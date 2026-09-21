@@ -151,3 +151,30 @@ export const BackHandler = {
   },
   exitApp() {},
 };
+
+/**
+ * `direction` in a style is how the app turns the whole tree right-to-left
+ * for Arabic and Urdu (AppNavigationRoot), and how the muṣḥaf pins its
+ * pager back to left-to-right. React Native honours it as a layout style;
+ * react-native-web drops it ("Invalid style property") and wants the `dir`
+ * attribute instead, which is also what flips start/end for the children.
+ * So a View whose style names a direction gets it as `dir`.
+ */
+import React from 'react';
+
+const FlatStyle = RNW.StyleSheet;
+export const View = React.forwardRef(function View(props, ref) {
+  const style = props.style;
+  if (style != null) {
+    const flat = FlatStyle.flatten(style);
+    if (flat && (flat.direction === 'rtl' || flat.direction === 'ltr')) {
+      const { direction, ...rest } = flat;
+      return React.createElement(RNW.View, { ...props, style: rest, dir: props.dir ?? direction, ref });
+    }
+    if (flat && flat.direction != null) {
+      const { direction: _unused, ...rest } = flat;
+      return React.createElement(RNW.View, { ...props, style: rest, ref });
+    }
+  }
+  return React.createElement(RNW.View, { ...props, ref });
+});
