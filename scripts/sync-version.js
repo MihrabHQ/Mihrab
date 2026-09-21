@@ -30,6 +30,7 @@ const RECIPE = path.join(ROOT, 'contrib', 'fdroid', 'com.prayer_times.yml');
 const PACKAGE = path.join(ROOT, 'package.json');
 const LOCK = path.join(ROOT, 'package-lock.json');
 const PKG_NAME = JSON.parse(fs.readFileSync(PACKAGE, 'utf-8')).name;
+const DESKTOP = path.join(ROOT, 'desktop', 'package.json');
 /** Every language page other than English and Swedish, which have rules of their own. */
 const OTHER_SITES = ['ar', 'bn', 'de', 'es', 'fr', 'hi', 'id', 'ru', 'tr', 'ur', 'zh'].map(
   lang => ({ lang, file: path.join(ROOT, 'docs', lang, 'index.html') }),
@@ -192,6 +193,14 @@ function rules({ versionName, versionCode }) {
       // is the one whose `"name"` is on the line before it.
       find: /"": \{\n      "name": "[^"]+",\n      "version": "[\d.]+"/,
       replace: `"": {\n      "name": "${PKG_NAME}",\n      "version": "${versionName}"`,
+    },
+    // The Windows/Linux build takes its version — the installer's file
+    // name, "About", the sync device's reported version — from here.
+    {
+      file: DESKTOP,
+      what: 'desktop: package version',
+      find: /"version": "[\d.]+"/,
+      replace: `"version": "${versionName}"`,
     },
   ];
 }

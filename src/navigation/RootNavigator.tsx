@@ -14,7 +14,7 @@ import { MainTabs } from './MainTabs';
 import { useVerticalBarInsets } from '../native/VerticalBar';
 import { HeaderPlaybackBar } from '../quran/audio/HeaderPlaybackBar';
 import { usePrayerSettings } from '../context/PrayerSettingsContext';
-import { isDesktop, isMacCatalyst } from '../responsive/breakpoints';
+import { isDesktop } from '../responsive/breakpoints';
 import { trailingBackOptions } from './trailingBackOptions';
 import { SETTINGS_STACK_PAGES } from '../screens/settings/subpages';
 import type { RootStackParamList } from './types';

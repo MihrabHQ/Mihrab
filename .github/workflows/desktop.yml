@@ -1,0 +1,94 @@
+name: Desktop
+
+# Builds the Windows and Linux app (desktop/) on the platforms it ships
+# for, launches each packaged build, and keeps the installers as artifacts.
+#
+# Run by hand (Actions → Desktop → Run workflow) or by a version tag. It is
+# NOT run on every push: an Electron build is minutes of runner time per OS,
+# and release.sh builds the same artifacts locally anyway.
+#
+# The smoke test is the thing a Mac cannot do: start the real Windows .exe
+# and the real Linux AppImage, let the app render, and fail if the window
+# stays blank or the page throws before it draws.
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ['v*']
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: --linux AppImage deb --x64
+            exe: desktop/dist/linux-unpacked/mihrab
+          - os: windows-latest
+            target: --win nsis --x64
+            exe: desktop/dist/win-unpacked/Mihrab.exe
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            desktop/package-lock.json
+
+      # The app's own dependencies: the web bundle is built from src/ and
+      # the React Native packages it imports.
+      - name: App dependencies
+        run: npm ci --no-audit
+
+      - name: Desktop dependencies
+        working-directory: desktop
+        run: npm ci --no-audit --include=dev
+
+      - name: Build
+        working-directory: desktop
+        run: npm run build && npx electron-builder ${{ matrix.target }} --publish never
+
+      - name: Linux display
+        if: runner.os == 'Linux'
+        run: sudo apt-get update -q && sudo apt-get install -yq xvfb libnotify4
+
+      - name: Smoke test — the packaged app renders
+        env:
+          MIHRAB_DEBUG: '1'
+          MIHRAB_SNAPSHOT: ${{ runner.temp }}/snapshot.png
+          MIHRAB_SNAPSHOT_DELAY: '12000'
+          MIHRAB_USER_DATA: ${{ runner.temp }}/profile
+        run: |
+          if [ "$RUNNER_OS" = "Linux" ]; then
+            timeout 120 xvfb-run -a -s "-screen 0 1280x900x24" "${{ matrix.exe }}" --no-sandbox | tee app.log
+          else
+            timeout 120 "${{ matrix.exe }}" | tee app.log
+          fi
+          test -s "$MIHRAB_SNAPSHOT" || { echo "no snapshot: the window never drew"; exit 1; }
+          if grep -q "\[page:uncaught\]\|Uncaught" app.log; then
+            echo "the page threw while starting"; exit 1
+          fi
+          node -e "
+            const s = require('fs').statSync(process.env.MIHRAB_SNAPSHOT).size;
+            if (s < 8000) { console.error('snapshot is ' + s + ' bytes: a blank window'); process.exit(1); }
+            console.log('snapshot ' + s + ' bytes');
+          "
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mihrab-desktop-${{ runner.os }}
+          path: |
+            desktop/dist/*.exe
+            desktop/dist/*.AppImage
+            desktop/dist/*.deb
+            ${{ runner.temp }}/snapshot.png
+          if-no-files-found: warn

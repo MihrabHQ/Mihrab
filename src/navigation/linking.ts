@@ -18,7 +18,7 @@
  * and nothing a link can ask for is destructive — the worst a forged
  * `mihrab://` does is change which tab is showing.
  */
-import { isDesktop, isMacCatalyst } from '../responsive/breakpoints';
+import { isDesktop } from '../responsive/breakpoints';
 import {
   getStateFromPath as defaultGetStateFromPath,
   type LinkingOptions,

@@ -4,7 +4,10 @@
   "version": "2.25.0",
   "productName": "Mihrab",
   "description": "Mihrab for Windows and Linux: the React Native app rendered with react-native-web inside Electron.",
-  "author": "Hassan El Ghamri",
+  "author": {
+    "name": "Hassan El Ghamri",
+    "email": "hassan15015099@gmail.com"
+  },
   "license": "AGPL-3.0-or-later",
   "main": "electron/main.js",
   "scripts": {
@@ -14,7 +17,9 @@
     "watch:web": "webpack --mode development --watch",
     "build": "npm run bundle && npm run build:web",
     "start": "electron .",
-    "dev": "npm run bundle && webpack --mode development && electron ."
+    "dev": "npm run bundle && webpack --mode development && electron .",
+    "dist:linux": "npm run build && electron-builder --linux",
+    "dist:win": "npm run build && electron-builder --win"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
@@ -29,5 +34,92 @@
   "dependencies": {
     "react-dom": "19.2.0",
     "react-native-web": "^0.21.2"
-  }
+  },
+  "homepage": "https://github.com/Hassan-PS/Mihrab",
+  "build": {
+    "appId": "com.prayer_times.desktop",
+    "productName": "Mihrab",
+    "executableName": "mihrab",
+    "artifactName": "Mihrab-${version}-${os}-${arch}.${ext}",
+    "directories": {
+      "output": "dist",
+      "buildResources": "resources"
+    },
+    "files": [
+      "electron/**",
+      "build/renderer/**",
+      "resources/**",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "build/bundle",
+        "to": "bundle"
+      }
+    ],
+    "asar": true,
+    "icon": "resources/icon.png",
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        },
+        {
+          "target": "deb",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "category": "Utility",
+      "icon": "resources/icon.png",
+      "synopsis": "Prayer times, the adhan and the Qur'an",
+      "description": "Prayer times worked out on your own computer, the adhan at each prayer, and the Madinah mushaf. No ads, no analytics, no account.",
+      "desktop": {
+        "entry": {
+          "Name": "Mihrab",
+          "StartupWMClass": "Mihrab",
+          "Keywords": "prayer;salah;adhan;quran;islam;"
+        }
+      },
+      "maintainer": "Hassan El Ghamri <hassan15015099@gmail.com>",
+      "syncDesktopName": true
+    },
+    "deb": {
+      "depends": [
+        "libnotify4",
+        "libxtst6",
+        "libnss3",
+        "libasound2 | libasound2t64"
+      ]
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "icon": "resources/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "shortcutName": "Mihrab",
+      "runAfterFinish": true,
+      "buildUniversalInstaller": false
+    },
+    "publish": null
+  },
+  "desktopName": "mihrab.desktop"
 }
