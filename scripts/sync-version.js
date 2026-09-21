@@ -27,6 +27,7 @@ const GRADLE = path.join(ROOT, 'android', 'app', 'build.gradle');
 const SITE = path.join(ROOT, 'docs', 'index.html');
 const SITE_SV = path.join(ROOT, 'docs', 'sv', 'index.html');
 const RECIPE = path.join(ROOT, 'contrib', 'fdroid', 'com.prayer_times.yml');
+const DESKTOP = path.join(ROOT, 'desktop', 'package.json');
 /** Every language page other than English and Swedish, which have rules of their own. */
 const OTHER_SITES = ['ar', 'bn', 'de', 'es', 'fr', 'hi', 'id', 'ru', 'tr', 'ur', 'zh'].map(
   lang => ({ lang, file: path.join(ROOT, 'docs', lang, 'index.html') }),
@@ -162,6 +163,14 @@ function rules({ versionName, versionCode }) {
       what: 'fdroid recipe: build commit tag',
       find: /commit: v[\d.]+/,
       replace: `commit: v${versionName}`,
+    },
+    // The Windows/Linux build takes its version — the installer's file
+    // name, "About", the sync device's reported version — from here.
+    {
+      file: DESKTOP,
+      what: 'desktop: package version',
+      find: /"version": "[\d.]+"/,
+      replace: `"version": "${versionName}"`,
     },
   ];
 }

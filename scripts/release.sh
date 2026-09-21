@@ -11,6 +11,16 @@
 #                                            # ship Android + iOS WITHOUT
 #                                            #   the Mac; Mac stays on
 #                                            #   whatever shipped last
+#   DESKTOP=1 ./scripts/release.sh 2.26.0    # also build and publish the
+#                                            #   Windows + Linux app
+#
+# ── DESKTOP, AND WHY IT IS OPT-IN FOR NOW ────────────────────────────
+#
+# The Windows/Linux build (desktop/) is new. Until one release of it has
+# been installed and used on a real Windows PC and a real Linux desktop,
+# publishing it has to be asked for each time. When that has happened,
+# flip the default here and in verify-release.sh, and say so in the
+# journal.
 #
 # ── SKIP_CATALYST, AND WHY IT IS AN ENV VAR AND NOT A FLAG ────────────
 #
@@ -278,7 +288,7 @@ JOURNAL="$ROOT/docs/release-log.md"
 # site is fourteen files and a list of them here goes stale the moment it
 # grows. An abort that leaves half the site stamped is an abort that makes
 # the next run refuse to start on a dirty tree, with no clue why.
-REVERT="git checkout -- android/app/build.gradle ios/PrayerApp.xcodeproj/project.pbxproj docs contrib/fdroid/com.prayer_times.yml src/polish/releaseNotes.generated.ts"
+REVERT="git checkout -- android/app/build.gradle ios/PrayerApp.xcodeproj/project.pbxproj docs contrib/fdroid/com.prayer_times.yml desktop/package.json src/polish/releaseNotes.generated.ts"
 
 current_version() { grep -o 'versionName "[^"]*"' "$GRADLE_FILE" | head -1 | cut -d'"' -f2; }
 current_code()    { grep -o 'versionCode [0-9]*'  "$GRADLE_FILE" | head -1 | awk '{print $2}'; }
@@ -679,6 +689,41 @@ rm -rf "$UNZIP"
 keep_installed_widget_registered
 fi
 
+# ── Windows + Linux (opt-in: DESKTOP=1) ───────────────────────────────
+# Built here, on the Mac, for both: electron-builder packages Windows and
+# Linux targets from macOS. Unsigned on Windows for now (SmartScreen will
+# warn on first run), which the release notes should say.
+DESKTOP_ASSETS=""
+if [ "${DESKTOP:-0}" = "1" ]; then
+  step "Windows + Linux"
+  D="$ROOT/desktop"
+  [ -x "$D/node_modules/.bin/electron-builder" ] \
+    || ( cd "$D" && NODE_ENV= npm ci --no-audit --include=dev >/tmp/release-desktop.log 2>&1 ) \
+    || die "desktop dependencies failed — /tmp/release-desktop.log"
+  grep -q "\"version\": \"$VERSION\"" "$D/package.json" \
+    || die "desktop/package.json does not say $VERSION — sync-version did not stamp it"
+  rm -rf "$D/dist"
+  ( cd "$D" && NODE_ENV= npm run build >/tmp/release-desktop.log 2>&1 \
+      && NODE_ENV= npx electron-builder --linux AppImage deb --x64 --arm64 --win nsis --x64 --arm64 \
+           --publish never >>/tmp/release-desktop.log 2>&1 ) \
+    || { tail -20 /tmp/release-desktop.log; die "desktop build failed — /tmp/release-desktop.log"; }
+  for f in "Mihrab-$VERSION-linux-x86_64.AppImage" "Mihrab-$VERSION-linux-arm64.AppImage" \
+           "Mihrab-$VERSION-linux-amd64.deb" "Mihrab-$VERSION-linux-arm64.deb" \
+           "Mihrab-$VERSION-win-x64.exe" "Mihrab-$VERSION-win-arm64.exe"; do
+    [ -s "$D/dist/$f" ] || die "desktop build produced no $f"
+    DESKTOP_ASSETS="$DESKTOP_ASSETS $D/dist/$f"
+  done
+  # The mushaf is the reason this build is Electron: the page fonts need a
+  # post table added before Chromium will draw them, and that code must be
+  # in what ships.
+  grep -q "adding the post table Chromium requires" "$D/build/renderer"/app.*.js \
+    || die "the desktop bundle lost the page-font post-table fix — the mushaf would be blank"
+  ok "Windows (x64, arm64) and Linux (AppImage, deb; x64, arm64)"
+else
+  step "Windows + Linux"
+  warn "not built: DESKTOP=1 not set"
+fi
+
 if [ "$DRY_RUN" = "1" ]; then
   cleanup_workbench
   printf "\n"
@@ -687,6 +732,7 @@ if [ "$DRY_RUN" = "1" ]; then
   echo "    $APK"
   echo "    $AAB"
   [ -n "$ZIP" ] && echo "    $ZIP"
+  for f in $DESKTOP_ASSETS; do echo "    $f"; done
   echo
   echo "  The version bump is in your working tree. Undo it with:"
   echo "    $REVERT"
@@ -752,6 +798,7 @@ step "Publishing"
 # and `releaseNotes.test.ts` would fail on the tagged commit.
 git add "$GRADLE_FILE" "$PBXPROJ" "$ROOT/docs" \
         "$ROOT/contrib/fdroid/com.prayer_times.yml" \
+        "$ROOT/desktop/package.json" \
         "$JOURNAL" \
         "$ROOT/fastlane/metadata/android" \
         "$ROOT/src/polish/releaseNotes.generated.ts" || die "git add failed"
@@ -813,6 +860,9 @@ if [ -n "$ZIP" ]; then
   cp "$ZIP" "$STAGE/" || die "cannot stage the zip"
   ASSETS="$ASSETS $STAGE/Mihrab-macOS-$VERSION.zip"
 fi
+# The desktop files are already named for publishing by electron-builder
+# (artifactName in desktop/package.json).
+ASSETS="$ASSETS$DESKTOP_ASSETS"
 
 NOTES="${RELEASE_NOTES:-}"
 if [ -n "$NOTES" ] && [ -f "$NOTES" ]; then
@@ -841,6 +891,10 @@ if [ -n "$ZIP" ]; then
 else
   ok "GitHub release published (APK only — SKIP_CATALYST=1)"
 fi
+for f in $DESKTOP_ASSETS; do
+  has "$PUBLISHED" "$(basename "$f")" || die "the desktop asset $(basename "$f") is missing from the release"
+done
+[ -n "$DESKTOP_ASSETS" ] && ok "Windows and Linux assets published"
 
 # The cask is bumped against the sha of the zip AS PUBLISHED, downloaded
 # back from the release, not against the local file. They came apart once

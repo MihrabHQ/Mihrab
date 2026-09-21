@@ -111,6 +111,24 @@ else
 fi
 rm -f "$APK_TMP"
 
+# ── 3b. Windows + Linux: all of them or none ───────────────────────────
+# Published only with DESKTOP=1 (see release.sh). A release that has any
+# desktop file must have every one: a Linux user who finds an AppImage for
+# x86_64 but not arm64, or a Windows user with no arm64 installer, has been
+# handed half a release.
+DESKTOP_FILES="Mihrab-$VERSION-linux-x86_64.AppImage Mihrab-$VERSION-linux-arm64.AppImage Mihrab-$VERSION-linux-amd64.deb Mihrab-$VERSION-linux-arm64.deb Mihrab-$VERSION-win-x64.exe Mihrab-$VERSION-win-arm64.exe"
+if echo "${REL_JSON:-}" | grep -q "\"Mihrab-$VERSION-\(linux\|win\)-"; then
+  for f in $DESKTOP_FILES; do
+    if echo "$REL_JSON" | grep -q "\"$f\""; then
+      pass "desktop asset present: $f"
+    else
+      fail "desktop asset MISSING: $f — the release has some Windows/Linux files but not this one"
+    fi
+  done
+else
+  echo "· no Windows/Linux build on this release (published only with DESKTOP=1)"
+fi
+
 # ── 4. Cask: version matches, sha256 matches the PUBLISHED zip ──────────
 if [ -f "$TAP" ]; then
   cask_ver=$(sed -n 's/.*version "\(.*\)".*/\1/p' "$TAP" | head -1)

@@ -261,6 +261,33 @@ That APK is **not** what goes on GitHub Releases any more (it was, up to 2.25.0)
 - **No Google Play Services** — guarded by the `patch-package` patch on `@react-native-community/geolocation` that strips `play-services-location` and uses AOSP `LocationManager` only.
 - **No ABI splits** — split APKs are only enabled for `playRelease` (guarded by `wantsPlayRelease` in `app/build.gradle`). The F-Droid build is a single universal APK, which is what their CI recipe expects.
 
+### Windows and Linux (`desktop/`)
+
+The React Native app rendered with react-native-web in Electron — see
+`desktop/README.md`. Published on the GitHub release, opt-in per release:
+
+```sh
+DESKTOP=1 ./scripts/release.sh X.Y.Z
+```
+
+builds on this Mac, and uploads:
+
+| File | For |
+|---|---|
+| `Mihrab-X.Y.Z-win-x64.exe`, `-win-arm64.exe` | Windows installer (per-user, unsigned — SmartScreen warns on first run) |
+| `Mihrab-X.Y.Z-linux-x86_64.AppImage`, `-linux-arm64.AppImage` | Any Linux, no install |
+| `Mihrab-X.Y.Z-linux-amd64.deb`, `-linux-arm64.deb` | Debian / Ubuntu |
+
+`verify-release.sh` requires all six or none. `desktop/package.json`'s
+version is stamped by `sync-version.js` with everything else. Before
+flipping `DESKTOP` to the default, one release has to have been installed
+and used on a real Windows PC and a real Linux desktop — the Actions
+workflow `desktop.yml` launches both packaged builds, but a launch is not
+an adhan at Fajr.
+
+Not yet: code signing on Windows, a Flathub manifest, winget and the
+Microsoft Store.
+
 ### F-Droid CI rules (`rewritemeta` linter)
 
 Mechanically enforced; ignore at your peril:

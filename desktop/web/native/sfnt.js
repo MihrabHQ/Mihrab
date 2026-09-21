@@ -42,11 +42,18 @@ function tableTags(view) {
   return tags;
 }
 
+let announced = false;
+
 export function withPostTable(input) {
   const src = input instanceof Uint8Array ? input : new Uint8Array(input);
   const view = new DataView(src.buffer, src.byteOffset, src.byteLength);
   const tables = tableTags(view);
   if (tables.some(t => t.tag === 'post')) return src;
+  if (!announced) {
+    announced = true;
+    // Also the marker release.sh looks for in the minified bundle.
+    console.info('[mihrab] page fonts: adding the post table Chromium requires');
+  }
 
   const post = new Uint8Array(32);
   new DataView(post.buffer).setUint32(0, 0x00030000); // version 3.0, rest zero

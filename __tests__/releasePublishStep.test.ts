@@ -125,3 +125,47 @@ describe('the APK on GitHub is the github flavor, checked as served', () => {
     expect(verify).toContain('published APK is signed with the release key');
   });
 });
+
+describe('the Windows/Linux build ships only when asked, and whole', () => {
+  it('is opt-in with DESKTOP=1 and says so when it is not built', () => {
+    expect(script).toMatch(/if \[ "\$\{DESKTOP:-0\}" = "1" \]; then/);
+    expect(script).toContain('not built: DESKTOP=1 not set');
+  });
+
+  it('builds every platform and architecture, and refuses a partial set', () => {
+    for (const f of [
+      'Mihrab-$VERSION-linux-x86_64.AppImage',
+      'Mihrab-$VERSION-linux-arm64.AppImage',
+      'Mihrab-$VERSION-linux-amd64.deb',
+      'Mihrab-$VERSION-linux-arm64.deb',
+      'Mihrab-$VERSION-win-x64.exe',
+      'Mihrab-$VERSION-win-arm64.exe',
+    ]) {
+      expect(script).toContain(f);
+      expect(verify).toContain(f);
+    }
+    expect(script).toContain('desktop build produced no');
+    expect(verify).toContain('desktop asset MISSING');
+  });
+
+  it('refuses a bundle without the page-font fix, which would blank the mushaf', () => {
+    const marker = 'adding the post table Chromium requires';
+    expect(script).toContain(marker);
+    expect(read('desktop', 'web', 'native', 'sfnt.js')).toContain(marker);
+  });
+
+  it('stamps, commits and can revert desktop/package.json with the rest', () => {
+    expect(read('scripts', 'sync-version.js')).toContain("path.join(ROOT, 'desktop', 'package.json')");
+    expect(script).toMatch(/git add[\s\S]*?desktop\/package\.json[\s\S]*?git commit -q -m "Release/);
+    expect(script).toMatch(/^REVERT="[^"]*desktop\/package\.json/m);
+  });
+
+  it('publishes the desktop files and checks GitHub has them', () => {
+    expect(script).toContain('ASSETS="$ASSETS$DESKTOP_ASSETS"');
+    expect(script).toContain('is missing from the release');
+  });
+});
+
+function read(...parts: string[]): string {
+  return readFileSync(path.join(__dirname, '..', ...parts), 'utf8');
+}
