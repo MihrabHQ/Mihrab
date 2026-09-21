@@ -111,6 +111,14 @@ module.exports = (env, argv) => {
       ],
     },
     plugins: [
+      // React Navigation's back button is Android-only (a web build uses
+      // browser history instead). Here back is BackHandler — Esc, Alt+←,
+      // the mouse's back button — so take the native hook.
+      new webpack.NormalModuleReplacementPlugin(/\/useBackButton(\.js)?$/, resource => {
+        if (resource.context.includes(path.join('@react-navigation', 'native'))) {
+          resource.request = resource.request.replace(/useBackButton(\.js)?$/, 'useBackButton.native.js');
+        }
+      }),
       new webpack.DefinePlugin({
         __DEV__: JSON.stringify(dev),
         'process.env.NODE_ENV': JSON.stringify(dev ? 'development' : 'production'),

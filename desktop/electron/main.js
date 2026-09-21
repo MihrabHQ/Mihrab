@@ -54,10 +54,13 @@ function serveScheme() {
     const url = new URL(request.url);
     if (url.host === 'app') {
       const rel = decodeURIComponent(url.pathname).replace(/^\/+/, '') || 'index.html';
-      const file = path.join(RENDERER, rel);
+      let file = path.join(RENDERER, rel);
       if (path.relative(RENDERER, file).startsWith('..')) {
         return new Response('forbidden', { status: 403 });
       }
+      // React Navigation writes the route into the URL; a reload of
+      // mihrab://app/qibla must still load the app, which then routes.
+      if (!fs.existsSync(file)) file = path.join(RENDERER, 'index.html');
       return net.fetch(pathToFileURL(file).toString());
     }
     if (url.host === 'files') {
@@ -123,6 +126,12 @@ function createWindow() {
       sandbox: true,
       nodeIntegration: false,
       spellcheck: false,
+      // The adhan starts itself at prayer time, with nobody's click to
+      // unlock audio — Chromium's autoplay rule must not apply.
+      autoplayPolicy: 'no-user-gesture-required',
+      // A hidden window (in the tray) must keep its timers and audio
+      // running at full speed, or the adhan comes late or not at all.
+      backgroundThrottling: false,
     },
   });
   // Links out of the app open in the system browser, never in the app.
