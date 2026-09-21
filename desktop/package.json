@@ -1,0 +1,29 @@
+{
+  "name": "mihrab-desktop",
+  "private": true,
+  "version": "2.25.0",
+  "productName": "Mihrab",
+  "description": "Mihrab for Windows and Linux: the React Native app rendered with react-native-web inside Electron.",
+  "author": "Hassan El Ghamri",
+  "license": "AGPL-3.0-or-later",
+  "main": "electron/main.js",
+  "scripts": {
+    "build:web": "webpack --mode production",
+    "watch:web": "webpack --mode development --watch",
+    "start": "electron .",
+    "dev": "webpack --mode development && electron ."
+  },
+  "devDependencies": {
+    "@babel/core": "^7.25.2",
+    "babel-loader": "^10.0.0",
+    "electron": "^44.4.3",
+    "electron-builder": "^26.15.3",
+    "html-webpack-plugin": "^5.6.3",
+    "webpack": "^5.111.1",
+    "webpack-cli": "^6.0.1"
+  },
+  "dependencies": {
+    "react-dom": "19.2.0",
+    "react-native-web": "^0.21.2"
+  }
+}
