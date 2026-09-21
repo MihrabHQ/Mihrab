@@ -98,3 +98,56 @@ export const AppRegistry = new Proxy(RNW.AppRegistry, {
     return typeof v === 'function' ? v.bind(target) : v;
   },
 });
+
+/**
+ * BackHandler: the phones' hardware back, from a keyboard and mouse.
+ *
+ * Esc, Alt+← and the mouse's back button all press "back". Handlers run
+ * newest first until one says it handled it, exactly as Android runs them —
+ * so the app's own back rules (useAndroidSubScreenBack) and React
+ * Navigation's goBack apply unchanged. Esc in a text field is left to the
+ * field.
+ */
+const backHandlers = [];
+
+function pressBack() {
+  for (let i = backHandlers.length - 1; i >= 0; i--) {
+    try {
+      if (backHandlers[i]()) return true;
+    } catch (e) {
+      console.error('[BackHandler]', e);
+    }
+  }
+  return false;
+}
+
+if (typeof document !== 'undefined') {
+  document.addEventListener('keydown', e => {
+    const t = e.target instanceof Element ? e.target : null;
+    const typing = t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName));
+    const esc = e.key === 'Escape' && !typing && !e.metaKey && !e.ctrlKey && !e.altKey;
+    const altLeft = e.key === 'ArrowLeft' && e.altKey && !e.metaKey && !e.ctrlKey;
+    if ((esc || altLeft) && pressBack()) e.preventDefault();
+  });
+  document.addEventListener('mouseup', e => {
+    if (e.button === 3 && pressBack()) e.preventDefault();
+  });
+}
+
+export const BackHandler = {
+  addEventListener(type, handler) {
+    if (type !== 'hardwareBackPress') return { remove() {} };
+    backHandlers.push(handler);
+    return {
+      remove() {
+        const i = backHandlers.lastIndexOf(handler);
+        if (i >= 0) backHandlers.splice(i, 1);
+      },
+    };
+  },
+  removeEventListener(type, handler) {
+    const i = backHandlers.lastIndexOf(handler);
+    if (i >= 0) backHandlers.splice(i, 1);
+  },
+  exitApp() {},
+};
