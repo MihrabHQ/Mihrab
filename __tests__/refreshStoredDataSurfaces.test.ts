@@ -84,7 +84,7 @@ describe('the pull on Home', () => {
   });
 
   it('is never on the Mac, where a pull is not a gesture anybody makes', () => {
-    expect(home).toMatch(/pullEnabled = !isMacCatalyst/);
+    expect(home).toMatch(/pullEnabled = !isDesktop/);
   });
 
   it('treats the system taking the gesture as a cancel, not a release', () => {

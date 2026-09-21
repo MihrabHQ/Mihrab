@@ -15,6 +15,10 @@ export function stopNotificationSound() {
   }
 }
 
+export function isNotificationSoundPlaying() {
+  return Boolean(current && !current.paused);
+}
+
 export async function playNotificationSound(sound) {
   const d = desktop();
   if (!d || !sound || sound === 'default') return;
@@ -37,3 +41,6 @@ export async function playNotificationSound(sound) {
     console.warn('[mihrab] could not play notification sound', sound, e);
   }
 }
+
+// "Stop the adhan" in the tray menu.
+desktop()?.app.onAdhanStop(() => stopNotificationSound());

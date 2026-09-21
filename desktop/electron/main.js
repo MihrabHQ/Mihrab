@@ -29,6 +29,9 @@ const { pathToFileURL } = require('url');
 const fsIpc = require('./fsIpc');
 const notifications = require('./notifications');
 const services = require('./services');
+const background = require('./background');
+
+let bg = null;
 const { readable } = require('./paths');
 
 const RENDERER = path.join(__dirname, '..', 'build', 'renderer');
@@ -105,6 +108,8 @@ function allowAppRequests() {
 
 function createWindow() {
   win = new BrowserWindow({
+    show: false,
+    icon: path.join(__dirname, '..', 'resources', 'icon.png'),
     width: 1100,
     height: 800,
     minWidth: 380,
@@ -129,6 +134,11 @@ function createWindow() {
     if (!url.startsWith('mihrab://app/')) e.preventDefault();
   });
   void win.loadURL('mihrab://app/index.html');
+  // Started at login: run in the tray, window unshown, until asked for.
+  win.once('ready-to-show', () => {
+    if (!bg?.startedHidden()) win.show();
+  });
+  bg?.attach(win);
   debugHooks(win);
   win.on('closed', () => {
     win = null;
@@ -172,6 +182,7 @@ function registerIpc() {
     locale: app.getLocale(),
     preferredLanguages: app.getPreferredSystemLanguages(),
     name: app.getName(),
+    hostname: require('os').hostname().replace(/\.local$/, ''),
   });
   ipcMain.handle('app:info', info);
   // Native module constants are synchronous on the phones; the preload reads
@@ -203,6 +214,7 @@ function registerIpc() {
     return response;
   });
 
+  ipcMain.on('tray:status', (_e, text) => bg?.setStatus(text));
   ipcMain.handle('clipboard:read', () => clipboard.readText());
   ipcMain.handle('clipboard:write', (_e, text) => clipboard.writeText(String(text ?? '')));
 }
@@ -212,23 +224,21 @@ function registerIpc() {
 if (!app.requestSingleInstanceLock()) {
   app.quit();
 } else {
-  app.on('second-instance', () => {
-    if (win) {
-      if (win.isMinimized()) win.restore();
-      win.show();
-      win.focus();
-    }
-  });
+  app.on('second-instance', () => bg?.show());
   app.whenReady().then(() => {
     serveScheme();
     registerIpc();
     allowAppRequests();
+    // No tray in automated runs: they must be able to close the window.
+    if (!process.env.MIHRAB_USER_DATA) bg = background.register(() => win);
     createWindow();
     app.on('activate', () => {
       if (BrowserWindow.getAllWindows().length === 0) createWindow();
     });
   });
+  // With the tray, closing the window never gets here; without it (an
+  // automated run), closing the window ends the app.
   app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') app.quit();
+    if (!bg) app.quit();
   });
 }

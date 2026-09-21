@@ -9,13 +9,13 @@ const { app } = require('electron');
 
 /**
  * The read-only files shipped with the app — the Qur'an text and
- * translations that the phones read from their bundle. Packaged, they sit
- * in resources/bundle; from a checkout, they are the repo's own assets/.
+ * translations and the adhan recordings. Packaged, they sit in
+ * resources/bundle; from a checkout, in build/bundle (scripts/bundle-assets.js).
  */
 function bundleDir() {
   return app.isPackaged
     ? path.join(process.resourcesPath, 'bundle')
-    : path.resolve(__dirname, '..', '..', 'assets');
+    : path.resolve(__dirname, '..', 'build', 'bundle');
 }
 
 function roots() {

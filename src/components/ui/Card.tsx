@@ -84,7 +84,9 @@ function CardImpl({
             padding: SPACING[padding],
             borderWidth: variant === 'default' && !isDark ? 0 : StyleSheet.hairlineWidth,
             borderColor: palette.border,
-            ...(Platform.OS === 'ios'
+            // A shadow everywhere but Android, which draws `elevation`
+            // instead — react-native-web ignores `elevation`.
+            ...(Platform.OS !== 'android'
               ? {
                   shadowColor: '#000',
                   shadowOffset: 'shadowOffset' in elev ? elev.shadowOffset : { width: 0, height: 0 },

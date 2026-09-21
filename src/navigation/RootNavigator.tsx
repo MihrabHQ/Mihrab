@@ -14,7 +14,7 @@ import { MainTabs } from './MainTabs';
 import { useVerticalBarInsets } from '../native/VerticalBar';
 import { HeaderPlaybackBar } from '../quran/audio/HeaderPlaybackBar';
 import { usePrayerSettings } from '../context/PrayerSettingsContext';
-import { isMacCatalyst } from '../responsive/breakpoints';
+import { isDesktop, isMacCatalyst } from '../responsive/breakpoints';
 import { trailingBackOptions } from './trailingBackOptions';
 import { SETTINGS_STACK_PAGES } from '../screens/settings/subpages';
 import type { RootStackParamList } from './types';
@@ -249,7 +249,7 @@ export function RootNavigator() {
           Unregistering rather than rendering a "not supported" screen so
           that `navigate('Compass')` cannot half-work, and so the `qibla`
           deep link 404s honestly instead of opening a dead room. */}
-      {isMacCatalyst ? null : (
+      {isDesktop ? null : (
         <Stack.Screen
           name="Compass"
           getComponent={() => (require('../screens/CompassScreen') as typeof import('../screens/CompassScreen')).CompassScreen}

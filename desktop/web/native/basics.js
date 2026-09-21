@@ -3,6 +3,7 @@
  * natively, answered here from the preload's app info or the browser.
  */
 import { desktop } from '../shims/desktop';
+import { playNotificationSound, stopNotificationSound, isNotificationSoundPlaying } from './notificationSound';
 
 const info = () => desktop()?.app.info ?? { version: '0.0.0', platform: 'web', locale: navigator.language };
 
@@ -18,9 +19,15 @@ export const AppVersion = {
   },
 };
 
+/** `deviceName` is what sync calls this computer: its host name. */
 export const PrayerBuildInfo = {
   distribution: 'desktop',
-  getConstants: () => ({ distribution: 'desktop' }),
+  get deviceName() {
+    return info().hostname ?? undefined;
+  },
+  getConstants() {
+    return { distribution: 'desktop', deviceName: this.deviceName };
+  },
 };
 
 export const SecureRandom = {
@@ -76,4 +83,26 @@ export const RateApp = {
   requestReview() {
     void desktop()?.app.openExternal('https://github.com/Hassan-PS/Mihrab');
   },
+};
+
+/**
+ * AdhanPlayer: every adhan here already plays in the page (see
+ * notificationSound.js); this is the same player under the name the app's
+ * stop / preview / dismiss paths call.
+ */
+
+export const AdhanPlayer = {
+  play: async name => {
+    await playNotificationSound(name);
+    return true;
+  },
+  playPath: async path => {
+    await playNotificationSound(path);
+    return true;
+  },
+  stop: async () => {
+    stopNotificationSound();
+    return true;
+  },
+  isPlaying: async () => isNotificationSoundPlaying(),
 };

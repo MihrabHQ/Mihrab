@@ -47,6 +47,8 @@ export type RatingPlace = 'appStore' | 'play' | 'github';
  */
 export function ratingPlaces(): RatingPlace[] {
   if (Platform.OS === 'ios') return ['appStore'];
+  // Windows/Linux: no store at all, so the project page.
+  if (Platform.OS === 'web') return ['github'];
   return getAndroidDistribution() === 'play' ? ['play'] : ['play', 'github'];
 }
 
@@ -95,5 +97,6 @@ export async function openRatingPlace(place: RatingPlace): Promise<void> {
  */
 export async function rateApp(): Promise<void> {
   if (Platform.OS === 'ios') return openRatingPlace('appStore');
+  if (Platform.OS === 'web') return openRatingPlace('github');
   return openRatingPlace(getAndroidDistribution() === 'play' ? 'play' : 'github');
 }
