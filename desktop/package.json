@@ -8,10 +8,13 @@
   "license": "AGPL-3.0-or-later",
   "main": "electron/main.js",
   "scripts": {
+    "setup": "npm install --include=dev && node node_modules/electron/install.js",
+    "bundle": "node scripts/bundle-assets.js",
     "build:web": "webpack --mode production",
     "watch:web": "webpack --mode development --watch",
+    "build": "npm run bundle && npm run build:web",
     "start": "electron .",
-    "dev": "webpack --mode development && electron ."
+    "dev": "npm run bundle && webpack --mode development && electron ."
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

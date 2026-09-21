@@ -231,27 +231,32 @@ describe('the magnetometer path is gone, not merely unused', () => {
   });
 });
 
-describe('the page does not exist on a Mac', () => {
-  // A Mac has no magnetometer. The dial would sit at a fixed heading and
+describe('the page does not exist on a desktop', () => {
+  test('a desktop is the Mac and the Windows/Linux build alike', () => {
+    const bp = code('src', 'responsive', 'breakpoints.ts');
+    expect(bp).toMatch(/isDesktop: boolean = isMacCatalyst \|\| Platform\.OS === 'web'/);
+  });
+
+  // A computer has no magnetometer. The dial would sit at a fixed heading and
   // look broken, which is worse than the feature being absent — it is
   // why the tile was pulled in the first place. The BEARING is not a
   // sensor reading though, so the chip stays.
   test('the route is not registered there', () => {
     const nav = code('src', 'navigation', 'RootNavigator.tsx');
-    expect(nav).toContain('isMacCatalyst');
-    expect(nav).toMatch(/isMacCatalyst \? null : \(/);
+    expect(nav).toContain('isDesktop');
+    expect(nav).toMatch(/isDesktop \? null : \(/);
   });
 
   test('the deep link is withheld to match, rather than dangling', () => {
     const linking = code('src', 'navigation', 'linking.ts');
     expect(linking).toMatch(
-      /isMacCatalyst \? \{\} : \{ Compass: 'qibla' as const \}/,
+      /isDesktop \? \{\} : \{ Compass: 'qibla' as const \}/,
     );
   });
 
   test('the home screen offers no way to open it', () => {
     const home = code('src', 'screens', 'HomeScreen.tsx');
-    expect(home).toMatch(/isMacCatalyst\s*\?\s*undefined/);
+    expect(home).toMatch(/isDesktop\s*\?\s*undefined/);
   });
 
   test('but the chip still renders, as a readout', () => {

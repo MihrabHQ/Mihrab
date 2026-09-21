@@ -32,7 +32,8 @@ export async function rateApp(): Promise<void> {
     return; // module unavailable (should not happen) — silently no-op
   }
 
-  if (getAndroidDistribution() !== 'play') {
+  // Windows/Linux: no store at all, so the project page.
+  if (Platform.OS === 'web' || getAndroidDistribution() !== 'play') {
     await Linking.openURL(GITHUB_URL).catch(() => undefined);
     return;
   }

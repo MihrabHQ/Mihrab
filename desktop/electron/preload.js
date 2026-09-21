@@ -20,6 +20,12 @@ const info = ipcRenderer.sendSync('app:infoSync');
 contextBridge.exposeInMainWorld('mihrabDesktop', {
   app: {
     info,
+    setTrayStatus: text => ipcRenderer.send('tray:status', String(text ?? '')),
+    onAdhanStop: fn => {
+      const h = () => fn();
+      ipcRenderer.on('adhan:stop', h);
+      return () => ipcRenderer.removeListener('adhan:stop', h);
+    },
     openExternal: url => ipcRenderer.invoke('app:openExternal', url),
   },
   dialog: {

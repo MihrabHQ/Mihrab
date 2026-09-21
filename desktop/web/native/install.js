@@ -9,7 +9,9 @@
 import { NativeModules } from 'react-native-web/dist/index';
 import './fonts';
 import { MushafFont } from './mushafFont';
+import { MihrabKeyCommands } from './keys';
 import {
+  AdhanPlayer,
   AppVersion,
   I18nManager,
   MihrabClipboard,
@@ -21,7 +23,9 @@ import {
 import { SyncFolder } from './syncFolder';
 
 Object.assign(NativeModules, {
+  AdhanPlayer,
   AppVersion,
+  MihrabKeyCommands,
   I18nManager,
   MihrabClipboard,
   MushafFont,

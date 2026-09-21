@@ -18,8 +18,10 @@ type AdhanPlayerNative = {
   isPlaying(): Promise<boolean>;
 };
 
+// iOS plays the full adhan in the foreground; the Windows/Linux build plays
+// every adhan in the page, so it answers the same calls (stop above all).
 const native: AdhanPlayerNative | undefined =
-  Platform.OS === 'ios'
+  Platform.OS === 'ios' || Platform.OS === 'web'
     ? (NativeModules.AdhanPlayer as AdhanPlayerNative | undefined)
     : undefined;
 

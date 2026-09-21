@@ -64,6 +64,7 @@ import { ErrorBoundary } from '../components/ErrorBoundary';
 import { TodaySummary } from './home/TodaySummary';
 import { CenteredColumn } from '../responsive/CenteredColumn';
 import {
+  isDesktop,
   isMacCatalyst,
   BREAKPOINT_REGULAR,
   HOME_DASHBOARD_MIN_WIDTH,
@@ -305,7 +306,7 @@ export function HomeScreen() {
    *
    * Never on Catalyst — a pull is a thumb (`PullToRefresh`).
    */
-  const pullEnabled = !isMacCatalyst && state.phase === 'ready';
+  const pullEnabled = !isDesktop && state.phase === 'ready';
   const refreshParams =
     state.phase === 'ready'
       ? {
@@ -1154,7 +1155,7 @@ export function HomeScreen() {
    */
   const handleOpenQibla = useMemo(
     () =>
-      isMacCatalyst
+      isDesktop
         ? undefined
         : () => {
             navigation.navigate('Compass');

@@ -9,7 +9,7 @@ import { MainTabs } from './MainTabs';
 import { HeaderPlaybackBar } from '../quran/audio/HeaderPlaybackBar';
 import { usePrayerSettings } from '../context/PrayerSettingsContext';
 import { CompassScreen } from '../screens/CompassScreen';
-import { isMacCatalyst } from '../responsive/breakpoints';
+import { isDesktop } from '../responsive/breakpoints';
 import { MonthTimesScreen } from '../screens/MonthTimesScreen';
 import { OnboardingScreen } from '../screens/OnboardingScreen';
 import { QuranSurahScreen } from '../screens/QuranSurahScreen';
@@ -205,7 +205,7 @@ export function RootNavigator() {
           Unregistering rather than rendering a "not supported" screen so
           that `navigate('Compass')` cannot half-work, and so the `qibla`
           deep link 404s honestly instead of opening a dead room. */}
-      {isMacCatalyst ? null : (
+      {isDesktop ? null : (
         <Stack.Screen
           name="Compass"
           component={CompassScreen}

@@ -18,7 +18,7 @@
  * and nothing a link can ask for is destructive — the worst a forged
  * `mihrab://` does is change which tab is showing.
  */
-import { isMacCatalyst } from '../responsive/breakpoints';
+import { isDesktop } from '../responsive/breakpoints';
 import type { LinkingOptions } from '@react-navigation/native';
 import notifee, { EventType } from '@notifee/react-native';
 import { Linking } from 'react-native';
@@ -158,7 +158,7 @@ export const linking: LinkingOptions<RootStackParamList> = {
        * dies somewhere unhelpful — so the map has to agree with the
        * navigator about what exists.
        */
-      ...(isMacCatalyst ? {} : { Compass: 'qibla' as const }),
+      ...(isDesktop ? {} : { Compass: 'qibla' as const }),
       Fasting: 'fasting',
     },
   },

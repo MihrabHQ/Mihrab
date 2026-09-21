@@ -545,10 +545,11 @@ export const MushafSpreadReader = React.memo(function MushafSpreadReader(
     [ornament, pageBg, pageWidth, paired, renderColumn, totalPages],
   );
 
-  // Pointer environments (iPad trackpad, Catalyst): wheel scroll doesn't
-  // drive a pagingEnabled list, so keep the edge chevrons. The mushaf
-  // advances right-to-left: LEFT chevron = next, right = previous.
-  const showChevrons = Platform.OS === 'ios';
+  // Pointer environments (iPad trackpad, Catalyst, the Windows/Linux
+  // build): wheel scroll doesn't drive a pagingEnabled list, so keep the
+  // edge chevrons. The mushaf advances right-to-left: LEFT chevron = next,
+  // right = previous.
+  const showChevrons = Platform.OS === 'ios' || Platform.OS === 'web';
   const currentIndex = indexForPage(currentPage);
 
   return (

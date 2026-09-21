@@ -126,6 +126,15 @@ export const isMacCatalyst: boolean =
       ?.interfaceIdiom === 'mac');
 
 /**
+ * True on a desktop computer: the Mac Catalyst build, or the Windows/Linux
+ * build (react-native-web in Electron). What they share is what this gates —
+ * a keyboard and mouse, no magnetometer, no Live Activity, no thumb to pull
+ * with. Catalyst's window chrome (its canvas scale, title-bar inset) is not
+ * part of it and stays on `isMacCatalyst`.
+ */
+export const isDesktop: boolean = isMacCatalyst || Platform.OS === 'web';
+
+/**
  * The width at which Home becomes the two-column dashboard (day table +
  * side column) rather than the phone page. 1180, not the 1100 'expanded'
  * edge: below it the sidebar drops under the table. Shared with the tab

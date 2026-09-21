@@ -3,7 +3,7 @@ import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useLiveActivitySettings } from '../../context/PrayerSettingsContext';
 import { useAppPalette } from '../../hooks/useAppPalette';
-import { isMacCatalyst } from '../../responsive/breakpoints';
+import { isDesktop } from '../../responsive/breakpoints';
 import {
   SettingsBlock,
   SettingsGroup,
@@ -208,8 +208,8 @@ function LiveActivityCardImpl() {
   const { slice: settings, update } = useLiveActivitySettings();
   const { palette } = useAppPalette();
 
-  // Mac Catalyst has no Live Activity surface, so hide the whole card there.
-  if (isMacCatalyst) return null;
+  // No desktop has a Live Activity surface, so hide the whole card there.
+  if (isDesktop) return null;
 
   // Coerce any legacy stored value to the current options.
   const design: LADesign =
