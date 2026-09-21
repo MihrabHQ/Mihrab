@@ -7,6 +7,7 @@
  * src/native already treats a missing module as "this device cannot".
  */
 import { NativeModules } from 'react-native-web/dist/index';
+import './fonts';
 import { MushafFont } from './mushafFont';
 import {
   AppVersion,

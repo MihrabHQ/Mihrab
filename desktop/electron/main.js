@@ -22,6 +22,7 @@ const {
   ipcMain,
   net,
   protocol,
+  session,
   shell,
 } = require('electron');
 const { pathToFileURL } = require('url');
@@ -31,6 +32,10 @@ const services = require('./services');
 const { readable } = require('./paths');
 
 const RENDERER = path.join(__dirname, '..', 'build', 'renderer');
+
+// A throwaway profile for automated runs (scripts/drive.js), so a test
+// never touches the real one.
+if (process.env.MIHRAB_USER_DATA) app.setPath('userData', process.env.MIHRAB_USER_DATA);
 
 protocol.registerSchemesAsPrivileged([
   {
@@ -63,6 +68,38 @@ function serveScheme() {
       }
     }
     return new Response('not found', { status: 404 });
+  });
+}
+
+/**
+ * The phones make plain HTTP requests; a page is held to CORS, and most of
+ * the APIs the app reads (the prayer-time providers, GitHub releases, the
+ * recitation hosts) send no CORS headers because no browser was ever meant
+ * to call them. For requests from our own page only, answer preflights and
+ * mark responses readable — which is what the phones' requests already are.
+ */
+function allowAppRequests() {
+  const fromApp = details =>
+    details.webContentsId != null &&
+    win &&
+    !win.isDestroyed() &&
+    details.webContentsId === win.webContents.id &&
+    /^https?:/.test(details.url);
+  session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+    if (!fromApp(details)) return callback({});
+    const headers = { ...details.responseHeaders };
+    for (const k of Object.keys(headers)) {
+      if (/^access-control-allow-/i.test(k)) delete headers[k];
+    }
+    headers['Access-Control-Allow-Origin'] = ['mihrab://app'];
+    headers['Access-Control-Allow-Headers'] = ['*'];
+    headers['Access-Control-Allow-Methods'] = ['GET, POST, HEAD, OPTIONS'];
+    headers['Access-Control-Expose-Headers'] = ['*'];
+    const preflight = details.method === 'OPTIONS';
+    callback({
+      responseHeaders: headers,
+      ...(preflight ? { statusLine: 'HTTP/1.1 204 No Content' } : {}),
+    });
   });
 }
 
@@ -185,6 +222,7 @@ if (!app.requestSingleInstanceLock()) {
   app.whenReady().then(() => {
     serveScheme();
     registerIpc();
+    allowAppRequests();
     createWindow();
     app.on('activate', () => {
       if (BrowserWindow.getAllWindows().length === 0) createWindow();
