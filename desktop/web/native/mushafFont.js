@@ -6,16 +6,24 @@
  * drop the FontFace the slot had, load the page's file as a new one under
  * the same family, add it. Chromium then redraws text in that family with
  * the new face — the same contract the phones keep.
+ *
+ * The file is read and loaded from memory rather than by URL, because it
+ * needs a `post` table added before Chromium will take it (see sfnt.js).
  */
 import { desktop } from '../shims/desktop';
+import { base64ToBytes, withPostTable } from './sfnt';
 
 const faces = new Map();
 
+async function fontBytes(path) {
+  const d = desktop();
+  if (!d) throw new Error('MushafFont needs the desktop app');
+  return withPostTable(base64ToBytes(await d.fs.readFile(path, 'base64')));
+}
+
 export const MushafFont = {
   async registerFont(family, path) {
-    const d = desktop();
-    if (!d) throw new Error('MushafFont needs the desktop app');
-    const face = new FontFace(family, `url("${d.fs.fileUrl(path)}")`, { display: 'block' });
+    const face = new FontFace(family, await fontBytes(path), { display: 'block' });
     await face.load();
     const previous = faces.get(family);
     if (previous) document.fonts.delete(previous);
@@ -24,10 +32,8 @@ export const MushafFont = {
     return family;
   },
   async isValidFont(path) {
-    const d = desktop();
-    if (!d) return false;
     try {
-      const probe = new FontFace(`MihrabProbe${Date.now()}`, `url("${d.fs.fileUrl(path)}")`);
+      const probe = new FontFace(`MihrabProbe${Date.now()}`, await fontBytes(path));
       await probe.load();
       return true;
     } catch {
