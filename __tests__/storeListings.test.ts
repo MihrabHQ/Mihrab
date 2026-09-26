@@ -182,6 +182,14 @@ describe('the listings are one listing', () => {
     expect(readFileSync(OUT, 'utf8')).toBe(render());
   });
 
+  it.each(APP_LOCALES)('%s keeps price and promotion words out of the short description', locale => {
+    // Play: "must not contain keywords that indicate price or promotion",
+    // and "No ads." tripped it — an app that does cannot be featured.
+    expect(field(STORE_DIR[locale], 'short_description')).not.toMatch(
+      /\bads?\b|\bfree\b|annons|gratis|إعلان|مجان|Werbung|kostenlos|\bpub\b|gratuit|anuncio|reklam|ücretsiz|iklan|реклам|бесплат|বিজ্ঞাপন|বিনামূল্যে|विज्ञापन|मुफ़्त|اشتہار|مفت|广告|免费/i,
+    );
+  });
+
   it.each(APP_LOCALES)('%s leads its title with the name', locale => {
     const title = field(STORE_DIR[locale], 'title');
     expect(title).toMatch(/^(Mihrab|محراب|মিহরাব|मिहराब)/);

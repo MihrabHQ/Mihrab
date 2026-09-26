@@ -1,5 +1,5 @@
 "Language code","Language","App name","Short description","Full description"
-"en-US","English (United States)","Mihrab: The Muslim Companion","Prayer times, adhan, the Quran, duas and qibla in one calm app. No ads.","Mihrab is a calm companion for a Muslim's day: the prayers, the Quran, and the remembrance in between, in one private app.
+"en-US","English (United States)","Mihrab: The Muslim Companion","Prayer times, adhan, the Quran, duas and qibla in one calm, private app.","Mihrab is a calm companion for a Muslim's day: the prayers, the Quran, and the remembrance in between, in one private app.
 
 Hold any word in the mushaf and hear that one word read. Follow the recited word as it lights up on the page. See tajweed in colour, on Hafs and on Warsh. Keep your journal and settings in step between your own devices, with no account and no server. And every line of it is open source.
 
@@ -38,7 +38,7 @@ YOURS
 The network is used only when you choose it: a prayer-time provider (AlAdhan, PrayTimes.dev, or the national tables for Sweden and Morocco), place search through OpenStreetMap Nominatim, and downloading Quran pages, translations, tafsir and recitation audio. Your coordinates stay on your device.
 
 Mihrab is open source under AGPL-3.0-or-later."
-"ar","Arabic","محراب: رفيق المسلم","مواقيت الصلاة والأذان والقرآن والأدعية والقبلة في تطبيق هادئ. بلا إعلانات.","محراب رفيقٌ هادئ في يوم المسلم: الصلوات، والقرآن الكريم، والذكر فيما بينها، في تطبيق واحد يحفظ خصوصيتك.
+"ar","Arabic","محراب: رفيق المسلم","مواقيت الصلاة والأذان والقرآن والأدعية والقبلة في تطبيق هادئ يحفظ خصوصيتك.","محراب رفيقٌ هادئ في يوم المسلم: الصلوات، والقرآن الكريم، والذكر فيما بينها، في تطبيق واحد يحفظ خصوصيتك.
 
 اضغط مطوّلًا على أي كلمة في المصحف فتسمعها وحدها. تابع الكلمة المتلوّة وهي تُضيء على الصفحة. شاهد أحكام التجويد بالألوان، لرواية حفص ولرواية ورش. واجعل سجلّك وإعداداتك متزامنة بين أجهزتك أنت، بلا حساب وبلا خادم. وكل سطر من شيفرته مفتوح المصدر.
 
@@ -77,7 +77,7 @@ Mihrab is open source under AGPL-3.0-or-later."
 لا تُستخدم الشبكة إلا حين تختار ذلك: مزوّد للمواقيت (AlAdhan، أو PrayTimes.dev، أو الجداول الوطنية للسويد والمغرب)، والبحث عن الأماكن عبر OpenStreetMap Nominatim، وتنزيل صفحات القرآن والترجمات والتفاسير وتسجيلات التلاوة. وإحداثياتك تبقى على جهازك.
 
 محراب مفتوح المصدر برخصة AGPL-3.0-or-later."
-"bn-BD","Bengali","মিহরাব: মুসলিমের সঙ্গী","নামাজের সময়, আজান, কুরআন, দোয়া ও কিবলা — এক শান্ত অ্যাপে। কোনো বিজ্ঞাপন নেই।","মিহরাব একজন মুসলিমের দিনের শান্ত সঙ্গী: নামাজ, কুরআন এবং দুই নামাজের মাঝের জিকির — সবই একটি ব্যক্তিগত অ্যাপে। মুসহাফের কোনো শব্দ চেপে ধরে রাখলে শুধু সেই শব্দটি পড়ে শোনানো হয়, তিলাওয়াতের শব্দটি পাতায় আলোকিত হয়, হাফস ও ওয়ারশ দুই রিওয়ায়াতেই তাজবিদ রঙে দেখা যায়, আর সবকিছু আপনার নিজের ডিভাইসগুলোর মধ্যে মিলিয়ে রাখা হয়। কোনো অ্যাকাউন্ট নেই, কোনো বিজ্ঞাপন নেই, আর আপনার কোনো তথ্য ফোন ছেড়ে যায় না।
+"bn-BD","Bengali","মিহরাব: মুসলিমের সঙ্গী","নামাজের সময়, আজান, কুরআন, দোয়া ও কিবলা — এক শান্ত, ব্যক্তিগত অ্যাপে।","মিহরাব একজন মুসলিমের দিনের শান্ত সঙ্গী: নামাজ, কুরআন এবং দুই নামাজের মাঝের জিকির — সবই একটি ব্যক্তিগত অ্যাপে। মুসহাফের কোনো শব্দ চেপে ধরে রাখলে শুধু সেই শব্দটি পড়ে শোনানো হয়, তিলাওয়াতের শব্দটি পাতায় আলোকিত হয়, হাফস ও ওয়ারশ দুই রিওয়ায়াতেই তাজবিদ রঙে দেখা যায়, আর সবকিছু আপনার নিজের ডিভাইসগুলোর মধ্যে মিলিয়ে রাখা হয়। কোনো অ্যাকাউন্ট নেই, কোনো বিজ্ঞাপন নেই, আর আপনার কোনো তথ্য ফোন ছেড়ে যায় না।
 
 প্রধান বৈশিষ্ট্য:
 - আজকের, আগামী সপ্তাহের এবং পূর্ণ এক মাসের নামাজের সময় — ছবি বা PDF হিসেবে শেয়ার করা যায়
@@ -106,7 +106,7 @@ Mihrab is open source under AGPL-3.0-or-later."
 - আপনার স্থানাঙ্ক কেবল আপনার ডিভাইসেই রাখা হয়
 
 অ্যাপটি AGPL-3.0-or-later লাইসেন্সে ওপেন সোর্স।"
-"de-DE","German","Mihrab: Begleiter für Muslime","Gebetszeiten, Adhan, Koran, Duas und Qibla in einer ruhigen App. Ohne Werbung.","Mihrab ist ein ruhiger Begleiter durch den Tag eines Muslims: die Gebete, der Koran und das Gedenken dazwischen, in einer einzigen privaten App. Ein im Mushaf gedrückt gehaltenes Wort wird einzeln vorgelesen, das rezitierte Wort leuchtet auf der Seite auf, Tajwid erscheint in Farbe für Hafs und Warsh, und alles bleibt zwischen den eigenen Geräten abgeglichen. Ohne Konto, ohne Werbung – und nichts Persönliches verlässt das Telefon.
+"de-DE","German","Mihrab: Begleiter für Muslime","Gebetszeiten, Adhan, Koran, Duas und Qibla in einer ruhigen, privaten App.","Mihrab ist ein ruhiger Begleiter durch den Tag eines Muslims: die Gebete, der Koran und das Gedenken dazwischen, in einer einzigen privaten App. Ein im Mushaf gedrückt gehaltenes Wort wird einzeln vorgelesen, das rezitierte Wort leuchtet auf der Seite auf, Tajwid erscheint in Farbe für Hafs und Warsh, und alles bleibt zwischen den eigenen Geräten abgeglichen. Ohne Konto, ohne Werbung – und nichts Persönliches verlässt das Telefon.
 
 Wichtigste Funktionen:
 - Gebetszeiten für heute, die kommende Woche und einen ganzen Monat — als Bild oder PDF teilbar
@@ -135,7 +135,7 @@ Datenschutz und Netznutzung:
 - Deine Koordinaten werden nur auf deinem Gerät gespeichert
 
 Die App ist quelloffen unter AGPL-3.0-or-later."
-"es-ES","Spanish","Mihrab: compañero musulmán","Horarios de oración, adhan, Corán, duas y alquibla en una app. Sin anuncios.","Mihrab es un compañero sereno para el día de un musulmán: las oraciones, el Corán y el recuerdo de Allah entre ellas, en una sola app privada. Al mantener pulsada una palabra del mushaf se lee sola, la palabra recitada se ilumina en la página, el tajwid aparece en color en Hafs y Warsh, y todo se mantiene sincronizado entre tus propios dispositivos. Sin cuenta, sin anuncios, y nada sobre ti sale del teléfono.
+"es-ES","Spanish","Mihrab: compañero musulmán","Horarios de oración, adhan, Corán, duas y alquibla en una app serena y privada.","Mihrab es un compañero sereno para el día de un musulmán: las oraciones, el Corán y el recuerdo de Allah entre ellas, en una sola app privada. Al mantener pulsada una palabra del mushaf se lee sola, la palabra recitada se ilumina en la página, el tajwid aparece en color en Hafs y Warsh, y todo se mantiene sincronizado entre tus propios dispositivos. Sin cuenta, sin anuncios, y nada sobre ti sale del teléfono.
 
 Funciones principales:
 - Horarios de oración para hoy, la semana siguiente y un mes entero — se pueden compartir como imagen o PDF
@@ -164,7 +164,7 @@ Privacidad y uso de la red:
 - Tus coordenadas se guardan solo en tu dispositivo
 
 La aplicación es de código abierto bajo AGPL-3.0-or-later."
-"fr-FR","French","Mihrab : compagnon du musulman","Heures de prière, adhan, Coran, douas et qibla dans une app sereine. Sans pub.","Mihrab est un compagnon serein pour la journée d'un musulman : les prières, le Coran et le rappel entre elles, dans une seule application privée. Un mot maintenu dans le mushaf est lu à lui seul, le mot récité s'illumine sur la page, le tajwid apparaît en couleur pour Hafs et Warsh, et tout reste synchronisé entre vos propres appareils. Sans compte, sans publicité, et rien de vous ne quitte le téléphone.
+"fr-FR","French","Mihrab : compagnon du musulman","Heures de prière, adhan, Coran, douas et qibla dans une app sereine et privée.","Mihrab est un compagnon serein pour la journée d'un musulman : les prières, le Coran et le rappel entre elles, dans une seule application privée. Un mot maintenu dans le mushaf est lu à lui seul, le mot récité s'illumine sur la page, le tajwid apparaît en couleur pour Hafs et Warsh, et tout reste synchronisé entre vos propres appareils. Sans compte, sans publicité, et rien de vous ne quitte le téléphone.
 
 Fonctions principales :
 - Heures de prière pour aujourd'hui, la semaine à venir et un mois entier — partageables en image ou en PDF
@@ -193,7 +193,7 @@ Confidentialité et usage du réseau :
 - Vos coordonnées ne sont conservées que sur votre appareil
 
 L'application est open source sous licence AGPL-3.0-or-later."
-"hi-IN","Hindi","मिहराब: मुसलमान का साथी","नमाज़ का समय, अज़ान, क़ुरआन, दुआ और क़िबला — एक शांत ऐप में। कोई विज्ञापन नहीं।","मिहराब एक मुसलमान के दिन का शांत साथी है: नमाज़ें, क़ुरआन, और उनके बीच का ज़िक्र — सब एक निजी ऐप में। मुसहफ़ में किसी शब्द को दबाए रखें तो वही एक शब्द पढ़कर सुनाया जाता है, तिलावत का शब्द पन्ने पर चमकता है, हफ़्स और वर्श दोनों रिवायतों में तजवीद रंगों में दिखती है, और सब कुछ आपके अपने डिवाइसों के बीच मिला रहता है। न कोई खाता, न कोई विज्ञापन, और आपके बारे में कुछ भी फ़ोन से बाहर नहीं जाता।
+"hi-IN","Hindi","मिहराब: मुसलमान का साथी","नमाज़ का समय, अज़ान, क़ुरआन, दुआ और क़िबला — एक शांत, निजी ऐप में।","मिहराब एक मुसलमान के दिन का शांत साथी है: नमाज़ें, क़ुरआन, और उनके बीच का ज़िक्र — सब एक निजी ऐप में। मुसहफ़ में किसी शब्द को दबाए रखें तो वही एक शब्द पढ़कर सुनाया जाता है, तिलावत का शब्द पन्ने पर चमकता है, हफ़्स और वर्श दोनों रिवायतों में तजवीद रंगों में दिखती है, और सब कुछ आपके अपने डिवाइसों के बीच मिला रहता है। न कोई खाता, न कोई विज्ञापन, और आपके बारे में कुछ भी फ़ोन से बाहर नहीं जाता।
 
 मुख्य विशेषताएँ:
 - आज, आने वाले हफ़्ते और पूरे महीने के नमाज़ के समय — तस्वीर या PDF के रूप में साझा किए जा सकते हैं
@@ -222,7 +222,7 @@ L'application est open source sous licence AGPL-3.0-or-later."
 - आपके निर्देशांक केवल आपके उपकरण पर रखे जाते हैं
 
 ऐप AGPL-3.0-or-later के तहत मुक्त स्रोत है।"
-"id","Indonesian","Mihrab: Pendamping Muslim","Jadwal sholat, adzan, Al-Quran, doa & kiblat dalam satu aplikasi. Tanpa iklan.","Mihrab adalah pendamping yang tenang bagi hari seorang Muslim: sholat, Al-Quran, dan dzikir di antaranya, dalam satu aplikasi yang menjaga privasi. Tahan sebuah kata di mushaf untuk mendengarnya dibacakan sendiri, kata yang dilantunkan menyala di halaman, tajwid tampil berwarna pada riwayat Hafs dan Warsh, dan semuanya tetap selaras di antara perangkat Anda sendiri. Tanpa akun, tanpa iklan, dan tidak ada data tentang Anda yang meninggalkan ponsel.
+"id","Indonesian","Mihrab: Pendamping Muslim","Jadwal sholat, adzan, Al-Quran, doa & kiblat dalam satu aplikasi yang privat.","Mihrab adalah pendamping yang tenang bagi hari seorang Muslim: sholat, Al-Quran, dan dzikir di antaranya, dalam satu aplikasi yang menjaga privasi. Tahan sebuah kata di mushaf untuk mendengarnya dibacakan sendiri, kata yang dilantunkan menyala di halaman, tajwid tampil berwarna pada riwayat Hafs dan Warsh, dan semuanya tetap selaras di antara perangkat Anda sendiri. Tanpa akun, tanpa iklan, dan tidak ada data tentang Anda yang meninggalkan ponsel.
 
 Fitur utama:
 - Jadwal sholat untuk hari ini, sepekan ke depan, dan satu bulan penuh — dapat dibagikan sebagai gambar atau PDF
@@ -251,7 +251,7 @@ Privasi dan penggunaan jaringan:
 - Koordinat Anda hanya disimpan di perangkat Anda
 
 Aplikasi ini sumber terbuka di bawah AGPL-3.0-or-later."
-"ru-RU","Russian","Mihrab: Спутник мусульманина","Время намаза, азан, Коран, дуа и кибла в одном тихом приложении. Без рекламы.","Mihrab — спокойный спутник мусульманина на весь день: намазы, Коран и поминание Аллаха между ними, в одном приложении, которое бережёт вашу приватность. Удерживая слово в мусхафе, можно услышать его отдельно; читаемое слово подсвечивается на странице; таджвид показан цветом для Хафса и Варша; и всё синхронизируется между вашими собственными устройствами. Без аккаунта, без рекламы — и ничего о вас не покидает телефон.
+"ru-RU","Russian","Mihrab: Спутник мусульманина","Время намаза, азан, Коран, дуа и кибла в одном тихом и приватном приложении.","Mihrab — спокойный спутник мусульманина на весь день: намазы, Коран и поминание Аллаха между ними, в одном приложении, которое бережёт вашу приватность. Удерживая слово в мусхафе, можно услышать его отдельно; читаемое слово подсвечивается на странице; таджвид показан цветом для Хафса и Варша; и всё синхронизируется между вашими собственными устройствами. Без аккаунта, без рекламы — и ничего о вас не покидает телефон.
 
 Основные возможности:
 - Время намаза на сегодня, на неделю вперёд и на целый месяц — можно поделиться картинкой или PDF
@@ -280,7 +280,7 @@ Aplikasi ini sumber terbuka di bawah AGPL-3.0-or-later."
 - Ваши координаты хранятся только на вашем устройстве
 
 Приложение с открытым исходным кодом под лицензией AGPL-3.0-or-later."
-"sv-SE","Swedish","Mihrab: Muslimens följeslagare","Bönetider, böneutrop, Koranen, duor och qibla i en lugn app. Inga annonser.","Mihrab är en lugn följeslagare genom muslimens dag: bönerna, Koranen och åminnelsen däremellan, i en och samma privata app.
+"sv-SE","Swedish","Mihrab: Muslimens följeslagare","Bönetider, böneutrop, Koranen, duor och qibla i en lugn och privat app.","Mihrab är en lugn följeslagare genom muslimens dag: bönerna, Koranen och åminnelsen däremellan, i en och samma privata app.
 
 Håll fingret på ett ord i mushafen och hör just det ordet läsas. Följ det reciterade ordet när det lyser upp på sidan. Se tajwid i färg, för Hafs och för Warsh. Håll din loggbok och dina inställningar i takt mellan dina egna enheter, utan konto och utan server. Och varenda rad kod är öppen.
 
@@ -319,7 +319,7 @@ DITT EGET
 Nätet används bara när du väljer det: en källa för bönetider (AlAdhan, PrayTimes.dev eller de nationella tabellerna för Sverige och Marocko), platssökning via OpenStreetMap Nominatim, och nedladdning av Koranens sidor, översättningar, tafsir och recitationsljud. Dina koordinater stannar på din enhet.
 
 Mihrab är öppen källkod under AGPL-3.0-or-later."
-"tr-TR","Turkish","Mihrab: Müslümanın Yoldaşı","Namaz vakitleri, ezan, Kuran, dualar ve kıble tek sakin uygulamada. Reklamsız.","Mihrab, bir Müslümanın gününe eşlik eden sakin bir yoldaştır: namazlar, Kuran ve aralarındaki zikir, gizliliğinize saygılı tek bir uygulamada. Mushafta basılı tutulan bir kelime tek başına okunur, okunan kelime sayfada parlar, tecvid Hafs ve Verş rivayetlerinde renkli gösterilir ve her şey kendi cihazlarınız arasında eşitlenir. Hesap yok, reklam yok; sizinle ilgili hiçbir şey telefondan çıkmaz.
+"tr-TR","Turkish","Mihrab: Müslümanın Yoldaşı","Namaz vakitleri, ezan, Kuran, dualar ve kıble; sakin ve gizliliğe saygılı.","Mihrab, bir Müslümanın gününe eşlik eden sakin bir yoldaştır: namazlar, Kuran ve aralarındaki zikir, gizliliğinize saygılı tek bir uygulamada. Mushafta basılı tutulan bir kelime tek başına okunur, okunan kelime sayfada parlar, tecvid Hafs ve Verş rivayetlerinde renkli gösterilir ve her şey kendi cihazlarınız arasında eşitlenir. Hesap yok, reklam yok; sizinle ilgili hiçbir şey telefondan çıkmaz.
 
 Öne çıkan özellikler:
 - Bugünün, önümüzdeki haftanın ve tam bir ayın namaz vakitleri — görsel ya da PDF olarak paylaşılabilir
@@ -348,7 +348,7 @@ Gizlilik ve ağ kullanımı:
 - Koordinatlarınız yalnızca cihazınızda saklanır
 
 Uygulama AGPL-3.0-or-later lisansıyla açık kaynaktır."
-"ur","Urdu","محراب: مسلمان کا رفیق","نماز کے اوقات، اذان، قرآن، دعائیں اور قبلہ — ایک پُرسکون ایپ میں۔ اشتہار نہیں۔","محراب ایک مسلمان کے دن کا پُرسکون رفیق ہے: نمازیں، قرآن، اور ان کے درمیان ذکر — سب ایک نجی ایپ میں۔ مصحف میں کسی لفظ کو دبائے رکھیں تو وہی ایک لفظ پڑھ کر سنایا جاتا ہے، تلاوت کا لفظ صفحے پر روشن ہوتا ہے، حفص اور ورش دونوں روایتوں میں تجوید رنگوں میں نظر آتی ہے، اور سب کچھ آپ کے اپنے آلات کے درمیان ہم آہنگ رہتا ہے۔ نہ کوئی اکاؤنٹ، نہ کوئی اشتہار، اور آپ کے بارے میں کچھ بھی فون سے باہر نہیں جاتا۔
+"ur","Urdu","محراب: مسلمان کا رفیق","نماز کے اوقات، اذان، قرآن، دعائیں اور قبلہ — ایک پُرسکون، نجی ایپ میں۔","محراب ایک مسلمان کے دن کا پُرسکون رفیق ہے: نمازیں، قرآن، اور ان کے درمیان ذکر — سب ایک نجی ایپ میں۔ مصحف میں کسی لفظ کو دبائے رکھیں تو وہی ایک لفظ پڑھ کر سنایا جاتا ہے، تلاوت کا لفظ صفحے پر روشن ہوتا ہے، حفص اور ورش دونوں روایتوں میں تجوید رنگوں میں نظر آتی ہے، اور سب کچھ آپ کے اپنے آلات کے درمیان ہم آہنگ رہتا ہے۔ نہ کوئی اکاؤنٹ، نہ کوئی اشتہار، اور آپ کے بارے میں کچھ بھی فون سے باہر نہیں جاتا۔
 
 نمایاں خصوصیات:
 - آج، آنے والے ہفتے اور پورے مہینے کے اوقاتِ نماز — تصویر یا PDF کے طور پر شیئر کیے جا سکتے ہیں
@@ -377,7 +377,7 @@ Uygulama AGPL-3.0-or-later lisansıyla açık kaynaktır."
 - آپ کے کوآرڈینیٹس صرف آپ کے آلے پر محفوظ ہوتے ہیں
 
 ایپ AGPL-3.0-or-later کے تحت اوپن سورس ہے۔"
-"zh-CN","Chinese (Simplified)","Mihrab：穆斯林的日常伴侣","礼拜时间、宣礼、古兰经、祈祷词与朝向，尽在一款安静的应用。无广告。","Mihrab 是穆斯林一天中安静的伴侣：礼拜、古兰经，以及两次礼拜之间的记念，都在一款尊重隐私的应用里。在穆斯哈夫中长按一个词，就能单独听到它的诵读；诵读到的词会在页面上亮起；哈夫斯与沃尔什两种传述都以颜色标出泰吉威德规则；所有内容都在您自己的设备之间保持同步。无需账号，没有广告，关于您的任何信息都不会离开手机。
+"zh-CN","Chinese (Simplified)","Mihrab：穆斯林的日常伴侣","礼拜时间、宣礼、古兰经、祈祷词与朝向，尽在一款安静、私密的应用。","Mihrab 是穆斯林一天中安静的伴侣：礼拜、古兰经，以及两次礼拜之间的记念，都在一款尊重隐私的应用里。在穆斯哈夫中长按一个词，就能单独听到它的诵读；诵读到的词会在页面上亮起；哈夫斯与沃尔什两种传述都以颜色标出泰吉威德规则；所有内容都在您自己的设备之间保持同步。无需账号，没有广告，关于您的任何信息都不会离开手机。
 
 主要功能：
 - 今天、未来一周和整整一个月的礼拜时间——可作为图片或 PDF 分享

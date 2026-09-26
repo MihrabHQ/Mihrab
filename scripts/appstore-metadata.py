@@ -47,6 +47,8 @@ ANDROID = ROOT / "fastlane" / "metadata" / "android"
 # App Store locale -> the Android directory whose changelog is "What's New".
 LOCALES = {"en-US": "en-US", "sv": "sv-SE", "ar-SA": "ar"}
 MARKETING_URL = "https://mihrab.elghamri.se/"
+SUPPORT_URL = "https://github.com/MihrabHQ/Mihrab/issues"
+PRIVACY_URL = "https://github.com/MihrabHQ/Mihrab/blob/main/PRIVACY_POLICY.md"
 
 EDITABLE = {
     "PREPARE_FOR_SUBMISSION",
@@ -127,48 +129,51 @@ def main(argv: list[str]) -> None:
                  xc.call(f"/v1/appInfos/{info['id']}/appInfoLocalizations?limit=50")["data"]}
     ver_locs = {l["attributes"]["locale"]: l for l in
                 xc.call(f"/v1/appStoreVersions/{ver['id']}/appStoreVersionLocalizations?limit=50")["data"]}
-    base_info = info_locs.get("en-US", {}).get("attributes", {})
-    base_ver = ver_locs.get("en-US", {}).get("attributes", {})
+    # App info first: a new app-info locale makes Apple create the matching
+    # version locale on its own, so the version locales are read again after.
+    for phase in ("appInfoLocalizations", "appStoreVersionLocalizations"):
+      if phase == "appStoreVersionLocalizations":
+        ver_locs = {l["attributes"]["locale"]: l for l in
+                    xc.call(f"/v1/appStoreVersions/{ver['id']}/appStoreVersionLocalizations?limit=50")["data"]}
+      for loc in LOCALES:
+          want_info = {"name": text(loc, "name"), "subtitle": text(loc, "subtitle"),
+                       "privacyPolicyUrl": PRIVACY_URL}
+          want_ver = {
+              "description": text(loc, "description"),
+              "keywords": text(loc, "keywords"),
+              "promotionalText": text(loc, "promotional_text"),
+              "marketingUrl": MARKETING_URL,
+              "supportUrl": SUPPORT_URL,
+          }
+          wn = whats_new(loc)
+          if wn:
+              want_ver["whatsNew"] = wn
 
-    for loc in LOCALES:
-        want_info = {"name": text(loc, "name"), "subtitle": text(loc, "subtitle")}
-        if base_info.get("privacyPolicyUrl"):
-            want_info["privacyPolicyUrl"] = base_info["privacyPolicyUrl"]
-        want_ver = {
-            "description": text(loc, "description"),
-            "keywords": text(loc, "keywords"),
-            "promotionalText": text(loc, "promotional_text"),
-            "marketingUrl": MARKETING_URL,
-        }
-        if base_ver.get("supportUrl"):
-            want_ver["supportUrl"] = base_ver["supportUrl"]
-        wn = whats_new(loc)
-        if wn:
-            want_ver["whatsNew"] = wn
-
-        for kind, have, want, parent in (
-            ("appInfoLocalizations", info_locs.get(loc), want_info, ("appInfo", "appInfos", info["id"])),
-            ("appStoreVersionLocalizations", ver_locs.get(loc), want_ver,
-             ("appStoreVersion", "appStoreVersions", ver["id"])),
-        ):
-            if have is None:
-                print(f"  {loc} {kind}: new locale")
-                if not dry:
-                    send("POST", f"/v1/{kind}", {"data": {
-                        "type": kind,
-                        "attributes": dict(want, locale=loc),
-                        "relationships": {parent[0]: {"data": {"type": parent[1], "id": parent[2]}}},
-                    }})
-                continue
-            diff = {k: v for k, v in want.items() if (have["attributes"].get(k) or "") != v}
-            for k in diff:
-                was = (have["attributes"].get(k) or "").replace("\n", " ")
-                print(f"  {loc} {k}: {was[:60]!r} -> {want[k].replace(chr(10), ' ')[:60]!r}")
-            if diff and not dry:
-                send("PATCH", f"/v1/{kind}/{have['id']}", {"data": {
-                    "type": kind, "id": have["id"], "attributes": diff}})
-            if not diff:
-                print(f"  {loc} {kind}: already correct")
+          for kind, have, want, parent in (
+              ("appInfoLocalizations", info_locs.get(loc), want_info, ("appInfo", "appInfos", info["id"])),
+              ("appStoreVersionLocalizations", ver_locs.get(loc), want_ver,
+               ("appStoreVersion", "appStoreVersions", ver["id"])),
+          ):
+              if kind != phase:
+                  continue
+              if have is None:
+                  print(f"  {loc} {kind}: new locale")
+                  if not dry:
+                      send("POST", f"/v1/{kind}", {"data": {
+                          "type": kind,
+                          "attributes": dict(want, locale=loc),
+                          "relationships": {parent[0]: {"data": {"type": parent[1], "id": parent[2]}}},
+                      }})
+                  continue
+              diff = {k: v for k, v in want.items() if (have["attributes"].get(k) or "") != v}
+              for k in diff:
+                  was = (have["attributes"].get(k) or "").replace("\n", " ")
+                  print(f"  {loc} {k}: {was[:60]!r} -> {want[k].replace(chr(10), ' ')[:60]!r}")
+              if diff and not dry:
+                  send("PATCH", f"/v1/{kind}/{have['id']}", {"data": {
+                      "type": kind, "id": have["id"], "attributes": diff}})
+              if not diff:
+                  print(f"  {loc} {kind}: already correct")
 
     print("\n--dry-run: nothing written." if dry else
           "\nwritten. It shows on the App Store when this version is approved.")
