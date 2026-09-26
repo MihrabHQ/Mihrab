@@ -347,7 +347,7 @@ ${BADGES.map(
   ba => `      <li><a href="${ba.href}"><img src="../assets/img/badges/${ba.img}.png" width="564" height="168" alt="${ba.alt}"></a></li>`,
 ).join('\n')}
     </ul>
-    <p class="note">${esc(t.install.brew)} <code>brew install --cask hassan-ps/tap/mihrab</code></p>
+    <p class="note">${esc(t.install.brew)} <code>brew install --cask mihrabhq/tap/mihrab</code></p>
   </div>
 </section>
 

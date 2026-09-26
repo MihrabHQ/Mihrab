@@ -153,7 +153,7 @@ describe('the long-tail answers are on the page, not only in the markup', () => 
   it.each([
     ['open source', /open-source prayer times app/i],
     ['no ads', /no ad network/i],
-    ['homebrew', /brew install --cask hassan-ps\/tap\/mihrab/],
+    ['homebrew', /brew install --cask mihrabhq\/tap\/mihrab/],
     ['obtainium', /Obtainium/],
     ['no play services', /no Play Services/i],
   ])('says the words someone searching for "%s" would type', (_l, re) => {
