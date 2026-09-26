@@ -1,0 +1,2 @@
+• Delade månadsblad har fått den nya undertiteln: Mihrab — Muslimens följeslagare.
+• Appens länkar till källkod, versioner och nedladdningar pekar nu på dess nya hem, github.com/MihrabHQ/Mihrab. De gamla länkarna fungerar fortfarande.

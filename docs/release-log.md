@@ -1041,4 +1041,15 @@ Changed the release cycle itself:
 
   - `scripts/build-catalyst.sh`
 
-**Lesson:** _(unfilled)_
+**Lesson:** A release gate must not depend on who is sitting at the
+Mac. The Catalyst smoke test waited for the widget payload, which the app
+writes only when its scene reaches the foreground — and on a locked Mac
+nothing does, so a healthy app failed twice and a third run waited on
+someone to unlock the screen. On a locked console the payload is now
+reported, not required: the launch still proves the bundle runs, and the
+entitlement check still proves app and extension share the group; the
+widget data the check deletes is exported first and put back. The third
+stop was LaunchServices re-registering the build products seconds after
+the sweep; the ghost check now sweeps again before it fails. And pull
+before starting: the daily dataset bot had pushed twice while the release
+waited, and each time preflight refused, correctly.
