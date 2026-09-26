@@ -1,4 +1,4 @@
-Mihrab hält die fünf täglichen Gebete griffbereit: ein ruhiger Startbildschirm mit dem nächsten Gebet und einem laufenden Countdown, optionale Adhan-Erinnerungen, eine Monatsübersicht und Widgets für den Homescreen.
+Mihrab ist ein ruhiger Begleiter durch den Tag eines Muslims: die Gebete, der Koran und das Gedenken dazwischen, in einer einzigen privaten App. Ein im Mushaf gedrückt gehaltenes Wort wird einzeln vorgelesen, das rezitierte Wort leuchtet auf der Seite auf, Tajwid erscheint in Farbe für Hafs und Warsh, und alles bleibt zwischen den eigenen Geräten abgeglichen. Ohne Konto, ohne Werbung – und nichts Persönliches verlässt das Telefon.
 
 Wichtigste Funktionen:
 - Gebetszeiten für heute, die kommende Woche und einen ganzen Monat — als Bild oder PDF teilbar

@@ -136,7 +136,7 @@
     "daruriLegend": "Den lilla raden under Fajr, Asr och Isha är när respektive böns första (föredragna) tid går ut. Dhuhrs går ut när Asr börjar och Maghribs när Isha börjar, så de två är kolumnerna själva. Fajrs och Asrs är ungefärliga."
   },
   "share": {
-    "tagline": "Bönetider, qibla och Koranen",
+    "tagline": "Muslimens följeslagare",
     "timesFor": "Bönetider för {{place}}",
     "scanForApp": "Skanna för att hämta appen",
     "asrHanafi": "Asr: hanafitisk",

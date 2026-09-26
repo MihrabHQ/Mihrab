@@ -1,29 +1,39 @@
-Mihrab håller de fem dagliga bönerna nära till hands: en lugn startskärm med nästa bön och en levande nedräkning, valfria böneutrop, en hel månads översikt och widgetar på hemskärmen.
+Mihrab är en lugn följeslagare genom muslimens dag: bönerna, Koranen och åminnelsen däremellan, i en och samma privata app.
 
-Viktigaste funktionerna:
-- Bönetider för idag, veckan framåt och en hel månad — kan delas som bild eller PDF
-- En tecknad himmel bakom nedräkningen som följer dygnet — natt med månen i sin fas, gryning, middag, solnedgång — och samma himmel som widget på hemskärmen
-- Logga en bön med ett tryck från startskärmen — i dag eller någon dag den senaste veckan — och loggboken håller reda på raden, sviten och grafen
-- Valfria aviseringar för de fem dagliga bönerna, med sjutton adhan-inspelningar eller en egen, påminnelse före bönen och snooze
-- Fastnålad nedräkning till bönen (Live Activity) på låsskärmen och i aviseringspanelen, i tre utföranden
-- Widgetar på hemskärmen: bönetider i tre storlekar, dagens logg, hijridatum, svit, tasbih och läsning
+Håll fingret på ett ord i mushafen och hör just det ordet läsas. Följ det reciterade ordet när det lyser upp på sidan. Se tajwid i färg, för Hafs och för Warsh. Håll din loggbok och dina inställningar i takt mellan dina egna enheter, utan konto och utan server. Och varenda rad kod är öppen.
+
+BE
+- Bönetider för idag, veckan och månaden framåt — uträknade på telefonen, från en källa på nätet eller ur de publicerade nationella tabellerna för Sverige och Marocko — kan delas som bild eller PDF
+- Böneutrop för varje bön, med sjutton adhan-inspelningar eller en egen, påminnelse före bönen och snooze
+- Tysta telefonen under själva bönen och låt ljudet komma tillbaka av sig självt
+- En fastnålad nedräkning till nästa bön på låsskärmen och i aviseringspanelen, i tre utföranden
 - Qiblakompass med signalstyrka och en kontroll mot solen
-- Koranläsare: Medinamushafen ritad ur de officiella sidtypsnitten, i fyra riwayat (Hafs, Warsh, Qalun, Shu'bah), med 13 översättningar och klassisk tafsir, 42 recitatörer, ordvis markering, memoreringsverktyg, bokmärken och khatmah-planer
-- Tilawah — lyssnandet som en egen sida: välj recitatör och låt sura följa på sura med skärmen släckt, från låsskärmen, med sovtimer, hastighetsreglage och en levande mushafsida där det reciterade ordet lyser upp
-- Duaer (Hisn al-Muslim), tasbihräknare, fasteregister samt bönedagbok med praktikgraf och sviter
-- Hijrikalender som lyfter fram ramadan, eid och fredagsbönen
-- Synk mellan dina egna enheter utan konto och utan server: förseglade filer i en mapp du redan synkar
+- Logga varje bön med ett tryck; loggboken håller reda på raden, sviten och grafen
+- Widgetar på hemskärmen: bönetider i tre storlekar, dagens logg, hijridatum, svit, tasbih och läsning
+
+LÄS OCH LYSSNA
+- Medinamushafen, ritad som text ur Kung Fahd-komplexets sidtypsnitt och skarp i alla storlekar — och Warsh, Qalun och Shu'bah bredvid
+- Tajwidfärger där varje regel förklaras — för Hafs och för Warsh
+- Ordläsaren: håll kvar fingret på ett ord och hör det läsas för sig
+- 42 recitatörer, och för dem med ordtider lyser det reciterade ordet upp på sidan
+- Tilawah: sura efter sura med skärmen släckt, med sovtimer och hastighetsreglage
+- 13 översättningar och klassisk tafsir, sparade för läsning offline
+- Memoreringsverktyg, bokmärken och khatmah-planer som följer sidan du är på
+
+MINNS
+- Över 100 duor ur Hisn al-Muslim, med translitterering och översättning
+- En tasbihräknare för dhikren efter bönen och mer därtill
+- Fasteregister för ramadan och sunnafastorna, med påminnelser
+- Hijrikalendern med ramadan, eid och fredagsbönen, och dagens vers
+
+DITT EGET
+- Inga annonser, ingen analys, inga spårare, inget konto
+- Fungerar offline när platsen är angiven och sidorna du vill ha finns på telefonen
+- Synk mellan dina egna enheter utan konto och utan server av vår: förseglade filer i en mapp du redan synkar
 - Säkerhetskopiering och återställning till en fil du själv behåller
-- GPS-position, platssökning, sparade platser eller manuella koordinater; minutjustering per bön
-- Flera källor för bönetider — bland annat de publicerade nationella tabellerna för Sverige och Marocko — eller beräkning helt på enheten
-- 13 språk, inklusive arabiska och urdu med höger-till-vänster-layout
-- Ljust, mörkt, helsvart och systemtema, din egen accentfärg och Material You
+- Android, iPhone, iPad och Mac, på 13 språk, med arabiska och urdu helt från höger till vänster
+- Ljust, mörkt och helsvart tema, din egen accentfärg och Material You
 
-Integritet och nätverksanvändning:
-- Ingen analys, inga spårare, ingen reklam, inget konto
-- Bönetiderna kan räknas ut helt på din enhet så snart en plats är angiven
-- Valfria funktioner på nätet, som bara används när du väljer dem: bönetidskällor (AlAdhan, PrayTimes.dev eller de förberedda nationella tabellerna för Sverige och Marocko), platssökning via OpenStreetMap Nominatim, och nedladdning av Koranens sidor, översättningar, tafsir och recitationsljud
-- Synken passerar aldrig någon server av vår, och det den skriver är oläsbart för allt utom de enheter du parat ihop
-- Dina koordinater lagras bara på din egen enhet
+Nätet används bara när du väljer det: en källa för bönetider (AlAdhan, PrayTimes.dev eller de nationella tabellerna för Sverige och Marocko), platssökning via OpenStreetMap Nominatim, och nedladdning av Koranens sidor, översättningar, tafsir och recitationsljud. Dina koordinater stannar på din enhet.
 
-Appen är öppen källkod under AGPL-3.0-or-later.
+Mihrab är öppen källkod under AGPL-3.0-or-later.

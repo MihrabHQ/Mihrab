@@ -1,0 +1,38 @@
+Mihrab är en lugn följeslagare genom muslimens dag: bönerna, Koranen och åminnelsen däremellan, i en och samma privata app.
+
+Håll fingret på ett ord i mushafen och hör just det ordet läsas. Följ det reciterade ordet när det lyser upp på sidan. Se tajwid i färg, för Hafs och för Warsh. Håll din loggbok och dina inställningar i takt mellan dina egna enheter, utan konto och utan server. Och varenda rad kod är öppen.
+
+BE
+- Bönetider för idag, veckan och månaden framåt — uträknade på telefonen, från en källa på nätet eller ur de publicerade nationella tabellerna för Sverige och Marocko — kan delas som bild eller PDF
+- Böneutrop för varje bön, med sjutton adhan-inspelningar eller en egen, påminnelse före bönen och snooze
+- En Live Activity som räknar ner till nästa bön, på låsskärmen och i Dynamic Island
+- Qiblakompass med signalstyrka och en kontroll mot solen
+- Logga varje bön med ett tryck; loggboken håller reda på raden, sviten och grafen
+- Widgetar på hemskärmen: bönetider i tre storlekar, dagens logg, hijridatum, svit, tasbih och läsning
+
+LÄS OCH LYSSNA
+- Medinamushafen, ritad som text ur Kung Fahd-komplexets sidtypsnitt och skarp i alla storlekar — och Warsh, Qalun och Shu'bah bredvid
+- Tajwidfärger där varje regel förklaras — för Hafs och för Warsh
+- Ordläsaren: håll kvar fingret på ett ord och hör det läsas för sig
+- 42 recitatörer, och för dem med ordtider lyser det reciterade ordet upp på sidan
+- Tilawah: sura efter sura med skärmen släckt, med sovtimer och hastighetsreglage
+- 13 översättningar och klassisk tafsir, sparade för läsning offline
+- Memoreringsverktyg, bokmärken och khatmah-planer som följer sidan du är på
+
+MINNS
+- Över 100 duor ur Hisn al-Muslim, med translitterering och översättning
+- En tasbihräknare för dhikren efter bönen och mer därtill
+- Fasteregister för ramadan och sunnafastorna, med påminnelser
+- Hijrikalendern med ramadan, eid och fredagsbönen, och dagens vers
+
+DITT EGET
+- Inga annonser, ingen analys, inga spårare, inget konto
+- Fungerar offline när platsen är angiven och sidorna du vill ha finns på telefonen
+- Synk mellan dina egna enheter utan konto och utan server av vår: förseglade filer i en mapp du redan synkar
+- Säkerhetskopiering och återställning till en fil du själv behåller
+- 13 språk, med arabiska och urdu helt från höger till vänster
+- Ljust, mörkt och helsvart tema, din egen accentfärg och Liquid Glass
+
+Nätet används bara när du väljer det: en källa för bönetider (AlAdhan, PrayTimes.dev eller de nationella tabellerna för Sverige och Marocko), platssökning via OpenStreetMap Nominatim, och nedladdning av Koranens sidor, översättningar, tafsir och recitationsljud. Dina koordinater stannar på din enhet.
+
+Mihrab är öppen källkod under AGPL-3.0-or-later.

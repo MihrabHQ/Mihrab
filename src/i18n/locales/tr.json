@@ -136,7 +136,7 @@
     "daruriLegend": "Sabah, ikindi ve yatsının altındaki küçük satır, her birinin ilk (tercih edilen) vaktinin ne zaman bittiğini gösterir. Öğlenin vakti ikindi girince, akşamınki yatsı girince biter; o ikisi zaten bu sütunların kendisidir. Sabah ve ikindininkiler yaklaşıktır."
   },
   "share": {
-    "tagline": "Namaz vakitleri, kıble ve Kur’an",
+    "tagline": "Müslümanın yoldaşı",
     "timesFor": "{{place}} için namaz vakitleri",
     "scanForApp": "Uygulamayı almak için tarayın",
     "asrHanafi": "İkindi: Hanefî",

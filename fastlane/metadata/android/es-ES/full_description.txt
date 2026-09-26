@@ -1,4 +1,4 @@
-Mihrab mantiene las cinco oraciones diarias a mano: una pantalla de inicio serena con la próxima oración y una cuenta atrás en vivo, recordatorios de adhan opcionales, una vista de mes completo y widgets para la pantalla de inicio.
+Mihrab es un compañero sereno para el día de un musulmán: las oraciones, el Corán y el recuerdo de Allah entre ellas, en una sola app privada. Al mantener pulsada una palabra del mushaf se lee sola, la palabra recitada se ilumina en la página, el tajwid aparece en color en Hafs y Warsh, y todo se mantiene sincronizado entre tus propios dispositivos. Sin cuenta, sin anuncios, y nada sobre ti sale del teléfono.
 
 Funciones principales:
 - Horarios de oración para hoy, la semana siguiente y un mes entero — se pueden compartir como imagen o PDF

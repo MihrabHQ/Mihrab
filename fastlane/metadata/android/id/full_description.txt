@@ -1,4 +1,4 @@
-Mihrab menjaga lima waktu sholat tetap dekat: layar utama yang tenang dengan sholat berikutnya dan hitung mundur langsung, pengingat adzan opsional, jadwal satu bulan penuh, dan widget layar utama.
+Mihrab adalah pendamping yang tenang bagi hari seorang Muslim: sholat, Al-Quran, dan dzikir di antaranya, dalam satu aplikasi yang menjaga privasi. Tahan sebuah kata di mushaf untuk mendengarnya dibacakan sendiri, kata yang dilantunkan menyala di halaman, tajwid tampil berwarna pada riwayat Hafs dan Warsh, dan semuanya tetap selaras di antara perangkat Anda sendiri. Tanpa akun, tanpa iklan, dan tidak ada data tentang Anda yang meninggalkan ponsel.
 
 Fitur utama:
 - Jadwal sholat untuk hari ini, sepekan ke depan, dan satu bulan penuh — dapat dibagikan sebagai gambar atau PDF

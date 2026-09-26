@@ -59,7 +59,7 @@ function ShareBannerImpl({
       <View style={[styles.left, { alignItems: align }]}>
         <Text style={[styles.appName, { textAlign }]}>{t('app.name')}</Text>
         <Text style={[styles.tagline, { textAlign }]}>
-          {t('share.tagline', 'Prayer times, qibla and the Qur’an')}
+          {t('share.tagline', 'The Muslim Companion')}
         </Text>
 
         <View style={styles.rule} />

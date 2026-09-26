@@ -1,29 +1,39 @@
-Mihrab keeps the five daily prayers close at hand: a calm home screen with the next salah and a live countdown, optional adhan reminders, a full-month planner, and home-screen widgets.
+Mihrab is a calm companion for a Muslim's day: the prayers, the Quran, and the remembrance in between, in one private app.
 
-Key features:
-- Prayer times for today, the week ahead, and a full-month overview — shareable as an image or a PDF
-- A drawn sky behind the countdown that follows the day — night with the moon in its phase, dawn, noon, sunset — and the same sky as a home-screen widget
-- Log a prayer with one tap from Today — for today or any day of the past week — and the journal keeps the record, the streak and the graph
-- Optional notifications for the five daily prayers, with seventeen adhan recordings or one of your own, pre-prayer reminders, and snooze
-- Pinned prayer countdown (Live Activity) on the lock screen and in the notification shade, in three designs
-- Home-screen widgets: prayer times in three sizes, today's log, Hijri date, streak, tasbih and reading
+Hold any word in the mushaf and hear that one word read. Follow the recited word as it lights up on the page. See tajweed in colour, on Hafs and on Warsh. Keep your journal and settings in step between your own devices, with no account and no server. And every line of it is open source.
+
+PRAY
+- Prayer times for today, the week and the month ahead — worked out on your phone, from a provider, or from the published national tables for Sweden and Morocco — shareable as an image or a PDF
+- The adhan for each prayer, with seventeen recordings or your own, a reminder before it, and snooze
+- Silence the phone for the prayer itself, and let it come back on its own
+- A pinned countdown to the next prayer on the lock screen and in the notification shade, in three designs
 - Qibla compass with signal strength and a cross-check against the sun
-- Quran reader: the Madinah mushaf drawn from the official page fonts, in four riwayat (Hafs, Warsh, Qalun, Shu'bah), with 13 translations and classical tafsir, 42 reciters, word-level highlighting, memorisation tools, bookmarks, and khatmah plans
-- Tilawah — listening as its own page: pick a reciter and it plays surah into surah with the screen off, from the lock screen, with a sleep timer, a speed control, and a live mushaf page where the recited word lights up
-- Duas (Hisn al-Muslim), tasbih counter, fasting tracker, and a prayer journal with a practice graph and streaks
-- Hijri calendar with Ramadan, Eid and Jumu'ah treatments
-- Sync between your own devices with no account and no server: sealed files in a folder you already keep in sync
+- Log each prayer with one tap; the journal keeps the record, the streak and the graph
+- Home-screen widgets: prayer times in three sizes, today's log, Hijri date, streak, tasbih and reading
+
+READ AND LISTEN
+- The Madinah mushaf, drawn as text from the King Fahd Complex's page fonts and sharp at any size — and Warsh, Qalun and Shu'bah beside it
+- Tajweed colours, every rule explained — on Hafs and on Warsh
+- The word reader: hold a word to hear it read on its own
+- 42 reciters, and for those with word timings, the recited word lit on the page
+- Tilawah: surah into surah with the screen off, with a sleep timer and a speed control
+- 13 translations and classical tafsir, kept for offline reading
+- Memorisation tools, bookmarks, and khatmah plans that follow the page you are on
+
+REMEMBER
+- More than 100 duas from Hisn al-Muslim, with transliteration and translation
+- A tasbih counter for the dhikr after prayer and beyond
+- A fasting log for Ramadan and the Sunnah fasts, with reminders
+- The Hijri calendar with Ramadan, Eid and Jumu'ah, and an ayah of the day
+
+YOURS
+- No ads, no analytics, no trackers, no account
+- Works offline once your location is set and the pages you want are on the phone
+- Sync between your own devices with no account and no server of ours: sealed files in a folder you already keep in sync
 - Backup and restore to a file you keep
-- GPS location, place search, saved places, or manual coordinates; per-prayer minute offsets
-- Several prayer-time sources — including the published national tables for Sweden and Morocco — or fully on-device calculation
-- 13 languages, including Arabic and Urdu with right-to-left layout
-- Light, dark, pure-black and system themes, your choice of accent, and Material You
+- Android, iPhone, iPad and Mac, in 13 languages, with Arabic and Urdu fully right-to-left
+- Light, dark and pure-black themes, your own accent colour, and Material You
 
-Privacy and network use:
-- No analytics, no trackers, no advertising, no account
-- Prayer times can be calculated entirely on your device once a location is set
-- Optional online features, used only when you choose them: prayer-time providers (AlAdhan, PrayTimes.dev, or the prepared national tables for Sweden and Morocco), place search via OpenStreetMap Nominatim, and downloading the Quran pages, translations, tafsir and recitation audio
-- Sync never passes through a server of ours, and what it writes is unreadable to anything but the devices you paired
-- Your coordinates are stored only on your device
+The network is used only when you choose it: a prayer-time provider (AlAdhan, PrayTimes.dev, or the national tables for Sweden and Morocco), place search through OpenStreetMap Nominatim, and downloading Quran pages, translations, tafsir and recitation audio. Your coordinates stay on your device.
 
-The app is open source under AGPL-3.0-or-later.
+Mihrab is open source under AGPL-3.0-or-later.

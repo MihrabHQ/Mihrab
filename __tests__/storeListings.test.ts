@@ -166,3 +166,76 @@ describe('the per-release translation cost stays at three languages', () => {
     expect(withChangelogs).toEqual(['ar', 'en-US', 'sv-SE']);
   });
 });
+
+/**
+ * One app, one description, on every shelf.
+ *
+ * Play was filled from a CSV written separately from the fastlane files
+ * F-Droid reads, and the two drifted until they described different apps:
+ * "The Muslim Companion" on one, "Prayer Times & Quran" on the other. Both
+ * now come from branding/IDENTITY.md through the fastlane files, the CSV
+ * is generated from them, and the App Store copy sits beside them.
+ */
+describe('the listings are one listing', () => {
+  it('the Play import is generated from the fastlane files', () => {
+    const { render, OUT } = require('../scripts/store-listing-csv.js');
+    expect(readFileSync(OUT, 'utf8')).toBe(render());
+  });
+
+  it.each(APP_LOCALES)('%s leads its title with the name', locale => {
+    const title = field(STORE_DIR[locale], 'title');
+    expect(title).toMatch(/^(Mihrab|محراب|মিহরাব|मिहराब)/);
+  });
+});
+
+describe('the App Store copy fits App Store Connect', () => {
+  const IOS = path.join(ROOT, 'fastlane', 'metadata', 'ios');
+  const IOS_LIMITS = {
+    name: 30,
+    subtitle: 30,
+    promotional_text: 170,
+    description: 4000,
+  } as const;
+  const locales = readdirSync(IOS).filter(d =>
+    statSync(path.join(IOS, d)).isDirectory(),
+  );
+  const ios = (loc: string, f: string) =>
+    readFileSync(path.join(IOS, loc, `${f}.txt`), 'utf8').trim();
+
+  it('has English, Swedish and Arabic', () => {
+    expect(locales.sort()).toEqual(['ar-SA', 'en-US', 'sv']);
+  });
+
+  it.each(
+    locales.flatMap(l =>
+      (Object.keys(IOS_LIMITS) as Array<keyof typeof IOS_LIMITS>).map(
+        f => [l, f] as const,
+      ),
+    ),
+  )('%s %s', (loc, f) => {
+    const text = ios(loc, f);
+    expect(text.length).toBeGreaterThan(5);
+    expect({ loc, f, over: Math.max(0, text.length - IOS_LIMITS[f]) }).toEqual({
+      loc,
+      f,
+      over: 0,
+    });
+  });
+
+  it.each(locales)('%s keywords fit in 100 bytes, without spaces', loc => {
+    // App Store Connect counts the keyword field in bytes, so an Arabic
+    // letter costs two of the hundred.
+    const k = ios(loc, 'keywords');
+    expect(Buffer.byteLength(k, 'utf8')).toBeLessThanOrEqual(100);
+    expect(k).not.toMatch(/,\s/);
+  });
+
+  it.each(locales)('%s names no other platform', loc => {
+    // App Review guideline 2.3.10: no other mobile platform in the
+    // metadata. And nothing Android-only, which would be a promise the
+    // iPhone cannot keep.
+    for (const f of ['description', 'promotional_text', 'subtitle', 'keywords']) {
+      expect(ios(loc, f)).not.toMatch(/Android|أندرويد|Google Play|F-Droid|Material You/i);
+    }
+  });
+});

@@ -136,7 +136,7 @@
     "daruriLegend": "La petite ligne sous Fajr, ʿAsr et ʿIshâ indique quand se termine le premier temps (préféré) de chacune. Celui de Zuhr se termine quand ʿAsr commence et celui de Maghrib quand ʿIshâ commence : ces deux-là sont donc les colonnes elles-mêmes. Ceux de Fajr et ʿAsr sont approximatifs."
   },
   "share": {
-    "tagline": "Horaires de prière, qibla et le Coran",
+    "tagline": "Le compagnon du musulman",
     "timesFor": "Horaires de prière pour {{place}}",
     "scanForApp": "Scannez pour obtenir l’application",
     "asrHanafi": "Asr : hanafite",

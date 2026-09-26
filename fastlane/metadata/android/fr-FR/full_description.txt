@@ -1,4 +1,4 @@
-Mihrab garde les cinq prières quotidiennes à portée de main : un écran d'accueil calme avec la prochaine prière et un compte à rebours en direct, des rappels d'adhan facultatifs, un planning du mois complet et des widgets pour l'écran d'accueil.
+Mihrab est un compagnon serein pour la journée d'un musulman : les prières, le Coran et le rappel entre elles, dans une seule application privée. Un mot maintenu dans le mushaf est lu à lui seul, le mot récité s'illumine sur la page, le tajwid apparaît en couleur pour Hafs et Warsh, et tout reste synchronisé entre vos propres appareils. Sans compte, sans publicité, et rien de vous ne quitte le téléphone.
 
 Fonctions principales :
 - Heures de prière pour aujourd'hui, la semaine à venir et un mois entier — partageables en image ou en PDF

@@ -173,10 +173,10 @@
     "name": "العربية",
     "dir": "rtl",
     "path": "/ar/",
-    "title": "أوقات الصلاة والمصحف المدني — تطبيق محراب",
-    "description": "تطبيق مجاني ومفتوح المصدر لأوقات الصلاة: تنبيهات الأذان، بوصلة القبلة، أدوات الشاشة الرئيسية، والمصحف المدني كاملاً. بلا إعلانات، بلا تتبّع، وبلا حساب.",
-    "h1": "أوقات صلاة لا تعرف من أنت.",
-    "sub": "تنبيهات الأذان، بوصلة القبلة، أداة على الشاشة الرئيسية، والمصحف المدني كاملاً — بلا حساب وبلا إعلانات وبلا تحليلات. وبمجرد تحديد موقعك تُحسب الأوقات على الهاتف نفسه، فيعمل اليوم كله دون اتصال.",
+    "title": "محراب: رفيق المسلم — مواقيت الصلاة والقرآن والأذكار",
+    "description": "محراب رفيق المسلم في يومه: مواقيت الصلاة والأذان، والمصحف المدني بالتلاوة وألوان التجويد وقارئ الكلمات، والأدعية والأذكار ومفكرة الصلاة. مفتوح المصدر، بلا إعلانات ولا حساب — على أندرويد والآيفون والآيباد والماك.",
+    "h1": "لكل صلاة، ولكل ما بينها.",
+    "sub": "محراب رفيقٌ هادئ في يوم المسلم: مواقيت الصلاة والأذان، والمصحف المدني بالتلاوة وألوان التجويد وقارئ الكلمات، والأدعية والأذكار بين الصلوات — بلا حساب وبلا إعلانات وبلا تحليلات. وبمجرد تحديد موقعك يعمل اليوم كله دون اتصال.",
     "chips": [
       "بلا إعلانات ولا تتبّع ولا حساب",
       "يعمل دون اتصال بالإنترنت",
@@ -190,23 +190,23 @@
     },
     "features": {
       "eyebrow": "المزايا",
-      "h2": "عبادات اليوم في تطبيق واحد",
+      "h2": "رفيق واحد، من الفجر إلى العشاء",
       "cards": [
         {
-          "h3": "الصلاة",
-          "p": "عدّ تنازلي للصلاة القادمة، تنبيه أذان لكل صلاة، عرض شهري، بوصلة قبلة، وأدوات على الشاشة الرئيسية."
+          "h3": "صلِّ",
+          "p": "مواقيت الصلاة وعدّ تنازلي للصلاة القادمة، والأذان لكل صلاة، وبوصلة القبلة، وأدوات على الشاشة الرئيسية، وتسجيل كل صلاة بضغطة واحدة."
         },
         {
-          "h3": "القرآن",
-          "p": "المصحف المدني كاملاً بأربع روايات، مع التلاوة وإبراز الكلمة المتلوّة والتفسير و14 ترجمة والعلامات المرجعية وخطة ختمة."
+          "h3": "اقرأ واستمع",
+          "p": "المصحف المدني كاملاً بأربع روايات، مع ألوان التجويد لحفص وورش، وقارئ الكلمات: اضغط مطوّلًا على كلمة فتسمعها وحدها. و42 قارئًا، والتلاوة سورة بعد سورة والشاشة مطفأة، والتفسير والترجمات وخطة الختمة."
         },
         {
-          "h3": "التلاوة",
-          "p": "الاستماع كصفحة مستقلة: اختر قارئًا فتمضي التلاوة سورة بعد سورة والشاشة مطفأة، وتُدار من شاشة القفل. مؤقّت نوم، وسرعة، وصفحة مصحف حيّة تضيء فيها الكلمة المتلوّة."
+          "h3": "اذكر",
+          "p": "أدعية حصن المسلم، والتسبيح، وسجلّ الصيام لرمضان وصيام السنّة، والتقويم الهجري."
         },
         {
-          "h3": "بقية اليوم",
-          "p": "أدعية حصن المسلم، والتسبيح، وسجلّ الصيام، ومفكرة الصلاة — ومزامنة بين أجهزتك بلا حساب."
+          "h3": "لك وحدك",
+          "p": "بلا حساب ولا إعلانات ولا تتبّع. مزامنة بين أجهزتك عبر مجلد تزامنه أصلًا، ونسخة احتياطية في ملف تحتفظ به، وشيفرة مفتوحة المصدر برخصة AGPL-3.0."
         }
       ]
     },
@@ -363,10 +363,10 @@
     "name": "Türkçe",
     "dir": "ltr",
     "path": "/tr/",
-    "title": "Namaz vakitleri ve Medine mushafı — Mihrab",
-    "description": "Ücretsiz, açık kaynaklı namaz vakti uygulaması: ezan hatırlatmaları, kıble pusulası, ana ekran araçları ve tam Medine mushafı. Reklamsız, takipsiz, hesapsız.",
-    "h1": "Kim olduğunuzu bilmeyen namaz vakitleri.",
-    "sub": "Ezan hatırlatmaları, kıble pusulası, ana ekran aracı ve tam Medine mushafı — hesap yok, reklam yok, analitik yok. Konumunuz belirlendikten sonra vakitler telefonda hesaplanır; gün, ağ kapalıyken de işler.",
+    "title": "Mihrab: Müslümanın Yoldaşı — namaz vakitleri, Kuran, dualar",
+    "description": "Mihrab, Müslümanın günlük yoldaşıdır: namaz vakitleri ve ezan; tilavet, renkli tecvid ve kelime okuyucuyla Medine mushafı; dualar, tesbih ve namaz günlüğü. Açık kaynak, reklamsız, hesapsız — Android, iPhone, iPad ve Mac'te.",
+    "h1": "Her namaz için, ve aradaki her şey için.",
+    "sub": "Mihrab, bir Müslümanın gününe eşlik eden sakin bir yoldaştır: namaz vakitleri ve ezan; tilavet, renkli tecvid ve kelime okuyucuyla Medine mushafı; ve namazlar arasındaki dualar ve zikir — hesap yok, reklam yok, analiz yok. Konumunuz ayarlandıktan sonra gün internetsiz de işler.",
     "chips": [
       "Reklam, takipçi ve hesap yok",
       "İnternetsiz çalışır",
@@ -380,23 +380,23 @@
     },
     "features": {
       "eyebrow": "Özellikler",
-      "h2": "Günün ibadeti, tek uygulamada",
+      "h2": "Sabahtan yatsıya tek bir yoldaş",
       "cards": [
         {
-          "h3": "Namaz",
-          "p": "Sonraki vakte geri sayım, her vakit için ezan hatırlatması, aylık görünüm, kıble pusulası ve ana ekran araçları."
+          "h3": "Kıl",
+          "p": "Sıradaki namaza geri sayımla namaz vakitleri, her namaz için ezan, kıble pusulası, ana ekran widget'ları — ve her namaz tek dokunuşla kaydedilir."
         },
         {
-          "h3": "Kur'an",
-          "p": "Dört rivayette tam Medine mushafı; tilavet, okunan kelimenin vurgulanması, tefsir, 14 meal, yer imleri ve hatim planı."
+          "h3": "Oku ve dinle",
+          "p": "Dört rivayetiyle tam Medine mushafı; Hafs ve Verş için renkli tecvid ve bir kelime okuyucu: bir kelimeye basılı tutun, yalnızca o kelime okunsun. 42 kari, ekran kapalıyken sure sure tilavet, tefsir, mealler ve hatim planı."
         },
         {
-          "h3": "Tilavet",
-          "p": "Dinlemek, kendi sayfasında: bir kâri seçin, tilavet ekran kapalıyken sure sure devam etsin, kilit ekranından yönetilsin. Uyku zamanlayıcısı, hız ayarı ve okunan kelimenin ışıdığı canlı bir mushaf sayfası."
+          "h3": "Zikret",
+          "p": "Hisnul Müslim'den dualar, tesbih, Ramazan ve sünnet oruçları için oruç kaydı ve hicri takvim."
         },
         {
-          "h3": "Günün geri kalanı",
-          "p": "Hısnu'l‑Müslim duaları, tesbih, oruç kaydı ve namaz günlüğü — ve hesapsız olarak kendi cihazlarınız arasında eşitleme."
+          "h3": "Sizin",
+          "p": "Hesap yok, reklam yok, takip yok. Zaten eşitlediğiniz bir klasör üzerinden kendi cihazlarınız arasında eşitleme, sakladığınız bir dosyaya yedek ve AGPL-3.0 altında tamamen açık kaynak kod."
         }
       ]
     },
@@ -553,10 +553,10 @@
     "name": "اردو",
     "dir": "rtl",
     "path": "/ur/",
-    "title": "نماز کے اوقات اور مصحفِ مدینہ — محراب",
-    "description": "مفت اور اوپن سورس نماز اوقات ایپ: اذان کی یاد دہانی، قبلہ کمپاس، ہوم اسکرین وجٹ اور مکمل مصحفِ مدینہ۔ بغیر اشتہار، بغیر ٹریکنگ، بغیر اکاؤنٹ۔",
-    "h1": "نماز کے اوقات جو آپ کو نہیں جانتے۔",
-    "sub": "اذان کی یاد دہانیاں، قبلہ کمپاس، ہوم اسکرین وجٹ اور مکمل مصحفِ مدینہ — نہ اکاؤنٹ، نہ اشتہار، نہ اینالٹکس۔ مقام مقرر ہونے کے بعد اوقات فون ہی پر شمار ہوتے ہیں، سو انٹرنیٹ بند ہو تب بھی دن چلتا رہتا ہے۔",
+    "title": "محراب: مسلمان کا رفیق — نماز کے اوقات، قرآن، دعا",
+    "description": "محراب مسلمان کا روزمرہ رفیق ہے: نماز کے اوقات اور اذان، تلاوت، رنگین تجوید اور لفظ خواں کے ساتھ مدنی مصحف، دعائیں، تسبیح اور نماز کی ڈائری۔ اوپن سورس، اشتہارات کے بغیر، اکاؤنٹ کے بغیر — Android، iPhone، iPad اور Mac پر۔",
+    "h1": "ہر نماز کے لیے، اور ان کے درمیان کی ہر چیز کے لیے۔",
+    "sub": "محراب ایک مسلمان کے دن کا پُرسکون رفیق ہے: نماز کے اوقات اور اذان، تلاوت، رنگین تجوید اور لفظ خواں کے ساتھ مدنی مصحف، اور نمازوں کے درمیان دعائیں اور ذکر — نہ اکاؤنٹ، نہ اشتہار، نہ تجزیات۔ مقام طے ہوتے ہی سارا دن نیٹ ورک کے بغیر چلتا ہے۔",
     "chips": [
       "نہ اشتہار، نہ ٹریکر، نہ اکاؤنٹ",
       "انٹرنیٹ کے بغیر کام کرتی ہے",
@@ -570,23 +570,23 @@
     },
     "features": {
       "eyebrow": "خصوصیات",
-      "h2": "دن کی عبادت، ایک ایپ میں",
+      "h2": "فجر سے عشاء تک، ایک رفیق",
       "cards": [
         {
           "h3": "نماز",
-          "p": "اگلی نماز تک گنتی، ہر نماز کے لیے اذان کی یاد دہانی، ماہانہ نقشہ، قبلہ کمپاس اور ہوم اسکرین وجٹ۔"
+          "p": "اگلی نماز کی الٹی گنتی کے ساتھ نماز کے اوقات، ہر نماز کی اذان، قبلہ کمپاس، ہوم اسکرین وجٹس — اور ہر نماز ایک ٹیپ میں درج۔"
         },
         {
-          "h3": "قرآن",
-          "p": "چار روایات میں مکمل مصحفِ مدینہ — تلاوت، پڑھے جانے والے لفظ کی نشاندہی، تفسیر، 14 تراجم، بک مارکس اور ختم قرآن کا منصوبہ۔"
+          "h3": "پڑھیں اور سنیں",
+          "p": "چار روایتوں میں مکمل مدنی مصحف، حفص اور ورش کے لیے رنگین تجوید، اور لفظ خواں: کسی لفظ کو دبائے رکھیں، وہی ایک لفظ پڑھ کر سنایا جائے گا۔ 42 قاری، اسکرین بند ہونے پر سورت کے بعد سورت تلاوت، تفسیر، تراجم اور ختم کا منصوبہ۔"
         },
         {
-          "h3": "تلاوت",
-          "p": "سننا، اپنے الگ صفحے پر: ایک قاری چنیے اور تلاوت سورہ در سورہ چلتی رہے، اسکرین بند ہو تب بھی، لاک اسکرین سے قابو میں۔ سلیپ ٹائمر، رفتار، اور ایک زندہ مصحف صفحہ جس پر پڑھا جانے والا لفظ روشن ہوتا ہے۔"
+          "h3": "ذکر",
+          "p": "حصن المسلم کی دعائیں، تسبیح، رمضان اور سنت روزوں کا حساب، اور ہجری کیلنڈر۔"
         },
         {
-          "h3": "باقی دن",
-          "p": "حصنِ مسلم کی دعائیں، تسبیح، روزے کا ریکارڈ اور نماز کی ڈائری — اور بغیر اکاؤنٹ اپنے آلات کے درمیان ہم آہنگی۔"
+          "h3": "صرف آپ کا",
+          "p": "نہ اکاؤنٹ، نہ اشتہار، نہ ٹریکنگ۔ اس فولڈر کے ذریعے اپنے ہی آلات میں ہم آہنگی جسے آپ پہلے سے سنک کرتے ہیں، اپنے پاس رکھی فائل میں بیک اپ، اور AGPL-3.0 کے تحت پورا کوڈ کھلا۔"
         }
       ]
     },
@@ -743,10 +743,10 @@
     "name": "Bahasa Indonesia",
     "dir": "ltr",
     "path": "/id/",
-    "title": "Jadwal sholat dan mushaf Madinah — Mihrab",
-    "description": "Aplikasi jadwal sholat gratis dan open source: pengingat adzan, kompas kiblat, widget layar utama, dan mushaf Madinah lengkap. Tanpa iklan, tanpa pelacakan, tanpa akun.",
-    "h1": "Jadwal sholat yang tidak tahu siapa Anda.",
-    "sub": "Pengingat adzan, kompas kiblat, widget layar utama, dan mushaf Madinah lengkap — tanpa akun, tanpa iklan, tanpa analitik. Setelah lokasi diatur, waktunya dihitung di ponsel sendiri, sehingga hari tetap berjalan meski jaringan dimatikan.",
+    "title": "Mihrab: Pendamping Muslim — jadwal sholat, Al-Quran, doa",
+    "description": "Mihrab adalah pendamping harian seorang Muslim: jadwal sholat dan adzan, mushaf Madinah dengan tilawah, warna tajwid dan pembaca kata, doa, tasbih, dan jurnal sholat. Sumber terbuka, tanpa iklan, tanpa akun — di Android, iPhone, iPad, dan Mac.",
+    "h1": "Untuk setiap sholat, dan semua yang ada di antaranya.",
+    "sub": "Mihrab adalah pendamping yang tenang bagi hari seorang Muslim: jadwal sholat dan adzan, mushaf Madinah dengan tilawah, warna tajwid dan pembaca kata, serta doa dan dzikir di antara sholat — tanpa akun, tanpa iklan, tanpa analitik. Setelah lokasi Anda diatur, hari tetap berjalan tanpa jaringan.",
     "chips": [
       "Tanpa iklan, pelacak, atau akun",
       "Berfungsi tanpa internet",
@@ -760,23 +760,23 @@
     },
     "features": {
       "eyebrow": "Fitur",
-      "h2": "Ibadah sehari, dalam satu aplikasi",
+      "h2": "Satu pendamping, dari Subuh hingga Isya",
       "cards": [
         {
           "h3": "Sholat",
-          "p": "Hitung mundur ke waktu berikutnya, pengingat adzan per waktu, tampilan bulanan, kompas kiblat, dan widget layar utama."
+          "p": "Jadwal sholat dengan hitung mundur ke sholat berikutnya, adzan untuk setiap waktu, kompas kiblat, widget layar utama — dan setiap sholat dicatat dengan satu ketukan."
         },
         {
-          "h3": "Al-Qur'an",
-          "p": "Mushaf Madinah lengkap dalam empat riwayat, dengan murottal, sorotan kata yang dibaca, tafsir, 14 terjemahan, penanda, dan rencana khatam."
+          "h3": "Baca dan dengarkan",
+          "p": "Mushaf Madinah lengkap dalam empat riwayat, dengan warna tajwid untuk Hafs dan Warsh serta pembaca kata: tahan sebuah kata dan hanya kata itu yang dibacakan. 42 qari, tilawah surah demi surah dengan layar mati, tafsir, terjemahan, dan rencana khatam."
         },
         {
-          "h3": "Tilawah",
-          "p": "Mendengarkan, sebagai halamannya sendiri: pilih qari dan tilawah berjalan surah demi surah meski layar mati, dikendalikan dari layar kunci. Pengatur waktu tidur, kecepatan, dan halaman mushaf hidup tempat kata yang dibaca menyala."
+          "h3": "Berzikir",
+          "p": "Doa dari Hisnul Muslim, tasbih, catatan puasa untuk Ramadan dan puasa sunnah, serta kalender Hijriah."
         },
         {
-          "h3": "Sisa hari Anda",
-          "p": "Doa Hisnul Muslim, tasbih, catatan puasa, dan jurnal sholat — serta sinkronisasi antarperangkat Anda tanpa akun."
+          "h3": "Milik Anda",
+          "p": "Tanpa akun, tanpa iklan, tanpa pelacakan. Sinkronisasi antara perangkat Anda sendiri lewat folder yang sudah Anda sinkronkan, cadangan ke berkas yang Anda simpan, dan seluruh kode terbuka di bawah AGPL-3.0."
         }
       ]
     },
@@ -933,10 +933,10 @@
     "name": "Deutsch",
     "dir": "ltr",
     "path": "/de/",
-    "title": "Gebetszeiten und Medina-Mushaf — Mihrab",
-    "description": "Kostenlose Open-Source-App für Gebetszeiten: Adhan-Erinnerungen, Qibla-Kompass, Homescreen-Widgets und der vollständige Medina-Mushaf. Ohne Werbung, ohne Tracking, ohne Konto.",
-    "h1": "Gebetszeiten, die nicht wissen, wer Sie sind.",
-    "sub": "Adhan-Erinnerungen, ein Qibla-Kompass, ein Homescreen-Widget und der vollständige Medina-Mushaf — ohne Konto, ohne Werbung, ohne Analytik. Sobald Ihr Standort gesetzt ist, werden die Zeiten auf dem Telefon selbst berechnet; der Tag funktioniert also auch ohne Netz.",
+    "title": "Mihrab: Begleiter für Muslime — Gebetszeiten, Koran, Duas",
+    "description": "Mihrab ist der tägliche Begleiter für Muslime: Gebetszeiten und Adhan, der Medina-Mushaf mit Rezitation, Tajwid-Farben und Wortvorleser, Duas, Tasbih und ein Gebetstagebuch. Quelloffen, ohne Werbung, ohne Konto — für Android, iPhone, iPad und Mac.",
+    "h1": "Für jedes Gebet – und alles dazwischen.",
+    "sub": "Mihrab ist ein ruhiger Begleiter durch den Tag eines Muslims: Gebetszeiten und Adhan, der Medina-Mushaf mit Rezitation, Tajwid-Farben und einem Wortvorleser, und die Duas und das Gedenken dazwischen — ohne Konto, ohne Werbung, ohne Analytik. Sobald Ihr Standort gesetzt ist, funktioniert der Tag auch ohne Netz.",
     "chips": [
       "Keine Werbung, kein Tracking, kein Konto",
       "Funktioniert ohne Netz",
@@ -950,23 +950,23 @@
     },
     "features": {
       "eyebrow": "Funktionen",
-      "h2": "Der Gottesdienst des Tages, in einer App",
+      "h2": "Ein Begleiter, vom Morgen- bis zum Nachtgebet",
       "cards": [
         {
-          "h3": "Gebet",
-          "p": "Countdown bis zum nächsten Gebet, Adhan-Erinnerung je Gebet, Monatsübersicht, Qibla-Kompass und Homescreen-Widgets."
+          "h3": "Beten",
+          "p": "Gebetszeiten mit Countdown zum nächsten Gebet, Adhan für jedes Gebet, Qibla-Kompass und Homescreen-Widgets – und jedes Gebet mit einem Tippen eingetragen."
         },
         {
-          "h3": "Koran",
-          "p": "Der vollständige Medina-Mushaf in vier Riwayat, mit Rezitation, Wortmarkierung, Tafsir, 14 Übersetzungen, Lesezeichen und einem Khatma-Plan."
+          "h3": "Lesen und hören",
+          "p": "Der vollständige Medina-Mushaf in vier Riwayat, mit Tajwid-Farben für Hafs und Warsh und einem Wortvorleser: ein Wort gedrückt halten, und genau dieses Wort wird vorgelesen. 42 Rezitatoren, Tilawa Sure für Sure bei ausgeschaltetem Bildschirm, Tafsir, Übersetzungen und ein Khatma-Plan."
         },
         {
-          "h3": "Tilawa",
-          "p": "Hören, als eigene Seite: einen Rezitator wählen, und die Rezitation läuft Sure für Sure bei ausgeschaltetem Bildschirm weiter, gesteuert vom Sperrbildschirm. Einschlaftimer, Tempo und eine lebendige Mushaf-Seite, auf der das rezitierte Wort leuchtet."
+          "h3": "Gedenken",
+          "p": "Bittgebete aus Hisnul Muslim, Tasbih, ein Fastenprotokoll für Ramadan und die Sunna-Fasten, und der Hidschri-Kalender."
         },
         {
-          "h3": "Der Rest des Tages",
-          "p": "Bittgebete aus Hisnul Muslim, Tasbih, ein Fastenprotokoll und ein Gebetstagebuch — und Abgleich zwischen Ihren Geräten ganz ohne Konto."
+          "h3": "Ihr Eigenes",
+          "p": "Kein Konto, keine Werbung, kein Tracking. Abgleich zwischen Ihren eigenen Geräten über einen Ordner, den Sie ohnehin synchronisieren, eine Sicherung als Datei, und der gesamte Code quelloffen unter AGPL-3.0."
         }
       ]
     },
@@ -1123,10 +1123,10 @@
     "name": "Français",
     "dir": "ltr",
     "path": "/fr/",
-    "title": "Horaires de prière et mushaf de Médine — Mihrab",
-    "description": "Application d'horaires de prière gratuite et open source : rappels d'adhan, boussole qibla, widgets d'écran d'accueil et le mushaf de Médine complet. Sans publicité, sans pistage, sans compte.",
-    "h1": "Des horaires de prière qui ne savent pas qui vous êtes.",
-    "sub": "Rappels d'adhan, boussole qibla, widget d'écran d'accueil et le mushaf de Médine complet — sans compte, sans publicité, sans analytique. Une fois votre position définie, les horaires sont calculés sur le téléphone : la journée fonctionne réseau coupé.",
+    "title": "Mihrab : compagnon du musulman — heures de prière, Coran, douas",
+    "description": "Mihrab est le compagnon quotidien du musulman : heures de prière et adhan, le mushaf de Médine avec récitation, couleurs du tajwid et lecteur de mots, douas, tasbih et journal de prière. Open source, sans publicité, sans compte — sur Android, iPhone, iPad et Mac.",
+    "h1": "Pour chaque prière, et tout ce qui les sépare.",
+    "sub": "Mihrab est un compagnon serein pour la journée d'un musulman : les heures de prière et l'adhan, le mushaf de Médine avec récitation, couleurs du tajwid et lecteur de mots, et les douas et le rappel entre les prières — sans compte, sans publicité, sans statistiques. Une fois votre position définie, la journée fonctionne même hors ligne.",
     "chips": [
       "Ni publicité, ni traceurs, ni compte",
       "Fonctionne sans réseau",
@@ -1140,23 +1140,23 @@
     },
     "features": {
       "eyebrow": "Fonctions",
-      "h2": "Le culte de la journée, dans une seule application",
+      "h2": "Un compagnon, du Fajr à l'Isha",
       "cards": [
         {
-          "h3": "Prière",
-          "p": "Compte à rebours jusqu'à la prière suivante, rappel d'adhan par prière, vue mensuelle, boussole qibla et widgets d'écran d'accueil."
+          "h3": "Prier",
+          "p": "Heures de prière et compte à rebours jusqu'à la prochaine, adhan pour chaque prière, boussole de la qibla, widgets pour l'écran d'accueil — et chaque prière consignée d'un seul geste."
         },
         {
-          "h3": "Coran",
-          "p": "Le mushaf de Médine complet en quatre riwayat, avec récitation, mise en évidence du mot lu, tafsir, 14 traductions, marque-pages et un plan de khatma."
+          "h3": "Lire et écouter",
+          "p": "Le mushaf de Médine complet en quatre riwayat, avec les couleurs du tajwid pour Hafs et Warsh et un lecteur de mots : maintenez un mot et c'est ce mot seul qui est lu. 42 récitateurs, la Tilawa sourate après sourate écran éteint, tafsir, traductions et plan de khatma."
         },
         {
-          "h3": "Tilawa",
-          "p": "Écouter, sur sa propre page : choisissez un récitant et la récitation enchaîne sourate après sourate, écran éteint, pilotée depuis l’écran verrouillé. Minuterie d’arrêt, vitesse, et une page du mushaf en direct où le mot récité s’allume."
+          "h3": "Se souvenir",
+          "p": "Les douas de Hisn al-Muslim, le tasbih, un suivi du jeûne pour le Ramadan et les jeûnes de la Sunna, et le calendrier hégirien."
         },
         {
-          "h3": "Le reste de la journée",
-          "p": "Les invocations de Hisn al-Muslim, le tasbih, un journal de jeûne et un journal de prière — et une synchronisation entre vos appareils sans aucun compte."
+          "h3": "À vous",
+          "p": "Pas de compte, pas de publicité, pas de pistage. Synchronisation entre vos propres appareils via un dossier que vous synchronisez déjà, sauvegarde dans un fichier que vous gardez, et tout le code ouvert sous AGPL-3.0."
         }
       ]
     },
@@ -1313,10 +1313,10 @@
     "name": "Español",
     "dir": "ltr",
     "path": "/es/",
-    "title": "Horarios de oración y mushaf de Medina — Mihrab",
-    "description": "Aplicación de horarios de oración gratuita y de código abierto: recordatorios de adhán, brújula qibla, widgets de pantalla de inicio y el mushaf de Medina completo. Sin anuncios, sin rastreo, sin cuenta.",
-    "h1": "Horarios de oración que no saben quién eres.",
-    "sub": "Recordatorios de adhán, brújula qibla, widget en la pantalla de inicio y el mushaf de Medina completo — sin cuenta, sin anuncios y sin analítica. Una vez fijada tu ubicación, los horarios se calculan en el propio teléfono, así que el día funciona con la red apagada.",
+    "title": "Mihrab: compañero musulmán — horarios de oración, Corán, duas",
+    "description": "Mihrab es el compañero diario del musulmán: horarios de oración y adhan, el mushaf de Medina con recitación, colores de tajwid y lector de palabras, duas, tasbih y un diario de oración. Código abierto, sin anuncios, sin cuenta — en Android, iPhone, iPad y Mac.",
+    "h1": "Para cada oración, y todo lo que hay entre ellas.",
+    "sub": "Mihrab es un compañero sereno para el día de un musulmán: los horarios de oración y el adhan, el mushaf de Medina con recitación, colores de tajwid y un lector de palabras, y las duas y el dhikr entre oraciones — sin cuenta, sin anuncios, sin analíticas. Una vez fijada tu ubicación, el día funciona sin conexión.",
     "chips": [
       "Sin anuncios, rastreadores ni cuenta",
       "Funciona sin conexión",
@@ -1330,23 +1330,23 @@
     },
     "features": {
       "eyebrow": "Funciones",
-      "h2": "La adoración del día, en una sola aplicación",
+      "h2": "Un compañero, del Fajr al Isha",
       "cards": [
         {
-          "h3": "Oración",
-          "p": "Cuenta atrás hasta la siguiente oración, recordatorio de adhán por oración, vista mensual, brújula qibla y widgets en la pantalla de inicio."
+          "h3": "Rezar",
+          "p": "Horarios de oración con cuenta atrás hasta la siguiente, adhan para cada oración, brújula de la alquibla, widgets para la pantalla de inicio — y cada oración registrada con un toque."
         },
         {
-          "h3": "Corán",
-          "p": "El mushaf de Medina completo en cuatro riwayat, con recitación, resaltado de la palabra recitada, tafsir, 14 traducciones, marcadores y un plan de jatma."
+          "h3": "Leer y escuchar",
+          "p": "El mushaf de Medina completo en cuatro riwayat, con colores de tajwid para Hafs y Warsh y un lector de palabras: mantén pulsada una palabra y se lee esa palabra sola. 42 recitadores, Tilawa sura tras sura con la pantalla apagada, tafsir, traducciones y un plan de jatma."
         },
         {
-          "h3": "Tilawah",
-          "p": "Escuchar, en su propia página: elige un recitador y la recitación sigue sura tras sura con la pantalla apagada, gobernada desde la pantalla de bloqueo. Temporizador, velocidad y una página del mushaf en vivo donde se enciende la palabra recitada."
+          "h3": "Recordar",
+          "p": "Las duas de Hisn al-Muslim, el tasbih, un registro de ayunos para Ramadán y los ayunos de la Sunna, y el calendario de la Hégira."
         },
         {
-          "h3": "El resto del día",
-          "p": "Las súplicas de Hisn al-Muslim, tasbih, un registro de ayuno y un diario de oración — y sincronización entre tus dispositivos sin ninguna cuenta."
+          "h3": "Tuyo",
+          "p": "Sin cuenta, sin anuncios, sin rastreo. Sincronización entre tus propios dispositivos mediante una carpeta que ya sincronizas, copia de seguridad en un archivo que guardas tú, y todo el código abierto bajo AGPL-3.0."
         }
       ]
     },
@@ -1503,10 +1503,10 @@
     "name": "Русский",
     "dir": "ltr",
     "path": "/ru/",
-    "title": "Время намаза и мединский мусхаф — Mihrab",
-    "description": "Бесплатное приложение с открытым исходным кодом: время намаза, напоминания азана, компас киблы, виджеты на главном экране и полный мединский мусхаф. Без рекламы, без слежки, без аккаунта.",
-    "h1": "Время намаза, которое не знает, кто вы.",
-    "sub": "Напоминания азана, компас киблы, виджет на главном экране и полный мединский мусхаф — без аккаунта, без рекламы и без аналитики. Как только задано местоположение, время рассчитывается на самом телефоне, и день работает при выключенной сети.",
+    "title": "Mihrab: спутник мусульманина — время намаза, Коран, дуа",
+    "description": "Mihrab — ежедневный спутник мусульманина: время намаза и азан, мединский мусхаф с чтением, цветным таджвидом и озвучкой отдельных слов, дуа, тасбих и дневник намазов. Открытый код, без рекламы, без аккаунта — на Android, iPhone, iPad и Mac.",
+    "h1": "Для каждого намаза — и для всего, что между ними.",
+    "sub": "Mihrab — спокойный спутник мусульманина на весь день: время намаза и азан, мединский мусхаф с чтением, цветным таджвидом и озвучкой отдельных слов, а между намазами — дуа и зикр. Без аккаунта, без рекламы, без аналитики. Как только задано местоположение, день работает и без сети.",
     "chips": [
       "Без рекламы, трекеров и аккаунта",
       "Работает без интернета",
@@ -1520,23 +1520,23 @@
     },
     "features": {
       "eyebrow": "Возможности",
-      "h2": "Поклонение целого дня — в одном приложении",
+      "h2": "Один спутник — от фаджра до иша",
       "cards": [
         {
-          "h3": "Намаз",
-          "p": "Обратный отсчёт до следующего намаза, напоминание азана для каждого времени, месячный обзор, компас киблы и виджеты на главном экране."
+          "h3": "Молитесь",
+          "p": "Время намаза с обратным отсчётом до следующего, азан для каждого намаза, компас киблы, виджеты — и каждый намаз отмечается одним касанием."
         },
         {
-          "h3": "Коран",
-          "p": "Полный мединский мусхаф в четырёх риваятах: чтение вслух, подсветка читаемого слова, тафсир, 14 переводов, закладки и план хатма."
+          "h3": "Читайте и слушайте",
+          "p": "Полный мединский мусхаф в четырёх риваятах, с цветным таджвидом для Хафса и Варша и озвучкой слов: удерживайте слово — и прозвучит именно оно. 42 чтеца, тилява сура за сурой с выключенным экраном, тафсир, переводы и план хатма."
         },
         {
-          "h3": "Тилават",
-          "p": "Слушание отдельной страницей: выберите чтеца — и чтение идёт сура за сурой с выключенным экраном, управляясь с экрана блокировки. Таймер сна, скорость и живая страница мусхафа, где подсвечивается читаемое слово."
+          "h3": "Поминайте",
+          "p": "Дуа из «Крепости мусульманина», тасбих, журнал постов для Рамадана и сунна-постов и календарь хиджры."
         },
         {
-          "h3": "Остальной день",
-          "p": "Дуа из «Хисн аль-Муслим», тасбих, журнал поста и дневник намазов — и синхронизация между вашими устройствами без аккаунта."
+          "h3": "Только ваше",
+          "p": "Без аккаунта, без рекламы, без слежки. Синхронизация между вашими устройствами через папку, которую вы и так синхронизируете, резервная копия в файл и весь код открыт по AGPL-3.0."
         }
       ]
     },
@@ -1693,10 +1693,10 @@
     "name": "বাংলা",
     "dir": "ltr",
     "path": "/bn/",
-    "title": "নামাজের সময় ও মদিনা মুসহাফ — Mihrab",
-    "description": "বিনামূল্যের ও ওপেন সোর্স নামাজের সময়ের অ্যাপ: আজানের রিমাইন্ডার, কিবলা কম্পাস, হোম স্ক্রিন উইজেট এবং সম্পূর্ণ মদিনা মুসহাফ। বিজ্ঞাপন নেই, ট্র্যাকিং নেই, অ্যাকাউন্ট নেই।",
-    "h1": "নামাজের সময়, যে জানে না আপনি কে।",
-    "sub": "আজানের রিমাইন্ডার, কিবলা কম্পাস, হোম স্ক্রিন উইজেট এবং সম্পূর্ণ মদিনা মুসহাফ — অ্যাকাউন্ট নেই, বিজ্ঞাপন নেই, অ্যানালিটিক্স নেই। অবস্থান একবার ঠিক করা হলে সময় ফোনেই হিসাব হয়, তাই নেটওয়ার্ক বন্ধ থাকলেও দিনটা চলে।",
+    "title": "মিহরাব: মুসলিমের সঙ্গী — নামাজের সময়, কুরআন, দোয়া",
+    "description": "মিহরাব একজন মুসলিমের প্রতিদিনের সঙ্গী: নামাজের সময় ও আজান, তিলাওয়াত, রঙিন তাজবিদ ও শব্দ-পাঠকসহ মদিনা মুসহাফ, দোয়া, তাসবিহ আর নামাজের জার্নাল। ওপেন সোর্স, বিজ্ঞাপন নেই, অ্যাকাউন্ট নেই — Android, iPhone, iPad ও Mac-এ।",
+    "h1": "প্রতিটি নামাজের জন্য, আর মাঝের সবকিছুর জন্য।",
+    "sub": "মিহরাব একজন মুসলিমের দিনের শান্ত সঙ্গী: নামাজের সময় ও আজান, তিলাওয়াত, রঙিন তাজবিদ ও শব্দ-পাঠকসহ মদিনা মুসহাফ, আর নামাজের মাঝের দোয়া ও জিকির — কোনো অ্যাকাউন্ট নেই, বিজ্ঞাপন নেই, বিশ্লেষণ নেই। অবস্থান ঠিক করা হলে পুরো দিন নেটওয়ার্ক ছাড়াই চলে।",
     "chips": [
       "বিজ্ঞাপন, ট্র্যাকার বা অ্যাকাউন্ট নেই",
       "ইন্টারনেট ছাড়াই চলে",
@@ -1710,23 +1710,23 @@
     },
     "features": {
       "eyebrow": "বৈশিষ্ট্য",
-      "h2": "দিনের ইবাদত, এক অ্যাপে",
+      "h2": "ফজর থেকে এশা পর্যন্ত একজন সঙ্গী",
       "cards": [
         {
           "h3": "নামাজ",
-          "p": "পরবর্তী নামাজ পর্যন্ত কাউন্টডাউন, প্রতিটি ওয়াক্তের আজান রিমাইন্ডার, মাসিক তালিকা, কিবলা কম্পাস ও হোম স্ক্রিন উইজেট।"
+          "p": "পরের নামাজের কাউন্টডাউনসহ নামাজের সময়, প্রতি ওয়াক্তের আজান, কিবলা কম্পাস, হোম স্ক্রিন উইজেট — আর এক ছোঁয়ায় প্রতিটি নামাজ লিখে রাখা।"
         },
         {
-          "h3": "কুরআন",
-          "p": "চার রেওয়ায়াতে সম্পূর্ণ মদিনা মুসহাফ — তিলাওয়াত, পঠিত শব্দ চিহ্নিতকরণ, তাফসির, ১৪টি অনুবাদ, বুকমার্ক এবং খতমের পরিকল্পনা।"
+          "h3": "পড়ুন ও শুনুন",
+          "p": "চার রিওয়ায়াতে পূর্ণ মদিনা মুসহাফ, হাফস ও ওয়ারশের জন্য রঙিন তাজবিদ, আর শব্দ-পাঠক: একটি শব্দ চেপে ধরুন, শুধু সেই শব্দটিই পড়ে শোনানো হবে। ৪২ জন কারি, স্ক্রিন বন্ধ রেখে সূরার পর সূরা তিলাওয়াত, তাফসির, অনুবাদ ও খতম পরিকল্পনা।"
         },
         {
-          "h3": "তিলাওয়াত",
-          "p": "শোনা, নিজের আলাদা পাতায়: একজন ক্বারী বেছে নিন, স্ক্রিন বন্ধ থাকলেও তিলাওয়াত সূরার পর সূরা চলতে থাকে, লক স্ক্রিন থেকেই নিয়ন্ত্রণ। স্লিপ টাইমার, গতি, আর জীবন্ত মুসহাফ পাতা যেখানে পঠিত শব্দ আলোকিত হয়।"
+          "h3": "জিকির",
+          "p": "হিসনুল মুসলিমের দোয়া, তাসবিহ, রমজান ও সুন্নত রোজার হিসাব, আর হিজরি ক্যালেন্ডার।"
         },
         {
-          "h3": "দিনের বাকি অংশ",
-          "p": "হিসনুল মুসলিমের দোয়া, তাসবিহ, রোজার হিসাব ও নামাজের ডায়েরি — এবং অ্যাকাউন্ট ছাড়াই নিজের ডিভাইসগুলোর মধ্যে সিঙ্ক।"
+          "h3": "আপনার নিজের",
+          "p": "অ্যাকাউন্ট নেই, বিজ্ঞাপন নেই, ট্র্যাকিং নেই। আপনি আগে থেকেই সিঙ্ক করেন এমন একটি ফোল্ডারের মাধ্যমে নিজের ডিভাইসগুলোর মধ্যে সিঙ্ক, নিজের কাছে রাখা ফাইলে ব্যাকআপ, আর AGPL-3.0-এর অধীনে পুরো কোড উন্মুক্ত।"
         }
       ]
     },
@@ -1883,10 +1883,10 @@
     "name": "हिन्दी",
     "dir": "ltr",
     "path": "/hi/",
-    "title": "नमाज़ के समय और मदीना मुसहफ़ — Mihrab",
-    "description": "मुफ़्त और ओपन-सोर्स नमाज़ समय ऐप: अज़ान की याद दिलाहट, क़िबला कम्पास, होम स्क्रीन विजेट और पूरा मदीना मुसहफ़। कोई विज्ञापन नहीं, कोई ट्रैकिंग नहीं, कोई खाता नहीं।",
-    "h1": "नमाज़ के समय, जिन्हें पता ही नहीं कि आप कौन हैं।",
-    "sub": "अज़ान की याद दिलाहट, क़िबला कम्पास, होम स्क्रीन विजेट और पूरा मदीना मुसहफ़ — बिना खाते, बिना विज्ञापन, बिना एनालिटिक्स के। जगह तय हो जाने के बाद समय फ़ोन पर ही निकाला जाता है, इसलिए नेटवर्क बंद हो तब भी दिन चलता रहता है।",
+    "title": "मिहराब: मुसलमान का साथी — नमाज़ का समय, क़ुरआन, दुआ",
+    "description": "मिहराब एक मुसलमान का रोज़ का साथी है: नमाज़ के समय और अज़ान, तिलावत, रंगीन तजवीद और शब्द-पाठक के साथ मदीना मुसहफ़, दुआएँ, तस्बीह और नमाज़ की डायरी। ओपन सोर्स, बिना विज्ञापन, बिना खाते — Android, iPhone, iPad और Mac पर।",
+    "h1": "हर नमाज़ के लिए, और उनके बीच की हर चीज़ के लिए।",
+    "sub": "मिहराब एक मुसलमान के दिन का शांत साथी है: नमाज़ के समय और अज़ान, तिलावत, रंगीन तजवीद और शब्द-पाठक के साथ मदीना मुसहफ़, और नमाज़ों के बीच की दुआएँ और ज़िक्र — न खाता, न विज्ञापन, न विश्लेषण। स्थान तय होते ही पूरा दिन बिना नेटवर्क के चलता है।",
     "chips": [
       "न विज्ञापन, न ट्रैकर, न खाता",
       "इंटरनेट के बिना चलता है",
@@ -1900,23 +1900,23 @@
     },
     "features": {
       "eyebrow": "विशेषताएँ",
-      "h2": "दिन भर की इबादत, एक ऐप में",
+      "h2": "फ़ज्र से इशा तक, एक साथी",
       "cards": [
         {
           "h3": "नमाज़",
-          "p": "अगली नमाज़ तक उलटी गिनती, हर वक़्त के लिए अज़ान की याद दिलाहट, महीने का नक़्शा, क़िबला कम्पास और होम स्क्रीन विजेट।"
+          "p": "अगली नमाज़ की उलटी गिनती के साथ नमाज़ के समय, हर नमाज़ की अज़ान, क़िबला कम्पास, होम स्क्रीन विजेट — और हर नमाज़ एक टैप में दर्ज।"
         },
         {
-          "h3": "क़ुरआन",
-          "p": "चार रिवायतों में पूरा मदीना मुसहफ़ — तिलावत, पढ़े जा रहे शब्द की पहचान, तफ़सीर, 14 अनुवाद, बुकमार्क और ख़त्म-ए-क़ुरआन की योजना।"
+          "h3": "पढ़ें और सुनें",
+          "p": "चार रिवायतों में पूरा मदीना मुसहफ़, हफ़्स और वर्श के लिए रंगीन तजवीद, और शब्द-पाठक: किसी शब्द को दबाए रखें, वही एक शब्द पढ़कर सुनाया जाएगा। 42 क़ारी, स्क्रीन बंद रहते सूरह-दर-सूरह तिलावत, तफ़सीर, अनुवाद और ख़त्म की योजना।"
         },
         {
-          "h3": "तिलावत",
-          "p": "सुनना, अपने अलग पन्ने पर: एक क़ारी चुनिए और तिलावत सूरह दर सूरह चलती रहे, स्क्रीन बंद हो तब भी, लॉक स्क्रीन से नियंत्रित। स्लीप टाइमर, गति, और एक जीवंत मुसहफ़ पृष्ठ जिस पर पढ़ा जा रहा शब्द रोशन होता है।"
+          "h3": "ज़िक्र",
+          "p": "हिस्नुल मुस्लिम की दुआएँ, तस्बीह, रमज़ान और सुन्नत रोज़ों का हिसाब, और हिजरी कैलेंडर।"
         },
         {
-          "h3": "बाक़ी दिन",
-          "p": "हिस्नुल मुस्लिम की दुआएँ, तस्बीह, रोज़े का हिसाब और नमाज़ की डायरी — और बिना खाते अपने ही उपकरणों के बीच सिंक।"
+          "h3": "सिर्फ़ आपका",
+          "p": "न खाता, न विज्ञापन, न ट्रैकिंग। उस फ़ोल्डर के ज़रिए अपने ही डिवाइसों में सिंक जिसे आप पहले से सिंक करते हैं, आपके पास रहने वाली फ़ाइल में बैकअप, और AGPL-3.0 के तहत पूरा कोड खुला।"
         }
       ]
     },
@@ -2073,10 +2073,10 @@
     "name": "中文",
     "dir": "ltr",
     "path": "/zh/",
-    "title": "礼拜时间与麦地那版《古兰经》— Mihrab",
-    "description": "免费开源的礼拜时间应用：宣礼提醒、朝向罗盘、主屏小组件，以及完整的麦地那版《古兰经》。没有广告，没有追踪，无需账号。",
-    "h1": "不知道你是谁的礼拜时间。",
-    "sub": "宣礼提醒、朝向罗盘、主屏小组件，以及完整的麦地那版《古兰经》——无需账号，没有广告，没有分析统计。设定位置后，时间就在手机本地推算，因此断网也不影响一天的功课。",
+    "title": "Mihrab：穆斯林的日常伴侣——礼拜时间、古兰经与祈祷词",
+    "description": "Mihrab 是穆斯林的日常伴侣：礼拜时间与宣礼，带诵读、泰吉威德着色和逐词朗读的麦地那穆斯哈夫，祈祷词、赞念计数与礼拜日志。开源、无广告、无需账号——支持 Android、iPhone、iPad 与 Mac。",
+    "h1": "为每一次礼拜，也为礼拜之间的一切。",
+    "sub": "Mihrab 是穆斯林一天中安静的伴侣：礼拜时间与宣礼，带诵读、泰吉威德着色和逐词朗读的麦地那穆斯哈夫，以及礼拜之间的祈祷词与记念——无需账号，没有广告，没有统计。设定位置后，整天都能离线使用。",
     "chips": [
       "无广告、无追踪、无账号",
       "断网也能用",
@@ -2090,23 +2090,23 @@
     },
     "features": {
       "eyebrow": "功能",
-      "h2": "一天的功课，集于一个应用",
+      "h2": "从晨礼到宵礼，一位伴侣",
       "cards": [
         {
           "h3": "礼拜",
-          "p": "距下次礼拜的倒计时、每个拜功的宣礼提醒、整月一览、朝向罗盘，以及主屏小组件。"
+          "p": "礼拜时间与到下一次礼拜的倒计时、每番礼拜的宣礼、朝向罗盘、主屏小组件——每次礼拜一触即可记录。"
         },
         {
-          "h3": "《古兰经》",
-          "p": "四种传述本的完整麦地那版，配诵读、逐词高亮、经注、14 种译文、书签，以及一份通读计划。"
+          "h3": "诵读与聆听",
+          "p": "四种传述的完整麦地那穆斯哈夫，哈夫斯与沃尔什均有泰吉威德着色，还有逐词朗读：长按一个词，就只朗读这个词。42 位诵读者，熄屏时逐章连续诵读，经注、译本与通读计划。"
         },
         {
-          "h3": "诵读",
-          "p": "把聆听单独做成一页：选一位诵读者，熄屏后仍一章接一章地读下去，可从锁屏控制。睡眠定时、语速，以及一页实时的穆斯哈夫，正在诵读的词会被点亮。"
+          "h3": "记念",
+          "p": "《穆斯林堡垒》中的祈祷词、赞念计数、斋月与圣行斋戒的记录，以及伊斯兰历。"
         },
         {
-          "h3": "一天的其余部分",
-          "p": "《穆斯林的堡垒》祈祷词、赞念计数、封斋记录与礼拜日志——并可在自己的设备之间同步，无需任何账号。"
+          "h3": "只属于您",
+          "p": "无需账号，没有广告，没有追踪。通过您本就在同步的文件夹在自己的设备之间同步，备份到您自己保存的文件，全部代码以 AGPL-3.0 开源。"
         }
       ]
     },

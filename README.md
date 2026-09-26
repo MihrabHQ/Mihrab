@@ -3,9 +3,11 @@
 </div>
 
 <div align="center">
-  <img src="branding/github-hero.png" alt="Mihrab — prayer times, the Madinah mushaf, dua, tasbih and a fasting log, on iOS and Android">
+  <img src="branding/github-hero.png" alt="Mihrab, the Muslim companion — prayer times, the Madinah mushaf, dua and tasbih, on iOS, Android and Mac">
 
-  A calm, private, offline-first companion for the day's intentions. Prayer times and a qibla compass, the Madinah muṣḥaf in four riwāyāt with recitation and tafsir, Tilāwah for listening surah into surah with the screen off, dua and tasbih, a fasting and prayer journal, home-screen widgets on three platforms, and sync between your own devices with no account and no server — no ads, no analytics, no tracking.
+  **A Muslim's daily companion — for every prayer, and everything between.**
+
+  Prayer times, the adhan and a qibla compass; the Madinah muṣḥaf in four riwāyāt with recitation, tajweed colours on Ḥafṣ and Warsh, a word reader and tafsir; Tilāwah for listening surah into surah with the screen off; duas, tasbih, and a fasting and prayer journal; home-screen widgets on three platforms; and sync between your own devices with no account and no server. No ads, no analytics, no tracking — and every line of it open source.
 
   **[mihrab website →](https://mihrab.elghamri.se/)**
 
@@ -37,7 +39,7 @@
 
 ## Features
 
-### Prayer
+### Pray
 
 - **Prayer times, online or off** — Daily times and a full month view up to a year ahead. Cached on-device so the app opens instantly without a connection; falls back to on-device calculation when the network is away.
 - **The day's own sky** — Behind the countdown, one continuous scene drawn from the clock: night with the moon in its actual phase, dawn through the horizon's rose and orange, the day with the sun climbing to its height about Ẓuhr, sunset, and the afterglow darkening into night. It is true to the hour rather than to the theme — noon is bright in a dark app — and the moon's phase and the sun's light are computed from your own coordinates rather than approximated.
@@ -45,17 +47,19 @@
 - **Sources, including national ones** — AlAdhan, PrayTimes.dev, on-device calculation (Adhan JS), or a published national table: **Sweden** (Islamiska Förbundet) and **Morocco** (the Ministry of Habous and Islamic Affairs), rebuilt daily by a workflow in this repo and matched to your nearest listed city. "Automatic" picks the right one for where you are.
 - **Tuned to your mosque** — Per-prayer minute offsets, Hanafi or standard Asr, and the extra marks when you want them: sunrise, Islamic midnight, the last third of the night, and the first third after Isha.
 - **Maliki second times** — Off by default: turn them on and each prayer gains a line saying when its preferred time (*ikhtiyārī*) closes and its late time (*ḍarūrī*) begins, computed on your device from your coordinates whichever source the times come from. From *Al-Murshid al-Muʿīn* (Ibn ʿĀshir). Fajr's and Asr's boundaries are marked approximate, and where the sun never reaches the angle nothing is shown rather than a guess.
+- **Quiet for the prayer itself (Android)** — Settings → Notifications puts the phone on Do Not Disturb around each prayer you pick, from the adhan or a few minutes before, and lifts it again on its own. Jumuʿah has its own length. Alarms and whatever you already let through still come through.
 - **Qibla compass** — A live dial with signal strength, a hold-still prompt when the sensors need it, and a cross-check against the sun. Falls back to the bearing when the phone has no magnetometer.
 - **Saved locations** — Keep the places you check on and switch between them freely; automatic location and saved places are not alternatives, and the month sheet names the city rather than printing coordinates.
 - **A month you can hand over** — The whole month as a sheet, Hijri and Gregorian side by side, exportable as an image or a PDF in any of the app's languages, with a QR back to the app.
 - **Live Activity** — A pinned countdown to the next prayer: Android 16+ status-bar chip and always-on notification in three designs (countdown, timeline, or markers with a proportional bar for the next three events), iOS Lock Screen and Dynamic Island via ActivityKit. What it shows — Hijri date, location, sunrise, the lock-screen button — is yours to switch.
 - **Home-screen widgets** — Prayer times in three sizes, plus Log Today (with the practice graph and a countdown), Hijri date, streak, tasbih and reading widgets, on iOS, Android **and** the Mac. Per-prayer accents, dynamic colour, adjustable background opacity.
 
-### Quran
+### Read and listen
 
 - **Interactive Madinah mushaf** — All 604 pages, drawn as *text* from the official KFGQPC page fonts rather than as page images: sharp at any zoom, instant to rotate, and a fraction of the memory. Reading starts the moment the download does — pages arrive as their fonts do (~300 KB each) with a slim line saying how the rest is going. Paper, sepia or night; a page rail and a go-to-page jump; fullscreen from the margins.
 - **A facing-page spread on iPad and Mac** — the pair of pages is the thing that turns, with the keyboard and a surah sidebar.
-- **Tajweed colours** — Optional: the King Fahd Complex's own colour-coded page fonts, each letter painted for the rule it falls under. Tap an ayah to see its rules word by word and hear each word read; a guide explains every colour.
+- **Tajweed colours** — Optional: the King Fahd Complex's own colour-coded page fonts, each letter painted for the rule it falls under. Tap an ayah to see its rules word by word and hear each word read; a guide explains every colour. The Warsh muṣḥaf has its own: the rules Warsh shares with Ḥafṣ in the same inks, and Warsh's own — naql, tashīl, taqlīl, the light rāʾ, the heavy lām, madd al-badal — each with its own.
+- **The word reader** — Optional: hold a finger on a word in the muṣḥaf and, when you lift it, that one word is read out. Slide to another word before lifting to pick it instead; a tap still opens the ayah.
 - **Four riwāyāt** — Ḥafṣ from the KFGQPC page fonts, and Warsh, Qālūn and Shuʿbah as bundled-typeface muṣḥafs downloaded on request from Quranpedia. Your place carries across a switch: the ayah is the coordinate, not the page number.
 - **Everything in one panel** — A tap on a word opens its ayah: translation, real **tafsir** (Ibn Kathir, Maarif-ul-Quran, al-Muyassar and more — cached for offline), coloured bookmarks, star, share as text or a rendered image card, the khatmah position, and the full recitation controls.
 - **42 reciters** — Al-Husary, Alafasy, Abdul Basit, Al-Minshawi, As-Sudais, Ash-Shatri, Ahmed Al-Ajmi, Yasser Ad-Dossari, Maher Al-Muaiqly, Saad Al-Ghamdi, plus mujawwad readings from Abdul Basit, Al-Minshawi and Al-Husary, streamed per-ayah or downloaded per-surah for offline listening. **Word-level highlight on the page itself** for nine of them — and in landscape the column follows the reciter down the page; prefetching keeps long sessions gapless.
@@ -66,7 +70,7 @@
 - **Ayah of the day** — On the Quran page, and optionally as a daily notification at a time you choose, with its translation.
 - **Manage downloads** — Exactly what is on disk — muṣḥaf pages, riwāyāt, tafsir, recitation audio — with sizes, and a way to remove any of it.
 
-### Daily worship
+### Remember
 
 - **Dua library** — 100+ duas across 19 categories (morning, evening, after prayer, food, sleep, travel, distress, gratitude, protection, and more) with Arabic, transliteration, translation, and Hisn al-Muslim sources.
 - **Tasbih counter** — Tap-to-count for the post-prayer dhikr plus open-ended Astaghfirullah and Salah on the Prophet ﷺ. Tabular numerals so digits don't shimmer on tick.
@@ -75,7 +79,7 @@
 - **Prayer journal** — Log each prayer as on-time / late / missed / qadha with private notes, a practice graph, streaks and what is owed. Optional "Log prayer" action right on the prayer notification, an end-of-day nudge, and tools to backfill or fill whole months at once.
 - **Hijri calendar** — Throughout, with Ramadan, Eid and Jumuʿah treatments and a Ramadan countdown on Home.
 
-### Yours, and only yours
+### Yours
 
 - **Sync between your own devices** — Pair by scanning a QR code (or copying it), and your journal, streaks, fasts, notes and settings stay in step. No account, no server of ours: the devices write **sealed** files into a folder you already keep in sync — Syncthing, Nextcloud, whatever you use — and each device holds a key that never leaves it, so what passes through that folder is unreadable to anything but the devices you paired. Choose how often it runs: on open, every 15 minutes, hourly, daily, or never.
 - **Backup and restore** — Export everything as a file you keep, and import it back, on any platform.

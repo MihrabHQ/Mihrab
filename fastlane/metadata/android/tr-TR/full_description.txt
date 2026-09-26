@@ -1,4 +1,4 @@
-Mihrab beş vakit namazı elinizin altında tutar: sıradaki namazı ve canlı geri sayımı gösteren sakin bir ana ekran, isteğe bağlı ezan hatırlatmaları, tam aylık bir takvim ve ana ekran widget'ları.
+Mihrab, bir Müslümanın gününe eşlik eden sakin bir yoldaştır: namazlar, Kuran ve aralarındaki zikir, gizliliğinize saygılı tek bir uygulamada. Mushafta basılı tutulan bir kelime tek başına okunur, okunan kelime sayfada parlar, tecvid Hafs ve Verş rivayetlerinde renkli gösterilir ve her şey kendi cihazlarınız arasında eşitlenir. Hesap yok, reklam yok; sizinle ilgili hiçbir şey telefondan çıkmaz.
 
 Öne çıkan özellikler:
 - Bugünün, önümüzdeki haftanın ve tam bir ayın namaz vakitleri — görsel ya da PDF olarak paylaşılabilir
