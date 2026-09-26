@@ -98,3 +98,18 @@ describe('the App Group is read by path', () => {
     for (const r of reads) expect(r).toContain('"$GROUP_DOMAIN"');
   });
 });
+
+describe('a locked Mac does not stop a release', () => {
+  it('reports the payload instead of requiring it when the console is locked', () => {
+    // 2.27.0 stopped twice on 2026-09-26 on a healthy app, because nothing
+    // reaches the foreground on a locked Mac and so no payload is written.
+    expect(sh).toMatch(/console_locked\(\) \{/);
+    expect(sh).toContain('IOConsoleLocked');
+    expect(sh).toMatch(/elif console_locked; then/);
+  });
+
+  it('puts the widget data back that it deleted', () => {
+    expect(sh).toMatch(/defaults export "\$GROUP_DOMAIN" "\$GROUP_BACKUP"/);
+    expect(sh).toMatch(/defaults import "\$GROUP_DOMAIN" "\$GROUP_BACKUP"/);
+  });
+});

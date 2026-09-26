@@ -417,7 +417,11 @@ sleep 3
 # Clear the payload so the check below cannot be satisfied by a value some
 # earlier build left behind. The app rewrites it within a few seconds of
 # launch, so this costs the local widget a blink and nothing else.
+# Kept first, so a locked Mac — where the check below cannot expect a new
+# one — gets its own widget's data back instead of a blank card.
+GROUP_BACKUP=$(mktemp -t mihrab-group-prefs)
 if [ "$SIGN_IDENTITY" != "-" ]; then
+  defaults export "$GROUP_DOMAIN" "$GROUP_BACKUP" 2>/dev/null || true
   defaults delete "$GROUP_DOMAIN" prayer_widget_payload_v1 2>/dev/null || true
 fi
 # `open -g -j`: launch in the background and hidden. Running the executable
@@ -504,9 +508,37 @@ payload_landed() {  # $1 = how many five-second looks to take
   return 1
 }
 
+# IS ANYONE AT THE MAC? The payload is written by a screen that only runs
+# when the app's scene reaches the foreground, and on a LOCKED Mac nothing
+# does — hidden launch or visible. 2.27.0 stopped here twice on
+# 2026-09-26 for exactly that, on an app that then passed the moment the
+# screen was unlocked. A release must not need someone at the keyboard, so
+# on a locked console the payload is REPORTED, not required: the launch
+# above still proves the bundle runs (the AMFI kill this gate was written
+# for), and the entitlement check above still proves both sides share the
+# group. On an unlocked Mac the payload is required exactly as before.
+console_locked() {
+  local state
+  state="$(ioreg -n Root -d1 -a 2>/dev/null || true)"
+  case "$state" in
+    *"<key>IOConsoleLocked</key>"*) ;;
+    *) return 1 ;;
+  esac
+  state="${state#*<key>IOConsoleLocked</key>}"
+  state="${state#"${state%%[![:space:]]*}"}"
+  case "$state" in "<true/>"*) return 0 ;; *) return 1 ;; esac
+}
+
 if [ "$SIGN_IDENTITY" != "-" ]; then
   if payload_landed 12; then
     echo "  ▸ App Group holds today's payload — the widget will have data."
+  elif console_locked; then
+    echo "  ⚠ the Mac is locked, so the app never reached the foreground and" >&2
+    echo "    wrote no widget payload. Not required on a locked Mac: the app" >&2
+    echo "    launched and stayed up, and app and extension share $GROUP_NAME." >&2
+    if [ -s "$GROUP_BACKUP" ]; then
+      defaults import "$GROUP_DOMAIN" "$GROUP_BACKUP" 2>/dev/null || true
+    fi
   else
     # THE HIDDEN LAUNCH IS A SUSPECT BEFORE THE APP IS.
     #
@@ -551,7 +583,7 @@ if [ "$SIGN_IDENTITY" != "-" ]; then
 fi
 kill "$LAUNCH_PID" 2>/dev/null || true
 wait "$LAUNCH_PID" 2>/dev/null || true
-rm -f "$LAUNCH_LOG"
+rm -f "$LAUNCH_LOG" "$GROUP_BACKUP"
 
 # THE EXTENSION THE LAUNCH SPAWNED, TOO. Killing the app is not killing the
 # widget: registering this copy is enough for chronod to ask it for a
