@@ -1053,3 +1053,15 @@ stop was LaunchServices re-registering the build products seconds after
 the sweep; the ghost check now sweeps again before it fails. And pull
 before starting: the daily dataset bot had pushed twice while the release
 waited, and each time preflight refused, correctly.
+
+## 2.27.1 (282) — 2026-09-26
+
+Ran clean on the first attempt.
+
+Changed the release cycle itself:
+
+  - `scripts/build-catalyst.sh`
+  - `scripts/release.sh`
+  - `scripts/verify-release.sh`
+
+**Lesson:** _(unfilled)_

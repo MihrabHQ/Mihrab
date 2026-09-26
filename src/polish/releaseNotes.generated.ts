@@ -19,6 +19,16 @@ export type ReleaseNote = {
 
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
+    code: 282,
+    version: '2.27.1',
+    date: '2026-09-26',
+    notes: {
+      en: '• Shared month sheets carry the new tagline: Mihrab — The Muslim Companion.\n• The app\'s links to its source, releases and downloads now point to its new home, github.com/MihrabHQ/Mihrab. The old links keep working.',
+      ar: '• جداول الشهر المشارَكة تحمل الوصف الجديد: محراب — رفيق المسلم.\n• روابط التطبيق إلى الشيفرة المصدرية والإصدارات والتنزيلات تشير الآن إلى موطنه الجديد github.com/MihrabHQ/Mihrab، والروابط القديمة ما زالت تعمل.',
+      sv: '• Delade månadsblad har fått den nya undertiteln: Mihrab — Muslimens följeslagare.\n• Appens länkar till källkod, versioner och nedladdningar pekar nu på dess nya hem, github.com/MihrabHQ/Mihrab. De gamla länkarna fungerar fortfarande.',
+    },
+  },
+  {
     code: 281,
     version: '2.27.0',
     date: '2026-09-26',
