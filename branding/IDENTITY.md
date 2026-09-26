@@ -168,6 +168,12 @@ mention and *القرآن* after, *المصحف المدني*, *الأذكار*,
 | GitHub | README intro, the repo's About line, the MihrabHQ org description and its `profile/README.md` | About: one sentence |
 | In the app | `share.tagline` on shared images | one short line |
 
+**Play's short description carries no price or promotion words** — no
+*free*, no *no ads*, in any language. Play flags them ("must not contain
+keywords that indicate price or promotion") and an app that trips it
+cannot be featured. Say *private* instead; the full description is where
+"no ads" belongs.
+
 `__tests__/storeListings.test.ts` enforces the store limits and that no
 language is silently still in English; it fails the release before a store
 would reject an upload.
