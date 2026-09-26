@@ -16,7 +16,7 @@ set -uo pipefail
 
 TAG="${1:?usage: verify-release.sh vX.Y.Z}"
 VERSION="${TAG#v}"
-REPO="Hassan-PS/Mihrab"
+REPO="MihrabHQ/Mihrab"
 TAP="$HOME/git/homebrew-tap/Casks/mihrab.rb"
 FAILED=0
 PENDING=0

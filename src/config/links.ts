@@ -18,4 +18,4 @@ export const MIHRAB_WEBSITE = 'https://mihrab.elghamri.se';
 export const MIHRAB_WEBSITE_LABEL = 'mihrab.elghamri.se';
 
 /** The source. Still linked from the attributions, where it belongs. */
-export const MIHRAB_REPO = 'https://github.com/Hassan-PS/Mihrab';
+export const MIHRAB_REPO = 'https://github.com/MihrabHQ/Mihrab';

@@ -47,7 +47,7 @@ export type MoroccoCity = {
 async function getJson(url: string): Promise<unknown> {
   const res = await fetch(url, {
     headers: {
-      'user-agent': 'Mihrab prayer-times dataset (+https://github.com/Hassan-PS/Mihrab)',
+      'user-agent': 'Mihrab prayer-times dataset (+https://github.com/MihrabHQ/Mihrab)',
       accept: 'application/json',
     },
   });

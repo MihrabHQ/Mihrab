@@ -91,7 +91,7 @@ without anyone needing to go to court.
 ## Asking
 
 Email **mihrab@elghamri.se**, or open an issue at
-<https://github.com/Hassan-PS/Mihrab/issues> if the matter is not private.
+<https://github.com/MihrabHQ/Mihrab/issues> if the matter is not private.
 Permission for reasonable uses is usually easy to get; the point of this page
 is to stop passing-off, not to stop people building things.
 

@@ -38,8 +38,8 @@ export function AttributionsSettingsScreen() {
       label: t('attributions.mushafImages', {
         defaultValue: 'Mushaf page images (604)',
       }),
-      sub: 'Hassan-PS/Mihrab · KFGQPC fonts · via quran/quran.com-images',
-      url: 'https://github.com/Hassan-PS/Mihrab/releases/tag/mushaf-assets-v2',
+      sub: 'MihrabHQ/Mihrab · KFGQPC fonts · via quran/quran.com-images',
+      url: 'https://github.com/MihrabHQ/Mihrab/releases/tag/mushaf-assets-v2',
     },
     {
       label: t('attributions.tajweedRules', {

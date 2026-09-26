@@ -11,7 +11,7 @@
 # Requires: gh (authenticated), python3.
 set -uo pipefail
 
-REPO="Hassan-PS/Mihrab"
+REPO="MihrabHQ/Mihrab"
 BASELINE="$HOME/.mihrab-watch-baseline.json"
 FULL="${1:-}"
 

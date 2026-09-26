@@ -102,7 +102,7 @@ function once(
         timeout: timeoutMs,
         headers: {
           'user-agent':
-            'Mihrab prayer-times dataset (+https://github.com/Hassan-PS/Mihrab)',
+            'Mihrab prayer-times dataset (+https://github.com/MihrabHQ/Mihrab)',
           'accept-language': 'ar,fr',
           ...(payload
             ? {

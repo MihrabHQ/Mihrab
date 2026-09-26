@@ -18,7 +18,7 @@ import { getAndroidDistribution } from '../distribution';
 const PLAY_MARKET_URL = 'market://details?id=com.prayer_times';
 const PLAY_WEB_URL =
   'https://play.google.com/store/apps/details?id=com.prayer_times';
-const GITHUB_URL = 'https://github.com/Hassan-PS/Mihrab';
+const GITHUB_URL = 'https://github.com/MihrabHQ/Mihrab';
 
 type RateAppNative = { requestReview?: () => void };
 

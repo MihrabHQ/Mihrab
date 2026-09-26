@@ -23,7 +23,7 @@ set -uo pipefail
 
 DIR="${1:?usage: upload_qcf_fonts.sh <font-dir> [tag]}"
 TAG="${2:-mushaf-fonts-v2}"
-REPO="Hassan-PS/Mihrab"
+REPO="MihrabHQ/Mihrab"
 
 # GitHub allows a thousand assets per release; the two tajwīd palettes are
 # twelve hundred files, so each palette is a release of its own.

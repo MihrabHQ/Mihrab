@@ -11,7 +11,7 @@
  * Forks: change the owner/repo to your own mirror.
  */
 export const IFIS_DATASET_BASE_URL =
-  'https://raw.githubusercontent.com/Hassan-PS/Mihrab/main/data/prayer-times/v1';
+  'https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/data/prayer-times/v1';
 
 /** Refresh a cached city file when the local copy is older than this (a
  *  fallback for when the index poll can't reach the server). */
@@ -58,7 +58,7 @@ export function nextServerRunAfter(from: Date = new Date()): Date {
 // important, which is why the poll interval here is tighter than Sweden's.
 
 export const HABOUS_DATASET_BASE_URL =
-  'https://raw.githubusercontent.com/Hassan-PS/Mihrab/main/data/prayer-times/morocco/v1';
+  'https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/data/prayer-times/morocco/v1';
 
 /** Fallback refresh when the index poll cannot reach the server. Shorter
  *  than Sweden's three days because the window itself is shorter. */

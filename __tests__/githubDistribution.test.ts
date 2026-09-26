@@ -38,13 +38,13 @@ describe('Rate Mihrab', () => {
     const { rateApp, openURL } = load('github');
     await rateApp();
     expect(openURL).toHaveBeenCalledTimes(1);
-    expect(openURL).toHaveBeenCalledWith('https://github.com/Hassan-PS/Mihrab');
+    expect(openURL).toHaveBeenCalledWith('https://github.com/MihrabHQ/Mihrab');
   });
 
   it('opens GitHub from the F-Droid build', async () => {
     const { rateApp, openURL } = load('fdroid');
     await rateApp();
-    expect(openURL).toHaveBeenCalledWith('https://github.com/Hassan-PS/Mihrab');
+    expect(openURL).toHaveBeenCalledWith('https://github.com/MihrabHQ/Mihrab');
   });
 
   it('opens the Play listing from the Play build', async () => {

@@ -14,8 +14,8 @@
   <a href="https://apps.apple.com/us/app/prayer-salah-times-qibla/id6762085256"><img src="branding/badges/appstore.png" alt="Download on the App Store" height="70"></a>
   <a href="https://play.google.com/store/apps/details?id=com.prayer_times"><img src="branding/badges/googleplay.png" alt="Get it on Google Play" height="70"></a>
   <a href="https://f-droid.org/packages/com.prayer_times/"><img src="branding/badges/fdroid.png" alt="Get it on F-Droid" height="70"></a>
-  <a href="https://github.com/Hassan-PS/Mihrab/releases"><img src="branding/badges/github.png" alt="Get it on GitHub" height="70"></a>
-  <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22com.prayer_times%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2FHassan-PS%2FMihrab%22%2C%22author%22%3A%22Hassan-PS%22%2C%22name%22%3A%22Mihrab%22%7D"><img src="branding/badges/obtainium.png" alt="Add to Obtainium" height="70"></a>
+  <a href="https://github.com/MihrabHQ/Mihrab/releases"><img src="branding/badges/github.png" alt="Get it on GitHub" height="70"></a>
+  <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22com.prayer_times%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2FMihrabHQ%2FMihrab%22%2C%22author%22%3A%22Hassan-PS%22%2C%22name%22%3A%22Mihrab%22%7D"><img src="branding/badges/obtainium.png" alt="Add to Obtainium" height="70"></a>
 
 </div>
 
@@ -98,9 +98,9 @@
 | Platform | Link |
 |---|---|
 | **iOS** | [App Store](https://apps.apple.com/us/app/prayer-salah-times-qibla/id6762085256) |
-| **macOS (Homebrew)** | `brew install --cask hassan-ps/tap/mihrab` — native Mac Catalyst build from [GitHub Releases](https://github.com/Hassan-PS/Mihrab/releases) |
-| **Android APK** | [GitHub Releases](https://github.com/Hassan-PS/Mihrab/releases) → `Mihrab-vX.Y.Z.apk` (ARM phones, 32- and 64-bit) |
-| **Android (Obtainium)** | [Add to Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/Hassan-PS/Mihrab) — auto-updates directly from GitHub Releases |
+| **macOS (Homebrew)** | `brew install --cask hassan-ps/tap/mihrab` — native Mac Catalyst build from [GitHub Releases](https://github.com/MihrabHQ/Mihrab/releases) |
+| **Android APK** | [GitHub Releases](https://github.com/MihrabHQ/Mihrab/releases) → `Mihrab-vX.Y.Z.apk` (ARM phones, 32- and 64-bit) |
+| **Android (Obtainium)** | [Add to Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/MihrabHQ/Mihrab) — auto-updates directly from GitHub Releases |
 | **Google Play** | [Google Play](https://play.google.com/store/apps/details?id=com.prayer_times) |
 | **F-Droid** | [f-droid.org/packages/com.prayer_times](https://f-droid.org/packages/com.prayer_times/) |
 
@@ -158,7 +158,7 @@ Three kinds of support are welcome, and they are worth more:
 - **Dua** — for me and my parents, and for everyone whose work this is built on.
 - **Constructive feedback** — a prayer time that disagrees with your masjid, a
   translation that reads wrong, a screen that fights you. Say what you saw and
-  what you expected in [an issue](https://github.com/Hassan-PS/Mihrab/issues);
+  what you expected in [an issue](https://github.com/MihrabHQ/Mihrab/issues);
   that is how the bugs get found.
 - **Code** — pull requests, translations, and reproducible bug reports. The
   build instructions are above and the whole thing is AGPL.

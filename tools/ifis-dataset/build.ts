@@ -108,7 +108,7 @@ async function fetchDay(city: string, dateKey: string): Promise<DatasetDayTuple 
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
           Accept: 'text/html,*/*',
-          'User-Agent': 'Mihrab dataset builder (+https://github.com/Hassan-PS/Mihrab)',
+          'User-Agent': 'Mihrab dataset builder (+https://github.com/MihrabHQ/Mihrab)',
           Origin: 'https://www.islamiskaforbundet.se',
           Referer: 'https://www.islamiskaforbundet.se/bonetider/',
         },

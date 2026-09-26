@@ -74,12 +74,12 @@ const BADGES = [
   {
     img: 'github',
     alt: 'GitHub',
-    href: 'https://github.com/Hassan-PS/Mihrab/releases/latest',
+    href: 'https://github.com/MihrabHQ/Mihrab/releases/latest',
   },
   {
     img: 'obtainium',
     alt: 'Obtainium',
-    href: 'https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22com.prayer_times%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2FHassan-PS%2FMihrab%22%2C%22author%22%3A%22Hassan-PS%22%2C%22name%22%3A%22Mihrab%22%7D',
+    href: 'https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22com.prayer_times%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2FMihrabHQ%2FMihrab%22%2C%22author%22%3A%22Hassan-PS%22%2C%22name%22%3A%22Mihrab%22%7D',
   },
 ];
 
@@ -234,7 +234,7 @@ function renderPage(code, langs, version) {
       'https://play.google.com/store/apps/details?id=com.prayer_times',
       'https://apps.apple.com/us/app/prayer-salah-times-qibla/id6762085256',
       'https://f-droid.org/packages/com.prayer_times/',
-      'https://github.com/Hassan-PS/Mihrab',
+      'https://github.com/MihrabHQ/Mihrab',
     ],
   };
   const faq = {
@@ -331,7 +331,7 @@ ${t.chips.map(c => `      <li>${check}${esc(c)}</li>`).join('\n')}
       <span>${esc(t.labels.version)} ${v}</span> <span class="dot" aria-hidden="true">•</span>
       <span>iOS, Android, macOS</span> <span class="dot" aria-hidden="true">•</span>
       <span>AGPL-3.0-or-later</span> <span class="dot" aria-hidden="true">•</span>
-      <a href="https://github.com/Hassan-PS/Mihrab">${esc(t.labels.source)}</a>
+      <a href="https://github.com/MihrabHQ/Mihrab">${esc(t.labels.source)}</a>
     </p>
   </div>
 </header>
@@ -427,8 +427,8 @@ ${t.faq.items
       <div>
         <h2>${esc(t.footer.project.h2)}</h2>
         <ul>
-          <li><a href="https://github.com/Hassan-PS/Mihrab/issues">${esc(t.footer.project.issues)}</a></li>
-          <li><a href="https://github.com/Hassan-PS/Mihrab/blob/main/CHANGELOG.md">${esc(t.footer.project.changelog)}</a></li>
+          <li><a href="https://github.com/MihrabHQ/Mihrab/issues">${esc(t.footer.project.issues)}</a></li>
+          <li><a href="https://github.com/MihrabHQ/Mihrab/blob/main/CHANGELOG.md">${esc(t.footer.project.changelog)}</a></li>
         </ul>
       </div>
     </div>

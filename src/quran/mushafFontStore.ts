@@ -169,7 +169,7 @@ export function fontFilePath(page: number, set: MushafFontSet = 'v2'): string {
 }
 
 export function fontUrl(page: number, set: MushafFontSet = 'v2'): string {
-  return `https://github.com/Hassan-PS/Mihrab/releases/download/${
+  return `https://github.com/MihrabHQ/Mihrab/releases/download/${
     SETS[set].release
   }/${fontFileName(page, set)}`;
 }

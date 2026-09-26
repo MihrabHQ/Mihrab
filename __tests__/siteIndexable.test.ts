@@ -113,7 +113,7 @@ describe('the app is an entity, not a word', () => {
         expect.stringContaining('play.google.com'),
         expect.stringContaining('apps.apple.com'),
         expect.stringContaining('f-droid.org'),
-        expect.stringContaining('github.com/Hassan-PS/Mihrab'),
+        expect.stringContaining('github.com/MihrabHQ/Mihrab'),
       ]),
     );
   });

@@ -71,10 +71,10 @@ describe('the tajwīd font sets', () => {
       dark: 'mushaf-fonts-v4-tajweed-dark',
     });
     expect(fontUrl(1, 'tajweed-light')).toBe(
-      'https://github.com/Hassan-PS/Mihrab/releases/download/mushaf-fonts-v4-tajweed-light/QCF4T001L.ttf',
+      'https://github.com/MihrabHQ/Mihrab/releases/download/mushaf-fonts-v4-tajweed-light/QCF4T001L.ttf',
     );
     expect(fontUrl(604, 'tajweed-dark')).toBe(
-      'https://github.com/Hassan-PS/Mihrab/releases/download/mushaf-fonts-v4-tajweed-dark/QCF4T604D.ttf',
+      'https://github.com/MihrabHQ/Mihrab/releases/download/mushaf-fonts-v4-tajweed-dark/QCF4T604D.ttf',
     );
     expect(fontUrl(1)).toContain('/mushaf-fonts-v2/QCF2001.ttf');
   });

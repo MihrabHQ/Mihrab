@@ -77,7 +77,7 @@
 # having already succeeded.
 set -uo pipefail
 
-REPO="Hassan-PS/Mihrab"
+REPO="MihrabHQ/Mihrab"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 TAP="$HOME/git/homebrew-tap/Casks/mihrab.rb"
 GRADLE_FILE="$ROOT/android/app/build.gradle"

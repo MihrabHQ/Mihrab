@@ -579,7 +579,7 @@ export function ayahAudioFileName(surah: number, ayah: number): string {
 
 /** Word-timing JSON for a reciter, hosted on this repo's release. */
 export function reciterTimingsUrl(reciter: Reciter): string {
-  return `https://github.com/Hassan-PS/Mihrab/releases/download/quran-timings-v1/${reciter.folder}.timings.json`;
+  return `https://github.com/MihrabHQ/Mihrab/releases/download/quran-timings-v1/${reciter.folder}.timings.json`;
 }
 
 export const RECITATION_ATTRIBUTION =

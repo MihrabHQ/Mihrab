@@ -16,8 +16,8 @@ Add com.prayer_times (Prayer Times)
 - **Package ID:** `com.prayer_times`
 - **Name:** Prayer Times
 - **License:** AGPL-3.0-or-later
-- **Source:** https://github.com/Hassan-PS/Mihrab
-- **Upstream F-Droid notes:** [`contrib/fdroid/`](https://github.com/Hassan-PS/Mihrab/tree/main/contrib/fdroid)
+- **Source:** https://github.com/MihrabHQ/Mihrab
+- **Upstream F-Droid notes:** [`contrib/fdroid/`](https://github.com/MihrabHQ/Mihrab/tree/main/contrib/fdroid)
 
 ### Build
 
