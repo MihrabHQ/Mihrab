@@ -22,6 +22,30 @@ RCT_EXPORT_METHOD(setData
                   : (RCTPromiseResolveBlock)resolve rejecter
                   : (RCTPromiseRejectBlock)reject)
 {
+  [PrayerWidget storePayload:json v2:nil];
+  resolve(nil);
+}
+
+/**
+ * v1 and the widget contract's v2 (docs/rewrite-plan.md, step 1.4), in one
+ * write. One write because the extension reads v2 in preference to v1
+ * (`loadStoredWidgetPayload`): a v2 written by an earlier call and left
+ * behind would outrank a newer v1. That is also why plain `setData` removes
+ * v2 — an older JS bundle, or the app's fallback when v2 could not be built,
+ * must not leave the widgets on a payload it did not write.
+ */
+RCT_EXPORT_METHOD(setDataV2
+                  : (NSString *)json v2
+                  : (NSString *)v2 resolver
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject)
+{
+  [PrayerWidget storePayload:json v2:v2];
+  resolve(nil);
+}
+
++ (void)storePayload:(NSString *)json v2:(nullable NSString *)v2
+{
   // The language travels beside the payload rather than being dug back out of
   // it on every draw. Six widget kinds read it, and re-decoding a hundred
   // kilobytes of JSON to find one string is work a widget cannot afford —
@@ -43,6 +67,11 @@ RCT_EXPORT_METHOD(setData
       MihrabAppGroupDefaults();
   NSUserDefaults *store = group != nil ? group : [NSUserDefaults standardUserDefaults];
   [store setObject:json forKey:@"prayer_widget_payload_v1"];
+  if (v2.length > 0) {
+    [store setObject:v2 forKey:@"prayer_widget_payload_v2"];
+  } else {
+    [store removeObjectForKey:@"prayer_widget_payload_v2"];
+  }
   // Cleared rather than left behind when a payload arrives without one: an
   // older app writing to a newer extension should give the phone's language
   // back, not keep whatever was last set.
@@ -57,7 +86,6 @@ RCT_EXPORT_METHOD(setData
   // reload below is a race against it: flush first, then ask.
   [store synchronize];
   [WidgetTimelineReloader reloadAllTimelinesIfAvailable];
-  resolve(nil);
 }
 
 /**

@@ -18,6 +18,9 @@ import {
   formatContractMinutes,
   minutesFromHHmm,
 } from '../src/widget/wallClock';
+import type { WidgetContractPayload } from '../src/widget/contract.generated';
+import { widgetPayloadV1FromV2 } from '../src/widget/widgetPayloadV2';
+import { widgetScenarios } from './scenarios';
 
 type Json = null | boolean | number | string | Json[] | { [k: string]: Json };
 
@@ -43,11 +46,11 @@ const DAY_1 = {
   ],
   sunrise: ROW('Sunrise', 425),
   extras: [ROW('Lastthird', 150, 'الثلث الأخير')],
+  estimated: false,
 };
 
 const FULL_PAYLOAD = {
   schemaVersion: 2,
-  builtAt: 1759000000000,
   language: 'ar',
   clock: { hour12: true, am: 'ص', pm: 'م', periodFirst: false },
   locationName: 'Malmö',
@@ -156,7 +159,6 @@ export const DECODE_CASES: DecodeCase[] = [
     type: 'Payload',
     input: J({
       ...FULL_PAYLOAD,
-      builtAt: 'yesterday',
       language: 5,
       clock: '12h',
       locationName: null,
@@ -201,7 +203,7 @@ export const DECODE_CASES: DecodeCase[] = [
     name: 'whole numbers written with a fraction of zero still read',
     type: 'Payload',
     input:
-      '{"schemaVersion":2.0,"builtAt":1759000000000.0,"days":[{"dateKey":"2026-09-28","prayers":[{"key":"Fajr","minutes":312.0}]}]}',
+      '{"schemaVersion":2.0,"days":[{"dateKey":"2026-09-28","utcOffsetMinutes":120.0,"prayers":[{"key":"Fajr","minutes":312.0}]}]}',
   },
   {
     name: 'unknown enum values fall back; unknown keys are ignored',
@@ -489,7 +491,30 @@ function inZones<R>(jobs: { zone: string; job: ZoneJob }[]): R[] {
   return out;
 }
 
-export function buildFixtures() {
+/**
+ * v2 → v1 at a moment, the way the native adapters must do it. English
+ * scenarios only, and each day's offset pinned: the adapter ignores both,
+ * and neither may make the recorded file differ between machines.
+ */
+async function adaptCases() {
+  const scenarios = (await widgetScenarios()).filter(s => s.fixture);
+  return scenarios.map(s => {
+    const v2 = JSON.parse(JSON.stringify(s.v2)) as WidgetContractPayload;
+    for (const d of v2.days) d.utcOffsetMinutes = 120;
+    const read = Contract.readWidgetContractPayload(v2);
+    if (!read) throw new Error(`scenario "${s.name}" did not read`);
+    return {
+      name: s.name,
+      now: s.now,
+      input: JSON.stringify(v2),
+      expected: JSON.parse(
+        JSON.stringify(widgetPayloadV1FromV2(read, s.now) ?? null),
+      ),
+    };
+  });
+}
+
+export async function buildFixtures() {
   const epochs = inZones<number>(
     INSTANT_CASES.map(c => ({
       zone: c.zone,
@@ -521,6 +546,7 @@ export function buildFixtures() {
   return {
     about:
       'GENERATED from contract-tests/cases.ts by `npm run contract-fixtures` — do not edit. The answers the app gives; Swift and Kotlin must give the same.',
+    adapt: await adaptCases(),
     decode: DECODE_CASES.map(c => ({
       ...c,
       expected: decode(c.type, c.input),

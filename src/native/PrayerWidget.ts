@@ -10,6 +10,15 @@ export interface PrayerWidgetInterface {
   /** Push a JSON-serialised WidgetPrayerPayload to the home-screen widget. */
   setData(json: string): Promise<void>;
 
+  /**
+   * Push v1 and the widget contract's v2 (docs/rewrite-plan.md, step 1.4)
+   * in one write, so the two can never describe different moments: a v2
+   * left behind by an older write would be read in preference to a newer v1.
+   * `setData` alone clears any v2 for the same reason. Absent on a binary
+   * older than the one that added it.
+   */
+  setDataV2?(json: string, v2: string): Promise<void>;
+
   // ── Android appearance ────────────────────────────────────────────────────
   setAndroidWidgetAppearance?(
     opacity: number,
@@ -72,14 +81,18 @@ export interface PrayerWidgetInterface {
  * (e.g. JS-only test environments).
  */
 export function getPrayerWidgetModule(): PrayerWidgetInterface | null {
-  const legacy = NativeModules.PrayerWidget as PrayerWidgetInterface | undefined;
+  const legacy = NativeModules.PrayerWidget as
+    | PrayerWidgetInterface
+    | undefined;
   if (legacy?.setData) {
     return legacy;
   }
   try {
     // TurboModuleRegistry.get requires T to extend TurboModule; cast via unknown
     // since PrayerWidget is a legacy NativeModule, not a TurboModule spec.
-    const turbo = TurboModuleRegistry.get('PrayerWidget') as PrayerWidgetInterface | null;
+    const turbo = TurboModuleRegistry.get(
+      'PrayerWidget',
+    ) as PrayerWidgetInterface | null;
     if (turbo) return turbo;
   } catch {
     // TurboModuleRegistry.get can throw when the module is not registered.

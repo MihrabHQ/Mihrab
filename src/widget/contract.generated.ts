@@ -27,8 +27,6 @@ export type WidgetContractTasbihAction = 'inc' | 'reset' | 'next';
 export type WidgetContractPayload = {
   /** Always 2 for this shape. */
   schemaVersion: number;
-  /** Epoch ms when the app wrote it. */
-  builtAt?: number;
   /**
    * The app's language tag (`sv`, `ar`). Native chrome resolves its own
    * strings against it, so one widget never speaks two languages.
@@ -91,9 +89,15 @@ export type WidgetContractDay = {
   /** Absent when the user turned Sunrise off. */
   sunrise?: WidgetContractRow | null;
   /**
-   * The night marks the user turned on, each on the calendar date it falls.
+   * The night marks the user turned on — Islamic Midnight, the Last Third,
+   * the First Third — as the app groups them with this day.
    */
   extras?: WidgetContractRow[];
+  /**
+   * True for a day the app had no times for, filled with the day before's.
+   * Only its Fajr is offered as "next", exactly as the app does.
+   */
+  estimated?: boolean;
 };
 
 /** One time on one day. */
@@ -105,8 +109,10 @@ export type WidgetContractRow = {
   /** Short label for narrow layouts. */
   abbr?: string;
   /**
-   * Minutes after local midnight of the day, 0–1439. Null when the time does
-   * not occur at this latitude; draw a dash.
+   * Minutes after local midnight of the day: 0–1439, or 1440 and more for a
+   * night mark that falls after the midnight ending the day (the First Third,
+   * some nights). Null when the time does not occur at this latitude; draw a
+   * dash.
    */
   minutes?: number | null;
 };
@@ -309,7 +315,6 @@ export function readWidgetContractPayload(
   if (daysRead == null) return null;
   const out: WidgetContractPayload = {
     schemaVersion: schemaVersionRead,
-    builtAt: wcLong(input.builtAt) ?? 0,
     language: wcString(input.language) ?? '',
     clock:
       readWidgetContractClock(input.clock) ??
@@ -358,6 +363,7 @@ export function readWidgetContractDay(
     label: wcString(input.label) ?? '',
     prayers: prayersRead,
     extras: wcList(input.extras, x => readWidgetContractRow(x)) ?? [],
+    estimated: wcBool(input.estimated) ?? false,
   };
   const utcOffsetMinutesRead = wcInt(input.utcOffsetMinutes);
   if (utcOffsetMinutesRead != null) out.utcOffsetMinutes = utcOffsetMinutesRead;

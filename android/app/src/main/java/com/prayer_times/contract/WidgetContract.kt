@@ -61,8 +61,6 @@ object WidgetContract {
   data class Payload(
     /** Always 2 for this shape. */
     val schemaVersion: Int,
-    /** Epoch ms when the app wrote it. */
-    val builtAt: Long = 0L,
     /**
      * The app's language tag (`sv`, `ar`). Native chrome resolves its own
      * strings against it, so one widget never speaks two languages.
@@ -95,7 +93,6 @@ object WidgetContract {
   ) {
     fun toJson(): JSONObject = JSONObject().apply {
       put("schemaVersion", schemaVersion)
-      put("builtAt", builtAt)
       put("language", language)
       put("clock", clock.toJson())
       put("locationName", locationName)
@@ -113,7 +110,6 @@ object WidgetContract {
         if (o == null) return null
         return Payload(
           schemaVersion = o.wcRaw("schemaVersion").wcAsInt() ?: return null,
-          builtAt = o.wcRaw("builtAt").wcAsLong() ?: 0L,
           language = o.wcString("language") ?: "",
           clock = Clock.fromJson(o.wcRaw("clock") as? JSONObject) ?: Clock(),
           locationName = o.wcString("locationName") ?: "",
@@ -195,9 +191,15 @@ object WidgetContract {
     /** Absent when the user turned Sunrise off. */
     val sunrise: Row? = null,
     /**
-     * The night marks the user turned on, each on the calendar date it falls.
+     * The night marks the user turned on — Islamic Midnight, the Last Third,
+     * the First Third — as the app groups them with this day.
      */
     val extras: List<Row> = emptyList(),
+    /**
+     * True for a day the app had no times for, filled with the day before's.
+     * Only its Fajr is offered as "next", exactly as the app does.
+     */
+    val estimated: Boolean = false,
   ) {
     fun toJson(): JSONObject = JSONObject().apply {
       put("dateKey", dateKey)
@@ -206,6 +208,7 @@ object WidgetContract {
       put("prayers", JSONArray().apply { prayers.forEach { put(it.toJson()) } })
       sunrise?.let { put("sunrise", it.toJson()) }
       put("extras", JSONArray().apply { extras.forEach { put(it.toJson()) } })
+      put("estimated", estimated)
     }
 
     companion object {
@@ -218,6 +221,7 @@ object WidgetContract {
           prayers = o.wcList("prayers") { Row.fromJson(it as? JSONObject) } ?: return null,
           sunrise = Row.fromJson(o.wcRaw("sunrise") as? JSONObject),
           extras = o.wcList("extras") { Row.fromJson(it as? JSONObject) } ?: emptyList(),
+          estimated = o.wcBool("estimated") ?: false,
         )
       }
 
@@ -239,8 +243,10 @@ object WidgetContract {
     /** Short label for narrow layouts. */
     val abbr: String = "",
     /**
-     * Minutes after local midnight of the day, 0–1439. Null when the time
-     * does not occur at this latitude; draw a dash.
+     * Minutes after local midnight of the day: 0–1439, or 1440 and more for a
+     * night mark that falls after the midnight ending the day (the First
+     * Third, some nights). Null when the time does not occur at this
+     * latitude; draw a dash.
      */
     val minutes: Int? = null,
   ) {

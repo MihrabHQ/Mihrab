@@ -74,6 +74,23 @@ for c in section("decode") {
   check(want == have, "decode \(type) — \(name)\n    want \(want)\n    have \(have)")
 }
 
+// ── v2 → the v1 the renderers draw ────────────────────────────────────────
+
+for c in section("adapt") {
+  let name = c["name"] as? String ?? "?"
+  let now = c["now"] as? [String: Any] ?? [:]
+  let input = (c["input"] as? String ?? "").data(using: .utf8)!
+  let have: Any? = (try? JSONDecoder().decode(WidgetContract.Payload.self, from: input)).flatMap {
+    WidgetPayloadV1.object(
+      from: $0,
+      todayKey: now["todayKey"] as? String ?? "",
+      nowMinutes: optionalInt(now["nowMinutes"]) ?? 0)
+  }
+  let want = canonical(c["expected"])
+  let got = canonical(have)
+  check(want == got, "adapt — \(name)\n    want \(want)\n    have \(got)")
+}
+
 // ── Time ──────────────────────────────────────────────────────────────────
 
 for c in section("hhmm") {

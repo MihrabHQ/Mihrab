@@ -247,10 +247,7 @@ struct TasbihProvider: TimelineProvider {
   }
 
   private func loadTasbih() -> WidgetPayload.Tasbih? {
-    guard let json = UserDefaults(suiteName: kSuite)?.string(forKey: kKey),
-          let data = json.data(using: .utf8),
-          let p = try? JSONDecoder().decode(WidgetPayload.self, from: data)
-    else { return nil }
+    guard let p = loadStoredWidgetPayload() else { return nil }
     // The counts survive, but "Today 231" from a payload written weeks ago
     // is some other day's total. See payloadHasExpired.
     guard !payloadHasExpired(p) else { return nil }

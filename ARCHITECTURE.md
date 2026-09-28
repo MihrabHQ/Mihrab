@@ -220,6 +220,11 @@ Every network provider response must pass through `validateTimings()` (asserts a
 ### Widget payload rollover
 After Isha, `buildWidgetPayload()` switches to tomorrow's data. iOS WidgetKit's `Provider.getTimeline()` mirrors this — when every `HH:MM` is in the past, it uses tomorrow's calendar date as the timeline base.
 
+### Widget contract (payload v2)
+`scripts/contract/widget-contract.js` describes what the app hands its widgets and what they hand back; `npm run gen-widget-contract` generates the TypeScript types and reference readers (`src/widget/contract.generated.ts`), Swift (`ios/Contract/`) and Kotlin (`android/…/contract/`). Never edit the generated files. The readers are lenient by construction: a missing or mistyped required field makes its object unreadable, anything else falls back to its default, and a list drops the elements it cannot read. Times travel as wall clock — minutes after local midnight of the day's `dateKey`, with the UTC offset they were built under — and only `WallClock` (one per platform) turns them into text or instants.
+
+The app writes v2 beside v1 in one native call (`setDataV2`; plain `setData` removes v2). The widgets read v2 when it is there and reads, through an adapter (`WidgetPayloadV1` in Swift and Kotlin) that produces the v1 JSON their renderers already draw — so the renderers are unchanged, and v1 is still the fallback. `contract-tests/` holds the cases every platform is held to: `npm run contract-fixtures` records the app's answers, `scripts/contract-test-native.sh` runs them through Swift and Kotlin, and CI runs both.
+
 ### Concurrent cache writes
 `prayerStorage.ts` serialises all `setItem` calls through `_writeMutex`. Do not bypass it — losing the mutex causes intermittent data loss when GPS and a manual refresh fire at the same time.
 

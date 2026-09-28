@@ -67,7 +67,11 @@ describe('the generated contract', () => {
     // `ruby scripts/add-ios-contract.rb` puts them there; a file in the
     // folder but in no target compiles nowhere and fails nothing.
     const pbx = readFileSync('ios/PrayerApp.xcodeproj/project.pbxproj', 'utf8');
-    for (const file of ['WidgetContract.generated.swift', 'WallClock.swift']) {
+    for (const file of [
+      'WidgetContract.generated.swift',
+      'WallClock.swift',
+      'WidgetPayloadV1.swift',
+    ]) {
       const inSources = pbx.match(
         new RegExp(
           `/\\* ${file.replace(/\./g, '\\.')} in Sources \\*/ = \\{`,

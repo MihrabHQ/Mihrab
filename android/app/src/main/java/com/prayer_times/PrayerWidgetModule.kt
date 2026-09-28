@@ -104,6 +104,23 @@ class PrayerWidgetModule(private val reactContext: ReactApplicationContext) :
 
   @ReactMethod
   fun setData(json: String, promise: Promise) {
+    store(json, null, promise)
+  }
+
+  /**
+   * v1 and the widget contract's v2 (docs/rewrite-plan.md, step 1.4), in one
+   * edit. One edit because the providers read v2 in preference to v1: a v2
+   * written by an earlier call and left behind would outrank a newer v1.
+   * That is also why plain `setData` REMOVES v2 — an older JS bundle, or the
+   * app's fallback when v2 could not be built, must not leave the widgets on
+   * a payload it did not write.
+   */
+  @ReactMethod
+  fun setDataV2(json: String, v2: String, promise: Promise) {
+    store(json, v2, promise)
+  }
+
+  private fun store(json: String, v2: String?, promise: Promise) {
     try {
       // The language travels beside the payload rather than being dug back out
       // of it on every redraw: seven providers read this, several of them more
@@ -129,7 +146,8 @@ class PrayerWidgetModule(private val reactContext: ReactApplicationContext) :
       // the half-hour period, a placement, an appearance change) is
       // untouched.
       val now = System.currentTimeMillis()
-      val unchanged = json == prefs.getString(PrayerWidgetProvider.PREFS_KEY, null)
+      val unchanged = json == prefs.getString(PrayerWidgetProvider.PREFS_KEY, null) &&
+        v2 == prefs.getString(WidgetPayloadSource.PREFS_KEY_V2, null)
       val drawnRecently = now - prefs.getLong(PREFS_LAST_FANOUT_MS, 0L) in 0..FANOUT_COALESCE_MS
       if (unchanged && drawnRecently) {
         promise.resolve(null)
@@ -138,6 +156,10 @@ class PrayerWidgetModule(private val reactContext: ReactApplicationContext) :
       prefs
         .edit()
         .putString(PrayerWidgetProvider.PREFS_KEY, json)
+        .also { e ->
+          if (v2 != null) e.putString(WidgetPayloadSource.PREFS_KEY_V2, v2)
+          else e.remove(WidgetPayloadSource.PREFS_KEY_V2)
+        }
         .putString(PrayerWidgetProvider.PREFS_LANGUAGE, language)
         .putLong(PREFS_LAST_FANOUT_MS, now)
         .apply()
