@@ -9,9 +9,9 @@ import ReactAppDependencyProvider
  The WINDOW is not made here any more. It belongs to `SceneDelegate` below,
  because iOS 27 refuses to launch an app built with its SDK that has no
  scene: UIKit stops it at launch with "UIScene life cycle is required for
- apps built with this SDK". That is exactly what 2.25.0 to 2.27.1 did on
- iOS/iPadOS 27, the first builds archived with Xcode 27 — App Review
- rejected 2.27.1 for it on an iPad Air, and 2.27.0 was already live.
+ apps built with this SDK". That is what every build from 2.22.0 to
+ 2.27.1 did on iOS/iPadOS 27 (all but 2.24.0 were built with Xcode 27) —
+ App Review rejected 2.27.1 for it on an iPad Air, and 2.27.0 was live.
 
  What stays here is what is per-process, not per-window: the factory, and
  the background task, which iOS requires registered before launch ends.
