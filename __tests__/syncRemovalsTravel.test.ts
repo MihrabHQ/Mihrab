@@ -25,18 +25,20 @@ import { join } from 'path';
 import {
   __resetQuranStateForTests,
   activeKhatmah,
-  addBookmark,
   clearKhatmahPosition,
   getQuranState,
   isKhatmahPageDone,
   khatmahCurrentPage,
   recordKhatmahPageTurn,
-  removeBookmark,
   setKhatmahPosition,
   startKhatmah,
   toggleKhatmahPageDone,
-  toggleStar,
 } from '../src/quran/quranState';
+import {
+  addBookmark,
+  removeBookmark,
+  toggleStar,
+} from '../src/quran/readerMarks';
 import {
   DEFAULT_QURAN_STATE,
   mergeRemovals,

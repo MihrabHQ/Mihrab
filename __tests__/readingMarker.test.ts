@@ -15,17 +15,19 @@ import {
   __resetQuranStateForTests,
   activeKhatmah,
   coerceQuranState,
-  drawnReadingPosition,
   getQuranState,
-  isKhatmahPage,
   khatmahCurrentPage,
-  readingContinueTarget,
-  recordReading,
   setKhatmahPosition,
-  setReadingPosition,
   startKhatmah,
   type QuranState,
 } from '../src/quran/quranState';
+import {
+  drawnReadingPosition,
+  isKhatmahPage,
+  readingContinueTarget,
+  recordReading,
+  setReadingPosition,
+} from '../src/quran/readerMarks';
 import { ayahEndInk, ayahTint } from '../src/quran/ayahMarks';
 import { lineMarks } from '../src/quran/MushafTextPage';
 import type { MushafLine, MushafWord } from '../src/quran/mushafLayout';

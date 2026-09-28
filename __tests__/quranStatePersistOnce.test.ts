@@ -11,9 +11,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   __resetQuranStateForTests,
   getQuranState,
-  setLastRead,
-  toggleStar,
 } from '../src/quran/quranState';
+import { setLastRead, toggleStar } from '../src/quran/readerMarks';
 
 /** Past the microtask the write is queued on, and the write itself. */
 const flush = () => new Promise<void>(r => setTimeout(r, 0));

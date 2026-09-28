@@ -72,18 +72,20 @@ import {
   setKhatmahDeadline,
   setKhatmahDuration,
   khatmahPages,
-  removeBookmark,
   resetKhatmahAll,
   resetKhatmahToday,
-  setBookmarkFollows,
   setQuranPrefs,
   startKhatmah,
   stepKhatmahBack,
-  toggleStar,
   useQuranState,
   BOOKMARK_COLORS,
   KHATMAH_TOTAL_AYAHS,
 } from '../quran/quranState';
+import {
+  removeBookmark,
+  setBookmarkFollows,
+  toggleStar,
+} from '../quran/readerMarks';
 import { loadTafsir, resolveTafsirEdition } from '../quran/tafsir';
 import { useIslamicDay } from '../hijri/useIslamicDay';
 import { selectQuranCardState } from '../quran/quranCardState';

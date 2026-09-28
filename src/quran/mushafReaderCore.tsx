@@ -46,20 +46,22 @@ import type { KhatmahPages } from './quranState';
 import {
   KHATMAH_COLOR,
   activeKhatmah,
-  moveSessionToPage,
-  drawnReadingPosition,
   khatmahDayAnchor,
   khatmahFinishTarget,
   khatmahMarkerAyah,
   khatmahPages,
   recordKhatmahPageTurn,
-  recordReading,
   setQuranPrefs,
   useQuranState,
   useQuranHydrated,
   type QuranBookmark,
   type QuranState,
 } from './quranState';
+import {
+  moveSessionToPage,
+  drawnReadingPosition,
+  recordReading,
+} from './readerMarks';
 import { usePlaybackStatus, type PlaybackStatus } from './audio/playback';
 import {
   mushafTone,
