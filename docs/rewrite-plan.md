@@ -189,8 +189,42 @@ Activity, the muṣḥaf, sync, notifications).
 fallback; one Xcode builds everything. *Phase exit:* the Catalyst app built
 with Xcode 27 passes the smoke test on macOS 27.
 
+## Baseline (P0.1, 2026-09-28)
+
+What every phase is measured against. Window: 2026-08-01 → 2026-09-28
+(767 commits on `main`). "Fix-like" = subject says fix/stop/no longer/
+never/crash/bug/wrong/fail or names an issue — a rough rate, compared only
+against itself later.
+
+| Area | Commits | Fix-like | Issues closed since Aug | Crash / ANR reports |
+|---|---|---|---|---|
+| Widget + Live Activity data and renderers (both platforms) | 119 | 18 | #31 (Android widgets stopped loading) | none attributed |
+| `quranState.ts` | 40 | 8 | #41, #44, #53, #54 | none |
+| Release tooling | 69 | 15 | — | — (the iOS 27 launch failure shipped through it: 38 opt-in crashes on iOS 27.0, 2.25.1 ×30 and 2.23.0 ×8) |
+| Android widgets (providers, bitmap, layouts) | 73 | 11 | #31 | none attributed |
+
+Open GitHub issues: none.
+
+Crash and ANR reports (last 28 days):
+
+- **App Store** (opt-in): iOS 27.0 — 2.25.1 ×30, 2.23.0 ×8, the launch
+  failure fixed by 2.27.1 (283); iOS 26.6 — 2.21.1 ×9 (Sept 14–15, not seen
+  in any later version).
+- **Google Play**: one crash cluster, `rnscreens.ScreenFragment.<init>`
+  IllegalStateException, 2.10.1 only (3 users, 23 days ago — the restore
+  crash fixed in `MainActivity.onCreate`). Four ANRs, 1 user each, all in
+  the system's text rendering — `libhwui GrTextBlob::Key::operator==` (2.25.1,
+  13 events; once while notifee's foreground service ran), `libGLES_mali
+  glTexSubImage2D` (2.25.1) and `GrTextBlobRedrawCoordinator` (2.18.4).
+
+**Not in this plan, but measured:** the Android ANRs all sit in text
+drawing, which in Mihrab means the muṣḥaf's native lines. One user, so no
+pattern yet — watch it at each recheck, and investigate before it becomes
+one. It is not a rewrite target.
+
 ## Progress log
 
 | Date | Step | What happened | Plan changed? |
 |---|---|---|---|
 | 2026-09-28 | — | Plan written from the measurements above. | — |
+| 2026-09-28 | P0.1 | Baseline recorded (section above). Sizes and churn re-measured: unchanged since the plan was written. | No change to phases. Added the text-rendering ANRs as a watch item outside the plan. |
