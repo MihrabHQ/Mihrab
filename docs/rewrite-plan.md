@@ -1,6 +1,6 @@
 # Targeted rewrites: the four places the bugs keep coming from
 
-> **Status (2026-09-28): planned, nothing started.** Decision (Hassan,
+> **Status (2026-09-28): P0.1 and P1.1 done; see the progress log.** Decision (Hassan,
 > 2026-09-28): no rewrite of the app — React Native stays, and so does the
 > language. Instead, rewrite the four parts where the history says the same
 > kinds of bug keep returning, one shippable step at a time, riding along
@@ -69,27 +69,47 @@ progress log. *Exit:* every later phase can say "before/after" with numbers.
 Today the app formats times for display, the natives parse those strings
 back, and three platforms each keep their own idea of the payload's shape.
 
-Target: one schema, generated types on all three sides, **times as
-timestamps** (epoch ms plus the local date key they belong to) and
-formatting done where the text is drawn, with the user's 12/24-hour
-choice passed as a flag. A `schemaVersion` on every payload.
+Target: one schema, generated types on all three sides, **times as typed
+wall-clock data** — the date key plus minutes since midnight, as integers,
+with the UTC offset they were computed under — and formatting done where
+the text is drawn, with the user's 12/24-hour choice passed as a flag. One
+helper per platform turns a wall-clock time into an instant where a native
+needs one (countdowns, the Live Activity). A `schemaVersion` on every
+payload.
+
+*Changed at P1.1 (was "times as epoch timestamps"):* every prayer time the
+app holds is a wall-clock string in the clock of the place it belongs to
+(`src/prayer/timezoneShift.ts`, issue #56). Sending instants would quietly
+re-render a stored location's table in the device's zone for anyone
+travelling; sending the offset instead lets a widget notice that the
+device's offset has moved on and ask for a refresh rather than draw a
+stale table.
 
 **1.1 Inventory.** Every value that crosses TS → native (widget payload,
 widget blocks, Live Activity payload, the widget refresh path) and native →
 TS (`WidgetLogQueue`, `WidgetTasbihQueue`): who writes it, who reads it, and
 whether it is data or pre-formatted text. *Exit:* a table in this file.
+**Done 2026-09-28 — see "Phase 1 inventory" below.**
 
 **1.2 Schema and generation.** One schema (JSON Schema, or TypeScript types
 the generator reads) → Swift `Codable` and Kotlin data classes, generated
 by a script and checked in; a test fails when the checked-in code is stale.
 Choose the generator (quicktype or similar) by trying it on the real
-payload. *Exit:* generated types compile in both native targets.
+payload. The generated decoders must be lenient the way the widget's
+hand-written one already is: only the fields a surface cannot draw
+without are required; everything else is optional with a default, so a
+missing or mistyped field costs one detail, never the whole payload (the
+24-hour Live Activity bug was one strict field). Includes the wall-clock
+helper per platform (parse, format 12/24 h, to-instant) that replaces the
+16 hand-written parsers. *Exit:* generated types and the helper compile in
+both native targets.
 
 **1.3 Contract tests across languages.** Today there are no native unit
 tests at all. Add a Kotlin JVM test target and a Swift package test for the
 decoders; the TypeScript tests write golden payload fixtures that the
-native tests decode. *Exit:* a payload change that one side misreads fails
-CI.
+native tests decode, and assert the decoded values — Android's reads
+default silently, so "it decoded" proves nothing there. *Exit:* a payload
+change that one side misreads fails CI.
 
 **1.4 Widget payload v2, written beside v1.** The app writes both; natives
 read v2 when present and fall back to v1, so an app update and a widget
@@ -98,13 +118,84 @@ reading an old payload never disagree. Formatting moves into the natives.
 12- and 24-hour, light/dark.
 
 **1.5 Live Activity payload v2** (iOS ActivityKit attributes, Android
-service). *Exit:* Live Activity correct on both clocks, both platforms.
+service) — one payload for both platforms, where today there are two built
+in two places with instants in two units. *Exit:* Live Activity correct on
+both clocks, both platforms.
 
 **1.6 The queues back to the app** (log, tasbih) on the same schema.
 
-**1.7 Remove v1** one release after 1.4–1.6 have shipped.
+**1.7 Remove v1** one release after 1.4–1.6 have shipped, with the dead
+fields the inventory found.
 *Phase exit:* no native code parses a formatted time; one schema; contract
 tests in CI.
+
+### Phase 1 inventory (P1.1, 2026-09-28)
+
+**Every channel between the app and its widgets and Live Activities:**
+
+| Direction | What | Written by | Stored / carried as | Read by |
+|---|---|---|---|---|
+| app → widgets | `WidgetPrayerPayload`: rows, `days[]`, and the `today`, `practice`, `reading`, `hijri`, `tasbih`, `seasonal` blocks | `src/widget/buildWidgetPayload.ts`, `widgetBlocks.ts`, `collectWidgetExtras.ts`; pushed by `syncPrayerWidget.ts` / `republishWidgetPayload.ts` through `PrayerWidget.setData(json)` | iOS: App Group defaults `prayer_widget_payload_v1`. Android: prefs `prayer_widget` / `payload_v1` | iOS: one `WidgetPayload: Codable` (PrayerWidgetExtension.swift), decoded separately in six widget files. Android: six provider classes each read the JSON on their own with `org.json` (the Large/Small variants subclass them) |
+| app → widgets | Appearance, outside the payload: language, UI style, OLED, highlight id/hex/dynamic, tinted, opacity (Android) | `syncWidgetUiHints.ts` and the appearance setters in `PrayerWidget.ts` | separate keys in the same stores | every widget |
+| app → iOS Live Activity | `PrayerLiveActivityContent` — derived from the widget payload | `src/liveActivity/syncLiveActivity.ts` → `PrayerLiveActivity.start/update(json)` | ActivityKit `ContentState` (ios/MihrabLiveActivity) | `PrayerLiveActivityWidget.swift`; the app's background refresher re-derives the next prayer natively (`PrayerLiveActivity.swift`) |
+| app → Android Live Activity | `MihrabLiveActivityPayload` — built separately, with ~15 localised words and the channel ids the alert button needs | `src/notifications/liveActivity.ts` → `MihrabLiveActivity.display(json)` | prefs `mihrab_live_activity` / `last_payload` | `MihrabLiveActivityModule.kt`, `MihrabLiveActivityService.kt` |
+| widget → app | Log taps `{d: 'YYYY-MM-DD', p: prayer, t: epoch ms}[]` | iOS `WidgetLogQueue.swift` (AppIntent); Android `WidgetLogQueue.kt` (`widget_log_queue`) | JSON string via `takeLogQueue()` | `coerceLogQueue` in `widgetLogQueue.ts` |
+| widget → app | Tasbih taps `{a: 'inc' \| 'reset' \| 'next', t: epoch ms, n?: run}` | iOS `TasbihWidget.swift`; Android `WidgetTasbihQueue.kt` (`widget_tasbih_queue`) | JSON string via `takeTasbihQueue()` | `widgetTasbihQueue.ts` |
+| widget → app (iOS, Mac) | "a queue changed", no data | the widget posts a Darwin notification; `WidgetQueueWatcher` native module | event | `WidgetQueueWatcher.ts` → queue drain |
+| Live Activity → app (Android) | Alert button: `epoch`, `name`, `mode`; the one-occurrence override kept natively (`alert_override_*`) | `MihrabLiveActivityActionReceiver.kt` | intent extras → `AdhanMuteToggle` headless task | `adhanMuteToggleTask`; cleared by `clearAlertOverride()` |
+| widget → app (Android) | "rebuild the payload" | `WidgetRefreshHeadlessService.kt` | `WidgetRefresh` headless task, no data | `widgetRefreshTask.ts` |
+
+**Data or pre-formatted text:**
+
+- *Times, as text:* `rows[].time` is "HH:mm" (24-hour, data carried as
+  text) and `rows[].display` the 12-hour text, absent on a 24-hour clock;
+  the same pair in `sunriseRow`, `extraRows`, `days[].rows`,
+  `today.prayers[]`, `nextPrayerTime`/`nextPrayerDisplay`, the Live
+  Activity rows and `nextTime`/`nextTimeDisplay`.
+- *Instants:* only the Live Activities carry them, in **two units** —
+  iOS `nextEpochSeconds`/`prevEpochSeconds`, Android
+  `nextEpochMs`/`prevEpochMs`. Android also turns its `days[]` rows into
+  instants itself.
+- *Dates:* `dateKey` "YYYY-MM-DD" (`days[]`, `today`, practice days `d`).
+- *Localised words written by the app:* `dayLabel`, row `name`/`abbr`,
+  `nextPrayerName`, `locationName`, Hijri `label`/`monthName`/
+  `nextMonthName`, `surahName`, tasbih `label`/`labels`/`arabic`,
+  `practice.since`, and every Live Activity label. These stay app-written
+  in v2 — the thirteen locales live in the app — only times and numbers
+  change form.
+- *Everything else is plain data* (counts, page, streak, the practice
+  day codes, Hijri numbers, khatmah numbers, `lastReadAt` in epoch ms).
+
+**The parsers v2 replaces:** 16 hand-written "HH:mm" parsers — Swift 10
+(`PrayerWidgetExtension.swift` ×5, `LogTodayWidget.swift` ×2,
+`HijriWidget.swift`, `PrayerLiveActivity.swift`,
+`PrayerLiveActivityWidget.swift`), Kotlin 6 (`PrayerWidgetProvider.kt` ×3,
+`PrayerWidgetLogProvider.kt`, and two separate copies of `epochForDayTime`
+in the Live Activity module and service). This replaces the rough "~20
+Kotlin and ~8 Swift" in the table at the top.
+
+**How strictly each side decodes:**
+
+- iOS widgets: only `dayLabel` and `rows` required; every block decoded
+  with `try?` — a bad block costs that block. Lenient, and right.
+- iOS Live Activity: `nextLabel`, `nextTime`, `nextEpochSeconds`,
+  `nextKey`, `rows` and each row's `key`/`abbr`/`time` required, the rest
+  `decodeIfPresent` without `try?` — one mistyped field fails the whole
+  payload. The app works around it by always writing `display` (the
+  comment saying so appears twice in `syncLiveActivity.ts`).
+- Android: ~260 `opt*` reads that turn a missing or renamed key into an
+  empty default with no error, plus `get*` reads that throw into the error
+  card every provider has had since #31. So a contract test there has to
+  assert values, not just "it decoded".
+
+**Dead or write-only fields** (removed in 1.7):
+
+- Widget: `tomorrowEstimated` — no reader on either platform.
+- iOS Live Activity: `locale` is sent but not decoded; `hijriLabel`,
+  `locationLabel`, `compactMode`, `showSunrise`, `showHijri`,
+  `showLocation` are decoded and never drawn.
+- Android Live Activity: `sinceWord`, `progressFraction`, `locationLabel`,
+  `compactMode`, `showSunrise`, `showLocation` are written and never read.
 
 ## Phase 2 — Split `quranState.ts`
 
@@ -228,3 +319,4 @@ one. It is not a rewrite target.
 |---|---|---|---|
 | 2026-09-28 | — | Plan written from the measurements above. | — |
 | 2026-09-28 | P0.1 | Baseline recorded (section above). Sizes and churn re-measured: unchanged since the plan was written. | No change to phases. Added the text-rendering ANRs as a watch item outside the plan. |
+| 2026-09-28 | P1.1 | Inventory written ("Phase 1 inventory"). Nine channels, not the five the step named: two separate Live Activity payloads (iOS in seconds, Android in ms), an appearance side channel, the Android alert button, and two data-less signals back to the app. 16 hand-written "HH:mm" parsers (10 Swift, 6 Kotlin). 14 dead or write-only fields across the three payloads. | Yes. Target changed from epoch timestamps to typed wall-clock plus the UTC offset (the app's times are wall-clock by design, #56). 1.2 now requires lenient generated decoders and ships the per-platform time helper; 1.3 asserts values; 1.5 merges the two Live Activity payloads; 1.7 drops the dead fields. |
