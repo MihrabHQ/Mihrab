@@ -290,3 +290,354 @@ export type WidgetContractTasbihQueueEntry = {
   /** Run length for coalesced taps; absent means one. */
   n?: number | null;
 };
+
+// ── Reading ─────────────────────────────────────────────────────
+
+/**
+ * The reference readers: the rules the Swift and Kotlin readers follow, in
+ * the language the golden fixtures (contract-tests/) are written from. Each
+ * returns null when a required field is missing or mistyped, fills defaults,
+ * and omits nulls.
+ */
+export function readWidgetContractPayload(
+  input: unknown,
+): WidgetContractPayload | null {
+  if (!wcIsObject(input)) return null;
+  const schemaVersionRead = wcInt(input.schemaVersion);
+  if (schemaVersionRead == null) return null;
+  const daysRead = wcList(input.days, x => readWidgetContractDay(x));
+  if (daysRead == null) return null;
+  const out: WidgetContractPayload = {
+    schemaVersion: schemaVersionRead,
+    builtAt: wcLong(input.builtAt) ?? 0,
+    language: wcString(input.language) ?? '',
+    clock:
+      readWidgetContractClock(input.clock) ??
+      (readWidgetContractClock({}) as WidgetContractClock),
+    locationName: wcString(input.locationName) ?? '',
+    days: daysRead,
+  };
+  const seasonalRead = readWidgetContractSeasonal(input.seasonal);
+  if (seasonalRead != null) out.seasonal = seasonalRead;
+  const todayRead = readWidgetContractToday(input.today);
+  if (todayRead != null) out.today = todayRead;
+  const practiceRead = readWidgetContractPractice(input.practice);
+  if (practiceRead != null) out.practice = practiceRead;
+  const readingRead = readWidgetContractReading(input.reading);
+  if (readingRead != null) out.reading = readingRead;
+  const hijriRead = readWidgetContractHijri(input.hijri);
+  if (hijriRead != null) out.hijri = hijriRead;
+  const tasbihRead = readWidgetContractTasbih(input.tasbih);
+  if (tasbihRead != null) out.tasbih = tasbihRead;
+  return out;
+}
+
+export function readWidgetContractClock(
+  input: unknown,
+): WidgetContractClock | null {
+  if (!wcIsObject(input)) return null;
+  const out: WidgetContractClock = {
+    hour12: wcBool(input.hour12) ?? false,
+    am: wcString(input.am) ?? 'AM',
+    pm: wcString(input.pm) ?? 'PM',
+    periodFirst: wcBool(input.periodFirst) ?? false,
+  };
+  return out;
+}
+
+export function readWidgetContractDay(
+  input: unknown,
+): WidgetContractDay | null {
+  if (!wcIsObject(input)) return null;
+  const dateKeyRead = wcString(input.dateKey);
+  if (dateKeyRead == null) return null;
+  const prayersRead = wcList(input.prayers, x => readWidgetContractRow(x));
+  if (prayersRead == null) return null;
+  const out: WidgetContractDay = {
+    dateKey: dateKeyRead,
+    label: wcString(input.label) ?? '',
+    prayers: prayersRead,
+    extras: wcList(input.extras, x => readWidgetContractRow(x)) ?? [],
+  };
+  const utcOffsetMinutesRead = wcInt(input.utcOffsetMinutes);
+  if (utcOffsetMinutesRead != null) out.utcOffsetMinutes = utcOffsetMinutesRead;
+  const sunriseRead = readWidgetContractRow(input.sunrise);
+  if (sunriseRead != null) out.sunrise = sunriseRead;
+  return out;
+}
+
+export function readWidgetContractRow(
+  input: unknown,
+): WidgetContractRow | null {
+  if (!wcIsObject(input)) return null;
+  const keyRead = wcString(input.key);
+  if (keyRead == null) return null;
+  const out: WidgetContractRow = {
+    key: keyRead,
+    name: wcString(input.name) ?? '',
+    abbr: wcString(input.abbr) ?? '',
+  };
+  const minutesRead = wcInt(input.minutes);
+  if (minutesRead != null) out.minutes = minutesRead;
+  return out;
+}
+
+export function readWidgetContractSeasonal(
+  input: unknown,
+): WidgetContractSeasonal | null {
+  if (!wcIsObject(input)) return null;
+  const out: WidgetContractSeasonal = {
+    jumuah: wcBool(input.jumuah) ?? false,
+    ramadan: wcBool(input.ramadan) ?? false,
+  };
+  const eidRead = wcEnum(input.eid, ['fitr', 'adha'] as const);
+  if (eidRead != null) out.eid = eidRead;
+  return out;
+}
+
+export function readWidgetContractToday(
+  input: unknown,
+): WidgetContractToday | null {
+  if (!wcIsObject(input)) return null;
+  const dateKeyRead = wcString(input.dateKey);
+  if (dateKeyRead == null) return null;
+  const out: WidgetContractToday = {
+    dateKey: dateKeyRead,
+    logged: wcInt(input.logged) ?? 0,
+    loggable: wcInt(input.loggable) ?? 0,
+    owed: wcInt(input.owed) ?? 0,
+    prayers: wcList(input.prayers, x => readWidgetContractTodayPrayer(x)) ?? [],
+  };
+  return out;
+}
+
+export function readWidgetContractTodayPrayer(
+  input: unknown,
+): WidgetContractTodayPrayer | null {
+  if (!wcIsObject(input)) return null;
+  const keyRead = wcString(input.key);
+  if (keyRead == null) return null;
+  const out: WidgetContractTodayPrayer = {
+    key: keyRead,
+    name: wcString(input.name) ?? '',
+    due: wcBool(input.due) ?? false,
+  };
+  const minutesRead = wcInt(input.minutes);
+  if (minutesRead != null) out.minutes = minutesRead;
+  const statusRead = wcEnum(input.status, [
+    'on-time',
+    'late',
+    'missed',
+    'qadha',
+  ] as const);
+  if (statusRead != null) out.status = statusRead;
+  return out;
+}
+
+export function readWidgetContractPractice(
+  input: unknown,
+): WidgetContractPractice | null {
+  if (!wcIsObject(input)) return null;
+  const out: WidgetContractPractice = {
+    streak: wcInt(input.streak) ?? 0,
+    bestStreak: wcInt(input.bestStreak) ?? 0,
+    loggedToday: wcInt(input.loggedToday) ?? 0,
+    owed: wcInt(input.owed) ?? 0,
+    fastsThisMonth: wcInt(input.fastsThisMonth) ?? 0,
+    days: wcList(input.days, x => readWidgetContractPracticeDay(x)) ?? [],
+  };
+  const sunnahRateRead = wcDouble(input.sunnahRate);
+  if (sunnahRateRead != null) out.sunnahRate = sunnahRateRead;
+  const sinceRead = wcString(input.since);
+  if (sinceRead != null) out.since = sinceRead;
+  return out;
+}
+
+export function readWidgetContractPracticeDay(
+  input: unknown,
+): WidgetContractPracticeDay | null {
+  if (!wcIsObject(input)) return null;
+  const dRead = wcString(input.d);
+  if (dRead == null) return null;
+  const out: WidgetContractPracticeDay = {
+    d: dRead,
+    kw: wcInt(input.kw) ?? 0,
+    l: wcInt(input.l) ?? 0,
+    m: wcBool(input.m) ?? false,
+    f: wcBool(input.f) ?? false,
+    s: wcInt(input.s) ?? 0,
+  };
+  return out;
+}
+
+export function readWidgetContractReading(
+  input: unknown,
+): WidgetContractReading | null {
+  if (!wcIsObject(input)) return null;
+  const out: WidgetContractReading = {
+    surah: wcInt(input.surah) ?? 1,
+    surahName: wcString(input.surahName) ?? '',
+    ayah: wcInt(input.ayah) ?? 1,
+    page: wcInt(input.page) ?? 1,
+    juz: wcInt(input.juz) ?? 1,
+    pagesRead: wcInt(input.pagesRead) ?? 0,
+    totalPages: wcInt(input.totalPages) ?? 604,
+    bookmarks: wcInt(input.bookmarks) ?? 0,
+    mode:
+      wcEnum(input.mode, ['mushaf', 'translation'] as const) ?? 'translation',
+    started: wcBool(input.started) ?? false,
+    downloaded: wcBool(input.downloaded) ?? false,
+  };
+  const lastReadAtRead = wcLong(input.lastReadAt);
+  if (lastReadAtRead != null) out.lastReadAt = lastReadAtRead;
+  const khatmahRead = readWidgetContractKhatmah(input.khatmah);
+  if (khatmahRead != null) out.khatmah = khatmahRead;
+  return out;
+}
+
+export function readWidgetContractKhatmah(
+  input: unknown,
+): WidgetContractKhatmah | null {
+  if (!wcIsObject(input)) return null;
+  const out: WidgetContractKhatmah = {
+    day: wcInt(input.day) ?? 1,
+    targetDays: wcInt(input.targetDays) ?? 0,
+    pagesToday: wcInt(input.pagesToday) ?? 0,
+    doneToday: wcInt(input.doneToday) ?? 0,
+    behindBy: wcInt(input.behindBy) ?? 0,
+    daysLeft: wcInt(input.daysLeft) ?? 0,
+    skipped: wcInt(input.skipped) ?? 0,
+  };
+  return out;
+}
+
+export function readWidgetContractHijri(
+  input: unknown,
+): WidgetContractHijri | null {
+  if (!wcIsObject(input)) return null;
+  const dayRead = wcInt(input.day);
+  if (dayRead == null) return null;
+  const monthRead = wcInt(input.month);
+  if (monthRead == null) return null;
+  const yearRead = wcInt(input.year);
+  if (yearRead == null) return null;
+  const out: WidgetContractHijri = {
+    day: dayRead,
+    month: monthRead,
+    year: yearRead,
+    monthName: wcString(input.monthName) ?? '',
+    label: wcString(input.label) ?? '',
+    nextMonthName: wcString(input.nextMonthName) ?? '',
+    nextMonthInDays: wcInt(input.nextMonthInDays) ?? 0,
+  };
+  return out;
+}
+
+export function readWidgetContractTasbih(
+  input: unknown,
+): WidgetContractTasbih | null {
+  if (!wcIsObject(input)) return null;
+  const out: WidgetContractTasbih = {
+    presetId: wcString(input.presetId) ?? '',
+    label: wcString(input.label) ?? '',
+    arabic: wcString(input.arabic) ?? '',
+    count: wcInt(input.count) ?? 0,
+    target: wcInt(input.target) ?? 0,
+    unbounded: wcBool(input.unbounded) ?? false,
+    index: wcInt(input.index) ?? 0,
+    total: wcInt(input.total) ?? 0,
+    counts: wcList(input.counts, x => wcInt(x)) ?? [],
+    labels: wcList(input.labels, x => wcString(x)) ?? [],
+    targets: wcList(input.targets, x => wcInt(x)) ?? [],
+    unboundedFlags: wcList(input.unboundedFlags, x => wcBool(x)) ?? [],
+    todayTotal: wcInt(input.todayTotal) ?? 0,
+    todayRounds: wcInt(input.todayRounds) ?? 0,
+  };
+  return out;
+}
+
+export function readWidgetContractLogQueueEntry(
+  input: unknown,
+): WidgetContractLogQueueEntry | null {
+  if (!wcIsObject(input)) return null;
+  const dRead = wcString(input.d);
+  if (dRead == null) return null;
+  const pRead = wcString(input.p);
+  if (pRead == null) return null;
+  const tRead = wcLong(input.t);
+  if (tRead == null) return null;
+  const out: WidgetContractLogQueueEntry = {
+    d: dRead,
+    p: pRead,
+    t: tRead,
+  };
+  return out;
+}
+
+export function readWidgetContractTasbihQueueEntry(
+  input: unknown,
+): WidgetContractTasbihQueueEntry | null {
+  if (!wcIsObject(input)) return null;
+  const aRead = wcEnum(input.a, ['inc', 'reset', 'next'] as const);
+  if (aRead == null) return null;
+  const tRead = wcLong(input.t);
+  if (tRead == null) return null;
+  const out: WidgetContractTasbihQueueEntry = {
+    a: aRead,
+    t: tRead,
+  };
+  const nRead = wcInt(input.n);
+  if (nRead != null) out.n = nRead;
+  return out;
+}
+
+function wcIsObject(v: unknown): v is Record<string, unknown> {
+  return typeof v === 'object' && v !== null && !Array.isArray(v);
+}
+
+function wcString(v: unknown): string | undefined {
+  return typeof v === 'string' ? v : undefined;
+}
+
+function wcBool(v: unknown): boolean | undefined {
+  return typeof v === 'boolean' ? v : undefined;
+}
+
+/** A whole number, below 9e15 in size, as every platform reads one. */
+function wcLong(v: unknown): number | undefined {
+  return typeof v === 'number' && Number.isInteger(v) && Math.abs(v) < 9e15
+    ? v
+    : undefined;
+}
+
+/** An `int` is 32-bit everywhere, because Kotlin reads it as Int. */
+function wcInt(v: unknown): number | undefined {
+  const n = wcLong(v);
+  return n !== undefined && n >= -2147483648 && n <= 2147483647 ? n : undefined;
+}
+
+function wcDouble(v: unknown): number | undefined {
+  return typeof v === 'number' && Number.isFinite(v) ? v : undefined;
+}
+
+function wcEnum<T extends string>(
+  v: unknown,
+  values: readonly T[],
+): T | undefined {
+  return typeof v === 'string' && (values as readonly string[]).includes(v)
+    ? (v as T)
+    : undefined;
+}
+
+function wcList<T>(
+  v: unknown,
+  element: (x: unknown) => T | null | undefined,
+): T[] | undefined {
+  if (!Array.isArray(v)) return undefined;
+  const out: T[] = [];
+  for (const x of v) {
+    const read = element(x);
+    if (read != null) out.push(read);
+  }
+  return out;
+}

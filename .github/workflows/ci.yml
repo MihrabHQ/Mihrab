@@ -30,3 +30,32 @@ jobs:
 
       - name: Jest
         run: npx jest --ci --runInBand
+
+  # The widget contract (docs/rewrite-plan.md, Phase 1): the readers the
+  # widgets and Live Activities compile, run over the golden fixtures the
+  # app's own TypeScript wrote (contract-tests/fixtures.json). A payload
+  # change one platform reads differently from the app fails here. Neither
+  # job needs an Xcode project or the Android build — the contract code
+  # depends on Foundation and org.json only. Swift runs on macOS so it gets
+  # Apple's Foundation, the one the widgets link, rather than Linux's.
+  contract-swift:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Swift readers against the fixtures
+        run: scripts/contract-test-native.sh swift
+
+  contract-kotlin:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Kotlin readers against the fixtures
+        run: scripts/contract-test-native.sh kotlin

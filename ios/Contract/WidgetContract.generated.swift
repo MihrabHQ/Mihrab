@@ -110,7 +110,7 @@ enum WidgetContract {
 
     init(from decoder: Decoder) throws {
       let c = try decoder.container(keyedBy: CodingKeys.self)
-      schemaVersion = try c.wcRequire(c.wcInt(.schemaVersion), .schemaVersion)
+      schemaVersion = try c.wcRequire(c.wcInt(.schemaVersion).flatMap(wcInt32), .schemaVersion)
       builtAt = c.wcInt(.builtAt) ?? 0
       language = c.wcValue(String.self, .language) ?? ""
       clock = c.wcValue(Clock.self, .clock) ?? Clock()
@@ -212,7 +212,7 @@ enum WidgetContract {
     init(from decoder: Decoder) throws {
       let c = try decoder.container(keyedBy: CodingKeys.self)
       dateKey = try c.wcRequire(c.wcValue(String.self, .dateKey), .dateKey)
-      utcOffsetMinutes = c.wcInt(.utcOffsetMinutes)
+      utcOffsetMinutes = c.wcInt(.utcOffsetMinutes).flatMap(wcInt32)
       label = c.wcValue(String.self, .label) ?? ""
       prayers = try c.wcRequire(c.wcList(Row.self, .prayers), .prayers)
       sunrise = c.wcValue(Row.self, .sunrise)
@@ -256,7 +256,7 @@ enum WidgetContract {
       key = try c.wcRequire(c.wcValue(String.self, .key), .key)
       name = c.wcValue(String.self, .name) ?? ""
       abbr = c.wcValue(String.self, .abbr) ?? ""
-      minutes = c.wcInt(.minutes)
+      minutes = c.wcInt(.minutes).flatMap(wcInt32)
     }
   }
 
@@ -329,9 +329,9 @@ enum WidgetContract {
     init(from decoder: Decoder) throws {
       let c = try decoder.container(keyedBy: CodingKeys.self)
       dateKey = try c.wcRequire(c.wcValue(String.self, .dateKey), .dateKey)
-      logged = c.wcInt(.logged) ?? 0
-      loggable = c.wcInt(.loggable) ?? 0
-      owed = c.wcInt(.owed) ?? 0
+      logged = c.wcInt(.logged).flatMap(wcInt32) ?? 0
+      loggable = c.wcInt(.loggable).flatMap(wcInt32) ?? 0
+      owed = c.wcInt(.owed).flatMap(wcInt32) ?? 0
       prayers = c.wcList(TodayPrayer.self, .prayers) ?? []
     }
   }
@@ -375,7 +375,7 @@ enum WidgetContract {
       let c = try decoder.container(keyedBy: CodingKeys.self)
       key = try c.wcRequire(c.wcValue(String.self, .key), .key)
       name = c.wcValue(String.self, .name) ?? ""
-      minutes = c.wcInt(.minutes)
+      minutes = c.wcInt(.minutes).flatMap(wcInt32)
       status = c.wcValue(String.self, .status).flatMap(PrayerStatus.init(rawValue:))
       due = c.wcValue(Bool.self, .due) ?? false
     }
@@ -432,12 +432,12 @@ enum WidgetContract {
 
     init(from decoder: Decoder) throws {
       let c = try decoder.container(keyedBy: CodingKeys.self)
-      streak = c.wcInt(.streak) ?? 0
-      bestStreak = c.wcInt(.bestStreak) ?? 0
-      loggedToday = c.wcInt(.loggedToday) ?? 0
-      owed = c.wcInt(.owed) ?? 0
+      streak = c.wcInt(.streak).flatMap(wcInt32) ?? 0
+      bestStreak = c.wcInt(.bestStreak).flatMap(wcInt32) ?? 0
+      loggedToday = c.wcInt(.loggedToday).flatMap(wcInt32) ?? 0
+      owed = c.wcInt(.owed).flatMap(wcInt32) ?? 0
       sunnahRate = c.wcDouble(.sunnahRate)
-      fastsThisMonth = c.wcInt(.fastsThisMonth) ?? 0
+      fastsThisMonth = c.wcInt(.fastsThisMonth).flatMap(wcInt32) ?? 0
       days = c.wcList(PracticeDay.self, .days) ?? []
       since = c.wcValue(String.self, .since)
     }
@@ -488,11 +488,11 @@ enum WidgetContract {
     init(from decoder: Decoder) throws {
       let c = try decoder.container(keyedBy: CodingKeys.self)
       d = try c.wcRequire(c.wcValue(String.self, .d), .d)
-      kw = c.wcInt(.kw) ?? 0
-      l = c.wcInt(.l) ?? 0
+      kw = c.wcInt(.kw).flatMap(wcInt32) ?? 0
+      l = c.wcInt(.l).flatMap(wcInt32) ?? 0
       m = c.wcValue(Bool.self, .m) ?? false
       f = c.wcValue(Bool.self, .f) ?? false
-      s = c.wcInt(.s) ?? 0
+      s = c.wcInt(.s).flatMap(wcInt32) ?? 0
     }
   }
 
@@ -566,14 +566,14 @@ enum WidgetContract {
 
     init(from decoder: Decoder) throws {
       let c = try decoder.container(keyedBy: CodingKeys.self)
-      surah = c.wcInt(.surah) ?? 1
+      surah = c.wcInt(.surah).flatMap(wcInt32) ?? 1
       surahName = c.wcValue(String.self, .surahName) ?? ""
-      ayah = c.wcInt(.ayah) ?? 1
-      page = c.wcInt(.page) ?? 1
-      juz = c.wcInt(.juz) ?? 1
-      pagesRead = c.wcInt(.pagesRead) ?? 0
-      totalPages = c.wcInt(.totalPages) ?? 604
-      bookmarks = c.wcInt(.bookmarks) ?? 0
+      ayah = c.wcInt(.ayah).flatMap(wcInt32) ?? 1
+      page = c.wcInt(.page).flatMap(wcInt32) ?? 1
+      juz = c.wcInt(.juz).flatMap(wcInt32) ?? 1
+      pagesRead = c.wcInt(.pagesRead).flatMap(wcInt32) ?? 0
+      totalPages = c.wcInt(.totalPages).flatMap(wcInt32) ?? 604
+      bookmarks = c.wcInt(.bookmarks).flatMap(wcInt32) ?? 0
       lastReadAt = c.wcInt(.lastReadAt)
       mode = c.wcValue(String.self, .mode).flatMap(ReaderMode.init(rawValue:)) ?? .translation
       khatmah = c.wcValue(Khatmah.self, .khatmah)
@@ -624,13 +624,13 @@ enum WidgetContract {
 
     init(from decoder: Decoder) throws {
       let c = try decoder.container(keyedBy: CodingKeys.self)
-      day = c.wcInt(.day) ?? 1
-      targetDays = c.wcInt(.targetDays) ?? 0
-      pagesToday = c.wcInt(.pagesToday) ?? 0
-      doneToday = c.wcInt(.doneToday) ?? 0
-      behindBy = c.wcInt(.behindBy) ?? 0
-      daysLeft = c.wcInt(.daysLeft) ?? 0
-      skipped = c.wcInt(.skipped) ?? 0
+      day = c.wcInt(.day).flatMap(wcInt32) ?? 1
+      targetDays = c.wcInt(.targetDays).flatMap(wcInt32) ?? 0
+      pagesToday = c.wcInt(.pagesToday).flatMap(wcInt32) ?? 0
+      doneToday = c.wcInt(.doneToday).flatMap(wcInt32) ?? 0
+      behindBy = c.wcInt(.behindBy).flatMap(wcInt32) ?? 0
+      daysLeft = c.wcInt(.daysLeft).flatMap(wcInt32) ?? 0
+      skipped = c.wcInt(.skipped).flatMap(wcInt32) ?? 0
     }
   }
 
@@ -675,13 +675,13 @@ enum WidgetContract {
 
     init(from decoder: Decoder) throws {
       let c = try decoder.container(keyedBy: CodingKeys.self)
-      day = try c.wcRequire(c.wcInt(.day), .day)
-      month = try c.wcRequire(c.wcInt(.month), .month)
-      year = try c.wcRequire(c.wcInt(.year), .year)
+      day = try c.wcRequire(c.wcInt(.day).flatMap(wcInt32), .day)
+      month = try c.wcRequire(c.wcInt(.month).flatMap(wcInt32), .month)
+      year = try c.wcRequire(c.wcInt(.year).flatMap(wcInt32), .year)
       monthName = c.wcValue(String.self, .monthName) ?? ""
       label = c.wcValue(String.self, .label) ?? ""
       nextMonthName = c.wcValue(String.self, .nextMonthName) ?? ""
-      nextMonthInDays = c.wcInt(.nextMonthInDays) ?? 0
+      nextMonthInDays = c.wcInt(.nextMonthInDays).flatMap(wcInt32) ?? 0
     }
   }
 
@@ -763,17 +763,17 @@ enum WidgetContract {
       presetId = c.wcValue(String.self, .presetId) ?? ""
       label = c.wcValue(String.self, .label) ?? ""
       arabic = c.wcValue(String.self, .arabic) ?? ""
-      count = c.wcInt(.count) ?? 0
-      target = c.wcInt(.target) ?? 0
+      count = c.wcInt(.count).flatMap(wcInt32) ?? 0
+      target = c.wcInt(.target).flatMap(wcInt32) ?? 0
       unbounded = c.wcValue(Bool.self, .unbounded) ?? false
-      index = c.wcInt(.index) ?? 0
-      total = c.wcInt(.total) ?? 0
-      counts = c.wcList(WCInt.self, .counts)?.map(\.value) ?? []
+      index = c.wcInt(.index).flatMap(wcInt32) ?? 0
+      total = c.wcInt(.total).flatMap(wcInt32) ?? 0
+      counts = c.wcList(WCInt.self, .counts)?.compactMap { wcInt32($0.value) } ?? []
       labels = c.wcList(String.self, .labels) ?? []
-      targets = c.wcList(WCInt.self, .targets)?.map(\.value) ?? []
+      targets = c.wcList(WCInt.self, .targets)?.compactMap { wcInt32($0.value) } ?? []
       unboundedFlags = c.wcList(Bool.self, .unboundedFlags) ?? []
-      todayTotal = c.wcInt(.todayTotal) ?? 0
-      todayRounds = c.wcInt(.todayRounds) ?? 0
+      todayTotal = c.wcInt(.todayTotal).flatMap(wcInt32) ?? 0
+      todayRounds = c.wcInt(.todayRounds).flatMap(wcInt32) ?? 0
     }
   }
 
@@ -840,7 +840,7 @@ enum WidgetContract {
       let c = try decoder.container(keyedBy: CodingKeys.self)
       a = try c.wcRequire(c.wcValue(String.self, .a).flatMap(TasbihAction.init(rawValue:)), .a)
       t = try c.wcRequire(c.wcInt(.t), .t)
-      n = c.wcInt(.n)
+      n = c.wcInt(.n).flatMap(wcInt32)
     }
   }
 
@@ -870,6 +870,12 @@ struct WCInt: Decodable, Hashable {
       value = Int(d)
     }
   }
+}
+
+/// An `int` field is 32-bit on every platform — Kotlin reads it as `Int` —
+/// so a value outside that range is unreadable here too, not silently wider.
+private func wcInt32(_ v: Int) -> Int? {
+  (Int(Int32.min)...Int(Int32.max)).contains(v) ? v : nil
 }
 
 struct WCDouble: Decodable, Hashable {

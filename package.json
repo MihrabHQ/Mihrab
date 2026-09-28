@@ -25,6 +25,8 @@
     "build-release-notes": "node scripts/build-release-notes.js",
     "sync-widget-strings": "node scripts/sync-widget-strings.js",
     "gen-widget-contract": "node scripts/gen-widget-contract.js",
+    "contract-fixtures": "UPDATE_CONTRACT_FIXTURES=1 jest __tests__/widgetContractFixtures.test.ts",
+    "contract-test-native": "scripts/contract-test-native.sh",
     "verify-release": "./scripts/verify-release.sh"
   },
   "dependencies": {

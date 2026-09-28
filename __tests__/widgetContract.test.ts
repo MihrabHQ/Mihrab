@@ -30,6 +30,8 @@ describe('the generated contract', () => {
     [gen.OUT.ts, gen.genTs(model)],
     [gen.OUT.swift, gen.genSwift(model)],
     [gen.OUT.kotlin, gen.genKotlin(model)],
+    [gen.OUT.swiftRegistry, gen.genSwiftRegistry(model)],
+    [gen.OUT.kotlinRegistry, gen.genKotlinRegistry(model)],
   ];
 
   it('matches what is checked in — run `npm run gen-widget-contract`', () => {
