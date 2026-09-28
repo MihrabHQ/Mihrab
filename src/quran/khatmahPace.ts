@@ -36,7 +36,7 @@
  * Everything here is pure: the plan's fields in, numbers out. The writer
  * that pins the cut lives with the other khatmah writers in
  * `quranState.ts`, and the plan-shaped wrappers with the rest of the
- * portion maths.
+ * portion maths in `khatmahSchedule.ts`.
  */
 import { daysAway } from './khatmahDayWhen';
 

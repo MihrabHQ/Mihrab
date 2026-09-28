@@ -24,6 +24,14 @@ import {
   todaysMaghrib,
 } from '../src/hijri/islamicDay';
 
+/** The Qur'an store, and the parts of it that were split out of it. */
+const STORE_FILES = [
+  'quranState.ts',
+  'khatmahProgress.ts',
+  'khatmahSchedule.ts',
+  'khatmahStatus.ts',
+];
+
 const at = (iso: string) => new Date(iso);
 /** Maghrib on the 18th, local time. */
 const maghrib18 = at('2026-09-18T18:45:00');
@@ -148,12 +156,17 @@ describe('the khatmah day follows the boundary', () => {
     // It had its own copy of the day, as four other places did. The store
     // stays pure — no location, no timings — because the boundary is
     // published to it rather than computed in it.
-    const src = readFileSync(
-      join(__dirname, '..', 'src', 'quran', 'quranState.ts'),
-      'utf8',
+    // The store's day (`localYmd`) lives with the khatmah's units since
+    // the store was split (docs/rewrite-plan.md, 2.2); no part of the store
+    // may keep a copy of its own.
+    const part = (f: string) =>
+      readFileSync(join(__dirname, '..', 'src', 'quran', f), 'utf8');
+    expect(part('khatmahProgress.ts')).toMatch(
+      /return islamicDayKey\(new Date\(now\)\)/,
     );
-    expect(src).toMatch(/return islamicDayKey\(new Date\(now\)\)/);
-    expect(src).not.toMatch(/String\(d\.getMonth\(\) \+ 1\)/);
+    for (const f of STORE_FILES) {
+      expect(part(f)).not.toMatch(/String\(d\.getMonth\(\) \+ 1\)/);
+    }
     const card = readFileSync(
       join(__dirname, '..', 'src', 'quran', 'quranCardState.ts'),
       'utf8',
@@ -344,7 +357,7 @@ describe('opt-in, and off by default', () => {
     // And nothing else in the app reads the setting, or there would be two
     // answers to one question.
     const readers = [
-      'src/quran/quranState.ts',
+      ...STORE_FILES.map(f => `src/quran/${f}`),
       'src/quran/quranCardState.ts',
       'src/hijri/islamicDay.ts',
       'src/hijri/useTodaysIslamicEvent.ts',

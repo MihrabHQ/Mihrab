@@ -562,7 +562,7 @@ export function buildReadingBlock(input: {
      *     morning.
      *
      * Both now come from the portion the reader is actually in
-     * (`quranState`, "Khatmah portions"), which is the same source the
+     * (`khatmahSchedule`, "Khatmah portions"), which is the same source the
      * card and the page marker use. Nothing on either widget had to
      * change: it already said "TODAY'S PORTION x / y", "Done for today"
      * and "N pages left" — those sentences were simply not true.
