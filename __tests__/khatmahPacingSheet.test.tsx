@@ -39,19 +39,17 @@ jest.mock('react-i18next', () => ({
     t: (key: string, opts?: unknown) =>
       typeof opts === 'string'
         ? opts
-        : ((opts as { defaultValue?: string })?.defaultValue ?? key),
+        : (opts as { defaultValue?: string })?.defaultValue ?? key,
     i18n: { language: 'en' },
   }),
 }));
 
-import { KhatmahPacingSheet, type PacingChoice } from '../src/quran/KhatmahPacingSheet';
+import {
+  KhatmahPacingSheet,
+  type PacingChoice,
+} from '../src/quran/KhatmahPacingSheet';
+import { ymdIn } from './fixtures/localDays';
 
-const DAY = 24 * 60 * 60 * 1000;
-const ymd = (at: number) => {
-  const d = new Date(at);
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  return `${d.getFullYear()}-${m}-${String(d.getDate()).padStart(2, '0')}`;
-};
 
 const mounted: ReactTestRenderer[] = [];
 afterEach(async () => {
@@ -101,7 +99,7 @@ describe('the sheet a khatmah is paced from', () => {
   });
 
   it('opens on the plan in hand when it has a date', async () => {
-    const by = ymd(Date.now() + 9 * DAY);
+    const by = ymdIn(9);
     const { chosen, confirm } = await open({ current: by });
     await confirm('Set the date');
     expect(chosen).toEqual([{ kind: 'date', deadline: by }]);
@@ -114,13 +112,11 @@ describe('the sheet a khatmah is paced from', () => {
     const { chosen, press, confirm } = await open({ currentDays: 12 });
     await press('By a date');
     await confirm('Set the date');
-    expect(chosen).toEqual([
-      { kind: 'date', deadline: ymd(Date.now() + 11 * DAY) },
-    ]);
+    expect(chosen).toEqual([{ kind: 'date', deadline: ymdIn(11) }]);
   });
 
   it('and back, with nothing lost on the way', async () => {
-    const by = ymd(Date.now() + 19 * DAY);
+    const by = ymdIn(19);
     const { chosen, press, confirm } = await open({ current: by });
     await press('A number of days');
     await confirm('Set the length');
@@ -153,8 +149,6 @@ describe('the sheet a khatmah is paced from', () => {
       currentDays: 30,
     });
     await confirm('Start');
-    expect(chosen).toEqual([
-      { kind: 'date', deadline: ymd(Date.now() + 29 * DAY) },
-    ]);
+    expect(chosen).toEqual([{ kind: 'date', deadline: ymdIn(29) }]);
   });
 });

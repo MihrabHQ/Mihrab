@@ -35,15 +35,17 @@ import {
 } from '../src/quran/quranState';
 import { ayahAtIndex, ayahIndexOf } from '../src/quran/ayahIndex';
 import { findPageForAyah, firstAyahOfPage } from '../src/quran/pages';
-import { applyMarks, lastReadAt, normalizeRanges, rangesCover, type AyahRange } from '../src/quran/khatmahDone';
+import {
+  applyMarks,
+  lastReadAt,
+  normalizeRanges,
+  rangesCover,
+  type AyahRange,
+} from '../src/quran/khatmahDone';
 import { mergeQuran } from '../src/sync/merge';
+import { ymd, ymdIn } from './fixtures/localDays';
 
 const DAY = 24 * 60 * 60 * 1000;
-const ymd = (at: number) => {
-  const d = new Date(at);
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  return `${d.getFullYear()}-${m}-${String(d.getDate()).padStart(2, '0')}`;
-};
 const clone = (s: QuranState): QuranState => JSON.parse(JSON.stringify(s));
 
 /** Deterministic PRNG (mulberry32). */
@@ -61,7 +63,11 @@ function rng(seed: number): () => number {
 type Claim = { from: number; to: number; at: number; read: boolean };
 
 /** Latest dated word per ayah, with undated fills beneath. */
-function oracle(claims: Claim[], fills: AyahRange[], start: number): AyahRange[] {
+function oracle(
+  claims: Claim[],
+  fills: AyahRange[],
+  start: number,
+): AyahRange[] {
   const verdict = new Int8Array(TOTAL + 1); // 0 unspoken, 1 read, -1 unread
   const when = new Float64Array(TOTAL + 1);
   for (const c of claims) {
@@ -87,14 +93,26 @@ function oracle(claims: Claim[], fills: AyahRange[], start: number): AyahRange[]
   return normalizeRanges(out, TOTAL);
 }
 
-function run(seed: number, withBackwardOps: boolean, steps: number, dated = true, days = 40): void {
+function run(
+  seed: number,
+  withBackwardOps: boolean,
+  steps: number,
+  dated = true,
+  days = 40,
+): void {
   const random = rng(seed);
   const pick = (n: number) => Math.floor(random() * n);
-  jest.useFakeTimers({ now: new Date(2026, 8, 1, 10, 0, 0).getTime(), doNotFake: ['performance'] });
+  jest.useFakeTimers({
+    now: new Date(2026, 8, 1, 10, 0, 0).getTime(),
+    doNotFake: ['performance'],
+  });
   __resetQuranStateForTests();
-  if (dated) startKhatmah(30, undefined, ymd(Date.now() + (days - 1) * DAY));
+  if (dated) startKhatmah(30, undefined, ymdIn(days - 1));
   else startKhatmah(days);
-  const devices: QuranState[] = [clone(getQuranState()), clone(getQuranState())];
+  const devices: QuranState[] = [
+    clone(getQuranState()),
+    clone(getQuranState()),
+  ];
   const claims: Claim[] = [];
   const fills: [number, number][] = [];
   let lastClaimAt = 0;
@@ -120,7 +138,9 @@ function run(seed: number, withBackwardOps: boolean, steps: number, dated = true
     keep(x);
     if (!withBackwardOps) {
       // Nothing the peer did could honestly move this device back.
-      expect(khatmahReachAyah(theOne(getQuranState()))).toBeGreaterThanOrEqual(reachBefore);
+      expect(khatmahReachAyah(theOne(getQuranState()))).toBeGreaterThanOrEqual(
+        reachBefore,
+      );
     }
   };
 
@@ -133,7 +153,9 @@ function run(seed: number, withBackwardOps: boolean, steps: number, dated = true
       sync(1, 0);
       expect(theOne(devices[0]).completedAt).not.toBeNull();
       expect(theOne(devices[1]).completedAt).not.toBeNull();
-      expect(khatmahDone(theOne(devices[0]))).toEqual(khatmahDone(theOne(devices[1])));
+      expect(khatmahDone(theOne(devices[0]))).toEqual(
+        khatmahDone(theOne(devices[1])),
+      );
       break;
     }
     jest.setSystemTime(Date.now() + 1_000 + pick(6 * 60 * 60 * 1000));
@@ -148,7 +170,11 @@ function run(seed: number, withBackwardOps: boolean, steps: number, dated = true
         if (!khatmahTracksPage(page)) break;
         const window = khatmahCreditWindow(plan());
         const first = firstAyahOfPage(page, 'hafs');
-        const from = Math.max(start, window[0], ayahIndexOf(first.surah, first.ayah));
+        const from = Math.max(
+          start,
+          window[0],
+          ayahIndexOf(first.surah, first.ayah),
+        );
         const to = Math.min(ayahsThroughPage(page, 'hafs'), window[1]);
         // Flipping through ground the log already says is read is not
         // a fresh reading of it (`withMarks`); the oracle agrees.
@@ -166,7 +192,12 @@ function run(seed: number, withBackwardOps: boolean, steps: number, dated = true
       finishKhatmahPortion();
       const p = theOne(getQuranState()); // may have just completed
       if (JSON.stringify(khatmahDone(p)) !== JSON.stringify(wasDone)) {
-        claims.push({ from: target.from, to: target.to, at: stamp(), read: true });
+        claims.push({
+          from: target.from,
+          to: target.to,
+          at: stamp(),
+          read: true,
+        });
         fills.push([start, target.to]);
       }
     } else if (op === 3) {
@@ -174,7 +205,11 @@ function run(seed: number, withBackwardOps: boolean, steps: number, dated = true
       const reach = khatmahReachAyah(plan());
       const at = Math.min(TOTAL, reach + 1 + pick(40));
       const a = ayahAtIndex(at);
-      setKhatmahPosition(a.surah, a.ayah, findPageForAyah(a.surah, a.ayah, 'hafs'));
+      setKhatmahPosition(
+        a.surah,
+        a.ayah,
+        findPageForAyah(a.surah, a.ayah, 'hafs'),
+      );
       const t = stamp();
       claims.push({ from: start, to: at - 1, at: t, read: true });
       claims.push({ from: at, to: TOTAL, at: stamp(), read: false });
@@ -184,7 +219,11 @@ function run(seed: number, withBackwardOps: boolean, steps: number, dated = true
     } else if (op === 5) {
       // Un-mark a done page behind the reader, by hand.
       const p = plan();
-      const reachPage = findPageForAyah(ayahAtIndex(Math.max(1, khatmahReachAyah(p))).surah, ayahAtIndex(Math.max(1, khatmahReachAyah(p))).ayah, 'hafs');
+      const reachPage = findPageForAyah(
+        ayahAtIndex(Math.max(1, khatmahReachAyah(p))).surah,
+        ayahAtIndex(Math.max(1, khatmahReachAyah(p))).ayah,
+        'hafs',
+      );
       const page = 1 + pick(Math.max(1, reachPage));
       if (isKhatmahPageDone(p, page) && khatmahTracksPage(page)) {
         const first = firstAyahOfPage(page, 'hafs');
@@ -196,7 +235,10 @@ function run(seed: number, withBackwardOps: boolean, steps: number, dated = true
     } else {
       // Rewind today (rare, and only when there is something to rewind).
       const p = plan();
-      const base = p.dayStartDate === ymd(Date.now()) ? (p.dayStartAyahsRead ?? 0) : khatmahReachAyah(p);
+      const base =
+        p.dayStartDate === ymd(Date.now())
+          ? p.dayStartAyahsRead ?? 0
+          : khatmahReachAyah(p);
       if (base < khatmahReachAyah(p) && random() < 0.3) {
         resetKhatmahToday();
         claims.push({ from: base + 1, to: TOTAL, at: stamp(), read: false });
@@ -257,16 +299,22 @@ describe('two devices, random days, a plan paced to a date', () => {
 describe('two devices, random days, a date that comes and goes', () => {
   // Twelve days: the run goes on past the date, and the plan must keep
   // its footing there too — nothing crashes, the two still agree.
-  it.each([51, 52, 53, 54])('with un-marks, rewinds and pins, seed %i', seed => {
-    run(seed, true, 200, true, 12);
-  });
+  it.each([51, 52, 53, 54])(
+    'with un-marks, rewinds and pins, seed %i',
+    seed => {
+      run(seed, true, 200, true, 12);
+    },
+  );
 });
 
 describe('two devices, random days, a plan of a number of days', () => {
   it.each([31, 32, 33, 34])('forward reading only, seed %i', seed => {
     run(seed, false, 160, false);
   });
-  it.each([41, 42, 43, 44, 45, 46])('with un-marks, rewinds and pins, seed %i', seed => {
-    run(seed, true, 160, false);
-  });
+  it.each([41, 42, 43, 44, 45, 46])(
+    'with un-marks, rewinds and pins, seed %i',
+    seed => {
+      run(seed, true, 160, false);
+    },
+  );
 });

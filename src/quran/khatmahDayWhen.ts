@@ -54,6 +54,19 @@ function todayOrigin(now: number): number {
   return startOfDay(islamicCivilDate(new Date(now)).getTime());
 }
 
+/**
+ * Local midnight `days` calendar days after the date of `at`.
+ *
+ * A calendar step, not `days` × 24 hours: across the night the clocks go
+ * back a day is 25 hours long, and midnight plus a multiple of 24 hours
+ * lands at 23:00 the day BEFORE — so every day of a plan past that night
+ * was named a day early ("tomorrow" for the day after). Found 2026-09-29.
+ */
+function addCalendarDays(at: number, days: number): number {
+  const d = new Date(at);
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate() + days).getTime();
+}
+
 /** Whole days from today to the day `at` falls on. Negative is the past. */
 export function daysAway(at: number, now: number): number {
   return Math.round((startOfDay(at) - todayOrigin(now)) / DAY_MS);
@@ -65,7 +78,7 @@ export function khatmahDayWhen(
   day: number,
   now: number = Date.now(),
 ): DayWhen {
-  const at = new Date(startOfDay(startedAt) + (Math.max(1, day) - 1) * DAY_MS);
+  const at = new Date(addCalendarDays(startedAt, Math.max(1, day) - 1));
   const away = daysAway(at.getTime(), now);
   if (away <= 0) return { kind: 'today' };
   if (away === 1) return { kind: 'tomorrow' };

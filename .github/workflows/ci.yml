@@ -31,6 +31,16 @@ jobs:
       - name: Jest
         run: npx jest --ci --runInBand
 
+      # The runner is UTC, which has no daylight saving — so a date counted
+      # in multiples of 24 hours looks right here and is a day off in most
+      # of the places Mihrab is used. Three khatmah dates were (2026-09-29,
+      # __tests__/khatmahClockChange.test.ts). Run the suite again where the
+      # clocks do move.
+      - name: Jest in a zone with daylight saving
+        run: npx jest --ci --runInBand
+        env:
+          TZ: Europe/Stockholm
+
   # The widget contract (docs/rewrite-plan.md, Phase 1): the readers the
   # widgets and Live Activities compile, run over the golden fixtures the
   # app's own TypeScript wrote (contract-tests/fixtures.json). A payload
