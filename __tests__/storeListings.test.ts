@@ -182,13 +182,16 @@ describe('the listings are one listing', () => {
     expect(readFileSync(OUT, 'utf8')).toBe(render());
   });
 
-  it.each(APP_LOCALES)('%s keeps price and promotion words out of the short description', locale => {
-    // Play: "must not contain keywords that indicate price or promotion",
-    // and "No ads." tripped it — an app that does cannot be featured.
-    expect(field(STORE_DIR[locale], 'short_description')).not.toMatch(
-      /\bads?\b|\bfree\b|annons|gratis|إعلان|مجان|Werbung|kostenlos|\bpub\b|gratuit|anuncio|reklam|ücretsiz|iklan|реклам|бесплат|বিজ্ঞাপন|বিনামূল্যে|विज्ञापन|मुफ़्त|اشتہار|مفت|广告|免费/i,
-    );
-  });
+  it.each(APP_LOCALES)(
+    '%s keeps price and promotion words out of the short description',
+    locale => {
+      // Play: "must not contain keywords that indicate price or promotion",
+      // and "No ads." tripped it — an app that does cannot be featured.
+      expect(field(STORE_DIR[locale], 'short_description')).not.toMatch(
+        /\bads?\b|\bfree\b|annons|gratis|إعلان|مجان|Werbung|kostenlos|\bpub\b|gratuit|anuncio|reklam|ücretsiz|iklan|реклам|бесплат|বিজ্ঞাপন|বিনামূল্যে|विज्ञापन|मुफ़्त|اشتہار|مفت|广告|免费/i,
+      );
+    },
+  );
 
   it.each(APP_LOCALES)('%s leads its title with the name', locale => {
     const title = field(STORE_DIR[locale], 'title');
@@ -210,9 +213,53 @@ describe('the App Store copy fits App Store Connect', () => {
   const ios = (loc: string, f: string) =>
     readFileSync(path.join(IOS, loc, `${f}.txt`), 'utf8').trim();
 
-  it('has English, Swedish and Arabic', () => {
-    expect(locales.sort()).toEqual(['ar-SA', 'en-US', 'sv']);
+  /**
+   * Every language the app speaks, keyed by the App Store's locale code
+   * and mapped to the Play directory the same words come from. It was
+   * English, Swedish and Arabic until 2026-09-28, while the app and its
+   * Play listing had thirteen — so a search in Turkish or Urdu found
+   * nothing to match on the iPhone. scripts/appstore-metadata.py writes
+   * exactly these, and says so in the same table.
+   */
+  const IOS_TO_PLAY: Record<string, string> = {
+    'en-US': 'en-US',
+    sv: 'sv-SE',
+    'ar-SA': 'ar',
+    'de-DE': 'de-DE',
+    'es-ES': 'es-ES',
+    'fr-FR': 'fr-FR',
+    id: 'id',
+    tr: 'tr-TR',
+    ru: 'ru-RU',
+    'zh-Hans': 'zh-CN',
+    hi: 'hi-IN',
+    bn: 'bn-BD',
+    ur: 'ur',
+  };
+
+  it('has all thirteen languages, and the script writes the same ones', () => {
+    expect(locales.sort()).toEqual(Object.keys(IOS_TO_PLAY).sort());
+    const script = readFileSync(
+      path.join(ROOT, 'scripts', 'appstore-metadata.py'),
+      'utf8',
+    );
+    for (const [appStore, play] of Object.entries(IOS_TO_PLAY)) {
+      expect(script).toContain(`"${appStore}": "${play}"`);
+    }
   });
+
+  it.each(Object.entries(IOS_TO_PLAY))(
+    '%s is called what Play calls it',
+    (appStore, play) => {
+      const playTitle = readFileSync(
+        path.join(ROOT, 'fastlane', 'metadata', 'android', play, 'title.txt'),
+        'utf8',
+      ).trim();
+      expect(
+        readFileSync(path.join(IOS, appStore, 'name.txt'), 'utf8').trim(),
+      ).toBe(playTitle);
+    },
+  );
 
   it.each(
     locales.flatMap(l =>
@@ -242,8 +289,15 @@ describe('the App Store copy fits App Store Connect', () => {
     // App Review guideline 2.3.10: no other mobile platform in the
     // metadata. And nothing Android-only, which would be a promise the
     // iPhone cannot keep.
-    for (const f of ['description', 'promotional_text', 'subtitle', 'keywords']) {
-      expect(ios(loc, f)).not.toMatch(/Android|أندرويد|Google Play|F-Droid|Material You/i);
+    for (const f of [
+      'description',
+      'promotional_text',
+      'subtitle',
+      'keywords',
+    ]) {
+      expect(ios(loc, f)).not.toMatch(
+        /Android|أندرويد|اینڈرائیڈ|Андроид|एंड्रॉ|অ্যান্ড্রয়েড|安卓|Google Play|F-Droid|Material You/i,
+      );
     }
   });
 });

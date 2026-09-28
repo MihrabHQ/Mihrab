@@ -1,0 +1,38 @@
+Mihrab es un compañero sereno para el día de un musulmán: las oraciones, el Corán y el recuerdo de Dios entre ellas, en una sola app privada.
+
+Mantén pulsada cualquier palabra del mushaf y oirás esa palabra recitada. Sigue la palabra recitada mientras se ilumina en la página. Mira el tajwid en color, en Hafs y en Warsh. Mantén tu diario y tus ajustes al día entre tus propios dispositivos, sin cuenta y sin servidor. Y cada línea es de código abierto.
+
+REZAR
+- Horarios de oración para hoy, la semana y el mes siguiente —calculados en tu teléfono, obtenidos de un proveedor o de las tablas nacionales publicadas de Suecia y Marruecos—, que puedes compartir como imagen o PDF
+- El adhan de cada oración, con diecisiete grabaciones o la tuya propia, un aviso previo y posponer
+- Una Actividad en Vivo con la cuenta atrás hasta la próxima oración, en la pantalla bloqueada y en la Dynamic Island
+- Brújula de la alquibla con intensidad de la señal y una comprobación con el sol
+- Registra cada oración con un toque; el diario guarda el historial, la racha y el gráfico
+- Widgets de la pantalla de inicio: horarios en tres tamaños, el registro de hoy, fecha de la Hégira, racha, tasbih y lectura
+
+LEER Y ESCUCHAR
+- El mushaf de Medina, trazado como texto con las fuentes de página del Complejo Rey Fahd y nítido a cualquier tamaño, junto con Warsh, Qalun y Shu'bah
+- Colores de tajwid, con cada regla explicada, en Hafs y en Warsh
+- El lector de palabras: mantén pulsada una palabra para oírla sola
+- 42 recitadores y, en los que tienen tiempos por palabra, la palabra recitada iluminada en la página
+- Tilawa: sura tras sura con la pantalla apagada, con temporizador y control de velocidad
+- 13 traducciones y tafsir clásico, disponibles sin conexión
+- Herramientas de memorización, marcadores y planes de jatma que siguen la página en la que estás
+
+RECORDAR
+- Más de 100 duas del Hisn al-Muslim, con transliteración y traducción
+- Un contador de tasbih para el dhikr después de la oración y más allá
+- Un registro de ayunos para Ramadán y los ayunos de la Sunna, con recordatorios
+- El calendario de la Hégira con Ramadán, Eid y Yumu'a, y una aleya del día
+
+TUYO
+- Sin anuncios, sin analíticas, sin rastreadores, sin cuenta
+- Funciona sin conexión una vez fijada tu ubicación y descargadas las páginas que quieras
+- Sincronización entre tus propios dispositivos sin cuenta y sin ningún servidor nuestro: archivos sellados en una carpeta que ya mantienes sincronizada
+- Copia de seguridad y restauración en un archivo que conservas tú
+- 13 idiomas, con árabe y urdu totalmente de derecha a izquierda
+- Temas claro, oscuro y negro puro, tu propio color de acento y Liquid Glass
+
+La red solo se usa cuando tú lo eliges: un proveedor de horarios (AlAdhan, PrayTimes.dev o las tablas nacionales de Suecia y Marruecos), la búsqueda de lugares con OpenStreetMap Nominatim y la descarga de páginas del Corán, traducciones, tafsir y audio de recitación. Tus coordenadas se quedan en tu dispositivo.
+
+Mihrab es de código abierto con licencia AGPL-3.0-or-later.

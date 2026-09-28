@@ -1,0 +1,38 @@
+Mihrab adalah pendamping yang tenang bagi hari seorang Muslim: sholat, Al-Quran, dan dzikir di antaranya, dalam satu aplikasi yang menjaga privasi.
+
+Tahan kata apa pun di mushaf dan dengarkan kata itu dibacakan. Ikuti kata yang sedang dibaca saat menyala di halaman. Lihat tajwid berwarna, pada Hafs dan Warsy. Jaga catatan dan pengaturan tetap selaras di antara perangkat Anda sendiri, tanpa akun dan tanpa server. Dan setiap barisnya bersumber terbuka.
+
+SHOLAT
+- Jadwal sholat hari ini, sepekan, dan sebulan ke depan — dihitung di ponsel, dari penyedia, atau dari tabel nasional resmi Swedia dan Maroko — dapat dibagikan sebagai gambar atau PDF
+- Adzan untuk setiap waktu sholat, dengan tujuh belas rekaman atau rekaman Anda sendiri, pengingat sebelumnya, dan tunda
+- Aktivitas Langsung yang menghitung mundur ke sholat berikutnya, di Layar Terkunci dan di Dynamic Island
+- Kompas kiblat dengan kekuatan sinyal dan pengecekan silang terhadap matahari
+- Catat setiap sholat dengan satu ketukan; jurnal menyimpan riwayat, rangkaian, dan grafiknya
+- Widget Layar Utama: jadwal sholat dalam tiga ukuran, catatan hari ini, tanggal Hijriah, rangkaian, tasbih, dan bacaan
+
+MEMBACA DAN MENDENGAR
+- Mushaf Madinah, disusun sebagai teks dari fon halaman Kompleks Raja Fahd dan tajam di ukuran apa pun — beserta Warsy, Qalun, dan Syu'bah
+- Warna tajwid, setiap hukum dijelaskan — pada Hafs dan Warsy
+- Pembaca kata: tahan satu kata untuk mendengarnya dibaca sendiri
+- 42 qari, dan pada qari yang memiliki penanda waktu per kata, kata yang dibaca menyala di halaman
+- Tilawah: surah demi surah dengan layar mati, dengan pengatur waktu tidur dan kendali kecepatan
+- 13 terjemahan dan tafsir klasik, bisa dibaca tanpa internet
+- Alat bantu hafalan, penanda, dan rencana khatam yang mengikuti halaman yang sedang Anda baca
+
+MENGINGAT
+- Lebih dari 100 doa dari Hisnul Muslim, dengan transliterasi dan terjemahan
+- Penghitung tasbih untuk dzikir setelah sholat dan seterusnya
+- Catatan puasa untuk Ramadhan dan puasa sunnah, dengan pengingat
+- Kalender Hijriah dengan Ramadhan, Idul Fitri, Idul Adha, dan Jumat, serta ayat hari ini
+
+MILIK ANDA
+- Tanpa iklan, tanpa analitik, tanpa pelacak, tanpa akun
+- Berfungsi tanpa internet setelah lokasi diatur dan halaman yang Anda inginkan ada di ponsel
+- Sinkronisasi antarperangkat Anda sendiri tanpa akun dan tanpa server kami: berkas tersegel di folder yang memang sudah Anda sinkronkan
+- Cadangkan dan pulihkan ke berkas yang Anda simpan
+- 13 bahasa, dengan bahasa Arab dan Urdu sepenuhnya dari kanan ke kiri
+- Tema terang, gelap, dan hitam pekat, warna aksen pilihan Anda, dan Liquid Glass
+
+Jaringan hanya digunakan saat Anda memilihnya: penyedia jadwal sholat (AlAdhan, PrayTimes.dev, atau tabel nasional Swedia dan Maroko), pencarian tempat melalui OpenStreetMap Nominatim, serta pengunduhan halaman Al-Quran, terjemahan, tafsir, dan audio tilawah. Koordinat Anda tetap di perangkat Anda.
+
+Mihrab bersumber terbuka dengan lisensi AGPL-3.0-or-later.

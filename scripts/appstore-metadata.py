@@ -5,7 +5,7 @@
     ./scripts/appstore-metadata.py --dry-run       # say what would change
     ./scripts/appstore-metadata.py --create 2.27.1 # make that version first
 
-WHAT IT WRITES, per locale (en-US, sv, ar-SA):
+WHAT IT WRITES, per locale — all thirteen the app speaks:
 
     name, subtitle           the app info — what search indexes first
     description, keywords,   the version — frozen once it is submitted
@@ -16,8 +16,19 @@ The words come from the files, and the files come from
 branding/IDENTITY.md; __tests__/storeListings.test.ts holds them to Apple's
 limits (keywords in BYTES, which is what an Arabic keyword costs) and to
 guideline 2.3.10 (no other platform named). What's new is the Android
-changelog for this build's versionCode, in the same three languages the
-release writes anyway. A locale the listing does not have yet is created.
+changelog for this build's versionCode — English, Swedish and Arabic are
+the three the release writes, so the other ten use the English one. A
+locale the listing does not have yet is created. And the categories, on
+the app info: Lifestyle, with Reference second.
+
+WHY THIRTEEN (2026-09-28). The App Store listing was English, Swedish and
+Arabic while the app and its Play listing were in thirteen languages, so a
+search in Turkish, Urdu or Indonesian had nothing to match on the iPhone.
+Each locale is its own name, subtitle and hundred bytes of keywords.
+
+WHY LIFESTYLE. It was filed under Utilities, beside flashlights and QR
+scanners; the apps people compare it with are in Lifestyle, and the
+category decides which charts and "similar apps" it is shown among.
 
 WHY. The App Store listing was the last thing still describing the app
 Mihrab was a year ago: a "Prayer Times" description that listed three
@@ -45,7 +56,14 @@ BUNDLE_ID = "com.hassan.prayerapp"
 IOS = ROOT / "fastlane" / "metadata" / "ios"
 ANDROID = ROOT / "fastlane" / "metadata" / "android"
 # App Store locale -> the Android directory whose changelog is "What's New".
-LOCALES = {"en-US": "en-US", "sv": "sv-SE", "ar-SA": "ar"}
+LOCALES = {
+    "en-US": "en-US", "sv": "sv-SE", "ar-SA": "ar",
+    "de-DE": "de-DE", "es-ES": "es-ES", "fr-FR": "fr-FR", "id": "id",
+    "tr": "tr-TR", "ru": "ru-RU", "zh-Hans": "zh-CN", "hi": "hi-IN",
+    "bn": "bn-BD", "ur": "ur",
+}
+PRIMARY_CATEGORY = "LIFESTYLE"
+SECONDARY_CATEGORY = "REFERENCE"
 MARKETING_URL = "https://mihrab.elghamri.se/"
 SUPPORT_URL = "https://github.com/MihrabHQ/Mihrab/issues"
 PRIVACY_URL = "https://github.com/MihrabHQ/Mihrab/blob/main/PRIVACY_POLICY.md"
@@ -84,8 +102,12 @@ def version_code() -> str:
 
 
 def whats_new(locale: str) -> str | None:
-    f = ANDROID / LOCALES[locale] / "changelogs" / f"{version_code()}.txt"
-    return f.read_text(encoding="utf-8").strip() if f.exists() else None
+    """This build's notes in the locale's language, or in English."""
+    for d in (LOCALES[locale], "en-US"):
+        f = ANDROID / d / "changelogs" / f"{version_code()}.txt"
+        if f.exists():
+            return f.read_text(encoding="utf-8").strip()
+    return None
 
 
 def main(argv: list[str]) -> None:
@@ -120,6 +142,19 @@ def main(argv: list[str]) -> None:
         print(f"nothing to edit — the listing is frozen. Versions: {states}")
         print("Run this after the release uploads its build, or pass --create X.Y.Z.")
         raise SystemExit(3)
+
+    cats = xc.call(f"/v1/appInfos/{info['id']}?include=primaryCategory,secondaryCategory")
+    rel = cats["data"]["relationships"]
+    have_cats = ((rel["primaryCategory"]["data"] or {}).get("id"),
+                 (rel["secondaryCategory"]["data"] or {}).get("id"))
+    if have_cats != (PRIMARY_CATEGORY, SECONDARY_CATEGORY):
+        print(f"  categories: {have_cats} -> {(PRIMARY_CATEGORY, SECONDARY_CATEGORY)}")
+        if not dry:
+            send("PATCH", f"/v1/appInfos/{info['id']}", {"data": {
+                "type": "appInfos", "id": info["id"], "relationships": {
+                    "primaryCategory": {"data": {"type": "appCategories", "id": PRIMARY_CATEGORY}},
+                    "secondaryCategory": {"data": {"type": "appCategories", "id": SECONDARY_CATEGORY}},
+                }}})
 
     print(f"version {ver['attributes']['versionString']} "
           f"({ver['attributes'].get('appStoreState')}), What's New from "

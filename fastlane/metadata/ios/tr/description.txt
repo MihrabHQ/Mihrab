@@ -1,0 +1,38 @@
+Mihrab, bir Müslümanın gününe eşlik eden sakin bir yoldaştır: namazlar, Kuran ve aralarındaki zikir, gizliliğinize saygılı tek bir uygulamada.
+
+Mushaftaki herhangi bir kelimeye basılı tutun ve yalnızca o kelimenin okunuşunu dinleyin. Okunan kelimeyi sayfada parlarken takip edin. Tecvidi renkli görün; Hafs ve Verş rivayetinde. Günlüğünüzü ve ayarlarınızı kendi cihazlarınız arasında eşit tutun; hesap yok, sunucu yok. Ve her satırı açık kaynaktır.
+
+NAMAZ
+- Bugünün, haftanın ve önümüzdeki ayın namaz vakitleri — telefonunuzda hesaplanır, bir sağlayıcıdan alınır ya da İsveç ve Fas'ın yayımlanmış resmî tablolarından gelir — görsel veya PDF olarak paylaşılabilir
+- Her vakit için ezan: on yedi kayıt ya da kendi kaydınız, vakit öncesi hatırlatma ve erteleme
+- Kilit Ekranı'nda ve Dynamic Island'da bir sonraki namaza geri sayan Canlı Etkinlik
+- Sinyal gücünü gösteren ve güneşle karşılaştıran kıble pusulası
+- Her namazı tek dokunuşla kaydedin; günlük geçmişi, seriyi ve grafiği tutar
+- Ana Ekran widget'ları: üç boyutta namaz vakitleri, günün kaydı, hicri tarih, seri, tesbih ve okuma
+
+OKU VE DİNLE
+- Kral Fahd Kompleksi'nin sayfa yazı tipleriyle metin olarak çizilen ve her boyutta net kalan Medine mushafı — yanında Verş, Kalun ve Şu'be
+- Tecvid renkleri, her kural açıklamalı — Hafs ve Verş rivayetinde
+- Kelime okuyucu: bir kelimeye basılı tutun, tek başına okunsun
+- 42 kâri; kelime zamanlaması olanlarda okunan kelime sayfada yanar
+- Tilavet: ekran kapalıyken sure sure dinleme, uyku zamanlayıcısı ve hız ayarıyla
+- 13 meal ve klasik tefsirler, çevrimdışı da okunabilir
+- Ezber araçları, yer imleri ve açık olduğunuz sayfayı izleyen hatim planları
+
+ZİKİR
+- Hısnü'l-Müslim'den 100'den fazla dua, okunuşu ve mealiyle
+- Namaz sonrası ve her an için tesbih sayacı
+- Ramazan ve sünnet oruçları için hatırlatmalı oruç takibi
+- Ramazan, bayram ve cuma vurgulu hicri takvim ve günün ayeti
+
+SİZİN
+- Reklam yok, analitik yok, izleyici yok, hesap yok
+- Konumunuz belirlendikten ve istediğiniz sayfalar telefona indikten sonra çevrimdışı çalışır
+- Hesapsız ve bize ait hiçbir sunucu olmadan, kendi cihazlarınız arasında eşitleme: zaten eşitlediğiniz bir klasörde mühürlü dosyalar
+- Sizde kalan bir dosyaya yedekleme ve geri yükleme
+- Arapça ve Urduca tamamen sağdan sola olmak üzere 13 dil
+- Açık, koyu ve saf siyah temalar, kendi vurgu renginiz ve Liquid Glass
+
+Ağ yalnızca siz seçtiğinizde kullanılır: bir vakit sağlayıcısı (AlAdhan, PrayTimes.dev ya da İsveç ve Fas'ın resmî tabloları), OpenStreetMap Nominatim ile yer arama ve Kuran sayfaları, mealler, tefsirler ile tilavet seslerinin indirilmesi. Koordinatlarınız cihazınızda kalır.
+
+Mihrab, AGPL-3.0-or-later lisansıyla açık kaynaktır.
