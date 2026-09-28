@@ -35,15 +35,8 @@ import { useActiveEdition } from '../useActiveEdition';
 import {
   activeKhatmah,
   khatmahPageInWindow,
-  addBookmark,
   clearKhatmahPosition,
-  findBookmark,
-  isStarred,
-  removeBookmark,
-  setBookmarkFollows,
   setKhatmahPosition,
-  setReadingPosition,
-  toggleStar,
   useQuranState,
   setQuranPrefs,
   BOOKMARK_COLORS,
@@ -51,6 +44,15 @@ import {
   READING_COLOR,
   type BookmarkColor,
 } from '../quranState';
+import {
+  addBookmark,
+  findBookmark,
+  isStarred,
+  removeBookmark,
+  setBookmarkFollows,
+  setReadingPosition,
+  toggleStar,
+} from '../readerMarks';
 import { activeReaderMode } from '../readerMode';
 import {
   loadTafsir,

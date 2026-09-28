@@ -13,21 +13,23 @@ import { readFileSync } from 'fs';
 import path from 'path';
 import {
   __resetQuranStateForTests,
-  addBookmark,
   BOOKMARK_COLORS,
   KHATMAH_COLOR,
   READING_COLOR,
-  moveSessionToPage,
   coerceQuranState,
   getQuranState,
-  recordReading,
-  removeBookmark,
-  setBookmarkFollows,
   setQuranPrefs,
   startKhatmah,
   type QuranState,
   type QuranBookmark,
 } from '../src/quran/quranState';
+import {
+  addBookmark,
+  moveSessionToPage,
+  recordReading,
+  removeBookmark,
+  setBookmarkFollows,
+} from '../src/quran/readerMarks';
 import { ayahTint } from '../src/quran/ayahMarks';
 import {
   _resetReadingSession,

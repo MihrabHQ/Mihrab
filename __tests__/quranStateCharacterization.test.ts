@@ -14,7 +14,6 @@ import {
   __resetQuranStateForTests,
   abandonKhatmah,
   activeKhatmah,
-  addBookmark,
   coerceQuranState,
   DEFAULT_QURAN_STATE,
   getQuranState,
@@ -26,13 +25,13 @@ import {
   planDays,
   recordKhatmahProgress,
   resetKhatmahAll,
-  setLastRead,
   startKhatmah,
   subscribeQuranState,
   updateQuranState,
   type KhatmahPlan,
   type QuranBookmark,
 } from '../src/quran/quranState';
+import { addBookmark, setLastRead } from '../src/quran/readerMarks';
 import { mergeFasting, mergeKhatmah, mergeQuran } from '../src/sync/merge';
 
 const DAY = 24 * 60 * 60 * 1000;

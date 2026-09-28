@@ -31,10 +31,10 @@ import { DEFAULT_RIWAYAH, type RiwayahId } from './riwayat';
 import {
   KHATMAH_TOTAL_PAGES,
   khatmahPages,
-  setBookmarkFollows,
   useQuranState,
   type QuranBookmark,
 } from './quranState';
+import { setBookmarkFollows } from './readerMarks';
 import { claimReadingSession } from './readingSession';
 import { activeKhatmah } from './quranCardState';
 import { Chip } from '../components/controls';

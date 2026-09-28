@@ -56,15 +56,17 @@ import { findPageForAyah } from '../../quran/pages';
 import { surahName } from '../../quran/surahName';
 import {
   activeKhatmah,
-  drawnReadingPosition,
-  findBookmark,
-  isStarred,
-  recordReading,
   useQuranState,
   BOOKMARK_COLORS,
   KHATMAH_COLOR,
   READING_COLOR,
 } from '../../quran/quranState';
+import {
+  drawnReadingPosition,
+  findBookmark,
+  isStarred,
+  recordReading,
+} from '../../quran/readerMarks';
 import { usePlaybackStatus } from '../../quran/audio/playback';
 import { useActiveWordIndex } from '../../quran/audio/useWordTiming';
 import { countedWordIndices } from '../../quran/audio/countedWords';

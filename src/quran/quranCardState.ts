@@ -45,11 +45,11 @@ import {
   khatmahOnlyGapsLeft,
   khatmahPages,
   isLivePlan,
-  readingContinueTarget,
   type KhatmahPlan,
   type LastRead,
   type QuranState,
 } from './quranState';
+import { readingContinueTarget } from './readerMarks';
 
 export type QuranCardKhatmah = {
   /** 1-based day within the plan. */

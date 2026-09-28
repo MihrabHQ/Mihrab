@@ -21,13 +21,13 @@ import {
   finishKhatmahPortion,
   primeQuranState,
   recordKhatmahPageTurn,
-  recordReading,
   setKhatmahPosition,
   startKhatmah,
   toggleKhatmahPageDone,
   isKhatmahPageDone,
   type QuranState,
 } from '../src/quran/quranState';
+import { recordReading } from '../src/quran/readerMarks';
 import { ayahAtIndex } from '../src/quran/ayahIndex';
 import { findPageForAyah } from '../src/quran/pages';
 import { mergeQuran } from '../src/sync/merge';
