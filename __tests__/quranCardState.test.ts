@@ -10,12 +10,9 @@ import {
   pagesReadToday,
   selectQuranCardState,
 } from '../src/quran/quranCardState';
-import {
-  khatmahCurrentPage,
-  khatmahPortion,
-  type KhatmahPlan,
-  type QuranState,
-} from '../src/quran/quranState';
+import type { KhatmahPlan, QuranState } from '../src/quran/quranTypes';
+import { khatmahCurrentPage } from '../src/quran/khatmahProgress';
+import { khatmahPortion } from '../src/quran/khatmahSchedule';
 import { DEFAULT_RIWAYAH } from '../src/quran/riwayat';
 
 const DAY = 24 * 60 * 60 * 1000;

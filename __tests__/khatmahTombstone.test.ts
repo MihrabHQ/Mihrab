@@ -11,7 +11,7 @@
  * date on it, and it travels.
  */
 import { mergeKhatmah } from '../src/sync/merge';
-import type { KhatmahPlan } from '../src/quran/quranState';
+import type { KhatmahPlan } from '../src/quran/quranTypes';
 
 const plan = (over: Partial<KhatmahPlan> = {}): KhatmahPlan => ({
   id: 'k1',

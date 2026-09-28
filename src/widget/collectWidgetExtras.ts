@@ -19,11 +19,8 @@ import { loadPractice } from '../practice/practiceStore';
 import { fontStoreStats } from '../quran/mushafFontStore';
 import { MUSHAF_TOTAL_PAGES } from '../quran/mushafImages';
 import { resolveRiwayah, riwayahById } from '../quran/riwayat';
-import {
-  activeKhatmah,
-  getQuranState,
-  hydrateQuranState,
-} from '../quran/quranState';
+import { getQuranState, hydrateQuranState } from '../quran/quranState';
+import { activeKhatmah } from '../quran/khatmahProgress';
 import { getTasbihState, hydrateTasbihState } from '../tasbih/tasbihStore';
 import i18n from '../i18n';
 import type { TimingsMap } from '../types/prayer';

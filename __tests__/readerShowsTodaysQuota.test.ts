@@ -15,10 +15,10 @@ import { readFileSync } from 'fs';
 import path from 'path';
 import {
   __resetQuranStateForTests,
-  activeKhatmah,
   getQuranState,
-  khatmahPages,
 } from '../src/quran/quranState';
+import { activeKhatmah } from '../src/quran/khatmahProgress';
+import { khatmahPages } from '../src/quran/khatmahStatus';
 import {
   recordKhatmahPageTurn,
   startKhatmah,

@@ -32,11 +32,13 @@ import {
   coerceQuranState,
   DEFAULT_QURAN_STATE,
   mergeRemovals,
-  pagesThroughAyahs,
-  type KhatmahPlan,
-  type QuranBookmark,
-  type QuranState,
 } from '../src/quran/quranState';
+import type {
+  KhatmahPlan,
+  QuranBookmark,
+  QuranState,
+} from '../src/quran/quranTypes';
+import { pagesThroughAyahs } from '../src/quran/khatmahProgress';
 
 /**
  * CANONICAL, the way a stored one is.

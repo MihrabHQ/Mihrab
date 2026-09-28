@@ -12,16 +12,17 @@
  */
 import {
   __resetQuranStateForTests,
-  activeKhatmah,
   getQuranState,
-  khatmahCurrentPage,
-  khatmahDay,
-  khatmahReachAyah,
-  khatmahFinishTarget,
   primeQuranState,
-  isKhatmahPageDone,
-  type QuranState,
 } from '../src/quran/quranState';
+import type { QuranState } from '../src/quran/quranTypes';
+import {
+  activeKhatmah,
+  khatmahCurrentPage,
+  khatmahReachAyah,
+  isKhatmahPageDone,
+} from '../src/quran/khatmahProgress';
+import { khatmahDay, khatmahFinishTarget } from '../src/quran/khatmahStatus';
 import {
   finishKhatmahPortion,
   recordKhatmahPageTurn,

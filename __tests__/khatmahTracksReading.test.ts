@@ -9,13 +9,17 @@
  */
 import {
   __resetQuranStateForTests,
-  activeKhatmah,
   getQuranState,
+} from '../src/quran/quranState';
+import {
+  activeKhatmah,
   khatmahCurrentPage,
+  isKhatmahPageDone,
+} from '../src/quran/khatmahProgress';
+import {
   khatmahCurrentPortion,
   khatmahGap,
-  isKhatmahPageDone,
-} from '../src/quran/quranState';
+} from '../src/quran/khatmahSchedule';
 import {
   finishKhatmahPortion,
   khatmahTracksPage,

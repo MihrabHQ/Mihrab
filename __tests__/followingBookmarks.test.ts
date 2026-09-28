@@ -19,9 +19,8 @@ import {
   coerceQuranState,
   getQuranState,
   setQuranPrefs,
-  type QuranState,
-  type QuranBookmark,
 } from '../src/quran/quranState';
+import type { QuranState, QuranBookmark } from '../src/quran/quranTypes';
 import { startKhatmah } from '../src/quran/khatmahActions';
 import {
   addBookmark,

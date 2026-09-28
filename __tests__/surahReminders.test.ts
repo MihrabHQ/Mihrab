@@ -21,6 +21,8 @@ import {
 jest.mock('../src/quran/quranState', () => ({
   hydrateQuranState: jest.fn(async () => {}),
   getQuranState: jest.fn(() => ({ lastRead: { mode: mockMode } })),
+}));
+jest.mock('../src/quran/khatmahProgress', () => ({
   activeKhatmah: jest.fn(() => null),
 }));
 let mockMode = 'withTranslation';

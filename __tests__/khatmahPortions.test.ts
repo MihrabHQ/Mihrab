@@ -14,14 +14,13 @@
  * shown somewhere other than where they stopped, which is the one thing
  * this feature must never do.
  */
+import type { KhatmahPlan } from '../src/quran/quranTypes';
 import {
   khatmahCurrentPortion,
-  khatmahDay,
-  khatmahMarkerAyah,
   khatmahPortion,
   khatmahPortionOf,
-  type KhatmahPlan,
-} from '../src/quran/quranState';
+} from '../src/quran/khatmahSchedule';
+import { khatmahDay, khatmahMarkerAyah } from '../src/quran/khatmahStatus';
 import { TOTAL_AYAHS, ayahAtIndex, ayahIndexOf } from '../src/quran/ayahIndex';
 import { findPageForAyah } from '../src/quran/pages';
 

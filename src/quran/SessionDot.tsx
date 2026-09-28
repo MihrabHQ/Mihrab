@@ -20,8 +20,8 @@ import {
   KHATMAH_COLOR,
   READING_COLOR,
   useQuranState,
-  type QuranBookmark,
 } from './quranState';
+import type { QuranBookmark } from './quranTypes';
 import {
   readingSessionSnapshot,
   subscribeReadingSession,

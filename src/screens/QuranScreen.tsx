@@ -53,26 +53,32 @@ import { findSurah, loadSurah, SURAHS, type SurahIndex } from '../quran/quran';
 import { getAyahTranslation } from '../quran/translations';
 import { useActiveEdition } from '../quran/useActiveEdition';
 import {
-  activeKhatmah,
   hydrateQuranState,
-  khatmahReachAyah,
-  khatmahFinishTarget,
-  khatmahDay,
-  khatmahDayAnchor,
-  khatmahBehindBy,
-  khatmahDaysLeft,
-  khatmahDatePassed,
-  khatmahDeadline,
-  planDays as khatmahPlanDays,
-  khatmahPaceOutgrown,
-  khatmahPerDayPages,
-  khatmahUnreadPages,
-  khatmahPages,
   setQuranPrefs,
   useQuranState,
   BOOKMARK_COLORS,
-  KHATMAH_TOTAL_AYAHS,
 } from '../quran/quranState';
+import {
+  activeKhatmah,
+  khatmahReachAyah,
+  khatmahUnreadPages,
+  KHATMAH_TOTAL_AYAHS,
+} from '../quran/khatmahProgress';
+import {
+  khatmahDayAnchor,
+  khatmahDatePassed,
+  khatmahDeadline,
+  planDays as khatmahPlanDays,
+} from '../quran/khatmahSchedule';
+import {
+  khatmahFinishTarget,
+  khatmahDay,
+  khatmahBehindBy,
+  khatmahDaysLeft,
+  khatmahPaceOutgrown,
+  khatmahPerDayPages,
+  khatmahPages,
+} from '../quran/khatmahStatus';
 import {
   abandonKhatmah,
   finishKhatmahPortion,

@@ -12,15 +12,10 @@
 import notifee, { AndroidImportance, TriggerType } from '@notifee/react-native';
 import i18n from '../i18n';
 import { ROUTE_KHATMAH } from './notificationRoute';
-import {
-  activeKhatmah,
-  getQuranState,
-  hydrateQuranState,
-  khatmahCurrentPage,
-  khatmahDay,
-  khatmahPages,
-  type KhatmahPlan,
-} from '../quran/quranState';
+import { getQuranState, hydrateQuranState } from '../quran/quranState';
+import type { KhatmahPlan } from '../quran/quranTypes';
+import { activeKhatmah, khatmahCurrentPage } from '../quran/khatmahProgress';
+import { khatmahDay, khatmahPages } from '../quran/khatmahStatus';
 
 const KHATMAH_REM_ID_PREFIX = 'khatmah-rem-';
 const KHATMAH_CHANNEL_ID = 'prayer_app_khatmah_reminder';

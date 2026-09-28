@@ -12,17 +12,19 @@ import {
   parseTrackId,
   trackId,
 } from '../src/quran/audio/playback';
+import { DEFAULT_QURAN_STATE } from '../src/quran/quranState';
+import type { KhatmahPlan } from '../src/quran/quranTypes';
 import {
-  DEFAULT_QURAN_STATE,
+  KHATMAH_TOTAL_AYAHS,
+  KHATMAH_TOTAL_PAGES,
+} from '../src/quran/khatmahProgress';
+import { khatmahPortion } from '../src/quran/khatmahSchedule';
+import {
   khatmahBehindBy,
   khatmahDay,
   khatmahDaysLeft,
   khatmahPages,
-  khatmahPortion,
-  KHATMAH_TOTAL_AYAHS,
-  KHATMAH_TOTAL_PAGES,
-  type KhatmahPlan,
-} from '../src/quran/quranState';
+} from '../src/quran/khatmahStatus';
 import { normalizeArabic, verseOfTheDayRef } from '../src/quran/search';
 import { SURAHS } from '../src/quran/quran';
 

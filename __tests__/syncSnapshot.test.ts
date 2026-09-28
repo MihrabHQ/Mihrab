@@ -36,7 +36,8 @@ import {
   mergeQuran,
   mergeSunnah,
 } from '../src/sync/merge';
-import { DEFAULT_QURAN_STATE, pagesThroughAyahs } from '../src/quran/quranState';
+import { DEFAULT_QURAN_STATE } from '../src/quran/quranState';
+import { pagesThroughAyahs } from '../src/quran/khatmahProgress';
 
 const NOW = '2026-08-19T06:00:00.000Z';
 

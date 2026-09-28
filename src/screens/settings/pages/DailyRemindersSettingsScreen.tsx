@@ -12,11 +12,8 @@ import { useTranslation } from 'react-i18next';
 import { useNotificationsSettings } from '../../../context/PrayerSettingsContext';
 import { useClockFormatter } from '../../../hooks/useClockFormatter';
 import { ensureNotifPermission } from '../../../notifications/ensureNotifPermission';
-import {
-  activeKhatmah,
-  hydrateQuranState,
-  useQuranState,
-} from '../../../quran/quranState';
+import { hydrateQuranState, useQuranState } from '../../../quran/quranState';
+import { activeKhatmah } from '../../../quran/khatmahProgress';
 import {
   SettingsGroup,
   SettingsLinkRow,

@@ -18,14 +18,14 @@
  */
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useQuranState } from './quranState';
+import type { QuranState } from './quranTypes';
 import {
   activeKhatmah,
   isKhatmahPageDone,
   khatmahCoversPage,
-  khatmahPageInWindow,
-  useQuranState,
-  type QuranState,
-} from './quranState';
+} from './khatmahProgress';
+import { khatmahPageInWindow } from './khatmahSchedule';
 import { toggleKhatmahPageDone } from './khatmahActions';
 import { DEFAULT_RIWAYAH, type RiwayahId } from './riwayat';
 import { useKhatmahSession } from './SessionDot';

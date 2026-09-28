@@ -35,20 +35,15 @@ import { countRanges } from './khatmahDone';
 import { islamicDayKey } from '../hijri/islamicDay';
 import { firstAyahOfPage } from './pages';
 import { type RiwayahId } from './riwayat';
+import type { KhatmahPlan, LastRead, QuranState } from './quranTypes';
 import {
   KHATMAH_TOTAL_AYAHS,
-  khatmahDay,
-  planDays,
-  khatmahDaysLeft,
   khatmahDone,
-  khatmahGap,
   khatmahOnlyGapsLeft,
-  khatmahPages,
   isLivePlan,
-  type KhatmahPlan,
-  type LastRead,
-  type QuranState,
-} from './quranState';
+} from './khatmahProgress';
+import { planDays, khatmahGap } from './khatmahSchedule';
+import { khatmahDay, khatmahDaysLeft, khatmahPages } from './khatmahStatus';
 import { readingContinueTarget } from './readerMarks';
 
 export type QuranCardKhatmah = {

@@ -225,6 +225,14 @@ After Isha, `buildWidgetPayload()` switches to tomorrow's data. iOS WidgetKit's 
 
 The app writes v2 beside v1 in one native call (`setDataV2`; plain `setData` removes v2). The widgets read v2 when it is there and reads, through an adapter (`WidgetPayloadV1` in Swift and Kotlin) that produces the v1 JSON their renderers already draw — so the renderers are unchanged, and v1 is still the fallback. `contract-tests/` holds the cases every platform is held to: `npm run contract-fixtures` records the app's answers, `scripts/contract-test-native.sh` runs them through Swift and Kotlin, and CI runs both.
 
+### The Quran store and the khatmah
+The reader's persistent state is one AsyncStorage blob, `mihrab.quran.v1`, held by `src/quran/quranState.ts` (state, hydrate, persist, subscribe, and the coerce that reads any stored blob back into shape). Everything else about it is split by what it does, and imports only downwards:
+
+- **Pure, below the store:** `quranTypes.ts` (the blob's types) → `khatmahProgress.ts` (pages and ayahs, the done set, reach, holes) → `khatmahSchedule.ts` (duration or deadline, days, portions, today's cut) → `khatmahStatus.ts` (today's state, days left, finish target, behind-by) → `khatmahEdits.ts` (the plan edits the writers make). None of these imports the store.
+- **Writers, above the store:** `readerMarks.ts` (the reading marker, bookmarks, stars) and `khatmahActions.ts` (start, pace, read, pin, reset, abandon), each a write through `updateQuranState`. The store imports neither.
+
+Import a name from the module that holds it; the store re-exports nothing. `__tests__/khatmahModules.test.ts` holds the order.
+
 ### Concurrent cache writes
 `prayerStorage.ts` serialises all `setItem` calls through `_writeMutex`. Do not bypass it — losing the mutex causes intermittent data loss when GPS and a manual refresh fire at the same time.
 
