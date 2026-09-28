@@ -72,6 +72,8 @@ jest.mock('../src/quran/quranState', () => ({
   khatmahDeadline: () => null,
   khatmahDaysLeft: () => 0,
   khatmahUnreadPages: () => 604,
+}));
+jest.mock('../src/quran/khatmahActions', () => ({
   setKhatmahDeadline: jest.fn(),
   setKhatmahDuration: jest.fn(),
 }));

@@ -23,10 +23,10 @@ import {
   isKhatmahPageDone,
   khatmahCoversPage,
   khatmahPageInWindow,
-  toggleKhatmahPageDone,
   useQuranState,
   type QuranState,
 } from './quranState';
+import { toggleKhatmahPageDone } from './khatmahActions';
 import { DEFAULT_RIWAYAH, type RiwayahId } from './riwayat';
 import { useKhatmahSession } from './SessionDot';
 

@@ -4,15 +4,17 @@
 import {
   __resetQuranStateForTests,
   activeKhatmah,
-  clearKhatmahPosition,
   getQuranState,
   khatmahCurrentPage,
+} from '../src/quran/quranState';
+import {
+  clearKhatmahPosition,
   recordKhatmahProgress,
   resetKhatmahAll,
   resetKhatmahToday,
   setKhatmahPosition,
   startKhatmah,
-} from '../src/quran/quranState';
+} from '../src/quran/khatmahActions';
 
 describe('khatmah position + resets', () => {
   beforeEach(() => {

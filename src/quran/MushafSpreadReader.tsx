@@ -40,7 +40,7 @@ import { useHeaderHeight } from '@react-navigation/elements';
 import { useTranslation } from 'react-i18next';
 import { useAppPalette } from '../hooks/useAppPalette';
 import { useIsActive } from '../hooks/useIsActive';
-import { finishKhatmahPortion } from './quranState';
+import { finishKhatmahPortion } from './khatmahActions';
 import { useRotationFade } from './rotationFade';
 import MushafTextPageSurface from './MushafTextPageSurface';
 import type { AyahRef } from './MushafTextPage';

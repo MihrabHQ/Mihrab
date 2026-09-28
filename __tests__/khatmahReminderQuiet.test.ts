@@ -16,10 +16,12 @@ import {
 import {
   __resetQuranStateForTests,
   activeKhatmah,
-  finishKhatmahPortion,
   getQuranState,
-  startKhatmah,
 } from '../src/quran/quranState';
+import {
+  finishKhatmahPortion,
+  startKhatmah,
+} from '../src/quran/khatmahActions';
 
 const plan = () => activeKhatmah(getQuranState())!;
 

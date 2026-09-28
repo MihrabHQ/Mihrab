@@ -7,9 +7,11 @@ import {
   __resetQuranStateForTests,
   activeKhatmah,
   getQuranState,
+} from '../src/quran/quranState';
+import {
   recordKhatmahPageTurn,
   startKhatmah,
-} from '../src/quran/quranState';
+} from '../src/quran/khatmahActions';
 import { pagesReadToday } from '../src/quran/quranCardState';
 import { DEFAULT_SETTINGS } from '../src/settings/types';
 import {
@@ -30,6 +32,9 @@ const STORE_FILES = [
   'khatmahProgress.ts',
   'khatmahSchedule.ts',
   'khatmahStatus.ts',
+  'khatmahEdits.ts',
+  'khatmahActions.ts',
+  'readerMarks.ts',
 ];
 
 const at = (iso: string) => new Date(iso);

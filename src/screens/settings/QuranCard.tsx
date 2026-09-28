@@ -12,11 +12,13 @@ import {
   khatmahDaysLeft,
   khatmahDeadline,
   khatmahUnreadPages,
-  setKhatmahDeadline,
-  setKhatmahDuration,
   setQuranPrefs,
   useQuranState,
 } from '../../quran/quranState';
+import {
+  setKhatmahDeadline,
+  setKhatmahDuration,
+} from '../../quran/khatmahActions';
 import {
   formatDeadline,
   KhatmahPacingSheet,

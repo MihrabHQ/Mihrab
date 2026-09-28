@@ -53,9 +53,7 @@ import { findSurah, loadSurah, SURAHS, type SurahIndex } from '../quran/quran';
 import { getAyahTranslation } from '../quran/translations';
 import { useActiveEdition } from '../quran/useActiveEdition';
 import {
-  abandonKhatmah,
   activeKhatmah,
-  finishKhatmahPortion,
   hydrateQuranState,
   khatmahReachAyah,
   khatmahFinishTarget,
@@ -69,18 +67,22 @@ import {
   khatmahPaceOutgrown,
   khatmahPerDayPages,
   khatmahUnreadPages,
-  setKhatmahDeadline,
-  setKhatmahDuration,
   khatmahPages,
-  resetKhatmahAll,
-  resetKhatmahToday,
   setQuranPrefs,
-  startKhatmah,
-  stepKhatmahBack,
   useQuranState,
   BOOKMARK_COLORS,
   KHATMAH_TOTAL_AYAHS,
 } from '../quran/quranState';
+import {
+  abandonKhatmah,
+  finishKhatmahPortion,
+  setKhatmahDeadline,
+  setKhatmahDuration,
+  resetKhatmahAll,
+  resetKhatmahToday,
+  startKhatmah,
+  stepKhatmahBack,
+} from '../quran/khatmahActions';
 import {
   removeBookmark,
   setBookmarkFollows,

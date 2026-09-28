@@ -13,7 +13,6 @@ import {
   __resetQuranStateForTests,
   activeKhatmah,
   ayahsThroughPage,
-  finishKhatmahPortion,
   getQuranState,
   isKhatmahPageDone,
   khatmahCreditWindow,
@@ -23,16 +22,19 @@ import {
   khatmahPaceToday,
   khatmahReachAyah,
   khatmahStartAyah,
-  khatmahTracksPage,
   primeQuranState,
+  KHATMAH_TOTAL_AYAHS as TOTAL,
+  type QuranState,
+} from '../src/quran/quranState';
+import {
+  finishKhatmahPortion,
+  khatmahTracksPage,
   recordKhatmahPageTurn,
   resetKhatmahToday,
   setKhatmahPosition,
   startKhatmah,
   toggleKhatmahPageDone,
-  KHATMAH_TOTAL_AYAHS as TOTAL,
-  type QuranState,
-} from '../src/quran/quranState';
+} from '../src/quran/khatmahActions';
 import { ayahAtIndex, ayahIndexOf } from '../src/quran/ayahIndex';
 import { findPageForAyah, firstAyahOfPage } from '../src/quran/pages';
 import {

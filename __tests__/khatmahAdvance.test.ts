@@ -9,16 +9,18 @@
 import {
   __resetQuranStateForTests,
   activeKhatmah,
-  finishKhatmahPortion,
   getQuranState,
   khatmahAyahsRead,
   khatmahCurrentPortion,
   khatmahDay,
   khatmahPortion,
+} from '../src/quran/quranState';
+import {
+  finishKhatmahPortion,
   setKhatmahPosition,
   startKhatmah,
   stepKhatmahBack,
-} from '../src/quran/quranState';
+} from '../src/quran/khatmahActions';
 import { TOTAL_AYAHS } from '../src/quran/ayahIndex';
 
 const active = () => activeKhatmah(getQuranState())!;

@@ -18,9 +18,11 @@ import {
   activeKhatmah,
   getQuranState,
   khatmahPages,
+} from '../src/quran/quranState';
+import {
   recordKhatmahPageTurn,
   startKhatmah,
-} from '../src/quran/quranState';
+} from '../src/quran/khatmahActions';
 
 const ROOT = path.join(__dirname, '..');
 const read = (p: string) => readFileSync(path.join(ROOT, p), 'utf8');

@@ -12,7 +12,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   __resetQuranStateForTests,
-  abandonKhatmah,
   activeKhatmah,
   coerceQuranState,
   DEFAULT_QURAN_STATE,
@@ -23,14 +22,17 @@ import {
   khatmahPaceToday,
   khatmahPortionOf,
   planDays,
-  recordKhatmahProgress,
-  resetKhatmahAll,
-  startKhatmah,
   subscribeQuranState,
   updateQuranState,
   type KhatmahPlan,
   type QuranBookmark,
 } from '../src/quran/quranState';
+import {
+  abandonKhatmah,
+  recordKhatmahProgress,
+  resetKhatmahAll,
+  startKhatmah,
+} from '../src/quran/khatmahActions';
 import { addBookmark, setLastRead } from '../src/quran/readerMarks';
 import { mergeFasting, mergeKhatmah, mergeQuran } from '../src/sync/merge';
 

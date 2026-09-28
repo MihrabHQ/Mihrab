@@ -10,17 +10,19 @@
 import {
   __resetQuranStateForTests,
   activeKhatmah,
-  finishKhatmahPortion,
   getQuranState,
   khatmahCurrentPage,
   khatmahCurrentPortion,
   khatmahGap,
-  khatmahTracksPage,
   isKhatmahPageDone,
+} from '../src/quran/quranState';
+import {
+  finishKhatmahPortion,
+  khatmahTracksPage,
   recordKhatmahPageTurn,
   setKhatmahPosition,
   startKhatmah,
-} from '../src/quran/quranState';
+} from '../src/quran/khatmahActions';
 import { ayahAtIndex } from '../src/quran/ayahIndex';
 import { findPageForAyah } from '../src/quran/pages';
 
