@@ -56,6 +56,7 @@ import { useAppPalette } from '../hooks/useAppPalette';
 import { useIsActive } from '../hooks/useIsActive';
 import { finishKhatmahPortion } from './quranState';
 import { VEIL_SETTLE_MS } from './fullscreenVeil';
+import { useRotationFade } from './rotationFade';
 import MushafTextPageSurface, {
   mushafPageColumnHeight,
 } from './MushafTextPageSurface';
@@ -536,6 +537,9 @@ export const MushafPhoneReader = React.memo(function MushafPhoneReader(
    * hides the pager entirely, until the two agree again.
    */
   const geometry = phoneGeometryFits(settled, pageWidth) ? settled : null;
+  // And when they agree again the page fades back in rather than cutting
+  // in — see `rotationFade.ts`.
+  const rotationFade = useRotationFade(geometry == null);
   // The fullscreen veil (see `fullscreenVeil.ts`): the new layout has
   // settled and the page has been asked to draw at it — one more frame
   // for that draw, and the veil can go.
@@ -790,6 +794,15 @@ export const MushafPhoneReader = React.memo(function MushafPhoneReader(
             style={[StyleSheet.absoluteFill, { backgroundColor: pageBg }]}
           />
         )}
+        {/* ...and its fade: already opaque when the cover goes, it lifts
+            off the redrawn page — see `rotationFade.ts`. */}
+        <Animated.View
+          pointerEvents="none"
+          style={[
+            StyleSheet.absoluteFill,
+            { backgroundColor: pageBg, opacity: rotationFade },
+          ]}
+        />
       </View>
 
       {/* The rail was iPad/Mac-only (design review 2d) on the theory that a
