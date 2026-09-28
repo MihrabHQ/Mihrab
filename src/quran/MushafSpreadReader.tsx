@@ -357,8 +357,6 @@ export const MushafSpreadReader = React.memo(function MushafSpreadReader(
   const availH = spreadGeometryFits(geometry, pageWidth, paired)
     ? geometry.availH
     : null;
-  // When they agree again the pages fade back in — see `rotationFade.ts`.
-  const rotationFade = useRotationFade(availH == null);
 
   const data = useMemo(
     () => Array.from({ length: itemCount }, (_, i) => i),
@@ -457,6 +455,15 @@ export const MushafSpreadReader = React.memo(function MushafSpreadReader(
    */
   const uiActive = useIsActive();
   const playingRef = uiActive ? playback.active : null;
+  // A turn of the iPad: the platform covers the window at the turn, and
+  // once the geometry fits again the pages fade back in — see
+  // `rotationFade.ts`. (A Mac window being resized gets the React sheet.)
+  const rotationFade = useRotationFade({
+    covered: availH == null,
+    landscape: width > height,
+    color: pageBg,
+    active: uiActive,
+  });
 
   /** One page column, or an empty one for the blank half of a spread. */
   const renderColumn = useCallback(

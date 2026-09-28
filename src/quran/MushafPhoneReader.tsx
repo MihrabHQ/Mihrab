@@ -537,9 +537,6 @@ export const MushafPhoneReader = React.memo(function MushafPhoneReader(
    * hides the pager entirely, until the two agree again.
    */
   const geometry = phoneGeometryFits(settled, pageWidth) ? settled : null;
-  // And when they agree again the page fades back in rather than cutting
-  // in — see `rotationFade.ts`.
-  const rotationFade = useRotationFade(geometry == null);
   // The fullscreen veil (see `fullscreenVeil.ts`): the new layout has
   // settled and the page has been asked to draw at it — one more frame
   // for that draw, and the veil can go.
@@ -666,6 +663,15 @@ export const MushafPhoneReader = React.memo(function MushafPhoneReader(
    */
   const uiActive = useIsActive();
   const playingRef = uiActive ? playback.active : null;
+  // A turn of the phone: the platform covers the window at the turn, and
+  // once the geometry fits again the page fades back in rather than
+  // cutting in — see `rotationFade.ts`.
+  const rotationFade = useRotationFade({
+    covered: geometry == null,
+    landscape: width > height,
+    color: pageBg,
+    active: uiActive,
+  });
   const renderItem = useCallback(
     ({ item: page }: { item: number }) => (
       <PhonePageItem
