@@ -68,7 +68,9 @@ export const MAX_TASBIH_RUN = 100_000;
 /** How many taps an entry stands for. */
 export function tasbihRunLength(entry: WidgetTasbihEntry): number {
   const n = entry.n ?? 1;
-  return Number.isFinite(n) ? Math.min(MAX_TASBIH_RUN, Math.max(1, Math.floor(n))) : 1;
+  return Number.isFinite(n)
+    ? Math.min(MAX_TASBIH_RUN, Math.max(1, Math.floor(n)))
+    : 1;
 }
 
 /**
@@ -89,23 +91,18 @@ export function coerceTasbihQueue(input: unknown): WidgetTasbihEntry[] {
   if (!Array.isArray(input)) return [];
   const out: WidgetTasbihEntry[] = [];
   for (const raw of input) {
-    if (!raw || typeof raw !== 'object') continue;
-    const { a, t, n } = raw as { a?: unknown; t?: unknown; n?: unknown };
-    if (typeof a !== 'string') continue;
-    if (!(TASBIH_ACTIONS as readonly string[]).includes(a)) continue;
-    if (typeof t !== 'number' || !Number.isFinite(t) || t <= 0) continue;
+    // The shape is the widget contract's (TasbihQueueEntry), read the way
+    // the Swift and Kotlin sides read it: an unknown action or a time that
+    // is not a whole number makes the entry unreadable. The rules below are
+    // this queue's own.
+    const e = readWidgetContractTasbihQueueEntry(raw);
+    if (!e || e.t <= 0) continue;
     // A missing count is one tap — which is every entry written before runs
     // existed, and every entry a Swift or Kotlin mirror writes for an action
-    // that does not coalesce.
-    const runs =
-      typeof n === 'number' && Number.isFinite(n)
-        ? Math.min(MAX_TASBIH_RUN, Math.max(1, Math.floor(n)))
-        : 1;
-    out.push(
-      runs > 1
-        ? { a: a as WidgetTasbihAction, t, n: runs }
-        : { a: a as WidgetTasbihAction, t },
-    );
+    // that does not coalesce. A count that is there is clamped, not dropped:
+    // the drain replays it bead by bead into the real store.
+    const runs = e.n != null ? Math.min(MAX_TASBIH_RUN, Math.max(1, e.n)) : 1;
+    out.push(runs > 1 ? { a: e.a, t: e.t, n: runs } : { a: e.a, t: e.t });
   }
   return out;
 }
@@ -237,7 +234,8 @@ export function projectTasbih(
         // away adds three. This runs on every redraw, so a run has to cost
         // the same to draw as a single tap — otherwise the queue stops
         // growing and the drawing does not.
-        const room = !unbounded && target > 0 ? Math.max(0, target - current) : times;
+        const room =
+          !unbounded && target > 0 ? Math.max(0, target - current) : times;
         const applied = Math.min(times, room);
         if (applied > 0) {
           counts[index] = current + applied;
@@ -321,3 +319,4 @@ export async function drainWidgetTasbihQueue(
   }
   return { applied, dropped: stale.length, failed };
 }
+import { readWidgetContractTasbihQueueEntry } from './contract.generated';

@@ -67,6 +67,24 @@ class ContractFixturesTest {
   }
 
   @Test
+  fun readsQueuesElementByElement() {
+    val failures = mutableListOf<String>()
+    val cases = section("lists")
+    for (c in cases) {
+      val type = c.getString("type")
+      val reader = contractListReaders[type]
+      if (reader == null) {
+        failures += "lists: no Kotlin list reader for $type"
+        continue
+      }
+      val want = canonical(c.opt("expected"))
+      val have = canonical(reader(c.getString("input")))
+      if (want != have) failures += "list $type — ${c.getString("name")}\n    want $want\n    have $have"
+    }
+    report(failures, cases.size)
+  }
+
+  @Test
   fun adaptsV2ToWhatTheRenderersDraw() {
     val failures = mutableListOf<String>()
     val cases = section("adapt")

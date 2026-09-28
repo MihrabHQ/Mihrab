@@ -2438,6 +2438,53 @@
       }
     }
   ],
+  "lists": [
+    {
+      "name": "a log queue with one entry another writer got wrong",
+      "type": "LogQueueEntry",
+      "input": "[{\"d\":\"2026-09-28\",\"p\":\"Fajr\",\"t\":1759000000000},{\"d\":\"2026-09-28\",\"p\":\"Dhuhr\",\"t\":\"noon\"},{\"d\":\"2026-09-28\",\"p\":\"Asr\",\"t\":1759000100000}]",
+      "expected": [
+        {
+          "d": "2026-09-28",
+          "p": "Fajr",
+          "t": 1759000000000
+        },
+        {
+          "d": "2026-09-28",
+          "p": "Asr",
+          "t": 1759000100000
+        }
+      ]
+    },
+    {
+      "name": "a tasbih queue with an action from a later version",
+      "type": "TasbihQueueEntry",
+      "input": "[{\"a\":\"inc\",\"t\":1,\"n\":33},{\"a\":\"undo\",\"t\":2},{\"a\":\"next\",\"t\":3},null,7]",
+      "expected": [
+        {
+          "a": "inc",
+          "t": 1,
+          "n": 33
+        },
+        {
+          "a": "next",
+          "t": 3
+        }
+      ]
+    },
+    {
+      "name": "an empty queue",
+      "type": "TasbihQueueEntry",
+      "input": "[]",
+      "expected": []
+    },
+    {
+      "name": "not a list: unreadable",
+      "type": "LogQueueEntry",
+      "input": "{\"d\":\"2026-09-28\"}",
+      "expected": null
+    }
+  ],
   "hhmm": [
     {
       "text": "00:00",

@@ -102,13 +102,10 @@ enum WidgetLogQueue {
   /// The five that can be logged, in the order they are prayed.
   static let prayers = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"]
 
-  struct Entry: Codable, Equatable {
-    /// yyyy-MM-dd
-    let d: String
-    let p: String
-    /// Epoch milliseconds, to match the other two implementations.
-    let t: Double
-  }
+  /// `{d: yyyy-MM-dd, p: prayer, t: epoch ms}` — the widget contract's
+  /// LogQueueEntry (scripts/contract/widget-contract.js), so the three
+  /// implementations cannot disagree about the shape. The rules are below.
+  typealias Entry = WidgetContract.LogQueueEntry
 
   private static func defaults() -> UserDefaults? {
     UserDefaults(suiteName: kSuite)
@@ -122,10 +119,14 @@ enum WidgetLogQueue {
   /// real tap. The same discipline the JS side applies, for the same reason:
   /// this string is written by another process and its contents end up in
   /// someone's record of their own worship.
+  ///
+  /// Element by element: this used to decode the array whole, so one entry
+  /// it could not read — a field another writer got wrong — threw away every
+  /// tap in the queue with it.
   static func read() -> [Entry] {
     guard let raw = defaults()?.string(forKey: key),
           let data = raw.data(using: .utf8),
-          let decoded = try? JSONDecoder().decode([Entry].self, from: data)
+          let decoded = WidgetContract.readList(Entry.self, from: data)
     else { return [] }
     return decoded.filter { isDateKey($0.d) && prayers.contains($0.p) && $0.t > 0 }
   }
@@ -154,10 +155,10 @@ enum WidgetLogQueue {
     undoWindowMs: Double = WidgetLogQueue.undoWindowMs
   ) -> [Entry] {
     if let existing = queue.first(where: { $0.d == date && $0.p == prayer }) {
-      guard now - existing.t <= undoWindowMs else { return queue }
+      guard now - Double(existing.t) <= undoWindowMs else { return queue }
       return queue.filter { !($0.d == date && $0.p == prayer) }
     }
-    return queue + [Entry(d: date, p: prayer, t: now)]
+    return queue + [Entry(d: date, p: prayer, t: Int(now))]
   }
 
   /// Record a tap and persist it.

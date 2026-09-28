@@ -426,6 +426,19 @@ function genSwiftRegistry(model) {
     o.push('  },');
   }
   o.push(']', '');
+  o.push(
+    '/// Type name → read a top-level array with `readList`, re-encode, or nil.',
+  );
+  o.push('let contractListReaders: [String: (Data) -> Data?] = [');
+  for (const tp of model.types) {
+    o.push(`  "${tp.name}": { data in`);
+    o.push(
+      `    guard let v = WidgetContract.readList(WidgetContract.${tp.name}.self, from: data) else { return nil }`,
+    );
+    o.push('    return try? JSONEncoder().encode(v)');
+    o.push('  },');
+  }
+  o.push(']', '');
   return o.join('\n');
 }
 
@@ -435,6 +448,7 @@ function genKotlinRegistry(model) {
     '',
     'package com.prayer_times.contract',
     '',
+    'import org.json.JSONArray',
     'import org.json.JSONObject',
     '',
   ];
@@ -445,6 +459,18 @@ function genKotlinRegistry(model) {
   for (const tp of model.types) {
     o.push(
       `  "${tp.name}" to { s -> WidgetContract.${tp.name}.parse(s)?.toJson() },`,
+    );
+  }
+  o.push(')', '');
+  o.push(
+    '/** Type name → read a top-level array with `readList` and write it back, or null. */',
+  );
+  o.push(
+    'val contractListReaders: Map<String, (String) -> JSONArray?> = mapOf(',
+  );
+  for (const tp of model.types) {
+    o.push(
+      `  "${tp.name}" to { s -> WidgetContract.readList(s) { WidgetContract.${tp.name}.fromJson(it) }?.let { l -> JSONArray(l.map { it.toJson() }) } },`,
     );
   }
   o.push(')', '');
@@ -597,6 +623,31 @@ function genSwift(model) {
 }
 
 const SWIFT_RUNTIME = `// MARK: - Lenient reading
+
+extension WidgetContract {
+  /// A JSON array of \`T\` at the top level — the queues back to the app —
+  /// keeping every element that reads and dropping the rest, the rule every
+  /// generated list follows. Nil only when \`data\` is not an array at all.
+  static func readList<T: Decodable>(_ type: T.Type, from data: Data) -> [T]? {
+    (try? JSONDecoder().decode(WCLossyList<T>.self, from: data))?.items
+  }
+}
+
+private struct WCLossyList<T: Decodable>: Decodable {
+  let items: [T]
+  init(from decoder: Decoder) throws {
+    var list = try decoder.unkeyedContainer()
+    var out: [T] = []
+    while !list.isAtEnd {
+      if let v = try? list.decode(T.self) {
+        out.append(v)
+      } else if (try? list.decode(WCSkip.self)) == nil {
+        break
+      }
+    }
+    items = out
+  }
+}
 
 /// Decodes from any JSON value and keeps nothing: what a lossy list reads
 /// to step past an element it could not use.
@@ -795,6 +846,25 @@ function genKotlin(model) {
   o.push('import org.json.JSONObject', '');
   o.push('object WidgetContract {');
   o.push(`  const val VERSION = ${model.version}`, '');
+  o.push(
+    '  /**',
+    '   * A JSON array of objects at the top level — the queues back to the app —',
+    '   * keeping every element that reads and dropping the rest, the rule every',
+    '   * generated list follows. Null only when `json` is not an array at all.',
+    '   */',
+    '  fun <T> readList(json: String?, element: (JSONObject?) -> T?): List<T>? {',
+    '    val a =',
+    '      try {',
+    '        JSONArray(json ?: return null)',
+    '      } catch (e: JSONException) {',
+    '        return null',
+    '      }',
+    '    val out = ArrayList<T>(a.length())',
+    '    for (i in 0 until a.length()) element(a.optJSONObject(i))?.let { out.add(it) }',
+    '    return out',
+    '  }',
+    '',
+  );
   for (const [name, values] of model.enums) {
     o.push(`  enum class ${name}(val wire: String) {`);
     values.forEach((v, i) =>

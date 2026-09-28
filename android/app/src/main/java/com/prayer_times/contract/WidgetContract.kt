@@ -15,6 +15,23 @@ import org.json.JSONObject
 object WidgetContract {
   const val VERSION = 2
 
+  /**
+   * A JSON array of objects at the top level — the queues back to the app —
+   * keeping every element that reads and dropping the rest, the rule every
+   * generated list follows. Null only when `json` is not an array at all.
+   */
+  fun <T> readList(json: String?, element: (JSONObject?) -> T?): List<T>? {
+    val a =
+      try {
+        JSONArray(json ?: return null)
+      } catch (e: JSONException) {
+        return null
+      }
+    val out = ArrayList<T>(a.length())
+    for (i in 0 until a.length()) element(a.optJSONObject(i))?.let { out.add(it) }
+    return out
+  }
+
   enum class Eid(val wire: String) {
     FITR("fitr"),
     ADHA("adha");
@@ -778,8 +795,12 @@ object WidgetContract {
     val a: TasbihAction,
     /** Epoch ms. */
     val t: Long,
-    /** Run length for coalesced taps; absent means one. */
-    val n: Int? = null,
+    /**
+     * Run length for coalesced taps; absent means one. A long so an absurd
+     * count still reads, and is clamped by the rule rather than dropped by
+     * the reader.
+     */
+    val n: Long? = null,
   ) {
     fun toJson(): JSONObject = JSONObject().apply {
       put("a", a.wire)
@@ -793,7 +814,7 @@ object WidgetContract {
         return TasbihQueueEntry(
           a = TasbihAction.fromWire(o.wcString("a")) ?: return null,
           t = o.wcRaw("t").wcAsLong() ?: return null,
-          n = o.wcRaw("n").wcAsInt(),
+          n = o.wcRaw("n").wcAsLong(),
         )
       }
 

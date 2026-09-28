@@ -74,6 +74,22 @@ for c in section("decode") {
   check(want == have, "decode \(type) — \(name)\n    want \(want)\n    have \(have)")
 }
 
+for c in section("lists") {
+  let name = c["name"] as? String ?? "?"
+  let type = c["type"] as? String ?? "?"
+  guard let reader = contractListReaders[type] else {
+    failures.append("lists: no Swift list reader for \(type)")
+    continue
+  }
+  let input = (c["input"] as? String ?? "").data(using: .utf8)!
+  let got: Any? = reader(input).flatMap {
+    try? JSONSerialization.jsonObject(with: $0, options: .fragmentsAllowed)
+  }
+  let want = canonical(c["expected"])
+  let have = canonical(got)
+  check(want == have, "list \(type) — \(name)\n    want \(want)\n    have \(have)")
+}
+
 // ── v2 → the v1 the renderers draw ────────────────────────────────────────
 
 for c in section("adapt") {

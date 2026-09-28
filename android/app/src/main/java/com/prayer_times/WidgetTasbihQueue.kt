@@ -1,8 +1,8 @@
 package com.prayer_times
 
 import android.content.Context
+import com.prayer_times.contract.WidgetContract
 import org.json.JSONArray
-import org.json.JSONObject
 
 /**
  * Taps on the Tasbih widget, waiting for the app to apply them.
@@ -65,38 +65,29 @@ object WidgetTasbihQueue {
     return parse(raw)
   }
 
-  fun parse(raw: String): List<Entry> {
-    val out = mutableListOf<Entry>()
-    try {
-      val arr = JSONArray(raw)
-      for (i in 0 until arr.length()) {
-        val o = arr.optJSONObject(i) ?: continue
-        val a = o.optString("a")
-        val t = o.optLong("t", 0L)
-        // An unknown action is dropped rather than treated as one of the
-        // known ones: this ends up in someone's dhikr count.
-        if (!ACTIONS.contains(a)) continue
-        if (t <= 0L) continue
+  fun parse(raw: String): List<Entry> =
+    // The shape is the widget contract's TasbihQueueEntry, read the way the
+    // app and the iOS widget read it: an unknown action makes the entry
+    // unreadable rather than one of the known ones — this ends up in
+    // someone's dhikr count. The rules below are this queue's own.
+    (WidgetContract.readList(raw) { WidgetContract.TasbihQueueEntry.fromJson(it) } ?: emptyList())
+      .filter { it.t > 0L }
+      .map {
         // A missing count is one tap — every entry written before runs
         // existed, and every entry any mirror writes for an action that
-        // does not coalesce.
-        val n = o.optInt("n", 1).coerceIn(1, MAX_RUN)
-        out.add(Entry(a, t, n))
+        // does not coalesce. A count that is there is clamped, not dropped.
+        Entry(it.a.wire, it.t, (it.n ?: 1L).coerceIn(1L, MAX_RUN.toLong()).toInt())
       }
-    } catch (_: Exception) {
-      return emptyList()
-    }
-    return out
-  }
 
   fun serialize(entries: List<Entry>): String {
     val arr = JSONArray()
     for (e in entries) {
-      val o = JSONObject().put("a", e.action).put("t", e.at)
-      // Only when it is a run. A single tap stays the shape it has always
-      // been, which is what any reader that predates runs expects.
-      if (e.n > 1) o.put("n", e.n)
-      arr.put(o)
+      val action = WidgetContract.TasbihAction.fromWire(e.action) ?: continue
+      // `n` only when it is a run. A single tap stays the shape it has
+      // always been, which is what any reader that predates runs expects.
+      arr.put(
+        WidgetContract.TasbihQueueEntry(a = action, t = e.at, n = e.n.takeIf { it > 1 }?.toLong()).toJson(),
+      )
     }
     return arr.toString()
   }

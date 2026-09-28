@@ -2,6 +2,7 @@
 
 package com.prayer_times.contract
 
+import org.json.JSONArray
 import org.json.JSONObject
 
 /** Type name → read with the contract reader and write back, or null when unreadable. */
@@ -21,4 +22,23 @@ val contractReaders: Map<String, (String) -> JSONObject?> = mapOf(
   "Tasbih" to { s -> WidgetContract.Tasbih.parse(s)?.toJson() },
   "LogQueueEntry" to { s -> WidgetContract.LogQueueEntry.parse(s)?.toJson() },
   "TasbihQueueEntry" to { s -> WidgetContract.TasbihQueueEntry.parse(s)?.toJson() },
+)
+
+/** Type name → read a top-level array with `readList` and write it back, or null. */
+val contractListReaders: Map<String, (String) -> JSONArray?> = mapOf(
+  "Payload" to { s -> WidgetContract.readList(s) { WidgetContract.Payload.fromJson(it) }?.let { l -> JSONArray(l.map { it.toJson() }) } },
+  "Clock" to { s -> WidgetContract.readList(s) { WidgetContract.Clock.fromJson(it) }?.let { l -> JSONArray(l.map { it.toJson() }) } },
+  "Day" to { s -> WidgetContract.readList(s) { WidgetContract.Day.fromJson(it) }?.let { l -> JSONArray(l.map { it.toJson() }) } },
+  "Row" to { s -> WidgetContract.readList(s) { WidgetContract.Row.fromJson(it) }?.let { l -> JSONArray(l.map { it.toJson() }) } },
+  "Seasonal" to { s -> WidgetContract.readList(s) { WidgetContract.Seasonal.fromJson(it) }?.let { l -> JSONArray(l.map { it.toJson() }) } },
+  "Today" to { s -> WidgetContract.readList(s) { WidgetContract.Today.fromJson(it) }?.let { l -> JSONArray(l.map { it.toJson() }) } },
+  "TodayPrayer" to { s -> WidgetContract.readList(s) { WidgetContract.TodayPrayer.fromJson(it) }?.let { l -> JSONArray(l.map { it.toJson() }) } },
+  "Practice" to { s -> WidgetContract.readList(s) { WidgetContract.Practice.fromJson(it) }?.let { l -> JSONArray(l.map { it.toJson() }) } },
+  "PracticeDay" to { s -> WidgetContract.readList(s) { WidgetContract.PracticeDay.fromJson(it) }?.let { l -> JSONArray(l.map { it.toJson() }) } },
+  "Reading" to { s -> WidgetContract.readList(s) { WidgetContract.Reading.fromJson(it) }?.let { l -> JSONArray(l.map { it.toJson() }) } },
+  "Khatmah" to { s -> WidgetContract.readList(s) { WidgetContract.Khatmah.fromJson(it) }?.let { l -> JSONArray(l.map { it.toJson() }) } },
+  "Hijri" to { s -> WidgetContract.readList(s) { WidgetContract.Hijri.fromJson(it) }?.let { l -> JSONArray(l.map { it.toJson() }) } },
+  "Tasbih" to { s -> WidgetContract.readList(s) { WidgetContract.Tasbih.fromJson(it) }?.let { l -> JSONArray(l.map { it.toJson() }) } },
+  "LogQueueEntry" to { s -> WidgetContract.readList(s) { WidgetContract.LogQueueEntry.fromJson(it) }?.let { l -> JSONArray(l.map { it.toJson() }) } },
+  "TasbihQueueEntry" to { s -> WidgetContract.readList(s) { WidgetContract.TasbihQueueEntry.fromJson(it) }?.let { l -> JSONArray(l.map { it.toJson() }) } },
 )
