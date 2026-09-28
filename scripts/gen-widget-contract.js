@@ -4,10 +4,15 @@
  *
  * Reads scripts/contract/widget-contract.js and writes:
  *
- *   src/widget/contract.generated.ts                       the app's types
+ *   src/widget/contract.generated.ts                       the app's types,
+ *                                                          and the reference
+ *                                                          readers
  *   ios/Contract/WidgetContract.generated.swift            Codable structs
  *   android/app/src/main/java/com/prayer_times/contract/WidgetContract.kt
  *                                                          data classes
+ *   contract-tests/{swift,kotlin}/…Registry…               type name → reader,
+ *                                                          for the native
+ *                                                          contract tests
  *
  * The readers it writes are lenient by construction — see the rules at the
  * top of the contract file. That is the point of generating them rather
@@ -46,6 +51,21 @@ const OUT = {
     'prayer_times',
     'contract',
     'WidgetContract.kt',
+  ),
+  swiftRegistry: path.join(
+    ROOT,
+    'contract-tests',
+    'swift',
+    'Registry.generated.swift',
+  ),
+  kotlinRegistry: path.join(
+    ROOT,
+    'contract-tests',
+    'kotlin',
+    'src',
+    'test',
+    'kotlin',
+    'RegistryGenerated.kt',
   ),
 };
 
@@ -246,12 +266,189 @@ function genTs(model) {
     }
     out.push('};', '');
   }
+  out.push(...genTsReaders(model));
   const src = out.join('\n');
   // Formatted with the repo's own prettier so eslint's prettier rule and the
   // --check comparison both see what a human edit would produce.
   const prettier = require('prettier');
   const config = require(path.join(ROOT, '.prettierrc.js'));
   return prettier.format(src, { ...config, parser: 'typescript' });
+}
+
+/** The TS expression reading one untyped value `v` as `spec`, or undefined. */
+function tsReadExpr(spec, v) {
+  switch (spec.kind) {
+    case 'string':
+      return `wcString(${v})`;
+    case 'bool':
+      return `wcBool(${v})`;
+    case 'int':
+      return `wcInt(${v})`;
+    case 'long':
+      return `wcLong(${v})`;
+    case 'double':
+      return `wcDouble(${v})`;
+    case 'enum':
+      return `wcEnum(${v}, ${JSON.stringify(spec.values)} as const)`;
+    case 'ref':
+      return `readWidgetContract${spec.name}(${v})`;
+    case 'list':
+      return `wcList(${v}, x => ${tsReadExpr(spec.of, 'x')})`;
+  }
+  throw new Error(`unknown kind ${spec.kind}`);
+}
+
+function tsDefault(spec, value) {
+  if (spec.kind === 'ref')
+    return `(readWidgetContract${spec.name}({}) as WidgetContract${spec.name})`;
+  if (spec.kind === 'list') return '[]';
+  return JSON.stringify(value);
+}
+
+/**
+ * The reference readers. The same rules as the native ones, in the language
+ * the tests are written in: the golden fixtures in contract-tests/ are what
+ * these return, and the Swift and Kotlin readers are held to them.
+ */
+function genTsReaders(model) {
+  const o = [];
+  o.push(
+    '// ── Reading ─────────────────────────────────────────────────────',
+    '',
+  );
+  o.push(
+    ...docBlock(
+      'The reference readers: the rules the Swift and Kotlin readers follow, in the language the golden fixtures (contract-tests/) are written from. Each returns null when a required field is missing or mistyped, fills defaults, and omits nulls.',
+      '',
+    ),
+  );
+  for (const tp of model.types) {
+    const T = `WidgetContract${tp.name}`;
+    o.push(
+      `export function readWidgetContract${tp.name}(input: unknown): ${T} | null {`,
+    );
+    o.push('  if (!wcIsObject(input)) return null;');
+    for (const f of tp.fields.filter(g => g.mode === 'required')) {
+      o.push(
+        `  const ${f.name}Read = ${tsReadExpr(f.spec, `input.${f.name}`)};`,
+      );
+      o.push(`  if (${f.name}Read == null) return null;`);
+    }
+    o.push(`  const out: ${T} = {`);
+    for (const f of tp.fields) {
+      const at = `input.${f.name}`;
+      if (f.mode === 'required') o.push(`    ${f.name}: ${f.name}Read,`);
+      else if (f.mode === 'default')
+        o.push(
+          `    ${f.name}: ${tsReadExpr(f.spec, at)} ?? ${tsDefault(
+            f.spec,
+            f.spec.default,
+          )},`,
+        );
+    }
+    o.push('  };');
+    for (const f of tp.fields.filter(g => g.mode === 'nullable')) {
+      o.push(
+        `  const ${f.name}Read = ${tsReadExpr(f.spec, `input.${f.name}`)};`,
+      );
+      o.push(`  if (${f.name}Read != null) out.${f.name} = ${f.name}Read;`);
+    }
+    o.push('  return out;');
+    o.push('}', '');
+  }
+  o.push(TS_RUNTIME);
+  return o;
+}
+
+const TS_RUNTIME = `function wcIsObject(v: unknown): v is Record<string, unknown> {
+  return typeof v === 'object' && v !== null && !Array.isArray(v);
+}
+
+function wcString(v: unknown): string | undefined {
+  return typeof v === 'string' ? v : undefined;
+}
+
+function wcBool(v: unknown): boolean | undefined {
+  return typeof v === 'boolean' ? v : undefined;
+}
+
+/** A whole number, below 9e15 in size, as every platform reads one. */
+function wcLong(v: unknown): number | undefined {
+  return typeof v === 'number' && Number.isInteger(v) && Math.abs(v) < 9e15 ? v : undefined;
+}
+
+/** An \`int\` is 32-bit everywhere, because Kotlin reads it as Int. */
+function wcInt(v: unknown): number | undefined {
+  const n = wcLong(v);
+  return n !== undefined && n >= -2147483648 && n <= 2147483647 ? n : undefined;
+}
+
+function wcDouble(v: unknown): number | undefined {
+  return typeof v === 'number' && Number.isFinite(v) ? v : undefined;
+}
+
+function wcEnum<T extends string>(v: unknown, values: readonly T[]): T | undefined {
+  return typeof v === 'string' && (values as readonly string[]).includes(v) ? (v as T) : undefined;
+}
+
+function wcList<T>(
+  v: unknown,
+  element: (x: unknown) => T | null | undefined,
+): T[] | undefined {
+  if (!Array.isArray(v)) return undefined;
+  const out: T[] = [];
+  for (const x of v) {
+    const read = element(x);
+    if (read != null) out.push(read);
+  }
+  return out;
+}
+`;
+
+// ---------------------------------------------------------------- test registries
+//
+// The native contract tests look readers up by type name. Generated, so a
+// type added to the contract is tested on every platform without anyone
+// remembering to add it to three harnesses.
+
+function genSwiftRegistry(model) {
+  const o = [`// ${BANNER}`, '', 'import Foundation', ''];
+  o.push(
+    '/// Type name → decode with the contract reader, re-encode, or nil when unreadable.',
+  );
+  o.push('let contractReaders: [String: (Data) -> Data?] = [');
+  for (const tp of model.types) {
+    o.push(`  "${tp.name}": { data in`);
+    o.push(
+      `    guard let v = try? JSONDecoder().decode(WidgetContract.${tp.name}.self, from: data) else { return nil }`,
+    );
+    o.push('    return try? JSONEncoder().encode(v)');
+    o.push('  },');
+  }
+  o.push(']', '');
+  return o.join('\n');
+}
+
+function genKotlinRegistry(model) {
+  const o = [
+    `// ${BANNER}`,
+    '',
+    'package com.prayer_times.contract',
+    '',
+    'import org.json.JSONObject',
+    '',
+  ];
+  o.push(
+    '/** Type name → read with the contract reader and write back, or null when unreadable. */',
+  );
+  o.push('val contractReaders: Map<String, (String) -> JSONObject?> = mapOf(');
+  for (const tp of model.types) {
+    o.push(
+      `  "${tp.name}" to { s -> WidgetContract.${tp.name}.parse(s)?.toJson() },`,
+    );
+  }
+  o.push(')', '');
+  return o.join('\n');
 }
 
 // ---------------------------------------------------------------- Swift
@@ -295,6 +492,7 @@ function swiftRead(spec, key) {
     case 'bool':
       return `c.wcValue(Bool.self, ${key})`;
     case 'int':
+      return `c.wcInt(${key}).flatMap(wcInt32)`;
     case 'long':
       return `c.wcInt(${key})`;
     case 'double':
@@ -305,7 +503,9 @@ function swiftRead(spec, key) {
       return `c.wcValue(${spec.name}.self, ${key})`;
     case 'list': {
       const of = spec.of;
-      if (of.kind === 'int' || of.kind === 'long')
+      if (of.kind === 'int')
+        return `c.wcList(WCInt.self, ${key})?.compactMap { wcInt32($0.value) }`;
+      if (of.kind === 'long')
         return `c.wcList(WCInt.self, ${key})?.map(\\.value)`;
       if (of.kind === 'double')
         return `c.wcList(WCDouble.self, ${key})?.map(\\.value)`;
@@ -420,6 +620,12 @@ struct WCInt: Decodable, Hashable {
       value = Int(d)
     }
   }
+}
+
+/// An \`int\` field is 32-bit on every platform — Kotlin reads it as \`Int\` —
+/// so a value outside that range is unreadable here too, not silently wider.
+private func wcInt32(_ v: Int) -> Int? {
+  (Int(Int32.min)...Int(Int32.max)).contains(v) ? v : nil
 }
 
 struct WCDouble: Decodable, Hashable {
@@ -707,6 +913,8 @@ function main() {
     [OUT.ts, genTs(model)],
     [OUT.swift, genSwift(model)],
     [OUT.kotlin, genKotlin(model)],
+    [OUT.swiftRegistry, genSwiftRegistry(model)],
+    [OUT.kotlinRegistry, genKotlinRegistry(model)],
   ];
   let stale = 0;
   for (const [file, content] of files) {
@@ -730,4 +938,12 @@ function main() {
 
 if (require.main === module) main();
 
-module.exports = { load, genTs, genSwift, genKotlin, OUT };
+module.exports = {
+  load,
+  genTs,
+  genSwift,
+  genKotlin,
+  genSwiftRegistry,
+  genKotlinRegistry,
+  OUT,
+};
