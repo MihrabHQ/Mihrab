@@ -40,6 +40,7 @@
  * "today" would credit the wrong day and leave the real one blank.
  */
 import type { JournalPrayer } from '../journal/journal';
+import { readWidgetContractLogQueueEntry } from './contract.generated';
 
 /** One queued tap. Short keys — this rides in a SharedPreferences string. */
 export type WidgetLogEntry = {
@@ -86,15 +87,14 @@ export function coerceLogQueue(input: unknown): WidgetLogEntry[] {
   if (!Array.isArray(input)) return [];
   const out: WidgetLogEntry[] = [];
   for (const item of input) {
-    if (!item || typeof item !== 'object') continue;
-    const r = item as Record<string, unknown>;
-    if (typeof r.d !== 'string' || !DATE_RE.test(r.d)) continue;
-    if (typeof r.p !== 'string' || !PRAYERS.includes(r.p as JournalPrayer)) {
-      continue;
-    }
-    const t = typeof r.t === 'number' && Number.isFinite(r.t) ? r.t : 0;
-    if (t <= 0) continue;
-    out.push({ d: r.d, p: r.p as JournalPrayer, t });
+    // The shape is the widget contract's (LogQueueEntry), read the way the
+    // Swift and Kotlin sides read it; the rules below are this queue's own.
+    const e = readWidgetContractLogQueueEntry(item);
+    if (!e) continue;
+    if (!DATE_RE.test(e.d)) continue;
+    if (!PRAYERS.includes(e.p as JournalPrayer)) continue;
+    if (e.t <= 0) continue;
+    out.push({ d: e.d, p: e.p as JournalPrayer, t: e.t });
   }
   return out;
 }

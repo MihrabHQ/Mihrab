@@ -395,7 +395,11 @@ module.exports = {
           'Action.',
         ],
         ['t', t.long(REQUIRED), 'Epoch ms.'],
-        ['n', t.int(), 'Run length for coalesced taps; absent means one.'],
+        [
+          'n',
+          t.long(),
+          'Run length for coalesced taps; absent means one. A long so an absurd count still reads, and is clamped by the rule rather than dropped by the reader.',
+        ],
       ],
     },
   ],

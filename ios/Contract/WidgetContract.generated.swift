@@ -820,7 +820,9 @@ enum WidgetContract {
     var a: TasbihAction
     /// Epoch ms.
     var t: Int
-    /// Run length for coalesced taps; absent means one.
+    /// Run length for coalesced taps; absent means one. A long so an absurd
+    /// count still reads, and is clamped by the rule rather than dropped by
+    /// the reader.
     var n: Int?
 
     init(
@@ -843,13 +845,38 @@ enum WidgetContract {
       let c = try decoder.container(keyedBy: CodingKeys.self)
       a = try c.wcRequire(c.wcValue(String.self, .a).flatMap(TasbihAction.init(rawValue:)), .a)
       t = try c.wcRequire(c.wcInt(.t), .t)
-      n = c.wcInt(.n).flatMap(wcInt32)
+      n = c.wcInt(.n)
     }
   }
 
 }
 
 // MARK: - Lenient reading
+
+extension WidgetContract {
+  /// A JSON array of `T` at the top level — the queues back to the app —
+  /// keeping every element that reads and dropping the rest, the rule every
+  /// generated list follows. Nil only when `data` is not an array at all.
+  static func readList<T: Decodable>(_ type: T.Type, from data: Data) -> [T]? {
+    (try? JSONDecoder().decode(WCLossyList<T>.self, from: data))?.items
+  }
+}
+
+private struct WCLossyList<T: Decodable>: Decodable {
+  let items: [T]
+  init(from decoder: Decoder) throws {
+    var list = try decoder.unkeyedContainer()
+    var out: [T] = []
+    while !list.isAtEnd {
+      if let v = try? list.decode(T.self) {
+        out.append(v)
+      } else if (try? list.decode(WCSkip.self)) == nil {
+        break
+      }
+    }
+    items = out
+  }
+}
 
 /// Decodes from any JSON value and keeps nothing: what a lossy list reads
 /// to step past an element it could not use.

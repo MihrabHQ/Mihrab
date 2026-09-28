@@ -27,7 +27,6 @@ import WidgetKit
 
 enum WidgetTasbihQueue {
   static let key = "widget_tasbih_queue"
-  static let actions = ["inc", "reset", "next"]
 
   /// One action, and how many times it was tapped in a row.
   ///
@@ -36,12 +35,11 @@ enum WidgetTasbihQueue {
   /// the run's NEWEST tap, so a sitting that crosses the fortnight cutoff is
   /// not thrown away while it is still being counted. Mirrors
   /// `widgetTasbihQueue.ts`, which is where the rules are decided.
-  struct Entry: Codable, Equatable {
-    let a: String
-    let t: Double
-    /// Absent means one tap — every entry written before runs existed.
-    var n: Int?
-  }
+  ///
+  /// The widget contract's TasbihQueueEntry (scripts/contract/widget-contract.js):
+  /// `a` is the action, `t` epoch ms, and `n` absent means one tap — every
+  /// entry written before runs existed.
+  typealias Entry = WidgetContract.TasbihQueueEntry
 
   /// A bound on what a corrupted queue can ask the drain to replay, not a
   /// limit anyone counting can reach. Mirrors MAX_TASBIH_RUN.
@@ -59,9 +57,9 @@ enum WidgetTasbihQueue {
   static func compact(_ entries: [Entry]) -> [Entry] {
     var out: [Entry] = []
     for e in entries {
-      if e.a == "inc", let last = out.last, last.a == "inc" {
+      if e.a == .inc, let last = out.last, last.a == .inc {
         out[out.count - 1] = Entry(
-          a: "inc",
+          a: .inc,
           t: max(last.t, e.t),
           n: min(maxRun, runLength(last) + runLength(e))
         )
@@ -77,9 +75,12 @@ enum WidgetTasbihQueue {
   static func read() -> [Entry] {
     guard let raw = defaults()?.string(forKey: key),
           let data = raw.data(using: .utf8),
-          let decoded = try? JSONDecoder().decode([Entry].self, from: data)
+          let decoded = WidgetContract.readList(Entry.self, from: data)
     else { return [] }
-    return decoded.filter { actions.contains($0.a) && $0.t > 0 }
+    // Element by element, as the log queue now reads: an unknown action or a
+    // mistyped entry costs that entry, where decoding the array whole used to
+    // cost every bead in it.
+    return decoded.filter { $0.t > 0 }
   }
 
   /// The most taps this queue holds before it starts forgetting the oldest.
@@ -104,11 +105,11 @@ enum WidgetTasbihQueue {
   /// plain `log show` finds it; see WidgetLogQueue.swift for what that
   /// distinction cost the first time.
   static func append(_ action: String, now: Double = Date().timeIntervalSince1970 * 1000) {
-    guard actions.contains(action) else { return }
+    guard let a = WidgetContract.TasbihAction(rawValue: action) else { return }
     // A `+1` on the back of a `+1` bumps the run rather than starting a
     // second record: two taps are still two beads, they are just written
     // down together. Only `inc` coalesces — two Nexts move two presets on.
-    let next = compact(read() + [Entry(a: action, t: now)]).suffix(maxEntries).map { $0 }
+    let next = compact(read() + [Entry(a: a, t: Int(now))]).suffix(maxEntries).map { $0 }
     guard let data = try? JSONEncoder().encode(next),
           let s = String(data: data, encoding: .utf8)
     else {
@@ -219,7 +220,7 @@ struct TasbihProvider: TimelineProvider {
     for e in queue {
       let times = WidgetTasbihQueue.runLength(e)
       switch e.a {
-      case "inc":
+      case .inc:
         let current = index < counts.count ? counts[index] : 0
         // The rules that apply are the CURRENT index's, which Next may have
         // moved inside this very loop — see the arrays on the payload.
@@ -234,13 +235,11 @@ struct TasbihProvider: TimelineProvider {
           if index < counts.count { counts[index] = current + applied }
           todayTotal += applied
         }
-      case "reset":
+      case .reset:
         // Resetting twice is resetting.
         if index < counts.count { counts[index] = 0 }
-      case "next":
+      case .next:
         index = t.total > 0 ? (index + times) % t.total : index
-      default:
-        break
       }
     }
     return (index, counts, todayTotal)

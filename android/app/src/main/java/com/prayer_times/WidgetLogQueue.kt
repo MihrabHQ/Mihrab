@@ -1,8 +1,8 @@
 package com.prayer_times
 
 import android.content.Context
+import com.prayer_times.contract.WidgetContract
 import org.json.JSONArray
-import org.json.JSONObject
 
 /**
  * Taps on the Log Today widget, waiting for the app to write them.
@@ -50,31 +50,16 @@ object WidgetLogQueue {
     return parse(raw)
   }
 
-  fun parse(raw: String): List<Entry> {
-    val out = mutableListOf<Entry>()
-    try {
-      val arr = JSONArray(raw)
-      for (i in 0 until arr.length()) {
-        val o = arr.optJSONObject(i) ?: continue
-        val d = o.optString("d")
-        val p = o.optString("p")
-        val t = o.optLong("t", 0L)
-        if (!DATE_RE.matches(d)) continue
-        if (!PRAYERS.contains(p)) continue
-        if (t <= 0L) continue
-        out.add(Entry(d, p, t))
-      }
-    } catch (_: Exception) {
-      return emptyList()
-    }
-    return out
-  }
+  fun parse(raw: String): List<Entry> =
+    // The shape is the widget contract's LogQueueEntry, read the way the app
+    // and the iOS widget read it; the rules are this queue's own.
+    (WidgetContract.readList(raw) { WidgetContract.LogQueueEntry.fromJson(it) } ?: emptyList())
+      .filter { DATE_RE.matches(it.d) && PRAYERS.contains(it.p) && it.t > 0L }
+      .map { Entry(it.d, it.p, it.t) }
 
   fun serialize(entries: List<Entry>): String {
     val arr = JSONArray()
-    for (e in entries) {
-      arr.put(JSONObject().put("d", e.date).put("p", e.prayer).put("t", e.at))
-    }
+    for (e in entries) arr.put(WidgetContract.LogQueueEntry(d = e.date, p = e.prayer, t = e.at).toJson())
     return arr.toString()
   }
 

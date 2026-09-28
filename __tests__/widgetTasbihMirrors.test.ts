@@ -23,20 +23,24 @@ const KOTLIN = read(
   'android/app/src/main/java/com/prayer_times/WidgetTasbihQueue.kt',
 );
 const SWIFT = read('ios/PrayerWidgetExtension/TasbihWidget.swift');
+const CONTRACT = read('scripts/contract/widget-contract.js');
 
 describe('every mirror records a run instead of a record per bead', () => {
   it('carries a count on the entry', () => {
     expect(KOTLIN).toMatch(/data class Entry\(.*val n: Int = 1\)/);
-    expect(SWIFT).toMatch(/var n: Int\?/);
+    // Swift's entry is the widget contract's, whose `n` is optional: absent
+    // is one tap.
+    expect(SWIFT).toContain(
+      'typealias Entry = WidgetContract.TasbihQueueEntry',
+    );
+    expect(CONTRACT).toMatch(/'n',\s*t\.long\(\)/);
   });
 
   it('coalesces a tap onto the run before it', () => {
     expect(KOTLIN).toContain(
       'e.action == ACTION_INC && last?.action == ACTION_INC',
     );
-    expect(SWIFT).toContain(
-      'e.a == "inc", let last = out.last, last.a == "inc"',
-    );
+    expect(SWIFT).toContain('e.a == .inc, let last = out.last, last.a == .inc');
   });
 
   it('compacts the whole queue, not just the newest tap', () => {
@@ -44,7 +48,7 @@ describe('every mirror records a run instead of a record per bead', () => {
     // them. The first tap after an update has to leave it compact, or the
     // old cost is inherited for as long as that queue survives.
     expect(KOTLIN).toContain('compact(read(context) + Entry(action, now))');
-    expect(SWIFT).toContain('compact(read() + [Entry(a: action, t: now)])');
+    expect(SWIFT).toContain('compact(read() + [Entry(a: a, t: Int(now))])');
   });
 
   it('coalesces nothing but the counter', () => {
@@ -56,6 +60,8 @@ describe('every mirror records a run instead of a record per bead', () => {
       );
       expect(src).not.toMatch(/action == "next", let last/);
       expect(src).not.toMatch(/action == "reset", let last/);
+      expect(src).not.toMatch(/\.a == \.next, let last/);
+      expect(src).not.toMatch(/\.a == \.reset, let last/);
     }
   });
 });
@@ -87,12 +93,12 @@ describe('the mirrors agree with the rules file', () => {
   it('treats a missing count as one tap', () => {
     // What every entry written before runs existed looks like, and what a
     // mirror writes for an action that does not coalesce.
-    expect(KOTLIN).toContain('o.optInt("n", 1)');
+    expect(KOTLIN).toContain('(it.n ?: 1L)');
     expect(SWIFT).toContain('e.n ?? 1');
   });
 
   it('writes the count only when it is a run', () => {
     // So a single tap keeps the shape any reader that predates runs expects.
-    expect(KOTLIN).toContain('if (e.n > 1) o.put("n", e.n)');
+    expect(KOTLIN).toContain('n = e.n.takeIf { it > 1 }');
   });
 });

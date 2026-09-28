@@ -65,3 +65,67 @@ let contractReaders: [String: (Data) -> Data?] = [
     return try? JSONEncoder().encode(v)
   },
 ]
+
+/// Type name → read a top-level array with `readList`, re-encode, or nil.
+let contractListReaders: [String: (Data) -> Data?] = [
+  "Payload": { data in
+    guard let v = WidgetContract.readList(WidgetContract.Payload.self, from: data) else { return nil }
+    return try? JSONEncoder().encode(v)
+  },
+  "Clock": { data in
+    guard let v = WidgetContract.readList(WidgetContract.Clock.self, from: data) else { return nil }
+    return try? JSONEncoder().encode(v)
+  },
+  "Day": { data in
+    guard let v = WidgetContract.readList(WidgetContract.Day.self, from: data) else { return nil }
+    return try? JSONEncoder().encode(v)
+  },
+  "Row": { data in
+    guard let v = WidgetContract.readList(WidgetContract.Row.self, from: data) else { return nil }
+    return try? JSONEncoder().encode(v)
+  },
+  "Seasonal": { data in
+    guard let v = WidgetContract.readList(WidgetContract.Seasonal.self, from: data) else { return nil }
+    return try? JSONEncoder().encode(v)
+  },
+  "Today": { data in
+    guard let v = WidgetContract.readList(WidgetContract.Today.self, from: data) else { return nil }
+    return try? JSONEncoder().encode(v)
+  },
+  "TodayPrayer": { data in
+    guard let v = WidgetContract.readList(WidgetContract.TodayPrayer.self, from: data) else { return nil }
+    return try? JSONEncoder().encode(v)
+  },
+  "Practice": { data in
+    guard let v = WidgetContract.readList(WidgetContract.Practice.self, from: data) else { return nil }
+    return try? JSONEncoder().encode(v)
+  },
+  "PracticeDay": { data in
+    guard let v = WidgetContract.readList(WidgetContract.PracticeDay.self, from: data) else { return nil }
+    return try? JSONEncoder().encode(v)
+  },
+  "Reading": { data in
+    guard let v = WidgetContract.readList(WidgetContract.Reading.self, from: data) else { return nil }
+    return try? JSONEncoder().encode(v)
+  },
+  "Khatmah": { data in
+    guard let v = WidgetContract.readList(WidgetContract.Khatmah.self, from: data) else { return nil }
+    return try? JSONEncoder().encode(v)
+  },
+  "Hijri": { data in
+    guard let v = WidgetContract.readList(WidgetContract.Hijri.self, from: data) else { return nil }
+    return try? JSONEncoder().encode(v)
+  },
+  "Tasbih": { data in
+    guard let v = WidgetContract.readList(WidgetContract.Tasbih.self, from: data) else { return nil }
+    return try? JSONEncoder().encode(v)
+  },
+  "LogQueueEntry": { data in
+    guard let v = WidgetContract.readList(WidgetContract.LogQueueEntry.self, from: data) else { return nil }
+    return try? JSONEncoder().encode(v)
+  },
+  "TasbihQueueEntry": { data in
+    guard let v = WidgetContract.readList(WidgetContract.TasbihQueueEntry.self, from: data) else { return nil }
+    return try? JSONEncoder().encode(v)
+  },
+]

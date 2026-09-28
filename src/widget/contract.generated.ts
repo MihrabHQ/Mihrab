@@ -293,7 +293,11 @@ export type WidgetContractTasbihQueueEntry = {
   a: WidgetContractTasbihAction;
   /** Epoch ms. */
   t: number;
-  /** Run length for coalesced taps; absent means one. */
+  /**
+   * Run length for coalesced taps; absent means one. A long so an absurd
+   * count still reads, and is clamped by the rule rather than dropped by the
+   * reader.
+   */
   n?: number | null;
 };
 
@@ -592,7 +596,7 @@ export function readWidgetContractTasbihQueueEntry(
     a: aRead,
     t: tRead,
   };
-  const nRead = wcInt(input.n);
+  const nRead = wcLong(input.n);
   if (nRead != null) out.n = nRead;
   return out;
 }

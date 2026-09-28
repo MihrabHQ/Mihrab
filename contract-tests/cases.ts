@@ -298,6 +298,40 @@ export const DECODE_CASES: DecodeCase[] = [
   },
 ];
 
+/**
+ * The queues back to the app are arrays at the top level. One entry a
+ * writer got wrong must cost that entry, not the queue: the iOS widget used
+ * to decode the array whole, and a single bad tap emptied it.
+ */
+export const LIST_CASES: DecodeCase[] = [
+  {
+    name: 'a log queue with one entry another writer got wrong',
+    type: 'LogQueueEntry',
+    input: J([
+      { d: '2026-09-28', p: 'Fajr', t: 1759000000000 },
+      { d: '2026-09-28', p: 'Dhuhr', t: 'noon' },
+      { d: '2026-09-28', p: 'Asr', t: 1759000100000 },
+    ]),
+  },
+  {
+    name: 'a tasbih queue with an action from a later version',
+    type: 'TasbihQueueEntry',
+    input: J([
+      { a: 'inc', t: 1, n: 33 },
+      { a: 'undo', t: 2 },
+      { a: 'next', t: 3 },
+      null,
+      7,
+    ]),
+  },
+  { name: 'an empty queue', type: 'TasbihQueueEntry', input: '[]' },
+  {
+    name: 'not a list: unreadable',
+    type: 'LogQueueEntry',
+    input: J({ d: '2026-09-28' }),
+  },
+];
+
 // ── Time cases ──────────────────────────────────────────────────────────
 
 export const HHMM_CASES = [
@@ -422,6 +456,17 @@ function readerFor(type: string): Reader {
   const fn = (Contract as Record<string, unknown>)[`readWidgetContract${type}`];
   if (typeof fn !== 'function') throw new Error(`no reader for ${type}`);
   return fn as Reader;
+}
+
+function decodeList(type: string, input: string): unknown {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(input);
+  } catch {
+    return null;
+  }
+  if (!Array.isArray(parsed)) return null;
+  return parsed.map(readerFor(type)).filter(x => x != null);
 }
 
 function decode(type: string, input: string): unknown {
@@ -550,6 +595,10 @@ export async function buildFixtures() {
     decode: DECODE_CASES.map(c => ({
       ...c,
       expected: decode(c.type, c.input),
+    })),
+    lists: LIST_CASES.map(c => ({
+      ...c,
+      expected: decodeList(c.type, c.input),
     })),
     hhmm: HHMM_CASES.map(text => ({ text, minutes: minutesFromHHmm(text) })),
     text: TEXT_CLOCKS.flatMap(clock =>
