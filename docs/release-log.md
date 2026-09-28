@@ -1079,3 +1079,27 @@ no scene or names a scene delegate the binary does not contain. The
 wider rule: when the Xcode that archives changes major version, install
 that iOS's simulator runtime and launch the Release build on it before
 the first release that uses it — the runtime was not even on this Mac.
+
+## 2.27.1 (283) — 2026-09-28 — App Store only
+
+Cut by hand, outside `release.sh`, and for one store. App Review had
+rejected 2.27.1 (282) because it did not launch on iPadOS 27, and 2.27.0,
+live, had the same fault for everyone on iOS 27. Too small a change to
+ask every other platform to update for, so it went out as a new BUILD of
+the rejected version: branch `ios-2.27.1-283` (local) is `Release 2.27.1
+(282)` plus the scene life cycle commit and the build number, archived
+and uploaded with `build-ios-appstore.sh` (its new scene gate passed),
+attached to 2.27.1 in App Store Connect and resubmitted through the same
+review submission. Android, F-Droid and the Mac stay on 2.27.1 (282).
+
+Two things the next release inherits: iOS build 283 exists for 2.27.1,
+so 2.27.2 will be iOS build 283 of a different version (App Store
+Connect allows that); and the fix is on `main` already, so nothing
+from that branch needs merging.
+
+**Lesson:** a fix for one store does not need a release on all of them —
+a rejected version takes a new build number under the same version, and
+the review submission is resumed by marking its rejected item resolved
+before setting `submitted`. Setting `submitted` alone answers 409,
+"Version is not ready to be submitted yet", which reads like a wait and
+is not one.
