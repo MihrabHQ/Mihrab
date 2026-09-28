@@ -17,10 +17,9 @@ import {
   coerceQuranState,
   getQuranState,
   khatmahCurrentPage,
-  setKhatmahPosition,
-  startKhatmah,
   type QuranState,
 } from '../src/quran/quranState';
+import { setKhatmahPosition, startKhatmah } from '../src/quran/khatmahActions';
 import {
   drawnReadingPosition,
   isKhatmahPage,

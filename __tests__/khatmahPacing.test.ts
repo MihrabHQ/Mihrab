@@ -31,12 +31,14 @@ import {
   khatmahReachAyah,
   khatmahReachPage,
   khatmahUnreadPages,
+  type KhatmahPlan,
+} from '../src/quran/quranState';
+import {
   recordKhatmahProgress,
   setKhatmahDeadline,
   setKhatmahDuration,
   startKhatmah,
-  type KhatmahPlan,
-} from '../src/quran/quranState';
+} from '../src/quran/khatmahActions';
 import {
   coerceQuranState,
   khatmahCurrentPortion,
@@ -46,10 +48,12 @@ import {
   khatmahIsComplete,
   khatmahPaceToday,
   khatmahPages,
+} from '../src/quran/quranState';
+import {
   resetKhatmahAll,
   stepKhatmahBack,
   toggleKhatmahPageDone,
-} from '../src/quran/quranState';
+} from '../src/quran/khatmahActions';
 import { khatmahDayWhen } from '../src/quran/khatmahDayWhen';
 import { mergeKhatmah } from '../src/sync/merge';
 import { setTodaysMaghrib, _resetIslamicDay } from '../src/hijri/islamicDay';

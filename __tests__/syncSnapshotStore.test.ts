@@ -67,9 +67,11 @@ import {
   getQuranState,
   hydrateQuranState,
   khatmahReachAyah,
+} from '../src/quran/quranState';
+import {
   recordKhatmahPageTurn,
   startKhatmah,
-} from '../src/quran/quranState';
+} from '../src/quran/khatmahActions';
 import { durableEncryptedGet } from '../src/storage/durableWrite';
 
 const NOW = '2026-08-19T06:00:00.000Z';

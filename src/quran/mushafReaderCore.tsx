@@ -50,13 +50,13 @@ import {
   khatmahFinishTarget,
   khatmahMarkerAyah,
   khatmahPages,
-  recordKhatmahPageTurn,
   setQuranPrefs,
   useQuranState,
   useQuranHydrated,
   type QuranBookmark,
   type QuranState,
 } from './quranState';
+import { recordKhatmahPageTurn } from './khatmahActions';
 import {
   moveSessionToPage,
   drawnReadingPosition,

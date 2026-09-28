@@ -35,8 +35,6 @@ import { useActiveEdition } from '../useActiveEdition';
 import {
   activeKhatmah,
   khatmahPageInWindow,
-  clearKhatmahPosition,
-  setKhatmahPosition,
   useQuranState,
   setQuranPrefs,
   BOOKMARK_COLORS,
@@ -44,6 +42,7 @@ import {
   READING_COLOR,
   type BookmarkColor,
 } from '../quranState';
+import { clearKhatmahPosition, setKhatmahPosition } from '../khatmahActions';
 import {
   addBookmark,
   findBookmark,

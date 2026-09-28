@@ -25,15 +25,17 @@ import { join } from 'path';
 import {
   __resetQuranStateForTests,
   activeKhatmah,
-  clearKhatmahPosition,
   getQuranState,
   isKhatmahPageDone,
   khatmahCurrentPage,
+} from '../src/quran/quranState';
+import {
+  clearKhatmahPosition,
   recordKhatmahPageTurn,
   setKhatmahPosition,
   startKhatmah,
   toggleKhatmahPageDone,
-} from '../src/quran/quranState';
+} from '../src/quran/khatmahActions';
 import {
   addBookmark,
   removeBookmark,
@@ -703,13 +705,17 @@ describe('the shape holds as the book is read', () => {
     // Six places set `position`, and one that forgot would put the bug
     // straight back — silently, because the merge would simply see an
     // older stamp. Source-pinned: the value only ever comes from `pinned`.
-    const src = readFileSync(
-      join(__dirname, '..', 'src', 'quran', 'quranState.ts'),
-      'utf8',
-    );
-    const body = src.slice(src.indexOf('function pinned('));
-    const afterHelper = body.slice(body.indexOf('\n}\n'));
+    // The writers live in khatmahActions.ts and the helper in
+    // khatmahEdits.ts since the store was split (docs/rewrite-plan.md, 2.4).
+    const read = (f: string) =>
+      readFileSync(join(__dirname, '..', 'src', 'quran', f), 'utf8');
+    const writers = read('khatmahActions.ts');
+    expect(writers).not.toMatch(/\n\s+position:/);
+    expect(writers.match(/\.\.\.pinned\(/g)?.length).toBeGreaterThanOrEqual(6);
+    const edits = read('khatmahEdits.ts');
+    const at = edits.indexOf('function pinned(');
+    const afterHelper = edits.slice(at).slice(edits.slice(at).indexOf('\n}\n'));
+    expect(edits.slice(0, at)).not.toMatch(/\n\s+position:/);
     expect(afterHelper).not.toMatch(/\n\s+position:/);
-    expect(src.match(/\.\.\.pinned\(/g)?.length).toBeGreaterThanOrEqual(6);
   });
 });

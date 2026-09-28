@@ -54,7 +54,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { useAppPalette } from '../hooks/useAppPalette';
 import { useIsActive } from '../hooks/useIsActive';
-import { finishKhatmahPortion } from './quranState';
+import { finishKhatmahPortion } from './khatmahActions';
 import { VEIL_SETTLE_MS } from './fullscreenVeil';
 import { useRotationFade } from './rotationFade';
 import MushafTextPageSurface, {

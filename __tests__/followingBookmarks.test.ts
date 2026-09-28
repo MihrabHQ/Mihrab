@@ -19,10 +19,10 @@ import {
   coerceQuranState,
   getQuranState,
   setQuranPrefs,
-  startKhatmah,
   type QuranState,
   type QuranBookmark,
 } from '../src/quran/quranState';
+import { startKhatmah } from '../src/quran/khatmahActions';
 import {
   addBookmark,
   moveSessionToPage,

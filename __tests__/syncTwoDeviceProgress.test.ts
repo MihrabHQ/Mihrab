@@ -18,15 +18,17 @@ import {
   khatmahDay,
   khatmahReachAyah,
   khatmahFinishTarget,
-  finishKhatmahPortion,
   primeQuranState,
+  isKhatmahPageDone,
+  type QuranState,
+} from '../src/quran/quranState';
+import {
+  finishKhatmahPortion,
   recordKhatmahPageTurn,
   setKhatmahPosition,
   startKhatmah,
   toggleKhatmahPageDone,
-  isKhatmahPageDone,
-  type QuranState,
-} from '../src/quran/quranState';
+} from '../src/quran/khatmahActions';
 import { recordReading } from '../src/quran/readerMarks';
 import { ayahAtIndex } from '../src/quran/ayahIndex';
 import { findPageForAyah } from '../src/quran/pages';

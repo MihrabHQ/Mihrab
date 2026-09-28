@@ -27,6 +27,10 @@ import {
   khatmahPages,
   khatmahReachPage,
   khatmahStartAyah,
+  khatmahCurrentPage,
+  KHATMAH_TOTAL_AYAHS,
+} from '../src/quran/quranState';
+import {
   khatmahTracksPage,
   recordKhatmahPageTurn,
   resetKhatmahAll,
@@ -35,10 +39,8 @@ import {
   startKhatmah,
   stepKhatmahBack,
   finishKhatmahPortion,
-  khatmahCurrentPage,
   toggleKhatmahPageDone,
-  KHATMAH_TOTAL_AYAHS,
-} from '../src/quran/quranState';
+} from '../src/quran/khatmahActions';
 import { countRanges } from '../src/quran/khatmahDone';
 import { khatmahContinueTarget } from '../src/quran/khatmahTarget';
 import { selectQuranCardState } from '../src/quran/quranCardState';

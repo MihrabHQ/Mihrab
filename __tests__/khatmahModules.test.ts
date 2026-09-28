@@ -5,11 +5,12 @@
  * both ways, so moving either one out as a block would have made an import
  * cycle (docs/rewrite-plan.md, 2.1). The functions themselves had none, so
  * the pure khatmah model was cut into layers instead — units and progress,
- * then the schedule, then the plan's status — with the store on top. What
- * writes through the store sits above it again (the reader's marks, 2.3)
- * and is imported from where it lives, never through the store. These pin
- * that order, so a helpful import in the wrong direction fails here rather
- * than as an `undefined` at module load.
+ * then the schedule, then the plan's status, then the edits the writers
+ * make — with the store on top. What writes through the store sits above
+ * it again (the reader's marks, 2.3; the khatmah's writers, 2.4) and is
+ * imported from where it lives, never through the store. These pin that
+ * order, so a helpful import in the wrong direction fails here rather than
+ * as an `undefined` at module load.
  */
 import { readFileSync } from 'fs';
 import { join } from 'path';
@@ -24,10 +25,11 @@ const LAYERS = [
   'khatmahProgress',
   'khatmahSchedule',
   'khatmahStatus',
+  'khatmahEdits',
 ];
 
 /** Above the store: they write through it, so it must never import them. */
-const CLIENTS = ['readerMarks'];
+const CLIENTS = ['readerMarks', 'khatmahActions'];
 
 const localImports = (name: string): string[] => {
   const src = readFileSync(

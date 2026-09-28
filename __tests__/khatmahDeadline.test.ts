@@ -23,28 +23,30 @@ import {
   khatmahFinishTarget,
   khatmahMarkerAyah,
   khatmahReachAyah,
-  finishKhatmahPortion,
   khatmahPaceToday,
   khatmahPages,
   khatmahPortion,
   ayahsThroughPage,
-  khatmahTracksPage,
-  setKhatmahPosition,
   khatmahCurrentPage,
   khatmahPerDayPages,
   khatmahBehindBy,
   khatmahUnreadAyahs,
   khatmahUnreadPages,
+  coerceQuranState,
+  setQuranPrefs,
+  KHATMAH_TOTAL_AYAHS,
+  type KhatmahPlan,
+} from '../src/quran/quranState';
+import {
+  finishKhatmahPortion,
+  khatmahTracksPage,
+  setKhatmahPosition,
   recordKhatmahPageTurn,
   resetKhatmahToday,
   setKhatmahDeadline,
   setKhatmahDuration,
-  coerceQuranState,
-  setQuranPrefs,
   startKhatmah,
-  KHATMAH_TOTAL_AYAHS,
-  type KhatmahPlan,
-} from '../src/quran/quranState';
+} from '../src/quran/khatmahActions';
 import { mergeKhatmah } from '../src/sync/merge';
 import { ayahAtIndex } from '../src/quran/ayahIndex';
 import { findPageForAyah } from '../src/quran/pages';
