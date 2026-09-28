@@ -24,6 +24,7 @@
     "build-site": "node scripts/build-site.js",
     "build-release-notes": "node scripts/build-release-notes.js",
     "sync-widget-strings": "node scripts/sync-widget-strings.js",
+    "gen-widget-contract": "node scripts/gen-widget-contract.js",
     "verify-release": "./scripts/verify-release.sh"
   },
   "dependencies": {

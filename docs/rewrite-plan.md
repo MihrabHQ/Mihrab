@@ -1,6 +1,6 @@
 # Targeted rewrites: the four places the bugs keep coming from
 
-> **Status (2026-09-28): P0.1 and P1.1 done; see the progress log.** Decision (Hassan,
+> **Status (2026-09-28): P0.1, P1.1 and P1.2 done; see the progress log.** Decision (Hassan,
 > 2026-09-28): no rewrite of the app — React Native stays, and so does the
 > language. Instead, rewrite the four parts where the history says the same
 > kinds of bug keep returning, one shippable step at a time, riding along
@@ -102,7 +102,8 @@ missing or mistyped field costs one detail, never the whole payload (the
 24-hour Live Activity bug was one strict field). Includes the wall-clock
 helper per platform (parse, format 12/24 h, to-instant) that replaces the
 16 hand-written parsers. *Exit:* generated types and the helper compile in
-both native targets.
+both native targets. **Done 2026-09-28** — `scripts/contract/widget-contract.js`
+→ `npm run gen-widget-contract`; see the progress log.
 
 **1.3 Contract tests across languages.** Today there are no native unit
 tests at all. Add a Kotlin JVM test target and a Swift package test for the
@@ -320,3 +321,4 @@ one. It is not a rewrite target.
 | 2026-09-28 | — | Plan written from the measurements above. | — |
 | 2026-09-28 | P0.1 | Baseline recorded (section above). Sizes and churn re-measured: unchanged since the plan was written. | No change to phases. Added the text-rendering ANRs as a watch item outside the plan. |
 | 2026-09-28 | P1.1 | Inventory written ("Phase 1 inventory"). Nine channels, not the five the step named: two separate Live Activity payloads (iOS in seconds, Android in ms), an appearance side channel, the Android alert button, and two data-less signals back to the app. 16 hand-written "HH:mm" parsers (10 Swift, 6 Kotlin). 14 dead or write-only fields across the three payloads. | Yes. Target changed from epoch timestamps to typed wall-clock plus the UTC offset (the app's times are wall-clock by design, #56). 1.2 now requires lenient generated decoders and ships the per-platform time helper; 1.3 asserts values; 1.5 merges the two Live Activity payloads; 1.7 drops the dead fields. |
+| 2026-09-28 | P1.2 | quicktype tried on the payload and rejected: its Swift is synthesized `Codable` (one mistyped optional fails the whole payload — the bug being fixed) and its Kotlin needs Jackson, Klaxon or kotlinx.serialization where the app uses only org.json. Wrote a small generator instead (`scripts/gen-widget-contract.js`, ~730 lines) from a schema file with the field docs in it; it emits TS types, Swift with lenient `init(from:)`, Kotlin with lenient `fromJson`/`toJson`. `WallClock` written for all three platforms. Verified: 21 jest tests (generated files current, generator refuses bad schemas, the TS formatter matches the app's own for all 1,440 minutes × 2 clocks × 6 locales); Swift compiles in all three iOS targets (both simulator archs, no warnings) and a scratch decode of a deliberately broken payload dropped only the broken parts; Kotlin compiles (F-Droid release). Found on the way: for a time the clock shows twice (the night it goes back), `java.util.Calendar` picks the later instant and Foundation/JS the earlier — Android was an hour off the other two on that night. `WallClock.kt` now picks the earlier. | Yes, small. The Live Activity root type moves to 1.5 (it is designed there, from the same `Day`/`Row`/`Clock`). Whether the natives compute "next" themselves or the app passes it is decided in 1.4, with the builder in hand. The TS side has types only; a generated TS reader for the queues waits for 1.6. 1.3 must pin the DST choice on all three platforms. |
