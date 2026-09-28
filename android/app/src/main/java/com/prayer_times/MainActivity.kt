@@ -73,6 +73,12 @@ class MainActivity : ReactActivity() {
    * Android guarantees is up-to-date — and force-emitting the correct scheme to JS.
    */
   override fun onConfigurationChanged(newConfig: Configuration) {
+    // A turn of the phone with the muṣḥaf open: cover the window in the
+    // page colour now, inside this traversal, so the first frame drawn at
+    // the new size is the cover and not the old layout stretched into it.
+    // See RotationCover.kt.
+    RotationCover.onConfigurationChanged(this, newConfig)
+
     // Record the night bit BEFORE anything else can read a staler copy.
     // `newConfig` is the only value Android guarantees is current here, and
     // `SystemThemeModule.getColorScheme()` hands it to JS so the app's

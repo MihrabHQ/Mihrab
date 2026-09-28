@@ -131,7 +131,31 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   }
 }
 
+/**
+ The root view controller React Native would make — a plain
+ `UIViewController` — with one addition: it hears about a rotation BEFORE
+ UIKit animates it, which nothing in JavaScript can, and tells the
+ muṣḥaf's rotation cover (MihrabRotationCover.swift).
+ */
+final class MihrabRootViewController: UIViewController {
+  override func viewWillTransition(
+    to size: CGSize,
+    with coordinator: UIViewControllerTransitionCoordinator
+  ) {
+    MihrabRotationCover.shared.willTransition(
+      from: view.bounds.size,
+      to: size,
+      in: view.window
+    )
+    super.viewWillTransition(to: size, with: coordinator)
+  }
+}
+
 class ReactNativeDelegate: RCTDefaultReactNativeFactoryDelegate {
+  override func createRootViewController() -> UIViewController {
+    MihrabRootViewController()
+  }
+
   override func sourceURL(for bridge: RCTBridge) -> URL? {
     self.bundleURL()
   }
