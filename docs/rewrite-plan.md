@@ -1,6 +1,6 @@
 # Targeted rewrites: the four places the bugs keep coming from
 
-> **Status (2026-09-28): P0.1, P1.1–P1.4 and P1.6 done; see the progress log.** Decision (Hassan,
+> **Status (2026-09-28): P0.1, P1.1–P1.4, P1.6 and P2.1 done; see the progress log.** Decision (Hassan,
 > 2026-09-28): no rewrite of the app — React Native stays, and so does the
 > language. Instead, rewrite the four parts where the history says the same
 > kinds of bug keep returning, one shippable step at a time, riding along
@@ -207,28 +207,55 @@ Kotlin and ~8 Swift" in the table at the top.
 
 ## Phase 2 — Split `quranState.ts`
 
-Seams already visible in the file: the store (shape, hydrate, persist,
-prefs — lines ~1–1190), bookmarks and reading trails (~1190–1756), the
+The file reads as four sections: the store (shape, coerce, hydrate,
+persist — lines ~1–1190), bookmarks and reading trails (~1190–1756), the
 khatmah lifecycle (~1756–3088), and khatmah portions and schedule maths
-(~3088–4302, almost all pure functions).
+(~3088–4324). **Measured in 2.1, those are not the seams.** The two khatmah
+sections call each other — 22 calls from "lifecycle" into "schedule" and
+34 back — so moving either one out as a block makes an import cycle. The
+functions themselves have none: the call graph of the pure functions is
+acyclic. So the file is cut by purity, not by position:
 
-**2.1 Map and pin.** Dependency map of the 107 exports and 51 importers;
-run coverage on the file and add characterisation tests wherever a
-behaviour is untested (sync merges and deletions first). *Exit:* coverage
-report in the progress log; gaps closed.
+| Part | Functions | Lines |
+|---|---|---|
+| Pure khatmah model (units, done set, reach, holes, days, portions, today's cut, pace, plan transforms) | 72 | ~1,650 + ~100 of types |
+| Khatmah writers (start, re-pace, progress, page toggles, position, reset, finish, step back, abandon) | 14 | ~820 |
+| Marks: bookmarks, stars, reading trails (9 pure, 12 writers) | 21 | ~570 |
+| Store: types and defaults, coerce (pure, ~510), hydrate, persist, subscribe | 47 | ~1,130 |
 
-**2.2 Extract the schedule maths** (portions, days left, gaps, finish
-targets) into a pure module — no state, easiest to move and to test.
+**2.1 Map and pin.** *Done 2026-09-28* — see the progress log.
 
-**2.3 Extract bookmarks and reading trails.**
+**2.2 Extract the pure khatmah model** into `src/quran/khatmah/`, as
+layers that import only downward — shared units (pages↔ayahs, the Ḥafṣ
+page, day keys, a plan's start and deadline), then progress (done set,
+reach, holes, completion), then the schedule (days, portions, today's cut,
+pace, behind-by, credit window, gap report), then the plan transforms the
+writers apply (`withDaySnapshot`, `withPaceOfDay`, `repaced`, `settled`).
+The recheck confirms the layering against the call graph before anything
+moves. The memos (`doneCache`, `gapMemo`, `pageEnds`) move with the
+functions that own them; `__resetQuranStateForTests` resets them through
+the module. No module over ~1,000 lines; `quranState.ts` re-exports.
 
-**2.4 Extract the khatmah lifecycle** (start, progress, reset, abandon and
-its dated removal record).
+**2.3 Extract bookmarks, stars and reading trails.** `isReadingHere` is
+exported and used nowhere — deleted here rather than tested.
+
+**2.4 Extract the khatmah writers** onto the store's `updateQuranState`.
+What stays in `quranState.ts` is the store; its coerce moves to its own
+module if the store is still over ~1,000 lines.
 
 **2.5 Retire the compatibility layer.** During 2.2–2.4 `quranState.ts`
 re-exports what moved, so importers change gradually; this step moves the
 last importers and deletes the re-exports. *Phase exit:* no module over
 ~1,000 lines, each with its own test file, every existing test green.
+
+**Open question for Hassan (found in 2.1, not changed by this phase).**
+Two devices that each start a khatmah before they sync keep BOTH live
+plans after the merge, and `activeKhatmah` shows the earlier-started one
+on both devices — the other plan, and anything read against it, is hidden
+until the shown one is finished or abandoned. Options: keep as is; keep
+the later-started plan (the most recent decision) and abandon the other;
+or ask the reader which to keep. A refactor must not change it, so the
+split keeps today's behaviour until this is decided.
 
 ## Phase 3 — Release tooling in TypeScript
 
@@ -332,3 +359,4 @@ one. It is not a rewrite target.
 | 2026-09-28 | P1.3 | `contract-tests/`: 23 decode cases (whole payload, every kind of breakage, both queue shapes, how Swift writes an epoch) and 150-odd time cases (v1 parsing, 12/24-hour text in four marker styles, instants and offsets in six zones including both DST transitions in Stockholm and New York, Lord Howe's half-hour DST and Chatham's +12:45). The generator now also writes the TS reference readers and a type→reader registry for each native harness. `npm run contract-fixtures` records the app's answers in `fixtures.json`; `scripts/contract-test-native.sh` runs them through Swift (plain `swiftc`, 177 checks) and Kotlin (a JVM Gradle project compiling the app's own contract sources, 8 tests); both pass, and both fail on a deliberately broken fixture. CI gets `contract-swift` (macOS) and `contract-kotlin` (Ubuntu) jobs. Two traps found: jest gives each file its own `process.env`, so setting `TZ` never reached V8 — zone answers now come from a child Node started in the zone; and Gradle called the Kotlin tests up to date after the fixtures changed until the file was declared a task input. | No change to later steps. Noted: the JVM test uses Maven's org.json, not Android's own implementation; the two agree on everything the contract reads (typed values, `isNull`), and 1.4's device pass covers the rest. The CI jobs are unproven until `ci.yml` is pushed with the next release. |
 | 2026-09-28 | P1.4 | Recheck changed the approach: rewriting 13 widgets' rendering to read v2 would be Phase 4's work done twice, so the natives read v2 through an adapter (`WidgetPayloadV1`, Swift and Kotlin, TS reference `widgetPayloadV1FromV2`) that hands the unchanged renderers the v1 JSON they draw, computed for the current minute. v2 is derived from the v1 payload in TS (`widgetPayloadV2FromV1`), so the two cannot disagree; the app writes both in ONE native call (`setDataV2`), and plain `setData` removes v2 so a stale v2 can never outrank a newer v1. Contract changes: `Day.estimated` (after ʿIshāʾ with no tomorrow, v1 put today's times under tomorrow's label at the top level; v2 says so), a First Third after midnight counts past 1440 on its own day, `builtAt` dropped (it made every push unique and would have defeated Android's redraw coalescing). Verified: jest round trip v1 → v2 → v1 is exact for 10 scenarios (midday, on a prayer's minute, after ʿIshāʾ with/without tomorrow, night marks, a First Third after midnight, no ʿIshāʾ at this latitude, every block, en/ar/sv, 12/24-hour) apart from the two fields not carried (`tomorrowEstimated`, read by nothing; practice `k`, superseded by `kw` and written as 0 only because the iOS decoder requires it); the Swift and Kotlin adapters match the TS reference on the 8 English scenarios (185 Swift checks, 9 Kotlin tests); Android emulator: a 2.21.0 install with Prayer times and Continue Reading widgets placed, upgraded to this build — logcat `drawing from payload v2`, both widgets drawn correctly (Arabic, 24-hour, Isha next with countdown); iOS simulator (Release): the app writes both keys (30 days, all blocks), and the extension's own `WidgetPayload` decoder reads identical content from v1 and from adapted v2. Full jest 394 suites / 6,031 tests, tsc clean, Kotlin and iOS builds clean. | Yes. The renderers move onto the typed v2 model in 1.7, which is also where the remaining "HH:mm" parse sites are removed (the phase exit is unchanged; its timing moves). Light/dark was not re-shot: the data path changed, the drawing did not. |
 | 2026-09-28 | P1.6 | Taken before 1.5: smaller, and it found a real bug. Both iOS queues decoded their array whole, so one entry another writer got wrong emptied the queue — every Log Today tap or bead waiting in it. All three platforms now read each queue through the contract's types and a lossy top-level list reader (`WidgetContract.readList`, generated for Swift and Kotlin; the TS coercers read each item through the generated reader); each queue's own rules (date format, the five prayers, action set, run clamp) are unchanged and stay hand-written. The run length `n` became a `long` in the contract so an absurd count is clamped by the rule, not dropped by the reader — the TS tests pinned exactly that. Verified: 4 new list cases through TS, Swift (189 checks) and Kotlin (10 tests); the queue suites and the mirror tests (updated to the new code) pass; full jest 394/6,031; Kotlin and iOS builds clean. | Two rules now agree across platforms that did not before, both edge cases no writer produces: a fractional run length reads as one tap (TS used to floor it), and a run length written as text reads as one tap (Kotlin used to parse it). Cross-platform tests of the queue RULES would need the pure logic split from the platform storage code; not worth it for five-line rules already mirrored and pinned — left as is. |
+| 2026-09-28 | P2.1 | Coverage of `quranState.ts` with every suite: 97.76% of lines, 87.84% of branches; `merge.ts` 98.03%. The gaps were not random — they sat on deletions and on the merge's tie-breaks: `abandonKhatmah` was never called by a test, nor the removal record the bookmark de-duplication writes, nor any same-millisecond tie in `mergeKhatmah` or `mergeFasting`. `quranStateCharacterization.test.ts` (21 tests) pins those, plus today's cut (dropped from a duration plan, dropped on restart, portions past today) and the disk failing (a store that cannot be read starts from the defaults once; a failed write does not hold up the next). After: 99.86% / 89.41%, `merge.ts` 100% of lines; the one line left is `isReadingHere`, which nothing uses. Map: 4,324 lines, 107 exports, 51 app importers — of the 50 the script resolved, 23 use only the store, 10 the store and the marks, 17 reach into the khatmah — and 38 test files. Two real bugs found and fixed (committed on their own, with 6 tests): a khatmah's day N was its start plus (N−1)×24 h, a day off after the night the clocks go back (`khatmahDayWhen`, `khatmahDayAnchor`), and the coerce's stale-day check did the same sum; both now step the calendar. Five test files that failed between 00:00 and 00:59 on autumn nights in Stockholm now build their dates the same way (`__tests__/fixtures/localDays.ts`). Verified: full jest 396 suites / 6,058 tests; the new and DST tests also in UTC and New York; tsc and eslint clean. | Yes. The four sections are not the seams (22 calls one way between the khatmah sections, 34 the other), so 2.2 as written would have made an import cycle; the pure functions' call graph has none, so the file is cut by purity: 2.2 the 72 pure khatmah functions as downward-importing layers, 2.3 the marks (deleting `isReadingHere`), 2.4 the 14 khatmah writers, the store last. Found and NOT changed: two devices that each start a khatmah before syncing keep both live plans, and both show the earlier one — written up under Phase 2 as an open question for Hassan. |
