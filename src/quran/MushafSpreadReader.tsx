@@ -24,6 +24,7 @@ import React, {
   useState,
 } from 'react';
 import {
+  Animated,
   FlatList,
   InteractionManager,
   Platform,
@@ -40,6 +41,7 @@ import { useTranslation } from 'react-i18next';
 import { useAppPalette } from '../hooks/useAppPalette';
 import { useIsActive } from '../hooks/useIsActive';
 import { finishKhatmahPortion } from './quranState';
+import { useRotationFade } from './rotationFade';
 import MushafTextPageSurface from './MushafTextPageSurface';
 import type { AyahRef } from './MushafTextPage';
 import { spreadCount, spreadForPage } from './mushafSpread';
@@ -355,6 +357,8 @@ export const MushafSpreadReader = React.memo(function MushafSpreadReader(
   const availH = spreadGeometryFits(geometry, pageWidth, paired)
     ? geometry.availH
     : null;
+  // When they agree again the pages fade back in — see `rotationFade.ts`.
+  const rotationFade = useRotationFade(availH == null);
 
   const data = useMemo(
     () => Array.from({ length: itemCount }, (_, i) => i),
@@ -648,6 +652,15 @@ export const MushafSpreadReader = React.memo(function MushafSpreadReader(
             style={[StyleSheet.absoluteFill, { backgroundColor: pageBg }]}
           />
         ) : null}
+        {/* ...and its fade: already opaque when the cover goes, it lifts
+            off the redrawn spread — see `rotationFade.ts`. */}
+        <Animated.View
+          pointerEvents="none"
+          style={[
+            StyleSheet.absoluteFill,
+            { backgroundColor: pageBg, opacity: rotationFade },
+          ]}
+        />
       </View>
 
       {showChevrons ? (

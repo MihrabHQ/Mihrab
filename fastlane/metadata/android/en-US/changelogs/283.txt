@@ -1,1 +1,2 @@
 • On iPhone and iPad, Mihrab opens again on iOS 27 and iPadOS 27. Since 2.25.0 it closed the moment it was opened on a device updated to 27. Nothing you had saved was lost, and a widget tap still opens the page it points to.
+• Turning the phone fades the muṣḥaf page back in, as leaving fullscreen does.
