@@ -1064,4 +1064,18 @@ Changed the release cycle itself:
   - `scripts/release.sh`
   - `scripts/verify-release.sh`
 
-**Lesson:** _(unfilled)_
+**Lesson:** a new Xcode is a new platform, and nothing in the cycle
+launched the app on it. App Review rejected this build on 2026-09-28:
+on an iPad Air running iPadOS 27.0 it closed at launch, and UIKit says
+why in so many words — "UIScene life cycle is required for apps built
+with this SDK". Every iOS archive since 2.25.0 was built with Xcode 27,
+none had a scene, and 2.27.0 had passed review and gone live, so for
+about a week Mihrab would not open for anyone who updated to 27. The
+Mac never broke only because Catalyst is still pinned to Xcode 26. The
+app has a `SceneDelegate` now (widget links come in through the scene,
+cold and warm, both checked in the iOS 27 simulator), and
+`build-ios-appstore.sh` refuses to export an archive whose bundle declares
+no scene or names a scene delegate the binary does not contain. The
+wider rule: when the Xcode that archives changes major version, install
+that iOS's simulator runtime and launch the Release build on it before
+the first release that uses it — the runtime was not even on this Mac.

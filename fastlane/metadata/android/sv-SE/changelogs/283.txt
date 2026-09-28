@@ -1,0 +1,1 @@
+• På iPhone och iPad öppnas Mihrab igen på iOS 27 och iPadOS 27. Sedan 2.25.0 stängdes appen direkt när den öppnades på en enhet med 27. Inget du sparat har gått förlorat, och ett tryck på en widget öppnar fortfarande sidan den pekar på.
