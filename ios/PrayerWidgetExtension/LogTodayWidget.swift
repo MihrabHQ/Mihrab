@@ -198,10 +198,7 @@ struct LogTodayProvider: TimelineProvider {
   }
 
   private func loadPayload() -> WidgetPayload? {
-    guard let json = UserDefaults(suiteName: kSuite)?.string(forKey: kKey),
-          let data = json.data(using: .utf8),
-          let p = try? JSONDecoder().decode(WidgetPayload.self, from: data)
-    else { return nil }
+    guard let p = loadStoredWidgetPayload() else { return nil }
     // The most important of the four. A payload whose schedule has run out
     // still carries a `today` block, dated whenever the app was last opened
     // — so a stale one would offer a month-old day's prayers as today's, and

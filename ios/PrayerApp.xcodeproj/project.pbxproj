@@ -23,6 +23,7 @@
 		2A9B8C7D6E5F4A3B2C1D0E9F /* AppVersion.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A9B8C7D6E5F4A3B2C1D0E9E /* AppVersion.m */; };
 		2A9B8C7D6E5F4A3B2C1D1A02 /* SystemClock.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A9B8C7D6E5F4A3B2C1D1A01 /* SystemClock.m */; };
 		2C5CEB29AC508FCD14DF3B46 /* MushafLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FF43166B10774D1533521FC /* MushafLine.swift */; };
+		33D4CD3C7FCC01FC84056305 /* WidgetPayloadV1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BDC072298C265946EC98634 /* WidgetPayloadV1.swift */; };
 		3B626775B5A7E2F8DC2273EF /* WidgetContract.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96544E1D56A76E31598DEF4D /* WidgetContract.generated.swift */; };
 		3E10B52B5B3701C8BFBF573C /* KeyCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B060F96DE10B3AF6B38D8B2 /* KeyCommands.swift */; };
 		41F54867DC3100970FA9932A /* NowPlayingState.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9A8F27786569D47911785CB /* NowPlayingState.swift */; };
@@ -36,6 +37,7 @@
 		6F702A22F070F0CB015C3788 /* adhan_abdul_ghaffar.caf in Resources */ = {isa = PBXBuildFile; fileRef = 8A1A56F1FEF3275970746B0F /* adhan_abdul_ghaffar.caf */; };
 		730120DC1F8F960B4D9B31BB /* MushafLine.m in Sources */ = {isa = PBXBuildFile; fileRef = 63C29CB4341E0EECC7836179 /* MushafLine.m */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
+		7E03A6352BAC52EEBCFDD0A5 /* WidgetPayloadV1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BDC072298C265946EC98634 /* WidgetPayloadV1.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		82792D28789AD3A9AD8EA294 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
 		8335EB755F07A4493C0BCA72 /* adhan_saber.caf in Resources */ = {isa = PBXBuildFile; fileRef = CE9E49272B22B1425383AC48 /* adhan_saber.caf */; };
@@ -77,6 +79,7 @@
 		BBF3C3E5E6C4DE8AF0C2C7A6 /* CompassModule.m in Sources */ = {isa = PBXBuildFile; fileRef = F4D4DB9CBD682D1BF5562CC3 /* CompassModule.m */; };
 		CA37C7F81236A5CF8F759E97 /* Haptics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60668681401DD7256458E168 /* Haptics.swift */; };
 		CC58BCD9D5E598399038FF84 /* WordPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62AC5ABA33A649A65C3854FF /* WordPlayer.swift */; };
+		CD071F0287B88D4CD0A3477F /* WidgetPayloadV1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BDC072298C265946EC98634 /* WidgetPayloadV1.swift */; };
 		CE1E4BEE25F612B8320B7886 /* adhan_hafiz_murad.caf in Resources */ = {isa = PBXBuildFile; fileRef = 91E97289B5BBE23C693F9B59 /* adhan_hafiz_murad.caf */; };
 		D56D0059B561A95DD5755655 /* WordPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = BA06E43EAA2F2E83EA0854E6 /* WordPlayer.m */; };
 		D80631DB29913BA3BE3917AB /* Haptics.m in Sources */ = {isa = PBXBuildFile; fileRef = BFF6595003A4C5C972D2B78B /* Haptics.m */; };
@@ -175,6 +178,7 @@
 		62AC5ABA33A649A65C3854FF /* WordPlayer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = WordPlayer.swift; path = PrayerApp/WordPlayer.swift; sourceTree = "<group>"; };
 		63C29CB4341E0EECC7836179 /* MushafLine.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MushafLine.m; path = PrayerApp/MushafLine.m; sourceTree = "<group>"; };
 		69FB66EF55272B1AA6A61A69 /* PrayerBuildInfo.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PrayerBuildInfo.m; path = PrayerApp/PrayerBuildInfo.m; sourceTree = "<group>"; };
+		6BDC072298C265946EC98634 /* WidgetPayloadV1.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WidgetPayloadV1.swift; sourceTree = "<group>"; };
 		6E8E4C81A93DFA1C5C47E89E /* WallClock.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WallClock.swift; sourceTree = "<group>"; };
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = PrayerApp/AppDelegate.swift; sourceTree = "<group>"; };
 		7B489EDC7485CD1BDA638DC8 /* adhan_sharif_doman.caf */ = {isa = PBXFileReference; lastKnownFileType = "audio.x-caf"; name = adhan_sharif_doman.caf; path = PrayerApp/adhan_sharif_doman.caf; sourceTree = "<group>"; };
@@ -417,6 +421,7 @@
 			children = (
 				96544E1D56A76E31598DEF4D /* WidgetContract.generated.swift */,
 				6E8E4C81A93DFA1C5C47E89E /* WallClock.swift */,
+				6BDC072298C265946EC98634 /* WidgetPayloadV1.swift */,
 			);
 			name = Contract;
 			path = Contract;
@@ -802,6 +807,7 @@
 				52E5157C94B284F6DC9D93E2 /* MihrabRotationCover.m in Sources */,
 				63F66A55A4230463C72B2391 /* WidgetContract.generated.swift in Sources */,
 				6C156AAD7CA5CDB0DEBF466E /* WallClock.swift in Sources */,
+				CD071F0287B88D4CD0A3477F /* WidgetPayloadV1.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -819,6 +825,7 @@
 				F2A1000000000023 /* PracticeGrid.swift in Sources */,
 				3B626775B5A7E2F8DC2273EF /* WidgetContract.generated.swift in Sources */,
 				FC36F1E91AF5B74243B9D9A7 /* WallClock.swift in Sources */,
+				7E03A6352BAC52EEBCFDD0A5 /* WidgetPayloadV1.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -831,6 +838,7 @@
 				F2A1000000000008 /* PrayerLiveActivityAttributes.swift in Sources */,
 				F0500B44C8F251035688F33E /* WidgetContract.generated.swift in Sources */,
 				487A75EFC746A21D7E0411B2 /* WallClock.swift in Sources */,
+				33D4CD3C7FCC01FC84056305 /* WidgetPayloadV1.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

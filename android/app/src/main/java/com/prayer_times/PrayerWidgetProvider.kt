@@ -525,7 +525,7 @@ open class PrayerWidgetProvider : AppWidgetProvider() {
       // it. See PrayerWidgetProvider.localized.
       val context = localized(base)
       val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-      val json = prefs.getString(PREFS_KEY, null)
+      val json = WidgetPayloadSource.json(context)
       val style = readWidgetStyle(prefs)
       for (id in ids) {
         // One RemoteViews per size the launcher can show — see WidgetSizing.
@@ -761,9 +761,7 @@ open class PrayerWidgetProvider : AppWidgetProvider() {
     fun armWidgetAlarms(context: Context) {
       scheduleMidnightRollover(context)
 
-      val json = context
-        .getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        .getString(PREFS_KEY, null) ?: return
+      val json = WidgetPayloadSource.json(context) ?: return
       val next = try {
         nextBoundaryMillis(JSONObject(json))
       } catch (_: Exception) {
@@ -1315,9 +1313,8 @@ open class PrayerWidgetProvider : AppWidgetProvider() {
 
     @Synchronized
     fun payload(context: Context): JSONObject? {
-      val raw = context
-        .getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        .getString(PREFS_KEY, null) ?: return null
+      // v2 adapted for this minute when the app wrote it, else v1 as written.
+      val raw = WidgetPayloadSource.json(context) ?: return null
       if (raw == cachedRaw) return cachedPayload
       val parsed = try {
         JSONObject(raw)

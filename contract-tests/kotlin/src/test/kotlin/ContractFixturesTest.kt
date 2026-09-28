@@ -67,6 +67,23 @@ class ContractFixturesTest {
   }
 
   @Test
+  fun adaptsV2ToWhatTheRenderersDraw() {
+    val failures = mutableListOf<String>()
+    val cases = section("adapt")
+    for (c in cases) {
+      val now = c.getJSONObject("now")
+      val p = WidgetContract.Payload.parse(c.getString("input"))
+      val have = p?.let {
+        WidgetPayloadV1.fromV2(it, now.getString("todayKey"), now.getInt("nowMinutes"))
+      }
+      val want = canonical(c.opt("expected"))
+      val got = canonical(have)
+      if (want != got) failures += "adapt — ${c.getString("name")}\n    want $want\n    have $got"
+    }
+    report(failures, cases.size)
+  }
+
+  @Test
   fun readsTheV1Clock() {
     val failures = mutableListOf<String>()
     val cases = section("hhmm")

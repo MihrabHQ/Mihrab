@@ -17,7 +17,10 @@ import { buildFixtures } from '../contract-tests/cases';
 const FILE = 'contract-tests/fixtures.json';
 
 describe('the widget contract fixtures', () => {
-  const fixtures = buildFixtures();
+  let fixtures: Awaited<ReturnType<typeof buildFixtures>>;
+  beforeAll(async () => {
+    fixtures = await buildFixtures();
+  });
 
   it('are current — run `npm run contract-fixtures`', () => {
     const text = `${JSON.stringify(fixtures, null, 2)}\n`;

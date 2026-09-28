@@ -7,6 +7,10 @@ import {
 } from './buildWidgetPayload';
 import { getPrayerWidgetModule } from '../native/PrayerWidget';
 import type { WidgetExtras } from './widgetBlocks';
+import { widgetPayloadV2FromV1 } from './widgetPayloadV2';
+import { contractClock } from './wallClock';
+import { activeClock } from '../utils/activeClock';
+import i18n from '../i18n';
 
 /**
  * Updates home-screen widget data (Android + iOS when native module is linked).
@@ -45,8 +49,22 @@ export async function syncPrayerWidget(
     week,
     extras,
   );
+  const json = JSON.stringify(payload);
+  if (mod.setDataV2) {
+    try {
+      const v2 = widgetPayloadV2FromV1(payload, {
+        clock: contractClock(activeClock().hour12, i18n.language),
+        now,
+      });
+      await mod.setDataV2(json, JSON.stringify(v2));
+      return;
+    } catch {
+      // Whatever went wrong with v2, v1 alone still reaches the widgets —
+      // and `setData` clears the v2 that would otherwise outrank it.
+    }
+  }
   try {
-    await mod.setData(JSON.stringify(payload));
+    await mod.setData(json);
   } catch {
     /* widget is best-effort */
   }

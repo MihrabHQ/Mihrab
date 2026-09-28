@@ -39,8 +39,6 @@ enum WidgetContract {
   struct Payload: Codable, Hashable {
     /// Always 2 for this shape.
     var schemaVersion: Int
-    /// Epoch ms when the app wrote it.
-    var builtAt: Int
     /// The app's language tag (`sv`, `ar`). Native chrome resolves its own
     /// strings against it, so one widget never speaks two languages.
     var language: String
@@ -67,7 +65,6 @@ enum WidgetContract {
 
     init(
       schemaVersion: Int,
-      builtAt: Int = 0,
       language: String = "",
       clock: Clock = Clock(),
       locationName: String = "",
@@ -80,7 +77,6 @@ enum WidgetContract {
       tasbih: Tasbih? = nil
     ) {
       self.schemaVersion = schemaVersion
-      self.builtAt = builtAt
       self.language = language
       self.clock = clock
       self.locationName = locationName
@@ -95,7 +91,6 @@ enum WidgetContract {
 
     enum CodingKeys: String, CodingKey {
       case schemaVersion
-      case builtAt
       case language
       case clock
       case locationName
@@ -111,7 +106,6 @@ enum WidgetContract {
     init(from decoder: Decoder) throws {
       let c = try decoder.container(keyedBy: CodingKeys.self)
       schemaVersion = try c.wcRequire(c.wcInt(.schemaVersion).flatMap(wcInt32), .schemaVersion)
-      builtAt = c.wcInt(.builtAt) ?? 0
       language = c.wcValue(String.self, .language) ?? ""
       clock = c.wcValue(Clock.self, .clock) ?? Clock()
       locationName = c.wcValue(String.self, .locationName) ?? ""
@@ -180,9 +174,12 @@ enum WidgetContract {
     var prayers: [Row]
     /// Absent when the user turned Sunrise off.
     var sunrise: Row?
-    /// The night marks the user turned on, each on the calendar date it
-    /// falls.
+    /// The night marks the user turned on — Islamic Midnight, the Last Third,
+    /// the First Third — as the app groups them with this day.
     var extras: [Row]
+    /// True for a day the app had no times for, filled with the day before's.
+    /// Only its Fajr is offered as "next", exactly as the app does.
+    var estimated: Bool
 
     init(
       dateKey: String,
@@ -190,7 +187,8 @@ enum WidgetContract {
       label: String = "",
       prayers: [Row],
       sunrise: Row? = nil,
-      extras: [Row] = []
+      extras: [Row] = [],
+      estimated: Bool = false
     ) {
       self.dateKey = dateKey
       self.utcOffsetMinutes = utcOffsetMinutes
@@ -198,6 +196,7 @@ enum WidgetContract {
       self.prayers = prayers
       self.sunrise = sunrise
       self.extras = extras
+      self.estimated = estimated
     }
 
     enum CodingKeys: String, CodingKey {
@@ -207,6 +206,7 @@ enum WidgetContract {
       case prayers
       case sunrise
       case extras
+      case estimated
     }
 
     init(from decoder: Decoder) throws {
@@ -217,6 +217,7 @@ enum WidgetContract {
       prayers = try c.wcRequire(c.wcList(Row.self, .prayers), .prayers)
       sunrise = c.wcValue(Row.self, .sunrise)
       extras = c.wcList(Row.self, .extras) ?? []
+      estimated = c.wcValue(Bool.self, .estimated) ?? false
     }
   }
 
@@ -228,8 +229,10 @@ enum WidgetContract {
     var name: String
     /// Short label for narrow layouts.
     var abbr: String
-    /// Minutes after local midnight of the day, 0–1439. Null when the time
-    /// does not occur at this latitude; draw a dash.
+    /// Minutes after local midnight of the day: 0–1439, or 1440 and more for
+    /// a night mark that falls after the midnight ending the day (the First
+    /// Third, some nights). Null when the time does not occur at this
+    /// latitude; draw a dash.
     var minutes: Int?
 
     init(

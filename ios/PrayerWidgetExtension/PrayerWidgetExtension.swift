@@ -28,6 +28,35 @@ let kSuite = "group.com.prayerapp"
 #endif
 let kKey = "prayer_widget_payload_v1"
 
+/// Payload v2, the widget contract (docs/rewrite-plan.md, Phase 1). The app
+/// writes it beside v1 in the same call; see `loadStoredWidgetPayload`.
+let kKeyV2 = "prayer_widget_payload_v2"
+
+/// The payload every widget in this extension draws from.
+///
+/// When the app wrote payload v2 and it reads, it is turned into the v1 JSON
+/// `WidgetPayload` has always decoded (`WidgetPayloadV1`), for this moment:
+/// the text written here from the payload's clock, "today" and "next"
+/// decided now rather than when the app last ran. Otherwise — an older app,
+/// or the app's fallback when v2 could not be built, which also removes it —
+/// v1 is read exactly as written, as it always was.
+func loadStoredWidgetPayload(now: Date = Date()) -> WidgetPayload? {
+  let defaults = UserDefaults(suiteName: kSuite)
+  if let v2 = defaults?.string(forKey: kKeyV2)?.data(using: .utf8),
+     let contract = try? JSONDecoder().decode(WidgetContract.Payload.self, from: v2),
+     let data = WidgetPayloadV1.data(
+       from: contract,
+       todayKey: WallClock.dateKey(now),
+       nowMinutes: WallClock.minutes(of: now)),
+     let p = try? JSONDecoder().decode(WidgetPayload.self, from: data) {
+    return p
+  }
+  guard let json = defaults?.string(forKey: kKey),
+        let data = json.data(using: .utf8)
+  else { return nil }
+  return try? JSONDecoder().decode(WidgetPayload.self, from: data)
+}
+
 /// The language Mihrab itself is set to, written beside the payload.
 ///
 /// Not read out of the payload: the JSON runs to a hundred kilobytes and
@@ -982,10 +1011,7 @@ struct Provider: TimelineProvider {
   }
 
   private func loadPayload() -> WidgetPayload? {
-    guard let json = UserDefaults(suiteName: kSuite)?.string(forKey: kKey),
-          let data = json.data(using: .utf8),
-          let p = try? JSONDecoder().decode(WidgetPayload.self, from: data)
-    else { return nil }
+    guard let p = loadStoredWidgetPayload() else { return nil }
     return p
   }
 

@@ -7,9 +7,8 @@
 #
 # contract-tests/fixtures.json holds the answers the app's own TypeScript
 # gives (`npm run contract-fixtures`); each platform must give the same.
-# Neither half needs Xcode, an emulator or the Android build: the contract
-# code depends on Foundation and org.json and nothing else, which is also
-# why it can run on the Linux CI runner.
+# Neither half needs an Xcode project, an emulator or the Android build:
+# the contract code depends on Foundation and org.json and nothing else.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -19,8 +18,7 @@ if [[ "$which" == all || "$which" == swift ]]; then
   out="$(mktemp -d)"
   trap 'rm -rf "$out"' EXIT
   swiftc -O -o "$out/contract-test" \
-    ios/Contract/WidgetContract.generated.swift \
-    ios/Contract/WallClock.swift \
+    ios/Contract/*.swift \
     contract-tests/swift/Registry.generated.swift \
     contract-tests/swift/main.swift
   "$out/contract-test" contract-tests/fixtures.json

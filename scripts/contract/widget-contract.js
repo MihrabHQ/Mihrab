@@ -28,12 +28,13 @@
  * ── TIMES ────────────────────────────────────────────────────────────
  *
  * Wall clock, not instants: `minutes` after the local midnight that starts
- * the row's `dateKey`, 0–1439. Every prayer time the app holds is a
- * wall-clock time in the clock of the place it belongs to (see
- * src/prayer/timezoneShift.ts, issue #56), and an instant would redraw a
- * stored place's table in the device's zone. `Day.utcOffsetMinutes` says
- * which offset the times were computed under, so a reader can tell when
- * the device's offset for that date has moved on since.
+ * the row's `dateKey` (1440 and past for the night after it). Every prayer
+ * time the app holds is a wall-clock time in the clock of the place it
+ * belongs to (see src/prayer/timezoneShift.ts, issue #56), and an instant
+ * would redraw a stored place's table in the device's zone.
+ * `Day.utcOffsetMinutes` says which offset the times were computed under,
+ * so a reader can tell when the device's offset for that date has moved on
+ * since.
  *
  * Turning minutes into text or an instant is done by one helper per
  * platform — WallClock.swift, WallClock.kt, src/widget/wallClock.ts — and
@@ -62,7 +63,6 @@ module.exports = {
       doc: 'Everything the home-screen widgets draw. Written by the app, read on every widget redraw.',
       fields: [
         ['schemaVersion', t.int(REQUIRED), 'Always 2 for this shape.'],
-        ['builtAt', t.long({ default: 0 }), 'Epoch ms when the app wrote it.'],
         [
           'language',
           t.string({ default: '' }),
@@ -145,7 +145,12 @@ module.exports = {
         [
           'extras',
           t.list(t.ref('Row'), { default: [] }),
-          'The night marks the user turned on, each on the calendar date it falls.',
+          'The night marks the user turned on — Islamic Midnight, the Last Third, the First Third — as the app groups them with this day.',
+        ],
+        [
+          'estimated',
+          t.bool({ default: false }),
+          'True for a day the app had no times for, filled with the day before\'s. Only its Fajr is offered as "next", exactly as the app does.',
         ],
       ],
     },
@@ -163,7 +168,7 @@ module.exports = {
         [
           'minutes',
           t.int(),
-          'Minutes after local midnight of the day, 0–1439. Null when the time does not occur at this latitude; draw a dash.',
+          'Minutes after local midnight of the day: 0–1439, or 1440 and more for a night mark that falls after the midnight ending the day (the First Third, some nights). Null when the time does not occur at this latitude; draw a dash.',
         ],
       ],
     },
