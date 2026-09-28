@@ -117,6 +117,33 @@
 	     orientations are supported and layouts reflow via useBreakpoint. -->
 	<key>UIRequiresFullScreen</key>
 	<false/>
+	<!--
+	The scene life cycle — REQUIRED from the iOS 27 SDK on. Without this
+	key an app built with Xcode 27 does not launch on iOS/iPadOS 27 at all:
+	UIKit stops it with "UIScene life cycle is required for apps built
+	with this SDK". 2.25.0 to 2.27.1 shipped without it; App Review caught
+	2.27.1 on an iPad Air running iPadOS 27.0.
+
+	One scene only. The window, and the links that arrive at it, live in
+	SceneDelegate (AppDelegate.swift). Guarded by __tests__/iosSceneLifecycle.test.ts.
+	-->
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<false/>
+		<key>UISceneConfigurations</key>
+		<dict>
+			<key>UIWindowSceneSessionRoleApplication</key>
+			<array>
+				<dict>
+					<key>UISceneConfigurationName</key>
+					<string>Default Configuration</string>
+					<key>UISceneDelegateClassName</key>
+					<string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
+				</dict>
+			</array>
+		</dict>
+	</dict>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 	<!--

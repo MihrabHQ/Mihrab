@@ -251,6 +251,36 @@ app_keychain=$(claims "$APP_BUNDLE" keychain-access-groups)
 [ -n "$app_keychain" ] || die "The app has no keychain access group: it would generate a new sync identity on install."
 say "  Mihrab.app carries its App Group and keychain group — correct."
 
+# ── The gate 2.25.0 to 2.27.1 needed ──────────────────────────────────
+#
+# From the iOS 27 SDK on, an app with no scene life cycle does not LAUNCH
+# on iOS/iPadOS 27 — UIKit stops it before the first frame with "UIScene
+# life cycle is required for apps built with this SDK". It archives,
+# exports, validates, uploads and runs on every older iOS without a word,
+# so nothing before a device on 27 says so. 2.25.0 was the first archive
+# built with Xcode 27; App Review found it on 2.27.1 (2026-09-28), after
+# 2.27.0 had gone live to people who then could not open it.
+#
+# Read from the ARCHIVED bundle, not the source plist, so the check sees
+# what ships: the manifest, the scene delegate it names with the module
+# name already substituted, and that class actually compiled into the
+# binary (a Swift class's runtime name is _TtC<len><module><len><class>).
+APP_PLIST="$APP_BUNDLE/Info.plist"
+scene_delegate=$(/usr/libexec/PlistBuddy -c \
+  'Print :UIApplicationSceneManifest:UISceneConfigurations:UIWindowSceneSessionRoleApplication:0:UISceneDelegateClassName' \
+  "$APP_PLIST" 2>/dev/null || true)
+[ -n "$scene_delegate" ] || die "The app declares no scene (UIApplicationSceneManifest) — built with the iOS 27 SDK it will not launch on iOS 27. See AppDelegate.swift."
+case "$scene_delegate" in
+  *'$('*) die "The scene delegate name was not substituted: $scene_delegate" ;;
+esac
+module=${scene_delegate%%.*}
+class=${scene_delegate#*.}
+runtime_name="_TtC${#module}${module}${#class}${class}"
+exe=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$APP_PLIST")
+grep -aq "$runtime_name" "$APP_BUNDLE/$exe" \
+  || die "Info.plist names $scene_delegate as the scene delegate, but the binary has no such class ($runtime_name)."
+say "  Mihrab.app has its scene ($scene_delegate) — it will launch on iOS 27."
+
 # ── Export ────────────────────────────────────────────────────────────
 cat > ios/build/appstore/ExportOptions.plist <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
