@@ -65,13 +65,19 @@ const mockPrefs = {
 jest.mock('../src/quran/quranState', () => ({
   useQuranState: () => ({ prefs: mockPrefs, khatmah: [] }),
   setQuranPrefs: jest.fn(),
-  // The card also shows how the live khatmah is paced. This suite has no
-  // khatmah, which is the branch that renders no pacing row at all — so
-  // these answer for the empty case and nothing here depends on them.
+}));
+// The card also shows how the live khatmah is paced. This suite has no
+// khatmah, which is the branch that renders no pacing row at all — so
+// these answer for the empty case and nothing here depends on them.
+jest.mock('../src/quran/khatmahProgress', () => ({
   activeKhatmah: () => undefined,
-  khatmahDeadline: () => null,
-  khatmahDaysLeft: () => 0,
   khatmahUnreadPages: () => 604,
+}));
+jest.mock('../src/quran/khatmahSchedule', () => ({
+  khatmahDeadline: () => null,
+}));
+jest.mock('../src/quran/khatmahStatus', () => ({
+  khatmahDaysLeft: () => 0,
 }));
 jest.mock('../src/quran/khatmahActions', () => ({
   setKhatmahDeadline: jest.fn(),

@@ -7,14 +7,10 @@ import {
   useCompanionChoice,
 } from '../../quran/CompanionTextControls';
 import { usePrayerSettings } from '../../context/PrayerSettingsContext';
-import {
-  activeKhatmah,
-  khatmahDaysLeft,
-  khatmahDeadline,
-  khatmahUnreadPages,
-  setQuranPrefs,
-  useQuranState,
-} from '../../quran/quranState';
+import { setQuranPrefs, useQuranState } from '../../quran/quranState';
+import { activeKhatmah, khatmahUnreadPages } from '../../quran/khatmahProgress';
+import { khatmahDeadline } from '../../quran/khatmahSchedule';
+import { khatmahDaysLeft } from '../../quran/khatmahStatus';
 import {
   setKhatmahDeadline,
   setKhatmahDuration,

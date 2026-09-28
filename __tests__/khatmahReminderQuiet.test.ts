@@ -15,9 +15,9 @@ import {
 } from '../src/notifications/khatmahReminder';
 import {
   __resetQuranStateForTests,
-  activeKhatmah,
   getQuranState,
 } from '../src/quran/quranState';
+import { activeKhatmah } from '../src/quran/khatmahProgress';
 import {
   finishKhatmahPortion,
   startKhatmah,

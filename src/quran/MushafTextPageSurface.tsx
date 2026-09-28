@@ -39,7 +39,7 @@ import { DEFAULT_RIWAYAH, riwayahById, type RiwayahId } from './riwayat';
 import { toneIsDark, type MushafTone } from './mushafTone';
 import { useMushafFontSet, useMushafPageFont } from './useMushafPageFont';
 import { ayahEndInk, ayahTint, withAlpha, type AyahRefLike } from './ayahMarks';
-import type { QuranBookmark } from './quranState';
+import type { QuranBookmark } from './quranTypes';
 
 export type MushafPageColors = {
   text: string;

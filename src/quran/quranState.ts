@@ -43,69 +43,6 @@ import {
 } from './khatmahProgress';
 import { KHATMAH_MARK_LIMIT } from './khatmahEdits';
 
-// Moved out in the rewrite plan's step 2.2 and re-exported, so every
-// importer is unchanged until step 2.5 points it at the new home.
-export type {
-  BookmarkColor,
-  QuranBookmark,
-  LastRead,
-  KhatmahPlan,
-  RepeatSettings,
-  QuranPrefs,
-  QuranState,
-  Removal,
-} from './quranTypes';
-export {
-  KHATMAH_TOTAL_PAGES,
-  KHATMAH_TOTAL_AYAHS,
-  KHATMAH_TOMBSTONE_TTL_DAYS,
-  isLivePlan,
-  activeKhatmah,
-  ayahsThroughPage,
-  pagesThroughAyahs,
-  khatmahStartAyah,
-  khatmahAyahsRead,
-  khatmahDone,
-  khatmahCoversPage,
-  isKhatmahPageDone,
-  khatmahReachAyah,
-  khatmahReachPage,
-  khatmahIsComplete,
-  khatmahOnlyGapsLeft,
-  khatmahUnreadAyahs,
-  khatmahGapPages,
-  khatmahUnreadPages,
-  khatmahCurrentPage,
-} from './khatmahProgress';
-export {
-  khatmahDeadline,
-  planDays,
-  khatmahDatePassed,
-  khatmahDayAnchor,
-  khatmahPaceToday,
-  khatmahPortionOf,
-  khatmahPortion,
-  khatmahReachPortion,
-  khatmahCurrentPortion,
-  khatmahCreditWindow,
-  khatmahPageInWindow,
-  khatmahGap,
-} from './khatmahSchedule';
-export type { KhatmahPortion, KhatmahGapReport } from './khatmahSchedule';
-export {
-  khatmahRealizedPace,
-  khatmahPerDayPages,
-  khatmahPaceOutgrown,
-  khatmahBehindBy,
-  khatmahDay,
-  khatmahFinishTarget,
-  khatmahMarkerAyah,
-  khatmahDaysLeft,
-  khatmahPages,
-  khatmahDurationForDaysLeft,
-} from './khatmahStatus';
-export type { KhatmahDayState, KhatmahPages } from './khatmahStatus';
-
 /** The Quran blob's key. Exported so the snapshot layer names it once. */
 export const QURAN_STORAGE_KEY = 'mihrab.quran.v1';
 const STORAGE_KEY = QURAN_STORAGE_KEY;

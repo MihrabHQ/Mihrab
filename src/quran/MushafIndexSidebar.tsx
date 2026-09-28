@@ -28,12 +28,10 @@ import { TABULAR_MAX_FONT_SCALE } from '../theme/textScale';
 import { SURAHS } from './quran';
 import { pagesForRiwayah, totalPagesForRiwayah } from './pages';
 import { DEFAULT_RIWAYAH, type RiwayahId } from './riwayat';
-import {
-  KHATMAH_TOTAL_PAGES,
-  khatmahPages,
-  useQuranState,
-  type QuranBookmark,
-} from './quranState';
+import { useQuranState } from './quranState';
+import type { QuranBookmark } from './quranTypes';
+import { KHATMAH_TOTAL_PAGES } from './khatmahProgress';
+import { khatmahPages } from './khatmahStatus';
 import { setBookmarkFollows } from './readerMarks';
 import { claimReadingSession } from './readingSession';
 import { activeKhatmah } from './quranCardState';

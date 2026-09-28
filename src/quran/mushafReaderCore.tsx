@@ -42,20 +42,21 @@ import {
   totalPagesForRiwayah,
 } from './pages';
 import { DEFAULT_RIWAYAH, resolveRiwayah, type RiwayahId } from './riwayat';
-import type { KhatmahPages } from './quranState';
+import type { KhatmahPages } from './khatmahStatus';
 import {
   KHATMAH_COLOR,
-  activeKhatmah,
-  khatmahDayAnchor,
-  khatmahFinishTarget,
-  khatmahMarkerAyah,
-  khatmahPages,
   setQuranPrefs,
   useQuranState,
   useQuranHydrated,
-  type QuranBookmark,
-  type QuranState,
 } from './quranState';
+import type { QuranBookmark, QuranState } from './quranTypes';
+import { activeKhatmah } from './khatmahProgress';
+import { khatmahDayAnchor } from './khatmahSchedule';
+import {
+  khatmahFinishTarget,
+  khatmahMarkerAyah,
+  khatmahPages,
+} from './khatmahStatus';
 import { recordKhatmahPageTurn } from './khatmahActions';
 import {
   moveSessionToPage,

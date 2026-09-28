@@ -13,12 +13,14 @@ import { readFileSync } from 'fs';
 import path from 'path';
 import {
   __resetQuranStateForTests,
-  activeKhatmah,
   coerceQuranState,
   getQuranState,
-  khatmahCurrentPage,
-  type QuranState,
 } from '../src/quran/quranState';
+import type { QuranState } from '../src/quran/quranTypes';
+import {
+  activeKhatmah,
+  khatmahCurrentPage,
+} from '../src/quran/khatmahProgress';
 import { setKhatmahPosition, startKhatmah } from '../src/quran/khatmahActions';
 import {
   drawnReadingPosition,

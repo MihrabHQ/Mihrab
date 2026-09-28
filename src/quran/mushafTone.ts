@@ -19,7 +19,7 @@
  */
 // tokens-ok: the mushaf is a print with its own three tones — paper, sepia, night — independent of the app palette
 import { PALETTE_OLED } from '../theme/tokens';
-import type { QuranPrefs } from './quranState';
+import type { QuranPrefs } from './quranTypes';
 
 export type MushafTone = 'paper' | 'sepia' | 'night';
 

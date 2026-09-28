@@ -40,11 +40,8 @@ import { coerceJournalEntries, type JournalEntry } from '../journal/journal';
 import { coerceFastEntries, type FastEntry } from '../fasting/fasting';
 import { coerceSunnahLog, type SunnahLog } from '../journal/sunnah';
 import { coerceDhikrLog, type DhikrLog } from '../practice/practiceStore';
-import {
-  coerceQuranState,
-  DEFAULT_QURAN_STATE,
-  type QuranState,
-} from '../quran/quranState';
+import { coerceQuranState, DEFAULT_QURAN_STATE } from '../quran/quranState';
+import type { QuranState } from '../quran/quranTypes';
 
 export const SNAPSHOT_FORMAT = 'mihrab.snapshot';
 export const SNAPSHOT_FORMAT_VERSION = 1;

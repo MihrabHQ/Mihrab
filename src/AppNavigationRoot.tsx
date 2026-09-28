@@ -44,11 +44,11 @@ import {
   rescheduleKhatmahReminder,
 } from './notifications/khatmahReminder';
 import {
-  activeKhatmah,
   getQuranState,
   hydrateQuranState,
   subscribeQuranState,
 } from './quran/quranState';
+import { activeKhatmah } from './quran/khatmahProgress';
 import { reconcileMushafAssets } from './quran/mushafAssets';
 import { clearStaleDownloadNotification } from './quran/downloadNotification';
 import { startDownloadResumeWatch } from './quran/quranDownloadResume';

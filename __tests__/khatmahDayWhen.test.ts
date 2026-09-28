@@ -7,7 +7,7 @@
  */
 import { daysAway, khatmahDayWhen, formatDayWhen } from '../src/quran/khatmahDayWhen';
 import { setTodaysMaghrib, _resetIslamicDay } from '../src/hijri/islamicDay';
-import { khatmahBehindBy } from '../src/quran/quranState';
+import { khatmahBehindBy } from '../src/quran/khatmahStatus';
 
 const t = (_k: string, o: { defaultValue: string }) => o.defaultValue;
 const at = (y: number, m: number, d: number, h = 12) =>

@@ -24,11 +24,13 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 import {
   __resetQuranStateForTests,
-  activeKhatmah,
   getQuranState,
+} from '../src/quran/quranState';
+import {
+  activeKhatmah,
   isKhatmahPageDone,
   khatmahCurrentPage,
-} from '../src/quran/quranState';
+} from '../src/quran/khatmahProgress';
 import {
   clearKhatmahPosition,
   recordKhatmahPageTurn,
@@ -41,13 +43,12 @@ import {
   removeBookmark,
   toggleStar,
 } from '../src/quran/readerMarks';
-import {
-  DEFAULT_QURAN_STATE,
-  mergeRemovals,
-  type KhatmahPlan,
-  type QuranBookmark,
-  type QuranState,
-} from '../src/quran/quranState';
+import { DEFAULT_QURAN_STATE, mergeRemovals } from '../src/quran/quranState';
+import type {
+  KhatmahPlan,
+  QuranBookmark,
+  QuranState,
+} from '../src/quran/quranTypes';
 import {
   coerceFastEntries,
   deleteFastEntry,

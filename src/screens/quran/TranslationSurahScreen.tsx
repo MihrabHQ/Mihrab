@@ -55,12 +55,12 @@ import {
 import { findPageForAyah } from '../../quran/pages';
 import { surahName } from '../../quran/surahName';
 import {
-  activeKhatmah,
   useQuranState,
   BOOKMARK_COLORS,
   KHATMAH_COLOR,
   READING_COLOR,
 } from '../../quran/quranState';
+import { activeKhatmah } from '../../quran/khatmahProgress';
 import {
   drawnReadingPosition,
   findBookmark,

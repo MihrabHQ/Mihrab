@@ -61,13 +61,15 @@ import {
   QURAN_STORAGE_KEY,
   DEFAULT_QURAN_STATE,
   __resetQuranStateForTests,
-  activeKhatmah,
-  ayahsThroughPage,
   flushQuranStateForTests,
   getQuranState,
   hydrateQuranState,
-  khatmahReachAyah,
 } from '../src/quran/quranState';
+import {
+  activeKhatmah,
+  ayahsThroughPage,
+  khatmahReachAyah,
+} from '../src/quran/khatmahProgress';
 import {
   recordKhatmahPageTurn,
   startKhatmah,

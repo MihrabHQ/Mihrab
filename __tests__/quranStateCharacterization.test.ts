@@ -12,21 +12,24 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   __resetQuranStateForTests,
-  activeKhatmah,
   coerceQuranState,
   DEFAULT_QURAN_STATE,
   getQuranState,
   hydrateQuranState,
   isQuranHydrated,
+  subscribeQuranState,
+  updateQuranState,
+} from '../src/quran/quranState';
+import type { KhatmahPlan, QuranBookmark } from '../src/quran/quranTypes';
+import {
+  activeKhatmah,
   KHATMAH_TOMBSTONE_TTL_DAYS,
+} from '../src/quran/khatmahProgress';
+import {
   khatmahPaceToday,
   khatmahPortionOf,
   planDays,
-  subscribeQuranState,
-  updateQuranState,
-  type KhatmahPlan,
-  type QuranBookmark,
-} from '../src/quran/quranState';
+} from '../src/quran/khatmahSchedule';
 import {
   abandonKhatmah,
   recordKhatmahProgress,

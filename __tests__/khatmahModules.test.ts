@@ -14,10 +14,6 @@
  */
 import { readFileSync } from 'fs';
 import { join } from 'path';
-import * as store from '../src/quran/quranState';
-import * as progress from '../src/quran/khatmahProgress';
-import * as schedule from '../src/quran/khatmahSchedule';
-import * as status from '../src/quran/khatmahStatus';
 
 /** Bottom first: each may import only from the layers before it. */
 const LAYERS = [
@@ -59,18 +55,15 @@ describe('the split store', () => {
     },
   );
 
-  it('the store still answers for everything that moved', () => {
-    // Importers are unchanged until step 2.5: every export of a layer the
-    // store re-exports is the very same function the layer holds.
-    for (const layer of [progress, schedule, status]) {
-      for (const [name, value] of Object.entries(layer)) {
-        if (name in store) {
-          expect((store as Record<string, unknown>)[name]).toBe(value);
-        }
-      }
-    }
-    expect(store.khatmahDone).toBe(progress.khatmahDone);
-    expect(store.khatmahPortion).toBe(schedule.khatmahPortion);
-    expect(store.khatmahDay).toBe(status.khatmahDay);
+  it('the store re-exports nothing, so each name has one way in', () => {
+    // During the split the store re-exported what had moved, so importers
+    // could follow at their own pace (2.2). Step 2.5 pointed every one of
+    // them at the module that holds the name; a re-export now would be a
+    // second address for it, and the start of the next knot.
+    const store = readFileSync(
+      join(__dirname, '..', 'src', 'quran', 'quranState.ts'),
+      'utf8',
+    );
+    expect(store).not.toMatch(/^export (type )?\{[^}]*\} from/m);
   });
 });

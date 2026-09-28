@@ -33,15 +33,15 @@ import { riwayahAyahText } from '../riwayahData';
 import { getAyahTranslation, QURAN_TRANSLATIONS } from '../translations';
 import { useActiveEdition } from '../useActiveEdition';
 import {
-  activeKhatmah,
-  khatmahPageInWindow,
   useQuranState,
   setQuranPrefs,
   BOOKMARK_COLORS,
   KHATMAH_COLOR,
   READING_COLOR,
-  type BookmarkColor,
 } from '../quranState';
+import type { BookmarkColor } from '../quranTypes';
+import { activeKhatmah } from '../khatmahProgress';
+import { khatmahPageInWindow } from '../khatmahSchedule';
 import { clearKhatmahPosition, setKhatmahPosition } from '../khatmahActions';
 import {
   addBookmark,

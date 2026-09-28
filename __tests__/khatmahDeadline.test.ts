@@ -10,33 +10,39 @@
  */
 import {
   __resetQuranStateForTests,
-  activeKhatmah,
   getQuranState,
+  coerceQuranState,
+  setQuranPrefs,
+} from '../src/quran/quranState';
+import type { KhatmahPlan } from '../src/quran/quranTypes';
+import {
+  activeKhatmah,
+  khatmahIsComplete,
+  khatmahReachAyah,
+  ayahsThroughPage,
+  khatmahCurrentPage,
+  khatmahUnreadAyahs,
+  khatmahUnreadPages,
+  KHATMAH_TOTAL_AYAHS,
+} from '../src/quran/khatmahProgress';
+import {
   khatmahCurrentPortion,
-  khatmahDay,
-  khatmahDaysLeft,
   khatmahCreditWindow,
   khatmahDatePassed,
   khatmahDeadline,
-  khatmahIsComplete,
+  khatmahPaceToday,
+  khatmahPortion,
+} from '../src/quran/khatmahSchedule';
+import {
+  khatmahDay,
+  khatmahDaysLeft,
   khatmahPaceOutgrown,
   khatmahFinishTarget,
   khatmahMarkerAyah,
-  khatmahReachAyah,
-  khatmahPaceToday,
   khatmahPages,
-  khatmahPortion,
-  ayahsThroughPage,
-  khatmahCurrentPage,
   khatmahPerDayPages,
   khatmahBehindBy,
-  khatmahUnreadAyahs,
-  khatmahUnreadPages,
-  coerceQuranState,
-  setQuranPrefs,
-  KHATMAH_TOTAL_AYAHS,
-  type KhatmahPlan,
-} from '../src/quran/quranState';
+} from '../src/quran/khatmahStatus';
 import {
   finishKhatmahPortion,
   khatmahTracksPage,

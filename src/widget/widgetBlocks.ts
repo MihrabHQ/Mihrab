@@ -34,19 +34,18 @@ import { owedPrayers, sunnahRateFor } from '../practice/practiceStats';
 import { MUSHAF_PAGES, MUSHAF_SURAHS } from '../quran/pages';
 import { khatmahContinueTarget } from '../quran/khatmahTarget';
 import { mushafSurahName } from '../quran/surahName';
+import type { KhatmahPlan, LastRead, QuranBookmark } from '../quran/quranTypes';
 import {
   KHATMAH_TOTAL_PAGES,
+  khatmahReachPage,
+} from '../quran/khatmahProgress';
+import { planDays, khatmahGap } from '../quran/khatmahSchedule';
+import {
   khatmahBehindBy,
   khatmahDay,
-  planDays,
   khatmahDaysLeft,
-  khatmahGap,
   khatmahPages,
-  khatmahReachPage,
-  type KhatmahPlan,
-  type LastRead,
-  type QuranBookmark,
-} from '../quran/quranState';
+} from '../quran/khatmahStatus';
 import type { RiwayahId } from '../quran/riwayat';
 import { gregorianToHijri } from '../hijri/convert';
 import { formatHijriLabel } from '../hijri/formatHijriLabel';

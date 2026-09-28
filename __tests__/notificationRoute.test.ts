@@ -26,6 +26,8 @@ jest.mock('../src/quran/quranState', () => ({
   getQuranState: jest.fn(() => ({
     lastRead: { mode: mockLastReadMode },
   })),
+}));
+jest.mock('../src/quran/khatmahProgress', () => ({
   activeKhatmah: jest.fn(() => mockActive),
 }));
 jest.mock('../src/quran/khatmahTarget', () => ({

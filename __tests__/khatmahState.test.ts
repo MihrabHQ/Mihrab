@@ -3,10 +3,12 @@
  */
 import {
   __resetQuranStateForTests,
-  activeKhatmah,
   getQuranState,
-  khatmahCurrentPage,
 } from '../src/quran/quranState';
+import {
+  activeKhatmah,
+  khatmahCurrentPage,
+} from '../src/quran/khatmahProgress';
 import {
   clearKhatmahPosition,
   recordKhatmahProgress,

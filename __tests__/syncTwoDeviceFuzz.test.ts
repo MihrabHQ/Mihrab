@@ -11,21 +11,25 @@
  */
 import {
   __resetQuranStateForTests,
+  getQuranState,
+  primeQuranState,
+} from '../src/quran/quranState';
+import type { QuranState } from '../src/quran/quranTypes';
+import {
   activeKhatmah,
   ayahsThroughPage,
-  getQuranState,
   isKhatmahPageDone,
-  khatmahCreditWindow,
   khatmahCurrentPage,
   khatmahDone,
-  khatmahFinishTarget,
-  khatmahPaceToday,
   khatmahReachAyah,
   khatmahStartAyah,
-  primeQuranState,
   KHATMAH_TOTAL_AYAHS as TOTAL,
-  type QuranState,
-} from '../src/quran/quranState';
+} from '../src/quran/khatmahProgress';
+import {
+  khatmahCreditWindow,
+  khatmahPaceToday,
+} from '../src/quran/khatmahSchedule';
+import { khatmahFinishTarget } from '../src/quran/khatmahStatus';
 import {
   finishKhatmahPortion,
   khatmahTracksPage,

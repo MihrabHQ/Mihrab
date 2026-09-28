@@ -19,12 +19,8 @@
  * a band over them. Night mode gets more because a translucent colour on
  * a near-black ground is much weaker than the same colour on cream.
  */
-import {
-  BOOKMARK_COLORS,
-  KHATMAH_COLOR,
-  READING_COLOR,
-  type QuranBookmark,
-} from './quranState';
+import { BOOKMARK_COLORS, KHATMAH_COLOR, READING_COLOR } from './quranState';
+import type { QuranBookmark } from './quranTypes';
 
 export type AyahRefLike = { surah: number; ayah: number };
 

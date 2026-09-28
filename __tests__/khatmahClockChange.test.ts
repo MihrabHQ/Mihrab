@@ -11,13 +11,11 @@
  * daylight saving (the UTC CI runner) they pass trivially; the second CI
  * job runs the suite in Europe/Stockholm, where they would not have.
  */
-import {
-  ayahsThroughPage,
-  coerceQuranState,
-  khatmahDay,
-  khatmahDayAnchor,
-  type KhatmahPlan,
-} from '../src/quran/quranState';
+import { coerceQuranState } from '../src/quran/quranState';
+import type { KhatmahPlan } from '../src/quran/quranTypes';
+import { ayahsThroughPage } from '../src/quran/khatmahProgress';
+import { khatmahDayAnchor } from '../src/quran/khatmahSchedule';
+import { khatmahDay } from '../src/quran/khatmahStatus';
 import { daysAway, khatmahDayWhen } from '../src/quran/khatmahDayWhen';
 
 const local = (m: number, d: number, h = 12, min = 0) =>

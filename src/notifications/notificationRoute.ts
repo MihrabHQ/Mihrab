@@ -42,11 +42,8 @@ import { khatmahContinueTarget } from '../quran/khatmahTarget';
 import { findDhikr } from '../dhikr/dhikr';
 import { isDuaCategory } from '../duas/duas';
 import { hydrateTasbihState, setActiveTasbih } from '../tasbih/tasbihStore';
-import {
-  activeKhatmah,
-  getQuranState,
-  hydrateQuranState,
-} from '../quran/quranState';
+import { getQuranState, hydrateQuranState } from '../quran/quranState';
+import { activeKhatmah } from '../quran/khatmahProgress';
 
 /** The value of `data.route` on a notification that has a destination. */
 export const ROUTE_KHATMAH = 'khatmah';

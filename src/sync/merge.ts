@@ -54,18 +54,19 @@ import {
   unionRanges,
   type AyahMark,
 } from '../quran/khatmahDone';
+import { mergeRemovals, removedAfter } from '../quran/quranState';
+import type {
+  KhatmahPlan,
+  QuranState,
+  QuranBookmark,
+} from '../quran/quranTypes';
 import {
   ayahsThroughPage,
   khatmahDone,
   khatmahStartAyah,
-  mergeRemovals,
   pagesThroughAyahs,
-  removedAfter,
   KHATMAH_TOTAL_AYAHS as TOTAL_AYAHS,
-  type KhatmahPlan,
-  type QuranState,
-  type QuranBookmark,
-} from '../quran/quranState';
+} from '../quran/khatmahProgress';
 import { DEFAULT_RIWAYAH } from '../quran/riwayat';
 import type { Snapshot, SnapshotData, SyncSelection } from './snapshot';
 

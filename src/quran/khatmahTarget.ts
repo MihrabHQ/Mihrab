@@ -16,7 +16,8 @@
  * it is the plan's own page that answers.
  */
 import { firstAyahOfPage } from './pages';
-import { khatmahCurrentPage, type KhatmahPlan } from './quranState';
+import type { KhatmahPlan } from './quranTypes';
+import { khatmahCurrentPage } from './khatmahProgress';
 import { DEFAULT_RIWAYAH, type RiwayahId } from './riwayat';
 
 export type KhatmahTarget = {

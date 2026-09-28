@@ -8,13 +8,14 @@
  */
 import {
   __resetQuranStateForTests,
-  activeKhatmah,
   getQuranState,
-  khatmahAyahsRead,
-  khatmahCurrentPortion,
-  khatmahDay,
-  khatmahPortion,
 } from '../src/quran/quranState';
+import { activeKhatmah, khatmahAyahsRead } from '../src/quran/khatmahProgress';
+import {
+  khatmahCurrentPortion,
+  khatmahPortion,
+} from '../src/quran/khatmahSchedule';
+import { khatmahDay } from '../src/quran/khatmahStatus';
 import {
   finishKhatmahPortion,
   setKhatmahPosition,

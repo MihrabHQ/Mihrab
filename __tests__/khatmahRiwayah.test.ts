@@ -47,14 +47,13 @@ jest.mock('../src/quran/riwayahData', () => {
 });
 
 import { findPageForAyah, firstAyahOfPage } from '../src/quran/pages';
+import type { KhatmahPlan, QuranState } from '../src/quran/quranTypes';
 import {
   KHATMAH_TOTAL_AYAHS,
   ayahsThroughPage,
   khatmahAyahsRead,
   khatmahCurrentPage,
-  type KhatmahPlan,
-  type QuranState,
-} from '../src/quran/quranState';
+} from '../src/quran/khatmahProgress';
 import { mergeQuran } from '../src/sync/merge';
 
 function plan(over: Partial<KhatmahPlan> = {}): KhatmahPlan {
