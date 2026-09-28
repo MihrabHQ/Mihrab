@@ -1068,9 +1068,12 @@ Changed the release cycle itself:
 launched the app on it. App Review rejected this build on 2026-09-28:
 on an iPad Air running iPadOS 27.0 it closed at launch, and UIKit says
 why in so many words — "UIScene life cycle is required for apps built
-with this SDK". Every iOS archive since 2.25.0 was built with Xcode 27,
-none had a scene, and 2.27.0 had passed review and gone live, so for
-about a week Mihrab would not open for anyone who updated to 27. The
+with this SDK". Every iOS build from 2.22.0 on had the iOS 27 SDK —
+Xcode Cloud moved to Xcode 27 on 2026-09-16, and this Mac's archives
+followed from 2.24.1; only 2.24.0 was built with Xcode 26 — none had a
+scene, and 2.27.0 had passed review and gone live. App Store Connect
+already held 38 opt-in crash reports from iOS 27.0, on 2.25.1 and 2.23.0,
+so for about ten days Mihrab would not open for anyone who updated. The
 Mac never broke only because Catalyst is still pinned to Xcode 26. The
 app has a `SceneDelegate` now (widget links come in through the scene,
 cold and warm, both checked in the iOS 27 simulator), and

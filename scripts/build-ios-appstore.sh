@@ -251,14 +251,15 @@ app_keychain=$(claims "$APP_BUNDLE" keychain-access-groups)
 [ -n "$app_keychain" ] || die "The app has no keychain access group: it would generate a new sync identity on install."
 say "  Mihrab.app carries its App Group and keychain group — correct."
 
-# ── The gate 2.25.0 to 2.27.1 needed ──────────────────────────────────
+# ── The gate 2.22.0 to 2.27.1 needed ──────────────────────────────────
 #
 # From the iOS 27 SDK on, an app with no scene life cycle does not LAUNCH
 # on iOS/iPadOS 27 — UIKit stops it before the first frame with "UIScene
 # life cycle is required for apps built with this SDK". It archives,
 # exports, validates, uploads and runs on every older iOS without a word,
-# so nothing before a device on 27 says so. 2.25.0 was the first archive
-# built with Xcode 27; App Review found it on 2.27.1 (2026-09-28), after
+# so nothing before a device on 27 says so. 2.22.0 was the first build
+# with the iOS 27 SDK (Xcode Cloud had moved to Xcode 27), and every one
+# after it but 2.24.0; App Review found it on 2.27.1 (2026-09-28), after
 # 2.27.0 had gone live to people who then could not open it.
 #
 # Read from the ARCHIVED bundle, not the source plist, so the check sees

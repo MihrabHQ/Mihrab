@@ -7,10 +7,13 @@
  * a crash anybody's code can catch, and it does not happen on the SDK
  * before, so nothing in development showed it.
  *
- * 2.25.0 was the first build archived with Xcode 27, and it and every build
- * after it to 2.27.1 had no scene. App Review rejected 2.27.1 on an iPad
- * Air running iPadOS 27.0 (2026-09-28) — by which time 2.27.0 was live and
- * would not open for anyone on 27. Reproduced the same day in the iOS 27
+ * Every iOS build from 2.22.0 to 2.27.1 had the iOS 27 SDK and no scene —
+ * 2.22.0 and 2.23.0 from Xcode Cloud, which moved to Xcode 27 on
+ * 2026-09-16, and 2.24.1 on from this Mac; 2.24.0, built with Xcode 26,
+ * was the only one in that run that opened on 27. App Review rejected
+ * 2.27.1 on an iPad Air running iPadOS 27.0 (2026-09-28), by which time
+ * App Store Connect had 38 opt-in crash reports from iOS 27.0 (2.25.1 and
+ * 2.23.0) and 2.27.0 was live. Reproduced the same day in the iOS 27
  * simulator, with that exact message.
  *
  * So these are the three things that make it launch, and the two that make
