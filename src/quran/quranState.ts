@@ -853,8 +853,7 @@ function coerceKhatmah(v: unknown): KhatmahPlan | null {
      * being handed a portion nobody had opened. Tomorrow's is allowed:
      * it is what a device an hour ahead of the day boundary writes.
      */
-    const stale =
-      day !== null && day > localYmd(Date.now() + 24 * 60 * 60 * 1000);
+    const stale = day !== null && day > dayKeyAfter(localYmd(), 1);
     if (day !== null && !stale && from !== null && to !== null && to >= from) {
       out.pace = { day, from, to };
       if (typeof pc.at === 'number' && Number.isFinite(pc.at) && pc.at > 0) {
@@ -2026,6 +2025,18 @@ function localYmd(now: number = Date.now()): string {
   return islamicDayKey(new Date(now));
 }
 
+/**
+ * The day key `days` calendar days after `key`. Stepped on the calendar:
+ * "now plus 24 hours" is still today for the first hour after midnight on
+ * the night the clocks go back.
+ */
+function dayKeyAfter(key: string, days: number): string {
+  const [y, m, d] = key.split('-').map(n => parseInt(n, 10));
+  const at = new Date(y, m - 1, d + days, 12, 0, 0, 0);
+  const mm = String(at.getMonth() + 1).padStart(2, '0');
+  return `${at.getFullYear()}-${mm}-${String(at.getDate()).padStart(2, '0')}`;
+}
+
 /** Snapshot pagesRead at the first progress of each local day. */
 function withDaySnapshot(plan: KhatmahPlan, now?: number): KhatmahPlan {
   const today = localYmd(now);
@@ -2213,7 +2224,17 @@ export function khatmahDayAnchor(plan: KhatmahPlan): number {
   if (plan.pacedAt === undefined || from === undefined) return plan.startedAt;
   const page = Math.min(KHATMAH_TOTAL_PAGES, Math.max(planFrom(plan), from));
   const day = durationPortionOf(plan, ayahsThroughHafsPage(page) + 1);
-  return pacedInstant(plan) - (day - 1) * 24 * 60 * 60 * 1000;
+  // Counted in calendar days back from the re-pace, at noon, not in
+  // multiples of 24 hours: across the night the clocks go back that lands
+  // an hour off, and an hour off a re-pace made near midnight is another
+  // date — every day of the plan then named a day wrong.
+  const paced = new Date(pacedInstant(plan));
+  return new Date(
+    paced.getFullYear(),
+    paced.getMonth(),
+    paced.getDate() - (day - 1),
+    12,
+  ).getTime();
 }
 
 /**

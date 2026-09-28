@@ -31,13 +31,9 @@ import {
 import { ayahAtIndex } from '../src/quran/ayahIndex';
 import { findPageForAyah } from '../src/quran/pages';
 import { mergeQuran } from '../src/sync/merge';
+import { ymdIn } from './fixtures/localDays';
 
 const DAY = 24 * 60 * 60 * 1000;
-const ymd = (at: number) => {
-  const d = new Date(at);
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  return `${d.getFullYear()}-${m}-${String(d.getDate()).padStart(2, '0')}`;
-};
 /** What a peer holds: the snapshot as it was sealed, a copy by value. */
 const snapshotOf = (s: QuranState): QuranState => JSON.parse(JSON.stringify(s));
 
@@ -66,7 +62,7 @@ describe('a stale device syncing with the phone', () => {
   afterEach(() => jest.useRealTimers());
 
   it('never moves the phone back, day after day', () => {
-    startKhatmah(30, undefined, ymd(Date.now() + 54 * DAY));
+    startKhatmah(30, undefined, ymdIn(54));
     readPages(1, 6);
     const stale = snapshotOf(getQuranState());
 
@@ -105,13 +101,20 @@ describe('a stale device syncing with the phone', () => {
    * peer syncs and holds both claims; the phone reads on past the pin.
    */
   it('keeps what the phone read past a pin the peer still holds', () => {
-    startKhatmah(60, undefined, ymd(Date.now() + 55 * DAY));
+    startKhatmah(60, undefined, ymdIn(55));
     for (let d = 0; d < 4; d++) {
-      readPages(khatmahCurrentPage(activeKhatmah(getQuranState())!), 1 + 20 * (d + 1));
+      readPages(
+        khatmahCurrentPage(activeKhatmah(getQuranState())!),
+        1 + 20 * (d + 1),
+      );
       jest.setSystemTime(Date.now() + DAY);
     }
     const at = ayahAtIndex(527);
-    setKhatmahPosition(at.surah, at.ayah, findPageForAyah(at.surah, at.ayah, 'hafs'));
+    setKhatmahPosition(
+      at.surah,
+      at.ayah,
+      findPageForAyah(at.surah, at.ayah, 'hafs'),
+    );
     const peer = snapshotOf(getQuranState());
     expect(activeKhatmah(peer)!.marks).toEqual([
       [1, 526, expect.any(Number), 1],
@@ -149,10 +152,14 @@ describe('a stale device syncing with the phone', () => {
    * is still in the phone's log, and that is what keeps the pages.
    */
   it('outlives a peer that compacts the old way', () => {
-    startKhatmah(60, undefined, ymd(Date.now() + 55 * DAY));
+    startKhatmah(60, undefined, ymdIn(55));
     readPages(1, 60);
     const at = ayahAtIndex(527);
-    setKhatmahPosition(at.surah, at.ayah, findPageForAyah(at.surah, at.ayah, 'hafs'));
+    setKhatmahPosition(
+      at.surah,
+      at.ayah,
+      findPageForAyah(at.surah, at.ayah, 'hafs'),
+    );
     const pinAt = activeKhatmah(getQuranState())!.marks![0][2];
     readPages(84, 105);
     const reach = khatmahReachAyah(activeKhatmah(getQuranState())!);
@@ -172,7 +179,7 @@ describe('a stale device syncing with the phone', () => {
     expect(khatmahReachAyah(activeKhatmah(getQuranState())!)).toBe(further);
   });
 
-  it('keeps a page un-marked, read again, and read again through the peer\'s old denial', () => {
+  it("keeps a page un-marked, read again, and read again through the peer's old denial", () => {
     startKhatmah(30);
     readPages(1, 41);
     toggleKhatmahPageDone(20); // un-mark page 20 by hand
