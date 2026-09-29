@@ -125,6 +125,15 @@ object WidgetContract {
     val reading: Reading? = null,
     /** Today's Hijri date and the month after it. */
     val hijri: Hijri? = null,
+    /**
+     * The same for the first week of `days`, keyed by `dateKey`: a widget
+     * that rolls onto the next day without the app draws that day's date, not
+     * the one it was built on. A reader falls back to `hijri` only when the
+     * list is empty (an older app); past the week it draws no Hijri date
+     * rather than a wrong one. A week, not the window: thirty would cost 4 KB
+     * of a 32 KB payload.
+     */
+    val hijriDays: List<Hijri> = emptyList(),
     /** The dhikr counter, for the Tasbih widget. */
     val tasbih: Tasbih? = null,
   ) {
@@ -139,6 +148,7 @@ object WidgetContract {
       practice?.let { put("practice", it.toJson()) }
       reading?.let { put("reading", it.toJson()) }
       hijri?.let { put("hijri", it.toJson()) }
+      put("hijriDays", JSONArray().apply { hijriDays.forEach { put(it.toJson()) } })
       tasbih?.let { put("tasbih", it.toJson()) }
     }
 
@@ -156,6 +166,7 @@ object WidgetContract {
           practice = Practice.fromJson(o.wcRaw("practice") as? JSONObject),
           reading = Reading.fromJson(o.wcRaw("reading") as? JSONObject),
           hijri = Hijri.fromJson(o.wcRaw("hijri") as? JSONObject),
+          hijriDays = o.wcList("hijriDays") { Hijri.fromJson(it as? JSONObject) } ?: emptyList(),
           tasbih = Tasbih.fromJson(o.wcRaw("tasbih") as? JSONObject),
         )
       }
@@ -657,6 +668,8 @@ object WidgetContract {
 
   /** Today's Hijri date. */
   data class Hijri(
+    /** The civil day it is for; set in `hijriDays`. */
+    val dateKey: String = "",
     val day: Int,
     val month: Int,
     val year: Int,
@@ -667,6 +680,7 @@ object WidgetContract {
     val nextMonthInDays: Int = 0,
   ) {
     fun toJson(): JSONObject = JSONObject().apply {
+      put("dateKey", dateKey)
       put("day", day)
       put("month", month)
       put("year", year)
@@ -680,6 +694,7 @@ object WidgetContract {
       fun fromJson(o: JSONObject?): Hijri? {
         if (o == null) return null
         return Hijri(
+          dateKey = o.wcString("dateKey") ?: "",
           day = o.wcRaw("day").wcAsInt() ?: return null,
           month = o.wcRaw("month").wcAsInt() ?: return null,
           year = o.wcRaw("year").wcAsInt() ?: return null,

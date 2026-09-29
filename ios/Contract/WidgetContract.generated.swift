@@ -72,6 +72,13 @@ enum WidgetContract {
     var reading: Reading?
     /// Today's Hijri date and the month after it.
     var hijri: Hijri?
+    /// The same for the first week of `days`, keyed by `dateKey`: a widget
+    /// that rolls onto the next day without the app draws that day's date,
+    /// not the one it was built on. A reader falls back to `hijri` only when
+    /// the list is empty (an older app); past the week it draws no Hijri date
+    /// rather than a wrong one. A week, not the window: thirty would cost 4
+    /// KB of a 32 KB payload.
+    var hijriDays: [Hijri]
     /// The dhikr counter, for the Tasbih widget.
     var tasbih: Tasbih?
 
@@ -86,6 +93,7 @@ enum WidgetContract {
       practice: Practice? = nil,
       reading: Reading? = nil,
       hijri: Hijri? = nil,
+      hijriDays: [Hijri] = [],
       tasbih: Tasbih? = nil
     ) {
       self.schemaVersion = schemaVersion
@@ -98,6 +106,7 @@ enum WidgetContract {
       self.practice = practice
       self.reading = reading
       self.hijri = hijri
+      self.hijriDays = hijriDays
       self.tasbih = tasbih
     }
 
@@ -112,6 +121,7 @@ enum WidgetContract {
       case practice
       case reading
       case hijri
+      case hijriDays
       case tasbih
     }
 
@@ -127,6 +137,7 @@ enum WidgetContract {
       practice = c.wcValue(Practice.self, .practice)
       reading = c.wcValue(Reading.self, .reading)
       hijri = c.wcValue(Hijri.self, .hijri)
+      hijriDays = c.wcList(Hijri.self, .hijriDays) ?? []
       tasbih = c.wcValue(Tasbih.self, .tasbih)
     }
   }
@@ -651,6 +662,8 @@ enum WidgetContract {
 
   /// Today's Hijri date.
   struct Hijri: Codable, Hashable {
+    /// The civil day it is for; set in `hijriDays`.
+    var dateKey: String
     var day: Int
     var month: Int
     var year: Int
@@ -661,6 +674,7 @@ enum WidgetContract {
     var nextMonthInDays: Int
 
     init(
+      dateKey: String = "",
       day: Int,
       month: Int,
       year: Int,
@@ -669,6 +683,7 @@ enum WidgetContract {
       nextMonthName: String = "",
       nextMonthInDays: Int = 0
     ) {
+      self.dateKey = dateKey
       self.day = day
       self.month = month
       self.year = year
@@ -679,6 +694,7 @@ enum WidgetContract {
     }
 
     enum CodingKeys: String, CodingKey {
+      case dateKey
       case day
       case month
       case year
@@ -690,6 +706,7 @@ enum WidgetContract {
 
     init(from decoder: Decoder) throws {
       let c = try decoder.container(keyedBy: CodingKeys.self)
+      dateKey = c.wcValue(String.self, .dateKey) ?? ""
       day = try c.wcRequire(c.wcInt(.day).flatMap(wcInt32), .day)
       month = try c.wcRequire(c.wcInt(.month).flatMap(wcInt32), .month)
       year = try c.wcRequire(c.wcInt(.year).flatMap(wcInt32), .year)

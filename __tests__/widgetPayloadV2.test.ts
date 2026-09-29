@@ -23,6 +23,9 @@ const wire = <T>(v: T): any => JSON.parse(JSON.stringify(v));
 function withoutUncarried(v1: any): any {
   const out = wire(v1);
   delete out.tomorrowEstimated;
+  // The per-day Hijri dates go to the natives, which pick the day's own
+  // into `hijri`; the v1 the renderers draw has no use for the list.
+  delete out.hijriDays;
   for (const d of out.practice?.days ?? []) delete d.k;
   // The adapter adds each row's `minutes` (step 1.7) — the number the
   // renderers now place a time by; the app's own v1 never had it.

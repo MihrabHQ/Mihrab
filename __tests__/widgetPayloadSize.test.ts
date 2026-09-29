@@ -146,7 +146,10 @@ describe('payload size', () => {
     // this bound is that the non-history part stays boring, not that it never
     // moves; it is the assertion below, that the grid dominates, that is
     // actually load-bearing.
-    expect(withoutPractice).toBeLessThan(7 * 1024);
+    //
+    // Raised again, to 8 KiB, for `hijriDays`: a week of Hijri dates, so a
+    // widget past midnight with the app closed shows the day's own date.
+    expect(withoutPractice).toBeLessThan(8 * 1024);
     expect(whole).toBeGreaterThan(withoutPractice);
   });
 });

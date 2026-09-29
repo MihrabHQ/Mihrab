@@ -97,6 +97,14 @@ object WidgetPayloadV1 {
     return WallClock.minutesFromHHmm(row.optString("time", ""))
   }
 
+  /**
+   * The Hijri date for [todayKey]: its entry in `hijriDays`; `hijri` only for
+   * a payload with no list (an older app). Past the list, none rather than a
+   * wrong one.
+   */
+  fun hijri(p: WidgetContract.Payload, todayKey: String): WidgetContract.Hijri? =
+    if (p.hijriDays.isEmpty()) p.hijri else p.hijriDays.firstOrNull { it.dateKey == todayKey }
+
   /** The v1 payload, or null when there are no days to draw from. */
   fun fromV2(p: WidgetContract.Payload, todayKey: String, nowMinutes: Int): JSONObject? {
     val days = p.days
@@ -204,7 +212,9 @@ object WidgetPayloadV1 {
       }
       out.put("reading", o)
     }
-    p.hijri?.let { h ->
+    // The day being drawn's own date: the widget may have rolled past
+    // midnight since the app built it.
+    hijri(p, todayKey)?.let { h ->
       out.put(
         "hijri",
         JSONObject()

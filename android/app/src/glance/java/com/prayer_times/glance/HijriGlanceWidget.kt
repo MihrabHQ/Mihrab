@@ -14,6 +14,7 @@ import androidx.glance.layout.padding
 import androidx.glance.text.TextAlign
 import com.prayer_times.R
 import com.prayer_times.contract.WidgetContract
+import com.prayer_times.contract.WidgetPayloadV1
 
 /**
  * Hijri Date on Glance — the Phase 4 trial (docs/rewrite-plan.md, 4.1).
@@ -43,7 +44,10 @@ internal class HijriGlanceWidget : MihrabGlanceWidget("hijri") {
     val size = cardSize()
     val model = guarded("hijri") {
       val now = Now.current()
-      Model(Colors.of(context), GlancePayload.live(context, now)?.hijri)
+      // Today's own date when the payload carries one per day: past
+      // midnight the card has moved on from the day it was built on.
+      val p = GlancePayload.live(context, now)
+      Model(Colors.of(context), p?.let { WidgetPayloadV1.hijri(it, now.dateKey) })
     }
     val colors = model.getOrNull()?.colors ?: Colors.of(context)
     MihrabCard(colors.background, openRoute(context, "mihrab://today")) {

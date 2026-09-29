@@ -15,6 +15,7 @@ import {
   type WidgetPrayerPayload,
 } from '../src/widget/buildWidgetPayload';
 import type { WidgetExtras } from '../src/widget/widgetBlocks';
+import { buildHijriBlock } from '../src/widget/widgetBlocks';
 import type { WidgetContractPayload } from '../src/widget/contract.generated';
 import {
   widgetPayloadV2FromV1,
@@ -136,7 +137,7 @@ const EXTRAS: WidgetExtras = {
     year: 1447,
     monthName: 'Shawwal',
     label: '21 Shawwal 1447',
-    nextMonthName: 'Dhu al-Qadah',
+    nextMonthName: "Dhul-Qa'dah", // as the app's own table writes it
     nextMonthInDays: 9,
   },
   tasbih: {
@@ -289,6 +290,15 @@ function withClock(extras: WidgetExtras | undefined): WidgetExtras | undefined {
   };
 }
 
+/**
+ * The Hijri block as the app builds it — for the moment and in the language
+ * of the scenario, like the per-day dates beside it. A hand-written block in
+ * English beside Arabic per-day dates is a payload the app never writes.
+ */
+function withHijri(extras: WidgetExtras | undefined, now: Date): WidgetExtras | undefined {
+  return extras?.hijri ? { ...extras, hijri: buildHijriBlock(now) } : extras;
+}
+
 /** Build every scenario. Leaves i18n and the clock as it found them. */
 export async function widgetScenarios(): Promise<WidgetScenario[]> {
   const languageBefore = i18n.language;
@@ -311,7 +321,7 @@ export async function widgetScenarios(): Promise<WidgetScenario[]> {
         undefined,
         s.seasonal,
         s.week,
-        withClock(s.extras),
+        withHijri(withClock(s.extras), now),
       );
       const clock = contractClock(activeClock().hour12, i18n.language);
       const v2 = widgetPayloadV2FromV1(v1, { clock, now });

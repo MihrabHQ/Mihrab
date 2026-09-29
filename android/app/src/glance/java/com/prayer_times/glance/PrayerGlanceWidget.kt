@@ -35,6 +35,7 @@ import com.prayer_times.R
 import com.prayer_times.WidgetRefreshHeadlessService
 import com.prayer_times.contract.WallClock
 import com.prayer_times.contract.WidgetContract
+import com.prayer_times.contract.WidgetPayloadV1
 
 /**
  * Prayer times on Glance — the card PrayerWidgetProvider draws for its three
@@ -171,9 +172,13 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
         else -> "$dayLabel · $location"
       },
       location = location,
-      // Both describe the day the payload was written; once the card has
-      // moved on they are someone else's facts, so they go.
-      hijri = if (describesToday) p.hijri?.label?.trim().orEmpty() else "",
+      // Today's own Hijri date from the payload's list; from an older app's
+      // single date, like the log below, only while it is about today —
+      // once the card has moved on it is someone else's fact.
+      hijri = (
+        if (p.hijriDays.isEmpty()) p.hijri?.takeIf { describesToday }
+        else WidgetPayloadV1.hijri(p, now.dateKey)
+      )?.label?.trim().orEmpty(),
       night = extra("nightRow") { nightLine(rows, p.clock) },
       logged = if (describesToday) p.today else null,
       practice = p.practice?.let { pr -> extra("practice") { practice(context, pr) } },

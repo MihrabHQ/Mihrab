@@ -15,6 +15,7 @@
 import { execFileSync } from 'child_process';
 import * as Contract from '../src/widget/contract.generated';
 import {
+  contractDateKey,
   formatContractMinutes,
   minutesFromHHmm,
 } from '../src/widget/wallClock';
@@ -28,7 +29,10 @@ import {
   liveActivityIosContent,
   type EpochOf,
 } from '../src/liveActivity/liveActivityV2';
-import { widgetPayloadV1FromV2 } from '../src/widget/widgetPayloadV2';
+import {
+  widgetPayloadV1FromV2,
+  type WidgetNow,
+} from '../src/widget/widgetPayloadV2';
 import { widgetScenarios } from './scenarios';
 
 type Json = null | boolean | number | string | Json[] | { [k: string]: Json };
@@ -122,6 +126,7 @@ const FULL_PAYLOAD = {
     downloaded: true,
   },
   hijri: {
+    dateKey: '',
     day: 6,
     month: 4,
     year: 1448,
@@ -130,6 +135,18 @@ const FULL_PAYLOAD = {
     nextMonthName: 'جمادى الأولى',
     nextMonthInDays: 24,
   },
+  hijriDays: [
+    {
+      dateKey: '2026-09-29',
+      day: 7,
+      month: 4,
+      year: 1448,
+      monthName: 'ربيع الآخر',
+      label: '7 ربيع الآخر 1448',
+      nextMonthName: 'جمادى الأولى',
+      nextMonthInDays: 23,
+    },
+  ],
   tasbih: {
     presetId: 'subhanallah',
     label: 'Subḥān Allāh',
@@ -573,20 +590,36 @@ function inZones<R>(jobs: { zone: string; job: ZoneJob }[]): R[] {
  */
 async function adaptCases() {
   const scenarios = (await widgetScenarios()).filter(s => s.fixture);
-  return scenarios.map(s => {
-    const v2 = JSON.parse(JSON.stringify(s.v2)) as WidgetContractPayload;
-    for (const d of v2.days) d.utcOffsetMinutes = 120;
+  const adapt = (name: string, v2: WidgetContractPayload, now: WidgetNow) => {
     const read = Contract.readWidgetContractPayload(v2);
-    if (!read) throw new Error(`scenario "${s.name}" did not read`);
+    if (!read) throw new Error(`scenario "${name}" did not read`);
     return {
-      name: s.name,
-      now: s.now,
+      name,
+      now,
       input: JSON.stringify(v2),
-      expected: JSON.parse(
-        JSON.stringify(widgetPayloadV1FromV2(read, s.now) ?? null),
-      ),
+      expected: JSON.parse(JSON.stringify(widgetPayloadV1FromV2(read, now) ?? null)),
     };
-  });
+  };
+  const pinned = (v2: WidgetContractPayload) => {
+    const out = JSON.parse(JSON.stringify(v2)) as WidgetContractPayload;
+    for (const d of out.days) d.utcOffsetMinutes = 120;
+    return out;
+  };
+  const cases = scenarios.map(s => adapt(s.name, pinned(s.v2), s.now));
+  // The day after, with the app not run since: every block the widgets roll
+  // on their own has to come from that day — the Hijri date included,
+  // which a payload carrying one date showed a day stale.
+  const every = scenarios.find(s => s.name === 'midday, 12-hour, every block');
+  if (!every) throw new Error('no "every block" scenario');
+  const [y, m, d] = every.now.todayKey.split('-').map(Number);
+  const next = new Date(y, m - 1, d + 1, 12);
+  cases.push(
+    adapt('the next day, past midnight, the app not run', pinned(every.v2), {
+      todayKey: contractDateKey(next),
+      nowMinutes: 30,
+    }),
+  );
+  return cases;
 }
 
 /**

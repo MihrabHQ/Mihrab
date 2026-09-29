@@ -210,6 +210,7 @@ export function widgetPayloadV2FromV1(
     };
   }
   if (v1.hijri) out.hijri = { ...v1.hijri };
+  if (v1.hijriDays?.length) out.hijriDays = v1.hijriDays.map(h => ({ ...h }));
   if (v1.tasbih) out.tasbih = { ...v1.tasbih };
   return out;
 }
@@ -487,8 +488,14 @@ export function widgetPayloadV1FromV2(
       downloaded: r.downloaded ?? false,
     };
   }
-  if (v2.hijri) {
-    const h = v2.hijri;
+  // The day being drawn's own date — the widget may have rolled past
+  // midnight since the app built it. The single `hijri` only for a payload
+  // from an app that wrote no list; past the list's week, no date rather
+  // than a wrong one.
+  const h = v2.hijriDays?.length
+    ? v2.hijriDays.find(d => d.dateKey === now.todayKey)
+    : v2.hijri;
+  if (h) {
     out.hijri = {
       day: h.day,
       month: h.month,

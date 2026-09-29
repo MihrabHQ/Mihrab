@@ -36,6 +36,13 @@ enum WidgetPayloadV1 {
     let next: Event?
   }
 
+  /// The Hijri date for `todayKey`: its entry in `hijriDays`; `hijri` only
+  /// for a payload with no list (an older app). Past the list, none rather
+  /// than a wrong one.
+  static func hijri(_ p: WidgetContract.Payload, todayKey: String) -> WidgetContract.Hijri? {
+    p.hijriDays.isEmpty ? p.hijri : p.hijriDays.first { $0.dateKey == todayKey }
+  }
+
   /// Today, the day shown and the next time, at `todayKey` + `nowMinutes`.
   /// Nil when there are no days.
   static func moment(_ days: [WidgetContract.Day], todayKey: String, nowMinutes: Int) -> Moment? {
@@ -178,7 +185,9 @@ enum WidgetPayloadV1 {
       }
       out["reading"] = o
     }
-    if let h = p.hijri {
+    // The day being drawn's own date: the widget may have rolled past
+    // midnight since the app built it.
+    if let h = hijri(p, todayKey: todayKey) {
       out["hijri"] = [
         "day": h.day,
         "month": h.month,

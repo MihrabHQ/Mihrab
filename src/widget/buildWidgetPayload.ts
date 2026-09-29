@@ -10,6 +10,7 @@ import type {
   WidgetTodayBlock,
 } from './widgetBlocks';
 import { shortPlaceLabel } from './shortPlaceLabel';
+import { buildHijriBlock } from './widgetBlocks';
 import {
   addDays,
   combineLocalDateAndTime,
@@ -188,6 +189,12 @@ export type WidgetPrayerPayload = {
   reading?: WidgetReadingBlock;
   /** Today's Hijri date and the month after it. */
   hijri?: WidgetHijriBlock;
+  /**
+   * The same for the first week of `days`, keyed by `dateKey`. A widget that
+   * rolls onto the next day without the app — past midnight, with it closed
+   * — draws that day's date rather than the one the payload was built on.
+   */
+  hijriDays?: (WidgetHijriBlock & { dateKey: string })[];
   /** The dhikr counter, for the interactive Tasbih widget. */
   tasbih?: WidgetTasbihBlock;
 };
@@ -414,8 +421,26 @@ export function buildWidgetPayload(
     ...(extras?.practice ? { practice: extras.practice } : {}),
     ...(extras?.today ? { today: extras.today } : {}),
     ...(extras?.reading ? { reading: extras.reading } : {}),
-    ...(extras?.hijri ? { hijri: extras.hijri } : {}),
+    ...(extras?.hijri
+      ? {
+          hijri: extras.hijri,
+          // A week of them — see the contract's `hijriDays` for why not all.
+          hijriDays: days.slice(0, HIJRI_DAYS).map(d => ({
+            dateKey: d.dateKey,
+            ...buildHijriBlock(noonOfDateKey(d.dateKey)),
+          })),
+        }
+      : {}),
     ...(extras?.tasbih ? { tasbih: extras.tasbih } : {}),
   };
+}
+
+/** How many days carry their own Hijri date (`hijriDays`). */
+const HIJRI_DAYS = 7;
+
+/** Local noon on a `YYYY-MM-DD` day: clear of any clock change. */
+function noonOfDateKey(key: string): Date {
+  const [y, m, d] = key.split('-').map(Number);
+  return new Date(y, m - 1, d, 12);
 }
 

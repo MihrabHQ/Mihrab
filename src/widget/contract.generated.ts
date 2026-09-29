@@ -59,6 +59,15 @@ export type WidgetContractPayload = {
   reading?: WidgetContractReading | null;
   /** Today's Hijri date and the month after it. */
   hijri?: WidgetContractHijri | null;
+  /**
+   * The same for the first week of `days`, keyed by `dateKey`: a widget that
+   * rolls onto the next day without the app draws that day's date, not the
+   * one it was built on. A reader falls back to `hijri` only when the list is
+   * empty (an older app); past the week it draws no Hijri date rather than a
+   * wrong one. A week, not the window: thirty would cost 4 KB of a 32 KB
+   * payload.
+   */
+  hijriDays?: WidgetContractHijri[];
   /** The dhikr counter, for the Tasbih widget. */
   tasbih?: WidgetContractTasbih | null;
 };
@@ -246,6 +255,8 @@ export type WidgetContractKhatmah = {
 
 /** Today's Hijri date. */
 export type WidgetContractHijri = {
+  /** The civil day it is for; set in `hijriDays`. */
+  dateKey?: string;
   day: number;
   month: number;
   year: number;
@@ -439,6 +450,7 @@ export function readWidgetContractPayload(
       (readWidgetContractClock({}) as WidgetContractClock),
     locationName: wcString(input.locationName) ?? '',
     days: daysRead,
+    hijriDays: wcList(input.hijriDays, x => readWidgetContractHijri(x)) ?? [],
   };
   const seasonalRead = readWidgetContractSeasonal(input.seasonal);
   if (seasonalRead != null) out.seasonal = seasonalRead;
@@ -646,6 +658,7 @@ export function readWidgetContractHijri(
   const yearRead = wcInt(input.year);
   if (yearRead == null) return null;
   const out: WidgetContractHijri = {
+    dateKey: wcString(input.dateKey) ?? '',
     day: dayRead,
     month: monthRead,
     year: yearRead,

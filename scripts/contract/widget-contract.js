@@ -97,6 +97,11 @@ module.exports = {
         ],
         ['hijri', t.ref('Hijri'), "Today's Hijri date and the month after it."],
         [
+          'hijriDays',
+          t.list(t.ref('Hijri'), { default: [] }),
+          "The same for the first week of `days`, keyed by `dateKey`: a widget that rolls onto the next day without the app draws that day's date, not the one it was built on. A reader falls back to `hijri` only when the list is empty (an older app); past the week it draws no Hijri date rather than a wrong one. A week, not the window: thirty would cost 4 KB of a 32 KB payload.",
+        ],
+        [
           'tasbih',
           t.ref('Tasbih'),
           'The dhikr counter, for the Tasbih widget.',
@@ -331,6 +336,11 @@ module.exports = {
       name: 'Hijri',
       doc: "Today's Hijri date.",
       fields: [
+        [
+          'dateKey',
+          t.string({ default: '' }),
+          'The civil day it is for; set in `hijriDays`.',
+        ],
         ['day', t.int(REQUIRED)],
         ['month', t.int(REQUIRED)],
         ['year', t.int(REQUIRED)],
