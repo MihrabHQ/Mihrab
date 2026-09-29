@@ -159,7 +159,10 @@ floor, iOS 13.1 = macOS 10.15. Catalyst builds now say iOS 15.2
 `__tests__/catalystDeploymentTarget.test.ts` holds the configuration.
 
 So the Mac app needs **macOS 12.1** or later (it was 10.15; the Homebrew
-cask already asks for Ventura). `Xcode-26.app` is no longer needed.
+cask already asks for Ventura). Its widgets need macOS 14: the widget
+extension's own minimum is iOS 17.0, which the same map reads as 14.0, so
+on 12 and 13 the app runs without them. `build-catalyst.sh` prints both
+minimums off the signed product and stops if the app's is below 12. `Xcode-26.app` is no longer needed.
 `CATALYST_DEVELOPER_DIR` still names a toolchain outright, for trying one
 Xcode against another:
 
@@ -485,14 +488,11 @@ sed -i '' \
 
 ### Widget Extension
 
-`ios/PrayerWidgetExtension/` is an embedded extension target inside the same `.ipa`. Its deployment target is iOS 16 (matches WidgetKit + ActivityKit minimums).
+`ios/PrayerWidgetExtension/` is an embedded extension target inside the same `.ipa`. Its deployment target is iOS 17.0 (macOS 14 under Catalyst). The Live Activity is a separate target, `ios/MihrabLiveActivity/`, at iOS 16.1 and not built for the Mac.
 
-The Widget Extension Bundle (`PrayerWidgetExtension.swift`) is a `WidgetBundle` containing:
+The Widget Extension Bundle (`PrayerWidgetExtension.swift`) is a `WidgetBundle` containing the six home-screen widgets: `PrayerTimesHomeWidget` (also the Lock-Screen accessories), `HijriDateWidget`, `StreakWidget`, `ReadingWidget`, `LogTodayWidget` and `TasbihWidget`.
 
-1. `PrayerTimesHomeWidget` — the home-screen + Lock-Screen accessory widget.
-2. `PrayerLiveActivityWidget` (iOS 16.1+) — the ActivityKit Live Activity (Lock Screen card + Dynamic Island compact / minimal / expanded).
-
-`PrayerLiveActivityAttributes.swift` is a **dual-target member** (main app + widget extension) so ActivityKit's type-identity check passes when the app calls `Activity<…>.request(…)` and the widget renders via `ActivityConfiguration<…>`. The dual membership is set via direct `pbxproj` edits — see `outputs/pbxproj_add_liveactivity.py` for the editor that wires it up.
+The Live Activity (`PrayerLiveActivityWidget`, Lock Screen card + Dynamic Island) is in `MihrabLiveActivityBundle`, in its own target. `PrayerLiveActivityAttributes.swift` is a **dual-target member** (main app + `MihrabLiveActivity`) so ActivityKit's type-identity check passes when the app calls `Activity<…>.request(…)` and the extension renders via `ActivityConfiguration<…>`. The files in `ios/Contract/` belong to all three targets (`scripts/add-ios-contract.rb`).
 
 ### TestFlight
 

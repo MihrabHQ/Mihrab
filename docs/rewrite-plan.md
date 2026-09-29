@@ -1,6 +1,9 @@
 # Targeted rewrites: the four places the bugs keep coming from
 
-> **Status (2026-09-28): P0.1, P1.1–P1.4, P1.6, Phase 2, P5.1 and P5.3 done; see the progress log.** Decision (Hassan,
+> **Status (2026-09-29): P0.1, P1.1–P1.4, P1.6, Phase 2 (and the two-live-plans
+> follow-up), P5.1 and P5.3 done; P1.5 not started; P1.7 waits on 1.4–1.6
+> shipping; Phases 3 and 4 and P5.2 not started. See the progress log and
+> "Open items" below it.** Decision (Hassan,
 > 2026-09-28): no rewrite of the app — React Native stays, and so does the
 > language. Instead, rewrite the four parts where the history says the same
 > kinds of bug keep returning, one shippable step at a time, riding along
@@ -33,11 +36,12 @@ The app is ~119,000 lines of TypeScript (491 files, 393 test files),
 | Release tooling | `release.sh` 1,195 · `build-catalyst.sh` 930 · `verify-release.sh` 478 · `build-ios-appstore.sh` 363 · `xcode-cloud.py` 502 · `appstore-metadata.py` 218 | 32 + 21 | of 31 entries in `release-log.md`, 27 needed a written lesson and 19 changed the release cycle itself; 5 test files test the scripts by searching their text |
 | Android widgets | 5,232 lines of RemoteViews code + 18 layouts | 41 + 29 (provider files) | sizing: height budgets, resize, the picker's double 4×1 tile, the render crash (#31) |
 
-And one debt that is an upgrade, not a rewrite: the Mac app is pinned to
-Xcode 26 (`CATALYST_MAX_XCODE` in `build-catalyst.sh`): with React Native
-0.83.1 the Catalyst build reports a macOS 10.15 deployment target that no
-build setting reaches — most likely Hermes' prebuilt framework — and
-Xcode 27 refuses anything below 12.0.
+And one debt that is an upgrade, not a rewrite: React Native 0.83.1 is four
+minors behind. *As written on 2026-09-28* the Mac was also pinned to Xcode
+26, because the Catalyst build reported a macOS 10.15 deployment target
+Xcode 27 refuses; 5.1 found the cause (an iOS 15.1 minimum missing from
+the SDK's iOS-to-Catalyst version map, not React Native) and 5.3 fixed it
+— the pin is gone.
 
 ## Order, and why
 
@@ -46,8 +50,9 @@ Phase 0  Baseline ─────────────┐
 Phase 1  Widget/LA data contract ──► Phase 4  Android widgets on Glance
 Phase 2  Split quranState.ts          (needs Phase 1's payload)
 Phase 5.1  RN upgrade spike (early, small — to learn how big 5 is)
+Phase 5.3  Mac off Xcode 26 (done — it did not need 5.2)
 Phase 3  Release tooling in TypeScript
-Phase 5  React Native upgrade, Mac off Xcode 26
+Phase 5.2  React Native upgrade, a release of its own
 ```
 
 Phase 1 first: highest value, smallest, and Phase 4 builds on it. Phase 2
@@ -102,7 +107,10 @@ missing or mistyped field costs one detail, never the whole payload (the
 24-hour Live Activity bug was one strict field). Includes the wall-clock
 helper per platform (parse, format 12/24 h, to-instant) that replaces the
 16 hand-written parsers. *Exit:* generated types and the helper compile in
-both native targets. **Done 2026-09-28** — `scripts/contract/widget-contract.js`
+both native targets. **Done 2026-09-28** as far as that exit goes — the
+helper's to-instant and offset functions (`WallClock.date`, `epochMs`,
+`isStale`) have no production caller yet and all 16 parsers are still in
+place; replacing them moved to 1.7 — `scripts/contract/widget-contract.js`
 → `npm run gen-widget-contract`; see the progress log.
 
 **1.3 Contract tests across languages.** Today there are no native unit
@@ -110,8 +118,10 @@ tests at all. Add a Kotlin JVM test target and a Swift package test for the
 decoders; the TypeScript tests write golden payload fixtures that the
 native tests decode, and assert the decoded values — Android's reads
 default silently, so "it decoded" proves nothing there. *Exit:* a payload
-change that one side misreads fails CI. **Done 2026-09-28** (CI jobs live
-once `ci.yml` next reaches GitHub) — see the progress log.
+change that one side misreads fails CI. **Done 2026-09-28** — see the
+progress log; `contract-swift` and `contract-kotlin` first ran on GitHub
+with e370f58 (run 36609171841), both green. They run on pushes and pull
+requests to `main` only.
 
 **1.4 Widget payload v2, written beside v1.** The app writes both; natives
 read v2 when present and fall back to v1, so an app update and a widget
@@ -124,16 +134,22 @@ the typed v2 model in 1.7.
 **1.5 Live Activity payload v2** (iOS ActivityKit attributes, Android
 service) — one payload for both platforms, where today there are two built
 in two places with instants in two units. *Exit:* Live Activity correct on
-both clocks, both platforms.
+both clocks, both platforms. **Not started.**
 
 **1.6 The queues back to the app** (log, tasbih) on the same schema.
 **Done 2026-09-28** — see the progress log.
 
-**1.7 Remove v1** one release after 1.4–1.6 have shipped, with the dead
+**1.7 Remove v1** one release after 1.4–1.6 have shipped (so it waits on
+1.5), with the dead
 fields the inventory found — and move the renderers off the v1-shaped JSON
 the 1.4 adapter hands them onto the typed v2 model, which is where the
 remaining "HH:mm" parse sites go (on Android, the providers that Phase 4
 does not replace first).
+Also 1.7's: act on `Day.utcOffsetMinutes` — the reason P1.1 chose
+wall-clock times plus the offset was that a widget could notice the
+device's offset has moved on and ask for a refresh, and nothing reads it
+yet. Note what it can catch: the app writes the DEVICE's offset at noon,
+so a changed device zone, not a stored location's zone (#56).
 *Phase exit:* no native code parses a formatted time; one schema; contract
 tests in CI.
 
@@ -311,7 +327,7 @@ Prayer times last); the practice graph stays a bitmap inside Glance.
 *Phase exit:* RemoteViews layouts deleted; widget fixes per release down
 against the Phase 0 baseline.
 
-## Phase 5 — React Native upgrade, and the Mac off Xcode 26
+## Phase 5 — React Native upgrade (and the Mac off Xcode 26, done in 5.3)
 
 **5.1 Spike.** *Done 2026-09-29* — see the progress log. Branch
 `spike/rn-0.87` (local, worktree `../PrayerApp-rn087`): React Native
@@ -409,7 +425,38 @@ one. It is not a rewrite target.
 | 2026-09-28 | P2.4 | Recheck: the writers and the pure edits separate as planned, and the edits need nothing from the store except the claim log's bound (`KHATMAH_MARK_LIMIT`), so the bound moved down with them and the store imports it — the edits are a pure layer below the store, the writers a client above it. `khatmahEdits.ts` (a new plan's start, the day's snapshot and pinned cut, a dated re-pace, the claim log, the pinned position, keeping the read set and the high-water fields in step; 16 declarations, 348 lines) and `khatmahActions.ts` (the 14 writers, with `khatmahTracksPage`, the question every page turn asks before it writes; 786 lines). 23 importers pointed at them (7 app files, 16 test files); the store re-exports neither. Found on the way: the scripts' call-graph scan read `...pinned(` as a property access and missed every call made through a spread — harmless for 2.2 and 2.3, whose imports tsc checked complete, but it means 2.1's edge counts were low; the layering test, not those counts, is what holds the cut. Three tests followed the code: the pin test now reads the writers and the helper where they live and is stricter than before (it used to check only the code after `pinned`, which was near the end of the file, so the writers above it went unchecked); the day test's negative checks cover all seven store files; the QuranCard suite mocks the two pacing writers where the card now imports them. Checked as before: every line that left the store is in one of the two files unchanged (bar `export` on 13 helpers), except the "── Khatmah" banner, dropped. Verified: full jest 397 suites / 6,066 tests, also in UTC; tsc clean; eslint no new warnings; a release Android bundle; the three files 100% line-covered. `quranState.ts` 1,850 → 791 lines. | No change to 2.5. Every module is now under ~800 lines; what is left is 2.2's re-exports, the per-module test files and the four mocks. |
 | 2026-09-28 | P2.5 | The 54 names the store still re-exported for 2.2's layers: 48 files (src and tests) now import each from the module that holds it, and the re-exports are gone — `quranState.ts` 791 → 728 lines. The four suites that mock the store were the risk the recheck named, and one was real: `notificationRoute` failed four tests, because the khatmah reminder now takes `activeKhatmah` from `khatmahProgress` and the store's mock of it no longer reached it. All four now mock each name where its importer takes it from; the other three passed anyway — the real functions answered the same, or were not reached — so their mocks had quietly stopped mocking anything. `khatmahEdits.ts` was the one module no test imported directly — covered, but only through the writers — so it has its own suite (16 tests: the pin and its date, the claim log's order and its no-op turns, the mirror never past a hole, rewind and fill, a new plan's start, the re-pace stamp, today's cut, the day's snapshot); three of them fail when the pin's or the re-pace's stamp rule is broken, checked. `khatmahModules.test.ts` now pins that the store re-exports nothing. ARCHITECTURE.md has a section on the modules and their order. Verified: full jest 398 suites / 6,082 tests, also in UTC; khatmah, store and sync suites in New York; tsc clean; eslint no new warnings; a release iOS bundle; every module 100% line-covered. | Phase 2 done. `quranState.ts` 4,324 lines → 8 modules, the largest 786. Carried out of the phase, not changed by it: the two-live-plans question for Hassan (above). |
 | 2026-09-29 | 2.1 finding | Hassan decided the two-live-plans question: keep the plan with more reading, even if started later; with equal reading, the one started last. `oneLivePlan` (in `khatmahProgress.ts`, beside `isLivePlan`) applies it to the merge's result and to a stored blob as it is read, so the store never holds two live plans; the loser is abandoned at the later of the two starts, a date worked out from the plans alone, so both devices write the same thing. Reading is counted inside each plan's own span, so a plan begun at page 300 is not credited with the pages it skipped. The recheck found a second way in: `startKhatmah` dropped a live plan it replaced rather than abandoning it — unreachable from today's UI, which only offers a start when no plan is live, but under the new rule a dropped plan with more reading would come back from the other device and beat the new one, so it abandons it now. 9 tests (`khatmahOneLivePlan.test.ts`): both merge orders agree, progress beats recency and recency breaks a tie, reading outside a plan's span does not count, the decision holds when the loser arrives again, the store shows the kept plan after a sync, a stored blob with two reads as one, and a replaced plan cannot come back; three of them fail with progress ignored, one with the old drop, checked. Verified: full jest 399 suites / 6,091 tests, also in UTC (the merge property and two-device fuzz suites unchanged and green); tsc clean; no new eslint warnings. CHANGELOG and `docs/sync-conflict-rules.md` updated. | No change to later phases. Not done, and not asked: the losing plan's reading is not carried into the kept plan. |
-| 2026-09-29 | P5.1 | Recheck: the plan's facts still held — 0.83.1 on the Mac, Xcode 27 selected with 26 kept beside it for Catalyst — and the current release is 0.87.1 (0.88 due 2026-10-12). Branch `spike/rn-0.87` in its own worktree, so main was never touched. First the baseline, measured rather than trusted: 0.83.1 still fails on Xcode 27 with the same 105 targets at macOS 10.15. The cause, found this time: iOS 15.1 is missing from the SDK's iOS-to-Catalyst version map in both Xcodes, so the Catalyst deployment target falls back to iOS 13.1 = macOS 10.15, which Xcode 26 allowed and 27 does not. That is why every earlier attempt failed — it set the macOS target, and Xcode derives it from the iOS one; a blanket override to 15.2 lowered the widget extension (16.1) and broke it; raising only what said 15.1 built 0.83.1 for Catalyst on Xcode 27, and the app launched. Then 0.87.1: package bumps and the template's changes; Android failed on AGP 9's refusal of `proguard-android.txt` and on two libraries' legacy-architecture code (safe-area-context, screens), iOS on three (gesture-handler, screens, view-shot); each fixed by the library's current version. The F-Droid release and beta build, and the beta ran on the emulator (API 37) to onboarding with no errors; the iOS simulator Debug build succeeds; the Catalyst Release build succeeds in 4 minutes and the app ran and drew Today from the Mac's own data. Jest: 7 failures from the two removed APIs, all fixed on the branch — 399 suites / 6,091 tests pass. Found and not fixed: 51 type errors in 29 files; the screens patch has to be ported to 4.28; `codesign` refuses the prebuilt React framework in the Mac bundle; the APK is about 9 MB bigger and the Mac app 59 MB. | Yes. 5.3 moves ahead of 5.2 and no longer depends on it: the Catalyst fix is one setting per side and works on 0.83.1 — it needs Hassan's yes on raising the Mac minimum to macOS 12.1. 5.2 is rewritten from the spike's list, estimated at two to three sessions plus a phone pass, as a release of its own. |
+| 2026-09-29 | P5.1 | Recheck: the plan's facts still held — 0.83.1 on the Mac, Xcode 27 selected with 26 kept beside it for Catalyst — and the current release is 0.87.1 (0.88 due 2026-10-12). Branch `spike/rn-0.87` in its own worktree, so main was never touched. First the baseline, measured rather than trusted: 0.83.1 still fails on Xcode 27 with the same 105 targets at macOS 10.15. The cause, found this time: iOS 15.1 is missing from the SDK's iOS-to-Catalyst version map in both Xcodes, so the Catalyst deployment target falls back to iOS 13.1 = macOS 10.15, which Xcode 26 allowed and 27 does not. That is why every earlier attempt failed — it set the macOS target, and Xcode derives it from the iOS one; a blanket override to 15.2 lowered the widget extension (16.1 — *correction: the widget extension is 17.0; 16.1 is the Live Activity, which does not build for the Mac*) and broke it; raising only what said 15.1 built 0.83.1 for Catalyst on Xcode 27, and the app launched. Then 0.87.1: package bumps and the template's changes; Android failed on AGP 9's refusal of `proguard-android.txt` and on two libraries' legacy-architecture code (safe-area-context, screens), iOS on three (gesture-handler, screens, view-shot); each fixed by the library's current version. The F-Droid release and beta build, and the beta ran on the emulator (API 37) to onboarding with no errors; the iOS simulator Debug build succeeds; the Catalyst Release build succeeds in 4 minutes and the app ran and drew Today from the Mac's own data. Jest: 7 failures from the two removed APIs, all fixed on the branch — 399 suites / 6,091 tests pass. Found and not fixed: 51 type errors in 29 files; the screens patch has to be ported to 4.28; `codesign` refuses the prebuilt React framework in the Mac bundle; the APK is about 9 MB bigger and the Mac app 59 MB. | Yes. 5.3 moves ahead of 5.2 and no longer depends on it: the Catalyst fix is one setting per side and works on 0.83.1 — it needs Hassan's yes on raising the Mac minimum to macOS 12.1. 5.2 is rewritten from the spike's list, estimated at two to three sessions plus a phone pass, as a release of its own. |
 | 2026-09-29 | P5.3 | Hassan agreed to the Mac minimum going from macOS 10.15 to 12.1. Done without the React Native upgrade: `"IPHONEOS_DEPLOYMENT_TARGET[sdk=macosx*]" = 15.2` on the four configurations of the app project that say 15.1, and the same for every pod below 15.2 and for the pods project in the Podfile — conditional, so the iOS build keeps 15.1 (checked: iOS simulator settings 15.1, Catalyst 15.2 → macOS 12.1). `build-catalyst.sh` lost its Xcode-version pin and fallback; `--check-toolchain` now reports the selected Xcode, and `CATALYST_DEVELOPER_DIR` still names another. Verified with the real script on Xcode 27, notarisation skipped: built, Developer ID signature verifies, Keychain group and App Group sealed in, the extension signed and sandboxed, the smoke launch came up and wrote today's widget payload, `LSMinimumSystemVersion` 12.1, SDK 27.0. The first run stopped at the script's last gate — LaunchServices still knew a widget extension inside the spike's copy of the app, launched from /tmp in 5.1 and deleted afterwards, which would have blanked every widget on this Mac; unregistered it, and the second run passed every gate. `catalystDeploymentTarget.test.ts` holds the configuration; its first draft missed the app target's configurations (CocoaPods puts a line between `isa` and `buildSettings`) and passed with one removed — caught by breaking it on purpose, fixed, and it now fails that way. DISTRIBUTION.md and release.sh say what the cause was; CHANGELOG says the Mac needs 12.1. Full jest 400 suites / 6,095 tests, tsc clean. | The Homebrew cask already requires Ventura, so it needs no change. Notarising an Xcode 27 build is left to the next release, which does it anyway. |
 | 2026-09-29 | 2.1 finding, review | A review of a79eb29 found the choice itself was unsafe to store. `oneLivePlan` wrote the loser's `abandonedAt`, which is permanent and one side's word is enough, from the reading the merging device could see — and folder sync merges the other device's file as it was when written. Phone (P 10 pages, Mac's old file Q 5) abandoned Q while the Mac (Q 20, phone's P 10) abandoned P: the next exchange left no live plan, and the result depended on the order of merges (not associative). Separately the loser was dated at the plans' starts, so two plans over 90 days old produced a tombstone the next read pruned — never reaching the other device. Now the loser carries `supersededBy` (the kept plan's id), cleared and recomputed from the merged plans on every merge, every read of a blob and every store write; it has no date and never expires; it becomes live again if the kept plan is abandoned or finished; `startKhatmah` abandons it. 5 new tests (stale copies on each side converge, both merge orders equal, old plans survive two reads, set-aside plan live at once after the kept one is abandoned, a new start ends it); 7 of the 14 fail on a79eb29, checked. | No. A build without the field sees both plans live, as before a79eb29 (which never shipped). |
 | 2026-09-29 | P1.6, review | A review found an upgrade loss P1.6 introduced: the iOS/Mac widgets before the contract wrote a queued tap's `t` as `Date().timeIntervalSince1970 * 1000`, a fractional Double, and the contract's `long` reader (all three platforms) drops a number with a fraction — so every Log Today tap and tasbih bead still queued when the update landed would have been dropped by the app's drain and by the widget's next tap. The fixture "as Swift writes it" used `1759000000000.0`, a whole number, so it never saw the real case. The schema gained `truncate` for a long (refused on list elements); both queues' `t` use it and read any finite number below 9e15 with its fraction dropped. 5 new fixture cases (fractional log tap and bead, a mixed old/new queue, `t` as text still unreadable) and one app-level test per queue; the TS and Kotlin sides fail on them without the change, checked; Kotlin harness 10 tests pass. | No. The Swift harness is left to CI's `contract-swift` job (no swiftc in the session that made the change). |
+| 2026-09-29 | review | A review of everything above (three reviewers, then fixes). Two bugs fixed and logged in their own rows (the two-live-plans choice, the fractional queue times); the iOS widgets now read date keys on a Gregorian calendar (on a Buddhist, Japanese or Islamic system calendar today's key matched no payload day); the Catalyst test holds every Mac target's minimum, and `build-catalyst.sh` reads the product's `LSMinimumSystemVersion` and stops below 12. Checked and correct: every widget on both platforms reads through the adapter; every app write goes through `setDataV2` with `setData` as the fallback; the quranState move was mechanical; the DST fix holds in seven zones over 800 days. | Yes: the status line, the order, the 1.2/1.3/1.5/1.7 texts, and "Open items" below. |
+
+## Open items (not a step yet, each needs an owner)
+
+- **P1.4's exit is not fully met.** Light/dark were not re-shot; on
+  devices only two Android widgets were seen (Arabic, 24-hour); iOS was
+  checked by comparing decoded content, not by drawing; the native
+  adapters are held to the 8 English scenarios only. The next release's
+  device pass should cover en/sv/ar × 12/24 h × light/dark on both.
+- **iOS falls back from v2 to v1 silently.** `loadStoredWidgetPayload`
+  chains `try?`, so a v2 that never adapts is invisible; Android logs it.
+  Log it before 1.7 removes the fallback.
+- **The adapter's cost on iOS is unmeasured**: v2 decode, re-serialise,
+  v1 decode — three passes where there was one, in six widget kinds.
+- **`setDataV2` with an empty v2** removes the key on iOS and stores `""`
+  on Android (harmless — it fails to parse and falls back). Make them the
+  same when the module is next touched.
+- **Headless clock language**: `syncPrayerWidget` builds the clock from
+  `i18n.language`, which a headless republish does not set. Same as v1,
+  not a regression.
+- **Two live khatmahs**: the losing plan's reading is not carried into the
+  kept plan (not asked for). A device on a build from before `supersededBy`
+  shows both plans live and the earlier one first, as it always did.
+- **The Mac is built nowhere but a release.** Notarising an Xcode 27 build
+  is first proven by the next release; a Catalyst build before release day
+  (or in CI) would find the next toolchain break earlier.
+- **5.2's Mac zip cannot be signed** while the prebuilt React framework
+  makes `codesign` refuse the bundle — make that part of 5.2's exit.
+- **The Homebrew cask's `depends_on`** (said to be Ventura in CHANGELOG,
+  DISTRIBUTION.md and the P5.3 row) is in MihrabHQ/homebrew-tap and was not
+  checked from this repo.

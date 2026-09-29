@@ -856,6 +856,13 @@ the podspecs (hermes-engine's prebuilt macOS framework declares 10.15 in
 its own Info.plist), which makes it an upstream React Native problem. The
 fast way back to a shipping Mac is Xcode 26 and `DEVELOPER_DIR`.
 
+*Resolved 2026-09-29 — the advice above is superseded.* The 10.15 was a
+build setting after all, just not a macOS one: Xcode derives the Catalyst
+target from the iOS one through the SDK's version map, which has no iOS
+15.1, so it fell back to iOS 13.1 = macOS 10.15. Catalyst builds now say
+iOS 15.2 through `[sdk=macosx*]` and build on Xcode 27; see
+docs/DISTRIBUTION.md and docs/rewrite-plan.md (step 5.3).
+
 ## 2.23.0 (275) — 2026-09-17
 
 Ran clean on the first attempt.
@@ -1028,7 +1035,9 @@ shipped Android and iOS with `SKIP_CATALYST=1` and the notarized Mac zip
 and cask followed by hand the same day. `build-catalyst.sh
 --check-toolchain` now finds Xcode 26 alongside 27 in preflight; keep an
 Xcode that can build Catalyst installed until the deployment-target
-source is found.
+source is found. *(Found and fixed 2026-09-29: an iOS 15.1 minimum the
+version map cannot read. The Mac builds on Xcode 27 and the Xcode 26 pin
+is gone — docs/DISTRIBUTION.md.)*
 
 ## 2.27.0 (281) — 2026-09-26
 
