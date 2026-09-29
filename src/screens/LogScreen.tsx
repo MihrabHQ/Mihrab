@@ -36,6 +36,7 @@ import {
   TextInput,
   useWindowDimensions,
   View,
+  type ScrollViewInstance,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation, useScrollToTop } from '@react-navigation/native';
@@ -193,9 +194,9 @@ export function LogScreen() {
    * `tabPress` and acts only while this screen is focused, so pressing a
    * DIFFERENT tab still just navigates.
    */
-  const scrollRef = useRef<ScrollView>(null);
+  const scrollRef = useRef<ScrollViewInstance>(null);
   useScrollToTop(scrollRef);
-  const kb = useKeyboardAwareScroll<ScrollView>(scrollRef);
+  const kb = useKeyboardAwareScroll<ScrollViewInstance>(scrollRef);
   const tabBarInset = useTabBarInset();
   const pageTop = useTabPageTop();
   /**

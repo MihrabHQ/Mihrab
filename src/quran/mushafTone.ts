@@ -18,6 +18,7 @@
  * reads the old field exactly as before.
  */
 // tokens-ok: the mushaf is a print with its own three tones — paper, sepia, night — independent of the app palette
+import type { ColorValue } from 'react-native';
 import { PALETTE_OLED } from '../theme/tokens';
 import type { QuranPrefs } from './quranTypes';
 
@@ -204,10 +205,10 @@ export function scrubberChrome(
     accentSolid: string;
     tintedSurfaces: boolean;
     isDark: boolean;
-    text: string | { toString(): string };
-    muted: string | { toString(): string };
-    controlBg: string | { toString(): string };
-    card: string | { toString(): string };
+    text: ColorValue;
+    muted: ColorValue;
+    controlBg: ColorValue;
+    card: ColorValue;
   },
 ): ToneChrome {
   const base = TONE_CHROME[tone];

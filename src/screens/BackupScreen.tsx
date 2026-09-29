@@ -32,6 +32,7 @@ import {
   Text,
   TextInput,
   View,
+  type ScrollViewInstance,
 } from 'react-native';
 import { CenteredColumn } from '../responsive/CenteredColumn';
 import { useTranslation } from 'react-i18next';
@@ -109,7 +110,7 @@ function CategoryRow({
 }
 
 export function BackupScreen() {
-  const kb = useKeyboardAwareScroll<ScrollView>();
+  const kb = useKeyboardAwareScroll<ScrollViewInstance>();
   const { t } = useTranslation();
   const { palette } = useAppPalette();
   useBreakpoint();

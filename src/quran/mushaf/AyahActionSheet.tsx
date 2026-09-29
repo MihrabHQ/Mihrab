@@ -20,6 +20,7 @@ import {
   StyleSheet,
   Text,
   View,
+  type ScrollViewInstance,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useKeyboardInset } from '../../hooks/useKeyboardInset';
@@ -166,7 +167,7 @@ export function AyahActionSheet({
    */
   const [translationOpen, setTranslationOpen] = useState(false);
 
-  const scrollRef = useRef<ScrollView>(null);
+  const scrollRef = useRef<ScrollViewInstance>(null);
   const audioSectionY = useRef(0);
 
   useEffect(() => {

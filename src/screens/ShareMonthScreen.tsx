@@ -18,7 +18,7 @@ import {
 } from 'react-native';
 import { PinchGestureHandler, State } from 'react-native-gesture-handler';
 import Share from 'react-native-share';
-import ViewShot, { captureRef } from 'react-native-view-shot';
+import ViewShot, { captureRef, type ViewShotRef } from 'react-native-view-shot';
 import ReactNativeBlobUtil from 'react-native-blob-util';
 import { usePrayerSettings } from '../context/PrayerSettingsContext';
 import { useAppPalette } from '../hooks/useAppPalette';
@@ -86,7 +86,7 @@ export function ShareMonthScreen({ route, navigation, embedded }: Props & { navi
   const clock = useClockFormatter();
   const headerHeight = useHeaderHeight();
   const paddingTop = embedded ? 0 : headerHeight;
-  const viewShotRef = useRef<ViewShot>(null);
+  const viewShotRef = useRef<ViewShotRef>(null);
 
   const [rows, setRows] = useState<MonthDayEntry[] | null>(null);
   const [loading, setLoading] = useState(true);

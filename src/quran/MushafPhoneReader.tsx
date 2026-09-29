@@ -49,6 +49,7 @@ import {
   StyleSheet,
   View,
   useWindowDimensions,
+  type ScrollViewInstance,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useHeaderHeight } from '@react-navigation/elements';
@@ -238,7 +239,7 @@ const PhonePageItem = React.memo(function PhonePageItem({
    * so there is nothing to follow there; a page that is not the one being
    * recited is handed `playing: null` and never runs this.
    */
-  const columnRef = useRef<ScrollView>(null);
+  const columnRef = useRef<ScrollViewInstance>(null);
   const playingSurah = playing?.surah ?? 0;
   const playingAyah = playing?.ayah ?? 0;
   useEffect(() => {

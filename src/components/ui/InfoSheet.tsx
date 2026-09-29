@@ -1,5 +1,12 @@
 import { memo, useState, type ReactNode } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  type ColorValue,
+} from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import { ResponsiveModal } from '../../responsive/ResponsiveModal';
@@ -98,7 +105,7 @@ function HelpTextImpl({
   text: string;
   /** The sheet's title — the row's own title. */
   title: string;
-  color: string | object;
+  color: ColorValue;
   style?: object;
 }) {
   const long = text.length > HELP_LINE_LIMIT;

@@ -36,7 +36,9 @@ export function useIsActive(): boolean {
   );
 
   useEffect(() => {
-    const onChange = (state: AppStateStatus) => {
+    // Wider than `AppStateStatus`: `currentState` is typed as possibly
+    // null before the first report, which reads as not in the background.
+    const onChange = (state: AppStateStatus | string | null | undefined) => {
       // Only a real 'background' stops the clock. 'inactive' is iOS's
       // transitional state — the app switcher, a permission sheet, a
       // notification pulled halfway down — and treating it as background

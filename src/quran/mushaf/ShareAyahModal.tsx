@@ -7,7 +7,7 @@
  * Islamic ornament stays a quiet accent (design principle 2).
  */
 // tokens-ok: an exported image, deterministic whatever the in-app theme
-import { useRef, useState } from 'react';
+import { useRef, useState, type ComponentRef } from 'react';
 import {
   ActivityIndicator,
   Modal,
@@ -47,7 +47,7 @@ export function ShareAyahModal({
 }: Props) {
   const { t } = useTranslation();
   const { palette } = useAppPalette();
-  const cardRef = useRef<View>(null);
+  const cardRef = useRef<ComponentRef<typeof View>>(null);
   const [busy, setBusy] = useState(false);
   const meta = findSurah(surah);
   const reference = `${meta?.romanized ?? ''} ${surah}:${ayah}`;

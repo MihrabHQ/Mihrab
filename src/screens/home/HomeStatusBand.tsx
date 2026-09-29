@@ -96,8 +96,6 @@ export function HomeStatusBand({
           hero owns the bar, from the sky it is drawing — see TodayCard. */}
       {overPage ? (
         <StatusBar
-          translucent
-          backgroundColor="transparent"
           barStyle={
             luminance(pageColor) < INK_SWITCH_LUMINANCE
               ? 'light-content'

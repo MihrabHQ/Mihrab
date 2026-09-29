@@ -837,7 +837,7 @@ export function TranslationSurahScreen({
           renderItem={renderAyah}
           // Only once the window reaches the top of the surah. Drawn above
           // ayah 250 it would be a lie about where the reader is.
-          ListHeaderComponent={windowStart === 0 ? header : null}
+          ListHeaderComponent={windowStart === 0 ? header : undefined}
           // Reading backwards: the rows above arrive a chunk at a time and
           // this is what stops them shoving the page down as they land.
           maintainVisibleContentPosition={{ minIndexForVisible: 1 }}

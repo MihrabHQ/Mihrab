@@ -10,6 +10,7 @@ import {
   Text,
   Vibration,
   View,
+  type ScrollViewInstance,
 } from 'react-native';
 import { useScrollToTop } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
@@ -103,7 +104,7 @@ export function DuasScreen({ route, navigation }: DuasScreenProps = {}) {
    * `tabPress` and acts only while this screen is focused, so pressing a
    * DIFFERENT tab still just navigates.
    */
-  const scrollRef = useRef<ScrollView>(null);
+  const scrollRef = useRef<ScrollViewInstance>(null);
   useScrollToTop(scrollRef);
   // Arabic readers don't need a Latin pronunciation guide or an English
   // meaning — they read the Arabic directly. Hide both supplementary

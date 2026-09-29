@@ -23,6 +23,7 @@ import {
   StyleSheet,
   Text,
   View,
+  type ScrollViewInstance,
 } from 'react-native';
 import {
   useNavigation,
@@ -58,7 +59,7 @@ export function SettingsScreen() {
    * the top — the standard idiom, and the fastest way back to the index
    * after a long page.
    */
-  const scrollRef = useRef<ScrollView>(null);
+  const scrollRef = useRef<ScrollViewInstance>(null);
   useScrollToTop(scrollRef);
 
   const go = useCallback(

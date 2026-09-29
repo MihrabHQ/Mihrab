@@ -39,7 +39,7 @@ const removed: number[] = [];
 
 jest
   .spyOn(NativeEventEmitter.prototype, 'addListener')
-  .mockImplementation((_event: string, fn: unknown) => {
+  .mockImplementation((_event: unknown, fn: unknown) => {
     listeners.push(fn as Listener);
     const index = listeners.length - 1;
     return { remove: () => removed.push(index) } as never;

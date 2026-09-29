@@ -322,7 +322,7 @@ export function MonthTimesScreen() {
         ListEmptyComponent={
           !loading && !error ? (
             <Text style={[styles.empty, { color: palette.muted }]}>{t('month.empty')}</Text>
-          ) : null
+          ) : undefined
         }
         keyboardShouldPersistTaps="handled"
         initialScrollIndex={
@@ -342,7 +342,7 @@ export function MonthTimesScreen() {
             <Text style={[styles.empty, { color: palette.muted }]}>
               {t('month.daruriLegend')}
             </Text>
-          ) : null
+          ) : undefined
         }
         onScrollToIndexFailed={() => {}}
       />

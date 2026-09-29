@@ -31,6 +31,7 @@ import {
   StyleSheet,
   Text,
   View,
+  type ScrollViewInstance,
 } from 'react-native';
 import { CenteredColumn } from '../responsive/CenteredColumn';
 import ReactNativeBlobUtil from 'react-native-blob-util';
@@ -86,7 +87,7 @@ function formatBytes(bytes: number): string {
 }
 
 export function QuranDownloadsScreen() {
-  const kb = useKeyboardAwareScroll<ScrollView>();
+  const kb = useKeyboardAwareScroll<ScrollViewInstance>();
   const { t } = useTranslation();
   const { palette } = useAppPalette();
 

@@ -11,6 +11,7 @@ import {
   TextInput,
   View,
   type ColorValue,
+  type ScrollViewInstance,
 } from 'react-native';
 import { requestAndroidLocationPermission } from '../utils/locationPermission';
 import { usePrayerSettings } from '../context/PrayerSettingsContext';
@@ -58,7 +59,7 @@ export function LocationSetup({ palette, hideIntro }: Props) {
   const { updateSettings } = usePrayerSettings();
   const [step, setStep] = useState<'choose' | 'manual'>('choose');
   // One ref for both steps: only ever one of them is mounted.
-  const kb = useKeyboardAwareScroll<ScrollView>();
+  const kb = useKeyboardAwareScroll<ScrollViewInstance>();
   const [gpsBusy, setGpsBusy] = useState(false);
   const [gpsError, setGpsError] = useState<string | null>(null);
   const [draftLat, setDraftLat] = useState('');

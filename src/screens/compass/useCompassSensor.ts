@@ -143,7 +143,10 @@ export function useCompassSensor(
       CompassModule.startUpdates(latitude, longitude);
       const sub = compassEmitter.addListener(
         'CompassHeading',
-        (data: { heading: number; accuracy: number }) => {
+        // The emitter's listener takes untyped events since 0.87; the
+        // native module sends this shape.
+        (event: unknown) => {
+          const data = event as { heading: number; accuracy: number };
           if (cancelled) return;
           clearStartupTimeout();
           lastSampleAt = Date.now();

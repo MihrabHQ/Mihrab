@@ -15,6 +15,7 @@ import {
   useWindowDimensions,
   View,
   type LayoutChangeEvent,
+  type ScrollViewInstance,
 } from 'react-native';
 import notifee, {
   AndroidNotificationSetting,
@@ -159,7 +160,7 @@ export function HomeScreen() {
    * `tabPress` and acts only while this screen is focused, so pressing a
    * DIFFERENT tab still just navigates.
    */
-  const scrollRef = useRef<ScrollView>(null);
+  const scrollRef = useRef<ScrollViewInstance>(null);
   useScrollToTop(scrollRef);
   // The RESOLVED clock, not the stored preference. On 'auto' the answer
   // moves when the device's 12/24 switch does, and that has to re-sync

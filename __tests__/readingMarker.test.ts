@@ -236,7 +236,7 @@ describe('the readers', () => {
     expect(t).toContain('onStartReached={readEarlier}');
     expect(t).toContain('maintainVisibleContentPosition={{ minIndexForVisible: 1 }}');
     // The surah header belongs at the surah's start, not above ayah 250.
-    expect(t).toContain('ListHeaderComponent={windowStart === 0 ? header : null}');
+    expect(t).toContain('ListHeaderComponent={windowStart === 0 ? header : undefined}');
     // Recitation scrolls by the list's index, which is not the ayah's when
     // the list holds a window — off by `windowStart` is off by 249.
     expect(t).toMatch(/const row = idx - windowStart;[\s\S]*?scrollToIndex\(\{\s*index: row,/);

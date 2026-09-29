@@ -475,8 +475,6 @@ const HeroToday = memo(function HeroToday({
           same gate as the countdown, so nothing here runs in a pocket. */}
       {ownsStatusBar && active ? (
         <StatusBar
-          translucent
-          backgroundColor="transparent"
           barStyle={inkTop.text === '#FFFFFF' ? 'light-content' : 'dark-content'}
           animated
         />

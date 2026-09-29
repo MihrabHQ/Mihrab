@@ -251,7 +251,7 @@ export async function scrollFocusedFieldIntoView(
  * keyboard.
  *
  * ```tsx
- * const kb = useKeyboardAwareScroll<ScrollView>();
+ * const kb = useKeyboardAwareScroll<ScrollViewInstance>();
  * <ScrollView
  *   ref={kb.ref}
  *   automaticallyAdjustKeyboardInsets
@@ -292,7 +292,8 @@ export function useKeyboardAwareScroll<T>(
 
       timer = setTimeout(() => {
         const scroller = ref.current as KeyboardScrollable | null;
-        const field: Measurable | null = TextInput.State.currentlyFocusedInput();
+        const field: Measurable | null =
+          TextInput.State.currentlyFocusedInput() ?? null;
         if (!scroller || !field) {
           return;
         }

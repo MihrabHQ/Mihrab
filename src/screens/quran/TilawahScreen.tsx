@@ -47,6 +47,7 @@ import {
   type ColorValue,
   type NativeScrollEvent,
   type NativeSyntheticEvent,
+  type ScrollViewInstance,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
@@ -773,7 +774,7 @@ export function TilawahScreen() {
     setShowTop(false);
   }, []);
 
-  const pageScrollRef = useRef<ScrollView>(null);
+  const pageScrollRef = useRef<ScrollViewInstance>(null);
   const pageColumnH = useMemo(
     () =>
       playingPage && pageWidth > 0

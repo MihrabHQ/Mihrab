@@ -18,6 +18,7 @@ import {
   StyleSheet,
   Text,
   View,
+  type ScrollViewInstance,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
@@ -143,7 +144,7 @@ export function OnboardingFrame({
 }) {
   const { palette } = useAppPalette();
   const insets = useSafeAreaInsets();
-  const kb = useKeyboardAwareScroll<ScrollView>();
+  const kb = useKeyboardAwareScroll<ScrollViewInstance>();
   return (
     <View style={[styles.root, { backgroundColor: palette.bg }]}>
       <View style={{ height: insets.top }} />

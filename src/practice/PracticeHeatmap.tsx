@@ -38,6 +38,7 @@ import {
   Text,
   View,
   type ViewStyle,
+  type ScrollViewInstance,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useAppPalette } from '../hooks/useAppPalette';
@@ -548,7 +549,7 @@ function PracticeHeatmapImpl({
    * impossible — you would be dragged to the present the moment you logged
    * anything.
    */
-  const scrollRef = useRef<ScrollView>(null);
+  const scrollRef = useRef<ScrollViewInstance>(null);
   const parked = useRef(false);
   const drawnWeeks = useRef(0);
   const offset = useRef(0);

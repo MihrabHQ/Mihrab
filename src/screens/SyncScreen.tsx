@@ -37,6 +37,7 @@ import {
   Text,
   TextInput,
   View,
+  type ScrollViewInstance,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { CenteredColumn } from '../responsive/CenteredColumn';
@@ -168,7 +169,7 @@ function PeerRow({
 export function SyncScreen() {
   // One ref for both returns: the not-ready page and the real one are
   // never mounted together.
-  const kb = useKeyboardAwareScroll<ScrollView>();
+  const kb = useKeyboardAwareScroll<ScrollViewInstance>();
   const { t } = useTranslation();
   const { palette } = useAppPalette();
 

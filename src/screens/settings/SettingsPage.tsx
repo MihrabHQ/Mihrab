@@ -13,7 +13,7 @@
  */
 import type { ReactNode, RefObject } from 'react';
 import { useLayoutEffect } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View, type ScrollViewInstance } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -52,7 +52,7 @@ export function SettingsPage({ children, deferBackRef }: Props) {
   useAndroidSubScreenBack(deferBackRef);
   // Every settings subpage with a field in it — location search, the
   // coordinate boxes, a saved place's name — rides on this one scroller.
-  const kb = useKeyboardAwareScroll<ScrollView>();
+  const kb = useKeyboardAwareScroll<ScrollViewInstance>();
 
   const page = SETTINGS_STACK_PAGES.find(p => p.route === route.name);
   const title = t(page?.titleKey ?? route.name);
