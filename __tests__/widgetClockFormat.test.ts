@@ -1,13 +1,11 @@
 /**
  * The widget payload and the 12-hour clock — issue #18.
  *
- * The invariant this file exists for: `time` is machine data. The iOS
- * widget's progress ring splits it on ":", `logMinutesOfDay` turns it
- * into minutes-of-day, Android's `epochForDayTime` matches it against
- * `^(\d{1,2}):(\d{2})$` to schedule the Live Activity, and
- * `syncLiveActivity` parses it back into a Date. A "5:31 PM" in that
- * field would not throw — the ring would simply stop advancing and the
- * card would stop rolling over, on devices nobody is testing on.
+ * The invariant this file exists for: `time` is machine data. Since step
+ * 1.7 the natives place rows by `minutes`, but a v1 stored by an older
+ * build is still read through `time` (WallClock, once), and a "5:31 PM"
+ * in that field would not throw — the ring would simply stop advancing
+ * and the card would stop rolling over, on devices nobody is testing on.
  *
  * So the 12-hour clock rides in a SEPARATE field, and it rides only when
  * it says something `time` does not.

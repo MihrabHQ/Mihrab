@@ -14,8 +14,9 @@ export interface PrayerWidgetInterface {
    * Push v1 and the widget contract's v2 (docs/rewrite-plan.md, step 1.4)
    * in one write, so the two can never describe different moments: a v2
    * left behind by an older write would be read in preference to a newer v1.
-   * `setData` alone clears any v2 for the same reason. Absent on a binary
-   * older than the one that added it.
+   * `setData` alone clears any v2 for the same reason. Since step 1.7 the
+   * app passes `''` for v1: v2 is written alone and the stored v1 removed.
+   * Absent on a binary older than the one that added it.
    */
   setDataV2?(json: string, v2: string): Promise<void>;
 

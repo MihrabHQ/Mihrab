@@ -25,12 +25,9 @@ export type WidgetPrayerRow = {
   /**
    * CANONICAL 24-hour `HH:mm`. Machine data, never localised.
    *
-   * Native parses this: the iOS widget's progress ring splits it on ":"
-   * to place the prayer on a timeline, `logMinutesOfDay` turns it into
-   * minutes-of-day, and Android's `epochForDayTime` matches it against
-   * `^(\d{1,2}):(\d{2})$` to schedule the Live Activity. A "5:31 PM"
-   * here would not fail loudly — it would silently stop the ring
-   * advancing and the rollover happening.
+   * Since step 1.7 the natives place rows by `minutes`; this is read (once,
+   * through `WallClock`) only when `minutes` is absent — a v1 stored by an
+   * older build. A "5:31 PM" here would still break that fallback silently.
    *
    * What the user reads is `display`.
    */

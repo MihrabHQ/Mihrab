@@ -165,16 +165,11 @@ struct PracticeGrid: View {
   }
 
   private func key(_ date: Date, _ cal: Calendar) -> String {
-    let c = cal.dateComponents([.year, .month, .day], from: date)
-    return String(format: "%04d-%02d-%02d", c.year ?? 0, c.month ?? 0, c.day ?? 0)
+    WallClock.dateKey(date, calendar: cal)
   }
 
   /// Today's key, in the same shape the payload uses.
-  private var todayKey: String {
-    var cal = WallClock.localCalendar
-    cal.firstWeekday = 2
-    return key(Date(), cal)
-  }
+  private var todayKey: String { WallClock.dateKey(Date()) }
 
   /// The Log screen's `fillFor`, with the names changed.
   ///

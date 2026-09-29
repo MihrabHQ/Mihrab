@@ -111,16 +111,9 @@ private func displayRows(
   let night = s.extraRows ?? []
   if !night.isEmpty {
     out.append(contentsOf: night)
-    out.sort { (rowMinutes($0) ?? 0) < (rowMinutes($1) ?? 0) }
+    out.sort { ($0.at ?? 0) < ($1.at ?? 0) }
   }
   return out
-}
-
-/// Minutes after midnight for a row: the adapter's (step 1.7), or — content
-/// from a build before it — its `time` read once through `WallClock`.
-@available(iOS 16.1, *)
-private func rowMinutes(_ r: PrayerLiveActivityAttributes.Row) -> Int? {
-  r.minutes ?? WallClock.minutes(fromHHmm: r.time)
 }
 
 // MARK: - Reusable pieces

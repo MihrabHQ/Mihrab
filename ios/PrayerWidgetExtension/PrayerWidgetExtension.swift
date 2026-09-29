@@ -1,6 +1,7 @@
 import SwiftUI
 import WidgetKit
 import AppIntents
+import os
 
 /// Which App Group to read through. Must stay in lockstep with
 /// MihrabAppGroup.m, which is the same rule on the app's side of the group —
@@ -28,8 +29,9 @@ let kSuite = "group.com.prayerapp"
 #endif
 let kKey = "prayer_widget_payload_v1"
 
-/// Payload v2, the widget contract (docs/rewrite-plan.md, Phase 1). The app
-/// writes it beside v1 in the same call; see `loadStoredWidgetPayload`.
+/// Payload v2, the widget contract (docs/rewrite-plan.md, Phase 1). Since
+/// step 1.7 the app writes it alone and removes v1; see
+/// `loadStoredWidgetPayload`.
 let kKeyV2 = "prayer_widget_payload_v2"
 
 /// The payload every widget in this extension draws from.
@@ -42,13 +44,9 @@ let kKeyV2 = "prayer_widget_payload_v2"
 /// v1 is read exactly as written, as it always was.
 func loadStoredWidgetPayload(now: Date = Date()) -> WidgetPayload? {
   let defaults = UserDefaults(suiteName: kSuite)
-  if let v2 = defaults?.string(forKey: kKeyV2)?.data(using: .utf8),
-     let contract = try? JSONDecoder().decode(WidgetContract.Payload.self, from: v2),
-     let data = WidgetPayloadV1.data(
-       from: contract,
-       todayKey: WallClock.dateKey(now),
-       nowMinutes: WallClock.minutes(of: now)),
-     let p = try? JSONDecoder().decode(WidgetPayload.self, from: data) {
+  if let v2 = defaults?.string(forKey: kKeyV2), !v2.isEmpty,
+     let p = adaptedPayloads.payload(
+       v2: v2, todayKey: WallClock.dateKey(now), nowMinutes: WallClock.minutes(of: now)) {
     return p
   }
   guard let json = defaults?.string(forKey: kKey),
@@ -56,6 +54,50 @@ func loadStoredWidgetPayload(now: Date = Date()) -> WidgetPayload? {
   else { return nil }
   return try? JSONDecoder().decode(WidgetPayload.self, from: data)
 }
+
+private let widgetPayloadLog = Logger(subsystem: "com.hassan.prayerapp.widget", category: "payload")
+
+/// The v2 payload adapted for one minute, kept for the rest of it.
+///
+/// Adapting is three passes — decode v2, write the v1 JSON, decode that — and
+/// six widget kinds each ask for the payload at every timeline entry they
+/// build, in an extension WidgetKit kills for CPU. The answer depends only on
+/// the stored payload, the day and the minute, so that is the key.
+///
+/// A payload that does not adapt is logged once rather than on every read:
+/// until this, a v2 that never adapted fell back to v1 in silence.
+private final class AdaptedPayloadCache: @unchecked Sendable {
+  private let lock = NSLock()
+  private var key: (v2: String, todayKey: String, nowMinutes: Int)?
+  private var value: WidgetPayload?
+  private var reportedV2: String?
+
+  func payload(v2: String, todayKey: String, nowMinutes: Int) -> WidgetPayload? {
+    lock.lock()
+    defer { lock.unlock() }
+    if let k = key, k.nowMinutes == nowMinutes, k.todayKey == todayKey, k.v2 == v2 {
+      return value
+    }
+    let adapted = Self.adapt(v2, todayKey: todayKey, nowMinutes: nowMinutes)
+    key = (v2, todayKey, nowMinutes)
+    value = adapted
+    if adapted == nil, reportedV2 != v2 {
+      reportedV2 = v2
+      widgetPayloadLog.error("payload v2 (\(v2.count) bytes) could not be adapted; drawing from v1 if there is one")
+    }
+    return adapted
+  }
+
+  private static func adapt(_ v2: String, todayKey: String, nowMinutes: Int) -> WidgetPayload? {
+    guard let raw = v2.data(using: .utf8),
+          let contract = try? JSONDecoder().decode(WidgetContract.Payload.self, from: raw),
+          let data = WidgetPayloadV1.data(from: contract, todayKey: todayKey, nowMinutes: nowMinutes)
+    else { return nil }
+    return try? JSONDecoder().decode(WidgetPayload.self, from: data)
+  }
+}
+
+private let adaptedPayloads = AdaptedPayloadCache()
 
 /// The language Mihrab itself is set to, written beside the payload.
 ///
@@ -233,12 +275,7 @@ func payloadHasExpired(
   _ p: WidgetPayload, now: Date = Date(), calendar: Calendar = WallClock.localCalendar
 ) -> Bool {
   guard let days = p.days, !days.isEmpty else { return true }
-  let fmt = DateFormatter()
-  fmt.calendar = calendar
-  fmt.locale = Locale(identifier: "en_US_POSIX")
-  fmt.timeZone = calendar.timeZone
-  fmt.dateFormat = "yyyy-MM-dd"
-  let today = fmt.string(from: now)
+  let today = WallClock.dateKey(now, calendar: calendar)
   // Lexicographic works on yyyy-MM-dd and avoids parsing 30 dates to answer
   // "is any of them today or later".
   return !days.contains { $0.dateKey >= today }
@@ -443,9 +480,8 @@ struct WidgetPayload: Codable {
   let days: [Day]?
   struct Row: Codable {
     let key: String
-    /// CANONICAL 24-hour `HH:mm`. The progress ring, the timeline
-    /// boundaries and every "which prayer is next" computation split this
-    /// on ":" — it is arithmetic, not text. Draw `text` instead.
+    /// 24-hour `HH:mm`, read (through `at`) only when `minutes` is absent —
+    /// a v1 stored by a build before step 1.7. Draw `text`.
     let time: String
     /// The same instant written the way the user reads a clock (issue #18).
     /// Absent in payloads from app builds that predate the setting, which
@@ -553,7 +589,8 @@ struct WidgetPayload: Codable {
   struct TodayPrayer: Codable {
     let key: String
     let name: String
-    /// CANONICAL 24-hour `HH:mm` — `logIsDue` parses it. Draw `text`.
+    /// 24-hour `HH:mm`, read (through `at`) only when `minutes` is absent.
+    /// Draw `text`.
     let time: String
     /// The same time, written the way the user reads a clock (issue #18).
     var display: String? = nil
@@ -733,7 +770,7 @@ struct Provider: TimelineProvider {
       let r = computeDynamicNext(
         after: Date(),
         rows: widgetEvents(rows: p.rows, sunriseRow: p.sunriseRow, extraRows: p.extraRows),
-        calendar: .current
+        calendar: WallClock.localCalendar
       )
       key = r?.key; name = r?.name; time = r?.time
     }
@@ -1133,7 +1170,7 @@ struct RefreshIntent: AppIntent {
 /// The stretch of time the user is currently inside: the prayer just past,
 /// and the one coming up.
 ///
-/// Built from the payload's `HH:mm` strings against a REFERENCE DATE rather
+/// Built from the rows' minutes (`Row.at`) against a REFERENCE DATE rather
 /// than against `Date()`. The difference matters: WidgetKit renders an entry
 /// at a moment of its choosing, sometimes hours after the provider built it
 /// and sometimes on the other side of midnight, and an interval anchored to
@@ -1151,11 +1188,6 @@ struct PrayerInterval {
     return min(1, max(0, date.timeIntervalSince(start) / total))
   }
 
-  /// A row's time on the calendar day containing `reference`.
-  private static func date(_ row: WidgetPayload.Row, on reference: Date, _ cal: Calendar) -> Date? {
-    widgetDate(minutes: row.at, on: reference)
-  }
-
   /// The interval surrounding `reference`.
   ///
   /// Before the day's first prayer the interval runs from yesterday's LAST
@@ -1163,7 +1195,7 @@ struct PrayerInterval {
   /// cases matter — without them the ring sits empty all night, which is
   /// exactly when someone is most likely to be waiting for Fajr.
   static func around(_ reference: Date, rows: [WidgetPayload.Row], calendar cal: Calendar) -> PrayerInterval? {
-    let times = rows.compactMap { date($0, on: reference, cal) }.sorted()
+    let times = rows.compactMap { widgetDate(minutes: $0.at, on: reference) }.sorted()
     guard let first = times.first, let last = times.last else { return nil }
 
     if reference < first {

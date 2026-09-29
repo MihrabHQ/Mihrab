@@ -33,6 +33,9 @@ RCT_EXPORT_METHOD(setData
  * behind would outrank a newer v1. That is also why plain `setData` removes
  * v2 — an older JS bundle, or the app's fallback when v2 could not be built,
  * must not leave the widgets on a payload it did not write.
+ *
+ * Since step 1.7 the app passes an empty v1: v2 is written alone and the
+ * stored v1 is removed. An empty v2 removes that key the same way.
  */
 RCT_EXPORT_METHOD(setDataV2
                   : (NSString *)json v2

@@ -162,8 +162,8 @@ export type WidgetTodayPrayer = {
   /** Localized full name. */
   name: string;
   /**
-   * CANONICAL 24-hour `HH:mm` — `LogTodayWidget.logMinutesOfDay` parses
-   * this to decide which prayers are due. Read `display` instead.
+   * CANONICAL 24-hour `HH:mm`, kept for natives from before step 1.7, which
+   * read it when `minutes` is absent. Draw `display` instead.
    */
   time: string;
   /** Minutes after local midnight, from payload v2 — see `WidgetPrayerRow.minutes`. */

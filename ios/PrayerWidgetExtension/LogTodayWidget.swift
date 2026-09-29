@@ -87,14 +87,6 @@ struct LogTodayEntry: TimelineEntry {
 
 // MARK: - Whose clock decides
 
-private let logDayKeyFormatter: DateFormatter = {
-  let f = DateFormatter()
-  f.calendar = Calendar(identifier: .gregorian)
-  f.locale = Locale(identifier: "en_US_POSIX")
-  f.dateFormat = "yyyy-MM-dd"
-  return f
-}()
-
 /// Has this prayer's time arrived, as of `when`?
 ///
 /// NOT `p.due`. That flag is stamped by the app at the moment it writes the
@@ -113,13 +105,12 @@ func logIsDue(
   _ p: WidgetPayload.TodayPrayer,
   in today: WidgetPayload.Today,
   at when: Date,
-  calendar: Calendar = .current
+  calendar: Calendar = WallClock.localCalendar
 ) -> Bool {
-  guard today.dateKey == logDayKeyFormatter.string(from: when),
+  guard today.dateKey == WallClock.dateKey(when, calendar: calendar),
         let at = p.at
   else { return p.due }
-  let c = calendar.dateComponents([.hour, .minute], from: when)
-  return at <= (c.hour ?? 0) * 60 + (c.minute ?? 0)
+  return at <= WallClock.minutes(of: when, calendar: calendar)
 }
 
 struct LogTodayProvider: TimelineProvider {
@@ -128,7 +119,7 @@ struct LogTodayProvider: TimelineProvider {
   }
 
   func getSnapshot(in context: Context, completion: @escaping (LogTodayEntry) -> Void) {
-    completion(entry(at: Date(), fallback: true))
+    completion(entry(at: Date(), payload: loadPayload(), fallback: true))
   }
 
   /// An entry now, and one at each remaining prayer time today.
@@ -144,7 +135,9 @@ struct LogTodayProvider: TimelineProvider {
       ?? now.addingTimeInterval(3600)
 
     var boundaries: [Date] = [now]
-    if let p = loadPayload() {
+    // Read once: every entry below draws from the same payload.
+    let payload = loadPayload()
+    if let p = payload {
       // The chips advance on the five salāh; the countdown in the footer
       // advances on every event the user has turned on, so both sets are
       // boundaries. Without the second the card sat on "Isha" with the
@@ -162,13 +155,12 @@ struct LogTodayProvider: TimelineProvider {
     }
     boundaries = Array(Set(boundaries)).sorted()
     completion(Timeline(
-      entries: boundaries.map { entry(at: $0, fallback: false) },
+      entries: boundaries.map { entry(at: $0, payload: payload, fallback: false) },
       policy: .after(nextMidnight)
     ))
   }
 
-  private func entry(at when: Date, fallback: Bool) -> LogTodayEntry {
-    let p = loadPayload()
+  private func entry(at when: Date, payload p: WidgetPayload?, fallback: Bool) -> LogTodayEntry {
     let today = p?.today ?? (fallback ? Self.sample : nil)
     return LogTodayEntry(
       date: when,
@@ -381,8 +373,7 @@ struct LogTodayEntryView: View {
   /// and list order is not the clock, so with the First Third on it answered
   /// "Isha" at nine with the First Third half an hour away.
   private func nextEvent() -> WidgetPayload.Row? {
-    let c = Calendar.current.dateComponents([.hour, .minute], from: entry.date)
-    let nowMinutes = (c.hour ?? 0) * 60 + (c.minute ?? 0)
+    let nowMinutes = WallClock.minutes(of: entry.date)
     let dated = entry.events.compactMap { row -> (Int, WidgetPayload.Row)? in
       guard let at = row.at else { return nil }
       return (at, row)

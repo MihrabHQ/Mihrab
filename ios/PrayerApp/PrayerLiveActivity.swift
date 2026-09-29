@@ -5,10 +5,15 @@
 //
 //   • start(json)      — decode ContentState, start a new Activity. If
 //                        one is already running, update it in place.
+//   • startV2(json)    — the same from the shared payload (the contract's
+//                        `LiveActivity`, step 1.5), adapted for this minute
+//                        and stored for the background refresh.
 //   • update(json)     — push fresh content to every running activity.
 //   • stop()           — end every running activity with .immediate
 //                        dismissal so the lock-screen card disappears
 //                        as soon as the user toggles the feature off.
+//   • reassert()       — show the card again if it was swiped away while
+//                        the feature is on.
 //   • isAvailable()    — true when ActivityKit is available *and* the
 //                        user hasn't disabled Live Activities for the
 //                        app in Settings.
@@ -172,13 +177,14 @@ final class PrayerLiveActivity: NSObject {
       reject("DECODE_FAILED", "LiveActivity payload could not be read", nil)
       return
     }
-    UserDefaults.standard.set(json, forKey: Self.storedV2Key)
     guard let content = Self.contentJSON(from: la, now: Date()) else {
-      // Nothing ahead to count down to — the app re-arms with tomorrow's days
-      // on its next sync, as it always did.
-      resolve(nil)
+      // Nothing ahead to count down to: end the card, as the JS path does,
+      // rather than leave it counting down to a time that has passed. The
+      // app starts it again with the next days on its next sync.
+      stop(resolve, rejecter: reject)
       return
     }
+    UserDefaults.standard.set(json, forKey: Self.storedV2Key)
     start(content, resolver: resolve, rejecter: reject)
   }
 
@@ -201,6 +207,18 @@ final class PrayerLiveActivity: NSObject {
     else { return nil }
     return contentJSON(from: la, now: now)
   }
+
+  #if canImport(ActivityKit) && !targetEnvironment(macCatalyst)
+  /// `storedContentJSON`, decoded: the card the stored shared payload stands
+  /// for at `now`.
+  @available(iOS 16.1, *)
+  static func storedContentState(now: Date) -> PrayerLiveActivityAttributes.ContentState? {
+    guard let json = storedContentJSON(now: now), let data = json.data(using: .utf8) else {
+      return nil
+    }
+    return try? JSONDecoder().decode(PrayerLiveActivityAttributes.ContentState.self, from: data)
+  }
+  #endif
 
   // MARK: - update
 
@@ -316,9 +334,7 @@ final class PrayerLiveActivity: NSObject {
       let now = Date()
       // From the shared payload when there is one: the whole card as it
       // stands now, the day shown included.
-      if let fresh = Self.storedContentJSON(now: now)?.data(using: .utf8),
-         let freshState = try? JSONDecoder().decode(
-           PrayerLiveActivityAttributes.ContentState.self, from: fresh) {
+      if let freshState = Self.storedContentState(now: now) {
         do {
           let _ = try Activity<PrayerLiveActivityAttributes>.request(
             attributes: PrayerLiveActivityAttributes(),
@@ -385,9 +401,10 @@ final class PrayerLiveActivity: NSObject {
 // MARK: - LiveActivityRefresher (BGTaskScheduler — local, no server)
 //
 // Advances the Live Activity's highlighted prayer while the app is
-// backgrounded, with no push / no server. A BGAppRefreshTask recomputes the
-// next prayer from the activity's OWN rows (each carries HH:MM + a localized
-// name) and calls `Activity.update`. iOS runs these opportunistically (timing
+// backgrounded, with no push / no server. A BGAppRefreshTask re-adapts the
+// stored shared payload (step 1.5) for the minute it runs in — falling back
+// to the activity's own rows when there is none — and calls
+// `Activity.update`. iOS runs these opportunistically (timing
 // is best-effort), which is fine: the on-device countdown/progress views stay
 // live regardless, and the foreground path covers the rest. Lives in this file
 // (already in the main app target) so no new file / pbxproj entry is needed.
@@ -458,9 +475,7 @@ enum LiveActivityRefresher {
     let now = Date()
     // The shared payload's days, when the app stored them: the card as it
     // stands now, rows and all — after ʿIshāʾ that is tomorrow's.
-    if let fresh = PrayerLiveActivity.storedContentJSON(now: now)?.data(using: .utf8),
-       let state = try? JSONDecoder().decode(
-         PrayerLiveActivityAttributes.ContentState.self, from: fresh) {
+    if let state = PrayerLiveActivity.storedContentState(now: now) {
       let stale = Date(timeIntervalSince1970: state.nextEpochSeconds + 60)
       for activity in Activity<PrayerLiveActivityAttributes>.activities
       where activity.content.state != state {
@@ -488,9 +503,7 @@ enum LiveActivityRefresher {
   @available(iOS 16.2, *)
   private static func soonestNextPrayerDate() -> Date? {
     let now = Date()
-    if let fresh = PrayerLiveActivity.storedContentJSON(now: now)?.data(using: .utf8),
-       let state = try? JSONDecoder().decode(
-         PrayerLiveActivityAttributes.ContentState.self, from: fresh) {
+    if let state = PrayerLiveActivity.storedContentState(now: now) {
       return Date(timeIntervalSince1970: state.nextEpochSeconds)
     }
     var soonest: Date?
@@ -534,14 +547,14 @@ enum LiveActivityRefresher {
     // matter here; the list is sorted by wall clock below, which is the only
     // thing that could put them in the right place anyway.
     rows.append(contentsOf: state.extraRows ?? [])
-    // Only for an activity started by a build before step 1.5, which stored
-    // no shared payload (the refresh prefers that, above). Its rows' minutes
-    // when the content has them, else their `time` read once by WallClock.
+    // Used when there is no stored shared payload or it has nothing ahead: an
+    // activity from a build before step 1.5, or a payload whose days have run
+    // out. Rows are placed by `Row.at`.
     let cal = WallClock.localCalendar
     let todayKey = WallClock.dateKey(now, calendar: cal)
     var events: [(date: Date, row: PrayerLiveActivityAttributes.Row)] = []
     for row in rows {
-      guard let m = row.minutes ?? WallClock.minutes(fromHHmm: row.time),
+      guard let m = row.at,
             let d = WallClock.date(dateKey: todayKey, minutes: m, calendar: cal)
       else { continue }
       events.append((d, row))

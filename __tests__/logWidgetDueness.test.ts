@@ -82,7 +82,8 @@ describe('ios and macos decide dueness per timeline entry', () => {
   it('has the predicate, and it takes the moment to judge against', () => {
     expect(logToday).toMatch(/func logIsDue\(/);
     expect(logToday).toMatch(/at when: Date/);
-    expect(logToday).toMatch(/return at <= \(c\.hour \?\? 0\) \* 60 \+ \(c\.minute \?\? 0\)/);
+    // The entry's own wall-clock minute, through the contract's WallClock.
+    expect(logToday).toMatch(/return at <= WallClock\.minutes\(of: when, calendar: calendar\)/);
   });
 
   it('judges against the entry date, not the render time', () => {

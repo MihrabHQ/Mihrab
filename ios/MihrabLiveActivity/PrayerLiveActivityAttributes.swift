@@ -5,8 +5,9 @@
 // widget (which renders it). The file is a member of BOTH targets:
 //   • PrayerApp (main app) — uses ActivityKit's Activity<…>.request /
 //     update / end to drive the Activity from the JS bridge.
-//   • PrayerWidgetExtension — declares ActivityConfiguration<…> in
-//     PrayerLiveActivityWidget.swift so the OS knows how to render.
+//   • MihrabLiveActivity (the Live Activity extension) — declares
+//     ActivityConfiguration<…> in PrayerLiveActivityWidget.swift so the OS
+//     knows how to render.
 // Both targets must see the SAME type identity, hence the dual
 // membership recorded in PrayerApp.xcodeproj/project.pbxproj.
 //
@@ -25,10 +26,9 @@ public struct PrayerLiveActivityAttributes: ActivityAttributes {
   public struct ContentState: Codable, Hashable {
     /// Localised name for the upcoming prayer, e.g. "Fajr" / "الفجر".
     public var nextLabel: String
-    /// CANONICAL 24-hour `HH:mm` for the upcoming prayer.
-    ///
-    /// `computeNext` and the on-device roll-forward split this on ":" —
-    /// it is arithmetic. What the card draws is `nextTimeText`.
+    /// 24-hour `HH:mm` for the upcoming prayer, kept for content from older
+    /// builds; nothing parses it. The instant is `nextEpochSeconds`, and what
+    /// the card draws is `nextTimeText`.
     public var nextTime: String
     /// The same instant written the way the user reads a clock (issue #18).
     /// Defaults to "" so payloads from older app builds still decode.
@@ -117,8 +117,8 @@ public struct PrayerLiveActivityAttributes: ActivityAttributes {
 
   /// One prayer row. `key` is canonical ("Fajr"/"Sunrise"/…) so the
   /// SwiftUI views can compare against `ContentState.nextKey` without
-  /// worrying about localisation. `abbr` is the localised short label,
-  /// `time` is the HH:MM display string.
+  /// worrying about localisation. `abbr` is the localised short label;
+  /// `minutes` places the row and `text` draws it.
   public struct Row: Codable, Hashable {
     public var key: String
     public var abbr: String
@@ -128,7 +128,8 @@ public struct PrayerLiveActivityAttributes: ActivityAttributes {
     /// extension. Defaults to "" so older payloads still decode (callers fall
     /// back to `abbr`).
     public var name: String = ""
-    /// CANONICAL 24-hour `HH:mm` — the roll-forward parses it. Draw `text`.
+    /// 24-hour `HH:mm`, read (through `at`) only when `minutes` is absent —
+    /// content from a build before step 1.7. Draw `text`.
     public var time: String
     /// The same instant written the way the user reads a clock (issue #18).
     public var display: String = ""
@@ -139,6 +140,10 @@ public struct PrayerLiveActivityAttributes: ActivityAttributes {
 
     /// What to put on screen. Never feed this to a parser.
     public var text: String { display.isEmpty ? time : display }
+
+    /// Minutes after the shown day's midnight: the adapter's, or — content
+    /// from a build before step 1.7 — `time` read once through WallClock.
+    public var at: Int? { minutes ?? WallClock.minutes(fromHHmm: time) }
 
     fileprivate enum CodingKeys: String, CodingKey {
       case key, abbr, name, time, display, minutes
