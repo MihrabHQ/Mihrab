@@ -82,5 +82,38 @@
         android:name="android.appwidget.provider"
         android:resource="@xml/glance_log_tall_info" />
     </receiver>
+    <receiver
+      android:name="com.prayer_times.glance.PrayerGlanceReceiver"
+      android:exported="true"
+      android:label="@string/glance_widget_name_prayer">
+      <intent-filter>
+        <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+      </intent-filter>
+      <meta-data
+        android:name="android.appwidget.provider"
+        android:resource="@xml/glance_prayer_info" />
+    </receiver>
+    <receiver
+      android:name="com.prayer_times.glance.PrayerTallGlanceReceiver"
+      android:exported="true"
+      android:label="@string/glance_widget_name_prayer_tall">
+      <intent-filter>
+        <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+      </intent-filter>
+      <meta-data
+        android:name="android.appwidget.provider"
+        android:resource="@xml/glance_prayer_tall_info" />
+    </receiver>
+    <receiver
+      android:name="com.prayer_times.glance.PrayerSmallGlanceReceiver"
+      android:exported="true"
+      android:label="@string/glance_widget_name_prayer_small">
+      <intent-filter>
+        <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+      </intent-filter>
+      <meta-data
+        android:name="android.appwidget.provider"
+        android:resource="@xml/glance_prayer_small_info" />
+    </receiver>
   </application>
 </manifest>

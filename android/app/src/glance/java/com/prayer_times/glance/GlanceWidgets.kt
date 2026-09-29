@@ -26,6 +26,9 @@ internal object GlanceWidgets {
     ReadingGlanceReceiver::class.java,
     LogGlanceReceiver::class.java,
     LogTallGlanceReceiver::class.java,
+    PrayerGlanceReceiver::class.java,
+    PrayerTallGlanceReceiver::class.java,
+    PrayerSmallGlanceReceiver::class.java,
   )
 
   fun anyPlaced(context: Context): Boolean {

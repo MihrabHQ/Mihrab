@@ -14,4 +14,7 @@
     <string name="glance_widget_name_reading" translatable="false">Mihrab · Continue reading (Glance)</string>
     <string name="glance_widget_name_log" translatable="false">Mihrab · Log today (Glance)</string>
     <string name="glance_widget_name_log_tall" translatable="false">Mihrab · Log today, tall (Glance)</string>
+    <string name="glance_widget_name_prayer" translatable="false">Mihrab · Prayer times (Glance)</string>
+    <string name="glance_widget_name_prayer_tall" translatable="false">Mihrab · Prayer times, tall (Glance)</string>
+    <string name="glance_widget_name_prayer_small" translatable="false">Mihrab · Next prayer (Glance)</string>
 </resources>
