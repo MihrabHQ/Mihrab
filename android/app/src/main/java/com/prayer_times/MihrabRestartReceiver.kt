@@ -21,10 +21,11 @@ import androidx.core.content.ContextCompat
  *     services are dead; we revive the Live Activity if it was active
  *     before the shutdown.
  *
- * Both cases read the payload that was persisted to SharedPreferences by
- * MihrabLiveActivityModule.display() and restart the service with it.
- * If the user had explicitly cancelled (MihrabLiveActivityModule.cancel()
- * clears the prefs), this receiver is a no-op.
+ * Both cases restart the service with the stored payload
+ * (MihrabLiveActivityModule.currentPayload): the shared one adapted for
+ * this minute, else the last one shown. If the user had explicitly
+ * cancelled (MihrabLiveActivityModule.cancel() clears the prefs), or the
+ * shared payload has nothing ahead, this receiver is a no-op.
  *
  * The RECEIVE_BOOT_COMPLETED permission is already declared in the
  * manifest (added for the widget receivers). MY_PACKAGE_REPLACED does
@@ -53,9 +54,9 @@ class MihrabRestartReceiver : BroadcastReceiver() {
       Log.w(TAG, "Failed to refresh widgets after $action", t)
     }
 
-    val payload = MihrabLiveActivityModule.loadPayload(context)
+    val payload = MihrabLiveActivityModule.currentPayload(context)
     if (payload.isNullOrEmpty()) {
-      Log.i(TAG, "$action — no persisted payload, skipping restart")
+      Log.i(TAG, "$action — nothing to draw (off, or nothing ahead), skipping restart")
       return
     }
 

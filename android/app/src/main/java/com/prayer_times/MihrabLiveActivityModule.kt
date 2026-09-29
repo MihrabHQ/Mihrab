@@ -63,8 +63,18 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
 
   // ── Public API ────────────────────────────────────────────────────
 
+  /**
+   * The payload as the notification draws it, from an app that does not
+   * send the shared one. It is the whole truth then, so a shared payload
+   * kept from an earlier [displayV2] must not outrank it on a restart.
+   */
   @ReactMethod
   fun display(payloadJson: String, promise: Promise) {
+    clearPayloadV2(reactContext)
+    show(payloadJson, promise)
+  }
+
+  private fun show(payloadJson: String, promise: Promise) {
     try {
       val p = JSONObject(payloadJson)
       Log.i(
@@ -113,9 +123,16 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
    * step 1.5) — the one the app now builds for both platforms.
    *
    * Adapted here, for this minute and this device's zone, into the payload
-   * [display] has always taken (`LiveActivityV1`), and kept beside it, so a
-   * roll-forward can read the same days. The next prayer's instant comes
-   * from its day and minutes, not from "HH:mm" re-parsed on today.
+   * the notification has always drawn (`LiveActivityV1`), and kept: a start
+   * with no payload handed in — the service's restart, the wake alarm, a
+   * reboot, an action button — adapts it again for ITS minute
+   * ([currentPayload]), so the card rolls onto the right day, estimated
+   * days included, without the app. The next prayer's instant comes from
+   * its day and minutes, not from "HH:mm" re-parsed on today.
+   *
+   * NOTHING AHEAD takes the card down, as [cancel] does but keeping the
+   * payload and the setting: a countdown to a time that has passed is
+   * wrong, and the app re-arms it with the next days on its next sync.
    */
   @ReactMethod
   fun displayV2(liveActivityJson: String, promise: Promise) {
@@ -125,21 +142,15 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
         promise.reject("DECODE_FAILED", "LiveActivity payload could not be read")
         return
       }
-      val now = System.currentTimeMillis()
-      val adapted = LiveActivityV1.androidPayload(
-        la,
-        WallClock.dateKey(now),
-        WallClock.minutesOf(now),
-      )
+      savePayloadV2(reactContext, liveActivityJson)
+      val adapted = adaptNow(la)
       if (adapted == null) {
-        // Nothing ahead to count down to: the app re-arms with the next
-        // days on its next sync, as it always did.
-        Log.i(NAME, "displayV2: nothing ahead")
+        Log.i(NAME, "displayV2: nothing ahead to count down to; taking the card down until the next sync")
+        takeDown(reactContext)
         promise.resolve(null)
         return
       }
-      savePayloadV2(reactContext, liveActivityJson)
-      display(adapted.toString(), promise)
+      show(adapted.toString(), promise)
     } catch (e: Throwable) {
       Log.e(NAME, "displayV2: failed", e)
       promise.reject("DISPLAY_FAILED", e.message, e)
@@ -172,7 +183,7 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
         .remove(MihrabLiveActivityActionReceiver.KEY_MUTED_EPOCH)
         .apply()
       runCatching {
-        val payload = loadPayload(reactContext)?.let { JSONObject(it) }
+        val payload = currentPayload(reactContext)?.let { JSONObject(it) }
         if (payload != null) {
           NotificationManagerCompat.from(reactContext).notify(
             NOTIF_ID,
@@ -193,14 +204,7 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
       // the Live Activity after an update / reboot when the user has
       // explicitly turned it off.
       clearPayload(reactContext)
-      val intent = Intent(reactContext, MihrabLiveActivityService::class.java)
-      reactContext.stopService(intent)
-      // Also cancel both notifications in case the service was never
-      // started (background FGS-start was blocked and we fell back to
-      // notify()) or the service already exited.
-      runCatching {
-        NotificationManagerCompat.from(reactContext).cancel(NOTIF_ID)
-      }
+      takeDown(reactContext)
       promise.resolve(null)
     } catch (e: Throwable) {
       promise.reject("CANCEL_FAILED", e.message, e)
@@ -229,11 +233,59 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
         .apply()
     }
 
+    fun clearPayloadV2(context: android.content.Context) {
+      context.getSharedPreferences(PREFS_NAME, android.content.Context.MODE_PRIVATE)
+        .edit()
+        .remove(PREF_KEY_PAYLOAD_V2)
+        .apply()
+    }
+
     /** The stored shared payload, when the feature is on and the app wrote one. */
     fun loadPayloadV2(context: android.content.Context): String? {
       val prefs = context.getSharedPreferences(PREFS_NAME, android.content.Context.MODE_PRIVATE)
       if (!prefs.getBoolean(PREF_KEY_ENABLED, false)) return null
       return prefs.getString(PREF_KEY_PAYLOAD_V2, null)
+    }
+
+    /** The shared payload as the notification draws it at this minute; null when nothing is ahead. */
+    fun adaptNow(la: WidgetContract.LiveActivity): JSONObject? {
+      val now = System.currentTimeMillis()
+      return LiveActivityV1.androidPayload(la, WallClock.dateKey(now), WallClock.minutesOf(now))
+    }
+
+    /**
+     * What to draw when no payload is handed in — the service's restart, the
+     * wake alarm, a reboot, an action button: the stored shared payload
+     * adapted for this minute, else (an app that sent none, or one that does
+     * not read) the last payload shown. Null when the feature is off, or when
+     * the shared payload has nothing ahead: that card is taken down, not
+     * drawn from an older payload counting to a time already gone.
+     */
+    fun currentPayload(context: android.content.Context): String? {
+      val v2 = loadPayloadV2(context)
+      if (v2 != null) {
+        val la = try {
+          WidgetContract.LiveActivity.parse(v2)
+        } catch (e: Exception) {
+          Log.w(NAME, "stored LiveActivity payload could not be read; drawing the last one shown", e)
+          null
+        }
+        if (la != null) return adaptNow(la)?.toString()
+      }
+      return loadPayload(context)
+    }
+
+    /**
+     * Take the card down without touching the setting or the stored payload:
+     * the service, its wake alarm (cancelled here too — `stopService` on a
+     * service that is not running reaches no `onDestroy`), and the
+     * notification, in case the service never ran (a blocked background
+     * start fell back to `notify()`) or has already gone.
+     */
+    fun takeDown(context: android.content.Context) {
+      context.stopService(Intent(context, MihrabLiveActivityService::class.java))
+      MihrabLiveActivityService.cancelWakeAlarm(context)
+      runCatching { NotificationManagerCompat.from(context).cancel(NOTIF_ID) }
     }
 
     fun savePayload(context: android.content.Context, payloadJson: String) {

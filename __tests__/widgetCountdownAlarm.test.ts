@@ -28,24 +28,35 @@ const ROOT = path.join(__dirname, '..');
 const KT = path.join(ROOT, 'android', 'app', 'src', 'main', 'java', 'com', 'prayer_times');
 const provider = readFileSync(path.join(KT, 'PrayerWidgetProvider.kt'), 'utf8');
 const log = readFileSync(path.join(KT, 'PrayerWidgetLogProvider.kt'), 'utf8');
+// The instant both the alarm and the countdown aim at, as a pure function
+// the Kotlin contract tests hold across the nights the clocks change
+// (contract-tests/kotlin/…/WidgetInstantsTest.kt).
+const instants = readFileSync(path.join(KT, 'contract', 'WidgetInstants.kt'), 'utf8');
+const wallClock = readFileSync(path.join(KT, 'contract', 'WallClock.kt'), 'utf8');
 
 describe('the next boundary is found even when today has none left', () => {
   it('wraps to the first prayer of the next day in the window', () => {
-    expect(provider).toMatch(/val tomorrow = dayAfter\(o, todayDateKey\(\)\)/);
+    expect(provider).toMatch(/val tomorrow = dayAfter\(o, todayKey\)/);
     expect(provider).toMatch(/private fun dayAfter\(o: JSONObject, key: String\): JSONObject\?/);
-    expect(provider).toMatch(/return at\(first, 1\)/);
+    expect(provider).toMatch(
+      /private fun nextBoundaryMillis[\s\S]*?WidgetInstants\.next\([\s\S]*?nextDayMinutes = tomorrow\?\.let \{ boundaryMinutes\(it, o\) \}/,
+    );
+    expect(instants).toMatch(/nextDayMinutes\.minOrNull\(\)/);
   });
 
   it('falls back to today\'s own first row rather than to nothing', () => {
     // A legacy payload with no `days[]` window still has to wake up.
-    expect(provider).toMatch(/\?: boundaryMinutes\(today, o\)\.minOrNull\(\)/);
+    expect(instants).toMatch(
+      /\?: dayMinutes\.minOrNull\(\)\?\.let \{ first ->\s*WallClock\.epochMs\(dayKey, first \+ WallClock\.MINUTES_PER_DAY/,
+    );
   });
 
   it('builds tomorrow by rolling the calendar, not by adding 24 hours', () => {
     // On the two nights a year the clocks move, those differ by an hour —
     // and one of those nights the alarm would land after Fajr.
-    expect(provider).toMatch(/add\(java\.util\.Calendar\.DAY_OF_MONTH, daysAhead\)/);
+    expect(wallClock).toMatch(/add\(Calendar\.DAY_OF_MONTH, dayShift\)/);
     expect(provider).not.toMatch(/\+ 24 \* 60 \* 60 \* 1000/);
+    expect(instants).not.toMatch(/86_400_000|24 \* 60 \* 60/);
   });
 
   it('wakes at the night boundaries too, now that they can be the headline', () => {
@@ -144,11 +155,19 @@ describe('ios and macos already meet the same contract', () => {
 
 describe('the cards agree on what they are counting to', () => {
   it('the prayer strip wraps past midnight', () => {
-    expect(provider).toMatch(/firstRowMinutes\(displayRows\)\?\.let \{ it \+ 24 \* 60 - currentMinutes \}/);
+    // To tomorrow's first row, as an instant — the same answer the alarm
+    // is armed with, handed to the Chronometer as elapsed time.
+    expect(provider).toMatch(/nextDayMinutes = tomorrowDay\?\.let \{ boundaryMinutes\(it, o\) \}/);
+    expect(provider).toMatch(/SystemClock\.elapsedRealtime\(\) \+ \(next\.epochMs - nowMs\)/);
+    // Minutes of the day are not elapsed time on the nights the clocks change.
+    expect(provider).not.toMatch(/\+ 24 \* 60 - currentMinutes/);
   });
 
   it('the log card wraps to tomorrow\'s first prayer', () => {
     expect(log).toMatch(/val fajr = tomorrowFirstPrayer\(root, todayKey\)/);
+    expect(log).toMatch(/minutesAt \+ dayShift \* WallClock\.MINUTES_PER_DAY/);
+    expect(log).toMatch(/SystemClock\.elapsedRealtime\(\) \+ \(targetMs - nowMs\)/);
+    expect(log).not.toMatch(/\+ 24 \* 60 - currentMinutes/);
   });
 
   it('both hand the view an instant, so the tick costs nothing', () => {
@@ -172,9 +191,10 @@ describe('the cards agree on what they are counting to', () => {
     // the First Third is drawn last and falls that evening. A walk that
     // stopped at the first row later than now would answer "Isha" at nine
     // with the First Third half an hour away.
-    expect(provider).toMatch(
-      /nextUpdateMinutes < 0 \|\| rowMinutes < nextUpdateMinutes/,
+    expect(instants).toMatch(
+      /if \(at > nowMs && \(best == null \|\| at < best\.epochMs\)\) best = /,
     );
+    expect(provider).toMatch(/dayMinutes = displayRows\.mapNotNull \{ WidgetPayloadV1\.minutesOf\(it\) \}/);
     expect(log).toMatch(/if \(bestAt < 0 \|\| at < bestAt\)/);
   });
 });

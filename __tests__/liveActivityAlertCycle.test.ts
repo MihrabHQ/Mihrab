@@ -442,9 +442,13 @@ describe('the card the button rebuilds is the card that is on screen', () => {
     expect(call).toBeGreaterThan(close);
   });
 
-  it('rebuilds from the persisted payload in the receiver', () => {
-    // Which is only safe because of the above.
-    expect(code(RECEIVER)).toContain('MihrabLiveActivityModule.loadPayload(ctx)');
+  it('rebuilds from the stored payload in the receiver', () => {
+    // The shared payload adapted for this minute, else the persisted one —
+    // which is only safe because of the above.
+    expect(code(RECEIVER)).toContain('MihrabLiveActivityModule.currentPayload(ctx)');
+    expect(code(MODULE)).toMatch(
+      /fun currentPayload\(context: android\.content\.Context\): String\? \{[\s\S]*?adaptNow\(la\)[\s\S]*?return loadPayload\(context\)/,
+    );
   });
 });
 

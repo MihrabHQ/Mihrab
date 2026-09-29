@@ -10,6 +10,7 @@ import android.graphics.Color
 import android.net.Uri
 import android.view.View
 import android.widget.RemoteViews
+import com.prayer_times.contract.WallClock
 import com.prayer_times.contract.WidgetPayloadV1
 import org.json.JSONObject
 
@@ -827,14 +828,13 @@ open class PrayerWidgetLogProvider : AppWidgetProvider() {
      *
      * WRAPS PAST MIDNIGHT, and for six hours a night it did not.
      *
-     * The arithmetic here is minutes-since-midnight, and the guard threw
-     * away anything that came out negative. Every prayer but one is later
-     * today than now, so the guard only ever caught the one that is not:
-     * once Isha has passed, what comes next is tomorrow's Fajr, at 03:25
-     * against a clock reading 22:27 — a negative number, and the countdown
-     * hid itself. The card lost its countdown every night between Isha and
-     * dawn, which is a stretch of hours a home screen most needs it. The
-     * prayer-times strip has wrapped for a while; this is the same wrap.
+     * Once Isha has passed, what comes next is tomorrow's Fajr, at 03:25
+     * against a clock reading 22:27. The old minutes-of-the-day arithmetic
+     * came out negative there and the countdown hid itself, every night
+     * between Isha and dawn. It now aims at an instant on the event's own
+     * day (`WallClock.epochMs`), which also keeps it right on the nights
+     * the clocks change, when wall minutes and elapsed time differ by an
+     * hour.
      *
      * Tomorrow's Fajr comes from the multi-day window in the payload, which
      * this widget did not used to read — the older comment here said
@@ -852,9 +852,8 @@ open class PrayerWidgetLogProvider : AppWidgetProvider() {
       describesToday: Boolean,
       nowMinutes: Int,
     ) {
-      val now = java.util.Calendar.getInstance()
-      val currentMinutes =
-        now.get(java.util.Calendar.HOUR_OF_DAY) * 60 + now.get(java.util.Calendar.MINUTE)
+      val nowMs = System.currentTimeMillis()
+      val currentMinutes = WallClock.minutesOf(nowMs)
 
       // The card's own chips are the five loggable prayers; the countdown
       // aims at everything the user asked to be told about, which is the
@@ -866,9 +865,10 @@ open class PrayerWidgetLogProvider : AppWidgetProvider() {
         if (events.isNotEmpty() && describesToday) nextEvent(events, currentMinutes)
         else nextPrayer(prayers, describesToday, nowMinutes)
       var minutesAt = minutesOfDay(next)
-      var minutesLeft = if (minutesAt < 0) -1 else minutesAt - currentMinutes
+      // Whole days after today's midnight the event falls: 1 once the day is done.
+      var dayShift = 0
 
-      if (next == null || minutesLeft < 0) {
+      if (next == null || minutesAt < 0 || minutesAt < currentMinutes) {
         // The day is done. What is next is on the other side of midnight.
         val fajr = tomorrowFirstPrayer(root, todayKey)
           ?: earliest(events)
@@ -877,11 +877,20 @@ open class PrayerWidgetLogProvider : AppWidgetProvider() {
         if (fajr != null && fajrMinutes >= 0) {
           next = fajr
           minutesAt = fajrMinutes
-          minutesLeft = fajrMinutes + 24 * 60 - currentMinutes
+          dayShift = 1
         }
       }
 
-      if (next == null || minutesAt < 0 || minutesLeft < 0) {
+      // The instant, through WallClock, not "minutes from now": the
+      // Chronometer counts elapsed time, and on the two nights a year the
+      // clocks change, wall minutes and elapsed minutes are an hour apart.
+      val targetMs =
+        if (next == null || minutesAt < 0) null
+        else WallClock.epochMs(
+          PrayerWidgetProvider.todayDateKey(),
+          minutesAt + dayShift * WallClock.MINUTES_PER_DAY,
+        )
+      if (next == null || targetMs == null || targetMs < nowMs) {
         views.setTextViewText(R.id.widget_log_foot_right, "")
         // Stopped as well as hidden: a running Chronometer inside a hidden
         // view is still a view being invalidated once a second.
@@ -893,11 +902,7 @@ open class PrayerWidgetLogProvider : AppWidgetProvider() {
         R.id.widget_log_foot_right,
         next.optString("name").ifEmpty { next.optString("key") },
       )
-      // The seconds of the current minute have to come off the base or the
-      // countdown is up to 59 seconds early — long enough to show 00:00
-      // while the prayer has not arrived.
-      val base = android.os.SystemClock.elapsedRealtime() +
-        minutesLeft * 60_000L - now.get(java.util.Calendar.SECOND) * 1000L
+      val base = android.os.SystemClock.elapsedRealtime() + (targetMs - nowMs)
       views.setChronometerCountDown(R.id.widget_log_remaining, true)
       views.setChronometer(
         R.id.widget_log_remaining,

@@ -21,6 +21,8 @@ import android.text.style.RelativeSizeSpan
 import android.util.Log
 import android.view.View
 import android.widget.RemoteViews
+import com.prayer_times.contract.WallClock
+import com.prayer_times.contract.WidgetInstants
 import com.prayer_times.contract.WidgetPayloadV1
 import org.json.JSONObject
 
@@ -799,57 +801,33 @@ open class PrayerWidgetProvider : AppWidgetProvider() {
     }
 
     /**
-     * When the card next says something different: the first prayer or
-     * sunrise still ahead, as epoch millis. WRAPS PAST MIDNIGHT.
+     * When the card next says something different: the first time still
+     * ahead, as epoch millis. WRAPS PAST MIDNIGHT.
      *
-     * Night rows are skipped for the same reason they are never the
-     * headline — the widget is called Next Prayer, and Islamic Midnight is
-     * not one.
+     * Every row on the card counts, the night marks included: they can be
+     * the headline, and a card that says "Last Third" has to be woken when
+     * the Last Third arrives.
      *
      * IT USED TO RETURN NULL AFTER THE LAST PRAYER, and that null was the
-     * hole the countdown fell through. Every card already wraps its
-     * countdown to tomorrow's Fajr the moment Isha passes — the display was
-     * fixed long ago — but nothing was scheduled to fire when that
-     * countdown ran out. The only alarm left was the midnight backstop, so
-     * a card counting down to Fajr reached zero and kept going, and the
-     * "next prayer" line still read Fajr, until something else happened to
-     * wake the app. Overnight, on a phone nobody is touching, that is the
-     * whole stretch from Isha to whenever the owner picks it up.
-     *
-     * So: today's remaining boundaries first, and when there are none, the
-     * first prayer of the next day in the window. Built by rolling the
-     * calendar a day and setting the wall clock rather than by adding 24
-     * hours, because on the two nights a year the clocks move, 24 hours and
-     * "tomorrow at 05:12" are an hour apart.
+     * hole the countdown fell through: the card wrapped its countdown to
+     * tomorrow's Fajr, but nothing was scheduled to fire when that countdown
+     * ran out, so it reached zero and kept going until something else woke
+     * the app. So: today's remaining times first, and when there are none,
+     * the first time of the next day in the window (`WidgetInstants.next`,
+     * which the countdown aims with too — one answer for both). Instants
+     * from `WallClock`, so the night the clocks go back lands on the first
+     * of the two readings, as iOS and the app do.
      */
     private fun nextBoundaryMillis(o: JSONObject): Long? {
-      val cal = java.util.Calendar.getInstance()
-      val nowMinutes =
-        cal.get(java.util.Calendar.HOUR_OF_DAY) * 60 + cal.get(java.util.Calendar.MINUTE)
-
-      fun at(minutes: Int, daysAhead: Int): Long =
-        (cal.clone() as java.util.Calendar).apply {
-          if (daysAhead != 0) add(java.util.Calendar.DAY_OF_MONTH, daysAhead)
-          set(java.util.Calendar.HOUR_OF_DAY, minutes / 60)
-          set(java.util.Calendar.MINUTE, minutes % 60)
-          set(java.util.Calendar.SECOND, 0)
-          set(java.util.Calendar.MILLISECOND, 0)
-        }.timeInMillis
-
-      val today = selectTodayDay(o)
-      val todayNext = boundaryMinutes(today, o).filter { it > nowMinutes }.minOrNull()
-      if (todayNext != null) return at(todayNext, 0)
-
-      // Nothing left today. What the card is counting down to is on the
-      // other side of midnight, so that is what has to be armed.
-      val tomorrow = dayAfter(o, todayDateKey())
-      val first = boundaryMinutes(tomorrow, o).minOrNull()
-        // No window to read: fall back to today's own first row, which is
-        // what the countdown itself falls back to. A minute or two out at
-        // worst, and a wake-up a minute out beats none.
-        ?: boundaryMinutes(today, o).minOrNull()
-        ?: return null
-      return at(first, 1)
+      val todayKey = todayDateKey()
+      val tomorrow = dayAfter(o, todayKey)
+      return WidgetInstants.next(
+        nowMs = System.currentTimeMillis(),
+        dayKey = todayKey,
+        dayMinutes = boundaryMinutes(selectTodayDay(o), o),
+        nextDayKey = tomorrow?.optString("dateKey"),
+        nextDayMinutes = tomorrow?.let { boundaryMinutes(it, o) }.orEmpty(),
+      )?.epochMs
     }
 
     /**
@@ -860,18 +838,18 @@ open class PrayerWidgetProvider : AppWidgetProvider() {
      * them out and the card sits on "Isha" until something else happens to
      * wake it, which between Isha and Fajr can be hours.
      */
-    private fun boundaryMinutes(day: JSONObject?, root: JSONObject): List<Int> {
+    private fun boundaryMinutes(day: JSONObject?, root: JSONObject): List<Int> =
+      boundaryRows(day, root).mapNotNull { WidgetPayloadV1.minutesOf(it) }
+
+    /** A day's rows, Sunrise and the night marks the user turned on. */
+    private fun boundaryRows(day: JSONObject?, root: JSONObject): List<JSONObject> {
       val rows = day?.optJSONArray("rows") ?: root.optJSONArray("rows") ?: return emptyList()
-      val out = mutableListOf<Int>()
-      val candidates = mutableListOf<org.json.JSONObject>()
-      for (i in 0 until rows.length()) rows.optJSONObject(i)?.let { candidates.add(it) }
-      (day?.optJSONObject("sunriseRow") ?: root.optJSONObject("sunriseRow"))
-        ?.let { candidates.add(it) }
+      val out = mutableListOf<JSONObject>()
+      for (i in 0 until rows.length()) rows.optJSONObject(i)?.let { out.add(it) }
+      (day?.optJSONObject("sunriseRow") ?: root.optJSONObject("sunriseRow"))?.let { out.add(it) }
       (day?.optJSONArray("extraRows") ?: root.optJSONArray("extraRows"))?.let { extra ->
-        for (i in 0 until extra.length()) extra.optJSONObject(i)?.let { candidates.add(it) }
+        for (i in 0 until extra.length()) extra.optJSONObject(i)?.let { out.add(it) }
       }
-      // Minutes, not "HH:mm" (step 1.7).
-      for (row in candidates) WidgetPayloadV1.minutesOf(row)?.let { out.add(it) }
       return out
     }
 
@@ -1861,44 +1839,41 @@ open class PrayerWidgetProvider : AppWidgetProvider() {
         }
       }
 
-      // Dynamically calculate next event (prayer or sunrise) based on current time
-      val cal = java.util.Calendar.getInstance()
-      val currentMinutes = cal.get(java.util.Calendar.HOUR_OF_DAY) * 60 + cal.get(java.util.Calendar.MINUTE)
-
-      var dynamicNextKey: String? = null
-      var dynamicNextName = ""
-      var dynamicNextTime = ""
-      var nextUpdateMinutes = -1
-
-      // Every row on the card is a candidate, night times included. They are
-      // only here because the user turned them on, and the hours between Isha
-      // and Fajr are exactly when a home screen has nothing else to count
-      // down to.
-      //
-      // The EARLIEST row still ahead, not the first one found: `displayRows`
-      // is in display order, and display order is not the clock. Islamic
-      // Midnight and the Last Third are drawn after Isha but belong to the
-      // small hours of the same date, and the First Third is drawn last and
-      // falls in the evening — so a walk that stopped at the first row later
-      // than now would answer "Isha" at nine o'clock with the First Third
-      // half an hour away.
-      for (row in displayRows) {
-        val rowMinutes = WidgetPayloadV1.minutesOf(row)
-        if (rowMinutes != null) {
-          if (rowMinutes > currentMinutes &&
-            (nextUpdateMinutes < 0 || rowMinutes < nextUpdateMinutes)
-          ) {
-            dynamicNextKey = row.optString("key", "")
-            dynamicNextName = row.optString("name", "").trim()
-              .ifEmpty { row.optString("abbr", "").trim() }
-              .ifEmpty { dynamicNextKey!! }
-            dynamicNextTime = displayTime(row)
-            nextUpdateMinutes = rowMinutes
-          }
-        }
+      // What comes next, and when, as an instant: the EARLIEST row still
+      // ahead, not the first one found — display order is not the clock
+      // (Islamic Midnight and the Last Third are drawn after Isha but belong
+      // to the small hours; the First Third is drawn last and falls in the
+      // evening). Every row is a candidate, night times included: they are
+      // here because the user turned them on, and the hours between Isha
+      // and Fajr are when a home screen has nothing else to count down to.
+      // Past the last row, tomorrow's first — the same answer the boundary
+      // alarm is armed with (`WidgetInstants.next`), so the countdown and the
+      // redraw that meets it agree.
+      val nowMs = System.currentTimeMillis()
+      val rowsDateKey = todayDay?.optString("dateKey")?.ifEmpty { null } ?: todayDateKey()
+      val tomorrowDay = dayAfter(o, rowsDateKey)
+      val next = WidgetInstants.next(
+        nowMs = nowMs,
+        dayKey = rowsDateKey,
+        dayMinutes = displayRows.mapNotNull { WidgetPayloadV1.minutesOf(it) },
+        nextDayKey = tomorrowDay?.optString("dateKey"),
+        nextDayMinutes = tomorrowDay?.let { boundaryMinutes(it, o) }.orEmpty(),
+      )
+      val nextRow = next?.let { n ->
+        val candidates = if (n.nextDay && tomorrowDay != null) boundaryRows(tomorrowDay, o) else displayRows
+        candidates.firstOrNull { WidgetPayloadV1.minutesOf(it) == n.minutes }
       }
+      // Only today's rows are highlighted: tomorrow's Fajr is not the Fajr
+      // on the card.
+      val dynamicNextKey: String? = nextRow?.takeIf { next?.nextDay == false }?.optString("key", "")
+      val dynamicNextName = nextRow?.let { row ->
+        row.optString("name", "").trim()
+          .ifEmpty { row.optString("abbr", "").trim() }
+          .ifEmpty { row.optString("key", "") }
+      }.orEmpty()
+      val dynamicNextTime = nextRow?.let { displayTime(it) }.orEmpty()
 
-      if (dynamicNextKey != null) {
+      if (nextRow != null) {
         nextPrayerName = dynamicNextName
         nextPrayerTime = dynamicNextTime
       } else if (nextPrayerName.isEmpty() && nextKey != null) {
@@ -1964,40 +1939,17 @@ open class PrayerWidgetProvider : AppWidgetProvider() {
       views.setTextColor(R.id.widget_next_time, highlightColor)
       views.setTextColor(R.id.widget_location, Color.parseColor(NEUTRAL_MUTED))
 
-      // The countdown to the next event, ticked by the system.
+      // The countdown to the next event, ticked by the system: a Chronometer
+      // handed the moment it lands counts itself down at no refresh cost
+      // (`setChronometerCountDown` is API 24, and minSdk is 24).
       //
-      // This used to be a string computed right here — "1h 54m" — which the
-      // comment above it defended as "fresh whenever the user looks",
-      // because the widget redraws on screen-on and at each prayer
-      // transition. That is true and it was never badly wrong; it was also
-      // frozen for anyone who looked at it for longer than a moment, and the
-      // plan asks for a countdown "ticked by the system, not by us".
-      //
-      // A Chronometer is that, at zero refresh cost: hand it the moment the
-      // next event lands and the view counts itself down. Chronometer is a
-      // TextView, so the colour and visibility actions below are unchanged.
-      //
-      // `setChronometerCountDown` is API 24 and minSdk is 24.
-      // Wraps past midnight. After Isha there is no row left today, and the
-      // widget used to show no countdown at all until the small hours — six
-      // silent hours, which is precisely the stretch where a home screen most
-      // needs to say "Fajr, in six hours". The rows on display are already
-      // tomorrow's by then (`selectTodayDay` rolls the day over), so the
-      // first of them is the right target; it is just on the other side of
-      // midnight. The same wrap the iOS ring does, for the same reason.
-      val minutesLeft = when {
-        nextUpdateMinutes != -1 && nextUpdateMinutes >= currentMinutes ->
-          nextUpdateMinutes - currentMinutes
-        else -> firstRowMinutes(displayRows)?.let { it + 24 * 60 - currentMinutes } ?: -1
-      }
-      if (minutesLeft >= 0) {
-        // Base is on the elapsedRealtime clock, and the seconds of the
-        // current minute have to come off it or the countdown is up to 59
-        // seconds early — which is exactly long enough to show 00:00 while
-        // the prayer has not arrived.
-        val secondsIntoMinute = java.util.Calendar.getInstance().get(java.util.Calendar.SECOND)
-        val base = android.os.SystemClock.elapsedRealtime() +
-          minutesLeft * 60_000L - secondsIntoMinute * 1000L
+      // From the instant, not from minutes of the day. The Chronometer counts
+      // elapsed time; on the two nights a year the clocks change, "Fajr minus
+      // now" in wall minutes was an hour out from Isha until the change. And
+      // after Isha it aims at TOMORROW's first row, not today's plus 24
+      // hours, which is a minute or two out every night.
+      if (next != null) {
+        val base = android.os.SystemClock.elapsedRealtime() + (next.epochMs - nowMs)
         views.setChronometerCountDown(R.id.widget_remaining, true)
         views.setChronometer(
           R.id.widget_remaining,

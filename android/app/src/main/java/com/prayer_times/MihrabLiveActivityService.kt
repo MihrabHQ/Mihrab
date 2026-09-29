@@ -174,56 +174,87 @@ class MihrabLiveActivityService : Service() {
 
   override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
     // Payload source: a fresh push from JS (EXTRA_PAYLOAD), or — when the OS or
-    // our own wake-alarm restarted us with no extra — the persisted last
-    // payload. This is what lets the exact alarm below revive/advance the
-    // notification during deep sleep without the app being opened.
+    // our own wake-alarm restarted us with no extra — the stored one
+    // (`currentPayload`). This is what lets the exact alarm below
+    // revive/advance the notification during deep sleep without the app
+    // being opened.
     val incoming = intent?.getStringExtra(EXTRA_PAYLOAD)
-      ?: MihrabLiveActivityModule.loadPayload(this)
-    if (incoming != null) {
-      // Advance to the interval that is current *right now* before the first
-      // paint — critical when an exact alarm woke us at a prayer boundary
-      // during doze (otherwise we'd briefly repaint the just-elapsed prayer).
-      val payload = recomputeFromDays(incoming)
-        ?: tryAdvanceToNextPrayer(incoming)
-        ?: incoming
-      lastPayload = payload
-      // The wake-alarm path. In doze this is the only advance that runs.
-      persistIfAdvanced(payload)
-      // Channel safety net — required on Android 8+ before startForeground.
-      // The JS bridge creates them too, but the service can run independent
-      // of that path (system-restarted instance after OOM, etc.).
-      MihrabLiveActivityModule.ensureChannelExists(this)
-      MihrabLiveActivityModule.ensureFgsChannelExists(this)
-
-      // Single-notification architecture (v2.5.0): the rich ProgressStyle
-      // notification IS the foreground-service notification. On this platform
-      // it is still eligible for the Android 16 status-bar Live Update chip.
-      try {
-        val richNotif = build(payload)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-          startForeground(
-            MihrabLiveActivityModule.NOTIF_ID,
-            richNotif,
-            ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE,
-          )
-        } else {
-          startForeground(MihrabLiveActivityModule.NOTIF_ID, richNotif)
-        }
-        Log.i(TAG, "startForeground posted rich notification id=${MihrabLiveActivityModule.NOTIF_ID}")
-      } catch (t: Throwable) {
-        Log.w(TAG, "startForeground failed", t)
-      }
-
-      scheduleTicker()
-      // Wake the device at the next prayer so the countdown advances even in
-      // deep sleep, when the Handler ticker (uptime-based) is suspended.
-      scheduleWakeAlarm(payload)
+      ?: MihrabLiveActivityModule.currentPayload(this)
+    if (incoming == null) {
+      stopWithoutPayload(startId)
+      return START_NOT_STICKY
     }
+    // Advance to the interval that is current *right now* before the first
+    // paint — critical when an exact alarm woke us at a prayer boundary
+    // during doze (otherwise we'd briefly repaint the just-elapsed prayer).
+    val payload = recomputeFromDays(incoming)
+      ?: tryAdvanceToNextPrayer(incoming)
+      ?: incoming
+    lastPayload = payload
+    // The wake-alarm path. In doze this is the only advance that runs.
+    persistIfAdvanced(payload)
+    // Channel safety net — required on Android 8+ before startForeground.
+    // The JS bridge creates them too, but the service can run independent
+    // of that path (system-restarted instance after OOM, etc.).
+    MihrabLiveActivityModule.ensureChannelExists(this)
+    MihrabLiveActivityModule.ensureFgsChannelExists(this)
+
+    // Single-notification architecture (v2.5.0): the rich ProgressStyle
+    // notification IS the foreground-service notification. On this platform
+    // it is still eligible for the Android 16 status-bar Live Update chip.
+    try {
+      val richNotif = build(payload)
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        startForeground(
+          MihrabLiveActivityModule.NOTIF_ID,
+          richNotif,
+          ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE,
+        )
+      } else {
+        startForeground(MihrabLiveActivityModule.NOTIF_ID, richNotif)
+      }
+      Log.i(TAG, "startForeground posted rich notification id=${MihrabLiveActivityModule.NOTIF_ID}")
+    } catch (t: Throwable) {
+      Log.w(TAG, "startForeground failed", t)
+    }
+
+    scheduleTicker()
+    // Wake the device at the next prayer so the countdown advances even in
+    // deep sleep, when the Handler ticker (uptime-based) is suspended.
+    scheduleWakeAlarm(payload)
     // START_STICKY so the system restarts the service if the OS kills it
-    // for memory. The last payload is replayed when re-started — the
-    // service queries lastPayload, but a fresh start without intent
-    // means the OS restarted us; we no-op and wait for JS to repost.
+    // for memory. That restart has no extra, and draws from the stored
+    // payload — the shared one adapted for that minute, else the last one
+    // shown (`MihrabLiveActivityModule.currentPayload`).
     return START_STICKY
+  }
+
+  /**
+   * Started with nothing to draw: the feature was turned off, or nothing is
+   * ahead, and the wake alarm or the system started this anyway.
+   *
+   * A service started with `startForegroundService` MUST reach
+   * `startForeground` before it stops: the system kills the app otherwise
+   * (ForegroundServiceDidNotStartInTimeException), and stopping first counts
+   * as not reaching it. So: a silent placeholder, then down, and the alarm
+   * that may have started us is cancelled so it does not do it again.
+   */
+  private fun stopWithoutPayload(startId: Int) {
+    Log.i(TAG, "started with no payload to draw; stopping")
+    runCatching {
+      MihrabLiveActivityModule.ensureFgsChannelExists(this)
+      val placeholder = androidx.core.app.NotificationCompat.Builder(this, MihrabLiveActivityModule.FGS_CHANNEL_ID)
+        .setSmallIcon(R.drawable.ic_stat_prayer)
+        .setSilent(true)
+        .build()
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        startForeground(MihrabLiveActivityModule.FGS_NOTIF_ID, placeholder, ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE)
+      } else {
+        startForeground(MihrabLiveActivityModule.FGS_NOTIF_ID, placeholder)
+      }
+    }.onFailure { Log.w(TAG, "placeholder startForeground failed", it) }
+    cancelWakeAlarm(this)
+    stopSelf(startId)
   }
 
   /** Re-post the notification once a minute so the progress bar /
@@ -427,13 +458,10 @@ class MihrabLiveActivityService : Service() {
       // current date (not the in-progress prayer day) so it always matches the
       // home cards — e.g. between midnight and Fajr it shows today's Hijri, not
       // the previous day's.
-      val cal = java.util.Calendar.getInstance().apply { timeInMillis = now }
-      val nowDateKey = String.format(
-        "%04d-%02d-%02d",
-        cal.get(java.util.Calendar.YEAR),
-        cal.get(java.util.Calendar.MONTH) + 1,
-        cal.get(java.util.Calendar.DAY_OF_MONTH),
-      )
+      // WallClock's key: a Calendar.getInstance() and a locale's String.format
+      // wrote 2569 on a Thai phone and Arabic-Indic digits on an Arabic or
+      // Persian one, matched no day, and the Hijri date never rolled.
+      val nowDateKey = WallClock.dateKey(now)
       for (i in 0 until days.length()) {
         val day = days.optJSONObject(i) ?: continue
         if (day.optString("dateKey") == nowDateKey) {
@@ -624,7 +652,7 @@ class MihrabLiveActivityService : Service() {
       val now = System.currentTimeMillis()
       if (nextEpochMs <= now) return
       val am = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-      val pi = wakeAlarmPendingIntent()
+      val pi = wakeAlarmPendingIntent(this)
       val triggerAt = nextEpochMs + 1000L
       // setExactAndAllowWhileIdle fires even in Doze. Fall back to the inexact
       // allow-while-idle variant when the exact-alarm permission is withheld.
@@ -638,32 +666,10 @@ class MihrabLiveActivityService : Service() {
     }
   }
 
-  private fun cancelWakeAlarm() {
-    try {
-      val am = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-      am.cancel(wakeAlarmPendingIntent())
-    } catch (_: Throwable) {
-      // Non-fatal.
-    }
-  }
-
-  /** PendingIntent that restarts this foreground service. Uses
-   *  getForegroundService on API 26+ (exact alarms grant a brief FGS-start
-   *  allowlist window). */
-  private fun wakeAlarmPendingIntent(): PendingIntent {
-    val intent = Intent(this, MihrabLiveActivityService::class.java)
-    val flags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      PendingIntent.getForegroundService(this, ALARM_REQUEST_CODE, intent, flags)
-    } else {
-      PendingIntent.getService(this, ALARM_REQUEST_CODE, intent, flags)
-    }
-  }
-
   override fun onDestroy() {
     super.onDestroy()
     runCatching { unregisterReceiver(screenReceiver) }
-    cancelWakeAlarm()
+    cancelWakeAlarm(this)
     ticker?.let { handler.removeCallbacks(it) }
     ticker = null
     runCatching {
@@ -694,5 +700,30 @@ class MihrabLiveActivityService : Service() {
      * and rolls onto the next prayer. See `tickInterval`.
      */
     const val TICK_MS = 60_000L
+
+    /** PendingIntent that restarts this foreground service. Uses
+     *  getForegroundService on API 26+ (exact alarms grant a brief FGS-start
+     *  allowlist window). */
+    fun wakeAlarmPendingIntent(context: Context): PendingIntent {
+      val intent = Intent(context, MihrabLiveActivityService::class.java)
+      val flags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+      return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        PendingIntent.getForegroundService(context, ALARM_REQUEST_CODE, intent, flags)
+      } else {
+        PendingIntent.getService(context, ALARM_REQUEST_CODE, intent, flags)
+      }
+    }
+
+    /**
+     * Cancel the deep-sleep wake alarm. A companion function so turning the
+     * feature off can cancel it without a live service: `stopService` on a
+     * service that is not running reaches no `onDestroy`, and an alarm left
+     * armed would later start one with nothing to draw.
+     */
+    fun cancelWakeAlarm(context: Context) {
+      runCatching {
+        (context.getSystemService(Context.ALARM_SERVICE) as AlarmManager).cancel(wakeAlarmPendingIntent(context))
+      }.onFailure { Log.w(TAG, "cancel wake alarm failed", it) }
+    }
   }
 }

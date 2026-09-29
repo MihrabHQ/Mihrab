@@ -227,10 +227,12 @@
       </receiver>
 
       <!--
-        Hijri Date. DATE_CHANGED and TIMEZONE_CHANGED are here and nowhere
-        else in this file for a reason: this is the only widget whose entire
-        content turns over at midnight, so it is the only one for which the
-        system's own date broadcast is the right signal.
+        Hijri Date. DATE_CHANGED and TIMEZONE_CHANGED are on this widget and
+        no other for a reason: it is the only one whose entire content turns
+        over at midnight, so it is the only one for which the system's own
+        date broadcasts are the right signal. (WidgetClockChangeReceiver
+        also hears TIMEZONE_CHANGED, to redraw every kind and check the
+        times' offset; this card does not depend on it.)
       -->
       <receiver
         android:name=".PrayerWidgetHijriProvider"
@@ -339,6 +341,19 @@
         <intent-filter>
           <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
           <action android:name="android.intent.action.BOOT_COMPLETED" />
+        </intent-filter>
+      </receiver>
+
+      <!-- A zone or clock change redraws every widget, which is also when
+           WidgetPayloadSource checks today's times against the offset they
+           were built under and asks the app to rebuild them. Both actions
+           are exempt from the implicit-broadcast limits. -->
+      <receiver
+        android:name=".WidgetClockChangeReceiver"
+        android:exported="false">
+        <intent-filter>
+          <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+          <action android:name="android.intent.action.TIME_SET" />
         </intent-filter>
       </receiver>
 

@@ -61,7 +61,7 @@ class MihrabLiveActivityActionReceiver : BroadcastReceiver() {
     val nowHidden = !prefs.getBoolean(KEY_AOD_HIDDEN, false)
     prefs.edit().putBoolean(KEY_AOD_HIDDEN, nowHidden).apply()
     Log.i(TAG, "toggle AOD visibility -> hidden=$nowHidden")
-    val payloadJson = MihrabLiveActivityModule.loadPayload(ctx)
+    val payloadJson = MihrabLiveActivityModule.currentPayload(ctx)
     val payload = runCatching { payloadJson?.let { JSONObject(it) } }.getOrNull()
     runCatching {
       if (payload != null) {
@@ -102,7 +102,7 @@ class MihrabLiveActivityActionReceiver : BroadcastReceiver() {
     val prefs = ctx.getSharedPreferences(
       MihrabLiveActivityModule.PREFS_NAME, Context.MODE_PRIVATE,
     )
-    val payloadJson = MihrabLiveActivityModule.loadPayload(ctx)
+    val payloadJson = MihrabLiveActivityModule.currentPayload(ctx)
     val payload = runCatching { payloadJson?.let { JSONObject(it) } }.getOrNull()
 
     val current =
