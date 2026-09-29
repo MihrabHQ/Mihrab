@@ -10,6 +10,7 @@ import android.graphics.Color
 import android.net.Uri
 import android.view.View
 import android.widget.RemoteViews
+import com.prayer_times.contract.WidgetPayloadV1
 import org.json.JSONObject
 
 /**
@@ -700,20 +701,13 @@ open class PrayerWidgetLogProvider : AppWidgetProvider() {
      */
     private fun isDue(row: JSONObject?, describesToday: Boolean, nowMinutes: Int): Boolean {
       if (row == null) return false
-      val at = minutesOfDay(row.optString("time"))
+      val at = minutesOfDay(row)
       if (!describesToday || at < 0) return row.optBoolean("due", false)
       return at <= nowMinutes
     }
 
-    /** "05:12" to 312, or -1 for anything that is not a time. */
-    private fun minutesOfDay(at: String?): Int {
-      val parts = (at ?: "").split(":")
-      if (parts.size != 2) return -1
-      val h = parts[0].toIntOrNull() ?: return -1
-      val m = parts[1].toIntOrNull() ?: return -1
-      if (h < 0 || m < 0) return -1
-      return h * 60 + m
-    }
+    /** A row's minutes after midnight (step 1.7), or -1 without one. */
+    private fun minutesOfDay(row: JSONObject?): Int = WidgetPayloadV1.minutesOf(row) ?: -1
 
     /**
      * The first event of the day after `todayKey`, from the payload's
@@ -777,7 +771,7 @@ open class PrayerWidgetLogProvider : AppWidgetProvider() {
       var best: JSONObject? = null
       var bestAt = -1
       for (e in events) {
-        val at = minutesOfDay(e.optString("time"))
+        val at = minutesOfDay(e)
         if (at < 0) continue
         if (bestAt < 0 || at < bestAt) {
           best = e
@@ -799,7 +793,7 @@ open class PrayerWidgetLogProvider : AppWidgetProvider() {
       var best: JSONObject? = null
       var bestAt = -1
       for (e in events) {
-        val at = minutesOfDay(e.optString("time"))
+        val at = minutesOfDay(e)
         if (at < 0 || at <= nowMinutes) continue
         if (bestAt < 0 || at < bestAt) {
           best = e
@@ -871,7 +865,7 @@ open class PrayerWidgetLogProvider : AppWidgetProvider() {
       var next =
         if (events.isNotEmpty() && describesToday) nextEvent(events, currentMinutes)
         else nextPrayer(prayers, describesToday, nowMinutes)
-      var minutesAt = minutesOfDay(next?.optString("time"))
+      var minutesAt = minutesOfDay(next)
       var minutesLeft = if (minutesAt < 0) -1 else minutesAt - currentMinutes
 
       if (next == null || minutesLeft < 0) {
@@ -879,7 +873,7 @@ open class PrayerWidgetLogProvider : AppWidgetProvider() {
         val fajr = tomorrowFirstPrayer(root, todayKey)
           ?: earliest(events)
           ?: prayers?.optJSONObject(0)
-        val fajrMinutes = minutesOfDay(fajr?.optString("time"))
+        val fajrMinutes = minutesOfDay(fajr)
         if (fajr != null && fajrMinutes >= 0) {
           next = fajr
           minutesAt = fajrMinutes

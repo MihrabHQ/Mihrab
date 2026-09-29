@@ -337,13 +337,30 @@ func resolvedWidgetBackground() -> Color {
   ).opacity(0.88)
 }
 
-/// Minutes since midnight for an "HH:MM" string, or nil.
-func widgetMinutesOfDay(_ hhmm: String) -> Int? {
-  let parts = hhmm.split(separator: ":")
-  guard parts.count == 2, let h = Int(parts[0]), let m = Int(parts[1]),
-        (0...23).contains(h), (0...59).contains(m)
-  else { return nil }
-  return h * 60 + m
+/// A time on the calendar day of `reference`, from its minutes after that
+/// day's midnight — 1440 and past for the night after it.
+///
+/// Every renderer places a time by this (docs/rewrite-plan.md, step 1.7):
+/// the minutes come from payload v2 through the adapter, so nothing here
+/// parses the "HH:mm" text back. The local Gregorian calendar, whatever the
+/// device's own calendar is set to (`WallClock.localCalendar`).
+func widgetDate(minutes: Int?, on reference: Date) -> Date? {
+  guard let minutes else { return nil }
+  let cal = WallClock.localCalendar
+  return WallClock.date(dateKey: WallClock.dateKey(reference, calendar: cal), minutes: minutes, calendar: cal)
+}
+
+extension WidgetPayload.Row {
+  /// Minutes after the row's day's midnight: the adapter's, from payload v2.
+  /// A v1 payload the app wrote before step 1.7 carries none, until the app
+  /// next runs and replaces it; its `time` is read once, here — the one
+  /// place left that parses a time, and only for that payload.
+  var at: Int? { minutes ?? WallClock.minutes(fromHHmm: time) }
+}
+
+extension WidgetPayload.TodayPrayer {
+  /// As `Row.at`.
+  var at: Int? { minutes ?? WallClock.minutes(fromHHmm: time) }
 }
 
 /// Everything on one day the countdown may aim at: the five salāh, plus
@@ -379,7 +396,7 @@ private func computeDynamicNext(
   let currentMinutes = calendar.component(.hour, from: date) * 60
     + calendar.component(.minute, from: date)
   let dated = rows.compactMap { row -> (Int, WidgetPayload.Row)? in
-    guard let at = widgetMinutesOfDay(row.time) else { return nil }
+    guard let at = row.at else { return nil }
     return (at, row)
   }
   if let next = dated.filter({ $0.0 > currentMinutes }).min(by: { $0.0 < $1.0 }) {
@@ -434,6 +451,9 @@ struct WidgetPayload: Codable {
     /// Absent in payloads from app builds that predate the setting, which
     /// is what `text` falls back for.
     var display: String? = nil
+    /// Minutes after the row's day's midnight, written by the v2 adapter —
+    /// what every renderer places the time by (step 1.7). Read `at`.
+    var minutes: Int? = nil
     let abbr: String?
     /// The full localized label ("Islamic Midnight"). Only the night rows
     /// use it — a five-letter abbreviation is right in a six-column strip
@@ -537,6 +557,8 @@ struct WidgetPayload: Codable {
     let time: String
     /// The same time, written the way the user reads a clock (issue #18).
     var display: String? = nil
+    /// Minutes after midnight, from the v2 adapter. Read `at`.
+    var minutes: Int? = nil
     /// on-time / late / missed / qadha, or nil when nothing is recorded.
     let status: String?
     let due: Bool
@@ -759,10 +781,7 @@ struct Provider: TimelineProvider {
     // tomorrow's calendar date, otherwise they all resolve to today's past and
     // no future timeline entries are produced.
     let allTimesInPast = payload.rows.allSatisfy { row in
-      let parts = row.time.split(separator: ":")
-      guard parts.count == 2, let h = Int(parts[0]), let m = Int(parts[1]),
-            let d = cal.date(bySettingHour: h, minute: m, second: 0, of: now)
-      else { return true }
+      guard let d = widgetDate(minutes: row.at, on: now) else { return true }
       return d <= now
     }
     let baseDate: Date
@@ -775,9 +794,7 @@ struct Provider: TimelineProvider {
 
     var lastDate = now
     for row in events {
-      let parts = row.time.split(separator: ":")
-      if parts.count == 2, let h = Int(parts[0]), let m = Int(parts[1]),
-         let prayerDate = cal.date(bySettingHour: h, minute: m, second: 0, of: baseDate),
+      if let prayerDate = widgetDate(minutes: row.at, on: baseDate),
          prayerDate > now {
         let next = computeDynamicNext(after: prayerDate, rows: events, calendar: cal)
         entries.append(Entry(date: prayerDate, payload: payload, dynamicNextKey: next?.key, dynamicNextName: next?.name, dynamicNextTime: next?.time))
@@ -889,9 +906,10 @@ struct Provider: TimelineProvider {
         extraRows: info.day.extraRows
       )
       for r in dayEvents {
-        let parts = r.time.split(separator: ":")
-        if parts.count == 2, let h = Int(parts[0]), let m = Int(parts[1]),
-           let pd = cal.date(bySettingHour: h, minute: m, second: 0, of: info.date) {
+        // On the row's own day, from its minutes: a First Third after
+        // midnight (1440 and past) lands on the night it belongs to.
+        if let m = r.at,
+           let pd = WallClock.date(dateKey: info.day.dateKey, minutes: m, calendar: cal) {
           // Full name first. `abbr` exists so six prayers fit across an
           // Android strip; the headline of a widget has room to say
           // "Maghrib", and "Magh" up there reads as a truncation bug.
@@ -1133,11 +1151,9 @@ struct PrayerInterval {
     return min(1, max(0, date.timeIntervalSince(start) / total))
   }
 
-  /// Resolve `HH:mm` against the calendar day containing `reference`.
-  private static func date(_ hhmm: String, on reference: Date, _ cal: Calendar) -> Date? {
-    let parts = hhmm.split(separator: ":")
-    guard parts.count == 2, let h = Int(parts[0]), let m = Int(parts[1]) else { return nil }
-    return cal.date(bySettingHour: h, minute: m, second: 0, of: reference)
+  /// A row's time on the calendar day containing `reference`.
+  private static func date(_ row: WidgetPayload.Row, on reference: Date, _ cal: Calendar) -> Date? {
+    widgetDate(minutes: row.at, on: reference)
   }
 
   /// The interval surrounding `reference`.
@@ -1147,7 +1163,7 @@ struct PrayerInterval {
   /// cases matter — without them the ring sits empty all night, which is
   /// exactly when someone is most likely to be waiting for Fajr.
   static func around(_ reference: Date, rows: [WidgetPayload.Row], calendar cal: Calendar) -> PrayerInterval? {
-    let times = rows.compactMap { date($0.time, on: reference, cal) }.sorted()
+    let times = rows.compactMap { date($0, on: reference, cal) }.sorted()
     guard let first = times.first, let last = times.last else { return nil }
 
     if reference < first {

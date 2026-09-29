@@ -126,9 +126,10 @@ class PrayerWidgetModule(private val reactContext: ReactApplicationContext) :
       // of it on every redraw: seven providers read this, several of them more
       // than once per update, and re-parsing the whole payload to find one
       // string is work the widget can least afford.
+      // From v2 when the app wrote no v1 (step 1.7): both carry `language`.
       val language =
         try {
-          org.json.JSONObject(json).optString("language", "").trim()
+          org.json.JSONObject(json.ifEmpty { v2 ?: "{}" }).optString("language", "").trim()
         } catch (e: Exception) {
           ""
         }
@@ -146,7 +147,8 @@ class PrayerWidgetModule(private val reactContext: ReactApplicationContext) :
       // the half-hour period, a placement, an appearance change) is
       // untouched.
       val now = System.currentTimeMillis()
-      val unchanged = json == prefs.getString(PrayerWidgetProvider.PREFS_KEY, null) &&
+      // An empty v1 is a removed key (step 1.7), which reads back as null.
+      val unchanged = json.ifEmpty { null } == prefs.getString(PrayerWidgetProvider.PREFS_KEY, null) &&
         v2 == prefs.getString(WidgetPayloadSource.PREFS_KEY_V2, null)
       val drawnRecently = now - prefs.getLong(PREFS_LAST_FANOUT_MS, 0L) in 0..FANOUT_COALESCE_MS
       if (unchanged && drawnRecently) {
@@ -155,7 +157,12 @@ class PrayerWidgetModule(private val reactContext: ReactApplicationContext) :
       }
       prefs
         .edit()
-        .putString(PrayerWidgetProvider.PREFS_KEY, json)
+        .also { e ->
+          // An empty v1 is the app writing v2 alone (step 1.7): drop the v1
+          // it wrote before, so no renderer is left parsing its times.
+          if (json.isNotEmpty()) e.putString(PrayerWidgetProvider.PREFS_KEY, json)
+          else e.remove(PrayerWidgetProvider.PREFS_KEY)
+        }
         .also { e ->
           if (v2 != null) e.putString(WidgetPayloadSource.PREFS_KEY_V2, v2)
           else e.remove(WidgetPayloadSource.PREFS_KEY_V2)

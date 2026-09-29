@@ -534,12 +534,15 @@ enum LiveActivityRefresher {
     // matter here; the list is sorted by wall clock below, which is the only
     // thing that could put them in the right place anyway.
     rows.append(contentsOf: state.extraRows ?? [])
-    let cal = Calendar.current
+    // Only for an activity started by a build before step 1.5, which stored
+    // no shared payload (the refresh prefers that, above). Its rows' minutes
+    // when the content has them, else their `time` read once by WallClock.
+    let cal = WallClock.localCalendar
+    let todayKey = WallClock.dateKey(now, calendar: cal)
     var events: [(date: Date, row: PrayerLiveActivityAttributes.Row)] = []
     for row in rows {
-      let parts = row.time.split(separator: ":")
-      guard parts.count == 2, let h = Int(parts[0]), let m = Int(parts[1]),
-            let d = cal.date(bySettingHour: h, minute: m, second: 0, of: now)
+      guard let m = row.minutes ?? WallClock.minutes(fromHHmm: row.time),
+            let d = WallClock.date(dateKey: todayKey, minutes: m, calendar: cal)
       else { continue }
       events.append((d, row))
     }

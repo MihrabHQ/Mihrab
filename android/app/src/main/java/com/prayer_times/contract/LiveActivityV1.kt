@@ -51,6 +51,8 @@ object LiveActivityV1 {
         val (time, display) = WidgetPayloadV1.timePair(minutes, clock)
         o.put("time", time)
         display?.let { o.put("display", it) }
+        // What the service places the row by (step 1.7).
+        o.put("minutes", minutes)
       }
       o.put("mode", modes[r.key] ?: "notification")
       return o

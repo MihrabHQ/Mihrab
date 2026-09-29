@@ -24,6 +24,20 @@ function withoutUncarried(v1: any): any {
   const out = wire(v1);
   delete out.tomorrowEstimated;
   for (const d of out.practice?.days ?? []) delete d.k;
+  // The adapter adds each row's `minutes` (step 1.7) — the number the
+  // renderers now place a time by; the app's own v1 never had it.
+  const rows = (o: any): any[] => [
+    ...(o?.rows ?? []),
+    ...(o?.sunriseRow ? [o.sunriseRow] : []),
+    ...(o?.extraRows ?? []),
+  ];
+  for (const r of [
+    ...rows(out),
+    ...(out.days ?? []).flatMap(rows),
+    ...(out.today?.prayers ?? []),
+  ]) {
+    delete r.minutes;
+  }
   return out;
 }
 
@@ -62,6 +76,20 @@ describe('widget payload v2', () => {
         payload: want,
       });
     }
+  });
+
+  it('hands every row its minutes, which the renderers place times by (step 1.7)', () => {
+    const s = scenarios.find(
+      x => x.name === 'late evening, the First Third after midnight is next',
+    )!;
+    const back = widgetPayloadV1FromV2(readWidgetContractPayload(wire(s.v2))!, s.now)!;
+    for (const d of back.days!) {
+      for (const r of d.rows) expect(typeof r.minutes).toBe('number');
+    }
+    // On its own day, past 1440 — not "00:05" read back as the morning.
+    const first = back.days![0].extraRows!.find(r => r.key === 'Firstthird')!;
+    expect(first.minutes).toBe(1440 + 5);
+    expect(first.time).toBe('00:05');
   });
 
   it('carries a known tomorrow that was outside the window, so ʿIshāʾ has a next', () => {

@@ -69,13 +69,17 @@ enum LiveActivityV1 {
   /// A row with `display` always written: ContentState's `Row.display` is
   /// not optional, and one missing key once failed the whole payload.
   private static func row(_ r: WidgetContract.Row, _ clock: WidgetContract.Clock) -> [String: Any] {
-    var time = WallClock.noTime
-    var display = WallClock.noTime
+    var o: [String: Any] = [
+      "key": r.key, "abbr": r.abbr, "name": r.name,
+      "time": WallClock.noTime, "display": WallClock.noTime,
+    ]
     if let minutes = r.minutes {
       let pair = WidgetPayloadV1.timePair(minutes, clock)
-      time = pair.time
-      display = pair.display ?? pair.time
+      o["time"] = pair.time
+      o["display"] = pair.display ?? pair.time
+      // What the card places the row by (step 1.7).
+      o["minutes"] = minutes
     }
-    return ["key": r.key, "abbr": r.abbr, "name": r.name, "time": time, "display": display]
+    return o
   }
 }

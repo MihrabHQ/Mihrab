@@ -80,6 +80,22 @@ object WidgetPayloadV1 {
     return best
   }
 
+  /**
+   * A drawn row's minutes after its day's midnight — what every renderer
+   * places a time by (docs/rewrite-plan.md, step 1.7). The adapter writes
+   * them; a v1 payload the app wrote before that step carries none, until
+   * the app next runs and replaces it, and its `time` is read once, here —
+   * the one place left that parses a time, and only for that payload.
+   */
+  fun minutesOf(row: JSONObject?): Int? {
+    if (row == null) return null
+    if (row.has("minutes") && !row.isNull("minutes")) {
+      val m = row.opt("minutes")
+      if (m is Number) return m.toInt()
+    }
+    return WallClock.minutesFromHHmm(row.optString("time", ""))
+  }
+
   /** The v1 payload, or null when there are no days to draw from. */
   fun fromV2(p: WidgetContract.Payload, todayKey: String, nowMinutes: Int): JSONObject? {
     val days = p.days
@@ -247,6 +263,8 @@ object WidgetPayloadV1 {
     val (time, display) = timePair(minutes, clock)
     o.put("time", time)
     display?.let { o.put("display", it) }
+    // What the renderers place a time by (step 1.7): nothing parses `time`.
+    o.put("minutes", minutes)
   }
 
   private fun rowJson(r: WidgetContract.Row, clock: WidgetContract.Clock): JSONObject {

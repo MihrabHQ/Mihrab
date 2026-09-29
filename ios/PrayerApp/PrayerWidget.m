@@ -52,8 +52,10 @@ RCT_EXPORT_METHOD(setDataV2
   // see mihrabLocalizationTag() in the extension.
   NSString *language = nil;
   NSError *parseError = nil;
+  // From v2 when the app wrote no v1 (step 1.7): both carry `language`.
+  NSString *languageSource = json.length > 0 ? json : (v2 ?: @"");
   id parsed = [NSJSONSerialization
-      JSONObjectWithData:[json dataUsingEncoding:NSUTF8StringEncoding]
+      JSONObjectWithData:[languageSource dataUsingEncoding:NSUTF8StringEncoding]
                  options:0
                    error:&parseError];
   if ([parsed isKindOfClass:[NSDictionary class]]) {
@@ -66,7 +68,13 @@ RCT_EXPORT_METHOD(setDataV2
   NSUserDefaults *group =
       MihrabAppGroupDefaults();
   NSUserDefaults *store = group != nil ? group : [NSUserDefaults standardUserDefaults];
-  [store setObject:json forKey:@"prayer_widget_payload_v1"];
+  // An empty v1 is the app writing v2 alone (step 1.7): drop the v1 it
+  // wrote before, so no renderer is left parsing its times.
+  if (json.length > 0) {
+    [store setObject:json forKey:@"prayer_widget_payload_v1"];
+  } else {
+    [store removeObjectForKey:@"prayer_widget_payload_v1"];
+  }
   if (v2.length > 0) {
     [store setObject:v2 forKey:@"prayer_widget_payload_v2"];
   } else {

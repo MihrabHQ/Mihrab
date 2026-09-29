@@ -9,6 +9,7 @@ import { syncPrayerWidget } from '../src/widget/syncPrayerWidget';
 import { getPrayerWidgetModule } from '../src/native/PrayerWidget';
 import { readWidgetContractPayload } from '../src/widget/contract.generated';
 import { widgetPayloadV1FromV2 } from '../src/widget/widgetPayloadV2';
+import { buildWidgetPayload } from '../src/widget/buildWidgetPayload';
 
 jest.mock('../src/native/PrayerWidget', () => ({
   getPrayerWidgetModule: jest.fn(),
@@ -34,7 +35,7 @@ describe('syncPrayerWidget', () => {
     Platform.OS = 'android';
   });
 
-  it('writes v1 and v2 in one call when the binary can take both', async () => {
+  it('writes v2 alone when the binary can take it — the empty v1 drops the old one', async () => {
     (getPrayerWidgetModule as jest.Mock).mockReturnValue({
       setData,
       setDataV2,
@@ -52,7 +53,17 @@ describe('syncPrayerWidget', () => {
     expect(setData).not.toHaveBeenCalled();
     expect(setDataV2).toHaveBeenCalledTimes(1);
     const [json, v2json] = setDataV2.mock.calls[0];
-    const v1 = JSON.parse(json);
+    // Step 1.7: no v1 is written; an empty one tells the native side to
+    // remove the one an earlier build left.
+    expect(json).toBe('');
+    const v1 = JSON.parse(
+      JSON.stringify(
+        buildWidgetPayload(TODAY, TOMORROW, now, 'Malmö', undefined, undefined, [
+          TODAY,
+          TOMORROW,
+        ]),
+      ),
+    );
     const v2 = readWidgetContractPayload(JSON.parse(v2json));
     expect(v2).not.toBeNull();
     expect(v2!.schemaVersion).toBe(2);
@@ -66,6 +77,13 @@ describe('syncPrayerWidget', () => {
       ),
     );
     delete v1.tomorrowEstimated;
+    // The adapter adds the minutes the renderers place times by.
+    for (const d of [back, ...back.days]) {
+      for (const r of [...d.rows, ...(d.sunriseRow ? [d.sunriseRow] : []), ...(d.extraRows ?? [])]) {
+        expect(typeof r.minutes).toBe('number');
+        delete r.minutes;
+      }
+    }
     expect(back).toEqual(v1);
   });
 

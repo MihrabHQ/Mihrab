@@ -56,7 +56,11 @@ export async function syncPrayerWidget(
         clock: contractClock(activeClock().hour12, i18n.language),
         now,
       });
-      await mod.setDataV2(json, JSON.stringify(v2));
+      // v2 ALONE (step 1.7): the empty v1 tells the native side to drop the
+      // v1 key, so nothing is left for a renderer to parse a time out of.
+      // The natives still read a v1 left by the app before this update,
+      // until the first write here replaces it.
+      await mod.setDataV2('', JSON.stringify(v2));
       return;
     } catch {
       // Whatever went wrong with v2, v1 alone still reaches the widgets —

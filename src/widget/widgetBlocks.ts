@@ -166,6 +166,8 @@ export type WidgetTodayPrayer = {
    * this to decide which prayers are due. Read `display` instead.
    */
   time: string;
+  /** Minutes after local midnight, from payload v2 — see `WidgetPrayerRow.minutes`. */
+  minutes?: number;
   /**
    * The same time as the user reads it — issue #18. Absent when it would
    * repeat `time`; see `WidgetPrayerRow.display` for why.

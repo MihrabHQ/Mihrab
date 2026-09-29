@@ -148,6 +148,8 @@ export type IosLiveActivityRow = {
   time: string;
   /** Always written — see PrayerLiveActivityAttributes. */
   display: string;
+  /** Minutes after the shown day's midnight — what the card places it by. */
+  minutes?: number;
 };
 
 /** The fields of `PrayerLiveActivityAttributes.ContentState` that are drawn. */
@@ -177,6 +179,7 @@ function iosRow(
     name: r.name ?? '',
     time: pair.time,
     display: pair.display ?? pair.time,
+    ...(r.minutes != null ? { minutes: r.minutes } : {}),
   };
 }
 
@@ -218,6 +221,8 @@ export type AndroidLiveActivityRow = {
   name: string;
   time: string;
   display?: string;
+  /** Minutes after the row's day's midnight — what the service places it by. */
+  minutes?: number;
   mode: WidgetContractAlertModeKind;
 };
 
@@ -285,6 +290,7 @@ export function liveActivityAndroidPayload(
     key: r.key,
     name: r.name ?? '',
     ...timePair(r.minutes, clock),
+    ...(r.minutes != null ? { minutes: r.minutes } : {}),
     mode: modes.get(r.key) ?? 'notification',
   });
   const next = timePair(m.nextAt, clock);

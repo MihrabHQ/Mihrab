@@ -21,6 +21,7 @@ import android.text.style.RelativeSizeSpan
 import android.util.Log
 import android.view.View
 import android.widget.RemoteViews
+import com.prayer_times.contract.WidgetPayloadV1
 import org.json.JSONObject
 
 private data class WidgetStyle(
@@ -866,14 +867,8 @@ open class PrayerWidgetProvider : AppWidgetProvider() {
       (day?.optJSONArray("extraRows") ?: root.optJSONArray("extraRows"))?.let { extra ->
         for (i in 0 until extra.length()) extra.optJSONObject(i)?.let { candidates.add(it) }
       }
-      for (row in candidates) {
-        val parts = row.optString("time").split(":")
-        if (parts.size != 2) continue
-        val h = parts[0].toIntOrNull() ?: continue
-        val m = parts[1].toIntOrNull() ?: continue
-        if (h < 0 || m < 0) continue
-        out.add(h * 60 + m)
-      }
+      // Minutes, not "HH:mm" (step 1.7).
+      for (row in candidates) WidgetPayloadV1.minutesOf(row)?.let { out.add(it) }
       return out
     }
 
@@ -1740,11 +1735,7 @@ open class PrayerWidgetProvider : AppWidgetProvider() {
     private fun firstRowMinutes(displayRows: List<org.json.JSONObject>): Int? {
       var earliest: Int? = null
       for (row in displayRows) {
-        val parts = row.optString("time").split(":")
-        if (parts.size != 2) continue
-        val h = parts[0].toIntOrNull() ?: continue
-        val m = parts[1].toIntOrNull() ?: continue
-        val mins = h * 60 + m
+        val mins = WidgetPayloadV1.minutesOf(row) ?: continue
         if (earliest == null || mins < earliest!!) earliest = mins
       }
       return earliest
@@ -1889,12 +1880,8 @@ open class PrayerWidgetProvider : AppWidgetProvider() {
       // than now would answer "Isha" at nine o'clock with the First Third
       // half an hour away.
       for (row in displayRows) {
-        val timeStr = row.optString("time", "")
-        val parts = timeStr.split(":")
-        if (parts.size == 2) {
-          val h = parts[0].toIntOrNull() ?: continue
-          val m = parts[1].toIntOrNull() ?: continue
-          val rowMinutes = h * 60 + m
+        val rowMinutes = WidgetPayloadV1.minutesOf(row)
+        if (rowMinutes != null) {
           if (rowMinutes > currentMinutes &&
             (nextUpdateMinutes < 0 || rowMinutes < nextUpdateMinutes)
           ) {

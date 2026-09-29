@@ -116,12 +116,11 @@ private func displayRows(
   return out
 }
 
-/// Minutes since midnight for a row's "HH:MM", or nil.
+/// Minutes after midnight for a row: the adapter's (step 1.7), or — content
+/// from a build before it — its `time` read once through `WallClock`.
 @available(iOS 16.1, *)
 private func rowMinutes(_ r: PrayerLiveActivityAttributes.Row) -> Int? {
-  let parts = r.time.split(separator: ":")
-  guard parts.count == 2, let h = Int(parts[0]), let m = Int(parts[1]) else { return nil }
-  return h * 60 + m
+  r.minutes ?? WallClock.minutes(fromHHmm: r.time)
 }
 
 // MARK: - Reusable pieces

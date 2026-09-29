@@ -72,7 +72,7 @@ struct HijriProvider: TimelineProvider {
     // what is next, and that changes five times.
     var boundaries: [Date] = [now]
     for r in p.rows {
-      if let d = Self.time(r.time, on: now, cal), d > now, d < nextMidnight {
+      if let d = widgetDate(minutes: r.at, on: now), d > now, d < nextMidnight {
         boundaries.append(d)
       }
     }
@@ -82,9 +82,8 @@ struct HijriProvider: TimelineProvider {
 
   /// The entry as of `when` — the same payload, a different "next".
   private func entry(from p: WidgetPayload, at when: Date) -> HijriEntry {
-    let cal = Calendar.current
     let dated = p.rows.compactMap { r -> (Date, WidgetPayload.Row)? in
-      guard let d = Self.time(r.time, on: when, cal) else { return nil }
+      guard let d = widgetDate(minutes: r.at, on: when) else { return nil }
       return (d, r)
     }.sorted { $0.0 < $1.0 }
     // After Isha the answer is tomorrow's Fajr: the same row, a day later.
@@ -97,12 +96,6 @@ struct HijriProvider: TimelineProvider {
       nextTime: next?.text,
       rows: p.rows
     )
-  }
-
-  private static func time(_ hhmm: String, on reference: Date, _ cal: Calendar) -> Date? {
-    let parts = hhmm.split(separator: ":")
-    guard parts.count == 2, let h = Int(parts[0]), let m = Int(parts[1]) else { return nil }
-    return cal.date(bySettingHour: h, minute: m, second: 0, of: reference)
   }
 
   private func loadPayload() -> WidgetPayload? {

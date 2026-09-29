@@ -20,6 +20,7 @@ import com.facebook.react.bridge.ReactMethod
 import com.prayer_times.contract.LiveActivityV1
 import com.prayer_times.contract.WallClock
 import com.prayer_times.contract.WidgetContract
+import com.prayer_times.contract.WidgetPayloadV1
 import org.json.JSONObject
 import java.time.Instant
 
@@ -903,7 +904,7 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
             for (j in 0 until extra.length()) extra.optJSONObject(j)?.let(candidates::add)
           }
           for (r in candidates) {
-            val e = epochForDayTime(dateKey, r.optString("time"))
+            val e = epochOfRow(dateKey, r)
             if (e <= 0L) continue
             val d = kotlin.math.abs(e - epochMs)
             if (d < bestDiff) {
@@ -967,11 +968,14 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
 
         val second: Any? = when (secondKind) {
           "time" -> {
-            val m = Regex("^(\\d{1,2}):(\\d{2})$").find(nextTime)
-            if (m == null) null else {
-              val lt = java.time.LocalTime.of(
-                m.groupValues[1].toInt(), m.groupValues[2].toInt(),
-              )
+            // The clock time of the instant itself (step 1.7), not the
+            // "HH:mm" text parsed back.
+            if (nextEpochMs <= 0L) null else {
+              val lt = Instant.ofEpochMilli(nextEpochMs)
+                .atZone(java.time.ZoneId.systemDefault())
+                .toLocalTime()
+                .withSecond(0)
+                .withNano(0)
               val ftCtor = ftCls.getConstructor(java.time.LocalTime::class.java)
               metricCtor.newInstance(ftCtor.newInstance(lt), atWord as CharSequence)
             }
@@ -1015,20 +1019,20 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
         val day = days.optJSONObject(i) ?: continue
         val dateKey = day.optString("dateKey")
         if (dateKey.isEmpty()) continue
-        val add = { time: String ->
-          val e = epochForDayTime(dateKey, time)
+        val add = { row: JSONObject ->
+          val e = epochOfRow(dateKey, row)
           if (e > 0L) out.add(e)
           Unit
         }
         day.optJSONArray("rows")?.let { rows ->
           for (j in 0 until rows.length()) {
-            rows.optJSONObject(j)?.let { add(it.optString("time")) }
+            rows.optJSONObject(j)?.let { add(it) }
           }
         }
-        day.optJSONObject("sunriseRow")?.let { add(it.optString("time")) }
+        day.optJSONObject("sunriseRow")?.let { add(it) }
         day.optJSONArray("extraRows")?.let { extra ->
           for (j in 0 until extra.length()) {
-            extra.optJSONObject(j)?.let { add(it.optString("time")) }
+            extra.optJSONObject(j)?.let { add(it) }
           }
         }
       }
@@ -1156,22 +1160,13 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
       }
     }
 
-    /** Local-timezone epoch (ms) for a `yyyy-MM-dd` + `HH:MM` pair, or 0. */
-    private fun epochForDayTime(dateKey: String, hhmm: String): Long {
-      val dm = Regex("^(\\d{4})-(\\d{2})-(\\d{2})$").find(dateKey) ?: return 0L
-      val tm = Regex("^(\\d{1,2}):(\\d{2})$").find(hhmm) ?: return 0L
-      val h = tm.groupValues[1].toInt()
-      val min = tm.groupValues[2].toInt()
-      if (h !in 0..23 || min !in 0..59) return 0L
-      return java.util.Calendar.getInstance().apply {
-        set(java.util.Calendar.YEAR, dm.groupValues[1].toInt())
-        set(java.util.Calendar.MONTH, dm.groupValues[2].toInt() - 1)
-        set(java.util.Calendar.DAY_OF_MONTH, dm.groupValues[3].toInt())
-        set(java.util.Calendar.HOUR_OF_DAY, h)
-        set(java.util.Calendar.MINUTE, min)
-        set(java.util.Calendar.SECOND, 0)
-        set(java.util.Calendar.MILLISECOND, 0)
-      }.timeInMillis
+    /**
+     * A row's instant on `dateKey`, from its minutes (step 1.7), through
+     * `WallClock`. 0 without a time.
+     */
+    private fun epochOfRow(dateKey: String, row: JSONObject): Long {
+      val minutes = WidgetPayloadV1.minutesOf(row) ?: return 0L
+      return WallClock.epochMs(dateKey, minutes) ?: 0L
     }
 
     // ── Pre-Android 16 path ─────────────────────────────────────────

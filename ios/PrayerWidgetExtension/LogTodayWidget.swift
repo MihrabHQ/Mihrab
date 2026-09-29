@@ -87,18 +87,6 @@ struct LogTodayEntry: TimelineEntry {
 
 // MARK: - Whose clock decides
 
-/// Minutes since local midnight for a payload time, or nil.
-///
-/// The payload's `time` is always 24-hour `HH:mm` — `formatDisplayTime`
-/// zero-pads and never localises — so this is a comparison, not a guess at
-/// whatever clock format the device is set to.
-func logMinutesOfDay(_ hhmm: String) -> Int? {
-  let parts = hhmm.split(separator: ":")
-  guard parts.count == 2, let h = Int(parts[0]), let m = Int(parts[1]),
-        h >= 0, m >= 0 else { return nil }
-  return h * 60 + m
-}
-
 private let logDayKeyFormatter: DateFormatter = {
   let f = DateFormatter()
   f.calendar = Calendar(identifier: .gregorian)
@@ -128,7 +116,7 @@ func logIsDue(
   calendar: Calendar = .current
 ) -> Bool {
   guard today.dateKey == logDayKeyFormatter.string(from: when),
-        let at = logMinutesOfDay(p.time)
+        let at = p.at
   else { return p.due }
   let c = calendar.dateComponents([.hour, .minute], from: when)
   return at <= (c.hour ?? 0) * 60 + (c.minute ?? 0)
@@ -161,12 +149,13 @@ struct LogTodayProvider: TimelineProvider {
       // advances on every event the user has turned on, so both sets are
       // boundaries. Without the second the card sat on "Isha" with the
       // First Third half an hour gone.
-      var times = (p.today?.prayers ?? []).map(\.time)
+      // Minutes, not "HH:mm" (step 1.7).
+      var times = (p.today?.prayers ?? []).map(\.at)
       times += widgetEvents(
         rows: p.rows, sunriseRow: p.sunriseRow, extraRows: p.extraRows
-      ).map(\.time)
-      for time in times {
-        if let d = Self.time(time, on: now, cal), d > now, d < nextMidnight {
+      ).map(\.at)
+      for minutes in times {
+        if let d = widgetDate(minutes: minutes, on: now), d > now, d < nextMidnight {
           boundaries.append(d)
         }
       }
@@ -190,12 +179,6 @@ struct LogTodayProvider: TimelineProvider {
         widgetEvents(rows: $0.rows, sunriseRow: $0.sunriseRow, extraRows: $0.extraRows)
       } ?? []
     )
-  }
-
-  private static func time(_ hhmm: String, on reference: Date, _ cal: Calendar) -> Date? {
-    let parts = hhmm.split(separator: ":")
-    guard parts.count == 2, let h = Int(parts[0]), let m = Int(parts[1]) else { return nil }
-    return cal.date(bySettingHour: h, minute: m, second: 0, of: reference)
   }
 
   private func loadPayload() -> WidgetPayload? {
@@ -401,7 +384,7 @@ struct LogTodayEntryView: View {
     let c = Calendar.current.dateComponents([.hour, .minute], from: entry.date)
     let nowMinutes = (c.hour ?? 0) * 60 + (c.minute ?? 0)
     let dated = entry.events.compactMap { row -> (Int, WidgetPayload.Row)? in
-      guard let at = widgetMinutesOfDay(row.time) else { return nil }
+      guard let at = row.at else { return nil }
       return (at, row)
     }
     return dated.filter { $0.0 > nowMinutes }.min(by: { $0.0 < $1.0 })?.1

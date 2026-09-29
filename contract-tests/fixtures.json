@@ -14,30 +14,35 @@
           {
             "key": "Fajr",
             "time": "05:12",
+            "minutes": 312,
             "abbr": "Fajr",
             "name": "Fajr"
           },
           {
             "key": "Dhuhr",
             "time": "12:32",
+            "minutes": 752,
             "abbr": "Dhuhr",
             "name": "Dhuhr"
           },
           {
             "key": "Asr",
             "time": "15:50",
+            "minutes": 950,
             "abbr": "Asr",
             "name": "Asr"
           },
           {
             "key": "Maghrib",
             "time": "18:35",
+            "minutes": 1115,
             "abbr": "Magh",
             "name": "Maghrib"
           },
           {
             "key": "Isha",
             "time": "20:15",
+            "minutes": 1215,
             "abbr": "Isha",
             "name": "Isha"
           }
@@ -45,6 +50,7 @@
         "sunriseRow": {
           "key": "Sunrise",
           "time": "07:05",
+          "minutes": 425,
           "abbr": "Sun",
           "name": "Sunrise"
         },
@@ -60,30 +66,35 @@
               {
                 "key": "Fajr",
                 "time": "05:12",
+                "minutes": 312,
                 "abbr": "Fajr",
                 "name": "Fajr"
               },
               {
                 "key": "Dhuhr",
                 "time": "12:32",
+                "minutes": 752,
                 "abbr": "Dhuhr",
                 "name": "Dhuhr"
               },
               {
                 "key": "Asr",
                 "time": "15:50",
+                "minutes": 950,
                 "abbr": "Asr",
                 "name": "Asr"
               },
               {
                 "key": "Maghrib",
                 "time": "18:35",
+                "minutes": 1115,
                 "abbr": "Magh",
                 "name": "Maghrib"
               },
               {
                 "key": "Isha",
                 "time": "20:15",
+                "minutes": 1215,
                 "abbr": "Isha",
                 "name": "Isha"
               }
@@ -91,6 +102,7 @@
             "sunriseRow": {
               "key": "Sunrise",
               "time": "07:05",
+              "minutes": 425,
               "abbr": "Sun",
               "name": "Sunrise"
             }
@@ -102,30 +114,35 @@
               {
                 "key": "Fajr",
                 "time": "05:14",
+                "minutes": 314,
                 "abbr": "Fajr",
                 "name": "Fajr"
               },
               {
                 "key": "Dhuhr",
                 "time": "12:34",
+                "minutes": 754,
                 "abbr": "Dhuhr",
                 "name": "Dhuhr"
               },
               {
                 "key": "Asr",
                 "time": "15:52",
+                "minutes": 952,
                 "abbr": "Asr",
                 "name": "Asr"
               },
               {
                 "key": "Maghrib",
                 "time": "18:37",
+                "minutes": 1117,
                 "abbr": "Magh",
                 "name": "Maghrib"
               },
               {
                 "key": "Isha",
                 "time": "20:17",
+                "minutes": 1217,
                 "abbr": "Isha",
                 "name": "Isha"
               }
@@ -133,6 +150,7 @@
             "sunriseRow": {
               "key": "Sunrise",
               "time": "07:07",
+              "minutes": 427,
               "abbr": "Sun",
               "name": "Sunrise"
             }
@@ -144,30 +162,35 @@
               {
                 "key": "Fajr",
                 "time": "05:16",
+                "minutes": 316,
                 "abbr": "Fajr",
                 "name": "Fajr"
               },
               {
                 "key": "Dhuhr",
                 "time": "12:36",
+                "minutes": 756,
                 "abbr": "Dhuhr",
                 "name": "Dhuhr"
               },
               {
                 "key": "Asr",
                 "time": "15:54",
+                "minutes": 954,
                 "abbr": "Asr",
                 "name": "Asr"
               },
               {
                 "key": "Maghrib",
                 "time": "18:39",
+                "minutes": 1119,
                 "abbr": "Magh",
                 "name": "Maghrib"
               },
               {
                 "key": "Isha",
                 "time": "20:19",
+                "minutes": 1219,
                 "abbr": "Isha",
                 "name": "Isha"
               }
@@ -175,6 +198,7 @@
             "sunriseRow": {
               "key": "Sunrise",
               "time": "07:09",
+              "minutes": 429,
               "abbr": "Sun",
               "name": "Sunrise"
             }
@@ -196,6 +220,7 @@
             "key": "Fajr",
             "time": "05:12",
             "display": "5:12 AM",
+            "minutes": 312,
             "abbr": "Fajr",
             "name": "Fajr"
           },
@@ -203,6 +228,7 @@
             "key": "Dhuhr",
             "time": "12:32",
             "display": "12:32 PM",
+            "minutes": 752,
             "abbr": "Dhuhr",
             "name": "Dhuhr"
           },
@@ -210,6 +236,7 @@
             "key": "Asr",
             "time": "15:50",
             "display": "3:50 PM",
+            "minutes": 950,
             "abbr": "Asr",
             "name": "Asr"
           },
@@ -217,6 +244,7 @@
             "key": "Maghrib",
             "time": "18:35",
             "display": "6:35 PM",
+            "minutes": 1115,
             "abbr": "Magh",
             "name": "Maghrib"
           },
@@ -224,6 +252,7 @@
             "key": "Isha",
             "time": "20:15",
             "display": "8:15 PM",
+            "minutes": 1215,
             "abbr": "Isha",
             "name": "Isha"
           }
@@ -232,6 +261,7 @@
           "key": "Sunrise",
           "time": "07:05",
           "display": "7:05 AM",
+          "minutes": 425,
           "abbr": "Sun",
           "name": "Sunrise"
         },
@@ -255,6 +285,7 @@
                 "key": "Fajr",
                 "time": "05:12",
                 "display": "5:12 AM",
+                "minutes": 312,
                 "abbr": "Fajr",
                 "name": "Fajr"
               },
@@ -262,6 +293,7 @@
                 "key": "Dhuhr",
                 "time": "12:32",
                 "display": "12:32 PM",
+                "minutes": 752,
                 "abbr": "Dhuhr",
                 "name": "Dhuhr"
               },
@@ -269,6 +301,7 @@
                 "key": "Asr",
                 "time": "15:50",
                 "display": "3:50 PM",
+                "minutes": 950,
                 "abbr": "Asr",
                 "name": "Asr"
               },
@@ -276,6 +309,7 @@
                 "key": "Maghrib",
                 "time": "18:35",
                 "display": "6:35 PM",
+                "minutes": 1115,
                 "abbr": "Magh",
                 "name": "Maghrib"
               },
@@ -283,6 +317,7 @@
                 "key": "Isha",
                 "time": "20:15",
                 "display": "8:15 PM",
+                "minutes": 1215,
                 "abbr": "Isha",
                 "name": "Isha"
               }
@@ -291,6 +326,7 @@
               "key": "Sunrise",
               "time": "07:05",
               "display": "7:05 AM",
+              "minutes": 425,
               "abbr": "Sun",
               "name": "Sunrise"
             }
@@ -303,6 +339,7 @@
                 "key": "Fajr",
                 "time": "05:14",
                 "display": "5:14 AM",
+                "minutes": 314,
                 "abbr": "Fajr",
                 "name": "Fajr"
               },
@@ -310,6 +347,7 @@
                 "key": "Dhuhr",
                 "time": "12:34",
                 "display": "12:34 PM",
+                "minutes": 754,
                 "abbr": "Dhuhr",
                 "name": "Dhuhr"
               },
@@ -317,6 +355,7 @@
                 "key": "Asr",
                 "time": "15:52",
                 "display": "3:52 PM",
+                "minutes": 952,
                 "abbr": "Asr",
                 "name": "Asr"
               },
@@ -324,6 +363,7 @@
                 "key": "Maghrib",
                 "time": "18:37",
                 "display": "6:37 PM",
+                "minutes": 1117,
                 "abbr": "Magh",
                 "name": "Maghrib"
               },
@@ -331,6 +371,7 @@
                 "key": "Isha",
                 "time": "20:17",
                 "display": "8:17 PM",
+                "minutes": 1217,
                 "abbr": "Isha",
                 "name": "Isha"
               }
@@ -339,6 +380,7 @@
               "key": "Sunrise",
               "time": "07:07",
               "display": "7:07 AM",
+              "minutes": 427,
               "abbr": "Sun",
               "name": "Sunrise"
             }
@@ -351,6 +393,7 @@
                 "key": "Fajr",
                 "time": "05:16",
                 "display": "5:16 AM",
+                "minutes": 316,
                 "abbr": "Fajr",
                 "name": "Fajr"
               },
@@ -358,6 +401,7 @@
                 "key": "Dhuhr",
                 "time": "12:36",
                 "display": "12:36 PM",
+                "minutes": 756,
                 "abbr": "Dhuhr",
                 "name": "Dhuhr"
               },
@@ -365,6 +409,7 @@
                 "key": "Asr",
                 "time": "15:54",
                 "display": "3:54 PM",
+                "minutes": 954,
                 "abbr": "Asr",
                 "name": "Asr"
               },
@@ -372,6 +417,7 @@
                 "key": "Maghrib",
                 "time": "18:39",
                 "display": "6:39 PM",
+                "minutes": 1119,
                 "abbr": "Magh",
                 "name": "Maghrib"
               },
@@ -379,6 +425,7 @@
                 "key": "Isha",
                 "time": "20:19",
                 "display": "8:19 PM",
+                "minutes": 1219,
                 "abbr": "Isha",
                 "name": "Isha"
               }
@@ -387,6 +434,7 @@
               "key": "Sunrise",
               "time": "07:09",
               "display": "7:09 AM",
+              "minutes": 429,
               "abbr": "Sun",
               "name": "Sunrise"
             }
@@ -403,6 +451,7 @@
               "name": "Fajr",
               "time": "05:12",
               "display": "5:12 AM",
+              "minutes": 312,
               "status": "on-time",
               "due": true
             },
@@ -411,6 +460,7 @@
               "name": "Dhuhr",
               "time": "12:32",
               "display": "12:32 PM",
+              "minutes": 752,
               "status": "missed",
               "due": true
             },
@@ -419,6 +469,7 @@
               "name": "Asr",
               "time": "15:50",
               "display": "3:50 PM",
+              "minutes": 950,
               "status": null,
               "due": false
             },
@@ -427,6 +478,7 @@
               "name": "Maghrib",
               "time": "18:35",
               "display": "6:35 PM",
+              "minutes": 1115,
               "status": null,
               "due": false
             },
@@ -533,30 +585,35 @@
           {
             "key": "Fajr",
             "time": "05:12",
+            "minutes": 312,
             "abbr": "Fajr",
             "name": "Fajr"
           },
           {
             "key": "Dhuhr",
             "time": "12:32",
+            "minutes": 752,
             "abbr": "Dhuhr",
             "name": "Dhuhr"
           },
           {
             "key": "Asr",
             "time": "15:50",
+            "minutes": 950,
             "abbr": "Asr",
             "name": "Asr"
           },
           {
             "key": "Maghrib",
             "time": "18:35",
+            "minutes": 1115,
             "abbr": "Magh",
             "name": "Maghrib"
           },
           {
             "key": "Isha",
             "time": "20:15",
+            "minutes": 1215,
             "abbr": "Isha",
             "name": "Isha"
           }
@@ -564,6 +621,7 @@
         "sunriseRow": {
           "key": "Sunrise",
           "time": "07:05",
+          "minutes": 425,
           "abbr": "Sun",
           "name": "Sunrise"
         },
@@ -579,30 +637,35 @@
               {
                 "key": "Fajr",
                 "time": "05:12",
+                "minutes": 312,
                 "abbr": "Fajr",
                 "name": "Fajr"
               },
               {
                 "key": "Dhuhr",
                 "time": "12:32",
+                "minutes": 752,
                 "abbr": "Dhuhr",
                 "name": "Dhuhr"
               },
               {
                 "key": "Asr",
                 "time": "15:50",
+                "minutes": 950,
                 "abbr": "Asr",
                 "name": "Asr"
               },
               {
                 "key": "Maghrib",
                 "time": "18:35",
+                "minutes": 1115,
                 "abbr": "Magh",
                 "name": "Maghrib"
               },
               {
                 "key": "Isha",
                 "time": "20:15",
+                "minutes": 1215,
                 "abbr": "Isha",
                 "name": "Isha"
               }
@@ -610,6 +673,7 @@
             "sunriseRow": {
               "key": "Sunrise",
               "time": "07:05",
+              "minutes": 425,
               "abbr": "Sun",
               "name": "Sunrise"
             }
@@ -621,30 +685,35 @@
               {
                 "key": "Fajr",
                 "time": "05:14",
+                "minutes": 314,
                 "abbr": "Fajr",
                 "name": "Fajr"
               },
               {
                 "key": "Dhuhr",
                 "time": "12:34",
+                "minutes": 754,
                 "abbr": "Dhuhr",
                 "name": "Dhuhr"
               },
               {
                 "key": "Asr",
                 "time": "15:52",
+                "minutes": 952,
                 "abbr": "Asr",
                 "name": "Asr"
               },
               {
                 "key": "Maghrib",
                 "time": "18:37",
+                "minutes": 1117,
                 "abbr": "Magh",
                 "name": "Maghrib"
               },
               {
                 "key": "Isha",
                 "time": "20:17",
+                "minutes": 1217,
                 "abbr": "Isha",
                 "name": "Isha"
               }
@@ -652,6 +721,7 @@
             "sunriseRow": {
               "key": "Sunrise",
               "time": "07:07",
+              "minutes": 427,
               "abbr": "Sun",
               "name": "Sunrise"
             }
@@ -663,30 +733,35 @@
               {
                 "key": "Fajr",
                 "time": "05:16",
+                "minutes": 316,
                 "abbr": "Fajr",
                 "name": "Fajr"
               },
               {
                 "key": "Dhuhr",
                 "time": "12:36",
+                "minutes": 756,
                 "abbr": "Dhuhr",
                 "name": "Dhuhr"
               },
               {
                 "key": "Asr",
                 "time": "15:54",
+                "minutes": 954,
                 "abbr": "Asr",
                 "name": "Asr"
               },
               {
                 "key": "Maghrib",
                 "time": "18:39",
+                "minutes": 1119,
                 "abbr": "Magh",
                 "name": "Maghrib"
               },
               {
                 "key": "Isha",
                 "time": "20:19",
+                "minutes": 1219,
                 "abbr": "Isha",
                 "name": "Isha"
               }
@@ -694,6 +769,7 @@
             "sunriseRow": {
               "key": "Sunrise",
               "time": "07:09",
+              "minutes": 429,
               "abbr": "Sun",
               "name": "Sunrise"
             }
@@ -714,30 +790,35 @@
           {
             "key": "Fajr",
             "time": "05:14",
+            "minutes": 314,
             "abbr": "Fajr",
             "name": "Fajr"
           },
           {
             "key": "Dhuhr",
             "time": "12:34",
+            "minutes": 754,
             "abbr": "Dhuhr",
             "name": "Dhuhr"
           },
           {
             "key": "Asr",
             "time": "15:52",
+            "minutes": 952,
             "abbr": "Asr",
             "name": "Asr"
           },
           {
             "key": "Maghrib",
             "time": "18:37",
+            "minutes": 1117,
             "abbr": "Magh",
             "name": "Maghrib"
           },
           {
             "key": "Isha",
             "time": "20:17",
+            "minutes": 1217,
             "abbr": "Isha",
             "name": "Isha"
           }
@@ -745,6 +826,7 @@
         "sunriseRow": {
           "key": "Sunrise",
           "time": "07:07",
+          "minutes": 427,
           "abbr": "Sun",
           "name": "Sunrise"
         },
@@ -760,30 +842,35 @@
               {
                 "key": "Fajr",
                 "time": "05:12",
+                "minutes": 312,
                 "abbr": "Fajr",
                 "name": "Fajr"
               },
               {
                 "key": "Dhuhr",
                 "time": "12:32",
+                "minutes": 752,
                 "abbr": "Dhuhr",
                 "name": "Dhuhr"
               },
               {
                 "key": "Asr",
                 "time": "15:50",
+                "minutes": 950,
                 "abbr": "Asr",
                 "name": "Asr"
               },
               {
                 "key": "Maghrib",
                 "time": "18:35",
+                "minutes": 1115,
                 "abbr": "Magh",
                 "name": "Maghrib"
               },
               {
                 "key": "Isha",
                 "time": "20:15",
+                "minutes": 1215,
                 "abbr": "Isha",
                 "name": "Isha"
               }
@@ -791,6 +878,7 @@
             "sunriseRow": {
               "key": "Sunrise",
               "time": "07:05",
+              "minutes": 425,
               "abbr": "Sun",
               "name": "Sunrise"
             }
@@ -802,30 +890,35 @@
               {
                 "key": "Fajr",
                 "time": "05:14",
+                "minutes": 314,
                 "abbr": "Fajr",
                 "name": "Fajr"
               },
               {
                 "key": "Dhuhr",
                 "time": "12:34",
+                "minutes": 754,
                 "abbr": "Dhuhr",
                 "name": "Dhuhr"
               },
               {
                 "key": "Asr",
                 "time": "15:52",
+                "minutes": 952,
                 "abbr": "Asr",
                 "name": "Asr"
               },
               {
                 "key": "Maghrib",
                 "time": "18:37",
+                "minutes": 1117,
                 "abbr": "Magh",
                 "name": "Maghrib"
               },
               {
                 "key": "Isha",
                 "time": "20:17",
+                "minutes": 1217,
                 "abbr": "Isha",
                 "name": "Isha"
               }
@@ -833,6 +926,7 @@
             "sunriseRow": {
               "key": "Sunrise",
               "time": "07:07",
+              "minutes": 427,
               "abbr": "Sun",
               "name": "Sunrise"
             }
@@ -844,30 +938,35 @@
               {
                 "key": "Fajr",
                 "time": "05:16",
+                "minutes": 316,
                 "abbr": "Fajr",
                 "name": "Fajr"
               },
               {
                 "key": "Dhuhr",
                 "time": "12:36",
+                "minutes": 756,
                 "abbr": "Dhuhr",
                 "name": "Dhuhr"
               },
               {
                 "key": "Asr",
                 "time": "15:54",
+                "minutes": 954,
                 "abbr": "Asr",
                 "name": "Asr"
               },
               {
                 "key": "Maghrib",
                 "time": "18:39",
+                "minutes": 1119,
                 "abbr": "Magh",
                 "name": "Maghrib"
               },
               {
                 "key": "Isha",
                 "time": "20:19",
+                "minutes": 1219,
                 "abbr": "Isha",
                 "name": "Isha"
               }
@@ -875,6 +974,7 @@
             "sunriseRow": {
               "key": "Sunrise",
               "time": "07:09",
+              "minutes": 429,
               "abbr": "Sun",
               "name": "Sunrise"
             }
@@ -895,30 +995,35 @@
           {
             "key": "Fajr",
             "time": "05:14",
+            "minutes": 314,
             "abbr": "Fajr",
             "name": "Fajr"
           },
           {
             "key": "Dhuhr",
             "time": "12:34",
+            "minutes": 754,
             "abbr": "Dhuhr",
             "name": "Dhuhr"
           },
           {
             "key": "Asr",
             "time": "15:52",
+            "minutes": 952,
             "abbr": "Asr",
             "name": "Asr"
           },
           {
             "key": "Maghrib",
             "time": "18:37",
+            "minutes": 1117,
             "abbr": "Magh",
             "name": "Maghrib"
           },
           {
             "key": "Isha",
             "time": "20:17",
+            "minutes": 1217,
             "abbr": "Isha",
             "name": "Isha"
           }
@@ -926,6 +1031,7 @@
         "sunriseRow": {
           "key": "Sunrise",
           "time": "07:07",
+          "minutes": 427,
           "abbr": "Sun",
           "name": "Sunrise"
         },
@@ -941,30 +1047,35 @@
               {
                 "key": "Fajr",
                 "time": "05:12",
+                "minutes": 312,
                 "abbr": "Fajr",
                 "name": "Fajr"
               },
               {
                 "key": "Dhuhr",
                 "time": "12:32",
+                "minutes": 752,
                 "abbr": "Dhuhr",
                 "name": "Dhuhr"
               },
               {
                 "key": "Asr",
                 "time": "15:50",
+                "minutes": 950,
                 "abbr": "Asr",
                 "name": "Asr"
               },
               {
                 "key": "Maghrib",
                 "time": "18:35",
+                "minutes": 1115,
                 "abbr": "Magh",
                 "name": "Maghrib"
               },
               {
                 "key": "Isha",
                 "time": "20:15",
+                "minutes": 1215,
                 "abbr": "Isha",
                 "name": "Isha"
               }
@@ -972,6 +1083,7 @@
             "sunriseRow": {
               "key": "Sunrise",
               "time": "07:05",
+              "minutes": 425,
               "abbr": "Sun",
               "name": "Sunrise"
             }
@@ -983,30 +1095,35 @@
               {
                 "key": "Fajr",
                 "time": "05:14",
+                "minutes": 314,
                 "abbr": "Fajr",
                 "name": "Fajr"
               },
               {
                 "key": "Dhuhr",
                 "time": "12:34",
+                "minutes": 754,
                 "abbr": "Dhuhr",
                 "name": "Dhuhr"
               },
               {
                 "key": "Asr",
                 "time": "15:52",
+                "minutes": 952,
                 "abbr": "Asr",
                 "name": "Asr"
               },
               {
                 "key": "Maghrib",
                 "time": "18:37",
+                "minutes": 1117,
                 "abbr": "Magh",
                 "name": "Maghrib"
               },
               {
                 "key": "Isha",
                 "time": "20:17",
+                "minutes": 1217,
                 "abbr": "Isha",
                 "name": "Isha"
               }
@@ -1014,6 +1131,7 @@
             "sunriseRow": {
               "key": "Sunrise",
               "time": "07:07",
+              "minutes": 427,
               "abbr": "Sun",
               "name": "Sunrise"
             }
@@ -1035,6 +1153,7 @@
             "key": "Fajr",
             "time": "05:12",
             "display": "5:12 AM",
+            "minutes": 312,
             "abbr": "Fajr",
             "name": "Fajr"
           },
@@ -1042,6 +1161,7 @@
             "key": "Dhuhr",
             "time": "12:32",
             "display": "12:32 PM",
+            "minutes": 752,
             "abbr": "Dhuhr",
             "name": "Dhuhr"
           },
@@ -1049,6 +1169,7 @@
             "key": "Asr",
             "time": "15:50",
             "display": "3:50 PM",
+            "minutes": 950,
             "abbr": "Asr",
             "name": "Asr"
           },
@@ -1056,6 +1177,7 @@
             "key": "Maghrib",
             "time": "18:35",
             "display": "6:35 PM",
+            "minutes": 1115,
             "abbr": "Magh",
             "name": "Maghrib"
           },
@@ -1063,6 +1185,7 @@
             "key": "Isha",
             "time": "20:15",
             "display": "8:15 PM",
+            "minutes": 1215,
             "abbr": "Isha",
             "name": "Isha"
           }
@@ -1071,6 +1194,7 @@
           "key": "Sunrise",
           "time": "07:05",
           "display": "7:05 AM",
+          "minutes": 425,
           "abbr": "Sun",
           "name": "Sunrise"
         },
@@ -1088,6 +1212,7 @@
                 "key": "Fajr",
                 "time": "05:12",
                 "display": "5:12 AM",
+                "minutes": 312,
                 "abbr": "Fajr",
                 "name": "Fajr"
               },
@@ -1095,6 +1220,7 @@
                 "key": "Dhuhr",
                 "time": "12:32",
                 "display": "12:32 PM",
+                "minutes": 752,
                 "abbr": "Dhuhr",
                 "name": "Dhuhr"
               },
@@ -1102,6 +1228,7 @@
                 "key": "Asr",
                 "time": "15:50",
                 "display": "3:50 PM",
+                "minutes": 950,
                 "abbr": "Asr",
                 "name": "Asr"
               },
@@ -1109,6 +1236,7 @@
                 "key": "Maghrib",
                 "time": "18:35",
                 "display": "6:35 PM",
+                "minutes": 1115,
                 "abbr": "Magh",
                 "name": "Maghrib"
               },
@@ -1116,6 +1244,7 @@
                 "key": "Isha",
                 "time": "20:15",
                 "display": "8:15 PM",
+                "minutes": 1215,
                 "abbr": "Isha",
                 "name": "Isha"
               }
@@ -1124,6 +1253,7 @@
               "key": "Sunrise",
               "time": "07:05",
               "display": "7:05 AM",
+              "minutes": 425,
               "abbr": "Sun",
               "name": "Sunrise"
             }
@@ -1145,6 +1275,7 @@
             "key": "Fajr",
             "time": "05:12",
             "display": "5:12 AM",
+            "minutes": 312,
             "abbr": "Fajr",
             "name": "Fajr"
           },
@@ -1152,6 +1283,7 @@
             "key": "Dhuhr",
             "time": "12:32",
             "display": "12:32 PM",
+            "minutes": 752,
             "abbr": "Dhuhr",
             "name": "Dhuhr"
           },
@@ -1159,6 +1291,7 @@
             "key": "Asr",
             "time": "15:50",
             "display": "3:50 PM",
+            "minutes": 950,
             "abbr": "Asr",
             "name": "Asr"
           },
@@ -1166,6 +1299,7 @@
             "key": "Maghrib",
             "time": "18:35",
             "display": "6:35 PM",
+            "minutes": 1115,
             "abbr": "Magh",
             "name": "Maghrib"
           },
@@ -1173,6 +1307,7 @@
             "key": "Isha",
             "time": "20:15",
             "display": "8:15 PM",
+            "minutes": 1215,
             "abbr": "Isha",
             "name": "Isha"
           }
@@ -1181,6 +1316,7 @@
           "key": "Sunrise",
           "time": "07:05",
           "display": "7:05 AM",
+          "minutes": 425,
           "abbr": "Sun",
           "name": "Sunrise"
         },
@@ -1189,6 +1325,7 @@
             "key": "Midnight",
             "time": "00:40",
             "display": "12:40 AM",
+            "minutes": 40,
             "abbr": "Mid",
             "name": "Islamic Midnight"
           },
@@ -1196,6 +1333,7 @@
             "key": "Lastthird",
             "time": "02:55",
             "display": "2:55 AM",
+            "minutes": 175,
             "abbr": "Qiyam",
             "name": "Last Third"
           },
@@ -1203,6 +1341,7 @@
             "key": "Firstthird",
             "time": "00:05",
             "display": "12:05 AM",
+            "minutes": 1445,
             "abbr": "1/3",
             "name": "First Third"
           }
@@ -1221,6 +1360,7 @@
                 "key": "Fajr",
                 "time": "05:12",
                 "display": "5:12 AM",
+                "minutes": 312,
                 "abbr": "Fajr",
                 "name": "Fajr"
               },
@@ -1228,6 +1368,7 @@
                 "key": "Dhuhr",
                 "time": "12:32",
                 "display": "12:32 PM",
+                "minutes": 752,
                 "abbr": "Dhuhr",
                 "name": "Dhuhr"
               },
@@ -1235,6 +1376,7 @@
                 "key": "Asr",
                 "time": "15:50",
                 "display": "3:50 PM",
+                "minutes": 950,
                 "abbr": "Asr",
                 "name": "Asr"
               },
@@ -1242,6 +1384,7 @@
                 "key": "Maghrib",
                 "time": "18:35",
                 "display": "6:35 PM",
+                "minutes": 1115,
                 "abbr": "Magh",
                 "name": "Maghrib"
               },
@@ -1249,6 +1392,7 @@
                 "key": "Isha",
                 "time": "20:15",
                 "display": "8:15 PM",
+                "minutes": 1215,
                 "abbr": "Isha",
                 "name": "Isha"
               }
@@ -1257,6 +1401,7 @@
               "key": "Sunrise",
               "time": "07:05",
               "display": "7:05 AM",
+              "minutes": 425,
               "abbr": "Sun",
               "name": "Sunrise"
             },
@@ -1265,6 +1410,7 @@
                 "key": "Midnight",
                 "time": "00:40",
                 "display": "12:40 AM",
+                "minutes": 40,
                 "abbr": "Mid",
                 "name": "Islamic Midnight"
               },
@@ -1272,6 +1418,7 @@
                 "key": "Lastthird",
                 "time": "02:55",
                 "display": "2:55 AM",
+                "minutes": 175,
                 "abbr": "Qiyam",
                 "name": "Last Third"
               },
@@ -1279,6 +1426,7 @@
                 "key": "Firstthird",
                 "time": "00:05",
                 "display": "12:05 AM",
+                "minutes": 1445,
                 "abbr": "1/3",
                 "name": "First Third"
               }
@@ -1292,6 +1440,7 @@
                 "key": "Fajr",
                 "time": "05:14",
                 "display": "5:14 AM",
+                "minutes": 314,
                 "abbr": "Fajr",
                 "name": "Fajr"
               },
@@ -1299,6 +1448,7 @@
                 "key": "Dhuhr",
                 "time": "12:34",
                 "display": "12:34 PM",
+                "minutes": 754,
                 "abbr": "Dhuhr",
                 "name": "Dhuhr"
               },
@@ -1306,6 +1456,7 @@
                 "key": "Asr",
                 "time": "15:52",
                 "display": "3:52 PM",
+                "minutes": 952,
                 "abbr": "Asr",
                 "name": "Asr"
               },
@@ -1313,6 +1464,7 @@
                 "key": "Maghrib",
                 "time": "18:37",
                 "display": "6:37 PM",
+                "minutes": 1117,
                 "abbr": "Magh",
                 "name": "Maghrib"
               },
@@ -1320,6 +1472,7 @@
                 "key": "Isha",
                 "time": "20:17",
                 "display": "8:17 PM",
+                "minutes": 1217,
                 "abbr": "Isha",
                 "name": "Isha"
               }
@@ -1328,6 +1481,7 @@
               "key": "Sunrise",
               "time": "07:07",
               "display": "7:07 AM",
+              "minutes": 427,
               "abbr": "Sun",
               "name": "Sunrise"
             },
@@ -1336,6 +1490,7 @@
                 "key": "Midnight",
                 "time": "00:42",
                 "display": "12:42 AM",
+                "minutes": 42,
                 "abbr": "Mid",
                 "name": "Islamic Midnight"
               },
@@ -1343,6 +1498,7 @@
                 "key": "Lastthird",
                 "time": "02:57",
                 "display": "2:57 AM",
+                "minutes": 177,
                 "abbr": "Qiyam",
                 "name": "Last Third"
               },
@@ -1350,6 +1506,7 @@
                 "key": "Firstthird",
                 "time": "00:07",
                 "display": "12:07 AM",
+                "minutes": 1447,
                 "abbr": "1/3",
                 "name": "First Third"
               }
@@ -1363,6 +1520,7 @@
                 "key": "Fajr",
                 "time": "05:16",
                 "display": "5:16 AM",
+                "minutes": 316,
                 "abbr": "Fajr",
                 "name": "Fajr"
               },
@@ -1370,6 +1528,7 @@
                 "key": "Dhuhr",
                 "time": "12:36",
                 "display": "12:36 PM",
+                "minutes": 756,
                 "abbr": "Dhuhr",
                 "name": "Dhuhr"
               },
@@ -1377,6 +1536,7 @@
                 "key": "Asr",
                 "time": "15:54",
                 "display": "3:54 PM",
+                "minutes": 954,
                 "abbr": "Asr",
                 "name": "Asr"
               },
@@ -1384,6 +1544,7 @@
                 "key": "Maghrib",
                 "time": "18:39",
                 "display": "6:39 PM",
+                "minutes": 1119,
                 "abbr": "Magh",
                 "name": "Maghrib"
               },
@@ -1391,6 +1552,7 @@
                 "key": "Isha",
                 "time": "20:19",
                 "display": "8:19 PM",
+                "minutes": 1219,
                 "abbr": "Isha",
                 "name": "Isha"
               }
@@ -1399,6 +1561,7 @@
               "key": "Sunrise",
               "time": "07:09",
               "display": "7:09 AM",
+              "minutes": 429,
               "abbr": "Sun",
               "name": "Sunrise"
             },
@@ -1407,6 +1570,7 @@
                 "key": "Midnight",
                 "time": "00:44",
                 "display": "12:44 AM",
+                "minutes": 44,
                 "abbr": "Mid",
                 "name": "Islamic Midnight"
               },
@@ -1414,6 +1578,7 @@
                 "key": "Lastthird",
                 "time": "02:59",
                 "display": "2:59 AM",
+                "minutes": 179,
                 "abbr": "Qiyam",
                 "name": "Last Third"
               },
@@ -1421,6 +1586,7 @@
                 "key": "Firstthird",
                 "time": "00:09",
                 "display": "12:09 AM",
+                "minutes": 1449,
                 "abbr": "1/3",
                 "name": "First Third"
               }
@@ -1442,30 +1608,35 @@
           {
             "key": "Fajr",
             "time": "05:12",
+            "minutes": 312,
             "abbr": "Fajr",
             "name": "Fajr"
           },
           {
             "key": "Dhuhr",
             "time": "12:32",
+            "minutes": 752,
             "abbr": "Dhuhr",
             "name": "Dhuhr"
           },
           {
             "key": "Asr",
             "time": "15:50",
+            "minutes": 950,
             "abbr": "Asr",
             "name": "Asr"
           },
           {
             "key": "Maghrib",
             "time": "18:35",
+            "minutes": 1115,
             "abbr": "Magh",
             "name": "Maghrib"
           },
           {
             "key": "Isha",
             "time": "20:15",
+            "minutes": 1215,
             "abbr": "Isha",
             "name": "Isha"
           }
@@ -1473,6 +1644,7 @@
         "sunriseRow": {
           "key": "Sunrise",
           "time": "07:05",
+          "minutes": 425,
           "abbr": "Sun",
           "name": "Sunrise"
         },
@@ -1480,18 +1652,21 @@
           {
             "key": "Midnight",
             "time": "00:40",
+            "minutes": 40,
             "abbr": "Mid",
             "name": "Islamic Midnight"
           },
           {
             "key": "Lastthird",
             "time": "02:55",
+            "minutes": 175,
             "abbr": "Qiyam",
             "name": "Last Third"
           },
           {
             "key": "Firstthird",
             "time": "00:05",
+            "minutes": 1445,
             "abbr": "1/3",
             "name": "First Third"
           }
@@ -1508,30 +1683,35 @@
               {
                 "key": "Fajr",
                 "time": "05:12",
+                "minutes": 312,
                 "abbr": "Fajr",
                 "name": "Fajr"
               },
               {
                 "key": "Dhuhr",
                 "time": "12:32",
+                "minutes": 752,
                 "abbr": "Dhuhr",
                 "name": "Dhuhr"
               },
               {
                 "key": "Asr",
                 "time": "15:50",
+                "minutes": 950,
                 "abbr": "Asr",
                 "name": "Asr"
               },
               {
                 "key": "Maghrib",
                 "time": "18:35",
+                "minutes": 1115,
                 "abbr": "Magh",
                 "name": "Maghrib"
               },
               {
                 "key": "Isha",
                 "time": "20:15",
+                "minutes": 1215,
                 "abbr": "Isha",
                 "name": "Isha"
               }
@@ -1539,6 +1719,7 @@
             "sunriseRow": {
               "key": "Sunrise",
               "time": "07:05",
+              "minutes": 425,
               "abbr": "Sun",
               "name": "Sunrise"
             },
@@ -1546,18 +1727,21 @@
               {
                 "key": "Midnight",
                 "time": "00:40",
+                "minutes": 40,
                 "abbr": "Mid",
                 "name": "Islamic Midnight"
               },
               {
                 "key": "Lastthird",
                 "time": "02:55",
+                "minutes": 175,
                 "abbr": "Qiyam",
                 "name": "Last Third"
               },
               {
                 "key": "Firstthird",
                 "time": "00:05",
+                "minutes": 1445,
                 "abbr": "1/3",
                 "name": "First Third"
               }
@@ -1570,30 +1754,35 @@
               {
                 "key": "Fajr",
                 "time": "05:14",
+                "minutes": 314,
                 "abbr": "Fajr",
                 "name": "Fajr"
               },
               {
                 "key": "Dhuhr",
                 "time": "12:34",
+                "minutes": 754,
                 "abbr": "Dhuhr",
                 "name": "Dhuhr"
               },
               {
                 "key": "Asr",
                 "time": "15:52",
+                "minutes": 952,
                 "abbr": "Asr",
                 "name": "Asr"
               },
               {
                 "key": "Maghrib",
                 "time": "18:37",
+                "minutes": 1117,
                 "abbr": "Magh",
                 "name": "Maghrib"
               },
               {
                 "key": "Isha",
                 "time": "20:17",
+                "minutes": 1217,
                 "abbr": "Isha",
                 "name": "Isha"
               }
@@ -1601,6 +1790,7 @@
             "sunriseRow": {
               "key": "Sunrise",
               "time": "07:07",
+              "minutes": 427,
               "abbr": "Sun",
               "name": "Sunrise"
             },
@@ -1608,18 +1798,21 @@
               {
                 "key": "Midnight",
                 "time": "00:42",
+                "minutes": 42,
                 "abbr": "Mid",
                 "name": "Islamic Midnight"
               },
               {
                 "key": "Lastthird",
                 "time": "02:57",
+                "minutes": 177,
                 "abbr": "Qiyam",
                 "name": "Last Third"
               },
               {
                 "key": "Firstthird",
                 "time": "00:07",
+                "minutes": 1447,
                 "abbr": "1/3",
                 "name": "First Third"
               }
@@ -1641,24 +1834,28 @@
           {
             "key": "Fajr",
             "time": "05:14",
+            "minutes": 314,
             "abbr": "Fajr",
             "name": "Fajr"
           },
           {
             "key": "Dhuhr",
             "time": "12:34",
+            "minutes": 754,
             "abbr": "Dhuhr",
             "name": "Dhuhr"
           },
           {
             "key": "Asr",
             "time": "15:52",
+            "minutes": 952,
             "abbr": "Asr",
             "name": "Asr"
           },
           {
             "key": "Maghrib",
             "time": "18:37",
+            "minutes": 1117,
             "abbr": "Magh",
             "name": "Maghrib"
           },
@@ -1672,6 +1869,7 @@
         "sunriseRow": {
           "key": "Sunrise",
           "time": "07:07",
+          "minutes": 427,
           "abbr": "Sun",
           "name": "Sunrise"
         },
@@ -1687,24 +1885,28 @@
               {
                 "key": "Fajr",
                 "time": "05:12",
+                "minutes": 312,
                 "abbr": "Fajr",
                 "name": "Fajr"
               },
               {
                 "key": "Dhuhr",
                 "time": "12:32",
+                "minutes": 752,
                 "abbr": "Dhuhr",
                 "name": "Dhuhr"
               },
               {
                 "key": "Asr",
                 "time": "15:50",
+                "minutes": 950,
                 "abbr": "Asr",
                 "name": "Asr"
               },
               {
                 "key": "Maghrib",
                 "time": "18:35",
+                "minutes": 1115,
                 "abbr": "Magh",
                 "name": "Maghrib"
               },
@@ -1718,6 +1920,7 @@
             "sunriseRow": {
               "key": "Sunrise",
               "time": "07:05",
+              "minutes": 425,
               "abbr": "Sun",
               "name": "Sunrise"
             }
@@ -1729,24 +1932,28 @@
               {
                 "key": "Fajr",
                 "time": "05:14",
+                "minutes": 314,
                 "abbr": "Fajr",
                 "name": "Fajr"
               },
               {
                 "key": "Dhuhr",
                 "time": "12:34",
+                "minutes": 754,
                 "abbr": "Dhuhr",
                 "name": "Dhuhr"
               },
               {
                 "key": "Asr",
                 "time": "15:52",
+                "minutes": 952,
                 "abbr": "Asr",
                 "name": "Asr"
               },
               {
                 "key": "Maghrib",
                 "time": "18:37",
+                "minutes": 1117,
                 "abbr": "Magh",
                 "name": "Maghrib"
               },
@@ -1760,6 +1967,7 @@
             "sunriseRow": {
               "key": "Sunrise",
               "time": "07:07",
+              "minutes": 427,
               "abbr": "Sun",
               "name": "Sunrise"
             }
@@ -1790,35 +1998,40 @@
             "abbr": "Fajr",
             "name": "Fajr",
             "time": "05:12",
-            "display": "05:12"
+            "display": "05:12",
+            "minutes": 312
           },
           {
             "key": "Dhuhr",
             "abbr": "Dhuhr",
             "name": "Dhuhr",
             "time": "12:32",
-            "display": "12:32"
+            "display": "12:32",
+            "minutes": 752
           },
           {
             "key": "Asr",
             "abbr": "Asr",
             "name": "Asr",
             "time": "15:50",
-            "display": "15:50"
+            "display": "15:50",
+            "minutes": 950
           },
           {
             "key": "Maghrib",
             "abbr": "Magh",
             "name": "Maghrib",
             "time": "18:35",
-            "display": "18:35"
+            "display": "18:35",
+            "minutes": 1115
           },
           {
             "key": "Isha",
             "abbr": "Isha",
             "name": "Isha",
             "time": "20:15",
-            "display": "20:15"
+            "display": "20:15",
+            "minutes": 1215
           }
         ],
         "sunriseRow": {
@@ -1826,7 +2039,8 @@
           "abbr": "Sun",
           "name": "Sunrise",
           "time": "07:05",
-          "display": "07:05"
+          "display": "07:05",
+          "minutes": 425
         },
         "extraRows": [],
         "accentHex": "#5B4B9E",
@@ -1846,30 +2060,35 @@
             "key": "Fajr",
             "name": "Fajr",
             "time": "05:12",
+            "minutes": 312,
             "mode": "adhan"
           },
           {
             "key": "Dhuhr",
             "name": "Dhuhr",
             "time": "12:32",
+            "minutes": 752,
             "mode": "notification"
           },
           {
             "key": "Asr",
             "name": "Asr",
             "time": "15:50",
+            "minutes": 950,
             "mode": "notification"
           },
           {
             "key": "Maghrib",
             "name": "Maghrib",
             "time": "18:35",
+            "minutes": 1115,
             "mode": "adhan"
           },
           {
             "key": "Isha",
             "name": "Isha",
             "time": "20:15",
+            "minutes": 1215,
             "mode": "notification"
           }
         ],
@@ -1877,6 +2096,7 @@
           "key": "Sunrise",
           "name": "Sunrise",
           "time": "07:05",
+          "minutes": 425,
           "mode": "silent"
         },
         "extraRows": [],
@@ -1889,30 +2109,35 @@
                 "key": "Fajr",
                 "name": "Fajr",
                 "time": "05:12",
+                "minutes": 312,
                 "mode": "adhan"
               },
               {
                 "key": "Dhuhr",
                 "name": "Dhuhr",
                 "time": "12:32",
+                "minutes": 752,
                 "mode": "notification"
               },
               {
                 "key": "Asr",
                 "name": "Asr",
                 "time": "15:50",
+                "minutes": 950,
                 "mode": "notification"
               },
               {
                 "key": "Maghrib",
                 "name": "Maghrib",
                 "time": "18:35",
+                "minutes": 1115,
                 "mode": "adhan"
               },
               {
                 "key": "Isha",
                 "name": "Isha",
                 "time": "20:15",
+                "minutes": 1215,
                 "mode": "notification"
               }
             ],
@@ -1920,6 +2145,7 @@
               "key": "Sunrise",
               "name": "Sunrise",
               "time": "07:05",
+              "minutes": 425,
               "mode": "silent"
             },
             "extraRows": []
@@ -1932,30 +2158,35 @@
                 "key": "Fajr",
                 "name": "Fajr",
                 "time": "05:14",
+                "minutes": 314,
                 "mode": "adhan"
               },
               {
                 "key": "Dhuhr",
                 "name": "Dhuhr",
                 "time": "12:34",
+                "minutes": 754,
                 "mode": "notification"
               },
               {
                 "key": "Asr",
                 "name": "Asr",
                 "time": "15:52",
+                "minutes": 952,
                 "mode": "notification"
               },
               {
                 "key": "Maghrib",
                 "name": "Maghrib",
                 "time": "18:37",
+                "minutes": 1117,
                 "mode": "adhan"
               },
               {
                 "key": "Isha",
                 "name": "Isha",
                 "time": "20:17",
+                "minutes": 1217,
                 "mode": "notification"
               }
             ],
@@ -1963,6 +2194,7 @@
               "key": "Sunrise",
               "name": "Sunrise",
               "time": "07:07",
+              "minutes": 427,
               "mode": "silent"
             },
             "extraRows": []
@@ -1975,30 +2207,35 @@
                 "key": "Fajr",
                 "name": "Fajr",
                 "time": "05:16",
+                "minutes": 316,
                 "mode": "adhan"
               },
               {
                 "key": "Dhuhr",
                 "name": "Dhuhr",
                 "time": "12:36",
+                "minutes": 756,
                 "mode": "notification"
               },
               {
                 "key": "Asr",
                 "name": "Asr",
                 "time": "15:54",
+                "minutes": 954,
                 "mode": "notification"
               },
               {
                 "key": "Maghrib",
                 "name": "Maghrib",
                 "time": "18:39",
+                "minutes": 1119,
                 "mode": "adhan"
               },
               {
                 "key": "Isha",
                 "name": "Isha",
                 "time": "20:19",
+                "minutes": 1219,
                 "mode": "notification"
               }
             ],
@@ -2006,6 +2243,7 @@
               "key": "Sunrise",
               "name": "Sunrise",
               "time": "07:09",
+              "minutes": 429,
               "mode": "silent"
             },
             "extraRows": []
@@ -2057,35 +2295,40 @@
             "abbr": "Fajr",
             "name": "Fajr",
             "time": "05:12",
-            "display": "5:12 AM"
+            "display": "5:12 AM",
+            "minutes": 312
           },
           {
             "key": "Dhuhr",
             "abbr": "Dhuhr",
             "name": "Dhuhr",
             "time": "12:32",
-            "display": "12:32 PM"
+            "display": "12:32 PM",
+            "minutes": 752
           },
           {
             "key": "Asr",
             "abbr": "Asr",
             "name": "Asr",
             "time": "15:50",
-            "display": "3:50 PM"
+            "display": "3:50 PM",
+            "minutes": 950
           },
           {
             "key": "Maghrib",
             "abbr": "Magh",
             "name": "Maghrib",
             "time": "18:35",
-            "display": "6:35 PM"
+            "display": "6:35 PM",
+            "minutes": 1115
           },
           {
             "key": "Isha",
             "abbr": "Isha",
             "name": "Isha",
             "time": "20:15",
-            "display": "8:15 PM"
+            "display": "8:15 PM",
+            "minutes": 1215
           }
         ],
         "sunriseRow": {
@@ -2093,7 +2336,8 @@
           "abbr": "Sun",
           "name": "Sunrise",
           "time": "07:05",
-          "display": "7:05 AM"
+          "display": "7:05 AM",
+          "minutes": 425
         },
         "extraRows": [],
         "accentHex": "#5B4B9E",
@@ -2114,6 +2358,7 @@
             "name": "Fajr",
             "time": "05:12",
             "display": "5:12 AM",
+            "minutes": 312,
             "mode": "adhan"
           },
           {
@@ -2121,6 +2366,7 @@
             "name": "Dhuhr",
             "time": "12:32",
             "display": "12:32 PM",
+            "minutes": 752,
             "mode": "notification"
           },
           {
@@ -2128,6 +2374,7 @@
             "name": "Asr",
             "time": "15:50",
             "display": "3:50 PM",
+            "minutes": 950,
             "mode": "notification"
           },
           {
@@ -2135,6 +2382,7 @@
             "name": "Maghrib",
             "time": "18:35",
             "display": "6:35 PM",
+            "minutes": 1115,
             "mode": "adhan"
           },
           {
@@ -2142,6 +2390,7 @@
             "name": "Isha",
             "time": "20:15",
             "display": "8:15 PM",
+            "minutes": 1215,
             "mode": "notification"
           }
         ],
@@ -2150,6 +2399,7 @@
           "name": "Sunrise",
           "time": "07:05",
           "display": "7:05 AM",
+          "minutes": 425,
           "mode": "silent"
         },
         "extraRows": [],
@@ -2163,6 +2413,7 @@
                 "name": "Fajr",
                 "time": "05:12",
                 "display": "5:12 AM",
+                "minutes": 312,
                 "mode": "adhan"
               },
               {
@@ -2170,6 +2421,7 @@
                 "name": "Dhuhr",
                 "time": "12:32",
                 "display": "12:32 PM",
+                "minutes": 752,
                 "mode": "notification"
               },
               {
@@ -2177,6 +2429,7 @@
                 "name": "Asr",
                 "time": "15:50",
                 "display": "3:50 PM",
+                "minutes": 950,
                 "mode": "notification"
               },
               {
@@ -2184,6 +2437,7 @@
                 "name": "Maghrib",
                 "time": "18:35",
                 "display": "6:35 PM",
+                "minutes": 1115,
                 "mode": "adhan"
               },
               {
@@ -2191,6 +2445,7 @@
                 "name": "Isha",
                 "time": "20:15",
                 "display": "8:15 PM",
+                "minutes": 1215,
                 "mode": "notification"
               }
             ],
@@ -2199,6 +2454,7 @@
               "name": "Sunrise",
               "time": "07:05",
               "display": "7:05 AM",
+              "minutes": 425,
               "mode": "silent"
             },
             "extraRows": []
@@ -2212,6 +2468,7 @@
                 "name": "Fajr",
                 "time": "05:14",
                 "display": "5:14 AM",
+                "minutes": 314,
                 "mode": "adhan"
               },
               {
@@ -2219,6 +2476,7 @@
                 "name": "Dhuhr",
                 "time": "12:34",
                 "display": "12:34 PM",
+                "minutes": 754,
                 "mode": "notification"
               },
               {
@@ -2226,6 +2484,7 @@
                 "name": "Asr",
                 "time": "15:52",
                 "display": "3:52 PM",
+                "minutes": 952,
                 "mode": "notification"
               },
               {
@@ -2233,6 +2492,7 @@
                 "name": "Maghrib",
                 "time": "18:37",
                 "display": "6:37 PM",
+                "minutes": 1117,
                 "mode": "adhan"
               },
               {
@@ -2240,6 +2500,7 @@
                 "name": "Isha",
                 "time": "20:17",
                 "display": "8:17 PM",
+                "minutes": 1217,
                 "mode": "notification"
               }
             ],
@@ -2248,6 +2509,7 @@
               "name": "Sunrise",
               "time": "07:07",
               "display": "7:07 AM",
+              "minutes": 427,
               "mode": "silent"
             },
             "extraRows": []
@@ -2261,6 +2523,7 @@
                 "name": "Fajr",
                 "time": "05:16",
                 "display": "5:16 AM",
+                "minutes": 316,
                 "mode": "adhan"
               },
               {
@@ -2268,6 +2531,7 @@
                 "name": "Dhuhr",
                 "time": "12:36",
                 "display": "12:36 PM",
+                "minutes": 756,
                 "mode": "notification"
               },
               {
@@ -2275,6 +2539,7 @@
                 "name": "Asr",
                 "time": "15:54",
                 "display": "3:54 PM",
+                "minutes": 954,
                 "mode": "notification"
               },
               {
@@ -2282,6 +2547,7 @@
                 "name": "Maghrib",
                 "time": "18:39",
                 "display": "6:39 PM",
+                "minutes": 1119,
                 "mode": "adhan"
               },
               {
@@ -2289,6 +2555,7 @@
                 "name": "Isha",
                 "time": "20:19",
                 "display": "8:19 PM",
+                "minutes": 1219,
                 "mode": "notification"
               }
             ],
@@ -2297,6 +2564,7 @@
               "name": "Sunrise",
               "time": "07:09",
               "display": "7:09 AM",
+              "minutes": 429,
               "mode": "silent"
             },
             "extraRows": []
@@ -2348,35 +2616,40 @@
             "abbr": "Fajr",
             "name": "Fajr",
             "time": "05:12",
-            "display": "05:12"
+            "display": "05:12",
+            "minutes": 312
           },
           {
             "key": "Dhuhr",
             "abbr": "Dhuhr",
             "name": "Dhuhr",
             "time": "12:32",
-            "display": "12:32"
+            "display": "12:32",
+            "minutes": 752
           },
           {
             "key": "Asr",
             "abbr": "Asr",
             "name": "Asr",
             "time": "15:50",
-            "display": "15:50"
+            "display": "15:50",
+            "minutes": 950
           },
           {
             "key": "Maghrib",
             "abbr": "Magh",
             "name": "Maghrib",
             "time": "18:35",
-            "display": "18:35"
+            "display": "18:35",
+            "minutes": 1115
           },
           {
             "key": "Isha",
             "abbr": "Isha",
             "name": "Isha",
             "time": "20:15",
-            "display": "20:15"
+            "display": "20:15",
+            "minutes": 1215
           }
         ],
         "sunriseRow": {
@@ -2384,7 +2657,8 @@
           "abbr": "Sun",
           "name": "Sunrise",
           "time": "07:05",
-          "display": "07:05"
+          "display": "07:05",
+          "minutes": 425
         },
         "extraRows": [],
         "accentHex": "#5B4B9E",
@@ -2404,30 +2678,35 @@
             "key": "Fajr",
             "name": "Fajr",
             "time": "05:12",
+            "minutes": 312,
             "mode": "adhan"
           },
           {
             "key": "Dhuhr",
             "name": "Dhuhr",
             "time": "12:32",
+            "minutes": 752,
             "mode": "notification"
           },
           {
             "key": "Asr",
             "name": "Asr",
             "time": "15:50",
+            "minutes": 950,
             "mode": "notification"
           },
           {
             "key": "Maghrib",
             "name": "Maghrib",
             "time": "18:35",
+            "minutes": 1115,
             "mode": "adhan"
           },
           {
             "key": "Isha",
             "name": "Isha",
             "time": "20:15",
+            "minutes": 1215,
             "mode": "notification"
           }
         ],
@@ -2435,6 +2714,7 @@
           "key": "Sunrise",
           "name": "Sunrise",
           "time": "07:05",
+          "minutes": 425,
           "mode": "silent"
         },
         "extraRows": [],
@@ -2447,30 +2727,35 @@
                 "key": "Fajr",
                 "name": "Fajr",
                 "time": "05:12",
+                "minutes": 312,
                 "mode": "adhan"
               },
               {
                 "key": "Dhuhr",
                 "name": "Dhuhr",
                 "time": "12:32",
+                "minutes": 752,
                 "mode": "notification"
               },
               {
                 "key": "Asr",
                 "name": "Asr",
                 "time": "15:50",
+                "minutes": 950,
                 "mode": "notification"
               },
               {
                 "key": "Maghrib",
                 "name": "Maghrib",
                 "time": "18:35",
+                "minutes": 1115,
                 "mode": "adhan"
               },
               {
                 "key": "Isha",
                 "name": "Isha",
                 "time": "20:15",
+                "minutes": 1215,
                 "mode": "notification"
               }
             ],
@@ -2478,6 +2763,7 @@
               "key": "Sunrise",
               "name": "Sunrise",
               "time": "07:05",
+              "minutes": 425,
               "mode": "silent"
             },
             "extraRows": []
@@ -2490,30 +2776,35 @@
                 "key": "Fajr",
                 "name": "Fajr",
                 "time": "05:14",
+                "minutes": 314,
                 "mode": "adhan"
               },
               {
                 "key": "Dhuhr",
                 "name": "Dhuhr",
                 "time": "12:34",
+                "minutes": 754,
                 "mode": "notification"
               },
               {
                 "key": "Asr",
                 "name": "Asr",
                 "time": "15:52",
+                "minutes": 952,
                 "mode": "notification"
               },
               {
                 "key": "Maghrib",
                 "name": "Maghrib",
                 "time": "18:37",
+                "minutes": 1117,
                 "mode": "adhan"
               },
               {
                 "key": "Isha",
                 "name": "Isha",
                 "time": "20:17",
+                "minutes": 1217,
                 "mode": "notification"
               }
             ],
@@ -2521,6 +2812,7 @@
               "key": "Sunrise",
               "name": "Sunrise",
               "time": "07:07",
+              "minutes": 427,
               "mode": "silent"
             },
             "extraRows": []
@@ -2533,30 +2825,35 @@
                 "key": "Fajr",
                 "name": "Fajr",
                 "time": "05:16",
+                "minutes": 316,
                 "mode": "adhan"
               },
               {
                 "key": "Dhuhr",
                 "name": "Dhuhr",
                 "time": "12:36",
+                "minutes": 756,
                 "mode": "notification"
               },
               {
                 "key": "Asr",
                 "name": "Asr",
                 "time": "15:54",
+                "minutes": 954,
                 "mode": "notification"
               },
               {
                 "key": "Maghrib",
                 "name": "Maghrib",
                 "time": "18:39",
+                "minutes": 1119,
                 "mode": "adhan"
               },
               {
                 "key": "Isha",
                 "name": "Isha",
                 "time": "20:19",
+                "minutes": 1219,
                 "mode": "notification"
               }
             ],
@@ -2564,6 +2861,7 @@
               "key": "Sunrise",
               "name": "Sunrise",
               "time": "07:09",
+              "minutes": 429,
               "mode": "silent"
             },
             "extraRows": []
@@ -2615,35 +2913,40 @@
             "abbr": "Fajr",
             "name": "Fajr",
             "time": "05:14",
-            "display": "05:14"
+            "display": "05:14",
+            "minutes": 314
           },
           {
             "key": "Dhuhr",
             "abbr": "Dhuhr",
             "name": "Dhuhr",
             "time": "12:34",
-            "display": "12:34"
+            "display": "12:34",
+            "minutes": 754
           },
           {
             "key": "Asr",
             "abbr": "Asr",
             "name": "Asr",
             "time": "15:52",
-            "display": "15:52"
+            "display": "15:52",
+            "minutes": 952
           },
           {
             "key": "Maghrib",
             "abbr": "Magh",
             "name": "Maghrib",
             "time": "18:37",
-            "display": "18:37"
+            "display": "18:37",
+            "minutes": 1117
           },
           {
             "key": "Isha",
             "abbr": "Isha",
             "name": "Isha",
             "time": "20:17",
-            "display": "20:17"
+            "display": "20:17",
+            "minutes": 1217
           }
         ],
         "sunriseRow": {
@@ -2651,7 +2954,8 @@
           "abbr": "Sun",
           "name": "Sunrise",
           "time": "07:07",
-          "display": "07:07"
+          "display": "07:07",
+          "minutes": 427
         },
         "extraRows": [],
         "accentHex": "#5B4B9E",
@@ -2671,30 +2975,35 @@
             "key": "Fajr",
             "name": "Fajr",
             "time": "05:14",
+            "minutes": 314,
             "mode": "adhan"
           },
           {
             "key": "Dhuhr",
             "name": "Dhuhr",
             "time": "12:34",
+            "minutes": 754,
             "mode": "notification"
           },
           {
             "key": "Asr",
             "name": "Asr",
             "time": "15:52",
+            "minutes": 952,
             "mode": "notification"
           },
           {
             "key": "Maghrib",
             "name": "Maghrib",
             "time": "18:37",
+            "minutes": 1117,
             "mode": "adhan"
           },
           {
             "key": "Isha",
             "name": "Isha",
             "time": "20:17",
+            "minutes": 1217,
             "mode": "notification"
           }
         ],
@@ -2702,6 +3011,7 @@
           "key": "Sunrise",
           "name": "Sunrise",
           "time": "07:07",
+          "minutes": 427,
           "mode": "silent"
         },
         "extraRows": [],
@@ -2714,30 +3024,35 @@
                 "key": "Fajr",
                 "name": "Fajr",
                 "time": "05:12",
+                "minutes": 312,
                 "mode": "adhan"
               },
               {
                 "key": "Dhuhr",
                 "name": "Dhuhr",
                 "time": "12:32",
+                "minutes": 752,
                 "mode": "notification"
               },
               {
                 "key": "Asr",
                 "name": "Asr",
                 "time": "15:50",
+                "minutes": 950,
                 "mode": "notification"
               },
               {
                 "key": "Maghrib",
                 "name": "Maghrib",
                 "time": "18:35",
+                "minutes": 1115,
                 "mode": "adhan"
               },
               {
                 "key": "Isha",
                 "name": "Isha",
                 "time": "20:15",
+                "minutes": 1215,
                 "mode": "notification"
               }
             ],
@@ -2745,6 +3060,7 @@
               "key": "Sunrise",
               "name": "Sunrise",
               "time": "07:05",
+              "minutes": 425,
               "mode": "silent"
             },
             "extraRows": []
@@ -2757,30 +3073,35 @@
                 "key": "Fajr",
                 "name": "Fajr",
                 "time": "05:14",
+                "minutes": 314,
                 "mode": "adhan"
               },
               {
                 "key": "Dhuhr",
                 "name": "Dhuhr",
                 "time": "12:34",
+                "minutes": 754,
                 "mode": "notification"
               },
               {
                 "key": "Asr",
                 "name": "Asr",
                 "time": "15:52",
+                "minutes": 952,
                 "mode": "notification"
               },
               {
                 "key": "Maghrib",
                 "name": "Maghrib",
                 "time": "18:37",
+                "minutes": 1117,
                 "mode": "adhan"
               },
               {
                 "key": "Isha",
                 "name": "Isha",
                 "time": "20:17",
+                "minutes": 1217,
                 "mode": "notification"
               }
             ],
@@ -2788,6 +3109,7 @@
               "key": "Sunrise",
               "name": "Sunrise",
               "time": "07:07",
+              "minutes": 427,
               "mode": "silent"
             },
             "extraRows": []
@@ -2800,30 +3122,35 @@
                 "key": "Fajr",
                 "name": "Fajr",
                 "time": "05:16",
+                "minutes": 316,
                 "mode": "adhan"
               },
               {
                 "key": "Dhuhr",
                 "name": "Dhuhr",
                 "time": "12:36",
+                "minutes": 756,
                 "mode": "notification"
               },
               {
                 "key": "Asr",
                 "name": "Asr",
                 "time": "15:54",
+                "minutes": 954,
                 "mode": "notification"
               },
               {
                 "key": "Maghrib",
                 "name": "Maghrib",
                 "time": "18:39",
+                "minutes": 1119,
                 "mode": "adhan"
               },
               {
                 "key": "Isha",
                 "name": "Isha",
                 "time": "20:19",
+                "minutes": 1219,
                 "mode": "notification"
               }
             ],
@@ -2831,6 +3158,7 @@
               "key": "Sunrise",
               "name": "Sunrise",
               "time": "07:09",
+              "minutes": 429,
               "mode": "silent"
             },
             "extraRows": []
@@ -2882,35 +3210,40 @@
             "abbr": "Fajr",
             "name": "Fajr",
             "time": "05:14",
-            "display": "05:14"
+            "display": "05:14",
+            "minutes": 314
           },
           {
             "key": "Dhuhr",
             "abbr": "Dhuhr",
             "name": "Dhuhr",
             "time": "12:34",
-            "display": "12:34"
+            "display": "12:34",
+            "minutes": 754
           },
           {
             "key": "Asr",
             "abbr": "Asr",
             "name": "Asr",
             "time": "15:52",
-            "display": "15:52"
+            "display": "15:52",
+            "minutes": 952
           },
           {
             "key": "Maghrib",
             "abbr": "Magh",
             "name": "Maghrib",
             "time": "18:37",
-            "display": "18:37"
+            "display": "18:37",
+            "minutes": 1117
           },
           {
             "key": "Isha",
             "abbr": "Isha",
             "name": "Isha",
             "time": "20:17",
-            "display": "20:17"
+            "display": "20:17",
+            "minutes": 1217
           }
         ],
         "sunriseRow": {
@@ -2918,7 +3251,8 @@
           "abbr": "Sun",
           "name": "Sunrise",
           "time": "07:07",
-          "display": "07:07"
+          "display": "07:07",
+          "minutes": 427
         },
         "extraRows": [],
         "accentHex": "#5B4B9E",
@@ -2938,30 +3272,35 @@
             "key": "Fajr",
             "name": "Fajr",
             "time": "05:14",
+            "minutes": 314,
             "mode": "adhan"
           },
           {
             "key": "Dhuhr",
             "name": "Dhuhr",
             "time": "12:34",
+            "minutes": 754,
             "mode": "notification"
           },
           {
             "key": "Asr",
             "name": "Asr",
             "time": "15:52",
+            "minutes": 952,
             "mode": "notification"
           },
           {
             "key": "Maghrib",
             "name": "Maghrib",
             "time": "18:37",
+            "minutes": 1117,
             "mode": "adhan"
           },
           {
             "key": "Isha",
             "name": "Isha",
             "time": "20:17",
+            "minutes": 1217,
             "mode": "notification"
           }
         ],
@@ -2969,6 +3308,7 @@
           "key": "Sunrise",
           "name": "Sunrise",
           "time": "07:07",
+          "minutes": 427,
           "mode": "silent"
         },
         "extraRows": [],
@@ -2981,30 +3321,35 @@
                 "key": "Fajr",
                 "name": "Fajr",
                 "time": "05:12",
+                "minutes": 312,
                 "mode": "adhan"
               },
               {
                 "key": "Dhuhr",
                 "name": "Dhuhr",
                 "time": "12:32",
+                "minutes": 752,
                 "mode": "notification"
               },
               {
                 "key": "Asr",
                 "name": "Asr",
                 "time": "15:50",
+                "minutes": 950,
                 "mode": "notification"
               },
               {
                 "key": "Maghrib",
                 "name": "Maghrib",
                 "time": "18:35",
+                "minutes": 1115,
                 "mode": "adhan"
               },
               {
                 "key": "Isha",
                 "name": "Isha",
                 "time": "20:15",
+                "minutes": 1215,
                 "mode": "notification"
               }
             ],
@@ -3012,6 +3357,7 @@
               "key": "Sunrise",
               "name": "Sunrise",
               "time": "07:05",
+              "minutes": 425,
               "mode": "silent"
             },
             "extraRows": []
@@ -3024,30 +3370,35 @@
                 "key": "Fajr",
                 "name": "Fajr",
                 "time": "05:14",
+                "minutes": 314,
                 "mode": "adhan"
               },
               {
                 "key": "Dhuhr",
                 "name": "Dhuhr",
                 "time": "12:34",
+                "minutes": 754,
                 "mode": "notification"
               },
               {
                 "key": "Asr",
                 "name": "Asr",
                 "time": "15:52",
+                "minutes": 952,
                 "mode": "notification"
               },
               {
                 "key": "Maghrib",
                 "name": "Maghrib",
                 "time": "18:37",
+                "minutes": 1117,
                 "mode": "adhan"
               },
               {
                 "key": "Isha",
                 "name": "Isha",
                 "time": "20:17",
+                "minutes": 1217,
                 "mode": "notification"
               }
             ],
@@ -3055,6 +3406,7 @@
               "key": "Sunrise",
               "name": "Sunrise",
               "time": "07:07",
+              "minutes": 427,
               "mode": "silent"
             },
             "extraRows": []
@@ -3106,35 +3458,40 @@
             "abbr": "Fajr",
             "name": "Fajr",
             "time": "05:12",
-            "display": "5:12 AM"
+            "display": "5:12 AM",
+            "minutes": 312
           },
           {
             "key": "Dhuhr",
             "abbr": "Dhuhr",
             "name": "Dhuhr",
             "time": "12:32",
-            "display": "12:32 PM"
+            "display": "12:32 PM",
+            "minutes": 752
           },
           {
             "key": "Asr",
             "abbr": "Asr",
             "name": "Asr",
             "time": "15:50",
-            "display": "3:50 PM"
+            "display": "3:50 PM",
+            "minutes": 950
           },
           {
             "key": "Maghrib",
             "abbr": "Magh",
             "name": "Maghrib",
             "time": "18:35",
-            "display": "6:35 PM"
+            "display": "6:35 PM",
+            "minutes": 1115
           },
           {
             "key": "Isha",
             "abbr": "Isha",
             "name": "Isha",
             "time": "20:15",
-            "display": "8:15 PM"
+            "display": "8:15 PM",
+            "minutes": 1215
           }
         ],
         "sunriseRow": {
@@ -3142,7 +3499,8 @@
           "abbr": "Sun",
           "name": "Sunrise",
           "time": "07:05",
-          "display": "7:05 AM"
+          "display": "7:05 AM",
+          "minutes": 425
         },
         "extraRows": [],
         "accentHex": "#5B4B9E",
@@ -3163,6 +3521,7 @@
             "name": "Fajr",
             "time": "05:12",
             "display": "5:12 AM",
+            "minutes": 312,
             "mode": "adhan"
           },
           {
@@ -3170,6 +3529,7 @@
             "name": "Dhuhr",
             "time": "12:32",
             "display": "12:32 PM",
+            "minutes": 752,
             "mode": "notification"
           },
           {
@@ -3177,6 +3537,7 @@
             "name": "Asr",
             "time": "15:50",
             "display": "3:50 PM",
+            "minutes": 950,
             "mode": "notification"
           },
           {
@@ -3184,6 +3545,7 @@
             "name": "Maghrib",
             "time": "18:35",
             "display": "6:35 PM",
+            "minutes": 1115,
             "mode": "adhan"
           },
           {
@@ -3191,6 +3553,7 @@
             "name": "Isha",
             "time": "20:15",
             "display": "8:15 PM",
+            "minutes": 1215,
             "mode": "notification"
           }
         ],
@@ -3199,6 +3562,7 @@
           "name": "Sunrise",
           "time": "07:05",
           "display": "7:05 AM",
+          "minutes": 425,
           "mode": "silent"
         },
         "extraRows": [],
@@ -3212,6 +3576,7 @@
                 "name": "Fajr",
                 "time": "05:12",
                 "display": "5:12 AM",
+                "minutes": 312,
                 "mode": "adhan"
               },
               {
@@ -3219,6 +3584,7 @@
                 "name": "Dhuhr",
                 "time": "12:32",
                 "display": "12:32 PM",
+                "minutes": 752,
                 "mode": "notification"
               },
               {
@@ -3226,6 +3592,7 @@
                 "name": "Asr",
                 "time": "15:50",
                 "display": "3:50 PM",
+                "minutes": 950,
                 "mode": "notification"
               },
               {
@@ -3233,6 +3600,7 @@
                 "name": "Maghrib",
                 "time": "18:35",
                 "display": "6:35 PM",
+                "minutes": 1115,
                 "mode": "adhan"
               },
               {
@@ -3240,6 +3608,7 @@
                 "name": "Isha",
                 "time": "20:15",
                 "display": "8:15 PM",
+                "minutes": 1215,
                 "mode": "notification"
               }
             ],
@@ -3248,6 +3617,7 @@
               "name": "Sunrise",
               "time": "07:05",
               "display": "7:05 AM",
+              "minutes": 425,
               "mode": "silent"
             },
             "extraRows": []
@@ -3299,35 +3669,40 @@
             "abbr": "Fajr",
             "name": "Fajr",
             "time": "05:12",
-            "display": "5:12 AM"
+            "display": "5:12 AM",
+            "minutes": 312
           },
           {
             "key": "Dhuhr",
             "abbr": "Dhuhr",
             "name": "Dhuhr",
             "time": "12:32",
-            "display": "12:32 PM"
+            "display": "12:32 PM",
+            "minutes": 752
           },
           {
             "key": "Asr",
             "abbr": "Asr",
             "name": "Asr",
             "time": "15:50",
-            "display": "3:50 PM"
+            "display": "3:50 PM",
+            "minutes": 950
           },
           {
             "key": "Maghrib",
             "abbr": "Magh",
             "name": "Maghrib",
             "time": "18:35",
-            "display": "6:35 PM"
+            "display": "6:35 PM",
+            "minutes": 1115
           },
           {
             "key": "Isha",
             "abbr": "Isha",
             "name": "Isha",
             "time": "20:15",
-            "display": "8:15 PM"
+            "display": "8:15 PM",
+            "minutes": 1215
           }
         ],
         "sunriseRow": {
@@ -3335,7 +3710,8 @@
           "abbr": "Sun",
           "name": "Sunrise",
           "time": "07:05",
-          "display": "7:05 AM"
+          "display": "7:05 AM",
+          "minutes": 425
         },
         "extraRows": [
           {
@@ -3343,21 +3719,24 @@
             "abbr": "Mid",
             "name": "Islamic Midnight",
             "time": "00:40",
-            "display": "12:40 AM"
+            "display": "12:40 AM",
+            "minutes": 40
           },
           {
             "key": "Lastthird",
             "abbr": "Qiyam",
             "name": "Last Third",
             "time": "02:55",
-            "display": "2:55 AM"
+            "display": "2:55 AM",
+            "minutes": 175
           },
           {
             "key": "Firstthird",
             "abbr": "1/3",
             "name": "First Third",
             "time": "00:05",
-            "display": "12:05 AM"
+            "display": "12:05 AM",
+            "minutes": 1445
           }
         ],
         "accentHex": "#5B4B9E",
@@ -3378,6 +3757,7 @@
             "name": "Fajr",
             "time": "05:12",
             "display": "5:12 AM",
+            "minutes": 312,
             "mode": "adhan"
           },
           {
@@ -3385,6 +3765,7 @@
             "name": "Dhuhr",
             "time": "12:32",
             "display": "12:32 PM",
+            "minutes": 752,
             "mode": "notification"
           },
           {
@@ -3392,6 +3773,7 @@
             "name": "Asr",
             "time": "15:50",
             "display": "3:50 PM",
+            "minutes": 950,
             "mode": "notification"
           },
           {
@@ -3399,6 +3781,7 @@
             "name": "Maghrib",
             "time": "18:35",
             "display": "6:35 PM",
+            "minutes": 1115,
             "mode": "adhan"
           },
           {
@@ -3406,6 +3789,7 @@
             "name": "Isha",
             "time": "20:15",
             "display": "8:15 PM",
+            "minutes": 1215,
             "mode": "notification"
           }
         ],
@@ -3414,6 +3798,7 @@
           "name": "Sunrise",
           "time": "07:05",
           "display": "7:05 AM",
+          "minutes": 425,
           "mode": "silent"
         },
         "extraRows": [
@@ -3422,6 +3807,7 @@
             "name": "Islamic Midnight",
             "time": "00:40",
             "display": "12:40 AM",
+            "minutes": 40,
             "mode": "notification"
           },
           {
@@ -3429,6 +3815,7 @@
             "name": "Last Third",
             "time": "02:55",
             "display": "2:55 AM",
+            "minutes": 175,
             "mode": "notification"
           },
           {
@@ -3436,6 +3823,7 @@
             "name": "First Third",
             "time": "00:05",
             "display": "12:05 AM",
+            "minutes": 1445,
             "mode": "notification"
           }
         ],
@@ -3449,6 +3837,7 @@
                 "name": "Fajr",
                 "time": "05:12",
                 "display": "5:12 AM",
+                "minutes": 312,
                 "mode": "adhan"
               },
               {
@@ -3456,6 +3845,7 @@
                 "name": "Dhuhr",
                 "time": "12:32",
                 "display": "12:32 PM",
+                "minutes": 752,
                 "mode": "notification"
               },
               {
@@ -3463,6 +3853,7 @@
                 "name": "Asr",
                 "time": "15:50",
                 "display": "3:50 PM",
+                "minutes": 950,
                 "mode": "notification"
               },
               {
@@ -3470,6 +3861,7 @@
                 "name": "Maghrib",
                 "time": "18:35",
                 "display": "6:35 PM",
+                "minutes": 1115,
                 "mode": "adhan"
               },
               {
@@ -3477,6 +3869,7 @@
                 "name": "Isha",
                 "time": "20:15",
                 "display": "8:15 PM",
+                "minutes": 1215,
                 "mode": "notification"
               }
             ],
@@ -3485,6 +3878,7 @@
               "name": "Sunrise",
               "time": "07:05",
               "display": "7:05 AM",
+              "minutes": 425,
               "mode": "silent"
             },
             "extraRows": [
@@ -3493,6 +3887,7 @@
                 "name": "Islamic Midnight",
                 "time": "00:40",
                 "display": "12:40 AM",
+                "minutes": 40,
                 "mode": "notification"
               },
               {
@@ -3500,6 +3895,7 @@
                 "name": "Last Third",
                 "time": "02:55",
                 "display": "2:55 AM",
+                "minutes": 175,
                 "mode": "notification"
               },
               {
@@ -3507,6 +3903,7 @@
                 "name": "First Third",
                 "time": "00:05",
                 "display": "12:05 AM",
+                "minutes": 1445,
                 "mode": "notification"
               }
             ]
@@ -3520,6 +3917,7 @@
                 "name": "Fajr",
                 "time": "05:14",
                 "display": "5:14 AM",
+                "minutes": 314,
                 "mode": "adhan"
               },
               {
@@ -3527,6 +3925,7 @@
                 "name": "Dhuhr",
                 "time": "12:34",
                 "display": "12:34 PM",
+                "minutes": 754,
                 "mode": "notification"
               },
               {
@@ -3534,6 +3933,7 @@
                 "name": "Asr",
                 "time": "15:52",
                 "display": "3:52 PM",
+                "minutes": 952,
                 "mode": "notification"
               },
               {
@@ -3541,6 +3941,7 @@
                 "name": "Maghrib",
                 "time": "18:37",
                 "display": "6:37 PM",
+                "minutes": 1117,
                 "mode": "adhan"
               },
               {
@@ -3548,6 +3949,7 @@
                 "name": "Isha",
                 "time": "20:17",
                 "display": "8:17 PM",
+                "minutes": 1217,
                 "mode": "notification"
               }
             ],
@@ -3556,6 +3958,7 @@
               "name": "Sunrise",
               "time": "07:07",
               "display": "7:07 AM",
+              "minutes": 427,
               "mode": "silent"
             },
             "extraRows": [
@@ -3564,6 +3967,7 @@
                 "name": "Islamic Midnight",
                 "time": "00:42",
                 "display": "12:42 AM",
+                "minutes": 42,
                 "mode": "notification"
               },
               {
@@ -3571,6 +3975,7 @@
                 "name": "Last Third",
                 "time": "02:57",
                 "display": "2:57 AM",
+                "minutes": 177,
                 "mode": "notification"
               },
               {
@@ -3578,6 +3983,7 @@
                 "name": "First Third",
                 "time": "00:07",
                 "display": "12:07 AM",
+                "minutes": 1447,
                 "mode": "notification"
               }
             ]
@@ -3591,6 +3997,7 @@
                 "name": "Fajr",
                 "time": "05:16",
                 "display": "5:16 AM",
+                "minutes": 316,
                 "mode": "adhan"
               },
               {
@@ -3598,6 +4005,7 @@
                 "name": "Dhuhr",
                 "time": "12:36",
                 "display": "12:36 PM",
+                "minutes": 756,
                 "mode": "notification"
               },
               {
@@ -3605,6 +4013,7 @@
                 "name": "Asr",
                 "time": "15:54",
                 "display": "3:54 PM",
+                "minutes": 954,
                 "mode": "notification"
               },
               {
@@ -3612,6 +4021,7 @@
                 "name": "Maghrib",
                 "time": "18:39",
                 "display": "6:39 PM",
+                "minutes": 1119,
                 "mode": "adhan"
               },
               {
@@ -3619,6 +4029,7 @@
                 "name": "Isha",
                 "time": "20:19",
                 "display": "8:19 PM",
+                "minutes": 1219,
                 "mode": "notification"
               }
             ],
@@ -3627,6 +4038,7 @@
               "name": "Sunrise",
               "time": "07:09",
               "display": "7:09 AM",
+              "minutes": 429,
               "mode": "silent"
             },
             "extraRows": [
@@ -3635,6 +4047,7 @@
                 "name": "Islamic Midnight",
                 "time": "00:44",
                 "display": "12:44 AM",
+                "minutes": 44,
                 "mode": "notification"
               },
               {
@@ -3642,6 +4055,7 @@
                 "name": "Last Third",
                 "time": "02:59",
                 "display": "2:59 AM",
+                "minutes": 179,
                 "mode": "notification"
               },
               {
@@ -3649,6 +4063,7 @@
                 "name": "First Third",
                 "time": "00:09",
                 "display": "12:09 AM",
+                "minutes": 1449,
                 "mode": "notification"
               }
             ]
@@ -3700,35 +4115,40 @@
             "abbr": "Fajr",
             "name": "Fajr",
             "time": "05:12",
-            "display": "05:12"
+            "display": "05:12",
+            "minutes": 312
           },
           {
             "key": "Dhuhr",
             "abbr": "Dhuhr",
             "name": "Dhuhr",
             "time": "12:32",
-            "display": "12:32"
+            "display": "12:32",
+            "minutes": 752
           },
           {
             "key": "Asr",
             "abbr": "Asr",
             "name": "Asr",
             "time": "15:50",
-            "display": "15:50"
+            "display": "15:50",
+            "minutes": 950
           },
           {
             "key": "Maghrib",
             "abbr": "Magh",
             "name": "Maghrib",
             "time": "18:35",
-            "display": "18:35"
+            "display": "18:35",
+            "minutes": 1115
           },
           {
             "key": "Isha",
             "abbr": "Isha",
             "name": "Isha",
             "time": "20:15",
-            "display": "20:15"
+            "display": "20:15",
+            "minutes": 1215
           }
         ],
         "sunriseRow": {
@@ -3736,7 +4156,8 @@
           "abbr": "Sun",
           "name": "Sunrise",
           "time": "07:05",
-          "display": "07:05"
+          "display": "07:05",
+          "minutes": 425
         },
         "extraRows": [
           {
@@ -3744,21 +4165,24 @@
             "abbr": "Mid",
             "name": "Islamic Midnight",
             "time": "00:40",
-            "display": "00:40"
+            "display": "00:40",
+            "minutes": 40
           },
           {
             "key": "Lastthird",
             "abbr": "Qiyam",
             "name": "Last Third",
             "time": "02:55",
-            "display": "02:55"
+            "display": "02:55",
+            "minutes": 175
           },
           {
             "key": "Firstthird",
             "abbr": "1/3",
             "name": "First Third",
             "time": "00:05",
-            "display": "00:05"
+            "display": "00:05",
+            "minutes": 1445
           }
         ],
         "accentHex": "#5B4B9E",
@@ -3778,30 +4202,35 @@
             "key": "Fajr",
             "name": "Fajr",
             "time": "05:12",
+            "minutes": 312,
             "mode": "adhan"
           },
           {
             "key": "Dhuhr",
             "name": "Dhuhr",
             "time": "12:32",
+            "minutes": 752,
             "mode": "notification"
           },
           {
             "key": "Asr",
             "name": "Asr",
             "time": "15:50",
+            "minutes": 950,
             "mode": "notification"
           },
           {
             "key": "Maghrib",
             "name": "Maghrib",
             "time": "18:35",
+            "minutes": 1115,
             "mode": "adhan"
           },
           {
             "key": "Isha",
             "name": "Isha",
             "time": "20:15",
+            "minutes": 1215,
             "mode": "notification"
           }
         ],
@@ -3809,6 +4238,7 @@
           "key": "Sunrise",
           "name": "Sunrise",
           "time": "07:05",
+          "minutes": 425,
           "mode": "silent"
         },
         "extraRows": [
@@ -3816,18 +4246,21 @@
             "key": "Midnight",
             "name": "Islamic Midnight",
             "time": "00:40",
+            "minutes": 40,
             "mode": "notification"
           },
           {
             "key": "Lastthird",
             "name": "Last Third",
             "time": "02:55",
+            "minutes": 175,
             "mode": "notification"
           },
           {
             "key": "Firstthird",
             "name": "First Third",
             "time": "00:05",
+            "minutes": 1445,
             "mode": "notification"
           }
         ],
@@ -3840,30 +4273,35 @@
                 "key": "Fajr",
                 "name": "Fajr",
                 "time": "05:12",
+                "minutes": 312,
                 "mode": "adhan"
               },
               {
                 "key": "Dhuhr",
                 "name": "Dhuhr",
                 "time": "12:32",
+                "minutes": 752,
                 "mode": "notification"
               },
               {
                 "key": "Asr",
                 "name": "Asr",
                 "time": "15:50",
+                "minutes": 950,
                 "mode": "notification"
               },
               {
                 "key": "Maghrib",
                 "name": "Maghrib",
                 "time": "18:35",
+                "minutes": 1115,
                 "mode": "adhan"
               },
               {
                 "key": "Isha",
                 "name": "Isha",
                 "time": "20:15",
+                "minutes": 1215,
                 "mode": "notification"
               }
             ],
@@ -3871,6 +4309,7 @@
               "key": "Sunrise",
               "name": "Sunrise",
               "time": "07:05",
+              "minutes": 425,
               "mode": "silent"
             },
             "extraRows": [
@@ -3878,18 +4317,21 @@
                 "key": "Midnight",
                 "name": "Islamic Midnight",
                 "time": "00:40",
+                "minutes": 40,
                 "mode": "notification"
               },
               {
                 "key": "Lastthird",
                 "name": "Last Third",
                 "time": "02:55",
+                "minutes": 175,
                 "mode": "notification"
               },
               {
                 "key": "Firstthird",
                 "name": "First Third",
                 "time": "00:05",
+                "minutes": 1445,
                 "mode": "notification"
               }
             ]
@@ -3902,30 +4344,35 @@
                 "key": "Fajr",
                 "name": "Fajr",
                 "time": "05:14",
+                "minutes": 314,
                 "mode": "adhan"
               },
               {
                 "key": "Dhuhr",
                 "name": "Dhuhr",
                 "time": "12:34",
+                "minutes": 754,
                 "mode": "notification"
               },
               {
                 "key": "Asr",
                 "name": "Asr",
                 "time": "15:52",
+                "minutes": 952,
                 "mode": "notification"
               },
               {
                 "key": "Maghrib",
                 "name": "Maghrib",
                 "time": "18:37",
+                "minutes": 1117,
                 "mode": "adhan"
               },
               {
                 "key": "Isha",
                 "name": "Isha",
                 "time": "20:17",
+                "minutes": 1217,
                 "mode": "notification"
               }
             ],
@@ -3933,6 +4380,7 @@
               "key": "Sunrise",
               "name": "Sunrise",
               "time": "07:07",
+              "minutes": 427,
               "mode": "silent"
             },
             "extraRows": [
@@ -3940,18 +4388,21 @@
                 "key": "Midnight",
                 "name": "Islamic Midnight",
                 "time": "00:42",
+                "minutes": 42,
                 "mode": "notification"
               },
               {
                 "key": "Lastthird",
                 "name": "Last Third",
                 "time": "02:57",
+                "minutes": 177,
                 "mode": "notification"
               },
               {
                 "key": "Firstthird",
                 "name": "First Third",
                 "time": "00:07",
+                "minutes": 1447,
                 "mode": "notification"
               }
             ]
@@ -4003,28 +4454,32 @@
             "abbr": "Fajr",
             "name": "Fajr",
             "time": "05:14",
-            "display": "05:14"
+            "display": "05:14",
+            "minutes": 314
           },
           {
             "key": "Dhuhr",
             "abbr": "Dhuhr",
             "name": "Dhuhr",
             "time": "12:34",
-            "display": "12:34"
+            "display": "12:34",
+            "minutes": 754
           },
           {
             "key": "Asr",
             "abbr": "Asr",
             "name": "Asr",
             "time": "15:52",
-            "display": "15:52"
+            "display": "15:52",
+            "minutes": 952
           },
           {
             "key": "Maghrib",
             "abbr": "Magh",
             "name": "Maghrib",
             "time": "18:37",
-            "display": "18:37"
+            "display": "18:37",
+            "minutes": 1117
           },
           {
             "key": "Isha",
@@ -4039,7 +4494,8 @@
           "abbr": "Sun",
           "name": "Sunrise",
           "time": "07:07",
-          "display": "07:07"
+          "display": "07:07",
+          "minutes": 427
         },
         "extraRows": [],
         "accentHex": "#5B4B9E",
@@ -4059,24 +4515,28 @@
             "key": "Fajr",
             "name": "Fajr",
             "time": "05:14",
+            "minutes": 314,
             "mode": "adhan"
           },
           {
             "key": "Dhuhr",
             "name": "Dhuhr",
             "time": "12:34",
+            "minutes": 754,
             "mode": "notification"
           },
           {
             "key": "Asr",
             "name": "Asr",
             "time": "15:52",
+            "minutes": 952,
             "mode": "notification"
           },
           {
             "key": "Maghrib",
             "name": "Maghrib",
             "time": "18:37",
+            "minutes": 1117,
             "mode": "adhan"
           },
           {
@@ -4090,6 +4550,7 @@
           "key": "Sunrise",
           "name": "Sunrise",
           "time": "07:07",
+          "minutes": 427,
           "mode": "silent"
         },
         "extraRows": [],
@@ -4102,24 +4563,28 @@
                 "key": "Fajr",
                 "name": "Fajr",
                 "time": "05:12",
+                "minutes": 312,
                 "mode": "adhan"
               },
               {
                 "key": "Dhuhr",
                 "name": "Dhuhr",
                 "time": "12:32",
+                "minutes": 752,
                 "mode": "notification"
               },
               {
                 "key": "Asr",
                 "name": "Asr",
                 "time": "15:50",
+                "minutes": 950,
                 "mode": "notification"
               },
               {
                 "key": "Maghrib",
                 "name": "Maghrib",
                 "time": "18:35",
+                "minutes": 1115,
                 "mode": "adhan"
               },
               {
@@ -4133,6 +4598,7 @@
               "key": "Sunrise",
               "name": "Sunrise",
               "time": "07:05",
+              "minutes": 425,
               "mode": "silent"
             },
             "extraRows": []
@@ -4145,24 +4611,28 @@
                 "key": "Fajr",
                 "name": "Fajr",
                 "time": "05:14",
+                "minutes": 314,
                 "mode": "adhan"
               },
               {
                 "key": "Dhuhr",
                 "name": "Dhuhr",
                 "time": "12:34",
+                "minutes": 754,
                 "mode": "notification"
               },
               {
                 "key": "Asr",
                 "name": "Asr",
                 "time": "15:52",
+                "minutes": 952,
                 "mode": "notification"
               },
               {
                 "key": "Maghrib",
                 "name": "Maghrib",
                 "time": "18:37",
+                "minutes": 1117,
                 "mode": "adhan"
               },
               {
@@ -4176,6 +4646,7 @@
               "key": "Sunrise",
               "name": "Sunrise",
               "time": "07:07",
+              "minutes": 427,
               "mode": "silent"
             },
             "extraRows": []

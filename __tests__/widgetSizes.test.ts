@@ -211,7 +211,10 @@ describe('setData coalesces identical pushes', () => {
   const module = kt('PrayerWidgetModule');
 
   it('skips the fan-out for an unchanged payload drawn within the window', () => {
-    expect(module).toMatch(/val unchanged = json == prefs\.getString\(PrayerWidgetProvider\.PREFS_KEY, null\)/);
+    // An empty v1 is a removed key since step 1.7, which reads back as null.
+    expect(module).toMatch(
+      /val unchanged = json\.ifEmpty \{ null \} == prefs\.getString\(PrayerWidgetProvider\.PREFS_KEY, null\)/,
+    );
     expect(module).toMatch(/in 0\.\.FANOUT_COALESCE_MS/);
     expect(module).toMatch(/if \(unchanged && drawnRecently\) \{\s*promise\.resolve\(null\)\s*return\s*\}/);
     expect(module).toMatch(/const val FANOUT_COALESCE_MS = 60_000L/);

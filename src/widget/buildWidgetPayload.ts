@@ -36,6 +36,13 @@ export type WidgetPrayerRow = {
    */
   time: string;
   /**
+   * Minutes after local midnight of the row's own day — 1440 and past for a
+   * night mark after the midnight that ends it. Written by the natives'
+   * adapters from payload v2 (docs/rewrite-plan.md, step 1.7), which is what
+   * the renderers place a time by; `time` is kept only for the text.
+   */
+  minutes?: number;
+  /**
    * The same instant, written the way the user reads a clock — issue #18.
    *
    * ABSENT on a 24-hour clock, where it would be a byte-for-byte copy of

@@ -265,6 +265,9 @@ function rowV1(
   return {
     key: row.key,
     ...timePair(row.minutes, clock),
+    // The number the renderers place a time by (step 1.7) — no native code
+    // parses `time` back any more.
+    ...(row.minutes != null ? { minutes: row.minutes } : {}),
     abbr: row.abbr ?? '',
     name: row.name ?? '',
   };
@@ -448,6 +451,7 @@ export function widgetPayloadV1FromV2(
         key: p.key as WidgetTodayPrayerKey,
         name: p.name ?? '',
         ...timePair(p.minutes, clock),
+        ...(p.minutes != null ? { minutes: p.minutes } : {}),
         status: p.status ?? null,
         due: p.due ?? false,
       })),

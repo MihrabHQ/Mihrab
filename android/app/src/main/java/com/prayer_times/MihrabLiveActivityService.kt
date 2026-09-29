@@ -16,6 +16,8 @@ import android.os.Looper
 import android.os.PowerManager
 import android.util.Log
 import androidx.core.app.NotificationManagerCompat
+import com.prayer_times.contract.WallClock
+import com.prayer_times.contract.WidgetPayloadV1
 import org.json.JSONObject
 
 /**
@@ -281,25 +283,24 @@ class MihrabLiveActivityService : Service() {
   }
 
   /**
-   * Convert a `dateKey` (yyyy-MM-dd) + `HH:MM` time into a ms-since-epoch
-   * timestamp in the device's local timezone. Returns 0 on a parse failure.
+   * A row's instant on `dateKey`, from its minutes (step 1.7) — the adapter
+   * writes them, 1440 and past for a night mark after midnight — through
+   * `WallClock`, which also takes the earlier instant on the night the
+   * clocks go back. 0 without a time.
    */
-  private fun epochForDayTime(dateKey: String, hhmm: String): Long {
-    val dm = Regex("^(\\d{4})-(\\d{2})-(\\d{2})$").find(dateKey) ?: return 0L
-    val tm = Regex("^(\\d{1,2}):(\\d{2})$").find(hhmm) ?: return 0L
-    val h = tm.groupValues[1].toInt()
-    val min = tm.groupValues[2].toInt()
-    if (h !in 0..23 || min !in 0..59) return 0L
-    return java.util.Calendar.getInstance().apply {
-      set(java.util.Calendar.YEAR, dm.groupValues[1].toInt())
-      set(java.util.Calendar.MONTH, dm.groupValues[2].toInt() - 1)
-      set(java.util.Calendar.DAY_OF_MONTH, dm.groupValues[3].toInt())
-      set(java.util.Calendar.HOUR_OF_DAY, h)
-      set(java.util.Calendar.MINUTE, min)
-      set(java.util.Calendar.SECOND, 0)
-      set(java.util.Calendar.MILLISECOND, 0)
-    }.timeInMillis
+  private fun epochOfRow(dateKey: String, row: JSONObject): Long {
+    val minutes = WidgetPayloadV1.minutesOf(row) ?: return 0L
+    return WallClock.epochMs(dateKey, minutes) ?: 0L
   }
+
+  /** The first instant after `referenceMs` at `minutes` past a midnight: today's, or tomorrow's. */
+  private fun nextEpochFor(minutes: Int, referenceMs: Long): Long {
+    val key = WallClock.dateKey(referenceMs)
+    val today = WallClock.epochMs(key, minutes) ?: return 0L
+    if (today > referenceMs) return today
+    return WallClock.epochMs(key, minutes + WallClock.MINUTES_PER_DAY) ?: 0L
+  }
+
 
   /**
    * Recompute the current prayer interval from the multi-day `days[]`
@@ -324,7 +325,7 @@ class MihrabLiveActivityService : Service() {
         val epoch: Long,
         val key: String,
         val name: String,
-        /** CANONICAL 24-hour `HH:mm` — what `epochForDayTime` parses. */
+        /** CANONICAL 24-hour `HH:mm` — text only; the instant is `epoch`. */
         val time: String,
         /** The same instant as the user reads it (issue #18). */
         val display: String,
@@ -339,7 +340,7 @@ class MihrabLiveActivityService : Service() {
           for (j in 0 until rows.length()) {
             val r = rows.optJSONObject(j) ?: continue
             val t = r.optString("time")
-            val e = epochForDayTime(dateKey, t)
+            val e = epochOfRow(dateKey, r)
             if (e > 0L) {
               events.add(
                 Ev(e, r.optString("key"), r.optString("name"), t, drawn(r, t), dateKey),
@@ -349,7 +350,7 @@ class MihrabLiveActivityService : Service() {
         }
         day.optJSONObject("sunriseRow")?.let { sr ->
           val t = sr.optString("time")
-          val e = epochForDayTime(dateKey, t)
+          val e = epochOfRow(dateKey, sr)
           if (e > 0L) {
             events.add(
               Ev(
@@ -374,7 +375,7 @@ class MihrabLiveActivityService : Service() {
           for (j in 0 until extra.length()) {
             val r = extra.optJSONObject(j) ?: continue
             val t = r.optString("time")
-            val e = epochForDayTime(dateKey, t)
+            val e = epochOfRow(dateKey, r)
             if (e > 0L) {
               events.add(
                 Ev(e, r.optString("key"), r.optString("name"), t, drawn(r, t), dateKey),
@@ -481,16 +482,18 @@ class MihrabLiveActivityService : Service() {
       data class Row(
         val key: String,
         val name: String,
-        /** CANONICAL 24-hour `HH:mm` — parsed by `parseHHMMToEpochMs`. */
+        /** CANONICAL 24-hour `HH:mm` — text only now. */
         val time: String,
         /** The same instant as the user reads it (issue #18). */
         val display: String,
+        /** Minutes after midnight — what the walk places it by (step 1.7). */
+        val minutes: Int?,
       )
       val rowList = mutableListOf<Row>()
       for (i in 0 until rows.length()) {
         val r = rows.getJSONObject(i)
         val t = r.optString("time")
-        rowList.add(Row(r.optString("key"), r.optString("name"), t, drawn(r, t)))
+        rowList.add(Row(r.optString("key"), r.optString("name"), t, drawn(r, t), WidgetPayloadV1.minutesOf(r)))
       }
       if (rowList.isEmpty()) return null
 
@@ -508,6 +511,7 @@ class MihrabLiveActivityService : Service() {
               sr.optString("name", "Sunrise"),
               t,
               drawn(sr, t),
+              WidgetPayloadV1.minutesOf(sr),
             ),
           )
         }
@@ -517,7 +521,7 @@ class MihrabLiveActivityService : Service() {
           val r = extra.optJSONObject(i) ?: continue
           val t = r.optString("time", "")
           if (t.isNotEmpty()) {
-            rowList.add(Row(r.optString("key"), r.optString("name"), t, drawn(r, t)))
+            rowList.add(Row(r.optString("key"), r.optString("name"), t, drawn(r, t), WidgetPayloadV1.minutesOf(r)))
           }
         }
       }
@@ -526,11 +530,11 @@ class MihrabLiveActivityService : Service() {
       // the list. Display order is not the clock: Islamic Midnight and the
       // Last Third are drawn after Isha and belong to the small hours, the
       // First Third is drawn last and falls that same evening. And because
-      // `parseHHMMToEpochMs` rolls a time that has already passed forward a
-      // day, "earliest still ahead" wraps onto tomorrow on its own — the
-      // walk no longer freezes after Isha waiting for a Fajr special case.
+      // `nextEpochFor` rolls a time that has already passed forward a day,
+      // "earliest still ahead" wraps onto tomorrow on its own — the walk no
+      // longer freezes after Isha waiting for a Fajr special case.
       val next = rowList
-        .map { it to parseHHMMToEpochMs(it.time, now) }
+        .mapNotNull { r -> r.minutes?.let { r to nextEpochFor(it, now) } }
         .filter { it.second > now }
         .minByOrNull { it.second }
 
@@ -559,37 +563,17 @@ class MihrabLiveActivityService : Service() {
   }
 
   /**
-   * Parse an "HH:MM" string into a ms-since-epoch timestamp using
-   * `referenceMs` as the base date. If the resolved time is in the past,
-   * it is advanced by 24 hours to handle midnight roll-overs gracefully.
-   */
-  /**
    * What a row should be DRAWN as — issue #18.
    *
-   * Rows carry both: `time` is canonical 24-hour `HH:mm`, which every
-   * walk in this file parses, and `display` is the same instant written
+   * Rows carry both: `time` is canonical 24-hour `HH:mm` (text only since
+   * step 1.7 — the walks place a row by its minutes), and `display` is the
+   * same instant written
    * the way the user reads a clock. Payloads from app builds before the
    * setting existed have no `display`, so the canonical string stands in.
    */
   private fun drawn(o: org.json.JSONObject, fallback: String): String =
     o.optString("display", "").ifEmpty { fallback }
 
-  private fun parseHHMMToEpochMs(hhmm: String, referenceMs: Long): Long {
-    val m = Regex("^(\\d{1,2}):(\\d{2})$").find(hhmm) ?: return 0L
-    val h = m.groupValues[1].toInt()
-    val min = m.groupValues[2].toInt()
-    if (h !in 0..23 || min !in 0..59) return 0L
-    val cal = java.util.Calendar.getInstance().apply {
-      timeInMillis = referenceMs
-      set(java.util.Calendar.HOUR_OF_DAY, h)
-      set(java.util.Calendar.MINUTE, min)
-      set(java.util.Calendar.SECOND, 0)
-      set(java.util.Calendar.MILLISECOND, 0)
-    }
-    var t = cal.timeInMillis
-    if (t <= referenceMs) t += 24L * 60L * 60L * 1000L
-    return t
-  }
 
   /** Build the notification fresh on each tick so the progress bar
    *  value reflects the current wall clock. Delegates to the module's

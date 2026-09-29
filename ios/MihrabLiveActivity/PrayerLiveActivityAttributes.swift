@@ -132,6 +132,10 @@ public struct PrayerLiveActivityAttributes: ActivityAttributes {
     public var time: String
     /// The same instant written the way the user reads a clock (issue #18).
     public var display: String = ""
+    /// Minutes after the shown day's midnight, written by the v2 adapter
+    /// (LiveActivityV1.swift) — what the card and its roll-forward place the
+    /// row by (step 1.7). Nil in content from a build before it.
+    public var minutes: Int? = nil
 
     /// What to put on screen. Never feed this to a parser.
     public var text: String { display.isEmpty ? time : display }
@@ -208,6 +212,7 @@ extension PrayerLiveActivityAttributes.Row {
     name = try c.decodeIfPresent(String.self, forKey: .name) ?? ""
     time = try c.decode(String.self, forKey: .time)
     display = try c.decodeIfPresent(String.self, forKey: .display) ?? ""
+    minutes = try? c.decodeIfPresent(Int.self, forKey: .minutes)
   }
 }
 #endif

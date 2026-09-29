@@ -251,6 +251,8 @@ enum WidgetPayloadV1 {
     let pair = timePair(minutes, clock)
     o["time"] = pair.time
     if let display = pair.display { o["display"] = display }
+    // What the renderers place a time by (step 1.7): nothing parses `time`.
+    o["minutes"] = minutes
   }
 
   private static func rowObject(_ r: WidgetContract.Row, _ clock: WidgetContract.Clock) -> [String: Any] {
