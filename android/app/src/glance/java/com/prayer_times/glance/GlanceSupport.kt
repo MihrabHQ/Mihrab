@@ -14,7 +14,7 @@ import android.util.TypedValue
 import android.view.View
 import android.widget.RemoteViews
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
@@ -146,13 +146,16 @@ internal object GlancePayload {
  * ones that are not start from `provideGlance` and read everything fresh.
  */
 internal object GlanceRefresh {
-  private val version = mutableIntStateOf(0)
+  // `mutableStateOf`, not `mutableIntStateOf`: the second is Compose 1.5,
+  // and the runtime Glance 1.1 brings is older — the first real build with
+  // the flag stopped here.
+  private val version = mutableStateOf(0)
 
   /** Read inside a composition to be recomposed by `bump`. */
-  fun observe(): Int = version.intValue
+  fun observe(): Int = version.value
 
   fun bump() {
-    Snapshot.withMutableSnapshot { version.intValue += 1 }
+    Snapshot.withMutableSnapshot { version.value += 1 }
   }
 }
 
