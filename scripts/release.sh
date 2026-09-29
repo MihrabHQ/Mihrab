@@ -84,6 +84,19 @@ PBXPROJ="$ROOT/ios/PrayerApp.xcodeproj/project.pbxproj"
 LOCALES="en-US sv-SE ar"
 JDK="/Library/Java/JavaVirtualMachines/temurin-21.jdk/Contents/Home"
 
+# ── RELEASE_TS=1: THE TYPESCRIPT CUTS THE RELEASE (NOT THE DEFAULT) ────
+#
+# scripts/release/ is this script ported to TypeScript, gate for gate
+# (rewrite plan, Phase 3). Until two real releases have been cut by it,
+# this script decides and the TypeScript only runs beside it — see SHADOW
+# MODE below. RELEASE_TS=1 is the switch-over, prepared and off: the same
+# arguments go to the TypeScript, which prints the same lines, writes the
+# same attempts log and journal, and exits with the same status. Node runs
+# it with its own type stripping (Node 22.6 or later); nothing to install.
+if [ "${RELEASE_TS:-0}" = "1" ]; then
+  exec node --experimental-strip-types --no-warnings "$ROOT/scripts/release/main.ts" release "$@"
+fi
+
 # ── grep AFTER capturing, never through a pipe ────────────────────────
 #
 # `set -o pipefail` plus `cmd | grep -q` is a trap, and this script fell
@@ -99,10 +112,55 @@ has() { case "$1" in *"$2"*) return 0 ;; *) return 1 ;; esac; }
 
 bold() { printf "\033[1m%s\033[0m\n" "$1"; }
 step() { printf "\n\033[1m▸ %s\033[0m\n" "$1"; }
-ok()   { printf "  ✓ %s\n" "$1"; }
+ok()   { printf "  ✓ %s\n" "$1"; shadow_note ok "$1"; }
 # After PHASE 3 there is nothing left to undo, so a problem found past it
 # cannot be a die — but it must not be a ✓ either.
 warn() { printf "  ⚠ %s\n" "$1" >&2; }
+
+# ── SHADOW MODE: THE TYPESCRIPT RUNS BESIDE THIS SCRIPT ────────────────
+#
+# Phase 3 of the rewrite plan: for two releases this script decides and
+# the TypeScript port runs beside it, and any disagreement is written
+# down. So every ✓ and ✗ this script prints is also noted, and at three
+# points — the end of preflight (or a stop inside it), the end of the
+# build, and after verification — `release_shadow` hands the notes to the
+# TypeScript, which runs the same phase with everything irreversible in
+# dry run and the slow parts (jest, Gradle, the Catalyst build) taken from
+# this script's own ✓. It appends what it found to .release-shadow.log
+# and prints one line.
+#
+# IT CANNOT STOP A RELEASE. Its status is ignored, its output is one line,
+# it gives up at its own deadline, and a Node too old to run it is a line
+# saying so. RELEASE_SHADOW=0 turns it off.
+SHADOW_REC=""
+# A newline to match on, kept in a variable: bash 3.2 (the Mac's /bin/bash)
+# does not expand $'\n' inside a double-quoted ${…} pattern.
+SHADOW_NL=$'\n'
+SHADOW_PHASE=""
+if [ "${RELEASE_SHADOW:-1}" = "1" ]; then
+  SHADOW_REC="$(mktemp "${TMPDIR:-/tmp}/mihrab-shadow.XXXXXX" 2>/dev/null || true)"
+  trap 'rm -f "$SHADOW_REC"' EXIT
+fi
+# One verdict per line, newlines inside a message flattened to spaces.
+shadow_note() {
+  if [ -n "$SHADOW_REC" ]; then printf '%s\t%s\n' "$1" "${2//$SHADOW_NL/ }" >>"$SHADOW_REC"; fi
+  return 0
+}
+release_shadow() {  # <phase> [extra arguments for the TypeScript]
+  if [ -z "$SHADOW_REC" ]; then return 0; fi
+  local phase="$1" said
+  shift
+  said="$(node --experimental-strip-types --no-warnings "$ROOT/scripts/release/main.ts" \
+    shadow "$phase" "$VERSION" --old-version "$OLD_VERSION" --old-code "$OLD_CODE" \
+    --record "$SHADOW_REC" "$@" 2>&1 || true)"
+  case "$said" in
+    *"◦ shadow"*) printf '%s\n' "${said##*$SHADOW_NL}" ;;
+    *) printf '  ◦ shadow (TypeScript) %s did not run: %s\n' "$phase" "${said%%$SHADOW_NL*}" ;;
+  esac
+  # Each phase compares only its own lines.
+  : >"$SHADOW_REC"
+  return 0
+}
 
 # ── PUT THE MACHINE BACK THE WAY IT WAS FOUND ─────────────────────────
 #
@@ -257,6 +315,10 @@ ATTEMPTS="$ROOT/.release-attempts.log"
 die() {
   printf "%s\t%s\t%s\n" "$(date -u +%FT%TZ)" "${VERSION:-?}" "$1" >>"$ATTEMPTS"
   printf "\n  ✗ %s\n\n" "$1" >&2
+  shadow_note die "$1"
+  # A stop in preflight is the one the TypeScript is asked about: would it
+  # have stopped here too, with the same words?
+  if [ "$SHADOW_PHASE" = "preflight" ]; then release_shadow preflight; fi
   exit 1
 }
 
@@ -326,6 +388,7 @@ TAG="v$VERSION"
 OLD_VERSION="$(current_version)"
 OLD_CODE="$(current_code)"
 CODE=$((OLD_CODE + 1))
+SHADOW_PHASE=preflight
 
 # ══════════════════════════════════════════════════════════════════════
 # PHASE 1 — PREFLIGHT.  Nothing is written. Everything that can say no
@@ -511,6 +574,8 @@ if has "$XC_RUNS" "PENDING" || has "$XC_RUNS" "RUNNING"; then
   die "an Xcode Cloud run is already in flight — let it finish, or it and the release build will kill each other"
 fi
 ok "no Xcode Cloud run in flight"
+release_shadow preflight
+SHADOW_PHASE=build
 
 step "What this ships"
 show_unreleased
@@ -681,6 +746,9 @@ rm -rf "$UNZIP"
 # widgets on the machine cutting it.
 keep_installed_widget_registered
 fi
+
+release_shadow build
+SHADOW_PHASE=publish
 
 if [ "$DRY_RUN" = "1" ]; then
   cleanup_workbench
@@ -1004,6 +1072,9 @@ fi
 # ══════════════════════════════════════════════════════════════════════
 step "Verifying"
 "$ROOT/scripts/verify-release.sh" "$TAG" || die "verification failed — see the ✗ lines above"
+# What this script published, held against what the TypeScript would
+# have: the journal entry, the commit, the tag, the assets, the cask.
+release_shadow publish --release-sha "$RELEASE_SHA" --ios "${XC_STARTED:-0}"
 
 # ══════════════════════════════════════════════════════════════════════
 # PHASE 5 — BE A USER.  Install what was just published, the way they do.

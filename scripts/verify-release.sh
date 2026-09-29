@@ -15,17 +15,48 @@
 set -uo pipefail
 
 TAG="${1:?usage: verify-release.sh vX.Y.Z}"
+
+# RELEASE_TS=1: the TypeScript port (scripts/release/verify.ts) answers
+# instead — the same checks, lines and exit status. Not the default until
+# the rewrite plan's Phase 3 switch-over; see release.sh.
+if [ "${RELEASE_TS:-0}" = "1" ]; then
+  exec node --experimental-strip-types --no-warnings \
+    "$(dirname "$0")/release/main.ts" verify "$TAG" --self "$0"
+fi
 VERSION="${TAG#v}"
 REPO="MihrabHQ/Mihrab"
 TAP="$HOME/git/homebrew-tap/Casks/mihrab.rb"
 FAILED=0
 PENDING=0
 
-pass() { echo "✓ $1"; }
-fail() { echo "✗ $1"; FAILED=1; }
+pass() { echo "✓ $1"; shadow_note pass "$1"; }
+fail() { echo "✗ $1"; FAILED=1; shadow_note fail "$1"; }
 # Neither. A check that has not finished has not passed, and printing a ✓
 # next to "still building" is exactly how 2.13.0 was called done.
 pend() { echo "⧗ $1"; PENDING=1; }
+
+# ── SHADOW MODE ─────────────────────────────────────────────────────────
+#
+# Every verdict below is also noted, and before the summary the TypeScript
+# port runs the same checks beside this script and compares (see SHADOW
+# MODE in release.sh). This script decides; the TypeScript can only append
+# to .release-shadow.log and print one line. RELEASE_SHADOW=0 turns it off.
+SHADOW_REC=""
+# A newline to match on, kept in a variable: bash 3.2 (the Mac's /bin/bash)
+# does not expand $'\n' inside a double-quoted ${…} pattern.
+SHADOW_NL=$'\n'
+if [ "${RELEASE_SHADOW:-1}" = "1" ]; then
+  SHADOW_REC="$(mktemp "${TMPDIR:-/tmp}/mihrab-shadow.XXXXXX" 2>/dev/null || true)"
+  trap 'rm -f "$SHADOW_REC"' EXIT
+fi
+shadow_note() {
+  if [ -n "$SHADOW_REC" ]; then printf '%s\t%s\n' "$1" "${2//$SHADOW_NL/ }" >>"$SHADOW_REC"; fi
+  return 0
+}
+# `pend` keeps its one line as it is — PENDING is set in exactly one place,
+# and a test holds it there — and is wrapped to take its note.
+eval "shell_$(declare -f pend)"
+pend() { shell_pend "$1"; shadow_note pend "$1"; }
 
 # ── 1. Tag exists on the remote ─────────────────────────────────────────
 if git -C "$(dirname "$0")/.." ls-remote --tags origin "refs/tags/$TAG" | grep -q "$TAG"; then
@@ -504,6 +535,15 @@ else
         pend "CI: $CI_CONCLUSION on $CI_SHORT — no verdict — $CI_RUN_URL" ;;
     esac
   fi
+fi
+
+if [ -n "$SHADOW_REC" ]; then
+  SHADOW_SAID="$(node --experimental-strip-types --no-warnings "$(dirname "$0")/release/main.ts" \
+    shadow verify "$TAG" --self "$0" --record "$SHADOW_REC" 2>&1 || true)"
+  case "$SHADOW_SAID" in
+    *"◦ shadow"*) printf '%s\n' "${SHADOW_SAID##*$SHADOW_NL}" ;;
+    *) printf '  ◦ shadow (TypeScript) verify did not run: %s\n' "${SHADOW_SAID%%$SHADOW_NL*}" ;;
+  esac
 fi
 
 echo

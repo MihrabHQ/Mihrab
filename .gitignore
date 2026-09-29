@@ -143,3 +143,7 @@ __pycache__/
 # Screenshot scratch: raw captures live in branding/, never here.
 .tmp-shots/
 Claude outputs/
+
+# What the TypeScript release tool, running beside release.sh, found to
+# disagree with it (docs/rewrite-plan.md, Phase 3). This machine's evidence.
+.release-shadow.log

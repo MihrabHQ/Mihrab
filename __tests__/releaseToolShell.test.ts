@@ -1,0 +1,229 @@
+/**
+ * The shell side of the port, run rather than read.
+ *
+ * release.sh and verify-release.sh are run for real here — copied into a
+ * scratch tree whose scripts/release/main.ts is a stub that writes down
+ * what it was handed — to hold the three things the port promises the
+ * shell: RELEASE_TS=1 hands over the same arguments and keeps the exit
+ * status; shadow mode hands the TypeScript every verdict the shell printed,
+ * `pend` included; and nothing the TypeScript does can change the shell's
+ * verdict or exit status.
+ *
+ * They need Node's type stripping (22.6 or later), as the tool itself
+ * does; CI's Node 20 skips them, and the Mac runs them.
+ */
+import { spawnSync } from 'child_process';
+import { chmodSync, copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'fs';
+import os from 'os';
+import path from 'path';
+
+const REPO = path.join(__dirname, '..');
+const [major, minor] = process.versions.node.split('.').map(Number);
+const canStrip = major > 22 || (major === 22 && minor >= 6);
+const d = canStrip ? describe : describe.skip;
+
+const STUB = `import { appendFileSync, existsSync, readFileSync } from 'node:fs';
+const argv = process.argv.slice(2);
+const i = argv.indexOf('--record');
+const record = i >= 0 && existsSync(argv[i + 1]) ? readFileSync(argv[i + 1], 'utf8') : '';
+appendFileSync(process.env.STUB_OUT as string, JSON.stringify({ argv, record }) + '\\n');
+if (argv[0] === 'shadow') {
+  if (process.env.STUB_BROKEN) {
+    console.log('SyntaxError: the stub is broken on purpose');
+    process.exit(1);
+  }
+  console.log('  ◦ shadow (TypeScript) ' + argv[1] + ': agrees (stub)');
+} else {
+  console.log('stub ' + argv[0]);
+  process.exit(Number(process.env.STUB_EXIT ?? 0));
+}
+`;
+
+/** A scratch repo holding copies of the two scripts and the stub. */
+function scratch() {
+  const dir = mkdtempSync(path.join(os.tmpdir(), 'mihrab-shell-'));
+  const scripts = path.join(dir, 'scripts');
+  mkdirSync(path.join(scripts, 'release'), { recursive: true });
+  for (const f of ['release.sh', 'verify-release.sh']) {
+    copyFileSync(path.join(REPO, 'scripts', f), path.join(scripts, f));
+    chmodSync(path.join(scripts, f), 0o755);
+  }
+  writeFileSync(path.join(scripts, 'release', 'package.json'), '{"type":"module"}\n');
+  writeFileSync(path.join(scripts, 'release', 'main.ts'), STUB);
+  writeFileSync(path.join(scripts, 'xcode-cloud.py'), '');
+  mkdirSync(path.join(dir, 'android', 'app'), { recursive: true });
+  writeFileSync(path.join(dir, 'android', 'app', 'build.gradle'), 'versionCode 282\nversionName "2.27.1"\n');
+  const bin = path.join(dir, 'bin');
+  mkdirSync(bin);
+  const home = path.join(dir, 'home');
+  mkdirSync(home);
+  const out = path.join(dir, 'stub.jsonl');
+  return {
+    dir,
+    bin,
+    /** A fake command on PATH, ahead of the real one. */
+    fake(name: string, body: string) {
+      writeFileSync(path.join(bin, name), `#!/bin/bash\n${body}\n`);
+      chmodSync(path.join(bin, name), 0o755);
+    },
+    run(script: string, args: string[], env: Record<string, string> = {}) {
+      const r = spawnSync('bash', [path.join(scripts, script), ...args], {
+        cwd: dir,
+        encoding: 'utf8',
+        env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, HOME: home, STUB_OUT: out, NODE_ENV: 'test', ...env },
+        timeout: 60_000,
+      });
+      return { status: r.status, text: `${r.stdout}${r.stderr}` };
+    },
+    stubCalls(): Array<{ argv: string[]; record: string }> {
+      return existsSync(out) ? readFileSync(out, 'utf8').trim().split('\n').map(l => JSON.parse(l)) : [];
+    },
+    clean: () => rmSync(dir, { recursive: true, force: true }),
+  };
+}
+
+d('RELEASE_TS=1 hands the release to the TypeScript', () => {
+  it('release.sh passes its arguments through and exits with the TypeScript’s status', () => {
+    const s = scratch();
+    try {
+      const r = s.run('release.sh', ['2.28.0', '--dry-run'], { RELEASE_TS: '1', STUB_EXIT: '7' });
+      expect(r.status).toBe(7);
+      expect(r.text).toContain('stub release');
+      expect(s.stubCalls()).toEqual([{ argv: ['release', '2.28.0', '--dry-run'], record: '' }]);
+    } finally {
+      s.clean();
+    }
+  });
+
+  it('verify-release.sh passes the tag and how it was called', () => {
+    const s = scratch();
+    try {
+      const r = s.run('verify-release.sh', ['v2.28.0'], { RELEASE_TS: '1', STUB_EXIT: '1' });
+      expect(r.status).toBe(1);
+      const call = s.stubCalls()[0];
+      expect(call.argv.slice(0, 3)).toEqual(['verify', 'v2.28.0', '--self']);
+      expect(call.argv[3]).toMatch(/scripts\/verify-release\.sh$/);
+    } finally {
+      s.clean();
+    }
+  });
+
+  it('is off unless asked for', () => {
+    const s = scratch();
+    try {
+      s.run('release.sh', ['not-a-version'], { RELEASE_SHADOW: '0' });
+      expect(s.stubCalls()).toEqual([]);
+    } finally {
+      s.clean();
+    }
+  });
+});
+
+d('release.sh shadows its preflight', () => {
+  const setup = () => {
+    const s = scratch();
+    // P1 passes (gh and python3 faked); P2 then stops: the scratch tree has
+    // no build-catalyst.sh, so there is no working Xcode to ask.
+    s.fake('gh', 'exit 0');
+    s.fake('python3', 'exit 0');
+    return s;
+  };
+
+  it('a stop in preflight hands the TypeScript every verdict so far, and keeps exit 1', () => {
+    const s = setup();
+    try {
+      const r = s.run('release.sh', ['2.28.0']);
+      expect(r.status).toBe(1);
+      expect(r.text).toContain('  ◦ shadow (TypeScript) preflight: agrees (stub)');
+      const [call] = s.stubCalls();
+      expect(call.argv.slice(0, 7)).toEqual(['shadow', 'preflight', '2.28.0', '--old-version', '2.27.1', '--old-code', '282']);
+      expect(call.record).toBe('ok\ttools present\ndie\tno working Xcode for the Catalyst build — see above\n');
+      // The attempts log still gets its line.
+      expect(readFileSync(path.join(s.dir, '.release-attempts.log'), 'utf8')).toMatch(/\t2\.28\.0\tno working Xcode/);
+    } finally {
+      s.clean();
+    }
+  });
+
+  it('a broken TypeScript is one line saying so, and changes nothing else', () => {
+    const s = setup();
+    try {
+      const r = s.run('release.sh', ['2.28.0'], { STUB_BROKEN: '1' });
+      expect(r.status).toBe(1);
+      expect(r.text).toContain('  ◦ shadow (TypeScript) preflight did not run: SyntaxError: the stub is broken on purpose');
+    } finally {
+      s.clean();
+    }
+  });
+
+  it('RELEASE_SHADOW=0 turns it off', () => {
+    const s = setup();
+    try {
+      const r = s.run('release.sh', ['2.28.0'], { RELEASE_SHADOW: '0' });
+      expect(r.status).toBe(1);
+      expect(s.stubCalls()).toEqual([]);
+      expect(r.text).not.toContain('◦ shadow');
+    } finally {
+      s.clean();
+    }
+  });
+});
+
+d('verify-release.sh shadows every check, pend included', () => {
+  it('records ✓ ✗ and ⧗ alike, and its own verdict and exit status stand', () => {
+    const s = scratch();
+    try {
+      s.fake('git', 'exit 0');
+      s.fake('gh', 'exit 0');
+      s.fake('curl', 'case "$*" in *"%{http_code}"*) printf 404 ;; esac; exit 22');
+      s.fake('python3', 'case "$*" in *shipped*) echo "2.28.0: #741 is still going"; exit 3 ;; *) echo -1 ;; esac');
+      const r = s.run('verify-release.sh', ['v2.28.0']);
+      expect(r.status).toBe(1);
+      expect(r.text).toContain('⧗ iOS: 2.28.0: #741 is still going');
+      expect(r.text).toContain('  ◦ shadow (TypeScript) verify: agrees (stub)');
+      expect(r.text).toContain('── RELEASE VERIFICATION FAILED');
+      const [call] = s.stubCalls();
+      expect(call.argv.slice(0, 3)).toEqual(['shadow', 'verify', 'v2.28.0']);
+      const record = call.record.split('\n');
+      expect(record).toContain('fail\ttag v2.28.0 missing on origin');
+      expect(record).toContain('fail\tGitHub release v2.28.0 not found');
+      expect(record).toContain('pend\tiOS: 2.28.0: #741 is still going');
+      // One line per verdict printed, no more and no fewer.
+      const printed = r.text.split('\n').filter(l => /^[✓✗⧗] /.test(l));
+      expect(record.filter(Boolean)).toHaveLength(printed.length);
+    } finally {
+      s.clean();
+    }
+  });
+});
+
+d('the TypeScript itself runs under Node', () => {
+  const node = (args: string[]) =>
+    spawnSync(process.execPath, ['--experimental-strip-types', '--no-warnings', path.join(REPO, 'scripts/release/main.ts'), ...args], {
+      encoding: 'utf8',
+      timeout: 60_000,
+    });
+
+  it('loads every module and answers --help', () => {
+    const r = node(['--help']);
+    expect(r.status).toBe(0);
+    expect(r.stderr).toContain('usage: main.ts release X.Y.Z');
+  });
+
+  it('a shadow with nothing to go on is still exit 0 and one line', () => {
+    const r = node(['shadow', 'nonsense']);
+    expect(r.status).toBe(0);
+    expect(r.stdout.trim().split('\n')).toHaveLength(1);
+  });
+});
+
+describe('the release tool typechecks as Node will run it', () => {
+  it('passes tsc with erasableSyntaxOnly and verbatimModuleSyntax', () => {
+    const r = spawnSync(process.execPath, [require.resolve('typescript/bin/tsc'), '-p', path.join(REPO, 'scripts/release')], {
+      encoding: 'utf8',
+      timeout: 120_000,
+    });
+    expect(r.stdout + r.stderr).toBe('');
+    expect(r.status).toBe(0);
+  }, 130_000);
+});
