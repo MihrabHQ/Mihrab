@@ -101,6 +101,7 @@ func logMinutesOfDay(_ hhmm: String) -> Int? {
 
 private let logDayKeyFormatter: DateFormatter = {
   let f = DateFormatter()
+  f.calendar = Calendar(identifier: .gregorian)
   f.locale = Locale(identifier: "en_US_POSIX")
   f.dateFormat = "yyyy-MM-dd"
   return f

@@ -229,7 +229,9 @@ func widgetGalleryName(_ key: String) -> String {
 /// True when there is no `days[]` at all, because a payload from a build
 /// older than the multi-day window cannot be checked and is by now certainly
 /// older than this problem.
-func payloadHasExpired(_ p: WidgetPayload, now: Date = Date(), calendar: Calendar = .current) -> Bool {
+func payloadHasExpired(
+  _ p: WidgetPayload, now: Date = Date(), calendar: Calendar = WallClock.localCalendar
+) -> Bool {
   guard let days = p.days, !days.isEmpty else { return true }
   let fmt = DateFormatter()
   fmt.calendar = calendar
@@ -724,7 +726,8 @@ struct Provider: TimelineProvider {
       return
     }
 
-    let now = Date(); let cal = Calendar.current
+    // Gregorian: `days[]` is keyed by Gregorian dates (`WallClock.localCalendar`).
+    let now = Date(); let cal = WallClock.localCalendar
 
     // ── Multi-day path ───────────────────────────────────────────────
     // When the app pushes a `days[]` schedule, build a timeline spanning

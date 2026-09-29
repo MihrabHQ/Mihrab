@@ -169,6 +169,35 @@ for c in section("stale") {
   check(want == have, "stale \(zone) \(canonical(c["day"])): want \(String(describing: want)), have \(have)")
 }
 
+// ── The device's calendar ─────────────────────────────────────────────────
+//
+// Every case above passes a Gregorian calendar. The widgets use the default,
+// which must be Gregorian too whatever calendar the user has chosen: date
+// keys are Gregorian, and `Calendar.current` on a Buddhist, Japanese or
+// Islamic setting made today's key "2569-…", matching no payload day.
+
+check(
+  WallClock.localCalendar.identifier == .gregorian,
+  "localCalendar: want gregorian, have \(WallClock.localCalendar.identifier)")
+check(
+  WallClock.localCalendar.timeZone == TimeZone.current,
+  "localCalendar: want the device's zone, have \(WallClock.localCalendar.timeZone)")
+do {
+  // 2026-09-28 12:00 UTC is 2026-09-28 in any zone within ±11 hours.
+  let noon = Date(timeIntervalSince1970: 1_790_596_800)
+  let key = WallClock.dateKey(noon)
+  check(
+    key.hasPrefix("2026-09-2"),
+    "dateKey with the default calendar: want a Gregorian 2026 key, have \(key)")
+  var buddhist = Calendar(identifier: .buddhist)
+  buddhist.timeZone = TimeZone(identifier: "UTC")!
+  // The failure this guards against, shown to exist: a non-Gregorian
+  // calendar does write a different year.
+  check(
+    WallClock.dateKey(noon, calendar: buddhist).hasPrefix("2569-"),
+    "dateKey on a Buddhist calendar: want 2569-…, have \(WallClock.dateKey(noon, calendar: buddhist))")
+}
+
 // ── Verdict ───────────────────────────────────────────────────────────────
 
 if failures.isEmpty {

@@ -69,6 +69,17 @@ enum WallClock {
 
   // MARK: - Dates and instants
 
+  /// The device's zone on the GREGORIAN calendar — the calendar every
+  /// contract date key is written in. Not `Calendar.current`: that follows
+  /// the user's calendar setting, and with iOS set to Buddhist, Japanese or
+  /// Islamic, today's key came out as "2569-…" or "1448-…", matched no
+  /// payload day, and the widget drew the wrong day's times.
+  static var localCalendar: Calendar {
+    var c = Calendar(identifier: .gregorian)
+    c.timeZone = .current
+    return c
+  }
+
   /// "2026-09-28" → (2026, 9, 28). Nil for anything else.
   static func components(ofDateKey key: String) -> DateComponents? {
     let parts = key.split(separator: "-", omittingEmptySubsequences: false)
@@ -80,13 +91,13 @@ enum WallClock {
   }
 
   /// The local calendar date of `date` as a contract date key.
-  static func dateKey(_ date: Date, calendar: Calendar = .current) -> String {
+  static func dateKey(_ date: Date, calendar: Calendar = WallClock.localCalendar) -> String {
     let c = calendar.dateComponents([.year, .month, .day], from: date)
     return String(format: "%04d-%02d-%02d", c.year ?? 0, c.month ?? 0, c.day ?? 0)
   }
 
   /// Minutes after local midnight of the day `date` falls on.
-  static func minutes(of date: Date, calendar: Calendar = .current) -> Int {
+  static func minutes(of date: Date, calendar: Calendar = WallClock.localCalendar) -> Int {
     let c = calendar.dateComponents([.hour, .minute], from: date)
     return (c.hour ?? 0) * 60 + (c.minute ?? 0)
   }
@@ -99,7 +110,7 @@ enum WallClock {
   /// time the clock shows twice (the hour it goes back) is the earlier of
   /// the two instants — Foundation's choice, and JavaScript's; WallClock.kt
   /// corrects java.util.Calendar, which picks the later one.
-  static func date(dateKey: String, minutes: Int, calendar: Calendar = .current) -> Date? {
+  static func date(dateKey: String, minutes: Int, calendar: Calendar = WallClock.localCalendar) -> Date? {
     guard var c = components(ofDateKey: dateKey) else { return nil }
     let dayShift = Int((Double(minutes) / Double(minutesPerDay)).rounded(.down))
     let m = minutes - dayShift * minutesPerDay
@@ -117,7 +128,7 @@ enum WallClock {
 
   /// The UTC offset the calendar's zone uses at local noon of `dateKey`, in
   /// minutes — what the app wrote into `Day.utcOffsetMinutes`.
-  static func utcOffsetMinutes(dateKey: String, calendar: Calendar = .current) -> Int? {
+  static func utcOffsetMinutes(dateKey: String, calendar: Calendar = WallClock.localCalendar) -> Int? {
     guard let noon = date(dateKey: dateKey, minutes: 12 * 60, calendar: calendar) else { return nil }
     return calendar.timeZone.secondsFromGMT(for: noon) / 60
   }
@@ -125,7 +136,7 @@ enum WallClock {
   /// True when the day's times were computed under an offset the device no
   /// longer uses for that date — the zone's rules changed (#56) or the device
   /// moved zones. A day that did not record its offset is taken on trust.
-  static func isStale(_ day: WidgetContract.Day, calendar: Calendar = .current) -> Bool {
+  static func isStale(_ day: WidgetContract.Day, calendar: Calendar = WallClock.localCalendar) -> Bool {
     guard let written = day.utcOffsetMinutes,
           let now = utcOffsetMinutes(dateKey: day.dateKey, calendar: calendar)
     else { return false }

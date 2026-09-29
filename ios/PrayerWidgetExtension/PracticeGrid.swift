@@ -140,7 +140,8 @@ struct PracticeGrid: View {
   /// and drawing its remaining days as "nothing recorded" would claim the
   /// user has already missed days that have not happened yet.
   private func buildColumns() -> [[String?]] {
-    var cal = Calendar.current
+    // Gregorian: the practice days are keyed by Gregorian dates.
+    var cal = WallClock.localCalendar
     cal.firstWeekday = 2
     let today = Date()
     guard let thisWeekStart = cal.dateInterval(of: .weekOfYear, for: today)?.start
@@ -170,7 +171,7 @@ struct PracticeGrid: View {
 
   /// Today's key, in the same shape the payload uses.
   private var todayKey: String {
-    var cal = Calendar.current
+    var cal = WallClock.localCalendar
     cal.firstWeekday = 2
     return key(Date(), cal)
   }
