@@ -10,4 +10,5 @@
 <resources>
     <string name="glance_widget_name_hijri" translatable="false">Mihrab · Hijri date (Glance)</string>
     <string name="glance_widget_name_tasbih" translatable="false">Mihrab · Tasbih (Glance)</string>
+    <string name="glance_widget_name_streak" translatable="false">Mihrab · Streak (Glance)</string>
 </resources>
