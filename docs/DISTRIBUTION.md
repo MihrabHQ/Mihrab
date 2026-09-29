@@ -158,8 +158,13 @@ floor, iOS 13.1 = macOS 10.15. Catalyst builds now say iOS 15.2
 `PrayerApp.xcodeproj` and for the pods in the Podfile; iOS stays at 15.1.
 `__tests__/catalystDeploymentTarget.test.ts` holds the configuration.
 
-So the Mac app needs **macOS 12.1** or later (it was 10.15; the Homebrew
-cask already asks for Ventura). Its widgets need macOS 14: the widget
+So the Mac app needs **macOS 12.1** or later (it was 10.15), and it is
+built for Apple silicon only (`arch=arm64` in the build). The Homebrew
+cask says the same — `depends_on macos: :monterey` (a cask can only name
+a major version) and `depends_on arch: :arm64` — and `verify-release.sh`
+reads both off the published app and fails a release whose cask asks for
+more or less. It asked for Ventura from the day the tap was made until
+2026-09-29, a guess nothing compared with the app. Its widgets need macOS 14: the widget
 extension's own minimum is iOS 17.0, which the same map reads as 14.0, so
 on 12 and 13 the app runs without them. `build-catalyst.sh` prints both
 minimums off the signed product and stops if the app's is below 12. `Xcode-26.app` is no longer needed.

@@ -242,6 +242,48 @@ if [ -f "$TAP" ]; then
       else
         fail "published app carries NO notarization ticket — macOS blocks its first launch, as it has since 2.11.0"
       fi
+
+      # ── AND THE CASK ASKS FOR WHAT THE APP NEEDS, NO MORE, NO LESS ──
+      #
+      # The cask's `depends_on` was written once, by hand, when the tap was
+      # made (Ventura and Apple silicon, 2026-07-16), while the app said
+      # macOS 10.15 — and nothing compared the two again. When the app's
+      # minimum moved to 12.1 the cask went on turning Monterey away. Both
+      # halves are read off the SHIPPED app: `LSMinimumSystemVersion`, and
+      # the architectures in its executable. A cask symbol can only name a
+      # major version, so the majors must match.
+      plist="$unz/Mihrab.app/Contents/Info.plist"
+      app_min=$(plutil -extract LSMinimumSystemVersion raw -o - "$plist" 2>/dev/null || true)
+      cask_macos=$(sed -n 's/^[[:space:]]*depends_on macos:[^:]*:\([a-z_]*\).*/\1/p' "$TAP" | head -1)
+      case "$cask_macos" in
+        monterey) cask_major=12 ;; ventura) cask_major=13 ;; sonoma) cask_major=14 ;;
+        sequoia) cask_major=15 ;; tahoe) cask_major=26 ;; *) cask_major="" ;;
+      esac
+      if [ -z "$app_min" ] || [ -z "$cask_major" ]; then
+        fail "cannot compare the cask's macOS (':${cask_macos:-none}') with the app's LSMinimumSystemVersion ('${app_min:-none}')"
+      elif [ "$cask_major" != "${app_min%%.*}" ]; then
+        fail "cask requires macOS $cask_major (:$cask_macos) but the app needs $app_min — set depends_on macos in Casks/mihrab.rb to the app's own minimum"
+      else
+        pass "cask requires macOS $cask_major (:$cask_macos), as the app does ($app_min)"
+      fi
+      exe=$(plutil -extract CFBundleExecutable raw -o - "$plist" 2>/dev/null || true)
+      archs=$(lipo -archs "$unz/Mihrab.app/Contents/MacOS/$exe" 2>/dev/null || true)
+      cask_arch=$(sed -n 's/^[[:space:]]*depends_on arch:[[:space:]]*:\([a-z0-9_]*\).*/\1/p' "$TAP" | head -1)
+      case " $archs " in
+        "  ") fail "cannot read the published app's architectures" ;;
+        *" x86_64 "*)
+          if [ "$cask_arch" = "arm64" ]; then
+            fail "the app runs on Intel ($archs) but the cask says depends_on arch: :arm64 — drop it"
+          else
+            pass "cask admits Intel and Apple silicon, as the app ($archs) does"
+          fi ;;
+        *)
+          if [ "$cask_arch" = "arm64" ]; then
+            pass "cask requires Apple silicon, as the app ($archs) does"
+          else
+            fail "the app is $archs only but the cask lets Intel Macs install it — add depends_on arch: :arm64"
+          fi ;;
+      esac
     else
       fail "could not unpack the published zip to check its signature"
     fi

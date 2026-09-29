@@ -462,8 +462,9 @@ one. It is not a rewrite target.
   (or in CI) would find the next toolchain break earlier.
 - **5.2's Mac zip cannot be signed** while the prebuilt React framework
   makes `codesign` refuse the bundle — make that part of 5.2's exit.
-- **The Homebrew cask** (MihrabHQ/homebrew-tap, `Casks/mihrab.rb`) says
-  `depends_on macos: :ventura` — checked 2026-09-29, as the docs say — and
-  `depends_on arch: :arm64`, which no doc here mentions: through Homebrew
-  the Mac app is Apple silicon only, and the zip's own minimum (12.1) only
-  matters for a download by hand.
+- ~~**The Homebrew cask**~~ — done 2026-09-29: it asked for Ventura (a
+  guess from the day the tap was made) while the app needs 12.1, so it
+  now says `:monterey`, keeps `:arm64` (the build is Apple silicon only),
+  and its README says both and that the widgets need macOS 14.
+  `verify-release.sh` compares the cask's `depends_on` with the published
+  app. The app has not been run on Monterey or Ventura by anyone yet.
