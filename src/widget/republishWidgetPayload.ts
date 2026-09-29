@@ -36,6 +36,7 @@ import { AppState } from 'react-native';
 import { setActiveClockFormat } from '../utils/activeClock';
 import { refreshSystemIs24Hour } from '../native/SystemClock';
 import i18n from '../i18n';
+import { applyMadhabNaming } from '../prayer/madhab';
 import { subscribePractice } from '../practice/practiceStore';
 import { subscribeQuranState } from '../quran/quranState';
 import { subscribeTasbihState } from '../tasbih/tasbihStore';
@@ -188,6 +189,18 @@ export async function republishWidgetPayload(
     // situation, and same fix, as `language` further down.
     setActiveClockFormat(settings.clockFormat);
     await refreshSystemIs24Hour();
+    // And the language, for the same reason: every string in the payload —
+    // the prayer names, the day labels, the clock's AM/PM words, the
+    // `language` the widgets localise by — comes from the app's i18n, which
+    // only the settings provider sets. From a headless task it is still the
+    // default, and a Swedish widget refreshed with the app killed came back
+    // in English. In the running app this is a no-op: the provider has
+    // already set both. The madhab's name for dawn rides on the language
+    // (see prayer/madhab.ts), silently and idempotently.
+    if (settings.language && i18n.language !== settings.language) {
+      await i18n.changeLanguage(settings.language);
+    }
+    applyMadhabNaming(i18n, settings.madhab, settings.language);
 
     const params: DayWindowParams = {
       provider: getEffectiveDataProvider(
@@ -254,9 +267,9 @@ export async function republishWidgetPayload(
     const extras = await collectWidgetExtras({
       timings: week[0],
       now,
-      // Explicit rather than i18n's current value: this can run from a
-      // headless task where the app's i18n has not been initialised, and a
-      // widget quietly stuck in English is the failure that hides.
+      // Explicit rather than i18n's current value, although that is now
+      // set above: a widget quietly stuck in English is the failure that
+      // hides.
       language: settings.language ?? i18n.language,
     });
 

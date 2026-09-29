@@ -33,6 +33,7 @@ import { republishWidgetPayload } from '../src/widget/republishWidgetPayload';
 import { getPrayerWidgetModule } from '../src/native/PrayerWidget';
 import { loadSettings } from '../src/settings/storage';
 import { getCachedPrayerTimesMany } from '../src/prayer/prayerStorage';
+import i18n from '../src/i18n';
 
 const NOW = new Date(2026, 7, 18, 14, 0, 0);
 
@@ -92,6 +93,20 @@ describe('republishWidgetPayload', () => {
     expect(
       ((payload.days as { rows: { time: string }[] }[])[1].rows[0]).time,
     ).toBe('05:01');
+  });
+
+  test("builds in the user's language even where nothing set it (a headless task)", async () => {
+    await i18n.changeLanguage('en');
+    (loadSettings as jest.Mock).mockResolvedValue(
+      settingsWith({ language: 'sv', madhab: 'maliki' }),
+    );
+    await expect(republishWidgetPayload('launch', NOW)).resolves.toBe(true);
+    const payload = pushed();
+    expect(payload.language).toBe('sv');
+    // The names are Swedish, and dawn is named as the madhab names it.
+    const names = (payload.rows as { key: string; name: string }[]).map(r => r.name);
+    expect(names[0]).toBe(i18n.getFixedT('sv')('prayer.Subh'));
+    await i18n.changeLanguage('en');
   });
 
   test('refuses the (0, 0) sentinel rather than publishing the coast of Ghana', async () => {
