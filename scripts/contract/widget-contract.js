@@ -372,6 +372,155 @@ module.exports = {
         ['todayRounds', t.int({ default: 0 })],
       ],
     },
+    // ── The Live Activity ───────────────────────────────────────────
+    {
+      name: 'LiveActivity',
+      doc: 'What a Live Activity draws — the iOS Lock Screen card and Dynamic Island, and the Android pinned notification — as one payload built once for both (docs/rewrite-plan.md, step 1.5). Before it there were two, built in two places, with the next prayer as an instant in seconds on one and milliseconds on the other. Times are wall clock, as the widgets\' are; each native works out "next" and "previous" for the minute it draws at.',
+      fields: [
+        ['schemaVersion', t.int(REQUIRED), 'Always 2 for this shape.'],
+        [
+          'language',
+          t.string({ default: '' }),
+          "The app's language tag.",
+        ],
+        ['clock', t.ref('Clock', { default: 'fallback' }), 'How to write a time.'],
+        [
+          'days',
+          t.list(t.ref('Day'), REQUIRED),
+          "The widget payload's days, today first, each row carrying its localised full name.",
+        ],
+        [
+          'hijri',
+          t.list(t.ref('DayText'), { default: [] }),
+          'The Hijri date of each day, localised. Android heads the notification with the one the next prayer falls on.',
+        ],
+        [
+          'alertModes',
+          t.list(t.ref('AlertMode'), { default: [] }),
+          "What each prayer's alert does, for the Android lock-screen alert button.",
+        ],
+        [
+          'appearance',
+          t.ref('LiveActivityAppearance', { default: 'fallback' }),
+          'Accent and style.',
+        ],
+        [
+          'android',
+          t.ref('LiveActivityAndroid', { default: 'fallback' }),
+          'What only the Android notification needs.',
+        ],
+        [
+          'words',
+          t.ref('LiveActivityWords', { default: 'fallback' }),
+          'Words the Android notification draws, in the app language — the thirteen locales live in the app.',
+        ],
+      ],
+    },
+    {
+      name: 'DayText',
+      doc: 'A line of text that belongs to one day.',
+      fields: [
+        ['dateKey', t.string(REQUIRED), 'Local YYYY-MM-DD.'],
+        ['text', t.string({ default: '' })],
+      ],
+    },
+    {
+      name: 'AlertMode',
+      doc: 'What one prayer does when its time comes.',
+      fields: [
+        ['key', t.string(REQUIRED), 'Row key.'],
+        [
+          'mode',
+          t.enumOf(['adhan', 'notification', 'silent'], {
+            name: 'AlertModeKind',
+            ...REQUIRED,
+          }),
+          'As Settings → Notifications shows it.',
+        ],
+      ],
+    },
+    {
+      name: 'LiveActivityAppearance',
+      doc: 'How the Live Activity is tinted and laid out.',
+      fields: [
+        [
+          'accentHex',
+          t.string({ default: '#22c55e' }),
+          "The app accent's light swatch, #RRGGBB.",
+        ],
+        [
+          'systemTinted',
+          t.bool({ default: false }),
+          'iOS: follow the system tint (Liquid Glass) instead of the accent.',
+        ],
+        [
+          'systemAccent',
+          t.bool({ default: false }),
+          'Android: follow the Material You accent, re-read natively on each repost.',
+        ],
+        [
+          'tinted',
+          t.bool({ default: false }),
+          '"Tinted surfaces": the accent becomes the card\'s background.',
+        ],
+        [
+          'design',
+          t.enumOf(['timeline', 'countdown', 'markers'], {
+            name: 'LiveActivityDesign',
+            default: 'timeline',
+          }),
+          'Android: which of the three layouts.',
+        ],
+      ],
+    },
+    {
+      name: 'LiveActivityAndroid',
+      doc: 'The Android notification\'s own settings.',
+      fields: [
+        [
+          'alertActionEnabled',
+          t.bool({ default: false }),
+          'Offer the button that changes the next alert once.',
+        ],
+        [
+          'aodActionEnabled',
+          t.bool({ default: true }),
+          'Offer the hide/show-on-lock-screen button.',
+        ],
+        [
+          'adhanChannelId',
+          t.string({ default: 'prayer-times-default' }),
+          'The notification channel an adhan alert posts to.',
+        ],
+        ['adhanSoundId', t.string({ default: 'default' }), 'The adhan chosen.'],
+        [
+          'defaultChannelId',
+          t.string({ default: 'prayer-times-default' }),
+          'The channel a plain alert posts to.',
+        ],
+      ],
+    },
+    {
+      name: 'LiveActivityWords',
+      doc: 'Localised words for the Android notification.',
+      fields: [
+        ['fgsText', t.string({ default: '' }), 'The foreground service line.'],
+        ['alertLabelAdhan', t.string({ default: '' })],
+        ['alertLabelNotification', t.string({ default: '' })],
+        ['alertLabelSilent', t.string({ default: '' })],
+        ['alertOnceWord', t.string({ default: '' }), '"once", after a changed alert.'],
+        ['aodHideLabel', t.string({ default: '' })],
+        ['aodShowLabel', t.string({ default: '' })],
+        ['nowWord', t.string({ default: '' })],
+        ['inWord', t.string({ default: '' })],
+        ['atWord', t.string({ default: '' })],
+        [
+          'atPrayerBody',
+          t.string({ default: '' }),
+          'The body of the alert the button posts.',
+        ],
+      ],
+    },
     // ── Back to the app ─────────────────────────────────────────────
     {
       name: 'LogQueueEntry',

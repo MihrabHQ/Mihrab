@@ -18,22 +18,26 @@ import { Platform } from 'react-native';
 import { isMacCatalyst } from '../responsive/breakpoints';
 import i18n from '../i18n';
 import type { TimingsMap } from '../types/prayer';
-import { NEXT_SALAH_ORDER } from '../types/prayer';
 import type { AppAccentId } from '../settings/types';
 import {
   buildWidgetPayload,
   type WidgetCoords,
   type WidgetSeasonalFlags,
 } from '../widget/buildWidgetPayload';
-import { formatHijriLabel } from '../hijri/formatHijriLabel';
 import {
-  startOrUpdateLiveActivity as androidStartOrUpdate,
+  hijriLabelForDateKey,
+  loadLiveActivityOptions,
+  postLiveActivity,
   stopLiveActivity as androidStop,
 } from '../notifications/liveActivity';
+import { getPrayerLiveActivityModule } from '../native/PrayerLiveActivity';
+import { activeClock } from '../utils/activeClock';
+import { contractClock, contractDateKey } from '../widget/wallClock';
 import {
-  getPrayerLiveActivityModule,
-  type PrayerLiveActivityContent,
-} from '../native/PrayerLiveActivity';
+  buildLiveActivityV2,
+  deviceEpochOf,
+  liveActivityIosContent,
+} from './liveActivityV2';
 
 export type LiveActivityDisplayOptions = {
   enabled: boolean;
@@ -78,45 +82,6 @@ export function resolveAccentHex(
 
 // Hijri label now comes from the shared `formatHijriLabel` util (also used by
 // the home day cards) so the format stays identical everywhere.
-
-/**
- * Epoch (ms) of the prayer that most recently passed at or before `now`,
- * scanning today's raw timings (the five salāh + Sunrise). Used as the start
- * anchor for the iOS Live Activity progress bar. Returns null before the day's
- * first event so the caller can fall back to a sensible default.
- */
-export function computePrevPrayerEpochMs(
-  today: TimingsMap,
-  now: Date,
-): number | null {
-  const nowMs = now.getTime();
-  let prev: number | null = null;
-  // Scan every event present in today's (already-filtered) timings — the five
-  // salāh, Sunrise, and any enabled night times — so the progress bar anchors
-  // on whichever one most recently passed (e.g. Islamic Midnight before Fajr).
-  for (const key of NEXT_SALAH_ORDER) {
-    const hhmm = today[key];
-    const at = hhmm ? parseHHMMOnDate(hhmm, now) : null;
-    if (!at) continue;
-    let t = at.getTime();
-    // A time that reads as "future" belongs to the previous calendar day's
-    // occurrence when we're looking backwards (e.g. just after midnight).
-    if (t > nowMs) t -= 24 * 60 * 60 * 1000;
-    if (t <= nowMs && (prev == null || t > prev)) prev = t;
-  }
-  return prev;
-}
-
-function parseHHMMOnDate(hhmm: string, base: Date): Date | null {
-  const m = /^(\d{1,2}):(\d{2})$/.exec(hhmm);
-  if (!m) return null;
-  const h = Number(m[1]);
-  const min = Number(m[2]);
-  if (h < 0 || h > 23 || min < 0 || min > 59) return null;
-  const out = new Date(base);
-  out.setHours(h, min, 0, 0);
-  return out;
-}
 
 function localizedPrayerLabel(key: string | null | undefined): string {
   if (!key) return '';
@@ -222,131 +187,63 @@ async function syncLiveActivityImpl(args: {
     return;
   }
 
-  // Figure out the wall-clock timestamp of the next prayer for the
-  // Android chronometer / iOS Text(timerInterval:).
-  let nextPrayerTimestamp: number | null = null;
-  if (payload.nextKey && payload.nextPrayerTime) {
-    // Pick today's date as the base. After-Isha rollover already swapped
-    // payload to tomorrow's date in dayLabel; we infer the right base by
-    // comparing the parsed time vs. now — if it's in the past, advance
-    // one day.
-    let parsed = parseHHMMOnDate(payload.nextPrayerTime, now);
-    if (parsed && parsed.getTime() <= now.getTime()) {
-      parsed = parseHHMMOnDate(
-        payload.nextPrayerTime,
-        new Date(now.getTime() + 24 * 60 * 60 * 1000),
-      );
-    }
-    if (parsed) nextPrayerTimestamp = parsed.getTime();
-  }
-
-  const nextLabel = localizedPrayerLabel(payload.nextKey);
-  // Hijri and location intentionally NOT included in the Live Activity
-  // anymore — the user explicitly asked for them removed in beta.5.
-  // Sunrise is now permanent (not user-toggleable) — always shown in
-  // the prayer list as it marks the end of the Fajr window.
-  const accentHex = args.accentHex || '#22c55e';
+  // ONE payload for both platforms (step 1.5): the widget payload's own
+  // days, wall clock, with the words and settings the natives draw. Each
+  // native turns it into its content for the minute it draws at.
+  const options = await loadLiveActivityOptions();
+  const la = buildLiveActivityV2({
+    payload,
+    clock: contractClock(activeClock().hour12, i18n.language || 'en'),
+    now,
+    language: i18n.language || 'en',
+    nameOf: localizedPrayerLabel,
+    // Only Android draws it: the Hijri date of the day the next prayer
+    // falls on, beside it in the notification header.
+    hijriOf: Platform.OS === 'android' ? hijriLabelForDateKey : () => '',
+    modeOf: options.modeOf,
+    appearance: {
+      accentHex: args.accentHex || '#22c55e',
+      systemTinted: !!args.systemTinted,
+      systemAccent: args.systemAccent === true,
+      // Android has always read "tinted surfaces" from settings, iOS from
+      // the caller; the same setting either way.
+      tinted: Platform.OS === 'android' ? options.tinted : !!args.tinted,
+      design: args.design ?? 'timeline',
+    },
+    android: options.android,
+    words: options.words,
+  });
+  const at = {
+    todayKey: contractDateKey(now),
+    nowMinutes: now.getHours() * 60 + now.getMinutes(),
+  };
 
   if (Platform.OS === 'android') {
-    await androidStartOrUpdate({
-      payload,
-      nextPrayerTimestamp,
-      nextPrayerLabel: nextLabel,
-      // Hijri date of the day the next prayer falls on (handles after-Isha
-      // rollover), shown next to the next prayer in the notification header.
-      hijriLabel: formatHijriLabel(
-        new Date(nextPrayerTimestamp ?? now.getTime()),
-      ),
-      locationLabel: '',
-      accentHex,
-      systemAccent: args.systemAccent === true,
-      design: args.design ?? 'timeline',
-      compactMode: true,
-      showSunrise: true,
-      showHijri: true,
-      showLocation: false,
-      // Pass today's raw timings so computePrevPrayerEpoch uses the actual
-      // current-day HH:MM strings even after payload rolls over to tomorrow.
-      todayTimings: args.today,
-    });
+    await postLiveActivity(la, at);
     return;
   }
 
   if (Platform.OS === 'ios') {
     const mod = getPrayerLiveActivityModule();
     if (!mod) {
-      // ActivityKit bridge not yet linked — see task #129.
-      // Silent no-op so the toggle still appears functional from the
-      // user's POV (next beta ships the iOS visual).
+      // ActivityKit bridge not linked (Mac Catalyst, a simulator without
+      // it): a silent no-op, so the toggle still reads as working.
       return;
     }
-    const rows = payload.rows.map(r => ({
-      key: r.key,
-      abbr: r.abbr,
-      // Localized full name so the background refresh task can rebuild the
-      // hero label after a rollover (the strip still uses `abbr`).
-      name: localizedPrayerLabel(r.key),
-      time: r.time,
-      // Always written, never left undefined: `JSON.stringify` drops an
-      // undefined key, and the Activity's `Row.display` is a Swift
-      // non-Optional. A 24-hour clock produces no separate display string,
-      // so the whole payload used to fail to decode and no Live Activity
-      // was ever created — see `PrayerLiveActivityAttributes`.
-      // Always written, never left undefined: `JSON.stringify` drops an
-      // undefined key, and the Activity's `Row.display` is a Swift
-      // non-Optional. A 24-hour clock produces no separate display
-      // string, so the whole payload used to fail to decode and no Live
-      // Activity was ever created — see `PrayerLiveActivityAttributes`.
-      display: r.display ?? r.time,
-    }));
-    // Start anchor for the progress bar — previous prayer, falling back to one
-    // hour before the next prayer so the bar still renders sensibly before the
-    // day's first event (or when today's timings are unavailable).
-    const prevEpochMs =
-      (args.today ? computePrevPrayerEpochMs(args.today, now) : null) ??
-      (nextPrayerTimestamp != null ? nextPrayerTimestamp - 60 * 60 * 1000 : 0);
-
-    const content: PrayerLiveActivityContent = {
-      locale: i18n.language || 'en',
-      nextKey: payload.nextKey ?? '',
-      nextLabel,
-      nextTime: payload.nextPrayerTime ?? '',
-      nextTimeDisplay: payload.nextPrayerDisplay ?? payload.nextPrayerTime ?? '',
-      // Swift ContentState.nextEpochSeconds is Double seconds-since-epoch.
-      // nextPrayerTimestamp is ms-since-epoch — divide by 1000.
-      nextEpochSeconds: (nextPrayerTimestamp ?? 0) / 1000,
-      prevEpochSeconds: prevEpochMs / 1000,
-      rows,
-      sunriseRow: payload.sunriseRow
-        ? {
-            key: payload.sunriseRow.key,
-            abbr: payload.sunriseRow.abbr,
-            name: localizedPrayerLabel(payload.sunriseRow.key),
-            time: payload.sunriseRow.time,
-            display: payload.sunriseRow.display ?? payload.sunriseRow.time,
-          }
-        : undefined,
-      extraRows: (payload.extraRows ?? []).map(r => ({
-        key: r.key,
-        abbr: r.abbr,
-        name: localizedPrayerLabel(r.key),
-        time: r.time,
-        display: r.display ?? r.time,
-      })),
-      hijriLabel: '',
-      locationLabel: '',
-      accentHex,
-      systemTinted: !!args.systemTinted,
-      tinted: !!args.tinted,
-      compactMode: true,
-      showSunrise: true,
-      showHijri: false,
-      showLocation: false,
-    };
     try {
-      // Start is idempotent — stops any existing activity, then requests
-      // a fresh one so the widget extension always renders the latest state.
-      await mod.start(JSON.stringify(content));
+      if (mod.startV2) {
+        // Start is idempotent — an existing activity is updated in place.
+        await mod.startV2(JSON.stringify(la));
+      } else {
+        // A native module from before step 1.5: hand it the content it
+        // decodes, worked out here the way the native adapter would.
+        const content = liveActivityIosContent(la, at, deviceEpochOf);
+        if (!content) {
+          await stopLiveActivityCrossPlatform();
+          return;
+        }
+        await mod.start(JSON.stringify(content));
+      }
     } catch (e) {
       console.warn('[liveActivity] ios start/update failed', e);
     }

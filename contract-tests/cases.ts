@@ -18,7 +18,16 @@ import {
   formatContractMinutes,
   minutesFromHHmm,
 } from '../src/widget/wallClock';
-import type { WidgetContractPayload } from '../src/widget/contract.generated';
+import type {
+  WidgetContractDay,
+  WidgetContractLiveActivity,
+  WidgetContractPayload,
+} from '../src/widget/contract.generated';
+import {
+  liveActivityAndroidPayload,
+  liveActivityIosContent,
+  type EpochOf,
+} from '../src/liveActivity/liveActivityV2';
 import { widgetPayloadV1FromV2 } from '../src/widget/widgetPayloadV2';
 import { widgetScenarios } from './scenarios';
 
@@ -580,6 +589,77 @@ async function adaptCases() {
   });
 }
 
+/**
+ * The shared Live Activity payload at a moment, as each native must draw it
+ * (step 1.5): the iOS ActivityKit content (LiveActivityV1.swift) and the
+ * Android notification payload (LiveActivityV1.kt). Built from the same
+ * scenarios' days, with every Android setting and word set to something a
+ * reader could get wrong, and instants in UTC — the zone rules themselves
+ * are held by the `instants` cases in six zones.
+ */
+async function liveActivityCases() {
+  const scenarios = (await widgetScenarios()).filter(s => s.fixture);
+  const utc: EpochOf = (dateKey, minutes) => {
+    const [y, m, d] = dateKey.split('-').map(Number);
+    return Date.UTC(y, m - 1, d, 0, minutes);
+  };
+  return scenarios.map((s, i) => {
+    const days = JSON.parse(JSON.stringify(s.v2.days)) as WidgetContractDay[];
+    for (const d of days) d.utcOffsetMinutes = 120;
+    const la: WidgetContractLiveActivity = {
+      schemaVersion: 2,
+      language: s.v2.language ?? 'en',
+      clock: s.v2.clock ?? { hour12: false },
+      days,
+      hijri: days.map(d => ({ dateKey: d.dateKey, text: `Hijri ${d.dateKey}` })),
+      alertModes: [
+        { key: 'Fajr', mode: 'adhan' },
+        { key: 'Sunrise', mode: 'silent' },
+        { key: 'Maghrib', mode: 'adhan' },
+      ],
+      appearance: {
+        accentHex: '#5B4B9E',
+        systemTinted: i % 2 === 0,
+        systemAccent: i % 2 === 1,
+        tinted: i % 3 === 0,
+        design: (['timeline', 'countdown', 'markers'] as const)[i % 3],
+      },
+      android: {
+        alertActionEnabled: true,
+        aodActionEnabled: i % 2 === 0,
+        adhanChannelId: 'adhan-makkah-alarm',
+        adhanSoundId: 'makkah',
+        defaultChannelId: 'prayer-times-default',
+      },
+      words: {
+        fgsText: 'Prayer countdown active',
+        alertLabelAdhan: 'Adhan',
+        alertLabelNotification: 'Alert',
+        alertLabelSilent: 'Silent',
+        alertOnceWord: 'once',
+        aodHideLabel: 'Hide on lock screen',
+        aodShowLabel: 'Show on lock screen',
+        nowWord: 'Now',
+        inWord: 'In',
+        atWord: 'At',
+        atPrayerBody: 'Prayer time',
+      },
+    };
+    const read = Contract.readWidgetContractLiveActivity(la);
+    if (!read) throw new Error(`scenario "${s.name}" did not read as a LiveActivity`);
+    return {
+      name: s.name,
+      now: s.now,
+      zone: 'UTC',
+      input: JSON.stringify(la),
+      ios: JSON.parse(JSON.stringify(liveActivityIosContent(read, s.now, utc) ?? null)),
+      android: JSON.parse(
+        JSON.stringify(liveActivityAndroidPayload(read, s.now, utc) ?? null),
+      ),
+    };
+  });
+}
+
 export async function buildFixtures() {
   const epochs = inZones<number>(
     INSTANT_CASES.map(c => ({
@@ -613,6 +693,7 @@ export async function buildFixtures() {
     about:
       'GENERATED from contract-tests/cases.ts by `npm run contract-fixtures` — do not edit. The answers the app gives; Swift and Kotlin must give the same.',
     adapt: await adaptCases(),
+    liveActivity: await liveActivityCases(),
     decode: DECODE_CASES.map(c => ({
       ...c,
       expected: decode(c.type, c.input),

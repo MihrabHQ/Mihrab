@@ -102,6 +102,28 @@ class ContractFixturesTest {
   }
 
   @Test
+  fun adaptsTheLiveActivityToWhatTheNotificationDraws() {
+    val failures = mutableListOf<String>()
+    val cases = section("liveActivity")
+    for (c in cases) {
+      val now = c.getJSONObject("now")
+      val la = WidgetContract.LiveActivity.parse(c.getString("input"))
+      val have = la?.let {
+        LiveActivityV1.androidPayload(
+          it,
+          now.getString("todayKey"),
+          now.getInt("nowMinutes"),
+          TimeZone.getTimeZone(c.getString("zone")),
+        )
+      }
+      val want = canonical(c.opt("android"))
+      val got = canonical(have)
+      if (want != got) failures += "live activity — ${c.getString("name")}\n    want $want\n    have $got"
+    }
+    report(failures, cases.size)
+  }
+
+  @Test
   fun readsTheV1Clock() {
     val failures = mutableListOf<String>()
     val cases = section("hhmm")

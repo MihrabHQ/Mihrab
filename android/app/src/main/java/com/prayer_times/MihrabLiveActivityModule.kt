@@ -17,6 +17,9 @@ import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
+import com.prayer_times.contract.LiveActivityV1
+import com.prayer_times.contract.WallClock
+import com.prayer_times.contract.WidgetContract
 import org.json.JSONObject
 import java.time.Instant
 
@@ -105,6 +108,44 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
   }
 
   /**
+   * THE SHARED PAYLOAD (the contract's `LiveActivity`, docs/rewrite-plan.md
+   * step 1.5) — the one the app now builds for both platforms.
+   *
+   * Adapted here, for this minute and this device's zone, into the payload
+   * [display] has always taken (`LiveActivityV1`), and kept beside it, so a
+   * roll-forward can read the same days. The next prayer's instant comes
+   * from its day and minutes, not from "HH:mm" re-parsed on today.
+   */
+  @ReactMethod
+  fun displayV2(liveActivityJson: String, promise: Promise) {
+    try {
+      val la = WidgetContract.LiveActivity.parse(liveActivityJson)
+      if (la == null) {
+        promise.reject("DECODE_FAILED", "LiveActivity payload could not be read")
+        return
+      }
+      val now = System.currentTimeMillis()
+      val adapted = LiveActivityV1.androidPayload(
+        la,
+        WallClock.dateKey(now),
+        WallClock.minutesOf(now),
+      )
+      if (adapted == null) {
+        // Nothing ahead to count down to: the app re-arms with the next
+        // days on its next sync, as it always did.
+        Log.i(NAME, "displayV2: nothing ahead")
+        promise.resolve(null)
+        return
+      }
+      savePayloadV2(reactContext, liveActivityJson)
+      display(adapted.toString(), promise)
+    } catch (e: Throwable) {
+      Log.e(NAME, "displayV2: failed", e)
+      promise.reject("DISPLAY_FAILED", e.message, e)
+    }
+  }
+
+  /**
    * Forget the one-occurrence override, and repaint the card without it.
    *
    * The row on the home screen that shows an overridden prayer carries the
@@ -177,6 +218,22 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
     const val PREFS_NAME = "mihrab_live_activity"
     const val PREF_KEY_PAYLOAD = "last_payload"
     const val PREF_KEY_ENABLED = "enabled"
+    /** The shared payload [displayV2] was last given (step 1.5). */
+    const val PREF_KEY_PAYLOAD_V2 = "last_payload_v2"
+
+    fun savePayloadV2(context: android.content.Context, liveActivityJson: String) {
+      context.getSharedPreferences(PREFS_NAME, android.content.Context.MODE_PRIVATE)
+        .edit()
+        .putString(PREF_KEY_PAYLOAD_V2, liveActivityJson)
+        .apply()
+    }
+
+    /** The stored shared payload, when the feature is on and the app wrote one. */
+    fun loadPayloadV2(context: android.content.Context): String? {
+      val prefs = context.getSharedPreferences(PREFS_NAME, android.content.Context.MODE_PRIVATE)
+      if (!prefs.getBoolean(PREF_KEY_ENABLED, false)) return null
+      return prefs.getString(PREF_KEY_PAYLOAD_V2, null)
+    }
 
     fun savePayload(context: android.content.Context, payloadJson: String) {
       context.getSharedPreferences(PREFS_NAME, android.content.Context.MODE_PRIVATE)
@@ -190,6 +247,7 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
       context.getSharedPreferences(PREFS_NAME, android.content.Context.MODE_PRIVATE)
         .edit()
         .remove(PREF_KEY_PAYLOAD)
+        .remove(PREF_KEY_PAYLOAD_V2)
         .putBoolean(PREF_KEY_ENABLED, false)
         .apply()
     }

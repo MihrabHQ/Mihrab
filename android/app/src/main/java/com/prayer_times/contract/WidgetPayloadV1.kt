@@ -24,14 +24,25 @@ import org.json.JSONObject
  *     next day's — or, when the next day is an estimate, its Fajr.
  */
 object WidgetPayloadV1 {
-  private class Event(val row: WidgetContract.Row, val at: Int)
+  /** A time on a day, placed `at` minutes from today's midnight. */
+  class Event(val row: WidgetContract.Row, val at: Int)
 
-  /** The v1 payload, or null when there are no days to draw from. */
-  fun fromV2(p: WidgetContract.Payload, todayKey: String, nowMinutes: Int): JSONObject? {
-    val days = p.days
+  /**
+   * Where the days stand at a moment — `widgetMoment` in widgetPayloadV2.ts,
+   * shared by this adapter and the Live Activity's (LiveActivityV1.kt).
+   * `now` is minutes since today's midnight, -1 when "today" is a later day.
+   */
+  class Moment(
+    val today: WidgetContract.Day,
+    val tomorrow: WidgetContract.Day?,
+    val shown: WidgetContract.Day,
+    val now: Int,
+    val next: Event?,
+  )
+
+  /** Today, the day shown and the next time; null when there are no days. */
+  fun moment(days: List<WidgetContract.Day>, todayKey: String, nowMinutes: Int): Moment? {
     if (days.isEmpty()) return null
-    val clock = p.clock
-
     var todayIndex = days.indexOfFirst { it.dateKey == todayKey }
     var now = nowMinutes
     if (todayIndex < 0) {
@@ -53,6 +64,29 @@ object WidgetPayloadV1 {
       } else {
         earliest(ahead + (tomorrow?.let { eventsOf(it, 1440) } ?: emptyList()))
       }
+    return Moment(today, tomorrow, shown, now, next)
+  }
+
+  /**
+   * The time most recently passed — today's, and one still ahead taken as
+   * yesterday's (`at` - 1440). `widgetPrevious` in widgetPayloadV2.ts.
+   */
+  fun previous(m: Moment): Event? {
+    var best: Event? = null
+    for (e in eventsOf(m.today, 0)) {
+      val at = if (e.at > m.now) e.at - WallClock.MINUTES_PER_DAY else e.at
+      if (at <= m.now && (best == null || at > best.at)) best = Event(e.row, at)
+    }
+    return best
+  }
+
+  /** The v1 payload, or null when there are no days to draw from. */
+  fun fromV2(p: WidgetContract.Payload, todayKey: String, nowMinutes: Int): JSONObject? {
+    val days = p.days
+    val m = moment(days, todayKey, nowMinutes) ?: return null
+    val clock = p.clock
+    val shown = m.shown
+    val next = m.next
 
     val out = JSONObject()
     out.put("dayLabel", shown.label)
@@ -193,13 +227,13 @@ object WidgetPayloadV1 {
   }
 
   /** Canonical 24-hour 'HH:mm', as v1 carried every time. */
-  private fun hhmm(minutes: Int): String {
+  fun hhmm(minutes: Int): String {
     val m = Math.floorMod(minutes, WallClock.MINUTES_PER_DAY)
     return String.format(Locale.ROOT, "%02d:%02d", m / 60, m % 60)
   }
 
   /** `time`, and `display` when it reads differently — the v1 pair. */
-  private fun timePair(minutes: Int, clock: WidgetContract.Clock): Pair<String, String?> {
+  fun timePair(minutes: Int, clock: WidgetContract.Clock): Pair<String, String?> {
     val time = hhmm(minutes)
     val display = WallClock.text(minutes, clock)
     return time to display.takeIf { it != time }

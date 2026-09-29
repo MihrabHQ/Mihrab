@@ -28,6 +28,18 @@ enum WidgetContract {
     case translation
   }
 
+  enum AlertModeKind: String, Codable, Hashable {
+    case adhan
+    case notification
+    case silent
+  }
+
+  enum LiveActivityDesign: String, Codable, Hashable {
+    case timeline
+    case countdown
+    case markers
+  }
+
   enum TasbihAction: String, Codable, Hashable {
     case inc
     case reset
@@ -777,6 +789,302 @@ enum WidgetContract {
       unboundedFlags = c.wcList(Bool.self, .unboundedFlags) ?? []
       todayTotal = c.wcInt(.todayTotal).flatMap(wcInt32) ?? 0
       todayRounds = c.wcInt(.todayRounds).flatMap(wcInt32) ?? 0
+    }
+  }
+
+  /// What a Live Activity draws — the iOS Lock Screen card and Dynamic
+  /// Island, and the Android pinned notification — as one payload built once
+  /// for both (docs/rewrite-plan.md, step 1.5). Before it there were two,
+  /// built in two places, with the next prayer as an instant in seconds on
+  /// one and milliseconds on the other. Times are wall clock, as the widgets'
+  /// are; each native works out "next" and "previous" for the minute it draws
+  /// at.
+  struct LiveActivity: Codable, Hashable {
+    /// Always 2 for this shape.
+    var schemaVersion: Int
+    /// The app's language tag.
+    var language: String
+    /// How to write a time.
+    var clock: Clock
+    /// The widget payload's days, today first, each row carrying its
+    /// localised full name.
+    var days: [Day]
+    /// The Hijri date of each day, localised. Android heads the notification
+    /// with the one the next prayer falls on.
+    var hijri: [DayText]
+    /// What each prayer's alert does, for the Android lock-screen alert
+    /// button.
+    var alertModes: [AlertMode]
+    /// Accent and style.
+    var appearance: LiveActivityAppearance
+    /// What only the Android notification needs.
+    var android: LiveActivityAndroid
+    /// Words the Android notification draws, in the app language — the
+    /// thirteen locales live in the app.
+    var words: LiveActivityWords
+
+    init(
+      schemaVersion: Int,
+      language: String = "",
+      clock: Clock = Clock(),
+      days: [Day],
+      hijri: [DayText] = [],
+      alertModes: [AlertMode] = [],
+      appearance: LiveActivityAppearance = LiveActivityAppearance(),
+      android: LiveActivityAndroid = LiveActivityAndroid(),
+      words: LiveActivityWords = LiveActivityWords()
+    ) {
+      self.schemaVersion = schemaVersion
+      self.language = language
+      self.clock = clock
+      self.days = days
+      self.hijri = hijri
+      self.alertModes = alertModes
+      self.appearance = appearance
+      self.android = android
+      self.words = words
+    }
+
+    enum CodingKeys: String, CodingKey {
+      case schemaVersion
+      case language
+      case clock
+      case days
+      case hijri
+      case alertModes
+      case appearance
+      case android
+      case words
+    }
+
+    init(from decoder: Decoder) throws {
+      let c = try decoder.container(keyedBy: CodingKeys.self)
+      schemaVersion = try c.wcRequire(c.wcInt(.schemaVersion).flatMap(wcInt32), .schemaVersion)
+      language = c.wcValue(String.self, .language) ?? ""
+      clock = c.wcValue(Clock.self, .clock) ?? Clock()
+      days = try c.wcRequire(c.wcList(Day.self, .days), .days)
+      hijri = c.wcList(DayText.self, .hijri) ?? []
+      alertModes = c.wcList(AlertMode.self, .alertModes) ?? []
+      appearance = c.wcValue(LiveActivityAppearance.self, .appearance) ?? LiveActivityAppearance()
+      android = c.wcValue(LiveActivityAndroid.self, .android) ?? LiveActivityAndroid()
+      words = c.wcValue(LiveActivityWords.self, .words) ?? LiveActivityWords()
+    }
+  }
+
+  /// A line of text that belongs to one day.
+  struct DayText: Codable, Hashable {
+    /// Local YYYY-MM-DD.
+    var dateKey: String
+    var text: String
+
+    init(
+      dateKey: String,
+      text: String = ""
+    ) {
+      self.dateKey = dateKey
+      self.text = text
+    }
+
+    enum CodingKeys: String, CodingKey {
+      case dateKey
+      case text
+    }
+
+    init(from decoder: Decoder) throws {
+      let c = try decoder.container(keyedBy: CodingKeys.self)
+      dateKey = try c.wcRequire(c.wcValue(String.self, .dateKey), .dateKey)
+      text = c.wcValue(String.self, .text) ?? ""
+    }
+  }
+
+  /// What one prayer does when its time comes.
+  struct AlertMode: Codable, Hashable {
+    /// Row key.
+    var key: String
+    /// As Settings → Notifications shows it.
+    var mode: AlertModeKind
+
+    init(
+      key: String,
+      mode: AlertModeKind
+    ) {
+      self.key = key
+      self.mode = mode
+    }
+
+    enum CodingKeys: String, CodingKey {
+      case key
+      case mode
+    }
+
+    init(from decoder: Decoder) throws {
+      let c = try decoder.container(keyedBy: CodingKeys.self)
+      key = try c.wcRequire(c.wcValue(String.self, .key), .key)
+      mode = try c.wcRequire(c.wcValue(String.self, .mode).flatMap(AlertModeKind.init(rawValue:)), .mode)
+    }
+  }
+
+  /// How the Live Activity is tinted and laid out.
+  struct LiveActivityAppearance: Codable, Hashable {
+    /// The app accent's light swatch, #RRGGBB.
+    var accentHex: String
+    /// iOS: follow the system tint (Liquid Glass) instead of the accent.
+    var systemTinted: Bool
+    /// Android: follow the Material You accent, re-read natively on each
+    /// repost.
+    var systemAccent: Bool
+    /// "Tinted surfaces": the accent becomes the card's background.
+    var tinted: Bool
+    /// Android: which of the three layouts.
+    var design: LiveActivityDesign
+
+    init(
+      accentHex: String = "#22c55e",
+      systemTinted: Bool = false,
+      systemAccent: Bool = false,
+      tinted: Bool = false,
+      design: LiveActivityDesign = .timeline
+    ) {
+      self.accentHex = accentHex
+      self.systemTinted = systemTinted
+      self.systemAccent = systemAccent
+      self.tinted = tinted
+      self.design = design
+    }
+
+    enum CodingKeys: String, CodingKey {
+      case accentHex
+      case systemTinted
+      case systemAccent
+      case tinted
+      case design
+    }
+
+    init(from decoder: Decoder) throws {
+      let c = try decoder.container(keyedBy: CodingKeys.self)
+      accentHex = c.wcValue(String.self, .accentHex) ?? "#22c55e"
+      systemTinted = c.wcValue(Bool.self, .systemTinted) ?? false
+      systemAccent = c.wcValue(Bool.self, .systemAccent) ?? false
+      tinted = c.wcValue(Bool.self, .tinted) ?? false
+      design = c.wcValue(String.self, .design).flatMap(LiveActivityDesign.init(rawValue:)) ?? .timeline
+    }
+  }
+
+  /// The Android notification's own settings.
+  struct LiveActivityAndroid: Codable, Hashable {
+    /// Offer the button that changes the next alert once.
+    var alertActionEnabled: Bool
+    /// Offer the hide/show-on-lock-screen button.
+    var aodActionEnabled: Bool
+    /// The notification channel an adhan alert posts to.
+    var adhanChannelId: String
+    /// The adhan chosen.
+    var adhanSoundId: String
+    /// The channel a plain alert posts to.
+    var defaultChannelId: String
+
+    init(
+      alertActionEnabled: Bool = false,
+      aodActionEnabled: Bool = true,
+      adhanChannelId: String = "prayer-times-default",
+      adhanSoundId: String = "default",
+      defaultChannelId: String = "prayer-times-default"
+    ) {
+      self.alertActionEnabled = alertActionEnabled
+      self.aodActionEnabled = aodActionEnabled
+      self.adhanChannelId = adhanChannelId
+      self.adhanSoundId = adhanSoundId
+      self.defaultChannelId = defaultChannelId
+    }
+
+    enum CodingKeys: String, CodingKey {
+      case alertActionEnabled
+      case aodActionEnabled
+      case adhanChannelId
+      case adhanSoundId
+      case defaultChannelId
+    }
+
+    init(from decoder: Decoder) throws {
+      let c = try decoder.container(keyedBy: CodingKeys.self)
+      alertActionEnabled = c.wcValue(Bool.self, .alertActionEnabled) ?? false
+      aodActionEnabled = c.wcValue(Bool.self, .aodActionEnabled) ?? true
+      adhanChannelId = c.wcValue(String.self, .adhanChannelId) ?? "prayer-times-default"
+      adhanSoundId = c.wcValue(String.self, .adhanSoundId) ?? "default"
+      defaultChannelId = c.wcValue(String.self, .defaultChannelId) ?? "prayer-times-default"
+    }
+  }
+
+  /// Localised words for the Android notification.
+  struct LiveActivityWords: Codable, Hashable {
+    /// The foreground service line.
+    var fgsText: String
+    var alertLabelAdhan: String
+    var alertLabelNotification: String
+    var alertLabelSilent: String
+    /// "once", after a changed alert.
+    var alertOnceWord: String
+    var aodHideLabel: String
+    var aodShowLabel: String
+    var nowWord: String
+    var inWord: String
+    var atWord: String
+    /// The body of the alert the button posts.
+    var atPrayerBody: String
+
+    init(
+      fgsText: String = "",
+      alertLabelAdhan: String = "",
+      alertLabelNotification: String = "",
+      alertLabelSilent: String = "",
+      alertOnceWord: String = "",
+      aodHideLabel: String = "",
+      aodShowLabel: String = "",
+      nowWord: String = "",
+      inWord: String = "",
+      atWord: String = "",
+      atPrayerBody: String = ""
+    ) {
+      self.fgsText = fgsText
+      self.alertLabelAdhan = alertLabelAdhan
+      self.alertLabelNotification = alertLabelNotification
+      self.alertLabelSilent = alertLabelSilent
+      self.alertOnceWord = alertOnceWord
+      self.aodHideLabel = aodHideLabel
+      self.aodShowLabel = aodShowLabel
+      self.nowWord = nowWord
+      self.inWord = inWord
+      self.atWord = atWord
+      self.atPrayerBody = atPrayerBody
+    }
+
+    enum CodingKeys: String, CodingKey {
+      case fgsText
+      case alertLabelAdhan
+      case alertLabelNotification
+      case alertLabelSilent
+      case alertOnceWord
+      case aodHideLabel
+      case aodShowLabel
+      case nowWord
+      case inWord
+      case atWord
+      case atPrayerBody
+    }
+
+    init(from decoder: Decoder) throws {
+      let c = try decoder.container(keyedBy: CodingKeys.self)
+      fgsText = c.wcValue(String.self, .fgsText) ?? ""
+      alertLabelAdhan = c.wcValue(String.self, .alertLabelAdhan) ?? ""
+      alertLabelNotification = c.wcValue(String.self, .alertLabelNotification) ?? ""
+      alertLabelSilent = c.wcValue(String.self, .alertLabelSilent) ?? ""
+      alertOnceWord = c.wcValue(String.self, .alertOnceWord) ?? ""
+      aodHideLabel = c.wcValue(String.self, .aodHideLabel) ?? ""
+      aodShowLabel = c.wcValue(String.self, .aodShowLabel) ?? ""
+      nowWord = c.wcValue(String.self, .nowWord) ?? ""
+      inWord = c.wcValue(String.self, .inWord) ?? ""
+      atWord = c.wcValue(String.self, .atWord) ?? ""
+      atPrayerBody = c.wcValue(String.self, .atPrayerBody) ?? ""
     }
   }
 

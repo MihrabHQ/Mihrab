@@ -148,6 +148,60 @@ final class PrayerLiveActivity: NSObject {
     resolve(nil)
   }
 
+  // MARK: - startV2
+
+  /// UserDefaults key of the last shared payload (the contract's
+  /// `LiveActivity`, step 1.5). Kept across launches: the background refresh
+  /// runs in a process the app did not start, and re-adapting the stored days
+  /// is what lets it roll the card forward — past ʿIshāʾ into tomorrow, which
+  /// the old re-parse of the activity's own "HH:mm" rows could not.
+  static let storedV2Key = "PrayerLiveActivity.payloadV2"
+
+  /// Start or update from the shared payload. Adapted here, for this minute,
+  /// into the content `start` has always decoded (LiveActivityV1.swift), and
+  /// stored for the refresh and for `reassert`.
+  @objc
+  func startV2(
+    _ json: String,
+    resolver resolve: @escaping RCTPromiseResolveBlock,
+    rejecter reject: @escaping RCTPromiseRejectBlock
+  ) {
+    guard let data = json.data(using: .utf8),
+          let la = try? JSONDecoder().decode(WidgetContract.LiveActivity.self, from: data)
+    else {
+      reject("DECODE_FAILED", "LiveActivity payload could not be read", nil)
+      return
+    }
+    UserDefaults.standard.set(json, forKey: Self.storedV2Key)
+    guard let content = Self.contentJSON(from: la, now: Date()) else {
+      // Nothing ahead to count down to — the app re-arms with tomorrow's days
+      // on its next sync, as it always did.
+      resolve(nil)
+      return
+    }
+    start(content, resolver: resolve, rejecter: reject)
+  }
+
+  /// The ContentState JSON the shared payload stands for at `now`.
+  static func contentJSON(from la: WidgetContract.LiveActivity, now: Date) -> String? {
+    guard let data = LiveActivityV1.iosContentData(
+      la,
+      todayKey: WallClock.dateKey(now),
+      nowMinutes: WallClock.minutes(of: now)
+    ) else { return nil }
+    return String(data: data, encoding: .utf8)
+  }
+
+  /// The stored shared payload's content at `now`, or nil when there is none
+  /// (an activity started by a build from before step 1.5) or nothing ahead.
+  static func storedContentJSON(now: Date) -> String? {
+    guard let json = UserDefaults.standard.string(forKey: storedV2Key),
+          let data = json.data(using: .utf8),
+          let la = try? JSONDecoder().decode(WidgetContract.LiveActivity.self, from: data)
+    else { return nil }
+    return contentJSON(from: la, now: now)
+  }
+
   // MARK: - update
 
   @objc
@@ -213,8 +267,9 @@ final class PrayerLiveActivity: NSObject {
     rejecter reject: @escaping RCTPromiseRejectBlock
   ) {
     // Feature turned off — forget the cached content so `reassert()` won't
-    // revive the card.
+    // revive the card, nor the refresh roll it forward.
     Self.cachedStateJSON = nil
+    UserDefaults.standard.removeObject(forKey: Self.storedV2Key)
     #if canImport(ActivityKit) && !targetEnvironment(macCatalyst)
     if #available(iOS 16.1, *) {
       LiveActivityRefresher.cancelScheduledRefresh()
@@ -258,8 +313,28 @@ final class PrayerLiveActivity: NSObject {
         return
       }
 
-      // Re-point to the current next prayer so the revived card isn't stale.
       let now = Date()
+      // From the shared payload when there is one: the whole card as it
+      // stands now, the day shown included.
+      if let fresh = Self.storedContentJSON(now: now)?.data(using: .utf8),
+         let freshState = try? JSONDecoder().decode(
+           PrayerLiveActivityAttributes.ContentState.self, from: fresh) {
+        do {
+          let _ = try Activity<PrayerLiveActivityAttributes>.request(
+            attributes: PrayerLiveActivityAttributes(),
+            content: ActivityContent(
+              state: freshState,
+              staleDate: Date(timeIntervalSince1970: freshState.nextEpochSeconds + 60)),
+            pushType: nil
+          )
+          LiveActivityRefresher.scheduleRefresh()
+        } catch {
+          NSLog("[PrayerLiveActivity] reassert request failed: \(error.localizedDescription)")
+        }
+        resolve(nil)
+        return
+      }
+      // Re-point to the current next prayer so the revived card isn't stale.
       guard let next = LiveActivityRefresher.computeNext(state: state, now: now) else {
         // No remaining event today — let the foreground sync re-arm with
         // tomorrow's data instead of reviving a past countdown.
@@ -381,6 +456,18 @@ enum LiveActivityRefresher {
   @available(iOS 16.2, *)
   private static func refreshRunningActivities() async {
     let now = Date()
+    // The shared payload's days, when the app stored them: the card as it
+    // stands now, rows and all — after ʿIshāʾ that is tomorrow's.
+    if let fresh = PrayerLiveActivity.storedContentJSON(now: now)?.data(using: .utf8),
+       let state = try? JSONDecoder().decode(
+         PrayerLiveActivityAttributes.ContentState.self, from: fresh) {
+      let stale = Date(timeIntervalSince1970: state.nextEpochSeconds + 60)
+      for activity in Activity<PrayerLiveActivityAttributes>.activities
+      where activity.content.state != state {
+        await activity.update(ActivityContent(state: state, staleDate: stale))
+      }
+      return
+    }
     for activity in Activity<PrayerLiveActivityAttributes>.activities {
       let state = activity.content.state
       guard let next = computeNext(state: state, now: now) else { continue }
@@ -401,6 +488,11 @@ enum LiveActivityRefresher {
   @available(iOS 16.2, *)
   private static func soonestNextPrayerDate() -> Date? {
     let now = Date()
+    if let fresh = PrayerLiveActivity.storedContentJSON(now: now)?.data(using: .utf8),
+       let state = try? JSONDecoder().decode(
+         PrayerLiveActivityAttributes.ContentState.self, from: fresh) {
+      return Date(timeIntervalSince1970: state.nextEpochSeconds)
+    }
     var soonest: Date?
     for activity in Activity<PrayerLiveActivityAttributes>.activities {
       if let n = computeNext(state: activity.content.state, now: now) {

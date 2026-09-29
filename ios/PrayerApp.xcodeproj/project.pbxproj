@@ -37,7 +37,9 @@
 		6F702A22F070F0CB015C3788 /* adhan_abdul_ghaffar.caf in Resources */ = {isa = PBXBuildFile; fileRef = 8A1A56F1FEF3275970746B0F /* adhan_abdul_ghaffar.caf */; };
 		730120DC1F8F960B4D9B31BB /* MushafLine.m in Sources */ = {isa = PBXBuildFile; fileRef = 63C29CB4341E0EECC7836179 /* MushafLine.m */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
+		7B95C61E834EEEF5588B2D91 /* LiveActivityV1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 740F53BC32BAAD6E2D7AC76D /* LiveActivityV1.swift */; };
 		7E03A6352BAC52EEBCFDD0A5 /* WidgetPayloadV1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BDC072298C265946EC98634 /* WidgetPayloadV1.swift */; };
+		7FC53BCA2DAF2CDA273E952E /* LiveActivityV1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 740F53BC32BAAD6E2D7AC76D /* LiveActivityV1.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		82792D28789AD3A9AD8EA294 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
 		8335EB755F07A4493C0BCA72 /* adhan_saber.caf in Resources */ = {isa = PBXBuildFile; fileRef = CE9E49272B22B1425383AC48 /* adhan_saber.caf */; };
@@ -115,6 +117,7 @@
 		FA11B0071AC0000000000002 /* RateApp.m in Sources */ = {isa = PBXBuildFile; fileRef = FA11B0071AC0000000000001 /* RateApp.m */; };
 		FA22B0071AD0000000000013 /* MushafFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA22B0071AD0000000000011 /* MushafFont.swift */; };
 		FA22B0071AD0000000000014 /* MushafFont.m in Sources */ = {isa = PBXBuildFile; fileRef = FA22B0071AD0000000000012 /* MushafFont.m */; };
+		FABE63D27A73A0AE708840DB /* LiveActivityV1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 740F53BC32BAAD6E2D7AC76D /* LiveActivityV1.swift */; };
 		FC36F1E91AF5B74243B9D9A7 /* WallClock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E8E4C81A93DFA1C5C47E89E /* WallClock.swift */; };
 /* End PBXBuildFile section */
 
@@ -180,6 +183,7 @@
 		69FB66EF55272B1AA6A61A69 /* PrayerBuildInfo.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PrayerBuildInfo.m; path = PrayerApp/PrayerBuildInfo.m; sourceTree = "<group>"; };
 		6BDC072298C265946EC98634 /* WidgetPayloadV1.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WidgetPayloadV1.swift; sourceTree = "<group>"; };
 		6E8E4C81A93DFA1C5C47E89E /* WallClock.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WallClock.swift; sourceTree = "<group>"; };
+		740F53BC32BAAD6E2D7AC76D /* LiveActivityV1.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LiveActivityV1.swift; sourceTree = "<group>"; };
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = PrayerApp/AppDelegate.swift; sourceTree = "<group>"; };
 		7B489EDC7485CD1BDA638DC8 /* adhan_sharif_doman.caf */ = {isa = PBXFileReference; lastKnownFileType = "audio.x-caf"; name = adhan_sharif_doman.caf; path = PrayerApp/adhan_sharif_doman.caf; sourceTree = "<group>"; };
 		7BB6BBBA364576409D299287 /* adhan_al_hussaini.caf */ = {isa = PBXFileReference; lastKnownFileType = "audio.x-caf"; name = adhan_al_hussaini.caf; path = PrayerApp/adhan_al_hussaini.caf; sourceTree = "<group>"; };
@@ -422,6 +426,7 @@
 				96544E1D56A76E31598DEF4D /* WidgetContract.generated.swift */,
 				6E8E4C81A93DFA1C5C47E89E /* WallClock.swift */,
 				6BDC072298C265946EC98634 /* WidgetPayloadV1.swift */,
+				740F53BC32BAAD6E2D7AC76D /* LiveActivityV1.swift */,
 			);
 			name = Contract;
 			path = Contract;
@@ -808,6 +813,7 @@
 				63F66A55A4230463C72B2391 /* WidgetContract.generated.swift in Sources */,
 				6C156AAD7CA5CDB0DEBF466E /* WallClock.swift in Sources */,
 				CD071F0287B88D4CD0A3477F /* WidgetPayloadV1.swift in Sources */,
+				FABE63D27A73A0AE708840DB /* LiveActivityV1.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -826,6 +832,7 @@
 				3B626775B5A7E2F8DC2273EF /* WidgetContract.generated.swift in Sources */,
 				FC36F1E91AF5B74243B9D9A7 /* WallClock.swift in Sources */,
 				7E03A6352BAC52EEBCFDD0A5 /* WidgetPayloadV1.swift in Sources */,
+				7B95C61E834EEEF5588B2D91 /* LiveActivityV1.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -839,6 +846,7 @@
 				F0500B44C8F251035688F33E /* WidgetContract.generated.swift in Sources */,
 				487A75EFC746A21D7E0411B2 /* WallClock.swift in Sources */,
 				33D4CD3C7FCC01FC84056305 /* WidgetPayloadV1.swift in Sources */,
+				7FC53BCA2DAF2CDA273E952E /* LiveActivityV1.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

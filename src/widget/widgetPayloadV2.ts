@@ -169,6 +169,29 @@ export function widgetPayloadV2FromV1(
       ),
     );
   }
+  // After ʿIshāʾ WITH tomorrow's times but tomorrow outside `days` — the
+  // app had them from its `tomorrow` argument and a window that ends today
+  // — v1 shows tomorrow at the top level, under tomorrow's label, and
+  // nowhere else. Leaving it out left a reader of v2 with nothing ahead
+  // after ʿIshāʾ: no next prayer on the widgets, no Live Activity at all.
+  const todayDay = v1Days.find(d => d.dateKey === todayKey);
+  if (
+    !v1.tomorrowEstimated &&
+    todayDay &&
+    v1.dayLabel !== todayDay.dayLabel &&
+    !v1Days.some(d => d.dateKey === tomorrowKey)
+  ) {
+    days.push(
+      dayV2(
+        tomorrowKey,
+        v1.dayLabel,
+        v1.rows,
+        v1.sunriseRow,
+        v1.extraRows,
+        false,
+      ),
+    );
+  }
   if (days.length === 0) {
     // A v1 payload without `days` (only ever built by old callers and
     // tests) still describes one day: the one at the top level.
@@ -217,7 +240,7 @@ export function widgetPayloadV2FromV1(
 // ── Back to v1, the way the widgets will ─────────────────────────────────
 
 /** Local midnight → 'HH:mm', canonical 24-hour, as v1 carried every time. */
-function hhmm(minutes: number): string {
+export function hhmm(minutes: number): string {
   const m = ((minutes % 1440) + 1440) % 1440;
   return `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(
     m % 60,
@@ -225,7 +248,7 @@ function hhmm(minutes: number): string {
 }
 
 /** `time` and, when it reads differently, `display` — the v1 pair. */
-function timePair(
+export function timePair(
   minutes: number | null | undefined,
   clock: WidgetContractClock,
 ): { time: string; display?: string } {
@@ -288,20 +311,40 @@ export type WidgetNow = {
  *   - "next" is the earliest of today's times still ahead and all of the
  *     next day's — or, when the next day is an estimate, its Fajr.
  */
-export function widgetPayloadV1FromV2(
-  v2: WidgetContractPayload,
+/**
+ * WHERE THE DAYS STAND AT A MOMENT — the one rule every reader of `days`
+ * uses, the widgets' adapter and the Live Activity's alike:
+ *
+ *   - "today" is the day whose date is the device's; written before today
+ *     (the app has not run since) or after it (a clock set back), the
+ *     first day not yet past, and if it is a later day everything on it is
+ *     still ahead (`now` is then -1);
+ *   - the day shown is today while any of its times is still ahead, else
+ *     the day after;
+ *   - "next" is the earliest of today's times still ahead and all of the
+ *     next day's — or, when the next day is an estimate, its Fajr. Its `at`
+ *     counts minutes from today's midnight, past 1440 for tomorrow.
+ *
+ * Null when there are no days at all.
+ */
+export type WidgetMoment = {
+  today: WidgetContractDay;
+  todayIndex: number;
+  tomorrow?: WidgetContractDay;
+  shown: WidgetContractDay;
+  /** Minutes since today's midnight; -1 when today is a later day. */
+  now: number;
+  next: { row: WidgetContractRow; at: number } | null;
+};
+
+export function widgetMoment(
+  days: WidgetContractDay[],
   { todayKey, nowMinutes }: WidgetNow,
-): WidgetPrayerPayload | null {
-  const clock: WidgetContractClock = v2.clock ?? { hour12: false };
-  const days = v2.days;
-  // No days, nothing to draw a prayer card from: the caller reads v1.
+): WidgetMoment | null {
   if (days.length === 0) return null;
   let todayIndex = days.findIndex(d => d.dateKey === todayKey);
   let now = nowMinutes;
   if (todayIndex < 0) {
-    // Written before today (the app has not run since) or after it (a clock
-    // set back): take the first day not yet past, and if it is a later day,
-    // everything on it is still ahead.
     todayIndex = days.findIndex(d => d.dateKey > todayKey);
     if (todayIndex < 0) todayIndex = days.length - 1;
     else now = -1;
@@ -320,6 +363,37 @@ export function widgetPayloadV1FromV2(
   } else {
     next = earliest([...ahead, ...(tomorrow ? eventsOf(tomorrow, 1440) : [])]);
   }
+  return { today, todayIndex, tomorrow, shown, now, next };
+}
+
+/**
+ * The event most recently passed at `now` — the start of the Live
+ * Activity's progress bar. Today's times, and a time that reads as still
+ * ahead taken as yesterday's (`at` - 1440), the rule both Live Activities
+ * used on the app's own timings: just after midnight the last thing that
+ * happened was last night's ʿIshāʾ. Null before anything has.
+ */
+export function widgetPrevious(
+  moment: WidgetMoment,
+): { row: WidgetContractRow; at: number } | null {
+  let best: Event | null = null;
+  for (const e of eventsOf(moment.today, 0)) {
+    const at = e.at > moment.now ? e.at - 1440 : e.at;
+    if (at <= moment.now && (!best || at > best.at)) best = { row: e.row, at };
+  }
+  return best;
+}
+
+export function widgetPayloadV1FromV2(
+  v2: WidgetContractPayload,
+  now: WidgetNow,
+): WidgetPrayerPayload | null {
+  const clock: WidgetContractClock = v2.clock ?? { hour12: false };
+  const days = v2.days;
+  // No days, nothing to draw a prayer card from: the caller reads v1.
+  const moment = widgetMoment(days, now);
+  if (!moment) return null;
+  const { shown, next } = moment;
 
   const shownRows = rowsOf(shown, clock);
   const out: WidgetPrayerPayload = {

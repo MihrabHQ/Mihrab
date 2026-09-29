@@ -56,6 +56,30 @@ let contractReaders: [String: (Data) -> Data?] = [
     guard let v = try? JSONDecoder().decode(WidgetContract.Tasbih.self, from: data) else { return nil }
     return try? JSONEncoder().encode(v)
   },
+  "LiveActivity": { data in
+    guard let v = try? JSONDecoder().decode(WidgetContract.LiveActivity.self, from: data) else { return nil }
+    return try? JSONEncoder().encode(v)
+  },
+  "DayText": { data in
+    guard let v = try? JSONDecoder().decode(WidgetContract.DayText.self, from: data) else { return nil }
+    return try? JSONEncoder().encode(v)
+  },
+  "AlertMode": { data in
+    guard let v = try? JSONDecoder().decode(WidgetContract.AlertMode.self, from: data) else { return nil }
+    return try? JSONEncoder().encode(v)
+  },
+  "LiveActivityAppearance": { data in
+    guard let v = try? JSONDecoder().decode(WidgetContract.LiveActivityAppearance.self, from: data) else { return nil }
+    return try? JSONEncoder().encode(v)
+  },
+  "LiveActivityAndroid": { data in
+    guard let v = try? JSONDecoder().decode(WidgetContract.LiveActivityAndroid.self, from: data) else { return nil }
+    return try? JSONEncoder().encode(v)
+  },
+  "LiveActivityWords": { data in
+    guard let v = try? JSONDecoder().decode(WidgetContract.LiveActivityWords.self, from: data) else { return nil }
+    return try? JSONEncoder().encode(v)
+  },
   "LogQueueEntry": { data in
     guard let v = try? JSONDecoder().decode(WidgetContract.LogQueueEntry.self, from: data) else { return nil }
     return try? JSONEncoder().encode(v)
@@ -118,6 +142,30 @@ let contractListReaders: [String: (Data) -> Data?] = [
   },
   "Tasbih": { data in
     guard let v = WidgetContract.readList(WidgetContract.Tasbih.self, from: data) else { return nil }
+    return try? JSONEncoder().encode(v)
+  },
+  "LiveActivity": { data in
+    guard let v = WidgetContract.readList(WidgetContract.LiveActivity.self, from: data) else { return nil }
+    return try? JSONEncoder().encode(v)
+  },
+  "DayText": { data in
+    guard let v = WidgetContract.readList(WidgetContract.DayText.self, from: data) else { return nil }
+    return try? JSONEncoder().encode(v)
+  },
+  "AlertMode": { data in
+    guard let v = WidgetContract.readList(WidgetContract.AlertMode.self, from: data) else { return nil }
+    return try? JSONEncoder().encode(v)
+  },
+  "LiveActivityAppearance": { data in
+    guard let v = WidgetContract.readList(WidgetContract.LiveActivityAppearance.self, from: data) else { return nil }
+    return try? JSONEncoder().encode(v)
+  },
+  "LiveActivityAndroid": { data in
+    guard let v = WidgetContract.readList(WidgetContract.LiveActivityAndroid.self, from: data) else { return nil }
+    return try? JSONEncoder().encode(v)
+  },
+  "LiveActivityWords": { data in
+    guard let v = WidgetContract.readList(WidgetContract.LiveActivityWords.self, from: data) else { return nil }
     return try? JSONEncoder().encode(v)
   },
   "LogQueueEntry": { data in

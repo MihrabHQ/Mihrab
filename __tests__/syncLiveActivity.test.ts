@@ -1,9 +1,9 @@
 /**
  * syncLiveActivity orchestrator coverage.
  *
- *  1. computePrevPrayerEpochMs — the progress-bar start anchor (the previous
- *     prayer at/before now), including the before-Fajr / after-midnight
- *     fall-back to the prior day's Isha.
+ *  1. The progress bar's start anchor (the previous prayer at/before now,
+ *     `widgetPrevious` on the shared payload's days), including the
+ *     before-Fajr / after-midnight fall-back to the prior day's Isha.
  *  2. The iOS content build — verifies the ActivityKit payload carries
  *     prevEpochSeconds + accentHex and the correct next prayer, via a mocked
  *     native module.
@@ -18,10 +18,13 @@ jest.mock('../src/native/MihrabLiveActivity', () => ({
   getMihrabLiveActivityModule: jest.fn(() => null),
 }));
 
+import { syncLiveActivity } from '../src/liveActivity/syncLiveActivity';
 import {
-  syncLiveActivity,
-  computePrevPrayerEpochMs,
-} from '../src/liveActivity/syncLiveActivity';
+  widgetMoment,
+  widgetPrevious,
+} from '../src/widget/widgetPayloadV2';
+import { minutesFromHHmm } from '../src/widget/wallClock';
+import type { TimingsMap } from '../src/types/prayer';
 import { getPrayerLiveActivityModule } from '../src/native/PrayerLiveActivity';
 
 const today = {
@@ -33,36 +36,44 @@ const today = {
   Isha: '20:00',
 };
 
-describe('computePrevPrayerEpochMs', () => {
+describe('the previous prayer — the progress bar starts there', () => {
   const at = (h: number, m: number) => new Date(2026, 5, 14, h, m, 0, 0);
+  /** Minutes from today's midnight of the prayer last passed, or null. */
+  const prevAt = (timings: TimingsMap, when: Date): number | null => {
+    const rows = Object.entries(timings).map(([key, time]) => ({
+      key,
+      minutes: minutesFromHHmm(time),
+    }));
+    const moment = widgetMoment(
+      [{ dateKey: '2026-06-14', prayers: rows, extras: [] }],
+      { todayKey: '2026-06-14', nowMinutes: when.getHours() * 60 + when.getMinutes() },
+    );
+    const prev = moment && widgetPrevious(moment);
+    return prev ? prev.at : null;
+  };
 
   test('returns the most recent prayer earlier today (mid-afternoon)', () => {
-    const prev = computePrevPrayerEpochMs(today, at(14, 0));
-    expect(prev).toBe(at(12, 0).getTime()); // Dhuhr
+    expect(prevAt(today, at(14, 0))).toBe(12 * 60); // Dhuhr
   });
 
   test('returns Fajr shortly after Fajr', () => {
-    expect(computePrevPrayerEpochMs(today, at(5, 30))).toBe(at(5, 0).getTime());
+    expect(prevAt(today, at(5, 30))).toBe(5 * 60);
   });
 
   test('returns Isha after Isha', () => {
-    expect(computePrevPrayerEpochMs(today, at(21, 0))).toBe(at(20, 0).getTime());
+    expect(prevAt(today, at(21, 0))).toBe(20 * 60);
   });
 
-  test('before Fajr → falls back to the previous day\'s Isha', () => {
-    const prev = computePrevPrayerEpochMs(today, at(4, 0));
-    const yesterdayIsha = new Date(2026, 5, 13, 20, 0, 0, 0).getTime();
-    expect(prev).toBe(yesterdayIsha);
+  test("before Fajr → the previous day's Isha", () => {
+    expect(prevAt(today, at(4, 0))).toBe(20 * 60 - 1440);
   });
 
-  test('just after midnight → previous day\'s Isha', () => {
-    const prev = computePrevPrayerEpochMs(today, at(0, 30));
-    const yesterdayIsha = new Date(2026, 5, 13, 20, 0, 0, 0).getTime();
-    expect(prev).toBe(yesterdayIsha);
+  test("just after midnight → the previous day's Isha", () => {
+    expect(prevAt(today, at(0, 30))).toBe(20 * 60 - 1440);
   });
 
   test('returns null when no timings are usable', () => {
-    expect(computePrevPrayerEpochMs({}, at(14, 0))).toBeNull();
+    expect(prevAt({}, at(14, 0))).toBeNull();
   });
 });
 

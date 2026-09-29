@@ -107,6 +107,25 @@ for c in section("adapt") {
   check(want == got, "adapt — \(name)\n    want \(want)\n    have \(got)")
 }
 
+// ── The shared Live Activity payload → the ActivityKit content ───────────
+
+for c in section("liveActivity") {
+  let name = c["name"] as? String ?? "?"
+  let now = c["now"] as? [String: Any] ?? [:]
+  let zone = c["zone"] as? String ?? "UTC"
+  let input = (c["input"] as? String ?? "").data(using: .utf8)!
+  let have: Any? = (try? JSONDecoder().decode(WidgetContract.LiveActivity.self, from: input)).flatMap {
+    LiveActivityV1.iosContent(
+      $0,
+      todayKey: now["todayKey"] as? String ?? "",
+      nowMinutes: optionalInt(now["nowMinutes"]) ?? 0,
+      calendar: calendar(zone))
+  }
+  let want = canonical(c["ios"])
+  let got = canonical(have)
+  check(want == got, "live activity — \(name)\n    want \(want)\n    have \(got)")
+}
+
 // ── Time ──────────────────────────────────────────────────────────────────
 
 for c in section("hhmm") {

@@ -37,16 +37,21 @@ import { Platform } from 'react-native';
 import notifee, {
   AndroidCategory,
   AndroidImportance,
-  AndroidStyle,
   AndroidVisibility,
 } from '@notifee/react-native';
-import { activeClock } from '../utils/activeClock';
 import i18n from '../i18n';
-import type { WidgetPrayerPayload } from '../widget/buildWidgetPayload';
+import { getMihrabLiveActivityModule } from '../native/MihrabLiveActivity';
+import type {
+  WidgetContractAlertModeKind,
+  WidgetContractLiveActivity,
+  WidgetContractLiveActivityAndroid,
+  WidgetContractLiveActivityWords,
+} from '../widget/contract.generated';
+import type { WidgetNow } from '../widget/widgetPayloadV2';
 import {
-  getMihrabLiveActivityModule,
-  type MihrabLiveActivityPayload,
-} from '../native/MihrabLiveActivity';
+  deviceEpochOf,
+  liveActivityAndroidPayload,
+} from '../liveActivity/liveActivityV2';
 import { loadSettings } from '../settings/storage';
 import {
   getNotificationSoundOption,
@@ -56,7 +61,7 @@ import { shownAlertMode } from '../settings/alertModes';
 import { formatHijriLabel } from '../hijri/formatHijriLabel';
 
 /** Hijri label for a "yyyy-MM-dd" day key (parsed in local time). */
-function hijriLabelForDateKey(dateKey: string): string {
+export function hijriLabelForDateKey(dateKey: string): string {
   const [y, m, d] = dateKey.split('-').map(Number);
   if (!y || !m || !d) return '';
   return formatHijriLabel(new Date(y, m - 1, d));
@@ -76,40 +81,6 @@ export const LIVE_ACTIVITY_NOTIFICATION_ID =
 const CHANNEL_ID = 'mihrab_live_activity_v3';
 const CHANNEL_ID_LEGACY_V1 = 'mihrab_live_activity_v1';
 const CHANNEL_ID_LEGACY_V2 = 'mihrab_live_activity_v2';
-
-export type LiveActivityRenderInput = {
-  payload: WidgetPrayerPayload;
-  /** ms-since-epoch of the upcoming prayer. */
-  nextPrayerTimestamp: number | null;
-  /** Already-localised label for the next prayer. */
-  nextPrayerLabel: string;
-  /** Hijri caption, e.g. "12 Dhul-Qa'dah 1447" — empty = omit. */
-  hijriLabel: string;
-  /** Active location caption — we shorten internally. */
-  locationLabel: string;
-  /** App accent color hex, e.g. "#6BC98A". */
-  accentHex: string;
-  /** When true (Android system colours on), the native module re-resolves the
-   *  live Material You system accent on each repost instead of using
-   *  `accentHex`, so the notification matches the app and auto-updates when the
-   *  wallpaper colour changes. */
-  systemAccent?: boolean;
-  /** Enhanced Live Activity visual style (Android 16 ProgressStyle). */
-  design?: 'timeline' | 'countdown' | 'markers';
-  /** Display knobs from settings. */
-  compactMode: boolean;
-  showSunrise: boolean;
-  showHijri: boolean;
-  showLocation: boolean;
-  /**
-   * The raw today TimingsMap (HH:MM strings for the actual calendar day).
-   * Used to compute prevEpochMs correctly after the payload rolls over to
-   * tomorrow — payload.rows is tomorrow's data at that point, so looking
-   * there would mis-identify tomorrow's Maghrib as the previous prayer
-   * instead of today's Isha.
-   */
-  todayTimings?: Record<string, string> | null;
-};
 
 /** ── Channel ─────────────────────────────────────────────────────── */
 
@@ -148,26 +119,68 @@ async function ensureChannel(): Promise<void> {
 
 /** ── Helpers ─────────────────────────────────────────────────────── */
 
-/** First comma-separated component, e.g. "Stockholm" from a full
- *  geocoded address. */
-function shortLocation(label: string): string {
-  if (!label) return '';
-  const first = label.split(',')[0]?.trim();
-  return first || label;
-}
+/** The settings the Live Activity payload carries for Android. */
+export type LiveActivityOptions = {
+  modeOf: (key: string) => WidgetContractAlertModeKind;
+  android: WidgetContractLiveActivityAndroid;
+  words: WidgetContractLiveActivityWords;
+  /** "Tinted surfaces", from settings — Android reads it here. */
+  tinted: boolean;
+};
 
 /**
- * CANONICAL 24-hour `HH:mm`. `MihrabLiveActivityModule` parses this
- * string into a `LocalTime` for the Android 17 "At <time>" metric, and
- * the foreground service matches it against `^(\d{1,2}):(\d{2})$` when
- * it advances the card on its own. What the card DRAWS is
- * `nextTimeDisplay` — see issue #18.
+ * Everything the Live Activity needs from settings and the locale: each
+ * prayer's alert mode (what the lock-screen button cycles), the channels
+ * an alert it re-posts goes to, and the words the notification draws.
+ * Settings that cannot be read leave the defaults, as they always did.
  */
-function formatHHMM(epochMs: number): string {
-  const d = new Date(epochMs);
-  const hh = String(d.getHours()).padStart(2, '0');
-  const mm = String(d.getMinutes()).padStart(2, '0');
-  return `${hh}:${mm}`;
+export async function loadLiveActivityOptions(): Promise<LiveActivityOptions> {
+  const out: LiveActivityOptions = {
+    modeOf: () => 'notification',
+    android: {
+      alertActionEnabled: false,
+      aodActionEnabled: true,
+      adhanChannelId: 'prayer-times-default',
+      adhanSoundId: 'default',
+      defaultChannelId: 'prayer-times-default',
+    },
+    words: {
+      fgsText: i18n.t('liveActivity.fgsText', 'Prayer countdown active'),
+      alertLabelAdhan: i18n.t('settings.alertModeAdhan', 'Adhan'),
+      alertLabelNotification: i18n.t('settings.alertModeNotification', 'Alert'),
+      alertLabelSilent: i18n.t('settings.alertModeSilent', 'Silent'),
+      alertOnceWord: i18n.t('liveActivity.justThisOne', 'once'),
+      aodHideLabel: i18n.t('liveActivity.hideOnLock', 'Hide on lock screen'),
+      aodShowLabel: i18n.t('liveActivity.showOnLock', 'Show on lock screen'),
+      nowWord: i18n.t('liveActivity.now', 'Now'),
+      inWord: i18n.t('liveActivity.inWord', 'In'),
+      atWord: i18n.t('liveActivity.atWord', 'At'),
+      atPrayerBody: i18n.t('alertCopy.atPrayer', 'Prayer time'),
+    },
+    tinted: false,
+  };
+  try {
+    const s = await loadSettings();
+    const soundOpt = getNotificationSoundOption(s.notificationSound);
+    const adhanChosen = soundOpt.id !== 'default';
+    const alertModes = s.prayerAlertModes ?? {};
+    out.modeOf = key =>
+      shownAlertMode(key, alertModes, adhanChosen, s.notificationsEnabled);
+    out.android = {
+      alertActionEnabled: s.notificationsEnabled,
+      aodActionEnabled: s.liveActivityLockButton !== false,
+      adhanChannelId: resolveSoundTargets(
+        soundOpt.id,
+        s.adhanUsesAlarmStream === true,
+      ).androidChannelId,
+      adhanSoundId: soundOpt.id,
+      defaultChannelId: resolveSoundTargets('default').androidChannelId,
+    };
+    out.tinted = s.tintedSurfaces === true;
+  } catch {
+    // Settings unreadable — the defaults above stand.
+  }
+  return out;
 }
 
 /** Compact human duration: "3h 47m" / "47m" / "30s". */
@@ -182,381 +195,36 @@ function formatRemaining(ms: number): string {
 }
 
 /**
- * Look up the long localised prayer name (e.g. "Maghrib" not "Magh"),
- * falling back to the supplied abbreviation, then to the canonical row
- * key. Row keys are stable (Fajr/Sunrise/Dhuhr/Asr/Maghrib/Isha) so the
- * fallback is always meaningful.
+ * Post the Live Activity on Android from the one payload both platforms
+ * share. The native module adapts it to the minute it draws at
+ * (LiveActivityV1.kt) and keeps it, so a roll-forward reads the same
+ * days. Without the native module — or with nothing ahead to count down
+ * to — the plain notifee notification, as before.
  */
-function localizedPrayerName(key: string, abbrFallback?: string): string {
-  // Keys in the locale files are capitalised exactly as the row key
-  // (e.g. prayer.Fajr, prayer.Maghrib). Try exact case first, then
-  // lowercase as a fallback so older locale structures still work.
-  const kExact = `prayer.${key}`;
-  if (i18n.exists(kExact)) return i18n.t(kExact);
-  const kLower = `prayer.${key.toLowerCase()}`;
-  if (i18n.exists(kLower)) return i18n.t(kLower);
-  return abbrFallback || key;
-}
-
-/**
- * Build the InboxStyle line list. One entry per prayer in chronological
- * order, with the next prayer carrying a leading "›" marker so the eye
- * lands on it.
- */
-function buildInboxLines(input: LiveActivityRenderInput): string[] {
-  const { payload } = input;
-  const ordered = [...payload.rows];
-  if (input.showSunrise && payload.sunriseRow) {
-    if (ordered.length > 0) ordered.splice(1, 0, payload.sunriseRow);
-    else ordered.push(payload.sunriseRow);
-  }
-  // Enabled pre-dawn night times (Islamic Midnight / Last Third) appended after
-  // Isha so they read as "later tonight" in the expanded list.
-  if (payload.extraRows && payload.extraRows.length > 0) {
-    ordered.push(...payload.extraRows);
-  }
-  return ordered.map(r => {
-    const isNext = r.key === payload.nextKey;
-    const marker = isNext ? '›' : ' ';
-    const name = localizedPrayerName(r.key);
-    // Use NBSP between marker/name/time so the shell doesn't collapse
-    // the leading marker indent — InboxStyle treats each line as a
-    // single CharSequence and trims leading whitespace.
-    return `${marker}  ${name}  ${r.time}`;
-  });
-}
-
-/** ── Public API ──────────────────────────────────────────────────── */
-
-/** ms-since-epoch of the prayer that most recently passed before
- *  `now`. Returns 0 when we can't infer one (very first use, before Fajr).
- *
- *  Prefers `todayTimings` (the raw TimingsMap for the actual calendar day)
- *  over `payload.rows`, because `payload.rows` rolls over to tomorrow's data
- *  after Isha — at that point iterating the rows would mis-identify
- *  tomorrow's Maghrib (applied to today's date) as the previous prayer
- *  instead of today's Isha, producing an inflated progress % at rollover. */
-function computePrevPrayerEpoch(
-  payload: WidgetPrayerPayload,
-  now: number,
-  todayTimings?: Record<string, string> | null,
-): number {
-  // Build the list of HH:MM strings to scan.  Prefer the raw today-timings
-  // (stable salah keys + Sunrise) over the widget rows which may be tomorrow.
-  const SALAH_KEYS = [
-    'Midnight',
-    'Lastthird',
-    'Fajr',
-    'Sunrise',
-    'Dhuhr',
-    'Asr',
-    'Maghrib',
-    'Isha',
-    'Firstthird',
-  ];
-  const times: string[] = todayTimings
-    ? SALAH_KEYS.map(k => todayTimings[k]).filter(
-        (v): v is string => typeof v === 'string' && /^\d{1,2}:\d{2}$/.test(v),
-      )
-    : (() => {
-        const ordered = [...payload.rows];
-        if (payload.sunriseRow) {
-          if (ordered.length > 0) ordered.splice(1, 0, payload.sunriseRow);
-          else ordered.push(payload.sunriseRow);
-        }
-        return ordered.map(r => r.time).filter(t => /^\d{1,2}:\d{2}$/.test(t));
-      })();
-
-  let prevEpoch: number | null = null;
-  for (const hhmm of times) {
-    const m = /^(\d{1,2}):(\d{2})$/.exec(hhmm);
-    if (!m) continue;
-    const candidate = new Date(now);
-    candidate.setHours(Number(m[1]), Number(m[2]), 0, 0);
-    let t = candidate.getTime();
-    if (t > now) {
-      t -= 24 * 60 * 60 * 1000;
-    }
-    if (t <= now && (prevEpoch == null || t > prevEpoch)) prevEpoch = t;
-  }
-  return prevEpoch ?? 0;
-}
-
-/**
- * Compute fraction (0..1) of time elapsed since the PREVIOUS prayer
- * vs. the wait until the NEXT prayer.
- */
-function computeProgressFraction(
-  payload: WidgetPrayerPayload,
-  nextEpochMs: number | null,
-  now: number,
-  todayTimings?: Record<string, string> | null,
-): number {
-  if (nextEpochMs == null) return 0;
-  const prev = computePrevPrayerEpoch(payload, now, todayTimings);
-  if (prev <= 0) return 0;
-  const span = nextEpochMs - prev;
-  if (span <= 0) return 0;
-  const done = now - prev;
-  return Math.max(0, Math.min(1, done / span));
-}
-
-export async function startOrUpdateLiveActivity(
-  input: LiveActivityRenderInput,
+export async function postLiveActivity(
+  la: WidgetContractLiveActivity,
+  now: WidgetNow,
 ): Promise<void> {
   if (Platform.OS !== 'android') return;
   await ensureChannel();
-
-  // "Tinted surfaces" — colourise the whole card toward the accent. Read
-  // once here (headless-safe) so both the native path and the notifee
-  // fallback below can see it; the native branch refreshes it from the same
-  // settings load it already does.
-  let tinted = false;
-
-  // ── Text ────────────────────────────────────────────────────────
-  const nextTime = input.nextPrayerTimestamp
-    ? formatHHMM(input.nextPrayerTimestamp)
-    : '';
-  const remaining = input.nextPrayerTimestamp
-    ? formatRemaining(input.nextPrayerTimestamp - Date.now())
-    : i18n.t('liveActivity.soon', 'Starting soon');
-
-  // The same instant as `nextTime`, written the way the user reads a
-  // clock. Everything the card shows uses this; only the parsers use
-  // `nextTime`.
-  const nextTimeDisplay = nextTime ? activeClock()(nextTime) : '';
-
-  // Title — what's next + when. Same in collapsed and expanded.
-  const title = nextTimeDisplay
-    ? `${input.nextPrayerLabel} · ${nextTimeDisplay}`
-    : input.nextPrayerLabel || i18n.t('liveActivity.soon', 'Starting soon');
-
-  // Body — countdown + optional location, separated by middle dots.
-  const inLabel = i18n.t('liveActivity.in', 'in {{remaining}}', { remaining });
-  const locShort =
-    input.showLocation && input.locationLabel
-      ? shortLocation(input.locationLabel)
-      : '';
-  const body = locShort ? `${inLabel} · ${locShort}` : inLabel;
-
-  // Expanded — InboxStyle list. Compact mode skips the list entirely.
-  const inboxLines = input.compactMode ? [] : buildInboxLines(input);
-
-  // Summary — Hijri date when enabled. Lives below the InboxStyle list.
-  const summary =
-    input.showHijri && input.hijriLabel ? input.hijriLabel : undefined;
-
-  // ── Native module first ─────────────────────────────────────────
-  // When the MihrabLiveActivity native module is linked (always true
-  // in builds from this repo on Android), we route through it for the
-  // rich custom-RemoteViews layout: big chronometer + accent-tinted
-  // progress bar + per-row visual list, plus the Android 16 status-bar
-  // "Live Update" chip via Notification.ProgressStyle. The notifee
-  // fallback below only runs when the module isn't available (older
-  // builds or test harnesses).
+  const at = liveActivityAndroidPayload(la, now, deviceEpochOf);
   const native = getMihrabLiveActivityModule();
-  if (native && input.nextPrayerTimestamp != null) {
-    const nowMs = Date.now();
-    const progressFraction = computeProgressFraction(
-      input.payload,
-      input.nextPrayerTimestamp,
-      nowMs,
-      input.todayTimings,
-    );
-    // The native foreground service uses prevEpochMs / nextEpochMs to
-    // recompute progress on every minute tick — that's what makes the
-    // bar advance without the app being open.
-    const prevEpochMs = computePrevPrayerEpoch(
-      input.payload,
-      nowMs,
-      input.todayTimings,
-    );
-    // ── What each event is set to ───────────────────────────────────
-    //
-    // Read once, here, and then stamped onto every row of every day. The
-    // card walks to the next event on its own — natively, with no JS
-    // running — so anything the action button needs to know has to be
-    // sitting on the row it walks to, not on a field describing whichever
-    // event happened to be next when this payload was written.
-    let lockButton = true;
-    let alertActionEnabled = false;
-    let adhanChannelId = 'prayer-times-default';
-    let defaultChannelId = 'prayer-times-default';
-    let adhanSoundId = 'default';
-    let modeOfKey = (_key: string): 'adhan' | 'notification' | 'silent' =>
-      'notification';
+  if (native && at) {
     try {
-      const s = await loadSettings();
-      lockButton = s.liveActivityLockButton !== false;
-      tinted = s.tintedSurfaces === true;
-      const soundOpt = getNotificationSoundOption(s.notificationSound);
-      // Resolved rather than read off the table: the user's own recording has
-      // no fixed channel, and if its file has gone this lands on the default
-      // one instead of a channel that does not exist.
-      //
-      // AND RESOLVED WITH THE ALARM STREAM, which it was not.
-      //
-      // "Play adhan as an alarm" is not a flag on a channel — a channel's
-      // sound and audio attributes are frozen when it is created, so the
-      // ringer-proof version is a SEPARATE channel with an `-alarm` suffix.
-      // The scheduler has always known that; this payload did not, so the id
-      // it handed the card's button was the ordinary one. Cycle a prayer back
-      // to Adhan from the lock screen with that setting on and its adhan was
-      // quietly re-created on the stream that a silenced phone silences —
-      // which is the exact thing the setting exists to prevent, undone by the
-      // control that was supposed to be putting it back.
-      //
-      // Safe to resolve the alarm twin unconditionally here because the only
-      // consumer is the `wantsAdhan` branch of the headless task: the call to
-      // prayer, on a real prayer. A reminder or a night mark never reads it.
-      adhanChannelId = resolveSoundTargets(
-        soundOpt.id,
-        s.adhanUsesAlarmStream === true,
-      ).androidChannelId;
-      // The plain-alert channel, asked for rather than spelled out. It was
-      // the literal 'prayer-times-default' in two places, which is true until
-      // the day the default option's channel is renamed and the button starts
-      // posting to a channel that does not exist.
-      defaultChannelId = resolveSoundTargets('default').androidChannelId;
-      adhanSoundId = soundOpt.id;
-      const adhanChosen = soundOpt.id !== 'default';
-      const alertModes = s.prayerAlertModes ?? {};
-      modeOfKey = key =>
-        shownAlertMode(key, alertModes, adhanChosen, s.notificationsEnabled);
-      // With notifications off every row reads silent and the master switch
-      // has already answered the question the button asks. Cycling would
-      // either do nothing audible or quietly turn the master back on, and a
-      // control that is meant to last one prayer must not do the second.
-      alertActionEnabled = s.notificationsEnabled;
-    } catch {
-      // Non-fatal — the Live Activity still renders without the extras.
-    }
-
-    // Project rows to the shape the native module expects (key/name/time).
-    // We send the localised long names so the expanded list isn't reading
-    // as widget abbrevs ("Magh") — the widget payload uses short forms,
-    // we want long forms here.
-    const rows = input.payload.rows.map(r => ({
-      key: r.key,
-      name: localizedPrayerName(r.key, r.abbr),
-      time: r.time,
-      display: r.display,
-      mode: modeOfKey(r.key),
-    }));
-    const sunriseRow = input.payload.sunriseRow
-      ? {
-          key: input.payload.sunriseRow.key,
-          name: localizedPrayerName(
-            input.payload.sunriseRow.key,
-            input.payload.sunriseRow.abbr,
-          ),
-          time: input.payload.sunriseRow.time,
-          display: input.payload.sunriseRow.display,
-          mode: modeOfKey(input.payload.sunriseRow.key),
-        }
-      : undefined;
-    const extraRows = (input.payload.extraRows ?? []).map(r => ({
-      key: r.key,
-      name: localizedPrayerName(r.key, r.abbr),
-      time: r.time,
-      display: r.display,
-      mode: modeOfKey(r.key),
-    }));
-    // Project the multi-day schedule to the native shape with localised long
-    // names. This is what lets the foreground-service ticker advance to the
-    // right day's prayers (and overnight Isha→Fajr interval) on its own.
-    const days = (input.payload.days ?? []).map(d => ({
-      dateKey: d.dateKey,
-      // Per-day Hijri label so the native ticker can roll the Hijri date across
-      // midnight/days in step with the prayer times — without reopening the app.
-      hijriLabel: hijriLabelForDateKey(d.dateKey),
-      rows: d.rows.map(r => ({
-        key: r.key,
-        name: localizedPrayerName(r.key, r.abbr),
-        time: r.time,
-        display: r.display,
-        mode: modeOfKey(r.key),
-      })),
-      sunriseRow: d.sunriseRow
-        ? {
-            key: d.sunriseRow.key,
-            name: localizedPrayerName(d.sunriseRow.key, d.sunriseRow.abbr),
-            time: d.sunriseRow.time,
-            display: d.sunriseRow.display,
-            mode: modeOfKey(d.sunriseRow.key),
-          }
-        : undefined,
-      extraRows: (d.extraRows ?? []).map(r => ({
-        key: r.key,
-        name: localizedPrayerName(r.key, r.abbr),
-        time: r.time,
-        display: r.display,
-        mode: modeOfKey(r.key),
-      })),
-    }));
-    const nativePayload: MihrabLiveActivityPayload = {
-      nextLabel: input.nextPrayerLabel,
-      nextTime,
-      nextTimeDisplay,
-      nextKey: input.payload.nextKey ?? '',
-      nextEpochMs: input.nextPrayerTimestamp,
-      prevEpochMs,
-      title,
-      body,
-      progressFraction,
-      rows,
-      sunriseRow,
-      extraRows,
-      days,
-      hijriLabel: input.hijriLabel,
-      locationLabel: input.locationLabel,
-      accentHex: input.accentHex,
-      systemAccent: input.systemAccent === true,
-      tinted,
-      design: input.design ?? 'timeline',
-      compactMode: input.compactMode,
-      showSunrise: input.showSunrise,
-      showHijri: input.showHijri,
-      showLocation: input.showLocation,
-      fgsText: i18n.t('liveActivity.fgsText', 'Prayer countdown active'),
-      // Always. It was a setting once — see settings/types.ts on why the
-      // clock time beside the countdown stopped being a question.
-      secondMetric: 'time',
-      alertActionEnabled,
-      // The home row's own three words. Sharing them is the point: the
-      // card and the row are now the same control, and a control that
-      // calls itself "Alert" in one place and "Mute" in the other is two
-      // controls as far as the reader is concerned.
-      alertLabelAdhan: i18n.t('settings.alertModeAdhan', 'Adhan'),
-      alertLabelNotification: i18n.t('settings.alertModeNotification', 'Alert'),
-      alertLabelSilent: i18n.t('settings.alertModeSilent', 'Silent'),
-      alertOnceWord: i18n.t('liveActivity.justThisOne', 'once'),
-      // Second action: toggle the card's lock-screen / always-on-display
-      // visibility (native-only state; independent of the master on/off setting).
-      // The lock-screen toggle is one of two actions the card has room
-      // for, and someone who never hides it is carrying a button they
-      // will never press. Off by choice, on by default.
-      aodActionEnabled: lockButton,
-      aodHideLabel: i18n.t('liveActivity.hideOnLock', 'Hide on lock screen'),
-      aodShowLabel: i18n.t('liveActivity.showOnLock', 'Show on lock screen'),
-      nowWord: i18n.t('liveActivity.now', 'Now'),
-      inWord: i18n.t('liveActivity.inWord', 'In'),
-      atWord: i18n.t('liveActivity.atWord', 'At'),
-      atPrayerBody: i18n.t('alertCopy.atPrayer', 'Prayer time'),
-      adhanChannelId,
-      adhanSoundId,
-      defaultChannelId,
-    };
-    try {
-      await native.display(JSON.stringify(nativePayload));
+      if (native.displayV2) await native.displayV2(JSON.stringify(la));
+      else await native.display(JSON.stringify(at));
       return;
     } catch (e) {
-      // Native failed (e.g. POST_NOTIFICATIONS denied) — fall through
-      // to the notifee path so the user still sees something.
       console.warn('[liveActivity] native module display failed', e);
     }
   }
-
+  const remaining = at
+    ? formatRemaining(at.nextEpochMs - Date.now())
+    : i18n.t('liveActivity.soon', 'Starting soon');
+  const title = at
+    ? at.title
+    : i18n.t('liveActivity.soon', 'Starting soon');
+  const body = i18n.t('liveActivity.in', 'in {{remaining}}', { remaining });
   try {
     await notifee.displayNotification({
       id: LIVE_ACTIVITY_NOTIFICATION_ID,
@@ -565,37 +233,18 @@ export async function startOrUpdateLiveActivity(
       android: {
         channelId: CHANNEL_ID,
         smallIcon: 'ic_stat_prayer',
-        // App accent tints the small icon on Android 8+ and the
-        // chronometer text colour on Android 12+ Material You shells.
-        color: input.accentHex || undefined,
-        // Tinted surfaces: colourise the whole notification with the accent.
-        colorized: tinted,
+        color: la.appearance?.accentHex || undefined,
+        colorized: la.appearance?.tinted === true,
         ongoing: true,
         autoCancel: false,
-        // No Wear OS mirror — info-only surface, the wrist would
-        // re-render on every update.
         localOnly: true,
-        // Live countdown rendered by the system. timestamp = target
-        // instant, chronometerDirection 'down' → ticks toward it.
-        showChronometer: input.nextPrayerTimestamp != null,
+        showChronometer: at != null,
         chronometerDirection: 'down',
-        timestamp: input.nextPrayerTimestamp ?? undefined,
-        showTimestamp: input.nextPrayerTimestamp != null,
+        timestamp: at?.nextEpochMs,
+        showTimestamp: at != null,
         category: AndroidCategory.STATUS,
         visibility: AndroidVisibility.PUBLIC,
         importance: AndroidImportance.LOW,
-        // InboxStyle = platform-native list-of-lines. Each line is a
-        // separate visible row; the shell elides them per its own
-        // density rules. Empty lines[] → fall back to the body.
-        style:
-          inboxLines.length > 0
-            ? {
-                type: AndroidStyle.INBOX,
-                lines: inboxLines,
-                title,
-                summary,
-              }
-            : undefined,
         pressAction: { id: 'default', launchActivity: 'default' },
       },
     });

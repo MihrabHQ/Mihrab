@@ -883,6 +883,145 @@
       }
     },
     {
+      "name": "after ʿIshāʾ, tomorrow known but outside the window",
+      "now": {
+        "todayKey": "2026-04-09",
+        "nowMinutes": 1320
+      },
+      "input": "{\"schemaVersion\":2,\"language\":\"en\",\"clock\":{\"hour12\":false},\"days\":[{\"dateKey\":\"2026-04-09\",\"utcOffsetMinutes\":120,\"label\":\"Thu, Apr 9\",\"prayers\":[{\"key\":\"Fajr\",\"name\":\"Fajr\",\"abbr\":\"Fajr\",\"minutes\":312},{\"key\":\"Dhuhr\",\"name\":\"Dhuhr\",\"abbr\":\"Dhuhr\",\"minutes\":752},{\"key\":\"Asr\",\"name\":\"Asr\",\"abbr\":\"Asr\",\"minutes\":950},{\"key\":\"Maghrib\",\"name\":\"Maghrib\",\"abbr\":\"Magh\",\"minutes\":1115},{\"key\":\"Isha\",\"name\":\"Isha\",\"abbr\":\"Isha\",\"minutes\":1215}],\"sunrise\":{\"key\":\"Sunrise\",\"name\":\"Sunrise\",\"abbr\":\"Sun\",\"minutes\":425}},{\"dateKey\":\"2026-04-10\",\"utcOffsetMinutes\":120,\"label\":\"Fri, Apr 10\",\"prayers\":[{\"key\":\"Fajr\",\"name\":\"Fajr\",\"abbr\":\"Fajr\",\"minutes\":314},{\"key\":\"Dhuhr\",\"name\":\"Dhuhr\",\"abbr\":\"Dhuhr\",\"minutes\":754},{\"key\":\"Asr\",\"name\":\"Asr\",\"abbr\":\"Asr\",\"minutes\":952},{\"key\":\"Maghrib\",\"name\":\"Maghrib\",\"abbr\":\"Magh\",\"minutes\":1117},{\"key\":\"Isha\",\"name\":\"Isha\",\"abbr\":\"Isha\",\"minutes\":1217}],\"sunrise\":{\"key\":\"Sunrise\",\"name\":\"Sunrise\",\"abbr\":\"Sun\",\"minutes\":427}}]}",
+      "expected": {
+        "dayLabel": "Fri, Apr 10",
+        "rows": [
+          {
+            "key": "Fajr",
+            "time": "05:14",
+            "abbr": "Fajr",
+            "name": "Fajr"
+          },
+          {
+            "key": "Dhuhr",
+            "time": "12:34",
+            "abbr": "Dhuhr",
+            "name": "Dhuhr"
+          },
+          {
+            "key": "Asr",
+            "time": "15:52",
+            "abbr": "Asr",
+            "name": "Asr"
+          },
+          {
+            "key": "Maghrib",
+            "time": "18:37",
+            "abbr": "Magh",
+            "name": "Maghrib"
+          },
+          {
+            "key": "Isha",
+            "time": "20:17",
+            "abbr": "Isha",
+            "name": "Isha"
+          }
+        ],
+        "sunriseRow": {
+          "key": "Sunrise",
+          "time": "07:07",
+          "abbr": "Sun",
+          "name": "Sunrise"
+        },
+        "nextKey": "Fajr",
+        "nextPrayerName": "Fajr",
+        "nextPrayerTime": "05:14",
+        "language": "en",
+        "days": [
+          {
+            "dateKey": "2026-04-09",
+            "dayLabel": "Thu, Apr 9",
+            "rows": [
+              {
+                "key": "Fajr",
+                "time": "05:12",
+                "abbr": "Fajr",
+                "name": "Fajr"
+              },
+              {
+                "key": "Dhuhr",
+                "time": "12:32",
+                "abbr": "Dhuhr",
+                "name": "Dhuhr"
+              },
+              {
+                "key": "Asr",
+                "time": "15:50",
+                "abbr": "Asr",
+                "name": "Asr"
+              },
+              {
+                "key": "Maghrib",
+                "time": "18:35",
+                "abbr": "Magh",
+                "name": "Maghrib"
+              },
+              {
+                "key": "Isha",
+                "time": "20:15",
+                "abbr": "Isha",
+                "name": "Isha"
+              }
+            ],
+            "sunriseRow": {
+              "key": "Sunrise",
+              "time": "07:05",
+              "abbr": "Sun",
+              "name": "Sunrise"
+            }
+          },
+          {
+            "dateKey": "2026-04-10",
+            "dayLabel": "Fri, Apr 10",
+            "rows": [
+              {
+                "key": "Fajr",
+                "time": "05:14",
+                "abbr": "Fajr",
+                "name": "Fajr"
+              },
+              {
+                "key": "Dhuhr",
+                "time": "12:34",
+                "abbr": "Dhuhr",
+                "name": "Dhuhr"
+              },
+              {
+                "key": "Asr",
+                "time": "15:52",
+                "abbr": "Asr",
+                "name": "Asr"
+              },
+              {
+                "key": "Maghrib",
+                "time": "18:37",
+                "abbr": "Magh",
+                "name": "Maghrib"
+              },
+              {
+                "key": "Isha",
+                "time": "20:17",
+                "abbr": "Isha",
+                "name": "Isha"
+              }
+            ],
+            "sunriseRow": {
+              "key": "Sunrise",
+              "time": "07:07",
+              "abbr": "Sun",
+              "name": "Sunrise"
+            }
+          }
+        ]
+      }
+    },
+    {
       "name": "after ʿIshāʾ, tomorrow unknown",
       "now": {
         "todayKey": "2026-04-09",
@@ -1626,6 +1765,2445 @@
             }
           }
         ]
+      }
+    }
+  ],
+  "liveActivity": [
+    {
+      "name": "midday, 24-hour",
+      "now": {
+        "todayKey": "2026-04-09",
+        "nowMinutes": 780
+      },
+      "zone": "UTC",
+      "input": "{\"schemaVersion\":2,\"language\":\"en\",\"clock\":{\"hour12\":false},\"days\":[{\"dateKey\":\"2026-04-09\",\"utcOffsetMinutes\":120,\"label\":\"Thu, Apr 9\",\"prayers\":[{\"key\":\"Fajr\",\"name\":\"Fajr\",\"abbr\":\"Fajr\",\"minutes\":312},{\"key\":\"Dhuhr\",\"name\":\"Dhuhr\",\"abbr\":\"Dhuhr\",\"minutes\":752},{\"key\":\"Asr\",\"name\":\"Asr\",\"abbr\":\"Asr\",\"minutes\":950},{\"key\":\"Maghrib\",\"name\":\"Maghrib\",\"abbr\":\"Magh\",\"minutes\":1115},{\"key\":\"Isha\",\"name\":\"Isha\",\"abbr\":\"Isha\",\"minutes\":1215}],\"sunrise\":{\"key\":\"Sunrise\",\"name\":\"Sunrise\",\"abbr\":\"Sun\",\"minutes\":425}},{\"dateKey\":\"2026-04-10\",\"utcOffsetMinutes\":120,\"label\":\"Fri, Apr 10\",\"prayers\":[{\"key\":\"Fajr\",\"name\":\"Fajr\",\"abbr\":\"Fajr\",\"minutes\":314},{\"key\":\"Dhuhr\",\"name\":\"Dhuhr\",\"abbr\":\"Dhuhr\",\"minutes\":754},{\"key\":\"Asr\",\"name\":\"Asr\",\"abbr\":\"Asr\",\"minutes\":952},{\"key\":\"Maghrib\",\"name\":\"Maghrib\",\"abbr\":\"Magh\",\"minutes\":1117},{\"key\":\"Isha\",\"name\":\"Isha\",\"abbr\":\"Isha\",\"minutes\":1217}],\"sunrise\":{\"key\":\"Sunrise\",\"name\":\"Sunrise\",\"abbr\":\"Sun\",\"minutes\":427}},{\"dateKey\":\"2026-04-11\",\"utcOffsetMinutes\":120,\"label\":\"Sat, Apr 11\",\"prayers\":[{\"key\":\"Fajr\",\"name\":\"Fajr\",\"abbr\":\"Fajr\",\"minutes\":316},{\"key\":\"Dhuhr\",\"name\":\"Dhuhr\",\"abbr\":\"Dhuhr\",\"minutes\":756},{\"key\":\"Asr\",\"name\":\"Asr\",\"abbr\":\"Asr\",\"minutes\":954},{\"key\":\"Maghrib\",\"name\":\"Maghrib\",\"abbr\":\"Magh\",\"minutes\":1119},{\"key\":\"Isha\",\"name\":\"Isha\",\"abbr\":\"Isha\",\"minutes\":1219}],\"sunrise\":{\"key\":\"Sunrise\",\"name\":\"Sunrise\",\"abbr\":\"Sun\",\"minutes\":429}}],\"hijri\":[{\"dateKey\":\"2026-04-09\",\"text\":\"Hijri 2026-04-09\"},{\"dateKey\":\"2026-04-10\",\"text\":\"Hijri 2026-04-10\"},{\"dateKey\":\"2026-04-11\",\"text\":\"Hijri 2026-04-11\"}],\"alertModes\":[{\"key\":\"Fajr\",\"mode\":\"adhan\"},{\"key\":\"Sunrise\",\"mode\":\"silent\"},{\"key\":\"Maghrib\",\"mode\":\"adhan\"}],\"appearance\":{\"accentHex\":\"#5B4B9E\",\"systemTinted\":true,\"systemAccent\":false,\"tinted\":true,\"design\":\"timeline\"},\"android\":{\"alertActionEnabled\":true,\"aodActionEnabled\":true,\"adhanChannelId\":\"adhan-makkah-alarm\",\"adhanSoundId\":\"makkah\",\"defaultChannelId\":\"prayer-times-default\"},\"words\":{\"fgsText\":\"Prayer countdown active\",\"alertLabelAdhan\":\"Adhan\",\"alertLabelNotification\":\"Alert\",\"alertLabelSilent\":\"Silent\",\"alertOnceWord\":\"once\",\"aodHideLabel\":\"Hide on lock screen\",\"aodShowLabel\":\"Show on lock screen\",\"nowWord\":\"Now\",\"inWord\":\"In\",\"atWord\":\"At\",\"atPrayerBody\":\"Prayer time\"}}",
+      "ios": {
+        "nextKey": "Asr",
+        "nextLabel": "Asr",
+        "nextTime": "15:50",
+        "nextTimeDisplay": "15:50",
+        "nextEpochSeconds": 1775749800,
+        "prevEpochSeconds": 1775737920,
+        "rows": [
+          {
+            "key": "Fajr",
+            "abbr": "Fajr",
+            "name": "Fajr",
+            "time": "05:12",
+            "display": "05:12"
+          },
+          {
+            "key": "Dhuhr",
+            "abbr": "Dhuhr",
+            "name": "Dhuhr",
+            "time": "12:32",
+            "display": "12:32"
+          },
+          {
+            "key": "Asr",
+            "abbr": "Asr",
+            "name": "Asr",
+            "time": "15:50",
+            "display": "15:50"
+          },
+          {
+            "key": "Maghrib",
+            "abbr": "Magh",
+            "name": "Maghrib",
+            "time": "18:35",
+            "display": "18:35"
+          },
+          {
+            "key": "Isha",
+            "abbr": "Isha",
+            "name": "Isha",
+            "time": "20:15",
+            "display": "20:15"
+          }
+        ],
+        "sunriseRow": {
+          "key": "Sunrise",
+          "abbr": "Sun",
+          "name": "Sunrise",
+          "time": "07:05",
+          "display": "07:05"
+        },
+        "extraRows": [],
+        "accentHex": "#5B4B9E",
+        "systemTinted": true,
+        "tinted": true
+      },
+      "android": {
+        "nextKey": "Asr",
+        "nextLabel": "Asr",
+        "nextTime": "15:50",
+        "nextTimeDisplay": "15:50",
+        "nextEpochMs": 1775749800000,
+        "prevEpochMs": 1775737920000,
+        "title": "Asr · 15:50",
+        "rows": [
+          {
+            "key": "Fajr",
+            "name": "Fajr",
+            "time": "05:12",
+            "mode": "adhan"
+          },
+          {
+            "key": "Dhuhr",
+            "name": "Dhuhr",
+            "time": "12:32",
+            "mode": "notification"
+          },
+          {
+            "key": "Asr",
+            "name": "Asr",
+            "time": "15:50",
+            "mode": "notification"
+          },
+          {
+            "key": "Maghrib",
+            "name": "Maghrib",
+            "time": "18:35",
+            "mode": "adhan"
+          },
+          {
+            "key": "Isha",
+            "name": "Isha",
+            "time": "20:15",
+            "mode": "notification"
+          }
+        ],
+        "sunriseRow": {
+          "key": "Sunrise",
+          "name": "Sunrise",
+          "time": "07:05",
+          "mode": "silent"
+        },
+        "extraRows": [],
+        "days": [
+          {
+            "dateKey": "2026-04-09",
+            "hijriLabel": "Hijri 2026-04-09",
+            "rows": [
+              {
+                "key": "Fajr",
+                "name": "Fajr",
+                "time": "05:12",
+                "mode": "adhan"
+              },
+              {
+                "key": "Dhuhr",
+                "name": "Dhuhr",
+                "time": "12:32",
+                "mode": "notification"
+              },
+              {
+                "key": "Asr",
+                "name": "Asr",
+                "time": "15:50",
+                "mode": "notification"
+              },
+              {
+                "key": "Maghrib",
+                "name": "Maghrib",
+                "time": "18:35",
+                "mode": "adhan"
+              },
+              {
+                "key": "Isha",
+                "name": "Isha",
+                "time": "20:15",
+                "mode": "notification"
+              }
+            ],
+            "sunriseRow": {
+              "key": "Sunrise",
+              "name": "Sunrise",
+              "time": "07:05",
+              "mode": "silent"
+            },
+            "extraRows": []
+          },
+          {
+            "dateKey": "2026-04-10",
+            "hijriLabel": "Hijri 2026-04-10",
+            "rows": [
+              {
+                "key": "Fajr",
+                "name": "Fajr",
+                "time": "05:14",
+                "mode": "adhan"
+              },
+              {
+                "key": "Dhuhr",
+                "name": "Dhuhr",
+                "time": "12:34",
+                "mode": "notification"
+              },
+              {
+                "key": "Asr",
+                "name": "Asr",
+                "time": "15:52",
+                "mode": "notification"
+              },
+              {
+                "key": "Maghrib",
+                "name": "Maghrib",
+                "time": "18:37",
+                "mode": "adhan"
+              },
+              {
+                "key": "Isha",
+                "name": "Isha",
+                "time": "20:17",
+                "mode": "notification"
+              }
+            ],
+            "sunriseRow": {
+              "key": "Sunrise",
+              "name": "Sunrise",
+              "time": "07:07",
+              "mode": "silent"
+            },
+            "extraRows": []
+          },
+          {
+            "dateKey": "2026-04-11",
+            "hijriLabel": "Hijri 2026-04-11",
+            "rows": [
+              {
+                "key": "Fajr",
+                "name": "Fajr",
+                "time": "05:16",
+                "mode": "adhan"
+              },
+              {
+                "key": "Dhuhr",
+                "name": "Dhuhr",
+                "time": "12:36",
+                "mode": "notification"
+              },
+              {
+                "key": "Asr",
+                "name": "Asr",
+                "time": "15:54",
+                "mode": "notification"
+              },
+              {
+                "key": "Maghrib",
+                "name": "Maghrib",
+                "time": "18:39",
+                "mode": "adhan"
+              },
+              {
+                "key": "Isha",
+                "name": "Isha",
+                "time": "20:19",
+                "mode": "notification"
+              }
+            ],
+            "sunriseRow": {
+              "key": "Sunrise",
+              "name": "Sunrise",
+              "time": "07:09",
+              "mode": "silent"
+            },
+            "extraRows": []
+          }
+        ],
+        "hijriLabel": "Hijri 2026-04-09",
+        "showHijri": true,
+        "accentHex": "#5B4B9E",
+        "systemAccent": false,
+        "tinted": true,
+        "design": "timeline",
+        "secondMetric": "time",
+        "alertActionEnabled": true,
+        "aodActionEnabled": true,
+        "adhanChannelId": "adhan-makkah-alarm",
+        "adhanSoundId": "makkah",
+        "defaultChannelId": "prayer-times-default",
+        "fgsText": "Prayer countdown active",
+        "alertLabelAdhan": "Adhan",
+        "alertLabelNotification": "Alert",
+        "alertLabelSilent": "Silent",
+        "alertOnceWord": "once",
+        "aodHideLabel": "Hide on lock screen",
+        "aodShowLabel": "Show on lock screen",
+        "nowWord": "Now",
+        "inWord": "In",
+        "atWord": "At",
+        "atPrayerBody": "Prayer time"
+      }
+    },
+    {
+      "name": "midday, 12-hour, every block",
+      "now": {
+        "todayKey": "2026-04-09",
+        "nowMinutes": 780
+      },
+      "zone": "UTC",
+      "input": "{\"schemaVersion\":2,\"language\":\"en\",\"clock\":{\"hour12\":true,\"am\":\"AM\",\"pm\":\"PM\",\"periodFirst\":false},\"days\":[{\"dateKey\":\"2026-04-09\",\"utcOffsetMinutes\":120,\"label\":\"Thu, Apr 9\",\"prayers\":[{\"key\":\"Fajr\",\"name\":\"Fajr\",\"abbr\":\"Fajr\",\"minutes\":312},{\"key\":\"Dhuhr\",\"name\":\"Dhuhr\",\"abbr\":\"Dhuhr\",\"minutes\":752},{\"key\":\"Asr\",\"name\":\"Asr\",\"abbr\":\"Asr\",\"minutes\":950},{\"key\":\"Maghrib\",\"name\":\"Maghrib\",\"abbr\":\"Magh\",\"minutes\":1115},{\"key\":\"Isha\",\"name\":\"Isha\",\"abbr\":\"Isha\",\"minutes\":1215}],\"sunrise\":{\"key\":\"Sunrise\",\"name\":\"Sunrise\",\"abbr\":\"Sun\",\"minutes\":425}},{\"dateKey\":\"2026-04-10\",\"utcOffsetMinutes\":120,\"label\":\"Fri, Apr 10\",\"prayers\":[{\"key\":\"Fajr\",\"name\":\"Fajr\",\"abbr\":\"Fajr\",\"minutes\":314},{\"key\":\"Dhuhr\",\"name\":\"Dhuhr\",\"abbr\":\"Dhuhr\",\"minutes\":754},{\"key\":\"Asr\",\"name\":\"Asr\",\"abbr\":\"Asr\",\"minutes\":952},{\"key\":\"Maghrib\",\"name\":\"Maghrib\",\"abbr\":\"Magh\",\"minutes\":1117},{\"key\":\"Isha\",\"name\":\"Isha\",\"abbr\":\"Isha\",\"minutes\":1217}],\"sunrise\":{\"key\":\"Sunrise\",\"name\":\"Sunrise\",\"abbr\":\"Sun\",\"minutes\":427}},{\"dateKey\":\"2026-04-11\",\"utcOffsetMinutes\":120,\"label\":\"Sat, Apr 11\",\"prayers\":[{\"key\":\"Fajr\",\"name\":\"Fajr\",\"abbr\":\"Fajr\",\"minutes\":316},{\"key\":\"Dhuhr\",\"name\":\"Dhuhr\",\"abbr\":\"Dhuhr\",\"minutes\":756},{\"key\":\"Asr\",\"name\":\"Asr\",\"abbr\":\"Asr\",\"minutes\":954},{\"key\":\"Maghrib\",\"name\":\"Maghrib\",\"abbr\":\"Magh\",\"minutes\":1119},{\"key\":\"Isha\",\"name\":\"Isha\",\"abbr\":\"Isha\",\"minutes\":1219}],\"sunrise\":{\"key\":\"Sunrise\",\"name\":\"Sunrise\",\"abbr\":\"Sun\",\"minutes\":429}}],\"hijri\":[{\"dateKey\":\"2026-04-09\",\"text\":\"Hijri 2026-04-09\"},{\"dateKey\":\"2026-04-10\",\"text\":\"Hijri 2026-04-10\"},{\"dateKey\":\"2026-04-11\",\"text\":\"Hijri 2026-04-11\"}],\"alertModes\":[{\"key\":\"Fajr\",\"mode\":\"adhan\"},{\"key\":\"Sunrise\",\"mode\":\"silent\"},{\"key\":\"Maghrib\",\"mode\":\"adhan\"}],\"appearance\":{\"accentHex\":\"#5B4B9E\",\"systemTinted\":false,\"systemAccent\":true,\"tinted\":false,\"design\":\"countdown\"},\"android\":{\"alertActionEnabled\":true,\"aodActionEnabled\":false,\"adhanChannelId\":\"adhan-makkah-alarm\",\"adhanSoundId\":\"makkah\",\"defaultChannelId\":\"prayer-times-default\"},\"words\":{\"fgsText\":\"Prayer countdown active\",\"alertLabelAdhan\":\"Adhan\",\"alertLabelNotification\":\"Alert\",\"alertLabelSilent\":\"Silent\",\"alertOnceWord\":\"once\",\"aodHideLabel\":\"Hide on lock screen\",\"aodShowLabel\":\"Show on lock screen\",\"nowWord\":\"Now\",\"inWord\":\"In\",\"atWord\":\"At\",\"atPrayerBody\":\"Prayer time\"}}",
+      "ios": {
+        "nextKey": "Asr",
+        "nextLabel": "Asr",
+        "nextTime": "15:50",
+        "nextTimeDisplay": "3:50 PM",
+        "nextEpochSeconds": 1775749800,
+        "prevEpochSeconds": 1775737920,
+        "rows": [
+          {
+            "key": "Fajr",
+            "abbr": "Fajr",
+            "name": "Fajr",
+            "time": "05:12",
+            "display": "5:12 AM"
+          },
+          {
+            "key": "Dhuhr",
+            "abbr": "Dhuhr",
+            "name": "Dhuhr",
+            "time": "12:32",
+            "display": "12:32 PM"
+          },
+          {
+            "key": "Asr",
+            "abbr": "Asr",
+            "name": "Asr",
+            "time": "15:50",
+            "display": "3:50 PM"
+          },
+          {
+            "key": "Maghrib",
+            "abbr": "Magh",
+            "name": "Maghrib",
+            "time": "18:35",
+            "display": "6:35 PM"
+          },
+          {
+            "key": "Isha",
+            "abbr": "Isha",
+            "name": "Isha",
+            "time": "20:15",
+            "display": "8:15 PM"
+          }
+        ],
+        "sunriseRow": {
+          "key": "Sunrise",
+          "abbr": "Sun",
+          "name": "Sunrise",
+          "time": "07:05",
+          "display": "7:05 AM"
+        },
+        "extraRows": [],
+        "accentHex": "#5B4B9E",
+        "systemTinted": false,
+        "tinted": false
+      },
+      "android": {
+        "nextKey": "Asr",
+        "nextLabel": "Asr",
+        "nextTime": "15:50",
+        "nextTimeDisplay": "3:50 PM",
+        "nextEpochMs": 1775749800000,
+        "prevEpochMs": 1775737920000,
+        "title": "Asr · 3:50 PM",
+        "rows": [
+          {
+            "key": "Fajr",
+            "name": "Fajr",
+            "time": "05:12",
+            "display": "5:12 AM",
+            "mode": "adhan"
+          },
+          {
+            "key": "Dhuhr",
+            "name": "Dhuhr",
+            "time": "12:32",
+            "display": "12:32 PM",
+            "mode": "notification"
+          },
+          {
+            "key": "Asr",
+            "name": "Asr",
+            "time": "15:50",
+            "display": "3:50 PM",
+            "mode": "notification"
+          },
+          {
+            "key": "Maghrib",
+            "name": "Maghrib",
+            "time": "18:35",
+            "display": "6:35 PM",
+            "mode": "adhan"
+          },
+          {
+            "key": "Isha",
+            "name": "Isha",
+            "time": "20:15",
+            "display": "8:15 PM",
+            "mode": "notification"
+          }
+        ],
+        "sunriseRow": {
+          "key": "Sunrise",
+          "name": "Sunrise",
+          "time": "07:05",
+          "display": "7:05 AM",
+          "mode": "silent"
+        },
+        "extraRows": [],
+        "days": [
+          {
+            "dateKey": "2026-04-09",
+            "hijriLabel": "Hijri 2026-04-09",
+            "rows": [
+              {
+                "key": "Fajr",
+                "name": "Fajr",
+                "time": "05:12",
+                "display": "5:12 AM",
+                "mode": "adhan"
+              },
+              {
+                "key": "Dhuhr",
+                "name": "Dhuhr",
+                "time": "12:32",
+                "display": "12:32 PM",
+                "mode": "notification"
+              },
+              {
+                "key": "Asr",
+                "name": "Asr",
+                "time": "15:50",
+                "display": "3:50 PM",
+                "mode": "notification"
+              },
+              {
+                "key": "Maghrib",
+                "name": "Maghrib",
+                "time": "18:35",
+                "display": "6:35 PM",
+                "mode": "adhan"
+              },
+              {
+                "key": "Isha",
+                "name": "Isha",
+                "time": "20:15",
+                "display": "8:15 PM",
+                "mode": "notification"
+              }
+            ],
+            "sunriseRow": {
+              "key": "Sunrise",
+              "name": "Sunrise",
+              "time": "07:05",
+              "display": "7:05 AM",
+              "mode": "silent"
+            },
+            "extraRows": []
+          },
+          {
+            "dateKey": "2026-04-10",
+            "hijriLabel": "Hijri 2026-04-10",
+            "rows": [
+              {
+                "key": "Fajr",
+                "name": "Fajr",
+                "time": "05:14",
+                "display": "5:14 AM",
+                "mode": "adhan"
+              },
+              {
+                "key": "Dhuhr",
+                "name": "Dhuhr",
+                "time": "12:34",
+                "display": "12:34 PM",
+                "mode": "notification"
+              },
+              {
+                "key": "Asr",
+                "name": "Asr",
+                "time": "15:52",
+                "display": "3:52 PM",
+                "mode": "notification"
+              },
+              {
+                "key": "Maghrib",
+                "name": "Maghrib",
+                "time": "18:37",
+                "display": "6:37 PM",
+                "mode": "adhan"
+              },
+              {
+                "key": "Isha",
+                "name": "Isha",
+                "time": "20:17",
+                "display": "8:17 PM",
+                "mode": "notification"
+              }
+            ],
+            "sunriseRow": {
+              "key": "Sunrise",
+              "name": "Sunrise",
+              "time": "07:07",
+              "display": "7:07 AM",
+              "mode": "silent"
+            },
+            "extraRows": []
+          },
+          {
+            "dateKey": "2026-04-11",
+            "hijriLabel": "Hijri 2026-04-11",
+            "rows": [
+              {
+                "key": "Fajr",
+                "name": "Fajr",
+                "time": "05:16",
+                "display": "5:16 AM",
+                "mode": "adhan"
+              },
+              {
+                "key": "Dhuhr",
+                "name": "Dhuhr",
+                "time": "12:36",
+                "display": "12:36 PM",
+                "mode": "notification"
+              },
+              {
+                "key": "Asr",
+                "name": "Asr",
+                "time": "15:54",
+                "display": "3:54 PM",
+                "mode": "notification"
+              },
+              {
+                "key": "Maghrib",
+                "name": "Maghrib",
+                "time": "18:39",
+                "display": "6:39 PM",
+                "mode": "adhan"
+              },
+              {
+                "key": "Isha",
+                "name": "Isha",
+                "time": "20:19",
+                "display": "8:19 PM",
+                "mode": "notification"
+              }
+            ],
+            "sunriseRow": {
+              "key": "Sunrise",
+              "name": "Sunrise",
+              "time": "07:09",
+              "display": "7:09 AM",
+              "mode": "silent"
+            },
+            "extraRows": []
+          }
+        ],
+        "hijriLabel": "Hijri 2026-04-09",
+        "showHijri": true,
+        "accentHex": "#5B4B9E",
+        "systemAccent": true,
+        "tinted": false,
+        "design": "countdown",
+        "secondMetric": "time",
+        "alertActionEnabled": true,
+        "aodActionEnabled": false,
+        "adhanChannelId": "adhan-makkah-alarm",
+        "adhanSoundId": "makkah",
+        "defaultChannelId": "prayer-times-default",
+        "fgsText": "Prayer countdown active",
+        "alertLabelAdhan": "Adhan",
+        "alertLabelNotification": "Alert",
+        "alertLabelSilent": "Silent",
+        "alertOnceWord": "once",
+        "aodHideLabel": "Hide on lock screen",
+        "aodShowLabel": "Show on lock screen",
+        "nowWord": "Now",
+        "inWord": "In",
+        "atWord": "At",
+        "atPrayerBody": "Prayer time"
+      }
+    },
+    {
+      "name": "on the minute of a prayer",
+      "now": {
+        "todayKey": "2026-04-09",
+        "nowMinutes": 752
+      },
+      "zone": "UTC",
+      "input": "{\"schemaVersion\":2,\"language\":\"en\",\"clock\":{\"hour12\":false},\"days\":[{\"dateKey\":\"2026-04-09\",\"utcOffsetMinutes\":120,\"label\":\"Thu, Apr 9\",\"prayers\":[{\"key\":\"Fajr\",\"name\":\"Fajr\",\"abbr\":\"Fajr\",\"minutes\":312},{\"key\":\"Dhuhr\",\"name\":\"Dhuhr\",\"abbr\":\"Dhuhr\",\"minutes\":752},{\"key\":\"Asr\",\"name\":\"Asr\",\"abbr\":\"Asr\",\"minutes\":950},{\"key\":\"Maghrib\",\"name\":\"Maghrib\",\"abbr\":\"Magh\",\"minutes\":1115},{\"key\":\"Isha\",\"name\":\"Isha\",\"abbr\":\"Isha\",\"minutes\":1215}],\"sunrise\":{\"key\":\"Sunrise\",\"name\":\"Sunrise\",\"abbr\":\"Sun\",\"minutes\":425}},{\"dateKey\":\"2026-04-10\",\"utcOffsetMinutes\":120,\"label\":\"Fri, Apr 10\",\"prayers\":[{\"key\":\"Fajr\",\"name\":\"Fajr\",\"abbr\":\"Fajr\",\"minutes\":314},{\"key\":\"Dhuhr\",\"name\":\"Dhuhr\",\"abbr\":\"Dhuhr\",\"minutes\":754},{\"key\":\"Asr\",\"name\":\"Asr\",\"abbr\":\"Asr\",\"minutes\":952},{\"key\":\"Maghrib\",\"name\":\"Maghrib\",\"abbr\":\"Magh\",\"minutes\":1117},{\"key\":\"Isha\",\"name\":\"Isha\",\"abbr\":\"Isha\",\"minutes\":1217}],\"sunrise\":{\"key\":\"Sunrise\",\"name\":\"Sunrise\",\"abbr\":\"Sun\",\"minutes\":427}},{\"dateKey\":\"2026-04-11\",\"utcOffsetMinutes\":120,\"label\":\"Sat, Apr 11\",\"prayers\":[{\"key\":\"Fajr\",\"name\":\"Fajr\",\"abbr\":\"Fajr\",\"minutes\":316},{\"key\":\"Dhuhr\",\"name\":\"Dhuhr\",\"abbr\":\"Dhuhr\",\"minutes\":756},{\"key\":\"Asr\",\"name\":\"Asr\",\"abbr\":\"Asr\",\"minutes\":954},{\"key\":\"Maghrib\",\"name\":\"Maghrib\",\"abbr\":\"Magh\",\"minutes\":1119},{\"key\":\"Isha\",\"name\":\"Isha\",\"abbr\":\"Isha\",\"minutes\":1219}],\"sunrise\":{\"key\":\"Sunrise\",\"name\":\"Sunrise\",\"abbr\":\"Sun\",\"minutes\":429}}],\"hijri\":[{\"dateKey\":\"2026-04-09\",\"text\":\"Hijri 2026-04-09\"},{\"dateKey\":\"2026-04-10\",\"text\":\"Hijri 2026-04-10\"},{\"dateKey\":\"2026-04-11\",\"text\":\"Hijri 2026-04-11\"}],\"alertModes\":[{\"key\":\"Fajr\",\"mode\":\"adhan\"},{\"key\":\"Sunrise\",\"mode\":\"silent\"},{\"key\":\"Maghrib\",\"mode\":\"adhan\"}],\"appearance\":{\"accentHex\":\"#5B4B9E\",\"systemTinted\":true,\"systemAccent\":false,\"tinted\":false,\"design\":\"markers\"},\"android\":{\"alertActionEnabled\":true,\"aodActionEnabled\":true,\"adhanChannelId\":\"adhan-makkah-alarm\",\"adhanSoundId\":\"makkah\",\"defaultChannelId\":\"prayer-times-default\"},\"words\":{\"fgsText\":\"Prayer countdown active\",\"alertLabelAdhan\":\"Adhan\",\"alertLabelNotification\":\"Alert\",\"alertLabelSilent\":\"Silent\",\"alertOnceWord\":\"once\",\"aodHideLabel\":\"Hide on lock screen\",\"aodShowLabel\":\"Show on lock screen\",\"nowWord\":\"Now\",\"inWord\":\"In\",\"atWord\":\"At\",\"atPrayerBody\":\"Prayer time\"}}",
+      "ios": {
+        "nextKey": "Asr",
+        "nextLabel": "Asr",
+        "nextTime": "15:50",
+        "nextTimeDisplay": "15:50",
+        "nextEpochSeconds": 1775749800,
+        "prevEpochSeconds": 1775737920,
+        "rows": [
+          {
+            "key": "Fajr",
+            "abbr": "Fajr",
+            "name": "Fajr",
+            "time": "05:12",
+            "display": "05:12"
+          },
+          {
+            "key": "Dhuhr",
+            "abbr": "Dhuhr",
+            "name": "Dhuhr",
+            "time": "12:32",
+            "display": "12:32"
+          },
+          {
+            "key": "Asr",
+            "abbr": "Asr",
+            "name": "Asr",
+            "time": "15:50",
+            "display": "15:50"
+          },
+          {
+            "key": "Maghrib",
+            "abbr": "Magh",
+            "name": "Maghrib",
+            "time": "18:35",
+            "display": "18:35"
+          },
+          {
+            "key": "Isha",
+            "abbr": "Isha",
+            "name": "Isha",
+            "time": "20:15",
+            "display": "20:15"
+          }
+        ],
+        "sunriseRow": {
+          "key": "Sunrise",
+          "abbr": "Sun",
+          "name": "Sunrise",
+          "time": "07:05",
+          "display": "07:05"
+        },
+        "extraRows": [],
+        "accentHex": "#5B4B9E",
+        "systemTinted": true,
+        "tinted": false
+      },
+      "android": {
+        "nextKey": "Asr",
+        "nextLabel": "Asr",
+        "nextTime": "15:50",
+        "nextTimeDisplay": "15:50",
+        "nextEpochMs": 1775749800000,
+        "prevEpochMs": 1775737920000,
+        "title": "Asr · 15:50",
+        "rows": [
+          {
+            "key": "Fajr",
+            "name": "Fajr",
+            "time": "05:12",
+            "mode": "adhan"
+          },
+          {
+            "key": "Dhuhr",
+            "name": "Dhuhr",
+            "time": "12:32",
+            "mode": "notification"
+          },
+          {
+            "key": "Asr",
+            "name": "Asr",
+            "time": "15:50",
+            "mode": "notification"
+          },
+          {
+            "key": "Maghrib",
+            "name": "Maghrib",
+            "time": "18:35",
+            "mode": "adhan"
+          },
+          {
+            "key": "Isha",
+            "name": "Isha",
+            "time": "20:15",
+            "mode": "notification"
+          }
+        ],
+        "sunriseRow": {
+          "key": "Sunrise",
+          "name": "Sunrise",
+          "time": "07:05",
+          "mode": "silent"
+        },
+        "extraRows": [],
+        "days": [
+          {
+            "dateKey": "2026-04-09",
+            "hijriLabel": "Hijri 2026-04-09",
+            "rows": [
+              {
+                "key": "Fajr",
+                "name": "Fajr",
+                "time": "05:12",
+                "mode": "adhan"
+              },
+              {
+                "key": "Dhuhr",
+                "name": "Dhuhr",
+                "time": "12:32",
+                "mode": "notification"
+              },
+              {
+                "key": "Asr",
+                "name": "Asr",
+                "time": "15:50",
+                "mode": "notification"
+              },
+              {
+                "key": "Maghrib",
+                "name": "Maghrib",
+                "time": "18:35",
+                "mode": "adhan"
+              },
+              {
+                "key": "Isha",
+                "name": "Isha",
+                "time": "20:15",
+                "mode": "notification"
+              }
+            ],
+            "sunriseRow": {
+              "key": "Sunrise",
+              "name": "Sunrise",
+              "time": "07:05",
+              "mode": "silent"
+            },
+            "extraRows": []
+          },
+          {
+            "dateKey": "2026-04-10",
+            "hijriLabel": "Hijri 2026-04-10",
+            "rows": [
+              {
+                "key": "Fajr",
+                "name": "Fajr",
+                "time": "05:14",
+                "mode": "adhan"
+              },
+              {
+                "key": "Dhuhr",
+                "name": "Dhuhr",
+                "time": "12:34",
+                "mode": "notification"
+              },
+              {
+                "key": "Asr",
+                "name": "Asr",
+                "time": "15:52",
+                "mode": "notification"
+              },
+              {
+                "key": "Maghrib",
+                "name": "Maghrib",
+                "time": "18:37",
+                "mode": "adhan"
+              },
+              {
+                "key": "Isha",
+                "name": "Isha",
+                "time": "20:17",
+                "mode": "notification"
+              }
+            ],
+            "sunriseRow": {
+              "key": "Sunrise",
+              "name": "Sunrise",
+              "time": "07:07",
+              "mode": "silent"
+            },
+            "extraRows": []
+          },
+          {
+            "dateKey": "2026-04-11",
+            "hijriLabel": "Hijri 2026-04-11",
+            "rows": [
+              {
+                "key": "Fajr",
+                "name": "Fajr",
+                "time": "05:16",
+                "mode": "adhan"
+              },
+              {
+                "key": "Dhuhr",
+                "name": "Dhuhr",
+                "time": "12:36",
+                "mode": "notification"
+              },
+              {
+                "key": "Asr",
+                "name": "Asr",
+                "time": "15:54",
+                "mode": "notification"
+              },
+              {
+                "key": "Maghrib",
+                "name": "Maghrib",
+                "time": "18:39",
+                "mode": "adhan"
+              },
+              {
+                "key": "Isha",
+                "name": "Isha",
+                "time": "20:19",
+                "mode": "notification"
+              }
+            ],
+            "sunriseRow": {
+              "key": "Sunrise",
+              "name": "Sunrise",
+              "time": "07:09",
+              "mode": "silent"
+            },
+            "extraRows": []
+          }
+        ],
+        "hijriLabel": "Hijri 2026-04-09",
+        "showHijri": true,
+        "accentHex": "#5B4B9E",
+        "systemAccent": false,
+        "tinted": false,
+        "design": "markers",
+        "secondMetric": "time",
+        "alertActionEnabled": true,
+        "aodActionEnabled": true,
+        "adhanChannelId": "adhan-makkah-alarm",
+        "adhanSoundId": "makkah",
+        "defaultChannelId": "prayer-times-default",
+        "fgsText": "Prayer countdown active",
+        "alertLabelAdhan": "Adhan",
+        "alertLabelNotification": "Alert",
+        "alertLabelSilent": "Silent",
+        "alertOnceWord": "once",
+        "aodHideLabel": "Hide on lock screen",
+        "aodShowLabel": "Show on lock screen",
+        "nowWord": "Now",
+        "inWord": "In",
+        "atWord": "At",
+        "atPrayerBody": "Prayer time"
+      }
+    },
+    {
+      "name": "after ʿIshāʾ, tomorrow known",
+      "now": {
+        "todayKey": "2026-04-09",
+        "nowMinutes": 1320
+      },
+      "zone": "UTC",
+      "input": "{\"schemaVersion\":2,\"language\":\"en\",\"clock\":{\"hour12\":false},\"days\":[{\"dateKey\":\"2026-04-09\",\"utcOffsetMinutes\":120,\"label\":\"Thu, Apr 9\",\"prayers\":[{\"key\":\"Fajr\",\"name\":\"Fajr\",\"abbr\":\"Fajr\",\"minutes\":312},{\"key\":\"Dhuhr\",\"name\":\"Dhuhr\",\"abbr\":\"Dhuhr\",\"minutes\":752},{\"key\":\"Asr\",\"name\":\"Asr\",\"abbr\":\"Asr\",\"minutes\":950},{\"key\":\"Maghrib\",\"name\":\"Maghrib\",\"abbr\":\"Magh\",\"minutes\":1115},{\"key\":\"Isha\",\"name\":\"Isha\",\"abbr\":\"Isha\",\"minutes\":1215}],\"sunrise\":{\"key\":\"Sunrise\",\"name\":\"Sunrise\",\"abbr\":\"Sun\",\"minutes\":425}},{\"dateKey\":\"2026-04-10\",\"utcOffsetMinutes\":120,\"label\":\"Fri, Apr 10\",\"prayers\":[{\"key\":\"Fajr\",\"name\":\"Fajr\",\"abbr\":\"Fajr\",\"minutes\":314},{\"key\":\"Dhuhr\",\"name\":\"Dhuhr\",\"abbr\":\"Dhuhr\",\"minutes\":754},{\"key\":\"Asr\",\"name\":\"Asr\",\"abbr\":\"Asr\",\"minutes\":952},{\"key\":\"Maghrib\",\"name\":\"Maghrib\",\"abbr\":\"Magh\",\"minutes\":1117},{\"key\":\"Isha\",\"name\":\"Isha\",\"abbr\":\"Isha\",\"minutes\":1217}],\"sunrise\":{\"key\":\"Sunrise\",\"name\":\"Sunrise\",\"abbr\":\"Sun\",\"minutes\":427}},{\"dateKey\":\"2026-04-11\",\"utcOffsetMinutes\":120,\"label\":\"Sat, Apr 11\",\"prayers\":[{\"key\":\"Fajr\",\"name\":\"Fajr\",\"abbr\":\"Fajr\",\"minutes\":316},{\"key\":\"Dhuhr\",\"name\":\"Dhuhr\",\"abbr\":\"Dhuhr\",\"minutes\":756},{\"key\":\"Asr\",\"name\":\"Asr\",\"abbr\":\"Asr\",\"minutes\":954},{\"key\":\"Maghrib\",\"name\":\"Maghrib\",\"abbr\":\"Magh\",\"minutes\":1119},{\"key\":\"Isha\",\"name\":\"Isha\",\"abbr\":\"Isha\",\"minutes\":1219}],\"sunrise\":{\"key\":\"Sunrise\",\"name\":\"Sunrise\",\"abbr\":\"Sun\",\"minutes\":429}}],\"hijri\":[{\"dateKey\":\"2026-04-09\",\"text\":\"Hijri 2026-04-09\"},{\"dateKey\":\"2026-04-10\",\"text\":\"Hijri 2026-04-10\"},{\"dateKey\":\"2026-04-11\",\"text\":\"Hijri 2026-04-11\"}],\"alertModes\":[{\"key\":\"Fajr\",\"mode\":\"adhan\"},{\"key\":\"Sunrise\",\"mode\":\"silent\"},{\"key\":\"Maghrib\",\"mode\":\"adhan\"}],\"appearance\":{\"accentHex\":\"#5B4B9E\",\"systemTinted\":false,\"systemAccent\":true,\"tinted\":true,\"design\":\"timeline\"},\"android\":{\"alertActionEnabled\":true,\"aodActionEnabled\":false,\"adhanChannelId\":\"adhan-makkah-alarm\",\"adhanSoundId\":\"makkah\",\"defaultChannelId\":\"prayer-times-default\"},\"words\":{\"fgsText\":\"Prayer countdown active\",\"alertLabelAdhan\":\"Adhan\",\"alertLabelNotification\":\"Alert\",\"alertLabelSilent\":\"Silent\",\"alertOnceWord\":\"once\",\"aodHideLabel\":\"Hide on lock screen\",\"aodShowLabel\":\"Show on lock screen\",\"nowWord\":\"Now\",\"inWord\":\"In\",\"atWord\":\"At\",\"atPrayerBody\":\"Prayer time\"}}",
+      "ios": {
+        "nextKey": "Fajr",
+        "nextLabel": "Fajr",
+        "nextTime": "05:14",
+        "nextTimeDisplay": "05:14",
+        "nextEpochSeconds": 1775798040,
+        "prevEpochSeconds": 1775765700,
+        "rows": [
+          {
+            "key": "Fajr",
+            "abbr": "Fajr",
+            "name": "Fajr",
+            "time": "05:14",
+            "display": "05:14"
+          },
+          {
+            "key": "Dhuhr",
+            "abbr": "Dhuhr",
+            "name": "Dhuhr",
+            "time": "12:34",
+            "display": "12:34"
+          },
+          {
+            "key": "Asr",
+            "abbr": "Asr",
+            "name": "Asr",
+            "time": "15:52",
+            "display": "15:52"
+          },
+          {
+            "key": "Maghrib",
+            "abbr": "Magh",
+            "name": "Maghrib",
+            "time": "18:37",
+            "display": "18:37"
+          },
+          {
+            "key": "Isha",
+            "abbr": "Isha",
+            "name": "Isha",
+            "time": "20:17",
+            "display": "20:17"
+          }
+        ],
+        "sunriseRow": {
+          "key": "Sunrise",
+          "abbr": "Sun",
+          "name": "Sunrise",
+          "time": "07:07",
+          "display": "07:07"
+        },
+        "extraRows": [],
+        "accentHex": "#5B4B9E",
+        "systemTinted": false,
+        "tinted": true
+      },
+      "android": {
+        "nextKey": "Fajr",
+        "nextLabel": "Fajr",
+        "nextTime": "05:14",
+        "nextTimeDisplay": "05:14",
+        "nextEpochMs": 1775798040000,
+        "prevEpochMs": 1775765700000,
+        "title": "Fajr · 05:14",
+        "rows": [
+          {
+            "key": "Fajr",
+            "name": "Fajr",
+            "time": "05:14",
+            "mode": "adhan"
+          },
+          {
+            "key": "Dhuhr",
+            "name": "Dhuhr",
+            "time": "12:34",
+            "mode": "notification"
+          },
+          {
+            "key": "Asr",
+            "name": "Asr",
+            "time": "15:52",
+            "mode": "notification"
+          },
+          {
+            "key": "Maghrib",
+            "name": "Maghrib",
+            "time": "18:37",
+            "mode": "adhan"
+          },
+          {
+            "key": "Isha",
+            "name": "Isha",
+            "time": "20:17",
+            "mode": "notification"
+          }
+        ],
+        "sunriseRow": {
+          "key": "Sunrise",
+          "name": "Sunrise",
+          "time": "07:07",
+          "mode": "silent"
+        },
+        "extraRows": [],
+        "days": [
+          {
+            "dateKey": "2026-04-09",
+            "hijriLabel": "Hijri 2026-04-09",
+            "rows": [
+              {
+                "key": "Fajr",
+                "name": "Fajr",
+                "time": "05:12",
+                "mode": "adhan"
+              },
+              {
+                "key": "Dhuhr",
+                "name": "Dhuhr",
+                "time": "12:32",
+                "mode": "notification"
+              },
+              {
+                "key": "Asr",
+                "name": "Asr",
+                "time": "15:50",
+                "mode": "notification"
+              },
+              {
+                "key": "Maghrib",
+                "name": "Maghrib",
+                "time": "18:35",
+                "mode": "adhan"
+              },
+              {
+                "key": "Isha",
+                "name": "Isha",
+                "time": "20:15",
+                "mode": "notification"
+              }
+            ],
+            "sunriseRow": {
+              "key": "Sunrise",
+              "name": "Sunrise",
+              "time": "07:05",
+              "mode": "silent"
+            },
+            "extraRows": []
+          },
+          {
+            "dateKey": "2026-04-10",
+            "hijriLabel": "Hijri 2026-04-10",
+            "rows": [
+              {
+                "key": "Fajr",
+                "name": "Fajr",
+                "time": "05:14",
+                "mode": "adhan"
+              },
+              {
+                "key": "Dhuhr",
+                "name": "Dhuhr",
+                "time": "12:34",
+                "mode": "notification"
+              },
+              {
+                "key": "Asr",
+                "name": "Asr",
+                "time": "15:52",
+                "mode": "notification"
+              },
+              {
+                "key": "Maghrib",
+                "name": "Maghrib",
+                "time": "18:37",
+                "mode": "adhan"
+              },
+              {
+                "key": "Isha",
+                "name": "Isha",
+                "time": "20:17",
+                "mode": "notification"
+              }
+            ],
+            "sunriseRow": {
+              "key": "Sunrise",
+              "name": "Sunrise",
+              "time": "07:07",
+              "mode": "silent"
+            },
+            "extraRows": []
+          },
+          {
+            "dateKey": "2026-04-11",
+            "hijriLabel": "Hijri 2026-04-11",
+            "rows": [
+              {
+                "key": "Fajr",
+                "name": "Fajr",
+                "time": "05:16",
+                "mode": "adhan"
+              },
+              {
+                "key": "Dhuhr",
+                "name": "Dhuhr",
+                "time": "12:36",
+                "mode": "notification"
+              },
+              {
+                "key": "Asr",
+                "name": "Asr",
+                "time": "15:54",
+                "mode": "notification"
+              },
+              {
+                "key": "Maghrib",
+                "name": "Maghrib",
+                "time": "18:39",
+                "mode": "adhan"
+              },
+              {
+                "key": "Isha",
+                "name": "Isha",
+                "time": "20:19",
+                "mode": "notification"
+              }
+            ],
+            "sunriseRow": {
+              "key": "Sunrise",
+              "name": "Sunrise",
+              "time": "07:09",
+              "mode": "silent"
+            },
+            "extraRows": []
+          }
+        ],
+        "hijriLabel": "Hijri 2026-04-10",
+        "showHijri": true,
+        "accentHex": "#5B4B9E",
+        "systemAccent": true,
+        "tinted": true,
+        "design": "timeline",
+        "secondMetric": "time",
+        "alertActionEnabled": true,
+        "aodActionEnabled": false,
+        "adhanChannelId": "adhan-makkah-alarm",
+        "adhanSoundId": "makkah",
+        "defaultChannelId": "prayer-times-default",
+        "fgsText": "Prayer countdown active",
+        "alertLabelAdhan": "Adhan",
+        "alertLabelNotification": "Alert",
+        "alertLabelSilent": "Silent",
+        "alertOnceWord": "once",
+        "aodHideLabel": "Hide on lock screen",
+        "aodShowLabel": "Show on lock screen",
+        "nowWord": "Now",
+        "inWord": "In",
+        "atWord": "At",
+        "atPrayerBody": "Prayer time"
+      }
+    },
+    {
+      "name": "after ʿIshāʾ, tomorrow known but outside the window",
+      "now": {
+        "todayKey": "2026-04-09",
+        "nowMinutes": 1320
+      },
+      "zone": "UTC",
+      "input": "{\"schemaVersion\":2,\"language\":\"en\",\"clock\":{\"hour12\":false},\"days\":[{\"dateKey\":\"2026-04-09\",\"utcOffsetMinutes\":120,\"label\":\"Thu, Apr 9\",\"prayers\":[{\"key\":\"Fajr\",\"name\":\"Fajr\",\"abbr\":\"Fajr\",\"minutes\":312},{\"key\":\"Dhuhr\",\"name\":\"Dhuhr\",\"abbr\":\"Dhuhr\",\"minutes\":752},{\"key\":\"Asr\",\"name\":\"Asr\",\"abbr\":\"Asr\",\"minutes\":950},{\"key\":\"Maghrib\",\"name\":\"Maghrib\",\"abbr\":\"Magh\",\"minutes\":1115},{\"key\":\"Isha\",\"name\":\"Isha\",\"abbr\":\"Isha\",\"minutes\":1215}],\"sunrise\":{\"key\":\"Sunrise\",\"name\":\"Sunrise\",\"abbr\":\"Sun\",\"minutes\":425}},{\"dateKey\":\"2026-04-10\",\"utcOffsetMinutes\":120,\"label\":\"Fri, Apr 10\",\"prayers\":[{\"key\":\"Fajr\",\"name\":\"Fajr\",\"abbr\":\"Fajr\",\"minutes\":314},{\"key\":\"Dhuhr\",\"name\":\"Dhuhr\",\"abbr\":\"Dhuhr\",\"minutes\":754},{\"key\":\"Asr\",\"name\":\"Asr\",\"abbr\":\"Asr\",\"minutes\":952},{\"key\":\"Maghrib\",\"name\":\"Maghrib\",\"abbr\":\"Magh\",\"minutes\":1117},{\"key\":\"Isha\",\"name\":\"Isha\",\"abbr\":\"Isha\",\"minutes\":1217}],\"sunrise\":{\"key\":\"Sunrise\",\"name\":\"Sunrise\",\"abbr\":\"Sun\",\"minutes\":427}}],\"hijri\":[{\"dateKey\":\"2026-04-09\",\"text\":\"Hijri 2026-04-09\"},{\"dateKey\":\"2026-04-10\",\"text\":\"Hijri 2026-04-10\"}],\"alertModes\":[{\"key\":\"Fajr\",\"mode\":\"adhan\"},{\"key\":\"Sunrise\",\"mode\":\"silent\"},{\"key\":\"Maghrib\",\"mode\":\"adhan\"}],\"appearance\":{\"accentHex\":\"#5B4B9E\",\"systemTinted\":true,\"systemAccent\":false,\"tinted\":false,\"design\":\"countdown\"},\"android\":{\"alertActionEnabled\":true,\"aodActionEnabled\":true,\"adhanChannelId\":\"adhan-makkah-alarm\",\"adhanSoundId\":\"makkah\",\"defaultChannelId\":\"prayer-times-default\"},\"words\":{\"fgsText\":\"Prayer countdown active\",\"alertLabelAdhan\":\"Adhan\",\"alertLabelNotification\":\"Alert\",\"alertLabelSilent\":\"Silent\",\"alertOnceWord\":\"once\",\"aodHideLabel\":\"Hide on lock screen\",\"aodShowLabel\":\"Show on lock screen\",\"nowWord\":\"Now\",\"inWord\":\"In\",\"atWord\":\"At\",\"atPrayerBody\":\"Prayer time\"}}",
+      "ios": {
+        "nextKey": "Fajr",
+        "nextLabel": "Fajr",
+        "nextTime": "05:14",
+        "nextTimeDisplay": "05:14",
+        "nextEpochSeconds": 1775798040,
+        "prevEpochSeconds": 1775765700,
+        "rows": [
+          {
+            "key": "Fajr",
+            "abbr": "Fajr",
+            "name": "Fajr",
+            "time": "05:14",
+            "display": "05:14"
+          },
+          {
+            "key": "Dhuhr",
+            "abbr": "Dhuhr",
+            "name": "Dhuhr",
+            "time": "12:34",
+            "display": "12:34"
+          },
+          {
+            "key": "Asr",
+            "abbr": "Asr",
+            "name": "Asr",
+            "time": "15:52",
+            "display": "15:52"
+          },
+          {
+            "key": "Maghrib",
+            "abbr": "Magh",
+            "name": "Maghrib",
+            "time": "18:37",
+            "display": "18:37"
+          },
+          {
+            "key": "Isha",
+            "abbr": "Isha",
+            "name": "Isha",
+            "time": "20:17",
+            "display": "20:17"
+          }
+        ],
+        "sunriseRow": {
+          "key": "Sunrise",
+          "abbr": "Sun",
+          "name": "Sunrise",
+          "time": "07:07",
+          "display": "07:07"
+        },
+        "extraRows": [],
+        "accentHex": "#5B4B9E",
+        "systemTinted": true,
+        "tinted": false
+      },
+      "android": {
+        "nextKey": "Fajr",
+        "nextLabel": "Fajr",
+        "nextTime": "05:14",
+        "nextTimeDisplay": "05:14",
+        "nextEpochMs": 1775798040000,
+        "prevEpochMs": 1775765700000,
+        "title": "Fajr · 05:14",
+        "rows": [
+          {
+            "key": "Fajr",
+            "name": "Fajr",
+            "time": "05:14",
+            "mode": "adhan"
+          },
+          {
+            "key": "Dhuhr",
+            "name": "Dhuhr",
+            "time": "12:34",
+            "mode": "notification"
+          },
+          {
+            "key": "Asr",
+            "name": "Asr",
+            "time": "15:52",
+            "mode": "notification"
+          },
+          {
+            "key": "Maghrib",
+            "name": "Maghrib",
+            "time": "18:37",
+            "mode": "adhan"
+          },
+          {
+            "key": "Isha",
+            "name": "Isha",
+            "time": "20:17",
+            "mode": "notification"
+          }
+        ],
+        "sunriseRow": {
+          "key": "Sunrise",
+          "name": "Sunrise",
+          "time": "07:07",
+          "mode": "silent"
+        },
+        "extraRows": [],
+        "days": [
+          {
+            "dateKey": "2026-04-09",
+            "hijriLabel": "Hijri 2026-04-09",
+            "rows": [
+              {
+                "key": "Fajr",
+                "name": "Fajr",
+                "time": "05:12",
+                "mode": "adhan"
+              },
+              {
+                "key": "Dhuhr",
+                "name": "Dhuhr",
+                "time": "12:32",
+                "mode": "notification"
+              },
+              {
+                "key": "Asr",
+                "name": "Asr",
+                "time": "15:50",
+                "mode": "notification"
+              },
+              {
+                "key": "Maghrib",
+                "name": "Maghrib",
+                "time": "18:35",
+                "mode": "adhan"
+              },
+              {
+                "key": "Isha",
+                "name": "Isha",
+                "time": "20:15",
+                "mode": "notification"
+              }
+            ],
+            "sunriseRow": {
+              "key": "Sunrise",
+              "name": "Sunrise",
+              "time": "07:05",
+              "mode": "silent"
+            },
+            "extraRows": []
+          },
+          {
+            "dateKey": "2026-04-10",
+            "hijriLabel": "Hijri 2026-04-10",
+            "rows": [
+              {
+                "key": "Fajr",
+                "name": "Fajr",
+                "time": "05:14",
+                "mode": "adhan"
+              },
+              {
+                "key": "Dhuhr",
+                "name": "Dhuhr",
+                "time": "12:34",
+                "mode": "notification"
+              },
+              {
+                "key": "Asr",
+                "name": "Asr",
+                "time": "15:52",
+                "mode": "notification"
+              },
+              {
+                "key": "Maghrib",
+                "name": "Maghrib",
+                "time": "18:37",
+                "mode": "adhan"
+              },
+              {
+                "key": "Isha",
+                "name": "Isha",
+                "time": "20:17",
+                "mode": "notification"
+              }
+            ],
+            "sunriseRow": {
+              "key": "Sunrise",
+              "name": "Sunrise",
+              "time": "07:07",
+              "mode": "silent"
+            },
+            "extraRows": []
+          }
+        ],
+        "hijriLabel": "Hijri 2026-04-10",
+        "showHijri": true,
+        "accentHex": "#5B4B9E",
+        "systemAccent": false,
+        "tinted": false,
+        "design": "countdown",
+        "secondMetric": "time",
+        "alertActionEnabled": true,
+        "aodActionEnabled": true,
+        "adhanChannelId": "adhan-makkah-alarm",
+        "adhanSoundId": "makkah",
+        "defaultChannelId": "prayer-times-default",
+        "fgsText": "Prayer countdown active",
+        "alertLabelAdhan": "Adhan",
+        "alertLabelNotification": "Alert",
+        "alertLabelSilent": "Silent",
+        "alertOnceWord": "once",
+        "aodHideLabel": "Hide on lock screen",
+        "aodShowLabel": "Show on lock screen",
+        "nowWord": "Now",
+        "inWord": "In",
+        "atWord": "At",
+        "atPrayerBody": "Prayer time"
+      }
+    },
+    {
+      "name": "after ʿIshāʾ, tomorrow unknown",
+      "now": {
+        "todayKey": "2026-04-09",
+        "nowMinutes": 1320
+      },
+      "zone": "UTC",
+      "input": "{\"schemaVersion\":2,\"language\":\"en\",\"clock\":{\"hour12\":true,\"am\":\"AM\",\"pm\":\"PM\",\"periodFirst\":false},\"days\":[{\"dateKey\":\"2026-04-09\",\"utcOffsetMinutes\":120,\"label\":\"Thu, Apr 9\",\"prayers\":[{\"key\":\"Fajr\",\"name\":\"Fajr\",\"abbr\":\"Fajr\",\"minutes\":312},{\"key\":\"Dhuhr\",\"name\":\"Dhuhr\",\"abbr\":\"Dhuhr\",\"minutes\":752},{\"key\":\"Asr\",\"name\":\"Asr\",\"abbr\":\"Asr\",\"minutes\":950},{\"key\":\"Maghrib\",\"name\":\"Maghrib\",\"abbr\":\"Magh\",\"minutes\":1115},{\"key\":\"Isha\",\"name\":\"Isha\",\"abbr\":\"Isha\",\"minutes\":1215}],\"sunrise\":{\"key\":\"Sunrise\",\"name\":\"Sunrise\",\"abbr\":\"Sun\",\"minutes\":425}},{\"dateKey\":\"2026-04-10\",\"utcOffsetMinutes\":120,\"label\":\"Fri, Apr 10\",\"prayers\":[{\"key\":\"Fajr\",\"name\":\"Fajr\",\"abbr\":\"Fajr\",\"minutes\":312},{\"key\":\"Dhuhr\",\"name\":\"Dhuhr\",\"abbr\":\"Dhuhr\",\"minutes\":752},{\"key\":\"Asr\",\"name\":\"Asr\",\"abbr\":\"Asr\",\"minutes\":950},{\"key\":\"Maghrib\",\"name\":\"Maghrib\",\"abbr\":\"Magh\",\"minutes\":1115},{\"key\":\"Isha\",\"name\":\"Isha\",\"abbr\":\"Isha\",\"minutes\":1215}],\"sunrise\":{\"key\":\"Sunrise\",\"name\":\"Sunrise\",\"abbr\":\"Sun\",\"minutes\":425},\"estimated\":true}],\"hijri\":[{\"dateKey\":\"2026-04-09\",\"text\":\"Hijri 2026-04-09\"},{\"dateKey\":\"2026-04-10\",\"text\":\"Hijri 2026-04-10\"}],\"alertModes\":[{\"key\":\"Fajr\",\"mode\":\"adhan\"},{\"key\":\"Sunrise\",\"mode\":\"silent\"},{\"key\":\"Maghrib\",\"mode\":\"adhan\"}],\"appearance\":{\"accentHex\":\"#5B4B9E\",\"systemTinted\":false,\"systemAccent\":true,\"tinted\":false,\"design\":\"markers\"},\"android\":{\"alertActionEnabled\":true,\"aodActionEnabled\":false,\"adhanChannelId\":\"adhan-makkah-alarm\",\"adhanSoundId\":\"makkah\",\"defaultChannelId\":\"prayer-times-default\"},\"words\":{\"fgsText\":\"Prayer countdown active\",\"alertLabelAdhan\":\"Adhan\",\"alertLabelNotification\":\"Alert\",\"alertLabelSilent\":\"Silent\",\"alertOnceWord\":\"once\",\"aodHideLabel\":\"Hide on lock screen\",\"aodShowLabel\":\"Show on lock screen\",\"nowWord\":\"Now\",\"inWord\":\"In\",\"atWord\":\"At\",\"atPrayerBody\":\"Prayer time\"}}",
+      "ios": {
+        "nextKey": "Fajr",
+        "nextLabel": "Fajr",
+        "nextTime": "05:12",
+        "nextTimeDisplay": "5:12 AM",
+        "nextEpochSeconds": 1775797920,
+        "prevEpochSeconds": 1775765700,
+        "rows": [
+          {
+            "key": "Fajr",
+            "abbr": "Fajr",
+            "name": "Fajr",
+            "time": "05:12",
+            "display": "5:12 AM"
+          },
+          {
+            "key": "Dhuhr",
+            "abbr": "Dhuhr",
+            "name": "Dhuhr",
+            "time": "12:32",
+            "display": "12:32 PM"
+          },
+          {
+            "key": "Asr",
+            "abbr": "Asr",
+            "name": "Asr",
+            "time": "15:50",
+            "display": "3:50 PM"
+          },
+          {
+            "key": "Maghrib",
+            "abbr": "Magh",
+            "name": "Maghrib",
+            "time": "18:35",
+            "display": "6:35 PM"
+          },
+          {
+            "key": "Isha",
+            "abbr": "Isha",
+            "name": "Isha",
+            "time": "20:15",
+            "display": "8:15 PM"
+          }
+        ],
+        "sunriseRow": {
+          "key": "Sunrise",
+          "abbr": "Sun",
+          "name": "Sunrise",
+          "time": "07:05",
+          "display": "7:05 AM"
+        },
+        "extraRows": [],
+        "accentHex": "#5B4B9E",
+        "systemTinted": false,
+        "tinted": false
+      },
+      "android": {
+        "nextKey": "Fajr",
+        "nextLabel": "Fajr",
+        "nextTime": "05:12",
+        "nextTimeDisplay": "5:12 AM",
+        "nextEpochMs": 1775797920000,
+        "prevEpochMs": 1775765700000,
+        "title": "Fajr · 5:12 AM",
+        "rows": [
+          {
+            "key": "Fajr",
+            "name": "Fajr",
+            "time": "05:12",
+            "display": "5:12 AM",
+            "mode": "adhan"
+          },
+          {
+            "key": "Dhuhr",
+            "name": "Dhuhr",
+            "time": "12:32",
+            "display": "12:32 PM",
+            "mode": "notification"
+          },
+          {
+            "key": "Asr",
+            "name": "Asr",
+            "time": "15:50",
+            "display": "3:50 PM",
+            "mode": "notification"
+          },
+          {
+            "key": "Maghrib",
+            "name": "Maghrib",
+            "time": "18:35",
+            "display": "6:35 PM",
+            "mode": "adhan"
+          },
+          {
+            "key": "Isha",
+            "name": "Isha",
+            "time": "20:15",
+            "display": "8:15 PM",
+            "mode": "notification"
+          }
+        ],
+        "sunriseRow": {
+          "key": "Sunrise",
+          "name": "Sunrise",
+          "time": "07:05",
+          "display": "7:05 AM",
+          "mode": "silent"
+        },
+        "extraRows": [],
+        "days": [
+          {
+            "dateKey": "2026-04-09",
+            "hijriLabel": "Hijri 2026-04-09",
+            "rows": [
+              {
+                "key": "Fajr",
+                "name": "Fajr",
+                "time": "05:12",
+                "display": "5:12 AM",
+                "mode": "adhan"
+              },
+              {
+                "key": "Dhuhr",
+                "name": "Dhuhr",
+                "time": "12:32",
+                "display": "12:32 PM",
+                "mode": "notification"
+              },
+              {
+                "key": "Asr",
+                "name": "Asr",
+                "time": "15:50",
+                "display": "3:50 PM",
+                "mode": "notification"
+              },
+              {
+                "key": "Maghrib",
+                "name": "Maghrib",
+                "time": "18:35",
+                "display": "6:35 PM",
+                "mode": "adhan"
+              },
+              {
+                "key": "Isha",
+                "name": "Isha",
+                "time": "20:15",
+                "display": "8:15 PM",
+                "mode": "notification"
+              }
+            ],
+            "sunriseRow": {
+              "key": "Sunrise",
+              "name": "Sunrise",
+              "time": "07:05",
+              "display": "7:05 AM",
+              "mode": "silent"
+            },
+            "extraRows": []
+          }
+        ],
+        "hijriLabel": "Hijri 2026-04-10",
+        "showHijri": true,
+        "accentHex": "#5B4B9E",
+        "systemAccent": true,
+        "tinted": false,
+        "design": "markers",
+        "secondMetric": "time",
+        "alertActionEnabled": true,
+        "aodActionEnabled": false,
+        "adhanChannelId": "adhan-makkah-alarm",
+        "adhanSoundId": "makkah",
+        "defaultChannelId": "prayer-times-default",
+        "fgsText": "Prayer countdown active",
+        "alertLabelAdhan": "Adhan",
+        "alertLabelNotification": "Alert",
+        "alertLabelSilent": "Silent",
+        "alertOnceWord": "once",
+        "aodHideLabel": "Hide on lock screen",
+        "aodShowLabel": "Show on lock screen",
+        "nowWord": "Now",
+        "inWord": "In",
+        "atWord": "At",
+        "atPrayerBody": "Prayer time"
+      }
+    },
+    {
+      "name": "before dawn, night marks on",
+      "now": {
+        "todayKey": "2026-04-09",
+        "nowMinutes": 60
+      },
+      "zone": "UTC",
+      "input": "{\"schemaVersion\":2,\"language\":\"en\",\"clock\":{\"hour12\":true,\"am\":\"AM\",\"pm\":\"PM\",\"periodFirst\":false},\"days\":[{\"dateKey\":\"2026-04-09\",\"utcOffsetMinutes\":120,\"label\":\"Thu, Apr 9\",\"prayers\":[{\"key\":\"Fajr\",\"name\":\"Fajr\",\"abbr\":\"Fajr\",\"minutes\":312},{\"key\":\"Dhuhr\",\"name\":\"Dhuhr\",\"abbr\":\"Dhuhr\",\"minutes\":752},{\"key\":\"Asr\",\"name\":\"Asr\",\"abbr\":\"Asr\",\"minutes\":950},{\"key\":\"Maghrib\",\"name\":\"Maghrib\",\"abbr\":\"Magh\",\"minutes\":1115},{\"key\":\"Isha\",\"name\":\"Isha\",\"abbr\":\"Isha\",\"minutes\":1215}],\"sunrise\":{\"key\":\"Sunrise\",\"name\":\"Sunrise\",\"abbr\":\"Sun\",\"minutes\":425},\"extras\":[{\"key\":\"Midnight\",\"name\":\"Islamic Midnight\",\"abbr\":\"Mid\",\"minutes\":40},{\"key\":\"Lastthird\",\"name\":\"Last Third\",\"abbr\":\"Qiyam\",\"minutes\":175},{\"key\":\"Firstthird\",\"name\":\"First Third\",\"abbr\":\"1/3\",\"minutes\":1445}]},{\"dateKey\":\"2026-04-10\",\"utcOffsetMinutes\":120,\"label\":\"Fri, Apr 10\",\"prayers\":[{\"key\":\"Fajr\",\"name\":\"Fajr\",\"abbr\":\"Fajr\",\"minutes\":314},{\"key\":\"Dhuhr\",\"name\":\"Dhuhr\",\"abbr\":\"Dhuhr\",\"minutes\":754},{\"key\":\"Asr\",\"name\":\"Asr\",\"abbr\":\"Asr\",\"minutes\":952},{\"key\":\"Maghrib\",\"name\":\"Maghrib\",\"abbr\":\"Magh\",\"minutes\":1117},{\"key\":\"Isha\",\"name\":\"Isha\",\"abbr\":\"Isha\",\"minutes\":1217}],\"sunrise\":{\"key\":\"Sunrise\",\"name\":\"Sunrise\",\"abbr\":\"Sun\",\"minutes\":427},\"extras\":[{\"key\":\"Midnight\",\"name\":\"Islamic Midnight\",\"abbr\":\"Mid\",\"minutes\":42},{\"key\":\"Lastthird\",\"name\":\"Last Third\",\"abbr\":\"Qiyam\",\"minutes\":177},{\"key\":\"Firstthird\",\"name\":\"First Third\",\"abbr\":\"1/3\",\"minutes\":1447}]},{\"dateKey\":\"2026-04-11\",\"utcOffsetMinutes\":120,\"label\":\"Sat, Apr 11\",\"prayers\":[{\"key\":\"Fajr\",\"name\":\"Fajr\",\"abbr\":\"Fajr\",\"minutes\":316},{\"key\":\"Dhuhr\",\"name\":\"Dhuhr\",\"abbr\":\"Dhuhr\",\"minutes\":756},{\"key\":\"Asr\",\"name\":\"Asr\",\"abbr\":\"Asr\",\"minutes\":954},{\"key\":\"Maghrib\",\"name\":\"Maghrib\",\"abbr\":\"Magh\",\"minutes\":1119},{\"key\":\"Isha\",\"name\":\"Isha\",\"abbr\":\"Isha\",\"minutes\":1219}],\"sunrise\":{\"key\":\"Sunrise\",\"name\":\"Sunrise\",\"abbr\":\"Sun\",\"minutes\":429},\"extras\":[{\"key\":\"Midnight\",\"name\":\"Islamic Midnight\",\"abbr\":\"Mid\",\"minutes\":44},{\"key\":\"Lastthird\",\"name\":\"Last Third\",\"abbr\":\"Qiyam\",\"minutes\":179},{\"key\":\"Firstthird\",\"name\":\"First Third\",\"abbr\":\"1/3\",\"minutes\":1449}]}],\"hijri\":[{\"dateKey\":\"2026-04-09\",\"text\":\"Hijri 2026-04-09\"},{\"dateKey\":\"2026-04-10\",\"text\":\"Hijri 2026-04-10\"},{\"dateKey\":\"2026-04-11\",\"text\":\"Hijri 2026-04-11\"}],\"alertModes\":[{\"key\":\"Fajr\",\"mode\":\"adhan\"},{\"key\":\"Sunrise\",\"mode\":\"silent\"},{\"key\":\"Maghrib\",\"mode\":\"adhan\"}],\"appearance\":{\"accentHex\":\"#5B4B9E\",\"systemTinted\":true,\"systemAccent\":false,\"tinted\":true,\"design\":\"timeline\"},\"android\":{\"alertActionEnabled\":true,\"aodActionEnabled\":true,\"adhanChannelId\":\"adhan-makkah-alarm\",\"adhanSoundId\":\"makkah\",\"defaultChannelId\":\"prayer-times-default\"},\"words\":{\"fgsText\":\"Prayer countdown active\",\"alertLabelAdhan\":\"Adhan\",\"alertLabelNotification\":\"Alert\",\"alertLabelSilent\":\"Silent\",\"alertOnceWord\":\"once\",\"aodHideLabel\":\"Hide on lock screen\",\"aodShowLabel\":\"Show on lock screen\",\"nowWord\":\"Now\",\"inWord\":\"In\",\"atWord\":\"At\",\"atPrayerBody\":\"Prayer time\"}}",
+      "ios": {
+        "nextKey": "Lastthird",
+        "nextLabel": "Last Third",
+        "nextTime": "02:55",
+        "nextTimeDisplay": "2:55 AM",
+        "nextEpochSeconds": 1775703300,
+        "prevEpochSeconds": 1775695200,
+        "rows": [
+          {
+            "key": "Fajr",
+            "abbr": "Fajr",
+            "name": "Fajr",
+            "time": "05:12",
+            "display": "5:12 AM"
+          },
+          {
+            "key": "Dhuhr",
+            "abbr": "Dhuhr",
+            "name": "Dhuhr",
+            "time": "12:32",
+            "display": "12:32 PM"
+          },
+          {
+            "key": "Asr",
+            "abbr": "Asr",
+            "name": "Asr",
+            "time": "15:50",
+            "display": "3:50 PM"
+          },
+          {
+            "key": "Maghrib",
+            "abbr": "Magh",
+            "name": "Maghrib",
+            "time": "18:35",
+            "display": "6:35 PM"
+          },
+          {
+            "key": "Isha",
+            "abbr": "Isha",
+            "name": "Isha",
+            "time": "20:15",
+            "display": "8:15 PM"
+          }
+        ],
+        "sunriseRow": {
+          "key": "Sunrise",
+          "abbr": "Sun",
+          "name": "Sunrise",
+          "time": "07:05",
+          "display": "7:05 AM"
+        },
+        "extraRows": [
+          {
+            "key": "Midnight",
+            "abbr": "Mid",
+            "name": "Islamic Midnight",
+            "time": "00:40",
+            "display": "12:40 AM"
+          },
+          {
+            "key": "Lastthird",
+            "abbr": "Qiyam",
+            "name": "Last Third",
+            "time": "02:55",
+            "display": "2:55 AM"
+          },
+          {
+            "key": "Firstthird",
+            "abbr": "1/3",
+            "name": "First Third",
+            "time": "00:05",
+            "display": "12:05 AM"
+          }
+        ],
+        "accentHex": "#5B4B9E",
+        "systemTinted": true,
+        "tinted": true
+      },
+      "android": {
+        "nextKey": "Lastthird",
+        "nextLabel": "Last Third",
+        "nextTime": "02:55",
+        "nextTimeDisplay": "2:55 AM",
+        "nextEpochMs": 1775703300000,
+        "prevEpochMs": 1775695200000,
+        "title": "Last Third · 2:55 AM",
+        "rows": [
+          {
+            "key": "Fajr",
+            "name": "Fajr",
+            "time": "05:12",
+            "display": "5:12 AM",
+            "mode": "adhan"
+          },
+          {
+            "key": "Dhuhr",
+            "name": "Dhuhr",
+            "time": "12:32",
+            "display": "12:32 PM",
+            "mode": "notification"
+          },
+          {
+            "key": "Asr",
+            "name": "Asr",
+            "time": "15:50",
+            "display": "3:50 PM",
+            "mode": "notification"
+          },
+          {
+            "key": "Maghrib",
+            "name": "Maghrib",
+            "time": "18:35",
+            "display": "6:35 PM",
+            "mode": "adhan"
+          },
+          {
+            "key": "Isha",
+            "name": "Isha",
+            "time": "20:15",
+            "display": "8:15 PM",
+            "mode": "notification"
+          }
+        ],
+        "sunriseRow": {
+          "key": "Sunrise",
+          "name": "Sunrise",
+          "time": "07:05",
+          "display": "7:05 AM",
+          "mode": "silent"
+        },
+        "extraRows": [
+          {
+            "key": "Midnight",
+            "name": "Islamic Midnight",
+            "time": "00:40",
+            "display": "12:40 AM",
+            "mode": "notification"
+          },
+          {
+            "key": "Lastthird",
+            "name": "Last Third",
+            "time": "02:55",
+            "display": "2:55 AM",
+            "mode": "notification"
+          },
+          {
+            "key": "Firstthird",
+            "name": "First Third",
+            "time": "00:05",
+            "display": "12:05 AM",
+            "mode": "notification"
+          }
+        ],
+        "days": [
+          {
+            "dateKey": "2026-04-09",
+            "hijriLabel": "Hijri 2026-04-09",
+            "rows": [
+              {
+                "key": "Fajr",
+                "name": "Fajr",
+                "time": "05:12",
+                "display": "5:12 AM",
+                "mode": "adhan"
+              },
+              {
+                "key": "Dhuhr",
+                "name": "Dhuhr",
+                "time": "12:32",
+                "display": "12:32 PM",
+                "mode": "notification"
+              },
+              {
+                "key": "Asr",
+                "name": "Asr",
+                "time": "15:50",
+                "display": "3:50 PM",
+                "mode": "notification"
+              },
+              {
+                "key": "Maghrib",
+                "name": "Maghrib",
+                "time": "18:35",
+                "display": "6:35 PM",
+                "mode": "adhan"
+              },
+              {
+                "key": "Isha",
+                "name": "Isha",
+                "time": "20:15",
+                "display": "8:15 PM",
+                "mode": "notification"
+              }
+            ],
+            "sunriseRow": {
+              "key": "Sunrise",
+              "name": "Sunrise",
+              "time": "07:05",
+              "display": "7:05 AM",
+              "mode": "silent"
+            },
+            "extraRows": [
+              {
+                "key": "Midnight",
+                "name": "Islamic Midnight",
+                "time": "00:40",
+                "display": "12:40 AM",
+                "mode": "notification"
+              },
+              {
+                "key": "Lastthird",
+                "name": "Last Third",
+                "time": "02:55",
+                "display": "2:55 AM",
+                "mode": "notification"
+              },
+              {
+                "key": "Firstthird",
+                "name": "First Third",
+                "time": "00:05",
+                "display": "12:05 AM",
+                "mode": "notification"
+              }
+            ]
+          },
+          {
+            "dateKey": "2026-04-10",
+            "hijriLabel": "Hijri 2026-04-10",
+            "rows": [
+              {
+                "key": "Fajr",
+                "name": "Fajr",
+                "time": "05:14",
+                "display": "5:14 AM",
+                "mode": "adhan"
+              },
+              {
+                "key": "Dhuhr",
+                "name": "Dhuhr",
+                "time": "12:34",
+                "display": "12:34 PM",
+                "mode": "notification"
+              },
+              {
+                "key": "Asr",
+                "name": "Asr",
+                "time": "15:52",
+                "display": "3:52 PM",
+                "mode": "notification"
+              },
+              {
+                "key": "Maghrib",
+                "name": "Maghrib",
+                "time": "18:37",
+                "display": "6:37 PM",
+                "mode": "adhan"
+              },
+              {
+                "key": "Isha",
+                "name": "Isha",
+                "time": "20:17",
+                "display": "8:17 PM",
+                "mode": "notification"
+              }
+            ],
+            "sunriseRow": {
+              "key": "Sunrise",
+              "name": "Sunrise",
+              "time": "07:07",
+              "display": "7:07 AM",
+              "mode": "silent"
+            },
+            "extraRows": [
+              {
+                "key": "Midnight",
+                "name": "Islamic Midnight",
+                "time": "00:42",
+                "display": "12:42 AM",
+                "mode": "notification"
+              },
+              {
+                "key": "Lastthird",
+                "name": "Last Third",
+                "time": "02:57",
+                "display": "2:57 AM",
+                "mode": "notification"
+              },
+              {
+                "key": "Firstthird",
+                "name": "First Third",
+                "time": "00:07",
+                "display": "12:07 AM",
+                "mode": "notification"
+              }
+            ]
+          },
+          {
+            "dateKey": "2026-04-11",
+            "hijriLabel": "Hijri 2026-04-11",
+            "rows": [
+              {
+                "key": "Fajr",
+                "name": "Fajr",
+                "time": "05:16",
+                "display": "5:16 AM",
+                "mode": "adhan"
+              },
+              {
+                "key": "Dhuhr",
+                "name": "Dhuhr",
+                "time": "12:36",
+                "display": "12:36 PM",
+                "mode": "notification"
+              },
+              {
+                "key": "Asr",
+                "name": "Asr",
+                "time": "15:54",
+                "display": "3:54 PM",
+                "mode": "notification"
+              },
+              {
+                "key": "Maghrib",
+                "name": "Maghrib",
+                "time": "18:39",
+                "display": "6:39 PM",
+                "mode": "adhan"
+              },
+              {
+                "key": "Isha",
+                "name": "Isha",
+                "time": "20:19",
+                "display": "8:19 PM",
+                "mode": "notification"
+              }
+            ],
+            "sunriseRow": {
+              "key": "Sunrise",
+              "name": "Sunrise",
+              "time": "07:09",
+              "display": "7:09 AM",
+              "mode": "silent"
+            },
+            "extraRows": [
+              {
+                "key": "Midnight",
+                "name": "Islamic Midnight",
+                "time": "00:44",
+                "display": "12:44 AM",
+                "mode": "notification"
+              },
+              {
+                "key": "Lastthird",
+                "name": "Last Third",
+                "time": "02:59",
+                "display": "2:59 AM",
+                "mode": "notification"
+              },
+              {
+                "key": "Firstthird",
+                "name": "First Third",
+                "time": "00:09",
+                "display": "12:09 AM",
+                "mode": "notification"
+              }
+            ]
+          }
+        ],
+        "hijriLabel": "Hijri 2026-04-09",
+        "showHijri": true,
+        "accentHex": "#5B4B9E",
+        "systemAccent": false,
+        "tinted": true,
+        "design": "timeline",
+        "secondMetric": "time",
+        "alertActionEnabled": true,
+        "aodActionEnabled": true,
+        "adhanChannelId": "adhan-makkah-alarm",
+        "adhanSoundId": "makkah",
+        "defaultChannelId": "prayer-times-default",
+        "fgsText": "Prayer countdown active",
+        "alertLabelAdhan": "Adhan",
+        "alertLabelNotification": "Alert",
+        "alertLabelSilent": "Silent",
+        "alertOnceWord": "once",
+        "aodHideLabel": "Hide on lock screen",
+        "aodShowLabel": "Show on lock screen",
+        "nowWord": "Now",
+        "inWord": "In",
+        "atWord": "At",
+        "atPrayerBody": "Prayer time"
+      }
+    },
+    {
+      "name": "late evening, the First Third after midnight is next",
+      "now": {
+        "todayKey": "2026-04-09",
+        "nowMinutes": 1430
+      },
+      "zone": "UTC",
+      "input": "{\"schemaVersion\":2,\"language\":\"en\",\"clock\":{\"hour12\":false},\"days\":[{\"dateKey\":\"2026-04-09\",\"utcOffsetMinutes\":120,\"label\":\"Thu, Apr 9\",\"prayers\":[{\"key\":\"Fajr\",\"name\":\"Fajr\",\"abbr\":\"Fajr\",\"minutes\":312},{\"key\":\"Dhuhr\",\"name\":\"Dhuhr\",\"abbr\":\"Dhuhr\",\"minutes\":752},{\"key\":\"Asr\",\"name\":\"Asr\",\"abbr\":\"Asr\",\"minutes\":950},{\"key\":\"Maghrib\",\"name\":\"Maghrib\",\"abbr\":\"Magh\",\"minutes\":1115},{\"key\":\"Isha\",\"name\":\"Isha\",\"abbr\":\"Isha\",\"minutes\":1215}],\"sunrise\":{\"key\":\"Sunrise\",\"name\":\"Sunrise\",\"abbr\":\"Sun\",\"minutes\":425},\"extras\":[{\"key\":\"Midnight\",\"name\":\"Islamic Midnight\",\"abbr\":\"Mid\",\"minutes\":40},{\"key\":\"Lastthird\",\"name\":\"Last Third\",\"abbr\":\"Qiyam\",\"minutes\":175},{\"key\":\"Firstthird\",\"name\":\"First Third\",\"abbr\":\"1/3\",\"minutes\":1445}]},{\"dateKey\":\"2026-04-10\",\"utcOffsetMinutes\":120,\"label\":\"Fri, Apr 10\",\"prayers\":[{\"key\":\"Fajr\",\"name\":\"Fajr\",\"abbr\":\"Fajr\",\"minutes\":314},{\"key\":\"Dhuhr\",\"name\":\"Dhuhr\",\"abbr\":\"Dhuhr\",\"minutes\":754},{\"key\":\"Asr\",\"name\":\"Asr\",\"abbr\":\"Asr\",\"minutes\":952},{\"key\":\"Maghrib\",\"name\":\"Maghrib\",\"abbr\":\"Magh\",\"minutes\":1117},{\"key\":\"Isha\",\"name\":\"Isha\",\"abbr\":\"Isha\",\"minutes\":1217}],\"sunrise\":{\"key\":\"Sunrise\",\"name\":\"Sunrise\",\"abbr\":\"Sun\",\"minutes\":427},\"extras\":[{\"key\":\"Midnight\",\"name\":\"Islamic Midnight\",\"abbr\":\"Mid\",\"minutes\":42},{\"key\":\"Lastthird\",\"name\":\"Last Third\",\"abbr\":\"Qiyam\",\"minutes\":177},{\"key\":\"Firstthird\",\"name\":\"First Third\",\"abbr\":\"1/3\",\"minutes\":1447}]}],\"hijri\":[{\"dateKey\":\"2026-04-09\",\"text\":\"Hijri 2026-04-09\"},{\"dateKey\":\"2026-04-10\",\"text\":\"Hijri 2026-04-10\"}],\"alertModes\":[{\"key\":\"Fajr\",\"mode\":\"adhan\"},{\"key\":\"Sunrise\",\"mode\":\"silent\"},{\"key\":\"Maghrib\",\"mode\":\"adhan\"}],\"appearance\":{\"accentHex\":\"#5B4B9E\",\"systemTinted\":false,\"systemAccent\":true,\"tinted\":false,\"design\":\"countdown\"},\"android\":{\"alertActionEnabled\":true,\"aodActionEnabled\":false,\"adhanChannelId\":\"adhan-makkah-alarm\",\"adhanSoundId\":\"makkah\",\"defaultChannelId\":\"prayer-times-default\"},\"words\":{\"fgsText\":\"Prayer countdown active\",\"alertLabelAdhan\":\"Adhan\",\"alertLabelNotification\":\"Alert\",\"alertLabelSilent\":\"Silent\",\"alertOnceWord\":\"once\",\"aodHideLabel\":\"Hide on lock screen\",\"aodShowLabel\":\"Show on lock screen\",\"nowWord\":\"Now\",\"inWord\":\"In\",\"atWord\":\"At\",\"atPrayerBody\":\"Prayer time\"}}",
+      "ios": {
+        "nextKey": "Firstthird",
+        "nextLabel": "First Third",
+        "nextTime": "00:05",
+        "nextTimeDisplay": "00:05",
+        "nextEpochSeconds": 1775779500,
+        "prevEpochSeconds": 1775765700,
+        "rows": [
+          {
+            "key": "Fajr",
+            "abbr": "Fajr",
+            "name": "Fajr",
+            "time": "05:12",
+            "display": "05:12"
+          },
+          {
+            "key": "Dhuhr",
+            "abbr": "Dhuhr",
+            "name": "Dhuhr",
+            "time": "12:32",
+            "display": "12:32"
+          },
+          {
+            "key": "Asr",
+            "abbr": "Asr",
+            "name": "Asr",
+            "time": "15:50",
+            "display": "15:50"
+          },
+          {
+            "key": "Maghrib",
+            "abbr": "Magh",
+            "name": "Maghrib",
+            "time": "18:35",
+            "display": "18:35"
+          },
+          {
+            "key": "Isha",
+            "abbr": "Isha",
+            "name": "Isha",
+            "time": "20:15",
+            "display": "20:15"
+          }
+        ],
+        "sunriseRow": {
+          "key": "Sunrise",
+          "abbr": "Sun",
+          "name": "Sunrise",
+          "time": "07:05",
+          "display": "07:05"
+        },
+        "extraRows": [
+          {
+            "key": "Midnight",
+            "abbr": "Mid",
+            "name": "Islamic Midnight",
+            "time": "00:40",
+            "display": "00:40"
+          },
+          {
+            "key": "Lastthird",
+            "abbr": "Qiyam",
+            "name": "Last Third",
+            "time": "02:55",
+            "display": "02:55"
+          },
+          {
+            "key": "Firstthird",
+            "abbr": "1/3",
+            "name": "First Third",
+            "time": "00:05",
+            "display": "00:05"
+          }
+        ],
+        "accentHex": "#5B4B9E",
+        "systemTinted": false,
+        "tinted": false
+      },
+      "android": {
+        "nextKey": "Firstthird",
+        "nextLabel": "First Third",
+        "nextTime": "00:05",
+        "nextTimeDisplay": "00:05",
+        "nextEpochMs": 1775779500000,
+        "prevEpochMs": 1775765700000,
+        "title": "First Third · 00:05",
+        "rows": [
+          {
+            "key": "Fajr",
+            "name": "Fajr",
+            "time": "05:12",
+            "mode": "adhan"
+          },
+          {
+            "key": "Dhuhr",
+            "name": "Dhuhr",
+            "time": "12:32",
+            "mode": "notification"
+          },
+          {
+            "key": "Asr",
+            "name": "Asr",
+            "time": "15:50",
+            "mode": "notification"
+          },
+          {
+            "key": "Maghrib",
+            "name": "Maghrib",
+            "time": "18:35",
+            "mode": "adhan"
+          },
+          {
+            "key": "Isha",
+            "name": "Isha",
+            "time": "20:15",
+            "mode": "notification"
+          }
+        ],
+        "sunriseRow": {
+          "key": "Sunrise",
+          "name": "Sunrise",
+          "time": "07:05",
+          "mode": "silent"
+        },
+        "extraRows": [
+          {
+            "key": "Midnight",
+            "name": "Islamic Midnight",
+            "time": "00:40",
+            "mode": "notification"
+          },
+          {
+            "key": "Lastthird",
+            "name": "Last Third",
+            "time": "02:55",
+            "mode": "notification"
+          },
+          {
+            "key": "Firstthird",
+            "name": "First Third",
+            "time": "00:05",
+            "mode": "notification"
+          }
+        ],
+        "days": [
+          {
+            "dateKey": "2026-04-09",
+            "hijriLabel": "Hijri 2026-04-09",
+            "rows": [
+              {
+                "key": "Fajr",
+                "name": "Fajr",
+                "time": "05:12",
+                "mode": "adhan"
+              },
+              {
+                "key": "Dhuhr",
+                "name": "Dhuhr",
+                "time": "12:32",
+                "mode": "notification"
+              },
+              {
+                "key": "Asr",
+                "name": "Asr",
+                "time": "15:50",
+                "mode": "notification"
+              },
+              {
+                "key": "Maghrib",
+                "name": "Maghrib",
+                "time": "18:35",
+                "mode": "adhan"
+              },
+              {
+                "key": "Isha",
+                "name": "Isha",
+                "time": "20:15",
+                "mode": "notification"
+              }
+            ],
+            "sunriseRow": {
+              "key": "Sunrise",
+              "name": "Sunrise",
+              "time": "07:05",
+              "mode": "silent"
+            },
+            "extraRows": [
+              {
+                "key": "Midnight",
+                "name": "Islamic Midnight",
+                "time": "00:40",
+                "mode": "notification"
+              },
+              {
+                "key": "Lastthird",
+                "name": "Last Third",
+                "time": "02:55",
+                "mode": "notification"
+              },
+              {
+                "key": "Firstthird",
+                "name": "First Third",
+                "time": "00:05",
+                "mode": "notification"
+              }
+            ]
+          },
+          {
+            "dateKey": "2026-04-10",
+            "hijriLabel": "Hijri 2026-04-10",
+            "rows": [
+              {
+                "key": "Fajr",
+                "name": "Fajr",
+                "time": "05:14",
+                "mode": "adhan"
+              },
+              {
+                "key": "Dhuhr",
+                "name": "Dhuhr",
+                "time": "12:34",
+                "mode": "notification"
+              },
+              {
+                "key": "Asr",
+                "name": "Asr",
+                "time": "15:52",
+                "mode": "notification"
+              },
+              {
+                "key": "Maghrib",
+                "name": "Maghrib",
+                "time": "18:37",
+                "mode": "adhan"
+              },
+              {
+                "key": "Isha",
+                "name": "Isha",
+                "time": "20:17",
+                "mode": "notification"
+              }
+            ],
+            "sunriseRow": {
+              "key": "Sunrise",
+              "name": "Sunrise",
+              "time": "07:07",
+              "mode": "silent"
+            },
+            "extraRows": [
+              {
+                "key": "Midnight",
+                "name": "Islamic Midnight",
+                "time": "00:42",
+                "mode": "notification"
+              },
+              {
+                "key": "Lastthird",
+                "name": "Last Third",
+                "time": "02:57",
+                "mode": "notification"
+              },
+              {
+                "key": "Firstthird",
+                "name": "First Third",
+                "time": "00:07",
+                "mode": "notification"
+              }
+            ]
+          }
+        ],
+        "hijriLabel": "Hijri 2026-04-10",
+        "showHijri": true,
+        "accentHex": "#5B4B9E",
+        "systemAccent": true,
+        "tinted": false,
+        "design": "countdown",
+        "secondMetric": "time",
+        "alertActionEnabled": true,
+        "aodActionEnabled": false,
+        "adhanChannelId": "adhan-makkah-alarm",
+        "adhanSoundId": "makkah",
+        "defaultChannelId": "prayer-times-default",
+        "fgsText": "Prayer countdown active",
+        "alertLabelAdhan": "Adhan",
+        "alertLabelNotification": "Alert",
+        "alertLabelSilent": "Silent",
+        "alertOnceWord": "once",
+        "aodHideLabel": "Hide on lock screen",
+        "aodShowLabel": "Show on lock screen",
+        "nowWord": "Now",
+        "inWord": "In",
+        "atWord": "At",
+        "atPrayerBody": "Prayer time"
+      }
+    },
+    {
+      "name": "ʿIshāʾ does not occur here",
+      "now": {
+        "todayKey": "2026-04-09",
+        "nowMinutes": 1260
+      },
+      "zone": "UTC",
+      "input": "{\"schemaVersion\":2,\"language\":\"en\",\"clock\":{\"hour12\":false},\"days\":[{\"dateKey\":\"2026-04-09\",\"utcOffsetMinutes\":120,\"label\":\"Thu, Apr 9\",\"prayers\":[{\"key\":\"Fajr\",\"name\":\"Fajr\",\"abbr\":\"Fajr\",\"minutes\":312},{\"key\":\"Dhuhr\",\"name\":\"Dhuhr\",\"abbr\":\"Dhuhr\",\"minutes\":752},{\"key\":\"Asr\",\"name\":\"Asr\",\"abbr\":\"Asr\",\"minutes\":950},{\"key\":\"Maghrib\",\"name\":\"Maghrib\",\"abbr\":\"Magh\",\"minutes\":1115},{\"key\":\"Isha\",\"name\":\"Isha\",\"abbr\":\"Isha\"}],\"sunrise\":{\"key\":\"Sunrise\",\"name\":\"Sunrise\",\"abbr\":\"Sun\",\"minutes\":425}},{\"dateKey\":\"2026-04-10\",\"utcOffsetMinutes\":120,\"label\":\"Fri, Apr 10\",\"prayers\":[{\"key\":\"Fajr\",\"name\":\"Fajr\",\"abbr\":\"Fajr\",\"minutes\":314},{\"key\":\"Dhuhr\",\"name\":\"Dhuhr\",\"abbr\":\"Dhuhr\",\"minutes\":754},{\"key\":\"Asr\",\"name\":\"Asr\",\"abbr\":\"Asr\",\"minutes\":952},{\"key\":\"Maghrib\",\"name\":\"Maghrib\",\"abbr\":\"Magh\",\"minutes\":1117},{\"key\":\"Isha\",\"name\":\"Isha\",\"abbr\":\"Isha\"}],\"sunrise\":{\"key\":\"Sunrise\",\"name\":\"Sunrise\",\"abbr\":\"Sun\",\"minutes\":427}}],\"hijri\":[{\"dateKey\":\"2026-04-09\",\"text\":\"Hijri 2026-04-09\"},{\"dateKey\":\"2026-04-10\",\"text\":\"Hijri 2026-04-10\"}],\"alertModes\":[{\"key\":\"Fajr\",\"mode\":\"adhan\"},{\"key\":\"Sunrise\",\"mode\":\"silent\"},{\"key\":\"Maghrib\",\"mode\":\"adhan\"}],\"appearance\":{\"accentHex\":\"#5B4B9E\",\"systemTinted\":true,\"systemAccent\":false,\"tinted\":false,\"design\":\"markers\"},\"android\":{\"alertActionEnabled\":true,\"aodActionEnabled\":true,\"adhanChannelId\":\"adhan-makkah-alarm\",\"adhanSoundId\":\"makkah\",\"defaultChannelId\":\"prayer-times-default\"},\"words\":{\"fgsText\":\"Prayer countdown active\",\"alertLabelAdhan\":\"Adhan\",\"alertLabelNotification\":\"Alert\",\"alertLabelSilent\":\"Silent\",\"alertOnceWord\":\"once\",\"aodHideLabel\":\"Hide on lock screen\",\"aodShowLabel\":\"Show on lock screen\",\"nowWord\":\"Now\",\"inWord\":\"In\",\"atWord\":\"At\",\"atPrayerBody\":\"Prayer time\"}}",
+      "ios": {
+        "nextKey": "Fajr",
+        "nextLabel": "Fajr",
+        "nextTime": "05:14",
+        "nextTimeDisplay": "05:14",
+        "nextEpochSeconds": 1775798040,
+        "prevEpochSeconds": 1775759700,
+        "rows": [
+          {
+            "key": "Fajr",
+            "abbr": "Fajr",
+            "name": "Fajr",
+            "time": "05:14",
+            "display": "05:14"
+          },
+          {
+            "key": "Dhuhr",
+            "abbr": "Dhuhr",
+            "name": "Dhuhr",
+            "time": "12:34",
+            "display": "12:34"
+          },
+          {
+            "key": "Asr",
+            "abbr": "Asr",
+            "name": "Asr",
+            "time": "15:52",
+            "display": "15:52"
+          },
+          {
+            "key": "Maghrib",
+            "abbr": "Magh",
+            "name": "Maghrib",
+            "time": "18:37",
+            "display": "18:37"
+          },
+          {
+            "key": "Isha",
+            "abbr": "Isha",
+            "name": "Isha",
+            "time": "—",
+            "display": "—"
+          }
+        ],
+        "sunriseRow": {
+          "key": "Sunrise",
+          "abbr": "Sun",
+          "name": "Sunrise",
+          "time": "07:07",
+          "display": "07:07"
+        },
+        "extraRows": [],
+        "accentHex": "#5B4B9E",
+        "systemTinted": true,
+        "tinted": false
+      },
+      "android": {
+        "nextKey": "Fajr",
+        "nextLabel": "Fajr",
+        "nextTime": "05:14",
+        "nextTimeDisplay": "05:14",
+        "nextEpochMs": 1775798040000,
+        "prevEpochMs": 1775759700000,
+        "title": "Fajr · 05:14",
+        "rows": [
+          {
+            "key": "Fajr",
+            "name": "Fajr",
+            "time": "05:14",
+            "mode": "adhan"
+          },
+          {
+            "key": "Dhuhr",
+            "name": "Dhuhr",
+            "time": "12:34",
+            "mode": "notification"
+          },
+          {
+            "key": "Asr",
+            "name": "Asr",
+            "time": "15:52",
+            "mode": "notification"
+          },
+          {
+            "key": "Maghrib",
+            "name": "Maghrib",
+            "time": "18:37",
+            "mode": "adhan"
+          },
+          {
+            "key": "Isha",
+            "name": "Isha",
+            "time": "—",
+            "mode": "notification"
+          }
+        ],
+        "sunriseRow": {
+          "key": "Sunrise",
+          "name": "Sunrise",
+          "time": "07:07",
+          "mode": "silent"
+        },
+        "extraRows": [],
+        "days": [
+          {
+            "dateKey": "2026-04-09",
+            "hijriLabel": "Hijri 2026-04-09",
+            "rows": [
+              {
+                "key": "Fajr",
+                "name": "Fajr",
+                "time": "05:12",
+                "mode": "adhan"
+              },
+              {
+                "key": "Dhuhr",
+                "name": "Dhuhr",
+                "time": "12:32",
+                "mode": "notification"
+              },
+              {
+                "key": "Asr",
+                "name": "Asr",
+                "time": "15:50",
+                "mode": "notification"
+              },
+              {
+                "key": "Maghrib",
+                "name": "Maghrib",
+                "time": "18:35",
+                "mode": "adhan"
+              },
+              {
+                "key": "Isha",
+                "name": "Isha",
+                "time": "—",
+                "mode": "notification"
+              }
+            ],
+            "sunriseRow": {
+              "key": "Sunrise",
+              "name": "Sunrise",
+              "time": "07:05",
+              "mode": "silent"
+            },
+            "extraRows": []
+          },
+          {
+            "dateKey": "2026-04-10",
+            "hijriLabel": "Hijri 2026-04-10",
+            "rows": [
+              {
+                "key": "Fajr",
+                "name": "Fajr",
+                "time": "05:14",
+                "mode": "adhan"
+              },
+              {
+                "key": "Dhuhr",
+                "name": "Dhuhr",
+                "time": "12:34",
+                "mode": "notification"
+              },
+              {
+                "key": "Asr",
+                "name": "Asr",
+                "time": "15:52",
+                "mode": "notification"
+              },
+              {
+                "key": "Maghrib",
+                "name": "Maghrib",
+                "time": "18:37",
+                "mode": "adhan"
+              },
+              {
+                "key": "Isha",
+                "name": "Isha",
+                "time": "—",
+                "mode": "notification"
+              }
+            ],
+            "sunriseRow": {
+              "key": "Sunrise",
+              "name": "Sunrise",
+              "time": "07:07",
+              "mode": "silent"
+            },
+            "extraRows": []
+          }
+        ],
+        "hijriLabel": "Hijri 2026-04-10",
+        "showHijri": true,
+        "accentHex": "#5B4B9E",
+        "systemAccent": false,
+        "tinted": false,
+        "design": "markers",
+        "secondMetric": "time",
+        "alertActionEnabled": true,
+        "aodActionEnabled": true,
+        "adhanChannelId": "adhan-makkah-alarm",
+        "adhanSoundId": "makkah",
+        "defaultChannelId": "prayer-times-default",
+        "fgsText": "Prayer countdown active",
+        "alertLabelAdhan": "Adhan",
+        "alertLabelNotification": "Alert",
+        "alertLabelSilent": "Silent",
+        "alertOnceWord": "once",
+        "aodHideLabel": "Hide on lock screen",
+        "aodShowLabel": "Show on lock screen",
+        "nowWord": "Now",
+        "inWord": "In",
+        "atWord": "At",
+        "atPrayerBody": "Prayer time"
       }
     }
   ],

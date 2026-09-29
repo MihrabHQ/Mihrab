@@ -18,6 +18,13 @@ export type WidgetContractPrayerStatus =
 
 export type WidgetContractReaderMode = 'mushaf' | 'translation';
 
+export type WidgetContractAlertModeKind = 'adhan' | 'notification' | 'silent';
+
+export type WidgetContractLiveActivityDesign =
+  | 'timeline'
+  | 'countdown'
+  | 'markers';
+
 export type WidgetContractTasbihAction = 'inc' | 'reset' | 'next';
 
 /**
@@ -272,6 +279,109 @@ export type WidgetContractTasbih = {
   /** Beads counted today, across presets. */
   todayTotal?: number;
   todayRounds?: number;
+};
+
+/**
+ * What a Live Activity draws — the iOS Lock Screen card and Dynamic Island,
+ * and the Android pinned notification — as one payload built once for both
+ * (docs/rewrite-plan.md, step 1.5). Before it there were two, built in two
+ * places, with the next prayer as an instant in seconds on one and
+ * milliseconds on the other. Times are wall clock, as the widgets' are; each
+ * native works out "next" and "previous" for the minute it draws at.
+ */
+export type WidgetContractLiveActivity = {
+  /** Always 2 for this shape. */
+  schemaVersion: number;
+  /** The app's language tag. */
+  language?: string;
+  /** How to write a time. */
+  clock?: WidgetContractClock;
+  /**
+   * The widget payload's days, today first, each row carrying its localised
+   * full name.
+   */
+  days: WidgetContractDay[];
+  /**
+   * The Hijri date of each day, localised. Android heads the notification
+   * with the one the next prayer falls on.
+   */
+  hijri?: WidgetContractDayText[];
+  /**
+   * What each prayer's alert does, for the Android lock-screen alert button.
+   */
+  alertModes?: WidgetContractAlertMode[];
+  /** Accent and style. */
+  appearance?: WidgetContractLiveActivityAppearance;
+  /** What only the Android notification needs. */
+  android?: WidgetContractLiveActivityAndroid;
+  /**
+   * Words the Android notification draws, in the app language — the thirteen
+   * locales live in the app.
+   */
+  words?: WidgetContractLiveActivityWords;
+};
+
+/** A line of text that belongs to one day. */
+export type WidgetContractDayText = {
+  /** Local YYYY-MM-DD. */
+  dateKey: string;
+  text?: string;
+};
+
+/** What one prayer does when its time comes. */
+export type WidgetContractAlertMode = {
+  /** Row key. */
+  key: string;
+  /** As Settings → Notifications shows it. */
+  mode: WidgetContractAlertModeKind;
+};
+
+/** How the Live Activity is tinted and laid out. */
+export type WidgetContractLiveActivityAppearance = {
+  /** The app accent's light swatch, #RRGGBB. */
+  accentHex?: string;
+  /** iOS: follow the system tint (Liquid Glass) instead of the accent. */
+  systemTinted?: boolean;
+  /**
+   * Android: follow the Material You accent, re-read natively on each repost.
+   */
+  systemAccent?: boolean;
+  /** "Tinted surfaces": the accent becomes the card's background. */
+  tinted?: boolean;
+  /** Android: which of the three layouts. */
+  design?: WidgetContractLiveActivityDesign;
+};
+
+/** The Android notification's own settings. */
+export type WidgetContractLiveActivityAndroid = {
+  /** Offer the button that changes the next alert once. */
+  alertActionEnabled?: boolean;
+  /** Offer the hide/show-on-lock-screen button. */
+  aodActionEnabled?: boolean;
+  /** The notification channel an adhan alert posts to. */
+  adhanChannelId?: string;
+  /** The adhan chosen. */
+  adhanSoundId?: string;
+  /** The channel a plain alert posts to. */
+  defaultChannelId?: string;
+};
+
+/** Localised words for the Android notification. */
+export type WidgetContractLiveActivityWords = {
+  /** The foreground service line. */
+  fgsText?: string;
+  alertLabelAdhan?: string;
+  alertLabelNotification?: string;
+  alertLabelSilent?: string;
+  /** "once", after a changed alert. */
+  alertOnceWord?: string;
+  aodHideLabel?: string;
+  aodShowLabel?: string;
+  nowWord?: string;
+  inWord?: string;
+  atWord?: string;
+  /** The body of the alert the button posts. */
+  atPrayerBody?: string;
 };
 
 /**
@@ -566,6 +676,126 @@ export function readWidgetContractTasbih(
     unboundedFlags: wcList(input.unboundedFlags, x => wcBool(x)) ?? [],
     todayTotal: wcInt(input.todayTotal) ?? 0,
     todayRounds: wcInt(input.todayRounds) ?? 0,
+  };
+  return out;
+}
+
+export function readWidgetContractLiveActivity(
+  input: unknown,
+): WidgetContractLiveActivity | null {
+  if (!wcIsObject(input)) return null;
+  const schemaVersionRead = wcInt(input.schemaVersion);
+  if (schemaVersionRead == null) return null;
+  const daysRead = wcList(input.days, x => readWidgetContractDay(x));
+  if (daysRead == null) return null;
+  const out: WidgetContractLiveActivity = {
+    schemaVersion: schemaVersionRead,
+    language: wcString(input.language) ?? '',
+    clock:
+      readWidgetContractClock(input.clock) ??
+      (readWidgetContractClock({}) as WidgetContractClock),
+    days: daysRead,
+    hijri: wcList(input.hijri, x => readWidgetContractDayText(x)) ?? [],
+    alertModes:
+      wcList(input.alertModes, x => readWidgetContractAlertMode(x)) ?? [],
+    appearance:
+      readWidgetContractLiveActivityAppearance(input.appearance) ??
+      (readWidgetContractLiveActivityAppearance(
+        {},
+      ) as WidgetContractLiveActivityAppearance),
+    android:
+      readWidgetContractLiveActivityAndroid(input.android) ??
+      (readWidgetContractLiveActivityAndroid(
+        {},
+      ) as WidgetContractLiveActivityAndroid),
+    words:
+      readWidgetContractLiveActivityWords(input.words) ??
+      (readWidgetContractLiveActivityWords(
+        {},
+      ) as WidgetContractLiveActivityWords),
+  };
+  return out;
+}
+
+export function readWidgetContractDayText(
+  input: unknown,
+): WidgetContractDayText | null {
+  if (!wcIsObject(input)) return null;
+  const dateKeyRead = wcString(input.dateKey);
+  if (dateKeyRead == null) return null;
+  const out: WidgetContractDayText = {
+    dateKey: dateKeyRead,
+    text: wcString(input.text) ?? '',
+  };
+  return out;
+}
+
+export function readWidgetContractAlertMode(
+  input: unknown,
+): WidgetContractAlertMode | null {
+  if (!wcIsObject(input)) return null;
+  const keyRead = wcString(input.key);
+  if (keyRead == null) return null;
+  const modeRead = wcEnum(input.mode, [
+    'adhan',
+    'notification',
+    'silent',
+  ] as const);
+  if (modeRead == null) return null;
+  const out: WidgetContractAlertMode = {
+    key: keyRead,
+    mode: modeRead,
+  };
+  return out;
+}
+
+export function readWidgetContractLiveActivityAppearance(
+  input: unknown,
+): WidgetContractLiveActivityAppearance | null {
+  if (!wcIsObject(input)) return null;
+  const out: WidgetContractLiveActivityAppearance = {
+    accentHex: wcString(input.accentHex) ?? '#22c55e',
+    systemTinted: wcBool(input.systemTinted) ?? false,
+    systemAccent: wcBool(input.systemAccent) ?? false,
+    tinted: wcBool(input.tinted) ?? false,
+    design:
+      wcEnum(input.design, ['timeline', 'countdown', 'markers'] as const) ??
+      'timeline',
+  };
+  return out;
+}
+
+export function readWidgetContractLiveActivityAndroid(
+  input: unknown,
+): WidgetContractLiveActivityAndroid | null {
+  if (!wcIsObject(input)) return null;
+  const out: WidgetContractLiveActivityAndroid = {
+    alertActionEnabled: wcBool(input.alertActionEnabled) ?? false,
+    aodActionEnabled: wcBool(input.aodActionEnabled) ?? true,
+    adhanChannelId: wcString(input.adhanChannelId) ?? 'prayer-times-default',
+    adhanSoundId: wcString(input.adhanSoundId) ?? 'default',
+    defaultChannelId:
+      wcString(input.defaultChannelId) ?? 'prayer-times-default',
+  };
+  return out;
+}
+
+export function readWidgetContractLiveActivityWords(
+  input: unknown,
+): WidgetContractLiveActivityWords | null {
+  if (!wcIsObject(input)) return null;
+  const out: WidgetContractLiveActivityWords = {
+    fgsText: wcString(input.fgsText) ?? '',
+    alertLabelAdhan: wcString(input.alertLabelAdhan) ?? '',
+    alertLabelNotification: wcString(input.alertLabelNotification) ?? '',
+    alertLabelSilent: wcString(input.alertLabelSilent) ?? '',
+    alertOnceWord: wcString(input.alertOnceWord) ?? '',
+    aodHideLabel: wcString(input.aodHideLabel) ?? '',
+    aodShowLabel: wcString(input.aodShowLabel) ?? '',
+    nowWord: wcString(input.nowWord) ?? '',
+    inWord: wcString(input.inWord) ?? '',
+    atWord: wcString(input.atWord) ?? '',
+    atPrayerBody: wcString(input.atPrayerBody) ?? '',
   };
   return out;
 }

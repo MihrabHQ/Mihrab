@@ -19,17 +19,27 @@
 import Foundation
 
 enum WidgetPayloadV1 {
-  private struct Event {
+  /// A time on a day, placed `at` minutes from today's midnight.
+  struct Event {
     let row: WidgetContract.Row
     let at: Int
   }
 
-  /// The v1 payload as a JSON object, or nil when there are no days to draw from.
-  static func object(from p: WidgetContract.Payload, todayKey: String, nowMinutes: Int) -> [String: Any]? {
-    let days = p.days
-    guard !days.isEmpty else { return nil }
-    let clock = p.clock
+  /// Where the days stand at a moment — `widgetMoment` in widgetPayloadV2.ts,
+  /// shared by this adapter and the Live Activity's (LiveActivityV1.swift).
+  struct Moment {
+    let today: WidgetContract.Day
+    let tomorrow: WidgetContract.Day?
+    let shown: WidgetContract.Day
+    /// Minutes since today's midnight; -1 when "today" is a later day.
+    let now: Int
+    let next: Event?
+  }
 
+  /// Today, the day shown and the next time, at `todayKey` + `nowMinutes`.
+  /// Nil when there are no days.
+  static func moment(_ days: [WidgetContract.Day], todayKey: String, nowMinutes: Int) -> Moment? {
+    guard !days.isEmpty else { return nil }
     var todayIndex = days.firstIndex { $0.dateKey == todayKey }
     var now = nowMinutes
     if todayIndex == nil {
@@ -56,6 +66,27 @@ enum WidgetPayloadV1 {
     } else {
       next = earliest(ahead + (tomorrow.map { events(of: $0, offset: 1440) } ?? []))
     }
+    return Moment(today: today, tomorrow: tomorrow, shown: shown, now: now, next: next)
+  }
+
+  /// The time most recently passed — today's, and one still ahead taken as
+  /// yesterday's (`at` - 1440). `widgetPrevious` in widgetPayloadV2.ts.
+  static func previous(_ m: Moment) -> Event? {
+    var best: Event?
+    for e in events(of: m.today, offset: 0) {
+      let at = e.at > m.now ? e.at - WallClock.minutesPerDay : e.at
+      if at <= m.now && (best == nil || at > best!.at) { best = Event(row: e.row, at: at) }
+    }
+    return best
+  }
+
+  /// The v1 payload as a JSON object, or nil when there are no days to draw from.
+  static func object(from p: WidgetContract.Payload, todayKey: String, nowMinutes: Int) -> [String: Any]? {
+    let days = p.days
+    guard let m = moment(days, todayKey: todayKey, nowMinutes: nowMinutes) else { return nil }
+    let clock = p.clock
+    let shown = m.shown
+    let next = m.next
 
     var out: [String: Any] = ["dayLabel": shown.label]
     putRows(&out, shown, clock)
@@ -200,13 +231,13 @@ enum WidgetPayloadV1 {
   }
 
   /// Canonical 24-hour "HH:mm", as v1 carried every time.
-  private static func hhmm(_ minutes: Int) -> String {
+  static func hhmm(_ minutes: Int) -> String {
     let m = ((minutes % WallClock.minutesPerDay) + WallClock.minutesPerDay) % WallClock.minutesPerDay
     return String(format: "%02d:%02d", m / 60, m % 60)
   }
 
   /// `time`, and `display` when it reads differently — the v1 pair.
-  private static func timePair(_ minutes: Int, _ clock: WidgetContract.Clock) -> (time: String, display: String?) {
+  static func timePair(_ minutes: Int, _ clock: WidgetContract.Clock) -> (time: String, display: String?) {
     let time = hhmm(minutes)
     let display = WallClock.text(minutes, clock: clock)
     return (time, display == time ? nil : display)

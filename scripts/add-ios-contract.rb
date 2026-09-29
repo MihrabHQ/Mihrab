@@ -6,7 +6,7 @@
 # Idempotent: a file already in a target is left alone.
 require 'xcodeproj'
 
-FILES = %w[WidgetContract.generated.swift WallClock.swift WidgetPayloadV1.swift].freeze
+FILES = %w[WidgetContract.generated.swift WallClock.swift WidgetPayloadV1.swift LiveActivityV1.swift].freeze
 TARGETS = %w[PrayerApp PrayerWidgetExtension MihrabLiveActivity].freeze
 
 project = Xcodeproj::Project.open(File.join(__dir__, '..', 'ios', 'PrayerApp.xcodeproj'))

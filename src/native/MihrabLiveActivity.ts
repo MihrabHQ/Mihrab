@@ -182,6 +182,12 @@ export type MihrabLiveActivityPayload = {
 
 export interface MihrabLiveActivityInterface {
   display(payloadJson: string): Promise<void>;
+  /**
+   * The shared Live Activity payload (the contract's `LiveActivity`,
+   * step 1.5), adapted natively to the minute it draws at and kept for the
+   * roll-forward. Optional: a JS bundle can outlive the native module.
+   */
+  displayV2?(liveActivityJson: string): Promise<void>;
   cancel(): Promise<void>;
   /** Forget the one-occurrence override and repaint the card without it.
    *  Optional: a JS bundle can outlive the native module that has it. */

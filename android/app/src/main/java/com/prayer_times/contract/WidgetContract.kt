@@ -61,6 +61,26 @@ object WidgetContract {
     }
   }
 
+  enum class AlertModeKind(val wire: String) {
+    ADHAN("adhan"),
+    NOTIFICATION("notification"),
+    SILENT("silent");
+
+    companion object {
+      fun fromWire(s: String?): AlertModeKind? = entries.firstOrNull { it.wire == s }
+    }
+  }
+
+  enum class LiveActivityDesign(val wire: String) {
+    TIMELINE("timeline"),
+    COUNTDOWN("countdown"),
+    MARKERS("markers");
+
+    companion object {
+      fun fromWire(s: String?): LiveActivityDesign? = entries.firstOrNull { it.wire == s }
+    }
+  }
+
   enum class TasbihAction(val wire: String) {
     INC("inc"),
     RESET("reset"),
@@ -744,6 +764,287 @@ object WidgetContract {
       }
 
       fun parse(json: String?): Tasbih? =
+        try {
+          if (json.isNullOrEmpty()) null else fromJson(JSONObject(json))
+        } catch (e: JSONException) {
+          null
+        }
+    }
+  }
+
+  /**
+   * What a Live Activity draws — the iOS Lock Screen card and Dynamic Island,
+   * and the Android pinned notification — as one payload built once for both
+   * (docs/rewrite-plan.md, step 1.5). Before it there were two, built in two
+   * places, with the next prayer as an instant in seconds on one and
+   * milliseconds on the other. Times are wall clock, as the widgets' are;
+   * each native works out "next" and "previous" for the minute it draws at.
+   */
+  data class LiveActivity(
+    /** Always 2 for this shape. */
+    val schemaVersion: Int,
+    /** The app's language tag. */
+    val language: String = "",
+    /** How to write a time. */
+    val clock: Clock = Clock(),
+    /**
+     * The widget payload's days, today first, each row carrying its localised
+     * full name.
+     */
+    val days: List<Day>,
+    /**
+     * The Hijri date of each day, localised. Android heads the notification
+     * with the one the next prayer falls on.
+     */
+    val hijri: List<DayText> = emptyList(),
+    /**
+     * What each prayer's alert does, for the Android lock-screen alert
+     * button.
+     */
+    val alertModes: List<AlertMode> = emptyList(),
+    /** Accent and style. */
+    val appearance: LiveActivityAppearance = LiveActivityAppearance(),
+    /** What only the Android notification needs. */
+    val android: LiveActivityAndroid = LiveActivityAndroid(),
+    /**
+     * Words the Android notification draws, in the app language — the
+     * thirteen locales live in the app.
+     */
+    val words: LiveActivityWords = LiveActivityWords(),
+  ) {
+    fun toJson(): JSONObject = JSONObject().apply {
+      put("schemaVersion", schemaVersion)
+      put("language", language)
+      put("clock", clock.toJson())
+      put("days", JSONArray().apply { days.forEach { put(it.toJson()) } })
+      put("hijri", JSONArray().apply { hijri.forEach { put(it.toJson()) } })
+      put("alertModes", JSONArray().apply { alertModes.forEach { put(it.toJson()) } })
+      put("appearance", appearance.toJson())
+      put("android", android.toJson())
+      put("words", words.toJson())
+    }
+
+    companion object {
+      fun fromJson(o: JSONObject?): LiveActivity? {
+        if (o == null) return null
+        return LiveActivity(
+          schemaVersion = o.wcRaw("schemaVersion").wcAsInt() ?: return null,
+          language = o.wcString("language") ?: "",
+          clock = Clock.fromJson(o.wcRaw("clock") as? JSONObject) ?: Clock(),
+          days = o.wcList("days") { Day.fromJson(it as? JSONObject) } ?: return null,
+          hijri = o.wcList("hijri") { DayText.fromJson(it as? JSONObject) } ?: emptyList(),
+          alertModes = o.wcList("alertModes") { AlertMode.fromJson(it as? JSONObject) } ?: emptyList(),
+          appearance = LiveActivityAppearance.fromJson(o.wcRaw("appearance") as? JSONObject) ?: LiveActivityAppearance(),
+          android = LiveActivityAndroid.fromJson(o.wcRaw("android") as? JSONObject) ?: LiveActivityAndroid(),
+          words = LiveActivityWords.fromJson(o.wcRaw("words") as? JSONObject) ?: LiveActivityWords(),
+        )
+      }
+
+      fun parse(json: String?): LiveActivity? =
+        try {
+          if (json.isNullOrEmpty()) null else fromJson(JSONObject(json))
+        } catch (e: JSONException) {
+          null
+        }
+    }
+  }
+
+  /** A line of text that belongs to one day. */
+  data class DayText(
+    /** Local YYYY-MM-DD. */
+    val dateKey: String,
+    val text: String = "",
+  ) {
+    fun toJson(): JSONObject = JSONObject().apply {
+      put("dateKey", dateKey)
+      put("text", text)
+    }
+
+    companion object {
+      fun fromJson(o: JSONObject?): DayText? {
+        if (o == null) return null
+        return DayText(
+          dateKey = o.wcString("dateKey") ?: return null,
+          text = o.wcString("text") ?: "",
+        )
+      }
+
+      fun parse(json: String?): DayText? =
+        try {
+          if (json.isNullOrEmpty()) null else fromJson(JSONObject(json))
+        } catch (e: JSONException) {
+          null
+        }
+    }
+  }
+
+  /** What one prayer does when its time comes. */
+  data class AlertMode(
+    /** Row key. */
+    val key: String,
+    /** As Settings → Notifications shows it. */
+    val mode: AlertModeKind,
+  ) {
+    fun toJson(): JSONObject = JSONObject().apply {
+      put("key", key)
+      put("mode", mode.wire)
+    }
+
+    companion object {
+      fun fromJson(o: JSONObject?): AlertMode? {
+        if (o == null) return null
+        return AlertMode(
+          key = o.wcString("key") ?: return null,
+          mode = AlertModeKind.fromWire(o.wcString("mode")) ?: return null,
+        )
+      }
+
+      fun parse(json: String?): AlertMode? =
+        try {
+          if (json.isNullOrEmpty()) null else fromJson(JSONObject(json))
+        } catch (e: JSONException) {
+          null
+        }
+    }
+  }
+
+  /** How the Live Activity is tinted and laid out. */
+  data class LiveActivityAppearance(
+    /** The app accent's light swatch, #RRGGBB. */
+    val accentHex: String = "#22c55e",
+    /** iOS: follow the system tint (Liquid Glass) instead of the accent. */
+    val systemTinted: Boolean = false,
+    /**
+     * Android: follow the Material You accent, re-read natively on each
+     * repost.
+     */
+    val systemAccent: Boolean = false,
+    /** "Tinted surfaces": the accent becomes the card's background. */
+    val tinted: Boolean = false,
+    /** Android: which of the three layouts. */
+    val design: LiveActivityDesign = LiveActivityDesign.TIMELINE,
+  ) {
+    fun toJson(): JSONObject = JSONObject().apply {
+      put("accentHex", accentHex)
+      put("systemTinted", systemTinted)
+      put("systemAccent", systemAccent)
+      put("tinted", tinted)
+      put("design", design.wire)
+    }
+
+    companion object {
+      fun fromJson(o: JSONObject?): LiveActivityAppearance? {
+        if (o == null) return null
+        return LiveActivityAppearance(
+          accentHex = o.wcString("accentHex") ?: "#22c55e",
+          systemTinted = o.wcBool("systemTinted") ?: false,
+          systemAccent = o.wcBool("systemAccent") ?: false,
+          tinted = o.wcBool("tinted") ?: false,
+          design = LiveActivityDesign.fromWire(o.wcString("design")) ?: LiveActivityDesign.TIMELINE,
+        )
+      }
+
+      fun parse(json: String?): LiveActivityAppearance? =
+        try {
+          if (json.isNullOrEmpty()) null else fromJson(JSONObject(json))
+        } catch (e: JSONException) {
+          null
+        }
+    }
+  }
+
+  /** The Android notification's own settings. */
+  data class LiveActivityAndroid(
+    /** Offer the button that changes the next alert once. */
+    val alertActionEnabled: Boolean = false,
+    /** Offer the hide/show-on-lock-screen button. */
+    val aodActionEnabled: Boolean = true,
+    /** The notification channel an adhan alert posts to. */
+    val adhanChannelId: String = "prayer-times-default",
+    /** The adhan chosen. */
+    val adhanSoundId: String = "default",
+    /** The channel a plain alert posts to. */
+    val defaultChannelId: String = "prayer-times-default",
+  ) {
+    fun toJson(): JSONObject = JSONObject().apply {
+      put("alertActionEnabled", alertActionEnabled)
+      put("aodActionEnabled", aodActionEnabled)
+      put("adhanChannelId", adhanChannelId)
+      put("adhanSoundId", adhanSoundId)
+      put("defaultChannelId", defaultChannelId)
+    }
+
+    companion object {
+      fun fromJson(o: JSONObject?): LiveActivityAndroid? {
+        if (o == null) return null
+        return LiveActivityAndroid(
+          alertActionEnabled = o.wcBool("alertActionEnabled") ?: false,
+          aodActionEnabled = o.wcBool("aodActionEnabled") ?: true,
+          adhanChannelId = o.wcString("adhanChannelId") ?: "prayer-times-default",
+          adhanSoundId = o.wcString("adhanSoundId") ?: "default",
+          defaultChannelId = o.wcString("defaultChannelId") ?: "prayer-times-default",
+        )
+      }
+
+      fun parse(json: String?): LiveActivityAndroid? =
+        try {
+          if (json.isNullOrEmpty()) null else fromJson(JSONObject(json))
+        } catch (e: JSONException) {
+          null
+        }
+    }
+  }
+
+  /** Localised words for the Android notification. */
+  data class LiveActivityWords(
+    /** The foreground service line. */
+    val fgsText: String = "",
+    val alertLabelAdhan: String = "",
+    val alertLabelNotification: String = "",
+    val alertLabelSilent: String = "",
+    /** "once", after a changed alert. */
+    val alertOnceWord: String = "",
+    val aodHideLabel: String = "",
+    val aodShowLabel: String = "",
+    val nowWord: String = "",
+    val inWord: String = "",
+    val atWord: String = "",
+    /** The body of the alert the button posts. */
+    val atPrayerBody: String = "",
+  ) {
+    fun toJson(): JSONObject = JSONObject().apply {
+      put("fgsText", fgsText)
+      put("alertLabelAdhan", alertLabelAdhan)
+      put("alertLabelNotification", alertLabelNotification)
+      put("alertLabelSilent", alertLabelSilent)
+      put("alertOnceWord", alertOnceWord)
+      put("aodHideLabel", aodHideLabel)
+      put("aodShowLabel", aodShowLabel)
+      put("nowWord", nowWord)
+      put("inWord", inWord)
+      put("atWord", atWord)
+      put("atPrayerBody", atPrayerBody)
+    }
+
+    companion object {
+      fun fromJson(o: JSONObject?): LiveActivityWords? {
+        if (o == null) return null
+        return LiveActivityWords(
+          fgsText = o.wcString("fgsText") ?: "",
+          alertLabelAdhan = o.wcString("alertLabelAdhan") ?: "",
+          alertLabelNotification = o.wcString("alertLabelNotification") ?: "",
+          alertLabelSilent = o.wcString("alertLabelSilent") ?: "",
+          alertOnceWord = o.wcString("alertOnceWord") ?: "",
+          aodHideLabel = o.wcString("aodHideLabel") ?: "",
+          aodShowLabel = o.wcString("aodShowLabel") ?: "",
+          nowWord = o.wcString("nowWord") ?: "",
+          inWord = o.wcString("inWord") ?: "",
+          atWord = o.wcString("atWord") ?: "",
+          atPrayerBody = o.wcString("atPrayerBody") ?: "",
+        )
+      }
+
+      fun parse(json: String?): LiveActivityWords? =
         try {
           if (json.isNullOrEmpty()) null else fromJson(JSONObject(json))
         } catch (e: JSONException) {

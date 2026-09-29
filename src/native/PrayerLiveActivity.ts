@@ -72,6 +72,13 @@ export interface PrayerLiveActivityInterface {
   /** Start a new Live Activity. Idempotent: if one is already running for
    *  the same content, the implementation should `update` it in place. */
   start(json: string): Promise<void>;
+  /**
+   * Start or update from the shared Live Activity payload (the contract's
+   * `LiveActivity`, step 1.5): adapted natively to the minute it is drawn
+   * at, and kept, so the background refresh and a revived card read the
+   * same days. Optional: a JS bundle can outlive the native module.
+   */
+  startV2?(json: string): Promise<void>;
   /** Push fresh content to the existing activity. */
   update(json: string): Promise<void>;
   /** End any running Live Activity. */

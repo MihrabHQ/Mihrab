@@ -16,6 +16,14 @@ const read = (...p: string[]) => readFileSync(path.join(ROOT, ...p), 'utf8');
 const types = read('src', 'settings', 'types.ts');
 const card = read('src', 'screens', 'settings', 'LiveActivityCard.tsx');
 const bridge = read('src', 'notifications', 'liveActivity.ts');
+// Since step 1.5 the payload is built once for both platforms and adapted
+// natively; the Android fields are written by these two, held to each
+// other by the contract fixtures.
+const shared = read('src', 'liveActivity', 'liveActivityV2.ts');
+const adapter = read(
+  'android', 'app', 'src', 'main', 'java', 'com', 'prayer_times', 'contract',
+  'LiveActivityV1.kt',
+);
 const kotlin = read(
   'android', 'app', 'src', 'main', 'java', 'com', 'prayer_times',
   'MihrabLiveActivityModule.kt',
@@ -38,8 +46,11 @@ describe('the lock-screen button can be turned off', () => {
   });
 
   it('reaches the card as aodActionEnabled', () => {
-    expect(bridge).toMatch(/lockButton = s\.liveActivityLockButton !== false/);
-    expect(bridge).toMatch(/aodActionEnabled: lockButton,/);
+    expect(bridge).toMatch(
+      /aodActionEnabled: s\.liveActivityLockButton !== false,/,
+    );
+    expect(shared).toMatch(/aodActionEnabled: android\?\.aodActionEnabled \?\? true,/);
+    expect(adapter).toMatch(/out\.put\("aodActionEnabled", android\.aodActionEnabled\)/);
   });
 
   it('and the card only draws the button when it is on', () => {
@@ -75,7 +86,8 @@ describe('the countdown always shows the prayer time', () => {
 
   it('the bridge sends it unconditionally', () => {
     expect(bridge).not.toMatch(/liveActivitySecondMetric/);
-    expect(bridge).toMatch(/secondMetric: 'time',/);
+    expect(shared).toMatch(/secondMetric: 'time',/);
+    expect(adapter).toMatch(/out\.put\("secondMetric", "time"\)/);
   });
 
   it('and the Kotlin defaults to it, so an old payload gets it too', () => {

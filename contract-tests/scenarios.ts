@@ -203,6 +203,17 @@ const SPECS: Spec[] = [
     week: WEEK,
   },
   {
+    // The window the app hands the widgets ends today; tomorrow's times
+    // came in beside it. v2 once dropped that day, leaving nothing ahead.
+    name: 'after ʿIshāʾ, tomorrow known but outside the window',
+    language: 'en',
+    clock: '24',
+    at: [22, 0],
+    today: WEEK[0],
+    tomorrow: WEEK[1],
+    week: [WEEK[0]],
+  },
+  {
     name: 'after ʿIshāʾ, tomorrow unknown',
     language: 'en',
     clock: '12',
