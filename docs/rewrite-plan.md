@@ -380,6 +380,8 @@ the next release, which notarises as it always does.
   In return the Catalyst Release build compiles a third of what it did
   (about 2,250 compile steps → 840, 4 minutes), because React's core now
   comes prebuilt.
+- *The device pass:* `docs/device-pass-rewrite.md`, the checklist for
+  everything on `rewrite` that only a device can confirm.
 - *Still to prove on devices:* the libraries nobody maintains any more —
   notifee, encrypted-storage, sensors, blur, geolocation — build and run
   through the interop layer, but notifications, secure storage and the
