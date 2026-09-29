@@ -196,6 +196,49 @@ export function activeKhatmah(s: QuranState): KhatmahPlan | undefined {
 }
 
 /**
+ * ONE LIVE PLAN, whatever a sync brings together.
+ *
+ * Two devices that each start a khatmah before they have heard of the
+ * other's used to keep both after the merge, and every screen showed the
+ * one started first — the other plan, and all the reading done in it,
+ * hidden until the first was finished or deleted. The rule is Hassan's
+ * (2026-09-29): the plan with more reading in it stays, even if it was
+ * started later; with equal reading, the one started last, as the most
+ * recent decision. Reading is counted inside each plan's own span, so a
+ * plan begun at page 300 is not credited with the 299 pages it skipped.
+ *
+ * The others are ABANDONED, not dropped: a plan that simply vanished
+ * would come back from any device that still has it, which is the bug
+ * `abandonedAt` exists for. Their date is the later of the two starts —
+ * the moment there were two — worked out from the plans alone, so every
+ * device that merges the same plans writes the same thing.
+ *
+ * The merge (`mergeKhatmah`) and the store's reading of a stored blob
+ * (`coerceQuranState`) both pass their plans through here. The same list
+ * comes back when there is nothing to settle.
+ */
+export function oneLivePlan(plans: KhatmahPlan[]): KhatmahPlan[] {
+  const live = plans.filter(isLivePlan);
+  if (live.length < 2) return plans;
+  const read = new Map(
+    live.map(p => [
+      p,
+      countWithin(khatmahDone(p), khatmahStartAyah(p), TOTAL_AYAHS),
+    ]),
+  );
+  const beats = (a: KhatmahPlan, b: KhatmahPlan) =>
+    read.get(a)! - read.get(b)! ||
+    a.startedAt - b.startedAt ||
+    (a.id > b.id ? 1 : a.id < b.id ? -1 : 0);
+  const kept = live.reduce((best, p) => (beats(p, best) > 0 ? p : best));
+  return plans.map(p =>
+    p === kept || !isLivePlan(p)
+      ? p
+      : { ...p, abandonedAt: Math.max(p.startedAt, kept.startedAt) },
+  );
+}
+
+/**
  * WHICH DAY THE KHATMAH IS ON — the Islamic one, which begins at maghrib.
  *
  * A khatmah read in Ramadan is counted in Islamic days: tarawih at 21:00
