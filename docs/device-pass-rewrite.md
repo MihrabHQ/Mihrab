@@ -39,6 +39,19 @@ steps, in the progress log of `docs/rewrite-plan.md`.
   next prayer are right, and `drawing from payload v2` is in logcat.
 - [ ] Log Today and Tasbih widget taps reach the app.
 - [ ] Live Activity (Android 16 chip and notification) on both clocks.
+  It rolls from one prayer to the next and past ʿIshāʾ into tomorrow by
+  itself, with the app closed. The "at" time beside the countdown is the
+  prayer's own time.
+- [ ] **Time zone change.** With a widget placed, change the phone's time
+  zone in Settings. The widget starts the app's refresh by itself; logcat
+  shows "today's times were built at UTC…". It then shows times for the
+  new zone.
+- [ ] With the First Third on: after Maghrib the widgets and the Live
+  Activity count down to it, and after midnight they do not show it as
+  that morning's.
+- [ ] **Update over the old build with widgets placed**, without opening
+  the app. The widgets still draw, from the stored v1. After the app runs
+  once, the v1 key is gone and they draw from v2.
 
 ## 2. iPhone simulator
 
@@ -51,7 +64,11 @@ steps, in the progress log of `docs/rewrite-plan.md`.
   `rewrite` build over the 2.27 App Store build** with taps still
   queued, open the app, and check none were lost (the fractional-time
   fix).
-- [ ] Live Activity on both clocks.
+- [ ] Live Activity on both clocks. Leave it running past ʿIshāʾ with the
+  app closed: the background refresh moves it to tomorrow's Fajr. Swipe it
+  away and open the app: it comes back, current.
+- [ ] If possible, a Live Activity running across the night the clocks
+  change: the countdown ends at the right minute.
 
 ## 3. iPad (simulator) and this Mac
 
