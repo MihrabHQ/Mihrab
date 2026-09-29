@@ -279,9 +279,11 @@ set aside (`supersededBy`), not abandoned: the marker is worked out again
 from the merged plans every time, so devices that saw each other's
 reading at different times still converge — the first version wrote the
 choice as `abandonedAt`, which could leave no live plan at all (fixed
-2026-09-29, see the progress log). `startKhatmah` also abandons a plan it
-replaces, and any plan set aside, instead of dropping it, which could
-otherwise come back from another device and win on reading.
+2026-09-29, see the progress log). There is only ever one khatmah
+(Hassan, 2026-09-29): when the reader finishes or abandons the kept plan,
+the plans set aside behind it are abandoned with it (`endSetAside`).
+`startKhatmah` also abandons a plan it replaces, and any plan set aside,
+instead of dropping it, which could otherwise come back from another device and win on reading.
 
 ## Phase 3 — Release tooling in TypeScript
 
@@ -430,6 +432,7 @@ one. It is not a rewrite target.
 | 2026-09-29 | 2.1 finding, review | A review of a79eb29 found the choice itself was unsafe to store. `oneLivePlan` wrote the loser's `abandonedAt`, which is permanent and one side's word is enough, from the reading the merging device could see — and folder sync merges the other device's file as it was when written. Phone (P 10 pages, Mac's old file Q 5) abandoned Q while the Mac (Q 20, phone's P 10) abandoned P: the next exchange left no live plan, and the result depended on the order of merges (not associative). Separately the loser was dated at the plans' starts, so two plans over 90 days old produced a tombstone the next read pruned — never reaching the other device. Now the loser carries `supersededBy` (the kept plan's id), cleared and recomputed from the merged plans on every merge, every read of a blob and every store write; it has no date and never expires; it becomes live again if the kept plan is abandoned or finished; `startKhatmah` abandons it. 5 new tests (stale copies on each side converge, both merge orders equal, old plans survive two reads, set-aside plan live at once after the kept one is abandoned, a new start ends it); 7 of the 14 fail on a79eb29, checked. | No. A build without the field sees both plans live, as before a79eb29 (which never shipped). |
 | 2026-09-29 | P1.6, review | A review found an upgrade loss P1.6 introduced: the iOS/Mac widgets before the contract wrote a queued tap's `t` as `Date().timeIntervalSince1970 * 1000`, a fractional Double, and the contract's `long` reader (all three platforms) drops a number with a fraction — so every Log Today tap and tasbih bead still queued when the update landed would have been dropped by the app's drain and by the widget's next tap. The fixture "as Swift writes it" used `1759000000000.0`, a whole number, so it never saw the real case. The schema gained `truncate` for a long (refused on list elements); both queues' `t` use it and read any finite number below 9e15 with its fraction dropped. 5 new fixture cases (fractional log tap and bead, a mixed old/new queue, `t` as text still unreadable) and one app-level test per queue; the TS and Kotlin sides fail on them without the change, checked; Kotlin harness 10 tests pass. | No. The Swift harness is left to CI's `contract-swift` job (no swiftc in the session that made the change). |
 | 2026-09-29 | review | A review of everything above (three reviewers, then fixes). Two bugs fixed and logged in their own rows (the two-live-plans choice, the fractional queue times); the iOS widgets now read date keys on a Gregorian calendar (on a Buddhist, Japanese or Islamic system calendar today's key matched no payload day); the Catalyst test holds every Mac target's minimum, and `build-catalyst.sh` reads the product's `LSMinimumSystemVersion` and stops below 12. Checked and correct: every widget on both platforms reads through the adapter; every app write goes through `setDataV2` with `setData` as the fallback; the quranState move was mechanical; the DST fix holds in seven zones over 800 days. | Yes: the status line, the order, the 1.2/1.3/1.5/1.7 texts, and "Open items" below. |
+| 2026-09-29 | 2.1 finding, again | Hassan: there is always one khatmah. The fix above let a plan set aside come back when the kept one was finished or abandoned; now `endSetAside`, run on every store write, abandons the plans set aside behind a kept plan the reader finishes or abandons, at the same moment — the reader's act, so a real tombstone that travels and expires with the kept plan's. The choice between open plans stays derived. A draft that instead kept the marker through merges and re-checked it against a closed winner failed a new fuzz test — the result depended on the order of merges once devices could end plans — and was dropped. `khatmahOneLivePlanFuzz.test.ts`: 1,500 random runs (up to three plans on three devices, stale copies, some devices ending their plan), every merge order must leave the same one live plan, and settling or self-merging must change nothing; 20,000 runs clean while developing. 4 tests replaced in `khatmahOneLivePlan.test.ts` (abandoning or finishing the kept plan ends the other, the ending travels and expires, a sync alone never ends a plan). | No. |
 
 ## Open items (not a step yet, each needs an owner)
 
@@ -451,12 +454,16 @@ one. It is not a rewrite target.
   not a regression.
 - **Two live khatmahs**: the losing plan's reading is not carried into the
   kept plan (not asked for). A device on a build from before `supersededBy`
-  shows both plans live and the earlier one first, as it always did.
+  shows both plans live and the earlier one first, as it always did. A
+  kept plan that ended on a device that never knew the other plan leaves
+  that plan as the khatmah elsewhere — a merge alone never ends a plan.
 - **The Mac is built nowhere but a release.** Notarising an Xcode 27 build
   is first proven by the next release; a Catalyst build before release day
   (or in CI) would find the next toolchain break earlier.
 - **5.2's Mac zip cannot be signed** while the prebuilt React framework
   makes `codesign` refuse the bundle — make that part of 5.2's exit.
-- **The Homebrew cask's `depends_on`** (said to be Ventura in CHANGELOG,
-  DISTRIBUTION.md and the P5.3 row) is in MihrabHQ/homebrew-tap and was not
-  checked from this repo.
+- **The Homebrew cask** (MihrabHQ/homebrew-tap, `Casks/mihrab.rb`) says
+  `depends_on macos: :ventura` — checked 2026-09-29, as the docs say — and
+  `depends_on arch: :arm64`, which no doc here mentions: through Homebrew
+  the Mac app is Apple silicon only, and the zip's own minimum (12.1) only
+  matters for a download by hand.

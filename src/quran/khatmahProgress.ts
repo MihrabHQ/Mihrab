@@ -193,8 +193,7 @@ export function isLivePlan(k: KhatmahPlan): boolean {
 
 /**
  * Not finished and not abandoned by the reader — live, or set aside
- * behind another live plan (`supersededBy`). What starting a new khatmah
- * ends.
+ * behind another plan (`supersededBy`). What starting a new khatmah ends.
  */
 export function isOpenPlan(k: KhatmahPlan): boolean {
   return k.completedAt == null && k.abandonedAt == null;
@@ -213,38 +212,41 @@ export function activeKhatmah(s: QuranState): KhatmahPlan | undefined {
 }
 
 /**
- * ONE LIVE PLAN, whatever a sync brings together.
+ * ONE KHATMAH, whatever a sync brings together.
  *
- * Two devices that each start a khatmah before they have heard of the
- * other's used to keep both after the merge, and every screen showed the
- * one started first — the other plan, and all the reading done in it,
- * hidden until the first was finished or deleted. The rule is Hassan's
- * (2026-09-29): the plan with more reading in it stays, even if it was
- * started later; with equal reading, the one started last, as the most
- * recent decision. Reading is counted inside each plan's own span, so a
- * plan begun at page 300 is not credited with the 299 pages it skipped.
+ * There is only ever one khatmah (Hassan, 2026-09-29). Two devices that
+ * each start one before they have heard of the other's bring two to the
+ * merge, and one is kept: the plan with more reading in it, even if it
+ * was started later; with equal reading, the one started last. Reading is
+ * counted inside each plan's own span, so a plan begun at page 300 is not
+ * credited with the 299 pages it skipped. The others are SET ASIDE
+ * (`supersededBy`, the kept plan's id).
  *
- * The others are SET ASIDE (`supersededBy`), not abandoned. The choice
- * is made from the reading one device can see, and a device merging an
- * out-of-date copy of the other's file can see less than there is: when
- * it was written down as `abandonedAt` — permanent, and one side's word
- * enough — two devices could each abandon the other's plan and leave
- * none. So every earlier choice is cleared first and made again from the
- * plans as they now are; the plans' content converges, and the choice
- * converges with it, in any order of merges.
+ * The choice is DERIVED, never merged: every earlier marker is dropped
+ * and the choice made again from the plans as they now are. It is made
+ * from the reading one device can see, and a device merging an
+ * out-of-date copy of the other's file sees less than there is — written
+ * as `abandonedAt`, permanent and one side's word enough, two devices each
+ * abandoned the other's plan and left none. Derived, it converges as the
+ * plans' content does, in any order of merges.
  *
- * The merge (`mergeKhatmah`) and the store's reading of a stored blob
- * (`coerceQuranState`) both pass their plans through here. The same list
- * comes back when there is nothing to settle.
+ * What ends the plans set aside is the reader ending the khatmah: when a
+ * write finishes or abandons the kept plan, the store abandons the ones
+ * behind it with it (`endSetAside`), so none comes back. That is the
+ * reader's act, so it is an ordinary dated tombstone and travels.
+ *
+ * The merge (`mergeKhatmah`), the store's reading of a stored blob
+ * (`coerceQuranState`) and every store write pass their plans through
+ * here. The same list comes back when there is nothing to settle.
  */
 export function oneLivePlan(input: KhatmahPlan[]): KhatmahPlan[] {
   const plans = input.some(k => 'supersededBy' in k)
     ? input.map(withoutSupersede)
     : input;
-  const live = plans.filter(isLivePlan);
-  if (live.length < 2) return plans;
+  const open = plans.filter(isOpenPlan);
+  if (open.length < 2) return plans;
   const read = new Map(
-    live.map(p => [
+    open.map(p => [
       p,
       countWithin(khatmahDone(p), khatmahStartAyah(p), TOTAL_AYAHS),
     ]),
@@ -253,12 +255,49 @@ export function oneLivePlan(input: KhatmahPlan[]): KhatmahPlan[] {
     read.get(a)! - read.get(b)! ||
     a.startedAt - b.startedAt ||
     (a.id > b.id ? 1 : a.id < b.id ? -1 : 0);
-  const kept = live.reduce((best, p) => (beats(p, best) > 0 ? p : best));
+  const kept = open.reduce((best, p) => (beats(p, best) > 0 ? p : best));
   return plans.map(p =>
-    p === kept || !isLivePlan(p)
-      ? p
-      : { ...p, supersededBy: kept.id },
+    p === kept || !isOpenPlan(p) ? p : { ...p, supersededBy: kept.id },
   );
+}
+
+/**
+ * THE KHATMAH ENDED, SO EVERYTHING SET ASIDE BEHIND IT ENDS TOO.
+ *
+ * `prev` and `next` are the plans before and after one of the reader's
+ * own writes. A plan that was live in `prev` and is finished or abandoned
+ * in `next` takes every plan that was set aside behind it
+ * (`supersededBy`) with it: each is abandoned at the moment the kept plan
+ * ended, so there is still only one khatmah — and now none — rather than
+ * the loser of an old sync surfacing in its place. Dated like any
+ * abandonment, it reaches the other devices and expires with the kept
+ * plan's own tombstone.
+ */
+export function endSetAside(
+  prev: KhatmahPlan[],
+  next: KhatmahPlan[],
+): KhatmahPlan[] {
+  const endedAt = new Map<string, number>();
+  const nextById = new Map(next.map(k => [k.id, k]));
+  for (const k of prev) {
+    if (!isLivePlan(k)) continue;
+    const after = nextById.get(k.id);
+    const at = after?.abandonedAt ?? after?.completedAt;
+    if (at != null) endedAt.set(k.id, at);
+  }
+  if (endedAt.size === 0) return next;
+  const behind = new Map<string, number>();
+  for (const k of prev) {
+    const at = k.supersededBy != null ? endedAt.get(k.supersededBy) : undefined;
+    if (at != null) behind.set(k.id, at);
+  }
+  if (behind.size === 0) return next;
+  return next.map(k => {
+    const at = behind.get(k.id);
+    return at != null && isOpenPlan(k)
+      ? { ...withoutSupersede(k), abandonedAt: at }
+      : k;
+  });
 }
 
 /**

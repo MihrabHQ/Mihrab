@@ -22,7 +22,11 @@ import {
   isLivePlan,
   oneLivePlan,
 } from '../src/quran/khatmahProgress';
-import { abandonKhatmah, startKhatmah } from '../src/quran/khatmahActions';
+import {
+  abandonKhatmah,
+  startKhatmah,
+  toggleKhatmahPageDone,
+} from '../src/quran/khatmahActions';
 import { mergeKhatmah } from '../src/sync/merge';
 import { DEFAULT_RIWAYAH } from '../src/quran/riwayat';
 import type { KhatmahPlan } from '../src/quran/quranTypes';
@@ -205,21 +209,76 @@ describe('the store', () => {
     expect(afterSync.filter(isLivePlan).map(k => k.id)).toEqual([fresh.id]);
   });
 
-  it('brings a plan set aside back when the kept one is abandoned', () => {
-    const merged = mergeKhatmah(
-      [plan('phone', NOW - 10 * DAY, 5)],
-      [plan('mac', NOW - 2 * DAY, 40)],
-    );
+  it('ends the plan set aside when the reader abandons the kept one', () => {
+    // One khatmah: the reader ended it, and the other does not surface.
+    const phone = plan('phone', NOW - 10 * DAY, 5);
+    const merged = mergeKhatmah([phone], [plan('mac', NOW - 2 * DAY, 40)]);
     adoptQuranState({ ...getQuranState(), khatmah: merged });
     expect(activeKhatmah(getQuranState())!.id).toBe('mac');
+    jest.setSystemTime(NOW + 5000);
     abandonKhatmah('mac');
-    // Its reading was waiting, not lost — and it is live at once, not
-    // only after the next sync or restart.
-    expect(activeKhatmah(getQuranState())!.id).toBe('phone');
-    expect(getQuranState().khatmah.find(k => k.id === 'phone')!.supersededBy)
-      .toBeUndefined();
+    expect(activeKhatmah(getQuranState())).toBeUndefined();
+    // Abandoned with it, at the same moment — a tombstone that travels…
+    const ended = getQuranState().khatmah.find(k => k.id === 'phone')!;
+    expect(ended.abandonedAt).toBe(NOW + 5000);
+    expect(ended.supersededBy).toBeUndefined();
+    // …so the phone's own copy, still live and unmarked, cannot bring it back.
+    expect(mergeKhatmah(getQuranState().khatmah, [phone]).filter(isLivePlan)).toEqual([]);
+    expect(mergeKhatmah([phone], getQuranState().khatmah).filter(isLivePlan)).toEqual([]);
+    // And it expires with the kept plan's tombstone.
+    jest.setSystemTime(NOW + 91 * DAY);
+    expect(coerceQuranState({ version: 1, khatmah: getQuranState().khatmah }).khatmah)
+      .toEqual([]);
   });
 
+  it('ends the plan set aside when the reader finishes the kept one', () => {
+    const merged = mergeKhatmah(
+      [plan('phone', NOW - 10 * DAY, 5)],
+      [plan('mac', NOW - 2 * DAY, 603)],
+    );
+    adoptQuranState({ ...getQuranState(), khatmah: merged });
+    toggleKhatmahPageDone(604);
+    const mac = getQuranState().khatmah.find(k => k.id === 'mac')!;
+    expect(mac.completedAt).toBe(NOW);
+    expect(activeKhatmah(getQuranState())).toBeUndefined();
+    expect(getQuranState().khatmah.find(k => k.id === 'phone')!.abandonedAt).toBe(NOW);
+  });
+
+  it('leaves a plan alone that was not set aside behind the one that ended', () => {
+    // A sync alone never ends a plan: the Mac's plan ended on the Mac,
+    // which never knew of the phone's, so the phone's is the khatmah now.
+    const macEnded = { ...plan('mac', NOW - 2 * DAY, 40), abandonedAt: NOW };
+    const phone = plan('phone', NOW - 10 * DAY, 5);
+    expect(mergeKhatmah([phone], [macEnded]).filter(isLivePlan).map(k => k.id))
+      .toEqual(['phone']);
+  });
+});
+
+describe('a choice made on stale numbers', () => {
+  it('never ends the kept plan through a marker it carried from before', () => {
+    // Q lost once on stale numbers and won when they caught up; a device
+    // still holding the old verdict (Q behind P) must not end Q when P is
+    // abandoned.
+    const P = plan('P', NOW - 5 * DAY, 10);
+    const stale = mergeKhatmah([P], [plan('Q', NOW - 4 * DAY, 5)]);
+    const settled = mergeKhatmah(stale, [plan('Q', NOW - 4 * DAY, 20)]);
+    expect(settled.filter(isLivePlan).map(k => k.id)).toEqual(['Q']);
+    const pEnded = settled.map(k => (k.id === 'P' ? { ...k, abandonedAt: NOW } : k));
+    const merged = mergeKhatmah(pEnded, stale);
+    expect(merged.filter(isLivePlan).map(k => k.id)).toEqual(['Q']);
+  });
+
+  it('settles once: settling again changes nothing', () => {
+    const merged = mergeKhatmah(
+      [plan('a', NOW - 9 * DAY, 3), plan('b', NOW - 8 * DAY, 30)],
+      [plan('c', NOW - 7 * DAY, 12)],
+    );
+    expect(merged.filter(isLivePlan).map(k => k.id)).toEqual(['b']);
+    expect(oneLivePlan(merged)).toEqual(merged);
+  });
+});
+
+describe('starting over', () => {
   it('ends a plan set aside, too, when a new one is started', () => {
     const merged = mergeKhatmah(
       [plan('phone', NOW - 10 * DAY, 5)],

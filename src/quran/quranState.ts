@@ -38,6 +38,7 @@ import type {
 import {
   KHATMAH_TOMBSTONE_TTL_DAYS,
   KHATMAH_TOTAL_PAGES,
+  endSetAside,
   localYmd,
   oneLivePlan,
   resetKhatmahGapMemo,
@@ -647,14 +648,16 @@ export function updateQuranState(
   updater: (prev: QuranState) => QuranState,
 ): void {
   const next = updater(state);
-  // A write that ends the live plan (abandoned, finished) lets a plan set
-  // aside behind it (`supersededBy`) be read again — settled here, as a
-  // merge or a read of the blob would, or the reader would see no khatmah
-  // at all until the next one.
+  // One khatmah after every write, as after a merge or a read of the blob
+  // (`oneLivePlan`). A write that ended the kept plan ends the plans set
+  // aside behind it too (`endSetAside`), or one would surface in its place.
   state =
     next.khatmah === state.khatmah
       ? next
-      : { ...next, khatmah: oneLivePlan(next.khatmah) };
+      : {
+          ...next,
+          khatmah: oneLivePlan(endSetAside(state.khatmah, next.khatmah)),
+        };
   emit();
   persist();
 }
