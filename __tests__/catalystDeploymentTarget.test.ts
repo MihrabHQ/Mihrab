@@ -126,7 +126,11 @@ describe('React on the Mac', () => {
   });
 
   it('leaves Podfile.lock as it found it', () => {
-    const trap = catalystScript.indexOf("trap 'cp \"$LOCK_KEPT\" \"$LOCK\"");
+    // The EXIT trap puts it back (and, since it also hands the machine
+    // back, lives in a function), set before the install rewrites it.
+    const onExit = catalystScript.match(/\non_exit\(\) \{\n([\s\S]*?)\n\}/)?.[1] ?? '';
+    expect(onExit).toContain('cp "$LOCK_KEPT" "$LOCK"');
+    const trap = catalystScript.indexOf('\ntrap on_exit EXIT\n');
     const install = catalystScript.indexOf('MIHRAB_CATALYST=1 pod install');
     expect(trap).toBeGreaterThan(0);
     expect(trap).toBeLessThan(install);
