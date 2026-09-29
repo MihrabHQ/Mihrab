@@ -21,6 +21,7 @@ import androidx.glance.appwidget.GlanceAppWidgetReceiver
 internal object GlanceWidgets {
   val receivers: List<Class<out GlanceAppWidgetReceiver>> = listOf(
     HijriGlanceReceiver::class.java,
+    TasbihGlanceReceiver::class.java,
   )
 
   fun anyPlaced(context: Context): Boolean {

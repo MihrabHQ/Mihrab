@@ -27,5 +27,16 @@
         android:name="android.appwidget.provider"
         android:resource="@xml/glance_hijri_info" />
     </receiver>
+    <receiver
+      android:name="com.prayer_times.glance.TasbihGlanceReceiver"
+      android:exported="true"
+      android:label="@string/glance_widget_name_tasbih">
+      <intent-filter>
+        <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+      </intent-filter>
+      <meta-data
+        android:name="android.appwidget.provider"
+        android:resource="@xml/glance_tasbih_info" />
+    </receiver>
   </application>
 </manifest>
