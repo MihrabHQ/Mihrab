@@ -24,6 +24,8 @@ internal object GlanceWidgets {
     TasbihGlanceReceiver::class.java,
     StreakGlanceReceiver::class.java,
     ReadingGlanceReceiver::class.java,
+    LogGlanceReceiver::class.java,
+    LogTallGlanceReceiver::class.java,
   )
 
   fun anyPlaced(context: Context): Boolean {

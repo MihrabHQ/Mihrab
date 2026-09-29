@@ -24,10 +24,13 @@ import androidx.glance.action.Action
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.AndroidRemoteViews
 import androidx.glance.appwidget.action.actionStartActivity
+import androidx.glance.background
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Box
 import androidx.glance.layout.Row
 import androidx.glance.layout.fillMaxSize
+import androidx.glance.layout.fillMaxWidth
+import androidx.glance.layout.height
 import androidx.glance.layout.padding
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
@@ -170,7 +173,16 @@ internal class Event(
  * v1 adapter (`WidgetPayloadV1.fromV2`, held to the app's TS by the contract
  * fixtures) and the RemoteViews renderer on top of it.
  */
-internal class Schedule(val table: WidgetContract.Day, val next: Event?) {
+internal class Schedule(
+  /** The day whose times are drawn: today's own entry while there is one. */
+  val table: WidgetContract.Day,
+  /**
+   * The day the v1 adapter called "shown" — today while any of its times is
+   * still ahead, else the day after. Its label is the payload's `dayLabel`.
+   */
+  val shown: WidgetContract.Day,
+  val next: Event?,
+) {
   companion object {
     fun of(p: WidgetContract.Payload, now: Now): Schedule? {
       val days = p.days
@@ -194,14 +206,12 @@ internal class Schedule(val table: WidgetContract.Day, val next: Event?) {
         } else {
           earliest(ahead + (tomorrow?.let { eventsOf(it, WallClock.MINUTES_PER_DAY) } ?: emptyList()))
         }
+      val shown = if (ahead.isNotEmpty() || tomorrow == null) today else tomorrow
       // The table is today's own entry while there is one — the times roll
       // at midnight, not at Isha, and "next" says what tomorrow brings. With
       // no entry for today, the day the adapter would show.
-      val table =
-        if (days[todayIndex].dateKey == now.dateKey) today
-        else if (ahead.isNotEmpty() || tomorrow == null) today
-        else tomorrow
-      return Schedule(table, next)
+      val table = if (today.dateKey == now.dateKey) today else shown
+      return Schedule(table, shown, next)
     }
 
     /** Every time on a day, placed `offset` minutes from the drawn day's midnight. */
@@ -392,16 +402,29 @@ internal fun MihrabCard(
   background: Int,
   onClick: Action?,
   contentPadding: Dp = 10.dp,
+  verticalPadding: Dp = contentPadding,
   content: @Composable () -> Unit,
 ) {
   val context = LocalContext.current
   val card = RemoteViews(context.packageName, R.layout.glance_card).also { WidgetCard.paint(it, background) }
   Box(modifier = GlanceModifier.fillMaxSize().padding(R.dimen.widget_card_inset)) {
     AndroidRemoteViews(card, GlanceModifier.fillMaxSize())
-    val inner = GlanceModifier.fillMaxSize().padding(contentPadding)
+    val inner = GlanceModifier.fillMaxSize().padding(horizontal = contentPadding, vertical = verticalPadding)
     Box(modifier = if (onClick != null) inner.clickable(onClick) else inner) {
       content()
     }
+  }
+}
+
+/**
+ * A 1dp rule across the card, with the margins the layouts gave it — one
+ * element, not three: a Glance Row, Column or Box takes at most ten
+ * children, and the strip is close to that.
+ */
+@Composable
+internal fun Rule(color: Int, top: Int, bottom: Int) {
+  Box(modifier = GlanceModifier.fillMaxWidth().padding(top = top.dp, bottom = bottom.dp)) {
+    Box(modifier = GlanceModifier.fillMaxWidth().height(1.dp).background(provider(color))) {}
   }
 }
 
