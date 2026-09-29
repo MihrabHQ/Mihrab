@@ -251,6 +251,17 @@ describe('the command line keeps the Python’s exit codes', () => {
     expect(w.err).toEqual(['HTTP 401: NOT_AUTHORIZED']);
   });
 
+  it('ensure refuses minutes that are not a number — NaN used to poll for ever', async () => {
+    for (const bad of ['abc', 'nan', 'inf', '-1', '']) {
+      const { w, x } = apple({ runs: [] });
+      expect(await xcodeCloudMain(x, ['ensure', 'feedbeef00', bad])).toBe(1);
+      expect(w.err).toEqual([`usage: ensure <sha> [minutes] — minutes must be a number, got '${bad}'`]);
+      // Refused before Apple is asked anything, and before any wait.
+      expect(w.requests).toEqual([]);
+      expect(w.slept).toBe(0);
+    }
+  });
+
   it('shipped passes 3 through', async () => {
     const { x } = apple({ runs: [{ number: 741, progress: 'RUNNING', sha: 'cafe0000' }] });
     expect(await xcodeCloudMain(x, ['shipped', '2.28.0', 'cafe0000'])).toBe(3);

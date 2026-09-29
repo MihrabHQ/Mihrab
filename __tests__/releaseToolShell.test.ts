@@ -197,6 +197,26 @@ d('verify-release.sh shadows every check, pend included', () => {
   });
 });
 
+d('verify-release.sh cannot pass a check it could not make', () => {
+  it('an APK with no readable dex fails the Google check, in the TypeScript’s words', () => {
+    const s = scratch();
+    try {
+      s.fake('git', 'exit 0');
+      s.fake('gh', 'exit 0');
+      // The APK downloads; every other request fails.
+      s.fake('curl', 'case "$*" in *"%{http_code}"*) printf 404 ;; *"-sfL -o "*) exit 0 ;; esac; exit 22');
+      s.fake('unzip', 'exit 9');
+      s.fake('python3', 'echo -1');
+      s.run('verify-release.sh', ['v2.28.0']);
+      const record = s.stubCalls()[0].record.split('\n');
+      expect(record).toContain('fail\tpublished APK has no readable classes*.dex — cannot check it for Google Play Services');
+      expect(record).not.toContain('pass\tpublished APK carries no Google Play Services');
+    } finally {
+      s.clean();
+    }
+  });
+});
+
 d('the TypeScript itself runs under Node', () => {
   const node = (args: string[]) =>
     spawnSync(process.execPath, ['--experimental-strip-types', '--no-warnings', path.join(REPO, 'scripts/release/main.ts'), ...args], {

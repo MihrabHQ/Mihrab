@@ -97,8 +97,14 @@ describe('B4 the APK is asked what it is', () => {
       stdout: "package: name='com.prayer_times' versionCode='283' versionName='2.28.0'\nsdkVersion:'24'\n",
     })
       .on('unzip -Z1', { stdout: 'lib/arm64-v8a/x.so\nlib/armeabi-v7a/x.so\n' })
-      .on('unzip -q -o', {});
-    return w;
+      .on(/^unzip -Z1 \S+ classes\*\.dex$/, { stdout: 'classes.dex\nclasses2.dex\n' })
+      .on('unzip -q -o', c => dex(c.args[c.args.length - 1], 'Lcom/prayer_times/MainActivity;'));
+    const dex = (dir: string, body: string) => {
+      w.file(`${dir}/classes.dex`, 'Landroidx/core/app/Notification;');
+      w.file(`${dir}/classes2.dex`, body);
+      return {};
+    };
+    return Object.assign(w, { dex });
   };
 
   it('uses the newest build-tools and passes a correct APK', async () => {
@@ -112,6 +118,22 @@ describe('B4 the APK is asked what it is', () => {
       'ok B4 github APK is ARM only',
       'ok B4 github APK carries no Google Play Services',
     ]);
+  });
+
+  it('stops on Google classes in any dex, the second included', async () => {
+    const w = apkWorld();
+    w.on('unzip -q -o', c => w.dex(c.args[c.args.length - 1], 'Lcom/google/firebase/FirebaseApp;'));
+    expect(await stopOf(() => apkChecks(w.ctx(), rel))).toBe(
+      'github APK contains Google Play Services / Firebase / Play Core classes',
+    );
+  });
+
+  it('stops when it cannot look: no dex listed, or none unpacked — not a pass', async () => {
+    const unreadable = 'github APK has no readable classes*.dex — cannot check it for Google Play Services';
+    const none = apkWorld().on(/^unzip -Z1 \S+ classes\*\.dex$/, { code: 11, stdout: '' });
+    expect(await stopOf(() => apkChecks(none.ctx(), rel))).toBe(unreadable);
+    const broken = apkWorld().on('unzip -q -o', { code: 9 });
+    expect(await stopOf(() => apkChecks(broken.ctx(), rel))).toBe(unreadable);
   });
 
   it('stops on the wrong versionCode', async () => {
@@ -136,7 +158,11 @@ describe('B6 the zip about to be published (2.11.0)', () => {
       .on('codesign -dv', { stderr: sig })
       .on('codesign -d --entitlements', { stdout: ents })
       .on('xcrun stapler validate', { code: stapled ? 0 : 65 })
-      .on('/System/Library', {});
+      .on(/plutil -extract LSMinimumSystemVersion/, { stdout: '12.1\n' })
+      .on(/plutil -extract CFBundleExecutable/, { stdout: 'PrayerApp\n' })
+      .on('lipo -archs', { stdout: 'arm64\n' })
+      .on('/System/Library', {})
+      .file(TAP, GOOD_CASK);
     w.executables.add('/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister');
     return w;
   };
@@ -149,8 +175,46 @@ describe('B6 the zip about to be published (2.11.0)', () => {
       'ok B6 signed by team GAW23HT439',
       'ok B6 App Group sealed in',
       'ok B6 notarized, ticket stapled into the bundle',
+      'ok B6 cask requires macOS 12 (:monterey), as the app does (12.1)',
+      'ok B6 cask requires Apple silicon, as the app (arm64) does',
     ]);
     expect(w.ran(/lsregister -u \/tmp\/mihrab-zip-\d+\/Mihrab\.app/)).toHaveLength(1);
+  });
+
+  it('stops a cask that asks for the wrong macOS BEFORE publishing — the verifier found it after', async () => {
+    const w = zipWorld('TeamIdentifier=GAW23HT439', 'group.com.prayerapp').file(
+      TAP,
+      GOOD_CASK.replace('>= :monterey', '>= :ventura'),
+    );
+    expect(await stopOf(() => inspectZip(w.ctx(), '/z.zip'))).toBe(
+      "cask requires macOS 13 (:ventura) but the app needs 12.1 — set depends_on macos in Casks/mihrab.rb to the app's own minimum",
+    );
+    expect(w.ran(/lsregister -u/)).toHaveLength(1);
+  });
+
+  it('reads the array form of depends_on arch, and stops a universal app behind an arm64-only cask', async () => {
+    const w = zipWorld('TeamIdentifier=GAW23HT439', 'group.com.prayerapp')
+      .file(TAP, GOOD_CASK.replace('depends_on arch: :arm64', 'depends_on arch: [:arm64]'))
+      .on('lipo -archs', { stdout: 'x86_64 arm64\n' });
+    expect(await stopOf(() => inspectZip(w.ctx(), '/z.zip'))).toBe(
+      'the app runs on Intel (x86_64 arm64) but the cask says depends_on arch: :arm64 — drop it',
+    );
+  });
+
+  it('beside the shell it unpacks nothing and registers nothing: the plist and executable alone, then the cask', async () => {
+    const w = zipWorld('TeamIdentifier=GAW23HT439', 'group.com.prayerapp').on('unzip -j', {});
+    const ctx = w.ctx({ shadow: true, quiet: true });
+    await inspectZip(ctx, '/z.zip');
+    expect(w.ran('ditto')).toEqual([]);
+    expect(w.ran(/lsregister|pluginkit|codesign|stapler/)).toEqual([]);
+    expect(w.ran('unzip -j').map(c => c.args[4])).toEqual(['Mihrab.app/Contents/Info.plist', 'Mihrab.app/Contents/MacOS/PrayerApp']);
+    expect(lines(ctx)).toEqual([
+      'skip B6 signed by team GAW23HT439 (not re-unpacked beside the shell)',
+      'skip B6 App Group sealed in (not re-unpacked beside the shell)',
+      'skip B6 notarized, ticket stapled into the bundle (not re-unpacked beside the shell)',
+      'ok B6 cask requires macOS 12 (:monterey), as the app does (12.1)',
+      'ok B6 cask requires Apple silicon, as the app (arm64) does',
+    ]);
   });
 
   it('stops an ad-hoc app, and still unregisters the temp copy (the shell left it behind)', async () => {

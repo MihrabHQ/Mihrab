@@ -39,6 +39,7 @@ Requires `pyjwt`, `cryptography` and `certifi`.
 import json
 import os
 import pathlib
+import re
 import ssl
 import subprocess
 import sys
@@ -260,7 +261,14 @@ def ensure(commit: str, wait: str = "6") -> None:
     So: wait for the trigger, and only start a run if it never came.
     Prints what it found and exits 0 when a run exists for the commit,
     exits 2 when there is none and one could not be started.
+
+    The minutes are digits, with an optional fraction. `float()` alone
+    raised a ValueError traceback on "abc" and took "nan" and "inf",
+    which never reach the deadline; scripts/release/ read NaN the same
+    way and polled for ever. Both refuse it, in the same words, exit 1.
     """
+    if not re.fullmatch(r"[0-9]+(\.[0-9]+)?", wait):
+        sys.exit(f"usage: ensure <sha> [minutes] — minutes must be a number, got '{wait}'")
     minutes = float(wait)
     deadline = time.time() + minutes * 60
     short = commit[:8]

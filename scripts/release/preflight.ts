@@ -27,7 +27,6 @@ import {
   tapPath,
 } from './common.ts';
 import { Asc } from './asc.ts';
-import { runLine } from './xcodeCloud.ts';
 import * as xc from './xcodeCloud.ts';
 
 export interface Release {
@@ -340,24 +339,28 @@ export async function tests(ctx: Ctx): Promise<void> {
 // which is how 2.12.0's iOS build was lost. Like the shell, a tool that
 // cannot answer at all lets this pass: the question is "is one in flight",
 // and no answer is not a yes.
+//
+// DECIDED FROM THE RUN'S STATE, not by searching the `runs` line for the
+// words: that line ends with the commit message, so a commit titled
+// "Show RUNNING state" read as a run in flight. The shell reads the
+// state field of the line (`#N STATE/STATUS …`) for the same reason.
 export async function xcodeCloudIdle(ctx: Ctx): Promise<void> {
-  const lines: string[] = [];
+  let live = false;
   try {
     const x: xc.XcCtx = {
       asc: new Asc(ctx.io, ctx.home),
       io: ctx.io,
       root: ctx.root,
-      say: l => lines.push(l),
+      say: () => undefined,
     };
     const data = await x.asc.call(
       `/v1/ciProducts/${await xc.product(x)}/buildRuns?limit=1&sort=-number`,
     );
-    for (const run of data.data) lines.push(runLine(run));
+    live = data.data.some(xc.isLive);
   } catch {
     // no answer; see above
   }
-  const runs = lines.join('\n');
-  if (has(runs, 'PENDING') || has(runs, 'RUNNING')) {
+  if (live) {
     ctx.report.stop(
       'P12',
       'an Xcode Cloud run is already in flight — let it finish, or it and the release build will kill each other',

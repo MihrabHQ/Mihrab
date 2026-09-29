@@ -299,12 +299,14 @@ describe('P11 tests', () => {
 });
 
 describe('P12 no Xcode Cloud run in flight (2.12.0)', () => {
-  const asc = (w: World, progress: string) => {
+  const asc = (w: World, progress: string, message = 'Release 2.27.1 (282)') => {
     w.file(`/home/mac/.config/mihrab/asc.json`, JSON.stringify({ keyPath: '/k.p8', keyId: 'K', issuerId: 'I' }));
     w.file('/k.p8', require('crypto').generateKeyPairSync('ec', { namedCurve: 'P-256' }).privateKey.export({ type: 'pkcs8', format: 'pem' }));
     w.url('https://api.appstoreconnect.apple.com/v1/ciProducts?limit=10', { text: JSON.stringify({ data: [{ id: 'P' }] }) });
     w.url('https://api.appstoreconnect.apple.com/v1/ciProducts/P/buildRuns?limit=1&sort=-number', {
-      text: JSON.stringify({ data: [{ id: 'r', attributes: { number: 740, executionProgress: progress } }] }),
+      text: JSON.stringify({
+        data: [{ id: 'r', attributes: { number: 740, executionProgress: progress, sourceCommit: { commitSha: 'feedbeef', message } } }],
+      }),
     });
   };
 
@@ -317,6 +319,14 @@ describe('P12 no Xcode Cloud run in flight (2.12.0)', () => {
   it('passes on a finished run', async () => {
     const w = world();
     asc(w, 'COMPLETE');
+    const ctx = w.ctx();
+    await xcodeCloudIdle(ctx);
+    expect(lines(ctx)).toEqual(['ok P12 no Xcode Cloud run in flight']);
+  });
+
+  it('reads the run’s state, not its commit message: "RUNNING" in a title is not a run in flight', async () => {
+    const w = world();
+    asc(w, 'COMPLETE', 'Show the RUNNING and PENDING states on the timer');
     const ctx = w.ctx();
     await xcodeCloudIdle(ctx);
     expect(lines(ctx)).toEqual(['ok P12 no Xcode Cloud run in flight']);

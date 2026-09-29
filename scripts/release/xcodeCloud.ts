@@ -100,8 +100,26 @@ export async function runs(x: XcCtx, limit = '5'): Promise<number> {
   return 0;
 }
 
-const isLive = (run: Json) =>
+/**
+ * A run App Store Connect still considers live, read from its state — not
+ * from a `runs` line, which carries the commit message: a commit titled
+ * "Fix RUNNING timer" once looked in flight to a text search (P12).
+ */
+export const isLive = (run: Json) =>
   ['PENDING', 'RUNNING'].includes(run.attributes?.executionProgress);
+
+/**
+ * `ensure`'s minutes, as the Python reads them: digits, with an optional
+ * fraction. "abc" used to become NaN, a deadline never reached, and a
+ * poll that never ended; the Python raised a ValueError. Both refuse it
+ * now, in the same words, with exit 1.
+ */
+export function ensureMinutes(wait: string): number {
+  if (!/^[0-9]+(\.[0-9]+)?$/.test(wait)) {
+    throw new AscExit(`usage: ensure <sha> [minutes] — minutes must be a number, got '${wait}'`);
+  }
+  return Number(wait);
+}
 
 /** Runs App Store Connect still considers live. */
 export async function inFlight(x: XcCtx): Promise<Json[]> {
@@ -169,7 +187,7 @@ export async function start(x: XcCtx, force?: string): Promise<number> {
  * and one could not be started.
  */
 export async function ensure(x: XcCtx, commit: string, wait = '6'): Promise<number> {
-  const minutes = Number(wait);
+  const minutes = ensureMinutes(wait);
   const deadline = x.io.clock.now() + minutes * 60_000;
   const short = commit.slice(0, 8);
   for (;;) {

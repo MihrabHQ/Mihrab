@@ -5,7 +5,8 @@
  * app, a cask asking for the wrong macOS, iOS mid-build or shipped by the
  * local route, CI still running.
  */
-import { archVerdict, caskArch, caskMacos, ciVerdict, macosVerdict, verify } from '../scripts/release/verify.ts';
+import { ciVerdict, verify } from '../scripts/release/verify.ts';
+import { archVerdict, caskArch, caskMacos, macosVerdict } from '../scripts/release/common.ts';
 import { GOOD_CASK, GRADLE, HOME, ROOT, TAP, World, sha } from './fixtures/releaseWorld';
 import { generateKeyPairSync } from 'crypto';
 
@@ -34,7 +35,11 @@ function published() {
       stdout: JSON.stringify({ isDraft: false, assets: [{ name: `Mihrab-v${V}.apk` }, { name: `Mihrab-macOS-${V}.zip` }] }),
     })
     .on('unzip -Z1', { stdout: 'lib/arm64-v8a/libhermes.so\nlib/armeabi-v7a/libhermes.so\n' })
-    .on('unzip -q -o', {})
+    .on(/^unzip -Z1 \S+ classes\*\.dex$/, { stdout: 'classes.dex\n' })
+    .on('unzip -q -o', c => {
+      w.file(`${c.args[c.args.length - 1]}/classes.dex`, 'Lcom/hassan/prayerapp/MainActivity;');
+      return {};
+    })
     .on(`${SDK}/35.0.0/apksigner verify`, { stdout: `Signer #1 certificate SHA-256 digest: ${CERT}\n` })
     .on('ditto -xk', c => {
       w.dir(`${c.args[2]}/Mihrab.app`);
@@ -150,6 +155,13 @@ describe('what has gone wrong live', () => {
     expect((await run(w)).fails).toContain('published APK contains Google Play Services / Firebase / Play Core classes');
   });
 
+  it('an APK whose dex cannot be read fails — it used to pass, having found nothing', async () => {
+    const w = published().on(/^unzip -Z1 \S+ classes\*\.dex$/, { code: 9, stdout: '' });
+    const { fails, oks } = await run(w);
+    expect(fails).toContain('published APK has no readable classes*.dex — cannot check it for Google Play Services');
+    expect(oks).not.toContain('published APK carries no Google Play Services');
+  });
+
   it('another signing key fails; no apksigner is pending, not passed', async () => {
     const w = published().on(`${SDK}/35.0.0/apksigner`, { stdout: 'Signer #1 certificate SHA-256 digest: 00ff\n' });
     expect((await run(w)).fails[0]).toMatch(/^published APK signer is '00ff', not the release key/);
@@ -189,6 +201,25 @@ describe('what has gone wrong live', () => {
     expect(fails).toContain(`live site is NOT serving ${V}`);
     expect(w.out).toContain('    served: Version 2.27.1 (282)   last-modified: unknown');
     expect(w.out).toContain('    → Pages is not operational. The repo is right; the deploy is stuck on GitHub.');
+  });
+});
+
+describe('beside the shell', () => {
+  it('unpacks nothing, registers nothing, and still compares the cask off the plist and executable', async () => {
+    const w = published().on('unzip -j', {});
+    const ctx = w.ctx({ style: 'verify', shadow: true, dryRun: true, quiet: true });
+    await verify(ctx, TAG);
+    expect(w.ran(/^(ditto|codesign|xcrun stapler|pluginkit|lipo -archs \/tmp\/mihrab-verifyapp)/)).toEqual([]);
+    expect(w.ran(/lsregister/)).toEqual([]);
+    const v6 = ctx.report.outcomes.filter(o => o.id === 'V6').map(o => `${o.kind} ${o.text}`);
+    expect(v6).toEqual([
+      'skip published app signed by team GAW23HT439 (not re-unpacked beside the shell)',
+      'skip published app carries the App Group (not re-unpacked beside the shell)',
+      'skip published app is notarized, ticket stapled (not re-unpacked beside the shell)',
+      "skip this Mac's own Mihrab widget extension is still registered (not re-unpacked beside the shell)",
+      'ok cask requires macOS 12 (:monterey), as the app does (12.1)',
+      'ok cask requires Apple silicon, as the app (arm64) does',
+    ]);
   });
 });
 
@@ -243,6 +274,15 @@ describe('the small verdicts', () => {
     expect(caskMacos('  depends_on macos: ">= :monterey"')).toBe('monterey');
     expect(caskMacos('  depends_on macos: :sonoma')).toBe('sonoma');
     expect(caskArch('  depends_on arch: :arm64')).toBe('arm64');
+  });
+
+  it('reads the array form of depends_on arch, which it once read as none', () => {
+    expect(caskArch('  depends_on arch: [:arm64]')).toBe('arm64');
+    expect(caskArch('  depends_on arch: [ :arm64 ]')).toBe('arm64');
+    // Several are not "arm64": the cask admits Intel, and says so.
+    expect(caskArch('  depends_on arch: [:arm64, :x86_64]')).toBe('arm64,x86_64');
+    expect(archVerdict('arm64', caskArch('  depends_on arch: [:arm64, :x86_64]'))[0]).toBe('fail');
+    expect(caskArch('  depends_on macos: ">= :monterey"')).toBe('');
   });
 
   it('compares majors only, and cannot compare without both', () => {

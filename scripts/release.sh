@@ -573,10 +573,20 @@ ok "tsc"
 # One workflow, started by a push to main. A second run started while one
 # is live kills both ("An update has been initiated by another request"),
 # which is how 2.12.0's iOS build was lost.
+#
+# The run's STATE, not the whole line. `runs` prints `#N STATE/STATUS …`
+# and ends with the commit message, so searching the line for the words
+# read a commit titled "Show RUNNING state" as a run in flight. The first
+# line's second field, up to the slash — as scripts/release/ reads the
+# state off the run itself.
 XC_RUNS="$(python3 "$ROOT/scripts/xcode-cloud.py" runs 1 2>/dev/null)"
-if has "$XC_RUNS" "PENDING" || has "$XC_RUNS" "RUNNING"; then
-  die "an Xcode Cloud run is already in flight — let it finish, or it and the release build will kill each other"
-fi
+XC_STATE="${XC_RUNS%%"$SHADOW_NL"*}"
+XC_STATE="${XC_STATE#* }"
+XC_STATE="${XC_STATE%%/*}"
+case "$XC_STATE" in
+  PENDING|RUNNING)
+    die "an Xcode Cloud run is already in flight — let it finish, or it and the release build will kill each other" ;;
+esac
 ok "no Xcode Cloud run in flight"
 release_shadow preflight
 SHADOW_PHASE=build
@@ -676,6 +686,14 @@ if [ -n "$AAPT" ]; then
   # SIGPIPE, and `pipefail` turns the found case into 141 — so this gate
   # could only ever pass. `grep -c` reads to the end; a count, not a
   # status, decides.
+  #
+  # AND ONLY ONCE THERE IS SOMETHING TO COUNT. An APK unzip cannot read,
+  # or one with no dex in it, counts zero — and zero was the pass, so the
+  # gate passed exactly when it could not look. Asked first, in the same
+  # words as scripts/release/common.ts.
+  if [ -z "$(unzip -Z1 "$APK" 'classes*.dex' 2>/dev/null || true)" ]; then
+    die "github APK has no readable classes*.dex — cannot check it for Google Play Services"
+  fi
   google=$(unzip -p "$APK" 'classes*.dex' 2>/dev/null | strings | grep -cE 'Lcom/google/(android/gms|firebase|android/play/core)/' || true)
   if [ "${google:-0}" != "0" ]; then
     die "github APK contains Google Play Services / Firebase / Play Core classes"
@@ -747,6 +765,46 @@ ok "App Group sealed in"
 xcrun stapler validate "$APP" >/dev/null 2>&1 \
   || die "the app about to be published carries no notarization ticket — Gatekeeper would block its first launch, as it has since 2.11.0"
 ok "notarized, ticket stapled into the bundle"
+
+# ── AND THE CASK ASKS FOR WHAT THIS APP NEEDS ─────────────────────────
+#
+# verify-release.sh compared the cask's `depends_on` with the app only
+# after the tag and the GitHub release were public — the one place a wrong
+# minimum could no longer stop anything, while the tap was about to be
+# bumped from that very cask. Asked here now, before publishing, in the
+# same words as the verifier (and as scripts/release/common.ts). The
+# array form `depends_on arch: [:arm64]` is read too; several arches come
+# out comma-joined, which is not `arm64` and so admits Intel, as it does.
+APP_MIN=$(plutil -extract LSMinimumSystemVersion raw -o - "$APP/Contents/Info.plist" 2>/dev/null || true)
+CASK_MACOS=$(sed -n 's/^[[:space:]]*depends_on macos:[^:]*:\([a-z_]*\).*/\1/p' "$TAP" 2>/dev/null | head -1)
+case "$CASK_MACOS" in
+  monterey) CASK_MAJOR=12 ;; ventura) CASK_MAJOR=13 ;; sonoma) CASK_MAJOR=14 ;;
+  sequoia) CASK_MAJOR=15 ;; tahoe) CASK_MAJOR=26 ;; *) CASK_MAJOR="" ;;
+esac
+if [ -z "$APP_MIN" ] || [ -z "$CASK_MAJOR" ]; then
+  die "cannot compare the cask's macOS (':${CASK_MACOS:-none}') with the app's LSMinimumSystemVersion ('${APP_MIN:-none}')"
+fi
+if [ "$CASK_MAJOR" != "${APP_MIN%%.*}" ]; then
+  die "cask requires macOS $CASK_MAJOR (:$CASK_MACOS) but the app needs $APP_MIN — set depends_on macos in Casks/mihrab.rb to the app's own minimum"
+fi
+ok "cask requires macOS $CASK_MAJOR (:$CASK_MACOS), as the app does ($APP_MIN)"
+APP_EXE=$(plutil -extract CFBundleExecutable raw -o - "$APP/Contents/Info.plist" 2>/dev/null || true)
+APP_ARCHS=$(lipo -archs "$APP/Contents/MacOS/$APP_EXE" 2>/dev/null || true)
+CASK_ARCH=$(sed -n 's/^[[:space:]]*depends_on arch:[[:space:]]*\[\{0,1\}\([a-z0-9_,: ]*\).*/\1/p' "$TAP" 2>/dev/null | head -1 | tr -d ' :')
+case " $APP_ARCHS " in
+  "  ")
+    die "cannot read the published app's architectures" ;;
+  *" x86_64 "*)
+    if [ "$CASK_ARCH" = "arm64" ]; then
+      die "the app runs on Intel ($APP_ARCHS) but the cask says depends_on arch: :arm64 — drop it"
+    fi
+    ok "cask admits Intel and Apple silicon, as the app ($APP_ARCHS) does" ;;
+  *)
+    if [ "$CASK_ARCH" != "arm64" ]; then
+      die "the app is $APP_ARCHS only but the cask lets Intel Macs install it — add depends_on arch: :arm64"
+    fi
+    ok "cask requires Apple silicon, as the app ($APP_ARCHS) does" ;;
+esac
 
 # UNREGISTER BEFORE REMOVING. Unpacking an .app into a temp directory is by
 # itself enough to put it in the LaunchServices database — no launch, no

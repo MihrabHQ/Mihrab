@@ -126,12 +126,18 @@ if curl -sfL -o "$APK_TMP" "$APK_URL"; then
     fail "published APK carries ABIs '$abis' — expected arm64-v8a armeabi-v7a; is this the F-Droid build?"
   fi
   # Counted, not `grep -q` (see `has` above): with -q the found case
-  # was 141, and this check could only ever pass.
-  google=$(unzip -p "$APK_TMP" 'classes*.dex' 2>/dev/null | strings | grep -cE 'Lcom/google/(android/gms|firebase|android/play/core)/' || true)
-  if [ "${google:-0}" != "0" ]; then
-    fail "published APK contains Google Play Services / Firebase / Play Core classes"
+  # was 141, and this check could only ever pass. And only once there is
+  # a dex to count: an APK unzip cannot read counts zero, and zero was
+  # the pass (the same words as release.sh and scripts/release/).
+  if [ -z "$(unzip -Z1 "$APK_TMP" 'classes*.dex' 2>/dev/null || true)" ]; then
+    fail "published APK has no readable classes*.dex — cannot check it for Google Play Services"
   else
-    pass "published APK carries no Google Play Services"
+    google=$(unzip -p "$APK_TMP" 'classes*.dex' 2>/dev/null | strings | grep -cE 'Lcom/google/(android/gms|firebase|android/play/core)/' || true)
+    if [ "${google:-0}" != "0" ]; then
+      fail "published APK contains Google Play Services / Firebase / Play Core classes"
+    else
+      pass "published APK carries no Google Play Services"
+    fi
   fi
   RELEASE_CERT="e66c0dabc898856bd0f6057a8fe0aaa440fa1d04f0da5a213104f41f89e6f997"
   SIGNER=$(ls "$HOME"/Library/Android/sdk/build-tools/*/apksigner 2>/dev/null | sort -V | tail -1)
@@ -291,7 +297,8 @@ if [ -f "$TAP" ]; then
       # minimum moved to 12.1 the cask went on turning Monterey away. Both
       # halves are read off the SHIPPED app: `LSMinimumSystemVersion`, and
       # the architectures in its executable. A cask symbol can only name a
-      # major version, so the majors must match.
+      # major version, so the majors must match. release.sh asks the same
+      # of the zip before publishing, in the same words.
       plist="$unz/Mihrab.app/Contents/Info.plist"
       app_min=$(plutil -extract LSMinimumSystemVersion raw -o - "$plist" 2>/dev/null || true)
       cask_macos=$(sed -n 's/^[[:space:]]*depends_on macos:[^:]*:\([a-z_]*\).*/\1/p' "$TAP" | head -1)
@@ -308,7 +315,9 @@ if [ -f "$TAP" ]; then
       fi
       exe=$(plutil -extract CFBundleExecutable raw -o - "$plist" 2>/dev/null || true)
       archs=$(lipo -archs "$unz/Mihrab.app/Contents/MacOS/$exe" 2>/dev/null || true)
-      cask_arch=$(sed -n 's/^[[:space:]]*depends_on arch:[[:space:]]*:\([a-z0-9_]*\).*/\1/p' "$TAP" | head -1)
+      # `depends_on arch: :arm64` or the array form `[:arm64]`, which this
+      # once read as no arch at all; several come out comma-joined.
+      cask_arch=$(sed -n 's/^[[:space:]]*depends_on arch:[[:space:]]*\[\{0,1\}\([a-z0-9_,: ]*\).*/\1/p' "$TAP" | head -1 | tr -d ' :')
       case " $archs " in
         "  ") fail "cannot read the published app's architectures" ;;
         *" x86_64 "*)

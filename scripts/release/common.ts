@@ -146,15 +146,128 @@ export const ARM_ONLY = 'arm64-v8a armeabi-v7a ';
  */
 export const GOOGLE_CLASSES = /Lcom\/google\/(android\/gms|firebase|android\/play\/core)\//;
 
-/** Whether an APK carries Google classes: extracts its dex files and looks. */
-export async function apkHasGoogleClasses(ctx: Ctx, apk: string): Promise<boolean> {
+/**
+ * Whether an APK carries Google classes: extracts its dex files and looks.
+ *
+ * THREE ANSWERS, NOT TWO. An APK unzip cannot read, or one with no dex in
+ * it, has nothing in it to find — and "found nothing" was a pass, so the
+ * gate passed exactly when it could not look. The shell asks the same
+ * first question (`unzip -Z1 … 'classes*.dex'` lists at least one) and
+ * stops, or fails, with the same words.
+ */
+export type GoogleClasses = 'found' | 'clean' | 'unreadable';
+export const DEX_UNREADABLE = "has no readable classes*.dex — cannot check it for Google Play Services";
+
+export async function apkGoogleClasses(ctx: Ctx, apk: string): Promise<GoogleClasses> {
+  const listed = await ctx.io.exec.run('unzip', ['-Z1', apk, 'classes*.dex']);
+  if (!listed.stdout.trim()) return 'unreadable';
   const dir = ctx.io.fs.mkdtemp('mihrab-dex-');
   try {
-    await ctx.io.exec.run('unzip', ['-q', '-o', apk, 'classes*.dex', '-d', dir]);
-    return ctx.io.fs
-      .list(dir)
-      .filter(f => f.endsWith('.dex'))
-      .some(f => GOOGLE_CLASSES.test(ctx.io.fs.readBinary(`${dir}/${f}`)));
+    if ((await ctx.io.exec.run('unzip', ['-q', '-o', apk, 'classes*.dex', '-d', dir])).code !== 0) return 'unreadable';
+    const dexes = ctx.io.fs.list(dir).filter(f => f.endsWith('.dex'));
+    if (!dexes.length) return 'unreadable';
+    return dexes.some(f => GOOGLE_CLASSES.test(ctx.io.fs.readBinary(`${dir}/${f}`))) ? 'found' : 'clean';
+  } finally {
+    ctx.io.fs.rm(dir);
+  }
+}
+
+// ── THE CASK ASKS FOR WHAT THE APP NEEDS, NO MORE, NO LESS ────────────
+//
+// The cask's `depends_on` was written once by hand (Ventura, 2026-07-16)
+// while the app said 10.15, and nothing compared them again: when the
+// minimum moved to 12.1 the cask went on turning Monterey away. Asked of
+// the zip before publishing (B6, and release.sh's zip gate) and of the
+// published one after (V6, verify-release.sh), in the same words.
+
+/** A cask symbol names a major version only. */
+export const CASK_MACOS: Record<string, number> = {
+  monterey: 12,
+  ventura: 13,
+  sonoma: 14,
+  sequoia: 15,
+  tahoe: 26,
+};
+
+export function caskMacos(cask: string): string {
+  return /^[ \t]*depends_on macos:[^:\n]*:([a-z_]*)/m.exec(cask)?.[1] ?? '';
+}
+
+/**
+ * `depends_on arch: :arm64`, or the array form `[:arm64]` — which the
+ * first parser read as no arch at all. Several are comma-joined
+ * (`arm64,x86_64`), which is not `arm64` and so admits Intel, as it does.
+ */
+export function caskArch(cask: string): string {
+  const hit = /^[ \t]*depends_on arch:[ \t]*\[?([a-z0-9_,: ]*)/m.exec(cask);
+  return hit ? hit[1].replace(/[ :]/g, '') : '';
+}
+
+/** The cask-against-app comparison of the minimum macOS: [kind, message]. */
+export function macosVerdict(caskSymbol: string, appMin: string): ['ok' | 'fail', string] {
+  const major = CASK_MACOS[caskSymbol];
+  if (!appMin || major === undefined) {
+    return [
+      'fail',
+      `cannot compare the cask's macOS (':${caskSymbol || 'none'}') with the app's LSMinimumSystemVersion ('${appMin || 'none'}')`,
+    ];
+  }
+  if (String(major) !== appMin.split('.')[0]) {
+    return [
+      'fail',
+      `cask requires macOS ${major} (:${caskSymbol}) but the app needs ${appMin} — set depends_on macos in Casks/mihrab.rb to the app's own minimum`,
+    ];
+  }
+  return ['ok', `cask requires macOS ${major} (:${caskSymbol}), as the app does (${appMin})`];
+}
+
+export function archVerdict(archs: string, caskArchSymbol: string): ['ok' | 'fail', string] {
+  const padded = ` ${archs} `;
+  if (padded === '  ') return ['fail', "cannot read the published app's architectures"];
+  if (padded.includes(' x86_64 ')) {
+    return caskArchSymbol === 'arm64'
+      ? ['fail', `the app runs on Intel (${archs}) but the cask says depends_on arch: :arm64 — drop it`]
+      : ['ok', `cask admits Intel and Apple silicon, as the app (${archs}) does`];
+  }
+  return caskArchSymbol === 'arm64'
+    ? ['ok', `cask requires Apple silicon, as the app (${archs}) does`]
+    : ['fail', `the app is ${archs} only but the cask lets Intel Macs install it — add depends_on arch: :arm64`];
+}
+
+/**
+ * Both verdicts, read off an app's Info.plist and the executable it names
+ * in `exeDir` — an unpacked bundle (`…/Contents/Info.plist`,
+ * `…/Contents/MacOS`), or the two files alone (`caskAgainstZip`).
+ */
+export async function caskAgainstApp(
+  ctx: Ctx,
+  cask: string,
+  plist: string,
+  exeDir: string,
+): Promise<Array<['ok' | 'fail', string]>> {
+  const extract = async (key: string) =>
+    (await ctx.io.exec.run('plutil', ['-extract', key, 'raw', '-o', '-', plist])).stdout.trim();
+  const macos = macosVerdict(caskMacos(cask), await extract('LSMinimumSystemVersion'));
+  const exe = await extract('CFBundleExecutable');
+  const archs = (await ctx.io.exec.run('lipo', ['-archs', `${exeDir}/${exe}`])).stdout.trim();
+  return [macos, archVerdict(archs, caskArch(cask))];
+}
+
+/**
+ * The same verdicts WITHOUT UNPACKING THE APP, for shadow mode: the plist
+ * and the executable are taken out of the zip on their own (`unzip -j`),
+ * so no `.app` bundle ever exists on disk for LaunchServices to register.
+ */
+export async function caskAgainstZip(ctx: Ctx, cask: string, zip: string): Promise<Array<['ok' | 'fail', string]>> {
+  const dir = ctx.io.fs.mkdtemp('mihrab-zipinfo-');
+  try {
+    const take = (member: string) => ctx.io.exec.run('unzip', ['-j', '-o', '-q', zip, member, '-d', dir]);
+    await take('Mihrab.app/Contents/Info.plist');
+    const exe = (
+      await ctx.io.exec.run('plutil', ['-extract', 'CFBundleExecutable', 'raw', '-o', '-', `${dir}/Info.plist`])
+    ).stdout.trim();
+    if (exe) await take(`Mihrab.app/Contents/MacOS/${exe}`);
+    return await caskAgainstApp(ctx, cask, `${dir}/Info.plist`, dir);
   } finally {
     ctx.io.fs.rm(dir);
   }

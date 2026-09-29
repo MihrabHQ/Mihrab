@@ -16,6 +16,7 @@ import type { Ctx } from './common.ts';
 import {
   APP_GROUP,
   ARM_ONLY,
+  DEX_UNREADABLE,
   INSTALLED_EXT,
   JDK,
   PLAY_LOCALES,
@@ -23,11 +24,14 @@ import {
   RELEASE_CERT,
   REPO,
   SITE_URL,
+  TEAM,
   WIDGET_EXT_ID,
   apkAbis,
-  apkHasGoogleClasses,
+  apkGoogleClasses,
   apkName,
   assetUrl,
+  caskAgainstApp,
+  caskAgainstZip,
   charCount,
   codesignDetails,
   codesignEntitlements,
@@ -46,57 +50,11 @@ import { Asc, AscExit } from './asc.ts';
 import { POSTFLIGHT_DO, POSTFLIGHT_STEPS } from './preflight.ts';
 import * as xc from './xcodeCloud.ts';
 
-/** A cask symbol names a major version only. */
-export const CASK_MACOS: Record<string, number> = {
-  monterey: 12,
-  ventura: 13,
-  sonoma: 14,
-  sequoia: 15,
-  tahoe: 26,
-};
-
 export function caskVersion(cask: string): string {
   return /.*version "(.*)".*/.exec(cask)?.[1] ?? '';
 }
 export function caskSha(cask: string): string {
   return /.*sha256 "([a-f0-9]*)".*/.exec(cask)?.[1] ?? '';
-}
-export function caskMacos(cask: string): string {
-  return /^[ \t]*depends_on macos:[^:\n]*:([a-z_]*)/m.exec(cask)?.[1] ?? '';
-}
-export function caskArch(cask: string): string {
-  return /^[ \t]*depends_on arch:[ \t]*:([a-z0-9_]*)/m.exec(cask)?.[1] ?? '';
-}
-
-/** 4b's cask-against-app comparison: [kind, message]. */
-export function macosVerdict(caskSymbol: string, appMin: string): ['ok' | 'fail', string] {
-  const major = CASK_MACOS[caskSymbol];
-  if (!appMin || major === undefined) {
-    return [
-      'fail',
-      `cannot compare the cask's macOS (':${caskSymbol || 'none'}') with the app's LSMinimumSystemVersion ('${appMin || 'none'}')`,
-    ];
-  }
-  if (String(major) !== appMin.split('.')[0]) {
-    return [
-      'fail',
-      `cask requires macOS ${major} (:${caskSymbol}) but the app needs ${appMin} — set depends_on macos in Casks/mihrab.rb to the app's own minimum`,
-    ];
-  }
-  return ['ok', `cask requires macOS ${major} (:${caskSymbol}), as the app does (${appMin})`];
-}
-
-export function archVerdict(archs: string, caskArchSymbol: string): ['ok' | 'fail', string] {
-  const padded = ` ${archs} `;
-  if (padded === '  ') return ['fail', "cannot read the published app's architectures"];
-  if (padded.includes(' x86_64 ')) {
-    return caskArchSymbol === 'arm64'
-      ? ['fail', `the app runs on Intel (${archs}) but the cask says depends_on arch: :arm64 — drop it`]
-      : ['ok', `cask admits Intel and Apple silicon, as the app (${archs}) does`];
-  }
-  return caskArchSymbol === 'arm64'
-    ? ['ok', `cask requires Apple silicon, as the app (${archs}) does`]
-    : ['fail', `the app is ${archs} only but the cask lets Intel Macs install it — add depends_on arch: :arm64`];
 }
 
 /** V12's verdict on a finished or unfinished run. */
@@ -186,11 +144,10 @@ export async function verify(ctx: Ctx, tag: string, opts: { self?: string } = {}
     const abis = await apkAbis(ctx, apk);
     if (abis === ARM_ONLY) ok('V4', 'published APK is ARM only (github flavor)');
     else fail('V4', `published APK carries ABIs '${abis}' — expected arm64-v8a armeabi-v7a; is this the F-Droid build?`);
-    if (await apkHasGoogleClasses(ctx, apk)) {
-      fail('V4', 'published APK contains Google Play Services / Firebase / Play Core classes');
-    } else {
-      ok('V4', 'published APK carries no Google Play Services');
-    }
+    const google = await apkGoogleClasses(ctx, apk);
+    if (google === 'found') fail('V4', 'published APK contains Google Play Services / Firebase / Play Core classes');
+    else if (google === 'unreadable') fail('V4', `published APK ${DEX_UNREADABLE}`);
+    else ok('V4', 'published APK carries no Google Play Services');
     const signer = newestBuildTool(ctx, 'apksigner');
     if (signer) {
       const certs = await ctx.io.exec.run(signer, ['verify', '--print-certs', apk], {
@@ -416,6 +373,29 @@ export async function verify(ctx: Ctx, tag: string, opts: { self?: string } = {}
  */
 async function publishedApp(ctx: Ctx, zip: string, cask: string): Promise<void> {
   const r = ctx.report;
+  const verdicts = (vs: Array<['ok' | 'fail', string]>) => {
+    for (const [kind, text] of vs) {
+      if (kind === 'ok') r.ok('V6', text);
+      else r.fail('V6', text);
+    }
+  };
+  if (ctx.shadow) {
+    // NOT UNPACKED BESIDE THE SHELL. Unpacking registers the app, and the
+    // unregister after it takes the installed widget down lazily — the
+    // shell has just done both, and shadow mode is not to do them again.
+    // Its ✓ for the signature, the group, the ticket and the widget are
+    // trusted; the cask is still compared, off the plist and executable
+    // taken out of the zip alone, which puts no bundle on disk.
+    const trusted = [
+      `published app signed by team ${TEAM}`,
+      'published app carries the App Group',
+      'published app is notarized, ticket stapled',
+      ...(ctx.io.fs.isDir(INSTALLED_EXT) ? ["this Mac's own Mihrab widget extension is still registered"] : []),
+    ];
+    for (const t of trusted) r.skip('V6', `${t} (not re-unpacked beside the shell)`, t);
+    verdicts(await caskAgainstZip(ctx, cask, zip));
+    return;
+  }
   const dir = ctx.io.fs.mkdtemp('mihrab-verifyapp-');
   const app = `${dir}/Mihrab.app`;
   const unpacked = (await ctx.io.exec.run('ditto', ['-xk', zip, dir])).code === 0 && ctx.io.fs.isDir(app);
@@ -434,21 +414,10 @@ async function publishedApp(ctx: Ctx, zip: string, cask: string): Promise<void> 
     if (await staplerValidates(ctx, app)) r.ok('V6', 'published app is notarized, ticket stapled');
     else r.fail('V6', 'published app carries NO notarization ticket — macOS blocks its first launch, as it has since 2.11.0');
 
-    // AND THE CASK ASKS FOR WHAT THE APP NEEDS, NO MORE, NO LESS. The
-    // cask's `depends_on` was written once by hand (Ventura, 2026-07-16)
-    // while the app said 10.15, and nothing compared them again: when the
-    // minimum moved to 12.1 the cask went on turning Monterey away.
-    const plist = `${app}/Contents/Info.plist`;
-    const extract = async (key: string) =>
-      (await ctx.io.exec.run('plutil', ['-extract', key, 'raw', '-o', '-', plist])).stdout.trim();
-    const [k1, t1] = macosVerdict(caskMacos(cask), await extract('LSMinimumSystemVersion'));
-    if (k1 === 'ok') r.ok('V6', t1);
-    else r.fail('V6', t1);
-    const exe = await extract('CFBundleExecutable');
-    const archs = (await ctx.io.exec.run('lipo', ['-archs', `${app}/Contents/MacOS/${exe}`])).stdout.trim();
-    const [k2, t2] = archVerdict(archs, caskArch(cask));
-    if (k2 === 'ok') r.ok('V6', t2);
-    else r.fail('V6', t2);
+    // AND THE CASK ASKS FOR WHAT THE APP NEEDS (see caskAgainstApp) — asked
+    // before publishing too, since 2026-09-29, and again here of what is
+    // served.
+    verdicts(await caskAgainstApp(ctx, cask, `${app}/Contents/Info.plist`, `${app}/Contents/MacOS`));
   } else {
     r.fail('V6', 'could not unpack the published zip to check its signature');
   }

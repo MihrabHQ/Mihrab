@@ -13,12 +13,15 @@
 import type { Ctx } from './common.ts';
 import {
   ARM_ONLY,
+  DEX_UNREADABLE,
   JDK,
   TEAM,
   APP_GROUP,
   WIDGET_UNREGISTERED,
   apkAbis,
-  apkHasGoogleClasses,
+  apkGoogleClasses,
+  caskAgainstApp,
+  caskAgainstZip,
   codesignDetails,
   codesignEntitlements,
   flag,
@@ -28,6 +31,7 @@ import {
   newestBuildTool,
   shown,
   staplerValidates,
+  tapPath,
   unregisterAndRemove,
   zipName,
 } from './common.ts';
@@ -181,9 +185,11 @@ export async function apkChecks(ctx: Ctx, rel: Release): Promise<void> {
     ctx.report.stop('B4', `github APK carries ABIs '${abis}', expected arm64-v8a armeabi-v7a`);
   }
   ctx.report.ok('B4', 'github APK is ARM only');
-  if (await apkHasGoogleClasses(ctx, apk)) {
+  const google = await apkGoogleClasses(ctx, apk);
+  if (google === 'found') {
     ctx.report.stop('B4', 'github APK contains Google Play Services / Firebase / Play Core classes');
   }
+  if (google === 'unreadable') ctx.report.stop('B4', `github APK ${DEX_UNREADABLE}`);
   ctx.report.ok('B4', 'github APK carries no Google Play Services');
 }
 
@@ -217,6 +223,27 @@ export async function mac(ctx: Ctx, rel: Release): Promise<string> {
  * invisible to `codesign --verify` and fatal to the widgets.
  */
 export async function inspectZip(ctx: Ctx, zip: string): Promise<void> {
+  const tap = tapPath(ctx.home);
+  const cask = ctx.io.fs.isFile(tap) ? ctx.io.fs.readText(tap) : '';
+  const caskVerdicts = (vs: Array<['ok' | 'fail', string]>) => {
+    for (const [kind, text] of vs) {
+      if (kind === 'fail') ctx.report.stop('B6', text);
+      ctx.report.ok('B6', text);
+    }
+  };
+  if (ctx.shadow) {
+    // NOT UNPACKED BESIDE THE SHELL, which has just unpacked this zip,
+    // unregistered its copy and put the installed widget back. Doing it a
+    // second time is a second chance to blank the widgets on this Mac, and
+    // shadow mode is not to touch the machine: the signature, group and
+    // ticket are trusted from the shell's ✓, as B3's Gradle builds are.
+    // The cask is compared off the plist and executable alone.
+    for (const t of [`signed by team ${TEAM}`, 'App Group sealed in', 'notarized, ticket stapled into the bundle']) {
+      ctx.report.skip('B6', `${t} (not re-unpacked beside the shell)`, t);
+    }
+    caskVerdicts(await caskAgainstZip(ctx, cask, zip));
+    return;
+  }
   const dir = ctx.io.fs.mkdtemp('mihrab-zip-');
   const app = `${dir}/Mihrab.app`;
   try {
@@ -249,6 +276,11 @@ export async function inspectZip(ctx: Ctx, zip: string): Promise<void> {
       );
     }
     ctx.report.ok('B6', 'notarized, ticket stapled into the bundle');
+    // AND THE CASK ASKS FOR WHAT THIS APP NEEDS. It was compared only in
+    // verification, after the tag and the release were public — the one
+    // place a wrong `depends_on` could no longer stop anything. The tap is
+    // bumped from this cask, so it is asked here, before publishing.
+    caskVerdicts(await caskAgainstApp(ctx, cask, `${app}/Contents/Info.plist`, `${app}/Contents/MacOS`));
   } finally {
     // Always, however the checks above ended — the shell's `die` does the
     // same through forget_unpacked_app (it once exited before it).
