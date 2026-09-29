@@ -23,6 +23,7 @@ internal object GlanceWidgets {
     HijriGlanceReceiver::class.java,
     TasbihGlanceReceiver::class.java,
     StreakGlanceReceiver::class.java,
+    ReadingGlanceReceiver::class.java,
   )
 
   fun anyPlaced(context: Context): Boolean {

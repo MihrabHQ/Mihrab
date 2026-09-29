@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The Glance port of prayer_widget_reading_info.xml: the same sizes, cells, preview and
+  settings screen, so the two can be placed side by side and compared.
+  Only the initial layout differs: Glance's loading view until the
+  first composition lands.
+-->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:configure="com.prayer_times.PrayerWidgetConfigureActivity"
+    android:widgetFeatures="reconfigurable|configuration_optional"
+    android:description="@string/widget_description_reading"
+    android:initialLayout="@layout/glance_default_loading_layout"
+    android:minWidth="250dp"
+    android:minHeight="50dp"
+    android:previewImage="@mipmap/ic_launcher"
+    android:previewLayout="@layout/prayer_widget_reading_preview"
+    android:resizeMode="horizontal|vertical"
+    android:minResizeWidth="110dp"
+    android:minResizeHeight="40dp"
+    android:updatePeriodMillis="0"
+    android:widgetCategory="home_screen"
+    android:targetCellWidth="4"
+    android:targetCellHeight="1"
+    android:maxResizeWidth="500dp"
+    android:maxResizeHeight="400dp" />
