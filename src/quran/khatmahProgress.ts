@@ -188,7 +188,24 @@ export const KHATMAH_TOMBSTONE_TTL_DAYS = 90;
  * way `indexByDate` is for cleared prayers.
  */
 export function isLivePlan(k: KhatmahPlan): boolean {
+  return k.completedAt == null && k.abandonedAt == null && k.supersededBy == null;
+}
+
+/**
+ * Not finished and not abandoned by the reader — live, or set aside
+ * behind another live plan (`supersededBy`). What starting a new khatmah
+ * ends.
+ */
+export function isOpenPlan(k: KhatmahPlan): boolean {
   return k.completedAt == null && k.abandonedAt == null;
+}
+
+/** The plan without its `supersededBy` marker — the same object if it had none. */
+export function withoutSupersede(k: KhatmahPlan): KhatmahPlan {
+  if (!('supersededBy' in k)) return k;
+  const rest = { ...k };
+  delete rest.supersededBy;
+  return rest;
 }
 
 export function activeKhatmah(s: QuranState): KhatmahPlan | undefined {
@@ -207,17 +224,23 @@ export function activeKhatmah(s: QuranState): KhatmahPlan | undefined {
  * recent decision. Reading is counted inside each plan's own span, so a
  * plan begun at page 300 is not credited with the 299 pages it skipped.
  *
- * The others are ABANDONED, not dropped: a plan that simply vanished
- * would come back from any device that still has it, which is the bug
- * `abandonedAt` exists for. Their date is the later of the two starts —
- * the moment there were two — worked out from the plans alone, so every
- * device that merges the same plans writes the same thing.
+ * The others are SET ASIDE (`supersededBy`), not abandoned. The choice
+ * is made from the reading one device can see, and a device merging an
+ * out-of-date copy of the other's file can see less than there is: when
+ * it was written down as `abandonedAt` — permanent, and one side's word
+ * enough — two devices could each abandon the other's plan and leave
+ * none. So every earlier choice is cleared first and made again from the
+ * plans as they now are; the plans' content converges, and the choice
+ * converges with it, in any order of merges.
  *
  * The merge (`mergeKhatmah`) and the store's reading of a stored blob
  * (`coerceQuranState`) both pass their plans through here. The same list
  * comes back when there is nothing to settle.
  */
-export function oneLivePlan(plans: KhatmahPlan[]): KhatmahPlan[] {
+export function oneLivePlan(input: KhatmahPlan[]): KhatmahPlan[] {
+  const plans = input.some(k => 'supersededBy' in k)
+    ? input.map(withoutSupersede)
+    : input;
   const live = plans.filter(isLivePlan);
   if (live.length < 2) return plans;
   const read = new Map(
@@ -234,7 +257,7 @@ export function oneLivePlan(plans: KhatmahPlan[]): KhatmahPlan[] {
   return plans.map(p =>
     p === kept || !isLivePlan(p)
       ? p
-      : { ...p, abandonedAt: Math.max(p.startedAt, kept.startedAt) },
+      : { ...p, supersededBy: kept.id },
   );
 }
 

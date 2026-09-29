@@ -94,6 +94,26 @@ export type KhatmahPlan = {
    */
   abandonedAt?: number;
   /**
+   * SET ASIDE, NOT ABANDONED: the id of the live plan this one waits
+   * behind (`oneLivePlan`).
+   *
+   * Two devices that each started a khatmah before they synced hold two
+   * live plans, and only one can be read. The choice is not the reader's,
+   * so it is not written down as one: `abandonedAt` is permanent and
+   * travels, and a choice made from one device's out-of-date copy of the
+   * other's reading would stick — two devices each setting the other's
+   * plan aside left no live plan at all. This marker is worked out again
+   * from the merged plans on every merge and every read of a stored blob,
+   * never merged itself, so every device that holds the same plans makes
+   * the same choice, and a later choice replaces an earlier one.
+   *
+   * No tombstone date, so it never expires: the plan waits, reading and
+   * all, and becomes live again if the kept plan is abandoned. A build
+   * from before the field drops it and sees both plans live, as it always
+   * did.
+   */
+  supersededBy?: string;
+  /**
    * WHICH ayahs the plan has read, as inclusive `[from, to]` index
    * ranges — the authoritative record of progress (issue #54 follow-on).
    *

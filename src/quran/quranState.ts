@@ -646,7 +646,15 @@ export function getQuranState(): QuranState {
 export function updateQuranState(
   updater: (prev: QuranState) => QuranState,
 ): void {
-  state = updater(state);
+  const next = updater(state);
+  // A write that ends the live plan (abandoned, finished) lets a plan set
+  // aside behind it (`supersededBy`) be read again — settled here, as a
+  // merge or a read of the blob would, or the reader would see no khatmah
+  // at all until the next one.
+  state =
+    next.khatmah === state.khatmah
+      ? next
+      : { ...next, khatmah: oneLivePlan(next.khatmah) };
   emit();
   persist();
 }

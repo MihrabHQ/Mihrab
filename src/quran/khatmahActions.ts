@@ -29,6 +29,7 @@ import {
   ayahsThroughHafsPage,
   ayahsThroughPage,
   isLivePlan,
+  isOpenPlan,
   khatmahAyahsRead,
   khatmahDone,
   khatmahReachAyah,
@@ -36,6 +37,7 @@ import {
   localYmd,
   pagesThroughAyahs,
   planFrom,
+  withoutSupersede,
 } from './khatmahProgress';
 import {
   khatmahCreditWindow,
@@ -115,13 +117,16 @@ export function startKhatmah(
     ...prev,
     /**
      * One active plan at a time; completed plans stay for history. A
-     * plan still live here is ABANDONED, not dropped: dropped, it would
+     * plan still open here — live, or set aside behind it by a sync
+     * (`supersededBy`) — is ABANDONED, not dropped: dropped, it would
      * come back from any device that still had it, and with more reading
      * in it than the new one it would win (`oneLivePlan`) — the reader's
      * fresh start undone by the next sync.
      */
     khatmah: [
-      ...prev.khatmah.map(k => (isLivePlan(k) ? { ...k, abandonedAt: now } : k)),
+      ...prev.khatmah.map(k =>
+        isOpenPlan(k) ? { ...withoutSupersede(k), abandonedAt: now } : k,
+      ),
       paced,
     ],
   }));
