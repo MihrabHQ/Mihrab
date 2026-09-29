@@ -284,6 +284,31 @@ codesign --force "${RUNTIME_OPTS[@]+"${RUNTIME_OPTS[@]}"}" \
   "${ENTITLEMENT_OPTS[@]+"${ENTITLEMENT_OPTS[@]}"}" -s "$SIGN_IDENTITY" "$APP"
 codesign --verify --strict "$APP" && echo "▸ Signature verifies ($SIGN_IDENTITY)."
 
+# ── THE MAC MINIMUM, READ OFF THE PRODUCT ─────────────────────────────
+#
+# The configuration is held by __tests__/catalystDeploymentTarget.test.ts,
+# but only the product says what Xcode derived from it: an iOS minimum
+# missing from the SDK's version map falls back to macOS 10.15, which
+# Xcode 27 refuses and an older Xcode (CATALYST_DEVELOPER_DIR) would ship
+# without a word. Below 12 is that fallback and stops the build; any other
+# value than the documented one is said out loud, since CHANGELOG and
+# DISTRIBUTION.md name it. 12.1 is iOS 15.2 through the map.
+EXPECTED_MAC_MIN="12.1"
+mac_min=$(plutil -extract LSMinimumSystemVersion raw -o - "$APP/Contents/Info.plist" 2>/dev/null || true)
+if [ -z "$mac_min" ] || [ "${mac_min%%.*}" -lt 12 ] 2>/dev/null; then
+  echo "✗ The Mac app's LSMinimumSystemVersion is '${mac_min:-missing}': the" >&2
+  echo "  macOS 10.15 fallback is back. Look for a target whose iOS minimum is" >&2
+  echo "  not in the SDK's iOS-to-Catalyst map (SDKSettings.json, iOSMac_macOS)." >&2
+  exit 1
+fi
+if [ "$mac_min" != "$EXPECTED_MAC_MIN" ]; then
+  echo "⚠ The Mac app needs macOS $mac_min, not the documented $EXPECTED_MAC_MIN —" >&2
+  echo "  update CHANGELOG, docs/DISTRIBUTION.md and this line if that is intended." >&2
+fi
+ext_min=$(plutil -extract LSMinimumSystemVersion raw -o - \
+  "$APP/Contents/PlugIns/PrayerWidgetExtension.appex/Contents/Info.plist" 2>/dev/null || true)
+echo "▸ Mac minimum: macOS $mac_min (widgets: macOS ${ext_min:-unknown})."
+
 if [ "$SIGN_IDENTITY" != "-" ]; then
   echo "▸ Checking the entitlements that actually got sealed in…"
   # A TEAM IDENTIFIER FIRST, because without one none of the rest can be

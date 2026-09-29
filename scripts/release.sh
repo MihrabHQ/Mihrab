@@ -337,16 +337,18 @@ for tool in gh git node python3; do
 done
 ok "tools present"
 
-# ── AN XCODE THAT CAN BUILD THE MAC, ASKED FOR IN PREFLIGHT ───────────
+# ── A WORKING XCODE FOR THE MAC, ASKED FOR IN PREFLIGHT ───────────────
 #
 # 2.22.0 found out it had none at the Catalyst step, which is after the
 # whole Android build — five minutes spent to learn something knowable in
-# one second, and a stamped tree to revert afterwards. build-catalyst.sh
-# owns the rule (see the toolchain block at its head); this only asks.
+# one second, and a stamped tree to revert afterwards. Since the Mac left
+# its Xcode 26 pin (2026-09-29) any Xcode that runs will do, so this asks
+# only that one does (or that CATALYST_DEVELOPER_DIR names a real one);
+# build-catalyst.sh owns the check.
 if [ "${SKIP_CATALYST:-0}" != "1" ]; then
   CAT_TOOLCHAIN="$("$ROOT/scripts/build-catalyst.sh" --check-toolchain 2>&1)" || {
     printf "%s\n" "$CAT_TOOLCHAIN" | sed 's/^/    /' >&2
-    die "no Xcode on this Mac can build the Catalyst app — see above"
+    die "no working Xcode for the Catalyst build — see above"
   }
   ok "$(printf '%s' "$CAT_TOOLCHAIN" | head -1 | sed 's/^▸ //')"
 fi

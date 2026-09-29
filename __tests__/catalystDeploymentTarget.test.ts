@@ -69,6 +69,28 @@ describe('the Mac Catalyst deployment target', () => {
     for (const c of at151) expect(setting(c, CATALYST)).toBe(catalystMin);
   });
 
+  it('is one the version map can read, on every target the Mac builds', () => {
+    // Not only the app: any target that builds for Catalyst (today the
+    // widget extension, at 17.0 = macOS 14) derives its Mac minimum the
+    // same way, and a minor release missing from the map falls back just
+    // as 15.1 did. Major releases (x.0) are always in it; so is the value
+    // this file was written against. Anything else must be checked in
+    // SDKSettings.json first — then add it here.
+    const projectIos = configs
+      .filter(c => !/\n\s*SUPPORTS_MACCATALYST = /.test(c))
+      .map(c => setting(c, IOS))
+      .find(Boolean);
+    const onMac = configs.filter(c =>
+      /\n\s*SUPPORTS_MACCATALYST = YES;/.test(c),
+    );
+    expect(onMac.length).toBeGreaterThanOrEqual(4);
+    for (const c of onMac) {
+      const effective = setting(c, CATALYST) ?? setting(c, IOS) ?? projectIos!;
+      expect(effective === catalystMin || /^\d+\.0$/.test(effective)).toBe(true);
+      expect(above(effective, catalystMin!) || effective === catalystMin).toBe(true);
+    }
+  });
+
   it('never lowers a configuration below its own iOS minimum', () => {
     for (const c of configs) {
       const cat = setting(c, CATALYST);
