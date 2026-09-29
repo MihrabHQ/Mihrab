@@ -141,37 +141,34 @@ finishes:
   ./scripts/xcode-cloud.py pause
   ```
 
-### The Mac needs its own Xcode
+### The Mac builds with the same Xcode as everything else
 
-**Xcode 27 cannot build the Catalyst app.** It made a macOS deployment
-target below 12.0 an error, and this project reports 10.15 from somewhere
-no build setting reaches — every pod target, the app target and both
-projects at 12.0, target *and* project level, plus
-`MACOSX_DEPLOYMENT_TARGET=12.0` on the xcodebuild command line, which
-outranks all of them. 105 targets fail before anything compiles. The same
-tree builds clean under Xcode 26.6, so it is the toolchain, not the
-project. The cause is most likely podspec platform metadata upstream in
-React Native; hermes-engine's prebuilt macOS framework declares 10.15 in
-its own `Info.plist`.
+**It did not, from 2.22.0 to 2.27.** Xcode 27 made a macOS deployment
+target below 12.0 an error, the Catalyst build reported 10.15 for 105
+targets, and nothing that set `MACOSX_DEPLOYMENT_TARGET` moved it. The Mac
+was pinned to a second Xcode 26 kept at `/Applications/Xcode-26.app`.
 
-So keep a second Xcode at **`/Applications/Xcode-26.app`**. Do not
-`xcode-select` it — iOS and everything else should stay on the current
-one. `build-catalyst.sh` finds it by itself: it uses the selected Xcode
-when that is 26 or older, falls back to `/Applications/Xcode-26.app`, and
-stops with instructions when neither works. `release.sh` asks the same
-question in preflight, so a missing toolchain costs a second rather than
-being found after the Android build.
+The cause (found 2026-09-29, rewrite plan step 5.1): a Catalyst build has
+no macOS deployment target of its own. Xcode derives it from
+`IPHONEOS_DEPLOYMENT_TARGET` through the SDK's iOS-to-Catalyst version map
+(`SDKSettings.json`, `iOSMac_macOS`), and that map has no entry for 15.1 —
+the app's iOS minimum — so every target at 15.1 fell back to the Catalyst
+floor, iOS 13.1 = macOS 10.15. Catalyst builds now say iOS 15.2
+(macOS 12.1) through `[sdk=macosx*]`, on the app target in
+`PrayerApp.xcodeproj` and for the pods in the Podfile; iOS stays at 15.1.
+`__tests__/catalystDeploymentTarget.test.ts` holds the configuration.
 
-Two knobs, both documented at the head of `build-catalyst.sh`:
-`CATALYST_XCODE` moves the fallback path, and `CATALYST_DEVELOPER_DIR`
-names a toolchain outright and skips the version check — which is also how
-you retest a newer Xcode once upstream fixes this:
+So the Mac app needs **macOS 12.1** or later (it was 10.15; the Homebrew
+cask already asks for Ventura). `Xcode-26.app` is no longer needed.
+`CATALYST_DEVELOPER_DIR` still names a toolchain outright, for trying one
+Xcode against another:
 
 ```sh
-CATALYST_DEVELOPER_DIR="$(xcode-select -p)" ./scripts/build-catalyst.sh
+CATALYST_DEVELOPER_DIR=/Applications/Xcode-beta.app/Contents/Developer ./scripts/build-catalyst.sh
 ```
 
-When that starts working, raise `CATALYST_MAX_XCODE` or delete the block.
+If a Catalyst build ever reports 10.15 again, look first for a target
+whose iOS minimum is not in that version map.
 
 **If the Mac genuinely cannot be built**, a release can still ship the
 other two: `SKIP_CATALYST=1 ./scripts/release.sh X.Y.Z` skips the build,

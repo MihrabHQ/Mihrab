@@ -18,6 +18,23 @@ end
 # something older are raised to it in post_install.
 app_min_ios = '15.1'
 
+# THE MAC'S MINIMUM IS READ OFF THE iOS ONE, and 15.1 cannot be read.
+#
+# A Mac Catalyst build has no macOS deployment target of its own: Xcode
+# derives it from IPHONEOS_DEPLOYMENT_TARGET through the SDK's iOS-to-
+# Catalyst version map (SDKSettings.json, `iOSMac_macOS`). That map has
+# 15.0 → 12.0 and 15.2 → 12.1 and no 15.1 at all, so every target at 15.1
+# fell back to the Catalyst minimum, iOS 13.1 = macOS 10.15. Xcode 26
+# allowed 10.15; Xcode 27 refuses anything below 12.0, and 105 targets
+# failed before compiling a line — which setting MACOSX_DEPLOYMENT_TARGET,
+# anywhere, could never fix, because it is not the setting Xcode reads.
+#
+# So Catalyst builds say 15.2 (macOS 12.1), and only Catalyst builds: the
+# `[sdk=macosx*]` condition leaves iOS at 15.1. The same condition is on
+# the app target in PrayerApp.xcodeproj; __tests__/catalystDeploymentTarget
+# holds both. Found in the rewrite plan's step 5.1 (2026-09-29).
+catalyst_min_ios = '15.2'
+
 target 'PrayerApp' do
   config = use_native_modules!
 
@@ -113,7 +130,17 @@ INS
         if !pod_min.empty? && Gem::Version.new(pod_min) < Gem::Version.new(app_min_ios)
           cfg.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = app_min_ios
         end
+        # And the Mac's reading of it — see `catalyst_min_ios` above. A
+        # target that inherits its minimum gets it from the project level,
+        # below.
+        pod_min = cfg.build_settings['IPHONEOS_DEPLOYMENT_TARGET'].to_s
+        if !pod_min.empty? && Gem::Version.new(pod_min) < Gem::Version.new(catalyst_min_ios)
+          cfg.build_settings['IPHONEOS_DEPLOYMENT_TARGET[sdk=macosx*]'] = catalyst_min_ios
+        end
       end
+    end
+    installer.pods_project.build_configurations.each do |cfg|
+      cfg.build_settings['IPHONEOS_DEPLOYMENT_TARGET[sdk=macosx*]'] = catalyst_min_ios
     end
   end
 end

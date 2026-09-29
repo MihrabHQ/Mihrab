@@ -15,12 +15,11 @@
 # ── SKIP_CATALYST, AND WHY IT IS AN ENV VAR AND NOT A FLAG ────────────
 #
 # Xcode 27 made a macOS deployment target below 12.0 a build error, and
-# this project's Catalyst build reports 10.15 from somewhere no build
-# setting reaches: every pod target, the app target and both projects set
-# to 12.0 at target AND project level did not move it, and neither did
-# `MACOSX_DEPLOYMENT_TARGET=12.0` passed on the xcodebuild command line,
-# which outranks all of them. So the Mac could not be built at all on
-# 2026-09-16, with Android and iOS both ready and gated green.
+# this project's Catalyst build reported 10.15 — so the Mac could not be
+# built at all on 2026-09-16, with Android and iOS both ready and gated
+# green. (The cause was found on 2026-09-29: iOS 15.1 has no entry in the
+# SDK's iOS-to-Catalyst version map; see build-catalyst.sh. It is fixed,
+# and this switch stays for the next thing that stops the Mac alone.)
 #
 # The honest options were to hold the whole release for the Mac or to
 # ship the two platforms that work. This is the second, made explicit:
