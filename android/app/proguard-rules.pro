@@ -55,3 +55,11 @@
 # Preserve line numbers in stack traces for crash reporting.
 -keepattributes SourceFile,LineNumberTable
 -renamesourcefileattribute SourceFile
+
+# ── WorkManager / Room (pulled in by Glance widgets) ─────────────────────────
+# Room instantiates its generated *_Impl class by reflection; without these
+# the app dies at launch in InitializationProvider (WorkDatabase.canonicalName).
+-keep class * extends androidx.room.RoomDatabase { <init>(...); }
+-keep class androidx.work.impl.WorkDatabase_Impl { *; }
+-keep class androidx.work.impl.** { *; }
+-dontwarn androidx.work.**
