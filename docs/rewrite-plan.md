@@ -754,6 +754,7 @@ one. It is not a rewrite target.
 | 2026-09-29 | P1.5, P1.7, compile check | The Android side of 1.5 and 1.7 compiled against the real Android framework (API 37 android-all, org.json) with Kotlin 2.2.0, the React Native bridge and `androidx.core` stubbed (their Maven hosts are blocked here): `PrayerWidgetProvider`, `PrayerWidgetLogProvider`, `PrayerWidgetModule`, `WidgetPayloadSource`, `MihrabLiveActivityModule`, `MihrabLiveActivityService`, together with the contract and every Glance file. No errors, no new warnings. Not an AGP build: the device pass step 0 still builds it for real. The Swift side of both steps is still not compiled anywhere; the contract harness in CI compiles `ios/Contract`, not the app or widget targets. | No. |
 | 2026-09-29 | P3, shell fixes | The four gates the port found wrong are fixed in the shell too, so shadow mode compares two correct answers: the Google-classes check counts matches (`grep -c`) instead of `grep -q` in a `pipefail` pipe, in release.sh and verify-release.sh; `xcode-cloud.py ensure` prints why `start` failed before it exits 2; build-catalyst.sh stops on a signature that does not verify (both now `--verify --strict --deep`, same words); release.sh unregisters the unpacked zip on every `die` (`forget_unpacked_app`). The other pipes into `grep -q` were captured too, among them `git log | grep -q .` in the tap check, which read "unpushed" as "pushed". Also found: build-catalyst.sh (and the port) waited for `prayer_widget_payload_v1`, which 1.7 stopped writing — it waits for `_v2` now, and docs/release/catalyst-widgets.md says so. | No. |
 | 2026-09-29 | P3, review fixes | A review of the release tool, fixed in the shell wherever the shell does the same thing, so shadow mode still compares like with like. The HTTP timeout now covers the body (it was cleared on the headers) and a request with no answer keeps its reason. A failing command that decides a stop has its stderr shown (`shown()`); a crash is written to `.release-attempts.log` like a stop; a dry run no longer appends the journal or makes the release commit. The Catalyst build hands the machine back on every exit after the smoke launch (the shell from its EXIT trap), unregisters the notarisation check copy before removing it, and restores Podfile.lock on a Ctrl-C (`Io.onInterrupt`). Gates that passed without looking: the Google-classes check on an APK with no readable dex, P12 on a commit message containing RUNNING, `ensure` on minutes that are not a number (NaN polled for ever). The cask's `depends_on` is compared with the app before publishing (B6 and release.sh's zip gate), not only in verification, and the array form `[:arm64]` is read. Shadow mode writes nothing: no fetch, git with `GIT_OPTIONAL_LOCKS=0`, no app unpacked (the cask compared off the plist and executable alone), held by a read-only allow-list test; it stops where the shell stopped on jest or tsc; iOS and CI lines asked a minute apart are notes when either is ⧗; U8 is held against XC_STARTED. `RELEASE_TS=1` on Node < 22.6 warns and runs the shell. | No. |
+| 2026-09-29 | Review of the rewrite | Every part of `rewrite` reviewed again (iOS, Android, TypeScript, the release tool) and each finding fixed with a test where one can hold it. **Build breaks:** the Live Activity's `Row.CodingKeys` lacked `minutes`, so neither the app nor the Live Activity extension compiled — found by type-checking the non-contract Swift against stubs of SwiftUI, WidgetKit and ActivityKit under a Linux Swift 6.1, with runtime harnesses over the fixtures; build-catalyst.sh (and the port) waited for `prayer_widget_payload_v1`, which 1.7 stopped writing. **iOS:** `startV2` with nothing ahead ends the card; one `Row.at`; v2 adapted once per payload, day and minute, and logged when it does not adapt. **Android:** countdowns and the boundary alarm are instants (`WidgetInstants`, tested across Stockholm's spring and autumn nights), the Live Activity's Hijri date key is `WallClock`'s (Arabic digits and the Buddhist year had kept it from ever matching), the service no longer crashes when started with nothing to draw, the Live Activity re-adapts the stored shared payload on every start without one, a clock or zone change redraws through its own receiver and the stale-offset rebuild is retried only from contexts allowed to start it, and the three compiler warnings are gone. **Khatmah:** "previous day" on a plan by date counts yesterday in pages; an abandoned plan past the TTL is kept as a skeleton (dropped, an offline copy came back and took the khatmah over); "most progress" is Ḥafṣ pages, then ayahs; the merged list is ordered by start then id. **Widgets:** a week of today alone carries a known tomorrow (no next prayer after ʿIshāʾ otherwise); a week of per-day Hijri dates (`hijriDays`); a headless refresh builds in the app's language. **Tests:** jest never reaches the network (the audio suites were fetching everyayah.com — the flake); a store-level khatmah fuzz through the wire. **CI:** Node 22; a "Native builds" workflow builds Android with the Glance flag off and on, the iOS app with both extensions, and Mac Catalyst — its first runs found the CodingKeys break, the WorkManager duplicates and `mutableIntStateOf` in the Glance build. Jest 420 suites / 6,394 tests; the Swift and Kotlin contract harnesses; the Kotlin compile check with no warnings. | No. |
 
 ## Open items (not a step yet, each needs an owner)
 
@@ -763,39 +764,52 @@ one. It is not a rewrite target.
   checked by comparing decoded content, not by drawing; the native
   adapters are held to the 8 English scenarios only. The next release's
   device pass should cover en/sv/ar × 12/24 h × light/dark on both.
-- **iOS falls back from v2 to v1 silently.** `loadStoredWidgetPayload`
-  chains `try?`, so a v2 that never adapts is invisible; Android logs it.
-  Log it before 1.7 removes the fallback.
-- **The adapter's cost on iOS is unmeasured**: v2 decode, re-serialise,
-  v1 decode — three passes where there was one, in six widget kinds.
-- **`setDataV2` with an empty v2** removes the key on iOS and stores `""`
-  on Android (harmless — it fails to parse and falls back). Make them the
-  same when the module is next touched.
-- **Headless clock language**: `syncPrayerWidget` builds the clock from
-  `i18n.language`, which a headless republish does not set. Same as v1,
-  not a regression.
+- ~~**iOS falls back from v2 to v1 silently**~~ — done 2026-09-29: a v2
+  that does not adapt is logged once per payload (category `payload`).
+- ~~**The adapter's cost on iOS**~~ — done 2026-09-29: adapted once per
+  stored payload, day and minute, shared by every widget kind and entry
+  (as Android). Not measured on a device.
+- ~~**`setDataV2` with an empty v2**~~ — done 2026-09-29: both platforms
+  remove the key, and Android rejects a write that leaves nothing readable.
+- ~~**Headless clock language**~~ — done 2026-09-29: a headless republish
+  applies the saved language and the madhab's name for dawn before it
+  builds, so the whole payload — not only the clock — is in the app's
+  language.
+- **Khatmah reading in the translation view** is not counted: only muṣḥaf
+  page turns move the plan by themselves; in translation the reader
+  presses "done" or marks. By design so far (`readerMarks.ts`), but the
+  owner asked for tracking "in both modes" — decide whether that meant
+  the two plan types (as built) or the two reading views.
 - **Two live khatmahs**: the losing plan's reading is not carried into the
   kept plan (not asked for). A device on a build from before `supersededBy`
   shows both plans live and the earlier one first, as it always did. A
   kept plan that ended on a device that never knew the other plan leaves
   that plan as the khatmah elsewhere — a merge alone never ends a plan.
-- **The Mac is built nowhere but a release.** Notarising an Xcode 27 build
-  is first proven by the next release; a Catalyst build before release day
-  (or in CI) would find the next toolchain break earlier.
+- **The Mac is signed and notarised nowhere but a release.** CI builds it
+  (unsigned, React from source) on every push since 2026-09-29, so a
+  compile break shows on the pull request; signing and notarising an
+  Xcode 27 build is still first proven by the next release.
 - **5.2's Mac zip**: worked around on `rn-0.87` (React built from source
   for the Mac); proven only when `build-catalyst.sh` signs and notarises.
-- **The Glance build has never been built.** Nothing builds with
-  `-PmihrabGlanceWidgets=true` — not CI, not a release — so the Glance
-  sources can rot unnoticed until the gate is measured. A CI job that
-  assembles the F-Droid debug APK with the flag would hold them; the first
-  such build also proves the AGP 9 wiring (the build types' manifest, the
-  Compose plugin with `builtInKotlin=false`, R8 on Play).
+- **The Glance build under R8.** CI assembles the F-Droid debug APK with
+  `-PmihrabGlanceWidgets=true` since 2026-09-29 (its first runs found two
+  breaks: WorkManager 2.7/2.8 duplicate classes, and `mutableIntStateOf`,
+  newer than the Compose runtime Glance brings). The Play release build
+  with R8 and the flag is still built nowhere.
 - **Glance's version**: 1.1.1 is the last release checked here (against
   its published API file, not its binary); take the current stable at the
   gate and re-check the stubs' API against it.
-- **The v1 fallback**: the Glance cards read v2 only. Until 1.7 removes
-  v1, a payload the app could only write as v1 shows "Open Mihrab" on a
-  Glance card where the RemoteViews twin still draws.
+- ~~**The v1 fallback**~~ — moot since 1.7: the app writes v2 alone.
+- **Hijri dates past a week**: the payload carries a week of per-day Hijri
+  dates (`hijriDays`); a widget left longer than that without the app
+  shows no Hijri date rather than a stale one.
+- **Android 17's "At" metric** decides 12- or 24-hour from whether the
+  payload's `nextTimeDisplay` differs from `nextTime`, because the
+  v1-shaped payload carries no `hour12`. Right for every payload the app
+  writes; an `hour12` in the Live Activity payload would make it explicit.
+- **CI on pushes to `rewrite`**: the "Native builds" workflow runs on pushes
+  to `rewrite` so it could be proven before a pull request existed. Drop
+  `rewrite` from its `push` branches when the branch merges.
 - ~~**The Homebrew cask**~~ — done 2026-09-29: it asked for Ventura (a
   guess from the day the tap was made) while the app needs 12.1, so it
   now says `:monterey`, keeps `:arm64` (the build is Apple silicon only),

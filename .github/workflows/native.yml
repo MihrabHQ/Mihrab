@@ -11,8 +11,10 @@ name: Native builds
 on:
   pull_request:
     branches: [main]
+    paths-ignore: ['docs/**', '**/*.md']
   push:
     branches: [main, rewrite]
+    paths-ignore: ['docs/**', '**/*.md']
   workflow_dispatch:
 
 concurrency:

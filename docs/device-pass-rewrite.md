@@ -8,9 +8,12 @@ steps, in the progress log of `docs/rewrite-plan.md`.
 ## 0. Builds
 
 - [ ] `npx tsc --noEmit` and `npx jest` are clean.
-- [ ] `scripts/contract-test-native.sh` passes. It compiles the Swift
-  changes, which nothing has compiled yet: fractional queue times and
-  `WallClock.localCalendar`.
+- [ ] `scripts/contract-test-native.sh` passes (also in CI, and the Swift
+  side under a Linux Swift 6.1 here).
+- [ ] The "Native builds" CI workflow is green on the branch's head: the
+  F-Droid debug APK with the Glance flag off and on, the iOS simulator
+  build (app and both extensions) and the Mac Catalyst build. Unsigned
+  builds only; the steps below are what CI cannot do.
 - [ ] Android builds with the ported screens patch:
   `npm run android:assembleFdroidRelease`, and the beta build.
 - [ ] iOS simulator Debug and Release build.
@@ -57,6 +60,28 @@ steps, in the progress log of `docs/rewrite-plan.md`.
   the app. The widgets still draw, from the stored v1. After the app runs
   once, the v1 key is gone and they draw from v2.
 
+- [ ] **Clock changes (Europe/Stockholm).** On the spring and the autumn
+  night, after ʿIshāʾ: the widget's countdown and the Live Activity end
+  on Fajr's minute. On the autumn night between 02:00 and 03:00 the
+  countdown does not run an hour long.
+- [ ] **Time zone change with the app closed.** The widgets redraw on
+  their own, logcat shows the rebuild being asked for once, and not again
+  within 15 minutes.
+- [ ] Turn the Live Activity off while its service is not running, then
+  wait past the next prayer: no crash (the wake alarm is cancelled with
+  it).
+- [ ] After an update and after a reboot, the Live Activity comes back
+  from the stored shared payload without the app being opened.
+- [ ] Android 17's "At" metric with the app on 24-hour and the phone on
+  12-hour (and the other way): the metric and the title read the same.
+- [ ] Hijri widget past midnight with the app closed: it shows the new
+  day's date, not yesterday's.
+- [ ] "Last read" on the reading widget just after midnight says
+  "yesterday", not "today".
+- [ ] TalkBack reads the widgets' refresh glyph in the app's language.
+- [ ] A widget refreshed with the app killed (the refresh glyph) comes
+  back in the app's language and clock, not English.
+
 ## 2. iPhone simulator
 
 - [ ] App launches (scene life cycle) and the widgets draw from v2.
@@ -73,6 +98,13 @@ steps, in the progress log of `docs/rewrite-plan.md`.
   away and open the app: it comes back, current.
 - [ ] If possible, a Live Activity running across the night the clocks
   change: the countdown ends at the right minute.
+
+- [ ] Live Activity with nothing ahead (the payload's days run out): the
+  card ends rather than counting down to a time that has passed.
+- [ ] Console (subsystem `com.hassan.prayerapp.widget`, category
+  `payload`): no "could not be adapted" line in normal use.
+- [ ] Hijri widget past midnight with the app closed shows the new day's
+  date.
 
 ## 3. iPad (simulator) and this Mac
 
@@ -99,6 +131,13 @@ On the phone and the Mac, paired:
 - [ ] With only a skipped page left there is no "done" button, and Home
   offers the skipped page.
 
+- [ ] Two devices, one khatmah each before they sync, one with ten pages
+  at the front of the book and one with five at the back: after the sync
+  both keep the one with ten (pages, not ayahs).
+- [ ] A plan by date: read days one and two on their days, part of day
+  three, then "previous day": back to the end of day one's reading, not
+  into it.
+
 ## 5. The Glance widgets (Phase 4 gate)
 
 The measuring build: `./gradlew assembleFdroidRelease
@@ -107,8 +146,8 @@ own invocation). Each Glance card is in the picker as "… (Glance)" beside
 the card it ports. Record the numbers in the 4.2 table of
 `docs/rewrite-plan.md`; the pass criteria are there.
 
-- [ ] The flag build assembles at all (first time under AGP), and the
-  default build's APK has no `androidx.glance` classes.
+- [ ] The default build's APK has no `androidx.glance` classes. (That
+  the flag build assembles is CI's "Android (Glance on)" job now.)
 - [ ] APK size with and without the flag, F-Droid and Play.
 - [ ] Resize, on the Pixel launcher, One UI, and EMUI or Lawnchair: each
   Glance card beside its twin at 1×1 to 4×4, upright and sideways. The
@@ -127,3 +166,8 @@ the card it ports. Record the numbers in the 4.2 table of
   after a reboot.
 - [ ] Memory (`dumpsys meminfo`) and time from a payload write to every
   card redrawn, with all nine placed.
+- [ ] An Arabic time on an English phone, and an English time on an
+  Arabic phone: the Glance card puts the AM/PM marker where its twin
+  does. (The port assumes a Glance `Row` is mirrored in an RTL host.)
+- [ ] With a Glance card's session running, a payload write redraws it
+  once, not twice (the refresh counter and the update broadcast).
