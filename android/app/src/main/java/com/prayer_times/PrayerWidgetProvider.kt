@@ -680,7 +680,7 @@ open class PrayerWidgetProvider : AppWidgetProvider() {
           // is certainly not a reason to fail the whole check.
           false
         }
-      }
+      } || GlanceWidgetHook.anyPlaced(context)
     }
 
     fun requestUpdate(context: Context) {
@@ -733,6 +733,9 @@ open class PrayerWidgetProvider : AppWidgetProvider() {
       draw(context) { PrayerWidgetReadingProvider.requestUpdate(context) }
       draw(context) { PrayerWidgetHijriProvider.requestUpdate(context) }
       draw(context) { PrayerWidgetTasbihProvider.requestUpdate(context) }
+      // The Glance ports (docs/rewrite-plan.md, Phase 4). A no-op unless the
+      // app was built with -PmihrabGlanceWidgets=true; see GlanceWidgetHook.
+      draw(context) { GlanceWidgetHook.requestUpdate(context) }
     }
 
     /** One widget's redraw, contained. */

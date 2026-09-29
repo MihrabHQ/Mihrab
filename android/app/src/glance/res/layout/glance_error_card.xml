@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  What a Glance widget shows when its composition throws: the Mihrab card
+  and one line, filled in by WidgetErrorCard.errorCard with the exception's
+  class name (MihrabGlanceWidget.onCompositionError). Also Glance's
+  `errorUiLayout`, so even a failure Glance handles itself is a Mihrab card
+  rather than the library's grey box.
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@id/widget_shell"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/widget_card_inset">
+
+    <ImageView
+        android:id="@id/widget_card"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY"
+        android:src="@drawable/widget_card"
+        android:contentDescription="@null"
+        android:importantForAccessibility="no" />
+
+    <FrameLayout
+        android:id="@id/widget_root"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp">
+
+        <TextView
+            android:id="@id/widget_placeholder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="@string/widget_error"
+            android:textColor="#F87171"
+            android:textSize="12sp" />
+    </FrameLayout>
+</FrameLayout>

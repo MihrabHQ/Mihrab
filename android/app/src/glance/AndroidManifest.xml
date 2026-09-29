@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The Glance widgets' receivers (docs/rewrite-plan.md, Phase 4).
+
+  Merged into the app only when it is built with -PmihrabGlanceWidgets=true
+  (android/app/build.gradle wires this file in as the build types' manifest).
+  The shipping build never sees it: every RemoteViews provider in
+  src/main/AndroidManifest.xml stays registered exactly as it was, and
+  placed widgets keep working. The switch happens after the 4.2 gate is
+  measured on devices.
+
+  Only APPWIDGET_UPDATE here. Boot, unlock, the prayer-boundary alarm and the
+  app's payload write all reach PrayerWidgetProvider, whose fan-out redraws
+  these through GlanceWidgetHook — one fan-out, as the comment on
+  USER_PRESENT in the main manifest asks.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  <application>
+    <receiver
+      android:name="com.prayer_times.glance.HijriGlanceReceiver"
+      android:exported="true"
+      android:label="@string/glance_widget_name_hijri">
+      <intent-filter>
+        <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+      </intent-filter>
+      <meta-data
+        android:name="android.appwidget.provider"
+        android:resource="@xml/glance_hijri_info" />
+    </receiver>
+  </application>
+</manifest>

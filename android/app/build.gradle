@@ -3,6 +3,29 @@ apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
 
 /**
+ * THE GLANCE WIDGETS, BEHIND A FLAG (docs/rewrite-plan.md, Phase 4).
+ *
+ * Every home-screen widget has a Jetpack Glance port in src/glance, and none
+ * of it ships until the 4.2 gate is measured on devices (APK size, resize on
+ * three launchers, memory and render time). So by default nothing changes:
+ * src/glanceOff supplies a no-op GlanceWidgetHook, no Compose compiler, no
+ * Glance dependency, no receivers — the shipping build, F-Droid's included,
+ * is what it was.
+ *
+ *     ./gradlew assembleFdroidDebug -PmihrabGlanceWidgets=true
+ *
+ * builds the measuring APK instead: the Glance sources, their resources and
+ * receivers (src/glance/AndroidManifest.xml, merged as the build types'
+ * manifest), androidx.glance, and the Compose compiler plugin. Each Glance
+ * card appears in the picker beside the RemoteViews card it ports, which
+ * stays registered exactly as before, so placed widgets keep working.
+ */
+def glanceWidgets = (findProperty("mihrabGlanceWidgets") ?: "false").toString().toBoolean()
+if (glanceWidgets) {
+    apply plugin: "org.jetbrains.kotlin.plugin.compose"
+}
+
+/**
  * This is the configuration block to customize your React Native Android app.
  * By default you don't need to apply any configuration, just uncomment the lines you need.
  */
@@ -167,7 +190,16 @@ android {
     sourceSets {
         main {
             assets.srcDirs += ["$rootDir/../assets"]
+            // One GlanceWidgetHook or the other; see `glanceWidgets` above.
+            java.srcDirs += [glanceWidgets ? "src/glance/java" : "src/glanceOff/java"]
+            if (glanceWidgets) {
+                res.srcDirs += ["src/glance/res"]
+            }
         }
+    }
+
+    buildFeatures {
+        compose glanceWidgets
     }
 
     /*
@@ -383,5 +415,32 @@ dependencies {
         implementation("com.facebook.react:hermes-android")
     } else {
         implementation jscFlavor
+    }
+
+    // Jetpack Glance, for the widget ports behind -PmihrabGlanceWidgets.
+    // Apache 2.0 and built from AOSP like every androidx library here; it
+    // brings the Compose runtime and WorkManager (which Glance runs its
+    // sessions on), none of it Play Services. 1.1.1 is the last Glance
+    // release this was checked against; take the current stable at the gate.
+    if (glanceWidgets) {
+        implementation("androidx.glance:glance-appwidget:1.1.1")
+    }
+}
+
+/*
+ * The Glance receivers' manifest, merged as each build type's own — a
+ * source set has one manifest, and main's is the shipping one. Guarded so a
+ * build type that grows a manifest of its own later is not silently
+ * replaced.
+ */
+if (glanceWidgets) {
+    ["debug", "release", "beta"].each { buildType ->
+        if (file("src/$buildType/AndroidManifest.xml").exists()) {
+            throw new GradleException(
+                "src/$buildType/AndroidManifest.xml exists, and -PmihrabGlanceWidgets=true " +
+                "would replace it with src/glance/AndroidManifest.xml. Merge the two first."
+            )
+        }
+        android.sourceSets.getByName(buildType).manifest.srcFile("src/glance/AndroidManifest.xml")
     }
 }

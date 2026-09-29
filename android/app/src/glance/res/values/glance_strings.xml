@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Picker names for the Glance widgets. Only in the build with
+  -PmihrabGlanceWidgets=true, where each Glance card sits in the picker next
+  to the RemoteViews card it ports, so the two need telling apart. English
+  only on purpose: this is a measuring build, not a shipping one; the
+  switch (docs/rewrite-plan.md, 4.3) moves the real names onto these
+  receivers and drops this file.
+-->
+<resources>
+    <string name="glance_widget_name_hijri" translatable="false">Mihrab · Hijri date (Glance)</string>
+</resources>

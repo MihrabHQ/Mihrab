@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The card behind every Glance widget, embedded with AndroidRemoteViews.
+
+  The same ImageView the RemoteViews layouts draw (`@id/widget_card`, the
+  white rounded `widget_card` drawable), so `WidgetCard.paint` recolours it
+  exactly as it does theirs: colour filter for the hue, image alpha for the
+  opacity. Glance's own `cornerRadius` only rounds on Android 12+; this
+  rounds on every version the app supports. See MihrabCard in GlanceSupport.kt.
+-->
+<ImageView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@id/widget_card"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:scaleType="fitXY"
+    android:src="@drawable/widget_card"
+    android:contentDescription="@null"
+    android:importantForAccessibility="no" />
