@@ -4,10 +4,12 @@
 > follow-up), P5.1 and P5.3 done. Done in code on the `rewrite` branch and
 > waiting on their proof: P1.5 and P1.7 (Phase 1 complete in code), P5.2
 > (the Android build with the ported screens patch, the Mac signed and
-> notarised, the device pass), and P3.1–P3.4 (two releases cut with the
-> shadow beside them); 3.5 prepared behind `RELEASE_TS=1`, not switched.
-> Phase 4 in progress. See the progress log and "Open items" below it.**
-> Decision (Hassan,
+> notarised, the device pass), P3.1–P3.4 (two releases cut with the
+> shadow beside them; 3.5 prepared behind `RELEASE_TS=1`, not switched),
+> and Phase 4 (all six widgets on Glance, behind the off-by-default
+> `mihrabGlanceWidgets` flag, compile-checked only; its 4.2 gate waits on
+> the device measurements). See the progress log and "Open items" below
+> it.** Decision (Hassan,
 > 2026-09-28): no rewrite of the app — React Native stays, and so does the
 > language. Instead, rewrite the four parts where the history says the same
 > kinds of bug keep returning, one shippable step at a time, riding along
@@ -522,16 +524,105 @@ arguments to the TS and exit with its status.
 **4.1 Trial one widget.** Port the smallest (Hijri, 185 lines, or Tasbih,
 295) to Glance, reading the Phase 1 payload. Measure: lines of code, APK
 size, resize behaviour on at least three launchers, the F-Droid build
-(Compose compiler with Kotlin 2.1), memory and render time.
+(Compose compiler with Kotlin ~~2.1~~ 2.2 — the branch is on 2.2.0 since
+5.2), memory and render time. **Done in code 2026-09-29** on
+the `rewrite` branch (Hassan: finish the steps in code, verify on devices
+later) — Hijri, from payload v2's typed `hijri` block through the
+generated reader. The measurements that need a device are the 4.2 table
+below; see the progress log.
+
+*How it is built.* Everything Glance lives in `android/app/src/glance`
+and is compiled only with `-PmihrabGlanceWidgets=true` (default `false` in
+`gradle.properties`): the sources and resources, the receivers (merged as
+the build types' manifest), `androidx.glance:glance-appwidget:1.1.1` and
+the Kotlin Compose compiler plugin. The default build compiles
+`src/glanceOff`'s no-op `GlanceWidgetHook`, so the shipping app has no
+Glance, no Compose and no new receivers; with the flag, each Glance card
+sits in the picker beside the RemoteViews card it ports ("… (Glance)"),
+which stays registered as it was. `PrayerWidgetProvider`'s fan-out calls
+the hook, so boot, unlock, the boundary alarm, the payload write and every
+tap redraw both kinds, and a home screen of Glance cards alone still arms
+the alarms.
+
+*F-Droid.* Since Kotlin 2.0 the Compose compiler is part of Kotlin
+(`org.jetbrains.kotlin.plugin.compose`, versioned with it, on Maven
+Central, built from JetBrains' Apache-2.0 source), so there is no separate
+Google-hosted compiler artifact to trust. Glance and what it brings (the
+Compose runtime, WorkManager with Room, DataStore) are AOSP androidx
+libraries from Google's Maven, which F-Droid's builds already take for
+`androidx.camera` and the rest; none is Play Services. What F-Droid does
+change is the size: its build runs without R8, so every class of those
+libraries lands in the APK — the number to measure.
 
 **4.2 Decision gate.** Continue only if the trial is smaller and sizes
 correctly everywhere tested. Otherwise record why and stop here — the
 Phase 1 contract already removes the parsing half of the widget bugs.
+**Written down 2026-09-29; not passed** — half of it can only be measured
+on devices. What was measured here, with no Android SDK (a JVM compile
+against Robolectric's android-all for API 37 and Glance's published 1.1
+API — see the progress log):
+
+| Measured here | Result |
+|---|---|
+| Code, the trial (Hijri) | 214 code lines (provider 121 + layout 93) → 86 (`HijriGlanceWidget.kt`); non-blank, non-comment |
+| Code, all six | 3,954 → 1,949 code lines. The RemoteViews side counts all of `PrayerWidgetProvider.kt` (1,059), whose fan-out, alarms and payload cache stay; the Glance side includes its shared support (`GlanceSupport.kt`, the base class, the receiver registry, three small layouts: 476) |
+| Per widget | Tasbih 367 → 206, Streak 353 → 188, Reading 507 → 250, Log 691 → 298, Prayer times: layouts 663 + provider → 445 |
+| Compile | Kotlin 2.2.0 with its Compose compiler plugin: every Glance file, the contract and the 18 widget files of `src/main` they reach, 31 files, no warnings in new code; each 4.x commit compiled on its own |
+| Our code's weight (JVM class files, a proxy for dex) | Glance widgets 59 classes / 414 methods / 384 KiB; the RemoteViews providers and helpers they replace 22 / 217 / 196 KiB |
+| Library weight (proxy) | Compose runtime 1.6 (JetBrains' JVM build of the same code): 598 classes / 4,992 methods; ui-unit and ui-geometry 58 / 784. Glance itself, WorkManager/Room and DataStore could not be fetched here (Google's Maven is blocked) |
+
+| Must be measured on devices | Pass if |
+|---|---|
+| APK size, `assembleFdroidRelease` and `bundlePlayRelease`, flag on vs off | the growth is written down and Hassan accepts it (proposed: under 1 MB on Play's download; F-Droid, without R8, will be several MB) |
+| Resize on three launchers (Pixel, One UI, one more — EMUI or Lawnchair), every Glance card beside its RemoteViews twin, 1×1 to 4×4, both orientations | every card shows the same variant as its twin and no line is cut |
+| API 24–30 (emulator) | the card is rounded and tinted (it is the RemoteViews card, embedded) and the countdown ticks |
+| Memory: `dumpsys meminfo` across a redraw of nine placed cards | within a few MB of the RemoteViews-only build; no widget process death |
+| Render time: payload write to every card redrawn (logcat) | under a second for nine cards on a mid-range phone |
+| The F-Droid recipe with the flag | builds from source unchanged apart from the flag; the scanner is clean |
+| Parity: en/sv/ar (RTL), 12/24 h, opacity, tint, highlight; tasbih and log taps (queue, undo, the app told); countdown past ʿIshāʾ; tap targets | as the RemoteViews twin, apart from the differences listed under 4.3 |
+| The flag build itself | never built by AGP yet: it has to assemble, merge the manifest and pass R8 on Play |
 
 **4.3 Port the rest, one widget per release** (Streak, Reading, Log,
 Prayer times last); the practice graph stays a bitmap inside Glance.
 *Phase exit:* RemoteViews layouts deleted; widget fixes per release down
-against the Phase 0 baseline.
+against the Phase 0 baseline. **Done in code 2026-09-29, not switched**:
+Tasbih, Streak, Reading, Log (both picker entries), Prayer times (all
+three), one commit each, behind the same flag. No "HH:mm" is parsed: times
+are the contract's minutes, text is `WallClock.text`/`parts`, instants
+`WallClock.epochMs` on the event's own date. The practice graph is still
+`PracticeGridBitmap`, shown as a Glance `Image`. "One widget per release"
+now means one *switch* per release: after the gate, each release moves one
+widget's picker entry and intent filters onto its Glance receiver and
+drops its RemoteViews provider and layout (keeping the `*_preview.xml`
+layouts, which the picker shows). With the last switch, boot, unlock and
+the boundary alarm — received by `PrayerWidgetProvider` today, which then
+redraws the Glance cards through the hook — need a receiver of their own
+(the fan-out and the alarms are not rendering and stay). The refresh
+glyph already has its own Glance callback (`PrayerRefresh`).
+
+*What Glance could not do as RemoteViews did, and what stands in:*
+- no Chronometer — the countdown is a Chronometer embedded with
+  `AndroidRemoteViews` (`glance_countdown.xml`);
+- `cornerRadius` rounds on Android 12+ only — the card is the RemoteViews
+  card embedded (`glance_card.xml`, painted by `WidgetCard.paint`);
+- no text auto-sizing — the Hijri date and the compact line's time are
+  measured, as the strip's times already were;
+- no spans — the 62% meridiem and the red make-up count in the streak
+  summary are separate Texts on one line, bottom-aligned where the layouts
+  aligned baselines;
+- no letter spacing, no `includeFontPadding`, no light weight (the compact
+  line's time is regular, not light);
+- the Continue Reading bar is Glance's, in the accent on a faint track,
+  where the ProgressBar took the launcher theme's colours;
+- a Row, Column or Box takes at most ten children — the rule is one
+  element and the tasbih dots carry their own gap;
+- no v1 fallback: without payload v2 a Glance card says "Open Mihrab".
+
+*And where it now does better:* the countdown past ʿIshāʾ aims at the next
+day's first time exactly (the provider counted to today's first time plus
+24 hours); the Log's 30dp chips on a short card apply below Android 12 too;
+a Log block that is not today's no longer counts down to a time on another
+day.
 
 ## Phase 5 — React Native upgrade (and the Mac off Xcode 26, done in 5.3)
 
@@ -655,6 +746,10 @@ one. It is not a rewrite target.
 | 2026-09-29 | P3.1 | Recheck: the scripts had not moved since the plan was written (release.sh 1,196 lines, build-catalyst.sh 925, verify-release.sh 520 — 42 more than the plan's table, from the cask's `depends_on` checks — build-ios-appstore.sh 363, xcode-cloud.py 502, appstore-metadata.py 218). Inventory and design written ("Phase 3 inventory", "Phase 3 design"): 12 preflight gates, 6 build steps, 8 publish steps plus install, CI and cleanup, 12 verification checks, 15 Catalyst steps, 11 local-iOS steps, 7 Xcode Cloud commands; 13 test files read the scripts' text. Two things the plan named are not in the scripts: there is no `RELEASE_EXIT=` line anywhere (whatever wraps the release prints it from the exit status, so the status is what must stay), and "five scripts" are six. Runtime chosen: Node's own type stripping (`node --experimental-strip-types`, ≥ 22.6; `package.json` asks for ≥ 22.11), no new dependency — the repo has `tsc` and nothing to run TypeScript with, and a compiled copy would be a second thing to keep in step. | The design section is the plan for 3.2–3.5. |
 | 2026-09-29 | P3.2–P3.4 | Written on `rewrite`: `scripts/release/`, 17 modules, 5,089 lines, every command, HTTP call, file and clock reached through `io.ts` — preflight P1–P12, build B1–B6, publish U1–U8 with install, CI and cleanup, verification V1–V12, the Catalyst build C1–C15, the local iOS build A1–A11, `xcode-cloud` (all seven commands, same exit codes, ES256 token from `node:crypto` instead of pyjwt) and the listing writer; every lesson comment that explains a gate carried over, shortened. Shadow mode in `release.sh` (preflight, build, publish) and `verify-release.sh` (every check, `pend` included, through a wrapper that leaves the one pinned `PENDING=1` line alone): the shell notes each verdict, the TS compares and appends to `.release-shadow.log` (gitignored) and prints one line; it cannot change the shell's verdict or status — tested by running the real scripts against a stub. Verified here: `npx tsc --noEmit` clean, `tsc -p scripts/release` (erasable syntax only) clean, eslint clean on the new files, `bash -n` on both scripts, 9 new test files / 191 tests — every gate against fakes in both directions, the publish order and a dry run that pushes, tags, uploads and submits nothing, and the two shell scripts run for real with a stub — and the 13 text-reading test files unchanged and green; full jest 411 suites / 6,320 tests (1 skipped, as before; 402 / 6,129 before). Nothing has run on a Mac: no gate has met a real `codesign`, `notarytool`, App Store Connect, GitHub or Gradle. Found while porting (the shell is unchanged; the TS does the right thing, and the shadow log will show where they differ): the Google-classes gate in both release.sh and verify-release.sh is `unzip -p … \| strings \| grep -qE` under `pipefail`, the very trap the script's own header warns about — `grep -q` leaves on the first match, `strings` takes SIGPIPE, the pipeline reports 141 and the `if` reads a found class as "not found", so on a real-size dex it cannot fire; `xcode-cloud.py ensure` turned every exit from `start` into a bare 2 and dropped Apple's message, which is why 2.25.0's log said "Starting one by hand" and nothing after; build-catalyst.sh's `codesign --verify --strict "$APP" && echo …` is an AND-list, exempt from `set -e`, so a signature that fails to verify is passed over in silence; release.sh's zip gate exits before unregistering the temp copy when it stops, leaving the LaunchServices record its own comment warns about. | Yes: 3.1–3.4 marked done in code, 3.5 written out as prepared-not-switched with what the switch itself is. The shell's `CYCLE_PATHS` gains `scripts/release`. |
 | 2026-09-29 | P3.5, prepared | `RELEASE_TS=1 ./scripts/release.sh X.Y.Z [--dry-run]` and `RELEASE_TS=1 ./scripts/verify-release.sh vX.Y.Z` hand everything to the TypeScript (`exec`, so the exit status is the TS's); off by default, documented in DISTRIBUTION.md §1. Signing secrets stay where they were: the TS reads the same keychain profile, `asc.json` and provisioning profile on the Mac, and nothing new is stored. Behavioural tests for everything the text-reading tests hold are in `releaseTool*.test.ts`; the text-reading tests are kept, all green. Left for the Mac, in order: (1) check the Mac's Node (`node --version` ≥ 22.6; the shadow says so in one line if not); (2) cut the next two releases as usual and read `.release-shadow.log` after each — every disagreement is either a TS bug to fix or a shell bug to decide on (the four above are expected to show only if they fire); (3) `RELEASE_TS=1 ./scripts/release.sh X.Y.Z --dry-run` on the Mac, the first time the TS builds, signs and notarises for real; (4) two releases on `RELEASE_TS=1`, which is the phase exit; then retire the shell and the text-reading tests. | No. |
+| 2026-09-29 | P1 finding | Found while porting the widgets: `WallClock.kt` built every date with `Calendar.getInstance`, which follows the locale. On the JVM a Thai locale gives a BuddhistCalendar: the device's key came out as 2569-09-21 — the v2 adapter would match no payload day and draw the last one — and an instant from a payload key landed 543 years out. The bug the iOS widgets had (fixed in the review above) and that `PrayerWidgetProvider.todayDateKey` guards against; whether Android's own libcore ever returns a non-Gregorian `Calendar` could not be checked here (its source is outside the session's network), so the device pass has a Thai item. Every WallClock date now goes through a `GregorianCalendar` either way. `WallClockCalendarTest` (contract-tests/kotlin) asks the same four questions under th-TH, th-TH-u-nu-thai, ja-JP-u-ca-japanese, fa-IR and ar-SA-u-ca-islamic and wants the root locale's answers; it fails on th-TH without the change, checked. Kotlin harness 11 tests pass. | No. |
+| 2026-09-29 | P4.1 | Recheck: the branch is on Kotlin 2.2.0 (5.2), not 2.1, so the Compose compiler is the Kotlin plugin at 2.2.0; Hijri is still the smallest (185 lines + a 124-line layout). Hassan's instruction: do the steps in code now, measure on devices later. Hijri ported (`HijriGlanceWidget.kt`) from payload v2's typed `hijri` block; everything Glance in `src/glance` behind `-PmihrabGlanceWidgets` (off by default), with a no-op hook for the default build — the shipping build is unchanged and every RemoteViews provider stays registered. The shared part written once for all six: the typed payload read once per version, "today"/"next" by the v1 adapter's rules with instants from `WallClock.epochMs`, clock text from `WallClock.parts`, the card as the RemoteViews card embedded (Glance only rounds on 12+), a Chronometer embedded for the countdown (Glance has none), measured text where the layouts auto-sized, the error card with the class name. Compile-checked, not built: no Android SDK in the session and Google's Maven blocked, so a JVM Gradle project compiled the Glance sources, the contract and the 18 `src/main` widget files they reach with Kotlin 2.2.0 and its Compose plugin, against Robolectric's android-all for API 37, the Compose runtime/ui-unit/ui-graphics (JetBrains' JVM builds of the same packages), an `R` generated from the repo's `res/`, and Glance API stubs whose 78 declarations a script holds to androidx's published `api/1.1.0-beta01.txt` (names and parameter order; it fails on a renamed parameter, checked). Also checked: each commit on its own. | Yes: 4.1's measurements split into what a JVM can say and what a device must (the 4.2 table), and the F-Droid question answered in the text (the compiler is Kotlin's; the size is the cost, without R8). |
+| 2026-09-29 | P4.2 | Gate written as a table (Phase 4 above): measured here — code 214 → 86 lines for Hijri and 3,954 → 1,949 for all six (the first figure includes the fan-out and alarms that stay), the Glance code at 59 classes / 414 methods of JVM bytecode against the RemoteViews code's 22 / 217, the Compose runtime at 598 classes / 4,992 methods as a proxy; not measurable here — Glance's own size, WorkManager/Room/DataStore, the APK, launchers, memory, render time, the F-Droid recipe, and the flag build under AGP at all. Pass criteria proposed for each. **Not passed; not claimed.** | Yes: the gate now says what has to be measured and what passes, and the APK-size bar needs Hassan's number. |
+| 2026-09-29 | P4.3 | Ported in code, not switched: Tasbih (queue and projection through an `ActionCallback`), Streak (graph still `PracticeGridBitmap`, fed the typed days in the v1 shape it reads), Continue Reading (three states, three tiers, both taps), Log Today (two entries, dueness and countdown from minutes and instants), Prayer times last (three entries, three designs by `selectLayout`'s rules, extras contained as #31 asks), one commit each, every commit compile-checked on its own. No "HH:mm" parsed in any new code. Same sizes, variants, tap targets and intents as each RemoteViews twin; RTL through start/end as before; opacity, tint and highlight from `resolvedColors` as before — the dark/OLED/UI-style hints the app writes are read by no Android widget, RemoteViews or Glance. What Glance could not do and what stands in is listed under 4.3, as are three places it now does better (the countdown past ʿIshāʾ is exact). Found on the way: a Glance Row/Column/Box takes at most ten children (the strip's rules and the tasbih dots were rebuilt to stay under). Jest 402 suites / 6,129 tests unchanged and green (no JS touched); the contract harness green. | Yes: "one widget per release" becomes one *switch* per release after the gate; the last switch has to give boot, unlock and the alarm a receiver that is not a RemoteViews provider; the `*_preview.xml` layouts stay at the phase exit. |
 
 ## Open items (not a step yet, each needs an owner)
 
@@ -693,6 +788,18 @@ one. It is not a rewrite target.
   (or in CI) would find the next toolchain break earlier.
 - **5.2's Mac zip**: worked around on `rn-0.87` (React built from source
   for the Mac); proven only when `build-catalyst.sh` signs and notarises.
+- **The Glance build has never been built.** Nothing builds with
+  `-PmihrabGlanceWidgets=true` — not CI, not a release — so the Glance
+  sources can rot unnoticed until the gate is measured. A CI job that
+  assembles the F-Droid debug APK with the flag would hold them; the first
+  such build also proves the AGP 9 wiring (the build types' manifest, the
+  Compose plugin with `builtInKotlin=false`, R8 on Play).
+- **Glance's version**: 1.1.1 is the last release checked here (against
+  its published API file, not its binary); take the current stable at the
+  gate and re-check the stubs' API against it.
+- **The v1 fallback**: the Glance cards read v2 only. Until 1.7 removes
+  v1, a payload the app could only write as v1 shows "Open Mihrab" on a
+  Glance card where the RemoteViews twin still draws.
 - ~~**The Homebrew cask**~~ — done 2026-09-29: it asked for Ventura (a
   guess from the day the tap was made) while the app needs 12.1, so it
   now says `:monterey`, keeps `:arm64` (the build is Apple silicon only),

@@ -38,6 +38,10 @@ steps, in the progress log of `docs/rewrite-plan.md`.
   English, on a 12-hour and a 24-hour clock, light and dark. Times and
   next prayer are right, and `drawing from payload v2` is in logcat.
 - [ ] Log Today and Tasbih widget taps reach the app.
+- [ ] **Thai calendar (WallClock).** Phone language Thai (ไทย), app in
+  English: every widget shows today's times and the right next prayer,
+  not the last day of the payload. (On the JVM the old WallClock read the
+  date as year 2569; whether Android did is what this finds out.)
 - [ ] Live Activity (Android 16 chip and notification) on both clocks.
   It rolls from one prayer to the next and past ʿIshāʾ into tomorrow by
   itself, with the app closed. The "at" time beside the countdown is the
@@ -94,3 +98,32 @@ On the phone and the Mac, paired:
   Deleting it leaves none.
 - [ ] With only a skipped page left there is no "done" button, and Home
   offers the skipped page.
+
+## 5. The Glance widgets (Phase 4 gate)
+
+The measuring build: `./gradlew assembleFdroidRelease
+-PmihrabGlanceWidgets=true` (and `bundlePlayRelease` the same way, in its
+own invocation). Each Glance card is in the picker as "… (Glance)" beside
+the card it ports. Record the numbers in the 4.2 table of
+`docs/rewrite-plan.md`; the pass criteria are there.
+
+- [ ] The flag build assembles at all (first time under AGP), and the
+  default build's APK has no `androidx.glance` classes.
+- [ ] APK size with and without the flag, F-Droid and Play.
+- [ ] Resize, on the Pixel launcher, One UI, and EMUI or Lawnchair: each
+  Glance card beside its twin at 1×1 to 4×4, upright and sideways. The
+  same variant at every size (compact / strip / list; the Log and Reading
+  tiers; the graph arriving), and no line cut.
+- [ ] Android 7–11 (emulator): the card is rounded and tinted, the
+  countdown ticks.
+- [ ] en/sv/ar (RTL), 12/24 h, the opacity, tint and highlight settings:
+  each Glance card matches its twin, apart from the differences listed
+  under 4.3.
+- [ ] Taps: tasbih +1/Reset/Next and a Log chip (and its undo within a
+  minute) move the card at once and reach the app; the refresh glyph
+  starts a sync; every other tap opens the same screen as the twin's.
+- [ ] A home screen with only Glance cards: they roll over at midnight,
+  move at each prayer time with the phone asleep, and redraw on unlock and
+  after a reboot.
+- [ ] Memory (`dumpsys meminfo`) and time from a payload write to every
+  card redrawn, with all nine placed.
