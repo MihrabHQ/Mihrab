@@ -1,8 +1,8 @@
 diff --git a/node_modules/@react-native-community/cli-platform-apple/build/commands/runCommand/createRun.js b/node_modules/@react-native-community/cli-platform-apple/build/commands/runCommand/createRun.js
-index a217a62..f30c1fc 100644
+index 6c489a7..546ffa4 100644
 --- a/node_modules/@react-native-community/cli-platform-apple/build/commands/runCommand/createRun.js
 +++ b/node_modules/@react-native-community/cli-platform-apple/build/commands/runCommand/createRun.js
-@@ -151,7 +151,15 @@ const createRun = ({
+@@ -154,7 +154,15 @@ const createRun = ({
        devices.unshift(device);
      }
    }
@@ -20,10 +20,10 @@ index a217a62..f30c1fc 100644
      if (args.device || args.udid) {
        _cliTools().logger.warn(`Both ${args.device ? 'device' : 'udid'} and "list-devices" parameters were passed to "run" command. We will list available devices and let you choose from one.`);
 diff --git a/node_modules/@react-native-community/cli-platform-apple/build/commands/runCommand/matchingDevice.js b/node_modules/@react-native-community/cli-platform-apple/build/commands/runCommand/matchingDevice.js
-index 4be993e..f41479a 100644
+index e0ca312..b4a369b 100644
 --- a/node_modules/@react-native-community/cli-platform-apple/build/commands/runCommand/matchingDevice.js
 +++ b/node_modules/@react-native-community/cli-platform-apple/build/commands/runCommand/matchingDevice.js
-@@ -23,6 +23,9 @@ function _chalk() {
+@@ -23,6 +23,9 @@ function _picocolors() {
  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
  function matchingDevice(devices, deviceName) {
    // The condition specifically checks if the value is `true`, not just truthy to allow for `--device` flag without a value
@@ -46,7 +46,7 @@ index 4be993e..f41479a 100644
  function formattedDeviceName(simulator) {
    return simulator.version ? `${simulator.name} (${simulator.version})` : simulator.name;
 diff --git a/node_modules/@react-native-community/cli-platform-apple/build/tools/listDevices.js b/node_modules/@react-native-community/cli-platform-apple/build/tools/listDevices.js
-index b194800..29e2e48 100644
+index 5238041..0f9aa25 100644
 --- a/node_modules/@react-native-community/cli-platform-apple/build/tools/listDevices.js
 +++ b/node_modules/@react-native-community/cli-platform-apple/build/tools/listDevices.js
 @@ -19,7 +19,7 @@ const parseXcdeviceList = (text, sdkNames = []) => {
