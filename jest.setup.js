@@ -487,7 +487,13 @@ try {
 // Unit tests never reach the network. Without this, a path that fell back to
 // the global `fetch` (the ayah audio's RNFetch fallback) went to everyayah.com
 // and GitHub for real — slow, and flaky under load. A suite that needs
-// `fetch` mocks it.
-global.fetch = jest.fn(() =>
-  Promise.reject(new TypeError('Network request failed (jest: no network)')),
-);
+// `fetch` mocks it. Loopback is let through: a test's own local server
+// (the release tool's HTTP timeouts) is not the network.
+const realFetch = global.fetch;
+global.fetch = jest.fn((input, init) => {
+  const url = typeof input === 'string' ? input : input?.url ?? String(input);
+  if (realFetch && /^https?:\/\/(127\.0\.0\.1|localhost|\[::1\])(:|\/)/.test(url)) {
+    return realFetch(input, init);
+  }
+  return Promise.reject(new TypeError('Network request failed (jest: no network)'));
+});
