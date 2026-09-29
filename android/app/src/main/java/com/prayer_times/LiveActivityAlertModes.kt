@@ -1,6 +1,7 @@
 package com.prayer_times
 
 import android.content.SharedPreferences
+import com.prayer_times.contract.NightMarks
 import org.json.JSONObject
 
 /**
@@ -54,9 +55,8 @@ object LiveActivityAlertModes {
    *  the three. The call to prayer is not theirs to make. */
   val EVENT_MODES: List<String> = listOf(NOTIFICATION, SILENT)
 
-  /** Mirrors OPTIONAL_TIME_KEYS in src/types/prayer.ts. */
-  private val NON_PRAYER_KEYS: Set<String> =
-    setOf("Sunrise", "Midnight", "Lastthird", "Firstthird")
+  /** Mirrors OPTIONAL_TIME_KEYS in src/types/prayer.ts: Sunrise and the night marks. */
+  private val NON_PRAYER_KEYS: Set<String> = setOf("Sunrise") + NightMarks.KEYS
 
   /** SharedPreferences keys, in MihrabLiveActivityModule.PREFS_NAME. */
   const val KEY_OVERRIDE_EPOCH = "alert_override_epoch"

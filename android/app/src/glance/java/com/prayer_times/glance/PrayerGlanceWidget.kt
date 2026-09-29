@@ -270,8 +270,9 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     val slack = if (h <= 0 || h >= GRID_MIN_HEIGHT_DP) 0 else ((h - budget) / 2).coerceIn(0, STRIP_SLACK_CAP_DP)
     // An unmeasured card draws no graph: on a short card the graph would
     // take the prayer times' room.
-    val showPractice = m.practice != null && h >= GRID_MIN_HEIGHT_DP
-    val showFoot = showPractice && h >= PRACTICE_MIN_HEIGHT_DP
+    // Null when there is no block or no room for it: one value, no `!!`.
+    val practice = m.practice?.takeIf { h >= GRID_MIN_HEIGHT_DP }
+    val showFoot = practice != null && h >= PRACTICE_MIN_HEIGHT_DP
     val columns = m.rows.take(STRIP_COLUMNS)
     val timeSp = fitTimesSp(
       context,
@@ -318,10 +319,9 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
         if (m.nextName.isNotEmpty()) Label(m.nextName, 11f, Palette.TEXT)
         m.nextAt?.let { Countdown(it, m.now, 11f, Palette.MUTED, GlanceModifier.padding(start = 4.dp)) }
         Spacer(GlanceModifier.defaultWeight())
-        if (showPractice) {
-          val pr = m.practice!!
-          Label(pr.block.streak.toString(), 11f, Palette.TEXT, medium = true, modifier = GlanceModifier.padding(start = 10.dp))
-          Label("${pr.streakText} · ${pr.second}", 11f, Palette.MUTED, modifier = GlanceModifier.padding(start = 5.dp))
+        if (practice != null) {
+          Label(practice.block.streak.toString(), 11f, Palette.TEXT, medium = true, modifier = GlanceModifier.padding(start = 10.dp))
+          Label("${practice.streakText} · ${practice.second}", 11f, Palette.MUTED, modifier = GlanceModifier.padding(start = 5.dp))
         } else {
           // "2 of 5 logged" — said by the summary instead once it is drawn.
           m.logged?.let {
@@ -334,8 +334,7 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
           }
         }
       }
-      if (showPractice) {
-        val pr = m.practice!!
+      practice?.let { pr ->
         Rule(Palette.RULE_STRONG, top = 8, bottom = 8)
         val box = size.heightDp - STRIP_CHROME_DP - (if (showFoot) STRIP_FOOT_DP else 0)
         PracticeImage(context, pr.block, size.widthDp - STRIP_CONTENT_INSET_DP, box, MAX_GRID_DAYS, m.colors.accent,
@@ -347,6 +346,7 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
 
   @Composable
   private fun Header(text: String, hijri: String) {
+    val refresh = localizedContext().getString(R.string.widget_intent_refresh)
     Row(modifier = GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
       Label(text, 10f, Palette.MUTED, medium = true, modifier = GlanceModifier.defaultWeight())
       if (hijri.isNotEmpty()) Label(hijri, 10f, Palette.MUTED, medium = true, modifier = GlanceModifier.padding(start = 6.dp))
@@ -358,7 +358,7 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
         modifier = GlanceModifier
           .padding(start = 8.dp)
           .clickable(actionRunCallback<PrayerRefresh>())
-          .semantics { contentDescription = "Refresh" },
+          .semantics { contentDescription = refresh },
       )
     }
   }
@@ -404,8 +404,8 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
   @Composable
   private fun ListCard(context: Context, m: Model, size: CardSize) {
     val h = size.heightDp
-    val showPractice = m.practice != null && h >= GRID_MIN_HEIGHT_DP
-    val showFoot = showPractice && h >= PRACTICE_MIN_HEIGHT_DP
+    val practice = m.practice?.takeIf { h >= GRID_MIN_HEIGHT_DP }
+    val showFoot = practice != null && h >= PRACTICE_MIN_HEIGHT_DP
     val shown = m.rows.take(LIST_SLOTS)
     // The provider sizes every layout's times by the same measure.
     val timeSp = fitTimesSp(
@@ -448,8 +448,7 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
           }
         }
       }
-      if (showPractice) {
-        val pr = m.practice!!
+      practice?.let { pr ->
         Rule(Palette.RULE_STRONG, top = 6, bottom = 0)
         Row(modifier = GlanceModifier.fillMaxWidth().padding(top = 8.dp), verticalAlignment = Alignment.CenterVertically) {
           Column(modifier = GlanceModifier.defaultWeight()) {

@@ -21,6 +21,7 @@ import android.text.style.RelativeSizeSpan
 import android.util.Log
 import android.view.View
 import android.widget.RemoteViews
+import com.prayer_times.contract.NightMarks
 import com.prayer_times.contract.WallClock
 import com.prayer_times.contract.WidgetInstants
 import com.prayer_times.contract.WidgetPayloadV1
@@ -336,7 +337,10 @@ open class PrayerWidgetProvider : AppWidgetProvider() {
       }
       var sp = TIME_MAX_SP
       while (sp > TIME_MIN_SP) {
-        if (times.all { measureTimePx(paint, it, sp, metrics.scaledDensity) <= availablePx }) {
+        // applyDimension, not scaledDensity: from Android 14 font scaling is
+        // non-linear, and this has to agree with the TextView the size is set on.
+        val px = android.util.TypedValue.applyDimension(android.util.TypedValue.COMPLEX_UNIT_SP, sp, metrics)
+        if (times.all { measureTimePx(paint, it, px) <= availablePx }) {
           break
         }
         sp -= 0.5f
@@ -351,14 +355,14 @@ open class PrayerWidgetProvider : AppWidgetProvider() {
     private fun measureTimePx(
       paint: TextPaint,
       time: String,
-      sp: Float,
-      scaledDensity: Float,
+      px: Float,
     ): Float {
       val core = numericRange(time)
-      paint.textSize = sp * scaledDensity
+      paint.textSize = px
       var width = paint.measureText(time, core.first, core.last + 1)
       if (core.first > 0 || core.last < time.length - 1) {
-        paint.textSize = sp * MERIDIEM_SCALE * scaledDensity
+        // RelativeSizeSpan scales the TextView's pixel size.
+        paint.textSize = px * MERIDIEM_SCALE
         width += paint.measureText(time, 0, core.first)
         width += paint.measureText(time, core.last + 1, time.length)
       }
@@ -1582,7 +1586,7 @@ open class PrayerWidgetProvider : AppWidgetProvider() {
         R.id.widget_practice_foot,
         if (showFoot) View.VISIBLE else View.GONE,
       )
-      if (!show || practice == null) return
+      if (!show) return
 
       val accent = style.highlightColorInt(context)
       val streak = practice.optInt("streak", 0)
@@ -1672,41 +1676,21 @@ open class PrayerWidgetProvider : AppWidgetProvider() {
     }
 
     /**
-     * The three optional night times. They can be the headline now — this
-     * only decides how a row that is *not* the headline is painted: muted,
-     * the way Sunrise has always been, so the five salāh stay the loudest
-     * thing on the card.
-     */
-    /**
-     * What to DRAW for a row — issue #18.
-     *
-     * `time` is canonical 24-hour `HH:mm` because this file, the Live
-     * Activity service and the widget's own next-prayer walk all parse
-     * it. `display` is the same instant written the way the user reads a
-     * clock, and is absent from payloads written by app builds that
-     * predate the setting — hence the fallback.
+     * What to DRAW for a row — issue #18: `display` is the time written the
+     * way the user reads a clock. `time` is its canonical 24-hour twin, text
+     * only — every walk places a row by its minutes (`WidgetPayloadV1.minutesOf`)
+     * — and stands in for payloads from builds that predate `display`.
      */
     private fun displayTime(o: org.json.JSONObject): String =
       o.optString("display", "").ifEmpty { o.optString("time", "") }
 
-    private fun isNightKey(key: String): Boolean =
-      key.equals("Midnight", ignoreCase = true) ||
-        key.equals("Lastthird", ignoreCase = true) ||
-        key.equals("Firstthird", ignoreCase = true)
-
     /**
-     * Minutes-since-midnight of the earliest salāh (or Sunrise) on display,
-     * for the after-Isha wrap. Sunrise counts — whatever comes first
-     * tomorrow is what the countdown is for.
+     * The three optional night times. They can be the headline — this only
+     * decides how a row that is *not* the headline is painted: muted, the
+     * way Sunrise has always been, so the five salāh stay the loudest thing
+     * on the card.
      */
-    private fun firstRowMinutes(displayRows: List<org.json.JSONObject>): Int? {
-      var earliest: Int? = null
-      for (row in displayRows) {
-        val mins = WidgetPayloadV1.minutesOf(row) ?: continue
-        if (earliest == null || mins < earliest!!) earliest = mins
-      }
-      return earliest
-    }
+    private fun isNightKey(key: String): Boolean = NightMarks.isNightKey(key)
 
     /**
      * Four launcher rows. Below this the practice strip would eat the space

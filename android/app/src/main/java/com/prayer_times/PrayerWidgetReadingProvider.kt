@@ -10,6 +10,7 @@ import android.net.Uri
 import android.util.TypedValue
 import android.view.View
 import android.widget.RemoteViews
+import com.prayer_times.contract.WallClock
 import org.json.JSONObject
 
 /**
@@ -461,7 +462,8 @@ class PrayerWidgetReadingProvider : AppWidgetProvider() {
     private fun lastReadPhrase(context: Context, r: JSONObject): String? {
       val ms = r.optDouble("lastReadAt", 0.0)
       if (ms <= 0) return null
-      val days = ((System.currentTimeMillis() - ms) / 86_400_000L).toInt()
+      // Calendar days, not elapsed ones: read at 23:30, it is "Yesterday" the next morning.
+      val days = WallClock.calendarDaysBetween(ms.toLong(), System.currentTimeMillis())
       return when {
         days < 1 -> context.getString(R.string.widget_reading_today)
         days == 1 -> context.getString(R.string.widget_reading_yesterday)

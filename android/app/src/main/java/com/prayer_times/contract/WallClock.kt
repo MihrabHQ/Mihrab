@@ -146,6 +146,18 @@ object WallClock {
   }
 
   /**
+   * Whole local calendar days from the day `fromMs` falls on to the day
+   * `toMs` falls on: read at 23:30 and looked at the next morning is 1, not
+   * the 0 that elapsed hours would say. Negative when `toMs` is the earlier.
+   */
+  fun calendarDaysBetween(fromMs: Long, toMs: Long, zone: TimeZone = TimeZone.getDefault()): Int {
+    // Noon to noon, rounded: a day the clocks change on is 23 or 25 hours.
+    val from = epochMs(dateKey(fromMs, zone), 12 * 60, zone) ?: return 0
+    val to = epochMs(dateKey(toMs, zone), 12 * 60, zone) ?: return 0
+    return Math.round((to - from) / 86_400_000.0).toInt()
+  }
+
+  /**
    * The UTC offset `zone` uses at local noon of `dateKey`, in minutes —
    * what the app wrote into `Day.utcOffsetMinutes`.
    */

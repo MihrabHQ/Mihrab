@@ -308,14 +308,17 @@ describe('the times row fits its own columns', () => {
   });
 
   it('finds one size that every time in the row fits', () => {
-    expect(strip).toMatch(/times\.all \{ measureTimePx\(paint, it, sp/);
+    expect(strip).toMatch(/times\.all \{ measureTimePx\(paint, it, px\)/);
   });
 
   it('measures the string it will actually draw', () => {
     // The meridiem is set small, so a search that measured the whole time
     // at one size would fit a string nobody draws — and settle on type
     // smaller than it had to be.
-    expect(strip).toContain('paint.textSize = sp * MERIDIEM_SCALE * scaledDensity');
+    expect(strip).toContain('paint.textSize = px * MERIDIEM_SCALE');
+    // Pixels as the TextView computes them: non-linear from Android 14.
+    expect(strip).toContain('TypedValue.applyDimension(android.util.TypedValue.COMPLEX_UNIT_SP, sp, metrics)');
+    expect(strip).not.toContain('metrics.scaledDensity');
     expect(strip).toContain('views.setTextViewText(COL_TIMES[i], styledTime(time))');
   });
 

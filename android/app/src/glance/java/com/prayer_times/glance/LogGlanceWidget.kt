@@ -214,7 +214,9 @@ internal class LogGlanceWidget : MihrabGlanceWidget("log") {
     val tight = h in 1 until LOG_ROOMY_CONTENT_DP
     val bare = h in 1 until LOG_TIGHT_CONTENT_DP
     val graphHeight = h >= GRID_MIN_HEIGHT_DP
-    val showGrid = m.practice != null && graphHeight
+    // Null when there is no block or no room for it: one value, no `!!`.
+    val practice = m.practice?.takeIf { graphHeight }
+    val showGrid = practice != null
     // Each variant is filled against the budget that chose it.
     val budget = if (bare) LOG_BARE_CONTENT_DP else if (tight) LOG_TIGHT_CONTENT_DP else LOG_ROOMY_CONTENT_DP
     val slack = if (h <= 0 || graphHeight) 0 else ((h - budget) / 2).coerceIn(0, LOG_SLACK_CAP_DP)
@@ -249,14 +251,12 @@ internal class LogGlanceWidget : MihrabGlanceWidget("log") {
           Countdown(at, m.now, 11f, Palette.MUTED, modifier = GlanceModifier.padding(start = 4.dp))
         }
         Spacer(GlanceModifier.defaultWeight())
-        if (showGrid) {
-          val pr = m.practice!!
+        practice?.let { pr ->
           Label(pr.streak.toString(), 11f, Palette.TEXT, medium = true, modifier = GlanceModifier.padding(start = 10.dp))
           Label(practiceLine(context, pr), 11f, Palette.MUTED, modifier = GlanceModifier.padding(start = 5.dp))
         }
       }
-      if (showGrid) {
-        val pr = m.practice!!
+      practice?.let { pr ->
         Rule(Palette.RULE, top = 8, bottom = 8)
         // The card's chrome off the height, the padding off the width; the
         // grid gets the rest — PrayerWidgetLogProvider.bindGrid's box.

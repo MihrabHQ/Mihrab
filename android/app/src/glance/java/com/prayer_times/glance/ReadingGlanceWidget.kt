@@ -25,6 +25,7 @@ import androidx.glance.layout.height
 import androidx.glance.layout.padding
 import androidx.glance.layout.size
 import com.prayer_times.R
+import com.prayer_times.contract.WallClock
 import com.prayer_times.contract.WidgetContract
 
 /**
@@ -264,7 +265,8 @@ internal class ReadingGlanceWidget : MihrabGlanceWidget("reading") {
   private fun lastReadPhrase(context: Context, r: WidgetContract.Reading, nowMs: Long): String? {
     val ms = r.lastReadAt ?: return null
     if (ms <= 0) return null
-    val days = ((nowMs - ms) / 86_400_000L).toInt()
+    // Calendar days, not elapsed ones: read at 23:30, it is "Yesterday" the next morning.
+    val days = WallClock.calendarDaysBetween(ms, nowMs)
     return when {
       days < 1 -> context.getString(R.string.widget_reading_today)
       days == 1 -> context.getString(R.string.widget_reading_yesterday)

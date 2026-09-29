@@ -9,10 +9,11 @@ import org.json.JSONObject
  *
  * A port of `widgetPayloadV1FromV2` in src/widget/widgetPayloadV2.ts, held
  * to the same answers by the contract fixtures (contract-tests/, the `adapt`
- * cases). While the app writes both payloads (docs/rewrite-plan.md, step
- * 1.4) the providers read this: the data arrives through the lenient
+ * cases). The app writes v2 alone since step 1.7 (docs/rewrite-plan.md),
+ * and the providers read this: the data arrives through the lenient
  * generated reader, the text is written here from minutes and the payload's
- * clock, and not one renderer had to change to get either.
+ * clock, and every row carries its minutes, which is what the renderers
+ * place a time by.
  *
  * Wall clock throughout — `todayKey` and `nowMinutes` are the device's local
  * date and minutes since its midnight — so the answer does not depend on
@@ -170,17 +171,7 @@ object WidgetPayloadV1 {
           .put(
             "days",
             JSONArray().apply {
-              for (d in pr.days) {
-                // `k` only because the iOS decoder requires it; every renderer
-                // reads `kw` first, and `kw` is absent only when the score is 0.
-                val o = JSONObject().put("d", d.d).put("k", 0)
-                if (d.kw != 0) o.put("kw", d.kw)
-                if (d.l != 0) o.put("l", d.l)
-                if (d.m) o.put("m", true)
-                if (d.f) o.put("f", true)
-                if (d.s != 0) o.put("s", d.s)
-                put(o)
-              }
+              for (d in pr.days) put(practiceDayJson(d))
             },
           )
           .apply { pr.since?.let { put("since", it) } },
@@ -228,6 +219,23 @@ object WidgetPayloadV1 {
     }
     p.tasbih?.let { t -> out.put("tasbih", t.toJson()) }
     return out
+  }
+
+  /**
+   * One day of the practice grid in the v1 shape PracticeGridBitmap reads.
+   * Zero fields are left out, because the renderer tells "no `l`" from "`l`
+   * is 0": a day marked missed with no count still reads as one entry. `k`
+   * only because the iOS decoder requires it; every renderer reads `kw`
+   * first, and `kw` is absent only when the score is 0.
+   */
+  fun practiceDayJson(d: WidgetContract.PracticeDay): JSONObject {
+    val o = JSONObject().put("d", d.d).put("k", 0)
+    if (d.kw != 0) o.put("kw", d.kw)
+    if (d.l != 0) o.put("l", d.l)
+    if (d.m) o.put("m", true)
+    if (d.f) o.put("f", true)
+    if (d.s != 0) o.put("s", d.s)
+    return o
   }
 
   /** Every time on a day, placed `offset` minutes from today's midnight. */

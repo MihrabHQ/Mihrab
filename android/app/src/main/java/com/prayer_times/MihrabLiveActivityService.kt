@@ -268,7 +268,7 @@ class MihrabLiveActivityService : Service() {
    *  needing to open the app. */
   private fun scheduleTicker() {
     ticker?.let { handler.removeCallbacks(it) }
-    ticker = Runnable {
+    val tick = Runnable {
       val payload = lastPayload
       if (payload != null) {
         // Recompute the current prayer interval from the absolute, dated
@@ -305,12 +305,12 @@ class MihrabLiveActivityService : Service() {
           Log.w(TAG, "ticker re-post failed", t)
         }
       }
-      // Self-rescheduling tick — 1s while the screen is on (live seconds),
-      // 60s otherwise.
+      // Self-rescheduling tick, while it is still the current one.
       val next = ticker
       if (next != null) handler.postDelayed(next, tickInterval())
     }
-    handler.postDelayed(ticker!!, tickInterval())
+    ticker = tick
+    handler.postDelayed(tick, tickInterval())
   }
 
   /**

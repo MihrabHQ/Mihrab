@@ -101,7 +101,7 @@
                     android:text="↻"
                     android:textColor="#80FFFFFF"
                     android:textSize="14sp"
-                    android:contentDescription="Refresh" />
+                    android:contentDescription="@string/widget_intent_refresh" />
             </LinearLayout>
 
             <TextView

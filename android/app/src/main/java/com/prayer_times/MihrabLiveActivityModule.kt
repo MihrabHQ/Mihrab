@@ -584,10 +584,9 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
         //   'countdown' — countdown-focused: big countdown title + prayer/time.
         val design = p.optString("design", "timeline")
         val nextTime = p.optString("nextTime", "")
-        // What the card DRAWS. `nextTime` stays canonical 24-hour `HH:mm`
-        // because `buildMetricStyle` parses it into a `LocalTime` for the
-        // Android 17 "At <time>" metric, which the system then formats
-        // itself. Empty on payloads from app builds before issue #18.
+        // What the card DRAWS: the time as the user reads a clock. `nextTime`
+        // is its canonical 24-hour twin, text only, and stands in for
+        // payloads from app builds before issue #18.
         val nextTimeText =
           p.optString("nextTimeDisplay", "").ifEmpty { nextTime }
 
@@ -704,7 +703,7 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
         val shortText = if (withSeconds) formatHMS(remaining) else formatRemainingShort(remaining)
         val nextLabel = p.optString("nextLabel", "")
         val nextTime = p.optString("nextTime", "")
-        // See the note in the other builder: `nextTime` is parsed, this is drawn.
+        // See the note in the other builder: `nextTimeText` is what is drawn.
         val nextTimeText =
           p.optString("nextTimeDisplay", "").ifEmpty { nextTime }
         val design = p.optString("design", "timeline")
@@ -784,8 +783,21 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
           // the AOD cadence) and the critical metric drives the status-bar chip.
           val inWord = p.optString("inWord", "In")
           val atWord = p.optString("atWord", "At")
+          // The "At" metric is a FixedTime, which the SYSTEM formats by the
+          // device's 12/24-hour setting. When the app's clock says otherwise
+          // (Settings → Appearance), the card would read "Maghrib · 17:31"
+          // over "At 5:31 PM"; the app's own text is used instead, so both
+          // agree. The app's clock is read off the payload: a 12-hour time is
+          // written differently from its canonical 24-hour twin, a 24-hour
+          // one is not. A payload with no `nextTimeDisplay` (before #18)
+          // says nothing, and keeps the system's.
+          val appHour12 = p.has("nextTimeDisplay") && nextTimeText.isNotEmpty() && nextTimeText != nextTime
+          val atText = nextTimeText.takeIf {
+            p.has("nextTimeDisplay") && it.isNotEmpty() &&
+              appHour12 == android.text.format.DateFormat.is24HourFormat(ctx)
+          }
           val ms = tryBuildCountdownMetricStyle(
-            nextEpochMs, inWord, secondMetric, nextTime, atWord,
+            nextEpochMs, inWord, secondMetric, atWord, atText,
           )
           if (ms != null) {
             val (style, hasSecond) = ms
@@ -984,13 +996,17 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
      *   Notification.Metric(MetricValue value, CharSequence label)
      *   Metric.TimeDifference.forTimer(Instant, int)  FORMAT_CHRONOMETER
      *   Metric.FixedTime(LocalTime)
+     *   Metric.FixedText(CharSequence)
+     *
+     * @param atText the "At" value as text, when the system's clock format
+     *   would disagree with the app's; null to let the system format it.
      */
     private fun tryBuildCountdownMetricStyle(
       nextEpochMs: Long,
       inWord: String,
       secondKind: String,
-      nextTime: String,
       atWord: String,
+      atText: String?,
     ): Pair<Notification.Style, Boolean>? {
       return try {
         val msCls = Class.forName("android.app.Notification\$MetricStyle")
@@ -1022,7 +1038,11 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
           "time" -> {
             // The clock time of the instant itself (step 1.7), not the
             // "HH:mm" text parsed back.
-            if (nextEpochMs <= 0L) null else {
+            if (atText != null) {
+              val fixedText = Class.forName("android.app.Notification\$Metric\$FixedText")
+                .getConstructor(CharSequence::class.java)
+              metricCtor.newInstance(fixedText.newInstance(atText as CharSequence), atWord as CharSequence)
+            } else if (nextEpochMs <= 0L) null else {
               val lt = Instant.ofEpochMilli(nextEpochMs)
                 .atZone(java.time.ZoneId.systemDefault())
                 .toLocalTime()

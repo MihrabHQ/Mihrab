@@ -46,6 +46,9 @@ const read = (p: string) => readFileSync(path.join(ROOT, p), 'utf-8');
 const KOTLIN = read(
   'android/app/src/main/java/com/prayer_times/LiveActivityAlertModes.kt',
 );
+const NIGHT_MARKS = read(
+  'android/app/src/main/java/com/prayer_times/contract/NightMarks.kt',
+);
 const RECEIVER = read(
   'android/app/src/main/java/com/prayer_times/MihrabLiveActivityActionReceiver.kt',
 );
@@ -90,15 +93,22 @@ describe('the two sides agree on what the modes are', () => {
   });
 
   it('calls the same times "not a prayer"', () => {
-    const m = /NON_PRAYER_KEYS: Set<String> =\s*\n?\s*setOf\(([^)]*)\)/.exec(
+    // Sunrise, plus the night marks every native reader shares (NightMarks.kt).
+    const m = /NON_PRAYER_KEYS: Set<String> =\s*setOf\(([^)]*)\) \+ NightMarks\.KEYS/.exec(
       KOTLIN,
     );
-    const keys = (m?.[1] ?? '')
+    const night = /val KEYS: Set<String> = setOf\(([^)]*)\)/.exec(NIGHT_MARKS);
+    const keys = [m?.[1] ?? '', night?.[1] ?? '']
+      .join(',')
       .split(',')
       .map(s => s.trim().replace(/"/g, ''))
       .filter(Boolean)
       .sort();
     expect(keys).toEqual([...OPTIONAL_TIME_KEYS].sort());
+    // And the night marks are exactly the payload's extra rows.
+    expect(
+      (night?.[1] ?? '').split(',').map(s => s.trim().replace(/"/g, '')).sort(),
+    ).toEqual([...EXTRA_ROW_KEYS].sort());
   });
 
   it('accounts for every event the card can point at', () => {

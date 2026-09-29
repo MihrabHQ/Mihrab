@@ -2,13 +2,16 @@ package com.prayer_times.glance
 
 import android.content.Context
 import android.content.Intent
+import android.content.res.Resources
 import android.graphics.Paint
 import android.graphics.Typeface
 import android.net.Uri
 import android.os.SystemClock
+import android.text.TextDirectionHeuristics
 import android.text.TextPaint
 import android.util.Log
 import android.util.TypedValue
+import android.view.View
 import android.widget.RemoteViews
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
@@ -41,6 +44,7 @@ import com.prayer_times.PrayerWidgetProvider
 import com.prayer_times.R
 import com.prayer_times.WidgetCard
 import com.prayer_times.WidgetPayloadSource
+import com.prayer_times.contract.NightMarks
 import com.prayer_times.contract.WallClock
 import com.prayer_times.contract.WidgetContract
 
@@ -100,7 +104,8 @@ internal object GlancePayload {
     if (raw.isNullOrEmpty()) return null
     if (raw == cachedRaw) return cached
     val parsed = try {
-      WidgetContract.Payload.parse(raw)
+      // A later schema is a different contract, not a lenient read of this one.
+      WidgetContract.Payload.parse(raw)?.takeIf { it.schemaVersion == WidgetContract.VERSION }
     } catch (e: Exception) {
       Log.w(TAG, "payload v2 did not read", e)
       null
@@ -224,10 +229,7 @@ internal class Schedule(
   }
 }
 
-internal fun isNightKey(key: String): Boolean =
-  key.equals("Midnight", ignoreCase = true) ||
-    key.equals("Lastthird", ignoreCase = true) ||
-    key.equals("Firstthird", ignoreCase = true)
+internal fun isNightKey(key: String): Boolean = NightMarks.isNightKey(key)
 
 /** How the meridiem is drawn beside the digits: 62%, as `styledTime` does. */
 internal const val MERIDIEM_SCALE = 0.62f
@@ -255,10 +257,35 @@ internal fun ClockText(
     Label(parts.digits, sp, color, medium = medium, modifier = modifier)
     return
   }
+  // In the order the RemoteViews cards show it. They draw the time as ONE
+  // string with the period in a smaller span, and the TextView orders it by
+  // the string's own direction (first strong character): "5:31 م" reads
+  // "م 5:31" on screen. Glance text takes no spans, so here it is two Texts
+  // in a Row — and a Row is laid out in the HOST's direction, which follows
+  // the phone's language, not Mihrab's. The children go in logical order
+  // when the two directions agree and reversed when they do not, so an
+  // Arabic time on an English phone (or the other way round) reads as the
+  // RemoteViews card does.
+  val logical = if (parts.periodFirst) period + parts.digits else parts.digits + " " + period
+  val textRtl = TextDirectionHeuristics.FIRSTSTRONG_LTR.isRtl(logical, 0, logical.length)
+  val hostRtl = Resources.getSystem().configuration.layoutDirection == View.LAYOUT_DIRECTION_RTL
+  val first: @Composable () -> Unit
+  val second: @Composable () -> Unit
+  if (parts.periodFirst) {
+    first = { Label(period, sp * MERIDIEM_SCALE, color, medium = medium) }
+    second = { Label(parts.digits, sp, color, medium = medium) }
+  } else {
+    first = { Label(parts.digits, sp, color, medium = medium) }
+    second = { Label(" $period", sp * MERIDIEM_SCALE, color, medium = medium) }
+  }
   Row(modifier = modifier, verticalAlignment = Alignment.Bottom) {
-    if (parts.periodFirst) Label(period, sp * MERIDIEM_SCALE, color, medium = medium)
-    Label(parts.digits, sp, color, medium = medium)
-    if (!parts.periodFirst) Label(" $period", sp * MERIDIEM_SCALE, color, medium = medium)
+    if (textRtl == hostRtl) {
+      first()
+      second()
+    } else {
+      second()
+      first()
+    }
   }
 }
 

@@ -437,7 +437,7 @@ open class PrayerWidgetLogProvider : AppWidgetProvider() {
         if (show) View.GONE else View.VISIBLE,
       )
       views.setViewVisibility(R.id.widget_log_grid, vis)
-      if (!show || practice == null) return
+      if (!show) return
 
       // The same line the prayer-times card draws, from the same block and
       // in the same words: "0  day streak · Best 92 · 3 of 5 today · 1 to
@@ -543,8 +543,8 @@ open class PrayerWidgetLogProvider : AppWidgetProvider() {
         val queued = pending.contains(key)
 
         views.setTextViewText(NAMES[i], row.optString("name").ifEmpty { key })
-        // `display` is the clock the user reads; `time` is the canonical
-        // 24-hour string `isDue` parses. See PrayerWidgetProvider.displayTime.
+        // `display` is the clock the user reads; `time`, its canonical
+        // 24-hour twin, is text only — `isDue` reads the row's minutes.
         // Small-capped around the digits, the same as the prayer strip: on
         // a 12-hour clock the meridiem is three characters of the widest
         // thing on this row, and it is not the part anyone reads.
@@ -668,20 +668,8 @@ open class PrayerWidgetLogProvider : AppWidgetProvider() {
       return context.getString(R.string.widget_log_up_to_date)
     }
 
-    /**
-     * The next prayer whose time has not arrived, or null after the last.
-     *
-     * The first row that is not due is the next one — the same reading
-     * iOS's footer takes. What "due" means is the fix: it used to be the
-     * payload's flag, stamped by the app at write time, so this answered
-     * "what was next when the app was last open".
-     */
     /** Minutes since local midnight, right now. */
-    private fun nowMinutesOfDay(): Int {
-      val cal = java.util.Calendar.getInstance()
-      return cal.get(java.util.Calendar.HOUR_OF_DAY) * 60 +
-        cal.get(java.util.Calendar.MINUTE)
-    }
+    private fun nowMinutesOfDay(): Int = WallClock.minutesOf(System.currentTimeMillis())
 
     /**
      * Has this prayer's time arrived?
@@ -804,6 +792,14 @@ open class PrayerWidgetLogProvider : AppWidgetProvider() {
       return best
     }
 
+    /**
+     * The next prayer whose time has not arrived, or null after the last.
+     *
+     * The first row that is not due is the next one — the same reading
+     * iOS's footer takes. What "due" means is the fix: it used to be the
+     * payload's flag, stamped by the app at write time, so this answered
+     * "what was next when the app was last open".
+     */
     private fun nextPrayer(
       prayers: org.json.JSONArray?,
       describesToday: Boolean,

@@ -21,6 +21,7 @@ import androidx.glance.layout.padding
 import com.prayer_times.PracticeGridBitmap
 import com.prayer_times.R
 import com.prayer_times.contract.WidgetContract
+import com.prayer_times.contract.WidgetPayloadV1
 
 /**
  * Streak & Practice on Glance — PrayerWidgetStreakProvider's card.
@@ -209,10 +210,8 @@ internal class StreakGlanceWidget : MihrabGlanceWidget("streak") {
 
 /**
  * The practice graph for a typed practice block, drawn by the one renderer
- * every widget uses. PracticeGridBitmap reads the v1 day shape, so each day
- * is written the way the v1 adapter writes it (WidgetPayloadV1): zero fields
- * left out, because the renderer tells "no `l`" from "`l` is 0" — a day
- * marked missed with no count still reads as one entry, as it always has.
+ * every widget uses, from each day in the v1 shape it reads — written by
+ * the v1 adapter's own `practiceDayJson`, so the two cannot drift.
  */
 internal fun practiceGrid(
   pr: WidgetContract.Practice,
@@ -224,15 +223,7 @@ internal fun practiceGrid(
   accent: Int,
 ): Bitmap {
   val days = org.json.JSONArray()
-  for (d in pr.days) {
-    val o = org.json.JSONObject().put("d", d.d).put("k", 0)
-    if (d.kw != 0) o.put("kw", d.kw)
-    if (d.l != 0) o.put("l", d.l)
-    if (d.m) o.put("m", true)
-    if (d.f) o.put("f", true)
-    if (d.s != 0) o.put("s", d.s)
-    days.put(o)
-  }
+  for (d in pr.days) days.put(WidgetPayloadV1.practiceDayJson(d))
   return PracticeGridBitmap.render(days, rows, columns, cellWPx, cellHPx, gapPx, accent, pr.since?.ifEmpty { null })
 }
 
