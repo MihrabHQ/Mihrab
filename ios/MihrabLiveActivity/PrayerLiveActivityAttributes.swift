@@ -141,7 +141,7 @@ public struct PrayerLiveActivityAttributes: ActivityAttributes {
     public var text: String { display.isEmpty ? time : display }
 
     fileprivate enum CodingKeys: String, CodingKey {
-      case key, abbr, name, time, display
+      case key, abbr, name, time, display, minutes
     }
   }
 }
