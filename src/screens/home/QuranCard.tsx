@@ -18,7 +18,8 @@
  * second door is a second row in the same card and not a second card.
  */
 import { memo, useCallback, useEffect } from 'react';
-import { InteractionManager, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { afterInteractions } from '../../utils/afterInteractions';
 import { GlassSurface } from '../../components/GlassSurface';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import { cardEdgeStyle } from '../../theme/chrome';
@@ -59,7 +60,7 @@ function QuranCardImpl({ onOpenAt, onOpenQuran }: Props) {
   const riwayah = quran.prefs.riwayah;
   useEffect(() => {
     if (!readsMushaf) return;
-    const task = InteractionManager.runAfterInteractions(() =>
+    const task = afterInteractions(() =>
       warmMushafLayout(riwayah),
     );
     return () => task.cancel();

@@ -26,7 +26,6 @@ import React, {
 import {
   Animated,
   FlatList,
-  InteractionManager,
   Platform,
   Pressable,
   StatusBar,
@@ -35,6 +34,7 @@ import {
   View,
   useWindowDimensions,
 } from 'react-native';
+import { afterInteractions } from '../utils/afterInteractions';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { useTranslation } from 'react-i18next';
@@ -419,7 +419,7 @@ export const MushafSpreadReader = React.memo(function MushafSpreadReader(
   // One item while opening, three once the transition is out of the way.
   const [windowSize, setWindowSize] = useState(WINDOW_OPENING);
   useEffect(() => {
-    const task = InteractionManager.runAfterInteractions(() =>
+    const task = afterInteractions(() =>
       setWindowSize(WINDOW_READING),
     );
     return () => task.cancel();

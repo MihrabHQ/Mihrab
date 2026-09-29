@@ -295,7 +295,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   modalFill: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
   },
   modalSheet: {
     maxHeight: '78%',

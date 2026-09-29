@@ -11,7 +11,7 @@
  * out from under a page that is still on screen.
  */
 import { useEffect, useState } from 'react';
-import { InteractionManager } from 'react-native';
+import { afterInteractions } from '../utils/afterInteractions';
 import {
   acquirePageFont,
   loadedPageFont,
@@ -83,7 +83,7 @@ export function warmAround(page: number, radius: number, set: MushafFontSet = 'v
     }
   }
   if (pages.length === 0) return;
-  void InteractionManager.runAfterInteractions(() => {
+  afterInteractions(() => {
     for (const p of pages) {
       void ensurePageFontFile(p, set).then(path => {
         const key = fontKey(p, set);

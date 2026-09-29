@@ -9,7 +9,7 @@ export const modalStyles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   fill: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
   },
   sheet: {
     maxHeight: '72%',

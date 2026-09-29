@@ -354,7 +354,7 @@ export function KhatmahPacingSheet({
 }
 
 const styles = StyleSheet.create({
-  backdrop: { ...StyleSheet.absoluteFillObject },
+  backdrop: { ...StyleSheet.absoluteFill },
   card: {
     position: 'absolute',
     left: SPACING.lg,

@@ -203,5 +203,5 @@ const styles = StyleSheet.create({
   wrap: { alignItems: 'center', marginVertical: SPACING.sm },
   dial: { width: DIAL, height: DIAL, alignItems: 'center', justifyContent: 'center' },
   unsupported: { opacity: 0.5 },
-  centre: { ...StyleSheet.absoluteFillObject, alignItems: 'center', justifyContent: 'center' },
+  centre: { ...StyleSheet.absoluteFill, alignItems: 'center', justifyContent: 'center' },
 });
