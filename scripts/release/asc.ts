@@ -92,7 +92,10 @@ export function makeToken(creds: AscCreds, pem: string, nowSeconds: number): str
 }
 
 // The API's JSON is loosely typed on purpose: every read below is guarded
-// the way the Python's `.get(…)` chains were.
+// the way the Python's `.get(…)` chains were. `any` and not `unknown`:
+// some forty reads, four levels deep, across xcodeCloud.ts and
+// appstoreMetadata.ts would each need a cast or a narrowing helper to say
+// what `?.` already says, and none of them would check anything more.
 export type Json = any;
 
 export class Asc {

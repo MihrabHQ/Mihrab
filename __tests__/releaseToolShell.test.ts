@@ -10,7 +10,8 @@
  * verdict or exit status.
  *
  * They need Node's type stripping (22.6 or later), as the tool itself
- * does; CI's Node 20 skips them, and the Mac runs them.
+ * does. CI and the Mac both run Node 22, so both run them; an older Node
+ * skips them.
  */
 import { spawnSync } from 'child_process';
 import { chmodSync, copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'fs';
