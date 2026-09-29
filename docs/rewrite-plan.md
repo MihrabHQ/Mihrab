@@ -321,6 +321,178 @@ so the release is one language.
 grep-the-source tests are replaced by behavioural ones. *Phase exit:* two
 consecutive releases cut by the new tool with no manual step.
 
+### Phase 3 inventory (P3.1, 2026-09-29)
+
+Measured on `rewrite` at a8192de: `release.sh` 1,196 lines, `build-catalyst.sh`
+925, `verify-release.sh` 520, `build-ios-appstore.sh` 363, `xcode-cloud.py`
+502, `appstore-metadata.py` 218. The plan says "five scripts"; it is six
+with the metadata tool, and all six are inventoried. Numbers in the gate
+tables (P1, B3, …) are the ids the TypeScript uses in its outcomes and in
+the shadow log.
+
+**Entry points, flags and environment:**
+
+| Script | Arguments | Environment it reads | Writes outside the tree |
+|---|---|---|---|
+| `release.sh` | `X.Y.Z [--dry-run]`, `--unreleased` | `SKIP_CATALYST`, `SKIP_APP_STORE`, `IOS_LOCAL`, `NO_IOS_LOCAL`, `RELEASE_NOTES` (a notes file); exports `IOS_LOCAL_UPLOAD=1` to the verifier | `.release-attempts.log` (every `die`), `/tmp/release-catalyst.log`, `/tmp/release-brew.log`, the tap `~/git/homebrew-tap` |
+| `verify-release.sh` | `vX.Y.Z` | `IOS_LOCAL_UPLOAD`, `JDK` | temp files only |
+| `build-catalyst.sh` | `[--check-toolchain]` | `CATALYST_DEVELOPER_DIR`, `SIGN_IDENTITY` (`-` = ad hoc), `SKIP_NOTARIZE`, `NOTARY_PROFILE` (default `mihrab`) | the App Group's preferences (deleted, restored when locked), LaunchServices, `ios/build/catalyst-dist` |
+| `build-ios-appstore.sh` | `[--no-upload]` | `SKIP_PODS`, `SKIP_ARCHIVE` | `~/.appstoreconnect/private_keys/AuthKey_<id>.p8` (a link), `ios/build/appstore`, `/tmp/mihrab-{validate,upload}.log` |
+| `xcode-cloud.py` | `runs [n]`, `start [--force]`, `why <run>`, `shipped X.Y.Z [sha]` (exit 0 / 2 never / 3 not yet), `ensure <sha> [minutes]` (0 / 2), `pause`, `resume` | `ASC_KEY_PATH`, `ASC_KEY_ID`, `ASC_ISSUER_ID`, else `~/.config/mihrab/asc.json` | App Store Connect (start, pause, resume) |
+| `appstore-metadata.py` | `[--dry-run] [--create X.Y.Z]` (exit 3 when frozen) | as `xcode-cloud.py` | the App Store listing |
+
+Fixed facts the scripts share: repo `MihrabHQ/Mihrab`; team `GAW23HT439`;
+App Group `group.com.prayerapp`; widget extension id
+`maccatalyst.com.hassan.prayerapp.PrayerWidgetExtension`; bundle id
+`com.hassan.prayerapp`; release APK certificate SHA-256 `e66c0dab…f997`;
+Temurin 21 as `JAVA_HOME`; Play locales `en-US sv-SE ar`; the published
+names `Mihrab-vX.Y.Z.apk` and `Mihrab-macOS-X.Y.Z.zip`.
+
+**`release.sh` — preflight (nothing written; every stop is a `die`, logged to the attempts file):**
+
+| # | Gate | Lesson behind it | Pinned by |
+|---|---|---|---|
+| P1 | `gh git node python3` present | — | — |
+| P2 | a working Xcode for Catalyst (`build-catalyst.sh --check-toolchain`), unless `SKIP_CATALYST` | 2.22.0 found out after the Android build | — |
+| P3 | on `main`, no tracked changes | the release commit would sweep them up | — |
+| P4 | `git fetch`; `origin/main` not ahead of `main` | 2.19.0, 2.21.0, 2.24.0, 2.27.0 aborts (the dataset bot) | — |
+| P5 | tag free locally and on origin (captured, not `grep -q` in a pipe) | a pushed tag is never moved; SIGPIPE read "found" as "not found" | releaseScript (before first push) |
+| P6 | version moves | — | — |
+| P7 | Play notes exist for the new code, ≤ 500 characters, three locales | 2.13.0 (found after the tag), 2.26.0 (Swedish 503) | releaseScript |
+| P8 | cask: no `postflight_steps`; a legacy `postflight do` with `chronod`; `pluginkit` (or `SKIP_CATALYST` warns; no tap is a stop) | widgets froze (2026-08-28), were removed (08-29), Homebrew 7's sandbox (09-14) | releaseScript |
+| P9 | the last lesson is written (whole-line match) | the header quotes the marker; 2.21.1 | releaseSelfImprovement |
+| P10 | last *completed* `ci.yml` on main is success or absent | 2.13.1–2.13.5 red unnoticed | releaseCiGate |
+| P11 | `jest` (NODE_ENV=test), `tsc` | — | releaseScript |
+| P12 | no Xcode Cloud run PENDING/RUNNING | 2.12.0: two runs kill each other | releaseScript |
+| — | "What this ships" (`--unreleased`), and which cycle files changed since the last tag | fixes sat on main for days | releaseScript, releaseSelfImprovement (`CYCLE_PATHS`) |
+
+**Build (writes the tree and `ios/build` only; `REVERT` undoes it):**
+
+| # | Step / gate | Lesson | Pinned by |
+|---|---|---|---|
+| B1 | stamp `build.gradle` and the pbxproj; `sync-version.js`, `build-site.js`, `build-site.js --check`; the stamps took | 2.15.0 (English site only) | releaseNotes (order), releasePublishStep (`REVERT`) |
+| B2 | `build-release-notes.js` after the stamp, `--check`, the table names the version | the APK's changelog stopped one release short | releaseNotes |
+| B3 | Gradle: play APK+AAB, github (ARM only), fdroid — three invocations | one run mixed flavours | releaseScript, releasePublishStep |
+| B4 | if `aapt2`: badging code and name; ABIs exactly `arm64-v8a armeabi-v7a`; no Play Services / Firebase / Play Core classes | — | releaseScript, releasePublishStep |
+| B5 | `build-catalyst.sh` (unless `SKIP_CATALYST`), the zip exists | — | — |
+| B6 | the zip about to be published: `TeamIdentifier=GAW23HT439`, App Group, `stapler validate` (never `spctl` on a temp copy); `lsregister -u` the temp copy; put the installed widget back | 2.11.0 ad hoc; 2.11.0–2.13.3 unnotarised; 2026-08-29 blank widgets | releaseScript |
+| — | `--dry-run` stops here: cleanup, artefacts, the `REVERT` line | — | — |
+
+**Publish (irreversible; order is the safety):**
+
+| # | Step | Lesson | Pinned by |
+|---|---|---|---|
+| U1 | journal entry into the release commit: attempts for this version, cycle files, `_(unfilled)_` when either | a second push cancels the iOS run (2.13.0) | releaseSelfImprovement |
+| U2 | `git add` gradle, pbxproj, `docs/`, recipe, journal, Play notes, notes table; commit `Release V (C)`; `RELEASE_SHA` | 2.19.0 (`$RELEASE_SHA` never set) | releaseNotes, releaseScript |
+| U3 | `SKIP_APP_STORE=1` pauses Xcode Cloud *before* the push | 2.20.0 | skipAppStore |
+| U4 | push main; on failure print the mixed-reset recovery | 2.25.1 (`--soft` left stamps staged) | releasePublishStep |
+| U5 | annotated tag, push it | tag before main | releaseScript (order) |
+| U6 | copy to published names; `gh release create --latest` (notes file or generated); ask GitHub for the asset names | `file#Label` is a label; 2.23.0 (a stalled upload leaves a draft) | releasePublishStep |
+| U7 | tap: sha of the zip *as downloaded*; sed version and sha; assert both changed; commit and push (skipped with `SKIP_CATALYST`) | sha drift; a stale cask | releasePublishStep |
+| U8 | App Store: skip / `IOS_LOCAL` / `ensure` the push's run → local fallback unless `NO_IOS_LOCAL`; never a stop | 2026-08-07, 08-26, 09-11 (HTTP 500), 2.24.0 | releaseIosGate, skipAppStore |
+| V | `verify-release.sh` | — | — |
+| I | `brew update`, `brew upgrade` (reinstall when "Not upgrading"), installed version, stapled ticket, extension registered with no launch | 2.11.0–2.13.3; widgets removed on upgrade | — |
+| C | CI on the release commit: 40 × 15 s; red is a warning and exit 1 at the very end | five red releases | releaseCiGate |
+| — | cleanup (three `pgrep` patterns in `$ROOT`, Gradle daemon, widget re-registration); the "still yours to do" summary per iOS state | orphaned widget extension (2.13.4) | releaseScript, skipAppStore |
+
+**`verify-release.sh`** (✓ / ✗ / ⧗; exit 1 only on a ✗): V1 tag on origin;
+V2 release exists, not a draft, both assets; V3 both URLs 200; V4 exactly
+one APK, ARM only, no Google classes, signed with the release key (⧗ without
+`apksigner`); V5 cask version, sha of the served zip, `postflight_steps` /
+`chronod` / `pluginkit`; V6 the served app: not ad hoc, a team, the App Group,
+stapled, the cask's macOS major equals `LSMinimumSystemVersion`'s, the cask's
+arch matches `lipo`; then unregister the temp copy and put the widget back;
+V7 tap pushed; V8 F-Droid `CurrentVersion`; V9 `docs/index.html` and the live
+site (with Pages diagnostics); V10 Play notes; V11 iOS shipped (0 ✓, 3 ⧗,
+else ✗ unless `IOS_LOCAL_UPLOAD=1` → ⧗); V12 CI on the tag's commit (✓ /
+✗ on failure, timed_out, startup_failure / ⧗ otherwise). Pinned by
+releaseCiGate, releaseIosGate, releasePublishStep.
+
+**`build-catalyst.sh`** (every stop is `exit 1`): C1 toolchain; C2 signing
+identity (found, named, or `-` with a warning); C3 `MIHRAB_CATALYST=1 pod
+install` with `Podfile.lock` restored on exit; C4 unsigned `xcodebuild`,
+`ditto`; C5 profile readable and carrying the signing certificate (else
+AMFI kills at launch); C6 hermes symlink, sign inside out, `--verify
+--strict`; C7 `LSMinimumSystemVersion` ≥ 12 (warn if ≠ 12.1); C8 a team id,
+the extension sandboxed, keychain group and embedded profile when a profile
+exists, app and extension name the same App Group; C9 smoke launch — quit
+running copies, back up and delete the payload, `open -g -j`, 30 × 2 s for
+the process, alive after 10 s, 12 × 5 s for today's payload, a locked console
+reports instead of requiring it, else one visible launch; C10 kill the
+extension it spawned; C11 zip; C12 notarise (keychain profile, or
+`asc.json`, or stop), read `status: Accepted`, print the log on refusal;
+C13 staple, six tries with 10–50 s waits, signature still verifies, re-zip,
+the unpacked zip validates, `spctl` on the dist copy says accepted *and*
+`Notarized Developer ID`; C14 sha256; C15 LaunchServices: unregister the two
+`.app` paths and every other registered copy (never an `.appex`), delete the
+dist app, re-register `/Applications`, re-add the extension, re-sweep
+ghosts four times and stop if one keeps coming back. Pinned by
+releaseCatalystGate, catalystDeploymentTarget (lock trap), releaseScript
+(`set -u`).
+
+**`build-ios-appstore.sh`**: A1 an Apple Distribution identity; A2
+`asc.json` and its key file; A3 the altool key link; A4 version and build
+from the pbxproj; A5 `shipped` → ask before rebuilding a live version; A6
+plain-iOS `pod install`; A7 archive; A8 the Live Activity claims no App Group
+or keychain, the widget keeps its App Group, the app has both; A9 the scene
+manifest names a delegate that is substituted and compiled into the binary
+(iOS 27); A10 export, an `.ipa` exists; A11 validate, upload (or stop at
+`--no-upload`). Pinned by iosSceneLifecycle, releaseScript (`set -u`).
+
+**Tests that read the scripts' text** (13 files, all kept until the
+switch-over): releaseScript, releaseCatalystGate, releaseCiGate,
+releaseIosGate, releasePublishStep, releaseSelfImprovement, skipAppStore,
+releaseNotes (one describe), catalystDeploymentTarget (one describe),
+iosSceneLifecycle (one test), storeListings (the metadata tool's locale
+map), and siteVersion / widgetStaleness only mention the verifier in
+comments.
+
+**Two constraints the plan names that are not in the scripts:** there is no
+`RELEASE_EXIT=` line in any of them — it is printed by whatever wraps
+`release.sh` (Paperclip), from its exit status — so what must stay is the
+exit status: 0, or 1 for a stop, a failed verification or a red release
+commit. "The log" is the output plus `.release-attempts.log` and
+`docs/release-log.md`.
+
+### Phase 3 design (P3.1)
+
+`scripts/release/`, TypeScript run by Node's own type stripping (`node
+--experimental-strip-types`, Node ≥ 22.6; `package.json` asks for ≥ 22.11).
+No new dependency: no `tsx`, no build step, nothing checked in twice. The
+cost is a subset of TypeScript — no enums, no parameter properties, `import
+type` for types, `.ts` in import paths — which `scripts/release/tsconfig.json`
+(`erasableSyntaxOnly`, `verbatimModuleSyntax`) enforces and a test runs.
+CI's Node 20 cannot run it, so the test that launches it skips there; jest
+runs the modules through Babel as it does the app.
+
+| Module | Holds |
+|---|---|
+| `io.ts` | the injected world: `Exec` (run a command, captured or streamed), `Http` (request, download), `Fs`, `Clock` (now, sleep), `Env`; `realIo()` for the Mac |
+| `report.ts` | the outcome log (`ok`, `warn`, `fail`, `pend`, `skip`, `stop`) printed in the shell's own format, and what shadow mode compares |
+| `common.ts` | the shared facts above, `has`, version and code readers, the published names, `keepInstalledWidgetRegistered`, `inspectPublishedApp` |
+| `preflight.ts` | P1–P12, `unreleased` |
+| `build.ts` | B1–B6 |
+| `publish.ts` | U1–U8, I, C, cleanup, the summary; every irreversible call goes through `ctx.irreversible()`, which only says what it would do under dry-run |
+| `verify.ts` | V1–V12 |
+| `catalyst.ts`, `iosAppStore.ts` | C1–C15, A1–A11 |
+| `asc.ts`, `xcodeCloud.ts`, `appstoreMetadata.ts` | the App Store Connect client (ES256 JWT with `node:crypto`), the Xcode Cloud commands with the same exit codes, the listing writer |
+| `release.ts` | the whole cut in the shell's order, for `RELEASE_TS=1` |
+| `shadow.ts` | compare a phase's TS outcomes with the shell's record; write `.release-shadow.log`; print one line |
+| `main.ts` | the command line |
+
+Every gate is a function of a context (`io`, root, env, reporter, dry-run),
+so a test hands it fakes and asserts the outcome. **Shadow mode** is on by
+default (`RELEASE_SHADOW=0` turns it off): the shell records each of its own
+✓/⚠/✗/⧗ lines, and at three points — end of preflight (or a preflight
+stop), end of the build phase, after verification — runs the TS phase
+beside itself with every irreversible step in dry-run and the expensive ones
+(jest, Gradle, the Catalyst build) trusted from the shell's record. The TS
+never decides: it cannot stop the release, its exit status is ignored, it
+has a time limit, and it prints one line — agrees, or how many
+disagreements and where the log is. **`RELEASE_TS=1`** is the switch-over,
+prepared and off: `release.sh` and `verify-release.sh` hand the same
+arguments to the TS and exit with its status.
+
 ## Phase 4 — Android widgets on Jetpack Glance (only if the trial earns it)
 
 **4.1 Trial one widget.** Port the smallest (Hijri, 185 lines, or Tasbih,
