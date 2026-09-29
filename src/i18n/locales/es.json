@@ -1802,7 +1802,7 @@
       "khatmah": "Planes de khatmah"
     },
     "settingsRowHint": "Vincular otro dispositivo",
-    "pairIntro": "La sincronización mantiene tu registro igual en todos tus dispositivos. Mihrab nunca mueve nada por sí mismo: necesita una carpeta que Nextcloud, OneDrive, Dropbox, Syncthing o similar ya mantenga sincronizada entre tus dispositivos. Mihrab escribe allí un pequeño archivo cifrado que solo tus propios dispositivos pueden leer.",
+    "pairIntro": "La sincronización mantiene tu registro igual en todos tus dispositivos. Es de igual a igual (peer to peer): tus dispositivos intercambian archivos cifrados directamente entre sí, sin cuenta y sin ningún servidor nuestro, y solo tus propios dispositivos pueden leerlos.",
     "thisDevice": "Este dispositivo",
     "deviceNameLabel": "Nombre del dispositivo",
     "thisDeviceHelp": "Muestra este código a tu otro dispositivo, o escríbelo allí. No es una contraseña: puedes copiarlo, fotografiarlo o enviártelo sin problema.",
@@ -1841,7 +1841,7 @@
     "notReady": "Este dispositivo no puede configurar la sincronización: no tiene una fuente segura de aleatoriedad, y una clave creada sin ella no sería privada.",
     "privacyNoteP2p": "Tu código es una clave pública, no un secreto. Los datos se cifran solo para tus dispositivos vinculados, y no se sube nada a ningún sitio.",
     "folderSection": "Carpeta",
-    "folderHelp": "Elige una carpeta que tu servicio de sincronización ya mantenga al día en todos los dispositivos: una carpeta de Nextcloud, OneDrive, Dropbox o Syncthing. Si nada sincroniza esa carpeta entre tus dispositivos, no llegará nada. Mihrab escribe allí un pequeño archivo cifrado y lee los que dejaron tus otros dispositivos.",
+    "folderHelp": "Mihrab no transporta los archivos por sí mismo, así que sirve cualquier programa que sincronice una carpeta entre tus dispositivos: Syncthing, que va directamente de dispositivo a dispositivo, o una carpeta en la nube como Nextcloud, OneDrive o Dropbox. Elige una carpeta que mantenga al día en todos los dispositivos; si nada sincroniza esa carpeta, no llegará nada a tus otros dispositivos. Mihrab escribe allí un pequeño archivo cifrado y lee los que dejaron tus otros dispositivos.",
     "chooseFolder": "Elegir una carpeta",
     "changeFolder": "Cambiar de carpeta",
     "folderChosen": "Usando {{value}}",

@@ -1802,7 +1802,7 @@
       "khatmah": "Plans de khatma"
     },
     "settingsRowHint": "Associer un autre appareil",
-    "pairIntro": "La synchronisation garde votre historique identique sur tous vos appareils. Mihrab ne déplace jamais rien lui-même : il lui faut un dossier que Nextcloud, OneDrive, Dropbox, Syncthing ou équivalent synchronise déjà entre vos appareils. Mihrab y écrit un petit fichier chiffré, que seuls vos propres appareils peuvent lire.",
+    "pairIntro": "La synchronisation garde votre historique identique sur tous vos appareils. Elle fonctionne en pair à pair : vos appareils échangent des fichiers chiffrés directement entre eux, sans compte et sans serveur de notre part, et seuls vos propres appareils peuvent les lire.",
     "thisDevice": "Cet appareil",
     "deviceNameLabel": "Nom de l’appareil",
     "thisDeviceHelp": "Montrez ce code à votre autre appareil, ou saisissez-le là-bas. Ce n’est pas un mot de passe — vous pouvez le copier, le photographier ou vous l’envoyer sans risque.",
@@ -1841,7 +1841,7 @@
     "notReady": "Cet appareil ne peut pas configurer la synchronisation : il n’a pas de source d’aléa sûre, et une clé créée sans elle ne serait pas privée.",
     "privacyNoteP2p": "Votre code est une clé publique, pas un secret. Les données elles-mêmes sont chiffrées pour vos seuls appareils associés, et rien n’est envoyé nulle part.",
     "folderSection": "Dossier",
-    "folderHelp": "Choisissez un dossier que votre service de synchronisation garde déjà à jour sur chaque appareil — un dossier Nextcloud, OneDrive, Dropbox ou Syncthing. Si rien ne synchronise ce dossier entre vos appareils, rien ne leur parviendra. Mihrab y écrit un petit fichier chiffré et lit ceux laissés par vos autres appareils.",
+    "folderHelp": "Mihrab ne transporte pas les fichiers lui-même : n'importe quel programme qui synchronise un dossier entre vos appareils convient — Syncthing, qui va directement d'appareil à appareil, ou un dossier cloud comme Nextcloud, OneDrive ou Dropbox. Choisissez un dossier qu'il garde à jour sur chaque appareil ; si rien ne synchronise ce dossier, rien n'arrivera sur vos autres appareils. Mihrab y écrit un petit fichier chiffré et lit ceux laissés par vos autres appareils.",
     "chooseFolder": "Choisir un dossier",
     "changeFolder": "Changer de dossier",
     "folderChosen": "Utilise {{value}}",

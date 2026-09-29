@@ -245,6 +245,15 @@ describe('the location screen', () => {
     expect(src).not.toMatch(/onboarding\.skip/);
     expect(src).not.toMatch(/onboarding\.notNow/);
   });
+
+  it('moves on as soon as the location is set, with no flash of times', () => {
+    // The times shown for a second and then pulled away read as a stutter
+    // before the school question. A location set here advances at once;
+    // the times are only for someone who comes back to this screen.
+    expect(src).not.toMatch(/setTimeout\(onAdvance/);
+    expect(src).toMatch(/if \(done && !wasDoneOnMount\.current\) onAdvance\(\)/);
+    expect(src).toMatch(/const armed = done && wasDoneOnMount\.current/);
+  });
 });
 
 describe('the personalisation shelf', () => {

@@ -1802,7 +1802,7 @@
       "khatmah": "Hatim planları"
     },
     "settingsRowHint": "Başka bir cihaz eşleştir",
-    "pairIntro": "Eşitleme kaydını kullandığın her cihazda aynı tutar. Mihrab hiçbir şeyi kendisi taşımaz: Nextcloud, OneDrive, Dropbox, Syncthing veya benzerinin cihazların arasında zaten eşitlediği bir klasöre ihtiyaç duyar. Mihrab oraya küçük ve şifreli bir dosya yazar; onu yalnızca kendi cihazların okuyabilir.",
+    "pairIntro": "Eşitleme kaydını kullandığın her cihazda aynı tutar. Eşler arası (peer to peer) çalışır: cihazların şifreli dosyaları doğrudan birbiriyle paylaşır, hesap ve bize ait bir sunucu gerekmez; dosyaları yalnızca kendi cihazların okuyabilir.",
     "thisDevice": "Bu cihaz",
     "deviceNameLabel": "Cihaz adı",
     "thisDeviceHelp": "Bu kodu diğer cihazınıza gösterin ya da oraya yazın. Bu bir parola değildir — kopyalamanız, fotoğraflamanız veya kendinize göndermeniz sakıncasızdır.",
@@ -1841,7 +1841,7 @@
     "notReady": "Bu cihaz eşitlemeyi kuramıyor: güvenli bir rastgelelik kaynağı yok ve onsuz üretilen bir anahtar gizli olmazdı.",
     "privacyNoteP2p": "Kodunuz bir açık anahtardır, sır değildir. Verinin kendisi yalnızca eşleştirdiğiniz cihazlar için şifrelenir ve hiçbir yere yüklenmez.",
     "folderSection": "Klasör",
-    "folderHelp": "Eşitleme hizmetinin her cihazda zaten güncel tuttuğu bir klasör seç — Nextcloud, OneDrive, Dropbox veya Syncthing klasörü. O klasörü cihazlarının arasında hiçbir şey eşitlemiyorsa, hiçbir şey ulaşmaz. Mihrab oraya küçük ve şifreli bir dosya yazar ve diğer cihazlarının bıraktıklarını okur.",
+    "folderHelp": "Mihrab dosyaları kendisi taşımaz; bu yüzden cihazların arasında bir klasörü eşitleyen her program işini görür — cihazdan cihaza doğrudan aktaran Syncthing veya Nextcloud, OneDrive ya da Dropbox gibi bir bulut klasörü. Her cihazda güncel tuttuğu bir klasör seç; o klasörü hiçbir şey eşitlemiyorsa diğer cihazlarına hiçbir şey ulaşmaz. Mihrab oraya küçük ve şifreli bir dosya yazar ve diğer cihazlarının bıraktıklarını okur.",
     "chooseFolder": "Klasör seç",
     "changeFolder": "Klasörü değiştir",
     "folderChosen": "{{value}} kullanılıyor",

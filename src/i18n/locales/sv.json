@@ -1802,7 +1802,7 @@
       "khatmah": "Khatmah-planer"
     },
     "settingsRowHint": "Parkoppla en annan enhet",
-    "pairIntro": "Synk håller din historik likadan på alla enheter du använder. Mihrab flyttar aldrig något själv: appen behöver en mapp som Nextcloud, OneDrive, Dropbox, Syncthing eller liknande redan håller synkroniserad mellan dina enheter. Mihrab skriver en liten krypterad fil där, och bara dina egna enheter kan läsa den.",
+    "pairIntro": "Synk håller din historik likadan på alla enheter du använder. Den är peer to peer: dina enheter utbyter krypterade filer direkt med varandra, utan konto och utan någon server från oss, och bara dina egna enheter kan läsa dem.",
     "thisDevice": "Den här enheten",
     "deviceNameLabel": "Enhetens namn",
     "thisDeviceHelp": "Visa den här koden för din andra enhet, eller skriv in den där. Det är inte ett lösenord — den går bra att kopiera, fotografera eller skicka till dig själv.",
@@ -1841,7 +1841,7 @@
     "notReady": "Den här enheten kan inte ställa in synk: den saknar en säker källa till slumptal, och en nyckel som skapas utan en sådan vore inte privat.",
     "privacyNoteP2p": "Din kod är en publik nyckel, inte en hemlighet. Själva uppgifterna krypteras bara för dina parkopplade enheter, och ingenting laddas upp någonstans.",
     "folderSection": "Mapp",
-    "folderHelp": "Välj en mapp som din synktjänst redan håller synkroniserad på alla enheter — en mapp i Nextcloud, OneDrive, Dropbox eller Syncthing. Om ingenting synkar den mappen mellan dina enheter når ingenting fram. Mihrab skriver en liten krypterad fil där och läser dem dina andra enheter lämnat.",
+    "folderHelp": "Mihrab bär inte filerna själv, så vilket program som helst som synkar en mapp mellan dina enheter fungerar — Syncthing, som går direkt från enhet till enhet, eller en molnmapp som Nextcloud, OneDrive eller Dropbox. Välj en mapp som det håller synkroniserad på alla enheter; om ingenting synkar den mappen når ingenting fram till dina andra enheter. Mihrab skriver en liten krypterad fil där och läser dem dina andra enheter lämnat.",
     "chooseFolder": "Välj en mapp",
     "changeFolder": "Byt mapp",
     "folderChosen": "Använder {{value}}",

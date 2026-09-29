@@ -1802,7 +1802,7 @@
       "khatmah": "Rencana khatam"
     },
     "settingsRowHint": "Sandingkan perangkat lain",
-    "pairIntro": "Sinkronisasi menjaga catatan Anda sama di setiap perangkat. Mihrab tidak pernah memindahkan apa pun sendiri: ia memerlukan folder yang sudah disinkronkan Nextcloud, OneDrive, Dropbox, Syncthing atau sejenisnya di antara perangkat Anda. Mihrab menulis satu berkas kecil terenkripsi di sana, dan hanya perangkat Anda sendiri yang dapat membacanya.",
+    "pairIntro": "Sinkronisasi menjaga catatan Anda sama di setiap perangkat. Sinkronisasi ini bersifat peer to peer: perangkat Anda saling bertukar berkas terenkripsi secara langsung, tanpa akun dan tanpa server dari kami, dan hanya perangkat Anda sendiri yang dapat membacanya.",
     "thisDevice": "Perangkat ini",
     "deviceNameLabel": "Nama perangkat",
     "thisDeviceHelp": "Tunjukkan kode ini ke perangkat Anda yang lain, atau ketikkan di sana. Ini bukan kata sandi — aman untuk disalin, difoto, atau dikirim ke diri sendiri.",
@@ -1841,7 +1841,7 @@
     "notReady": "Perangkat ini tidak bisa menyiapkan sinkronisasi: tidak ada sumber acak yang aman, dan kunci yang dibuat tanpa itu tidak akan bersifat pribadi.",
     "privacyNoteP2p": "Kode Anda adalah kunci publik, bukan rahasia. Datanya sendiri dienkripsi hanya untuk perangkat yang Anda sandingkan, dan tidak ada yang diunggah ke mana pun.",
     "folderSection": "Folder",
-    "folderHelp": "Pilih folder yang sudah dijaga tetap selaras oleh layanan sinkronisasi Anda di setiap perangkat — folder Nextcloud, OneDrive, Dropbox, atau Syncthing. Jika tidak ada yang menyinkronkan folder itu di antara perangkat Anda, tidak ada yang akan sampai. Mihrab menulis satu berkas kecil terenkripsi di sana dan membaca berkas yang ditinggalkan perangkat Anda yang lain.",
+    "folderHelp": "Mihrab tidak membawa berkas itu sendiri, jadi program apa pun yang menyinkronkan folder di antara perangkat Anda bisa dipakai — Syncthing, yang langsung dari perangkat ke perangkat, atau folder cloud seperti Nextcloud, OneDrive, atau Dropbox. Pilih folder yang dijaga tetap selaras di setiap perangkat; jika tidak ada yang menyinkronkan folder itu, tidak ada yang akan sampai ke perangkat Anda yang lain. Mihrab menulis satu berkas kecil terenkripsi di sana dan membaca berkas yang ditinggalkan perangkat Anda yang lain.",
     "chooseFolder": "Pilih folder",
     "changeFolder": "Ganti folder",
     "folderChosen": "Memakai {{value}}",

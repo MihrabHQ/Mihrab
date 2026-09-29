@@ -9,18 +9,19 @@
  * the widget, not beside it. A test pins the absence of that control,
  * because a redesign is exactly how it would be lost.
  *
- * ── WHAT CHANGED IS THE EIGHTY MILLISECONDS AFTER ─────────────────────
+ * ── ONCE IT IS ANSWERED, THE NEXT QUESTION ────────────────────────────
  *
- * The old screen auto-advanced on an 80ms timer the moment
- * `locationOnboardingComplete` flipped, which is faster than the eye. So
- * the first moment the app proves it works — a real city, real times,
- * computed on this device — went by unseen.
+ * The moment a location lands the flow moves straight on to the school.
+ * It used to show the city and today's five times for 1.4 seconds first,
+ * as proof the app works — and then pull them away before anyone could
+ * read them, which looked like a stutter rather than a result. The proof
+ * is not lost: the school screen shows the user's own ʿaṣr for the place
+ * just set, and the last screen their real Today card.
  *
- * Now the widget gives way to the city name and today's five times, and
- * the screen waits. It is also the setup for the school screen, which can
- * only show a real ʿaṣr because this one has just established where.
+ * The times are still shown to someone who steps BACK to this screen to
+ * check what they entered, with Continue to go on.
  */
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useAppPalette } from '../../hooks/useAppPalette';
@@ -36,9 +37,6 @@ import {
   OnboardingHeading,
   PrimaryAction,
 } from '../OnboardingChrome';
-
-/** Long enough to read five rows, short enough not to feel stuck. */
-const PAUSE_MS = 1400;
 
 export function LocationScreen({
   progress,
@@ -66,27 +64,19 @@ export function LocationScreen({
   );
 
   /**
-   * Advance on a timer once the location lands, so the proof is seen. A
-   * tap on Continue does the same thing sooner; both paths call the same
-   * callback, so nothing double-advances.
+   * Advance the moment the location lands HERE — never rendering the
+   * times in between, not even for a frame.
    *
-   * ── BUT ONLY WHEN IT LANDS HERE ───────────────────────────────────
-   *
-   * Hardware back steps within the flow, so somebody can come back to
-   * this screen to check what they entered. If the timer fired on a
-   * location that was ALREADY set when the screen mounted, back would
-   * bounce them forward again a second and a half later — a screen they
-   * are not allowed to look at. The ref records the state at mount, and
-   * the timer is only armed by a change away from it.
+   * Only when it lands here: hardware back steps within the flow, so
+   * somebody can come back to this screen to check what they entered. A
+   * location that was already set when the screen mounted shows the times
+   * and waits for Continue, rather than bouncing them forward off a screen
+   * they came back to look at.
    */
   const wasDoneOnMount = useRef(done);
-  const [armed, setArmed] = useState(done);
+  const armed = done && wasDoneOnMount.current;
   useEffect(() => {
-    if (!done) return undefined;
-    setArmed(true);
-    if (wasDoneOnMount.current) return undefined;
-    const id = setTimeout(onAdvance, PAUSE_MS);
-    return () => clearTimeout(id);
+    if (done && !wasDoneOnMount.current) onAdvance();
   }, [done, onAdvance]);
 
   const city =
