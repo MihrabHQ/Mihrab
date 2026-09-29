@@ -245,8 +245,8 @@ export async function inspectZip(ctx: Ctx, zip: string): Promise<void> {
     }
     ctx.report.ok('B6', 'notarized, ticket stapled into the bundle');
   } finally {
-    // The shell's `die` exited before this cleanup; the TS always does it,
-    // which is what the comment on unregisterAndRemove asks for anyway.
+    // Always, however the checks above ended — the shell's `die` does the
+    // same through forget_unpacked_app (it once exited before it).
     await unregisterAndRemove(ctx, app, dir);
     // That unregister is by bundle identity and lands late. Without this
     // the release blanks the widgets on the machine cutting it.

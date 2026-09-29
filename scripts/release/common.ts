@@ -121,10 +121,10 @@ export const ARM_ONLY = 'arm64-v8a armeabi-v7a ';
 
 /**
  * Google Play Services, Firebase or Play Core, found in dex bytes read as
- * latin1. The shell asked `unzip -p … | strings | grep -qE …` — and under
- * `pipefail` that pipeline can report 141 when grep leaves early, which
- * reads as "not found": the check could pass an APK it should have
- * stopped. Reading the bytes has no pipe to break.
+ * latin1. The shell once asked `unzip -p … | strings | grep -qE …`, and
+ * under `pipefail` that pipeline reported 141 when grep left early, which
+ * read as "not found": the check could only pass. The shell counts now;
+ * reading the bytes has no pipe to break.
  */
 export const GOOGLE_CLASSES = /Lcom\/google\/(android\/gms|firebase|android\/play\/core)\//;
 

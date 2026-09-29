@@ -345,11 +345,17 @@ export async function buildCatalyst(ctx: Ctx, args: string[]): Promise<number> {
       await must('C6', `codesign ${name}`, 'codesign', ['--force', ...runtime, ...extEnts, '-s', identity, ext]);
     }
     await must('C6', 'codesign Mihrab.app', 'codesign', ['--force', ...runtime, ...appEnts, '-s', identity, APP]);
-    // The shell wrote `codesign --verify --strict "$APP" && echo …`, and an
-    // AND-list is exempt from `set -e`: a signature that did not verify
-    // was skipped over in silence. It stops the build here.
-    if ((await run('codesign', ['--verify', '--strict', APP])).code !== 0) {
-      fail('C6', `✗ codesign --verify --strict rejects ${APP}.`);
+    // Not `verify && echo`: an AND-list is exempt from `set -e`, and the
+    // shell once skipped a signature that did not verify in silence. It
+    // stops the build here, in both. `--deep` names the nested piece that
+    // is wrong rather than only the app.
+    const verified = await run('codesign', ['--verify', '--strict', '--deep', APP]);
+    if (verified.code !== 0) {
+      fail(
+        'C6',
+        `  ✗ codesign --verify --strict --deep rejects ${APP}:`,
+        ...`${verified.stderr}${verified.stdout}`.trim().split('\n').map((l) => `    ${l}`),
+      );
     }
     say(`▸ Signature verifies (${identity}).`);
 
@@ -500,7 +506,7 @@ export async function buildCatalyst(ctx: Ctx, args: string[]): Promise<number> {
     const backup = `${ctx.io.fs.mkdtemp('mihrab-group-prefs-')}/prefs.plist`;
     if (!adhoc) {
       await run('defaults', ['export', domain, backup]);
-      await run('defaults', ['delete', domain, 'prayer_widget_payload_v1']);
+      await run('defaults', ['delete', domain, 'prayer_widget_payload_v2']);
     }
     const openLogged = async (a: string[]) => {
       const r = await run('open', a);
@@ -545,7 +551,7 @@ export async function buildCatalyst(ctx: Ctx, args: string[]): Promise<number> {
     const today = localDate(ctx.io.clock.now());
     const payloadLanded = async (looks: number) => {
       for (let i = 0; i < looks; i++) {
-        const r = await run('defaults', ['read', domain, 'prayer_widget_payload_v1']);
+        const r = await run('defaults', ['read', domain, 'prayer_widget_payload_v2']);
         if (r.code === 0 && r.stdout.includes(today)) return true;
         await ctx.io.clock.sleep(5000);
       }

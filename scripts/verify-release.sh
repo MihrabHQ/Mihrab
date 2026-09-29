@@ -29,6 +29,11 @@ TAP="$HOME/git/homebrew-tap/Casks/mihrab.rb"
 FAILED=0
 PENDING=0
 
+# `set -o pipefail` plus `cmd | grep -q` is a trap: grep exits on the first
+# match, the producer takes SIGPIPE, and the pipeline reports 141 — a found
+# thing read as missing. So capture, then test (release.sh has the story).
+has() { case "$1" in *"$2"*) return 0 ;; *) return 1 ;; esac; }
+
 pass() { echo "✓ $1"; shadow_note pass "$1"; }
 fail() { echo "✗ $1"; FAILED=1; shadow_note fail "$1"; }
 # Neither. A check that has not finished has not passed, and printing a ✓
@@ -59,7 +64,8 @@ eval "shell_$(declare -f pend)"
 pend() { shell_pend "$1"; shadow_note pend "$1"; }
 
 # ── 1. Tag exists on the remote ─────────────────────────────────────────
-if git -C "$(dirname "$0")/.." ls-remote --tags origin "refs/tags/$TAG" | grep -q "$TAG"; then
+REMOTE_TAGS="$(git -C "$(dirname "$0")/.." ls-remote --tags origin "refs/tags/$TAG" 2>/dev/null || true)"
+if has "$REMOTE_TAGS" "refs/tags/$TAG"; then
   pass "tag $TAG exists on origin"
 else
   fail "tag $TAG missing on origin"
@@ -76,7 +82,7 @@ else
     fail "release is a DRAFT — assets 404 publicly. Fix: gh release edit $TAG -R $REPO --draft=false --latest"
   fi
   for asset in "Mihrab-v$VERSION.apk" "Mihrab-macOS-$VERSION.zip"; do
-    if echo "$REL_JSON" | grep -q "\"$asset\""; then
+    if has "$REL_JSON" "\"$asset\""; then
       pass "asset present: $asset"
     else
       fail "asset MISSING from release: $asset"
@@ -119,7 +125,10 @@ if curl -sfL -o "$APK_TMP" "$APK_URL"; then
   else
     fail "published APK carries ABIs '$abis' — expected arm64-v8a armeabi-v7a; is this the F-Droid build?"
   fi
-  if unzip -p "$APK_TMP" 'classes*.dex' 2>/dev/null | strings | grep -qE 'Lcom/google/(android/gms|firebase|android/play/core)/'; then
+  # Counted, not `grep -q` (see `has` above): with -q the found case
+  # was 141, and this check could only ever pass.
+  google=$(unzip -p "$APK_TMP" 'classes*.dex' 2>/dev/null | strings | grep -cE 'Lcom/google/(android/gms|firebase|android/play/core)/' || true)
+  if [ "${google:-0}" != "0" ]; then
     fail "published APK contains Google Play Services / Firebase / Play Core classes"
   else
     pass "published APK carries no Google Play Services"
@@ -232,7 +241,7 @@ if [ -f "$TAP" ]; then
     if ditto -xk "$tmp" "$unz" 2>/dev/null && [ -d "$unz/Mihrab.app" ]; then
       sig=$(codesign -dv "$unz/Mihrab.app" 2>&1)
       team=$(printf '%s' "$sig" | sed -n 's/^TeamIdentifier=//p')
-      if printf '%s' "$sig" | grep -q "adhoc"; then
+      if has "$sig" "adhoc"; then
         fail "the published app is AD-HOC SIGNED — no entitlements, no App Group, no widgets. Rebuild with a Developer ID and re-upload."
       elif [ -z "$team" ] || [ "$team" = "not set" ]; then
         fail "the published app has no TeamIdentifier — every entitlement was dropped at signing. Rebuild and re-upload."
@@ -241,8 +250,8 @@ if [ -f "$TAP" ]; then
       fi
       # The entitlement the widgets live or die by, read off the shipped
       # bundle rather than the repo's entitlements file.
-      if codesign -d --entitlements - --xml "$unz/Mihrab.app" 2>/dev/null |
-          grep -q "group.com.prayerapp"; then
+      ents="$(codesign -d --entitlements - --xml "$unz/Mihrab.app" 2>/dev/null || true)"
+      if has "$ents" "group.com.prayerapp"; then
         pass "published app carries the App Group"
       else
         fail "published app has NO App Group — its widgets will not render"
@@ -356,7 +365,10 @@ if [ -f "$TAP" ]; then
   fi
   rm -f "$tmp"
   # The tap must actually be pushed.
-  if git -C "$(dirname "$TAP")/.." diff --quiet && git -C "$(dirname "$TAP")/.." log origin/main..main --oneline 2>/dev/null | grep -q .; then
+  # Captured: `git log | grep -q .` took SIGPIPE whenever there was more
+  # than one line to write, and read "unpushed" as "pushed".
+  UNPUSHED="$(git -C "$(dirname "$TAP")/.." log origin/main..main --oneline 2>/dev/null || true)"
+  if git -C "$(dirname "$TAP")/.." diff --quiet && [ -n "$UNPUSHED" ]; then
     fail "homebrew-tap has unpushed commits — git push it"
   else
     pass "homebrew-tap is pushed"
@@ -387,7 +399,7 @@ fi
 LIVE="$(curl -fsS --max-time 20 "https://mihrab.elghamri.se/?bust=$$" 2>/dev/null || true)"
 if [ -z "$LIVE" ]; then
   fail "could not fetch the live site to check its version"
-elif printf '%s' "$LIVE" | grep -q "Version $VERSION ("; then
+elif has "$LIVE" "Version $VERSION ("; then
   pass "live site serves $VERSION"
 else
   # Say WHICH of the two failures this is, or the next person re-reads the

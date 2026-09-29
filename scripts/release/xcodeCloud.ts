@@ -198,10 +198,9 @@ export async function ensure(x: XcCtx, commit: string, wait = '6'): Promise<numb
   try {
     return (await start(x)) === 0 ? 0 : 2;
   } catch (e) {
-    // The Python turned every exit from `start` into a bare 2 and dropped
-    // its message — which is why 2.25.0's log said "Starting one by hand"
-    // and then nothing at all about why it failed. The status is kept;
-    // the reason is now said.
+    // Exit 2 whatever `start` said, but say it. The Python once dropped
+    // the message — 2.25.0's log said "Starting one by hand" and then
+    // nothing at all about why it failed; both say it now.
     if (e instanceof AscExit) {
       x.say(`  could not start one: ${e.message}`);
       return 2;

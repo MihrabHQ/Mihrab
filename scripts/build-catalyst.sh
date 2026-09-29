@@ -226,8 +226,8 @@ if [ "$SIGN_IDENTITY" != "-" ]; then
       plutil -extract DeveloperCertificates xml1 -o - - 2>/dev/null |
       grep -c '<data>' || echo 0)
     SIGNER_CN=${SIGN_IDENTITY%% (*}
-    if ! security cms -D -i "$PROFILE" 2>/dev/null |
-        plutil -p - 2>/dev/null | grep -q .; then
+    PROFILE_TEXT="$(security cms -D -i "$PROFILE" 2>/dev/null | plutil -p - 2>/dev/null || true)"
+    if [ -z "$PROFILE_TEXT" ]; then
       echo "  ✗ $PROFILE is not a readable provisioning profile." >&2
       exit 1
     fi
@@ -293,7 +293,16 @@ find "$APP/Contents/PlugIns" -maxdepth 1 -name '*.appex' -print0 2>/dev/null |
   done
 codesign --force "${RUNTIME_OPTS[@]+"${RUNTIME_OPTS[@]}"}" \
   "${ENTITLEMENT_OPTS[@]+"${ENTITLEMENT_OPTS[@]}"}" -s "$SIGN_IDENTITY" "$APP"
-codesign --verify --strict "$APP" && echo "▸ Signature verifies ($SIGN_IDENTITY)."
+# `--deep`: the app's seal covers its nested code, but checking each piece
+# names the one that is wrong. And not `verify && echo`: under `set -e` a
+# failure on the left of `&&` does not stop the script, so a bad signature
+# printed nothing and the build went on to notarise it.
+if ! VERIFY_OUT="$(codesign --verify --strict --deep "$APP" 2>&1)"; then
+  echo "  ✗ codesign --verify --strict --deep rejects $APP:" >&2
+  printf '%s\n' "$VERIFY_OUT" | sed 's/^/    /' >&2
+  exit 1
+fi
+echo "▸ Signature verifies ($SIGN_IDENTITY)."
 
 # ── THE MAC MINIMUM, READ OFF THE PRODUCT ─────────────────────────────
 #
@@ -328,7 +337,8 @@ if [ "$SIGN_IDENTITY" != "-" ]; then
   # 2.11.0 shipped to macOS with no App Group, no widgets, and no access to
   # the Keychain items its predecessor had written. The signature verifies
   # perfectly; it just is not the app.
-  if codesign -dv "$APP" 2>&1 | grep -q "TeamIdentifier=not set"; then
+  SIGN_INFO="$(codesign -dv "$APP" 2>&1 || true)"
+  if [[ "$SIGN_INFO" == *"TeamIdentifier=not set"* ]]; then
     echo "  ✗ no TeamIdentifier on the signed app." >&2
     echo "    Every entitlement below has been silently dropped: no App" >&2
     echo "    Group, no widgets, and a new sync identity on every install." >&2
@@ -417,7 +427,7 @@ sleep 3
 GROUP_BACKUP=$(mktemp -t mihrab-group-prefs)
 if [ "$SIGN_IDENTITY" != "-" ]; then
   defaults export "$GROUP_DOMAIN" "$GROUP_BACKUP" 2>/dev/null || true
-  defaults delete "$GROUP_DOMAIN" prayer_widget_payload_v1 2>/dev/null || true
+  defaults delete "$GROUP_DOMAIN" prayer_widget_payload_v2 2>/dev/null || true
 fi
 # `open -g -j`: launch in the background and hidden. Running the executable
 # directly works too, but it throws a window onto whatever the person is doing,
@@ -494,8 +504,12 @@ echo "  ▸ alive."
 payload_landed() {  # $1 = how many five-second looks to take
   local _
   for _ in $(seq 1 "$1"); do
-    if defaults read "$GROUP_DOMAIN" prayer_widget_payload_v1 2>/dev/null |
-        grep -q "$(date +%Y-%m-%d)"; then
+    # Captured, not piped into `grep -q`: the payload is larger than a pipe
+    # buffer, so an early grep exit left `defaults` on SIGPIPE and a
+    # payload that had landed read as missing.
+    local payload
+    payload="$(defaults read "$GROUP_DOMAIN" prayer_widget_payload_v2 2>/dev/null || true)"
+    if [[ "$payload" == *"$(date +%Y-%m-%d)"* ]]; then
       return 0
     fi
     sleep 5

@@ -235,7 +235,7 @@ describe('what signing must have sealed in', () => {
 
   it('a signature that does not verify stops the build (the shell skipped past it)', async () => {
     const w = mac().on('codesign --verify', { code: 1 });
-    expect((await build(w)).stopped).toMatch(/codesign --verify --strict rejects/);
+    expect((await build(w)).stopped).toMatch(/codesign --verify --strict --deep rejects/);
   });
 });
 

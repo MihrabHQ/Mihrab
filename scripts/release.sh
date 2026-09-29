@@ -319,6 +319,10 @@ die() {
   # A stop in preflight is the one the TypeScript is asked about: would it
   # have stopped here too, with the same words?
   if [ "$SHADOW_PHASE" = "preflight" ]; then release_shadow preflight; fi
+  # A stop between unpacking the zip and the cleanup after its checks would
+  # leave the unpacked app registered with LaunchServices, which blanks the
+  # widgets on this Mac (see forget_unpacked_app).
+  if [ -n "${UNZIP:-}" ]; then forget_unpacked_app; fi
   exit 1
 }
 
@@ -481,10 +485,10 @@ elif [ -f "$TAP" ]; then
   # rejected. The deprecation warning it prints is expected and accepted;
   # see docs/release/catalyst-widgets.md. `^` anchors keep a comment that
   # merely mentions the words from tripping either grep.
-  if printf '%s' "$CASK_SRC" | grep -qE '^[[:space:]]*postflight_steps'; then
+  if grep -qE '^[[:space:]]*postflight_steps' <<< "$CASK_SRC"; then
     die "cask uses postflight_steps — its sandboxed run step cannot register the widget extension (pluginkit -a fails), so every Mac upgrading to $TAG LOSES its widgets. Keep the legacy 'postflight do' block. See docs/release/catalyst-widgets.md."
   fi
-  { printf '%s' "$CASK_SRC" | grep -qE '^[[:space:]]*postflight do' && has "$CASK_SRC" "chronod"; } \
+  { grep -qE '^[[:space:]]*postflight do' <<< "$CASK_SRC" && has "$CASK_SRC" "chronod"; } \
     || die "cask has no chronod postflight — Macs upgrading to $TAG would freeze their widgets"
   ok "cask restarts chronod after install (legacy, unsandboxed postflight)"
   has "$CASK_SRC" "pluginkit" \
@@ -668,7 +672,12 @@ if [ -n "$AAPT" ]; then
   abis=$(unzip -Z1 "$APK" 'lib/*' 2>/dev/null | cut -d/ -f2 | sort -u | tr '\n' ' ')
   [ "$abis" = "arm64-v8a armeabi-v7a " ] || die "github APK carries ABIs '$abis', expected arm64-v8a armeabi-v7a"
   ok "github APK is ARM only"
-  if unzip -p "$APK" 'classes*.dex' | strings | grep -qE 'Lcom/google/(android/gms|firebase|android/play/core)/'; then
+  # COUNTED, NOT `grep -q`: -q exits on the first match, `strings` takes
+  # SIGPIPE, and `pipefail` turns the found case into 141 — so this gate
+  # could only ever pass. `grep -c` reads to the end; a count, not a
+  # status, decides.
+  google=$(unzip -p "$APK" 'classes*.dex' 2>/dev/null | strings | grep -cE 'Lcom/google/(android/gms|firebase|android/play/core)/' || true)
+  if [ "${google:-0}" != "0" ]; then
     die "github APK contains Google Play Services / Firebase / Play Core classes"
   fi
   ok "github APK carries no Google Play Services"
@@ -690,6 +699,17 @@ ok "$(basename "$ZIP")"
 # what happens to be in ios/build afterwards. An ad-hoc signature has no
 # team identifier, and without one codesign drops every entitlement —
 # which is invisible to `codesign --verify` and fatal to the widgets.
+forget_unpacked_app() {
+  local dir="$UNZIP"
+  UNZIP=""  # once, even when a step below dies
+  local lsreg=/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister
+  [ -x "$lsreg" ] && { "$lsreg" -u "$dir/Mihrab.app" 2>/dev/null || true; }
+  rm -rf "$dir"
+  # That unregister is by bundle identity and lands late — see
+  # keep_installed_widget_registered. Without this the release blanks the
+  # widgets on the machine cutting it.
+  keep_installed_widget_registered
+}
 UNZIP=$(mktemp -d)
 ditto -x -k "$ZIP" "$UNZIP" || die "cannot unpack $ZIP"
 APP="$UNZIP/Mihrab.app"
@@ -737,14 +757,9 @@ ok "notarized, ticket stapled into the bundle"
 # what makes every widget on the release machine go blank.
 #
 # `.app` only — see build-catalyst.sh on why `.appex` paths are never
-# unregistered by hand.
-LSREG=/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister
-[ -x "$LSREG" ] && { "$LSREG" -u "$APP" 2>/dev/null || true; }
-rm -rf "$UNZIP"
-# That unregister is by bundle identity and lands late — see
-# keep_installed_widget_registered. Without this the release blanks the
-# widgets on the machine cutting it.
-keep_installed_widget_registered
+# unregistered by hand. `die` calls this too, so a gate above that stops
+# the release does not leave the record behind.
+forget_unpacked_app
 fi
 
 release_shadow build

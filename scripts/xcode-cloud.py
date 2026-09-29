@@ -288,7 +288,12 @@ def ensure(commit: str, wait: str = "6") -> None:
         raise SystemExit(2)
     try:
         start()
-    except SystemExit:
+    except SystemExit as err:
+        # Exit 2 whatever `start` said, but say it: `call` carries Apple's
+        # reason in the exit, and this once dropped it — 2.25.0's log read
+        # "Starting one by hand" and then nothing about why it failed.
+        if isinstance(err.code, str):
+            print(f"  could not start one: {err.code}")
         raise SystemExit(2)
 
 

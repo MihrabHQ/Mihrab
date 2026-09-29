@@ -103,8 +103,10 @@ entitlement files):
 Then it launches the app for real, because a signature that verifies is not a
 bundle that runs — `codesign` verification and notarization both pass a bundle
 AMFI will kill on sight. It requires the app to survive 15 seconds, and it
-deletes `prayer_widget_payload_v1` from the group container beforehand and
-requires the app to write it back with today's date. It looks for that payload
+deletes `prayer_widget_payload_v2` from the group container beforehand and
+requires the app to write it back with today's date. (Until the rewrite's
+step 1.7 this was `prayer_widget_payload_v1`; the app now writes v2 alone
+and removes v1, so a check on v1 would never pass.) It looks for that payload
 every five seconds for a minute rather than once, and if the minute passes it
 relaunches the app VISIBLY and looks again before failing — see the section
 below for why a hidden launch alone is not enough to judge the app by.
@@ -245,8 +247,8 @@ any of the other checks.
 codesign -dv /Applications/Mihrab.app 2>&1 | grep TeamIdentifier   # = GAW23HT439
 pluginkit -m -i maccatalyst.com.hassan.prayerapp.PrayerWidgetExtension -v
 defaults read "$HOME/Library/Group Containers/GAW23HT439.group.com.prayerapp/\
-Library/Preferences/GAW23HT439.group.com.prayerapp" prayer_widget_payload_v1 \
-  | head -c 40            # dayLabel must be TODAY
+Library/Preferences/GAW23HT439.group.com.prayerapp" prayer_widget_payload_v2 \
+  | grep -o '20[0-9][0-9]-[0-9][0-9]-[0-9][0-9]' | head -3   # today's date among them
 ```
 
 **Why iOS and iPadOS cannot hit it.** There is no LaunchServices, and an
@@ -417,7 +419,8 @@ day. Whatever was wrong was not in the build.
 
 **What it is.** `open -g -j` launches hidden, and hidden is not merely quiet:
 the scene never becomes foreground-active, so the screen that writes
-`prayer_widget_payload_v1` never runs its data effect. Somebody sitting at the
+the widget payload (`prayer_widget_payload_v1` then, `_v2` since the
+rewrite) never runs its data effect. Somebody sitting at the
 Mac resolves this without noticing. A Mac whose display has gone to sleep does
 not.
 
