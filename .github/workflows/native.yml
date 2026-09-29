@@ -1,0 +1,129 @@
+name: Native builds
+
+# Compiles what jest and the contract harnesses cannot: the Android app
+# (with and without the Glance widgets), the iOS app with its widget and
+# Live Activity extensions, and the Mac Catalyst app. Until this existed
+# the Swift outside ios/Contract and the Kotlin outside the contract were
+# first compiled on a release machine (docs/rewrite-plan.md, "Open items").
+#
+# Builds only: nothing is signed, bundled for release or uploaded.
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main, rewrite]
+  workflow_dispatch:
+
+concurrency:
+  group: native-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  android:
+    name: Android (Glance ${{ matrix.glance && 'on' || 'off' }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    strategy:
+      fail-fast: false
+      matrix:
+        # Off is the shipping build. On is the measuring build behind
+        # -PmihrabGlanceWidgets (Phase 4), which nothing else builds.
+        glance: [false, true]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --no-audit
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Assemble the F-Droid debug APK
+        working-directory: android
+        run: >-
+          ./gradlew assembleFdroidDebug
+          -PreactNativeArchitectures=arm64-v8a
+          -PmihrabGlanceWidgets=${{ matrix.glance }}
+          --no-daemon --stacktrace
+
+  apple:
+    name: ${{ matrix.name }}
+    runs-on: macos-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: iOS simulator
+            catalyst: '0'
+            destination: generic/platform=iOS Simulator
+          # React is built from source for the Mac (the Podfile, under
+          # MIHRAB_CATALYST), so this is the slow one.
+          - name: Mac Catalyst
+            catalyst: '1'
+            destination: generic/platform=macOS,variant=Mac Catalyst
+    env:
+      MIHRAB_CATALYST: ${{ matrix.catalyst }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --no-audit
+
+      - name: Xcode
+        run: xcodebuild -version
+
+      - name: Pods
+        working-directory: ios
+        run: |
+          for attempt in 1 2 3; do
+            pod install && exit 0
+            echo "pod install failed (attempt $attempt), retrying in 20s" >&2
+            sleep 20
+          done
+          exit 1
+
+      # Every Swift and Objective-C file the app and both extensions
+      # compile. Debug, so the JS bundle is not built into it.
+      # The full log is kept as an artifact on failure; the job's own log
+      # shows the errors, the warnings in our code and the verdict.
+      - name: Build
+        env:
+          DESTINATION: ${{ matrix.destination }}
+        run: |
+          mkdir -p build
+          set +e
+          xcodebuild build \
+            -workspace ios/PrayerApp.xcworkspace \
+            -scheme PrayerApp \
+            -configuration Debug \
+            -destination "$DESTINATION" \
+            -derivedDataPath build/derived \
+            CODE_SIGNING_ALLOWED=NO \
+            COMPILER_INDEX_STORE_ENABLE=NO \
+            > build/xcodebuild.log 2>&1
+          status=$?
+          grep -E 'error:|/ios/[^:]+:[0-9]+:[0-9]+: warning:|BUILD (SUCCEEDED|FAILED)' build/xcodebuild.log | sort -u
+          exit "$status"
+
+      - name: Keep the build log
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xcodebuild-${{ matrix.catalyst == '1' && 'catalyst' || 'ios' }}
+          path: build/xcodebuild.log
