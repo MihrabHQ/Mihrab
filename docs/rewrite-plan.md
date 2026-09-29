@@ -1,8 +1,10 @@
 # Targeted rewrites: the four places the bugs keep coming from
 
 > **Status (2026-09-29): P0.1, P1.1–P1.4, P1.6, Phase 2 (and the two-live-plans
-> follow-up), P5.1 and P5.3 done; P1.5 not started; P1.7 waits on 1.4–1.6
-> shipping; Phases 3 and 4 and P5.2 not started. See the progress log and
+> follow-up), P5.1 and P5.3 done. P5.2 done in code on the `rewrite` branch,
+> waiting on its proof: the Android build with the ported screens patch, the
+> Mac signed and notarised, the device pass. P1.5 not started; P1.7 waits on
+> 1.4–1.6 shipping; Phases 3 and 4 not started. See the progress log and
 > "Open items" below it.** Decision (Hassan,
 > 2026-09-28): no rewrite of the app — React Native stays, and so does the
 > language. Instead, rewrite the four parts where the history says the same
