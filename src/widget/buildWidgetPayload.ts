@@ -372,10 +372,15 @@ export function buildWidgetPayload(
   const { rows, sunriseRow, extraRows } = buildDayRows(timings);
 
   // Multi-day schedule. Prefer the supplied `week`; otherwise synthesise the
-  // shortest useful window from today (+ tomorrow when available).
+  // shortest useful window from today (+ tomorrow when available). A week of
+  // today alone gains tomorrow when it is known: built before ʿIshāʾ, a
+  // payload with one day left every reader nothing ahead after it until the
+  // app ran again — and since step 1.7 v2 is the only payload there is.
   const weekSource =
     week && week.length > 0
-      ? week
+      ? week.length === 1 && haveTomorrow
+        ? [week[0], tomorrow as TimingsMap]
+        : week
       : tomorrow
         ? [today, tomorrow]
         : [today];

@@ -780,8 +780,8 @@ export function finishKhatmahPortion(): void {
  * undoes what "done" did, in the portions "done" used: when the reading
  * is past today's cut, back to the start of the last portion finished
  * (`khatmahFinishTarget` is the one "done" would act on next); on a day
- * not finished yet, back one day's length before today's cut, whose own
- * start is then re-made from there (`paceStillFits`).
+ * not finished yet, back one day's length (in pages) before today's cut,
+ * whose own start is then re-made from there (`paceStillFits`).
  */
 function stepBackTo(plan: KhatmahPlan): number {
   const start = khatmahStartAyah(plan) - 1;
@@ -791,7 +791,15 @@ function stepBackTo(plan: KhatmahPlan): number {
     const to =
       target.day > today.day
         ? khatmahPortion(plan, target.day - 1).from - 1
-        : today.from - 1 - (today.to - today.from + 1);
+        : (() => {
+            // In Ḥafṣ pages, the unit the day is cut in: counted in ayahs,
+            // today's length says nothing about yesterday's (seven ayahs to
+            // a page at the front of the book, thirty and more at the back),
+            // and the rewind went back into the day before yesterday.
+            const before = pagesThroughAyahs(today.from - 1);
+            const len = pagesThroughAyahs(today.to) - before;
+            return ayahsThroughHafsPage(before - len);
+          })();
     return Math.max(start, to);
   }
   const current = khatmahCurrentPortion(plan).day;

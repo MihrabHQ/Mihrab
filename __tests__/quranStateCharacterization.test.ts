@@ -87,7 +87,7 @@ describe('abandoning a khatmah', () => {
     expect(s.khatmah.find(k => k.id === first)!.abandonedAt).toBe(NOW);
   });
 
-  it('is forgotten once no device could still be arguing about it', () => {
+  it('keeps only a skeleton once no device could still be arguing about it', () => {
     const plan = (abandonedAt: number) => ({
       version: 1,
       khatmah: [
@@ -102,8 +102,19 @@ describe('abandoning a khatmah', () => {
       ],
     });
     const ttl = KHATMAH_TOMBSTONE_TTL_DAYS * DAY;
-    expect(coerceQuranState(plan(NOW - ttl + DAY)).khatmah).toHaveLength(1);
-    expect(coerceQuranState(plan(NOW - ttl - DAY)).khatmah).toHaveLength(0);
+    expect(coerceQuranState(plan(NOW - ttl + DAY)).khatmah[0].pagesRead).toBe(10);
+    // Dropped, an offline device's copy of the plan came back open and took
+    // the khatmah over; kept as a skeleton, the ending still travels.
+    expect(coerceQuranState(plan(NOW - ttl - DAY)).khatmah).toEqual([
+      {
+        id: 'gone',
+        startedAt: NOW - 200 * DAY,
+        targetDays: 30,
+        pagesRead: 0,
+        completedAt: null,
+        abandonedAt: NOW - ttl - DAY,
+      },
+    ]);
   });
 });
 

@@ -483,3 +483,11 @@ try {
   // react-test-renderer is not installed in every environment this file
   // is loaded in; the suites that do not render do not need this.
 }
+
+// Unit tests never reach the network. Without this, a path that fell back to
+// the global `fetch` (the ayah audio's RNFetch fallback) went to everyayah.com
+// and GitHub for real — slow, and flaky under load. A suite that needs
+// `fetch` mocks it.
+global.fetch = jest.fn(() =>
+  Promise.reject(new TypeError('Network request failed (jest: no network)')),
+);

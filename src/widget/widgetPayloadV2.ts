@@ -169,29 +169,6 @@ export function widgetPayloadV2FromV1(
       ),
     );
   }
-  // After ʿIshāʾ WITH tomorrow's times but tomorrow outside `days` — the
-  // app had them from its `tomorrow` argument and a window that ends today
-  // — v1 shows tomorrow at the top level, under tomorrow's label, and
-  // nowhere else. Leaving it out left a reader of v2 with nothing ahead
-  // after ʿIshāʾ: no next prayer on the widgets, no Live Activity at all.
-  const todayDay = v1Days.find(d => d.dateKey === todayKey);
-  if (
-    !v1.tomorrowEstimated &&
-    todayDay &&
-    v1.dayLabel !== todayDay.dayLabel &&
-    !v1Days.some(d => d.dateKey === tomorrowKey)
-  ) {
-    days.push(
-      dayV2(
-        tomorrowKey,
-        v1.dayLabel,
-        v1.rows,
-        v1.sunriseRow,
-        v1.extraRows,
-        false,
-      ),
-    );
-  }
   if (days.length === 0) {
     // A v1 payload without `days` (only ever built by old callers and
     // tests) still describes one day: the one at the top level.

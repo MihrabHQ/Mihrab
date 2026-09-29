@@ -418,6 +418,9 @@ export function QuranScreen() {
   const doors = selectQuranCardState(quran);
   // The day's portion, how much of it is read, and anything read past it.
   const day = plan ? khatmahDay(plan) : null;
+  // The day "done" would finish, or null when pressing would do nothing
+  // (only skipped pages left: `khatmahCanFinish`). Worked out once.
+  const finishDay = plan && khatmahCanFinish(plan) ? khatmahFinishTarget(plan).day : null;
   // And the same thing in pages, of the muṣḥaf this reader is in — see
   // `khatmahPages`. A page is the unit a reader plans in; an ayah count
   // is a number nobody can picture.
@@ -757,47 +760,47 @@ export function QuranScreen() {
               {/* Not when pressing would do nothing: with only skipped
                   pages left the last portion is already read
                   (`khatmahCanFinish`), and the Home door says what is. */}
-              {khatmahCanFinish(plan) ? (
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel={t('quran.khatmahMarkDone', {
-                  day: khatmahFinishTarget(plan).day,
-                  defaultValue: "Mark day {{day}}'s reading done",
-                })}
-                onPress={finishKhatmahPortion}
-                style={[styles.khatmahBtn, { backgroundColor: palette.accentSolid }]}>
-                <Text
-                style={[styles.khatmahBtnLabel, { color: palette.onAccent }]}
-                numberOfLines={1}>
-                  {/* The strings carry a leading "✓" from when this was the
-                      only filled button on the card; a secondary button
-                      does not need to shout it, and the glyph was what
-                      pushed the label into an ellipsis at 2 : 3. */}
-                  {(day.done
-                    ? t('quran.khatmahMarkNext', {
-                        day: khatmahFinishTarget(plan).day,
-                        // Which day that is, in calendar terms — a plan's
-                        // day number says nothing on its own.
-                        when: formatDayWhen(
-                          khatmahDayWhen(
-                            // Not the plan's birthday: a re-paced plan's
-                            // day numbers were recut, and counting them
-                            // from the start would call tomorrow today.
-                            khatmahDayAnchor(plan),
-                            khatmahFinishTarget(plan).day,
+              {finishDay != null ? (
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={t('quran.khatmahMarkDone', {
+                    day: finishDay,
+                    defaultValue: "Mark day {{day}}'s reading done",
+                  })}
+                  onPress={finishKhatmahPortion}
+                  style={[styles.khatmahBtn, { backgroundColor: palette.accentSolid }]}>
+                  <Text
+                  style={[styles.khatmahBtnLabel, { color: palette.onAccent }]}
+                  numberOfLines={1}>
+                    {/* The strings carry a leading "✓" from when this was the
+                        only filled button on the card; a secondary button
+                        does not need to shout it, and the glyph was what
+                        pushed the label into an ellipsis at 2 : 3. */}
+                    {(day.done
+                      ? t('quran.khatmahMarkNext', {
+                          day: finishDay,
+                          // Which day that is, in calendar terms — a plan's
+                          // day number says nothing on its own.
+                          when: formatDayWhen(
+                            khatmahDayWhen(
+                              // Not the plan's birthday: a re-paced plan's
+                              // day numbers were recut, and counting them
+                              // from the start would call tomorrow today.
+                              khatmahDayAnchor(plan),
+                              finishDay,
+                            ),
+                            (key: string, opts: { defaultValue: string }) =>
+                              t(key, opts) as string,
+                            i18n.language,
                           ),
-                          (key: string, opts: { defaultValue: string }) =>
-                            t(key, opts) as string,
-                          i18n.language,
-                        ),
-                        defaultValue: '✓ Finish day {{day}} ({{when}}) too',
-                      })
-                    : t('quran.khatmahMarkToday', {
-                        defaultValue: "✓ Today's reading done",
-                      })
-                  ).replace(/^✓\s*/, '')}
-                </Text>
-              </Pressable>
+                          defaultValue: '✓ Finish day {{day}} ({{when}}) too',
+                        })
+                      : t('quran.khatmahMarkToday', {
+                          defaultValue: "✓ Today's reading done",
+                        })
+                    ).replace(/^✓\s*/, '')}
+                  </Text>
+                </Pressable>
               ) : null}
               <Pressable
                 accessibilityRole="button"

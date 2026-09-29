@@ -242,14 +242,17 @@ function coerceKhatmah(v: unknown): KhatmahPlan | null {
     typeof r.abandonedAt === 'number' && Number.isFinite(r.abandonedAt)
       ? r.abandonedAt
       : null;
-  // Expired tombstones are dropped rather than carried: past the TTL the
-  // plan is gone everywhere and the row is pure weight in every sealed
-  // file. `coerceSunnahLog` prunes on exactly this reasoning.
+  // Past the TTL a tombstone is cut to a skeleton, not dropped. Dropped,
+  // an offline device's copy of the plan came back open on its next sync —
+  // and with more reading than the current plan it took the khatmah over
+  // (`oneLivePlan`); a device whose clock ran ahead dropped fresh endings at
+  // once. The ending must outlive every peer that could still hold the plan,
+  // and what made the row heavy was its reading (`done`, marks), not this.
   if (
     abandonedAt != null &&
     Date.now() - abandonedAt > KHATMAH_TOMBSTONE_TTL_DAYS * 24 * 60 * 60 * 1000
   ) {
-    return null;
+    return { id: r.id, startedAt, targetDays, pagesRead: 0, completedAt, abandonedAt };
   }
   const out: KhatmahPlan = {
     id: r.id,

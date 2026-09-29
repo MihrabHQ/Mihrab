@@ -642,7 +642,12 @@ export function mergeKhatmah(
   // them all — including two LIVE ones, when each device started its own
   // before hearing of the other's. Only one can be read; `oneLivePlan`
   // decides which, the same way on every device.
-  return oneLivePlan([...byId.values()]).sort((a, b) => a.startedAt - b.startedAt);
+  // Ordered by start, then id: two plans started in the same millisecond
+  // came out in whichever order the sides were passed, so the two devices
+  // of one sync stored different lists.
+  return oneLivePlan([...byId.values()]).sort(
+    (a, b) => a.startedAt - b.startedAt || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0),
+  );
 }
 
 /**

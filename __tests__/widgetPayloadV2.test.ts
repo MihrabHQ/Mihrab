@@ -60,17 +60,6 @@ describe('widget payload v2', () => {
       });
       const back = withoutUncarried(widgetPayloadV1FromV2(read!, s.now));
       const want = withoutUncarried(s.v1);
-      // The one addition: a tomorrow the app showed only at the top level
-      // (known, but outside the window) comes back in `days` as well —
-      // v2 has to carry it for a reader to have anything ahead.
-      if (s.name === 'after ʿIshāʾ, tomorrow known but outside the window') {
-        expect(back.days.map((d: { dateKey: string }) => d.dateKey)).toEqual([
-          ...want.days.map((d: { dateKey: string }) => d.dateKey),
-          '2026-04-10',
-        ]);
-        expect(back.days[back.days.length - 1].rows).toEqual(want.rows);
-        back.days.pop();
-      }
       expect({ name: s.name, payload: back }).toEqual({
         name: s.name,
         payload: want,

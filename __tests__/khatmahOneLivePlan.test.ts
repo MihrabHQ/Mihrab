@@ -225,10 +225,16 @@ describe('the store', () => {
     // …so the phone's own copy, still live and unmarked, cannot bring it back.
     expect(mergeKhatmah(getQuranState().khatmah, [phone]).filter(isLivePlan)).toEqual([]);
     expect(mergeKhatmah([phone], getQuranState().khatmah).filter(isLivePlan)).toEqual([]);
-    // And it expires with the kept plan's tombstone.
+    // Past the TTL both endings are cut to skeletons, never dropped: the
+    // phone's live copy still cannot bring the plan back.
     jest.setSystemTime(NOW + 91 * DAY);
-    expect(coerceQuranState({ version: 1, khatmah: getQuranState().khatmah }).khatmah)
-      .toEqual([]);
+    const aged = coerceQuranState({ version: 1, khatmah: getQuranState().khatmah }).khatmah;
+    expect(Object.fromEntries(aged.map(k => [k.id, [k.pagesRead, k.done]]))).toEqual({
+      phone: [0, undefined],
+      mac: [0, undefined],
+    });
+    expect(aged.every(k => k.abandonedAt != null)).toBe(true);
+    expect(mergeKhatmah(aged, [phone]).filter(isLivePlan)).toEqual([]);
   });
 
   it('ends the plan set aside when the reader finishes the kept one', () => {

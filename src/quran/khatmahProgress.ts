@@ -174,10 +174,12 @@ export function pagesThroughAyahs(
 }
 
 /**
- * How long an abandoned plan is remembered as abandoned — the same ninety
- * days, for the same reason, as the sunnah tombstones and the peer
- * removals: long enough for a tablet that has been in a drawer to learn
- * about it, short enough that the blob does not grow for ever.
+ * How long an abandoned plan keeps its reading — the same ninety days, for
+ * the same reason, as the sunnah tombstones and the peer removals: long
+ * enough for a tablet that has been in a drawer to learn about it, short
+ * enough that the blob does not grow for ever. After it the plan is kept
+ * as a skeleton (id, dates, the ending), never dropped: a dropped ending
+ * let an offline copy of the plan come back and take the khatmah over.
  */
 export const KHATMAH_TOMBSTONE_TTL_DAYS = 90;
 
@@ -212,12 +214,31 @@ export function activeKhatmah(s: QuranState): KhatmahPlan | undefined {
 }
 
 /**
+ * How much of a plan has been read, inside its own span: Ḥafṣ pages first,
+ * because "most progress" is the reader's measure and a page is theirs. In
+ * ayahs the back of the book counted four times the front (seven ayahs to
+ * a page against thirty), and five pages of Juz' ʿAmma beat ten of
+ * al-Baqarah. Ayahs break a tie of pages. A pure function of the plan, so
+ * every device ranks the same plans the same way.
+ */
+function readingOf(p: KhatmahPlan): { pages: number; ayahs: number } {
+  const start = khatmahStartAyah(p);
+  const done = khatmahDone(p);
+  let pages = 0;
+  for (const [from, to] of done) {
+    const lo = Math.max(from, start);
+    if (to >= lo) pages += pagesThroughAyahs(to) - pagesThroughAyahs(lo - 1);
+  }
+  return { pages, ayahs: countWithin(done, start, TOTAL_AYAHS) };
+}
+
+/**
  * ONE KHATMAH, whatever a sync brings together.
  *
  * There is only ever one khatmah (Hassan, 2026-09-29). Two devices that
  * each start one before they have heard of the other's bring two to the
- * merge, and one is kept: the plan with more reading in it, even if it
- * was started later; with equal reading, the one started last. Reading is
+ * merge, and one is kept: the plan with more reading in it (in pages,
+ * `readingOf`), even if it was started later; with equal reading, the one started last. Reading is
  * counted inside each plan's own span, so a plan begun at page 300 is not
  * credited with the 299 pages it skipped. The others are SET ASIDE
  * (`supersededBy`, the kept plan's id).
@@ -245,14 +266,10 @@ export function oneLivePlan(input: KhatmahPlan[]): KhatmahPlan[] {
     : input;
   const open = plans.filter(isOpenPlan);
   if (open.length < 2) return plans;
-  const read = new Map(
-    open.map(p => [
-      p,
-      countWithin(khatmahDone(p), khatmahStartAyah(p), TOTAL_AYAHS),
-    ]),
-  );
+  const read = new Map(open.map(p => [p, readingOf(p)]));
   const beats = (a: KhatmahPlan, b: KhatmahPlan) =>
-    read.get(a)! - read.get(b)! ||
+    read.get(a)!.pages - read.get(b)!.pages ||
+    read.get(a)!.ayahs - read.get(b)!.ayahs ||
     a.startedAt - b.startedAt ||
     (a.id > b.id ? 1 : a.id < b.id ? -1 : 0);
   const kept = open.reduce((best, p) => (beats(p, best) > 0 ? p : best));
