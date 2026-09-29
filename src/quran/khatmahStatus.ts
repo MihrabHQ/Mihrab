@@ -239,8 +239,28 @@ export function khatmahMarkerAyah(
   plan: KhatmahPlan,
   now: number = Date.now(),
 ): { surah: number; ayah: number } | null {
-  if (khatmahAyahsRead(plan) >= TOTAL_AYAHS) return null;
+  if (!khatmahCanFinish(plan, now)) return null;
   return ayahAtIndex(khatmahFinishTarget(plan, now).to);
+}
+
+/**
+ * WOULD "DONE" DO ANYTHING? False once the portion it acts on
+ * (`khatmahFinishTarget`) is read in full.
+ *
+ * Which is the case when all that is left are pages skipped on the way —
+ * the reader has reached the end, the last portion is covered, and the
+ * holes behind it are not a portion. `finishKhatmahPortion` then declines,
+ * so the card's button, the reader's pill and the marker at the portion's
+ * end must not be offered: they did nothing when pressed. The way on from
+ * there is the skipped pages themselves (the Home door says so).
+ */
+export function khatmahCanFinish(
+  plan: KhatmahPlan,
+  now: number = Date.now(),
+): boolean {
+  if (khatmahAyahsRead(plan) >= TOTAL_AYAHS) return false;
+  const target = khatmahFinishTarget(plan, now);
+  return !rangesCover(khatmahDone(plan), target.from, target.to);
 }
 
 /**

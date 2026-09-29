@@ -42,8 +42,10 @@ import {
 import {
   khatmahCreditWindow,
   khatmahCurrentPortion,
+  khatmahDeadline,
   khatmahPaceToday,
   khatmahPageInWindow,
+  khatmahPortion,
   planDays,
   portionEnd,
 } from './khatmahSchedule';
@@ -590,12 +592,19 @@ export function setKhatmahPosition(
 
 /** Clear the pinned position (falls back to automatic page tracking). */
 export function clearKhatmahPosition(): void {
-  updateQuranState(prev => ({
-    ...prev,
-    khatmah: prev.khatmah.map(k =>
-      k.completedAt == null ? { ...k, ...pinned(k, null) } : k,
-    ),
-  }));
+  updateQuranState(prev => {
+    // The plan the reader is on, as every other writer: an abandoned or
+    // set-aside plan's pin is not theirs to clear, and re-stamping it
+    // would send that plan's old pin across as a fresh word.
+    const active = prev.khatmah.find(isLivePlan);
+    if (!active) return prev;
+    return {
+      ...prev,
+      khatmah: prev.khatmah.map(k =>
+        k.id === active.id ? { ...k, ...pinned(k, null) } : k,
+      ),
+    };
+  });
 }
 
 /** Rewind only today's progress (to the day-start snapshot). */
@@ -757,22 +766,56 @@ export function finishKhatmahPortion(): void {
 }
 
 /**
+ * WHERE "PREVIOUS DAY" REWINDS TO — the last ayah left read.
+ *
+ * On a duration plan the day comes from the reading, so stepping back is
+ * rewinding to the end of the portion before last: the previous one is
+ * then current again.
+ *
+ * A deadline plan has no standing cut to count back through — its days
+ * are cut each morning from where the reader is (`khatmahPaceToday`), and
+ * `portionEnd` is the duration plan's arithmetic, which put the rewind
+ * anywhere (a double "done" on day one went back to page 0, and on a plan
+ * behind its proportional schedule the button did nothing at all). So it
+ * undoes what "done" did, in the portions "done" used: when the reading
+ * is past today's cut, back to the start of the last portion finished
+ * (`khatmahFinishTarget` is the one "done" would act on next); on a day
+ * not finished yet, back one day's length before today's cut, whose own
+ * start is then re-made from there (`paceStillFits`).
+ */
+function stepBackTo(plan: KhatmahPlan): number {
+  const start = khatmahStartAyah(plan) - 1;
+  if (khatmahDeadline(plan)) {
+    const today = khatmahCurrentPortion(plan);
+    const target = khatmahFinishTarget(plan);
+    const to =
+      target.day > today.day
+        ? khatmahPortion(plan, target.day - 1).from - 1
+        : today.from - 1 - (today.to - today.from + 1);
+    return Math.max(start, to);
+  }
+  const current = khatmahCurrentPortion(plan).day;
+  return portionEnd(planDays(plan), current - 2, planFrom(plan));
+}
+
+/**
  * Step back one portion, so the one before the current becomes current.
  *
  * The undo for a "done" pressed by mistake, and the way back into
- * yesterday's reading. Progress is rewound to the end of the portion
- * before last, which is what makes the previous one current again; the
- * day snapshot moves with it so the card does not go on claiming a day
- * the reader has just stepped out of.
+ * yesterday's reading. Progress is rewound to where `stepBackTo` says;
+ * the day snapshot moves with it so the card does not go on claiming a
+ * day the reader has just stepped out of.
  */
 export function stepKhatmahBack(): void {
   updateQuranState(prev => {
     const active = prev.khatmah.find(isLivePlan);
     if (!active) return prev;
-    const days = planDays(active);
-    const current = khatmahCurrentPortion(active).day;
-    const to = portionEnd(days, current - 2, planFrom(active));
-    if (to >= khatmahAyahsRead(active)) return prev;
+    const to = stepBackTo(active);
+    // Measured against where the reader IS, not where the unbroken run
+    // stopped: with a page left unread behind them the run ends at that
+    // page, and "nothing to rewind" refused every step back past it —
+    // the same trap `resetKhatmahToday` fell into first.
+    if (to >= khatmahReachAyah(active)) return prev;
     const today = localYmd();
     const pages = pagesThroughAyahs(to);
     return {

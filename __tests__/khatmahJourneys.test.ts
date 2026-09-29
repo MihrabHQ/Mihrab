@@ -25,19 +25,27 @@ import {
   KHATMAH_TOTAL_AYAHS as TOTAL,
 } from '../src/quran/khatmahProgress';
 import { khatmahDeadline, planDays } from '../src/quran/khatmahSchedule';
-import { khatmahDay, khatmahFinishTarget } from '../src/quran/khatmahStatus';
+import {
+  khatmahCanFinish,
+  khatmahDay,
+  khatmahFinishTarget,
+  khatmahMarkerAyah,
+} from '../src/quran/khatmahStatus';
 import {
   abandonKhatmah,
+  clearKhatmahPosition,
   finishKhatmahPortion,
   recordKhatmahPageTurn,
   resetKhatmahAll,
+  resetKhatmahToday,
   setKhatmahDeadline,
+  setKhatmahPosition,
   setKhatmahDuration,
   startKhatmah,
   stepKhatmahBack,
   toggleKhatmahPageDone,
 } from '../src/quran/khatmahActions';
-import { mergeQuran } from '../src/sync/merge';
+import { mergeKhatmah, mergeQuran } from '../src/sync/merge';
 import { ymdIn } from './fixtures/localDays';
 
 const DAY = 24 * 60 * 60 * 1000;
@@ -381,5 +389,126 @@ describe('two devices', () => {
     on(mac);
     syncFrom(phone);
     expect(plan()!.id).toBe(later);
+  });
+});
+
+describe('"previous day" undoes "done"', () => {
+  it('on a date plan, one portion at a time', () => {
+    startKhatmah(10, undefined, ymdIn(9, START));
+    const day1 = khatmahFinishTarget(plan()!);
+    finishKhatmahPortion();
+    const day2 = khatmahFinishTarget(plan()!);
+    finishKhatmahPortion();
+    expect(khatmahReachAyah(plan()!)).toBe(day2.to);
+    stepKhatmahBack();
+    expect(khatmahReachAyah(plan()!)).toBe(day1.to);
+    stepKhatmahBack();
+    expect(khatmahReachAyah(plan()!)).toBe(0);
+  });
+
+  it('on a date plan behind its schedule', () => {
+    startKhatmah(30, undefined, ymdIn(29, START));
+    jest.setSystemTime(START + 10 * DAY);
+    turnPages(1, 50);
+    const before = khatmahReachAyah(plan()!);
+    // "Done" finishes the portion the reader is in; "previous day" takes
+    // back that portion, to where it began — as on a length plan.
+    const pressed = khatmahFinishTarget(plan()!);
+    finishKhatmahPortion();
+    expect(khatmahReachAyah(plan()!)).toBe(pressed.to);
+    stepKhatmahBack();
+    expect(khatmahReachAyah(plan()!)).toBe(pressed.from - 1);
+    expect(khatmahReachAyah(plan()!)).toBeLessThan(before);
+    expect(khatmahFinishTarget(plan()!).from).toBe(pressed.from);
+  });
+
+  it('with a page left unread behind the reader', () => {
+    startKhatmah(30);
+    for (let i = 0; i < 10; i++) finishKhatmahPortion();
+    const nine = khatmahFinishTarget(plan()!);
+    toggleKhatmahPageDone(5);
+    expect(isKhatmahPageDone(plan()!, 5)).toBe(false);
+    stepKhatmahBack();
+    // Back to the end of day 9, the hole behind still a hole.
+    expect(khatmahReachAyah(plan()!)).toBeLessThan(nine.from);
+    expect(khatmahFinishTarget(plan()!).day).toBe(10);
+    expect(isKhatmahPageDone(plan()!, 5)).toBe(false);
+  });
+});
+
+describe('when only skipped pages are left', () => {
+  it('offers no "done" that would do nothing', () => {
+    startKhatmah(3);
+    finishKhatmahPortion();
+    // Un-mark a page far behind, then everything else is read.
+    toggleKhatmahPageDone(5);
+    finishKhatmahPortion();
+    finishKhatmahPortion();
+    expect(plan()).toBeDefined();
+    expect(khatmahReachAyah(plan()!)).toBe(TOTAL);
+    expect(khatmahCanFinish(plan()!)).toBe(false);
+    expect(khatmahMarkerAyah(plan()!)).toBeNull();
+    // Reading the skipped page finishes it.
+    toggleKhatmahPageDone(5);
+    expect(plan()).toBeUndefined();
+  });
+
+  it('offers "done" while there is a portion to finish', () => {
+    startKhatmah(30);
+    expect(khatmahCanFinish(plan()!)).toBe(true);
+    expect(khatmahMarkerAyah(plan()!)).not.toBeNull();
+  });
+});
+
+describe('the reader\'s own write never switches their khatmah', () => {
+  /** Mac kept (more reading), phone's plan set aside behind it. */
+  const twoPlans = () => {
+    startKhatmah(30);
+    const phoneId = plan()!.id;
+    turnPages(1, 6);
+    const phone = JSON.parse(JSON.stringify(getQuranState())) as QuranState;
+    __resetQuranStateForTests();
+    jest.setSystemTime(Date.now() + 60_000);
+    startKhatmah(20);
+    const macId = plan()!.id;
+    turnPages(1, 31);
+    primeQuranState(mergeQuran(getQuranState(), phone));
+    expect(plan()!.id).toBe(macId);
+    return { phoneId, macId };
+  };
+
+  it('restarting the khatmah keeps the reader on it and ends the other', () => {
+    const { phoneId, macId } = twoPlans();
+    jest.setSystemTime(Date.now() + 60_000);
+    resetKhatmahAll();
+    expect(plan()!.id).toBe(macId);
+    expect(khatmahReachAyah(plan()!)).toBe(0);
+    const other = getQuranState().khatmah.find(k => k.id === phoneId)!;
+    expect(other.abandonedAt).toBe(Date.now());
+    checkOne();
+  });
+
+  it('as do resetting today, stepping back and un-marking pages', () => {
+    const { macId } = twoPlans();
+    resetKhatmahToday();
+    expect(plan()!.id).toBe(macId);
+    stepKhatmahBack();
+    expect(plan()!.id).toBe(macId);
+    for (let p = 1; p <= 30; p++) toggleKhatmahPageDone(p);
+    expect(plan()!.id).toBe(macId);
+    checkOne();
+  });
+
+  it('un-pinning touches only the plan the reader is on', () => {
+    const { phoneId } = twoPlans();
+    const aside = () => getQuranState().khatmah.find(k => k.id === phoneId)!;
+    const before = aside();
+    setKhatmahPosition(2, 10, 5);
+    clearKhatmahPosition();
+    expect(aside().position).toEqual(before.position);
+    expect(aside().positionAt).toEqual(before.positionAt);
+    expect(mergeKhatmah(getQuranState().khatmah, getQuranState().khatmah)).toEqual(
+      getQuranState().khatmah,
+    );
   });
 });

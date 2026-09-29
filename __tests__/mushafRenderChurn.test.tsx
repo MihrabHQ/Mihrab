@@ -319,8 +319,11 @@ describe('the readers hand the page a handler, not an arrow around one', () => {
     // `anchorBookmarkId` is the following bookmark being DRAWN (#54): it
     // changes when the visit opens on one and again on the first turn
     // that carries it along, so twice a visit rather than once a page.
+    // `islamicDay` turns once a day, at maghrib: the portion-end marker on
+    // a plan paced to a date is the day's own, and without it the marker
+    // stayed on yesterday's end until something else changed.
     expect(core).toMatch(
-      /\[quran\.bookmarks, plan, readingKey, anchorBookmarkId\],?\s*\n\s*\);/,
+      /\[quran\.bookmarks, plan, readingKey, anchorBookmarkId, islamicDay\],?\s*\n\s*\);/,
     );
     expect(core).not.toMatch(/\}, \[quran\]\);/);
     expect(core).not.toMatch(/\[quran\.bookmarks, plan, quran\.lastRead\]/);

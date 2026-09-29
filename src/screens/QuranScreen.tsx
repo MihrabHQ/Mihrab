@@ -71,6 +71,7 @@ import {
   planDays as khatmahPlanDays,
 } from '../quran/khatmahSchedule';
 import {
+  khatmahCanFinish,
   khatmahFinishTarget,
   khatmahDay,
   khatmahBehindBy,
@@ -753,6 +754,10 @@ export function QuranScreen() {
                 one (#41), so this card is the plan's own account of itself
                 and the button is what changes that account. */}
             <View style={styles.khatmahActions}>
+              {/* Not when pressing would do nothing: with only skipped
+                  pages left the last portion is already read
+                  (`khatmahCanFinish`), and the Home door says what is. */}
+              {khatmahCanFinish(plan) ? (
               <Pressable
                 accessibilityRole="button"
                 accessibilityLabel={t('quran.khatmahMarkDone', {
@@ -793,6 +798,7 @@ export function QuranScreen() {
                   ).replace(/^✓\s*/, '')}
                 </Text>
               </Pressable>
+              ) : null}
               <Pressable
                 accessibilityRole="button"
                 accessibilityLabel={t('quran.khatmahMore', 'More khatmah options')}

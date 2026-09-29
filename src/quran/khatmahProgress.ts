@@ -301,6 +301,39 @@ export function endSetAside(
 }
 
 /**
+ * THE READER'S OWN WRITE NEVER SWITCHES THEIR KHATMAH.
+ *
+ * `oneLivePlan` keeps the plan with the most reading, and reading can go
+ * down: restart the khatmah, reset today, step back a day, un-mark a page
+ * — and a plan set aside behind it with a few pages in it would be kept
+ * instead, the reader moved onto a plan of another length, start or date
+ * by pressing "restart". A merge may choose between plans; the reader's
+ * own write only acts on the one they are on.
+ *
+ * So after a write, if the plan that was live before it is still open but
+ * no longer the one kept, every other open plan is abandoned at `now`:
+ * the reader, working on this khatmah by hand, has settled the contest.
+ * `next` is the list after `oneLivePlan`; the result is settled again.
+ */
+export function keepReadersPlan(
+  prev: KhatmahPlan[],
+  next: KhatmahPlan[],
+  now: number,
+): KhatmahPlan[] {
+  const before = prev.find(isLivePlan);
+  if (!before) return next;
+  const still = next.find(k => k.id === before.id);
+  if (!still || !isOpenPlan(still) || isLivePlan(still)) return next;
+  return oneLivePlan(
+    next.map(k =>
+      k.id !== before.id && isOpenPlan(k)
+        ? { ...withoutSupersede(k), abandonedAt: now }
+        : k,
+    ),
+  );
+}
+
+/**
  * WHICH DAY THE KHATMAH IS ON — the Islamic one, which begins at maghrib.
  *
  * A khatmah read in Ramadan is counted in Islamic days: tarawih at 21:00

@@ -599,6 +599,12 @@ export function useMushafReaderCore({
   // drawn as soon as reading carries it along. Cheap to key on: it changes
   // once when the visit opens and once on the first turn, not per page.
   const anchorBookmarkId = useAnchorBookmarkId();
+  // The marker, the pill and today's quota all depend on the day as well
+  // as on the plan: on a plan paced to a date the day's cut is the day's,
+  // and a reader still on the page at maghrib (or midnight) would go on
+  // seeing yesterday's end — the pill naming one day while pressing it
+  // finished another — until something else changed.
+  const islamicDay = useIslamicDay();
   const marks = useMemo<AyahMarkProps>(
     () => ({
       bookmarks: quran.bookmarks,
@@ -611,7 +617,8 @@ export function useMushafReaderCore({
       // null once the book is read — there is nothing left to aim at.
       khatmahTarget: plan ? khatmahMarkerAyah(plan) : null,
     }),
-    [quran.bookmarks, plan, readingKey, anchorBookmarkId],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [quran.bookmarks, plan, readingKey, anchorBookmarkId, islamicDay],
   );
 
   /**
@@ -625,7 +632,6 @@ export function useMushafReaderCore({
   // Recomputed when the Islamic day turns as well: a reader still on the
   // page at maghrib would otherwise be shown the finished day's quota
   // until they touched something.
-  const islamicDay = useIslamicDay();
   const todayQuota = useMemo(
     () => (plan ? khatmahPages(plan, riwayah) : null),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -649,7 +655,8 @@ export function useMushafReaderCore({
       // paced rather than where it began (`khatmahDayAnchor`).
       when: khatmahDayWhen(khatmahDayAnchor(plan), day),
     };
-  }, [plan, riwayah]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [plan, riwayah, islamicDay]);
 
   return {
     quran,
