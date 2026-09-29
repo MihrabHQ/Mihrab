@@ -106,6 +106,7 @@ see the pacing row below.
 | quran · lastRead | whole-object LWW on `updatedAt` | n/a — one value |
 | quran · prefs | whole-object LWW on `prefsUpdatedAt` | n/a — one value |
 | quran · khatmah plans | per-id; union of `done`, dated claims replayed over it | yes — `abandonedAt`, `AyahMark`, `positionAt` |
+| quran · khatmah, which plan is live | one: the most reading inside its own span, then the latest `startedAt`, then the higher id (`oneLivePlan`); the rest abandoned at the later of the two starts — also applied when a stored blob is read | yes — the loser carries `abandonedAt`, so the choice travels |
 | quran · khatmah pacing (`targetDays` + `deadline` + `pacedDay` + `pacedFrom`) | newest `pacedAt` wins and takes the whole set; equal stamps → a duration wins, then the later date, then the longer length | yes — the stamp survives the date, so "no deadline" travels |
 | quran · khatmah day cut (`pace`) | goes with the date it was cut for; between two cuts for the same date, later `day` wins and within a day the EARLIEST cut (smallest `from`) | n/a — one value, replaced daily |
 | settings, location | incoming wins per top-level field | **no** — see below |

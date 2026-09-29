@@ -113,8 +113,17 @@ export function startKhatmah(
   const paced = deadline ? withPaceOfDay(plan, now) : plan;
   updateQuranState(prev => ({
     ...prev,
-    // One active plan at a time; completed plans stay for history.
-    khatmah: [...prev.khatmah.filter(k => !isLivePlan(k)), paced],
+    /**
+     * One active plan at a time; completed plans stay for history. A
+     * plan still live here is ABANDONED, not dropped: dropped, it would
+     * come back from any device that still had it, and with more reading
+     * in it than the new one it would win (`oneLivePlan`) — the reader's
+     * fresh start undone by the next sync.
+     */
+    khatmah: [
+      ...prev.khatmah.map(k => (isLivePlan(k) ? { ...k, abandonedAt: now } : k)),
+      paced,
+    ],
   }));
 }
 

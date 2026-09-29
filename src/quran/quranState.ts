@@ -39,6 +39,7 @@ import {
   KHATMAH_TOMBSTONE_TTL_DAYS,
   KHATMAH_TOTAL_PAGES,
   localYmd,
+  oneLivePlan,
   resetKhatmahGapMemo,
 } from './khatmahProgress';
 import { KHATMAH_MARK_LIMIT } from './khatmahEdits';
@@ -479,8 +480,13 @@ function mergeStored(raw: unknown): QuranState {
           ),
         ].filter(k => keptStars.has(k))
       : [],
+    // One live plan, as the merge leaves it (`oneLivePlan`): a blob with
+    // two — written by a build from before the rule — must read the way it
+    // would after a sync, or merging it with itself would not return it.
     khatmah: Array.isArray(r.khatmah)
-      ? r.khatmah.map(coerceKhatmah).filter((k): k is KhatmahPlan => k !== null)
+      ? oneLivePlan(
+          r.khatmah.map(coerceKhatmah).filter((k): k is KhatmahPlan => k !== null),
+        )
       : [],
     prefs: {
       ...DEFAULT_QURAN_STATE.prefs,

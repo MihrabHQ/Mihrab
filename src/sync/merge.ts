@@ -64,6 +64,7 @@ import {
   ayahsThroughPage,
   khatmahDone,
   khatmahStartAyah,
+  oneLivePlan,
   pagesThroughAyahs,
   KHATMAH_TOTAL_AYAHS as TOTAL_AYAHS,
 } from '../quran/khatmahProgress';
@@ -637,7 +638,11 @@ export function mergeKhatmah(
        * re-takes them on the next local write anyway.
        */
   }
-  return [...byId.values()].sort((a, b) => a.startedAt - b.startedAt);
+  // Plans with different ids are different plans, and the union keeps
+  // them all — including two LIVE ones, when each device started its own
+  // before hearing of the other's. Only one can be read; `oneLivePlan`
+  // decides which, the same way on every device.
+  return oneLivePlan([...byId.values()]).sort((a, b) => a.startedAt - b.startedAt);
 }
 
 /**
