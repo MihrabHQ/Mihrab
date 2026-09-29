@@ -1,11 +1,13 @@
 package com.prayer_times
 
 import android.content.Context
+import android.util.Log
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
+import com.prayer_times.contract.WidgetContract
 
 class PrayerWidgetModule(private val reactContext: ReactApplicationContext) :
   ReactContextBaseJavaModule(reactContext) {
@@ -108,20 +110,32 @@ class PrayerWidgetModule(private val reactContext: ReactApplicationContext) :
   }
 
   /**
-   * v1 and the widget contract's v2 (docs/rewrite-plan.md, step 1.4), in one
-   * edit. One edit because the providers read v2 in preference to v1: a v2
-   * written by an earlier call and left behind would outrank a newer v1.
-   * That is also why plain `setData` REMOVES v2 — an older JS bundle, or the
-   * app's fallback when v2 could not be built, must not leave the widgets on
-   * a payload it did not write.
+   * The widget contract's v2 (docs/rewrite-plan.md, step 1.4), with v1 beside
+   * it in one edit — or, since step 1.7, an EMPTY v1: the app writes v2
+   * alone, and the v1 it wrote before is removed so no renderer is left
+   * reading its times. One edit because the providers read v2 in preference
+   * to v1: a v2 written by an earlier call and left behind would outrank a
+   * newer v1. That is also why plain `setData` REMOVES v2 — an older JS
+   * bundle, or the app's fallback when v2 could not be built, must not leave
+   * the widgets on a payload it did not write.
+   *
+   * A v2 that does not read is not stored (the widgets would skip it
+   * anyway), and a call that leaves nothing readable — an empty v1 and no
+   * readable v2 — is rejected rather than wiping what the widgets draw.
    */
   @ReactMethod
   fun setDataV2(json: String, v2: String, promise: Promise) {
     store(json, v2, promise)
   }
 
-  private fun store(json: String, v2: String?, promise: Promise) {
+  private fun store(json: String, v2In: String?, promise: Promise) {
     try {
+      val v2 = v2In?.takeIf { readable(it) }
+      if (v2In != null && v2 == null) Log.w(NAME, "setDataV2: payload v2 does not read; not stored")
+      if (json.isEmpty() && v2 == null) {
+        promise.reject("E_WIDGET", "no readable payload: v1 is empty and v2 does not read")
+        return
+      }
       // The language travels beside the payload rather than being dug back out
       // of it on every redraw: seven providers read this, several of them more
       // than once per update, and re-parsing the whole payload to find one
@@ -254,6 +268,14 @@ class PrayerWidgetModule(private val reactContext: ReactApplicationContext) :
       .remove(PREFS_LAST_FANOUT_MS)
       .apply()
   }
+
+  /** Whether the widgets could draw from this v2: it parses, at the schema they read. */
+  private fun readable(v2: String): Boolean =
+    try {
+      WidgetContract.Payload.parse(v2)?.schemaVersion == WidgetContract.VERSION
+    } catch (e: Exception) {
+      false
+    }
 
   companion object {
     const val NAME = "PrayerWidget"

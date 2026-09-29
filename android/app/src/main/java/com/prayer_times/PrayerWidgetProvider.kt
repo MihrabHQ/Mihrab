@@ -1226,26 +1226,12 @@ open class PrayerWidgetProvider : AppWidgetProvider() {
     }
 
     fun todayDateKey(): String {
-      // GREGORIAN, EXPLICITLY. `Calendar.getInstance()` follows the
-      // default locale, and on a Thai or Japanese one that is a
-      // BuddhistCalendar or a JapaneseImperialCalendar — YEAR 2569, or 8,
-      // instead of 2026. The payload's `dateKey` is written by JavaScript
-      // and is always Gregorian, so on those phones no day would ever
-      // match: `selectTodayDay` returns null and the widget falls back to
-      // whatever single day the app last wrote, or says nothing at all.
-      // The device's own TIME ZONE is still what decides which day it is,
-      // which is the part that has to follow the phone.
-      val cal = java.util.GregorianCalendar(
-        java.util.TimeZone.getDefault(),
-        java.util.Locale.US,
-      )
-      return String.format(
-        java.util.Locale.US,
-        "%04d-%02d-%02d",
-        cal.get(java.util.Calendar.YEAR),
-        cal.get(java.util.Calendar.MONTH) + 1,
-        cal.get(java.util.Calendar.DAY_OF_MONTH),
-      )
+      // WallClock's, the one Gregorian reading of "today" every widget and
+      // the Live Activity share. `Calendar.getInstance()` follows the
+      // default locale — a BuddhistCalendar on a Thai phone, year 2569 —
+      // and the payload's keys are always Gregorian, so on those phones no
+      // day would ever match. The device's TIME ZONE still decides the day.
+      return WallClock.dateKey(System.currentTimeMillis())
     }
 
     /**

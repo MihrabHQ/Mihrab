@@ -326,12 +326,15 @@ class MihrabLiveActivityService : Service() {
 
   /** The first instant after `referenceMs` at `minutes` past a midnight: today's, or tomorrow's. */
   private fun nextEpochFor(minutes: Int, referenceMs: Long): Long {
+    // A night mark after midnight carries 1440 and more; as a time of day it
+    // is the same clock reading, and which day's is decided below. Unfolded,
+    // it skipped tonight's occurrence and landed two days out.
+    val m = Math.floorMod(minutes, WallClock.MINUTES_PER_DAY)
     val key = WallClock.dateKey(referenceMs)
-    val today = WallClock.epochMs(key, minutes) ?: return 0L
+    val today = WallClock.epochMs(key, m) ?: return 0L
     if (today > referenceMs) return today
-    return WallClock.epochMs(key, minutes + WallClock.MINUTES_PER_DAY) ?: 0L
+    return WallClock.epochMs(key, m + WallClock.MINUTES_PER_DAY) ?: 0L
   }
-
 
   /**
    * Recompute the current prayer interval from the multi-day `days[]`

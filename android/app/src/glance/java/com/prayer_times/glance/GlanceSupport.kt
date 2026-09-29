@@ -293,7 +293,10 @@ internal fun fitTimesSp(
     paint.textSize = scaled
     var w = paint.measureText(p.digits)
     p.period?.takeIf { it.isNotEmpty() }?.let {
-      paint.textSize = scaled * MERIDIEM_SCALE
+      // Its own size in sp, as `ClockText` draws it — not a share of the
+      // digits' pixels: from Android 14 font scaling is non-linear, and
+      // small text is scaled up more than large.
+      paint.textSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp * MERIDIEM_SCALE, metrics)
       w += paint.measureText(if (p.periodFirst) it else " $it")
     }
     return w

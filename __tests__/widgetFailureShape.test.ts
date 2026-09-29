@@ -112,19 +112,28 @@ describe('the day the widget thinks it is', () => {
       .join('\n');
   })();
 
+  // It is WallClock's answer now, the one every widget reader and the Live
+  // Activity share; the rules are held there, and by the Kotlin contract
+  // tests (WallClockCalendarTest) under every calendar a locale can pick.
+  const WALLCLOCK = readFileSync(
+    path.join(ROOT, 'android/app/src/main/java/com/prayer_times/contract/WallClock.kt'),
+    'utf8',
+  );
+
   it('is Gregorian whatever the phone’s locale calendar is', () => {
-    expect(fn).toMatch(/java\.util\.GregorianCalendar\(/);
-    expect(fn).toMatch(/java\.util\.Locale\.US/);
+    expect(fn).toMatch(/WallClock\.dateKey\(System\.currentTimeMillis\(\)\)/);
     // `Calendar.getInstance()` is a BuddhistCalendar on th-TH and a
     // JapaneseImperialCalendar on ja-JP-JP. The payload's dateKey is
     // written by JavaScript and is always Gregorian.
     expect(fn).not.toMatch(/Calendar\.getInstance\(\)/);
+    expect(WALLCLOCK).toMatch(/GregorianCalendar\(zone, Locale\.ROOT\)/);
+    expect(WALLCLOCK).toMatch(/String\.format\(\s*Locale\.ROOT,\s*"%04d-%02d-%02d"/);
   });
 
   it('still follows the phone’s time zone', () => {
     // Which DAY it is has to be the device's answer; only the calendar
     // system is pinned.
-    expect(fn).toMatch(/TimeZone\.getDefault\(\)/);
+    expect(WALLCLOCK).toMatch(/fun dateKey\(epochMs: Long, zone: TimeZone = TimeZone\.getDefault\(\)\)/);
   });
 });
 
