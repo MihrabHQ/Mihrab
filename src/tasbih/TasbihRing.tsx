@@ -72,7 +72,7 @@ export const TasbihRing = memo(TasbihRingImpl);
 
 const styles = StyleSheet.create({
   centre: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     alignItems: 'center',
     justifyContent: 'center',
   },

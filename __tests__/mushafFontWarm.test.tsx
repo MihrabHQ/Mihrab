@@ -15,7 +15,6 @@ const mockResident = new Set<number>([50]);
 const mockAcquired: number[] = [];
 const mockEnsured: number[] = [];
 
-import { InteractionManager } from 'react-native';
 
 jest.mock('../src/native/MushafFont', () => ({
   mushafFontAvailable: true,
@@ -28,6 +27,14 @@ jest.mock('../src/native/MushafFont', () => ({
   pinPageFont: () => {},
   unpinPageFont: () => {},
   isValidFontFile: async () => true,
+}));
+
+// Warming waits for interactions to finish; in here there are none.
+jest.mock('../src/utils/afterInteractions', () => ({
+  afterInteractions: (run: () => void) => {
+    run();
+    return { cancel: () => undefined };
+  },
 }));
 
 jest.mock('../src/quran/mushafFontStore', () => ({
@@ -45,13 +52,6 @@ function Probe({ page, radius }: { page: number; radius: number }) {
 }
 
 beforeEach(() => {
-  // Warming waits for interactions to finish; in here there are none.
-  jest
-    .spyOn(InteractionManager, 'runAfterInteractions')
-    .mockImplementation(((cb: () => void) => {
-      cb();
-      return { then: () => undefined, done: () => undefined, cancel: () => undefined };
-    }) as unknown as typeof InteractionManager.runAfterInteractions);
   mockAcquired.length = 0;
   mockEnsured.length = 0;
   mockResident.clear();

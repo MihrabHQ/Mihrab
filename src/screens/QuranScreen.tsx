@@ -15,7 +15,6 @@ import { useNavigation, useScrollToTop } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
   FlatList,
-  InteractionManager,
   Modal,
   Pressable,
   ScrollView,
@@ -25,6 +24,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import { afterInteractions } from '../utils/afterInteractions';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { useKeyboardInset } from '../hooks/useKeyboardInset';
@@ -210,7 +210,7 @@ export function QuranScreen() {
   // settled, instead of during the push transition of the surah they tap.
   const riwayahForWarm = quran.prefs.riwayah;
   useEffect(() => {
-    const task = InteractionManager.runAfterInteractions(() =>
+    const task = afterInteractions(() =>
       warmMushafLayout(riwayahForWarm),
     );
     return () => task.cancel();
@@ -2251,7 +2251,7 @@ const styles = StyleSheet.create({
   // The Khatmah options dialog: centred between the insets rather than
   // pinned — see its render site.
   menuCentre: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     justifyContent: 'center',
     // rtl-safe: symmetric on both edges, the same 24 the pinned cards use
     paddingHorizontal: 24,

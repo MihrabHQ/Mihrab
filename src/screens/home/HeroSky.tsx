@@ -362,7 +362,7 @@ export const HeroSky = memo(HeroSkyImpl);
 
 const styles = StyleSheet.create({
   fill: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     // THE SKY DOES NOT MIRROR. The app lays itself out right-to-left for
     // Arabic with a Yoga `direction` on its root, and the moon is placed
     // with `start`, which that flips — while the sun is an SVG `cx`, which

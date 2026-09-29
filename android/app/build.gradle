@@ -292,7 +292,7 @@ android {
             // the F-Droid flavor (minify off — CI OOM) stays untouched;
             // shrinkResources requires minifyEnabled.
             shrinkResources enableProguardInReleaseBuilds
-            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             buildConfigField "boolean", "IS_BETA", "false"
         }
         // Beta build type — separate test channel (added 2026-05-04).

@@ -412,7 +412,7 @@ const rowStyles = StyleSheet.create({
     flexDirection: 'row',
   },
   bandLabel: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     alignItems: 'center',
     justifyContent: 'center',
   },

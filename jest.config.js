@@ -9,7 +9,7 @@
 process.env.NODE_ENV = 'test';
 
 module.exports = {
-  preset: 'react-native',
+  preset: '@react-native/jest-preset',
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   // notifee_fork is a vendored submodule (notifee core source, built only by
   // the F-Droid Android build); its own test suite isn't ours to run.

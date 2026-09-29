@@ -1281,7 +1281,7 @@ const styles = StyleSheet.create({
     fontVariant: ['tabular-nums'],
   },
   jumpBackdrop: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     alignItems: 'center',
     justifyContent: 'center',
   },
