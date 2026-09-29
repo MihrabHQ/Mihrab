@@ -27,6 +27,12 @@ const base = (over: Partial<Parameters<typeof projectTasbih>[0]> = {}) => ({
 });
 
 describe('coerceTasbihQueue', () => {
+  it('keeps beads an older widget queued with a fractional epoch', () => {
+    expect(coerceTasbihQueue([{ a: 'inc', t: NOW + 0.9, n: 300 }])).toEqual([
+      { a: 'inc', t: NOW, n: 300 },
+    ]);
+  });
+
   it('keeps well-formed entries', () => {
     expect(
       coerceTasbihQueue([

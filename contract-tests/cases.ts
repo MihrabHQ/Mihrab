@@ -272,6 +272,16 @@ export const DECODE_CASES: DecodeCase[] = [
     input: '{"d":"2026-09-28","p":"Asr","t":1759000000000.0}',
   },
   {
+    name: 'a log tap an older widget queued (the epoch with a fraction)',
+    type: 'LogQueueEntry',
+    input: '{"d":"2026-09-28","p":"Asr","t":1759123456789.4321}',
+  },
+  {
+    name: 'a log tap with a time as text: unreadable',
+    type: 'LogQueueEntry',
+    input: J({ d: '2026-09-28', p: 'Fajr', t: '1759000000000' }),
+  },
+  {
     name: 'a log tap with no time: unreadable',
     type: 'LogQueueEntry',
     input: J({ d: '2026-09-28', p: 'Fajr' }),
@@ -285,6 +295,11 @@ export const DECODE_CASES: DecodeCase[] = [
     name: 'a coalesced tasbih run',
     type: 'TasbihQueueEntry',
     input: J({ a: 'inc', t: 1759000000000, n: 7 }),
+  },
+  {
+    name: 'a tasbih bead an older widget queued (the epoch with a fraction)',
+    type: 'TasbihQueueEntry',
+    input: '{"a":"inc","t":1759123456789.9,"n":300}',
   },
   {
     name: 'an unknown tasbih action: unreadable',
@@ -323,6 +338,12 @@ export const LIST_CASES: DecodeCase[] = [
       null,
       7,
     ]),
+  },
+  {
+    name: 'a log queue written before and after the update',
+    type: 'LogQueueEntry',
+    input:
+      '[{"d":"2026-09-28","p":"Fajr","t":1759000000000.25},{"d":"2026-09-28","p":"Dhuhr","t":1759000100000}]',
   },
   { name: 'an empty queue', type: 'TasbihQueueEntry', input: '[]' },
   {

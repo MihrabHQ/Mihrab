@@ -2401,6 +2401,22 @@
       }
     },
     {
+      "name": "a log tap an older widget queued (the epoch with a fraction)",
+      "type": "LogQueueEntry",
+      "input": "{\"d\":\"2026-09-28\",\"p\":\"Asr\",\"t\":1759123456789.4321}",
+      "expected": {
+        "d": "2026-09-28",
+        "p": "Asr",
+        "t": 1759123456789
+      }
+    },
+    {
+      "name": "a log tap with a time as text: unreadable",
+      "type": "LogQueueEntry",
+      "input": "{\"d\":\"2026-09-28\",\"p\":\"Fajr\",\"t\":\"1759000000000\"}",
+      "expected": null
+    },
+    {
       "name": "a log tap with no time: unreadable",
       "type": "LogQueueEntry",
       "input": "{\"d\":\"2026-09-28\",\"p\":\"Fajr\"}",
@@ -2420,6 +2436,16 @@
         "a": "inc",
         "t": 1759000000000,
         "n": 7
+      }
+    },
+    {
+      "name": "a tasbih bead an older widget queued (the epoch with a fraction)",
+      "type": "TasbihQueueEntry",
+      "input": "{\"a\":\"inc\",\"t\":1759123456789.9,\"n\":300}",
+      "expected": {
+        "a": "inc",
+        "t": 1759123456789,
+        "n": 300
       }
     },
     {
@@ -2469,6 +2495,23 @@
         {
           "a": "next",
           "t": 3
+        }
+      ]
+    },
+    {
+      "name": "a log queue written before and after the update",
+      "type": "LogQueueEntry",
+      "input": "[{\"d\":\"2026-09-28\",\"p\":\"Fajr\",\"t\":1759000000000.25},{\"d\":\"2026-09-28\",\"p\":\"Dhuhr\",\"t\":1759000100000}]",
+      "expected": [
+        {
+          "d": "2026-09-28",
+          "p": "Fajr",
+          "t": 1759000000000
+        },
+        {
+          "d": "2026-09-28",
+          "p": "Dhuhr",
+          "t": 1759000100000
         }
       ]
     },

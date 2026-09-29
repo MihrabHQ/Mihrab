@@ -34,6 +34,14 @@ describe('reading a stored queue back', () => {
     expect(q).toEqual([{ d: DAY, p: 'Asr', t: T0 }]);
   });
 
+  it('keeps a tap an older widget queued with a fractional epoch', () => {
+    // The iOS widget wrote `Date().timeIntervalSince1970 * 1000` as a
+    // Double before the contract; a tap still queued at the update must be
+    // logged, not dropped.
+    const q = coerceLogQueue([{ d: DAY, p: 'Dhuhr', t: T0 + 0.4321 }]);
+    expect(q).toEqual([{ d: DAY, p: 'Dhuhr', t: T0 }]);
+  });
+
   it('treats junk as an empty queue', () => {
     expect(coerceLogQueue(null)).toEqual([]);
     expect(coerceLogQueue({ d: DAY })).toEqual([]);

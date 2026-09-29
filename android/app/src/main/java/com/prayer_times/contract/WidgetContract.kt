@@ -761,7 +761,11 @@ object WidgetContract {
     val d: String,
     /** Journal prayer key. */
     val p: String,
-    /** Epoch ms of the tap. */
+    /**
+     * Epoch ms of the tap. Read with its fraction dropped: widgets before the
+     * contract wrote a fractional Double here, and a tap queued by one must
+     * survive the update.
+     */
     val t: Long,
   ) {
     fun toJson(): JSONObject = JSONObject().apply {
@@ -776,7 +780,7 @@ object WidgetContract {
         return LogQueueEntry(
           d = o.wcString("d") ?: return null,
           p = o.wcString("p") ?: return null,
-          t = o.wcRaw("t").wcAsLong() ?: return null,
+          t = o.wcRaw("t").wcAsLongTruncated() ?: return null,
         )
       }
 
@@ -793,7 +797,7 @@ object WidgetContract {
   data class TasbihQueueEntry(
     /** Action. */
     val a: TasbihAction,
-    /** Epoch ms. */
+    /** Epoch ms. Read with its fraction dropped, as the log tap is. */
     val t: Long,
     /**
      * Run length for coalesced taps; absent means one. A long so an absurd
@@ -813,7 +817,7 @@ object WidgetContract {
         if (o == null) return null
         return TasbihQueueEntry(
           a = TasbihAction.fromWire(o.wcString("a")) ?: return null,
-          t = o.wcRaw("t").wcAsLong() ?: return null,
+          t = o.wcRaw("t").wcAsLongTruncated() ?: return null,
           n = o.wcRaw("n").wcAsLong(),
         )
       }
@@ -848,6 +852,22 @@ private fun Any?.wcAsLong(): Long? =
     is Number -> {
       val d = toDouble()
       if (d.isFinite() && d == Math.floor(d) && Math.abs(d) < 9.0e15) d.toLong() else null
+    }
+    else -> null
+  }
+
+/**
+ * A `truncate` long: any finite number below 9e15, its fraction dropped.
+ * For values a writer once stored as a fractional Double (epoch ms), so
+ * an entry already on disk still reads.
+ */
+private fun Any?.wcAsLongTruncated(): Long? =
+  when (this) {
+    is Int -> toLong()
+    is Long -> this
+    is Number -> {
+      val d = toDouble()
+      if (d.isFinite() && Math.abs(d) < 9.0e15) d.toLong() else null
     }
     else -> null
   }

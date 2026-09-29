@@ -97,7 +97,11 @@ function load(contract) {
     if (!cond) throw new Error(`widget contract: ${msg}`);
   };
 
-  const walk = (owner, field, spec) => {
+  const walk = (owner, field, spec, inList = false) => {
+    check(
+      !spec.truncate || (spec.kind === 'long' && !inList),
+      `${owner}.${field}: truncate is for a long field, not a list element`,
+    );
     if (spec.kind === 'ref') {
       check(
         byName.has(spec.name),
@@ -109,7 +113,7 @@ function load(contract) {
         spec.of.kind !== 'list',
         `${owner}.${field}: lists of lists are not supported`,
       );
-      walk(owner, field, spec.of);
+      walk(owner, field, spec.of, true);
     }
     if (spec.kind === 'enum') {
       const name = spec.name || `${owner}${cap(field)}`;
@@ -285,7 +289,7 @@ function tsReadExpr(spec, v) {
     case 'int':
       return `wcInt(${v})`;
     case 'long':
-      return `wcLong(${v})`;
+      return spec.truncate ? `wcLongTruncated(${v})` : `wcLong(${v})`;
     case 'double':
       return `wcDouble(${v})`;
     case 'enum':
@@ -375,6 +379,17 @@ function wcBool(v: unknown): boolean | undefined {
 /** A whole number, below 9e15 in size, as every platform reads one. */
 function wcLong(v: unknown): number | undefined {
   return typeof v === 'number' && Number.isInteger(v) && Math.abs(v) < 9e15 ? v : undefined;
+}
+
+/**
+ * A \`truncate\` long: any finite number below 9e15, its fraction dropped.
+ * For values a writer once stored as a fractional Double (epoch ms), so
+ * an entry already on disk still reads.
+ */
+function wcLongTruncated(v: unknown): number | undefined {
+  return typeof v === 'number' && Number.isFinite(v) && Math.abs(v) < 9e15
+    ? Math.trunc(v)
+    : undefined;
 }
 
 /** An \`int\` is 32-bit everywhere, because Kotlin reads it as Int. */
@@ -520,7 +535,9 @@ function swiftRead(spec, key) {
     case 'int':
       return `c.wcInt(${key}).flatMap(wcInt32)`;
     case 'long':
-      return `c.wcInt(${key})`;
+      return spec.truncate
+        ? `c.wcDouble(${key}).flatMap(wcTruncated)`
+        : `c.wcInt(${key})`;
     case 'double':
       return `c.wcDouble(${key})`;
     case 'enum':
@@ -679,6 +696,13 @@ private func wcInt32(_ v: Int) -> Int? {
   (Int(Int32.min)...Int(Int32.max)).contains(v) ? v : nil
 }
 
+/// A \`truncate\` long: any finite number below 9e15, its fraction dropped.
+/// For values a writer once stored as a fractional Double (epoch ms), so
+/// an entry already on disk still reads.
+private func wcTruncated(_ d: Double) -> Int? {
+  d.isFinite && abs(d) < 9.0e15 ? Int(d.rounded(.towardZero)) : nil
+}
+
 struct WCDouble: Decodable, Hashable {
   let value: Double
   init(from decoder: Decoder) throws {
@@ -791,7 +815,9 @@ function ktRead(spec, key) {
     case 'int':
       return `o.wcRaw(${k}).wcAsInt()`;
     case 'long':
-      return `o.wcRaw(${k}).wcAsLong()`;
+      return spec.truncate
+        ? `o.wcRaw(${k}).wcAsLongTruncated()`
+        : `o.wcRaw(${k}).wcAsLong()`;
     case 'double':
       return `(o.wcRaw(${k}) as? Number)?.toDouble()`;
     case 'enum':
@@ -956,6 +982,22 @@ private fun Any?.wcAsLong(): Long? =
     is Number -> {
       val d = toDouble()
       if (d.isFinite() && d == Math.floor(d) && Math.abs(d) < 9.0e15) d.toLong() else null
+    }
+    else -> null
+  }
+
+/**
+ * A \`truncate\` long: any finite number below 9e15, its fraction dropped.
+ * For values a writer once stored as a fractional Double (epoch ms), so
+ * an entry already on disk still reads.
+ */
+private fun Any?.wcAsLongTruncated(): Long? =
+  when (this) {
+    is Int -> toLong()
+    is Long -> this
+    is Number -> {
+      val d = toDouble()
+      if (d.isFinite() && Math.abs(d) < 9.0e15) d.toLong() else null
     }
     else -> null
   }

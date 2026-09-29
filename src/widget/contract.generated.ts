@@ -283,7 +283,11 @@ export type WidgetContractLogQueueEntry = {
   d: string;
   /** Journal prayer key. */
   p: string;
-  /** Epoch ms of the tap. */
+  /**
+   * Epoch ms of the tap. Read with its fraction dropped: widgets before the
+   * contract wrote a fractional Double here, and a tap queued by one must
+   * survive the update.
+   */
   t: number;
 };
 
@@ -291,7 +295,7 @@ export type WidgetContractLogQueueEntry = {
 export type WidgetContractTasbihQueueEntry = {
   /** Action. */
   a: WidgetContractTasbihAction;
-  /** Epoch ms. */
+  /** Epoch ms. Read with its fraction dropped, as the log tap is. */
   t: number;
   /**
    * Run length for coalesced taps; absent means one. A long so an absurd
@@ -574,7 +578,7 @@ export function readWidgetContractLogQueueEntry(
   if (dRead == null) return null;
   const pRead = wcString(input.p);
   if (pRead == null) return null;
-  const tRead = wcLong(input.t);
+  const tRead = wcLongTruncated(input.t);
   if (tRead == null) return null;
   const out: WidgetContractLogQueueEntry = {
     d: dRead,
@@ -590,7 +594,7 @@ export function readWidgetContractTasbihQueueEntry(
   if (!wcIsObject(input)) return null;
   const aRead = wcEnum(input.a, ['inc', 'reset', 'next'] as const);
   if (aRead == null) return null;
-  const tRead = wcLong(input.t);
+  const tRead = wcLongTruncated(input.t);
   if (tRead == null) return null;
   const out: WidgetContractTasbihQueueEntry = {
     a: aRead,
@@ -617,6 +621,17 @@ function wcBool(v: unknown): boolean | undefined {
 function wcLong(v: unknown): number | undefined {
   return typeof v === 'number' && Number.isInteger(v) && Math.abs(v) < 9e15
     ? v
+    : undefined;
+}
+
+/**
+ * A `truncate` long: any finite number below 9e15, its fraction dropped.
+ * For values a writer once stored as a fractional Double (epoch ms), so
+ * an entry already on disk still reads.
+ */
+function wcLongTruncated(v: unknown): number | undefined {
+  return typeof v === 'number' && Number.isFinite(v) && Math.abs(v) < 9e15
+    ? Math.trunc(v)
     : undefined;
 }
 

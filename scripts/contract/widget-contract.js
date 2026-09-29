@@ -379,7 +379,11 @@ module.exports = {
       fields: [
         ['d', t.string(REQUIRED), 'Local YYYY-MM-DD the tap was for.'],
         ['p', t.string(REQUIRED), 'Journal prayer key.'],
-        ['t', t.long(REQUIRED), 'Epoch ms of the tap.'],
+        [
+          't',
+          t.long({ ...REQUIRED, truncate: true }),
+          'Epoch ms of the tap. Read with its fraction dropped: widgets before the contract wrote a fractional Double here, and a tap queued by one must survive the update.',
+        ],
       ],
     },
     {
@@ -394,7 +398,11 @@ module.exports = {
           }),
           'Action.',
         ],
-        ['t', t.long(REQUIRED), 'Epoch ms.'],
+        [
+          't',
+          t.long({ ...REQUIRED, truncate: true }),
+          'Epoch ms. Read with its fraction dropped, as the log tap is.',
+        ],
         [
           'n',
           t.long(),

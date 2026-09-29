@@ -787,7 +787,9 @@ enum WidgetContract {
     var d: String
     /// Journal prayer key.
     var p: String
-    /// Epoch ms of the tap.
+    /// Epoch ms of the tap. Read with its fraction dropped: widgets before
+    /// the contract wrote a fractional Double here, and a tap queued by one
+    /// must survive the update.
     var t: Int
 
     init(
@@ -810,7 +812,7 @@ enum WidgetContract {
       let c = try decoder.container(keyedBy: CodingKeys.self)
       d = try c.wcRequire(c.wcValue(String.self, .d), .d)
       p = try c.wcRequire(c.wcValue(String.self, .p), .p)
-      t = try c.wcRequire(c.wcInt(.t), .t)
+      t = try c.wcRequire(c.wcDouble(.t).flatMap(wcTruncated), .t)
     }
   }
 
@@ -818,7 +820,7 @@ enum WidgetContract {
   struct TasbihQueueEntry: Codable, Hashable {
     /// Action.
     var a: TasbihAction
-    /// Epoch ms.
+    /// Epoch ms. Read with its fraction dropped, as the log tap is.
     var t: Int
     /// Run length for coalesced taps; absent means one. A long so an absurd
     /// count still reads, and is clamped by the rule rather than dropped by
@@ -844,7 +846,7 @@ enum WidgetContract {
     init(from decoder: Decoder) throws {
       let c = try decoder.container(keyedBy: CodingKeys.self)
       a = try c.wcRequire(c.wcValue(String.self, .a).flatMap(TasbihAction.init(rawValue:)), .a)
-      t = try c.wcRequire(c.wcInt(.t), .t)
+      t = try c.wcRequire(c.wcDouble(.t).flatMap(wcTruncated), .t)
       n = c.wcInt(.n)
     }
   }
@@ -906,6 +908,13 @@ struct WCInt: Decodable, Hashable {
 /// so a value outside that range is unreadable here too, not silently wider.
 private func wcInt32(_ v: Int) -> Int? {
   (Int(Int32.min)...Int(Int32.max)).contains(v) ? v : nil
+}
+
+/// A `truncate` long: any finite number below 9e15, its fraction dropped.
+/// For values a writer once stored as a fractional Double (epoch ms), so
+/// an entry already on disk still reads.
+private func wcTruncated(_ d: Double) -> Int? {
+  d.isFinite && abs(d) < 9.0e15 ? Int(d.rounded(.towardZero)) : nil
 }
 
 struct WCDouble: Decodable, Hashable {
