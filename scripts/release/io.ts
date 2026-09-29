@@ -179,18 +179,35 @@ function realExec(): Exec {
   };
 }
 
+/**
+ * Why a request got no answer. `fetch` throws "fetch failed" and keeps the
+ * reason (ECONNREFUSED, ENOTFOUND, a certificate) one level down.
+ */
+export function failureReason(e: unknown): string {
+  // Duck-typed, not `instanceof Error`: an error from another realm (undici
+  // inside a test's VM) is an Error that instanceof does not recognise.
+  const cause = typeof e === 'object' && e !== null ? (e as { cause?: unknown }).cause : undefined;
+  return cause === undefined ? String(e) : `${String(e)}: ${failureReason(cause)}`;
+}
+
 function realHttp(): Http {
-  const go = async (req: HttpRequest) => {
+  // THE TIMER RUNS UNTIL THE BODY IS READ, not until the headers arrive.
+  // `fetch` resolves on the headers; clearing the timeout there left the
+  // body with none, and a server that answers and then stalls (a CDN
+  // mid-download) held the release for as long as it liked. So the caller
+  // reads the body inside `go`, under the same abort.
+  const go = async <T>(req: HttpRequest, read: (res: Response) => Promise<T>): Promise<T> => {
     const ctl = new AbortController();
     const timer = setTimeout(() => ctl.abort(), req.timeoutMs ?? 120_000);
     try {
-      return await fetch(req.url, {
+      const res = await fetch(req.url, {
         method: req.method,
         headers: req.headers,
         body: req.body,
         redirect: 'follow',
         signal: ctl.signal,
       });
+      return await read(res);
     } finally {
       clearTimeout(timer);
     }
@@ -198,21 +215,26 @@ function realHttp(): Http {
   return {
     async request(req) {
       try {
-        const res = await go(req);
-        const headers: Record<string, string> = {};
-        res.headers.forEach((v, k) => {
-          headers[k.toLowerCase()] = v;
+        return await go(req, async res => {
+          const headers: Record<string, string> = {};
+          res.headers.forEach((v, k) => {
+            headers[k.toLowerCase()] = v;
+          });
+          return { status: res.status, headers, text: req.method === 'HEAD' ? '' : await res.text() };
         });
-        return { status: res.status, headers, text: req.method === 'HEAD' ? '' : await res.text() };
-      } catch {
-        return { status: 0, headers: {}, text: '' };
+      } catch (e) {
+        // Status 0 is "no answer", and the reason travels with it: a gate
+        // that prints "HTTP 000" can at least say whether it was DNS, TLS
+        // or the timeout.
+        return { status: 0, headers: {}, text: failureReason(e) };
       }
     },
     async download(url, dest, opts = {}) {
       try {
-        const res = await go({ method: 'GET', url, timeoutMs: 30 * 60_000 });
-        if (res.ok || opts.keepErrorBody) nodeFs.writeFileSync(dest, Buffer.from(await res.arrayBuffer()));
-        return { status: res.status };
+        return await go({ method: 'GET', url, timeoutMs: 30 * 60_000 }, async res => {
+          if (res.ok || opts.keepErrorBody) nodeFs.writeFileSync(dest, Buffer.from(await res.arrayBuffer()));
+          return { status: res.status };
+        });
       } catch {
         return { status: 0 };
       }
