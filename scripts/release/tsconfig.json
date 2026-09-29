@@ -1,0 +1,15 @@
+{
+  // The release tool runs under Node's type stripping, which only erases
+  // types: no enums, no namespaces, no parameter properties, and a type
+  // import must say `import type` or Node looks for it at run time. These
+  // two options make tsc refuse what Node would. The root tsconfig checks
+  // the same files for everything else. Run: npx tsc -p scripts/release
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "erasableSyntaxOnly": true,
+    "verbatimModuleSyntax": true,
+    "noEmit": true,
+    "types": ["node"]
+  },
+  "include": ["*.ts"]
+}
