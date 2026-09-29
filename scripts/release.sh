@@ -266,7 +266,9 @@ die() {
 # NOT fastlane/ — those are the release NOTES, which change every time by
 # definition. Flagging them would mark every release as cycle-changing,
 # and a signal that is always on is not a signal.
-CYCLE_PATHS="scripts/release.sh scripts/verify-release.sh scripts/build-catalyst.sh scripts/build-ios-appstore.sh scripts/sync-version.js scripts/xcode-cloud.py .github/workflows docs/DISTRIBUTION.md"
+# scripts/release is the TypeScript port running beside this script; a
+# change to it changes what shadow mode tells the next person.
+CYCLE_PATHS="scripts/release.sh scripts/verify-release.sh scripts/build-catalyst.sh scripts/build-ios-appstore.sh scripts/sync-version.js scripts/xcode-cloud.py scripts/release .github/workflows docs/DISTRIBUTION.md"
 JOURNAL="$ROOT/docs/release-log.md"
 
 # Everything phase 2 writes into the tree, so a run that stops partway can
