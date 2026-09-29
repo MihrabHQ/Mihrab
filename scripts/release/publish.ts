@@ -28,6 +28,7 @@ import {
   irreversible,
   keepInstalledWidgetRegistered,
   row3,
+  shown,
   staplerValidates,
   tapPath,
   zipName,
@@ -164,20 +165,40 @@ export async function publish(
   const r = ctx.report;
   const fs = ctx.io.fs;
 
-  // ── U1 ──
+  // ── U1 ── Through `irreversible` like everything below, though a
+  // journal line can be taken back: the shell's dry run never gets this
+  // far, so a dry run here must not write the entry or make the commit
+  // either — a second entry for the same version is what the next run
+  // would find.
   r.step('Journal');
   const attemptsFile = `${ctx.root}/${ATTEMPTS}`;
-  const attempts = fs.exists(attemptsFile) ? attemptsFor(fs.readText(attemptsFile), rel.version) : [];
-  fs.appendText(
-    `${ctx.root}/${JOURNAL}`,
-    journalEntry(rel, utcDate(ctx.io.clock.now()), attempts, cycleTouched),
+  const attempts = fs.isFile(attemptsFile) ? attemptsFor(fs.readText(attemptsFile), rel.version) : [];
+  const entry = journalEntry(rel, utcDate(ctx.io.clock.now()), attempts, cycleTouched);
+  await irreversible(
+    ctx,
+    `append the ${rel.version} entry to ${JOURNAL}`,
+    async () => {
+      fs.appendText(`${ctx.root}/${JOURNAL}`, entry);
+      return true;
+    },
+    true,
   );
   r.ok('U1', 'docs/release-log.md updated');
 
   // ── U2 ──
   r.step('Publishing');
-  if ((await git(ctx, ['add', ...RELEASE_COMMIT_PATHS])).code !== 0) r.stop('U2', 'git add failed');
-  if ((await git(ctx, ['commit', '-q', '-m', commitMessage(rel)])).code !== 0) r.stop('U2', 'commit failed');
+  await irreversible(
+    ctx,
+    `commit "${commitMessage(rel)}"`,
+    async () => {
+      if ((await shown(ctx, git(ctx, ['add', ...RELEASE_COMMIT_PATHS]))).code !== 0) r.stop('U2', 'git add failed');
+      if ((await shown(ctx, git(ctx, ['commit', '-q', '-m', commitMessage(rel)]))).code !== 0) {
+        r.stop('U2', 'commit failed');
+      }
+      return true;
+    },
+    true,
+  );
   r.ok('U2', 'committed');
   // THE COMMIT iOS IS CUT FROM, named here and nowhere else. The shell once
   // read `$RELEASE_SHA` without anything setting it, and under `set -u`
@@ -220,7 +241,7 @@ export async function publish(
   const pushedMain = await irreversible(
     ctx,
     'push main to origin',
-    async () => (await git(ctx, ['push', '-q', 'origin', 'main'])).code === 0,
+    async () => (await shown(ctx, git(ctx, ['push', '-q', 'origin', 'main']))).code === 0,
     true,
   );
   if (!pushedMain) {
@@ -237,14 +258,14 @@ export async function publish(
   const tagged = await irreversible(
     ctx,
     `tag ${rel.tag} "${tagMessage(rel)}"`,
-    async () => (await git(ctx, ['tag', '-a', rel.tag, '-m', tagMessage(rel)])).code === 0,
+    async () => (await shown(ctx, git(ctx, ['tag', '-a', rel.tag, '-m', tagMessage(rel)]))).code === 0,
     true,
   );
   if (!tagged) r.stop('U5', 'tag failed');
   const pushedTag = await irreversible(
     ctx,
     `push ${rel.tag} to origin`,
-    async () => (await git(ctx, ['push', '-q', 'origin', rel.tag])).code === 0,
+    async () => (await shown(ctx, git(ctx, ['push', '-q', 'origin', rel.tag]))).code === 0,
     true,
   );
   if (!pushedTag) r.stop('U5', 'tag push failed — main is pushed, so rerunning after a fix is safe');
@@ -262,12 +283,12 @@ export async function publish(
     assets.push(`${stage}/${zipName(rel.version)}`);
   }
   const notes = env(ctx, 'RELEASE_NOTES');
-  const notesArgs = notes && fs.exists(notes) ? ['--notes-file', notes] : ['--generate-notes'];
+  const notesArgs = notes && fs.isFile(notes) ? ['--notes-file', notes] : ['--generate-notes'];
   const created = await irreversible(
     ctx,
     `create the GitHub release ${rel.tag} with ${assets.map(a => a.slice(a.lastIndexOf('/') + 1)).join(', ')}`,
     async () =>
-      (await gh(ctx, ['release', 'create', rel.tag, '-R', REPO, '--title', `Mihrab ${rel.version}`, ...notesArgs, '--latest', ...assets])).code === 0,
+      (await shown(ctx, gh(ctx, ['release', 'create', rel.tag, '-R', REPO, '--title', `Mihrab ${rel.version}`, ...notesArgs, '--latest', ...assets]))).code === 0,
     true,
   );
   if (!created) {
@@ -351,7 +372,7 @@ async function bumpTap(ctx: Ctx, rel: Release): Promise<void> {
     async () => {
       fs.writeText(tap, text);
       for (const a of [['add', 'Casks/mihrab.rb'], ['commit', '-q', '-m', `mihrab ${rel.version}`], ['push', '-q', 'origin', 'HEAD']]) {
-        if ((await git(ctx, a, { cwd: tapRepo })).code !== 0) return false;
+        if ((await shown(ctx, git(ctx, a, { cwd: tapRepo }))).code !== 0) return false;
       }
       return true;
     },

@@ -26,6 +26,7 @@ import {
   has,
   keepInstalledWidgetRegistered,
   newestBuildTool,
+  shown,
   staplerValidates,
   unregisterAndRemove,
   zipName,
@@ -80,8 +81,9 @@ export function stampPbxproj(pbx: string, rel: Release): string {
   return out;
 }
 
+/** A repo script under Node; its stderr is shown when it fails, as the shell's `>/dev/null` let it be. */
 async function node(ctx: Ctx, script: string, args: string[] = []) {
-  return ctx.io.exec.run('node', [`${ctx.root}/scripts/${script}`, ...args], { cwd: ctx.root });
+  return shown(ctx, ctx.io.exec.run('node', [`${ctx.root}/scripts/${script}`, ...args], { cwd: ctx.root }));
 }
 
 // ── B1 ────────────────────────────────────────────────────────────────
@@ -202,7 +204,7 @@ export async function mac(ctx: Ctx, rel: Release): Promise<string> {
     }
   }
   const zip = `${ctx.root}/ios/build/catalyst-dist/${zipName(rel.version)}`;
-  if (!ctx.io.fs.exists(zip)) ctx.report.stop('B5', `catalyst build produced no ${zip}`);
+  if (!ctx.io.fs.isFile(zip)) ctx.report.stop('B5', `catalyst build produced no ${zip}`);
   ctx.report.ok('B5', zipName(rel.version));
   await inspectZip(ctx, zip);
   return zip;

@@ -2,7 +2,7 @@
  * What every part of the release shares: the fixed facts, the context a
  * gate runs in, and the few checks more than one script makes.
  */
-import type { Io } from './io.ts';
+import type { ExecResult, Io } from './io.ts';
 import type { Reporter } from './report.ts';
 
 export const REPO = 'MihrabHQ/Mihrab';
@@ -51,9 +51,11 @@ export const flag = (ctx: Ctx, name: string) => ctx.io.env[name] === '1';
 
 /**
  * The one gate for everything that cannot be taken back: a push, a tag, a
- * GitHub release, an upload, a notarisation submission, the tap. Under a
- * dry run it records what it would have done and hands back `pretend`, so
- * the steps after it can still be exercised.
+ * GitHub release, an upload, a notarisation submission, the tap — and the
+ * journal entry and release commit before them, which the shell's dry run
+ * never reaches either. Under a dry run it records what it would have
+ * done and hands back `pretend`, so the steps after it can still be
+ * exercised.
  */
 export async function irreversible<T>(
   ctx: Ctx,
@@ -67,6 +69,22 @@ export async function irreversible<T>(
     return pretend;
   }
   return run();
+}
+
+/**
+ * A command whose result decides a stop, with its stderr shown when it
+ * failed. The shell let a failing `git push` or `gh release create` speak
+ * to the terminal before its `die`; captured here, that reason went
+ * nowhere, and "tag push failed" came with no why. Indented under the
+ * step, as the shell's `sed 's/^/    /'` did; quiet in shadow mode, like
+ * everything else the reporter says.
+ */
+export async function shown(ctx: Ctx, pending: Promise<ExecResult>): Promise<ExecResult> {
+  const r = await pending;
+  if (r.code !== 0) {
+    for (const line of r.stderr.split('\n')) if (line.trim()) ctx.report.sayErr(`    ${line}`);
+  }
+  return r;
 }
 
 /**

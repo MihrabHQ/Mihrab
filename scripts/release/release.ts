@@ -38,8 +38,14 @@ import { REVERT, build } from './build.ts';
 import { ciOnRelease, cleanup, installAsUser, publish, summary } from './publish.ts';
 import { verify } from './verify.ts';
 
-export function makeCtx(io: Io, root: string, home: string, dryRun = false): Ctx {
-  return { io, root, home, report: new Reporter(io, 'release'), dryRun, shadow: false, wouldDo: [] };
+/**
+ * `dryRun` stays false even under --dry-run: the shell's dry run stops
+ * before the first irreversible step rather than pretending through it,
+ * and `cut` does the same. (The Catalyst build it runs still notarises,
+ * as build-catalyst.sh does in a shell dry run.)
+ */
+export function makeCtx(io: Io, root: string, home: string): Ctx {
+  return { io, root, home, report: new Reporter(io, 'release'), dryRun: false, shadow: false, wouldDo: [] };
 }
 
 /** `date -u +%FT%TZ`. */
@@ -58,11 +64,20 @@ export async function release(io: Io, root: string, home: string, argv: string[]
     if (!VERSION_RE.test(version)) ctx.report.stop('usage', `version must be X.Y.Z, got '${version}'`);
     return await cut(ctx, version, dryRun);
   } catch (e) {
-    if (!(e instanceof ReleaseStop)) throw e;
     // Every abort is recorded. A release cycle only improves from evidence
     // about where it actually stops people, and nobody remembers the third
-    // failed attempt from two weeks ago.
-    io.fs.appendText(`${root}/${ATTEMPTS}`, `${isoSeconds(io.clock.now())}\t${version || '?'}\t${e.message}\n`);
+    // failed attempt from two weeks ago. A CRASH IS AN ABORT TOO: the
+    // shell could not crash past its `die`, and a TypeScript that threw
+    // left no line at all — the one attempt most worth reading later.
+    let reason: string;
+    if (e instanceof ReleaseStop) {
+      reason = e.message;
+    } else {
+      const err = e instanceof Error ? e : new Error(String(e));
+      io.err(err.stack ?? err.message);
+      reason = `the release tool crashed: ${err.message.split('\n')[0]}`;
+    }
+    io.fs.appendText(`${root}/${ATTEMPTS}`, `${isoSeconds(io.clock.now())}\t${version || '?'}\t${reason}\n`);
     return 1;
   }
 }

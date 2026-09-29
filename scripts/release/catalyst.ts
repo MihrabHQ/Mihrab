@@ -270,7 +270,7 @@ export async function buildCatalyst(ctx: Ctx, args: string[]): Promise<number> {
     const extEnts = adhoc ? [] : ['--entitlements', 'ios/PrayerWidgetExtension/CatalystExtension.entitlements'];
     let appEnts: string[] = [];
     if (!adhoc) {
-      if (ctx.io.fs.exists(abs(PROFILE))) {
+      if (ctx.io.fs.isFile(abs(PROFILE))) {
         // ── C5 — THE PROFILE HAS TO NAME THE CERTIFICATE WE SIGN WITH ──
         //
         // A Developer ID provisioning profile is what lets this build have a
@@ -421,11 +421,11 @@ export async function buildCatalyst(ctx: Ctx, args: string[]): Promise<number> {
       }
       // The Keychain group, when a profile said it was allowed: otherwise a
       // silent downgrade to plaintext.
-      if (ctx.io.fs.exists(abs(PROFILE))) {
+      if (ctx.io.fs.isFile(abs(PROFILE))) {
         if (!appEntsP.includes('keychain-access-groups')) {
           fail('C8', '  ✗ a profile was embedded but no Keychain group was sealed in.');
         }
-        if (!ctx.io.fs.exists(abs(`${APP}/Contents/embedded.provisionprofile`))) {
+        if (!ctx.io.fs.isFile(abs(`${APP}/Contents/embedded.provisionprofile`))) {
           fail('C8', '  ✗ the embedded profile is missing from the signed bundle.');
         }
         say('  ✓ Keychain group sealed in, profile embedded.');
@@ -655,7 +655,7 @@ export async function buildCatalyst(ctx: Ctx, args: string[]): Promise<number> {
     if ((await run('xcrun', ['notarytool', 'history', '--keychain-profile', profile])).code === 0) {
       notaryArgs = ['--keychain-profile', profile];
       say(`▸ Notarizing (keychain profile: ${profile})…`);
-    } else if (ctx.io.fs.exists(ascJson)) {
+    } else if (ctx.io.fs.isFile(ascJson)) {
       // The same App Store Connect key xcode-cloud uses: one credential
       // for both, rather than a second thing noticed only when missing.
       let cfg: Record<string, string> = {};

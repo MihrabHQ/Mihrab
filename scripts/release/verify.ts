@@ -213,7 +213,7 @@ export async function verify(ctx: Ctx, tag: string, opts: { self?: string } = {}
   fs.rm(apkDir);
 
   // ── V5 / V6 / V7 — the cask and the published Mac app ──
-  if (fs.exists(tap)) {
+  if (fs.isFile(tap)) {
     const cask = fs.readText(tap);
     const cv = caskVersion(cask);
     const cs = caskSha(cask);
@@ -322,7 +322,7 @@ export async function verify(ctx: Ctx, tag: string, opts: { self?: string } = {}
   const code = codeLine.replace(/[^0-9]/g, '');
   for (const loc of PLAY_LOCALES) {
     const note = `${ctx.root}/fastlane/metadata/android/${loc}/changelogs/${code}.txt`;
-    if (!fs.exists(note)) fail('V10', `missing Play release notes: ${loc}/changelogs/${code}.txt`);
+    if (!fs.isFile(note)) fail('V10', `missing Play release notes: ${loc}/changelogs/${code}.txt`);
     else if (charCount(fs.readText(note)) > PLAY_NOTE_LIMIT) {
       fail('V10', `${loc}/changelogs/${code}.txt is over Play's 500-character limit`);
     } else ok('V10', `Play release notes present for ${loc} (${code})`);

@@ -23,6 +23,7 @@ import {
   gradleVersion,
   has,
   row3,
+  shown,
   tapPath,
 } from './common.ts';
 import { Asc } from './asc.ts';
@@ -145,7 +146,7 @@ export async function onMainAndClean(ctx: Ctx): Promise<void> {
 // The dataset bot pushes on its own schedule; 2.19.0, 2.21.0, 2.24.0 and
 // 2.27.0 each stopped here once, correctly. Fetch and pull BEFORE starting.
 export async function notBehindOrigin(ctx: Ctx): Promise<void> {
-  if ((await git(ctx, ['fetch', '--quiet', 'origin'])).code !== 0) {
+  if ((await shown(ctx, git(ctx, ['fetch', '--quiet', 'origin']))).code !== 0) {
     ctx.report.stop('P4', 'cannot reach origin');
   }
   const behind = await git(ctx, ['rev-list', 'main..origin/main']);
@@ -185,7 +186,7 @@ export function versionMoves(ctx: Ctx, rel: Release): void {
 export function playNotes(ctx: Ctx, rel: Release): void {
   for (const loc of PLAY_LOCALES) {
     const note = `${ctx.root}/fastlane/metadata/android/${loc}/changelogs/${rel.code}.txt`;
-    if (!ctx.io.fs.exists(note)) {
+    if (!ctx.io.fs.isFile(note)) {
       ctx.report.stop('P7', `missing release notes: ${loc}/changelogs/${rel.code}.txt`);
     }
     const chars = charCount(ctx.io.fs.readText(note));
@@ -226,7 +227,7 @@ export function caskGate(ctx: Ctx, rel: Release): void {
     ctx.report.warn('P8', '  Mac users stay on whatever the cask says today; only Android and iOS move');
     return;
   }
-  if (!ctx.io.fs.exists(tap)) ctx.report.stop('P8', `cask not found at ${tap} — clone the tap before releasing`);
+  if (!ctx.io.fs.isFile(tap)) ctx.report.stop('P8', `cask not found at ${tap} — clone the tap before releasing`);
   const cask = ctx.io.fs.readText(tap);
   if (POSTFLIGHT_STEPS.test(cask)) {
     ctx.report.stop(
@@ -273,7 +274,7 @@ export function unfilledLesson(journal: string): string[] | null {
 
 export function lessonGate(ctx: Ctx): void {
   const file = `${ctx.root}/${JOURNAL}`;
-  if (ctx.io.fs.exists(file)) {
+  if (ctx.io.fs.isFile(file)) {
     const entry = unfilledLesson(ctx.io.fs.readText(file));
     if (entry) {
       ctx.report.say('');

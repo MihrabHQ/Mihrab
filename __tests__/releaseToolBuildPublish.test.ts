@@ -373,6 +373,8 @@ describe('publishing in dry run', () => {
     expect(w.files.get(TAP)).toBe(GOOD_CASK);
     expect(w.requests.filter(r => r.method !== 'GET')).toEqual([]);
     expect(ctx.wouldDo).toEqual([
+      'append the 2.28.0 entry to docs/release-log.md',
+      'commit "Release 2.28.0 (283)"',
       'push main to origin',
       'tag v2.28.0 "Mihrab 2.28.0 (283)"',
       'push v2.28.0 to origin',
@@ -380,6 +382,48 @@ describe('publishing in dry run', () => {
       'commit "mihrab 2.28.0" in the tap and push it',
       'wait for the Xcode Cloud run on feedbeef',
     ]);
+  });
+});
+
+describe('publishing in dry run writes nothing either', () => {
+  it('no journal entry and no release commit: the shell’s dry run never gets that far', async () => {
+    const w = publishWorld();
+    await publish(w.ctx({ dryRun: true }), rel, built, 'scripts/release.sh');
+    expect(w.files.get(`${ROOT}/docs/release-log.md`)).toBe('# Release log\n');
+    expect(w.ran(/^git (add|commit)/)).toEqual([]);
+  });
+});
+
+describe('a command that decides a stop says why it failed', () => {
+  it('a refused tag push prints git’s own reason, indented, before the stop', async () => {
+    const w = publishWorld().on('git push -q origin v2.28.0', {
+      code: 1,
+      stderr: ' ! [remote rejected] v2.28.0 -> v2.28.0 (protected tag)\nerror: failed to push some refs\n',
+    });
+    const msg = await stopOf(() => publish(w.ctx(), rel, built, ''));
+    expect(msg).toMatch(/^tag push failed/);
+    expect(w.err).toEqual(
+      expect.arrayContaining(['     ! [remote rejected] v2.28.0 -> v2.28.0 (protected tag)', '    error: failed to push some refs']),
+    );
+  });
+
+  it('a failing site build prints its stderr, and a passing command prints nothing', async () => {
+    const w = new World()
+      .file(`${ROOT}/android/app/build.gradle`, GRADLE)
+      .file(`${ROOT}/ios/PrayerApp.xcodeproj/project.pbxproj`, PBX)
+      .on('node', { stderr: 'a warning nobody asked about\n' })
+      .on(/build-site\.js$/, { code: 1, stderr: 'TypeError: cannot read the locale table\n' });
+    expect(await stopOf(() => stamp(w.ctx(), rel))).toBe('build-site failed');
+    expect(w.err).toEqual(['    TypeError: cannot read the locale table', '\n  ✗ build-site failed\n']);
+  });
+
+  it('is quiet in shadow mode', async () => {
+    const w = new World()
+      .file(`${ROOT}/android/app/build.gradle`, stampGradle(GRADLE, rel))
+      .file(`${ROOT}/ios/PrayerApp.xcodeproj/project.pbxproj`, stampPbxproj(PBX, rel))
+      .on('node', { code: 1, stderr: 'stale\n' });
+    await stopOf(() => stamp(w.ctx({ shadow: true, quiet: true }), rel));
+    expect(w.err).toEqual([]);
   });
 });
 
