@@ -112,6 +112,48 @@ the one before it having already succeeded.
 `--dry-run` stops at exactly that line, having done all the work and none
 of the publishing.
 
+### The TypeScript beside it (shadow mode, and `RELEASE_TS=1`)
+
+`scripts/release/` is this whole cycle ported to TypeScript — `release.sh`,
+`verify-release.sh`, `build-catalyst.sh`, `build-ios-appstore.sh`,
+`xcode-cloud.py` and `appstore-metadata.py`, gate for gate — so each gate
+can be tested by running it rather than by searching its text (rewrite
+plan, Phase 3). It runs on the Mac's Node with its built-in type
+stripping (Node 22.6 or later); there is nothing to install or build.
+
+**The shell still decides.** Until two releases have been cut with it
+beside them, the TypeScript only watches:
+
+- `release.sh` notes every ✓ and ✗ it prints and, at the end of preflight
+  (or a stop inside it), at the end of the build and after verification,
+  runs the same phase in TypeScript with every irreversible step in dry
+  run and jest, Gradle and the Catalyst build taken from the shell's own ✓.
+  `verify-release.sh` does the same for every check before its summary.
+- Each run prints one line — `◦ shadow (TypeScript) preflight: agrees…`
+  or how many disagreements — and appends the detail to
+  `.release-shadow.log` (gitignored). It cannot stop or change a release:
+  its status is ignored, it has a deadline, and a Node too old to run it is
+  a line saying so. Read the log after each release; a disagreement is a
+  bug on one side or the other.
+- `RELEASE_SHADOW=0` turns it off. Beside verification it downloads the
+  APK and the zip a second time, which costs a minute or two.
+
+**`RELEASE_TS=1` is the switch-over, prepared and off.** With it,
+`./scripts/release.sh X.Y.Z [--dry-run]` and `./scripts/verify-release.sh
+vX.Y.Z` hand their arguments to the TypeScript and exit with its status:
+the same flags and environment (`SKIP_CATALYST`, `SKIP_APP_STORE`,
+`IOS_LOCAL`, `NO_IOS_LOCAL`, `RELEASE_NOTES`), the same lines, the same
+`.release-attempts.log` and journal entry, the same exit status (0; 1 for
+a stop, a failed verification, or a release commit that fails CI). The
+signing identities, the notary profile, `~/.config/mihrab/asc.json` and
+the provisioning profile are read where they always were. Try it first as
+`RELEASE_TS=1 ./scripts/release.sh X.Y.Z --dry-run`.
+
+The parts also run on their own:
+`node --experimental-strip-types --no-warnings scripts/release/main.ts
+xcode-cloud runs 3` (and `verify vX.Y.Z`, `catalyst`, `ios-appstore`,
+`appstore-metadata --dry-run`).
+
 ### What it still cannot do for you
 
 Two things need a human at a console, and the script prints both when it

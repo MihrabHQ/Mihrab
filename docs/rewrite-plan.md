@@ -1,11 +1,13 @@
 # Targeted rewrites: the four places the bugs keep coming from
 
 > **Status (2026-09-29): P0.1, P1.1–P1.4, P1.6, Phase 2 (and the two-live-plans
-> follow-up), P5.1 and P5.3 done. P1.5, P1.7 (Phase 1 complete) and P5.2 done in
-> code on the `rewrite` branch, waiting on their proof: the Android build with the ported screens
-> patch, the Mac signed and notarised, the device pass. P1.7 waits on 1.4–1.6
-> shipping; Phases 3 and 4 not started. See the progress log and
-> "Open items" below it.** Decision (Hassan,
+> follow-up), P5.1 and P5.3 done. Done in code on the `rewrite` branch and
+> waiting on their proof: P1.5 and P1.7 (Phase 1 complete in code), P5.2
+> (the Android build with the ported screens patch, the Mac signed and
+> notarised, the device pass), and P3.1–P3.4 (two releases cut with the
+> shadow beside them); 3.5 prepared behind `RELEASE_TS=1`, not switched.
+> Phase 4 in progress. See the progress log and "Open items" below it.**
+> Decision (Hassan,
 > 2026-09-28): no rewrite of the app — React Native stays, and so does the
 > language. Instead, rewrite the four parts where the history says the same
 > kinds of bug keep returning, one shippable step at a time, riding along
@@ -306,20 +308,39 @@ with the same flags (Paperclip triggers it, and so do people), the log and
 **3.1 Inventory and design.** Every step, gate, flag and env var of the
 five scripts; which tests pin which gate; a design for `scripts/release/`
 (steps as functions, shell and API calls injected so tests can fake them).
+**Done 2026-09-29** — "Phase 3 inventory" and "Phase 3 design" below.
 
 **3.2 Port the read-only parts in shadow mode.** Preflight and verification
 first. For two releases the old script decides and the new one runs beside
-it, and any disagreement is written down.
+it, and any disagreement is written down. **Done in code 2026-09-29**
+(`preflight.ts`, `verify.ts`, `shadow.ts`); the two shadowed releases are
+still to come.
 
 **3.3 Port build and publish,** again shadowed where it is safe to be
-(dry-run of the irreversible steps).
+(dry-run of the irreversible steps). **Done in code 2026-09-29** —
+`build.ts`, `publish.ts`, `catalyst.ts`, `iosAppStore.ts`, `release.ts`;
+the build phase is shadowed on the shell's artefacts, the publish phase
+after the fact (what the TS would have done, held against what the shell
+did). None of it has run on the Mac.
 
 **3.4 Fold in the Python tools** (`xcode-cloud.py`, `appstore-metadata.py`)
-so the release is one language.
+so the release is one language. **Done in code 2026-09-29** (`asc.ts`,
+`xcodeCloud.ts`, `appstoreMetadata.ts`, same commands and exit codes); the
+Python stays, and stays what the shell calls, until the switch-over.
 
 **3.5 Switch over and retire.** `release.sh` becomes a thin wrapper; the
 grep-the-source tests are replaced by behavioural ones. *Phase exit:* two
 consecutive releases cut by the new tool with no manual step.
+**Prepared, not switched (2026-09-29):** `RELEASE_TS=1` makes `release.sh`
+and `verify-release.sh` hand their arguments to the TypeScript and exit
+with its status; the behavioural tests that replace the text-reading ones
+are written (`releaseTool*.test.ts`); the text-reading ones stay until the
+switch. What the switch itself is: after two releases whose shadow log is
+clean (or whose disagreements are understood and fixed), make
+`RELEASE_TS=1` the default, run two releases on it, then cut `release.sh`
+and `verify-release.sh` down to the `exec` line, delete the Python and the
+Catalyst/iOS shell scripts, and delete the 13 text-reading test files (or
+the describes in them that read scripts).
 
 ### Phase 3 inventory (P3.1, 2026-09-29)
 
@@ -469,10 +490,11 @@ runs the modules through Babel as it does the app.
 |---|---|
 | `io.ts` | the injected world: `Exec` (run a command, captured or streamed), `Http` (request, download), `Fs`, `Clock` (now, sleep), `Env`; `realIo()` for the Mac |
 | `report.ts` | the outcome log (`ok`, `warn`, `fail`, `pend`, `skip`, `stop`) printed in the shell's own format, and what shadow mode compares |
-| `common.ts` | the shared facts above, `has`, version and code readers, the published names, `keepInstalledWidgetRegistered`, `inspectPublishedApp` |
+| `common.ts` | the shared facts above, `has`, version and code readers, the published names, the APK checks, `keepInstalledWidgetRegistered`, `irreversible()` |
+| `toolchain.ts`, `self.ts` | which Xcode and which signing identity (asked by preflight and both builds); how the tool runs a part of itself as a process |
 | `preflight.ts` | P1–P12, `unreleased` |
 | `build.ts` | B1–B6 |
-| `publish.ts` | U1–U8, I, C, cleanup, the summary; every irreversible call goes through `ctx.irreversible()`, which only says what it would do under dry-run |
+| `publish.ts` | U1–U8, I, C, cleanup, the summary; every irreversible call goes through `irreversible()`, which only says what it would do under dry-run |
 | `verify.ts` | V1–V12 |
 | `catalyst.ts`, `iosAppStore.ts` | C1–C15, A1–A11 |
 | `asc.ts`, `xcodeCloud.ts`, `appstoreMetadata.ts` | the App Store Connect client (ES256 JWT with `node:crypto`), the Xcode Cloud commands with the same exit codes, the listing writer |
@@ -483,10 +505,12 @@ runs the modules through Babel as it does the app.
 Every gate is a function of a context (`io`, root, env, reporter, dry-run),
 so a test hands it fakes and asserts the outcome. **Shadow mode** is on by
 default (`RELEASE_SHADOW=0` turns it off): the shell records each of its own
-✓/⚠/✗/⧗ lines, and at three points — end of preflight (or a preflight
-stop), end of the build phase, after verification — runs the TS phase
-beside itself with every irreversible step in dry-run and the expensive ones
-(jest, Gradle, the Catalyst build) trusted from the shell's record. The TS
+✓/✗/⧗ lines, and at four points — end of preflight (or a stop inside
+it), end of the build phase, after verification (publish: what the TS
+would have done against what the shell did), and inside `verify-release.sh`
+before its summary — runs the TS phase beside itself with every
+irreversible step in dry-run and the expensive ones (jest, Gradle, the
+Catalyst build) trusted from the shell's record. The TS
 never decides: it cannot stop the release, its exit status is ignored, it
 has a time limit, and it prints one line — agrees, or how many
 disagreements and where the log is. **`RELEASE_TS=1`** is the switch-over,
@@ -628,8 +652,20 @@ one. It is not a rewrite target.
 | 2026-09-29 | P5.2, part | Hassan pushed `spike/rn-0.87`. Replayed onto current `main` as `rn-0.87` (the one conflict, the project file: 5.3's `[sdk=macosx*]` setting kept instead of the spike's iOS 15.2; the template's `RCT_REMOVE_LEGACY_ARCH` flags and `PODFILE_DIR` kept). Measured the spike's 51 type errors in 29 files, fixed all of them (tsc clean; jest 402 suites / 6,127 tests; no new lint warnings). Ported the screens patch to 4.28 (checked that the bug is still there — the commit hook still resets frames, `onLayout` still pushes only on change, the memo still swallows a repeat — and that the patch applies to the published 4.28.0). Worked around the Mac signing blocker by building React from source for the Mac only. The prebuilt artifact could not be inspected from the session (repo.reactnative.dev is outside its network policy). | No. Still to do before 5.2 ships: build Android with the ported patch and check rotation on the phone; `build-catalyst.sh` on the Mac to prove signing and notarisation; the device pass the step always had. |
 | 2026-09-29 | P1.5 | One `LiveActivity` in the contract — the widget payload's own `Day`/`Row`/`Clock`, plus the Hijri line per day, each prayer's alert mode, the appearance, the Android channels and the Android words — built once in TS (`buildLiveActivityV2`) for both platforms. The dead fields the inventory found are not carried. Each native adapts it for the minute it draws at, as the widgets do: `LiveActivityV1.swift` → the ActivityKit `ContentState` JSON (unchanged type), `LiveActivityV1.kt` → the payload `MihrabLiveActivityModule` and its service already read; the next prayer's instant now comes from its day and minutes (`WallClock`), not from "HH:mm" re-parsed on today and pushed a day when past (an hour off on the DST night). New native entry points `startV2` (iOS) and `displayV2` (Android) store the payload; the iOS background refresh and a revived card re-adapt the stored days, so the card rolls past ʿIshāʾ into tomorrow on its own, which the old re-parse of its own rows could not. The "where do the days stand" rule is now one function per platform (`widgetMoment`/`moment`), shared by the widget and Live Activity adapters. Found on the way and fixed: v2 dropped a tomorrow the app knew but held outside the widget window (after ʿIshāʾ nothing was ahead — no next prayer on a v2 widget, no Live Activity); a scenario pins it. Verified here: 8+1 new contract fixtures (`liveActivity`), Kotlin harness 11 tests (fails on a broken adapter, checked); TS reference tests; the old iOS content tests pass unchanged through the new path; full jest 403 suites; the Swift adapter and module changes are **not compiled** (no swiftc). | No. The service's own roll-forward on Android still parses the v1 days it stores — that, and the old `start`/`display` entry points, go in 1.7. |
 | 2026-09-29 | P1.7 | The app writes payload v2 alone (`setDataV2('', v2)`: the empty v1 makes each native remove the old key; the language now comes from v2; Android's "unchanged, skip the redraw" check reads a removed key as empty). Every row the adapters hand the renderers carries `minutes` (TS reference, Swift, Kotlin, both Live Activity adapters), and every renderer places times by them: iOS `widgetDate(minutes:on:)` and `Row.at`/`TodayPrayer.at` (Prayer, Log Today, Hijri widgets, the progress ring, the multi-day timeline — on the row's own day, so a First Third after midnight lands on its night), the Live Activity card and its legacy roll-forward; Android `WidgetPayloadV1.minutesOf(row)` in the provider's three walks and the Log provider, the Live Activity module's and service's day walks (`epochOfRow` → `WallClock.epochMs`, replacing both copies of `epochForDayTime`), the service's single-day fallback, and the "at" metric (from the instant, not the text). The only parser left is `WallClock`'s own, for a v1 the app stored before this update; `noNativeTimeParsing.test.ts` scans every Swift and Kotlin file and holds that (it fails on the code before, checked). The offset check P1.1 was for: an Android widget whose today was built under another UTC offset starts the app's refresh task headlessly, once per payload and offset; iOS has no way to run the app from a widget, so it draws the table it has. Dead fields: none left to drop in v2 (1.4 and 1.5 never carried them). Verified: TS tests (the adapter's minutes, a First Third at 1445), contract fixtures regenerated, Kotlin harness 11 tests, full jest. **Not compiled:** the Android providers and Live Activity module/service (no Android SDK; to be run through the Phase 4 harness), and all Swift. | Phase 1's exit is met in code: no native code parses a formatted time (bar the legacy reader), one schema, contract tests in CI. The renderers still draw from the v1-shaped JSON the adapters produce — moving the SwiftUI views onto the typed model was judged not worth a blind 2,000-line rewrite without a compiler; the text is written by the adapter from the typed model, and every time is placed by minutes. |
+| 2026-09-29 | P3.1 | Recheck: the scripts had not moved since the plan was written (release.sh 1,196 lines, build-catalyst.sh 925, verify-release.sh 520 — 42 more than the plan's table, from the cask's `depends_on` checks — build-ios-appstore.sh 363, xcode-cloud.py 502, appstore-metadata.py 218). Inventory and design written ("Phase 3 inventory", "Phase 3 design"): 12 preflight gates, 6 build steps, 8 publish steps plus install, CI and cleanup, 12 verification checks, 15 Catalyst steps, 11 local-iOS steps, 7 Xcode Cloud commands; 13 test files read the scripts' text. Two things the plan named are not in the scripts: there is no `RELEASE_EXIT=` line anywhere (whatever wraps the release prints it from the exit status, so the status is what must stay), and "five scripts" are six. Runtime chosen: Node's own type stripping (`node --experimental-strip-types`, ≥ 22.6; `package.json` asks for ≥ 22.11), no new dependency — the repo has `tsc` and nothing to run TypeScript with, and a compiled copy would be a second thing to keep in step. | The design section is the plan for 3.2–3.5. |
+| 2026-09-29 | P3.2–P3.4 | Written on `phase3-release-tooling` (not pushed): `scripts/release/`, 17 modules, 5,089 lines, every command, HTTP call, file and clock reached through `io.ts` — preflight P1–P12, build B1–B6, publish U1–U8 with install, CI and cleanup, verification V1–V12, the Catalyst build C1–C15, the local iOS build A1–A11, `xcode-cloud` (all seven commands, same exit codes, ES256 token from `node:crypto` instead of pyjwt) and the listing writer; every lesson comment that explains a gate carried over, shortened. Shadow mode in `release.sh` (preflight, build, publish) and `verify-release.sh` (every check, `pend` included, through a wrapper that leaves the one pinned `PENDING=1` line alone): the shell notes each verdict, the TS compares and appends to `.release-shadow.log` (gitignored) and prints one line; it cannot change the shell's verdict or status — tested by running the real scripts against a stub. Verified here: `npx tsc --noEmit` clean, `tsc -p scripts/release` (erasable syntax only) clean, eslint clean on the new files, `bash -n` on both scripts, 9 new test files / 191 tests — every gate against fakes in both directions, the publish order and a dry run that pushes, tags, uploads and submits nothing, and the two shell scripts run for real with a stub — and the 13 text-reading test files unchanged and green; full jest 411 suites / 6,320 tests (1 skipped, as before; 402 / 6,129 before). Nothing has run on a Mac: no gate has met a real `codesign`, `notarytool`, App Store Connect, GitHub or Gradle. Found while porting (the shell is unchanged; the TS does the right thing, and the shadow log will show where they differ): the Google-classes gate in both release.sh and verify-release.sh is `unzip -p … \| strings \| grep -qE` under `pipefail`, the very trap the script's own header warns about — `grep -q` leaves on the first match, `strings` takes SIGPIPE, the pipeline reports 141 and the `if` reads a found class as "not found", so on a real-size dex it cannot fire; `xcode-cloud.py ensure` turned every exit from `start` into a bare 2 and dropped Apple's message, which is why 2.25.0's log said "Starting one by hand" and nothing after; build-catalyst.sh's `codesign --verify --strict "$APP" && echo …` is an AND-list, exempt from `set -e`, so a signature that fails to verify is passed over in silence; release.sh's zip gate exits before unregistering the temp copy when it stops, leaving the LaunchServices record its own comment warns about. | Yes: 3.1–3.4 marked done in code, 3.5 written out as prepared-not-switched with what the switch itself is. The shell's `CYCLE_PATHS` gains `scripts/release`. |
+| 2026-09-29 | P3.5, prepared | `RELEASE_TS=1 ./scripts/release.sh X.Y.Z [--dry-run]` and `RELEASE_TS=1 ./scripts/verify-release.sh vX.Y.Z` hand everything to the TypeScript (`exec`, so the exit status is the TS's); off by default, documented in DISTRIBUTION.md §1. Signing secrets stay where they were: the TS reads the same keychain profile, `asc.json` and provisioning profile on the Mac, and nothing new is stored. Behavioural tests for everything the text-reading tests hold are in `releaseTool*.test.ts`; the text-reading tests are kept, all green. Left for the Mac, in order: (1) check the Mac's Node (`node --version` ≥ 22.6; the shadow says so in one line if not); (2) cut the next two releases as usual and read `.release-shadow.log` after each — every disagreement is either a TS bug to fix or a shell bug to decide on (the four above are expected to show only if they fire); (3) `RELEASE_TS=1 ./scripts/release.sh X.Y.Z --dry-run` on the Mac, the first time the TS builds, signs and notarises for real; (4) two releases on `RELEASE_TS=1`, which is the phase exit; then retire the shell and the text-reading tests. | No. |
 
 ## Open items (not a step yet, each needs an owner)
+
+- **Four gates the Phase 3 port found wrong in the shell** (progress log,
+  P3.2–P3.4): the Google-classes check in release.sh and verify-release.sh
+  cannot fire on a real dex (`grep -q` in a `pipefail` pipe); `ensure`
+  drops Apple's reason; build-catalyst.sh passes over a signature that does
+  not verify; release.sh's zip gate leaves a LaunchServices record when it
+  stops. Fixed in the TypeScript only, so the shell stays the reference
+  during the shadow releases. Decide whether to fix the shell too, or let
+  the switch-over retire them.
 
 - **P1.4's exit is not fully met.** Light/dark were not re-shot; on
   devices only two Android widgets were seen (Arabic, 24-hour); iOS was
