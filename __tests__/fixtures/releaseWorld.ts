@@ -41,6 +41,8 @@ export class World {
   out: string[] = [];
   err: string[] = [];
   answers: string[] = [];
+  /** What a Ctrl-C would run now: `interrupt()` runs it, as the real one does. */
+  interrupts: Array<() => void> = [];
   now = Date.parse('2026-09-29T12:00:00Z');
   slept = 0;
   private handlers: Array<[RegExp | string, Answer]> = [];
@@ -101,6 +103,12 @@ export class World {
       ask: async q => {
         world.out.push(q);
         return world.answers.shift() ?? '';
+      },
+      onInterrupt: restore => {
+        world.interrupts.push(restore);
+        return () => {
+          world.interrupts = world.interrupts.filter(r => r !== restore);
+        };
       },
       clock: {
         now: () => world.now,
@@ -196,6 +204,11 @@ export class World {
         sha256: p => sha(world.files.get(p) ?? ''),
       },
     };
+  }
+
+  /** A Ctrl-C: every restore still registered runs (the real one then exits). */
+  interrupt(): void {
+    for (const restore of [...this.interrupts]) restore();
   }
 
   ctx(opts: { style?: Style; shadow?: boolean; dryRun?: boolean; quiet?: boolean } = {}): Ctx {

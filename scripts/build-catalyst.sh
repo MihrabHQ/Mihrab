@@ -146,7 +146,38 @@ echo "▸ Preparing pods with Catalyst support (MIHRAB_CATALYST=1)…"
 LOCK="$PWD/ios/Podfile.lock"
 LOCK_KEPT="$(mktemp)"
 cp "$LOCK" "$LOCK_KEPT"
-trap 'cp "$LOCK_KEPT" "$LOCK"; rm -f "$LOCK_KEPT"' EXIT
+
+# THE EXIT TRAP ALSO HANDS THE MACHINE BACK, once the smoke launch below has
+# registered this build with LaunchServices (see hand_back_the_machine), and
+# forgets the unpacked notarization check copy if a check on it stopped the
+# build. The exit status is kept: a trap that ends on a failing command
+# would otherwise replace it.
+LSREGISTER=/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister
+BUILT=ios/build/catalyst-release/Build/Products/Release-maccatalyst/PrayerApp.app
+LAUNCHED=0
+HANDED_BACK=0
+NCHECK=""
+# UNREGISTER BEFORE REMOVING: unpacking an .app is enough to register it
+# (2026-08-29), and this copy was deleted still registered — or, when its
+# check failed, left behind registered. `.app` only, as everywhere here.
+forget_ncheck() {
+  local dir="$NCHECK"
+  NCHECK=""
+  if [ -x "$LSREGISTER" ]; then "$LSREGISTER" -u "$dir/Mihrab.app" 2>/dev/null || true; fi
+  rm -rf "$dir"
+}
+on_exit() {
+  local status=$?
+  cp "$LOCK_KEPT" "$LOCK" || true
+  rm -f "$LOCK_KEPT"
+  if [ -n "$NCHECK" ]; then forget_ncheck || true; fi
+  if [ "$LAUNCHED" = 1 ] && [ "$HANDED_BACK" = 0 ]; then
+    HANDED_BACK=1
+    hand_back_the_machine stopped || true
+  fi
+  exit "$status"
+}
+trap on_exit EXIT
 (cd ios && MIHRAB_CATALYST=1 pod install --silent)
 
 echo "▸ Building Mihrab $VERSION for Mac Catalyst (Release)…"
@@ -387,6 +418,180 @@ if [ "$SIGN_IDENTITY" != "-" ]; then
   echo "  ▸ extension sandboxed; both sides share${APP_GROUP#*=>}"
 fi
 
+# ── Hand the machine back ─────────────────────────────────────────────
+#
+# Launching the app registered THIS copy — the one in ios/build — with
+# LaunchServices, widget extension and all. That registration outlives the
+# build: the bundle gets zipped, deleted, replaced next build, and
+# LaunchServices keeps pointing at a path that no longer holds the bundle it
+# remembers.
+#
+# What that does to the widgets is not obvious and cost an afternoon to find
+# (2026-08-26). chronod launches the extension from the STALE path, the
+# extension answers with a perfectly good timeline, and then the archive is
+# rejected:
+#
+#   WidgetArchiver.ValidationError.bundleStubNotSupported
+#     ("Bundle version did not match; LaunchServices DB may need to be rebuilt")
+#
+# Every widget, every size, gallery previews included, on the copy in
+# /Applications that was never the problem. Nothing in the app is wrong and
+# nothing in the app can fix it.
+#
+# So unregister what we registered. `-u` is scoped to one path: it does not
+# touch /Applications, and it is not the `-kill -r` sledgehammer that
+# rebuilds the whole database.
+#
+# THREE PATHS, NOT ONE, AND AFTER THE ZIP RATHER THAN BEFORE IT. The first
+# version of this unregistered only the copy it launched, and only that, and
+# it did not work — checked on 2026-08-26, straight after a clean build:
+#
+#   ios/build/catalyst-dist/Mihrab.app                          ← re-appeared
+#   …/catalyst-release/…/PrayerApp.app                          ← never touched
+#   …/catalyst-release/…/PrayerApp.app/…/PrayerWidgetExtension.appex
+#
+# Two things were wrong. Xcode registers its OWN build product, so the
+# derived-data bundle and its widget extension are registered by the compile
+# whether or not anything is ever launched — and that .appex is precisely
+# the competing widget host. And a bundle that still exists on disk gets
+# rediscovered, so unregistering the dist copy while leaving it sitting
+# there buys minutes.
+#
+# Hence: unregister all four paths, then DELETE the bundle. The zip is the
+# artifact; the .app beside it was only ever the thing we zipped, and it is
+# one `unzip` away for anyone who wants to run it.
+#
+# Then check, and fail if a ghost survived. A build that says it cleaned up
+# and did not is worse than one that says nothing — that is the whole reason
+# this section had to be written twice.
+#
+# Users reach the same state without any of this — unzip the release, run it
+# once from Downloads, drag it to Applications, empty the Trash — so the
+# repair is written down in docs/release/catalyst-widgets.md rather than
+# living only here.
+#
+# A FUNCTION, CALLED ON EVERY WAY OUT once the smoke launch has registered
+# this copy, not only at the end. Until 2026-09-29 it ran only on success:
+# a stop after the launch — no payload, notarization Invalid, a staple that
+# never came — exited with $APP and the build product still registered,
+# which is the blank-widgets state all of this exists to prevent. The EXIT
+# trap above calls it as `hand_back_the_machine stopped`; the end of the
+# build as `built`, the one case where the zip is worth naming.
+hand_back_the_machine() {
+  if [ -x "$LSREGISTER" ]; then
+    # THE .appex PATHS ARE DELIBERATELY NOT LISTED HERE.
+    #
+    # `-u` takes a path but the record it drops is keyed by BUNDLE IDENTIFIER,
+    # and every copy of the widget extension — build product, dist copy, the
+    # one inside /Applications — carries the same one. Unregistering the build
+    # tree's `.appex` took the INSTALLED app's plugin registration with it on
+    # 2026-08-27: `pluginkit` stopped listing the extension at all, which is
+    # the same blank-widgets outcome this cleanup exists to prevent, arrived at
+    # from the opposite direction. Unregistering the `.app` is enough; the
+    # plugin inside it goes with it.
+    # The two known paths, plus WHATEVER ELSE IS REGISTERED. The fixed list
+    # was not enough: notarization brought App Translocation with it, and a
+    # translocated copy lives at a path nobody can predict. Sweeping `.app`
+    # records outside /Applications catches those; `.appex` records are still
+    # never named here, for the reason above, and the assertion below is what
+    # says whether one survived.
+    for stale in "$APP" "$BUILT"; do
+      "$LSREGISTER" -u "$stale" 2>/dev/null || true
+    done
+    # NO `$` ANCHOR ON THE PATH. `lsregister -dump` writes
+    # `path:  /Applications/Mihrab.app (0x42c4)` — a trailing record id — so a
+    # pattern ending in `\.app$` matches nothing at all and the sweep silently
+    # does nothing. It was written that way first and found two ghosts still
+    # sitting in the database after it claimed to have cleaned them.
+    #
+    # Without the anchor, an `.appex` line matches up to its parent `.app`,
+    # which is the path we want to unregister anyway. `sort -u` collapses the
+    # duplicate, and the `-v` below keeps the installed copy — anchored there,
+    # where the anchor is correct.
+    # `|| true` ON THE WHOLE PIPELINE, and this is the third time today. When
+    # there are no ghosts — the good case, and the common one — the final
+    # `grep -v` matches nothing and exits 1, `pipefail` promotes that to the
+    # pipeline, and `set -e` ends the build. It ended this one, after the zip
+    # and the sha and before the cleanup, so the build tree stayed registered:
+    # a script whose job is to prevent stale registrations, prevented from
+    # doing it by a grep that found nothing wrong.
+    { "$LSREGISTER" -dump 2>/dev/null |
+      grep -oE '^path: +/[^ ]*(PrayerApp|Mihrab)\.app' | sed 's/^path: *//' |
+      sort -u | grep -v '^/Applications/Mihrab\.app$' |
+      while read -r stale; do "$LSREGISTER" -u "$stale" 2>/dev/null || true; done
+    } || true
+    rm -rf "$APP"
+    # AND PUT THE REAL ONE BACK. Cheap insurance either way: if the installed
+    # copy survived the above it is re-registered identically, and if it did
+    # not, this is the repair from docs/release/catalyst-widgets.md.
+    #
+    # The widget extension needs saying separately. Unregistering any copy of
+    # this app drops the plugin record for ALL of them — same bundle
+    # identifier — so a build can leave the machine with an app that
+    # registers fine and no widget provider at all, which is the 2026-08-29
+    # failure seen from the developer's side rather than the user's.
+    # `lsregister -f` does not restore it and launching the app is the only
+    # other thing that does, so ask PlugInKit directly, and check that it
+    # stayed: a late LaunchServices event can drop it a second later.
+    if [ -d /Applications/Mihrab.app ]; then
+      "$LSREGISTER" -f /Applications/Mihrab.app 2>/dev/null || true
+      INSTALLED_EXT=/Applications/Mihrab.app/Contents/PlugIns/PrayerWidgetExtension.appex
+      INSTALLED_ID=maccatalyst.com.hassan.prayerapp.PrayerWidgetExtension
+      # CAPTURED, NOT PIPED INTO `grep -q`. grep exits on the first line,
+      # pluginkit takes SIGPIPE, and `pipefail` turns that into 141 — so a
+      # registered extension reads as missing, the loop can never break, and
+      # the warning below fires on a machine that is perfectly healthy. It
+      # only worked here by accident: pluginkit's output is small enough to
+      # fit the pipe buffer and finish writing before grep leaves.
+      SEEN=""
+      for _ in 1 2 3 4 5 6 7 8; do
+        pluginkit -a "$INSTALLED_EXT" >/dev/null 2>&1 || true
+        sleep 3
+        SEEN="$(pluginkit -m -i "$INSTALLED_ID" 2>/dev/null || true)"
+        if [ -n "$SEEN" ]; then break; fi
+      done
+      if [ -n "$SEEN" ]; then
+        echo "  ▸ the installed app's widget extension is still registered."
+      else
+        echo "  ⚠ /Applications/Mihrab.app's widget extension is NOT registered." >&2
+        echo "    Its widgets will be blank until it is. See" >&2
+        if [ "$1" = built ]; then
+          echo "    docs/release/catalyst-widgets.md; the zip is fine." >&2
+        else
+          echo "    docs/release/catalyst-widgets.md." >&2
+        fi
+      fi
+    fi
+    # SWEPT AGAIN BEFORE IT IS CALLED A FAILURE. The build products are
+    # still on disk after the sweep above, and LaunchServices registers a
+    # bundle it notices on its own: 2.27.0's first run found
+    # `catalyst-release/…/PrayerApp.app` registered again seconds after it
+    # had been unregistered, and a single `lsregister -u` by hand cleared it
+    # for good. So a ghost found here is unregistered and looked for again,
+    # three times, and only one that keeps coming back stops the build.
+    GHOSTS=""
+    for try in 1 2 3 4; do
+      sleep 2
+      GHOSTS=$("$LSREGISTER" -dump 2>/dev/null |
+        grep -oE '^path: +/[^ ]*(PrayerApp\.app|Mihrab\.app|PrayerWidgetExtension\.appex)[^ ]*' |
+        sed 's/^path: *//' | sort -u | grep -v '^/Applications/Mihrab\.app' || true)
+      if [ -z "$GHOSTS" ] || [ "$try" = 4 ]; then break; fi
+      for stale in $GHOSTS; do "$LSREGISTER" -u "$stale" 2>/dev/null || true; done
+    done
+    if [ -n "$GHOSTS" ]; then
+      echo "  ✗ LaunchServices still points at a build copy:" >&2
+      printf '      %s\n' $GHOSTS >&2
+      echo "    Every widget on this Mac will go blank — see" >&2
+      echo "    docs/release/catalyst-widgets.md. Clear them with:" >&2
+      echo "      for p in $GHOSTS; do \"$LSREGISTER\" -u \"\$p\"; done" >&2
+      if [ "$1" = built ]; then echo "    The zip is built and fine: $ZIP" >&2; fi
+      return 1
+    fi
+    echo "  ▸ LaunchServices knows only /Applications/Mihrab.app."
+  fi
+}
+
+LAUNCHED=1
 echo "▸ Smoke-launching the signed app…"
 # A signature that verifies is not a bundle that runs. Restricted entitlements
 # (keychain-access-groups, and friends) need a provisioning profile to back
@@ -610,57 +815,6 @@ rm -f "$LAUNCH_LOG" "$GROUP_BACKUP"
 # installed copy is the one that is supposed to be serving the widgets.
 pkill -f "$APP/Contents/PlugIns/" 2>/dev/null || true
 
-# ── Hand the machine back ─────────────────────────────────────────────
-#
-# Launching the app registered THIS copy — the one in ios/build — with
-# LaunchServices, widget extension and all. That registration outlives the
-# build: the bundle gets zipped, deleted, replaced next build, and
-# LaunchServices keeps pointing at a path that no longer holds the bundle it
-# remembers.
-#
-# What that does to the widgets is not obvious and cost an afternoon to find
-# (2026-08-26). chronod launches the extension from the STALE path, the
-# extension answers with a perfectly good timeline, and then the archive is
-# rejected:
-#
-#   WidgetArchiver.ValidationError.bundleStubNotSupported
-#     ("Bundle version did not match; LaunchServices DB may need to be rebuilt")
-#
-# Every widget, every size, gallery previews included, on the copy in
-# /Applications that was never the problem. Nothing in the app is wrong and
-# nothing in the app can fix it.
-#
-# So unregister what we registered. `-u` is scoped to one path: it does not
-# touch /Applications, and it is not the `-kill -r` sledgehammer that
-# rebuilds the whole database.
-#
-# THREE PATHS, NOT ONE, AND AFTER THE ZIP RATHER THAN BEFORE IT. The first
-# version of this unregistered only the copy it launched, and only that, and
-# it did not work — checked on 2026-08-26, straight after a clean build:
-#
-#   ios/build/catalyst-dist/Mihrab.app                          ← re-appeared
-#   …/catalyst-release/…/PrayerApp.app                          ← never touched
-#   …/catalyst-release/…/PrayerApp.app/…/PrayerWidgetExtension.appex
-#
-# Two things were wrong. Xcode registers its OWN build product, so the
-# derived-data bundle and its widget extension are registered by the compile
-# whether or not anything is ever launched — and that .appex is precisely
-# the competing widget host. And a bundle that still exists on disk gets
-# rediscovered, so unregistering the dist copy while leaving it sitting
-# there buys minutes.
-#
-# Hence: unregister all four paths, then DELETE the bundle. The zip is the
-# artifact; the .app beside it was only ever the thing we zipped, and it is
-# one `unzip` away for anyone who wants to run it.
-#
-# Then check, and fail if a ghost survived. A build that says it cleaned up
-# and did not is worse than one that says nothing — that is the whole reason
-# this section had to be written twice.
-#
-# Users reach the same state without any of this — unzip the release, run it
-# once from Downloads, drag it to Applications, empty the Trash — so the
-# repair is written down in docs/release/catalyst-widgets.md rather than
-# living only here.
 echo "▸ Zipping…"
 ditto -c -k --keepParent "$APP" "$ZIP"
 
@@ -810,7 +964,7 @@ else
     echo "    must happen AFTER the staple." >&2
     exit 1
   fi
-  rm -rf "$NCHECK"
+  forget_ncheck
   # Both halves matter. "accepted" alone can come from a Developer ID that
   # is merely trusted locally; the source line is what says a notarized
   # ticket was the reason.
@@ -826,114 +980,7 @@ fi
 
 shasum -a 256 "$ZIP" | tee "$ZIP.sha256"
 
-LSREGISTER=/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister
-BUILT=ios/build/catalyst-release/Build/Products/Release-maccatalyst/PrayerApp.app
-if [ -x "$LSREGISTER" ]; then
-  # THE .appex PATHS ARE DELIBERATELY NOT LISTED HERE.
-  #
-  # `-u` takes a path but the record it drops is keyed by BUNDLE IDENTIFIER,
-  # and every copy of the widget extension — build product, dist copy, the
-  # one inside /Applications — carries the same one. Unregistering the build
-  # tree's `.appex` took the INSTALLED app's plugin registration with it on
-  # 2026-08-27: `pluginkit` stopped listing the extension at all, which is
-  # the same blank-widgets outcome this cleanup exists to prevent, arrived at
-  # from the opposite direction. Unregistering the `.app` is enough; the
-  # plugin inside it goes with it.
-  # The two known paths, plus WHATEVER ELSE IS REGISTERED. The fixed list
-  # was not enough: notarization brought App Translocation with it, and a
-  # translocated copy lives at a path nobody can predict. Sweeping `.app`
-  # records outside /Applications catches those; `.appex` records are still
-  # never named here, for the reason above, and the assertion below is what
-  # says whether one survived.
-  for stale in "$APP" "$BUILT"; do
-    "$LSREGISTER" -u "$stale" 2>/dev/null || true
-  done
-  # NO `$` ANCHOR ON THE PATH. `lsregister -dump` writes
-  # `path:  /Applications/Mihrab.app (0x42c4)` — a trailing record id — so a
-  # pattern ending in `\.app$` matches nothing at all and the sweep silently
-  # does nothing. It was written that way first and found two ghosts still
-  # sitting in the database after it claimed to have cleaned them.
-  #
-  # Without the anchor, an `.appex` line matches up to its parent `.app`,
-  # which is the path we want to unregister anyway. `sort -u` collapses the
-  # duplicate, and the `-v` below keeps the installed copy — anchored there,
-  # where the anchor is correct.
-  # `|| true` ON THE WHOLE PIPELINE, and this is the third time today. When
-  # there are no ghosts — the good case, and the common one — the final
-  # `grep -v` matches nothing and exits 1, `pipefail` promotes that to the
-  # pipeline, and `set -e` ends the build. It ended this one, after the zip
-  # and the sha and before the cleanup, so the build tree stayed registered:
-  # a script whose job is to prevent stale registrations, prevented from
-  # doing it by a grep that found nothing wrong.
-  { "$LSREGISTER" -dump 2>/dev/null |
-    grep -oE '^path: +/[^ ]*(PrayerApp|Mihrab)\.app' | sed 's/^path: *//' |
-    sort -u | grep -v '^/Applications/Mihrab\.app$' |
-    while read -r stale; do "$LSREGISTER" -u "$stale" 2>/dev/null || true; done
-  } || true
-  rm -rf "$APP"
-  # AND PUT THE REAL ONE BACK. Cheap insurance either way: if the installed
-  # copy survived the above it is re-registered identically, and if it did
-  # not, this is the repair from docs/release/catalyst-widgets.md.
-  #
-  # The widget extension needs saying separately. Unregistering any copy of
-  # this app drops the plugin record for ALL of them — same bundle
-  # identifier — so a build can leave the machine with an app that
-  # registers fine and no widget provider at all, which is the 2026-08-29
-  # failure seen from the developer's side rather than the user's.
-  # `lsregister -f` does not restore it and launching the app is the only
-  # other thing that does, so ask PlugInKit directly, and check that it
-  # stayed: a late LaunchServices event can drop it a second later.
-  if [ -d /Applications/Mihrab.app ]; then
-    "$LSREGISTER" -f /Applications/Mihrab.app 2>/dev/null || true
-    INSTALLED_EXT=/Applications/Mihrab.app/Contents/PlugIns/PrayerWidgetExtension.appex
-    INSTALLED_ID=maccatalyst.com.hassan.prayerapp.PrayerWidgetExtension
-    # CAPTURED, NOT PIPED INTO `grep -q`. grep exits on the first line,
-    # pluginkit takes SIGPIPE, and `pipefail` turns that into 141 — so a
-    # registered extension reads as missing, the loop can never break, and
-    # the warning below fires on a machine that is perfectly healthy. It
-    # only worked here by accident: pluginkit's output is small enough to
-    # fit the pipe buffer and finish writing before grep leaves.
-    SEEN=""
-    for _ in 1 2 3 4 5 6 7 8; do
-      pluginkit -a "$INSTALLED_EXT" >/dev/null 2>&1 || true
-      sleep 3
-      SEEN="$(pluginkit -m -i "$INSTALLED_ID" 2>/dev/null || true)"
-      if [ -n "$SEEN" ]; then break; fi
-    done
-    if [ -n "$SEEN" ]; then
-      echo "  ▸ the installed app's widget extension is still registered."
-    else
-      echo "  ⚠ /Applications/Mihrab.app's widget extension is NOT registered." >&2
-      echo "    Its widgets will be blank until it is. See" >&2
-      echo "    docs/release/catalyst-widgets.md; the zip is fine." >&2
-    fi
-  fi
-  # SWEPT AGAIN BEFORE IT IS CALLED A FAILURE. The build products are
-  # still on disk after the sweep above, and LaunchServices registers a
-  # bundle it notices on its own: 2.27.0's first run found
-  # `catalyst-release/…/PrayerApp.app` registered again seconds after it
-  # had been unregistered, and a single `lsregister -u` by hand cleared it
-  # for good. So a ghost found here is unregistered and looked for again,
-  # three times, and only one that keeps coming back stops the build.
-  GHOSTS=""
-  for try in 1 2 3 4; do
-    sleep 2
-    GHOSTS=$("$LSREGISTER" -dump 2>/dev/null |
-      grep -oE '^path: +/[^ ]*(PrayerApp\.app|Mihrab\.app|PrayerWidgetExtension\.appex)[^ ]*' |
-      sed 's/^path: *//' | sort -u | grep -v '^/Applications/Mihrab\.app' || true)
-    if [ -z "$GHOSTS" ] || [ "$try" = 4 ]; then break; fi
-    for stale in $GHOSTS; do "$LSREGISTER" -u "$stale" 2>/dev/null || true; done
-  done
-  if [ -n "$GHOSTS" ]; then
-    echo "  ✗ LaunchServices still points at a build copy:" >&2
-    printf '      %s\n' $GHOSTS >&2
-    echo "    Every widget on this Mac will go blank — see" >&2
-    echo "    docs/release/catalyst-widgets.md. Clear them with:" >&2
-    echo "      for p in $GHOSTS; do \"$LSREGISTER\" -u \"\$p\"; done" >&2
-    echo "    The zip is built and fine: $ZIP" >&2
-    exit 1
-  fi
-  echo "  ▸ LaunchServices knows only /Applications/Mihrab.app."
-fi
+HANDED_BACK=1
+hand_back_the_machine built || exit 1
 
 echo "▸ Done: $ZIP"

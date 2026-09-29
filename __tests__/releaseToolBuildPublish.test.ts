@@ -161,6 +161,13 @@ describe('B6 the zip about to be published (2.11.0)', () => {
     expect(w.ran(/lsregister -u/)).toHaveLength(1);
   });
 
+  it('a zip that will not unpack still has its temp copy unregistered and removed', async () => {
+    const w = zipWorld('TeamIdentifier=GAW23HT439', 'group.com.prayerapp').on('ditto -x -k', { code: 1 });
+    expect(await stopOf(() => inspectZip(w.ctx(), '/z.zip'))).toBe('cannot unpack /z.zip');
+    expect(w.ran(/lsregister -u \/tmp\/mihrab-zip-\d+\/Mihrab\.app/)).toHaveLength(1);
+    expect([...w.dirs].some(d => d.startsWith('/tmp/mihrab-zip-'))).toBe(false);
+  });
+
   it('stops an unstapled app — Gatekeeper would block its first launch', async () => {
     const w = zipWorld('TeamIdentifier=GAW23HT439', 'group.com.prayerapp', false);
     expect(await stopOf(() => inspectZip(w.ctx(), '/z.zip'))).toMatch(/carries no notarization ticket/);

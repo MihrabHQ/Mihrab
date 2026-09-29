@@ -136,6 +136,20 @@ describe('a whole build on a healthy Mac', () => {
     expect(w.files.get(`${ROOT}/ios/Podfile.lock`)).toBe('PODFILE CHECKSUM: original\n');
   });
 
+  it('puts it back on a Ctrl-C, which skips `finally` (the shell’s EXIT trap did not)', async () => {
+    const w = mac();
+    let during: string | undefined;
+    w.on('xcodebuild -workspace', () => {
+      w.interrupt();
+      during = w.files.get(`${ROOT}/ios/Podfile.lock`);
+      return {};
+    });
+    await build(w);
+    expect(during).toBe('PODFILE CHECKSUM: original\n');
+    // Listening stops once the lock is back: a later Ctrl-C restores nothing.
+    expect(w.interrupts).toEqual([]);
+  });
+
   it('--check-toolchain answers and builds nothing', async () => {
     const w = mac();
     expect((await build(w, ['--check-toolchain'])).code).toBe(0);
@@ -302,6 +316,52 @@ describe('handing the machine back', () => {
     const unregistered = w.ran(`${LSREG} -u`).map(c => c.args[1]);
     expect(unregistered).toContain('/private/var/folders/x/T/AppTranslocation/Y/d/Mihrab.app');
     expect(unregistered.some(p => p.endsWith('.appex'))).toBe(false);
+  });
+
+  const BUILT_APP = 'ios/build/catalyst-release/Build/Products/Release-maccatalyst/PrayerApp.app';
+  const handedBack = (w: World) => {
+    const unregistered = w.ran(`${LSREG} -u`).map(c => c.args[1]);
+    return unregistered.includes(APP) && unregistered.includes(BUILT_APP) && w.ran('pluginkit -a').length > 0;
+  };
+
+  it('a stop after the launch still hands it back: no payload (C9)', async () => {
+    const w = mac().on('open', {}).on('ioreg', { stdout: '<key>IOConsoleLocked</key><false/>' });
+    const { stopped, err } = await build(w);
+    expect(stopped).toMatch(/has no payload for today/);
+    expect(handedBack(w)).toBe(true);
+    expect(w.files.has(`${ROOT}/${APP}`)).toBe(false);
+    // Not the "zip is fine" of a finished build: there is no zip.
+    expect(err).not.toContain('the zip is fine');
+  });
+
+  it('… notarisation Invalid (C12)', async () => {
+    const w = mac().on('xcrun notarytool submit', { stdout: '  id: 9f9f-0001\n  status: Invalid\n' });
+    expect((await build(w)).stopped).toBe('notarization was not accepted.');
+    expect(handedBack(w)).toBe(true);
+  });
+
+  it('… a staple that never came (C13)', async () => {
+    const w = mac().on('xcrun stapler staple', { code: 73 });
+    expect((await build(w)).stopped).toMatch(/stapler failed after 6 attempts/);
+    expect(handedBack(w)).toBe(true);
+  });
+
+  it('a stop before the launch registers nothing, so it unregisters nothing', async () => {
+    const w = mac().on('codesign --verify', { code: 1 });
+    await build(w);
+    expect(w.ran(`${LSREG} -u`)).toEqual([]);
+  });
+
+  it('the unpacked check copy is unregistered before it is removed — and when its check fails', async () => {
+    for (const validates of [true, false]) {
+      const w = mac().on(/^xcrun stapler validate \/tmp\/mihrab-ncheck-/, { code: validates ? 0 : 65 });
+      const { stopped } = await build(w);
+      if (validates) expect(stopped).toBeUndefined();
+      else expect(stopped).toMatch(/the zip carries no stapled ticket/);
+      const check = w.ran(`${LSREG} -u`).map(c => c.args[1]).find(p => p.includes('mihrab-ncheck-'));
+      expect(check).toMatch(/^\/tmp\/mihrab-ncheck-\d+\/Mihrab\.app$/);
+      expect(w.dirs.has(check!.replace(/\/Mihrab\.app$/, ''))).toBe(false);
+    }
   });
 
   it('a ghost that keeps coming back fails the build after four sweeps (2.27.0)', async () => {

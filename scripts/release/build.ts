@@ -217,10 +217,13 @@ export async function mac(ctx: Ctx, rel: Release): Promise<string> {
 export async function inspectZip(ctx: Ctx, zip: string): Promise<void> {
   const dir = ctx.io.fs.mkdtemp('mihrab-zip-');
   const app = `${dir}/Mihrab.app`;
-  if ((await ctx.io.exec.run('ditto', ['-x', '-k', zip, dir])).code !== 0) {
-    ctx.report.stop('B6', `cannot unpack ${zip}`);
-  }
   try {
+    // Inside the `try`: a `ditto -x` that fails partway has still written
+    // (and registered) whatever it unpacked, and the temp dir is ours to
+    // remove either way.
+    if ((await ctx.io.exec.run('ditto', ['-x', '-k', zip, dir])).code !== 0) {
+      ctx.report.stop('B6', `cannot unpack ${zip}`);
+    }
     if (!has(await codesignDetails(ctx, app), `TeamIdentifier=${TEAM}`)) {
       ctx.report.stop(
         'B6',

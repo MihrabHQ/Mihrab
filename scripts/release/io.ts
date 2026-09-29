@@ -119,6 +119,13 @@ export interface Io {
   err(line: string): void;
   /** Ask a person a question and wait (build-ios-appstore's "Continue?"). */
   ask(question: string): Promise<string>;
+  /**
+   * The shell's `trap … EXIT` for the one case `finally` cannot cover: a
+   * Ctrl-C, a `kill`, a closed terminal. Runs `restore`, then exits
+   * 128 + the signal's number, as the shell would. The returned function
+   * stops listening, for when the thing to restore is restored.
+   */
+  onInterrupt(restore: () => void): () => void;
 }
 
 // ── The real machine ──────────────────────────────────────────────────
@@ -313,5 +320,22 @@ export function realIo(): Io {
           resolve(answer);
         });
       }),
+    onInterrupt: restore => {
+      const signals = ['SIGINT', 'SIGTERM', 'SIGHUP'] as const;
+      const handlers = signals.map(sig => {
+        const handler = () => {
+          try {
+            restore();
+          } finally {
+            process.exit(128 + (os.constants.signals[sig] ?? 0));
+          }
+        };
+        process.once(sig, handler);
+        return [sig, handler] as const;
+      });
+      return () => {
+        for (const [sig, handler] of handlers) process.removeListener(sig, handler);
+      };
+    },
   };
 }

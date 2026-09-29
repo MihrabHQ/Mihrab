@@ -34,8 +34,10 @@ import {
   flag,
   irreversible,
   pbxMarketingVersion,
+  unregisterAndRemove,
 } from './common.ts';
 import type { ExecOptions } from './io.ts';
+import { ReleaseStop } from './report.ts';
 import { findIdentity, resolveCatalystToolchain } from './toolchain.ts';
 
 export const DIST = 'ios/build/catalyst-dist';
@@ -213,10 +215,16 @@ export async function buildCatalyst(ctx: Ctx, args: string[]): Promise<number> {
   // layout). This install also builds React from source (codesign refuses
   // the prebuilt React.framework in a Mac bundle), which rewrites
   // Podfile.lock — so the lock is put back however this ends: release.sh
-  // refuses to start on a tree with tracked changes.
+  // refuses to start on a tree with tracked changes. `finally` covers a
+  // stop and a throw; a Ctrl-C or a `kill` skips it, which the shell's
+  // `trap … EXIT` never did, so the interrupt is asked to restore it too.
   say('▸ Preparing pods with Catalyst support (MIHRAB_CATALYST=1)…');
   const lock = abs('ios/Podfile.lock');
   const lockKept = ctx.io.fs.exists(lock) ? ctx.io.fs.readText(lock) : undefined;
+  const restoreLock = () => {
+    if (lockKept !== undefined) ctx.io.fs.writeText(lock, lockKept);
+  };
+  const stopListening = ctx.io.onInterrupt(restoreLock);
   try {
     await must('C3', 'pod install', 'pod', ['install', '--silent'], {
       cwd: abs('ios'),
@@ -225,7 +233,8 @@ export async function buildCatalyst(ctx: Ctx, args: string[]): Promise<number> {
     });
     return await afterPods();
   } finally {
-    if (lockKept !== undefined) ctx.io.fs.writeText(lock, lockKept);
+    stopListening();
+    restoreLock();
   }
 
   async function afterPods(): Promise<number> {
@@ -436,21 +445,40 @@ export async function buildCatalyst(ctx: Ctx, args: string[]): Promise<number> {
       say(`  ▸ extension sandboxed; both sides share${appGroup.slice(appGroup.indexOf('=>') + 2)}`);
     }
 
-    await smokeLaunch();
+    // FROM THE SMOKE LAUNCH ON, THIS COPY IS REGISTERED, and a stop after
+    // it (the launch check, notarisation Invalid, a staple that never
+    // came) used to exit with it still registered — which is what blanks
+    // every widget on the release Mac. So the machine is handed back on
+    // every way out from here, not only at the end.
+    let handedBack = false;
+    try {
+      await smokeLaunch();
 
-    // ── C11 ──
-    say('▸ Zipping…');
-    await must('C11', 'ditto -c', 'ditto', ['-c', '-k', '--keepParent', APP, zip]);
+      // ── C11 ──
+      say('▸ Zipping…');
+      await must('C11', 'ditto -c', 'ditto', ['-c', '-k', '--keepParent', APP, zip]);
 
-    await notarise();
+      await notarise();
 
-    // ── C14 ──
-    const sha = ctx.io.fs.sha256(abs(zip));
-    const shaLine = `${sha}  ${zip}`;
-    say(shaLine);
-    ctx.io.fs.writeText(abs(`${zip}.sha256`), `${shaLine}\n`);
+      // ── C14 ──
+      const sha = ctx.io.fs.sha256(abs(zip));
+      const shaLine = `${sha}  ${zip}`;
+      say(shaLine);
+      ctx.io.fs.writeText(abs(`${zip}.sha256`), `${shaLine}\n`);
 
-    await handBackTheMachine();
+      handedBack = true;
+      await handBackTheMachine(true);
+    } finally {
+      if (!handedBack) {
+        // The stop that brought us here is the one to report; a ghost the
+        // hand-back cannot clear has already said so on stderr.
+        try {
+          await handBackTheMachine(false);
+        } catch (e) {
+          if (!(e instanceof ReleaseStop)) throw e;
+        }
+      }
+    }
     say(`▸ Done: ${zip}`);
     return 0;
   }
@@ -708,17 +736,24 @@ export async function buildCatalyst(ctx: Ctx, args: string[]): Promise<number> {
     // temp directory hands it to App Translocation, and the translocated
     // .appex record took the INSTALLED app's widgets with it (2026-08-29).
     say('▸ Checking the notarization that actually got shipped…');
+    // UNREGISTERED BEFORE IT IS REMOVED, and removed however the check
+    // ends: unpacking an .app is enough to register it (2026-08-29), and
+    // this copy used to be deleted still registered — or, when the check
+    // failed, left behind registered.
     const check = ctx.io.fs.mkdtemp('mihrab-ncheck-');
-    if ((await run('ditto', ['-x', '-k', zip, check])).code !== 0) fail('C13', `  ✗ cannot unpack ${zip}`);
-    if ((await run('xcrun', ['stapler', 'validate', `${check}/Mihrab.app`])).code !== 0) {
-      fail(
-        'C13',
-        '  ✗ the zip carries no stapled ticket.',
-        '    An offline Mac will refuse to launch it. The re-zip above',
-        '    must happen AFTER the staple.',
-      );
+    try {
+      if ((await run('ditto', ['-x', '-k', zip, check])).code !== 0) fail('C13', `  ✗ cannot unpack ${zip}`);
+      if ((await run('xcrun', ['stapler', 'validate', `${check}/Mihrab.app`])).code !== 0) {
+        fail(
+          'C13',
+          '  ✗ the zip carries no stapled ticket.',
+          '    An offline Mac will refuse to launch it. The re-zip above',
+          '    must happen AFTER the staple.',
+        );
+      }
+    } finally {
+      await unregisterAndRemove(ctx, `${check}/Mihrab.app`, check);
     }
-    ctx.io.fs.rm(check);
     const assess = await run('spctl', ['-a', '-t', 'exec', '-vv', APP]);
     const text = assess.stdout + assess.stderr;
     if (!gatekeeperAccepts(text)) {
@@ -745,7 +780,10 @@ export async function buildCatalyst(ctx: Ctx, args: string[]): Promise<number> {
   // BUNDLE IDENTIFIER, and every copy of the extension carries the same
   // one — unregistering the build tree's .appex took the installed app's
   // plugin registration with it (2026-08-27).
-  async function handBackTheMachine() {
+  //
+  // `built` says whether this is the end of a build that made its zip, or
+  // the way out of one that stopped — which is when the zip is not "fine".
+  async function handBackTheMachine(built: boolean) {
     if (!ctx.io.fs.isExecutable(LSREGISTER)) return;
     for (const stale of [APP, BUILT]) await run(LSREGISTER, ['-u', stale]);
     // The fixed list was not enough: notarisation brought App
@@ -773,7 +811,7 @@ export async function buildCatalyst(ctx: Ctx, args: string[]): Promise<number> {
       } else {
         err("  ⚠ /Applications/Mihrab.app's widget extension is NOT registered.");
         err('    Its widgets will be blank until it is. See');
-        err('    docs/release/catalyst-widgets.md; the zip is fine.');
+        err(built ? '    docs/release/catalyst-widgets.md; the zip is fine.' : '    docs/release/catalyst-widgets.md.');
       }
     }
     // SWEPT AGAIN BEFORE IT IS CALLED A FAILURE: LaunchServices registers a
@@ -795,7 +833,7 @@ export async function buildCatalyst(ctx: Ctx, args: string[]): Promise<number> {
         '    Every widget on this Mac will go blank — see',
         '    docs/release/catalyst-widgets.md. Clear them with:',
         `      for p in ${ghosts.join(' ')}; do "${LSREGISTER}" -u "$p"; done`,
-        `    The zip is built and fine: ${zip}`,
+        ...(built ? [`    The zip is built and fine: ${zip}`] : []),
       );
     }
     say('  ▸ LaunchServices knows only /Applications/Mihrab.app.');
