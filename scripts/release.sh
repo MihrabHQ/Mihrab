@@ -93,8 +93,15 @@ JDK="/Library/Java/JavaVirtualMachines/temurin-21.jdk/Contents/Home"
 # arguments go to the TypeScript, which prints the same lines, writes the
 # same attempts log and journal, and exits with the same status. Node runs
 # it with its own type stripping (Node 22.6 or later); nothing to install.
+#
+# ON AN OLDER NODE THE SHELL CUTS IT, and says so. Handed to a Node without
+# type stripping, the switch died on "bad option" before a single gate —
+# a release stopped by the flag meant to change nothing but who runs it.
 if [ "${RELEASE_TS:-0}" = "1" ]; then
-  exec node --experimental-strip-types --no-warnings "$ROOT/scripts/release/main.ts" release "$@"
+  if node -e 'const [a, b] = process.versions.node.split(".").map(Number); process.exit(a > 22 || (a === 22 && b >= 6) ? 0 : 1)' 2>/dev/null; then
+    exec node --experimental-strip-types --no-warnings "$ROOT/scripts/release/main.ts" release "$@"
+  fi
+  printf "  ⚠ %s\n" "RELEASE_TS=1 needs Node 22.6 or later and this is $(node --version 2>/dev/null || echo 'no Node') — the shell script runs instead" >&2
 fi
 
 # ── grep AFTER capturing, never through a pipe ────────────────────────

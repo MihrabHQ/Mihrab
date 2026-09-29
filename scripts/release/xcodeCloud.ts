@@ -49,8 +49,11 @@ export const BUNDLE_ID = 'com.hassan.prayerapp';
  * stand-in for "how long ago did Xcode Cloud get the chance to see it".
  */
 export async function commitAgeMinutes(x: XcCtx, sha: string): Promise<number | null> {
+  // GIT_OPTIONAL_LOCKS=0: `log` takes none, and verification beside the
+  // shell promises that no git command it runs may write (shadow.ts).
   const r = await x.io.exec.run('git', ['-C', x.root, 'log', '-1', '--format=%ct', sha], {
     timeoutMs: 10_000,
+    env: { GIT_OPTIONAL_LOCKS: '0' },
   });
   if (r.code !== 0 || !r.stdout.trim()) return null;
   return Math.floor((x.io.clock.now() / 1000 - Number(r.stdout.trim())) / 60);

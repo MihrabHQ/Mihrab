@@ -79,7 +79,10 @@ export const VERSION_RE = /^[0-9]+\.[0-9]+\.[0-9]+$/;
 // and not shipped is, from the outside, a fix that was never made.
 export async function showUnreleased(ctx: Ctx): Promise<void> {
   const r = ctx.report;
-  await git(ctx, ['fetch', '--quiet', '--tags', 'origin']);
+  // Not beside the shell: shadow mode writes nothing, remote-tracking refs
+  // included, and the shell fetched origin at P4 seconds ago. (It prints
+  // nothing there either; only the cycle files it returns are used.)
+  if (!ctx.shadow) await git(ctx, ['fetch', '--quiet', '--tags', 'origin']);
   const last = (await git(ctx, ['describe', '--tags', '--abbrev=0', '--match', 'v*'])).stdout.trim();
   if (!last) {
     r.bold('No release tag found — everything on main is unreleased.');
@@ -144,10 +147,16 @@ export async function onMainAndClean(ctx: Ctx): Promise<void> {
 // ── P4 ────────────────────────────────────────────────────────────────
 // The dataset bot pushes on its own schedule; 2.19.0, 2.21.0, 2.24.0 and
 // 2.27.0 each stopped here once, correctly. Fetch and pull BEFORE starting.
+//
+// Beside the shell, which has just fetched, the TS does not fetch again:
+// shadow mode writes nothing, remote-tracking refs included. It asks
+// whether origin answers with `ls-remote`, which writes nothing, and
+// reads origin/main as the shell's fetch left it.
 export async function notBehindOrigin(ctx: Ctx): Promise<void> {
-  if ((await shown(ctx, git(ctx, ['fetch', '--quiet', 'origin']))).code !== 0) {
-    ctx.report.stop('P4', 'cannot reach origin');
-  }
+  const reached = ctx.shadow
+    ? await git(ctx, ['ls-remote', '--quiet', 'origin', 'refs/heads/main'])
+    : await shown(ctx, git(ctx, ['fetch', '--quiet', 'origin']));
+  if (reached.code !== 0) ctx.report.stop('P4', 'cannot reach origin');
   const behind = await git(ctx, ['rev-list', 'main..origin/main']);
   if (behind.code === 0 && behind.stdout.trim()) {
     ctx.report.stop('P4', 'origin/main has commits main does not — pull first');
@@ -314,11 +323,19 @@ export async function ciOnMain(ctx: Ctx): Promise<void> {
 }
 
 // ── P11 ───────────────────────────────────────────────────────────────
+export const JEST_FAILED = "jest failed — run 'NODE_ENV=test npx jest'";
+export const TSC_FAILED = "tsc failed — run 'npx tsc --noEmit'";
+
 export async function tests(ctx: Ctx): Promise<void> {
   ctx.report.step('Tests');
   if (ctx.shadow) {
-    // Minutes of work the shell has just done; its ✓ is trusted.
+    // Minutes of work the shell has just done: its ✓ is trusted — and so
+    // is its ✗. Where the shell stopped on jest or tsc, the TS stops too,
+    // or every gate after it would be called a disagreement.
+    const shellStopped = (text: string) => ctx.shellRecord?.some(l => l.kind === 'stop' && l.text === text);
+    if (shellStopped(JEST_FAILED)) ctx.report.stop('P11', JEST_FAILED);
     ctx.report.skip('P11', 'jest (not re-run beside the shell)', 'jest');
+    if (shellStopped(TSC_FAILED)) ctx.report.stop('P11', TSC_FAILED);
     ctx.report.skip('P11', 'tsc (not re-run beside the shell)', 'tsc');
     return;
   }
@@ -326,10 +343,10 @@ export async function tests(ctx: Ctx): Promise<void> {
     cwd: ctx.root,
     env: { NODE_ENV: 'test' },
   });
-  if (jest.code !== 0) ctx.report.stop('P11', "jest failed — run 'NODE_ENV=test npx jest'");
+  if (jest.code !== 0) ctx.report.stop('P11', JEST_FAILED);
   ctx.report.ok('P11', 'jest');
   const tsc = await ctx.io.exec.run('npx', ['tsc', '--noEmit'], { cwd: ctx.root });
-  if (tsc.code !== 0) ctx.report.stop('P11', "tsc failed — run 'npx tsc --noEmit'");
+  if (tsc.code !== 0) ctx.report.stop('P11', TSC_FAILED);
   ctx.report.ok('P11', 'tsc');
 }
 

@@ -3,7 +3,7 @@
  * gate runs in, and the few checks more than one script makes.
  */
 import type { ExecResult, Io } from './io.ts';
-import type { Reporter } from './report.ts';
+import type { Kind, Reporter } from './report.ts';
 
 export const REPO = 'MihrabHQ/Mihrab';
 export const TEAM = 'GAW23HT439';
@@ -38,6 +38,12 @@ export interface Ctx {
    * record rather than run a second time.
    */
   shadow: boolean;
+  /**
+   * Shadow mode only: the verdicts the shell has already printed in this
+   * phase. A step the TS trusts rather than repeats (jest, tsc) looks here
+   * to stop where the shell stopped.
+   */
+  shellRecord?: Array<{ kind: Kind; text: string }>;
   /** What the irreversible steps would have done, in order (dry run). */
   wouldDo: string[];
 }
@@ -363,9 +369,16 @@ export async function staplerValidates(ctx: Ctx, app: string): Promise<boolean> 
   return (await ctx.io.exec.run('xcrun', ['stapler', 'validate', app])).code === 0;
 }
 
-/** `git` in the repo, captured. */
+/**
+ * `git` in the repo, captured. Beside the shell with GIT_OPTIONAL_LOCKS=0:
+ * `git status` otherwise refreshes the index's stat cache and writes it
+ * back, and shadow mode writes nothing.
+ */
 export async function git(ctx: Ctx, args: string[], opts: { cwd?: string } = {}) {
-  return ctx.io.exec.run('git', args, { cwd: opts.cwd ?? ctx.root });
+  return ctx.io.exec.run('git', args, {
+    cwd: opts.cwd ?? ctx.root,
+    ...(ctx.shadow ? { env: { GIT_OPTIONAL_LOCKS: '0' } } : {}),
+  });
 }
 
 export async function gh(ctx: Ctx, args: string[]) {

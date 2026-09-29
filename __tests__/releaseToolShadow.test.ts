@@ -7,6 +7,7 @@ import {
   compare,
   parseRecord,
   report,
+  setAsideTiming,
   shadowCtx,
   shadowPreflight,
   shadowPublish,
@@ -59,6 +60,43 @@ describe('comparing', () => {
   it('matches a multi-line stop against the shell’s flattened one', () => {
     const c = compare([{ kind: 'stop', text: 'push failed. Undo it: git reset' }], [{ id: 'U4', kind: 'stop', text: 'push failed.\n    Undo it:\n      git reset' }]);
     expect(c.onlyShell.length + c.onlyTs.length).toBe(0);
+  });
+});
+
+describe('what depends on when it was asked', () => {
+  it('an iOS or CI line that is ⧗ on either side goes to the notes, not the count', () => {
+    const c = compare(
+      [
+        { kind: 'pend', text: 'iOS: 2.28.0 is not in App Store Connect yet — #741 feedbeef is still going.' },
+        { kind: 'pend', text: 'CI: in_progress on feedbee — u' },
+      ],
+      [
+        { id: 'V11', kind: 'ok', text: 'iOS: 2.28.0 is in App Store Connect: build 283, VALID, uploaded today' },
+        { id: 'V12', kind: 'pend', text: 'CI: no run on feedbee yet — re-run once GitHub has picked the push up' },
+      ],
+    );
+    const { comparison, notes } = setAsideTiming(c);
+    expect(comparison.onlyShell).toEqual([]);
+    expect(comparison.onlyTs).toEqual([]);
+    expect(notes).toHaveLength(2);
+    expect(notes[0]).toMatch(/^asked at different moments — shell ⧗ iOS: .* \| TS ✓ iOS: /);
+  });
+
+  it('✗ against ✓ is still a disagreement, and so is anything else', () => {
+    const c = compare(
+      [
+        { kind: 'fail', text: 'CI: failure on the released commit feedbee — u' },
+        { kind: 'pend', text: 'live site is late' },
+      ],
+      [
+        { id: 'V12', kind: 'ok', text: 'CI: green on feedbee' },
+        { id: 'V9', kind: 'ok', text: 'live site serves 2.28.0' },
+      ],
+    );
+    const { comparison, notes } = setAsideTiming(c);
+    expect(comparison.onlyShell).toHaveLength(2);
+    expect(comparison.onlyTs).toHaveLength(2);
+    expect(notes).toEqual([]);
   });
 });
 
@@ -122,6 +160,26 @@ describe('the preflight shadow', () => {
     expect(w.out).toEqual([]);
   });
 
+  it('stops where the shell stopped on jest or tsc, which it does not re-run', async () => {
+    for (const [at, words] of [
+      [13, "jest failed — run 'NODE_ENV=test npx jest'"],
+      [14, "tsc failed — run 'npx tsc --noEmit'"],
+    ] as const) {
+      const w = preflightWorld();
+      const shell = `${SHELL_PREFLIGHT.split('\n').slice(0, at).join('\n')}\ndie\t${words}`;
+      const res = await shadowPreflight(shadowCtx(w.io(), ROOT, HOME, 'release'), rel, shell);
+      expect(res.comparison.onlyShell).toEqual([]);
+      expect(res.comparison.onlyTs).toEqual([]);
+    }
+  });
+
+  it('asks origin whether it answers, and does not fetch: the shell just did', async () => {
+    const w = preflightWorld();
+    await shadowPreflight(shadowCtx(w.io(), ROOT, HOME, 'release'), rel, SHELL_PREFLIGHT);
+    expect(w.ran('git fetch')).toEqual([]);
+    expect(w.ran('git ls-remote --quiet origin refs/heads/main')).toHaveLength(1);
+  });
+
   it('writes down a gate the two decide differently', async () => {
     const w = preflightWorld();
     const shell = `${SHELL_PREFLIGHT.split('\n').slice(0, 6).join('\n')}\ndie\tsv-SE/changelogs/283.txt is 503 characters — Play's limit is 500`;
@@ -152,6 +210,25 @@ describe('the publish shadow', () => {
       .on('git show HEAD^:Casks/mihrab.rb', { stdout: GOOD_CASK });
     const res = await shadowPublish(shadowCtx(w.io(), ROOT, HOME, 'release'), rel, { releaseSha: 'feedbeef', ios: '1', zip: true });
     expect(res.comparison).toEqual({ compared: 8, onlyShell: [], onlyTs: [] });
+
+    // U8 against what XC_STARTED says ran — which it could never disagree
+    // with while both sides were worked out from IOS_LOCAL.
+    const u8 = async (ios: string, env: Record<string, string> = {}) => {
+      Object.assign(w.env, { IOS_LOCAL: undefined, SKIP_APP_STORE: undefined }, env);
+      const r = await shadowPublish(shadowCtx(w.io(), ROOT, HOME, 'release'), rel, { releaseSha: 'feedbeef', ios, zip: true });
+      return [...r.comparison.onlyShell, ...r.comparison.onlyTs].filter(l => l.text.startsWith('iOS route'));
+    };
+    expect(await u8('local')).toEqual([]); // the cloud route's fallback
+    expect(await u8('0', { IOS_LOCAL: '1' })).toEqual([]);
+    expect(await u8('skipped')).toEqual([
+      { kind: 'ok', text: 'iOS route: skip' },
+      { kind: 'ok', text: 'iOS route: cloud' },
+    ]);
+    expect(await u8('1', { IOS_LOCAL: '1' })).toHaveLength(2);
+    expect(await u8('local', { SKIP_APP_STORE: '1' })).toEqual([
+      { kind: 'ok', text: 'iOS route: not skipped (XC_STARTED=local)' },
+      { kind: 'ok', text: 'iOS route: skip' },
+    ]);
   });
 });
 

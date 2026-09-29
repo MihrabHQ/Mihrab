@@ -108,6 +108,30 @@ d('RELEASE_TS=1 hands the release to the TypeScript', () => {
     }
   });
 
+  it('on a Node too old to strip types, says so and lets the shell run — not "bad option"', () => {
+    const OLD_NODE = 'case "$1" in -e) exit 1 ;; --version) echo v20.11.0 ;; *) echo "node: bad option: $1" >&2; exit 9 ;; esac';
+    const WARNING = '  ⚠ RELEASE_TS=1 needs Node 22.6 or later and this is v20.11.0 — the shell script runs instead';
+    const s = scratch();
+    try {
+      s.fake('node', OLD_NODE);
+      const r = s.run('release.sh', ['not-a-version'], { RELEASE_TS: '1', RELEASE_SHADOW: '0' });
+      expect(r.status).toBe(1);
+      expect(r.text).toContain(WARNING);
+      expect(r.text).toContain("version must be X.Y.Z, got 'not-a-version'");
+      expect(r.text).not.toContain('bad option');
+      s.fake('git', 'exit 0');
+      s.fake('gh', 'exit 0');
+      s.fake('curl', 'case "$*" in *"%{http_code}"*) printf 404 ;; esac; exit 22');
+      s.fake('python3', 'echo -1');
+      const v = s.run('verify-release.sh', ['v2.28.0'], { RELEASE_TS: '1', RELEASE_SHADOW: '0' });
+      expect(v.text).toContain(WARNING);
+      expect(v.text).toContain('── RELEASE VERIFICATION FAILED');
+      expect(s.stubCalls()).toEqual([]);
+    } finally {
+      s.clean();
+    }
+  });
+
   it('is off unless asked for', () => {
     const s = scratch();
     try {

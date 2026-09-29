@@ -127,14 +127,31 @@ beside them, the TypeScript only watches:
 - `release.sh` notes every ✓ and ✗ it prints and, at the end of preflight
   (or a stop inside it), at the end of the build and after verification,
   runs the same phase in TypeScript with every irreversible step in dry
-  run and jest, Gradle and the Catalyst build taken from the shell's own ✓.
+  run and jest, Gradle and the Catalyst build taken from the shell's own ✓
+  — or its ✗, where the shell stopped on jest or tsc.
   `verify-release.sh` does the same for every check before its summary.
+- **It touches nothing on the machine.** It does not fetch: P4 asks
+  origin whether it answers with `git ls-remote` and reads `origin/main`
+  as the shell's own fetch left it, seconds earlier. Every git command
+  runs with `GIT_OPTIONAL_LOCKS=0`, so not even the index's stat cache is
+  written. It stamps, rebuilds and commits nothing, and it unpacks no app:
+  an unpacked `.app` is registered with LaunchServices, and the unregister
+  after it is what has blanked the release Mac's widgets before. The
+  signature, App Group and ticket of the zip (and of the published app)
+  are taken from the shell's ✓; the cask's `depends_on` is still compared,
+  off the `Info.plist` and executable taken out of the zip on their own.
+  Its HTTP requests are GETs and HEADs. What it does write: files in the
+  system temp directory (the downloaded APK and zip, the dex files, those
+  two files), removed as it goes, and its entry in `.release-shadow.log`.
+  A test holds every command each phase runs to a list of read-only ones.
 - Each run prints one line — `◦ shadow (TypeScript) preflight: agrees…`
   or how many disagreements — and appends the detail to
   `.release-shadow.log` (gitignored). It cannot stop or change a release:
   its status is ignored, it has a deadline, and a Node too old to run it is
   a line saying so. Read the log after each release; a disagreement is a
-  bug on one side or the other.
+  bug on one side or the other. The iOS and CI lines of verification are
+  asked a minute apart on the two sides, so a ⧗ on either side there is a
+  note in the log, not a disagreement; ✗ against ✓ still is one.
 - `RELEASE_SHADOW=0` turns it off. Beside verification it downloads the
   APK and the zip a second time, which costs a minute or two.
 
@@ -144,7 +161,9 @@ vX.Y.Z` hand their arguments to the TypeScript and exit with its status:
 the same flags and environment (`SKIP_CATALYST`, `SKIP_APP_STORE`,
 `IOS_LOCAL`, `NO_IOS_LOCAL`, `RELEASE_NOTES`), the same lines, the same
 `.release-attempts.log` and journal entry, the same exit status (0; 1 for
-a stop, a failed verification, or a release commit that fails CI). The
+a stop, a failed verification, or a release commit that fails CI). On a
+Node older than 22.6 it prints a ⚠ saying so and the shell scripts run
+as if it were not set. The
 signing identities, the notary profile, `~/.config/mihrab/asc.json` and
 the provisioning profile are read where they always were. Try it first as
 `RELEASE_TS=1 ./scripts/release.sh X.Y.Z --dry-run`.

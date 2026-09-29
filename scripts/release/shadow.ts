@@ -9,6 +9,12 @@
  * the same phase here with every irreversible step in dry run, compares,
  * appends what it found to .release-shadow.log and prints ONE line.
  *
+ * It writes nothing else, anywhere (docs/DISTRIBUTION.md says so, and
+ * releaseToolShadowReadOnly.test.ts holds every command to a read-only
+ * list): no fetch, git with GIT_OPTIONAL_LOCKS=0, no app unpacked — the
+ * shell's ✓ for jest, Gradle, the Catalyst build and the unpacked app's
+ * signature are trusted rather than repeated.
+ *
  * It can never stop a release: every error is caught and logged, it has a
  * deadline, and its exit status is always 0. A shadow that could break the
  * thing it is shadowing would defeat the point of having one.
@@ -112,6 +118,39 @@ export function compare(shell: ShellLine[], ts: Outcome[]): Comparison {
   return { compared: left.length, onlyShell, onlyTs };
 }
 
+/**
+ * The checks whose answer is a matter of WHEN they are asked: the iOS
+ * build and the release commit's CI. The shell asks, then the TypeScript
+ * a minute later, and "#741 is still going" can by then be "in App Store
+ * Connect" — or "(2 min after the commit)" be "(3 min …)". Neither is a
+ * disagreement about the gate.
+ */
+export const TIME_DEPENDENT = ['iOS: ', 'CI: '];
+
+/**
+ * Takes each time-dependent pair where at least one side is ⧗ out of the
+ * disagreements and into the notes. ✗ against ✓ stays a disagreement: a
+ * minute does not turn a failure into a pass.
+ */
+export function setAsideTiming(c: Comparison): { comparison: Comparison; notes: string[] } {
+  const onlyShell = [...c.onlyShell];
+  const onlyTs = [...c.onlyTs];
+  const notes: string[] = [];
+  for (const prefix of TIME_DEPENDENT) {
+    for (;;) {
+      const i = onlyShell.findIndex(l => l.text.startsWith(prefix));
+      const j = onlyTs.findIndex(l => l.text.startsWith(prefix));
+      if (i < 0 || j < 0) break;
+      const [s, t] = [onlyShell[i], onlyTs[j]];
+      if (s.kind !== 'pend' && t.kind !== 'pend') break;
+      notes.push(`asked at different moments — shell ${MARK[s.kind]} ${s.text} | TS ${MARK[t.kind]} ${t.text}`);
+      onlyShell.splice(i, 1);
+      onlyTs.splice(j, 1);
+    }
+  }
+  return { comparison: { ...c, onlyShell, onlyTs }, notes };
+}
+
 export interface ShadowResult {
   phase: string;
   label: string;
@@ -166,8 +205,13 @@ async function runQuietly(ctx: Ctx, f: () => Promise<unknown>): Promise<string[]
 }
 
 export async function shadowPreflight(ctx: Ctx, rel: Release, record: string): Promise<ShadowResult> {
+  const shell = parseRecord(record);
+  // Where the shell stopped on a step the TS does not repeat (jest, tsc),
+  // the TS has to stop there too, or every gate after it is a false
+  // "TS only".
+  ctx.shellRecord = shell;
   const notes = await runQuietly(ctx, () => preflight(ctx, rel));
-  return { phase: 'preflight', label: rel.version, comparison: compare(parseRecord(record), ctx.report.outcomes), notes };
+  return { phase: 'preflight', label: rel.version, comparison: compare(shell, ctx.report.outcomes), notes };
 }
 
 export async function shadowBuild(ctx: Ctx, rel: Release, record: string): Promise<ShadowResult> {
@@ -177,7 +221,8 @@ export async function shadowBuild(ctx: Ctx, rel: Release, record: string): Promi
 
 export async function shadowVerify(ctx: Ctx, tag: string, record: string, self?: string): Promise<ShadowResult> {
   const notes = await runQuietly(ctx, () => verify(ctx, tag, { self }));
-  return { phase: 'verify', label: tag, comparison: compare(parseRecord(record), ctx.report.outcomes), notes };
+  const { comparison, notes: timing } = setAsideTiming(compare(parseRecord(record), ctx.report.outcomes));
+  return { phase: 'verify', label: tag, comparison, notes: [...timing, ...notes] };
 }
 
 /**
@@ -208,7 +253,7 @@ export async function shadowPublish(
     const after = (await git(ctx, ['show', `${sha}:${JOURNAL}`])).stdout;
     const added = after.startsWith(before) ? after.slice(before.length) : '(not an append)';
     const attemptsFile = `${ctx.root}/.release-attempts.log`;
-    const attempts = ctx.io.fs.exists(attemptsFile)
+    const attempts = ctx.io.fs.isFile(attemptsFile)
       ? attemptsFor(ctx.io.fs.readText(attemptsFile), rel.version)
       : [];
     const last = (await git(ctx, ['describe', '--tags', '--abbrev=0', '--match', 'v*', `${sha}^`])).stdout.trim();
@@ -254,10 +299,16 @@ export async function shadowPublish(
       both('U7', 'cask', now, bumpCask(prev, oldVersion, rel.version, shaNow).text);
     }
 
-    // U8: the route. The shell's XC_STARTED is 1 / local / 0 / skipped.
+    // U8: the route, against what the shell's XC_STARTED says ran. It
+    // was compared with a route the shell side worked out from the same
+    // IOS_LOCAL the TS reads, so it could only agree. XC_STARTED pins the
+    // route down when it is `skipped` or `1` (the cloud's run); `local`
+    // and `0` are how the local route ends and ALSO how the cloud route
+    // ends after its fallback, so they say only "not skipped".
     const route = iosRoute(ctx);
-    const shellRoute = opts.ios === 'skipped' ? 'skip' : ctx.io.env.IOS_LOCAL === '1' ? 'local' : 'cloud';
-    both('U8', 'iOS route asked for', shellRoute, route);
+    const ran: Record<string, string> = { skipped: 'skip', 1: 'cloud' };
+    const shellRoute = ran[opts.ios] ?? (route === 'skip' ? `not skipped (XC_STARTED=${opts.ios})` : route);
+    both('U8', 'iOS route', shellRoute, route);
     notes.push(`iOS ended as XC_STARTED=${opts.ios}`);
   } catch (e) {
     notes.push(`the TypeScript threw: ${e instanceof Error ? e.message : String(e)}`);

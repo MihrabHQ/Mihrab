@@ -18,10 +18,14 @@ TAG="${1:?usage: verify-release.sh vX.Y.Z}"
 
 # RELEASE_TS=1: the TypeScript port (scripts/release/verify.ts) answers
 # instead — the same checks, lines and exit status. Not the default until
-# the rewrite plan's Phase 3 switch-over; see release.sh.
+# the rewrite plan's Phase 3 switch-over; see release.sh. On a Node too old
+# to strip types, this script answers, and says so (release.sh has why).
 if [ "${RELEASE_TS:-0}" = "1" ]; then
-  exec node --experimental-strip-types --no-warnings \
-    "$(dirname "$0")/release/main.ts" verify "$TAG" --self "$0"
+  if node -e 'const [a, b] = process.versions.node.split(".").map(Number); process.exit(a > 22 || (a === 22 && b >= 6) ? 0 : 1)' 2>/dev/null; then
+    exec node --experimental-strip-types --no-warnings \
+      "$(dirname "$0")/release/main.ts" verify "$TAG" --self "$0"
+  fi
+  printf "  ⚠ %s\n" "RELEASE_TS=1 needs Node 22.6 or later and this is $(node --version 2>/dev/null || echo 'no Node') — the shell script runs instead" >&2
 fi
 VERSION="${TAG#v}"
 REPO="MihrabHQ/Mihrab"
