@@ -1,6 +1,7 @@
 package com.prayer_times.contract
 
 import java.util.Calendar
+import java.util.GregorianCalendar
 import java.util.Locale
 import java.util.TimeZone
 
@@ -17,7 +18,11 @@ import java.util.TimeZone
  * malformed time meant.
  *
  * java.util.Calendar rather than java.time: minSdk is 24 and the app does
- * not desugar.
+ * not desugar. Always a GregorianCalendar (`gregorian`), never
+ * `Calendar.getInstance`: that follows the default locale, and for a Thai
+ * one the JVM hands back a BuddhistCalendar — today's key came out as
+ * 2569-09-21, matched no payload day, and an instant built from a payload
+ * key landed 543 years out. The payload's keys are Gregorian, always.
  */
 object WallClock {
   const val MINUTES_PER_DAY = 1440
@@ -26,6 +31,9 @@ object WallClock {
   const val NO_TIME = "—"
 
   private val HHMM = Regex("^([0-9]{1,2}):([0-9]{2})$")
+  /** The calendar every date here is read and built on; see the note above. */
+  private fun gregorian(zone: TimeZone): Calendar = GregorianCalendar(zone, Locale.ROOT)
+
   private val DATE_KEY = Regex("^([0-9]{4})-([0-9]{2})-([0-9]{2})$")
 
   // ── Reading the v1 payload ────────────────────────────────────────────
@@ -90,7 +98,7 @@ object WallClock {
 
   /** The local calendar date of `epochMs` as a contract date key. */
   fun dateKey(epochMs: Long, zone: TimeZone = TimeZone.getDefault()): String {
-    val c = Calendar.getInstance(zone).apply { timeInMillis = epochMs }
+    val c = gregorian(zone).apply { timeInMillis = epochMs }
     return String.format(
       Locale.ROOT,
       "%04d-%02d-%02d",
@@ -102,7 +110,7 @@ object WallClock {
 
   /** Minutes after local midnight of the day `epochMs` falls on. */
   fun minutesOf(epochMs: Long, zone: TimeZone = TimeZone.getDefault()): Int {
-    val c = Calendar.getInstance(zone).apply { timeInMillis = epochMs }
+    val c = gregorian(zone).apply { timeInMillis = epochMs }
     return c.get(Calendar.HOUR_OF_DAY) * 60 + c.get(Calendar.MINUTE)
   }
 
@@ -124,7 +132,7 @@ object WallClock {
     val ymd = parseDateKey(dateKey) ?: return null
     val dayShift = Math.floorDiv(minutes, MINUTES_PER_DAY)
     val m = Math.floorMod(minutes, MINUTES_PER_DAY)
-    val t = Calendar.getInstance(zone).apply {
+    val t = gregorian(zone).apply {
       clear()
       set(ymd[0], ymd[1] - 1, ymd[2], m / 60, m % 60, 0)
       if (dayShift != 0) add(Calendar.DAY_OF_MONTH, dayShift)
