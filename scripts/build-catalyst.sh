@@ -136,6 +136,17 @@ echo "▸ Preparing pods with Catalyst support (MIHRAB_CATALYST=1)…"
 # plain iOS device archive on Xcode Cloud (hermes-engine framework
 # layout). This regenerates the Pods project with Catalyst on; the next
 # plain `pod install` (or Xcode Cloud's clean checkout) reverts it.
+#
+# It also builds React from source (see the Podfile: codesign refuses the
+# prebuilt React.framework in a Mac bundle), which swaps the prebuilt pods
+# for the source ones and so rewrites Podfile.lock for the length of this
+# build. The lock is put back however the script ends: release.sh commits
+# a fixed list of files and refuses to start on a tree with tracked
+# changes, so a lock left rewritten would stop the next release.
+LOCK="$PWD/ios/Podfile.lock"
+LOCK_KEPT="$(mktemp)"
+cp "$LOCK" "$LOCK_KEPT"
+trap 'cp "$LOCK_KEPT" "$LOCK"; rm -f "$LOCK_KEPT"' EXIT
 (cd ios && MIHRAB_CATALYST=1 pod install --silent)
 
 echo "▸ Building Mihrab $VERSION for Mac Catalyst (Release)…"

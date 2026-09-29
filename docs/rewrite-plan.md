@@ -354,16 +354,25 @@ the next release, which notarises as it always does.
   core no longer has (gesture-handler 2.33, screens 4.28, safe-area-context
   5.10, view-shot 6.0); `InteractionManager` (4 files) and
   `StyleSheet.absoluteFillObject` (9 files) replaced.
-- *Left:* 51 type errors in 29 files from the strict TypeScript API, most
-  of them ScrollView refs that now need instance types, the rest colour
-  values — mechanical. The `react-native-screens` patch (the Android
-  rotation fix for press rects) does not apply to 4.28 and is not
-  upstream, so it is ported again. AGP 9 refuses `proguard-android.txt`;
-  the optimize rules turn more of R8 on for the Play build, which then
-  needs a full pass on the phone. The prebuilt React framework makes
-  `codesign` refuse the Mac bundle ("bundle format is ambiguous" — the
-  0.84 report, still in 0.87.1), so the Mac zip cannot be signed until
-  that is worked around or React is built from source for Catalyst.
+- *Left, and now done on `rn-0.87` (2026-09-29)* — the spike replayed onto
+  current `main`, keeping 5.3's Mac-only Catalyst setting rather than the
+  spike's 15.2 for iOS too:
+  - the 51 type errors in 29 files, all mechanical (ScrollView refs are
+    `ScrollViewInstance`, `ColorValue` includes null, `StatusBar` lost
+    `translucent`/`backgroundColor` — no-ops under edge-to-edge — and six
+    one-offs); tsc clean, jest green;
+  - the `react-native-screens` patch ported to 4.28: the bug is still
+    upstream, the fix is the same on 4.28's code, the legacy-architecture
+    half is gone with the legacy code; it applies cleanly to the published
+    4.28.0, and was **not compiled** here (no Android SDK in the session);
+  - the Mac signing blocker worked around: under `MIHRAB_CATALYST` the
+    Podfile turns `RCT_USE_PREBUILT_RNCORE` and `RCT_USE_RN_DEP` off, so
+    the Mac builds React from source as every signed Mac release through
+    0.83 did, and iOS keeps the prebuilt core; `build-catalyst.sh` puts
+    back the `Podfile.lock` that install rewrites. **Not proven** until
+    `build-catalyst.sh` signs and notarises on the Mac. It gives back
+    most of the prebuilt core's build-time saving on the Mac only.
+  AGP 9's optimize rules still need the full pass on the phone.
 - *Costs:* the F-Droid APK grows about 9 MB (native libraries 7.7 MB over
   four ABIs, the Hermes V1 bundle 8.5 → 9.2 MB); the Mac app 130 → 189 MB.
   In return the Catalyst Release build compiles a third of what it did
@@ -434,6 +443,7 @@ one. It is not a rewrite target.
 | 2026-09-29 | review | A review of everything above (three reviewers, then fixes). Two bugs fixed and logged in their own rows (the two-live-plans choice, the fractional queue times); the iOS widgets now read date keys on a Gregorian calendar (on a Buddhist, Japanese or Islamic system calendar today's key matched no payload day); the Catalyst test holds every Mac target's minimum, and `build-catalyst.sh` reads the product's `LSMinimumSystemVersion` and stops below 12. Checked and correct: every widget on both platforms reads through the adapter; every app write goes through `setDataV2` with `setData` as the fallback; the quranState move was mechanical; the DST fix holds in seven zones over 800 days. | Yes: the status line, the order, the 1.2/1.3/1.5/1.7 texts, and "Open items" below. |
 | 2026-09-29 | 2.1 finding, again | Hassan: there is always one khatmah. The fix above let a plan set aside come back when the kept one was finished or abandoned; now `endSetAside`, run on every store write, abandons the plans set aside behind a kept plan the reader finishes or abandons, at the same moment — the reader's act, so a real tombstone that travels and expires with the kept plan's. The choice between open plans stays derived. A draft that instead kept the marker through merges and re-checked it against a closed winner failed a new fuzz test — the result depended on the order of merges once devices could end plans — and was dropped. `khatmahOneLivePlanFuzz.test.ts`: 1,500 random runs (up to three plans on three devices, stale copies, some devices ending their plan), every merge order must leave the same one live plan, and settling or self-merging must change nothing; 20,000 runs clean while developing. 4 tests replaced in `khatmahOneLivePlan.test.ts` (abandoning or finishing the kept plan ends the other, the ending travels and expires, a sync alone never ends a plan). | No. |
 | 2026-09-29 | khatmah recheck | Every khatmah flow walked through the shipping writers, on one device and on two that sync (`khatmahJourneys.test.ts`, 20 journeys), and the screens reviewed. Found and fixed: "restart the khatmah" (and reset today, step back, un-marking) could move the reader onto a plan a sync had set aside, because every write re-chose by reading — the reader's own write now never switches their plan (`keepReadersPlan`); "previous day" on a deadline plan used the duration plan's arithmetic (a double "done" on day one rewound to page 0; behind schedule it did nothing) and refused whenever a page was left unread behind the reader; with only skipped pages left the card's "done" and the reader's pill were offered and did nothing (`khatmahCanFinish`); the reader's pill and portion-end marker did not refresh at the day's turn; un-pinning re-stamped the pins of abandoned and set-aside plans. 8 of the new tests fail on the code before, checked. Not changed: the last "done" of a khatmah cannot be undone (the plan is finished and no writer touches it), and the translation view does not credit the khatmah (by design, `readerMarks.ts`). | No. |
+| 2026-09-29 | P5.2, part | Hassan pushed `spike/rn-0.87`. Replayed onto current `main` as `rn-0.87` (the one conflict, the project file: 5.3's `[sdk=macosx*]` setting kept instead of the spike's iOS 15.2; the template's `RCT_REMOVE_LEGACY_ARCH` flags and `PODFILE_DIR` kept). Measured the spike's 51 type errors in 29 files, fixed all of them (tsc clean; jest 402 suites / 6,127 tests; no new lint warnings). Ported the screens patch to 4.28 (checked that the bug is still there — the commit hook still resets frames, `onLayout` still pushes only on change, the memo still swallows a repeat — and that the patch applies to the published 4.28.0). Worked around the Mac signing blocker by building React from source for the Mac only. The prebuilt artifact could not be inspected from the session (repo.reactnative.dev is outside its network policy). | No. Still to do before 5.2 ships: build Android with the ported patch and check rotation on the phone; `build-catalyst.sh` on the Mac to prove signing and notarisation; the device pass the step always had. |
 
 ## Open items (not a step yet, each needs an owner)
 
@@ -461,8 +471,8 @@ one. It is not a rewrite target.
 - **The Mac is built nowhere but a release.** Notarising an Xcode 27 build
   is first proven by the next release; a Catalyst build before release day
   (or in CI) would find the next toolchain break earlier.
-- **5.2's Mac zip cannot be signed** while the prebuilt React framework
-  makes `codesign` refuse the bundle — make that part of 5.2's exit.
+- **5.2's Mac zip**: worked around on `rn-0.87` (React built from source
+  for the Mac); proven only when `build-catalyst.sh` signs and notarises.
 - ~~**The Homebrew cask**~~ — done 2026-09-29: it asked for Ventura (a
   guess from the day the tap was made) while the app needs 12.1, so it
   now says `:monterey`, keeps `:arm64` (the build is Apple silicon only),

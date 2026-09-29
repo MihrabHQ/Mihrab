@@ -98,3 +98,37 @@ describe('the Mac Catalyst deployment target', () => {
     }
   });
 });
+
+/**
+ * AND THE MAC BUILDS REACT FROM SOURCE. React Native links a prebuilt
+ * React.framework by default (0.84 on), and codesign refuses it in a Mac
+ * bundle — "bundle format is ambiguous" — so a Mac release could not be
+ * signed. The Mac's own `pod install` turns both prebuilt switches off;
+ * iOS keeps them. And the lock that install rewrites is put back, or the
+ * next release would refuse to start on a tree with tracked changes.
+ */
+describe('React on the Mac', () => {
+  const catalystScript = readFileSync(join(ROOT, 'scripts', 'build-catalyst.sh'), 'utf8');
+
+  it('is built from source under MIHRAB_CATALYST, and only there', () => {
+    const block = podfile.match(
+      /if ENV\['MIHRAB_CATALYST'\] == '1'\n([\s\S]*?)\nend/,
+    )?.[1];
+    expect(block).toMatch(/ENV\['RCT_USE_PREBUILT_RNCORE'\] = '0'/);
+    expect(block).toMatch(/ENV\['RCT_USE_RN_DEP'\] = '0'/);
+    // Set before React Native reads them.
+    expect(podfile.indexOf("ENV['RCT_USE_PREBUILT_RNCORE'] = '0'")).toBeLessThan(
+      podfile.indexOf('use_react_native!('),
+    );
+    // Nowhere unconditionally.
+    const outside = podfile.replace(block ?? '', '');
+    expect(outside).not.toMatch(/RCT_USE_PREBUILT_RNCORE'\] = '0'/);
+  });
+
+  it('leaves Podfile.lock as it found it', () => {
+    const trap = catalystScript.indexOf("trap 'cp \"$LOCK_KEPT\" \"$LOCK\"");
+    const install = catalystScript.indexOf('MIHRAB_CATALYST=1 pod install');
+    expect(trap).toBeGreaterThan(0);
+    expect(trap).toBeLessThan(install);
+  });
+});

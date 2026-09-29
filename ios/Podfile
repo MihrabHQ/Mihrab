@@ -6,6 +6,24 @@ require Pod::Executable.execute_command('node', ['-p',
   )', __dir__]).strip
 
 platform :ios, min_ios_version_supported
+
+# THE MAC BUILDS REACT FROM SOURCE (React Native 0.87 on).
+#
+# Since 0.84 React Native links a prebuilt React.framework (and a prebuilt
+# ReactNativeDependencies) by default. Its Mac Catalyst slice builds, runs
+# and cannot be signed: codesign refuses the Mac bundle with "bundle format
+# is ambiguous (could be app or framework)" — reported upstream against
+# 0.84, still so in 0.87.1 — so no Mac release could be notarised. Built
+# from source, React is compiled into the app as it was through 0.83, the
+# way every Mac release so far was signed. Only under MIHRAB_CATALYST, which
+# scripts/build-catalyst.sh sets for its own `pod install`: iOS keeps the
+# prebuilt core and its shorter build. React Native reads these two in
+# `use_react_native!` and keeps an explicit '0'.
+if ENV['MIHRAB_CATALYST'] == '1'
+  ENV['RCT_USE_PREBUILT_RNCORE'] = '0'
+  ENV['RCT_USE_RN_DEP'] = '0'
+end
+
 prepare_react_native_project!
 
 linkage = ENV['USE_FRAMEWORKS']
