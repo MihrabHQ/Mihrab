@@ -424,6 +424,12 @@ dependencies {
     // release this was checked against; take the current stable at the gate.
     if (glanceWidgets) {
         implementation("androidx.glance:glance-appwidget:1.1.1")
+        // Glance brings work-runtime 2.8, and another dependency brings
+        // work-runtime-ktx 2.7: since 2.8 the ktx classes live in
+        // work-runtime itself, so the two versions ship the same classes
+        // and the build stops on duplicates. The 2.8 ktx is the empty shell
+        // that lines them up.
+        implementation("androidx.work:work-runtime-ktx:2.8.1")
     }
 }
 
