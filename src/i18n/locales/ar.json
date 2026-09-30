@@ -1945,7 +1945,11 @@
     "settingsHelp": "كل ما تغيّر، إصدارًا بعد إصدار.",
     "copyNotes": "نسخ ملاحظات الإصدار {{version}}",
     "copied": "تم النسخ",
-    "copyFailed": "تعذّر النسخ"
+    "copyFailed": "تعذّر النسخ",
+    "copyNotesIn": "نسخ ملاحظات الإصدار {{version}} باللغة {{language}}",
+    "platformAll": "كل المنصات",
+    "platformAndroid": "Android فقط",
+    "platformApple": "iPhone وiPad وMac فقط"
   },
   "silence": {
     "activeTitle": "صامت لصلاة {{prayer}}",

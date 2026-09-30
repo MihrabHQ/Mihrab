@@ -1945,7 +1945,11 @@
     "settingsHelp": "Everything that has changed, release by release.",
     "copyNotes": "Copy release notes for {{version}}",
     "copied": "Copied",
-    "copyFailed": "Couldn't copy"
+    "copyFailed": "Couldn't copy",
+    "copyNotesIn": "Copy the {{language}} release notes for {{version}}",
+    "platformAll": "All platforms",
+    "platformAndroid": "Android only",
+    "platformApple": "iPhone, iPad and Mac only"
   },
   "silence": {
     "activeTitle": "Silenced for {{prayer}}",

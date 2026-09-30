@@ -1945,7 +1945,11 @@
     "settingsHelp": "Semua yang berubah, rilis demi rilis.",
     "copyNotes": "Salin catatan rilis {{version}}",
     "copied": "Disalin",
-    "copyFailed": "Tidak dapat menyalin"
+    "copyFailed": "Tidak dapat menyalin",
+    "copyNotesIn": "Salin catatan rilis {{version}} dalam {{language}}",
+    "platformAll": "Semua platform",
+    "platformAndroid": "Hanya Android",
+    "platformApple": "Hanya iPhone, iPad, dan Mac"
   },
   "silence": {
     "activeTitle": "Senyap untuk {{prayer}}",

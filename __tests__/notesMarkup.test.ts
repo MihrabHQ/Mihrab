@@ -9,7 +9,13 @@
  * A note written in a shape this parser does not understand fails here,
  * not on a phone.
  */
-import { notePlainText, parseNote, parseSpans } from '../src/polish/notesMarkup';
+import {
+  groupByPlatform,
+  notePlainText,
+  parseNote,
+  parseSpans,
+  platformOf,
+} from '../src/polish/notesMarkup';
 import { CHANGELOG } from '../src/polish/releaseNotes';
 
 describe('blocks', () => {
@@ -152,5 +158,42 @@ describe('every note the app actually ships', () => {
   it('produces at least one block for each', () => {
     const empty = all.filter(n => parseNote(n.text).length === 0);
     expect(empty.map(n => n.id)).toEqual([]);
+  });
+});
+
+describe('which platform a change is for', () => {
+  it('reads the product names, in any language', () => {
+    expect(platformOf('In Arabic and Urdu the Today carousel opens on today again on Android.')).toBe('android');
+    expect(platformOf('På iPhone och iPad öppnas Mihrab igen på iOS 27')).toBe('apple');
+    expect(platformOf('يفتح محراب من جديد على iPhone وiPad بنظام iOS 27')).toBe('apple');
+    expect(platformOf('تُرسم ودجات Android الآن بمحرّك جديد.')).toBe('android');
+    expect(platformOf('The Mac app installs from Homebrew.')).toBe('apple');
+    expect(platformOf('Turning the phone fades the muṣḥaf page back in.')).toBe('all');
+    // Both, or a word that only looks like a name, is everyone's.
+    expect(platformOf('Widgets on Android and iPhone.')).toBe('all');
+    expect(platformOf('A macaroon, an iPod and an Androidic tale.')).toBe('all');
+  });
+
+  it('keeps every bullet, in order, and puts everyone\'s first', () => {
+    const blocks = parseNote('Intro\n\n• On Android, a\n• b for all\n• On iPhone, c\n• d for all');
+    const groups = groupByPlatform(blocks);
+    expect(groups.map(g => g.platform)).toEqual(['all', 'android', 'apple']);
+    const items = (i: number) =>
+      groups[i].blocks.flatMap(b => (b.kind === 'list' ? b.items.map(it => it.map(s => s.text).join('')) : ['¶']));
+    expect(items(0)).toEqual(['¶', 'b for all', 'd for all']);
+    expect(items(1)).toEqual(['On Android, a']);
+    expect(items(2)).toEqual(['On iPhone, c']);
+  });
+
+  it('loses nothing from any note the app ships, in any language', () => {
+    for (const r of CHANGELOG) {
+      for (const text of Object.values(r.notes) as string[]) {
+        const blocks = parseNote(text);
+        const count = (bs: typeof blocks) =>
+          bs.reduce((n, b) => n + (b.kind === 'list' ? b.items.length : 1), 0);
+        const grouped = groupByPlatform(blocks).flatMap(g => g.blocks);
+        expect(count(grouped)).toBe(count(blocks));
+      }
+    }
   });
 });

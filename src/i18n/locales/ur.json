@@ -1945,7 +1945,11 @@
     "settingsHelp": "جو کچھ بدلا ہے، ورژن در ورژن۔",
     "copyNotes": "{{version}} کے ریلیز نوٹس کاپی کریں",
     "copied": "کاپی ہو گیا",
-    "copyFailed": "کاپی نہیں ہو سکا"
+    "copyFailed": "کاپی نہیں ہو سکا",
+    "copyNotesIn": "{{version}} کے ریلیز نوٹس {{language}} میں کاپی کریں",
+    "platformAll": "تمام پلیٹ فارم",
+    "platformAndroid": "صرف Android",
+    "platformApple": "صرف iPhone، iPad اور Mac"
   },
   "silence": {
     "activeTitle": "{{prayer}} کے لیے خاموش",

@@ -51,7 +51,15 @@ import { isRtlLanguage } from '../i18n/layoutDirection';
 import { foreignText, LRI, PDI } from '../i18n/foreignText';
 import { RADIUS, SPACING } from '../theme/tokens';
 import { TYPE, typeStyle } from '../theme/typography';
-import { noteCopyText, parseNote, type NoteBlock, type Span } from './notesMarkup';
+import {
+  groupByPlatform,
+  noteCopyText,
+  parseNote,
+  type NoteBlock,
+  type Platform,
+  type Span,
+} from './notesMarkup';
+import { languageLabel } from '../i18n/languages';
 import { usePrayerSettingsOrDefaults } from '../context/PrayerSettingsContext';
 import { copyToClipboard } from '../sync/clipboard';
 import { CheckIcon, CopyIcon } from '../theme/icons';
@@ -60,6 +68,7 @@ import {
   compareVersions,
   lastSeenFrom,
   noteFor,
+  STATS_LANGUAGES,
   unseenVersionSet,
   type ReleaseNote,
 } from './releaseNotes';
@@ -279,22 +288,27 @@ type Props = {
  *
  * The notes go out to Play, GitHub, the App Store and replies on issues,
  * and the one place they are all laid out, dated and translated, is this
- * sheet. So a copy button per release — but only behind "Show data
- * statistics", the diagnostic switch that is itself hidden behind five
- * taps on the version: a reader has no use for it, and a copy icon on
- * every release is chrome they would have to read past.
+ * sheet. So a copy button per language of every release — English,
+ * Swedish and Arabic, all three laid out one under the other — but only
+ * behind "Show data statistics", the diagnostic switch that is itself
+ * hidden behind five taps on the version: a reader has no use for it,
+ * and a copy icon on every release is chrome they would have to read past.
  *
- * What is copied is the note as this sheet shows it, in the note's own
- * language, under the release's name (`noteCopyText`). The icon turns to
+ * What is copied is that language's note exactly as the stores get it —
+ * one flat list, not split by platform the way the sheet shows it —
+ * under the release's name (`noteCopyText`). The icon turns to
  * a tick for two seconds when it lands; Android 13 and up says "Copied"
  * itself, so the word is only added where the system said nothing.
  */
 function CopyNotesButton({
   version,
   text,
+  label,
 }: {
   version: string;
   text: string;
+  /** Which language this copies, when there is more than one to copy. */
+  label?: string;
 }) {
   const { t } = useTranslation();
   const { palette } = useAppPalette();
@@ -325,10 +339,18 @@ function CopyNotesButton({
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={t('whatsNew.copyNotes', {
-        defaultValue: 'Copy release notes for {{version}}',
-        version,
-      })}
+      accessibilityLabel={
+        label
+          ? t('whatsNew.copyNotesIn', {
+              defaultValue: 'Copy the {{language}} release notes for {{version}}',
+              version,
+              language: label,
+            })
+          : t('whatsNew.copyNotes', {
+              defaultValue: 'Copy release notes for {{version}}',
+              version,
+            })
+      }
       onPress={onPress}
       hitSlop={10}
       style={({ pressed }) => [styles.copy, pressed ? styles.pressed : null]}>
@@ -348,6 +370,93 @@ function CopyNotesButton({
         <CopyIcon size={18} color={palette.muted} />
       )}
     </Pressable>
+  );
+}
+
+/**
+ * A note split by the platforms its changes are for — everyone's first,
+ * then Android's, then iPhone, iPad and Mac — with a hairline and a name
+ * between the groups (`groupByPlatform`). A note whose changes are all
+ * for everyone is drawn as it always was, with nothing added.
+ */
+const PLATFORM_LABEL: Record<Platform, [string, string]> = {
+  all: ['whatsNew.platformAll', 'All platforms'],
+  android: ['whatsNew.platformAndroid', 'Android only'],
+  apple: ['whatsNew.platformApple', 'iPhone, iPad and Mac only'],
+};
+
+function PlatformGroups({
+  blocks,
+  language,
+  reader,
+}: {
+  blocks: NoteBlock[];
+  language: string;
+  reader: string;
+}) {
+  const { t } = useTranslation();
+  const { palette } = useAppPalette();
+  const groups = useMemo(() => groupByPlatform(blocks), [blocks]);
+  if (groups.length === 1 && groups[0].platform === 'all') {
+    return <NoteBody blocks={blocks} language={language} reader={reader} />;
+  }
+  return (
+    <View style={styles.groups}>
+      {groups.map((g, i) => (
+        <View key={g.platform} style={styles.group}>
+          {i > 0 ? <Rule /> : null}
+          <Text style={[typeStyle('footnote'), styles.groupLabel, { color: palette.muted }]}>
+            {t(PLATFORM_LABEL[g.platform][0], PLATFORM_LABEL[g.platform][1])}
+          </Text>
+          <NoteBody blocks={g.blocks} language={language} reader={reader} />
+        </View>
+      ))}
+    </View>
+  );
+}
+
+/**
+ * One language of a release's notes, for the keeper of the releases:
+ * the language's own name, a copy button for exactly that text, and the
+ * note split by platform.
+ */
+function LanguageNote({
+  release,
+  language,
+  reader,
+}: {
+  release: ReleaseNote;
+  language: string;
+  reader: string;
+}) {
+  const { t, i18n } = useTranslation();
+  const { palette } = useAppPalette();
+  const text = release.notes[language] ?? '';
+  const blocks = useMemo(() => parseNote(text), [text]);
+  // The heading in the copied text is in the note's language, where the
+  // app can say it that way; the reader's otherwise.
+  const tl =
+    (i18n as { getFixedT?: (l: string) => typeof t }).getFixedT?.(language) ?? t;
+  const heading = tl('whatsNew.installed', {
+    defaultValue: 'Mihrab {{version}}',
+    version: release.version,
+  });
+  const name = languageLabel(language);
+  return (
+    <View style={styles.languageNote}>
+      <View style={styles.head}>
+        <Text style={[typeStyle('footnote'), styles.languageName, { color: palette.muted }]}>
+          {name}
+        </Text>
+        <View style={styles.spacer} />
+        <CopyNotesButton
+          version={release.version}
+          label={name}
+          text={noteCopyText(heading, text)}
+        />
+      </View>
+      <PlatformGroups blocks={blocks} language={language} reader={reader} />
+    </View>
   );
 }
 
@@ -371,10 +480,6 @@ function ReleaseRow({
   );
   const blocks = useMemo(() => parseNote(note.text), [note.text]);
   const date = dateLabel(release.date, language);
-  const heading = t('whatsNew.installed', {
-    defaultValue: 'Mihrab {{version}}',
-    version: release.version,
-  });
 
   return (
     <View style={styles.release}>
@@ -395,14 +500,16 @@ function ReleaseRow({
             {date}
           </Text>
         ) : null}
-        {copyable ? (
-          <CopyNotesButton
-            version={release.version}
-            text={noteCopyText(heading, note.text)}
-          />
-        ) : null}
       </View>
-      <NoteBody blocks={blocks} language={note.language} reader={language} />
+      {copyable ? (
+        // "Show data statistics" is on: every language the notes are
+        // written in, each with its own copy button, split by platform.
+        STATS_LANGUAGES.filter(l => release.notes[l]).map(l => (
+          <LanguageNote key={l} release={release} language={l} reader={language} />
+        ))
+      ) : (
+        <NoteBody blocks={blocks} language={note.language} reader={language} />
+      )}
     </View>
   );
 }
@@ -580,6 +687,11 @@ const styles = StyleSheet.create({
     lineHeight: TYPE.body.lineHeight,
   },
   itemText: { flex: 1 },
+  languageNote: { gap: SPACING.sm },
+  languageName: { fontWeight: '700' },
+  groups: { gap: SPACING.sm },
+  group: { gap: SPACING.sm },
+  groupLabel: { fontWeight: '600' },
   bold: { fontWeight: '700' },
   rule: { height: StyleSheet.hairlineWidth },
   footer: {

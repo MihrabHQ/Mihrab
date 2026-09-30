@@ -1945,7 +1945,11 @@
     "settingsHelp": "जो कुछ बदला है, संस्करण दर संस्करण।",
     "copyNotes": "{{version}} के रिलीज़ नोट्स कॉपी करें",
     "copied": "कॉपी हो गया",
-    "copyFailed": "कॉपी नहीं हो सका"
+    "copyFailed": "कॉपी नहीं हो सका",
+    "copyNotesIn": "{{version}} के रिलीज़ नोट्स {{language}} में कॉपी करें",
+    "platformAll": "सभी प्लेटफ़ॉर्म",
+    "platformAndroid": "केवल Android",
+    "platformApple": "केवल iPhone, iPad और Mac"
   },
   "silence": {
     "activeTitle": "{{prayer}} के लिए साइलेंट",

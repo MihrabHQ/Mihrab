@@ -1945,7 +1945,11 @@
     "settingsHelp": "Alles, was sich geändert hat — Version für Version.",
     "copyNotes": "Versionshinweise für {{version}} kopieren",
     "copied": "Kopiert",
-    "copyFailed": "Kopieren fehlgeschlagen"
+    "copyFailed": "Kopieren fehlgeschlagen",
+    "copyNotesIn": "Versionshinweise für {{version}} auf {{language}} kopieren",
+    "platformAll": "Alle Plattformen",
+    "platformAndroid": "Nur Android",
+    "platformApple": "Nur iPhone, iPad und Mac"
   },
   "silence": {
     "activeTitle": "Stumm für {{prayer}}",

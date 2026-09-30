@@ -1945,7 +1945,11 @@
     "settingsHelp": "Değişen her şey, sürüm sürüm.",
     "copyNotes": "{{version}} sürüm notlarını kopyala",
     "copied": "Kopyalandı",
-    "copyFailed": "Kopyalanamadı"
+    "copyFailed": "Kopyalanamadı",
+    "copyNotesIn": "{{version}} sürüm notlarını {{language}} olarak kopyala",
+    "platformAll": "Tüm platformlar",
+    "platformAndroid": "Yalnızca Android",
+    "platformApple": "Yalnızca iPhone, iPad ve Mac"
   },
   "silence": {
     "activeTitle": "{{prayer}} için sessiz",

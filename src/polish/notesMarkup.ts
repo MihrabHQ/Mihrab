@@ -156,3 +156,64 @@ export function noteCopyText(heading: string, raw: string): string {
   );
   return [heading, ...blocks].join('\n\n');
 }
+
+// ---------------------------------------------------------- platforms
+
+/**
+ * Which platforms a change is for, as the note's own words say.
+ *
+ * The notes are one list for every store, and a change that only exists
+ * on Android or only on Apple's devices says so in its text — "on
+ * Android", "On iPhone and iPad" — because the Play listing and the App
+ * Store listing are the same file. The names are product names and stay
+ * in Latin script in every translation, so the same test reads the
+ * English, Swedish and Arabic note alike. A bullet naming both, or
+ * neither, is for everyone.
+ *
+ * "Live Activity" is not an Apple word here: the Android app has one too.
+ */
+export type Platform = 'all' | 'android' | 'apple';
+
+const ANDROID_WORDS = /\bAndroid\b|\bMaterial You\b|\bF-Droid\b|\bGoogle Play\b/;
+const APPLE_WORDS =
+  /\biPhone\b|\biPad\b|\biPadOS\b|\biOS\b|\bmacOS\b|\bMac\b|\bHomebrew\b|\bApp Store\b|\bLiquid Glass\b/;
+
+export function platformOf(text: string): Platform {
+  const android = ANDROID_WORDS.test(text);
+  const apple = APPLE_WORDS.test(text);
+  if (android === apple) return 'all';
+  return android ? 'android' : 'apple';
+}
+
+/** The order the groups are drawn in: what everyone gets comes first. */
+export const PLATFORM_ORDER: readonly Platform[] = ['all', 'android', 'apple'];
+
+/**
+ * A note's blocks sorted into the platforms they are for, in
+ * `PLATFORM_ORDER`, leaving out a platform with nothing in it.
+ *
+ * Bullets are sorted one by one; a paragraph is prose around them and
+ * stays with everyone's. Within a group the note's own order is kept.
+ */
+export function groupByPlatform(
+  blocks: NoteBlock[],
+): { platform: Platform; blocks: NoteBlock[] }[] {
+  const by: Record<Platform, NoteBlock[]> = { all: [], android: [], apple: [] };
+  for (const block of blocks) {
+    if (block.kind === 'paragraph') {
+      by.all.push(block);
+      continue;
+    }
+    const items: Record<Platform, Span[][]> = { all: [], android: [], apple: [] };
+    for (const item of block.items) {
+      items[platformOf(item.map(s => s.text).join(''))].push(item);
+    }
+    for (const p of PLATFORM_ORDER) {
+      if (items[p].length > 0) by[p].push({ kind: 'list', items: items[p] });
+    }
+  }
+  return PLATFORM_ORDER.filter(p => by[p].length > 0).map(p => ({
+    platform: p,
+    blocks: by[p],
+  }));
+}

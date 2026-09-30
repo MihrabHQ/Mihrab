@@ -1945,7 +1945,11 @@
     "settingsHelp": "যা যা বদলেছে, সংস্করণ ধরে ধরে।",
     "copyNotes": "{{version}}-এর রিলিজ নোট কপি করুন",
     "copied": "কপি হয়েছে",
-    "copyFailed": "কপি করা যায়নি"
+    "copyFailed": "কপি করা যায়নি",
+    "copyNotesIn": "{{version}}-এর রিলিজ নোট {{language}}-এ কপি করুন",
+    "platformAll": "সব প্ল্যাটফর্ম",
+    "platformAndroid": "শুধু Android",
+    "platformApple": "শুধু iPhone, iPad ও Mac"
   },
   "silence": {
     "activeTitle": "{{prayer}}-এর জন্য নীরব",

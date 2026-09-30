@@ -1945,7 +1945,11 @@
     "settingsHelp": "Todo lo que ha cambiado, versión a versión.",
     "copyNotes": "Copiar las notas de la versión {{version}}",
     "copied": "Copiado",
-    "copyFailed": "No se pudo copiar"
+    "copyFailed": "No se pudo copiar",
+    "copyNotesIn": "Copiar las notas de la versión {{version}} en {{language}}",
+    "platformAll": "Todas las plataformas",
+    "platformAndroid": "Solo Android",
+    "platformApple": "Solo iPhone, iPad y Mac"
   },
   "silence": {
     "activeTitle": "En silencio por {{prayer}}",

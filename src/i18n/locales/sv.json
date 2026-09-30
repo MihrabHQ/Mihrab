@@ -1945,7 +1945,11 @@
     "settingsHelp": "Allt som har ändrats, version för version.",
     "copyNotes": "Kopiera versionsinformationen för {{version}}",
     "copied": "Kopierat",
-    "copyFailed": "Kunde inte kopiera"
+    "copyFailed": "Kunde inte kopiera",
+    "copyNotesIn": "Kopiera versionsinformationen på {{language}} för {{version}}",
+    "platformAll": "Alla plattformar",
+    "platformAndroid": "Endast Android",
+    "platformApple": "Endast iPhone, iPad och Mac"
   },
   "silence": {
     "activeTitle": "Tyst för {{prayer}}",

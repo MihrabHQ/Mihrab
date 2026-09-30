@@ -57,9 +57,12 @@ jest.mock('react-i18next', () => ({
   }),
 }));
 
+// Mutable so the platform tests can run on a release whose notes name
+// the platforms (2.27.2); everything else runs on INSTALLED.
+const mockVersion = { installed: INSTALLED };
 jest.mock('../src/appVersion', () => ({
-  getInstalledAppVersionName: () => INSTALLED,
-  getInstalledAppVersionLabel: () => INSTALLED,
+  getInstalledAppVersionName: () => mockVersion.installed,
+  getInstalledAppVersionLabel: () => mockVersion.installed,
 }));
 
 jest.mock('react-native-safe-area-context', () => ({
@@ -88,7 +91,7 @@ const { ChangelogSheet } = require('../src/polish/ChangelogSheet');
 // component stopped setting it, and `undefined` matches every Text that
 // sets no alignment at all — which is how this read as passing once.
 const { ALIGN_TO_OWN_SIDE } = require('../src/i18n/foreignText');
-const { CHANGELOG } = require('../src/polish/releaseNotes');
+const { CHANGELOG, STATS_LANGUAGES } = require('../src/polish/releaseNotes');
 
 type Node = { props: Record<string, unknown>; children?: unknown };
 
@@ -312,14 +315,20 @@ describe('copying a release\'s notes', () => {
     expect(copyButtons(render(null))).toHaveLength(0);
   });
 
-  it('offers one per release once it is on', () => {
+  it('offers one per language of every release once it is on', () => {
     mockSettings.showDataStats = true;
     const tree = render(null);
     const shown = CHANGELOG.filter(
       (r: { version: string }) => texts(tree).includes(r.version),
     );
     expect(shown.length).toBeGreaterThan(1);
-    expect(copyButtons(tree)).toHaveLength(shown.length);
+    const expected = shown.reduce(
+      (n: number, r: { notes: Record<string, string> }) =>
+        n + STATS_LANGUAGES.filter((l: string) => r.notes[l]).length,
+      0,
+    );
+    expect(expected).toBeGreaterThan(shown.length);
+    expect(copyButtons(tree)).toHaveLength(expected);
   });
 
   it('copies that release\'s notes, as shown, under its name', async () => {
@@ -344,6 +353,83 @@ describe('copying a release\'s notes', () => {
     }
     // And it says so.
     expect(texts(tree)).toContain('Copied');
+  });
+});
+
+/**
+ * With "Show data statistics" on, a release is laid out in English,
+ * Swedish and Arabic, each with its own copy button, and each split into
+ * what is for every platform, for Android only and for Apple's devices
+ * only. 2.27.2's notes have all three kinds.
+ */
+describe('the keeper\'s view of a release', () => {
+  const release = () =>
+    CHANGELOG.find((r: { version: string }) => r.version === '2.27.2');
+  const copyButtons = (tree: ReactTestRenderer) =>
+    tree.root.findAll(
+      (n: Node) =>
+        n.props.accessibilityRole === 'button' &&
+        typeof n.props.accessibilityLabel === 'string' &&
+        (n.props.accessibilityLabel as string).startsWith('whatsNew.copyNotes') &&
+        typeof n.props.onPress === 'function',
+    );
+  const bulletText = (line: string) => line.replace(/^[•\-*–]\s+/, '').trim();
+
+  beforeEach(() => {
+    mockVersion.installed = '2.27.2';
+  });
+  afterEach(() => {
+    mockVersion.installed = INSTALLED;
+    mockSettings.showDataStats = false;
+    mockCopy.mockClear();
+  });
+
+  it('draws the note in all three languages', () => {
+    mockSettings.showDataStats = true;
+    const shown = texts(render(null)).join('\n');
+    for (const l of ['en', 'sv', 'ar']) {
+      for (const line of release().notes[l].split('\n').filter(Boolean)) {
+        expect(shown).toContain(bulletText(line));
+      }
+    }
+  });
+
+  it('copies each language on its own, as the stores get it', async () => {
+    mockSettings.showDataStats = true;
+    const tree = render(null);
+    // The installed release is first, and its languages come in order.
+    const [en, sv, ar] = copyButtons(tree);
+    for (const [button, l] of [[en, 'en'], [sv, 'sv'], [ar, 'ar']] as const) {
+      mockCopy.mockClear();
+      await act(async () => {
+        await (button.props.onPress as () => Promise<void>)();
+      });
+      const copied = mockCopy.mock.calls[0][0];
+      for (const line of release().notes[l].split('\n').filter(Boolean)) {
+        expect(copied).toContain(`• ${bulletText(line)}`);
+      }
+      // One flat list, as Play shows it: no platform headings in it.
+      expect(copied).not.toContain('Android only');
+      expect(copied).not.toContain('All platforms');
+    }
+  });
+
+  it('splits the changes by platform: everyone, then Android, then Apple', () => {
+    mockSettings.showDataStats = true;
+    const shown = texts(render(null));
+    const at = (s: string) => shown.indexOf(s);
+    expect(at('All platforms')).toBeGreaterThanOrEqual(0);
+    expect(at('Android only')).toBeGreaterThan(at('All platforms'));
+    expect(at('iPhone, iPad and Mac only')).toBeGreaterThan(at('Android only'));
+    // At least one set per language of the installed release (older
+    // releases below it may have their own).
+    expect(shown.filter(s => s === 'Android only').length).toBeGreaterThanOrEqual(3);
+  });
+
+  it('leaves a reader\'s view as it was', () => {
+    const shown = texts(render(null));
+    expect(shown).not.toContain('Android only');
+    expect(copyButtons(render(null))).toHaveLength(0);
   });
 });
 

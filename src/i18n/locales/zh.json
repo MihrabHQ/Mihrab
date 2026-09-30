@@ -1945,7 +1945,11 @@
     "settingsHelp": "每个版本的改动，一览无遗。",
     "copyNotes": "复制 {{version}} 的更新说明",
     "copied": "已复制",
-    "copyFailed": "无法复制"
+    "copyFailed": "无法复制",
+    "copyNotesIn": "复制 {{version}} 的{{language}}版本说明",
+    "platformAll": "所有平台",
+    "platformAndroid": "仅 Android",
+    "platformApple": "仅 iPhone、iPad 和 Mac"
   },
   "silence": {
     "activeTitle": "{{prayer}}静音中",

@@ -1945,7 +1945,11 @@
     "settingsHelp": "Всё, что изменилось, — от версии к версии.",
     "copyNotes": "Скопировать примечания к версии {{version}}",
     "copied": "Скопировано",
-    "copyFailed": "Не удалось скопировать"
+    "copyFailed": "Не удалось скопировать",
+    "copyNotesIn": "Скопировать примечания к версии {{version}} ({{language}})",
+    "platformAll": "Все платформы",
+    "platformAndroid": "Только Android",
+    "platformApple": "Только iPhone, iPad и Mac"
   },
   "silence": {
     "activeTitle": "Беззвучно: {{prayer}}",

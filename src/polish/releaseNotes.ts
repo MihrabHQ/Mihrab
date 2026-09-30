@@ -158,3 +158,12 @@ export function noteFor(
     language: BASE_LANGUAGE,
   };
 }
+
+/**
+ * The languages every release's notes are written in, in the order the
+ * keeper of the releases reads them: English first because the others
+ * are made from it, then Swedish and Arabic. With "Show data statistics"
+ * on, the sheet lays out all three side by side, each with its own copy
+ * button, so a release can be posted in any of them from the phone.
+ */
+export const STATS_LANGUAGES: readonly string[] = ['en', 'sv', 'ar'];
