@@ -137,8 +137,9 @@
           android:resource="@xml/glance_prayer_tall_info" />
       </receiver>
 
-      <!-- Log Today. Also listens for its own tap action, which is what a
-           chip's PendingIntent broadcasts — see PrayerWidgetLogProvider. -->
+      <!-- Log Today. Its chips are Glance actions (LogTap in LogGlanceWidget.kt),
+           handled by Glance itself; this receiver takes the ordinary update
+           broadcasts. -->
       <receiver
         android:name=".PrayerWidgetLogProvider"
         android:exported="true"

@@ -15,7 +15,7 @@
     android:previewLayout="@layout/prayer_widget_strip_preview"
     android:resizeMode="horizontal|vertical"
     android:widgetFeatures="reconfigurable"
-    android:minResizeWidth="180dp"
+    android:minResizeWidth="110dp"
     android:minResizeHeight="60dp"
     android:updatePeriodMillis="1800000"
     android:widgetCategory="home_screen"
