@@ -76,6 +76,7 @@ import {
   type PassedPrayerAnswer,
 } from '../../journal/quickLog';
 import type { JournalPrayer } from '../../journal/journal';
+import { pagerPosition } from './pagerPosition';
 import { LogPassedPrayerSheet } from './LogPassedPrayerSheet';
 import { HeroSky } from './HeroSky';
 import { HERO_Y, skyFrame, skyInkAt, skyMoment, type SkyInkColors } from './skyModel';
@@ -613,6 +614,7 @@ function TodayCardImpl({
     () => pastDays.slice().reverse().concat(week),
     [pastDays, week],
   );
+  const pagesReversed = useMemo(() => pages.slice().reverse(), [pages]);
   const todayIndex = pastDays.length;
   const dayAt = useCallback(
     (offset: number): TimingsMap | undefined =>
@@ -722,21 +724,29 @@ function TodayCardImpl({
     setPageWidth(prev => (prev === w ? prev : w));
   }, []);
   const pagerRef = useRef<FlatList<TimingsMap>>(null);
+  /** Where a page sits along the scroll axis — see `pagerPosition`. */
+  const pagePosition = useCallback(
+    (index: number) => pagerPosition(index, pages.length, rtl),
+    [rtl, pages.length],
+  );
   const scrollToDay = useCallback(
     (offset: number, animated: boolean) => {
       if (pageWidth <= 0) return;
-      pagerRef.current?.scrollToIndex({ index: offset + todayIndex, animated });
+      pagerRef.current?.scrollToIndex({
+        index: pagePosition(offset + todayIndex),
+        animated,
+      });
     },
-    [pageWidth, todayIndex],
+    [pageWidth, todayIndex, pagePosition],
   );
   const onPageSettled = useCallback(
     (e: NativeSyntheticEvent<NativeScrollEvent>) => {
       if (pageWidth <= 0) return;
-      const page = Math.round(e.nativeEvent.contentOffset.x / pageWidth);
-      const offset = page - todayIndex;
+      const position = Math.round(e.nativeEvent.contentOffset.x / pageWidth);
+      const offset = pagePosition(position) - todayIndex;
       setSelected(Math.max(-pastDays.length, Math.min(week.length - 1, offset)));
     },
-    [pageWidth, todayIndex, pastDays.length, week.length],
+    [pageWidth, todayIndex, pastDays.length, week.length, pagePosition],
   );
   const pageLayout = useCallback(
     (_: unknown, index: number) => ({
@@ -1409,9 +1419,13 @@ function TodayCardImpl({
               // …and on the day the card LANDS on, which after the last
               // time of the night is tomorrow. Read once, at mount, which
               // is the only time this prop is.
-              initialScrollIndex={todayIndex + landedAtMount}
-              data={pages}
-              keyExtractor={(_, index) => String(index - todayIndex)}
+              initialScrollIndex={pagePosition(todayIndex + landedAtMount)}
+              // Left to right whatever the language: see `pagerPosition`.
+              style={styles.pager}
+              data={rtl ? pagesReversed : pages}
+              keyExtractor={(_, position) =>
+                String(pagePosition(position) - todayIndex)
+              }
               getItemLayout={pageLayout}
               onMomentumScrollEnd={onPageSettled}
               // A finger on the pager is a choice of day, and the card
@@ -1424,7 +1438,13 @@ function TodayCardImpl({
               // clearly horizontal drags.
               nestedScrollEnabled
               renderItem={({ index }) => (
-                <View style={{ width: pageWidth }}>{renderDay(index - todayIndex)}</View>
+                <View
+                  style={[
+                    { width: pageWidth },
+                    rtl ? styles.pageRtl : styles.pageLtr,
+                  ]}>
+                  {renderDay(pagePosition(index) - todayIndex)}
+                </View>
               )}
             />
           ) : (
@@ -1523,6 +1543,10 @@ const styles = StyleSheet.create({
     paddingBottom: SPACING.sm,
   },
   /** Ink with a hit slop, not a button with a fill. */
+  // The day pager scrolls left to right in every language — see `pagerPosition`.
+  pager: { direction: 'ltr' },
+  pageLtr: { direction: 'ltr' },
+  pageRtl: { direction: 'rtl' },
   dayStep: { padding: SPACING.xs, alignItems: 'center', justifyContent: 'center' },
   /** At either end of the record there is nowhere to step. */
   dayStepOff: { opacity: 0.25 },

@@ -113,12 +113,12 @@ describe('the pages', () => {
     expect(card).toMatch(/const todayIndex = pastDays\.length;/);
     // Today, until today is spent, and then tomorrow — see
     // `dayRollsOverAfterLastTime.test.tsx` for the rule itself.
-    expect(card).toMatch(/initialScrollIndex=\{todayIndex \+ landedAtMount\}/);
-    expect(card).toMatch(/renderDay\(index - todayIndex\)/);
+    expect(card).toMatch(/initialScrollIndex=\{pagePosition\(todayIndex \+ landedAtMount\)\}/);
+    expect(card).toMatch(/renderDay\(pagePosition\(index\) - todayIndex\)/);
   });
 
   it('keep the selection as an offset from today, negative behind it', () => {
-    expect(card).toMatch(/const offset = page - todayIndex;/);
+    expect(card).toMatch(/const offset = pagePosition\(position\) - todayIndex;/);
     expect(card).toMatch(/Math\.max\(-pastDays\.length, Math\.min\(week\.length - 1, offset\)\)/);
     expect(card).toMatch(/offset < 0 \? pastDays\[-offset - 1\] : week\[offset\]/);
   });
