@@ -167,3 +167,45 @@ describe('timeline and markers show one countdown, not two', () => {
     expect(card).toMatch(/styles\.pvTitle[\s\S]{0,40}>Maghrib</);
   });
 });
+
+/**
+ * On the always-on display the platform's countdown does not tick: the
+ * chronometer and the Android 17 TimeDifference metric both froze at the
+ * second the screen went off, on every design. With the screen off the
+ * card shows hours and minutes as text instead, re-posted at each minute.
+ */
+describe('with the screen off, hours and minutes that keep moving', () => {
+  const service = read(
+    'android', 'app', 'src', 'main', 'java', 'com', 'prayer_times',
+    'MihrabLiveActivityService.kt',
+  );
+
+  it('tells the builder when the screen is off', () => {
+    expect(service).toMatch(/o\.put\("ambient", !screenOn\)/);
+    expect(kotlin.match(/p\.optBoolean\("ambient", false\)/g)).toHaveLength(2);
+  });
+
+  it('draws no chronometer then, and one with the screen on', () => {
+    const helper = kotlin.slice(kotlin.indexOf('private fun ambientCountdown'));
+    const body = helper.slice(0, helper.indexOf('\n    }\n'));
+    expect(body).toMatch(/if \(ambient\) \{\s*builder\.setUsesChronometer\(false\)\.setShowWhen\(false\)/);
+    expect(body).toMatch(/setChronometerCountDown\(true\)/);
+    // Every chronometer the cards attach goes through it.
+    expect(kotlin.match(/^\s*\.setUsesChronometer\(true\)/gm)).toHaveLength(1);
+  });
+
+  it('puts the time left in the title, and fixes the metric, instead', () => {
+    expect(kotlin.match(/formatRemainingShort\(remaining\)\}"/g)?.length).toBeGreaterThanOrEqual(2);
+    expect(kotlin).toMatch(/ambientText = if \(ambient\) formatRemainingShort\(remaining\) else null/);
+    expect(kotlin).toMatch(/if \(ambientText != null\) \{\s*Class\.forName\("android\.app\.Notification\\\$Metric\\\$FixedText"\)/);
+  });
+
+  it('re-posts at each minute while the phone sleeps, and stops when it wakes', () => {
+    expect(service).toMatch(/private fun tickInterval\(\): Long = if \(screenOn\) TICK_MS else untilNextMinute\(\)/);
+    expect(service).toMatch(/if \(screenOn \|\| lastPayload == null\) \{\s*am\.cancel\(pi\)/);
+    expect(service).toMatch(/setExactAndAllowWhileIdle\(AlarmManager\.RTC_WAKEUP, triggerAt, pi\)/);
+    // Its own request code, and cancelled with the wake alarm.
+    expect(service).toMatch(/MINUTE_ALARM_REQUEST_CODE = 0xA1B5/);
+    expect(service).toMatch(/am\.cancel\(minuteAlarmPendingIntent\(context\)\)/);
+  });
+});

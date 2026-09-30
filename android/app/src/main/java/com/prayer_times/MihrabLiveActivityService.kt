@@ -74,9 +74,10 @@ class MihrabLiveActivityService : Service() {
    *  notification from this every minute. */
   @Volatile private var lastPayload: String? = null
 
-  /** True while the screen is interactive. Drives the tick cadence (1s vs
-   *  60s) and the H:MM:SS-vs-H:MM countdown format: live seconds when the
-   *  user is looking, no seconds on AOD / screen-off (saves power). */
+  /** True while the screen is interactive. With it on, the platform's
+   *  chronometer ticks the seconds; with it off — the always-on display,
+   *  where that chronometer freezes — the card shows hours and minutes as
+   *  text and is re-posted at each minute (`ambient` in the payload). */
   @Volatile private var screenOn = true
 
   /** Next-prayer epoch the deep-sleep wake alarm is currently set for. Lets
@@ -96,6 +97,7 @@ class MihrabLiveActivityService : Service() {
       }
       repostNow()
       scheduleTicker()
+      scheduleMinuteAlarm()
     }
   }
 
@@ -222,6 +224,9 @@ class MihrabLiveActivityService : Service() {
     // Wake the device at the next prayer so the countdown advances even in
     // deep sleep, when the Handler ticker (uptime-based) is suspended.
     scheduleWakeAlarm(payload)
+    // And, with the screen off, at the next minute: the always-on display
+    // shows the hours and minutes as text, which only moves when re-posted.
+    scheduleMinuteAlarm()
     // START_STICKY so the system restarts the service if the OS kills it
     // for memory. That restart has no extra, and draws from the stored
     // payload — the shared one adapted for that minute, else the last one
@@ -308,6 +313,7 @@ class MihrabLiveActivityService : Service() {
       // Self-rescheduling tick, while it is still the current one.
       val next = ticker
       if (next != null) handler.postDelayed(next, tickInterval())
+      if (!screenOn) scheduleMinuteAlarm()
     }
     ticker = tick
     handler.postDelayed(tick, tickInterval())
@@ -618,6 +624,9 @@ class MihrabLiveActivityService : Service() {
     // builds only has to survive until the next tick, and the next tick is a
     // minute away. See `tickInterval`.
     o.put("withSeconds", false)
+    // Screen off: no chronometer (it freezes on the always-on display), the
+    // hours and minutes as text instead. See `ambientCountdown`.
+    o.put("ambient", !screenOn)
     return MihrabLiveActivityModule.buildNotificationFromPayload(this, o)
   }
 
@@ -639,7 +648,45 @@ class MihrabLiveActivityService : Service() {
    * multi-hour interval, and the rollover onto the next prayer. A minute is
    * finer than either needs.
    */
-  private fun tickInterval(): Long = TICK_MS
+  private fun tickInterval(): Long = if (screenOn) TICK_MS else untilNextMinute()
+
+  /**
+   * With the screen off the card says "2h 15m" as text, so it has to be
+   * re-posted the moment that goes stale: when the time left crosses a whole
+   * minute, not a minute after whenever the last post happened.
+   */
+  private fun untilNextMinute(): Long {
+    val next = lastPayload?.let { runCatching { JSONObject(it).optLong("nextEpochMs", 0L) }.getOrNull() } ?: 0L
+    val left = next - System.currentTimeMillis()
+    val into = if (left > 0) left % 60_000L else 0L
+    return (if (into == 0L) 60_000L else into) + 500L
+  }
+
+  /**
+   * The minute re-post, when the phone sleeps. The Handler ticker runs on
+   * uptime and stops while the CPU does, which on the always-on display is
+   * most of the time; this alarm restarts the service at the next minute,
+   * and onStartCommand re-posts from the stored payload and arms the next
+   * one. Only with the screen off: with it on the chronometer ticks by
+   * itself. In deep Doze Android may space allow-while-idle alarms out, so
+   * the card can lag a few minutes there; it never shows a frozen second.
+   */
+  private fun scheduleMinuteAlarm() {
+    runCatching {
+      val am = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+      val pi = minuteAlarmPendingIntent(this)
+      if (screenOn || lastPayload == null) {
+        am.cancel(pi)
+        return
+      }
+      val triggerAt = System.currentTimeMillis() + untilNextMinute()
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !am.canScheduleExactAlarms()) {
+        am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAt, pi)
+      } else {
+        am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAt, pi)
+      }
+    }.onFailure { Log.w(TAG, "scheduleMinuteAlarm failed", it) }
+  }
 
   /**
    * Schedule an exact, wake-the-device alarm at the next prayer instant. The
@@ -697,6 +744,8 @@ class MihrabLiveActivityService : Service() {
     /** Request code for the deep-sleep wake alarm (distinct from the widget's
      *  alarm request codes in PrayerWidgetProvider). */
     const val ALARM_REQUEST_CODE = 0xA1B4
+    /** Request code for the screen-off minute re-post. */
+    const val MINUTE_ALARM_REQUEST_CODE = 0xA1B5
     /**
      * Tick cadence, screen on or off. The seconds are drawn by the platform
      * (chronometer / TimeDifference metric); this only moves the progress bar
@@ -717,6 +766,18 @@ class MihrabLiveActivityService : Service() {
       }
     }
 
+    /** The same restart as the wake alarm, under its own request code so the
+     *  two never replace each other. */
+    fun minuteAlarmPendingIntent(context: Context): PendingIntent {
+      val intent = Intent(context, MihrabLiveActivityService::class.java)
+      val flags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+      return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        PendingIntent.getForegroundService(context, MINUTE_ALARM_REQUEST_CODE, intent, flags)
+      } else {
+        PendingIntent.getService(context, MINUTE_ALARM_REQUEST_CODE, intent, flags)
+      }
+    }
+
     /**
      * Cancel the deep-sleep wake alarm. A companion function so turning the
      * feature off can cancel it without a live service: `stopService` on a
@@ -725,7 +786,11 @@ class MihrabLiveActivityService : Service() {
      */
     fun cancelWakeAlarm(context: Context) {
       runCatching {
-        (context.getSystemService(Context.ALARM_SERVICE) as AlarmManager).cancel(wakeAlarmPendingIntent(context))
+        val am = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        am.cancel(wakeAlarmPendingIntent(context))
+        // The screen-off minute re-post too, or it starts a service with
+        // nothing to draw a minute after the feature was turned off.
+        am.cancel(minuteAlarmPendingIntent(context))
       }.onFailure { Log.w(TAG, "cancel wake alarm failed", it) }
     }
   }

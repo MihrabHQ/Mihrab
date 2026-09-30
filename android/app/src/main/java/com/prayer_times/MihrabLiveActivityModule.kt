@@ -427,6 +427,29 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
       return if (h > 0) "${h}h ${m}m" else "${m}m"
     }
 
+    /**
+     * The countdown's clock: the platform's own, or none.
+     *
+     * With the screen on, a chronometer counting down to `nextEpochMs` draws
+     * H:MM:SS in the header and ticks every second with no app involvement.
+     * On the always-on display it does not tick — it froze at the second the
+     * screen went off and stayed there, on every design. So with the screen
+     * off (`ambient`) there is no chronometer at all: the card says the hours
+     * and minutes in its own text, and MihrabLiveActivityService re-posts it
+     * at each minute until the screen comes back on.
+     */
+    private fun ambientCountdown(builder: Notification.Builder, ambient: Boolean, nextEpochMs: Long) {
+      if (ambient) {
+        builder.setUsesChronometer(false).setShowWhen(false)
+      } else {
+        builder
+          .setUsesChronometer(true)
+          .setChronometerCountDown(true)
+          .setWhen(nextEpochMs)
+          .setShowWhen(true)
+      }
+    }
+
     /** Live ticking countdown with seconds: "3:07:05" (≥1h) or "7:05" (<1h). */
     private fun formatHMS(deltaMs: Long): String {
       val totalSec = (deltaMs / 1000).coerceAtLeast(0)
@@ -557,6 +580,9 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
         // sets withSeconds=true → live H:MM:SS; on AOD/screen-off it ticks each
         // minute with withSeconds=false → H:MM (no seconds, lower power).
         val withSeconds = p.optBoolean("withSeconds", false)
+        // The screen is off: the always-on display, where the platform's
+        // chronometer does not tick (see `ambientCountdown`).
+        val ambient = p.optBoolean("ambient", false)
         val remaining = nextEpochMs - now
         val countdown = if (withSeconds) formatHMS(remaining) else formatRemaining(remaining)
         val shortText = if (withSeconds) formatHMS(remaining) else formatRemainingShort(remaining)
@@ -615,11 +641,9 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
           //
           // `setShowWhen(true)` is required with it: without it the header
           // slot is not drawn and the chronometer has nowhere to render.
-          .setUsesChronometer(true)
-          .setChronometerCountDown(true)
-          .setWhen(nextEpochMs)
-          .setShowWhen(true)
+          // Attached below, and only while the screen is on.
           .setContentIntent(contentIntent)
+        ambientCountdown(builder, ambient, nextEpochMs)
 
         if (design == "countdown") {
           // The live countdown is the prominent title (the largest text the
@@ -652,7 +676,13 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
             } else null,
           )
           builder.setContentTitle(
-            if (dayStyle != null) inlineTitle else "$inlineTitle · $progressPct%",
+            when {
+              // On the always-on display the name carries the hours and
+              // minutes itself: there is no ticking chronometer beside it.
+              ambient -> "$inlineTitle · ${formatRemainingShort(remaining)}"
+              dayStyle != null -> inlineTitle
+              else -> "$inlineTitle · $progressPct%"
+            },
           )
           // Actual prayer time shown small/grey in the header (next to app name).
           if (nextTimeText.isNotEmpty()) builder.setSubText(nextTimeText)
@@ -699,6 +729,9 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
         val now = System.currentTimeMillis()
         val remaining = nextEpochMs - now
         val withSeconds = p.optBoolean("withSeconds", false)
+        // Screen off: the always-on display, where neither the chronometer
+        // nor a TimeDifference metric ticks. See `ambientCountdown`.
+        val ambient = p.optBoolean("ambient", false)
         val countdown = if (withSeconds) formatHMS(remaining) else formatRemaining(remaining)
         val shortText = if (withSeconds) formatHMS(remaining) else formatRemainingShort(remaining)
         val nextLabel = p.optString("nextLabel", "")
@@ -798,6 +831,7 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
           }
           val ms = tryBuildCountdownMetricStyle(
             nextEpochMs, inWord, secondMetric, atWord, atText,
+            ambientText = if (ambient) formatRemainingShort(remaining) else null,
           )
           if (ms != null) {
             val (style, hasSecond) = ms
@@ -836,11 +870,16 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
           // note on `inlineTitle` in the Android 16 builder above: two
           // countdowns to one prayer, one of them a minute-resolution copy
           // that disagreed with the other for most of every minute.
-          val inlineTitle = when {
+          val inlineName = when {
             arrivedTitle != null -> arrivedTitle
             nextLabel.isNotEmpty() -> nextLabel
             else -> title
           }
+          // On the always-on display the name carries the hours and minutes
+          // itself: no chronometer ticks there (`ambientCountdown`).
+          val inlineTitle =
+            if (ambient && arrivedTitle == null) "$inlineName · ${formatRemainingShort(remaining)}"
+            else inlineName
           if (dayStyle != null) {
             builder.setContentTitle(inlineTitle)
             val sub = joinDot(nextTimeText, hijri)
@@ -857,13 +896,7 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
         // path: a chronometer counting down to `nextEpochMs` advances on its
         // own, so the service posts once a minute instead of once a second.
         // Skipped when MetricStyle already ticks the countdown itself.
-        if (!systemTicked) {
-          builder
-            .setUsesChronometer(true)
-            .setChronometerCountDown(true)
-            .setWhen(nextEpochMs)
-            .setShowWhen(true)
-        }
+        if (!systemTicked) ambientCountdown(builder, ambient, nextEpochMs)
 
         // The alert-mode action — the same control as the home row, for one
         // occurrence. One tap cycles the upcoming event through the modes
@@ -1007,6 +1040,8 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
       secondKind: String,
       atWord: String,
       atText: String?,
+      /** Screen off: this, fixed, instead of the ticking TimeDifference. */
+      ambientText: String? = null,
     ): Pair<Notification.Style, Boolean>? {
       return try {
         val msCls = Class.forName("android.app.Notification\$MetricStyle")
@@ -1027,11 +1062,22 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
         // screen is on and H:MM on the Always-On Display (it drops the seconds
         // there itself), so the full hours and minutes are always visible. The
         // adaptive format collapsed to a coarse "4h" on AOD.
-        val timer = forTimer.invoke(
-          null,
-          Instant.ofEpochMilli(nextEpochMs),
-          fmtChrono,
-        )
+        //
+        // Except on the always-on display, where the system does NOT tick it:
+        // the value froze at whatever second the screen went off. There the
+        // service passes the hours and minutes as text and re-posts it each
+        // minute instead (MihrabLiveActivityService, `screenOn`).
+        val timer = if (ambientText != null) {
+          Class.forName("android.app.Notification\$Metric\$FixedText")
+            .getConstructor(CharSequence::class.java)
+            .newInstance(ambientText as CharSequence)
+        } else {
+          forTimer.invoke(
+            null,
+            Instant.ofEpochMilli(nextEpochMs),
+            fmtChrono,
+          )
+        }
         val countdownMetric = metricCtor.newInstance(timer, inWord as CharSequence)
 
         val second: Any? = when (secondKind) {
