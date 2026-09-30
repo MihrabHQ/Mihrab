@@ -450,6 +450,19 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
       }
     }
 
+    /**
+     * The countdown on the always-on display: the chronometer's own shape
+     * with the seconds as "--" — "2:15:--" (≥1h) or "15:--" (<1h) — because
+     * nothing ticks there to keep them true. The hours and minutes move
+     * with each minute's re-post; the seconds come back with the screen.
+     */
+    private fun formatAmbient(deltaMs: Long): String {
+      val totalSec = (deltaMs / 1000).coerceAtLeast(0)
+      val h = totalSec / 3600
+      val m = (totalSec % 3600) / 60
+      return if (h > 0) String.format("%d:%02d:--", h, m) else String.format("%d:--", m)
+    }
+
     /** Live ticking countdown with seconds: "3:07:05" (≥1h) or "7:05" (<1h). */
     private fun formatHMS(deltaMs: Long): String {
       val totalSec = (deltaMs / 1000).coerceAtLeast(0)
@@ -584,8 +597,16 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
         // chronometer does not tick (see `ambientCountdown`).
         val ambient = p.optBoolean("ambient", false)
         val remaining = nextEpochMs - now
-        val countdown = if (withSeconds) formatHMS(remaining) else formatRemaining(remaining)
-        val shortText = if (withSeconds) formatHMS(remaining) else formatRemainingShort(remaining)
+        val countdown = when {
+          ambient -> formatAmbient(remaining)
+          withSeconds -> formatHMS(remaining)
+          else -> formatRemaining(remaining)
+        }
+        val shortText = when {
+          ambient -> formatAmbient(remaining)
+          withSeconds -> formatHMS(remaining)
+          else -> formatRemainingShort(remaining)
+        }
         val nextLabel = p.optString("nextLabel", "")
         // THE PRAYER'S NAME, AND NOT A SECOND COUNTDOWN.
         //
@@ -679,7 +700,7 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
             when {
               // On the always-on display the name carries the hours and
               // minutes itself: there is no ticking chronometer beside it.
-              ambient -> "$inlineTitle · ${formatRemainingShort(remaining)}"
+              ambient -> "$inlineTitle · $countdown"
               dayStyle != null -> inlineTitle
               else -> "$inlineTitle · $progressPct%"
             },
@@ -732,8 +753,16 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
         // Screen off: the always-on display, where neither the chronometer
         // nor a TimeDifference metric ticks. See `ambientCountdown`.
         val ambient = p.optBoolean("ambient", false)
-        val countdown = if (withSeconds) formatHMS(remaining) else formatRemaining(remaining)
-        val shortText = if (withSeconds) formatHMS(remaining) else formatRemainingShort(remaining)
+        val countdown = when {
+          ambient -> formatAmbient(remaining)
+          withSeconds -> formatHMS(remaining)
+          else -> formatRemaining(remaining)
+        }
+        val shortText = when {
+          ambient -> formatAmbient(remaining)
+          withSeconds -> formatHMS(remaining)
+          else -> formatRemainingShort(remaining)
+        }
         val nextLabel = p.optString("nextLabel", "")
         val nextTime = p.optString("nextTime", "")
         // See the note in the other builder: `nextTimeText` is what is drawn.
@@ -831,7 +860,7 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
           }
           val ms = tryBuildCountdownMetricStyle(
             nextEpochMs, inWord, secondMetric, atWord, atText,
-            ambientText = if (ambient) formatRemainingShort(remaining) else null,
+            ambientText = if (ambient) countdown else null,
           )
           if (ms != null) {
             val (style, hasSecond) = ms
@@ -878,7 +907,7 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
           // On the always-on display the name carries the hours and minutes
           // itself: no chronometer ticks there (`ambientCountdown`).
           val inlineTitle =
-            if (ambient && arrivedTitle == null) "$inlineName · ${formatRemainingShort(remaining)}"
+            if (ambient && arrivedTitle == null) "$inlineName · $countdown"
             else inlineName
           if (dayStyle != null) {
             builder.setContentTitle(inlineTitle)

@@ -194,9 +194,13 @@ describe('with the screen off, hours and minutes that keep moving', () => {
     expect(kotlin.match(/^\s*\.setUsesChronometer\(true\)/gm)).toHaveLength(1);
   });
 
-  it('puts the time left in the title, and fixes the metric, instead', () => {
-    expect(kotlin.match(/formatRemainingShort\(remaining\)\}"/g)?.length).toBeGreaterThanOrEqual(2);
-    expect(kotlin).toMatch(/ambientText = if \(ambient\) formatRemainingShort\(remaining\) else null/);
+  it('puts the hours and minutes, seconds dashed, in the title and the metric', () => {
+    // "2:15:--": the chronometer's shape, the seconds as dashes.
+    expect(kotlin).toMatch(/String\.format\("%d:%02d:--", h, m\) else String\.format\("%d:--", m\)/);
+    expect(kotlin.match(/ambient -> formatAmbient\(remaining\)/g)).toHaveLength(4);
+    expect(kotlin).toMatch(/ambient -> "\$inlineTitle · \$countdown"/);
+    expect(kotlin).toMatch(/if \(ambient && arrivedTitle == null\) "\$inlineName · \$countdown"/);
+    expect(kotlin).toMatch(/ambientText = if \(ambient\) countdown else null/);
     expect(kotlin).toMatch(/if \(ambientText != null\) \{\s*Class\.forName\("android\.app\.Notification\\\$Metric\\\$FixedText"\)/);
   });
 
