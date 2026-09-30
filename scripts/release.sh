@@ -84,24 +84,26 @@ PBXPROJ="$ROOT/ios/PrayerApp.xcodeproj/project.pbxproj"
 LOCALES="en-US sv-SE ar"
 JDK="/Library/Java/JavaVirtualMachines/temurin-21.jdk/Contents/Home"
 
-# ── RELEASE_TS=1: THE TYPESCRIPT CUTS THE RELEASE (NOT THE DEFAULT) ────
+# ── THE TYPESCRIPT CUTS THE RELEASE (RELEASE_TS=0 to run this script) ──
 #
 # scripts/release/ is this script ported to TypeScript, gate for gate
-# (rewrite plan, Phase 3). Until two real releases have been cut by it,
-# this script decides and the TypeScript only runs beside it — see SHADOW
-# MODE below. RELEASE_TS=1 is the switch-over, prepared and off: the same
-# arguments go to the TypeScript, which prints the same lines, writes the
-# same attempts log and journal, and exits with the same status. Node runs
-# it with its own type stripping (Node 22.6 or later); nothing to install.
+# (rewrite plan, Phase 3), and since the 3.5 switch-over (2026-09-30) it is
+# what runs: the same arguments go to the TypeScript, which prints the same
+# lines, writes the same attempts log and journal, and exits with the same
+# status. Node runs it with its own type stripping (Node 22.6 or later);
+# nothing to install. RELEASE_TS=0 runs this shell script instead, with the
+# TypeScript beside it in shadow mode (SHADOW MODE below) — the way back if
+# the TypeScript turns out wrong on a real release. This script is retired
+# after two real releases have been cut by the TypeScript.
 #
 # ON AN OLDER NODE THE SHELL CUTS IT, and says so. Handed to a Node without
 # type stripping, the switch died on "bad option" before a single gate —
 # a release stopped by the flag meant to change nothing but who runs it.
-if [ "${RELEASE_TS:-0}" = "1" ]; then
+if [ "${RELEASE_TS:-1}" != "0" ]; then
   if node -e 'const [a, b] = process.versions.node.split(".").map(Number); process.exit(a > 22 || (a === 22 && b >= 6) ? 0 : 1)' 2>/dev/null; then
     exec node --experimental-strip-types --no-warnings "$ROOT/scripts/release/main.ts" release "$@"
   fi
-  printf "  ⚠ %s\n" "RELEASE_TS=1 needs Node 22.6 or later and this is $(node --version 2>/dev/null || echo 'no Node') — the shell script runs instead" >&2
+  printf "  ⚠ %s\n" "the TypeScript release tool needs Node 22.6 or later and this is $(node --version 2>/dev/null || echo 'no Node') — the shell script runs instead" >&2
 fi
 
 # ── grep AFTER capturing, never through a pipe ────────────────────────

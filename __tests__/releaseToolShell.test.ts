@@ -68,10 +68,13 @@ function scratch() {
       chmodSync(path.join(bin, name), 0o755);
     },
     run(script: string, args: string[], env: Record<string, string> = {}) {
+      // The shell paths are what most tests here exercise, so they run with
+      // RELEASE_TS=0 unless a test says otherwise ('' is unset: the default).
+      const { RELEASE_TS: _inherited, ...inherited } = process.env;
       const r = spawnSync('bash', [path.join(scripts, script), ...args], {
         cwd: dir,
         encoding: 'utf8',
-        env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, HOME: home, STUB_OUT: out, NODE_ENV: 'test', ...env },
+        env: { ...inherited, PATH: `${bin}:${process.env.PATH}`, HOME: home, STUB_OUT: out, NODE_ENV: 'test', RELEASE_TS: '0', ...env },
         timeout: 60_000,
       });
       return { status: r.status, text: `${r.stdout}${r.stderr}` };
@@ -83,7 +86,7 @@ function scratch() {
   };
 }
 
-d('RELEASE_TS=1 hands the release to the TypeScript', () => {
+d('the release is handed to the TypeScript (the default; RELEASE_TS=0 keeps the shell)', () => {
   it('release.sh passes its arguments through and exits with the TypeScript’s status', () => {
     const s = scratch();
     try {
@@ -111,7 +114,7 @@ d('RELEASE_TS=1 hands the release to the TypeScript', () => {
 
   it('on a Node too old to strip types, says so and lets the shell run — not "bad option"', () => {
     const OLD_NODE = 'case "$1" in -e) exit 1 ;; --version) echo v20.11.0 ;; *) echo "node: bad option: $1" >&2; exit 9 ;; esac';
-    const WARNING = '  ⚠ RELEASE_TS=1 needs Node 22.6 or later and this is v20.11.0 — the shell script runs instead';
+    const WARNING = '  ⚠ the TypeScript release tool needs Node 22.6 or later and this is v20.11.0 — the shell script runs instead';
     const s = scratch();
     try {
       s.fake('node', OLD_NODE);
@@ -133,11 +136,14 @@ d('RELEASE_TS=1 hands the release to the TypeScript', () => {
     }
   });
 
-  it('is off unless asked for', () => {
+  it('is on unless RELEASE_TS=0', () => {
     const s = scratch();
     try {
-      s.run('release.sh', ['not-a-version'], { RELEASE_SHADOW: '0' });
-      expect(s.stubCalls()).toEqual([]);
+      const r = s.run('release.sh', ['2.28.0', '--dry-run'], { RELEASE_TS: '', STUB_EXIT: '7' });
+      expect(r.status).toBe(7);
+      expect(s.stubCalls()).toEqual([{ argv: ['release', '2.28.0', '--dry-run'], record: '' }]);
+      s.run('release.sh', ['not-a-version'], { RELEASE_TS: '0', RELEASE_SHADOW: '0' });
+      expect(s.stubCalls().length).toBe(1);
     } finally {
       s.clean();
     }

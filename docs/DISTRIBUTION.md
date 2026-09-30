@@ -112,7 +112,7 @@ the one before it having already succeeded.
 `--dry-run` stops at exactly that line, having done all the work and none
 of the publishing.
 
-### The TypeScript beside it (shadow mode, and `RELEASE_TS=1`)
+### The TypeScript release tool (the default; `RELEASE_TS=0` runs the shell)
 
 `scripts/release/` is this whole cycle ported to TypeScript — `release.sh`,
 `verify-release.sh`, `build-catalyst.sh`, `build-ios-appstore.sh`,
@@ -121,8 +121,10 @@ can be tested by running it rather than by searching its text (rewrite
 plan, Phase 3). It runs on the Mac's Node with its built-in type
 stripping (Node 22.6 or later); there is nothing to install or build.
 
-**The shell still decides.** Until two releases have been cut with it
-beside them, the TypeScript only watches:
+**Since 2026-09-30 the TypeScript decides** (rewrite plan, 3.5). What follows
+is shadow mode, which runs only under `RELEASE_TS=0`, when the shell cuts the
+release and the TypeScript only watches; the shell is retired after two real
+releases have been cut by the TypeScript:
 
 - `release.sh` notes every ✓ and ✗ it prints and, at the end of preflight
   (or a stop inside it), at the end of the build and after verification,
@@ -155,18 +157,18 @@ beside them, the TypeScript only watches:
 - `RELEASE_SHADOW=0` turns it off. Beside verification it downloads the
   APK and the zip a second time, which costs a minute or two.
 
-**`RELEASE_TS=1` is the switch-over, prepared and off.** With it,
-`./scripts/release.sh X.Y.Z [--dry-run]` and `./scripts/verify-release.sh
-vX.Y.Z` hand their arguments to the TypeScript and exit with its status:
-the same flags and environment (`SKIP_CATALYST`, `SKIP_APP_STORE`,
-`IOS_LOCAL`, `NO_IOS_LOCAL`, `RELEASE_NOTES`), the same lines, the same
-`.release-attempts.log` and journal entry, the same exit status (0; 1 for
-a stop, a failed verification, or a release commit that fails CI). On a
-Node older than 22.6 it prints a ⚠ saying so and the shell scripts run
-as if it were not set. The
+**The default.** `./scripts/release.sh X.Y.Z [--dry-run]` and
+`./scripts/verify-release.sh vX.Y.Z` hand their arguments to the
+TypeScript and exit with its status: the same flags and environment
+(`SKIP_CATALYST`, `SKIP_APP_STORE`, `IOS_LOCAL`, `NO_IOS_LOCAL`,
+`RELEASE_NOTES`), the same lines, the same `.release-attempts.log` and
+journal entry, the same exit status (0; 1 for a stop, a failed
+verification, or a release commit that fails CI). On a Node older than 22.6
+it prints a ⚠ saying so and the shell scripts run. `RELEASE_TS=0` runs the
+shell scripts instead, with the TypeScript in shadow mode beside them. The
 signing identities, the notary profile, `~/.config/mihrab/asc.json` and
-the provisioning profile are read where they always were. Try it first as
-`RELEASE_TS=1 ./scripts/release.sh X.Y.Z --dry-run`.
+the provisioning profile are read where they always were. Its first run
+should be `./scripts/release.sh X.Y.Z --dry-run`.
 
 The parts also run on their own:
 `node --experimental-strip-types --no-warnings scripts/release/main.ts
