@@ -63,3 +63,13 @@
 -keep class androidx.work.impl.WorkDatabase_Impl { *; }
 -keep class androidx.work.impl.** { *; }
 -dontwarn androidx.work.**
+# WorkManager builds these by reflection (Glance runs its sessions on it): an
+# input merger, every worker (the constructor WorkManager looks up), and
+# Glance's own. Without them a widget placed from a release build never draws:
+# "WM-InputMerger: NoSuchMethodException: OverwritingInputMerger.<init>".
+-keep class * extends androidx.work.InputMerger { <init>(...); }
+-keep class * extends androidx.work.ListenableWorker { <init>(...); }
+-keep class androidx.work.OverwritingInputMerger { *; }
+-keep class androidx.work.ArrayCreatingInputMerger { *; }
+-keep class androidx.glance.session.** { *; }
+-keep class androidx.glance.appwidget.** extends androidx.work.ListenableWorker { *; }
