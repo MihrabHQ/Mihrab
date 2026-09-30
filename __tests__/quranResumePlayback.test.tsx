@@ -136,49 +136,56 @@ const read = (rel: string) => fs.readFileSync(path.join(REPO, rel), 'utf8');
 
 describe('the Android reading widget', () => {
   const kotlin = read(
-    'android/app/src/main/java/com/prayer_times/PrayerWidgetReadingProvider.kt',
+    'android/app/src/main/java/com/prayer_times/glance/ReadingGlanceWidget.kt',
   );
 
   it('sends the play position from the play control', () => {
-    const play = kotlin.slice(kotlin.indexOf('private fun playIntent'));
-    expect(play).toContain('playFromAyah=$ayah');
+    const play = kotlin.slice(kotlin.indexOf('private fun readingAction'));
+    expect(play).toContain('playFromAyah=${r.ayah}');
+    // ...and only the disc asks for it.
+    expect(kotlin).toMatch(
+      /\.clickable\(readingAction\(context, r, play = true\)\)/,
+    );
   });
 
   it('leaves the card’s own tap silent', () => {
     // The whole design: a tap opens the page as it always did, and only
-    // the disc beside the surah name makes a sound. Pinned as the two URL
-    // templates rather than by slicing the file between functions — the
-    // prose around these explains the param, and prose is not behaviour.
-    // `sessionParam` is the khatmah's door telling the reader whose
-    // visit this is; it says nothing about sound.
-    expect(kotlin).toContain('"mihrab://read/$surah?$position${sessionParam(r)}"');
+    // the disc beside the surah name makes a sound. `session` is the
+    // khatmah's door telling the reader whose visit this is; it says
+    // nothing about sound.
     expect(kotlin).toContain(
-      '"mihrab://read/$surah?$position&playFromAyah=$ayah${sessionParam(r)}"',
+      '"mihrab://read/${r.surah}?$position$playParam$session"',
     );
-    // One sender, so the card's tap cannot have quietly grown one.
-    expect(kotlin.match(/playFromAyah=\$ayah/g)).toHaveLength(1);
+    expect(kotlin).toContain('readingAction(context, r, play = false)');
+    expect(kotlin).toContain('val playParam = if (play) "&playFromAyah=${r.ayah}" else ""');
+    // One sender of the param, one caller asking for it.
+    expect(kotlin.match(/playFromAyah=/g)).toHaveLength(1);
+    expect(kotlin.match(/play = true/g)).toHaveLength(1);
   });
 
   it('offers nothing to resume when there is nothing to resume', () => {
     // Two dead ends: a stale payload with no position in it, and a reader
     // who has never opened the Quran. A play button in either would recite
-    // Al-Fatiha at someone who asked for nothing.
-    const hides = kotlin.match(
-      /setViewVisibility\(R\.id\.reading_play, View\.GONE\)/g,
+    // Al-Fatiha at someone who asked for nothing. Glance draws the disc
+    // only in Reading(), which is reached only for a started reader.
+    expect(kotlin).toContain('if (r == null) Placeholder(');
+    expect(kotlin).toContain('else if (!r.started) Invitation(');
+    expect(kotlin).toContain('else Reading(');
+    const invitation = kotlin.slice(
+      kotlin.indexOf('private fun Invitation'),
+      kotlin.indexOf('private fun Reading'),
     );
-    expect(hides).toHaveLength(2);
+    expect(invitation.length).toBeGreaterThan(0);
+    expect(invitation).not.toContain('play = true');
+    expect(invitation).not.toContain('widget_play_button');
   });
 
-  it('draws the control in the layout, hidden until it is earned', () => {
-    const layout = read(
-      'android/app/src/main/res/layout/prayer_widget_reading.xml',
-    );
-    expect(layout).toContain('@+id/reading_play');
-    expect(layout).toContain('@drawable/ic_widget_play');
-    const control = layout.slice(layout.indexOf('@+id/reading_play'));
-    expect(control.slice(0, control.indexOf('/>'))).toContain(
-      'android:visibility="gone"',
-    );
+  it('draws the control with its play icon and an announced label', () => {
+    // (The old layout XML's "gone until earned" is now the composable
+    // branching above.)
+    expect(kotlin).toContain('R.drawable.widget_play_button');
+    expect(kotlin).toContain('ImageProvider(R.drawable.ic_widget_play)');
+    expect(kotlin).toContain('R.string.widget_reading_play');
   });
 });
 

@@ -33,6 +33,7 @@ const RES = path.join(ROOT, 'android', 'app', 'src', 'main', 'res');
 const xml = (dir: string, name: string) =>
   readFileSync(path.join(RES, dir, `${name}.xml`), 'utf8');
 
+// Picker entries live in glance_*_info.xml now (the RemoteViews prayer_widget_*_info.xml are gone).
 const cell = (info: string) => ({
   w: /android:targetCellWidth="(\d+)"/.exec(info)?.[1],
   h: /android:targetCellHeight="(\d+)"/.exec(info)?.[1],
@@ -40,10 +41,10 @@ const cell = (info: string) => ({
 
 describe('what each entry places', () => {
   it.each([
-    ['prayer times, short', '4', '1', 'prayer_widget_info'],
-    ['prayer times, tall', '4', '2', 'prayer_widget_tall_info'],
-    ['log today, short', '4', '1', 'prayer_widget_log_info'],
-    ['log today, tall', '4', '2', 'prayer_widget_log_tall_info'],
+    ['prayer times, short', '4', '1', 'glance_prayer_info'],
+    ['prayer times, tall', '4', '2', 'glance_prayer_tall_info'],
+    ['log today, short', '4', '1', 'glance_log_info'],
+    ['log today, tall', '4', '2', 'glance_log_tall_info'],
   ])('%s places %s×%s', (_label, w, h, file) => {
     expect(cell(xml('xml', file))).toEqual({ w, h });
   });
@@ -51,15 +52,15 @@ describe('what each entry places', () => {
   it('the tall entries are still taller than the short ones', () => {
     // If these ever match, the second picker entry is a duplicate row that
     // places an identical card, and it should be deleted rather than kept.
-    const short = Number(cell(xml('xml', 'prayer_widget_info')).h);
-    const tall = Number(cell(xml('xml', 'prayer_widget_tall_info')).h);
+    const short = Number(cell(xml('xml', 'glance_prayer_info')).h);
+    const tall = Number(cell(xml('xml', 'glance_prayer_tall_info')).h);
     expect(tall).toBeGreaterThan(short);
   });
 
   it('every entry stays resizable to where the graph lives', () => {
     // 4×2 is the default, not a ceiling: a drag to three rows brings the
     // practice graph, and maxResizeHeight has to allow it.
-    for (const f of ['prayer_widget_tall_info', 'prayer_widget_log_tall_info']) {
+    for (const f of ['glance_prayer_tall_info', 'glance_log_tall_info']) {
       const info = xml('xml', f);
       expect(info).toMatch(/android:resizeMode="horizontal\|vertical"/);
       expect(Number(/android:maxResizeHeight="(\d+)dp"/.exec(info)?.[1])).toBeGreaterThanOrEqual(321);

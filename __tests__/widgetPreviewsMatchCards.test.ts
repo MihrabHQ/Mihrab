@@ -36,9 +36,14 @@ import path from 'path';
 const RES = path.join(__dirname, '..', 'android', 'app', 'src', 'main', 'res');
 const layout = (n: string) => readFileSync(path.join(RES, 'layout', `${n}.xml`), 'utf8');
 const strings = (dir: string) => readFileSync(path.join(RES, dir, 'strings.xml'), 'utf8');
+const glancePrayer = readFileSync(
+  path.join(__dirname, '..', 'android', 'app', 'src', 'main', 'java', 'com',
+    'prayer_times', 'glance', 'PrayerGlanceWidget.kt'),
+  'utf8',
+);
 const provider = readFileSync(
   path.join(__dirname, '..', 'android', 'app', 'src', 'main', 'java', 'com',
-    'prayer_times', 'PrayerWidgetLogProvider.kt'),
+    'prayer_times', 'glance', 'LogGlanceWidget.kt'),
   'utf8',
 );
 
@@ -50,7 +55,9 @@ describe('the log previews draw the chip the card draws', () => {
   it('the card draws a hollow tick', () => {
     // Pinning the source of truth, so this test fails loudly rather than
     // silently inverting if the card ever goes back to a plus.
-    expect(provider).toMatch(/widget_log_chip_due\)\s*\n\s*views\.setTextViewText\(CHIPS\[i\], "✓"\)/);
+    // (Glance: LogGlanceWidget.ChipCell; the RemoteViews provider is gone.)
+    expect(provider).toMatch(/chip\.due -> Triple\(R\.drawable\.widget_log_chip_due, "✓"/);
+    expect(provider).not.toMatch(/Triple\(R\.drawable\.widget_log_chip_due, "\+"/);
   });
 
   it.each(LOG_PREVIEWS)('%s draws it too, and never a plus', name => {
@@ -75,9 +82,13 @@ describe('the prayer previews name sunrise the way the card does', () => {
 
 describe('nothing in a preview is clipped by its own font size', () => {
   it('the 2x1 card autosizes its time, and so does its preview', () => {
-    for (const name of ['prayer_widget_small', 'prayer_widget_small_preview']) {
-      expect(layout(name)).toMatch(/android:autoSizeTextType="uniform"/);
-    }
+    expect(layout('prayer_widget_small_preview')).toMatch(/android:autoSizeTextType="uniform"/);
+    // The card no longer has a layout to autosize: the Glance Small card
+    // fits its time between 22 and 44sp itself (fitTextSp).
+    const small = glancePrayer.slice(glancePrayer.indexOf('private fun Small('));
+    expect(small.slice(0, small.indexOf('// ── The strip'))).toMatch(
+      /fitTextSp\(context, m\.nextTime, column, 44f, 22f/,
+    );
   });
 });
 
@@ -103,7 +114,7 @@ describe('the 4x1 previews draw the header the card draws', () => {
     name => {
       // One launcher row is ~147dp on a tall phone, which is above both
       // cards' "keep the date line" budget — STRIP_TIGHT_CONTENT_DP and
-      // LOG_TIGHT_CONTENT_DP — so a real 4×1 draws this line and a preview
+      // LOG_TIGHT_CONTENT_DP (in glance/PrayerGlanceWidget.kt and LogGlanceWidget.kt) — so a real 4×1 draws this line and a preview
       // without it is a card nobody gets. The log card needed a third
       // variant to keep that true; see widgetHeightBudgets.
       expect(layout(name)).toMatch(/android:text="@string\/widget_preview_header"/);

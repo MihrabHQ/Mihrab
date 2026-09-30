@@ -9,8 +9,6 @@ import androidx.compose.ui.unit.dp
 import androidx.glance.GlanceModifier
 import androidx.glance.Image
 import androidx.glance.ImageProvider
-import androidx.glance.appwidget.GlanceAppWidget
-import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Column
 import androidx.glance.layout.ContentScale
@@ -225,9 +223,4 @@ internal fun practiceGrid(
   val days = org.json.JSONArray()
   for (d in pr.days) days.put(WidgetPayloadV1.practiceDayJson(d))
   return PracticeGridBitmap.render(days, rows, columns, cellWPx, cellHPx, gapPx, accent, pr.since?.ifEmpty { null })
-}
-
-/** The Streak widget's Glance receiver. Registered only by the Glance build flag. */
-class StreakGlanceReceiver : GlanceAppWidgetReceiver() {
-  override val glanceAppWidget: GlanceAppWidget = StreakGlanceWidget()
 }

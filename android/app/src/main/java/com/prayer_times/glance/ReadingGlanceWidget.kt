@@ -9,8 +9,6 @@ import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.action.Action
 import androidx.glance.action.clickable
-import androidx.glance.appwidget.GlanceAppWidget
-import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import androidx.glance.appwidget.LinearProgressIndicator
 import androidx.glance.background
 import androidx.glance.layout.Alignment
@@ -297,9 +295,4 @@ internal class ReadingGlanceWidget : MihrabGlanceWidget("reading") {
     /** The bar's track: the rule colour the cards already use. */
     private const val PROGRESS_TRACK = 0x33FFFFFF
   }
-}
-
-/** The Continue Reading widget's Glance receiver. Registered only by the Glance build flag. */
-class ReadingGlanceReceiver : GlanceAppWidgetReceiver() {
-  override val glanceAppWidget: GlanceAppWidget = ReadingGlanceWidget()
 }

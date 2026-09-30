@@ -36,44 +36,55 @@ const kt = (name: string) =>
 const swift = (name: string) =>
   readFileSync(path.join(ROOT, 'ios', 'PrayerWidgetExtension', name), 'utf8');
 
-const log = kt('PrayerWidgetLogProvider.kt');
+// The Log card is drawn by Glance now; the RemoteViews provider it replaced
+// is a receiver shell. The dueness predicate lives in the Glance widget.
+const log = kt('glance/LogGlanceWidget.kt');
+const support = kt('glance/GlanceSupport.kt');
+const glanceWidgets = kt('glance/GlanceWidgets.kt');
 const provider = kt('PrayerWidgetProvider.kt');
+const logReceiver = kt('PrayerWidgetLogProvider.kt');
 const logToday = swift('LogTodayWidget.swift');
 
 describe('android decides dueness at draw time', () => {
   it('has one predicate, and it reads the clock', () => {
-    expect(log).toMatch(/private fun isDue\(\s*row: JSONObject\?, describesToday: Boolean, nowMinutes: Int\s*\)/);
-    expect(log).toMatch(/return at <= nowMinutes/);
+    expect(log).toMatch(
+      /private fun isDue\(pr: WidgetContract\.TodayPrayer, describesToday: Boolean, now: Now\): Boolean/,
+    );
+    expect(log).toMatch(/return at <= now\.minutes/);
   });
 
   it('reads the payload flag only as a fallback', () => {
-    // Exactly one `due` read left in the file: the one inside isDue that
+    // Exactly one `due` read of the payload row: the one inside isDue that
     // covers an unparseable time or a block about another day.
-    const reads = log.match(/optBoolean\("due"/g) ?? [];
+    const reads = log.match(/\bpr\.due\b/g) ?? [];
     expect(reads).toHaveLength(1);
-    expect(log).toMatch(/if \(!describesToday \|\| at < 0\) return row\.optBoolean\("due", false\)/);
+    expect(log).toMatch(/if \(!describesToday \|\| at == null\) return pr\.due/);
   });
 
   it('feeds the clock to every place that asked the flag', () => {
     // The chips, the footer line, and the countdown's "what is next".
-    expect(log).toMatch(/val due = isDue\(row, describesToday, nowMinutes\)/);
-    expect(log).toMatch(/if \(isDue\(o, describesToday, nowMinutes\) && status == null/);
-    expect(log).toMatch(/if \(!isDue\(o, describesToday, nowMinutes\)\) return o/);
+    expect(log).toMatch(/due = isDue\(pr, describesToday, now\)/);
+    expect(log).toMatch(/if \(isDue\(pr, describesToday, now\) && pr\.status == null/);
+    expect(log).toMatch(/firstOrNull \{ !isDue\(it, describesToday, now\) \}/);
   });
 
   it('knows which day the block is about', () => {
     // Dueness computed from today's clock is a claim about today. Asserting
     // it over a stale block would offer prayers for logging against a date
     // the user never touched.
-    expect(log).toMatch(/val describesToday = dateKey == PrayerWidgetProvider\.todayDateKey\(\)/);
-    expect(provider).toMatch(/\n    fun todayDateKey\(\): String \{/);
+    expect(log).toMatch(/val describesToday = dateKey == now\.dateKey/);
+    // ...and "now" carries WallClock's Gregorian date key, the payload's own.
+    expect(support).toMatch(/Now\(t, WallClock\.dateKey\(t\), WallClock\.minutesOf\(t\)\)/);
   });
 
   it('still gets woken at each boundary', () => {
     // The fix above is worthless without this, and this was worthless
     // without the fix above.
     expect(provider).toMatch(/ACTION_PRAYER_TIME_ELAPSED -> requestUpdate\(context\)/);
-    expect(provider).toMatch(/draw\(context\) \{ PrayerWidgetLogProvider\.requestUpdate\(context\) \}/);
+    expect(logReceiver).toMatch(/PrayerWidgetProvider\.ACTION_PRAYER_TIME_ELAPSED ->\s*PrayerWidgetProvider\.requestUpdate\(context\)/);
+    // The Log card is in the one redraw fan-out, both placements of it.
+    expect(glanceWidgets).toContain('PrayerWidgetLogProvider::class.java');
+    expect(glanceWidgets).toContain('PrayerWidgetLogLargeProvider::class.java');
     expect(provider).toMatch(/fun armWidgetAlarms/);
   });
 });

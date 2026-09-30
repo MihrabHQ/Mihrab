@@ -1117,55 +1117,11 @@ struct Entry: TimelineEntry {
   let dynamicNextTime: String?
 }
 
-// AppIntent requires iOS 16+; the widget extension minimum deployment target is 16.0.
-// Button(intent:) requires iOS 17+, so the button itself is still guarded below.
-struct RefreshIntent: AppIntent {
-  static var title: LocalizedStringResource = "widget_intent_refresh"
-  static var isDiscoverable: Bool = false
-
-  /// Rebuild THIS widget's timeline, and only this one.
-  ///
-  /// It used to be `{ .result() }` — a button that ran nothing and relied
-  /// on WidgetKit reloading the widget after any intent. That reload does
-  /// happen, so the button was not quite a lie, but nothing in this file
-  /// said so and the next reader had no way to tell a deliberate no-op
-  /// from an unfinished one. Now the reload is stated where the button is.
-  ///
-  /// `ofKind:` rather than `reloadAllTimelines()`, and that is the whole
-  /// design of this method: a press costs one render, not six. Read the
-  /// note by `widgetString` for why a render used to cost ten seconds of
-  /// CPU and why a button that quietly refreshed every widget on the Mac
-  /// was the fastest way to have WidgetKit kill the extension.
-  ///
-  /// What it cannot do is fetch new prayer times. The payload is written
-  /// by the app, into the App Group, from the foreground; the extension
-  /// only ever reads it. So this redraws from the newest payload there is,
-  /// which is the honest meaning of the button, and an expired payload
-  /// still needs the app opened — which is what the card says when it
-  /// happens.
-  ///
-  /// ── THE SAME GLYPH DOES MORE ON ANDROID ─────────────────────────────
-  ///
-  /// Worth knowing before anyone "fixes" the asymmetry. `onRefreshPressed`
-  /// in PrayerWidgetProvider.kt redraws AND starts a headless service that
-  /// runs a sync round, so a press there can pull in what another paired
-  /// device recorded without the app being opened. This one cannot do the
-  /// equivalent, and the reason is structural rather than unfinished: a
-  /// sync round needs the record's encryption key, which lives on the JS
-  /// side of the app, and a widget extension has neither the key nor a
-  /// way to run JS. The two buttons therefore mean different things —
-  /// "redraw" here, "redraw and go and look" there — and only one of them
-  /// can be made to mean the other.
-  ///
-  /// Which families carry it, since it is not all of them: `.systemLarge`
-  /// and the medium `default` branch, both behind `#available(iOS 17.0)`
-  /// because `Button(intent:)` is iOS 17. Small and the accessory families
-  /// have no room for it and never had one.
-  func perform() async throws -> some IntentResult {
-    WidgetCenter.shared.reloadTimelines(ofKind: "PrayerTimesWidget")
-    return .result()
-  }
-}
+// There is no refresh button on iOS or the Mac, and that is deliberate: a
+// widget extension cannot fetch or sync anything (the record's key and the
+// JS live in the app), so a button could only redraw from the payload already
+// on disk, which the timeline does by itself on schedule. Android keeps its
+// glyph because there a press really starts a sync round.
 
 /// The stretch of time the user is currently inside: the prayer just past,
 /// and the one coming up.
@@ -1875,28 +1831,9 @@ struct PrayerWidgetEntryView: View {
         case .systemLarge:
           largeContent
             .padding(EdgeInsets(top: 12, leading: 14, bottom: 12, trailing: 14))
-          if #available(iOS 17.0, *) {
-            Button(intent: RefreshIntent()) {
-              Image(systemName: "arrow.clockwise")
-                .font(.system(size: 9, weight: .medium))
-                .foregroundColor(widgetMuted)
-                .padding(8)
-            }
-            .buttonStyle(.plain)
-          }
         default:
           mediumLargeContent
             .padding(EdgeInsets(top: 12, leading: 14, bottom: 12, trailing: 12))
-          // iOS 17+ refresh button
-          if #available(iOS 17.0, *) {
-            Button(intent: RefreshIntent()) {
-              Image(systemName: "arrow.clockwise")
-                .font(.system(size: 9, weight: .medium))
-                .foregroundColor(widgetMuted)
-                .padding(8)
-            }
-            .buttonStyle(.plain)
-          }
         }
       } else if widgetFamily == .systemSmall {
         smallWidgetContent

@@ -298,52 +298,55 @@ describe('an edge cell is a whole cell', () => {
  * the top of the card became one run of digits.
  */
 describe('the times row fits its own columns', () => {
-  const strip = src('PrayerWidgetProvider');
+  const strip = src('glance/PrayerGlanceWidget');
+  const support = src('glance/GlanceSupport');
 
   it('sets the size it measured, on every column', () => {
-    expect(strip).toContain('val timeSizeSp = stripTimeSizeSp(');
-    expect(strip).toMatch(
-      /setTextViewTextSize\(\s*COL_TIMES\[i\],[\s\S]{0,120}timeSizeSp,/,
-    );
+    expect(strip).toContain('val timeSp = fitTimesSp(');
+    expect(strip).toContain('ClockText(r.minutes, m.clock, timeSp, color)');
   });
 
   it('finds one size that every time in the row fits', () => {
-    expect(strip).toMatch(/times\.all \{ measureTimePx\(paint, it, px\)/);
+    expect(support).toMatch(/while \(sp > minSp && times\.any \{ width\(it, sp\) > available \}\)/);
   });
 
   it('measures the string it will actually draw', () => {
     // The meridiem is set small, so a search that measured the whole time
     // at one size would fit a string nobody draws — and settle on type
     // smaller than it had to be.
-    expect(strip).toContain('paint.textSize = px * MERIDIEM_SCALE');
+    expect(support).toContain('sp * MERIDIEM_SCALE');
     // Pixels as the TextView computes them: non-linear from Android 14.
-    expect(strip).toContain('TypedValue.applyDimension(android.util.TypedValue.COMPLEX_UNIT_SP, sp, metrics)');
-    expect(strip).not.toContain('metrics.scaledDensity');
-    expect(strip).toContain('views.setTextViewText(COL_TIMES[i], styledTime(time))');
+    expect(support).toContain('TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, metrics)');
+    expect(support).toContain(
+      'TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp * MERIDIEM_SCALE, metrics)',
+    );
+    expect(support).not.toContain('scaledDensity');
   });
 
   it('keeps the meridiem where the language puts it', () => {
-    // Chinese writes 上午5:36. The span goes on whatever falls outside the
-    // digits, either side of them, rather than on a trailing suffix.
-    expect(strip).toMatch(/if \(core\.first > 0\) \{[\s\S]{0,200}RelativeSizeSpan/);
-    expect(strip).toMatch(
-      /if \(core\.last < time\.length - 1\) \{[\s\S]{0,200}RelativeSizeSpan/,
+    // Chinese writes 上午5:36. ClockText draws the period before or after
+    // the digits by WallClock.parts' periodFirst, small either way.
+    expect(support).toMatch(
+      /if \(parts\.periodFirst\) \{\s*\n\s*first = \{ Label\(period, sp \* MERIDIEM_SCALE[\s\S]{0,120}second = \{ Label\(parts\.digits, sp/,
+    );
+    expect(support).toMatch(
+      /\} else \{\s*\n\s*first = \{ Label\(parts\.digits, sp[\s\S]{0,120}second = \{ Label\(" \$period", sp \* MERIDIEM_SCALE/,
     );
   });
 
   it('shrinks the meridiem on the Log card too', () => {
-    expect(src('PrayerWidgetLogProvider')).toContain(
-      'PrayerWidgetProvider.styledTime(',
-    );
+    expect(src('glance/LogGlanceWidget')).toContain('ClockText(chip.minutes, m.clock,');
   });
 
   it('leaves a gutter, so fitting is not the same as touching', () => {
     expect(strip).toMatch(/TIME_GUTTER_DP = ([1-9]\d*)f/);
-    expect(strip).toContain('(columnDp - TIME_GUTTER_DP)');
+    expect(strip).toContain('/ columns.size.coerceAtLeast(1) - TIME_GUTTER_DP');
   });
 
   it('stops declaring an auto-size the host may ignore', () => {
-    for (const layout of ['prayer_widget_strip', 'prayer_widget']) {
+    // The strip layouts are gone (Glance measures with fitTimesSp); what
+    // remains of them is the picker preview and the shared card.
+    for (const layout of ['prayer_widget_strip_preview', 'prayer_widget_log_preview', 'glance_card']) {
       expect(layoutXml(layout)).not.toContain('autoSizeTextType');
     }
   });
@@ -353,125 +356,92 @@ describe('the times row fits its own columns', () => {
  * One band between the times and the graph, and the same one on both cards.
  */
 describe('the streak sits on the line with what is next', () => {
-  it.each([
-    ['prayer_widget_strip', 'widget_practice_streak', 'widget_next_row'],
-    ['prayer_widget_log', 'widget_log_streak', 'widget_log_footer'],
-  ])('%s carries it on the row that already existed', (layout, streakId, rowId) => {
-    const xml = layoutXml(layout);
-    const row = xml.slice(xml.indexOf(rowId));
-    const streakAt = row.indexOf(streakId);
-    const rowEnd = row.indexOf('</LinearLayout>');
-    expect(streakAt).toBeGreaterThan(-1);
-    expect(streakAt).toBeLessThan(rowEnd);
-  });
+  const strip = src('glance/PrayerGlanceWidget');
+  const log = src('glance/LogGlanceWidget');
+
+  /** The Row that holds what is next, and the text up to the rule under it. */
+  const nextRow = (file: string, marker: string) => {
+    const at = file.indexOf(marker);
+    expect(at).toBeGreaterThan(-1);
+    return file.slice(at, at + 1400);
+  };
+  const STRIP_ROW = 'if (m.nextName.isNotEmpty()) Label(m.nextName, 11f';
+  const LOG_ROW = 'm.next?.let { (name, at) ->';
 
   it.each([
-    ['prayer_widget_strip', 'widget_practice_row'],
-    ['prayer_widget_log', 'widget_log_practice_row'],
-  ])('%s keeps the old row as an empty shell', (layout, rowId) => {
-    // The binder is shared, and a RemoteViews action against an id a layout
-    // does not have takes the whole widget down rather than being skipped.
-    const xml = layoutXml(layout);
-    const at = xml.indexOf(`@+id/${rowId}`);
+    ['the strip', strip, STRIP_ROW, 'practice.block.streak.toString()'],
+    ['the log card', log, LOG_ROW, 'pr.streak.toString()'],
+  ])('%s carries it on the row that already existed', (_l, file, marker, streak) => {
+    const row = nextRow(file, marker);
+    const rowEnd = row.indexOf('\n      }\n');
+    const at = row.indexOf(streak);
     expect(at).toBeGreaterThan(-1);
-    expect(xml.slice(at - 200, at)).toContain('FrameLayout');
+    expect(at).toBeLessThan(rowEnd);
   });
+
+  // Removed: "keeps the old row as an empty shell" — that guarded the shared
+  // RemoteViews binder against ids a layout no longer has; Glance has no ids.
 
   it('is one line on the prayer card, as it is on the Log card', () => {
-    // The night times used to sit UNDER the streak line, which made the
-    // band between the times and the graph two lines on one card and one
-    // on the other. They belong to the times, so they are above the rule
-    // now and the band itself is a single line on both.
-    const xml = layoutXml('prayer_widget_strip');
-    expect(xml.indexOf('@+id/widget_night_row')).toBeLessThan(
-      xml.indexOf('@+id/widget_strip_divider'),
-    );
-    expect(xml.indexOf('@+id/widget_strip_divider')).toBeLessThan(
-      xml.indexOf('@+id/widget_next_row'),
-    );
+    // The night times belong to the times, so they are above the rule and
+    // the band between the times and the graph is a single line on both.
+    const night = strip.indexOf('m.night?.let { n ->');
+    const rule = strip.indexOf('if (!tight) Rule(Palette.RULE, top = 6, bottom = 8)');
+    const next = strip.indexOf(STRIP_ROW);
+    expect(night).toBeGreaterThan(-1);
+    expect(night).toBeLessThan(rule);
+    expect(rule).toBeLessThan(next);
   });
 
   it('rules itself off the same way on both cards', () => {
-    const ruleOf = (layout: string, id: string) => {
-      const xml = layoutXml(layout);
-      const at = xml.indexOf(`@+id/${id}`);
-      return /android:background="(#[0-9A-F]+)"/.exec(xml.slice(at, at + 400))?.[1];
-    };
-    expect(ruleOf('prayer_widget_strip', 'widget_strip_divider')).toBe(
-      ruleOf('prayer_widget_log', 'widget_log_divider') ??
-        ruleOf('prayer_widget_log', 'widget_log_grid_divider'),
-    );
+    const rule = 'if (!tight) Rule(Palette.RULE, top = 6, bottom = 8)';
+    expect(strip).toContain(rule);
+    expect(log).toContain(rule);
   });
 
   /**
    * The band is what sits between the rule under the times and the rule
-   * over the graph. Reported as "the middle segment in both of the widgets
-   * is not centered between the top and the bottom line", and measured off
-   * the screenshot: the prayer card had 6+8dp above the line against 10
-   * below, so it sat low in a 43dp band; the Log card had 6 above against
-   * 8 below, so it sat high in a band 10dp shorter. Two cards on one home
-   * screen, two different answers.
+   * over the graph, and it is centred between them: the same dp above the
+   * row as below it. Reported as "the middle segment in both of the widgets
+   * is not centered between the top and the bottom line". The row itself
+   * carries no vertical margin in Glance, so the two Rule() gaps are the
+   * whole of it.
    */
-  /** The id, and only that id — `widget_log_grid` is a prefix of its divider. */
-  const tagOf = (layout: string, id: string) => {
-    const xml = layoutXml(layout);
-    const at = xml.indexOf(`@+id/${id}"`);
-    expect(at).toBeGreaterThan(-1);
-    return xml.slice(at, xml.indexOf('/>', at));
-  };
-
-  const marginsOf = (layout: string, id: string) => {
-    const tag = tagOf(layout, id);
-    const dp = (attr: string) =>
-      Number(new RegExp(`android:layout_${attr}="(\\d+)dp"`).exec(tag)?.[1] ?? 0);
-    return { top: dp('marginTop'), bottom: dp('marginBottom') };
+  /** The gap under the rule over the row, and the gap over the rule under it. */
+  const band = (file: string, gridRule: string) => {
+    const rules = [...file.matchAll(/Rule\(Palette\.(\w+), top = (\d+), bottom = (\d+)\)/g)];
+    const over = rules.find((r) => r[1] === 'RULE' && r[2] === '6');
+    const under = rules.find((r) => r[1] === gridRule && r[2] === '8');
+    expect(over).toBeDefined();
+    expect(under).toBeDefined();
+    return { above: Number(over![3]), below: Number(under![2]) };
   };
 
   it.each([
-    ['prayer_widget_strip', 'widget_strip_divider', 'widget_next_row', 'widget_practice_divider'],
-    ['prayer_widget_log', 'widget_log_divider', 'widget_log_footer', 'widget_log_grid_divider'],
-  ])('%s centres the band between its two rules', (layout, above, row, below) => {
-    const space = {
-      above: marginsOf(layout, above).bottom + marginsOf(layout, row).top,
-      below: marginsOf(layout, row).bottom + marginsOf(layout, below).top,
-    };
-    expect(space.above).toBe(space.below);
+    ['the strip', strip, 'RULE_STRONG'],
+    ['the log card', log, 'RULE'],
+  ])('%s centres the band between its two rules', (_l, file, gridRule) => {
+    const b = band(file, gridRule);
+    expect(b.above).toBe(b.below);
   });
 
   it('gives both cards the same band, not just a symmetric one', () => {
-    // Symmetric on each card and different between them would still read as
-    // two designs; the number has to be the same number.
-    expect(marginsOf('prayer_widget_strip', 'widget_strip_divider').bottom).toBe(
-      marginsOf('prayer_widget_log', 'widget_log_divider').bottom,
-    );
-    expect(marginsOf('prayer_widget_strip', 'widget_practice_divider').top).toBe(
-      marginsOf('prayer_widget_log', 'widget_log_grid_divider').top,
-    );
+    expect(band(strip, 'RULE_STRONG')).toEqual(band(log, 'RULE'));
   });
 
   it.each([
-    ['prayer_widget_strip', 'widget_practice_grid'],
-    ['prayer_widget_log', 'widget_log_grid'],
-  ])('%s centres the graph in whatever slack is left', (layout, id) => {
+    ['the strip', strip],
+    ['the log card', log],
+  ])('%s centres the graph in whatever slack is left', (_l, file) => {
     // The row count quantises, so up to a row's worth of the box goes
-    // unspent. fitStart piled all of it under the last row — a void that
-    // came out a different size on each card, because the two have
-    // different chrome above the graph. fitCenter splits it.
-    expect(tagOf(layout, id)).toContain('android:scaleType="fitCenter"');
+    // unspent. Fit centres the bitmap and splits it above and below.
+    expect(file).toContain('contentScale = ContentScale.Fit');
   });
 
   it('reads at the same size on both cards', () => {
-    const sizeOf = (layout: string, id: string) => {
-      const xml = layoutXml(layout);
-      const at = xml.indexOf(`@+id/${id}`);
-      const m = /android:textSize="(\d+)sp"/.exec(xml.slice(at, at + 400));
-      return m ? Number(m[1]) : null;
-    };
-    expect(sizeOf('prayer_widget_strip', 'widget_practice_streak')).toBe(
-      sizeOf('prayer_widget_log', 'widget_log_streak'),
-    );
-    expect(sizeOf('prayer_widget_strip', 'widget_practice_second')).toBe(
-      sizeOf('prayer_widget_log', 'widget_log_practice_second'),
-    );
+    expect(strip).toMatch(/Label\(practice\.block\.streak\.toString\(\), 11f,/);
+    expect(log).toMatch(/Label\(pr\.streak\.toString\(\), 11f,/);
+    expect(strip).toMatch(/Label\("\$\{practice\.streakText\} · \$\{practice\.second\}", 11f,/);
+    expect(log).toMatch(/Label\(practiceLine\(context, pr\), 11f,/);
   });
 });

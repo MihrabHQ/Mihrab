@@ -22,8 +22,10 @@
  *
  * Three things have to stay true for that to keep working, and each is a
  * different file, which is why they are pinned here rather than trusted:
- *   1. every live widget layout wraps its content in a shell + card,
- *   2. no provider calls `setBackgroundColor` on the root again — that
+ *   1. every card a widget draws is inset + the recolourable card ImageView
+ *      (Glance: `MihrabCard` embeds glance_card.xml inside a
+ *      widget_card_inset-padded Box; the error card is glance_error_card.xml),
+ *   2. nothing calls `setBackgroundColor` on a widget root again — that
  *      REPLACES the drawable with a flat ColorDrawable and takes the
  *      rounding with it, which is how the slab happened in the first
  *      place,
@@ -39,83 +41,102 @@ const ANDROID_RES = path.join(
 const PROVIDER_DIR = path.join(
   __dirname, '..', 'android', 'app', 'src', 'main', 'java', 'com', 'prayer_times',
 );
+const GLANCE_DIR = path.join(PROVIDER_DIR, 'glance');
 
 const read = (...parts: string[]) =>
   readFileSync(path.join(...parts), 'utf8');
 
-/** The layouts a provider actually inflates — previews are not placed. */
-const LIVE_LAYOUTS = [
-  'prayer_widget.xml',
-  'prayer_widget_hijri.xml',
-  'prayer_widget_log.xml',
-  'prayer_widget_reading.xml',
-  'prayer_widget_small.xml',
-  'prayer_widget_streak.xml',
-  'prayer_widget_strip.xml',
-  'prayer_widget_tasbih.xml',
+const ktIn = (dir: string) => readdirSync(dir).filter(f => f.endsWith('.kt'));
+
+/**
+ * The Glance widgets: every glance/*.kt that draws a card of its own.
+ * (Replaces the old list of live RemoteViews layouts.)
+ */
+const CARD_WIDGETS = [
+  'HijriGlanceWidget.kt',
+  'LogGlanceWidget.kt',
+  'PrayerGlanceWidget.kt',
+  'ReadingGlanceWidget.kt',
+  'StreakGlanceWidget.kt',
+  'TasbihGlanceWidget.kt',
 ];
 
-describe('the live widget layouts', () => {
-  it('are the complete set the providers inflate', () => {
-    const inflated = new Set<string>();
-    for (const f of readdirSync(PROVIDER_DIR)) {
-      if (!f.endsWith('.kt')) continue;
-      const src = read(PROVIDER_DIR, f);
-      for (const m of src.matchAll(/R\.layout\.(prayer_widget[a-z_]*)/g)) {
-        inflated.add(`${m[1]}.xml`);
-      }
-    }
-    // If a widget is added and not listed above, every assertion below
-    // would silently skip it — so the list is checked, not assumed.
-    expect([...inflated].sort()).toEqual([...LIVE_LAYOUTS].sort());
+describe('the Glance widgets draw on the inset card', () => {
+  it('are the complete set that call MihrabCard', () => {
+    const callers = ktIn(GLANCE_DIR).filter(f =>
+      f !== 'GlanceSupport.kt' && /\bMihrabCard\(/.test(read(GLANCE_DIR, f)),
+    );
+    // If a widget is added and not listed above, it would silently skip
+    // every assertion here — so the list is checked, not assumed.
+    expect(callers.sort()).toEqual([...CARD_WIDGETS].sort());
   });
 
-  for (const name of LIVE_LAYOUTS) {
+  it('MihrabCard insets the card from the host view, so neighbours cannot touch', () => {
+    const support = read(GLANCE_DIR, 'GlanceSupport.kt');
+    expect(support).toMatch(/fun MihrabCard\(/);
+    expect(support).toMatch(/fillMaxSize\(\)\.padding\(R\.dimen\.widget_card_inset\)/);
+  });
+
+  it('MihrabCard draws the rounded, recolourable card, not a Glance background', () => {
+    const support = read(GLANCE_DIR, 'GlanceSupport.kt');
+    expect(support).toContain('R.layout.glance_card');
+    expect(support).toMatch(/WidgetCard\.paint\(it, background\)/);
+    const body = support.slice(support.indexOf('fun MihrabCard('));
+    // Glance's cornerRadius is Android 12+ only — a slab below that.
+    expect(body.slice(0, body.indexOf('\n}\n'))).not.toMatch(/cornerRadius|\.background\(/);
+  });
+
+  for (const name of ['glance_card.xml', 'glance_error_card.xml']) {
     describe(name, () => {
       const xml = () => read(ANDROID_RES, 'layout', name);
 
-      it('is inset from the host view, so neighbours cannot touch', () => {
-        expect(xml()).toContain('android:id="@+id/widget_shell"');
-        expect(xml()).toContain('android:padding="@dimen/widget_card_inset"');
-      });
-
       it('draws the rounded card behind its content', () => {
-        expect(xml()).toContain('android:id="@+id/widget_card"');
+        expect(xml()).toContain('android:id="@id/widget_card"');
         expect(xml()).toContain('android:src="@drawable/widget_card"');
       });
 
       it('no longer paints a flat colour edge to edge', () => {
         expect(xml()).not.toContain('android:background="#E01C1C1E"');
-      });
-
-      it('keeps widget_root, which providers still pad and make clickable', () => {
-        expect(xml()).toContain('android:id="@+id/widget_root"');
+        expect(xml()).not.toMatch(/android:background="#/);
       });
     });
   }
+
+  it('the error card is inset from the host view like the live ones', () => {
+    // glance_card.xml is embedded inside MihrabCard's padded Box; the error
+    // card is a whole RemoteViews of its own, so it carries the inset itself.
+    const xml = read(ANDROID_RES, 'layout', 'glance_error_card.xml');
+    expect(xml).toContain('android:id="@id/widget_shell"');
+    expect(xml).toContain('android:padding="@dimen/widget_card_inset"');
+  });
+  // The old "keeps widget_root, which providers still pad and make
+  // clickable" test is gone with the RemoteViews layouts; Glance pads and
+  // clicks its own Box inside MihrabCard.
 });
 
-describe('the providers', () => {
-  const providers = readdirSync(PROVIDER_DIR).filter(f => f.endsWith('.kt'));
+describe('the widget code', () => {
+  const sources = [
+    ...ktIn(PROVIDER_DIR).map(f => [PROVIDER_DIR, f] as const),
+    ...ktIn(GLANCE_DIR).map(f => [GLANCE_DIR, f] as const),
+  ];
 
-  it('never call setBackgroundColor on a widget root again', () => {
-    for (const f of providers) {
+  it('never calls setBackgroundColor on a widget root again', () => {
+    for (const [dir, f] of sources) {
       if (f === 'WidgetCard.kt') continue; // its doc comment quotes the old call
-      expect(read(PROVIDER_DIR, f)).not.toContain(
+      expect(read(dir, f)).not.toContain(
         'setInt(R.id.widget_root, "setBackgroundColor"',
       );
     }
   });
 
-  it('paint the card through the one helper', () => {
-    const painters = providers.filter(f =>
-      read(PROVIDER_DIR, f).includes('WidgetCard.paint('),
-    );
-    // Six providers draw a card; PrayerWidgetProvider does it twice.
-    expect(painters.length).toBeGreaterThanOrEqual(6);
+  it('paints the card through the one helper', () => {
+    // Every Glance card goes through MihrabCard -> WidgetCard.paint, and the
+    // error card paints through it too.
+    expect(read(GLANCE_DIR, 'GlanceSupport.kt')).toContain('WidgetCard.paint(');
+    expect(read(PROVIDER_DIR, 'WidgetErrorCard.kt')).toContain('WidgetCard.paint(');
   });
 
-  it('recolour the shape rather than replacing it', () => {
+  it('recolours the shape rather than replacing it', () => {
     const helper = read(PROVIDER_DIR, 'WidgetCard.kt');
     expect(helper).toContain('"setColorFilter"');
     // Without this the shape paints at full opacity and the user's

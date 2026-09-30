@@ -51,14 +51,12 @@ describe('native code', () => {
   const files = [
     ...sources(join(ROOT, 'ios'), '.swift'),
     ...sources(join(ROOT, 'android', 'app', 'src', 'main', 'java'), '.kt'),
-    // The Glance source sets, compiled in by -PmihrabGlanceWidgets.
-    ...sources(join(ROOT, 'android', 'app', 'src', 'glance', 'java'), '.kt'),
-    ...sources(join(ROOT, 'android', 'app', 'src', 'glanceOff', 'java'), '.kt'),
   ];
 
   it('is all scanned', () => {
     expect(files.length).toBeGreaterThan(40);
-    expect(files.some(f => f.includes('/src/glance/java/'))).toBe(true);
+    // The Glance widgets live in main/java/.../glance now.
+    expect(files.some(f => f.includes('/com/prayer_times/glance/'))).toBe(true);
   });
 
   it('parses no formatted time outside WallClock', () => {

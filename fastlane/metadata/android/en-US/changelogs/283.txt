@@ -1,2 +1,5 @@
 • On iPhone and iPad, Mihrab opens again on iOS 27 and iPadOS 27. Since 2.25.0 it closed the moment it was opened on a device updated to 27. Nothing you had saved was lost, and a widget tap still opens the page it points to.
 • Turning the phone fades the muṣḥaf page back in, as leaving fullscreen does.
+• In Arabic and Urdu the Today carousel opens on today again on Android.
+• The Android widgets are redrawn by a new engine. Widgets you already placed stay where they are and keep their settings; if one says “Open Mihrab” after the update, opening the app once fills it in.
+• The refresh button is gone from the iPhone, iPad and Mac prayer widget: the widget already updates on its own.

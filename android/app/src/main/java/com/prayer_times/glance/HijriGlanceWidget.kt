@@ -4,8 +4,6 @@ import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import androidx.glance.GlanceModifier
-import androidx.glance.appwidget.GlanceAppWidget
-import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Column
 import androidx.glance.layout.Row
@@ -119,9 +117,4 @@ internal class HijriGlanceWidget : MihrabGlanceWidget("hijri") {
     private const val DATE_MAX_SP = 22f
     private const val DATE_MIN_SP = 13f
   }
-}
-
-/** The Hijri Date widget's Glance receiver. Registered only by the Glance build flag. */
-class HijriGlanceReceiver : GlanceAppWidgetReceiver() {
-  override val glanceAppWidget: GlanceAppWidget = HijriGlanceWidget()
 }

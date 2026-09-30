@@ -27,7 +27,11 @@ import path from 'path';
 const ROOT = path.join(__dirname, '..');
 const KT = path.join(ROOT, 'android', 'app', 'src', 'main', 'java', 'com', 'prayer_times');
 const provider = readFileSync(path.join(KT, 'PrayerWidgetProvider.kt'), 'utf8');
-const log = readFileSync(path.join(KT, 'PrayerWidgetLogProvider.kt'), 'utf8');
+// The Log and prayer cards are Glance now (the RemoteViews providers are
+// receiver shells): the countdown's rules live in these.
+const log = readFileSync(path.join(KT, 'glance', 'LogGlanceWidget.kt'), 'utf8');
+const glanceSupport = readFileSync(path.join(KT, 'glance', 'GlanceSupport.kt'), 'utf8');
+const glanceWidgets = readFileSync(path.join(KT, 'glance', 'GlanceWidgets.kt'), 'utf8');
 // The instant both the alarm and the countdown aim at, as a pure function
 // the Kotlin contract tests hold across the nights the clocks change
 // (contract-tests/kotlin/…/WidgetInstantsTest.kt).
@@ -101,19 +105,26 @@ describe('the alarm can actually fire at that moment', () => {
 describe('when it fires, every widget is redrawn', () => {
   // The countdown lives on three different cards. A refresh that reaches
   // only the one that armed the alarm is the same bug with a smaller
-  // blast radius.
+  // blast radius. requestUpdate now hands off to the Glance fan-out, which
+  // must name every kind.
+  it('requestUpdate hands the redraw to the one Glance fan-out', () => {
+    expect(provider).toMatch(/draw\(context\) \{ GlanceWidgetHook\.requestUpdate\(context\) \}/);
+    expect(glanceWidgets).toMatch(/fun requestUpdate\(context: Context\) \{[\s\S]*?for \(cls in receivers\)/);
+  });
+
   it.each([
     'PrayerWidgetLogProvider',
+    'PrayerWidgetLogLargeProvider',
     'PrayerWidgetStreakProvider',
     'PrayerWidgetReadingProvider',
     'PrayerWidgetHijriProvider',
     'PrayerWidgetTasbihProvider',
+    'PrayerWidgetProvider',
+    'PrayerWidgetSmallProvider',
+    'PrayerWidgetLargeProvider',
   ])('%s is redrawn from the one entry point', kind => {
-    expect(provider).toMatch(new RegExp(`draw\\(context\\) \\{ ${kind}\\.requestUpdate\\(context\\) \\}`));
-  });
-
-  it('and so are the three prayer-times classes', () => {
-    expect(provider).toMatch(/PrayerWidgetProvider::class\.java,\s*PrayerWidgetSmallProvider::class\.java,\s*PrayerWidgetLargeProvider::class\.java/);
+    const occurrences = glanceWidgets.match(new RegExp(`\\b${kind}::class\\.java`, 'g')) ?? [];
+    expect(occurrences).toHaveLength(1);
   });
 });
 
@@ -157,22 +168,32 @@ describe('the cards agree on what they are counting to', () => {
   it('the prayer strip wraps past midnight', () => {
     // To tomorrow's first row, as an instant — the same answer the alarm
     // is armed with, handed to the Chronometer as elapsed time.
-    expect(provider).toMatch(/nextDayMinutes = tomorrowDay\?\.let \{ boundaryMinutes\(it, o\) \}/);
-    expect(provider).toMatch(/SystemClock\.elapsedRealtime\(\) \+ \(next\.epochMs - nowMs\)/);
+    expect(glanceSupport).toMatch(
+      /earliest\(ahead \+ \(tomorrow\?\.let \{ eventsOf\(it, WallClock\.MINUTES_PER_DAY\) \} \?: emptyList\(\)\)\)/,
+    );
+    expect(glanceSupport).toMatch(/fun epochMs\(\): Long\? = WallClock\.epochMs\(day\.dateKey, minutes\)/);
+    expect(glanceSupport).toMatch(/SystemClock\.elapsedRealtime\(\) \+ left/);
     // Minutes of the day are not elapsed time on the nights the clocks change.
-    expect(provider).not.toMatch(/\+ 24 \* 60 - currentMinutes/);
+    expect(glanceSupport).not.toMatch(/\+ 24 \* 60 - /);
+    expect(log).not.toMatch(/\+ 24 \* 60 - /);
   });
 
   it('the log card wraps to tomorrow\'s first prayer', () => {
-    expect(log).toMatch(/val fajr = tomorrowFirstPrayer\(root, todayKey\)/);
-    expect(log).toMatch(/minutesAt \+ dayShift \* WallClock\.MINUTES_PER_DAY/);
-    expect(log).toMatch(/SystemClock\.elapsedRealtime\(\) \+ \(targetMs - nowMs\)/);
-    expect(log).not.toMatch(/\+ 24 \* 60 - currentMinutes/);
+    expect(log).toMatch(/p\.days\.getOrNull\(index \+ 1\)/);
+    expect(log).toMatch(/WallClock\.epochMs\(todayKey, e\.minutes \+ WallClock\.MINUTES_PER_DAY\)/);
+    expect(log).toMatch(/return next\?\.takeIf \{ it\.second >= now\.epochMs \}/);
+    expect(log).not.toMatch(/\+ 24 \* 60 - /);
   });
 
   it('both hand the view an instant, so the tick costs nothing', () => {
-    expect(provider).toMatch(/setChronometerCountDown\(R\.id\.widget_remaining, true\)/);
-    expect(log).toMatch(/setChronometerCountDown\(R\.id\.widget_log_remaining, true\)/);
+    // One Countdown composable, a system-ticked Chronometer aimed at the
+    // event's instant; both cards use it.
+    expect(glanceSupport).toMatch(/setChronometerCountDown\(R\.id\.glance_countdown, true\)/);
+    expect(glanceSupport).toMatch(/val left = targetEpochMs - now\.epochMs/);
+    const prayer = readFileSync(path.join(KT, 'glance', 'PrayerGlanceWidget.kt'), 'utf8');
+    expect(prayer).toMatch(/Countdown\(it, m\.now,/);
+    expect(prayer).toMatch(/nextAt = next\?\.epochMs\(\)/);
+    expect(log).toMatch(/Countdown\(/);
   });
 
   it('the log card counts to whatever the user turned on, not just the five', () => {
@@ -180,9 +201,10 @@ describe('the cards agree on what they are counting to', () => {
     // reads the day's full event list out of the payload window, so a phone
     // with the Last Third on does not read "Fajr · in 5:12" beside a Lock
     // Screen counting the forty minutes to the Last Third.
-    expect(log).toMatch(/private fun eventsOf\(day: JSONObject\?\): List<JSONObject>/);
-    expect(log).toMatch(/day\.optJSONObject\("sunriseRow"\)\?\.let \{ out\.add\(it\) \}/);
-    expect(log).toMatch(/nextEvent\(events, currentMinutes\)/);
+    expect(glanceSupport).toMatch(
+      /val rows = day\.prayers \+ listOfNotNull\(day\.sunrise\) \+ day\.extras/,
+    );
+    expect(log).toMatch(/val events = day\?\.let \{ Schedule\.eventsOf\(it, 0\) \}/);
   });
 
   it('and both take the earliest thing ahead, not the first one listed', () => {
@@ -194,7 +216,7 @@ describe('the cards agree on what they are counting to', () => {
     expect(instants).toMatch(
       /if \(at > nowMs && \(best == null \|\| at < best\.epochMs\)\) best = /,
     );
-    expect(provider).toMatch(/dayMinutes = displayRows\.mapNotNull \{ WidgetPayloadV1\.minutesOf\(it\) \}/);
-    expect(log).toMatch(/if \(bestAt < 0 \|\| at < bestAt\)/);
+    expect(glanceSupport).toMatch(/fun earliest\(events: List<Event>\): Event\? = events\.minByOrNull \{ it\.at \}/);
+    expect(log).toMatch(/Schedule\.earliest\(events\.filter \{ it\.at > now\.minutes \}\)/);
   });
 });

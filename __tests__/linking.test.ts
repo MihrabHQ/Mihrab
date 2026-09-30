@@ -141,12 +141,15 @@ describe('mihrab:// route table', () => {
     // the plan's own page, so its presence IS the question — and the
     // "play from here" link is the same destination, out loud.
     const kotlin = src(
-      'android/app/src/main/java/com/prayer_times/PrayerWidgetReadingProvider.kt',
+      'android/app/src/main/java/com/prayer_times/glance/ReadingGlanceWidget.kt',
     );
-    expect(kotlin).toMatch(
-      /optJSONObject\("khatmah"\) != null\) "&sessionKhatmah=1" else ""/,
+    expect(kotlin).toContain(
+      'val session = if (r.khatmah != null) "&sessionKhatmah=1" else ""',
     );
-    expect(kotlin.match(/\$\{sessionParam\(r\)\}/g) ?? []).toHaveLength(2);
+    // One builder makes both the card's and the play disc's URL.
+    expect(kotlin.match(/\$session"\)/g) ?? []).toHaveLength(1);
+    expect(kotlin.match(/readingAction\(context, r, play = (true|false)\)/g) ?? [])
+      .toHaveLength(2);
     const swift = src('ios/PrayerWidgetExtension/ReadingWidget.swift');
     expect(swift).toMatch(/r\.khatmah != nil \? "&sessionKhatmah=1" : ""/);
     expect(swift.match(/\\\(sessionParam\(r\)\)/g) ?? []).toHaveLength(2);

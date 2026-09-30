@@ -1,7 +1,7 @@
 name: Native builds
 
 # Compiles what jest and the contract harnesses cannot: the Android app
-# (with and without the Glance widgets), the iOS app with its widget and
+# (its widgets are Glance, the only implementation), the iOS app with its widget and
 # Live Activity extensions, and the Mac Catalyst app. Until this existed
 # the Swift outside ios/Contract and the Kotlin outside the contract were
 # first compiled on a release machine (docs/rewrite-plan.md, "Open items").
@@ -23,15 +23,9 @@ concurrency:
 
 jobs:
   android:
-    name: Android (Glance ${{ matrix.glance && 'on' || 'off' }})
+    name: Android
     runs-on: ubuntu-latest
     timeout-minutes: 75
-    strategy:
-      fail-fast: false
-      matrix:
-        # Off is the shipping build. On is the measuring build behind
-        # -PmihrabGlanceWidgets (Phase 4), which nothing else builds.
-        glance: [false, true]
     steps:
       - uses: actions/checkout@v5
 
@@ -55,7 +49,6 @@ jobs:
         run: >-
           ./gradlew assembleFdroidDebug
           -PreactNativeArchitectures=arm64-v8a
-          -PmihrabGlanceWidgets=${{ matrix.glance }}
           --no-daemon --stacktrace
 
   apple:

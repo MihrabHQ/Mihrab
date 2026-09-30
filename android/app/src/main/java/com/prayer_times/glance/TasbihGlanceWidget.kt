@@ -9,8 +9,6 @@ import androidx.glance.ImageProvider
 import androidx.glance.action.ActionParameters
 import androidx.glance.action.actionParametersOf
 import androidx.glance.action.clickable
-import androidx.glance.appwidget.GlanceAppWidget
-import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import androidx.glance.appwidget.action.ActionCallback
 import androidx.glance.appwidget.action.actionRunCallback
 import androidx.glance.background
@@ -247,9 +245,4 @@ class TasbihTap : ActionCallback {
   companion object {
     val ACTION = ActionParameters.Key<String>("tasbih_action")
   }
-}
-
-/** The Tasbih widget's Glance receiver. Registered only by the Glance build flag. */
-class TasbihGlanceReceiver : GlanceAppWidgetReceiver() {
-  override val glanceAppWidget: GlanceAppWidget = TasbihGlanceWidget()
 }

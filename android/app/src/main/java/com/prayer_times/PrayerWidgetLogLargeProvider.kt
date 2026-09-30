@@ -9,6 +9,6 @@ package com.prayer_times
  * from the short entry and dragged — it simply starts at the size where the
  * date line, the full-height chips and the practice graph are all there.
  *
- * See prayer_widget_log_tall_info.xml.
+ * See glance_log_tall_info.xml.
  */
 class PrayerWidgetLogLargeProvider : PrayerWidgetLogProvider()

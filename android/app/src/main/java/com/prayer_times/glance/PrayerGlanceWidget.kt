@@ -12,8 +12,6 @@ import androidx.glance.ImageProvider
 import androidx.glance.Visibility
 import androidx.glance.action.ActionParameters
 import androidx.glance.action.clickable
-import androidx.glance.appwidget.GlanceAppWidget
-import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import androidx.glance.appwidget.action.ActionCallback
 import androidx.glance.appwidget.action.actionRunCallback
 import androidx.glance.background
@@ -515,7 +513,7 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
 }
 
 /**
- * The refresh glyph — PrayerWidgetProvider.onRefreshPressed: redraw from
+ * The refresh glyph: redraw from
  * what is on disk now, then start the sync round the press is really for.
  * A HeadlessJS service can be refused; a refresh that only redraws is the
  * old behaviour, not a crash.
@@ -529,17 +527,4 @@ class PrayerRefresh : ActionCallback {
       Log.w(TAG, "widget refresh: could not start the sync task", t)
     }
   }
-}
-
-/** "Prayer times": the strip, and whatever the size makes of it. */
-open class PrayerGlanceReceiver : GlanceAppWidgetReceiver() {
-  override val glanceAppWidget: GlanceAppWidget = PrayerGlanceWidget(PrayerGlanceWidget.Entry.STRIP)
-}
-
-/** "Prayer times (tall)": the same card, placed two rows tall. */
-class PrayerTallGlanceReceiver : PrayerGlanceReceiver()
-
-/** "Next prayer": the compact line at every size. */
-class PrayerSmallGlanceReceiver : GlanceAppWidgetReceiver() {
-  override val glanceAppWidget: GlanceAppWidget = PrayerGlanceWidget(PrayerGlanceWidget.Entry.SMALL)
 }

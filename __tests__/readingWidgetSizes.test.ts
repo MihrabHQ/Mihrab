@@ -21,40 +21,37 @@ import path from 'path';
 const REPO = path.join(__dirname, '..');
 const read = (rel: string) => fs.readFileSync(path.join(REPO, rel), 'utf8');
 
-const LAYOUT = read(
-  'android/app/src/main/res/layout/prayer_widget_reading.xml',
+const GLANCE = read(
+  'android/app/src/main/java/com/prayer_times/glance/ReadingGlanceWidget.kt',
 );
-const PROVIDER = read(
-  'android/app/src/main/java/com/prayer_times/PrayerWidgetReadingProvider.kt',
-);
-const INFO = read(
-  'android/app/src/main/res/xml/prayer_widget_reading_info.xml',
-);
-
-const idIndex = (id: string) => LAYOUT.indexOf(`@+id/${id}`);
+// Tier thresholds, type sizes and the tier logic are unchanged from the old
+// provider; they live in the Glance widget now.
+const PROVIDER = GLANCE;
+const INFO = read('android/app/src/main/res/xml/glance_reading_info.xml');
 
 describe('a control does not decide how tall the text is', () => {
   it('keeps the play disc out of the text column', () => {
     // Between the two columns, as a sibling of both. Inside the left one it
     // set the height of the line it sat on, and that line was the surah
     // name — so a 36dp target quietly became the card's layout.
-    expect(idIndex('reading_play')).toBeGreaterThan(
-      idIndex('reading_position'),
-    );
-    expect(idIndex('reading_play')).toBeLessThan(idIndex('reading_side'));
-    // `layout_gravity` only means anything on a child of the root row.
-    const disc = LAYOUT.slice(idIndex('reading_play'));
-    expect(disc.slice(0, disc.indexOf('/>'))).toContain(
-      'android:layout_gravity="center_vertical"',
-    );
+    const position = GLANCE.indexOf('context.getString(R.string.widget_reading_position');
+    const disc = GLANCE.indexOf('.size(36.dp)');
+    const side = GLANCE.indexOf('if (size.widthDp !in 1 until SIDE_COLUMN_MIN_WIDTH_DP)');
+    expect(position).toBeGreaterThan(-1);
+    expect(disc).toBeGreaterThan(position);
+    expect(disc).toBeLessThan(side);
+    // ...and it is a child of the root Row, not of the text Column: the
+    // Column that holds the position line is closed before the disc opens.
+    const between = GLANCE.slice(position, disc);
+    expect(between).toMatch(/\n      \}\n/);
   });
 
   it('lets the surah name have the column to itself', () => {
-    const surah = LAYOUT.slice(idIndex('reading_surah'));
-    const tag = surah.slice(0, surah.indexOf('/>'));
-    expect(tag).toContain('android:layout_width="match_parent"');
+    const at = GLANCE.indexOf('Label(r.surahName');
+    expect(at).toBeGreaterThan(-1);
+    const call = GLANCE.slice(at, GLANCE.indexOf('\n', at));
     // A weight is how it looked when it shared a row with the control.
-    expect(tag).not.toContain('layout_weight');
+    expect(call).not.toContain('defaultWeight');
   });
 });
 
@@ -81,8 +78,7 @@ describe('height picks a tier, and every tier fits', () => {
     expect(compact).toBeGreaterThan(101);
   });
 
-  it('scales the type rather than shipping three layouts', () => {
-    expect(PROVIDER).toContain('views.setTextViewTextSize(');
+  it('scales the type rather than drawing three cards', () => {
     expect(PROVIDER).toMatch(
       /Tier\.COMPACT -> 20f; Tier\.NORMAL -> 23f; Tier\.GENEROUS -> 28f/,
     );
@@ -91,22 +87,20 @@ describe('height picks a tier, and every tier fits', () => {
   it('drops the side column’s third line at one row', () => {
     // The line that was being cut. It repeats what the counter above it
     // already says, so it is the one to lose.
-    expect(PROVIDER).toContain(
-      'if (tier == Tier.COMPACT) View.GONE else View.VISIBLE',
-    );
+    expect(PROVIDER).toContain('note = if (tier == Tier.COMPACT) null else when {');
   });
 
   it('will not let a branch put back a line the height ruled out', () => {
     // The khatmah branch used to set the tail visible on its own, after the
     // card had already decided it had no room for one.
-    expect(PROVIDER).toContain('if (tail != null && tall) {');
+    expect(PROVIDER).toContain('lastReadTail(context, r, nowMs)?.takeIf { tall }');
   });
 
   it('gives the tallest sizes something to say', () => {
     // Without a plan the left column is a header, a name and a page; at
     // three rows and up the rest was air.
     expect(PROVIDER).toContain(
-      'val tail = if (tier == Tier.GENEROUS) lastReadTail(context, r) else null',
+      'else if (tier == Tier.GENEROUS) lastReadTail(context, r, nowMs)',
     );
   });
 });
@@ -126,7 +120,12 @@ describe('the stack fits the card it is drawn in', () => {
       /name="widget_card_inset">(\d+)dp/,
     )![1],
   );
-  const CARD_PADDING_DP = 10;
+  // MihrabCard's default contentPadding / verticalPadding.
+  const CARD_PADDING_DP = Number(
+    read('android/app/src/main/java/com/prayer_times/glance/GlanceSupport.kt').match(
+      /contentPadding: Dp = (\d+)\.dp/,
+    )![1],
+  );
   const ONE_ROW_DP = 101;
 
   const budget = (launcherDp: number) =>
@@ -135,22 +134,44 @@ describe('the stack fits the card it is drawn in', () => {
   /** A line box is about 1.2x its type size for the default face. */
   const line = (sp: number) => sp * 1.2;
 
+  /**
+   * The type size a tier draws a label at, read off the Kotlin's own
+   * `surahSp` / `positionSp` / `sideValueSp` tables.
+   */
   const spFor = (tier: 'COMPACT' | 'NORMAL' | 'GENEROUS', which: string) => {
-    const block = PROVIDER.slice(PROVIDER.indexOf(`R.id.${which}, sp,`));
-    const arm = block.match(new RegExp(`Tier\\.${tier} -> (\\d+)f`));
+    const fn = which === 'reading_surah' ? 'surahSp' : which === 'reading_position' ? 'positionSp' : 'sideValueSp';
+    const body = PROVIDER.slice(PROVIDER.indexOf(`private fun ${fn}(`));
+    const line1 = body.slice(0, body.indexOf('\n'));
+    const arm = line1.match(new RegExp(`Tier\\.${tier} -> (\\d+)f`));
     if (arm) return Number(arm[1]);
-    const fallback = block.match(/else -> (\d+)f/);
-    return Number(fallback![1]);
+    const iff = line1.match(/if \(t == Tier\.COMPACT\) (\d+)f else (\d+)f/);
+    if (iff) return Number(tier === 'COMPACT' ? iff[1] : iff[2]);
+    throw new Error(`${fn} changed shape — teach this test how to read it`);
   };
 
+  /**
+   * The gap above a label: the `padding(top = N.dp)` on the Label call whose
+   * first line mentions `needle`, read off the Kotlin. Glance has no layout
+   * margins; the padding on the Label is the margin.
+   */
   const marginOf = (id: string) => {
-    const at = LAYOUT.indexOf(`@+id/${id}`);
-    const tag = LAYOUT.slice(at, at + LAYOUT.slice(at).indexOf('/>'));
-    const m = tag.match(/layout_marginTop="(\d+)dp"/);
+    const needle = {
+      reading_surah: 'Label(r.surahName',
+      reading_position: 'context.getString(R.string.widget_reading_position',
+      reading_side_value: 'Label(value, valueSp',
+      reading_progress: 'Spacer(GlanceModifier.height(',
+      reading_progress_label: 'R.string.widget_reading_progress',
+      reading_tail: 'if (tail != null) Label(tail',
+    }[id]!;
+    const at = PROVIDER.indexOf(needle);
+    expect(at).toBeGreaterThan(-1);
+    const chunk = PROVIDER.slice(at, at + 260);
+    const m = chunk.match(/(?:padding\(top = |height\()(\d+)\.dp/);
     return m ? Number(m[1]) : 0;
   };
 
   const HEADER_SP = 11;
+  const PROGRESS_BAR_DP = Number(PROVIDER.match(/fillMaxWidth\(\)\.height\((\d+)\.dp\)/)![1]);
 
   it('fits one launcher row, which is the size it ships at', () => {
     // header + surah + position, at COMPACT's type. Nothing else is drawn
@@ -180,9 +201,7 @@ describe('the stack fits the card it is drawn in', () => {
   it('fits the play control beside them', () => {
     // It sizes the card's row now rather than the text column's line, so
     // what it has to fit inside is the same budget.
-    const at = LAYOUT.indexOf('@+id/reading_play');
-    const tag = LAYOUT.slice(at, at + LAYOUT.slice(at).indexOf('/>'));
-    const size = Number(tag.match(/layout_height="(\d+)dp"/)![1]);
+    const size = Number(PROVIDER.match(/\.size\((\d+)\.dp\)\s*\n\s*\.background\(ImageProvider\(R\.drawable\.widget_play_button/)![1]);
     expect(size).toBeLessThanOrEqual(budget(ONE_ROW_DP));
     // Still a real target for a thumb.
     expect(size).toBeGreaterThanOrEqual(32);
@@ -219,7 +238,7 @@ describe('the stack fits the card it is drawn in', () => {
       marginOf('reading_position') +
       line(spFor('NORMAL', 'reading_position')) +
       marginOf('reading_progress') +
-      4 +
+      PROGRESS_BAR_DP +
       marginOf('reading_progress_label') +
       line(11) +
       marginOf('reading_tail') +
@@ -238,7 +257,7 @@ describe('the stack fits the card it is drawn in', () => {
       marginOf('reading_position') +
       line(spFor('GENEROUS', 'reading_position')) +
       marginOf('reading_progress') +
-      4 +
+      PROGRESS_BAR_DP +
       marginOf('reading_progress_label') +
       line(11) +
       marginOf('reading_tail') +

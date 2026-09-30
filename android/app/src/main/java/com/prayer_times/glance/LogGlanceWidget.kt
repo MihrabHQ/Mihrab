@@ -11,8 +11,6 @@ import androidx.glance.ImageProvider
 import androidx.glance.action.ActionParameters
 import androidx.glance.action.actionParametersOf
 import androidx.glance.action.clickable
-import androidx.glance.appwidget.GlanceAppWidget
-import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import androidx.glance.appwidget.action.ActionCallback
 import androidx.glance.appwidget.action.actionRunCallback
 import androidx.glance.background
@@ -368,11 +366,3 @@ class LogTap : ActionCallback {
     val INDEX = ActionParameters.Key<Int>("index")
   }
 }
-
-/** Log Today's Glance receiver. Registered only by the Glance build flag. */
-open class LogGlanceReceiver : GlanceAppWidgetReceiver() {
-  override val glanceAppWidget: GlanceAppWidget = LogGlanceWidget()
-}
-
-/** Log Today placed three rows tall: the same widget under a second picker entry. */
-class LogTallGlanceReceiver : LogGlanceReceiver()

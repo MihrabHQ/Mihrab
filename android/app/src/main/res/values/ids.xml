@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!--
+    The views `glance_card.xml` and `glance_error_card.xml` draw, and that
+    `WidgetCard` and `WidgetErrorCard` address. They used to be declared by
+    the RemoteViews layouts (`@+id/...`); those are gone, so they are
+    declared here.
+  -->
+  <item name="widget_card" type="id" />
+  <item name="widget_shell" type="id" />
+  <item name="widget_root" type="id" />
+  <item name="widget_content" type="id" />
+  <item name="widget_placeholder" type="id" />
+</resources>

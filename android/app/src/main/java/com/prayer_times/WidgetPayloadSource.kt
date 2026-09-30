@@ -26,6 +26,7 @@ object WidgetPayloadSource {
 
   /** When a rebuild for a stale offset was last started, epoch ms (see `askForRebuildIfStale`). */
   private const val PREFS_STALE_ASK_MS = "stale_rebuild_ask_ms"
+  private const val PREFS_V2_ASK_MS = "v2_rebuild_ask_ms"
 
   /** At most one rebuild per this long, across processes. */
   private const val STALE_ASK_MIN_INTERVAL_MS = 15 * 60_000L
@@ -98,6 +99,39 @@ object WidgetPayloadSource {
     cachedMinutes = -1
     cachedToday = null
     staleAskedFor = null
+  }
+
+  /**
+   * NO PAYLOAD V2 YET — ask the app to write one.
+   *
+   * The Glance cards read payload v2 alone. An app updated from before 1.4
+   * (v2.27.1 and older) has only ever written v1, so on the first redraw
+   * after the update every placed widget would say "Open Mihrab" until the
+   * app is opened — overnight for anyone whose store updates while they
+   * sleep. The app's own refresh task rebuilds and writes the payload
+   * headlessly, the same one the refresh glyph and a stale offset start.
+   *
+   * Only when v2 is missing, a widget is placed (the caller checks), and at
+   * most once per [STALE_ASK_MIN_INTERVAL_MS]. Allowed from the update and
+   * boot broadcasts and the boundary alarm; refused (IllegalStateException)
+   * from a plain APPWIDGET_UPDATE or an unlock, in which case the next
+   * allowed wake-up asks again, since nothing is recorded.
+   */
+  fun askForV2IfMissing(context: Context) {
+    val prefs = context.getSharedPreferences(PrayerWidgetProvider.PREFS_NAME, Context.MODE_PRIVATE)
+    if (!prefs.getString(PREFS_KEY_V2, null).isNullOrEmpty()) return
+    val now = System.currentTimeMillis()
+    if (now - prefs.getLong(PREFS_V2_ASK_MS, 0L) in 0 until STALE_ASK_MIN_INTERVAL_MS) return
+    try {
+      if (context.startService(Intent(context, WidgetRefreshHeadlessService::class.java)) != null) {
+        prefs.edit().putLong(PREFS_V2_ASK_MS, now).apply()
+        Log.i(TAG, "no payload v2 yet; asked the app to write one")
+      }
+    } catch (e: IllegalStateException) {
+      Log.i(TAG, "payload v2 rebuild refused in the background; will ask again from an allowed wake-up")
+    } catch (t: Throwable) {
+      Log.w(TAG, "could not start the refresh task", t)
+    }
   }
 
   /** The payload and offset a rebuild was last started for, so it is started once. */

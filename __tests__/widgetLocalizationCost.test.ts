@@ -130,21 +130,16 @@ describe('the timeline archive stays under WidgetKit\'s size cap', () => {
   });
 });
 
-describe('the refresh button', () => {
+describe('no refresh button on iOS or the Mac', () => {
   const main = source['PrayerWidgetExtension.swift'];
 
-  it('does something', () => {
-    // It was `func perform() async throws -> some IntentResult { .result() }`.
-    expect(main).not.toMatch(/func perform\(\)[^\n]*\{ \.result\(\) \}/);
-    expect(main).toContain('WidgetCenter.shared.reloadTimelines(ofKind: "PrayerTimesWidget")');
-  });
-
-  it('reloads one kind, never all of them', () => {
-    // A press costs a render. Six renders is how you get an extension
-    // killed by the CPU limit — see the note at the top of this file.
+  it('draws none and declares no intent for one', () => {
+    // A press could only redraw from the payload already on disk, which the
+    // timeline does by itself; and a reload from a button is how an extension
+    // gets killed by the CPU limit. Android's glyph does a sync round.
     const bare = code(main);
-    const intent = bare.slice(bare.indexOf('struct RefreshIntent'));
-    const body = intent.slice(0, intent.indexOf('\n}\n'));
-    expect(body).not.toContain('reloadAllTimelines');
+    expect(bare).not.toContain('RefreshIntent');
+    expect(bare).not.toContain('arrow.clockwise');
+    expect(bare).not.toContain('reloadAllTimelines');
   });
 });

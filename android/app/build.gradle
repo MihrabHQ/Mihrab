@@ -2,26 +2,9 @@ apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
 
-/**
- * THE WIDGETS ARE JETPACK GLANCE (docs/rewrite-plan.md, Phase 4).
- *
- * Every home-screen widget has a Glance card in src/glance, and the picker
- * offers those. The RemoteViews providers in src/main stay registered, hidden
- * from the picker on Android 12+ (res/xml-v31), so a widget a user placed
- * before the switch keeps drawing; delete them when nobody has one left.
- *
- *     ./gradlew assembleFdroidRelease -PmihrabGlanceWidgets=false
- *
- * builds the RemoteViews-only app instead: src/glanceOff supplies a no-op
- * GlanceWidgetHook, and there is no Compose compiler, no Glance dependency,
- * no WorkManager and no Glance receivers. The Glance build adds the sources,
- * resources and receivers (src/glance/AndroidManifest.xml, merged as the build
- * types' manifest), androidx.glance and the Compose compiler plugin.
- */
-def glanceWidgets = (findProperty("mihrabGlanceWidgets") ?: "true").toString().toBoolean()
-if (glanceWidgets) {
-    apply plugin: "org.jetbrains.kotlin.plugin.compose"
-}
+// The widgets are Jetpack Glance (docs/rewrite-plan.md, Phase 4), which needs
+// the Compose compiler.
+apply plugin: "org.jetbrains.kotlin.plugin.compose"
 
 /**
  * This is the configuration block to customize your React Native Android app.
@@ -188,16 +171,11 @@ android {
     sourceSets {
         main {
             assets.srcDirs += ["$rootDir/../assets"]
-            // One GlanceWidgetHook or the other; see `glanceWidgets` above.
-            java.srcDirs += [glanceWidgets ? "src/glance/java" : "src/glanceOff/java"]
-            if (glanceWidgets) {
-                res.srcDirs += ["src/glance/res"]
-            }
         }
     }
 
     buildFeatures {
-        compose glanceWidgets
+        compose true
     }
 
     /*
@@ -415,36 +393,16 @@ dependencies {
         implementation jscFlavor
     }
 
-    // Jetpack Glance, for the widget ports behind -PmihrabGlanceWidgets.
+    // Jetpack Glance, which draws every widget.
     // Apache 2.0 and built from AOSP like every androidx library here; it
     // brings the Compose runtime and WorkManager (which Glance runs its
     // sessions on), none of it Play Services. 1.1.1 is the last Glance
     // release this was checked against; take the current stable at the gate.
-    if (glanceWidgets) {
-        implementation("androidx.glance:glance-appwidget:1.1.1")
-        // Glance brings work-runtime 2.8, and another dependency brings
-        // work-runtime-ktx 2.7: since 2.8 the ktx classes live in
-        // work-runtime itself, so the two versions ship the same classes
-        // and the build stops on duplicates. The 2.8 ktx is the empty shell
-        // that lines them up.
-        implementation("androidx.work:work-runtime-ktx:2.8.1")
-    }
-}
-
-/*
- * The Glance receivers' manifest, merged as each build type's own — a
- * source set has one manifest, and main's is the shipping one. Guarded so a
- * build type that grows a manifest of its own later is not silently
- * replaced.
- */
-if (glanceWidgets) {
-    ["debug", "release", "beta"].each { buildType ->
-        if (file("src/$buildType/AndroidManifest.xml").exists()) {
-            throw new GradleException(
-                "src/$buildType/AndroidManifest.xml exists, and -PmihrabGlanceWidgets=true " +
-                "would replace it with src/glance/AndroidManifest.xml. Merge the two first."
-            )
-        }
-        android.sourceSets.getByName(buildType).manifest.srcFile("src/glance/AndroidManifest.xml")
-    }
+    implementation("androidx.glance:glance-appwidget:1.1.1")
+    // Glance brings work-runtime 2.8, and another dependency brings
+    // work-runtime-ktx 2.7: since 2.8 the ktx classes live in
+    // work-runtime itself, so the two versions ship the same classes
+    // and the build stops on duplicates. The 2.8 ktx is the empty shell
+    // that lines them up.
+    implementation("androidx.work:work-runtime-ktx:2.8.1")
 }

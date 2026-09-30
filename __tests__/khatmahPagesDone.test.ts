@@ -682,13 +682,13 @@ describe('the widget says the pages are missing too', () => {
       join(
         __dirname,
         '..',
-        'android/app/src/main/java/com/prayer_times/PrayerWidgetReadingProvider.kt',
+        'android/app/src/main/java/com/prayer_times/glance/ReadingGlanceWidget.kt',
       ),
       'utf8',
     );
     // Behind schedule first, then skipped, then done — a plan that is
     // both behind and holed has one line to say it in.
-    const order = ['behind > 0', 'skipped > 0', 'left == 0'];
+    const order = ['behind > 0 ->', 'khatmah.skipped > 0 ->', 'left == 0 ->'];
     const at = order.map(k => kotlin.indexOf(k));
     expect(at.every(i => i > 0)).toBe(true);
     expect([...at].sort((a, b) => a - b)).toEqual(at);

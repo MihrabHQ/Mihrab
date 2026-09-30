@@ -6,6 +6,15 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
+import com.prayer_times.PrayerWidgetHijriProvider
+import com.prayer_times.PrayerWidgetLargeProvider
+import com.prayer_times.PrayerWidgetLogLargeProvider
+import com.prayer_times.PrayerWidgetLogProvider
+import com.prayer_times.PrayerWidgetProvider
+import com.prayer_times.PrayerWidgetReadingProvider
+import com.prayer_times.PrayerWidgetSmallProvider
+import com.prayer_times.PrayerWidgetStreakProvider
+import com.prayer_times.PrayerWidgetTasbihProvider
 
 /**
  * Every Glance receiver this build registers, and the one way they are
@@ -20,15 +29,15 @@ import androidx.glance.appwidget.GlanceAppWidgetReceiver
  */
 internal object GlanceWidgets {
   val receivers: List<Class<out GlanceAppWidgetReceiver>> = listOf(
-    HijriGlanceReceiver::class.java,
-    TasbihGlanceReceiver::class.java,
-    StreakGlanceReceiver::class.java,
-    ReadingGlanceReceiver::class.java,
-    LogGlanceReceiver::class.java,
-    LogTallGlanceReceiver::class.java,
-    PrayerGlanceReceiver::class.java,
-    PrayerTallGlanceReceiver::class.java,
-    PrayerSmallGlanceReceiver::class.java,
+    PrayerWidgetHijriProvider::class.java,
+    PrayerWidgetTasbihProvider::class.java,
+    PrayerWidgetStreakProvider::class.java,
+    PrayerWidgetReadingProvider::class.java,
+    PrayerWidgetLogProvider::class.java,
+    PrayerWidgetLogLargeProvider::class.java,
+    PrayerWidgetProvider::class.java,
+    PrayerWidgetLargeProvider::class.java,
+    PrayerWidgetSmallProvider::class.java,
   )
 
   fun anyPlaced(context: Context): Boolean {

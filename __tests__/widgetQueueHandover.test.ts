@@ -87,8 +87,13 @@ describe('the redraw that replaces it', () => {
   it('and requestUpdate reaches the Tasbih widget', () => {
     // If it ever stopped fanning out to this provider, removing the redraw
     // above would strand the count until the next unrelated update.
+    // Every widget is a Glance card now: requestUpdate delegates to the hook,
+    // and the hook's receiver list must still hold the Tasbih receiver.
     expect(src('PrayerWidgetProvider')).toMatch(
-      /PrayerWidgetTasbihProvider\.requestUpdate\(context\)/,
+      /GlanceWidgetHook\.requestUpdate\(context\)/,
+    );
+    expect(src('glance/GlanceWidgets')).toMatch(
+      /PrayerWidgetTasbihProvider::class\.java/,
     );
   });
 });
@@ -96,14 +101,14 @@ describe('the redraw that replaces it', () => {
 describe('the tap itself still redraws immediately', () => {
   // The projection is the only feedback a tap has — nothing is written
   // until the app runs — so this redraw is the one that must stay.
-  const tasbih = src('PrayerWidgetTasbihProvider');
+  const tasbih = src('glance/TasbihGlanceWidget');
 
   it('appends, signals the app, and redraws, in that order', () => {
-    const at = tasbih.indexOf('private fun handleTap');
-    const body = tasbih.slice(at, tasbih.indexOf('\n    }', at));
+    const at = tasbih.indexOf('class TasbihTap');
+    const body = tasbih.slice(at, tasbih.indexOf('\n  }', at));
     const append = body.indexOf('WidgetTasbihQueue.append');
     const post = body.indexOf('WidgetQueueEvents.postChanged');
-    const draw = body.indexOf('requestUpdate(context)');
+    const draw = body.indexOf('PrayerWidgetProvider.requestUpdate(context)');
     expect(append).toBeGreaterThan(-1);
     expect(post).toBeGreaterThan(append);
     expect(draw).toBeGreaterThan(post);

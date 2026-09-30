@@ -259,10 +259,8 @@ describe('the senders say what they are', () => {
 
   it('the Log widget opens the Log', () => {
     const log = src(
-      'android/app/src/main/java/com/prayer_times/PrayerWidgetLogProvider.kt',
+      'android/app/src/main/java/com/prayer_times/glance/LogGlanceWidget.kt',
     );
-    expect(log).toContain('Uri.parse("mihrab://log")');
-    // The bare launcher intent this replaced.
-    expect(log).not.toContain('Intent(context, MainActivity::class.java)');
+    expect(log).toContain('openRoute(context, "mihrab://log")');
   });
 });

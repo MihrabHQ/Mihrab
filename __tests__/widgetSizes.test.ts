@@ -5,124 +5,108 @@
  * ArrayIndexOutOfBoundsException on the Next-prayer, Prayer-times and
  * Prayer-times-(tall) widgets, on a phone with all three night marks on.
  * Nine rows (Sunrise, five prayers, three marks) indexed a highlight-box
- * array of eight. The four column arrays are pinned equal here, and the
- * binder indexes the boxes with `getOrNull`, so the lengths can never
- * again decide whether a card renders.
+ * array of eight. The Glance cards have no per-slot id arrays at all: the
+ * rows are iterated with `withIndex()`, so a row count can no longer index
+ * past anything.
  *
- * The size story: every provider that decides anything from its size draws
- * ONE RemoteViews per size the launcher can show (WidgetSizing, Android 12's
- * size map), and nothing inside a render reads the options bundle for the
- * "current" size. Below 12 the single measured pair still applies.
+ * The size story: every Glance widget is a function of `LocalSize` and
+ * nothing else (`SizeMode.Exact`, one composition per size the launcher can
+ * show), and nothing inside a render reads the options bundle for the
+ * "current" size.
  */
 import { readFileSync, readdirSync } from 'fs';
 import path from 'path';
 
 const ROOT = path.join(__dirname, '..');
 const KT = path.join(ROOT, 'android', 'app', 'src', 'main', 'java', 'com', 'prayer_times');
+const GLANCE = path.join(KT, 'glance');
 const RES = path.join(ROOT, 'android', 'app', 'src', 'main', 'res');
 const read = (...p: string[]) => readFileSync(path.join(...p), 'utf8');
 const kt = (name: string) => read(KT, `${name}.kt`);
+const glance = (name: string) => read(GLANCE, `${name}.kt`);
 
-const provider = kt('PrayerWidgetProvider');
+const prayer = glance('PrayerGlanceWidget');
 
-function arrayLength(src: string, name: string): number {
-  const m = new RegExp(`private val ${name} =\\s*intArrayOf\\(([\\s\\S]*?)\\)`).exec(src);
-  expect(m).toBeTruthy();
-  return m![1].split('\n').filter(l => /R\.id\./.test(l)).length;
-}
-
-describe('the column arrays — issue #31', () => {
-  it('are all the same length', () => {
-    const wrappers = arrayLength(provider, 'COL_WRAPPERS');
-    const boxes = arrayLength(provider, 'COL_BOXES');
-    const labels = arrayLength(provider, 'COL_LABELS');
-    const times = arrayLength(provider, 'COL_TIMES');
-    expect(new Set([wrappers, boxes, labels, times]).size).toBe(1);
-    // Nine: Fajr, Sunrise, Dhuhr, Asr, Maghrib, Isha and the three night marks.
-    expect(labels).toBe(9);
+describe('the prayer rows — issue #31', () => {
+  // Replaces "the column arrays are all the same length" and "every slot the
+  // arrays name exists in the list layout": COL_* and prayer_widget.xml are gone.
+  it('has no fixed per-slot id arrays to fall out of step', () => {
+    expect(prayer).not.toMatch(/intArrayOf\(/);
+    expect(prayer).not.toMatch(/R\.id\.widget_col_/);
   });
 
-  it('every slot the arrays name exists in the list layout', () => {
-    const list = read(RES, 'layout', 'prayer_widget.xml');
-    for (let i = 0; i < 9; i++) {
-      for (const suffix of ['', '_box', '_label', '_time']) {
-        expect(list).toContain(`android:id="@+id/widget_col_${i}${suffix}"`);
-      }
-    }
+  it('makes room for all nine rows in the list', () => {
+    // Fajr, Sunrise, Dhuhr, Asr, Maghrib, Isha and the three night marks.
+    expect(prayer).toMatch(/private const val LIST_SLOTS = 9/);
+    expect(prayer).toMatch(/val shown = m\.rows\.take\(LIST_SLOTS\)/);
   });
 
-  it('indexes the boxes defensively anyway', () => {
-    expect(provider).toMatch(/val box = COL_BOXES\.getOrNull\(i\)/);
-    expect(provider).not.toMatch(/COL_BOXES\[i\]/);
+  it('indexes the rows by iteration, never by a fixed table', () => {
+    expect(prayer).toMatch(/for \(\(i, r\) in shown\.withIndex\(\)\)/);
   });
 
   it('sizes the strip’s times for six columns, not nine', () => {
-    expect(provider).toMatch(/const val STRIP_COLUMNS = 6/);
-    expect(provider).toMatch(/val slots = if \(layoutId == R\.layout\.prayer_widget\) COL_LABELS\.size else STRIP_COLUMNS/);
-    expect(provider).toMatch(/val shown = displayRows\.take\(slots\)/);
+    expect(prayer).toMatch(/private const val STRIP_COLUMNS = 6/);
+    expect(prayer).toMatch(/val columns = m\.rows\.take\(STRIP_COLUMNS\)/);
   });
 });
 
-describe('one RemoteViews per size the launcher can show', () => {
-  const sizing = kt('WidgetSizing');
+describe('one composition per size the launcher can show', () => {
+  // Replaces the WidgetSizing / RemoteViews(map) tests: SizeMode.Exact is
+  // that machinery done by the library (see MihrabGlanceWidget).
+  const base = glance('MihrabGlanceWidget');
+  const widgets = [
+    'PrayerGlanceWidget',
+    'LogGlanceWidget',
+    'StreakGlanceWidget',
+    'ReadingGlanceWidget',
+    'HijriGlanceWidget',
+    'TasbihGlanceWidget',
+  ];
 
-  it('uses the platform size map on Android 12+', () => {
-    expect(sizing).toMatch(/OPTION_APPWIDGET_SIZES/);
-    expect(sizing).toMatch(/RemoteViews\(map\)/);
-    expect(sizing).toMatch(/Build\.VERSION_CODES\.S/);
-    // And the single measured pair below it.
-    expect(sizing).toMatch(/PrayerWidgetProvider\.sizeDp\(context, mgr, appWidgetId\)/);
+  it('uses the library’s exact size map', () => {
+    expect(base).toMatch(/override val sizeMode: SizeMode = SizeMode\.Exact/);
   });
 
-  it.each([
-    'PrayerWidgetProvider',
-    'PrayerWidgetLogProvider',
-    'PrayerWidgetStreakProvider',
-    'PrayerWidgetReadingProvider',
-    'PrayerWidgetHijriProvider',
-    'PrayerWidgetTasbihProvider',
-  ])('%s draws through it', name => {
-    expect(kt(name)).toMatch(/WidgetSizing\.responsive\(/);
+  it.each(widgets)('%s draws through it', name => {
+    expect(glance(name)).toMatch(/: MihrabGlanceWidget\("[a-z]+"\)/);
   });
 
-  it('no size-dependent provider reads the options for the "current" size inside a render', () => {
-    for (const name of [
-      'PrayerWidgetLogProvider',
-      'PrayerWidgetStreakProvider',
-      'PrayerWidgetReadingProvider',
-      'PrayerWidgetHijriProvider',
-      'PrayerWidgetTasbihProvider',
-    ]) {
-      const src = kt(name);
-      expect(src).not.toMatch(/PrayerWidgetProvider\.sizeDp\(/);
+  it('reads the size from LocalSize only, in one place', () => {
+    expect(glance('GlanceSupport')).toMatch(/fun cardSize\(\): CardSize \{\s*val s = LocalSize\.current/);
+    for (const f of readdirSync(GLANCE).filter(f => f.endsWith('.kt'))) {
+      const src = read(GLANCE, f);
+      // Nothing in a render asks the launcher for the "current" size.
       expect(src).not.toMatch(/getAppWidgetOptions\(/);
+      expect(src).not.toMatch(/PrayerWidgetProvider\.sizeDp\(/);
     }
-    // The prayer provider owns sizeDp for the pre-12 path and nothing else
-    // in it calls it: selectLayout takes the size it is handed.
-    const body = provider.slice(provider.indexOf('private fun selectLayout('));
-    expect(body.slice(0, body.indexOf('private fun buildViews('))).not.toMatch(/getAppWidgetOptions/);
-    expect(provider).toMatch(/private fun selectLayout\(\s*providerName: String\?,\s*width: Int,\s*height: Int,\s*\)/);
   });
 
-  it('every render is handed both dimensions', () => {
-    expect(provider).toMatch(/buildViews\(context, id, json, style, providerName, size\.widthDp, size\.heightDp\)/);
-    expect(kt('PrayerWidgetLogProvider')).toMatch(/private fun buildViews\(base: Context, widthDp: Int, heightDp: Int\)/);
-    expect(kt('PrayerWidgetStreakProvider')).toMatch(/fun buildViews\(base: Context, widthDp: Int, heightDp: Int\)/);
+  it('every provider class is a Glance receiver holding its widget', () => {
+    for (const [cls, w] of [
+      ['PrayerWidgetLogProvider', 'LogGlanceWidget'],
+      ['PrayerWidgetStreakProvider', 'StreakGlanceWidget'],
+      ['PrayerWidgetReadingProvider', 'ReadingGlanceWidget'],
+      ['PrayerWidgetHijriProvider', 'HijriGlanceWidget'],
+      ['PrayerWidgetTasbihProvider', 'TasbihGlanceWidget'],
+    ]) {
+      expect(kt(cls)).toMatch(new RegExp(`: GlanceAppWidgetReceiver\\(\\)[\\s\\S]*glanceAppWidget: GlanceAppWidget = ${w}\\(\\)`));
+    }
   });
 
   it('Hijri and Tasbih drop a line at a short size instead of clipping it', () => {
-    const hijri = kt('PrayerWidgetHijriProvider');
+    const hijri = glance('HijriGlanceWidget');
     expect(hijri).toMatch(/const val SHORT_HEIGHT_DP = 52/);
     expect(hijri).toMatch(/const val NARROW_WIDTH_DP = 170/);
-    expect(hijri).toMatch(/R\.id\.hijri_year, if \(short\) View\.GONE else View\.VISIBLE/);
-    expect(hijri).toMatch(/nextMonth\.isEmpty\(\) \|\| short \|\| narrow/);
+    expect(hijri).toMatch(/if \(!short\) Label\(h\.year\.toString\(\)/);
+    expect(hijri).toMatch(/h\.nextMonthName\.isNotEmpty\(\) && !short && !narrow/);
     // The layout's own floor stays below the threshold, so the short variant is reachable.
-    expect(read(RES, 'xml', 'prayer_widget_hijri_info.xml')).toMatch(/android:minResizeHeight="40dp"/);
-    const tasbih = kt('PrayerWidgetTasbihProvider');
+    expect(read(RES, 'xml', 'glance_hijri_info.xml')).toMatch(/android:minResizeHeight="40dp"/);
+    const tasbih = glance('TasbihGlanceWidget');
     expect(tasbih).toMatch(/const val SHORT_HEIGHT_DP = 110/);
-    expect(tasbih).toMatch(/R\.id\.tasbih_today, if \(short\) View\.GONE else View\.VISIBLE/);
-    expect(read(RES, 'xml', 'prayer_widget_tasbih_info.xml')).toMatch(/android:minResizeHeight="100dp"/);
-    // Size 0 is "unknown" and draws the full card — the pre-12 callers with no launcher to ask.
+    expect(tasbih).toMatch(/if \(!short\) Label\(footerLine\(context, m\.todayTotal, m\.todayRounds\)/);
+    expect(read(RES, 'xml', 'glance_tasbih_info.xml')).toMatch(/android:minResizeHeight="100dp"/);
+    // Size 0 is "unknown" and draws the full card — the callers with no launcher to ask.
     for (const src of [hijri, tasbih]) expect(src).toMatch(/heightDp in 1 until SHORT_HEIGHT_DP/);
   });
 });
@@ -135,8 +119,8 @@ describe('one RemoteViews per size the launcher can show', () => {
  * "Class not allowed to be inflated" on the launcher side, where no
  * try/catch of ours can turn it into a Mihrab error card. One of these
  * widgets shipped once with a <View> spacer and showed exactly that.
- * Every layout a widget provider inflates — live and preview — is held
- * to the list.
+ * Every layout that reaches a RemoteViews — the picker previews, the
+ * embedded card / countdown, and the error card — is held to the list.
  */
 describe('every widget layout inflates under RemoteViews', () => {
   // https://developer.android.com/reference/android/widget/RemoteViews (API 31+, without the
@@ -148,12 +132,18 @@ describe('every widget layout inflates under RemoteViews', () => {
     'ListView', 'GridView', 'StackView',
   ]);
   const layoutDir = path.join(RES, 'layout');
-  const layouts = readdirSync(layoutDir).filter(f => /^prayer_widget.*\.xml$/.test(f));
+  const layouts = readdirSync(layoutDir).filter(f => /^(prayer_widget|glance_).*\.xml$/.test(f));
 
-  it('covers the live and the preview layouts', () => {
-    expect(layouts.length).toBeGreaterThanOrEqual(17);
-    expect(layouts).toContain('prayer_widget.xml');
-    expect(layouts).toContain('prayer_widget_tasbih_preview.xml');
+  it('covers the previews and the Glance-embedded layouts', () => {
+    expect(layouts.length).toBeGreaterThanOrEqual(12);
+    for (const f of [
+      'prayer_widget_tasbih_preview.xml', 'prayer_widget_strip_preview.xml',
+      'glance_card.xml', 'glance_error_card.xml', 'glance_countdown.xml',
+    ]) {
+      expect(layouts).toContain(f);
+    }
+    // The old live layouts are gone: a resurrected one would be a second drawing path.
+    expect(layouts).not.toContain('prayer_widget.xml');
   });
 
   for (const f of layouts) {
@@ -168,23 +158,36 @@ describe('every widget layout inflates under RemoteViews', () => {
 });
 
 /**
- * A throw in ANY provider's render is a Mihrab error card, not the
- * launcher's. Next-prayer catches its own; the rest go through
- * WidgetErrorCard.guard, and the guard itself never trusts the state it
- * is called in.
+ * A throw in ANY widget's render is a Mihrab error card, not the
+ * launcher's. Each Glance card builds its model inside `guarded` and shows
+ * `ErrorContent` on failure; a throw in the composition itself lands in
+ * `MihrabGlanceWidget.onCompositionError`, which draws
+ * `WidgetErrorCard.errorCard`; and the guard itself never trusts the state
+ * it is called in.
  */
-describe('every provider degrades to a Mihrab error card', () => {
-  const guarded = ['Streak', 'Reading', 'Hijri', 'Tasbih', 'Log'];
-  for (const name of guarded) {
-    it(`PrayerWidget${name}Provider.buildViews is guarded`, () => {
-      const src = kt(`PrayerWidget${name}Provider`);
-      expect(src).toMatch(/fun buildViews\([^)]*\): RemoteViews =\s*(\/\/[^\n]*\n\s*)*WidgetErrorCard\.guard\(base, R\.layout\.prayer_widget_[a-z]*, "[a-z]+"\) \{ render\(/);
-      expect(src).toMatch(/private fun render\(base: Context/);
+describe('every widget degrades to a Mihrab error card', () => {
+  for (const name of ['Prayer', 'Log', 'Streak', 'Reading', 'Hijri', 'Tasbih']) {
+    it(`${name}GlanceWidget builds its model guarded and shows ErrorContent on failure`, () => {
+      const src = glance(`${name}GlanceWidget`);
+      expect(src).toMatch(/guarded\(/);
+      expect(src).toMatch(/onFailure = \{ ErrorContent\(context, it\) \}/);
     });
   }
 
-  it('Next-prayer puts the class name on the card itself', () => {
-    expect(provider).toMatch(/widget_error\)\} \(\$\{e\.javaClass\.simpleName\}\)/);
+  it('a throw in the composition draws the Mihrab error card, and the library’s is a Mihrab card too', () => {
+    const base = glance('MihrabGlanceWidget');
+    expect(base).toMatch(/GlanceAppWidget\(errorUiLayout = R\.layout\.glance_error_card\)/);
+    expect(base).toMatch(/override fun onCompositionError\(/);
+    expect(base).toMatch(/WidgetErrorCard\.errorCard\(context, R\.layout\.glance_error_card, throwable\)/);
+    // Only exceptions, as WidgetErrorCard: an Error is not a rendering fault.
+    expect(base).toMatch(/if \(throwable !is Exception\)/);
+  });
+
+  it('the in-card error puts the class name on the card, never the message', () => {
+    const support = glance('GlanceSupport');
+    expect(support).toMatch(/Placeholder\("\$label \(\$\{e\.javaClass\.simpleName\}\)", color = Palette\.DANGER\)/);
+    expect(support).not.toMatch(/e\.message/);
+    expect(support).toMatch(/Log\.e\(PrayerWidgetProvider\.WIDGET_LOG_TAG, "\$what glance widget failed", e\)/);
   });
 
   it('the guard shows the class name, not the message, and survives a broken context', () => {
@@ -197,6 +200,10 @@ describe('every provider degrades to a Mihrab error card', () => {
     expect(src).toMatch(/R\.id\.widget_placeholder, View\.VISIBLE/);
     expect(src).toMatch(/R\.id\.widget_content, View\.GONE/);
     expect(src).toMatch(/Log\.e\(PrayerWidgetProvider\.WIDGET_LOG_TAG/);
+  });
+
+  it('the error card layout has the placeholder the guard fills in', () => {
+    expect(read(RES, 'layout', 'glance_error_card.xml')).toContain('android:id="@id/widget_placeholder"');
   });
 });
 

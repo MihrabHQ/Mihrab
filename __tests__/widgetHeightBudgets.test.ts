@@ -32,8 +32,9 @@ const JAVA = path.join(ROOT, 'android', 'app', 'src', 'main', 'java', 'com', 'pr
 const RES = path.join(ROOT, 'android', 'app', 'src', 'main', 'res');
 
 const src = (name: string) => readFileSync(path.join(JAVA, `${name}.kt`), 'utf8');
-const strip = src('PrayerWidgetProvider');
-const log = src('PrayerWidgetLogProvider');
+// The budgets moved into the Glance widgets when the RemoteViews providers went.
+const strip = src('glance/PrayerGlanceWidget');
+const log = src('glance/LogGlanceWidget');
 
 const constOf = (file: string, name: string) => {
   const m = new RegExp(`val ${name} = (\\d+)`).exec(file);
@@ -95,13 +96,13 @@ describe('the budgets stay in order', () => {
 
 describe('a variant is filled against the budget that chose it', () => {
   it('the strip picks its variant on the budgets and nothing else', () => {
-    expect(strip).toContain('val oneRow = heightDp in 1 until STRIP_TIGHT_CONTENT_DP');
-    expect(strip).toContain('val tight = heightDp in 1 until STRIP_ROOMY_CONTENT_DP');
+    expect(strip).toContain('val oneRow = h in 1 until STRIP_TIGHT_CONTENT_DP');
+    expect(strip).toContain('val tight = h in 1 until STRIP_ROOMY_CONTENT_DP');
   });
 
   it('the log card picks its three the same way', () => {
-    expect(log).toContain('val tight = heightDp in 1 until LOG_ROOMY_CONTENT_DP');
-    expect(log).toContain('val bare = heightDp in 1 until LOG_TIGHT_CONTENT_DP');
+    expect(log).toContain('val tight = h in 1 until LOG_ROOMY_CONTENT_DP');
+    expect(log).toContain('val bare = h in 1 until LOG_TIGHT_CONTENT_DP');
   });
 
   it.each([
@@ -114,9 +115,9 @@ describe('a variant is filled against the budget that chose it', () => {
       `val budget =[\\s\\S]{0,200}?${prefix}_ROOMY_CONTENT_DP`,
     );
     expect(file).toMatch(assign);
-    expect(file).toContain('((heightDp - budget) / 2)');
+    expect(file).toContain('((h - budget) / 2)');
     // No bare numeral may creep back into the slack arithmetic.
-    expect(file).not.toMatch(/\(heightDp - \d+\) \/ 2/);
+    expect(file).not.toMatch(/\(h - \d+\) \/ 2/);
   });
 });
 
@@ -162,10 +163,8 @@ describe('the graph appears exactly when a row of it fits', () => {
   it('drops the log card’s date line when the graph takes its place', () => {
     // Both facts on that line are said again once the graph is drawn, and
     // the 22dp it costs is most of a row of history.
-    expect(log).toContain('val graph = heightDp >= GRID_MIN_HEIGHT_DP');
-    expect(log).toMatch(
-      /widget_log_header_row,\s*\n\s*if \(bare \|\| graph\) View\.GONE/,
-    );
+    expect(log).toContain('val graphHeight = h >= GRID_MIN_HEIGHT_DP');
+    expect(log).toMatch(/if \(!bare && !graphHeight\) \{\s*\n\s*Row\([^\n]*\n\s*Label\(m\.title/);
   });
 });
 
@@ -193,70 +192,38 @@ describe('the graph appears exactly when a row of it fits', () => {
  * would be a graph that had shrunk.
  */
 describe('the graph is sized for the space it is actually given', () => {
-  const layoutXml = (name: string) =>
-    readFileSync(path.join(RES, 'layout', `${name}.xml`), 'utf8');
+  // The layout-XML walk that pinned "the graph's ImageView is the only weighted
+  // child" went with prayer_widget_{strip,log}.xml; the Glance equivalent is
+  // that the graph is the one defaultWeight() child after its rule.
+  it('the strip gives the whole remainder to the graph alone', () => {
+    const at = strip.indexOf('practice?.let { pr ->\n        Rule(');
+    expect(at).toBeGreaterThan(-1);
+    const block = strip.slice(at, at + 700);
+    expect(block.match(/defaultWeight\(\)/g)).toHaveLength(1);
+    expect(block).toMatch(/PracticeImage\([\s\S]*?fillMaxWidth\(\)\.defaultWeight\(\)/);
+  });
 
-  /**
-   * The direct children of one element, by id — a real walk rather than a
-   * regex, because "weighted sibling" is a question about depth.
-   */
-  const childrenOf = (xml: string, id: string): string[] => {
-    const body = xml.replace(/<!--[\s\S]*?-->/g, '');
-    const tag = /<(\/?)([A-Za-z][\w.]*)((?:[^<>"]|"[^"]*")*?)(\/?)>/g;
-    const stack: string[] = [];
-    const kids: string[] = [];
-    let m: RegExpExecArray | null;
-    let depth = -1;
-    while ((m = tag.exec(body))) {
-      const [, closing, name, attrs, selfClosing] = m;
-      if (closing) {
-        if (stack.length - 1 === depth) depth = -1;
-        stack.pop();
-        continue;
-      }
-      const open = `<${name}${attrs}>`;
-      if (depth >= 0 && stack.length === depth + 1) kids.push(open);
-      if (!selfClosing) {
-        stack.push(name);
-        if (attrs.includes(`@+id/${id}"`) && depth < 0) depth = stack.length - 1;
-      } else if (depth >= 0 && stack.length === depth + 1) {
-        // already counted above
-      }
-    }
-    return kids;
-  };
-
-  it.each([
-    ['prayer_widget_strip', 'widget_content', 'widget_practice_grid'],
-    ['prayer_widget_log', 'widget_content', 'widget_log_grid'],
-  ])('%s gives the whole remainder to the graph alone', (layout, parent, gridId) => {
-    const kids = childrenOf(layoutXml(layout), parent);
-    expect(kids.length).toBeGreaterThan(3);
-    const weighted = kids.filter((k) => k.includes('android:layout_weight'));
-    expect(weighted).toHaveLength(1);
-    expect(weighted[0]).toContain(`@+id/${gridId}"`);
+  it('the log card gives the whole remainder to the graph alone', () => {
+    const at = log.indexOf('val grid = PracticeGridBitmap.layoutFor(');
+    expect(at).toBeGreaterThan(-1);
+    const block = log.slice(at, at + 900);
+    expect(block.match(/defaultWeight\(\)/g)).toHaveLength(1);
+    expect(block).toContain('GlanceModifier.fillMaxWidth().defaultWeight()');
   });
 
   it('the strip subtracts what the card costs instead of taking a fraction', () => {
-    const at = strip.indexOf('private fun gridBoxHeight(');
-    expect(at).toBeGreaterThan(-1);
-    const box = strip.slice(at, at + 400);
-    const branches = /if \(wide\) \{([\s\S]*?)\} else \{([\s\S]*?)\n      \}/.exec(box);
-    expect(branches).not.toBeNull();
-    const [, wide, tall] = branches!;
     // The strip's own branch: a subtraction of named constants, no fraction.
-    expect(wide).toContain('heightDp - STRIP_CHROME_DP -');
-    expect(wide).toContain('STRIP_FOOT_DP');
-    expect(wide).not.toMatch(/[*\/]\s*\d/);
-    // The tall card's stays a share, and the comment above says why: its
-    // graph sits in a wrap_content row, so the bitmap sets the row's height
-    // instead of being scaled into it, and asking for too much pushes the
+    expect(strip).toContain(
+      'val box = size.heightDp - STRIP_CHROME_DP - (if (showFoot) STRIP_FOOT_DP else 0)',
+    );
+    // The tall card's stays a share: its graph sits in a wrap_content row, so
+    // the bitmap sets the row's height, and asking for too much pushes the
     // footer off the card rather than shrinking the squares.
-    expect(tall).toMatch(/\* 2\) \/ 3/);
+    expect(strip).toContain('((h - STRIP_CHROME_DP) * 2) / 3');
   });
 
   it('the log card subtracts its own, and neither scales the answer', () => {
-    expect(log).toContain('val boxHeight = heightDp - LOG_CHROME_DP');
+    expect(log).toContain('h - LOG_CHROME_DP,');
   });
 
   /**

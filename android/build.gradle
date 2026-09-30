@@ -18,13 +18,9 @@ buildscript {
         classpath("com.android.tools.build:gradle")
         classpath("com.facebook.react:react-native-gradle-plugin")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
-        // The Compose compiler, for the Glance widgets only (docs/rewrite-plan.md,
-        // Phase 4). Part of Kotlin since 2.0 and versioned with it; on the
-        // classpath only when -PmihrabGlanceWidgets=true, so the default build
-        // resolves nothing new. See android/app/build.gradle.
-        if ((findProperty("mihrabGlanceWidgets") ?: "false").toString().toBoolean()) {
-            classpath("org.jetbrains.kotlin:compose-compiler-gradle-plugin:$kotlinVersion")
-        }
+        // The Compose compiler, for the Glance widgets (docs/rewrite-plan.md,
+        // Phase 4). Part of Kotlin since 2.0 and versioned with it.
+        classpath("org.jetbrains.kotlin:compose-compiler-gradle-plugin:$kotlinVersion")
     }
 }
 

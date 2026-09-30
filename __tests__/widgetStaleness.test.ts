@@ -51,19 +51,48 @@ describe('android tells every widget kind, exactly once', () => {
   const module = readFileSync(
     path.join(KT, 'PrayerWidgetModule.kt'), 'utf8',
   );
+  const hook = readFileSync(path.join(KT, 'GlanceWidgetHook.kt'), 'utf8');
+  const fanout = readFileSync(path.join(KT, 'glance', 'GlanceWidgets.kt'), 'utf8');
 
-  const KINDS = [
-    'PrayerWidgetLogProvider',
-    'PrayerWidgetStreakProvider',
-    'PrayerWidgetReadingProvider',
-    'PrayerWidgetHijriProvider',
-    'PrayerWidgetTasbihProvider',
-  ];
+  // Every receiver class this app ships, from the files themselves so a new
+  // kind that is added and not listed below fails here.
+  const KINDS = readdirSync(KT)
+    .filter(f => /^PrayerWidget\w*Provider\.kt$/.test(f))
+    .map(f => f.replace(/\.kt$/, ''));
 
-  it.each(KINDS)('the fan-out redraws %s', kind => {
-    expect(provider).toMatch(
-      new RegExp(`draw\\(context\\) \\{ ${kind}\\.requestUpdate`),
+  const receiversBlock = fanout.slice(
+    fanout.indexOf('val receivers'),
+    fanout.indexOf('fun anyPlaced'),
+  );
+
+  it('finds the kinds', () => {
+    expect(KINDS.length).toBeGreaterThanOrEqual(9);
+  });
+
+  // The RemoteViews draw(...) list is gone: one Glance fan-out redraws every
+  // receiver, once each.
+  it.each(KINDS)('the fan-out redraws %s exactly once', kind => {
+    const n = receiversBlock.match(new RegExp(`\\b${kind}::class\\.java`, 'g')) ?? [];
+    expect(n).toHaveLength(1);
+  });
+
+  it.each(KINDS)('the alarm/placed check knows %s too', kind => {
+    // ALL_WIDGET_CLASSES decides whether any alarm is armed at all.
+    const list = provider.slice(
+      provider.indexOf('ALL_WIDGET_CLASSES = arrayOf('),
+      provider.indexOf('/** Whether the user has any Mihrab widget'),
     );
+    expect(list).toMatch(new RegExp(`\\b${kind}::class\\.java`));
+  });
+
+  it('requestUpdate redraws through the fan-out once, and each kind delegates to it', () => {
+    const body = provider.slice(provider.indexOf('fun requestUpdate('), provider.indexOf('/** One widget'));
+    expect(body.match(/GlanceWidgetHook\.requestUpdate/g) ?? []).toHaveLength(1);
+    expect(hook).toMatch(/fun requestUpdate\(context: Context\) = GlanceWidgets\.requestUpdate\(context\)/);
+    for (const kind of KINDS.filter(k => k !== 'PrayerWidgetProvider')) {
+      const src = readFileSync(path.join(KT, `${kind}.kt`), 'utf8');
+      expect(src).toMatch(/fun requestUpdate\(context: Context\) = GlanceWidgetHook\.requestUpdate\(context\)|class \w+ : PrayerWidget\w*Provider\(\)/);
+    }
   });
 
   it('a new payload asks for one fan-out and nothing else', () => {
@@ -74,7 +103,7 @@ describe('android tells every widget kind, exactly once', () => {
       module.indexOf('fun setAndroidWidgetAppearance('),
     );
     expect(body).toContain('PrayerWidgetProvider.requestUpdate');
-    for (const kind of KINDS) {
+    for (const kind of KINDS.filter(k => k !== 'PrayerWidgetProvider')) {
       expect(body).not.toContain(`${kind}.requestUpdate`);
     }
   });
@@ -84,13 +113,20 @@ describe('android tells every widget kind, exactly once', () => {
     // keeping them current.
     const xmlDir = path.join(ANDROID, 'res', 'xml');
     const manual = readdirSync(xmlDir)
-      .filter(f => f.startsWith('prayer_widget_'))
+      .filter(f => f.startsWith('glance_'))
       .filter(f =>
         /updatePeriodMillis="0"/.test(readFileSync(path.join(xmlDir, f), 'utf8')),
       );
     // Hijri, Log, Log tall, Reading, Streak, Tasbih.
     expect(manual.length).toBeGreaterThanOrEqual(6);
-    expect(provider).toContain('ALL_WIDGET_CLASSES');
+    expect(fanout).toContain('for (cls in receivers)');
+    expect(receiversBlock).toContain('PrayerWidgetLogLargeProvider::class.java');
+  });
+
+  it('a payload past its window is not drawn as today (payloadHasExpired, and Glance\'s live())', () => {
+    expect(provider).toMatch(/fun payloadHasExpired\(o: JSONObject\): Boolean \{[\s\S]*?if \(key >= todayKey\) return false[\s\S]*?return true/);
+    const support = readFileSync(path.join(KT, 'glance', 'GlanceSupport.kt'), 'utf8');
+    expect(support).toMatch(/takeUnless \{ p -> p\.days\.none \{ !it\.estimated && it\.dateKey >= now\.dateKey \} \}/);
   });
 });
 

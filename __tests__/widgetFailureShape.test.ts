@@ -30,69 +30,69 @@ import path from 'path';
 
 const ROOT = path.join(__dirname, '..');
 const read = (p: string) => readFileSync(path.join(ROOT, p), 'utf-8');
-const PROVIDER = read(
-  'android/app/src/main/java/com/prayer_times/PrayerWidgetProvider.kt',
-);
+const JAVA = 'android/app/src/main/java/com/prayer_times';
+const PROVIDER = read(`${JAVA}/PrayerWidgetProvider.kt`);
+// The widgets are drawn by Glance now; these are where its guards live.
+const SUPPORT = read(`${JAVA}/glance/GlanceSupport.kt`);
+const PRAYER_GLANCE = read(`${JAVA}/glance/PrayerGlanceWidget.kt`);
+const BASE_GLANCE = read(`${JAVA}/glance/MihrabGlanceWidget.kt`);
+const CONTRACT = read(`${JAVA}/contract/WidgetContract.kt`);
 
 describe('a tapped prayer widget has somewhere to go', () => {
   it('opens Today rather than wherever the app was left', () => {
-    expect(PROVIDER).toMatch(
-      /val click = Intent\(Intent\.ACTION_VIEW, Uri\.parse\("mihrab:\/\/today"\)\)/,
-    );
-    // Every other widget's root does this too; a bare MainActivity intent
-    // in this file is the bug, not a style.
-    expect(PROVIDER).not.toMatch(
-      /val click = Intent\(context, MainActivity::class\.java\)/,
-    );
+    expect(PRAYER_GLANCE).toContain('openRoute(context, "mihrab://today", clearTop = true)');
+    // A bare MainActivity intent is the bug, not a style.
+    expect(PRAYER_GLANCE).not.toMatch(/Intent\(context, MainActivity::class\.java\)/);
+    expect(SUPPORT).toMatch(/Intent\(Intent\.ACTION_VIEW, Uri\.parse\(uri\)\)/);
   });
 
   it('keeps the link inside this app', () => {
     // An implicit VIEW for a scheme somebody else registers is an app
     // chooser on a home-screen tap.
-    const click = PROVIDER.slice(
-      PROVIDER.indexOf('val click = Intent(Intent.ACTION_VIEW'),
-    ).slice(0, 400);
-    expect(click).toMatch(/setPackage\(context\.packageName\)/);
+    const at = SUPPORT.indexOf('internal fun openRoute(');
+    expect(at).toBeGreaterThan(-1);
+    expect(SUPPORT.slice(at, at + 400)).toMatch(/setPackage\(context\.packageName\)/);
   });
 });
 
 describe('when a render fails, it says why', () => {
   it('does not swallow the exception', () => {
-    expect(PROVIDER).not.toMatch(/catch \(_: Exception\) \{\s*\n\s*showMessageOnly/);
-    expect(PROVIDER).toMatch(/Log\.e\(WIDGET_LOG_TAG, "widget render failed", e\)/);
+    // The model build logs the throw and hands it on to the error card.
+    expect(SUPPORT).toMatch(
+      /catch \(e: Exception\) \{\s*\n\s*Log\.e\(PrayerWidgetProvider\.WIDGET_LOG_TAG, "\$what glance widget failed", e\)\s*\n\s*Result\.failure\(e\)/,
+    );
+    // A throw in the composition itself is logged too, then drawn as the card.
+    expect(BASE_GLANCE).toMatch(/Log\.e\(PrayerWidgetProvider\.WIDGET_LOG_TAG, "\$what glance widget failed", throwable\)/);
   });
 
   it('puts the cause on the card, and only the cause', () => {
     // A screenshot of a broken widget should be a diagnosis. The message
     // is deliberately not shown — it can carry payload content.
-    expect(PROVIDER).toMatch(/\$\{e\.javaClass\.simpleName\}/);
-    expect(PROVIDER).not.toMatch(/\$\{e\.message\}/);
+    expect(SUPPORT).toMatch(/\$\{e\.javaClass\.simpleName\}/);
+    expect(SUPPORT).not.toMatch(/\$\{e\.message\}/);
+    expect(SUPPORT).not.toMatch(/\$\{throwable\.message\}/);
   });
 });
 
 describe('an extra cannot take the times down', () => {
-  // From the seam comment, so the first binder has its runCatching
-  // ahead of it in the slice like the other three do.
-  const AFTER_ROWS = PROVIDER.slice(
-    PROVIDER.indexOf('THE TIMES ARE THE PROMISE'),
-  );
+  // Removed: bindLoggedLine / bindStripHeader "is wrapped" — those were
+  // RemoteViews binders with no Glance counterpart (the header and the
+  // logged line are plain text in the model). Replaced by the `extra(...)`
+  // wrapper the strip's model uses for the parts that can throw.
+  it.each(['nightRow', 'practice', 'practiceGrid'])('%s is wrapped', (what: string) => {
+    // Each call site sits inside extra(), so the practice grid failing
+    // costs the grid rather than Maghrib.
+    expect(PRAYER_GLANCE).toContain(`extra("${what}") {`);
+  });
 
-  it.each([
-    'bindNightRow',
-    'bindLoggedLine',
-    'bindStripHeader',
-    'bindPracticeStrip',
-  ])('%s is wrapped', (binder: string) => {
-    // Each call site sits inside a runCatching, so the practice grid
-    // failing costs the grid rather than Maghrib.
-    const at = AFTER_ROWS.indexOf(`${binder}(`);
-    expect(at).toBeGreaterThan(-1);
-    expect(AFTER_ROWS.slice(Math.max(0, at - 120), at)).toMatch(/runCatching \{/);
+  it('the extras are the only thing that is contained', () => {
+    // The rows themselves are not wrapped: a throw there is the error card.
+    expect(PRAYER_GLANCE).not.toMatch(/extra\("(rows|times)"\)/);
   });
 
   it('says which extra failed', () => {
-    expect(PROVIDER).toMatch(
-      /Log\.w\(WIDGET_LOG_TAG, "widget extra failed: \$what", e\)/,
+    expect(PRAYER_GLANCE).toMatch(
+      /Log\.w\(PrayerWidgetProvider\.WIDGET_LOG_TAG, "glance widget extra failed: \$what", e\)/,
     );
   });
 });
@@ -163,22 +163,26 @@ describe('every plural the widgets format has an “other”', () => {
 
 describe('the render survives a payload it does not recognise', () => {
   // The Huawei cause in #31 is still unknown, but every throw that WAS
-  // reachable in this path is now a missing row or a placeholder. If the
-  // cause was one of them, it is fixed rather than merely reported.
+  // reachable in this path is now a missing row or a placeholder. The
+  // payload is read by WidgetContract now, which never uses the throwing
+  // org.json accessors (its own suites, and the Kotlin contract tests,
+  // exercise the values).
   it('does not throw on a payload with no rows', () => {
-    expect(PROVIDER).toMatch(/o\.optJSONArray\("rows"\)/);
-    expect(PROVIDER).not.toMatch(/o\.getJSONArray\("rows"\)/);
+    expect(CONTRACT).not.toMatch(/\.getJSONArray\(/);
+    // A day with no prayers is no day; the card then draws its placeholder.
+    expect(CONTRACT).toMatch(/prayers = o\.wcList\("prayers"\) \{ Row\.fromJson\(it as\? JSONObject\) \} \?: return null/);
+    expect(read(`${JAVA}/glance/PrayerGlanceWidget.kt`)).toContain('if (m == null) {');
   });
 
   it('drops a malformed row rather than the card', () => {
-    expect(PROVIDER).not.toMatch(/rows\.getJSONObject\(/);
-    expect(PROVIDER).toMatch(/rows\.optJSONObject\(0\)\?\.let/);
+    expect(CONTRACT).not.toMatch(/\.getJSONObject\(/);
+    expect(CONTRACT).toMatch(/element\(a\.optJSONObject\(i\)\)\?\.let/);
   });
 
   it('reads a row’s fields without demanding them', () => {
-    // `getString` throws when the key is absent; every one of these sits
-    // inside a loop over rows the payload supplied.
-    expect(PROVIDER).not.toMatch(/row\.getString\(/);
+    // `getString` throws when the key is absent; every field is read
+    // through the tolerant wc* helpers instead.
+    expect(CONTRACT).not.toMatch(/\b\w+\.(?:getString|getInt|getLong|getDouble|getBoolean)\(/);
   });
 });
 
@@ -193,8 +197,8 @@ describe('the two entries in the widget picker', () => {
     Number(new RegExp(`android:${attr}="(\\d+)dp"`).exec(src)?.[1] ?? 0);
 
   it.each([
-    ['prayer_widget_info.xml', 'prayer_widget_tall_info.xml'],
-    ['prayer_widget_log_info.xml', 'prayer_widget_log_tall_info.xml'],
+    ['glance_prayer_info.xml', 'glance_prayer_tall_info.xml'],
+    ['glance_log_info.xml', 'glance_log_tall_info.xml'],
   ])('%s and %s ask for different heights', (shortFile, tallFile) => {
     const short = xml(shortFile);
     const tall = xml(tallFile);
@@ -203,7 +207,7 @@ describe('the two entries in the widget picker', () => {
     );
   });
 
-  it.each(['prayer_widget_tall_info.xml', 'prayer_widget_log_tall_info.xml'])(
+  it.each(['glance_prayer_tall_info.xml', 'glance_log_tall_info.xml'])(
     '%s can still be dragged down to the strip',
     (file: string) => {
       // minHeight is where the picker PLACES it; minResizeHeight is how

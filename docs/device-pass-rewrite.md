@@ -140,14 +140,14 @@ On the phone and the Mac, paired:
 
 ## 5. The Glance widgets (Phase 4 gate)
 
-The measuring build: `./gradlew assembleFdroidRelease
--PmihrabGlanceWidgets=true` (and `bundlePlayRelease` the same way, in its
-own invocation). Each Glance card is in the picker as "… (Glance)" beside
-the card it ports. Record the numbers in the 4.2 table of
+Glance is now the only implementation (no flag): every build draws the
+widgets with Glance, under the old receiver class names, so widgets placed
+by an older version are redrawn in place after the update. Record the numbers in the 4.2 table of
 `docs/rewrite-plan.md`; the pass criteria are there.
 
-- [ ] The default build's APK has no `androidx.glance` classes. (That
-  the flag build assembles is CI's "Android (Glance on)" job now.)
+- [x] Upgrade in place: v2.27.1 beta with all nine widgets placed, then
+  the new build over it — ids kept, drawn by Glance after the app is opened
+  once (2026-09-30, Pixel).
 - [ ] APK size with and without the flag, F-Droid and Play.
 - [ ] Resize, on the Pixel launcher, One UI, and EMUI or Lawnchair: each
   Glance card beside its twin at 1×1 to 4×4, upright and sideways. The

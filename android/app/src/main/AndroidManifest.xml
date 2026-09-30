@@ -106,7 +106,7 @@
         </intent-filter>
         <meta-data
           android:name="android.appwidget.provider"
-          android:resource="@xml/prayer_widget_info" />
+          android:resource="@xml/glance_prayer_info" />
       </receiver>
 
       <receiver
@@ -120,7 +120,7 @@
         </intent-filter>
         <meta-data
           android:name="android.appwidget.provider"
-          android:resource="@xml/prayer_widget_small_info" />
+          android:resource="@xml/glance_prayer_small_info" />
       </receiver>
 
       <receiver
@@ -134,7 +134,7 @@
         </intent-filter>
         <meta-data
           android:name="android.appwidget.provider"
-          android:resource="@xml/prayer_widget_tall_info" />
+          android:resource="@xml/glance_prayer_tall_info" />
       </receiver>
 
       <!-- Log Today. Also listens for its own tap action, which is what a
@@ -147,17 +147,16 @@
           <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
           <action android:name="android.intent.action.BOOT_COMPLETED" />
           <action android:name="com.prayer_times.ACTION_PRAYER_TIME_ELAPSED" />
-          <action android:name="com.prayer_times.ACTION_WIDGET_LOG_TAP" />
         </intent-filter>
         <meta-data
           android:name="android.appwidget.provider"
-          android:resource="@xml/prayer_widget_log_info" />
+          android:resource="@xml/glance_log_info" />
       </receiver>
       <!--
         Log Today at three rows. A second entry for the same widget, not a
-        second widget: see prayer_widget_log_tall_info.xml.
+        second widget: see glance_log_tall_info.xml.
       -->
-<receiver
+      <receiver
         android:name=".PrayerWidgetLogLargeProvider"
         android:exported="true"
         android:label="@string/widget_name_log_tall">
@@ -165,11 +164,10 @@
           <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
           <action android:name="android.intent.action.BOOT_COMPLETED" />
           <action android:name="com.prayer_times.ACTION_PRAYER_TIME_ELAPSED" />
-          <action android:name="com.prayer_times.ACTION_WIDGET_LOG_TAP" />
         </intent-filter>
         <meta-data
           android:name="android.appwidget.provider"
-          android:resource="@xml/prayer_widget_log_tall_info" />
+          android:resource="@xml/glance_log_tall_info" />
       </receiver>
 
       <!--
@@ -188,7 +186,7 @@
         </intent-filter>
         <meta-data
           android:name="android.appwidget.provider"
-          android:resource="@xml/prayer_widget_streak_info" />
+          android:resource="@xml/glance_streak_info" />
       </receiver>
 
       <!-- Continue Reading. -->
@@ -203,13 +201,12 @@
         </intent-filter>
         <meta-data
           android:name="android.appwidget.provider"
-          android:resource="@xml/prayer_widget_reading_info" />
+          android:resource="@xml/glance_reading_info" />
       </receiver>
 
       <!--
-        Tasbih. ACTION_WIDGET_TASBIH_TAP is how the three controls reach the
-        provider; the same receiver handles it and the ordinary update
-        broadcasts, exactly as the Log Today one does.
+        Tasbih. Its three controls are Glance actions (TasbihTap), handled by
+        Glance itself; this receiver takes the ordinary update broadcasts.
       -->
       <receiver
         android:name=".PrayerWidgetTasbihProvider"
@@ -218,12 +215,11 @@
         <intent-filter>
           <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
           <action android:name="android.intent.action.BOOT_COMPLETED" />
-          <action android:name="com.prayer_times.ACTION_WIDGET_TASBIH_TAP" />
           <action android:name="com.prayer_times.ACTION_PRAYER_TIME_ELAPSED" />
         </intent-filter>
         <meta-data
           android:name="android.appwidget.provider"
-          android:resource="@xml/prayer_widget_tasbih_info" />
+          android:resource="@xml/glance_tasbih_info" />
       </receiver>
 
       <!--
@@ -247,7 +243,7 @@
         </intent-filter>
         <meta-data
           android:name="android.appwidget.provider"
-          android:resource="@xml/prayer_widget_hijri_info" />
+          android:resource="@xml/glance_hijri_info" />
       </receiver>
 
       <!-- No screenOrientation lock: Android 16 ignores orientation
