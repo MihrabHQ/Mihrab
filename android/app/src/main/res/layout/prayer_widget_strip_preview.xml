@@ -77,6 +77,14 @@
             android:maxLines="1" />
     </LinearLayout>
 
+    <!-- Slack between the three sections. The picker's box is taller than the
+         content, and top-aligned content left a void under the last line that
+         the placed widget does not have: the spare height is shared out here,
+         so the preview reads the way the placed card does. A TextView, not a Space:
+         a preview is inflated as RemoteViews, which allow only a short list of
+         classes, and Space is not on it ("Couldn't add widget"). -->
+    <TextView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -116,13 +124,19 @@
         </LinearLayout>
     </LinearLayout>
 
+    <!-- Slack between the three sections. The picker's box is taller than the
+         content, and top-aligned content left a void under the last line that
+         the placed widget does not have: the spare height is shared out here,
+         so the preview reads the way the placed card does. A TextView, not a Space:
+         a preview is inflated as RemoteViews, which allow only a short list of
+         classes, and Space is not on it ("Couldn't add widget"). -->
+    <TextView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:baselineAligned="true"
-        android:layout_marginTop="8dp">
+        android:baselineAligned="true">
 
         <TextView
             android:layout_width="wrap_content"
