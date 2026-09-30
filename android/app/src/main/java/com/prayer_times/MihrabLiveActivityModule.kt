@@ -41,10 +41,15 @@ import java.time.Instant
  *                  →  context.stopService(...)
  *                  →  service.onDestroy() cancels the ticker and the notification.
  *
- * Note: the single-notification approach means FLAG_FOREGROUND_SERVICE is
- *   added to NOTIF_ID by NMS, which prevents FLAG_PROMOTED_ONGOING and
- *   therefore the Android 16 status-bar chip. The cleaner single-notification
- *   UX (no "silent" placeholder visible in settings) is the correct trade-off.
+ * Note: the single-notification approach means NMS adds FLAG_FOREGROUND_SERVICE
+ *   to NOTIF_ID. That does NOT stop promotion: NotificationManagerService
+ *   grants FLAG_PROMOTED_ONGOING on the notification's own characteristics
+ *   (ongoing, a title, a promotable style, not colorized, not a group summary,
+ *   no custom views, channel above IMPORTANCE_MIN, POST_PROMOTED_NOTIFICATIONS)
+ *   and never looks at the foreground-service flag. Seen on the Android 16
+ *   emulator (API 36.1) and Android 17 (Pixel 10 Pro): the record carries
+ *   FOREGROUND_SERVICE|PROMOTED_ONGOING and the status-bar chip shows the
+ *   countdown. An earlier note here said the opposite; it was wrong.
  *
  * The notification builder lives in the companion object so the
  * service can build the notification on its own ticker, without going
