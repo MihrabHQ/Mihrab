@@ -791,11 +791,12 @@ one. It is not a rewrite target.
   Xcode 27 build is still first proven by the next release.
 - **5.2's Mac zip**: worked around on `rn-0.87` (React built from source
   for the Mac); proven only when `build-catalyst.sh` signs and notarises.
-- **The Glance build under R8.** CI assembles the F-Droid debug APK with
-  `-PmihrabGlanceWidgets=true` since 2026-09-29 (its first runs found two
-  breaks: WorkManager 2.7/2.8 duplicate classes, and `mutableIntStateOf`,
-  newer than the Compose runtime Glance brings). The Play release build
-  with R8 and the flag is still built nowhere.
+- ~~**The Glance build under R8.**~~ — built 2026-09-30: `assembleFdroidRelease` (R8 and
+  shrinking on) succeeds with and without `-PmihrabGlanceWidgets=true`, no
+  WorkManager, Room or Glance warnings. APK 96,161,828 → 98,265,213 bytes
+  (+2.1 MB, +2.2%), dex 28.2 → 32.5 MB uncompressed. Not run: the Play
+  flavour's signed bundle, and the widgets on a device from that APK.
+  The APK-size bar for the 4.2 gate is still Hassan's number.
 - **Glance's version**: 1.1.1 is the last release checked here (against
   its published API file, not its binary); take the current stable at the
   gate and re-check the stubs' API against it.
@@ -807,9 +808,7 @@ one. It is not a rewrite target.
   payload's `nextTimeDisplay` differs from `nextTime`, because the
   v1-shaped payload carries no `hour12`. Right for every payload the app
   writes; an `hour12` in the Live Activity payload would make it explicit.
-- **CI on pushes to `rewrite`**: the "Native builds" workflow runs on pushes
-  to `rewrite` so it could be proven before a pull request existed. Drop
-  `rewrite` from its `push` branches when the branch merges.
+- ~~**CI on pushes to `rewrite`**~~ — done 2026-09-30: the branch merged, and `native.yml` now runs on pushes to `main` only.
 - ~~**The Homebrew cask**~~ — done 2026-09-29: it asked for Ventura (a
   guess from the day the tap was made) while the app needs 12.1, so it
   now says `:monterey`, keeps `:arm64` (the build is Apple silicon only),
