@@ -19,6 +19,16 @@ export type ReleaseNote = {
 
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
+    code: 283,
+    version: '2.27.2',
+    date: '2026-09-30',
+    notes: {
+      en: '• The Android widgets are drawn by a new engine. Widgets you already placed stay where they are and keep their settings; if one says “Open Mihrab” after the update, open the app once.\n• In Arabic and Urdu the Today carousel opens on today again on Android.\n• Turning the phone fades the muṣḥaf page back in.\n• On iPhone and iPad, Mihrab opens again on iOS 27; the prayer widget’s refresh button is gone (it updates on its own).',
+      ar: '• تُرسم ودجات Android الآن بمحرّك جديد. الودجات التي وضعتها تبقى في مكانها وتحتفظ بإعداداتها؛ وإن ظهرت إحداها بعبارة «افتح محراب» بعد التحديث فافتح التطبيق مرة واحدة.\n• في العربية والأردية يفتح شريط «اليوم» على تاريخ اليوم من جديد على Android.\n• عند تدوير الهاتف تعود صفحة المصحف بتلاشٍ هادئ.\n• يفتح محراب من جديد على iPhone وiPad بنظام iOS 27؛ وأُزيل زرّ التحديث من ودجة أوقات الصلاة، فهي تتحدّث من تلقاء نفسها.',
+      sv: '• Android-widgetarna ritas nu av en ny motor. Widgetar du redan placerat ligger kvar och behåller sina inställningar; visar någon ”Öppna Mihrab” efter uppdateringen öppnar du appen en gång.\n• På arabiska och urdu öppnar karusellen på Idag åter på dagens datum på Android.\n• När du vänder telefonen tonar mushafens sida in igen.\n• På iPhone och iPad öppnas Mihrab igen på iOS 27; uppdateringsknappen på bönetidswidgeten är borta (den uppdaterar sig själv).',
+    },
+  },
+  {
     code: 282,
     version: '2.27.1',
     date: '2026-09-26',

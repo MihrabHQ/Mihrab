@@ -1115,3 +1115,44 @@ the review submission is resumed by marking its rejected item resolved
 before setting `submitted`. Setting `submitted` alone answers 409,
 "Version is not ready to be submitted yet", which reads like a wait and
 is not one.
+
+## 2.27.2 (283) — 2026-09-30
+
+Took 5 aborted attempt(s) before it ran clean:
+
+  - 1 cask requires macOS 13 (:ventura) but the app needs 12.1 — set depends_on macos in Casks/mihrab.rb to the app's own minimum
+  - 1 github build failed
+  - 2 play build failed
+  - 1 the app runs on Intel (x86_64 arm64) but the cask says depends_on arch: :arm64 — drop it
+
+Changed the release cycle itself:
+
+  - `.github/workflows/ci.yml`
+  - `.github/workflows/native.yml`
+  - `docs/DISTRIBUTION.md`
+  - `scripts/build-catalyst.sh`
+  - `scripts/build-ios-appstore.sh`
+  - `scripts/release.sh`
+  - `scripts/release/appstoreMetadata.ts`
+  - `scripts/release/asc.ts`
+  - `scripts/release/build.ts`
+  - `scripts/release/catalyst.ts`
+  - `scripts/release/common.ts`
+  - `scripts/release/io.ts`
+  - `scripts/release/iosAppStore.ts`
+  - `scripts/release/main.ts`
+  - `scripts/release/package.json`
+  - `scripts/release/preflight.ts`
+  - `scripts/release/publish.ts`
+  - `scripts/release/release.ts`
+  - `scripts/release/report.ts`
+  - `scripts/release/self.ts`
+  - `scripts/release/shadow.ts`
+  - `scripts/release/toolchain.ts`
+  - `scripts/release/tsconfig.json`
+  - `scripts/release/verify.ts`
+  - `scripts/release/xcodeCloud.ts`
+  - `scripts/verify-release.sh`
+  - `scripts/xcode-cloud.py`
+
+**Lesson:** _(unfilled)_
