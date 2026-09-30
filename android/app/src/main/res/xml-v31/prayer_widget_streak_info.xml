@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Streak & Practice.
+
+  2x2 to 4x2. The provider measures the placed width and draws five weeks of
+  the graph or ten — a grid sized for the wide case and squeezed into the
+  narrow one is what makes cells 4px and the record a texture.
+
+  updatePeriodMillis is 0: a streak moves when a prayer is logged, and every
+  path that logs one already pushes an update. The only unattended change is
+  the date rolling over, which ACTION_PRAYER_TIME_ELAPSED covers.
+
+  On `android:configure`, which this file used to refuse. The refusal was
+  half right: a settings screen between the tap that places a widget and the
+  first tap that uses it IS a worse first run, and that is what the comment
+  here defended. But the screen sets background strength and accent colour,
+  which every card honours — this one already draws through
+  `PrayerWidgetProvider.resolvedColors` — so leaving the attribute off did
+  not remove a prompt, it removed the only way in. Placed widgets had no
+  settings at all while the three prayer-times entries did, which is what a
+  user reported.
+
+  `configuration_optional` is the flag that wanted using: the launcher
+  places the widget immediately and the screen becomes an entry in the
+  long-press menu instead of a gate in front of it. `reconfigurable` is what
+  puts that entry there. Both are API 31; below that Android falls back to
+  prompting on placement, the same as the prayer widgets have always done.
+-->
+<!--
+  The API 31+ copy: identical to ../xml/prayer_widget_streak_info.xml, but hidden from the picker.
+  The Glance card of the same name is the entry now; this provider stays
+  registered only so widgets a user placed before the switch keep drawing
+  (docs/rewrite-plan.md, 4.3). Delete with the provider, once nobody has one placed.
+-->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:configure="com.prayer_times.PrayerWidgetConfigureActivity"
+    android:widgetFeatures="reconfigurable|configuration_optional|hide_from_picker"
+    android:description="@string/widget_description_streak"
+    android:initialLayout="@layout/prayer_widget_streak"
+    android:minWidth="110dp"
+    android:minHeight="50dp"
+    android:previewImage="@mipmap/ic_launcher"
+    android:previewLayout="@layout/prayer_widget_streak_preview"
+    android:resizeMode="horizontal|vertical"
+    android:minResizeWidth="110dp"
+    android:minResizeHeight="40dp"
+    android:updatePeriodMillis="0"
+    android:widgetCategory="home_screen"
+    android:targetCellWidth="4"
+    android:targetCellHeight="1"
+    android:maxResizeWidth="500dp"
+    android:maxResizeHeight="200dp" />

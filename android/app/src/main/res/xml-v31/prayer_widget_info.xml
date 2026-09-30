@@ -10,6 +10,7 @@
   the difference between them should only ever be the attributes that did
   not exist before 31.
 -->
+<!-- hide_from_picker: see the note in the other v31 copies. -->
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     android:configure="com.prayer_times.PrayerWidgetConfigureActivity"
     android:description="@string/widget_description_prayer_times"
@@ -19,7 +20,7 @@
     android:previewImage="@mipmap/ic_launcher"
     android:previewLayout="@layout/prayer_widget_strip_preview"
     android:resizeMode="horizontal|vertical"
-    android:widgetFeatures="reconfigurable"
+    android:widgetFeatures="reconfigurable|hide_from_picker"
     android:minResizeWidth="110dp"
     android:minResizeHeight="60dp"
     android:updatePeriodMillis="1800000"

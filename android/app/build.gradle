@@ -3,24 +3,22 @@ apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
 
 /**
- * THE GLANCE WIDGETS, BEHIND A FLAG (docs/rewrite-plan.md, Phase 4).
+ * THE WIDGETS ARE JETPACK GLANCE (docs/rewrite-plan.md, Phase 4).
  *
- * Every home-screen widget has a Jetpack Glance port in src/glance, and none
- * of it ships until the 4.2 gate is measured on devices (APK size, resize on
- * three launchers, memory and render time). So by default nothing changes:
- * src/glanceOff supplies a no-op GlanceWidgetHook, no Compose compiler, no
- * Glance dependency, no receivers — the shipping build, F-Droid's included,
- * is what it was.
+ * Every home-screen widget has a Glance card in src/glance, and the picker
+ * offers those. The RemoteViews providers in src/main stay registered, hidden
+ * from the picker on Android 12+ (res/xml-v31), so a widget a user placed
+ * before the switch keeps drawing; delete them when nobody has one left.
  *
- *     ./gradlew assembleFdroidDebug -PmihrabGlanceWidgets=true
+ *     ./gradlew assembleFdroidRelease -PmihrabGlanceWidgets=false
  *
- * builds the measuring APK instead: the Glance sources, their resources and
- * receivers (src/glance/AndroidManifest.xml, merged as the build types'
- * manifest), androidx.glance, and the Compose compiler plugin. Each Glance
- * card appears in the picker beside the RemoteViews card it ports, which
- * stays registered exactly as before, so placed widgets keep working.
+ * builds the RemoteViews-only app instead: src/glanceOff supplies a no-op
+ * GlanceWidgetHook, and there is no Compose compiler, no Glance dependency,
+ * no WorkManager and no Glance receivers. The Glance build adds the sources,
+ * resources and receivers (src/glance/AndroidManifest.xml, merged as the build
+ * types' manifest), androidx.glance and the Compose compiler plugin.
  */
-def glanceWidgets = (findProperty("mihrabGlanceWidgets") ?: "false").toString().toBoolean()
+def glanceWidgets = (findProperty("mihrabGlanceWidgets") ?: "true").toString().toBoolean()
 if (glanceWidgets) {
     apply plugin: "org.jetbrains.kotlin.plugin.compose"
 }

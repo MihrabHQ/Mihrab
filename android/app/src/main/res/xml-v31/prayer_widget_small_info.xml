@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The API 31+ copy: identical to ../xml/prayer_widget_small_info.xml, but hidden from the picker.
+  The Glance card of the same name is the entry now; this provider stays
+  registered only so widgets a user placed before the switch keep drawing
+  (docs/rewrite-plan.md, 4.3). Delete with the provider, once nobody has one placed.
+-->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:configure="com.prayer_times.PrayerWidgetConfigureActivity"
+    android:description="@string/widget_description_small"
+    android:initialLayout="@layout/prayer_widget_small"
+    android:minWidth="110dp"
+    android:minHeight="40dp"
+    android:previewImage="@mipmap/ic_launcher"
+    android:previewLayout="@layout/prayer_widget_small_preview"
+    android:resizeMode="horizontal|vertical"
+    android:widgetFeatures="reconfigurable|hide_from_picker"
+    android:minResizeWidth="110dp"
+    android:minResizeHeight="40dp"
+    android:updatePeriodMillis="1800000"
+    android:widgetCategory="home_screen"
+    android:targetCellWidth="2"
+    android:targetCellHeight="1"
+    android:maxResizeWidth="300dp"
+    android:maxResizeHeight="160dp" />
