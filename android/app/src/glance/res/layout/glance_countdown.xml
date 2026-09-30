@@ -3,13 +3,16 @@
   The countdown to the next prayer, ticked by the system. Glance has no
   Chronometer, so it is embedded with AndroidRemoteViews; the colour, size
   and base are set on it per card (Countdown in GlanceSupport.kt).
+
+  No includeFontPadding=false: Glance's Text keeps its font padding, so a
+  countdown without it sat a few pixels above the prayer name beside it
+  and the two lines were not level.
 -->
 <Chronometer xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/glance_countdown"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:fontFamily="sans-serif-medium"
-    android:includeFontPadding="false"
     android:maxLines="1"
     android:textColor="#9AA0A6"
     android:textSize="11sp" />
