@@ -414,8 +414,19 @@ export async function getCachedPrayerTimesMany(
   return dates.map(date => {
     const month = entry.months[getMonthKey(date)];
     const day = month ? month[getDayKey(date)] : undefined;
-    return day ?? null;
+    return day && isReadableDay(day) ? day : null;
   });
+}
+
+/**
+ * A cached day the screens can read. Version 2.27.2 and earlier could
+ * store a polar day as "NaN:NaN" (issue #61), and the Today card throws on
+ * a time it cannot parse — so a phone that had cached one closed on every
+ * launch. Such a day is a miss here: it is fetched again, by the fixed
+ * calculation, and overwritten.
+ */
+function isReadableDay(day: TimingsMap): boolean {
+  return !Object.values(day).some(v => typeof v === 'string' && v.includes('NaN'));
 }
 
 /**

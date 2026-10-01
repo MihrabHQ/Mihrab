@@ -82,6 +82,24 @@ function findImsakViolation(timings: TimingsMap): string | null {
  * a misformed Imsak shipping to the widget during Ramadan would surface a
  * Suhoor cutoff that's clearly wrong, hence the strictness.
  */
+/**
+ * Only the shape: all six required times present as HH:MM. For the
+ * on-device answer, whose ORDER on the clock face depends on the phone's
+ * timezone and is not this check's business, but which must never reach a
+ * screen as "NaN:NaN" (issue #61).
+ */
+export function validateTimingShape(timings: TimingsMap): TimingsMap {
+  for (const key of REQUIRED_KEYS) {
+    const val = timings[key];
+    if (!val || !HH_MM.test(val)) {
+      throw new Error(
+        `Invalid prayer times: key "${key}" is missing or not in HH:MM format (got "${val ?? 'undefined'}")`,
+      );
+    }
+  }
+  return timings;
+}
+
 export function validateTimings(timings: TimingsMap): TimingsMap {
   for (const key of REQUIRED_KEYS) {
     const val = timings[key];

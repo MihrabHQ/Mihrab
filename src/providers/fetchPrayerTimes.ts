@@ -6,7 +6,7 @@ import { getIslamiskaForbundetDatasetTimes } from './islamiskaForbundetDataset';
 import { getHabousDatasetTimes } from './habousDataset';
 import { computeLocalAdhanTimes } from './localAdhan';
 import { computeImsak, DEFAULT_IMSAK_OFFSET_MINUTES } from './imsak';
-import { validateTimings } from './validateTimings';
+import { validateTimings, validateTimingShape } from './validateTimings';
 import {
   isProviderCoolingDown,
   recordProviderResult,
@@ -126,9 +126,11 @@ export async function fetchPrayerTimesUnified(
       result.source = 'aladhan';
       break;
     }
-    case 'local_adhan':
-      // On-device calculation — skip network validation, it always produces valid output.
-      return {
+    case 'local_adhan': {
+      // On-device calculation. Its shape is checked: it once produced
+      // "NaN:NaN" for a polar day (issue #61), and a bad answer must stop
+      // here as an error the caller can show, not reach a screen.
+      const local: PrayerTimesResult = {
         ...computeLocalAdhanTimes({
           latitude: p.latitude,
           longitude: p.longitude,
@@ -138,6 +140,9 @@ export async function fetchPrayerTimesUnified(
         }),
         source: 'local',
       };
+      validateTimingShape(local.timings);
+      return local;
+    }
     default:
       throw new Error(`Unknown prayer data provider: ${String(p.provider)}`);
   }

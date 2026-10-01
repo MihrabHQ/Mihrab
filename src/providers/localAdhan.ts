@@ -142,6 +142,60 @@ function parametersForMethod(methodId: number): CalculationParameters {
   }
 }
 
+/**
+ * WHERE THE SUN DOES NOT RISE OR SET — issue #61.
+ *
+ * Inside the polar circles there are days with no sunrise or no sunset at
+ * all: midsummer in Tromsø or Svalbard, most of the year at the poles.
+ * adhan.js answers those days honestly, with Invalid Date for every time
+ * that hangs on the horizon, and that went on to the screen as "NaN:NaN" —
+ * which the Today card could not read, so the app closed on launch, every
+ * launch, with the location that caused it saved.
+ *
+ * For those days the times are taken at the NEAREST LATITUDE where the day
+ * still has a sunrise and a sunset all year (aqrab al-bilād, the "nearest
+ * place" opinion), on the same longitude, so Dhuhr stays the local solar
+ * noon. 48.5° is the usual choice for it: the highest latitude at which
+ * the sun still sinks 18° below the horizon on midsummer night, so even
+ * Fajr and Isha are real there all year. Only a day that cannot be
+ * computed is moved; every ordinary day, however far north, keeps its own
+ * sun.
+ */
+export const NEAREST_LATITUDE = 48.5;
+
+/**
+ * Every time is a real instant, and they come in order. The order is
+ * checked as instants, not clock faces, so it does not care what timezone
+ * the phone is in. Near the polar circles adhan.js can return a Fajr from
+ * the evening before, after its own sunrise — a day it could compute but
+ * not sensibly; that day is moved too.
+ */
+function allTimesValid(pt: PrayerTimes): boolean {
+  const times = [pt.fajr, pt.sunrise, pt.dhuhr, pt.asr, pt.maghrib, pt.isha];
+  if (!times.every(d => d instanceof Date && !Number.isNaN(d.getTime()))) return false;
+  for (let i = 1; i < times.length; i++) {
+    if (!(times[i - 1].getTime() < times[i].getTime())) return false;
+  }
+  return true;
+}
+
+/**
+ * The latitude a day is actually computed at: the real one, or — where the
+ * real one has no sunrise or sunset that day — the nearest latitude, on the
+ * same side of the equator.
+ */
+export function computedLatitude(
+  latitude: number,
+  longitude: number,
+  dayDate: Date,
+  calc: CalculationParameters,
+): number {
+  if (allTimesValid(new PrayerTimes(new Coordinates(latitude, longitude), dayDate, calc))) {
+    return latitude;
+  }
+  return (latitude < 0 ? -1 : 1) * Math.min(Math.abs(latitude), NEAREST_LATITUDE);
+}
+
 export function computeLocalAdhanTimes(params: {
   latitude: number;
   longitude: number;
@@ -155,7 +209,6 @@ export function computeLocalAdhanTimes(params: {
   const m = params.date.getMonth();
   const day = params.date.getDate();
   const dayDate = new Date(y, m, day);
-  const coords = new Coordinates(params.latitude, params.longitude);
   
   // "Automatic" is AlAdhan's server-side choice; off the network we make the
   // same choice ourselves from the coordinates (see `autoMethod.ts`), rather
@@ -167,7 +220,8 @@ export function computeLocalAdhanTimes(params: {
   const calc = parametersForMethod(methodId);
   
   calc.madhab = params.school === 1 ? Madhab.Hanafi : Madhab.Shafi;
-  const pt = new PrayerTimes(coords, dayDate, calc);
+  const latitude = computedLatitude(params.latitude, params.longitude, dayDate, calc);
+  const pt = new PrayerTimes(new Coordinates(latitude, params.longitude), dayDate, calc);
   const fajrStr = formatLocalTime(pt.fajr);
   // Imsak is computed locally (adhan.js does not expose it). Default offset
   // is the most-common 10 minutes; will become user-configurable via task #21.
