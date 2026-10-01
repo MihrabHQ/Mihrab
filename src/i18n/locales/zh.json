@@ -1331,7 +1331,17 @@
     "featuresOfferTitle": "这本穆斯哈夫还能做更多",
     "featuresOfferBody": "有两项功能默认关闭，直到你需要它们。之后都可在“设置 → 古兰经”中更改。",
     "featuresOfferTajweedNote": "着色页面会在 Wi‑Fi 下于后台下载，约 170 MB。",
-    "featuresOfferTurnOn": "开启"
+    "featuresOfferTurnOn": "开启",
+    "verseOfDaySettingHelp": "在古兰经页面顶部显示一节经文及其译文或注释，每天更换。每日经文通知是单独的设置，见“通知”。",
+    "verseOfDayOnQuranPage": "在古兰经页面显示",
+    "shortcutToggle": "古兰经页面",
+    "bookmarkShortcut": "显示在古兰经页面“继续阅读”下方",
+    "homeBookmarkOn": "显示在主屏幕",
+    "homeBookmarkOff": "从主屏幕移除",
+    "homeBookmarkLabel": "主屏幕",
+    "homeBookmarkHelp": "“古兰经页面”会把书签放在本页顶部“继续阅读”下方。星标会把一个书签放到主屏幕上原本属于诵读计划的位置；只能有一个书签带星标。",
+    "homeBookmarkHelpKhatmah": "“古兰经页面”会把书签放在本页顶部“继续阅读”下方。星标会把一个书签放到主屏幕上“继续诵读计划”所在的位置——诵读计划进行中时星标不可用。",
+    "bookmarkDoor": "书签"
   },
   "reading": {
     "textSize": "文字大小",

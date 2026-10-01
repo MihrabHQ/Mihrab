@@ -24,7 +24,7 @@ import { GlassSurface } from '../../components/GlassSurface';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import { cardEdgeStyle } from '../../theme/chrome';
 import { useQuranState } from '../../quran/quranState';
-import type { LastRead } from '../../quran/quranTypes';
+import type { LastRead, QuranBookmark } from '../../quran/quranTypes';
 import { warmMushafLayout } from '../../quran/mushafLayout';
 import { useIslamicDay } from '../../hijri/useIslamicDay';
 import { selectQuranCardState } from '../../quran/quranCardState';
@@ -40,6 +40,8 @@ type Props = {
     ayah?: number,
     /** This visit is the khatmah's — see `quran/readingSession`. */
     khatmah?: boolean,
+    /** …or a bookmark's: the starred one in the khatmah's slot. */
+    bookmarkId?: string,
   ) => void;
   /** Opens the Quran home (surah list, khatmah controls). */
   onOpenQuran: () => void;
@@ -56,7 +58,8 @@ function QuranCardImpl({ onOpenAt, onOpenQuran }: Props) {
   // it. Bring the page-layout data in now, after the home screen has
   // settled, rather than in the middle of the push transition when the
   // first page asks for it — see `warmMushafLayout`.
-  const readsMushaf = quran.lastRead?.mode === 'mushaf' || card.khatmah != null;
+  const readsMushaf =
+    quran.lastRead?.mode === 'mushaf' || card.khatmah != null || card.homeBookmark != null;
   const riwayah = quran.prefs.riwayah;
   useEffect(() => {
     if (!readsMushaf) return;
@@ -79,6 +82,10 @@ function QuranCardImpl({ onOpenAt, onOpenQuran }: Props) {
     (marker: LastRead) => onOpenAt(marker.surah, marker.page, marker.ayah),
     [onOpenAt],
   );
+  const openBookmark = useCallback(
+    (b: QuranBookmark) => onOpenAt(b.surah, b.page, b.ayah, undefined, b.id),
+    [onOpenAt],
+  );
 
   return (
     <GlassSurface
@@ -90,6 +97,7 @@ function QuranCardImpl({ onOpenAt, onOpenQuran }: Props) {
         state={card}
         onOpenKhatmah={openKhatmah}
         onOpenReading={openReading}
+        onOpenBookmark={openBookmark}
         onOpenQuran={onOpenQuran}
         showStart
         layout="columns"

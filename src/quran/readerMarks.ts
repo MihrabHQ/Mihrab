@@ -28,7 +28,7 @@ import type {
   QuranState,
 } from './quranTypes';
 import { activeKhatmah, khatmahCurrentPage } from './khatmahProgress';
-import { getQuranState, mergeRemovals, updateQuranState } from './quranState';
+import { getQuranState, mergeRemovals, setQuranPrefs, updateQuranState } from './quranState';
 
 export function setLastRead(pos: Omit<LastRead, 'updatedAt'>): void {
   updateQuranState(prev => ({
@@ -492,6 +492,33 @@ export function setBookmarkFollows(id: string, follows: boolean): void {
   // marker take the turns, which is the duplicate place `recordReading`
   // exists to avoid.
   if (follows) claimReadingSession({ kind: 'bookmark', id });
+}
+
+/**
+ * Put a bookmark on the Qur'an tab's doors card, or take it off — see
+ * `QuranBookmark.shortcut`. A setting on the bookmark, nothing more: it
+ * does not touch the visit.
+ */
+export function setBookmarkShortcut(id: string, shortcut: boolean): void {
+  updateQuranState(prev => ({
+    ...prev,
+    bookmarks: prev.bookmarks.map(b => {
+      if (b.id !== id) return b;
+      const next: QuranBookmark = { ...b, updatedAt: stampAfter(b) };
+      if (shortcut) next.shortcut = true;
+      else delete next.shortcut;
+      return next;
+    }),
+  }));
+}
+
+/**
+ * Give one bookmark the khatmah's slot on Home, or clear it — see
+ * `QuranPrefs.homeBookmarkId`. One at a time by construction: the id
+ * replaces whatever was there.
+ */
+export function setHomeBookmark(id: string | null): void {
+  setQuranPrefs({ homeBookmarkId: id ?? '' });
 }
 
 /**

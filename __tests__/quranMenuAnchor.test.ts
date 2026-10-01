@@ -11,10 +11,14 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
-const screen = readFileSync(
-  join(__dirname, '..', 'src', 'screens', 'QuranScreen.tsx'),
-  'utf8',
-);
+// The page-jump dialog is the Qur'an tab's; the khatmah's two moved with
+// the card to its own page, and the rule is the same on both.
+const screen =
+  readFileSync(join(__dirname, '..', 'src', 'screens', 'QuranScreen.tsx'), 'utf8') +
+  readFileSync(
+    join(__dirname, '..', 'src', 'screens', 'quran', 'KhatmahScreen.tsx'),
+    'utf8',
+  );
 
 describe('every dialog on the Quran page knows where it goes', () => {
   it('no card is drawn with the base style and nothing to anchor it', () => {

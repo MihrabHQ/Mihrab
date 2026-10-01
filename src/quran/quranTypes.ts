@@ -35,6 +35,16 @@ export type QuranBookmark = {
    */
   follows?: boolean;
   /**
+   * SHOWN ON THE QUR'AN TAB, under "Continue reading" (additive).
+   *
+   * A bookmark the reader goes back to often — the surah under revision,
+   * the Friday Al-Kahf — is a row on the tab's doors card, one tap from
+   * the top of the page, rather than a row in a list behind a tab. Off,
+   * and absent on every bookmark made before this existed, it is in the
+   * list only. Switched on the bookmark itself, in that list.
+   */
+  shortcut?: boolean;
+  /**
    * When it last changed — moved, recoloured, or switched to following.
    *
    * A bookmark used to be immutable after creation, and the sync merge
@@ -432,6 +442,28 @@ export type QuranPrefs = {
    * point is that the reader decides, not that we guess right.
    */
   verseOfDayOpen: boolean;
+  /**
+   * Is the verse of the day on the Qur'an tab at all? (additive)
+   *
+   * Off by default. The card was there for everyone, closed, as one more
+   * row between the top of the tab and the surah list; it is a setting
+   * now (Settings → Quran), and the tab shows it only to a reader who
+   * asked. The daily ayah notification is its own switch and unaffected.
+   */
+  verseOfDay: boolean;
+  /**
+   * THE BOOKMARK THAT STANDS IN FOR THE KHATMAH ON HOME (additive).
+   *
+   * Home's Qur'an card has a slot for the khatmah's next page. A reader
+   * who keeps no khatmah but reads one surah on a schedule has the same
+   * need — a door to a kept place — and an empty slot. So one bookmark,
+   * and only one, can be starred in the bookmark list to take it. Its
+   * id, or empty for none. While a khatmah is live the star is disabled
+   * and the slot is the plan's; the id is kept, and the door returns
+   * when the plan is done. A bookmark that no longer exists is simply
+   * not drawn.
+   */
+  homeBookmarkId: string;
   /**
    * Does one surah lead to a random next one? (additive)
    *

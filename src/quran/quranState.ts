@@ -166,6 +166,8 @@ export const DEFAULT_QURAN_STATE: QuranState = {
     companionMode: 'translation',
     tafsirEditionId: '',
     verseOfDayOpen: false,
+    verseOfDay: false,
+    homeBookmarkId: '',
     shuffleSurahs: false,
     tilawahShowPage: true,
   },
@@ -212,6 +214,7 @@ function coerceBookmark(v: unknown): QuranBookmark | null {
   // Only when set: a key written onto a bookmark that never had it makes
   // a snapshot merged with itself stop equalling itself.
   if (r.follows === true) out.follows = true;
+  if (r.shortcut === true) out.shortcut = true;
   if (typeof r.updatedAt === 'number' && Number.isFinite(r.updatedAt)) {
     out.updatedAt = r.updatedAt;
   }
@@ -543,6 +546,15 @@ function mergeStored(raw: unknown): QuranState {
           ?.readerKeepAwake !== false,
       tajweedColours:
         (r.prefs as { tajweedColours?: unknown } | undefined)?.tajweedColours === true,
+      // Off unless explicitly on: the card was shown to everyone before
+      // this was a setting, and the setting's default is off.
+      verseOfDay:
+        (r.prefs as { verseOfDay?: unknown } | undefined)?.verseOfDay === true,
+      homeBookmarkId:
+        typeof (r.prefs as { homeBookmarkId?: unknown } | undefined)?.homeBookmarkId ===
+        'string'
+          ? ((r.prefs as { homeBookmarkId: string }).homeBookmarkId)
+          : '',
     },
     // Kept if it is there and sane, and LEFT OUT otherwise rather than
     // written as 0: an export of a blob that never had it must round-trip

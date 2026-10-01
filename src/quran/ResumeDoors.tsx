@@ -42,8 +42,8 @@ import { RADIUS, SPACING } from '../theme/tokens';
 import { TYPE } from '../theme/typography';
 import { findSurah } from './quran';
 import { surahName } from './surahName';
-import { READING_COLOR } from './quranState';
-import type { LastRead } from './quranTypes';
+import { BOOKMARK_COLORS, READING_COLOR } from './quranState';
+import type { LastRead, QuranBookmark } from './quranTypes';
 import type { KhatmahTarget } from './khatmahTarget';
 import { PAGE_TO_READ } from './PageProgressMark';
 import type { KhatmahGap } from './quranCardState';
@@ -53,6 +53,8 @@ type Props = {
   state: QuranCardState;
   onOpenKhatmah: (target: KhatmahTarget) => void;
   onOpenReading: (marker: LastRead) => void;
+  /** A bookmark's door — the starred one on Home, the shortcuts on the tab. */
+  onOpenBookmark: (bookmark: QuranBookmark) => void;
   /** The Qur'an index — where "Start reading" and the khatmah offer go. */
   onOpenQuran: () => void;
   /**
@@ -322,6 +324,70 @@ function ReadingDoor({
   );
 }
 
+/**
+ * A kept place, as a door. On the tab it is one of the shortcuts under
+ * "Continue reading"; on Home it is the starred bookmark in the slot the
+ * khatmah would take. In the bookmark's own colour, so the row says which
+ * of the reader's places it is before the name is read.
+ */
+function BookmarkDoor({
+  bookmark,
+  divided,
+  column,
+  onPress,
+}: {
+  bookmark: QuranBookmark;
+  divided?: boolean;
+  column?: boolean;
+  onPress: () => void;
+}) {
+  const { t, i18n } = useTranslation();
+  const { palette } = useAppPalette();
+  const meta = findSurah(bookmark.surah);
+  const name = meta ? surahName(meta, i18n.language) : '';
+  const color = BOOKMARK_COLORS[bookmark.color];
+  const title = t('quran.bookmarkDoor', 'Bookmark');
+  return (
+    <Door
+      label={`${title} · ${name} ${bookmark.surah}:${bookmark.ayah}`}
+      onPress={onPress}
+      divided={divided}
+      column={column}>
+      {column ? null : <QuranBookIcon color={color} size={20} />}
+      <View style={styles.body}>
+        <View style={[styles.titleRow, column && styles.titleRowColumn]}>
+          {column ? <View style={[styles.dot, { backgroundColor: color }]} /> : null}
+          <Text style={[styles.title, { color: palette.text }]} numberOfLines={1}>
+            {column ? name : title}
+          </Text>
+          {column ? null : (
+            <Text
+              style={[styles.trailing, { color }]}
+              maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}>
+              {t('home.pageNumber', {
+                defaultValue: 'page {{page}}',
+                page: bookmark.page,
+              })}
+            </Text>
+          )}
+        </View>
+        <View style={styles.subtitleRow}>
+          <Text
+            style={[styles.subtitle, styles.shrinks, { color: palette.muted }]}
+            numberOfLines={1}>
+            {column ? title : name}
+          </Text>
+          <Text
+            style={[styles.subtitle, { color: palette.muted }]}
+            maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}>
+            {` · ${bookmark.surah}:${bookmark.ayah}`}
+          </Text>
+        </View>
+      </View>
+    </Door>
+  );
+}
+
 function StartDoor({
   onOpenQuran,
 }: {
@@ -354,23 +420,39 @@ function ResumeDoorsImpl({
   state,
   onOpenKhatmah,
   onOpenReading,
+  onOpenBookmark,
   onOpenQuran,
   showStart = false,
   layout = 'stack',
 }: Props) {
   const { khatmah, reading } = state;
-  if (!khatmah && !reading) {
+  // The khatmah's slot: the plan while there is one, else the starred
+  // bookmark (`homeBookmark` is null whenever a plan is live). Home's
+  // slot; the tab draws the starred bookmark only if it is also a
+  // shortcut, which is the reader's own choice.
+  const starred = layout === 'columns' ? state.homeBookmark : null;
+  // The tab's rows under "Continue reading". Never on Home.
+  const shortcuts = layout === 'stack' ? state.shortcuts : [];
+  const first = khatmah != null || starred != null;
+  if (!first && !reading && shortcuts.length === 0) {
     return showStart ? <StartDoor onOpenQuran={onOpenQuran} /> : null;
   }
   // Side by side only when there are two: a lone door is a full row,
   // with its icon and its page, whichever screen it is on.
-  const column = layout === 'columns' && khatmah != null && reading != null;
+  const column = layout === 'columns' && first && reading != null;
+  let divided = false;
+  const divide = () => {
+    const d = divided;
+    divided = true;
+    return d;
+  };
   const doors = (
     <>
       {khatmah ? (
         <KhatmahDoor
           khatmah={khatmah}
           column={column}
+          divided={divide()}
           onPress={() => onOpenKhatmah(khatmah.target)}
           // The same door, a different page: it is the plan's reading, so
           // the visit is the plan's and the done-marks are drawn.
@@ -378,15 +460,30 @@ function ResumeDoorsImpl({
             khatmah.gap ? onOpenKhatmah(khatmah.gap.target) : undefined
           }
         />
+      ) : starred ? (
+        <BookmarkDoor
+          bookmark={starred}
+          column={column}
+          divided={divide()}
+          onPress={() => onOpenBookmark(starred)}
+        />
       ) : null}
       {reading ? (
         <ReadingDoor
           marker={reading}
-          divided={khatmah != null}
+          divided={divide()}
           column={column}
           onPress={() => onOpenReading(reading)}
         />
       ) : null}
+      {shortcuts.map(b => (
+        <BookmarkDoor
+          key={b.id}
+          bookmark={b}
+          divided={divide()}
+          onPress={() => onOpenBookmark(b)}
+        />
+      ))}
     </>
   );
   return column ? <View style={styles.columns}>{doors}</View> : doors;

@@ -35,7 +35,7 @@ import { countRanges } from './khatmahDone';
 import { islamicDayKey } from '../hijri/islamicDay';
 import { firstAyahOfPage } from './pages';
 import { type RiwayahId } from './riwayat';
-import type { KhatmahPlan, LastRead, QuranState } from './quranTypes';
+import type { KhatmahPlan, LastRead, QuranBookmark, QuranState } from './quranTypes';
 import {
   KHATMAH_TOTAL_AYAHS,
   khatmahDone,
@@ -91,6 +91,19 @@ export type KhatmahGap = {
 export type QuranCardState = {
   khatmah: QuranCardKhatmah | null;
   reading: LastRead | null;
+  /**
+   * The bookmarks the reader put on the Qur'an tab's card
+   * (`QuranBookmark.shortcut`), in book order. Rows under "Continue
+   * reading" on the tab; Home does not draw them — its card is one row
+   * high, and that row is for the two doors or the starred bookmark.
+   */
+  shortcuts: QuranBookmark[];
+  /**
+   * The bookmark starred to take the khatmah's slot on Home
+   * (`QuranPrefs.homeBookmarkId`) — only while there is no plan to take
+   * it, and only while the bookmark still exists.
+   */
+  homeBookmark: QuranBookmark | null;
 };
 
 /** `khatmahGap` as something the card can open. */
@@ -171,8 +184,18 @@ export function selectQuranCardState(
     };
   }
 
+  const shortcuts = state.bookmarks
+    .filter(b => b.shortcut === true)
+    .sort((a, b) => a.surah - b.surah || a.ayah - b.ayah);
+  const homeBookmark =
+    !plan && state.prefs.homeBookmarkId
+      ? (state.bookmarks.find(b => b.id === state.prefs.homeBookmarkId) ?? null)
+      : null;
+
   return {
     khatmah,
     reading: readingContinueTarget(state, state.prefs.riwayah),
+    shortcuts,
+    homeBookmark,
   };
 }

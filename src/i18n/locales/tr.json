@@ -1331,7 +1331,17 @@
     "featuresOfferTitle": "Mushaf daha fazlasını yapabilir",
     "featuresOfferBody": "İki özellik sen isteyene kadar kapalı. İkisi de daha sonra Ayarlar → Kur'an'dan değiştirilebilir.",
     "featuresOfferTajweedNote": "Renkli sayfalar arka planda Wi‑Fi üzerinden indirilir, yaklaşık 170 MB.",
-    "featuresOfferTurnOn": "Aç"
+    "featuresOfferTurnOn": "Aç",
+    "verseOfDaySettingHelp": "Kur'an sayfasının üstünde, her gün değişen bir ayeti meali veya tefsiriyle gösterir. Günün ayeti bildirimi ayrıdır — bkz. Bildirimler.",
+    "verseOfDayOnQuranPage": "Kur'an sayfasında göster",
+    "shortcutToggle": "Kur'an sayfası",
+    "bookmarkShortcut": "Kur'an sayfasında «Okumaya devam et» altında gösterilir",
+    "homeBookmarkOn": "Ana ekranda göster",
+    "homeBookmarkOff": "Ana ekrandan kaldır",
+    "homeBookmarkLabel": "Ana ekran",
+    "homeBookmarkHelp": "«Kur'an sayfası», yer imini bu sayfanın üstündeki «Okumaya devam et» altına koyar. Yıldız, bir yer imini ana ekranda hatmin alacağı yere koyar; yalnızca bir yer imi alabilir.",
+    "homeBookmarkHelpKhatmah": "«Kur'an sayfası», yer imini bu sayfanın üstündeki «Okumaya devam et» altına koyar. Yıldız, bir yer imini ana ekranda «Hatme devam et»in olduğu yere koyar — hatim sürerken kapalıdır.",
+    "bookmarkDoor": "Yer imi"
   },
   "reading": {
     "textSize": "Metin boyutu",

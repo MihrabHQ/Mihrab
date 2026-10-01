@@ -10,7 +10,8 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 
 const read = (...p: string[]) => readFileSync(join(__dirname, '..', ...p), 'utf8');
-const screen = read('src', 'screens', 'QuranScreen.tsx');
+// The khatmah card is its own page now; its tab row is `KhatmahEntry`.
+const screen = read('src', 'screens', 'quran', 'KhatmahScreen.tsx');
 const sheet = read('src', 'quran', 'KhatmahPacingSheet.tsx');
 const settings = read('src', 'screens', 'settings', 'QuranCard.tsx');
 const en = JSON.parse(read('src', 'i18n', 'locales', 'en.json'));

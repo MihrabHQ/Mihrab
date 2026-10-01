@@ -1331,7 +1331,17 @@
     "featuresOfferTitle": "Mushaf bisa lebih banyak",
     "featuresOfferBody": "Dua fitur mati sampai kamu memintanya. Keduanya bisa diubah nanti di Pengaturan → Al-Qur'an.",
     "featuresOfferTajweedNote": "Halaman berwarna diunduh di latar belakang lewat Wi‑Fi, sekitar 170 MB.",
-    "featuresOfferTurnOn": "Nyalakan"
+    "featuresOfferTurnOn": "Nyalakan",
+    "verseOfDaySettingHelp": "Menampilkan satu ayat di bagian atas halaman Al-Qur'an, dengan terjemahan atau tafsirnya, yang berganti setiap hari. Notifikasi ayat harian terpisah — lihat Notifikasi.",
+    "verseOfDayOnQuranPage": "Tampilkan di halaman Al-Qur'an",
+    "shortcutToggle": "Halaman Al-Qur'an",
+    "bookmarkShortcut": "Ditampilkan di bawah «Lanjutkan membaca» di halaman Al-Qur'an",
+    "homeBookmarkOn": "Tampilkan di layar utama",
+    "homeBookmarkOff": "Hapus dari layar utama",
+    "homeBookmarkLabel": "Utama",
+    "homeBookmarkHelp": "«Halaman Al-Qur'an» meletakkan penanda di bawah «Lanjutkan membaca» di bagian atas halaman ini. Bintang meletakkan satu penanda di layar utama, di tempat yang akan diisi khatmah; hanya satu penanda yang bisa memilikinya.",
+    "homeBookmarkHelpKhatmah": "«Halaman Al-Qur'an» meletakkan penanda di bawah «Lanjutkan membaca» di bagian atas halaman ini. Bintang meletakkan satu penanda di layar utama, di tempat «Lanjutkan khatmah» — nonaktif selama khatmah berjalan.",
+    "bookmarkDoor": "Penanda"
   },
   "reading": {
     "textSize": "Ukuran teks",

@@ -144,13 +144,29 @@ function QuranCardImpl() {
         title={t('quran.companionTitle', 'Under each verse')}
         footer={t('quran.companionHelp', {
           defaultValue:
-            'Applies everywhere a verse is shown — the reader, the verse of the day, and the daily-ayah notification. Also changeable from the Quran page.',
+            'Applies everywhere a verse is shown — the reader, the verse of the day, and the daily-ayah notification. Also changeable from any verse.',
         })}>
         <SettingsLinkRow
           testID="settings-companion-row"
           title={modeLabel}
           value={editionLabel}
           onPress={() => setSheetVisible(true)}
+        />
+      </SettingsGroup>
+      {/* The verse of the day, as a card on the Qur'an page: off unless
+          asked for. It was there for everyone, one more row above the
+          surah list; the daily notification is its own switch. */}
+      <SettingsGroup
+        title={t('quran.verseOfDay', 'Verse of the day')}
+        footer={t('quran.verseOfDaySettingHelp', {
+          defaultValue:
+            'Shows a verse at the top of the Quran page, with its translation or tafsir, changing each day. The daily-ayah notification is separate — see Notifications.',
+        })}>
+        <SettingsToggleRow
+          testID="settings-verse-of-day"
+          title={t('quran.verseOfDayOnQuranPage', 'Show on the Quran page')}
+          value={quran.prefs.verseOfDay}
+          onValueChange={next => setQuranPrefs({ verseOfDay: next })}
         />
       </SettingsGroup>
       {/* The second reader, and whether there is one. Below the companion

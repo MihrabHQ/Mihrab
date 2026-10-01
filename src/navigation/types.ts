@@ -77,6 +77,12 @@ export type RootStackParamList = {
    * and would have to be drawn by hand in a nested navigator.
    */
   QuranListen: undefined;
+  /**
+   * The khatmah's own page: the plan's account of itself and its
+   * options, or the ways to start one. Off the Qur'an tab for the same
+   * reason as Tilāwah — and because the tab was a wall of controls.
+   */
+  Khatmah: undefined;
   Onboarding: undefined;
   Backup: undefined;
   Sync: undefined;

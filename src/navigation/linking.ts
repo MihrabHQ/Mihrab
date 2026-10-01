@@ -142,6 +142,8 @@ export const linking: LinkingOptions<RootStackParamList> = {
        * is the screen someone is sent to when they are standing next to
        * the other device with its code on screen.
        */
+      /** mihrab://khatmah — the plan's page, where a reminder about it lands. */
+      Khatmah: 'khatmah',
       Sync: 'sync',
       /**
        * mihrab://downloads

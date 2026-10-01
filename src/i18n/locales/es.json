@@ -1331,7 +1331,17 @@
     "featuresOfferTitle": "El mushaf puede hacer más",
     "featuresOfferBody": "Dos funciones están desactivadas hasta que las pidas. Ambas se pueden cambiar después en Ajustes → Corán.",
     "featuresOfferTajweedNote": "Las páginas coloreadas se descargan en segundo plano por Wi‑Fi, unos 170 MB.",
-    "featuresOfferTurnOn": "Activar"
+    "featuresOfferTurnOn": "Activar",
+    "verseOfDaySettingHelp": "Muestra un versículo en la parte superior de la página del Corán, con su traducción o tafsir, que cambia cada día. La notificación de la aleya del día es aparte — ver Notificaciones.",
+    "verseOfDayOnQuranPage": "Mostrar en la página del Corán",
+    "shortcutToggle": "Página del Corán",
+    "bookmarkShortcut": "Se muestra bajo «Continuar leyendo» en la página del Corán",
+    "homeBookmarkOn": "Mostrar en la pantalla de inicio",
+    "homeBookmarkOff": "Quitar de la pantalla de inicio",
+    "homeBookmarkLabel": "Inicio",
+    "homeBookmarkHelp": "«Página del Corán» pone un marcador bajo «Continuar leyendo» al principio de esta página. La estrella pone un marcador en la pantalla de inicio, en el lugar que ocuparía una jatma; solo un marcador puede tenerla.",
+    "homeBookmarkHelpKhatmah": "«Página del Corán» pone un marcador bajo «Continuar leyendo» al principio de esta página. La estrella pone un marcador en la pantalla de inicio, donde está «Continuar la jatma» — está desactivada mientras hay una jatma en curso.",
+    "bookmarkDoor": "Marcador"
   },
   "reading": {
     "textSize": "Tamaño del texto",

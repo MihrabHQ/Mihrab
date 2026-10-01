@@ -88,23 +88,30 @@ const reading = {
   updatedAt: 1,
 };
 
-function render(state: QuranCardState, showStart = false) {
+/** A card state with no bookmark doors — the tests below are about the two trails. */
+type Doors = Pick<QuranCardState, 'khatmah' | 'reading'> & Partial<QuranCardState>;
+const card = (s: Doors): QuranCardState => ({ shortcuts: [], homeBookmark: null, ...s });
+
+function render(state: Doors, showStart = false, layout: 'stack' | 'columns' = 'stack') {
   const onOpenKhatmah = jest.fn();
   const onOpenReading = jest.fn();
+  const onOpenBookmark = jest.fn();
   const onOpenQuran = jest.fn();
   let tree!: ReturnType<typeof create>;
   act(() => {
     tree = create(
       <ResumeDoors
-        state={state}
+        state={card(state)}
         onOpenKhatmah={onOpenKhatmah}
         onOpenReading={onOpenReading}
+        onOpenBookmark={onOpenBookmark}
         onOpenQuran={onOpenQuran}
         showStart={showStart}
+        layout={layout}
       />,
     );
   });
-  return { tree, onOpenKhatmah, onOpenReading, onOpenQuran };
+  return { tree, onOpenKhatmah, onOpenReading, onOpenBookmark, onOpenQuran };
 }
 
 describe('the doors', () => {
@@ -246,7 +253,8 @@ describe('the doors', () => {
     act(() => {
       tree = create(
         <ResumeDoors
-          state={{ khatmah, reading }}
+          state={card({ khatmah, reading })}
+          onOpenBookmark={jest.fn()}
           onOpenKhatmah={() => {}}
           onOpenReading={() => {}}
           onOpenQuran={() => {}}
@@ -270,7 +278,8 @@ describe('the doors', () => {
     act(() => {
       tree = create(
         <ResumeDoors
-          state={{ khatmah: null, reading }}
+          state={card({ khatmah: null, reading })}
+          onOpenBookmark={jest.fn()}
           onOpenKhatmah={() => {}}
           onOpenReading={() => {}}
           onOpenQuran={() => {}}

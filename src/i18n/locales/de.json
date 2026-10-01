@@ -1331,7 +1331,17 @@
     "featuresOfferTitle": "Der Mushaf kann mehr",
     "featuresOfferBody": "Zwei Dinge sind aus, bis du sie einschaltest. Beides lässt sich später unter Einstellungen → Koran ändern.",
     "featuresOfferTajweedNote": "Die farbigen Seiten werden im Hintergrund über WLAN geladen, etwa 170 MB.",
-    "featuresOfferTurnOn": "Einschalten"
+    "featuresOfferTurnOn": "Einschalten",
+    "verseOfDaySettingHelp": "Zeigt oben auf der Koranseite einen Vers mit Übersetzung oder Tafsir, der täglich wechselt. Die tägliche Ayah-Benachrichtigung ist davon getrennt — siehe Benachrichtigungen.",
+    "verseOfDayOnQuranPage": "Auf der Koranseite zeigen",
+    "shortcutToggle": "Koranseite",
+    "bookmarkShortcut": "Wird unter „Weiterlesen“ auf der Koranseite gezeigt",
+    "homeBookmarkOn": "Auf dem Startbildschirm zeigen",
+    "homeBookmarkOff": "Vom Startbildschirm entfernen",
+    "homeBookmarkLabel": "Start",
+    "homeBookmarkHelp": "„Koranseite“ setzt ein Lesezeichen unter „Weiterlesen“ oben auf dieser Seite. Der Stern setzt ein Lesezeichen auf den Startbildschirm, an die Stelle einer Khatmah; nur ein Lesezeichen kann ihn tragen.",
+    "homeBookmarkHelpKhatmah": "„Koranseite“ setzt ein Lesezeichen unter „Weiterlesen“ oben auf dieser Seite. Der Stern setzt ein Lesezeichen auf den Startbildschirm, wo „Khatmah fortsetzen“ steht — während einer Khatmah ist er aus.",
+    "bookmarkDoor": "Lesezeichen"
   },
   "reading": {
     "textSize": "Schriftgröße",

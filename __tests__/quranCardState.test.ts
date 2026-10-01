@@ -56,7 +56,12 @@ function ymd(ts: number): string {
 
 describe('selectQuranCardState', () => {
   it('offers the way in when nothing has been started — never a verse to read here', () => {
-    expect(selectQuranCardState(base, NOW)).toEqual({ khatmah: null, reading: null });
+    expect(selectQuranCardState(base, NOW)).toEqual({
+      khatmah: null,
+      reading: null,
+      shortcuts: [],
+      homeBookmark: null,
+    });
   });
 
   it('offers to continue reading when a marker exists but no plan', () => {
@@ -104,6 +109,8 @@ describe('selectQuranCardState', () => {
     expect(selectQuranCardState({ ...base, khatmah: [finished] }, NOW)).toEqual({
       khatmah: null,
       reading: null,
+      shortcuts: [],
+      homeBookmark: null,
     });
   });
 

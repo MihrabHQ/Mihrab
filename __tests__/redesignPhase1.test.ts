@@ -37,19 +37,34 @@ describe('Today', () => {
 
 describe('the Quran tab', () => {
   const src = read('src/screens/QuranScreen.tsx');
+  // The khatmah card moved to its own page; the tab keeps one row to it.
+  const khatmah = read('src/screens/quran/KhatmahScreen.tsx');
 
   it('shows the doors once, at the top — and nowhere else (#41)', () => {
     // The khatmah's next page and the reading marker are one card of rows
-    // shared with Home; the khatmah card below it carries no Continue of
-    // its own and no "last read" line, which were two more ways to say
-    // the same thing with different numbers.
+    // shared with Home; the khatmah page carries no Continue of its own
+    // and no "last read" line, which were two more ways to say the same
+    // thing with different numbers.
     expect(src.match(/<ResumeDoors/g)).toHaveLength(1);
-    expect(src).toContain('{doors.khatmah || doors.reading ? (');
+    expect(src).toContain('{doors.khatmah || doors.reading || doors.shortcuts.length > 0 ? (');
     expect(src).not.toContain("t('quran.lastReadRow'");
     expect(src).not.toContain("t('quran.khatmahContinue'");
+    expect(khatmah).not.toContain('<ResumeDoors');
+    expect(khatmah).not.toContain("t('quran.khatmahContinue'");
+  });
+
+  it('keeps the tab to the doors, one khatmah row and the tabs', () => {
+    // The whole khatmah card, the verse of the day for everyone, and the
+    // companion-text card were a wall above the surah list.
+    expect(src).toContain('<KhatmahEntry />');
+    expect(src).not.toContain("t('quran.khatmahMore'");
+    expect(src).not.toContain("t('quran.companionTitle'");
+    expect(src).toContain('{votdOn && votdArabic ? (');
+    expect(src).toContain('{plan ? <TilawahRow /> : null}');
   });
 
   it('has one primary and a "more" on the khatmah card', () => {
+    const src = khatmah;
     const start = src.indexOf('{/* One primary — the day');
     expect(start).toBeGreaterThan(0);
     const end = src.indexOf("t('quran.startKhatmah', 'Start a khatmah')", start);
@@ -63,13 +78,14 @@ describe('the Quran tab', () => {
   });
 
   it('keeps "Previous day" reachable, in the menu', () => {
-    const menu = src.slice(src.indexOf('Khatmah reset menu'));
+    const menu = khatmah.slice(khatmah.indexOf('Khatmah reset menu'));
     expect(menu).toContain("t('quran.khatmahPrevDay'");
     expect(menu).toContain('stepKhatmahBack()');
   });
 
   it('speaks in the accent only — no cyan, no gold on this screen', () => {
     expect(src).not.toMatch(/KHATMAH_COLOR|KHATMAH_EXTRA_COLOR/);
+    expect(khatmah).not.toMatch(/KHATMAH_COLOR|KHATMAH_EXTRA_COLOR/);
   });
 });
 

@@ -1331,7 +1331,17 @@
     "featuresOfferTitle": "Le mushaf peut faire plus",
     "featuresOfferBody": "Deux fonctions sont désactivées tant que vous ne les demandez pas. Les deux se modifient plus tard dans Réglages → Coran.",
     "featuresOfferTajweedNote": "Les pages colorées se téléchargent en arrière-plan en Wi‑Fi, environ 170 Mo.",
-    "featuresOfferTurnOn": "Activer"
+    "featuresOfferTurnOn": "Activer",
+    "verseOfDaySettingHelp": "Affiche un verset en haut de la page Coran, avec sa traduction ou son tafsir, qui change chaque jour. La notification du verset du jour est distincte — voir Notifications.",
+    "verseOfDayOnQuranPage": "Afficher sur la page Coran",
+    "shortcutToggle": "Page Coran",
+    "bookmarkShortcut": "Affiché sous « Continuer la lecture » sur la page Coran",
+    "homeBookmarkOn": "Afficher sur l’écran d’accueil",
+    "homeBookmarkOff": "Retirer de l’écran d’accueil",
+    "homeBookmarkLabel": "Accueil",
+    "homeBookmarkHelp": "« Page Coran » place un signet sous « Continuer la lecture » en haut de cette page. L’étoile place un signet sur l’écran d’accueil, à la place qu’une khatmah prendrait ; un seul signet peut l’avoir.",
+    "homeBookmarkHelpKhatmah": "« Page Coran » place un signet sous « Continuer la lecture » en haut de cette page. L’étoile place un signet sur l’écran d’accueil, là où se trouve « Continuer la khatmah » — elle est désactivée pendant une khatmah.",
+    "bookmarkDoor": "Signet"
   },
   "reading": {
     "textSize": "Taille du texte",

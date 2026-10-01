@@ -1159,7 +1159,7 @@
     "nextPage": "Next page",
     "prevPage": "Previous page",
     "companionTitle": "Under each verse",
-    "companionHelp": "Applies everywhere a verse is shown — the reader, the verse of the day, and the daily-ayah notification. Also changeable from the Quran page.",
+    "companionHelp": "Applies everywhere a verse is shown — the reader, the verse of the day, and the daily-ayah notification. Also changeable from any verse.",
     "companionActive": "active",
     "mushafReplaceOldBody": "An older copy of the mushaf ({{size}} MB) is still on your device from a previous version. It will be removed first — nothing you have saved is affected.",
     "shareAsText": "Share the text",
@@ -1331,7 +1331,17 @@
     "featuresOfferTitle": "The mushaf can do more",
     "featuresOfferBody": "Two things are off until you ask for them. Both can be changed later in Settings → Quran.",
     "featuresOfferTajweedNote": "The coloured pages download in the background over Wi‑Fi, about 170 MB.",
-    "featuresOfferTurnOn": "Turn on"
+    "featuresOfferTurnOn": "Turn on",
+    "verseOfDaySettingHelp": "Shows a verse at the top of the Quran page, with its translation or tafsir, changing each day. The daily-ayah notification is separate — see Notifications.",
+    "verseOfDayOnQuranPage": "Show on the Quran page",
+    "shortcutToggle": "Quran page",
+    "bookmarkShortcut": "Shown under Continue reading on the Quran page",
+    "homeBookmarkOn": "Show on the Home screen",
+    "homeBookmarkOff": "Take off the Home screen",
+    "homeBookmarkLabel": "Home",
+    "homeBookmarkHelp": "Quran page puts a bookmark under Continue reading at the top of this page. The star puts one bookmark on the Home screen, in the place a khatmah would take; only one bookmark can have it.",
+    "homeBookmarkHelpKhatmah": "Quran page puts a bookmark under Continue reading at the top of this page. The star puts one bookmark on the Home screen where Continue khatmah is — it is off while a khatmah is running.",
+    "bookmarkDoor": "Bookmark"
   },
   "reading": {
     "textSize": "Text size",

@@ -16,6 +16,7 @@ import { QuranSurahScreen } from '../screens/QuranSurahScreen';
 import { QuranDownloadsScreen } from '../screens/QuranDownloadsScreen';
 import { TajweedGuideScreen } from '../quran/tajweed/TajweedGuideScreen';
 import { TilawahScreen } from '../screens/quran/TilawahScreen';
+import { KhatmahScreen } from '../screens/quran/KhatmahScreen';
 import { ShareMonthScreen } from '../screens/ShareMonthScreen';
 import { BackupScreen } from '../screens/BackupScreen';
 import { SyncScreen } from '../screens/SyncScreen';
@@ -223,6 +224,14 @@ export function RootNavigator() {
         component={TilawahScreen}
         options={{
           title: t('quran.listenTitle', 'Tilawah'),
+          headerLargeTitle: false,
+        }}
+      />
+      <Stack.Screen
+        name="Khatmah"
+        component={KhatmahScreen}
+        options={{
+          title: t('quran.khatmah', 'Khatmah'),
           headerLargeTitle: false,
         }}
       />

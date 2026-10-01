@@ -1223,12 +1223,21 @@ export function HomeScreen() {
   );
   /** Continue reading exactly where the card says — surah, page, ayah. */
   const handleOpenQuranAt = useCallback(
-    (surahNumber: number, page?: number, ayah?: number, khatmah?: boolean) =>
+    (
+      surahNumber: number,
+      page?: number,
+      ayah?: number,
+      khatmah?: boolean,
+      bookmarkId?: string,
+    ) =>
       navigation.navigate('QuranSurah', {
         surahNumber,
         initialPage: page,
         scrollToAyah: ayah,
         sessionKhatmah: khatmah,
+        // The starred bookmark's door: the visit is the bookmark's, as it
+        // is when it is opened from the bookmark list.
+        sessionBookmarkId: bookmarkId,
       }),
     [navigation],
   );
