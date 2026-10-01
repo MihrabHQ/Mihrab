@@ -189,6 +189,7 @@ describe('two devices reading the same khatmah in different muṣḥafs', () => 
     verseOfDay: false,
     homeBookmarkId: '',
     bookmarkColourReuse: false,
+    ayahSheetPanel: 'none',
   };
   const state = (ayahsRead: number, pagesRead: number): QuranState => ({
     ...base,

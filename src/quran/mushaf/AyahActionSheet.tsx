@@ -41,7 +41,7 @@ import {
   KHATMAH_COLOR,
   READING_COLOR,
 } from '../quranState';
-import type { BookmarkColor, QuranBookmark } from '../quranTypes';
+import type { AyahSheetPanel, BookmarkColor, QuranBookmark } from '../quranTypes';
 import { activeKhatmah } from '../khatmahProgress';
 import { khatmahPageInWindow } from '../khatmahSchedule';
 import { clearKhatmahPosition, setKhatmahPosition } from '../khatmahActions';
@@ -171,7 +171,23 @@ export function AyahActionSheet({
   // ALL shipped tafsir editions (v2.7.40) — matches the companion-text
   // selector so a pick made anywhere is offered everywhere.
   const tafsirEditions = TAFSIR_EDITIONS;
-  const [tafsirOpen, setTafsirOpen] = useState(false);
+  /**
+   * TRANSLATION · TAFSIR · TAJWĪD — tabs, one text at a time, or none.
+   *
+   * None to begin with; the reader's pick is kept in the prefs, so the
+   * tafsir someone opened on one āyah is open on the next, and tomorrow.
+   * Tapping the open tab again puts the text away. Tajwīd is offered only
+   * where the muṣḥaf has it; a remembered tajwīd tab in a recitation
+   * without it shows nothing.
+   */
+  const tajweedOffered = riwayahHasTajweed(state.prefs.riwayah);
+  const panel =
+    state.prefs.ayahSheetPanel === 'tajweed' && !tajweedOffered
+      ? 'none'
+      : state.prefs.ayahSheetPanel;
+  const choosePanel = (next: AyahSheetPanel) =>
+    setQuranPrefs({ ayahSheetPanel: panel === next ? 'none' : next });
+  const tafsirOpen = panel === 'tafsir';
   const tafsirEdition = resolveTafsirEdition(
     state.prefs.tafsirEditionId,
     settings.language,
@@ -194,16 +210,7 @@ export function AyahActionSheet({
   const [tafsirExpanded, setTafsirExpanded] = useState(false);
   const [translationExpanded, setTranslationExpanded] = useState(false);
 
-  /**
-   * Both long-form sections start CLOSED (v2.14.5).
-   *
-   * The sheet is not a reader. It is where you pin your khatmah, set a
-   * bookmark colour, and reach the recitation controls — and with a
-   * translation and a tafsir open above them, all three sat below the
-   * fold on a phone. Opening a text is a decision about the ayah in
-   * front of you; the controls are why the sheet was opened at all.
-   */
-  const [translationOpen, setTranslationOpen] = useState(false);
+  const translationOpen = panel === 'translation';
 
   const scrollRef = useRef<ScrollViewInstance>(null);
   const audioSectionY = useRef(0);
@@ -212,10 +219,6 @@ export function AyahActionSheet({
     if (!visible) return;
     let cancelled = false;
     setArabic('');
-    // When the app-wide companion mode is tafsir (v2.7.40), the section the
-    // user chose opens pre-expanded — the sheet leads with their preference.
-    setTafsirOpen(false);
-    setTranslationOpen(false);
     setTafsirText(null);
     setTafsirExpanded(false);
     setTranslationExpanded(false);
@@ -430,7 +433,7 @@ export function AyahActionSheet({
       tafsirText ??
       (await loadTafsir(tafsirEdition.id, surah, ayah).catch(() => null));
     if (!text) {
-      setTafsirOpen(true);
+      setQuranPrefs({ ayahSheetPanel: 'tafsir' });
       return;
     }
     try {
@@ -561,19 +564,39 @@ export function AyahActionSheet({
               closed until asked for, and carrying its own edition picker
               so a reader can read an ayah in a language other than the
               one the app happens to be in. */}
-          <Pressable
-            accessibilityRole="button"
-            accessibilityState={{ expanded: translationOpen }}
-            accessibilityLabel={t('quran.viewToggleTranslation', 'Translation')}
-            onPress={() => setTranslationOpen(o => !o)}
-            style={[styles.tafsirToggle, { borderColor: palette.border }]}>
-            <Text style={[styles.tafsirToggleLabel, { color: palette.accentSolid }]}>
-              {`${translationOpen ? '▾' : '▸'} ${t(
-                'quran.viewToggleTranslation',
-                'Translation',
-              )}`}
-            </Text>
-          </Pressable>
+          <View
+            accessibilityRole="tablist"
+            style={[styles.panelTabs, { borderColor: palette.border, backgroundColor: palette.bg }]}>
+            {(
+              [
+                ['translation', t('quran.viewToggleTranslation', 'Translation')],
+                ['tafsir', t('quran.tafsir', 'Tafsir')],
+                ...(tajweedOffered
+                  ? [['tajweed', t('tajweed.sheetSection', 'Tajweed')] as const]
+                  : []),
+              ] as const
+            ).map(([key, label]) => {
+              const on = panel === key;
+              return (
+                <Pressable
+                  key={key}
+                  accessibilityRole="tab"
+                  accessibilityState={{ selected: on }}
+                  accessibilityLabel={label}
+                  onPress={() => choosePanel(key)}
+                  style={[styles.panelTab, on && { backgroundColor: palette.accentBg }]}>
+                  <Text
+                    numberOfLines={1}
+                    style={[
+                      styles.panelTabLabel,
+                      { color: on ? palette.accentSolid : palette.muted },
+                    ]}>
+                    {label}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
           {translationOpen ? (
             <View style={styles.tafsirBlock}>
               <View style={styles.tafsirChips}>
@@ -634,16 +657,6 @@ export function AyahActionSheet({
           ) : null}
 
           {/* Tafsir (v2.7.28) */}
-          <Pressable
-            accessibilityRole="button"
-            accessibilityState={{ expanded: tafsirOpen }}
-            accessibilityLabel={t('quran.tafsir', 'Tafsir')}
-            onPress={() => setTafsirOpen(o => !o)}
-            style={[styles.tafsirToggle, { borderColor: palette.border }]}>
-            <Text style={[styles.tafsirToggleLabel, { color: palette.accentSolid }]}>
-              {`${tafsirOpen ? '▾' : '▸'} ${t('quran.tafsir', 'Tafsir')}`}
-            </Text>
-          </Pressable>
           {tafsirOpen ? (
             <View style={styles.tafsirBlock}>
               {tafsirEditions.length > 1 ? (
@@ -744,14 +757,8 @@ export function AyahActionSheet({
           {/* Tajwīd: the āyah's tinted letters and what each colour asks.
               Only where the muṣḥaf can draw them — the Warsh reader has
               no rules data and no coloured faces. */}
-          {riwayahHasTajweed(state.prefs.riwayah) ? (
-            <TajweedAyahSection
-              surah={surah}
-              ayah={ayah}
-              onClose={onClose}
-              toggleStyle={styles.tafsirToggle}
-              toggleLabelStyle={styles.tafsirToggleLabel}
-            />
+          {panel === 'tajweed' ? (
+            <TajweedAyahSection surah={surah} ayah={ayah} onClose={onClose} />
           ) : null}
 
           {/* Bookmark colours — one bookmark per ayah and ONE PER COLOUR:
@@ -1109,15 +1116,22 @@ const styles = StyleSheet.create({
   // text version had around it.
   arabicGlyphs: { paddingVertical: SPACING.xs },
   translation: { fontSize: TYPE.callout.fontSize, lineHeight: 22, marginTop: SPACING.md },
-  tafsirToggle: {
+  // Translation · Tafsir · Tajwīd: one row of tabs, none open to begin with.
+  panelTabs: {
+    flexDirection: 'row',
     marginTop: SPACING.md,
     borderWidth: StyleSheet.hairlineWidth,
     borderRadius: RADIUS.md,
-    paddingVertical: SPACING.sm,
-    paddingHorizontal: SPACING.md,
-    alignSelf: 'flex-start',
+    padding: 3,
+    gap: 3,
   },
-  tafsirToggleLabel: { fontSize: TYPE.footnote.fontSize, fontWeight: '700' },
+  panelTab: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: SPACING.sm,
+    borderRadius: RADIUS.md - 3,
+  },
+  panelTabLabel: { fontSize: TYPE.footnote.fontSize, fontWeight: '700' },
   tafsirBlock: { marginTop: SPACING.md, gap: SPACING.sm },
   tafsirChips: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.sm },
   tafsirChip: {

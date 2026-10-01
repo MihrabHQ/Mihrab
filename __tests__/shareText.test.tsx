@@ -401,7 +401,7 @@ describe('the ayah with its commentary — the third format', () => {
       sheet.indexOf('/** "Show more'),
     );
     expect(fn).toContain('await loadTafsir(');
-    expect(fn).toMatch(/if \(!text\) \{\s*setTafsirOpen\(true\);\s*return;/);
+    expect(fn).toMatch(/if \(!text\) \{\s*setQuranPrefs\(\{ ayahSheetPanel: 'tafsir' \}\);\s*return;/);
     expect(fn.indexOf('setTafsirOpen(true)')).toBeLessThan(fn.indexOf('Share.share'));
   });
 

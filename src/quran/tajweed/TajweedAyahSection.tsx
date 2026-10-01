@@ -4,9 +4,8 @@
  * and the words it happens in. Tapping a word reads it out (the word
  * reader's own voice), which is the point: see the colour, hear the rule.
  *
- * Collapsed by default like the tafsir, and the last choice is kept for
- * the session — someone working through a page rule by rule should not
- * have to reopen it on every āyah.
+ * Shown when the sheet's Tajweed tab is open — the sheet decides, and
+ * keeps the reader's choice (`ayahSheetPanel`).
  */
 import { useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -32,8 +31,6 @@ import { tajweedInk, type TajweedRule } from './rules';
 import { TajweedSwatch } from './TajweedText';
 import { ayahGlyphWords, TajweedAyahGlyphs, TajweedWordGlyph } from './TajweedAyahGlyphs';
 
-let rememberedOpen = false;
-
 /** The page font's size in the sheet and its chips, dp. */
 const AYAH_FONT_SIZE = 30;
 const CHIP_FONT_SIZE = 24;
@@ -48,21 +45,17 @@ export function TajweedAyahSection({
   surah,
   ayah,
   onClose,
-  toggleStyle,
-  toggleLabelStyle,
 }: {
   surah: number;
   ayah: number;
   /** Closes the sheet — before leaving for the guide. */
   onClose: () => void;
-  toggleStyle: object;
-  toggleLabelStyle: object;
 }) {
   const { t } = useTranslation();
   const { palette } = useAppPalette();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { prefs } = useQuranState();
-  const [open, setOpen] = useState(rememberedOpen);
+  const open = true;
   const [data, setData] = useState<TajweedAyah | null | undefined>(undefined);
 
   useEffect(() => {
@@ -77,10 +70,6 @@ export function TajweedAyahSection({
     };
   }, [open, surah, ayah, prefs.riwayah]);
 
-  const toggle = () => {
-    rememberedOpen = !open;
-    setOpen(!open);
-  };
   const coloursOn = prefs.tajweedColours;
   const hafs = riwayahById(prefs.riwayah).render !== 'unicode';
   const warsh = prefs.riwayah === 'warsh';
@@ -90,16 +79,6 @@ export function TajweedAyahSection({
 
   return (
     <>
-      <Pressable
-        accessibilityRole="button"
-        accessibilityState={{ expanded: open }}
-        accessibilityLabel={t('tajweed.sheetSection', 'Tajweed')}
-        onPress={toggle}
-        style={[toggleStyle, { borderColor: palette.border }]}>
-        <Text style={[toggleLabelStyle, { color: palette.accentSolid }]}>
-          {`${open ? '▾' : '▸'} ${t('tajweed.sheetSection', 'Tajweed')}`}
-        </Text>
-      </Pressable>
       {open && warsh ? (
         <WarshTajweedBody
           surah={surah}

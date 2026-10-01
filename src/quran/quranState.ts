@@ -34,6 +34,7 @@ import type {
   QuranPrefs,
   QuranState,
   Removal,
+  AyahSheetPanel,
 } from './quranTypes';
 import {
   KHATMAH_TOMBSTONE_TTL_DAYS,
@@ -166,6 +167,7 @@ export const DEFAULT_QURAN_STATE: QuranState = {
     companionMode: 'translation',
     tafsirEditionId: '',
     verseOfDayOpen: false,
+    ayahSheetPanel: 'none',
     verseOfDay: false,
     homeBookmarkId: '',
     bookmarkColourReuse: false,
@@ -230,6 +232,10 @@ function coerceBookmark(v: unknown): QuranBookmark | null {
  * written by a reader who then has duplicates (made on another device,
  * say) is their answer and stays.
  */
+function coerceSheetPanel(v: unknown): AyahSheetPanel {
+  return v === 'translation' || v === 'tafsir' || v === 'tajweed' ? v : 'none';
+}
+
 function coerceColourReuse(raw: unknown, bookmarks: QuranBookmark[]): boolean {
   if (typeof raw === 'boolean') return raw;
   const seen = new Set<string>();
@@ -570,6 +576,10 @@ function mergeStored(raw: unknown): QuranState {
       // this was a setting, and the setting's default is off.
       verseOfDay:
         (r.prefs as { verseOfDay?: unknown } | undefined)?.verseOfDay === true,
+      // Only a known panel; anything else (or a blob from before) is none.
+      ayahSheetPanel: coerceSheetPanel(
+        (r.prefs as { ayahSheetPanel?: unknown } | undefined)?.ayahSheetPanel,
+      ),
       homeBookmarkId:
         typeof (r.prefs as { homeBookmarkId?: unknown } | undefined)?.homeBookmarkId ===
         'string'

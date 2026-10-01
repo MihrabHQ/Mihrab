@@ -443,6 +443,15 @@ export type QuranPrefs = {
    */
   verseOfDayOpen: boolean;
   /**
+   * Which text the āyah sheet shows under the āyah — translation, tafsir
+   * or tajwīd, one at a time — or none. (additive)
+   *
+   * None to begin with: the sheet is opened for its controls as often as
+   * to read. The reader's choice is kept, so someone working through a
+   * page with the tafsir open finds it open on the next āyah too.
+   */
+  ayahSheetPanel: AyahSheetPanel;
+  /**
    * Is the verse of the day on the Qur'an tab at all? (additive)
    *
    * Off by default. The card was there for everyone, closed, as one more
@@ -552,3 +561,6 @@ export type QuranState = {
 
 /** Something the reader took away, and when. */
 export type Removal = { id: string; at: number };
+
+/** The text under the āyah in its sheet — see `QuranPrefs.ayahSheetPanel`. */
+export type AyahSheetPanel = 'none' | 'translation' | 'tafsir' | 'tajweed';
