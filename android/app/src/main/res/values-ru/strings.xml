@@ -4,7 +4,7 @@
     <string name="widget_name_small">Mihrab · Следующий намаз</string>
     <string name="widget_name_medium">Mihrab · Время намазов</string>
     <string name="widget_name_large">Mihrab · Время намазов (старое)</string>
-    <string name="widget_description">Сегодняшние времена намаза в одну строку, следующий намаз выделен</string>
+    <string name="widget_description">Сегодняшнее время намазов в одну строку, следующий намаз выделен</string>
     <string name="widget_description_small">Только следующий намаз и его время. 2×1, изменяемый размер.</string>
     <string name="widget_description_medium">Все шесть времён намаза колонками в одной широкой строке, следующий намаз выделен. 4×2, изменяемый размер.</string>
     <string name="widget_description_prayer_times">Шесть времён намаза сегодня в одной строке. Увеличьте высоту, чтобы увидеть город и дату хиджры, ещё выше — график практики. От 4×1 до 4×4.</string>
@@ -17,7 +17,7 @@
     <string name="widget_log_waiting">%1$s ещё не отмечен</string>
     <string name="widget_log_tap_to_log">Нажмите ✓, чтобы отметить %1$s вовремя</string>
     <string name="widget_log_up_to_date">Сегодня всё отмечено</string>
-    <string name="widget_log_owed">%1$d в долгу</string>
+    <string name="widget_log_owed">%1$d к восполнению</string>
     <string name="widget_placeholder_day">Откройте Mihrab, чтобы загрузить время намазов</string>
     <string name="widget_error">Не удалось загрузить данные виджета</string>
     <string name="widget_configure_title">Виджет намаза</string>
@@ -32,11 +32,11 @@
     <string name="widget_configure_hex_hint">#RRGGBB</string>
     <string name="widget_configure_save">Сохранить</string>
     <!-- Live Activity notification strings -->
-    <string name="live_activity_channel_name">Отсчёт молитвы</string>
-    <string name="live_activity_channel_desc">Закреплённый обратный отсчёт до следующей молитвы.</string>
-    <string name="live_activity_fgs_channel_name">Отсчёт молитвы (система)</string>
-    <string name="live_activity_fgs_channel_desc">Внутренний служебный канал для обратного отсчёта молитвы. Не отображается пользователю.</string>
-    <string name="live_activity_countdown_active">Отсчёт молитвы активен</string>
+    <string name="live_activity_channel_name">Отсчёт до намаза</string>
+    <string name="live_activity_channel_desc">Закреплённый обратный отсчёт до следующего намаза.</string>
+    <string name="live_activity_fgs_channel_name">Отсчёт до намаза (система)</string>
+    <string name="live_activity_fgs_channel_desc">Внутренний служебный канал для отсчёта до намаза. Пользователю не показывается.</string>
+    <string name="live_activity_countdown_active">Отсчёт до намаза включён</string>
 
     <!-- ── Streak &amp; Practice ────────────────────────────────────────── -->
     <string name="widget_name_streak">Mihrab · Серия</string>
@@ -68,10 +68,10 @@
 
     <!-- ── Continue Reading ──────────────────────────────────────────── -->
     <string name="widget_name_reading">Mihrab · Продолжить чтение</string>
-    <string name="widget_description_reading">Где вы остановились и какой отрывок хатма назначен на сегодня. 4×1, изменяемый размер.</string>
+    <string name="widget_description_reading">Где вы остановились и какую часть хатмы нужно прочитать сегодня. 4×1, изменяемый размер.</string>
     <string name="widget_reading_continue">ПРОДОЛЖИТЬ</string>
     <string name="widget_reading_play">Воспроизвести отсюда</string>
-    <string name="widget_reading_khatmah_day">ХАТМ · ДЕНЬ %1$d/%2$d</string>
+    <string name="widget_reading_khatmah_day">ХАТМА · ДЕНЬ %1$d/%2$d</string>
     <string name="widget_reading_position">Стр. %1$d · Джуз %2$d</string>
     <string name="widget_reading_progress">%1$d из %2$d · %3$d%% прочитано</string>
     <string name="widget_reading_today_portion">ПОРЦИЯ ДНЯ</string>
@@ -95,6 +95,8 @@
     </plurals>
     <plurals name="widget_reading_skipped">
         <item quantity="one">%1$d стр. пропущена</item>
+        <item quantity="few">%1$d стр. пропущены</item>
+        <item quantity="many">%1$d стр. пропущено</item>
         <item quantity="other">%1$d стр. пропущено</item>
     </plurals>
     <plurals name="widget_reading_behind">
@@ -130,12 +132,12 @@
          preview layout can show. Representative, not live. -->
     <string name="widget_preview_days">дней</string>
     <string name="widget_preview_streak_second">Лучшая 31 · 2 из 5 сегодня · Сунна 68%</string>
-    <string name="widget_preview_reading_header">ХАТМ · ДЕНЬ 14/30</string>
+    <string name="widget_preview_reading_header">ХАТМА · ДЕНЬ 14/30</string>
     <string name="widget_preview_reading_surah">Аль-Бакара</string>
     <string name="widget_preview_reading_position">Стр. 47 · Джуз 3</string>
     <string name="widget_preview_reading_progress">47 из 604 · 8% прочитано</string>
     <string name="widget_preview_reading_note">По графику · осталось 3 страницы</string>
-    <string name="widget_preview_tasbih_label">СубханАллах</string>
+    <string name="widget_preview_tasbih_label">Субханаллах</string>
     <string name="widget_preview_tasbih_of">из 33</string>
     <string name="widget_preview_tasbih_today">Сегодня 231 · 2 круга</string>
     <!-- The Chronometer's format. "%1$s" is the ticking duration; the word
@@ -180,9 +182,9 @@
     <!-- The Continue Reading widget before anything has been read. -->
     <string name="widget_reading_header_start">КОРАН</string>
     <string name="widget_reading_start_title">Начать чтение</string>
-    <string name="widget_reading_start_note">Начните с любого места или запустите хатм.</string>
+    <string name="widget_reading_start_note">Начните с любого места или начните хатму.</string>
     <string name="widget_reading_start_note_undownloaded">Перевод уже готов для чтения.</string>
-    <string name="widget_reading_start_tail">План не нужен — открой и начни.</string>
+    <string name="widget_reading_start_tail">План не нужен — откройте и начните.</string>
     <string name="widget_reading_start_side_title">СТРАНИЦЫ</string>
     <string name="widget_reading_start_side_note">во всём Коране</string>
     <string name="widget_hijri_title">ХИДЖРА</string>
@@ -198,16 +200,16 @@
     <string name="widget_intent_log_prayer">Отметить намаз</string>
     <string name="widget_intent_refresh">Обновить виджет</string>
     <string name="widget_intent_tasbih">Считать зикр</string>
-    <string name="widget_ios_description_prayer_times">Сегодняшние времена намазов, включая Восход. После Иши показывает завтрашние.</string>
+    <string name="widget_ios_description_prayer_times">Сегодняшнее время намазов, включая восход. После Иши показывает завтрашнее.</string>
     <string name="widget_ios_description_hijri">Сегодняшняя дата хиджры. На экране блокировки, вместе со следующим намазом.</string>
     <string name="widget_ios_description_log">Нажмите на намаз, чтобы отметить его вовремя. Нажмите ещё раз в течение минуты, чтобы отменить.</string>
-    <string name="widget_ios_description_reading">Где вы остановились и какой отрывок хатма назначен на сегодня.</string>
+    <string name="widget_ios_description_reading">Где вы остановились и какую часть хатмы нужно прочитать сегодня.</string>
     <string name="widget_ios_description_streak">Ваша серия намазов вовремя и график за последние десять недель.</string>
     <string name="widget_ios_description_tasbih">Считайте зикр, не открывая приложение.</string>
     <string name="widget_reading_no_bookmarks">Ещё нет закладок</string>
     <string name="widget_reading_page_today">Стр. %1$d \u00b7 %2$d/%3$d сегодня</string>
     <string name="widget_streak_inline">Серия %1$dд</string>
-    <string name="widget_preview_tap_to_log">Нажмите \u2713, чтобы отметить Asr вовремя</string>
+    <string name="widget_preview_tap_to_log">Нажмите \u2713, чтобы отметить Аср вовремя</string>
     <string name="widget_preview_practice_second">дня подряд \u00b7 Лучшая 31 \u00b7 2 из 5 сегодня</string>
     <string name="widget_name_tall">Mihrab \u00b7 Время намазов (высокое)</string>
     <string name="widget_description_tall">Те же шесть времён намаза с городом, датой хиджры и графиком практики. 4\u00d72 \u2014 уменьшите, и он станет полосой в одну строку.</string>

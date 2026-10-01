@@ -57,12 +57,13 @@ function loadLocale(name: string): Translations {
  *   • `settings.prePrayerReminderOption` and `notifications.prePrayer` use
  *     the "min" abbreviation, where CLDR plural distinction adds no value
  *     (a "1 min" / "5 min" pair reads correctly in any language).
- *   • If a future feature introduces a {{count}} key with a real plural-form
- *     need (e.g., "{{count}} prayers logged today"), use i18next's CLDR
+ *   • A {{count}} key with a real plural-form need uses i18next's CLDR
  *     suffix system: `key_one`, `key_other` for most locales; full
  *     `key_zero/_one/_two/_few/_many/_other` for ar; `_one/_few/_many/_other`
- *     for ru. The parity test below should be extended to treat plural
- *     siblings as a single logical key.
+ *     for ru. A locale may carry plural forms English does not need (ru's
+ *     `_few` and `_many`), so the parity test below treats plural siblings
+ *     as one logical key: a form is not "extra" when English has the key
+ *     it is a form of.
  */
 const STRICT_TRANSLATE_KEYS = [
   'compass.a11yDialLive',
@@ -76,6 +77,9 @@ const STRICT_TRANSLATE_KEYS = [
 
 const en = loadLocale('en');
 const enKeys = new Set(Object.keys(en));
+const PLURAL_FORM = /_(zero|one|two|few|many|other)$/;
+const pluralBase = (k: string) => k.replace(PLURAL_FORM, '');
+const enBases = new Set([...enKeys].map(pluralBase));
 
 describe('locale key parity', () => {
   for (const locale of ALL_LOCALES) {
@@ -91,7 +95,11 @@ describe('locale key parity', () => {
     test(`${locale}.json has no keys that are absent from en.json`, () => {
       const data = loadLocale(locale);
       const keys = new Set(Object.keys(data));
-      const extra = [...keys].filter(k => !enKeys.has(k)).sort();
+      const extra = [...keys]
+        .filter(k => !enKeys.has(k))
+        // A plural form of a key English has (ru's `_few`, `_many`).
+        .filter(k => !(PLURAL_FORM.test(k) && enBases.has(pluralBase(k))))
+        .sort();
       expect(extra).toEqual([]);
     });
   }

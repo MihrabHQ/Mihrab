@@ -115,6 +115,10 @@
 			<string>d</string>
 			<key>one</key>
 			<string>%d стр. пропущена</string>
+			<key>few</key>
+			<string>%d стр. пропущены</string>
+			<key>many</key>
+			<string>%d стр. пропущено</string>
 			<key>other</key>
 			<string>%d стр. пропущено</string>
 		</dict>
