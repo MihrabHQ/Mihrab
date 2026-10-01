@@ -12,7 +12,7 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { Pressable, type GestureResponderEvent, type HostInstance } from 'react-native';
 import type { BottomTabBarButtonProps } from '@react-navigation/bottom-tabs';
-import { hapticScrubStart } from '../polish/haptics';
+import { hapticScrubStart, hapticScrubTick } from '../polish/haptics';
 import {
   activateTab,
   holdTab,
@@ -79,7 +79,9 @@ export function TabBarButton({ name, onPress, children, style, ...rest }: Props)
           hapticScrubStart();
         }, HOLD_MS);
       }}
-      onTouchMove={e => slideTo(e.nativeEvent.pageX)}
+      onTouchMove={e => {
+        if (slideTo(e.nativeEvent.pageX)) hapticScrubTick(false);
+      }}
       onTouchEnd={() => {
         clearHold();
         const { held } = tabBarPress();

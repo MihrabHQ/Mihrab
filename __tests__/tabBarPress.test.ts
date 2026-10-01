@@ -9,6 +9,7 @@ import {
   activateTab,
   holdTab,
   hoveredTab,
+  onFinger,
   pressTab,
   registerTabActivation,
   registerTabFrame,
@@ -46,19 +47,28 @@ describe('the store', () => {
     expect(hoveredTab()).toBe('TodayTab');
     expect(tabBarPress().held).toBe(false);
     releaseTab('TodayTab');
-    expect(tabBarPress()).toEqual({ hovered: null, fingerX: null, held: false, settled: 'TodayTab' });
+    expect(tabBarPress()).toEqual({ hovered: null, held: false, settled: 'TodayTab' });
   });
 
   it('a slide before the hold does nothing; after it, the finger leads', () => {
     registerTabFrame('TodayTab', { x: 0, width: 60 });
     registerTabFrame('QuranTab', { x: 60, width: 60 });
+    const finger = jest.fn();
+    onFinger(finger);
     pressTab('TodayTab');
-    slideTo(90);
-    expect(tabBarPress().fingerX).toBeNull();
+    expect(slideTo(90)).toBe(false);
+    expect(finger).not.toHaveBeenCalled();
     expect(hoveredTab()).toBe('TodayTab');
     holdTab();
-    slideTo(90);
-    expect(tabBarPress()).toMatchObject({ hovered: 'QuranTab', fingerX: 90, held: true });
+    // Crossing into another tab says so (the tick)…
+    expect(slideTo(90)).toBe(true);
+    expect(tabBarPress()).toMatchObject({ hovered: 'QuranTab', held: true });
+    // …moving within it does not, and changes nothing a render would see.
+    const before = tabBarPress();
+    expect(slideTo(100)).toBe(false);
+    expect(tabBarPress()).toBe(before);
+    // The finger itself goes to the listener on every move.
+    expect(finger.mock.calls.map(c => c[0])).toEqual([90, 100]);
     // Off the end of the bar: the last tab it was over stays named.
     slideTo(400);
     expect(hoveredTab()).toBe('QuranTab');
@@ -82,7 +92,9 @@ describe('the wiring', () => {
   it('holds, then slides: the tab under the finger is the one opened', () => {
     const button = read('src/navigation/TabBarButton.tsx');
     expect(button).toMatch(/holdTimer\.current = setTimeout\(\(\) => \{\s*holdTab\(\);/);
-    expect(button).toContain('onTouchMove={e => slideTo(e.nativeEvent.pageX)}');
+    expect(button).toMatch(/onTouchMove=\{e => \{\s*if \(slideTo\(e\.nativeEvent\.pageX\)\) hapticScrubTick\(false\);/);
+    // The bubble follows on the native value, not through a render.
+    expect(read('src/navigation/TabBarBubble.tsx')).toMatch(/onFinger\(pageX => \{\s*x\.stopAnimation\(\);\s*x\.setValue\(leftFor\(pageX\)\);/);
     expect(button).toMatch(/const target = held \? hoveredTab\(\) : name;\s*releaseTab\(target\);\s*if \(held && target\) activateTab\(target\);/);
     // A tap after a hold is not a second press.
     expect(button).toMatch(/onPress=\{e => \{\s*if \(tabBarPress\(\)\.held\) return;/);

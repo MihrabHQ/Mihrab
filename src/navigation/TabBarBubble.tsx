@@ -20,15 +20,13 @@ import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 import { useAppPalette } from '../hooks/useAppPalette';
 import { useReduceMotion } from '../hooks/useReduceMotion';
 import { resolveSpring } from '../theme/motion';
-import { tabFrame, useTabBarPress } from './tabBarPress';
+import { onFinger, tabFrame, useTabBarPress } from './tabBarPress';
 
 /** Air between the bubble and the bar's edges, and between it and the next tab. */
 const INSET_X = 4;
 const INSET_Y = 4;
 /** How much a held bubble lifts. */
 const LIFT = 1.06;
-/** A finger-following spring: tight enough to keep up, soft enough to glide. */
-const FOLLOW = { stiffness: 520, damping: 34, mass: 0.7 };
 
 export function TabBarBubble({ radius }: { radius: number }) {
   const { palette } = useAppPalette();
@@ -83,6 +81,16 @@ export function TabBarBubble({ radius }: { radius: number }) {
     [w],
   );
 
+  // A held finger, straight to the native value: no render, no spring —
+  // the bubble is under the finger, not chasing it.
+  useEffect(() => {
+    onFinger(pageX => {
+      x.stopAnimation();
+      x.setValue(leftFor(pageX));
+    });
+    return () => onFinger(null);
+  }, [leftFor, x]);
+
   // A new press: the bar may have moved since it was laid out.
   useEffect(() => {
     if (press.hovered && !press.held) measure();
@@ -96,20 +104,13 @@ export function TabBarBubble({ radius }: { radius: number }) {
     };
 
     if (press.hovered) {
-      const target =
-        press.held && press.fingerX != null ? press.fingerX : centreOf(press.hovered);
-      if (target == null) return;
-      const left = leftFor(target);
-      if (!placed.current) {
+      // Held, the finger places it (`onFinger`); this only places it
+      // under the tab a press began on.
+      const target = centreOf(press.hovered);
+      if (!placed.current && target != null) {
         // Appears where the finger is; it does not fly in from elsewhere.
-        x.setValue(left);
+        x.setValue(leftFor(target));
         placed.current = true;
-      } else {
-        Animated.spring(x, {
-          toValue: left,
-          ...(press.held && !reduceMotion ? FOLLOW : spatial),
-          useNativeDriver: true,
-        }).start();
       }
       Animated.spring(shown, { toValue: 1, ...spatial }).start();
       Animated.spring(scale, { toValue: press.held ? LIFT : 1, ...spatial }).start();
@@ -134,8 +135,8 @@ export function TabBarBubble({ radius }: { radius: number }) {
   }, [press, leftFor, reduceMotion, scale, shown, x]);
 
   const accent = palette.accentSolid;
-  // Concentric with a rounded bar; a soft pill in a square one.
-  const r = Math.max(0, Math.min(h / 2, radius > INSET_Y ? radius - INSET_Y : 16));
+  // Concentric with a rounded bar; a full capsule in a square one.
+  const r = Math.max(0, Math.min(h / 2, radius > INSET_Y ? radius - INSET_Y : h / 2));
   return (
     <View ref={ref} onLayout={onLayout} pointerEvents="none" style={[styles.fill, { borderRadius: radius }]}>
       {w > 0 && h > 0 ? (
@@ -155,14 +156,19 @@ export function TabBarBubble({ radius }: { radius: number }) {
           <Svg width={w} height={h}>
             <Defs>
               <LinearGradient id="bubbleBody" x1="0" y1="0" x2="0" y2="1">
-                <Stop offset="0" stopColor={accent} stopOpacity={0.16} />
-                <Stop offset="1" stopColor={accent} stopOpacity={0.3} />
+                <Stop offset="0" stopColor={accent} stopOpacity={0.06} />
+                <Stop offset="1" stopColor={accent} stopOpacity={0.12} />
               </LinearGradient>
-              {/* The gloss: a sheen across the upper half, gone by the middle. */}
+              {/* The gloss: a faint sheen at the top, gone before the middle. */}
               <LinearGradient id="bubbleSheen" x1="0" y1="0" x2="0" y2="1">
-                <Stop offset="0" stopColor="#ffffff" stopOpacity={0.34} />
-                <Stop offset="0.5" stopColor="#ffffff" stopOpacity={0.06} />
-                <Stop offset="0.55" stopColor="#ffffff" stopOpacity={0} />
+                <Stop offset="0" stopColor="#ffffff" stopOpacity={0.09} />
+                <Stop offset="0.4" stopColor="#ffffff" stopOpacity={0} />
+              </LinearGradient>
+              {/* Glass edge: lit along the top, all but gone at the bottom. */}
+              <LinearGradient id="bubbleEdge" x1="0" y1="0" x2="0" y2="1">
+                <Stop offset="0" stopColor="#ffffff" stopOpacity={0.3} />
+                <Stop offset="0.5" stopColor="#ffffff" stopOpacity={0.08} />
+                <Stop offset="1" stopColor={accent} stopOpacity={0.18} />
               </LinearGradient>
             </Defs>
             <Rect x={0} y={0} width={w} height={h} rx={r} ry={r} fill="url(#bubbleBody)" />
@@ -175,8 +181,7 @@ export function TabBarBubble({ radius }: { radius: number }) {
               rx={Math.max(0, r - 0.5)}
               ry={Math.max(0, r - 0.5)}
               fill="none"
-              stroke="#ffffff"
-              strokeOpacity={0.28}
+              stroke="url(#bubbleEdge)"
               strokeWidth={1}
             />
           </Svg>
