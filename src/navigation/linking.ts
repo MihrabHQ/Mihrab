@@ -28,6 +28,9 @@ import type { RootStackParamList } from './types';
 
 export const MIHRAB_SCHEME = 'mihrab://';
 
+/** The month's prayer times, opened on the sheet that is shared and printed. */
+export const MONTH_SHARE_LINK = `${MIHRAB_SCHEME}month?share=1`;
+
 /** A link's boolean: present and `1` is true, anything else is not. */
 function flag(value: string): boolean {
   return value === '1';
@@ -158,7 +161,19 @@ export const linking: LinkingOptions<RootStackParamList> = {
        */
       QuranDownloads: 'downloads',
       QuranTajweed: 'tajweed',
-      MonthTimes: 'month',
+      /**
+       * mihrab://month — the month's table; mihrab://month?share=1 — the
+       * same screen already on its shareable sheet (`MONTH_SHARE_LINK`),
+       * with the share buttons under it. The sheet is the app's one
+       * thing worth handing to someone without the app, so it gets a
+       * door of its own rather than a toggle behind the table.
+       */
+      MonthTimes: {
+        path: 'month',
+        parse: { share: flag as (v: string) => boolean },
+      },
+      /** mihrab://help — Settings → About → Help Mihrab. */
+      SettingsHelpMihrab: 'help',
       /**
        * Absent on a Mac, where `RootNavigator` does not register the
        * screen. A path that maps to a route the navigator has never

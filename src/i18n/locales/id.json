@@ -103,7 +103,8 @@
     "timezoneShiftNotice": "Waktu setempat telah berubah ({{from}} → {{to}}). Waktu sholat sudah diperbarui.",
     "pullToRefresh": "Tarik ke bawah untuk menyegarkan",
     "pullRelease": "Lepaskan untuk menyegarkan",
-    "pullRefreshing": "Memperbarui waktu salat Anda…"
+    "pullRefreshing": "Memperbarui waktu salat Anda…",
+    "helpMihrabChip": "Bantu Mihrab berkembang"
   },
   "errors": {
     "locationNeededTitle": "Lokasi diperlukan",
@@ -2159,7 +2160,7 @@
     "ratePlay": "Beri nilai di Google Play",
     "rateStoreHelp": "Sebuah nilai dan beberapa kata membantu orang menemukannya saat mencari di toko aplikasi.",
     "rateGithub": "Beri bintang di GitHub",
-    "rateGithubHelp": "Di tempat Anda mendapatkan Mihrab tidak ada penilaian; bintang di GitHub adalah yang paling mendekati.",
+    "rateGithubHelp": "Bintang di GitHub membantu orang yang mencari aplikasi sumber terbuka untuk menemukannya.",
     "tellTitle": "Ceritakan kepada keluarga dan teman",
     "tellRow": "Kirimkan Mihrab kepada mereka",
     "tellRowHelp": "Tautan ke situs web Mihrab, yang memuat semua cara mengunduhnya, dikirim lewat aplikasi pilihan Anda.",
@@ -2167,6 +2168,7 @@
     "monthTitle": "Bagikan jadwal salat",
     "monthRow": "Jadwal bulan ini",
     "monthRowHelp": "Jadwal salat bulan ini di tempat Anda, dalam satu halaman untuk dikirim atau dicetak.",
-    "monthFooter": "Kirimkan kepada orang-orang tercinta, atau cetak salinannya untuk dibagikan di masjid, kepada keluarga dan tetangga. Setiap lembar memuat alamat Mihrab, sehingga siapa pun yang menerimanya dapat menemukan aplikasinya."
+    "monthFooter": "Kirimkan kepada orang-orang tercinta, atau cetak salinannya untuk dibagikan di masjid, kepada keluarga dan tetangga. Setiap lembar memuat alamat Mihrab, sehingga siapa pun yang menerimanya dapat menemukan aplikasinya.",
+    "ratePlayElsewhereHelp": "Kebanyakan orang menemukan Mihrab di Google Play. Jika Anda punya akun Google, nilai di sana membantu, dari mana pun Anda memasangnya."
   }
 }

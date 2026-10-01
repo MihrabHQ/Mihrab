@@ -103,7 +103,8 @@
     "timezoneShiftNotice": "Ici, l’heure locale a changé ({{from}} → {{to}}). Les horaires de prière ont été actualisés.",
     "pullToRefresh": "Tirez vers le bas pour actualiser",
     "pullRelease": "Relâchez pour actualiser",
-    "pullRefreshing": "Actualisation de vos heures de prière…"
+    "pullRefreshing": "Actualisation de vos heures de prière…",
+    "helpMihrabChip": "Aidez Mihrab à grandir"
   },
   "errors": {
     "locationNeededTitle": "Emplacement nécessaire",
@@ -2159,7 +2160,7 @@
     "ratePlay": "L’évaluer sur Google Play",
     "rateStoreHelp": "Une note et quelques mots aident d’autres personnes à la trouver quand elles cherchent dans la boutique.",
     "rateGithub": "Lui donner une étoile sur GitHub",
-    "rateGithubHelp": "Là où vous avez obtenu Mihrab, il n’y a pas de notes ; une étoile sur GitHub s’en rapproche le plus.",
+    "rateGithubHelp": "Une étoile sur GitHub aide ceux qui cherchent des apps open source à la trouver.",
     "tellTitle": "En parler à la famille et aux amis",
     "tellRow": "Leur envoyer Mihrab",
     "tellRowHelp": "Un lien vers le site de Mihrab, qui réunit toutes les façons de la télécharger, envoyé avec l’app de votre choix.",
@@ -2167,6 +2168,7 @@
     "monthTitle": "Partager les horaires de prière",
     "monthRow": "Les horaires de ce mois",
     "monthRowHelp": "Les horaires de prière de ce mois là où vous êtes, sur une page à envoyer ou à imprimer.",
-    "monthFooter": "Envoyez-la à vos proches, ou imprimez des copies à distribuer à la mosquée, à la famille et aux voisins. Chaque feuille porte l’adresse de Mihrab, pour que chacun de ceux qui la reçoivent puisse trouver l’app."
+    "monthFooter": "Envoyez-la à vos proches, ou imprimez des copies à distribuer à la mosquée, à la famille et aux voisins. Chaque feuille porte l’adresse de Mihrab, pour que chacun de ceux qui la reçoivent puisse trouver l’app.",
+    "ratePlayElsewhereHelp": "La plupart des gens trouvent Mihrab sur Google Play. Si vous avez un compte Google, une note là-bas aide, d’où que vous l’ayez installée."
   }
 }

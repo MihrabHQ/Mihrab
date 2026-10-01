@@ -33,12 +33,25 @@ const load = (os: 'ios' | 'android', distribution?: string, failFirst = 0) => {
 
 describe('where a rating goes', () => {
   it.each([
-    ['ios', undefined, 'appStore'],
-    ['android', 'play', 'play'],
-    ['android', 'github', 'github'],
-    ['android', 'fdroid', 'github'],
-  ] as const)('%s %s → %s', (os, dist, expected) => {
-    expect(load(os, dist).ratingDestination()).toBe(expected);
+    ['ios', undefined, ['appStore']],
+    ['android', 'play', ['play']],
+    // Off Google Play the Play listing is still offered, first: many of
+    // these users have a Google account, and it is where most people
+    // find the app.
+    ['android', 'github', ['play', 'github']],
+    ['android', 'fdroid', ['play', 'github']],
+  ] as const)('%s %s → %j', (os, dist, expected) => {
+    expect(load(os, dist).ratingPlaces()).toEqual(expected);
+  });
+
+  it('opens the Play listing from an F-Droid build, on the web without the Play app', async () => {
+    const { openRatingPlace, openURL } = load('android', 'fdroid', 1);
+    await openRatingPlace('play');
+    expect(openURL).toHaveBeenNthCalledWith(1, 'market://details?id=com.prayer_times');
+    expect(openURL).toHaveBeenNthCalledWith(
+      2,
+      'https://play.google.com/store/apps/details?id=com.prayer_times',
+    );
   });
 
   it('opens the App Store review page on iOS', async () => {
@@ -77,7 +90,8 @@ describe('the page', () => {
 
   it('is the only rating button — About no longer carries its own', () => {
     expect(read('src/screens/settings/AboutCard.tsx')).not.toMatch(/rateApp\(/);
-    expect(page).toMatch(/rateApp\(\)/);
+    expect(page).toMatch(/ratingPlaces\(\)/);
+    expect(page).toMatch(/openRatingPlace\(place\)/);
   });
 
   it('shares the website, and opens the month on its sheet', () => {
@@ -88,10 +102,18 @@ describe('the page', () => {
     );
   });
 
+  it('is offered from the Today hero', () => {
+    const card = read('src/screens/home/TodayCard.tsx');
+    expect(card).toMatch(/topRow\?\.renderHelp\?\.\(inkTop\)/);
+    expect(read('src/screens/HomeScreen.tsx')).toMatch(/navigate\('SettingsHelpMihrab'\)/);
+  });
+
   it('has its words in every language', () => {
     for (const l of ['en', 'sv', 'ar', 'bn', 'de', 'es', 'fr', 'hi', 'id', 'ru', 'tr', 'ur', 'zh']) {
       const json = JSON.parse(read(`src/i18n/locales/${l}.json`));
       expect(json.settings.helpMihrab).toBeTruthy();
+      expect(json.home.helpMihrabChip).toBeTruthy();
+      expect(json.helpMihrab.ratePlayElsewhereHelp).toBeTruthy();
       expect(json.helpMihrab.shareMessage).toContain('{{url}}');
     }
   });

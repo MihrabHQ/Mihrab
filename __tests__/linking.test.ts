@@ -10,7 +10,7 @@ import path from 'path';
 
 import { getStateFromPath } from '@react-navigation/native';
 
-import { linking, MIHRAB_SCHEME } from '../src/navigation/linking';
+import { linking, MIHRAB_SCHEME, MONTH_SHARE_LINK } from '../src/navigation/linking';
 
 const src = (p: string) => readFileSync(path.join(__dirname, '..', p), 'utf8');
 
@@ -46,6 +46,18 @@ function params(url: string): Record<string, unknown> {
 }
 
 describe('mihrab:// route table', () => {
+  it('opens the month on its shareable sheet', () => {
+    expect(MONTH_SHARE_LINK).toBe('mihrab://month?share=1');
+    expect(leaf(stateFor(MONTH_SHARE_LINK))).toBe('MonthTimes');
+    expect(params(MONTH_SHARE_LINK)).toEqual({ share: true });
+    // The plain link is still the table.
+    expect(params('mihrab://month')).toEqual({});
+  });
+
+  it('opens Help Mihrab', () => {
+    expect(leaf(stateFor('mihrab://help'))).toBe('SettingsHelpMihrab');
+  });
+
   it('opens the Log', () => {
     expect(leaf(stateFor('mihrab://log'))).toBe('LogTab');
   });

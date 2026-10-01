@@ -103,7 +103,8 @@
     "timezoneShiftNotice": "The clocks here changed ({{from}} → {{to}}). Prayer times have been refreshed.",
     "pullToRefresh": "Pull down to refresh",
     "pullRelease": "Release to refresh",
-    "pullRefreshing": "Refreshing your times…"
+    "pullRefreshing": "Refreshing your times…",
+    "helpMihrabChip": "Help Mihrab grow"
   },
   "errors": {
     "locationNeededTitle": "Location needed",
@@ -2159,7 +2160,7 @@
     "ratePlay": "Rate it on Google Play",
     "rateStoreHelp": "A rating and a few words help people find it when they search the store.",
     "rateGithub": "Star it on GitHub",
-    "rateGithubHelp": "Where you got Mihrab there are no ratings; a star on GitHub is the closest thing.",
+    "rateGithubHelp": "A star on GitHub helps people looking for open-source apps find it.",
     "tellTitle": "Tell family and friends",
     "tellRow": "Send them Mihrab",
     "tellRowHelp": "A link to Mihrab's website, which has every way to download it, sent through any app you choose.",
@@ -2167,6 +2168,7 @@
     "monthTitle": "Share the prayer times",
     "monthRow": "This month's timetable",
     "monthRowHelp": "This month's prayer times where you are, on one page to send or print.",
-    "monthFooter": "Send it to the people you love, or print copies to hand out at your mosque, to family and to neighbours. Every sheet carries Mihrab's address, so whoever it reaches can find the app."
+    "monthFooter": "Send it to the people you love, or print copies to hand out at your mosque, to family and to neighbours. Every sheet carries Mihrab's address, so whoever it reaches can find the app.",
+    "ratePlayElsewhereHelp": "Most people find Mihrab on Google Play. If you have a Google account, a rating there helps, wherever you installed it from."
   }
 }

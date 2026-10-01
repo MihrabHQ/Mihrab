@@ -103,7 +103,8 @@
     "timezoneShiftNotice": "Buradaki saatler değişti ({{from}} → {{to}}). Namaz vakitleri yenilendi.",
     "pullToRefresh": "Yenilemek için aşağı çekin",
     "pullRelease": "Yenilemek için bırakın",
-    "pullRefreshing": "Namaz vakitleriniz yenileniyor…"
+    "pullRefreshing": "Namaz vakitleriniz yenileniyor…",
+    "helpMihrabChip": "Mihrab'ın büyümesine yardım et"
   },
   "errors": {
     "locationNeededTitle": "Konum gerekli",
@@ -2159,7 +2160,7 @@
     "ratePlay": "Google Play'de değerlendir",
     "rateStoreHelp": "Bir puan ve birkaç kelime, mağazada arama yapanların uygulamayı bulmasına yardımcı olur.",
     "rateGithub": "GitHub'da yıldız ver",
-    "rateGithubHelp": "Mihrab'ı aldığınız yerde puanlama yok; GitHub'daki bir yıldız buna en yakın şey.",
+    "rateGithubHelp": "GitHub'daki bir yıldız, açık kaynaklı uygulama arayanların onu bulmasına yardımcı olur.",
     "tellTitle": "Aileye ve arkadaşlara anlat",
     "tellRow": "Onlara Mihrab'ı gönder",
     "tellRowHelp": "Mihrab'ın tüm indirme yollarını içeren web sitesinin bağlantısı, seçtiğiniz herhangi bir uygulamayla gönderilir.",
@@ -2167,6 +2168,7 @@
     "monthTitle": "Namaz vakitlerini paylaş",
     "monthRow": "Bu ayın vakit çizelgesi",
     "monthRowHelp": "Bulunduğunuz yerin bu ayki namaz vakitleri, gönderilecek ya da yazdırılacak tek bir sayfada.",
-    "monthFooter": "Sevdiklerinize gönderin ya da kopyalarını yazdırıp caminizde, ailenize ve komşularınıza dağıtın. Her sayfada Mihrab'ın adresi bulunur; böylece ulaştığı herkes uygulamayı bulabilir."
+    "monthFooter": "Sevdiklerinize gönderin ya da kopyalarını yazdırıp caminizde, ailenize ve komşularınıza dağıtın. Her sayfada Mihrab'ın adresi bulunur; böylece ulaştığı herkes uygulamayı bulabilir.",
+    "ratePlayElsewhereHelp": "Çoğu kişi Mihrab'ı Google Play'de bulur. Google hesabınız varsa, uygulamayı nereden almış olursanız olun orada puan vermek yardımcı olur."
   }
 }

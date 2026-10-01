@@ -3,18 +3,21 @@
  *
  * The ways a reader who likes the app can pass it on, in one place:
  *
- *   1. A rating, where this build came from — the App Store's review page,
- *      the Play listing, or GitHub for the builds no store rates
- *      (`rateApp`). The row says which, so nobody taps "rate" and lands
- *      somewhere they did not expect.
+ *   1. A rating, where this build can give one — the App Store's review
+ *      page, the Play listing, or on F-Droid and the GitHub APK both the
+ *      Play listing and a GitHub star (`ratingPlaces`). Each row says
+ *      where it goes, so nobody taps "rate" and lands somewhere they did
+ *      not expect.
  *   2. Telling people: the system share sheet with a line and the
  *      website, which is where every way of installing it is listed —
  *      not one store's link, which half the people it reaches cannot use.
  *   3. The month's prayer-time sheet, to send or to print and hand out.
  *      It is the one thing the app makes that is useful to someone who
  *      does not have the app, and it carries the site's address, so it
- *      travels as an introduction too. The row opens the month screen on
- *      the sheet, with the month switcher and the export beside it.
+ *      travels as an introduction too. The row opens the month screen
+ *      already on the shareable sheet — `mihrab://month?share=1`, the
+ *      same in-app link anything else can use — with the month switcher
+ *      and the share buttons beside it.
  *
  * "Rate Mihrab" used to be the first row of About. It moved here with the
  * other two rather than staying as a duplicate.
@@ -25,7 +28,11 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
 import { useAppPalette } from '../../../hooks/useAppPalette';
 import type { RootStackParamList } from '../../../navigation/types';
-import { rateApp, ratingDestination } from '../../../polish/rateApp';
+import {
+  openRatingPlace,
+  ratingPlaces,
+  type RatingPlace,
+} from '../../../polish/rateApp';
 import { MIHRAB_WEBSITE } from '../../../config/links';
 import { SettingsBlock, SettingsGroup, SettingsLinkRow } from '../SettingsGroup';
 import { SettingsPage } from '../SettingsPage';
@@ -38,23 +45,50 @@ export function HelpMihrabSettingsScreen() {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
-  const destination = ratingDestination();
-  const rateTitle =
-    destination === 'appStore'
-      ? t('helpMihrab.rateAppStore', 'Rate it on the App Store')
-      : destination === 'play'
-        ? t('helpMihrab.ratePlay', 'Rate it on Google Play')
-        : t('helpMihrab.rateGithub', 'Star it on GitHub');
-  const rateHelp =
-    destination === 'github'
-      ? t(
-          'helpMihrab.rateGithubHelp',
-          'Where you got Mihrab there are no ratings; a star on GitHub is the closest thing.',
-        )
-      : t(
-          'helpMihrab.rateStoreHelp',
-          'A rating and a few words help people find it when they search the store.',
-        );
+  /**
+   * One row per place this build can be rated, most useful first: the
+   * App Store, the Play listing, or — on F-Droid and the GitHub APK —
+   * Google Play and then GitHub (`ratingPlaces`). Each says where it goes.
+   */
+  const places = ratingPlaces();
+  const elsewhere = places.includes('github');
+  const rateRow = (place: RatingPlace) => {
+    const title =
+      place === 'appStore'
+        ? t('helpMihrab.rateAppStore', 'Rate it on the App Store')
+        : place === 'play'
+          ? t('helpMihrab.ratePlay', 'Rate it on Google Play')
+          : t('helpMihrab.rateGithub', 'Star it on GitHub');
+    const help =
+      place === 'github'
+        ? t(
+            'helpMihrab.rateGithubHelp',
+            'A star on GitHub helps people looking for open-source apps find it.',
+          )
+        : place === 'play' && elsewhere
+          ? t(
+              'helpMihrab.ratePlayElsewhereHelp',
+              'Most people find Mihrab on Google Play. If you have a Google account, a rating there helps, wherever you installed it from.',
+            )
+          : t(
+              'helpMihrab.rateStoreHelp',
+              'A rating and a few words help people find it when they search the store.',
+            );
+    return (
+      <SettingsLinkRow
+        key={place}
+        testID={`help-mihrab-rate-${place}`}
+        title={title}
+        help={help}
+        onPress={() => {
+          void openRatingPlace(place);
+        }}
+        accessory={
+          <Text style={[styles.star, { color: palette.accent }]}>★</Text>
+        }
+      />
+    );
+  };
 
   const tellPeople = () => {
     const message = t('helpMihrab.shareMessage', {
@@ -80,17 +114,7 @@ export function HelpMihrabSettingsScreen() {
       </SettingsGroup>
 
       <SettingsGroup title={t('settings.rateApp', 'Rate Mihrab')}>
-        <SettingsLinkRow
-          testID="help-mihrab-rate"
-          title={rateTitle}
-          help={rateHelp}
-          onPress={() => {
-            void rateApp();
-          }}
-          accessory={
-            <Text style={[styles.star, { color: palette.accent }]}>★</Text>
-          }
-        />
+        {places.map(rateRow)}
       </SettingsGroup>
 
       <SettingsGroup title={t('helpMihrab.tellTitle', 'Tell family and friends')}>

@@ -1188,6 +1188,11 @@ export function HomeScreen() {
           },
     [navigation],
   );
+  // The heart above the countdown: Settings → About → Help Mihrab.
+  const handleOpenHelpMihrab = useCallback(
+    () => navigation.navigate('SettingsHelpMihrab'),
+    [navigation],
+  );
 
   /**
    * The Qibla bearing for wherever we are, for the hero chip.
@@ -1404,6 +1409,7 @@ export function HomeScreen() {
             onOpenMonth={handleOpenMonth}
             qiblaBearing={qiblaBearing}
             onOpenQibla={handleOpenQibla}
+            onHelpMihrab={handleOpenHelpMihrab}
             expanded={isDashboard}
             fullBleed={fullBleed}
             roomy={isRoomy}

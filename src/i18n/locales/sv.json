@@ -103,7 +103,8 @@
     "timezoneShiftNotice": "Klockan har ställts om här ({{from}} → {{to}}). Bönetiderna har uppdaterats.",
     "pullToRefresh": "Dra nedåt för att uppdatera",
     "pullRelease": "Släpp för att uppdatera",
-    "pullRefreshing": "Uppdaterar dina bönetider…"
+    "pullRefreshing": "Uppdaterar dina bönetider…",
+    "helpMihrabChip": "Hjälp Mihrab att växa"
   },
   "errors": {
     "locationNeededTitle": "Plats krävs",
@@ -2159,7 +2160,7 @@
     "ratePlay": "Betygsätt på Google Play",
     "rateStoreHelp": "Ett betyg och några ord hjälper andra att hitta appen när de söker i butiken.",
     "rateGithub": "Ge en stjärna på GitHub",
-    "rateGithubHelp": "Där du hämtade Mihrab finns inga betyg; en stjärna på GitHub är det närmaste.",
+    "rateGithubHelp": "En stjärna på GitHub hjälper den som letar efter appar med öppen källkod att hitta den.",
     "tellTitle": "Berätta för familj och vänner",
     "tellRow": "Skicka Mihrab till dem",
     "tellRowHelp": "En länk till Mihrabs webbplats, där alla sätt att ladda ner appen finns, skickad med vilken app du vill.",
@@ -2167,6 +2168,7 @@
     "monthTitle": "Dela bönetiderna",
     "monthRow": "Månadens tidtabell",
     "monthRowHelp": "Månadens bönetider där du är, på en sida att skicka eller skriva ut.",
-    "monthFooter": "Skicka den till dina nära och kära, eller skriv ut exemplar att dela ut i moskén, till familjen och till grannarna. Varje blad har Mihrabs adress, så att alla som får det kan hitta appen."
+    "monthFooter": "Skicka den till dina nära och kära, eller skriv ut exemplar att dela ut i moskén, till familjen och till grannarna. Varje blad har Mihrabs adress, så att alla som får det kan hitta appen.",
+    "ratePlayElsewhereHelp": "De flesta hittar Mihrab på Google Play. Har du ett Google-konto hjälper ett betyg där, var du än installerade appen ifrån."
   }
 }

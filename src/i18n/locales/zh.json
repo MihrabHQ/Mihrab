@@ -103,7 +103,8 @@
     "timezoneShiftNotice": "本地时间已调整（{{from}} → {{to}}）。祈祷时间已刷新。",
     "pullToRefresh": "下拉刷新",
     "pullRelease": "松开刷新",
-    "pullRefreshing": "正在刷新您的礼拜时间…"
+    "pullRefreshing": "正在刷新您的礼拜时间…",
+    "helpMihrabChip": "帮助 Mihrab 成长"
   },
   "errors": {
     "locationNeededTitle": "需要位置",
@@ -2159,7 +2160,7 @@
     "ratePlay": "在 Google Play 评分",
     "rateStoreHelp": "一个评分和几句话，能帮助在商店里搜索的人找到它。",
     "rateGithub": "在 GitHub 上加星",
-    "rateGithubHelp": "你获取 Mihrab 的地方没有评分功能；在 GitHub 上加一颗星是最接近的方式。",
+    "rateGithubHelp": "在 GitHub 上加星，能帮助寻找开源应用的人找到它。",
     "tellTitle": "告诉家人和朋友",
     "tellRow": "把 Mihrab 发给他们",
     "tellRowHelp": "Mihrab 网站的链接，上面有所有下载方式，可通过你选择的任何应用发送。",
@@ -2167,6 +2168,7 @@
     "monthTitle": "分享礼拜时间",
     "monthRow": "本月时间表",
     "monthRowHelp": "你所在地本月的礼拜时间，排在一页纸上，可发送也可打印。",
-    "monthFooter": "发给你爱的人，或打印出来在清真寺、家人和邻居间分发。每一页都印有 Mihrab 的网址，拿到它的人都能找到这个应用。"
+    "monthFooter": "发给你爱的人，或打印出来在清真寺、家人和邻居间分发。每一页都印有 Mihrab 的网址，拿到它的人都能找到这个应用。",
+    "ratePlayElsewhereHelp": "大多数人是在 Google Play 上发现 Mihrab 的。如果你有 Google 账号，无论从哪里安装，在那里评分都会有帮助。"
   }
 }

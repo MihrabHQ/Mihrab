@@ -60,6 +60,12 @@ export function MonthTimesScreen() {
   // Settings → About → Help Mihrab opens straight on the sheet.
   const route = useRoute<RouteProp<RootStackParamList, 'MonthTimes'>>();
   const [isShareView, setIsShareView] = useState(route.params?.share === true);
+  // The link can arrive while the screen is already open on the table
+  // (mihrab://month?share=1 with the month on the stack): React
+  // Navigation then updates the params rather than mounting it again.
+  useEffect(() => {
+    if (route.params?.share === true) setIsShareView(true);
+  }, [route.params?.share]);
 
   useAndroidSubScreenBack();
 

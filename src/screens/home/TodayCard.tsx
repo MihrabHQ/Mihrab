@@ -83,6 +83,7 @@ import { HERO_Y, skyFrame, skyInkAt, skyMoment, type SkyInkColors } from './skyM
 import { setHeroSkyBand } from './heroSkyBand';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { QiblaChip } from './QiblaChip';
+import { HelpMihrabChip } from './HelpMihrabChip';
 import { PrayerRow } from './PrayerRow';
 import {
   useNextAlertOverride,
@@ -169,6 +170,12 @@ export type TodayCardProps = {
   qiblaBearing?: number | null;
   /** Opens the compass screen from the hero chip. */
   onOpenQibla?: () => void;
+  /**
+   * Opens Settings → About → Help Mihrab from the chip above the
+   * countdown. Phone hero only (it rides in the full-bleed top row's
+   * props); absent, there is no chip.
+   */
+  onHelpMihrab?: () => void;
   /** Wide iPad/Mac dashboard: the hero gets more presence. */
   expanded?: boolean;
   /**
@@ -267,6 +274,8 @@ const HeroToday = memo(function HeroToday({
     /** A render function, not a node: it takes the sky's ink like the
         location beside it — see QiblaChip's `ink`. */
     renderQibla?: (ink: SkyInkColors) => ReactNode;
+    /** Above the countdown, on the sky: the way into Help Mihrab. */
+    renderHelp?: (ink: SkyInkColors) => ReactNode;
   };
   /** The status bar's glyphs follow the sky while this hero is on screen. */
   ownsStatusBar?: boolean;
@@ -489,6 +498,7 @@ const HeroToday = memo(function HeroToday({
       {/* The room the sky's bodies move in. */}
       {fill ? <View style={styles.heroScene} /> : null}
       <View onLayout={fill ? onBlockLayout : undefined}>
+      {topRow?.renderHelp?.(inkTop)}
       <Text
         style={[styles.heroEyebrow, { color: inkTop.muted }]}
         numberOfLines={1}
@@ -579,6 +589,7 @@ function TodayCardImpl({
   onOpenMonth,
   qiblaBearing,
   onOpenQibla,
+  onHelpMihrab,
   expanded = false,
   fullBleed = false,
   bannerAbove = false,
@@ -1114,6 +1125,8 @@ function TodayCardImpl({
     fullBleed && qiblaBearing != null ? (
       <QiblaChip bearing={qiblaBearing} onPress={onOpenQibla} ink={ink} />
     ) : null;
+  const renderHelp = (ink: SkyInkColors) =>
+    onHelpMihrab ? <HelpMihrabChip ink={ink} onPress={onHelpMihrab} /> : null;
 
   /**
    * One day's table. Today's rows carry the live things — the next-prayer
@@ -1264,7 +1277,7 @@ function TodayCardImpl({
             bleed={{ horizontal: SPACING.xl, top: heroTop, bottom: SPACING.lg }}
             statusBarInset={underStatusBar ? insets.top : 0}
             fill={fullBleed}
-            topRow={fullBleed ? { renderLocation, renderQibla } : undefined}
+            topRow={fullBleed ? { renderLocation, renderQibla, renderHelp } : undefined}
             // Not on a roomy page: the hero is not under the status bar
             // there, so the bar takes the page's ink like every other tab.
             ownsStatusBar={underStatusBar}

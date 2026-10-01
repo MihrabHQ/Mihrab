@@ -103,7 +103,8 @@
     "timezoneShiftNotice": "Aquí ha cambiado la hora local ({{from}} → {{to}}). Los tiempos de oración se han actualizado.",
     "pullToRefresh": "Desliza hacia abajo para actualizar",
     "pullRelease": "Suelta para actualizar",
-    "pullRefreshing": "Actualizando tus horarios de oración…"
+    "pullRefreshing": "Actualizando tus horarios de oración…",
+    "helpMihrabChip": "Ayuda a crecer a Mihrab"
   },
   "errors": {
     "locationNeededTitle": "Ubicación necesaria",
@@ -2159,7 +2160,7 @@
     "ratePlay": "Valórala en Google Play",
     "rateStoreHelp": "Una valoración y unas palabras ayudan a otros a encontrarla cuando buscan en la tienda.",
     "rateGithub": "Dale una estrella en GitHub",
-    "rateGithubHelp": "Donde conseguiste Mihrab no hay valoraciones; una estrella en GitHub es lo más parecido.",
+    "rateGithubHelp": "Una estrella en GitHub ayuda a quienes buscan apps de código abierto a encontrarla.",
     "tellTitle": "Cuéntaselo a familia y amigos",
     "tellRow": "Envíales Mihrab",
     "tellRowHelp": "Un enlace a la web de Mihrab, con todas las formas de descargarla, enviado con la app que prefieras.",
@@ -2167,6 +2168,7 @@
     "monthTitle": "Comparte los horarios de oración",
     "monthRow": "Horario de este mes",
     "monthRowHelp": "Los horarios de oración de este mes donde estás, en una página para enviar o imprimir.",
-    "monthFooter": "Envíala a tus seres queridos o imprime copias para repartir en tu mezquita, entre tu familia y tus vecinos. Cada hoja lleva la dirección de Mihrab, para que quien la reciba pueda encontrar la app."
+    "monthFooter": "Envíala a tus seres queridos o imprime copias para repartir en tu mezquita, entre tu familia y tus vecinos. Cada hoja lleva la dirección de Mihrab, para que quien la reciba pueda encontrar la app.",
+    "ratePlayElsewhereHelp": "La mayoría encuentra Mihrab en Google Play. Si tienes una cuenta de Google, una valoración allí ayuda, la hayas instalado desde donde sea."
   }
 }

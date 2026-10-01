@@ -103,7 +103,8 @@
     "timezoneShiftNotice": "Hier wurden die Uhren umgestellt ({{from}} → {{to}}). Die Gebetszeiten wurden aktualisiert.",
     "pullToRefresh": "Zum Aktualisieren nach unten ziehen",
     "pullRelease": "Zum Aktualisieren loslassen",
-    "pullRefreshing": "Gebetszeiten werden aktualisiert…"
+    "pullRefreshing": "Gebetszeiten werden aktualisiert…",
+    "helpMihrabChip": "Hilf Mihrab zu wachsen"
   },
   "errors": {
     "locationNeededTitle": "Standort erforderlich",
@@ -2159,7 +2160,7 @@
     "ratePlay": "Bei Google Play bewerten",
     "rateStoreHelp": "Eine Bewertung und ein paar Worte helfen anderen, die App bei der Suche im Store zu finden.",
     "rateGithub": "Auf GitHub einen Stern geben",
-    "rateGithubHelp": "Wo du Mihrab herhast, gibt es keine Bewertungen; ein Stern auf GitHub kommt dem am nächsten.",
+    "rateGithubHelp": "Ein Stern auf GitHub hilft Leuten, die nach Open-Source-Apps suchen, sie zu finden.",
     "tellTitle": "Familie und Freunden erzählen",
     "tellRow": "Mihrab weiterschicken",
     "tellRowHelp": "Ein Link zur Website von Mihrab, auf der alle Download-Wege stehen, verschickt mit einer App deiner Wahl.",
@@ -2167,6 +2168,7 @@
     "monthTitle": "Gebetszeiten teilen",
     "monthRow": "Zeitplan dieses Monats",
     "monthRowHelp": "Die Gebetszeiten dieses Monats an deinem Ort, auf einer Seite zum Verschicken oder Drucken.",
-    "monthFooter": "Schick sie deinen Liebsten oder drucke Exemplare, um sie in deiner Moschee, in der Familie und unter Nachbarn zu verteilen. Jedes Blatt trägt die Adresse von Mihrab, damit jeder, der es bekommt, die App finden kann."
+    "monthFooter": "Schick sie deinen Liebsten oder drucke Exemplare, um sie in deiner Moschee, in der Familie und unter Nachbarn zu verteilen. Jedes Blatt trägt die Adresse von Mihrab, damit jeder, der es bekommt, die App finden kann.",
+    "ratePlayElsewhereHelp": "Die meisten finden Mihrab bei Google Play. Mit einem Google-Konto hilft eine Bewertung dort – egal, woher du die App hast."
   }
 }
