@@ -1,6 +1,5 @@
 /**
- * The āyah sheet's "Tajweed" section: the āyah with its letters tinted,
- * then one row per rule it contains — the colour, the name, what to do,
+ * The āyah sheet's "Tajweed" section: one row per rule the āyah contains — the colour, the name, what to do,
  * and the words it happens in. Tapping a word reads it out (the word
  * reader's own voice), which is the point: see the colour, hear the rule.
  *
@@ -8,7 +7,7 @@
  * keeps the reader's choice (`ayahSheetPanel`).
  */
 import { useEffect, useMemo, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View, type StyleProp, type TextStyle } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
@@ -29,10 +28,9 @@ import {
 } from './warshTajweed';
 import { tajweedInk, type TajweedRule } from './rules';
 import { TajweedSwatch } from './TajweedText';
-import { ayahGlyphWords, TajweedAyahGlyphs, TajweedWordGlyph } from './TajweedAyahGlyphs';
+import { ayahGlyphWords, TajweedWordGlyph } from './TajweedAyahGlyphs';
 
-/** The page font's size in the sheet and its chips, dp. */
-const AYAH_FONT_SIZE = 30;
+/** The page font's size in the chips, dp. */
 const CHIP_FONT_SIZE = 24;
 
 /** Read one word aloud, as a held-and-released word in the muṣḥaf is. */
@@ -99,15 +97,8 @@ export function TajweedAyahSection({
             </Text>
           ) : (
             <>
-              <TajweedAyahGlyphs
-                surah={surah}
-                ayah={ayah}
-                fontSize={AYAH_FONT_SIZE}
-                color={String(palette.text)}
-                onWordPress={w => {
-                  if (!w.isEnd) speakWord(surah, ayah, w.position);
-                }}
-              />
+              {/* No copy of the āyah here: the sheet draws it right above
+                  the tabs, tinted while this tab is open (AyahActionSheet). */}
               {data.rules.length === 0 ? (
                 <Text style={[styles.meta, { color: palette.muted }]}>
                   {t('tajweed.sheetNone', 'Nothing in this ayah is tinted — no rule applies.')}
@@ -257,14 +248,6 @@ function WarshTajweedBody({
         </Text>
       ) : (
         <>
-          <Text style={[styles.warshAyah, { color: palette.text, fontFamily }]}>
-            {words.map((w, i) => (
-              <Text key={i}>
-                {i > 0 ? ' ' : null}
-                {drawn(w)}
-              </Text>
-            ))}
-          </Text>
           {rules.length === 0 ? (
             <Text style={[styles.meta, { color: palette.muted }]}>
               {t('tajweed.sheetNone', 'Nothing in this ayah is tinted — no rule applies.')}
@@ -331,8 +314,62 @@ function WarshTajweedBody({
   );
 }
 
+/**
+ * The Warsh āyah in the page's face with its letters tinted — what the
+ * sheet draws above its tabs while the Tajweed tab is open. Until the
+ * rules load, or where they do not match, it is the plain text.
+ */
+export function WarshTajweedAyah({
+  surah,
+  ayah,
+  text,
+  style,
+}: {
+  surah: number;
+  ayah: number;
+  /** The āyah's own text, drawn as-is until (or unless) the tints load. */
+  text: string;
+  style?: StyleProp<TextStyle>;
+}) {
+  const { palette, isDark } = useAppPalette();
+  const [words, setWords] = useState<WarshTajweedWord[] | null>(null);
+  const fontFamily = riwayahFontFamily(riwayahById('warsh'));
+
+  useEffect(() => {
+    let alive = true;
+    setWords(null);
+    const own = riwayahAyahText('warsh', surah, ayah);
+    void loadWarshSurah(surah).then(data => {
+      if (alive) setWords(data && own ? warshAyahWords(data, ayah, own) : null);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [surah, ayah]);
+
+  return (
+    <Text style={[style, { color: palette.text, fontFamily }]}>
+      {words
+        ? words.map((w, i) => (
+            <Text key={i}>
+              {i > 0 ? ' ' : null}
+              {shapedRuns(w.runs).map((run, j) =>
+                run.rule ? (
+                  <Text key={j} style={{ color: tajweedInk(run.rule, isDark) }}>
+                    {run.text}
+                  </Text>
+                ) : (
+                  run.text
+                ),
+              )}
+            </Text>
+          ))
+        : text}
+    </Text>
+  );
+}
+
 const styles = StyleSheet.create({
-  warshAyah: { fontSize: 26, lineHeight: 52, textAlign: 'right', writingDirection: 'rtl' },
   warshChip: { fontSize: TYPE.title3.fontSize, lineHeight: 40 },
   block: { marginTop: SPACING.sm, gap: SPACING.sm },
   meta: { fontSize: TYPE.footnote.fontSize },
