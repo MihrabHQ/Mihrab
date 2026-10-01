@@ -81,7 +81,7 @@ class MihrabLiveActivityService : Service() {
   @Volatile private var screenOn = true
 
   /** Next-prayer epoch the deep-sleep wake alarm is currently set for. Lets
-   *  the per-second ticker skip re-arming the exact alarm every tick — it only
+   *  the ticker skip re-arming the exact alarm every tick — it only
    *  reschedules when the upcoming prayer actually changes. */
   @Volatile private var lastAlarmEpoch = 0L
 
@@ -310,13 +310,15 @@ class MihrabLiveActivityService : Service() {
           Log.w(TAG, "ticker re-post failed", t)
         }
       }
-      // Self-rescheduling tick, while it is still the current one.
+      // Self-rescheduling tick, while it is still the current one — and
+      // only while the screen is on. With it off the ambient alarm
+      // (`scheduleMinuteAlarm`) is the one re-post: when the CPU happened
+      // to be awake, both used to fire for the same change and post twice.
       val next = ticker
-      if (next != null) handler.postDelayed(next, tickInterval())
-      if (!screenOn) scheduleMinuteAlarm()
+      if (next != null && screenOn) handler.postDelayed(next, TICK_MS)
     }
     ticker = tick
-    handler.postDelayed(tick, tickInterval())
+    if (screenOn) handler.postDelayed(tick, TICK_MS)
   }
 
   /**
@@ -618,12 +620,10 @@ class MihrabLiveActivityService : Service() {
    *  the initial notification. */
   private fun build(payload: String): Notification {
     val o = JSONObject(payload)
-    // No baked-in seconds, ever. The seconds are drawn by the platform now —
-    // a chronometer counting down to `nextEpochMs` (Android 16) or a
-    // system-ticked TimeDifference metric (Android 17) — so the text this
-    // builds only has to survive until the next tick, and the next tick is a
-    // minute away. See `tickInterval`.
-    o.put("withSeconds", false)
+    // No baked-in seconds, ever: the platform draws them — a chronometer
+    // counting down to `nextEpochMs` (Android 16) or a system-ticked
+    // TimeDifference metric (Android 17) — so the text this builds only has
+    // to survive until the next tick.
     // Screen off: no chronometer (it freezes on the always-on display), the
     // hours and minutes as text instead. See `ambientCountdown`.
     o.put("ambient", !screenOn)
@@ -631,7 +631,8 @@ class MihrabLiveActivityService : Service() {
   }
 
   /**
-   * Tick cadence: once a minute, screen on or off.
+   * Tick cadence, screen on: once a minute. (Screen off there is no tick;
+   * see `untilAmbientChange`.)
    *
    * It used to be once a SECOND while the screen was interactive, because
    * the H:MM:SS countdown was a string this service formatted and the only
@@ -648,28 +649,40 @@ class MihrabLiveActivityService : Service() {
    * multi-hour interval, and the rollover onto the next prayer. A minute is
    * finer than either needs.
    */
-  private fun tickInterval(): Long = if (screenOn) TICK_MS else untilNextMinute()
-
   /**
-   * With the screen off the card says "2h 15m" as text, so it has to be
-   * re-posted the moment that goes stale: when the time left crosses a whole
-   * minute, not a minute after whenever the last post happened.
+   * With the screen off the card's text changes only at a few instants, and
+   * the service wakes the phone for exactly those (`formatAmbient`):
+   *
+   *  - an hour or more left, it says the whole hours ("2h+"), so the next
+   *    change is when the time left drops under the next whole hour — one
+   *    wake an hour for most of the night, where this used to be one a
+   *    minute all night long (the cost the background-power audit set out
+   *    to avoid);
+   *  - under an hour, it says the minutes ("42:--"), and the next change is
+   *    the next whole minute.
    */
-  private fun untilNextMinute(): Long {
+  private fun untilAmbientChange(): Long {
     val next = lastPayload?.let { runCatching { JSONObject(it).optLong("nextEpochMs", 0L) }.getOrNull() } ?: 0L
     val left = next - System.currentTimeMillis()
-    val into = if (left > 0) left % 60_000L else 0L
-    return (if (into == 0L) 60_000L else into) + 500L
+    if (left <= 0) return 60_000L + 500L
+    val step = if (left >= 3_600_000L) 3_600_000L else 60_000L
+    val into = left % step
+    return (if (into == 0L) step else into) + 500L
   }
 
   /**
-   * The minute re-post, when the phone sleeps. The Handler ticker runs on
+   * The ambient re-post, when the phone sleeps. The Handler ticker runs on
    * uptime and stops while the CPU does, which on the always-on display is
-   * most of the time; this alarm restarts the service at the next minute,
-   * and onStartCommand re-posts from the stored payload and arms the next
-   * one. Only with the screen off: with it on the chronometer ticks by
-   * itself. In deep Doze Android may space allow-while-idle alarms out, so
-   * the card can lag a few minutes there; it never shows a frozen second.
+   * most of the time; this alarm restarts the service at the next change of
+   * the card's text (`untilAmbientChange`), and onStartCommand re-posts from
+   * the stored payload and arms the next one. Only with the screen off: with
+   * it on the chronometer ticks by itself.
+   *
+   * In deep Doze Android allows an app's allow-while-idle alarms only about
+   * once every nine minutes, so in the last hour before a prayer the minutes
+   * on the always-on display can run up to ~9 minutes behind there. The
+   * prayer's own wake alarm (`scheduleWakeAlarm`) still rolls the card over
+   * on time; and it never shows a frozen second.
    */
   private fun scheduleMinuteAlarm() {
     runCatching {
@@ -679,7 +692,7 @@ class MihrabLiveActivityService : Service() {
         am.cancel(pi)
         return
       }
-      val triggerAt = System.currentTimeMillis() + untilNextMinute()
+      val triggerAt = System.currentTimeMillis() + untilAmbientChange()
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !am.canScheduleExactAlarms()) {
         am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAt, pi)
       } else {

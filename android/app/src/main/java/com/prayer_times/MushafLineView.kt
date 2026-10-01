@@ -154,14 +154,19 @@ class MushafLineView(context: Context) : View(context) {
     if (cacheGeneration == generation && typeface !== cacheTypeface) generation += 1
 
     val bitmap = cache
-    if (bitmap != null && cacheGeneration == generation) {
+    val cached = bitmap != null && cacheGeneration == generation
+    // A HARDWARE bitmap cannot be drawn on a software canvas (it throws):
+    // a capture of the view into a Bitmap — a screenshot-to-share, a
+    // drawing cache — gets the line drawn directly instead. Nothing does
+    // that today; this keeps it from being a crash the day something does.
+    if (cached && (canvas.isHardwareAccelerated || !isHardwareBitmap(bitmap!!))) {
       val m = -cacheMargin.toFloat()
       canvas.drawBitmap(bitmap, m, m, blitPaint)
       return
     }
     val line = snapshot(pieces, typeface)
     drawLine(canvas, line, uiPens, 0f)
-    if (pendingGeneration != generation) paintInBackground(line)
+    if (!cached && pendingGeneration != generation) paintInBackground(line)
   }
 
   private fun snapshot(pieces: ReadableArray, typeface: Typeface?): Line {
@@ -231,7 +236,13 @@ class MushafLineView(context: Context) : View(context) {
         null
       }
       post {
-        if (painted == null) return@post
+        if (painted == null) {
+          // Free the slot, or this line would draw itself directly on every
+          // frame until a prop changed: the next draw tries again, by when
+          // the memory pressure that failed this one may have passed.
+          if (pendingGeneration == gen) pendingGeneration = -1
+          return@post
+        }
         if (gen != generation || !isAttachedToWindow) {
           painted.recycle()
           return@post
@@ -248,6 +259,9 @@ class MushafLineView(context: Context) : View(context) {
   }
 
   companion object {
+    private fun isHardwareBitmap(b: Bitmap): Boolean =
+      Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && b.config == Bitmap.Config.HARDWARE
+
     /**
      * Two painters for every line in the app: a page turn brings fifteen
      * lines at once, and the UI thread is the one thing they must not

@@ -565,9 +565,10 @@ const decoded = new Map<string, MushafPageLayout>();
 // has its own line data, `mushafLayoutV4.json` (built by
 // `scripts/mushaf/build_v4_layout.py` from QUL's 1441H layout, with the
 // fonts' own advances), in the same shape as V2's, and a page is decoded
-// from whichever file its set names. V2's file is never read for the
-// tajwīd set and the tajwīd file never for V2, so the plain muṣḥaf cannot
-// be touched by anything here.
+// from whichever file its set names. The tajwīd file is never read for
+// V2, so the plain muṣḥaf cannot be touched by anything here. (The other
+// way, `rawPage` falls back to V2's page should the tajwīd file lack one;
+// it has all 604, so today it never does.)
 //
 // Which set is live is a module switch, set by the reader from its
 // preference, so that every reader of the geometry — the surface, the
@@ -642,12 +643,16 @@ function rawPage(page: number, set: MushafGlyphSet): RawPage | null {
  * are done. By the time the surah is tapped it is already here; and a
  * user who never gets that far still never pays.
  */
-export function warmMushafLayout(riwayah?: RiwayahId): void {
+export function warmMushafLayout(riwayah?: RiwayahId, tajweed = false): void {
   // A bundled riwayah draws from its own line data, not this file; a Warsh
   // reader warming the Ḥafṣ layout would be paying for a muṣḥaf they are
   // not in.
   if (riwayah && riwayahById(riwayah).render === 'unicode') return;
-  loadRaw();
+  // The set the reader will draw in (its tajwīd preference): the tajwīd
+  // reader decodes from the 1441H file, and warming V2 for them would leave
+  // that 1.4 MB parse on the JS thread at their first page.
+  if (tajweed) loadRawV4();
+  else loadRaw();
 }
 
 function decodeLine(line: RawLine): MushafLine | null {

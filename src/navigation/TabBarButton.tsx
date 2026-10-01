@@ -29,9 +29,26 @@ const HOLD_MS = 180;
 
 type Props = BottomTabBarButtonProps & { name: string };
 
-export function TabBarButton({ name, onPress, children, style, ...rest }: Props) {
+export function TabBarButton({
+  name,
+  onPress,
+  // Dropped: every slide is a hold, so the navigator's long press
+  // (`tabLongPress`) would fire half a second into each one. Nothing
+  // listens for it, and a slide is not a long press.
+  onLongPress: _longPress,
+  children,
+  style,
+  ...rest
+}: Props) {
   const ref = useRef<HostInstance>(null);
   const holdTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  /**
+   * This touch was a hold, settled on lift. Kept past the lift so the tap
+   * below stands down whichever arrives first, the responder's release
+   * (`onPress`) or the bubbled `onTouchEnd`: a held finger opens exactly
+   * one tab, the one under it, in either order.
+   */
+  const wasHeld = useRef(false);
 
   const press = useCallback(
     (e?: GestureResponderEvent) => onPress?.(e as GestureResponderEvent),
@@ -64,13 +81,14 @@ export function TabBarButton({ name, onPress, children, style, ...rest }: Props)
       // The tap. Not after a hold: a hold is settled on lift, below, and a
       // hold that slid away must not also tap here.
       onPress={e => {
-        if (tabBarPress().held) return;
+        if (tabBarPress().held || wasHeld.current) return;
         press(e);
       }}
       onTouchStart={() => {
         // Where the bar is NOW, not where it was laid out: it slides
         // away while reading and back, and the keyboard can lift it.
         measure();
+        wasHeld.current = false;
         pressTab(name);
         clearHold();
         holdTimer.current = setTimeout(() => {
@@ -84,6 +102,7 @@ export function TabBarButton({ name, onPress, children, style, ...rest }: Props)
       onTouchEnd={() => {
         clearHold();
         const { held } = tabBarPress();
+        if (held) wasHeld.current = true;
         const target = held ? hoveredTab() : name;
         releaseTab(target);
         if (held && target) activateTab(target);

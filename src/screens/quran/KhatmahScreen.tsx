@@ -11,7 +11,7 @@
  */
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigation } from '@react-navigation/native';
+import { StackActions, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
   Modal,
@@ -64,7 +64,14 @@ export function KhatmahScreen() {
   // plan arriving by sync while this page is open.
   const plan = activeKhatmah(quran);
   useEffect(() => {
-    if (plan) navigation.goBack();
+    if (!plan) return;
+    // Opened from a link with nothing under it (a cold start), there is no
+    // back to go to, and "Start a khatmah" would sit over a running plan:
+    // the Qur'an tab, where the plan's card is, takes its place.
+    if (navigation.canGoBack()) navigation.goBack();
+    // (StackActions: the stack's types give Home no params, but the tab
+    // navigator inside it takes `screen` like any nested navigator.)
+    else navigation.dispatch(StackActions.replace('Home', { screen: 'QuranTab' }));
   }, [plan, navigation]);
 
   /**

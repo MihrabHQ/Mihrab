@@ -61,13 +61,14 @@ function QuranCardImpl({ onOpenAt, onOpenQuran }: Props) {
   const readsMushaf =
     quran.lastRead?.mode === 'mushaf' || card.khatmah != null || card.homeBookmark != null;
   const riwayah = quran.prefs.riwayah;
+  const tajweed = quran.prefs.tajweedColours;
   useEffect(() => {
     if (!readsMushaf) return;
     const task = afterInteractions(() =>
-      warmMushafLayout(riwayah),
+      warmMushafLayout(riwayah, tajweed),
     );
     return () => task.cancel();
-  }, [readsMushaf, riwayah]);
+  }, [readsMushaf, riwayah, tajweed]);
 
   // The khatmah is a muṣḥaf page: the reader lands on it whichever reader
   // they are in, and the translation reader takes the page's first ayah.

@@ -456,26 +456,20 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
     }
 
     /**
-     * The countdown on the always-on display: the chronometer's own shape
-     * with the seconds as "--" — "2:15:--" (≥1h) or "15:--" (<1h) — because
-     * nothing ticks there to keep them true. The hours and minutes move
-     * with each minute's re-post; the seconds come back with the screen.
+     * The countdown on the always-on display, where nothing ticks to keep
+     * seconds true: "2h+" while an hour or more is left, then the minutes
+     * with the seconds as "--" ("15:--"). Each is re-posted when it changes;
+     * the seconds come back with the screen.
      */
     private fun formatAmbient(deltaMs: Long): String {
       val totalSec = (deltaMs / 1000).coerceAtLeast(0)
       val h = totalSec / 3600
       val m = (totalSec % 3600) / 60
-      return if (h > 0) String.format("%d:%02d:--", h, m) else String.format("%d:--", m)
-    }
-
-    /** Live ticking countdown with seconds: "3:07:05" (≥1h) or "7:05" (<1h). */
-    private fun formatHMS(deltaMs: Long): String {
-      val totalSec = (deltaMs / 1000).coerceAtLeast(0)
-      val h = totalSec / 3600
-      val m = (totalSec % 3600) / 60
-      val s = totalSec % 60
-      return if (h > 0) String.format("%d:%02d:%02d", h, m, s)
-             else String.format("%d:%02d", m, s)
+      // An hour or more: the whole hours only, "2h+", which changes once an
+      // hour — so the service wakes the phone once an hour for it rather
+      // than once a minute all night (`untilAmbientChange`). Under an hour,
+      // the minutes, re-posted as each one passes.
+      return if (h > 0) "${h}h+" else String.format("%d:--", m)
     }
 
     /** Top-level entry point — used by both the JS bridge (as a
@@ -594,22 +588,16 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
     ): Notification {
       try {
         val now = System.currentTimeMillis()
-        // When the screen is interactive the service ticks every second and
-        // sets withSeconds=true → live H:MM:SS; on AOD/screen-off it ticks each
-        // minute with withSeconds=false → H:MM (no seconds, lower power).
-        val withSeconds = p.optBoolean("withSeconds", false)
         // The screen is off: the always-on display, where the platform's
         // chronometer does not tick (see `ambientCountdown`).
         val ambient = p.optBoolean("ambient", false)
         val remaining = nextEpochMs - now
         val countdown = when {
           ambient -> formatAmbient(remaining)
-          withSeconds -> formatHMS(remaining)
           else -> formatRemaining(remaining)
         }
         val shortText = when {
           ambient -> formatAmbient(remaining)
-          withSeconds -> formatHMS(remaining)
           else -> formatRemainingShort(remaining)
         }
         val nextLabel = p.optString("nextLabel", "")
@@ -659,7 +647,7 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
           //
           // A chronometer counting down to `nextEpochMs` advances on its own,
           // in the header slot, with no app involvement at all. Before this,
-          // `withSeconds` baked H:MM:SS into the title and the service had to
+          // the service baked H:MM:SS into the title and had to
           // re-post the entire notification once a second to move it — 3600
           // rebuilds an hour for as long as the screen was on. The text this
           // builder produces is now minute-resolution and the chronometer
@@ -754,18 +742,15 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
       try {
         val now = System.currentTimeMillis()
         val remaining = nextEpochMs - now
-        val withSeconds = p.optBoolean("withSeconds", false)
         // Screen off: the always-on display, where neither the chronometer
         // nor a TimeDifference metric ticks. See `ambientCountdown`.
         val ambient = p.optBoolean("ambient", false)
         val countdown = when {
           ambient -> formatAmbient(remaining)
-          withSeconds -> formatHMS(remaining)
           else -> formatRemaining(remaining)
         }
         val shortText = when {
           ambient -> formatAmbient(remaining)
-          withSeconds -> formatHMS(remaining)
           else -> formatRemainingShort(remaining)
         }
         val nextLabel = p.optString("nextLabel", "")

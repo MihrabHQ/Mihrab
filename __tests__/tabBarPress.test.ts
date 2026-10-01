@@ -96,6 +96,10 @@ describe('the wiring', () => {
     expect(button).toMatch(/onTouchMove=\{e => \{\s*if \(slideTo\(e\.nativeEvent\.pageX\)\) hapticScrubTick\(false\);/);
     expect(button).toMatch(/const target = held \? hoveredTab\(\) : name;\s*releaseTab\(target\);\s*if \(held && target\) activateTab\(target\);/);
     // A tap after a hold is not a second press.
-    expect(button).toMatch(/onPress=\{e => \{\s*if \(tabBarPress\(\)\.held\) return;/);
+    // In either event order: the hold is remembered past the lift.
+    expect(button).toMatch(/onPress=\{e => \{\s*if \(tabBarPress\(\)\.held \|\| wasHeld\.current\) return;/);
+    expect(button).toMatch(/if \(held\) wasHeld\.current = true;/);
+    // A slide is not a long press.
+    expect(button).toContain('onLongPress: _longPress,');
   });
 });

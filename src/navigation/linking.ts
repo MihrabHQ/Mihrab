@@ -142,7 +142,12 @@ export const linking: LinkingOptions<RootStackParamList> = {
        * is the screen someone is sent to when they are standing next to
        * the other device with its code on screen.
        */
-      /** mihrab://khatmah — the plan's page, where a reminder about it lands. */
+      /**
+       * mihrab://khatmah — the page that starts a plan. (A khatmah reminder
+       * does NOT land here: it opens the reader at the plan's next page, or
+       * the Qur'an tab — see `notificationRoute`.) Opened while a plan is
+       * running, the screen steps aside to the Qur'an tab.
+       */
       Khatmah: 'khatmah',
       Sync: 'sync',
       /**

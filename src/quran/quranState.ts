@@ -224,6 +224,11 @@ function coerceBookmark(v: unknown): QuranBookmark | null {
   return out;
 }
 
+/** The āyah sheet's kept panel: a known one, else none. */
+function coerceSheetPanel(v: unknown): AyahSheetPanel {
+  return v === 'translation' || v === 'tafsir' || v === 'tajweed' ? v : 'none';
+}
+
 /**
  * The colour-reuse setting as the blob has it — or, when the blob has
  * never said, as its bookmarks imply: two in one colour means the reader
@@ -232,10 +237,6 @@ function coerceBookmark(v: unknown): QuranBookmark | null {
  * written by a reader who then has duplicates (made on another device,
  * say) is their answer and stays.
  */
-function coerceSheetPanel(v: unknown): AyahSheetPanel {
-  return v === 'translation' || v === 'tafsir' || v === 'tajweed' ? v : 'none';
-}
-
 function coerceColourReuse(raw: unknown, bookmarks: QuranBookmark[]): boolean {
   if (typeof raw === 'boolean') return raw;
   const seen = new Set<string>();

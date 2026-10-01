@@ -194,9 +194,11 @@ describe('with the screen off, hours and minutes that keep moving', () => {
     expect(kotlin.match(/^\s*\.setUsesChronometer\(true\)/gm)).toHaveLength(1);
   });
 
-  it('puts the hours and minutes, seconds dashed, in the title and the metric', () => {
-    // "2:15:--": the chronometer's shape, the seconds as dashes.
-    expect(kotlin).toMatch(/String\.format\("%d:%02d:--", h, m\) else String\.format\("%d:--", m\)/);
+  it('puts whole hours, or minutes with the seconds dashed, in the title and the metric', () => {
+    // "2h+" an hour or more out; "42:--" in the last hour.
+    expect(kotlin).toMatch(/return if \(h > 0\) "\$\{h\}h\+" else String\.format\("%d:--", m\)/);
+    // No seconds baked in anywhere any more.
+    expect(kotlin).not.toMatch(/withSeconds|formatHMS/);
     expect(kotlin.match(/ambient -> formatAmbient\(remaining\)/g)).toHaveLength(4);
     expect(kotlin).toMatch(/ambient -> "\$inlineTitle · \$countdown"/);
     expect(kotlin).toMatch(/if \(ambient && arrivedTitle == null\) "\$inlineName · \$countdown"/);
@@ -204,8 +206,15 @@ describe('with the screen off, hours and minutes that keep moving', () => {
     expect(kotlin).toMatch(/if \(ambientText != null\) \{\s*Class\.forName\("android\.app\.Notification\\\$Metric\\\$FixedText"\)/);
   });
 
-  it('re-posts at each minute while the phone sleeps, and stops when it wakes', () => {
-    expect(service).toMatch(/private fun tickInterval\(\): Long = if \(screenOn\) TICK_MS else untilNextMinute\(\)/);
+  it('wakes the phone only when the ambient text changes, and stops when it wakes', () => {
+    // Once an hour while an hour or more is left; once a minute in the last.
+    expect(service).toMatch(/val step = if \(left >= 3_600_000L\) 3_600_000L else 60_000L/);
+    expect(service).toContain('val triggerAt = System.currentTimeMillis() + untilAmbientChange()');
+    // The handler ticker runs only with the screen on: the alarm is the one
+    // screen-off re-post, never both for the same change.
+    expect(service).toContain('if (next != null && screenOn) handler.postDelayed(next, TICK_MS)');
+    expect(service).toContain('if (screenOn) handler.postDelayed(tick, TICK_MS)');
+    expect(service).not.toMatch(/untilNextMinute|tickInterval\(\)/);
     expect(service).toMatch(/if \(screenOn \|\| lastPayload == null\) \{\s*am\.cancel\(pi\)/);
     expect(service).toMatch(/setExactAndAllowWhileIdle\(AlarmManager\.RTC_WAKEUP, triggerAt, pi\)/);
     // Its own request code, and cancelled with the wake alarm.
