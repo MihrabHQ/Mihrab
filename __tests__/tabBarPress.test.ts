@@ -82,8 +82,11 @@ describe('the wiring', () => {
     expect(tabs).toContain('tabBarBackground: () => <TabBarBubble radius={FLOATS_OVER_CONTENT ? RADIUS.xl : 0} />');
     const bubble = read('src/navigation/TabBarBubble.tsx');
     expect(bubble).toMatch(/overflow: 'hidden'/);
-    expect(bubble).toMatch(/const w = Math\.max\(0, tabW - INSET_X \* 2\)/);
-    expect(bubble).toMatch(/const h = Math\.max\(0, Math\.min\(tabH, bar\.height - tabTop\) - INSET_Y \* 2\)/);
+    // A slim pill around the icon, kept inside the bar.
+    expect(bubble).toContain('const w = tabW > 0 ? Math.min(PILL_W, tabW - INSET_X * 2) : 0;');
+    expect(bubble).toContain('const top = Math.max(0, Math.min(bar.height - h, centreY - h / 2));');
+    expect(bubble).toContain('band.y + band.height / 2 - bar.y');
+    expect(read('src/navigation/tabIcons.tsx').match(/<IconAnchor>/g)).toHaveLength(6);
     // No halo left on the icons, and no ripple on the buttons.
     expect(read('src/navigation/tabIcons.tsx')).not.toContain('Halo');
     expect(read('src/navigation/TabBarButton.tsx')).toContain('android_ripple={undefined}');

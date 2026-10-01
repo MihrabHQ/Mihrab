@@ -74,6 +74,18 @@ export function registerTabFrame(name: string, frame: TabFrame | null): void {
   else frames.delete(name);
 }
 
+/**
+ * Where the icons sit, vertically, in the window — every tab's icon is on
+ * the same line, so one band serves all. The pill centres on it.
+ */
+let band: { y: number; height: number } | null = null;
+export function registerIconBand(y: number, height: number): void {
+  band = { y, height };
+}
+export function iconBand(): { y: number; height: number } | null {
+  return band;
+}
+
 export function tabFrame(name: string): TabFrame | undefined {
   return frames.get(name);
 }
@@ -151,4 +163,5 @@ export function _resetTabBarPress(): void {
   state = IDLE;
   listeners.clear();
   fingerListener = null;
+  band = null;
 }

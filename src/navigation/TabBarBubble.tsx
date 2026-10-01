@@ -1,35 +1,34 @@
 /**
- * The tab bar's press, drawn — a glossy bubble that lives INSIDE the bar.
+ * The tab bar's press, drawn — a slim indicator pill around the icon.
  *
  * Rendered as the bar's `tabBarBackground`, so it sits behind the icons
- * and labels and is clipped by the bar's own rounded silhouette: whatever
- * it does, it cannot leave the pill. (The halo it replaces was drawn on
- * the icon, sized by the icon, and spilled over the bar's top edge.)
+ * and is clipped by the bar: whatever it does, it cannot leave it.
  *
+ * Deliberately plain: one flat wash of the accent, a fixed capsule centred
+ * on the ICON (not the whole tab, label and all), no gradient, no edge.
  * It reads the press from `tabBarPress`:
- *   • tap        — springs in under the tab, fades as the finger lifts;
- *   • hold       — lifts a little, then follows the finger along the bar;
- *   • lift       — glides to the tab it was released over, then fades.
- *
- * Its size is the tab's, less a small inset on every side, with corners
- * concentric to the bar's — a pill that hugs one icon and its label.
+ *   • tap   — grows in around the icon, fades as the finger lifts;
+ *   • hold  — follows the finger along the bar, on the native value;
+ *   • lift  — glides to the tab it was released over, then fades.
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, StyleSheet, View, type HostInstance, type LayoutChangeEvent } from 'react-native';
-import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 import { useAppPalette } from '../hooks/useAppPalette';
 import { useReduceMotion } from '../hooks/useReduceMotion';
 import { resolveSpring } from '../theme/motion';
-import { onFinger, tabFrame, useTabBarPress } from './tabBarPress';
+import { withAlpha } from '../quran/ayahMarks';
+import { iconBand, onFinger, tabFrame, useTabBarPress } from './tabBarPress';
 
-/** Air between the bubble and the bar's edges, and between it and the next tab. */
+/** Air between the pill and the bar's ends. */
 const INSET_X = 4;
-const INSET_Y = 4;
-/** How much a held bubble lifts. */
-const LIFT = 1.06;
+/** The pill: a capsule around a glyph, the size Material's indicator uses. */
+const PILL_W = 60;
+const PILL_H = 32;
+/** A held pill stretches a touch sideways — it is being carried. */
+const STRETCH = 1.12;
 
 export function TabBarBubble({ radius }: { radius: number }) {
-  const { palette } = useAppPalette();
+  const { palette, isDark } = useAppPalette();
   const reduceMotion = useReduceMotion();
   const press = useTabBarPress();
   const ref = useRef<HostInstance>(null);
@@ -39,7 +38,9 @@ export function TabBarBubble({ radius }: { radius: number }) {
 
   const x = useRef(new Animated.Value(0)).current;
   const shown = useRef(new Animated.Value(0)).current;
-  const scale = useRef(new Animated.Value(0.85)).current;
+  // Horizontal only: the pill grows out from the icon's centre, as
+  // Material's indicator does, and stretches while carried.
+  const scale = useRef(new Animated.Value(0.6)).current;
   const placed = useRef(false);
 
   const measure = useCallback(() => {
@@ -64,12 +65,16 @@ export function TabBarBubble({ radius }: { radius: number }) {
   const name = press.hovered ?? press.settled;
   const frame = name ? tabFrame(name) : undefined;
   const tabW = frame?.width ?? 0;
-  const w = Math.max(0, tabW - INSET_X * 2);
-  // The tab's own box, not the bar's: an in-flow bar also holds the
-  // gesture-nav inset under the tabs, and the bubble belongs to the tabs.
-  const tabTop = frame?.y != null ? Math.max(0, frame.y - bar.y) : 0;
-  const tabH = frame?.height ?? bar.height;
-  const h = Math.max(0, Math.min(tabH, bar.height - tabTop) - INSET_Y * 2);
+  const w = tabW > 0 ? Math.min(PILL_W, tabW - INSET_X * 2) : 0;
+  const h = PILL_H;
+  // Centred on the icons' own band (the icons report where they are);
+  // until they have, a fair guess from the tab's box.
+  const band = iconBand();
+  const centreY =
+    band != null
+      ? band.y + band.height / 2 - bar.y
+      : (frame?.y != null ? frame.y - bar.y : 0) + (frame?.height ?? bar.height) * 0.36;
+  const top = Math.max(0, Math.min(bar.height - h, centreY - h / 2));
 
   /** The bubble's left edge, in bar coordinates, centred on a window x. */
   const leftFor = useCallback(
@@ -113,7 +118,7 @@ export function TabBarBubble({ radius }: { radius: number }) {
         placed.current = true;
       }
       Animated.spring(shown, { toValue: 1, ...spatial }).start();
-      Animated.spring(scale, { toValue: press.held ? LIFT : 1, ...spatial }).start();
+      Animated.spring(scale, { toValue: press.held ? STRETCH : 1, ...spatial }).start();
       return;
     }
 
@@ -130,62 +135,28 @@ export function TabBarBubble({ radius }: { radius: number }) {
         useNativeDriver: true,
       }),
     ]).start(({ finished }) => {
-      if (finished) scale.setValue(0.85);
+      if (finished) scale.setValue(0.6);
     });
   }, [press, leftFor, reduceMotion, scale, shown, x]);
 
-  const accent = palette.accentSolid;
-  // Concentric with a rounded bar; a full capsule in a square one.
-  const r = Math.max(0, Math.min(h / 2, radius > INSET_Y ? radius - INSET_Y : h / 2));
+  const wash = withAlpha(palette.accentSolid, isDark ? 0.24 : 0.16);
   return (
     <View ref={ref} onLayout={onLayout} pointerEvents="none" style={[styles.fill, { borderRadius: radius }]}>
-      {w > 0 && h > 0 ? (
+      {w > 0 ? (
         <Animated.View
           testID="tab-bar-bubble"
           style={[
-            styles.bubble,
+            styles.pill,
             {
-              top: tabTop + INSET_Y,
+              top,
               width: w,
               height: h,
-              borderRadius: r,
+              backgroundColor: wash,
               opacity: shown,
-              transform: [{ translateX: x }, { scale }],
+              transform: [{ translateX: x }, { scaleX: scale }],
             },
-          ]}>
-          <Svg width={w} height={h}>
-            <Defs>
-              <LinearGradient id="bubbleBody" x1="0" y1="0" x2="0" y2="1">
-                <Stop offset="0" stopColor={accent} stopOpacity={0.06} />
-                <Stop offset="1" stopColor={accent} stopOpacity={0.12} />
-              </LinearGradient>
-              {/* The gloss: a faint sheen at the top, gone before the middle. */}
-              <LinearGradient id="bubbleSheen" x1="0" y1="0" x2="0" y2="1">
-                <Stop offset="0" stopColor="#ffffff" stopOpacity={0.09} />
-                <Stop offset="0.4" stopColor="#ffffff" stopOpacity={0} />
-              </LinearGradient>
-              {/* Glass edge: lit along the top, all but gone at the bottom. */}
-              <LinearGradient id="bubbleEdge" x1="0" y1="0" x2="0" y2="1">
-                <Stop offset="0" stopColor="#ffffff" stopOpacity={0.3} />
-                <Stop offset="0.5" stopColor="#ffffff" stopOpacity={0.08} />
-                <Stop offset="1" stopColor={accent} stopOpacity={0.18} />
-              </LinearGradient>
-            </Defs>
-            <Rect x={0} y={0} width={w} height={h} rx={r} ry={r} fill="url(#bubbleBody)" />
-            <Rect x={0} y={0} width={w} height={h} rx={r} ry={r} fill="url(#bubbleSheen)" />
-            <Rect
-              x={0.5}
-              y={0.5}
-              width={w - 1}
-              height={h - 1}
-              rx={Math.max(0, r - 0.5)}
-              ry={Math.max(0, r - 0.5)}
-              fill="none"
-              stroke="url(#bubbleEdge)"
-              strokeWidth={1}
-            />
-          </Svg>
-        </Animated.View>
+          ]}
+        />
       ) : null}
     </View>
   );
@@ -196,5 +167,5 @@ const styles = StyleSheet.create({
   // `left: 0` + translateX in bar coordinates. Window x does not mirror,
   // so neither does this — in an RTL layout the frames are already where
   // the tabs are drawn.
-  bubble: { position: 'absolute', left: 0, overflow: 'hidden' },
+  pill: { position: 'absolute', left: 0, borderRadius: PILL_H / 2 },
 });
