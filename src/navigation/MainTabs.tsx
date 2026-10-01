@@ -45,7 +45,6 @@ import {
 } from './tabBarInset';
 import { TabBarScrim } from './TabBarScrim';
 import { StatusBarBand } from './StatusBarBand';
-import { TabBarBubble } from './TabBarBubble';
 import { TabBarButton } from './TabBarButton';
 import { showTabBar, useTabBarHidden } from './tabBarVisibility';
 import { HomeScreen } from '../screens/HomeScreen';
@@ -164,9 +163,6 @@ export function MainTabs() {
          * that opens the tab the finger ends on (`TabBarButton`).
          */
         tabBarButton: props => <TabBarButton {...props} name={route.name} />,
-        // The press feedback, drawn in the bar's own background so the
-        // bar's silhouette clips it — see TabBarBubble.
-        tabBarBackground: () => <TabBarBubble radius={FLOATS_OVER_CONTENT ? RADIUS.xl : 0} />,
         headerShown: false,
         /**
          * Quran, Tasbih, Duas, Log and Settings centre their titles on

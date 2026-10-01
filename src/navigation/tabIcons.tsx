@@ -17,9 +17,6 @@ import {
   TasbihIcon,
 } from '../theme/icons';
 import { desktopSize } from '../responsive/desktop';
-import { useRef, type ReactNode } from 'react';
-import { View, type HostInstance } from 'react-native';
-import { registerIconBand } from './tabBarPress';
 
 type TabIconProps = { color: string; size: number };
 
@@ -31,55 +28,28 @@ type TabIconProps = { color: string; size: number };
 const iconSize = (size: number) => desktopSize(size);
 
 /**
- * Tells the tab bar's pill where the icons sit (`registerIconBand`), so it
- * centres on the glyph rather than on the tab's box, label and all.
- */
-function IconAnchor({ children }: { children: ReactNode }) {
-  const ref = useRef<HostInstance>(null);
-  return (
-    <View
-      ref={ref}
-      onLayout={() =>
-        ref.current?.measureInWindow((_x, y, _w, height) => registerIconBand(y, height))
-      }>
-      {children}
-    </View>
-  );
-}
-
-/**
  * The wordmark's own logo, not the plain arch. The header says "⌂ Mihrab"
  * with one mark and the tab said "Today" with a different one, so the two
  * places that name the same screen disagreed about what it looks like.
  */
 export const TabHomeIcon = ({ color, size }: TabIconProps) => (
-  <IconAnchor>
-    <MihrabLogoIcon color={color} size={iconSize(size)} />
-  </IconAnchor>
+  <MihrabLogoIcon color={color} size={iconSize(size)} />
 );
 
 export const TabBookIcon = ({ color, size }: TabIconProps) => (
-  <IconAnchor>
-    <QuranBookIcon color={color} size={iconSize(size)} />
-  </IconAnchor>
+  <QuranBookIcon color={color} size={iconSize(size)} />
 );
 
 export const TabTasbihIcon = ({ color, size }: TabIconProps) => (
-  <IconAnchor>
-    <TasbihIcon color={color} size={iconSize(size)} />
-  </IconAnchor>
+  <TasbihIcon color={color} size={iconSize(size)} />
 );
 
 export const TabDuasIcon = ({ color, size }: TabIconProps) => (
-  <IconAnchor>
-    <DuaHandsIcon color={color} size={iconSize(size)} />
-  </IconAnchor>
+  <DuaHandsIcon color={color} size={iconSize(size)} />
 );
 
 export const TabLogIcon = ({ color, size }: TabIconProps) => (
-  <IconAnchor>
-    <PenIcon color={color} size={iconSize(size)} />
-  </IconAnchor>
+  <PenIcon color={color} size={iconSize(size)} />
 );
 
 /**
@@ -92,7 +62,5 @@ export const TabLogIcon = ({ color, size }: TabIconProps) => (
  * than the header chip did, and a 2pt stroke fills the cog's teeth in.
  */
 export const TabSettingsIcon = ({ color, size }: TabIconProps) => (
-  <IconAnchor>
-    <SettingsGearIcon color={color} size={iconSize(size)} strokeWidth={1.8} />
-  </IconAnchor>
+  <SettingsGearIcon color={color} size={iconSize(size)} strokeWidth={1.8} />
 );

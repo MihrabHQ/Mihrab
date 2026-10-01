@@ -1,29 +1,12 @@
 /**
- * The tab bar's press, shared between its buttons and its bubble.
+ * The tab bar's press, shared between its buttons.
  *
- * ── WHY A STORE ───────────────────────────────────────────────────────
- *
- * Two things the default bar could not do. Its press feedback on Android
- * was a borderless ripple: a circle the size of the whole button, centred
- * on the button's box rather than the glyph, spilling over the top of
- * the pill. And a press was a press: hold a tab and slide to the next and
- * nothing followed the finger, because the touch belongs to the button
- * it started in.
- *
- * So the press is a fact the bar keeps here, and anyone can read it. The
- * buttons write it (`TabBarButton`): touch down names the tab, a hold
- * marks it held, a slide moves the finger and names whichever tab it is
- * over, lift says which tab the press SETTLED on and clears the rest.
- * One bubble reads it (`TabBarBubble`): it is drawn in the bar's own
- * background, so it can never leave the bar, under the tab that is
- * pressed — and while held, under the finger.
- *
- * The finger itself is NOT state. A held slide moves dozens of times a
- * second, and re-rendering on every move (and starting a spring on every
- * move) is what made the bubble trail the finger badly enough to be
- * unusable. The finger's x goes straight to whoever listens (`onFinger`)
- * — the bubble, which sets its native value — and the store only changes
- * when the finger crosses into another tab.
+ * A press was a press: hold a tab and slide to the next and nothing
+ * followed, because the touch belongs to the button it started in. So the
+ * press is a fact the bar keeps here: touch down names the tab, a hold
+ * marks it held, a slide names whichever tab the finger is over, and lift
+ * opens that one. There is no drawn feedback — the bar's own icon tint
+ * says where you are, and a haptic tick marks each tab crossed.
  *
  * The frames let a button know what is under a finger that has left it:
  * every button registers where it sits in the window, and `tabAt` says
@@ -39,7 +22,7 @@ export type TabBarPress = {
   hovered: string | null;
   /** Held long enough to slide. */
   held: boolean;
-  /** The tab a lift landed on, for the bubble to glide to as it fades. */
+  /** The tab a lift landed on. */
   settled: string | null;
 };
 
@@ -48,12 +31,6 @@ const activations = new Map<string, () => void>();
 const IDLE: TabBarPress = { hovered: null, held: false, settled: null };
 let state: TabBarPress = IDLE;
 const listeners = new Set<() => void>();
-let fingerListener: ((pageX: number) => void) | null = null;
-
-/** Hear a held finger's window x on every move, without a render. */
-export function onFinger(listener: ((pageX: number) => void) | null): void {
-  fingerListener = listener;
-}
 
 function set(next: Partial<TabBarPress>): void {
   const merged = { ...state, ...next };
@@ -72,18 +49,6 @@ function set(next: Partial<TabBarPress>): void {
 export function registerTabFrame(name: string, frame: TabFrame | null): void {
   if (frame) frames.set(name, frame);
   else frames.delete(name);
-}
-
-/**
- * Where the icons sit, vertically, in the window — every tab's icon is on
- * the same line, so one band serves all. The pill centres on it.
- */
-let band: { y: number; height: number } | null = null;
-export function registerIconBand(y: number, height: number): void {
-  band = { y, height };
-}
-export function iconBand(): { y: number; height: number } | null {
-  return band;
 }
 
 export function tabFrame(name: string): TabFrame | undefined {
@@ -125,7 +90,6 @@ export function holdTab(): void {
  */
 export function slideTo(pageX: number): boolean {
   if (!state.held) return false;
-  fingerListener?.(pageX);
   const over = tabAt(pageX) ?? state.hovered;
   if (over === state.hovered) return false;
   set({ hovered: over });
@@ -162,6 +126,4 @@ export function _resetTabBarPress(): void {
   activations.clear();
   state = IDLE;
   listeners.clear();
-  fingerListener = null;
-  band = null;
 }

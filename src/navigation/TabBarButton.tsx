@@ -1,13 +1,12 @@
 /**
  * A tab's button — see `tabBarPress` for what it is for.
  *
- * A plain Pressable with NO ripple: the feedback is the bubble drawn in
- * the bar's background (`TabBarBubble`). On top of the tap, a
- * hold-and-slide: keep a finger on a tab for a moment and the bubble
- * lifts and follows the finger along the bar; lift over a tab, and that
- * is the tab opened. The touch stays with the button it began in — that
- * is how touches work — so the button reads the finger's window x from
- * the touch events it keeps receiving and hands it to the store.
+ * A plain Pressable with NO ripple or drawn effect: the icon's own tint is
+ * the feedback. On top of the tap, a hold-and-slide: keep a finger on a
+ * tab for a moment, slide along the bar (a tick for each tab crossed), and
+ * lift over a tab to open it. The touch stays with the button it began in
+ * — that is how touches work — so the button reads the finger's window x
+ * from the touch events it keeps receiving and hands it to the store.
  */
 import { useCallback, useEffect, useRef } from 'react';
 import { Pressable, type GestureResponderEvent, type HostInstance } from 'react-native';

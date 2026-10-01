@@ -1,6 +1,6 @@
 /**
- * The tab bar's press: a glossy bubble inside the bar, and a hold-and-
- * slide along it. See `navigation/tabBarPress.ts` and `TabBarBubble`.
+ * The tab bar's press: no drawn effect, and a hold-and-slide along it.
+ * See `navigation/tabBarPress.ts`.
  */
 import { readFileSync } from 'fs';
 import { join } from 'path';
@@ -9,7 +9,6 @@ import {
   activateTab,
   holdTab,
   hoveredTab,
-  onFinger,
   pressTab,
   registerTabActivation,
   registerTabFrame,
@@ -53,11 +52,8 @@ describe('the store', () => {
   it('a slide before the hold does nothing; after it, the finger leads', () => {
     registerTabFrame('TodayTab', { x: 0, width: 60 });
     registerTabFrame('QuranTab', { x: 60, width: 60 });
-    const finger = jest.fn();
-    onFinger(finger);
     pressTab('TodayTab');
     expect(slideTo(90)).toBe(false);
-    expect(finger).not.toHaveBeenCalled();
     expect(hoveredTab()).toBe('TodayTab');
     holdTab();
     // Crossing into another tab says so (the tick)…
@@ -67,8 +63,6 @@ describe('the store', () => {
     const before = tabBarPress();
     expect(slideTo(100)).toBe(false);
     expect(tabBarPress()).toBe(before);
-    // The finger itself goes to the listener on every move.
-    expect(finger.mock.calls.map(c => c[0])).toEqual([90, 100]);
     // Off the end of the bar: the last tab it was over stays named.
     slideTo(400);
     expect(hoveredTab()).toBe('QuranTab');
@@ -76,19 +70,11 @@ describe('the store', () => {
 });
 
 describe('the wiring', () => {
-  it('draws the bubble in the bar background, so the bar clips it', () => {
+  it('draws nothing over the bar: no bubble, no halo, no ripple', () => {
     const tabs = read('src/navigation/MainTabs.tsx');
     expect(tabs).toContain('tabBarButton: props => <TabBarButton {...props} name={route.name} />');
-    expect(tabs).toContain('tabBarBackground: () => <TabBarBubble radius={FLOATS_OVER_CONTENT ? RADIUS.xl : 0} />');
-    const bubble = read('src/navigation/TabBarBubble.tsx');
-    expect(bubble).toMatch(/overflow: 'hidden'/);
-    // A slim pill around the icon, kept inside the bar.
-    expect(bubble).toContain('const w = tabW > 0 ? Math.min(PILL_W, tabW - INSET_X * 2) : 0;');
-    expect(bubble).toContain('const top = Math.max(0, Math.min(bar.height - h, centreY - h / 2));');
-    expect(bubble).toContain('band.y + band.height / 2 - bar.y');
-    expect(read('src/navigation/tabIcons.tsx').match(/<IconAnchor>/g)).toHaveLength(6);
-    // No halo left on the icons, and no ripple on the buttons.
-    expect(read('src/navigation/tabIcons.tsx')).not.toContain('Halo');
+    expect(tabs).not.toMatch(/tabBarBackground|TabBarBubble/);
+    expect(read('src/navigation/tabIcons.tsx')).not.toMatch(/Halo|IconAnchor/);
     expect(read('src/navigation/TabBarButton.tsx')).toContain('android_ripple={undefined}');
   });
 
@@ -96,8 +82,6 @@ describe('the wiring', () => {
     const button = read('src/navigation/TabBarButton.tsx');
     expect(button).toMatch(/holdTimer\.current = setTimeout\(\(\) => \{\s*holdTab\(\);/);
     expect(button).toMatch(/onTouchMove=\{e => \{\s*if \(slideTo\(e\.nativeEvent\.pageX\)\) hapticScrubTick\(false\);/);
-    // The bubble follows on the native value, not through a render.
-    expect(read('src/navigation/TabBarBubble.tsx')).toMatch(/onFinger\(pageX => \{\s*x\.stopAnimation\(\);\s*x\.setValue\(leftFor\(pageX\)\);/);
     expect(button).toMatch(/const target = held \? hoveredTab\(\) : name;\s*releaseTab\(target\);\s*if \(held && target\) activateTab\(target\);/);
     // A tap after a hold is not a second press.
     expect(button).toMatch(/onPress=\{e => \{\s*if \(tabBarPress\(\)\.held\) return;/);
