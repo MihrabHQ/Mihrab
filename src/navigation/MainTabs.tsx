@@ -46,6 +46,7 @@ import {
 import { TabBarScrim } from './TabBarScrim';
 import { StatusBarBand } from './StatusBarBand';
 import { TabBarButton } from './TabBarButton';
+import { setHoverTint } from './tabBarPress';
 import { showTabBar, useTabBarHidden } from './tabBarVisibility';
 import { HomeScreen } from '../screens/HomeScreen';
 import { QuranScreen } from '../screens/QuranScreen';
@@ -75,6 +76,10 @@ const SCREEN = { flex: 1 } as const;
 export function MainTabs() {
   const { t } = useTranslation();
   const { palette } = useAppPalette();
+  // The icon under a sliding finger brightens to the text colour.
+  useEffect(() => {
+    setHoverTint(palette.textSolid);
+  }, [palette.textSolid]);
   const isDashboardWidth = useWindowDimensions().width >= HOME_DASHBOARD_MIN_WIDTH;
   // Today's header survives only on the wide dashboard; see its options.
   const todayHeader = !isMacCatalyst && isDashboardWidth;

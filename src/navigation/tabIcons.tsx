@@ -17,8 +17,9 @@ import {
   TasbihIcon,
 } from '../theme/icons';
 import { desktopSize } from '../responsive/desktop';
+import { useTabHoverTint } from './tabBarPress';
 
-type TabIconProps = { color: string; size: number };
+type TabIconProps = { color: string; size: number; focused?: boolean };
 
 /**
  * The navigator hands down a size tuned for a touch target. On Mac
@@ -32,24 +33,24 @@ const iconSize = (size: number) => desktopSize(size);
  * with one mark and the tab said "Today" with a different one, so the two
  * places that name the same screen disagreed about what it looks like.
  */
-export const TabHomeIcon = ({ color, size }: TabIconProps) => (
-  <MihrabLogoIcon color={color} size={iconSize(size)} />
+export const TabHomeIcon = ({ color, size, focused }: TabIconProps) => (
+  <MihrabLogoIcon color={useTabHoverTint('TodayTab', color, focused ?? false)} size={iconSize(size)} />
 );
 
-export const TabBookIcon = ({ color, size }: TabIconProps) => (
-  <QuranBookIcon color={color} size={iconSize(size)} />
+export const TabBookIcon = ({ color, size, focused }: TabIconProps) => (
+  <QuranBookIcon color={useTabHoverTint('QuranTab', color, focused ?? false)} size={iconSize(size)} />
 );
 
-export const TabTasbihIcon = ({ color, size }: TabIconProps) => (
-  <TasbihIcon color={color} size={iconSize(size)} />
+export const TabTasbihIcon = ({ color, size, focused }: TabIconProps) => (
+  <TasbihIcon color={useTabHoverTint('TasbihTab', color, focused ?? false)} size={iconSize(size)} />
 );
 
-export const TabDuasIcon = ({ color, size }: TabIconProps) => (
-  <DuaHandsIcon color={color} size={iconSize(size)} />
+export const TabDuasIcon = ({ color, size, focused }: TabIconProps) => (
+  <DuaHandsIcon color={useTabHoverTint('DuasTab', color, focused ?? false)} size={iconSize(size)} />
 );
 
-export const TabLogIcon = ({ color, size }: TabIconProps) => (
-  <PenIcon color={color} size={iconSize(size)} />
+export const TabLogIcon = ({ color, size, focused }: TabIconProps) => (
+  <PenIcon color={useTabHoverTint('LogTab', color, focused ?? false)} size={iconSize(size)} />
 );
 
 /**
@@ -61,6 +62,6 @@ export const TabLogIcon = ({ color, size }: TabIconProps) => (
  * Stroke 1.8 rather than the icon's own 2: the tab bar sets these smaller
  * than the header chip did, and a 2pt stroke fills the cog's teeth in.
  */
-export const TabSettingsIcon = ({ color, size }: TabIconProps) => (
-  <SettingsGearIcon color={color} size={iconSize(size)} strokeWidth={1.8} />
+export const TabSettingsIcon = ({ color, size, focused }: TabIconProps) => (
+  <SettingsGearIcon color={useTabHoverTint('SettingsTab', color, focused ?? false)} size={iconSize(size)} strokeWidth={1.8} />
 );

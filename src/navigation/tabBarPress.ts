@@ -5,8 +5,9 @@
  * followed, because the touch belongs to the button it started in. So the
  * press is a fact the bar keeps here: touch down names the tab, a hold
  * marks it held, a slide names whichever tab the finger is over, and lift
- * opens that one. There is no drawn feedback — the bar's own icon tint
- * says where you are, and a haptic tick marks each tab crossed.
+ * opens that one. There is no drawn feedback beyond the icons' own tint:
+ * while a held finger slides, the icon under it takes the full text
+ * colour (`useTabHoverTint`), and a haptic tick marks each tab crossed.
  *
  * The frames let a button know what is under a finger that has left it:
  * every button registers where it sits in the window, and `tabAt` says
@@ -49,6 +50,12 @@ function set(next: Partial<TabBarPress>): void {
 export function registerTabFrame(name: string, frame: TabFrame | null): void {
   if (frame) frames.set(name, frame);
   else frames.delete(name);
+}
+
+/** The colour an icon takes under a sliding finger — set by the navigator. */
+let hoverTint: string | null = null;
+export function setHoverTint(color: string | null): void {
+  hoverTint = color;
 }
 
 export function tabFrame(name: string): TabFrame | undefined {
@@ -120,10 +127,22 @@ export function useTabBarPress(): TabBarPress {
   );
 }
 
+/**
+ * The colour a tab's icon should be drawn in: its own, unless a held
+ * finger is sliding over it — then the brighter hover tint. The tab in
+ * focus keeps its accent either way.
+ */
+export function useTabHoverTint(name: string, color: string, focused: boolean): string {
+  const press = useTabBarPress();
+  if (focused || !press.held || press.hovered !== name || hoverTint == null) return color;
+  return hoverTint;
+}
+
 /** Test seam. */
 export function _resetTabBarPress(): void {
   frames.clear();
   activations.clear();
   state = IDLE;
   listeners.clear();
+  hoverTint = null;
 }

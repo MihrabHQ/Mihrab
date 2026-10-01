@@ -69,6 +69,18 @@ describe('the store', () => {
   });
 });
 
+describe('the icon under a sliding finger', () => {
+  it('brightens to the hover tint only while held and over it, and never the focused tab', () => {
+    const src = read('src/navigation/tabBarPress.ts');
+    expect(src).toContain('if (focused || !press.held || press.hovered !== name || hoverTint == null) return color;');
+    const icons = read('src/navigation/tabIcons.tsx');
+    for (const name of ['TodayTab', 'QuranTab', 'TasbihTab', 'DuasTab', 'LogTab', 'SettingsTab']) {
+      expect(icons).toContain(`color={useTabHoverTint('${name}', color, focused ?? false)}`);
+    }
+    expect(read('src/navigation/MainTabs.tsx')).toContain('setHoverTint(palette.textSolid);');
+  });
+});
+
 describe('the wiring', () => {
   it('draws nothing over the bar: no bubble, no halo, no ripple', () => {
     const tabs = read('src/navigation/MainTabs.tsx');
