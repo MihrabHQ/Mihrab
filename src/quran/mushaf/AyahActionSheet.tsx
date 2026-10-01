@@ -11,7 +11,7 @@
  *     memorization, range player) — the header "Recitation" button
  *     opens this same sheet scrolled straight to this section.
  */
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Modal,
   Pressable,
@@ -40,7 +40,7 @@ import {
   KHATMAH_COLOR,
   READING_COLOR,
 } from '../quranState';
-import type { BookmarkColor } from '../quranTypes';
+import type { BookmarkColor, QuranBookmark } from '../quranTypes';
 import { activeKhatmah } from '../khatmahProgress';
 import { khatmahPageInWindow } from '../khatmahSchedule';
 import { clearKhatmahPosition, setKhatmahPosition } from '../khatmahActions';
@@ -285,6 +285,15 @@ export function AyahActionSheet({
   }, [visible, edition, surah, ayah]);
   const starred = isStarred(state, surah, ayah);
   const bookmark = findBookmark(state, surah, ayah);
+  // The colours already on OTHER ayahs — one bookmark each (`addBookmark`).
+  const coloursInUse = useMemo(() => {
+    const m = new Map<BookmarkColor, QuranBookmark>();
+    for (const b of state.bookmarks) {
+      if (b.surah === surah && b.ayah === ayah) continue;
+      m.set(b.color, b);
+    }
+    return m;
+  }, [state.bookmarks, surah, ayah]);
   const plan = activeKhatmah(state);
   const isKhatmahHere =
     plan?.position?.surah === surah && plan?.position?.ayah === ayah;
@@ -705,22 +714,36 @@ export function AyahActionSheet({
             />
           ) : null}
 
-          {/* Bookmark colors — one bookmark per ayah, tap active color to remove. */}
+          {/* Bookmark colors — one bookmark per ayah and ONE PER COLOUR:
+              tap the active colour to remove, tap a colour that is on
+              another ayah and that bookmark moves here (`addBookmark`).
+              A colour in use carries a mark, and the line under the row
+              names where each one is, so the move is never a surprise. */}
           <View style={styles.bookmarkRow}>
             <Text style={[styles.bookmarkLabel, { color: palette.muted }]}>
               {t('quran.bookmark', 'Bookmark')}
             </Text>
             {(Object.keys(BOOKMARK_COLORS) as BookmarkColor[]).map(color => {
               const selected = bookmark?.color === color;
+              const elsewhere = coloursInUse.get(color);
               return (
                 <Pressable
                   key={color}
                   accessibilityRole="button"
                   accessibilityState={{ selected }}
-                  accessibilityLabel={t('quran.bookmarkColor', {
-                    defaultValue: 'Bookmark color {{color}}',
-                    color,
-                  })}
+                  accessibilityLabel={
+                    elsewhere
+                      ? t('quran.bookmarkColorInUse', {
+                          defaultValue:
+                            'Bookmark color {{color}} — in use at {{ref}}; tapping moves that bookmark here',
+                          color,
+                          ref: `${findSurah(elsewhere.surah)?.romanized ?? ''} ${elsewhere.surah}:${elsewhere.ayah}`,
+                        })
+                      : t('quran.bookmarkColor', {
+                          defaultValue: 'Bookmark color {{color}}',
+                          color,
+                        })
+                  }
                   hitSlop={6}
                   onPress={() => {
                     if (selected && bookmark) removeBookmark(bookmark.id);
@@ -730,11 +753,31 @@ export function AyahActionSheet({
                     styles.colorDot,
                     { backgroundColor: BOOKMARK_COLORS[color] },
                     selected && styles.colorDotSelected,
-                  ]}
-                />
+                  ]}>
+                  {elsewhere && !selected ? <View style={styles.colorDotUsed} /> : null}
+                </Pressable>
               );
             })}
           </View>
+          {coloursInUse.size > 0 ? (
+            <View style={styles.inUseRow}>
+              <Text style={[styles.inUseLead, { color: palette.muted }]}>
+                {t('quran.bookmarkColoursInUse', 'In use — tapping one moves it here:')}
+              </Text>
+              {[...coloursInUse.values()].map(b => (
+                <View key={b.id} style={styles.inUseChip}>
+                  <View
+                    style={[styles.inUseDot, { backgroundColor: BOOKMARK_COLORS[b.color] }]}
+                  />
+                  <Text
+                    style={[styles.inUseText, { color: palette.muted }]}
+                    numberOfLines={1}>
+                    {`${findSurah(b.surah)?.romanized ?? ''} ${b.surah}:${b.ayah}`}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          ) : null}
 
           {/**
            * DOES THIS PLACE KEEP ITSELF?
@@ -1078,6 +1121,26 @@ const styles = StyleSheet.create({
   },
   followLineLabel: { fontSize: TYPE.footnote.fontSize, flexShrink: 1 },
   colorDot: { width: 24, height: 24, borderRadius: RADIUS.md },
+  colorDotUsed: {
+    position: 'absolute',
+    top: 8,
+    left: 8,
+    width: 8,
+    height: 8,
+    borderRadius: RADIUS.full,
+    backgroundColor: 'rgba(255,255,255,0.9)', // tokens-ok-line: a mark on the swatch's own colour
+  },
+  inUseRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    gap: SPACING.sm,
+    marginTop: -SPACING.xs,
+  },
+  inUseLead: { fontSize: TYPE.caption.fontSize },
+  inUseChip: { flexDirection: 'row', alignItems: 'center', gap: SPACING.xs },
+  inUseDot: { width: 8, height: 8, borderRadius: RADIUS.full },
+  inUseText: { fontSize: TYPE.caption.fontSize, fontWeight: '600' },
   colorDotSelected: {
     borderWidth: 3, // tokens-ok-line: the selected swatch ring, thicker than a hairline by design
     borderColor: 'rgba(255,255,255,0.9)',

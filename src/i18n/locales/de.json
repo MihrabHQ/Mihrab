@@ -1341,7 +1341,10 @@
     "homeBookmarkLabel": "Start",
     "homeBookmarkHelp": "„Koranseite“ setzt ein Lesezeichen unter „Weiterlesen“ oben auf dieser Seite. Der Stern setzt ein Lesezeichen auf den Startbildschirm, an die Stelle einer Khatmah; nur ein Lesezeichen kann ihn tragen.",
     "homeBookmarkHelpKhatmah": "„Koranseite“ setzt ein Lesezeichen unter „Weiterlesen“ oben auf dieser Seite. Der Stern setzt ein Lesezeichen auf den Startbildschirm, wo „Khatmah fortsetzen“ steht — während einer Khatmah ist er aus.",
-    "bookmarkDoor": "Lesezeichen"
+    "bookmarkDoor": "Lesezeichen",
+    "khatmahIntro": "Eine Khatmah ist eine Lesung des ganzen Mushaf, in eine Portion pro Tag geteilt. Die App merkt sich deine Stelle, zählt die Seiten und sagt jeden Tag, was noch bleibt.",
+    "bookmarkColorInUse": "Lesezeichenfarbe {{color}} — in Gebrauch bei {{ref}}; Tippen verschiebt dieses Lesezeichen hierher",
+    "bookmarkColoursInUse": "In Gebrauch — Tippen verschiebt es hierher:"
   },
   "reading": {
     "textSize": "Schriftgröße",

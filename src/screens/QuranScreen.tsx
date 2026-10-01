@@ -409,6 +409,8 @@ export function QuranScreen() {
           ]}>
           <ResumeDoors
             state={doors}
+            // One line a door: there can be three and more here.
+            dense
             // Both the page and the ayah, whichever reader recorded the
             // place: the muṣḥaf takes the page and the translation reader
             // the ayah, and a marker pinned in one reader still lands in

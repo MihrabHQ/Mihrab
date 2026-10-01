@@ -1341,7 +1341,10 @@
     "homeBookmarkLabel": "Ana ekran",
     "homeBookmarkHelp": "«Kur'an sayfası», yer imini bu sayfanın üstündeki «Okumaya devam et» altına koyar. Yıldız, bir yer imini ana ekranda hatmin alacağı yere koyar; yalnızca bir yer imi alabilir.",
     "homeBookmarkHelpKhatmah": "«Kur'an sayfası», yer imini bu sayfanın üstündeki «Okumaya devam et» altına koyar. Yıldız, bir yer imini ana ekranda «Hatme devam et»in olduğu yere koyar — hatim sürerken kapalıdır.",
-    "bookmarkDoor": "Yer imi"
+    "bookmarkDoor": "Yer imi",
+    "khatmahIntro": "Hatim, mushafın tamamını günde bir bölüm halinde okumaktır. Uygulama yerini tutar, sayfaları sayar ve her gün ne kaldığını söyler.",
+    "bookmarkColorInUse": "Yer imi rengi {{color}} — {{ref}} konumunda kullanılıyor; dokununca o yer imi buraya taşınır",
+    "bookmarkColoursInUse": "Kullanımda — birine dokununca buraya taşınır:"
   },
   "reading": {
     "textSize": "Metin boyutu",

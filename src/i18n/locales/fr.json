@@ -1341,7 +1341,10 @@
     "homeBookmarkLabel": "Accueil",
     "homeBookmarkHelp": "« Page Coran » place un signet sous « Continuer la lecture » en haut de cette page. L’étoile place un signet sur l’écran d’accueil, à la place qu’une khatmah prendrait ; un seul signet peut l’avoir.",
     "homeBookmarkHelpKhatmah": "« Page Coran » place un signet sous « Continuer la lecture » en haut de cette page. L’étoile place un signet sur l’écran d’accueil, là où se trouve « Continuer la khatmah » — elle est désactivée pendant une khatmah.",
-    "bookmarkDoor": "Signet"
+    "bookmarkDoor": "Signet",
+    "khatmahIntro": "Une khatmah est une lecture de tout le mushaf, découpée en une portion par jour. L’app garde votre place, compte les pages et dit chaque jour ce qu’il reste.",
+    "bookmarkColorInUse": "Couleur de signet {{color}} — utilisée en {{ref}} ; toucher déplace ce signet ici",
+    "bookmarkColoursInUse": "Utilisées — toucher en déplace un ici :"
   },
   "reading": {
     "textSize": "Taille du texte",

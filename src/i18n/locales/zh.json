@@ -1341,7 +1341,10 @@
     "homeBookmarkLabel": "主屏幕",
     "homeBookmarkHelp": "“古兰经页面”会把书签放在本页顶部“继续阅读”下方。星标会把一个书签放到主屏幕上原本属于诵读计划的位置；只能有一个书签带星标。",
     "homeBookmarkHelpKhatmah": "“古兰经页面”会把书签放在本页顶部“继续阅读”下方。星标会把一个书签放到主屏幕上“继续诵读计划”所在的位置——诵读计划进行中时星标不可用。",
-    "bookmarkDoor": "书签"
+    "bookmarkDoor": "书签",
+    "khatmahIntro": "诵读计划是通读整部古兰经，按每天一份划分。应用会记住你的位置、计算页数，并每天告诉你还剩多少。",
+    "bookmarkColorInUse": "书签颜色 {{color}} — 已用于 {{ref}}；点按会把该书签移到这里",
+    "bookmarkColoursInUse": "已使用 — 点按即移到这里："
   },
   "reading": {
     "textSize": "文字大小",

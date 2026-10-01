@@ -123,13 +123,16 @@ describe('the Tilawah mark', () => {
   const icons = read('src/quran/audio/PlaybackIcons.tsx');
 
   /**
-   * Stroked circles at 16 points are rings with a hole in them, which is
-   * what the first pass drew — two of them, beside a solid play triangle
-   * and a solid pause bar. A notehead is filled.
+   * Headphones, not a note: the Qur'an is recited, not sung. The cups
+   * are FILLED — stroked ones at 16 points are rings with a hole in them,
+   * beside a solid play triangle and a solid pause bar — and the band is
+   * one stroked arc over them.
    */
-  it('has filled noteheads', () => {
-    expect(icons).toMatch(/<Ellipse[\s\S]{0,200}fill=\{color\}/);
-    expect(icons).toMatch(/rotate\(-18/);
+  it('is a pair of headphones with filled cups, and no note anywhere in it', () => {
+    const mark = icons.slice(icons.indexOf('export function TilawahIcon'), icons.indexOf('export function ReaderIcon'));
+    expect(mark.match(/<Rect[\s\S]{0,120}fill=\{color\}/g)).toHaveLength(2);
+    expect(mark).toMatch(/a7\.5 7\.5 0 0 1 15 0/);
+    expect(mark).not.toMatch(/Ellipse|quaver|notehead/i);
   });
 
   it('still takes a resolved colour', () => {

@@ -1341,7 +1341,10 @@
     "homeBookmarkLabel": "Home",
     "homeBookmarkHelp": "Quran page puts a bookmark under Continue reading at the top of this page. The star puts one bookmark on the Home screen, in the place a khatmah would take; only one bookmark can have it.",
     "homeBookmarkHelpKhatmah": "Quran page puts a bookmark under Continue reading at the top of this page. The star puts one bookmark on the Home screen where Continue khatmah is — it is off while a khatmah is running.",
-    "bookmarkDoor": "Bookmark"
+    "bookmarkDoor": "Bookmark",
+    "khatmahIntro": "A khatmah is a reading of the whole muṣḥaf, cut into a portion a day. The app keeps your place, counts the pages, and says each day what is left.",
+    "bookmarkColorInUse": "Bookmark color {{color}} — in use at {{ref}}; tapping moves that bookmark here",
+    "bookmarkColoursInUse": "In use — tapping one moves it here:"
   },
   "reading": {
     "textSize": "Text size",

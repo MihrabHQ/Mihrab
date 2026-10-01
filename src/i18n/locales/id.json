@@ -1341,7 +1341,10 @@
     "homeBookmarkLabel": "Utama",
     "homeBookmarkHelp": "«Halaman Al-Qur'an» meletakkan penanda di bawah «Lanjutkan membaca» di bagian atas halaman ini. Bintang meletakkan satu penanda di layar utama, di tempat yang akan diisi khatmah; hanya satu penanda yang bisa memilikinya.",
     "homeBookmarkHelpKhatmah": "«Halaman Al-Qur'an» meletakkan penanda di bawah «Lanjutkan membaca» di bagian atas halaman ini. Bintang meletakkan satu penanda di layar utama, di tempat «Lanjutkan khatmah» — nonaktif selama khatmah berjalan.",
-    "bookmarkDoor": "Penanda"
+    "bookmarkDoor": "Penanda",
+    "khatmahIntro": "Khatmah adalah bacaan seluruh mushaf, dibagi menjadi satu bagian per hari. Aplikasi menyimpan posisimu, menghitung halaman, dan mengatakan setiap hari apa yang tersisa.",
+    "bookmarkColorInUse": "Warna penanda {{color}} — dipakai di {{ref}}; mengetuk memindahkan penanda itu ke sini",
+    "bookmarkColoursInUse": "Dipakai — ketuk satu untuk memindahkannya ke sini:"
   },
   "reading": {
     "textSize": "Ukuran teks",

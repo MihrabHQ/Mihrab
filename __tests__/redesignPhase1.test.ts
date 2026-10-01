@@ -37,8 +37,10 @@ describe('Today', () => {
 
 describe('the Quran tab', () => {
   const src = read('src/screens/QuranScreen.tsx');
-  // The khatmah card moved to its own page; the tab keeps one row to it.
-  const khatmah = read('src/screens/quran/KhatmahScreen.tsx');
+  // The live plan's card is its own component on the tab; starting one
+  // is its own page.
+  const khatmah = read('src/screens/quran/KhatmahCard.tsx');
+  const start = read('src/screens/quran/KhatmahScreen.tsx');
 
   it('shows the doors once, at the top — and nowhere else (#41)', () => {
     // The khatmah's next page and the reading marker are one card of rows
@@ -58,6 +60,11 @@ describe('the Quran tab', () => {
     // companion-text card were a wall above the surah list.
     expect(src).toContain('<KhatmahEntry />');
     expect(src).not.toContain("t('quran.khatmahMore'");
+    // Starting a plan is a page, not chips on the tab; the live card is
+    // drawn on the tab by the entry.
+    expect(src).not.toContain("t('quran.khatmahCustom'");
+    expect(start).toContain("t('quran.khatmahCustom'");
+    expect(read('src/screens/quran/KhatmahEntry.tsx')).toContain('return <KhatmahCard />;');
     expect(src).not.toContain("t('quran.companionTitle'");
     expect(src).toContain('{votdOn && votdArabic ? (');
     expect(src).toContain('{plan ? <TilawahRow /> : null}');
@@ -67,7 +74,7 @@ describe('the Quran tab', () => {
     const src = khatmah;
     const start = src.indexOf('{/* One primary — the day');
     expect(start).toBeGreaterThan(0);
-    const end = src.indexOf("t('quran.startKhatmah', 'Start a khatmah')", start);
+    const end = src.indexOf('{/* Khatmah reset menu', start);
     const actions = src.slice(start, end);
     expect(actions.match(/backgroundColor: palette\.accentSolid/g)).toHaveLength(1);
     expect(actions).not.toMatch(/backgroundColor: palette\.accentBg/);

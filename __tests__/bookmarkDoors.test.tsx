@@ -206,6 +206,45 @@ describe('the starred bookmark', () => {
   });
 });
 
+describe('one bookmark per colour', () => {
+  it('tapping a colour that is on another ayah moves that bookmark here, identity and all', () => {
+    addBookmark(18, 1, 293, 'emerald');
+    const id = marks()[0].id;
+    setBookmarkShortcut(id, true);
+    setHomeBookmark(id);
+    addBookmark(67, 1, 562, 'emerald');
+    expect(marks()).toHaveLength(1);
+    expect(marks()[0]).toMatchObject({ id, surah: 67, ayah: 1, page: 562, color: 'emerald', shortcut: true });
+    expect(getQuranState().prefs.homeBookmarkId).toBe(id);
+  });
+
+  it('a bookmark already on the ayah gives way to the colour\'s, and is buried for the other device', () => {
+    addBookmark(18, 1, 293, 'emerald');
+    addBookmark(67, 1, 562, 'rose');
+    const rose = marks().find(b => b.color === 'rose')!;
+    // Tap emerald on Al-Mulk: the emerald bookmark comes here; rose goes.
+    addBookmark(67, 1, 562, 'emerald');
+    expect(marks()).toHaveLength(1);
+    expect(marks()[0]).toMatchObject({ surah: 67, color: 'emerald' });
+    expect(getQuranState().bookmarksRemoved?.some(r => r.id === rose.id)).toBe(true);
+  });
+
+  it('recolouring the ayah\'s own bookmark to a free colour keeps it where it is', () => {
+    addBookmark(18, 1, 293, 'emerald');
+    const id = marks()[0].id;
+    addBookmark(18, 1, 293, 'rose');
+    expect(marks()).toHaveLength(1);
+    expect(marks()[0]).toMatchObject({ id, surah: 18, color: 'rose' });
+  });
+
+  it('the sheet marks the colours in use and names them', () => {
+    const sheet = src('src/quran/mushaf/AyahActionSheet.tsx');
+    expect(sheet).toContain('coloursInUse.get(color)');
+    expect(sheet).toContain("t('quran.bookmarkColoursInUse'");
+    expect(sheet).toMatch(/elsewhere && !selected \? <View style=\{styles\.colorDotUsed\} \/> : null/);
+  });
+});
+
 describe('the verse of the day', () => {
   it('is off by default and a setting, and the tab fetches nothing while it is off', () => {
     expect(getQuranState().prefs.verseOfDay).toBe(false);

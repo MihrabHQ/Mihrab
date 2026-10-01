@@ -1341,7 +1341,10 @@
     "homeBookmarkLabel": "Inicio",
     "homeBookmarkHelp": "«Página del Corán» pone un marcador bajo «Continuar leyendo» al principio de esta página. La estrella pone un marcador en la pantalla de inicio, en el lugar que ocuparía una jatma; solo un marcador puede tenerla.",
     "homeBookmarkHelpKhatmah": "«Página del Corán» pone un marcador bajo «Continuar leyendo» al principio de esta página. La estrella pone un marcador en la pantalla de inicio, donde está «Continuar la jatma» — está desactivada mientras hay una jatma en curso.",
-    "bookmarkDoor": "Marcador"
+    "bookmarkDoor": "Marcador",
+    "khatmahIntro": "Una jatma es una lectura de todo el mushaf, dividida en una porción al día. La app guarda tu lugar, cuenta las páginas y dice cada día lo que queda.",
+    "bookmarkColorInUse": "Color de marcador {{color}} — en uso en {{ref}}; al tocar, ese marcador se mueve aquí",
+    "bookmarkColoursInUse": "En uso — tocar uno lo mueve aquí:"
   },
   "reading": {
     "textSize": "Tamaño del texto",

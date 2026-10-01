@@ -12,7 +12,7 @@
  * Shared by the bar under the title bar and by the now-playing row on the
  * Qur'an page, so the same action is the same shape wherever it appears.
  */
-import Svg, { Ellipse, Path, Rect } from 'react-native-svg';
+import Svg, { Path, Rect } from 'react-native-svg';
 
 export function PlayIcon({ color, size = 18 }: { color: string; size?: number }) {
   return (
@@ -58,15 +58,13 @@ export function CloseIcon({
 }
 
 /**
- * A beamed pair of quavers — "the player", as opposed to the muṣḥaf.
+ * Headphones — "the player", as opposed to the muṣḥaf.
  *
- * The noteheads are FILLED and the stems are stroked, which is how a note
- * is actually drawn and the only version of this that survives 16 points.
- * The first attempt stroked everything, so at that size the two heads
- * came out as rings with a hole in the middle — two small circles that
- * read as anything but a note, sitting next to a solid play triangle and
- * a solid pause bar. The heads are also tilted, because a horizontal
- * ellipse under a vertical stem is a lollipop.
+ * It was a pair of quavers. The Qur'an is recited, not sung, and a note
+ * says music; a reader who objected to the one was right. Headphones say
+ * LISTENING and nothing about what is heard. Drawn as one stroked band
+ * and two filled cups, so it survives 16 points — a stroked cup at that
+ * size is a ring with a hole in it, which reads as anything but an ear.
  */
 export function TilawahIcon({
   color,
@@ -77,37 +75,16 @@ export function TilawahIcon({
 }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      {/* Stems, and the beam that joins them. */}
+      {/* The band, over the head. */}
       <Path
-        d="M9.4 17.2V6.1l9.2-2v11.1"
-        stroke={color}
-        strokeWidth={1.9}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <Path
-        d="M9.4 8.6l9.2-2"
+        d="M4.5 14.5V12a7.5 7.5 0 0 1 15 0v2.5"
         stroke={color}
         strokeWidth={1.9}
         strokeLinecap="round"
       />
-      {/* Noteheads, tilted the way a print one is. */}
-      <Ellipse
-        cx={7}
-        cy={17.4}
-        rx={2.9}
-        ry={2.2}
-        transform="rotate(-18 7 17.4)"
-        fill={color}
-      />
-      <Ellipse
-        cx={16.2}
-        cy={15.4}
-        rx={2.9}
-        ry={2.2}
-        transform="rotate(-18 16.2 15.4)"
-        fill={color}
-      />
+      {/* The cups. */}
+      <Rect x={3} y={13.5} width={4.6} height={7} rx={1.8} fill={color} />
+      <Rect x={16.4} y={13.5} width={4.6} height={7} rx={1.8} fill={color} />
     </Svg>
   );
 }

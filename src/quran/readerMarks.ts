@@ -342,14 +342,19 @@ export function addBookmark(
         // the other device it is still there — one bookmark per ayah has
         // to be true after the sync too, not just here. See
         // `bookmarksRemoved`.
+        // …and so has any other bookmark in the colour that was tapped:
+        // ONE BOOKMARK PER COLOUR (see the note on `addBookmark`), and
+        // this is the one keeping the place.
         const gaveWay = prev.bookmarks.filter(
-          b => b.id !== session.id && b.surah === surah && b.ayah === ayah,
+          b =>
+            b.id !== session.id &&
+            ((b.surah === surah && b.ayah === ayah) || b.color === color),
         );
         return {
           ...prev,
           bookmarks: [
             ...prev.bookmarks.filter(
-              b => b.id !== session.id && !(b.surah === surah && b.ayah === ayah),
+              b => b.id !== session.id && !gaveWay.some(g => g.id === b.id),
             ),
             { ...session, surah, ayah, page, color, updatedAt: at },
           ],
@@ -371,19 +376,38 @@ export function addBookmark(
   const now = Date.now();
   updateQuranState(prev => {
     /**
-     * One bookmark per ayah: re-bookmarking is a RECOLOUR, and a recolour
+     * ONE BOOKMARK PER COLOUR, AND ONE PER AYAH.
+     *
+     * A colour is how a bookmark is known — "the green one is my Friday
+     * place" — so tapping a colour that is already on another ayah MOVES
+     * that bookmark here, identity and all: it keeps following if it
+     * followed, it keeps its place on the tab and on Home, it keeps its
+     * spot in the list. It used to make a second bookmark in the same
+     * colour, two marks nobody could tell apart; the sheet now marks the
+     * colours in use and names what each would move.
+     *
+     * Likewise one per ayah: re-bookmarking is a RECOLOUR, and a recolour
      * keeps the bookmark's identity. It used to make a new one and drop
      * the old, which was two bugs: the visit it owned now named a dead
      * id, so the marker quietly took over — and on the other device the
      * old id was still there, so the sync produced two bookmarks on one
      * ayah. A following bookmark recoloured is still following; a new
      * colour is not a reason to lose a place that keeps itself.
+     *
+     * When both apply — this ayah has a bookmark AND the colour is on
+     * another — the colour's bookmark is the one that comes here, and
+     * the one that was on this ayah gives way: the colour is the thing
+     * the reader chose.
      */
-    const replaced = prev.bookmarks.find(b => b.surah === surah && b.ayah === ayah);
+    const onAyah = prev.bookmarks.find(b => b.surah === surah && b.ayah === ayah);
+    const inColour = prev.bookmarks.find(
+      b => b.color === color && !(b.surah === surah && b.ayah === ayah),
+    );
+    const replaced = inColour ?? onAyah;
     const wants =
       follows ?? prev.prefs.bookmarkFollowDefault === 'follow';
     const base: QuranBookmark = replaced
-      ? { ...replaced, page, color, updatedAt: stampAfter(replaced) }
+      ? { ...replaced, surah, ayah, page, color, updatedAt: stampAfter(replaced) }
       : {
           id: `${now}-${Math.floor(Math.random() * 1e6)}`,
           surah,
@@ -405,7 +429,9 @@ export function addBookmark(
     return {
       ...prev,
       bookmarks: [
-        ...prev.bookmarks.filter(b => !(b.surah === surah && b.ayah === ayah)),
+        ...prev.bookmarks.filter(
+          b => b.id !== next.id && !(b.surah === surah && b.ayah === ayah),
+        ),
         next,
       ],
       ...(gaveWay.length > 0

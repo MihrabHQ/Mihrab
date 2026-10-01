@@ -10,8 +10,11 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 
 const read = (...p: string[]) => readFileSync(join(__dirname, '..', ...p), 'utf8');
-// The khatmah card is its own page now; its tab row is `KhatmahEntry`.
-const screen = read('src', 'screens', 'quran', 'KhatmahScreen.tsx');
+// The live plan's card is `KhatmahCard` (on the tab); starting one is
+// `KhatmahScreen`, its own page. The sheet is reachable from both.
+const card = read('src', 'screens', 'quran', 'KhatmahCard.tsx');
+const start = read('src', 'screens', 'quran', 'KhatmahScreen.tsx');
+const screen = card + start;
 const sheet = read('src', 'quran', 'KhatmahPacingSheet.tsx');
 const settings = read('src', 'screens', 'settings', 'QuranCard.tsx');
 const en = JSON.parse(read('src', 'i18n', 'locales', 'en.json'));
@@ -200,10 +203,12 @@ describe('the wiring, where a sheet that remembers is a bug', () => {
   it('is reachable from the plan, and from Settings', () => {
     // Two entry points, one sheet and one store call each way — the pair
     // cannot drift into two different ideas of what a switch means.
-    expect(screen).toMatch(/khatmahPacingTitle[\s\S]{0,900}setPacingSheet\(\{ mode: 'change'/);
+    expect(card).toMatch(/khatmahPacingTitle[\s\S]{0,900}setPacingSheet\(\{ kind: deadline/);
+    expect(card).toContain('mode="change"');
+    expect(start).toContain('mode="start"');
     expect(settings).toContain('settings-khatmah-pacing');
     expect(settings).toContain('quran.khatmahPacingTitle');
-    for (const src of [screen, settings]) {
+    for (const src of [card, settings]) {
       expect(src).toMatch(/choice\.kind === 'days'/);
       expect(src).toContain('setKhatmahDuration');
       expect(src).toContain('setKhatmahDeadline');

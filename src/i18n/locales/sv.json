@@ -1341,7 +1341,10 @@
     "homeBookmarkLabel": "Start",
     "homeBookmarkHelp": "Koransidan lägger ett bokmärke under Fortsätt läsa överst på den här sidan. Stjärnan lägger ett bokmärke på startskärmen, på platsen en khatmah annars tar; bara ett bokmärke kan ha den.",
     "homeBookmarkHelpKhatmah": "Koransidan lägger ett bokmärke under Fortsätt läsa överst på den här sidan. Stjärnan lägger ett bokmärke på startskärmen där Fortsätt khatmah står — den är avstängd medan en khatmah pågår.",
-    "bookmarkDoor": "Bokmärke"
+    "bookmarkDoor": "Bokmärke",
+    "khatmahIntro": "En khatmah är en läsning av hela mushafen, delad i en portion om dagen. Appen håller din plats, räknar sidorna och säger varje dag vad som återstår.",
+    "bookmarkColorInUse": "Bokmärkesfärg {{color}} — används vid {{ref}}; ett tryck flyttar det bokmärket hit",
+    "bookmarkColoursInUse": "Används — tryck på en för att flytta den hit:"
   },
   "reading": {
     "textSize": "Textstorlek",

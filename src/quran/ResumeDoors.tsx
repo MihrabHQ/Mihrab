@@ -64,6 +64,15 @@ type Props = {
   showStart?: boolean;
   /** Two doors side by side (Today) or one under the other (the tab). */
   layout?: 'stack' | 'columns';
+  /**
+   * One line per door. The tab stacks up to three rows and then some —
+   * the khatmah, the marker, the bookmarks the reader put there — and
+   * three two-line rows with a bar under one of them was a card as tall
+   * as the list it sat on. Dense, a row is its icon, its title, what it
+   * is about, and its page, on one line; the khatmah's bar goes, since
+   * the line already says the day and what is left of it.
+   */
+  dense?: boolean;
 };
 
 function ProgressBar({ value, color }: { value: number; color: string }) {
@@ -89,6 +98,7 @@ function Door({
   children,
   divided,
   column,
+  dense,
 }: {
   label: string;
   onPress: () => void;
@@ -96,6 +106,7 @@ function Door({
   divided?: boolean;
   /** Half the width, beside another door; the divider is then a vertical rule. */
   column?: boolean;
+  dense?: boolean;
 }) {
   const { palette } = useAppPalette();
   const rule = palette.border ?? palette.muted;
@@ -106,6 +117,7 @@ function Door({
       onPress={onPress}
       style={({ pressed }: { pressed: boolean }) => [
         styles.door,
+        dense && styles.doorDense,
         column && styles.column,
         divided && !column && [styles.divided, { borderTopColor: rule }],
         divided && column && [styles.dividedColumn, { borderStartColor: rule }],
@@ -173,16 +185,74 @@ function GapRow({
   );
 }
 
+/**
+ * A door's one dense line: title, then what it is about, then the page —
+ * the title and the page keep their width, the middle shrinks. The
+ * reference is never cut: `name` is the part that may shrink, `ref` is
+ * set after it in its own text.
+ */
+function DenseLine({
+  icon,
+  title,
+  name,
+  reference,
+  page,
+  pageColor,
+  titleColor,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  name: string;
+  reference?: string;
+  page: number;
+  pageColor: string;
+  titleColor?: string;
+}) {
+  const { t } = useTranslation();
+  const { palette } = useAppPalette();
+  return (
+    <>
+      {icon}
+      <View style={styles.denseBody}>
+        <Text
+          style={[styles.denseTitle, { color: titleColor ?? palette.text }]}
+          numberOfLines={1}>
+          {title}
+        </Text>
+        <Text
+          style={[styles.denseName, { color: palette.muted }]}
+          numberOfLines={1}>
+          {name}
+        </Text>
+        {reference ? (
+          <Text
+            style={[styles.denseRef, { color: palette.muted }]}
+            maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}>
+            {reference}
+          </Text>
+        ) : null}
+      </View>
+      <Text
+        style={[styles.trailing, { color: pageColor }]}
+        maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}>
+        {t('home.pageNumber', { defaultValue: 'page {{page}}', page })}
+      </Text>
+    </>
+  );
+}
+
 function KhatmahDoor({
   khatmah,
   divided,
   column,
+  dense,
   onPress,
   onOpenGap,
 }: {
   khatmah: QuranCardKhatmah;
   divided?: boolean;
   column?: boolean;
+  dense?: boolean;
   onPress: () => void;
   onOpenGap: () => void;
 }) {
@@ -226,6 +296,28 @@ function KhatmahDoor({
           defaultValue: '{{count}} pages left today',
           count: khatmah.pagesLeftToday,
         });
+  if (dense) {
+    return (
+      <View>
+        <Door label={title} onPress={onPress} divided={divided} dense>
+          <DenseLine
+            icon={<QuranBookIcon color={palette.accentSolid} size={16} />}
+            title={title}
+            // What is left today, and no day count: the plan's own card
+            // sits right under this line on the tab and says the day.
+            name={left}
+            page={khatmah.target.page}
+            pageColor={String(palette.accent)}
+          />
+        </Door>
+        {khatmah.gap && !onlyGaps ? (
+          <View style={styles.denseGap}>
+            <GapRow gap={khatmah.gap} label={gapText} onPress={onOpenGap} />
+          </View>
+        ) : null}
+      </View>
+    );
+  }
   return (
     <Door label={title} onPress={onPress} divided={divided} column={column}>
       {column ? null : <QuranBookIcon color={palette.accentSolid} size={20} />}
@@ -271,11 +363,13 @@ function ReadingDoor({
   marker,
   divided,
   column,
+  dense,
   onPress,
 }: {
   marker: LastRead;
   divided?: boolean;
   column?: boolean;
+  dense?: boolean;
   onPress: () => void;
 }) {
   const { t, i18n } = useTranslation();
@@ -283,6 +377,24 @@ function ReadingDoor({
   const meta = findSurah(marker.surah);
   const name = meta ? surahName(meta, i18n.language) : '';
   const title = t('quran.continueReading', 'Continue reading');
+  if (dense) {
+    return (
+      <Door
+        label={`${title} · ${name} ${marker.surah}:${marker.ayah}`}
+        onPress={onPress}
+        divided={divided}
+        dense>
+        <DenseLine
+          icon={<QuranBookIcon color={READING_COLOR} size={16} />}
+          title={title}
+          name={name}
+          reference={` · ${marker.surah}:${marker.ayah}`}
+          page={marker.page}
+          pageColor={READING_COLOR}
+        />
+      </Door>
+    );
+  }
   return (
     <Door
       label={`${title} · ${name} ${marker.surah}:${marker.ayah}`}
@@ -334,11 +446,13 @@ function BookmarkDoor({
   bookmark,
   divided,
   column,
+  dense,
   onPress,
 }: {
   bookmark: QuranBookmark;
   divided?: boolean;
   column?: boolean;
+  dense?: boolean;
   onPress: () => void;
 }) {
   const { t, i18n } = useTranslation();
@@ -347,6 +461,24 @@ function BookmarkDoor({
   const name = meta ? surahName(meta, i18n.language) : '';
   const color = BOOKMARK_COLORS[bookmark.color];
   const title = t('quran.bookmarkDoor', 'Bookmark');
+  if (dense) {
+    return (
+      <Door
+        label={`${title} · ${name} ${bookmark.surah}:${bookmark.ayah}`}
+        onPress={onPress}
+        divided={divided}
+        dense>
+        <DenseLine
+          icon={<QuranBookIcon color={color} size={16} />}
+          title={title}
+          name={name}
+          reference={` · ${bookmark.surah}:${bookmark.ayah}`}
+          page={bookmark.page}
+          pageColor={color}
+        />
+      </Door>
+    );
+  }
   return (
     <Door
       label={`${title} · ${name} ${bookmark.surah}:${bookmark.ayah}`}
@@ -424,6 +556,7 @@ function ResumeDoorsImpl({
   onOpenQuran,
   showStart = false,
   layout = 'stack',
+  dense = false,
 }: Props) {
   const { khatmah, reading } = state;
   // The khatmah's slot: the plan while there is one, else the starred
@@ -452,6 +585,7 @@ function ResumeDoorsImpl({
         <KhatmahDoor
           khatmah={khatmah}
           column={column}
+          dense={dense}
           divided={divide()}
           onPress={() => onOpenKhatmah(khatmah.target)}
           // The same door, a different page: it is the plan's reading, so
@@ -464,6 +598,7 @@ function ResumeDoorsImpl({
         <BookmarkDoor
           bookmark={starred}
           column={column}
+          dense={dense}
           divided={divide()}
           onPress={() => onOpenBookmark(starred)}
         />
@@ -473,6 +608,7 @@ function ResumeDoorsImpl({
           marker={reading}
           divided={divide()}
           column={column}
+          dense={dense}
           onPress={() => onOpenReading(reading)}
         />
       ) : null}
@@ -480,6 +616,7 @@ function ResumeDoorsImpl({
         <BookmarkDoor
           key={b.id}
           bookmark={b}
+          dense={dense}
           divided={divide()}
           onPress={() => onOpenBookmark(b)}
         />
@@ -499,6 +636,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.lg,
     paddingVertical: SPACING.md,
   },
+  doorDense: { paddingVertical: SPACING.sm + 2, gap: SPACING.sm },
+  denseBody: { flex: 1, minWidth: 0, flexDirection: 'row', alignItems: 'baseline' },
+  denseTitle: { fontSize: TYPE.footnote.fontSize, fontWeight: '600' },
+  denseName: { fontSize: TYPE.caption.fontSize, flexShrink: 1, marginStart: SPACING.sm },
+  denseRef: { fontSize: TYPE.caption.fontSize },
+  denseGap: { paddingHorizontal: SPACING.lg, paddingBottom: SPACING.sm, marginTop: -SPACING.xs },
   divided: { borderTopWidth: StyleSheet.hairlineWidth },
   columns: { flexDirection: 'row', alignItems: 'stretch' },
   column: { flex: 1, minWidth: 0, gap: 0, paddingHorizontal: SPACING.md },
