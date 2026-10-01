@@ -113,6 +113,14 @@ describe('the page', () => {
     expect(read('src/screens/HomeScreen.tsx')).toMatch(/navigate\('SettingsHelpMihrab'\)/);
   });
 
+  it('opens after a moment, then folds back into the circle after 15 seconds', () => {
+    const chip = read('src/screens/home/HelpMihrabChip.tsx');
+    expect(chip).toMatch(/export const SHOWN_FOR_MS = 15000;/);
+    expect(chip).toMatch(/timing\(1, EXPAND_AFTER_MS\),\s*timing\(0, SHOWN_FOR_MS\)/);
+    // Reduce Motion closes it too, just without the slide.
+    expect(chip).toMatch(/setTimeout\(\(\) => open\.setValue\(0\), SHOWN_FOR_MS\)/);
+  });
+
   it('can be taken off Today from the page it opens', () => {
     expect(read('src/screens/HomeScreen.tsx')).toMatch(
       /onHelpMihrab=\{settings\.showHelpMihrabOnHome \? handleOpenHelpMihrab : undefined\}/,

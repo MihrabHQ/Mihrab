@@ -9,13 +9,14 @@
  * unrolling back toward the eyebrow while the heart stays where it was,
  * so it is noticed without being the first thing on the screen: the
  * prayer time is what the page opens for, and it gets the first look.
+ * Fifteen seconds later it folds back into the circle (`SHOWN_FOR_MS`).
  *
  * Drawn in the sky's own ink (`skyModel`), like the location and Qibla
  * chips in the row above it, with no card of its own: a hairline ring
  * and a faint wash of the same ink, so it reads as part of the sky at
  * dawn and at midnight alike.
  *
- * Reduce Motion: it is simply open, no growing.
+ * Reduce Motion: it is simply open, no growing, and simply closes.
  */
 import { memo, useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Pressable, StyleSheet, Text, View } from 'react-native';
@@ -32,6 +33,12 @@ const LINE_PAD = 2;
 /** How long the circle stays a circle before it opens. */
 export const EXPAND_AFTER_MS = 2500;
 const EXPAND_MS = 450;
+/**
+ * How long the line stays open before folding back into the circle. It
+ * is an invitation, not a fixture: after this the heart is enough to
+ * find it again, and the hero is the countdown's.
+ */
+export const SHOWN_FOR_MS = 15000;
 
 /** `#RRGGBB` at an opacity; anything else is passed back as it is. */
 function withAlpha(color: string, alpha: number): string {
@@ -78,17 +85,25 @@ function HelpMihrabChipImpl({
   useEffect(() => {
     if (lineW === 0) return undefined;
     if (reduceMotion) {
+      // No growing: open at once, and back to the circle when the time
+      // is up, without the slide either way.
       open.setValue(1);
-      return undefined;
+      const id = setTimeout(() => open.setValue(0), SHOWN_FOR_MS);
+      return () => clearTimeout(id);
     }
-    const anim = Animated.timing(open, {
-      toValue: 1,
-      delay: EXPAND_AFTER_MS,
-      duration: EXPAND_MS,
-      easing: Easing.out(Easing.cubic),
-      // Width is a layout property: the JS driver, for one short run.
-      useNativeDriver: false,
-    });
+    const timing = (toValue: number, delay: number) =>
+      Animated.timing(open, {
+        toValue,
+        delay,
+        duration: EXPAND_MS,
+        easing: Easing.out(Easing.cubic),
+        // Width is a layout property: the JS driver, for two short runs.
+        useNativeDriver: false,
+      });
+    const anim = Animated.sequence([
+      timing(1, EXPAND_AFTER_MS),
+      timing(0, SHOWN_FOR_MS),
+    ]);
     anim.start();
     return () => anim.stop();
   }, [lineW, reduceMotion, open]);
