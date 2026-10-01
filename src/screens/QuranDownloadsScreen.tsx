@@ -25,7 +25,6 @@
  */
 import { useCallback, useEffect, useState } from 'react';
 import {
-  Alert,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -34,6 +33,7 @@ import {
   type ScrollViewInstance,
 } from 'react-native';
 import { CenteredColumn } from '../responsive/CenteredColumn';
+import { ConfirmModal } from '../components/ConfirmModal';
 import ReactNativeBlobUtil from 'react-native-blob-util';
 import { useTranslation } from 'react-i18next';
 import { useAppPalette } from '../hooks/useAppPalette';
@@ -188,26 +188,16 @@ export function QuranDownloadsScreen() {
     if (!running) void refresh();
   }, [running, refresh]);
 
-  const confirmDelete = (label: string, action: () => Promise<void>) => {
-    Alert.alert(
-      t('downloads.deleteTitle', 'Delete download?'),
-      t('downloads.deleteBody', {
-        defaultValue:
-          '{{what}} will be removed from this device. You can download it again at any time.',
-        what: label,
-      }),
-      [
-        { text: t('common.cancel', 'Cancel'), style: 'cancel' },
-        {
-          text: t('common.delete', 'Delete'),
-          style: 'destructive',
-          onPress: () => {
-            void action().then(refresh);
-          },
-        },
-      ],
-    );
-  };
+  /**
+   * The delete being asked about, if one is. The app's own themed dialog,
+   * not the platform alert, which drew a stock grey box over this screen.
+   */
+  const [pendingDelete, setPendingDelete] = useState<{
+    label: string;
+    action: () => Promise<void>;
+  } | null>(null);
+  const confirmDelete = (label: string, action: () => Promise<void>) =>
+    setPendingDelete({ label, action });
 
   const row = (
     key: string,
@@ -222,57 +212,79 @@ export function QuranDownloadsScreen() {
      * six thousand files to do nothing.
      */
     onResume?: () => void,
+    /** How far along a part-way download is, 0–1, drawn as a bar. */
+    progress?: number,
   ) => (
     <View
       key={key}
       style={[
-        styles.row,
+        styles.card,
         { backgroundColor: palette.card, ...cardEdgeStyle(palette) },
       ]}>
-      <View style={{ flex: 1 }}>
+      {/* The name has the full width of the card: the size sits beside it,
+          and the buttons go on a line of their own under it. In one row
+          with Continue downloading and Delete, a reciter's name was
+          squeezed into a column a word wide. */}
+      <View style={styles.cardHead}>
         <Text style={[styles.rowTitle, { color: palette.text }]}>{title}</Text>
-        <Text style={[styles.rowSub, { color: palette.muted }]}>{sub}</Text>
+        <Text style={[styles.rowBytes, { color: palette.muted }]}>
+          {formatBytes(bytes)}
+        </Text>
       </View>
-      <Text style={[styles.rowBytes, { color: palette.muted }]}>
-        {formatBytes(bytes)}
-      </Text>
-      {onResume ? (
+      <Text style={[styles.rowSub, { color: palette.muted }]}>{sub}</Text>
+      {progress != null ? (
+        <View style={[styles.track, { backgroundColor: palette.border ?? palette.muted }]}>
+          <View
+            style={[
+              styles.fill,
+              { width: `${Math.round(progress * 100)}%`, backgroundColor: palette.accentSolid },
+            ]}
+          />
+        </View>
+      ) : null}
+      <View style={styles.actions}>
+        {onResume ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t(
+              'quran.listenDownloadResume',
+              'Continue downloading',
+            )}
+            accessibilityState={{ disabled: running != null }}
+            hitSlop={6}
+            disabled={running != null}
+            onPress={onResume}
+            style={({ pressed }) => [
+              styles.actionBtn,
+              {
+                backgroundColor: running ? palette.controlBg : palette.accentSolid,
+                opacity: pressed ? 0.8 : 1,
+              },
+            ]}>
+            <Text
+              numberOfLines={1}
+              style={[
+                styles.actionLabel,
+                { color: running ? palette.muted : palette.onAccent },
+              ]}>
+              {t('quran.listenDownloadResume', 'Continue downloading')}
+            </Text>
+          </Pressable>
+        ) : null}
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel={t(
-            'quran.listenDownloadResume',
-            'Continue downloading',
-          )}
-          hitSlop={8}
-          disabled={running != null}
-          onPress={onResume}
-          style={[
-            styles.deleteBtn,
-            {
-              borderColor: running ? 'transparent' : palette.border,
-              marginEnd: SPACING.sm,
-            },
+          accessibilityLabel={`${t('common.delete', 'Delete')} — ${title}`}
+          hitSlop={6}
+          onPress={onDelete}
+          style={({ pressed }) => [
+            styles.actionBtn,
+            { backgroundColor: palette.controlBg, opacity: pressed ? 0.8 : 1 },
           ]}>
-          <Text
-            style={{
-              color: running ? palette.muted : palette.accentSolid,
-              fontWeight: '700',
-              fontSize: TYPE.label.fontSize,
-            }}>
-            {t('quran.listenDownloadResume', 'Continue downloading')}
+          <Text numberOfLines={1} style={[styles.actionLabel, { color: palette.danger }]}>
+            {t('common.delete', 'Delete')}
           </Text>
         </Pressable>
-      ) : null}
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel={t('common.delete', 'Delete')}
-        hitSlop={8}
-        onPress={onDelete}
-        style={[styles.deleteBtn, { borderColor: palette.border }]}>
-        <Text style={{ color: palette.danger, fontWeight: '700', fontSize: TYPE.label.fontSize }}>
-          {t('common.delete', 'Delete')}
-        </Text>
-      </Pressable>
+      </View>
     </View>
   );
 
@@ -441,6 +453,7 @@ export function QuranDownloadsScreen() {
             : () => {
                 startQuranDownload({ kind: 'audio', reciterId: a.reciterId });
               },
+          whole ? undefined : a.files / totalAyahCount(),
         );
       })}
 
@@ -472,6 +485,24 @@ export function QuranDownloadsScreen() {
         </View>
       ) : null}
       </CenteredColumn>
+      <ConfirmModal
+        visible={pendingDelete != null}
+        title={t('downloads.deleteTitle', 'Delete download?')}
+        message={t('downloads.deleteBody', {
+          defaultValue:
+            '{{what}} will be removed from this device. You can download it again at any time.',
+          what: pendingDelete?.label ?? '',
+        })}
+        confirmLabel={t('common.delete', 'Delete')}
+        cancelLabel={t('common.cancel', 'Cancel')}
+        destructive
+        onCancel={() => setPendingDelete(null)}
+        onConfirm={() => {
+          const pending = pendingDelete;
+          setPendingDelete(null);
+          if (pending) void pending.action().then(refresh);
+        }}
+      />
     </ScrollView>
   );
 }
@@ -491,8 +522,34 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.md,
     gap: SPACING.md,
   },
-  rowTitle: { fontSize: TYPE.callout.fontSize, fontWeight: '600' },
-  rowSub: { fontSize: TYPE.label.fontSize, marginTop: 2 },
+  // A downloaded item: name and size, what it is, then its buttons.
+  card: {
+    padding: SPACING.lg,
+    borderRadius: RADIUS.md,
+    gap: SPACING.xs,
+  },
+  cardHead: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: SPACING.md,
+  },
+  actions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    flexWrap: 'wrap',
+    gap: SPACING.sm,
+    marginTop: SPACING.sm,
+  },
+  actionBtn: {
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.xs + 2,
+    borderRadius: RADIUS.md,
+  },
+  actionLabel: { fontSize: TYPE.label.fontSize, fontWeight: '700' },
+  track: { height: 4, borderRadius: RADIUS.full, overflow: 'hidden', marginTop: SPACING.xs },
+  fill: { height: 4, borderRadius: RADIUS.full },
+  rowTitle: { fontSize: TYPE.callout.fontSize, fontWeight: '600', flex: 1 },
+  rowSub: { fontSize: TYPE.label.fontSize },
   rowBytes: { fontSize: TYPE.footnote.fontSize, fontVariant: ['tabular-nums'] },
   deleteBtn: {
     borderWidth: 1,

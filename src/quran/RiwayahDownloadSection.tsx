@@ -35,9 +35,9 @@
  * The file never travels through anything of ours either way.
  */
 import React, { useCallback, useState } from 'react';
+import { ConfirmModal } from '../components/ConfirmModal';
 import {
   ActivityIndicator,
-  Alert,
   Linking,
   Pressable,
   StyleSheet,
@@ -268,26 +268,9 @@ function RiwayahCard({
     setDetail(result.error.detail ?? null);
   }, [onChanged, riwayah.id, t, url]);
 
-  const remove = useCallback(() => {
-    Alert.alert(
-      t('downloads.deleteTitle', 'Delete download?'),
-      t('downloads.deleteBody', {
-        defaultValue:
-          '{{what}} will be removed from this device. You can download it again at any time.',
-        what: name,
-      }),
-      [
-        { text: t('common.cancel', 'Cancel'), style: 'cancel' },
-        {
-          text: t('common.delete', 'Delete'),
-          style: 'destructive',
-          onPress: () => {
-            void uninstallRiwayah(riwayah.id).then(() => onChanged?.());
-          },
-        },
-      ],
-    );
-  }, [name, onChanged, riwayah.id, t]);
+  // The app's own themed dialog, not the platform alert.
+  const [confirming, setConfirming] = useState(false);
+  const remove = useCallback(() => setConfirming(true), []);
 
   if (installed) {
     return (
@@ -321,6 +304,23 @@ function RiwayahCard({
             </Text>
           </Pressable>
         </View>
+        <ConfirmModal
+          visible={confirming}
+          title={t('downloads.deleteTitle', 'Delete download?')}
+          message={t('downloads.deleteBody', {
+            defaultValue:
+              '{{what}} will be removed from this device. You can download it again at any time.',
+            what: name,
+          })}
+          confirmLabel={t('common.delete', 'Delete')}
+          cancelLabel={t('common.cancel', 'Cancel')}
+          destructive
+          onCancel={() => setConfirming(false)}
+          onConfirm={() => {
+            setConfirming(false);
+            void uninstallRiwayah(riwayah.id).then(() => onChanged?.());
+          }}
+        />
       </View>
     );
   }
