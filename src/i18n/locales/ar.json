@@ -1352,7 +1352,8 @@
     "bookmarkCircledHint": "اللون المحاط بحلقة موضوع على آية أخرى — اختياره ينقل تلك العلامة إلى هنا.",
     "pinSet": "تعيين",
     "pinRemove": "إزالة",
-    "khatmahPinnedHere": "ختمتك عند هذه الآية"
+    "khatmahPinnedHere": "ختمتك عند هذه الآية",
+    "playSection": "التشغيل"
   },
   "reading": {
     "textSize": "حجم النص",

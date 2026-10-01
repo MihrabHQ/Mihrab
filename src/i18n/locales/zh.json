@@ -1352,7 +1352,8 @@
     "bookmarkCircledHint": "带圆环的颜色已用于其他经文——选择它会把那个书签移到这里。",
     "pinSet": "设定",
     "pinRemove": "移除",
-    "khatmahPinnedHere": "你的通读进度在这节经文"
+    "khatmahPinnedHere": "你的通读进度在这节经文",
+    "playSection": "播放"
   },
   "reading": {
     "textSize": "文字大小",

@@ -1352,7 +1352,8 @@
     "bookmarkCircledHint": "Une couleur cerclée est sur un autre verset — la choisir déplace ce signet ici.",
     "pinSet": "Définir",
     "pinRemove": "Retirer",
-    "khatmahPinnedHere": "Votre khatma est à ce verset"
+    "khatmahPinnedHere": "Votre khatma est à ce verset",
+    "playSection": "Lecture"
   },
   "reading": {
     "textSize": "Taille du texte",

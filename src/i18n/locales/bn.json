@@ -1352,7 +1352,8 @@
     "bookmarkCircledHint": "বৃত্তযুক্ত রঙটি অন্য আয়াতে আছে — এটি বাছলে সেই বুকমার্ক এখানে চলে আসবে।",
     "pinSet": "সেট করুন",
     "pinRemove": "সরান",
-    "khatmahPinnedHere": "আপনার খতম এই আয়াতে"
+    "khatmahPinnedHere": "আপনার খতম এই আয়াতে",
+    "playSection": "চালান"
   },
   "reading": {
     "textSize": "লেখার আকার",

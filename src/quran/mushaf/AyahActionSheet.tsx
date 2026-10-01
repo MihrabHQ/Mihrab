@@ -511,23 +511,37 @@ export function AyahActionSheet({
           <Text style={[styles.reference, { color: palette.muted }]}>
             {reference}
           </Text>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={
-              starred
-                ? t('quran.unstar', 'Remove star')
-                : t('quran.star', 'Star this ayah')
-            }
-            hitSlop={10}
-            onPress={() => toggleStar(surah, ayah)}>
-            <Text
-              style={{
-                fontSize: TYPE.title2.fontSize,
-                color: starred ? palette.accentSolid : palette.muted,
-              }}>
-              {starred ? '★' : '☆'}
-            </Text>
-          </Pressable>
+          {/* Share and star: the two things done to the āyah as a whole.
+              Share asks for a format afterwards. */}
+          <View style={styles.headerActions}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t(
+                'quran.shareChoiceA11y',
+                'Share — opens a choice of text or image card',
+              )}
+              hitSlop={10}
+              onPress={share}>
+              <ShareIcon size={22} color={palette.muted} />
+            </Pressable>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={
+                starred
+                  ? t('quran.unstar', 'Remove star')
+                  : t('quran.star', 'Star this ayah')
+              }
+              hitSlop={10}
+              onPress={() => toggleStar(surah, ayah)}>
+              <Text
+                style={{
+                  fontSize: TYPE.title2.fontSize,
+                  color: starred ? palette.accentSolid : palette.muted,
+                }}>
+                {starred ? '★' : '☆'}
+              </Text>
+            </Pressable>
+          </View>
         </View>
 
         {/* No `automaticallyAdjustKeyboardInsets` here: the sheet itself
@@ -994,48 +1008,36 @@ export function AyahActionSheet({
             </Pressable>
           ) : null}
 
-          <View style={styles.actionsRow}>
-            {/* Read → act → organise → tune. Play is the single emerald
-                button; repeat sits beside it; share is one action that
-                asks for a format afterwards. */}
-            <View style={styles.actionsPrimary}>
-              <RowAction
-                label={t('quran.playFromHere', 'Play from here')}
-                glyph="▶"
-                emphasized
-                onPress={() => {
-                  onClose();
-                  void playFromAyah(surah, ayah);
-                }}
-              />
-            </View>
-            <RowAction
-              label={t('quran.repeatAyah', 'Repeat this ayah')}
-              glyph="↻"
-              onPress={() => {
-                onClose();
-                void playRange({ surah, ayah }, { surah, ayah });
-              }}
-            />
-            <RowAction
-              label={t('common.share', 'Share')}
-              glyph="⇪"
-              accessibilityLabel={t(
-                'quran.shareChoiceA11y',
-                'Share — opens a choice of text or image card',
-              )}
-              onPress={share}
-            />
-          </View>
-
-          {/* Recitation is a different job from marking an ayah, so it
-              gets its own rule and heading (2f). */}
-          <SectionHead label={t('quran.recitation', 'Recitation')} />
-          {/* Recitation controls — the header button lands here. */}
+          {/* PLAY — everything that makes this āyah sound, in one place:
+              play from here and repeat at the top, then the reciter,
+              speed, memorisation and the range player. The header's
+              recitation button lands here. */}
           <View
             onLayout={e => {
               audioSectionY.current = e.nativeEvent.layout.y;
             }}>
+            <SectionHead label={t('quran.playSection', 'Play')} />
+            <View style={styles.actionsRow}>
+              <View style={styles.actionsPrimary}>
+                <RowAction
+                  label={t('quran.playFromHere', 'Play from here')}
+                  glyph="▶"
+                  emphasized
+                  onPress={() => {
+                    onClose();
+                    void playFromAyah(surah, ayah);
+                  }}
+                />
+              </View>
+              <RowAction
+                label={t('quran.repeatAyah', 'Repeat this ayah')}
+                glyph="↻"
+                onPress={() => {
+                  onClose();
+                  void playRange({ surah, ayah }, { surah, ayah });
+                }}
+              />
+            </View>
             <RecitationControls
               surahNumber={surah}
               onStartPlayback={onClose}
@@ -1113,6 +1115,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
+  headerActions: { flexDirection: 'row', alignItems: 'center', gap: SPACING.lg },
   reference: { fontSize: TYPE.footnote.fontSize, fontWeight: '700', letterSpacing: 0.3 },
   body: { flexGrow: 0 },
   arabic: {

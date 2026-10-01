@@ -1352,7 +1352,8 @@
     "bookmarkCircledHint": "En färg med ring finns på en annan vers — väljer du den flyttas bokmärket hit.",
     "pinSet": "Ange",
     "pinRemove": "Ta bort",
-    "khatmahPinnedHere": "Din khatmah är vid den här versen"
+    "khatmahPinnedHere": "Din khatmah är vid den här versen",
+    "playSection": "Spela upp"
   },
   "reading": {
     "textSize": "Textstorlek",

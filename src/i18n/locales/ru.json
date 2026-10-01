@@ -1352,7 +1352,8 @@
     "bookmarkCircledHint": "Цвет в кольце уже стоит на другом аяте — выбрав его, вы перенесёте ту закладку сюда.",
     "pinSet": "Задать",
     "pinRemove": "Убрать",
-    "khatmahPinnedHere": "Ваш хатм на этом аяте"
+    "khatmahPinnedHere": "Ваш хатм на этом аяте",
+    "playSection": "Воспроизведение"
   },
   "reading": {
     "textSize": "Размер текста",

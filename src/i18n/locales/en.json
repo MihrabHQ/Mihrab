@@ -1352,7 +1352,8 @@
     "bookmarkCircledHint": "A ringed colour is on another ayah — picking it moves that bookmark here.",
     "pinSet": "Set",
     "pinRemove": "Remove",
-    "khatmahPinnedHere": "Your khatmah is at this ayah"
+    "khatmahPinnedHere": "Your khatmah is at this ayah",
+    "playSection": "Play"
   },
   "reading": {
     "textSize": "Text size",

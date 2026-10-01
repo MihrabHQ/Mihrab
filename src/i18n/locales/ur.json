@@ -1352,7 +1352,8 @@
     "bookmarkCircledHint": "حلقے والا رنگ کسی اور آیت پر ہے — اسے چننے سے وہ نشان یہاں آ جائے گا۔",
     "pinSet": "مقرر کریں",
     "pinRemove": "ہٹائیں",
-    "khatmahPinnedHere": "آپ کا ختم اسی آیت پر ہے"
+    "khatmahPinnedHere": "آپ کا ختم اسی آیت پر ہے",
+    "playSection": "سنیں"
   },
   "reading": {
     "textSize": "متن کا سائز",

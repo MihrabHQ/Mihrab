@@ -1352,7 +1352,8 @@
     "bookmarkCircledHint": "Eine umrandete Farbe liegt auf einem anderen Vers — wählst du sie, wandert dieses Lesezeichen hierher.",
     "pinSet": "Setzen",
     "pinRemove": "Entfernen",
-    "khatmahPinnedHere": "Deine Khatmah steht bei diesem Vers"
+    "khatmahPinnedHere": "Deine Khatmah steht bei diesem Vers",
+    "playSection": "Abspielen"
   },
   "reading": {
     "textSize": "Schriftgröße",

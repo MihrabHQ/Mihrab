@@ -1352,7 +1352,8 @@
     "bookmarkCircledHint": "Warna yang dilingkari ada di ayat lain — memilihnya memindahkan penanda itu ke sini.",
     "pinSet": "Atur",
     "pinRemove": "Hapus",
-    "khatmahPinnedHere": "Khatam Anda ada di ayat ini"
+    "khatmahPinnedHere": "Khatam Anda ada di ayat ini",
+    "playSection": "Putar"
   },
   "reading": {
     "textSize": "Ukuran teks",

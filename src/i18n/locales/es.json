@@ -1352,7 +1352,8 @@
     "bookmarkCircledHint": "Un color con anillo está en otra aleya: al elegirlo, ese marcador se mueve aquí.",
     "pinSet": "Fijar",
     "pinRemove": "Quitar",
-    "khatmahPinnedHere": "Tu jatma está en esta aleya"
+    "khatmahPinnedHere": "Tu jatma está en esta aleya",
+    "playSection": "Reproducir"
   },
   "reading": {
     "textSize": "Tamaño del texto",

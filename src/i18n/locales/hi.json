@@ -1352,7 +1352,8 @@
     "bookmarkCircledHint": "घेरे वाला रंग किसी और आयत पर है — उसे चुनने से वह बुकमार्क यहाँ आ जाएगा।",
     "pinSet": "सेट करें",
     "pinRemove": "हटाएँ",
-    "khatmahPinnedHere": "आपका ख़त्म इसी आयत पर है"
+    "khatmahPinnedHere": "आपका ख़त्म इसी आयत पर है",
+    "playSection": "चलाएँ"
   },
   "reading": {
     "textSize": "पाठ का आकार",

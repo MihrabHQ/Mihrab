@@ -1352,7 +1352,8 @@
     "bookmarkCircledHint": "Halkalı renk başka bir ayette — seçersen o yer imi buraya taşınır.",
     "pinSet": "Ayarla",
     "pinRemove": "Kaldır",
-    "khatmahPinnedHere": "Hatmin bu ayette"
+    "khatmahPinnedHere": "Hatmin bu ayette",
+    "playSection": "Oynat"
   },
   "reading": {
     "textSize": "Metin boyutu",
