@@ -348,7 +348,8 @@ export function addBookmark(
         const gaveWay = prev.bookmarks.filter(
           b =>
             b.id !== session.id &&
-            ((b.surah === surah && b.ayah === ayah) || b.color === color),
+            ((b.surah === surah && b.ayah === ayah) ||
+              (!prev.prefs.bookmarkColourReuse && b.color === color)),
         );
         return {
           ...prev,
@@ -400,9 +401,13 @@ export function addBookmark(
      * the reader chose.
      */
     const onAyah = prev.bookmarks.find(b => b.surah === surah && b.ayah === ayah);
-    const inColour = prev.bookmarks.find(
-      b => b.color === color && !(b.surah === surah && b.ayah === ayah),
-    );
+    // Unless the reader lets colours repeat (`bookmarkColourReuse`), in
+    // which case the colour says nothing about which bookmark this is.
+    const inColour = prev.prefs.bookmarkColourReuse
+      ? undefined
+      : prev.bookmarks.find(
+          b => b.color === color && !(b.surah === surah && b.ayah === ayah),
+        );
     const replaced = inColour ?? onAyah;
     const wants =
       follows ?? prev.prefs.bookmarkFollowDefault === 'follow';

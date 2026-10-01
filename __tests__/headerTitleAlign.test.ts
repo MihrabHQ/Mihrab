@@ -36,7 +36,7 @@ describe('the pushed subpages', () => {
 
 describe('the tabs', () => {
   it('centre theirs too', () => {
-    expect(TABS).toMatch(/screenOptions=\{\{[\s\S]*?headerTitleAlign: 'center'/);
+    expect(TABS).toMatch(/screenOptions=\{\(\{ route \}\) => \(\{[\s\S]*?headerTitleAlign: 'center'/);
   });
 
   it('let Today keep its wordmark at the leading edge', () => {

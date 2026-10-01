@@ -465,6 +465,17 @@ export type QuranPrefs = {
    */
   homeBookmarkId: string;
   /**
+   * MAY TWO BOOKMARKS SHARE A COLOUR? (additive)
+   *
+   * Off by default: a colour is one bookmark, and tapping a colour that
+   * is on another ayah moves that bookmark here (`addBookmark`). On, a
+   * colour is a KIND of bookmark — every passage under revision in one
+   * colour, say — and tapping it makes another in that colour. Switched
+   * on for a reader who already had two in one colour when this rule
+   * arrived, so nothing of theirs was moved or lost (`coerceQuranState`).
+   */
+  bookmarkColourReuse: boolean;
+  /**
    * Does one surah lead to a random next one? (additive)
    *
    * A SURAH shuffle, never an ayah shuffle — see `pickNextSurah`. Off by

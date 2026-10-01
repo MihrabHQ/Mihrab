@@ -1344,7 +1344,10 @@
     "bookmarkDoor": "Signet",
     "khatmahIntro": "Une khatmah est une lecture de tout le mushaf, découpée en une portion par jour. L’app garde votre place, compte les pages et dit chaque jour ce qu’il reste.",
     "bookmarkColorInUse": "Couleur de signet {{color}} — utilisée en {{ref}} ; toucher déplace ce signet ici",
-    "bookmarkColoursInUse": "Utilisées — toucher en déplace un ici :"
+    "bookmarkColoursInUse": "Utilisées — toucher en déplace un ici :",
+    "bookmarksSettingsTitle": "Signets",
+    "bookmarkColourReuseHelp": "Désactivé : chaque couleur est un signet — choisir une couleur déjà posée sur un autre verset déplace ce signet. Activé : une couleur peut servir encore et encore, par exemple pour tous les passages d’un même genre.",
+    "bookmarkColourReuse": "Réutiliser les couleurs"
   },
   "reading": {
     "textSize": "Taille du texte",

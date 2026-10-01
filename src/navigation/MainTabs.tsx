@@ -45,6 +45,7 @@ import {
 } from './tabBarInset';
 import { TabBarScrim } from './TabBarScrim';
 import { StatusBarBand } from './StatusBarBand';
+import { TabBarButton } from './TabBarButton';
 import { showTabBar, useTabBarHidden } from './tabBarVisibility';
 import { HomeScreen } from '../screens/HomeScreen';
 import { QuranScreen } from '../screens/QuranScreen';
@@ -155,7 +156,13 @@ export function MainTabs() {
           <TabBarScrim bg={palette.bg} slide={slide} />
         </View>
       )}
-      screenOptions={{
+      screenOptions={({ route }) => ({
+        /**
+         * The button, ours: no ripple — the icon draws the press, centred
+         * on the glyph (`tabIcons`) — and a hold-and-slide along the bar
+         * that opens the tab the finger ends on (`TabBarButton`).
+         */
+        tabBarButton: props => <TabBarButton {...props} name={route.name} />,
         headerShown: false,
         /**
          * Quran, Tasbih, Duas, Log and Settings centre their titles on
@@ -325,7 +332,7 @@ export function MainTabs() {
         // The bar is the app's own chrome; on iOS the blur belongs to the
         // system, so leave the default there.
         tabBarHideOnKeyboard: Platform.OS === 'android',
-      }}
+      })}
     >
       <Tab.Screen
         name="TodayTab"

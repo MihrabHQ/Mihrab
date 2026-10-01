@@ -19,7 +19,9 @@ import { useNavigation, useScrollToTop } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
   FlatList,
+  I18nManager,
   Modal,
+  useWindowDimensions,
   Pressable,
   StyleSheet,
   Switch,
@@ -29,6 +31,7 @@ import {
 } from 'react-native';
 import { afterInteractions } from '../utils/afterInteractions';
 import { useTranslation } from 'react-i18next';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { useKeyboardInset } from '../hooks/useKeyboardInset';
 import { useKeyboardAwareScroll } from '../hooks/useKeyboardAwareScroll';
 import { useAppPalette } from '../hooks/useAppPalette';
@@ -86,6 +89,33 @@ import { useTabBarScroll } from '../navigation/tabBarVisibility';
 import { RADIUS, SPACING } from '../theme/tokens';
 
 type Tab = 'surah' | 'juz' | 'bookmarks';
+const TABS: Tab[] = ['surah', 'juz', 'bookmarks'];
+/** Sideways travel before a pan is a swipe, and vertical travel that makes it a scroll. */
+const SWIPE_ACTIVATE = 24;
+const SWIPE_FAIL_Y = 16;
+/** A swipe that ends shorter than this, and slower than this, is not one. */
+const SWIPE_DISTANCE = 56;
+const SWIPE_VELOCITY = 500;
+
+/**
+ * Which tab a swipe lands on. A swipe towards the start of the row (left,
+ * in a left-to-right layout) goes to the NEXT tab, as paging does; in a
+ * mirrored layout the row runs the other way and so does the swipe.
+ * Exported for the test; pure.
+ */
+export function tabAfterSwipe(
+  current: Tab,
+  translationX: number,
+  velocityX: number,
+  rtl: boolean,
+): Tab {
+  const far = Math.abs(translationX) >= SWIPE_DISTANCE;
+  const fast = Math.abs(velocityX) >= SWIPE_VELOCITY;
+  if (!far && !fast) return current;
+  const sign = Math.sign(far ? translationX : velocityX) * (rtl ? -1 : 1);
+  const index = TABS.indexOf(current) + (sign < 0 ? 1 : -1);
+  return TABS[Math.max(0, Math.min(TABS.length - 1, index))];
+}
 
 /**
  * The surahs with a standing appointment — issue #23.
@@ -171,6 +201,33 @@ export function QuranScreen() {
   }, [riwayahForWarm]);
 
   const [tab, setTab] = useState<Tab>('surah');
+  const tabRef = useRef<Tab>('surah');
+  tabRef.current = tab;
+  /**
+   * The bar floats OVER the list, inside this area's bounds, and a
+   * hold-and-slide along it (`TabBarButton`) is a horizontal pan too. A
+   * swipe that began under the bar is the bar's, not the tabs'.
+   */
+  const windowH = useWindowDimensions().height;
+  const barTopRef = useRef(0);
+  barTopRef.current = windowH - useTabBarInset();
+  const swipeStartY = useRef(0);
+  const tabSwipe = useMemo(
+    () =>
+      Gesture.Pan()
+        .activeOffsetX([-SWIPE_ACTIVATE, SWIPE_ACTIVATE])
+        .failOffsetY([-SWIPE_FAIL_Y, SWIPE_FAIL_Y])
+        .runOnJS(true)
+        .onBegin(e => {
+          swipeStartY.current = e.absoluteY;
+        })
+        .onEnd(e => {
+          if (swipeStartY.current >= barTopRef.current) return;
+          const next = tabAfterSwipe(tabRef.current, e.translationX, e.velocityX, I18nManager.isRTL);
+          if (next !== tabRef.current) setTab(next);
+        }),
+    [],
+  );
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<QuranSearchResult[] | null>(null);
   // Go-to-page (v2.8.5) — a page number typed here opens the mushaf there.
@@ -1117,6 +1174,16 @@ export function QuranScreen() {
           top={Math.max(0, pageTop - SPACING.md)}
         />
       ) : null}
+      {/* SWIPE BETWEEN THE TABS. A horizontal pan over the list moves to
+          the next or previous of Surah / Juz / Bookmarks, the way the
+          segmented control does. The pan only activates once the finger
+          has clearly gone sideways (`activeOffsetX`) and gives up the
+          moment it goes up or down (`failOffsetY`), so the lists scroll
+          exactly as they did; the lists' own native gesture is left to
+          win every vertical drag. In Arabic the row is mirrored, and so
+          is the swipe. */}
+      <GestureDetector gesture={tabSwipe}>
+      <View style={styles.swipeArea}>
       {tab === 'surah' ? (
         <FlatList<SurahIndex>
           automaticallyAdjustKeyboardInsets
@@ -1170,6 +1237,8 @@ export function QuranScreen() {
           renderItem={renderBookmarks}
         />
       )}
+      </View>
+      </GestureDetector>
 
 
 
@@ -1262,6 +1331,7 @@ const HEADER_GAP = 12;
 
 const styles = StyleSheet.create({
   root: { flex: 1 },
+  swipeArea: { flex: 1 },
   list: { padding: LIST_PADDING, gap: LIST_GAP },
   // Center + cap the index column on iPad/Mac so surah rows stay readable.
   // Cap+center applied to the header and to EVERY row — NOT to the

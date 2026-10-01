@@ -188,6 +188,7 @@ describe('two devices reading the same khatmah in different muṣḥafs', () => 
     tilawahShowPage: true,
     verseOfDay: false,
     homeBookmarkId: '',
+    bookmarkColourReuse: false,
   };
   const state = (ayahsRead: number, pagesRead: number): QuranState => ({
     ...base,

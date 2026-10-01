@@ -153,6 +153,19 @@ function QuranCardImpl() {
           onPress={() => setSheetVisible(true)}
         />
       </SettingsGroup>
+      <SettingsGroup
+        title={t('quran.bookmarksSettingsTitle', 'Bookmarks')}
+        footer={t('quran.bookmarkColourReuseHelp', {
+          defaultValue:
+            'Off, each colour is one bookmark: choosing a colour that is already on another verse moves that bookmark. On, a colour can be used again and again — for every passage of one kind, say.',
+        })}>
+        <SettingsToggleRow
+          testID="settings-bookmark-colour-reuse"
+          title={t('quran.bookmarkColourReuse', 'Reuse colours')}
+          value={quran.prefs.bookmarkColourReuse}
+          onValueChange={next => setQuranPrefs({ bookmarkColourReuse: next })}
+        />
+      </SettingsGroup>
       {/* The verse of the day, as a card on the Qur'an page: off unless
           asked for. It was there for everyone, one more row above the
           surah list; the daily notification is its own switch. */}

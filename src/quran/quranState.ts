@@ -168,6 +168,7 @@ export const DEFAULT_QURAN_STATE: QuranState = {
     verseOfDayOpen: false,
     verseOfDay: false,
     homeBookmarkId: '',
+    bookmarkColourReuse: false,
     shuffleSurahs: false,
     tilawahShowPage: true,
   },
@@ -219,6 +220,24 @@ function coerceBookmark(v: unknown): QuranBookmark | null {
     out.updatedAt = r.updatedAt;
   }
   return out;
+}
+
+/**
+ * The colour-reuse setting as the blob has it — or, when the blob has
+ * never said, as its bookmarks imply: two in one colour means the reader
+ * was keeping them that way before the one-per-colour rule, and the rule
+ * must not cost them a bookmark. Only an absent key is inferred; `false`
+ * written by a reader who then has duplicates (made on another device,
+ * say) is their answer and stays.
+ */
+function coerceColourReuse(raw: unknown, bookmarks: QuranBookmark[]): boolean {
+  if (typeof raw === 'boolean') return raw;
+  const seen = new Set<string>();
+  for (const b of bookmarks) {
+    if (seen.has(b.color)) return true;
+    seen.add(b.color);
+  }
+  return false;
 }
 
 function coerceKhatmah(v: unknown): KhatmahPlan | null {
@@ -467,17 +486,18 @@ function mergeStored(raw: unknown): QuranState {
   for (const [k, at] of Object.entries(starsAt)) {
     if (keptStars.has(k)) liveStarsAt[k] = at;
   }
+  const liveBookmarks = Array.isArray(r.bookmarks)
+    ? r.bookmarks
+        .map(coerceBookmark)
+        .filter((b): b is QuranBookmark => b !== null)
+        // A bookmark a tombstone has already buried never comes back
+        // out of the blob, whichever order the two were written in.
+        .filter(b => !removedAfter(removedBookmarks, b.id, b.updatedAt ?? b.createdAt))
+    : [];
   return {
     version: 1,
     lastRead: coerceLastRead(r.lastRead),
-    bookmarks: Array.isArray(r.bookmarks)
-      ? r.bookmarks
-          .map(coerceBookmark)
-          .filter((b): b is QuranBookmark => b !== null)
-          // A bookmark a tombstone has already buried never comes back
-          // out of the blob, whichever order the two were written in.
-          .filter(b => !removedAfter(removedBookmarks, b.id, b.updatedAt ?? b.createdAt))
-      : [],
+    bookmarks: liveBookmarks,
     starred: Array.isArray(r.starred)
       ? [
           ...new Set(
@@ -555,6 +575,14 @@ function mergeStored(raw: unknown): QuranState {
         'string'
           ? ((r.prefs as { homeBookmarkId: string }).homeBookmarkId)
           : '',
+      // A blob from before the one-per-colour rule that already holds two
+      // bookmarks in one colour keeps them: the setting that allows it is
+      // switched on for that reader, once, and written. A blob that has
+      // the key keeps its answer whatever the bookmarks say.
+      bookmarkColourReuse: coerceColourReuse(
+        (r.prefs as { bookmarkColourReuse?: unknown } | undefined)?.bookmarkColourReuse,
+        liveBookmarks,
+      ),
     },
     // Kept if it is there and sane, and LEFT OUT otherwise rather than
     // written as 0: an export of a blob that never had it must round-trip

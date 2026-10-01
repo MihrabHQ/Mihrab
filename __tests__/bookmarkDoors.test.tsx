@@ -48,6 +48,7 @@ import {
   __resetQuranStateForTests,
   coerceQuranState,
   getQuranState,
+  setQuranPrefs,
 } from '../src/quran/quranState';
 import { startKhatmah, abandonKhatmah } from '../src/quran/khatmahActions';
 import {
@@ -242,6 +243,33 @@ describe('one bookmark per colour', () => {
     expect(sheet).toContain('coloursInUse.get(color)');
     expect(sheet).toContain("t('quran.bookmarkColoursInUse'");
     expect(sheet).toMatch(/elsewhere && !selected \? <View style=\{styles\.colorDotUsed\} \/> : null/);
+  });
+});
+
+describe('reusing colours — the setting', () => {
+  it('is off by default, and on it lets a colour repeat without moving anything', () => {
+    expect(getQuranState().prefs.bookmarkColourReuse).toBe(false);
+    setQuranPrefs({ bookmarkColourReuse: true });
+    addBookmark(18, 1, 293, 'emerald');
+    addBookmark(67, 1, 562, 'emerald');
+    expect(marks()).toHaveLength(2);
+    expect(marks().map(b => b.surah).sort()).toEqual([18, 67]);
+  });
+
+  it('is switched on for a blob that already holds two bookmarks in one colour — once, and then kept', () => {
+    const two = [
+      { id: 'a', surah: 18, ayah: 1, page: 293, color: 'emerald', createdAt: 1 },
+      { id: 'b', surah: 67, ayah: 1, page: 562, color: 'emerald', createdAt: 2 },
+    ];
+    expect(coerceQuranState({ bookmarks: two }).prefs.bookmarkColourReuse).toBe(true);
+    expect(coerceQuranState({ bookmarks: two, prefs: { bookmarkColourReuse: false } }).prefs.bookmarkColourReuse).toBe(false);
+    expect(coerceQuranState({ bookmarks: [two[0]] }).prefs.bookmarkColourReuse).toBe(false);
+    // Nothing of theirs is lost on the way in.
+    expect(coerceQuranState({ bookmarks: two }).bookmarks).toHaveLength(2);
+  });
+
+  it('has a row in Settings → Quran', () => {
+    expect(src('src/screens/settings/QuranCard.tsx')).toContain("setQuranPrefs({ bookmarkColourReuse: next })");
   });
 });
 

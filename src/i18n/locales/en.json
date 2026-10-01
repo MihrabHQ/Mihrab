@@ -1344,7 +1344,10 @@
     "bookmarkDoor": "Bookmark",
     "khatmahIntro": "A khatmah is a reading of the whole muṣḥaf, cut into a portion a day. The app keeps your place, counts the pages, and says each day what is left.",
     "bookmarkColorInUse": "Bookmark color {{color}} — in use at {{ref}}; tapping moves that bookmark here",
-    "bookmarkColoursInUse": "In use — tapping one moves it here:"
+    "bookmarkColoursInUse": "In use — tapping one moves it here:",
+    "bookmarksSettingsTitle": "Bookmarks",
+    "bookmarkColourReuseHelp": "Off, each colour is one bookmark: choosing a colour that is already on another verse moves that bookmark. On, a colour can be used again and again — for every passage of one kind, say.",
+    "bookmarkColourReuse": "Reuse colours"
   },
   "reading": {
     "textSize": "Text size",

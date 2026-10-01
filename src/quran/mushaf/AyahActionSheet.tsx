@@ -288,12 +288,14 @@ export function AyahActionSheet({
   // The colours already on OTHER ayahs — one bookmark each (`addBookmark`).
   const coloursInUse = useMemo(() => {
     const m = new Map<BookmarkColor, QuranBookmark>();
+    // With colours free to repeat there is nothing a tap would move.
+    if (state.prefs.bookmarkColourReuse) return m;
     for (const b of state.bookmarks) {
       if (b.surah === surah && b.ayah === ayah) continue;
       m.set(b.color, b);
     }
     return m;
-  }, [state.bookmarks, surah, ayah]);
+  }, [state.bookmarks, state.prefs.bookmarkColourReuse, surah, ayah]);
   const plan = activeKhatmah(state);
   const isKhatmahHere =
     plan?.position?.surah === surah && plan?.position?.ayah === ayah;

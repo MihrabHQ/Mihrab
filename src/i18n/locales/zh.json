@@ -1344,7 +1344,10 @@
     "bookmarkDoor": "书签",
     "khatmahIntro": "诵读计划是通读整部古兰经，按每天一份划分。应用会记住你的位置、计算页数，并每天告诉你还剩多少。",
     "bookmarkColorInUse": "书签颜色 {{color}} — 已用于 {{ref}}；点按会把该书签移到这里",
-    "bookmarkColoursInUse": "已使用 — 点按即移到这里："
+    "bookmarkColoursInUse": "已使用 — 点按即移到这里：",
+    "bookmarksSettingsTitle": "书签",
+    "bookmarkColourReuseHelp": "关闭时，每种颜色只对应一个书签：选择已用于其他经文的颜色会把该书签移过来。开启后，同一颜色可以反复使用，例如用于同一类的所有段落。",
+    "bookmarkColourReuse": "重复使用颜色"
   },
   "reading": {
     "textSize": "文字大小",

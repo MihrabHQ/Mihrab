@@ -24,6 +24,8 @@ jest.mock('react-native-gesture-handler', () => {
       'simultaneousWithExternalGesture', 'requireExternalGestureToFail',
       'blocksExternalGesture', 'withRef', 'enabled', 'shouldCancelWhenOutside',
       'hitSlop', 'activeCursor', 'mouseButton', 'runOnJS', 'config',
+      'activeOffsetX', 'activeOffsetY', 'failOffsetX', 'failOffsetY',
+      'minPointers', 'maxPointers', 'minVelocity', 'averageTouches',
     ];
     methods.forEach(m => { g[m] = jest.fn(() => g); });
     return g;
