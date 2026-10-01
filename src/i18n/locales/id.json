@@ -1114,7 +1114,6 @@
     "showTafsir": "Tampilkan tafsir",
     "tafsirUnavailable": "Tafsir tidak tersedia — sambungkan ke internet sekali untuk mengunduhnya.",
     "khatmahPin": "Jadikan posisi khataman saya",
-    "khatmahPinned": "Posisi khataman — ketuk untuk menghapus",
     "khatmahUnpin": "Hapus posisi khataman",
     "khatmahContinue": "Lanjutkan",
     "khatmahReset": "Atur ulang",
@@ -1350,7 +1349,10 @@
     "bookmarkTapToRemove": "Ketuk warnanya lagi untuk menghapus",
     "bookmarkPick": "Pilih warna",
     "bookmarkHere": "Di sini",
-    "bookmarkCircledHint": "Warna yang dilingkari ada di ayat lain — memilihnya memindahkan penanda itu ke sini."
+    "bookmarkCircledHint": "Warna yang dilingkari ada di ayat lain — memilihnya memindahkan penanda itu ke sini.",
+    "pinSet": "Atur",
+    "pinRemove": "Hapus",
+    "khatmahPinnedHere": "Khatam Anda ada di ayat ini"
   },
   "reading": {
     "textSize": "Ukuran teks",

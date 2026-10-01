@@ -264,7 +264,9 @@ describe('the readers', () => {
     const sheet = src('src/quran/mushaf/AyahActionSheet.tsx');
     expect(sheet).toContain("t('quran.readingPin', 'Continue reading from here')");
     expect(sheet).toContain('setReadingPosition(');
-    expect(sheet).toContain('borderColor: READING_COLOR');
+    // A button in the reading colour, with an action that says what a tap does.
+    expect(sheet).toContain('color={READING_COLOR}');
+    expect(sheet).toContain("action={isReadingHere ? '✓' : t('quran.pinSet', 'Set')}");
   });
 });
 

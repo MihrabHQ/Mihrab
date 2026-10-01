@@ -1114,7 +1114,6 @@
     "showTafsir": "Mostrar tafsir",
     "tafsirUnavailable": "Tafsir no disponible — conéctate a internet una vez para descargarlo.",
     "khatmahPin": "Fijar como mi posición del jatma",
-    "khatmahPinned": "Posición del jatma — toca para quitar",
     "khatmahUnpin": "Quitar posición del jatma",
     "khatmahContinue": "Continuar",
     "khatmahReset": "Restablecer",
@@ -1350,7 +1349,10 @@
     "bookmarkTapToRemove": "Toca su color otra vez para quitarlo",
     "bookmarkPick": "Elige un color",
     "bookmarkHere": "Aquí",
-    "bookmarkCircledHint": "Un color con anillo está en otra aleya: al elegirlo, ese marcador se mueve aquí."
+    "bookmarkCircledHint": "Un color con anillo está en otra aleya: al elegirlo, ese marcador se mueve aquí.",
+    "pinSet": "Fijar",
+    "pinRemove": "Quitar",
+    "khatmahPinnedHere": "Tu jatma está en esta aleya"
   },
   "reading": {
     "textSize": "Tamaño del texto",

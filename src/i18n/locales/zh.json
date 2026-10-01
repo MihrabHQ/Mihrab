@@ -1114,7 +1114,6 @@
     "showTafsir": "显示经注",
     "tafsirUnavailable": "经注不可用 — 请联网一次以下载。",
     "khatmahPin": "设为我的完读位置",
-    "khatmahPinned": "完读位置 — 点按以移除",
     "khatmahUnpin": "移除完读位置",
     "khatmahContinue": "继续",
     "khatmahReset": "重置",
@@ -1350,7 +1349,10 @@
     "bookmarkTapToRemove": "再次点按其颜色即可移除",
     "bookmarkPick": "选择一种颜色",
     "bookmarkHere": "此处",
-    "bookmarkCircledHint": "带圆环的颜色已用于其他经文——选择它会把那个书签移到这里。"
+    "bookmarkCircledHint": "带圆环的颜色已用于其他经文——选择它会把那个书签移到这里。",
+    "pinSet": "设定",
+    "pinRemove": "移除",
+    "khatmahPinnedHere": "你的通读进度在这节经文"
   },
   "reading": {
     "textSize": "文字大小",

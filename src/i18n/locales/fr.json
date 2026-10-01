@@ -1114,7 +1114,6 @@
     "showTafsir": "Afficher le tafsir",
     "tafsirUnavailable": "Tafsir indisponible — connectez-vous une fois à Internet pour le télécharger.",
     "khatmahPin": "Définir comme ma position de khatma",
-    "khatmahPinned": "Position de khatma — touchez pour retirer",
     "khatmahUnpin": "Retirer la position de khatma",
     "khatmahContinue": "Continuer",
     "khatmahReset": "Réinitialiser",
@@ -1350,7 +1349,10 @@
     "bookmarkTapToRemove": "Touchez à nouveau sa couleur pour le retirer",
     "bookmarkPick": "Choisissez une couleur",
     "bookmarkHere": "Ici",
-    "bookmarkCircledHint": "Une couleur cerclée est sur un autre verset — la choisir déplace ce signet ici."
+    "bookmarkCircledHint": "Une couleur cerclée est sur un autre verset — la choisir déplace ce signet ici.",
+    "pinSet": "Définir",
+    "pinRemove": "Retirer",
+    "khatmahPinnedHere": "Votre khatma est à ce verset"
   },
   "reading": {
     "textSize": "Taille du texte",

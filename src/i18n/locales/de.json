@@ -1114,7 +1114,6 @@
     "showTafsir": "Tafsir anzeigen",
     "tafsirUnavailable": "Tafsir nicht verfügbar — einmal mit dem Internet verbinden, um ihn zu laden.",
     "khatmahPin": "Als meine Khatmah-Position setzen",
-    "khatmahPinned": "Khatmah-Position — zum Entfernen tippen",
     "khatmahUnpin": "Khatmah-Position entfernen",
     "khatmahContinue": "Fortsetzen",
     "khatmahReset": "Zurücksetzen",
@@ -1350,7 +1349,10 @@
     "bookmarkTapToRemove": "Tippe erneut auf die Farbe, um sie zu entfernen",
     "bookmarkPick": "Wähle eine Farbe",
     "bookmarkHere": "Hier",
-    "bookmarkCircledHint": "Eine umrandete Farbe liegt auf einem anderen Vers — wählst du sie, wandert dieses Lesezeichen hierher."
+    "bookmarkCircledHint": "Eine umrandete Farbe liegt auf einem anderen Vers — wählst du sie, wandert dieses Lesezeichen hierher.",
+    "pinSet": "Setzen",
+    "pinRemove": "Entfernen",
+    "khatmahPinnedHere": "Deine Khatmah steht bei diesem Vers"
   },
   "reading": {
     "textSize": "Schriftgröße",

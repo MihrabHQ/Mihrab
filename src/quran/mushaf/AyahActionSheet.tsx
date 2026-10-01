@@ -20,6 +20,7 @@ import {
   StyleSheet,
   Text,
   View,
+  type ColorValue,
   type ScrollViewInstance,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -69,7 +70,7 @@ import { TajweedAyahGlyphs } from '../tajweed/TajweedAyahGlyphs';
 /** The page font's size for the āyah at the top of the sheet, dp — the
  *  same as the Tajweed section's, so the two read as one face. */
 const AYAH_GLYPH_SIZE = 30;
-import { ShareIcon } from '../../theme/icons';
+import { QuranBookIcon, ShareIcon } from '../../theme/icons';
 import {
   ayahShareText,
   ayahWithTafsirShareText,
@@ -101,6 +102,43 @@ type Props = {
   /** Open pre-scrolled to the recitation section (header button). */
   scrollToAudio?: boolean;
 };
+
+/**
+ * The inside of a pin button: the trail's icon in its colour, what the
+ * pin is, and the action a tap takes — a filled pill to set it, a quiet
+ * one (✓, or Remove) once it is here.
+ */
+function PinFace({
+  color,
+  textColor,
+  active,
+  label,
+  action,
+}: {
+  color: string;
+  textColor: ColorValue;
+  active: boolean;
+  label: string;
+  action: string;
+}) {
+  return (
+    <>
+      <View style={[styles.pinIcon, { backgroundColor: active ? color : `${color}33` }]}>
+        <QuranBookIcon color={active ? '#fff' : color} size={18} />
+      </View>
+      <Text style={[styles.pinLabel, { color: textColor }]}>{label}</Text>
+      <View
+        style={[
+          styles.pinAction,
+          active
+            ? { borderWidth: 1, borderColor: color }
+            : { backgroundColor: color },
+        ]}>
+        <Text style={[styles.pinActionText, { color: active ? color : '#fff' }]}>{action}</Text>
+      </View>
+    </>
+  );
+}
 
 export function AyahActionSheet({
   visible,
@@ -881,19 +919,23 @@ export function AyahActionSheet({
               // an ayah, so it has to be the truth.
               setReadingPosition(surah, ayah, page, activeReaderMode(settings));
             }}
-            style={[
-              styles.khatmahPin,
-              {
-                borderColor: READING_COLOR,
-                backgroundColor: isReadingHere ? `${READING_COLOR}26` : 'transparent',
-              },
+            style={({ pressed }) => [
+              styles.pinButton,
+              { backgroundColor: `${READING_COLOR}${isReadingHere ? '33' : '1F'}` },
+              pressed && styles.pinPressed,
             ]}>
-            <View style={[styles.khatmahDot, { backgroundColor: READING_COLOR }]} />
-            <Text style={[styles.khatmahPinLabel, { color: palette.text }]}>
-              {isReadingHere
-                ? t('quran.readingPinned', 'Continue reading starts here')
-                : t('quran.readingPin', 'Continue reading from here')}
-            </Text>
+            <PinFace
+              color={READING_COLOR}
+              textColor={palette.text}
+              active={isReadingHere}
+              label={
+                isReadingHere
+                  ? t('quran.readingPinned', 'Continue reading starts here')
+                  : t('quran.readingPin', 'Continue reading from here')
+              }
+              // Nothing to undo: the marker is always somewhere.
+              action={isReadingHere ? '✓' : t('quran.pinSet', 'Set')}
+            />
           </Pressable>
 
           {/* Khatmah pin (v2.7.28) — only while a plan is active, and
@@ -916,23 +958,22 @@ export function AyahActionSheet({
                 if (isKhatmahHere) clearKhatmahPosition();
                 else setKhatmahPosition(surah, ayah, page);
               }}
-              style={[
-                styles.khatmahPin,
-                {
-                  borderColor: KHATMAH_COLOR,
-                  backgroundColor: isKhatmahHere
-                    ? `${KHATMAH_COLOR}26`
-                    : 'transparent',
-                },
+              style={({ pressed }) => [
+                styles.pinButton,
+                { backgroundColor: `${KHATMAH_COLOR}${isKhatmahHere ? '33' : '1F'}` },
+                pressed && styles.pinPressed,
               ]}>
-              <View
-                style={[styles.khatmahDot, { backgroundColor: KHATMAH_COLOR }]}
+              <PinFace
+                color={KHATMAH_COLOR}
+                textColor={palette.text}
+                active={isKhatmahHere}
+                label={
+                  isKhatmahHere
+                    ? t('quran.khatmahPinnedHere', 'Your khatmah is at this ayah')
+                    : t('quran.khatmahPin', 'Set as my khatmah position')
+                }
+                action={isKhatmahHere ? t('quran.pinRemove', 'Remove') : t('quran.pinSet', 'Set')}
               />
-              <Text style={[styles.khatmahPinLabel, { color: palette.text }]}>
-                {isKhatmahHere
-                  ? t('quran.khatmahPinned', 'Khatmah position — tap to remove')
-                  : t('quran.khatmahPin', 'Set as my khatmah position')}
-              </Text>
             </Pressable>
           ) : null}
 
@@ -1177,18 +1218,36 @@ const styles = StyleSheet.create({
     includeFontPadding: false,
   },
   followLineLabel: { fontSize: TYPE.footnote.fontSize, flexShrink: 1 },
-  khatmahPin: {
+  // The two pins (reading marker, khatmah position) are BUTTONS: a tinted
+  // face, an icon, and an action on the end that says what a tap does.
+  pinButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: SPACING.sm,
+    gap: SPACING.md,
     marginTop: SPACING.md,
-    borderWidth: 1,
-    borderRadius: RADIUS.md,
+    minHeight: 52,
+    borderRadius: RADIUS.lg,
     paddingVertical: SPACING.sm,
-    paddingHorizontal: SPACING.md,
+    paddingStart: SPACING.sm,
+    paddingEnd: SPACING.sm,
   },
-  khatmahDot: { width: 12, height: 12, borderRadius: RADIUS.sm },
-  khatmahPinLabel: { fontSize: TYPE.footnote.fontSize, fontWeight: '600', flex: 1 },
+  pinPressed: { opacity: 0.7 },
+  pinIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: RADIUS.full,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pinLabel: { fontSize: TYPE.footnote.fontSize, fontWeight: '600', flex: 1 },
+  pinAction: {
+    minWidth: 64,
+    paddingVertical: SPACING.xs + 2,
+    paddingHorizontal: SPACING.md,
+    borderRadius: RADIUS.full,
+    alignItems: 'center',
+  },
+  pinActionText: { fontSize: TYPE.footnote.fontSize, fontWeight: '700' },
   // The emerald button takes the row's full width; repeat and share share
   // the line below it, so the ranking is visible before it is read.
   actionsPrimary: { width: '100%' },

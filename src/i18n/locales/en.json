@@ -1114,7 +1114,6 @@
     "showTafsir": "Show tafsir",
     "tafsirUnavailable": "Tafsir unavailable — connect to the internet once to download it.",
     "khatmahPin": "Set as my khatmah position",
-    "khatmahPinned": "Khatmah position — tap to remove",
     "khatmahUnpin": "Remove khatmah position",
     "khatmahContinue": "Continue",
     "khatmahReset": "Reset",
@@ -1350,7 +1349,10 @@
     "bookmarkTapToRemove": "Tap its colour again to remove",
     "bookmarkPick": "Pick a colour",
     "bookmarkHere": "Here",
-    "bookmarkCircledHint": "A ringed colour is on another ayah — picking it moves that bookmark here."
+    "bookmarkCircledHint": "A ringed colour is on another ayah — picking it moves that bookmark here.",
+    "pinSet": "Set",
+    "pinRemove": "Remove",
+    "khatmahPinnedHere": "Your khatmah is at this ayah"
   },
   "reading": {
     "textSize": "Text size",

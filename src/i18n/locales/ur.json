@@ -1114,7 +1114,6 @@
     "showTafsir": "تفسیر دکھائیں",
     "tafsirUnavailable": "تفسیر دستیاب نہیں — ڈاؤن لوڈ کے لیے ایک بار انٹرنیٹ سے جڑیں۔",
     "khatmahPin": "میری ختم کی پوزیشن مقرر کریں",
-    "khatmahPinned": "ختم کی پوزیشن — ہٹانے کے لیے دبائیں",
     "khatmahUnpin": "ختم کی پوزیشن ہٹائیں",
     "khatmahContinue": "جاری رکھیں",
     "khatmahReset": "ری سیٹ",
@@ -1350,7 +1349,10 @@
     "bookmarkTapToRemove": "ہٹانے کے لیے اس کا رنگ دوبارہ دبائیں",
     "bookmarkPick": "رنگ منتخب کریں",
     "bookmarkHere": "یہاں",
-    "bookmarkCircledHint": "حلقے والا رنگ کسی اور آیت پر ہے — اسے چننے سے وہ نشان یہاں آ جائے گا۔"
+    "bookmarkCircledHint": "حلقے والا رنگ کسی اور آیت پر ہے — اسے چننے سے وہ نشان یہاں آ جائے گا۔",
+    "pinSet": "مقرر کریں",
+    "pinRemove": "ہٹائیں",
+    "khatmahPinnedHere": "آپ کا ختم اسی آیت پر ہے"
   },
   "reading": {
     "textSize": "متن کا سائز",

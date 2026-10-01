@@ -1114,7 +1114,6 @@
     "showTafsir": "तफ़सीर दिखाएँ",
     "tafsirUnavailable": "तफ़सीर उपलब्ध नहीं — डाउनलोड करने के लिए एक बार इंटरनेट से जुड़ें।",
     "khatmahPin": "मेरी ख़त्मा स्थिति के रूप में सेट करें",
-    "khatmahPinned": "ख़त्मा स्थिति — हटाने के लिए टैप करें",
     "khatmahUnpin": "ख़त्मा स्थिति हटाएँ",
     "khatmahContinue": "जारी रखें",
     "khatmahReset": "रीसेट",
@@ -1350,7 +1349,10 @@
     "bookmarkTapToRemove": "हटाने के लिए उसका रंग फिर से दबाएँ",
     "bookmarkPick": "एक रंग चुनें",
     "bookmarkHere": "यहाँ",
-    "bookmarkCircledHint": "घेरे वाला रंग किसी और आयत पर है — उसे चुनने से वह बुकमार्क यहाँ आ जाएगा।"
+    "bookmarkCircledHint": "घेरे वाला रंग किसी और आयत पर है — उसे चुनने से वह बुकमार्क यहाँ आ जाएगा।",
+    "pinSet": "सेट करें",
+    "pinRemove": "हटाएँ",
+    "khatmahPinnedHere": "आपका ख़त्म इसी आयत पर है"
   },
   "reading": {
     "textSize": "पाठ का आकार",

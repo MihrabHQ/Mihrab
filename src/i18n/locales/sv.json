@@ -1114,7 +1114,6 @@
     "showTafsir": "Visa tafsir",
     "tafsirUnavailable": "Tafsir är inte tillgänglig — anslut till internet en gång för att hämta den.",
     "khatmahPin": "Ange som min khatmah-position",
-    "khatmahPinned": "Khatmah-position — tryck för att ta bort",
     "khatmahUnpin": "Ta bort khatmah-position",
     "khatmahContinue": "Fortsätt",
     "khatmahReset": "Återställ",
@@ -1350,7 +1349,10 @@
     "bookmarkTapToRemove": "Tryck på färgen igen för att ta bort",
     "bookmarkPick": "Välj en färg",
     "bookmarkHere": "Här",
-    "bookmarkCircledHint": "En färg med ring finns på en annan vers — väljer du den flyttas bokmärket hit."
+    "bookmarkCircledHint": "En färg med ring finns på en annan vers — väljer du den flyttas bokmärket hit.",
+    "pinSet": "Ange",
+    "pinRemove": "Ta bort",
+    "khatmahPinnedHere": "Din khatmah är vid den här versen"
   },
   "reading": {
     "textSize": "Textstorlek",

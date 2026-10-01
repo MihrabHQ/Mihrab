@@ -1114,7 +1114,6 @@
     "showTafsir": "عرض التفسير",
     "tafsirUnavailable": "التفسير غير متاح — اتصل بالإنترنت مرة واحدة لتنزيله.",
     "khatmahPin": "تعيين كموضعي في الختمة",
-    "khatmahPinned": "موضع الختمة — انقر للإزالة",
     "khatmahUnpin": "إزالة موضع الختمة",
     "khatmahContinue": "متابعة",
     "khatmahReset": "إعادة ضبط",
@@ -1350,7 +1349,10 @@
     "bookmarkTapToRemove": "اضغط لونها مرة أخرى للإزالة",
     "bookmarkPick": "اختر لونًا",
     "bookmarkHere": "هنا",
-    "bookmarkCircledHint": "اللون المحاط بحلقة موضوع على آية أخرى — اختياره ينقل تلك العلامة إلى هنا."
+    "bookmarkCircledHint": "اللون المحاط بحلقة موضوع على آية أخرى — اختياره ينقل تلك العلامة إلى هنا.",
+    "pinSet": "تعيين",
+    "pinRemove": "إزالة",
+    "khatmahPinnedHere": "ختمتك عند هذه الآية"
   },
   "reading": {
     "textSize": "حجم النص",

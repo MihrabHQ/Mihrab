@@ -1114,7 +1114,6 @@
     "showTafsir": "তাফসীর দেখান",
     "tafsirUnavailable": "তাফসীর পাওয়া যাচ্ছে না — ডাউনলোড করতে একবার ইন্টারনেটে সংযোগ করুন।",
     "khatmahPin": "আমার খতমের অবস্থান হিসেবে সেট করুন",
-    "khatmahPinned": "খতমের অবস্থান — সরাতে চাপুন",
     "khatmahUnpin": "খতমের অবস্থান সরান",
     "khatmahContinue": "চালিয়ে যান",
     "khatmahReset": "রিসেট",
@@ -1350,7 +1349,10 @@
     "bookmarkTapToRemove": "সরাতে আবার এর রঙে চাপুন",
     "bookmarkPick": "একটি রঙ বেছে নিন",
     "bookmarkHere": "এখানে",
-    "bookmarkCircledHint": "বৃত্তযুক্ত রঙটি অন্য আয়াতে আছে — এটি বাছলে সেই বুকমার্ক এখানে চলে আসবে।"
+    "bookmarkCircledHint": "বৃত্তযুক্ত রঙটি অন্য আয়াতে আছে — এটি বাছলে সেই বুকমার্ক এখানে চলে আসবে।",
+    "pinSet": "সেট করুন",
+    "pinRemove": "সরান",
+    "khatmahPinnedHere": "আপনার খতম এই আয়াতে"
   },
   "reading": {
     "textSize": "লেখার আকার",

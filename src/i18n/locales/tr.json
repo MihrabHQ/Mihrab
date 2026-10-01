@@ -1114,7 +1114,6 @@
     "showTafsir": "Tefsiri göster",
     "tafsirUnavailable": "Tefsir mevcut değil — indirmek için bir kez internete bağlanın.",
     "khatmahPin": "Hatim konumum olarak ayarla",
-    "khatmahPinned": "Hatim konumu — kaldırmak için dokunun",
     "khatmahUnpin": "Hatim konumunu kaldır",
     "khatmahContinue": "Devam et",
     "khatmahReset": "Sıfırla",
@@ -1350,7 +1349,10 @@
     "bookmarkTapToRemove": "Kaldırmak için rengine tekrar dokun",
     "bookmarkPick": "Bir renk seç",
     "bookmarkHere": "Burada",
-    "bookmarkCircledHint": "Halkalı renk başka bir ayette — seçersen o yer imi buraya taşınır."
+    "bookmarkCircledHint": "Halkalı renk başka bir ayette — seçersen o yer imi buraya taşınır.",
+    "pinSet": "Ayarla",
+    "pinRemove": "Kaldır",
+    "khatmahPinnedHere": "Hatmin bu ayette"
   },
   "reading": {
     "textSize": "Metin boyutu",
