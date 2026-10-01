@@ -12,7 +12,6 @@ import { getInstalledAppVersionLabel } from '../../appVersion';
 import type { RootStackParamList } from '../../navigation/types';
 import { resetAppData } from '../../settings/storage';
 import { DEFAULT_SETTINGS } from '../../settings/types';
-import { rateApp } from '../../polish/rateApp';
 import { ChangelogSheet } from '../../polish/ChangelogSheet';
 import { NestedPageRows } from './NestedPageRows';
 import {
@@ -148,19 +147,9 @@ function AboutCardImpl() {
       </SettingsGroup>
 
       <SettingsGroup title={t('settings.sectionAbout')}>
-        <SettingsLinkRow
-          title={t('settings.rateApp', 'Rate Mihrab')}
-          help={t(
-            'settings.rateAppHelp',
-            'Enjoying the app? A rating helps others find it.',
-          )}
-          onPress={() => {
-            void rateApp();
-          }}
-          accessory={
-            <Text style={[styles.star, { color: palette.accent }]}>★</Text>
-          }
-        />
+        {/* "Rate Mihrab" was the first row here. It is on its own page
+            now, Help Mihrab (below), beside the other ways to pass the
+            app on: telling people, and the month's printable sheet. */}
         {/* "Show the app tour" was here. The tour is gone from first
             launch — the setup flow's last screen shows the user their own
             times instead of four slides describing them — and what it
@@ -193,8 +182,9 @@ function AboutCardImpl() {
         />
       </SettingsGroup>
 
-      {/* Attributions, on their own page. Eleven-point centred text under
-          the version number read as small print; it is not small print. */}
+      {/* Help Mihrab and Attributions, on their own pages. Eleven-point
+          centred text under the version number read as small print; it is
+          not small print. */}
       <NestedPageRows parent="SettingsAbout" />
       <View style={styles.versionBlock}>
         <Text
@@ -232,7 +222,6 @@ function AboutCardImpl() {
 export const AboutCard = memo(AboutCardImpl);
 
 const styles = StyleSheet.create({
-  star: { fontSize: TYPE.title3.fontSize },
   versionBlock: {
     marginTop: SPACING.md,
     marginBottom: SPACING.xs,

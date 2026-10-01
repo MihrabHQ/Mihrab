@@ -318,7 +318,6 @@
     "accent_violet": "Mor",
     "laDesignMarkers": "İşaretler",
     "rateApp": "Mihrab'ı değerlendir",
-    "rateAppHelp": "Uygulamayı beğendiniz mi? Puanınız başkalarının bulmasına yardımcı olur.",
     "ayahOfDay": "Günlük ayet bildirimi",
     "ayahOfDayHelp": "Her gün rastgele seçilen bir ayet ve meali.",
     "ayahOfDayTime": "Bildirim saati",
@@ -403,7 +402,9 @@
     "silenceJumuahDuration": "Cuma süresi",
     "silenceJumuahFixed": "Cuma sabit saatte",
     "silenceJumuahFixedHelp": "Birçok cami cumayı yıl boyunca aynı saatte kılar. Kapalıyken aralık öğleyi izler.",
-    "silenceJumuahTime": "Cuma saati"
+    "silenceJumuahTime": "Cuma saati",
+    "helpMihrab": "Mihrab'a destek ol",
+    "helpMihrabBlurb": "Değerlendir, başkalarına anlat, bir aylık namaz vakitlerini paylaş."
   },
   "locationSetup": {
     "headline": "Konumunuzu ayarlayın",
@@ -2151,5 +2152,21 @@
         "help": "Uzun ā hafifçe ē'ye meylettirilir, fetha ile imâle arasında. Harfin altındaki küçük nokta bunu gösterir: اَ۬لنَّصَٰر۪ىٰ."
       }
     }
+  },
+  "helpMihrab": {
+    "intro": "Mihrab ağızdan ağıza yayılıyor. Size faydası olduysa, onu başkalarına ulaştırmanın üç yolu burada.",
+    "rateAppStore": "App Store'da değerlendir",
+    "ratePlay": "Google Play'de değerlendir",
+    "rateStoreHelp": "Bir puan ve birkaç kelime, mağazada arama yapanların uygulamayı bulmasına yardımcı olur.",
+    "rateGithub": "GitHub'da yıldız ver",
+    "rateGithubHelp": "Mihrab'ı aldığınız yerde puanlama yok; GitHub'daki bir yıldız buna en yakın şey.",
+    "tellTitle": "Aileye ve arkadaşlara anlat",
+    "tellRow": "Onlara Mihrab'ı gönder",
+    "tellRowHelp": "Mihrab'ın tüm indirme yollarını içeren web sitesinin bağlantısı, seçtiğiniz herhangi bir uygulamayla gönderilir.",
+    "shareMessage": "Namaz vakitleri ve Kur'an için Mihrab'ı kullanıyorum. Bir göz at: {{url}}",
+    "monthTitle": "Namaz vakitlerini paylaş",
+    "monthRow": "Bu ayın vakit çizelgesi",
+    "monthRowHelp": "Bulunduğunuz yerin bu ayki namaz vakitleri, gönderilecek ya da yazdırılacak tek bir sayfada.",
+    "monthFooter": "Sevdiklerinize gönderin ya da kopyalarını yazdırıp caminizde, ailenize ve komşularınıza dağıtın. Her sayfada Mihrab'ın adresi bulunur; böylece ulaştığı herkes uygulamayı bulabilir."
   }
 }

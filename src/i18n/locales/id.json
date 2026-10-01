@@ -318,7 +318,6 @@
     "accent_violet": "Ungu",
     "laDesignMarkers": "Penanda",
     "rateApp": "Beri nilai Mihrab",
-    "rateAppHelp": "Suka aplikasinya? Penilaian membantu orang lain menemukannya.",
     "ayahOfDay": "Notifikasi ayat harian",
     "ayahOfDayHelp": "Satu ayat yang dipilih acak beserta terjemahannya, setiap hari.",
     "ayahOfDayTime": "Waktu notifikasi",
@@ -403,7 +402,9 @@
     "silenceJumuahDuration": "Lama Jumat",
     "silenceJumuahFixed": "Jumat pada jam tetap",
     "silenceJumuahFixedHelp": "Banyak masjid mengadakan Jumat pada jam yang sama sepanjang tahun. Jika mati, jendela mengikuti Zuhur.",
-    "silenceJumuahTime": "Waktu Jumat"
+    "silenceJumuahTime": "Waktu Jumat",
+    "helpMihrab": "Bantu Mihrab",
+    "helpMihrabBlurb": "Beri nilai, ceritakan kepada orang lain, bagikan jadwal salat sebulan."
   },
   "locationSetup": {
     "headline": "Tetapkan lokasi Anda",
@@ -2151,5 +2152,21 @@
         "help": "Ā panjang sedikit dicondongkan ke ē, antara fathah dan imalah. Titik kecil di bawah huruf menandainya: اَ۬لنَّصَٰر۪ىٰ."
       }
     }
+  },
+  "helpMihrab": {
+    "intro": "Mihrab tumbuh dari mulut ke mulut. Jika aplikasi ini bermanfaat bagi Anda, berikut tiga cara untuk meneruskannya.",
+    "rateAppStore": "Beri nilai di App Store",
+    "ratePlay": "Beri nilai di Google Play",
+    "rateStoreHelp": "Sebuah nilai dan beberapa kata membantu orang menemukannya saat mencari di toko aplikasi.",
+    "rateGithub": "Beri bintang di GitHub",
+    "rateGithubHelp": "Di tempat Anda mendapatkan Mihrab tidak ada penilaian; bintang di GitHub adalah yang paling mendekati.",
+    "tellTitle": "Ceritakan kepada keluarga dan teman",
+    "tellRow": "Kirimkan Mihrab kepada mereka",
+    "tellRowHelp": "Tautan ke situs web Mihrab, yang memuat semua cara mengunduhnya, dikirim lewat aplikasi pilihan Anda.",
+    "shareMessage": "Saya memakai Mihrab untuk jadwal salat dan Al-Qur’an. Coba lihat: {{url}}",
+    "monthTitle": "Bagikan jadwal salat",
+    "monthRow": "Jadwal bulan ini",
+    "monthRowHelp": "Jadwal salat bulan ini di tempat Anda, dalam satu halaman untuk dikirim atau dicetak.",
+    "monthFooter": "Kirimkan kepada orang-orang tercinta, atau cetak salinannya untuk dibagikan di masjid, kepada keluarga dan tetangga. Setiap lembar memuat alamat Mihrab, sehingga siapa pun yang menerimanya dapat menemukan aplikasinya."
   }
 }

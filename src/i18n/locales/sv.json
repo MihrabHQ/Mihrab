@@ -318,7 +318,6 @@
     "accent_violet": "Violett",
     "laDesignMarkers": "Markörer",
     "rateApp": "Betygsätt Mihrab",
-    "rateAppHelp": "Gillar du appen? Ett betyg hjälper andra att hitta den.",
     "ayahOfDay": "Daglig aya-avisering",
     "ayahOfDayHelp": "En slumpmässigt vald aya med översättning, varje dag.",
     "ayahOfDayTime": "Aviseringstid",
@@ -403,7 +402,9 @@
     "silenceJumuahDuration": "Längd för Jumu'ah",
     "silenceJumuahFixed": "Jumu'ah på fast tid",
     "silenceJumuahFixedHelp": "Många moskéer håller Jumu'ah på samma tid året runt. Av följer fönstret Dhuhr.",
-    "silenceJumuahTime": "Tid för Jumu'ah"
+    "silenceJumuahTime": "Tid för Jumu'ah",
+    "helpMihrab": "Hjälp Mihrab",
+    "helpMihrabBlurb": "Betygsätt appen, berätta om den, dela en månads bönetider."
   },
   "locationSetup": {
     "headline": "Ange din plats",
@@ -2151,5 +2152,21 @@
         "help": "Det långa ā dras lätt mot ē, mellan fatḥa och imāla. Den lilla pricken under bokstaven visar det: اَ۬لنَّصَٰر۪ىٰ."
       }
     }
+  },
+  "helpMihrab": {
+    "intro": "Mihrab sprids från person till person. Om appen har varit till nytta för dig finns här tre sätt att föra den vidare.",
+    "rateAppStore": "Betygsätt i App Store",
+    "ratePlay": "Betygsätt på Google Play",
+    "rateStoreHelp": "Ett betyg och några ord hjälper andra att hitta appen när de söker i butiken.",
+    "rateGithub": "Ge en stjärna på GitHub",
+    "rateGithubHelp": "Där du hämtade Mihrab finns inga betyg; en stjärna på GitHub är det närmaste.",
+    "tellTitle": "Berätta för familj och vänner",
+    "tellRow": "Skicka Mihrab till dem",
+    "tellRowHelp": "En länk till Mihrabs webbplats, där alla sätt att ladda ner appen finns, skickad med vilken app du vill.",
+    "shareMessage": "Jag använder Mihrab för bönetider och Koranen. Ta en titt: {{url}}",
+    "monthTitle": "Dela bönetiderna",
+    "monthRow": "Månadens tidtabell",
+    "monthRowHelp": "Månadens bönetider där du är, på en sida att skicka eller skriva ut.",
+    "monthFooter": "Skicka den till dina nära och kära, eller skriv ut exemplar att dela ut i moskén, till familjen och till grannarna. Varje blad har Mihrabs adress, så att alla som får det kan hitta appen."
   }
 }

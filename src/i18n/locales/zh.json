@@ -318,7 +318,6 @@
     "accent_violet": "紫罗兰",
     "laDesignMarkers": "标记",
     "rateApp": "为 Mihrab 评分",
-    "rateAppHelp": "喜欢这个应用吗？评分能帮助更多人发现它。",
     "ayahOfDay": "每日经文通知",
     "ayahOfDayHelp": "每天随机挑选一节经文及其译文。",
     "ayahOfDayTime": "通知时间",
@@ -403,7 +402,9 @@
     "silenceJumuahDuration": "主麻时长",
     "silenceJumuahFixed": "主麻固定时间",
     "silenceJumuahFixedHelp": "许多清真寺全年在同一时间举行主麻。关闭时，时段跟随晌礼。",
-    "silenceJumuahTime": "主麻时间"
+    "silenceJumuahTime": "主麻时间",
+    "helpMihrab": "帮助 Mihrab",
+    "helpMihrabBlurb": "评分、告诉他人、分享一个月的礼拜时间。"
   },
   "locationSetup": {
     "headline": "设置您的位置",
@@ -2151,5 +2152,21 @@
         "help": "长 ā 略微倾向 ē，介于开口音与倾音之间。字母下方的小点即为标记：اَ۬لنَّصَٰر۪ىٰ。"
       }
     }
+  },
+  "helpMihrab": {
+    "intro": "Mihrab 靠口口相传成长。如果它对你有帮助，这里有三种方式把它传给更多人。",
+    "rateAppStore": "在 App Store 评分",
+    "ratePlay": "在 Google Play 评分",
+    "rateStoreHelp": "一个评分和几句话，能帮助在商店里搜索的人找到它。",
+    "rateGithub": "在 GitHub 上加星",
+    "rateGithubHelp": "你获取 Mihrab 的地方没有评分功能；在 GitHub 上加一颗星是最接近的方式。",
+    "tellTitle": "告诉家人和朋友",
+    "tellRow": "把 Mihrab 发给他们",
+    "tellRowHelp": "Mihrab 网站的链接，上面有所有下载方式，可通过你选择的任何应用发送。",
+    "shareMessage": "我用 Mihrab 查看礼拜时间和阅读古兰经。来看看：{{url}}",
+    "monthTitle": "分享礼拜时间",
+    "monthRow": "本月时间表",
+    "monthRowHelp": "你所在地本月的礼拜时间，排在一页纸上，可发送也可打印。",
+    "monthFooter": "发给你爱的人，或打印出来在清真寺、家人和邻居间分发。每一页都印有 Mihrab 的网址，拿到它的人都能找到这个应用。"
   }
 }

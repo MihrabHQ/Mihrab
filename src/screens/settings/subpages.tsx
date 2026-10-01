@@ -21,6 +21,7 @@ import { AboutSettingsScreen } from './pages/AboutSettingsScreen';
 import { AppearanceSettingsScreen } from './pages/AppearanceSettingsScreen';
 import { AttributionsSettingsScreen } from './pages/AttributionsSettingsScreen';
 import { DailyRemindersSettingsScreen } from './pages/DailyRemindersSettingsScreen';
+import { HelpMihrabSettingsScreen } from './pages/HelpMihrabSettingsScreen';
 import { DhikrRemindersSettingsScreen } from './pages/DhikrRemindersSettingsScreen';
 import { ExtraTimesSettingsScreen } from './pages/ExtraTimesSettingsScreen';
 import { LocationSettingsScreen } from './pages/LocationSettingsScreen';
@@ -161,6 +162,12 @@ const ALL_SUBPAGES: readonly SettingsSubpage[] = [
     Icon: AboutIcon,
     component: AboutSettingsScreen,
     children: [
+      {
+        route: 'SettingsHelpMihrab',
+        titleKey: 'settings.helpMihrab',
+        blurbKey: 'settings.helpMihrabBlurb',
+        component: HelpMihrabSettingsScreen,
+      },
       {
         route: 'SettingsAttributions',
         titleKey: 'settings.attributions',

@@ -318,7 +318,6 @@
     "accent_violet": "Violet",
     "laDesignMarkers": "Markers",
     "rateApp": "Rate Mihrab",
-    "rateAppHelp": "Enjoying the app? A rating helps others find it.",
     "ayahOfDay": "Daily ayah notification",
     "ayahOfDayHelp": "A randomly chosen ayah with its translation, every day.",
     "ayahOfDayTime": "Notification time",
@@ -403,7 +402,9 @@
     "silenceJumuahDuration": "Jumu'ah length",
     "silenceJumuahFixed": "Jumu'ah at a fixed time",
     "silenceJumuahFixedHelp": "Many mosques hold Jumu'ah at the same time all year. Off, the window follows Dhuhr.",
-    "silenceJumuahTime": "Jumu'ah time"
+    "silenceJumuahTime": "Jumu'ah time",
+    "helpMihrab": "Help Mihrab",
+    "helpMihrabBlurb": "Rate it, tell people about it, share a month of prayer times."
   },
   "locationSetup": {
     "headline": "Set your location",
@@ -2151,5 +2152,21 @@
     "lightPages": "light pages",
     "darkPages": "dark pages",
     "attribution": "Colours and page fonts: the King Fahd Glorious Qur'an Printing Complex, Madinah (QPC V4 tajweed), via the Quranic Universal Library. Rule data: quran.com."
+  },
+  "helpMihrab": {
+    "intro": "Mihrab grows by word of mouth. If it has been useful to you, here are three ways to pass it on.",
+    "rateAppStore": "Rate it on the App Store",
+    "ratePlay": "Rate it on Google Play",
+    "rateStoreHelp": "A rating and a few words help people find it when they search the store.",
+    "rateGithub": "Star it on GitHub",
+    "rateGithubHelp": "Where you got Mihrab there are no ratings; a star on GitHub is the closest thing.",
+    "tellTitle": "Tell family and friends",
+    "tellRow": "Send them Mihrab",
+    "tellRowHelp": "A link to Mihrab's website, which has every way to download it, sent through any app you choose.",
+    "shareMessage": "I use Mihrab for prayer times and the Quran. Have a look: {{url}}",
+    "monthTitle": "Share the prayer times",
+    "monthRow": "This month's timetable",
+    "monthRowHelp": "This month's prayer times where you are, on one page to send or print.",
+    "monthFooter": "Send it to the people you love, or print copies to hand out at your mosque, to family and to neighbours. Every sheet carries Mihrab's address, so whoever it reaches can find the app."
   }
 }

@@ -318,7 +318,6 @@
     "accent_violet": "Violeta",
     "laDesignMarkers": "Marcadores",
     "rateApp": "Valora Mihrab",
-    "rateAppHelp": "¿Te gusta la app? Una valoración ayuda a otros a encontrarla.",
     "ayahOfDay": "Notificación diaria de aleya",
     "ayahOfDayHelp": "Una aleya elegida al azar con su traducción, cada día.",
     "ayahOfDayTime": "Hora de la notificación",
@@ -403,7 +402,9 @@
     "silenceJumuahDuration": "Duración del Yumu'ah",
     "silenceJumuahFixed": "Yumu'ah a una hora fija",
     "silenceJumuahFixedHelp": "Muchas mezquitas celebran el Yumu'ah a la misma hora todo el año. Apagado, el periodo sigue al Dhuhr.",
-    "silenceJumuahTime": "Hora del Yumu'ah"
+    "silenceJumuahTime": "Hora del Yumu'ah",
+    "helpMihrab": "Ayuda a Mihrab",
+    "helpMihrabBlurb": "Valórala, habla de ella, comparte un mes de horarios de oración."
   },
   "locationSetup": {
     "headline": "Establece tu ubicación",
@@ -2151,5 +2152,21 @@
         "help": "La ā larga se inclina un poco hacia ē, entre fatḥa e imāla. El puntito bajo la letra lo marca: اَ۬لنَّصَٰر۪ىٰ."
       }
     }
+  },
+  "helpMihrab": {
+    "intro": "Mihrab crece de boca en boca. Si te ha sido útil, aquí tienes tres maneras de hacerla llegar a otros.",
+    "rateAppStore": "Valórala en el App Store",
+    "ratePlay": "Valórala en Google Play",
+    "rateStoreHelp": "Una valoración y unas palabras ayudan a otros a encontrarla cuando buscan en la tienda.",
+    "rateGithub": "Dale una estrella en GitHub",
+    "rateGithubHelp": "Donde conseguiste Mihrab no hay valoraciones; una estrella en GitHub es lo más parecido.",
+    "tellTitle": "Cuéntaselo a familia y amigos",
+    "tellRow": "Envíales Mihrab",
+    "tellRowHelp": "Un enlace a la web de Mihrab, con todas las formas de descargarla, enviado con la app que prefieras.",
+    "shareMessage": "Uso Mihrab para los horarios de oración y el Corán. Échale un vistazo: {{url}}",
+    "monthTitle": "Comparte los horarios de oración",
+    "monthRow": "Horario de este mes",
+    "monthRowHelp": "Los horarios de oración de este mes donde estás, en una página para enviar o imprimir.",
+    "monthFooter": "Envíala a tus seres queridos o imprime copias para repartir en tu mezquita, entre tu familia y tus vecinos. Cada hoja lleva la dirección de Mihrab, para que quien la reciba pueda encontrar la app."
   }
 }

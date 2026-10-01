@@ -318,7 +318,6 @@
     "accent_violet": "Violett",
     "laDesignMarkers": "Markierungen",
     "rateApp": "Mihrab bewerten",
-    "rateAppHelp": "Gefällt dir die App? Eine Bewertung hilft anderen, sie zu finden.",
     "ayahOfDay": "Tägliche Aya-Benachrichtigung",
     "ayahOfDayHelp": "Jeden Tag eine zufällig gewählte Aya mit Übersetzung.",
     "ayahOfDayTime": "Benachrichtigungszeit",
@@ -403,7 +402,9 @@
     "silenceJumuahDuration": "Dauer am Freitag (Dschumua)",
     "silenceJumuahFixed": "Dschumua zu fester Uhrzeit",
     "silenceJumuahFixedHelp": "Viele Moscheen halten das Freitagsgebet das ganze Jahr zur selben Zeit. Aus, folgt das Fenster dem Dhuhr.",
-    "silenceJumuahTime": "Uhrzeit der Dschumua"
+    "silenceJumuahTime": "Uhrzeit der Dschumua",
+    "helpMihrab": "Mihrab unterstützen",
+    "helpMihrabBlurb": "Bewerten, weitererzählen, einen Monat Gebetszeiten teilen."
   },
   "locationSetup": {
     "headline": "Legen Sie Ihren Standort fest",
@@ -2151,5 +2152,21 @@
         "help": "Das lange ā wird leicht zu ē geneigt, zwischen Fatḥa und Imāla. Der kleine Punkt unter dem Buchstaben zeigt es an: اَ۬لنَّصَٰر۪ىٰ."
       }
     }
+  },
+  "helpMihrab": {
+    "intro": "Mihrab verbreitet sich durch Mundpropaganda. Wenn die App dir geholfen hat, gibt es hier drei Wege, sie weiterzugeben.",
+    "rateAppStore": "Im App Store bewerten",
+    "ratePlay": "Bei Google Play bewerten",
+    "rateStoreHelp": "Eine Bewertung und ein paar Worte helfen anderen, die App bei der Suche im Store zu finden.",
+    "rateGithub": "Auf GitHub einen Stern geben",
+    "rateGithubHelp": "Wo du Mihrab herhast, gibt es keine Bewertungen; ein Stern auf GitHub kommt dem am nächsten.",
+    "tellTitle": "Familie und Freunden erzählen",
+    "tellRow": "Mihrab weiterschicken",
+    "tellRowHelp": "Ein Link zur Website von Mihrab, auf der alle Download-Wege stehen, verschickt mit einer App deiner Wahl.",
+    "shareMessage": "Ich nutze Mihrab für Gebetszeiten und den Koran. Schau mal: {{url}}",
+    "monthTitle": "Gebetszeiten teilen",
+    "monthRow": "Zeitplan dieses Monats",
+    "monthRowHelp": "Die Gebetszeiten dieses Monats an deinem Ort, auf einer Seite zum Verschicken oder Drucken.",
+    "monthFooter": "Schick sie deinen Liebsten oder drucke Exemplare, um sie in deiner Moschee, in der Familie und unter Nachbarn zu verteilen. Jedes Blatt trägt die Adresse von Mihrab, damit jeder, der es bekommt, die App finden kann."
   }
 }

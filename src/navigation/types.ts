@@ -21,7 +21,8 @@ export type MainTabParamList = {
 export type RootStackParamList = {
   /** The tab navigator. */
   Home: undefined;
-  MonthTimes: undefined;
+  /** `share` opens it on the printable sheet rather than the table. */
+  MonthTimes: { share?: boolean } | undefined;
   ShareMonth: { year: number; month: number };
   Compass: undefined;
   QuranSurah: {
@@ -123,5 +124,6 @@ export type RootStackParamList = {
   SettingsExtraTimes: undefined;
   SettingsDailyReminders: undefined;
   SettingsDhikrReminders: undefined;
+  SettingsHelpMihrab: undefined;
   SettingsAttributions: undefined;
 };

@@ -318,7 +318,6 @@
     "accent_violet": "Violet",
     "laDesignMarkers": "Repères",
     "rateApp": "Évaluer Mihrab",
-    "rateAppHelp": "Vous aimez l'application ? Une note aide les autres à la découvrir.",
     "ayahOfDay": "Notification quotidienne d'un verset",
     "ayahOfDayHelp": "Un verset choisi au hasard avec sa traduction, chaque jour.",
     "ayahOfDayTime": "Heure de la notification",
@@ -403,7 +402,9 @@
     "silenceJumuahDuration": "Durée de la Joumou'a",
     "silenceJumuahFixed": "Joumou'a à heure fixe",
     "silenceJumuahFixedHelp": "Beaucoup de mosquées tiennent la Joumou'a à la même heure toute l'année. Désactivé, la plage suit le Dhuhr.",
-    "silenceJumuahTime": "Heure de la Joumou'a"
+    "silenceJumuahTime": "Heure de la Joumou'a",
+    "helpMihrab": "Aider Mihrab",
+    "helpMihrabBlurb": "Évaluez-la, parlez-en, partagez un mois d’horaires de prière."
   },
   "locationSetup": {
     "headline": "Définissez votre emplacement",
@@ -2151,5 +2152,21 @@
         "help": "Le ā long s’incline légèrement vers ē, entre fatḥa et imāla. Le petit point sous la lettre l’indique : اَ۬لنَّصَٰر۪ىٰ."
       }
     }
+  },
+  "helpMihrab": {
+    "intro": "Mihrab se fait connaître de bouche à oreille. Si elle vous a été utile, voici trois façons de la transmettre.",
+    "rateAppStore": "L’évaluer sur l’App Store",
+    "ratePlay": "L’évaluer sur Google Play",
+    "rateStoreHelp": "Une note et quelques mots aident d’autres personnes à la trouver quand elles cherchent dans la boutique.",
+    "rateGithub": "Lui donner une étoile sur GitHub",
+    "rateGithubHelp": "Là où vous avez obtenu Mihrab, il n’y a pas de notes ; une étoile sur GitHub s’en rapproche le plus.",
+    "tellTitle": "En parler à la famille et aux amis",
+    "tellRow": "Leur envoyer Mihrab",
+    "tellRowHelp": "Un lien vers le site de Mihrab, qui réunit toutes les façons de la télécharger, envoyé avec l’app de votre choix.",
+    "shareMessage": "J’utilise Mihrab pour les horaires de prière et le Coran. Jette un œil : {{url}}",
+    "monthTitle": "Partager les horaires de prière",
+    "monthRow": "Les horaires de ce mois",
+    "monthRowHelp": "Les horaires de prière de ce mois là où vous êtes, sur une page à envoyer ou à imprimer.",
+    "monthFooter": "Envoyez-la à vos proches, ou imprimez des copies à distribuer à la mosquée, à la famille et aux voisins. Chaque feuille porte l’adresse de Mihrab, pour que chacun de ceux qui la reçoivent puisse trouver l’app."
   }
 }

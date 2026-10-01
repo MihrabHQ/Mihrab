@@ -1,4 +1,4 @@
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import { useHeaderHeight } from '@react-navigation/elements';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -57,7 +57,9 @@ export function MonthTimesScreen() {
   const [cacheStatus, setCacheStatus] = useState<{ monthsStored: number; isExpired: boolean } | null>(null);
   const [refreshingCache, setRefreshingCache] = useState(false);
   const [refreshProgress, setRefreshProgress] = useState<{ current: number; total: number } | null>(null);
-  const [isShareView, setIsShareView] = useState(false);
+  // Settings → About → Help Mihrab opens straight on the sheet.
+  const route = useRoute<RouteProp<RootStackParamList, 'MonthTimes'>>();
+  const [isShareView, setIsShareView] = useState(route.params?.share === true);
 
   useAndroidSubScreenBack();
 
