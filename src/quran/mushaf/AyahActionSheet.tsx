@@ -573,9 +573,10 @@ export function AyahActionSheet({
               tajwīd colours when they are on, whichever the page is in.
               A `unicode` riwayah (Warsh) has no page fonts and keeps the
               text. The text is still what is shared and copied.
-              With the Tajweed tab open this is the tab's āyah too —
-              tinted whatever the page is in, and a tapped word is read
-              out — so the tab does not draw a second copy below. */}
+              Warsh's text is tinted here too when its muṣḥaf is.
+              The Tajweed tab draws its own tinted copy only when this one
+              is plain — the colours off — so a coloured āyah is never
+              shown twice. With the tab open a tapped word is read out. */}
           {arabic && riwayahById(state.prefs.riwayah).render !== 'unicode' ? (
             <View style={styles.arabicGlyphs}>
               <TajweedAyahGlyphs
@@ -583,7 +584,7 @@ export function AyahActionSheet({
                 ayah={ayah}
                 fontSize={AYAH_GLYPH_SIZE}
                 color={String(palette.text)}
-                glyphs={state.prefs.tajweedColours || panel === 'tajweed' ? 'tajweed' : 'v2'}
+                glyphs={state.prefs.tajweedColours ? 'tajweed' : 'v2'}
                 onWordPress={
                   panel === 'tajweed'
                     ? w => {
@@ -593,7 +594,7 @@ export function AyahActionSheet({
                 }
               />
             </View>
-          ) : arabic && panel === 'tajweed' && state.prefs.riwayah === 'warsh' ? (
+          ) : arabic && state.prefs.riwayah === 'warsh' && state.prefs.tajweedColours ? (
             <WarshTajweedAyah surah={surah} ayah={ayah} text={arabic} style={styles.arabic} />
           ) : arabic ? (
             <Text style={[styles.arabic, { color: palette.text }]}>

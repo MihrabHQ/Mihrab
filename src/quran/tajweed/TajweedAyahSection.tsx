@@ -1,5 +1,7 @@
 /**
- * The āyah sheet's "Tajweed" section: one row per rule the āyah contains — the colour, the name, what to do,
+ * The āyah sheet's "Tajweed" section: the āyah with its letters tinted —
+ * only when the muṣḥaf's colours are off, since otherwise the sheet's
+ * āyah above is already tinted — then one row per rule it contains — the colour, the name, what to do,
  * and the words it happens in. Tapping a word reads it out (the word
  * reader's own voice), which is the point: see the colour, hear the rule.
  *
@@ -28,9 +30,10 @@ import {
 } from './warshTajweed';
 import { tajweedInk, type TajweedRule } from './rules';
 import { TajweedSwatch } from './TajweedText';
-import { ayahGlyphWords, TajweedWordGlyph } from './TajweedAyahGlyphs';
+import { ayahGlyphWords, TajweedAyahGlyphs, TajweedWordGlyph } from './TajweedAyahGlyphs';
 
-/** The page font's size in the chips, dp. */
+/** The page font's size in the section's āyah and its chips, dp. */
+const AYAH_FONT_SIZE = 30;
 const CHIP_FONT_SIZE = 24;
 
 /** Read one word aloud, as a held-and-released word in the muṣḥaf is. */
@@ -97,8 +100,20 @@ export function TajweedAyahSection({
             </Text>
           ) : (
             <>
-              {/* No copy of the āyah here: the sheet draws it right above
-                  the tabs, tinted while this tab is open (AyahActionSheet). */}
+              {/* The tinted āyah, only when the sheet's own copy above the
+                  tabs is plain (the muṣḥaf's colours off). With them on, the
+                  one above is already tinted and a second would repeat it. */}
+              {coloursOn ? null : (
+                <TajweedAyahGlyphs
+                  surah={surah}
+                  ayah={ayah}
+                  fontSize={AYAH_FONT_SIZE}
+                  color={String(palette.text)}
+                  onWordPress={w => {
+                    if (!w.isEnd) speakWord(surah, ayah, w.position);
+                  }}
+                />
+              )}
               {data.rules.length === 0 ? (
                 <Text style={[styles.meta, { color: palette.muted }]}>
                   {t('tajweed.sheetNone', 'Nothing in this ayah is tinted — no rule applies.')}
@@ -248,6 +263,16 @@ function WarshTajweedBody({
         </Text>
       ) : (
         <>
+          {coloursOn ? null : (
+            <Text style={[styles.warshAyah, { color: palette.text, fontFamily }]}>
+              {words.map((w, i) => (
+                <Text key={i}>
+                  {i > 0 ? ' ' : null}
+                  {drawn(w)}
+                </Text>
+              ))}
+            </Text>
+          )}
           {rules.length === 0 ? (
             <Text style={[styles.meta, { color: palette.muted }]}>
               {t('tajweed.sheetNone', 'Nothing in this ayah is tinted — no rule applies.')}
@@ -316,7 +341,7 @@ function WarshTajweedBody({
 
 /**
  * The Warsh āyah in the page's face with its letters tinted — what the
- * sheet draws above its tabs while the Tajweed tab is open. Until the
+ * sheet draws above its tabs when the muṣḥaf's colours are on. Until the
  * rules load, or where they do not match, it is the plain text.
  */
 export function WarshTajweedAyah({
@@ -370,6 +395,7 @@ export function WarshTajweedAyah({
 }
 
 const styles = StyleSheet.create({
+  warshAyah: { fontSize: 26, lineHeight: 52, textAlign: 'right', writingDirection: 'rtl' },
   warshChip: { fontSize: TYPE.title3.fontSize, lineHeight: 40 },
   block: { marginTop: SPACING.sm, gap: SPACING.sm },
   meta: { fontSize: TYPE.footnote.fontSize },
