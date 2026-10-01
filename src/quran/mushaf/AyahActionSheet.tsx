@@ -505,7 +505,6 @@ export function AyahActionSheet({
              */
             paddingStart: SHEET_H_PADDING + sideInset,
             paddingEnd: SHEET_H_PADDING + sideInset,
-            paddingBottom: SHEET_BOTTOM_PADDING + insets.bottom,
           },
         ]}>
         <View style={styles.headerRow}>
@@ -536,7 +535,18 @@ export function AyahActionSheet({
             scroller never intersects the keyboard to begin with. The prop
             would be an iOS-only no-op sitting where a reader would take
             it for the fix. */}
-        <ScrollView ref={scrollRef} style={styles.body} bounces={false}>
+        {/* The bottom inset is the SCROLLER's, not the sheet's: on the
+            sheet it was a band of empty card under the scroller, a lip
+            that cut the content off above the screen's edge and looked
+            like the end of it. In the content, the list runs to the edge
+            and the last control still clears the home indicator. */}
+        <ScrollView
+          ref={scrollRef}
+          style={styles.body}
+          bounces={false}
+          contentContainerStyle={{
+            paddingBottom: SHEET_BOTTOM_PADDING + insets.bottom,
+          }}>
           {/* THE ĀYAH IN THE MUṢḤAF'S OWN FACE. It was set in the app's
               Arabic text font, which is not the face the reader had just
               been looking at: the sheet opened on a word and showed it in

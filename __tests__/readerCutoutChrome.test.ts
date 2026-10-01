@@ -102,9 +102,11 @@ describe('the ayah sheet clears the cutout in landscape', () => {
     expect(sheet).toContain('paddingEnd: SHEET_H_PADDING + sideInset');
   });
 
-  it('and the bottom inset under its actions', () => {
-    expect(sheet).toContain(
-      'paddingBottom: SHEET_BOTTOM_PADDING + insets.bottom',
+  it('and the bottom inset under its actions — inside the scroller, not under it', () => {
+    expect(sheet).toMatch(
+      /contentContainerStyle=\{\{\s*paddingBottom: SHEET_BOTTOM_PADDING \+ insets\.bottom,\s*\}\}/,
     );
+    // No band of empty sheet under the scroller to cut the content off.
+    expect(sheet).not.toMatch(/paddingEnd: SHEET_H_PADDING \+ sideInset,\s*paddingBottom/);
   });
 });
