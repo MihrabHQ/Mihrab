@@ -21,6 +21,8 @@ import {
   Animated,
   FlatList,
   Modal,
+  type NativeScrollEvent,
+  type NativeSyntheticEvent,
   type ScrollViewInstance,
   Pressable,
   StyleSheet,
@@ -31,6 +33,7 @@ import {
 } from 'react-native';
 import { afterInteractions } from '../utils/afterInteractions';
 import { useTranslation } from 'react-i18next';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { useLayoutRtl } from '../i18n/useLayoutRtl';
 import { useReduceMotion } from '../hooks/useReduceMotion';
 import { useKeyboardInset } from '../hooks/useKeyboardInset';
@@ -94,6 +97,8 @@ const TABS: Tab[] = ['surah', 'juz', 'bookmarks'];
 /** A page that is not the one in front is a card, set back this far. */
 const CARD_SCALE = 0.92;
 const CARD_DIM = 0.55;
+/** The lists report their offset on the native driver — the shared top follows it there. */
+const AnimatedFlatList = Animated.FlatList;
 
 /**
  * The surahs with a standing appointment — issue #23.
@@ -418,15 +423,95 @@ export function QuranScreen() {
   useEffect(() => {
     listRef.current = pageRefs.current[tab];
   }, [tab]);
+  /**
+   * THE SHARED TOP — doors, khatmah, search and the selector — sits over
+   * the pager, and each list starts with a gap its height (`topH`). It
+   * follows the list in front up and out of the way, one point for one,
+   * exactly as when it was part of the list.
+   *
+   * Three lists, one top: so before the front changes, the others are
+   * lined up (`alignPages`). While the top is still partly in view, every
+   * list is put at the same offset; once it is gone, any list still
+   * showing it is moved to where it just isn't. The top therefore stands
+   * still through a swipe, whichever list it then follows.
+   */
+  const [topH, setTopH] = useState(0);
+  const [pagerH, setPagerH] = useState(0);
+  const scrollYs = useRef<Record<Tab, Animated.Value>>({
+    surah: new Animated.Value(0),
+    juz: new Animated.Value(0),
+    bookmarks: new Animated.Value(0),
+  }).current;
+  const lastY = useRef<Record<Tab, number>>({ surah: 0, juz: 0, bookmarks: 0 });
+  const topHRef = useRef(0);
+  topHRef.current = topH;
+  const alignPages = useCallback(() => {
+    const from = tabRef.current;
+    const y = lastY.current[from];
+    const h = topHRef.current;
+    for (const p of TABS) {
+      if (p === from) continue;
+      const target = y < h ? y : Math.max(lastY.current[p], h);
+      if (Math.abs(target - lastY.current[p]) < 0.5) continue;
+      pageRefs.current[p]?.scrollToOffset({ offset: target, animated: false });
+      lastY.current[p] = target;
+      scrollYs[p].setValue(target);
+    }
+  }, [scrollYs]);
+  const onListScroll = useMemo(() => {
+    const make = (p: Tab) =>
+      Animated.event([{ nativeEvent: { contentOffset: { y: scrollYs[p] } } }], {
+        useNativeDriver: true,
+        listener: (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+          lastY.current[p] = e.nativeEvent.contentOffset.y;
+          tabBarScroll.onScroll?.(e);
+        },
+      });
+    return { surah: make('surah'), juz: make('juz'), bookmarks: make('bookmarks') };
+  }, [scrollYs, tabBarScroll]);
+  const topShift = useMemo(() => {
+    const h = Math.max(1, topH);
+    return scrollYs[tab].interpolate({ inputRange: [0, h], outputRange: [0, -h], extrapolate: 'clamp' });
+  }, [scrollYs, tab, topH]);
+  /**
+   * A drag that starts on the top scrolls the list under it, as it did
+   * when the top was the list's own header — it is only laid over it now.
+   */
+  const dragFrom = useRef(0);
+  const topDrag = useMemo(
+    () =>
+      Gesture.Pan()
+        .activeOffsetY([-8, 8])
+        .failOffsetX([-12, 12])
+        .runOnJS(true)
+        .onStart(() => {
+          dragFrom.current = lastY.current[tabRef.current];
+        })
+        .onUpdate(e => {
+          listRef.current?.scrollToOffset({
+            offset: Math.max(0, dragFrom.current - e.translationY),
+            animated: false,
+          });
+        })
+        .onEnd(e => {
+          if (Math.abs(e.velocityY) < 300) return;
+          listRef.current?.scrollToOffset({
+            offset: Math.max(0, dragFrom.current - e.translationY - e.velocityY * 0.25),
+            animated: true,
+          });
+        }),
+    [],
+  );
   const searching = searchOpen || query.trim() !== '' || results != null;
   const goToTab = useCallback(
     (next: Tab) => {
+      alignPages();
       setTab(next);
       if (pageW > 0) {
         pagerRef.current?.scrollTo({ x: order.indexOf(next) * pageW, y: 0, animated: !reduceMotion });
       }
     },
-    [order, pageW, reduceMotion],
+    [alignPages, order, pageW, reduceMotion],
   );
   // A new width (rotation) or a mirrored row: stay on the same page.
   useEffect(() => {
@@ -448,6 +533,7 @@ export function QuranScreen() {
     [scrollX],
   );
 
+
   const [headerH, setHeaderH] = useState<Record<Tab, number>>({ surah: 0, juz: 0, bookmarks: 0 });
   const [surahRowH, setSurahRowH] = useState(0);
   const [juzRowH, setJuzRowH] = useState(0);
@@ -457,25 +543,21 @@ export function QuranScreen() {
         ? (_: unknown, index: number) => ({
             length: rowH,
             offset:
-              LIST_PADDING + headerH[pageTab] + HEADER_GAP + index * (rowH + LIST_GAP),
+              topH + headerH[pageTab] + HEADER_GAP + index * (rowH + LIST_GAP),
             index,
           })
         : undefined,
-    [headerH],
+    [headerH, topH],
   );
 
   /**
-   * The list's header, for one page of the pager. Each page carries its
-   * own — it scrolls with that page's list — so a page sliding in arrives
-   * whole, its segment already selected.
+   * EVERYTHING DOWN TO THE TAB SELECTOR — shared by the three pages, and
+   * not part of any of them. It is laid over the pager (see `topShift`)
+   * and scrolls away with whichever list is in front, so the page reads
+   * as it always did; but a swipe moves only what is under the selector.
    */
-  const headerFor = (pageTab: Tab) => (
-    <View
-      style={[styles.headerWrap, listCap]}
-      onLayout={e => {
-        const h = e.nativeEvent.layout.height;
-        setHeaderH(prev => (prev[pageTab] === h ? prev : { ...prev, [pageTab]: h }));
-      }}>
+  const topHeader = (
+    <View style={[styles.topWrap, listCap]}>
       {/* The doors back into the book — the khatmah's next page and the
           reading marker, both when the reader keeps both (#41). The same
           rows Home draws, from the same selector, so the two screens
@@ -676,7 +758,7 @@ export function QuranScreen() {
             { key: 'juz', label: t('quran.tabJuz', 'Juz') },
             { key: 'bookmarks', label: t('quran.tabBookmarks', 'Bookmarks') },
           ]}
-          value={pageTab}
+          value={tab}
           onChange={goToTab}
         />
       </View>
@@ -714,7 +796,20 @@ export function QuranScreen() {
           </Text>
         </Pressable>
       </View>
+    </View>
+  );
 
+  /**
+   * The rest of the header, for one page of the pager — the part under
+   * the selector, which slides with that page's card.
+   */
+  const headerFor = (pageTab: Tab) => (
+    <View
+      style={[styles.headerWrap, listCap]}
+      onLayout={e => {
+        const h = e.nativeEvent.layout.height;
+        setHeaderH(prev => (prev[pageTab] === h ? prev : { ...prev, [pageTab]: h }));
+      }}>
       {/* The two surahs with a place in the week — issue #23.
           
           Al-Kahf on Friday and Al-Mulk before sleep are read on a
@@ -1193,7 +1288,9 @@ export function QuranScreen() {
   const renderPage = (pageTab: Tab, inFront: boolean) => {
     const contentStyle = [
       styles.list,
-      { paddingTop: listTop, paddingBottom: tabBarInset },
+      // The gap the shared top lies over, and enough length under any
+      // list for the top to scroll fully away from it.
+      { paddingTop: topH, paddingBottom: tabBarInset, minHeight: pagerH + topH },
       kb.contentPadding,
     ];
     // While searching, the field and its results live on the page in
@@ -1201,10 +1298,12 @@ export function QuranScreen() {
     const listHeader = inFront || !searching ? headerFor(pageTab) : undefined;
     if (pageTab === 'surah') {
       return (
-        <FlatList<SurahIndex>
+        <AnimatedFlatList<SurahIndex>
           automaticallyAdjustKeyboardInsets
           ref={pageRef.surah}
           {...tabBarScroll}
+          onScroll={onListScroll.surah}
+          scrollEventThrottle={16}
           data={[...filteredSurahs]}
           keyExtractor={s => String(s.number)}
           contentContainerStyle={contentStyle}
@@ -1219,10 +1318,12 @@ export function QuranScreen() {
     }
     if (pageTab === 'juz') {
       return (
-        <FlatList<JuzRow>
+        <AnimatedFlatList<JuzRow>
           automaticallyAdjustKeyboardInsets
           ref={pageRef.juz}
           {...tabBarScroll}
+          onScroll={onListScroll.juz}
+          scrollEventThrottle={16}
           data={juzRows}
           keyExtractor={j => String(j.juz)}
           contentContainerStyle={contentStyle}
@@ -1234,10 +1335,12 @@ export function QuranScreen() {
       );
     }
     return (
-      <FlatList
+      <AnimatedFlatList
         automaticallyAdjustKeyboardInsets
         ref={pageRef.bookmarks}
         {...tabBarScroll}
+        onScroll={onListScroll.bookmarks}
+        scrollEventThrottle={16}
         data={[0]}
         keyExtractor={() => 'bookmarks'}
         contentContainerStyle={contentStyle}
@@ -1263,7 +1366,9 @@ export function QuranScreen() {
         style={styles.pagerArea}
         onLayout={e => {
           const w = Math.round(e.nativeEvent.layout.width);
+          const h = Math.round(e.nativeEvent.layout.height);
           setPageW(prev => (prev === w ? prev : w));
+          setPagerH(prev => (prev === h ? prev : h));
         }}>
         {/* The gap between the cards: a shade off the page's own colour —
             deeper on a light page, lifted on a dark one (black has no
@@ -1287,6 +1392,7 @@ export function QuranScreen() {
             contentOffset={{ x: order.indexOf(tab) * pageW, y: 0 }}
             scrollEventThrottle={16}
             onScroll={onPagerScroll}
+            onScrollBeginDrag={alignPages}
             onMomentumScrollEnd={e => onPagerSettled(e.nativeEvent.contentOffset.x)}>
             {order.map((pageTab, slot) => {
               const range = [(slot - 1) * pageW, slot * pageW, (slot + 1) * pageW];
@@ -1340,6 +1446,24 @@ export function QuranScreen() {
             })}
           </Animated.ScrollView>
         ) : null}
+        {/* The shared top, over the cards — see `topShift`. */}
+        <GestureDetector gesture={topDrag}>
+          <Animated.View
+            onLayout={e => {
+              const h = Math.round(e.nativeEvent.layout.height);
+              setTopH(prev => (prev === h ? prev : h));
+            }}
+            style={[
+              styles.topOverlay,
+              {
+                paddingTop: listTop + LIST_PADDING,
+                backgroundColor: palette.bg,
+                transform: [{ translateY: topShift }],
+              },
+            ]}>
+            {topHeader}
+          </Animated.View>
+        </GestureDetector>
       </View>
 
 
@@ -1438,6 +1562,16 @@ const styles = StyleSheet.create({
   // Pinned left-to-right; each page sets the app's own direction.
   pager: { flex: 1, direction: 'ltr' },
   page: { flex: 1, overflow: 'hidden', borderRadius: RADIUS.xl },
+  // Over the pager, full width so the cards slide out from under it.
+  topOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    paddingHorizontal: LIST_PADDING,
+    paddingBottom: SPACING.md,
+  },
+  topWrap: { gap: SPACING.md },
   pageEdge: {
     position: 'absolute',
     top: 0,

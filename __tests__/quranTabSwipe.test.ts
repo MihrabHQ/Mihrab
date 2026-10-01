@@ -13,7 +13,7 @@ describe('the pager', () => {
     expect(screen).toContain('{order.map((pageTab, slot) => {');
     expect(screen).toContain('{renderPage(pageTab, inFront)}');
     // No more swapping one list for another on a pan.
-    expect(screen).not.toMatch(/GestureDetector|tabAfterSwipe/);
+    expect(screen).not.toMatch(/tabAfterSwipe/);
   });
 
   it('draws the pages as cards that set back and dim off-centre, on the native driver', () => {
@@ -25,7 +25,7 @@ describe('the pager', () => {
 
   it('settles the tab where the swipe lands, and a tap on the control slides there', () => {
     expect(screen).toContain('onMomentumScrollEnd={e => onPagerSettled(e.nativeEvent.contentOffset.x)}');
-    expect(screen).toMatch(/value=\{pageTab\}\s*onChange=\{goToTab\}/);
+    expect(screen).toMatch(/value=\{tab\}\s*onChange=\{goToTab\}/);
     expect(screen).toMatch(/pagerRef\.current\?\.scrollTo\(\{ x: order\.indexOf\(next\) \* pageW/);
   });
 
@@ -38,5 +38,21 @@ describe('the pager', () => {
   it('locks while searching, with one search field', () => {
     expect(screen).toContain('scrollEnabled={!searching}');
     expect(screen).toContain('const listHeader = inFront || !searching ? headerFor(pageTab) : undefined;');
+  });
+
+  it('moves only what is under the selector: the top is shared, laid over the cards', () => {
+    // The selector and everything above it is one view, outside the pages…
+    const top = screen.slice(screen.indexOf('const topHeader = ('), screen.indexOf('const headerFor = ('));
+    expect(top).toContain('<SegmentedControl');
+    expect(top).toContain('<KhatmahEntry />');
+    expect(top).not.toContain('OFTEN_READ');
+    // …drawn over the pager, following the list in front up and away…
+    expect(screen).toMatch(/<GestureDetector gesture=\{topDrag\}>\s*<Animated\.View/);
+    expect(screen).toContain('transform: [{ translateY: topShift }]');
+    expect(screen).toMatch(/scrollYs\[tab\]\.interpolate\(\{ inputRange: \[0, h\], outputRange: \[0, -h\], extrapolate: 'clamp' \}\)/);
+    // …and each list leaves room for it, and lines up with the others first.
+    expect(screen).toContain('{ paddingTop: topH, paddingBottom: tabBarInset, minHeight: pagerH + topH }');
+    expect(screen).toContain('onScrollBeginDrag={alignPages}');
+    expect(screen).toContain('const target = y < h ? y : Math.max(lastY.current[p], h);');
   });
 });

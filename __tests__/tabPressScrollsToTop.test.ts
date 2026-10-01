@@ -54,7 +54,7 @@ describe('the Quran tab, which has three lists and one ref', () => {
     // Surah / Juz / Bookmarks are all mounted — the pager's cards. Each
     // keeps its own ref, and `listRef` follows whichever is in front —
     // miss one and that tab alone stops responding.
-    const lists = SRC.match(/<FlatList[<\s]/g) ?? [];
+    const lists = SRC.match(/<AnimatedFlatList[<\s]/g) ?? [];
     expect(lists.length).toBe(3);
     for (const p of ['surah', 'juz', 'bookmarks']) expect(SRC).toContain(`ref={pageRef.${p}}`);
     expect(SRC).toContain('if (pageTab === tabRef.current) listRef.current = r;');
