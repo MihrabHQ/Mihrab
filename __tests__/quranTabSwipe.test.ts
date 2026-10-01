@@ -1,33 +1,42 @@
 /**
- * Swiping between Surah / Juz / Bookmarks on the Qur'an tab.
+ * Surah / Juz / Bookmarks on the Qur'an tab are a pager of cards: a swipe
+ * drags the next page in, the pages set back and dim while they move.
  */
 import { readFileSync } from 'fs';
 import { join } from 'path';
-import { tabAfterSwipe } from '../src/screens/QuranScreen';
 
 const screen = readFileSync(join(__dirname, '..', 'src', 'screens', 'QuranScreen.tsx'), 'utf8');
 
-describe('a swipe over the list', () => {
-  it('moves one tab in the direction of the row, and stops at its ends', () => {
-    expect(tabAfterSwipe('surah', -80, 0, false)).toBe('juz');
-    expect(tabAfterSwipe('juz', -80, 0, false)).toBe('bookmarks');
-    expect(tabAfterSwipe('bookmarks', -80, 0, false)).toBe('bookmarks');
-    expect(tabAfterSwipe('bookmarks', 80, 0, false)).toBe('juz');
-    expect(tabAfterSwipe('surah', 80, 0, false)).toBe('surah');
+describe('the pager', () => {
+  it('is a horizontal paging scroll view, one page per tab', () => {
+    expect(screen).toMatch(/<Animated\.ScrollView[\s\S]*?horizontal\s+pagingEnabled/);
+    expect(screen).toContain('{order.map((pageTab, slot) => {');
+    expect(screen).toContain('{renderPage(pageTab, inFront)}');
+    // No more swapping one list for another on a pan.
+    expect(screen).not.toMatch(/GestureDetector|tabAfterSwipe/);
   });
 
-  it('is mirrored with the layout', () => {
-    expect(tabAfterSwipe('surah', 80, 0, true)).toBe('juz');
-    expect(tabAfterSwipe('juz', -80, 0, true)).toBe('surah');
+  it('draws the pages as cards that set back and dim off-centre, on the native driver', () => {
+    expect(screen).toMatch(/outputRange: \[CARD_SCALE, 1, CARD_SCALE\]/);
+    expect(screen).toMatch(/outputRange: \[CARD_DIM, 1, CARD_DIM\]/);
+    expect(screen).toMatch(/contentOffset: \{ x: scrollX \} \} \}\], \{ useNativeDriver: true \}/);
+    expect(screen).toMatch(/page: \{ flex: 1, overflow: 'hidden', borderRadius: RADIUS\.xl \}/);
   });
 
-  it('counts a short, fast flick, and ignores a short slow drag', () => {
-    expect(tabAfterSwipe('surah', -30, -900, false)).toBe('juz');
-    expect(tabAfterSwipe('surah', -30, -100, false)).toBe('surah');
+  it('settles the tab where the swipe lands, and a tap on the control slides there', () => {
+    expect(screen).toContain('onMomentumScrollEnd={e => onPagerSettled(e.nativeEvent.contentOffset.x)}');
+    expect(screen).toMatch(/value=\{pageTab\}\s*onChange=\{goToTab\}/);
+    expect(screen).toMatch(/pagerRef\.current\?\.scrollTo\(\{ x: order\.indexOf\(next\) \* pageW/);
   });
 
-  it('activates only sideways and yields to a scroll', () => {
-    expect(screen).toMatch(/Gesture\.Pan\(\)\s*\.activeOffsetX\(\[-SWIPE_ACTIVATE, SWIPE_ACTIVATE\]\)\s*\.failOffsetY\(\[-SWIPE_FAIL_Y, SWIPE_FAIL_Y\]\)/);
-    expect(screen).toMatch(/<GestureDetector gesture=\{tabSwipe\}>/);
+  it('keeps Surah at the start of the row in a mirrored layout', () => {
+    expect(screen).toContain("layoutRtl ? [...TABS].reverse() : TABS");
+    expect(screen).toMatch(/pager: \{ flex: 1, direction: 'ltr' \}/);
+    expect(screen).toContain("direction: layoutRtl ? 'rtl' : 'ltr'");
+  });
+
+  it('locks while searching, with one search field', () => {
+    expect(screen).toContain('scrollEnabled={!searching}');
+    expect(screen).toContain('const listHeader = inFront || !searching ? headerFor(pageTab) : undefined;');
   });
 });

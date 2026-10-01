@@ -1,17 +1,21 @@
 /**
- * The tab bar's press: a halo on the icon, and a hold-and-slide along the
- * bar. See `navigation/tabBarPress.ts`.
+ * The tab bar's press: a glossy bubble inside the bar, and a hold-and-
+ * slide along it. See `navigation/tabBarPress.ts` and `TabBarBubble`.
  */
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import {
   _resetTabBarPress,
   activateTab,
+  holdTab,
   hoveredTab,
+  pressTab,
   registerTabActivation,
   registerTabFrame,
-  setHoveredTab,
+  releaseTab,
+  slideTo,
   tabAt,
+  tabBarPress,
 } from '../src/navigation/tabBarPress';
 
 const read = (p: string) => readFileSync(join(__dirname, '..', p), 'utf8');
@@ -37,33 +41,50 @@ describe('the store', () => {
     expect(open).toHaveBeenCalledTimes(1);
   });
 
-  it('keeps one hovered tab', () => {
-    setHoveredTab('TodayTab');
-    setHoveredTab('QuranTab');
+  it('a tap names the tab and settles on it', () => {
+    pressTab('TodayTab');
+    expect(hoveredTab()).toBe('TodayTab');
+    expect(tabBarPress().held).toBe(false);
+    releaseTab('TodayTab');
+    expect(tabBarPress()).toEqual({ hovered: null, fingerX: null, held: false, settled: 'TodayTab' });
+  });
+
+  it('a slide before the hold does nothing; after it, the finger leads', () => {
+    registerTabFrame('TodayTab', { x: 0, width: 60 });
+    registerTabFrame('QuranTab', { x: 60, width: 60 });
+    pressTab('TodayTab');
+    slideTo(90);
+    expect(tabBarPress().fingerX).toBeNull();
+    expect(hoveredTab()).toBe('TodayTab');
+    holdTab();
+    slideTo(90);
+    expect(tabBarPress()).toMatchObject({ hovered: 'QuranTab', fingerX: 90, held: true });
+    // Off the end of the bar: the last tab it was over stays named.
+    slideTo(400);
     expect(hoveredTab()).toBe('QuranTab');
-    setHoveredTab(null);
-    expect(hoveredTab()).toBeNull();
   });
 });
 
 describe('the wiring', () => {
-  it('replaces the ripple with a halo on every icon, sized by the glyph', () => {
-    const icons = read('src/navigation/tabIcons.tsx');
-    for (const name of ['TodayTab', 'QuranTab', 'TasbihTab', 'DuasTab', 'LogTab', 'SettingsTab']) {
-      expect(icons).toContain(`<Halo name="${name}" size={iconSize(size)} color={color}>`);
-    }
-    expect(icons).toMatch(/const d = Math\.round\(size \* HALO_SCALE\)/);
-    const button = read('src/navigation/TabBarButton.tsx');
-    expect(button).toContain('android_ripple={undefined}');
-    expect(read('src/navigation/MainTabs.tsx')).toContain('tabBarButton: props => <TabBarButton {...props} name={route.name} />');
+  it('draws the bubble in the bar background, so the bar clips it', () => {
+    const tabs = read('src/navigation/MainTabs.tsx');
+    expect(tabs).toContain('tabBarButton: props => <TabBarButton {...props} name={route.name} />');
+    expect(tabs).toContain('tabBarBackground: () => <TabBarBubble radius={FLOATS_OVER_CONTENT ? RADIUS.xl : 0} />');
+    const bubble = read('src/navigation/TabBarBubble.tsx');
+    expect(bubble).toMatch(/overflow: 'hidden'/);
+    expect(bubble).toMatch(/const w = Math\.max\(0, tabW - INSET_X \* 2\)/);
+    expect(bubble).toMatch(/const h = Math\.max\(0, Math\.min\(tabH, bar\.height - tabTop\) - INSET_Y \* 2\)/);
+    // No halo left on the icons, and no ripple on the buttons.
+    expect(read('src/navigation/tabIcons.tsx')).not.toContain('Halo');
+    expect(read('src/navigation/TabBarButton.tsx')).toContain('android_ripple={undefined}');
   });
 
   it('holds, then slides: the tab under the finger is the one opened', () => {
     const button = read('src/navigation/TabBarButton.tsx');
-    expect(button).toMatch(/holdTimer\.current = setTimeout\(\(\) => \{\s*held\.current = true;/);
-    expect(button).toMatch(/onTouchMove=\{e => \{\s*if \(!held\.current\) return;\s*const over = tabAt\(e\.nativeEvent\.pageX\)/);
-    expect(button).toMatch(/if \(held\.current\) \{\s*const target = hoveredTab\(\);\s*if \(target\) activateTab\(target\);/);
+    expect(button).toMatch(/holdTimer\.current = setTimeout\(\(\) => \{\s*holdTab\(\);/);
+    expect(button).toContain('onTouchMove={e => slideTo(e.nativeEvent.pageX)}');
+    expect(button).toMatch(/const target = held \? hoveredTab\(\) : name;\s*releaseTab\(target\);\s*if \(held && target\) activateTab\(target\);/);
     // A tap after a hold is not a second press.
-    expect(button).toMatch(/onPress=\{e => \{\s*if \(held\.current\) return;/);
+    expect(button).toMatch(/onPress=\{e => \{\s*if \(tabBarPress\(\)\.held\) return;/);
   });
 });

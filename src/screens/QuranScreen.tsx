@@ -18,10 +18,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigation, useScrollToTop } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
+  Animated,
   FlatList,
-  I18nManager,
   Modal,
-  useWindowDimensions,
+  type ScrollViewInstance,
   Pressable,
   StyleSheet,
   Switch,
@@ -31,7 +31,8 @@ import {
 } from 'react-native';
 import { afterInteractions } from '../utils/afterInteractions';
 import { useTranslation } from 'react-i18next';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { useLayoutRtl } from '../i18n/useLayoutRtl';
+import { useReduceMotion } from '../hooks/useReduceMotion';
 import { useKeyboardInset } from '../hooks/useKeyboardInset';
 import { useKeyboardAwareScroll } from '../hooks/useKeyboardAwareScroll';
 import { useAppPalette } from '../hooks/useAppPalette';
@@ -90,32 +91,9 @@ import { RADIUS, SPACING } from '../theme/tokens';
 
 type Tab = 'surah' | 'juz' | 'bookmarks';
 const TABS: Tab[] = ['surah', 'juz', 'bookmarks'];
-/** Sideways travel before a pan is a swipe, and vertical travel that makes it a scroll. */
-const SWIPE_ACTIVATE = 24;
-const SWIPE_FAIL_Y = 16;
-/** A swipe that ends shorter than this, and slower than this, is not one. */
-const SWIPE_DISTANCE = 56;
-const SWIPE_VELOCITY = 500;
-
-/**
- * Which tab a swipe lands on. A swipe towards the start of the row (left,
- * in a left-to-right layout) goes to the NEXT tab, as paging does; in a
- * mirrored layout the row runs the other way and so does the swipe.
- * Exported for the test; pure.
- */
-export function tabAfterSwipe(
-  current: Tab,
-  translationX: number,
-  velocityX: number,
-  rtl: boolean,
-): Tab {
-  const far = Math.abs(translationX) >= SWIPE_DISTANCE;
-  const fast = Math.abs(velocityX) >= SWIPE_VELOCITY;
-  if (!far && !fast) return current;
-  const sign = Math.sign(far ? translationX : velocityX) * (rtl ? -1 : 1);
-  const index = TABS.indexOf(current) + (sign < 0 ? 1 : -1);
-  return TABS[Math.max(0, Math.min(TABS.length - 1, index))];
-}
+/** A page that is not the one in front is a card, set back this far. */
+const CARD_SCALE = 0.92;
+const CARD_DIM = 0.55;
 
 /**
  * The surahs with a standing appointment — issue #23.
@@ -145,7 +123,7 @@ export function QuranScreen() {
   const quranWide = useBreakpoint() !== 'compact';
   const listCap = quranWide ? styles.listWide : null;
   const { t, i18n } = useTranslation();
-  const { palette } = useAppPalette();
+  const { palette, isDark } = useAppPalette();
   // Two dialogs on this screen open with an autoFocus field in them.
   const keyboardInset = useKeyboardInset();
   const navigation =
@@ -157,10 +135,9 @@ export function QuranScreen() {
    * screen most needs: the surah list is 114 rows and the juz list 30, so
    * "back to the top" was otherwise a long swipe with no shortcut.
    *
-   * ONE ref for all three lists. The tab renders exactly one of them at a
-   * time, so at any moment this holds whichever is mounted; React detaches
-   * the outgoing list before it attaches the incoming one, so a switch
-   * never leaves the ref pointing at a list that is gone.
+   * ONE ref for the list in front. All three lists are mounted — they
+   * are the pager's cards — so this is pointed at whichever page is
+   * current (`pageRefs`, and the effect on `tab` below).
    */
   const listRef = useRef<FlatList>(null);
   useScrollToTop(listRef);
@@ -203,31 +180,6 @@ export function QuranScreen() {
   const [tab, setTab] = useState<Tab>('surah');
   const tabRef = useRef<Tab>('surah');
   tabRef.current = tab;
-  /**
-   * The bar floats OVER the list, inside this area's bounds, and a
-   * hold-and-slide along it (`TabBarButton`) is a horizontal pan too. A
-   * swipe that began under the bar is the bar's, not the tabs'.
-   */
-  const windowH = useWindowDimensions().height;
-  const barTopRef = useRef(0);
-  barTopRef.current = windowH - useTabBarInset();
-  const swipeStartY = useRef(0);
-  const tabSwipe = useMemo(
-    () =>
-      Gesture.Pan()
-        .activeOffsetX([-SWIPE_ACTIVATE, SWIPE_ACTIVATE])
-        .failOffsetY([-SWIPE_FAIL_Y, SWIPE_FAIL_Y])
-        .runOnJS(true)
-        .onBegin(e => {
-          swipeStartY.current = e.absoluteY;
-        })
-        .onEnd(e => {
-          if (swipeStartY.current >= barTopRef.current) return;
-          const next = tabAfterSwipe(tabRef.current, e.translationX, e.velocityX, I18nManager.isRTL);
-          if (next !== tabRef.current) setTab(next);
-        }),
-    [],
-  );
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<QuranSearchResult[] | null>(null);
   // Go-to-page (v2.8.5) — a page number typed here opens the mushaf there.
@@ -433,26 +385,97 @@ export function QuranScreen() {
    * named constants shared with the stylesheet rather than two numbers
    * typed twice.
    */
-  const [headerH, setHeaderH] = useState(0);
+  /**
+   * THE PAGER — Surah, Juz and Bookmarks side by side.
+   *
+   * A swipe drags the next page in under the finger, and the pages read
+   * as CARDS while they move: the one leaving sinks back and dims, the one
+   * arriving rises to full size, with a darker gap between them. Release
+   * past half way (or flick) and it settles on the next; otherwise it
+   * springs back. The segmented control drives the same pager, so a tap
+   * slides the cards too, rather than swapping the list out from under.
+   *
+   * The pager itself is pinned left-to-right and, in a mirrored layout,
+   * takes its pages in reverse — Surah stays at the start of the row and
+   * a swipe towards the end of the row is still "next". Each page then
+   * lays itself out in the app's own direction.
+   */
+  const layoutRtl = useLayoutRtl();
+  const reduceMotion = useReduceMotion();
+  const order = useMemo<Tab[]>(() => (layoutRtl ? [...TABS].reverse() : TABS), [layoutRtl]);
+  const [pageW, setPageW] = useState(0);
+  const pagerRef = useRef<ScrollViewInstance>(null);
+  const scrollX = useRef(new Animated.Value(0)).current;
+  const pageRefs = useRef<Record<Tab, FlatList | null>>({ surah: null, juz: null, bookmarks: null });
+  /** Each list's ref: kept per page, and `listRef` follows the one in front. */
+  const pageRef = useMemo(() => {
+    const make = (pageTab: Tab) => (r: FlatList | null) => {
+      pageRefs.current[pageTab] = r;
+      if (pageTab === tabRef.current) listRef.current = r;
+    };
+    return { surah: make('surah'), juz: make('juz'), bookmarks: make('bookmarks') };
+  }, []);
+  useEffect(() => {
+    listRef.current = pageRefs.current[tab];
+  }, [tab]);
+  const searching = searchOpen || query.trim() !== '' || results != null;
+  const goToTab = useCallback(
+    (next: Tab) => {
+      setTab(next);
+      if (pageW > 0) {
+        pagerRef.current?.scrollTo({ x: order.indexOf(next) * pageW, y: 0, animated: !reduceMotion });
+      }
+    },
+    [order, pageW, reduceMotion],
+  );
+  // A new width (rotation) or a mirrored row: stay on the same page.
+  useEffect(() => {
+    if (pageW > 0) {
+      pagerRef.current?.scrollTo({ x: order.indexOf(tabRef.current) * pageW, y: 0, animated: false });
+    }
+  }, [order, pageW]);
+  const onPagerSettled = useCallback(
+    (x: number) => {
+      if (pageW <= 0) return;
+      const slot = Math.max(0, Math.min(order.length - 1, Math.round(x / pageW)));
+      const next = order[slot];
+      if (next !== tabRef.current) setTab(next);
+    },
+    [order, pageW],
+  );
+  const onPagerScroll = useMemo(
+    () => Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }], { useNativeDriver: true }),
+    [scrollX],
+  );
+
+  const [headerH, setHeaderH] = useState<Record<Tab, number>>({ surah: 0, juz: 0, bookmarks: 0 });
   const [surahRowH, setSurahRowH] = useState(0);
   const [juzRowH, setJuzRowH] = useState(0);
   const itemLayoutFor = useCallback(
-    (rowH: number) =>
-      headerH > 0 && rowH > 0
+    (rowH: number, pageTab: Tab) =>
+      headerH[pageTab] > 0 && rowH > 0
         ? (_: unknown, index: number) => ({
             length: rowH,
             offset:
-              LIST_PADDING + headerH + HEADER_GAP + index * (rowH + LIST_GAP),
+              LIST_PADDING + headerH[pageTab] + HEADER_GAP + index * (rowH + LIST_GAP),
             index,
           })
         : undefined,
     [headerH],
   );
 
-  const header = (
+  /**
+   * The list's header, for one page of the pager. Each page carries its
+   * own — it scrolls with that page's list — so a page sliding in arrives
+   * whole, its segment already selected.
+   */
+  const headerFor = (pageTab: Tab) => (
     <View
       style={[styles.headerWrap, listCap]}
-      onLayout={e => setHeaderH(e.nativeEvent.layout.height)}>
+      onLayout={e => {
+        const h = e.nativeEvent.layout.height;
+        setHeaderH(prev => (prev[pageTab] === h ? prev : { ...prev, [pageTab]: h }));
+      }}>
       {/* The doors back into the book — the khatmah's next page and the
           reading marker, both when the reader keeps both (#41). The same
           rows Home draws, from the same selector, so the two screens
@@ -653,8 +676,8 @@ export function QuranScreen() {
             { key: 'juz', label: t('quran.tabJuz', 'Juz') },
             { key: 'bookmarks', label: t('quran.tabBookmarks', 'Bookmarks') },
           ]}
-          value={tab}
-          onChange={setTab}
+          value={pageTab}
+          onChange={goToTab}
         />
       </View>
         {searchOpen ? null : (
@@ -701,7 +724,7 @@ export function QuranScreen() {
           while nothing is being searched: they are a shortcut past the
           list, so above a list that is already narrowed they would be in
           the way. */}
-      {tab === 'surah' && !query.trim() && results == null ? (
+      {pageTab === 'surah' && !query.trim() && results == null ? (
         <View style={styles.oftenRow}>
           <Text style={[styles.oftenLabel, { color: palette.muted }]}>
             {t('quran.oftenRead', { defaultValue: 'Often read' })}
@@ -1166,6 +1189,65 @@ export function QuranScreen() {
     </View>
   );
 
+  /** One card of the pager: that tab's list, its own header on top. */
+  const renderPage = (pageTab: Tab, inFront: boolean) => {
+    const contentStyle = [
+      styles.list,
+      { paddingTop: listTop, paddingBottom: tabBarInset },
+      kb.contentPadding,
+    ];
+    // While searching, the field and its results live on the page in
+    // front alone: one autoFocus field, one set of results.
+    const listHeader = inFront || !searching ? headerFor(pageTab) : undefined;
+    if (pageTab === 'surah') {
+      return (
+        <FlatList<SurahIndex>
+          automaticallyAdjustKeyboardInsets
+          ref={pageRef.surah}
+          {...tabBarScroll}
+          data={[...filteredSurahs]}
+          keyExtractor={s => String(s.number)}
+          contentContainerStyle={contentStyle}
+          contentInsetAdjustmentBehavior="never"
+          ListHeaderComponent={listHeader}
+          initialNumToRender={12}
+          windowSize={7}
+          renderItem={renderSurahRow}
+          getItemLayout={itemLayoutFor(surahRowH, 'surah')}
+        />
+      );
+    }
+    if (pageTab === 'juz') {
+      return (
+        <FlatList<JuzRow>
+          automaticallyAdjustKeyboardInsets
+          ref={pageRef.juz}
+          {...tabBarScroll}
+          data={juzRows}
+          keyExtractor={j => String(j.juz)}
+          contentContainerStyle={contentStyle}
+          contentInsetAdjustmentBehavior="never"
+          ListHeaderComponent={listHeader}
+          renderItem={renderJuzRow}
+          getItemLayout={itemLayoutFor(juzRowH, 'juz')}
+        />
+      );
+    }
+    return (
+      <FlatList
+        automaticallyAdjustKeyboardInsets
+        ref={pageRef.bookmarks}
+        {...tabBarScroll}
+        data={[0]}
+        keyExtractor={() => 'bookmarks'}
+        contentContainerStyle={contentStyle}
+        contentInsetAdjustmentBehavior="never"
+        ListHeaderComponent={listHeader}
+        renderItem={renderBookmarks}
+      />
+    );
+  };
+
   return (
     <View style={[styles.root, { backgroundColor: palette.bg }]}>
       {stripOn ? (
@@ -1174,71 +1256,91 @@ export function QuranScreen() {
           top={Math.max(0, pageTop - SPACING.md)}
         />
       ) : null}
-      {/* SWIPE BETWEEN THE TABS. A horizontal pan over the list moves to
-          the next or previous of Surah / Juz / Bookmarks, the way the
-          segmented control does. The pan only activates once the finger
-          has clearly gone sideways (`activeOffsetX`) and gives up the
-          moment it goes up or down (`failOffsetY`), so the lists scroll
-          exactly as they did; the lists' own native gesture is left to
-          win every vertical drag. In Arabic the row is mirrored, and so
-          is the swipe. */}
-      <GestureDetector gesture={tabSwipe}>
-      <View style={styles.swipeArea}>
-      {tab === 'surah' ? (
-        <FlatList<SurahIndex>
-          automaticallyAdjustKeyboardInsets
-          ref={listRef}
-          {...tabBarScroll}
-          data={[...filteredSurahs]}
-          keyExtractor={s => String(s.number)}
-          contentContainerStyle={[
-            styles.list,
-            { paddingTop: listTop, paddingBottom: tabBarInset },
-            kb.contentPadding,
-          ]}
-          contentInsetAdjustmentBehavior="never"
-          ListHeaderComponent={header}
-          initialNumToRender={12}
-          windowSize={7}
-          renderItem={renderSurahRow}
-          getItemLayout={itemLayoutFor(surahRowH)}
+      {/* SWIPE BETWEEN THE TABS — the pager; see `order` above. Locked
+          while searching: the results belong to the page they were typed
+          on, and the field must not slide away under the keyboard. */}
+      <View
+        style={styles.pagerArea}
+        onLayout={e => {
+          const w = Math.round(e.nativeEvent.layout.width);
+          setPageW(prev => (prev === w ? prev : w));
+        }}>
+        {/* The gap between the cards: a shade off the page's own colour —
+            deeper on a light page, lifted on a dark one (black has no
+            deeper). */}
+        <View
+          pointerEvents="none"
+          style={[styles.pagerGap, { backgroundColor: isDark ? palette.card : 'rgba(0,0,0,0.07)' }]}
         />
-      ) : tab === 'juz' ? (
-        <FlatList<JuzRow>
-          automaticallyAdjustKeyboardInsets
-          ref={listRef}
-          {...tabBarScroll}
-          data={juzRows}
-          keyExtractor={j => String(j.juz)}
-          contentContainerStyle={[
-            styles.list,
-            { paddingTop: listTop, paddingBottom: tabBarInset },
-            kb.contentPadding,
-          ]}
-          contentInsetAdjustmentBehavior="never"
-          ListHeaderComponent={header}
-          renderItem={renderJuzRow}
-          getItemLayout={itemLayoutFor(juzRowH)}
-        />
-      ) : (
-        <FlatList
-          automaticallyAdjustKeyboardInsets
-          ref={listRef}
-          {...tabBarScroll}
-          data={[0]}
-          keyExtractor={() => 'bookmarks'}
-          contentContainerStyle={[
-            styles.list,
-            { paddingTop: listTop, paddingBottom: tabBarInset },
-            kb.contentPadding,
-          ]}
-          contentInsetAdjustmentBehavior="never"
-          ListHeaderComponent={header}
-          renderItem={renderBookmarks}
-        />
-      )}
+        {pageW > 0 ? (
+          <Animated.ScrollView
+            ref={pagerRef}
+            horizontal
+            pagingEnabled
+            style={styles.pager}
+            scrollEnabled={!searching}
+            showsHorizontalScrollIndicator={false}
+            bounces={false}
+            overScrollMode="never"
+            decelerationRate="fast"
+            keyboardShouldPersistTaps="handled"
+            contentOffset={{ x: order.indexOf(tab) * pageW, y: 0 }}
+            scrollEventThrottle={16}
+            onScroll={onPagerScroll}
+            onMomentumScrollEnd={e => onPagerSettled(e.nativeEvent.contentOffset.x)}>
+            {order.map((pageTab, slot) => {
+              const range = [(slot - 1) * pageW, slot * pageW, (slot + 1) * pageW];
+              const inFront = pageTab === tab;
+              return (
+                <Animated.View
+                  key={pageTab}
+                  // Only the page in front is there for a screen reader.
+                  importantForAccessibility={inFront ? 'auto' : 'no-hide-descendants'}
+                  accessibilityElementsHidden={!inFront}
+                  style={[
+                    styles.page,
+                    {
+                      width: pageW,
+                      direction: layoutRtl ? 'rtl' : 'ltr',
+                      backgroundColor: palette.bg,
+                      opacity: scrollX.interpolate({
+                        inputRange: range,
+                        outputRange: [CARD_DIM, 1, CARD_DIM],
+                        extrapolate: 'clamp',
+                      }),
+                      transform: [
+                        {
+                          scale: scrollX.interpolate({
+                            inputRange: range,
+                            outputRange: [CARD_SCALE, 1, CARD_SCALE],
+                            extrapolate: 'clamp',
+                          }),
+                        },
+                      ],
+                    },
+                  ]}>
+                  {renderPage(pageTab, inFront)}
+                  {/* The card's edge, there only while it is moving. */}
+                  <Animated.View
+                    pointerEvents="none"
+                    style={[
+                      styles.pageEdge,
+                      {
+                        borderColor: palette.border ?? palette.muted,
+                        opacity: scrollX.interpolate({
+                          inputRange: range,
+                          outputRange: [1, 0, 1],
+                          extrapolate: 'clamp',
+                        }),
+                      },
+                    ]}
+                  />
+                </Animated.View>
+              );
+            })}
+          </Animated.ScrollView>
+        ) : null}
       </View>
-      </GestureDetector>
 
 
 
@@ -1331,7 +1433,20 @@ const HEADER_GAP = 12;
 
 const styles = StyleSheet.create({
   root: { flex: 1 },
-  swipeArea: { flex: 1 },
+  pagerArea: { flex: 1 },
+  pagerGap: { position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 },
+  // Pinned left-to-right; each page sets the app's own direction.
+  pager: { flex: 1, direction: 'ltr' },
+  page: { flex: 1, overflow: 'hidden', borderRadius: RADIUS.xl },
+  pageEdge: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    borderRadius: RADIUS.xl,
+    borderWidth: 1,
+  },
   list: { padding: LIST_PADDING, gap: LIST_GAP },
   // Center + cap the index column on iPad/Mac so surah rows stay readable.
   // Cap+center applied to the header and to EVERY row — NOT to the

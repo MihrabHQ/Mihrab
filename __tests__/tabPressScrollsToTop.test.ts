@@ -39,7 +39,9 @@ describe('every scrolling tab returns to the top on a second tab press', () => {
 
     it(`${file} attaches that ref to a scrollable`, () => {
       // The hook without the ref is the failure mode: it compiles, it
-      // renders, and the tab press does nothing.
+      // renders, and the tab press does nothing. (The Quran tab hands it
+      // to whichever page of its pager is in front — see below.)
+      if (file === 'QuranScreen.tsx') return;
       expect(read(file)).toContain(`ref={${ref}}`);
     });
   }
@@ -48,13 +50,15 @@ describe('every scrolling tab returns to the top on a second tab press', () => {
 describe('the Quran tab, which has three lists and one ref', () => {
   const SRC = read('QuranScreen.tsx');
 
-  it('gives every one of its lists the ref', () => {
-    // Surah / Juz / Bookmarks are rendered one at a time by the same
-    // ternary. Whichever is mounted has to be the one the ref holds, so
-    // all three carry it — miss one and that tab alone stops responding.
+  it('points the ref at the list in front', () => {
+    // Surah / Juz / Bookmarks are all mounted — the pager's cards. Each
+    // keeps its own ref, and `listRef` follows whichever is in front —
+    // miss one and that tab alone stops responding.
     const lists = SRC.match(/<FlatList[<\s]/g) ?? [];
     expect(lists.length).toBe(3);
-    expect((SRC.match(/ref=\{listRef\}/g) ?? []).length).toBe(3);
+    for (const p of ['surah', 'juz', 'bookmarks']) expect(SRC).toContain(`ref={pageRef.${p}}`);
+    expect(SRC).toContain('if (pageTab === tabRef.current) listRef.current = r;');
+    expect(SRC).toMatch(/listRef\.current = pageRefs\.current\[tab\];\s*\}, \[tab\]\);/);
   });
 
   it('does not scroll a tab it is not on', () => {
