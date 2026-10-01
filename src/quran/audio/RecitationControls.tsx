@@ -209,8 +209,101 @@ export function RecitationControls({ surahNumber, onStartPlayback }: Props) {
 
   return (
     <View>
-      {/* Reciter — compact row; tap opens the searchable picker. */}
-      <SectionHead label={t('quran.reciter', 'Reciter')} first />
+      {/* Speed */}
+      <SectionHead label={t('quran.speed', 'Speed')} first />
+      {chipRow(RATES, prefs.playbackRate, v => {
+        setQuranPrefs({ playbackRate: v });
+        void setPlaybackRate(v);
+      }, v => `${v}×`)}
+
+      {/* Memorization */}
+      <SectionHead label={t('quran.memorization', 'Memorization')} />
+      {stepper(
+        t('quran.repeatEachAyah', 'Repeat each ayah'),
+        prefs.repeat.eachAyah,
+        v => setQuranPrefs({ repeat: { ...prefs.repeat, eachAyah: v } }),
+      )}
+      {stepper(
+        t('quran.repeatRange', 'Repeat the range'),
+        prefs.repeat.range,
+        v => setQuranPrefs({ repeat: { ...prefs.repeat, range: v } }),
+      )}
+      <View style={styles.row}>
+        <Text style={[styles.rowLabel, { color: palette.text }]}>
+          {t('quran.pauseBetween', 'Pause between repeats')}
+        </Text>
+      </View>
+      {chipRow(PAUSE_FACTORS, prefs.repeat.pauseFactor, v =>
+        setQuranPrefs({ repeat: { ...prefs.repeat, pauseFactor: v } }),
+        v => (v === 0 ? t('quran.none', 'None') : `${v}×`),
+      )}
+
+      <View style={styles.row}>
+        <Text style={[styles.rowLabel, { color: palette.text }]}>
+          {t('quran.hideForReview', 'Hide while reviewing')}
+        </Text>
+      </View>
+      {chipRow(
+        ['none', 'arabic', 'translation'] as const,
+        prefs.hideMode,
+        v => setQuranPrefs({ hideMode: v }),
+        v =>
+          v === 'none'
+            ? t('quran.none', 'None')
+            : v === 'arabic'
+              ? t('quran.hideArabic', 'Arabic')
+              : t('quran.hideTranslation', 'Translation'),
+      )}
+
+      {/* Range player */}
+      <SectionHead
+        label={t('quran.playRangeTitle', {
+          defaultValue: 'Play a range of {{surah}}',
+          surah: surahLabel,
+        })}
+      />
+      <View style={styles.rangeRow}>
+        <TextInput
+          value={fromText}
+          onChangeText={setFromText}
+          keyboardType="number-pad"
+          maxLength={3}
+          accessibilityLabel={t('quran.fromAyah', 'From ayah')}
+          style={[styles.rangeInput, { color: palette.text, borderColor: palette.border }]}
+        />
+        <Text style={{ color: palette.muted }}>–</Text>
+        <TextInput
+          value={toText}
+          onChangeText={setToText}
+          keyboardType="number-pad"
+          maxLength={3}
+          accessibilityLabel={t('quran.toAyah', 'To ayah')}
+          style={[styles.rangeInput, { color: palette.text, borderColor: palette.border }]}
+        />
+        <View style={styles.playRangeWrap}>
+          <RowAction
+            label={t('quran.playRange', 'Play range')}
+            emphasized
+            glyph="▶"
+            onPress={() => {
+              const max = meta?.ayahCount ?? 1;
+              const from = Math.max(1, Math.min(max, Number(fromText) || 1));
+              const to = Math.max(from, Math.min(max, Number(toText) || max));
+              onStartPlayback?.();
+              void playRange(
+                { surah: surahNumber, ayah: from },
+                { surah: surahNumber, ayah: to },
+              );
+            }}
+          />
+        </View>
+      </View>
+
+      {/* Reciter — last in the section: chosen once and rarely changed,
+          where speed and repetition are touched on every session. A
+          compact row; tap opens the searchable picker. Its download and
+          delete rows follow it. */}
+      <SectionHead label={t('quran.reciter', 'Reciter')} />
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={t('quran.chooseReciter', 'Choose reciter')}
@@ -301,96 +394,6 @@ export function RecitationControls({ surahNumber, onStartPlayback }: Props) {
         ) : null}
       </View>
 
-      {/* Speed */}
-      <SectionHead label={t('quran.speed', 'Speed')} />
-      {chipRow(RATES, prefs.playbackRate, v => {
-        setQuranPrefs({ playbackRate: v });
-        void setPlaybackRate(v);
-      }, v => `${v}×`)}
-
-      {/* Memorization */}
-      <SectionHead label={t('quran.memorization', 'Memorization')} />
-      {stepper(
-        t('quran.repeatEachAyah', 'Repeat each ayah'),
-        prefs.repeat.eachAyah,
-        v => setQuranPrefs({ repeat: { ...prefs.repeat, eachAyah: v } }),
-      )}
-      {stepper(
-        t('quran.repeatRange', 'Repeat the range'),
-        prefs.repeat.range,
-        v => setQuranPrefs({ repeat: { ...prefs.repeat, range: v } }),
-      )}
-      <View style={styles.row}>
-        <Text style={[styles.rowLabel, { color: palette.text }]}>
-          {t('quran.pauseBetween', 'Pause between repeats')}
-        </Text>
-      </View>
-      {chipRow(PAUSE_FACTORS, prefs.repeat.pauseFactor, v =>
-        setQuranPrefs({ repeat: { ...prefs.repeat, pauseFactor: v } }),
-        v => (v === 0 ? t('quran.none', 'None') : `${v}×`),
-      )}
-
-      <View style={styles.row}>
-        <Text style={[styles.rowLabel, { color: palette.text }]}>
-          {t('quran.hideForReview', 'Hide while reviewing')}
-        </Text>
-      </View>
-      {chipRow(
-        ['none', 'arabic', 'translation'] as const,
-        prefs.hideMode,
-        v => setQuranPrefs({ hideMode: v }),
-        v =>
-          v === 'none'
-            ? t('quran.none', 'None')
-            : v === 'arabic'
-              ? t('quran.hideArabic', 'Arabic')
-              : t('quran.hideTranslation', 'Translation'),
-      )}
-
-      {/* Range player */}
-      <SectionHead
-        label={t('quran.playRangeTitle', {
-          defaultValue: 'Play a range of {{surah}}',
-          surah: surahLabel,
-        })}
-      />
-      <View style={styles.rangeRow}>
-        <TextInput
-          value={fromText}
-          onChangeText={setFromText}
-          keyboardType="number-pad"
-          maxLength={3}
-          accessibilityLabel={t('quran.fromAyah', 'From ayah')}
-          style={[styles.rangeInput, { color: palette.text, borderColor: palette.border }]}
-        />
-        <Text style={{ color: palette.muted }}>–</Text>
-        <TextInput
-          value={toText}
-          onChangeText={setToText}
-          keyboardType="number-pad"
-          maxLength={3}
-          accessibilityLabel={t('quran.toAyah', 'To ayah')}
-          style={[styles.rangeInput, { color: palette.text, borderColor: palette.border }]}
-        />
-        <View style={styles.playRangeWrap}>
-          <RowAction
-            label={t('quran.playRange', 'Play range')}
-            emphasized
-            glyph="▶"
-            onPress={() => {
-              const max = meta?.ayahCount ?? 1;
-              const from = Math.max(1, Math.min(max, Number(fromText) || 1));
-              const to = Math.max(from, Math.min(max, Number(toText) || max));
-              onStartPlayback?.();
-              void playRange(
-                { surah: surahNumber, ayah: from },
-                { surah: surahNumber, ayah: to },
-              );
-            }}
-          />
-        </View>
-      </View>
-
       <ReciterPickerSheet
         visible={reciterPickerVisible}
         onClose={() => setReciterPickerVisible(false)}
@@ -448,7 +451,8 @@ const styles = StyleSheet.create({
     fontVariant: ['tabular-nums'],
   },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.sm, marginTop: SPACING.sm },
-  dlWrap: { marginTop: SPACING.sm },
+  // Download, cancel and delete stack here: apart, not touching.
+  dlWrap: { marginTop: SPACING.sm, gap: SPACING.sm },
   playRangeWrap: { marginStart: 'auto' },
   chip: {
     paddingHorizontal: SPACING.md,

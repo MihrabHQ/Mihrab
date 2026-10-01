@@ -52,3 +52,21 @@ describe('the sheet', () => {
     expect(sheet).toMatch(/state\.prefs\.ayahSheetPanel === 'tajweed' && !tajweedOffered\s*\?\s*'none'/);
   });
 });
+
+describe('the play section', () => {
+  const controls = readFileSync(
+    join(__dirname, '..', 'src', 'quran', 'audio', 'RecitationControls.tsx'),
+    'utf8',
+  );
+
+  it('puts the reciter last, after speed, memorisation and the range', () => {
+    const at = (s: string) => controls.indexOf(s);
+    expect(at("<SectionHead label={t('quran.speed', 'Speed')} first />")).toBeGreaterThan(-1);
+    expect(at("label={t('quran.reciter', 'Reciter')}")).toBeGreaterThan(at("defaultValue: 'Play a range of {{surah}}'"));
+    expect(at("label={t('quran.reciter', 'Reciter')}")).toBeLessThan(at('<ReciterPickerSheet'));
+  });
+
+  it('keeps the download and delete rows apart', () => {
+    expect(controls).toContain('dlWrap: { marginTop: SPACING.sm, gap: SPACING.sm },');
+  });
+});
