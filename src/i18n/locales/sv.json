@@ -147,7 +147,10 @@
     "sheetLanguage": "Bladets språk",
     "exportImage": "Dela bild",
     "exportPdf": "Dela PDF (A4)",
-    "pitch": "Gratis och utan reklam. Bönetider, qibla, Koranen med recitation och översättning, och en khatma-räknare."
+    "pitch": "Gratis och utan reklam. Bönetider, qibla, Koranen med recitation och översättning, och en khatma-räknare.",
+    "progressCapture": "Ritar bladet…",
+    "progressPdf": "Skapar PDF:en… {{percent}} %",
+    "progressOpening": "Öppnar delningsmenyn…"
   },
   "settings": {
     "colourTheme": "Färgtema",
@@ -2169,6 +2172,9 @@
     "monthRow": "Månadens tidtabell",
     "monthRowHelp": "Månadens bönetider där du är, på en sida att skicka eller skriva ut.",
     "monthFooter": "Skicka den till dina nära och kära, eller skriv ut exemplar att dela ut i moskén, till familjen och till grannarna. Varje blad har Mihrabs adress, så att alla som får det kan hitta appen.",
-    "ratePlayElsewhereHelp": "De flesta hittar Mihrab på Google Play. Har du ett Google-konto hjälper ett betyg där, var du än installerade appen ifrån."
+    "ratePlayElsewhereHelp": "De flesta hittar Mihrab på Google Play. Har du ett Google-konto hjälper ett betyg där, var du än installerade appen ifrån.",
+    "homeTitle": "På Idag-skärmen",
+    "homeToggle": "Visa hjärtat på Idag",
+    "homeToggleHelp": "Det lilla hjärtat bredvid nedräkningen som öppnar den här sidan."
   }
 }

@@ -147,7 +147,10 @@
     "sheetLanguage": "页面语言",
     "exportImage": "分享图片",
     "exportPdf": "分享 PDF（A4）",
-    "pitch": "免费、无广告。礼拜时间、朝向、带诵读与翻译的《古兰经》，以及诵读进度追踪。"
+    "pitch": "免费、无广告。礼拜时间、朝向、带诵读与翻译的《古兰经》，以及诵读进度追踪。",
+    "progressCapture": "正在绘制表格…",
+    "progressPdf": "正在生成 PDF… {{percent}}%",
+    "progressOpening": "正在打开分享菜单…"
   },
   "settings": {
     "colourTheme": "颜色主题",
@@ -2169,6 +2172,9 @@
     "monthRow": "本月时间表",
     "monthRowHelp": "你所在地本月的礼拜时间，排在一页纸上，可发送也可打印。",
     "monthFooter": "发给你爱的人，或打印出来在清真寺、家人和邻居间分发。每一页都印有 Mihrab 的网址，拿到它的人都能找到这个应用。",
-    "ratePlayElsewhereHelp": "大多数人是在 Google Play 上发现 Mihrab 的。如果你有 Google 账号，无论从哪里安装，在那里评分都会有帮助。"
+    "ratePlayElsewhereHelp": "大多数人是在 Google Play 上发现 Mihrab 的。如果你有 Google 账号，无论从哪里安装，在那里评分都会有帮助。",
+    "homeTitle": "在“今天”页面",
+    "homeToggle": "在“今天”页面显示爱心",
+    "homeToggleHelp": "倒计时旁的小爱心，点按即可打开本页。"
   }
 }

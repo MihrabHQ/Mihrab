@@ -147,7 +147,10 @@
     "sheetLanguage": "Sayfa dili",
     "exportImage": "Görseli paylaş",
     "exportPdf": "PDF paylaş (A4)",
-    "pitch": "Ücretsiz ve reklamsız. Namaz vakitleri, kıble, tilavet ve mealli Kur’an, ve hatim takibi."
+    "pitch": "Ücretsiz ve reklamsız. Namaz vakitleri, kıble, tilavet ve mealli Kur’an, ve hatim takibi.",
+    "progressCapture": "Sayfa çiziliyor…",
+    "progressPdf": "PDF hazırlanıyor… %{{percent}}",
+    "progressOpening": "Paylaşım menüsü açılıyor…"
   },
   "settings": {
     "colourTheme": "Renk teması",
@@ -2169,6 +2172,9 @@
     "monthRow": "Bu ayın vakit çizelgesi",
     "monthRowHelp": "Bulunduğunuz yerin bu ayki namaz vakitleri, gönderilecek ya da yazdırılacak tek bir sayfada.",
     "monthFooter": "Sevdiklerinize gönderin ya da kopyalarını yazdırıp caminizde, ailenize ve komşularınıza dağıtın. Her sayfada Mihrab'ın adresi bulunur; böylece ulaştığı herkes uygulamayı bulabilir.",
-    "ratePlayElsewhereHelp": "Çoğu kişi Mihrab'ı Google Play'de bulur. Google hesabınız varsa, uygulamayı nereden almış olursanız olun orada puan vermek yardımcı olur."
+    "ratePlayElsewhereHelp": "Çoğu kişi Mihrab'ı Google Play'de bulur. Google hesabınız varsa, uygulamayı nereden almış olursanız olun orada puan vermek yardımcı olur.",
+    "homeTitle": "Bugün ekranında",
+    "homeToggle": "Bugün ekranında kalbi göster",
+    "homeToggleHelp": "Geri sayımın yanındaki, bu sayfayı açan küçük kalp."
   }
 }

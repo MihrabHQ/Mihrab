@@ -147,7 +147,10 @@
     "sheetLanguage": "Langue de la feuille",
     "exportImage": "Partager l’image",
     "exportPdf": "Partager le PDF (A4)",
-    "pitch": "Gratuite et sans publicité. Horaires de prière, qibla, le Coran avec récitation et traduction, et un suivi de khatma."
+    "pitch": "Gratuite et sans publicité. Horaires de prière, qibla, le Coran avec récitation et traduction, et un suivi de khatma.",
+    "progressCapture": "Dessin de la feuille…",
+    "progressPdf": "Création du PDF… {{percent}} %",
+    "progressOpening": "Ouverture du menu de partage…"
   },
   "settings": {
     "colourTheme": "Thème de couleur",
@@ -2169,6 +2172,9 @@
     "monthRow": "Les horaires de ce mois",
     "monthRowHelp": "Les horaires de prière de ce mois là où vous êtes, sur une page à envoyer ou à imprimer.",
     "monthFooter": "Envoyez-la à vos proches, ou imprimez des copies à distribuer à la mosquée, à la famille et aux voisins. Chaque feuille porte l’adresse de Mihrab, pour que chacun de ceux qui la reçoivent puisse trouver l’app.",
-    "ratePlayElsewhereHelp": "La plupart des gens trouvent Mihrab sur Google Play. Si vous avez un compte Google, une note là-bas aide, d’où que vous l’ayez installée."
+    "ratePlayElsewhereHelp": "La plupart des gens trouvent Mihrab sur Google Play. Si vous avez un compte Google, une note là-bas aide, d’où que vous l’ayez installée.",
+    "homeTitle": "Sur l’écran Aujourd’hui",
+    "homeToggle": "Afficher le cœur sur Aujourd’hui",
+    "homeToggleHelp": "Le petit cœur à côté du compte à rebours qui ouvre cette page."
   }
 }

@@ -147,7 +147,10 @@
     "sheetLanguage": "Sprache des Blatts",
     "exportImage": "Bild teilen",
     "exportPdf": "PDF teilen (A4)",
-    "pitch": "Kostenlos und werbefrei. Gebetszeiten, Qibla, der Koran mit Rezitation und Übersetzung, und ein Khatma-Tracker."
+    "pitch": "Kostenlos und werbefrei. Gebetszeiten, Qibla, der Koran mit Rezitation und Übersetzung, und ein Khatma-Tracker.",
+    "progressCapture": "Blatt wird gezeichnet …",
+    "progressPdf": "PDF wird erstellt … {{percent}} %",
+    "progressOpening": "Teilen-Menü wird geöffnet …"
   },
   "settings": {
     "colourTheme": "Farbthema",
@@ -2169,6 +2172,9 @@
     "monthRow": "Zeitplan dieses Monats",
     "monthRowHelp": "Die Gebetszeiten dieses Monats an deinem Ort, auf einer Seite zum Verschicken oder Drucken.",
     "monthFooter": "Schick sie deinen Liebsten oder drucke Exemplare, um sie in deiner Moschee, in der Familie und unter Nachbarn zu verteilen. Jedes Blatt trägt die Adresse von Mihrab, damit jeder, der es bekommt, die App finden kann.",
-    "ratePlayElsewhereHelp": "Die meisten finden Mihrab bei Google Play. Mit einem Google-Konto hilft eine Bewertung dort – egal, woher du die App hast."
+    "ratePlayElsewhereHelp": "Die meisten finden Mihrab bei Google Play. Mit einem Google-Konto hilft eine Bewertung dort – egal, woher du die App hast.",
+    "homeTitle": "Auf dem Heute-Bildschirm",
+    "homeToggle": "Herz auf „Heute“ zeigen",
+    "homeToggleHelp": "Das kleine Herz neben dem Countdown, das diese Seite öffnet."
   }
 }

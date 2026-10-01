@@ -498,16 +498,20 @@ const HeroToday = memo(function HeroToday({
       {/* The room the sky's bodies move in. */}
       {fill ? <View style={styles.heroScene} /> : null}
       <View onLayout={fill ? onBlockLayout : undefined}>
-      {topRow?.renderHelp?.(inkTop)}
-      <Text
-        style={[styles.heroEyebrow, { color: inkTop.muted }]}
-        numberOfLines={1}
-        maxFontSizeMultiplier={TITLE_BAND_MAX_FONT_SCALE}>
-        {t('home.nextPrayerIn', {
-          defaultValue: '{{prayer}} in',
-          prayer: t(`prayer.${target.name}`),
-        })}
-      </Text>
+      {/* "Fajr in" leading, and on the trailing end of the same line —
+          the side with nothing on it — the heart that opens Help Mihrab. */}
+      <View style={styles.heroEyebrowRow}>
+        <Text
+          style={[styles.heroEyebrow, styles.heroEyebrowText, { color: inkTop.muted }]}
+          numberOfLines={1}
+          maxFontSizeMultiplier={TITLE_BAND_MAX_FONT_SCALE}>
+          {t('home.nextPrayerIn', {
+            defaultValue: '{{prayer}} in',
+            prayer: t(`prayer.${target.name}`),
+          })}
+        </Text>
+        {topRow?.renderHelp?.(inkTop)}
+      </View>
       <View style={styles.heroCountdownRow}>
         <Text
           style={[
@@ -1619,6 +1623,12 @@ const styles = StyleSheet.create({
     fontSize: TYPE.footnote.fontSize,
     fontWeight: '600',
   },
+  heroEyebrowRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.sm,
+  },
+  heroEyebrowText: { flex: 1 },
   heroCountdownRow: {
     flexDirection: 'row',
     alignItems: 'baseline',

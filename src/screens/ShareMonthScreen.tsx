@@ -42,7 +42,7 @@ import { useLayoutRtl } from '../i18n/useLayoutRtl';
 import { languageLabel } from '../i18n/languages';
 import { injectNightTimes } from '../utils/nightTimes';
 import { sheetPlaceName } from '../share/sheetPlaceName';
-import { pngToPdfA4, fromBase64, toBase64 } from '../share/pngToPdf';
+import { pngToPdfA4Async, fromBase64, toBase64 } from '../share/pngToPdf';
 import { LanguageModal } from './settings/LanguageModal';
 import { ShareBanner } from './share/ShareBanner';
 import { ShareFooter } from './share/ShareFooter';
@@ -91,7 +91,18 @@ export function ShareMonthScreen({ route, navigation, embedded }: Props & { navi
   const [rows, setRows] = useState<MonthDayEntry[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [sharing, setSharing] = useState(false);
+  /**
+   * Where an export has got to, or null. The PDF takes seconds on a
+   * phone, and both buttons used to sit there with, at most, a spinner
+   * in the IMAGE button — pressing "Share PDF" showed nothing at all.
+   */
+  const [exporting, setExporting] = useState<{
+    as: 'image' | 'pdf';
+    stage: 'capture' | 'pdf' | 'opening';
+    /** 0–100, while the PDF is being made. */
+    percent: number;
+  } | null>(null);
+  const sharing = exporting !== null;
 
   /**
    * The language of the SHEET, which is not the language of the app.
@@ -278,7 +289,7 @@ export function ShareMonthScreen({ route, navigation, embedded }: Props & { navi
     async (as: 'image' | 'pdf') => {
       if (!viewShotRef.current?.capture) return;
       try {
-        setSharing(true);
+        setExporting({ as, stage: 'capture', percent: 0 });
         // Captured at twice the page so the print does not go soft, and
         // at a fixed size so the export does not vary with the device's
         // pixel ratio — two phones must produce the same file.
@@ -308,20 +319,30 @@ export function ShareMonthScreen({ route, navigation, embedded }: Props & { navi
         const stem = `mihrab-${year}-${String(month + 1).padStart(2, '0')}`;
         const dir = ReactNativeBlobUtil.fs.dirs.CacheDir;
         if (as === 'pdf') {
-          const pdf = pngToPdfA4(fromBase64(base64));
+          setExporting({ as, stage: 'pdf', percent: 0 });
+          // In slices, with the percentage between them: done in one go
+          // it held the thread for seconds and froze the spinner too.
+          const pdf = await pngToPdfA4Async(fromBase64(base64), f => {
+            const percent = Math.round(f * 100);
+            setExporting(cur =>
+              cur && cur.percent !== percent ? { ...cur, percent } : cur,
+            );
+          });
           const path = `${dir}/${stem}.pdf`;
           await ReactNativeBlobUtil.fs.writeFile(path, toBase64(pdf), 'base64');
+          setExporting({ as, stage: 'opening', percent: 100 });
           await Share.open({ url: `file://${path}`, type: 'application/pdf' });
         } else {
           const path = `${dir}/${stem}.png`;
           await ReactNativeBlobUtil.fs.writeFile(path, base64, 'base64');
+          setExporting({ as, stage: 'opening', percent: 100 });
           await Share.open({ url: `file://${path}`, type: 'image/png' });
         }
       } catch (e) {
         // A cancelled share sheet throws too, and is not an error.
         console.log('Share error:', e);
       } finally {
-        setSharing(false);
+        setExporting(null);
       }
     },
     [month, year],
@@ -478,15 +499,66 @@ export function ShareMonthScreen({ route, navigation, embedded }: Props & { navi
           </Text>
         </TouchableOpacity>
 
+        {/* What the export is doing, while it does it. The share sheet
+            opening is the end of it; before that the capture and — for
+            the PDF — the making of the page can take seconds. */}
+        {exporting ? (
+          <View
+            style={styles.progress}
+            accessibilityRole="progressbar"
+            accessibilityLiveRegion="polite"
+            accessibilityValue={
+              exporting.stage === 'pdf'
+                ? { min: 0, max: 100, now: exporting.percent }
+                : undefined
+            }>
+            <Text style={[styles.progressText, { color: palette.muted }]} numberOfLines={1}>
+              {exporting.stage === 'capture'
+                ? t('share.progressCapture', 'Drawing the sheet…')
+                : exporting.stage === 'pdf'
+                  ? t('share.progressPdf', {
+                      percent: exporting.percent,
+                      defaultValue: 'Making the PDF… {{percent}}%',
+                    })
+                  : t('share.progressOpening', 'Opening the share menu…')}
+            </Text>
+            {exporting.as === 'pdf' ? (
+              <View style={[styles.progressTrack, { backgroundColor: palette.border }]}>
+                <View
+                  style={[
+                    styles.progressFill,
+                    {
+                      backgroundColor: palette.accent,
+                      // The capture is the first stretch of the bar, the
+                      // page-making the rest of it.
+                      width: `${
+                        exporting.stage === 'capture'
+                          ? 5
+                          : exporting.stage === 'pdf'
+                            ? 5 + exporting.percent * 0.95
+                            : 100
+                      }%`,
+                    },
+                  ]}
+                />
+              </View>
+            ) : null}
+          </View>
+        ) : null}
+
         <View style={styles.exportRow}>
           <TouchableOpacity
             accessibilityRole="button"
             accessibilityLabel={t('share.exportImage', 'Share image')}
-            accessibilityState={{ busy: sharing, disabled: sharing }}
-            style={[styles.exportBtn, { backgroundColor: palette.accent }]}
+            accessibilityState={{ busy: exporting?.as === 'image', disabled: sharing }}
+            style={[
+              styles.exportBtn,
+              { backgroundColor: palette.accent },
+              sharing && exporting?.as !== 'image' && styles.exportBtnIdle,
+            ]}
             onPress={() => shareSheet('image')}
             disabled={sharing}>
-            {sharing ? (
+            {exporting?.as === 'image' ? (
               <ActivityIndicator color="#fff" />
             ) : (
               <Text style={styles.exportBtnText}>
@@ -497,17 +569,22 @@ export function ShareMonthScreen({ route, navigation, embedded }: Props & { navi
           <TouchableOpacity
             accessibilityRole="button"
             accessibilityLabel={t('share.exportPdf', 'Share PDF (A4)')}
-            accessibilityState={{ busy: sharing, disabled: sharing }}
+            accessibilityState={{ busy: exporting?.as === 'pdf', disabled: sharing }}
             style={[
               styles.exportBtn,
               styles.exportBtnGhost,
               { borderColor: palette.accent },
+              sharing && exporting?.as !== 'pdf' && styles.exportBtnIdle,
             ]}
             onPress={() => shareSheet('pdf')}
             disabled={sharing}>
-            <Text style={[styles.exportBtnText, { color: palette.accentSolid }]}>
-              {t('share.exportPdf', 'Share PDF (A4)')}
-            </Text>
+            {exporting?.as === 'pdf' ? (
+              <ActivityIndicator color={palette.accentSolid} />
+            ) : (
+              <Text style={[styles.exportBtnText, { color: palette.accentSolid }]}>
+                {t('share.exportPdf', 'Share PDF (A4)')}
+              </Text>
+            )}
           </TouchableOpacity>
         </View>
       </View>
@@ -585,5 +662,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   exportBtnGhost: { backgroundColor: 'transparent', borderWidth: 1 },
+  // The other button, while one export runs: still there, plainly not
+  // the one working.
+  exportBtnIdle: { opacity: 0.45 },
+  progress: { gap: 6, marginBottom: 10 },
+  progressText: { fontSize: 13, textAlign: 'center' },
+  progressTrack: { height: 4, borderRadius: 2, overflow: 'hidden' },
+  progressFill: { height: 4, borderRadius: 2 },
   exportBtnText: { color: '#ffffff', fontSize: 15, fontWeight: '600' },
 });

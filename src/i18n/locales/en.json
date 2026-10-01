@@ -147,7 +147,10 @@
     "sheetLanguage": "Sheet language",
     "exportImage": "Share image",
     "exportPdf": "Share PDF (A4)",
-    "pitch": "Free and ad-free. Prayer times, qibla, the Qur’an with recitation and translation, and a khatmah tracker."
+    "pitch": "Free and ad-free. Prayer times, qibla, the Qur’an with recitation and translation, and a khatmah tracker.",
+    "progressCapture": "Drawing the sheet…",
+    "progressPdf": "Making the PDF… {{percent}}%",
+    "progressOpening": "Opening the share menu…"
   },
   "settings": {
     "colourTheme": "Colour theme",
@@ -2169,6 +2172,9 @@
     "monthRow": "This month's timetable",
     "monthRowHelp": "This month's prayer times where you are, on one page to send or print.",
     "monthFooter": "Send it to the people you love, or print copies to hand out at your mosque, to family and to neighbours. Every sheet carries Mihrab's address, so whoever it reaches can find the app.",
-    "ratePlayElsewhereHelp": "Most people find Mihrab on Google Play. If you have a Google account, a rating there helps, wherever you installed it from."
+    "ratePlayElsewhereHelp": "Most people find Mihrab on Google Play. If you have a Google account, a rating there helps, wherever you installed it from.",
+    "homeTitle": "On the Today screen",
+    "homeToggle": "Show the heart on Today",
+    "homeToggleHelp": "The small heart beside the countdown that opens this page."
   }
 }

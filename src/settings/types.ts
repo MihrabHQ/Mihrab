@@ -127,6 +127,11 @@ export type PrayerAppSettings = {
    * how the last three months went is not that question.
    */
   showPracticeOnHome: boolean;
+  /**
+   * The heart above the countdown on Today that opens Settings → About →
+   * Help Mihrab. On by default; turned off from that same page.
+   */
+  showHelpMihrabOnHome: boolean;
   calculationMethod: number | 'auto';
   /**
    * The ʿaṣr shadow: 1 for the Ḥanafī 2:1, 0 for the 1:1 the rest take.
@@ -633,6 +638,7 @@ export const DEFAULT_SETTINGS: PrayerAppSettings = {
   // Folded. Unfolding it is one tap, and it stays unfolded after that.
   dataStatsExpanded: false,
   showPracticeOnHome: false,
+  showHelpMihrabOnHome: true,
   calculationMethod: 'auto',
   school: 0,
   madhab: null,

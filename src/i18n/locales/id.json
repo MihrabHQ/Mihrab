@@ -147,7 +147,10 @@
     "sheetLanguage": "Bahasa lembar",
     "exportImage": "Bagikan gambar",
     "exportPdf": "Bagikan PDF (A4)",
-    "pitch": "Gratis dan tanpa iklan. Waktu salat, kiblat, Al-Qur’an dengan tilawah dan terjemahan, serta pelacak khatam."
+    "pitch": "Gratis dan tanpa iklan. Waktu salat, kiblat, Al-Qur’an dengan tilawah dan terjemahan, serta pelacak khatam.",
+    "progressCapture": "Menggambar lembar…",
+    "progressPdf": "Membuat PDF… {{percent}}%",
+    "progressOpening": "Membuka menu berbagi…"
   },
   "settings": {
     "colourTheme": "Tema warna",
@@ -2169,6 +2172,9 @@
     "monthRow": "Jadwal bulan ini",
     "monthRowHelp": "Jadwal salat bulan ini di tempat Anda, dalam satu halaman untuk dikirim atau dicetak.",
     "monthFooter": "Kirimkan kepada orang-orang tercinta, atau cetak salinannya untuk dibagikan di masjid, kepada keluarga dan tetangga. Setiap lembar memuat alamat Mihrab, sehingga siapa pun yang menerimanya dapat menemukan aplikasinya.",
-    "ratePlayElsewhereHelp": "Kebanyakan orang menemukan Mihrab di Google Play. Jika Anda punya akun Google, nilai di sana membantu, dari mana pun Anda memasangnya."
+    "ratePlayElsewhereHelp": "Kebanyakan orang menemukan Mihrab di Google Play. Jika Anda punya akun Google, nilai di sana membantu, dari mana pun Anda memasangnya.",
+    "homeTitle": "Di layar Hari ini",
+    "homeToggle": "Tampilkan hati di Hari ini",
+    "homeToggleHelp": "Hati kecil di samping hitung mundur yang membuka halaman ini."
   }
 }

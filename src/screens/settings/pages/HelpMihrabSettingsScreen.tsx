@@ -34,7 +34,13 @@ import {
   type RatingPlace,
 } from '../../../polish/rateApp';
 import { MIHRAB_WEBSITE } from '../../../config/links';
-import { SettingsBlock, SettingsGroup, SettingsLinkRow } from '../SettingsGroup';
+import {
+  SettingsBlock,
+  SettingsGroup,
+  SettingsLinkRow,
+  SettingsToggleRow,
+} from '../SettingsGroup';
+import { usePrayerSettings } from '../../../context/PrayerSettingsContext';
 import { SettingsPage } from '../SettingsPage';
 import { SPACING } from '../../../theme/tokens';
 import { TYPE } from '../../../theme/typography';
@@ -44,6 +50,7 @@ export function HelpMihrabSettingsScreen() {
   const { palette } = useAppPalette();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const { settings, updateSettings } = usePrayerSettings();
 
   /**
    * One row per place this build can be rated, most useful first: the
@@ -150,6 +157,22 @@ export function HelpMihrabSettingsScreen() {
           "Send it to the people you love, or print copies to hand out at your mosque, to family and to neighbours. Every sheet carries Mihrab's address, so whoever it reaches can find the app.",
         )}
       </Text>
+
+      {/* The way in from Today, and the way to put it away again — from
+          the page it leads to, so whoever is bothered by it finds the
+          switch the first time they follow it. */}
+      <SettingsGroup title={t('helpMihrab.homeTitle', 'On the Today screen')}>
+        <SettingsToggleRow
+          testID="help-mihrab-home-toggle"
+          title={t('helpMihrab.homeToggle', 'Show the heart on Today')}
+          help={t(
+            'helpMihrab.homeToggleHelp',
+            'The small heart beside the countdown that opens this page.',
+          )}
+          value={settings.showHelpMihrabOnHome}
+          onValueChange={v => updateSettings({ showHelpMihrabOnHome: v })}
+        />
+      </SettingsGroup>
     </SettingsPage>
   );
 }

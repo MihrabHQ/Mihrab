@@ -1409,7 +1409,7 @@ export function HomeScreen() {
             onOpenMonth={handleOpenMonth}
             qiblaBearing={qiblaBearing}
             onOpenQibla={handleOpenQibla}
-            onHelpMihrab={handleOpenHelpMihrab}
+            onHelpMihrab={settings.showHelpMihrabOnHome ? handleOpenHelpMihrab : undefined}
             expanded={isDashboard}
             fullBleed={fullBleed}
             roomy={isRoomy}

@@ -3,10 +3,12 @@
 /**
  * The way into Settings → About → Help Mihrab, from the Today hero.
  *
- * A small clear circle with a heart, sitting on the sky above the
- * countdown. After a few seconds it opens into a line — "Help Mihrab
- * grow" — so it is noticed without being the first thing on the screen:
- * the prayer time is what the page opens for, and it gets the first look.
+ * A small clear circle with a heart, on the trailing end of the "Fajr in"
+ * line above the countdown — the side of the hero with nothing else on
+ * it. After a few seconds it opens into a line — "Help Mihrab grow" —
+ * unrolling back toward the eyebrow while the heart stays where it was,
+ * so it is noticed without being the first thing on the screen: the
+ * prayer time is what the page opens for, and it gets the first look.
  *
  * Drawn in the sky's own ink (`skyModel`), like the location and Qibla
  * chips in the row above it, with no card of its own: a hairline ring
@@ -25,8 +27,8 @@ import type { SkyInkColors } from './skyModel';
 
 /** The circle, closed. */
 const SIZE = 30;
-/** The room the line takes past the circle: its gap and its end padding. */
-const LINE_PAD = 12;
+/** Slack past the measured line (which carries its own leading padding). */
+const LINE_PAD = 2;
 /** How long the circle stays a circle before it opens. */
 export const EXPAND_AFTER_MS = 2500;
 const EXPAND_MS = 450;
@@ -156,12 +158,16 @@ function HelpMihrabChipImpl({
 export const HelpMihrabChip = memo(HelpMihrabChipImpl);
 
 const styles = StyleSheet.create({
-  wrap: { alignSelf: 'flex-start', marginBottom: 10 },
+  // Taller than the eyebrow it shares a line with; the negative margin
+  // keeps that line — and the countdown under it — where it was.
+  wrap: { marginVertical: -6 },
+  // Heart at the trailing end, so it holds still while the pill opens
+  // toward the leading side.
   pill: {
     height: SIZE,
     borderRadius: SIZE / 2,
     borderWidth: StyleSheet.hairlineWidth * 2,
-    flexDirection: 'row',
+    flexDirection: 'row-reverse',
     alignItems: 'center',
     overflow: 'hidden',
   },
@@ -173,7 +179,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  label: { fontWeight: '600' },
+  label: { fontWeight: '600', paddingStart: 12 },
   // Laid out for its width and never seen. A box far wider than any
   // label, so the text sizes to itself rather than to the closed circle.
   measure: {

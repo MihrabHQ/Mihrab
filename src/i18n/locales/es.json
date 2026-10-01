@@ -147,7 +147,10 @@
     "sheetLanguage": "Idioma de la hoja",
     "exportImage": "Compartir imagen",
     "exportPdf": "Compartir PDF (A4)",
-    "pitch": "Gratis y sin anuncios. Horarios de oración, alquibla, el Corán con recitación y traducción, y un seguimiento del jatma."
+    "pitch": "Gratis y sin anuncios. Horarios de oración, alquibla, el Corán con recitación y traducción, y un seguimiento del jatma.",
+    "progressCapture": "Dibujando la hoja…",
+    "progressPdf": "Creando el PDF… {{percent}} %",
+    "progressOpening": "Abriendo el menú de compartir…"
   },
   "settings": {
     "colourTheme": "Tema de color",
@@ -2169,6 +2172,9 @@
     "monthRow": "Horario de este mes",
     "monthRowHelp": "Los horarios de oración de este mes donde estás, en una página para enviar o imprimir.",
     "monthFooter": "Envíala a tus seres queridos o imprime copias para repartir en tu mezquita, entre tu familia y tus vecinos. Cada hoja lleva la dirección de Mihrab, para que quien la reciba pueda encontrar la app.",
-    "ratePlayElsewhereHelp": "La mayoría encuentra Mihrab en Google Play. Si tienes una cuenta de Google, una valoración allí ayuda, la hayas instalado desde donde sea."
+    "ratePlayElsewhereHelp": "La mayoría encuentra Mihrab en Google Play. Si tienes una cuenta de Google, una valoración allí ayuda, la hayas instalado desde donde sea.",
+    "homeTitle": "En la pantalla Hoy",
+    "homeToggle": "Mostrar el corazón en Hoy",
+    "homeToggleHelp": "El pequeño corazón junto a la cuenta atrás que abre esta página."
   }
 }

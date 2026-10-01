@@ -102,10 +102,23 @@ describe('the page', () => {
     );
   });
 
-  it('is offered from the Today hero', () => {
+  it('is offered from the Today hero, on the far end of the "Fajr in" line', () => {
     const card = read('src/screens/home/TodayCard.tsx');
-    expect(card).toMatch(/topRow\?\.renderHelp\?\.\(inkTop\)/);
+    const row = card.slice(card.indexOf('<View style={styles.heroEyebrowRow}>'));
+    // The eyebrow first, the heart after it: the trailing end.
+    expect(row.indexOf("t('home.nextPrayerIn'")).toBeGreaterThan(0);
+    expect(row.indexOf('topRow?.renderHelp?.(inkTop)')).toBeGreaterThan(
+      row.indexOf("t('home.nextPrayerIn'"),
+    );
     expect(read('src/screens/HomeScreen.tsx')).toMatch(/navigate\('SettingsHelpMihrab'\)/);
+  });
+
+  it('can be taken off Today from the page it opens', () => {
+    expect(read('src/screens/HomeScreen.tsx')).toMatch(
+      /onHelpMihrab=\{settings\.showHelpMihrabOnHome \? handleOpenHelpMihrab : undefined\}/,
+    );
+    expect(page).toMatch(/updateSettings\(\{ showHelpMihrabOnHome: v \}\)/);
+    expect(read('src/settings/types.ts')).toMatch(/showHelpMihrabOnHome: true,/);
   });
 
   it('has its words in every language', () => {
