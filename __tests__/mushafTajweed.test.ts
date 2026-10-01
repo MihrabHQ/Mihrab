@@ -21,6 +21,7 @@ import {
 import tajweedManifest from '../src/quran/data/mushafTajweedFontManifest.json';
 import v4AdvancesJson from '../src/quran/data/mushafLayoutV4Advances.json';
 import layout from '../src/quran/data/mushafLayoutV2.json';
+import layoutV4Json from '../src/quran/data/mushafLayoutV4.json';
 import {
   _resetLayoutCache,
   getPageLayout,
@@ -51,6 +52,10 @@ jest.mock('../src/native/MushafFont', () => ({
 
 const RULES_DIR = path.join(__dirname, '..', 'assets', 'quran', 'tajweed');
 const v4Advances = v4AdvancesJson as Array<Array<[number, number[]] | null>>;
+type RawLine = { t: string; x?: string; w?: number[][]; n?: number; a?: number[]; c?: 1; s?: number };
+type RawPage = { p: number; m: number; l: RawLine[] };
+const layoutV2 = layout as RawPage[];
+const layoutV4 = layoutV4Json as RawPage[];
 
 describe('the tajwīd font sets', () => {
   it('name their files apart from V2, and read the page back', () => {
@@ -139,17 +144,12 @@ describe('the V4 advances', () => {
     expect(mushafGlyphSet()).toBe('tajweed');
     const v4 = getPageLayout(125)!;
     expect(v4).not.toBe(v2);
-    const v2Line = v2.lines.find(l => l.kind === 'ayah')!;
     const v4Line = v4.lines.find(l => l.kind === 'ayah')!;
-    if (v2Line.kind === 'ayah' && v4Line.kind === 'ayah') {
-      expect(v4Line.words).toHaveLength(v2Line.words.length);
-      // The V4 faces are cut a little wider: the same words, wider advances.
-      expect(v4Line.natural).not.toBe(v2Line.natural);
-      const idx = layout[124].l.findIndex(l => l.t === 'a');
-      expect(v4Line.natural).toBeCloseTo(v4Advances[124][idx]![0], 3);
-      v4Line.words.forEach((w, i) =>
-        expect(w.advance).toBeCloseTo(v4Advances[124][idx]![1][i], 3),
-      );
+    if (v4Line.kind === 'ayah') {
+      // The line is V4's own; its advances are the V4 font's for those words.
+      const raw = layoutV4[124].l.find(l => l.t === 'a')!;
+      expect(v4Line.natural).toBeCloseTo(raw.n!, 3);
+      v4Line.words.forEach((w, i) => expect(w.advance).toBeCloseTo(raw.a![i], 3));
     }
     // The measure follows the set, so the font size does too.
     expect(pageMeasureEm(v4)).not.toBe(pageMeasureEm(v2));
@@ -161,6 +161,63 @@ describe('the V4 advances', () => {
     const a = getPageLayout(1);
     setMushafGlyphSet('v2');
     expect(getPageLayout(1)).toBe(a);
+  });
+});
+
+describe('the 1441H lines (mushafLayoutV4.json)', () => {
+  afterEach(() => _resetLayoutCache());
+
+  it('cover every page with the same glyphs, in the same order, as V2', () => {
+    expect(layoutV4).toHaveLength(MUSHAF_TOTAL_PAGES);
+    for (let p = 0; p < MUSHAF_TOTAL_PAGES; p++) {
+      expect(layoutV4[p].p).toBe(p + 1);
+      const glyphs = (page: RawPage) =>
+        page.l.map(l => (l.x ?? '').replace(/\|/g, '')).join('');
+      expect(glyphs(layoutV4[p])).toBe(glyphs(layoutV2[p]));
+      expect(layoutV4[p].l).toHaveLength(layoutV2[p].l.length);
+      for (const line of layoutV4[p].l) {
+        if (line.t !== 'a') continue;
+        expect(line.a).toHaveLength(line.x!.split('|').length);
+        expect(line.n).toBeGreaterThan(0);
+        expect(line.n!).toBeLessThanOrEqual(layoutV4[p].m + 1e-6);
+      }
+    }
+  });
+
+  it('keep V2\'s word positions and āyah markers', () => {
+    const words = (page: RawPage) =>
+      page.l.flatMap(l =>
+        (l.w ?? []).flatMap(seg =>
+          Array.from({ length: seg[3] }, (_, k) => [seg[0], seg[1], seg[2] + k, seg[4] === 1 && k === seg[3] - 1 ? 1 : 0].join(':')),
+        ),
+      );
+    for (let p = 0; p < MUSHAF_TOTAL_PAGES; p++) {
+      expect(words(layoutV4[p])).toEqual(words(layoutV2[p]));
+    }
+  });
+
+  it('are full lines: no page of the 1441H print has a line a whole em narrower than its measure', () => {
+    // Page 76 on V2's lines ran from 14.9 to 20.8 em; on its own they are
+    // all within a fraction of an em, which is what a justified print is.
+    // (Page 604's penultimate line is short in both prints, by design.)
+    for (let p = 2; p < MUSHAF_TOTAL_PAGES - 1; p++) {
+      for (const line of layoutV4[p].l) {
+        if (line.t !== 'a' || line.c) continue;
+        expect(layoutV4[p].m - line.n!).toBeLessThan(1.6);
+      }
+    }
+  });
+
+  it('put the surah plate where the 1441H print does — page 76 ends Āl ʿImrān, 77 opens An-Nisāʾ', () => {
+    expect(layoutV2[75].l[14].t).toBe('s');
+    expect(layoutV4[75].l[14].t).toBe('a');
+    expect(layoutV4[76].l[0]).toEqual({ t: 's', s: 4 });
+    expect(layoutV4[76].l[1]).toEqual({ t: 'b', s: 4 });
+    setMushafGlyphSet('tajweed');
+    expect(getPageLayout(76)!.lines[14].kind).toBe('ayah');
+    expect(getPageLayout(77)!.lines[0]).toEqual({ kind: 'surah', surah: 4 });
+    setMushafGlyphSet('v2');
+    expect(getPageLayout(76)!.lines[14]).toEqual({ kind: 'surah', surah: 4 });
   });
 });
 

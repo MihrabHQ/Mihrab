@@ -554,13 +554,25 @@ const decoded = new Map<string, MushafPageLayout>();
 // Which page fonts are being drawn
 //
 // The QPC V4 tajwīd fonts (`docs/mushaf-fidelity-rules.md`, "Tajwīd
-// colours") carry the same glyph codes as V2 but are cut a little wider,
-// so the advances a line is measured and hit-tested with have to be the
-// fonts' own. `mushafLayoutV4Advances.json` holds V4's, per page and line;
-// which set is live is a module switch, set by the reader from its
+// colours") carry the same glyph codes as V2, but they are cut from the
+// 1441H Madinah print, and that print does not break every page into the
+// same fifteen lines as the one V2 follows — page 76 keeps the last words
+// of Āl ʿImrān where V2 has An-Nisāʾ's plate, and the plate moves to 77.
+// A V4 glyph is justified for the line it sits on in ITS print: laid on
+// V2's lines the words came out stretched or cramped, the widest of them
+// set a small font size for the whole page, and a line that closes a
+// surah was centred in a space it was never cut for. So the tajwīd set
+// has its own line data, `mushafLayoutV4.json` (built by
+// `scripts/mushaf/build_v4_layout.py` from QUL's 1441H layout, with the
+// fonts' own advances), in the same shape as V2's, and a page is decoded
+// from whichever file its set names. V2's file is never read for the
+// tajwīd set and the tajwīd file never for V2, so the plain muṣḥaf cannot
+// be touched by anything here.
+//
+// Which set is live is a module switch, set by the reader from its
 // preference, so that every reader of the geometry — the surface, the
 // hit-test, the follow-scroll, the previews — sees one truth at a time
-// rather than each being told. The decode cache is dropped on a switch.
+// rather than each being told. The decode cache is keyed by set.
 // ---------------------------------------------------------------------------
 
 /** The page-font family in use: the plain V2 faces, or V4's tajwīd colours. */
@@ -584,14 +596,14 @@ export function setMushafGlyphSet(next: MushafGlyphSet): void {
 
 const cacheKey = (page: number, set: MushafGlyphSet) => `${set}:${page}`;
 
-type V4LineAdvances = [number, number[]] | null;
-let v4: V4LineAdvances[][] | null = null;
+/** The 1441H print's pages, by page − 1; null where the build has none. */
+let rawV4: Array<RawPage | null> | null = null;
 
-function loadV4(): V4LineAdvances[][] {
-  if (v4 == null) {
-    v4 = require('./data/mushafLayoutV4Advances.json') as V4LineAdvances[][];
+function loadRawV4(): Array<RawPage | null> {
+  if (rawV4 == null) {
+    rawV4 = require('./data/mushafLayoutV4.json') as Array<RawPage | null>;
   }
-  return v4;
+  return rawV4;
 }
 
 function loadRaw(): RawPage[] {
@@ -601,6 +613,18 @@ function loadRaw(): RawPage[] {
     raw = require('./data/mushafLayoutV2.json') as RawPage[];
   }
   return raw;
+}
+
+/** The raw page for a set: the tajwīd file's where it has the page, else V2's. */
+function rawPage(page: number, set: MushafGlyphSet): RawPage | null {
+  if (set === 'tajweed') {
+    const entry = loadRawV4()[page - 1];
+    if (entry && entry.p === page) return entry;
+  }
+  const pages = loadRaw();
+  const entry = pages[page - 1];
+  if (entry && entry.p === page) return entry;
+  return pages.find(p => p.p === page) ?? null;
 }
 
 /**
@@ -626,7 +650,7 @@ export function warmMushafLayout(riwayah?: RiwayahId): void {
   loadRaw();
 }
 
-function decodeLine(line: RawLine, v4Line: V4LineAdvances = null): MushafLine | null {
+function decodeLine(line: RawLine): MushafLine | null {
   if (line.t === 's' || line.t === 'b') {
     return {
       kind: line.t === 's' ? 'surah' : 'basmalah',
@@ -634,7 +658,7 @@ function decodeLine(line: RawLine, v4Line: V4LineAdvances = null): MushafLine | 
     };
   }
   const tokens = (line.x ?? '').split('|').filter(Boolean);
-  const advances = v4Line?.[1] ?? line.a ?? [];
+  const advances = line.a ?? [];
   const words: MushafWord[] = [];
   let i = 0;
   for (const seg of line.w ?? []) {
@@ -657,7 +681,7 @@ function decodeLine(line: RawLine, v4Line: V4LineAdvances = null): MushafLine | 
   return {
     kind: 'ayah',
     words,
-    natural: v4Line?.[0] ?? line.n ?? 0,
+    natural: line.n ?? 0,
     centered: line.c === 1,
   };
 }
@@ -675,35 +699,20 @@ export function getPageLayout(page: number): MushafPageLayout | null {
 export function getPageLayoutIn(page: number, set: MushafGlyphSet): MushafPageLayout | null {
   const cached = decoded.get(cacheKey(page, set));
   if (cached) return cached;
-  const pages = loadRaw();
-  const entry = pages[page - 1];
-  if (!entry || entry.p !== page) {
-    const found = pages.find(p => p.p === page);
-    if (!found) return null;
-    return decodePage(found, set);
-  }
-  return decodePage(entry, set);
+  const entry = rawPage(page, set);
+  return entry ? decodePage(entry, set) : null;
 }
 
 function decodePage(entry: RawPage, set: MushafGlyphSet): MushafPageLayout {
   const key = cacheKey(entry.p, set);
   const cached = decoded.get(key);
   if (cached) return cached;
-  // The V4 advances for this page, when V4 is what is drawn and the
-  // build produced them; a page the build has not covered keeps V2's.
-  const v4Lines = set === 'tajweed' ? loadV4()[entry.p - 1] : undefined;
   const lines = entry.l
-    .map((line, i) => decodeLine(line, v4Lines?.[i] ?? null))
+    .map(line => decodeLine(line))
     .filter((l): l is MushafLine => l != null);
-  let measure = entry.m;
-  if (v4Lines) {
-    for (const line of lines) {
-      if (line.kind === 'ayah' && line.natural > measure) measure = line.natural;
-    }
-  }
   const layout: MushafPageLayout = {
     page: entry.p,
-    measure,
+    measure: entry.m,
     lines,
   };
   decoded.set(key, layout);
