@@ -21,6 +21,7 @@ import {
   Animated,
   FlatList,
   Modal,
+  type ColorValue,
   type NativeScrollEvent,
   type NativeSyntheticEvent,
   type ScrollViewInstance,
@@ -34,6 +35,7 @@ import {
 import { afterInteractions } from '../utils/afterInteractions';
 import { useTranslation } from 'react-i18next';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import Svg, { Path } from 'react-native-svg';
 import { useLayoutRtl } from '../i18n/useLayoutRtl';
 import { useReduceMotion } from '../hooks/useReduceMotion';
 import { useKeyboardInset } from '../hooks/useKeyboardInset';
@@ -112,6 +114,35 @@ const AnimatedFlatList = Animated.FlatList;
 const OFTEN_READ = [18, 67] as const;
 
 type JuzRow = { juz: number; page: number; startSurah: SurahIndex | undefined };
+
+/** The gap between cards on a light page: the page's colour, a shade deeper. */
+const GAP_SHADE = 'rgba(0,0,0,0.07)';
+
+/**
+ * The four rounded corners of a moving card, as masks: each is the square
+ * outside a quarter circle, painted the colour of the gap behind the card
+ * (the page colour with the light shade over it, or the dark gap), so the
+ * square page reads as a rounded card.
+ */
+function CardCorners({ bg, gap }: { bg: ColorValue; gap: ColorValue }) {
+  const r = RADIUS.xl;
+  const d = `M0 0 H${r} A${r} ${r} 0 0 0 0 ${r} Z`;
+  const shade = gap === GAP_SHADE;
+  const corner = (
+    <Svg width={r} height={r}>
+      <Path d={d} fill={shade ? bg : gap} />
+      {shade ? <Path d={d} fill={GAP_SHADE} /> : null}
+    </Svg>
+  );
+  return (
+    <>
+      <View style={[styles.corner, { top: 0, left: 0 }]}>{corner}</View>
+      <View style={[styles.corner, { top: 0, right: 0, transform: [{ rotate: '90deg' }] }]}>{corner}</View>
+      <View style={[styles.corner, { bottom: 0, right: 0, transform: [{ rotate: '180deg' }] }]}>{corner}</View>
+      <View style={[styles.corner, { bottom: 0, left: 0, transform: [{ rotate: '270deg' }] }]}>{corner}</View>
+    </>
+  );
+}
 
 /** The inset hairline under a surah or juz row. Nothing under flat chrome. */
 function RowLine({ palette }: { palette: AppPalette }) {
@@ -1284,6 +1315,8 @@ export function QuranScreen() {
     </View>
   );
 
+  const gapColour = isDark ? palette.card : GAP_SHADE;
+
   /** One card of the pager: that tab's list, its own header on top. */
   const renderPage = (pageTab: Tab, inFront: boolean) => {
     const contentStyle = [
@@ -1370,12 +1403,12 @@ export function QuranScreen() {
           setPageW(prev => (prev === w ? prev : w));
           setPagerH(prev => (prev === h ? prev : h));
         }}>
-        {/* The gap between the cards: a shade off the page's own colour —
+        {/* The gap between the cards (`gapColour`): a shade off the page's own colour —
             deeper on a light page, lifted on a dark one (black has no
             deeper). */}
         <View
           pointerEvents="none"
-          style={[styles.pagerGap, { backgroundColor: isDark ? palette.card : 'rgba(0,0,0,0.07)' }]}
+          style={[styles.pagerGap, { backgroundColor: gapColour }]}
         />
         {pageW > 0 ? (
           <Animated.ScrollView
@@ -1426,21 +1459,26 @@ export function QuranScreen() {
                     },
                   ]}>
                   {renderPage(pageTab, inFront)}
-                  {/* The card's edge, there only while it is moving. */}
+                  {/* The card's shape — rounded corners and an edge — there only
+                      while it is moving. Settled, the page is square and runs
+                      to the edges of the screen like any other. (Drawn over
+                      the page rather than as its borderRadius, which cannot
+                      be animated on the native driver.) */}
                   <Animated.View
                     pointerEvents="none"
                     style={[
-                      styles.pageEdge,
+                      styles.pageChrome,
                       {
-                        borderColor: palette.border ?? palette.muted,
                         opacity: scrollX.interpolate({
                           inputRange: range,
                           outputRange: [1, 0, 1],
                           extrapolate: 'clamp',
                         }),
                       },
-                    ]}
-                  />
+                    ]}>
+                    <CardCorners bg={palette.bg} gap={gapColour} />
+                    <View style={[styles.pageEdge, { borderColor: palette.border ?? palette.muted }]} />
+                  </Animated.View>
                 </Animated.View>
               );
             })}
@@ -1561,7 +1599,9 @@ const styles = StyleSheet.create({
   pagerGap: { position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 },
   // Pinned left-to-right; each page sets the app's own direction.
   pager: { flex: 1, direction: 'ltr' },
-  page: { flex: 1, overflow: 'hidden', borderRadius: RADIUS.xl },
+  page: { flex: 1, overflow: 'hidden' },
+  pageChrome: { position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 },
+  corner: { position: 'absolute', width: RADIUS.xl, height: RADIUS.xl },
   // Over the pager, full width so the cards slide out from under it.
   topOverlay: {
     position: 'absolute',

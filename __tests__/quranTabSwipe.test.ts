@@ -20,7 +20,10 @@ describe('the pager', () => {
     expect(screen).toMatch(/outputRange: \[CARD_SCALE, 1, CARD_SCALE\]/);
     expect(screen).toMatch(/outputRange: \[CARD_DIM, 1, CARD_DIM\]/);
     expect(screen).toMatch(/contentOffset: \{ x: scrollX \} \} \}\], \{ useNativeDriver: true \}/);
-    expect(screen).toMatch(/page: \{ flex: 1, overflow: 'hidden', borderRadius: RADIUS\.xl \}/);
+    // Square when settled; the rounded corners and edge fade in only while moving.
+    expect(screen).toMatch(/page: \{ flex: 1, overflow: 'hidden' \}/);
+    expect(screen).toMatch(/styles\.pageChrome,\s*\{\s*opacity: scrollX\.interpolate\(\{\s*inputRange: range,\s*outputRange: \[1, 0, 1\]/);
+    expect(screen).toContain('<CardCorners bg={palette.bg} gap={gapColour} />');
   });
 
   it('settles the tab where the swipe lands, and a tap on the control slides there', () => {
