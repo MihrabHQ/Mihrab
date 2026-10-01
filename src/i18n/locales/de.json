@@ -1344,10 +1344,13 @@
     "bookmarkDoor": "Lesezeichen",
     "khatmahIntro": "Eine Khatmah ist eine Lesung des ganzen Mushaf, in eine Portion pro Tag geteilt. Die App merkt sich deine Stelle, zählt die Seiten und sagt jeden Tag, was noch bleibt.",
     "bookmarkColorInUse": "Lesezeichenfarbe {{color}} — in Gebrauch bei {{ref}}; Tippen verschiebt dieses Lesezeichen hierher",
-    "bookmarkColoursInUse": "In Gebrauch — Tippen verschiebt es hierher:",
     "bookmarksSettingsTitle": "Lesezeichen",
     "bookmarkColourReuseHelp": "Aus: Jede Farbe ist ein Lesezeichen — eine Farbe, die schon auf einem anderen Vers liegt, verschiebt dieses Lesezeichen. An: Eine Farbe kann immer wieder verwendet werden, etwa für alle Stellen einer Art.",
-    "bookmarkColourReuse": "Farben mehrfach verwenden"
+    "bookmarkColourReuse": "Farben mehrfach verwenden",
+    "bookmarkTapToRemove": "Tippe erneut auf die Farbe, um sie zu entfernen",
+    "bookmarkPick": "Wähle eine Farbe",
+    "bookmarkHere": "Hier",
+    "bookmarkCircledHint": "Eine umrandete Farbe liegt auf einem anderen Vers — wählst du sie, wandert dieses Lesezeichen hierher."
   },
   "reading": {
     "textSize": "Schriftgröße",

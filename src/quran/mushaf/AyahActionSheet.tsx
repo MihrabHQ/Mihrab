@@ -716,70 +716,87 @@ export function AyahActionSheet({
             />
           ) : null}
 
-          {/* Bookmark colors — one bookmark per ayah and ONE PER COLOUR:
+          {/* Bookmark colours — one bookmark per ayah and ONE PER COLOUR:
               tap the active colour to remove, tap a colour that is on
               another ayah and that bookmark moves here (`addBookmark`).
-              A colour in use carries a mark, and the line under the row
-              names where each one is, so the move is never a surprise. */}
-          <View style={styles.bookmarkRow}>
-            <Text style={[styles.bookmarkLabel, { color: palette.muted }]}>
-              {t('quran.bookmark', 'Bookmark')}
-            </Text>
-            {(Object.keys(BOOKMARK_COLORS) as BookmarkColor[]).map(color => {
-              const selected = bookmark?.color === color;
-              const elsewhere = coloursInUse.get(color);
-              return (
-                <Pressable
-                  key={color}
-                  accessibilityRole="button"
-                  accessibilityState={{ selected }}
-                  accessibilityLabel={
-                    elsewhere
-                      ? t('quran.bookmarkColorInUse', {
-                          defaultValue:
-                            'Bookmark color {{color}} — in use at {{ref}}; tapping moves that bookmark here',
-                          color,
-                          ref: `${findSurah(elsewhere.surah)?.romanized ?? ''} ${elsewhere.surah}:${elsewhere.ayah}`,
-                        })
-                      : t('quran.bookmarkColor', {
-                          defaultValue: 'Bookmark color {{color}}',
-                          color,
-                        })
-                  }
-                  hitSlop={6}
-                  onPress={() => {
-                    if (selected && bookmark) removeBookmark(bookmark.id);
-                    else addBookmark(surah, ayah, page, color);
-                  }}
-                  style={[
-                    styles.colorDot,
-                    { backgroundColor: BOOKMARK_COLORS[color] },
-                    selected && styles.colorDotSelected,
-                  ]}>
-                  {elsewhere && !selected ? <View style={styles.colorDotUsed} /> : null}
-                </Pressable>
-              );
-            })}
-          </View>
-          {coloursInUse.size > 0 ? (
-            <View style={styles.inUseRow}>
-              <Text style={[styles.inUseLead, { color: palette.muted }]}>
-                {t('quran.bookmarkColoursInUse', 'In use — tapping one moves it here:')}
+
+              One block, read top to bottom: what this ayah has, the
+              colours, and under each colour where it is. A colour on this
+              ayah is filled with a tick and ringed; a colour on another
+              ayah is ringed and names that ayah underneath, so the move a
+              tap makes is never a surprise. */}
+          <View style={[styles.bookmarkBlock, { borderColor: palette.border ?? palette.muted }]}>
+            <View style={styles.bookmarkHead}>
+              <Text style={[styles.bookmarkTitle, { color: palette.text }]}>
+                {t('quran.bookmark', 'Bookmark')}
               </Text>
-              {[...coloursInUse.values()].map(b => (
-                <View key={b.id} style={styles.inUseChip}>
-                  <View
-                    style={[styles.inUseDot, { backgroundColor: BOOKMARK_COLORS[b.color] }]}
-                  />
-                  <Text
-                    style={[styles.inUseText, { color: palette.muted }]}
-                    numberOfLines={1}>
-                    {`${findSurah(b.surah)?.romanized ?? ''} ${b.surah}:${b.ayah}`}
-                  </Text>
-                </View>
-              ))}
+              <Text style={[styles.bookmarkStatus, { color: palette.muted }]} numberOfLines={1}>
+                {bookmark
+                  ? t('quran.bookmarkTapToRemove', 'Tap its colour again to remove')
+                  : t('quran.bookmarkPick', 'Pick a colour')}
+              </Text>
             </View>
-          ) : null}
+            <View style={styles.swatchRow}>
+              {(Object.keys(BOOKMARK_COLORS) as BookmarkColor[]).map(color => {
+                const selected = bookmark?.color === color;
+                const elsewhere = coloursInUse.get(color);
+                const ringed = selected || elsewhere != null;
+                const tint = BOOKMARK_COLORS[color];
+                return (
+                  <Pressable
+                    key={color}
+                    accessibilityRole="button"
+                    accessibilityState={{ selected }}
+                    accessibilityLabel={
+                      elsewhere
+                        ? t('quran.bookmarkColorInUse', {
+                            defaultValue:
+                              'Bookmark color {{color}} — in use at {{ref}}; tapping moves that bookmark here',
+                            color,
+                            ref: `${findSurah(elsewhere.surah)?.romanized ?? ''} ${elsewhere.surah}:${elsewhere.ayah}`,
+                          })
+                        : t('quran.bookmarkColor', {
+                            defaultValue: 'Bookmark color {{color}}',
+                            color,
+                          })
+                    }
+                    hitSlop={4}
+                    onPress={() => {
+                      if (selected && bookmark) removeBookmark(bookmark.id);
+                      else addBookmark(surah, ayah, page, color);
+                    }}
+                    style={({ pressed }) => [styles.swatchSlot, pressed && styles.swatchPressed]}>
+                    <View style={styles.swatchBox}>
+                      {ringed ? <View style={[styles.swatchRing, { borderColor: tint }]} /> : null}
+                      <View style={[styles.swatch, { backgroundColor: tint }]}>
+                        {selected ? <Text style={styles.swatchTick}>✓</Text> : null}
+                      </View>
+                    </View>
+                    <Text
+                      numberOfLines={1}
+                      style={[
+                        styles.swatchCaption,
+                        { color: selected ? palette.text : palette.muted },
+                      ]}>
+                      {selected
+                        ? t('quran.bookmarkHere', 'Here')
+                        : elsewhere
+                          ? `${elsewhere.surah}:${elsewhere.ayah}`
+                          : ' '}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+            {coloursInUse.size > 0 ? (
+              <Text style={[styles.bookmarkHint, { color: palette.muted }]}>
+                {t(
+                  'quran.bookmarkCircledHint',
+                  'A ringed colour is on another ayah — picking it moves that bookmark here.',
+                )}
+              </Text>
+            ) : null}
+          </View>
 
           {/**
            * DOES THIS PLACE KEEP ITSELF?
@@ -1094,13 +1111,51 @@ const styles = StyleSheet.create({
   },
   tafsirRtl: { textAlign: 'right', writingDirection: 'rtl' },
   moreLink: { fontSize: TYPE.label.fontSize, fontWeight: '700', marginTop: SPACING.xs },
-  bookmarkRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: SPACING.md,
+  bookmarkBlock: {
     marginTop: SPACING.lg,
+    borderWidth: 1,
+    borderRadius: RADIUS.lg,
+    paddingVertical: SPACING.md,
+    paddingHorizontal: SPACING.md,
+    gap: SPACING.sm,
   },
-  bookmarkLabel: { fontSize: TYPE.footnote.fontSize, marginEnd: SPACING.xs },
+  bookmarkHead: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    justifyContent: 'space-between',
+    gap: SPACING.sm,
+  },
+  bookmarkTitle: { fontSize: TYPE.label.fontSize, fontWeight: '700' },
+  bookmarkStatus: { fontSize: TYPE.caption.fontSize, flexShrink: 1 },
+  swatchRow: { flexDirection: 'row', justifyContent: 'space-between' },
+  swatchSlot: { alignItems: 'center', gap: SPACING.xs, minWidth: 52 },
+  swatchPressed: { opacity: 0.6 },
+  swatchBox: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
+  // The ring around a colour that is taken: a gap, then the colour's own line.
+  swatchRing: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    start: 0,
+    end: 0,
+    borderRadius: RADIUS.full,
+    borderWidth: 2, // tokens-ok-line: the ring around a taken colour
+  },
+  swatch: {
+    width: 28,
+    height: 28,
+    borderRadius: RADIUS.full,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  swatchTick: {
+    color: '#fff', // tokens-ok-line: ink on the bookmark's own colour
+    fontSize: TYPE.label.fontSize,
+    fontWeight: '800',
+    includeFontPadding: false,
+  },
+  swatchCaption: { fontSize: TYPE.caption.fontSize, fontWeight: '600' },
+  bookmarkHint: { fontSize: TYPE.caption.fontSize },
   followLine: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -1122,32 +1177,6 @@ const styles = StyleSheet.create({
     includeFontPadding: false,
   },
   followLineLabel: { fontSize: TYPE.footnote.fontSize, flexShrink: 1 },
-  colorDot: { width: 24, height: 24, borderRadius: RADIUS.md },
-  colorDotUsed: {
-    position: 'absolute',
-    top: 8,
-    left: 8,
-    width: 8,
-    height: 8,
-    borderRadius: RADIUS.full,
-    backgroundColor: 'rgba(255,255,255,0.9)', // tokens-ok-line: a mark on the swatch's own colour
-  },
-  inUseRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    alignItems: 'center',
-    gap: SPACING.sm,
-    marginTop: -SPACING.xs,
-  },
-  inUseLead: { fontSize: TYPE.caption.fontSize },
-  inUseChip: { flexDirection: 'row', alignItems: 'center', gap: SPACING.xs },
-  inUseDot: { width: 8, height: 8, borderRadius: RADIUS.full },
-  inUseText: { fontSize: TYPE.caption.fontSize, fontWeight: '600' },
-  colorDotSelected: {
-    borderWidth: 3, // tokens-ok-line: the selected swatch ring, thicker than a hairline by design
-    borderColor: 'rgba(255,255,255,0.9)',
-    transform: [{ scale: 1.15 }],
-  },
   khatmahPin: {
     flexDirection: 'row',
     alignItems: 'center',

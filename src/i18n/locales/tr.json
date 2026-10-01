@@ -1344,10 +1344,13 @@
     "bookmarkDoor": "Yer imi",
     "khatmahIntro": "Hatim, mushafın tamamını günde bir bölüm halinde okumaktır. Uygulama yerini tutar, sayfaları sayar ve her gün ne kaldığını söyler.",
     "bookmarkColorInUse": "Yer imi rengi {{color}} — {{ref}} konumunda kullanılıyor; dokununca o yer imi buraya taşınır",
-    "bookmarkColoursInUse": "Kullanımda — birine dokununca buraya taşınır:",
     "bookmarksSettingsTitle": "Yer imleri",
     "bookmarkColourReuseHelp": "Kapalı: her renk tek bir yer imidir; başka bir ayette olan bir rengi seçmek o yer imini taşır. Açık: bir renk tekrar tekrar kullanılabilir — örneğin aynı türden tüm bölümler için.",
-    "bookmarkColourReuse": "Renkleri yeniden kullan"
+    "bookmarkColourReuse": "Renkleri yeniden kullan",
+    "bookmarkTapToRemove": "Kaldırmak için rengine tekrar dokun",
+    "bookmarkPick": "Bir renk seç",
+    "bookmarkHere": "Burada",
+    "bookmarkCircledHint": "Halkalı renk başka bir ayette — seçersen o yer imi buraya taşınır."
   },
   "reading": {
     "textSize": "Metin boyutu",

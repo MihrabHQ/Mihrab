@@ -241,8 +241,11 @@ describe('one bookmark per colour', () => {
   it('the sheet marks the colours in use and names them', () => {
     const sheet = src('src/quran/mushaf/AyahActionSheet.tsx');
     expect(sheet).toContain('coloursInUse.get(color)');
-    expect(sheet).toContain("t('quran.bookmarkColoursInUse'");
-    expect(sheet).toMatch(/elsewhere && !selected \? <View style=\{styles\.colorDotUsed\} \/> : null/);
+    // A taken colour is ringed (here or elsewhere), and names its ayah underneath.
+    expect(sheet).toContain('const ringed = selected || elsewhere != null;');
+    expect(sheet).toContain('{ringed ? <View style={[styles.swatchRing, { borderColor: tint }]} /> : null}');
+    expect(sheet).toContain('`${elsewhere.surah}:${elsewhere.ayah}`');
+    expect(sheet).toContain("'quran.bookmarkCircledHint'");
   });
 });
 

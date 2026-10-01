@@ -1344,10 +1344,13 @@
     "bookmarkDoor": "Penanda",
     "khatmahIntro": "Khatmah adalah bacaan seluruh mushaf, dibagi menjadi satu bagian per hari. Aplikasi menyimpan posisimu, menghitung halaman, dan mengatakan setiap hari apa yang tersisa.",
     "bookmarkColorInUse": "Warna penanda {{color}} — dipakai di {{ref}}; mengetuk memindahkan penanda itu ke sini",
-    "bookmarkColoursInUse": "Dipakai — ketuk satu untuk memindahkannya ke sini:",
     "bookmarksSettingsTitle": "Penanda",
     "bookmarkColourReuseHelp": "Mati: setiap warna adalah satu penanda; memilih warna yang sudah ada di ayat lain memindahkan penanda itu. Nyala: satu warna bisa dipakai berulang kali — misalnya untuk semua bagian sejenis.",
-    "bookmarkColourReuse": "Pakai ulang warna"
+    "bookmarkColourReuse": "Pakai ulang warna",
+    "bookmarkTapToRemove": "Ketuk warnanya lagi untuk menghapus",
+    "bookmarkPick": "Pilih warna",
+    "bookmarkHere": "Di sini",
+    "bookmarkCircledHint": "Warna yang dilingkari ada di ayat lain — memilihnya memindahkan penanda itu ke sini."
   },
   "reading": {
     "textSize": "Ukuran teks",

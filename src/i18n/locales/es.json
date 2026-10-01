@@ -1344,10 +1344,13 @@
     "bookmarkDoor": "Marcador",
     "khatmahIntro": "Una jatma es una lectura de todo el mushaf, dividida en una porción al día. La app guarda tu lugar, cuenta las páginas y dice cada día lo que queda.",
     "bookmarkColorInUse": "Color de marcador {{color}} — en uso en {{ref}}; al tocar, ese marcador se mueve aquí",
-    "bookmarkColoursInUse": "En uso — tocar uno lo mueve aquí:",
     "bookmarksSettingsTitle": "Marcadores",
     "bookmarkColourReuseHelp": "Desactivado: cada color es un marcador; elegir un color que ya está en otro versículo mueve ese marcador. Activado: un color puede usarse una y otra vez, por ejemplo para todos los pasajes de un mismo tipo.",
-    "bookmarkColourReuse": "Reutilizar colores"
+    "bookmarkColourReuse": "Reutilizar colores",
+    "bookmarkTapToRemove": "Toca su color otra vez para quitarlo",
+    "bookmarkPick": "Elige un color",
+    "bookmarkHere": "Aquí",
+    "bookmarkCircledHint": "Un color con anillo está en otra aleya: al elegirlo, ese marcador se mueve aquí."
   },
   "reading": {
     "textSize": "Tamaño del texto",

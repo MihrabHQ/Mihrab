@@ -1344,10 +1344,13 @@
     "bookmarkDoor": "Bokmärke",
     "khatmahIntro": "En khatmah är en läsning av hela mushafen, delad i en portion om dagen. Appen håller din plats, räknar sidorna och säger varje dag vad som återstår.",
     "bookmarkColorInUse": "Bokmärkesfärg {{color}} — används vid {{ref}}; ett tryck flyttar det bokmärket hit",
-    "bookmarkColoursInUse": "Används — tryck på en för att flytta den hit:",
     "bookmarksSettingsTitle": "Bokmärken",
     "bookmarkColourReuseHelp": "Av: varje färg är ett bokmärke — väljer du en färg som redan sitter på en annan vers flyttas det bokmärket. På: en färg kan användas om och om igen, till exempel för alla ställen av ett slag.",
-    "bookmarkColourReuse": "Återanvänd färger"
+    "bookmarkColourReuse": "Återanvänd färger",
+    "bookmarkTapToRemove": "Tryck på färgen igen för att ta bort",
+    "bookmarkPick": "Välj en färg",
+    "bookmarkHere": "Här",
+    "bookmarkCircledHint": "En färg med ring finns på en annan vers — väljer du den flyttas bokmärket hit."
   },
   "reading": {
     "textSize": "Textstorlek",
