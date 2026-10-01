@@ -810,6 +810,8 @@ export function SyncScreen() {
                 accessibilityLabel={t(`sync.category.${category}`)}
                 value={settings?.selection[category] ?? false}
                 onValueChange={next => onToggleCategory(category, next)}
+                trackColor={{ true: palette.accentSolid, false: String(palette.border) }}
+                thumbColor="#ffffff" // tokens-ok-line: a Switch thumb stays light in both states so it reads against an accent track
               />
             </View>
           ))}

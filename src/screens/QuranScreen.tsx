@@ -1211,8 +1211,9 @@ export function QuranScreen() {
               accessibilityLabel={t('quran.bookmarkFollows', 'Follows your reading')}
               value={!!b.follows}
               onValueChange={next => setBookmarkFollows(b.id, next)}
-              trackColor={{ true: palette.accentSolid }}
               style={styles.followSwitch}
+              trackColor={{ true: palette.accentSolid, false: String(palette.border) }}
+              thumbColor="#ffffff" // tokens-ok-line: a Switch thumb stays light in both states so it reads against an accent track
             />
           </View>
           <View style={styles.followControl}>
@@ -1226,8 +1227,9 @@ export function QuranScreen() {
               )}
               value={!!b.shortcut}
               onValueChange={next => setBookmarkShortcut(b.id, next)}
-              trackColor={{ true: palette.accentSolid }}
               style={styles.followSwitch}
+              trackColor={{ true: palette.accentSolid, false: String(palette.border) }}
+              thumbColor="#ffffff" // tokens-ok-line: a Switch thumb stays light in both states so it reads against an accent track
             />
           </View>
           <View style={styles.bookmarkControlsSpacer} />

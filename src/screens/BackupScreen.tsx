@@ -104,6 +104,8 @@ function CategoryRow({
         value={value}
         onValueChange={onChange}
         disabled={disabled}
+        trackColor={{ true: palette.accentSolid, false: String(palette.border) }}
+        thumbColor="#ffffff" // tokens-ok-line: a Switch thumb stays light in both states so it reads against an accent track
       />
     </View>
   );
