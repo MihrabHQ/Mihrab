@@ -1353,7 +1353,8 @@
     "pinSet": "Set",
     "pinRemove": "Remove",
     "khatmahPinnedHere": "Your khatmah is at this ayah",
-    "playSection": "Play"
+    "playSection": "Play",
+    "surahAudioPartialShort": "{{have}}/{{total}} ayahs · Download the rest"
   },
   "reading": {
     "textSize": "Text size",

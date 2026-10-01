@@ -1353,7 +1353,8 @@
     "pinSet": "设定",
     "pinRemove": "移除",
     "khatmahPinnedHere": "你的通读进度在这节经文",
-    "playSection": "播放"
+    "playSection": "播放",
+    "surahAudioPartialShort": "{{have}}/{{total}} 节 · 下载其余部分"
   },
   "reading": {
     "textSize": "文字大小",

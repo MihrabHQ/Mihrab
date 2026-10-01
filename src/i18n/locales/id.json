@@ -1353,7 +1353,8 @@
     "pinSet": "Atur",
     "pinRemove": "Hapus",
     "khatmahPinnedHere": "Khatam Anda ada di ayat ini",
-    "playSection": "Putar"
+    "playSection": "Putar",
+    "surahAudioPartialShort": "{{have}}/{{total}} ayat · Unduh sisanya"
   },
   "reading": {
     "textSize": "Ukuran teks",

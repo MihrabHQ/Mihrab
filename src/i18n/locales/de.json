@@ -1353,7 +1353,8 @@
     "pinSet": "Setzen",
     "pinRemove": "Entfernen",
     "khatmahPinnedHere": "Deine Khatmah steht bei diesem Vers",
-    "playSection": "Abspielen"
+    "playSection": "Abspielen",
+    "surahAudioPartialShort": "{{have}}/{{total}} Verse · Rest laden"
   },
   "reading": {
     "textSize": "Schriftgröße",

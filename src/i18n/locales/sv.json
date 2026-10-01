@@ -1353,7 +1353,8 @@
     "pinSet": "Ange",
     "pinRemove": "Ta bort",
     "khatmahPinnedHere": "Din khatmah är vid den här versen",
-    "playSection": "Spela upp"
+    "playSection": "Spela upp",
+    "surahAudioPartialShort": "{{have}}/{{total}} verser · Hämta resten"
   },
   "reading": {
     "textSize": "Textstorlek",

@@ -124,7 +124,7 @@ function PinFace({
   return (
     <>
       <View style={[styles.pinIcon, { backgroundColor: active ? color : `${color}33` }]}>
-        <QuranBookIcon color={active ? '#fff' : color} size={18} />
+        <QuranBookIcon color={active ? '#fff' : color} size={15} />
       </View>
       <Text style={[styles.pinLabel, { color: textColor }]}>{label}</Text>
       <View
@@ -1016,22 +1016,24 @@ export function AyahActionSheet({
             onLayout={e => {
               audioSectionY.current = e.nativeEvent.layout.y;
             }}>
-            <SectionHead label={t('quran.playSection', 'Play')} />
+            <SectionHead label={t('quran.playSection', 'Play')} tight />
             <View style={styles.actionsRow}>
-              <View style={styles.actionsPrimary}>
-                <RowAction
-                  label={t('quran.playFromHere', 'Play from here')}
-                  glyph="▶"
-                  emphasized
-                  onPress={() => {
-                    onClose();
-                    void playFromAyah(surah, ayah);
-                  }}
-                />
-              </View>
+              <RowAction
+                label={t('quran.playFromHere', 'Play from here')}
+                glyph="▶"
+                emphasized
+                compact
+                grow
+                onPress={() => {
+                  onClose();
+                  void playFromAyah(surah, ayah);
+                }}
+              />
               <RowAction
                 label={t('quran.repeatAyah', 'Repeat this ayah')}
                 glyph="↻"
+                compact
+                grow
                 onPress={() => {
                   onClose();
                   void playRange({ surah, ayah }, { surah, ayah });
@@ -1180,12 +1182,12 @@ const styles = StyleSheet.create({
   tafsirRtl: { textAlign: 'right', writingDirection: 'rtl' },
   moreLink: { fontSize: TYPE.label.fontSize, fontWeight: '700', marginTop: SPACING.xs },
   bookmarkBlock: {
-    marginTop: SPACING.lg,
+    marginTop: SPACING.md,
     borderWidth: 1,
-    borderRadius: RADIUS.lg,
-    paddingVertical: SPACING.md,
+    borderRadius: RADIUS.md,
+    paddingVertical: SPACING.sm,
     paddingHorizontal: SPACING.md,
-    gap: SPACING.sm,
+    gap: SPACING.xs,
   },
   bookmarkHead: {
     flexDirection: 'row',
@@ -1196,9 +1198,9 @@ const styles = StyleSheet.create({
   bookmarkTitle: { fontSize: TYPE.label.fontSize, fontWeight: '700' },
   bookmarkStatus: { fontSize: TYPE.caption.fontSize, flexShrink: 1 },
   swatchRow: { flexDirection: 'row', justifyContent: 'space-between' },
-  swatchSlot: { alignItems: 'center', gap: SPACING.xs, minWidth: 52 },
+  swatchSlot: { alignItems: 'center', gap: 2, minWidth: 48 },
   swatchPressed: { opacity: 0.6 },
-  swatchBox: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
+  swatchBox: { width: 34, height: 34, alignItems: 'center', justifyContent: 'center' },
   // The ring around a colour that is taken: a gap, then the colour's own line.
   swatchRing: {
     position: 'absolute',
@@ -1210,8 +1212,8 @@ const styles = StyleSheet.create({
     borderWidth: 2, // tokens-ok-line: the ring around a taken colour
   },
   swatch: {
-    width: 28,
-    height: 28,
+    width: 24,
+    height: 24,
     borderRadius: RADIUS.full,
     alignItems: 'center',
     justifyContent: 'center',
@@ -1251,25 +1253,25 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: SPACING.md,
-    marginTop: SPACING.md,
-    minHeight: 52,
-    borderRadius: RADIUS.lg,
-    paddingVertical: SPACING.sm,
-    paddingStart: SPACING.sm,
-    paddingEnd: SPACING.sm,
+    marginTop: SPACING.sm,
+    minHeight: 44,
+    borderRadius: RADIUS.md,
+    paddingVertical: SPACING.xs,
+    paddingStart: SPACING.xs + 2,
+    paddingEnd: SPACING.xs + 2,
   },
   pinPressed: { opacity: 0.7 },
   pinIcon: {
-    width: 36,
-    height: 36,
+    width: 30,
+    height: 30,
     borderRadius: RADIUS.full,
     alignItems: 'center',
     justifyContent: 'center',
   },
   pinLabel: { fontSize: TYPE.footnote.fontSize, fontWeight: '600', flex: 1 },
   pinAction: {
-    minWidth: 64,
-    paddingVertical: SPACING.xs + 2,
+    minWidth: 56,
+    paddingVertical: SPACING.xs,
     paddingHorizontal: SPACING.md,
     borderRadius: RADIUS.full,
     alignItems: 'center',
@@ -1277,11 +1279,9 @@ const styles = StyleSheet.create({
   pinActionText: { fontSize: TYPE.footnote.fontSize, fontWeight: '700' },
   // The emerald button takes the row's full width; repeat and share share
   // the line below it, so the ranking is visible before it is read.
-  actionsPrimary: { width: '100%' },
+  // Play and repeat side by side, equal halves.
   actionsRow: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
     gap: SPACING.sm,
-    marginTop: SPACING.lg,
   },
 });

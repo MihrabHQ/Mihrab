@@ -85,6 +85,10 @@ export type RowActionProps = {
   glyph?: string;
   accessibilityLabel?: string;
   disabled?: boolean;
+  /** The smaller size, for a dense sheet. */
+  compact?: boolean;
+  /** Take an equal share of the row it sits in. */
+  grow?: boolean;
 };
 
 export const RowAction = memo(function RowAction({
@@ -94,6 +98,8 @@ export const RowAction = memo(function RowAction({
   glyph,
   accessibilityLabel,
   disabled = false,
+  compact = false,
+  grow = false,
 }: RowActionProps) {
   const { palette } = useAppPalette();
   const fg = emphasized ? palette.onAccent : palette.text;
@@ -106,16 +112,20 @@ export const RowAction = memo(function RowAction({
       onPress={onPress}
       style={({ pressed }: { pressed: boolean }) => [
         styles.action,
+        compact && styles.actionCompact,
+        grow && styles.grow,
         {
           backgroundColor: emphasized ? palette.accentSolid : palette.controlBg,
           opacity: disabled ? 0.5 : pressed ? 0.8 : 1,
         },
       ]}>
       {glyph ? (
-        <Text style={[styles.actionGlyph, { color: fg }]}>{glyph}</Text>
+        <Text style={[styles.actionGlyph, compact && styles.actionGlyphCompact, { color: fg }]}>
+          {glyph}
+        </Text>
       ) : null}
       <Text
-        style={[styles.actionLabel, { color: fg }]}
+        style={[styles.actionLabel, compact && styles.actionLabelCompact, { color: fg }]}
         numberOfLines={1}
         maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}>
         {label}
@@ -134,6 +144,8 @@ export type StepperProps = {
   incrementLabel: string;
   atMin?: boolean;
   atMax?: boolean;
+  /** The smaller size, for a dense sheet. */
+  compact?: boolean;
 };
 
 /**
@@ -148,6 +160,7 @@ export const Stepper = memo(function Stepper({
   incrementLabel,
   atMin = false,
   atMax = false,
+  compact = false,
 }: StepperProps) {
   const { palette } = useAppPalette();
   return (
@@ -159,17 +172,18 @@ export const Stepper = memo(function Stepper({
         disabled={atMin}
         onPress={onDecrement}
         hitSlop={6}
-        style={styles.stepperBtn}>
+        style={[styles.stepperBtn, compact && styles.stepperBtnCompact]}>
         <Text
           style={[
             styles.stepperGlyph,
+            compact && styles.stepperGlyphCompact,
             { color: atMin ? palette.muted : palette.accent },
           ]}>
           −
         </Text>
       </Pressable>
       <Text
-        style={[styles.stepperValue, { color: palette.text }]}
+        style={[styles.stepperValue, compact && styles.stepperValueCompact, { color: palette.text }]}
         maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}>
         {value}
       </Text>
@@ -180,10 +194,11 @@ export const Stepper = memo(function Stepper({
         disabled={atMax}
         onPress={onIncrement}
         hitSlop={6}
-        style={styles.stepperBtn}>
+        style={[styles.stepperBtn, compact && styles.stepperBtnCompact]}>
         <Text
           style={[
             styles.stepperGlyph,
+            compact && styles.stepperGlyphCompact,
             { color: atMax ? palette.muted : palette.accent },
           ]}>
           +
@@ -192,6 +207,56 @@ export const Stepper = memo(function Stepper({
     </View>
   );
 });
+
+// ── Segments ──────────────────────────────────────────────────────────
+
+/**
+ * A single choice as ONE control: a track with equal segments, the chosen
+ * one filled. Where a row of loose chips (speed, pause, hide) took a line
+ * of separate buttons each, this is one compact object that reads as
+ * "pick one of these".
+ */
+export function Segments<T extends string | number>({
+  values,
+  selected,
+  onSelect,
+  format,
+  accessibilityLabel,
+}: {
+  values: readonly T[];
+  selected: T;
+  onSelect: (v: T) => void;
+  format: (v: T) => string;
+  accessibilityLabel?: string;
+}) {
+  const { palette } = useAppPalette();
+  return (
+    <View
+      accessibilityRole="radiogroup"
+      accessibilityLabel={accessibilityLabel}
+      style={[styles.segments, { backgroundColor: palette.controlBg }]}>
+      {values.map(v => {
+        const on = v === selected;
+        return (
+          <Pressable
+            key={String(v)}
+            accessibilityRole="radio"
+            accessibilityState={{ selected: on }}
+            accessibilityLabel={format(v)}
+            onPress={() => onSelect(v)}
+            style={[styles.segment, on && { backgroundColor: palette.accentSolid }]}>
+            <Text
+              numberOfLines={1}
+              maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}
+              style={[styles.segmentLabel, { color: on ? palette.onAccent : palette.text }]}>
+              {format(v)}
+            </Text>
+          </Pressable>
+        );
+      })}
+    </View>
+  );
+}
 
 // ── Section head ──────────────────────────────────────────────────────
 
@@ -203,11 +268,14 @@ export const Stepper = memo(function Stepper({
 export const SectionHead = memo(function SectionHead({
   label,
   first = false,
+  tight = false,
   trailing,
 }: {
   label: string;
   /** No rule above the first section — nothing to separate it from. */
   first?: boolean;
+  /** Less air around it, for a dense sheet. */
+  tight?: boolean;
   trailing?: ReactNode;
 }) {
   const { palette } = useAppPalette();
@@ -215,6 +283,7 @@ export const SectionHead = memo(function SectionHead({
     <View
       style={[
         styles.sectionHead,
+        tight && styles.sectionHeadTight,
         !first && {
           borderTopWidth: StyleSheet.hairlineWidth,
           borderTopColor: palette.border ?? palette.muted,
@@ -248,8 +317,30 @@ const styles = StyleSheet.create({
     paddingVertical: desktopSize(11),
     borderRadius: RADIUS.lg,
   },
+  actionCompact: {
+    paddingHorizontal: desktopSize(12),
+    paddingVertical: desktopSize(8),
+    borderRadius: RADIUS.md,
+    gap: SPACING.xs,
+  },
+  grow: { flex: 1 },
   actionGlyph: { fontSize: desktopSize(13), fontWeight: '700' },
+  actionGlyphCompact: { fontSize: desktopSize(11) },
   actionLabel: { fontSize: desktopSize(13.5), fontWeight: '700' },
+  actionLabelCompact: { fontSize: desktopSize(12.5) },
+  segments: {
+    flexDirection: 'row',
+    borderRadius: RADIUS.md,
+    padding: 2,
+    gap: 2,
+  },
+  segment: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: desktopSize(6),
+    borderRadius: RADIUS.md - 2,
+  },
+  segmentLabel: { fontSize: desktopSize(12.5), fontWeight: '600' },
   stepper: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -262,7 +353,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  stepperBtnCompact: { width: 28, height: 28 },
   stepperGlyph: { fontSize: TYPE.title3.fontSize, fontWeight: '700' },
+  stepperGlyphCompact: { fontSize: TYPE.callout.fontSize },
   stepperValue: {
     minWidth: 38,
     textAlign: 'center',
@@ -270,6 +363,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontVariant: ['tabular-nums'],
   },
+  stepperValueCompact: { minWidth: 30, fontSize: TYPE.footnote.fontSize },
   sectionHead: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -279,6 +373,7 @@ const styles = StyleSheet.create({
     paddingTop: SPACING.lg,
     marginBottom: SPACING.sm,
   },
+  sectionHeadTight: { marginTop: SPACING.md, paddingTop: SPACING.md, marginBottom: SPACING.xs },
   sectionLabel: {
     fontSize: TYPE.label.fontSize,
     fontWeight: '600',

@@ -61,12 +61,19 @@ describe('the play section', () => {
 
   it('puts the reciter last, after speed, memorisation and the range', () => {
     const at = (s: string) => controls.indexOf(s);
-    expect(at("<SectionHead label={t('quran.speed', 'Speed')} first />")).toBeGreaterThan(-1);
+    expect(at("<SectionHead label={t('quran.speed', 'Speed')} first tight />")).toBeGreaterThan(-1);
     expect(at("label={t('quran.reciter', 'Reciter')}")).toBeGreaterThan(at("defaultValue: 'Play a range of {{surah}}'"));
     expect(at("label={t('quran.reciter', 'Reciter')}")).toBeLessThan(at('<ReciterPickerSheet'));
   });
 
-  it('keeps the download and delete rows apart', () => {
-    expect(controls).toContain('dlWrap: { marginTop: SPACING.sm, gap: SPACING.sm },');
+  it('keeps the download and delete buttons apart, on one row', () => {
+    expect(controls).toContain("dlWrap: { flexDirection: 'row', marginTop: SPACING.sm, gap: SPACING.sm },");
+  });
+
+  it('is compact: segmented choices, small buttons and steppers', () => {
+    expect(controls).toContain('<Segments values={values} selected={selected} onSelect={onSelect} format={format} />');
+    expect(controls).not.toMatch(/<Chip\b/);
+    expect(controls).toMatch(/atMax=\{value >= max\}\s*compact/);
+    expect(sheet).toMatch(/label=\{t\('quran\.playFromHere', 'Play from here'\)\}\s*glyph="▶"\s*emphasized\s*compact\s*grow/);
   });
 });

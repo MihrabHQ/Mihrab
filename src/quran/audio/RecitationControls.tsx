@@ -28,7 +28,7 @@ import {
 } from '../quranDownloadManager';
 import { playRange, setPlaybackRate } from './playback';
 import { setQuranPrefs, useQuranState } from '../quranState';
-import { Chip, RowAction, SectionHead, Stepper } from '../../components/controls';
+import { RowAction, SectionHead, Segments, Stepper } from '../../components/controls';
 import { RADIUS, SPACING } from '../../theme/tokens';
 import { TYPE } from '../../theme/typography';
 
@@ -185,6 +185,7 @@ export function RecitationControls({ surahNumber, onStartPlayback }: Props) {
         incrementLabel={`${label} +`}
         atMin={value <= min}
         atMax={value >= max}
+        compact
       />
     </View>
   );
@@ -196,28 +197,21 @@ export function RecitationControls({ surahNumber, onStartPlayback }: Props) {
     format: (v: T) => string,
   ) => (
     <View style={styles.chips}>
-      {values.map(v => (
-        <Chip
-          key={String(v)}
-          label={format(v)}
-          selected={v === selected}
-          onPress={() => onSelect(v)}
-        />
-      ))}
+      <Segments values={values} selected={selected} onSelect={onSelect} format={format} />
     </View>
   );
 
   return (
     <View>
       {/* Speed */}
-      <SectionHead label={t('quran.speed', 'Speed')} first />
+      <SectionHead label={t('quran.speed', 'Speed')} first tight />
       {chipRow(RATES, prefs.playbackRate, v => {
         setQuranPrefs({ playbackRate: v });
         void setPlaybackRate(v);
       }, v => `${v}×`)}
 
       {/* Memorization */}
-      <SectionHead label={t('quran.memorization', 'Memorization')} />
+      <SectionHead label={t('quran.memorization', 'Memorization')} tight />
       {stepper(
         t('quran.repeatEachAyah', 'Repeat each ayah'),
         prefs.repeat.eachAyah,
@@ -257,6 +251,7 @@ export function RecitationControls({ surahNumber, onStartPlayback }: Props) {
 
       {/* Range player */}
       <SectionHead
+        tight
         label={t('quran.playRangeTitle', {
           defaultValue: 'Play a range of {{surah}}',
           surah: surahLabel,
@@ -284,6 +279,7 @@ export function RecitationControls({ surahNumber, onStartPlayback }: Props) {
           <RowAction
             label={t('quran.playRange', 'Play range')}
             emphasized
+            compact
             glyph="▶"
             onPress={() => {
               const max = meta?.ayahCount ?? 1;
@@ -303,7 +299,7 @@ export function RecitationControls({ surahNumber, onStartPlayback }: Props) {
           where speed and repetition are touched on every session. A
           compact row; tap opens the searchable picker. Its download and
           delete rows follow it. */}
-      <SectionHead label={t('quran.reciter', 'Reciter')} />
+      <SectionHead label={t('quran.reciter', 'Reciter')} tight />
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={t('quran.chooseReciter', 'Choose reciter')}
@@ -332,6 +328,8 @@ export function RecitationControls({ surahNumber, onStartPlayback }: Props) {
           row used to withhold. */}
       <View style={styles.dlWrap}>
         <RowAction
+          compact
+          grow
           label={
             downloading
               ? t('quran.downloadingAudio', {
@@ -351,9 +349,8 @@ export function RecitationControls({ surahNumber, onStartPlayback }: Props) {
                   ? t('quran.surahAudioDownloaded', 'Audio downloaded for offline use')
                   : partial
                     ? // The state this row could not say. #30.
-                      t('quran.surahAudioPartial', {
-                        defaultValue:
-                          '{{have}} of {{total}} ayahs · tap to download the rest',
+                      t('quran.surahAudioPartialShort', {
+                        defaultValue: '{{have}}/{{total}} ayahs · Download the rest',
                         have: status?.have ?? 0,
                         total: status?.total ?? 0,
                       })
@@ -374,6 +371,7 @@ export function RecitationControls({ surahNumber, onStartPlayback }: Props) {
             sheet was the cancel, and it was not announced as one. */}
         {downloading ? (
           <RowAction
+            compact
             label={t('common.cancel', 'Cancel')}
             onPress={() => cancelQuranDownload()}
             accessibilityLabel={t('common.cancel', 'Cancel')}
@@ -384,7 +382,8 @@ export function RecitationControls({ surahNumber, onStartPlayback }: Props) {
             to delete a whole reciter to get 40 MB back. */}
         {!downloading && (status?.have ?? 0) > 0 ? (
           <RowAction
-            label={t('quran.deleteSurahAudio', 'Delete this surah’s audio')}
+            compact
+            label={t('common.delete', 'Delete')}
             onPress={removeDownload}
             accessibilityLabel={t('quran.deleteSurahAudioFor', {
               defaultValue: 'Delete downloaded audio for {{surah}}',
@@ -412,12 +411,12 @@ const styles = StyleSheet.create({
   reciterRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: SPACING.md,
+    paddingVertical: SPACING.sm,
     paddingHorizontal: SPACING.md,
     borderRadius: RADIUS.md,
     gap: SPACING.sm,
   },
-  reciterName: { fontSize: TYPE.callout.fontSize, fontWeight: '600' },
+  reciterName: { fontSize: TYPE.footnote.fontSize, fontWeight: '600' },
   reciterArabic: { fontSize: TYPE.label.fontSize, marginTop: 1 },
   dlRow: {
     marginTop: SPACING.sm,
@@ -430,9 +429,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: SPACING.md,
+    marginTop: SPACING.sm,
   },
-  rowLabel: { fontSize: TYPE.callout.fontSize, fontWeight: '600', flex: 1 },
+  rowLabel: { fontSize: TYPE.footnote.fontSize, fontWeight: '600', flex: 1 },
   stepper: { flexDirection: 'row', alignItems: 'center', gap: SPACING.md },
   stepBtn: {
     width: 32,
@@ -450,9 +449,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontVariant: ['tabular-nums'],
   },
-  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.sm, marginTop: SPACING.sm },
-  // Download, cancel and delete stack here: apart, not touching.
-  dlWrap: { marginTop: SPACING.sm, gap: SPACING.sm },
+  chips: { marginTop: SPACING.xs },
+  // Download, cancel and delete share one row: apart, not touching.
+  dlWrap: { flexDirection: 'row', marginTop: SPACING.sm, gap: SPACING.sm },
   playRangeWrap: { marginStart: 'auto' },
   chip: {
     paddingHorizontal: SPACING.md,
@@ -469,10 +468,10 @@ const styles = StyleSheet.create({
   rangeInput: {
     borderWidth: 1,
     borderRadius: RADIUS.md,
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
-    fontSize: TYPE.callout.fontSize,
-    minWidth: 56,
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: SPACING.xs,
+    fontSize: TYPE.footnote.fontSize,
+    minWidth: 48,
     textAlign: 'center',
     fontVariant: ['tabular-nums'],
   },

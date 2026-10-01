@@ -1353,7 +1353,8 @@
     "pinSet": "Définir",
     "pinRemove": "Retirer",
     "khatmahPinnedHere": "Votre khatma est à ce verset",
-    "playSection": "Lecture"
+    "playSection": "Lecture",
+    "surahAudioPartialShort": "{{have}}/{{total}} versets · Télécharger le reste"
   },
   "reading": {
     "textSize": "Taille du texte",

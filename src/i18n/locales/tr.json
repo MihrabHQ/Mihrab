@@ -1353,7 +1353,8 @@
     "pinSet": "Ayarla",
     "pinRemove": "Kaldır",
     "khatmahPinnedHere": "Hatmin bu ayette",
-    "playSection": "Oynat"
+    "playSection": "Oynat",
+    "surahAudioPartialShort": "{{have}}/{{total}} ayet · Kalanı indir"
   },
   "reading": {
     "textSize": "Metin boyutu",

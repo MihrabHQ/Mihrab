@@ -1353,7 +1353,8 @@
     "pinSet": "Задать",
     "pinRemove": "Убрать",
     "khatmahPinnedHere": "Ваш хатм на этом аяте",
-    "playSection": "Воспроизведение"
+    "playSection": "Воспроизведение",
+    "surahAudioPartialShort": "{{have}}/{{total}} аятов · Скачать остальное"
   },
   "reading": {
     "textSize": "Размер текста",

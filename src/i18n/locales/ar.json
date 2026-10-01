@@ -1353,7 +1353,8 @@
     "pinSet": "تعيين",
     "pinRemove": "إزالة",
     "khatmahPinnedHere": "ختمتك عند هذه الآية",
-    "playSection": "التشغيل"
+    "playSection": "التشغيل",
+    "surahAudioPartialShort": "{{have}}/{{total}} آية · تنزيل الباقي"
   },
   "reading": {
     "textSize": "حجم النص",

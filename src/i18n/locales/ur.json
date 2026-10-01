@@ -1353,7 +1353,8 @@
     "pinSet": "مقرر کریں",
     "pinRemove": "ہٹائیں",
     "khatmahPinnedHere": "آپ کا ختم اسی آیت پر ہے",
-    "playSection": "سنیں"
+    "playSection": "سنیں",
+    "surahAudioPartialShort": "{{have}}/{{total}} آیات · باقی ڈاؤن لوڈ کریں"
   },
   "reading": {
     "textSize": "متن کا سائز",

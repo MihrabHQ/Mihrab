@@ -1353,7 +1353,8 @@
     "pinSet": "Fijar",
     "pinRemove": "Quitar",
     "khatmahPinnedHere": "Tu jatma está en esta aleya",
-    "playSection": "Reproducir"
+    "playSection": "Reproducir",
+    "surahAudioPartialShort": "{{have}}/{{total}} aleyas · Descargar el resto"
   },
   "reading": {
     "textSize": "Tamaño del texto",

@@ -1353,7 +1353,8 @@
     "pinSet": "সেট করুন",
     "pinRemove": "সরান",
     "khatmahPinnedHere": "আপনার খতম এই আয়াতে",
-    "playSection": "চালান"
+    "playSection": "চালান",
+    "surahAudioPartialShort": "{{have}}/{{total}} আয়াত · বাকিটা ডাউনলোড করুন"
   },
   "reading": {
     "textSize": "লেখার আকার",

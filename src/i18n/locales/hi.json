@@ -1353,7 +1353,8 @@
     "pinSet": "सेट करें",
     "pinRemove": "हटाएँ",
     "khatmahPinnedHere": "आपका ख़त्म इसी आयत पर है",
-    "playSection": "चलाएँ"
+    "playSection": "चलाएँ",
+    "surahAudioPartialShort": "{{have}}/{{total}} आयतें · बाकी डाउनलोड करें"
   },
   "reading": {
     "textSize": "पाठ का आकार",
