@@ -1,0 +1,56 @@
+diff --git a/node_modules/react-native/Libraries/Text/Text.js b/node_modules/react-native/Libraries/Text/Text.js
+index 902fcab..146b70b 100644
+--- a/node_modules/react-native/Libraries/Text/Text.js
++++ b/node_modules/react-native/Libraries/Text/Text.js
+@@ -218,6 +218,33 @@ const TextImpl: component(
+     }
+   }
+ 
++  // MIHRAB PATCH — iOS text alignment in a right-to-left LAYOUT.
++  //
++  // The app mirrors itself with Yoga `direction: 'rtl'` on its root view
++  // rather than `I18nManager.forceRTL`, so the language can change without
++  // a restart. Yoga mirrors every row, and `textAlign: 'left' | 'right'`
++  // follows (RCTResolveTextAlignment swaps them in an RTL layout) — but a
++  // Text with NO alignment is drawn with NSTextAlignmentNatural, and on iOS
++  // "natural" is the app's localization, not the layout. So in Arabic or
++  // Urdu every unaligned label sat on the LEFT of its box: titles beside
++  // the chevron instead of at the row's start, "Dhuhr in" beside the heart.
++  // Android's "natural" is the view's layout direction, so it was right.
++  //
++  // An unaligned root Text gets 'left' here, which iOS resolves against the
++  // layout direction: left in a left-to-right tree, right in a mirrored one
++  // — what natural means on Android. Nested spans are left alone; their
++  // paragraph is the root's.
++  const hasTextAncestor = useContext(TextAncestorContext);
++  if (
++    Platform.OS === 'ios' &&
++    !hasTextAncestor &&
++    (processedStyle == null ||
++      processedStyle.textAlign == null ||
++      processedStyle.textAlign === 'auto')
++  ) {
++    _style = [_style, iosLayoutStartAlign];
++  }
++
+   if (ReactNativeFeatureFlags.defaultTextToOverflowHidden()) {
+     _style = [styles.default, _style];
+   }
+@@ -270,7 +297,6 @@ const TextImpl: component(
+     };
+   }
+ 
+-  const hasTextAncestor = useContext(TextAncestorContext);
+   if (hasTextAncestor) {
+     processedProps.disabled = disabled;
+     processedProps.children = children;
+@@ -547,6 +573,9 @@ const verticalAlignToTextAlignVerticalMap = {
+   middle: 'center',
+ } as const;
+ 
++// MIHRAB PATCH — see the alignment note in the component above.
++const iosLayoutStartAlign: {textAlign: 'left'} = {textAlign: 'left'};
++
+ const styles = StyleSheet.create({
+   // Native components have historically acted like overflow: 'hidden'. We set
+   // this, as part of the default style, to let client differentiate with

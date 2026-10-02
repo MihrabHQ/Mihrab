@@ -548,9 +548,17 @@ export function QuranScreen() {
   // A new width (rotation) or a mirrored row: stay on the same page.
   useEffect(() => {
     if (pageW > 0) {
-      pagerRef.current?.scrollTo({ x: order.indexOf(tabRef.current) * pageW, y: 0, animated: false });
+      const x = order.indexOf(tabRef.current) * pageW;
+      pagerRef.current?.scrollTo({ x, y: 0, animated: false });
+      // And the value the cards are drawn from. A ScrollView placed by its
+      // `contentOffset` (or a scrollTo that moves nothing) sends no scroll
+      // event on iOS, so `scrollX` stayed at 0 — which is the FIRST slot.
+      // In Arabic and Urdu the Surah page is the last slot, so on first open
+      // it was drawn as a card mid-swipe, shrunk and dimmed with its corners
+      // on, until a touch scrolled it and the event arrived.
+      scrollX.setValue(x);
     }
-  }, [order, pageW]);
+  }, [order, pageW, scrollX]);
   const onPagerSettled = useCallback(
     (x: number) => {
       if (pageW <= 0) return;
