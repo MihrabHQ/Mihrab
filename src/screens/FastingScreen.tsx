@@ -52,6 +52,7 @@ import {
   TABULAR_MAX_FONT_SCALE,
   tabularNumeralStyle,
 } from '../theme/textScale';
+import { useScrollBottomInset } from '../navigation/pageBottom';
 
 /**
  * FastingScreen — task #29 UI shell.
@@ -67,6 +68,8 @@ import {
  * voluntary-fast tracker (Mondays/Thursdays, white days, Arafah, Ashura).
  */
 export function FastingScreen() {
+  // Pads its own end; the stack reserves nothing here (pageBottom.ts).
+  const bottom = useScrollBottomInset();
   // Subscribe to width changes so future master-detail layouts pick up
   // the new breakpoint without a forced remount. iPad/Mac (#33) baseline.
   useBreakpoint();
@@ -216,7 +219,7 @@ export function FastingScreen() {
   return (
     <ScrollView
       style={[styles.scroll, { backgroundColor: palette.bg }]}
-      contentContainerStyle={styles.content}
+      contentContainerStyle={[styles.content, { paddingBottom: SPACING.lg + bottom }]}
       contentInsetAdjustmentBehavior="automatic">
       {/* The gap belongs to the stack, not to `contentContainerStyle`.
           That gap separates the ScrollView's DIRECT children, and since

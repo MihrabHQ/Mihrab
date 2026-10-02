@@ -85,6 +85,7 @@ import {
 } from '../sync/syncSettings';
 import { Chip } from '../components/controls';
 import { SYNC_CATEGORIES, type SyncCategory } from '../sync/snapshot';
+import { useScrollBottomInset } from '../navigation/pageBottom';
 
 type Palette = ReturnType<typeof useAppPalette>['palette'];
 
@@ -170,6 +171,8 @@ export function SyncScreen() {
   // One ref for both returns: the not-ready page and the real one are
   // never mounted together.
   const kb = useKeyboardAwareScroll<ScrollViewInstance>();
+  // Pads its own end; the stack reserves nothing here (pageBottom.ts).
+  const bottom = useScrollBottomInset();
   const { t } = useTranslation();
   const { palette } = useAppPalette();
 
@@ -485,7 +488,13 @@ export function SyncScreen() {
         ref={kb.ref}
         automaticallyAdjustKeyboardInsets
         style={styles.scroll}
-        contentContainerStyle={[styles.content, kb.contentPadding]}>
+        // Below the transparent iOS header, as every pushed page.
+        contentInsetAdjustmentBehavior="automatic"
+        contentContainerStyle={[
+          styles.content,
+          { paddingBottom: SPACING.lg + bottom },
+          kb.contentPadding,
+        ]}>
         <CenteredColumn innerStyle={styles.stack} style={styles.stack}>
           <View style={[styles.card, card]}>
             <Text style={[typeStyle('body'), { color: palette.text }]}>
@@ -502,7 +511,14 @@ export function SyncScreen() {
       ref={kb.ref}
       automaticallyAdjustKeyboardInsets
       style={styles.scroll}
-      contentContainerStyle={[styles.content, kb.contentPadding]}>
+      // Below the transparent iOS header, as every pushed page. Without
+      // it the first card sat under the title and the back chevron.
+      contentInsetAdjustmentBehavior="automatic"
+      contentContainerStyle={[
+        styles.content,
+        { paddingBottom: SPACING.lg + bottom },
+        kb.contentPadding,
+      ]}>
       <CenteredColumn innerStyle={styles.stack} style={styles.stack}>
         {/* One explanation, two lines, the rest a tap away. The intro and
             the folder card each carried a paragraph saying the same thing

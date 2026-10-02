@@ -95,6 +95,14 @@ export function RootNavigator() {
     (i18n.language || '').slice(0, 2),
   );
   const titleWritingDirection: 'rtl' | 'ltr' = isRtlLocale ? 'rtl' : 'ltr';
+  /**
+   * For pushed pages that run to the bottom edge and pad their own end
+   * (src/navigation/pageBottom.ts). The default `contentStyle` below
+   * reserves the bottom safe area and paints it the page colour — a band
+   * that a scrolling page slid under. Kept as the default only for the
+   * muṣḥaf reader and onboarding, which lay out against it.
+   */
+  const edgeToEdge = { backgroundColor: theme.colors.background, paddingBottom: 0 };
   return (
     <Stack.Navigator
       /**
@@ -207,12 +215,12 @@ export function RootNavigator() {
       <Stack.Screen
         name="MonthTimes"
         component={MonthTimesScreen}
-        options={{ title: t('nav.month'), headerLargeTitle: false }}
+        options={{ title: t('nav.month'), headerLargeTitle: false, contentStyle: edgeToEdge }}
       />
       <Stack.Screen
         name="ShareMonth"
         component={ShareMonthScreen}
-        options={{ title: t('nav.shareMonth'), headerLargeTitle: false }}
+        options={{ title: t('nav.shareMonth'), headerLargeTitle: false, contentStyle: edgeToEdge }}
       />
       {/* Not on a Mac. There is no magnetometer in one, so the dial has
           nothing to point with — it would sit at a fixed heading and look
@@ -227,7 +235,7 @@ export function RootNavigator() {
         <Stack.Screen
           name="Compass"
           component={CompassScreen}
-          options={{ title: t('nav.compass'), headerLargeTitle: false }}
+          options={{ title: t('nav.compass'), headerLargeTitle: false, contentStyle: edgeToEdge }}
         />
       )}
       <Stack.Screen
@@ -253,7 +261,7 @@ export function RootNavigator() {
           // TilawahScreen `listBottom`): the default reserve was a band of
           // page colour across the bottom of the screen that rows
           // scrolled under and vanished behind.
-          contentStyle: { backgroundColor: theme.colors.background, paddingBottom: 0 },
+          contentStyle: edgeToEdge,
         })}
       />
       <Stack.Screen
@@ -264,7 +272,7 @@ export function RootNavigator() {
           headerLargeTitle: false,
           // Same as Tilawah: the scroll view pads its own bottom
           // (tabBarInset), so the stack's reserve was a dead band.
-          contentStyle: { backgroundColor: theme.colors.background, paddingBottom: 0 },
+          contentStyle: edgeToEdge,
         })}
       />
       <Stack.Screen
@@ -276,7 +284,7 @@ export function RootNavigator() {
           // Same as Tilawah: the scroll view pads its own end (see
           // QuranDownloadsScreen `listBottom`), so the stack's reserve was
           // a band across the bottom of the screen that cards slid under.
-          contentStyle: { backgroundColor: theme.colors.background, paddingBottom: 0 },
+          contentStyle: edgeToEdge,
         })}
       />
       <Stack.Screen
@@ -287,7 +295,7 @@ export function RootNavigator() {
           headerLargeTitle: false,
           // Pads its own end (TajweedGuideScreen); the stack's reserve
           // was a band across the bottom the cards slid under.
-          contentStyle: { backgroundColor: theme.colors.background, paddingBottom: 0 },
+          contentStyle: edgeToEdge,
         })}
       />
       {/* A modal, not a pushed card, and no gesture.
@@ -317,7 +325,7 @@ export function RootNavigator() {
       <Stack.Screen
         name="Backup"
         component={BackupScreen}
-        options={{ title: t('nav.backup'), headerLargeTitle: false }}
+        options={{ title: t('nav.backup'), headerLargeTitle: false, contentStyle: edgeToEdge }}
       />
       {/* Pairing lives next to Backup because it is the same question asked
           twice — where does my record live, and how do I get it somewhere
@@ -326,7 +334,7 @@ export function RootNavigator() {
       <Stack.Screen
         name="Sync"
         component={SyncScreen}
-        options={{ title: t('nav.sync'), headerLargeTitle: false }}
+        options={{ title: t('nav.sync'), headerLargeTitle: false, contentStyle: edgeToEdge }}
       />
       {/* The sunnah calendar, the day-before reminder and the full history —
           reference material, reached from the Log's fasting card rather
@@ -334,7 +342,7 @@ export function RootNavigator() {
       <Stack.Screen
         name="Fasting"
         component={FastingScreen}
-        options={{ title: t('nav.fasting'), headerLargeTitle: false }}
+        options={{ title: t('nav.fasting'), headerLargeTitle: false, contentStyle: edgeToEdge }}
       />
 
       {/* The settings subpages.

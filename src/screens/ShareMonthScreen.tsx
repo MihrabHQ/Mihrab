@@ -8,7 +8,6 @@ import { useHeaderHeight } from '@react-navigation/elements';
 import {
   ActivityIndicator,
   Animated,
-  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -47,6 +46,7 @@ import { LanguageModal } from './settings/LanguageModal';
 import { ShareBanner } from './share/ShareBanner';
 import { ShareFooter } from './share/ShareFooter';
 import { ShareTable } from './share/ShareTable';
+import { useBottomInset } from '../navigation/pageBottom';
 
 /**
  * A4 at 96 DPI. The sheet is drawn at exactly this size so that what is
@@ -80,6 +80,11 @@ type Props = NativeStackScreenProps<RootStackParamList, 'ShareMonth'>;
 
 export function ShareMonthScreen({ route, navigation, embedded }: Props & { navigation?: any, embedded?: boolean }) {
   const { year, month } = route.params;
+  // The footer meets the bottom edge whether this is its own page or
+  // embedded in the month page: neither route reserves the bottom safe
+  // area any more (pageBottom.ts), so the footer keeps above it.
+  const bottomInset = useBottomInset();
+  const footerBottom = 16 + bottomInset;
   const { t, i18n } = useTranslation();
   const { settings, hydrated } = usePrayerSettings();
   const { palette } = useAppPalette();
@@ -481,7 +486,11 @@ export function ShareMonthScreen({ route, navigation, embedded }: Props & { navi
         </PinchGestureHandler>
       </ScrollView>
 
-      <View style={[styles.footer, { borderTopColor: palette.border, backgroundColor: palette.bg }]}>
+      <View
+        style={[
+          styles.footer,
+          { borderTopColor: palette.border, backgroundColor: palette.bg, paddingBottom: footerBottom },
+        ]}>
         {/* The sheet's language, chosen per export rather than in
             Settings: the app is for the sender, the sheet is for whoever
             reads it on the wall. */}
@@ -636,9 +645,9 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 4,
   },
+  // paddingBottom is set inline: 16 above the safe area (footerBottom).
   footer: {
     padding: 16,
-    paddingBottom: Platform.OS === 'ios' ? 32 : 16,
   },
   sheetBody: { flex: 1, justifyContent: 'space-between' },
   langRow: {

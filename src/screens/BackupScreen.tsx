@@ -62,6 +62,7 @@ import {
 } from '../sync/exportFile';
 import { hasFilePicker, pickFile } from '../native/FilePicker';
 import { utf8Decode } from '../sync/secureRandom';
+import { useScrollBottomInset } from '../navigation/pageBottom';
 
 /** Rows in the order someone thinks about their own data. */
 const ROWS: SyncCategory[] = [
@@ -113,6 +114,8 @@ function CategoryRow({
 
 export function BackupScreen() {
   const kb = useKeyboardAwareScroll<ScrollViewInstance>();
+  // Pads its own end; the stack reserves nothing here (pageBottom.ts).
+  const bottom = useScrollBottomInset();
   const { t } = useTranslation();
   const { palette } = useAppPalette();
   useBreakpoint();
@@ -304,7 +307,11 @@ export function BackupScreen() {
       ref={kb.ref}
       automaticallyAdjustKeyboardInsets
       style={[styles.scroll, { backgroundColor: palette.bg }]}
-      contentContainerStyle={[styles.content, kb.contentPadding]}
+      contentContainerStyle={[
+        styles.content,
+        { paddingBottom: SPACING.lg + bottom },
+        kb.contentPadding,
+      ]}
       contentInsetAdjustmentBehavior="automatic"
     >
       {/* The gap belongs to the stack, not to `contentContainerStyle`.

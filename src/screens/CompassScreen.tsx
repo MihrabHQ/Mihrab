@@ -16,6 +16,7 @@ import { useCompassSensor } from './compass/useCompassSensor';
 import { useIsActive } from '../hooks/useIsActive';
 import { SPACING } from '../theme/tokens';
 import { TYPE } from '../theme/typography';
+import { useBottomInset } from '../navigation/pageBottom';
 
 /**
  * CompassScreen orchestrator — task #10 split.
@@ -29,6 +30,8 @@ import { TYPE } from '../theme/typography';
  * file any more.
  */
 export function CompassScreen() {
+  // Runs to the bottom edge; the stack reserves nothing here (pageBottom.ts).
+  const bottomInset = useBottomInset();
   // Subscribe to width changes so future master-detail layouts pick up
   // the new breakpoint without a forced remount. iPad/Mac (#33) baseline.
   useBreakpoint();
@@ -113,7 +116,11 @@ export function CompassScreen() {
     <View
       style={[
         styles.root,
-        { backgroundColor: palette.bg, paddingTop: Platform.OS === 'ios' ? headerHeight : 0 },
+        {
+          backgroundColor: palette.bg,
+          paddingTop: Platform.OS === 'ios' ? headerHeight : 0,
+          paddingBottom: SPACING.xl + bottomInset,
+        },
       ]}>
       <BearingHeader qiblaDeg={qibla} />
 

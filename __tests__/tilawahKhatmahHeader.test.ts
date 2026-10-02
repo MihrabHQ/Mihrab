@@ -15,13 +15,30 @@ it('pushed pages show the chevron without a back title', () => {
   );
 });
 
-it('Tilawah and Khatmah drop the stack bottom reserve', () => {
+it('every pushed page but the mushaf and onboarding drops the stack bottom reserve', () => {
   const nav = read('src/navigation/RootNavigator.tsx');
-  for (const route of ['QuranListen', 'Khatmah', 'QuranDownloads', 'QuranTajweed']) {
+  expect(nav).toMatch(/const edgeToEdge = \{ backgroundColor: theme\.colors\.background, paddingBottom: 0 \}/);
+  for (const route of [
+    'QuranListen', 'Khatmah', 'QuranDownloads', 'QuranTajweed',
+    'MonthTimes', 'ShareMonth', 'Compass', 'Backup', 'Sync', 'Fasting',
+  ]) {
     const block = nav.slice(nav.indexOf(`name="${route}"`));
     const opts = block.slice(0, block.indexOf('/>'));
-    expect(opts).toMatch(/paddingBottom: 0/);
+    expect(`${route}: ${/contentStyle: edgeToEdge/.test(opts)}`).toBe(`${route}: true`);
   }
+});
+
+it('those pages pad their own end', () => {
+  for (const f of ['BackupScreen', 'FastingScreen', 'SyncScreen']) {
+    const src = read(`src/screens/${f}.tsx`);
+    expect(src).toMatch(/useScrollBottomInset\(\)/);
+    expect(src).toMatch(/paddingBottom: SPACING\.lg \+ bottom/);
+  }
+  expect(read('src/screens/CompassScreen.tsx')).toMatch(/paddingBottom: SPACING\.xl \+ bottomInset/);
+  expect(read('src/screens/ShareMonthScreen.tsx')).toMatch(/footerBottom = 16 \+ bottomInset/);
+  expect(read('src/screens/MonthTimesScreen.tsx')).toMatch(/paddingBottom: insets\.bottom \+ 24/);
+  // Sync now starts below the transparent iOS header.
+  expect(read('src/screens/SyncScreen.tsx').match(/contentInsetAdjustmentBehavior="automatic"/g)).toHaveLength(2);
 });
 
 it('Tilawah pads its own list end on Android and lifts the to-top button', () => {
