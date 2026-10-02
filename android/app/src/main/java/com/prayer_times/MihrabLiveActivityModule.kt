@@ -848,13 +848,37 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
             p.has("nextTimeDisplay") && it.isNotEmpty() &&
               appHour12 == android.text.format.DateFormat.is24HourFormat(ctx)
           }
+          // ON THE ALWAYS-ON DISPLAY THE NAME IS A METRIC'S LABEL, NOT THE
+          // TITLE.
+          //
+          // The title sits in the card's top line, sized to its text — and
+          // on the always-on display that box can keep the width of an
+          // EARLIER name. Seen on a Pixel (Android 17): "Dhuhr" drawn in a
+          // box exactly as wide as "Fajr" had been, so it read "D…", and
+          // "Maghrib" after "Asr" read "M…". The text was right and the
+          // length was not the cause; the width had not followed it. That is
+          // the system's view, out of this app's reach, so the name moves to
+          // where the width cannot go stale: the metrics are two columns of
+          // fixed width, and the name becomes the label over its own time —
+          // "Dhuhr 12:42 | In 3h+". The title becomes the app's name, which
+          // never changes. With the screen on the card is as it was.
+          val nameAsMetricLabel = ambient && secondMetric == "time"
+          val metricAtWord = when {
+            !nameAsMetricLabel -> atWord
+            arrivedTitle != null -> arrivedLabel
+            else -> name
+          }
+          val metricAtText = if (nameAsMetricLabel && arrivedTitle != null) nowWord else atText
           val ms = tryBuildCountdownMetricStyle(
-            nextEpochMs, inWord, secondMetric, atWord, atText,
+            nextEpochMs, inWord, secondMetric, metricAtWord, metricAtText,
             ambientText = if (ambient) countdown else null,
           )
           if (ms != null) {
             val (style, hasSecond) = ms
-            if (hasSecond) {
+            if (hasSecond && nameAsMetricLabel) {
+              builder.setContentTitle(appLabel(ctx))
+              if (hijri.isNotEmpty()) builder.setSubText(hijri)
+            } else if (hasSecond) {
               // [At · 17:35 | In · 3:13:09]; subtext carries the Hijri.
               builder.setContentTitle(arrivedTitle ?: name)
               if (hijri.isNotEmpty()) builder.setSubText(hijri)
@@ -997,6 +1021,13 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
         return buildAndroid16(ctx, p, nextEpochMs, accentInt, progressPct, title, contentIntent)
       }
     }
+
+    /** The app's own name, as the launcher shows it — a title that never changes. */
+    private fun appLabel(ctx: Context): String =
+      runCatching { ctx.applicationInfo.loadLabel(ctx.packageManager).toString() }
+        .getOrNull()
+        ?.takeIf { it.isNotBlank() }
+        ?: "Mihrab"
 
     /** Localised name of the event whose instant is closest to [epochMs]
      *  (within 2 min), looked up from the payload's day rows. "" if none. */

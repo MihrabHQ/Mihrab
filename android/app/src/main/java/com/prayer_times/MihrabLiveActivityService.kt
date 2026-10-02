@@ -662,8 +662,15 @@ class MihrabLiveActivityService : Service() {
    *    the next whole minute.
    */
   private fun untilAmbientChange(): Long {
+    val now = System.currentTimeMillis()
+    // Just after a prayer the card says "<prayer> · Now" for 90 s
+    // (`justArrived` in the builder). The next change of the countdown can
+    // be an hour away, and the "Now" stayed on the always-on display all
+    // that time; wake when it is due to go.
+    val prev = lastPayload?.let { runCatching { JSONObject(it).optLong("prevEpochMs", 0L) }.getOrNull() } ?: 0L
+    if (prev > 0L && now - prev in 0 until ARRIVED_MS) return prev + ARRIVED_MS - now + 500L
     val next = lastPayload?.let { runCatching { JSONObject(it).optLong("nextEpochMs", 0L) }.getOrNull() } ?: 0L
-    val left = next - System.currentTimeMillis()
+    val left = next - now
     if (left <= 0) return 60_000L + 500L
     val step = if (left >= 3_600_000L) 3_600_000L else 60_000L
     val into = left % step
@@ -765,6 +772,8 @@ class MihrabLiveActivityService : Service() {
      * and rolls onto the next prayer. See `tickInterval`.
      */
     const val TICK_MS = 60_000L
+    /** How long the card says "<prayer> · Now" after a prayer — the builder's `justArrived`. */
+    const val ARRIVED_MS = 90_000L
 
     /** PendingIntent that restarts this foreground service. Uses
      *  getForegroundService on API 26+ (exact alarms grant a brief FGS-start
