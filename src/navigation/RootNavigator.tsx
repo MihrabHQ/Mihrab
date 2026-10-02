@@ -113,7 +113,14 @@ export function RootNavigator() {
           {children}
         </View>
       )}
-      screenOptions={{
+      screenOptions={({ navigation }) => ({
+        /**
+         * Every pushed page with a native header: in a right-to-left app
+         * on iOS the back chevron sits on the right, where the settings
+         * pages and the Duas bar have it (see trailingBackOptions). The
+         * muṣḥaf reader opts out below and keeps its own header.
+         */
+        ...trailingBackOptions(navigation, isRtlLocale),
         // Large title only on iOS AND only for LTR locales — RTL locales fall
         // back to the compact title to avoid the Arabic-letters-reversed bug.
         headerLargeTitle: isIOS && !isRtlLocale,
@@ -174,7 +181,7 @@ export function RootNavigator() {
         // android:screenOrientation is now 'unspecified' so this option
         // takes effect.
         orientation: 'portrait',
-      }}>
+      })}>
       {/* The six tabs are the app (design review 2e). Everything below is
           pushed ON TOP of them: sub-pages, readers and one-off flows. */}
       <Stack.Screen
@@ -226,13 +233,20 @@ export function RootNavigator() {
       <Stack.Screen
         name="QuranSurah"
         component={QuranSurahScreen}
-        options={{ title: '', headerLargeTitle: false }}
+        options={{
+          title: '',
+          headerLargeTitle: false,
+          // The muṣḥaf keeps its back arrow on the left, with the riwayah
+          // beside it — its own headerLeft/headerRight, set by the screen.
+          headerBackVisible: undefined,
+          headerLeft: undefined,
+          headerRight: undefined,
+        }}
       />
       <Stack.Screen
         name="QuranListen"
         component={TilawahScreen}
-        options={({ navigation }) => ({
-          ...trailingBackOptions(navigation, isRtlLocale),
+        options={() => ({
           title: t('quran.listenTitle', 'Tilawah'),
           headerLargeTitle: false,
           // The list runs to the bottom edge and pads itself (see
@@ -245,8 +259,7 @@ export function RootNavigator() {
       <Stack.Screen
         name="Khatmah"
         component={KhatmahScreen}
-        options={({ navigation }) => ({
-          ...trailingBackOptions(navigation, isRtlLocale),
+        options={() => ({
           title: t('quran.khatmah', 'Khatmah'),
           headerLargeTitle: false,
           // Same as Tilawah: the scroll view pads its own bottom
@@ -257,8 +270,7 @@ export function RootNavigator() {
       <Stack.Screen
         name="QuranDownloads"
         component={QuranDownloadsScreen}
-        options={({ navigation }) => ({
-          ...trailingBackOptions(navigation, isRtlLocale),
+        options={() => ({
           title: t('downloads.title', 'Manage downloads'),
           headerLargeTitle: false,
           // Same as Tilawah: the scroll view pads its own end (see
@@ -270,8 +282,7 @@ export function RootNavigator() {
       <Stack.Screen
         name="QuranTajweed"
         component={TajweedGuideScreen}
-        options={({ navigation }) => ({
-          ...trailingBackOptions(navigation, isRtlLocale),
+        options={() => ({
           title: t('tajweed.guideTitle', 'Reading the colours'),
           headerLargeTitle: false,
           // Pads its own end (TajweedGuideScreen); the stack's reserve

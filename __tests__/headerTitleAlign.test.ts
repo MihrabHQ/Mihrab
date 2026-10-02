@@ -25,7 +25,7 @@ describe('the pushed subpages', () => {
     // In the stack's screenOptions, so a new subpage inherits it rather
     // than needing anyone to remember.
     expect(ROOT).toMatch(
-      /screenOptions=\{\{[\s\S]*?headerTitleAlign: 'center'/,
+      /screenOptions=\{(?:\{|\(\{ navigation \}\) => \(\{)[\s\S]*?headerTitleAlign: 'center'/,
     );
   });
 

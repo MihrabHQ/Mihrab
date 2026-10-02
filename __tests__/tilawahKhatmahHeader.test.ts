@@ -30,14 +30,14 @@ it('Tilawah pads its own list end on Android and lifts the to-top button', () =>
   expect(src).toMatch(/bottom: 24 \+ insets\.bottom/);
 });
 
-it('Tilawah, Khatmah, downloads and the tajweed guide put the back chevron on the trailing edge in RTL', () => {
+it('every pushed page but the mushaf puts the back chevron on the trailing edge in RTL', () => {
   const nav = read('src/navigation/RootNavigator.tsx');
-  for (const route of ['QuranListen', 'Khatmah', 'QuranDownloads', 'QuranTajweed']) {
-    const block = nav.slice(nav.indexOf(`name="${route}"`));
-    const opts = block.slice(0, block.indexOf('/>'));
-    expect(opts).toMatch(/\.\.\.trailingBackOptions\(navigation, isRtlLocale\)/);
-  }
-  expect(nav.slice(nav.indexOf('name="QuranSurah"')).slice(0, 200)).not.toMatch(/trailingBackOptions/);
+  expect(nav).toMatch(/screenOptions=\{\(\{ navigation \}\) => \(\{\s*\/\*\*[\s\S]*?\*\/\s*\.\.\.trailingBackOptions\(navigation, isRtlLocale\)/);
+  const surah = nav.slice(nav.indexOf('name="QuranSurah"'));
+  const opts = surah.slice(0, surah.indexOf('/>'));
+  expect(opts).toMatch(/headerBackVisible: undefined/);
+  expect(opts).toMatch(/headerLeft: undefined/);
+  expect(opts).toMatch(/headerRight: undefined/);
   const f = read('src/navigation/trailingBackOptions.tsx');
   expect(f).toMatch(/Platform\.OS !== 'ios' \|\| !rtl/);
   expect(f).toMatch(/headerBackVisible: false/);
