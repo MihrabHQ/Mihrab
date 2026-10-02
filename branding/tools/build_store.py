@@ -278,7 +278,9 @@ def android_assets():
     from compose_wide import feature_graphic
 
     play = os.path.join(ROOT, "branding/store/play")
-    home = os.path.join(play, "01_home.png")
+    # The night Today screen, not the 09:41 panel: moon and stars over the
+    # countdown read at banner size where a pale day sky washes out.
+    home = os.path.join(ROOT, "branding", "screenshots-2.28", "and-home-night.png")
     fg = os.path.join(play, "feature-graphic-1024x500.png")
     icon = os.path.join(play, "icon-512.png")
     feature_graphic(fg, home)
