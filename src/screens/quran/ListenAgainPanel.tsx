@@ -81,7 +81,7 @@ function ListenAgainPanelImpl({
           numberOfLines={1}>
           {title}
         </Text>
-        <Text style={[styles.rowSub, { color: palette.muted }]} numberOfLines={2}>
+        <Text style={[styles.rowSub, { color: palette.muted }]} numberOfLines={1}>
           {sub}
         </Text>
       </View>
@@ -136,32 +136,39 @@ function ListenAgainPanelImpl({
 
 export const ListenAgainPanel = memo(ListenAgainPanelImpl);
 
+// Compact: these are choices, not cards. One line of title and one of
+// reason, so the whole question fits on the screen with the player above.
 const styles = StyleSheet.create({
   card: {
     borderRadius: RADIUS.lg,
     borderWidth: StyleSheet.hairlineWidth,
-    padding: SPACING.md,
-    gap: SPACING.sm,
+    padding: SPACING.sm,
+    gap: 6,
     marginTop: SPACING.md,
   },
-  heading: { fontSize: TYPE.footnote.fontSize, fontWeight: '600' },
+  heading: {
+    fontSize: TYPE.caption.fontSize,
+    fontWeight: '600',
+    paddingHorizontal: SPACING.xs,
+  },
   subheading: {
-    fontSize: TYPE.footnote.fontSize,
+    fontSize: TYPE.caption.fontSize,
     fontWeight: '600',
     marginTop: SPACING.xs,
+    paddingHorizontal: SPACING.xs,
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
     borderRadius: RADIUS.md,
     borderWidth: StyleSheet.hairlineWidth,
-    paddingVertical: SPACING.sm,
-    paddingHorizontal: SPACING.md,
+    paddingVertical: 7,
+    paddingHorizontal: SPACING.sm + 2,
     gap: SPACING.sm,
   },
   rowText: { flex: 1 },
-  rowTitle: { fontSize: TYPE.callout.fontSize, fontWeight: '600' },
-  rowSub: { fontSize: TYPE.footnote.fontSize, lineHeight: 18, marginTop: 2 },
-  chevron: { fontSize: TYPE.title3.fontSize, fontWeight: '600' },
+  rowTitle: { fontSize: TYPE.footnote.fontSize, fontWeight: '600' },
+  rowSub: { fontSize: 12, lineHeight: 16, marginTop: 1 },
+  chevron: { fontSize: TYPE.callout.fontSize, fontWeight: '600' },
   pressed: { opacity: 0.6 },
 });

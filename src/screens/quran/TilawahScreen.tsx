@@ -1053,173 +1053,183 @@ export function TilawahScreen() {
           <Text style={[styles.reciterChevron, { color: palette.accentSolid }]}>›</Text>
         </Pressable>
 
-        {/* Where you are in the SURAH, with what the bar means and the
-            clock on one line under it. */}
-        <Scrubber
-          ratio={surahRatio}
-          onSeekRatio={seekSurah}
-          palette={palette}
-          label={t('quran.tilawahSurahSeek', {
-            defaultValue: 'Move through the surah',
-          })}
-        />
-        <View style={styles.scrubTimes}>
-          <Text style={[styles.scrubCaption, { color: palette.muted }]} numberOfLines={1}>
-            {idle
-              ? t('quran.listenSurahMeta', {
-                  defaultValue: '{{count}} ayahs',
-                  count: shownSurah.ayahCount,
-                })
-              : t('quran.tilawahAyahOf', {
-                  defaultValue: 'Ayah {{done}} of {{total}}',
-                  done: shownAyah,
-                  total: shownSurah.ayahCount,
-                })}
-          </Text>
-          <Text style={[styles.scrubTime, { color: palette.muted }]}>
-            {`${formatClock(progress.position)} / ${formatClock(progress.duration)}`}
-          </Text>
-        </View>
-        {/* And within the ayah, for scrubbing back over a line — a thin
-            second bar, the second thing you look at. */}
-        <Scrubber
-          minor
-          ratio={ayahRatio}
-          onSeekRatio={seekAyah}
-          palette={palette}
-          label={t('quran.listenSeek', { defaultValue: 'Seek within the ayah' })}
-        />
+        {/* LOCKED WHILE THE CHOICE IS OPEN. With nothing playing, or a
+            listen gone stale, the panel under the card asks what to do —
+            carry on, shuffle, or what is recommended — and the card shrinks
+            to the name and the reciter until one is chosen. A full player
+            with a play button beside that question was two answers to it,
+            and the play button's was the stale one. */}
+        {offerAgain ? null : (
+          <>
+          {/* Where you are in the SURAH, with what the bar means and the
+              clock on one line under it. */}
+          <Scrubber
+            ratio={surahRatio}
+            onSeekRatio={seekSurah}
+            palette={palette}
+            label={t('quran.tilawahSurahSeek', {
+              defaultValue: 'Move through the surah',
+            })}
+          />
+          <View style={styles.scrubTimes}>
+            <Text style={[styles.scrubCaption, { color: palette.muted }]} numberOfLines={1}>
+              {idle
+                ? t('quran.listenSurahMeta', {
+                    defaultValue: '{{count}} ayahs',
+                    count: shownSurah.ayahCount,
+                  })
+                : t('quran.tilawahAyahOf', {
+                    defaultValue: 'Ayah {{done}} of {{total}}',
+                    done: shownAyah,
+                    total: shownSurah.ayahCount,
+                  })}
+            </Text>
+            <Text style={[styles.scrubTime, { color: palette.muted }]}>
+              {`${formatClock(progress.position)} / ${formatClock(progress.duration)}`}
+            </Text>
+          </View>
+          {/* And within the ayah, for scrubbing back over a line — a thin
+              second bar, the second thing you look at. */}
+          <Scrubber
+            minor
+            ratio={ayahRatio}
+            onSeekRatio={seekAyah}
+            palette={palette}
+            label={t('quran.listenSeek', { defaultValue: 'Seek within the ayah' })}
+          />
 
-        {/* THE TRANSPORT, AS A PLAYER HAS ONE.
+          {/* THE TRANSPORT, AS A PLAYER HAS ONE.
 
-            Outer pair: an ayah either way — the line you want to hear
-            again, small because it is the fine control. Inner pair: a
-            surah either way, the coarse one. Play in the middle. Shuffle
-            and stop are not transport and left the row: shuffle is in
-            the options below, and pause is what stopping means here (the
-            mini player carries the close). */}
-        <View style={styles.transport}>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={t('quran.listenPrevious', {
-              defaultValue: 'Previous ayah',
-            })}
-            hitSlop={10}
-            onPress={() => void skipToPreviousAyah()}
-            style={({ pressed }) => [styles.transportBtn, pressed && styles.pressed]}>
-            <Text style={[styles.ayahStepGlyph, { color: palette.muted }]}>‹</Text>
-          </Pressable>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={t('quran.tilawahPrevSurah', {
-              defaultValue: 'Previous surah',
-            })}
-            hitSlop={12}
-            onPress={() => void listenPreviousSurah()}
-            style={({ pressed }) => [styles.transportBtn, pressed && styles.pressed]}>
-            <TransportIcon kind="prev" color={palette.text} />
-          </Pressable>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={
-              status.playing
-                ? t('common.pause', { defaultValue: 'Pause' })
-                : t('common.play', { defaultValue: 'Play' })
-            }
-            onPress={togglePlay}
-            style={({ pressed }) => [
-              styles.playBtn,
-              { backgroundColor: palette.accentSolid },
-              pressed && styles.pressed,
-            ]}>
-            {status.loading ? (
-              <ActivityIndicator size="small" color={palette.onAccent} />
-            ) : (
-              <TransportIcon
-                kind={status.playing ? 'pause' : 'play'}
-                color={palette.onAccent}
-                size={28}
-              />
-            )}
-          </Pressable>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={t('quran.tilawahNextSurah', {
-              defaultValue: 'Next surah',
-            })}
-            hitSlop={12}
-            onPress={() => void listenNextSurah()}
-            style={({ pressed }) => [styles.transportBtn, pressed && styles.pressed]}>
-            <TransportIcon kind="next" color={palette.text} />
-          </Pressable>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={t('quran.listenNext', {
-              defaultValue: 'Next ayah',
-            })}
-            hitSlop={10}
-            onPress={() => void skipToNextAyah()}
-            style={({ pressed }) => [styles.transportBtn, pressed && styles.pressed]}>
-            <Text style={[styles.ayahStepGlyph, { color: palette.muted }]}>›</Text>
-          </Pressable>
-        </View>
+              Outer pair: an ayah either way — the line you want to hear
+              again, small because it is the fine control. Inner pair: a
+              surah either way, the coarse one. Play in the middle. Shuffle
+              and stop are not transport and left the row: shuffle is in
+              the options below, and pause is what stopping means here (the
+              mini player carries the close). */}
+          <View style={styles.transport}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('quran.listenPrevious', {
+                defaultValue: 'Previous ayah',
+              })}
+              hitSlop={10}
+              onPress={() => void skipToPreviousAyah()}
+              style={({ pressed }) => [styles.transportBtn, pressed && styles.pressed]}>
+              <Text style={[styles.ayahStepGlyph, { color: palette.muted }]}>‹</Text>
+            </Pressable>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('quran.tilawahPrevSurah', {
+                defaultValue: 'Previous surah',
+              })}
+              hitSlop={12}
+              onPress={() => void listenPreviousSurah()}
+              style={({ pressed }) => [styles.transportBtn, pressed && styles.pressed]}>
+              <TransportIcon kind="prev" color={palette.text} />
+            </Pressable>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={
+                status.playing
+                  ? t('common.pause', { defaultValue: 'Pause' })
+                  : t('common.play', { defaultValue: 'Play' })
+              }
+              onPress={togglePlay}
+              style={({ pressed }) => [
+                styles.playBtn,
+                { backgroundColor: palette.accentSolid },
+                pressed && styles.pressed,
+              ]}>
+              {status.loading ? (
+                <ActivityIndicator size="small" color={palette.onAccent} />
+              ) : (
+                <TransportIcon
+                  kind={status.playing ? 'pause' : 'play'}
+                  color={palette.onAccent}
+                  size={28}
+                />
+              )}
+            </Pressable>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('quran.tilawahNextSurah', {
+                defaultValue: 'Next surah',
+              })}
+              hitSlop={12}
+              onPress={() => void listenNextSurah()}
+              style={({ pressed }) => [styles.transportBtn, pressed && styles.pressed]}>
+              <TransportIcon kind="next" color={palette.text} />
+            </Pressable>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('quran.listenNext', {
+                defaultValue: 'Next ayah',
+              })}
+              hitSlop={10}
+              onPress={() => void skipToNextAyah()}
+              style={({ pressed }) => [styles.transportBtn, pressed && styles.pressed]}>
+              <Text style={[styles.ayahStepGlyph, { color: palette.muted }]}>›</Text>
+            </Pressable>
+          </View>
 
-        {/* EVERYTHING ELSE, ON ONE QUIET LINE.
+          {/* EVERYTHING ELSE, ON ONE QUIET LINE.
 
-            Speed and the sleep timer were two labelled rows of five chips
-            each — ten controls for two settings almost nobody changes
-            twice. Each is one chip now that says its value and cycles on
-            a tap (0.75× → 1× → … → 2×; Off → 15 → 30 → 60 → end of
-            surah). Shuffle, keep-awake and show-the-page are the same
-            toggles they were, as chips in the same row, painted only when
-            they are on. */}
-        <View style={styles.optionsRow}>
-          <OptionChip
-            label={`${quran.prefs.playbackRate}×`}
-            a11y={t('quran.listenSpeed', { defaultValue: 'Speed' })}
-            onPress={cycleRate}
-            palette={palette}
-          />
-          <OptionChip
-            label={sleepLabel}
-            a11y={t('quran.listenSleep', { defaultValue: 'Sleep timer' })}
-            on={sleepMinutes !== 0}
-            onPress={cycleSleep}
-            palette={palette}
-          />
-          <OptionChip
-            icon={<ShuffleIcon color={String(shuffleOn ? palette.accentSolid : palette.mutedSolid)} />}
-            a11y={t('quran.tilawahShuffle', { defaultValue: 'Shuffle surahs' })}
-            on={shuffleOn}
-            onPress={toggleShuffle}
-            palette={palette}
-          />
-          <OptionChip
-            icon={<CoffeeIcon color={String(keepAwake ? palette.accentSolid : palette.mutedSolid)} />}
-            a11y={t('quran.tilawahKeepAwake', { defaultValue: 'Keep the screen on' })}
-            on={keepAwake}
-            onPress={toggleKeepAwake}
-            palette={palette}
-          />
-          <OptionChip
-            icon={<PageIcon color={String(showPage ? palette.accentSolid : palette.mutedSolid)} />}
-            a11y={t('quran.tilawahShowPage', { defaultValue: 'Show the page' })}
-            on={showPage}
-            onPress={() => setQuranPrefs({ tilawahShowPage: !showPage })}
-            palette={palette}
-          />
-        </View>
-        {sleepEndsAt != null ? (
-          <Text style={[styles.hint, { color: palette.muted }]}>
-            {t('quran.listenSleepArmed', {
-              defaultValue: 'Pauses in about {{count}} min',
-              count: Math.max(
-                1,
-                Math.round((sleepEndsAt - Date.now()) / 60_000),
-              ),
-            })}
-          </Text>
-        ) : null}
+              Speed and the sleep timer were two labelled rows of five chips
+              each — ten controls for two settings almost nobody changes
+              twice. Each is one chip now that says its value and cycles on
+              a tap (0.75× → 1× → … → 2×; Off → 15 → 30 → 60 → end of
+              surah). Shuffle, keep-awake and show-the-page are the same
+              toggles they were, as chips in the same row, painted only when
+              they are on. */}
+          <View style={styles.optionsRow}>
+            <OptionChip
+              label={`${quran.prefs.playbackRate}×`}
+              a11y={t('quran.listenSpeed', { defaultValue: 'Speed' })}
+              onPress={cycleRate}
+              palette={palette}
+            />
+            <OptionChip
+              label={sleepLabel}
+              a11y={t('quran.listenSleep', { defaultValue: 'Sleep timer' })}
+              on={sleepMinutes !== 0}
+              onPress={cycleSleep}
+              palette={palette}
+            />
+            <OptionChip
+              icon={<ShuffleIcon color={String(shuffleOn ? palette.accentSolid : palette.mutedSolid)} />}
+              a11y={t('quran.tilawahShuffle', { defaultValue: 'Shuffle surahs' })}
+              on={shuffleOn}
+              onPress={toggleShuffle}
+              palette={palette}
+            />
+            <OptionChip
+              icon={<CoffeeIcon color={String(keepAwake ? palette.accentSolid : palette.mutedSolid)} />}
+              a11y={t('quran.tilawahKeepAwake', { defaultValue: 'Keep the screen on' })}
+              on={keepAwake}
+              onPress={toggleKeepAwake}
+              palette={palette}
+            />
+            <OptionChip
+              icon={<PageIcon color={String(showPage ? palette.accentSolid : palette.mutedSolid)} />}
+              a11y={t('quran.tilawahShowPage', { defaultValue: 'Show the page' })}
+              on={showPage}
+              onPress={() => setQuranPrefs({ tilawahShowPage: !showPage })}
+              palette={palette}
+            />
+          </View>
+          {sleepEndsAt != null ? (
+            <Text style={[styles.hint, { color: palette.muted }]}>
+              {t('quran.listenSleepArmed', {
+                defaultValue: 'Pauses in about {{count}} min',
+                count: Math.max(
+                  1,
+                  Math.round((sleepEndsAt - Date.now()) / 60_000),
+                ),
+              })}
+            </Text>
+          ) : null}
+          </>
+        )}
       </View>
 
       {offerAgain ? (
@@ -1411,10 +1421,14 @@ const styles = StyleSheet.create({
   reciterChevron: { fontSize: TYPE.body.fontSize, fontWeight: '600' },
 
   // A thin track needs a tall touch target; the bar is 4pt, the finger is not.
-  scrubTouch: { height: 28, justifyContent: 'center' },
+  // Left to right in every language, like the transport under it: the
+  // thumb is placed by `left` and a drag is read from `locationX`, both
+  // physical, while the fill grew from the START — in Arabic the fill ran
+  // from the right and the thumb from the left, and a drag went backwards.
+  scrubTouch: { height: 28, justifyContent: 'center', direction: 'ltr' },
   scrubTrack: { height: 5, borderRadius: 2.5, overflow: 'hidden' },
   // The ayah's bar is the second thing you look at, and says so.
-  scrubTouchMinor: { height: 18, justifyContent: 'center' },
+  scrubTouchMinor: { height: 18, justifyContent: 'center', direction: 'ltr' },
   scrubTrackMinor: { height: 3, borderRadius: 1.5, overflow: 'hidden' },
   scrubThumb: {
     position: 'absolute',
@@ -1434,6 +1448,12 @@ const styles = StyleSheet.create({
   scrubTime: { fontSize: TYPE.caption.fontSize, fontVariant: ['tabular-nums'] },
 
   transport: {
+    // Not mirrored in Arabic or Urdu. Media transport keeps its
+    // left-to-right order on both platforms (Material and the HIG agree):
+    // previous on the left, next on the right, the arrows pointing the way
+    // the recitation runs. Mirrored, the row put "next" on the left and the
+    // skip glyphs' bar on the wrong side of their triangles.
+    direction: 'ltr',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
