@@ -35,7 +35,7 @@
  * name as text in an accessibility label, or sit inside an element that
  * already does.
  */
-import type { TextStyle, ViewStyle } from 'react-native';
+import type { TextStyle } from 'react-native';
 
 /** Family name and asset filename are the same. */
 export const SURAH_HEADER_FONT = 'SurahNames';
@@ -120,37 +120,15 @@ export function surahHeaderStyle(surahNumber?: number): TextStyle {
 }
 
 /**
- * The width of the widest name at its own size (Al-ʿAnkabūt, ≈ 2.7 em at
- * 34 pt), rounded up. The names are drawings of different widths, and in
- * a list the START of each name — its right edge, this being Arabic — is
- * what the eye lines up on.
- */
-export const SURAH_NAME_COLUMN_WIDTH = 96;
-
-/**
- * The name as a list column: a fixed-width box with the drawing against
- * its RIGHT edge, whatever the layout direction. For the View that wraps
- * the name Text.
+ * The row a name sits in is NOT mirrored: `direction: 'ltr'` on the row
+ * whatever the app's language, number at the left, the name at the right.
  *
- * Without this a row's name Text was exactly as wide as its own glyph,
- * so where the row put it decided what lined up: at the end of an LTR
- * row the right edges coincided and the names read as a column; at the
- * end of an RTL row (the app in Arabic or Urdu) the LEFT edges did, and
- * every name began somewhere else — Al-Fātiḥah's ال a finger's width
- * from Al-Baqarah's.
- *
- * Done with Yoga, not `textAlign`: iOS swaps `left` and `right` in a
- * mirrored tree (RCTResolveTextAlignment) and Android does not, so a
- * right-aligned Text is right on one platform and left on the other. A
- * box that is itself LTR, with its one child at flex-end, is the right
- * edge on both — the start of an Arabic word is its right edge whatever
- * the layout.
+ * The names are 114 drawings of different widths. At the END of an LTR
+ * row their right edges coincide, and the right edge is the start of an
+ * Arabic word — so the names read as a column with nothing done to them,
+ * and the Latin text at the row's other end starts at ITS edge. Mirror
+ * the row and the drawings' left edges line up instead, and every name
+ * begins somewhere else. Keeping the row LTR is the whole fix; a fixed
+ * column for the names was tried and left a void beside the short ones.
  */
-export function surahNameColumnStyle(): ViewStyle {
-  return {
-    width: SURAH_NAME_COLUMN_WIDTH,
-    flexShrink: 0,
-    direction: 'ltr',
-    alignItems: 'flex-end',
-  };
-}
+export const SURAH_ROW_DIRECTION = { direction: 'ltr' } as const;

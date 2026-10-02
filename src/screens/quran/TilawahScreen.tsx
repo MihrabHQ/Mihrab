@@ -94,7 +94,7 @@ import { TYPE } from '../../theme/typography';
 import {
   surahHeaderGlyph,
   surahHeaderStyle,
-  surahNameColumnStyle,
+  SURAH_ROW_DIRECTION,
   surahNameSize,
 } from '../../quran/surahHeaderGlyph';
 import { InfoButton } from '../../components/ui/InfoSheet';
@@ -971,19 +971,15 @@ export function TilawahScreen() {
               })}
             </Text>
           </View>
-          {/* The names line up on their start (right edge) — see
-              surahNameColumnStyle. */}
-          <View style={styles.surahArabicCol}>
-            <Text
-              style={[
-                styles.surahArabic,
-                { color: palette.text, fontSize: surahNameSize(item.number) },
-              ]}
-              accessible={false}
-              importantForAccessibility="no">
-              {surahHeaderGlyph(item.number)}
-            </Text>
-          </View>
+          <Text
+            style={[
+              styles.surahArabic,
+              { color: palette.text, fontSize: surahNameSize(item.number) },
+            ]}
+            accessible={false}
+            importantForAccessibility="no">
+            {surahHeaderGlyph(item.number)}
+          </Text>
         </Pressable>
       );
     },
@@ -1578,6 +1574,8 @@ const styles = StyleSheet.create({
     marginTop: SPACING.sm,
   },
   surahRow: {
+    // Never mirrored — see SURAH_ROW_DIRECTION.
+    ...SURAH_ROW_DIRECTION,
     flexDirection: 'row',
     alignItems: 'center',
     gap: SPACING.md,
@@ -1602,7 +1600,6 @@ const styles = StyleSheet.create({
   surahNames: { flex: 1 },
   surahRoman: { fontSize: TYPE.callout.fontSize, fontWeight: '600' },
   surahMeta: { fontSize: TYPE.label.fontSize, marginTop: 1 },
-  surahArabicCol: surahNameColumnStyle(),
   surahArabic: {
     flexShrink: 0,
     ...surahHeaderStyle(),
