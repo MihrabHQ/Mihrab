@@ -23,10 +23,38 @@ const native: AdhanPlayerNative | undefined =
     ? (NativeModules.AdhanPlayer as AdhanPlayerNative | undefined)
     : undefined;
 
+type BeforePlay = () => Promise<void> | void;
+const beforePlay = new Set<BeforePlay>();
+
+/**
+ * Run `fn` before the full adhan starts, and wait for it.
+ *
+ * The adhan and the Quran recitation share the app's one AVAudioSession,
+ * so without this the two would play over each other. The recitation
+ * player registers here (rather than this module importing it) so that
+ * the notification code, which runs in the headless background task too,
+ * does not pull the whole player in. Returns the unsubscribe.
+ */
+export function onBeforeAdhanPlays(fn: BeforePlay): () => void {
+  beforePlay.add(fn);
+  return () => beforePlay.delete(fn);
+}
+
+async function runBeforePlay(): Promise<void> {
+  for (const fn of beforePlay) {
+    try {
+      await fn();
+    } catch {
+      // A listener that fails must not keep the adhan from playing.
+    }
+  }
+}
+
 export const AdhanPlayer = {
   /** Play the full adhan bundled as `<name>.mp3` (e.g. 'adhan_makkah'). */
-  play(name: string): Promise<boolean> {
-    if (!native) return Promise.resolve(false);
+  async play(name: string): Promise<boolean> {
+    if (!native) return false;
+    await runBeforePlay();
     return native.play(name).catch(() => false);
   },
   /**
@@ -36,8 +64,9 @@ export const AdhanPlayer = {
    * notification plays is capped at 30s, so the foreground playback goes
    * through the original file instead.
    */
-  playPath(path: string): Promise<boolean> {
-    if (!native) return Promise.resolve(false);
+  async playPath(path: string): Promise<boolean> {
+    if (!native) return false;
+    await runBeforePlay();
     return native.playPath(path).catch(() => false);
   },
   /** Stop the currently-playing full adhan. */

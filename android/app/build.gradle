@@ -206,7 +206,7 @@ android {
         // want anyway — AGP's own defaults (.git, .DS_Store, thumbs.db…)
         // are already in this collection and should stay.
         ignoreAssetsPatterns.addAll([
-            "!app-icon-rounded.png",
+            "!app-icon-square.png",
             "!badge-appstore.png",
             "!badge-googleplay.png",
             "!qr-code.png",

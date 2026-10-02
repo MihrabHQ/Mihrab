@@ -81,7 +81,16 @@ final class AdhanPlayer: NSObject {
   func stop(_ resolve: @escaping RCTPromiseResolveBlock,
             rejecter reject: @escaping RCTPromiseRejectBlock) {
     DispatchQueue.main.async {
-      self.player?.stop()
+      // Only an adhan that actually played gets to give the session back.
+      // The app's one AVAudioSession is shared with the Quran recitation
+      // (react-native-track-player), and `stop()` is also called on
+      // notification dismissals and screen changes where no adhan is
+      // playing — deactivating then would cut a recitation off mid-ayah.
+      guard let p = self.player else {
+        resolve(true)
+        return
+      }
+      p.stop()
       self.player = nil
       try? AVAudioSession.sharedInstance()
         .setActive(false, options: [.notifyOthersOnDeactivation])

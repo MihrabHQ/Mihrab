@@ -343,6 +343,8 @@ jest.mock('react-native-track-player', () => ({
     StopPlaybackAndRemoveNotification: 'stop-playback-and-remove-notification',
     ContinuePlayback: 'continue-playback',
   },
+  IOSCategory: { Playback: 'playback' },
+  IOSCategoryMode: { SpokenAudio: 'spokenAudio' },
 }));
 
 jest.mock('react-native-sensors', () => ({

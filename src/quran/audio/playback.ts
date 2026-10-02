@@ -18,6 +18,8 @@ import TrackPlayer, {
   AppKilledPlaybackBehavior,
   Capability,
   Event,
+  IOSCategory,
+  IOSCategoryMode,
   State,
   type Track,
 } from 'react-native-track-player';
@@ -27,6 +29,8 @@ import { ayahAudioUrl, findReciter } from './reciters';
 import { localAudioPathIfAny, prefetchAyahAudio } from './audioStore';
 import { setNowPlayingState } from '../../native/NowPlayingState';
 import { noteListenPaused, recordListened } from './listenProgress';
+import { onAudioRouteLost } from '../../native/AudioRoute';
+import { onBeforeAdhanPlays } from '../../native/AdhanPlayer';
 
 export type AyahRef = { surah: number; ayah: number };
 
@@ -166,13 +170,52 @@ async function ensureSetup(): Promise<void> {
   if (setupPromise) return setupPromise;
   setupPromise = (async () => {
     try {
-      await TrackPlayer.setupPlayer({ autoHandleInterruptions: true });
+      await TrackPlayer.setupPlayer({
+        // A phone call or Siri pauses the recitation and, if the
+        // interruption says it should, resumes it afterwards. Both
+        // platforms.
+        autoHandleInterruptions: true,
+        /**
+         * iOS audio session, per Apple's "Configuring your app for media
+         * playback": `.playback` is the category for audio that is the
+         * app's purpose — it keeps playing with the ring/silent switch on
+         * and with the screen locked, and is what makes
+         * `UIBackgroundModes: audio` meaningful at all. `.spokenAudio`
+         * tells the system this is speech, not music: when another app's
+         * spoken audio (navigation, a reminder) interrupts, iOS PAUSES
+         * instead of ducking, so no word of the recitation is lost under
+         * a prompt. `longFormAudio` is the route-sharing policy Apple asks
+         * long-form audio apps to adopt (it keeps the recitation on the
+         * route the user picked, e.g. an AirPlay speaker, instead of
+         * following the system route, and is a requirement for the
+         * HomePod/Siri audio integration). The library's TypeScript type
+         * omits the policy key, but its Swift reads it — see
+         * RNTrackPlayer.swift, `iosCategoryPolicy`.
+         */
+        iosCategory: IOSCategory.Playback,
+        iosCategoryMode: IOSCategoryMode.SpokenAudio,
+        ...({ iosCategoryPolicy: 'longFormAudio' } as object),
+      });
     } catch (e) {
       // "player has already been initialized" — benign on fast reloads.
       const msg = e instanceof Error ? e.message : String(e);
       if (!msg.toLowerCase().includes('already')) throw e;
     }
     await applyPlayerOptions();
+
+    // Headphones unplugged / Bluetooth speaker off: pause rather than
+    // let the recitation jump to the loudspeaker. Android has this from
+    // handleAudioBecomingNoisy; this is the iOS half (see AudioRoute.ts).
+    onAudioRouteLost(() => {
+      if (status.active && status.playing) void TrackPlayer.pause();
+    });
+
+    // The in-app full adhan (iOS) shares the one audio session with the
+    // recitation. Two voices at once is never what anyone wanted, and
+    // the adhan has the stronger claim, so the recitation yields.
+    onBeforeAdhanPlays(async () => {
+      if (status.active && status.playing) await TrackPlayer.pause();
+    });
 
     // Mirror player state into the status store.
     TrackPlayer.addEventListener(Event.PlaybackActiveTrackChanged, e => {
@@ -398,8 +441,14 @@ export function applyRepeats(
  * the watch all reserve the space whether we fill it or not. There is
  * nothing to picture for a recitation — no cover exists — so the honest
  * thing to put there is the app it is coming from.
+ *
+ * The SQUARE icon, not the rounded one. Every player draws album art in
+ * its own frame — the lock screen's card, the notification's thumbnail —
+ * and rounds it itself. The rounded PNG had transparent corners, which
+ * iOS composited onto the card's white, so the icon sat in a square with
+ * four white corners on the lock screen.
  */
-const ARTWORK = require('../../../assets/app-icon-rounded.png');
+const ARTWORK = require('../../../assets/app-icon-square.png');
 
 async function buildTracks(
   refs: AyahRef[],
