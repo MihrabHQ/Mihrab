@@ -192,6 +192,12 @@ export function MiniPlayer({
           </View>
         </View>
 
+        {/* Previous, play, next: left to right in every language, as media
+            controls are on both platforms. In the mirrored row the ⏮ and ⏭
+            glyphs (which do not mirror) landed pointing at each other —
+            "previous" on the right pointing left, "next" on the left
+            pointing right. */}
+        <View style={styles.transport}>
         {sideBtn('⏮︎', t('quran.previousAyah', 'Previous ayah'), () => {
           void skipToPreviousAyah();
         })}
@@ -214,6 +220,7 @@ export function MiniPlayer({
         {sideBtn('⏭︎', t('quran.nextAyah', 'Next ayah'), () => {
           void skipToNextAyah();
         })}
+        </View>
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={t('quran.stopPlayback', 'Stop playback')}
@@ -292,6 +299,7 @@ const styles = StyleSheet.create({
   title: { fontSize: TYPE.callout.fontSize, fontWeight: '700', fontVariant: ['tabular-nums'] },
   sub: { fontSize: TYPE.caption.fontSize, fontWeight: '600' },
   sideBtn: { paddingHorizontal: SPACING.sm, paddingVertical: SPACING.sm },
+  transport: { flexDirection: 'row', alignItems: 'center', gap: 2, direction: 'ltr' },
   sideGlyph: { fontSize: TYPE.title3.fontSize, fontWeight: '700' },
   closeGlyph: { fontSize: TYPE.callout.fontSize, fontWeight: '700' },
   playBtn: {

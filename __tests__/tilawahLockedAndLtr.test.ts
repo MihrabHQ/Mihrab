@@ -30,3 +30,19 @@ it('keeps the transport and the bars left to right', () => {
   expect(screen).toMatch(/scrubTouch: \{ height: 28, justifyContent: 'center', direction: 'ltr' \}/);
   expect(screen).toMatch(/scrubTouchMinor: \{ height: 18, justifyContent: 'center', direction: 'ltr' \}/);
 });
+
+it('the reader mini player keeps previous, play and next left to right too', () => {
+  const mini = readFileSync(
+    path.join(__dirname, '..', 'src/quran/audio/MiniPlayer.tsx'),
+    'utf8',
+  );
+  expect(mini).toMatch(/transport: \{ flexDirection: 'row', alignItems: 'center', gap: 2, direction: 'ltr' \}/);
+  const i = mini.indexOf('<View style={styles.transport}>');
+  expect(i).toBeGreaterThan(0);
+  expect(mini.indexOf("sideBtn('⏮︎'")).toBeGreaterThan(i);
+  expect(mini.indexOf("sideBtn('⏭︎'")).toBeGreaterThan(i);
+});
+
+it('has a way to dismiss the current playback beside the ⓘ', () => {
+  expect(screen).toMatch(/testID="tilawah-dismiss"[\s\S]{0,300}onPress=\{\(\) => void stopPlayback\(\)\}/);
+});

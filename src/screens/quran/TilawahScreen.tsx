@@ -74,6 +74,7 @@ import {
   listenNextSurah,
   listenPreviousSurah,
   setShuffleSurahs,
+  stopPlayback,
   pausePlayback,
   resumePlayback,
   seekTo,
@@ -1013,13 +1014,34 @@ export function TilawahScreen() {
               paragraph above the player. "Tilawah" names Qur'anic
               recitation; a name half the audience has to look up still
               gets its sentence, behind the ⓘ. */}
-          <InfoButton
-            title={t('quran.listenTitle', { defaultValue: 'Tilawah' })}
-            body={t('quran.tilawahBlurb', {
-              defaultValue:
-                'Recitation of the Quran — it keeps playing with the screen off, and works offline once downloaded.',
-            })}
-          />
+          <View style={styles.nowHeadActions}>
+            <InfoButton
+              title={t('quran.listenTitle', { defaultValue: 'Tilawah' })}
+              body={t('quran.tilawahBlurb', {
+                defaultValue:
+                  'Recitation of the Quran — it keeps playing with the screen off, and works offline once downloaded.',
+              })}
+            />
+            {/* Done with this one: stops it and clears the player, which
+                then asks what is next — carry on (the place is kept),
+                shuffle, or what is recommended. Only while there is a
+                playback to dismiss. */}
+            {status.active ? (
+              <Pressable
+                testID="tilawah-dismiss"
+                accessibilityRole="button"
+                accessibilityLabel={t('quran.stopPlayback', 'Stop playback')}
+                hitSlop={10}
+                onPress={() => void stopPlayback()}
+                style={({ pressed }) => [
+                  styles.dismissBtn,
+                  { backgroundColor: palette.controlBg },
+                  pressed && styles.pressed,
+                ]}>
+                <Text style={[styles.dismissGlyph, { color: palette.muted }]}>✕</Text>
+              </Pressable>
+            ) : null}
+          </View>
         </View>
         <View style={styles.nowNames}>
           <Text style={[styles.nowSurah, { color: palette.text }]} numberOfLines={1}>
@@ -1447,6 +1469,15 @@ const styles = StyleSheet.create({
   },
   scrubTime: { fontSize: TYPE.caption.fontSize, fontVariant: ['tabular-nums'] },
 
+  nowHeadActions: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm },
+  dismissBtn: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  dismissGlyph: { fontSize: TYPE.footnote.fontSize, fontWeight: '700' },
   transport: {
     // Not mirrored in Arabic or Urdu. Media transport keeps its
     // left-to-right order on both platforms (Material and the HIG agree):
