@@ -336,10 +336,12 @@ export const MushafSpreadReader = React.memo(function MushafSpreadReader(
 
   const listRef = useRef<FlatList<number>>(null);
 
-  const navPad =
-    !isFullscreen && Platform.OS === 'ios' && !props.chromeCleared
-      ? headerHeight
-      : 0;
+  // The header floats over the page on BOTH platforms (MushafSurahScreen's
+  // `headerTransparent`, Android since 2026-09-25), so both pad below it.
+  // This was iOS-only after the Android header went transparent: on an
+  // Android tablet in landscape the spread and the index sidebar started
+  // under the bar, the surah frame and the search field cut off at the top.
+  const navPad = !isFullscreen && !props.chromeCleared ? headerHeight : 0;
 
   // Every input that decides a page's size, folded into one value and
   // published once it has stopped moving — see spreadPageGeometry.ts.
