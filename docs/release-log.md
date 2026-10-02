@@ -1163,3 +1163,14 @@ and architecture were guesses from when the tap was set up, not facts
 read from the app. Land the rewrite, build it through the release path
 in a dry run, and only then cut — and let the cask's requirements come
 from the built app rather than from memory.
+
+## 2.28.0 (284) — 2026-10-02
+
+Took 6 aborted attempt(s) before it ran clean:
+
+  - 2 jest failed — run 'NODE_ENV=test npx jest'
+  - 2 origin/main has commits main does not — pull first
+  - 1 the last release left its lesson unwritten — fill in that '**Lesson:**' line in docs/release-log.md, commit it, and rerun
+  - 1 working tree has tracked changes — commit or stash them first
+
+**Lesson:** _(unfilled)_

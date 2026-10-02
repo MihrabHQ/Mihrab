@@ -47,6 +47,7 @@
 		9381D9BABC745CEEC09EF47C /* MihrabAppGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = 5690D5BC679A6B773737566F /* MihrabAppGroup.m */; };
 		953C80C94E0CFB27986DBE4E /* SecureRandom.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE7C8075017FD04A3E8F05C /* SecureRandom.swift */; };
 		9E69A27015C7ED4DEE6162C9 /* adhan_hafez.caf in Resources */ = {isa = PBXBuildFile; fileRef = CB4D857AA2ED576723B598E1 /* adhan_hafez.caf */; };
+		A17B2C3D4E5F60718293A4B5 /* AudioRouteWatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = C2D3E4F5A6B7C8D9E0F1A2B3 /* AudioRouteWatcher.m */; };
 		A2221144D790FD1729021523 /* MihrabRotationCover.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13C068400FE8DA49D224D1D2 /* MihrabRotationCover.swift */; };
 		AA0385239A1984202E9F4870 /* adhan_abdul_hakam.caf in Resources */ = {isa = PBXBuildFile; fileRef = B8EC02874B0A8F91C2E75CCD /* adhan_abdul_hakam.caf */; };
 		ADBF0000000000 /* adhan_abdul_basit.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = ADFR0000000000 /* adhan_abdul_basit.mp3 */; };
@@ -77,9 +78,9 @@
 		B1C2D3E40006AAAA0006BEEF /* SyncFolder.m in Sources */ = {isa = PBXBuildFile; fileRef = B1C2D3E40008AAAA0008BEEF /* SyncFolder.m */; };
 		B1C2D3E40009AAAA0009BEEF /* ScanQr.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1C2D3E4000BAAAA000BBEEF /* ScanQr.swift */; };
 		B1C2D3E4000AAAAA000ABEEF /* ScanQr.m in Sources */ = {isa = PBXBuildFile; fileRef = B1C2D3E4000CAAAA000CBEEF /* ScanQr.m */; };
+		B3C4D5E6F7A8B9C0D1E2F3A4 /* AudioRouteWatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E5F6A7B8C9D0E1F2A3B4C5 /* AudioRouteWatcher.swift */; };
 		B5C72EE49F32E58EDF1BC8CA /* adhan_abdul_basit.caf in Resources */ = {isa = PBXBuildFile; fileRef = D5FC0C5A1FDA3B8C9843426D /* adhan_abdul_basit.caf */; };
 		BBF3C3E5E6C4DE8AF0C2C7A6 /* CompassModule.m in Sources */ = {isa = PBXBuildFile; fileRef = F4D4DB9CBD682D1BF5562CC3 /* CompassModule.m */; };
-A17B2C3D4E5F60718293A4B5 /* AudioRouteWatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = C2D3E4F5A6B7C8D9E0F1A2B3 /* AudioRouteWatcher.m */; };
 		CA37C7F81236A5CF8F759E97 /* Haptics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60668681401DD7256458E168 /* Haptics.swift */; };
 		CC58BCD9D5E598399038FF84 /* WordPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62AC5ABA33A649A65C3854FF /* WordPlayer.swift */; };
 		CD071F0287B88D4CD0A3477F /* WidgetPayloadV1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BDC072298C265946EC98634 /* WidgetPayloadV1.swift */; };
@@ -87,7 +88,6 @@ A17B2C3D4E5F60718293A4B5 /* AudioRouteWatcher.m in Sources */ = {isa = PBXBuildF
 		D56D0059B561A95DD5755655 /* WordPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = BA06E43EAA2F2E83EA0854E6 /* WordPlayer.m */; };
 		D80631DB29913BA3BE3917AB /* Haptics.m in Sources */ = {isa = PBXBuildFile; fileRef = BFF6595003A4C5C972D2B78B /* Haptics.m */; };
 		DF5D2FB480E49268AC15485E /* CompassModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = A62E49C8F92272DF77C323AA /* CompassModule.swift */; };
-B3C4D5E6F7A8B9C0D1E2F3A4 /* AudioRouteWatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E5F6A7B8C9D0E1F2A3B4C5 /* AudioRouteWatcher.swift */; };
 		E1D2C3B4A5968778695A4B3C5 /* PrayerWidgetExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1D2C3B4A5968778695A4B3C2 /* PrayerWidgetExtension.swift */; };
 		E1D2C3B4A5968778695A4B3C6 /* PrayerWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = E1D2C3B4A5968778695A4B3C1 /* PrayerWidgetExtension.appex */; platformFilters = (ios, maccatalyst, ); settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		E1D2C3B4A5968778695A4B3D5 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = E1D2C3B4A5968778695A4B3D4 /* PrivacyInfo.xcprivacy */; };
@@ -196,7 +196,6 @@ B3C4D5E6F7A8B9C0D1E2F3A4 /* AudioRouteWatcher.swift in Sources */ = {isa = PBXBu
 		91E97289B5BBE23C693F9B59 /* adhan_hafiz_murad.caf */ = {isa = PBXFileReference; lastKnownFileType = "audio.x-caf"; name = adhan_hafiz_murad.caf; path = PrayerApp/adhan_hafiz_murad.caf; sourceTree = "<group>"; };
 		96544E1D56A76E31598DEF4D /* WidgetContract.generated.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WidgetContract.generated.swift; sourceTree = "<group>"; };
 		A62E49C8F92272DF77C323AA /* CompassModule.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CompassModule.swift; path = PrayerApp/CompassModule.swift; sourceTree = "<group>"; };
-D4E5F6A7B8C9D0E1F2A3B4C5 /* AudioRouteWatcher.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AudioRouteWatcher.swift; path = PrayerApp/AudioRouteWatcher.swift; sourceTree = "<group>"; };
 		AB45623C84005143211BE8CC /* MihrabKeepAwake.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MihrabKeepAwake.swift; path = PrayerApp/MihrabKeepAwake.swift; sourceTree = "<group>"; };
 		ADFR0000000000 /* adhan_abdul_basit.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = PrayerApp/adhan_abdul_basit.mp3; sourceTree = "<group>"; };
 		ADFR0000000001 /* adhan_abdul_ghaffar.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = PrayerApp/adhan_abdul_ghaffar.mp3; sourceTree = "<group>"; };
@@ -231,8 +230,10 @@ D4E5F6A7B8C9D0E1F2A3B4C5 /* AudioRouteWatcher.swift */ = {isa = PBXFileReference
 		BA06E43EAA2F2E83EA0854E6 /* WordPlayer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = WordPlayer.m; path = PrayerApp/WordPlayer.m; sourceTree = "<group>"; };
 		BFF6595003A4C5C972D2B78B /* Haptics.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = Haptics.m; path = PrayerApp/Haptics.m; sourceTree = "<group>"; };
 		C27195F19393889CFB4B2553 /* adhan_egypt.caf */ = {isa = PBXFileReference; lastKnownFileType = "audio.x-caf"; name = adhan_egypt.caf; path = PrayerApp/adhan_egypt.caf; sourceTree = "<group>"; };
+		C2D3E4F5A6B7C8D9E0F1A2B3 /* AudioRouteWatcher.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AudioRouteWatcher.m; path = PrayerApp/AudioRouteWatcher.m; sourceTree = "<group>"; };
 		CB4D857AA2ED576723B598E1 /* adhan_hafez.caf */ = {isa = PBXFileReference; lastKnownFileType = "audio.x-caf"; name = adhan_hafez.caf; path = PrayerApp/adhan_hafez.caf; sourceTree = "<group>"; };
 		CE9E49272B22B1425383AC48 /* adhan_saber.caf */ = {isa = PBXFileReference; lastKnownFileType = "audio.x-caf"; name = adhan_saber.caf; path = PrayerApp/adhan_saber.caf; sourceTree = "<group>"; };
+		D4E5F6A7B8C9D0E1F2A3B4C5 /* AudioRouteWatcher.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AudioRouteWatcher.swift; path = PrayerApp/AudioRouteWatcher.swift; sourceTree = "<group>"; };
 		D5FC0C5A1FDA3B8C9843426D /* adhan_abdul_basit.caf */ = {isa = PBXFileReference; lastKnownFileType = "audio.x-caf"; name = adhan_abdul_basit.caf; path = PrayerApp/adhan_abdul_basit.caf; sourceTree = "<group>"; };
 		D9A8F27786569D47911785CB /* NowPlayingState.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrayerApp/NowPlayingState.swift; sourceTree = "<group>"; };
 		E1D2C3B4A5968778695A4B3C1 /* PrayerWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PrayerWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -287,7 +288,6 @@ D4E5F6A7B8C9D0E1F2A3B4C5 /* AudioRouteWatcher.swift */ = {isa = PBXFileReference
 		F2A100030110001 /* ur */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = ur; path = ur.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
 		F2A100030120001 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.stringsdict"; sourceTree = "<group>"; };
 		F4D4DB9CBD682D1BF5562CC3 /* CompassModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = CompassModule.m; path = PrayerApp/CompassModule.m; sourceTree = "<group>"; };
-C2D3E4F5A6B7C8D9E0F1A2B3 /* AudioRouteWatcher.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AudioRouteWatcher.m; path = PrayerApp/AudioRouteWatcher.m; sourceTree = "<group>"; };
 		FA11B0071AA0000000000001 /* Amiri-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Amiri-Regular.ttf"; path = "PrayerApp/Resources/fonts/Amiri-Regular.ttf"; sourceTree = "<group>"; };
 		FA11B0071AA0000000000002 /* AmiriQuran.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = AmiriQuran.ttf; path = PrayerApp/Resources/fonts/AmiriQuran.ttf; sourceTree = "<group>"; };
 		FA11B0071AA0000000000003 /* SurahNames.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = SurahNames.ttf; path = PrayerApp/Resources/fonts/SurahNames.ttf; sourceTree = "<group>"; };
@@ -933,7 +933,7 @@ C2D3E4F5A6B7C8D9E0F1A2B3 /* AudioRouteWatcher.m */ = {isa = PBXFileReference; in
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = PrayerApp/PrayerApp.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 283;
+				CURRENT_PROJECT_VERSION = 284;
 				DEAD_CODE_STRIPPING = YES;
 				DERIVE_MACCATALYST_PRODUCT_BUNDLE_IDENTIFIER = YES;
 				DEVELOPMENT_TEAM = GAW23HT439;
@@ -956,7 +956,7 @@ C2D3E4F5A6B7C8D9E0F1A2B3 /* AudioRouteWatcher.m */ = {isa = PBXFileReference; in
 					"$(SDKROOT)/System/iOSSupport/usr/lib/swift",
 					"$(inherited)",
 				);
-				MARKETING_VERSION = 2.27.2;
+				MARKETING_VERSION = 2.28.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -983,7 +983,7 @@ C2D3E4F5A6B7C8D9E0F1A2B3 /* AudioRouteWatcher.m */ = {isa = PBXFileReference; in
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = PrayerApp/PrayerApp.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 283;
+				CURRENT_PROJECT_VERSION = 284;
 				DEAD_CODE_STRIPPING = YES;
 				DERIVE_MACCATALYST_PRODUCT_BUNDLE_IDENTIFIER = YES;
 				DEVELOPMENT_TEAM = GAW23HT439;
@@ -1005,7 +1005,7 @@ C2D3E4F5A6B7C8D9E0F1A2B3 /* AudioRouteWatcher.m */ = {isa = PBXFileReference; in
 					"$(SDKROOT)/System/iOSSupport/usr/lib/swift",
 					"$(inherited)",
 				);
-				MARKETING_VERSION = 2.27.2;
+				MARKETING_VERSION = 2.28.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -1189,7 +1189,7 @@ C2D3E4F5A6B7C8D9E0F1A2B3 /* AudioRouteWatcher.m */ = {isa = PBXFileReference; in
 				CLANG_ENABLE_EXPLICIT_MODULES = NO;
 				CODE_SIGN_ENTITLEMENTS = PrayerWidgetExtension/PrayerWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 283;
+				CURRENT_PROJECT_VERSION = 284;
 				DEAD_CODE_STRIPPING = YES;
 				DERIVE_MACCATALYST_PRODUCT_BUNDLE_IDENTIFIER = YES;
 				DEVELOPMENT_TEAM = GAW23HT439;
@@ -1212,7 +1212,7 @@ C2D3E4F5A6B7C8D9E0F1A2B3 /* AudioRouteWatcher.m */ = {isa = PBXFileReference; in
 					"$(SDKROOT)/System/iOSSupport/usr/lib/swift",
 					"$(inherited)",
 				);
-				MARKETING_VERSION = 2.27.2;
+				MARKETING_VERSION = 2.28.0;
 				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.hassan.prayerapp.PrayerWidgetExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1233,7 +1233,7 @@ C2D3E4F5A6B7C8D9E0F1A2B3 /* AudioRouteWatcher.m */ = {isa = PBXFileReference; in
 				CLANG_ENABLE_EXPLICIT_MODULES = NO;
 				CODE_SIGN_ENTITLEMENTS = PrayerWidgetExtension/PrayerWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 283;
+				CURRENT_PROJECT_VERSION = 284;
 				DEAD_CODE_STRIPPING = YES;
 				DERIVE_MACCATALYST_PRODUCT_BUNDLE_IDENTIFIER = YES;
 				DEVELOPMENT_TEAM = GAW23HT439;
@@ -1256,7 +1256,7 @@ C2D3E4F5A6B7C8D9E0F1A2B3 /* AudioRouteWatcher.m */ = {isa = PBXFileReference; in
 					"$(SDKROOT)/System/iOSSupport/usr/lib/swift",
 					"$(inherited)",
 				);
-				MARKETING_VERSION = 2.27.2;
+				MARKETING_VERSION = 2.28.0;
 				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.hassan.prayerapp.PrayerWidgetExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1277,7 +1277,7 @@ C2D3E4F5A6B7C8D9E0F1A2B3 /* AudioRouteWatcher.m */ = {isa = PBXFileReference; in
 				CLANG_ENABLE_EXPLICIT_MODULES = NO;
 				CODE_SIGN_ENTITLEMENTS = MihrabLiveActivity/MihrabLiveActivity.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 283;
+				CURRENT_PROJECT_VERSION = 284;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = GAW23HT439;
 				GENERATE_INFOPLIST_FILE = NO;
@@ -1294,7 +1294,7 @@ C2D3E4F5A6B7C8D9E0F1A2B3 /* AudioRouteWatcher.m */ = {isa = PBXFileReference; in
 					"$(SDKROOT)/System/iOSSupport/usr/lib/swift",
 					"$(inherited)",
 				);
-				MARKETING_VERSION = 2.27.2;
+				MARKETING_VERSION = 2.28.0;
 				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.hassan.prayerapp.MihrabLiveActivity;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1316,7 +1316,7 @@ C2D3E4F5A6B7C8D9E0F1A2B3 /* AudioRouteWatcher.m */ = {isa = PBXFileReference; in
 				CLANG_ENABLE_EXPLICIT_MODULES = NO;
 				CODE_SIGN_ENTITLEMENTS = MihrabLiveActivity/MihrabLiveActivity.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 283;
+				CURRENT_PROJECT_VERSION = 284;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = GAW23HT439;
 				GENERATE_INFOPLIST_FILE = NO;
@@ -1333,7 +1333,7 @@ C2D3E4F5A6B7C8D9E0F1A2B3 /* AudioRouteWatcher.m */ = {isa = PBXFileReference; in
 					"$(SDKROOT)/System/iOSSupport/usr/lib/swift",
 					"$(inherited)",
 				);
-				MARKETING_VERSION = 2.27.2;
+				MARKETING_VERSION = 2.28.0;
 				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.hassan.prayerapp.MihrabLiveActivity;
 				PRODUCT_NAME = "$(TARGET_NAME)";

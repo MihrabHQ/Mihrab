@@ -19,6 +19,16 @@ export type ReleaseNote = {
 
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
+    code: 284,
+    version: '2.28.0',
+    date: '2026-10-02',
+    notes: {
+      en: '• Tilawah keeps its own place: carry on, shuffle, or play what the sunnah recommends now.\n• A new Qur\'an tab and āyah sheet: swipeable lists, tabs for translation, tafsir and tajweed.\n• Help Mihrab, under Settings → About.\n• Polar days no longer show broken times (#61).\n• The prayer name shows whole on the always-on display.\n• iPhone: better lock-screen playback, pause when headphones are unplugged, Arabic and Urdu layout fixes.',
+      ar: '• التلاوة تحفظ موضعها: تابع، أو اخلط، أو استمع لما تستحبه السنة الآن.\n• تبويب قرآن ولوحة آية جديدان: قوائم تُسحب، وتبويبات للترجمة والتفسير والتجويد.\n• ساعد محراب، في الإعدادات ← حول.\n• أيام القطب لم تعد تعرض أوقاتًا معطوبة (#61).\n• اسم الصلاة يظهر كاملًا على الشاشة الدائمة.\n• آيفون: تشغيل أفضل على شاشة القفل، وإيقاف مؤقت عند نزع السماعات، وإصلاح التخطيط بالعربية والأردية.',
+      sv: '• Tilawah minns sin egen plats: fortsätt, blanda, eller spela det sunnah rekommenderar nu.\n• Ny Koranflik och ayahvy: svepbara listor, flikar för översättning, tafsir och tajwid.\n• Hjälp Mihrab, under Inställningar → Om.\n• Polardagar visar inte längre trasiga tider (#61).\n• Bönens namn syns helt på alltid-på-skärmen.\n• iPhone: bättre uppspelning på låsskärmen, paus när hörlurarna dras ur, rättad layout på arabiska och urdu.',
+    },
+  },
+  {
     code: 283,
     version: '2.27.2',
     date: '2026-09-30',
