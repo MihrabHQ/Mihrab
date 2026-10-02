@@ -15,7 +15,7 @@ LIRE ET ÉCOUTER
 - Les couleurs du tajwid, chaque règle expliquée — en Hafs et en Warsh
 - Le lecteur de mots : maintenez un mot pour l'entendre seul
 - 42 récitateurs et, pour ceux qui ont des repères par mot, le mot récité éclairé sur la page
-- Tilawa : sourate après sourate écran éteint, avec minuterie de sommeil et réglage de la vitesse
+- Tilawa : sourate après sourate écran éteint, avec minuterie de sommeil et réglage de la vitesse ; elle garde votre place et propose ce que la sunna recommande à cette heure : al-Kahf le vendredi, al-Mulk la nuit
 - 13 traductions et des tafsirs classiques, lisibles hors ligne
 - Des outils de mémorisation, des signets et des plans de khatma qui suivent la page où vous êtes
 
@@ -30,8 +30,8 @@ SE SOUVENIR
 - Fonctionne hors ligne une fois votre position définie et les pages voulues sur le téléphone
 - Synchronisation entre vos propres appareils sans compte et sans aucun serveur à nous : des fichiers scellés dans un dossier que vous synchronisez déjà
 - Sauvegarde et restauration dans un fichier que vous gardez
-- 13 langues, dont l'arabe et l'ourdou entièrement de droite à gauche
-- Thèmes clair, sombre et noir pur, votre couleur d'accent et Liquid Glass
+- iPhone, iPad et Mac, en 13 langues, dont l'arabe et l'ourdou entièrement de droite à gauche
+- Clair, sombre et noir pur, six thèmes de couleur, votre couleur d'accent et Liquid Glass
 
 Le réseau n'est utilisé que lorsque vous le choisissez : un service d'heures de prière (AlAdhan, PrayTimes.dev ou les tables nationales de la Suède et du Maroc), la recherche de lieux via OpenStreetMap Nominatim, et le téléchargement des pages du Coran, des traductions, des tafsirs et des récitations. Vos coordonnées restent sur votre appareil.
 

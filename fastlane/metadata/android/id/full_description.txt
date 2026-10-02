@@ -1,29 +1,39 @@
-Mihrab adalah pendamping yang tenang bagi hari seorang Muslim: sholat, Al-Quran, dan dzikir di antaranya, dalam satu aplikasi yang menjaga privasi. Tahan sebuah kata di mushaf untuk mendengarnya dibacakan sendiri, kata yang dilantunkan menyala di halaman, tajwid tampil berwarna pada riwayat Hafs dan Warsh, dan semuanya tetap selaras di antara perangkat Anda sendiri. Tanpa akun, tanpa iklan, dan tidak ada data tentang Anda yang meninggalkan ponsel.
+Mihrab adalah pendamping yang tenang bagi hari seorang Muslim: sholat, Al-Quran, dan dzikir di antaranya, dalam satu aplikasi yang menjaga privasi.
 
-Fitur utama:
-- Jadwal sholat untuk hari ini, sepekan ke depan, dan satu bulan penuh — dapat dibagikan sebagai gambar atau PDF
-- Langit yang digambar di belakang hitungan waktu dan mengikuti hari — malam dengan bulan pada fasenya, fajar, tengah hari, senja — dan langit yang sama sebagai widget
-- Catat salat dengan satu ketukan dari Hari Ini — untuk hari ini atau hari mana pun dalam sepekan terakhir — jurnal menyimpan rekamnya, rentetan, dan grafik
-- Notifikasi opsional untuk lima waktu, dengan tujuh belas rekaman adzan atau rekaman Anda sendiri, pengingat sebelum waktu, dan tunda
-- Hitung mundur sholat yang disematkan (Live Activity) di layar kunci dan di panel notifikasi, dalam tiga desain
-- Widget layar utama: jadwal sholat dalam tiga ukuran, catatan hari ini, tanggal Hijriah, rentetan, tasbih, dan bacaan
-- Kompas kiblat dengan kekuatan sinyal dan pemeriksaan silang terhadap matahari
-- Pembaca Quran: mushaf Madinah digambar dari font halaman resmi, dalam empat riwayat (Hafsh, Warsy, Qalun, Syu'bah), dengan 13 terjemahan dan tafsir klasik, 42 qari, penyorotan per kata, alat hafalan, penanda, dan rencana khatam
-- Tilawah — mendengarkan sebagai halaman tersendiri: pilih qari dan biarkan surah mengalir ke surah berikutnya dengan layar mati, dari layar kunci, dengan pengatur waktu tidur, pengatur kecepatan, dan halaman mushaf langsung tempat kata yang dibaca menyala
-- Doa (Hisnul Muslim), penghitung tasbih, catatan puasa, serta jurnal sholat dengan grafik amalan dan rentetan
-- Kalender Hijriah dengan penanda Ramadhan, Idulfitri/Iduladha, dan Jumat
-- Sinkronisasi antar perangkat Anda sendiri tanpa akun dan tanpa server: berkas tersegel di folder yang sudah Anda sinkronkan
-- Cadangkan dan pulihkan ke berkas yang Anda simpan sendiri
-- Lokasi GPS, pencarian tempat, tempat tersimpan, atau koordinat manual; koreksi menit per sholat
-- Beberapa sumber jadwal — termasuk tabel nasional resmi Swedia dan Maroko — atau perhitungan sepenuhnya di perangkat
-- 13 bahasa, termasuk Arab dan Urdu dengan tata letak kanan ke kiri
-- Tema terang, gelap, hitam pekat, dan mengikuti sistem, warna aksen pilihan Anda, dan Material You
+Tahan kata apa pun di mushaf dan dengarkan kata itu dibacakan. Ikuti kata yang sedang dibaca saat menyala di halaman. Lihat tajwid berwarna, pada Hafs dan Warsy. Jaga catatan dan pengaturan tetap selaras di antara perangkat Anda sendiri, tanpa akun dan tanpa server. Dan setiap barisnya bersumber terbuka.
 
-Privasi dan penggunaan jaringan:
-- Tanpa analitik, tanpa pelacak, tanpa iklan, tanpa akun
-- Jadwal sholat dapat dihitung sepenuhnya di perangkat Anda setelah lokasi ditetapkan
-- Fitur daring opsional, hanya dipakai bila Anda memilihnya: penyedia jadwal (AlAdhan, PrayTimes.dev, atau tabel nasional yang disiapkan untuk Swedia dan Maroko), pencarian tempat lewat OpenStreetMap Nominatim, dan pengunduhan halaman Quran, terjemahan, tafsir, serta audio tilawah
-- Sinkronisasi tidak pernah melewati server kami, dan apa yang ditulisnya tak terbaca oleh apa pun selain perangkat yang Anda pasangkan
-- Koordinat Anda hanya disimpan di perangkat Anda
+SHOLAT
+- Jadwal sholat hari ini, sepekan, dan sebulan ke depan — dihitung di ponsel, dari penyedia, atau dari tabel nasional resmi Swedia dan Maroko — dapat dibagikan sebagai gambar atau PDF
+- Adzan untuk setiap waktu sholat, dengan tujuh belas rekaman atau rekaman Anda sendiri, pengingat sebelumnya, dan tunda
+- Senyapkan ponsel selama sholat, lalu suaranya kembali dengan sendirinya
+- Hitung mundur yang disematkan ke sholat berikutnya di layar kunci dan panel notifikasi, dalam tiga desain
+- Kompas kiblat dengan kekuatan sinyal dan pengecekan silang terhadap matahari
+- Catat setiap sholat dengan satu ketukan; jurnal menyimpan riwayat, rangkaian, dan grafiknya
+- Widget layar utama: jadwal sholat dalam tiga ukuran, catatan hari ini, tanggal Hijriah, rangkaian, tasbih, dan bacaan
 
-Aplikasi ini sumber terbuka di bawah AGPL-3.0-or-later.
+MEMBACA DAN MENDENGAR
+- Mushaf Madinah, disusun sebagai teks dari fon halaman Kompleks Raja Fahd dan tajam di ukuran apa pun — beserta Warsy, Qalun, dan Syu'bah
+- Warna tajwid, setiap hukum dijelaskan — pada Hafs dan Warsy
+- Pembaca kata: tahan satu kata untuk mendengarnya dibaca sendiri
+- 42 qari, dan pada qari yang memiliki penanda waktu per kata, kata yang dibaca menyala di halaman
+- Tilawah: surah demi surah dengan layar mati, dengan pengatur waktu tidur dan kendali kecepatan; mengingat posisi Anda dan menyarankan bacaan yang dianjurkan sunnah pada jam itu — Al-Kahf di hari Jumat, Al-Mulk di malam hari
+- 13 terjemahan dan tafsir klasik, bisa dibaca tanpa internet
+- Alat bantu hafalan, penanda, dan rencana khatam yang mengikuti halaman yang sedang Anda baca
+
+MENGINGAT
+- Lebih dari 100 doa dari Hisnul Muslim, dengan transliterasi dan terjemahan
+- Penghitung tasbih untuk dzikir setelah sholat dan seterusnya
+- Catatan puasa untuk Ramadhan dan puasa sunnah, dengan pengingat
+- Kalender Hijriah dengan Ramadhan, Idul Fitri, Idul Adha, dan Jumat, serta ayat hari ini
+
+MILIK ANDA
+- Tanpa iklan, tanpa analitik, tanpa pelacak, tanpa akun
+- Berfungsi tanpa internet setelah lokasi diatur dan halaman yang Anda inginkan ada di ponsel
+- Sinkronisasi antarperangkat Anda sendiri tanpa akun dan tanpa server kami: berkas tersegel di folder yang memang sudah Anda sinkronkan
+- Cadangkan dan pulihkan ke berkas yang Anda simpan
+- Android, iPhone, iPad, dan Mac, dalam 13 bahasa, dengan bahasa Arab dan Urdu sepenuhnya dari kanan ke kiri
+- Tema terang, gelap, dan hitam pekat, enam tema warna, warna aksen pilihan Anda, dan Material You
+
+Jaringan hanya digunakan saat Anda memilihnya: penyedia jadwal sholat (AlAdhan, PrayTimes.dev, atau tabel nasional Swedia dan Maroko), pencarian tempat melalui OpenStreetMap Nominatim, serta pengunduhan halaman Al-Quran, terjemahan, tafsir, dan audio tilawah. Koordinat Anda tetap di perangkat Anda.
+
+Mihrab bersumber terbuka dengan lisensi AGPL-3.0-or-later.

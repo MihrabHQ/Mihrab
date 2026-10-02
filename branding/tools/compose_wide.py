@@ -1,7 +1,12 @@
 import sys, math
 sys.path.insert(0,"branding/tools")
 from PIL import Image, ImageDraw, ImageFilter
-from compose import gradient_bg, rub_star, round_image, _font, ROUND_FONT, TEXT_FONT, ICON_PATH, CREAM
+from compose import gradient_bg, rub_star, round_image, _font, ROUND_FONT, TEXT_FONT, ICON_PATH, CREAM, DESCRIPTOR
+
+# branding/IDENTITY.md: the headline, the tagline, and the pillars in order.
+HEADLINE = "For every prayer, and everything between."
+TAGLINE = "Calm, private, offline-first."
+PILLARS = "Prayer times · the Quran · Tilawah · Dua · Dhikr"
 
 def device(shot_path, height, radius_frac=0.062):
     shot=Image.open(shot_path).convert("RGB")
@@ -31,9 +36,12 @@ def feature_graphic(out, home, W=1024,H=500):
     mx=int(W*0.06); iy=int(H*0.20); isz=int(H*0.20)
     icon=round_image(Image.open(ICON_PATH).convert("RGBA").resize((isz,isz)),int(isz*0.24))
     c.alpha_composite(icon,(mx,iy))
-    d.text((mx+isz+int(W*0.02), iy+isz*0.08), "Mihrab", font=_font(ROUND_FONT,int(H*0.19),"Bold"), fill=CREAM)
-    d.text((mx, iy+isz+int(H*0.06)), "Prayer times · Quran · Dua · Tasbih · Qibla", font=_font(TEXT_FONT,int(H*0.062),"Semibold"), fill=CREAM)
-    d.text((mx, iy+isz+int(H*0.20)), "Private. Offline. No ads, no tracking.", font=_font(TEXT_FONT,int(H*0.052),"Medium"), fill=(238,228,212,200))
+    tx=mx+isz+int(W*0.02)
+    d.text((tx, iy-isz*0.06), "Mihrab", font=_font(ROUND_FONT,int(H*0.15),"Bold"), fill=CREAM)
+    d.text((tx, iy+isz*0.66), DESCRIPTOR, font=_font(TEXT_FONT,int(H*0.050),"Medium"), fill=(238,228,212,200))
+    d.text((mx, iy+isz+int(H*0.07)), "For every prayer,", font=_font(ROUND_FONT,int(H*0.072),"Bold"), fill=CREAM)
+    d.text((mx, iy+isz+int(H*0.16)), "and everything between.", font=_font(ROUND_FONT,int(H*0.072),"Bold"), fill=CREAM)
+    d.text((mx, iy+isz+int(H*0.285)), TAGLINE, font=_font(TEXT_FONT,int(H*0.046),"Medium"), fill=(238,228,212,200))
     # One phone on the right, bleeding off top/bottom. Barely tilted: at 8
     # degrees the prayer rows fell far enough across the width that each time
     # lined up with the NEXT prayer's name, and a graphic whose whole subject
@@ -51,10 +59,15 @@ def hero(out, home, quran, duas, W=1600,H=900):
     mx=int(W*0.055); iy=int(H*0.10); isz=int(H*0.115)
     icon=round_image(Image.open(ICON_PATH).convert("RGBA").resize((isz,isz)),int(isz*0.24))
     c.alpha_composite(icon,(mx,iy))
-    d.text((mx+isz+int(W*0.018), iy+isz*0.02), "Mihrab", font=_font(ROUND_FONT,int(H*0.13),"Bold"), fill=CREAM)
-    d.text((mx, iy+isz+int(H*0.06)), "The Muslim companion —", font=_font(ROUND_FONT,int(H*0.058),"Semibold"), fill=CREAM)
-    d.text((mx, iy+isz+int(H*0.135)), "calm, private, offline-first.", font=_font(ROUND_FONT,int(H*0.058),"Semibold"), fill=CREAM)
-    d.text((mx, iy+isz+int(H*0.235)), "Prayer times · Quran · Dua · Tasbih · Qibla", font=_font(TEXT_FONT,int(H*0.040),"Medium"), fill=(238,228,212,205))
+    # Wordmark and descriptor share the icon's height: the name in its
+    # upper part, the descriptor under it, both clear of each other.
+    tx = mx+isz+int(W*0.018)
+    d.text((tx, iy-isz*0.10), "Mihrab", font=_font(ROUND_FONT,int(H*0.092),"Bold"), fill=CREAM)
+    d.text((tx, iy+isz*0.70), DESCRIPTOR, font=_font(TEXT_FONT,int(H*0.034),"Medium"), fill=(238,228,212,200))
+    d.text((mx, iy+isz+int(H*0.10)), "For every prayer,", font=_font(ROUND_FONT,int(H*0.058),"Semibold"), fill=CREAM)
+    d.text((mx, iy+isz+int(H*0.175)), "and everything between.", font=_font(ROUND_FONT,int(H*0.058),"Semibold"), fill=CREAM)
+    d.text((mx, iy+isz+int(H*0.265)), TAGLINE, font=_font(TEXT_FONT,int(H*0.040),"Medium"), fill=(238,228,212,205))
+    d.text((mx, iy+isz+int(H*0.325)), PILLARS, font=_font(TEXT_FONT,int(H*0.034),"Medium"), fill=(238,228,212,170))
     # three devices, staggered, right/bottom
     dh=int(H*0.86)
     dv_home=device(home,dh); dv_q=device(quran,int(dh*0.94)); dv_d=device(duas,int(dh*0.88))

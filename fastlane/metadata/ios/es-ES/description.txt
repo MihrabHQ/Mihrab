@@ -15,7 +15,7 @@ LEER Y ESCUCHAR
 - Colores de tajwid, con cada regla explicada, en Hafs y en Warsh
 - El lector de palabras: mantén pulsada una palabra para oírla sola
 - 42 recitadores y, en los que tienen tiempos por palabra, la palabra recitada iluminada en la página
-- Tilawa: sura tras sura con la pantalla apagada, con temporizador y control de velocidad
+- Tilawa: sura tras sura con la pantalla apagada, con temporizador y control de velocidad; recuerda dónde te quedaste y sugiere lo que la sunna recomienda a esa hora: al-Kahf el viernes, al-Mulk por la noche
 - 13 traducciones y tafsir clásico, disponibles sin conexión
 - Herramientas de memorización, marcadores y planes de jatma que siguen la página en la que estás
 
@@ -30,8 +30,8 @@ TUYO
 - Funciona sin conexión una vez fijada tu ubicación y descargadas las páginas que quieras
 - Sincronización entre tus propios dispositivos sin cuenta y sin ningún servidor nuestro: archivos sellados en una carpeta que ya mantienes sincronizada
 - Copia de seguridad y restauración en un archivo que conservas tú
-- 13 idiomas, con árabe y urdu totalmente de derecha a izquierda
-- Temas claro, oscuro y negro puro, tu propio color de acento y Liquid Glass
+- iPhone, iPad y Mac, en 13 idiomas, con árabe y urdu totalmente de derecha a izquierda
+- Claro, oscuro y negro puro, seis temas de color, tu propio color de acento y Liquid Glass
 
 La red solo se usa cuando tú lo eliges: un proveedor de horarios (AlAdhan, PrayTimes.dev o las tablas nacionales de Suecia y Marruecos), la búsqueda de lugares con OpenStreetMap Nominatim y la descarga de páginas del Corán, traducciones, tafsir y audio de recitación. Tus coordenadas se quedan en tu dispositivo.
 

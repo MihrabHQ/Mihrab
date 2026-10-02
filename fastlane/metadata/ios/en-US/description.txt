@@ -15,7 +15,7 @@ READ AND LISTEN
 - Tajweed colours, every rule explained — on Hafs and on Warsh
 - The word reader: hold a word to hear it read on its own
 - 42 reciters, and for those with word timings, the recited word lit on the page
-- Tilawah: surah into surah with the screen off, with a sleep timer and a speed control
+- Tilawah: surah into surah with the screen off, with a sleep timer and a speed control; it keeps your place and suggests what the sunnah recommends at that hour — Al-Kahf on Friday, Al-Mulk at night
 - 13 translations and classical tafsir, kept for offline reading
 - Memorisation tools, bookmarks, and khatmah plans that follow the page you are on
 
@@ -30,8 +30,8 @@ YOURS
 - Works offline once your location is set and the pages you want are on the phone
 - Sync between your own devices with no account and no server of ours: sealed files in a folder you already keep in sync
 - Backup and restore to a file you keep
-- 13 languages, with Arabic and Urdu fully right-to-left
-- Light, dark and pure-black themes, your own accent colour, and Liquid Glass
+- iPhone, iPad and Mac, in 13 languages, with Arabic and Urdu fully right-to-left
+- Light, dark and pure black, six colour themes, your own accent colour, and Liquid Glass
 
 The network is used only when you choose it: a prayer-time provider (AlAdhan, PrayTimes.dev, or the national tables for Sweden and Morocco), place search through OpenStreetMap Nominatim, and downloading Quran pages, translations, tafsir and recitation audio. Your coordinates stay on your device.
 

@@ -25,48 +25,90 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
 sys.path.insert(0, HERE)
 
-from compose import compose, compose_landscape  # noqa: E402
+from compose import compose, compose_landscape, headline_size  # noqa: E402
 from PIL import Image  # noqa: E402
 
 # Keyed by the part of the file name after the number, so the same screen
-# can sit at a different position in different sets — the tablet has no
-# tasbih panel and its journal is number five, the phone's is number six.
-# The number is still what fixes the running order on the product page.  The wording carries over from the
-# 6.3"/6.5" sets that are live today; only the two new panels are new copy.
+# can sit at a different position in different sets. The number is what
+# fixes the running order on the product page.
+#
+# THE STORY IS branding/IDENTITY.md's, in its order: the day's prayers
+# first, because that is where the name comes from, then the Qur'an read
+# and listened to, then the remembrance between prayers, and the last
+# panel closes on what makes the app yours. The first headline is the
+# identity's own headline, so the first thing anyone reads on a store is
+# the same sentence the website opens with. Voice rules from the same
+# file: calm, precise, no superlatives, no guilt.
+#
 # "\\n" inside a headline is a deliberate line break.
 CAPTIONS = {
     "home": (
-        "Prayer times\\nyou can trust",
-        "Fifteen calculation methods, a year stored offline",
+        "For every prayer,\\nand everything between",
+        "Prayer times, the Quran, dua and dhikr in one calm app",
     ),
     "mushaf": (
-        "The Madinah mushaf,\\npage for page",
-        "All 604 pages, recitation that follows each word",
+        "The Madinah mushaf,\\nin tajweed colour",
+        "The recited word lights up; hold any word to hear it",
     ),
     "spread": (
         "The mushaf,\\nas it falls open",
-        "Two facing pages, exactly as the Madinah print sets them",
+        "Two facing pages in tajweed colour, as the Madinah print sets them",
     ),
-    "month": (
-        "The whole month\\nat a glance",
-        "Every day's times in one table, ready offline",
+    "tilawah": (
+        "Tilawah, surah\\ninto surah",
+        "42 reciters, the screen off, the page following the recited word",
+    ),
+    "ayah": (
+        "Translation, tafsir\\nand tajweed",
+        "13 translations, classical tafsir, every tajweed rule explained",
     ),
     "duas": (
-        "Daily duas,\\nalways to hand",
-        "Morning, evening and after prayer",
+        "The remembrance\\nbetween prayers",
+        "100+ duas from Hisn al-Muslim, with transliteration",
     ),
     "tasbih": (
-        "A quiet tasbih counter",
-        "Keep your dhikr count without leaving the app",
+        "Dhikr, counted\\nquietly",
+        "A tasbih for after the prayer, and for the rest of the day",
     ),
     "journal": (
-        "Your prayer journal",
-        "Every prayer logged, encrypted on your device",
+        "Your prayers,\\nkept by you",
+        "Log each prayer with one tap; the record stays on your devices",
+    ),
+    "month": (
+        "The month ahead,\\nready to share",
+        "Every day's times in one table, offline, as an image or a PDF",
     ),
     "qibla": (
-        "Always toward\\nthe Ka'bah",
-        "A live bearing from your device's own sensors",
+        "Facing\\nthe Ka'bah",
+        "A live bearing from your phone's own sensors",
     ),
+}
+
+# The tablet panels are landscape, and their text is a column beside the
+# device: a line that fits across a phone does not fit there. Only the
+# break moves; the words are the same.
+LANDSCAPE_HEADLINES = {
+    "home": "For every prayer,\\nand everything\\nbetween",
+}
+
+
+def caption(screen, landscape):
+    headline, subhead = CAPTIONS[screen]
+    if landscape:
+        headline = LANDSCAPE_HEADLINES.get(screen, headline)
+    return headline, subhead
+
+
+# F-DROID NEVER DELETES A SCREENSHOT (see build() and docs/DISTRIBUTION.md),
+# so the file names it has already copied are kept as SLOTS: the first
+# panel is always written as the first name below, whatever it shows, and
+# only a panel beyond the list gets a new name. Reordering the story then
+# overwrites files F-Droid already holds rather than adding duplicates
+# beside them. The names no longer describe the picture — F-Droid shows
+# them in file-name order and never shows the name.
+FDROID_SLOTS = {
+    "phoneScreenshots": ["1_home", "2_mushaf", "3_month", "4_duas", "5_tasbih", "6_journal", "7_qibla"],
+    "tenInchScreenshots": ["1_home", "2_spread", "3_month", "4_duas", "5_journal"],
 }
 
 SETS = [
@@ -106,7 +148,9 @@ SETS = [
         "size": (1080, 2160),
         "radius": 0.050,
         "device_w": 0.62,
-        "device_top": 0.290,
+        # Low enough that a two-line subhead never pushes one device below
+        # its neighbours: the set reads as one row on the store page.
+        "device_top": 0.322,
     },
     {
         # A tablet is held in landscape and Play wants 16:9 or 9:16 exactly,
@@ -160,12 +204,18 @@ def build(spec):
     shots = sorted(f for f in os.listdir(src) if re.match(r"^\d\d_.*\.png$", f))
     if not shots:
         raise SystemExit("no screenshots in " + src)
+    screens = [os.path.splitext(f)[0].split("_", 1)[1] for f in shots]
+    missing = [x for x in screens if x not in CAPTIONS]
+    if missing:
+        raise SystemExit("no caption for " + ", ".join(missing))
+    landscape = bool(spec.get("landscape"))
+    hl = headline_size([caption(x, landscape)[0] for x in screens], W, H, landscape)
     for shot in shots:
         key = os.path.splitext(shot)[0]
         screen = key.split("_", 1)[1] if "_" in key else key
         if screen not in CAPTIONS:
             raise SystemExit("no caption for " + screen)
-        headline, subhead = CAPTIONS[screen]
+        headline, subhead = caption(screen, landscape)
         raw = os.path.join(src, shot)
         check(raw, spec["raw_size"])
         out = os.path.join(previews, shot)
@@ -180,6 +230,7 @@ def build(spec):
                 screen_radius_frac=spec["radius"],
                 device_h_frac=spec["device_w"],
                 device_x_frac=spec["device_top"],
+                hl_size=hl,
             )
         else:
             compose(
@@ -192,6 +243,7 @@ def build(spec):
                 screen_radius_frac=spec["radius"],
                 device_w_frac=spec["device_w"],
                 device_top_frac=spec["device_top"],
+                hl_size=hl,
             )
         if upload:
             jpg = os.path.join(upload, key + ".jpg")
@@ -210,7 +262,9 @@ def build(spec):
             # second screenshot on the listing, forever, until an F-Droid
             # admin removes the old file by hand. Overwrite; do not rename.
             n = key.split("_", 1)
-            plain = "%d_%s.png" % (int(n[0]), n[1]) if n[0].isdigit() else shot
+            slots = FDROID_SLOTS.get(os.path.basename(fdroid), [])
+            i = int(n[0]) - 1
+            plain = (slots[i] if i < len(slots) else "%d_%s" % (int(n[0]), n[1])) + ".png"
             Image.open(out).convert("RGB").save(os.path.join(fdroid, plain))
     went = [d for d in (spec["previews"], spec.get("upload"), spec.get("fdroid")) if d]
     print("%s: %d panels -> %s" % (spec["name"], len(shots), ", ".join(went)))

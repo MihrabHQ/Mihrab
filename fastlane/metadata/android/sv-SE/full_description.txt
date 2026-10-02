@@ -16,7 +16,7 @@ LÄS OCH LYSSNA
 - Tajwidfärger där varje regel förklaras — för Hafs och för Warsh
 - Ordläsaren: håll kvar fingret på ett ord och hör det läsas för sig
 - 42 recitatörer, och för dem med ordtider lyser det reciterade ordet upp på sidan
-- Tilawah: sura efter sura med skärmen släckt, med sovtimer och hastighetsreglage
+- Tilawah: sura efter sura med skärmen släckt, med sovtimer och hastighetsreglage; den minns var du slutade och föreslår vad sunnan rekommenderar vid den tiden — al-Kahf på fredagen, al-Mulk på natten
 - 13 översättningar och klassisk tafsir, sparade för läsning offline
 - Memoreringsverktyg, bokmärken och khatmah-planer som följer sidan du är på
 
@@ -32,7 +32,7 @@ DITT EGET
 - Synk mellan dina egna enheter utan konto och utan server av vår: förseglade filer i en mapp du redan synkar
 - Säkerhetskopiering och återställning till en fil du själv behåller
 - Android, iPhone, iPad och Mac, på 13 språk, med arabiska och urdu helt från höger till vänster
-- Ljust, mörkt och helsvart tema, din egen accentfärg och Material You
+- Ljust, mörkt och helsvart, sex färgteman, din egen accentfärg och Material You
 
 Nätet används bara när du väljer det: en källa för bönetider (AlAdhan, PrayTimes.dev eller de nationella tabellerna för Sverige och Marocko), platssökning via OpenStreetMap Nominatim, och nedladdning av Koranens sidor, översättningar, tafsir och recitationsljud. Dina koordinater stannar på din enhet.
 

@@ -105,7 +105,50 @@ By default `~/Desktop/Simulator Screenshot - <device> - <date>.png`. If your des
 
 ---
 
-## The 2.18 set (2026-09-09) — READ THIS ONE FIRST
+## The 2.28 set (2026-10-02) — READ THIS ONE FIRST
+
+The store story now follows `branding/IDENTITY.md`: the companion, not a
+prayer-times app. Every panel carries the descriptor under the wordmark
+("Mihrab · The Muslim Companion"), and the first headline is the
+identity's own headline. Eight panels per phone set, in pillar order:
+
+| # | Android phone | iPhone 6.9″ / iPad 13″ | Pillar |
+|---|---|---|---|
+| 1 | Today | Today | Pray — "For every prayer, and everything between" |
+| 2 | Mushaf, tajweed colour, recited word lit | same | Read and listen |
+| 3 | Tilawah, playing | same | Read and listen |
+| 4 | Āyah sheet, Tajweed tab | same | Read and listen |
+| 5 | Duas — Āyat al-Kursī opened | same | Remember |
+| 6 | Tasbih, part-way | same | Remember |
+| 7 | Log | same | Yours |
+| 8 | Qibla | Month (no magnetometer in a simulator) | Pray |
+
+The Android tablet has six: Today, the spread, Tilawah, duas, log, month.
+
+Captions live in `CAPTIONS` in `build_store.py`; one headline size per set
+(`headline_size`), balanced wrapping (no orphan word), and a landscape-only
+line break where the tablet's text column needs one (`LANDSCAPE_HEADLINES`).
+F-Droid file names are now SLOTS (`FDROID_SLOTS`): the panel in position n
+overwrites whatever file F-Droid already holds at n, so reordering the story
+never leaves a stale screenshot on the listing.
+
+How this set was shot, for next time: Android on `Mihrab_API_37` with the
+beta build (`assembleGithubBeta`, installs beside nothing), clock pinned
+with `adb shell date 100209412026.00` and the zone set to
+`Africa/Casablanca`; the tablet by `wm size 2560x1600` + `wm density 280`
+on the same emulator. iOS on a fresh install per simulator, onboarding
+run through, the muṣḥaf fonts copied across from a simulator that had
+them (`Documents/quran`), the app launched with
+`SIMCTL_CHILD_TZ=Africa/Casablanca` so its times are Casablanca's, and the
+status bar pinned to the same zone's clock. One emulator or simulator at a
+time, shut down before the next one boots.
+
+Not yet handled: an iPad in iPadOS 26 draws a resize grabber in the
+bottom-right corner, and the simulator offers no way to turn windowing off.
+
+---
+
+## The 2.18 set (2026-09-09) — superseded by 2.28
 
 The current set. `branding/screenshots-2.18/` holds the raw captures every
 piece of imagery is built from, and three commands turn them into

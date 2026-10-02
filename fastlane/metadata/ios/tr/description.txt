@@ -15,7 +15,7 @@ OKU VE DİNLE
 - Tecvid renkleri, her kural açıklamalı — Hafs ve Verş rivayetinde
 - Kelime okuyucu: bir kelimeye basılı tutun, tek başına okunsun
 - 42 kâri; kelime zamanlaması olanlarda okunan kelime sayfada yanar
-- Tilavet: ekran kapalıyken sure sure dinleme, uyku zamanlayıcısı ve hız ayarıyla
+- Tilavet: ekran kapalıyken sure sure dinleme, uyku zamanlayıcısı ve hız ayarıyla; kaldığınız yeri hatırlar ve o saatte sünnetin tavsiye ettiğini önerir: cuma günü Kehf, gece Mülk
 - 13 meal ve klasik tefsirler, çevrimdışı da okunabilir
 - Ezber araçları, yer imleri ve açık olduğunuz sayfayı izleyen hatim planları
 
@@ -30,8 +30,8 @@ SİZİN
 - Konumunuz belirlendikten ve istediğiniz sayfalar telefona indikten sonra çevrimdışı çalışır
 - Hesapsız ve bize ait hiçbir sunucu olmadan, kendi cihazlarınız arasında eşitleme: zaten eşitlediğiniz bir klasörde mühürlü dosyalar
 - Sizde kalan bir dosyaya yedekleme ve geri yükleme
-- Arapça ve Urduca tamamen sağdan sola olmak üzere 13 dil
-- Açık, koyu ve saf siyah temalar, kendi vurgu renginiz ve Liquid Glass
+- iPhone, iPad ve Mac'te, Arapça ve Urduca tamamen sağdan sola olmak üzere 13 dilde
+- Açık, koyu ve saf siyah temalar, altı renk teması, kendi vurgu renginiz ve Liquid Glass
 
 Ağ yalnızca siz seçtiğinizde kullanılır: bir vakit sağlayıcısı (AlAdhan, PrayTimes.dev ya da İsveç ve Fas'ın resmî tabloları), OpenStreetMap Nominatim ile yer arama ve Kuran sayfaları, mealler, tefsirler ile tilavet seslerinin indirilmesi. Koordinatlarınız cihazınızda kalır.
 

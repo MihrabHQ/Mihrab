@@ -14,6 +14,9 @@ CREAM_SOFT    = (238, 228, 212)
 ROUND_FONT    = "/System/Library/Fonts/SFNSRounded.ttf"
 TEXT_FONT     = "/System/Library/Fonts/SFNS.ttf"
 ICON_PATH     = "/Users/hassan/git/PrayerApp/ios/PrayerApp/Images.xcassets/AppIcon.appiconset/AppIcon-1024.png"
+# The descriptor from branding/IDENTITY.md: it follows the name wherever
+# there is room for one, and every panel has room.
+DESCRIPTOR    = "The Muslim Companion"
 
 def _font(path, size, weight=None):
     f = ImageFont.truetype(path, size)
@@ -70,7 +73,58 @@ def wrap(draw, text, font, max_w):
     if cur: lines.append(cur)
     return lines
 
-def compose(shot_path, out_path, W, H, headline, subhead, screen_radius_frac=0.062, device_w_frac=0.66, device_top_frac=None):
+def balanced(draw, text, font, max_w):
+    """Wrap into as few lines as greedy wrapping needs, but with the lines
+    as even as they can be: no single word left alone on a last line.
+    A store caption with an orphan reads as a mistake."""
+    lines = wrap(draw, text, font, max_w)
+    if len(lines) < 2:
+        return lines
+    lo, hi = 1, int(max_w)
+    best = lines
+    while lo <= hi:
+        mid = (lo + hi) // 2
+        trial = wrap(draw, text, font, mid)
+        if len(trial) <= len(lines) and all(draw.textlength(l, font=font) <= mid for l in trial):
+            best, hi = trial, mid - 1
+        else:
+            lo = mid + 1
+    return best
+
+
+def fit_headline(draw, headline, path, size, max_w, floor):
+    """The largest size at which every deliberate line of the headline
+    fits on one line, down to `floor`; below that it wraps (balanced)."""
+    parts = headline.split("\\n")
+    while size > floor:
+        f = _font(path, size, "Bold")
+        if all(draw.textlength(p, font=f) <= max_w for p in parts):
+            return f
+        size -= 2
+    return _font(path, floor, "Bold")
+
+
+def headline_size(headlines, W, H, landscape=False):
+    """One headline size for a whole set: the largest at which every
+    deliberate line of EVERY headline fits on one line. Panels sit side by
+    side on a store page, and a headline a size smaller than its neighbour
+    reads as a different template."""
+    d = ImageDraw.Draw(Image.new("RGB", (W, H)))
+    if landscape:
+        m = int(W * 0.055)
+        # The same arithmetic compose_landscape does for a 16:10 capture
+        # at the tablet set's device height.
+        dev_w = int(int(H * 0.66) * 1.6)
+        dx = W - dev_w - int(W * 0.035)
+        max_w = max(int(W * 0.20), dx - m - int(W * 0.025))
+        start, floor = int(H * 0.076), int(H * 0.062)
+    else:
+        m = int(W * 0.085)
+        max_w, start, floor = W - 2 * m, int(W * 0.078), int(W * 0.066)
+    return min(fit_headline(d, h, ROUND_FONT, start, max_w, floor).size for h in headlines)
+
+
+def compose(shot_path, out_path, W, H, headline, subhead, screen_radius_frac=0.062, device_w_frac=0.66, device_top_frac=None, hl_size=None):
     canvas = gradient_bg(W, H).convert("RGBA")
     # geometry accent: large faint star, bottom-right bleed
     star_sz = int(W*0.9)
@@ -89,20 +143,23 @@ def compose(shot_path, out_path, W, H, headline, subhead, screen_radius_frac=0.0
     top_y = int(H*0.055)
     canvas.alpha_composite(icon, (m, top_y))
     wm = _font(ROUND_FONT, int(W*0.052), "Bold")
-    d.text((m+icon_sz+int(W*0.028), top_y+icon_sz*0.16), "Mihrab", font=wm, fill=CREAM)
+    ds = _font(TEXT_FONT, int(W*0.029), "Medium")
+    tx = m+icon_sz+int(W*0.028)
+    d.text((tx, top_y+icon_sz*0.02), "Mihrab", font=wm, fill=CREAM)
+    d.text((tx, top_y+icon_sz*0.60), DESCRIPTOR, font=ds, fill=(238,228,212,190))
 
     # headline
-    hl_font = _font(ROUND_FONT, int(W*0.078), "Bold")
+    hl_font = _font(ROUND_FONT, hl_size, "Bold") if hl_size else fit_headline(d, headline, ROUND_FONT, int(W*0.078), W-2*m, int(W*0.066))
     sub_font = _font(TEXT_FONT, int(W*0.038), "Medium")
     hy = top_y + icon_sz + int(H*0.045)
     hlines=[]
     for part in headline.split("\\n"):
-        hlines += wrap(d, part, hl_font, W-2*m)
+        hlines += balanced(d, part, hl_font, W-2*m)
     for line in hlines:
         d.text((m, hy), line, font=hl_font, fill=CREAM)
         hy += int(hl_font.size*1.13)
     hy += int(H*0.008)
-    for line in wrap(d, subhead, sub_font, W-2*m):
+    for line in balanced(d, subhead, sub_font, W-2*m):
         d.text((m, hy), line, font=sub_font, fill=(238,228,212,205))
         hy += int(sub_font.size*1.3)
 
@@ -151,6 +208,7 @@ def compose_landscape(
     screen_radius_frac=0.022,
     device_h_frac=0.80,
     device_x_frac=None,
+    hl_size=None,
 ):
     """The same panel, turned on its side.
 
@@ -182,19 +240,22 @@ def compose_landscape(
     top_y = int(H * 0.13)
     canvas.alpha_composite(icon, (m, top_y))
     wm = _font(ROUND_FONT, int(H * 0.062), "Bold")
-    d.text((m + icon_sz + int(W * 0.014), top_y + icon_sz * 0.16), "Mihrab", font=wm, fill=CREAM)
+    ds = _font(TEXT_FONT, int(H * 0.034), "Medium")
+    tx = m + icon_sz + int(W * 0.014)
+    d.text((tx, top_y + icon_sz * 0.02), "Mihrab", font=wm, fill=CREAM)
+    d.text((tx, top_y + icon_sz * 0.60), DESCRIPTOR, font=ds, fill=(238, 228, 212, 190))
 
-    hl_font = _font(ROUND_FONT, int(H * 0.076), "Bold")
+    hl_font = _font(ROUND_FONT, hl_size, "Bold") if hl_size else fit_headline(d, headline, ROUND_FONT, int(H * 0.076), text_w, int(H * 0.062))
     sub_font = _font(TEXT_FONT, int(H * 0.042), "Medium")
     hy = top_y + icon_sz + int(H * 0.085)
     hlines = []
     for part in headline.split("\\n"):
-        hlines += wrap(d, part, hl_font, text_w)
+        hlines += balanced(d, part, hl_font, text_w)
     for line in hlines:
         d.text((m, hy), line, font=hl_font, fill=CREAM)
         hy += int(hl_font.size * 1.13)
     hy += int(H * 0.018)
-    for line in wrap(d, subhead, sub_font, text_w):
+    for line in balanced(d, subhead, sub_font, text_w):
         d.text((m, hy), line, font=sub_font, fill=(238, 228, 212, 205))
         hy += int(sub_font.size * 1.32)
 

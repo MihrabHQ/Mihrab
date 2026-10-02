@@ -1,29 +1,39 @@
-Mihrab es un compañero sereno para el día de un musulmán: las oraciones, el Corán y el recuerdo de Allah entre ellas, en una sola app privada. Al mantener pulsada una palabra del mushaf se lee sola, la palabra recitada se ilumina en la página, el tajwid aparece en color en Hafs y Warsh, y todo se mantiene sincronizado entre tus propios dispositivos. Sin cuenta, sin anuncios, y nada sobre ti sale del teléfono.
+Mihrab es un compañero sereno para el día de un musulmán: las oraciones, el Corán y el recuerdo de Dios entre ellas, en una sola app privada.
 
-Funciones principales:
-- Horarios de oración para hoy, la semana siguiente y un mes entero — se pueden compartir como imagen o PDF
-- Un cielo dibujado detrás de la cuenta atrás que sigue el día — noche con la luna en su fase, alba, mediodía, atardecer — y el mismo cielo como widget
-- Registra una oración con un toque desde Hoy — hoy o cualquier día de la última semana — y el diario guarda el registro, la racha y el gráfico
-- Notificaciones opcionales para las cinco oraciones, con diecisiete grabaciones de adhan o la tuya propia, aviso previo y posponer
-- Cuenta atrás fijada (Live Activity) en la pantalla de bloqueo y en el panel de notificaciones, en tres diseños
-- Widgets de pantalla de inicio: horarios en tres tamaños, el registro del día, la fecha hiyrí, la racha, el tasbih y la lectura
-- Brújula de la alquibla con intensidad de señal y comprobación con la posición del sol
-- Lector del Corán: el mushaf de Medina dibujado con las tipografías oficiales de página, en cuatro riwayat (Hafs, Warsh, Qalun, Shuʿba), con 13 traducciones y tafsir clásico, 42 recitadores, resaltado palabra por palabra, herramientas de memorización, marcadores y planes de jatma
-- Tilawa — la escucha como página propia: elige un recitador y las suras se encadenan con la pantalla apagada, desde la pantalla de bloqueo, con temporizador de apagado, control de velocidad y una página de mushaf viva donde se ilumina la palabra recitada
-- Súplicas (Hisn al-Muslim), contador de tasbih, registro de ayuno y diario de oración con gráfico de práctica y rachas
-- Calendario hiyrí que destaca Ramadán, el Eid y el viernes
-- Sincronización entre tus propios dispositivos sin cuenta y sin servidor: archivos sellados en una carpeta que ya sincronizas
-- Copia de seguridad y restauración en un archivo que guardas tú
-- Ubicación por GPS, búsqueda de lugares, lugares guardados o coordenadas manuales; ajuste en minutos por oración
-- Varias fuentes de horarios — incluidas las tablas nacionales publicadas de Suecia y Marruecos — o cálculo íntegro en el dispositivo
-- 13 idiomas, entre ellos árabe y urdu con disposición de derecha a izquierda
-- Temas claro, oscuro, negro puro y del sistema, el color de acento que elijas y Material You
+Mantén pulsada cualquier palabra del mushaf y oirás esa palabra recitada. Sigue la palabra recitada mientras se ilumina en la página. Mira el tajwid en color, en Hafs y en Warsh. Mantén tu diario y tus ajustes al día entre tus propios dispositivos, sin cuenta y sin servidor. Y cada línea es de código abierto.
 
-Privacidad y uso de la red:
-- Sin analíticas, sin rastreadores, sin publicidad, sin cuenta
-- Los horarios pueden calcularse enteramente en tu dispositivo una vez fijada la ubicación
-- Funciones en línea opcionales, usadas solo si tú las eliges: proveedores de horarios (AlAdhan, PrayTimes.dev o las tablas nacionales preparadas para Suecia y Marruecos), búsqueda de lugares mediante OpenStreetMap Nominatim, y descarga de las páginas del Corán, traducciones, tafsir y audio de recitación
-- La sincronización no pasa por ningún servidor nuestro, y lo que escribe resulta ilegible para todo salvo los dispositivos que hayas emparejado
-- Tus coordenadas se guardan solo en tu dispositivo
+REZAR
+- Horarios de oración para hoy, la semana y el mes siguiente —calculados en tu teléfono, obtenidos de un proveedor o de las tablas nacionales publicadas de Suecia y Marruecos—, que puedes compartir como imagen o PDF
+- El adhan de cada oración, con diecisiete grabaciones o la tuya propia, un aviso previo y posponer
+- Silencia el teléfono durante la oración y deja que el sonido vuelva solo
+- Una cuenta atrás fija hasta la próxima oración en la pantalla de bloqueo y en el panel de notificaciones, con tres diseños
+- Brújula de la alquibla con intensidad de la señal y una comprobación con el sol
+- Registra cada oración con un toque; el diario guarda el historial, la racha y el gráfico
+- Widgets de la pantalla de inicio: horarios en tres tamaños, el registro de hoy, fecha de la Hégira, racha, tasbih y lectura
 
-La aplicación es de código abierto bajo AGPL-3.0-or-later.
+LEER Y ESCUCHAR
+- El mushaf de Medina, trazado como texto con las fuentes de página del Complejo Rey Fahd y nítido a cualquier tamaño, junto con Warsh, Qalun y Shu'bah
+- Colores de tajwid, con cada regla explicada, en Hafs y en Warsh
+- El lector de palabras: mantén pulsada una palabra para oírla sola
+- 42 recitadores y, en los que tienen tiempos por palabra, la palabra recitada iluminada en la página
+- Tilawa: sura tras sura con la pantalla apagada, con temporizador y control de velocidad; recuerda dónde te quedaste y sugiere lo que la sunna recomienda a esa hora: al-Kahf el viernes, al-Mulk por la noche
+- 13 traducciones y tafsir clásico, disponibles sin conexión
+- Herramientas de memorización, marcadores y planes de jatma que siguen la página en la que estás
+
+RECORDAR
+- Más de 100 duas del Hisn al-Muslim, con transliteración y traducción
+- Un contador de tasbih para el dhikr después de la oración y más allá
+- Un registro de ayunos para Ramadán y los ayunos de la Sunna, con recordatorios
+- El calendario de la Hégira con Ramadán, Eid y Yumu'a, y una aleya del día
+
+TUYO
+- Sin anuncios, sin analíticas, sin rastreadores, sin cuenta
+- Funciona sin conexión una vez fijada tu ubicación y descargadas las páginas que quieras
+- Sincronización entre tus propios dispositivos sin cuenta y sin ningún servidor nuestro: archivos sellados en una carpeta que ya mantienes sincronizada
+- Copia de seguridad y restauración en un archivo que conservas tú
+- Android, iPhone, iPad y Mac, en 13 idiomas, con árabe y urdu totalmente de derecha a izquierda
+- Claro, oscuro y negro puro, seis temas de color, tu propio color de acento y Material You
+
+La red solo se usa cuando tú lo eliges: un proveedor de horarios (AlAdhan, PrayTimes.dev o las tablas nacionales de Suecia y Marruecos), la búsqueda de lugares con OpenStreetMap Nominatim y la descarga de páginas del Corán, traducciones, tafsir y audio de recitación. Tus coordenadas se quedan en tu dispositivo.
+
+Mihrab es de código abierto con licencia AGPL-3.0-or-later.

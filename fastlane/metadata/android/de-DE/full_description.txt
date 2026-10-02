@@ -1,29 +1,39 @@
-Mihrab ist ein ruhiger Begleiter durch den Tag eines Muslims: die Gebete, der Koran und das Gedenken dazwischen, in einer einzigen privaten App. Ein im Mushaf gedrückt gehaltenes Wort wird einzeln vorgelesen, das rezitierte Wort leuchtet auf der Seite auf, Tajwid erscheint in Farbe für Hafs und Warsh, und alles bleibt zwischen den eigenen Geräten abgeglichen. Ohne Konto, ohne Werbung – und nichts Persönliches verlässt das Telefon.
+Mihrab ist ein ruhiger Begleiter für den Tag eines Muslims: die Gebete, der Koran und das Gedenken dazwischen – in einer App, die privat bleibt.
 
-Wichtigste Funktionen:
-- Gebetszeiten für heute, die kommende Woche und einen ganzen Monat — als Bild oder PDF teilbar
-- Ein gezeichneter Himmel hinter dem Countdown, der dem Tag folgt — Nacht mit dem Mond in seiner Phase, Morgendämmerung, Mittag, Sonnenuntergang — und derselbe Himmel als Widget
-- Ein Gebet mit einem Tippen auf „Heute“ eintragen — für heute oder jeden Tag der vergangenen Woche — das Tagebuch führt Aufzeichnung, Serie und Diagramm
-- Optionale Benachrichtigungen für die fünf Gebete, mit siebzehn Adhan-Aufnahmen oder einer eigenen, Vorab-Erinnerung und Schlummerfunktion
-- Angehefteter Gebets-Countdown (Live Activity) auf dem Sperrbildschirm und in der Benachrichtigungsleiste, in drei Ausführungen
-- Homescreen-Widgets: Gebetszeiten in drei Größen, das Tagesprotokoll, Hidschri-Datum, Serie, Tasbih und Lesefortschritt
-- Qibla-Kompass mit Signalstärke und einer Gegenprobe über den Sonnenstand
-- Koranleser: der Medina-Mushaf aus den offiziellen Seiten-Schriftarten gezeichnet, in vier Riwayat (Hafs, Warsch, Qalun, Schuʿba), mit 13 Übersetzungen und klassischem Tafsir, 42 Rezitatoren, wortgenauer Hervorhebung, Werkzeugen zum Auswendiglernen, Lesezeichen und Khatma-Plänen
-- Tilawa — das Hören als eigene Seite: einen Rezitator wählen, und es läuft Sure für Sure weiter, auch bei ausgeschaltetem Bildschirm und vom Sperrbildschirm aus, mit Sleeptimer, Tempo-Regler und einer lebenden Mushaf-Seite, auf der das rezitierte Wort aufleuchtet
-- Bittgebete (Hisn al-Muslim), Tasbih-Zähler, Fastenprotokoll sowie Gebetstagebuch mit Praxisdiagramm und Serien
-- Hidschri-Kalender mit Ramadan, Eid und Dschumuʿa hervorgehoben
-- Abgleich zwischen deinen eigenen Geräten, ohne Konto und ohne Server: versiegelte Dateien in einem Ordner, den du ohnehin synchronisierst
-- Sicherung und Wiederherstellung in eine Datei, die bei dir bleibt
-- GPS-Standort, Ortssuche, gespeicherte Orte oder manuelle Koordinaten; Minutenkorrektur je Gebet
-- Mehrere Quellen für die Zeiten — darunter die veröffentlichten nationalen Tabellen für Schweden und Marokko — oder vollständige Berechnung auf dem Gerät
-- 13 Sprachen, darunter Arabisch und Urdu mit Rechts-nach-links-Layout
-- Helles, dunkles, tiefschwarzes und Systemdesign, eine Akzentfarbe deiner Wahl und Material You
+Halte ein Wort im Mushaf gedrückt und hör genau dieses Wort vorgelesen. Folge dem rezitierten Wort, während es auf der Seite aufleuchtet. Sieh Tadschwid in Farbe, in Hafs und in Warsch. Halte Tagebuch und Einstellungen zwischen deinen eigenen Geräten abgeglichen – ohne Konto und ohne Server. Und jede Zeile davon ist Open Source.
 
-Datenschutz und Netznutzung:
-- Keine Analytik, keine Tracker, keine Werbung, kein Konto
-- Die Gebetszeiten lassen sich vollständig auf dem Gerät berechnen, sobald ein Standort feststeht
-- Optionale Onlinefunktionen, nur wenn du sie wählst: Zeitanbieter (AlAdhan, PrayTimes.dev oder die vorbereiteten nationalen Tabellen für Schweden und Marokko), Ortssuche über OpenStreetMap Nominatim und das Herunterladen von Koranseiten, Übersetzungen, Tafsir und Rezitationen
-- Der Abgleich läuft über keinen Server von uns, und was er schreibt, ist für nichts außer den von dir gekoppelten Geräten lesbar
-- Deine Koordinaten werden nur auf deinem Gerät gespeichert
+BETEN
+- Gebetszeiten für heute, die Woche und den kommenden Monat – auf dem Gerät berechnet, von einem Anbieter oder aus den veröffentlichten Landestabellen für Schweden und Marokko – als Bild oder PDF teilbar
+- Der Adhan zu jedem Gebet, mit siebzehn Aufnahmen oder deiner eigenen, einer Erinnerung davor und Schlummern
+- Das Telefon für das Gebet selbst stummschalten und den Ton danach von selbst zurückkommen lassen
+- Ein angehefteter Countdown zum nächsten Gebet auf dem Sperrbildschirm und in der Benachrichtigungsleiste, in drei Designs
+- Qibla-Kompass mit Signalstärke und einem Abgleich mit der Sonne
+- Jedes Gebet mit einem Tippen eintragen; das Tagebuch führt Verlauf, Serie und Diagramm
+- Widgets für den Startbildschirm: Gebetszeiten in drei Größen, der heutige Eintrag, Hidschri-Datum, Serie, Tasbih und Lesen
 
-Die App ist quelloffen unter AGPL-3.0-or-later.
+LESEN UND HÖREN
+- Der Madinah-Mushaf, als Text aus den Seitenschriften des König-Fahd-Komplexes gesetzt und in jeder Größe scharf – dazu Warsch, Qalun und Schu'ba
+- Tadschwid-Farben, jede Regel erklärt – in Hafs und in Warsch
+- Der Wortleser: ein Wort gedrückt halten und es allein vorgelesen hören
+- 42 Rezitatoren, und bei denen mit Wort-Zeitmarken leuchtet das rezitierte Wort auf der Seite
+- Tilawa: Sure für Sure bei ausgeschaltetem Bildschirm, mit Schlaftimer und Geschwindigkeitsregler; sie merkt sich, wo du warst, und schlägt vor, was die Sunna zu dieser Stunde empfiehlt – al-Kahf am Freitag, al-Mulk in der Nacht
+- 13 Übersetzungen und klassischer Tafsir, auch offline lesbar
+- Hilfen zum Auswendiglernen, Lesezeichen und Khatma-Pläne, die der aufgeschlagenen Seite folgen
+
+GEDENKEN
+- Mehr als 100 Duas aus Hisn al-Muslim, mit Umschrift und Übersetzung
+- Ein Tasbih-Zähler für den Dhikr nach dem Gebet und darüber hinaus
+- Ein Fastenprotokoll für Ramadan und die Sunnah-Fasten, mit Erinnerungen
+- Der Hidschri-Kalender mit Ramadan, Eid und Dschumu'a, und ein Vers des Tages
+
+DEINS
+- Keine Werbung, keine Analyse, keine Tracker, kein Konto
+- Funktioniert offline, sobald dein Standort gesetzt ist und die gewünschten Seiten auf dem Gerät sind
+- Abgleich zwischen deinen eigenen Geräten ohne Konto und ohne einen Server von uns: versiegelte Dateien in einem Ordner, den du ohnehin synchron hältst
+- Sicherung und Wiederherstellung in eine Datei, die du behältst
+- Android, iPhone, iPad und Mac, in 13 Sprachen, Arabisch und Urdu vollständig von rechts nach links
+- Hell, dunkel und tiefschwarz, sechs Farbthemen, deine eigene Akzentfarbe und Material You
+
+Das Netz wird nur genutzt, wenn du es wählst: ein Anbieter für Gebetszeiten (AlAdhan, PrayTimes.dev oder die Landestabellen für Schweden und Marokko), die Ortssuche über OpenStreetMap Nominatim und das Herunterladen von Koranseiten, Übersetzungen, Tafsir und Rezitationen. Deine Koordinaten bleiben auf deinem Gerät.
+
+Mihrab ist Open Source unter AGPL-3.0-or-later.

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Rebuild the README and website imagery from a screenshot set.
 
-Sources live in `branding/screenshots-2.18/` — device captures at their own
+Sources live in `branding/screenshots-2.28/` — device captures at their own
 resolutions (Android 1080x2400, iPhone 1320x2868, an Android tablet at
 2560x1600). This script is what turns them into the fixed shapes the README
 and the site ask for, so the next set can be dropped in and the same command
@@ -28,7 +28,7 @@ import re
 from PIL import Image
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-SRC = os.path.join(ROOT, 'branding/screenshots-2.18')
+SRC = os.path.join(ROOT, 'branding/screenshots-2.28')
 SITE = os.path.join(ROOT, 'docs/assets/img')
 README = os.path.join(ROOT, 'branding/readme')
 

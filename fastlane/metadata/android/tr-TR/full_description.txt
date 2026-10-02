@@ -1,29 +1,39 @@
-Mihrab, bir Müslümanın gününe eşlik eden sakin bir yoldaştır: namazlar, Kuran ve aralarındaki zikir, gizliliğinize saygılı tek bir uygulamada. Mushafta basılı tutulan bir kelime tek başına okunur, okunan kelime sayfada parlar, tecvid Hafs ve Verş rivayetlerinde renkli gösterilir ve her şey kendi cihazlarınız arasında eşitlenir. Hesap yok, reklam yok; sizinle ilgili hiçbir şey telefondan çıkmaz.
+Mihrab, bir Müslümanın gününe eşlik eden sakin bir yoldaştır: namazlar, Kuran ve aralarındaki zikir, gizliliğinize saygılı tek bir uygulamada.
 
-Öne çıkan özellikler:
-- Bugünün, önümüzdeki haftanın ve tam bir ayın namaz vakitleri — görsel ya da PDF olarak paylaşılabilir
-- Geri sayımın arkasında günü izleyen çizilmiş bir gökyüzü — evresiyle ay, tan, öğle, gün batımı — ve aynı gökyüzü ana ekran widget'ı olarak
-- Namazı Bugün ekranından tek dokunuşla kaydedin — bugün ya da son bir haftadaki herhangi bir gün — günlük kaydı, seriyi ve grafiği tutar
-- Beş vakit için isteğe bağlı bildirimler; on yedi ezan kaydı ya da kendi kaydınız, vakit öncesi hatırlatma ve erteleme
-- Kilit ekranında ve bildirim panelinde sabitlenen namaz geri sayımı (Live Activity), üç tasarımda
+Mushaftaki herhangi bir kelimeye basılı tutun ve yalnızca o kelimenin okunuşunu dinleyin. Okunan kelimeyi sayfada parlarken takip edin. Tecvidi renkli görün; Hafs ve Verş rivayetinde. Günlüğünüzü ve ayarlarınızı kendi cihazlarınız arasında eşit tutun; hesap yok, sunucu yok. Ve her satırı açık kaynaktır.
+
+NAMAZ
+- Bugünün, haftanın ve önümüzdeki ayın namaz vakitleri — telefonunuzda hesaplanır, bir sağlayıcıdan alınır ya da İsveç ve Fas'ın yayımlanmış resmî tablolarından gelir — görsel veya PDF olarak paylaşılabilir
+- Her vakit için ezan: on yedi kayıt ya da kendi kaydınız, vakit öncesi hatırlatma ve erteleme
+- Namaz süresince telefonu sessize alın; ses sonra kendiliğinden geri gelsin
+- Kilit ekranında ve bildirim panelinde bir sonraki namaza sabitlenmiş geri sayım, üç tasarımla
+- Sinyal gücünü gösteren ve güneşle karşılaştıran kıble pusulası
+- Her namazı tek dokunuşla kaydedin; günlük geçmişi, seriyi ve grafiği tutar
 - Ana ekran widget'ları: üç boyutta namaz vakitleri, günün kaydı, hicri tarih, seri, tesbih ve okuma
-- Sinyal gücünü gösteren ve güneşle karşılaştırma sunan kıble pusulası
-- Kuran okuyucu: resmî sayfa yazı tipleriyle çizilen Medine mushafı, dört rivayette (Hafs, Verş, Kalun, Şu'be), 13 meal ve klasik tefsirler, 42 kâri, kelime kelime vurgulama, ezber araçları, yer imleri ve hatim planları
-- Tilavet — dinlemenin kendi sayfası: bir kâri seçin, ekran kapalıyken ve kilit ekranından sure sure çalsın; uyku zamanlayıcısı, hız kontrolü ve okunan kelimenin yandığı canlı mushaf sayfasıyla
-- Dualar (Hısnü'l-Müslim), tesbih sayacı, oruç takibi, pratik grafiği ve serileriyle namaz günlüğü
-- Ramazan, bayram ve cuma vurgularıyla hicri takvim
-- Hesapsız ve sunucusuz, yalnızca kendi cihazlarınız arasında eşitleme: zaten eşitlediğiniz bir klasörde mühürlü dosyalar
+
+OKU VE DİNLE
+- Kral Fahd Kompleksi'nin sayfa yazı tipleriyle metin olarak çizilen ve her boyutta net kalan Medine mushafı — yanında Verş, Kalun ve Şu'be
+- Tecvid renkleri, her kural açıklamalı — Hafs ve Verş rivayetinde
+- Kelime okuyucu: bir kelimeye basılı tutun, tek başına okunsun
+- 42 kâri; kelime zamanlaması olanlarda okunan kelime sayfada yanar
+- Tilavet: ekran kapalıyken sure sure dinleme, uyku zamanlayıcısı ve hız ayarıyla; kaldığınız yeri hatırlar ve o saatte sünnetin tavsiye ettiğini önerir: cuma günü Kehf, gece Mülk
+- 13 meal ve klasik tefsirler, çevrimdışı da okunabilir
+- Ezber araçları, yer imleri ve açık olduğunuz sayfayı izleyen hatim planları
+
+ZİKİR
+- Hısnü'l-Müslim'den 100'den fazla dua, okunuşu ve mealiyle
+- Namaz sonrası ve her an için tesbih sayacı
+- Ramazan ve sünnet oruçları için hatırlatmalı oruç takibi
+- Ramazan, bayram ve cuma vurgulu hicri takvim ve günün ayeti
+
+SİZİN
+- Reklam yok, analitik yok, izleyici yok, hesap yok
+- Konumunuz belirlendikten ve istediğiniz sayfalar telefona indikten sonra çevrimdışı çalışır
+- Hesapsız ve bize ait hiçbir sunucu olmadan, kendi cihazlarınız arasında eşitleme: zaten eşitlediğiniz bir klasörde mühürlü dosyalar
 - Sizde kalan bir dosyaya yedekleme ve geri yükleme
-- GPS konumu, yer arama, kayıtlı yerler veya elle koordinat; her namaz için dakika düzeltmesi
-- Birden çok vakit kaynağı — İsveç ve Fas'ın yayımlanmış resmî tabloları dâhil — ya da tamamen cihaz üzerinde hesaplama
-- Arapça ve Urduca dâhil, sağdan sola yerleşimli 13 dil
-- Açık, koyu, saf siyah ve sistem temaları, seçtiğiniz vurgu rengi ve Material You
+- Android, iPhone, iPad ve Mac'te, Arapça ve Urduca tamamen sağdan sola olmak üzere 13 dilde
+- Açık, koyu ve saf siyah temalar, altı renk teması, kendi vurgu renginiz ve Material You
 
-Gizlilik ve ağ kullanımı:
-- Analitik yok, izleyici yok, reklam yok, hesap yok
-- Konum belirlendikten sonra vakitler tamamen cihazınızda hesaplanabilir
-- Yalnızca siz seçtiğinizde kullanılan isteğe bağlı çevrimiçi özellikler: vakit sağlayıcıları (AlAdhan, PrayTimes.dev veya İsveç ve Fas için hazırlanmış resmî tablolar), OpenStreetMap Nominatim ile yer arama ve Kuran sayfaları, mealler, tefsirler ile tilavet seslerinin indirilmesi
-- Eşitleme bize ait hiçbir sunucudan geçmez ve yazdıkları, eşlediğiniz cihazlar dışında hiçbir şey tarafından okunamaz
-- Koordinatlarınız yalnızca cihazınızda saklanır
+Ağ yalnızca siz seçtiğinizde kullanılır: bir vakit sağlayıcısı (AlAdhan, PrayTimes.dev ya da İsveç ve Fas'ın resmî tabloları), OpenStreetMap Nominatim ile yer arama ve Kuran sayfaları, mealler, tefsirler ile tilavet seslerinin indirilmesi. Koordinatlarınız cihazınızda kalır.
 
-Uygulama AGPL-3.0-or-later lisansıyla açık kaynaktır.
+Mihrab, AGPL-3.0-or-later lisansıyla açık kaynaktır.

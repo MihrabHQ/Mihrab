@@ -15,7 +15,7 @@ LESEN UND HÖREN
 - Tadschwid-Farben, jede Regel erklärt – in Hafs und in Warsch
 - Der Wortleser: ein Wort gedrückt halten und es allein vorgelesen hören
 - 42 Rezitatoren, und bei denen mit Wort-Zeitmarken leuchtet das rezitierte Wort auf der Seite
-- Tilawa: Sure für Sure bei ausgeschaltetem Bildschirm, mit Schlaftimer und Geschwindigkeitsregler
+- Tilawa: Sure für Sure bei ausgeschaltetem Bildschirm, mit Schlaftimer und Geschwindigkeitsregler; sie merkt sich, wo du warst, und schlägt vor, was die Sunna zu dieser Stunde empfiehlt – al-Kahf am Freitag, al-Mulk in der Nacht
 - 13 Übersetzungen und klassischer Tafsir, auch offline lesbar
 - Hilfen zum Auswendiglernen, Lesezeichen und Khatma-Pläne, die der aufgeschlagenen Seite folgen
 
@@ -30,8 +30,8 @@ DEINS
 - Funktioniert offline, sobald dein Standort gesetzt ist und die gewünschten Seiten auf dem Gerät sind
 - Abgleich zwischen deinen eigenen Geräten ohne Konto und ohne einen Server von uns: versiegelte Dateien in einem Ordner, den du ohnehin synchron hältst
 - Sicherung und Wiederherstellung in eine Datei, die du behältst
-- 13 Sprachen, Arabisch und Urdu vollständig von rechts nach links
-- Helles, dunkles und tiefschwarzes Design, deine eigene Akzentfarbe und Liquid Glass
+- iPhone, iPad und Mac, in 13 Sprachen, Arabisch und Urdu vollständig von rechts nach links
+- Hell, dunkel und tiefschwarz, sechs Farbthemen, deine eigene Akzentfarbe und Liquid Glass
 
 Das Netz wird nur genutzt, wenn du es wählst: ein Anbieter für Gebetszeiten (AlAdhan, PrayTimes.dev oder die Landestabellen für Schweden und Marokko), die Ortssuche über OpenStreetMap Nominatim und das Herunterladen von Koranseiten, Übersetzungen, Tafsir und Rezitationen. Deine Koordinaten bleiben auf deinem Gerät.
 
