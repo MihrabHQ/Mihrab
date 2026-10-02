@@ -428,7 +428,20 @@ export function QuranDownloadsScreen() {
         : null}
 
       {audio.map(a => {
-        const whole = a.files >= totalAyahCount();
+        // While this reciter is the one downloading, the card follows the
+        // run. It used to show what the inventory found when the screen
+        // opened — "92 of 6236" and a bar at 1% — the whole time the card
+        // at the top counted up, so the download looked stuck. The run
+        // walks every ayah in order and counts the ones already on disk as
+        // it passes them, so its count is the floor of what is there; the
+        // inventory's own count wins until the run overtakes it. The size
+        // is re-read when the run ends.
+        const live =
+          running?.kind === 'audio' && running.reciterId === a.reciterId
+            ? download.progress
+            : null;
+        const files = live ? Math.max(a.files, live.done) : a.files;
+        const whole = files >= totalAyahCount();
         return row(
           a.reciterId,
           findReciter(a.reciterId).name,
@@ -440,7 +453,7 @@ export function QuranDownloadsScreen() {
             ? t('downloads.audioSub', 'Recitation audio')
             : t('quran.downloadProgressAyahs', {
                 defaultValue: '{{done}} of {{total}} ayahs',
-                done: a.files,
+                done: files,
                 total: totalAyahCount(),
               }),
           a.bytes,
@@ -448,12 +461,14 @@ export function QuranDownloadsScreen() {
             confirmDelete(findReciter(a.reciterId).name, () =>
               deleteReciterAudio(a.reciterId),
             ),
-          whole
+          // No Continue on the card of the reciter that IS continuing: a
+          // greyed copy of the button read as "this did not start".
+          whole || live
             ? undefined
             : () => {
                 startQuranDownload({ kind: 'audio', reciterId: a.reciterId });
               },
-          whole ? undefined : a.files / totalAyahCount(),
+          whole ? undefined : files / totalAyahCount(),
         );
       })}
 

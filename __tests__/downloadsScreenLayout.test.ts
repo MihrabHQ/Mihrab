@@ -26,7 +26,24 @@ describe('a downloaded item', () => {
   });
 
   it('shows how far a part-way reciter has got', () => {
-    expect(screen).toContain('whole ? undefined : a.files / totalAyahCount(),');
+    expect(screen).toContain('whole ? undefined : files / totalAyahCount(),');
     expect(screen).toMatch(/width: `\$\{Math\.round\(progress \* 100\)\}%`/);
+  });
+});
+
+describe('a reciter downloading right now', () => {
+  const screen = require('fs').readFileSync(
+    require('path').join(__dirname, '..', 'src/screens/QuranDownloadsScreen.tsx'),
+    'utf8',
+  );
+  it('has its card follow the run, not the count from when the screen opened', () => {
+    expect(screen).toMatch(
+      /running\?\.kind === 'audio' && running\.reciterId === a\.reciterId/,
+    );
+    expect(screen).toMatch(/Math\.max\(a\.files, live\.done\)/);
+    expect(screen).toMatch(/done: files,/);
+    // Its own Continue button is not offered while it is the one running.
+    expect(screen).toMatch(/whole \|\| live\s*\? undefined/);
+    expect(screen).toMatch(/whole \? undefined : files \/ totalAyahCount\(\)/);
   });
 });

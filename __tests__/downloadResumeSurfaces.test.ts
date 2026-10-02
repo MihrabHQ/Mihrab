@@ -72,7 +72,9 @@ describe('manage downloads, where the tap now lands', () => {
   });
 
   it('and offers to continue it', () => {
-    expect(downloads).toMatch(/whole\s*\n?\s*\?\s*undefined[\s\S]{0,200}startQuranDownload\(\{ kind: 'audio'/);
+    // Offered while there is a rest to fetch — and not while this very
+    // reciter is the run in progress (`live`).
+    expect(downloads).toMatch(/whole \|\| live\s*\n?\s*\?\s*undefined[\s\S]{0,200}startQuranDownload\(\{ kind: 'audio'/);
     expect(downloads).toContain('quran.listenDownloadResume');
   });
 });
