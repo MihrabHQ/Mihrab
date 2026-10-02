@@ -39,6 +39,7 @@ import {
   ActivityIndicator,
   FlatList,
   PanResponder,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -50,6 +51,7 @@ import {
   type ScrollViewInstance,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useProgressWhileActive } from '../../quran/audio/useProgressWhileActive';
@@ -58,6 +60,7 @@ import { useKeepAwake } from '../../quran/keepAwakeLock';
 import Svg, { Path } from 'react-native-svg';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import { useAndroidSubScreenBack } from '../../navigation/useAndroidSubScreenBack';
+import { useTrailingBackInRtl } from '../../navigation/useTrailingBackInRtl';
 import type { RootStackParamList } from '../../navigation/types';
 import MushafTextPageSurface, {
   mushafLineGeometry,
@@ -528,6 +531,8 @@ export function TilawahScreen() {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   useAndroidSubScreenBack();
+  useTrailingBackInRtl(navigation);
+  const insets = useSafeAreaInsets();
   const status = usePlaybackStatus();
   /**
    * The position poller, and everything else here that only matters
@@ -1336,6 +1341,15 @@ export function TilawahScreen() {
     </View>
   );
 
+  /**
+   * The list runs under the home indicator / navigation bar and pads its
+   * own end instead of the stack reserving a band there (RootNavigator,
+   * QuranListen). iOS: `contentInsetAdjustmentBehavior="automatic"`
+   * already insets a scroll view for the bottom safe area, so adding it
+   * again would double it. Android has no such adjustment.
+   */
+  const listBottom = Platform.OS === 'android' ? insets.bottom : 0;
+
   return (
     <View style={[styles.root, { backgroundColor: palette.bg }]}>
       <FlatList<SurahIndex>
@@ -1344,7 +1358,7 @@ export function TilawahScreen() {
         keyExtractor={s => String(s.number)}
         renderItem={renderSurah}
         ListHeaderComponent={header}
-        contentContainerStyle={styles.list}
+        contentContainerStyle={[styles.list, { paddingBottom: listBottom }]}
         contentInsetAdjustmentBehavior="automatic"
         initialNumToRender={10}
         windowSize={7}
@@ -1367,6 +1381,7 @@ export function TilawahScreen() {
           onPress={scrollToTop}
           style={({ pressed }) => [
             styles.toTop,
+            { bottom: 24 + insets.bottom },
             {
               // The accent tint, not the card colour: the rows under it
               // ARE the card colour, so a card-coloured circle floating
@@ -1413,12 +1428,8 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
   },
   root: { flex: 1 },
-  /**
-   * No bottom padding: the last row ends the page, and iOS already keeps
-   * the content clear of the home indicator through the automatic
-   * content inset. Padding under it was a lip of empty page.
-   */
-  list: { padding: SPACING.lg, paddingBottom: 0 },
+  /** The bottom is `listBottom`, set inline — see there. */
+  list: { padding: SPACING.lg },
   /**
    * The reading measure on iPad and Mac. 720 is QuranScreen's number, and
    * matching it is the point: the two pages sit one tap apart.

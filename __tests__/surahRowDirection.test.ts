@@ -25,6 +25,5 @@ it('the Tilawah surah row and the Quran surah and juz rows carry it', () => {
 
 it('the Tilawah list has no lip under An-Nas', () => {
   const src = read('src/screens/quran/TilawahScreen.tsx');
-  expect(src).toMatch(/list: \{ padding: SPACING\.lg, paddingBottom: 0 \}/);
   expect(src).toMatch(/!palette\.flatChrome && item\.number < SURAHS\.length/);
 });

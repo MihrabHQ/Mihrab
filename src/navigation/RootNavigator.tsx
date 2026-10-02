@@ -135,6 +135,14 @@ export function RootNavigator() {
          * that is a different shape altogether.
          */
         headerTitleAlign: 'center',
+        /**
+         * The chevron alone, never the previous screen's title. Pushed from
+         * the tabs, that title is the root route's name — "Home" — which
+         * is not a word anywhere else in the app, and the settings pages
+         * and the Duas category bar (TabBackButton) draw a bare chevron.
+         * iOS only in effect; Android's toolbar has no back title.
+         */
+        headerBackButtonDisplayMode: 'minimal',
         headerStyle: { backgroundColor: isIOS ? 'transparent' : theme.colors.background },
         headerLargeStyle: { backgroundColor: 'transparent' },
         // Keep content above the system navigation bar (edge-to-edge bottom inset).
@@ -225,6 +233,11 @@ export function RootNavigator() {
         options={{
           title: t('quran.listenTitle', 'Tilawah'),
           headerLargeTitle: false,
+          // The list runs to the bottom edge and pads itself (see
+          // TilawahScreen `listBottom`): the default reserve was a band of
+          // page colour across the bottom of the screen that rows
+          // scrolled under and vanished behind.
+          contentStyle: { backgroundColor: theme.colors.background, paddingBottom: 0 },
         }}
       />
       <Stack.Screen
@@ -233,6 +246,9 @@ export function RootNavigator() {
         options={{
           title: t('quran.khatmah', 'Khatmah'),
           headerLargeTitle: false,
+          // Same as Tilawah: the scroll view pads its own bottom
+          // (tabBarInset), so the stack's reserve was a dead band.
+          contentStyle: { backgroundColor: theme.colors.background, paddingBottom: 0 },
         }}
       />
       <Stack.Screen
