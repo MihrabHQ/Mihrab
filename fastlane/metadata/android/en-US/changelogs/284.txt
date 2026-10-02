@@ -1,0 +1,6 @@
+• Tilawah keeps its own place: carry on, shuffle, or play what the sunnah recommends now.
+• A new Qur'an tab and āyah sheet: swipeable lists, tabs for translation, tafsir and tajweed.
+• Help Mihrab, under Settings → About.
+• Polar days no longer show broken times (#61).
+• The prayer name shows whole on the always-on display.
+• iPhone: better lock-screen playback, pause when headphones are unplugged, Arabic and Urdu layout fixes.

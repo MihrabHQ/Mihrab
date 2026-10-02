@@ -1,0 +1,6 @@
+• Tilawah minns sin egen plats: fortsätt, blanda, eller spela det sunnah rekommenderar nu.
+• Ny Koranflik och ayahvy: svepbara listor, flikar för översättning, tafsir och tajwid.
+• Hjälp Mihrab, under Inställningar → Om.
+• Polardagar visar inte längre trasiga tider (#61).
+• Bönens namn syns helt på alltid-på-skärmen.
+• iPhone: bättre uppspelning på låsskärmen, paus när hörlurarna dras ur, rättad layout på arabiska och urdu.
