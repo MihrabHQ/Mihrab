@@ -1359,7 +1359,27 @@
     "pinRemove": "Ta bort",
     "khatmahPinnedHere": "Din khatmah är vid den här versen",
     "playSection": "Spela upp",
-    "surahAudioPartialShort": "{{have}}/{{total}} verser · Hämta resten"
+    "surahAudioPartialShort": "{{have}}/{{total}} verser · Hämta resten",
+    "tilawahContinueListening": "Fortsätt lyssna",
+    "listenAgain": {
+      "heading": "Fortsätt, eller börja med något nytt",
+      "resume": "Fortsätt {{surah}}",
+      "resumeSub": "Från vers {{ayah}}, där du slutade lyssna",
+      "shuffle": "Blanda",
+      "shuffleSub": "En slumpad sura, sedan en till",
+      "suggested": "Rekommenderat nu"
+    },
+    "suggest": {
+      "kahf": "Fredagens sunna, från torsdagens maghrib",
+      "mulk": "Profeten ﷺ reciterade den varje kväll innan han sov",
+      "sajdahNight": "Tillsammans med al-Mulk, innan sömnen",
+      "baqarahEnd": "Reciterade på natten räcker de för den som reciterar dem",
+      "baqarahEndTitle": "al-Baqara, de två sista verserna",
+      "muawwidhat": "Morgon och kväll, och innan sömnen",
+      "muawwidhatTitle": "al-Ikhlas, al-Falaq och an-Nas",
+      "fridayFajr": "Reciterades i fajr på fredagen",
+      "baqarah": "Shaytan lämnar ett hus där den reciteras"
+    }
   },
   "reading": {
     "textSize": "Textstorlek",

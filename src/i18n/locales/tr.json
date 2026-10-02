@@ -1359,7 +1359,27 @@
     "pinRemove": "Kaldır",
     "khatmahPinnedHere": "Hatmin bu ayette",
     "playSection": "Oynat",
-    "surahAudioPartialShort": "{{have}}/{{total}} ayet · Kalanı indir"
+    "surahAudioPartialShort": "{{have}}/{{total}} ayet · Kalanı indir",
+    "tilawahContinueListening": "Dinlemeye devam et",
+    "listenAgain": {
+      "heading": "Devam et ya da yeni bir şey başlat",
+      "resume": "{{surah}} suresine devam et",
+      "resumeSub": "{{ayah}}. ayetten, dinlemeyi bıraktığın yerden",
+      "shuffle": "Karışık",
+      "shuffleSub": "Rastgele bir sure, sonra bir tane daha",
+      "suggested": "Şimdi tavsiye edilen"
+    },
+    "suggest": {
+      "kahf": "Cuma sünneti, perşembe akşamından itibaren",
+      "mulk": "Peygamber ﷺ onu her gece uyumadan önce okurdu",
+      "sajdahNight": "Mülk suresiyle birlikte, uyumadan önce",
+      "baqarahEnd": "Gece okuyana bu iki ayet yeter",
+      "baqarahEndTitle": "Bakara, son iki ayet",
+      "muawwidhat": "Sabah ve akşam, ve uyumadan önce",
+      "muawwidhatTitle": "İhlas, Felak ve Nas",
+      "fridayFajr": "Cuma günü sabah namazında okunurdu",
+      "baqarah": "Okunduğu evden şeytan kaçar"
+    }
   },
   "reading": {
     "textSize": "Metin boyutu",

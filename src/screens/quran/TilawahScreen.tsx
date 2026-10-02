@@ -70,6 +70,7 @@ import { SURAHS, type SurahIndex } from '../../quran/quran';
 import {
   isListening,
   listenFrom,
+  playRange,
   listenNextSurah,
   listenPreviousSurah,
   setShuffleSurahs,
@@ -95,6 +96,10 @@ import {
   surahNameSize,
 } from '../../quran/surahHeaderGlyph';
 import { InfoButton } from '../../components/ui/InfoSheet';
+import { isListenStale, useListenProgress } from '../../quran/audio/listenProgress';
+import type { ListenSuggestion } from '../../quran/audio/listenSuggestions';
+import { todaysMaghrib } from '../../hijri/islamicDay';
+import { ListenAgainPanel } from './ListenAgainPanel';
 
 /** Playback speeds, matching the reader's own chips. */
 const RATES = [0.75, 1, 1.25, 1.5, 2] as const;
@@ -607,14 +612,19 @@ export function TilawahScreen() {
    * them, and left the biggest text on the screen doing no work; where
    * they left off reading is an answer to a question they might actually
    * have.
+   *
+   * Where they left off LISTENING, not reading. This used to be the
+   * reading marker (`lastRead`), so a listen stopped half way through
+   * Al-Baqarah came back as whatever the muṣḥaf had been opened at since.
+   * The two places are kept apart now — see `listenProgress`.
    */
   const idle = status.active == null;
-  const resume = quran.lastRead;
+  const listened = useListenProgress();
   const shownSurah =
     SURAHS.find(
-      s => s.number === (status.active?.surah ?? resume?.surah ?? 1),
+      s => s.number === (status.active?.surah ?? listened?.surah ?? 1),
     ) ?? SURAHS[0];
-  const shownAyah = status.active?.ayah ?? resume?.ayah ?? 1;
+  const shownAyah = status.active?.ayah ?? listened?.ayah ?? 1;
 
   const togglePlay = useCallback(() => {
     if (status.playing) {
@@ -625,10 +635,38 @@ export function TilawahScreen() {
       void resumePlayback();
       return;
     }
-    // Start where the card said it would. Someone who has been reading
+    // Start where the card said it would. Someone who has been listening
     // gets picked up there; someone who has not gets the opening.
-    void listenFrom(shownSurah.number, resume?.ayah ?? 1);
-  }, [resume?.ayah, shownSurah.number, status.active, status.playing]);
+    void listenFrom(shownSurah.number, listened?.ayah ?? 1);
+  }, [listened?.ayah, shownSurah.number, status.active, status.playing]);
+
+  /**
+   * Carry on, shuffle, or what the hour recommends — offered when there is
+   * nothing playing, and when a listen has sat paused long enough to have
+   * gone stale. See `ListenAgainPanel`.
+   */
+  const offerAgain =
+    idle || (!status.playing && isListening() && isListenStale(listened));
+  const carryOn = useCallback(() => {
+    if (status.active && isListening()) {
+      void resumePlayback();
+      return;
+    }
+    if (listened) void listenFrom(listened.surah, listened.ayah);
+  }, [listened, status.active]);
+  const shuffleNew = useCallback(() => {
+    setQuranPrefs({ shuffleSurahs: true });
+    setShuffleSurahs(true);
+    void listenFrom(1 + Math.floor(Math.random() * SURAHS.length), 1);
+  }, []);
+  const playSuggestion = useCallback((sg: ListenSuggestion) => {
+    if (sg.to) {
+      // A passage: just these ayahs, and stop.
+      void playRange({ surah: sg.surah, ayah: sg.ayah }, sg.to, { useRepeats: false });
+      return;
+    }
+    void listenFrom(sg.surah, sg.ayah);
+  }, []);
 
   // ── Two progressions, one inside the other ──────────────────────────
   //
@@ -962,9 +1000,9 @@ export function TilawahScreen() {
         <View style={styles.nowHead}>
           <Text style={[styles.nowLabel, { color: palette.muted }]} numberOfLines={1}>
             {idle
-              ? resume
-                ? t('quran.tilawahContinue', {
-                    defaultValue: 'Carry on from your reading',
+              ? listened
+                ? t('quran.tilawahContinueListening', {
+                    defaultValue: 'Carry on listening',
                   })
                 : t('quran.tilawahBegin', { defaultValue: 'Begin with' })
               : isListening()
@@ -1183,6 +1221,16 @@ export function TilawahScreen() {
           </Text>
         ) : null}
       </View>
+
+      {offerAgain ? (
+        <ListenAgainPanel
+          progress={listened}
+          maghrib={todaysMaghrib()}
+          onContinue={carryOn}
+          onShuffle={shuffleNew}
+          onSuggestion={playSuggestion}
+        />
+      ) : null}
 
       {/* ── The page it is on ─────────────────────────────────────── */}
       {showPage && playingPage && !pageUnavailable ? (

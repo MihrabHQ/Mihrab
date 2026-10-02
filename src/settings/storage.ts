@@ -503,6 +503,8 @@ export async function resetAppData(): Promise<void> {
     // task #138. Not sensitive but resetting makes the next session
     // re-fetch fresh.
     'islamiska_forbundet.reverse.v1',
+    // Where the last Tilāwah listen stopped (quran/audio/listenProgress).
+    'mihrab.listenProgress.v1',
   ];
   invalidateInflightLoad();
   try {

@@ -26,6 +26,7 @@ import { getQuranState } from '../quranState';
 import { ayahAudioUrl, findReciter } from './reciters';
 import { localAudioPathIfAny, prefetchAyahAudio } from './audioStore';
 import { setNowPlayingState } from '../../native/NowPlayingState';
+import { noteListenPaused, recordListened } from './listenProgress';
 
 export type AyahRef = { surah: number; ayah: number };
 
@@ -177,6 +178,9 @@ async function ensureSetup(): Promise<void> {
     TrackPlayer.addEventListener(Event.PlaybackActiveTrackChanged, e => {
       const ref = e.track ? parseTrackId(String(e.track.id)) : null;
       setStatus({ active: ref });
+      // The listening place moves with a continuous listen, and only with
+      // one: a range played from the reader is the reader's business.
+      if (ref && listening) recordListened(ref, status.reciterId);
       // The first track the player ever loads is the moment iOS will
       // accept the remote commands — see applyPlayerOptions. Once only:
       // after that the binding survives every later track by itself.
@@ -204,6 +208,10 @@ async function ensureSetup(): Promise<void> {
       });
     });
     TrackPlayer.addEventListener(Event.PlaybackState, e => {
+      if (listening) {
+        if (e.state === State.Paused) noteListenPaused(true);
+        else if (e.state === State.Playing) noteListenPaused(false);
+      }
       setStatus({
         playing: e.state === State.Playing,
         loading: e.state === State.Loading || e.state === State.Buffering,
@@ -725,6 +733,7 @@ export async function listenFrom(
   listening = true;
   listenCursor = cursor;
   listenIndex = refs.length;
+  recordListened(start, prefs.reciterId);
   setStatus({ active: start, playing: true });
 }
 

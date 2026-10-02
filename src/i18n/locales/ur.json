@@ -1359,7 +1359,27 @@
     "pinRemove": "ہٹائیں",
     "khatmahPinnedHere": "آپ کا ختم اسی آیت پر ہے",
     "playSection": "سنیں",
-    "surahAudioPartialShort": "{{have}}/{{total}} آیات · باقی ڈاؤن لوڈ کریں"
+    "surahAudioPartialShort": "{{have}}/{{total}} آیات · باقی ڈاؤن لوڈ کریں",
+    "tilawahContinueListening": "سننا جاری رکھیں",
+    "listenAgain": {
+      "heading": "جاری رکھیں، یا کچھ نیا شروع کریں",
+      "resume": "{{surah}} جاری رکھیں",
+      "resumeSub": "آیت {{ayah}} سے، جہاں آپ نے سننا روکا تھا",
+      "shuffle": "شفل",
+      "shuffleSub": "کوئی بھی سورت، پھر ایک اور",
+      "suggested": "ابھی تجویز کردہ"
+    },
+    "suggest": {
+      "kahf": "جمعہ کی سنت، جمعرات کی مغرب سے",
+      "mulk": "نبی ﷺ ہر رات سونے سے پہلے اسے پڑھتے تھے",
+      "sajdahNight": "سورۃ الملک کے ساتھ، سونے سے پہلے",
+      "baqarahEnd": "رات کو پڑھنے والے کے لیے یہ دونوں کافی ہیں",
+      "baqarahEndTitle": "البقرہ، آخری دو آیات",
+      "muawwidhat": "صبح و شام، اور سونے سے پہلے",
+      "muawwidhatTitle": "الاخلاص، الفلق اور الناس",
+      "fridayFajr": "جمعہ کی فجر میں پڑھی جاتی تھیں",
+      "baqarah": "جس گھر میں یہ پڑھی جائے، شیطان وہاں سے بھاگ جاتا ہے"
+    }
   },
   "reading": {
     "textSize": "متن کا سائز",

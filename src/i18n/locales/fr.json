@@ -1359,7 +1359,27 @@
     "pinRemove": "Retirer",
     "khatmahPinnedHere": "Votre khatma est à ce verset",
     "playSection": "Lecture",
-    "surahAudioPartialShort": "{{have}}/{{total}} versets · Télécharger le reste"
+    "surahAudioPartialShort": "{{have}}/{{total}} versets · Télécharger le reste",
+    "tilawahContinueListening": "Reprendre l’écoute",
+    "listenAgain": {
+      "heading": "Reprendre, ou commencer autre chose",
+      "resume": "Reprendre {{surah}}",
+      "resumeSub": "Au verset {{ayah}}, là où vous vous êtes arrêté",
+      "shuffle": "Aléatoire",
+      "shuffleSub": "Une sourate au hasard, puis une autre",
+      "suggested": "Recommandé maintenant"
+    },
+    "suggest": {
+      "kahf": "Sunna du vendredi, dès le maghrib du jeudi",
+      "mulk": "Le Prophète ﷺ la récitait chaque nuit avant de dormir",
+      "sajdahNight": "Avec Al-Mulk, avant de dormir",
+      "baqarahEnd": "Récités la nuit, ils suffisent à celui qui les récite",
+      "baqarahEndTitle": "Al-Baqara, les deux derniers versets",
+      "muawwidhat": "Matin et soir, et avant de dormir",
+      "muawwidhatTitle": "Al-Ikhlas, Al-Falaq et An-Nas",
+      "fridayFajr": "Récitées au fajr le vendredi",
+      "baqarah": "Le Shaytan fuit la maison où elle est récitée"
+    }
   },
   "reading": {
     "textSize": "Taille du texte",

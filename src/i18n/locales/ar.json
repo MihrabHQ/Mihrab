@@ -1359,7 +1359,27 @@
     "pinRemove": "إزالة",
     "khatmahPinnedHere": "ختمتك عند هذه الآية",
     "playSection": "التشغيل",
-    "surahAudioPartialShort": "{{have}}/{{total}} آية · تنزيل الباقي"
+    "surahAudioPartialShort": "{{have}}/{{total}} آية · تنزيل الباقي",
+    "tilawahContinueListening": "تابع الاستماع",
+    "listenAgain": {
+      "heading": "تابع، أو ابدأ شيئًا جديدًا",
+      "resume": "تابع {{surah}}",
+      "resumeSub": "من الآية {{ayah}}، حيث توقفت عن الاستماع",
+      "shuffle": "عشوائي",
+      "shuffleSub": "سورة عشوائية، ثم أخرى",
+      "suggested": "يُستحب الآن"
+    },
+    "suggest": {
+      "kahf": "سنة الجمعة، من مغرب الخميس",
+      "mulk": "كان النبي ﷺ يقرؤها كل ليلة قبل أن ينام",
+      "sajdahNight": "مع سورة الملك، قبل النوم",
+      "baqarahEnd": "من قرأهما في ليلة كفتاه",
+      "baqarahEndTitle": "البقرة، الآيتان الأخيرتان",
+      "muawwidhat": "صباحًا ومساءً، وقبل النوم",
+      "muawwidhatTitle": "الإخلاص والفلق والناس",
+      "fridayFajr": "كان يُقرأ بها في فجر الجمعة",
+      "baqarah": "الشيطان ينفر من البيت الذي تُقرأ فيه"
+    }
   },
   "reading": {
     "textSize": "حجم النص",

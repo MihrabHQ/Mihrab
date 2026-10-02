@@ -63,7 +63,7 @@ import {
   drawnReadingPosition,
   recordReading,
 } from './readerMarks';
-import { usePlaybackStatus, type PlaybackStatus } from './audio/playback';
+import { isListening, usePlaybackStatus, type PlaybackStatus } from './audio/playback';
 import {
   mushafTone,
   mushafToneChoice,
@@ -397,9 +397,32 @@ export function useMushafReaderCore({
     onPageChange?.(currentPage);
   }, [currentPage, onPageChange]);
 
+  /**
+   * The page the recitation follow last moved to, until the pager reports
+   * arriving there. See the top of `commitPageTurn`.
+   */
+  const followPageRef = useRef<number | null>(null);
+
   // ── Last-read + khatmah on page turns (QR-10/21) ────────────────────
   const commitPageTurn = useCallback(
     (newPage: number, prevPage: number) => {
+      /**
+       * A PAGE TURNED BY A TILĀWAH LISTEN IS NOT READING.
+       *
+       * With the muṣḥaf open while Tilāwah plays, the page follows the
+       * reciter (below), and each of those turns used to land here as a
+       * step of one — reading, by the rule under this — so the reading
+       * marker and the khatmah were walked to wherever the listen had got
+       * to. Listening has its own place now (`listenProgress`), and the
+       * reading marker is the reader's. A turn the follow made for a
+       * continuous listen is passed over; a turn the reader makes is
+       * counted as always, and so is a follow during "play from here",
+       * which is reading along with the page.
+       */
+      if (followPageRef.current === newPage) {
+        followPageRef.current = null;
+        if (isListening()) return;
+      }
       /**
        * A TURN IS READING; A JUMP IS NOT — issue #41.
        *
@@ -489,7 +512,11 @@ export function useMushafReaderCore({
       playback.active.ayah,
       riwayah,
     );
-    setCurrentPage(prev => (page !== prev ? page : prev));
+    setCurrentPage(prev => {
+      if (page === prev) return prev;
+      followPageRef.current = page;
+      return page;
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     playback.active?.surah,

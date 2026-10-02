@@ -94,7 +94,7 @@ describe('the page that follows the recitation', () => {
     }
     // …but the reader core still turns the page.
     const core = read('src/quran/mushafReaderCore.tsx');
-    expect(core).toMatch(/setCurrentPage\(prev => \(page !== prev \? page : prev\)\)/);
+    expect(core).toMatch(/setCurrentPage\(prev => \{\s*if \(page === prev\) return prev;/);
   });
 });
 

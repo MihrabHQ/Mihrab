@@ -1359,7 +1359,27 @@
     "pinRemove": "हटाएँ",
     "khatmahPinnedHere": "आपका ख़त्म इसी आयत पर है",
     "playSection": "चलाएँ",
-    "surahAudioPartialShort": "{{have}}/{{total}} आयतें · बाकी डाउनलोड करें"
+    "surahAudioPartialShort": "{{have}}/{{total}} आयतें · बाकी डाउनलोड करें",
+    "tilawahContinueListening": "सुनना जारी रखें",
+    "listenAgain": {
+      "heading": "जारी रखें, या कुछ नया शुरू करें",
+      "resume": "{{surah}} जारी रखें",
+      "resumeSub": "आयत {{ayah}} से, जहाँ आपने सुनना रोका था",
+      "shuffle": "शफ़ल",
+      "shuffleSub": "कोई भी सूरह, फिर एक और",
+      "suggested": "अभी सुझाया गया"
+    },
+    "suggest": {
+      "kahf": "जुमे की सुन्नत, गुरुवार की मग़रिब से",
+      "mulk": "नबी ﷺ हर रात सोने से पहले इसे पढ़ते थे",
+      "sajdahNight": "अल-मुल्क के साथ, सोने से पहले",
+      "baqarahEnd": "रात को पढ़ने वाले के लिए ये दोनों काफ़ी हैं",
+      "baqarahEndTitle": "अल-बक़रह, आख़िरी दो आयतें",
+      "muawwidhat": "सुबह और शाम, और सोने से पहले",
+      "muawwidhatTitle": "अल-इख़लास, अल-फ़लक़ और अन-नास",
+      "fridayFajr": "जुमे की फ़ज्र में पढ़ी जाती थीं",
+      "baqarah": "जिस घर में यह पढ़ी जाती है, शैतान वहाँ से भागता है"
+    }
   },
   "reading": {
     "textSize": "पाठ का आकार",

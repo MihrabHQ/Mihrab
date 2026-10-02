@@ -1359,7 +1359,27 @@
     "pinRemove": "移除",
     "khatmahPinnedHere": "你的通读进度在这节经文",
     "playSection": "播放",
-    "surahAudioPartialShort": "{{have}}/{{total}} 节 · 下载其余部分"
+    "surahAudioPartialShort": "{{have}}/{{total}} 节 · 下载其余部分",
+    "tilawahContinueListening": "继续收听",
+    "listenAgain": {
+      "heading": "继续，或开始新的",
+      "resume": "继续 {{surah}}",
+      "resumeSub": "从第 {{ayah}} 节，即你停下的地方",
+      "shuffle": "随机",
+      "shuffleSub": "随机一章，再一章",
+      "suggested": "此刻推荐"
+    },
+    "suggest": {
+      "kahf": "主麻日的圣行，自周四昏礼起",
+      "mulk": "先知 ﷺ 每晚睡前诵读此章",
+      "sajdahNight": "与《国权章》一起，睡前诵读",
+      "baqarahEnd": "夜间诵读，这两节对诵读者已足够",
+      "baqarahEndTitle": "《黄牛章》最后两节",
+      "muawwidhat": "早晚，以及睡前",
+      "muawwidhatTitle": "《忠诚章》《曙光章》《世人章》",
+      "fridayFajr": "主麻日晨礼中诵读",
+      "baqarah": "诵读此章的家，恶魔会离开"
+    }
   },
   "reading": {
     "textSize": "文字大小",

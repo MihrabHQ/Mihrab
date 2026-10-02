@@ -22,6 +22,7 @@ import Svg, { Path, Rect } from 'react-native-svg';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import type { RootStackParamList } from '../../navigation/types';
 import { PauseIcon, PlayIcon, TilawahIcon } from '../../quran/audio/PlaybackIcons';
+import { useListenProgress } from '../../quran/audio/listenProgress';
 import {
   listenFrom,
   listenNextSurah,
@@ -30,7 +31,6 @@ import {
   SURAHS,
   usePlaybackStatus,
 } from '../../quran/audio/playback';
-import { useQuranState } from '../../quran/quranState';
 import { cardEdgeStyle } from '../../theme/chrome';
 import { RADIUS, SPACING } from '../../theme/tokens';
 import { TYPE } from '../../theme/typography';
@@ -49,10 +49,11 @@ export function TilawahRow() {
   const { palette } = useAppPalette();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const status = usePlaybackStatus();
-  const quran = useQuranState();
 
   // What the row is about: what is playing, else what play would start.
-  const resume = quran.lastRead;
+  // Where the last LISTEN got to — the reading marker is the muṣḥaf's
+  // (see `listenProgress`).
+  const resume = useListenProgress();
   const shown =
     SURAHS.find(s => s.number === (status.active?.surah ?? resume?.surah ?? 1)) ?? SURAHS[0];
   const ayah = status.active?.ayah ?? null;

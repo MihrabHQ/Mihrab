@@ -74,6 +74,8 @@ const TRAVELS = new Set([
  * thing; "too large" means it is content, not record, and re-downloadable.
  */
 const STAYS: Record<string, string> = {
+  'mihrab.listenProgress.v1':
+    'device-local — where a listen on THIS phone stopped; the reading marker is what travels',
   'prayer_times_cache.v2': 'derived — recomputed from coordinates and method',
   prayer_times_cache: 'derived — the legacy cache, migrated then deleted',
   'prayerapp.prayer.v1': 'dead — named in resetAppData but written nowhere',

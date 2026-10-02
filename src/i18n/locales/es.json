@@ -1359,7 +1359,27 @@
     "pinRemove": "Quitar",
     "khatmahPinnedHere": "Tu jatma está en esta aleya",
     "playSection": "Reproducir",
-    "surahAudioPartialShort": "{{have}}/{{total}} aleyas · Descargar el resto"
+    "surahAudioPartialShort": "{{have}}/{{total}} aleyas · Descargar el resto",
+    "tilawahContinueListening": "Seguir escuchando",
+    "listenAgain": {
+      "heading": "Continúa, o empieza algo nuevo",
+      "resume": "Continuar {{surah}}",
+      "resumeSub": "Desde la aleya {{ayah}}, donde dejaste de escuchar",
+      "shuffle": "Aleatorio",
+      "shuffleSub": "Una sura al azar, y luego otra",
+      "suggested": "Recomendado ahora"
+    },
+    "suggest": {
+      "kahf": "Sunna del viernes, desde el magrib del jueves",
+      "mulk": "El Profeta ﷺ la recitaba cada noche antes de dormir",
+      "sajdahNight": "Junto con Al-Mulk, antes de dormir",
+      "baqarahEnd": "Recitadas de noche, le bastan a quien las recita",
+      "baqarahEndTitle": "Al-Baqara, las dos últimas aleyas",
+      "muawwidhat": "Por la mañana y por la tarde, y antes de dormir",
+      "muawwidhatTitle": "Al-Ijlás, Al-Falaq y An-Nás",
+      "fridayFajr": "Se recitaban en el fajr del viernes",
+      "baqarah": "Shaitán abandona la casa en la que se recita"
+    }
   },
   "reading": {
     "textSize": "Tamaño del texto",

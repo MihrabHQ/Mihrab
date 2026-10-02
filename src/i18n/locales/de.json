@@ -1359,7 +1359,27 @@
     "pinRemove": "Entfernen",
     "khatmahPinnedHere": "Deine Khatmah steht bei diesem Vers",
     "playSection": "Abspielen",
-    "surahAudioPartialShort": "{{have}}/{{total}} Verse · Rest laden"
+    "surahAudioPartialShort": "{{have}}/{{total}} Verse · Rest laden",
+    "tilawahContinueListening": "Weiterhören",
+    "listenAgain": {
+      "heading": "Weitermachen oder etwas Neues beginnen",
+      "resume": "{{surah}} fortsetzen",
+      "resumeSub": "Ab Vers {{ayah}}, wo du aufgehört hast zu hören",
+      "shuffle": "Zufällig",
+      "shuffleSub": "Eine zufällige Sure, dann noch eine",
+      "suggested": "Jetzt empfohlen"
+    },
+    "suggest": {
+      "kahf": "Sunna des Freitags, ab dem Maghrib am Donnerstag",
+      "mulk": "Der Prophet ﷺ rezitierte sie jede Nacht vor dem Schlafen",
+      "sajdahNight": "Zusammen mit al-Mulk, vor dem Schlafen",
+      "baqarahEnd": "Nachts rezitiert genügen sie dem, der sie rezitiert",
+      "baqarahEndTitle": "al-Baqara, die letzten zwei Verse",
+      "muawwidhat": "Morgens und abends und vor dem Schlafen",
+      "muawwidhatTitle": "al-Ichlas, al-Falaq und an-Nas",
+      "fridayFajr": "Im Fadschr am Freitag rezitiert",
+      "baqarah": "Der Satan verlässt ein Haus, in dem sie rezitiert wird"
+    }
   },
   "reading": {
     "textSize": "Schriftgröße",

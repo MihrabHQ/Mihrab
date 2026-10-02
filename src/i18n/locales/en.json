@@ -1359,7 +1359,27 @@
     "pinRemove": "Remove",
     "khatmahPinnedHere": "Your khatmah is at this ayah",
     "playSection": "Play",
-    "surahAudioPartialShort": "{{have}}/{{total}} ayahs · Download the rest"
+    "surahAudioPartialShort": "{{have}}/{{total}} ayahs · Download the rest",
+    "tilawahContinueListening": "Carry on listening",
+    "listenAgain": {
+      "heading": "Carry on, or start something new",
+      "resume": "Continue {{surah}}",
+      "resumeSub": "From ayah {{ayah}}, where you stopped listening",
+      "shuffle": "Shuffle",
+      "shuffleSub": "A surah at random, then another",
+      "suggested": "Recommended now"
+    },
+    "suggest": {
+      "kahf": "Friday's sunnah, from Thursday's maghrib",
+      "mulk": "The Prophet ﷺ recited it every night before sleeping",
+      "sajdahNight": "With Al-Mulk, before sleeping",
+      "baqarahEnd": "Recited at night, they are enough for whoever recites them",
+      "baqarahEndTitle": "Al-Baqarah, the last two ayahs",
+      "muawwidhat": "Morning and evening, and before sleeping",
+      "muawwidhatTitle": "Al-Ikhlas, Al-Falaq and An-Nas",
+      "fridayFajr": "Recited in Fajr on Friday",
+      "baqarah": "Shayṭān leaves a house where it is recited"
+    }
   },
   "reading": {
     "textSize": "Text size",

@@ -1359,7 +1359,27 @@
     "pinRemove": "Hapus",
     "khatmahPinnedHere": "Khatam Anda ada di ayat ini",
     "playSection": "Putar",
-    "surahAudioPartialShort": "{{have}}/{{total}} ayat · Unduh sisanya"
+    "surahAudioPartialShort": "{{have}}/{{total}} ayat · Unduh sisanya",
+    "tilawahContinueListening": "Lanjutkan mendengarkan",
+    "listenAgain": {
+      "heading": "Lanjutkan, atau mulai sesuatu yang baru",
+      "resume": "Lanjutkan {{surah}}",
+      "resumeSub": "Dari ayat {{ayah}}, tempat Anda berhenti mendengarkan",
+      "shuffle": "Acak",
+      "shuffleSub": "Satu surah acak, lalu satu lagi",
+      "suggested": "Dianjurkan sekarang"
+    },
+    "suggest": {
+      "kahf": "Sunnah hari Jumat, sejak magrib hari Kamis",
+      "mulk": "Nabi ﷺ membacanya setiap malam sebelum tidur",
+      "sajdahNight": "Bersama Al-Mulk, sebelum tidur",
+      "baqarahEnd": "Dibaca pada malam hari, keduanya mencukupi bagi yang membacanya",
+      "baqarahEndTitle": "Al-Baqarah, dua ayat terakhir",
+      "muawwidhat": "Pagi dan petang, dan sebelum tidur",
+      "muawwidhatTitle": "Al-Ikhlas, Al-Falaq dan An-Nas",
+      "fridayFajr": "Dibaca dalam salat Subuh hari Jumat",
+      "baqarah": "Setan lari dari rumah yang dibacakan surah ini"
+    }
   },
   "reading": {
     "textSize": "Ukuran teks",
