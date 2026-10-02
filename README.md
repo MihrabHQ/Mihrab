@@ -3,7 +3,7 @@
 </div>
 
 <div align="center">
-  <img src="branding/github-hero.png" alt="Mihrab, the Muslim companion — prayer times, the Madinah mushaf, dua and tasbih, on iOS, Android and Mac">
+  <img src="branding/github-hero.png" alt="Mihrab, The Muslim Companion — for every prayer, and everything between. Calm, private, offline-first.">
 
   **A Muslim's daily companion — for every prayer, and everything between.**
 
@@ -27,11 +27,11 @@
 
 <div align="center">
 
-<img src="branding/readme/01_home.png" width="32%" alt="Home — the day’s sky behind the next prayer and its countdown, the day above the times, and a check beside each prayer">&nbsp;<img src="branding/readme/02_quran.png" width="32%" alt="The mushaf mid-recitation — the recited word lit on the page, with the player below">&nbsp;<img src="branding/readme/03_duas.png" width="32%" alt="Duas — Ayat al-Kursi with transliteration and source">
+<img src="branding/readme/01_home.png" width="32%" alt="Home — the day’s sky behind the next prayer and its countdown, the day above the times, and a check beside each prayer">&nbsp;<img src="branding/readme/02_quran.png" width="32%" alt="The mushaf in tajweed colour mid-recitation — every letter in the ink of its rule, the recited word lit, the player below">&nbsp;<img src="branding/readme/03_duas.png" width="32%" alt="Duas — Ayat al-Kursi with transliteration and source">
 
 <img src="branding/readme/04_tasbih.png" width="32%" alt="Tasbih counter — dhikr with tabular digits">&nbsp;<img src="branding/readme/05_qibla.png" width="32%" alt="Qibla compass — the bearing, the signal strength and a cross-check">&nbsp;<img src="branding/readme/06_journal.png" width="32%" alt="Prayer journal — the practice graph, the on-time streak and what is owed">
 
-<img src="branding/readme/07_tilawah.png" width="32%" alt="Tilawah — a recitation of Al-Baqarah with the reciter, a speed control and a sleep timer">&nbsp;<img src="branding/readme/08_fasting.png" width="32%" alt="Fasting — today's fast, the Ramadan and voluntary counts, and the coming Sunnah days">&nbsp;<img src="branding/readme/09_widgets.png" width="32%" alt="Android home-screen widgets — the Sky widget with the next prayer and a live countdown, and Continue Reading above it">
+<img src="branding/readme/07_tilawah.png" width="32%" alt="Tilawah — Al-Mulk playing, with the reciter, the transport, speed, sleep timer and shuffle, and a live mushaf page with the recited word lit">&nbsp;<img src="branding/readme/08_fasting.png" width="32%" alt="Fasting — today's fast, the Ramadan and voluntary counts, and the coming Sunnah days">&nbsp;<img src="branding/readme/09_widgets.png" width="32%" alt="Android home-screen widgets — today’s six times, a row to log each prayer with one tap, and the next prayer with its countdown">
 
 </div>
 
@@ -63,7 +63,7 @@
 - **Four riwāyāt** — Ḥafṣ from the KFGQPC page fonts, and Warsh, Qālūn and Shuʿbah as bundled-typeface muṣḥafs downloaded on request from Quranpedia. Your place carries across a switch: the ayah is the coordinate, not the page number.
 - **Everything in one panel** — A tap on a word opens its ayah: translation, real **tafsir** (Ibn Kathir, Maarif-ul-Quran, al-Muyassar and more — cached for offline), coloured bookmarks, star, share as text or a rendered image card, the khatmah position, and the full recitation controls.
 - **42 reciters** — Al-Husary, Alafasy, Abdul Basit, Al-Minshawi, As-Sudais, Ash-Shatri, Ahmed Al-Ajmi, Yasser Ad-Dossari, Maher Al-Muaiqly, Saad Al-Ghamdi, plus mujawwad readings from Abdul Basit, Al-Minshawi and Al-Husary, streamed per-ayah or downloaded per-surah for offline listening. **Word-level highlight on the page itself** for nine of them — and in landscape the column follows the reciter down the page; prefetching keeps long sessions gapless.
-- **Tilāwah — listening, as its own page** — The reader plays the passage in front of you and stops where that surah does. Tilāwah is the other act: pick a reciter, start anywhere, and it runs surah into surah with the screen off, from the lock screen, without the app open or even alive. Scrub by ayah or by whole surah, shuffle, set a speed or a sleep timer (minutes, or the end of the surah), and follow along on a live muṣḥaf page with the recited word lit. Its downloads share the reader's own folder, so a reciter fetched for a flight makes play-from-here work offline in the same act. While anything is playing a **mini-player** sits under the title bar on every screen: what it is, a progress bar for the surah, pause, and a way back to Tilāwah.
+- **Tilāwah — listening, as its own page** — The reader plays the passage in front of you and stops where that surah does. Tilāwah is the other act: pick a reciter, start anywhere, and it runs surah into surah with the screen off, from the lock screen, without the app open or even alive. Scrub by ayah or by whole surah, shuffle, set a speed or a sleep timer (minutes, or the end of the surah), and follow along on a live muṣḥaf page with the recited word lit. Its downloads share the reader's own folder, so a reciter fetched for a flight makes play-from-here work offline in the same act. While anything is playing a **mini-player** sits under the title bar on every screen: what it is, a progress bar for the surah, pause, and a way back to Tilāwah. Tilāwah keeps **its own place**, apart from where you are reading; come back after a while and it offers to carry on, to shuffle, or **what the sunnah recommends at that hour** — Al-Kahf from Thursday's maghrib to Friday's, As-Sajdah and Al-Insān on Friday morning, Al-Mulk, the last two āyāt of Al-Baqarah and the Muʿawwidhāt at night. On iPhone it plays as long-form spoken audio, with the lock screen's controls, and pauses when the headphones come out.
 - **Memorization (hifz) tools** — Repeat each ayah ×N, repeat a range ×M, pause-between-repeats for recite-back, and hide-and-reveal masking of Arabic or translation.
 - **Khatmah plans** — 30/60/90-day plans (or your own length, from the page you are on) with automatic page tracking, a continue button, pin-your-exact-ayah positioning, a done button for the day, flexible resets, and an optional daily reminder with today's portion.
 - **13 translation editions** — Sahih International, Pickthall, Bernström, Hamidullah, Diyanet, Cortés, Bubenheim, Ma Jian, Kuliev, Indonesian Ministry, Mujibur Rahman, Jalandhry, Suhel Farooq Khan — with diacritic-insensitive Arabic + translation search, and a verse-by-verse reading view that lights the recited word too.
@@ -88,7 +88,7 @@
 
 ### The app itself
 
-- **Yours to look at** — Light, dark or system, pure-black for OLED, six accent colours or your own hex, and the platform's own palette when you want it: **Material You** on Android, **Liquid Glass** on iOS.
+- **Yours to look at** — Light, dark or system, pure-black for OLED, six colour themes (green, teal, blue, amber, rose, violet) or your own hex, and the platform's own palette when you want it: **Material You** on Android, **Liquid Glass** on iOS.
 - **Real Arabic typography** — Amiri Quran for ayah text with correct stacked diacritics, Amiri Naskh for duas, on both platforms.
 - **13 languages** — English, Arabic, Swedish, Bengali, Urdu, Hindi, French, Spanish, German, Turkish, Indonesian, Russian, and Chinese — every screen, every notification, every dua title, and the widgets too. Arabic and Urdu are fully RTL.
 - **A Mac app, not a phone app in a window** — The Catalyst build has the spread reader, keyboard paging, the surah sidebar and its own widgets in Notification Centre.
@@ -102,7 +102,7 @@
 | Platform | Link |
 |---|---|
 | **iOS** | [App Store](https://apps.apple.com/us/app/prayer-salah-times-qibla/id6762085256) |
-| **macOS (Homebrew)** | `brew install --cask mihrabhq/tap/mihrab` — native Mac Catalyst build from [GitHub Releases](https://github.com/MihrabHQ/Mihrab/releases), for Apple silicon Macs on macOS 12.1 (Monterey) or later; the widgets need macOS 14 |
+| **macOS (Homebrew)** | `brew install --cask mihrabhq/tap/mihrab` — native Mac Catalyst build from [GitHub Releases](https://github.com/MihrabHQ/Mihrab/releases), for Intel and Apple silicon Macs on macOS 12.1 (Monterey) or later; the widgets need macOS 14 |
 | **Android APK** | [GitHub Releases](https://github.com/MihrabHQ/Mihrab/releases) → `Mihrab-vX.Y.Z.apk` (ARM phones, 32- and 64-bit) |
 | **Android (Obtainium)** | [Add to Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/MihrabHQ/Mihrab) — auto-updates directly from GitHub Releases |
 | **Google Play** | [Google Play](https://play.google.com/store/apps/details?id=com.prayer_times) |
@@ -143,7 +143,7 @@ Archive and upload via Xcode Organizer for App Store / TestFlight.
 ### Tests
 
 ```sh
-npx jest        # 2,900+ unit tests
+npx jest        # 6,500+ unit tests
 npm run e2e     # Maestro end-to-end flows (needs a running emulator/simulator)
 ```
 
@@ -157,13 +157,16 @@ project outright, and no build pulls one back in. Several people have kindly
 offered; the answer is the same to everyone. It is not that kind of project,
 and it is not going to become one.
 
-Three kinds of support are welcome, and they are worth more:
+Four kinds of support are welcome, and they are worth more:
 
 - **Dua** — for me and my parents, and for everyone whose work this is built on.
 - **Constructive feedback** — a prayer time that disagrees with your masjid, a
   translation that reads wrong, a screen that fights you. Say what you saw and
   what you expected in [an issue](https://github.com/MihrabHQ/Mihrab/issues);
   that is how the bugs get found.
+- **Pass it on** — rate Mihrab where you got it, and tell family and friends.
+  The app's own month sheet (Settings → About → Help Mihrab) is an easy thing to
+  send. A project with no marketing reaches the next person this way.
 - **Code** — pull requests, translations, and reproducible bug reports. The
   build instructions are above and the whole thing is AGPL.
 

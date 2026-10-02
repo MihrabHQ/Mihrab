@@ -102,7 +102,7 @@
       "name": "How do I install the prayer times app on a Mac with Homebrew?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Run brew install --cask mihrabhq/tap/mihrab. It installs the Mac Catalyst build with its Notification Centre widgets, on an Apple silicon Mac with macOS 12.1 or later (the widgets need macOS 14); the cask lives in the MihrabHQ/homebrew-tap repository and every release updates it, so brew upgrade keeps you current."
+        "text": "Run brew install --cask mihrabhq/tap/mihrab. It installs the Mac Catalyst build with its Notification Centre widgets, on an Intel or Apple silicon Mac with macOS 12.1 or later (the widgets need macOS 14); the cask lives in the MihrabHQ/homebrew-tap repository and every release updates it, so brew upgrade keeps you current."
       }
     },
     {
@@ -257,8 +257,8 @@
           <b>Mac</b>
           <span><code>brew install --cask mihrabhq/tap/mihrab</code> — a Mac Catalyst build, cask in the
             <a href="https://github.com/MihrabHQ/homebrew-tap">MihrabHQ/homebrew-tap</a> repo. Signed
-            with a Developer ID and notarised by Apple; for Apple silicon Macs on macOS 12.1 or
-            later, and the widgets need macOS 14.</span>
+            with a Developer ID and notarised by Apple; for Intel and Apple silicon Macs on macOS
+            12.1 or later, and the widgets need macOS 14.</span>
         </div>
       </li>
       <li class="channel">
@@ -370,7 +370,10 @@
             ayah or by whole surah, shuffle, set a speed or a sleep timer, and follow along on a
             live muṣḥaf page with the recited word lit. It downloads into the reader's own folder,
             so a reciter fetched for a flight makes play-from-here work offline too. A mini-player
-            under the title bar carries it to every other screen.</span></li>
+            under the title bar carries it to every other screen. It keeps its own place, apart
+            from where you are reading, and when you come back to it it offers to carry on, to
+            shuffle, or what the sunnah recommends at that hour — Al-Kahf from Thursday’s maghrib,
+            Al-Mulk and the end of Al-Baqarah at night.</span></li>
           <li><b>Memorisation tools</b> <span>— repeat an ayah or a range, pause between repeats, hide
             and reveal the Arabic or the translation.</span></li>
           <li><b>Khatmah plans</b> <span>— 30, 60 or 90 days, or your own length from the page you are
@@ -409,8 +412,8 @@
             too.</span></li>
           <li><b>Real Arabic typography</b> <span>— Amiri Quran for ayah text with correctly stacked
             diacritics, Amiri Naskh for duas, on both platforms.</span></li>
-          <li><b>Yours to look at</b> <span>— light, dark or system, pure black for OLED, six accents or
-            your own colour, and the platform’s own palette when you want it: Material You on Android,
+          <li><b>Yours to look at</b> <span>— light, dark or system, pure black for OLED, six colour
+            themes or your own colour, and the platform’s own palette when you want it: Material You on Android,
             Liquid Glass on iOS.</span></li>
           <li><b>It tells you what it is doing</b> <span>— a data panel names the source in use, when
             each dataset was last rebuilt, how far ahead it reaches and when the next check is
@@ -477,8 +480,13 @@
       </figure></li>
       <li><figure>
         <img src="assets/img/shot-tilawah.png?v=2026-10-02" width="810" height="1800" loading="lazy" decoding="async"
-          alt="Tilāwah: a recitation of Al-Baqarah with the reciter, the transport, a speed control and a sleep timer, and the surah list below to start anywhere.">
+          alt="Tilāwah playing Al-Mulk: the reciter, the transport, speed, sleep timer and shuffle, with a live muṣḥaf page below and the recited word lit.">
         <figcaption>Tilāwah — put it on and let it run</figcaption>
+      </figure></li>
+      <li><figure>
+        <img src="assets/img/shot-tilawah-suggest.png?v=2026-10-02" width="810" height="1800" loading="lazy" decoding="async"
+          alt="Tilāwah waiting for a choice: carry on from where you left off, shuffle, or one of the surahs the sunnah recommends at this hour — on a Friday morning Al-Kahf, As-Sajdah, Al-Insān and Al-Baqarah.">
+        <figcaption>What the sunnah recommends now</figcaption>
       </figure></li>
       <li><figure>
         <img src="assets/img/shot-reciters.png?v=2026-10-02" width="810" height="1800" loading="lazy" decoding="async"
@@ -487,8 +495,13 @@
       </figure></li>
       <li><figure>
         <img src="assets/img/shot-mushaf.png?v=2026-10-02" width="810" height="1800" loading="lazy" decoding="async"
-          alt="The mushaf mid-recitation: the recited word lit on the page, with the player below it.">
-        <figcaption>Mushaf — the recited word, lit</figcaption>
+          alt="The mushaf in tajweed colour mid-recitation: every letter in the ink of its rule, the recited word lit on the page, the player below.">
+        <figcaption>Mushaf — tajweed colours, the recited word lit</figcaption>
+      </figure></li>
+      <li><figure>
+        <img src="assets/img/shot-ayah.png?v=2026-10-02" width="810" height="1800" loading="lazy" decoding="async"
+          alt="An ayah’s sheet on its Tajweed tab: each rule in the ayah, what it asks of you, and the words it falls on, each a tap from being heard.">
+        <figcaption>Every tajweed rule, explained</figcaption>
       </figure></li>
       <li><figure>
         <img src="assets/img/shot-mushaf-dark.png?v=2026-10-02" width="810" height="1800" loading="lazy" decoding="async"
@@ -502,7 +515,7 @@
       </figure></li>
       <li><figure>
         <img src="assets/img/shot-quran.png?v=2026-10-02" width="810" height="1800" loading="lazy" decoding="async"
-          alt="The Quran tab: continue reading, the khatmah plan, the Tilāwah row, the verse of the day, and every surah named in the muṣḥaf’s own calligraphy.">
+          alt="The Quran tab: continue the khatmah or your reading, today’s portion, the Tilāwah row, the surahs read often, and every surah named in the muṣḥaf’s own calligraphy.">
         <figcaption>Khatmah and where you left off</figcaption>
       </figure></li>
       <li><figure>
@@ -547,8 +560,8 @@
       </figure></li>
       <li><figure>
         <img src="assets/img/shot-widgets-android.png?v=2026-10-02" width="810" height="1800" loading="lazy" decoding="async"
-          alt="An Android home screen carrying the Sky widget — the day’s sky with the next prayer and a live countdown — and the Continue Reading widget above it.">
-        <figcaption>Android widgets — the sky, and where you left off</figcaption>
+          alt="An Android home screen with Mihrab widgets: today’s six times, a row to log each prayer with one tap, and the next prayer with its countdown.">
+        <figcaption>Android widgets — the day’s times, and logging from the home screen</figcaption>
       </figure></li>
     </ul>
     <figure class="spread">
@@ -708,6 +721,12 @@
           that fights you. Say what you saw and what you expected in
           <a href="https://github.com/MihrabHQ/Mihrab/issues">an issue</a> — that is how the bugs
           get found.</p>
+      </article>
+      <article class="card">
+        <h3>Pass it on</h3>
+        <p>Rate Mihrab where you got it, and tell family and friends — the app’s own month sheet,
+          from Settings → About → Help Mihrab, is an easy thing to send. That is how a project
+          with no marketing reaches the next person.</p>
       </article>
       <article class="card">
         <h3>Code</h3>

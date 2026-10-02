@@ -18,16 +18,24 @@
           "cap": "Home, dark"
         },
         "tilawah": {
-          "alt": "Tilāwah: a recitation of Al-Baqarah with the reciter, the transport, a speed control and a sleep timer, and the surah list below to start anywhere.",
+          "alt": "Tilāwah playing Al-Mulk: the reciter, the transport, speed, sleep timer and shuffle, with a live muṣḥaf page below and the recited word lit.",
           "cap": "Tilāwah — put it on and let it run"
+        },
+        "tilawah-suggest": {
+          "alt": "Tilāwah waiting for a choice: carry on from where you left off, shuffle, or one of the surahs the sunnah recommends at this hour — on a Friday morning Al-Kahf, As-Sajdah, Al-Insān and Al-Baqarah.",
+          "cap": "What the sunnah recommends now"
         },
         "reciters": {
           "alt": "The reciter list: forty-two voices, each row saying what is already on the device, with a button to download it or delete it.",
           "cap": "Reciters, and what you have offline"
         },
         "mushaf": {
-          "alt": "The mushaf mid-recitation: the recited word lit on the page, with the player below it.",
-          "cap": "Mushaf — the recited word, lit"
+          "alt": "The mushaf in tajweed colour mid-recitation: every letter in the ink of its rule, the recited word lit on the page, the player below.",
+          "cap": "Mushaf — tajweed colours, the recited word lit"
+        },
+        "ayah": {
+          "alt": "An ayah’s sheet on its Tajweed tab: each rule in the ayah, what it asks of you, and the words it falls on, each a tap from being heard.",
+          "cap": "Every tajweed rule, explained"
         },
         "mushaf-dark": {
           "alt": "The reader in its night theme.",
@@ -38,7 +46,7 @@
           "cap": "Repeat, pause, hide — for memorising"
         },
         "quran": {
-          "alt": "The Quran tab: continue reading, the khatmah plan, the Tilāwah row, the verse of the day, and every surah named in the muṣḥaf’s own calligraphy.",
+          "alt": "The Quran tab: continue the khatmah or your reading, today’s portion, the Tilāwah row, the surahs read often, and every surah named in the muṣḥaf’s own calligraphy.",
           "cap": "Khatmah and where you left off"
         },
         "qibla": {
@@ -74,8 +82,8 @@
           "cap": "Widgets and the Live Activity"
         },
         "widgets-android": {
-          "alt": "An Android home screen carrying the Sky widget — the day’s sky with the next prayer and a live countdown — and the Continue Reading widget above it.",
-          "cap": "Android widgets — the sky, and where you left off"
+          "alt": "An Android home screen with Mihrab widgets: today’s six times, a row to log each prayer with one tap, and the next prayer with its countdown.",
+          "cap": "Android widgets — the day’s times, and logging from the home screen"
         }
       },
       "spread": {
@@ -103,16 +111,24 @@
           "cap": "Start, mörkt"
         },
         "tilawah": {
-          "alt": "Tilāwah: en recitation av Al-Baqarah med recitatör, uppspelningskontroller, hastighet och sovtimer, och surahlistan nedanför för att börja var som helst.",
+          "alt": "Tilāwah spelar al-Mulk: recitatör, uppspelningskontroller, hastighet, sovtimer och blandning, med en levande muṣḥaf-sida under där det reciterade ordet lyser.",
           "cap": "Tilawah — sätt på och låt den gå"
+        },
+        "tilawah-suggest": {
+          "alt": "Tilāwah väntar på ett val: fortsätt där du slutade, blanda, eller en av de suror sunnan rekommenderar vid den här tiden — en fredagsmorgon al-Kahf, as-Sajda, al-Insan och al-Baqara.",
+          "cap": "Det sunnan rekommenderar nu"
         },
         "reciters": {
           "alt": "Recitatörslistan: fyrtiotvå röster, varje rad visar vad som redan finns på enheten, med en knapp för att ladda ner eller radera.",
           "cap": "Recitatörer, och vad du har offline"
         },
         "mushaf": {
-          "alt": "Mushafen mitt i recitationen: det reciterade ordet lyser på sidan, med spelaren under.",
-          "cap": "Mushaf — det reciterade ordet, upplyst"
+          "alt": "Mushafen i tajwidfärg mitt i recitationen: varje bokstav i sin regels färg, det reciterade ordet lyser på sidan, spelaren under.",
+          "cap": "Mushaf — tajwidfärger, det reciterade ordet upplyst"
+        },
+        "ayah": {
+          "alt": "En versens panel på fliken Tajwid: varje regel i versen, vad den kräver av dig, och orden den gäller — vart och ett ett tryck från att höras.",
+          "cap": "Varje tajwidregel, förklarad"
         },
         "mushaf-dark": {
           "alt": "Läsaren i sitt nattläge.",
@@ -123,7 +139,7 @@
           "cap": "Upprepa, pausa, dölj — för memorering"
         },
         "quran": {
-          "alt": "Koran-fliken: fortsätt läsa, khatmah-planen, Tilāwah-raden, dagens vers och varje sura med sitt namn i muṣḥafens egen kalligrafi.",
+          "alt": "Koran-fliken: fortsätt khatman eller läsningen, dagens del, Tilāwah-raden, de suror som läses ofta, och varje sura med sitt namn i muṣḥafens egen kalligrafi.",
           "cap": "Khatmah och där du slutade"
         },
         "qibla": {
@@ -159,8 +175,8 @@
           "cap": "Widgetar och den levande nedräkningen"
         },
         "widgets-android": {
-          "alt": "En Android-hemskärm med himmelswidgeten — dygnets himmel med nästa bön och en levande nedräkning — och widgeten Fortsätt läsa ovanför.",
-          "cap": "Android-widgetar — himlen och där du slutade"
+          "alt": "En Android-hemskärm med Mihrabs widgetar: dagens sex tider, en rad för att logga varje bön med ett tryck, och nästa bön med sin nedräkning.",
+          "cap": "Android-widgetar — dagens tider, och loggning från hemskärmen"
         }
       },
       "spread": {
@@ -198,7 +214,7 @@
         },
         {
           "h3": "اقرأ واستمع",
-          "p": "المصحف المدني كاملاً بأربع روايات، مع ألوان التجويد لحفص وورش، وقارئ الكلمات: اضغط مطوّلًا على كلمة فتسمعها وحدها. و42 قارئًا، والتلاوة سورة بعد سورة والشاشة مطفأة، والتفسير والترجمات وخطة الختمة."
+          "p": "المصحف المدني كاملاً بأربع روايات، مع ألوان التجويد لحفص وورش، وقارئ الكلمات: اضغط مطوّلًا على كلمة فتسمعها وحدها. و42 قارئًا، والتلاوة سورة بعد سورة والشاشة مطفأة، والتفسير والترجمات وخطة الختمة. والتلاوة تحفظ موضعها، وتقترح ما تستحبّه السنّة في كل ساعة."
         },
         {
           "h3": "اذكر",
@@ -293,16 +309,24 @@
           "cap": "اليوم، داكن"
         },
         "tilawah": {
-          "alt": "تِلاوة: تلاوة سورة البقرة مع القارئ وأزرار التشغيل والسرعة ومؤقّت النوم، وقائمة السور أسفلها للبدء من أي موضع.",
+          "alt": "التلاوة تُسمِع سورة الملك: القارئ وأزرار التشغيل والسرعة ومؤقّت النوم والخلط، وتحتها صفحة المصحف والكلمة المتلوّة مضاءة.",
           "cap": "التلاوة — شغّلها ودعها تمضي"
+        },
+        "tilawah-suggest": {
+          "alt": "التلاوة تنتظر اختيارك: تابع من حيث توقفت، أو اخلط، أو اختر سورة مما تستحبّه السنّة في هذه الساعة — في صباح الجمعة: الكهف والسجدة والإنسان والبقرة.",
+          "cap": "ما تستحبّه السنّة الآن"
         },
         "reciters": {
           "alt": "قائمة القرّاء: اثنان وأربعون صوتًا، كل سطر يبيّن ما هو محفوظ على الجهاز، مع زر للتنزيل أو الحذف.",
           "cap": "القرّاء، وما لديك دون إنترنت"
         },
         "mushaf": {
-          "alt": "المصحف أثناء التلاوة: الكلمة المتلوّة مضاءة على الصفحة والمشغّل أسفلها.",
-          "cap": "المصحف — الكلمة المتلوّة مضاءة"
+          "alt": "المصحف بألوان التجويد أثناء التلاوة: كل حرف بلون حكمه، والكلمة المتلوّة مضاءة على الصفحة، والمشغّل أسفلها.",
+          "cap": "المصحف — ألوان التجويد والكلمة المتلوّة مضاءة"
+        },
+        "ayah": {
+          "alt": "لوحة الآية على تبويب التجويد: كل حكم في الآية، وما يطلبه منك، والكلمات التي يقع عليها، وكل كلمة تُسمع بلمسة.",
+          "cap": "كل حكم تجويد، مشروحًا"
         },
         "mushaf-dark": {
           "alt": "القارئ في وضعه الليلي.",
@@ -313,7 +337,7 @@
           "cap": "تكرار ووقفة وإخفاء — للحفظ"
         },
         "quran": {
-          "alt": "تبويب القرآن: تابع القراءة، وخطة الختمة، وصفّ التلاوة، وآية اليوم، وكل سورة باسمها بخط المصحف.",
+          "alt": "تبويب القرآن: تابع الختمة أو قراءتك، وورد اليوم، وصفّ التلاوة، والسور التي تُقرأ كثيرًا، وكل سورة باسمها بخط المصحف.",
           "cap": "الختمة وموضع توقفك"
         },
         "qibla": {
@@ -349,8 +373,8 @@
           "cap": "الأدوات والنشاط الحيّ"
         },
         "widgets-android": {
-          "alt": "شاشة أندرويد الرئيسية تحمل أداة «السماء» — سماء اليوم مع الصلاة القادمة وعدّ تنازلي حيّ — وأداة «تابع القراءة» فوقها.",
-          "cap": "أدوات أندرويد — السماء، وموضع توقفك"
+          "alt": "شاشة أندرويد الرئيسية بأدوات محراب: مواقيت اليوم الستة، وصفّ لتسجيل كل صلاة بلمسة، والصلاة القادمة مع عدّها التنازلي.",
+          "cap": "أدوات أندرويد — مواقيت اليوم، والتسجيل من الشاشة الرئيسية"
         }
       },
       "spread": {
@@ -388,7 +412,7 @@
         },
         {
           "h3": "Oku ve dinle",
-          "p": "Dört rivayetiyle tam Medine mushafı; Hafs ve Verş için renkli tecvid ve bir kelime okuyucu: bir kelimeye basılı tutun, yalnızca o kelime okunsun. 42 kari, ekran kapalıyken sure sure tilavet, tefsir, mealler ve hatim planı."
+          "p": "Dört rivayetiyle tam Medine mushafı; Hafs ve Verş için renkli tecvid ve bir kelime okuyucu: bir kelimeye basılı tutun, yalnızca o kelime okunsun. 42 kari, ekran kapalıyken sure sure tilavet, tefsir, mealler ve hatim planı. Tilavet kaldığınız yeri hatırlar ve o saatte sünnetin tavsiye ettiğini önerir."
         },
         {
           "h3": "Zikret",
@@ -483,16 +507,24 @@
           "cap": "Bugün, koyu"
         },
         "tilawah": {
-          "alt": "Tilâvet: Bakara sûresinin tilaveti; kâri, oynatma denetimleri, hız ve uyku zamanlayıcısı, altında istediğiniz yerden başlamak için sûre listesi.",
+          "alt": "Tilâvet Mülk sûresini okuyor: kâri, oynatma denetimleri, hız, uyku zamanlayıcısı ve karışık çalma; altında okunan kelimenin ışıdığı canlı mushaf sayfası.",
           "cap": "Tilavet — koy, kendi akışında gitsin"
+        },
+        "tilawah-suggest": {
+          "alt": "Tilâvet bir seçim bekliyor: kaldığınız yerden devam, karışık çalma ya da sünnetin bu saatte tavsiye ettiği surelerden biri — cuma sabahı Kehf, Secde, İnsan ve Bakara.",
+          "cap": "Sünnetin şimdi tavsiye ettiği"
         },
         "reciters": {
           "alt": "Kâri listesi: kırk iki ses; her satır cihazda hâlihazırda ne olduğunu söyler, indirme ya da silme düğmesiyle.",
           "cap": "Kâriler ve çevrimdışı olanlar"
         },
         "mushaf": {
-          "alt": "Tilavet sırasında mushaf: okunan kelime sayfada ışıyor, altında oynatıcı.",
-          "cap": "Mushaf — okunan kelime, ışıklı"
+          "alt": "Tilavet sırasında renkli tecvidli mushaf: her harf kuralının renginde, okunan kelime sayfada ışıyor, altında oynatıcı.",
+          "cap": "Mushaf — tecvid renkleri, okunan kelime ışıklı"
+        },
+        "ayah": {
+          "alt": "Bir ayetin panelinde Tecvid sekmesi: ayetteki her kural, sizden ne istediği ve geçtiği kelimeler; her biri bir dokunuşla dinlenebilir.",
+          "cap": "Her tecvid kuralı, açıklamasıyla"
         },
         "mushaf-dark": {
           "alt": "Okuyucu gece temasında.",
@@ -503,7 +535,7 @@
           "cap": "Tekrar, duraklama, gizleme — ezber için"
         },
         "quran": {
-          "alt": "Kur’an sekmesi: okumaya devam, hatim planı, Tilâvet satırı, günün ayeti ve her sure adı mushafın kendi hattıyla.",
+          "alt": "Kur’an sekmesi: hatme ya da okumaya devam, günün payı, Tilâvet satırı, sık okunan sureler ve her sure adı mushafın kendi hattıyla.",
           "cap": "Hatim ve kaldığın yer"
         },
         "qibla": {
@@ -539,8 +571,8 @@
           "cap": "Widget’lar ve canlı etkinlik"
         },
         "widgets-android": {
-          "alt": "Gökyüzü widget’ını taşıyan bir Android ana ekranı — günün gökyüzü, sıradaki namaz ve canlı geri sayım — üstünde Okumaya Devam widget’ı.",
-          "cap": "Android widget’ları — gökyüzü ve kaldığın yer"
+          "alt": "Mihrab widget’larıyla bir Android ana ekranı: günün altı vakti, her namazı tek dokunuşla kaydetmek için bir satır ve geri sayımıyla sıradaki namaz.",
+          "cap": "Android widget’ları — günün vakitleri ve ana ekrandan kayıt"
         }
       },
       "spread": {
@@ -578,7 +610,7 @@
         },
         {
           "h3": "پڑھیں اور سنیں",
-          "p": "چار روایتوں میں مکمل مدنی مصحف، حفص اور ورش کے لیے رنگین تجوید، اور لفظ خواں: کسی لفظ کو دبائے رکھیں، وہی ایک لفظ پڑھ کر سنایا جائے گا۔ 42 قاری، اسکرین بند ہونے پر سورت کے بعد سورت تلاوت، تفسیر، تراجم اور ختم کا منصوبہ۔"
+          "p": "چار روایتوں میں مکمل مدنی مصحف، حفص اور ورش کے لیے رنگین تجوید، اور لفظ خواں: کسی لفظ کو دبائے رکھیں، وہی ایک لفظ پڑھ کر سنایا جائے گا۔ 42 قاری، اسکرین بند ہونے پر سورت کے بعد سورت تلاوت، تفسیر، تراجم اور ختم کا منصوبہ۔ تلاوت آپ کی جگہ یاد رکھتی ہے اور بتاتی ہے کہ اس وقت سنت کیا پڑھنے کی ترغیب دیتی ہے۔"
         },
         {
           "h3": "ذکر",
@@ -673,16 +705,24 @@
           "cap": "آج، گہرا"
         },
         "tilawah": {
-          "alt": "تلاوت: سورۃ البقرہ کی تلاوت، قاری، پلے بیک کنٹرول، رفتار اور سلیپ ٹائمر کے ساتھ، اور نیچے سورتوں کی فہرست تاکہ کہیں سے بھی شروع کیا جا سکے۔",
+          "alt": "تلاوت میں سورۃ الملک: قاری، پلے بیک کنٹرول، رفتار، سلیپ ٹائمر اور شفل، اور نیچے زندہ مصحف کا صفحہ جس پر پڑھا جانے والا لفظ روشن ہے۔",
           "cap": "تلاوت — لگا دیجیے اور چلنے دیجیے"
+        },
+        "tilawah-suggest": {
+          "alt": "تلاوت آپ کے انتخاب کی منتظر: جہاں چھوڑا تھا وہیں سے جاری رکھیں، شفل کریں، یا وہ سورتیں جن کی سنت اس وقت ترغیب دیتی ہے — جمعہ کی صبح الکہف، السجدہ، الانسان اور البقرہ۔",
+          "cap": "جو سنت اس وقت سکھاتی ہے"
         },
         "reciters": {
           "alt": "قاریوں کی فہرست: بیالیس آوازیں، ہر سطر بتاتی ہے کہ ڈیوائس پر کیا موجود ہے، ڈاؤن لوڈ یا حذف کرنے کے بٹن کے ساتھ۔",
           "cap": "قاری، اور آف لائن کیا موجود ہے"
         },
         "mushaf": {
-          "alt": "تلاوت کے دوران مصحف: پڑھا جانے والا لفظ صفحے پر روشن، نیچے پلیئر۔",
-          "cap": "مصحف — پڑھا جانے والا لفظ، روشن"
+          "alt": "تلاوت کے دوران رنگین تجوید والا مصحف: ہر حرف اپنے حکم کے رنگ میں، پڑھا جانے والا لفظ صفحے پر روشن، نیچے پلیئر۔",
+          "cap": "مصحف — تجوید کے رنگ، پڑھا جانے والا لفظ روشن"
+        },
+        "ayah": {
+          "alt": "آیت کے پینل میں تجوید کا ٹیب: آیت میں ہر حکم، وہ آپ سے کیا چاہتا ہے، اور وہ الفاظ جن پر وہ آتا ہے — ہر ایک ایک لمس پر سنا جا سکتا ہے۔",
+          "cap": "ہر تجوید کا حکم، وضاحت کے ساتھ"
         },
         "mushaf-dark": {
           "alt": "قاری اپنے رات کے انداز میں۔",
@@ -693,7 +733,7 @@
           "cap": "تکرار، وقفہ، اخفا — حفظ کے لیے"
         },
         "quran": {
-          "alt": "قرآن ٹیب: پڑھنا جاری رکھیں، ختمہ منصوبہ، تلاوت کی سطر، دن کی آیت، اور ہر سورہ کا نام مصحف کے اپنے خط میں۔",
+          "alt": "قرآن ٹیب: ختمہ یا اپنی پڑھائی جاری رکھیں، آج کا حصہ، تلاوت کی سطر، اکثر پڑھی جانے والی سورتیں، اور ہر سورہ کا نام مصحف کے اپنے خط میں۔",
           "cap": "ختمہ اور جہاں آپ نے چھوڑا"
         },
         "qibla": {
@@ -729,8 +769,8 @@
           "cap": "ویجٹ اور لائیو ایکٹیویٹی"
         },
         "widgets-android": {
-          "alt": "اینڈرائیڈ ہوم اسکرین پر آسمان ویجٹ — دن کا آسمان، اگلی نماز اور چلتی گنتی — اور اوپر پڑھائی جاری رکھنے کا ویجٹ۔",
-          "cap": "اینڈرائیڈ ویجٹ — آسمان، اور جہاں آپ نے چھوڑا"
+          "alt": "محراب ویجٹس کے ساتھ اینڈرائیڈ ہوم اسکرین: آج کے چھ اوقات، ہر نماز کو ایک لمس سے درج کرنے کی سطر، اور اگلی نماز اپنی الٹی گنتی کے ساتھ۔",
+          "cap": "اینڈرائیڈ ویجٹ — آج کے اوقات، اور ہوم اسکرین سے اندراج"
         }
       },
       "spread": {
@@ -768,7 +808,7 @@
         },
         {
           "h3": "Baca dan dengarkan",
-          "p": "Mushaf Madinah lengkap dalam empat riwayat, dengan warna tajwid untuk Hafs dan Warsh serta pembaca kata: tahan sebuah kata dan hanya kata itu yang dibacakan. 42 qari, tilawah surah demi surah dengan layar mati, tafsir, terjemahan, dan rencana khatam."
+          "p": "Mushaf Madinah lengkap dalam empat riwayat, dengan warna tajwid untuk Hafs dan Warsh serta pembaca kata: tahan sebuah kata dan hanya kata itu yang dibacakan. 42 qari, tilawah surah demi surah dengan layar mati, tafsir, terjemahan, dan rencana khatam. Tilawah mengingat posisi Anda dan menyarankan bacaan yang dianjurkan sunnah pada jam itu."
         },
         {
           "h3": "Berzikir",
@@ -863,16 +903,24 @@
           "cap": "Hari Ini, gelap"
         },
         "tilawah": {
-          "alt": "Tilāwah: bacaan Al-Baqarah dengan qari, kendali pemutaran, pengatur kecepatan dan pengatur waktu tidur, serta daftar surah di bawahnya untuk memulai dari mana saja.",
+          "alt": "Tilāwah memutar Al-Mulk: qari, kendali pemutaran, kecepatan, pengatur waktu tidur dan acak, dengan halaman mushaf di bawahnya tempat kata yang dibaca menyala.",
           "cap": "Tilawah — putar dan biarkan berjalan"
+        },
+        "tilawah-suggest": {
+          "alt": "Tilāwah menunggu pilihan: lanjutkan dari tempat Anda berhenti, acak, atau salah satu surah yang dianjurkan sunnah pada jam ini — di Jumat pagi Al-Kahf, As-Sajdah, Al-Insan, dan Al-Baqarah.",
+          "cap": "Yang dianjurkan sunnah saat ini"
         },
         "reciters": {
           "alt": "Daftar qari: empat puluh dua suara, tiap baris menyebut apa yang sudah ada di perangkat, dengan tombol untuk mengunduh atau menghapus.",
           "cap": "Qari, dan yang tersimpan offline"
         },
         "mushaf": {
-          "alt": "Mushaf saat dibacakan: kata yang dibaca menyala di halaman, pemutar di bawahnya.",
-          "cap": "Mushaf — kata yang dibaca, menyala"
+          "alt": "Mushaf berwarna tajwid saat dibacakan: setiap huruf dalam warna hukumnya, kata yang dibaca menyala di halaman, pemutar di bawahnya.",
+          "cap": "Mushaf — warna tajwid, kata yang dibaca menyala"
+        },
+        "ayah": {
+          "alt": "Panel ayat pada tab Tajwid: setiap hukum dalam ayat, apa yang dituntutnya, dan kata-kata tempat ia berlaku, masing-masing bisa didengar dengan satu ketukan.",
+          "cap": "Setiap hukum tajwid, dijelaskan"
         },
         "mushaf-dark": {
           "alt": "Pembaca dalam tema malam.",
@@ -883,7 +931,7 @@
           "cap": "Ulang, jeda, sembunyikan — untuk menghafal"
         },
         "quran": {
-          "alt": "Tab Quran: lanjutkan membaca, rencana khatam, baris Tilawah, ayat hari ini, dan setiap surah dengan namanya dalam kaligrafi mushaf.",
+          "alt": "Tab Quran: lanjutkan khatam atau bacaan Anda, bagian hari ini, baris Tilawah, surah yang sering dibaca, dan setiap surah dengan namanya dalam kaligrafi mushaf.",
           "cap": "Khatam dan tempat Anda berhenti"
         },
         "qibla": {
@@ -919,8 +967,8 @@
           "cap": "Widget dan Live Activity"
         },
         "widgets-android": {
-          "alt": "Layar utama Android dengan widget Langit — langit hari itu, salat berikutnya, dan hitungan waktu — serta widget Lanjutkan Membaca di atasnya.",
-          "cap": "Widget Android — langit, dan tempat Anda berhenti"
+          "alt": "Layar utama Android dengan widget Mihrab: enam waktu hari ini, baris untuk mencatat setiap salat dengan satu ketukan, dan salat berikutnya dengan hitung mundurnya.",
+          "cap": "Widget Android — waktu hari ini, dan mencatat dari layar utama"
         }
       },
       "spread": {
@@ -958,7 +1006,7 @@
         },
         {
           "h3": "Lesen und hören",
-          "p": "Der vollständige Medina-Mushaf in vier Riwayat, mit Tajwid-Farben für Hafs und Warsh und einem Wortvorleser: ein Wort gedrückt halten, und genau dieses Wort wird vorgelesen. 42 Rezitatoren, Tilawa Sure für Sure bei ausgeschaltetem Bildschirm, Tafsir, Übersetzungen und ein Khatma-Plan."
+          "p": "Der vollständige Medina-Mushaf in vier Riwayat, mit Tajwid-Farben für Hafs und Warsh und einem Wortvorleser: ein Wort gedrückt halten, und genau dieses Wort wird vorgelesen. 42 Rezitatoren, Tilawa Sure für Sure bei ausgeschaltetem Bildschirm, Tafsir, Übersetzungen und ein Khatma-Plan. Die Tilawa merkt sich, wo Sie waren, und schlägt vor, was die Sunna zu dieser Stunde empfiehlt."
         },
         {
           "h3": "Gedenken",
@@ -1053,16 +1101,24 @@
           "cap": "Start, dunkel"
         },
         "tilawah": {
-          "alt": "Tilāwah: eine Rezitation von Al-Baqara mit Rezitator, Wiedergabesteuerung, Tempo und Sleeptimer, darunter die Suren-Liste, um überall zu beginnen.",
+          "alt": "Tilāwah spielt al-Mulk: Rezitator, Wiedergabesteuerung, Tempo, Sleeptimer und Zufallswiedergabe, darunter eine lebende Muṣḥaf-Seite, auf der das rezitierte Wort leuchtet.",
           "cap": "Tilawa — anmachen und laufen lassen"
+        },
+        "tilawah-suggest": {
+          "alt": "Tilāwah wartet auf eine Wahl: dort weitermachen, wo du warst, mischen oder eine der Suren, die die Sunna zu dieser Stunde empfiehlt — an einem Freitagmorgen al-Kahf, as-Sadschda, al-Insan und al-Baqara.",
+          "cap": "Was die Sunna jetzt empfiehlt"
         },
         "reciters": {
           "alt": "Die Rezitatorenliste: zweiundvierzig Stimmen; jede Zeile sagt, was schon auf dem Gerät liegt, mit einer Schaltfläche zum Laden oder Löschen.",
           "cap": "Rezitatoren — und was offline da ist"
         },
         "mushaf": {
-          "alt": "Der Mushaf während der Rezitation: das rezitierte Wort leuchtet auf der Seite, darunter der Player.",
-          "cap": "Mushaf — das rezitierte Wort, hervorgehoben"
+          "alt": "Der Mushaf in Tajwid-Farben während der Rezitation: jeder Buchstabe in der Farbe seiner Regel, das rezitierte Wort leuchtet auf der Seite, darunter der Player.",
+          "cap": "Mushaf — Tajwid-Farben, das rezitierte Wort hervorgehoben"
+        },
+        "ayah": {
+          "alt": "Das Panel einer Aya im Tab Tajwid: jede Regel der Aya, was sie verlangt, und die Wörter, auf die sie fällt — jedes mit einem Tippen zu hören.",
+          "cap": "Jede Tajwid-Regel, erklärt"
         },
         "mushaf-dark": {
           "alt": "Der Leser im Nachtmodus.",
@@ -1073,7 +1129,7 @@
           "cap": "Wiederholen, pausieren, ausblenden — zum Auswendiglernen"
         },
         "quran": {
-          "alt": "Der Quran-Tab: weiterlesen, der Khatmah-Plan, die Tilāwah-Zeile, der Vers des Tages und jede Sure mit ihrem Namen in der Kalligrafie des Muṣḥaf.",
+          "alt": "Der Quran-Tab: die Khatma oder das Lesen fortsetzen, der heutige Teil, die Tilāwah-Zeile, oft gelesene Suren und jede Sure mit ihrem Namen in der Kalligrafie des Muṣḥaf.",
           "cap": "Khatmah und wo du warst"
         },
         "qibla": {
@@ -1109,8 +1165,8 @@
           "cap": "Widgets und die Live-Aktivität"
         },
         "widgets-android": {
-          "alt": "Ein Android-Startbildschirm mit dem Himmel-Widget — der Himmel des Tages, das nächste Gebet und ein lebendiger Countdown — darüber das Weiterlesen-Widget.",
-          "cap": "Android-Widgets — der Himmel und wo du warst"
+          "alt": "Ein Android-Startbildschirm mit Mihrab-Widgets: die sechs Zeiten des Tages, eine Zeile zum Eintragen jedes Gebets mit einem Tippen und das nächste Gebet mit Countdown.",
+          "cap": "Android-Widgets — die Zeiten des Tages und Eintragen vom Startbildschirm"
         }
       },
       "spread": {
@@ -1148,7 +1204,7 @@
         },
         {
           "h3": "Lire et écouter",
-          "p": "Le mushaf de Médine complet en quatre riwayat, avec les couleurs du tajwid pour Hafs et Warsh et un lecteur de mots : maintenez un mot et c'est ce mot seul qui est lu. 42 récitateurs, la Tilawa sourate après sourate écran éteint, tafsir, traductions et plan de khatma."
+          "p": "Le mushaf de Médine complet en quatre riwayat, avec les couleurs du tajwid pour Hafs et Warsh et un lecteur de mots : maintenez un mot et c'est ce mot seul qui est lu. 42 récitateurs, la Tilawa sourate après sourate écran éteint, tafsir, traductions et plan de khatma. La Tilawa garde votre place et propose ce que la sunna recommande à cette heure."
         },
         {
           "h3": "Se souvenir",
@@ -1243,16 +1299,24 @@
           "cap": "Accueil, sombre"
         },
         "tilawah": {
-          "alt": "Tilāwah : une récitation d’Al-Baqara avec le récitateur, les commandes de lecture, la vitesse et une minuterie de sommeil, et la liste des sourates dessous pour commencer où l’on veut.",
+          "alt": "La Tilāwah joue al-Mulk : le récitateur, les commandes, la vitesse, la minuterie et la lecture aléatoire, avec dessous une page de muṣḥaf vivante où le mot récité s’allume.",
           "cap": "Tilawa — on lance, et ça continue"
+        },
+        "tilawah-suggest": {
+          "alt": "La Tilāwah attend un choix : reprendre là où vous étiez, lecture aléatoire, ou l’une des sourates que la sunna recommande à cette heure — un vendredi matin al-Kahf, as-Sajda, al-Insân et al-Baqara.",
+          "cap": "Ce que la sunna recommande maintenant"
         },
         "reciters": {
           "alt": "La liste des récitateurs : quarante-deux voix, chaque ligne indiquant ce qui est déjà sur l’appareil, avec un bouton pour télécharger ou supprimer.",
           "cap": "Récitateurs, et ce que vous avez hors ligne"
         },
         "mushaf": {
-          "alt": "Le mushaf pendant la récitation : le mot récité s’allume sur la page, le lecteur en dessous.",
-          "cap": "Mushaf — le mot récité, allumé"
+          "alt": "Le mushaf en couleurs du tajwid pendant la récitation : chaque lettre dans la couleur de sa règle, le mot récité allumé sur la page, le lecteur dessous.",
+          "cap": "Mushaf — couleurs du tajwid, le mot récité allumé"
+        },
+        "ayah": {
+          "alt": "Le panneau d’un verset sur l’onglet Tajwid : chaque règle du verset, ce qu’elle demande, et les mots où elle s’applique, chacun à un toucher d’être entendu.",
+          "cap": "Chaque règle du tajwid, expliquée"
         },
         "mushaf-dark": {
           "alt": "Le lecteur dans son thème de nuit.",
@@ -1263,7 +1327,7 @@
           "cap": "Répéter, marquer une pause, masquer — pour mémoriser"
         },
         "quran": {
-          "alt": "L’onglet Coran : reprendre la lecture, le plan de khatma, la ligne Tilāwah, le verset du jour, et chaque sourate nommée dans la calligraphie du muṣḥaf.",
+          "alt": "L’onglet Coran : reprendre la khatma ou la lecture, la portion du jour, la ligne Tilāwah, les sourates souvent lues, et chaque sourate nommée dans la calligraphie du muṣḥaf.",
           "cap": "Khatma et où vous en étiez"
         },
         "qibla": {
@@ -1299,8 +1363,8 @@
           "cap": "Widgets et activité en direct"
         },
         "widgets-android": {
-          "alt": "Un écran d’accueil Android portant le widget Ciel — le ciel du jour, la prochaine prière et un compte à rebours — et le widget Reprendre la lecture au-dessus.",
-          "cap": "Widgets Android — le ciel, et où vous en étiez"
+          "alt": "Un écran d’accueil Android avec les widgets Mihrab : les six heures du jour, une ligne pour noter chaque prière d’un toucher, et la prochaine prière avec son compte à rebours.",
+          "cap": "Widgets Android — les heures du jour, et noter depuis l’accueil"
         }
       },
       "spread": {
@@ -1338,7 +1402,7 @@
         },
         {
           "h3": "Leer y escuchar",
-          "p": "El mushaf de Medina completo en cuatro riwayat, con colores de tajwid para Hafs y Warsh y un lector de palabras: mantén pulsada una palabra y se lee esa palabra sola. 42 recitadores, Tilawa sura tras sura con la pantalla apagada, tafsir, traducciones y un plan de jatma."
+          "p": "El mushaf de Medina completo en cuatro riwayat, con colores de tajwid para Hafs y Warsh y un lector de palabras: mantén pulsada una palabra y se lee esa palabra sola. 42 recitadores, Tilawa sura tras sura con la pantalla apagada, tafsir, traducciones y un plan de jatma. La Tilawa recuerda dónde lo dejaste y sugiere lo que la sunna recomienda a esa hora."
         },
         {
           "h3": "Recordar",
@@ -1433,16 +1497,24 @@
           "cap": "Inicio, oscuro"
         },
         "tilawah": {
-          "alt": "Tilāwah: una recitación de Al-Baqara con el recitador, los controles, la velocidad y un temporizador de apagado, y debajo la lista de suras para empezar donde quieras.",
+          "alt": "Tilāwah reproduciendo al-Mulk: el recitador, los controles, la velocidad, el temporizador y el modo aleatorio, con una página de muṣḥaf debajo donde se enciende la palabra recitada.",
           "cap": "Tilawah — la pones y sigue sola"
+        },
+        "tilawah-suggest": {
+          "alt": "Tilāwah espera una elección: seguir donde lo dejaste, aleatorio o una de las suras que la sunna recomienda a esta hora — un viernes por la mañana al-Kahf, as-Sayda, al-Insán y al-Baqara.",
+          "cap": "Lo que la sunna recomienda ahora"
         },
         "reciters": {
           "alt": "La lista de recitadores: cuarenta y dos voces; cada fila dice qué hay ya en el dispositivo, con un botón para descargar o borrar.",
           "cap": "Recitadores, y lo que tienes sin conexión"
         },
         "mushaf": {
-          "alt": "El mushaf durante la recitación: la palabra recitada se enciende en la página, con el reproductor debajo.",
-          "cap": "Mushaf — la palabra recitada, encendida"
+          "alt": "El mushaf en colores de tajwid durante la recitación: cada letra en el color de su regla, la palabra recitada encendida en la página y el reproductor debajo.",
+          "cap": "Mushaf — colores de tajwid, la palabra recitada encendida"
+        },
+        "ayah": {
+          "alt": "El panel de una aleya en la pestaña Tajwid: cada regla de la aleya, lo que pide y las palabras en que se aplica, cada una a un toque de oírse.",
+          "cap": "Cada regla de tajwid, explicada"
         },
         "mushaf-dark": {
           "alt": "El lector en su tema nocturno.",
@@ -1453,7 +1525,7 @@
           "cap": "Repetir, pausar, ocultar — para memorizar"
         },
         "quran": {
-          "alt": "La pestaña Corán: seguir leyendo, el plan de jatma, la fila de Tilāwah, el versículo del día y cada sura con su nombre en la caligrafía del muṣḥaf.",
+          "alt": "La pestaña Corán: seguir con la jatma o la lectura, la porción de hoy, la fila de Tilāwah, las suras más leídas y cada sura con su nombre en la caligrafía del muṣḥaf.",
           "cap": "Jatma y dónde lo dejaste"
         },
         "qibla": {
@@ -1489,8 +1561,8 @@
           "cap": "Widgets y actividad en directo"
         },
         "widgets-android": {
-          "alt": "Una pantalla de inicio de Android con el widget Cielo — el cielo del día, la próxima oración y una cuenta atrás — y encima el widget Seguir leyendo.",
-          "cap": "Widgets de Android — el cielo y dónde lo dejaste"
+          "alt": "Una pantalla de inicio de Android con widgets de Mihrab: las seis horas del día, una fila para registrar cada oración con un toque y la próxima oración con su cuenta atrás.",
+          "cap": "Widgets de Android — las horas del día y registrar desde el inicio"
         }
       },
       "spread": {
@@ -1528,7 +1600,7 @@
         },
         {
           "h3": "Читайте и слушайте",
-          "p": "Полный мединский мусхаф в четырёх риваятах, с цветным таджвидом для Хафса и Варша и озвучкой слов: удерживайте слово — и прозвучит именно оно. 42 чтеца, тилява сура за сурой с выключенным экраном, тафсир, переводы и план хатма."
+          "p": "Полный мединский мусхаф в четырёх риваятах, с цветным таджвидом для Хафса и Варша и озвучкой слов: удерживайте слово — и прозвучит именно оно. 42 чтеца, тилява сура за сурой с выключенным экраном, тафсир, переводы и план хатма. Тилява помнит, где вы остановились, и предлагает то, что сунна советует читать в этот час."
         },
         {
           "h3": "Поминайте",
@@ -1623,16 +1695,24 @@
           "cap": "Сегодня, тёмная тема"
         },
         "tilawah": {
-          "alt": "Тиляуа: чтение суры «Аль-Бакара» с чтецом, кнопками воспроизведения, скоростью и таймером сна, а ниже — список сур, чтобы начать с любого места.",
+          "alt": "Тилява читает суру «аль-Мульк»: чтец, кнопки воспроизведения, скорость, таймер сна и перемешивание, а ниже — живая страница мусхафа с подсвеченным словом.",
           "cap": "Тилават — включил и слушаешь"
+        },
+        "tilawah-suggest": {
+          "alt": "Тилява ждёт выбора: продолжить с места, где вы остановились, перемешать или одна из сур, которые сунна советует читать в этот час, — в пятницу утром аль-Кахф, ас-Саджда, аль-Инсан и аль-Бакара.",
+          "cap": "Что сунна советует сейчас"
         },
         "reciters": {
           "alt": "Список чтецов: сорок два голоса, в каждой строке — что уже есть на устройстве, с кнопкой загрузки или удаления.",
           "cap": "Чтецы и то, что есть офлайн"
         },
         "mushaf": {
-          "alt": "Мусхаф во время чтения: читаемое слово подсвечено на странице, ниже плеер.",
-          "cap": "Мусхаф — подсвеченное слово"
+          "alt": "Мусхаф в цветах таджвида во время чтения: каждая буква цветом своего правила, читаемое слово подсвечено на странице, ниже плеер.",
+          "cap": "Мусхаф — цвета таджвида, подсвеченное слово"
+        },
+        "ayah": {
+          "alt": "Панель аята на вкладке «Таджвид»: каждое правило в аяте, что оно требует, и слова, к которым оно относится, — каждое можно услышать одним касанием.",
+          "cap": "Каждое правило таджвида — с объяснением"
         },
         "mushaf-dark": {
           "alt": "Читалка в ночной теме.",
@@ -1643,7 +1723,7 @@
           "cap": "Повтор, пауза, скрытие — для заучивания"
         },
         "quran": {
-          "alt": "Вкладка «Коран»: продолжить чтение, план хатмы, строка тиляуа, аят дня и каждая сура, названная каллиграфией мусхафа.",
+          "alt": "Вкладка «Коран»: продолжить хатму или чтение, сегодняшняя часть, строка тилявы, часто читаемые суры и каждая сура, названная каллиграфией мусхафа.",
           "cap": "Хатма и место, где вы остановились"
         },
         "qibla": {
@@ -1679,8 +1759,8 @@
           "cap": "Виджеты и живой отсчёт"
         },
         "widgets-android": {
-          "alt": "Главный экран Android с виджетом «Небо» — небо дня, следующая молитва и живой отсчёт — и виджетом «Продолжить чтение» над ним.",
-          "cap": "Виджеты Android — небо и место, где вы остановились"
+          "alt": "Главный экран Android с виджетами Mihrab: шесть времён дня, строка, чтобы отметить каждый намаз одним касанием, и следующий намаз с обратным отсчётом.",
+          "cap": "Виджеты Android — время дня и отметка с главного экрана"
         }
       },
       "spread": {
@@ -1718,7 +1798,7 @@
         },
         {
           "h3": "পড়ুন ও শুনুন",
-          "p": "চার রিওয়ায়াতে পূর্ণ মদিনা মুসহাফ, হাফস ও ওয়ারশের জন্য রঙিন তাজবিদ, আর শব্দ-পাঠক: একটি শব্দ চেপে ধরুন, শুধু সেই শব্দটিই পড়ে শোনানো হবে। ৪২ জন কারি, স্ক্রিন বন্ধ রেখে সূরার পর সূরা তিলাওয়াত, তাফসির, অনুবাদ ও খতম পরিকল্পনা।"
+          "p": "চার রিওয়ায়াতে পূর্ণ মদিনা মুসহাফ, হাফস ও ওয়ারশের জন্য রঙিন তাজবিদ, আর শব্দ-পাঠক: একটি শব্দ চেপে ধরুন, শুধু সেই শব্দটিই পড়ে শোনানো হবে। ৪২ জন কারি, স্ক্রিন বন্ধ রেখে সূরার পর সূরা তিলাওয়াত, তাফসির, অনুবাদ ও খতম পরিকল্পনা। তিলাওয়াত আপনার জায়গা মনে রাখে এবং সেই সময়ে সুন্নাহ যা পড়তে উৎসাহ দেয় তা প্রস্তাব করে।"
         },
         {
           "h3": "জিকির",
@@ -1813,16 +1893,24 @@
           "cap": "হোম, গাঢ়"
         },
         "tilawah": {
-          "alt": "তিলাওয়াত: সূরা আল-বাকারার তিলাওয়াত — ক্বারী, প্লেব্যাক নিয়ন্ত্রণ, গতি ও স্লিপ টাইমার, আর নিচে যেকোনো জায়গা থেকে শুরু করার জন্য সূরার তালিকা।",
+          "alt": "তিলাওয়াতে সূরা আল-মুলক: ক্বারী, প্লেব্যাক নিয়ন্ত্রণ, গতি, স্লিপ টাইমার ও শাফল, আর নিচে জীবন্ত মুসহাফ পাতা যেখানে পঠিত শব্দটি আলোকিত।",
           "cap": "তিলাওয়াত — চালিয়ে দিন, চলতে থাকবে"
+        },
+        "tilawah-suggest": {
+          "alt": "তিলাওয়াত আপনার বাছাইয়ের অপেক্ষায়: যেখানে থেমেছিলেন সেখান থেকে চালিয়ে যান, শাফল করুন, অথবা এই সময়ে সুন্নাহ যে সূরাগুলো পড়তে উৎসাহ দেয় — শুক্রবার সকালে আল-কাহফ, আস-সাজদাহ, আল-ইনসান ও আল-বাকারাহ।",
+          "cap": "এখন সুন্নাহ যা পড়তে বলে"
         },
         "reciters": {
           "alt": "ক্বারীর তালিকা: বিয়াল্লিশটি কণ্ঠ, প্রতিটি সারিতে ডিভাইসে ইতিমধ্যে কী আছে তা লেখা, ডাউনলোড বা মুছে ফেলার বোতামসহ।",
           "cap": "ক্বারী, আর অফলাইনে যা আছে"
         },
         "mushaf": {
-          "alt": "তিলাওয়াতের সময় মুসহাফ: পঠিত শব্দটি পাতায় আলোকিত, নিচে প্লেয়ার।",
-          "cap": "মুসহাফ — পঠিত শব্দ, আলোকিত"
+          "alt": "তিলাওয়াতের সময় রঙিন তাজবিদের মুসহাফ: প্রতিটি অক্ষর তার বিধানের রঙে, পঠিত শব্দটি পাতায় আলোকিত, নিচে প্লেয়ার।",
+          "cap": "মুসহাফ — তাজবিদের রং, পঠিত শব্দ আলোকিত"
+        },
+        "ayah": {
+          "alt": "আয়াতের প্যানেলে তাজবিদ ট্যাব: আয়াতের প্রতিটি বিধান, তা আপনার কাছে কী চায়, আর যে শব্দগুলোতে তা পড়ে — প্রতিটি এক ছোঁয়ায় শোনা যায়।",
+          "cap": "প্রতিটি তাজবিদের বিধান, ব্যাখ্যাসহ"
         },
         "mushaf-dark": {
           "alt": "রিডার তার রাতের সাজে।",
@@ -1833,7 +1921,7 @@
           "cap": "পুনরাবৃত্তি, বিরতি, আড়াল — মুখস্থের জন্য"
         },
         "quran": {
-          "alt": "কুরআন ট্যাব: পড়া চালিয়ে যান, খতম পরিকল্পনা, তিলাওয়াতের সারি, দিনের আয়াত, আর প্রতিটি সূরার নাম মুসহাফের নিজস্ব ক্যালিগ্রাফিতে।",
+          "alt": "কুরআন ট্যাব: খতম বা আপনার পড়া চালিয়ে যান, আজকের অংশ, তিলাওয়াতের সারি, প্রায়ই পড়া সূরা, আর প্রতিটি সূরার নাম মুসহাফের নিজস্ব ক্যালিগ্রাফিতে।",
           "cap": "খতম আর যেখানে থেমেছিলেন"
         },
         "qibla": {
@@ -1869,8 +1957,8 @@
           "cap": "উইজেট আর লাইভ অ্যাক্টিভিটি"
         },
         "widgets-android": {
-          "alt": "অ্যান্ড্রয়েড হোম স্ক্রিনে স্কাই উইজেট — দিনের আকাশ, পরের নামাজ ও চলমান কাউন্টডাউন — এবং তার উপরে পড়া চালিয়ে যাওয়ার উইজেট।",
-          "cap": "অ্যান্ড্রয়েড উইজেট — আকাশ, আর যেখানে থেমেছিলেন"
+          "alt": "মিহরাব উইজেটসহ অ্যান্ড্রয়েড হোম স্ক্রিন: আজকের ছয়টি সময়, এক ছোঁয়ায় প্রতিটি নামাজ রেকর্ড করার সারি, আর কাউন্টডাউনসহ পরের নামাজ।",
+          "cap": "অ্যান্ড্রয়েড উইজেট — দিনের সময়, আর হোম স্ক্রিন থেকে রেকর্ড"
         }
       },
       "spread": {
@@ -1908,7 +1996,7 @@
         },
         {
           "h3": "पढ़ें और सुनें",
-          "p": "चार रिवायतों में पूरा मदीना मुसहफ़, हफ़्स और वर्श के लिए रंगीन तजवीद, और शब्द-पाठक: किसी शब्द को दबाए रखें, वही एक शब्द पढ़कर सुनाया जाएगा। 42 क़ारी, स्क्रीन बंद रहते सूरह-दर-सूरह तिलावत, तफ़सीर, अनुवाद और ख़त्म की योजना।"
+          "p": "चार रिवायतों में पूरा मदीना मुसहफ़, हफ़्स और वर्श के लिए रंगीन तजवीद, और शब्द-पाठक: किसी शब्द को दबाए रखें, वही एक शब्द पढ़कर सुनाया जाएगा। 42 क़ारी, स्क्रीन बंद रहते सूरह-दर-सूरह तिलावत, तफ़सीर, अनुवाद और ख़त्म की योजना। तिलावत आपकी जगह याद रखती है और बताती है कि उस वक़्त सुन्नत क्या पढ़ने की सलाह देती है।"
         },
         {
           "h3": "ज़िक्र",
@@ -2003,16 +2091,24 @@
           "cap": "होम, गहरा"
         },
         "tilawah": {
-          "alt": "तिलावत: सूरह अल-बक़रा की तिलावत — क़ारी, प्लेबैक नियंत्रण, गति और स्लीप टाइमर, और नीचे कहीं से भी शुरू करने के लिए सूरतों की सूची।",
+          "alt": "तिलावत में सूरह अल-मुल्क: क़ारी, प्लेबैक नियंत्रण, गति, स्लीप टाइमर और शफ़ल, और नीचे जीवंत मुसहफ़ पन्ना जिस पर पढ़ा जा रहा शब्द रोशन है।",
           "cap": "तिलावत — लगाइए और चलने दीजिए"
+        },
+        "tilawah-suggest": {
+          "alt": "तिलावत आपके चुनाव का इंतज़ार कर रही है: जहाँ छोड़ा था वहीं से जारी रखें, शफ़ल करें, या वे सूरतें जिनकी सुन्नत इस वक़्त सलाह देती है — जुमा की सुबह अल-कहफ़, अस-सजदा, अल-इंसान और अल-बक़रा।",
+          "cap": "इस वक़्त सुन्नत जो पढ़ने को कहती है"
         },
         "reciters": {
           "alt": "क़ारियों की सूची: बयालीस आवाज़ें, हर पंक्ति बताती है कि डिवाइस पर पहले से क्या है, डाउनलोड या मिटाने के बटन के साथ।",
           "cap": "क़ारी, और ऑफ़लाइन क्या है"
         },
         "mushaf": {
-          "alt": "तिलावत के दौरान मुसहफ़: पढ़ा जा रहा शब्द पृष्ठ पर रोशन, नीचे प्लेयर।",
-          "cap": "मुसहफ़ — पढ़ा जा रहा शब्द, रोशन"
+          "alt": "तिलावत के दौरान रंगीन तजवीद वाला मुसहफ़: हर अक्षर अपने नियम के रंग में, पढ़ा जा रहा शब्द पन्ने पर रोशन, नीचे प्लेयर।",
+          "cap": "मुसहफ़ — तजवीद के रंग, पढ़ा जा रहा शब्द रोशन"
+        },
+        "ayah": {
+          "alt": "आयत के पैनल में तजवीद टैब: आयत का हर नियम, वह आपसे क्या माँगता है, और वे शब्द जिन पर वह लागू होता है — हर एक एक टैप पर सुना जा सकता है।",
+          "cap": "तजवीद का हर नियम, समझाया हुआ"
         },
         "mushaf-dark": {
           "alt": "रीडर अपने रात के रूप में।",
@@ -2023,7 +2119,7 @@
           "cap": "दोहराव, ठहराव, छिपाव — याद करने के लिए"
         },
         "quran": {
-          "alt": "क़ुरआन टैब: पढ़ना जारी रखें, ख़त्म योजना, तिलावत की पंक्ति, दिन की आयत, और हर सूरह का नाम मुसहफ़ की अपनी सुलेख में।",
+          "alt": "क़ुरआन टैब: ख़त्म या अपनी पढ़ाई जारी रखें, आज का हिस्सा, तिलावत की पंक्ति, अक्सर पढ़ी जाने वाली सूरतें, और हर सूरह का नाम मुसहफ़ की अपनी सुलेख में।",
           "cap": "ख़त्म और जहाँ आपने छोड़ा"
         },
         "qibla": {
@@ -2059,8 +2155,8 @@
           "cap": "विजेट और लाइव गतिविधि"
         },
         "widgets-android": {
-          "alt": "एंड्रॉइड होम स्क्रीन पर आकाश विजेट — दिन का आकाश, अगली नमाज़ और चलती गिनती — और उसके ऊपर पढ़ना जारी रखने का विजेट।",
-          "cap": "एंड्रॉइड विजेट — आकाश, और जहाँ आपने छोड़ा"
+          "alt": "मिहराब विजेट वाली एंड्रॉइड होम स्क्रीन: आज के छह समय, हर नमाज़ को एक टैप से दर्ज करने की पंक्ति, और उलटी गिनती के साथ अगली नमाज़।",
+          "cap": "एंड्रॉइड विजेट — दिन के समय, और होम स्क्रीन से दर्ज करना"
         }
       },
       "spread": {
@@ -2098,7 +2194,7 @@
         },
         {
           "h3": "诵读与聆听",
-          "p": "四种传述的完整麦地那穆斯哈夫，哈夫斯与沃尔什均有泰吉威德着色，还有逐词朗读：长按一个词，就只朗读这个词。42 位诵读者，熄屏时逐章连续诵读，经注、译本与通读计划。"
+          "p": "四种传述的完整麦地那穆斯哈夫，哈夫斯与沃尔什均有泰吉威德着色，还有逐词朗读：长按一个词，就只朗读这个词。42 位诵读者，熄屏时逐章连续诵读，经注、译本与通读计划。诵读会记住你的进度，并按时辰推荐圣行所提倡的章节。"
         },
         {
           "h3": "记念",
@@ -2193,16 +2289,24 @@
           "cap": "主页，深色"
         },
         "tilawah": {
-          "alt": "诵读：黄牛章的诵读，带诵读者、播放控制、语速与睡眠定时器，下方是可从任意处开始的章节列表。",
+          "alt": "诵读国权章：诵读者、播放控制、语速、睡眠定时与随机播放，下方是实时的穆斯哈夫页面，正在诵读的词被点亮。",
           "cap": "诵读 — 放上就一直读下去"
+        },
+        "tilawah-suggest": {
+          "alt": "诵读等待你的选择：从上次停下的地方继续、随机播放，或此刻圣行所提倡的章节——周五清晨是山洞章、叩头章、人章与黄牛章。",
+          "cap": "此刻圣行所提倡的"
         },
         "reciters": {
           "alt": "诵读者名单：四十二个声音，每一行说明设备上已有多少，并带有下载或删除按钮。",
           "cap": "诵读者，以及离线已有的部分"
         },
         "mushaf": {
-          "alt": "诵读中的穆斯哈夫：正在诵读的词在页面上点亮，下方是播放器。",
-          "cap": "穆斯哈夫 — 点亮正在诵读的词"
+          "alt": "诵读中的泰吉威德着色穆斯哈夫：每个字母以其规则的颜色呈现，正在诵读的词在页面上点亮，下方是播放器。",
+          "cap": "穆斯哈夫 — 泰吉威德着色，点亮正在诵读的词"
+        },
+        "ayah": {
+          "alt": "经文面板的泰吉威德标签：经文中的每条规则、它要求你怎样读，以及它所落在的词，每个词轻点即可听到。",
+          "cap": "每条泰吉威德规则，逐一讲解"
         },
         "mushaf-dark": {
           "alt": "阅读器的夜间外观。",
@@ -2213,7 +2317,7 @@
           "cap": "重复、停顿、隐藏——为了背诵"
         },
         "quran": {
-          "alt": "古兰经标签页：继续阅读、封印计划、诵读一行、当日经文，以及每章以穆斯哈甫自身书法写出的名称。",
+          "alt": "古兰经标签页：继续通读或阅读、今日分量、诵读一行、常读章节，以及每章以穆斯哈夫自身书法写出的名称。",
           "cap": "封印计划与上次读到的地方"
         },
         "qibla": {
@@ -2249,8 +2353,8 @@
           "cap": "小组件与实时活动"
         },
         "widgets-android": {
-          "alt": "安卓主屏上的天空小组件——当日的天空、下一次礼拜与实时倒计时——上方是继续阅读小组件。",
-          "cap": "安卓小组件 —— 天空与上次读到的地方"
+          "alt": "带有 Mihrab 小组件的安卓主屏：今日六个时间、一键记录每次礼拜的一行，以及带倒计时的下一次礼拜。",
+          "cap": "安卓小组件 —— 当日时间，在主屏上记录"
         }
       },
       "spread": {
