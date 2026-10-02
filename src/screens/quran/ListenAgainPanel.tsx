@@ -1,18 +1,21 @@
 /**
- * "Carry on, or start something new" — the listening page when nothing is
- * playing, or the last session has gone stale.
+ * Carry on, shuffle, or what is recommended now — the listening page when
+ * nothing is playing, or the last session has gone stale.
  *
- * Three ways in, in the order people reach for them:
+ * Laid out to be read at a glance rather than as a list:
  *
- *   1. Carry on: the listen picks up at the ayah it reached
- *      (`listenProgress`) — the listening place, never the reading marker.
- *   2. Shuffle: a surah at random, then another, with shuffle left on.
- *   3. Recommended now: what the sunnah attaches to this hour
- *      (`listenSuggestions`), each with its reason.
+ *   [ ▶  Continue Al-Baqarah · 120 ]  [ ⤨ ]     one row: the two ways on
+ *   ✦ Recommended now
+ *   [ Al-Kahf      ] [ As-Sajdah   ]             a grid of small cards,
+ *   [ reason…      ] [ reason…     ]             name and why
+ *
+ * Continue picks the listen up where it reached (`listenProgress`) — the
+ * listening place, never the reading marker. Shuffle starts a surah at
+ * random with shuffle left on. The cards are what the sunnah attaches to
+ * this hour (`listenSuggestions`).
  *
  * Shown while idle (after a reload, or once a listen has been stopped) and
- * while a listen has sat paused for longer than `STALE_AFTER_MS`. A pause
- * of a moment keeps the plain player: the play button is the answer then.
+ * while a listen has sat paused for longer than `STALE_AFTER_MS`.
  */
 import { memo, useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -24,6 +27,7 @@ import {
   listenSuggestions,
   type ListenSuggestion,
 } from '../../quran/audio/listenSuggestions';
+import { PlayIcon, ShuffleIcon, SparkIcon } from '../../quran/audio/PlaybackIcons';
 import { RADIUS, SPACING } from '../../theme/tokens';
 import { TYPE } from '../../theme/typography';
 
@@ -54,121 +58,155 @@ function ListenAgainPanelImpl({
     () => listenSuggestions(new Date(), maghrib),
     [maghrib],
   );
-
-  const row = (
-    key: string,
-    title: string,
-    sub: string,
-    onPress: () => void,
-    strong?: boolean,
-  ) => (
-    <Pressable
-      key={key}
-      testID={`listen-again-${key}`}
-      accessibilityRole="button"
-      accessibilityLabel={`${title} — ${sub}`}
-      onPress={onPress}
-      style={({ pressed }) => [
-        styles.row,
-        strong
-          ? { backgroundColor: palette.accentBg, borderColor: palette.accentSolid }
-          : { borderColor: palette.border ?? palette.muted },
-        pressed && styles.pressed,
-      ]}>
-      <View style={styles.rowText}>
-        <Text
-          style={[styles.rowTitle, { color: strong ? palette.accentSolid : palette.text }]}
-          numberOfLines={1}>
-          {title}
-        </Text>
-        <Text style={[styles.rowSub, { color: palette.muted }]} numberOfLines={1}>
-          {sub}
-        </Text>
-      </View>
-      <Text style={[styles.chevron, { color: palette.accentSolid }]}>›</Text>
-    </Pressable>
-  );
+  const shuffleLabel = t('quran.listenAgain.shuffle', 'Shuffle');
 
   return (
-    <View
-      style={[
-        styles.card,
-        { backgroundColor: palette.card, borderColor: palette.border ?? palette.muted },
-      ]}>
-      <Text style={[styles.heading, { color: palette.muted }]}>
-        {t('quran.listenAgain.heading', 'Carry on, or start something new')}
-      </Text>
-      {progress
-        ? row(
-            'continue',
-            t('quran.listenAgain.resume', {
+    <View style={styles.wrap}>
+      <View style={styles.actions}>
+        {progress ? (
+          <Pressable
+            testID="listen-again-continue"
+            accessibilityRole="button"
+            accessibilityLabel={`${t('quran.listenAgain.resume', {
               defaultValue: 'Continue {{surah}}',
               surah: surahName(progress.surah),
-            }),
-            t('quran.listenAgain.resumeSub', {
+            })} — ${t('quran.listenAgain.resumeSub', {
               defaultValue: 'From ayah {{ayah}}, where you stopped listening',
               ayah: progress.ayah,
-            }),
-            onContinue,
-            true,
-          )
-        : null}
-      {row(
-        'shuffle',
-        t('quran.listenAgain.shuffle', 'Shuffle'),
-        t('quran.listenAgain.shuffleSub', 'A surah at random, then another'),
-        onShuffle,
-      )}
-      <Text style={[styles.subheading, { color: palette.muted }]}>
-        {t('quran.listenAgain.suggested', 'Recommended now')}
-      </Text>
-      {suggestions.map(s =>
-        row(
-          s.id,
-          s.titleKey ? t(s.titleKey, s.titleDefault ?? '') : surahName(s.surah),
-          t(s.reasonKey, s.reasonDefault),
-          () => onSuggestion(s),
-        ),
-      )}
+            })}`}
+            onPress={onContinue}
+            style={({ pressed }) => [
+              styles.continueBtn,
+              { backgroundColor: palette.accentSolid },
+              pressed && styles.pressed,
+            ]}>
+            <PlayIcon color={String(palette.onAccent)} size={16} />
+            <Text
+              style={[styles.continueText, { color: palette.onAccent }]}
+              numberOfLines={1}>
+              {t('quran.listenAgain.resume', {
+                defaultValue: 'Continue {{surah}}',
+                surah: surahName(progress.surah),
+              })}
+            </Text>
+            <Text
+              style={[styles.continueAyah, { color: palette.onAccent }]}
+              numberOfLines={1}>
+              {`· ${progress.ayah}`}
+            </Text>
+          </Pressable>
+        ) : null}
+        <Pressable
+          testID="listen-again-shuffle"
+          accessibilityRole="button"
+          accessibilityLabel={`${shuffleLabel} — ${t(
+            'quran.listenAgain.shuffleSub',
+            'A surah at random, then another',
+          )}`}
+          onPress={onShuffle}
+          style={({ pressed }) => [
+            progress ? styles.shuffleBtn : styles.shuffleWide,
+            { backgroundColor: palette.controlBg },
+            pressed && styles.pressed,
+          ]}>
+          <ShuffleIcon color={String(palette.accentSolid)} size={18} />
+          {progress ? null : (
+            <Text style={[styles.shuffleText, { color: palette.text }]} numberOfLines={1}>
+              {shuffleLabel}
+            </Text>
+          )}
+        </Pressable>
+      </View>
+
+      <View style={styles.suggestHead}>
+        <SparkIcon color={String(palette.accentSolid)} size={12} />
+        <Text style={[styles.suggestLabel, { color: palette.muted }]}>
+          {t('quran.listenAgain.suggested', 'Recommended now')}
+        </Text>
+      </View>
+      <View style={styles.grid}>
+        {suggestions.map(s => {
+          const title = s.titleKey ? t(s.titleKey, s.titleDefault ?? '') : surahName(s.surah);
+          const reason = t(s.reasonKey, s.reasonDefault);
+          return (
+            <Pressable
+              key={s.id}
+              testID={`listen-again-${s.id}`}
+              accessibilityRole="button"
+              accessibilityLabel={`${title} — ${reason}`}
+              onPress={() => onSuggestion(s)}
+              style={({ pressed }) => [
+                styles.tile,
+                { backgroundColor: palette.card, borderColor: palette.border ?? palette.muted },
+                pressed && styles.pressed,
+              ]}>
+              <Text style={[styles.tileTitle, { color: palette.text }]} numberOfLines={1}>
+                {title}
+              </Text>
+              <Text style={[styles.tileReason, { color: palette.muted }]} numberOfLines={2}>
+                {reason}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </View>
     </View>
   );
 }
 
 export const ListenAgainPanel = memo(ListenAgainPanelImpl);
 
-// Compact: these are choices, not cards. One line of title and one of
-// reason, so the whole question fits on the screen with the player above.
 const styles = StyleSheet.create({
-  card: {
-    borderRadius: RADIUS.lg,
-    borderWidth: StyleSheet.hairlineWidth,
-    padding: SPACING.sm,
+  wrap: { marginTop: SPACING.md, gap: SPACING.sm },
+  actions: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm },
+  continueBtn: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.sm,
+    height: 44,
+    borderRadius: 22,
+    paddingHorizontal: SPACING.md,
+  },
+  continueText: { flexShrink: 1, fontSize: TYPE.callout.fontSize, fontWeight: '700' },
+  continueAyah: { fontSize: TYPE.callout.fontSize, fontWeight: '500', opacity: 0.85 },
+  shuffleBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  shuffleWide: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: SPACING.sm,
+    height: 44,
+    borderRadius: 22,
+  },
+  shuffleText: { fontSize: TYPE.callout.fontSize, fontWeight: '600' },
+  suggestHead: {
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 6,
-    marginTop: SPACING.md,
-  },
-  heading: {
-    fontSize: TYPE.caption.fontSize,
-    fontWeight: '600',
-    paddingHorizontal: SPACING.xs,
-  },
-  subheading: {
-    fontSize: TYPE.caption.fontSize,
-    fontWeight: '600',
     marginTop: SPACING.xs,
     paddingHorizontal: SPACING.xs,
   },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  suggestLabel: { fontSize: TYPE.footnote.fontSize, fontWeight: '600' },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.sm },
+  // Two to a row; an odd last one takes the row.
+  tile: {
+    flexBasis: '47%',
+    flexGrow: 1,
     borderRadius: RADIUS.md,
     borderWidth: StyleSheet.hairlineWidth,
-    paddingVertical: 7,
+    paddingVertical: SPACING.sm,
     paddingHorizontal: SPACING.sm + 2,
-    gap: SPACING.sm,
+    gap: 2,
   },
-  rowText: { flex: 1 },
-  rowTitle: { fontSize: TYPE.footnote.fontSize, fontWeight: '600' },
-  rowSub: { fontSize: 12, lineHeight: 16, marginTop: 1 },
-  chevron: { fontSize: TYPE.callout.fontSize, fontWeight: '600' },
+  tileTitle: { fontSize: TYPE.footnote.fontSize, fontWeight: '700' },
+  tileReason: { fontSize: 12, lineHeight: 16 },
   pressed: { opacity: 0.6 },
 });
