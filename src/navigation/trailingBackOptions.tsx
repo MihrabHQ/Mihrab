@@ -1,8 +1,6 @@
-import { useLayoutEffect } from 'react';
 import { Platform } from 'react-native';
-import type { NavigationProp, ParamListBase } from '@react-navigation/native';
+import type { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import { TabBackButton } from './TabBackButton';
-import { useLayoutRtl } from '../i18n/useLayoutRtl';
 
 /**
  * iOS, app in Arabic or Urdu: the back chevron on the RIGHT of a pushed
@@ -16,7 +14,9 @@ import { useLayoutRtl } from '../i18n/useLayoutRtl';
  * left-to-right, so Tilawah and Khatmah had their arrow on the left: the
  * same control on the opposite side from one page to the next.
  *
- * So in a right-to-left app the system back control is hidden and
+ * Used as route options in RootNavigator (Tilawah, Khatmah, downloads,
+ * the tajwīd guide), so a screen does not need a navigation context of
+ * its own for it. In a right-to-left app the system back control is hidden and
  * `TabBackButton` stands in `headerRight`, glyph flipped by the app's
  * direction (not `inNativeHeader`, which would follow the device's and
  * point it away from the edge it sits on). The swipe-back gesture is
@@ -28,26 +28,14 @@ import { useLayoutRtl } from '../i18n/useLayoutRtl';
  * Android is left alone: its toolbar arrow is the platform's own placement
  * and was not part of the drift.
  */
-export function useTrailingBackInRtl(
-  navigation: NavigationProp<ParamListBase>,
-): void {
-  const rtl = useLayoutRtl();
-  useLayoutEffect(() => {
-    if (Platform.OS !== 'ios') return;
-    navigation.setOptions(
-      rtl
-        ? {
-            headerBackVisible: false,
-            headerLeft: () => null,
-            headerRight: () => (
-              <TabBackButton onPress={() => navigation.goBack()} />
-            ),
-          }
-        : {
-            headerBackVisible: true,
-            headerLeft: undefined,
-            headerRight: undefined,
-          },
-    );
-  }, [navigation, rtl]);
+export function trailingBackOptions(
+  navigation: { goBack(): void },
+  rtl: boolean,
+): NativeStackNavigationOptions {
+  if (Platform.OS !== 'ios' || !rtl) return {};
+  return {
+    headerBackVisible: false,
+    headerLeft: () => null,
+    headerRight: () => <TabBackButton onPress={() => navigation.goBack()} />,
+  };
 }

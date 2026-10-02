@@ -9,7 +9,7 @@
  * heard here or opened on its page.
  */
 import { useCallback, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import { Platform, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
@@ -49,7 +49,11 @@ export function TajweedGuideScreen() {
   const { t } = useTranslation();
   const { palette, isDark } = useAppPalette();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const systemBottom = useSystemNavigationReserve();
+  // The page runs to the bottom edge (no stack reserve — RootNavigator,
+  // QuranTajweed). iOS: the automatic content inset already adds the
+  // bottom safe area, so the system band is Android's alone.
+  const systemNav = useSystemNavigationReserve();
+  const systemBottom = Platform.OS === 'android' ? systemNav : 0;
   const { prefs } = useQuranState();
   // Warsh has colours of its own (issue #58) and rules Ḥafṣ does not.
   const coloured = riwayahHasTajweed(prefs.riwayah);

@@ -23,8 +23,9 @@
  * walked rather than read from the manifest, so a store whose manifest
  * went missing still shows up as the space it is really taking.
  */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import {
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -36,6 +37,7 @@ import { CenteredColumn } from '../responsive/CenteredColumn';
 import { ConfirmModal } from '../components/ConfirmModal';
 import ReactNativeBlobUtil from 'react-native-blob-util';
 import { useTranslation } from 'react-i18next';
+import { SafeAreaInsetsContext } from 'react-native-safe-area-context';
 import { useAppPalette } from '../hooks/useAppPalette';
 import { useKeyboardAwareScroll } from '../hooks/useKeyboardAwareScroll';
 import { cardEdgeStyle } from '../theme/chrome';
@@ -88,6 +90,9 @@ function formatBytes(bytes: number): string {
 
 export function QuranDownloadsScreen() {
   const kb = useKeyboardAwareScroll<ScrollViewInstance>();
+  // The context rather than the hook: the hook throws without a provider,
+  // and this screen is rendered bare in tests.
+  const bottomInset = useContext(SafeAreaInsetsContext)?.bottom ?? 0;
   const { t } = useTranslation();
   const { palette } = useAppPalette();
 
@@ -297,12 +302,21 @@ export function QuranDownloadsScreen() {
     riwayahBytes +
     audio.reduce((s, a) => s + a.bytes, 0);
 
+  /**
+   * The page runs under the home indicator / navigation bar and pads its
+   * own end (the stack no longer reserves a band there — RootNavigator,
+   * QuranDownloads). iOS: the automatic content inset already adds the
+   * bottom safe area. Android: added here. The keyboard's padding, when
+   * there is one, comes after and wins.
+   */
+  const listBottom = SPACING.lg + (Platform.OS === 'android' ? bottomInset : 0);
+
   return (
     <ScrollView
       ref={kb.ref}
       automaticallyAdjustKeyboardInsets
       style={{ flex: 1, backgroundColor: palette.bg }}
-      contentContainerStyle={[styles.list, kb.contentPadding]}
+      contentContainerStyle={[styles.list, { paddingBottom: listBottom }, kb.contentPadding]}
       contentInsetAdjustmentBehavior="automatic">
       {/* The gap belongs to the stack, not to `contentContainerStyle`.
           That gap separates the ScrollView's DIRECT children, and since

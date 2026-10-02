@@ -33,7 +33,6 @@ import { startKhatmah } from '../../quran/khatmahActions';
 import type { RootStackParamList } from '../../navigation/types';
 import { useBreakpoint } from '../../responsive/breakpoints';
 import { useTabBarInset } from '../../navigation/tabBarInset';
-import { useTrailingBackInRtl } from '../../navigation/useTrailingBackInRtl';
 import { cardEdgeStyle } from '../../theme/chrome';
 import { TYPE } from '../../theme/typography';
 import { RADIUS, SPACING } from '../../theme/tokens';
@@ -47,7 +46,6 @@ export function KhatmahScreen() {
   const tabBarInset = useTabBarInset();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  useTrailingBackInRtl(navigation);
   // Custom khatmah length (v2.7.31) — the 30/60/90 presets plus a
   // free-form day count entered in a small modal.
   const [customDaysVisible, setCustomDaysVisible] = useState(false);
@@ -103,6 +101,11 @@ export function KhatmahScreen() {
     <>
     <ScrollView
       style={{ backgroundColor: palette.bg }}
+      // iOS: the header is transparent (blur), so the scroll view starts
+      // under it; "automatic" insets the content below the bar, as every
+      // other pushed page does. Without it the intro sat under the title
+      // and the back chevron.
+      contentInsetAdjustmentBehavior="automatic"
       contentContainerStyle={[
         styles.content,
         { paddingBottom: tabBarInset + SPACING.xl },

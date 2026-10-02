@@ -17,7 +17,7 @@ it('pushed pages show the chevron without a back title', () => {
 
 it('Tilawah and Khatmah drop the stack bottom reserve', () => {
   const nav = read('src/navigation/RootNavigator.tsx');
-  for (const route of ['QuranListen', 'Khatmah']) {
+  for (const route of ['QuranListen', 'Khatmah', 'QuranDownloads', 'QuranTajweed']) {
     const block = nav.slice(nav.indexOf(`name="${route}"`));
     const opts = block.slice(0, block.indexOf('/>'));
     expect(opts).toMatch(/paddingBottom: 0/);
@@ -30,14 +30,23 @@ it('Tilawah pads its own list end on Android and lifts the to-top button', () =>
   expect(src).toMatch(/bottom: 24 \+ insets\.bottom/);
 });
 
-it('Tilawah and Khatmah put the back chevron on the trailing edge in RTL', () => {
-  for (const f of ['src/screens/quran/TilawahScreen.tsx', 'src/screens/quran/KhatmahScreen.tsx']) {
-    expect(read(f)).toMatch(/useTrailingBackInRtl\(navigation\)/);
+it('Tilawah, Khatmah, downloads and the tajweed guide put the back chevron on the trailing edge in RTL', () => {
+  const nav = read('src/navigation/RootNavigator.tsx');
+  for (const route of ['QuranListen', 'Khatmah', 'QuranDownloads', 'QuranTajweed']) {
+    const block = nav.slice(nav.indexOf(`name="${route}"`));
+    const opts = block.slice(0, block.indexOf('/>'));
+    expect(opts).toMatch(/\.\.\.trailingBackOptions\(navigation, isRtlLocale\)/);
   }
-  expect(read('src/screens/quran/MushafSurahScreen.tsx')).not.toMatch(/useTrailingBackInRtl/);
-  const hook = read('src/navigation/useTrailingBackInRtl.tsx');
-  expect(hook).toMatch(/Platform\.OS !== 'ios'/);
-  expect(hook).toMatch(/headerBackVisible: false/);
+  expect(nav.slice(nav.indexOf('name="QuranSurah"')).slice(0, 200)).not.toMatch(/trailingBackOptions/);
+  const f = read('src/navigation/trailingBackOptions.tsx');
+  expect(f).toMatch(/Platform\.OS !== 'ios' \|\| !rtl/);
+  expect(f).toMatch(/headerBackVisible: false/);
   // Glyph follows the app's direction, not the device's.
-  expect(hook).toMatch(/<TabBackButton onPress=\{\(\) => navigation\.goBack\(\)\} \/>/);
+  expect(f).toMatch(/<TabBackButton onPress=\{\(\) => navigation\.goBack\(\)\} \/>/);
+});
+
+it('Khatmah content starts below the transparent iOS header', () => {
+  expect(read('src/screens/quran/KhatmahScreen.tsx')).toMatch(
+    /contentInsetAdjustmentBehavior="automatic"/,
+  );
 });

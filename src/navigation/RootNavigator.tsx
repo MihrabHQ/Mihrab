@@ -17,6 +17,7 @@ import { QuranDownloadsScreen } from '../screens/QuranDownloadsScreen';
 import { TajweedGuideScreen } from '../quran/tajweed/TajweedGuideScreen';
 import { TilawahScreen } from '../screens/quran/TilawahScreen';
 import { KhatmahScreen } from '../screens/quran/KhatmahScreen';
+import { trailingBackOptions } from './trailingBackOptions';
 import { ShareMonthScreen } from '../screens/ShareMonthScreen';
 import { BackupScreen } from '../screens/BackupScreen';
 import { SyncScreen } from '../screens/SyncScreen';
@@ -230,7 +231,8 @@ export function RootNavigator() {
       <Stack.Screen
         name="QuranListen"
         component={TilawahScreen}
-        options={{
+        options={({ navigation }) => ({
+          ...trailingBackOptions(navigation, isRtlLocale),
           title: t('quran.listenTitle', 'Tilawah'),
           headerLargeTitle: false,
           // The list runs to the bottom edge and pads itself (see
@@ -238,34 +240,44 @@ export function RootNavigator() {
           // page colour across the bottom of the screen that rows
           // scrolled under and vanished behind.
           contentStyle: { backgroundColor: theme.colors.background, paddingBottom: 0 },
-        }}
+        })}
       />
       <Stack.Screen
         name="Khatmah"
         component={KhatmahScreen}
-        options={{
+        options={({ navigation }) => ({
+          ...trailingBackOptions(navigation, isRtlLocale),
           title: t('quran.khatmah', 'Khatmah'),
           headerLargeTitle: false,
           // Same as Tilawah: the scroll view pads its own bottom
           // (tabBarInset), so the stack's reserve was a dead band.
           contentStyle: { backgroundColor: theme.colors.background, paddingBottom: 0 },
-        }}
+        })}
       />
       <Stack.Screen
         name="QuranDownloads"
         component={QuranDownloadsScreen}
-        options={{
+        options={({ navigation }) => ({
+          ...trailingBackOptions(navigation, isRtlLocale),
           title: t('downloads.title', 'Manage downloads'),
           headerLargeTitle: false,
-        }}
+          // Same as Tilawah: the scroll view pads its own end (see
+          // QuranDownloadsScreen `listBottom`), so the stack's reserve was
+          // a band across the bottom of the screen that cards slid under.
+          contentStyle: { backgroundColor: theme.colors.background, paddingBottom: 0 },
+        })}
       />
       <Stack.Screen
         name="QuranTajweed"
         component={TajweedGuideScreen}
-        options={{
+        options={({ navigation }) => ({
+          ...trailingBackOptions(navigation, isRtlLocale),
           title: t('tajweed.guideTitle', 'Reading the colours'),
           headerLargeTitle: false,
-        }}
+          // Pads its own end (TajweedGuideScreen); the stack's reserve
+          // was a band across the bottom the cards slid under.
+          contentStyle: { backgroundColor: theme.colors.background, paddingBottom: 0 },
+        })}
       />
       {/* A modal, not a pushed card, and no gesture.
 

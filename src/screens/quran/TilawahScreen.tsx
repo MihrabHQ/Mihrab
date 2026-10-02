@@ -60,7 +60,6 @@ import { useKeepAwake } from '../../quran/keepAwakeLock';
 import Svg, { Path } from 'react-native-svg';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import { useAndroidSubScreenBack } from '../../navigation/useAndroidSubScreenBack';
-import { useTrailingBackInRtl } from '../../navigation/useTrailingBackInRtl';
 import type { RootStackParamList } from '../../navigation/types';
 import MushafTextPageSurface, {
   mushafLineGeometry,
@@ -531,7 +530,6 @@ export function TilawahScreen() {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   useAndroidSubScreenBack();
-  useTrailingBackInRtl(navigation);
   const insets = useSafeAreaInsets();
   const status = usePlaybackStatus();
   /**
