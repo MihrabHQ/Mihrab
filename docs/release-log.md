@@ -1155,4 +1155,11 @@ Changed the release cycle itself:
   - `scripts/verify-release.sh`
   - `scripts/xcode-cloud.py`
 
-**Lesson:** _(unfilled)_
+**Lesson:** a release that lands a new drawing engine (Glance) and a new
+release tool on the same day spends its attempts on both: the two Play
+build failures and the GitHub one were the new release path meeting R8
+and the widget rewrite for the first time, and the cask's macOS minimum
+and architecture were guesses from when the tap was set up, not facts
+read from the app. Land the rewrite, build it through the release path
+in a dry run, and only then cut — and let the cask's requirements come
+from the built app rather than from memory.
