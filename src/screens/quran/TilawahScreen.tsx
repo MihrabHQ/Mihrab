@@ -94,6 +94,7 @@ import { TYPE } from '../../theme/typography';
 import {
   surahHeaderGlyph,
   surahHeaderStyle,
+  surahNameColumnStyle,
   surahNameSize,
 } from '../../quran/surahHeaderGlyph';
 import { InfoButton } from '../../components/ui/InfoSheet';
@@ -936,8 +937,10 @@ export function TilawahScreen() {
             pressed && styles.pressed,
           ]}>
           {/* An inset hairline instead of a card per surah (redesign-plan
-              P2/P3): a hundred and fourteen cards was a wall. */}
-          {!palette.flatChrome ? (
+              P2/P3): a hundred and fourteen cards was a wall. BETWEEN rows
+              only: a line under An-Nas separates it from nothing and read
+              as a lip at the foot of the page. */}
+          {!palette.flatChrome && item.number < SURAHS.length ? (
             <View
               pointerEvents="none"
               style={[styles.surahDivider, { backgroundColor: palette.border }]}
@@ -968,15 +971,19 @@ export function TilawahScreen() {
               })}
             </Text>
           </View>
-          <Text
-            style={[
-              styles.surahArabic,
-              { color: palette.text, fontSize: surahNameSize(item.number) },
-            ]}
-            accessible={false}
-            importantForAccessibility="no">
-            {surahHeaderGlyph(item.number)}
-          </Text>
+          {/* The names line up on their start (right edge) — see
+              surahNameColumnStyle. */}
+          <View style={styles.surahArabicCol}>
+            <Text
+              style={[
+                styles.surahArabic,
+                { color: palette.text, fontSize: surahNameSize(item.number) },
+              ]}
+              accessible={false}
+              importantForAccessibility="no">
+              {surahHeaderGlyph(item.number)}
+            </Text>
+          </View>
         </Pressable>
       );
     },
@@ -1410,7 +1417,12 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
   },
   root: { flex: 1 },
-  list: { padding: SPACING.lg },
+  /**
+   * No bottom padding: the last row ends the page, and iOS already keeps
+   * the content clear of the home indicator through the automatic
+   * content inset. Padding under it was a lip of empty page.
+   */
+  list: { padding: SPACING.lg, paddingBottom: 0 },
   /**
    * The reading measure on iPad and Mac. 720 is QuranScreen's number, and
    * matching it is the point: the two pages sit one tap apart.
@@ -1590,6 +1602,7 @@ const styles = StyleSheet.create({
   surahNames: { flex: 1 },
   surahRoman: { fontSize: TYPE.callout.fontSize, fontWeight: '600' },
   surahMeta: { fontSize: TYPE.label.fontSize, marginTop: 1 },
+  surahArabicCol: surahNameColumnStyle(),
   surahArabic: {
     flexShrink: 0,
     ...surahHeaderStyle(),

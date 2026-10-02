@@ -80,6 +80,7 @@ import { TYPE, arabicTextStyle } from '../theme/typography';
 import {
   surahHeaderGlyph,
   surahHeaderStyle,
+  surahNameColumnStyle,
   surahNameSize,
 } from '../quran/surahHeaderGlyph';
 import { useTabBarInset } from '../navigation/tabBarInset';
@@ -1048,22 +1049,26 @@ export function QuranScreen() {
             {t('quran.pageLabel', { page: startPage })}
           </Text>
         </View>
-        <Text
-          numberOfLines={1}
-          // NO adjustsFontSizeToFit HERE — see the note above `arabic`.
-          allowFontScaling={false}
-          // A drawing of the header, not text — the row's own label names
-          // the surah for screen readers.
-          accessible={false}
-          importantForAccessibility="no"
-          // Each name at its own size — see `SURAH_NAME_SIZES`. The line
-          // height is the base's, so the row is the same height either way.
-          style={[
-            styles.arabic,
-            { color: palette.text, fontSize: surahNameSize(item.number) },
-          ]}>
-          {surahHeaderGlyph(item.number)}
-        </Text>
+        {/* The names line up on their start (right edge) — see
+            surahNameColumnStyle. */}
+        <View style={styles.arabicCol}>
+          <Text
+            numberOfLines={1}
+            // NO adjustsFontSizeToFit HERE — see the note above `arabic`.
+            allowFontScaling={false}
+            // A drawing of the header, not text — the row's own label names
+            // the surah for screen readers.
+            accessible={false}
+            importantForAccessibility="no"
+            // Each name at its own size — see `SURAH_NAME_SIZES`. The line
+            // height is the base's, so the row is the same height either way.
+            style={[
+              styles.arabic,
+              { color: palette.text, fontSize: surahNameSize(item.number) },
+            ]}>
+            {surahHeaderGlyph(item.number)}
+          </Text>
+        </View>
       </Pressable>
     );
   };
@@ -1097,19 +1102,21 @@ export function QuranScreen() {
           {`${item.startSurah?.romanized ?? ''} · ${t('quran.pageLabel', { page: item.page })}`}
         </Text>
       </View>
-      <Text
-        numberOfLines={1}
-        // NO adjustsFontSizeToFit HERE — see the note above `arabic`.
-        allowFontScaling={false}
-        accessible={false}
-        importantForAccessibility="no"
-        style={[
-          styles.arabic,
-          { color: palette.text },
-          item.startSurah ? { fontSize: surahNameSize(item.startSurah.number) } : null,
-        ]}>
-        {item.startSurah ? surahHeaderGlyph(item.startSurah.number) : ''}
-      </Text>
+      <View style={styles.arabicCol}>
+        <Text
+          numberOfLines={1}
+          // NO adjustsFontSizeToFit HERE — see the note above `arabic`.
+          allowFontScaling={false}
+          accessible={false}
+          importantForAccessibility="no"
+          style={[
+            styles.arabic,
+            { color: palette.text },
+            item.startSurah ? { fontSize: surahNameSize(item.startSurah.number) } : null,
+          ]}>
+          {item.startSurah ? surahHeaderGlyph(item.startSurah.number) : ''}
+        </Text>
+      </View>
     </Pressable>
   );
 
@@ -1853,6 +1860,7 @@ const styles = StyleSheet.create({
    * off keeps a 310% text setting from growing a decorative glyph out of
    * its row while the row's own words, the ones being read, still grow.
    */
+  arabicCol: surahNameColumnStyle(),
   arabic: {
     flexShrink: 0,
     ...surahHeaderStyle(),
