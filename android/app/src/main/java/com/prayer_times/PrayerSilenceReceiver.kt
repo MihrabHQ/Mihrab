@@ -18,7 +18,7 @@ class PrayerSilenceReceiver : BroadcastReceiver() {
   override fun onReceive(context: Context, intent: Intent) {
     when (intent.action) {
       PrayerSilence.ACTION_END_NOW -> PrayerSilence.endNow(context)
-      else -> PrayerSilence.reschedule(context)
+      else -> PrayerSilence.reschedule(context, intent.action ?: "receiver")
     }
   }
 }
