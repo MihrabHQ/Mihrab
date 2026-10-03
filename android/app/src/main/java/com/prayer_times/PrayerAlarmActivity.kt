@@ -187,10 +187,28 @@ class PrayerAlarmActivity : Activity() {
     val snoozeMinutes = data.getString("fsSnoozeMinutes")?.toIntOrNull() ?: 10
     val rtl = data.getString("fsRtl") == "1"
 
+    // The Today hero's sky for this prayer, sent by JS; the night sky is the
+    // fallback for an alert scheduled by an older build.
+    val skyTop = parseColor(data.getString("fsSkyTop"), NIGHT_TOP)
+    val skyBottom = parseColor(data.getString("fsSkyBottom"), NIGHT_BOTTOM)
+    if (data.getString("fsInk") == "dark") {
+      ink = Color.BLACK
+      inkSoft = Color.argb(168, 0, 0, 0)
+      inkLine = Color.argb(140, 0, 0, 0)
+    }
+    buttonText = skyTop
+    // Dark ink means a pale sky, so the clock and battery up top must be dark
+    // too or they vanish into it.
+    if (ink == Color.BLACK) {
+      @Suppress("DEPRECATION")
+      window.decorView.systemUiVisibility =
+        window.decorView.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+    }
+
     val root = FrameLayout(this).apply {
       background = GradientDrawable(
         GradientDrawable.Orientation.TOP_BOTTOM,
-        intArrayOf(NIGHT_TOP, NIGHT_BOTTOM),
+        intArrayOf(skyTop, skyBottom),
       )
       fitsSystemWindows = true
       layoutDirection = if (rtl) View.LAYOUT_DIRECTION_RTL else View.LAYOUT_DIRECTION_LTR
@@ -216,21 +234,21 @@ class PrayerAlarmActivity : Activity() {
     head.addView(
       ImageView(this).apply {
         setImageResource(R.drawable.ic_stat_prayer)
-        setColorFilter(CREAM)
+        setColorFilter(ink)
         alpha = 0.9f
       },
       LinearLayout.LayoutParams(dp(56), dp(56)).apply { bottomMargin = dp(24) },
     )
     if (time.isNotEmpty()) {
-      head.addView(text(time, 22f, CREAM_SOFT, bold = false))
+      head.addView(text(time, 22f, inkSoft, bold = false))
     }
     head.addView(
-      text(prayer, 56f, CREAM, bold = true).apply {
+      text(prayer, 56f, ink, bold = true).apply {
         setPadding(0, dp(4), 0, dp(8))
       },
     )
     if (body.isNotEmpty()) {
-      head.addView(text(body.lineSequence().first(), 19f, CREAM_SOFT, bold = false))
+      head.addView(text(body.lineSequence().first(), 19f, inkSoft, bold = false))
     }
 
     // Lower part: what to do about it. Stop is the big one — it is the button
@@ -275,17 +293,32 @@ class PrayerAlarmActivity : Activity() {
     gravity = Gravity.CENTER
     setTextSize(TypedValue.COMPLEX_UNIT_SP, if (filled) 20f else 16f)
     typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-    setTextColor(if (filled) NIGHT_TOP else CREAM)
+    setTextColor(if (filled) buttonText else ink)
     maxLines = 1
     background = GradientDrawable().apply {
       cornerRadius = dp(32).toFloat()
-      if (filled) setColor(CREAM) else setStroke(dp(2), CREAM_LINE)
+      if (filled) setColor(ink) else setStroke(dp(2), inkLine)
     }
     isClickable = true
     isFocusable = true
     contentDescription = label
     setOnClickListener { onClick() }
   }
+
+  // The ink on the sky: cream on a dark sky, black on a pale one — the same
+  // switch the hero makes. `buttonText` is the sky showing through the Stop
+  // button's fill.
+  private var ink = CREAM
+  private var inkSoft = CREAM_SOFT
+  private var inkLine = CREAM_LINE
+  private var buttonText = NIGHT_TOP
+
+  private fun parseColor(value: String?, fallback: Int): Int =
+    try {
+      if (value.isNullOrEmpty()) fallback else Color.parseColor(value)
+    } catch (_: IllegalArgumentException) {
+      fallback
+    }
 
   private fun dp(v: Int): Int = (v * resources.displayMetrics.density + 0.5f).toInt()
 

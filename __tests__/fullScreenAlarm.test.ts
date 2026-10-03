@@ -207,3 +207,16 @@ describe('the alarm screen buttons', () => {
     expect(handlePrayerLogEvent).not.toHaveBeenCalled();
   });
 });
+
+describe('alarm screen sky', () => {
+  const { fullScreenAlarmData } = require('../src/notifications/fullScreenAlarm');
+  it.each(['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'])('%s carries the hero sky', prayer => {
+    const d = fullScreenAlarmData(prayer);
+    expect(d.fsSkyTop).toMatch(/^#[0-9a-fA-F]{6}$/);
+    expect(d.fsSkyBottom).toMatch(/^#[0-9a-fA-F]{6}$/);
+    expect(['light', 'dark']).toContain(d.fsInk);
+  });
+  it('a non-prayer carries none', () => {
+    expect(fullScreenAlarmData('').fsSkyTop).toBeUndefined();
+  });
+});

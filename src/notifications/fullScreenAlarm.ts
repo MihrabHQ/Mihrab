@@ -19,6 +19,7 @@
  */
 import { AndroidCategory } from '@notifee/react-native';
 import i18n from '../i18n';
+import { skyFrame, skyInkAt, type SkyPassage } from '../screens/home/skyModel';
 
 /** The native activity Notifee launches; resolved by class name. */
 export const PRAYER_ALARM_ACTIVITY = 'com.prayer_times.PrayerAlarmActivity';
@@ -33,6 +34,32 @@ export const FULL_SCREEN_SNOOZE_MIN = 10;
 export const FULL_SCREEN_DATA_FLAG = 'fullScreen';
 
 const RTL_LANGUAGES = ['ar', 'ur', 'he', 'fa'];
+
+/**
+ * Which passage of the Today hero's sky each prayer begins, and how far into
+ * it. The alarm rings AT the prayer, so this is the sky the hero is showing
+ * the moment it fires. Dhuhr starts nothing of its own — it sits in the
+ * middle of the day passage.
+ */
+const PRAYER_SKY: Record<string, { passage: SkyPassage; t: number }> = {
+  Fajr: { passage: 'dawn', t: 0 },
+  Dhuhr: { passage: 'day', t: 0.55 },
+  Asr: { passage: 'sunset', t: 0 },
+  Maghrib: { passage: 'dusk', t: 0 },
+  Isha: { passage: 'night', t: 0 },
+};
+
+/** The hero's two sky colours for a prayer and whether text on it is light or dark. */
+export function fullScreenAlarmSky(prayer: string): Record<string, string> {
+  const at = PRAYER_SKY[prayer];
+  if (!at) return {};
+  const frame = skyFrame({ ...at, daylight: null }, new Date());
+  return {
+    fsSkyTop: frame.top,
+    fsSkyBottom: frame.bottom,
+    fsInk: skyInkAt(frame, 0.5).text === '#FFFFFF' ? 'light' : 'dark',
+  };
+}
 
 /**
  * The words the native screen prints, translated now, while JS and i18n are
@@ -53,6 +80,7 @@ export function fullScreenAlarmData(prayer: string): Record<string, string> {
     }),
     fsSnoozeMinutes: String(FULL_SCREEN_SNOOZE_MIN),
     fsRtl: RTL_LANGUAGES.includes(lang) ? '1' : '0',
+    ...fullScreenAlarmSky(prayer),
   };
   if (prayer) {
     out.fsLog = i18n.t('journal.logActionTitle', {
