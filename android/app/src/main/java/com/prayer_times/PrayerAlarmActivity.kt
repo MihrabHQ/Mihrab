@@ -21,6 +21,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.widget.TextViewCompat
 import com.facebook.react.HeadlessJsTaskService
 
 /**
@@ -191,19 +192,22 @@ class PrayerAlarmActivity : Activity() {
     // fallback for an alert scheduled by an older build.
     val skyTop = parseColor(data.getString("fsSkyTop"), NIGHT_TOP)
     val skyBottom = parseColor(data.getString("fsSkyBottom"), NIGHT_BOTTOM)
-    if (data.getString("fsInk") == "dark") {
-      ink = Color.BLACK
-      inkSoft = Color.argb(168, 0, 0, 0)
-      inkLine = Color.argb(140, 0, 0, 0)
-    }
+    // Reset every time: a second alert can arrive on this same screen
+    // (onNewIntent) with a different sky, and the ink must follow it.
+    val darkInk = data.getString("fsInk") == "dark"
+    ink = if (darkInk) Color.BLACK else CREAM
+    inkSoft = if (darkInk) Color.argb(168, 0, 0, 0) else CREAM_SOFT
+    inkLine = if (darkInk) Color.argb(140, 0, 0, 0) else CREAM_LINE
     buttonText = skyTop
     // Dark ink means a pale sky, so the clock and battery up top must be dark
     // too or they vanish into it.
-    if (ink == Color.BLACK) {
-      @Suppress("DEPRECATION")
-      window.decorView.systemUiVisibility =
+    @Suppress("DEPRECATION")
+    window.decorView.systemUiVisibility =
+      if (darkInk) {
         window.decorView.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-    }
+      } else {
+        window.decorView.systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
+      }
 
     val root = FrameLayout(this).apply {
       background = GradientDrawable(
@@ -295,6 +299,10 @@ class PrayerAlarmActivity : Activity() {
     typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
     setTextColor(if (filled) buttonText else ink)
     maxLines = 1
+    // A long translation shrinks to fit rather than being cut off.
+    TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
+      this, 11, if (filled) 20 else 16, 1, TypedValue.COMPLEX_UNIT_SP,
+    )
     background = GradientDrawable().apply {
       cornerRadius = dp(32).toFloat()
       if (filled) setColor(ink) else setStroke(dp(2), inkLine)
