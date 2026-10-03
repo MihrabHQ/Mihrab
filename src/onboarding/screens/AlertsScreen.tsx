@@ -29,7 +29,14 @@
  * is the point: this is a screen about whether the app speaks at all.
  */
 import { useCallback, useEffect, useState } from 'react';
-import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import {
+  Linking,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { useTranslation } from 'react-i18next';
 import notifee, {
   AndroidNotificationSetting,
@@ -50,7 +57,10 @@ import {
 import {
   SettingsGroup,
   SettingsLinkRow,
+  SettingsToggleRow,
 } from '../../screens/settings/SettingsGroup';
+import { openFullScreenAlarmSettings } from '../../native/FullScreenAlarm';
+import { useFullScreenAlarmSwitch } from '../../notifications/useFullScreenAlarmSwitch';
 import { PreReminderModal } from '../../screens/settings/PreReminderModal';
 import type { PrePrayerReminderMinutes } from '../../settings/prePrayerReminder';
 import { RADIUS, SPACING } from '../../theme/tokens';
@@ -92,6 +102,11 @@ export function AlertsScreen({
   const [alarmOk, setAlarmOk] = useState(true);
   const [preModal, setPreModal] = useState(false);
   const [previewing, setPreviewing] = useState<NotificationSoundId | null>(null);
+  // The full-screen alarm (issue #63): offered only where the phone has one.
+  const fullScreen = useFullScreenAlarmSwitch(
+    settings.prayerAlertFullScreen,
+    v => updateSettings({ prayerAlertFullScreen: v }),
+  );
 
   /**
    * Which face this screen wears — derived, not stored.
@@ -322,6 +337,43 @@ export function AlertsScreen({
               value={minutesLabel}
               onPress={() => setPreModal(true)}
             />
+            {fullScreen.offered ? (
+              <SettingsToggleRow
+                testID="onboarding-full-screen"
+                title={t('settings.prayerAlertFullScreen')}
+                help={t(
+                  Platform.OS === 'ios'
+                    ? 'settings.prayerAlertFullScreenHelpIos'
+                    : 'settings.prayerAlertFullScreenHelp',
+                )}
+                value={settings.prayerAlertFullScreen}
+                onValueChange={v => void fullScreen.toggle(v)}
+              />
+            ) : null}
+            {fullScreen.offered &&
+            settings.prayerAlertFullScreen &&
+            fullScreen.blocked ? (
+              <SettingsLinkRow
+                testID="onboarding-full-screen-blocked"
+                title={t('settings.prayerAlertFullScreenBlocked')}
+                help={t(
+                  Platform.OS === 'ios'
+                    ? 'settings.prayerAlertFullScreenBlockedHelpIos'
+                    : 'settings.prayerAlertFullScreenBlockedHelp',
+                )}
+                accessory={
+                  <Text
+                    style={[typeStyle('body'), { color: palette.accentSolid }]}>
+                    {t('common.change')}
+                  </Text>
+                }
+                onPress={() =>
+                  void (Platform.OS === 'ios'
+                    ? Linking.openSettings()
+                    : openFullScreenAlarmSettings())
+                }
+              />
+            ) : null}
             {!alarmOk ? (
               <SettingsLinkRow
                 testID="onboarding-exact-alarms"

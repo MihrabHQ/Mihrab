@@ -17,16 +17,8 @@ import { useNotificationsSettings } from '../../context/PrayerSettingsContext';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import { getNotificationSoundOption } from '../../notifications/notificationSounds';
 import { requestNotificationPermission } from '../../notifications/requestNotificationAccess';
-import {
-  canUseFullScreenAlarm,
-  fullScreenAlarmAvailable,
-  openFullScreenAlarmSettings,
-} from '../../native/FullScreenAlarm';
-import {
-  prayerAlarmAccess,
-  prayerAlarmsAvailable,
-  requestPrayerAlarmAccess,
-} from '../../native/PrayerAlarms';
+import { openFullScreenAlarmSettings } from '../../native/FullScreenAlarm';
+import { useFullScreenAlarmSwitch } from '../../notifications/useFullScreenAlarmSwitch';
 import {
   SettingsGroup,
   SettingsLinkRow,
@@ -82,70 +74,14 @@ function NotificationsCardImpl({
     };
   }, []);
 
-  // Android 14+: USE_FULL_SCREEN_INTENT can be off (Play pre-grants it only
-  // to calling and alarm apps), and then Android quietly shows a heads-up
-  // instead. Checked like the battery row — on mount and on every return
-  // from the system page — and only while the switch is on.
-  const [fullScreenBlocked, setFullScreenBlocked] = useState(false);
   const fullScreenOn = settings.prayerAlertFullScreen;
-  // iPhone (iOS 26+): the same switch rings the prayers as AlarmKit alarms.
-  // Offered only where the OS has it; blocked means the person said no to
-  // the system prompt, and only Settings can change that.
-  const [iosAlarmsOffered, setIosAlarmsOffered] = useState(false);
-  useEffect(() => {
-    if (Platform.OS !== 'ios') return;
-    let alive = true;
-    void prayerAlarmsAvailable().then(ok => {
-      if (alive) setIosAlarmsOffered(ok);
-    });
-    return () => {
-      alive = false;
-    };
-  }, []);
-  const alarmsOffered = fullScreenAlarmAvailable || iosAlarmsOffered;
-  useEffect(() => {
-    if (!alarmsOffered || !fullScreenOn) {
-      setFullScreenBlocked(false);
-      return;
-    }
-    let alive = true;
-    const check = () => {
-      if (Platform.OS === 'ios') {
-        void prayerAlarmAccess().then(a => {
-          if (alive) setFullScreenBlocked(a === 'denied');
-        });
-        return;
-      }
-      void canUseFullScreenAlarm().then(ok => {
-        if (alive) setFullScreenBlocked(!ok);
-      });
-    };
-    check();
-    const sub = AppState.addEventListener('change', st => {
-      if (st === 'active') check();
-    });
-    return () => {
-      alive = false;
-      sub.remove();
-    };
-  }, [fullScreenOn, alarmsOffered]);
-
-  const onToggleFullScreen = async (value: boolean) => {
-    updateSettings({ prayerAlertFullScreen: value });
-    if (Platform.OS === 'ios') {
-      // The system prompt appears here, once. A "no" leaves the switch on
-      // and the notification as it was; the row below says why.
-      if (value && (await requestPrayerAlarmAccess()) === 'denied') {
-        setFullScreenBlocked(true);
-      }
-      return;
-    }
-    // Turning it on with the permission off would look like it worked and
-    // then not; take the person to the switch Android needs right away.
-    if (value && !(await canUseFullScreenAlarm())) {
-      await openFullScreenAlarmSettings();
-    }
-  };
+  const {
+    offered: alarmsOffered,
+    blocked: fullScreenBlocked,
+    toggle: onToggleFullScreen,
+  } = useFullScreenAlarmSwitch(fullScreenOn, v =>
+    updateSettings({ prayerAlertFullScreen: v }),
+  );
 
   const selectedNotificationSound = useMemo(
     () => getNotificationSoundOption(settings.notificationSound),
