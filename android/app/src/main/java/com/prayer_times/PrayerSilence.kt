@@ -62,6 +62,7 @@ object PrayerSilence {
   private const val KEY_LEGACY_FILTER = "legacy_filter"
   private const val KEY_AUDIT = "access_audit"
   private const val KEY_LAST_ACCESS = "last_access"
+  private const val KEY_LAST_AUDIT_AT = "last_audit_at"
   private const val AUDIT_MAX = 60
 
   const val ACTION_START = "com.prayer_times.silence.START"
@@ -154,18 +155,92 @@ object PrayerSilence {
         }
       } catch (t: Throwable) { null }
       val stamp = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.US)
+      val lastAt = p.getLong(KEY_LAST_AUDIT_AT, 0L)
+      // The cause is not something Android will tell an app, so a change is
+      // recorded with everything that could explain it: why the process died
+      // since the last look, and the state of the other things that move
+      // with it. Kept only when it matters, to keep the record short.
+      val detail = if (changed || last == -1 || notable) " | " + context(ctx, lastAt, stamp) else ""
       val line = "${stamp.format(java.util.Date())} $source access=$now" +
-        (if (changed) " CHANGED(was ${last == 1})" else "") +
+        (if (changed) " CHANGED(was ${last == 1}, last seen ${if (lastAt > 0) stamp.format(java.util.Date(lastAt)) else "never"})" else "") +
         " v=${info.versionName} updated=${stamp.format(java.util.Date(info.lastUpdateTime))}" +
-        " installer=$installer sdk=${Build.VERSION.SDK_INT}"
+        " installer=$installer sdk=${Build.VERSION.SDK_INT}" + detail
       if (changed && !now) Log.w(TAG, "Do Not Disturb access LOST: $line") else Log.i(TAG, "access audit: $line")
       val lines = (p.getString(KEY_AUDIT, "") ?: "").split("\n").filter { it.isNotBlank() }
       val kept = (lines + line).takeLast(AUDIT_MAX)
       p.edit().putInt(KEY_LAST_ACCESS, if (now) 1 else 0)
+        .putLong(KEY_LAST_AUDIT_AT, System.currentTimeMillis())
         .putString(KEY_AUDIT, kept.joinToString("\n")).apply()
     } catch (t: Throwable) {
       Log.w(TAG, "access audit failed", t)
     }
+  }
+
+  /**
+   * Everything a debugger would ask for next. Each probe is guarded on its
+   * own: one that throws on some OS version must not cost the rest.
+   */
+  private fun context(ctx: Context, since: Long, stamp: java.text.SimpleDateFormat): String {
+    fun <T> probe(f: () -> T): String = try { f().toString() } catch (t: Throwable) { "?" }
+    val nm = ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    val parts = ArrayList<String>()
+    // Why the process ended since the last look. REASON_PERMISSION_CHANGE
+    // and REASON_USER_REQUESTED / USER_STOPPED are the ones that point at a
+    // person in system settings.
+    if (Build.VERSION.SDK_INT >= 30) {
+      parts += "exits=" + probe {
+        val am = ctx.getSystemService(Context.ACTIVITY_SERVICE) as android.app.ActivityManager
+        am.getHistoricalProcessExitReasons(ctx.packageName, 0, 8)
+          .filter { it.timestamp >= since - 60_000L }
+          .joinToString(",") { "${exitName(it.reason)}@${stamp.format(java.util.Date(it.timestamp))}" }
+          .ifEmpty { "none" }
+      }
+    }
+    parts += "notifs=" + probe { nm.areNotificationsEnabled() }
+    parts += "filter=" + probe { nm.currentInterruptionFilter }
+    parts += "ourRule=" + probe {
+      val id = prefs(ctx).getString(KEY_RULE_ID, null)
+      if (id == null) "none" else (nm.getAutomaticZenRule(id) != null)
+    }
+    parts += "exactAlarms=" + probe {
+      (ctx.getSystemService(Context.ALARM_SERVICE) as AlarmManager).canScheduleExactAlarms()
+    }
+    if (Build.VERSION.SDK_INT >= 34) {
+      parts += "fullScreenIntent=" + probe { nm.canUseFullScreenIntent() }
+    }
+    parts += "batteryExempt=" + probe {
+      (ctx.getSystemService(Context.POWER_SERVICE) as android.os.PowerManager)
+        .isIgnoringBatteryOptimizations(ctx.packageName)
+    }
+    parts += "bucket=" + probe {
+      (ctx.getSystemService(Context.USAGE_STATS_SERVICE) as android.app.usage.UsageStatsManager)
+        .appStandbyBucket
+    }
+    parts += "autoRevokeExempt=" + probe {
+      ctx.packageManager.isAutoRevokeWhitelisted
+    }
+    parts += "windows=" + probe { loadWindows(ctx).size }
+    return parts.joinToString(" ")
+  }
+
+  private fun exitName(reason: Int): String = when (reason) {
+    android.app.ApplicationExitInfo.REASON_PERMISSION_CHANGE -> "PERMISSION_CHANGE"
+    android.app.ApplicationExitInfo.REASON_USER_REQUESTED -> "USER_REQUESTED"
+    android.app.ApplicationExitInfo.REASON_USER_STOPPED -> "USER_STOPPED"
+    android.app.ApplicationExitInfo.REASON_FREEZER -> "FREEZER"
+    android.app.ApplicationExitInfo.REASON_LOW_MEMORY -> "LOW_MEMORY"
+    android.app.ApplicationExitInfo.REASON_OTHER -> "OTHER"
+    android.app.ApplicationExitInfo.REASON_SIGNALED -> "SIGNALED"
+    android.app.ApplicationExitInfo.REASON_EXCESSIVE_RESOURCE_USAGE -> "EXCESSIVE_RESOURCES"
+    android.app.ApplicationExitInfo.REASON_DEPENDENCY_DIED -> "DEPENDENCY_DIED"
+    android.app.ApplicationExitInfo.REASON_CRASH -> "CRASH"
+    android.app.ApplicationExitInfo.REASON_CRASH_NATIVE -> "CRASH_NATIVE"
+    android.app.ApplicationExitInfo.REASON_ANR -> "ANR"
+    android.app.ApplicationExitInfo.REASON_EXIT_SELF -> "EXIT_SELF"
+    android.app.ApplicationExitInfo.REASON_INITIALIZATION_FAILURE -> "INIT_FAILURE"
+    15 -> "PACKAGE_STATE_CHANGE"
+    16 -> "PACKAGE_UPDATED"
+    else -> "REASON_$reason"
   }
 
   fun auditLog(ctx: Context): String = prefs(ctx).getString(KEY_AUDIT, "") ?: ""
