@@ -25,6 +25,7 @@ import { startKhatmah } from '../src/quran/khatmahActions';
 import {
   addBookmark,
   moveSessionToPage,
+  recordListenStop,
   recordReading,
   removeBookmark,
   setBookmarkFollows,
@@ -949,5 +950,28 @@ describe('nothing here touched the khatmah merge', () => {
   it('still unites by id', () => {
     const p = { id: 'k', startedAt: 1, targetDays: 30, pagesRead: 1, completedAt: null };
     expect(mergeKhatmah([p], [])).toHaveLength(1);
+  });
+});
+
+describe('a recitation that stops', () => {
+  it('leaves the following bookmark on the ayah it stopped at, and a page turn moves it on', () => {
+    const id = followingInBaqarah();
+    beginReadingSession({ kind: 'bookmark', id });
+    recordListenStop({ surah: 2, ayah: 34, page: 5 });
+    expect(only()).toMatchObject({ surah: 2, ayah: 34, page: 5 });
+    recordReading({ surah: 2, ayah: 37, page: 6, mode: 'mushaf' });
+    expect(only()).toMatchObject({ ayah: 37, page: 6 });
+  });
+
+  it('does not move a fixed bookmark, or one nobody opened', () => {
+    addBookmark(2, 30, 5, 'emerald');
+    setBookmarkFollows(only().id, false);
+    beginReadingSession({ kind: 'bookmark', id: only().id });
+    recordListenStop({ surah: 2, ayah: 34, page: 5 });
+    expect(only().ayah).toBe(30);
+    _resetReadingSession();
+    setBookmarkFollows(only().id, true);
+    recordListenStop({ surah: 2, ayah: 34, page: 5 });
+    expect(only().ayah).toBe(30);
   });
 });

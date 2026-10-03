@@ -62,6 +62,7 @@ import {
   moveSessionToPage,
   drawnReadingPosition,
   recordReading,
+  recordListenStop,
 } from './readerMarks';
 import { usePlaybackStatus, type PlaybackStatus } from './audio/playback';
 import {
@@ -494,11 +495,30 @@ export function useMushafReaderCore({
   // into playing, not on `playing` itself, so pausing and resuming does not
   // override a swipe the user made while it was paused.
   const wasPlaying = useRef(false);
+  const lastRecited = useRef<{ surah: number; ayah: number } | null>(null);
   useEffect(() => {
     const nowPlaying = Boolean(playback.active && playback.playing);
     if (nowPlaying && !wasPlaying.current) resumeFollow();
+    if (nowPlaying && playback.active) {
+      lastRecited.current = {
+        surah: playback.active.surah,
+        ayah: playback.active.ayah,
+      };
+    }
+    if (!nowPlaying && wasPlaying.current && !followSuspended) {
+      // The reciter stopped (paused, finished or closed): a following
+      // bookmark settles on the āyah it stopped at.
+      const at = playback.active ?? lastRecited.current;
+      if (at) {
+        recordListenStop({
+          surah: at.surah,
+          ayah: at.ayah,
+          page: findPageForAyah(at.surah, at.ayah, riwayah),
+        });
+      }
+    }
     wasPlaying.current = nowPlaying;
-  }, [playback.active, playback.playing, resumeFollow]);
+  }, [playback.active, playback.playing, resumeFollow, followSuspended, riwayah]);
 
   useEffect(() => {
     if (!playback.active || !playback.playing || followSuspended) return;

@@ -605,6 +605,26 @@ export function moveSessionToPage(
   noteReadingMoved();
 }
 
+/**
+ * The recitation has stopped on this āyah: a following bookmark goes
+ * there, exactly, rather than staying at the page start the reading
+ * carried it to. Turning to the next page afterwards moves it on as any
+ * turn does (`recordReading`), so it is the stopped āyah until the reader
+ * reads past the page. Not drawn, for the same reason a carried bookmark
+ * is not: nobody tapped that āyah.
+ */
+export function recordListenStop(
+  pos: { surah: number; ayah: number; page: number },
+): void {
+  const owner = readingSessionOwner();
+  if (owner?.kind !== 'bookmark') return;
+  const b = getQuranState().bookmarks.find(x => x.id === owner.id);
+  if (!b?.follows || !withinBookmarkReach(b, pos)) return;
+  if (b.surah === pos.surah && b.ayah === pos.ayah && b.page === pos.page) return;
+  moveBookmark(b.id, pos);
+  noteReadingMoved();
+}
+
 function withinBookmarkReach(
   b: QuranBookmark,
   pos: { surah: number; page: number },
