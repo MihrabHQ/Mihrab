@@ -252,6 +252,8 @@ class PrayerAlarms: NSObject {
         String(Int64(at)), title,
         item["sound"] as? String ?? "",
         item["snoozeLabel"] as? String ?? "",
+        item["pauseLabel"] as? String ?? "",
+        item["resumeLabel"] as? String ?? "",
         String((item["snoozeMinutes"] as? NSNumber)?.intValue ?? 10),
       ].joined(separator: "|")
       desired[uuid(for: fingerprint)] = item
@@ -274,6 +276,8 @@ class PrayerAlarms: NSObject {
       if date <= Date().addingTimeInterval(1) { continue }
       let title = item["title"] as? String ?? ""
       let snoozeLabel = item["snoozeLabel"] as? String ?? "Snooze"
+      let pauseLabel = item["pauseLabel"] as? String ?? "Pause"
+      let resumeLabel = item["resumeLabel"] as? String ?? "Resume"
       let minutes = max(1, (item["snoozeMinutes"] as? NSNumber)?.intValue ?? 10)
       let tint = color(item["tint"] as? String)
       let sound = (item["sound"] as? String) ?? ""
@@ -294,16 +298,16 @@ class PrayerAlarms: NSObject {
       let countdown = AlarmPresentation.Countdown(
         title: LocalizedStringResource(stringLiteral: title),
         pauseButton: AlarmButton(
-          text: LocalizedStringResource(stringLiteral: "Pause"),
-          textColor: tint,
+          text: LocalizedStringResource(stringLiteral: pauseLabel),
+          textColor: .white,
           systemImageName: "pause.fill"
         )
       )
       let paused = AlarmPresentation.Paused(
         title: LocalizedStringResource(stringLiteral: title),
         resumeButton: AlarmButton(
-          text: LocalizedStringResource(stringLiteral: "Resume"),
-          textColor: tint,
+          text: LocalizedStringResource(stringLiteral: resumeLabel),
+          textColor: .white,
           systemImageName: "play.fill"
         )
       )

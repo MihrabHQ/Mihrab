@@ -96,6 +96,8 @@ test('on + authorized: the five prayers become alarms with the bundled adhan', a
     expect(a.tint).toBe('#1f5f4a');
     expect(a.at).toBeGreaterThan(Date.now());
     expect(typeof a.stopLabel).toBe('string');
+    expect(typeof a.pauseLabel).toBe('string');
+    expect(typeof a.resumeLabel).toBe('string');
   }
   expect(clearPrayerAlarms).not.toHaveBeenCalled();
 });

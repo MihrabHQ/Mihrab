@@ -29,6 +29,9 @@ export type PrayerAlarm = {
   /** The Stop button's word — iOS 26.0 makes the app say it. */
   stopLabel: string;
   snoozeLabel: string;
+  /** The words on the snooze countdown's Pause and Resume buttons. */
+  pauseLabel: string;
+  resumeLabel: string;
   snoozeMinutes: number;
   /** "#rrggbb". */
   tint: string;

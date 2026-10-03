@@ -823,6 +823,8 @@ export async function syncPrayerNotifications(params: {
             : '',
         stopLabel: i18n.t('common.stop', { defaultValue: 'Stop' }),
         snoozeLabel: i18n.t('alertCopy.snoozeAction', 'Snooze'),
+        pauseLabel: i18n.t('common.pause', 'Pause'),
+        resumeLabel: i18n.t('common.resume', 'Resume'),
         snoozeMinutes: FULL_SCREEN_SNOOZE_MIN,
         tint: accent,
       });
