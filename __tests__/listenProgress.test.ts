@@ -72,12 +72,14 @@ describe('the two places stay apart', () => {
     expect(pb).toMatch(/recordListened\(start, prefs\.reciterId\)/);
   });
 
-  it('a page the muṣḥaf turned to follow a listen is not reading', () => {
+  it('a page the muṣḥaf turned to follow the recitation is reading, so a following bookmark moves', () => {
     const core = read('src/quran/mushafReaderCore.tsx');
-    expect(core).toMatch(
-      /if \(followPageRef\.current === newPage\) \{\s*followPageRef\.current = null;\s*if \(isListening\(\)\) return;/,
-    );
-    expect(core).toMatch(/followPageRef\.current = page;/);
+    // The pager settles only a finger's scrolls, so the follow has to
+    // record its own turns; it used to rely on commitPageTurn and recorded
+    // nothing.
+    expect(core).toMatch(/recordPageReading\(page, prev\);\s*currentPageRef\.current = page;/);
+    expect(core).not.toMatch(/followPageRef/);
+    expect(core).not.toMatch(/isListening\(\)/);
   });
 
   it('offers carry on, shuffle and the recommendations when idle or stale', () => {

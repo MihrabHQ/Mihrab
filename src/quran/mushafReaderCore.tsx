@@ -63,7 +63,7 @@ import {
   drawnReadingPosition,
   recordReading,
 } from './readerMarks';
-import { isListening, usePlaybackStatus, type PlaybackStatus } from './audio/playback';
+import { usePlaybackStatus, type PlaybackStatus } from './audio/playback';
 import {
   mushafTone,
   mushafToneChoice,
@@ -326,6 +326,10 @@ export function useMushafReaderCore({
     [surahNumber, initialPage],
   );
   const [currentPage, setCurrentPage] = useState(initial);
+  // The page as of the latest render, for effects that must compare against
+  // it without depending on it (the recitation follow).
+  const currentPageRef = useRef(currentPage);
+  currentPageRef.current = currentPage;
 
   // ── Switching riwayah keeps your place ──────────────────────────────
   //
@@ -397,46 +401,30 @@ export function useMushafReaderCore({
     onPageChange?.(currentPage);
   }, [currentPage, onPageChange]);
 
-  /**
-   * The page the recitation follow last moved to, until the pager reports
-   * arriving there. See the top of `commitPageTurn`.
-   */
-  const followPageRef = useRef<number | null>(null);
-
   // ── Last-read + khatmah on page turns (QR-10/21) ────────────────────
-  const commitPageTurn = useCallback(
+  /**
+   * A TURN IS READING; A JUMP IS NOT — issue #41.
+   *
+   * The marker used to follow every arrival, so a reader who went to
+   * look something up — the rail, jump-to-page, a bookmark, a search
+   * result — lost their place to the page they had only glanced at.
+   * Now it follows the page turned TO from the page beside it (one on
+   * a phone, two on a spread), which is what reading looks like, and
+   * nothing else: land anywhere and the marker waits until the next
+   * page is turned. `recordReading` then decides whether the turn is the
+   * khatmah's or the reader's own, and moves a following bookmark.
+   *
+   * ONE PLACE FOR BOTH WAYS A PAGE TURNS. A swipe reaches this through
+   * `commitPageTurn`; the recitation follow reaches it directly, below.
+   * The follow used to be assumed to arrive through `commitPageTurn` too
+   * (with a note saying a listen's turns were skipped there) — but the
+   * pager settles only the scrolls a finger started, so the follow's turns
+   * never got there at all, and a following bookmark stood still while
+   * the reciter read on. Listening and reading are now the same thing to
+   * the bookmark: it goes where the page goes.
+   */
+  const recordPageReading = useCallback(
     (newPage: number, prevPage: number) => {
-      /**
-       * A PAGE TURNED BY A TILĀWAH LISTEN IS NOT READING.
-       *
-       * With the muṣḥaf open while Tilāwah plays, the page follows the
-       * reciter (below), and each of those turns used to land here as a
-       * step of one — reading, by the rule under this — so the reading
-       * marker and the khatmah were walked to wherever the listen had got
-       * to. Listening has its own place now (`listenProgress`), and the
-       * reading marker is the reader's. A turn the follow made for a
-       * continuous listen is passed over; a turn the reader makes is
-       * counted as always, and so is a follow during "play from here",
-       * which is reading along with the page.
-       */
-      if (followPageRef.current === newPage) {
-        followPageRef.current = null;
-        if (isListening()) return;
-      }
-      /**
-       * A TURN IS READING; A JUMP IS NOT — issue #41.
-       *
-       * The marker used to follow every arrival, so a reader who went to
-       * look something up — the rail, jump-to-page, a bookmark, a search
-       * result — lost their place to the page they had only glanced at.
-       * Now it follows the page turned TO from the page beside it (one on
-       * a phone, two on a spread), which is what reading looks like, and
-       * nothing else: land anywhere and the marker waits until the next
-       * page is turned. The khatmah's own bookkeeping has always drawn
-       * the same line — see `recordKhatmahPageTurn` — and the two agree.
-       * `recordReading` then decides whether the turn is the khatmah's or
-       * the reader's own.
-       */
       const step = Math.abs(newPage - prevPage);
       if (step >= 1 && step <= 2) {
         const first = pageStartAyah(newPage, riwayah);
@@ -445,6 +433,13 @@ export function useMushafReaderCore({
           riwayah,
         );
       }
+    },
+    [riwayah],
+  );
+
+  const commitPageTurn = useCallback(
+    (newPage: number, prevPage: number) => {
+      recordPageReading(newPage, prevPage);
       // Sequential forward turn = the page(s) left behind are completed —
       // but only when they are the khatmah's own pages. Reading a juz or a
       // bookmark ahead of the plan is reading, not khatmah progress; see
@@ -453,7 +448,7 @@ export function useMushafReaderCore({
       // the same thing in either muṣḥaf.
       recordKhatmahPageTurn(prevPage, newPage, riwayah);
     },
-    [riwayah],
+    [recordPageReading, riwayah],
   );
 
   // ── Recitation follow (QR-17) ───────────────────────────────────────
@@ -512,11 +507,14 @@ export function useMushafReaderCore({
       playback.active.ayah,
       riwayah,
     );
-    setCurrentPage(prev => {
-      if (page === prev) return prev;
-      followPageRef.current = page;
-      return page;
-    });
+    const prev = currentPageRef.current;
+    if (page === prev) return;
+    // The recitation turned the page, which is reading along with it: the
+    // reading marker and a following bookmark go with it. The khatmah's
+    // own progress is still credited only from the reader's turns.
+    recordPageReading(page, prev);
+    currentPageRef.current = page;
+    setCurrentPage(page);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     playback.active?.surah,
