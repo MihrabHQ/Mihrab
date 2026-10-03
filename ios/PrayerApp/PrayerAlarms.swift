@@ -230,7 +230,7 @@ class PrayerAlarms: NSObject {
       title: title,
       stopButton: AlarmButton(
         text: LocalizedStringResource(stringLiteral: stopLabel),
-        textColor: stopTint,
+        textColor: .white,
         systemImageName: "checkmark"
       ),
       secondaryButton: secondary,
@@ -280,7 +280,7 @@ class PrayerAlarms: NSObject {
 
       let snoozeButton = AlarmButton(
         text: LocalizedStringResource(stringLiteral: snoozeLabel),
-        textColor: tint,
+        textColor: .white,
         systemImageName: "clock.arrow.circlepath"
       )
       let alert = Self.alert(
