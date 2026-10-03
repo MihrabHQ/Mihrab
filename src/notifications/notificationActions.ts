@@ -10,16 +10,12 @@
  * it never imports `prayerNotifications` / `adhanSafetyControls` — that keeps
  * the module graph acyclic (see `adhanActionIds.ts`).
  */
-import notifee, {
-  AlarmType,
-  AndroidStyle,
-  TriggerType,
-  type Notification,
-} from '@notifee/react-native';
-import { Platform } from 'react-native';
+import notifee, { AndroidStyle, type Notification } from '@notifee/react-native';
 import i18n from '../i18n';
 import { ADHAN_CONTROLS_CATEGORY_ID } from './adhanActionIds';
 import { prayerAlertActions } from './prayerAlertActions';
+import { buildTimestampTrigger, canUseExactAlarms } from './scheduling';
+import { fullScreenAlarmAndroid, isFullScreenAlarm } from './fullScreenAlarm';
 
 /** Ids of snoozed re-fires — deliberately NOT the `pt-` prefix used by the
  *  scheduled day, so a full resync (which cancels obsolete `pt-` triggers)
@@ -36,19 +32,6 @@ export {
   snoozeChoiceLabel,
 } from './prayerAlertActions';
 
-/** AlarmManager-backed timestamp trigger so the snooze is punctual even under
- *  aggressive OEM battery managers (mirrors prayerNotifications). */
-function snoozeTrigger(timestamp: number) {
-  const trigger: {
-    type: typeof TriggerType.TIMESTAMP;
-    timestamp: number;
-    alarmManager?: { type: AlarmType };
-  } = { type: TriggerType.TIMESTAMP, timestamp };
-  if (Platform.OS === 'android') {
-    trigger.alarmManager = { type: AlarmType.SET_AND_ALLOW_WHILE_IDLE };
-  }
-  return trigger;
-}
 
 /**
  * Re-fire a prayer alert `minutes` from now, reusing the original's title,
@@ -80,6 +63,8 @@ export async function snoozePrayerNotification(
     {
       id: `${SNOOZE_ID_PREFIX}${at}`,
       title,
+      // The prayer's own clock time, which the alarm screen prints.
+      ...(notification.subtitle ? { subtitle: notification.subtitle } : {}),
       body,
       data,
       ios: {
@@ -95,8 +80,17 @@ export async function snoozePrayerNotification(
         actions,
         // A snoozed alert shouldn't linger for hours if the user ignores it.
         timeoutAfter: 60 * 60_000,
+        // Snoozed from the alarm screen (or from a full-screen alert's own
+        // button), it comes back the way it came: full-screen, as an alarm
+        // clock's snooze does. The flag travels in `data`, copied above.
+        ...(isFullScreenAlarm(data) ? fullScreenAlarmAndroid() : {}),
       },
     },
-    snoozeTrigger(at),
+    // The same trigger the prayer itself rode: exact when the permission is
+    // there. This had its own inexact allow-while-idle trigger, which
+    // Android may deliver up to several minutes late — seen on the
+    // emulator as a 7½-minute window on a ten-minute snooze (2026-10-03),
+    // which an alarm screen's Snooze cannot afford.
+    buildTimestampTrigger(at, await canUseExactAlarms()),
   );
 }

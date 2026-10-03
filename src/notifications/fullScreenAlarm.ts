@@ -1,0 +1,95 @@
+/**
+ * The full-screen prayer alert — issue #63.
+ *
+ * Opt-in (Notifications → "Full-screen prayer alerts", Android only). When on,
+ * each of the five prayers' alerts carries a full-screen intent: with the phone
+ * locked or its screen off, Android wakes it and raises `PrayerAlarmActivity`
+ * over the lock screen, like an alarm clock. With the phone in hand Android
+ * shows the ordinary heads-up instead — the platform's rule.
+ *
+ * What it does NOT change is the sound. That is still the row's own mode —
+ * adhan, plain alert — on the same channels, so "adhan + vibration" and
+ * "notification sound" stay the choices they already were, and "Play adhan
+ * as an alarm" still decides whether the ringer switch can silence it. A
+ * silent row registers no alarm at all, so it has no screen either.
+ *
+ * Leaf module (i18n and Notifee only), because three writers of the same
+ * alert need it — the scheduler, the Live Activity's mode toggle and the
+ * snooze — and they must not import each other.
+ */
+import { AndroidCategory } from '@notifee/react-native';
+import i18n from '../i18n';
+
+/** The native activity Notifee launches; resolved by class name. */
+export const PRAYER_ALARM_ACTIVITY = 'com.prayer_times.PrayerAlarmActivity';
+
+/** See `fullScreenAlarmAndroid`. */
+export const PRAYER_ALARM_COMPONENT = 'mihrab-prayer-alarm';
+
+/** The alarm screen's Snooze button — the notification's own default. */
+export const FULL_SCREEN_SNOOZE_MIN = 10;
+
+/** Marks an alert as full-screen in its data, so a snooze can carry it on. */
+export const FULL_SCREEN_DATA_FLAG = 'fullScreen';
+
+const RTL_LANGUAGES = ['ar', 'ur', 'he', 'fa'];
+
+/**
+ * The words the native screen prints, translated now, while JS and i18n are
+ * here — the screen itself may draw with the app's process dead. Strings
+ * only: Notifee rejects anything else in `data`.
+ *
+ * `fsLog` is absent for anything that is not one of the five prayers, and the
+ * screen then draws no Log button.
+ */
+export function fullScreenAlarmData(prayer: string): Record<string, string> {
+  const lang = (i18n.language || 'en').split('-')[0];
+  const out: Record<string, string> = {
+    [FULL_SCREEN_DATA_FLAG]: '1',
+    fsStop: i18n.t('common.stop', { defaultValue: 'Stop' }),
+    fsSnooze: i18n.t('alertCopy.snoozeChoice', {
+      defaultValue: 'Snooze {{minutes}} min',
+      minutes: FULL_SCREEN_SNOOZE_MIN,
+    }),
+    fsSnoozeMinutes: String(FULL_SCREEN_SNOOZE_MIN),
+    fsRtl: RTL_LANGUAGES.includes(lang) ? '1' : '0',
+  };
+  if (prayer) {
+    out.fsLog = i18n.t('journal.logActionTitle', {
+      defaultValue: 'Log prayer',
+    });
+  }
+  return out;
+}
+
+/**
+ * The Android fields that make an alert full-screen.
+ *
+ * Category ALARM as well: Do Not Disturb's "Alarms" exception — on by default
+ * — is what lets the screen through while the phone is in Do Not Disturb,
+ * which is half of what the issue asked for.
+ */
+export function fullScreenAlarmAndroid() {
+  return {
+    fullScreenAction: {
+      id: 'default',
+      launchActivity: PRAYER_ALARM_ACTIVITY,
+      // NOT decorative. Notifee attaches the notification to the full-screen
+      // intent only when a main component is named — without one the screen
+      // opens with nothing to show and closes itself (seen on the emulator,
+      // 2026-10-03). Nothing reads the name: MainActivity never asks Notifee
+      // for a component, and the alarm screen is native.
+      mainComponent: PRAYER_ALARM_COMPONENT,
+    },
+    category: AndroidCategory.ALARM,
+  };
+}
+
+/** Whether a delivered/scheduled alert was built full-screen. */
+export function isFullScreenAlarm(data: unknown): boolean {
+  return (
+    !!data &&
+    typeof data === 'object' &&
+    (data as Record<string, unknown>)[FULL_SCREEN_DATA_FLAG] === '1'
+  );
+}

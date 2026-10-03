@@ -597,6 +597,7 @@ export function HomeScreen() {
       prePrayerReminderMinutes: settings.prePrayerReminderMinutes,
       notificationSound: settings.notificationSound,
       adhanUsesAlarmStream: settings.adhanUsesAlarmStream,
+      prayerAlertFullScreen: settings.prayerAlertFullScreen,
       today: view.table.today,
       tomorrow: view.table.tomorrow,
       // Anchor the schedule to the day the maps were FETCHED for — if this
@@ -698,6 +699,7 @@ export function HomeScreen() {
     settings.prePrayerReminderMinutes,
     settings.notificationSound,
     settings.adhanUsesAlarmStream,
+    settings.prayerAlertFullScreen,
     clockHour12,
     palette.accentSolid,
     // Tinted surfaces recolours the shade, so re-schedule when it flips.
@@ -767,6 +769,9 @@ export function HomeScreen() {
         // like "nothing changed" and the alarms would keep pointing at the
         // old channel until something else forced a rewrite.
         String(settings.adhanUsesAlarmStream),
+        // The full-screen intent is part of each alert, so flipping it has
+        // to rewrite them like the stream above.
+        String(settings.prayerAlertFullScreen),
         // Sunrise and the night marks print a clock time in their copy,
         // so a 12/24 change has to rewrite them — same reason as above.
         // The resolved answer rather than the setting, so 'auto' following
@@ -803,6 +808,7 @@ export function HomeScreen() {
           prePrayerReminderMinutes: settings.prePrayerReminderMinutes,
           notificationSound: settings.notificationSound,
           adhanUsesAlarmStream: settings.adhanUsesAlarmStream,
+          prayerAlertFullScreen: settings.prayerAlertFullScreen,
           today: view.table.today,
           tomorrow: view.table.tomorrow,
           baseDate: state.baseDate,
@@ -907,6 +913,7 @@ export function HomeScreen() {
       settings.prePrayerReminderMinutes,
       settings.notificationSound,
       settings.adhanUsesAlarmStream,
+      settings.prayerAlertFullScreen,
       clockHour12,
       settings.malikiSecondTimesEnabled,
       settings.malikiSecondTimeAlerts,

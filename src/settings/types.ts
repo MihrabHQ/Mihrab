@@ -228,6 +228,15 @@ export type PrayerAppSettings = {
    */
   adhanUsesAlarmStream: boolean;
   /**
+   * ANDROID: the five prayers' alerts take the whole screen when the phone is
+   * locked or its screen is off, like an alarm clock — issue #63. The sound
+   * is untouched (it stays each row's mode); this only decides how the alert
+   * looks. Off by default: it wakes the screen, and that should be asked for.
+   * See `notifications/fullScreenAlarm.ts`. Never shown on iOS, which has no
+   * full-screen notifications for an app like this.
+   */
+  prayerAlertFullScreen: boolean;
+  /**
    * ANDROID: put the phone on Do Not Disturb around the prayers chosen,
    * for the mosque — issue #60. See `settings/prayerSilence.ts`. Never
    * shown on iOS, which lets no app touch silent mode or Focus.
@@ -661,6 +670,7 @@ export const DEFAULT_SETTINGS: PrayerAppSettings = {
   prePrayerReminderMinutes: 0,
   notificationSound: 'default',
   adhanUsesAlarmStream: false,
+  prayerAlertFullScreen: false,
   prayerSilence: { ...DEFAULT_PRAYER_SILENCE },
   prayerAlertModes: {},
   androidWidgetBackgroundOpacity: 88,

@@ -18,6 +18,11 @@ import { useAppPalette } from '../../hooks/useAppPalette';
 import { getNotificationSoundOption } from '../../notifications/notificationSounds';
 import { requestNotificationPermission } from '../../notifications/requestNotificationAccess';
 import {
+  canUseFullScreenAlarm,
+  fullScreenAlarmAvailable,
+  openFullScreenAlarmSettings,
+} from '../../native/FullScreenAlarm';
+import {
   SettingsGroup,
   SettingsLinkRow,
   SettingsToggleRow,
@@ -71,6 +76,42 @@ function NotificationsCardImpl({
       sub.remove();
     };
   }, []);
+
+  // Android 14+: USE_FULL_SCREEN_INTENT can be off (Play pre-grants it only
+  // to calling and alarm apps), and then Android quietly shows a heads-up
+  // instead. Checked like the battery row — on mount and on every return
+  // from the system page — and only while the switch is on.
+  const [fullScreenBlocked, setFullScreenBlocked] = useState(false);
+  const fullScreenOn = settings.prayerAlertFullScreen;
+  useEffect(() => {
+    if (!fullScreenAlarmAvailable || !fullScreenOn) {
+      setFullScreenBlocked(false);
+      return;
+    }
+    let alive = true;
+    const check = () => {
+      void canUseFullScreenAlarm().then(ok => {
+        if (alive) setFullScreenBlocked(!ok);
+      });
+    };
+    check();
+    const sub = AppState.addEventListener('change', st => {
+      if (st === 'active') check();
+    });
+    return () => {
+      alive = false;
+      sub.remove();
+    };
+  }, [fullScreenOn]);
+
+  const onToggleFullScreen = async (value: boolean) => {
+    updateSettings({ prayerAlertFullScreen: value });
+    // Turning it on with the permission off would look like it worked and
+    // then not; take the person to the switch Android needs right away.
+    if (value && !(await canUseFullScreenAlarm())) {
+      await openFullScreenAlarmSettings();
+    }
+  };
 
   const selectedNotificationSound = useMemo(
     () => getNotificationSoundOption(settings.notificationSound),
@@ -152,6 +193,29 @@ function NotificationsCardImpl({
           help={t('settings.adhanAlarmStreamHelp')}
           value={settings.adhanUsesAlarmStream}
           onValueChange={v => updateSettings({ adhanUsesAlarmStream: v })}
+        />
+      ) : null}
+
+      {/* ANDROID ONLY (issue #63). iOS has no full-screen notification an
+          app like this may post. */}
+      {on && fullScreenAlarmAvailable ? (
+        <SettingsToggleRow
+          title={t('settings.prayerAlertFullScreen')}
+          help={t('settings.prayerAlertFullScreenHelp')}
+          value={fullScreenOn}
+          onValueChange={v => void onToggleFullScreen(v)}
+        />
+      ) : null}
+      {on && fullScreenOn && fullScreenBlocked ? (
+        <SettingsLinkRow
+          title={t('settings.prayerAlertFullScreenBlocked')}
+          help={t('settings.prayerAlertFullScreenBlockedHelp')}
+          onPress={() => void openFullScreenAlarmSettings()}
+          accessory={
+            <Text style={[styles.change, { color: palette.accentSolid }]}>
+              {t('common.change')}
+            </Text>
+          }
         />
       ) : null}
 

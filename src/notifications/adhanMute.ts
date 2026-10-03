@@ -66,6 +66,7 @@ import {
   ymdLocal,
 } from './scheduling';
 import { modesFor, type PrayerAlertMode } from '../settings/alertModes';
+import { fullScreenAlarmAndroid, fullScreenAlarmData } from './fullScreenAlarm';
 
 /**
  * AsyncStorage key holding the override.
@@ -465,6 +466,14 @@ export async function adhanMuteToggleTask(
       ? await usable(data.adhanChannelId || plain, plain)
       : await usable(plain, DEFAULT_CHANNEL);
 
+    // The full-screen alert survives a mode change (issue #63). Read from
+    // storage like the reminder above: this runs with no app around it.
+    const fullScreen =
+      isPrayer &&
+      (await loadSettings()
+        .then(s => s.prayerAlertFullScreen === true)
+        .catch(() => false));
+
     await notifee.createTriggerNotification(
       {
         id,
@@ -474,12 +483,17 @@ export async function adhanMuteToggleTask(
           kind: 'prayer_time',
           usesAdhan: wantsAdhan ? '1' : '0',
           adhanSound: wantsAdhan ? data.adhanSoundId || 'default' : 'default',
+          // What the alarm screen's Log button and the shade's need.
+          prayer: name,
+          targetDate: ymdLocal(new Date(epoch)),
+          ...(fullScreen ? fullScreenAlarmData(name) : {}),
         },
         android: {
           channelId,
           smallIcon: 'ic_stat_prayer',
           pressAction: { id: 'default' },
           importance: AndroidImportance.HIGH,
+          ...(fullScreen ? fullScreenAlarmAndroid() : {}),
         },
       },
       buildTimestampTrigger(epoch, exactAlarms),

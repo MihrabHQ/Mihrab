@@ -253,6 +253,11 @@ async function loadSettingsUncached(): Promise<PrayerAppSettings> {
   if (typeof merged.adhanUsesAlarmStream !== 'boolean') {
     merged.adhanUsesAlarmStream = false;
   }
+  // Same kind of guard: truthy garbage here would wake the screen for every
+  // prayer of someone who never asked for it.
+  if (typeof merged.prayerAlertFullScreen !== 'boolean') {
+    merged.prayerAlertFullScreen = false;
+  }
   // The same kind of guard: this one turns Do Not Disturb on and off on
   // a clock, and a half-shaped blob would be read by a receiver with the
   // app closed, where there is nobody to notice.

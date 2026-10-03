@@ -395,6 +395,8 @@ jest.mock('@notifee/react-native', () => ({
   TriggerType: { TIMESTAMP: 0, INTERVAL: 1 },
   AndroidStyle: { BIGTEXT: 0, BIGPICTURE: 1, INBOX: 2, MESSAGING: 3 },
   AndroidCategory: { STATUS: 'status', ALARM: 'alarm', REMINDER: 'reminder' },
+  // Notifee's own values (src/types/Notification.ts).
+  EventType: { UNKNOWN: -1, DISMISSED: 0, PRESS: 1, ACTION_PRESS: 2, DELIVERED: 3 },
   AndroidVisibility: { PRIVATE: 0, PUBLIC: 1, SECRET: -1 },
   AndroidImportance: { DEFAULT: 3, HIGH: 4, LOW: 2, MIN: 1, NONE: 0 },
   AndroidForegroundServiceType: { FOREGROUND_SERVICE_TYPE_DATA_SYNC: 1 },

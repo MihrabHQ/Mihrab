@@ -39,6 +39,7 @@ import { prayerAlertActions } from './prayerAlertActions';
 import { JOURNAL_LOG_ACTION_ID } from './prayerLogAction';
 import { AdhanPlayer } from '../native/AdhanPlayer';
 import { getNextAlertOverride, overrideAppliesTo } from './adhanMute';
+import { fullScreenAlarmAndroid, fullScreenAlarmData } from './fullScreenAlarm';
 import {
   buildTimestampTrigger,
   canUseExactAlarms,
@@ -491,6 +492,9 @@ export async function syncPrayerNotifications(params: {
   /** Android: post the adhan to the alarm-stream channel, so the ringer
    *  switch does not silence it (issue #9). */
   adhanUsesAlarmStream?: boolean;
+  /** Android: the five prayers' alerts take the whole screen when the phone
+   *  is locked, like an alarm clock (issue #63). See `fullScreenAlarm.ts`. */
+  prayerAlertFullScreen?: boolean;
   today: TimingsMap;
   tomorrow?: TimingsMap;
   /** The local calendar day `today` was fetched for — see
@@ -809,6 +813,10 @@ export async function syncPrayerNotifications(params: {
         });
     const atPrayerExpanded =
       isNonPrayer || !nextLine ? atPrayerBody : `${atPrayerBody}\n${nextLine}`;
+    // The five prayers only. Sunrise and the night marks are not a call to
+    // prayer, and waking someone with a full screen for the Last Third is
+    // not what this switch was asked for.
+    const fullScreen = params.prayerAlertFullScreen === true && !isNonPrayer;
     // Auto-dismiss this alert when the NEXT event is due, so a fired prayer's
     // notification never lingers into (or past) the following prayer. Capped
     // for the long Isha→Fajr gap. Android honours this even if the app is
@@ -846,6 +854,7 @@ export async function syncPrayerNotifications(params: {
           // uses it to play the FULL adhan on tap / when the app is open, since
           // iOS caps the notification sound itself at 30s.
           adhanSound: eventSound.id,
+          ...(fullScreen ? fullScreenAlarmData(e.name) : {}),
         },
         ios: {
           sound: eventTargets.iosSound,
@@ -881,6 +890,9 @@ export async function syncPrayerNotifications(params: {
           // (Sunrise, the night times) carry none: there is nothing to log
           // and nothing to be late for.
           actions: isNonPrayer ? [] : prayerAlertActions(e.name),
+          // Last, so its ALARM category wins over the plain alert's
+          // REMINDER: Do Not Disturb lets alarms through by default.
+          ...(fullScreen ? fullScreenAlarmAndroid() : {}),
         },
       },
       buildTimestampTrigger(e.at.getTime(), exactAlarms),

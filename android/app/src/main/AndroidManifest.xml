@@ -37,6 +37,10 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <!-- The full-screen prayer alert (issue #63), opt-in from Notifications
+         settings. Granted at install below Android 14; from 14 the person can
+         revoke it, and without it Android shows the ordinary heads-up. -->
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
     <!-- "Silence the phone at prayer time" (issue #60): the app owns one
          automatic Do Not Disturb rule and turns it on and off around the
          prayers chosen. Declaring this grants nothing; the person grants
@@ -369,6 +373,32 @@
           <action android:name="android.intent.action.TIMEZONE_CHANGED" />
         </intent-filter>
       </receiver>
+
+      <!-- The full-screen prayer alert (issue #63). Launched only by the
+           notification's full-screen intent, so not exported. Its own task
+           and out of recents: it is shown over the lock screen and must not
+           be a way into the rest of the app. -->
+      <activity
+        android:name=".PrayerAlarmActivity"
+        android:exported="false"
+        android:showWhenLocked="true"
+        android:turnScreenOn="true"
+        android:launchMode="singleTask"
+        android:taskAffinity=""
+        android:excludeFromRecents="true"
+        android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
+        android:theme="@android:style/Theme.Material.NoActionBar" />
+
+      <!-- HeadlessJS service behind the alarm screen's Snooze and Log
+           buttons: the same JS the notification's own buttons run. -->
+      <service
+        android:name=".PrayerAlarmHeadlessService"
+        android:exported="false"
+        android:foregroundServiceType="specialUse">
+        <property
+          android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+          android:value="prayerCountdown" />
+      </service>
 
       <!-- Handles the "Mute next adhan" toggle action on the Live Activity
            (Android 17+). Explicit-intent broadcast from the notification action;

@@ -12,6 +12,7 @@ import { AppRegistry } from 'react-native';
 import App from './App';
 import { registerAdhanSafetyControls } from './src/notifications/adhanSafetyControls';
 import { adhanMuteToggleTask } from './src/notifications/adhanMute';
+import { prayerAlarmActionTask } from './src/notifications/prayerAlarmTask';
 import { widgetRefreshTask } from './src/widget/widgetRefreshTask';
 // Side effect: subscribes to durable writes so a change to the record
 // schedules a sync round. See src/sync/recordChanged.ts.
@@ -102,3 +103,8 @@ AppRegistry.registerHeadlessTask('AdhanMuteToggle', () => adhanMuteToggleTask);
 // round, then a rebuild of the payload. Dispatched by
 // WidgetRefreshHeadlessService; must match its task name.
 AppRegistry.registerHeadlessTask('WidgetRefresh', () => widgetRefreshTask);
+
+// HeadlessJS task behind the full-screen prayer alert's Snooze and Log
+// buttons (issue #63). Dispatched by PrayerAlarmHeadlessService; must match
+// its task name.
+AppRegistry.registerHeadlessTask('PrayerAlarmAction', () => prayerAlarmActionTask);

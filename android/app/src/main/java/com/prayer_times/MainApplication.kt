@@ -28,6 +28,7 @@ class MainApplication : Application(), ReactApplication {
           add(MushafFontPackage())
           add(MushafLinePackage())
           add(PrayerSilencePackage())
+          add(FullScreenAlarmPackage())
           add(CustomAdhanPackage())
           add(SecureRandomPackage())
           add(WordPlayerPackage())
