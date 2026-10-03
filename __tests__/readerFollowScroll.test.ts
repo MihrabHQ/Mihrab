@@ -44,8 +44,9 @@ describe('the reader follows only where a column scrolls', () => {
   const reader = read('src/quran/MushafPhoneReader.tsx');
 
   it('does nothing in portrait, and nothing on a silent page', () => {
+    expect(reader).toContain('if (!geometry?.scrolling || wordLine < 0) return;');
     expect(reader).toContain(
-      'if (!geometry?.scrolling || !playingAyah) return;',
+      'if (!geometry?.scrolling || !playingAyah || wordLine >= 0) return;',
     );
     expect(reader).toContain('ayahLineBox(page, geometry.textWidth');
   });

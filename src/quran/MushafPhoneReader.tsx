@@ -254,28 +254,38 @@ const PhonePageItem = React.memo(function PhonePageItem({
   const wordLine = useActiveWordSelect(word =>
     playingAyah ? activeWordLineIndex(page, word) : -1,
   );
+  /* Word-highlighted: the recited line goes to the TOP of the window, so
+     an āyah running past the fold never leaves lines half cut. Keyed on
+     the line alone — the āyah prop moves a tick before the word does, and
+     reacting to it here is what sent the page back to the start of an
+     āyah before on to the next. */
   useEffect(() => {
-    if (!geometry?.scrolling || !playingAyah) return;
+    if (!geometry?.scrolling || wordLine < 0) return;
     const lineHeight = mushafLineHeight(page, geometry.textWidth);
-    if (wordLine >= 0 && lineHeight != null) {
-      /* Word-highlighted: the recited line goes to the TOP of the window,
-         so an āyah running past the fold never leaves lines half cut. */
-      columnRef.current?.scrollTo({
-        y: windowOffset(
-          { y: wordLine * lineHeight, lineHeight },
-          geometry.viewportH,
-          pageBoxH,
-        ),
-        animated: true,
-      });
-      return;
-    }
-    const box = ayahLineBox(page, geometry.textWidth, playingSurah, playingAyah);
-    if (!box) return;
+    if (lineHeight == null) return;
     columnRef.current?.scrollTo({
-      y: windowOffset(box, geometry.viewportH, pageBoxH),
+      y: windowOffset(
+        { y: wordLine * lineHeight, lineHeight },
+        geometry.viewportH,
+        pageBoxH,
+      ),
       animated: true,
     });
+  }, [page, geometry, pageBoxH, wordLine]);
+
+  /* No word timing: follow the āyah's first line. Deferred, and dropped
+     the moment a word arrives, so a word-timed reciter never sees it. */
+  useEffect(() => {
+    if (!geometry?.scrolling || !playingAyah || wordLine >= 0) return;
+    const box = ayahLineBox(page, geometry.textWidth, playingSurah, playingAyah);
+    if (!box) return;
+    const t = setTimeout(() => {
+      columnRef.current?.scrollTo({
+        y: windowOffset(box, geometry.viewportH, pageBoxH),
+        animated: true,
+      });
+    }, 700);
+    return () => clearTimeout(t);
   }, [page, geometry, playingSurah, playingAyah, pageBoxH, wordLine]);
 
   return (
