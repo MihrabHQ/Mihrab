@@ -235,6 +235,8 @@
     "prayerAlertFullScreenHelp": "Bei gesperrtem Telefon füllt der Alarm jedes Gebets den Bildschirm wie ein Wecker – du kannst ihn direkt beenden, schlummern lassen oder das Gebet eintragen. Der Ton bleibt wie oben gewählt.",
     "prayerAlertFullScreenBlocked": "Vollbild-Alarme sind für Mihrab aus",
     "prayerAlertFullScreenBlockedHelp": "Android zeigt stattdessen eine normale Benachrichtigung. Tippen, um Vollbild-Alarme zu erlauben.",
+    "prayerAlertFullScreenHelpIos": "Jedes Gebet klingelt wie ein Wecker – auch bei stummem Telefon oder in einem Fokus – mit „Stopp“ und „Schlummern“ auf dem Sperrbildschirm. Der Adhan bleibt wie oben gewählt; dein eigener importierter Adhan klingt mit dem Wecker-Ton des Systems.",
+    "prayerAlertFullScreenBlockedHelpIos": "Wecker sind für Mihrab aus. Tippen, um sie in den Einstellungen zu erlauben.",
     "notificationSoundModalTitle": "Wählen Sie den Alarmton aus",
     "notificationSoundDefault": "Standardbenachrichtigung",
     "notificationSoundDefaultHelp": "Verwendet den Standardbenachrichtigungston Ihres Geräts.",

@@ -235,6 +235,8 @@
     "prayerAlertFullScreenHelp": "When the phone is locked, each prayer's alert fills the screen like an alarm, so you can stop it, snooze it or log the prayer right there. The sound stays as chosen above.",
     "prayerAlertFullScreenBlocked": "Full-screen alerts are off for Mihrab",
     "prayerAlertFullScreenBlockedHelp": "Android shows an ordinary notification instead. Tap to allow full-screen alerts.",
+    "prayerAlertFullScreenHelpIos": "Each prayer rings like an alarm, even when the phone is silent or in a Focus, with Stop and Snooze on the lock screen. The adhan stays as chosen above; your own imported adhan rings the system alarm tone.",
+    "prayerAlertFullScreenBlockedHelpIos": "Alarms are off for Mihrab. Tap to allow them in Settings.",
     "notificationSoundModalTitle": "Select alert sound",
     "notificationSoundDefault": "Default notification",
     "notificationSoundDefaultHelp": "Uses your device default notification sound.",

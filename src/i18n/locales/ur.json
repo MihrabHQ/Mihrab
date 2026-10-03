@@ -235,6 +235,8 @@
     "prayerAlertFullScreenHelp": "فون لاک ہونے پر ہر نماز کا الرٹ الارم کی طرح پوری اسکرین پر آتا ہے، تاکہ آپ وہیں اسے بند، اسنوز یا نماز درج کر سکیں۔ آواز وہی رہتی ہے جو اوپر منتخب کی ہے۔",
     "prayerAlertFullScreenBlocked": "Mihrab کے لیے فل اسکرین الرٹس بند ہیں",
     "prayerAlertFullScreenBlockedHelp": "اس کی بجائے Android عام اطلاع دکھاتا ہے۔ فل اسکرین الرٹس کی اجازت دینے کے لیے تھپتھپائیں۔",
+    "prayerAlertFullScreenHelpIos": "ہر نماز الارم کی طرح بجتی ہے، چاہے فون سائلنٹ ہو یا فوکس میں، لاک اسکرین پر روکیں اور اسنوز کے ساتھ۔ اذان وہی رہتی ہے جو اوپر منتخب کی ہے؛ آپ کی اپنی درآمد کردہ اذان سسٹم کی الارم ٹون میں بجتی ہے۔",
+    "prayerAlertFullScreenBlockedHelpIos": "Mihrab کے لیے الارم بند ہیں۔ سیٹنگز میں اجازت دینے کے لیے تھپتھپائیں۔",
     "notificationSoundModalTitle": "انتباہی آواز منتخب کریں۔",
     "notificationSoundDefault": "پہلے سے طے شدہ اطلاع",
     "notificationSoundDefaultHelp": "آپ کے آلے کی ڈیفالٹ اطلاع کی آواز استعمال کرتا ہے۔",

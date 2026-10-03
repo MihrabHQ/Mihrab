@@ -41,6 +41,13 @@ import { AdhanPlayer } from '../native/AdhanPlayer';
 import { getNextAlertOverride, overrideAppliesTo } from './adhanMute';
 import { fullScreenAlarmAndroid, fullScreenAlarmData } from './fullScreenAlarm';
 import {
+  clearPrayerAlarms,
+  prayerAlarmAccess,
+  schedulePrayerAlarms,
+  type PrayerAlarm,
+} from '../native/PrayerAlarms';
+import { FULL_SCREEN_SNOOZE_MIN } from './fullScreenAlarm';
+import {
   buildTimestampTrigger,
   canUseExactAlarms,
   clampPrePrayerReminderMinutes,
@@ -575,12 +582,14 @@ export async function syncPrayerNotifications(params: {
 }): Promise<SyncPrayerNotificationsResult> {
   if (!params.enabled) {
     await cancelOwnedPrayerNotifications([]);
+    await clearPrayerAlarms();
     return { status: 'disabled' };
   }
   if (Platform.OS === 'ios') {
     const n = await notifee.getNotificationSettings();
     if (!iosNotificationsAllowed(n.authorizationStatus)) {
       await cancelOwnedPrayerNotifications([]);
+      await clearPrayerAlarms();
       return { status: 'ios-permission-denied' };
     }
   }
@@ -757,6 +766,17 @@ export async function syncPrayerNotifications(params: {
   // current one in the shade / AOD.
   await clearStaleDisplayedPrayerNotifications(now.getTime());
 
+  // ── iPhone: the prayers ring as AlarmKit alarms (issue #63) ──────────
+  //
+  // Only with the switch on AND the person's permission. Without either the
+  // alert stays the notification it always was — a switch that silently
+  // removed the adhan would be worse than not having one.
+  const iosAlarms: PrayerAlarm[] = [];
+  const iosAlarmsOn =
+    Platform.OS === 'ios' &&
+    params.prayerAlertFullScreen === true &&
+    (await prayerAlarmAccess()) === 'authorized';
+
   for (let i = 0; i < audibleEvents.length; i++) {
     const e = audibleEvents[i];
     const notificationId = `${PRAYER_NOTIFICATION_ID_PREFIX}${e.at.getTime()}-${
@@ -782,8 +802,31 @@ export async function syncPrayerNotifications(params: {
       eventSound.id,
       useAlarmStream && wantsAdhan,
     );
-    const usesAdhan = eventSound.id !== 'default';
+    // An alarm carries this prayer: it makes the sound, so the notification
+    // beside it stays (it is where "Log prayer" lives once the alarm is
+    // stopped) but says nothing, and a tap on it must not start the adhan a
+    // second time in the app.
+    const alarmCovers = iosAlarmsOn && !isNonPrayer;
+    const usesAdhan = eventSound.id !== 'default' && !alarmCovers;
     const atPrayerTitle = i18n.t(`prayer.${e.name}`, { defaultValue: e.name });
+    if (alarmCovers) {
+      iosAlarms.push({
+        at: e.at.getTime(),
+        title: atPrayerTitle,
+        prayer: e.name,
+        // The bundled clip, by its file name with the extension — and only
+        // a bundled one: the user's own recording lives in Library/Sounds,
+        // which AlarmKit does not read, so it rings the system tone.
+        sound:
+          wantsAdhan && eventSound.id !== 'custom'
+            ? eventTargets.iosSound
+            : '',
+        stopLabel: i18n.t('common.stop', { defaultValue: 'Stop' }),
+        snoozeLabel: i18n.t('alertCopy.snoozeAction', 'Snooze'),
+        snoozeMinutes: FULL_SCREEN_SNOOZE_MIN,
+        tint: accent,
+      });
+    }
     /**
      * WHAT THE CARD SAYS — v2.18.
      *
@@ -857,7 +900,7 @@ export async function syncPrayerNotifications(params: {
           ...(fullScreen ? fullScreenAlarmData(e.name) : {}),
         },
         ios: {
-          sound: eventTargets.iosSound,
+          ...(alarmCovers ? {} : { sound: eventTargets.iosSound }),
           // Every real prayer (adhan or plain) carries the Stop + Snooze
           // category so both actions are available; non-prayer events (Sunrise,
           // night times) get no actions.
@@ -898,6 +941,11 @@ export async function syncPrayerNotifications(params: {
       buildTimestampTrigger(e.at.getTime(), exactAlarms),
     );
   }
+
+  // Registered after the loop so the set is whole; empty when the switch is
+  // off or the permission is not there, which also takes down any alarms a
+  // previous sync left.
+  await (iosAlarmsOn ? schedulePrayerAlarms(iosAlarms) : clearPrayerAlarms());
 
   for (const e of reminderEvents) {
     const notificationId = `${PRAYER_NOTIFICATION_ID_PREFIX}pre-${e.at.getTime()}-${

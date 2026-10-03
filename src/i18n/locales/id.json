@@ -235,6 +235,8 @@
     "prayerAlertFullScreenHelp": "Saat ponsel terkunci, pengingat setiap salat memenuhi layar seperti alarm, sehingga Anda bisa menghentikan, menunda, atau mencatat salat langsung di sana. Suaranya tetap seperti yang dipilih di atas.",
     "prayerAlertFullScreenBlocked": "Pengingat layar penuh dinonaktifkan untuk Mihrab",
     "prayerAlertFullScreenBlockedHelp": "Android menampilkan notifikasi biasa sebagai gantinya. Ketuk untuk mengizinkan pengingat layar penuh.",
+    "prayerAlertFullScreenHelpIos": "Setiap salat berdering seperti alarm, bahkan saat ponsel senyap atau dalam Fokus, dengan Berhenti dan Tunda di layar kunci. Azan tetap seperti yang dipilih di atas; azan impor Anda sendiri berdering dengan nada alarm sistem.",
+    "prayerAlertFullScreenBlockedHelpIos": "Alarm dinonaktifkan untuk Mihrab. Ketuk untuk mengizinkannya di Pengaturan.",
     "notificationSoundModalTitle": "Pilih suara peringatan",
     "notificationSoundDefault": "Pemberitahuan bawaan",
     "notificationSoundDefaultHelp": "Menggunakan suara notifikasi default perangkat Anda.",

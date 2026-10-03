@@ -235,6 +235,8 @@
     "prayerAlertFullScreenHelp": "Con el teléfono bloqueado, el aviso de cada oración ocupa toda la pantalla como una alarma, para que puedas detenerlo, posponerlo o registrar la oración ahí mismo. El sonido sigue siendo el elegido arriba.",
     "prayerAlertFullScreenBlocked": "Los avisos a pantalla completa están desactivados para Mihrab",
     "prayerAlertFullScreenBlockedHelp": "Android muestra una notificación normal en su lugar. Toca para permitir los avisos a pantalla completa.",
+    "prayerAlertFullScreenHelpIos": "Cada oración suena como una alarma, incluso con el teléfono en silencio o en un modo de concentración, con Detener y Posponer en la pantalla de bloqueo. El adhan sigue siendo el elegido arriba; tu propio adhan importado suena con el tono de alarma del sistema.",
+    "prayerAlertFullScreenBlockedHelpIos": "Las alarmas están desactivadas para Mihrab. Toca para permitirlas en Ajustes.",
     "notificationSoundModalTitle": "Seleccionar sonido de alerta",
     "notificationSoundDefault": "Notificación predeterminada",
     "notificationSoundDefaultHelp": "Utiliza el sonido de notificación predeterminado de su dispositivo.",

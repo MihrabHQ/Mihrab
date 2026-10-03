@@ -26,6 +26,9 @@
 
 import SwiftUI
 import WidgetKit
+#if canImport(AlarmKit)
+import AlarmKit
+#endif
 
 @main
 struct MihrabLiveActivityBundle: WidgetBundle {
@@ -37,5 +40,13 @@ struct MihrabLiveActivityBundle: WidgetBundle {
     if #available(iOSApplicationExtension 16.1, *) {
       PrayerLiveActivityWidget()
     }
+    // The countdown a prayer alarm shows after a Snooze (issue #63). AlarmKit
+    // is iOS 26+, and Apple requires this widget to exist for any alarm that
+    // can count down — see PrayerAlarmWidget.swift.
+    #if canImport(AlarmKit) && !targetEnvironment(macCatalyst)
+    if #available(iOSApplicationExtension 26.0, *) {
+      PrayerAlarmWidget()
+    }
+    #endif
   }
 }

@@ -10,7 +10,7 @@
  * draws. What is left is one family, and it fits on a screen.
  */
 import { memo, useEffect, useMemo, useState } from 'react';
-import { AppState, Platform, StyleSheet, Text } from 'react-native';
+import { AppState, Linking, Platform, StyleSheet, Text } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import notifee, { AndroidNotificationSetting } from '@notifee/react-native';
 import { useNotificationsSettings } from '../../context/PrayerSettingsContext';
@@ -22,6 +22,11 @@ import {
   fullScreenAlarmAvailable,
   openFullScreenAlarmSettings,
 } from '../../native/FullScreenAlarm';
+import {
+  prayerAlarmAccess,
+  prayerAlarmsAvailable,
+  requestPrayerAlarmAccess,
+} from '../../native/PrayerAlarms';
 import {
   SettingsGroup,
   SettingsLinkRow,
@@ -83,13 +88,34 @@ function NotificationsCardImpl({
   // from the system page — and only while the switch is on.
   const [fullScreenBlocked, setFullScreenBlocked] = useState(false);
   const fullScreenOn = settings.prayerAlertFullScreen;
+  // iPhone (iOS 26+): the same switch rings the prayers as AlarmKit alarms.
+  // Offered only where the OS has it; blocked means the person said no to
+  // the system prompt, and only Settings can change that.
+  const [iosAlarmsOffered, setIosAlarmsOffered] = useState(false);
   useEffect(() => {
-    if (!fullScreenAlarmAvailable || !fullScreenOn) {
+    if (Platform.OS !== 'ios') return;
+    let alive = true;
+    void prayerAlarmsAvailable().then(ok => {
+      if (alive) setIosAlarmsOffered(ok);
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
+  const alarmsOffered = fullScreenAlarmAvailable || iosAlarmsOffered;
+  useEffect(() => {
+    if (!alarmsOffered || !fullScreenOn) {
       setFullScreenBlocked(false);
       return;
     }
     let alive = true;
     const check = () => {
+      if (Platform.OS === 'ios') {
+        void prayerAlarmAccess().then(a => {
+          if (alive) setFullScreenBlocked(a === 'denied');
+        });
+        return;
+      }
       void canUseFullScreenAlarm().then(ok => {
         if (alive) setFullScreenBlocked(!ok);
       });
@@ -102,10 +128,18 @@ function NotificationsCardImpl({
       alive = false;
       sub.remove();
     };
-  }, [fullScreenOn]);
+  }, [fullScreenOn, alarmsOffered]);
 
   const onToggleFullScreen = async (value: boolean) => {
     updateSettings({ prayerAlertFullScreen: value });
+    if (Platform.OS === 'ios') {
+      // The system prompt appears here, once. A "no" leaves the switch on
+      // and the notification as it was; the row below says why.
+      if (value && (await requestPrayerAlarmAccess()) === 'denied') {
+        setFullScreenBlocked(true);
+      }
+      return;
+    }
     // Turning it on with the permission off would look like it worked and
     // then not; take the person to the switch Android needs right away.
     if (value && !(await canUseFullScreenAlarm())) {
@@ -198,10 +232,14 @@ function NotificationsCardImpl({
 
       {/* ANDROID ONLY (issue #63). iOS has no full-screen notification an
           app like this may post. */}
-      {on && fullScreenAlarmAvailable ? (
+      {on && alarmsOffered ? (
         <SettingsToggleRow
           title={t('settings.prayerAlertFullScreen')}
-          help={t('settings.prayerAlertFullScreenHelp')}
+          help={t(
+            Platform.OS === 'ios'
+              ? 'settings.prayerAlertFullScreenHelpIos'
+              : 'settings.prayerAlertFullScreenHelp',
+          )}
           value={fullScreenOn}
           onValueChange={v => void onToggleFullScreen(v)}
         />
@@ -209,8 +247,16 @@ function NotificationsCardImpl({
       {on && fullScreenOn && fullScreenBlocked ? (
         <SettingsLinkRow
           title={t('settings.prayerAlertFullScreenBlocked')}
-          help={t('settings.prayerAlertFullScreenBlockedHelp')}
-          onPress={() => void openFullScreenAlarmSettings()}
+          help={t(
+            Platform.OS === 'ios'
+              ? 'settings.prayerAlertFullScreenBlockedHelpIos'
+              : 'settings.prayerAlertFullScreenBlockedHelp',
+          )}
+          onPress={() =>
+            void (Platform.OS === 'ios'
+              ? Linking.openSettings()
+              : openFullScreenAlarmSettings())
+          }
           accessory={
             <Text style={[styles.change, { color: palette.accentSolid }]}>
               {t('common.change')}

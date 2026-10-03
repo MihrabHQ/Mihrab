@@ -235,6 +235,8 @@
     "prayerAlertFullScreenHelp": "När telefonen är låst fyller varje bönetids avisering skärmen som ett alarm, så att du kan stänga av den, snooza den eller logga bönen direkt. Ljudet förblir det du valt ovan.",
     "prayerAlertFullScreenBlocked": "Helskärmsaviseringar är avstängda för Mihrab",
     "prayerAlertFullScreenBlockedHelp": "Android visar en vanlig avisering i stället. Tryck för att tillåta helskärmsaviseringar.",
+    "prayerAlertFullScreenHelpIos": "Varje bön ringer som ett alarm, även när telefonen är ljudlös eller i ett fokusläge, med Stoppa och Snooza på låsskärmen. Adhan förblir det du valt ovan; din egen importerade adhan ringer med systemets alarmljud.",
+    "prayerAlertFullScreenBlockedHelpIos": "Alarm är avstängda för Mihrab. Tryck för att tillåta dem i Inställningar.",
     "notificationSoundModalTitle": "Välj aviseringsljud",
     "notificationSoundDefault": "Standardavisering",
     "notificationSoundDefaultHelp": "Använder enhetens standardljud för aviseringar.",

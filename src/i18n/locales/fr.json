@@ -235,6 +235,8 @@
     "prayerAlertFullScreenHelp": "Quand le téléphone est verrouillé, l’alerte de chaque prière occupe tout l’écran comme une alarme : vous pouvez l’arrêter, la reporter ou enregistrer la prière sur place. Le son reste celui choisi plus haut.",
     "prayerAlertFullScreenBlocked": "Les alertes plein écran sont désactivées pour Mihrab",
     "prayerAlertFullScreenBlockedHelp": "Android affiche une notification ordinaire à la place. Touchez pour autoriser les alertes plein écran.",
+    "prayerAlertFullScreenHelpIos": "Chaque prière sonne comme une alarme, même quand le téléphone est en silencieux ou dans un mode de concentration, avec Arrêter et Répéter sur l’écran verrouillé. L’adhan reste celui choisi plus haut ; votre propre adhan importé sonne avec la tonalité d’alarme du système.",
+    "prayerAlertFullScreenBlockedHelpIos": "Les alarmes sont désactivées pour Mihrab. Touchez pour les autoriser dans les Réglages.",
     "notificationSoundModalTitle": "Sélectionnez le son d'alerte",
     "notificationSoundDefault": "Notification par défaut",
     "notificationSoundDefaultHelp": "Utilise le son de notification par défaut de votre appareil.",
