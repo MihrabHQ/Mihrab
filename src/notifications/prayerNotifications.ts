@@ -899,7 +899,7 @@ export async function syncPrayerNotifications(params: {
           // uses it to play the FULL adhan on tap / when the app is open, since
           // iOS caps the notification sound itself at 30s.
           adhanSound: eventSound.id,
-          ...(fullScreen ? fullScreenAlarmData(e.name) : {}),
+          ...(fullScreen ? fullScreenAlarmData(e.name, nextLine) : {}),
         },
         ios: {
           ...(alarmCovers ? {} : { sound: eventTargets.iosSound }),

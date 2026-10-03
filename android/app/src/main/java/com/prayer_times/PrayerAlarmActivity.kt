@@ -254,6 +254,15 @@ class PrayerAlarmActivity : Activity() {
     if (body.isNotEmpty()) {
       head.addView(text(body.lineSequence().first(), 19f, inkSoft, bold = false))
     }
+    // "Next: Isha at 20:18" — what the notification's expanded card also says.
+    val nextLine = data.getString("fsNext").orEmpty()
+    if (nextLine.isNotEmpty()) {
+      head.addView(
+        text(nextLine, 17f, inkSoft, bold = false).apply {
+          setPadding(0, dp(12), 0, 0)
+        },
+      )
+    }
 
     // Lower part: what to do about it. Stop is the big one — it is the button
     // a hand finds in the dark.

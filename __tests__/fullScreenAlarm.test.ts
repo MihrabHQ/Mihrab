@@ -232,3 +232,13 @@ describe('the notification beside a full-screen alert', () => {
     expect(fs).toHaveLength(plain.length);
   });
 });
+
+describe('the next prayer on the alarm screen', () => {
+  it('rides in the data when there is one, and is absent otherwise', () => {
+    const { fullScreenAlarmData } = require('../src/notifications/fullScreenAlarm');
+    expect(fullScreenAlarmData('Maghrib', 'Next: Isha at 20:18').fsNext).toBe(
+      'Next: Isha at 20:18',
+    );
+    expect(fullScreenAlarmData('Maghrib').fsNext).toBeUndefined();
+  });
+});

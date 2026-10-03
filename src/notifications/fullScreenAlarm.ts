@@ -69,7 +69,11 @@ export function fullScreenAlarmSky(prayer: string): Record<string, string> {
  * `fsLog` is absent for anything that is not one of the five prayers, and the
  * screen then draws no Log button.
  */
-export function fullScreenAlarmData(prayer: string): Record<string, string> {
+export function fullScreenAlarmData(
+  prayer: string,
+  /** "Next: Isha at 20:18", the same line the notification's card carries. */
+  nextLine = '',
+): Record<string, string> {
   const lang = (i18n.language || 'en').split('-')[0];
   const out: Record<string, string> = {
     [FULL_SCREEN_DATA_FLAG]: '1',
@@ -82,6 +86,7 @@ export function fullScreenAlarmData(prayer: string): Record<string, string> {
     fsRtl: RTL_LANGUAGES.includes(lang) ? '1' : '0',
     ...fullScreenAlarmSky(prayer),
   };
+  if (nextLine) out.fsNext = nextLine;
   if (prayer) {
     out.fsLog = i18n.t('journal.logActionTitle', {
       defaultValue: 'Log prayer',
