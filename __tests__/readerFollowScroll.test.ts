@@ -83,3 +83,25 @@ describe('the reader follows only where a column scrolls', () => {
     expect(reader).toMatch(/StatusBar\s+hidden=\{isFullscreen\}/);
   });
 });
+
+import { activeWordLineIndex, windowOffset } from '../src/quran/mushafFollowScroll';
+import { getPageLayout } from '../src/quran/mushafLayout';
+
+describe('word-highlighted follow', () => {
+  it('puts the recited line at the top of the window', () => {
+    expect(windowOffset({ y: 300, lineHeight: 60 }, 180, 2000)).toBe(300);
+  });
+  it('stops at the foot of the page', () => {
+    expect(windowOffset({ y: 1980, lineHeight: 60 }, 180, 2000)).toBe(1820);
+  });
+  it('finds the line carrying the recited word', () => {
+    const layout = getPageLayout(1);
+    if (!layout) return;
+    const i = layout.lines.findIndex(l => l.kind === 'ayah');
+    const w = (layout.lines[i] as any).words[0];
+    expect(
+      activeWordLineIndex(1, { surah: w.surah, ayah: w.ayah, wordIndex: w.position - 1 }),
+    ).toBe(i);
+    expect(activeWordLineIndex(1, null)).toBe(-1);
+  });
+});

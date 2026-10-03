@@ -93,6 +93,20 @@ export function activeWordOn(line: MushafLine, word: ActiveWord | null): number 
   return -1;
 }
 
+/**
+ * Any primitive derived from the active word, with the same wake-only-on-
+ * change behaviour as `useActiveWordOn`. `select` must be pure and cheap.
+ */
+export function useActiveWordSelect(
+  select: (word: ActiveWord | null) => number,
+): number {
+  return useSyncExternalStore(
+    subscribe,
+    () => select(current),
+    () => -1,
+  );
+}
+
 /** Test seam. */
 export function _resetActiveWordForTests(): void {
   current = null;

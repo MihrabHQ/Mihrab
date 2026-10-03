@@ -80,7 +80,13 @@ import { useRegisterKeyPaging } from './useKeyPaging';
 import { useMushafPager } from './useMushafPager';
 import { useMushafFontSet, warmAround } from './useMushafPageFont';
 import { findPageForAyah } from './pages';
-import { ayahLineBox, followOffset } from './mushafFollowScroll';
+import {
+  activeWordLineIndex,
+  ayahLineBox,
+  mushafLineHeight,
+  windowOffset,
+} from './mushafFollowScroll';
+import { useActiveWordSelect } from './audio/activeWordStore';
 import { riwayahById, type RiwayahId } from './riwayat';
 import { toneIsDark, type MushafTone } from './mushafTone';
 import { useScrubberChrome } from './useScrubberChrome';
@@ -242,15 +248,35 @@ const PhonePageItem = React.memo(function PhonePageItem({
   const columnRef = useRef<ScrollViewInstance>(null);
   const playingSurah = playing?.surah ?? 0;
   const playingAyah = playing?.ayah ?? 0;
+  /* The line carrying the recited word, -1 when the reciter has no word
+     timing (or the word is on another page). It wakes this item only when
+     the recitation crosses to a new line, not on every word. */
+  const wordLine = useActiveWordSelect(word =>
+    playingAyah ? activeWordLineIndex(page, word) : -1,
+  );
   useEffect(() => {
     if (!geometry?.scrolling || !playingAyah) return;
+    const lineHeight = mushafLineHeight(page, geometry.textWidth);
+    if (wordLine >= 0 && lineHeight != null) {
+      /* Word-highlighted: the recited line goes to the TOP of the window,
+         so an āyah running past the fold never leaves lines half cut. */
+      columnRef.current?.scrollTo({
+        y: windowOffset(
+          { y: wordLine * lineHeight, lineHeight },
+          geometry.viewportH,
+          pageBoxH,
+        ),
+        animated: true,
+      });
+      return;
+    }
     const box = ayahLineBox(page, geometry.textWidth, playingSurah, playingAyah);
     if (!box) return;
     columnRef.current?.scrollTo({
-      y: followOffset(box, geometry.viewportH, pageBoxH),
+      y: windowOffset(box, geometry.viewportH, pageBoxH),
       animated: true,
     });
-  }, [page, geometry, playingSurah, playingAyah, pageBoxH]);
+  }, [page, geometry, playingSurah, playingAyah, pageBoxH, wordLine]);
 
   return (
     <View style={[styles.item, { width: pageWidth, backgroundColor: pageBg }]}>

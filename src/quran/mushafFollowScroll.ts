@@ -134,3 +134,28 @@ export function ayahLineIndex(
   );
   return index < 0 ? null : index;
 }
+
+/**
+ * The printed line that carries the word being recited, or -1 when the
+ * page has no glyph layout or the word is not on it. QPC numbers words
+ * from 1 and the timing data from 0, hence the `+ 1`.
+ */
+export function activeWordLineIndex(
+  page: number,
+  word: { surah: number; ayah: number; wordIndex: number } | null,
+): number {
+  if (!word) return -1;
+  const layout = getPageLayout(page);
+  if (!layout) return -1;
+  const position = word.wordIndex + 1;
+  return layout.lines.findIndex(
+    line =>
+      line.kind === 'ayah' &&
+      line.words.some(
+        w =>
+          w.surah === word.surah &&
+          w.ayah === word.ayah &&
+          w.position === position,
+      ),
+  );
+}
