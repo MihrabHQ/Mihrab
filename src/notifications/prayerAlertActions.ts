@@ -131,18 +131,37 @@ export type PrayerAlertAction = {
  * offering to log a sunnah that does not exist would either lie about what it
  * wrote or do the same as the button beside it.
  */
-export function prayerAlertActions(prayer: string): PrayerAlertAction[] {
+export function prayerAlertActions(
+  prayer: string,
+  /**
+   * A full-screen alert already has the alarm screen's own fixed snooze, and
+   * its heads-up card, when the phone is in use, showed the chip row AND a
+   * Snooze button — two snoozes stacked. With this set the button is a single
+   * "Snooze N min" with no chips (a press with no input falls back to the
+   * default, which is the same N).
+   */
+  fixedSnoozeMinutes?: number,
+): PrayerAlertAction[] {
   const actions: PrayerAlertAction[] = [
     {
-      title: i18n.t('alertCopy.snoozeAction', 'Snooze'),
+      title:
+        fixedSnoozeMinutes != null
+          ? i18n.t('alertCopy.snoozeChoice', {
+              defaultValue: 'Snooze {{minutes}} min',
+              minutes: fixedSnoozeMinutes,
+            })
+          : i18n.t('alertCopy.snoozeAction', 'Snooze'),
       pressAction: { id: ADHAN_ACTION_SNOOZE },
-      input: {
-        // Both false: a chip tap must snooze, not open a keyboard, and the
-        // watch must not be allowed to invent its own replies. See header.
-        allowFreeFormInput: false,
-        allowGeneratedReplies: false,
-        choices: snoozeChoices(),
-      },
+      input:
+        fixedSnoozeMinutes != null
+          ? undefined
+          : {
+              // Both false: a chip tap must snooze, not open a keyboard, and
+              // the watch must not be allowed to invent its own replies.
+              allowFreeFormInput: false,
+              allowGeneratedReplies: false,
+              choices: snoozeChoices(),
+            },
     },
     {
       title: i18n.t('journal.logActionTitle', 'Log prayer'),

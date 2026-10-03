@@ -934,7 +934,12 @@ export async function syncPrayerNotifications(params: {
           // re-fires can never drift apart again. Non-prayer events
           // (Sunrise, the night times) carry none: there is nothing to log
           // and nothing to be late for.
-          actions: isNonPrayer ? [] : prayerAlertActions(e.name),
+          actions: isNonPrayer
+            ? []
+            : prayerAlertActions(
+                e.name,
+                fullScreen ? FULL_SCREEN_SNOOZE_MIN : undefined,
+              ),
           // Last, so its ALARM category wins over the plain alert's
           // REMINDER: Do Not Disturb lets alarms through by default.
           ...(fullScreen ? fullScreenAlarmAndroid() : {}),

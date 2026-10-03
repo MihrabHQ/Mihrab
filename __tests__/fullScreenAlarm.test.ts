@@ -220,3 +220,15 @@ describe('alarm screen sky', () => {
     expect(fullScreenAlarmData('').fsSkyTop).toBeUndefined();
   });
 });
+
+describe('the notification beside a full-screen alert', () => {
+  it('has one Snooze button, not a chip row and a button', () => {
+    const { prayerAlertActions } = require('../src/notifications/prayerAlertActions');
+    const plain = prayerAlertActions('Maghrib');
+    expect(plain[0].input?.choices.length).toBeGreaterThan(0);
+    const fs = prayerAlertActions('Maghrib', 10);
+    expect(fs[0].input).toBeUndefined();
+    expect(fs[0].title).toContain('10');
+    expect(fs).toHaveLength(plain.length);
+  });
+});

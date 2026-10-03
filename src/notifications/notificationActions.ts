@@ -15,7 +15,11 @@ import i18n from '../i18n';
 import { ADHAN_CONTROLS_CATEGORY_ID } from './adhanActionIds';
 import { prayerAlertActions } from './prayerAlertActions';
 import { buildTimestampTrigger, canUseExactAlarms } from './scheduling';
-import { fullScreenAlarmAndroid, isFullScreenAlarm } from './fullScreenAlarm';
+import {
+  FULL_SCREEN_SNOOZE_MIN,
+  fullScreenAlarmAndroid,
+  isFullScreenAlarm,
+} from './fullScreenAlarm';
 
 /** Ids of snoozed re-fires — deliberately NOT the `pt-` prefix used by the
  *  scheduled day, so a full resync (which cancels obsolete `pt-` triggers)
@@ -57,7 +61,10 @@ export async function snoozePrayerNotification(
   // The prayer name travels in the payload; without it there is nothing to
   // log, so the re-fire falls back to a snooze-only button.
   const prayer = typeof data.prayer === 'string' ? data.prayer : '';
-  const actions = prayerAlertActions(prayer);
+  const actions = prayerAlertActions(
+    prayer,
+    isFullScreenAlarm(data) ? FULL_SCREEN_SNOOZE_MIN : undefined,
+  );
 
   await notifee.createTriggerNotification(
     {
