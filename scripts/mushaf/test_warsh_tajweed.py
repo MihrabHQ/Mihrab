@@ -152,6 +152,18 @@ def main() -> int:
     case("allah-lillah", "لله", "ل", lacks=["tafkheem"], nth=2, surah=2)
     expect("allah-basm", "basm.", b[1], "ل", lacks=["tafkheem"], nth=2)
 
+    # ── Found by running the rules over the whole text (issue #64) ───
+    # iqlāb inside a word is iqlāb, not ikhfāʾ: يُنۢبِتُ.
+    case("iqlab-in-word", "تنبت", "ن", has=["iqlab"], lacks=["ikhafa"], surah=2)
+    # A nūn with the taqlīl dot is vowelled, not a sākinah: أَدْنَىٰ.
+    case("taqleel-nun", "أدنى", "ن", has=["taqleel"], lacks=["ikhafa"], surah=2)
+    # The hamza carrying the maddah after a prefix is badal: لَأٓيَةٗ, لِأٓدَمَ.
+    case("badal-prefix-a", "لأية", "أ", has=["madd_badal"], surah=2)
+    case("badal-prefix-b", "لأدم", "أ", has=["madd_badal"], surah=2)
+    # The disjoined letters carry a madd lāzim, as in Ḥafṣ: الٓمٓ.
+    case("muqattaat-l", "ألم", "ل", has=["madda_necessary"], surah=2)
+    case("muqattaat-m", "ألم", "م", has=["madda_necessary"], surah=2)
+
     bad = RESULTS.count(False)
     print(f"\n{len(RESULTS) - bad} passed, {bad} failed")
     return 1 if bad else 0

@@ -267,8 +267,12 @@ def rule_word(w: Word, prev_word: Word | None, next_word: Word | None, first_in_
         # The text puts fatḥatan on the alif (أَمْناٗ): the letter before it
         # is vowelled by that tanwīn, not sākin.
         tanween_on_alef = nxt is not None and nxt.base in "اى" and nxt.tanween is not None
-        if L.base == "ن" and L.bare and not L.shadda and not tanween_on_alef:
-            if nxt is not None:
+        # A nūn with the low dot is a vowelled nūn read with taqlīl (أَدْنَىٰ,
+        # مَثْنَىٰ, دِينَارٖ), not a sākinah: it is the taqlīl's, below.
+        if L.base == "ن" and L.bare and not L.shadda and not tanween_on_alef and not L.has(LOW_DOT):
+            if nxt is not None and L.has(SMALL_MEEM) and nxt.base == "ب":
+                w.mark("iqlab", L, nxt)  # يُنۢبِتُ, أَنۢبِيَآءَ — iqlāb inside the word
+            elif nxt is not None:
                 w.mark("ikhafa", L, nxt)  # أُنزِلَ — inside the word it is always ikhfāʾ
             elif nxt_first is not None:
                 _nun_or_tanween_across(w, L, next_word, nxt_first)
@@ -368,6 +372,20 @@ def _madd(w: Word, k: int, L: Letter, prev: Letter | None, nxt: Letter | None, n
         or (L.base == "ى" and (L.has(SUP_ALEF) or (L.marks == "" and prev is not None and prev.vowel == FATHA)))
         or carries_small
     )
+    # لَأٓيَةٗ, لِأٓدَمَ, وَلَأٓمُرَنَّهُمْ — the hamza itself carries the maddah (the
+    # first of ءَا written as one letter after a prefix): the same badal as
+    # ءَامَنُواْ, Warsh's own count. Q13.
+    if L.base == "أ" and L.has(MADDAH):
+        w.mark("madd_badal", L)
+        return
+    # The disjoined letters at the head of a sūrah: a consonant that carries
+    # the maddah is a madd lāzim ḥarfī (الٓمٓ, طسٓمٓ, حمٓ), six counts, as the
+    # Ḥafṣ colouring has it. Only the opening word of the āyah: nothing else
+    # in the text writes a maddah on a consonant that does not also carry a
+    # small madd letter (checked over the whole text: هُۥٓ, لَٰٓئِكَ are those).
+    if L.has(MADDAH) and L.base not in "اأإءوىيے" and not carries_small:
+        w.mark("madda_necessary", L)
+        return
     if not natural:
         return
     has_maddah = L.has(MADDAH)
