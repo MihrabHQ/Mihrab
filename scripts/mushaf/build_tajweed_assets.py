@@ -337,6 +337,11 @@ def cmd_rules(args: argparse.Namespace) -> int:
         with open(os.path.join(args.rules_dir, f"{surah:03d}.json"), "w", encoding="utf-8") as fh:
             json.dump(out, fh, ensure_ascii=False, separators=(",", ":"))
     print(f"wrote {len(per_surah)} surahs to {args.rules_dir}; rules: {rule_ids}")
+    # quran.com's markup has a few gaps the orthography itself closes —
+    # see fix_hafs_tajweed.py. Applied on every build, so a rebuild never
+    # brings them back.
+    from fix_hafs_tajweed import main as fix_hafs
+    fix_hafs()
     return 0
 
 
