@@ -1183,4 +1183,4 @@ Took 3 aborted attempt(s) before it ran clean:
   - 1 version is already 2.28.1
   - 1 working tree has tracked changes — commit or stash them first
 
-**Lesson:** _(unfilled)_
+**Lesson:** the aborts were the dry run's own leftovers — the version bump it leaves in the tree (undo it before the real run) and `PrivacyInfo.xcprivacy`, which a build reorders; discard it before releasing. Also, Xcode Cloud's workflow was paused, so the App Store build went by the local route; that is a decision to make before starting, not a surprise at the end.
