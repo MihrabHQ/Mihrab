@@ -1,0 +1,5 @@
+• Full-screen prayer alert on Android, with the next prayer and Snooze for 5, 10, 15 or 30 minutes (#63).
+• iPhone: prayer times can ring as AlarmKit alarms.
+• Tajweed colours now cover Warsh (#64) and fill the gaps in Hafs.
+• Landscape phones scroll the recited line to the top, and a following bookmark stays where the recitation stopped.
+• New privacy policy.

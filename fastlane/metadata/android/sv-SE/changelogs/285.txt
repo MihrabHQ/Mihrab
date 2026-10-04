@@ -1,0 +1,5 @@
+• Helskärmslarm för bön på Android, med nästa bön och snooze i 5, 10, 15 eller 30 minuter (#63).
+• iPhone: bönetider kan ringa som AlarmKit-larm.
+• Tajwidfärger för Warsh (#64) och fler regler täckta i Hafs.
+• Liggande telefon rullar den lästa raden överst, och ett följande bokmärke stannar där uppläsningen slutade.
+• Ny integritetspolicy.
