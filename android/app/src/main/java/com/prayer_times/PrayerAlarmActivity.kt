@@ -209,6 +209,16 @@ class PrayerAlarmActivity : Activity() {
         window.decorView.systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
       }
 
+    // Before Android 15 the system bars are drawn in the window's own colours,
+    // and the Material theme's are black — the status bar stayed a black strip
+    // above the sky on an Android 12 phone (issue #63). Paint them as the
+    // sky, so the screen reaches the top and bottom edge there too.
+    @Suppress("DEPRECATION")
+    run {
+      window.statusBarColor = skyTop
+      window.navigationBarColor = skyBottom
+    }
+
     val root = FrameLayout(this).apply {
       background = GradientDrawable(
         GradientDrawable.Orientation.TOP_BOTTOM,
