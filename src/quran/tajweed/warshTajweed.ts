@@ -30,9 +30,9 @@
  * SAID (silent, a moved hamza, a hum, a long vowel) before how heavy a
  * letter sounds.
  */
-import { Platform } from 'react-native';
 import ReactNativeBlobUtil from 'react-native-blob-util';
 import { tajweedRule, type TajweedRule, type TajweedRuleId } from './rules';
+import { bundledAssetPath } from '../bundledAsset';
 
 type RawWord = string | [string, Array<[number, number, number]>] | null;
 type RawSurah = { v: number; rules: string[]; ayahs: RawWord[][] };
@@ -215,10 +215,7 @@ const inFlight = new Map<number, Promise<RawSurah | null>>();
 
 async function readSurah(surah: number): Promise<RawSurah | null> {
   const file = `quran/tajweed-warsh/${String(surah).padStart(3, '0')}.json`;
-  const path =
-    Platform.OS === 'android'
-      ? ReactNativeBlobUtil.fs.asset(file)
-      : `${ReactNativeBlobUtil.fs.dirs.MainBundleDir}/${file}`;
+  const path = bundledAssetPath(file);
   try {
     const raw = await ReactNativeBlobUtil.fs.readFile(path, 'utf8');
     const data = JSON.parse(String(raw)) as RawSurah;

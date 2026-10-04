@@ -21,8 +21,8 @@
  * placeholder.
  */
 
-import { Platform } from 'react-native';
 import ReactNativeBlobUtil from 'react-native-blob-util';
+import { bundledAssetPath } from './bundledAsset';
 
 /** Public attribution string surfaced on the QuranScreen About row. */
 export const QURAN_ATTRIBUTION =
@@ -383,10 +383,7 @@ async function loadSurahDataFile(
   const cached = warmed.get(n) ?? surahCache.get(n);
   if (cached) return cached;
   const file = `quran/surahs/${String(n).padStart(3, '0')}.json`;
-  const path =
-    Platform.OS === 'android'
-      ? ReactNativeBlobUtil.fs.asset(file)
-      : `${ReactNativeBlobUtil.fs.dirs.MainBundleDir}/${file}`;
+  const path = bundledAssetPath(file);
   try {
     const raw = await ReactNativeBlobUtil.fs.readFile(path, 'utf8');
     const data = JSON.parse(String(raw)) as {

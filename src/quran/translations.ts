@@ -24,8 +24,8 @@
  *     redistributed under CC BY 3.0 by Tanzil.
  */
 
-import { Platform } from 'react-native';
 import ReactNativeBlobUtil from 'react-native-blob-util';
+import { bundledAssetPath } from './bundledAsset';
 
 export type QuranTranslationEdition = {
   /** Stable id, also the data file name. */
@@ -182,9 +182,7 @@ export async function loadTranslation(
  */
 function assetPath(edition: QuranTranslationId): string {
   const file = `quran/translations/${edition}.json`;
-  return Platform.OS === 'android'
-    ? ReactNativeBlobUtil.fs.asset(file)
-    : `${ReactNativeBlobUtil.fs.dirs.MainBundleDir}/${file}`;
+  return bundledAssetPath(file);
 }
 
 /**

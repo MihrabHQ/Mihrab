@@ -201,9 +201,12 @@ describe('the editions stay out of the JS bundle', () => {
   });
 
   it('asks each platform for its own path', () => {
-    const src = read('src/quran/translations.ts');
-    expect(src).toMatch(/ReactNativeBlobUtil\.fs\.asset\(file\)/);
-    expect(src).toMatch(/ReactNativeBlobUtil\.fs\.dirs\.MainBundleDir/);
+    expect(read('src/quran/translations.ts')).toMatch(/bundledAssetPath\(file\)/);
+    const helper = read('src/quran/bundledAsset.ts');
+    expect(helper).toMatch(/ReactNativeBlobUtil\.fs\.asset\(file\)/);
+    expect(helper).toMatch(/ReactNativeBlobUtil\.fs\.dirs\.MainBundleDir/);
+    // A Mac bundle keeps its resources under Contents/Resources.
+    expect(helper).toMatch(/Contents\/Resources/);
   });
 });
 

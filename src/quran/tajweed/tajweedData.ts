@@ -13,9 +13,9 @@
  * App assets rather than the bundle, like the surah files: 2.6 MB that a
  * reader who never turns the colours on should not carry in memory.
  */
-import { Platform } from 'react-native';
 import ReactNativeBlobUtil from 'react-native-blob-util';
 import { tajweedRule, type TajweedRule } from './rules';
+import { bundledAssetPath } from '../bundledAsset';
 
 export type TajweedSpan = { rule: TajweedRule; start: number; end: number };
 
@@ -44,10 +44,7 @@ const inFlight = new Map<number, Promise<RawSurah | null>>();
 
 async function readSurah(surah: number): Promise<RawSurah | null> {
   const file = `quran/tajweed/${String(surah).padStart(3, '0')}.json`;
-  const path =
-    Platform.OS === 'android'
-      ? ReactNativeBlobUtil.fs.asset(file)
-      : `${ReactNativeBlobUtil.fs.dirs.MainBundleDir}/${file}`;
+  const path = bundledAssetPath(file);
   try {
     const raw = await ReactNativeBlobUtil.fs.readFile(path, 'utf8');
     const data = JSON.parse(String(raw)) as RawSurah;
