@@ -115,6 +115,7 @@ describe('scheduling', () => {
           fsStop: expect.any(String),
           fsSnooze: expect.any(String),
           fsSnoozeMinutes: '10',
+          fsSnoozeAlt: expect.stringContaining('"m":5'),
           fsLog: expect.any(String),
           prayer: name,
         }),

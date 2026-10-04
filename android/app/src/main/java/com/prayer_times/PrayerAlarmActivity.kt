@@ -290,6 +290,35 @@ class PrayerAlarmActivity : Activity() {
           .apply { topMargin = dp(12) },
       )
     }
+
+    // Smaller chips for another wait than the default.
+    val alts = runCatching {
+      val arr = org.json.JSONArray(data.getString("fsSnoozeAlt").orEmpty())
+      (0 until arr.length()).map { arr.getJSONObject(it).let { o -> o.getInt("m") to o.getString("l") } }
+    }.getOrDefault(emptyList()).ifEmpty {
+      // An alert scheduled by an older build carries no chips: derive them
+      // from its own "Snooze 10 min" label so it still shows them.
+      if (snoozeLabel == null) emptyList()
+      else listOf(5, 15, 30).map { m ->
+        m to snoozeLabel.replace(snoozeMinutes.toString(), m.toString())
+      }
+    }
+    if (alts.isNotEmpty() && snoozeLabel != null) {
+      val chips = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
+      alts.forEachIndexed { i, (minutes, label) ->
+        chips.addView(
+          button(label, filled = false, small = true) { dispatch("snooze", notification, data, minutes) },
+          LinearLayout.LayoutParams(0, dp(40), 1f).apply {
+            if (i > 0) marginStart = dp(8)
+          },
+        )
+      }
+      column.addView(
+        chips,
+        LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+          .apply { topMargin = dp(10) },
+      )
+    }
     return root
   }
 
@@ -301,20 +330,20 @@ class PrayerAlarmActivity : Activity() {
     if (bold) typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
   }
 
-  private fun button(label: String, filled: Boolean, onClick: () -> Unit) = TextView(this).apply {
+  private fun button(label: String, filled: Boolean, small: Boolean = false, onClick: () -> Unit) = TextView(this).apply {
     text = label
     gravity = Gravity.CENTER
-    setTextSize(TypedValue.COMPLEX_UNIT_SP, if (filled) 20f else 16f)
+    setTextSize(TypedValue.COMPLEX_UNIT_SP, if (filled) 20f else if (small) 13f else 16f)
     typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
     setTextColor(if (filled) buttonText else ink)
     maxLines = 1
     // A long translation shrinks to fit rather than being cut off.
     TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
-      this, 11, if (filled) 20 else 16, 1, TypedValue.COMPLEX_UNIT_SP,
+      this, if (small) 9 else 11, if (filled) 20 else if (small) 13 else 16, 1, TypedValue.COMPLEX_UNIT_SP,
     )
     background = GradientDrawable().apply {
-      cornerRadius = dp(32).toFloat()
-      if (filled) setColor(ink) else setStroke(dp(2), inkLine)
+      cornerRadius = dp(if (small) 20 else 32).toFloat()
+      if (filled) setColor(ink) else setStroke(dp(if (small) 1 else 2), inkLine)
     }
     isClickable = true
     isFocusable = true

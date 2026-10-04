@@ -30,6 +30,9 @@ export const PRAYER_ALARM_COMPONENT = 'mihrab-prayer-alarm';
 /** The alarm screen's Snooze button — the notification's own default. */
 export const FULL_SCREEN_SNOOZE_MIN = 10;
 
+/** The smaller Snooze chips under it, for a shorter or longer wait. */
+export const FULL_SCREEN_SNOOZE_ALT_MIN = [5, 15, 30];
+
 /** Marks an alert as full-screen in its data, so a snooze can carry it on. */
 export const FULL_SCREEN_DATA_FLAG = 'fullScreen';
 
@@ -83,6 +86,16 @@ export function fullScreenAlarmData(
       minutes: FULL_SCREEN_SNOOZE_MIN,
     }),
     fsSnoozeMinutes: String(FULL_SCREEN_SNOOZE_MIN),
+    // [{m: minutes, l: label}] — the native screen draws one chip each.
+    fsSnoozeAlt: JSON.stringify(
+      FULL_SCREEN_SNOOZE_ALT_MIN.map(m => ({
+        m,
+        l: i18n.t('alertCopy.snoozeChoice', {
+          defaultValue: 'Snooze {{minutes}} min',
+          minutes: m,
+        }),
+      })),
+    ),
     fsRtl: RTL_LANGUAGES.includes(lang) ? '1' : '0',
     ...fullScreenAlarmSky(prayer),
   };
