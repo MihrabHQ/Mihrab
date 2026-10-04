@@ -17,14 +17,7 @@ class PrayerSilenceModule(private val reactContext: ReactApplicationContext) :
 
   @ReactMethod
   fun hasAccess(promise: Promise) {
-    PrayerSilence.audit(reactContext, "js:hasAccess")
     promise.resolve(PrayerSilence.hasAccess(reactContext))
-  }
-
-  /** The kept record of access changes, newest last — see `PrayerSilence.audit`. */
-  @ReactMethod
-  fun getAuditLog(promise: Promise) {
-    promise.resolve(PrayerSilence.auditLog(reactContext))
   }
 
   /** The system's own screen: the app cannot grant this to itself. */

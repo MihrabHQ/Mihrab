@@ -31,7 +31,6 @@ import type {
 } from '../settings/prayerSilence';
 import {
   clearSilenceWindows,
-  hasSilenceAccess,
   prayerSilenceAvailable,
   setSilenceWindows,
   type SilenceWindow,
@@ -129,8 +128,6 @@ export async function syncPrayerSilence(params: {
   now?: Date;
 }): Promise<SilenceSpan[]> {
   if (!prayerSilenceAvailable) return [];
-  // Looking is what puts the access state on the native audit record.
-  void hasSilenceAccess();
   const now = params.now ?? new Date();
   if (!params.settings.enabled || params.settings.prayers.length === 0) {
     await clearSilenceWindows();

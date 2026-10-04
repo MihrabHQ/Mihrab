@@ -60,9 +60,6 @@ object PrayerSilence {
   private const val KEY_RULE_ID = "rule_id"
   private const val KEY_ACTIVE_UNTIL = "active_until"
   private const val KEY_LEGACY_FILTER = "legacy_filter"
-  private const val KEY_AUDIT = "access_audit"
-  private const val KEY_LAST_ACCESS = "last_access"
-  private const val AUDIT_MAX = 60
 
   const val ACTION_START = "com.prayer_times.silence.START"
   const val ACTION_END = "com.prayer_times.silence.END"
@@ -123,53 +120,6 @@ object PrayerSilence {
     return nm.isNotificationPolicyAccessGranted
   }
 
-  /**
-   * A kept record of Do Not Disturb access, for the day it goes missing
-   * and nobody knows why. Logcat is a ring that is gone within hours; this
-   * is written to the app's own storage, so "when did it change, and what
-   * had just happened" can be answered later.
-   *
-   * An entry is added the first time access is seen, whenever it differs
-   * from the last time it was seen, and at the moments that are the
-   * usual suspects (boot, an app update, a time change) whether or not
-   * it changed — so a "still granted after the update" is on record too.
-   * `source` says who looked.
-   */
-  fun audit(ctx: Context, source: String) {
-    try {
-      val now = hasAccess(ctx)
-      val p = prefs(ctx)
-      val last = p.getInt(KEY_LAST_ACCESS, -1)
-      val changed = last != -1 && (last == 1) != now
-      val notable = source.contains("BOOT") || source.contains("PACKAGE_REPLACED") ||
-        source.contains("TIME")
-      if (last != -1 && !changed && !notable) return
-      val pm = ctx.packageManager
-      val info = pm.getPackageInfo(ctx.packageName, 0)
-      val installer = try {
-        if (Build.VERSION.SDK_INT >= 30) {
-          pm.getInstallSourceInfo(ctx.packageName).installingPackageName
-        } else {
-          @Suppress("DEPRECATION") pm.getInstallerPackageName(ctx.packageName)
-        }
-      } catch (t: Throwable) { null }
-      val stamp = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.US)
-      val line = "${stamp.format(java.util.Date())} $source access=$now" +
-        (if (changed) " CHANGED(was ${last == 1})" else "") +
-        " v=${info.versionName} updated=${stamp.format(java.util.Date(info.lastUpdateTime))}" +
-        " installer=$installer sdk=${Build.VERSION.SDK_INT}"
-      if (changed && !now) Log.w(TAG, "Do Not Disturb access LOST: $line") else Log.i(TAG, "access audit: $line")
-      val lines = (p.getString(KEY_AUDIT, "") ?: "").split("\n").filter { it.isNotBlank() }
-      val kept = (lines + line).takeLast(AUDIT_MAX)
-      p.edit().putInt(KEY_LAST_ACCESS, if (now) 1 else 0)
-        .putString(KEY_AUDIT, kept.joinToString("\n")).apply()
-    } catch (t: Throwable) {
-      Log.w(TAG, "access audit failed", t)
-    }
-  }
-
-  fun auditLog(ctx: Context): String = prefs(ctx).getString(KEY_AUDIT, "") ?: ""
-
   fun isActive(ctx: Context): Boolean = prefs(ctx).getLong(KEY_ACTIVE_UNTIL, 0L) > System.currentTimeMillis()
 
   // ── The clock ───────────────────────────────────────────────────────
@@ -179,8 +129,7 @@ object PrayerSilence {
    * and arm the alarm for the next change. Idempotent: called from JS
    * after every rewrite, from every alarm, and after a boot.
    */
-  fun reschedule(ctx: Context, source: String = "reschedule") {
-    audit(ctx, source)
+  fun reschedule(ctx: Context) {
     // A second of grace: an exact alarm can land a few milliseconds
     // before the instant it was set for, and a window whose end is
     // still 3 ms away would otherwise be begun all over again.
@@ -244,7 +193,6 @@ object PrayerSilence {
     val nm = ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     if (!nm.isNotificationPolicyAccessGranted) {
       Log.i(TAG, "no policy access; window not applied")
-      audit(ctx, "begin")
       return
     }
     try {

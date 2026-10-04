@@ -34,7 +34,6 @@ type PrayerSilenceNative = {
   ): Promise<void>;
   clear(): Promise<void>;
   isActive(): Promise<boolean>;
-  getAuditLog(): Promise<string>;
 };
 
 const native: PrayerSilenceNative | undefined =
@@ -93,19 +92,5 @@ export async function isSilenceActive(): Promise<boolean> {
     return await native.isActive();
   } catch {
     return false;
-  }
-}
-
-/**
- * The kept record of Do Not Disturb access: when it was first seen, every
- * time it changed, and what the app had just been through (update, boot).
- * Empty on iOS and on a build without it.
- */
-export async function silenceAuditLog(): Promise<string> {
-  if (!native?.getAuditLog) return '';
-  try {
-    return await native.getAuditLog();
-  } catch {
-    return '';
   }
 }
