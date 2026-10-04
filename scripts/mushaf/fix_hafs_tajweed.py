@@ -5,6 +5,8 @@ files after `build_tajweed_assets.py rules` writes them.
 
     python3 scripts/mushaf/fix_hafs_tajweed.py          # fix in place
     python3 scripts/mushaf/fix_hafs_tajweed.py --check  # report only
+    python3 scripts/mushaf/fix_hafs_tajweed.py --fonts DIR  # also tafkhīm
+        from the app's light page fonts (QCF4T{page}L.ttf) in DIR
 
 ── WHY THE MARKUP NEEDS FIXING ──────────────────────────────────────────
 
@@ -48,6 +50,14 @@ SAKT = "ۜ"
 HAMZA_ABOVE = "ٔ"
 HAMZA_BELOW = "ٕ"
 SILENT = ("۟", "۠")
+DAGGER = "ٰ"
+SMALL_WAW = "ۥ"
+SMALL_YEH = "ۦ"
+# The pause signs a reader may stop at (ۖ ۗ ۚ ۛ) and the obligatory one (ۘ).
+# Not ۙ, which says do not stop there.
+PAUSES = ("ۖ", "ۗ", "ۘ", "ۚ", "ۛ")
+QALQALAH = set("قطبجد")
+FATHA, DAMMA, KASRA = "َ", "ُ", "ِ"
 VOWELS = ("َ", "ُ", "ِ", "ً", "ٌ", "ٍ", "ࣰ", "ࣱ", "ࣲ")
 HAMZAS = set("ءأإؤئ")
 IKHFA = set("تثجدذزسشصضطظفقك")
@@ -132,6 +142,18 @@ def fix_ayah(words: list, rules: list[str]) -> list[str]:
                 if kind:
                     add.append([idx(kind), a, b])
                     done.append(f"{kind}: {text}")
+            # ── The small alif written on a letter: a natural madd ────
+            # ٱلصِّرٰطَ, ذٰلِكَ, ٱلصَّوٰعِقِ — the markup colours ـٰ (on a
+            # kashīda) but not the same alif written straight on the letter.
+            if (
+                DAGGER in marks
+                and base not in ("\u0640", "ى")  # عَلَىٰ: the print leaves ىٰ plain
+                and MADDAH not in marks
+                and not (rules_over(a, b) & MADD_RULES)
+                and not (k + 1 < len(Ls) and is_hamza(*Ls[k + 1][:2]))
+            ):
+                add.append([idx("madda_normal"), a, b])
+                done.append(f"madda_normal: {text}")
             # ── A nūn sākinah inside the word before ikhfāʾ ───────────
             if (
                 base == "ن"
@@ -157,6 +179,45 @@ def fix_ayah(words: list, rules: list[str]) -> list[str]:
                             nxt[1].remove(t)
                         if len(nxt) > 1 and not nxt[1]:
                             del nxt[1]
+        # ── A stop at a pause sign ────────────────────────────────────
+        # The markup treats only the āyah's end as a stop; the print treats
+        # every pause sign as one too, and so does a reader who stops there:
+        # the madd before the last letter becomes ʿāriḍ (فِيهِ ۛ, ٱلۡمَوۡتِ ۚ,
+        # ٱلنَّارِ ۖ) and a last qalqalah letter bounces (ٱلۡحَقِّ ۗ).
+        # ۛ comes in pairs and the reader stops at one of them; the print
+        # marks the stop at the second (لَا رَيۡبَۛ فِيهِۛ — at فِيهِ).
+        muanaqah_first = "\u06db" in text and not any("\u06db" in words[j][0] for j in range(wi))
+        if any(p in text for p in PAUSES) and len(Ls) >= 2 and not muanaqah_first:
+            last = Ls[-1]
+            stop_madd = None
+            P = Ls[-2]
+            pb, pm = P[0], P[1]
+            before = Ls[-3] if len(Ls) >= 3 else None
+            bv = before[1] if before else ""
+            silent_end = last[0] == "ا" and not any(v in last[1] for v in VOWELS)
+            if not silent_end and MADDAH not in pm:
+                if DAGGER in pm or SMALL_WAW in pm or SMALL_YEH in pm:
+                    stop_madd = P
+                elif pb == "ا" and FATHA in bv:
+                    stop_madd = P
+                elif pb in "ويى" and not any(v in pm for v in (FATHA, DAMMA, KASRA)) and SHADDA not in pm and (
+                    FATHA in bv or (pb == "و" and DAMMA in bv) or (pb in "يى" and KASRA in bv)
+                ):
+                    stop_madd = P  # a madd letter, or a līn after a fatḥa
+            if stop_madd is not None:
+                a, b = stop_madd[2], stop_madd[3]
+                over = [t for t in here + add if t[1] < b and t[2] > a and rules[t[0]] in MADD_RULES]
+                if not over:
+                    add.append([idx("madda_permissible"), a, b])
+                    done.append(f"stop madd: {text}")
+                else:
+                    for t in over:
+                        if rules[t[0]] == "madda_normal":
+                            t[0] = idx("madda_permissible")
+                            done.append(f"stop madd: {text}")
+            if last[0] in QALQALAH and not (rules_over(last[2], last[3]) & {"qalaqah"}):
+                add.append([idx("qalaqah"), last[2], last[3]])
+                done.append(f"stop qalqalah: {text}")
         if add:
             merged = sorted(here + add, key=lambda s: (s[1], s[2], s[0]))
             if len(w) > 1:
@@ -178,8 +239,76 @@ def fix_file(path: str) -> list[str]:
     return done, doc
 
 
+TAFKHEEM_ENTRY = 7  # the V4 fonts' palette entry for tafkhīm (build_tajweed_assets.py)
+
+
+def sync_tafkheem(fonts_dir: str, check: bool) -> int:
+    """Give tafkhīm to every word whose glyph the page font paints in the
+    tafkhīm ink. The build reads this off the raw fonts, and words on pages
+    whose raw font was missing then came out without it; Mihrab's own light
+    fonts (`QCF4T{page}L.ttf`) keep the entry, so they settle it here."""
+    from fontTools.ttLib import TTFont
+
+    with open(os.path.join(ROOT, "src", "quran", "data", "mushafLayoutV2.json"), encoding="utf-8") as fh:
+        layout = json.load(fh)
+    docs: dict[int, dict] = {}
+    added = 0
+    for page in layout:
+        path = os.path.join(fonts_dir, f"QCF4T{page['p']:03d}L.ttf")
+        if not os.path.exists(path):
+            continue
+        font = TTFont(path)
+        cmap = font.getBestCmap()
+        layers = font["COLR"].ColorLayers
+        for line in page["l"]:
+            if line["t"] != "a":
+                continue
+            tokens = [t for t in line["x"].split("|") if t]
+            i = 0
+            for seg in line["w"]:
+                surah, ayah, first, count = seg[0], seg[1], seg[2], seg[3]
+                for k in range(count):
+                    if i >= len(tokens):
+                        break
+                    token = tokens[i]
+                    i += 1
+                    heavy = any(
+                        l.colorID == TAFKHEEM_ENTRY
+                        for ch in token
+                        for l in layers.get(cmap.get(ord(ch)) or "", [])
+                    )
+                    if not heavy:
+                        continue
+                    if surah not in docs:
+                        with open(os.path.join(RULES_DIR, f"{surah:03d}.json"), encoding="utf-8") as fh:
+                            docs[surah] = json.load(fh)
+                    doc = docs[surah]
+                    words = doc["ayahs"][ayah - 1]
+                    if first + k - 1 >= len(words):
+                        continue  # the āyah's medallion
+                    w = words[first + k - 1]
+                    if "tafkheem" not in doc["rules"]:
+                        doc["rules"].append("tafkheem")
+                    t = doc["rules"].index("tafkheem")
+                    if any(r == t for r, _, _ in (w[1] if len(w) > 1 else [])):
+                        continue
+                    if len(w) == 1:
+                        w.append([])
+                    w[1].append([t, 0, len(w[0])])
+                    w[1].sort(key=lambda x: (x[1], x[2], x[0]))
+                    added += 1
+    if not check:
+        for surah, doc in docs.items():
+            with open(os.path.join(RULES_DIR, f"{surah:03d}.json"), "w", encoding="utf-8") as fh:
+                json.dump(doc, fh, ensure_ascii=False, separators=(",", ":"))
+    print(f"tafkheem from the page fonts: {'would add' if check else 'added'} {added}")
+    return added
+
+
 def main() -> int:
     check = "--check" in sys.argv
+    if "--fonts" in sys.argv:
+        sync_tafkheem(sys.argv[sys.argv.index("--fonts") + 1], check)
     total = []
     for path in sorted(glob.glob(os.path.join(RULES_DIR, "[0-9][0-9][0-9].json"))):
         done, doc = fix_file(path)

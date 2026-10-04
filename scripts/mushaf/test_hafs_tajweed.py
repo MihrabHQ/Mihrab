@@ -34,6 +34,13 @@ CASES = [
     ("ikhfa-jund", 38, 11, 1, "ن", 1, {"ikhafa"}, set()),                         # جُندٌ
     ("sakt-man", 75, 27, 2, "ن", 1, set(), {"idgham_wo_ghunnah"}),                # مَنۡۜ رَاقٖ
     ("sakt-raq", 75, 27, 3, "ر", 1, set(), {"idgham_wo_ghunnah"}),
+    ("dagger-alif", 1, 6, 2, "ر", 1, {"madda_normal"}, set()),                  # ٱلصِّرٰطَ
+    ("dagger-ya", 2, 5, 2, "ى", 1, set(), {"madda_normal"}),                     # عَلَىٰ stays plain, as printed
+    ("stop-leen", 2, 19, 16, "و", 1, {"madda_permissible"}, set()),             # ٱلۡمَوۡتِ ۚ
+    ("muanaqah-2nd", 2, 2, 5, "ي", 1, {"madda_permissible"}, set()),            # فِيهِ ۛ
+    ("muanaqah-1st", 2, 2, 4, "ي", 1, set(), {"madda_permissible"}),            # رَيۡبَ ۛ
+    ("stop-qalqalah", 2, 61, 54, "ق", 1, {"qalaqah"}, set()),                   # ٱلۡحَقِّ ۗ
+    ("tafkheem-page", 5, 77, 1, "ق", 1, {"tafkheem"}, set()),                   # قُلۡ, from the page font
 ]
 
 
