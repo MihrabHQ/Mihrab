@@ -5,6 +5,7 @@ All notable changes to this project are documented here. The format is inspired 
 ## [Unreleased]
 
 ### Added
+- **Mac: the Qur'an's bundled files load again.** The tajweed rules in the āyah sheet read "not available" on the Mac, because the app looked for its bundled data one folder above where a Mac bundle keeps it. The sūrah text, the translations and both riwāyāt's tajweed files all use the right path now. Android and iPhone were never affected.
 - **Smaller Snooze chips on the Android alarm screen.** Under Snooze 10 min and Log prayer, three small chips snooze for 5, 15 or 30 minutes instead.
 - **Tajweed accuracy.** Warsh (#64): iqlab inside a word, taqlīl on the nūn, prefixed madd badal and the disjoined letters. Ḥafṣ: the madd, ikhfāʾ and saktah gaps in quran.com's markup are filled, and the small alif, stops at pause signs and tafkhīm follow the colours of the page font.
 - **Landscape mushaf follows the recited line.** On a phone in landscape the line of the highlighted word scrolls to the top, without jumping back to the start of the āyah, and a following bookmark settles on the āyah where the recitation stopped.
