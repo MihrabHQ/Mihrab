@@ -16,9 +16,6 @@ import android.content.Intent
  */
 class PrayerSilenceReceiver : BroadcastReceiver() {
   override fun onReceive(context: Context, intent: Intent) {
-    // Unconditional, so a receiver that never runs is distinguishable from
-    // one that ran and found nothing to say.
-    android.util.Log.i("PrayerSilence", "receiver: ${intent.action}")
     when (intent.action) {
       PrayerSilence.ACTION_END_NOW -> PrayerSilence.endNow(context)
       else -> PrayerSilence.reschedule(context, intent.action ?: "receiver")

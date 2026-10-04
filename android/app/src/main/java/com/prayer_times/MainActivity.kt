@@ -48,14 +48,6 @@ class MainActivity : ReactActivity() {
    * Observed on a Pixel 10 Pro running 2.10.1 on 2026-08-26: relaunching a
    * live activity took the app down with exactly this stack.
    */
-  override fun onResume() {
-    super.onResume()
-    // Every return to the app looks at Do Not Disturb access, so a loss is
-    // recorded the next time the app is seen rather than the next time the
-    // settings card happens to be opened.
-    PrayerSilence.audit(this, "resume")
-  }
-
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(null)
   }
