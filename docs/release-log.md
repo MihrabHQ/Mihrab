@@ -1174,3 +1174,13 @@ Took 6 aborted attempt(s) before it ran clean:
   - 1 working tree has tracked changes — commit or stash them first
 
 **Lesson:** the aborts were all things `release.sh` can only report after it starts — a red jest run, a `main` that origin had moved past, a dirty tree. Before cutting, run `NODE_ENV=test npx jest`, `git fetch && git rebase origin/main` and `git status` first, so the script's preflight is a confirmation rather than a discovery.
+
+## 2.28.1 (285) — 2026-10-04
+
+Took 3 aborted attempt(s) before it ran clean:
+
+  - 1 the last release left its lesson unwritten — fill in that '**Lesson:**' line in docs/release-log.md, commit it, and rerun
+  - 1 version is already 2.28.1
+  - 1 working tree has tracked changes — commit or stash them first
+
+**Lesson:** _(unfilled)_

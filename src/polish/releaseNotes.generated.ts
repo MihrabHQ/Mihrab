@@ -19,6 +19,16 @@ export type ReleaseNote = {
 
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
+    code: 285,
+    version: '2.28.1',
+    date: '2026-10-04',
+    notes: {
+      en: '• Full-screen prayer alert on Android, with the next prayer and Snooze for 5, 10, 15 or 30 minutes (#63).\n• iPhone: prayer times can ring as AlarmKit alarms.\n• Tajweed colours now cover Warsh (#64) and fill the gaps in Hafs.\n• Landscape phones scroll the recited line to the top, and a following bookmark stays where the recitation stopped.\n• New privacy policy.',
+      ar: '• تنبيه صلاة بملء الشاشة على أندرويد، مع الصلاة التالية وغفوة لمدة 5 أو 10 أو 15 أو 30 دقيقة (#63).\n• آيفون: يمكن أن ترنّ أوقات الصلاة كمنبّهات AlarmKit.\n• ألوان التجويد تشمل الآن رواية ورش (#64) وتسدّ الثغرات في حفص.\n• الهاتف الأفقي يمرّر السطر المتلوّ إلى الأعلى، والعلامة التابعة تبقى حيث توقفت التلاوة.\n• سياسة خصوصية جديدة.',
+      sv: '• Helskärmslarm för bön på Android, med nästa bön och snooze i 5, 10, 15 eller 30 minuter (#63).\n• iPhone: bönetider kan ringa som AlarmKit-larm.\n• Tajwidfärger för Warsh (#64) och fler regler täckta i Hafs.\n• Liggande telefon rullar den lästa raden överst, och ett följande bokmärke stannar där uppläsningen slutade.\n• Ny integritetspolicy.',
+    },
+  },
+  {
     code: 284,
     version: '2.28.0',
     date: '2026-10-02',
