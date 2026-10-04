@@ -1173,4 +1173,4 @@ Took 6 aborted attempt(s) before it ran clean:
   - 1 the last release left its lesson unwritten — fill in that '**Lesson:**' line in docs/release-log.md, commit it, and rerun
   - 1 working tree has tracked changes — commit or stash them first
 
-**Lesson:** _(unfilled)_
+**Lesson:** the aborts were all things `release.sh` can only report after it starts — a red jest run, a `main` that origin had moved past, a dirty tree. Before cutting, run `NODE_ENV=test npx jest`, `git fetch && git rebase origin/main` and `git status` first, so the script's preflight is a confirmation rather than a discovery.
