@@ -19,6 +19,16 @@ export type ReleaseNote = {
 
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
+    code: 286,
+    version: '2.28.2',
+    date: '2026-10-04',
+    notes: {
+      en: '• Mac: the tajweed rules, translations and sūrah text were reported as unavailable; they load again.\n• No changes on Android or iPhone.',
+      ar: '• ماك: كانت أحكام التجويد والترجمات ونص السور تظهر غير متاحة؛ وهي تعمل الآن.\n• لا تغييرات على أندرويد أو آيفون.',
+      sv: '• Mac: tajwidreglerna, översättningarna och surortexten visades som otillgängliga; de laddas nu igen.\n• Inga ändringar på Android eller iPhone.',
+    },
+  },
+  {
     code: 285,
     version: '2.28.1',
     date: '2026-10-04',

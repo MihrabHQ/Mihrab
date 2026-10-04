@@ -1184,3 +1184,11 @@ Took 3 aborted attempt(s) before it ran clean:
   - 1 working tree has tracked changes — commit or stash them first
 
 **Lesson:** the aborts were the dry run's own leftovers — the version bump it leaves in the tree (undo it before the real run) and `PrivacyInfo.xcprivacy`, which a build reorders; discard it before releasing. Also, Xcode Cloud's workflow was paused, so the App Store build went by the local route; that is a decision to make before starting, not a surprise at the end.
+
+## 2.28.2 (286) — 2026-10-04
+
+Took 1 aborted attempt(s) before it ran clean:
+
+  - 1 the last release left its lesson unwritten — fill in that '**Lesson:**' line in docs/release-log.md, commit it, and rerun
+
+**Lesson:** _(unfilled)_
