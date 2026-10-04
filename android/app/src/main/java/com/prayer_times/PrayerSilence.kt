@@ -143,7 +143,7 @@ object PrayerSilence {
       val last = p.getInt(KEY_LAST_ACCESS, -1)
       val changed = last != -1 && (last == 1) != now
       val notable = source.contains("BOOT") || source.contains("PACKAGE_REPLACED") ||
-        source.contains("TIME") || source.contains("silence")
+        source.contains("TIME")
       if (last != -1 && !changed && !notable) return
       val pm = ctx.packageManager
       val info = pm.getPackageInfo(ctx.packageName, 0)
@@ -287,11 +287,7 @@ object PrayerSilence {
   fun endNow(ctx: Context) {
     val now = System.currentTimeMillis() + 1_000L
     val current = loadWindows(ctx).firstOrNull { it.start <= now && now < it.end }
-    // Before and after, so "End now" can be ruled in or out as what cost the
-    // access: the two lines either agree or they do not.
-    audit(ctx, "silence:endNow-before")
     end(ctx)
-    audit(ctx, "silence:endNow-after")
     if (current != null) prefs(ctx).edit().putLong(KEY_ACTIVE_UNTIL, -current.end).apply()
     val am = ctx.getSystemService(Context.ALARM_SERVICE) as AlarmManager
     arm(ctx, am, REQUEST_END, ACTION_END, null)
@@ -343,7 +339,6 @@ object PrayerSilence {
     }
     prefs(ctx).edit().putLong(KEY_ACTIVE_UNTIL, w.end).apply()
     postNotification(ctx, nm, w)
-    audit(ctx, "silence:begin-after")
   }
 
   private fun end(ctx: Context) {
@@ -368,7 +363,6 @@ object PrayerSilence {
     }
     prefs(ctx).edit().remove(KEY_ACTIVE_UNTIL).apply()
     nm.cancel(NOTIFICATION_ID)
-    audit(ctx, "silence:end-after")
   }
 
   /** The app's rule, created on first use and re-created if the person deleted it. */
