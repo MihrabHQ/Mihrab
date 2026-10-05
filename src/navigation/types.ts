@@ -123,6 +123,7 @@ export type RootStackParamList = {
    */
   SettingsExtraTimes: undefined;
   SettingsDailyReminders: undefined;
+  SettingsPrayerSounds: undefined;
   SettingsDhikrReminders: undefined;
   SettingsHelpMihrab: undefined;
   SettingsAttributions: undefined;

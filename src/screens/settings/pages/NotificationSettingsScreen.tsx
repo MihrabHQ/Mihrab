@@ -9,10 +9,10 @@
  * come from (#23). What is computed and what is printed stayed there;
  * what interrupts you is here.
  *
- * The per-prayer adhan / alert / silent choice is deliberately NOT here.
- * It is on the prayer's own row on the home screen: it is a question
- * about that prayer, and a control three screens away that has to be
- * changed twice a day is a control people abandon.
+ * The per-prayer adhan / alert / silent choice lives on the prayer's own
+ * row on the home screen, where it is a question about that prayer. The
+ * "Prayer sounds" page under this one sets the same five choices in one
+ * sitting; both read and write `prayerAlertModes`.
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';

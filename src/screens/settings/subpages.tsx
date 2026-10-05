@@ -26,6 +26,7 @@ import { DhikrRemindersSettingsScreen } from './pages/DhikrRemindersSettingsScre
 import { ExtraTimesSettingsScreen } from './pages/ExtraTimesSettingsScreen';
 import { LocationSettingsScreen } from './pages/LocationSettingsScreen';
 import { NotificationSettingsScreen } from './pages/NotificationSettingsScreen';
+import { PrayerSoundsSettingsScreen } from './pages/PrayerSoundsSettingsScreen';
 import { PrayerTimesSettingsScreen } from './pages/PrayerTimesSettingsScreen';
 import { QuranSettingsScreen } from './pages/QuranSettingsScreen';
 import { WordReaderSettingsScreen } from './pages/WordReaderSettingsScreen';
@@ -90,6 +91,12 @@ const ALL_SUBPAGES: readonly SettingsSubpage[] = [
     Icon: NotificationsIcon,
     component: NotificationSettingsScreen,
     children: [
+      {
+        route: 'SettingsPrayerSounds',
+        titleKey: 'settings.prayerSounds',
+        blurbKey: 'settings.prayerSoundsBlurb',
+        component: PrayerSoundsSettingsScreen,
+      },
       {
         route: 'SettingsExtraTimes',
         titleKey: 'settings.additionalTimes',
