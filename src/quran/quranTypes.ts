@@ -406,6 +406,13 @@ export type QuranPrefs = {
    * colours are a second set of fonts to fetch. Only Ḥafṣ has them.
    */
   tajweedColours: boolean;
+  /**
+   * VOLUME BUTTONS TURN THE PAGE (issue #68, additive; Android phones).
+   * Volume up goes to the next page and volume down to the previous one
+   * while the muṣḥaf is open and nothing is selected. Off by default: the
+   * buttons are the phone's, and taking them is something to ask for.
+   */
+  volumeKeyPaging: boolean;
   /** Memorization masking in translation view. */
   hideMode: 'none' | 'arabic' | 'translation';
   repeat: RepeatSettings;

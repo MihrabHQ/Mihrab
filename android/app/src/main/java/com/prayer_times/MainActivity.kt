@@ -3,6 +3,7 @@ package com.prayer_times
 import android.app.Activity
 import android.content.res.Configuration
 import android.os.Bundle
+import android.view.KeyEvent
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
@@ -50,6 +51,22 @@ class MainActivity : ReactActivity() {
    */
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(null)
+  }
+
+  /**
+   * The volume buttons, while the muṣḥaf has asked for them (issue #68).
+   * Taken on both the press and the release — a release left to the system
+   * after a consumed press is a stray event — and only while
+   * [VolumeKeysModule.captured]; otherwise untouched.
+   */
+  override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+    if (VolumeKeysModule.handle(keyCode, event)) return true
+    return super.onKeyDown(keyCode, event)
+  }
+
+  override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
+    if (VolumeKeysModule.handle(keyCode, event)) return true
+    return super.onKeyUp(keyCode, event)
   }
 
   /**

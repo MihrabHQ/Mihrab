@@ -76,6 +76,7 @@ import { AyahActionSheet } from './mushaf/AyahActionSheet';
 import { MushafPageScrubber } from './MushafPageScrubber';
 import { MiniPlayer } from './audio/MiniPlayer';
 import { ActiveWordProbe } from './audio/ActiveWordProbe';
+import { useVolumeKeyPaging } from './useVolumeKeyPaging';
 import { useRegisterKeyPaging } from './useKeyPaging';
 import { useMushafPager } from './useMushafPager';
 import { useMushafFontSet, warmAround } from './useMushafPageFont';
@@ -661,6 +662,13 @@ export const MushafPhoneReader = React.memo(function MushafPhoneReader(
    * native module is absent and the binding never fires.
    */
   useRegisterKeyPaging(props.keyTurn, turnPage);
+  // The volume buttons, when the reader has asked for them (#68).
+  useVolumeKeyPaging(
+    core.quran.prefs.volumeKeyPaging,
+    core.sheetVisible,
+    core.jumpVisible,
+    turnPage,
+  );
 
   // The neighbours' fonts, registered ahead of the swipe — from here, once
   // per turn, rather than as a per-page prop that changed on two pages

@@ -8,6 +8,7 @@ import {
 } from '../../quran/CompanionTextControls';
 import { usePrayerSettings } from '../../context/PrayerSettingsContext';
 import { setQuranPrefs, useQuranState } from '../../quran/quranState';
+import { volumeKeysAvailable } from '../../native/volumeKeys';
 import { activeKhatmah, khatmahUnreadPages } from '../../quran/khatmahProgress';
 import { khatmahDeadline } from '../../quran/khatmahSchedule';
 import { khatmahDaysLeft } from '../../quran/khatmahStatus';
@@ -322,6 +323,25 @@ function QuranCardImpl() {
           onValueChange={next => setQuranPrefs({ readerKeepAwake: next })}
         />
       </SettingsGroup>
+      {/* Android phones only — see `volumeKeysAvailable`. Elsewhere the
+          buttons cannot be taken from the system, or are the wrong gesture
+          for a tablet held like a book, and a switch that did nothing
+          would only be a thing to wonder about (#68). */}
+      {volumeKeysAvailable ? (
+        <SettingsGroup
+          title={t('quran.volumeKeysTitle', 'Page turning')}
+          footer={t('quran.volumeKeysHelp', {
+            defaultValue:
+              'While the mushaf is open, volume up goes to the next page and volume down to the previous one. The buttons change the volume as usual again as soon as you select an ayah or leave the mushaf.',
+          })}>
+          <SettingsToggleRow
+            testID="settings-volume-keys"
+            title={t('quran.volumeKeys', 'Turn pages with the volume buttons')}
+            value={quran.prefs.volumeKeyPaging}
+            onValueChange={next => setQuranPrefs({ volumeKeyPaging: next })}
+          />
+        </SettingsGroup>
+      ) : null}
       {/* The same picker the muṣḥaf header opens, so the two entry
           points cannot drift apart — including the one-time notice that
           a reflowing muṣḥaf breaks its lines differently

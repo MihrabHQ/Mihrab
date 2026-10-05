@@ -161,6 +161,7 @@ export const DEFAULT_QURAN_STATE: QuranState = {
     wordReader: false,
     wordReaderReciterId: '',
     tajweedColours: false,
+    volumeKeyPaging: false,
     hideMode: 'none',
     repeat: { eachAyah: 1, range: 1, pauseFactor: 0 },
     votdMode: 'translation',
@@ -573,6 +574,10 @@ function mergeStored(raw: unknown): QuranState {
           ?.readerKeepAwake !== false,
       tajweedColours:
         (r.prefs as { tajweedColours?: unknown } | undefined)?.tajweedColours === true,
+      // Off unless explicitly on.
+      volumeKeyPaging:
+        (r.prefs as { volumeKeyPaging?: unknown } | undefined)
+          ?.volumeKeyPaging === true,
       // Off unless explicitly on: the card was shown to everyone before
       // this was a setting, and the setting's default is off.
       verseOfDay:

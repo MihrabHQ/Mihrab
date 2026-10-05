@@ -38,6 +38,7 @@ class MainApplication : Application(), ReactApplication {
           add(CompassPackage())
           add(DisplayCutoutPackage())
           add(RotationCoverPackage())
+          add(VolumeKeysPackage())
         },
     )
   }
