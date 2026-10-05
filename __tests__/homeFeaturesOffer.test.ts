@@ -9,7 +9,10 @@ import {
   NOT_BEFORE_KEY,
   markWalkthroughFinished,
   offerHeldBack,
+  offerNotBefore,
   offerableHomeFeatures,
+  walkthroughAskedFullScreen,
+  WALKTHROUGH_OFFERS_FULL_SCREEN_FROM as FROM,
 } from '../src/home/HomeFeaturesOffer';
 
 const ALL = {
@@ -57,5 +60,24 @@ describe('the hold after the walkthrough', () => {
     expect(offerHeldBack(String(5_000), 5_000)).toBe(false);
     expect(offerHeldBack(null, 0)).toBe(false);
     expect(offerHeldBack('junk', 0)).toBe(false);
+  });
+});
+
+describe('telling who the walkthrough already asked', () => {
+  it('trusts the marker', () => {
+    expect(walkthroughAskedFullScreen('1', 0)).toBe(true);
+    expect(walkthroughAskedFullScreen('1', null)).toBe(true);
+  });
+  it('uses the install date for builds that wrote no marker', () => {
+    expect(walkthroughAskedFullScreen(null, FROM)).toBe(true);
+    expect(walkthroughAskedFullScreen(null, FROM - 1)).toBe(false);
+  });
+  it('says nothing about an install date the platform will not give', () => {
+    expect(walkthroughAskedFullScreen(null, null)).toBe(false);
+  });
+  it('holds a marker-less new install back a day from its install date', () => {
+    expect(offerNotBefore(null, FROM + 5)).toBe(String(FROM + 5 + AFTER_WALKTHROUGH_MS));
+    expect(offerNotBefore(null, FROM - 5)).toBeNull();
+    expect(offerNotBefore('123', FROM + 5)).toBe('123');
   });
 });

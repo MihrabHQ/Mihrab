@@ -43,7 +43,7 @@ type BuildInfoNative = { firstInstallTime?: number };
 
 /** The platform's own first-install time in ms, or null when it will not
  *  say. Both platforms expose it through the same native module name. */
-function nativeInstallMs(): number | null {
+export function nativeInstallMs(): number | null {
   if (Platform.OS !== 'android' && Platform.OS !== 'ios') return null;
   const mod = NativeModules.PrayerBuildInfo as BuildInfoNative | undefined;
   const ms = mod?.firstInstallTime;

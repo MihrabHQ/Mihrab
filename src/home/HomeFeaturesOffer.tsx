@@ -36,6 +36,7 @@ import { usePrayerSettings } from '../context/PrayerSettingsContext';
 import { useAppPalette } from '../hooks/useAppPalette';
 import { hasSilenceAccess, prayerSilenceAvailable, requestSilenceAccess } from '../native/PrayerSilence';
 import { useFullScreenAlarmSwitch } from '../notifications/useFullScreenAlarmSwitch';
+import { nativeInstallMs } from '../journal/installDate';
 import { isMacCatalyst } from '../responsive/breakpoints';
 import { ResponsiveModal } from '../responsive/ResponsiveModal';
 import { RADIUS, SPACING } from '../theme/tokens';
@@ -54,6 +55,42 @@ export const NOT_BEFORE_KEY = 'mihrab.homeFeaturesOffer.notBefore.v1';
 export const AFTER_WALKTHROUGH_MS = 24 * 60 * 60 * 1000;
 /** How long the page gets to itself before the question, ms. */
 export const OFFER_DELAY_MS = 2500;
+
+/**
+ * When the walkthrough began offering the full-screen alert: the moment
+ * v2.28.1 was published (2026-10-04 11:08:45 UTC).
+ *
+ * The marker above is only written by builds that have this file, so
+ * somebody who finished the walkthrough on 2.28.1 or 2.28.2 has none.
+ * What does say is when the app was FIRST installed — the platform's own
+ * install date, which an update never moves. Anybody who installed after
+ * this moment went through a walkthrough that asked.
+ *
+ * It is a floor, not an exact line: a fresh install of a channel that
+ * lags the GitHub release (F-Droid builds a day or two later) can have
+ * an install date past this and still have seen the older walkthrough.
+ * That person is not asked about the full-screen alert; it is one switch
+ * in Settings, and asking twice is the worse mistake.
+ */
+export const WALKTHROUGH_OFFERS_FULL_SCREEN_FROM = Date.UTC(2026, 9, 4, 11, 8, 45);
+
+/** Did the walkthrough this install went through ask about the alert? Pure. */
+export function walkthroughAskedFullScreen(marker: string | null, installMs: number | null): boolean {
+  if (marker === '1') return true;
+  return installMs != null && installMs >= WALKTHROUGH_OFFERS_FULL_SCREEN_FROM;
+}
+
+/**
+ * Not before when — the stored hold, or, for an install the marker never
+ * saw, a day after it was made.
+ */
+export function offerNotBefore(stored: string | null, installMs: number | null): string | null {
+  if (stored != null) return stored;
+  if (installMs != null && installMs >= WALKTHROUGH_OFFERS_FULL_SCREEN_FROM) {
+    return String(installMs + AFTER_WALKTHROUGH_MS);
+  }
+  return null;
+}
 
 /** Called when the first-run walkthrough finishes. */
 export function markWalkthroughFinished(now: number = Date.now()): void {
@@ -117,11 +154,12 @@ export function HomeFeaturesOffer({ ready }: { ready: boolean }) {
       .then(rows => {
         const got = Object.fromEntries(rows) as Record<string, string | null>;
         if (!live || got[OFFER_KEY]) return;
-        if (offerHeldBack(got[NOT_BEFORE_KEY] ?? null, Date.now())) return;
+        const installMs = nativeInstallMs();
+        if (offerHeldBack(offerNotBefore(got[NOT_BEFORE_KEY] ?? null, installMs), Date.now())) return;
         const offer = offerableHomeFeatures({
           fullScreenOffered: fullScreen.offered,
           fullScreenOn: settings.prayerAlertFullScreen,
-          fullScreenAsked: got[FULL_SCREEN_ASKED_KEY] === '1',
+          fullScreenAsked: walkthroughAskedFullScreen(got[FULL_SCREEN_ASKED_KEY] ?? null, installMs),
           silenceAvailable,
           silenceOn: settings.prayerSilence.enabled,
           liveActivityAvailable,
