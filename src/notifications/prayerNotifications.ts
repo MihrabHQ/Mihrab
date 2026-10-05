@@ -1085,6 +1085,40 @@ export async function syncPrayerNotifications(params: {
     );
   }
 
+  // ── THE LAST LOOK, FOR A PRAYER LOGGED WHILE THIS RAN — issue #69 ────
+  //
+  // `daruriLogged` was read at the top, and writing a week of
+  // notifications takes seconds. A prayer logged in that time was written
+  // AFTER the read: this run built its alerts from the old journal, and the
+  // cancel that `dropDaruriAlertsForLogged` does on every journal write had
+  // already come and gone — so the "first time is ending" alert for a
+  // prayer already logged was created after the thing that removes it.
+  // Slow storage widens the window (an encrypted write on an older phone
+  // takes long enough to lose this race every time).
+  //
+  // So look once more, now everything is scheduled, and take away what the
+  // journal has since answered. Both orders are covered: if the write ends
+  // after this look, its own cancel runs after these notifications exist.
+  if (
+    daruriLogged !== undefined &&
+    (daruriEvents.length > 0 || daruriEndEvents.length > 0)
+  ) {
+    try {
+      const latest = loggedByDate(
+        await storedJournalEntries().catch(() => []),
+        daruriDatesFrom(params.baseDate ?? now),
+      );
+      for (const [date, prayers] of Object.entries(latest)) {
+        const before = daruriLogged[date]?.length ?? 0;
+        if (prayers.length > before) {
+          await dropDaruriAlertsForLogged(date, prayers);
+        }
+      }
+    } catch {
+      /* the alerts stand; the next journal write cancels them */
+    }
+  }
+
   return {
     status: 'scheduled',
     scheduledCount:
