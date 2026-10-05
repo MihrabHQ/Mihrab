@@ -2203,5 +2203,9 @@
     "homeTitle": "På Idag-skärmen",
     "homeToggle": "Visa hjärtat på Idag",
     "homeToggleHelp": "Det lilla hjärtat bredvid nedräkningen som öppnar den här sidan."
+  },
+  "featuresOffer": {
+    "title": "Några funktioner är avstängda tills du ber om dem",
+    "body": "Slå på de du vill ha. Allt kan ändras senare i Inställningar."
   }
 }

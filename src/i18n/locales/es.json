@@ -2203,5 +2203,9 @@
     "homeTitle": "En la pantalla Hoy",
     "homeToggle": "Mostrar el corazón en Hoy",
     "homeToggleHelp": "El pequeño corazón junto a la cuenta atrás que abre esta página."
+  },
+  "featuresOffer": {
+    "title": "Algunas funciones están desactivadas hasta que las pidas",
+    "body": "Activa las que quieras. Puedes cambiarlas más tarde en Ajustes."
   }
 }

@@ -2203,5 +2203,9 @@
     "homeTitle": "On the Today screen",
     "homeToggle": "Show the heart on Today",
     "homeToggleHelp": "The small heart beside the countdown that opens this page."
+  },
+  "featuresOffer": {
+    "title": "A few things are off until you ask for them",
+    "body": "Turn on any you want. Each can be changed later in Settings."
   }
 }

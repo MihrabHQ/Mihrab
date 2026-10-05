@@ -109,6 +109,18 @@ const STAYS: Record<string, string> = {
   'mihrab.syncHint.dismissed.v1':
     'describes this phone — which one-off pointers the user has waved away, ' +
     'the same kind of thing as the what’s-new version stamp',
+  'mihrab.homeFeaturesOffer.v1':
+    'describes this phone — whether the home screen has asked, once, about ' +
+    'the full-screen alert, silencing the phone and the Live Activity ' +
+    '(src/home/HomeFeaturesOffer.tsx). The answers are settings, which ' +
+    'travel; a new phone with them on is never asked, and one without may ' +
+    'as well be asked once',
+  'mihrab.fullScreenAsked.v1':
+    'describes this phone — that the first-run walkthrough offered the ' +
+    'full-screen alert here, so the home screen does not ask again',
+  'mihrab.homeFeaturesOffer.notBefore.v1':
+    'describes this phone — a day’s hold after the walkthrough finished, ' +
+    'so the offer is not a second welcome',
   'mihrab.quran.featuresOffer.v1':
     'describes this phone — whether the muṣḥaf has asked, once, about its ' +
     'two off-by-default features (src/quran/QuranFeaturesOffer.tsx). The ' +

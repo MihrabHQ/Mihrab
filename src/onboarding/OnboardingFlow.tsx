@@ -23,6 +23,7 @@
  * precisely because answers are already written: going back to the school
  * screen shows the school the user picked, selected.
  */
+import { markWalkthroughFinished } from '../home/HomeFeaturesOffer';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, BackHandler, Easing, StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -112,6 +113,9 @@ export function OnboardingFlow() {
       // the Home banners carry that prompt forward with a path back.
       updateLocation({ locationOnboardingComplete: true });
     }
+    // The alerts step offered the full-screen alert: the home screen's
+    // later offer must not ask about it again.
+    markWalkthroughFinished();
     updateSettings({ onboardingComplete: true });
     navigation.goBack();
   }, [

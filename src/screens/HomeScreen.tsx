@@ -82,6 +82,7 @@ import { HomeStatusBand } from './home/HomeStatusBand';
 import { rescheduleEndOfDayLogReminders } from '../notifications/endOfDayLog';
 import { syncPrayerSilence } from '../notifications/prayerSilence';
 import { rescheduleDuaReminders } from '../notifications/duaReminders';
+import { HomeFeaturesOffer } from '../home/HomeFeaturesOffer';
 import {
   ChangelogSheet,
   pendingChangelog,
@@ -397,6 +398,9 @@ export function HomeScreen() {
    * to decide how much of it to mark new.
    */
   const [changelogSince, setChangelogSince] = useState<string | null>(null);
+  // The what's-new sheet and the features offer never share a launch.
+  const changelogShown = useRef(false);
+  if (changelogSince !== null) changelogShown.current = true;
   useFocusEffect(
     useCallback(() => {
       if (!settings.onboardingComplete) return;
@@ -1522,6 +1526,14 @@ export function HomeScreen() {
       </CenteredColumn>
 
 
+      <HomeFeaturesOffer
+        ready={
+          hydrated &&
+          settings.onboardingComplete &&
+          changelogSince === null &&
+          !changelogShown.current
+        }
+      />
       <ChangelogSheet
         visible={changelogSince !== null}
         since={changelogSince}

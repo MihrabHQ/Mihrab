@@ -2203,5 +2203,9 @@
     "homeTitle": "Sur l’écran Aujourd’hui",
     "homeToggle": "Afficher le cœur sur Aujourd’hui",
     "homeToggleHelp": "Le petit cœur à côté du compte à rebours qui ouvre cette page."
+  },
+  "featuresOffer": {
+    "title": "Certaines fonctions sont désactivées tant que vous ne les demandez pas",
+    "body": "Activez celles que vous voulez. Vous pourrez les modifier plus tard dans Réglages."
   }
 }

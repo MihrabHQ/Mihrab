@@ -2203,5 +2203,9 @@
     "homeTitle": "Auf dem Heute-Bildschirm",
     "homeToggle": "Herz auf „Heute“ zeigen",
     "homeToggleHelp": "Das kleine Herz neben dem Countdown, das diese Seite öffnet."
+  },
+  "featuresOffer": {
+    "title": "Einiges ist aus, bis du es einschaltest",
+    "body": "Schalte ein, was du möchtest. Alles lässt sich später in den Einstellungen ändern."
   }
 }

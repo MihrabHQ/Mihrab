@@ -2203,5 +2203,9 @@
     "homeTitle": "Di layar Hari ini",
     "homeToggle": "Tampilkan hati di Hari ini",
     "homeToggleHelp": "Hati kecil di samping hitung mundur yang membuka halaman ini."
+  },
+  "featuresOffer": {
+    "title": "Beberapa fitur nonaktif sampai Anda memintanya",
+    "body": "Aktifkan yang Anda mau. Semuanya bisa diubah nanti di Pengaturan."
   }
 }

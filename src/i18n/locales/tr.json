@@ -2203,5 +2203,9 @@
     "homeTitle": "Bugün ekranında",
     "homeToggle": "Bugün ekranında kalbi göster",
     "homeToggleHelp": "Geri sayımın yanındaki, bu sayfayı açan küçük kalp."
+  },
+  "featuresOffer": {
+    "title": "Bazı özellikler siz isteyene kadar kapalıdır",
+    "body": "İstediklerinizi açın. Hepsini daha sonra Ayarlar'dan değiştirebilirsiniz."
   }
 }
