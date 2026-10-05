@@ -269,7 +269,18 @@ def rule_word(w: Word, prev_word: Word | None, next_word: Word | None, first_in_
         tanween_on_alef = nxt is not None and nxt.base in "اى" and nxt.tanween is not None
         # A nūn with the low dot is a vowelled nūn read with taqlīl (أَدْنَىٰ,
         # مَثْنَىٰ, دِينَارٖ), not a sākinah: it is the taqlīl's, below.
-        if L.base == "ن" and L.bare and not L.shadda and not tanween_on_alef and not L.has(LOW_DOT):
+        # The text writes the nūn of مَنْ يَّقُولُ, أَنْ يَّضْرِبَ, مِنْ وَّلِيّٖ with its
+        # sukūn, where it leaves other assimilated nūns bare — but a doubled
+        # yāʾ or wāw after it is the idghām however the nūn is written. Without
+        # this 733 of them went uncoloured (issue #64, 31:5).
+        nun_into_yw = (
+            L.sukun
+            and nxt is None
+            and nxt_first is not None
+            and nxt_first.shadda
+            and nxt_first.base in "يو"
+        )
+        if L.base == "ن" and (L.bare or nun_into_yw) and not L.shadda and not tanween_on_alef and not L.has(LOW_DOT):
             if nxt is not None and L.has(SMALL_MEEM) and nxt.base == "ب":
                 w.mark("iqlab", L, nxt)  # يُنۢبِتُ, أَنۢبِيَآءَ — iqlāb inside the word
             elif nxt is not None:

@@ -128,6 +128,33 @@ def main() -> int:
     case("ghunnah", "إن", "ن", has=["ghunnah"], surah=2)
     case("ikhfa-in", "أنزل", "ن", has=["ikhafa"])
     case("iqlab", "اليم", "ۢ", has=["iqlab"])
+    # Issue #64 · مَنْ يَّشْتَرِے · the nūn is written WITH a sukūn, and a doubled
+    # yāʾ / wāw after it is the idghām all the same.
+    for label, surah, before, after in (
+        ("idgham-yaa", 31, "من", "يشترے"),
+        ("idgham-waw", 2, "من", "ولي"),
+    ):
+        A = data()["surahs"][surah - 1]["ayahs"]
+        for i, a in enumerate(A):
+            toks = [bare(x) for x in a["text"].split()]
+            if any(x == before and y.startswith(after) for x, y in zip(toks, toks[1:])):
+                ws = analyse_ayah(
+                    a["text"],
+                    A[i + 1]["text"] if i + 1 < len(A) else None,
+                    A[i - 1]["text"] if i > 0 else None,
+                )
+                at = next(
+                    k for k, w in enumerate(ws)
+                    if bare(w.text) == before and k + 1 < len(ws)
+                    and bare(ws[k + 1].text).startswith(after)
+                    and w.letters[-1].sukun and ws[k + 1].letters[0].shadda
+                )
+                expect(label, f"{surah}:{a['number']}", ws[at], "ن", has=["idgham_ghunnah"])
+                expect(label + "-2", f"{surah}:{a['number']}", ws[at + 1], ws[at + 1].letters[0].base, has=["idgham_ghunnah"])
+                break
+        else:
+            RESULTS.append(False)
+            print(f"FAIL {label}: no such pair in the text")
     case("shaf-ikh", "ترميهم", "م", has=["ikhafa_shafawi"], nth=2)
     case("naql-al", "الاخرة", "ل", has=["naql"])
     case("naql-alw", "وبالاخرة", "ل", has=["naql"])
