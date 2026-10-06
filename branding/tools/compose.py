@@ -3,6 +3,7 @@
 Composed marketing shot: deep-emerald gradient bg, quiet 8-point-star accent,
 app icon + wordmark, cream headline/subhead (SF Pro Rounded), and a floating
 device holding the app screenshot with rounded corners + soft shadow."""
+import os
 import math
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 
@@ -13,7 +14,7 @@ CREAM         = (238, 228, 212) # #EEE4D4
 CREAM_SOFT    = (238, 228, 212)
 ROUND_FONT    = "/System/Library/Fonts/SFNSRounded.ttf"
 TEXT_FONT     = "/System/Library/Fonts/SFNS.ttf"
-ICON_PATH     = "/Users/hassan/git/PrayerApp/ios/PrayerApp/Images.xcassets/AppIcon.appiconset/AppIcon-1024.png"
+ICON_PATH     = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "ios/PrayerApp/Images.xcassets/AppIcon.appiconset/AppIcon-1024.png")
 # The descriptor from branding/IDENTITY.md: it follows the name wherever
 # there is room for one, and every panel has room.
 DESCRIPTOR    = "The Muslim Companion"
