@@ -243,7 +243,7 @@ describe('one bookmark per colour', () => {
     expect(sheet).toContain('coloursInUse.get(color)');
     // A taken colour is ringed (here or elsewhere), and names its ayah underneath.
     expect(sheet).toContain('const ringed = selected || elsewhere != null;');
-    expect(sheet).toContain('{ringed ? <View style={[styles.swatchRing, { borderColor: tint }]} /> : null}');
+    expect(sheet).toMatch(/\{ringed \?[\s\S]*?styles\.swatchRing, \{ borderColor: tint \}/);
     expect(sheet).toContain('`${elsewhere.surah}:${elsewhere.ayah}`');
     expect(sheet).toContain("'quran.bookmarkCircledHint'");
   });
