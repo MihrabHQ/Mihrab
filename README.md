@@ -13,19 +13,16 @@
 
   <br>
 
-  <table>
-    <tr>
-      <td valign="top"><b>Apple</b><br><br>
-        <a href="https://apps.apple.com/us/app/prayer-salah-times-qibla/id6762085256"><img src="branding/badges/appstore.png" alt="Download on the App Store" height="56"></a>
-      </td>
-      <td valign="top"><b>Android</b> — Obtainium is recommended: first to get every update, and it updates itself<br><br>
-        <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22com.prayer_times%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2FMihrabHQ%2FMihrab%22%2C%22author%22%3A%22Hassan-PS%22%2C%22name%22%3A%22Mihrab%22%7D"><img src="branding/badges/obtainium.png" alt="Add to Obtainium" height="56"></a>
-        <a href="https://play.google.com/store/apps/details?id=com.prayer_times"><img src="branding/badges/googleplay.png" alt="Get it on Google Play" height="56"></a>
-        <a href="https://f-droid.org/packages/com.prayer_times/"><img src="branding/badges/fdroid.png" alt="Get it on F-Droid" height="56"></a>
-        <a href="https://github.com/MihrabHQ/Mihrab/releases"><img src="branding/badges/github.png" alt="Get it on GitHub" height="56"></a>
-      </td>
-    </tr>
-  </table>
+  <b>Apple</b><br>
+  <a href="https://apps.apple.com/us/app/prayer-salah-times-qibla/id6762085256"><img src="branding/badges/appstore.png" alt="Download on the App Store" height="70"></a>
+
+  <br>
+
+  <b>Android</b> — Obtainium is recommended: first to get every update, and it updates itself<br>
+  <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22com.prayer_times%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2FMihrabHQ%2FMihrab%22%2C%22author%22%3A%22Hassan-PS%22%2C%22name%22%3A%22Mihrab%22%7D"><img src="branding/badges/obtainium.png" alt="Add to Obtainium" height="70"></a>
+  <a href="https://play.google.com/store/apps/details?id=com.prayer_times"><img src="branding/badges/googleplay.png" alt="Get it on Google Play" height="70"></a>
+  <a href="https://f-droid.org/packages/com.prayer_times/"><img src="branding/badges/fdroid.png" alt="Get it on F-Droid" height="70"></a>
+  <a href="https://github.com/MihrabHQ/Mihrab/releases"><img src="branding/badges/github.png" alt="Get it on GitHub" height="70"></a>
 
 </div>
 
