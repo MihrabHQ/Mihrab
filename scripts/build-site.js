@@ -365,11 +365,12 @@ ${t.chips.map(c => `      <li>${check}${esc(c)}</li>`).join('\n')}
       <div class="platform">
         <h3><svg class="glyph" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="3" width="10" height="18" rx="2.5"/><path d="M11 18h2"/></svg>${esc(t.install.apple)}</h3>
 ${badgeList(['appstore'], '../assets/img/badges', '        ')}
-        <p class="note">${esc(t.install.brew)} <code>brew install --cask mihrabhq/tap/mihrab</code></p>
+        <p class="note">${esc(t.install.brew)}<br><code>brew install --cask mihrabhq/tap/mihrab</code></p>
       </div>
       <div class="platform">
         <h3><svg class="glyph" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.5 5.5 7 3"/><path d="M15.5 5.5 17 3"/><rect x="4" y="5.5" width="16" height="14" rx="4.5"/><circle cx="9.5" cy="11.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="14.5" cy="11.5" r="1.2" fill="currentColor" stroke="none"/></svg>${esc(t.install.android)}</h3>
-${badgeList(['obtainium', 'googleplay', 'fdroid', 'github'], '../assets/img/badges', '        ', { obtainium: t.install.flag })}
+${badgeList(['obtainium', 'googleplay', 'fdroid', 'github'], '../assets/img/badges', '        ')}
+        <p class="flag">${esc(t.install.flag)} <a href="https://github.com/ImranR98/Obtainium">${esc(t.install.getObtainium)}</a></p>
       </div>
     </div>
   </div>

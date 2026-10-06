@@ -17,14 +17,18 @@
 
   <p><a href="https://apps.apple.com/us/app/prayer-salah-times-qibla/id6762085256"><img src="branding/badges/appstore.png" alt="Download on the App Store" height="60"></a></p>
 
-  <p><b>Android</b> — Obtainium is recommended: first to get every update, and it updates itself</p>
+  <p>Mac: <code>brew install --cask mihrabhq/tap/mihrab</code></p>
+
+  <p><b>Android</b></p>
 
   <p>
   <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22com.prayer_times%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2FMihrabHQ%2FMihrab%22%2C%22author%22%3A%22Hassan-PS%22%2C%22name%22%3A%22Mihrab%22%7D"><img src="branding/badges/obtainium.png" alt="Add to Obtainium" height="60"></a>&nbsp;
   <a href="https://play.google.com/store/apps/details?id=com.prayer_times"><img src="branding/badges/googleplay.png" alt="Get it on Google Play" height="60"></a>&nbsp;
   <a href="https://f-droid.org/packages/com.prayer_times/"><img src="branding/badges/fdroid.png" alt="Get it on F-Droid" height="60"></a>&nbsp;
-  <a href="https://github.com/MihrabHQ/Mihrab/releases"><img src="branding/badges/github.png" alt="Get it on GitHub" height="60"></a>
+  <a href="https://github.com/MihrabHQ/Mihrab/releases/latest"><img src="branding/badges/github.png" alt="Get it on GitHub" height="60"></a>
   </p>
+
+  <p><sub>Obtainium is recommended: first to get every update, and it updates itself. Don’t have it? <a href="https://github.com/ImranR98/Obtainium">Get Obtainium</a>.</sub></p>
 
 </div>
 
@@ -109,32 +113,11 @@
 | Platform | Link |
 |---|---|
 | **iPhone & iPad** | [App Store](https://apps.apple.com/us/app/prayer-salah-times-qibla/id6762085256) |
-| **macOS** | `brew install --cask mihrabhq/tap/mihrab` — native Mac Catalyst build from [GitHub Releases](https://github.com/MihrabHQ/Mihrab/releases), for Intel and Apple silicon Macs on macOS 12.1 (Monterey) or later; the widgets need macOS 14 |
-| **Android — Obtainium (recommended)** | [Add to Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/MihrabHQ/Mihrab) — first to get every update, and it updates itself |
+| **macOS** | `brew install --cask mihrabhq/tap/mihrab` — native Mac Catalyst build from [GitHub Releases](https://github.com/MihrabHQ/Mihrab/releases/latest), for Intel and Apple silicon Macs on macOS 12.1 (Monterey) or later; the widgets need macOS 14 |
+| **Android — Obtainium (recommended)** | [Add to Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22com.prayer_times%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2FMihrabHQ%2FMihrab%22%2C%22author%22%3A%22Hassan-PS%22%2C%22name%22%3A%22Mihrab%22%7D) — first to get every update, and it updates itself. Needs [Obtainium](https://github.com/ImranR98/Obtainium) installed |
 | **Android — Google Play** | [Google Play](https://play.google.com/store/apps/details?id=com.prayer_times) |
 | **Android — F-Droid** | [f-droid.org/packages/com.prayer_times](https://f-droid.org/packages/com.prayer_times/) |
-| **Android — APK** | [GitHub Releases](https://github.com/MihrabHQ/Mihrab/releases) → `Mihrab-vX.Y.Z.apk` (ARM phones, 32- and 64-bit) |
-
----|---|
-| **iPhone & iPad** | [App Store](https://apps.apple.com/us/app/prayer-salah-times-qibla/id6762085256) |
-| **macOS (Homebrew)** | `brew install --cask mihrabhq/tap/mihrab` — native Mac Catalyst build from [GitHub Releases](https://github.com/MihrabHQ/Mihrab/releases), for Intel and Apple silicon Macs on macOS 12.1 (Monterey) or later; the widgets need macOS 14 |
-
-### Android
-
-| Way to install | Link |
-|---|---|
-| **Obtainium — recommended** | [Add to Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/MihrabHQ/Mihrab) — every release lands on GitHub first, so Obtainium is the first to offer each update, checks for new versions in the background and can install them automatically |
-| **Google Play** | [Google Play](https://play.google.com/store/apps/details?id=com.prayer_times) |
-| **F-Droid** | [f-droid.org/packages/com.prayer_times](https://f-droid.org/packages/com.prayer_times/) |
-| **APK** | [GitHub Releases](https://github.com/MihrabHQ/Mihrab/releases) → `Mihrab-vX.Y.Z.apk` (ARM phones, 32- and 64-bit) |
-
----|---|
-| **iOS** | [App Store](https://apps.apple.com/us/app/prayer-salah-times-qibla/id6762085256) |
-| **macOS (Homebrew)** | `brew install --cask mihrabhq/tap/mihrab` — native Mac Catalyst build from [GitHub Releases](https://github.com/MihrabHQ/Mihrab/releases), for Intel and Apple silicon Macs on macOS 12.1 (Monterey) or later; the widgets need macOS 14 |
-| **Android APK** | [GitHub Releases](https://github.com/MihrabHQ/Mihrab/releases) → `Mihrab-vX.Y.Z.apk` (ARM phones, 32- and 64-bit) |
-| **Android (Obtainium)** | [Add to Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/MihrabHQ/Mihrab) — auto-updates directly from GitHub Releases |
-| **Google Play** | [Google Play](https://play.google.com/store/apps/details?id=com.prayer_times) |
-| **F-Droid** | [f-droid.org/packages/com.prayer_times](https://f-droid.org/packages/com.prayer_times/) |
+| **Android — APK** | [GitHub Releases](https://github.com/MihrabHQ/Mihrab/releases/latest) → `Mihrab-vX.Y.Z.apk` (ARM phones, 32- and 64-bit) |
 
 ---
 

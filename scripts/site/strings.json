@@ -94,7 +94,8 @@
     "install": {
       "apple": "Apple",
       "android": "Android",
-      "flag": "Recommended — first to get every update, and updates itself"
+      "flag": "Obtainium is recommended: first to get every update, and it updates itself.",
+      "getObtainium": "Don’t have it? Get Obtainium"
     }
   },
   "sv": {
@@ -192,7 +193,8 @@
     "install": {
       "apple": "Apple",
       "android": "Android",
-      "flag": "Rekommenderas — först med varje uppdatering, uppdaterar sig själv"
+      "flag": "Obtainium rekommenderas: först med varje uppdatering, och uppdaterar sig själv.",
+      "getObtainium": "Har du det inte? Hämta Obtainium"
     }
   },
   "ar": {
@@ -215,7 +217,8 @@
       "brew": "على الماك:",
       "apple": "أبل",
       "android": "أندرويد",
-      "flag": "موصى به — أول من يحصل على كل إصدار، ويحدّث نفسه"
+      "flag": "ننصح بـ Obtainium: أول من يحصل على كل إصدار، ويحدّث نفسه.",
+      "getObtainium": "ليس لديك؟ احصل على Obtainium"
     },
     "features": {
       "eyebrow": "المزايا",
@@ -416,7 +419,8 @@
       "brew": "Mac'te:",
       "apple": "Apple",
       "android": "Android",
-      "flag": "Önerilen — her sürüm önce burada, kendini günceller"
+      "flag": "Obtainium önerilir: her sürüm önce orada ve kendini günceller.",
+      "getObtainium": "Yüklü değil mi? Obtainium’u edinin"
     },
     "features": {
       "eyebrow": "Özellikler",
@@ -617,7 +621,8 @@
       "brew": "میک پر:",
       "apple": "ایپل",
       "android": "اینڈرائیڈ",
-      "flag": "تجویز کردہ — ہر ورژن سب سے پہلے، خود اپڈیٹ ہوتا ہے"
+      "flag": "Obtainium تجویز کیا جاتا ہے: ہر ورژن سب سے پہلے، اور خود اپڈیٹ ہوتا ہے۔",
+      "getObtainium": "موجود نہیں؟ Obtainium حاصل کریں"
     },
     "features": {
       "eyebrow": "خصوصیات",
@@ -818,7 +823,8 @@
       "brew": "Di Mac:",
       "apple": "Apple",
       "android": "Android",
-      "flag": "Disarankan — setiap rilis lebih dulu, memperbarui diri sendiri"
+      "flag": "Obtainium disarankan: setiap rilis lebih dulu, dan memperbarui sendiri.",
+      "getObtainium": "Belum punya? Dapatkan Obtainium"
     },
     "features": {
       "eyebrow": "Fitur",
@@ -1019,7 +1025,8 @@
       "brew": "Auf dem Mac:",
       "apple": "Apple",
       "android": "Android",
-      "flag": "Empfohlen — jede Version zuerst, aktualisiert sich selbst"
+      "flag": "Obtainium wird empfohlen: jede Version zuerst, und es aktualisiert sich selbst.",
+      "getObtainium": "Noch nicht installiert? Obtainium holen"
     },
     "features": {
       "eyebrow": "Funktionen",
@@ -1220,7 +1227,8 @@
       "brew": "Sur Mac :",
       "apple": "Apple",
       "android": "Android",
-      "flag": "Recommandé — chaque version en premier, se met à jour tout seul"
+      "flag": "Obtainium est recommandé : chaque version en premier, et il se met à jour tout seul.",
+      "getObtainium": "Pas encore installé ? Obtenir Obtainium"
     },
     "features": {
       "eyebrow": "Fonctions",
@@ -1421,7 +1429,8 @@
       "brew": "En Mac:",
       "apple": "Apple",
       "android": "Android",
-      "flag": "Recomendado — cada versión primero, se actualiza solo"
+      "flag": "Se recomienda Obtainium: cada versión primero, y se actualiza solo.",
+      "getObtainium": "¿No lo tienes? Consigue Obtainium"
     },
     "features": {
       "eyebrow": "Funciones",
@@ -1622,7 +1631,8 @@
       "brew": "На Mac:",
       "apple": "Apple",
       "android": "Android",
-      "flag": "Рекомендуем — каждая версия первой, обновляется сама"
+      "flag": "Рекомендуем Obtainium: каждая версия первой, и обновляется само.",
+      "getObtainium": "Нет приложения? Установите Obtainium"
     },
     "features": {
       "eyebrow": "Возможности",
@@ -1823,7 +1833,8 @@
       "brew": "ম্যাকে:",
       "apple": "অ্যাপল",
       "android": "অ্যান্ড্রয়েড",
-      "flag": "প্রস্তাবিত — প্রতিটি সংস্করণ সবার আগে, নিজে থেকেই আপডেট হয়"
+      "flag": "Obtainium প্রস্তাবিত: প্রতিটি সংস্করণ সবার আগে, আর নিজে থেকেই আপডেট হয়।",
+      "getObtainium": "নেই? Obtainium নিন"
     },
     "features": {
       "eyebrow": "বৈশিষ্ট্য",
@@ -2024,7 +2035,8 @@
       "brew": "मैक पर:",
       "apple": "Apple",
       "android": "Android",
-      "flag": "अनुशंसित — हर संस्करण सबसे पहले, अपने-आप अपडेट होता है"
+      "flag": "Obtainium अनुशंसित है: हर संस्करण सबसे पहले, और यह अपने-आप अपडेट होता है।",
+      "getObtainium": "नहीं है? Obtainium पाएँ"
     },
     "features": {
       "eyebrow": "विशेषताएँ",
@@ -2225,7 +2237,8 @@
       "brew": "在 Mac 上：",
       "apple": "Apple",
       "android": "Android",
-      "flag": "推荐 —— 每个版本最先到达，自动更新"
+      "flag": "推荐使用 Obtainium：每个版本最先到达，并自动更新。",
+      "getObtainium": "还没有？获取 Obtainium"
     },
     "features": {
       "eyebrow": "功能",
