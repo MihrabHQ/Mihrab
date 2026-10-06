@@ -1191,4 +1191,6 @@ Took 1 aborted attempt(s) before it ran clean:
 
   - 1 the last release left its lesson unwritten — fill in that '**Lesson:**' line in docs/release-log.md, commit it, and rerun
 
-**Lesson:** _(unfilled)_
+**Lesson:** the only aborted attempt was the lesson gate itself, tripped
+by the previous entry; nothing in the release was wrong. Write the lesson
+in the same sitting as the release, while it is still known.
