@@ -197,8 +197,8 @@ h2 { font-size: clamp(26px, 4vw, 34px); }
 .channel code { font-size: 13px; }
 /* ---- install, split by platform ----
    Two cards in the page's own card style (as .group below): Apple on the left,
-   Android wider on the right. Every badge is one height; Obtainium is ringed and
-   carries the one-line recommendation, since it is the channel that updates itself
+   Android wider on the right. Every badge is one height; Obtainium carries the
+   one-line recommendation, since it is the channel that updates itself
    the moment a release is published. */
 .platforms { margin-top: 32px; display: flex; flex-wrap: wrap; gap: 20px; }
 .platform {
@@ -215,8 +215,6 @@ h2 { font-size: clamp(26px, 4vw, 34px); }
 .platform .badges { margin: 0; align-items: flex-start; gap: 14px 12px; }
 .platform .badges img { height: 46px; }
 .platform .note { margin: 14px 0 0; }
-.badges .pick > a { outline: 2px solid var(--emerald); outline-offset: 4px; }
-@media (prefers-color-scheme: dark) { .badges .pick > a { outline-color: var(--accent); } }
 .badges .pick { max-width: 160px; }
 .badges .flag { margin: 12px 0 0; font-size: 12.5px; font-weight: 650; line-height: 1.35; color: var(--emerald); }
 @media (prefers-color-scheme: dark) { .badges .flag { color: var(--accent); } }
