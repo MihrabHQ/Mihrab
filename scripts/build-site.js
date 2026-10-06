@@ -84,6 +84,23 @@ const BADGES = [
 ];
 
 /**
+ * A row of store badges, picked from BADGES by image name. The install
+ * section is split by platform (Apple, then Android with Obtainium first),
+ * so each group asks for its own badges rather than the whole list.
+ */
+function badgeList(names, imgBase, indent = '      ', flags = {}) {
+  const items = names.map(n => BADGES.find(b => b.img === n));
+  return `${indent}<ul class="badges">\n${items
+    .map(ba => {
+      const link = `<a href="${ba.href}"><img src="${imgBase}/${ba.img}.png" width="564" height="168" alt="${ba.alt}"></a>`;
+      return flags[ba.img]
+        ? `${indent}  <li class="pick">${link}<p class="flag">${esc(flags[ba.img])}</p></li>`
+        : `${indent}  <li>${link}</li>`;
+    })
+    .join('\n')}\n${indent}</ul>`;
+}
+
+/**
  * The screenshot gallery, in the order the English page shows it.
  *
  * The pictures were the one thing the translations did not get: a reader
@@ -344,12 +361,17 @@ ${t.chips.map(c => `      <li>${check}${esc(c)}</li>`).join('\n')}
     <p class="eyebrow">${esc(t.install.eyebrow)}</p>
     <h2>${esc(t.install.h2)}</h2>
     <p class="lede">${esc(t.install.lede)}</p>
-    <ul class="badges">
-${BADGES.map(
-  ba => `      <li><a href="${ba.href}"><img src="../assets/img/badges/${ba.img}.png" width="564" height="168" alt="${ba.alt}"></a></li>`,
-).join('\n')}
-    </ul>
-    <p class="note">${esc(t.install.brew)} <code>brew install --cask mihrabhq/tap/mihrab</code></p>
+    <div class="platforms">
+      <div class="platform">
+        <h3><svg class="glyph" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="3" width="10" height="18" rx="2.5"/><path d="M11 18h2"/></svg>${esc(t.install.apple)}</h3>
+${badgeList(['appstore'], '../assets/img/badges', '        ')}
+        <p class="note">${esc(t.install.brew)} <code>brew install --cask mihrabhq/tap/mihrab</code></p>
+      </div>
+      <div class="platform">
+        <h3><svg class="glyph" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.5 5.5 7 3"/><path d="M15.5 5.5 17 3"/><rect x="4" y="5.5" width="16" height="14" rx="4.5"/><circle cx="9.5" cy="11.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="14.5" cy="11.5" r="1.2" fill="currentColor" stroke="none"/></svg>${esc(t.install.android)}</h3>
+${badgeList(['obtainium', 'googleplay', 'fdroid', 'github'], '../assets/img/badges', '        ', { obtainium: t.install.flag })}
+      </div>
+    </div>
   </div>
 </section>
 

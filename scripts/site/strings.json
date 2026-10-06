@@ -90,6 +90,11 @@
         "alt": "Mihrab on a tablet: two facing mushaf pages side by side with the surah sidebar, as in the printed copy.",
         "cap": "On a tablet, an iPad or a Mac the mushaf opens as a facing-page spread — the pair of pages is what turns, exactly as it does in print."
       }
+    },
+    "install": {
+      "apple": "Apple",
+      "android": "Android",
+      "flag": "Recommended — first to get every update, and updates itself"
     }
   },
   "sv": {
@@ -183,6 +188,11 @@
         "alt": "Mihrab på en surfplatta: två uppslagna muṣḥaf-sidor sida vid sida med surelistan, som i den tryckta utgåvan.",
         "cap": "På en surfplatta, en iPad eller en Mac öppnas muṣḥafen som ett uppslag — det är sidparet som vänds, precis som i tryck."
       }
+    },
+    "install": {
+      "apple": "Apple",
+      "android": "Android",
+      "flag": "Rekommenderas — först med varje uppdatering, uppdaterar sig själv"
     }
   },
   "ar": {
@@ -202,7 +212,10 @@
       "eyebrow": "التثبيت",
       "h2": "احصل على محراب",
       "lede": "التطبيق نفسه في كل القنوات، مبنيّ من المصدر نفسه. نسخة F‑Droid لا تحتوي على خدمات Google Play.",
-      "brew": "على الماك:"
+      "brew": "على الماك:",
+      "apple": "أبل",
+      "android": "أندرويد",
+      "flag": "موصى به — أول من يحصل على كل إصدار، ويحدّث نفسه"
     },
     "features": {
       "eyebrow": "المزايا",
@@ -400,7 +413,10 @@
       "eyebrow": "Kurulum",
       "h2": "Mihrab'ı edinin",
       "lede": "Her kanalda aynı uygulama, aynı kaynaktan derlenmiş. F‑Droid sürümü Google Play Hizmetleri içermez.",
-      "brew": "Mac'te:"
+      "brew": "Mac'te:",
+      "apple": "Apple",
+      "android": "Android",
+      "flag": "Önerilen — her sürüm önce burada, kendini günceller"
     },
     "features": {
       "eyebrow": "Özellikler",
@@ -598,7 +614,10 @@
       "eyebrow": "انسٹال",
       "h2": "محراب حاصل کریں",
       "lede": "ہر ذریعے پر وہی ایپ، ایک ہی سورس سے بنی۔ F‑Droid والا ورژن گوگل پلے سروسز کے بغیر ہے۔",
-      "brew": "میک پر:"
+      "brew": "میک پر:",
+      "apple": "ایپل",
+      "android": "اینڈرائیڈ",
+      "flag": "تجویز کردہ — ہر ورژن سب سے پہلے، خود اپڈیٹ ہوتا ہے"
     },
     "features": {
       "eyebrow": "خصوصیات",
@@ -796,7 +815,10 @@
       "eyebrow": "Pasang",
       "h2": "Dapatkan Mihrab",
       "lede": "Aplikasi yang sama di semua kanal, dibangun dari sumber yang sama. Versi F‑Droid tidak memuat Google Play Services.",
-      "brew": "Di Mac:"
+      "brew": "Di Mac:",
+      "apple": "Apple",
+      "android": "Android",
+      "flag": "Disarankan — setiap rilis lebih dulu, memperbarui diri sendiri"
     },
     "features": {
       "eyebrow": "Fitur",
@@ -994,7 +1016,10 @@
       "eyebrow": "Installieren",
       "h2": "Mihrab holen",
       "lede": "Dieselbe App auf jedem Kanal, aus derselben Quelle gebaut. Die F‑Droid-Version kommt ohne Google Play Services.",
-      "brew": "Auf dem Mac:"
+      "brew": "Auf dem Mac:",
+      "apple": "Apple",
+      "android": "Android",
+      "flag": "Empfohlen — jede Version zuerst, aktualisiert sich selbst"
     },
     "features": {
       "eyebrow": "Funktionen",
@@ -1192,7 +1217,10 @@
       "eyebrow": "Installation",
       "h2": "Obtenir Mihrab",
       "lede": "La même application sur tous les canaux, compilée depuis la même source. La version F‑Droid ne contient pas les services Google Play.",
-      "brew": "Sur Mac :"
+      "brew": "Sur Mac :",
+      "apple": "Apple",
+      "android": "Android",
+      "flag": "Recommandé — chaque version en premier, se met à jour tout seul"
     },
     "features": {
       "eyebrow": "Fonctions",
@@ -1390,7 +1418,10 @@
       "eyebrow": "Instalar",
       "h2": "Consigue Mihrab",
       "lede": "La misma aplicación en todos los canales, compilada desde la misma fuente. La versión de F‑Droid no incluye los servicios de Google Play.",
-      "brew": "En Mac:"
+      "brew": "En Mac:",
+      "apple": "Apple",
+      "android": "Android",
+      "flag": "Recomendado — cada versión primero, se actualiza solo"
     },
     "features": {
       "eyebrow": "Funciones",
@@ -1588,7 +1619,10 @@
       "eyebrow": "Установка",
       "h2": "Установить Mihrab",
       "lede": "Одно и то же приложение во всех каналах, собранное из одного исходного кода. Сборка для F‑Droid идёт без сервисов Google Play.",
-      "brew": "На Mac:"
+      "brew": "На Mac:",
+      "apple": "Apple",
+      "android": "Android",
+      "flag": "Рекомендуем — каждая версия первой, обновляется сама"
     },
     "features": {
       "eyebrow": "Возможности",
@@ -1786,7 +1820,10 @@
       "eyebrow": "ইনস্টল",
       "h2": "Mihrab নিন",
       "lede": "সব চ্যানেলে একই অ্যাপ, একই সোর্স থেকে তৈরি। F‑Droid সংস্করণে Google Play Services নেই।",
-      "brew": "ম্যাকে:"
+      "brew": "ম্যাকে:",
+      "apple": "অ্যাপল",
+      "android": "অ্যান্ড্রয়েড",
+      "flag": "প্রস্তাবিত — প্রতিটি সংস্করণ সবার আগে, নিজে থেকেই আপডেট হয়"
     },
     "features": {
       "eyebrow": "বৈশিষ্ট্য",
@@ -1984,7 +2021,10 @@
       "eyebrow": "इंस्टॉल",
       "h2": "Mihrab पाएँ",
       "lede": "हर माध्यम पर वही ऐप, उसी स्रोत से बना। F‑Droid वाला संस्करण Google Play Services के बिना आता है।",
-      "brew": "मैक पर:"
+      "brew": "मैक पर:",
+      "apple": "Apple",
+      "android": "Android",
+      "flag": "अनुशंसित — हर संस्करण सबसे पहले, अपने-आप अपडेट होता है"
     },
     "features": {
       "eyebrow": "विशेषताएँ",
@@ -2182,7 +2222,10 @@
       "eyebrow": "安装",
       "h2": "获取 Mihrab",
       "lede": "各个渠道是同一个应用，由同一份源码构建。F‑Droid 版本不含 Google Play 服务。",
-      "brew": "在 Mac 上："
+      "brew": "在 Mac 上：",
+      "apple": "Apple",
+      "android": "Android",
+      "flag": "推荐 —— 每个版本最先到达，自动更新"
     },
     "features": {
       "eyebrow": "功能",
