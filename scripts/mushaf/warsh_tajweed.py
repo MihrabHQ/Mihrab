@@ -527,7 +527,12 @@ def analyse_ayah(text: str, next_text: str | None = None, prev_text: str | None 
     """The words of one āyah with their spans. The neighbours give the
     cross-word rules their context at the āyah's edges."""
     words = [tokenize(t) for t in split_words(text)]
-    after = tokenize(split_words(next_text)[0]) if next_text and split_words(next_text) else None
+    # The end of an āyah is where the reciter stops (as the Ḥafṣ markup treats
+    # it), so nothing carries across it: a tanwīn there is not idghām or
+    # ikhfāʾ into the next āyah's first letter, it stops and bounces — بَعِيدٖ at
+    # 34:52–53 has qalqalah, not idghām (issue #64). `next_text` is kept in the
+    # signature for callers, but the last word is read as a stop.
+    after = None
     before = tokenize(split_words(prev_text)[-1]) if prev_text and split_words(prev_text) else None
     if words:
         words[-1].last = True

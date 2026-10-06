@@ -130,6 +130,20 @@ def main() -> int:
     case("iqlab", "اليم", "ۢ", has=["iqlab"])
     # Issue #64 · مَنْ يَّشْتَرِے · the nūn is written WITH a sukūn, and a doubled
     # yāʾ / wāw after it is the idghām all the same.
+    # Issue #64 · بَعِيدٖ at the end of 34:52 and 34:53 · the reciter stops at the
+    # end of an āyah, so the tanwīn bounces and is not idghām into the next
+    # āyah's wāw.
+    case("ayah-end-qalqalah", "بعيد", "د", has=["qalaqah"], lacks=["idgham_ghunnah", "idgham_wo_ghunnah", "ikhafa", "iqlab"], surah=34)
+    # And as a rule rather than one word: the next āyah never changes how an
+    # āyah ends.
+    moved = 0
+    for s_ in data()["surahs"]:
+        A = s_["ayahs"]
+        for i, a in enumerate(A[:-1]):
+            if analyse_ayah(a["text"], A[i + 1]["text"])[-1].spans != analyse_ayah(a["text"])[-1].spans:
+                moved += 1
+    RESULTS.append(moved == 0)
+    print(f"{'ok  ' if moved == 0 else 'FAIL'} ayah-end-isolated  {moved} āyah endings differ with the next āyah in view")
     for label, surah, before, after in (
         ("idgham-yaa", 31, "من", "يشترے"),
         ("idgham-waw", 2, "من", "ولي"),
