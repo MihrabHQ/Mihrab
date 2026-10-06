@@ -19,6 +19,16 @@ export type ReleaseNote = {
 
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
+    code: 287,
+    version: '2.29.0',
+    date: '2026-10-06',
+    notes: {
+      en: '• Snoozing an adhan now re-alerts with different wording, and offers a 1-hour option.\n• Snooze choices follow the time left in the prayer; the last one becomes "Last chance to pray".\n• Settings → Notifications → Prayer sounds: pick adhan, alert or silent for each prayer.\n• Quran: download tafsir and Arabic meanings of harder words for offline reading.\n• A removed khatmah no longer keeps sending reminders on your other devices.',
+      ar: '• تأخير الأذان يعيد التنبيه الآن بصياغة مختلفة، مع خيار التأجيل ساعة.\n• خيارات التأجيل تتبع الوقت المتبقي من الصلاة، وآخرها «فرصتك الأخيرة للصلاة».\n• الإعدادات ← الإشعارات ← أصوات الصلاة: اختر أذانًا أو تنبيهًا أو صمتًا لكل صلاة.\n• القرآن: تنزيل التفسير ومعاني الكلمات الأصعب بالعربية للقراءة دون اتصال.\n• الختمة المحذوفة لم تعد ترسل تذكيرات على أجهزتك الأخرى.',
+      sv: '• Att snooza adhan ger nu en ny formulering när den kommer tillbaka, och du kan snooza i 1 timme.\n• Snoozealternativen följer tiden som är kvar av bönen; det sista blir "Sista chansen att be".\n• Inställningar → Aviseringar → Bönljud: välj adhan, avisering eller tyst för varje bön.\n• Koranen: ladda ner tafsir och arabiska betydelser av svårare ord för offlineläsning.\n• En borttagen khatma skickar inte längre påminnelser på dina andra enheter.',
+    },
+  },
+  {
     code: 286,
     version: '2.28.2',
     date: '2026-10-04',
