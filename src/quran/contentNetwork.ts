@@ -91,7 +91,7 @@ export type DownloadOutcome = {
 export const GIVE_UP_AFTER_CONSECUTIVE_FAILURES = 8;
 
 export const CONTENT_DEADLINES = {
-  /** One ayah's MP3 — tens of kilobytes. Matches the streaming watchdog it stands in for. */
+  /** One ayah's MP3 — tens of kilobytes (long ayahs, e.g. 2:282, close to a megabyte). Matches the streaming watchdog it stands in for. */
   ayahAudio: 60_000,
   /**
    * The gapless prefetch, which runs ahead of the listener and is pure
@@ -109,6 +109,18 @@ export const CONTENT_DEADLINES = {
    * rather than hold the sheet.
    */
   tafsir: 8_000,
+  /**
+   * One surah's word meanings — the largest is a few tens of kilobytes —
+   * fetched by the download manager, not under an open sheet.
+   */
+  wordMeanings: 20_000,
+  /**
+   * One surah of a tafsir edition for the download manager — up to a few
+   * megabytes for the largest editions (Ibn Kathir, Al-Baqarah).
+   */
+  tafsirSurah: 60_000,
+  /** One surah of a SMALL tafsir edition (al-Muyassar: ~27 KB a surah). */
+  tafsirSurahSmall: 12_000,
   /** A riwayah dataset from a link someone pasted; up to 48 MB. */
   riwayah: 30_000,
 } as const;

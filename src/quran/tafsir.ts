@@ -14,8 +14,15 @@
  */
 import ReactNativeBlobUtil from 'react-native-blob-util';
 import { fetchWithRetry } from '../utils/fetchWithRetry';
-import { CONTENT_DEADLINES } from './contentNetwork';
+import {
+  CONTENT_DEADLINES,
+  GIVE_UP_AFTER_CONSECUTIVE_FAILURES,
+} from './contentNetwork';
 import { mkdirDeep } from './mushafDownload';
+import type {
+  MushafDownloadHandle,
+  MushafDownloadProgress,
+} from './mushafDownload';
 
 export type TafsirEdition = {
   id: string;
@@ -27,6 +34,13 @@ export type TafsirEdition = {
   rtl: boolean;
   /** Display name of the edition's language (for the selector subtitle). */
   language: string;
+  /**
+   * What the whole edition comes to on disk, in bytes — the 114 surah files
+   * summed from the CDN on 2026-10-05. Only so the offer can say what it
+   * costs BEFORE the reader agrees; the downloads screen reports the real
+   * figure once it is there. Rounded; upstream is missing a few surahs.
+   */
+  approxBytes: number;
 };
 
 /**
@@ -40,6 +54,7 @@ export const TAFSIR_EDITIONS: ReadonlyArray<TafsirEdition> = [
     locale: 'en',
     rtl: false,
     language: 'English',
+    approxBytes: 44600000,
   },
   {
     id: 'en-tafsir-maarif-ul-quran',
@@ -47,6 +62,7 @@ export const TAFSIR_EDITIONS: ReadonlyArray<TafsirEdition> = [
     locale: 'en',
     rtl: false,
     language: 'English',
+    approxBytes: 17000000,
   },
   {
     id: 'ar-tafsir-muyassar',
@@ -54,6 +70,7 @@ export const TAFSIR_EDITIONS: ReadonlyArray<TafsirEdition> = [
     locale: 'ar',
     rtl: true,
     language: 'Arabic',
+    approxBytes: 3100000,
   },
   {
     id: 'ar-tafsir-ibn-kathir',
@@ -61,6 +78,7 @@ export const TAFSIR_EDITIONS: ReadonlyArray<TafsirEdition> = [
     locale: 'ar',
     rtl: true,
     language: 'Arabic',
+    approxBytes: 84100000,
   },
   {
     id: 'ur-tafseer-ibn-e-kaseer',
@@ -68,6 +86,7 @@ export const TAFSIR_EDITIONS: ReadonlyArray<TafsirEdition> = [
     locale: 'ur',
     rtl: true,
     language: 'Urdu',
+    approxBytes: 34800000,
   },
   {
     id: 'bn-tafseer-ibn-e-kaseer',
@@ -75,6 +94,7 @@ export const TAFSIR_EDITIONS: ReadonlyArray<TafsirEdition> = [
     locale: 'bn',
     rtl: false,
     language: 'Bengali',
+    approxBytes: 52700000,
   },
 ] as const;
 
@@ -83,6 +103,39 @@ export function tafsirEditionsForLocale(locale: string): TafsirEdition[] {
   const native = TAFSIR_EDITIONS.filter(e => e.locale === locale);
   const english = TAFSIR_EDITIONS.filter(e => e.locale === 'en');
   return locale === 'en' ? english : [...native, ...english];
+}
+
+/**
+ * An edition's name for a chip: the words kept together.
+ *
+ * Android lays a Text out in a width taken from Yoga's measurement, and for
+ * Arabic script the drawn line can come out a fraction of a pixel wider
+ * than that measurement. A name with ordinary spaces then WRAPS — and the
+ * chip is one line high, so everything after the first word is cut off:
+ * "تفسير ابن كثير" showing as "تفسير ابن" (seen on a Pixel, 2026-10-05; and
+ * "التفسير الميسر" as "التفسير" in September). Giving the chip more width
+ * does not help, the box was never too small; the line just must not be
+ * allowed to break. Non-breaking spaces make it one unbreakable run, so a
+ * hair of overflow is a hair, not a missing word.
+ */
+export function tafsirChipLabel(label: string): string {
+  return label.replace(/ /g, '\u00A0');
+}
+
+/**
+ * An edition's name set into a sentence of another script. Without the
+ * isolate, the Arabic name pulls the "17%" that follows it to the wrong
+ * side — "Downloading 17 · التفسير الميسر%" — because the sentence is left
+ * to right and the name is not. U+2068 … U+2069 keep the name a unit.
+ */
+export function tafsirNameInSentence(label: string): string {
+  return `\u2068${label}\u2069`;
+}
+
+/** "3.1 MB", "84 MB" — what a whole edition comes to, for the offer. */
+export function tafsirSizeLabel(bytes: number): string {
+  const mb = bytes / 1_000_000;
+  return mb < 10 ? `${mb.toFixed(1)} MB` : `${Math.round(mb)} MB`;
 }
 
 export function findTafsirEdition(id: string): TafsirEdition | undefined {
@@ -127,6 +180,10 @@ export async function loadTafsir(
   surah: number,
   ayah: number,
 ): Promise<string | null> {
+  // A downloaded edition answers from disk, whatever the network is doing.
+  const whole = await readSurahFile(edition, surah);
+  const held = whole?.ayahs[String(ayah)];
+  if (held) return held;
   const path = cachePath(edition, surah, ayah);
   try {
     if (await ReactNativeBlobUtil.fs.exists(path)) {
@@ -170,6 +227,222 @@ export async function loadTafsir(
   } catch {
     return null;
   }
+}
+
+// ─── Whole editions ─────────────────────────────────────────────────────
+//
+// An edition can be downloaded WHOLE, by the Quran download manager
+// (`kind: 'tafsir'`): one file per surah, 114 requests instead of 6,236,
+// then read from disk. Until it is, an ayah is fetched on demand as before
+// and cached on its own. Both live under `<tafsirCacheDir>/<edition>/`:
+//   s/{surah}.json   → { v: 1, ayahs: { "<ayah>": "text" } }   (a download)
+//   {surah}/{ayah}.json → { text }                              (on demand)
+
+export const TAFSIR_SURAHS = 114;
+
+/** Under this a whole edition is small enough to treat its files as small. */
+const SMALL_EDITION_BYTES = 10_000_000;
+
+function surahUrl(edition: string, surah: number): string {
+  return `https://cdn.jsdelivr.net/gh/spa5k/tafsir_api@main/tafsir/${edition}/${surah}.json`;
+}
+
+function surahFilePath(edition: string, surah: number): string {
+  return `${tafsirCacheDir()}/${edition}/s/${surah}.json`;
+}
+
+type TafsirSurahFile = { v: 1; ayahs: Record<string, string> };
+
+/**
+ * The last few surah files read, parsed. A big edition's surah is several
+ * megabytes of JSON; reading ayah after ayah of one surah must not parse it
+ * again each time. Few entries, because each one is large.
+ */
+const SURAH_MEMORY_LIMIT = 3;
+const surahMemory = new Map<string, TafsirSurahFile>();
+
+export function resetTafsirMemory(): void {
+  surahMemory.clear();
+}
+
+async function readSurahFile(
+  edition: string,
+  surah: number,
+): Promise<TafsirSurahFile | null> {
+  const key = `${edition}:${surah}`;
+  const hit = surahMemory.get(key);
+  if (hit) {
+    surahMemory.delete(key); // refresh recency
+    surahMemory.set(key, hit);
+    return hit;
+  }
+  try {
+    const path = surahFilePath(edition, surah);
+    if (!(await ReactNativeBlobUtil.fs.exists(path))) return null;
+    const parsed = JSON.parse(
+      String(await ReactNativeBlobUtil.fs.readFile(path, 'utf8')),
+    ) as Partial<TafsirSurahFile>;
+    if (parsed?.v !== 1 || !parsed.ayahs || typeof parsed.ayahs !== 'object') {
+      return null;
+    }
+    const file = parsed as TafsirSurahFile;
+    surahMemory.set(key, file);
+    while (surahMemory.size > SURAH_MEMORY_LIMIT) {
+      const oldest = surahMemory.keys().next().value;
+      if (oldest === undefined) break;
+      surahMemory.delete(oldest);
+    }
+    return file;
+  } catch {
+    return null;
+  }
+}
+
+/** Is this surah of the edition on disk as part of a whole-edition download? */
+export async function hasTafsirSurah(
+  edition: string,
+  surah: number,
+): Promise<boolean> {
+  try {
+    return await ReactNativeBlobUtil.fs.exists(surahFilePath(edition, surah));
+  } catch {
+    return false;
+  }
+}
+
+/** How much of one edition is on disk, for the downloads screen. */
+export async function tafsirEditionStats(edition: string): Promise<{
+  bytes: number;
+  surahs: number;
+}> {
+  const dir = `${tafsirCacheDir()}/${edition}`;
+  const walk = async (d: string, countSurahFiles: boolean) => {
+    let bytes = 0;
+    let surahs = 0;
+    let entries: Awaited<ReturnType<typeof ReactNativeBlobUtil.fs.lstat>> = [];
+    try {
+      entries = await ReactNativeBlobUtil.fs.lstat(d);
+    } catch {
+      return { bytes, surahs };
+    }
+    for (const e of entries) {
+      if (e.type === 'directory') {
+        const inner = await walk(`${d}/${e.filename}`, e.filename === 's');
+        bytes += inner.bytes;
+        surahs += inner.surahs;
+      } else {
+        bytes += Number(e.size) || 0;
+        if (countSurahFiles && /^\d+\.json$/.test(String(e.filename))) surahs += 1;
+      }
+    }
+    return { bytes, surahs };
+  };
+  try {
+    if (!(await ReactNativeBlobUtil.fs.exists(dir))) return { bytes: 0, surahs: 0 };
+  } catch {
+    return { bytes: 0, surahs: 0 };
+  }
+  return walk(dir, false);
+}
+
+/** Delete one edition — the whole download and anything cached ayah by ayah. */
+export async function deleteTafsirEdition(edition: string): Promise<void> {
+  surahMemory.clear();
+  try {
+    await ReactNativeBlobUtil.fs.unlink(`${tafsirCacheDir()}/${edition}`);
+  } catch {
+    /* already gone */
+  }
+}
+
+type SurahArray = Array<{ ayah?: number | string; text?: string | null }>;
+
+/** One surah file → disk. A surah upstream has no file for is NOT a failure. */
+async function fetchTafsirSurah(edition: string, surah: number): Promise<void> {
+  // A small edition's surah is a few tens of kilobytes: a request that has
+  // not answered in a dozen seconds is a stalled one, and waiting a minute
+  // on it three at a time is what made the first run crawl on a phone
+  // (≈3 surahs a minute). So: a short deadline and several tries. A big
+  // edition's biggest surah is megabytes, which needs the long one.
+  const small =
+    (findTafsirEdition(edition)?.approxBytes ?? Infinity) < SMALL_EDITION_BYTES;
+  const res = await fetchWithRetry(surahUrl(edition, surah), undefined, {
+    maxAttempts: small ? 4 : 2,
+    baseDelayMs: 400,
+    timeoutMs: small ? CONTENT_DEADLINES.tafsirSurahSmall : CONTENT_DEADLINES.tafsirSurah,
+  });
+  const ayahs: Record<string, string> = {};
+  if (res.status === 404) {
+    // A few surahs are simply missing from some editions upstream. Marking
+    // it done (empty) is what lets the run finish; an ayah in it is still
+    // fetched on demand, as it would have been.
+  } else {
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const rows = (await res.json()) as SurahArray;
+    if (!Array.isArray(rows)) throw new Error('unexpected response');
+    for (const r of rows) {
+      const text = typeof r?.text === 'string' ? r.text.trim() : '';
+      if (text && r.ayah != null) ayahs[String(r.ayah)] = text;
+    }
+  }
+  await mkdirDeep(`${tafsirCacheDir()}/${edition}/s`);
+  await ReactNativeBlobUtil.fs.writeFile(
+    surahFilePath(edition, surah),
+    JSON.stringify({ v: 1, ayahs } satisfies TafsirSurahFile),
+    'utf8',
+  );
+}
+
+/**
+ * Fetch every surah of an edition, skipping the ones already on disk, three
+ * at a time. Same contract as the other download jobs: a handle whose
+ * promise says whether it finished and, if not, whether the connection had
+ * stopped working altogether.
+ */
+export function downloadTafsirEdition(
+  edition: string,
+  opts: { onProgress?: (p: MushafDownloadProgress) => void },
+): MushafDownloadHandle {
+  let cancelled = false;
+  const promise = (async () => {
+    const total = TAFSIR_SURAHS;
+    let done = 0;
+    let failed = 0;
+    let inARow = 0;
+    let interrupted = false;
+    let next = 1;
+    const report = () => opts.onProgress?.({ done, total, failed });
+    report();
+    const worker = async () => {
+      while (!cancelled && !interrupted) {
+        const surah = next++;
+        if (surah > total) return;
+        try {
+          if (!(await hasTafsirSurah(edition, surah))) {
+            await fetchTafsirSurah(edition, surah);
+          }
+          done += 1;
+          inARow = 0;
+        } catch {
+          failed += 1;
+          inARow += 1;
+          if (inARow >= GIVE_UP_AFTER_CONSECUTIVE_FAILURES) interrupted = true;
+        }
+        report();
+      }
+    };
+    await Promise.all([worker(), worker(), worker()]);
+    return {
+      complete: !cancelled && !interrupted && failed === 0 && done === total,
+      interrupted: interrupted && !cancelled,
+    };
+  })();
+  return {
+    promise,
+    cancel: () => {
+      cancelled = true;
+    },
+  };
 }
 
 /** Bytes on disk in the tafsir cache (Manage-downloads screen). */

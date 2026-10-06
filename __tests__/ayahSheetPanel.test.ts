@@ -48,7 +48,7 @@ describe('the sheet', () => {
   });
 
   it('offers Tajweed only where the muṣḥaf has it', () => {
-    expect(sheet).toMatch(/\.\.\.\(tajweedOffered\s*\?\s*\[\['tajweed'/);
+    expect(sheet).toMatch(/\.\.\.\(\s*tajweedOffered\s*\?\s*\[\s*\[\s*'tajweed'/);
     expect(sheet).toMatch(/state\.prefs\.ayahSheetPanel === 'tajweed' && !tajweedOffered\s*\?\s*'none'/);
   });
 });

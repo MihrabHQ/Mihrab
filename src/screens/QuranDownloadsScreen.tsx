@@ -63,7 +63,18 @@ import {
   type QuranDownloadState,
 } from '../quran/quranDownloadManager';
 import { findReciter } from '../quran/audio/reciters';
-import { deleteTafsirCache, tafsirDiskUsage } from '../quran/tafsir';
+import {
+  deleteTafsirEdition,
+  findTafsirEdition,
+  tafsirEditionStats,
+  TAFSIR_EDITIONS,
+  TAFSIR_SURAHS,
+} from '../quran/tafsir';
+import {
+  deleteWordMeanings,
+  wordMeaningsStats,
+  WORD_MEANINGS_SURAHS,
+} from '../quran/wordMeanings';
 import { RiwayahDownloadSection } from '../quran/RiwayahDownloadSection';
 import {
   hydrateRiwayahData,
@@ -99,7 +110,11 @@ export function QuranDownloadsScreen() {
   const [mushafBytes, setMushafBytes] = useState(0);
   const [mushafPages, setMushafPages] = useState(0);
   const [legacyBytes, setLegacyBytes] = useState(0);
-  const [tafsirBytes, setTafsirBytes] = useState(0);
+  /** One entry per tafsir edition that has anything on disk. */
+  const [tafsirRows, setTafsirRows] = useState<
+    Array<{ id: string; bytes: number; surahs: number }>
+  >([]);
+  const [wordMeanings, setWordMeanings] = useState({ bytes: 0, surahs: 0 });
   /** The tajwīd page fonts, one set per palette (`mushafFontStore`). */
   const [tajweed, setTajweed] = useState({
     light: { bytes: 0, pages: 0 },
@@ -122,12 +137,18 @@ export function QuranDownloadsScreen() {
           0,
         ),
       );
-      const [fonts, light, dark, legacy, tafsir] = await Promise.all([
+      const [fonts, light, dark, legacy, tafsir, words] = await Promise.all([
         fontStoreStats(),
         fontStoreStats('tajweed-light'),
         fontStoreStats('tajweed-dark'),
         legacyImageStoreBytes(),
-        tafsirDiskUsage(),
+        Promise.all(
+          TAFSIR_EDITIONS.map(async e => ({
+            id: e.id,
+            ...(await tafsirEditionStats(e.id)),
+          })),
+        ),
+        wordMeaningsStats(),
       ]);
       setMushafBytes(fonts.bytes);
       setMushafPages(fonts.pages);
@@ -136,7 +157,8 @@ export function QuranDownloadsScreen() {
         dark: { bytes: dark.bytes, pages: dark.pages },
       });
       setLegacyBytes(legacy);
-      setTafsirBytes(tafsir);
+      setTafsirRows(tafsir.filter(e => e.bytes > 0));
+      setWordMeanings(words);
       const base = `${ReactNativeBlobUtil.fs.dirs.DocumentDir}/quran/audio`;
       const out: ReciterUsage[] = [];
       if (await ReactNativeBlobUtil.fs.exists(base)) {
@@ -298,7 +320,8 @@ export function QuranDownloadsScreen() {
     tajweed.light.bytes +
     tajweed.dark.bytes +
     legacyBytes +
-    tafsirBytes +
+    tafsirRows.reduce((s, e) => s + e.bytes, 0) +
+    wordMeanings.bytes +
     riwayahBytes +
     audio.reduce((s, a) => s + a.bytes, 0);
 
@@ -336,9 +359,13 @@ export function QuranDownloadsScreen() {
             <Text style={[styles.rowTitle, { color: palette.text }]}>
               {running.kind === 'audio'
                 ? findReciter(running.reciterId).name
-                : running.kind === 'fonts' && fontSetOf(running) !== 'v2'
-                  ? t('tajweed.downloadsRow', 'Tajweed colours')
-                  : t('downloads.mushaf', 'Mushaf pages')}
+                : running.kind === 'tafsir'
+                  ? findTafsirEdition(running.editionId)?.label ?? running.editionId
+                : running.kind === 'wordMeanings'
+                  ? t('downloads.wordMeanings', 'Arabic word meanings')
+                  : running.kind === 'fonts' && fontSetOf(running) !== 'v2'
+                    ? t('tajweed.downloadsRow', 'Tajweed colours')
+                    : t('downloads.mushaf', 'Mushaf pages')}
             </Text>
             <Text style={[styles.rowSub, { color: palette.muted }]}>
               {running.kind === 'audio'
@@ -346,6 +373,11 @@ export function QuranDownloadsScreen() {
                     done: download.progress.done,
                     total: download.progress.total,
                   })
+                : running.kind === 'wordMeanings' || running.kind === 'tafsir'
+                  ? t('quran.downloadProgressSurahs', {
+                      done: download.progress.done,
+                      total: download.progress.total,
+                    })
                 : t('quran.downloadProgress', {
                     done: download.progress.done,
                     total: download.progress.total,
@@ -486,14 +518,69 @@ export function QuranDownloadsScreen() {
         );
       })}
 
-      {tafsirBytes > 0
+      {tafsirRows.map(e => {
+        const edition = findTafsirEdition(e.id);
+        if (!edition) return null;
+        const live =
+          running?.kind === 'tafsir' && running.editionId === e.id
+            ? download.progress
+            : null;
+        const surahs = live ? Math.max(e.surahs, live.done) : e.surahs;
+        const whole = surahs >= TAFSIR_SURAHS;
+        return row(
+          `tafsir-${e.id}`,
+          edition.label,
+          whole
+            ? t('downloads.tafsirWhole', 'Complete tafsir')
+            : surahs > 0
+              ? t('downloads.tafsirPart', {
+                  defaultValue: '{{done}} of {{total}} surahs',
+                  done: surahs,
+                  total: TAFSIR_SURAHS,
+                })
+              : t('downloads.tafsirSub', 'Cached tafsir texts'),
+          e.bytes,
+          () => confirmDelete(edition.label, () => deleteTafsirEdition(e.id)),
+          // Continue only for a download that is part way (surahs > 0): the
+          // ayahs cached one at a time are not a download to resume.
+          whole || live || surahs === 0
+            ? undefined
+            : () => {
+                startQuranDownload({ kind: 'tafsir', editionId: e.id });
+              },
+          whole || surahs === 0 ? undefined : surahs / TAFSIR_SURAHS,
+        );
+      })}
+
+      {wordMeanings.bytes > 0
         ? row(
-            'tafsir',
-            t('quran.tafsir', 'Tafsir'),
-            t('downloads.tafsirSub', 'Cached tafsir texts'),
-            tafsirBytes,
+            'word-meanings',
+            t('downloads.wordMeanings', 'Arabic word meanings'),
+            wordMeanings.surahs >= WORD_MEANINGS_SURAHS
+              ? t(
+                  'downloads.wordMeaningsSub',
+                  'Meanings of the harder words, from QuranEnc.com',
+                )
+              : t('downloads.wordMeaningsPart', {
+                  defaultValue: '{{done}} of {{total}} surahs',
+                  done: wordMeanings.surahs,
+                  total: WORD_MEANINGS_SURAHS,
+                }),
+            wordMeanings.bytes,
             () =>
-              confirmDelete(t('quran.tafsir', 'Tafsir'), deleteTafsirCache),
+              confirmDelete(
+                t('downloads.wordMeanings', 'Arabic word meanings'),
+                deleteWordMeanings,
+              ),
+            wordMeanings.surahs >= WORD_MEANINGS_SURAHS ||
+              running?.kind === 'wordMeanings'
+              ? undefined
+              : () => {
+                  startQuranDownload({ kind: 'wordMeanings' });
+                },
+            wordMeanings.surahs >= WORD_MEANINGS_SURAHS
+              ? undefined
+              : wordMeanings.surahs / WORD_MEANINGS_SURAHS,
           )
         : null}
 

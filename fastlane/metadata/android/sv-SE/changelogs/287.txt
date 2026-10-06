@@ -1,0 +1,5 @@
+• Att snooza adhan ger nu en ny formulering när den kommer tillbaka, och du kan snooza i 1 timme.
+• Snoozealternativen följer tiden som är kvar av bönen; det sista blir "Sista chansen att be".
+• Inställningar → Aviseringar → Bönljud: välj adhan, avisering eller tyst för varje bön.
+• Koranen: ladda ner tafsir och arabiska betydelser av svårare ord för offlineläsning.
+• En borttagen khatma skickar inte längre påminnelser på dina andra enheter.

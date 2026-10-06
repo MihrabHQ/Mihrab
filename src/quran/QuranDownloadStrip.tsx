@@ -27,6 +27,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useAppPalette } from '../hooks/useAppPalette';
 import { findReciter } from './audio/reciters';
+import { findTafsirEdition, tafsirNameInSentence } from './tafsir';
 import {
   cancelQuranDownload,
   dismissResumableJob,
@@ -120,6 +121,19 @@ export function QuranDownloadStripView({
             defaultValue: 'Downloading the tajweed colours · {{pct}}%',
             pct,
           })
+      : job.kind === 'tafsir'
+        ? t('quran.tafsirDownloadStrip', {
+            defaultValue: 'Downloading {{name}} · {{pct}}%',
+            name: tafsirNameInSentence(
+              findTafsirEdition(job.editionId)?.label ?? job.editionId,
+            ),
+            pct,
+          })
+      : job.kind === 'wordMeanings'
+        ? t('quran.wordMeaningsStrip', {
+            defaultValue: 'Downloading word meanings · {{pct}}%',
+            pct,
+          })
       : job.kind === 'audio'
         ? t('quran.reciterDownloadStrip', {
             defaultValue: 'Downloading {{name}} · {{pct}}%',
@@ -197,9 +211,13 @@ function StoppedStrip({
       ? fontSetOf(job) === 'v2'
         ? t('downloads.mushaf', 'Mushaf pages')
         : t('tajweed.downloadsRow', 'Tajweed colours')
-      : job.kind === 'audio'
-        ? findReciter(job.reciterId).name
-        : jobSurahName(job.surah);
+      : job.kind === 'tafsir'
+        ? findTafsirEdition(job.editionId)?.label ?? job.editionId
+      : job.kind === 'wordMeanings'
+        ? t('downloads.wordMeanings', 'Arabic word meanings')
+        : job.kind === 'audio'
+          ? findReciter(job.reciterId).name
+          : jobSurahName(job.surah);
   return (
     <View
       style={[

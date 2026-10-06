@@ -1,0 +1,5 @@
+• Snoozing an adhan now re-alerts with different wording, and offers a 1-hour option.
+• Snooze choices follow the time left in the prayer; the last one becomes "Last chance to pray".
+• Settings → Notifications → Prayer sounds: pick adhan, alert or silent for each prayer.
+• Quran: download tafsir and Arabic meanings of harder words for offline reading.
+• A removed khatmah no longer keeps sending reminders on your other devices.

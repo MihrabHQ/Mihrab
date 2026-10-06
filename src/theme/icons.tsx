@@ -533,3 +533,42 @@ export function CheckIcon({ size = 24, color }: { size?: number; color?: ColorVa
     </Svg>
   );
 }
+
+/** Star — outline, or filled when `filled`. Same 24 grid and stroke as the rest. */
+export function StarIcon({
+  size = 24,
+  color,
+  filled = false,
+}: {
+  size?: number;
+  color?: ColorValue;
+  filled?: boolean;
+}) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path
+        d="M12 2.8l2.78 5.63 6.22.9-4.5 4.39 1.06 6.2L12 17.0l-5.56 2.92 1.06-6.2L3 9.33l6.22-.9z"
+        stroke={color}
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill={filled ? color : 'none'}
+      />
+    </Svg>
+  );
+}
+
+/** Close — a plain ×. */
+export function CloseIcon({ size = 24, color }: { size?: number; color?: ColorValue }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path
+        d="M6 6l12 12M18 6L6 18"
+        stroke={color}
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>
+  );
+}

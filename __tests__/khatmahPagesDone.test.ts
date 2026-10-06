@@ -928,7 +928,7 @@ describe('the khatmah pin in the ayah sheet obeys the same window', () => {
     // claim that everything between was read, which is the plan's to
     // decide from what was actually read.
     expect(sheet).toMatch(
-      /\{plan && \(isKhatmahHere \|\| khatmahPageInWindow\(plan, page, riwayah\)\) \? \(/,
+      /\{plan\s*&&\s*\(isKhatmahHere \|\| khatmahPageInWindow\(plan, page, riwayah\)\) \? \(/,
     );
   });
 

@@ -51,7 +51,7 @@ When you use these features, your device contacts the service directly. The serv
 
 - **Prayer-time providers** (your choice in Settings, or calculated offline): Aladhan (`api.aladhan.com`), prayertimes.dev, the Islamic Association in Sweden (`islamiskaforbundet.se`) and Mihrab's own open datasets on GitHub (`raw.githubusercontent.com/MihrabHQ/Mihrab`). Sent: coordinates or city, date and calculation settings.
 - **Place search and reverse lookup:** OpenStreetMap Nominatim (`nominatim.openstreetmap.org`) and Photon (`photon.komoot.io`). Sent: your search text, or the coordinates being looked up.
-- **Quran content, on request:** Quran text and translations (Tanzil / alquran.cloud), tafsir (via `cdn.jsdelivr.net`), recitation audio (`everyayah.com`), additional riwayat and mushaf data (Quranpedia, `api.quranpedia.net`) and mushaf fonts (GitHub releases of the Mihrab repository). Sent: the file or chapter being requested.
+- **Quran content, on request:** Quran text and translations (Tanzil / alquran.cloud), tafsir (via `cdn.jsdelivr.net`), Arabic meanings of harder words (QuranEnc, `quranenc.com`), recitation audio (`everyayah.com`), additional riwayat and mushaf data (Quranpedia, `api.quranpedia.net`) and mushaf fonts (GitHub releases of the Mihrab repository). Sent: the file or chapter being requested.
 - **Opening links:** If you tap a link (GitHub, the website, the store pages), it opens in your browser or the store app, under that site's policy.
 
 The app contains **no** advertising SDKs, analytics SDKs, tracking, crash-reporting services or data brokers, and it does not track you across apps or websites. Because the developer collects no data, there is nothing to share or sell.
@@ -126,7 +126,7 @@ När du använder dessa funktioner kontaktar din enhet tjänsten direkt. Tjänst
 
 - **Bönetidsleverantörer** (ditt val i Inställningar, eller beräkning utan nätverk): Aladhan (`api.aladhan.com`), prayertimes.dev, Islamiska Förbundet i Sverige (`islamiskaforbundet.se`) och Mihrabs egna öppna dataset på GitHub (`raw.githubusercontent.com/MihrabHQ/Mihrab`). Skickas: koordinater eller ort, datum och beräkningsinställningar.
 - **Platssökning och omvänd sökning:** OpenStreetMap Nominatim (`nominatim.openstreetmap.org`) och Photon (`photon.komoot.io`). Skickas: din söktext eller de koordinater som slås upp.
-- **Koraninnehåll, på begäran:** Korantext och översättningar (Tanzil / alquran.cloud), tafsir (via `cdn.jsdelivr.net`), recitationsljud (`everyayah.com`), ytterligare riwayat- och mushaf-data (Quranpedia, `api.quranpedia.net`) och mushaf-typsnitt (GitHub-releaser för Mihrab-repot). Skickas: den fil eller sura som begärs.
+- **Koraninnehåll, på begäran:** Korantext och översättningar (Tanzil / alquran.cloud), tafsir (via `cdn.jsdelivr.net`), arabiska betydelser av svårare ord (QuranEnc, `quranenc.com`), recitationsljud (`everyayah.com`), ytterligare riwayat- och mushaf-data (Quranpedia, `api.quranpedia.net`) och mushaf-typsnitt (GitHub-releaser för Mihrab-repot). Skickas: den fil eller sura som begärs.
 - **Öppna länkar:** Om du trycker på en länk (GitHub, webbplatsen, butikssidorna) öppnas den i webbläsaren eller butiksappen, enligt den webbplatsens policy.
 
 Appen innehåller **inga** reklam-SDK:er, analys-SDK:er, spårning, kraschrapporteringstjänster eller datamäklare, och den spårar dig inte över appar eller webbplatser. Eftersom utvecklaren inte samlar in några uppgifter finns inget att dela eller sälja.

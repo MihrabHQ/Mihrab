@@ -53,6 +53,13 @@ import {
   downloadReciterAudio,
 } from './audio/audioStore';
 import { findReciter } from './audio/reciters';
+import { downloadWordMeanings, WORD_MEANINGS_SURAHS } from './wordMeanings';
+import {
+  downloadTafsirEdition,
+  findTafsirEdition,
+  tafsirNameInSentence,
+  TAFSIR_SURAHS,
+} from './tafsir';
 import { findSurah } from './quran';
 import { surahName } from './surahName';
 import {
@@ -85,6 +92,10 @@ export type QuranDownloadJob =
   /** The page faces: V2 when `set` is absent, or one of the tajwīd sets. */
   | { kind: 'fonts'; set?: MushafFontSet }
   | { kind: 'audio'; reciterId: string }
+  /** QuranEnc's Arabic meanings of the harder words — the whole set, ~114 small files. */
+  | { kind: 'wordMeanings' }
+  /** One tafsir edition, whole — 114 surah files (`tafsir.ts`). */
+  | { kind: 'tafsir'; editionId: string }
   | {
       kind: 'surah';
       reciterId: string;
@@ -163,6 +174,9 @@ export function isJobRunning(job: QuranDownloadJob): boolean {
   if (!running || running.kind !== job.kind) return false;
   if (running.kind === 'audio' && job.kind === 'audio') {
     return running.reciterId === job.reciterId;
+  }
+  if (running.kind === 'tafsir' && job.kind === 'tafsir') {
+    return running.editionId === job.editionId;
   }
   if (running.kind === 'surah' && job.kind === 'surah') {
     // Identity is the voice and the surah. NOT the refs: the caller
@@ -248,6 +262,39 @@ function notificationText(job: QuranDownloadJob) {
         i18n.t('quran.downloadStoppedBodyAyahs', { done, total }),
     };
   }
+  if (job.kind === 'tafsir') {
+    const name = tafsirNameInSentence(
+      findTafsirEdition(job.editionId)?.label ?? job.editionId,
+    );
+    return {
+      label: i18n.t('quran.downloadingTafsir', { name }),
+      body: (done: number, total: number) =>
+        i18n.t('quran.downloadProgressSurahs', { done, total }),
+      doneTitle: i18n.t('quran.tafsirDoneTitle', { name }),
+      doneBody: i18n.t('quran.tafsirDoneBody'),
+      incompleteTitle: i18n.t('quran.downloadIncompleteTitle'),
+      incompleteBody: (failed: number) =>
+        i18n.t('quran.wordMeaningsIncompleteBody', { count: failed }),
+      stoppedTitle: i18n.t('quran.downloadStoppedTitle'),
+      stoppedBody: (done: number, total: number) =>
+        i18n.t('quran.downloadStoppedBodySurahs', { done, total }),
+    };
+  }
+  if (job.kind === 'wordMeanings') {
+    return {
+      label: i18n.t('quran.downloadingWordMeanings'),
+      body: (done: number, total: number) =>
+        i18n.t('quran.downloadProgressSurahs', { done, total }),
+      doneTitle: i18n.t('quran.wordMeaningsDoneTitle'),
+      doneBody: i18n.t('quran.wordMeaningsDoneBody'),
+      incompleteTitle: i18n.t('quran.downloadIncompleteTitle'),
+      incompleteBody: (failed: number) =>
+        i18n.t('quran.wordMeaningsIncompleteBody', { count: failed }),
+      stoppedTitle: i18n.t('quran.downloadStoppedTitle'),
+      stoppedBody: (done: number, total: number) =>
+        i18n.t('quran.downloadStoppedBodySurahs', { done, total }),
+    };
+  }
   const tajweed = fontSetOf(job) !== 'v2';
   return {
     label: tajweed ? i18n.t('tajweed.downloading') : i18n.t('quran.downloadingFonts'),
@@ -312,6 +359,8 @@ function begin(job: QuranDownloadJob): MushafDownloadHandle {
   if (job.kind === 'audio') {
     return downloadReciterAudio(job.reciterId, onProgress);
   }
+  if (job.kind === 'wordMeanings') return downloadWordMeanings({ onProgress });
+  if (job.kind === 'tafsir') return downloadTafsirEdition(job.editionId, { onProgress });
   return downloadAllPageFonts({ onProgress, set: fontSetOf(job) });
 }
 
@@ -340,6 +389,8 @@ function sameJob(a: QuranDownloadJob, b: QuranDownloadJob): boolean {
   if (a.kind !== b.kind) return false;
   if (a.kind === 'fonts' && b.kind === 'fonts') return fontSetOf(a) === fontSetOf(b);
   if (a.kind === 'audio' && b.kind === 'audio') return a.reciterId === b.reciterId;
+  if (a.kind === 'wordMeanings' && b.kind === 'wordMeanings') return true;
+  if (a.kind === 'tafsir' && b.kind === 'tafsir') return a.editionId === b.editionId;
   if (a.kind === 'surah' && b.kind === 'surah') {
     return a.reciterId === b.reciterId && a.surah === b.surah;
   }
@@ -393,7 +444,11 @@ export function startQuranDownload(job: QuranDownloadJob): boolean {
         ? { done: 0, total: totalAyahCount(), failed: 0 }
         : job.kind === 'surah'
           ? { done: 0, total: surahJobTotal(job), failed: 0 }
-          : EMPTY_PROGRESS,
+          : job.kind === 'wordMeanings'
+            ? { done: 0, total: WORD_MEANINGS_SURAHS, failed: 0 }
+            : job.kind === 'tafsir'
+              ? { done: 0, total: TAFSIR_SURAHS, failed: 0 }
+              : EMPTY_PROGRESS,
     last: null,
   });
 
@@ -522,6 +577,12 @@ function validJob(value: unknown): QuranDownloadJob | null {
     return job.set === 'tajweed-light' || job.set === 'tajweed-dark'
       ? { kind: 'fonts', set: job.set }
       : { kind: 'fonts' };
+  }
+  if (job.kind === 'wordMeanings') return { kind: 'wordMeanings' };
+  if (job.kind === 'tafsir') {
+    return typeof job.editionId === 'string' && findTafsirEdition(job.editionId)
+      ? { kind: 'tafsir', editionId: job.editionId }
+      : null;
   }
   if (typeof job.reciterId !== 'string' || !job.reciterId) return null;
   if (job.kind === 'audio') return { kind: 'audio', reciterId: job.reciterId };

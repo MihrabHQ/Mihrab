@@ -29,6 +29,7 @@ import { useAppPalette } from '../../hooks/useAppPalette';
 import { TYPE, arabicTextStyle } from '../../theme/typography';
 import { READING_BASE } from '../../theme/readingText';
 import { useReadingText } from '../../hooks/useReadingText';
+import { TextSizeStepper } from '../../components/ui';
 import { findSurah, loadSurah } from '../quran';
 import { resolveRiwayah, riwayahById } from '../riwayat';
 import { riwayahAyahText } from '../riwayahData';
@@ -41,7 +42,11 @@ import {
   KHATMAH_COLOR,
   READING_COLOR,
 } from '../quranState';
-import type { AyahSheetPanel, BookmarkColor, QuranBookmark } from '../quranTypes';
+import type {
+  AyahSheetPanel,
+  BookmarkColor,
+  QuranBookmark,
+} from '../quranTypes';
 import { activeKhatmah } from '../khatmahProgress';
 import { khatmahPageInWindow } from '../khatmahSchedule';
 import { clearKhatmahPosition, setKhatmahPosition } from '../khatmahActions';
@@ -59,7 +64,22 @@ import {
   loadTafsir,
   resolveTafsirEdition,
   TAFSIR_EDITIONS,
+  TAFSIR_SURAHS,
+  tafsirChipLabel,
+  tafsirEditionStats,
+  tafsirNameInSentence,
+  tafsirSizeLabel,
 } from '../tafsir';
+import {
+  hasWordMeanings,
+  wordMeaningsFor,
+  type WordMeaning,
+} from '../wordMeanings';
+import {
+  quranDownloadState,
+  queueQuranDownload,
+  subscribeQuranDownload,
+} from '../quranDownloadManager';
 import { playFromAyah, playRange } from '../audio/playback';
 import { RecitationControls } from '../audio/RecitationControls';
 import { ShareAyahModal } from './ShareAyahModal';
@@ -74,7 +94,12 @@ import { TajweedAyahGlyphs } from '../tajweed/TajweedAyahGlyphs';
 /** The page font's size for the āyah at the top of the sheet, dp — the
  *  same as the Tajweed section's, so the two read as one face. */
 const AYAH_GLYPH_SIZE = 30;
-import { QuranBookIcon, ShareIcon } from '../../theme/icons';
+import {
+  CloseIcon,
+  QuranBookIcon,
+  ShareIcon,
+  StarIcon,
+} from '../../theme/icons';
 import {
   ayahShareText,
   ayahWithTafsirShareText,
@@ -127,7 +152,12 @@ function PinFace({
 }) {
   return (
     <>
-      <View style={[styles.pinIcon, { backgroundColor: active ? color : `${color}33` }]}>
+      <View
+        style={[
+          styles.pinIcon,
+          { backgroundColor: active ? color : `${color}33` },
+        ]}
+      >
         <QuranBookIcon color={active ? '#fff' : color} size={15} />
       </View>
       <Text style={[styles.pinLabel, { color: textColor }]}>{label}</Text>
@@ -137,8 +167,13 @@ function PinFace({
           active
             ? { borderWidth: 1, borderColor: color }
             : { backgroundColor: color },
-        ]}>
-        <Text style={[styles.pinActionText, { color: active ? color : '#fff' }]}>{action}</Text>
+        ]}
+      >
+        <Text
+          style={[styles.pinActionText, { color: active ? color : '#fff' }]}
+        >
+          {action}
+        </Text>
       </View>
     </>
   );
@@ -212,6 +247,52 @@ export function AyahActionSheet({
    * one.
    */
   const [tafsirExpanded, setTafsirExpanded] = useState(false);
+  /**
+   * The harder words of this ayah and their Arabic meanings (QuranEnc.com),
+   * offered under an ARABIC tafsir only. Collapsed until the reader asks;
+   * like the other expansions it resets on every ayah.
+   */
+  const [wordMeanings, setWordMeanings] = useState<WordMeaning[]>([]);
+  /** Is the set on this device? Unknown (null) until the disk has answered. */
+  const [wordMeaningsHere, setWordMeaningsHere] = useState<boolean | null>(
+    null,
+  );
+  const [wordMeaningsOpen, setWordMeaningsOpen] = useState(false);
+  const wordMeaningsOffered = tafsirOpen && tafsirEdition.locale === 'ar';
+  /**
+   * The set is a download the manager owns (`kind: 'wordMeanings'`), read
+   * from disk here — nothing in this sheet fetches it. The sheet only needs
+   * to know when that download is running (to say so) and when it ends (to
+   * look again).
+   */
+  const [dl, setDl] = useState(quranDownloadState);
+  useEffect(() => subscribeQuranDownload(setDl), []);
+  const wordMeaningsDownloading = dl.running?.kind === 'wordMeanings';
+  /**
+   * Is the selected tafsir edition on this device in full? Unknown (null)
+   * until the disk has answered. An edition that is not is still READ — an
+   * ayah at a time, cached as it goes — so this only decides whether to
+   * offer the whole thing (`kind: 'tafsir'`, run by the download manager).
+   */
+  const [tafsirWhole, setTafsirWhole] = useState<boolean | null>(null);
+  const tafsirDownloading =
+    dl.running?.kind === 'tafsir' && dl.running.editionId === tafsirEdition.id;
+  useEffect(() => {
+    if (!visible || !tafsirOpen || tafsirDownloading) return;
+    let cancelled = false;
+    setTafsirWhole(null);
+    void tafsirEditionStats(tafsirEdition.id).then(stats => {
+      if (!cancelled) setTafsirWhole(stats.surahs >= TAFSIR_SURAHS);
+    });
+    return () => {
+      cancelled = true;
+    };
+    // The run ending flips `tafsirDownloading` back — look again.
+  }, [visible, tafsirOpen, tafsirEdition.id, tafsirDownloading]);
+  const wordMeaningsPct =
+    dl.progress.total > 0
+      ? Math.round((dl.progress.done / dl.progress.total) * 100)
+      : 0;
   const [translationExpanded, setTranslationExpanded] = useState(false);
 
   const translationOpen = panel === 'translation';
@@ -296,6 +377,24 @@ export function AyahActionSheet({
       cancelled = true;
     };
   }, [visible, tafsirOpen, tafsirEdition.id, surah, ayah]);
+
+  useEffect(() => {
+    setWordMeaningsOpen(false);
+    setWordMeanings([]);
+    if (!visible || !wordMeaningsOffered || wordMeaningsDownloading) return;
+    let cancelled = false;
+    void (async () => {
+      const here = await hasWordMeanings(surah);
+      const list = here ? await wordMeaningsFor(surah, ayah) : [];
+      if (cancelled) return;
+      setWordMeaningsHere(here);
+      setWordMeanings(list);
+    })();
+    return () => {
+      cancelled = true;
+    };
+    // `wordMeaningsDownloading` flips to false when the run ends — look again.
+  }, [visible, wordMeaningsOffered, wordMeaningsDownloading, surah, ayah]);
 
   const meta = findSurah(surah);
   /**
@@ -460,7 +559,8 @@ export function AyahActionSheet({
       accessibilityRole="button"
       accessibilityState={{ expanded }}
       hitSlop={6}
-      onPress={onToggle}>
+      onPress={onToggle}
+    >
       <Text style={[styles.moreLink, { color: palette.accentSolid }]}>
         {expanded
           ? t('quran.showLess', 'Show less')
@@ -477,7 +577,8 @@ export function AyahActionSheet({
       // at all — see MODAL_ORIENTATIONS.
       supportedOrientations={MODAL_ORIENTATIONS}
       animationType="slide"
-      onRequestClose={onClose}>
+      onRequestClose={onClose}
+    >
       <Pressable
         style={[styles.backdrop, { backgroundColor: palette.overlay }]}
         accessibilityLabel={t('common.close', 'Close')}
@@ -510,7 +611,8 @@ export function AyahActionSheet({
             paddingStart: SHEET_H_PADDING + sideInset,
             paddingEnd: SHEET_H_PADDING + sideInset,
           },
-        ]}>
+        ]}
+      >
         <View style={styles.headerRow}>
           <Text style={[styles.reference, { color: palette.muted }]}>
             {reference}
@@ -524,9 +626,11 @@ export function AyahActionSheet({
                 'quran.shareChoiceA11y',
                 'Share — opens a choice of text or image card',
               )}
-              hitSlop={10}
-              onPress={share}>
-              <ShareIcon size={22} color={palette.muted} />
+              hitSlop={6}
+              style={styles.headerBtn}
+              onPress={share}
+            >
+              <ShareIcon size={HEADER_ICON} color={palette.muted} />
             </Pressable>
             <Pressable
               accessibilityRole="button"
@@ -535,15 +639,24 @@ export function AyahActionSheet({
                   ? t('quran.unstar', 'Remove star')
                   : t('quran.star', 'Star this ayah')
               }
-              hitSlop={10}
-              onPress={() => toggleStar(surah, ayah)}>
-              <Text
-                style={{
-                  fontSize: TYPE.title2.fontSize,
-                  color: starred ? palette.accentSolid : palette.muted,
-                }}>
-                {starred ? '★' : '☆'}
-              </Text>
+              hitSlop={6}
+              style={styles.headerBtn}
+              onPress={() => toggleStar(surah, ayah)}
+            >
+              <StarIcon
+                size={HEADER_ICON}
+                filled={starred}
+                color={starred ? palette.accentSolid : palette.muted}
+              />
+            </Pressable>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('common.close', 'Close')}
+              hitSlop={6}
+              style={styles.headerBtn}
+              onPress={onClose}
+            >
+              <CloseIcon size={HEADER_ICON} color={palette.muted} />
             </Pressable>
           </View>
         </View>
@@ -564,7 +677,8 @@ export function AyahActionSheet({
           bounces={false}
           contentContainerStyle={{
             paddingBottom: SHEET_BOTTOM_PADDING + insets.bottom,
-          }}>
+          }}
+        >
           {/* THE ĀYAH IN THE MUṢḤAF'S OWN FACE. It was set in the app's
               Arabic text font, which is not the face the reader had just
               been looking at: the sheet opened on a word and showed it in
@@ -594,8 +708,15 @@ export function AyahActionSheet({
                 }
               />
             </View>
-          ) : arabic && state.prefs.riwayah === 'warsh' && state.prefs.tajweedColours ? (
-            <WarshTajweedAyah surah={surah} ayah={ayah} text={arabic} style={styles.arabic} />
+          ) : arabic &&
+            state.prefs.riwayah === 'warsh' &&
+            state.prefs.tajweedColours ? (
+            <WarshTajweedAyah
+              surah={surah}
+              ayah={ayah}
+              text={arabic}
+              style={styles.arabic}
+            />
           ) : arabic ? (
             <Text style={[styles.arabic, { color: palette.text }]}>
               {arabic}
@@ -607,10 +728,20 @@ export function AyahActionSheet({
               one the app happens to be in. */}
           <View
             accessibilityRole="tablist"
-            style={[styles.panelTabs, { borderColor: palette.border, backgroundColor: palette.bg }]}>
+            style={[
+              styles.panelTabs,
+              {
+                borderColor: palette.border,
+                backgroundColor: palette.bg,
+              },
+            ]}
+          >
             {(
               [
-                ['translation', t('quran.viewToggleTranslation', 'Translation')],
+                [
+                  'translation',
+                  t('quran.viewToggleTranslation', 'Translation'),
+                ],
                 ['tafsir', t('quran.tafsir', 'Tafsir')],
                 ...(tajweedOffered
                   ? [['tajweed', t('tajweed.sheetSection', 'Tajweed')] as const]
@@ -625,19 +756,27 @@ export function AyahActionSheet({
                   accessibilityState={{ selected: on }}
                   accessibilityLabel={label}
                   onPress={() => choosePanel(key)}
-                  style={[styles.panelTab, on && { backgroundColor: palette.accentBg }]}>
+                  style={[
+                    styles.panelTab,
+                    on && { backgroundColor: palette.accentBg },
+                  ]}
+                >
                   <Text
                     numberOfLines={1}
                     style={[
                       styles.panelTabLabel,
                       { color: on ? palette.accentSolid : palette.muted },
-                    ]}>
+                    ]}
+                  >
                     {label}
                   </Text>
                 </Pressable>
               );
             })}
           </View>
+          {panel === 'tajweed' ? (
+            <TextSizeStepper style={styles.sizeStepper} />
+          ) : null}
           {translationOpen ? (
             <View style={styles.tafsirBlock}>
               <View style={styles.tafsirChips}>
@@ -655,21 +794,30 @@ export function AyahActionSheet({
                       style={[
                         styles.tafsirChip,
                         {
-                          backgroundColor: sel ? palette.accentBg : 'transparent',
-                          borderColor: sel ? palette.accentSolid : palette.border,
+                          backgroundColor: sel
+                            ? palette.accentBg
+                            : 'transparent',
+                          borderColor: sel
+                            ? palette.accentSolid
+                            : palette.border,
                         },
-                      ]}>
+                      ]}
+                    >
                       <Text
                         style={[
                           styles.chipLabel,
-                          { color: sel ? palette.accentSolid : palette.muted },
-                        ]}>
+                          {
+                            color: sel ? palette.accentSolid : palette.muted,
+                          },
+                        ]}
+                      >
                         {ed.language}
                       </Text>
                     </Pressable>
                   );
                 })}
               </View>
+              <TextSizeStepper style={styles.sizeStepper} />
               {translation ? (
                 <>
                   <Text
@@ -680,7 +828,8 @@ export function AyahActionSheet({
                       styles.translation,
                       readingText.style(READING_BASE),
                       { color: palette.muted },
-                    ]}>
+                    ]}
+                  >
                     {translation}
                   </Text>
                   {translation.length > LONG_TRANSLATION
@@ -691,7 +840,10 @@ export function AyahActionSheet({
                 </>
               ) : (
                 <Text style={[styles.tafsirMeta, { color: palette.muted }]}>
-                  {t('quran.translationUnavailable', 'No translation for this ayah.')}
+                  {t(
+                    'quran.translationUnavailable',
+                    'No translation for this ayah.',
+                  )}
                 </Text>
               )}
             </View>
@@ -720,19 +872,25 @@ export function AyahActionSheet({
                               ? palette.accentSolid
                               : palette.border,
                           },
-                        ]}>
+                        ]}
+                      >
                         <Text
                           style={[
                             styles.chipLabel,
-                            { color: sel ? palette.accentSolid : palette.muted },
-                          ]}>
-                          {ed.label}
+                            ed.rtl && styles.chipLabelRtl,
+                            {
+                              color: sel ? palette.accentSolid : palette.muted,
+                            },
+                          ]}
+                        >
+                          {tafsirChipLabel(ed.label)}
                         </Text>
                       </Pressable>
                     );
                   })}
                 </View>
               ) : null}
+              <TextSizeStepper style={styles.sizeStepper} />
               {tafsirLoading ? (
                 <Text style={[styles.tafsirMeta, { color: palette.muted }]}>
                   {t('quran.loading', 'Loading…')}
@@ -748,7 +906,8 @@ export function AyahActionSheet({
                       readingText.style(READING_BASE),
                       { color: palette.text },
                       tafsirEdition.rtl && styles.tafsirRtl,
-                    ]}>
+                    ]}
+                  >
                     {tafsirText}
                   </Text>
                   <View style={styles.tafsirActions}>
@@ -772,13 +931,15 @@ export function AyahActionSheet({
                       style={({ pressed }) => [
                         styles.tafsirShare,
                         { opacity: pressed ? 0.6 : 1 },
-                      ]}>
+                      ]}
+                    >
                       <ShareIcon size={15} color={palette.accentSolid} />
                       <Text
                         style={[
                           styles.moreLink,
                           { color: palette.accentSolid },
-                        ]}>
+                        ]}
+                      >
                         {t('common.share', 'Share')}
                       </Text>
                     </Pressable>
@@ -792,6 +953,104 @@ export function AyahActionSheet({
                   )}
                 </Text>
               )}
+              {tafsirDownloading ? (
+                <Text style={[styles.tafsirMeta, { color: palette.muted }]}>
+                  {t('quran.tafsirDownloadStrip', {
+                    defaultValue: 'Downloading {{name}} · {{pct}}%',
+                    name: tafsirNameInSentence(tafsirEdition.label),
+                    pct: wordMeaningsPct,
+                  })}
+                </Text>
+              ) : tafsirWhole === false ? (
+                <Pressable
+                  accessibilityRole="button"
+                  hitSlop={6}
+                  onPress={() => {
+                    queueQuranDownload({
+                      kind: 'tafsir',
+                      editionId: tafsirEdition.id,
+                    });
+                  }}
+                  style={styles.wordMeaningsHeader}
+                >
+                  <Text
+                    style={[styles.moreLink, { color: palette.accentSolid }]}
+                  >
+                    {t('quran.tafsirGet', {
+                      defaultValue: 'Download {{name}} for offline · {{size}}',
+                      name: tafsirNameInSentence(tafsirEdition.label),
+                      size: tafsirSizeLabel(tafsirEdition.approxBytes),
+                    })}
+                  </Text>
+                </Pressable>
+              ) : null}
+              {wordMeaningsOffered && wordMeaningsDownloading ? (
+                <Text style={[styles.tafsirMeta, { color: palette.muted }]}>
+                  {t('quran.wordMeaningsStrip', {
+                    defaultValue: 'Downloading word meanings · {{pct}}%',
+                    pct: wordMeaningsPct,
+                  })}
+                </Text>
+              ) : wordMeaningsOffered && wordMeaningsHere === false ? (
+                <Pressable
+                  accessibilityRole="button"
+                  hitSlop={6}
+                  onPress={() => {
+                    queueQuranDownload({ kind: 'wordMeanings' });
+                  }}
+                  style={styles.wordMeaningsHeader}
+                >
+                  <Text
+                    style={[styles.moreLink, { color: palette.accentSolid }]}
+                  >
+                    {t(
+                      'quran.wordMeaningsGet',
+                      'Download Arabic word meanings',
+                    )}
+                  </Text>
+                </Pressable>
+              ) : null}
+              {wordMeaningsOffered && wordMeanings.length > 0 ? (
+                <View style={styles.wordMeanings}>
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityState={{ expanded: wordMeaningsOpen }}
+                    hitSlop={6}
+                    onPress={() => setWordMeaningsOpen(v => !v)}
+                    style={styles.wordMeaningsHeader}
+                  >
+                    <Text
+                      style={[styles.moreLink, { color: palette.accentSolid }]}
+                    >
+                      {t('quran.hardWords', 'Harder words (in Arabic)')}
+                      {wordMeaningsOpen ? '  ▴' : '  ▾'}
+                    </Text>
+                  </Pressable>
+                  {wordMeaningsOpen ? (
+                    <View>
+                      {wordMeanings.map((m, i) => (
+                        <Text
+                          key={`${i}-${m.word}`}
+                          style={[
+                            styles.tafsirText,
+                            readingText.style(READING_BASE),
+                            styles.tafsirRtl,
+                            { color: palette.text },
+                          ]}
+                        >
+                          {m.word ? (
+                            <Text style={styles.wordMeaningWord}>
+                              {m.word}
+                              {': '}
+                            </Text>
+                          ) : null}
+                          {m.meaning}
+                        </Text>
+                      ))}
+                    </View>
+                  ) : null}
+                </View>
+              ) : null}
             </View>
           ) : null}
 
@@ -800,6 +1059,19 @@ export function AyahActionSheet({
               no rules data and no coloured faces. */}
           {panel === 'tajweed' ? (
             <TajweedAyahSection surah={surah} ayah={ayah} onClose={onClose} />
+          ) : null}
+          {panel !== 'none' ? (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('quran.hidePanel', 'Hide')}
+              hitSlop={8}
+              onPress={() => setQuranPrefs({ ayahSheetPanel: 'none' })}
+              style={styles.hidePanel}
+            >
+              <Text style={[styles.moreLink, { color: palette.accentSolid }]}>
+                {t('quran.hidePanel', 'Hide')} ▴
+              </Text>
+            </Pressable>
           ) : null}
 
           {/* Bookmark colours — one bookmark per ayah and ONE PER COLOUR:
@@ -811,14 +1083,25 @@ export function AyahActionSheet({
               ayah is filled with a tick and ringed; a colour on another
               ayah is ringed and names that ayah underneath, so the move a
               tap makes is never a surprise. */}
-          <View style={[styles.bookmarkBlock, { borderColor: palette.border ?? palette.muted }]}>
+          <View
+            style={[
+              styles.bookmarkBlock,
+              { borderColor: palette.border ?? palette.muted },
+            ]}
+          >
             <View style={styles.bookmarkHead}>
               <Text style={[styles.bookmarkTitle, { color: palette.text }]}>
                 {t('quran.bookmark', 'Bookmark')}
               </Text>
-              <Text style={[styles.bookmarkStatus, { color: palette.muted }]} numberOfLines={1}>
+              <Text
+                style={[styles.bookmarkStatus, { color: palette.muted }]}
+                numberOfLines={1}
+              >
                 {bookmark
-                  ? t('quran.bookmarkTapToRemove', 'Tap its colour again to remove')
+                  ? t(
+                      'quran.bookmarkTapToRemove',
+                      'Tap its colour again to remove',
+                    )
                   : t('quran.bookmarkPick', 'Pick a colour')}
               </Text>
             </View>
@@ -839,7 +1122,9 @@ export function AyahActionSheet({
                             defaultValue:
                               'Bookmark color {{color}} — in use at {{ref}}; tapping moves that bookmark here',
                             color,
-                            ref: `${findSurah(elsewhere.surah)?.romanized ?? ''} ${elsewhere.surah}:${elsewhere.ayah}`,
+                            ref: `${
+                              findSurah(elsewhere.surah)?.romanized ?? ''
+                            } ${elsewhere.surah}:${elsewhere.ayah}`,
                           })
                         : t('quran.bookmarkColor', {
                             defaultValue: 'Bookmark color {{color}}',
@@ -851,24 +1136,37 @@ export function AyahActionSheet({
                       if (selected && bookmark) removeBookmark(bookmark.id);
                       else addBookmark(surah, ayah, page, color);
                     }}
-                    style={({ pressed }) => [styles.swatchSlot, pressed && styles.swatchPressed]}>
+                    style={({ pressed }) => [
+                      styles.swatchSlot,
+                      pressed && styles.swatchPressed,
+                    ]}
+                  >
                     <View style={styles.swatchBox}>
-                      {ringed ? <View style={[styles.swatchRing, { borderColor: tint }]} /> : null}
+                      {ringed ? (
+                        <View
+                          style={[styles.swatchRing, { borderColor: tint }]}
+                        />
+                      ) : null}
                       <View style={[styles.swatch, { backgroundColor: tint }]}>
-                        {selected ? <Text style={styles.swatchTick}>✓</Text> : null}
+                        {selected ? (
+                          <Text style={styles.swatchTick}>✓</Text>
+                        ) : null}
                       </View>
                     </View>
                     <Text
                       numberOfLines={1}
                       style={[
                         styles.swatchCaption,
-                        { color: selected ? palette.text : palette.muted },
-                      ]}>
+                        {
+                          color: selected ? palette.text : palette.muted,
+                        },
+                      ]}
+                    >
                       {selected
                         ? t('quran.bookmarkHere', 'Here')
                         : elsewhere
-                          ? `${elsewhere.surah}:${elsewhere.ayah}`
-                          : ' '}
+                        ? `${elsewhere.surah}:${elsewhere.ayah}`
+                        : ' '}
                     </Text>
                   </Pressable>
                 );
@@ -907,7 +1205,8 @@ export function AyahActionSheet({
               )}
               hitSlop={6}
               onPress={() => setBookmarkFollows(bookmark.id, !bookmark.follows)}
-              style={styles.followLine}>
+              style={styles.followLine}
+            >
               <View
                 style={[
                   styles.followBox,
@@ -917,7 +1216,8 @@ export function AyahActionSheet({
                       ? BOOKMARK_COLORS[bookmark.color]
                       : 'transparent',
                   },
-                ]}>
+                ]}
+              >
                 {bookmark.follows ? (
                   <Text style={styles.followTick}>✓</Text>
                 ) : null}
@@ -932,7 +1232,8 @@ export function AyahActionSheet({
                         ? palette.text
                         : palette.muted,
                   },
-                ]}>
+                ]}
+              >
                 {bookmark.follows
                   ? t('quran.followingOn', 'moves as you read')
                   : t('quran.followingOff', 'stays on this ayah')}
@@ -969,9 +1270,14 @@ export function AyahActionSheet({
             }}
             style={({ pressed }) => [
               styles.pinButton,
-              { backgroundColor: `${READING_COLOR}${isReadingHere ? '33' : '1F'}` },
+              {
+                backgroundColor: `${READING_COLOR}${
+                  isReadingHere ? '33' : '1F'
+                }`,
+              },
               pressed && styles.pinPressed,
-            ]}>
+            ]}
+          >
             <PinFace
               color={READING_COLOR}
               textColor={palette.text}
@@ -993,7 +1299,8 @@ export function AyahActionSheet({
               decides that, from what was read. Already pinned here stays
               offered whatever the window says, so a pin can always be
               taken back off. */}
-          {plan && (isKhatmahHere || khatmahPageInWindow(plan, page, riwayah)) ? (
+          {plan &&
+          (isKhatmahHere || khatmahPageInWindow(plan, page, riwayah)) ? (
             <Pressable
               accessibilityRole="button"
               accessibilityState={{ selected: isKhatmahHere }}
@@ -1008,19 +1315,31 @@ export function AyahActionSheet({
               }}
               style={({ pressed }) => [
                 styles.pinButton,
-                { backgroundColor: `${KHATMAH_COLOR}${isKhatmahHere ? '33' : '1F'}` },
+                {
+                  backgroundColor: `${KHATMAH_COLOR}${
+                    isKhatmahHere ? '33' : '1F'
+                  }`,
+                },
                 pressed && styles.pinPressed,
-              ]}>
+              ]}
+            >
               <PinFace
                 color={KHATMAH_COLOR}
                 textColor={palette.text}
                 active={isKhatmahHere}
                 label={
                   isKhatmahHere
-                    ? t('quran.khatmahPinnedHere', 'Your khatmah is at this ayah')
+                    ? t(
+                        'quran.khatmahPinnedHere',
+                        'Your khatmah is at this ayah',
+                      )
                     : t('quran.khatmahPin', 'Set as my khatmah position')
                 }
-                action={isKhatmahHere ? t('quran.pinRemove', 'Remove') : t('quran.pinSet', 'Set')}
+                action={
+                  isKhatmahHere
+                    ? t('quran.pinRemove', 'Remove')
+                    : t('quran.pinSet', 'Set')
+                }
               />
             </Pressable>
           ) : null}
@@ -1032,7 +1351,8 @@ export function AyahActionSheet({
           <View
             onLayout={e => {
               audioSectionY.current = e.nativeEvent.layout.y;
-            }}>
+            }}
+          >
             <SectionHead label={t('quran.playSection', 'Play')} tight />
             <View style={styles.actionsRow}>
               <RowAction
@@ -1057,10 +1377,7 @@ export function AyahActionSheet({
                 }}
               />
             </View>
-            <RecitationControls
-              surahNumber={surah}
-              onStartPlayback={onClose}
-            />
+            <RecitationControls surahNumber={surah} onStartPlayback={onClose} />
           </View>
         </ScrollView>
       </View>
@@ -1083,7 +1400,8 @@ export function AyahActionSheet({
             id: 'tafsir',
             title: t('quran.shareWithTafsir', 'Share with the tafsir'),
             subtitle: t('quran.shareWithTafsirHelp', {
-              defaultValue: 'The ayah and {{edition}}, instead of the translation',
+              defaultValue:
+                'The ayah and {{edition}}, instead of the translation',
               edition: tafsirEdition.label,
             }),
             onPress: () => void shareWithTafsir(),
@@ -1107,6 +1425,8 @@ export function AyahActionSheet({
     </Modal>
   );
 }
+
+const HEADER_ICON = 24;
 
 const styles = StyleSheet.create({
   backdrop: {
@@ -1134,8 +1454,23 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  headerActions: { flexDirection: 'row', alignItems: 'center', gap: SPACING.lg },
-  reference: { fontSize: TYPE.footnote.fontSize, fontWeight: '700', letterSpacing: 0.3 },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.md,
+  },
+  // Same box for all three, so the glyphs share a size and a centre line.
+  headerBtn: {
+    width: 32,
+    height: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  reference: {
+    fontSize: TYPE.footnote.fontSize,
+    fontWeight: '700',
+    letterSpacing: 0.3,
+  },
   body: { flexGrow: 0 },
   arabic: {
     fontSize: TYPE.title2.fontSize,
@@ -1147,7 +1482,11 @@ const styles = StyleSheet.create({
   // The page-font āyah lays itself out in lines; this is the same air the
   // text version had around it.
   arabicGlyphs: { paddingVertical: SPACING.xs },
-  translation: { fontSize: TYPE.callout.fontSize, lineHeight: 22, marginTop: SPACING.md },
+  translation: {
+    fontSize: TYPE.callout.fontSize,
+    lineHeight: 22,
+    marginTop: SPACING.md,
+  },
   // Translation · Tafsir · Tajwīd: one row of tabs, none open to begin with.
   panelTabs: {
     flexDirection: 'row',
@@ -1182,14 +1521,38 @@ const styles = StyleSheet.create({
      */
     flexShrink: 0,
   },
-  chipLabel: { fontSize: TYPE.label.fontSize, fontWeight: '600', flexShrink: 0 },
+  chipLabel: {
+    fontSize: TYPE.label.fontSize,
+    fontWeight: '600',
+    flexShrink: 0,
+  },
+  /**
+   * An Arabic-script edition name is drawn with its own face, not the
+   * Latin one, and at weight 600 Android drew only the first word of it
+   * ("التفسير الميسر" → "التفسير") inside a chip that had been sized for the
+   * whole name — flexShrink: 0 on the chip does not help, the chip is the
+   * right width; the text inside is what is cut. Plain weight, centred, and
+   * a stated direction, so the measured box and the drawn text agree.
+   */
+  chipLabelRtl: {
+    fontWeight: '400',
+    textAlign: 'center',
+    writingDirection: 'rtl',
+  },
   tafsirMeta: { fontSize: TYPE.footnote.fontSize, fontStyle: 'italic' },
+  wordMeanings: { marginTop: SPACING.sm, gap: SPACING.xs },
+  wordMeaningsHeader: { alignSelf: 'flex-start' },
+  wordMeaningWord: { fontWeight: '700' },
   tafsirText: { fontSize: TYPE.callout.fontSize, lineHeight: 22 },
   // The more/less link keeps the leading edge; the share control is
   // pushed to the trailing one with `marginStart: 'auto'` on the control
   // itself, so it sits correctly whether or not the toggle is drawn —
   // and on the right edge in English, the left in Arabic.
-  tafsirActions: { flexDirection: 'row', alignItems: 'center', gap: SPACING.md },
+  tafsirActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.md,
+  },
   tafsirShare: {
     marginStart: 'auto',
     flexDirection: 'row',
@@ -1197,7 +1560,13 @@ const styles = StyleSheet.create({
     gap: SPACING.xs,
   },
   tafsirRtl: { textAlign: 'right', writingDirection: 'rtl' },
-  moreLink: { fontSize: TYPE.label.fontSize, fontWeight: '700', marginTop: SPACING.xs },
+  sizeStepper: { alignSelf: 'flex-end', marginTop: SPACING.sm },
+  hidePanel: { alignSelf: 'center', paddingVertical: SPACING.xs },
+  moreLink: {
+    fontSize: TYPE.label.fontSize,
+    fontWeight: '700',
+    marginTop: SPACING.xs,
+  },
   bookmarkBlock: {
     marginTop: SPACING.md,
     borderWidth: 1,
@@ -1217,7 +1586,12 @@ const styles = StyleSheet.create({
   swatchRow: { flexDirection: 'row', justifyContent: 'space-between' },
   swatchSlot: { alignItems: 'center', gap: 2, minWidth: 48 },
   swatchPressed: { opacity: 0.6 },
-  swatchBox: { width: 34, height: 34, alignItems: 'center', justifyContent: 'center' },
+  swatchBox: {
+    width: 34,
+    height: 34,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   // The ring around a colour that is taken: a gap, then the colour's own line.
   swatchRing: {
     position: 'absolute',

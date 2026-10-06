@@ -17,6 +17,7 @@ import { useAppPalette } from '../../hooks/useAppPalette';
 import type { RootStackParamList } from '../../navigation/types';
 import { TYPE, arabicTextStyle } from '../../theme/typography';
 import { SPACING } from '../../theme/tokens';
+import { useReadingText } from '../../hooks/useReadingText';
 import { hold, release } from '../audio/wordReader';
 import { setQuranPrefs, useQuranState } from '../quranState';
 import { riwayahById, riwayahFontFamily } from '../riwayat';
@@ -54,6 +55,7 @@ export function TajweedAyahSection({
 }) {
   const { t } = useTranslation();
   const { palette } = useAppPalette();
+  const readingText = useReadingText();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { prefs } = useQuranState();
   const open = true;
@@ -125,7 +127,7 @@ export function TajweedAyahSection({
                     <View key={rule.id} style={styles.rule}>
                       <View style={styles.ruleHead}>
                         <TajweedSwatch rule={rule} />
-                        <Text style={[styles.ruleName, { color: palette.text }]}>
+                        <Text style={[styles.ruleName, readingText.style({ fontSize: TYPE.callout.fontSize }), { color: palette.text }]}>
                           {t(`tajweed.rule.${rule.id}.name`)}
                           {rule.counts ? (
                             <Text style={{ color: palette.muted, fontWeight: '400' }}>
@@ -134,7 +136,7 @@ export function TajweedAyahSection({
                           ) : null}
                         </Text>
                       </View>
-                      <Text style={[styles.ruleHelp, { color: palette.muted }]}>
+                      <Text style={[styles.ruleHelp, readingText.style({ fontSize: TYPE.footnote.fontSize, lineHeight: 18 }), { color: palette.muted }]}>
                         {t(`tajweed.rule.${rule.id}.help`)}
                       </Text>
                       <View style={styles.chips}>
@@ -220,6 +222,7 @@ function WarshTajweedBody({
 }) {
   const { t } = useTranslation();
   const { palette, isDark } = useAppPalette();
+  const readingText = useReadingText();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [words, setWords] = useState<WarshTajweedWord[] | null | undefined>(undefined);
   const fontFamily = riwayahFontFamily(riwayahById('warsh'));
@@ -282,7 +285,7 @@ function WarshTajweedBody({
               <View key={rule.id} style={styles.rule}>
                 <View style={styles.ruleHead}>
                   <TajweedSwatch rule={rule} />
-                  <Text style={[styles.ruleName, { color: palette.text }]}>
+                  <Text style={[styles.ruleName, readingText.style({ fontSize: TYPE.callout.fontSize }), { color: palette.text }]}>
                     {t(`tajweed.rule.${rule.id}.name`)}
                     {rule.counts ? (
                       <Text style={{ color: palette.muted, fontWeight: '400' }}>
@@ -291,7 +294,7 @@ function WarshTajweedBody({
                     ) : null}
                   </Text>
                 </View>
-                <Text style={[styles.ruleHelp, { color: palette.muted }]}>
+                <Text style={[styles.ruleHelp, readingText.style({ fontSize: TYPE.footnote.fontSize, lineHeight: 18 }), { color: palette.muted }]}>
                   {t(`tajweed.rule.${rule.id}.help`)}
                 </Text>
                 <View style={styles.chips}>

@@ -1,7 +1,7 @@
 /**
  * How this prayer announces itself — the control, on the row.
  *
- * A speaker for the adhan, a bell for the plain alert, a struck bell for
+ * A mosque for the adhan, a bell for the plain alert, a struck bell for
  * silence. One tap cycles; the label under it names the state, because a
  * glyph alone asks the reader to remember which of three it is looking
  * at and this is a control people will set once and then rely on.
@@ -19,30 +19,40 @@ import {
   type ColorValue,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import Svg, { Path, Line } from 'react-native-svg';
+import Svg, { Circle, Path, Line } from 'react-native-svg';
 import type { AppPalette } from '../../theme/appPalette';
 import type { PrayerAlertMode } from '../../settings/alertModes';
 
 const SIZE = 20;
 
-/** A speaker with two waves — the call going out. */
+/**
+ * A mosque — a dome between two minarets. It was a speaker, which sat one
+ * glance from the bell beside it (both are "a thing that makes a sound") and
+ * made the adhan and the plain alert easy to mix up. A building is nothing
+ * like a bell, and it is where the call comes from.
+ */
 function AdhanGlyph({ color }: { color: ColorValue }) {
   return (
     <Svg width={SIZE} height={SIZE} viewBox="0 0 24 24">
+      {/* The two minarets: a cap on a shaft. */}
+      <Path d="M3.1 8L4.6 4.3L6.1 8z" fill={color} />
+      <Path d="M3.6 8h2v12.5h-2z" fill={color} />
+      <Path d="M17.9 8L19.4 4.3L20.9 8z" fill={color} />
+      <Path d="M18.4 8h2v12.5h-2z" fill={color} />
+      {/* The dome and its finial. */}
       <Path
-        d="M4 9v6h4l5 4V5L8 9H4z"
+        d="M7.5 15C7.5 11.5 9.5 9.5 12 8C14.5 9.5 16.5 11.5 16.5 15z"
         fill={color}
-        stroke={color}
-        strokeWidth={1.5}
-        strokeLinejoin="round"
       />
+      <Circle cx={12} cy={6.2} r={1} fill={color} />
+      {/* The hall, with its doorway cut out. */}
       <Path
-        d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"
-        stroke={color}
-        strokeWidth={1.8}
-        strokeLinecap="round"
-        fill="none"
+        d="M5.6 15h12.8v5.5H5.6z M10.8 20.5v-2.6a1.2 1.2 0 0 1 2.4 0v2.6z"
+        fill={color}
+        fillRule="evenodd"
       />
+      {/* The ground. */}
+      <Path d="M2.5 20.5h19v1.5h-19z" fill={color} />
     </Svg>
   );
 }
@@ -140,7 +150,7 @@ function AlertModeButtonImpl({
       {/* The glyph alone. The word under it ("Silent", "Adhan") was a
           second line on every row of a list that has to fit the screen,
           and the glyph already says it — a struck bell is silence, the
-          bell is an alert, the minaret is the adhan. The word stays in
+          bell is an alert, the mosque is the adhan. The word stays in
           the accessibility label, where it is read rather than looked at. */}
       <View style={styles.glyph}>
         {mode === 'adhan' ? (

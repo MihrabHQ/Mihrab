@@ -108,6 +108,13 @@ export function AttributionsSettingsScreen() {
       url: 'https://github.com/spa5k/tafsir_api',
     },
     {
+      label: t('attributions.wordMeanings', {
+        defaultValue: 'Arabic meanings of harder words',
+      }),
+      sub: 'Encyclopedia of the Noble Quran · QuranEnc.com',
+      url: 'https://quranenc.com/ar/browse/arabic_seraj',
+    },
+    {
       label: t('attributions.sahihIntl', {
         defaultValue: 'Sahih International (English)',
       }),
