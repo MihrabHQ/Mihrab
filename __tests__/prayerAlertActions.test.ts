@@ -48,11 +48,12 @@ describe('the snooze chips', () => {
       'Snooze 10 min',
       'Snooze 15 min',
       'Snooze 30 min',
+      'Snooze 1 hour',
     ]);
   });
 
-  it('offers the four presets, in order', () => {
-    expect([...SNOOZE_PRESETS]).toEqual([5, 10, 15, 30]);
+  it('offers the presets, up to an hour, in order', () => {
+    expect([...SNOOZE_PRESETS]).toEqual([5, 10, 15, 30, 60]);
   });
 
   it('takes effect on the first tap — no free-form field to send from', () => {

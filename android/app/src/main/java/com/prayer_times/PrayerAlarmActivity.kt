@@ -72,6 +72,13 @@ class PrayerAlarmActivity : Activity() {
 
   private val giveUp = Runnable { finish() }
 
+  /**
+   * Re-decides which snoozes are still offered, set by `buildView` when the
+   * alert knows when its prayer ends. The screen can sit there for minutes,
+   * and an option that fitted when it rang may not now.
+   */
+  private var refreshSnooze: (() -> Unit)? = null
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     showOverLockScreen()
@@ -125,6 +132,14 @@ class PrayerAlarmActivity : Activity() {
     // notification is posted, and the two can land in either order.
     handler.postDelayed(watchNotification, FIRST_WATCH_MS)
     handler.postDelayed(giveUp, MAX_ON_SCREEN_MS)
+    refreshSnooze?.let { refresh ->
+      handler.post(object : Runnable {
+        override fun run() {
+          refresh()
+          handler.postDelayed(this, SNOOZE_REFRESH_MS)
+        }
+      })
+    }
   }
 
   private fun isNotificationPosted(): Boolean {
@@ -280,6 +295,12 @@ class PrayerAlarmActivity : Activity() {
       button(stopLabel, filled = true) { stop() },
       LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(64)),
     )
+    refreshSnooze = null
+    val deadline = data.getString("fsDeadline")?.toLongOrNull()
+    if (deadline != null) {
+      buildDynamicSnooze(column, notification, data, deadline, logLabel)
+      return root
+    }
     val secondary = listOfNotNull(
       snoozeLabel?.let { label -> label to { dispatch("snooze", notification, data, snoozeMinutes) } },
       logLabel?.let { label -> label to { dispatch("log", notification, data) } },
@@ -302,14 +323,19 @@ class PrayerAlarmActivity : Activity() {
     }
 
     // Smaller chips for another wait than the default.
-    val alts = runCatching {
-      val arr = org.json.JSONArray(data.getString("fsSnoozeAlt").orEmpty())
-      (0 until arr.length()).map { arr.getJSONObject(it).let { o -> o.getInt("m") to o.getString("l") } }
-    }.getOrDefault(emptyList()).ifEmpty {
+    val altsRaw = data.getString("fsSnoozeAlt")
+    val alts = if (altsRaw != null) {
+      // Present means decided: an EMPTY list is how the scheduler says that
+      // no other length fits before the prayer ends, and must stay empty.
+      runCatching {
+        val arr = org.json.JSONArray(altsRaw)
+        (0 until arr.length()).map { arr.getJSONObject(it).let { o -> o.getInt("m") to o.getString("l") } }
+      }.getOrDefault(emptyList())
+    } else {
       // An alert scheduled by an older build carries no chips: derive them
       // from its own "Snooze 10 min" label so it still shows them.
       if (snoozeLabel == null) emptyList()
-      else listOf(5, 15, 30).map { m ->
+      else listOf(5, 15, 30, 60).map { m ->
         m to snoozeLabel.replace(snoozeMinutes.toString(), m.toString())
       }
     }
@@ -330,6 +356,99 @@ class PrayerAlarmActivity : Activity() {
       )
     }
     return root
+  }
+
+  private fun parseOpts(raw: String?): List<Pair<Int, String>> =
+    runCatching {
+      val arr = org.json.JSONArray(raw.orEmpty())
+      (0 until arr.length()).map { arr.getJSONObject(it).let { o -> o.getInt("m") to o.getString("l") } }
+    }.getOrDefault(emptyList())
+
+  /**
+   * The snooze controls of an alert that knows when its prayer ends.
+   *
+   * Mirrors `snoozeWindow.ts`: a length is offered only if it leaves at least
+   * 15 minutes before the end; when not even 5 does, the big button becomes
+   * "Last chance to pray …"; inside the last minutes there is none. Unlike the
+   * static layout it keeps deciding — `refreshSnooze` runs every few seconds —
+   * so a screen left lying there loses its options as the clock moves.
+   */
+  private fun buildDynamicSnooze(
+    column: LinearLayout,
+    notification: Bundle,
+    data: Bundle,
+    deadline: Long,
+    logLabel: String?,
+  ) {
+    val mainOpts = parseOpts(data.getString("fsMainOpts"))
+    val chipOpts = parseOpts(data.getString("fsChipOpts"))
+    val lastLabel = data.getString("fsLastChance").orEmpty()
+    // What the big button sends if pressed now; read at the press, not captured.
+    var currentMinutes = mainOpts.firstOrNull()?.first ?: 10
+
+    val snoozeBtn = button(mainOpts.firstOrNull()?.second.orEmpty(), filled = false) {
+      dispatch("snooze", notification, data, currentMinutes)
+    }
+    val row = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
+    row.addView(snoozeBtn, LinearLayout.LayoutParams(0, dp(56), 1f))
+    logLabel?.let { label ->
+      row.addView(
+        button(label, filled = false) { dispatch("log", notification, data) },
+        LinearLayout.LayoutParams(0, dp(56), 1f).apply { marginStart = dp(12) },
+      )
+    }
+    column.addView(
+      row,
+      LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        .apply { topMargin = dp(12) },
+    )
+
+    val chipsRow = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
+    val chipViews = chipOpts.map { (minutes, label) ->
+      minutes to button(label, filled = false, small = true) {
+        dispatch("snooze", notification, data, minutes)
+      }.also { chipsRow.addView(it, LinearLayout.LayoutParams(0, dp(40), 1f)) }
+    }
+    column.addView(
+      chipsRow,
+      LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        .apply { topMargin = dp(10) },
+    )
+
+    refreshSnooze = {
+      val now = System.currentTimeMillis()
+      fun fits(m: Int) = now + m * 60_000L <= deadline - SNOOZE_KEEP_MS
+      val main = mainOpts.firstOrNull { fits(it.first) }
+      // The same fallbacks as the scheduler: 15 minutes before the end, else 5,
+      // and only if that is still at least a minute away.
+      val lastChanceOk = listOf(15, 5).any { deadline - it * 60_000L >= now + 60_000L }
+      when {
+        main != null -> {
+          currentMinutes = main.first
+          snoozeBtn.text = main.second
+          snoozeBtn.contentDescription = main.second
+          snoozeBtn.visibility = View.VISIBLE
+        }
+        lastChanceOk && lastLabel.isNotEmpty() -> {
+          currentMinutes = LAST_CHANCE_MINUTES
+          snoozeBtn.text = lastLabel
+          snoozeBtn.contentDescription = lastLabel
+          snoozeBtn.visibility = View.VISIBLE
+        }
+        else -> snoozeBtn.visibility = View.GONE
+      }
+      var first = true
+      for ((minutes, view) in chipViews) {
+        val show = main != null && minutes != main.first && fits(minutes)
+        view.visibility = if (show) View.VISIBLE else View.GONE
+        if (show) {
+          (view.layoutParams as LinearLayout.LayoutParams).marginStart = if (first) 0 else dp(8)
+          first = false
+        }
+      }
+      chipsRow.visibility = if (first) View.GONE else View.VISIBLE
+    }
+    refreshSnooze?.invoke()
   }
 
   private fun text(value: String, sp: Float, color: Int, bold: Boolean) = TextView(this).apply {
@@ -388,6 +507,10 @@ class PrayerAlarmActivity : Activity() {
 
     private const val FIRST_WATCH_MS = 3_000L
     private const val WATCH_INTERVAL_MS = 2_000L
+    private const val SNOOZE_REFRESH_MS = 15_000L
+    /** What a snooze must leave before the prayer ends (see snoozeWindow.ts). */
+    private const val SNOOZE_KEEP_MS = 15 * 60_000L
+    private const val LAST_CHANCE_MINUTES = -1
     /** An unanswered alarm screen goes away; the notification stays in the shade. */
     private const val MAX_ON_SCREEN_MS = 10 * 60_000L
   }

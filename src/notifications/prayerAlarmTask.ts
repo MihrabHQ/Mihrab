@@ -11,6 +11,7 @@
 import { EventType, type Notification } from '@notifee/react-native';
 import { snoozePrayerNotification } from './notificationActions';
 import { SNOOZE_DEFAULT_MIN, SNOOZE_MAX_MIN } from './prayerAlertActions';
+import { LAST_CHANCE_MINUTES } from './snoozeWindow';
 import { JOURNAL_LOG_ACTION_ID, handlePrayerLogEvent } from './prayerLogAction';
 
 export type PrayerAlarmTaskData = {
@@ -43,6 +44,12 @@ export async function prayerAlarmActionTask(
     const notification = notificationFromTask(raw);
     if (raw.action === 'snooze') {
       const asked = Number(raw.minutes);
+      if (asked === LAST_CHANCE_MINUTES) {
+        await snoozePrayerNotification(notification, SNOOZE_DEFAULT_MIN, {
+          lastChance: true,
+        });
+        return;
+      }
       const minutes =
         Number.isFinite(asked) && asked > 0
           ? Math.min(asked, SNOOZE_MAX_MIN)

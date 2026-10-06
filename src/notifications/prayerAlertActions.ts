@@ -39,9 +39,10 @@ import {
   JOURNAL_LOG_SUNNAH_ACTION_ID,
 } from './prayerLogAction';
 import { ADHAN_ACTION_SNOOZE } from './adhanActionIds';
+import { hasSnooze, type SnoozeMenu } from './snoozeWindow';
 
 /** Quick-choice minute presets offered on the snooze action. */
-export const SNOOZE_PRESETS = [5, 10, 15, 30] as const;
+export const SNOOZE_PRESETS = [5, 10, 15, 30, 60] as const;
 /** Used when a snooze arrives with nothing legible in it. */
 export const SNOOZE_DEFAULT_MIN = 10;
 /** Hard clamp so a fat-fingered "9999" can't schedule days out. */
@@ -49,15 +50,45 @@ export const SNOOZE_MAX_MIN = 180;
 
 /** The label on one snooze chip, in the active language. */
 export function snoozeChoiceLabel(minutes: number): string {
+  // An hour reads as an hour, not "60 min".
+  if (minutes === 60) {
+    return i18n.t('alertCopy.snoozeChoiceHour', {
+      defaultValue: 'Snooze 1 hour',
+    });
+  }
   return i18n.t('alertCopy.snoozeChoice', {
     defaultValue: 'Snooze {{minutes}} min',
     minutes,
   });
 }
 
-/** All four chips, in order. */
+/** All the chips, in order. */
 export function snoozeChoices(): string[] {
   return SNOOZE_PRESETS.map(snoozeChoiceLabel);
+}
+
+/** "Last chance to pray Dhuhr" — what the last snooze button says once no
+ *  snooze length fits before the prayer ends (see `snoozeWindow`). */
+export function lastChanceLabel(prayer: string): string {
+  return i18n.t('alertCopy.lastChanceChoice', {
+    defaultValue: 'Last chance to pray {{prayer}}',
+    prayer: i18n.t(`prayer.${prayer}`, { defaultValue: prayer }),
+  });
+}
+
+/** The chips for a menu: the lengths that fit, or the one last-chance button. */
+export function snoozeChoicesFor(menu: SnoozeMenu, prayer: string): string[] {
+  if (menu.minutes.length > 0) return menu.minutes.map(snoozeChoiceLabel);
+  return menu.lastChanceAt != null ? [lastChanceLabel(prayer)] : [];
+}
+
+/** Was this press the last-chance button? Matched on the label we drew. */
+export function isLastChanceChoice(input: unknown, prayer: string): boolean {
+  return (
+    typeof input === 'string' &&
+    prayer !== '' &&
+    input.trim() === lastChanceLabel(prayer)
+  );
 }
 
 /**
@@ -123,7 +154,7 @@ export type PrayerAlertAction = {
  *
  * Three slots, and Android shows no more than three:
  *
- *   Snooze          — the four chips, straight through
+ *   Snooze          — the chips (5 min to an hour), straight through
  *   Log prayer      — the fard, on time
  *   Log with sunnah — the fard AND that prayer's sunnah
  *
@@ -141,35 +172,52 @@ export function prayerAlertActions(
    * default, which is the same N).
    */
   fixedSnoozeMinutes?: number,
+  /**
+   * How much of the prayer is left, as `snoozeWindow.snoozeMenu` worked it
+   * out for the moment this alert appears. Absent means no known deadline:
+   * the whole menu, as before.
+   */
+  menu?: SnoozeMenu,
 ): PrayerAlertAction[] {
-  const actions: PrayerAlertAction[] = [
-    {
+  // The fixed single button needs ITS length to still fit; otherwise it is
+  // dropped for the chips, which say what is actually possible.
+  const fixed =
+    fixedSnoozeMinutes != null &&
+    (menu == null || menu.minutes.includes(fixedSnoozeMinutes))
+      ? fixedSnoozeMinutes
+      : undefined;
+  const choices = menu ? snoozeChoicesFor(menu, prayer) : snoozeChoices();
+  const actions: PrayerAlertAction[] = [];
+  if (menu == null || hasSnooze(menu)) {
+    actions.push({
       title:
-        fixedSnoozeMinutes != null
+        fixed != null
           ? i18n.t('alertCopy.snoozeChoice', {
               defaultValue: 'Snooze {{minutes}} min',
-              minutes: fixedSnoozeMinutes,
+              minutes: fixed,
             })
           : i18n.t('alertCopy.snoozeAction', 'Snooze'),
       pressAction: { id: ADHAN_ACTION_SNOOZE },
       input:
-        fixedSnoozeMinutes != null
+        fixed != null
           ? undefined
           : {
               // Both false: a chip tap must snooze, not open a keyboard, and
               // the watch must not be allowed to invent its own replies.
               allowFreeFormInput: false,
               allowGeneratedReplies: false,
-              choices: snoozeChoices(),
+              choices,
             },
-    },
+    });
+  }
+  actions.push(
     {
       title: i18n.t('journal.logActionTitle', 'Log prayer'),
       // The prayer travels in the id so the handler can route without the
       // payload, which a relay is free to drop.
       pressAction: { id: `${JOURNAL_LOG_ACTION_ID}:${prayer}` },
     },
-  ];
+  );
   if ((SUNNAH_UNITS[prayer as JournalPrayer] ?? 0) > 0) {
     actions.push({
       title: i18n.t('journal.logSunnahActionTitle', 'Log with sunnah'),

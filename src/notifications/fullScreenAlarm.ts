@@ -19,6 +19,7 @@
  */
 import { AndroidCategory } from '@notifee/react-native';
 import i18n from '../i18n';
+import { LAST_CHANCE_MINUTES, hasSnooze, type SnoozeMenu } from './snoozeWindow';
 import { skyFrame, skyInkAt, type SkyPassage } from '../screens/home/skyModel';
 
 /** The native activity Notifee launches; resolved by class name. */
@@ -31,7 +32,20 @@ export const PRAYER_ALARM_COMPONENT = 'mihrab-prayer-alarm';
 export const FULL_SCREEN_SNOOZE_MIN = 10;
 
 /** The smaller Snooze chips under it, for a shorter or longer wait. */
-export const FULL_SCREEN_SNOOZE_ALT_MIN = [5, 15, 30];
+export const FULL_SCREEN_SNOOZE_ALT_MIN = [5, 15, 30, 60];
+
+/**
+ * A chip's label. Shorter than the button above it ("Snooze 10 min"): the
+ * row holds four, and the word is already on the button.
+ */
+export function snoozeChipLabel(minutes: number): string {
+  return minutes === 60
+    ? i18n.t('alertCopy.snoozeChipHour', { defaultValue: '1 hour' })
+    : i18n.t('alertCopy.snoozeChipMinutes', {
+        defaultValue: '{{minutes}} min',
+        minutes,
+      });
+}
 
 /** Marks an alert as full-screen in its data, so a snooze can carry it on. */
 export const FULL_SCREEN_DATA_FLAG = 'fullScreen';
@@ -76,26 +90,82 @@ export function fullScreenAlarmData(
   prayer: string,
   /** "Next: Isha at 20:18", the same line the notification's card carries. */
   nextLine = '',
+  /**
+   * How much of the prayer is left (`snoozeWindow.snoozeMenu`, worked out for
+   * the moment the alarm rings). Absent: the whole menu, as before.
+   */
+  menu?: SnoozeMenu,
+  /**
+   * When this prayer ends. With it the alarm screen keeps its own clock: it
+   * re-checks every few seconds which snoozes still leave 15 minutes and
+   * withdraws the ones that no longer do while it sits on the screen. The
+   * keys above are what it draws FIRST; these are what it re-decides with.
+   */
+  deadlineMs?: number | null,
 ): Record<string, string> {
   const lang = (i18n.language || 'en').split('-')[0];
+  // The big button is ten minutes while ten minutes fit; then five; then,
+  // with nothing left to snooze, "Last chance to pray" — and inside the final
+  // minutes no button at all (the native screen draws none without a label).
+  const main: number | null =
+    menu == null || menu.minutes.includes(FULL_SCREEN_SNOOZE_MIN)
+      ? FULL_SCREEN_SNOOZE_MIN
+      : menu.minutes.length > 0
+        ? menu.minutes[0]
+        : menu.lastChanceAt != null
+          ? LAST_CHANCE_MINUTES
+          : null;
+  const mainLabel =
+    main === LAST_CHANCE_MINUTES
+      ? i18n.t('alertCopy.lastChanceChoice', {
+          defaultValue: 'Last chance to pray {{prayer}}',
+          prayer: i18n.t(`prayer.${prayer}`, { defaultValue: prayer }),
+        })
+      : main != null
+        ? i18n.t('alertCopy.snoozeChoice', {
+            defaultValue: 'Snooze {{minutes}} min',
+            minutes: main,
+          })
+        : '';
+  const alts = FULL_SCREEN_SNOOZE_ALT_MIN.filter(
+    m => m !== main && (menu == null || menu.minutes.includes(m)),
+  );
   const out: Record<string, string> = {
     [FULL_SCREEN_DATA_FLAG]: '1',
     fsStop: i18n.t('common.stop', { defaultValue: 'Stop' }),
-    fsSnooze: i18n.t('alertCopy.snoozeChoice', {
-      defaultValue: 'Snooze {{minutes}} min',
-      minutes: FULL_SCREEN_SNOOZE_MIN,
-    }),
-    fsSnoozeMinutes: String(FULL_SCREEN_SNOOZE_MIN),
-    // [{m: minutes, l: label}] — the native screen draws one chip each.
-    fsSnoozeAlt: JSON.stringify(
-      FULL_SCREEN_SNOOZE_ALT_MIN.map(m => ({
-        m,
-        l: i18n.t('alertCopy.snoozeChoice', {
-          defaultValue: 'Snooze {{minutes}} min',
-          minutes: m,
-        }),
-      })),
-    ),
+    ...(main != null && (menu == null || hasSnooze(menu))
+      ? {
+          fsSnooze: mainLabel,
+          fsSnoozeMinutes: String(main),
+          // [{m: minutes, l: label}] — the native screen draws one chip each.
+          fsSnoozeAlt: JSON.stringify(
+            alts.map(m => ({ m, l: snoozeChipLabel(m) })),
+          ),
+        }
+      : {}),
+    ...(deadlineMs != null && Number.isFinite(deadlineMs)
+      ? {
+          fsDeadline: String(deadlineMs),
+          // Every length the screen may ever show, longest-last, with the
+          // label it prints — the native side picks among them by the clock.
+          fsMainOpts: JSON.stringify(
+            [FULL_SCREEN_SNOOZE_MIN, 5].map(m => ({
+              m,
+              l: i18n.t('alertCopy.snoozeChoice', {
+                defaultValue: 'Snooze {{minutes}} min',
+                minutes: m,
+              }),
+            })),
+          ),
+          fsChipOpts: JSON.stringify(
+            FULL_SCREEN_SNOOZE_ALT_MIN.map(m => ({ m, l: snoozeChipLabel(m) })),
+          ),
+          fsLastChance: i18n.t('alertCopy.lastChanceChoice', {
+            defaultValue: 'Last chance to pray {{prayer}}',
+            prayer: i18n.t(`prayer.${prayer}`, { defaultValue: prayer }),
+          }),
+        }
+      : {}),
     fsRtl: RTL_LANGUAGES.includes(lang) ? '1' : '0',
     ...fullScreenAlarmSky(prayer),
   };

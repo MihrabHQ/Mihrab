@@ -35,7 +35,8 @@ import {
   syncCustomAdhan,
 } from '../native/CustomAdhan';
 import { ADHAN_CONTROLS_CATEGORY_ID } from './adhanActionIds';
-import { prayerAlertActions } from './prayerAlertActions';
+import { SNOOZE_PRESETS, prayerAlertActions } from './prayerAlertActions';
+import { prayerEndsAt, snoozeMenu, windowEdges } from './snoozeWindow';
 import { JOURNAL_LOG_ACTION_ID } from './prayerLogAction';
 import { AdhanPlayer } from '../native/AdhanPlayer';
 import { getNextAlertOverride, overrideAppliesTo } from './adhanMute';
@@ -511,6 +512,13 @@ export async function syncPrayerNotifications(params: {
    *  tomorrow extend alert coverage so alerts keep firing when the app isn't
    *  opened for a couple of days (v2.7.40) — capped internally. */
   week?: TimingsMap[];
+  /**
+   * The same days WITHOUT the display toggles applied — Sunrise is there
+   * whether or not its row is shown. The snooze menu needs it: Fajr ends at
+   * sunrise, and a reader who hid the Sunrise row has not moved the end of
+   * Fajr to Dhuhr. Absent, the (filtered) days above are used.
+   */
+  windowWeek?: TimingsMap[];
   /** When true, the prayer-time alert gets a "Log prayer" action — task #99. */
   journalLogActionEnabled?: boolean;
   /**
@@ -644,6 +652,14 @@ export async function syncPrayerNotifications(params: {
     // Capped so a sync stays a few dozen AlarmManager registrations, well
     // under the per-app alarm limit and quick enough for an on-focus sync.
     params.week?.slice(2, 4) ?? [],
+  );
+  // Where each prayer's window ends, for the snooze menu: the next edge of
+  // the day's own order, from the same cached days the events came from.
+  const windowEdgeList = windowEdges(
+    params.windowWeek && params.windowWeek.length > 0
+      ? params.windowWeek.slice(0, 4)
+      : [params.today, params.tomorrow, ...(params.week?.slice(2, 4) ?? [])],
+    params.baseDate ?? now,
   );
   const reminderMinutes = clampPrePrayerReminderMinutes(
     params.prePrayerReminderMinutes,
@@ -862,6 +878,16 @@ export async function syncPrayerNotifications(params: {
     // prayer, and waking someone with a full screen for the Last Third is
     // not what this switch was asked for.
     const fullScreen = params.prayerAlertFullScreen === true && !isNonPrayer;
+    // How long this prayer has, and so which snoozes are still honest when
+    // the alert rings (`snoozeWindow`). Null where the cached days do not
+    // reach the end: no limit, never a guess.
+    const endsAt = isNonPrayer
+      ? null
+      : prayerEndsAt(windowEdgeList, e.at.getTime());
+    const snoozeOptions =
+      endsAt != null
+        ? snoozeMenu(e.at.getTime(), endsAt, SNOOZE_PRESETS)
+        : undefined;
     // Auto-dismiss this alert when the NEXT event is due, so a fired prayer's
     // notification never lingers into (or past) the following prayer. Capped
     // for the long Isha→Fajr gap. Android honours this even if the app is
@@ -894,12 +920,14 @@ export async function syncPrayerNotifications(params: {
           // timestamp in the notification id.
           targetDate: ymdLocal(e.at),
           prayer: e.name,
+          // When this prayer ends; the snooze reads it at the press.
+          ...(endsAt != null ? { deadline: String(endsAt) } : {}),
           // The selected adhan's id doubles as the bundled audio base name
           // (e.g. 'adhan_makkah' → adhan_makkah.mp3). The iOS foreground handler
           // uses it to play the FULL adhan on tap / when the app is open, since
           // iOS caps the notification sound itself at 30s.
           adhanSound: eventSound.id,
-          ...(fullScreen ? fullScreenAlarmData(e.name, nextLine) : {}),
+          ...(fullScreen ? fullScreenAlarmData(e.name, nextLine, snoozeOptions, endsAt) : {}),
         },
         ios: {
           ...(alarmCovers ? {} : { sound: eventTargets.iosSound }),
@@ -939,6 +967,7 @@ export async function syncPrayerNotifications(params: {
             : prayerAlertActions(
                 e.name,
                 fullScreen ? FULL_SCREEN_SNOOZE_MIN : undefined,
+                snoozeOptions,
               ),
           // Last, so its ALARM category wins over the plain alert's
           // REMINDER: Do Not Disturb lets alarms through by default.

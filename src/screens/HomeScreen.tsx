@@ -611,6 +611,8 @@ export function HomeScreen() {
       // Extra cached days extend coverage past tomorrow so alerts keep
       // firing when the app isn't opened for a couple of days (v2.7.40).
       week: view.alertWeek,
+      // Unfiltered, so Fajr ends at sunrise even with the Sunrise row hidden.
+      windowWeek: state.week,
       // Only when the times themselves are on: an alert about a boundary
       // the card is not showing would be the app announcing something the
       // reader cannot go and look at.
@@ -819,6 +821,7 @@ export function HomeScreen() {
           // The alert week, not the drawn one — with the rows off they
           // differ by exactly the boundaries this schedule is for.
           week: view.alertWeek,
+          windowWeek: state.week,
           hour12: clockHour12,
           accentColor: palette.accentSolid,
           // Tinted surfaces: colourise the whole notification with the accent.

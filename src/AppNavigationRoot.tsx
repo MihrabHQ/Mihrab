@@ -40,15 +40,14 @@ import { rescheduleDhikrReminders } from './notifications/dhikrReminders';
 import { dhikrFingerprint } from './dhikr/dhikrReminders';
 import { rescheduleSurahReminders } from './notifications/surahReminders';
 import {
-  khatmahReminderDue,
   rescheduleKhatmahReminder,
+  watchKhatmahReminder,
 } from './notifications/khatmahReminder';
 import {
   getQuranState,
   hydrateQuranState,
   subscribeQuranState,
 } from './quran/quranState';
-import { activeKhatmah } from './quran/khatmahProgress';
 import { reconcileMushafAssets } from './quran/mushafAssets';
 import { clearStaleDownloadNotification } from './quran/downloadNotification';
 import { startDownloadResumeWatch } from './quran/quranDownloadResume';
@@ -219,23 +218,17 @@ export function AppNavigationRoot() {
     // nothing would revisit today's until tomorrow — the reader who read
     // this morning still got poked this evening. Guarded on the verdict, not
     // on the state: the quran blob also changes on every page turn.
-    let lastKhatmah = '';
-    const unsubKhatmah = subscribeQuranState(() => {
-      const plan = activeKhatmah(getQuranState());
-      const key = plan
-        ? `${plan.id}|${khatmahReminderDue(plan, Date.now())}`
-        : 'none';
-      if (lastKhatmah === '') {
-        lastKhatmah = key;
-        return;
-      }
-      if (key === lastKhatmah) return;
-      lastKhatmah = key;
-      void rescheduleKhatmahReminder({
-        enabled: settings.khatmahReminderEnabled,
-        hour: settings.khatmahReminderHour,
-        minute: settings.khatmahReminderMinute,
-      });
+    const unsubKhatmah = watchKhatmahReminder({
+      subscribe: subscribeQuranState,
+      hydrate: hydrateQuranState,
+      getState: getQuranState,
+      onChange: () => {
+        void rescheduleKhatmahReminder({
+          enabled: settings.khatmahReminderEnabled,
+          hour: settings.khatmahReminderHour,
+          minute: settings.khatmahReminderMinute,
+        });
+      },
     });
     return () => {
       live = false;

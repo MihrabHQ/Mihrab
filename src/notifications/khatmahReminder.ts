@@ -13,7 +13,7 @@ import notifee, { AndroidImportance, TriggerType } from '@notifee/react-native';
 import i18n from '../i18n';
 import { ROUTE_KHATMAH } from './notificationRoute';
 import { getQuranState, hydrateQuranState } from '../quran/quranState';
-import type { KhatmahPlan } from '../quran/quranTypes';
+import type { KhatmahPlan, QuranState } from '../quran/quranTypes';
 import { activeKhatmah, khatmahCurrentPage } from '../quran/khatmahProgress';
 import { khatmahDay, khatmahPages } from '../quran/khatmahStatus';
 
@@ -140,4 +140,54 @@ export async function rescheduleKhatmahReminder(opts: {
       console.warn('Failed to schedule khatmah reminder', ymd(fireAt), e);
     }
   }
+}
+
+/**
+ * One word for "what the reminder should be doing right now": which plan is
+ * live and whether today's portion is still to read. Two different words
+ * mean the scheduled window is out of date; the quran blob itself changes on
+ * every page turn, so it cannot be compared directly.
+ */
+export function khatmahReminderVerdict(state: QuranState, nowMs: number): string {
+  const plan = activeKhatmah(state);
+  return plan ? `${plan.id}|${khatmahReminderDue(plan, nowMs)}` : 'none';
+}
+
+/**
+ * Re-run `onChange` whenever the verdict changes — a plan started, finished,
+ * abandoned HERE or on another device and synced in, or today's portion read.
+ *
+ * The baseline is the state the store holds once it has been read, taken up
+ * front. It used to be taken from the FIRST change after launch, which threw
+ * that change away: if the first thing to happen was a sync round bringing in
+ * an abandonment from the other device, the verdict flipped to "none" and was
+ * recorded as the starting point instead of acted on — and the week of
+ * reminders already scheduled kept firing for a khatmah that no longer
+ * existed (seen on the Mac after the plan was removed on the phone).
+ */
+export function watchKhatmahReminder(opts: {
+  subscribe: (listener: () => void) => () => void;
+  hydrate: () => Promise<unknown>;
+  getState: () => QuranState;
+  now?: () => number;
+  onChange: () => void;
+}): () => void {
+  const clock = opts.now ?? Date.now;
+  let last: string | null = null;
+  let live = true;
+  void opts.hydrate().then(() => {
+    if (live) last = khatmahReminderVerdict(opts.getState(), clock());
+  });
+  const unsubscribe = opts.subscribe(() => {
+    // Not read yet: the launch resync schedules from the hydrated state.
+    if (last === null) return;
+    const next = khatmahReminderVerdict(opts.getState(), clock());
+    if (next === last) return;
+    last = next;
+    opts.onChange();
+  });
+  return () => {
+    live = false;
+    unsubscribe();
+  };
 }

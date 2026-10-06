@@ -18,6 +18,10 @@ import {
   parseSnoozeMinutes,
   snoozePrayerNotification,
 } from './notificationActions';
+import {
+  SNOOZE_DEFAULT_MIN,
+  isLastChanceChoice,
+} from './prayerAlertActions';
 import { handleEndOfDayLogEvent } from './endOfDayLog';
 import { JOURNAL_LOG_ACTION_ID, handlePrayerLogEvent } from './prayerLogAction';
 import { syncWidgetLogQueue } from '../widget/syncWidgetLogQueue';
@@ -53,12 +57,19 @@ async function handleAdhanAction(event: Event, foreground: boolean) {
     type === EventType.ACTION_PRESS &&
     detail.pressAction?.id === ADHAN_ACTION_SNOOZE
   ) {
-    const minutes = parseSnoozeMinutes(detail.input);
+    // "Last chance to pray X" arrives as its own label, not as minutes.
+    const prayerKey = String(notification?.data?.prayer ?? '');
+    const lastChance = isLastChanceChoice(detail.input, prayerKey);
+    const minutes = lastChance ? SNOOZE_DEFAULT_MIN : parseSnoozeMinutes(detail.input);
     void AdhanPlayer.stop();
-    if (notification?.id) {
+    // Dismissed only once the re-fire is placed: a snooze refused because
+    // the prayer is almost over must not also remove the alert.
+    const scheduled = await snoozePrayerNotification(notification, minutes, {
+      lastChance,
+    });
+    if (scheduled && notification?.id) {
       await notifee.cancelNotification(notification.id).catch(() => {});
     }
-    await snoozePrayerNotification(notification, minutes);
     return;
   }
 
