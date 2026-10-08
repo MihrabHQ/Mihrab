@@ -1,0 +1,3 @@
+• A day bar under the sky: an arrow at each edge steps one day back or forward, with the date in both calendars between them.
+• When you have stepped back to an earlier day, the same bar becomes "Back to today".
+• On a tablet held upright, the sky no longer stretches: it keeps a set height and the whole day sits centred on the page.

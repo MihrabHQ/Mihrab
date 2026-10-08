@@ -12,6 +12,7 @@ import type { RootStackParamList } from '../../navigation/types';
 import {
   AboutIcon,
   AppearanceIcon,
+  DownloadsIcon,
   LocationIcon,
   NotificationsIcon,
   PrayerTimesIcon,
@@ -21,6 +22,7 @@ import { AboutSettingsScreen } from './pages/AboutSettingsScreen';
 import { AppearanceSettingsScreen } from './pages/AppearanceSettingsScreen';
 import { AttributionsSettingsScreen } from './pages/AttributionsSettingsScreen';
 import { DailyRemindersSettingsScreen } from './pages/DailyRemindersSettingsScreen';
+import { DownloadsSettingsScreen } from './pages/DownloadsSettingsScreen';
 import { HelpMihrabSettingsScreen } from './pages/HelpMihrabSettingsScreen';
 import { DhikrRemindersSettingsScreen } from './pages/DhikrRemindersSettingsScreen';
 import { ExtraTimesSettingsScreen } from './pages/ExtraTimesSettingsScreen';
@@ -161,6 +163,20 @@ const ALL_SUBPAGES: readonly SettingsSubpage[] = [
         component: TajweedSettingsScreen,
       },
     ],
+  },
+  {
+    /**
+     * Its own section rather than a row under Data & privacy: the
+     * download manager is something people come back to — to resume, to
+     * see what is taking the space, to delete a reciter — and every door
+     * in the app (the Quran screen, the reader, the riwayah picker, the
+     * "download stopped" notification) opens this page.
+     */
+    route: 'SettingsDownloads',
+    titleKey: 'settings.sectionDownloads',
+    blurbKey: 'settings.sectionDownloadsBlurb',
+    Icon: DownloadsIcon,
+    component: DownloadsSettingsScreen,
   },
   {
     route: 'SettingsAbout',

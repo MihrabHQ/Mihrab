@@ -114,9 +114,10 @@ function AboutCardImpl() {
 
   return (
     <>
-      {/* Where your data goes, and how to get it back out. Backup, sync
-          and the downloads inventory are three answers to one question,
-          so they are one card. */}
+      {/* Where your data goes, and how to get it back out. Backup and sync
+          are two answers to one question, so they are one card. The
+          downloads inventory was the third; it is its own section now,
+          Settings → Downloads. */}
       <SettingsGroup title={t('settings.dataAndPrivacy')}>
         <SettingsLinkRow
           title={t('nav.backup')}
@@ -127,14 +128,6 @@ function AboutCardImpl() {
           title={t('nav.sync')}
           help={t('sync.settingsRowHint')}
           onPress={goToSync}
-        />
-        <SettingsLinkRow
-          title={t('downloads.title', 'Manage downloads')}
-          help={t(
-            'downloads.settingsHelp',
-            'Mushaf pages, recitation audio and tafsir on this device.',
-          )}
-          onPress={() => navigation.navigate('QuranDownloads')}
         />
         {settings.dataStatsUnlocked ? (
           <SettingsToggleRow

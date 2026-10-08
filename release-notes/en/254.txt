@@ -1,0 +1,11 @@
+• Three more reading traditions: Warsh, Qālūn and Shuʿbah, set on the printed mushaf's own fifteen lines. Tap the tradition's name at the top of a page to switch, or open them from the Quran page. Each is downloaded from the publisher, not bundled with the app.
+• You can also give the app a mushaf file you downloaded yourself, zipped or not; a file that is not the Quran is refused.
+• The khatmah counts in pages of the mushaf you are reading, and its days are even: a thirtieth of the book is twenty pages, not eight one day and thirty-six the next.
+• The khatmah's day is marked on the page and can be adjusted from the khatmah card.
+• Quran widgets agree with the app on the mushaf's real size.
+• The printed page is laid out more faithfully: lines are justified as in print, no surah begins above its own band, ayah medallions no longer take space from the words, and no line is drawn past the margin.
+• The Qibla compass is back, with a way to open it again.
+• Android: the Qibla compass uses a real compass heading.
+• Mac: the Qibla page is no longer shown.
+• The prayer log can be reset: one prayer, a day, a month, a year, or all of it, and it stays reset.
+• iPhone: fixed two faults in the Log.

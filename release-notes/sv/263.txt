@@ -1,0 +1,2 @@
+• Övningsgrafen fyller widgeten den ritas på. Den var anpassad för två tredjedelar av det tillgängliga utrymmet och svävade därför i mitten med tom yta ovanför och under; en 4x4-widget visar nu åtta rader historik där den tidigare visade sex.
+• Åtgärdat: på Logg-widgeten var grafen något för stor för sin ruta, så varje ruta skalades ned och rutnätet hamnade en bit från båda kanterna.

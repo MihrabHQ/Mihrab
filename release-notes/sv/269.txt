@@ -1,0 +1,7 @@
+• "Fortsätt läsa" tar dig till versen igen. Din läsplats sparas nu separat från din khatmah, med en egen markering på sidan, och att bara öppna läsaren sparar ingen plats förrän du själv börjar läsa.
+• Bocken på Idag erbjuder bara de val som passar stunden: i tid eller sent medan den andra tiden pågår, och alla fyra när tidsfönstret har passerat.
+• Om en bock inte kan registrera en bön förklarar den nu varför.
+• Ett tryck på en påminnelse om adhkar öppnar just de adhkar.
+• Nedladdningen av en suras recitation fortsätter när du lämnar sidan, med en förloppsindikator och en förloppsavisering.
+• Surornas namn i kalligrafi visas nu med en enhetlig tjocklek.
+• Ett meddelande högst upp på Idag hamnar inte längre under statusfältet.

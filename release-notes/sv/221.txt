@@ -1,0 +1,6 @@
+• Snooza bönelarm: välj 5, 10, 15 eller 30 minuter, eller skriv valfritt antal direkt i notisen.
+• Ditt val av tafsir sparas nu, och det finns en ny väljare för tafsir i Inställningar.
+• Layouten anpassar sig till stora skärmar som surfplattor och vikbara telefoner, och ordnas om till en kolumn när skärmen är smal.
+• Rättat att gamla bönenotiser låg kvar efter nästa bön.
+• Larmet för soluppgång säger inte längre "Dags för bön".
+• Android: en ny inställning för Live Activity döljer nedräkningen till bönen på låsskärmen och den alltid påslagna skärmen men behåller den i notisfältet.

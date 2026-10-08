@@ -208,6 +208,21 @@ export function playNotes(ctx: Ctx, rel: Release): void {
   }
 }
 
+// ── P7b — THE IN-APP NOTE ─────────────────────────────────────────────
+// Play's 500 characters name the headline changes and leave the rest out,
+// and the app's "What's new" was built from them alone — so for 77 releases
+// a reader could not find most of what had changed. The app now reads
+// release-notes/<locale>/<code>.txt first, with no length limit; English is
+// the one a release cannot go without, because every language falls back
+// to it. Swedish and Arabic fall back to their Play notes when missing.
+export function appNotes(ctx: Ctx, rel: Release): void {
+  const note = `${ctx.root}/release-notes/en/${rel.code}.txt`;
+  if (!ctx.io.fs.isFile(note) || ctx.io.fs.readText(note).trim() === '') {
+    ctx.report.stop('P7', `missing in-app release notes: release-notes/en/${rel.code}.txt`);
+  }
+  ctx.report.ok('P7', `in-app release notes for en`);
+}
+
 // ── P8 — THE CASK ─────────────────────────────────────────────────────
 //
 // The cask is the only code that runs when a Mac replaces the app: it is
@@ -411,6 +426,7 @@ export async function preflight(ctx: Ctx, rel: Release): Promise<string> {
   await tagFree(ctx, rel);
   versionMoves(ctx, rel);
   playNotes(ctx, rel);
+  appNotes(ctx, rel);
   caskGate(ctx, rel);
   lessonGate(ctx);
   await ciOnMain(ctx);

@@ -1,0 +1,6 @@
+• Snooze prayer alerts: pick 5, 10, 15 or 30 minutes, or type any number right in the notification.
+• Your tafsir choice now sticks, with a new tafsir selector in Settings.
+• The layout adapts to large screens such as tablets and foldables, and reflows to one column when narrow.
+• Fixed old prayer notifications staying visible past the next prayer.
+• The Sunrise alert no longer says "Prayer time".
+• Android: a new Live Activity setting hides the prayer countdown from the lock screen and always-on display while keeping it in the notification shade.

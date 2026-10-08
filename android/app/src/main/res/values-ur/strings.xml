@@ -31,6 +31,20 @@
     <string name="widget_configure_highlight_custom">اپنی پسند کا رنگ</string>
     <string name="widget_configure_hex_hint">#RRGGBB</string>
     <string name="widget_configure_save">محفوظ کریں</string>
+    <string name="widget_configure_prayer_title">نماز کے اوقات کا ویجیٹ</string>
+    <string name="widget_configure_prayer_note">یہ صرف نماز کے اوقات کے ویجیٹس پر لاگو ہوتے ہیں۔</string>
+    <string name="widget_configure_text_color">متن کا رنگ</string>
+    <string name="widget_configure_text_light">ہلکا</string>
+    <string name="widget_configure_text_white">سفید</string>
+    <string name="widget_configure_text_cream">کریم</string>
+    <string name="widget_configure_text_gold">سنہری</string>
+    <string name="widget_configure_text_sky">آسمانی</string>
+    <string name="widget_configure_text_dark">گہرا</string>
+    <string name="widget_configure_show_location">شہر دکھائیں</string>
+    <string name="widget_configure_show_countdown">الٹی گنتی دکھائیں</string>
+    <string name="widget_configure_show_table">دن کے اوقات دکھائیں</string>
+    <string name="widget_configure_time_size">نماز کے اوقات کا سائز</string>
+    <string name="widget_configure_hex_invalid">رنگ ‎#RRGGBB کی شکل میں لکھیں</string>
     <!-- Live Activity notification strings -->
     <string name="live_activity_channel_name">نماز کی گنتی</string>
     <string name="live_activity_channel_desc">اگلی نماز کے لیے نتھی الٹی گنتی۔</string>

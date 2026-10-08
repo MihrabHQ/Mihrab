@@ -1,0 +1,7 @@
+• More reliable automatic location: it now uses Wi‑Fi and network location alongside GPS, so it no longer gets stuck when GPS is unavailable indoors.
+• Prayer times switch correctly as you travel between countries: the Swedish and global sources swap at the border, and returning to a recent city reuses its saved times.
+• The location chip now shows your city in automatic mode too.
+• Daily ayah: verses that fill a whole page are skipped, the notification shows more of the text, and the verse of the day card opens the correct mushaf page.
+• Tafsir can be expanded and collapsed with Show more / Show less.
+• Faster first-time Quran page download.
+• Android: automatic location works with "Approximate location".

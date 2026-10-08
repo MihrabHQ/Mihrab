@@ -1,0 +1,5 @@
+• Swedish prayer times now switch to AlAdhan immediately when the Swedish source can't be reached.
+• Home shows when prayer times were last updated and how many days are stored offline.
+• A wide Quran shortcut on Home; the month view has moved next to "Today" and into the tools grid.
+• The accent line on the Home header now matches dynamic colors.
+• Quran pages 1–2 are now sharp.

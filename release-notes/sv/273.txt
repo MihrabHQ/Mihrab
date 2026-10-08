@@ -1,0 +1,6 @@
+• Spara en plats utan att namnge den: lämna namnet tomt så får den stadens eget namn.
+• Att byta mellan sparade platser går direkt, och att snabbt växla fram och tillbaka fastnar inte längre på en tom skärm.
+• "Lägg till ny plats" från platsknappen på Idag byter till platsen du lägger till, även med automatisk plats och inte bara manuell.
+• När du söker efter en stad står det nu "Plats vald", så det är tydligt att platsen sparas först när du trycker på Spara.
+• Att lägga till en plats när du redan har maximalt antal sparade platser tappar inte längre bort den nya.
+• En manuellt vald stad tar inte längre platsen för din automatiska plats.

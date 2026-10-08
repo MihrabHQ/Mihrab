@@ -17,6 +17,7 @@ import {
   notBehindOrigin,
   onMainAndClean,
   playNotes,
+  appNotes,
   preflight,
   readRelease,
   tagFree,
@@ -177,6 +178,20 @@ describe("P7 Play's 500-character limit, before the tag (2.13.0, 2.26.0)", () =>
     const w = world();
     notes(w, { 'en-US': 'x', 'sv-SE': 'x' });
     expect(() => playNotes(w.ctx(), rel)).toThrow('missing release notes: ar/changelogs/283.txt');
+  });
+});
+
+describe('P7 the in-app note', () => {
+  it('passes when the English in-app note exists', () => {
+    const w = world();
+    w.file(`${ROOT}/release-notes/en/283.txt`, '• A change\n');
+    const ctx = w.ctx();
+    appNotes(ctx, rel);
+    expect(lines(ctx)).toEqual(['ok P7 in-app release notes for en']);
+  });
+
+  it('stops when it is missing, because Play\'s 500 characters leave most of a release out', () => {
+    expect(() => appNotes(world().ctx(), rel)).toThrow('missing in-app release notes: release-notes/en/283.txt');
   });
 });
 

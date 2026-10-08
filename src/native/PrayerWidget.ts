@@ -29,6 +29,25 @@ export interface PrayerWidgetInterface {
     /** "Tinted surfaces": wash the widget card toward the accent. */
     tinted: boolean,
   ): Promise<void>;
+  /**
+   * The prayer-times widget's own display options: text colour, which parts
+   * are shown, and the size of the times in percent. Absent on a binary
+   * older than the one that added it.
+   */
+  setAndroidPrayerWidgetDisplay?(
+    textHex: string,
+    showLocation: boolean,
+    showCountdown: boolean,
+    showTable: boolean,
+    timeScalePercent: number,
+  ): Promise<void>;
+  getAndroidPrayerWidgetDisplay?(): Promise<{
+    textHex: string;
+    showLocation: boolean;
+    showCountdown: boolean;
+    showTable: boolean;
+    timeScale: number;
+  } | null>;
   getAndroidWidgetAppearance?(): Promise<{
     opacity: number;
     highlightId: string;

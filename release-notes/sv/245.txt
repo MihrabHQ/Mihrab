@@ -1,0 +1,5 @@
+• Navigeringsfältet flyttar undan medan du läser och kommer tillbaka när du skrollar uppåt. På Tasbih finns det alltid kvar.
+• Android: bakåtknappen fungerar på alla flikar: i läsaren går den till Koran-fliken, på andra flikar till Idag, och på Idag stänger den appen.
+• Android: widgetar får den färg du valt, aldrig bakgrundsbildens. När appen följer systemets färger har widgetarna en egen färgväljare, och alternativet Dynamisk är borttaget från widgetinställningarna.
+• Mac och iPad: piltangenterna, WASD och HJKL bläddrar i Koranen.
+• Föregående, Nollställ och Hoppa över ligger inte längre tryckta mot navigeringsfältet.

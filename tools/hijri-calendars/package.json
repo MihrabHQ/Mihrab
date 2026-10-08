@@ -1,0 +1,8 @@
+{
+  "name": "mihrab-hijri-calendars",
+  "private": true,
+  "description": "Build-time generator for src/hijri/data/monthStarts.json. Not part of the app bundle.",
+  "dependencies": {
+    "astronomy-engine": "2.1.19"
+  }
+}

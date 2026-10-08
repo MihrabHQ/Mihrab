@@ -1,0 +1,7 @@
+• Koranens knappar fungerar igen efter läsning i helskärm i liggande läge. Tidigare kunde suralistan och Koranknappen på startskärmen se normala ut men inte göra något efter att du lämnat läsaren.
+• En sura öppnas nu med ett illuminerat band, som i den tryckta mushafen, och bismillah sätts i sidans egen storlek. Surans namn anpassas för att rymmas i bandet.
+• Mushafen frågar nu innan den laddas ner, laddas ner ungefär fem gånger snabbare och pausar sedan aldrig för att läsa in en sida. Sidornas typsnitt hämtas en gång, i bakgrunden, via Wi-Fi, och en äldre kopia från en tidigare version tas bort först.
+• Det går lättare att växla läsaren in och ut ur helskärm.
+• Läsarens sidhuvud tar sina färger från mushafsidan i stället för från appens tema.
+• Åtgärdat: mushafen kunde kort visa fel bakgrundsfärg innan den blev rätt.
+• Åtgärdat: skärmar bakom läsaren kunde behålla fel layout efter att enheten vridits.

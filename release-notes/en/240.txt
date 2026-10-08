@@ -1,0 +1,15 @@
+• Sync your record between your own devices, with no account and no server, encrypted.
+• Pair devices by scanning a code; one code is enough, and each device appears under its own name. Choose how often sync runs, as often as every fifteen minutes; it also runs when the app opens.
+• The Log Today widget gains a graph, including fasting and sunnah, and a countdown at its tallest size.
+• The Prayer Times widget comes in three sizes; at one row it keeps the times and drops the header.
+• Widgets use the language you chose in the app, and Android widgets are translated into all thirteen languages.
+• The app language follows the phone until you choose another one.
+• The Home countdown shows seconds and can be aimed at any prayer.
+• The Quran download continues in the background after you leave the screen.
+• The graph marks days within your record that were never filled in.
+• Mac: one top bar, with the location chip at its far end, and the app no longer presents itself as an iPad.
+• Fixed: Manage downloads said nothing was downloaded.
+• Fixed: the Fajr countdown was missing from the widgets.
+• Fixed: the widget graph scored days differently from the app.
+• Fixed: prayer names were mistranslated in four languages.
+• Android: the appearance settings of five widgets can now be reached.

@@ -26,7 +26,7 @@
  *   { v: 1, fetchedAt: ISO, glosses: { "<ayah>": "word: meaning[\n…]" } }
  */
 import ReactNativeBlobUtil from 'react-native-blob-util';
-import { fetchWithRetry } from '../utils/fetchWithRetry';
+import { fetchMirrored, mirrorUrl, MIRROR_TAGS } from '../config/mirrors';
 import {
   CONTENT_DEADLINES,
   GIVE_UP_AFTER_CONSECUTIVE_FAILURES,
@@ -178,7 +178,7 @@ type SuraResponse = {
 
 /** One surah → its file. Throws when the response cannot be trusted. */
 async function fetchSurah(surah: number): Promise<void> {
-  const res = await fetchWithRetry(surahUrl(surah), undefined, {
+  const res = await fetchMirrored(mirrorUrl(MIRROR_TAGS.wordMeanings, `${surah}.json`), surahUrl(surah), undefined, {
     maxAttempts: 2,
     baseDelayMs: 400,
     timeoutMs: CONTENT_DEADLINES.wordMeanings,

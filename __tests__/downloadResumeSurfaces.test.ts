@@ -97,7 +97,7 @@ describe('the notification, tapped', () => {
     expect(route).toMatch(/ROUTE_QURAN_DOWNLOADS\) \{\s*\n\s*return `\$\{MIHRAB_SCHEME\}downloads`/);
     // A path the navigator has never heard of is not a no-op: React
     // Navigation warns and the link dies somewhere unhelpful.
-    expect(linking).toMatch(/QuranDownloads: 'downloads'/);
+    expect(linking).toMatch(/SettingsDownloads: 'downloads'/);
   });
 });
 

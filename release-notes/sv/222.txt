@@ -1,0 +1,6 @@
+• Adhan ljuder nu exakt i tid: rättat ett ovanligt larm som kom 1–2 minuter för tidigt tillsammans med en dubblett.
+• Koranens innehållsförteckning centreras nu korrekt på breda skärmar i språk som skrivs från höger till vänster.
+• Dagkarusellen på Hem ligger nu i linje med korten runt omkring.
+• Mac: Mihrab finns nu som Mac-app som kan installeras med Homebrew.
+• Mac: Hem-panelen skalas med fönstret när det är bredare än layouten.
+• iPad och Mac: finputsad layout, med en fylligare Hem-panel, kontroller för Koranvyn med två sidor och knappar för att bläddra.

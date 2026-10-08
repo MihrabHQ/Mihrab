@@ -1,0 +1,4 @@
+• Mushaf: lines no longer lose their last word. The space between words now comes from a font the app includes, and lines are justified to the page width as in print.
+• Ayah 2:2 and the rub al-hizb marks appear in the printed order again.
+• The mushaf page now reaches all four screen edges and keeps clear of the camera cut-out.
+• Leaving the Quran reader now closes what it opened, a first step toward fixing taps that stopped responding afterwards.

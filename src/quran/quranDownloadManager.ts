@@ -44,6 +44,11 @@ import type {
   MushafDownloadProgress,
 } from './mushafDownload';
 import { downloadAllPageFonts, type MushafFontSet } from './mushafFontStore';
+import type { DownloadError, DownloadOutcome } from './contentNetwork';
+import { downloadRiwayah } from './riwayahDownload';
+import { RIWAYAT, type RiwayahId } from './riwayat';
+import { riwayahProvenance } from './riwayahData';
+import { sizeLabel, spaceShortfall } from './downloadSpace';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   downloadAyahs,
@@ -51,12 +56,14 @@ import {
   reciterAudioStats,
   totalAyahCount,
   downloadReciterAudio,
+  estimatedReciterBytes,
 } from './audio/audioStore';
 import { findReciter } from './audio/reciters';
 import { downloadWordMeanings, WORD_MEANINGS_SURAHS } from './wordMeanings';
 import {
   downloadTafsirEdition,
   findTafsirEdition,
+  tafsirEditionStats,
   tafsirNameInSentence,
   TAFSIR_SURAHS,
 } from './tafsir';
@@ -96,6 +103,12 @@ export type QuranDownloadJob =
   | { kind: 'wordMeanings' }
   /** One tafsir edition, whole — 114 surah files (`tafsir.ts`). */
   | { kind: 'tafsir'; editionId: string }
+  /**
+   * One riwayah's muṣḥaf text (`riwayahDownload.ts`) — one file, a few
+   * megabytes. `url` is a link the reader pasted; without it, the
+   * one-button download (this repo's mirror, then the publisher).
+   */
+  | { kind: 'riwayah'; riwayahId: RiwayahId; url?: string }
   | {
       kind: 'surah';
       reciterId: string;
@@ -128,6 +141,8 @@ export type QuranDownloadState = {
     /** Where it had got to, so a screen can say so without a disk read. */
     done: number;
     total: number;
+    /** Why it did not complete, when there is one reason to give. */
+    error?: DownloadError;
   } | null;
 };
 
@@ -138,7 +153,6 @@ let state: QuranDownloadState = {
   progress: EMPTY_PROGRESS,
   last: null,
 };
-let handle: MushafDownloadHandle | null = null;
 let cancelledByUser = false;
 
 const listeners = new Set<(s: QuranDownloadState) => void>();
@@ -178,6 +192,9 @@ export function isJobRunning(job: QuranDownloadJob): boolean {
   if (running.kind === 'tafsir' && job.kind === 'tafsir') {
     return running.editionId === job.editionId;
   }
+  if (running.kind === 'riwayah' && job.kind === 'riwayah') {
+    return running.riwayahId === job.riwayahId;
+  }
   if (running.kind === 'surah' && job.kind === 'surah') {
     // Identity is the voice and the surah. NOT the refs: the caller
     // asking is a row that wants to know whether the bar it is drawing is
@@ -194,6 +211,12 @@ export function isJobRunning(job: QuranDownloadJob): boolean {
 /** Which page faces a fonts job fetches — V2 unless it says otherwise. */
 export function fontSetOf(job: { kind: 'fonts'; set?: MushafFontSet }): MushafFontSet {
   return job.set ?? 'v2';
+}
+
+/** A riwayah's name in the app's language, for the shade and the strip. */
+export function riwayahLabel(id: RiwayahId): string {
+  const def = RIWAYAT.find(r => r.id === id);
+  return def ? i18n.t(def.nameKey, def.arabic) : id;
 }
 
 /** The reciter's name as the shade should say it. */
@@ -280,6 +303,19 @@ function notificationText(job: QuranDownloadJob) {
         i18n.t('quran.downloadStoppedBodySurahs', { done, total }),
     };
   }
+  if (job.kind === 'riwayah') {
+    const name = riwayahLabel(job.riwayahId);
+    return {
+      label: i18n.t('quran.riwayahDownloading', { name }),
+      body: () => i18n.t('quran.riwayahDownloadingBody'),
+      doneTitle: i18n.t('quran.riwayahDoneTitle', { name }),
+      doneBody: i18n.t('quran.riwayahDoneBody', { name }),
+      incompleteTitle: i18n.t('quran.riwayahFailedTitle', { name }),
+      incompleteBody: () => i18n.t('quran.riwayahFailedBody'),
+      stoppedTitle: i18n.t('quran.downloadStoppedTitle'),
+      stoppedBody: () => i18n.t('quran.riwayahStoppedBody'),
+    };
+  }
   if (job.kind === 'wordMeanings') {
     return {
       label: i18n.t('quran.downloadingWordMeanings'),
@@ -312,6 +348,40 @@ function notificationText(job: QuranDownloadJob) {
 }
 
 /**
+ * What a job is called on a screen, for every kind — one answer, so a
+ * screen listing "what is downloading" cannot fall through to "Mushaf
+ * pages" for a kind it did not know about (which the Downloads screen did
+ * for a surah's recitation).
+ */
+export function jobDisplayName(job: QuranDownloadJob): string {
+  switch (job.kind) {
+    case 'audio':
+      return reciterLabel(job.reciterId);
+    case 'surah':
+      return `${jobSurahName(job.surah)} · ${reciterLabel(job.reciterId)}`;
+    case 'tafsir':
+      return findTafsirEdition(job.editionId)?.label ?? job.editionId;
+    case 'wordMeanings':
+      return i18n.t('downloads.wordMeanings', 'Arabic word meanings');
+    case 'riwayah':
+      return riwayahLabel(job.riwayahId);
+    case 'fonts':
+      return fontSetOf(job) === 'v2'
+        ? i18n.t('downloads.mushaf', 'Mushaf pages')
+        : i18n.t('tajweed.downloadsRow', 'Tajweed colours');
+  }
+}
+
+/** "40 of 86 ayahs", "12 of 114 surahs", "300 of 604 pages" — in the job's own unit. */
+export function jobProgressText(
+  job: QuranDownloadJob,
+  done: number,
+  total: number,
+): string {
+  return notificationText(job).body(done, total);
+}
+
+/**
  * The last percent this manager told anybody about.
  *
  * A whole-Quran download reports 6,236 times. Publishing each one drags
@@ -329,24 +399,16 @@ function notificationText(job: QuranDownloadJob) {
  */
 let lastPublishedPct = -1;
 
-function begin(job: QuranDownloadJob): MushafDownloadHandle {
-  const text = notificationText(job);
-  const onProgress = (progress: MushafDownloadProgress) => {
-    const pct =
-      progress.total > 0
-        ? Math.floor((progress.done / progress.total) * 100)
-        : 0;
-    const finished = progress.done >= progress.total;
-    if (pct === lastPublishedPct && !finished) return;
-    lastPublishedPct = pct;
-    publish({ ...state, progress });
-    void publishDownloadProgress({
-      done: progress.done,
-      total: progress.total,
-      label: text.label,
-      body: text.body(progress.done, progress.total),
-    });
-  };
+/**
+ * The job's own download, started. Pure dispatch: everything that keeps a
+ * run honest — the watchdog, the run token, the note on disk — wraps this
+ * in `startQuranDownload`, so a seventh kind of download inherits it by
+ * being added here and nowhere else.
+ */
+function begin(
+  job: QuranDownloadJob,
+  onProgress: (p: MushafDownloadProgress) => void,
+): MushafDownloadHandle {
   if (job.kind === 'surah') {
     // The refs are the gap. Without them — a caller that could not read
     // the disk — the whole surah is queued and the valid files skipped,
@@ -361,7 +423,131 @@ function begin(job: QuranDownloadJob): MushafDownloadHandle {
   }
   if (job.kind === 'wordMeanings') return downloadWordMeanings({ onProgress });
   if (job.kind === 'tafsir') return downloadTafsirEdition(job.editionId, { onProgress });
+  if (job.kind === 'riwayah') {
+    const def = RIWAYAT.find(r => r.id === job.riwayahId);
+    return downloadRiwayah(
+      job.riwayahId,
+      { url: job.url, direct: def?.source?.direct },
+      onProgress,
+    );
+  }
   return downloadAllPageFonts({ onProgress, set: fontSetOf(job) });
+}
+
+/**
+ * ── WHAT IS STILL TO COME, FOR THE SPACE CHECK ────────────────────────
+ *
+ * Only the two downloads big enough to fill a phone are measured: a
+ * reciter (up to 1.4 GB) and a tafsir edition (up to ~85 MB). What is
+ * already on disk is subtracted, so resuming at 90% asks for the last
+ * tenth, not the whole. Everything else is a few megabytes and comes in
+ * under the margin `spaceShortfall` keeps anyway.
+ */
+function needsSpaceCheck(job: QuranDownloadJob): boolean {
+  return job.kind === 'audio' || job.kind === 'tafsir';
+}
+
+async function bytesStillNeeded(job: QuranDownloadJob): Promise<number> {
+  if (job.kind === 'audio') {
+    const have = (await reciterAudioStats(job.reciterId)).bytes;
+    return Math.max(0, estimatedReciterBytes(job.reciterId) - have);
+  }
+  if (job.kind === 'tafsir') {
+    const whole = findTafsirEdition(job.editionId)?.approxBytes ?? 0;
+    const have = (await tafsirEditionStats(job.editionId)).bytes;
+    return Math.max(0, whole - have);
+  }
+  return 0;
+}
+
+/** The total a job's bar starts at, known before the first file lands. */
+function initialProgress(job: QuranDownloadJob): MushafDownloadProgress {
+  // A bar that starts at "0 of 0" and jumps to "1 of 6236" reads as a
+  // stall. `fonts` learns its own total from the first callback.
+  if (job.kind === 'audio') return { done: 0, total: totalAyahCount(), failed: 0 };
+  if (job.kind === 'surah') return { done: 0, total: surahJobTotal(job), failed: 0 };
+  if (job.kind === 'wordMeanings') return { done: 0, total: WORD_MEANINGS_SURAHS, failed: 0 };
+  if (job.kind === 'tafsir') return { done: 0, total: TAFSIR_SURAHS, failed: 0 };
+  if (job.kind === 'riwayah') return { done: 0, total: 1, failed: 0 };
+  return EMPTY_PROGRESS;
+}
+
+/**
+ * ── A RUN THAT CANNOT WEDGE THE MANAGER ───────────────────────────────
+ *
+ * "Something is already downloading" is the manager's one refusal, so a
+ * run that never ends is not a stuck download — it is every download
+ * button in the app, disabled until the process dies. Three things could
+ * do that, and each has an answer here:
+ *
+ *   • a job that THROWS while starting, or whose promise REJECTS. Both
+ *     end the run as a failure with the error carried along; before, a
+ *     rejection skipped the `.then` and left `running` set for good.
+ *   • a job that simply stops calling back and never settles — a native
+ *     download that lost its socket without saying so. Each request has a
+ *     deadline (`contentNetwork.ts`), but a deadline is per request; this
+ *     is the backstop for the run. No progress for `STALL_MS` and the run
+ *     is cancelled; if even the cancel is not answered within
+ *     `STALL_GRACE_MS`, the run is ended for it. Either way it ends as
+ *     INTERRUPTED — the network's fault until shown otherwise, so it is
+ *     offered again rather than called a failure.
+ *   • a LATE answer from a run already ended that way. Every run carries
+ *     a token, and anything from a run that is no longer the current one
+ *     — progress or outcome — is dropped, so it cannot overwrite the
+ *     state of the run that replaced it.
+ *
+ * `STALL_MS` is longer than the slowest legitimate gap between two
+ * callbacks: one ayah's three attempts at a minute each plus the backoff,
+ * or one big tafsir surah from the mirror and twice from the original.
+ */
+export const STALL_MS = 6 * 60_000;
+export const STALL_GRACE_MS = 15_000;
+
+type Run = {
+  id: number;
+  job: QuranDownloadJob;
+  inner: MushafDownloadHandle | null;
+  stalled: boolean;
+  /** The space check found the phone too full: why the run was stopped. */
+  noSpace: DownloadError | null;
+  settled: boolean;
+  watchdog: ReturnType<typeof setTimeout> | null;
+};
+
+let runSeq = 0;
+let current: Run | null = null;
+
+function isCurrent(run: Run): boolean {
+  return current === run && !run.settled;
+}
+
+function armWatchdog(run: Run): void {
+  if (run.watchdog) clearTimeout(run.watchdog);
+  run.watchdog = setTimeout(() => {
+    if (!isCurrent(run)) return;
+    run.stalled = true;
+    try {
+      run.inner?.cancel();
+    } catch {
+      /* the grace timer below ends it either way */
+    }
+    run.watchdog = setTimeout(
+      () => finishRun(run, { complete: false, interrupted: true }),
+      STALL_GRACE_MS,
+    );
+  }, STALL_MS);
+}
+
+function failure(e: unknown): DownloadOutcome {
+  return {
+    complete: false,
+    interrupted: false,
+    error: {
+      key: 'quran.downloadIncompleteTitle',
+      fallback: 'The download did not finish',
+      detail: String(e instanceof Error ? e.message : e),
+    },
+  };
 }
 
 /**
@@ -391,6 +577,7 @@ function sameJob(a: QuranDownloadJob, b: QuranDownloadJob): boolean {
   if (a.kind === 'audio' && b.kind === 'audio') return a.reciterId === b.reciterId;
   if (a.kind === 'wordMeanings' && b.kind === 'wordMeanings') return true;
   if (a.kind === 'tafsir' && b.kind === 'tafsir') return a.editionId === b.editionId;
+  if (a.kind === 'riwayah' && b.kind === 'riwayah') return a.riwayahId === b.riwayahId;
   if (a.kind === 'surah' && b.kind === 'surah') {
     return a.reciterId === b.reciterId && a.surah === b.surah;
   }
@@ -435,23 +622,30 @@ export function startQuranDownload(job: QuranDownloadJob): boolean {
   if (state.running) return false;
   cancelledByUser = false;
   lastPublishedPct = -1;
-  publish({
-    running: job,
-    // The total is known before the first file lands, and a bar that
-    // starts at "0 of 0" and jumps to "1 of 6236" reads as a stall.
-    progress:
-      job.kind === 'audio'
-        ? { done: 0, total: totalAyahCount(), failed: 0 }
-        : job.kind === 'surah'
-          ? { done: 0, total: surahJobTotal(job), failed: 0 }
-          : job.kind === 'wordMeanings'
-            ? { done: 0, total: WORD_MEANINGS_SURAHS, failed: 0 }
-            : job.kind === 'tafsir'
-              ? { done: 0, total: TAFSIR_SURAHS, failed: 0 }
-              : EMPTY_PROGRESS,
-    last: null,
-  });
+  const run: Run = {
+    id: ++runSeq,
+    job,
+    inner: null,
+    stalled: false,
+    noSpace: null,
+    settled: false,
+    watchdog: null,
+  };
+  current = run;
+  publish({ running: job, progress: initialProgress(job), last: null });
 
+  /**
+   * THE NOTE GOES DOWN AT THE START, not only when the network takes the
+   * run away. A process killed mid-download — swiped away, reclaimed by
+   * the system for memory, a crash — ends no run at all, so a note
+   * written at the end was never written, and the reader came back to a
+   * half-downloaded reciter with nothing offering to finish it. Now the
+   * note exists for as long as the run does and is cleared only by an
+   * ending that is not worth coming back to.
+   */
+  void rememberPendingJob(job);
+
+  const text = notificationText(job);
   // The bar goes up on the tap, not on the first file that lands. A surah
   // of seven ayahs on a slow connection used to leave several seconds
   // between "Download" and anything appearing in the shade, which reads as
@@ -460,68 +654,139 @@ export function startQuranDownload(job: QuranDownloadJob): boolean {
   // first callback, and a bar that says "0 of 0 pages" is worse than a bar
   // that is a second late.
   if (state.progress.total > 0) {
-    const opening = notificationText(job);
     void publishDownloadProgress({
       done: 0,
       total: state.progress.total,
-      label: opening.label,
-      body: opening.body(0, state.progress.total),
+      label: text.label,
+      body: text.body(0, state.progress.total),
     });
   }
 
-  handle = begin(job);
-
-  void handle.promise.then(outcome => {
-    const failed = state.progress.failed;
-    const { done, total } = state.progress;
-    const text = notificationText(job);
-    const interrupted = outcome.interrupted && !cancelledByUser;
-    handle = null;
-    publish({
-      running: null,
-      progress: state.progress,
-      last: {
-        job,
-        complete: outcome.complete,
-        cancelled: cancelledByUser,
-        failed,
-        interrupted,
-        done,
-        total,
-      },
+  const onProgress = (progress: MushafDownloadProgress) => {
+    if (!isCurrent(run)) return;
+    armWatchdog(run);
+    const pct =
+      progress.total > 0
+        ? Math.floor((progress.done / progress.total) * 100)
+        : 0;
+    const finished = progress.done >= progress.total;
+    if (pct === lastPublishedPct && !finished) return;
+    lastPublishedPct = pct;
+    publish({ ...state, progress });
+    void publishDownloadProgress({
+      done: progress.done,
+      total: progress.total,
+      label: text.label,
+      body: text.body(progress.done, progress.total),
     });
-    /**
-     * WHAT IS WORTH COMING BACK TO, remembered across launches.
-     *
-     * The state above dies with the process, and the process is exactly
-     * what dies while a phone sits in a pocket with no wifi. Without a
-     * note on disk, a reader who reopens the app is back to a reciter
-     * row that offers only Delete — which is issue #55 with one extra
-     * step. Cleared on a run that completed or was cancelled, because
-     * neither is something to resume.
-     */
-    if (interrupted) void rememberPendingJob(job);
-    else void forgetPendingJob();
-    // A stopped download stops the ones behind it too: cancelled by hand,
-    // or by the connection going — the next one would only stall the same
-    // way, and its "stopped" would bury this one's.
-    if (cancelledByUser || interrupted) queued = [];
-    void finishDownloadNotification({
-      complete: outcome.complete,
+  };
+
+  const settle = (outcome: DownloadOutcome) => finishRun(run, outcome);
+  armWatchdog(run);
+  try {
+    run.inner = begin(job, onProgress);
+    run.inner.promise.then(settle, e => settle(failure(e)));
+  } catch (e) {
+    settle(failure(e));
+    return true;
+  }
+  // The space check runs BESIDE the download rather than before it, so
+  // starting stays synchronous for every caller; a few files may land in
+  // the milliseconds it takes, which costs nothing. Too full, and the run
+  // is stopped with that as its one reason.
+  if (needsSpaceCheck(job)) void checkSpace(run);
+  return true;
+}
+
+async function checkSpace(run: Run): Promise<void> {
+  let short = 0;
+  try {
+    short = await spaceShortfall(await bytesStillNeeded(run.job));
+  } catch {
+    return; // unknown is not a reason to refuse
+  }
+  if (short <= 0 || !isCurrent(run)) return;
+  run.noSpace = {
+    key: 'quran.downloadNoSpaceBody',
+    fallback: 'This download needs {{size}} more free space. Free some up and try again.',
+    params: { size: sizeLabel(short) },
+  };
+  try {
+    run.inner?.cancel();
+  } catch {
+    /* ended below either way */
+  }
+  // In place of the watchdog, so ending the run clears it.
+  if (run.watchdog) clearTimeout(run.watchdog);
+  run.watchdog = setTimeout(
+    () => finishRun(run, { complete: false, interrupted: false }),
+    STALL_GRACE_MS,
+  );
+}
+
+/** End a run — once, and only the run that is still current. */
+function finishRun(run: Run, outcome: DownloadOutcome): void {
+  if (!isCurrent(run)) return;
+  run.settled = true;
+  if (run.watchdog) clearTimeout(run.watchdog);
+  current = null;
+  const job = run.job;
+  const failed = state.progress.failed;
+  const { done, total } = state.progress;
+  const text = notificationText(job);
+  const error = run.noSpace ?? outcome.error;
+  const noSpace = run.noSpace != null;
+  const complete = outcome.complete && !run.stalled && !noSpace;
+  const interrupted =
+    (outcome.interrupted || run.stalled) && !cancelledByUser && !noSpace;
+  publish({
+    running: null,
+    progress: state.progress,
+    last: {
+      job,
+      complete,
       cancelled: cancelledByUser,
       failed,
       interrupted,
-      doneTitle: text.doneTitle,
-      doneBody: text.doneBody,
-      incompleteTitle: text.incompleteTitle,
-      incompleteBody: text.incompleteBody(failed),
-      stoppedTitle: text.stoppedTitle,
-      stoppedBody: text.stoppedBody(done, total),
-      route: ROUTE_QURAN_DOWNLOADS,
-    });
-    startNextQueued();
+      done,
+      total,
+      ...(error ? { error } : {}),
+    },
   });
-  return true;
+  /**
+   * WHAT IS WORTH COMING BACK TO, remembered across launches.
+   *
+   * The state above dies with the process, and the process is exactly
+   * what dies while a phone sits in a pocket with no wifi. Without a
+   * note on disk, a reader who reopens the app is back to a reciter
+   * row that offers only Delete — which is issue #55 with one extra
+   * step. Cleared on a run that completed or was cancelled, because
+   * neither is something to resume.
+   */
+  if (interrupted) void rememberPendingJob(job);
+  else void forgetPendingJob();
+  // A stopped download stops the ones behind it too: cancelled by hand,
+  // or by the connection going — the next one would only stall the same
+  // way, and its "stopped" would bury this one's.
+  if (cancelledByUser || interrupted) queued = [];
+  void finishDownloadNotification({
+    complete,
+    cancelled: cancelledByUser,
+    failed,
+    interrupted,
+    doneTitle: text.doneTitle,
+    doneBody: text.doneBody,
+    incompleteTitle: noSpace
+      ? i18n.t('quran.downloadNoSpaceTitle')
+      : text.incompleteTitle,
+    incompleteBody: noSpace
+      ? i18n.t('quran.downloadNoSpaceBody', error?.params)
+      : text.incompleteBody(failed),
+    stoppedTitle: text.stoppedTitle,
+    stoppedBody: text.stoppedBody(done, total),
+    route: ROUTE_QURAN_DOWNLOADS,
+  });
+  startNextQueued();
 }
 
 /**
@@ -579,6 +844,13 @@ function validJob(value: unknown): QuranDownloadJob | null {
       : { kind: 'fonts' };
   }
   if (job.kind === 'wordMeanings') return { kind: 'wordMeanings' };
+  if (job.kind === 'riwayah') {
+    const def = RIWAYAT.find(r => r.id === job.riwayahId);
+    if (!def || def.id === 'hafs') return null;
+    return typeof job.url === 'string' && /^https:\/\//i.test(job.url)
+      ? { kind: 'riwayah', riwayahId: def.id, url: job.url }
+      : { kind: 'riwayah', riwayahId: def.id };
+  }
   if (job.kind === 'tafsir') {
     return typeof job.editionId === 'string' && findTafsirEdition(job.editionId)
       ? { kind: 'tafsir', editionId: job.editionId }
@@ -633,6 +905,10 @@ export async function hydrateResumableJob(): Promise<QuranDownloadJob | null> {
       await forgetPendingJob();
       return null;
     }
+    if (job.kind === 'riwayah' && riwayahProvenance(job.riwayahId)) {
+      await forgetPendingJob();
+      return null;
+    }
     if (job.kind === 'audio') {
       const stats = await reciterAudioStats(job.reciterId);
       if (stats.complete || stats.files === 0) {
@@ -650,14 +926,22 @@ export async function hydrateResumableJob(): Promise<QuranDownloadJob | null> {
 
 /** Stop it. Whatever landed on disk stays there and is usable. */
 export function cancelQuranDownload(): void {
-  if (!handle) return;
+  const run = current;
+  if (!run || run.settled) return;
   cancelledByUser = true;
-  handle.cancel();
+  try {
+    run.inner?.cancel();
+  } catch {
+    // A cancel that throws must still end the run; the watchdog would,
+    // but a person who pressed Stop should not wait six minutes for it.
+    finishRun(run, { complete: false, interrupted: false });
+  }
 }
 
 /** For tests. */
 export function resetQuranDownloadState(): void {
-  handle = null;
+  if (current?.watchdog) clearTimeout(current.watchdog);
+  current = null;
   cancelledByUser = false;
   lastPublishedPct = -1;
   pendingJob = null;

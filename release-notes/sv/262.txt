@@ -1,0 +1,10 @@
+• Skicka en dua eller ett tafsir-avsnitt till någon som text, med källa, på det språk du läser det på (#24).
+• Widgeten Fortsätt läsa har en uppspelningsknapp: ett tryck öppnar där du slutade och startar recitationen där (#25).
+• När du tystar en bön från dess kort tystas nu även förvarningen och gränsaviseringen.
+• Aviseringsknappen på en bönerad kan gälla ”bara den här gången” och ångras, och raden och kortet visar inte längre olika saker om en böns avisering.
+• iPhone: knappen på Live Activity fungerar som aviseringsreglaget på hemraden, för just den bönen.
+• Övningsgrafen har mindre rutor, bara en nedräkning visas, och ett tryck visar inte längre noll för ett ögonblick.
+• Åtgärdat: en bönetid kunde brytas över två rader med vissa systemtypsnitt (#26).
+• Åtgärdat: tasbih-widgeten blev långsammare ju högre räkningen blev.
+• Åtgärdat: läswidgeten klippte av sin sista rad i standardstorleken.
+• Åtgärdat: en nedladdning av Koranen kunde hänga sig i stället för att misslyckas.

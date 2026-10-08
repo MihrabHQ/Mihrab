@@ -20,10 +20,11 @@ const CASABLANCA = { latitude: 33.5731, longitude: -7.5898 };
 const LONDON = { latitude: 51.5072, longitude: -0.1276 };
 
 describe('the table', () => {
-  it('covers both countries that have a published source', () => {
+  it('covers every country that has a published source', () => {
     expect(REGIONAL_PROVIDER_REGIONS.map(r => r.id).sort()).toEqual([
       'habous',
       'islamiska_forbundet',
+      'marw',
     ]);
   });
 

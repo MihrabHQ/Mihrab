@@ -130,6 +130,7 @@ function preflightWorld() {
     .on('git describe', { stdout: 'v2.27.1' })
     .on('git rev-list --count', { stdout: '3' });
   for (const loc of ['en-US', 'sv-SE', 'ar']) w.file(`${ROOT}/fastlane/metadata/android/${loc}/changelogs/283.txt`, 'notes');
+  w.file(`${ROOT}/release-notes/en/283.txt`, '• notes');
   return w;
 }
 const SHELL_PREFLIGHT = [
@@ -142,6 +143,7 @@ const SHELL_PREFLIGHT = [
   'ok\trelease notes for en-US (5 chars)',
   'ok\trelease notes for sv-SE (5 chars)',
   'ok\trelease notes for ar (5 chars)',
+  'ok\tin-app release notes for en',
   'ok\tcask restarts chronod after install (legacy, unsandboxed postflight)',
   'ok\tcask re-registers the widget extension',
   "ok\tthe last release's lesson is written down",
@@ -155,15 +157,15 @@ describe('the preflight shadow', () => {
   it('agrees with a shell that passed the same gates, without re-running jest', async () => {
     const w = preflightWorld();
     const res = await shadowPreflight(shadowCtx(w.io(), ROOT, HOME, 'release'), rel, SHELL_PREFLIGHT);
-    expect(res.comparison).toEqual({ compared: 14, onlyShell: [], onlyTs: [] });
+    expect(res.comparison).toEqual({ compared: 15, onlyShell: [], onlyTs: [] });
     expect(w.ran('npx')).toEqual([]);
     expect(w.out).toEqual([]);
   });
 
   it('stops where the shell stopped on jest or tsc, which it does not re-run', async () => {
     for (const [at, words] of [
-      [13, "jest failed — run 'NODE_ENV=test npx jest'"],
-      [14, "tsc failed — run 'npx tsc --noEmit'"],
+      [14, "jest failed — run 'NODE_ENV=test npx jest'"],
+      [15, "tsc failed — run 'npx tsc --noEmit'"],
     ] as const) {
       const w = preflightWorld();
       const shell = `${SHELL_PREFLIGHT.split('\n').slice(0, at).join('\n')}\ndie\t${words}`;

@@ -1,0 +1,16 @@
+• Tilāwah: sätt på Koranen och lyssna. Välj en recitatör, börja var som helst, och uppläsningen fortsätter sura efter sura med skärmen avstängd, och offline när den är nedladdad.
+• Tilāwah har en minilasare, en knapp för att öppna avsnittet i den fullständiga läsaren och ett val för att hålla skärmen vaken. Knapparna för nästa och föregående hoppar en hel sura, och blandning väljer suror i slumpvis ordning.
+• Systemets mediespelare visar namnet på suran som reciteras, och spelaren drar mindre ström när den inte syns på skärmen.
+• Morgon- och kvällsduas kan nu påminna dig inom sina egna tidsfönster: efter Fajr före soluppgången och efter Asr före solnedgången.
+• Varje bön kan nu ha sitt eget aviseringssätt, och aviseringsreglaget sitter bredvid tiden det styr.
+• De malikitiska andra tiderna kan aviseras utan att lägga till rader på bönekortet, kan säga till när en bön blir qadaa och kan visas i månadsvyn.
+• Darūrī-tiderna tillämpar nu sin säkerhetsmarginal åt rätt håll, och om de kombineras med den hanafitiska inställningen markeras det som en konflikt.
+• Ett val för 12-timmarsklocka, som används överallt där du läser en tid.
+• Inställningar är omorganiserade till ett register med sju avsnitt i stället för en lång rullning.
+• Alla flikar utom Idag visar vart bakåtknappen leder, och Koranfliken går till toppen när du trycker på den, precis som de andra flikarna.
+• Duas fäller undan sina läshjälpmedel, och dua-texten är en storlek mindre.
+• Åtgärdat: widgetar klippte av sin sista rad.
+• Åtgärdat: en nedladdning av recitation kunde verka fastnat när den i själva verket misslyckades; nu rapporteras felet, och nedladdningsfältet försvinner när det är klart.
+• Åtgärdat: aviseringsreglagen för varje bön och huvudreglaget kunde visa olika saker.
+• Åtgärdat: slutet på Isha den sista dagen av ett säsongsbundet tidsfönster.
+• Åtgärdat: markeringen för aktiv flik, Koranindikatorn, ayah-bladet och bokstäver som föll bort från den översta textraden.

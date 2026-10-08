@@ -1,0 +1,5 @@
+• The Log graph is now coloured by status rather than by how many boxes were ticked: on time counts fully, late and make-up count less, missed counts nothing, and a day recorded as missed is marked instead of left blank.
+• Open any past day in the Log, with the arrows by the date or by tapping its square.
+• The graph reaches back to your first logged day and can be scrolled back.
+• A prayer whose time has not yet come cannot be logged, and "Mark all on time" respects that.
+• Optional: show the graph on the Today screen.

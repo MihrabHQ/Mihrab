@@ -238,6 +238,69 @@ class PrayerWidgetModule(private val reactContext: ReactApplicationContext) :
     }
   }
 
+  /**
+   * The prayer-times widget's display options as stored — they can be
+   * changed from the widget's own settings screen, so the app reads them
+   * back. Null until either side has written them.
+   */
+  @ReactMethod
+  fun getAndroidPrayerWidgetDisplay(promise: Promise) {
+    try {
+      val prefs = reactContext.getSharedPreferences(PrayerWidgetProvider.PREFS_NAME, Context.MODE_PRIVATE)
+      if (!prefs.contains(PrayerWidgetDisplay.KEY_TIME_SCALE)) {
+        promise.resolve(null)
+        return
+      }
+      val map = Arguments.createMap()
+      map.putString("textHex", prefs.getString(PrayerWidgetDisplay.KEY_TEXT_HEX, "") ?: "")
+      map.putBoolean("showLocation", prefs.getBoolean(PrayerWidgetDisplay.KEY_SHOW_LOCATION, true))
+      map.putBoolean("showCountdown", prefs.getBoolean(PrayerWidgetDisplay.KEY_SHOW_COUNTDOWN, true))
+      map.putBoolean("showTable", prefs.getBoolean(PrayerWidgetDisplay.KEY_SHOW_TABLE, true))
+      map.putInt("timeScale", prefs.getInt(PrayerWidgetDisplay.KEY_TIME_SCALE, 100))
+      promise.resolve(map)
+    } catch (e: Exception) {
+      promise.reject("E_WIDGET_DISPLAY_GET", e.message, e)
+    }
+  }
+
+  /** The prayer-times widget's display options — see `PrayerWidgetDisplay`. */
+  @ReactMethod
+  fun setAndroidPrayerWidgetDisplay(
+    textHex: String,
+    showLocation: Boolean,
+    showCountdown: Boolean,
+    showTable: Boolean,
+    timeScalePercent: Int,
+    promise: Promise,
+  ) {
+    try {
+      val prefs = reactContext.getSharedPreferences(PrayerWidgetProvider.PREFS_NAME, Context.MODE_PRIVATE)
+      val hex = textHex.trim().takeIf { it.matches(Regex("^#[0-9A-Fa-f]{6}$")) } ?: ""
+      val scale = timeScalePercent.coerceIn(PrayerWidgetDisplay.SCALE_MIN, PrayerWidgetDisplay.SCALE_MAX)
+      // Redrawn only when something changed: this runs on every settings
+      // change in the app, and a redraw of every widget is not free.
+      val same =
+        prefs.getString(PrayerWidgetDisplay.KEY_TEXT_HEX, "") == hex &&
+          prefs.getBoolean(PrayerWidgetDisplay.KEY_SHOW_LOCATION, true) == showLocation &&
+          prefs.getBoolean(PrayerWidgetDisplay.KEY_SHOW_COUNTDOWN, true) == showCountdown &&
+          prefs.getBoolean(PrayerWidgetDisplay.KEY_SHOW_TABLE, true) == showTable &&
+          prefs.getInt(PrayerWidgetDisplay.KEY_TIME_SCALE, 100) == scale
+      if (!same) {
+        prefs.edit()
+          .putString(PrayerWidgetDisplay.KEY_TEXT_HEX, hex)
+          .putBoolean(PrayerWidgetDisplay.KEY_SHOW_LOCATION, showLocation)
+          .putBoolean(PrayerWidgetDisplay.KEY_SHOW_COUNTDOWN, showCountdown)
+          .putBoolean(PrayerWidgetDisplay.KEY_SHOW_TABLE, showTable)
+          .putInt(PrayerWidgetDisplay.KEY_TIME_SCALE, scale)
+          .apply()
+        PrayerWidgetProvider.requestUpdate(reactContext)
+      }
+      promise.resolve(null)
+    } catch (e: Exception) {
+      promise.reject("E_WIDGET_DISPLAY", e.message, e)
+    }
+  }
+
   @ReactMethod
   fun setUiHints(style: String, oledBackground: Boolean, promise: Promise) {
     try {

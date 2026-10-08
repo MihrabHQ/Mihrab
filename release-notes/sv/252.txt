@@ -1,0 +1,8 @@
+• Bönetider beräknades för fel datum: ett formateringsfel gjorde att varje förfrågan till standardkällan bad om en dag fyra år bort. I Marocko förskjöts dessutom hela dagen med en timme.
+• Marocko använder nu Habous-ministeriets egna publicerade tider, uppdaterade dagligen. (#10)
+• Beräkningsmetoden du valt är nu den som används; flera metoder använde fel vinklar på din enhet. (#10)
+• Koranläsaren bläddrar till sidan där den reciterade versen står tryckt. (#12)
+• Bönewidgetar kunde bli tomma eftersom deras sparade tidslinje var alldeles för stor; det är åtgärdat.
+• Minst en månads bönetider sparas alltid, och en misslyckad hämtning lämnar inte längre en dag tom.
+• Ortnamn hämtas på ditt språk.
+• ”12 månader sparade” visas på ditt språk, och Marocko märks inte längre som ”Hanafi”.

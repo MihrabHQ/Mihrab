@@ -7,6 +7,7 @@ import {
   isRamadan,
   type IslamicEvent,
 } from './events';
+import { useHijriCalendarVersion } from './useHijriCalendarVersion';
 
 /**
  * Returns the Islamic event (if any) for today's Hijri date, plus the
@@ -21,6 +22,7 @@ export function useTodaysIslamicEvent(now: Date = new Date()): {
   isRamadan: boolean;
   isLaylatAlQadrCandidate: boolean;
 } {
+  const hijriVersion = useHijriCalendarVersion();
   return useMemo(() => {
     // Today's event, and today begins at maghrib: Laylat al-Qadr is a
     // NIGHT, so an odd night of the last ten that only became "today" at
@@ -32,5 +34,6 @@ export function useTodaysIslamicEvent(now: Date = new Date()): {
       isRamadan: isRamadan(hijri),
       isLaylatAlQadrCandidate: isLaylatAlQadrCandidate(hijri),
     };
-  }, [now]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [now, hijriVersion]);
 }

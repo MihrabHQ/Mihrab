@@ -1,0 +1,7 @@
+• iPad: Mihrab is now a full iPad app.
+• Mac: Mihrab now also runs on Apple Silicon Macs.
+• The layout adapts to the window: a two-column Home dashboard on wide screens, centred reading, and reflowing tools, Settings, Duas, Mosques, downloads, backup and month schedule, returning to a single column when narrow.
+• Two facing mushaf pages in landscape.
+• New tafsir selector in Settings that stays in sync with the Quran page, and your tafsir choice now sticks instead of resetting.
+• Smoother day carousel on large screens: swiping works in landscape and each page shows exactly one day.
+• The Qibla compass has been removed in this version.

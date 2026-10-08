@@ -1,0 +1,2 @@
+• The widget picker shows the widget you actually get: the log mark is the hollow ✓ the widget draws, sunrise is named Sunrise, the one-row widgets show their date line, and the 4×2 previews show the practice graph, as a 4×2 widget does on an ordinary phone.
+• Mac: updating no longer removes your widgets.

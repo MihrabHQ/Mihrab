@@ -302,7 +302,9 @@ describe('the times row fits its own columns', () => {
   const support = src('glance/GlanceSupport');
 
   it('sets the size it measured, on every column', () => {
-    expect(strip).toContain('val timeSp = fitTimesSp(');
+    // Measured, then the user's size (Settings → widget) held to the column.
+    expect(strip).toContain('val baseSp = fitTimesSp(');
+    expect(strip).toContain('val timeSp = scaledClockSp(');
     expect(strip).toContain('ClockText(r.minutes, m.clock, timeSp, color)');
   });
 
@@ -386,7 +388,7 @@ describe('the streak sits on the line with what is next', () => {
     // The night times belong to the times, so they are above the rule and
     // the band between the times and the graph is a single line on both.
     const night = strip.indexOf('m.night?.let { n ->');
-    const rule = strip.indexOf('if (!tight) Rule(Palette.RULE, top = 6, bottom = 8)');
+    const rule = strip.indexOf('if (!tight) Rule(d.rule, top = 6, bottom = 8)');
     const next = strip.indexOf(STRIP_ROW);
     expect(night).toBeGreaterThan(-1);
     expect(night).toBeLessThan(rule);
@@ -394,9 +396,10 @@ describe('the streak sits on the line with what is next', () => {
   });
 
   it('rules itself off the same way on both cards', () => {
-    const rule = 'if (!tight) Rule(Palette.RULE, top = 6, bottom = 8)';
-    expect(strip).toContain(rule);
-    expect(log).toContain(rule);
+    // The prayer card draws its rules in the user's text colour (`d.rule`),
+    // the Log card in the fixed one: the same rule, the same margins.
+    expect(strip).toContain('if (!tight) Rule(d.rule, top = 6, bottom = 8)');
+    expect(log).toContain('if (!tight) Rule(Palette.RULE, top = 6, bottom = 8)');
   });
 
   /**
@@ -409,7 +412,11 @@ describe('the streak sits on the line with what is next', () => {
    */
   /** The gap under the rule over the row, and the gap over the rule under it. */
   const band = (file: string, gridRule: string) => {
-    const rules = [...file.matchAll(/Rule\(Palette\.(\w+), top = (\d+), bottom = (\d+)\)/g)];
+    // `Palette.RULE_STRONG` and the display's `d.ruleStrong` are one rule.
+    const norm = (n: string) => n.replace(/([a-z])([A-Z])/g, '$1_$2').toUpperCase();
+    const rules = [...file.matchAll(/Rule\((?:Palette|d)\.(\w+), top = (\d+), bottom = (\d+)\)/g)].map(
+      (m) => [m[0], norm(m[1]), m[2], m[3]] as const,
+    );
     const over = rules.find((r) => r[1] === 'RULE' && r[2] === '6');
     const under = rules.find((r) => r[1] === gridRule && r[2] === '8');
     expect(over).toBeDefined();

@@ -131,6 +131,7 @@ import { useTabPageTop } from '../navigation/useTabPageTop';
 import { useTabBarScroll } from '../navigation/tabBarVisibility';
 import { RADIUS, SPACING } from '../theme/tokens';
 import { TYPE } from '../theme/typography';
+import { useHijriCalendarVersion } from '../hijri/useHijriCalendarVersion';
 
 const PRAYERS: JournalPrayer[] = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
 const STATUSES: JournalStatus[] = ['on-time', 'late', 'missed', 'qadha'];
@@ -1143,6 +1144,7 @@ export function LogScreen() {
     [selectedDate, i18n.language],
   );
 
+  const hijriVersion = useHijriCalendarVersion();
   /**
    * The same day in the Hijri calendar — issue #23.
    *
@@ -1154,7 +1156,9 @@ export function LogScreen() {
   const selectedHijriLine = useMemo(() => {
     const hijri = formatHijriLabel(selectedDate);
     return isToday ? `${selectedLabel} · ${hijri}` : hijri;
-  }, [selectedDate, selectedLabel, isToday]);
+    // hijriVersion: the calendar the date is read in.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedDate, selectedLabel, isToday, hijriVersion]);
 
   return (
     <ScrollView

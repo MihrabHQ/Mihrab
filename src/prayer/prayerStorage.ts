@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fetchPrayerTimesUnified } from '../providers/fetchPrayerTimes';
 import { getIslamiskaForbundetDatasetTimes } from '../providers/islamiskaForbundetDataset';
 import { getHabousDatasetTimes } from '../providers/habousDataset';
+import { getMarwDatasetTimes } from '../providers/marwDataset';
 import { computeLocalAdhanTimes } from '../providers/localAdhan';
 import type { PrayerTimesResult } from '../providers/types';
 import { recordDataSource } from './dataStatus';
@@ -503,6 +504,30 @@ export async function getStoredPrayerTimes(
   return getCachedPrayerTimes(params);
 }
 
+/** Providers backed by a prepared, server-built dataset. */
+function hasPreparedDataset(provider: PrayerDataProviderId): boolean {
+  return (
+    provider === 'islamiska_forbundet' ||
+    provider === 'habous' ||
+    provider === 'marw'
+  );
+}
+
+/** That provider's dataset answer for one day (throws on a miss). */
+function datasetTimesFor(
+  provider: PrayerDataProviderId,
+  params: { latitude: number; longitude: number; date: Date },
+) {
+  const q = {
+    latitude: params.latitude,
+    longitude: params.longitude,
+    date: params.date,
+  };
+  if (provider === 'habous') return getHabousDatasetTimes(q);
+  if (provider === 'marw') return getMarwDatasetTimes(q);
+  return getIslamiskaForbundetDatasetTimes(q);
+}
+
 /**
  * The prepared dataset's answer for one day, or null: null for a provider
  * that has no dataset, and null for a day the dataset does not cover.
@@ -513,25 +538,9 @@ export async function getStoredPrayerTimes(
 export async function getDatasetPrayerTimesOrNull(
   params: Omit<StoredPrayerData, 'months'> & { date: Date },
 ): Promise<TimingsMap | null> {
-  if (
-    params.provider !== 'islamiska_forbundet' &&
-    params.provider !== 'habous'
-  ) {
-    return null;
-  }
+  if (!hasPreparedDataset(params.provider)) return null;
   try {
-    const ds =
-      params.provider === 'habous'
-        ? await getHabousDatasetTimes({
-            latitude: params.latitude,
-            longitude: params.longitude,
-            date: params.date,
-          })
-        : await getIslamiskaForbundetDatasetTimes({
-            latitude: params.latitude,
-            longitude: params.longitude,
-            date: params.date,
-          });
+    const ds = await datasetTimesFor(params.provider, params);
     return ds.timings;
   } catch {
     /* dataset miss — the cache may still have it */
@@ -555,23 +564,9 @@ export async function getOrFetchPrayerTimes(
   // beyond that window necessarily came from a fallback, and the dataset
   // will cover it in a week or two. Reading the dataset first is what turns
   // that into an upgrade instead of a stale cache entry.
-  if (
-    params.provider === 'islamiska_forbundet' ||
-    params.provider === 'habous'
-  ) {
+  if (hasPreparedDataset(params.provider)) {
     try {
-      const ds =
-        params.provider === 'habous'
-          ? await getHabousDatasetTimes({
-              latitude: params.latitude,
-              longitude: params.longitude,
-              date: params.date,
-            })
-          : await getIslamiskaForbundetDatasetTimes({
-              latitude: params.latitude,
-              longitude: params.longitude,
-              date: params.date,
-            });
+      const ds = await datasetTimesFor(params.provider, params);
       if (ds.source) void recordDataSource(ds.source);
       return ds.timings;
     } catch {

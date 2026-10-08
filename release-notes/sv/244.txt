@@ -1,0 +1,4 @@
+• Synken körs nu så fort du ändrar din logg, även från en notis eller en widget när appen är stängd. Tidigare väntade den tills du öppnade appen nästa gång.
+• Uppdateringsknappen på en widget synkar innan den ritar om, i stället för att visa samma sak igen.
+• Att ta bort en parkopplad enhet gäller nu på riktigt: dess fil raderas, den kan inte lägga till sig själv igen och dina andra enheter tar också bort den.
+• Synkinställningen säger tydligt att den behöver en mapp som Nextcloud, OneDrive, Dropbox eller liknande håller synkad.

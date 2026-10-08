@@ -3,9 +3,10 @@
  *
  * ── WHAT THIS IS AND IS NOT ───────────────────────────────────────────
  *
- * It is not a download manager. There is no queue, no resume, no
- * background run: one file, a few megabytes, fetched because a reader
- * asked for it and while they are watching.
+ * It is not the download manager — `quranDownloadManager` runs this as
+ * its `riwayah` job (`downloadRiwayah` below), so the shade, the queue,
+ * the resume and the one-at-a-time rule are the same as for every other
+ * download. This module is the install itself.
  *
  * What it IS, and the reason it is its own module, is the boundary
  * between "bytes from the internet" and "scripture on a device". Nothing
@@ -14,23 +15,21 @@
  * laptop is refused on the phone too. The failure a reader must never
  * have is a muṣḥaf that renders beautifully and is quietly wrong.
  *
- * ── AND WHY MIHRAB DOES NOT HOST IT ───────────────────────────────────
+ * ── AND WHERE IT COMES FROM ───────────────────────────────────────────
  *
- * The Hafs page fonts come from a Mihrab release, which means the project
- * redistributes them. This does not, and the reason has changed: it used
- * to be that nobody published a Warsh text under terms that permitted it.
- * KFGQPC's terms turn out to be permissive — a free digital copy, for
- * software use, worldwide — so the project could now host one.
- *
- * It still does not. Hosting means a copy of the Qur'an whose fidelity is
- * ours to answer for, kept in step by us, and served from an account we
- * maintain; and the argument for taking that on is only convenience,
- * which a direct link from the publisher already provides. So the URL is
- * the publisher's, or one the reader supplies, and the file travels from
- * them to the reader without passing through anything of ours.
+ * KFGQPC's terms are permissive — a free digital copy, for software use,
+ * worldwide — and since October 2026 Mihrab keeps its own copy of each
+ * muṣḥaf as a release asset (`config/mirrors.ts`), byte for byte what the
+ * publisher serves. The one-button download asks that copy first and the
+ * publisher second, so a publisher moving its URL does not take the
+ * feature with it. Either way the file crosses the verifier below before
+ * a word of it is drawn, and the provenance records which host it came
+ * from.
  */
 import { fetchWithRetry } from '../utils/fetchWithRetry';
-import { CONTENT_DEADLINES } from './contentNetwork';
+import { mirrorUrl, MIRROR_TAGS } from '../config/mirrors';
+import { CONTENT_DEADLINES, type DownloadOutcome } from './contentNetwork';
+import type { MushafDownloadHandle, MushafDownloadProgress } from './mushafDownload';
 import { MUSHAF_PAGES, MUSHAF_SURAHS } from './pages';
 import { installRiwayahDataset } from './riwayahData';
 import { verifyRiwayahDataset } from './riwayahImport';
@@ -89,6 +88,8 @@ export async function installRiwayahFromUrl(
   id: RiwayahId,
   url: string,
   signal?: AbortSignal,
+  /** One try for a mirror that has a fallback behind it; retries otherwise. */
+  maxAttempts?: number,
 ): Promise<RiwayahInstallResult> {
   const trimmed = url.trim();
   if (!/^https:\/\//i.test(trimmed)) {
@@ -105,7 +106,7 @@ export async function installRiwayahFromUrl(
     const response = await fetchWithRetry(
       trimmed,
       { signal },
-      { timeoutMs: CONTENT_DEADLINES.riwayah },
+      { timeoutMs: CONTENT_DEADLINES.riwayah, maxAttempts },
     );
     if (!response.ok) {
       return fail(
@@ -143,6 +144,74 @@ export async function installRiwayahFromUrl(
     );
   }
   return finish(id, body, trimmed);
+}
+
+/**
+ * The one-button download: this repository's own copy first (see
+ * `config/mirrors`), the publisher's link only when the copy cannot be had
+ * or does not verify. What the reader sees on failure is the publisher's
+ * answer — the last thing tried.
+ */
+export async function installRiwayahMirrored(
+  id: RiwayahId,
+  direct: string,
+  signal?: AbortSignal,
+): Promise<RiwayahInstallResult> {
+  const mirrored = await installRiwayahFromUrl(
+    id,
+    mirrorUrl(MIRROR_TAGS.riwayah, `${id}.json`),
+    signal,
+    1,
+  );
+  if (mirrored.ok || signal?.aborted) return mirrored;
+  return installRiwayahFromUrl(id, direct, signal);
+}
+
+/**
+ * The same install as a download-manager job (`kind: 'riwayah'`).
+ *
+ * A muṣḥaf is one file, so its progress is 0 of 1 until it is installed —
+ * but it is a download like the others: it belongs in the shade, it must
+ * outlive the screen that started it, and it must not run beside a
+ * reciter's gigabyte on the same pipe. `url` is a link the reader pasted;
+ * without one it is the one-button download, mirror first.
+ *
+ * Endings, in the manager's words: installed is `complete`; a host that
+ * could not be reached is `interrupted` (come back to it); anything else —
+ * a file that would not verify, a server that said no — is a failure with
+ * the reason carried in `error`.
+ */
+export function downloadRiwayah(
+  id: RiwayahId,
+  source: { direct?: string; url?: string },
+  onProgress?: (p: MushafDownloadProgress) => void,
+): MushafDownloadHandle {
+  const controller = new AbortController();
+  const promise = (async (): Promise<DownloadOutcome> => {
+    onProgress?.({ done: 0, total: 1, failed: 0 });
+    const result = source.url
+      ? await installRiwayahFromUrl(id, source.url, controller.signal)
+      : source.direct
+        ? await installRiwayahMirrored(id, source.direct, controller.signal)
+        : fail('quran.riwayahUnreachable', 'Could not reach that link. Check the address and your connection.');
+    if (result.ok) {
+      onProgress?.({ done: 1, total: 1, failed: 0 });
+      return { complete: true, interrupted: false };
+    }
+    onProgress?.({ done: 0, total: 1, failed: 1 });
+    if (controller.signal.aborted) return { complete: false, interrupted: false };
+    return {
+      complete: false,
+      // Unreachable, or a server error (5xx): the network's problem, not the
+      // file's — worth coming back to. A 4xx or a bad file is not.
+      interrupted:
+        result.error.key === 'quran.riwayahUnreachable' ||
+        (result.error.key === 'quran.riwayahServerSaidNo' &&
+          Number(result.error.params?.status) >= 500),
+      error: result.error,
+    };
+  })();
+  return { promise, cancel: () => controller.abort() };
 }
 
 /**

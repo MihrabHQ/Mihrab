@@ -1,0 +1,4 @@
+• Hela mushaf-sidor utnyttjar nu skärmen bättre: texten sträcks försiktigt ut för att fylla det lediga vertikala utrymmet.
+• Helskärmsläget visar fortfarande surans namn, växlingen mellan natt- och ljust läge samt sidnumret.
+• Jämnare övergång in i och ut ur helskärm.
+• Sidorna 1–2 behåller sina dekorativa ramar osträckta.

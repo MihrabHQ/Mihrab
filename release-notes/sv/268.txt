@@ -1,0 +1,3 @@
+• En dagsrad under himlen: en pil i varje kant stegar en dag bakåt eller framåt, med datumet i båda kalendrarna mellan dem.
+• När du har stegat tillbaka till en tidigare dag blir samma rad "Tillbaka till idag".
+• På en surfplatta i stående läge sträcks himlen inte längre ut: den har en fast höjd och hela dagen ligger centrerad på sidan.

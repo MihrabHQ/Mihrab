@@ -1,0 +1,22 @@
+• A tap on a word in the mushaf opens its ayah: translation, tafsir, bookmark, recitation and khatmah position.
+• A sepia page, between paper and night.
+• The recited word lights up, on the mushaf page and in the translation view, and in landscape the page follows the reciter down.
+• Reading starts the moment the download does, and the mushaf opens and turns pages faster.
+• The page reaches the bottom of the screen, with even margins and a divider.
+• Turning the phone shows one page, not two.
+• Khatmah: the plan follows its own trail rather than wherever you turn the pages, a pinned page is a starting point rather than a fixed anchor, the finish day shows its date, and the reminder stays quiet once you have read.
+• Automatic location and saved locations can be used together.
+• The advance warning names the prayer time it is warning about.
+• The monthly timetable is now a page rather than a picture, names the place, and says what the app is under the codes.
+• Data statistics tell the two servers apart and explain why the Moroccan timetable covers a shorter period.
+• Widgets on the home screen now obey the matching toggle in the app.
+• iPhone: the Live Activity shows a bar for what is coming, drawn to scale; the night times are events the card can leave behind; a new switch controls the lock-screen button; and the stopwatch is gone.
+• iPhone and iPad: the widgets and Live Activity follow the additional-times toggles too.
+• iPhone: the mushaf's page header shares the camera cutout band, the download strip and sheets clear it, and a sheet can open in landscape.
+• iPad: rotation in the two-page view is handled the same careful way.
+• Mac: the page swipe no longer acts as the back swipe, the arrow keys turn pages again, page arrows appear at any window size, the trackpad works in the reader, and the reader's controls keep responding to the mouse.
+• iPhone and iPad: the tab bar icons show correctly with Liquid Glass.
+• Android: the navigation bar takes the page's colour, only where the buttons are.
+• Android: word highlighting works again.
+• Word timings for recitation that fail to load are retried instead of being given up on.
+• Fixed: the header strip covered the page-tone button, and the khatmah footer in the sidebar showed "today: {today}".

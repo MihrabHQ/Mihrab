@@ -13,7 +13,6 @@ import { isMacCatalyst } from '../responsive/breakpoints';
 import { MonthTimesScreen } from '../screens/MonthTimesScreen';
 import { OnboardingScreen } from '../screens/OnboardingScreen';
 import { QuranSurahScreen } from '../screens/QuranSurahScreen';
-import { QuranDownloadsScreen } from '../screens/QuranDownloadsScreen';
 import { TajweedGuideScreen } from '../quran/tajweed/TajweedGuideScreen';
 import { TilawahScreen } from '../screens/quran/TilawahScreen';
 import { KhatmahScreen } from '../screens/quran/KhatmahScreen';
@@ -272,18 +271,6 @@ export function RootNavigator() {
           headerLargeTitle: false,
           // Same as Tilawah: the scroll view pads its own bottom
           // (tabBarInset), so the stack's reserve was a dead band.
-          contentStyle: edgeToEdge,
-        })}
-      />
-      <Stack.Screen
-        name="QuranDownloads"
-        component={QuranDownloadsScreen}
-        options={() => ({
-          title: t('downloads.title', 'Manage downloads'),
-          headerLargeTitle: false,
-          // Same as Tilawah: the scroll view pads its own end (see
-          // QuranDownloadsScreen `listBottom`), so the stack's reserve was
-          // a band across the bottom of the screen that cards slid under.
           contentStyle: edgeToEdge,
         })}
       />

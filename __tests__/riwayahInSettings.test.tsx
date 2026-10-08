@@ -31,10 +31,10 @@ describe('the settings rows', () => {
 
   it('and offers the way to add and remove them', () => {
     expect(card).toContain('settings-riwayah-manage');
-    expect(card).toMatch(/riwayahManage[\s\S]{0,400}navigate\('QuranDownloads'\)/);
+    expect(card).toMatch(/riwayahManage[\s\S]{0,400}navigate\('SettingsDownloads'\)/);
     // A tradition that is not installed must not be a dead row in the
     // picker either: that is what `onManage` is for.
-    expect(card).toMatch(/onManage=\{[\s\S]{0,160}navigate\('QuranDownloads'\)/);
+    expect(card).toMatch(/onManage=\{[\s\S]{0,160}navigate\('SettingsDownloads'\)/);
   });
 
   it('is shown whether or not a second tradition is installed', () => {

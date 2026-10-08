@@ -1,0 +1,17 @@
+• Tilawah har sin egen plats: fortsätt, blanda, eller spela det som sunnah rekommenderar just nu. Fortsätt-panelen är smalare, spelaren hålls mindre medan du väljer, uppspelningsknapparna går från vänster till höger, och ett X stänger uppspelningen.
+• En ny Koran-flik: svepbara listor för Sūrah, Juz och Bokmärken, kortet för din khatmah-plan, en startsida, en riwāyah-knapp och en genväg för hörlurar.
+• Bokmärken: ett bokmärke per färg, och bokmärkesfärgerna kan ställas in i Inställningar.
+• Āyah-panelen har flikar för Översättning, Tafsir och Tajwid, en Spela-sektion, dela bredvid stjärnan, kompaktare reglage och en omgjord bokmärkesväljare; läs- och khatmah-markeringarna ser ut som knappar, och Tajwid-fliken upprepar inte längre āyahn.
+• Stöd Mihrab, under Inställningar → Om, med en väg in från Idag-skärmen: ett hjärta bredvid ”Fajr om” som kan stängas av, och en länk från månadsbladet.
+• Flikfältet har en smal indikator, och ikonen under ett glidande finger lyser upp.
+• Export av månadsblad visar hur långt den har kommit.
+• Hantera nedladdningar: en recitatörs kort följer nedladdningen medan den pågår, raderna rymmer långa recitatörsnamn, och borttagning frågar i en dialog som följer appens tema.
+• Muṣḥafen bläddrar mjukare i stående läge, och tajwid-muṣḥafen följer raderna i 1441H-trycket.
+• Många sidor har inte längre bandet längst ner: Månad, Dela, Kompass, Säkerhetskopia, Synk, Fasta, Nedladdningar, tajwidguiden, Tilawah och Khatmah.
+• Ryska: en enhetlig terminologi i hela appen, riktiga pluralformer och granskningsrättelser.
+• Skärmen Nyheter listar varje version på engelska, svenska och arabiska, uppdelat per plattform, och varje text kan kopieras (när datastatistik är på).
+• Polardagar visar inte längre trasiga tider, och appen kraschar inte längre vid start där (#61).
+• På Always On-skärmen visar Live Activity hela bönens namn, och timmar och minuter i stället för frysta sekunder.
+• iPhone: bättre uppspelning på låsskärmen, uppspelningen pausas när hörlurarna kopplas ur, och adhan går före recitationen.
+• iPhone: på arabiska och urdu börjar texten till höger, bakåtpilen sitter vid högerkanten, och Koran-fliken öppnas korrekt.
+• Sūrah-namnen linjeras i alla layoutriktningar, och reglagen har en vit knopp överallt.

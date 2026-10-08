@@ -1,0 +1,11 @@
+• Tre nya läsarter: Warsh, Qālūn och Shuʿbah, satta på den tryckta mushafens egna femton rader. Tryck på läsartens namn högst upp på en sida för att byta, eller öppna dem från Koran-sidan. Var och en hämtas från förlaget och följer inte med appen.
+• Du kan också ge appen en mushaf-fil som du laddat ner själv, zippad eller inte; en fil som inte är Koranen avvisas.
+• Khatmah räknar nu i sidor i den mushaf du läser, och dagarna är jämna: en trettiondel av boken är tjugo sidor, inte åtta ena dagen och trettiosex nästa.
+• Dagens khatmah-del markeras på sidan och kan justeras från khatmah-kortet.
+• Koranwidgetar stämmer nu överens med appen om mushafens verkliga storlek.
+• Den tryckta sidan återges troget: raderna är utjämnade som i trycket, ingen sura börjar ovanför sitt eget band, versmedaljongerna tar inte längre plats från orden och ingen rad ritas utanför marginalen.
+• Qibla-kompassen är tillbaka, med ett sätt att öppna den igen.
+• Android: Qibla-kompassen använder en riktig kompassriktning.
+• Mac: Qibla-sidan visas inte längre.
+• Bönloggen kan nollställas: en bön, en dag, en månad, ett år eller allt, och den förblir nollställd.
+• iPhone: åtgärdade två fel i loggen.

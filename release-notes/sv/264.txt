@@ -1,0 +1,10 @@
+• Dhikr-påminnelser: skapa egna, med ord du väljer, vid vilken tid på dygnet som helst, helt offline (#29).
+• Påminnelser om Surat Al-Kahf på fredag, Al-Mulk på kvällen och morgon- och kvällsadhkar (#36).
+• Välj din rättsskola (hanafitisk, malikitisk, shafiitisk eller hanbalitisk), så följer tiderna och bönernas namn den (#21, #22).
+• En andra spansk översättning av Koranen: Isa García, vid sidan av Cortés (#37).
+• Duas: alla nitton kategorier på en skärm, grupperade, med en rubrik som visar var du är (#33). Duas för toaletten och för påklädning är tillagda (#34).
+• Ett tryck på en avisering eller en bönewidget öppnar nu skärmen den handlar om (#27).
+• Sidan Aviseringar visar vad som är schemalagt (#32).
+• När du laddar ned en recitation följer även ordinformationen med, och Mihrab visar hur mycket av varje sura som faktiskt finns på din enhet (#30).
+• Datapanelen kan fällas ihop och förblir ihopfälld.
+• Åtgärdat: widgetväljaren visade två 4×1-widgetar, och en widget som inte kan ritas säger nu varför (#31).

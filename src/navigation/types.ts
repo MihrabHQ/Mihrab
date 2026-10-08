@@ -65,8 +65,6 @@ export type RootStackParamList = {
      */
     playFromAyah?: number;
   };
-  /** Manage downloads: mushaf pages, recitation audio, tafsir cache. */
-  QuranDownloads: undefined;
   /** The tajwīd colours explained — the legend, rule by rule. */
   QuranTajweed: undefined;
   /**
@@ -115,6 +113,8 @@ export type RootStackParamList = {
   SettingsQuran: undefined;
   SettingsWordReader: undefined;
   SettingsTajweed: undefined;
+  /** Settings → Downloads: the download manager, and the disk it uses. */
+  SettingsDownloads: undefined;
   SettingsAbout: undefined;
   /**
    * Pages nested under a section rather than under the index. They are

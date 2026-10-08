@@ -3,7 +3,8 @@
  *
  * One place to see and reclaim the disk the Quran reader uses:
  * the mushaf page store, per-reciter recitation audio, and the tafsir
- * cache. Reachable from Settings (Data & privacy) and the Quran screen.
+ * cache. Settings → Downloads, and reached from the Quran screen, the
+ * reader, the riwayah picker and the download notification.
  * Everything here is re-downloadable, so deletes are safe.
  *
  * ── IT USED TO REPORT AN EMPTY DEVICE ─────────────────────────────────
@@ -23,24 +24,20 @@
  * walked rather than read from the manifest, so a store whose manifest
  * went missing still shows up as the space it is really taking.
  */
-import { useCallback, useContext, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, type ReactNode } from 'react';
+import { StyleSheet, Text } from 'react-native';
+import { SettingsBlock, SettingsGroup } from './settings/SettingsGroup';
 import {
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-  type ScrollViewInstance,
-} from 'react-native';
-import { CenteredColumn } from '../responsive/CenteredColumn';
+  DownloadRow,
+  StorageBar,
+  TextAction,
+  type DeviceStorage,
+} from '../quran/downloadsUi';
+import { deviceStorage } from '../quran/downloadSpace';
 import { ConfirmModal } from '../components/ConfirmModal';
 import ReactNativeBlobUtil from 'react-native-blob-util';
 import { useTranslation } from 'react-i18next';
-import { SafeAreaInsetsContext } from 'react-native-safe-area-context';
 import { useAppPalette } from '../hooks/useAppPalette';
-import { useKeyboardAwareScroll } from '../hooks/useKeyboardAwareScroll';
-import { cardEdgeStyle } from '../theme/chrome';
 import {
   deleteLegacyImageStore,
   legacyImageStoreBytes,
@@ -56,9 +53,10 @@ import {
 } from '../quran/audio/audioStore';
 import {
   cancelQuranDownload,
-  fontSetOf,
   quranDownloadState,
   startQuranDownload,
+  jobDisplayName,
+  jobProgressText,
   subscribeQuranDownload,
   type QuranDownloadState,
 } from '../quran/quranDownloadManager';
@@ -81,7 +79,6 @@ import {
   riwayahProvenance,
 } from '../quran/riwayahData';
 import { RIWAYAT } from '../quran/riwayat';
-import { RADIUS, SPACING } from '../theme/tokens';
 import { TYPE } from '../theme/typography';
 
 type ReciterUsage = {
@@ -91,19 +88,14 @@ type ReciterUsage = {
   files: number;
 };
 
-function formatBytes(bytes: number): string {
-  if (bytes <= 0) return '0 MB';
-  const mb = bytes / (1024 * 1024);
-  if (mb >= 1024) return `${(mb / 1024).toFixed(1)} GB`;
-  if (mb >= 1) return `${mb.toFixed(mb >= 100 ? 0 : 1)} MB`;
-  return `${Math.max(1, Math.round(bytes / 1024))} KB`;
-}
 
-export function QuranDownloadsScreen() {
-  const kb = useKeyboardAwareScroll<ScrollViewInstance>();
-  // The context rather than the hook: the hook throws without a provider,
-  // and this screen is rendered bare in tests.
-  const bottomInset = useContext(SafeAreaInsetsContext)?.bottom ?? 0;
+/**
+ * The page's content. It is drawn inside `SettingsPage` — Settings →
+ * Downloads (`DownloadsSettingsScreen`) — which owns the scroll view, the
+ * width cap, the bottom reserve and the keyboard, so this is only the
+ * cards.
+ */
+export function QuranDownloadsContent() {
   const { t } = useTranslation();
   const { palette } = useAppPalette();
 
@@ -122,6 +114,8 @@ export function QuranDownloadsScreen() {
   });
   const [audio, setAudio] = useState<ReciterUsage[]>([]);
   const [riwayahBytes, setRiwayahBytes] = useState(0);
+  /** The phone's own total and free space, for the storage bar. */
+  const [device, setDevice] = useState<DeviceStorage | null>(null);
   const [loading, setLoading] = useState(true);
 
   const refresh = useCallback(async () => {
@@ -131,6 +125,7 @@ export function QuranDownloadsScreen() {
       // is often the first thing to need it, and it is what makes the
       // section below able to answer synchronously while it renders.
       await hydrateRiwayahData();
+      setDevice(await deviceStorage());
       setRiwayahBytes(
         RIWAYAT.reduce(
           (sum, r) => sum + (riwayahProvenance(r.id)?.bytes ?? 0),
@@ -226,93 +221,33 @@ export function QuranDownloadsScreen() {
   const confirmDelete = (label: string, action: () => Promise<void>) =>
     setPendingDelete({ label, action });
 
-  const row = (
-    key: string,
+  /** Delete, and Continue when there is a rest to fetch — issue #55. */
+  const itemActions = (
     title: string,
-    sub: string,
-    bytes: number,
     onDelete: () => void,
     /**
-     * The rest of it, for a download that is part way — issue #55. Only
-     * where there IS a rest: a complete reciter has nothing to fetch, and
-     * an offer to continue a finished download is a button that walks
-     * six thousand files to do nothing.
+     * Only where there IS a rest: a complete reciter has nothing to
+     * fetch, and an offer to continue a finished download is a button
+     * that walks six thousand files to do nothing.
      */
     onResume?: () => void,
-    /** How far along a part-way download is, 0–1, drawn as a bar. */
-    progress?: number,
   ) => (
-    <View
-      key={key}
-      style={[
-        styles.card,
-        { backgroundColor: palette.card, ...cardEdgeStyle(palette) },
-      ]}>
-      {/* The name has the full width of the card: the size sits beside it,
-          and the buttons go on a line of their own under it. In one row
-          with Continue downloading and Delete, a reciter's name was
-          squeezed into a column a word wide. */}
-      <View style={styles.cardHead}>
-        <Text style={[styles.rowTitle, { color: palette.text }]}>{title}</Text>
-        <Text style={[styles.rowBytes, { color: palette.muted }]}>
-          {formatBytes(bytes)}
-        </Text>
-      </View>
-      <Text style={[styles.rowSub, { color: palette.muted }]}>{sub}</Text>
-      {progress != null ? (
-        <View style={[styles.track, { backgroundColor: palette.border ?? palette.muted }]}>
-          <View
-            style={[
-              styles.fill,
-              { width: `${Math.round(progress * 100)}%`, backgroundColor: palette.accentSolid },
-            ]}
-          />
-        </View>
+    <>
+      {onResume ? (
+        <TextAction
+          label={t('quran.listenDownloadResume', 'Continue downloading')}
+          color={palette.accentSolid}
+          disabled={running != null}
+          onPress={onResume}
+        />
       ) : null}
-      <View style={styles.actions}>
-        {onResume ? (
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={t(
-              'quran.listenDownloadResume',
-              'Continue downloading',
-            )}
-            accessibilityState={{ disabled: running != null }}
-            hitSlop={6}
-            disabled={running != null}
-            onPress={onResume}
-            style={({ pressed }) => [
-              styles.actionBtn,
-              {
-                backgroundColor: running ? palette.controlBg : palette.accentSolid,
-                opacity: pressed ? 0.8 : 1,
-              },
-            ]}>
-            <Text
-              numberOfLines={1}
-              style={[
-                styles.actionLabel,
-                { color: running ? palette.muted : palette.onAccent },
-              ]}>
-              {t('quran.listenDownloadResume', 'Continue downloading')}
-            </Text>
-          </Pressable>
-        ) : null}
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={`${t('common.delete', 'Delete')} — ${title}`}
-          hitSlop={6}
-          onPress={onDelete}
-          style={({ pressed }) => [
-            styles.actionBtn,
-            { backgroundColor: palette.controlBg, opacity: pressed ? 0.8 : 1 },
-          ]}>
-          <Text numberOfLines={1} style={[styles.actionLabel, { color: palette.danger }]}>
-            {t('common.delete', 'Delete')}
-          </Text>
-        </Pressable>
-      </View>
-    </View>
+      <TextAction
+        label={t('common.delete', 'Delete')}
+        accessibilityLabel={`${t('common.delete', 'Delete')} — ${title}`}
+        color={palette.danger}
+        onPress={onDelete}
+      />
+    </>
   );
 
   const total =
@@ -325,211 +260,139 @@ export function QuranDownloadsScreen() {
     riwayahBytes +
     audio.reduce((s, a) => s + a.bytes, 0);
 
-  /**
-   * The page runs under the home indicator / navigation bar and pads its
-   * own end (the stack no longer reserves a band there — RootNavigator,
-   * QuranDownloads). iOS: the automatic content inset already adds the
-   * bottom safe area. Android: added here. The keyboard's padding, when
-   * there is one, comes after and wins.
-   */
-  const listBottom = SPACING.lg + (Platform.OS === 'android' ? bottomInset : 0);
+  const items: ReactNode[] = [];
 
-  return (
-    <ScrollView
-      ref={kb.ref}
-      automaticallyAdjustKeyboardInsets
-      style={{ flex: 1, backgroundColor: palette.bg }}
-      contentContainerStyle={[styles.list, { paddingBottom: listBottom }, kb.contentPadding]}
-      contentInsetAdjustmentBehavior="automatic">
-      {/* The gap belongs to the stack, not to `contentContainerStyle`.
-          That gap separates the ScrollView's DIRECT children, and since
-          the centred column went in there has been exactly one of those,
-          so it separated nothing and the cards sat flush against each
-          other. Both props: CenteredColumn is a pass-through on a phone
-          and only grows its inner column on a tablet or a Mac. See
-          duaCardSpacing, which pins this for every screen that does it. */}
-      <CenteredColumn innerStyle={styles.stack} style={styles.stack}>
-      {running ? (
-        <View
-          style={[
-            styles.row,
-            { backgroundColor: palette.card, ...cardEdgeStyle(palette) },
-          ]}>
-          <View style={{ flex: 1 }}>
-            <Text style={[styles.rowTitle, { color: palette.text }]}>
-              {running.kind === 'audio'
-                ? findReciter(running.reciterId).name
-                : running.kind === 'tafsir'
-                  ? findTafsirEdition(running.editionId)?.label ?? running.editionId
-                : running.kind === 'wordMeanings'
-                  ? t('downloads.wordMeanings', 'Arabic word meanings')
-                  : running.kind === 'fonts' && fontSetOf(running) !== 'v2'
-                    ? t('tajweed.downloadsRow', 'Tajweed colours')
-                    : t('downloads.mushaf', 'Mushaf pages')}
-            </Text>
-            <Text style={[styles.rowSub, { color: palette.muted }]}>
-              {running.kind === 'audio'
-                ? t('quran.downloadProgressAyahs', {
-                    done: download.progress.done,
-                    total: download.progress.total,
-                  })
-                : running.kind === 'wordMeanings' || running.kind === 'tafsir'
-                  ? t('quran.downloadProgressSurahs', {
-                      done: download.progress.done,
-                      total: download.progress.total,
-                    })
-                : t('quran.downloadProgress', {
-                    done: download.progress.done,
-                    total: download.progress.total,
-                  })}
-            </Text>
-          </View>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={t('common.cancel', 'Cancel')}
-            hitSlop={8}
-            onPress={() => cancelQuranDownload()}
-            style={[styles.deleteBtn, { borderColor: palette.border }]}>
-            <Text
-              style={{
-                color: palette.accentSolid,
-                fontWeight: '700',
-                fontSize: TYPE.label.fontSize,
-              }}>
-              {t('common.cancel', 'Cancel')}
-            </Text>
-          </Pressable>
-        </View>
-      ) : null}
+  if (mushafBytes > 0) {
+    items.push(
+      <DownloadRow
+        key="mushaf"
+        title={t('downloads.mushaf', 'Mushaf pages')}
+        // The count, not a flat "604": a run that was cancelled or that
+        // lost pages leaves a store this screen should describe honestly
+        // rather than round up to complete.
+        sub={t('downloads.mushafPages', {
+          defaultValue: '{{pages}} of {{total}} pages',
+          pages: mushafPages,
+          total: MUSHAF_TOTAL_PAGES,
+        })}
+        bytes={mushafBytes}
+        actions={itemActions(t('downloads.mushaf', 'Mushaf pages'), () =>
+          confirmDelete(t('downloads.mushaf', 'Mushaf pages'), async () => {
+            await deletePageFonts();
+          }),
+        )}
+      />,
+    );
+  }
 
-      <Text style={[styles.total, { color: palette.muted }]}>
-        {loading
-          ? t('quran.loading', 'Loading…')
-          : t('downloads.total', {
-              defaultValue: 'Total on device: {{size}}',
-              size: formatBytes(total),
-            })}
-      </Text>
+  for (const which of ['light', 'dark'] as const) {
+    if (tajweed[which].bytes <= 0) continue;
+    const title = `${t('tajweed.downloadsRow', 'Tajweed colours')} · ${
+      which === 'dark'
+        ? t('tajweed.darkPages', 'dark pages')
+        : t('tajweed.lightPages', 'light pages')
+    }`;
+    items.push(
+      <DownloadRow
+        key={`tajweed-${which}`}
+        title={title}
+        sub={t('tajweed.downloadsRowSub', {
+          defaultValue: '{{pages}} of {{total}} coloured pages',
+          pages: tajweed[which].pages,
+          total: MUSHAF_TOTAL_PAGES,
+        })}
+        bytes={tajweed[which].bytes}
+        actions={itemActions(title, () =>
+          confirmDelete(t('tajweed.downloadsRow', 'Tajweed colours'), async () => {
+            await deletePageFonts(`tajweed-${which}`);
+          }),
+        )}
+      />,
+    );
+  }
 
-      {mushafBytes > 0
-        ? row(
-            'mushaf',
-            t('downloads.mushaf', 'Mushaf pages'),
-            // The count, not a flat "604": a run that was cancelled or that
-            // lost pages leaves a store this screen should describe honestly
-            // rather than round up to complete.
-            t('downloads.mushafPages', {
-              defaultValue: '{{pages}} of {{total}} pages',
-              pages: mushafPages,
-              total: MUSHAF_TOTAL_PAGES,
-            }),
-            mushafBytes,
-            () =>
-              confirmDelete(t('downloads.mushaf', 'Mushaf pages'), async () => {
-                await deletePageFonts();
-              }),
-          )
-        : null}
+  if (legacyBytes > 0) {
+    const title = t('downloads.legacyMushaf', 'Older mushaf pages');
+    items.push(
+      <DownloadRow
+        key="mushaf-legacy"
+        title={title}
+        sub={t(
+          'downloads.legacyMushafSub',
+          'Left by the previous reader. Nothing opens these now.',
+        )}
+        bytes={legacyBytes}
+        actions={itemActions(title, () =>
+          confirmDelete(title, async () => {
+            await deleteLegacyImageStore();
+          }),
+        )}
+      />,
+    );
+  }
 
-      {(['light', 'dark'] as const).map(which =>
-        tajweed[which].bytes > 0
-          ? row(
-              `tajweed-${which}`,
-              `${t('tajweed.downloadsRow', 'Tajweed colours')} · ${
-                which === 'dark'
-                  ? t('tajweed.darkPages', 'dark pages')
-                  : t('tajweed.lightPages', 'light pages')
-              }`,
-              t('tajweed.downloadsRowSub', {
-                defaultValue: '{{pages}} of {{total}} coloured pages',
-                pages: tajweed[which].pages,
-                total: MUSHAF_TOTAL_PAGES,
-              }),
-              tajweed[which].bytes,
-              () =>
-                confirmDelete(t('tajweed.downloadsRow', 'Tajweed colours'), async () => {
-                  await deletePageFonts(`tajweed-${which}`);
-                }),
-            )
-          : null,
-      )}
-
-      {legacyBytes > 0
-        ? row(
-            'mushaf-legacy',
-            t('downloads.legacyMushaf', 'Older mushaf pages'),
-            t(
-              'downloads.legacyMushafSub',
-              'Left by the previous reader. Nothing opens these now.',
-            ),
-            legacyBytes,
-            () =>
-              confirmDelete(
-                t('downloads.legacyMushaf', 'Older mushaf pages'),
-                async () => {
-                  await deleteLegacyImageStore();
-                },
-              ),
-          )
-        : null}
-
-      {audio.map(a => {
-        // While this reciter is the one downloading, the card follows the
-        // run. It used to show what the inventory found when the screen
-        // opened — "92 of 6236" and a bar at 1% — the whole time the card
-        // at the top counted up, so the download looked stuck. The run
-        // walks every ayah in order and counts the ones already on disk as
-        // it passes them, so its count is the floor of what is there; the
-        // inventory's own count wins until the run overtakes it. The size
-        // is re-read when the run ends.
-        const live =
-          running?.kind === 'audio' && running.reciterId === a.reciterId
-            ? download.progress
-            : null;
-        const files = live ? Math.max(a.files, live.done) : a.files;
-        const whole = files >= totalAyahCount();
-        return row(
-          a.reciterId,
-          findReciter(a.reciterId).name,
-          // What is actually there, not a flat "Recitation audio" — the
-          // difference between a complete reciter and one that stopped at
-          // 85% was invisible on this screen, and it is the difference
-          // the reader came here to act on (#55).
+  for (const a of audio) {
+    // While this reciter is the one downloading, the row follows the run.
+    // It used to show what the inventory found when the screen opened —
+    // "92 of 6236" and a bar at 1% — the whole time the run counted up, so
+    // the download looked stuck. The run walks every ayah in order and
+    // counts the ones already on disk as it passes them, so its count is
+    // the floor of what is there; the inventory's own count wins until the
+    // run overtakes it. The size is re-read when the run ends.
+    const live =
+      running?.kind === 'audio' && running.reciterId === a.reciterId
+        ? download.progress
+        : null;
+    const files = live ? Math.max(a.files, live.done) : a.files;
+    const whole = files >= totalAyahCount();
+    const name = findReciter(a.reciterId).name;
+    items.push(
+      <DownloadRow
+        key={a.reciterId}
+        title={name}
+        // What is actually there, not a flat "Recitation audio" — the
+        // difference between a complete reciter and one that stopped at
+        // 85% is the difference the reader came here to act on (#55).
+        sub={
           whole
             ? t('downloads.audioSub', 'Recitation audio')
             : t('quran.downloadProgressAyahs', {
                 defaultValue: '{{done}} of {{total}} ayahs',
                 done: files,
                 total: totalAyahCount(),
-              }),
-          a.bytes,
-          () =>
-            confirmDelete(findReciter(a.reciterId).name, () =>
-              deleteReciterAudio(a.reciterId),
-            ),
-          // No Continue on the card of the reciter that IS continuing: a
+              })
+        }
+        bytes={a.bytes}
+        progress={whole ? undefined : files / totalAyahCount()}
+        actions={itemActions(
+          name,
+          () => confirmDelete(name, () => deleteReciterAudio(a.reciterId)),
+          // No Continue on the row of the reciter that IS continuing: a
           // greyed copy of the button read as "this did not start".
           whole || live
             ? undefined
             : () => {
                 startQuranDownload({ kind: 'audio', reciterId: a.reciterId });
               },
-          whole ? undefined : files / totalAyahCount(),
-        );
-      })}
+        )}
+      />,
+    );
+  }
 
-      {tafsirRows.map(e => {
-        const edition = findTafsirEdition(e.id);
-        if (!edition) return null;
-        const live =
-          running?.kind === 'tafsir' && running.editionId === e.id
-            ? download.progress
-            : null;
-        const surahs = live ? Math.max(e.surahs, live.done) : e.surahs;
-        const whole = surahs >= TAFSIR_SURAHS;
-        return row(
-          `tafsir-${e.id}`,
-          edition.label,
+  for (const e of tafsirRows) {
+    const edition = findTafsirEdition(e.id);
+    if (!edition) continue;
+    const live =
+      running?.kind === 'tafsir' && running.editionId === e.id
+        ? download.progress
+        : null;
+    const surahs = live ? Math.max(e.surahs, live.done) : e.surahs;
+    const whole = surahs >= TAFSIR_SURAHS;
+    items.push(
+      <DownloadRow
+        key={`tafsir-${e.id}`}
+        title={edition.label}
+        sub={
           whole
             ? t('downloads.tafsirWhole', 'Complete tafsir')
             : surahs > 0
@@ -538,8 +401,12 @@ export function QuranDownloadsScreen() {
                   done: surahs,
                   total: TAFSIR_SURAHS,
                 })
-              : t('downloads.tafsirSub', 'Cached tafsir texts'),
-          e.bytes,
+              : t('downloads.tafsirSub', 'Cached tafsir texts')
+        }
+        bytes={e.bytes}
+        progress={whole || surahs === 0 ? undefined : surahs / TAFSIR_SURAHS}
+        actions={itemActions(
+          edition.label,
           () => confirmDelete(edition.label, () => deleteTafsirEdition(e.id)),
           // Continue only for a download that is part way (surahs > 0): the
           // ayahs cached one at a time are not a download to resume.
@@ -548,59 +415,101 @@ export function QuranDownloadsScreen() {
             : () => {
                 startQuranDownload({ kind: 'tafsir', editionId: e.id });
               },
-          whole || surahs === 0 ? undefined : surahs / TAFSIR_SURAHS,
-        );
-      })}
+        )}
+      />,
+    );
+  }
 
-      {wordMeanings.bytes > 0
-        ? row(
-            'word-meanings',
-            t('downloads.wordMeanings', 'Arabic word meanings'),
-            wordMeanings.surahs >= WORD_MEANINGS_SURAHS
-              ? t(
-                  'downloads.wordMeaningsSub',
-                  'Meanings of the harder words, from QuranEnc.com',
-                )
-              : t('downloads.wordMeaningsPart', {
-                  defaultValue: '{{done}} of {{total}} surahs',
-                  done: wordMeanings.surahs,
-                  total: WORD_MEANINGS_SURAHS,
-                }),
-            wordMeanings.bytes,
-            () =>
-              confirmDelete(
-                t('downloads.wordMeanings', 'Arabic word meanings'),
-                deleteWordMeanings,
-              ),
-            wordMeanings.surahs >= WORD_MEANINGS_SURAHS ||
-              running?.kind === 'wordMeanings'
-              ? undefined
-              : () => {
-                  startQuranDownload({ kind: 'wordMeanings' });
-                },
-            wordMeanings.surahs >= WORD_MEANINGS_SURAHS
-              ? undefined
-              : wordMeanings.surahs / WORD_MEANINGS_SURAHS,
-          )
-        : null}
+  if (wordMeanings.bytes > 0) {
+    const whole = wordMeanings.surahs >= WORD_MEANINGS_SURAHS;
+    const title = t('downloads.wordMeanings', 'Arabic word meanings');
+    items.push(
+      <DownloadRow
+        key="word-meanings"
+        title={title}
+        sub={
+          whole
+            ? t(
+                'downloads.wordMeaningsSub',
+                'Meanings of the harder words, from QuranEnc.com',
+              )
+            : t('downloads.wordMeaningsPart', {
+                defaultValue: '{{done}} of {{total}} surahs',
+                done: wordMeanings.surahs,
+                total: WORD_MEANINGS_SURAHS,
+              })
+        }
+        bytes={wordMeanings.bytes}
+        progress={whole ? undefined : wordMeanings.surahs / WORD_MEANINGS_SURAHS}
+        actions={itemActions(
+          title,
+          () => confirmDelete(title, deleteWordMeanings),
+          whole || running?.kind === 'wordMeanings'
+            ? undefined
+            : () => {
+                startQuranDownload({ kind: 'wordMeanings' });
+              },
+        )}
+      />,
+    );
+  }
+
+  const runningProgress =
+    running && download.progress.total > 0
+      ? download.progress.done / download.progress.total
+      : 0;
+
+  return (
+    <>
+      <SettingsGroup
+        title={t('downloads.storageTitle', 'Storage')}
+        footer={t(
+          'downloads.storageFooter',
+          'Everything Mihrab downloads can be downloaded again, so deleting it here is always safe.',
+        )}>
+        <StorageBar mihrabBytes={total} device={device} loading={loading} />
+      </SettingsGroup>
+
+      {running ? (
+        <SettingsGroup title={t('downloads.groupDownloading', 'Downloading')}>
+          <DownloadRow
+            title={jobDisplayName(running)}
+            sub={jobProgressText(
+              running,
+              download.progress.done,
+              download.progress.total,
+            )}
+            progress={runningProgress}
+            actions={
+              <TextAction
+                label={t('common.cancel', 'Cancel')}
+                color={palette.danger}
+                onPress={() => cancelQuranDownload()}
+              />
+            }
+          />
+        </SettingsGroup>
+      ) : null}
+
+      <SettingsGroup title={t('downloads.groupOnDevice', 'On this device')}>
+        {items.length > 0 ? (
+          items
+        ) : (
+          <SettingsBlock>
+            <Text style={[styles.empty, { color: palette.muted }]}>
+              {loading
+                ? t('quran.loading', 'Loading…')
+                : t(
+                    'downloads.empty',
+                    'Nothing downloaded yet. Mushaf pages, recitation audio and tafsir you download appear here.',
+                  )}
+            </Text>
+          </SettingsBlock>
+        )}
+      </SettingsGroup>
 
       <RiwayahDownloadSection onChanged={() => void refresh()} />
 
-      {!loading && total === 0 ? (
-        <View
-          style={[
-            styles.row,
-            { backgroundColor: palette.card, ...cardEdgeStyle(palette) },
-          ]}>
-          <Text style={{ color: palette.muted, fontSize: TYPE.footnote.fontSize, flex: 1 }}>
-            {t(
-              'downloads.empty',
-              'Nothing downloaded yet. Mushaf pages, recitation audio and tafsir you download appear here.',
-            )}
-          </Text>
-        </View>
-      ) : null}
-      </CenteredColumn>
       <ConfirmModal
         visible={pendingDelete != null}
         title={t('downloads.deleteTitle', 'Delete download?')}
@@ -619,58 +528,10 @@ export function QuranDownloadsScreen() {
           if (pending) void pending.action().then(refresh);
         }}
       />
-    </ScrollView>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  list: { padding: SPACING.lg },
-  stack: { gap: SPACING.md },
-  total: {
-    fontSize: TYPE.label.fontSize,
-    fontWeight: '600',
-    marginBottom: 2,
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: SPACING.lg,
-    borderRadius: RADIUS.md,
-    gap: SPACING.md,
-  },
-  // A downloaded item: name and size, what it is, then its buttons.
-  card: {
-    padding: SPACING.lg,
-    borderRadius: RADIUS.md,
-    gap: SPACING.xs,
-  },
-  cardHead: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    gap: SPACING.md,
-  },
-  actions: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    flexWrap: 'wrap',
-    gap: SPACING.sm,
-    marginTop: SPACING.sm,
-  },
-  actionBtn: {
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.xs + 2,
-    borderRadius: RADIUS.md,
-  },
-  actionLabel: { fontSize: TYPE.label.fontSize, fontWeight: '700' },
-  track: { height: 4, borderRadius: RADIUS.full, overflow: 'hidden', marginTop: SPACING.xs },
-  fill: { height: 4, borderRadius: RADIUS.full },
-  rowTitle: { fontSize: TYPE.callout.fontSize, fontWeight: '600', flex: 1 },
-  rowSub: { fontSize: TYPE.label.fontSize },
-  rowBytes: { fontSize: TYPE.footnote.fontSize, fontVariant: ['tabular-nums'] },
-  deleteBtn: {
-    borderWidth: 1,
-    borderRadius: RADIUS.sm,
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
-  },
+  empty: { fontSize: TYPE.footnote.fontSize, lineHeight: 18 },
 });

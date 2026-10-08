@@ -1,0 +1,11 @@
+• När du snoozar en adhan larmar den igen med en annan formulering, och det finns ett alternativ på 1 timme.
+• Snoozealternativen följer tiden som återstår av bönen; det sista blir ”Sista chansen att be”.
+• Inställningar → Aviseringar → Böneljud: välj adhan, signal eller tyst för varje bön (#66).
+• Koranen: ladda ner tafsir och arabiska betydelser av svårare ord för läsning offline; āyah-panelen är omgjord runt dem.
+• Muṣḥaf: bläddra med volymknapparna, en Koran-inställning du själv slår på (#68).
+• Startskärmen erbjuder en gång helskärmsaviseringen, tyst telefon och Live Activity, och hoppar över det som första start-guiden redan har frågat.
+• Warsh-tajwid: slutet av en āyah är ett stopp, så inget följer med in i nästa āyah, och idghām av sākin nūn före dubbelt yāʾ eller wāw färgas (#64).
+• En borttagen khatmah skickar inte längre påminnelser på dina andra enheter.
+• En bön som du loggar medan dess aviseringar fortfarande schemaläggs får inte längre en avisering om att tiden snart går ut (#69).
+• Android: före Android 15 färgar larmskärmen status- och navigeringsfälten i bönens himmel (#63).
+• Nya texter för snooze och nedladdningar är översatta till alla språk.

@@ -911,7 +911,7 @@ export function QuranScreen() {
               'downloads.riwayat',
               'Reading traditions',
             )}
-            onPress={() => navigation.navigate('QuranDownloads')}
+            onPress={() => navigation.navigate('SettingsDownloads')}
             style={styles.downloadsLink}>
             <Text
               style={{
@@ -943,7 +943,7 @@ export function QuranScreen() {
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={t('downloads.title', 'Manage downloads')}
-          onPress={() => navigation.navigate('QuranDownloads')}
+          onPress={() => navigation.navigate('SettingsDownloads')}
           style={styles.downloadsLink}>
           <Text
             style={{ color: palette.muted, fontSize: TYPE.label.fontSize, fontWeight: '600' }}>

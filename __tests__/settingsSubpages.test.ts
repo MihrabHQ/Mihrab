@@ -144,7 +144,7 @@ describe('every subpage', () => {
     );
     const settingsPage = read('src/screens/settings/SettingsPage.tsx');
     expect(settingsPage).toMatch(
-      /const backLabel = t\(page\?\.backTitleKey \?\? 'nav\.settings'\)/,
+      /cameFromSettings\s*\?\s*t\(page\?\.backTitleKey \?\? 'nav\.settings'\)\s*:\s*t\('common\.back'/,
     );
     expect(settingsPage).toMatch(/<TabBackButton[\s\S]{0,160}label=\{backLabel\}/);
     // "Settings" for a section; the section's own name for a page nested

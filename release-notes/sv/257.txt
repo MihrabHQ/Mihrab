@@ -1,0 +1,4 @@
+• Tjugo sidor i mushafen visade vissa ord i systemets typsnitt i stället för sidans eget, som rader av meningslösa bokstäver. Sidornas typsnitt är ombyggda, och Mihrab kontrollerar nu typsnitten på din enhet och ersätter i tysthet de som är fel.
+• Nederkanten på bokstäverna klipps inte längre av vid raden.
+• När du vrider enheten stannar du kvar på samma sida.
+• Sidreglaget är ombyggt: det följer fingret mjukt, visar sura och juz under fingret och glider upp för finare kontroll.

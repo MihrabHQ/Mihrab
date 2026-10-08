@@ -1,0 +1,3 @@
+• يحمل Mihrab الآن شعاره «Mihrab — The Muslim Companion»، وتظهر في جداول الشهر المشتركة.
+• روابط التطبيق إلى الشيفرة المصدرية والإصدارات والتنزيلات تشير الآن إلى موطنه الجديد github.com/MihrabHQ/Mihrab، وتبقى الروابط القديمة صالحة.
+• Mac: انتقل مستودع Homebrew (tap) إلى MihrabHQ/homebrew-tap.

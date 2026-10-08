@@ -628,14 +628,29 @@ done
 Under 500 **characters** each — `wc -m`, not `wc -c`; Arabic and Swedish
 are well under the limit in characters and can be over it in bytes.
 
-These three files are also what the app itself shows. The "What's new"
-sheet that opens on the first launch after an update, and again from
-Settings → About, is built from every `changelogs/<code>.txt` there is —
-joined to the version name and the tag date in
+Then the **in-app notes**, which have no length limit and are what the
+"What's new" sheet shows — every user-visible change in the release, not
+just the headlines that fit Play's 500 characters:
+
+```sh
+for l in en sv ar; do
+  $EDITOR "release-notes/$l/$CODE.txt"
+done
+```
+
+English is required (the script refuses to start without it); Swedish and
+Arabic fall back to their Play notes if they are missing. Same format:
+one change per line starting with `• `, and a bullet that is for one
+platform names it (Android, iPhone, iPad, Mac) so the sheet can group it.
+
+The "What's new" sheet that opens on the first launch after an update,
+and again from Settings → About, is built from every
+`release-notes/<locale>/<code>.txt` there is, falling back per locale to
+`changelogs/<code>.txt` — joined to the version name and the tag date in
 `src/polish/releaseNotes.generated.ts`, which `release.sh` rebuilds after
 stamping the version and commits with the release. The other ten
-languages fall back to the English note; add a `changelogs/` folder under
-a locale and the app picks it up. Write for the reader, not the reviewer:
+languages fall back to the English note; add a `release-notes/<locale>/`
+folder and the app picks it up. Write for the reader, not the reviewer:
 the CHANGELOG.md entry can say what was wrong and why, the note should
 say what is different now. Bullets (`•`) and plain paragraphs are the
 whole format; `**bold**` is honoured if you ever want a lead-in.

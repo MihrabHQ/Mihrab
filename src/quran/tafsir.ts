@@ -14,6 +14,7 @@
  */
 import ReactNativeBlobUtil from 'react-native-blob-util';
 import { fetchWithRetry } from '../utils/fetchWithRetry';
+import { fetchMirrored, mirrorUrl, MIRROR_TAGS } from '../config/mirrors';
 import {
   CONTENT_DEADLINES,
   GIVE_UP_AFTER_CONSECUTIVE_FAILURES,
@@ -195,22 +196,29 @@ export async function loadTafsir(
     /* fall through to network */
   }
   try {
-    // Two attempts, not four: a reader is looking at an open sheet, so a
-    // CDN's transient 502 is worth exactly one more try and no more. The
-    // deadline is what matters most here — before this, a stalled origin
-    // left the sheet's spinner running with nothing to end it.
-    const res = await fetchWithRetry(
-      tafsirUrl(edition, surah, ayah),
-      undefined,
-      {
-        maxAttempts: 2,
-        baseDelayMs: 400,
-        timeoutMs: CONTENT_DEADLINES.tafsir,
-      },
-    );
-    if (!res.ok) return null;
-    const parsed = (await res.json()) as { text?: string };
-    const text = parsed.text?.trim();
+    // This repo's mirror first (a surah file, kept in memory), the original
+    // host's one-ayah answer when the mirror cannot give it.
+    let text: string | undefined = (
+      await mirrorSurah(edition, surah)
+    )?.ayahs[String(ayah)];
+    if (!text) {
+      // Two attempts, not four: a reader is looking at an open sheet, so a
+      // CDN's transient 502 is worth exactly one more try and no more. The
+      // deadline is what matters most here — before this, a stalled origin
+      // left the sheet's spinner running with nothing to end it.
+      const res = await fetchWithRetry(
+        tafsirUrl(edition, surah, ayah),
+        undefined,
+        {
+          maxAttempts: 2,
+          baseDelayMs: 400,
+          timeoutMs: CONTENT_DEADLINES.tafsir,
+        },
+      );
+      if (!res.ok) return null;
+      const parsed = (await res.json()) as { text?: string };
+      text = parsed.text?.trim();
+    }
     if (!text) return null;
     // Cache for offline re-reads (best effort).
     try {
@@ -247,6 +255,11 @@ function surahUrl(edition: string, surah: number): string {
   return `https://cdn.jsdelivr.net/gh/spa5k/tafsir_api@main/tafsir/${edition}/${surah}.json`;
 }
 
+/** The same surah file, from this repo's own mirror (see config/mirrors). */
+function mirrorSurahUrl(edition: string, surah: number): string {
+  return mirrorUrl(MIRROR_TAGS.tafsir, `${edition}__${surah}.json`);
+}
+
 function surahFilePath(edition: string, surah: number): string {
   return `${tafsirCacheDir()}/${edition}/s/${surah}.json`;
 }
@@ -263,6 +276,63 @@ const surahMemory = new Map<string, TafsirSurahFile>();
 
 export function resetTafsirMemory(): void {
   surahMemory.clear();
+}
+
+function rememberSurah(key: string, file: TafsirSurahFile): void {
+  surahMemory.set(key, file);
+  while (surahMemory.size > SURAH_MEMORY_LIMIT) {
+    const oldest = surahMemory.keys().next().value;
+    if (oldest === undefined) break;
+    surahMemory.delete(oldest);
+  }
+}
+
+const mirrorInFlight = new Map<string, Promise<TafsirSurahFile | null>>();
+
+/**
+ * One ayah asked for under an open sheet, answered from the mirror.
+ *
+ * The mirror holds a surah per file, not an ayah per file, so the surah is
+ * fetched once and kept in memory with the files read from disk: the next
+ * ayah of the same surah is then immediate rather than another download.
+ * Concurrent asks for one surah share a request. Bounded by its own
+ * deadline — on a slow link the original host's one-ayah answer is the
+ * quicker of the two, so null here simply hands over to it. Never written
+ * to disk: a whole-edition download is the only thing that marks a surah
+ * as held.
+ */
+async function mirrorSurah(
+  edition: string,
+  surah: number,
+): Promise<TafsirSurahFile | null> {
+  const key = `${edition}:${surah}`;
+  const pending = mirrorInFlight.get(key);
+  if (pending) return pending;
+  const job = (async () => {
+    try {
+      const res = await fetchWithRetry(mirrorSurahUrl(edition, surah), undefined, {
+        maxAttempts: 1,
+        timeoutMs: CONTENT_DEADLINES.tafsirMirrorSurah,
+      });
+      if (!res.ok) return null;
+      const rows = surahRows(await res.json());
+      if (!rows) return null;
+      const ayahs: Record<string, string> = {};
+      for (const r of rows) {
+        const t = typeof r?.text === 'string' ? r.text.trim() : '';
+        if (t && r.ayah != null) ayahs[String(r.ayah)] = t;
+      }
+      const file: TafsirSurahFile = { v: 1, ayahs };
+      rememberSurah(key, file);
+      return file;
+    } catch {
+      return null;
+    } finally {
+      mirrorInFlight.delete(key);
+    }
+  })();
+  mirrorInFlight.set(key, job);
+  return job;
 }
 
 async function readSurahFile(
@@ -286,12 +356,7 @@ async function readSurahFile(
       return null;
     }
     const file = parsed as TafsirSurahFile;
-    surahMemory.set(key, file);
-    while (surahMemory.size > SURAH_MEMORY_LIMIT) {
-      const oldest = surahMemory.keys().next().value;
-      if (oldest === undefined) break;
-      surahMemory.delete(oldest);
-    }
+    rememberSurah(key, file);
     return file;
   } catch {
     return null;
@@ -357,6 +422,17 @@ export async function deleteTafsirEdition(edition: string): Promise<void> {
 
 type SurahArray = Array<{ ayah?: number | string; text?: string | null }>;
 
+/**
+ * A surah file's rows. Most editions are a bare array; the Urdu Ibn Kathir is
+ * `{ "ayahs": [...] }`, which this used to refuse as "unexpected response" —
+ * so that edition's whole-edition download could never finish.
+ */
+export function surahRows(json: unknown): SurahArray | null {
+  if (Array.isArray(json)) return json as SurahArray;
+  const inner = (json as { ayahs?: unknown } | null)?.ayahs;
+  return Array.isArray(inner) ? (inner as SurahArray) : null;
+}
+
 /** One surah file → disk. A surah upstream has no file for is NOT a failure. */
 async function fetchTafsirSurah(edition: string, surah: number): Promise<void> {
   // A small edition's surah is a few tens of kilobytes: a request that has
@@ -366,7 +442,7 @@ async function fetchTafsirSurah(edition: string, surah: number): Promise<void> {
   // edition's biggest surah is megabytes, which needs the long one.
   const small =
     (findTafsirEdition(edition)?.approxBytes ?? Infinity) < SMALL_EDITION_BYTES;
-  const res = await fetchWithRetry(surahUrl(edition, surah), undefined, {
+  const res = await fetchMirrored(mirrorSurahUrl(edition, surah), surahUrl(edition, surah), undefined, {
     maxAttempts: small ? 4 : 2,
     baseDelayMs: 400,
     timeoutMs: small ? CONTENT_DEADLINES.tafsirSurahSmall : CONTENT_DEADLINES.tafsirSurah,
@@ -378,8 +454,8 @@ async function fetchTafsirSurah(edition: string, surah: number): Promise<void> {
     // fetched on demand, as it would have been.
   } else {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const rows = (await res.json()) as SurahArray;
-    if (!Array.isArray(rows)) throw new Error('unexpected response');
+    const rows = surahRows(await res.json());
+    if (!rows) throw new Error('unexpected response');
     for (const r of rows) {
       const text = typeof r?.text === 'string' ? r.text.trim() : '';
       if (text && r.ayah != null) ayahs[String(r.ayah)] = text;

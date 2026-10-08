@@ -1,0 +1,2 @@
+• Mushafets rader justeras nu till en och samma bredd, så att sidan får den raka marginal som den tryckta utgåvan har. Justeringen är så liten att bokstäverna ser oförändrade ut; en rad som skulle behöva sträckas mer lämnas som den är.
+• Inledningssidorna är större. Sida 1 och 2 rymmer bara sju eller åtta rader, så de använder nu ett bredare textblock och större text.

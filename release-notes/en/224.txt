@@ -1,0 +1,7 @@
+• One choice for what appears under each verse: pick translation or tafsir and the edition once, and it applies to the reader, the ayah panel, the verse of the day and the daily-ayah notification. The selector is on the Quran page (in its own card), in the reader header and in Settings.
+• Editions in the selector are grouped by language, with Arabic and English at the top.
+• Picking an edition applies it right away and closes the selector, including editions in another language.
+• On the verse of the day card, the translation/tafsir toggle and the edition selector are now one combined bar.
+• Al-Muyassar is now listed as a tafsir only.
+• Adhan alerts are now scheduled 4 days ahead, so they keep firing even if the app isn't opened every day; a new row helps you turn off battery optimization when it could block them.
+• Fixed the tools grid collapsing to two narrow columns on some phones.

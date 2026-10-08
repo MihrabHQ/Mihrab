@@ -1,0 +1,5 @@
+• 16 nya recitatörer (21 totalt), med en sökbar lista för att välja recitatör.
+• Mushaf-sidan är nu standardvyn för läsning, med en tydligare växling mellan natt- och ljust läge.
+• En renare spelare för recitation.
+• Ny daglig notis "Dagens ayah" vid en tid du väljer, med översättning.
+• Bokmärken kan nu tas bort från fliken Bokmärken.

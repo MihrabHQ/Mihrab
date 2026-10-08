@@ -1,0 +1,6 @@
+• Dagens tabell går nu att svepa upp till en vecka bakåt och även framåt, så att du kan logga en bön på den dag du missade den. Det fungerar även för platser som använder en officiell tidtabell.
+• När du trycker på bocken för en bön vars tid har passerat frågas du om du bad i tid eller tog igen den.
+• En tydligare rad under nedräkningen visar veckodagen, båda datumen och en väg tillbaka till idag.
+• Korankortet på Idag är mindre och visar "Börja läsa" när du inte har börjat.
+• Böneraderna når nu ända ut till skärmens kanter.
+• Raden för den andra tiden ligger kvar på böneraderna, så tabellen ändrar inte längre höjd.

@@ -1,0 +1,5 @@
+• 16 new reciters (21 in total), with a searchable reciter picker.
+• The mushaf page is now the default reading view, with a clearer night/light toggle.
+• A cleaner recitation player.
+• New daily "Ayah of the day" notification at a time you choose, with translation.
+• Bookmarks can now be deleted from the Bookmarks tab.

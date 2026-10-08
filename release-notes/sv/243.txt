@@ -1,0 +1,3 @@
+• Åtgärdat: en sunnabön du hade avloggat kom tillbaka. En enhet som slutat synka lämnade sin sista fil i den delade mappen, och varje synkrunda läste den igen och återställde det gamla antalet. En ögonblicksbild som redan slagits ihop lämnas nu ifred.
+• När du tar bort en parkopplad enhet tas även dess fil bort från den delade mappen.
+• Synken visar hur gammal din andra enhets logg är, inte när den här enheten senast läste dess fil.

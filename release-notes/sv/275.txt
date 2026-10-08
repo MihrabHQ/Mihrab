@@ -1,0 +1,4 @@
+• Att radera en khatmah får den inte längre att komma tillbaka. På en ihopkopplad enhet kom planen tillbaka inom en eller två synkrundor; en övergiven plan förblir nu övergiven överallt.
+• Skärmen förblir tänd även i läsaren vers för vers, som den redan gjorde i mushafen och Tilawah, med en knapp för det under Inställningar → Koranen.
+• Khatmah-kortet visar "dagar kvar att läsa" och hur många sidor efter du ligger.
+• Android: systemfärger (Material You) fungerar nu när Ljust eller Mörkt är valt, inte bara System.

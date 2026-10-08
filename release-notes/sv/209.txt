@@ -1,0 +1,10 @@
+• Tafsir (Ibn Kathir med flera) i ayah-panelen, sparad för läsning offline.
+• Skarpare och större mushaf-sidor som fyller skärmen bättre; ett tryck växlar helskärm och ett långt tryck markerar en ayah.
+• Alla kontroller för recitation finns nu samlade i en panel.
+• Bokmärken omfattar nu hela ayan.
+• Khatmah: en fortsätt-knapp, alternativ för att börja om och möjlighet att fästa din exakta position.
+• Ny daglig påminnelse för khatmah.
+• Ny skärm för att hantera nedladdningar.
+• Långa recitationspass spelas upp jämnare, eftersom nästa ayah laddas i förväg.
+• Pålitligare tidpunkt för adhan.
+• Tidsfärgningen i Hem-sidhuvudet visas nu bara när dynamiska färger är på.

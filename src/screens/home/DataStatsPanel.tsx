@@ -20,6 +20,7 @@ import {
   pollServerIndexNow,
 } from '../../providers/islamiskaForbundetDataset';
 import { pollServerIndexNow as pollHabousIndexNow } from '../../providers/habousDataset';
+import { pollServerIndexNow as pollMarwIndexNow } from '../../providers/marwDataset';
 import { getCacheStatus } from '../../prayer/prayerStorage';
 import {
   getEffectiveDataProvider,
@@ -27,6 +28,7 @@ import {
 } from '../../settings/effectiveProvider';
 import {
   nextHabousServerRunAfter,
+  nextMarwServerRunAfter,
   nextServerRunAfter,
 } from '../../config/datasets';
 import type { DataSource } from '../../providers/types';
@@ -35,7 +37,7 @@ import { RADIUS, SPACING } from '../../theme/tokens';
 import { TYPE } from '../../theme/typography';
 
 /**
- * The two prepared datasets, in the order the panel lists them, each with the
+ * The prepared datasets, in the order the panel lists them, each with the
  * provider that reads it and the server-run schedule to expect.
  */
 const SERVERS: {
@@ -46,7 +48,7 @@ const SERVERS: {
   nextRun: () => Date;
   /**
    * Why this dataset's window is the size it is, where the number alone is
-   * misleading. Only Habous has one, and it is the difference between "the
+   * misleading — Morocco's and Algeria's. It is the difference between "the
    * build is broken" and "that is everything the ministry publishes".
    */
   coverageNoteKey?: string;
@@ -68,6 +70,16 @@ const SERVERS: {
     coverageNoteKey: 'dataStats.habousWindow',
     coverageNoteDefault:
       'The ministry publishes only the current Hijri month, so this window shrinks by a day each day and refills when the month turns. A rebuild cannot make it longer.',
+  },
+  {
+    id: 'marw',
+    provider: 'marw',
+    labelKey: 'dataStats.serverAlgeria',
+    labelDefault: 'Algeria · Ministry of Religious Affairs',
+    nextRun: nextMarwServerRunAfter,
+    coverageNoteKey: 'dataStats.marwWindow',
+    coverageNoteDefault:
+      'The ministry publishes a Hijri year at a time, as an update to its own app. This window runs to the end of that year and is renewed when the next one appears, around June.',
   },
 ];
 
@@ -110,7 +122,7 @@ function DataStatsPanelImpl() {
       // for ever — which is how the shared slot used to look after someone
       // travelled between the two regions.
       await Promise.all(
-        [pollServerIndexNow(), pollHabousIndexNow()].map(p =>
+        [pollServerIndexNow(), pollHabousIndexNow(), pollMarwIndexNow()].map(p =>
           p.catch(() => {
             /* offline — keep whatever was recorded before */
           }),

@@ -1,0 +1,10 @@
+• Widgets have been redesigned and new ones added, on both phones: Next Prayer, Prayer Times in medium and large sizes, Hijri Date, Streak, Log Today, Continue Reading and Tasbih.
+• Log Today lets you log prayers from the home screen; an unlogged prayer shows a hollow tick, and the card says what the plus button does.
+• Continue Reading opens the reader you were last using, and Tasbih keeps its count; moving to the next dhikr shows its name.
+• Prayer widgets show your city instead of coordinates, include the night times, and show when owed prayers are due.
+• The widget graph is now a calendar that matches the one in the app, and the Streak widget defaults to one row.
+• Widgets update while the app is closed, tapping a widget opens the matching screen, and a widget whose data has run out says so.
+• Widgets fill their space without clipping or empty gaps, and the pickers preview them at their real size.
+• iPhone: widgets now need iOS 17 or later, the Lock Screen rectangular widget is more useful, and one faulty value no longer blanks all six widgets.
+• Android: the widget layout follows the size you choose, the countdown ticks, the Hijri Date widget is added, and a widget with an out-of-date day asks you to open the app instead of showing it.
+• Android (Google Play): this release also includes 2.9.0, which did not ship there: sunnah prayers logged beside each fard, any audio file as the adhan, export and import of the full record, the best streak beside the current one, and a fix for the streak showing zero each morning.

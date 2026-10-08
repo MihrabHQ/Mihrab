@@ -1,0 +1,4 @@
+• Once a prayer's first time has passed, its row shows when the second time ends.
+• A prayer log that could not be read is no longer overwritten. A brief storage hiccup could make the Log look empty, and the next tap replaced your whole record with that one prayer; the app now waits until your record can be read before saving anything. (#38)
+• The sun in the sky drawing crosses the sky once, from where it rises to where it sets.
+• The sky drawing no longer appears mirrored in right-to-left languages.

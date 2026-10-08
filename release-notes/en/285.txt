@@ -1,0 +1,8 @@
+• Android: a full-screen prayer alert, with the next prayer under the prayer name and Snooze for 5, 10, 15 or 30 minutes (#63). It is offered in the first-run walkthrough, takes on the colours of that prayer's sky, and the heads-up card has a single Snooze button.
+• iPhone: prayer times can ring as AlarmKit alarms on iOS 26 and later, full screen and through silent mode and Focus; the alarm's Snooze label is now readable and its Pause and Resume buttons are translated.
+• Tajweed colours now cover more of Warsh: iqlāb inside a word, taqlīl of nūn, badal after a prefix and the disjoined letters (#64).
+• Tajweed colours fill the gaps in Hafs for madd, ikhfāʾ and saktah, and match the printed page for the small alif, pause signs and tafkhīm.
+• Landscape phones scroll the recited line to the top during word-by-word recitation, without jumping back to the start of the āyah.
+• A following bookmark moves with the recitation's page turns and stays on the āyah where the recitation stopped.
+• New privacy policy, naming the app, the developer and a contact, and describing how data is handled today.
+• Android: the muṣḥaf's two-page spread leaves space below the header.

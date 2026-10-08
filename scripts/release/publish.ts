@@ -110,6 +110,7 @@ export const RELEASE_COMMIT_PATHS = [
   'contrib/fdroid/com.prayer_times.yml',
   JOURNAL,
   'fastlane/metadata/android',
+  'release-notes',
   'src/polish/releaseNotes.generated.ts',
 ];
 export const commitMessage = (rel: Release) => `Release ${rel.version} (${rel.code})`;

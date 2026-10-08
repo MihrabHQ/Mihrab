@@ -41,7 +41,14 @@ export type SnoozeMenu = {
   minutes: number[];
   /** When "Last chance" would fire; set only when no length fits. */
   lastChanceAt: number | null;
+  /** The moment the menu was worked out for (when the alert will show). */
+  drawnAt?: number;
 };
+
+/** Whole minutes from `nowMs` to `at`, never less than one. */
+export function minutesUntil(at: number, nowMs: number): number {
+  return Math.max(1, Math.round((at - nowMs) / MIN));
+}
 
 /**
  * The menu for an alert shown at `nowMs` whose prayer ends at `deadlineMs`.
@@ -62,7 +69,7 @@ export function snoozeMenu(
   for (const lead of LAST_CHANCE_LEAD_MIN) {
     const at = deadlineMs - lead * MIN;
     // At least a minute away, or pressing the button would just re-ring.
-    if (at >= nowMs + MIN) return { minutes: [], lastChanceAt: at };
+    if (at >= nowMs + MIN) return { minutes: [], lastChanceAt: at, drawnAt: nowMs };
   }
   return { minutes: [], lastChanceAt: null };
 }

@@ -1,0 +1,7 @@
+• The Quran is now drawn as text using the official Madinah page fonts instead of page images. It stays sharp at any zoom, uses far less memory and rotates instantly.
+• The reader opens right away: each page is fetched as you read instead of waiting for one large download.
+• Pages match the printed mushaf page for page and line for line, with words spaced like the print, short lines centred, and lines always right-to-left whatever the app language.
+• Phones and tablets each get a reader built for them: one page on a phone, facing pages on a tablet.
+• Phone landscape shows the page at 1.6 times its portrait size instead of the full screen width.
+• Turning pages in landscape no longer skips a page.
+• Mihrab is now licensed under the AGPL-3.0-or-later.

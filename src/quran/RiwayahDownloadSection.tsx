@@ -8,12 +8,11 @@
  * already stands behind. This one does not, and pretending otherwise by
  * making it look like the others would be the dishonest option.
  *
- * Mihrab has no right to distribute the Warsh corpus. Nobody publishes a
- * Warsh text under terms that would give it one (`riwayahStore.ts` has
- * the survey). So the app ships the reader and the checks, and the file
- * comes from the publisher to the reader, with nothing of ours in
- * between — and the reader is told exactly that, along with who publishes
- * it and whom they credit, before they add scripture to their device.
+ * The app ships the reader and the checks, not the text. The text is
+ * downloaded — from Mihrab's own copy of the publisher's file, or from the
+ * publisher (`riwayahDownload.ts` has why both) — and the reader is told
+ * who publishes it and whom they credit before they add scripture to
+ * their device.
  *
  * ── ONE BUTTON, AND A DOOR BESIDE IT ─────────────────────────────────
  *
@@ -34,7 +33,11 @@
  *
  * The file never travels through anything of ours either way.
  */
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { startQuranDownload } from './quranDownloadManager';
+import { useQuranDownloadRun } from './QuranDownloadStrip';
+import { DownloadRow, ProgressTrack, TextAction } from './downloadsUi';
+import { SettingsGroup } from '../screens/settings/SettingsGroup';
 import { ConfirmModal } from '../components/ConfirmModal';
 import {
   ActivityIndicator,
@@ -47,16 +50,12 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useAppPalette } from '../hooks/useAppPalette';
-import { cardEdgeStyle } from '../theme/chrome';
 import {
   riwayahProvenance,
   uninstallRiwayah,
   useRiwayahAvailability,
 } from './riwayahData';
-import {
-  installRiwayahFromText,
-  installRiwayahFromUrl,
-} from './riwayahDownload';
+import { installRiwayahFromText } from './riwayahDownload';
 import { hasFilePicker, pickFile } from '../native/FilePicker';
 import { mushafTextFromFile } from './mushafFile';
 import {
@@ -72,11 +71,6 @@ function hostOf(from: string): string {
   return m ? m[1] : from;
 }
 
-function formatBytes(bytes: number): string {
-  const mb = bytes / (1024 * 1024);
-  if (mb >= 1) return `${mb.toFixed(1)} MB`;
-  return `${Math.max(1, Math.round(bytes / 1024))} KB`;
-}
 
 export function RiwayahDownloadSection({
   onChanged,
@@ -85,7 +79,6 @@ export function RiwayahDownloadSection({
   onChanged?: () => void;
 }) {
   const { t } = useTranslation();
-  const { palette } = useAppPalette();
   // Re-render when a muṣḥaf is added or removed anywhere in the app.
   useRiwayahAvailability();
 
@@ -93,11 +86,13 @@ export function RiwayahDownloadSection({
   if (offered.length === 0) return null;
 
   return (
-    <View style={styles.section}>
-      <Text style={[styles.heading, { color: palette.muted }]}>
-        {t('downloads.riwayat', 'Reading traditions')}
-      </Text>
-      <BuiltInCard />
+    <SettingsGroup
+      title={t('downloads.riwayat', 'Reading traditions')}
+      footer={t(
+        'downloads.riwayatFootnote',
+        'Mihrab keeps its own copy of each text, byte for byte the publisher’s, and falls back to the publisher. Every file is checked here before anything is read from it.',
+      )}>
+      <BuiltInRow />
       {offered.map(riwayah => (
         <RiwayahCard
           key={riwayah.id}
@@ -105,13 +100,7 @@ export function RiwayahDownloadSection({
           onChanged={onChanged}
         />
       ))}
-      <Text style={[styles.footnote, { color: palette.muted }]}>
-        {t(
-          'downloads.riwayatFootnote',
-          'Mihrab does not include or host these texts. The file is fetched from the publisher straight to this device, and checked here before anything is read from it.',
-        )}
-      </Text>
-    </View>
+    </SettingsGroup>
   );
 }
 
@@ -125,27 +114,18 @@ export function RiwayahDownloadSection({
  * nothing to fetch and nothing to delete, and it says the two things that
  * are true of it: it is the default, and it is already here.
  */
-function BuiltInCard() {
+function BuiltInRow() {
   const { t } = useTranslation();
-  const { palette } = useAppPalette();
   const hafs = RIWAYAT.find(r => r.id === DEFAULT_RIWAYAH);
   if (!hafs) return null;
   return (
-    <View
-      style={[
-        styles.card,
-        { backgroundColor: palette.card, ...cardEdgeStyle(palette) },
-      ]}>
-      <Text style={[styles.title, { color: palette.text }]}>
-        {`${t(hafs.nameKey, hafs.arabic)} ${t('quran.riwayahDefault', '(default)')}`}
-      </Text>
-      <Text style={[styles.sub, { color: palette.muted }]}>
-        {t(
-          'downloads.riwayahBuiltIn',
-          'Built into Mihrab. Nothing to download, and nothing to delete.',
-        )}
-      </Text>
-    </View>
+    <DownloadRow
+      title={`${t(hafs.nameKey, hafs.arabic)} ${t('quran.riwayahDefault', '(default)')}`}
+      sub={t(
+        'downloads.riwayahBuiltIn',
+        'Built into Mihrab. Nothing to download, and nothing to delete.',
+      )}
+    />
   );
 }
 
@@ -159,9 +139,38 @@ function RiwayahCard({
   const { t } = useTranslation();
   const { palette } = useAppPalette();
   const [url, setUrl] = useState('');
-  const [busy, setBusy] = useState(false);
+  /** Reading a file the reader chose — local work, not a download. */
+  const [reading, setReading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [detail, setDetail] = useState<string | null>(null);
+
+  /**
+   * The download itself belongs to the download manager, like every other
+   * one in the app: it is in the shade, it survives this screen closing,
+   * it waits its turn behind a reciter's gigabyte, and it is offered again
+   * if the network takes it away. This card only shows what the manager
+   * says about this riwayah.
+   */
+  const run = useQuranDownloadRun();
+  const mine =
+    run.running?.kind === 'riwayah' && run.running.riwayahId === riwayah.id;
+  const otherRunning = run.running != null && !mine;
+  const last =
+    run.last?.job.kind === 'riwayah' && run.last.job.riwayahId === riwayah.id
+      ? run.last
+      : null;
+  const busy = reading || mine;
+  useEffect(() => {
+    if (!last?.complete) return;
+    setUrl('');
+    onChanged?.();
+  }, [last, onChanged]);
+  const lastError =
+    last && !last.complete && !last.cancelled && last.error ? last.error : null;
+  const shownError =
+    error ??
+    (lastError ? t(lastError.key, lastError.fallback, lastError.params) : null);
+  const shownDetail = error ? detail : lastError?.detail ?? null;
   /** Whether the reader has asked for the by-hand way in. */
   const [manual, setManual] = useState(false);
 
@@ -203,7 +212,7 @@ function RiwayahCard({
     }
     // Backed out. A cancel is a decision, not an error to report back.
     if (!picked) return;
-    setBusy(true);
+    setReading(true);
     try {
       const read = mushafTextFromFile(picked.name, picked.bytes);
       if (!read.ok) {
@@ -226,47 +235,29 @@ function RiwayahCard({
       setError(t('downloads.riwayahUnreadable', 'That file could not be read.'));
       setDetail(String(e));
     } finally {
-      setBusy(false);
+      setReading(false);
     }
   }, [onChanged, riwayah.id, t]);
 
   /**
-   * Fetch the muṣḥaf from the publisher, the way the page fonts are
-   * fetched: one button, no link to find, no file to go looking for.
-   *
-   * It still travels publisher → reader with nothing of ours in between,
-   * and it is still checked here before a word of it is drawn. What has
-   * changed is only that the reader no longer has to do the fetching.
+   * Fetch the muṣḥaf the way the page fonts are fetched: one button, no
+   * link to find, no file to go looking for. Mihrab's own copy first, the
+   * publisher's second (`downloadRiwayah`), and checked before a word of it
+   * is drawn.
    */
-  const download = useCallback(async () => {
+  const download = useCallback(() => {
     if (!direct) return;
-    setBusy(true);
     setError(null);
     setDetail(null);
-    const result = await installRiwayahFromUrl(riwayah.id, direct);
-    setBusy(false);
-    if (result.ok) {
-      onChanged?.();
-      return;
-    }
-    setError(t(result.error.key, result.error.fallback, result.error.params));
-    setDetail(result.error.detail ?? null);
-  }, [direct, onChanged, riwayah.id, t]);
+    startQuranDownload({ kind: 'riwayah', riwayahId: riwayah.id });
+  }, [direct, riwayah.id]);
 
-  const install = useCallback(async () => {
-    setBusy(true);
+  /** A link the reader pasted — the same download, from their address. */
+  const install = useCallback(() => {
     setError(null);
     setDetail(null);
-    const result = await installRiwayahFromUrl(riwayah.id, url);
-    setBusy(false);
-    if (result.ok) {
-      setUrl('');
-      onChanged?.();
-      return;
-    }
-    setError(t(result.error.key, result.error.fallback, result.error.params));
-    setDetail(result.error.detail ?? null);
-  }, [onChanged, riwayah.id, t, url]);
+    startQuranDownload({ kind: 'riwayah', riwayahId: riwayah.id, url: url.trim() });
+  }, [riwayah.id, url]);
 
   // The app's own themed dialog, not the platform alert.
   const [confirming, setConfirming] = useState(false);
@@ -274,36 +265,24 @@ function RiwayahCard({
 
   if (installed) {
     return (
-      <View
-        style={[
-          styles.card,
-          { backgroundColor: palette.card, ...cardEdgeStyle(palette) },
-        ]}>
-        <View style={styles.row}>
-          <View style={styles.grow}>
-            <Text style={[styles.title, { color: palette.text }]}>{name}</Text>
-            <Text style={[styles.sub, { color: palette.muted }]}>
-              {t('downloads.riwayahInstalled', {
-                defaultValue: '{{pages}} pages · from {{host}}',
-                pages: installed.pages,
-                host: hostOf(installed.from),
-              })}
-            </Text>
-          </View>
-          <Text style={[styles.bytes, { color: palette.muted }]}>
-            {formatBytes(installed.bytes)}
-          </Text>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={t('common.delete', 'Delete')}
-            hitSlop={8}
-            onPress={remove}
-            style={[styles.deleteBtn, { borderColor: palette.border }]}>
-            <Text style={[styles.deleteLabel, { color: palette.danger }]}>
-              {t('common.delete', 'Delete')}
-            </Text>
-          </Pressable>
-        </View>
+      <View>
+        <DownloadRow
+          title={name}
+          sub={t('downloads.riwayahInstalled', {
+            defaultValue: '{{pages}} pages · from {{host}}',
+            pages: installed.pages,
+            host: hostOf(installed.from),
+          })}
+          bytes={installed.bytes}
+          actions={
+            <TextAction
+              label={t('common.delete', 'Delete')}
+              accessibilityLabel={`${t('common.delete', 'Delete')} — ${name}`}
+              color={palette.danger}
+              onPress={remove}
+            />
+          }
+        />
         <ConfirmModal
           visible={confirming}
           title={t('downloads.deleteTitle', 'Delete download?')}
@@ -326,96 +305,87 @@ function RiwayahCard({
   }
 
   return (
-    <View
-      style={[
-        styles.card,
-        { backgroundColor: palette.card, ...cardEdgeStyle(palette) },
-      ]}>
-      <Text style={[styles.title, { color: palette.text }]}>{name}</Text>
-      <Text style={[styles.sub, { color: palette.muted }]}>
-        {t('downloads.riwayahPublisher', {
-          defaultValue: 'Published by {{publisher}}. Credits {{credits}}.',
-          publisher: riwayah.source?.publisher ?? '',
-          credits: riwayah.source?.credits ?? '',
-        })}
-      </Text>
-
-      <Pressable
-        accessibilityRole="link"
-        accessibilityLabel={t('downloads.riwayahOpenSource', 'Open the source')}
-        onPress={() => {
-          const page = riwayah.source?.page;
-          if (page) void Linking.openURL(page);
-        }}
-        style={styles.linkBtn}>
-        <Text style={[styles.link, { color: palette.accentSolid }]}>
-          {t('downloads.riwayahOpenSource', 'Open the source')}
-        </Text>
-      </Pressable>
-
-      {direct ? (
-        <>
-          <Text style={[styles.help, { color: palette.muted }]}>
-            {t(
-              'downloads.riwayahFetchHowTo',
-              'Mihrab will fetch it from the publisher straight to this device and check it before anything is read from it.',
-            )}
+    <View style={styles.block}>
+      {/* One line: the name, and the one thing to do with it. The
+          explanation of where the file comes from is the group's footer,
+          once, rather than a paragraph repeated under every riwayah. */}
+      <View style={styles.headRow}>
+        <View style={styles.grow}>
+          <Text style={[styles.title, { color: palette.text }]}>{name}</Text>
+          <Text style={[styles.sub, { color: palette.muted }]}>
+            {t('downloads.riwayahPublisher', {
+              defaultValue: 'Published by {{publisher}}. Credits {{credits}}.',
+              publisher: riwayah.source?.publisher ?? '',
+              credits: riwayah.source?.credits ?? '',
+            })}
           </Text>
-
+        </View>
+        {direct ? (
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel={t('downloads.riwayahDownload', 'Download')}
-            disabled={busy}
-            onPress={() => void download()}
-            style={[
-              styles.cta,
-              { backgroundColor: palette.accentSolid, opacity: busy ? 0.5 : 1 },
+            accessibilityLabel={`${t('downloads.riwayahDownload', 'Download')} — ${name}`}
+            accessibilityHint={t(
+              'downloads.riwayahFetchHowTo',
+              'Mihrab will fetch it to this device and check it before anything is read from it.',
+            )}
+            accessibilityState={{ disabled: busy || otherRunning, busy }}
+            disabled={busy || otherRunning}
+            hitSlop={6}
+            onPress={download}
+            style={({ pressed }) => [
+              styles.pill,
+              {
+                backgroundColor: palette.accentSolid,
+                opacity: busy || otherRunning ? 0.5 : pressed ? 0.8 : 1,
+              },
             ]}>
             {busy ? (
               <ActivityIndicator size="small" color={String(palette.onAccent)} />
             ) : (
-              <Text style={[styles.ctaLabel, { color: palette.onAccent }]}>
+              <Text style={[styles.pillLabel, { color: palette.onAccent }]}>
                 {t('downloads.riwayahDownload', 'Download')}
               </Text>
             )}
           </Pressable>
-        </>
+        ) : null}
+      </View>
+
+      {mine ? (
+        <ProgressTrack progress={run.progress.done / Math.max(1, run.progress.total)} />
       ) : null}
 
-      {error ? (
+      {shownError ? (
         <View style={styles.errorBox}>
-          <Text style={[styles.error, { color: palette.danger }]}>{error}</Text>
-          {detail ? (
+          <Text style={[styles.error, { color: palette.danger }]}>{shownError}</Text>
+          {shownDetail ? (
             <Text style={[styles.detail, { color: palette.muted }]}>
-              {detail}
+              {shownDetail}
             </Text>
           ) : null}
         </View>
       ) : null}
 
-      {/*
-        The manual way in, folded away when there is a direct link.
-
-        It is not a developer affordance and it is not dead weight: a
-        publisher's URL can move, a reader can be on a network that will
-        not reach it, and someone may have the file already. But it is no
-        longer the first thing on the card, because for almost everyone
-        the first thing should be a button that just works.
-      */}
-      {direct && !manual ? (
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={t(
-            'downloads.riwayahAddAFile',
-            'Add a file I already have',
-          )}
-          onPress={() => setManual(true)}
-          style={styles.linkBtn}>
-          <Text style={[styles.link, { color: palette.muted }]}>
-            {t('downloads.riwayahAddAFile', 'Add a file I already have')}
-          </Text>
-        </Pressable>
-      ) : null}
+      {/* The source, and the manual way in — words, not buttons. The
+          manual way is not dead weight: a publisher's URL can move, a
+          network may not reach it, and someone may have the file already.
+          But for almost everyone the button above is the whole story. */}
+      <View style={styles.links}>
+        <TextAction
+          label={t('downloads.riwayahOpenSource', 'Open the source')}
+          color={palette.accentSolid}
+          onPress={() => {
+            const page = riwayah.source?.page;
+            if (page) void Linking.openURL(page);
+          }}
+        />
+        {direct && !manual ? (
+          <TextAction
+            label={t('downloads.riwayahAddAFile', 'Add a file I already have')}
+            color={palette.muted}
+            onPress={() => setManual(true)}
+          />
+        ) : null}
+      </View>
 
       {!direct || manual ? (
         <>
@@ -437,7 +407,7 @@ function RiwayahCard({
               onPress={() => void chooseFile()}
               style={({ pressed }) => [
                 styles.secondary,
-                { borderColor: palette.accentSolid },
+                { backgroundColor: palette.controlBg },
                 (busy || pressed) && { opacity: 0.6 },
               ]}>
               <Text style={[styles.secondaryLabel, { color: palette.accentSolid }]}>
@@ -462,20 +432,20 @@ function RiwayahCard({
             accessibilityLabel={t('downloads.riwayahLink', 'Link to the data file')}
             style={[
               styles.input,
-              { color: palette.text, borderColor: palette.border },
+              { color: palette.text, backgroundColor: palette.controlBg },
             ]}
           />
 
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={t('downloads.riwayahInstall', 'Add this muṣḥaf')}
-            disabled={busy || url.trim().length === 0}
-            onPress={() => void install()}
+            disabled={busy || otherRunning || url.trim().length === 0}
+            onPress={install}
             style={[
               styles.secondary,
               styles.orLine,
-              { borderColor: palette.accentSolid },
-              (busy || url.trim().length === 0) && { opacity: 0.5 },
+              { backgroundColor: palette.controlBg },
+              (busy || otherRunning || url.trim().length === 0) && { opacity: 0.5 },
             ]}>
             <Text style={[styles.secondaryLabel, { color: palette.accentSolid }]}>
               {t('downloads.riwayahInstall', 'Add this muṣḥaf')}
@@ -488,24 +458,31 @@ function RiwayahCard({
 }
 
 const styles = StyleSheet.create({
-  section: { marginTop: SPACING.lg },
-  heading: {
-    fontSize: TYPE.label.fontSize,
-    fontWeight: '600',
-    marginBottom: SPACING.sm,
-    marginHorizontal: SPACING.xs,
-  },
-  card: { borderRadius: RADIUS.lg, padding: SPACING.lg, marginBottom: SPACING.md },
-  row: { flexDirection: 'row', alignItems: 'center', gap: SPACING.md },
+  // A riwayah not yet on the device: a row of the group, padded like one,
+  // with no surface of its own — the group is the card.
+  block: { paddingHorizontal: SPACING.lg, paddingVertical: SPACING.lg },
+  title: { fontSize: TYPE.body.fontSize, fontWeight: '500' },
+  sub: { fontSize: TYPE.footnote.fontSize, marginTop: SPACING.xs, lineHeight: 18 },
+  headRow: { flexDirection: 'row', alignItems: 'center', gap: SPACING.md },
   grow: { flex: 1 },
-  title: { fontSize: TYPE.callout.fontSize, fontWeight: '700' },
-  sub: { fontSize: TYPE.label.fontSize, marginTop: SPACING.xs, lineHeight: 17 },
-  bytes: { fontSize: TYPE.label.fontSize, fontVariant: ['tabular-nums'] },
-  deleteBtn: { borderWidth: 1, borderRadius: RADIUS.sm, paddingHorizontal: SPACING.md, paddingVertical: SPACING.sm },
-  deleteLabel: { fontWeight: '700', fontSize: TYPE.label.fontSize },
-  linkBtn: { alignSelf: 'flex-start', paddingVertical: SPACING.sm },
+  // The one filled control on the row: compact, beside the name.
+  pill: {
+    borderRadius: RADIUS.full,
+    paddingHorizontal: SPACING.lg,
+    minHeight: 34,
+    minWidth: 88,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pillLabel: { fontWeight: '600', fontSize: TYPE.footnote.fontSize },
+  links: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    columnGap: SPACING.xl,
+    marginTop: SPACING.xs,
+  },
+  // Tonal, not outlined: a filled pill in the control colour.
   secondary: {
-    borderWidth: 1,
     borderRadius: RADIUS.md,
     paddingVertical: SPACING.md,
     alignItems: 'center',
@@ -513,12 +490,10 @@ const styles = StyleSheet.create({
     minHeight: 44,
     marginBottom: SPACING.xs,
   },
-  secondaryLabel: { fontWeight: '700', fontSize: TYPE.callout.fontSize },
+  secondaryLabel: { fontWeight: '600', fontSize: TYPE.callout.fontSize },
   orLine: { marginTop: SPACING.md },
-  link: { fontSize: TYPE.callout.fontSize, fontWeight: '700' },
-  help: { fontSize: TYPE.label.fontSize, lineHeight: 17, marginBottom: SPACING.sm },
+  help: { fontSize: TYPE.footnote.fontSize, lineHeight: 18, marginBottom: SPACING.sm },
   input: {
-    borderWidth: 1,
     borderRadius: RADIUS.md,
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.md,
@@ -527,14 +502,4 @@ const styles = StyleSheet.create({
   errorBox: { marginTop: SPACING.md },
   error: { fontSize: TYPE.footnote.fontSize, fontWeight: '600', lineHeight: 18 },
   detail: { fontSize: TYPE.caption.fontSize, marginTop: SPACING.xs, lineHeight: 15 },
-  cta: {
-    marginTop: SPACING.md,
-    borderRadius: RADIUS.md,
-    paddingVertical: SPACING.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 44,
-  },
-  ctaLabel: { fontWeight: '700', fontSize: TYPE.callout.fontSize },
-  footnote: { fontSize: TYPE.caption.fontSize, lineHeight: 16, marginHorizontal: SPACING.xs, marginTop: 2 },
 });

@@ -1,0 +1,4 @@
+• Android: nytt alternativ att spela adhan som larm, så att den hörs även i tyst läge eller vibrationsläge. Avstängt som standard.
+• Logg-widgeten uppdateras när du loggar en bön. Det var den enda widgeten som inte fick veta det.
+• Mac: widgetar och deras förhandsvisningar fastnar inte längre på versionen du uppgraderade från.
+• Mac och iPad: tangentbordet bläddrar i Koranen i mushafens riktning, som läses från höger till vänster: ←, A eller H framåt; →, D eller L bakåt.

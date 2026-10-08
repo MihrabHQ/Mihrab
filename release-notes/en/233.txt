@@ -1,0 +1,4 @@
+• The mushaf now works when the app language is set to Arabic.
+• Visual refinements across the app following a design review.
+• The tab bar sits back inside the screen frame.
+• iPad: the Home screen now fits the iPad screen.

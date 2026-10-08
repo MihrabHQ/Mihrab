@@ -1,0 +1,3 @@
+• Sync: choosing a Nextcloud folder, or any folder whose provider will not create a subfolder, no longer fails with an error.
+• Sync: if the folder you pick is already called Mihrab, it is used as it is instead of getting another Mihrab folder inside it, so sync writes where your sync client is looking.
+• A folder that really cannot be used now says so in plain words instead of showing a technical error.

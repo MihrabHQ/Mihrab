@@ -3,6 +3,7 @@ import { Platform, AppState } from 'react-native';
 import { usePrayerSettings } from '../context/PrayerSettingsContext';
 import type { PrayerAppSettings, WidgetHighlightId } from '../settings/types';
 import { getPrayerWidgetModule } from '../native/PrayerWidget';
+import { coerceWidgetTimeScale } from '../settings/storage';
 
 // 'dynamic' is gone (2026-08-27), so a native side still reporting it is
 // not adopted back into settings.
@@ -52,6 +53,13 @@ function syncNativeWidgetAppearance(
       dynamicHl,
       settings.tintedSurfaces,
     );
+    void mod.setAndroidPrayerWidgetDisplay?.(
+      settings.androidWidgetTextColor,
+      settings.androidWidgetShowLocation,
+      settings.androidWidgetShowCountdown,
+      settings.androidWidgetShowTable,
+      settings.androidWidgetTimeScale,
+    );
     return;
   }
 
@@ -69,6 +77,40 @@ function syncNativeWidgetAppearance(
   if (Platform.OS === 'ios' && mod?.setUiHints) {
     void mod.setUiHints('fixed', false);
   }
+}
+
+/**
+ * What the app should adopt from the prayer-times widget's stored options
+ * (set from the widget's own settings screen). Only real changes, and only
+ * well-formed values.
+ */
+export function prayerWidgetDisplayUpdates(
+  display: {
+    textHex: string;
+    showLocation: boolean;
+    showCountdown: boolean;
+    showTable: boolean;
+    timeScale: number;
+  },
+  current: PrayerAppSettings,
+): Partial<PrayerAppSettings> {
+  const updates: Partial<PrayerAppSettings> = {};
+  const hex = typeof display.textHex === 'string' ? display.textHex.trim().toUpperCase() : '';
+  if (/^#[0-9A-F]{6}$/.test(hex) && hex !== current.androidWidgetTextColor.toUpperCase()) {
+    updates.androidWidgetTextColor = hex;
+  }
+  if (typeof display.showLocation === 'boolean' && display.showLocation !== current.androidWidgetShowLocation) {
+    updates.androidWidgetShowLocation = display.showLocation;
+  }
+  if (typeof display.showCountdown === 'boolean' && display.showCountdown !== current.androidWidgetShowCountdown) {
+    updates.androidWidgetShowCountdown = display.showCountdown;
+  }
+  if (typeof display.showTable === 'boolean' && display.showTable !== current.androidWidgetShowTable) {
+    updates.androidWidgetShowTable = display.showTable;
+  }
+  const scale = coerceWidgetTimeScale(display.timeScale);
+  if (scale !== current.androidWidgetTimeScale) updates.androidWidgetTimeScale = scale;
+  return updates;
 }
 
 /** Syncs widget highlight / Android opacity with app settings (and Theme → System colors for dynamic accent). */
@@ -113,6 +155,15 @@ export function useSyncWidgetUiHints(): void {
             }
           }
         }).catch(e => console.error('Failed to get widget appearance', e))
+        .then(() => mod.getAndroidPrayerWidgetDisplay?.())
+        .then(display => {
+          // The prayer-times widget's own options, which its settings screen
+          // (long-press → settings) can change while the app is closed.
+          if (!display) return;
+          const current = settingsRef.current;
+          const updates = prayerWidgetDisplayUpdates(display, current);
+          if (Object.keys(updates).length > 0) updateSettings(updates);
+        }).catch(e => console.error('Failed to get prayer widget display', e))
         .finally(() => setNativeSynced(true));
       } else {
         setNativeSynced(true);

@@ -75,6 +75,21 @@ export type DownloadOutcome = {
   complete: boolean;
   /** It gave up early because the files had stopped arriving at all. */
   interrupted: boolean;
+  /**
+   * Why it ended without completing, when there is one thing to say —
+   * "not enough space", or a riwayah file that would not verify. A key and
+   * a fallback for the UI to translate, never a sentence: see
+   * `RiwayahInstallError`, whose shape this is.
+   */
+  error?: DownloadError;
+};
+
+export type DownloadError = {
+  key: string;
+  fallback: string;
+  params?: Record<string, string | number>;
+  /** Diagnostics in English, for an issue report — never translated. */
+  detail?: string;
 };
 
 /**
@@ -119,6 +134,14 @@ export const CONTENT_DEADLINES = {
    * megabytes for the largest editions (Ibn Kathir, Al-Baqarah).
    */
   tafsirSurah: 60_000,
+  /**
+   * One surah file from this repo's mirror, fetched to answer ONE ayah under
+   * an open sheet (the mirror has no per-ayah files). Up to ~6 MB for the
+   * largest, about half a megabyte typically; past this the original host's
+   * one-ayah answer takes over, so a stalled mirror costs the sheet this
+   * long and no more.
+   */
+  tafsirMirrorSurah: 10_000,
   /** One surah of a SMALL tafsir edition (al-Muyassar: ~27 KB a surah). */
   tafsirSurahSmall: 12_000,
   /** A riwayah dataset from a link someone pasted; up to 48 MB. */

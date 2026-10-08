@@ -1,0 +1,11 @@
+• En ny första start: fyra frågor som ställer in appen för dig, där varje svar visas med dina egna bönetider. Den frågar inte längre efter din plats två gånger, och varje Asr-skola visar sin tid.
+• Välj vilken accentfärg du vill. Väljaren erbjuder bara färger som förblir läsbara, sparar dina egna färger så att du kan återvända till dem och erbjuds även vid första starten.
+• Himlen bakom nedräkningen lyses upp från där solen faktiskt står, och månen ritas så som den ser ut där du befinner dig.
+• Ställ in textstorleken för översättningen, tafsiren och uttalet med A− och A+.
+• Se vad som har ändrats efter varje uppdatering, och hela ändringsloggen med det senaste först, under Inställningar → Om.
+• Aviseringar som du tillåter under välkomststegen kommer nu faktiskt fram.
+• Hälsningen har fått en ny layout och animeras inte längre.
+• Färgerna inom varje tema är mer enhetliga, utan skarp ren svart eller vit.
+• Fältet du skriver i ligger kvar ovanför tangentbordet.
+• Aviseringsskärmen säger "meddela" i stället för "kalla".
+• Himmelswidgeten har tagits bort; dess bild finns kvar i appen.

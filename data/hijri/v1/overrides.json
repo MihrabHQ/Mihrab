@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "updated": "2026-10-08",
+  "notes": "Announced Hijri month starts that replace the app's tables. Add an entry after each Kemenag sidang isbat (mabims) whose result differs from the prediction; entries that agree are kept as a record. Checked by __tests__/hijriOverrides.test.ts.",
+  "mabims": [
+    {
+      "year": 1447,
+      "month": 9,
+      "start": "2026-02-19",
+      "source": "Kemenag sidang isbat (1 Ramadan 1447)",
+      "url": "https://rri.co.id/en/national/2192129/govt-announces-first-day-of-ramadan-on-february-19"
+    },
+    {
+      "year": 1447,
+      "month": 10,
+      "start": "2026-03-21",
+      "source": "Kemenag sidang isbat (1 Syawal 1447)",
+      "url": "https://jogja.antaranews.com/berita/814994/pemerintah-resmi-menetapkan-idul-fitri-jatuh-pada-sabtu-21-maret-2026"
+    },
+    {
+      "year": 1447,
+      "month": 12,
+      "start": "2026-05-18",
+      "source": "Kemenag sidang isbat (1 Zulhijah 1447, Iduladha 27 May 2026)",
+      "url": "https://www.rctiplus.com/news/detail/nasional/5384723/hari-raya-iduladha-1447-hijriah-serentak-pada-27-mei-2026"
+    }
+  ],
+  "khgt": []
+}

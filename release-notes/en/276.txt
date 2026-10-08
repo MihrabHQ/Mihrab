@@ -1,0 +1,5 @@
+• A bookmark can follow your reading, so it stays where you stopped, or stay pinned to its ayah. Each bookmark has its own switch.
+• Khatmah progress is the pages you actually read. Mark a page read or unread beside the surah name; pages you skipped are counted and can be gone back to.
+• A dot beside the surah name shows which of your reading places is recording.
+• New: start the day at sunset (Maghrib), so an evening's reading counts towards the day that has begun (Settings → Quran).
+• iPhone: the Live Activity now appears for people who use a 24-hour clock.

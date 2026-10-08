@@ -24,6 +24,7 @@ import { MadhabModal } from '../MadhabModal';
 import { MethodModal } from '../MethodModal';
 import { asrSchoolFor, selectedMadhab } from '../../../prayer/madhab';
 import { MonthTimesCard } from '../MonthTimesCard';
+import { HijriCalendarCard } from '../HijriCalendarCard';
 import { PrayerOffsetsModal } from '../PrayerOffsetsModal';
 import { SettingsPage } from '../SettingsPage';
 import { DataStatsPanel } from '../../home/DataStatsPanel';
@@ -58,6 +59,7 @@ export function PrayerTimesSettingsScreen() {
           onOpenMadhabPicker={openMadhab}
         />
         <MonthTimesCard />
+        <HijriCalendarCard />
         {/* The data statistics — where the times come from, how much is
             stored, when they were refreshed — sit with the source they
             describe. They were a card at the foot of Home, which is a page

@@ -1,0 +1,4 @@
+• Nedladdning av en recitatör har flyttat till listan över recitatörer. Varje röst visar nu vad den har sparat på din enhet och erbjuder att ladda ned eller radera det, så att du ser vilka recitatörer som finns offline på en enda skärm.
+• Övningsgrafen på hemskärmen är ombyggd: större rutor, kant till kant, och den läses nedåt kolumn för kolumn som på Logg-skärmen. När du ändrar widgetens storlek läggs rader till eller tas bort i stället för att grafen krymper, från en rad och uppåt.
+• Logg-widgeten använder datumradens utrymme till ytterligare en rad i grafen, och bandet mellan tiderna och grafen är en enda rad på båda widgetarna.
+• Aviseringsklockorna står i linje, och tre mindre fel är åtgärdade (#23).

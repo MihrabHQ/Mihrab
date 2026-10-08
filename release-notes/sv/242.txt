@@ -1,0 +1,8 @@
+• Appen drar märkbart mindre batteri i bakgrunden: timers stannar när appen inte syns, kompassen släpper sensorn när du lämnar den, dagliga notiser byggs inte längre om varje timme och ett helt års bönetider hämtas inte längre i bakgrunden.
+• Den levande nedräkningen ritas av systemet självt, så appen behöver inte längre vakna varje sekund.
+• Widgetar uppdateras en gång per upplåsning i stället för nio gånger, och inte alls om du inte har några widgetar.
+• Appen gör sitt tyngre arbete när något faktiskt har ändrats, inte varje gång den kommer i förgrunden.
+• Synken visar hur gammal din andra enhets logg är, och säger till när inget har kommit fram.
+• Inställningar: valet av medföljande text ligger nu bakom en enda rad.
+• Åtgärdat: loggen gick inte att ångra för en sunnabön, och en parkopplad enhet lade tillbaka den hela tiden.
+• Android: åtgärdade en krasch när appen återställdes från bakgrunden.

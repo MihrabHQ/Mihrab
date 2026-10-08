@@ -1,0 +1,3 @@
+• Mac: Mac-appen som installeras med Homebrew har nu bönetidswidgeten för Notiscenter, samma widget som iPhone redan har.
+• Länkarna till den delade månaden och i Inställningar öppnar nu Mihrabs webbplats i stället för kodförrådet.
+• Android: inget annat ändras i den här versionen; den delar versionsnummer med Mac-appen.

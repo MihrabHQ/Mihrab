@@ -1,0 +1,7 @@
+• Khatmah by a date: choose when to finish, and each day's portion is worked out from what is left. Switch between pacing by days and by a date at any time from the ⋯ menu. (#53)
+• Pull down on Today to refresh the prayer times, or use the new row in Settings that does the same.
+• Which mushaf you read can be chosen in Settings.
+• When the clocks change where you are, prayer times refresh at once. (#56)
+• A download cut off by the connection keeps what it has: continue it, or it resumes by itself on Wi-Fi. (#55)
+• Sync no longer brings back a khatmah marker you removed, or pulls your progress back.
+• The khatmah options no longer overlap the clock at the top of the screen.

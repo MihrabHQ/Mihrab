@@ -1,0 +1,12 @@
+• En ny Idag-skärm: en sida, ingen rullning, med en himmel bakom nedräkningen som följer dygnet: natten och dess måne, gryning, middag, solnedgång.
+• Logga en bön med ett tryck från Idag, med bocken bredvid varje bön.
+• Surornas namn visas i mushafens egen kalligrafi i hela Koranen.
+• Tilāwah är en spelare: fortsätt där du slutade, spela, nästa och blanda, och blandningen blandar nu på riktigt.
+• Mushafens ton kan följa appens tema automatiskt.
+• Varje skärm är omritad: lugnare ramverk, en accentfärg, vanlig meningsversal, inga titelrader på flikarna och förklaringar undanstoppade bakom ett ⓘ.
+• Qibla-skärmen är omgjord till ett instrument, och den uppslukande läsaren är omgjord.
+• Loggen ryms på en skärm, och varje dua-kategori öppnas som en egen sida.
+• I mushafen i helskärm håller sig surans namn och nedladdningsfältet undan från kameran.
+• Android: en ny Himmel-widget för hemskärmen. Widgetarna är stabilare: de ritas om en gång per start i stället för många gånger, Hijri- och tasbih-widgetarna ritas för varje storlek, och en widget som misslyckas visas som ett Mihrab-kort (#31).
+• iPhone: stilväljaren för Live Activity visar förhandsvisningar som stämmer med kortet, och stilar som inte kan ritas är avaktiverade.
+• Åtgärdat: en rad i mushafen kunde falla bort.

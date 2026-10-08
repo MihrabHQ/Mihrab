@@ -1,0 +1,10 @@
+• Send a dua or a passage of tafsir to someone as text, with its source, in the language you are reading it in (#24).
+• The Continue Reading widget has a play button: one tap opens where you left off and starts the recitation there (#25).
+• Silencing a prayer from its card now also silences its heads-up and its boundary announcement.
+• The alert button on a prayer row can apply "just this once" and take it back, and the row and the card no longer disagree about a prayer's alert.
+• iPhone: the button on the Live Activity works like the alert control on the home row, for that prayer.
+• The practice graph has smaller cells, only one countdown is shown, and a tap no longer briefly shows zero.
+• Fixed: a prayer time could break across two lines on some system fonts (#26).
+• Fixed: the tasbih widget slowed down as the count grew.
+• Fixed: the reading widget cut off its last line at its default size.
+• Fixed: a Qur'an download could hang instead of failing.

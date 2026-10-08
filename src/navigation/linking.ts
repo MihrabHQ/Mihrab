@@ -19,7 +19,10 @@
  * `mihrab://` does is change which tab is showing.
  */
 import { isMacCatalyst } from '../responsive/breakpoints';
-import type { LinkingOptions } from '@react-navigation/native';
+import {
+  getStateFromPath as defaultGetStateFromPath,
+  type LinkingOptions,
+} from '@react-navigation/native';
 import notifee, { EventType } from '@notifee/react-native';
 import { Linking } from 'react-native';
 
@@ -59,13 +62,57 @@ function positiveInt(value: string): number | undefined {
  *     that is usually forgotten and is the ordinary one for a reminder
  *     that arrives hours after the app was last opened.
  */
+/**
+ * A settings page opened by a link has Settings under it.
+ *
+ * React Navigation builds a link's state from the path alone, so
+ * mihrab://downloads on a cold start — the "download stopped"
+ * notification, tapped hours later — produced a stack of one: the page,
+ * with nothing to go back to. Its back control then did nothing and
+ * Android's back left the app. Every `Settings…` page is a page OF the
+ * Settings tab, so that is what is put under it, and back lands where it
+ * would have had the page been reached by hand.
+ *
+ * ONLY for the link the app was launched with. A link that arrives while
+ * the app is running is pushed onto the stack the reader already has, and
+ * back returns them there; a two-route state would instead be turned into
+ * a RESET by React Navigation, throwing away whatever they had open.
+ */
+export function withSettingsUnder<S extends { routes: Array<{ name: string }> }>(
+  state: S | undefined,
+): S | undefined {
+  if (!state || state.routes.length !== 1) return state;
+  const only = state.routes[0];
+  if (!only.name.startsWith('Settings')) return state;
+  return {
+    ...state,
+    index: 1,
+    routes: [
+      { name: 'Home', state: { index: 0, routes: [{ name: 'SettingsTab' }] } },
+      only,
+    ],
+  } as unknown as S;
+}
+
+/** Set while the launch link has not yet been turned into a state. */
+let launchLinkPending = false;
+
 export const linking: LinkingOptions<RootStackParamList> = {
   prefixes: [MIHRAB_SCHEME],
+  getStateFromPath(path, options) {
+    const state = defaultGetStateFromPath(path, options);
+    if (!launchLinkPending) return state;
+    launchLinkPending = false;
+    return withSettingsUnder(state);
+  },
   async getInitialURL() {
-    const url = await Linking.getInitialURL();
-    if (url) return url;
-    const initial = await notifee.getInitialNotification();
-    return initial ? await notificationRoute(initial.notification) : null;
+    let url = await Linking.getInitialURL();
+    if (!url) {
+      const initial = await notifee.getInitialNotification();
+      url = initial ? await notificationRoute(initial.notification) : null;
+    }
+    launchLinkPending = url != null;
+    return url;
   },
   subscribe(listener) {
     const link = Linking.addEventListener('url', ({ url }) => listener(url));
@@ -154,12 +201,12 @@ export const linking: LinkingOptions<RootStackParamList> = {
       Khatmah: 'khatmah',
       Sync: 'sync',
       /**
-       * mihrab://downloads
+       * mihrab://downloads — Settings → Downloads.
        *
        * Where a download that stopped is picked up again (#55), and so
        * where the "download stopped" notification lands.
        */
-      QuranDownloads: 'downloads',
+      SettingsDownloads: 'downloads',
       QuranTajweed: 'tajweed',
       /**
        * mihrab://month — the month's table; mihrab://month?share=1 — the

@@ -116,6 +116,143 @@
                  a hint pointing at a control that is gone is worse than no
                  hint, so it went with the radio button. -->
 
+            <!-- Only the prayer-times widgets (Next prayer, Prayer times,
+                 Prayer times tall) read these; the activity shows the
+                 section only when it was opened from one of them. -->
+            <LinearLayout
+                android:id="@+id/widget_configure_prayer_section"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/widget_configure_prayer_title"
+                    android:textAppearance="?attr/textAppearanceTitleMedium" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="@string/widget_configure_prayer_note"
+                    android:textAppearance="?attr/textAppearanceBodySmall" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/widget_configure_text_color"
+                    android:textAppearance="?attr/textAppearanceTitleSmall" />
+
+                <RadioGroup
+                    android:id="@+id/widget_configure_text_group"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="vertical">
+
+                    <RadioButton
+                        android:id="@+id/widget_configure_text_light"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/widget_configure_text_light" />
+
+                    <RadioButton
+                        android:id="@+id/widget_configure_text_white"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/widget_configure_text_white" />
+
+                    <RadioButton
+                        android:id="@+id/widget_configure_text_cream"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/widget_configure_text_cream" />
+
+                    <RadioButton
+                        android:id="@+id/widget_configure_text_gold"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/widget_configure_text_gold" />
+
+                    <RadioButton
+                        android:id="@+id/widget_configure_text_sky"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/widget_configure_text_sky" />
+
+                    <RadioButton
+                        android:id="@+id/widget_configure_text_dark"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/widget_configure_text_dark" />
+
+                    <RadioButton
+                        android:id="@+id/widget_configure_text_custom"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/widget_configure_highlight_custom" />
+                </RadioGroup>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/widget_configure_text_hex_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:hint="@string/widget_configure_hex_hint">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/widget_configure_text_hex_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textCapCharacters"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/widget_configure_show_location"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/widget_configure_show_location" />
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/widget_configure_show_countdown"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/widget_configure_show_countdown" />
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/widget_configure_show_table"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/widget_configure_show_table" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/widget_configure_time_size"
+                    android:textAppearance="?attr/textAppearanceTitleSmall" />
+
+                <TextView
+                    android:id="@+id/widget_configure_time_size_value"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:textAppearance="?attr/textAppearanceBodyLarge" />
+
+                <SeekBar
+                    android:id="@+id/widget_configure_time_size_seek"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:max="7" />
+            </LinearLayout>
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/widget_configure_save"
                 android:layout_width="match_parent"

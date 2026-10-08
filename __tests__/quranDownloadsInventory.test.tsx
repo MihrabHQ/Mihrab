@@ -44,6 +44,9 @@ function mockChildrenOf(dir: string): Entry[] {
   return [...seen.values()];
 }
 
+/** What `fs.df()` answers, Android's shape; null = the platform will not say. */
+let mockDf: { internal_free: string; internal_total: string } | null = null;
+
 jest.mock('react-native-blob-util', () => ({
   __esModule: true,
   default: {
@@ -63,6 +66,11 @@ jest.mock('react-native-blob-util', () => ({
         }
       },
       mkdir: async () => {},
+      // The device's own storage figures — none unless a test sets them.
+      df: async () => {
+        if (!mockDf) throw new Error('df unavailable');
+        return mockDf;
+      },
     },
   },
 }));
@@ -107,7 +115,8 @@ jest.mock('../src/hooks/useAppPalette', () => ({
   }),
 }));
 
-import { QuranDownloadsScreen } from '../src/screens/QuranDownloadsScreen';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { QuranDownloadsContent } from '../src/screens/QuranDownloadsScreen';
 import { MUSHAF_TOTAL_PAGES } from '../src/quran/mushafImages';
 
 const FONT_BYTES = 300_000;
@@ -133,7 +142,17 @@ function text(tree: ReactTestRenderer): string {
 async function render(): Promise<ReactTestRenderer> {
   let tree!: ReactTestRenderer;
   await act(async () => {
-    tree = create(<QuranDownloadsScreen />);
+    // The group footers open their essay in a sheet, which asks for the
+    // safe area; the app root provides one.
+    tree = create(
+      <SafeAreaProvider
+        initialMetrics={{
+          frame: { x: 0, y: 0, width: 390, height: 844 },
+          insets: { top: 0, left: 0, right: 0, bottom: 0 },
+        }}>
+        <QuranDownloadsContent />
+      </SafeAreaProvider>,
+    );
   });
   // One more flush: the inventory is gathered in an effect.
   await act(async () => {});
@@ -142,6 +161,7 @@ async function render(): Promise<ReactTestRenderer> {
 
 beforeEach(() => {
   mockFiles.clear();
+  mockDf = null;
 });
 
 test('a complete font store is listed, not reported as an empty device', async () => {
@@ -188,4 +208,21 @@ test('an empty device still says so', async () => {
 
   expect(body).toContain('Nothing downloaded yet');
   expect(body).toContain('Total on device: 0 MB');
+});
+
+test('the storage bar: Mihrab, the rest of the phone, and what is free', async () => {
+  for (let page = 1; page <= MUSHAF_TOTAL_PAGES; page++) {
+    const name = `QCF2${String(page).padStart(3, '0')}.ttf`;
+    mockFiles.set(`/mock/documents/quran/fonts/v2/${name}`, FONT_BYTES);
+  }
+  const GB = 1024 ** 3;
+  mockDf = { internal_free: String(40 * GB), internal_total: String(128 * GB) };
+
+  const body = text(await render());
+
+  expect(body).toContain('40.0 GB free of 128.0 GB');
+  expect(body).toMatch(/Mihrab 17\d MB/);
+  // 88 GB used, less Mihrab's 173 MB.
+  expect(body).toMatch(/Other apps and system 87\.8 GB/);
+  expect(body).toContain('Free 40.0 GB');
 });

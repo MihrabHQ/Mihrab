@@ -1,0 +1,6 @@
+• Today's table now swipes back up to a week as well as forward, so you can log a prayer on the day you missed it. This also works for locations that use an official timetable.
+• Tapping the check on a prayer whose time has passed asks whether you prayed it on time or made it up.
+• A clearer line under the countdown shows the weekday, both dates, and a way back to today.
+• The Quran card on Today is smaller, and says "Start reading" when you have not begun.
+• The prayer rows now reach the edges of the screen.
+• The second-time line on prayer rows stays in place, so the table no longer changes height.

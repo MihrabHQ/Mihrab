@@ -40,6 +40,20 @@
     <string name="widget_configure_highlight_custom">Custom color</string>
     <string name="widget_configure_hex_hint">#RRGGBB</string>
     <string name="widget_configure_save">Save</string>
+    <string name="widget_configure_prayer_title">Prayer times widget</string>
+    <string name="widget_configure_prayer_note">These apply to the prayer times widgets only.</string>
+    <string name="widget_configure_text_color">Text color</string>
+    <string name="widget_configure_text_light">Light</string>
+    <string name="widget_configure_text_white">White</string>
+    <string name="widget_configure_text_cream">Cream</string>
+    <string name="widget_configure_text_gold">Gold</string>
+    <string name="widget_configure_text_sky">Sky</string>
+    <string name="widget_configure_text_dark">Dark</string>
+    <string name="widget_configure_show_location">Show the city</string>
+    <string name="widget_configure_show_countdown">Show the countdown</string>
+    <string name="widget_configure_show_table">Show the day’s times</string>
+    <string name="widget_configure_time_size">Prayer time size</string>
+    <string name="widget_configure_hex_invalid">Enter a color as #RRGGBB</string>
     <!-- Live Activity notification strings -->
     <string name="live_activity_channel_name">Prayer countdown</string>
     <string name="live_activity_channel_desc">Pinned countdown to the next prayer.</string>

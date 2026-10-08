@@ -4,7 +4,11 @@ import { fetchPrayTimesDev } from './praytimesDev';
 import { fetchIslamiskaForbundetTimes } from './islamiskaForbundet';
 import { getIslamiskaForbundetDatasetTimes } from './islamiskaForbundetDataset';
 import { getHabousDatasetTimes } from './habousDataset';
+import { getMarwDatasetTimes } from './marwDataset';
 import { computeLocalAdhanTimes } from './localAdhan';
+import { autoMethodForCoords } from './autoMethod';
+import { ALGERIA_METHOD_ID } from './algeriaCities';
+import { isCoordinateInAlgeria } from '../utils/algeriaRegion';
 import { computeImsak, DEFAULT_IMSAK_OFFSET_MINUTES } from './imsak';
 import { validateTimings, validateTimingShape } from './validateTimings';
 import {
@@ -12,12 +16,42 @@ import {
   recordProviderResult,
 } from './providerHealth';
 
+/**
+ * The Algeria METHOD is computed on the device, not asked of AlAdhan:
+ * AlAdhan's own "Algeria" method is the Ministry's angles without its
+ * Maghrib margin, so it is three minutes early on Maghrib. (The Ministry's
+ * published TABLE is the 'marw' provider; this is the method a user picks
+ * by hand elsewhere, and the fallback past the table.) Returns null when
+ * the method that applies is not Algeria's.
+ */
+function algeriaOnDevice(p: UnifiedFetchParams): PrayerTimesResult | null {
+  const method =
+    p.calculationMethod === 'auto'
+      ? autoMethodForCoords(p.latitude, p.longitude)
+      : p.calculationMethod;
+  if (method !== ALGERIA_METHOD_ID) return null;
+  const local: PrayerTimesResult = {
+    ...computeLocalAdhanTimes({
+      latitude: p.latitude,
+      longitude: p.longitude,
+      date: p.date,
+      calculationMethod: method,
+      school: p.school,
+    }),
+    source: 'local',
+  };
+  validateTimingShape(local.timings);
+  return local;
+}
+
 export async function fetchPrayerTimesUnified(
   p: UnifiedFetchParams,
 ): Promise<PrayerTimesResult> {
   let result: PrayerTimesResult;
   switch (p.provider) {
-    case 'aladhan':
+    case 'aladhan': {
+      const algeria = algeriaOnDevice(p);
+      if (algeria) return algeria;
       result = await fetchAladhanTimes({
         latitude: p.latitude,
         longitude: p.longitude,
@@ -27,6 +61,7 @@ export async function fetchPrayerTimesUnified(
       });
       result.source = 'aladhan';
       break;
+    }
     case 'prayertimes_dev':
       result = await fetchPrayTimesDev({
         latitude: p.latitude,
@@ -106,15 +141,24 @@ export async function fetchPrayerTimesUnified(
       // straight to AlAdhan — which auto-selects the Morocco method — and
       // then to the caller's on-device last resort, where the Morocco
       // parameters now sit within a minute of the ministry.
-      try {
-        result = await getHabousDatasetTimes({
-          latitude: p.latitude,
-          longitude: p.longitude,
-          date: p.date,
-        });
-        break;
-      } catch {
-        /* outside coverage, or past the published window */
+      // Morocco's rectangle takes in a strip of western Algeria — Tlemcen,
+      // Maghnia — so a user there who pinned Morocco reaches this case. They
+      // are not Moroccan, and Oujda's table is not theirs: they get the
+      // Algerian Ministry's.
+      const inAlgeria = isCoordinateInAlgeria(p.latitude, p.longitude);
+      if (inAlgeria) {
+        return fetchPrayerTimesUnified({ ...p, provider: 'marw' });
+      } else {
+        try {
+          result = await getHabousDatasetTimes({
+            latitude: p.latitude,
+            longitude: p.longitude,
+            date: p.date,
+          });
+          break;
+        } catch {
+          /* outside coverage, or past the published window */
+        }
       }
       result = await fetchAladhanTimes({
         latitude: p.latitude,
@@ -125,6 +169,36 @@ export async function fetchPrayerTimesUnified(
       });
       result.source = 'aladhan';
       break;
+    }
+    case 'marw': {
+      // The Ministry of Religious Affairs and Wakfs's own table, from the
+      // prepared dataset (bundled for the year, refreshed from the CDN).
+      // Past the published year, or outside Algeria, the Algeria method is
+      // computed on the device — AlAdhan is not asked, because its id 19
+      // lacks the Ministry's Maghrib margin.
+      try {
+        result = await getMarwDatasetTimes({
+          latitude: p.latitude,
+          longitude: p.longitude,
+          date: p.date,
+        });
+        break;
+      } catch {
+        /* outside coverage, or past the published year */
+      }
+      const local: PrayerTimesResult = {
+        ...computeLocalAdhanTimes({
+          latitude: p.latitude,
+          longitude: p.longitude,
+          date: p.date,
+          calculationMethod: ALGERIA_METHOD_ID,
+          // The Ministry publishes one (Shafi'i) Asr, and this stands in for it.
+          school: 0,
+        }),
+        source: 'local',
+      };
+      validateTimingShape(local.timings);
+      return local;
     }
     case 'local_adhan': {
       // On-device calculation. Its shape is checked: it once produced

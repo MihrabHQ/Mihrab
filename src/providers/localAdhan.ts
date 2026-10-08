@@ -115,6 +115,18 @@ function parametersForMethod(methodId: number): CalculationParameters {
       return angles(16, 15);
     case 15:
       return CalculationMethod.MoonsightingCommittee();
+    case 19:
+      // Algeria — Ministry of Religious Affairs and Wakfs. Read from its
+      // 1448 AH timetables for Algiers, Djelfa and Adrar (355 days each):
+      // Fajr 18°, Isha 17°, sunrise, Dhuhr and Asr as the standard
+      // calculation, and Maghrib 3.6 minutes past true sunset on average —
+      // a 3-minute margin, rounded up. AlAdhan's own id 19 has the angles and
+      // not the margin, which is why Maghrib there is three minutes early.
+      // Where the Ministry's own table is available the app serves that
+      // instead (the 'marw' provider, `marwDataset.ts`); this is the method
+      // it falls back to past the published year.
+      // Issue #70.
+      return angles(18, 17, { maghrib: 3 });
     case 21:
       // Morocco — Ministry of Habous and Islamic Affairs.
       //

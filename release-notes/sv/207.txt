@@ -1,0 +1,8 @@
+• Helt ny Koranläsare med en interaktiv Madinah-mushaf: tryck på valfri ayah för att översätta, bokmärka, stjärnmarkera eller dela den.
+• Recitation med 5 recitatörer, uppspelning i bakgrunden och nedladdning för offlinebruk.
+• Verktyg för memorering: upprepning, intervall och dölj-och-visa.
+• Khatmah-planer med daglig framsteg.
+• En snabb rundtur bland funktionerna för att komma igång.
+• Rikare teman med Amiri-typografi och två nya accentfärger.
+• En tredje design för Live Activity.
+• Android: dina data finns nu kvar när appen avinstalleras och installeras om, via Androids säkerhetskopiering.

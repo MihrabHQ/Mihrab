@@ -1,0 +1,4 @@
+• Android: new option to play the adhan as an alarm, so it is heard even on silent or vibrate. Off by default.
+• The Log widget updates when you log a prayer. It was the one widget that was not told.
+• Mac: widgets and their previews no longer stay frozen at the version you upgraded from.
+• Mac and iPad: the keyboard turns Quran pages in the direction of the mushaf, which reads right to left: ←, A or H go forward; →, D or L go back.

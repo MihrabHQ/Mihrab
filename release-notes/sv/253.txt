@@ -1,0 +1,1 @@
+• Android: widgetar som står bredvid varandra flyter inte längre ihop. Var och en ritar nu sitt eget rundade kort, indraget i sin plats, så två staplade widgetar har ett mellanrum i stället för en skarv.

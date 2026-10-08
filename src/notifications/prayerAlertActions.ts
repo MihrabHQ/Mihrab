@@ -39,7 +39,7 @@ import {
   JOURNAL_LOG_SUNNAH_ACTION_ID,
 } from './prayerLogAction';
 import { ADHAN_ACTION_SNOOZE } from './adhanActionIds';
-import { hasSnooze, type SnoozeMenu } from './snoozeWindow';
+import { hasSnooze, minutesUntil, type SnoozeMenu } from './snoozeWindow';
 
 /** Quick-choice minute presets offered on the snooze action. */
 export const SNOOZE_PRESETS = [5, 10, 15, 30, 60] as const;
@@ -77,9 +77,17 @@ export function lastChanceLabel(prayer: string): string {
 }
 
 /** The chips for a menu: the lengths that fit, or the one last-chance button. */
-export function snoozeChoicesFor(menu: SnoozeMenu, prayer: string): string[] {
+export function snoozeChoicesFor(
+  menu: SnoozeMenu,
+  _prayer: string,
+): string[] {
   if (menu.minutes.length > 0) return menu.minutes.map(snoozeChoiceLabel);
-  return menu.lastChanceAt != null ? [lastChanceLabel(prayer)] : [];
+  // The last button says what it does: snooze for as long as it takes to reach
+  // the last-chance alert. Pressing it still lands there — a length that no
+  // longer fits is turned into the last chance by `resolveSnooze`.
+  return menu.lastChanceAt != null
+    ? [snoozeChoiceLabel(minutesUntil(menu.lastChanceAt, menu.drawnAt ?? Date.now()))]
+    : [];
 }
 
 /** Was this press the last-chance button? Matched on the label we drew. */

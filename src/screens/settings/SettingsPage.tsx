@@ -38,6 +38,28 @@ type Props = {
   deferBackRef?: RefObject<boolean>;
 };
 
+type NavState = {
+  index?: number;
+  routes: ReadonlyArray<{ name: string; state?: NavState }>;
+} | undefined;
+
+/**
+ * Is the route under this one Settings — the tab, or another settings
+ * page? Exported for its test.
+ */
+export function previousIsSettings(state: NavState): boolean {
+  if (!state || !state.routes.length) return false;
+  const index = state.index ?? state.routes.length - 1;
+  const prev = state.routes[index - 1];
+  if (!prev) return false;
+  if (prev.name.startsWith('Settings')) return true;
+  if (prev.name !== 'Home') return false;
+  const tabs = prev.state;
+  if (!tabs || !tabs.routes.length) return false;
+  const focused = tabs.routes[tabs.index ?? 0];
+  return focused?.name === 'SettingsTab';
+}
+
 export function SettingsPage({ children, deferBackRef }: Props) {
   const { t } = useTranslation();
   const { palette } = useAppPalette();
@@ -56,7 +78,23 @@ export function SettingsPage({ children, deferBackRef }: Props) {
 
   const page = SETTINGS_STACK_PAGES.find(p => p.route === route.name);
   const title = t(page?.titleKey ?? route.name);
-  const backLabel = t(page?.backTitleKey ?? 'nav.settings');
+  // "‹ Settings" only when back really goes to Settings. A section opened
+  // from elsewhere — Downloads from the Quran screen, the reader, a
+  // notification — goes back THERE, and its control says so plainly.
+  const cameFromSettings = previousIsSettings(navigation.getState());
+  const backLabel = cameFromSettings
+    ? t(page?.backTitleKey ?? 'nav.settings')
+    : t('common.back', 'Back');
+  // A page opened by a link on a cold start can be the only route on the
+  // stack (`linking.ts` puts the Settings tab under it, but a link the
+  // navigator could not read would not). Back must still lead somewhere.
+  const goBack = () => {
+    if (navigation.canGoBack()) navigation.goBack();
+    else
+      (navigation as unknown as {
+        navigate: (name: 'Home', params: { screen: 'SettingsTab' }) => void;
+      }).navigate('Home', { screen: 'SettingsTab' });
+  };
 
   // Own the system navigation band before paint: opaque page colour so
   // three-button nav matches the settings page (and Verdant) instead of
@@ -88,7 +126,7 @@ export function SettingsPage({ children, deferBackRef }: Props) {
           <View style={styles.barSide}>
             <TabBackButton
               label={backLabel}
-              onPress={() => navigation.goBack()}
+              onPress={goBack}
             />
           </View>
           <Text

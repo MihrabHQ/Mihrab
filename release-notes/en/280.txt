@@ -1,0 +1,5 @@
+• New: Tajweed colours for the mushaf. Each letter is shown in the colour of its recitation rule, with a guide and per-rule detail on every ayah. Turn it on in Settings → Quran; light and dark pages each have their own offline download, and the fonts and rules are credited.
+• New (Android): let the phone go quiet for the prayer itself and come back on its own, in Settings → Notifications. (#60)
+• The mushaf page is set closer to the print: tighter word spacing, more width for the page, and lines that no longer clip or drop a word.
+• What's new has a copy button on each release.
+• Moroccan prayer times refreshed from the Ministry of Habous.

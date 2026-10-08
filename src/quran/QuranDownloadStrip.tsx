@@ -33,6 +33,7 @@ import {
   dismissResumableJob,
   fontSetOf,
   jobSurahName,
+  riwayahLabel,
   quranDownloadState,
   resumeQuranDownload,
   subscribeQuranDownload,
@@ -134,6 +135,11 @@ export function QuranDownloadStripView({
             defaultValue: 'Downloading word meanings · {{pct}}%',
             pct,
           })
+      : job.kind === 'riwayah'
+        ? t('quran.riwayahDownloading', {
+            defaultValue: 'Downloading {{name}}',
+            name: riwayahLabel(job.riwayahId),
+          })
       : job.kind === 'audio'
         ? t('quran.reciterDownloadStrip', {
             defaultValue: 'Downloading {{name}} · {{pct}}%',
@@ -215,6 +221,8 @@ function StoppedStrip({
         ? findTafsirEdition(job.editionId)?.label ?? job.editionId
       : job.kind === 'wordMeanings'
         ? t('downloads.wordMeanings', 'Arabic word meanings')
+      : job.kind === 'riwayah'
+        ? riwayahLabel(job.riwayahId)
         : job.kind === 'audio'
           ? findReciter(job.reciterId).name
           : jobSurahName(job.surah);

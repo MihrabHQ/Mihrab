@@ -1,0 +1,10 @@
+• The mushaf is now the reader. The verse-by-verse list is a setting, already turned on if you were using it, and first launch asks which you prefer. Opening the verse-by-verse reader in the middle of a surah goes straight to the place.
+• Today turns to tomorrow once the last prayer time of the day has passed.
+• The A− A+ text size control for the translation and tafsir sits in the bar of both readers, not at the top of the surah.
+• Sharing an ayah asks what to send, like the rest of the app, and can include the tafsir.
+• The widget's setting has moved to Appearance.
+• A faster start.
+• Android: a smaller download.
+• The back arrow points the right way in Arabic and Urdu.
+• A khatmah keeps counting instead of quietly stopping.
+• Android: tab labels stay clear of rounded screen corners.

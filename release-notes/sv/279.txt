@@ -1,0 +1,7 @@
+• Ordläsare: håll på ett ord i mushafen, dra till ett annat om du vill, och släpp för att höra just det ordet. Slå på det under Inställningar → Koranen → Ordläsare.
+• Mushafens nattsida är helt svart.
+• Mushafens sidhuvud visar riwayan bredvid bakåtpilen och recitationen till höger, och titeln förblir centrerad på en telefon i liggande läge.
+• Khatmah till ett datum: dagarna efter idag visas i sidor, och när dagens del är klar visar markeringen var morgondagens del faktiskt slutar.
+• Synkroniseringen ångrar inte längre khatmah-läsning som gjorts på din andra enhet.
+• Android: appen behåller sin egen text när ett systemtemats typsnitt är valt, och versnumret ligger inuti sin rosett. (#16)
+• Android: nedladdningen från GitHub för Obtainium är mindre och är nu endast för ARM-enheter.

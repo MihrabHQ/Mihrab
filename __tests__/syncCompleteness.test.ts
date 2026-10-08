@@ -86,6 +86,11 @@ const STAYS: Record<string, string> = {
   'ifis.dataset.v1.city.': 'derived — a per-city timetable cache',
   'habous.dataset.v1.city.':
     'derived — the ministry’s published timetable for one city, re-downloadable',
+  'hijri.overrides.v1':
+    'derived — the announced Hijri month starts, re-downloadable from the server',
+  'hijri.overrides.v1.checkedAt': 'describes this phone — when it last asked the server',
+  'marw.dataset.v1.city.':
+    'derived — the Algerian ministry’s published timetable for one city, re-downloadable',
   'mihrab.first_seen_day':
     'describes this phone — the Log’s backfill uses it as the earliest ' +
     'day it may offer, so importing another device’s would let this one ' +

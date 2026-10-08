@@ -1,0 +1,5 @@
+• Loggens graf färgas nu efter status i stället för efter hur många rutor som kryssats: i tid räknas fullt, sent och igenbedd mindre, missad inte alls, och en dag registrerad som missad markeras i stället för att lämnas tom.
+• Öppna vilken tidigare dag som helst i Loggen, med pilarna vid datumet eller genom att trycka på dagens ruta.
+• Grafen når tillbaka till din första loggade dag och kan rullas bakåt.
+• En bön vars tid ännu inte har kommit kan inte loggas, och "Markera alla i tid" tar hänsyn till det.
+• Valfritt: visa grafen på Idag-skärmen.

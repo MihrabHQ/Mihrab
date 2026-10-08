@@ -1,0 +1,8 @@
+• The app uses noticeably less battery in the background: timers stop when the app is not on screen, the compass releases the sensor when you leave it, daily notifications are no longer rebuilt every hour, and a whole year of prayer times is no longer fetched in the background.
+• The live countdown is drawn by the system itself, so the app no longer has to wake every second.
+• Widgets refresh once per unlock instead of nine times, and not at all when you have no widgets.
+• The app does its heavier work when something has actually changed, not every time it comes to the foreground.
+• Sync shows how old your other device's record is, and says so when nothing has arrived.
+• Settings: the companion-text choice now sits behind a single row.
+• Fixed: the Log would not un-log a sunnah prayer, and a paired device kept putting it back.
+• Android: fixed a crash when the app was restored from the background.

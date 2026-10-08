@@ -31,6 +31,20 @@
     <string name="widget_configure_highlight_custom">Warna kustom</string>
     <string name="widget_configure_hex_hint">#RRGGBB</string>
     <string name="widget_configure_save">Simpan</string>
+    <string name="widget_configure_prayer_title">Widget waktu salat</string>
+    <string name="widget_configure_prayer_note">Hanya berlaku untuk widget waktu salat.</string>
+    <string name="widget_configure_text_color">Warna teks</string>
+    <string name="widget_configure_text_light">Terang</string>
+    <string name="widget_configure_text_white">Putih</string>
+    <string name="widget_configure_text_cream">Krem</string>
+    <string name="widget_configure_text_gold">Emas</string>
+    <string name="widget_configure_text_sky">Biru langit</string>
+    <string name="widget_configure_text_dark">Gelap</string>
+    <string name="widget_configure_show_location">Tampilkan kota</string>
+    <string name="widget_configure_show_countdown">Tampilkan hitung mundur</string>
+    <string name="widget_configure_show_table">Tampilkan waktu hari ini</string>
+    <string name="widget_configure_time_size">Ukuran waktu salat</string>
+    <string name="widget_configure_hex_invalid">Masukkan warna sebagai #RRGGBB</string>
     <!-- Live Activity notification strings -->
     <string name="live_activity_channel_name">Hitungan mundur salat</string>
     <string name="live_activity_channel_desc">Hitungan mundur tersemat ke salat berikutnya.</string>

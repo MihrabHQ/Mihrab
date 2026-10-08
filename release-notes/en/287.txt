@@ -1,0 +1,11 @@
+• Snoozing an adhan now re-alerts with different wording, and offers a 1-hour option.
+• Snooze choices follow the time left in the prayer; the last one becomes “Last chance to pray”.
+• Settings → Notifications → Prayer sounds: pick adhan, alert or silent for each prayer (#66).
+• Quran: download tafsir and Arabic meanings of harder words for offline reading; the āyah sheet is reworked around them.
+• Muṣḥaf: turn pages with the volume buttons, an opt-in Quran setting (#68).
+• The home screen offers the full-screen alert, silencing the phone and the Live Activity once, and skips what the first-run walkthrough already asked.
+• Warsh tajweed: the end of an āyah is a stop, so nothing carries into the next āyah, and idghām of a sākin nūn before a doubled yāʾ or wāw is coloured (#64).
+• A removed khatmah no longer keeps sending reminders on your other devices.
+• A prayer you log while its alerts are still being scheduled no longer gets an “ending soon” alert (#69).
+• Android: before Android 15, the alarm screen paints the status and navigation bars in the prayer's sky (#63).
+• New snooze and download wording is translated into every language.

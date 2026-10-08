@@ -62,6 +62,14 @@ export const REGIONAL_PRAYER_PROVIDERS: ProviderOption[] = [
     nameKey: 'providers.habous.name',
     descriptionKey: 'providers.habous.desc',
   },
+  {
+    id: 'marw',
+    name: 'Algeria',
+    description:
+      'The Ministry of Religious Affairs and Wakfs’ published times for listed Algerian cities; your location is matched to the nearest city in the list.',
+    nameKey: 'providers.marw.name',
+    descriptionKey: 'providers.marw.desc',
+  },
 ];
 
 /** Full list for lookups, settings copy, and labels (order: mainstream then regional). */

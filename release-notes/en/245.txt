@@ -1,0 +1,5 @@
+• The navigation bar moves out of the way while you read and comes back when you scroll up. It always stays on Tasbih.
+• Android: the back button works on every tab: in the reader it goes to the Quran tab, on other tabs it goes to Today, and on Today it exits the app.
+• Android: widgets take the colour you chose, never the wallpaper's. When the app follows system colours, widgets have a colour picker of their own, and the Dynamic option is gone from widget settings.
+• Mac and iPad: arrow keys, WASD and HJKL turn Quran pages.
+• Previous, Reset and Skip no longer sit against the navigation bar.

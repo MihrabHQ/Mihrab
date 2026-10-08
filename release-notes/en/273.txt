@@ -1,0 +1,6 @@
+• Save a location without naming it: leave the name blank and it takes the city's own name.
+• Switching between saved locations is instant, and flipping quickly back and forth no longer stalls on a blank screen.
+• "Add new location" from the location chip on Today switches to the place you add, on automatic location too, not only manual.
+• Searching for a city now says "Location selected", making it clear the place is only saved when you tap Save.
+• Adding a location when you already have the most saved locations allowed no longer loses the new one.
+• A manually chosen city no longer takes the place of your automatic location.

@@ -22,7 +22,7 @@
  * ── WHAT THAT COSTS, STATED PLAINLY ───────────────────────────────────
  *
  * When the user's data provider is a published table (Islamiska
- * Förbundet, Habous) rather than calculation, a preview here can differ
+ * Förbundet, Habous, the Algerian Ministry) rather than calculation, a preview here can differ
  * from the Home screen by a minute or two. That is acceptable for what
  * these screens are doing and it is worth being precise about why: the
  * madhab screen is a COMPARISON, both sides of which come from this same

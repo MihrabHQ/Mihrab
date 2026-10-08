@@ -11,10 +11,11 @@
  * here, a provider case, and its dataset — and nothing in the resolution
  * logic changes at all.
  *
- * ORDER MATTERS only if two regions overlap, which today they do not. If
- * that ever changes, the first match wins and the more specific region
- * should be listed first.
+ * ORDER MATTERS only where two regions overlap: the first match wins, and
+ * the more specific region is listed first. Algeria and Morocco overlap;
+ * see below.
  */
+import { isCoordinateInAlgeria } from '../utils/algeriaRegion';
 import { isCoordinateInMorocco } from '../utils/moroccoRegion';
 import { isCoordinateInSweden } from '../utils/swedenRegion';
 import type { PrayerDataProviderId } from './types';
@@ -27,6 +28,11 @@ export type RegionalProviderRegion = {
 
 export const REGIONAL_PROVIDER_REGIONS: readonly RegionalProviderRegion[] = [
   { id: 'islamiska_forbundet', covers: isCoordinateInSweden },
+  // Before Morocco, and the one overlap there is: Morocco's rectangle takes
+  // in a strip of western Algeria (Tlemcen, Maghnia, Tindouf), while
+  // `isCoordinateInAlgeria` already gives anything nearer a Moroccan
+  // ministry city back to Morocco.
+  { id: 'marw', covers: isCoordinateInAlgeria },
   { id: 'habous', covers: isCoordinateInMorocco },
 ];
 

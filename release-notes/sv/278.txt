@@ -1,0 +1,7 @@
+• Khatmah till ett datum: välj när du vill bli klar, så räknas varje dags del ut utifrån det som återstår. Växla när som helst mellan takt efter dagar och efter datum i menyn ⋯. (#53)
+• Dra nedåt på Idag för att uppdatera bönetiderna, eller använd den nya raden i Inställningar som gör samma sak.
+• Vilken mushaf du läser går att välja i Inställningar.
+• När klockan ställs om där du bor uppdateras bönetiderna direkt. (#56)
+• En nedladdning som avbryts av anslutningen behåller det som redan hämtats: fortsätt den, eller så återupptas den av sig själv på wifi. (#55)
+• Synkroniseringen tar inte längre tillbaka en khatmah-markering som du har tagit bort, och drar inte tillbaka dina framsteg.
+• Khatmah-alternativen lägger sig inte längre över klockan högst upp på skärmen.

@@ -19,7 +19,7 @@ it('every pushed page but the mushaf and onboarding drops the stack bottom reser
   const nav = read('src/navigation/RootNavigator.tsx');
   expect(nav).toMatch(/const edgeToEdge = \{ backgroundColor: theme\.colors\.background, paddingBottom: 0 \}/);
   for (const route of [
-    'QuranListen', 'Khatmah', 'QuranDownloads', 'QuranTajweed',
+    'QuranListen', 'Khatmah', 'QuranTajweed',
     'MonthTimes', 'ShareMonth', 'Compass', 'Backup', 'Sync', 'Fasting',
   ]) {
     const block = nav.slice(nav.indexOf(`name="${route}"`));

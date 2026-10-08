@@ -1,0 +1,16 @@
+• Log the sunnah prayers beside each fard prayer; the graph draws them around the day's square once their time has come.
+• Use your own adhan: pick any audio file on the phone.
+• Export and import your whole record, not just the settings.
+• Your best streak is now shown beside the current one.
+• The Log has four stat tiles above the graph, and the graph has a mode that shows prayers still owed.
+• Each prayer row in the Log uses one consistent kind of control, and the graph's shades now step evenly from less to more.
+• The graph works right to left, and settles on today instead of racing to it.
+• The prayer notification has a "Log with sunnah" option, and the snooze options say what they do.
+• Widgets no longer go blank when their schedule runs out, and now hold a month of prayer times.
+• 871 strings translated, including 71 that were still in English in every language.
+• The tip jar has been removed.
+• Android: the app now reaches the edges of the screen. The tab bar floats over the page, the area behind the navigation buttons matches the bar, and the bottom edge keeps a wider gap for gesture navigation.
+• Android: the "System" theme now follows the system setting correctly.
+• Mac: the location chip sits in the column with the cards instead of over them.
+• Fixed: the streak read zero every morning.
+• Android: fixed the last row of the Settings pickers sitting under the navigation bar.

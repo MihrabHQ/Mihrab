@@ -1,0 +1,3 @@
+• Mac: the Mac app installed with Homebrew now has the prayer-times widget for Notification Centre, the same widget the iPhone already has.
+• The links to the shared month and in Settings now open the Mihrab website instead of the code repository.
+• Android: nothing else changes in this release; it shares its version number with the Mac app.

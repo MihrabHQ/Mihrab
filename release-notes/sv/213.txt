@@ -1,0 +1,3 @@
+• Pålitligare bönetider för Sverige: de kommer nu från en regelbundet uppdaterad samling av Islamiska Förbundets tider, fungerar offline och har en reservlösning om nätverket inte är tillgängligt, så att dina tider alltid visas.
+• Karlshamn använder nu tiderna för Sölvesborg, den närmaste staden som stöds (cirka 22 km bort).
+• Ett dolt kort med datastatus på Hem, som låses upp genom att trycka fem gånger på versionsnumret, visar källan för bönetiderna, hur långt fram tider finns sparade och när de senast uppdaterades. Det är översatt till alla appens språk.

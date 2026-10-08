@@ -29,6 +29,12 @@ export const CALCULATION_METHODS: CalculationMethodOption[] = [
   // gap was only ever visible to someone who had picked a method by
   // hand — there was no right one to pick — or who was offline. Issue #10.
   { id: 21, name: 'Morocco', nameKey: 'methods.21' },
+  // The Ministry of Religious Affairs and Wakfs: 18° / 17° with Maghrib held
+  // three minutes past sunset, and — for the published Hijri year — the
+  // Ministry's own table at the nearest listed place. AlAdhan has an id 19
+  // "Algeria" too, but without the Maghrib margin, so the app computes this
+  // one itself. Issue #70.
+  { id: 19, name: 'Algeria', nameKey: 'methods.19' },
 ];
 
 /**

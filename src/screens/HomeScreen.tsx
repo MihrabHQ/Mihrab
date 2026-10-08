@@ -57,6 +57,7 @@ import type { RootStackParamList } from '../navigation/types';
 import { computeSeasonalTreatment } from '../seasonal/treatments';
 import { TodayCard } from './home/TodayCard';
 import { LocationChip } from './home/LocationChip';
+import { useHijriCalendarVersion } from '../hijri/useHijriCalendarVersion';
 import { formatHijriLabel } from '../hijri/formatHijriLabel';
 import { QuranCard } from './home/QuranCard';
 import { PermissionBanners } from './home/PermissionBanners';
@@ -122,6 +123,9 @@ export function HomeScreen() {
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { t, i18n } = useTranslation();
   const { settings, hydrated, updateSettings } = usePrayerSettings();
+  // The Hijri calendar picked in Settings: the heading's Hijri date, the
+  // widget's and the Live Activity's all have to follow it.
+  const hijriVersion = useHijriCalendarVersion();
   const { state, retry } = usePrayerDay(settings, hydrated);
   /**
    * The first frame with real times on it is the moment the app's boot-time
@@ -1000,6 +1004,8 @@ export function HomeScreen() {
     // the payload is built outside React from a mirror of the answer —
     // so the effect has to know when the answer changed.
     clockHour12,
+    // The Hijri date in the payload follows the chosen calendar.
+    hijriVersion,
   ]);
 
   // Live Activity sync — runs whenever prayer data changes OR whenever the
@@ -1080,6 +1086,8 @@ export function HomeScreen() {
     // Same reason as the widget effect: the card's times follow the clock
     // format, and the format can change without any setting changing.
     clockHour12,
+    // The Hijri date in the payload follows the chosen calendar.
+    hijriVersion,
   ]);
 
   // Persist last-fetched coords so MonthScreen and offline use can fall back to
@@ -1178,9 +1186,10 @@ export function HomeScreen() {
      */
     (dayOffset: number): string =>
       formatHijriLabel(addDays(new Date(), dayOffset)),
-    // i18n.language drives the localised Hijri month name inside the formatter.
+    // i18n.language drives the localised Hijri month name inside the
+    // formatter; the calendar version, which calendar it reads.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [i18n.language],
+    [i18n.language, hijriVersion],
   );
 
 

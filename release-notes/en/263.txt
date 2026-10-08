@@ -1,0 +1,2 @@
+• The practice graph fills the widget it is drawn on. It was sized for two thirds of the available space, so it floated in the middle with empty space above and below; a 4x4 widget now shows eight rows of history where it showed six.
+• Fixed: on the Log widget the graph was slightly too large for its box, so every square was scaled down and the grid stood away from both edges.

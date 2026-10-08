@@ -1,0 +1,5 @@
+• Svenska bönetider växlar nu direkt till AlAdhan när den svenska källan inte går att nå.
+• Hem visar när bönetiderna senast uppdaterades och hur många dagar som finns sparade offline.
+• En bred genväg till Koranen på Hem; månadsvyn har flyttats bredvid "Idag" och in i verktygsrutnätet.
+• Accentlinjen i Hem-sidhuvudet följer nu de dynamiska färgerna.
+• Koransidorna 1–2 visas nu skarpt.

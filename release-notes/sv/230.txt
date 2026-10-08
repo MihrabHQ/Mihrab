@@ -1,0 +1,4 @@
+• Mushafet: raderna tappar inte längre sitt sista ord. Mellanrummet mellan orden kommer nu från ett typsnitt som följer med appen, och raderna justeras till sidans bredd som i tryck.
+• Aya 2:2 och rub al-hizb-markeringarna visas i den tryckta ordningen igen.
+• Mushafsidan når nu alla fyra skärmkanter och håller sig undan kamerans urtag.
+• När du lämnar Koranläsaren stängs nu det som läsaren öppnade, ett första steg mot att åtgärda tryck som slutade fungera efteråt.

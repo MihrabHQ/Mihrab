@@ -69,6 +69,28 @@ export const LocationIcon = memo(({ size = S, color }: P) => (
   </Svg>
 ));
 
+/** An arrow down into a tray. */
+export const DownloadsIcon = memo(({ size = S, color }: P) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24">
+    <Path
+      d="M12 4v10.5M7.5 10.5 12 15l4.5-4.5"
+      stroke={color}
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      fill="none"
+    />
+    <Path
+      d="M4.5 15.5v2.5a1.5 1.5 0 0 0 1.5 1.5h12a1.5 1.5 0 0 0 1.5-1.5v-2.5"
+      stroke={color}
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      fill="none"
+    />
+  </Svg>
+));
+
 /** An open book. */
 export const QuranIcon = memo(({ size = S, color }: P) => (
   <Svg width={size} height={size} viewBox="0 0 24 24">

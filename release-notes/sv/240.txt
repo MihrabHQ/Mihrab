@@ -1,0 +1,15 @@
+• Synka din historik mellan dina egna enheter, utan konto och utan server, krypterat.
+• Para ihop enheter genom att skanna en kod; en kod räcker, och varje enhet visas med sitt eget namn. Välj hur ofta synken körs, som oftast var femtonde minut; den körs också när appen öppnas.
+• Widgeten Logga idag får en graf, med fasta och sunna, och en nedräkning i sin högsta storlek.
+• Widgeten Bönetider finns i tre storlekar; med en rad behåller den tiderna och tar bort rubriken.
+• Widgetarna använder språket du valt i appen, och Android-widgetarna är översatta till alla tretton språk.
+• Appens språk följer telefonen tills du väljer ett annat.
+• Nedräkningen på Hem visar sekunder och kan riktas mot vilken bön som helst.
+• Nedladdningen av Koranen fortsätter i bakgrunden efter att du lämnat skärmen.
+• Grafen markerar dagar i din historik som aldrig fylldes i.
+• Mac: ett enda övre fält, med platschipet längst ut, och appen presenterar sig inte längre som en iPad.
+• Åtgärdat: Hantera nedladdningar sa att inget var nedladdat.
+• Åtgärdat: nedräkningen till Fajr saknades i widgetarna.
+• Åtgärdat: widgetgrafen bedömde dagar annorlunda än appen.
+• Åtgärdat: bönernas namn var felöversatta på fyra språk.
+• Android: utseendeinställningarna för fem widgetar går nu att nå.

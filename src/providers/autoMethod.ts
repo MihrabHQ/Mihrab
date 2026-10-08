@@ -19,6 +19,7 @@
  * already exists for provider routing. Everywhere else MWL remains the
  * honest answer.
  */
+import { isCoordinateInAlgeria } from '../utils/algeriaRegion';
 import { isCoordinateInMorocco } from '../utils/moroccoRegion';
 
 /** Muslim World League — the global default when nothing more specific applies. */
@@ -30,6 +31,10 @@ type AutoMethodRegion = {
 };
 
 const AUTO_METHOD_REGIONS: readonly AutoMethodRegion[] = [
+  // 19 = Algeria. FIRST, because Morocco's rectangle takes in a strip of
+  // western Algeria (Tlemcen, Maghnia, Tindouf) and the first match wins;
+  // `isCoordinateInAlgeria` is the narrower test and answers for them.
+  { method: 19, covers: isCoordinateInAlgeria },
   // 21 = Morocco (Fajr 19°, Isha 17°, plus the ministry's own margins).
   { method: 21, covers: isCoordinateInMorocco },
 ];

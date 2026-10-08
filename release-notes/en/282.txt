@@ -1,0 +1,3 @@
+• Mihrab now carries its tagline, Mihrab — The Muslim Companion, and shared month sheets show it.
+• The app's links to its source, releases and downloads now point to its new home, github.com/MihrabHQ/Mihrab. The old links keep working.
+• Mac: the Homebrew tap has moved to MihrabHQ/homebrew-tap.

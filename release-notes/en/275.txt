@@ -1,0 +1,4 @@
+• Deleting a khatmah no longer brings it back. On a paired device the plan used to return within a sync round or two; an abandoned plan now stays abandoned everywhere.
+• The screen stays on in the verse-by-verse reader too, as it already did in the mushaf and Tilawah, with a switch for it in Settings → Quran.
+• The khatmah card says "days of reading left", and how many pages behind you are.
+• Android: system colours (Material You) now work with Light or Dark chosen, not only System.

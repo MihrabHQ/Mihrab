@@ -1,0 +1,7 @@
+• The notification's "Log prayer" button now records the prayer, even with the app closed, on the day the alert was for.
+• Swipe the day panel in the Log to change day; the arrows still work, and the selected day has its own card.
+• Fill in earlier days, or the past three months, in one step. Both ask first, show the figures involved, and never change a day you have already logged.
+• Days with a missed prayer are marked on the graph, so they can be found again.
+• The evening prompt no longer asks about a day that is already finished.
+• The graph scrolls on the first try, and now also on the Today screen.
+• The Log page has its proper spacing back.

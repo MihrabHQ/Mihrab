@@ -20,6 +20,7 @@ import { HOME_CARD_PADDING, HOME_CARD_RADIUS } from './tokens';
 import { useIsActive } from '../../hooks/useIsActive';
 import { RADIUS, SPACING } from '../../theme/tokens';
 import { TYPE } from '../../theme/typography';
+import { useHijriCalendarVersion } from '../../hijri/useHijriCalendarVersion';
 
 /**
  * Suhoor / Iftar countdown — visible only during Ramadan.
@@ -65,14 +66,17 @@ function RamadanCountdownCardImpl({
 
   // Gate: only render during Ramadan. We compute the seasonal treatment off the
   // same `now` value so a midnight rollover off Ramadan removes the card.
+  const hijriVersion = useHijriCalendarVersion();
   const treatment = useMemo(
     () => computeSeasonalTreatment(today, tomorrow, now),
-    [today, tomorrow, now],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [today, tomorrow, now, hijriVersion],
   );
 
   const event: RamadanCountdownEvent | null = useMemo(
     () => (treatment.ramadan ? getNextRamadanEvent(today, tomorrow, now) : null),
-    [treatment.ramadan, today, tomorrow, now],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [treatment.ramadan, today, tomorrow, now, hijriVersion],
   );
 
   if (!treatment.ramadan || !event) return null;

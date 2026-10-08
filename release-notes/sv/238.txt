@@ -1,0 +1,16 @@
+• Logga sunnabönerna bredvid varje fardbön; grafen ritar dem runt dagens ruta när deras tid har kommit.
+• Använd din egen adhan: välj vilken ljudfil som helst på telefonen.
+• Exportera och importera hela din historik, inte bara inställningarna.
+• Din längsta svit visas nu bredvid den nuvarande.
+• Loggen har fyra statistikrutor ovanför grafen, och grafen har ett läge som visar böner som återstår att be igen.
+• Varje bönerad i Loggen använder en och samma typ av kontroll, och grafens nyanser går nu jämnt från mindre till mer.
+• Grafen fungerar från höger till vänster och stannar på idag i stället för att rusa dit.
+• Bönenotisen har alternativet "Logga med sunna", och snooze-alternativen säger vad de gör.
+• Widgetar blir inte längre tomma när deras schema tar slut, och rymmer nu en månads bönetider.
+• 871 strängar översatta, däribland 71 som fortfarande var på engelska på alla språk.
+• Dricksburken har tagits bort.
+• Android: appen når nu skärmens kanter. Flikfältet svävar över sidan, ytan bakom navigeringsknapparna matchar fältet, och nederkanten har ett bredare utrymme för gestnavigering.
+• Android: temat "System" följer nu systeminställningen korrekt.
+• Mac: platschipet ligger i kolumnen med korten i stället för ovanpå dem.
+• Åtgärdat: sviten visade noll varje morgon.
+• Android: åtgärdat att sista raden i Inställningarnas väljare hamnade under navigeringsfältet.

@@ -53,6 +53,7 @@ import {
   tabularNumeralStyle,
 } from '../theme/textScale';
 import { useScrollBottomInset } from '../navigation/pageBottom';
+import { useHijriCalendarVersion } from '../hijri/useHijriCalendarVersion';
 
 /**
  * FastingScreen — task #29 UI shell.
@@ -159,7 +160,9 @@ export function FastingScreen() {
 
   const now = useMemo(() => new Date(), []);
   const todayKey = useMemo(() => formatLocalDate(now), [now]);
-  const hijri = useMemo(() => gregorianToHijri(now), [now]);
+  const hijriVersion = useHijriCalendarVersion();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const hijri = useMemo(() => gregorianToHijri(now), [now, hijriVersion]);
   const inRamadan = isRamadan(hijri);
   const ramadanDay = ramadanDayNumber(now);
   /**

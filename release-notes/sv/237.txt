@@ -1,0 +1,3 @@
+• Åtgärdat: vissa rader i mushafen tappade sitt sista ord, ungefär var åttonde rad på nästan varje sida. Texten och typsnitten var alltid rätt; visningen är nu åtgärdad och kontrollerad på alla 604 sidor.
+• Loggens graf rullar åt rätt håll på arabiska, urdu, persiska och hebreiska.
+• Koranfiler som lämnats kvar av en äldre version rensas bort.

@@ -1,0 +1,2 @@
+• Aviseringarna för de andra tiderna gäller inte längre en bön som du redan har loggat. När du registrerar Asr tas dess gränsavisering och aviseringen ”tiden har gått ut” bort, och där två böner delar en avisering behåller den andra bönen sin varning.
+• Den marockanska tidtabellen är uppdaterad från ministeriet för Habous.

@@ -1,0 +1,7 @@
+• Koranen ritas nu som text med de officiella Madinah-sidtypsnitten i stället för sidbilder. Den förblir skarp vid all förstoring, använder mycket mindre minne och roterar direkt.
+• Läsaren öppnas direkt: varje sida hämtas medan du läser i stället för att vänta på en stor nedladdning.
+• Sidorna motsvarar den tryckta mushafen sida för sida och rad för rad, med ordavstånd som i trycket, korta rader centrerade och rader alltid från höger till vänster oavsett appens språk.
+• Telefoner och surfplattor får var sin läsare: en sida på telefon, uppslag med två sidor på surfplatta.
+• I liggande läge på telefon visas sidan i 1,6 gånger sin stående storlek i stället för i skärmens fulla bredd.
+• Att bläddra i liggande läge hoppar inte längre över en sida.
+• Mihrab är nu licensierad under AGPL-3.0-or-later.

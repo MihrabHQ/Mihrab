@@ -1,0 +1,10 @@
+• Mushafen är nu läsaren. Listan vers för vers är en inställning, redan påslagen om du använde den, och första starten frågar vad du föredrar. När du öppnar läsaren vers för vers mitt i en sura hamnar du direkt på rätt ställe.
+• Idag går över till i morgon när dagens sista bönetid har passerat.
+• Textstorleksreglaget A− A+ för översättningen och tafsiren finns i fältet i båda läsarna, inte högst upp i suran.
+• När du delar en vers frågar appen vad som ska skickas, som i resten av appen, och tafsiren kan tas med.
+• Widgetens inställning har flyttats till Utseende.
+• Snabbare start.
+• Android: mindre nedladdning.
+• Bakåtpilen pekar åt rätt håll på arabiska och urdu.
+• En khatmah fortsätter att räkna i stället för att tyst sluta.
+• Android: flikarnas etiketter håller sig undan rundade skärmhörn.

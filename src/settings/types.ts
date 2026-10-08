@@ -1,4 +1,5 @@
 // tokens-ok: default accent hexes for stored settings
+import type { HijriCalendarId } from '../hijri/calendar';
 import type { Madhab } from '../prayer/madhab';
 import type { PrePrayerReminderMinutes } from './prePrayerReminder';
 import type { NotificationSoundId } from '../notifications/notificationSounds';
@@ -16,6 +17,7 @@ export type PrayerDataProviderId =
   | 'prayertimes_dev'
   | 'islamiska_forbundet'
   | 'habous'
+  | 'marw'
   | 'local_adhan';
 
 export type AppearancePreference = 'system' | 'light' | 'dark';
@@ -248,6 +250,26 @@ export type PrayerAppSettings = {
   widgetHighlightId: WidgetHighlightId;
   /** When `widgetHighlightId` is `custom`, #RRGGBB (e.g. #6BC98A). */
   widgetHighlightCustomHex: string;
+  /**
+   * The Hijri calendar every Hijri date is read in — `hijri/calendar.ts`:
+   * the arithmetic one, or Indonesia's government/NU (MABIMS) or
+   * Muhammadiyah (KHGT) tables.
+   */
+  hijriCalendar: HijriCalendarId;
+  /** Days to move that calendar by, −2…+2: +1 shows tomorrow's date. */
+  hijriAdjustDays: number;
+  /** Android prayer-times widget: the text colour, #RRGGBB. Secondary text
+   *  is the same colour, faded. */
+  androidWidgetTextColor: string;
+  /** Android prayer-times widget: show the city. */
+  androidWidgetShowLocation: boolean;
+  /** Android prayer-times widget: show the countdown to the next prayer. */
+  androidWidgetShowCountdown: boolean;
+  /** Android prayer-times widget: show the table of the day's times. */
+  androidWidgetShowTable: boolean;
+  /** Android prayer-times widget: size of the prayer times, percent
+   *  (`WIDGET_TIME_SCALE_MIN`–`WIDGET_TIME_SCALE_MAX`). */
+  androidWidgetTimeScale: number;
   /**
    * User's saved location presets — task #18. Always-present (never
    * undefined); empty array means no presets saved yet.
@@ -676,6 +698,13 @@ export const DEFAULT_SETTINGS: PrayerAppSettings = {
   androidWidgetBackgroundOpacity: 88,
   widgetHighlightId: 'green',
   widgetHighlightCustomHex: '#6BC98A',
+  hijriCalendar: 'tabular',
+  hijriAdjustDays: 0,
+  androidWidgetTextColor: '#E8EAED',
+  androidWidgetShowLocation: true,
+  androidWidgetShowCountdown: true,
+  androidWidgetShowTable: true,
+  androidWidgetTimeScale: 100,
   locationPresets: [],
   prayerOffsets: {},
   onboardingComplete: false,
@@ -758,3 +787,8 @@ export const DEFAULT_SETTINGS: PrayerAppSettings = {
   mulkReminderHour: 22,
   mulkReminderMinute: 0,
 };
+
+/** The widget's prayer-time size, in percent: within reason, in 10% steps. */
+export const WIDGET_TIME_SCALE_MIN = 80;
+export const WIDGET_TIME_SCALE_MAX = 150;
+export const WIDGET_TIME_SCALE_STEP = 10;

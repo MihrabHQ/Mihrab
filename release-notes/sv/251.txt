@@ -1,0 +1,1 @@
+• Android: när du loggar en bön från widgeten når den nu appen direkt. Tidigare sparades trycket i widgeten men nådde din journal först nästa gång du öppnade appen, så widgeten och appen kunde visa olika i flera dagar.

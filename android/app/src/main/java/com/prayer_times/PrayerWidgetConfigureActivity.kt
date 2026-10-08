@@ -16,6 +16,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.materialswitch.MaterialSwitch
 import kotlin.math.max
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -139,6 +140,54 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
     syncHexVisibility()
     radioGroup.setOnCheckedChangeListener { _, _ -> syncHexVisibility() }
 
+    // ── The prayer-times widget's own options ────────────────────────────
+    // Only the prayer-times cards read these (PrayerGlanceWidget), so the
+    // section is shown only when this screen was opened from one of them.
+    val isPrayerWidget = isPrayerTimesWidget(appWidgetId)
+    val prayerSection = findViewById<LinearLayout>(R.id.widget_configure_prayer_section)
+    prayerSection.visibility = if (isPrayerWidget) View.VISIBLE else View.GONE
+    val display = PrayerWidgetDisplay.read(this)
+    val storedTextHex = prefs.getString(PrayerWidgetDisplay.KEY_TEXT_HEX, "")?.trim().orEmpty().uppercase()
+    val textGroup = findViewById<RadioGroup>(R.id.widget_configure_text_group)
+    val textHexLayout = findViewById<TextInputLayout>(R.id.widget_configure_text_hex_layout)
+    val textHexInput = findViewById<TextInputEditText>(R.id.widget_configure_text_hex_input)
+    val presetIds = TEXT_PRESETS.map { it.first }
+    val presetIndex = TEXT_PRESETS.indexOfFirst { it.second == storedTextHex.ifEmpty { TEXT_PRESETS[0].second } }
+    textGroup.check(if (presetIndex >= 0) presetIds[presetIndex] else R.id.widget_configure_text_custom)
+    textHexInput.setText(if (presetIndex < 0 && HEX.matches(storedTextHex)) storedTextHex else "#FFFFFF")
+    fun syncTextHexVisibility() {
+      val custom = textGroup.checkedRadioButtonId == R.id.widget_configure_text_custom
+      textHexLayout.visibility = if (custom) View.VISIBLE else View.GONE
+      textHexLayout.error = null
+    }
+    syncTextHexVisibility()
+    textGroup.setOnCheckedChangeListener { _, _ -> syncTextHexVisibility() }
+
+    val showLocation = findViewById<MaterialSwitch>(R.id.widget_configure_show_location)
+    val showCountdown = findViewById<MaterialSwitch>(R.id.widget_configure_show_countdown)
+    val showTable = findViewById<MaterialSwitch>(R.id.widget_configure_show_table)
+    showLocation.isChecked = display.showLocation
+    showCountdown.isChecked = display.showCountdown
+    showTable.isChecked = display.showTable
+
+    // 80 … 150 % in steps of 10: the seek bar's 0 … 7.
+    val sizeSeek = findViewById<SeekBar>(R.id.widget_configure_time_size_seek)
+    val sizeLabel = findViewById<TextView>(R.id.widget_configure_time_size_value)
+    sizeSeek.max = (PrayerWidgetDisplay.SCALE_MAX - PrayerWidgetDisplay.SCALE_MIN) / 10
+    sizeSeek.progress = (Math.round(display.timeScale * 100) - PrayerWidgetDisplay.SCALE_MIN) / 10
+    fun sizePercent() = PrayerWidgetDisplay.SCALE_MIN + sizeSeek.progress * 10
+    fun updateSizeLabel() {
+      sizeLabel.text = getString(R.string.widget_configure_opacity_percent, sizePercent())
+    }
+    updateSizeLabel()
+    sizeSeek.setOnSeekBarChangeListener(
+      object : SeekBar.OnSeekBarChangeListener {
+        override fun onProgressChanged(sb: SeekBar?, progress: Int, fromUser: Boolean) = updateSizeLabel()
+        override fun onStartTrackingTouch(sb: SeekBar?) {}
+        override fun onStopTrackingTouch(sb: SeekBar?) {}
+      },
+    )
+
     findViewById<MaterialButton>(R.id.widget_configure_save).setOnClickListener {
       val checked = radioGroup.checkedRadioButtonId
       val hid =
@@ -161,8 +210,34 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
           ""
         }
 
-      prefs
-        .edit()
+      // The custom text colour must be a real #RRGGBB before anything is
+      // saved: a typo would otherwise draw the widget in the default and
+      // look like the setting had been ignored.
+      var textHex = ""
+      if (isPrayerWidget) {
+        val checkedText = textGroup.checkedRadioButtonId
+        if (checkedText == R.id.widget_configure_text_custom) {
+          val raw = normaliseHex(textHexInput.text?.toString())
+          if (raw == null) {
+            textHexLayout.error = getString(R.string.widget_configure_hex_invalid)
+            return@setOnClickListener
+          }
+          textHex = raw
+        } else {
+          textHex = TEXT_PRESETS.firstOrNull { it.first == checkedText }?.second ?: TEXT_PRESETS[0].second
+        }
+      }
+
+      val editor = prefs.edit()
+      if (isPrayerWidget) {
+        editor
+          .putString(PrayerWidgetDisplay.KEY_TEXT_HEX, textHex)
+          .putBoolean(PrayerWidgetDisplay.KEY_SHOW_LOCATION, showLocation.isChecked)
+          .putBoolean(PrayerWidgetDisplay.KEY_SHOW_COUNTDOWN, showCountdown.isChecked)
+          .putBoolean(PrayerWidgetDisplay.KEY_SHOW_TABLE, showTable.isChecked)
+          .putInt(PrayerWidgetDisplay.KEY_TIME_SCALE, sizePercent())
+      }
+      editor
         .putInt(PrayerWidgetProvider.PREFS_WIDGET_BG_OPACITY, seek.progress)
         .putString(PrayerWidgetProvider.PREFS_WIDGET_HIGHLIGHT_ID, hid)
         .putString(PrayerWidgetProvider.PREFS_WIDGET_HIGHLIGHT_HEX, hexForStore)
@@ -197,4 +272,38 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
     }
   }
 
+
+  /** Is this widget one of the prayer-times cards (its options apply)? */
+  private fun isPrayerTimesWidget(appWidgetId: Int): Boolean {
+    val cls = AppWidgetManager.getInstance(this).getAppWidgetInfo(appWidgetId)?.provider?.className
+      ?: return false
+    return cls in PRAYER_TIMES_PROVIDERS
+  }
+
+  companion object {
+    private val HEX = Regex("^#[0-9A-F]{6}$")
+
+    /** The cards PrayerGlanceWidget draws: Next prayer, Prayer times, tall. */
+    private val PRAYER_TIMES_PROVIDERS = setOf(
+      PrayerWidgetProvider::class.java.name,
+      PrayerWidgetSmallProvider::class.java.name,
+      PrayerWidgetLargeProvider::class.java.name,
+    )
+
+    /** The app's swatches (settings/WidgetCard.tsx), in its order. */
+    private val TEXT_PRESETS = listOf(
+      R.id.widget_configure_text_light to "#E8EAED",
+      R.id.widget_configure_text_white to "#FFFFFF",
+      R.id.widget_configure_text_cream to "#F3E9D2",
+      R.id.widget_configure_text_gold to "#E5C07B",
+      R.id.widget_configure_text_sky to "#A8C7FA",
+      R.id.widget_configure_text_dark to "#1C1C1E",
+    )
+
+    /** "#abc123", "abc123" → "#ABC123"; anything else → null. */
+    fun normaliseHex(input: String?): String? {
+      val t = input?.trim()?.uppercase()?.removePrefix("#") ?: return null
+      return if (Regex("^[0-9A-F]{6}$").matches(t)) "#$t" else null
+    }
+  }
 }

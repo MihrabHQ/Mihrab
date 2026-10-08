@@ -1,0 +1,16 @@
+• Tilāwah: put the Qur'an on and listen. Pick a reciter, start anywhere, and it keeps going surah after surah with the screen off, offline once downloaded.
+• Tilāwah has a mini reader, a button to open the passage in the full reader, and an option to keep the screen awake. The next and previous buttons move by whole surahs, and shuffle picks surahs at random.
+• The system media player shows the name of the surah being recited, and the player uses less power when it is not on screen.
+• Morning and evening duas can now remind you in their own windows: after Fajr before sunrise, and after Asr before sunset.
+• Each prayer can now have its own alert style, and the alert control sits next to the time it governs.
+• The Maliki second times can be announced without adding rows to your prayer card, can tell you when a prayer becomes qadaa, and can be shown in the month view.
+• Darūrī times now apply their safety margin in the correct direction, and combining them with the Hanafi setting is flagged as a conflict.
+• A 12-hour clock option, used everywhere you read a time.
+• Settings is reorganised into an index of seven sections instead of one long scroll.
+• Every tab except Today shows where the back button leads, and the Quran tab returns to the top when tapped, like the other tabs.
+• Duas fold their reading aids away, and the dua text is a size smaller.
+• Fixed: widgets cut off their last line.
+• Fixed: a recitation download could seem stuck when it was in fact failing; it now reports the failure, and the download bar goes away when it is done.
+• Fixed: the per-prayer alert switches and the master switch could disagree.
+• Fixed: the end of Isha on the last day of a seasonal timing window.
+• Fixed: the active tab indicator, the Quran indicator, the ayah sheet, and letters lost from the top line of text.

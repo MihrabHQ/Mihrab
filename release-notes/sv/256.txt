@@ -1,0 +1,22 @@
+• Ett tryck på ett ord i mushafen öppnar dess vers: översättning, tafsir, bokmärke, recitation och position i khatmah.
+• En sepiafärgad sida, mellan papper och natt.
+• Det reciterade ordet lyser upp, både på mushafsidan och i översättningsvyn, och i liggande läge följer sidan recitatören nedåt.
+• Läsningen börjar i samma stund som nedladdningen, och mushafen öppnas och bläddrar snabbare.
+• Sidan når ända ner till skärmens nederkant, med jämna marginaler och en avdelare.
+• När du vrider telefonen visas en sida, inte två.
+• Khatmah: planen följer sitt eget spår i stället för var du än bläddrar, en fäst sida är en startpunkt och inte ett fast ankare, slutdagen visar sitt datum och påminnelsen tiger när du redan har läst.
+• Automatisk plats och sparade platser kan användas tillsammans.
+• Förvarningen anger vilken bönetid den varnar för.
+• Månadstabellen är nu en sida i stället för en bild, anger platsen och säger vad appen är under koderna.
+• Datastatistiken skiljer på de två servrarna och förklarar varför den marockanska tabellen täcker en kortare period.
+• Widgetar på hemskärmen följer nu motsvarande reglage i appen.
+• iPhone: Live Activity visar en stapel för det som kommer, ritad i skala; nattiderna är händelser som kortet kan lämna bakom sig; ett nytt reglage styr låsskärmsknappen; och stoppuret är borttaget.
+• iPhone och iPad: widgetar och Live Activity följer också reglagen för extra tider.
+• iPhone: mushafens sidhuvud delar bandet runt kamerautskärningen, nedladdningsremsan och arken hamnar fritt från det, och ett ark kan öppnas i liggande läge.
+• iPad: rotation i tvåsidesvyn hanteras på samma omsorgsfulla sätt.
+• Mac: sidsvepet fungerar inte längre som bakåtsvep, piltangenterna bläddrar igen, sidpilar visas oavsett fönsterstorlek, styrplattan fungerar i läsaren och läsarens kontroller fortsätter svara på musen.
+• iPhone och iPad: flikfältets ikoner visas korrekt med Liquid Glass.
+• Android: navigeringsfältet tar sidans färg, bara där knapparna finns.
+• Android: ordmarkeringen fungerar igen.
+• Ordtider för recitation som inte går att hämta försöks igen i stället för att ges upp.
+• Åtgärdat: sidhuvudsremsan täckte knappen för sidton, och khatmah-foten i sidofältet visade ”today: {today}”.

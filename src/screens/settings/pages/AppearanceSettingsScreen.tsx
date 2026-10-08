@@ -22,6 +22,7 @@ import { LanguageCard } from '../LanguageCard';
 import { LanguageModal } from '../LanguageModal';
 import { SettingsPage } from '../SettingsPage';
 import { WidgetCard } from '../WidgetCard';
+import { PrayerWidgetCard } from '../PrayerWidgetCard';
 
 export function AppearanceSettingsScreen() {
   const { settings, updateSettings } = usePrayerSettings();
@@ -42,6 +43,8 @@ export function AppearanceSettingsScreen() {
             picked in `AppearanceCard`, and a reader who has just set it
             reads down to what follows it. */}
         <WidgetCard />
+        {/* Its own card: only the prayer-times widgets read these. */}
+        <PrayerWidgetCard />
       </SettingsPage>
       <LanguageModal
         visible={languageModal}

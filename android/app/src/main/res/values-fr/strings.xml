@@ -41,6 +41,20 @@
     <string name="widget_configure_highlight_custom">Couleur personnalisée</string>
     <string name="widget_configure_hex_hint">#RRGGBB</string>
     <string name="widget_configure_save">Enregistrer</string>
+    <string name="widget_configure_prayer_title">Widget des horaires</string>
+    <string name="widget_configure_prayer_note">S’applique uniquement aux widgets des horaires.</string>
+    <string name="widget_configure_text_color">Couleur du texte</string>
+    <string name="widget_configure_text_light">Clair</string>
+    <string name="widget_configure_text_white">Blanc</string>
+    <string name="widget_configure_text_cream">Crème</string>
+    <string name="widget_configure_text_gold">Or</string>
+    <string name="widget_configure_text_sky">Ciel</string>
+    <string name="widget_configure_text_dark">Sombre</string>
+    <string name="widget_configure_show_location">Afficher la ville</string>
+    <string name="widget_configure_show_countdown">Afficher le compte à rebours</string>
+    <string name="widget_configure_show_table">Afficher les horaires du jour</string>
+    <string name="widget_configure_time_size">Taille des horaires</string>
+    <string name="widget_configure_hex_invalid">Saisissez une couleur au format #RRGGBB</string>
     <!-- Live Activity notification strings -->
     <string name="live_activity_channel_name">Compte à rebours de la prière</string>
     <string name="live_activity_channel_desc">Compte à rebours épinglé jusqu\'à la prochaine prière.</string>

@@ -1,0 +1,158 @@
+name: Algeria prayer-times dataset
+
+# Rebuilds the Algerian dataset from the Ministry of Religious Affairs and
+# Wakfs's own app ("أذان الجزائر الرسمي", com.issolah.marwalarm), which
+# carries the Ministry's yearly timetable for 68 cities. See
+# tools/algeria-ministry/README.md.
+#
+# The Ministry publishes a Hijri year at a time, as an app update — the last
+# one landed on 17 June 2026, the day after 1 Muharram 1448. So: weekly most
+# of the year, daily from May to July when the next year is due. A run that
+# finds the same app version does nothing but report how many days are left.
+#
+# The APK comes from APKPure (via EFF's apkeep), and that is safe to do
+# because the source is not trusted at all: the build refuses any file whose
+# signature does not verify against the Ministry app's pinned certificate.
+#
+# A new year arrives as a PULL REQUEST, not a push: it is the whole year's
+# times for a country, and a person should look at the summary (and any
+# already-published day that changed) before phones pick it up from main.
+
+on:
+  schedule:
+    - cron: '23 5 * * 1' # Mondays, 05:23 UTC
+    - cron: '23 5 * 5-7 *' # every day in May, June and July
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'Rebuild even if the app version is unchanged'
+        type: boolean
+        default: false
+
+concurrency:
+  group: marw-dataset
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+env:
+  APKEEP_VERSION: '1.1.0'
+  # sha256 of apkeep-x86_64-unknown-linux-gnu 1.1.0, so a swapped binary never runs here.
+  APKEEP_SHA256: 'badd7ad9fa7d2f32abe01eaf33b7ff086361a95bbc000a33bf44b630d4bf2140'
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Fetch apkeep
+        run: |
+          curl -sSfL -o "$RUNNER_TEMP/apkeep" \
+            "https://github.com/EFForg/apkeep/releases/download/${APKEEP_VERSION}/apkeep-x86_64-unknown-linux-gnu"
+          echo "${APKEEP_SHA256}  $RUNNER_TEMP/apkeep" | sha256sum -c -
+          chmod +x "$RUNNER_TEMP/apkeep"
+
+      - name: Download the Ministry app
+        run: |
+          mkdir -p "$RUNNER_TEMP/apk"
+          for i in 1 2 3; do
+            "$RUNNER_TEMP/apkeep" -a com.issolah.marwalarm -d apk-pure \
+              -o acknowledge_dangers=true "$RUNNER_TEMP/apk" && break
+            sleep 20
+          done
+          ls -la "$RUNNER_TEMP/apk"
+          f=$(ls "$RUNNER_TEMP"/apk/com.issolah.marwalarm.* | head -1)
+          test -n "$f"
+          echo "MARW_APK=$f" >> "$GITHUB_ENV"
+
+      # Verifies the signature against the pinned certificate, checks every
+      # city, day and time, and writes nothing unless all of it passes.
+      - name: Build
+        id: build
+        env:
+          MARW_FORCE: ${{ inputs.force && '1' || '0' }}
+        run: npx --yes tsx@4 tools/algeria-ministry/build.ts "$MARW_APK"
+
+      - name: Open a pull request
+        if: steps.build.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.build.outputs.version_name }}
+          SUMMARY: ${{ steps.build.outputs.summary_file }}
+        run: |
+          if [ -z "$(git status --porcelain -- data/prayer-times/algeria src/providers/data/marwSeed.json src/providers/data/algeriaCities.json)" ]; then
+            echo "no change"
+            exit 0
+          fi
+          branch="marw-dataset/${VERSION}"
+          git config user.name  'mihrab-dataset-bot'
+          git config user.email 'mihrab-dataset-bot@users.noreply.github.com'
+          git checkout -B "$branch"
+          git add data/prayer-times/algeria src/providers/data/marwSeed.json src/providers/data/algeriaCities.json
+          git commit -m "Algeria dataset: Ministry app ${VERSION}"
+          git push --force origin "$branch"
+          if gh pr view "$branch" >/dev/null 2>&1; then
+            gh pr edit "$branch" --body-file "$SUMMARY"
+          else
+            gh pr create --base main --head "$branch" \
+              --title "Algeria dataset: Ministry app ${VERSION}" \
+              --body-file "$SUMMARY"
+          fi
+
+      - name: Mail on failure
+        if: failure() && env.MAIL_SERVER != ''
+        env:
+          MAIL_SERVER: ${{ secrets.MAIL_SERVER }}
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.MAIL_SERVER }}
+          server_port: ${{ secrets.MAIL_PORT }}
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: 'Mihrab: the Algeria dataset build failed'
+          to: mihrab@elghamri.se
+          from: Mihrab dataset bot <${{ secrets.MAIL_USERNAME }}>
+          body: |
+            The Algerian dataset build failed. Nothing was published; phones
+            keep the current table.
+
+            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            "refused:" in the log means the app file or its data did not pass
+            a check (signature, cities, days, times). Anything else is most
+            likely APKPure being unreachable; the next run retries.
+
+      - name: Mail when the year is running out
+        if: success() && steps.build.outputs.coverage_warning == 'true' && env.MAIL_SERVER != ''
+        env:
+          MAIL_SERVER: ${{ secrets.MAIL_SERVER }}
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.MAIL_SERVER }}
+          server_port: ${{ secrets.MAIL_PORT }}
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: 'Mihrab: the Algeria dataset ends in ${{ steps.build.outputs.days_left }} days'
+          to: mihrab@elghamri.se
+          from: Mihrab dataset bot <${{ secrets.MAIL_USERNAME }}>
+          body: |
+            The Ministry's published year runs out in ${{ steps.build.outputs.days_left }}
+            days and its app has not shipped the next one yet. Past the end,
+            phones compute the Algeria method (a minute or two off the table).
+
+            If the Ministry has published but APKPure lags, build locally from
+            the Play Store copy: tools/algeria-ministry/README.md.
+
+            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}

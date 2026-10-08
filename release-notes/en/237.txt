@@ -1,0 +1,3 @@
+• Fixed: some mushaf lines were losing their last word, roughly one line in eight on nearly every page. The text and fonts were always correct; the display is now fixed and checked on all 604 pages.
+• The Log graph scrolls in the right direction in Arabic, Urdu, Persian and Hebrew.
+• Quran files left behind by an older version are cleared out.

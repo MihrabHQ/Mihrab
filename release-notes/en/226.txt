@@ -1,0 +1,2 @@
+• Android: removed the storage read/write permissions, which the app never needed; Mihrab only writes to its own private app storage.
+• Mac: the menu bar now says "Mihrab".

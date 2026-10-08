@@ -31,6 +31,20 @@
     <string name="widget_configure_highlight_custom">Color personalizado</string>
     <string name="widget_configure_hex_hint">#RRGGBB</string>
     <string name="widget_configure_save">Guardar</string>
+    <string name="widget_configure_prayer_title">Widget de horarios</string>
+    <string name="widget_configure_prayer_note">Solo se aplica a los widgets de horarios.</string>
+    <string name="widget_configure_text_color">Color del texto</string>
+    <string name="widget_configure_text_light">Claro</string>
+    <string name="widget_configure_text_white">Blanco</string>
+    <string name="widget_configure_text_cream">Crema</string>
+    <string name="widget_configure_text_gold">Dorado</string>
+    <string name="widget_configure_text_sky">Celeste</string>
+    <string name="widget_configure_text_dark">Oscuro</string>
+    <string name="widget_configure_show_location">Mostrar la ciudad</string>
+    <string name="widget_configure_show_countdown">Mostrar la cuenta atrás</string>
+    <string name="widget_configure_show_table">Mostrar los horarios del día</string>
+    <string name="widget_configure_time_size">Tamaño de los horarios</string>
+    <string name="widget_configure_hex_invalid">Escribe un color como #RRGGBB</string>
     <!-- Live Activity notification strings -->
     <string name="live_activity_channel_name">Cuenta regresiva de oración</string>
     <string name="live_activity_channel_desc">Cuenta regresiva fijada hasta la próxima oración.</string>

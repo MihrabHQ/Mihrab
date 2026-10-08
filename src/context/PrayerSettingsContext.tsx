@@ -10,6 +10,7 @@ import { applyMadhabNaming } from '../prayer/madhab';
 import i18n from '../i18n';
 import { setActiveClockFormat } from '../utils/activeClock';
 import { loadSettings, saveSettings } from '../settings/storage';
+import { setHijriCalendar } from '../hijri/calendar';
 import {
   DEFAULT_SETTINGS,
   type PrayerAppSettings,
@@ -121,6 +122,11 @@ export type WidgetSlice = Pick<
   | 'androidWidgetBackgroundOpacity'
   | 'widgetHighlightId'
   | 'widgetHighlightCustomHex'
+  | 'androidWidgetTextColor'
+  | 'androidWidgetShowLocation'
+  | 'androidWidgetShowCountdown'
+  | 'androidWidgetShowTable'
+  | 'androidWidgetTimeScale'
 >;
 
 export type LiveActivitySlice = Pick<
@@ -354,11 +360,21 @@ export function PrayerSettingsProvider({
       androidWidgetBackgroundOpacity: settings.androidWidgetBackgroundOpacity,
       widgetHighlightId: settings.widgetHighlightId,
       widgetHighlightCustomHex: settings.widgetHighlightCustomHex,
+      androidWidgetTextColor: settings.androidWidgetTextColor,
+      androidWidgetShowLocation: settings.androidWidgetShowLocation,
+      androidWidgetShowCountdown: settings.androidWidgetShowCountdown,
+      androidWidgetShowTable: settings.androidWidgetShowTable,
+      androidWidgetTimeScale: settings.androidWidgetTimeScale,
     }),
     [
       settings.androidWidgetBackgroundOpacity,
       settings.widgetHighlightId,
       settings.widgetHighlightCustomHex,
+      settings.androidWidgetTextColor,
+      settings.androidWidgetShowLocation,
+      settings.androidWidgetShowCountdown,
+      settings.androidWidgetShowTable,
+      settings.androidWidgetTimeScale,
     ],
   );
 
@@ -409,6 +425,14 @@ export function PrayerSettingsProvider({
     () => ({ slice: liveActivity, update: updateSettings, hydrated }),
     [liveActivity, updateSettings, hydrated],
   );
+
+  // The Hijri calendar is module state (`hijri/calendar.ts`) so that code
+  // with no React around it reads the same one. Set after the render that
+  // changed it; screens printing a Hijri date re-render through
+  // `useHijriCalendarVersion`.
+  useEffect(() => {
+    setHijriCalendar(settings.hijriCalendar, settings.hijriAdjustDays);
+  }, [settings.hijriCalendar, settings.hijriAdjustDays]);
 
   const fullValue = useMemo<Ctx>(
     () => ({ settings, hydrated, updateSettings }),

@@ -1,0 +1,10 @@
+• Dhikr reminders: set your own, with words you choose, at any time of day, fully offline (#29).
+• Reminders for Surah Al-Kahf on Friday, Al-Mulk at night, and the morning and evening adhkar (#36).
+• Pick your school (Hanafi, Maliki, Shafi'i or Hanbali), and the times and prayer names follow it (#21, #22).
+• A second Spanish translation of the Qur'an: Isa García, alongside Cortés (#37).
+• Duas: all nineteen categories on one screen, grouped, with a header that shows where you are (#33). The lavatory and dressing duas are added (#34).
+• Tapping a notification or a prayer widget now opens the screen it is about (#27).
+• The Notifications page shows what is scheduled to fire (#32).
+• Downloading a recitation also brings its word data, and Mihrab shows how much of each surah is actually on your device (#30).
+• The data panel can be folded away, and stays folded.
+• Fixed: the widget picker showed two 4×1 widgets, and a widget that fails to draw now says why (#31).

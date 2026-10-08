@@ -58,6 +58,12 @@ import {
   markResynced,
   shouldResync,
 } from './utils/resyncGate';
+import {
+  activeHijriCalendar,
+  hijriOverridesUpdated,
+  subscribeHijriCalendar,
+} from './hijri/calendar';
+import { loadCachedHijriOverrides, refreshHijriOverrides } from './hijri/overrides';
 
 /** Gate key for the daily notification reschedules — see utils/resyncGate. */
 const DAILY_RESYNC_KEY = 'root.dailyReschedules';
@@ -97,6 +103,10 @@ export function AppNavigationRoot() {
     if (!hydrated) return;
     const sync = (force: boolean) => {
       const now = Date.now();
+      // Announced Hijri corrections (a sidang isbat that overruled the
+      // prediction). Throttled on its own; adopting one moves the calendar,
+      // which the subscription below turns into a forced resync.
+      void refreshHijriOverrides();
       if (!force && now - lastDailySyncRef.current < 60 * 60 * 1000) return;
       // The hourly gate above stops it running on every single foreground.
       // This one stops the runs that DO get through from redoing work whose
@@ -139,6 +149,9 @@ export function AppNavigationRoot() {
         // days, its words — rewrites the schedule rather than reading as
         // no change until tomorrow.
         dhikrPrint,
+        // Fasting reminders fall on Hijri dates: another calendar, another
+        // adjustment or an announced correction moves them.
+        `${activeHijriCalendar().id}|${activeHijriCalendar().adjustDays}|${hijriOverridesUpdated()}`,
       );
       if (!shouldResync(DAILY_RESYNC_KEY, dailyPrint, now)) return;
       markResynced(DAILY_RESYNC_KEY, dailyPrint, now);
@@ -188,8 +201,17 @@ export function AppNavigationRoot() {
     // the companion/khatmah subscriptions below are untouched: the app is
     // drawn by then. See src/boot/firstPaint.ts.
     let live = true;
+    let painted = false;
+    void loadCachedHijriOverrides();
     void afterFirstPaint().then(() => {
       if (live) sync(true);
+      painted = true;
+    });
+    // The Hijri calendar moved (Settings, or a correction from the server):
+    // the fasting reminders are on Hijri dates. Not before the first frame —
+    // the launch sync above runs then and reads the calendar as it is.
+    const unsubHijri = subscribeHijriCalendar(() => {
+      if (painted && live) sync(true);
     });
     const sub = AppState.addEventListener('change', state => {
       if (state === 'active') sync(false);
@@ -234,6 +256,7 @@ export function AppNavigationRoot() {
       live = false;
       sub.remove();
       unsubQuran();
+      unsubHijri();
       unsubKhatmah();
     };
   }, [

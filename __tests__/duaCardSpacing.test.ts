@@ -29,7 +29,6 @@ const SCREENS = [
   'src/screens/FastingScreen.tsx',
   'src/screens/BackupScreen.tsx',
   'src/screens/SyncScreen.tsx',
-  'src/screens/QuranDownloadsScreen.tsx',
 ];
 
 describe('a stacked screen spaces its cards on the column', () => {

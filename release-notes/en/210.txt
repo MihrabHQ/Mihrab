@@ -1,0 +1,4 @@
+• Full mushaf pages now use the screen better: the text gently stretches to fill the free vertical space.
+• Fullscreen keeps the surah name, the night/light toggle and the page number visible.
+• Smoother entering and leaving of fullscreen.
+• Pages 1–2 keep their decorative frames unstretched.

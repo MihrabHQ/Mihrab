@@ -31,6 +31,20 @@
     <string name="widget_configure_highlight_custom">কাস্টম রঙ</string>
     <string name="widget_configure_hex_hint">#RRGGBB</string>
     <string name="widget_configure_save">সংরক্ষণ করুন</string>
+    <string name="widget_configure_prayer_title">নামাজের সময়ের উইজেট</string>
+    <string name="widget_configure_prayer_note">এগুলো শুধু নামাজের সময়ের উইজেটে প্রযোজ্য।</string>
+    <string name="widget_configure_text_color">লেখার রং</string>
+    <string name="widget_configure_text_light">হালকা</string>
+    <string name="widget_configure_text_white">সাদা</string>
+    <string name="widget_configure_text_cream">ক্রিম</string>
+    <string name="widget_configure_text_gold">সোনালি</string>
+    <string name="widget_configure_text_sky">আকাশি</string>
+    <string name="widget_configure_text_dark">গাঢ়</string>
+    <string name="widget_configure_show_location">শহর দেখান</string>
+    <string name="widget_configure_show_countdown">কাউন্টডাউন দেখান</string>
+    <string name="widget_configure_show_table">দিনের সময়গুলো দেখান</string>
+    <string name="widget_configure_time_size">নামাজের সময়ের আকার</string>
+    <string name="widget_configure_hex_invalid">রং লিখুন #RRGGBB আকারে</string>
     <!-- Live Activity notification strings -->
     <string name="live_activity_channel_name">নামাযের কাউন্টডাউন</string>
     <string name="live_activity_channel_desc">পরবর্তী নামাযের জন্য পিন করা কাউন্টডাউন।</string>

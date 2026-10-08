@@ -1,0 +1,3 @@
+• Synk: att välja en Nextcloud-mapp, eller en mapp där leverantören inte skapar undermappar, misslyckas inte längre med ett fel.
+• Synk: om mappen du väljer redan heter Mihrab används den som den är, i stället för att en ny Mihrab-mapp skapas inuti den, så att synken skriver där din synkklient letar.
+• En mapp som verkligen inte går att använda förklaras nu med vanliga ord i stället för ett tekniskt felmeddelande.

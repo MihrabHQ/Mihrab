@@ -431,8 +431,11 @@ class PrayerAlarmActivity : Activity() {
         }
         lastChanceOk && lastLabel.isNotEmpty() -> {
           currentMinutes = LAST_CHANCE_MINUTES
-          snoozeBtn.text = lastLabel
-          snoozeBtn.contentDescription = lastLabel
+          val lead = listOf(15, 5).first { deadline - it * 60_000L >= now + 60_000L }
+          val mins = Math.max(1L, Math.round((deadline - lead * 60_000L - now) / 60_000.0))
+          val label = lastLabel.replace("{minutes}", mins.toString())
+          snoozeBtn.text = label
+          snoozeBtn.contentDescription = label
           snoozeBtn.visibility = View.VISIBLE
         }
         else -> snoozeBtn.visibility = View.GONE

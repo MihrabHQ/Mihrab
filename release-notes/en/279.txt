@@ -1,0 +1,7 @@
+• Word reader: hold a word in the mushaf, slide to another if you like, and lift to hear that one word. Turn it on in Settings → Quran → Word reader.
+• The mushaf's night page is true black.
+• The mushaf header shows the riwayah beside the back arrow and the recitation on the right, and the title stays centred on a phone in landscape.
+• Khatmah by a date: the days after today are laid out in pages, and once today is done, the marker shows where tomorrow's portion really ends.
+• Sync no longer undoes khatmah reading done on your other device.
+• Android: the app keeps its own text when a system theme font is set, and the ayah number sits inside its rosette. (#16)
+• Android: the download from GitHub for Obtainium is smaller, and is now for ARM devices only.

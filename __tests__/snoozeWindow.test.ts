@@ -112,10 +112,11 @@ describe('the buttons follow the menu', () => {
     ]);
   });
 
-  it('the one remaining button reads "Last chance to pray Asr"', () => {
+  it('the one remaining button says how long it snoozes, not "last chance"', () => {
     const menu = snoozeMenu(at(19), D, SNOOZE_PRESETS);
     const snooze = prayerAlertActions('Asr', undefined, menu)[0];
-    expect(snooze.input?.choices).toEqual([lastChanceLabel('Asr')]);
+    // Last chance fires 15 min before the end; drawn 19 min before it: 4 min.
+    expect(snooze.input?.choices).toEqual(['Snooze 4 min']);
     expect(lastChanceLabel('Asr')).toBe('Last chance to pray Asr');
   });
 
@@ -131,7 +132,7 @@ describe('the buttons follow the menu', () => {
     expect(full.fsSnoozeMinutes).toBe('10');
     expect(JSON.parse(full.fsSnoozeAlt).map((c: { m: number }) => c.m)).toEqual([5, 15, 30, 60]);
     const near = fullScreenAlarmData('Asr', '', snoozeMenu(at(19), D, SNOOZE_PRESETS));
-    expect(near.fsSnooze).toBe('Last chance to pray Asr');
+    expect(near.fsSnooze).toBe('Snooze 4 min');
     expect(near.fsSnoozeMinutes).toBe(String(LAST_CHANCE_MINUTES));
     expect(JSON.parse(near.fsSnoozeAlt)).toEqual([]);
     const late = fullScreenAlarmData('Asr', '', snoozeMenu(at(4), D, SNOOZE_PRESETS));
@@ -182,7 +183,7 @@ describe('the alarm screen keeps deciding while it is open', () => {
     expect(d.fsDeadline).toBe(String(D));
     expect(JSON.parse(d.fsMainOpts).map((o: { m: number }) => o.m)).toEqual([10, 5]);
     expect(JSON.parse(d.fsChipOpts).map((o: { m: number }) => o.m)).toEqual([5, 15, 30, 60]);
-    expect(d.fsLastChance).toBe('Last chance to pray Asr');
+    expect(d.fsLastChance).toBe('Snooze {minutes} min');
   });
 
   it('sends nothing extra when the end is unknown (the static screen)', () => {

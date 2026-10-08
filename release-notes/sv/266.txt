@@ -1,0 +1,4 @@
+• När en bönetids första tid har passerat visar raden när den andra tiden tar slut.
+• En bönelogg som inte gick att läsa skrivs inte längre över. Ett kort lagringsfel kunde få Loggen att se tom ut, och nästa tryck ersatte hela din historik med just den bönen; appen väntar nu tills historiken går att läsa innan något sparas. (#38)
+• Solen i himmelsbilden korsar himlen en gång, från där den går upp till där den går ner.
+• Himmelsbilden visas inte längre spegelvänd på språk som skrivs från höger till vänster.

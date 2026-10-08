@@ -31,6 +31,20 @@
     <string name="widget_configure_highlight_custom">Eigene Farbe</string>
     <string name="widget_configure_hex_hint">#RRGGBB</string>
     <string name="widget_configure_save">Speichern</string>
+    <string name="widget_configure_prayer_title">Gebetszeiten-Widget</string>
+    <string name="widget_configure_prayer_note">Gilt nur für die Gebetszeiten-Widgets.</string>
+    <string name="widget_configure_text_color">Textfarbe</string>
+    <string name="widget_configure_text_light">Hell</string>
+    <string name="widget_configure_text_white">Weiß</string>
+    <string name="widget_configure_text_cream">Creme</string>
+    <string name="widget_configure_text_gold">Gold</string>
+    <string name="widget_configure_text_sky">Himmelblau</string>
+    <string name="widget_configure_text_dark">Dunkel</string>
+    <string name="widget_configure_show_location">Stadt anzeigen</string>
+    <string name="widget_configure_show_countdown">Countdown anzeigen</string>
+    <string name="widget_configure_show_table">Die Zeiten des Tages anzeigen</string>
+    <string name="widget_configure_time_size">Größe der Gebetszeiten</string>
+    <string name="widget_configure_hex_invalid">Farbe als #RRGGBB eingeben</string>
     <!-- Live Activity notification strings -->
     <string name="live_activity_channel_name">Gebets-Countdown</string>
     <string name="live_activity_channel_desc">Angehefteter Countdown zum nächsten Gebet.</string>

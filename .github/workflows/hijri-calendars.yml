@@ -1,0 +1,81 @@
+name: Hijri calendars (Indonesia)
+
+# Rebuilds src/hijri/data/monthStarts.json: Muhammadiyah's KHGT calendar
+# read from its own site (khgt.muhammadiyah.or.id), and the government's
+# MABIMS calendar computed from the moon. See tools/hijri-calendars/README.md.
+#
+# Monthly: Muhammadiyah can revise or extend its published years, and this
+# is how the app finds out. The rules are first checked against every date
+# each body has announced (calibrate.ts) — a run that no longer reproduces
+# them stops before writing anything. A changed table arrives as a PULL
+# REQUEST: it moves Hijri dates on every phone, and a person should read
+# the diff first.
+
+on:
+  schedule:
+    - cron: '41 4 3 * *' # the 3rd of every month, 04:41 UTC
+  workflow_dispatch:
+
+concurrency:
+  group: hijri-calendars
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install the generator's dependencies
+        working-directory: tools/hijri-calendars
+        run: npm ci --ignore-scripts
+
+      - name: Check the rules against announced dates
+        run: |
+          npx --yes tsx@4 tools/hijri-calendars/calibrate.ts | tee calibrate.txt
+          # Every line is "<rule> <mode>: n/n"; any miss in the modes used fails.
+          grep -E '^MABIMS geo: ([0-9]+)/\1$' calibrate.txt
+          grep -E '^KHGT geo: ([0-9]+)/\1$' calibrate.txt
+
+      - name: Build
+        run: npx --yes tsx@4 tools/hijri-calendars/build.ts | tee build.txt
+
+      - name: Open a pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ -z "$(git status --porcelain -- src/hijri/data/monthStarts.json)" ]; then
+            echo "no change"
+            exit 0
+          fi
+          branch="hijri-calendars/$(date -u +%Y-%m)"
+          {
+            echo "The Hijri calendar tables changed. Read the diff before merging: every phone's Hijri dates follow it."
+            echo
+            echo '```'
+            grep -E '^(KHGT|MABIMS|  1)' build.txt || true
+            echo '```'
+          } > body.md
+          git config user.name  'mihrab-dataset-bot'
+          git config user.email 'mihrab-dataset-bot@users.noreply.github.com'
+          git checkout -B "$branch"
+          git add src/hijri/data/monthStarts.json
+          git commit -m "Hijri calendars: rebuild $(date -u +%Y-%m-%d)"
+          git push --force origin "$branch"
+          if gh pr view "$branch" >/dev/null 2>&1; then
+            gh pr edit "$branch" --body-file body.md
+          else
+            gh pr create --base main --head "$branch" \
+              --title "Hijri calendars: rebuild $(date -u +%Y-%m)" \
+              --body-file body.md
+          fi

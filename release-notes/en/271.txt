@@ -1,0 +1,6 @@
+• Two Warsh reciters, and tapping an ayah while reading Warsh now shows and shares the Warsh wording instead of the Hafs wording.
+• Today's reading target is shown in the reader, beside the page number.
+• The adhkar keep the way back on screen, and sharing a dua asks what to send, in the app's own sheet.
+• Sheets scroll again. The changelog and every other sheet ignored a slow finger and moved only for a quick flick.
+• In the mushaf, back now leaves fullscreen instead of leaving the app.
+• A khatmah no longer freezes when one fast swipe crosses several pages.

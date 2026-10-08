@@ -1,0 +1,7 @@
+• The Quran's buttons work again after reading in fullscreen landscape. Before, leaving the reader could leave the surah list and the Quran button on the home screen looking normal but doing nothing.
+• A surah now opens with an illuminated band, as in the printed mushaf, and the bismillah is set at the page's own size. The surah name is sized to fit inside the band.
+• The mushaf now asks before downloading, downloads about five times faster, and then never pauses to load a page. The page fonts are fetched once, in the background, over Wi-Fi, and an older copy from a previous version is removed first.
+• Switching the reader in and out of fullscreen is lighter.
+• The reader's header takes its colours from the mushaf page rather than from the app theme.
+• Fixed: the mushaf could briefly show the wrong background colour before settling.
+• Fixed: screens behind the reader could keep the wrong layout after the device was rotated.

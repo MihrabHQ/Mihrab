@@ -1,0 +1,11 @@
+• A new first launch: four questions that set the app up for you, each answered with your own prayer times shown. It no longer asks for your location twice, and each Asr school shows its time.
+• Choose any accent colour you like. The picker offers only colours that stay readable, keeps your custom colours to come back to, and is also offered during first launch.
+• The sky behind the countdown is lit from where the sun really is, and the moon is drawn as it looks from your own location.
+• Set the text size of the translation, tafsir and pronunciation with A− and A+.
+• See what changed after each update, and the whole changelog, newest first, in Settings → About.
+• Notifications you allow during the welcome now actually arrive.
+• The greeting has a new layout and no longer animates.
+• Colours within each theme are more consistent, with no stark pure black or white.
+• The field you are typing in stays above the keyboard.
+• The alerts screen says "notify" instead of "call".
+• The Sky widget has been removed; its drawing lives in the app.

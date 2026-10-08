@@ -1,0 +1,12 @@
+• A new Today screen: one page, no scrolling, with a sky behind the countdown that follows the day: night and its moon, dawn, noon, sunset.
+• Log a prayer with one tap from Today, using the check beside each prayer.
+• Surah names appear in the mushaf's own calligraphy throughout the Quran.
+• Tilāwah is a player: continue where you stopped, play, next and shuffle, and shuffle now actually shuffles.
+• The mushaf's tone can follow the app's theme automatically.
+• Every screen is redrawn: quieter chrome, one accent colour, sentence case, no title bars on the tabs, and explanations tucked behind an ⓘ.
+• The Qibla screen is redesigned as an instrument, and the immersive reader is redesigned.
+• The Log fits on one screen, and each dua category opens as its own page.
+• In the fullscreen mushaf, the surah name and the download strip stay clear of the camera.
+• Android: a new Sky widget for the home screen. Widgets are steadier: they redraw once per launch instead of many times, the Hijri and Tasbih widgets are drawn for each size, and a widget that fails shows as a Mihrab card (#31).
+• iPhone: the Live Activity style picker shows previews that match the card, and styles that cannot be drawn are disabled.
+• Fixed: a line of the mushaf could be dropped.

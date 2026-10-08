@@ -1,0 +1,2 @@
+• Widgetväljaren visar den widget du faktiskt får: loggmarkeringen är den ihåliga ✓ som widgeten ritar, soluppgången heter Soluppgång, enradiga widgetar visar sin datumrad och 4×2-förhandsvisningarna visar övningsgrafen, precis som en 4×2-widget gör på en vanlig telefon.
+• Mac: uppdateringar tar inte längre bort dina widgetar.

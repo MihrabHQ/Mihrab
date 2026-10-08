@@ -1,0 +1,7 @@
+• Ett val för vad som visas under varje vers: välj översättning eller tafsir och utgåva en gång, så gäller det i läsaren, ayah-panelen, dagens vers och notisen med dagens ayah. Väljaren finns på Koransidan (i ett eget kort), i läsarens sidhuvud och i Inställningar.
+• Utgåvorna i väljaren är grupperade efter språk, med arabiska och engelska överst.
+• När du väljer en utgåva används den direkt och väljaren stängs, även för utgåvor på ett annat språk.
+• På kortet för dagens vers är växlingen mellan översättning och tafsir och väljaren för utgåva nu samlade i ett fält.
+• Al-Muyassar visas nu enbart som tafsir.
+• Adhan-larm schemaläggs nu 4 dagar framåt, så att de fortsätter ljuda även om appen inte öppnas varje dag; en ny rad hjälper dig att stänga av batterioptimering när den kan blockera dem.
+• Rättat att verktygsrutnätet föll ihop till två smala kolumner på vissa telefoner.

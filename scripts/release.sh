@@ -475,6 +475,12 @@ for loc in $LOCALES; do
   ok "release notes for $loc ($chars chars)"
 done
 
+# The in-app "What's new" reads release-notes/<locale>/<code>.txt first, with
+# no length limit, because Play's 500 characters leave most of a release out.
+# English is required; the other languages fall back to their Play notes.
+[ -s "$ROOT/release-notes/en/$CODE.txt" ] || die "missing in-app release notes: release-notes/en/$CODE.txt"
+ok "in-app release notes for en"
+
 # The cask is the only code that runs when a Mac replaces the app, and it
 # is what stops the widgets freezing on upgrade — and, since 2026-08-29,
 # what stops them being removed outright. See verify-release.sh 4a.

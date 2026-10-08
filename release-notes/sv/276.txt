@@ -1,0 +1,5 @@
+• Ett bokmärke kan följa din läsning, så att det ligger där du slutade, eller sitta fast vid sin vers. Varje bokmärke har en egen knapp.
+• Framstegen i en khatmah är de sidor du faktiskt har läst. Markera en sida som läst eller oläst bredvid surans namn; sidor du hoppade över räknas och går att återvända till.
+• En prick bredvid surans namn visar vilken av dina läsplatser som registrerar.
+• Nytt: låt dagen börja vid solnedgången (Maghrib), så att kvällens läsning räknas till den dag som har börjat (Inställningar → Koranen).
+• iPhone: Live Activity visas nu även för dig som använder 24-timmarsklocka.

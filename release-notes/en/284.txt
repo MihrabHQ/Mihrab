@@ -1,0 +1,17 @@
+• Tilawah keeps its own place: carry on, shuffle, or play what the sunnah recommends now. The carry-on panel is slimmer, the player stays smaller while you choose, playback controls run left to right, and an X dismisses playback.
+• A new Qur'an tab: swipeable Sūrah, Juz and Bookmarks lists, your khatmah plan's card, a start page, a riwāyah pill and a headphones shortcut.
+• Bookmarks: one bookmark per colour, and bookmark colours can be set in Settings.
+• The āyah sheet has tabs for Translation, Tafsir and Tajweed, a Play section, share beside the star, compact controls and a reworked bookmark picker; the reading and khatmah pins look like buttons, and the Tajweed tab no longer repeats the āyah.
+• Help Mihrab, under Settings → About, with a way in from the Today screen: a heart beside “Fajr in” that you can turn off, and a link from the month sheet.
+• The tab bar has a slim indicator pill, and the icon under a sliding finger brightens.
+• Exporting a month sheet shows its progress.
+• Manage downloads: a reciter's card follows its download while it runs, rows fit long reciter names, and deleting asks in a dialog that matches the app's theme.
+• The muṣḥaf turns pages more smoothly in portrait, and the tajweed muṣḥaf follows the lines of the 1441H print.
+• Many pages lose the band at the bottom: Month, Share, Compass, Backup, Sync, Fasting, Downloads, the tajweed guide, Tilawah and Khatmah.
+• Russian: one terminology across the whole app, proper plurals and review fixes.
+• The What's new screen lists every release in English, Swedish and Arabic, split by platform, and each note can be copied (with data statistics on).
+• Polar days no longer show broken times, and the app no longer crashes on launch there (#61).
+• On the always-on display, the Live Activity shows the prayer name whole and shows hours and minutes instead of frozen seconds.
+• iPhone: better lock-screen playback, playback pauses when headphones are unplugged, and the adhan takes priority over recitation.
+• iPhone: in Arabic and Urdu, text starts on the right, the back arrow sits on the right edge, and the Qur'an tab opens correctly.
+• Sūrah names line up in every layout direction, and switches have a white thumb everywhere.

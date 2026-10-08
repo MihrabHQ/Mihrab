@@ -138,7 +138,7 @@ function QuranCardImpl() {
             defaultValue: '{{count}} on this device',
             count: onDevice,
           })}
-          onPress={() => navigation.navigate('QuranDownloads')}
+          onPress={() => navigation.navigate('SettingsDownloads')}
         />
       </SettingsGroup>
       <SettingsGroup
@@ -358,7 +358,7 @@ function QuranCardImpl() {
         }}
         onManage={() => {
           setRiwayahVisible(false);
-          navigation.navigate('QuranDownloads');
+          navigation.navigate('SettingsDownloads');
         }}
       />
       <CompanionTextSheet

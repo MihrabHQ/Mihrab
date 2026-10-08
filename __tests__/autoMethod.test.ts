@@ -26,7 +26,7 @@ describe('autoMethodForCoords', () => {
   test('everywhere else stays on the global default', () => {
     expect(autoMethodForCoords(59.33, 18.07)).toBe(DEFAULT_AUTO_METHOD); // Stockholm
     expect(autoMethodForCoords(21.4225, 39.8262)).toBe(DEFAULT_AUTO_METHOD); // Makkah
-    expect(autoMethodForCoords(36.75, 3.06)).toBe(DEFAULT_AUTO_METHOD); // Algiers
+    expect(autoMethodForCoords(36.8065, 10.1815)).toBe(DEFAULT_AUTO_METHOD); // Tunis (Algiers is Algeria's own, #70)
     expect(autoMethodForCoords(0, 0)).toBe(DEFAULT_AUTO_METHOD);
   });
 });

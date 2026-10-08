@@ -18,6 +18,14 @@ import {
 import { fetchWithRetry } from '../src/utils/fetchWithRetry';
 import ReactNativeBlobUtil from 'react-native-blob-util';
 
+// These tests pin the ORIGINAL host's behaviour; the mirror-first order is
+// covered in mirrors.test.ts, so here the mirror step is a straight pass.
+jest.mock('../src/config/mirrors', () => ({
+  ...jest.requireActual('../src/config/mirrors'),
+  fetchMirrored: (_mirror: string, original: string, init: unknown, opts: unknown) =>
+    jest.requireMock('../src/utils/fetchWithRetry').fetchWithRetry(original, init, opts),
+}));
+
 jest.mock('../src/utils/fetchWithRetry', () => ({
   fetchWithRetry: jest.fn(),
 }));

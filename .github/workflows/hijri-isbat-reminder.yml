@@ -1,0 +1,57 @@
+name: Sidang isbat reminder
+
+# The app's Indonesian government calendar (MABIMS) is a prediction, and
+# Kemenag's sidang isbat — held on the 29th of Sha'ban, Ramadan and
+# Dhu al-Qa'dah — can overrule it. On those days this opens an issue asking
+# for the announced date to be checked, and for data/hijri/v1/overrides.json
+# to be updated if it differs; phones pick that file up within hours.
+# See tools/hijri-calendars/README.md.
+
+on:
+  schedule:
+    - cron: '7 2 * * *' # every day, 09:07 WIB — the isbat is in the evening
+  workflow_dispatch:
+    inputs:
+      date:
+        description: 'Pretend it is this day (yyyy-mm-dd), to test'
+        required: false
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  remind:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Is there a sidang isbat today?
+        id: check
+        env:
+          DATE: ${{ inputs.date }}
+        run: |
+          npx --yes tsx@4 tools/hijri-calendars/isbatReminder.ts $DATE > reminder.txt
+          if [ -s reminder.txt ]; then
+            echo "title=$(head -n 1 reminder.txt)" >> "$GITHUB_OUTPUT"
+            tail -n +2 reminder.txt > body.md
+            echo "due=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Open the issue (once)
+        if: steps.check.outputs.due == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TITLE: ${{ steps.check.outputs.title }}
+        run: |
+          if gh issue list --state all --search "in:title \"$TITLE\"" --json title --jq '.[].title' | grep -Fxq "$TITLE"; then
+            echo "Already opened: $TITLE"
+          else
+            gh issue create --title "$TITLE" --body-file body.md
+          fi

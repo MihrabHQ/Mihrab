@@ -236,9 +236,13 @@ describe('tafsir', () => {
     jest.useRealTimers();
   });
 
-  it('retries a transient 502 once, then answers', async () => {
+  const isMirror = (input: unknown) =>
+    String(input).includes('github.com/MihrabHQ/Mihrab/releases/download/');
+
+  it('asks the mirror once, then retries a transient 502 at the original once', async () => {
     let n = 0;
-    const calls = jest.fn(async () => {
+    const calls = jest.fn(async (input: RequestInfo) => {
+      if (isMirror(input)) return new Response('', { status: 503 });
       n += 1;
       return n === 1
         ? new Response('', { status: 502 })
@@ -250,19 +254,20 @@ describe('tafsir', () => {
     await expect(loadTafsir('en-tafisr-ibn-kathir', 2, 255)).resolves.toBe(
       'the commentary',
     );
-    expect(calls).toHaveBeenCalledTimes(2);
+    expect(calls.mock.calls.map(c => isMirror(c[0]))).toEqual([true, false, false]);
   });
 
-  // Two, not four. A reader is looking at an open sheet; "unavailable"
-  // arriving late is worse than "unavailable" arriving.
-  it('gives up after two attempts', async () => {
+  // One at the mirror, two at the original, not four. A reader is looking
+  // at an open sheet; "unavailable" arriving late is worse than
+  // "unavailable" arriving.
+  it('gives up after one mirror and two original attempts', async () => {
     const calls = jest.fn(async () => new Response('', { status: 503 }));
     global.fetch = calls as unknown as typeof fetch;
     await expect(loadTafsir('en-tafisr-ibn-kathir', 3, 7)).resolves.toBeNull();
-    expect(calls).toHaveBeenCalledTimes(2);
+    expect(calls).toHaveBeenCalledTimes(3);
   });
 
-  it('answers null when the origin stalls, instead of hanging the sheet', async () => {
+  it('answers null when both hosts stall, instead of hanging the sheet', async () => {
     jest.useFakeTimers();
     global.fetch = jest.fn(
       async (_input: RequestInfo, init?: RequestInit) =>
@@ -276,7 +281,8 @@ describe('tafsir', () => {
     ) as unknown as typeof fetch;
 
     const answer = loadTafsir('en-tafisr-ibn-kathir', 4, 9);
-    // Both attempts' deadlines, plus the backoff between them.
+    // The mirror's deadline, then both original attempts' and the backoff.
+    await jest.advanceTimersByTimeAsync(CONTENT_DEADLINES.tafsirMirrorSurah);
     await jest.advanceTimersByTimeAsync(CONTENT_DEADLINES.tafsir);
     await jest.advanceTimersByTimeAsync(2_000);
     await jest.advanceTimersByTimeAsync(CONTENT_DEADLINES.tafsir);

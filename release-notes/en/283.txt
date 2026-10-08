@@ -1,0 +1,16 @@
+• Android: the widgets are drawn by a new engine. Widgets you already placed stay where they are and keep their settings; if one says “Open Mihrab” after the update, open the app once.
+• Android: the widget picker shows the new widgets, and the Prayer times 4x1 preview fills its box.
+• Android: the Prayer times widget can be made as narrow as before on Android 12 and later, and its countdown sits level with the prayer name.
+• iPhone and iPad: Mihrab opens again on iOS 27.
+• iPhone: the prayer widget's refresh button is gone; it updates on its own.
+• iPhone: permission prompts now say Mihrab instead of Prayer Times.
+• Widgets show each day's own Hijri date, and show the right day even when your phone uses a non-Gregorian calendar.
+• Widgets and the Live Activity count down to the exact prayer time and stop cleanly when it is reached.
+• Widgets that refresh in the background use the app's language.
+• Taps made on a widget while the app was not running are no longer lost.
+• Android: in Arabic and Urdu the Today carousel opens on today again and shows the right days.
+• Turning the phone fades the muṣḥaf page back in, and touches no longer stop working after a rotation.
+• Khatmah: when two devices each started a khatmah, one is kept and the other is set aside rather than lost; ending the kept plan also ends the one set aside.
+• Khatmah: you stay on your plan, “previous day” and “done” do what they say, and dates stay correct across the night the clocks go back.
+• Sync now describes itself as peer to peer, and the first-run setup no longer briefly flashes prayer times.
+• Mac: Homebrew states what the Mac app needs and checks it before installing; the app installs on Intel Macs too.

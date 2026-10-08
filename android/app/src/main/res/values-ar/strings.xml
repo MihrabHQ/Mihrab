@@ -31,6 +31,20 @@
     <string name="widget_configure_highlight_custom">لون مخصص</string>
     <string name="widget_configure_hex_hint">#RRGGBB</string>
     <string name="widget_configure_save">حفظ</string>
+    <string name="widget_configure_prayer_title">ودجة مواقيت الصلاة</string>
+    <string name="widget_configure_prayer_note">تنطبق على ودجات مواقيت الصلاة فقط.</string>
+    <string name="widget_configure_text_color">لون النص</string>
+    <string name="widget_configure_text_light">فاتح</string>
+    <string name="widget_configure_text_white">أبيض</string>
+    <string name="widget_configure_text_cream">كريمي</string>
+    <string name="widget_configure_text_gold">ذهبي</string>
+    <string name="widget_configure_text_sky">سماوي</string>
+    <string name="widget_configure_text_dark">داكن</string>
+    <string name="widget_configure_show_location">إظهار المدينة</string>
+    <string name="widget_configure_show_countdown">إظهار العد التنازلي</string>
+    <string name="widget_configure_show_table">إظهار مواقيت اليوم</string>
+    <string name="widget_configure_time_size">حجم أوقات الصلاة</string>
+    <string name="widget_configure_hex_invalid">أدخل لونًا بصيغة ‎#RRGGBB</string>
     <!-- Live Activity notification strings -->
     <string name="live_activity_channel_name">العد التنازلي للصلاة</string>
     <string name="live_activity_channel_desc">عداد تنازلي مثبت للصلاة التالية.</string>

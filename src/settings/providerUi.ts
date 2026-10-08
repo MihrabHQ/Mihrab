@@ -7,12 +7,13 @@ export function providerHidesCalculationMethod(
   return (
     id === 'prayertimes_dev' ||
     id === 'islamiska_forbundet' ||
-    id === 'habous'
+    id === 'habous' ||
+    id === 'marw'
   );
 }
 
 /** Hanafi Asr toggle is hidden (organization publishes a single schedule). */
 export function providerHidesHanafiAsr(id: PrayerDataProviderId): boolean {
   // Both publish a single schedule; there is no madhab to choose within it.
-  return id === 'islamiska_forbundet' || id === 'habous';
+  return id === 'islamiska_forbundet' || id === 'habous' || id === 'marw';
 }

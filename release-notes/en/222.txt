@@ -1,0 +1,6 @@
+• Adhan now fires exactly on time: fixed a rare alert that came 1–2 minutes early along with a duplicate.
+• The Quran index is now centred correctly on wide screens in right-to-left languages.
+• The day carousel on Home now lines up with the cards around it.
+• Mac: Mihrab is now available as a Mac app that can be installed with Homebrew.
+• Mac: the Home dashboard scales with the window when it is wider than the layout.
+• iPad and Mac: layout polish, with a fuller Home dashboard, controls for the two-page Quran view and page-turn buttons.

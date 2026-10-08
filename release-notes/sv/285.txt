@@ -1,0 +1,8 @@
+• Android: en helskärmsavisering för bön, med nästa bön under bönens namn och Snooza i 5, 10, 15 eller 30 minuter (#63). Den erbjuds i första start-guiden, får färgerna från bönens himmel, och notiskortet har en enda Snooza-knapp.
+• iPhone: bönetider kan ringa som AlarmKit-larm på iOS 26 och senare, i helskärm och genom tyst läge och Fokus; larmets Snooza-text går nu att läsa och knapparna Pausa och Fortsätt är översatta.
+• Tajwidfärgerna täcker nu mer av Warsh: iqlāb inuti ett ord, taqlīl av nūn, badal efter ett prefix och de avskilda bokstäverna (#64).
+• Tajwidfärgerna fyller luckorna i Hafs för madd, ikhfāʾ och saktah, och stämmer med den tryckta sidan för det lilla alif, pausmärken och tafkhīm.
+• Telefoner i liggande läge rullar den reciterade raden till toppen under ord-för-ord-recitation, utan att hoppa tillbaka till början av āyahn.
+• Ett följande bokmärke flyttar med recitationens sidbyten och stannar på āyahn där recitationen slutade.
+• Ny integritetspolicy som namnger appen, utvecklaren och en kontakt, och beskriver hur data hanteras i dag.
+• Android: muṣḥafens uppslag med två sidor lämnar utrymme under rubriken.

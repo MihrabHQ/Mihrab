@@ -1,0 +1,4 @@
+• Mushafen fungerar nu när appens språk är inställt på arabiska.
+• Visuella förbättringar i hela appen efter en designgenomgång.
+• Flikfältet ligger åter inom skärmens ram.
+• iPad: Hemskärmen får nu plats på iPad-skärmen.

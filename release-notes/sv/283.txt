@@ -1,0 +1,16 @@
+• Android: widgetarna ritas av en ny motor. Widgetar du redan har placerat ligger kvar och behåller sina inställningar; om en visar ”Öppna Mihrab” efter uppdateringen, öppna appen en gång.
+• Android: widgetväljaren visar de nya widgetarna, och förhandsvisningen av Bönetider 4x1 fyller sin ruta.
+• Android: widgeten Bönetider kan göras lika smal som förut på Android 12 och senare, och nedräkningen ligger i linje med bönens namn.
+• iPhone och iPad: Mihrab startar igen på iOS 27.
+• iPhone: bönewidgetens uppdateringsknapp är borta; den uppdateras av sig själv.
+• iPhone: behörighetsfrågor säger nu Mihrab i stället för Prayer Times.
+• Widgetar visar varje dags egna hijridatum, och rätt dag även när telefonen använder en annan kalender än den gregorianska.
+• Widgetar och Live Activity räknar ner till den exakta bönetiden och avslutas snyggt när den nås.
+• Widgetar som uppdateras i bakgrunden använder appens språk.
+• Tryck på en widget medan appen inte var igång går inte längre förlorade.
+• Android: på arabiska och urdu öppnar karusellen Idag på dagens datum igen och visar rätt dagar.
+• När du vrider telefonen tonar muṣḥaf-sidan in igen, och tryck slutar inte längre fungera efter en rotation.
+• Khatmah: om två enheter har startat var sin khatmah behålls den ena och den andra läggs åt sidan i stället för att försvinna; avslutar du den kvarvarande planen avslutas även den som lagts åt sidan.
+• Khatmah: du stannar på din plan, ”föregående dag” och ”klar” gör det de säger, och datumen stämmer även natten då klockan ställs tillbaka.
+• Synkronisering beskriver sig nu som peer to peer, och första start-guiden blinkar inte längre till med bönetider.
+• Mac: Homebrew anger vad Mac-appen kräver och kontrollerar det före installation; appen kan även installeras på Intel-Macar.

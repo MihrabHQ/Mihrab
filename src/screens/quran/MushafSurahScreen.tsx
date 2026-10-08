@@ -676,7 +676,7 @@ export function MushafSurahScreen({
       }}
       onManage={() => {
         setRiwayahPickerVisible(false);
-        navigation.navigate('QuranDownloads');
+        navigation.navigate('SettingsDownloads');
       }}
     />
   );

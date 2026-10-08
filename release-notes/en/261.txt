@@ -1,0 +1,4 @@
+• Downloading a reciter has moved onto the reciter list. Every voice now shows what it has stored on your device and offers to download or delete it, so you can see which reciters are available offline on one screen.
+• The home-screen practice graph is rebuilt: bigger squares, edge to edge, and it reads down its columns like the Log screen does. Resizing the widget now adds or removes rows instead of shrinking the graph, from one row up.
+• The Log widget uses the space of its date line for another row of the graph, and the band between the times and the graph is a single line on both widgets.
+• The alert bells are aligned, with three smaller fixes (#23).

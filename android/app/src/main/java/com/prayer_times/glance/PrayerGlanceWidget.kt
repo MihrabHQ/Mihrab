@@ -28,6 +28,7 @@ import androidx.glance.semantics.semantics
 import androidx.glance.text.TextAlign
 import androidx.glance.visibility
 import com.prayer_times.PracticeGridBitmap
+import com.prayer_times.PrayerWidgetDisplay
 import com.prayer_times.PrayerWidgetProvider
 import com.prayer_times.R
 import com.prayer_times.WidgetRefreshHeadlessService
@@ -85,6 +86,7 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     val logged: WidgetContract.Today?,
     val practice: Practice?,
     val now: Now,
+    val display: PrayerWidgetDisplay,
   )
 
   @Composable
@@ -95,7 +97,12 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     val result = guarded("prayer") {
       val now = Now.current()
       // An expired payload is not drawn as today: ask, don't guess.
-      GlancePayload.live(context, now)?.let { p -> Schedule.of(p, now)?.let { model(context, p, it, now) } }
+      val display = try {
+        PrayerWidgetDisplay.read(context)
+      } catch (e: Exception) {
+        PrayerWidgetDisplay.DEFAULT
+      }
+      GlancePayload.live(context, now)?.let { p -> Schedule.of(p, now)?.let { model(context, p, it, now, display) } }
     }
     val colors = result.getOrNull()?.colors ?: Colors.of(context)
     // The layouts' root padding: 10dp on the compact line, 14 elsewhere, and
@@ -147,14 +154,21 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     }
   }
 
-  private fun model(context: Context, p: WidgetContract.Payload, s: Schedule, now: Now): Model {
+  private fun model(
+    context: Context,
+    p: WidgetContract.Payload,
+    s: Schedule,
+    now: Now,
+    display: PrayerWidgetDisplay,
+  ): Model {
     val day = s.table
     // Fajr, Sunrise, Dhuhr … Isha, then the night marks the user turned on.
     val rows = day.prayers.take(1) + listOfNotNull(day.sunrise) + day.prayers.drop(1) + day.extras
     val next = s.next
     val describesToday = GlancePayload.describesToday(p, now)
     val dayLabel = day.label.trim().ifEmpty { s.shown.label.trim() }
-    val location = p.locationName
+    // Hidden by choice: everything that prints the city reads this.
+    val location = if (display.showLocation) p.locationName else ""
     return Model(
       colors = Colors.of(context),
       clock = p.clock,
@@ -181,6 +195,7 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
       logged = if (describesToday) p.today else null,
       practice = p.practice?.let { pr -> extra("practice") { practice(context, pr) } },
       now = now,
+      display = display,
     )
   }
 
@@ -230,8 +245,8 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
   private fun rowColor(m: Model, r: WidgetContract.Row): Int = when {
     m.nextKey != null && m.nextKey == r.key -> m.colors.accent
     // Sunrise and the night marks on the card without competing with the ṣalāh.
-    r.key.equals("Sunrise", ignoreCase = true) || isNightKey(r.key) -> Palette.MUTED
-    else -> Palette.TEXT
+    r.key.equals("Sunrise", ignoreCase = true) || isNightKey(r.key) -> m.display.muted
+    else -> m.display.text
   }
 
   private fun rowLabel(r: WidgetContract.Row) = r.name.trim().ifEmpty { r.abbr.trim() }.ifEmpty { r.key }
@@ -241,21 +256,85 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
   @Composable
   private fun Small(m: Model, size: CardSize) {
     val context = localizedContext()
+    val d = m.display
     // The layout auto-sized the time between 22 and 44sp; measured here
     // against half the card, and against its height.
     val column = (size.widthDp - 32) / 2f - 6f
     val byHeight = if (size.heightDp > 0) (size.heightDp - 12 - 20 - 16) / 1.2f else SMALL_TIME_SP
-    val timeSp = if (size.widthDp <= 0) SMALL_TIME_SP
+    val baseSp = if (size.widthDp <= 0) SMALL_TIME_SP
     else minOf(fitTextSp(context, m.nextTime, column, 44f, 22f, medium = false), byHeight.coerceAtLeast(22f))
+    // The user's size, held to what the half-card can take.
+    val timeSp = scaledTimeSp(context, listOf(m.nextTime), baseSp, d.timeScale, if (size.widthDp <= 0) 0f else column, medium = false)
     Row(modifier = GlanceModifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {
       Column(modifier = GlanceModifier.defaultWeight().padding(end = 6.dp)) {
-        if (m.nextName.isNotEmpty()) Label(m.nextName, 12f, Palette.TEXT, medium = true)
+        if (m.nextName.isNotEmpty()) Label(m.nextName, 12f, d.text, medium = true)
         if (m.nextTime.isNotEmpty()) Label(m.nextTime, timeSp, m.colors.accent)
       }
       Column(modifier = GlanceModifier.defaultWeight(), horizontalAlignment = Alignment.End) {
-        m.nextAt?.let { Countdown(it, m.now, 13f, Palette.MUTED) }
+        if (d.showCountdown) m.nextAt?.let { Countdown(it, m.now, 13f, d.muted) }
         if (m.location.isNotEmpty()) {
-          Label(m.location, 11f, Palette.MUTED, maxLines = 2, align = TextAlign.End, modifier = GlanceModifier.padding(top = 2.dp))
+          Label(m.location, 11f, d.muted, maxLines = 2, align = TextAlign.End, modifier = GlanceModifier.padding(top = 2.dp))
+        }
+      }
+    }
+  }
+
+  /**
+   * `baseSp` times the user's scale, then brought back down to whatever fits
+   * `availableDp` (0: unmeasured, no limit) — a larger size only where the
+   * card has the room for it. At 100% this is `baseSp` exactly.
+   */
+  private fun scaledTimeSp(
+    context: Context,
+    texts: List<String>,
+    baseSp: Float,
+    scale: Float,
+    availableDp: Float,
+    medium: Boolean,
+  ): Float {
+    if (scale == 1f) return baseSp
+    val wanted = baseSp * scale
+    if (availableDp <= 0f) return wanted
+    val floor = minOf(wanted, TIME_MIN_SP)
+    return texts.filter { it.isNotEmpty() }.minOfOrNull { fitTextSp(context, it, availableDp, wanted, floor, medium) } ?: wanted
+  }
+
+  /** Same, for clock times measured as `ClockText` draws them. */
+  private fun scaledClockSp(
+    context: Context,
+    times: List<Int?>,
+    clock: WidgetContract.Clock,
+    baseSp: Float,
+    scale: Float,
+    availableDp: Float,
+  ): Float {
+    if (scale == 1f) return baseSp
+    val wanted = baseSp * scale
+    if (availableDp <= 0f) return wanted
+    return fitTimesSp(context, times, clock, availableDp, wanted, minOf(wanted, TIME_MIN_SP))
+  }
+
+  /**
+   * The next prayer on its own: name, time, and the countdown — what the
+   * strip and the list say when the table is hidden, and the list's
+   * headline always.
+   */
+  @Composable
+  private fun NextBlock(context: Context, m: Model, size: CardSize, top: Int) {
+    val d = m.display
+    val half = if (size.widthDp > 0) (size.widthDp - STRIP_CONTENT_INSET_DP) / 2f else 0f
+    val timeSp = scaledTimeSp(context, listOf(m.nextTime), NEXT_TIME_SP, d.timeScale, half, medium = false)
+    Label(context.getString(R.string.widget_next_label), 9f, d.muted, medium = true, modifier = GlanceModifier.padding(top = top.dp))
+    Row(modifier = GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom) {
+      if (m.nextName.isNotEmpty()) Label(m.nextName, 24f, d.text, medium = true)
+      if (m.nextTime.isNotEmpty()) Label(m.nextTime, timeSp, m.colors.accent, modifier = GlanceModifier.padding(start = 8.dp))
+      Spacer(GlanceModifier.defaultWeight())
+      if (d.showCountdown) {
+        m.nextAt?.let { at ->
+          Column(horizontalAlignment = Alignment.End) {
+            Label(context.getString(R.string.widget_in_label), 10f, d.muted, align = TextAlign.End)
+            Countdown(at, m.now, 15f, d.muted)
+          }
         }
       }
     }
@@ -265,6 +344,7 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
 
   @Composable
   private fun Strip(context: Context, m: Model, size: CardSize) {
+    val d = m.display
     val h = size.heightDp
     // An unmeasured card (0) keeps the header and the roomy padding.
     val oneRow = h in 1 until STRIP_TIGHT_CONTENT_DP
@@ -277,87 +357,90 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     val practice = m.practice?.takeIf { h >= GRID_MIN_HEIGHT_DP }
     val showFoot = practice != null && h >= PRACTICE_MIN_HEIGHT_DP
     val columns = m.rows.take(STRIP_COLUMNS)
-    val timeSp = fitTimesSp(
-      context,
-      columns.map { it.minutes },
-      m.clock,
-      (size.widthDp - STRIP_CONTENT_INSET_DP).toFloat() / columns.size.coerceAtLeast(1) - TIME_GUTTER_DP,
-      TIME_MAX_SP,
-      TIME_MIN_SP,
-    )
+    val columnDp = (size.widthDp - STRIP_CONTENT_INSET_DP).toFloat() / columns.size.coerceAtLeast(1) - TIME_GUTTER_DP
+    val baseSp = fitTimesSp(context, columns.map { it.minutes }, m.clock, columnDp, TIME_MAX_SP, TIME_MIN_SP)
+    val timeSp = scaledClockSp(context, columns.map { it.minutes }, m.clock, baseSp, d.timeScale, if (size.widthDp > 0) columnDp else 0f)
 
     Column(modifier = GlanceModifier.fillMaxSize()) {
-      if (!oneRow) Header(m.header, m.hijri)
-      Row(
-        modifier = GlanceModifier.fillMaxWidth().padding(top = (8 + slack).dp, bottom = slack.dp),
-        verticalAlignment = Alignment.CenterVertically,
-      ) {
-        for (r in columns) {
-          Column(
-            modifier = GlanceModifier.defaultWeight().padding(horizontal = 1.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-          ) {
-            val highlight = m.nextKey != null && m.nextKey == r.key
-            val color = rowColor(m, r)
-            val box = GlanceModifier.fillMaxWidth().padding(vertical = 4.dp)
+      if (!oneRow) Header(m.header, m.hijri, d)
+      if (d.showTable) {
+        Row(
+          modifier = GlanceModifier.fillMaxWidth().padding(top = (8 + slack).dp, bottom = slack.dp),
+          verticalAlignment = Alignment.CenterVertically,
+        ) {
+          for (r in columns) {
             Column(
-              modifier = if (highlight) box.background(ImageProvider(R.drawable.widget_row_highlight)) else box,
+              modifier = GlanceModifier.defaultWeight().padding(horizontal = 1.dp),
               horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-              Label(rowLabel(r), 9f, color, medium = true, align = TextAlign.Center)
-              ClockText(r.minutes, m.clock, timeSp, color)
+              val highlight = m.nextKey != null && m.nextKey == r.key
+              val color = rowColor(m, r)
+              val box = GlanceModifier.fillMaxWidth().padding(vertical = 4.dp)
+              Column(
+                modifier = if (highlight) box.background(ImageProvider(R.drawable.widget_row_highlight)) else box,
+                horizontalAlignment = Alignment.CenterHorizontally,
+              ) {
+                Label(rowLabel(r), 9f, color, medium = true, align = TextAlign.Center)
+                ClockText(r.minutes, m.clock, timeSp, color)
+              }
             }
           }
         }
-      }
-      m.night?.let { n ->
-        Row(modifier = GlanceModifier.fillMaxWidth().padding(top = 4.dp)) {
-          Label(n.left, 11f, Palette.MUTED, modifier = GlanceModifier.defaultWeight())
-          n.mid?.let { Label(it, 11f, Palette.MUTED, modifier = GlanceModifier.padding(horizontal = 6.dp)) }
-          n.right?.let { Label(it, 11f, Palette.MUTED, modifier = GlanceModifier.padding(start = 6.dp)) }
+        m.night?.let { n ->
+          Row(modifier = GlanceModifier.fillMaxWidth().padding(top = 4.dp)) {
+            Label(n.left, 11f, d.muted, modifier = GlanceModifier.defaultWeight())
+            n.mid?.let { Label(it, 11f, d.muted, modifier = GlanceModifier.padding(horizontal = 6.dp)) }
+            n.right?.let { Label(it, 11f, d.muted, modifier = GlanceModifier.padding(start = 6.dp)) }
+          }
         }
+      } else {
+        // No table: the next prayer, large, says what the card is for.
+        NextBlock(context, m, size, top = 4 + slack)
       }
-      if (!tight) Rule(Palette.RULE, top = 6, bottom = 8)
+      if (!tight) Rule(d.rule, top = 6, bottom = 8)
       Row(modifier = GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        if (m.nextName.isNotEmpty()) Label(m.nextName, 11f, Palette.TEXT)
-        m.nextAt?.let { Countdown(it, m.now, 11f, Palette.MUTED, GlanceModifier.padding(start = 4.dp)) }
+        // The next-prayer line is the NextBlock's when the table is hidden.
+        if (d.showTable) {
+          if (m.nextName.isNotEmpty()) Label(m.nextName, 11f, d.text)
+          if (d.showCountdown) m.nextAt?.let { Countdown(it, m.now, 11f, d.muted, GlanceModifier.padding(start = 4.dp)) }
+        }
         Spacer(GlanceModifier.defaultWeight())
         if (practice != null) {
-          Label(practice.block.streak.toString(), 11f, Palette.TEXT, medium = true, modifier = GlanceModifier.padding(start = 10.dp))
-          Label("${practice.streakText} · ${practice.second}", 11f, Palette.MUTED, modifier = GlanceModifier.padding(start = 5.dp))
+          Label(practice.block.streak.toString(), 11f, d.text, medium = true, modifier = GlanceModifier.padding(start = 10.dp))
+          Label("${practice.streakText} · ${practice.second}", 11f, d.muted, modifier = GlanceModifier.padding(start = 5.dp))
         } else {
           // "2 of 5 logged" — said by the summary instead once it is drawn.
           m.logged?.let {
             Label(
               context.getString(R.string.widget_logged_short, it.logged, it.loggable),
               11f,
-              Palette.MUTED,
+              d.muted,
               modifier = GlanceModifier.padding(start = 6.dp),
             )
           }
         }
       }
       practice?.let { pr ->
-        Rule(Palette.RULE_STRONG, top = 8, bottom = 8)
+        Rule(d.ruleStrong, top = 8, bottom = 8)
         val box = size.heightDp - STRIP_CHROME_DP - (if (showFoot) STRIP_FOOT_DP else 0)
         PracticeImage(context, pr.block, size.widthDp - STRIP_CONTENT_INSET_DP, box, MAX_GRID_DAYS, m.colors.accent,
           GlanceModifier.fillMaxWidth().defaultWeight())
-        if (showFoot) Foot(pr, top = 7)
+        if (showFoot) Foot(pr, top = 7, d)
       }
     }
   }
 
   @Composable
-  private fun Header(text: String, hijri: String) {
+  private fun Header(text: String, hijri: String, d: PrayerWidgetDisplay) {
     val refresh = localizedContext().getString(R.string.widget_intent_refresh)
     Row(modifier = GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-      Label(text, 10f, Palette.MUTED, medium = true, modifier = GlanceModifier.defaultWeight())
-      if (hijri.isNotEmpty()) Label(hijri, 10f, Palette.MUTED, medium = true, modifier = GlanceModifier.padding(start = 6.dp))
+      Label(text, 10f, d.muted, medium = true, modifier = GlanceModifier.defaultWeight())
+      if (hijri.isNotEmpty()) Label(hijri, 10f, d.muted, medium = true, modifier = GlanceModifier.padding(start = 6.dp))
       // The refresh glyph: redraw now, then go and look (a sync round).
       Label(
         "↻",
         14f,
-        Palette.REFRESH,
+        d.refresh,
         modifier = GlanceModifier
           .padding(start = 8.dp)
           .clickable(actionRunCallback<PrayerRefresh>())
@@ -367,16 +450,16 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
   }
 
   @Composable
-  private fun Foot(pr: Practice, top: Int) {
+  private fun Foot(pr: Practice, top: Int, d: PrayerWidgetDisplay) {
     Row(modifier = GlanceModifier.fillMaxWidth().padding(top = top.dp)) {
       // INVISIBLE, not gone, when absent: the fasts keep their end.
       Label(
         pr.sunnah.orEmpty(),
         11f,
-        Palette.MUTED,
+        d.muted,
         modifier = GlanceModifier.defaultWeight().visibility(if (pr.sunnah == null) Visibility.Invisible else Visibility.Visible),
       )
-      pr.fasts?.let { Label(it, 11f, Palette.MUTED, modifier = GlanceModifier.padding(start = 6.dp)) }
+      pr.fasts?.let { Label(it, 11f, d.muted, modifier = GlanceModifier.padding(start = 6.dp)) }
     }
   }
 
@@ -406,12 +489,13 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
 
   @Composable
   private fun ListCard(context: Context, m: Model, size: CardSize) {
+    val d = m.display
     val h = size.heightDp
     val practice = m.practice?.takeIf { h >= GRID_MIN_HEIGHT_DP }
     val showFoot = practice != null && h >= PRACTICE_MIN_HEIGHT_DP
     val shown = m.rows.take(LIST_SLOTS)
     // The provider sizes every layout's times by the same measure.
-    val timeSp = fitTimesSp(
+    val baseSp = fitTimesSp(
       context,
       shown.map { it.minutes },
       m.clock,
@@ -419,47 +503,46 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
       TIME_MAX_SP,
       TIME_MIN_SP,
     )
+    // A row's time has about half the row; that, not the strip's column, is
+    // what a larger size has to fit.
+    val half = if (size.widthDp > 0) (size.widthDp - STRIP_CONTENT_INSET_DP - 14) / 2f else 0f
+    val timeSp = scaledClockSp(context, shown.map { it.minutes }, m.clock, baseSp, d.timeScale, half)
     Column(modifier = GlanceModifier.fillMaxSize()) {
-      Header(m.location, m.hijri)
-      Label(context.getString(R.string.widget_next_label), 9f, Palette.MUTED, medium = true, modifier = GlanceModifier.padding(top = 6.dp))
-      Row(modifier = GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom) {
-        if (m.nextName.isNotEmpty()) Label(m.nextName, 24f, Palette.TEXT, medium = true)
-        if (m.nextTime.isNotEmpty()) Label(m.nextTime, 19f, m.colors.accent, modifier = GlanceModifier.padding(start = 8.dp))
-        Spacer(GlanceModifier.defaultWeight())
-        Column(horizontalAlignment = Alignment.End) {
-          Label(context.getString(R.string.widget_in_label), 10f, Palette.MUTED, align = TextAlign.End)
-          m.nextAt?.let { Countdown(it, m.now, 15f, Palette.MUTED) }
-        }
-      }
-      Column(modifier = GlanceModifier.fillMaxWidth().defaultWeight().padding(top = 6.dp)) {
-        for ((i, r) in shown.withIndex()) {
-          val night = i >= STRIP_COLUMNS
-          val color = rowColor(m, r)
-          val highlight = m.nextKey != null && m.nextKey == r.key
-          val box = GlanceModifier.fillMaxWidth().padding(horizontal = 7.dp, vertical = 3.dp)
-          Row(
-            modifier = GlanceModifier.fillMaxWidth().defaultWeight(),
-            verticalAlignment = Alignment.CenterVertically,
-          ) {
+      Header(m.location, m.hijri, d)
+      NextBlock(context, m, size, top = 6)
+      if (d.showTable) {
+        Column(modifier = GlanceModifier.fillMaxWidth().defaultWeight().padding(top = 6.dp)) {
+          for ((i, r) in shown.withIndex()) {
+            val night = i >= STRIP_COLUMNS
+            val color = rowColor(m, r)
+            val highlight = m.nextKey != null && m.nextKey == r.key
+            val box = GlanceModifier.fillMaxWidth().padding(horizontal = 7.dp, vertical = 3.dp)
             Row(
-              modifier = if (highlight) box.background(ImageProvider(R.drawable.widget_row_highlight)) else box,
+              modifier = GlanceModifier.fillMaxWidth().defaultWeight(),
               verticalAlignment = Alignment.CenterVertically,
             ) {
-              Label(rowLabel(r), if (night) 12f else 13f, color, modifier = GlanceModifier.defaultWeight())
-              ClockText(r.minutes, m.clock, timeSp, color, medium = !night)
+              Row(
+                modifier = if (highlight) box.background(ImageProvider(R.drawable.widget_row_highlight)) else box,
+                verticalAlignment = Alignment.CenterVertically,
+              ) {
+                Label(rowLabel(r), if (night) 12f else 13f, color, modifier = GlanceModifier.defaultWeight())
+                ClockText(r.minutes, m.clock, timeSp, color, medium = !night)
+              }
             }
           }
         }
+      } else {
+        Spacer(GlanceModifier.defaultWeight())
       }
       practice?.let { pr ->
-        Rule(Palette.RULE_STRONG, top = 6, bottom = 0)
+        Rule(d.ruleStrong, top = 6, bottom = 0)
         Row(modifier = GlanceModifier.fillMaxWidth().padding(top = 8.dp), verticalAlignment = Alignment.CenterVertically) {
           Column(modifier = GlanceModifier.defaultWeight()) {
             Row(verticalAlignment = Alignment.Bottom) {
               Label(pr.block.streak.toString(), 25f, m.colors.accent, medium = true)
-              Label(pr.streakText, 12f, Palette.MUTED, modifier = GlanceModifier.padding(start = 7.dp))
+              Label(pr.streakText, 12f, d.muted, modifier = GlanceModifier.padding(start = 7.dp))
             }
-            Label(pr.second, 11f, Palette.MUTED, modifier = GlanceModifier.padding(top = 2.dp))
+            Label(pr.second, 11f, d.muted, modifier = GlanceModifier.padding(top = 2.dp))
           }
           // Beside the number, in half the width, a share of what is left —
           // the tall card's graph sets its row's height, so it is kept short.
@@ -473,13 +556,13 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
             GlanceModifier.padding(start = 10.dp),
           )
         }
-        if (showFoot) Foot(pr, top = 6)
+        if (showFoot) Foot(pr, top = 6, d)
       }
       m.logged?.let {
         Label(
           context.getString(R.string.widget_logged_line, it.logged, it.loggable),
           11f,
-          Palette.MUTED,
+          d.muted,
           modifier = GlanceModifier.padding(top = 4.dp),
         )
       }
@@ -509,6 +592,8 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     private const val TIME_MIN_SP = 10f
     private const val TIME_GUTTER_DP = 4f
     private const val SMALL_TIME_SP = 36f
+    /** The list's next-prayer time, as the layout drew it. */
+    private const val NEXT_TIME_SP = 19f
   }
 }
 

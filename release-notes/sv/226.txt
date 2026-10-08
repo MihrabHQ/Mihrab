@@ -1,0 +1,2 @@
+• Android: tog bort behörigheterna för att läsa och skriva lagring, som appen aldrig behövde; Mihrab skriver bara till sin egen privata lagring.
+• Mac: menyraden visar nu "Mihrab".

@@ -31,6 +31,20 @@
     <string name="widget_configure_highlight_custom">Свой цвет</string>
     <string name="widget_configure_hex_hint">#RRGGBB</string>
     <string name="widget_configure_save">Сохранить</string>
+    <string name="widget_configure_prayer_title">Виджет времени намаза</string>
+    <string name="widget_configure_prayer_note">Только для виджетов времени намаза.</string>
+    <string name="widget_configure_text_color">Цвет текста</string>
+    <string name="widget_configure_text_light">Светлый</string>
+    <string name="widget_configure_text_white">Белый</string>
+    <string name="widget_configure_text_cream">Кремовый</string>
+    <string name="widget_configure_text_gold">Золотой</string>
+    <string name="widget_configure_text_sky">Небесный</string>
+    <string name="widget_configure_text_dark">Тёмный</string>
+    <string name="widget_configure_show_location">Показывать город</string>
+    <string name="widget_configure_show_countdown">Показывать обратный отсчёт</string>
+    <string name="widget_configure_show_table">Показывать время на день</string>
+    <string name="widget_configure_time_size">Размер времени намаза</string>
+    <string name="widget_configure_hex_invalid">Введите цвет в формате #RRGGBB</string>
     <!-- Live Activity notification strings -->
     <string name="live_activity_channel_name">Отсчёт до намаза</string>
     <string name="live_activity_channel_desc">Закреплённый обратный отсчёт до следующего намаза.</string>

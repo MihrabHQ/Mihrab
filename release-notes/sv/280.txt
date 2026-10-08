@@ -1,0 +1,5 @@
+• Nytt: tajweedfärger i mushafen. Varje bokstav visas i färgen för sin recitationsregel, med en guide och detaljer per regel för varje vers. Slå på det under Inställningar → Koranen; ljusa och mörka sidor har var sin nedladdning för offlinebruk, och typsnitten och reglerna anges med källa.
+• Nytt (Android): låt telefonen bli tyst under själva bönen och slå på ljudet igen av sig själv, under Inställningar → Aviseringar. (#60)
+• Mushafsidan är satt närmare den tryckta förlagan: tätare ordmellanrum, mer bredd för sidan och rader som inte längre klipps av eller tappar ett ord.
+• Nyheter har en kopieringsknapp för varje version.
+• Marockanska bönetider uppdaterade från ministeriet för habous.

@@ -10,6 +10,12 @@ import { coercePrePrayerReminderMinutes } from './prePrayerReminder';
 import { coercePrayerSilence } from './prayerSilence';
 import { clampReadingScale } from '../theme/readingText';
 import {
+  coerceHijriAdjust,
+  coerceHijriCalendarId,
+  setHijriCalendar,
+} from '../hijri/calendar';
+import { loadCachedHijriOverrides } from '../hijri/overrides';
+import {
   extractSecureFields,
   hasSecureFields,
   loadSecureSettings,
@@ -19,6 +25,9 @@ import {
 } from './secureStorage';
 import {
   DEFAULT_SETTINGS,
+  WIDGET_TIME_SCALE_MAX,
+  WIDGET_TIME_SCALE_MIN,
+  WIDGET_TIME_SCALE_STEP,
   type AppLanguage,
   type PrayerAppSettings,
   type WidgetHighlightId,
@@ -92,6 +101,21 @@ function coerceWidgetHighlightHex(value: unknown): string {
   return DEFAULT_SETTINGS.widgetHighlightCustomHex;
 }
 
+function coerceHexColor(value: unknown, fallback: string): string {
+  return typeof value === 'string' && /^#[0-9A-Fa-f]{6}$/.test(value.trim())
+    ? value.trim().toUpperCase()
+    : fallback;
+}
+
+/** Snapped to the stepper's rungs and clamped to its ends. */
+export function coerceWidgetTimeScale(value: unknown): number {
+  if (typeof value !== 'number' || !Number.isFinite(value)) {
+    return DEFAULT_SETTINGS.androidWidgetTimeScale;
+  }
+  const snapped = Math.round(value / WIDGET_TIME_SCALE_STEP) * WIDGET_TIME_SCALE_STEP;
+  return Math.min(WIDGET_TIME_SCALE_MAX, Math.max(WIDGET_TIME_SCALE_MIN, snapped));
+}
+
 function coerceWidgetOpacity(value: unknown): number {
   if (typeof value === 'number' && Number.isFinite(value)) {
     return Math.round(Math.min(100, Math.max(0, value)));
@@ -141,10 +165,19 @@ function invalidateInflightLoad(): void {
  */
 export function loadSettings(): Promise<PrayerAppSettings> {
   if (inflightLoad) return inflightLoad;
-  const p = loadSettingsUncached().finally(() => {
-    // Only clear our own slot: a write may already have replaced it.
-    if (inflightLoad === p) inflightLoad = null;
-  });
+  const p = loadSettingsUncached()
+    .then(s => {
+      // Every Hijri date read after this — in the app, a notification
+      // task, the widget's headless refresh — is in the user's calendar.
+      setHijriCalendar(s.hijriCalendar, s.hijriAdjustDays);
+      // …with the last announced corrections this phone downloaded.
+      void loadCachedHijriOverrides();
+      return s;
+    })
+    .finally(() => {
+      // Only clear our own slot: a write may already have replaced it.
+      if (inflightLoad === p) inflightLoad = null;
+    });
   inflightLoad = p;
   return p;
 }
@@ -351,6 +384,16 @@ async function loadSettingsUncached(): Promise<PrayerAppSettings> {
   merged.androidWidgetBackgroundOpacity = coerceWidgetOpacity(
     parsed.androidWidgetBackgroundOpacity,
   );
+  merged.hijriCalendar = coerceHijriCalendarId(parsed.hijriCalendar);
+  merged.hijriAdjustDays = coerceHijriAdjust(parsed.hijriAdjustDays);
+  merged.androidWidgetTextColor = coerceHexColor(
+    parsed.androidWidgetTextColor,
+    DEFAULT_SETTINGS.androidWidgetTextColor,
+  );
+  merged.androidWidgetShowLocation = parsed.androidWidgetShowLocation !== false;
+  merged.androidWidgetShowCountdown = parsed.androidWidgetShowCountdown !== false;
+  merged.androidWidgetShowTable = parsed.androidWidgetShowTable !== false;
+  merged.androidWidgetTimeScale = coerceWidgetTimeScale(parsed.androidWidgetTimeScale);
   merged.clockFormat = coerceClockFormat(parsed.clockFormat);
   // Snapped, not merged: a value between rungs — an older ladder, a
   // hand-edited blob — would leave the stepper unable to say where it is.

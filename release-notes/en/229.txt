@@ -1,0 +1,2 @@
+• Mushaf lines are now justified to one consistent width, so the page has the straight margin of the printed copy. The adjustment is small enough that the letterforms look unchanged; a line that would need to stretch further is left as it is.
+• The opening pages are larger. Pages 1 and 2 hold only seven or eight lines, so they now use a wider text block and bigger text.

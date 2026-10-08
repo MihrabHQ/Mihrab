@@ -1,0 +1,358 @@
+{
+  "version": 1,
+  "builtAt": "2026-10-08T14:47:32.498Z",
+  "timezone": "Africa/Algiers",
+  "serverStatus": "ok",
+  "firstDate": "2026-10-01",
+  "lastDate": "2027-06-05",
+  "minCoverageDays": 240,
+  "deadCities": [],
+  "source": {
+    "package": "com.issolah.marwalarm",
+    "versionCode": 560,
+    "versionName": "5.60",
+    "certSha256": "84ce695c9879c263be871f2c809f1673cc75381e214fbed23d494fbbe65b3f35"
+  },
+  "cities": [
+    {
+      "id": 1,
+      "city": "الجلفة",
+      "cityEn": "Djelfa"
+    },
+    {
+      "id": 2,
+      "city": "تبسة",
+      "cityEn": "Tebessa"
+    },
+    {
+      "id": 3,
+      "city": "بئر العاتر",
+      "cityEn": "Bir El Ater"
+    },
+    {
+      "id": 4,
+      "city": "خنشلة",
+      "cityEn": "Khenchela"
+    },
+    {
+      "id": 5,
+      "city": "الوادي",
+      "cityEn": "El Oued"
+    },
+    {
+      "id": 6,
+      "city": "باتنة",
+      "cityEn": "Batna"
+    },
+    {
+      "id": 7,
+      "city": "تقرت",
+      "cityEn": "Touggourt"
+    },
+    {
+      "id": 8,
+      "city": "بسكرة",
+      "cityEn": "Biskra"
+    },
+    {
+      "id": 10,
+      "city": "بوسعادة",
+      "cityEn": "Bou Saada"
+    },
+    {
+      "id": 11,
+      "city": "عين الملح",
+      "cityEn": "Ain El Melh"
+    },
+    {
+      "id": 12,
+      "city": "حاسي الرمل",
+      "cityEn": "Hassi R'mel"
+    },
+    {
+      "id": 13,
+      "city": "الأغواط",
+      "cityEn": "Laghouat"
+    },
+    {
+      "id": 14,
+      "city": "عين وسارة",
+      "cityEn": "Ain Oussara"
+    },
+    {
+      "id": 15,
+      "city": "تيسمسيلت",
+      "cityEn": "Tissemsilt"
+    },
+    {
+      "id": 16,
+      "city": "تيارت",
+      "cityEn": "Tiaret"
+    },
+    {
+      "id": 17,
+      "city": "البيض",
+      "cityEn": "El Bayadh"
+    },
+    {
+      "id": 18,
+      "city": "سعيدة",
+      "cityEn": "Saida"
+    },
+    {
+      "id": 19,
+      "city": "معسكر",
+      "cityEn": "Mascara"
+    },
+    {
+      "id": 20,
+      "city": "النعامة",
+      "cityEn": "Naama"
+    },
+    {
+      "id": 21,
+      "city": "سيدي بلعباس",
+      "cityEn": "Sidi Bel Abbes"
+    },
+    {
+      "id": 22,
+      "city": "ابن باديس",
+      "cityEn": "Ben Badis"
+    },
+    {
+      "id": 23,
+      "city": "تلمسان",
+      "cityEn": "Tlemcen"
+    },
+    {
+      "id": 24,
+      "city": "عين تموشنت",
+      "cityEn": "Ain Temouchent"
+    },
+    {
+      "id": 25,
+      "city": "سبدو",
+      "cityEn": "Sebdou"
+    },
+    {
+      "id": 26,
+      "city": "مغنية",
+      "cityEn": "Maghnia"
+    },
+    {
+      "id": 27,
+      "city": "الجزائر",
+      "cityEn": "Algiers"
+    },
+    {
+      "id": 28,
+      "city": "وهران",
+      "cityEn": "Oran"
+    },
+    {
+      "id": 29,
+      "city": "مستغانم",
+      "cityEn": "Mostaganem"
+    },
+    {
+      "id": 30,
+      "city": "غليزان",
+      "cityEn": "Relizane"
+    },
+    {
+      "id": 31,
+      "city": "الشلف",
+      "cityEn": "Chlef"
+    },
+    {
+      "id": 32,
+      "city": "عين الدفلى",
+      "cityEn": "Ain Defla"
+    },
+    {
+      "id": 33,
+      "city": "تيبازة",
+      "cityEn": "Tipaza"
+    },
+    {
+      "id": 34,
+      "city": "المدية",
+      "cityEn": "Medea"
+    },
+    {
+      "id": 35,
+      "city": "البليدة",
+      "cityEn": "Blida"
+    },
+    {
+      "id": 36,
+      "city": "بومرداس",
+      "cityEn": "Boumerdes"
+    },
+    {
+      "id": 37,
+      "city": "البويرة",
+      "cityEn": "Bouira"
+    },
+    {
+      "id": 38,
+      "city": "دلس",
+      "cityEn": "Dellys"
+    },
+    {
+      "id": 39,
+      "city": "تيزي وزو",
+      "cityEn": "Tizi Ouzou"
+    },
+    {
+      "id": 40,
+      "city": "المسيلة",
+      "cityEn": "M'Sila"
+    },
+    {
+      "id": 41,
+      "city": "برج بوعريريج",
+      "cityEn": "Bordj Bou Arreridj"
+    },
+    {
+      "id": 42,
+      "city": "بجاية",
+      "cityEn": "Bejaia"
+    },
+    {
+      "id": 43,
+      "city": "سطيف",
+      "cityEn": "Setif"
+    },
+    {
+      "id": 44,
+      "city": "جيجل",
+      "cityEn": "Jijel"
+    },
+    {
+      "id": 45,
+      "city": "ميلة",
+      "cityEn": "Mila"
+    },
+    {
+      "id": 46,
+      "city": "قسنطينة",
+      "cityEn": "Constantine"
+    },
+    {
+      "id": 47,
+      "city": "سكيكدة",
+      "cityEn": "Skikda"
+    },
+    {
+      "id": 48,
+      "city": "أم البواقي",
+      "cityEn": "Oum El Bouaghi"
+    },
+    {
+      "id": 49,
+      "city": "قالمة",
+      "cityEn": "Guelma"
+    },
+    {
+      "id": 50,
+      "city": "عنابة",
+      "cityEn": "Annaba"
+    },
+    {
+      "id": 51,
+      "city": "سوق أهراس",
+      "cityEn": "Souk Ahras"
+    },
+    {
+      "id": 52,
+      "city": "الطارف",
+      "cityEn": "El Tarf"
+    },
+    {
+      "id": 53,
+      "city": "أدرار",
+      "cityEn": "Adrar"
+    },
+    {
+      "id": 54,
+      "city": "تندوف",
+      "cityEn": "Tindouf"
+    },
+    {
+      "id": 55,
+      "city": "بشار",
+      "cityEn": "Bechar"
+    },
+    {
+      "id": 56,
+      "city": "تميمون",
+      "cityEn": "Timimoun"
+    },
+    {
+      "id": 57,
+      "city": "رقان",
+      "cityEn": "Reggane"
+    },
+    {
+      "id": 58,
+      "city": "برج باجي مختار",
+      "cityEn": "Bordj Badji Mokhtar"
+    },
+    {
+      "id": 59,
+      "city": "بني عباس",
+      "cityEn": "Beni Abbes"
+    },
+    {
+      "id": 60,
+      "city": "عين صالح",
+      "cityEn": "In Salah"
+    },
+    {
+      "id": 61,
+      "city": "المنيعة",
+      "cityEn": "El Menia"
+    },
+    {
+      "id": 62,
+      "city": "غرداية",
+      "cityEn": "Ghardaia"
+    },
+    {
+      "id": 63,
+      "city": "ورقلة",
+      "cityEn": "Ouargla"
+    },
+    {
+      "id": 64,
+      "city": "تمنراست",
+      "cityEn": "Tamanrasset"
+    },
+    {
+      "id": 65,
+      "city": "عين قزام",
+      "cityEn": "In Guezzam"
+    },
+    {
+      "id": 66,
+      "city": "إليزي",
+      "cityEn": "Illizi"
+    },
+    {
+      "id": 67,
+      "city": "جانت",
+      "cityEn": "Djanet"
+    },
+    {
+      "id": 68,
+      "city": "عين أمناس",
+      "cityEn": "In Amenas"
+    },
+    {
+      "id": 69,
+      "city": "بني ونيف",
+      "cityEn": "Beni Ounif"
+    }
+  ]
+}

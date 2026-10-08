@@ -19,15 +19,30 @@ describe('deleting a download', () => {
 });
 
 describe('a downloaded item', () => {
-  it('puts its buttons on their own line, under the name and size', () => {
-    expect(screen).toMatch(/<View style=\{styles\.cardHead\}>[\s\S]*?styles\.rowTitle[\s\S]*?styles\.rowBytes/);
-    expect(screen).toMatch(/<View style=\{styles\.actions\}>[\s\S]*?listenDownloadResume[\s\S]*?common\.delete/);
-    expect(screen).toContain("rowTitle: { fontSize: TYPE.callout.fontSize, fontWeight: '600', flex: 1 }");
+  const ui = read('src/quran/downloadsUi.tsx');
+
+  it('is a row of a settings group, with its actions on their own line', () => {
+    // The page is built like every settings page: groups, not a card each.
+    expect(screen).toMatch(/<SettingsGroup title=\{t\('downloads\.groupOnDevice'/);
+    expect(screen).not.toMatch(/cardEdgeStyle/);
+    expect(ui).toMatch(/<View style=\{styles\.cardHead\}>[\s\S]*?styles\.rowTitle[\s\S]*?styles\.rowBytes/);
+    expect(ui).toMatch(/\{actions \? <View style=\{styles\.actions\}>/);
+    expect(screen).toMatch(/listenDownloadResume[\s\S]*?common\.delete/);
+  });
+
+  it('draws no outlines: text actions, a filled track, tonal buttons', () => {
+    for (const src of [screen, ui, riwayah]) {
+      expect(src).not.toMatch(/borderWidth/);
+      expect(src).not.toMatch(/borderColor:/);
+    }
+    // The track is on controlBg, which every palette paints — `border` is
+    // transparent under iOS's grouped chrome, and the bar vanished there.
+    expect(ui).toMatch(/styles\.track, \{ backgroundColor: palette\.controlBg \}/);
   });
 
   it('shows how far a part-way reciter has got', () => {
-    expect(screen).toContain('whole ? undefined : files / totalAyahCount(),');
-    expect(screen).toMatch(/width: `\$\{Math\.round\(progress \* 100\)\}%`/);
+    expect(screen).toContain('progress={whole ? undefined : files / totalAyahCount()}');
+    expect(ui).toMatch(/width: `\$\{Math\.round\(pct \* 100\)\}%`/);
   });
 });
 
@@ -44,6 +59,6 @@ describe('a reciter downloading right now', () => {
     expect(screen).toMatch(/done: files,/);
     // Its own Continue button is not offered while it is the one running.
     expect(screen).toMatch(/whole \|\| live\s*\? undefined/);
-    expect(screen).toMatch(/whole \? undefined : files \/ totalAyahCount\(\)/);
+    expect(screen).toMatch(/progress=\{whole \? undefined : files \/ totalAyahCount\(\)\}/);
   });
 });

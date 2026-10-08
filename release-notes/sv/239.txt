@@ -1,0 +1,10 @@
+• Widgetarna har fått ny design och nya har tillkommit, på båda typerna av telefon: Nästa bön, Bönetider i medelstor och stor storlek, Hijri-datum, Svit, Logga idag, Fortsätt läsa och Tasbih.
+• Med Logga idag kan du logga böner från hemskärmen; en ologgad bön visas med en ihålig bock, och kortet säger vad plusknappen gör.
+• Fortsätt läsa öppnar den läsare du senast använde, och Tasbih behåller sin räkning; när du går till nästa dhikr visas dess namn.
+• Bönewidgetarna visar din stad i stället för koordinater, tar med nattens tider och visar när böner som ska bes igen förfaller.
+• Widgetgrafen är nu en kalender som stämmer med den i appen, och Svit-widgeten visar som standard en rad.
+• Widgetarna uppdateras medan appen är stängd, ett tryck på en widget öppnar rätt skärm, och en widget vars data har tagit slut säger det.
+• Widgetarna fyller sin yta utan att något klipps eller lämnar tomrum, och väljarna förhandsvisar dem i verklig storlek.
+• iPhone: widgetarna kräver nu iOS 17 eller senare, den rektangulära widgeten på låsskärmen är mer användbar, och ett felaktigt värde gör inte längre alla sex widgetar tomma.
+• Android: widgetens layout följer storleken du väljer, nedräkningen tickar, widgeten Hijri-datum har tillkommit, och en widget med en inaktuell dag ber dig öppna appen i stället för att visa den.
+• Android (Google Play): den här versionen innehåller även 2.9.0, som aldrig släpptes där: sunnaböner loggade bredvid varje fardbön, valfri ljudfil som adhan, export och import av hela historiken, längsta sviten bredvid den nuvarande, och en åtgärd för att sviten visade noll varje morgon.

@@ -1,0 +1,7 @@
+• "Continue reading" takes you to the ayah again. Your reading place is now kept separately from your khatmah, with its own marker on the page, and opening the reader no longer records a place until you start reading yourself.
+• The check on Today offers only the choices that fit the moment: on time or late while the second time is running, and all four once the window has passed.
+• If a check cannot record a prayer, it now says why.
+• Tapping an adhkar reminder opens those adhkar.
+• A surah's recitation download continues when you leave the page, with a progress bar and a progress notification.
+• Surah names in calligraphy are set at one consistent weight.
+• A notice at the top of Today no longer sits under the status bar.

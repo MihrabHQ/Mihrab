@@ -90,3 +90,53 @@ export function nextHabousServerRunAfter(from: Date = new Date()): Date {
   if (d.getTime() <= from.getTime()) d.setUTCDate(d.getUTCDate() + 1);
   return d;
 }
+
+// ── ALGERIA ───────────────────────────────────────────────────────────
+//
+// The Ministry of Religious Affairs and Wakfs publishes a year at a time,
+// as an update to its own app, and the bundled seed holds that year. The
+// CDN copy is how next year's table reaches phones ahead of an app release,
+// so the device need not ask often: once a day is plenty.
+
+export const MARW_DATASET_BASE_URL =
+  'https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/data/prayer-times/algeria/v1';
+
+/** Fallback refresh when the index cannot be reached. */
+export const MARW_DATASET_REFRESH_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+
+/** How often to re-read `index.json`. ±25% jitter at the call site. */
+export const MARW_INDEX_POLL_INTERVAL_MS = 24 * 60 * 60 * 1000; // 1 day
+
+/**
+ * `.github/workflows/marw-dataset.yml`: 05:23 UTC every Monday, and every
+ * day in May, June and July, when the Ministry's new year is due. For
+ * display only.
+ */
+export const MARW_SERVER_CRON_UTC = { hour: 5, minute: 23, weekday: 1, dailyMonths: [5, 6, 7] };
+
+/** Compute the next Algerian server run (UTC) after `from`. */
+export function nextMarwServerRunAfter(from: Date = new Date()): Date {
+  const d = new Date(from.getTime());
+  d.setUTCHours(MARW_SERVER_CRON_UTC.hour, MARW_SERVER_CRON_UTC.minute, 0, 0);
+  if (d.getTime() <= from.getTime()) d.setUTCDate(d.getUTCDate() + 1);
+  for (let i = 0; i < 8; i++) {
+    const daily = MARW_SERVER_CRON_UTC.dailyMonths.includes(d.getUTCMonth() + 1);
+    if (daily || d.getUTCDay() === MARW_SERVER_CRON_UTC.weekday) return d;
+    d.setUTCDate(d.getUTCDate() + 1);
+  }
+  return d;
+}
+
+// ── HIJRI CORRECTIONS ─────────────────────────────────────────────────
+//
+// Announced Hijri month starts that replace the app's calendar tables —
+// chiefly Kemenag's sidang isbat when it overrules the MABIMS prediction.
+// Edited by hand in the repository (data/hijri/v1/overrides.json) after an
+// announcement; see `hijri/overrides.ts`.
+
+export const HIJRI_OVERRIDES_URL =
+  'https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/data/hijri/v1/overrides.json';
+
+/** How often a phone asks for it. An isbat is announced on the evening
+ *  before the month begins, so a few hours is what keeps that night right. */
+export const HIJRI_OVERRIDES_POLL_MS = 3 * 60 * 60 * 1000; // 3 hours

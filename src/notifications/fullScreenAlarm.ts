@@ -19,7 +19,7 @@
  */
 import { AndroidCategory } from '@notifee/react-native';
 import i18n from '../i18n';
-import { LAST_CHANCE_MINUTES, hasSnooze, type SnoozeMenu } from './snoozeWindow';
+import { LAST_CHANCE_MINUTES, hasSnooze, minutesUntil, type SnoozeMenu } from './snoozeWindow';
 import { skyFrame, skyInkAt, type SkyPassage } from '../screens/home/skyModel';
 
 /** The native activity Notifee launches; resolved by class name. */
@@ -117,9 +117,12 @@ export function fullScreenAlarmData(
           : null;
   const mainLabel =
     main === LAST_CHANCE_MINUTES
-      ? i18n.t('alertCopy.lastChanceChoice', {
-          defaultValue: 'Last chance to pray {{prayer}}',
-          prayer: i18n.t(`prayer.${prayer}`, { defaultValue: prayer }),
+      ? i18n.t('alertCopy.snoozeChoice', {
+          defaultValue: 'Snooze {{minutes}} min',
+          minutes: minutesUntil(
+            menu?.lastChanceAt ?? Date.now(),
+            menu?.drawnAt ?? Date.now(),
+          ),
         })
       : main != null
         ? i18n.t('alertCopy.snoozeChoice', {
@@ -160,9 +163,12 @@ export function fullScreenAlarmData(
           fsChipOpts: JSON.stringify(
             FULL_SCREEN_SNOOZE_ALT_MIN.map(m => ({ m, l: snoozeChipLabel(m) })),
           ),
-          fsLastChance: i18n.t('alertCopy.lastChanceChoice', {
-            defaultValue: 'Last chance to pray {{prayer}}',
-            prayer: i18n.t(`prayer.${prayer}`, { defaultValue: prayer }),
+          // A template: the screen fills {minutes} with the time left until
+          // the last-chance alert, re-worked as the clock moves.
+          fsLastChance: i18n.t('alertCopy.snoozeChoice', {
+            defaultValue: 'Snooze {{minutes}} min',
+            minutes: '{minutes}',
+            interpolation: { escapeValue: false },
           }),
         }
       : {}),

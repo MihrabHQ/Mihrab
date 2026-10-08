@@ -31,6 +31,20 @@
     <string name="widget_configure_highlight_custom">Anpassad färg</string>
     <string name="widget_configure_hex_hint">#RRGGBB</string>
     <string name="widget_configure_save">Spara</string>
+    <string name="widget_configure_prayer_title">Bönetidswidget</string>
+    <string name="widget_configure_prayer_note">Gäller bara bönetidswidgetarna.</string>
+    <string name="widget_configure_text_color">Textfärg</string>
+    <string name="widget_configure_text_light">Ljus</string>
+    <string name="widget_configure_text_white">Vit</string>
+    <string name="widget_configure_text_cream">Gräddvit</string>
+    <string name="widget_configure_text_gold">Guld</string>
+    <string name="widget_configure_text_sky">Himmelsblå</string>
+    <string name="widget_configure_text_dark">Mörk</string>
+    <string name="widget_configure_show_location">Visa staden</string>
+    <string name="widget_configure_show_countdown">Visa nedräkningen</string>
+    <string name="widget_configure_show_table">Visa dagens tider</string>
+    <string name="widget_configure_time_size">Storlek på bönetiderna</string>
+    <string name="widget_configure_hex_invalid">Ange en färg som #RRGGBB</string>
     <!-- Live Activity notification strings -->
     <string name="live_activity_channel_name">Bönnedräkning</string>
     <string name="live_activity_channel_desc">Fastnålad nedräkning till nästa bön.</string>

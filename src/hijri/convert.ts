@@ -1,43 +1,83 @@
 /**
- * Gregorian ↔ Hijri (Umm al-Qura tabular) conversion — task #20.
+ * Gregorian ↔ Hijri conversion — task #20.
  *
- * Implements the Kuwaiti / tabular algorithm. Accurate to ±1 day vs. observed
- * lunar calendar; sufficient for the events overlay where the user already
- * understands moon-sighting may shift dates.
+ * `gregorianToHijri` reads the date in the calendar the user chose
+ * (`calendar.ts`): the arithmetic one below by default, or one of the
+ * Indonesian tables, moved by the user's adjustment. Everything in the app
+ * that prints or decides on a Hijri date goes through it.
  *
+ * The arithmetic (tabular, "Kuwaiti") calendar: a 30-year cycle with 11
+ * leap years. Accurate to ±1 day vs. the observed lunar calendar.
  * Reference: Khalid Shaukat, "The Hijri Calendar Algorithm" (1985);
  * standard implementation matched against Tanzil and ulug.org for the
  * range AD 1900–2100.
  */
 
 import type { HijriDate } from './events';
+import { activeHijriCalendar, fromTable, julianDay, monthTable, type MonthTable } from './calendar';
 
 const HIJRI_EPOCH_JD = 1948440; // Julian Day for 1 Muharram 1 AH (16 July 622 CE, Friday)
 
-function gregorianToJulianDay(year: number, month: number, day: number): number {
-  // Standard astronomical formula (works for negative years too).
-  const a = Math.floor((14 - month) / 12);
-  const y = year + 4800 - a;
-  const m = month + 12 * a - 3;
-  return (
-    day +
-    Math.floor((153 * m + 2) / 5) +
-    365 * y +
-    Math.floor(y / 4) -
-    Math.floor(y / 100) +
-    Math.floor(y / 400) -
-    32045
-  );
+/**
+ * The Hijri date of a Gregorian date (local calendar; only year/month/day
+ * are used), in the chosen calendar.
+ */
+export function gregorianToHijri(d: Date): HijriDate {
+  const { id, adjustDays } = activeHijriCalendar();
+  const jd = julianDay(d.getFullYear(), d.getMonth() + 1, d.getDate()) + adjustDays;
+  const table = monthTable(id);
+  if (table) return fromTableOrBeyond(table, jd);
+  return tabularFromJd(jd);
 }
 
 /**
- * Convert a Gregorian date (local-calendar) to a Hijri date using the
- * Umm al-Qura tabular algorithm.
- *
- * @param d Date — only year/month/day are used; time-of-day ignored.
+ * Inside a table, the table. Before or after it, months of the arithmetic
+ * calendar's lengths counted from the table's own edge — never the
+ * arithmetic calendar's own dates, which can be a day off the table's at
+ * the seam and would repeat or skip a day there.
  */
-export function gregorianToHijri(d: Date): HijriDate {
-  const jd = gregorianToJulianDay(d.getFullYear(), d.getMonth() + 1, d.getDate());
+export function fromTableOrBeyond(table: MonthTable, jd: number): HijriDate {
+  const inside = fromTable(table, jd);
+  if (inside) return inside;
+  const s = table.starts;
+  if (jd < s[0]) {
+    let year = table.year;
+    let month = table.month;
+    let start = s[0];
+    while (jd < start) {
+      if (month === 1) {
+        year -= 1;
+        month = 12;
+      } else {
+        month -= 1;
+      }
+      start -= hijriMonthLength(year, month);
+    }
+    return { year, month, day: jd - start + 1 };
+  }
+  // After: the month that follows the table's last one.
+  const index = table.month - 1 + (s.length - 1);
+  let year = table.year + Math.floor(index / 12);
+  let month = (index % 12) + 1;
+  let start = s[s.length - 1];
+  while (jd >= start + hijriMonthLength(year, month)) {
+    start += hijriMonthLength(year, month);
+    if (month === 12) {
+      year += 1;
+      month = 1;
+    } else {
+      month += 1;
+    }
+  }
+  return { year, month, day: jd - start + 1 };
+}
+
+/** The arithmetic calendar alone, whatever the user chose. */
+export function tabularGregorianToHijri(d: Date): HijriDate {
+  return tabularFromJd(julianDay(d.getFullYear(), d.getMonth() + 1, d.getDate()));
+}
+
+function tabularFromJd(jd: number): HijriDate {
   const days = jd - HIJRI_EPOCH_JD;
   // 30-year cycle: 11 leap years at fixed positions.
   const cycle30 = Math.floor(days / 10631);

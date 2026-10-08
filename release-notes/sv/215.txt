@@ -1,0 +1,7 @@
+• Pålitligare automatisk plats: den använder nu Wi‑Fi och nätverksplats tillsammans med GPS, så den fastnar inte längre när GPS inte fungerar inomhus.
+• Bönetiderna byts korrekt när du reser mellan länder: den svenska och den globala källan växlar vid gränsen, och när du återvänder till en nyligen besökt stad används dess sparade tider igen.
+• Platsmarkeringen visar nu din stad även i automatiskt läge.
+• Dagens ayah: verser som fyller en hel sida hoppas över, notisen visar mer av texten och kortet för dagens vers öppnar rätt mushaf-sida.
+• Tafsir kan fällas ut och ihop med Visa mer / Visa mindre.
+• Snabbare första nedladdning av Koransidor.
+• Android: automatisk plats fungerar med "Ungefärlig plats".

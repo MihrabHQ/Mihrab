@@ -1,0 +1,10 @@
+• Tafsir (Ibn Kathir and others) in the ayah panel, saved for offline reading.
+• Sharper, larger mushaf pages that fit the screen more tightly; a tap toggles fullscreen and a long-press selects an ayah.
+• All recitation controls are now together in one panel.
+• Bookmarks now cover the whole ayah.
+• Khatmah: a continue button, reset options, and the ability to pin your exact position.
+• New daily khatmah reminder.
+• New Manage downloads screen.
+• Long recitation sessions play more smoothly, with the next ayah loaded ahead of time.
+• More reliable adhan timing.
+• The time-of-day tint on the Home header now appears only when dynamic colors are on.

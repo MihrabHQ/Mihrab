@@ -1,0 +1,4 @@
+• Mac: mushafen visar inte längre tre sidkolumner, där den vänstra löper in under registret, när du växlar tillbaka till den från en annan app i helskärm.
+• Mac: fältet ovanför sidan har sidans färg, och surans namn är centrerat över sidan i stället för över fönstret.
+• Mac och iPad: i helskärm visas surans namn i sin helhet igen, i stället för en bokstav och tre punkter.
+• Vänster- och högerpiltangenterna bläddrar sidor igen efter en sökning i registret.

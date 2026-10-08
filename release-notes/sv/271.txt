@@ -1,0 +1,6 @@
+• Två Warsh-recitatörer, och när du trycker på en vers medan du läser Warsh visas och delas nu Warsh-lydelsen i stället för Hafs-lydelsen.
+• Dagens läsmål visas i läsaren, bredvid sidnumret.
+• Adhkar behåller vägen tillbaka på skärmen, och när du delar en dua frågar appen vad som ska skickas, i sitt eget blad.
+• Bladen går att rulla igen. Ändringsloggen och alla andra blad ignorerade ett långsamt finger och rörde sig bara vid en snabb svepning.
+• I mushafen lämnar Tillbaka nu helskärmsläget i stället för att lämna appen.
+• En khatmah fryser inte längre när en snabb svepning går över flera sidor.

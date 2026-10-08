@@ -1,0 +1,3 @@
+• Fixed overlapping cards and dots on the Home screen.
+• The tools grid is back to 3 comfortable columns on phones.
+• Android: a smaller app from Google Play, with unused resources removed.
