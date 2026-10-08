@@ -73,7 +73,9 @@ function WidgetCardImpl() {
     // card down and an untitled group of controls under "Language" reads
     // as more language settings.
     <SettingsGroup
-      title={t('settings.sectionWidgets')}
+      // On the Widgets page, beside the prayer-times widget's own card:
+      // these are the ones EVERY widget follows.
+      title={t('settings.widgetsAllTitle', 'All widgets')}
       // The accent the widget follows is picked two cards up, on this
       // same page, so the sentence that used to send people to Appearance
       // would now be sending them here. What is left is the hint that

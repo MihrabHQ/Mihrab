@@ -1,6 +1,7 @@
 /**
- * Settings → Appearance. Theme, accent, time format, language, and on
- * Android the home-screen widget.
+ * Settings → Appearance. Theme, accent, time format, language. The
+ * widgets moved to Settings → Widgets (Android) once the prayer-times
+ * widget had options of its own.
  *
  * Language sits here rather than on a page of its own because it is a
  * decision about how the app LOOKS to you, and a settings index with a
@@ -21,8 +22,6 @@ import { AppearanceCard } from '../AppearanceCard';
 import { LanguageCard } from '../LanguageCard';
 import { LanguageModal } from '../LanguageModal';
 import { SettingsPage } from '../SettingsPage';
-import { WidgetCard } from '../WidgetCard';
-import { PrayerWidgetCard } from '../PrayerWidgetCard';
 
 export function AppearanceSettingsScreen() {
   const { settings, updateSettings } = usePrayerSettings();
@@ -39,12 +38,6 @@ export function AppearanceSettingsScreen() {
       <SettingsPage deferBackRef={deferBack}>
         <AppearanceCard />
         <LanguageCard onOpenLanguagePicker={open} />
-        {/* Last, not between the two: the widget's colour is the accent
-            picked in `AppearanceCard`, and a reader who has just set it
-            reads down to what follows it. */}
-        <WidgetCard />
-        {/* Its own card: only the prayer-times widgets read these. */}
-        <PrayerWidgetCard />
       </SettingsPage>
       <LanguageModal
         visible={languageModal}

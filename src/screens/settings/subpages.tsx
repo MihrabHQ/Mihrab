@@ -17,6 +17,7 @@ import {
   NotificationsIcon,
   PrayerTimesIcon,
   QuranIcon,
+  WidgetsIcon,
 } from './SettingsSectionIcons';
 import { AboutSettingsScreen } from './pages/AboutSettingsScreen';
 import { AppearanceSettingsScreen } from './pages/AppearanceSettingsScreen';
@@ -33,6 +34,7 @@ import { PrayerTimesSettingsScreen } from './pages/PrayerTimesSettingsScreen';
 import { QuranSettingsScreen } from './pages/QuranSettingsScreen';
 import { WordReaderSettingsScreen } from './pages/WordReaderSettingsScreen';
 import { TajweedSettingsScreen } from './pages/TajweedSettingsScreen';
+import { WidgetsSettingsScreen } from './pages/WidgetsSettingsScreen';
 
 export type SettingsSubpageRoute = Extract<
   keyof RootStackParamList,
@@ -129,19 +131,22 @@ const ALL_SUBPAGES: readonly SettingsSubpage[] = [
   {
     route: 'SettingsAppearance',
     titleKey: 'settings.sectionAppearance',
-    /**
-     * The widget's one remaining control lives on this page, and only
-     * Android has it — so only Android's blurb says so. A section whose
-     * index line does not name what is inside it is a section people
-     * scroll past: "Home screen" used to be its own row, and the word is
-     * the only thing anyone hunting for the widget scans for.
-     */
-    blurbKey:
-      Platform.OS === 'android'
-        ? 'settings.sectionAppearanceBlurbAndroid'
-        : 'settings.sectionAppearanceBlurb',
+    blurbKey: 'settings.sectionAppearanceBlurb',
     Icon: AppearanceIcon,
     component: AppearanceSettingsScreen,
+  },
+  {
+    /**
+     * Android only: the widgets with settings are Android's. Its own row
+     * because "widget" is the word someone hunting for these scans the
+     * index for, and the prayer-times widget's options are a page's worth.
+     */
+    route: 'SettingsWidgets',
+    titleKey: 'settings.sectionWidgets',
+    blurbKey: 'settings.sectionWidgetsBlurb',
+    Icon: WidgetsIcon,
+    component: WidgetsSettingsScreen,
+    platforms: ['android'],
   },
   {
     route: 'SettingsQuran',

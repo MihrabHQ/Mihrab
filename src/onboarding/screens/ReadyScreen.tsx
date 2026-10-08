@@ -105,7 +105,7 @@ export function ReadyScreen({
    * still waiting to pull them back into onboarding.
    */
   const goTo = (
-    route: 'SettingsPrayerTimes' | 'SettingsNotifications' | 'SettingsAppearance',
+    route: 'SettingsPrayerTimes' | 'SettingsNotifications' | 'SettingsWidgets',
   ) => {
     onFinish();
     navigation.navigate(route);
@@ -187,7 +187,7 @@ export function ReadyScreen({
           <SettingsLinkRow
             testID="onboarding-ready-widgets"
             title={t('onboarding.ready.widgets', 'Widgets')}
-            onPress={() => goTo('SettingsAppearance')}
+            onPress={() => goTo('SettingsWidgets')}
           />
         ) : null}
       </SettingsGroup>

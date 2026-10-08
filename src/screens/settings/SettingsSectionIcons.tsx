@@ -8,7 +8,7 @@
  * carry the accent when it is the one being pointed at.
  */
 import { memo } from 'react';
-import Svg, { Circle, Path } from 'react-native-svg';
+import Svg, { Circle, Path, Rect } from 'react-native-svg';
 import type { ColorValue } from 'react-native';
 
 type P = { size?: number; color: ColorValue };
@@ -129,3 +129,12 @@ export const ChevronIcon = memo(
     </Svg>
   ),
 );
+
+/** Four tiles — a home screen of widgets. */
+export const WidgetsIcon = memo(({ size = S, color }: P) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24">
+    <Rect x="4" y="4" width="7" height="7" rx="1.8" stroke={color} strokeWidth={1.8} fill="none" />
+    <Rect x="13" y="4" width="7" height="7" rx="1.8" stroke={color} strokeWidth={1.8} fill="none" />
+    <Rect x="4" y="13" width="16" height="7" rx="1.8" stroke={color} strokeWidth={1.8} fill="none" />
+  </Svg>
+));

@@ -207,6 +207,8 @@ export const linking: LinkingOptions<RootStackParamList> = {
        * where the "download stopped" notification lands.
        */
       SettingsDownloads: 'downloads',
+      /** mihrab://widgets — Settings → Widgets (Android). */
+      SettingsWidgets: 'widgets',
       QuranTajweed: 'tajweed',
       /**
        * mihrab://month — the month's table; mihrab://month?share=1 — the
