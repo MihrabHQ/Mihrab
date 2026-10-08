@@ -251,7 +251,7 @@
     "widgetTimeSizeLarger": "Daha büyük",
     "widgetTimeSizeHelp": "Büyük boyutlar, widget’ta yer olan yerlerde kullanılır.",
     "hijriCalendarTitle": "Hicri takvim",
-    "hijriCalendarFooter": "Her kurala göre önceden hesaplanır. Yaşadığınız yerde ilan edilen tarih farklıysa bir gün kaydırın.",
+    "hijriCalendarFooter": "Her kurala göre önceden hesaplanır. Yaşadığınız yerde ilan edilen tarih farklıysa bir gün kaydırın. Bu yalnızca hicri tarihi (ve ona bağlı olanları: Ramazan, bayramlar ve oruç günleri) kaydırır. Namaz vakitleri aynen kalır.",
     "hijriCalendar_tabular": "Standart (hesaplanmış)",
     "hijriCalendar_mabims": "Endonezya — Hükümet ve NU",
     "hijriCalendar_khgt": "Endonezya — Muhammediye",

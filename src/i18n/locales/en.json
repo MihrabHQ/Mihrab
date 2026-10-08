@@ -251,7 +251,7 @@
     "widgetTimeSizeLarger": "Larger",
     "widgetTimeSizeHelp": "Larger sizes are used where the widget has room for them.",
     "hijriCalendarTitle": "Hijri calendar",
-    "hijriCalendarFooter": "Calculated in advance from each rule. If the date announced where you live differs, adjust it by a day.",
+    "hijriCalendarFooter": "Calculated in advance from each rule. If the date announced where you live differs, shift it by a day. This only moves the Hijri date (and what depends on it: Ramadan, Eids and fasting days). Prayer times stay exactly the same.",
     "hijriCalendar_tabular": "Standard (calculated)",
     "hijriCalendar_mabims": "Indonesia — Government & NU",
     "hijriCalendar_khgt": "Indonesia — Muhammadiyah",

@@ -251,7 +251,7 @@
     "widgetTimeSizeLarger": "Más grande",
     "widgetTimeSizeHelp": "Los tamaños mayores se usan donde el widget tiene espacio para ellos.",
     "hijriCalendarTitle": "Calendario hiyri",
-    "hijriCalendarFooter": "Calculado de antemano según cada regla. Si la fecha anunciada donde vives es distinta, ajústala un día.",
+    "hijriCalendarFooter": "Calculado de antemano según cada regla. Si la fecha anunciada donde vives es distinta, muévela un día. Esto solo cambia la fecha hegírica (y lo que depende de ella: Ramadán, las fiestas y los días de ayuno). Los horarios de oración no cambian.",
     "hijriCalendar_tabular": "Estándar (calculado)",
     "hijriCalendar_mabims": "Indonesia — Gobierno y NU",
     "hijriCalendar_khgt": "Indonesia — Muhammadiyah",

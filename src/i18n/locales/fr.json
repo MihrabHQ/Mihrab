@@ -251,7 +251,7 @@
     "widgetTimeSizeLarger": "Plus grand",
     "widgetTimeSizeHelp": "Les grandes tailles sont utilisées là où le widget a la place.",
     "hijriCalendarTitle": "Calendrier hégirien",
-    "hijriCalendarFooter": "Calculé à l’avance selon chaque règle. Si la date annoncée chez vous diffère, ajustez-la d’un jour.",
+    "hijriCalendarFooter": "Calculé à l’avance selon chaque règle. Si la date annoncée chez vous diffère, décalez-la d’un jour. Cela ne change que la date hégirienne (et ce qui en dépend : ramadan, fêtes et jours de jeûne). Les horaires de prière restent exactement les mêmes.",
     "hijriCalendar_tabular": "Standard (calculé)",
     "hijriCalendar_mabims": "Indonésie — Gouvernement et NU",
     "hijriCalendar_khgt": "Indonésie — Muhammadiyah",

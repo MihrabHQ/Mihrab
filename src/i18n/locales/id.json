@@ -251,7 +251,7 @@
     "widgetTimeSizeLarger": "Lebih besar",
     "widgetTimeSizeHelp": "Ukuran lebih besar dipakai jika widget punya ruang untuknya.",
     "hijriCalendarTitle": "Kalender Hijriah",
-    "hijriCalendarFooter": "Dihitung sebelumnya menurut tiap kriteria. Jika tanggal yang diumumkan di tempat Anda berbeda, sesuaikan satu hari.",
+    "hijriCalendarFooter": "Dihitung sebelumnya menurut tiap kriteria. Jika tanggal yang diumumkan di tempat Anda berbeda, geser satu hari. Ini hanya menggeser tanggal Hijriah (dan yang bergantung padanya: Ramadan, hari raya, dan hari puasa). Waktu salat tetap sama persis.",
     "hijriCalendar_tabular": "Standar (perhitungan)",
     "hijriCalendar_mabims": "Indonesia — Pemerintah & NU",
     "hijriCalendar_khgt": "Indonesia — Muhammadiyah",

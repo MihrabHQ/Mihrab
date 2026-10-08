@@ -251,7 +251,7 @@
     "widgetTimeSizeLarger": "Större",
     "widgetTimeSizeHelp": "Större storlekar används där widgeten har plats för dem.",
     "hijriCalendarTitle": "Hijrikalender",
-    "hijriCalendarFooter": "Beräknad i förväg enligt varje regel. Om datumet som tillkännages där du bor skiljer sig, justera det en dag.",
+    "hijriCalendarFooter": "Beräknad i förväg enligt varje regel. Om datumet som tillkännages där du bor skiljer sig, flytta det en dag. Detta flyttar bara hijridatumet (och det som beror på det: ramadan, id och fastedagar). Bönetiderna förblir exakt desamma.",
     "hijriCalendar_tabular": "Standard (beräknad)",
     "hijriCalendar_mabims": "Indonesien – regeringen & NU",
     "hijriCalendar_khgt": "Indonesien – Muhammadiyah",

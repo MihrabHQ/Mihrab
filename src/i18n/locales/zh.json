@@ -251,7 +251,7 @@
     "widgetTimeSizeLarger": "更大",
     "widgetTimeSizeHelp": "较大的字号会在小组件有空间时使用。",
     "hijriCalendarTitle": "伊斯兰历",
-    "hijriCalendarFooter": "按各自规则预先计算。若你所在地公布的日期不同，可调整一天。",
+    "hijriCalendarFooter": "按各自规则预先计算。若你所在地公布的日期不同，可调整一天。这只会移动回历日期（以及依赖它的斋月、节日和斋戒日），祈祷时间保持不变。",
     "hijriCalendar_tabular": "标准（计算）",
     "hijriCalendar_mabims": "印度尼西亚 — 政府与伊斯兰教士联合会",
     "hijriCalendar_khgt": "印度尼西亚 — 穆罕默迪亚",

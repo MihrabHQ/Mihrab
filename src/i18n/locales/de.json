@@ -251,7 +251,7 @@
     "widgetTimeSizeLarger": "Größer",
     "widgetTimeSizeHelp": "Größere Schrift wird verwendet, wo das Widget Platz dafür hat.",
     "hijriCalendarTitle": "Hidschri-Kalender",
-    "hijriCalendarFooter": "Im Voraus nach der jeweiligen Regel berechnet. Weicht das bei Ihnen verkündete Datum ab, verschieben Sie es um einen Tag.",
+    "hijriCalendarFooter": "Im Voraus nach der jeweiligen Regel berechnet. Weicht das bei Ihnen verkündete Datum ab, verschieben Sie es um einen Tag. Das verschiebt nur das Hidschra-Datum (und was davon abhängt: Ramadan, Feste und Fastentage). Die Gebetszeiten bleiben genau gleich.",
     "hijriCalendar_tabular": "Standard (berechnet)",
     "hijriCalendar_mabims": "Indonesien – Regierung & NU",
     "hijriCalendar_khgt": "Indonesien – Muhammadiyah",
