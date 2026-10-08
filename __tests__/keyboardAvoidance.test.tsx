@@ -76,7 +76,7 @@ const DELEGATES_TO_HOST: Record<string, string> = {
     'a settings card — SettingsPage owns the ScrollView',
   'screens/settings/SavedLocationsCard.tsx':
     'a settings card — SettingsPage owns the ScrollView',
-  'screens/settings/PrayerWidgetCard.tsx':
+  'screens/settings/WidgetTextColor.tsx':
     'a settings card (the custom widget text colour) — SettingsPage owns the ScrollView',
   'quran/RiwayahDownloadSection.tsx':
     'a section of the Downloads settings page — SettingsPage owns the ScrollView',

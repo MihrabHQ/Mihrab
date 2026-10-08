@@ -140,9 +140,11 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
     syncHexVisibility()
     radioGroup.setOnCheckedChangeListener { _, _ -> syncHexVisibility() }
 
+    // ── Text colour: common to every widget ──────────────────────────────
     // ── The prayer-times widget's own options ────────────────────────────
-    // Only the prayer-times cards read these (PrayerGlanceWidget), so the
-    // section is shown only when this screen was opened from one of them.
+    // City, countdown, table and time size are read only by the prayer-times
+    // cards (PrayerGlanceWidget), so that section is shown only when this
+    // screen was opened from one of them. The text colour below it is not.
     val isPrayerWidget = isPrayerTimesWidget(appWidgetId)
     val prayerSection = findViewById<LinearLayout>(R.id.widget_configure_prayer_section)
     prayerSection.visibility = if (isPrayerWidget) View.VISIBLE else View.GONE
@@ -213,25 +215,24 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
       // The custom text colour must be a real #RRGGBB before anything is
       // saved: a typo would otherwise draw the widget in the default and
       // look like the setting had been ignored.
-      var textHex = ""
-      if (isPrayerWidget) {
-        val checkedText = textGroup.checkedRadioButtonId
-        if (checkedText == R.id.widget_configure_text_custom) {
-          val raw = normaliseHex(textHexInput.text?.toString())
-          if (raw == null) {
-            textHexLayout.error = getString(R.string.widget_configure_hex_invalid)
-            return@setOnClickListener
-          }
-          textHex = raw
-        } else {
-          textHex = TEXT_PRESETS.firstOrNull { it.first == checkedText }?.second ?: TEXT_PRESETS[0].second
+      // Common to every widget, so checked whichever widget this was opened from.
+      val textHex: String
+      val checkedText = textGroup.checkedRadioButtonId
+      if (checkedText == R.id.widget_configure_text_custom) {
+        val raw = normaliseHex(textHexInput.text?.toString())
+        if (raw == null) {
+          textHexLayout.error = getString(R.string.widget_configure_hex_invalid)
+          return@setOnClickListener
         }
+        textHex = raw
+      } else {
+        textHex = TEXT_PRESETS.firstOrNull { it.first == checkedText }?.second ?: TEXT_PRESETS[0].second
       }
 
       val editor = prefs.edit()
+      editor.putString(PrayerWidgetDisplay.KEY_TEXT_HEX, textHex)
       if (isPrayerWidget) {
         editor
-          .putString(PrayerWidgetDisplay.KEY_TEXT_HEX, textHex)
           .putBoolean(PrayerWidgetDisplay.KEY_SHOW_LOCATION, showLocation.isChecked)
           .putBoolean(PrayerWidgetDisplay.KEY_SHOW_COUNTDOWN, showCountdown.isChecked)
           .putBoolean(PrayerWidgetDisplay.KEY_SHOW_TABLE, showTable.isChecked)

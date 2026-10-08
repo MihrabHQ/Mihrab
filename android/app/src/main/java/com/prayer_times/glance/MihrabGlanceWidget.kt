@@ -39,7 +39,12 @@ internal abstract class MihrabGlanceWidget(private val what: String) :
       // it without the key would recompose only this lambda, and with strong
       // skipping `Content()` — same receiver, no parameters — would be
       // skipped.
-      key(GlanceRefresh.observe()) { Content() }
+      key(GlanceRefresh.observe()) {
+        // The user's text colour, read from disk with everything else the
+        // card is drawn from.
+        Palette.sync(context)
+        Content()
+      }
     }
   }
 

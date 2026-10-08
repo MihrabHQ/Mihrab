@@ -40,6 +40,7 @@ import androidx.glance.text.Text
 import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
+import com.prayer_times.PrayerWidgetDisplay
 import com.prayer_times.PrayerWidgetProvider
 import com.prayer_times.R
 import com.prayer_times.WidgetCard
@@ -66,15 +67,27 @@ import com.prayer_times.contract.WidgetContract
 
 internal const val TAG = "MihrabGlance"
 
-/** The colours the RemoteViews layouts declare, in one place. */
+/**
+ * The colours the widgets draw in, in one place. The text colours follow the
+ * user's choice (Settings → Widgets → Text colour, read by `sync` before a
+ * card is composed); the state colours — danger, disabled — are fixed so a
+ * missed prayer never reads as ordinary text.
+ */
 internal object Palette {
-  const val TEXT = 0xFFE8EAED.toInt()
-  const val MUTED = 0xFF9AA0A6.toInt()
+  @Volatile private var style: PrayerWidgetDisplay = PrayerWidgetDisplay.DEFAULT
+
+  /** Read the user's text colour; called once per composition. */
+  fun sync(context: Context) {
+    style = PrayerWidgetDisplay.read(context)
+  }
+
+  val TEXT: Int get() = style.text
+  val MUTED: Int get() = style.muted
   const val DANGER = 0xFFF87171.toInt()
   const val DISABLED = 0xFF6B7076.toInt()
-  const val REFRESH = 0x80FFFFFF.toInt()
-  const val RULE = 0x1FFFFFFF
-  const val RULE_STRONG = 0x26FFFFFF
+  val REFRESH: Int get() = style.refresh
+  val RULE: Int get() = style.rule
+  val RULE_STRONG: Int get() = style.ruleStrong
 }
 
 /** The moment a card describes: one reading of the clock per composition. */

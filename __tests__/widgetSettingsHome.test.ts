@@ -87,3 +87,32 @@ describe('the onboarding links land somewhere', () => {
     );
   });
 });
+
+describe('the text colour is common to every widget', () => {
+  const LAYOUT = read('android/app/src/main/res/layout/activity_prayer_widget_configure.xml');
+  const ACTIVITY = read('android/app/src/main/java/com/prayer_times/PrayerWidgetConfigureActivity.kt');
+  const SUPPORT = read('android/app/src/main/java/com/prayer_times/glance/GlanceSupport.kt');
+  const BASE = read('android/app/src/main/java/com/prayer_times/glance/MihrabGlanceWidget.kt');
+
+  it('is in the "All widgets" card, not the prayer-times one', () => {
+    expect(CARD).toContain('<WidgetTextColor />');
+    expect(PRAYER_CARD).not.toContain('widgetTextColor');
+    expect(PRAYER_CARD).not.toContain('<WidgetTextColor');
+  });
+
+  it('is on every widget\'s own settings screen, outside the prayer-times section', () => {
+    const textAt = LAYOUT.indexOf('widget_configure_text_group');
+    const prayerAt = LAYOUT.indexOf('widget_configure_prayer_section');
+    expect(textAt).toBeGreaterThan(-1);
+    expect(textAt).toBeLessThan(prayerAt);
+    // Saved whichever widget opened the screen, not only a prayer-times one.
+    expect(ACTIVITY).toMatch(/editor\.putString\(PrayerWidgetDisplay\.KEY_TEXT_HEX, textHex\)/);
+    expect(ACTIVITY).not.toMatch(/if \(isPrayerWidget\) \{\s*val checkedText/);
+  });
+
+  it('is what every Glance widget draws its text in', () => {
+    expect(SUPPORT).toMatch(/val TEXT: Int get\(\) = style\.text/);
+    expect(SUPPORT).toMatch(/val MUTED: Int get\(\) = style\.muted/);
+    expect(BASE).toMatch(/Palette\.sync\(context\)\s*Content\(\)/);
+  });
+});

@@ -4,9 +4,10 @@ import android.content.Context
 import android.graphics.Color
 
 /**
- * What the prayer-times widget shows and how its text looks, as chosen in
- * the app (Settings → Appearance → Widget). Only the prayer-times card reads
- * this; the other widgets keep their own fixed type.
+ * How the widgets' text looks and what the prayer-times card shows, as chosen
+ * in the app (Settings → Widgets). The text colour is common: every widget
+ * draws in it (through `Palette`). City, countdown, table and time size are
+ * read only by the prayer-times card.
  *
  * Everything defaults to the card as it was: the light text, the city, the
  * countdown and the table all on, the times at their measured size.

@@ -17,12 +17,14 @@ import {
   tabularNumeralStyle,
 } from '../../theme/textScale';
 import { SettingsBlock, SettingsGroup } from './SettingsGroup';
+import { WidgetTextColor } from './WidgetTextColor';
 import { RADIUS, SPACING } from '../../theme/tokens';
 import { TYPE } from '../../theme/typography';
 
 /**
- * Widget settings card — Android background strength, and the widget's own
- * highlight colour in the one case the app accent cannot supply it.
+ * Widget settings card — what EVERY Android widget follows: background
+ * strength, text colour, and the widget's own highlight colour in the one
+ * case the app accent cannot supply it.
  *
  * It sits on the Appearance page. It had a section of its own until the
  * unification below took its colour picker away and left one slider
@@ -140,6 +142,8 @@ function WidgetCardImpl() {
           </Pressable>
         </View>
       </SettingsBlock>
+
+      <WidgetTextColor />
 
       {needsOwnPicker ? (
         <SettingsBlock>

@@ -116,6 +116,81 @@
                  a hint pointing at a control that is gone is worse than no
                  hint, so it went with the radio button. -->
 
+            <!-- The text colour is common: every widget draws its text in it,
+                 so this block is outside the prayer-times section below. -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/widget_configure_text_color"
+                android:textAppearance="?attr/textAppearanceTitleSmall" />
+
+            <RadioGroup
+                android:id="@+id/widget_configure_text_group"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="vertical">
+
+                <RadioButton
+                    android:id="@+id/widget_configure_text_light"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/widget_configure_text_light" />
+
+                <RadioButton
+                    android:id="@+id/widget_configure_text_white"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/widget_configure_text_white" />
+
+                <RadioButton
+                    android:id="@+id/widget_configure_text_cream"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/widget_configure_text_cream" />
+
+                <RadioButton
+                    android:id="@+id/widget_configure_text_gold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/widget_configure_text_gold" />
+
+                <RadioButton
+                    android:id="@+id/widget_configure_text_sky"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/widget_configure_text_sky" />
+
+                <RadioButton
+                    android:id="@+id/widget_configure_text_dark"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/widget_configure_text_dark" />
+
+                <RadioButton
+                    android:id="@+id/widget_configure_text_custom"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/widget_configure_highlight_custom" />
+            </RadioGroup>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/widget_configure_text_hex_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:hint="@string/widget_configure_hex_hint">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/widget_configure_text_hex_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textCapCharacters"
+                    android:maxLines="1" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+
             <!-- Only the prayer-times widgets (Next prayer, Prayer times,
                  Prayer times tall) read these; the activity shows the
                  section only when it was opened from one of them. -->
@@ -139,78 +214,6 @@
                     android:layout_marginTop="2dp"
                     android:text="@string/widget_configure_prayer_note"
                     android:textAppearance="?attr/textAppearanceBodySmall" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="@string/widget_configure_text_color"
-                    android:textAppearance="?attr/textAppearanceTitleSmall" />
-
-                <RadioGroup
-                    android:id="@+id/widget_configure_text_group"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:orientation="vertical">
-
-                    <RadioButton
-                        android:id="@+id/widget_configure_text_light"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/widget_configure_text_light" />
-
-                    <RadioButton
-                        android:id="@+id/widget_configure_text_white"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/widget_configure_text_white" />
-
-                    <RadioButton
-                        android:id="@+id/widget_configure_text_cream"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/widget_configure_text_cream" />
-
-                    <RadioButton
-                        android:id="@+id/widget_configure_text_gold"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/widget_configure_text_gold" />
-
-                    <RadioButton
-                        android:id="@+id/widget_configure_text_sky"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/widget_configure_text_sky" />
-
-                    <RadioButton
-                        android:id="@+id/widget_configure_text_dark"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/widget_configure_text_dark" />
-
-                    <RadioButton
-                        android:id="@+id/widget_configure_text_custom"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/widget_configure_highlight_custom" />
-                </RadioGroup>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/widget_configure_text_hex_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:hint="@string/widget_configure_hex_hint">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/widget_configure_text_hex_input"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="textCapCharacters"
-                        android:maxLines="1" />
-                </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/widget_configure_show_location"
