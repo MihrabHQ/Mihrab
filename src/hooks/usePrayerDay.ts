@@ -1,3 +1,5 @@
+import { bootMark } from '../boot/bootTimeline';
+import { afterFirstPaint } from '../boot/firstPaint';
 import NetInfo from '@react-native-community/netinfo';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState, Platform } from 'react-native';
@@ -287,6 +289,7 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
       fromAuto: boolean = false,
     ) => {
       const gen = ++loadGenerationRef.current;
+      bootMark('load');
       loadedCoordsRef.current = { lat: latitude, lng: longitude };
       const coords = { latitude, longitude };
       const provider = getEffectiveDataProvider(
@@ -318,6 +321,7 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
         calculationMethod: settings.calculationMethod,
         school: settings.school,
       }).catch(() => null);
+      bootMark('tz');
       if (gen !== loadGenerationRef.current) return;
 
       if (!isBackgroundRefresh) {
@@ -401,6 +405,7 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
           ),
         );
 
+        bootMark('week');
         if (gen !== loadGenerationRef.current) return;
 
         // Build a gapless week: stop at the first failure so callers can rely
@@ -430,6 +435,7 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
         // parallel with the week, collected here so it is in the same
         // update as the times.
         const needsCacheFill = await statusPromise;
+        bootMark('status');
 
         if (gen !== loadGenerationRef.current) return;
 
@@ -532,6 +538,7 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
                 .reverse()
             : [];
 
+        bootMark('past');
         if (gen !== loadGenerationRef.current) return;
 
         setState(prev => ({
@@ -559,7 +566,10 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
 
         // Off the critical path, deliberately. Not awaited: nothing below
         // depends on it, and the point is that the screen does not either.
-        void widgetWindowLater();
+        // After the first paint, too: it is a cache read, a build and a
+        // second render of the whole screen, and run at once it landed in
+        // the frames between the first commit and the first paint.
+        void afterFirstPaint().then(widgetWindowLater);
 
         if (needsCacheFill) {
           // Fill up to 12 months ahead in the background; clear the indicator

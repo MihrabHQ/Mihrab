@@ -29,6 +29,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
   ) -> Bool {
+    // First: the kept Today screen decodes while everything below runs, so
+    // the window's first frame can be it (MihrabLaunchSnapshot.swift).
+    LaunchSnapshotStore.shared.preload()
     let delegate = ReactNativeDelegate()
     let factory = RCTReactNativeFactory(delegate: delegate)
     delegate.dependencyProvider = RCTAppDependencyProvider()
@@ -108,6 +111,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       in: window,
       launchOptions: launchOptions.isEmpty ? nil : launchOptions
     )
+    // The last Today screen over the window, as its first frame, until the
+    // live one has committed under it — MihrabLaunchSnapshot.swift.
+    LaunchSnapshotStore.shared.show(in: window, options: connectionOptions)
   }
 
   /// Hand `mihrab://…` to React Native's Linking module, which turns it into
@@ -120,6 +126,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       }
       RCTLinkingManager.application(UIApplication.shared, open: context.url, options: options)
     }
+  }
+
+  /** Still on screen: the moment to keep it for the next launch's first frame. */
+  func sceneWillResignActive(_ scene: UIScene) {
+    LaunchSnapshotStore.shared.capture(window)
   }
 
   func sceneDidEnterBackground(_ scene: UIScene) {

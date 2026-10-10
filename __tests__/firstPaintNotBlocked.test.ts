@@ -67,7 +67,9 @@ describe('the first paint waits only for the times it draws', () => {
   it('does not await the follow-up either', () => {
     // Awaiting it would put it back on the critical path by the back
     // door — `loadTimes` is what the caller awaits.
-    expect(HOOK).toContain('void widgetWindowLater();');
+    // Nor run it at once: it waits for the first paint (it is a cache read
+    // and a second render of the whole screen).
+    expect(HOOK).toContain('void afterFirstPaint().then(widgetWindowLater);');
     expect(HOOK).not.toMatch(/await widgetWindowLater\(\)/);
   });
 

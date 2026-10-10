@@ -6,7 +6,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
   Animated,
   Platform,
@@ -38,6 +38,8 @@ import {
   usePullToRefresh,
 } from './home/PullToRefresh';
 import { markFirstPaint, useAfterFirstPaint } from '../boot/firstPaint';
+import { bootMark } from '../boot/bootTimeline';
+import { hideLaunchSnapshot, setLaunchSnapshotEligible } from '../native/LaunchSnapshot';
 import { usePrefetchSavedLocations } from '../hooks/usePrefetchSavedLocations';
 import { syncPrayerNotifications } from '../notifications/prayerNotifications';
 import { useNextAlertOverride } from '../notifications/adhanMute';
@@ -135,12 +137,30 @@ export function HomeScreen() {
    * mark waits one animation frame and one tick beyond the commit.
    */
   const firstPaintMarked = useRef(false);
+  bootMark('home');
+  if (state.phase === 'ready') bootMark(state.provisional ? 'ready' : 'ready-cache');
+  // The first committed frame with times on it is the live screen the
+  // kept launch picture (Android) fades into. Committed is enough: the UI
+  // thread mounts it whatever JS does next, and the native side waits a
+  // frame or two before the fade begins.
+  //
+  // Not only `ready`: a launch that lands on a location error, a refused
+  // permission or no location at all is a different screen from the
+  // picture, and the person should see it now rather than the picture for
+  // the four seconds the fallback would take. `idle` is the state before
+  // the first load has begun, not an answer.
+  useLayoutEffect(() => {
+    if (state.phase === 'idle' || state.phase === 'loading') return;
+    if (state.phase === 'ready') bootMark('commit');
+    hideLaunchSnapshot();
+  });
   useEffect(() => {
     if (state.phase !== 'ready' || firstPaintMarked.current) return undefined;
     firstPaintMarked.current = true;
     let timer: ReturnType<typeof setTimeout> | null = null;
     const frame = requestAnimationFrame(() => {
-      timer = setTimeout(markFirstPaint, 0);
+      bootMark('raf');
+      timer = setTimeout(() => markFirstPaint(), 0);
     });
     return () => {
       cancelAnimationFrame(frame);
@@ -384,6 +404,31 @@ export function HomeScreen() {
   );
   // Focus + foreground; see the watchdog effect below and useIsActive.
   const homeActive = useIsActive();
+  /**
+   * Whether this screen, as it is now, is what the next cold start should
+   * open on (Android: native/LaunchSnapshot.ts). Only the settled screen,
+   * at the top: a picture scrolled halfway down would fade into a page
+   * that starts at the top. Kept current all the time, because the copy is
+   * taken the moment the app is left and JS has no say in that moment.
+   */
+  const [atTop, setAtTop] = useState(true);
+  const atTopRef = useRef(true);
+  const noteScrollTop = useCallback((y: number) => {
+    const top = y < 8;
+    if (top === atTopRef.current) return;
+    atTopRef.current = top;
+    setAtTop(top);
+  }, []);
+  const snapshotWorthy =
+    homeActive &&
+    afterFirstPaint &&
+    atTop &&
+    state.phase === 'ready' &&
+    !state.provisional;
+  useEffect(() => {
+    setLaunchSnapshotEligible(snapshotWorthy);
+    return () => setLaunchSnapshotEligible(false);
+  }, [snapshotWorthy]);
   /**
    * What changed since this user last opened the app.
    *
@@ -1336,6 +1381,7 @@ export function HomeScreen() {
       // the top — because a drag down anywhere else is an ordinary
       // scroll and must be left alone.
       onScroll={e => {
+        noteScrollTop(e.nativeEvent.contentOffset.y);
         pull.onScroll(e);
         if (!isDashboard && !isMacCatalyst) onScroll(e);
         else tabBarScroll.onScroll?.(e);

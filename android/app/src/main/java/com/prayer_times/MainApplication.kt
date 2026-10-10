@@ -1,6 +1,7 @@
 package com.prayer_times
 
 import android.app.Application
+import android.os.SystemClock
 import android.graphics.Typeface
 import android.util.Log
 import com.facebook.react.PackageList
@@ -39,15 +40,20 @@ class MainApplication : Application(), ReactApplication {
           add(DisplayCutoutPackage())
           add(RotationCoverPackage())
           add(VolumeKeysPackage())
+          add(LaunchSnapshotPackage())
         },
     )
   }
 
   override fun onCreate() {
     super.onCreate()
+    val appStart = SystemClock.uptimeMillis()
+    // First: the kept screen decodes while everything below runs.
+    LaunchSnapshot.preload(this)
     DynamicColors.applyToActivitiesIfAvailable(this)
     registerBundledFonts()
     loadReactNative(this)
+    BootTimes.app(appStart, SystemClock.uptimeMillis())
   }
 
   /**

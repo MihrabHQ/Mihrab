@@ -34,9 +34,13 @@ function load(os: 'android' | 'ios') {
 
 describe('the Android UI font', () => {
   it('is the first thing index.js loads', () => {
+    // After the launch timeline's clock, which imports nothing and draws
+    // nothing: it only has to start before everything else does.
     const index = read('index.js');
-    const first = index.match(/^import .*$/m)?.[0];
-    expect(first).toBe("import './src/theme/androidUiFont';");
+    const imports = index.match(/^import .*$/gm) ?? [];
+    expect(imports[0]).toBe("import { bootMark } from './src/boot/bootTimeline';");
+    expect(read('src/boot/bootTimeline.ts')).not.toMatch(/^import /m);
+    expect(imports[1]).toBe("import './src/theme/androidUiFont';");
   });
 
   it('gives every Text the bundled family, behind whatever the style says', () => {

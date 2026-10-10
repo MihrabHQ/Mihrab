@@ -122,7 +122,7 @@ describe('what is behind it', () => {
     // Committed is not painted. The mark waits an animation frame and a
     // tick past the commit, so "after the first paint" means after it.
     expect(home).toMatch(
-      /const frame = requestAnimationFrame\(\(\) => \{[\s\S]*?timer = setTimeout\(markFirstPaint, 0\);/,
+      /const frame = requestAnimationFrame\(\(\) => \{[\s\S]*?timer = setTimeout\(\(\) => markFirstPaint\(\), 0\);/,
     );
   });
 

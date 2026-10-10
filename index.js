@@ -2,6 +2,8 @@
  * @format
  */
 
+// Before everything: the launch timeline's clock starts here.
+import { bootMark } from './src/boot/bootTimeline';
 // FIRST, before anything takes a reference to Text: on Android every Text
 // is given the app's own Roboto, so a phone's theme font cannot reach the
 // UI (issue #16). A no-op elsewhere.
@@ -80,6 +82,7 @@ try {
   console.error('[mihrab] registerForegroundService failed:', e);
 }
 
+bootMark('index');
 AppRegistry.registerComponent(APP_REGISTRY_NAME, () => App);
 
 // Quran recitation playback service (lock-screen / notification remote

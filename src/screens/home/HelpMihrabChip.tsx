@@ -23,6 +23,7 @@ import { Animated, Easing, Pressable, StyleSheet, Text, View } from 'react-nativ
 import Svg, { Path } from 'react-native-svg';
 import { useTranslation } from 'react-i18next';
 import { useReduceMotion } from '../../hooks/useReduceMotion';
+import { holdLaunchSnapshot } from '../../native/LaunchSnapshot';
 import { typeStyle } from '../../theme/typography';
 import type { SkyInkColors } from './skyModel';
 
@@ -81,6 +82,20 @@ function HelpMihrabChipImpl({
   // to open — in every language, at every text size.
   const [lineW, setLineW] = useState(0);
   const open = useRef(new Animated.Value(0)).current;
+
+  // Open, opening or closing, the chip is in a passing state, and the
+  // screen is not kept for the next launch's first frame while it is
+  // (native/LaunchSnapshot.ts): the picture would show it open and the
+  // live screen fold it shut in the fade. Closed is how it is kept.
+  useEffect(() => {
+    const id = open.addListener(({ value }) => {
+      holdLaunchSnapshot('help-chip', value > 0.001);
+    });
+    return () => {
+      open.removeListener(id);
+      holdLaunchSnapshot('help-chip', false);
+    };
+  }, [open]);
 
   useEffect(() => {
     if (lineW === 0) return undefined;

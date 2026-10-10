@@ -10,6 +10,7 @@ import { applyMadhabNaming } from '../prayer/madhab';
 import i18n from '../i18n';
 import { setActiveClockFormat } from '../utils/activeClock';
 import { loadSettings, saveSettings } from '../settings/storage';
+import { bootMark } from '../boot/bootTimeline';
 import { setHijriCalendar } from '../hijri/calendar';
 import {
   DEFAULT_SETTINGS,
@@ -177,7 +178,10 @@ export function PrayerSettingsProvider({
   useEffect(() => {
     loadSettings()
       .then(loaded => setSettings(loaded))
-      .finally(() => setHydrated(true));
+      .finally(() => {
+        bootMark('settings');
+        setHydrated(true);
+      });
   }, []);
 
   useEffect(() => {

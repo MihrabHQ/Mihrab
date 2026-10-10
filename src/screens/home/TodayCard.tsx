@@ -37,6 +37,14 @@ import {
 import Svg, { Path } from 'react-native-svg';
 import { useTranslation } from 'react-i18next';
 import { useIsActive } from '../../hooks/useIsActive';
+import { useReduceMotion } from '../../hooks/useReduceMotion';
+import {
+  useLaunchWarp,
+  warpPct,
+  warpRemaining,
+  warpSkyAt,
+} from '../../boot/launchWarp';
+import { holdLaunchSnapshot, setLaunchHeroState } from '../../native/LaunchSnapshot';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import { useClockFormatter } from '../../hooks/useClockFormatter';
 import { usePrayerSettings } from '../../context/PrayerSettingsContext';
@@ -64,7 +72,7 @@ import type { TimingsMap } from '../../types/prayer';
 import {
   addDays,
   combineLocalDateAndTime,
-  countdownParts,
+  countdownPieces,
   eventAt,
   startOfLocalDay,
 } from '../../utils/prayerTimes';
@@ -296,6 +304,16 @@ const HeroToday = memo(function HeroToday({
   // a second in the user's pocket: backgrounding the app from the Today tab
   // leaves Today the focused route, so the timer never stopped.
   const active = useIsActive();
+  const reduceMotion = useReduceMotion();
+  /**
+   * A cold start that opened on the kept picture of this screen (Android)
+   * draws the hero first with the picture's numbers, so the fade from
+   * picture to live is invisible, then runs them to the live ones — see
+   * src/boot/launchWarp.ts.
+   */
+  const launchRun = useLaunchWarp(reduceMotion);
+  const warp = launchRun?.start ?? null;
+  const warpE = launchRun?.e ?? 1;
   const [now, setNow] = useState(() => new Date());
 
   useEffect(() => {
@@ -303,8 +321,18 @@ const HeroToday = memo(function HeroToday({
     // Immediately, not on the first interval: coming back from the background
     // the displayed countdown is as stale as the time spent away.
     setNow(new Date());
-    const id = setInterval(() => setNow(new Date()), 1000);
-    return () => clearInterval(id);
+    // Then on the clock's own seconds, so the countdown turns when the
+    // status bar's clock does — and a picture of it taken at any instant
+    // shows exactly the second that instant reads (launchWarp).
+    let id: ReturnType<typeof setInterval> | null = null;
+    const align = setTimeout(() => {
+      setNow(new Date());
+      id = setInterval(() => setNow(new Date()), 1000);
+    }, 1000 - (Date.now() % 1000));
+    return () => {
+      clearTimeout(align);
+      if (id) clearInterval(id);
+    };
   }, [active]);
 
   const remainingSeconds = Math.max(
@@ -319,7 +347,21 @@ const HeroToday = memo(function HeroToday({
     if (chosen && remainingSeconds <= 0) onExpire();
   }, [chosen, remainingSeconds, onExpire]);
 
-  const parts = countdownParts(remainingSeconds);
+  const units = useMemo(
+    () => ({
+      hour: t('home.countdownUnitHour', 'h'),
+      minute: t('home.countdownUnitMinute', 'm'),
+      second: t('home.countdownUnitSecond', 's'),
+    }),
+    [t],
+  );
+  const pieces = countdownPieces(
+    warp ? warpRemaining(warp, remainingSeconds, warpE) : remainingSeconds,
+    units,
+  );
+  // Latin units are a clock run, read left to right whatever the app's
+  // language; a language's own letters ("س") are read in its direction.
+  const unitLang = /^[a-z]*$/i.test(units.hour) ? 'en-US' : undefined;
 
   /**
    * The sky, from the CLOCK — not from the target. Someone aiming the
@@ -328,7 +370,8 @@ const HeroToday = memo(function HeroToday({
    * redrawn on every tick; a passage is hours long, so a minute is a
    * fraction of a percent of it.
    */
-  const minuteKey = Math.floor(now.getTime() / 60_000);
+  const skyAt = warp ? warpSkyAt(warp, now.getTime(), warpE) : now.getTime();
+  const minuteKey = Math.floor(skyAt / 60_000);
   const frame = useMemo(
     () =>
       skyFrame(
@@ -459,6 +502,14 @@ const HeroToday = memo(function HeroToday({
     return { from, pct };
   }, [today, now, target.at]);
 
+  // What the countdown is aimed at, and the rail's start: kept with the
+  // next launch picture so that launch can run from them (launchWarp).
+  const railFromAt = rail ? rail.from.at.getTime() : 0;
+  useEffect(() => {
+    setLaunchHeroState(target.at.getTime(), railFromAt);
+  }, [target.at, railFromAt]);
+  const railPct = rail ? (warp ? warpPct(warp, rail.pct, warpE) : rail.pct) : 0;
+
   return (
     <View
       style={[styles.hero, expanded && styles.heroExpanded, fill && styles.heroFill]}
@@ -512,21 +563,39 @@ const HeroToday = memo(function HeroToday({
         </Text>
         {topRow?.renderHelp?.(inkTop)}
       </View>
+      {/* Hours, minutes and seconds as pieces, so the row's direction puts
+          them in reading order — hours first from the right in Arabic, from
+          the left in English (#71). One string kept them left to right
+          inside a right-to-left row, with the seconds on the wrong side. */}
       <View style={styles.heroCountdownRow}>
-        <Text
-          style={[
-            styles.heroCountdown,
-            expanded && styles.heroCountdownExpanded,
-            tabularNumeralStyle,
-            { color: ink.text },
-          ]}
-          numberOfLines={1}
-          maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}
-          // Clock runs are a Latin-style left-to-right unit whatever the app
-          // language; iOS bidi otherwise collapses the line in Arabic.
-          accessibilityLanguage="en-US">
-          {parts.main}
-        </Text>
+        <View style={[styles.heroMain, expanded && styles.heroMainExpanded]}>
+          {pieces.hours ? (
+            <Text
+              style={[
+                styles.heroCountdown,
+                expanded && styles.heroCountdownExpanded,
+                tabularNumeralStyle,
+                { color: ink.text },
+              ]}
+              numberOfLines={1}
+              maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}
+              accessibilityLanguage={unitLang}>
+              {pieces.hours}
+            </Text>
+          ) : null}
+          <Text
+            style={[
+              styles.heroCountdown,
+              expanded && styles.heroCountdownExpanded,
+              tabularNumeralStyle,
+              { color: ink.text },
+            ]}
+            numberOfLines={1}
+            maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}
+            accessibilityLanguage={unitLang}>
+            {pieces.minutes}
+          </Text>
+        </View>
         <Text
           style={[
             styles.heroSeconds,
@@ -536,8 +605,8 @@ const HeroToday = memo(function HeroToday({
           ]}
           numberOfLines={1}
           maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}
-          accessibilityLanguage="en-US">
-          {parts.seconds}s
+          accessibilityLanguage={unitLang}>
+          {pieces.seconds}
         </Text>
         <Text
           style={[styles.heroAt, tabularNumeralStyle, { color: ink.muted }]}
@@ -555,7 +624,10 @@ const HeroToday = memo(function HeroToday({
                 styles.railFill,
                 {
                   backgroundColor: inkFoot.fill,
-                  width: `${Math.round(rail.pct * 100)}%`,
+                  // Unrounded: on a launch the rail slides from where the
+                  // kept picture left it (launchWarp), and whole percents
+                  // would step.
+                  width: `${(railPct * 100).toFixed(2)}%`,
                 },
               ]}
             />
@@ -692,6 +764,13 @@ function TodayCardImpl({
    */
   const landedAtMount = useRef(landing).current;
   const [selected, setSelected] = useState(landedAtMount);
+  // Turned to another day, the table is not the one a launch opens on:
+  // not a screen to keep for the next launch's first frame.
+  const turnedAway = selected !== landing;
+  useEffect(() => {
+    holdLaunchSnapshot('day-pager', turnedAway);
+    return () => holdLaunchSnapshot('day-pager', false);
+  }, [turnedAway]);
   /**
    * Whether a human has picked the day on show — a chevron, the swipe, or
    * the way back. Nothing below may move the table under someone who has.
@@ -1635,6 +1714,10 @@ const styles = StyleSheet.create({
     gap: SPACING.sm,
     marginTop: 2,
   },
+  // The space a "5h 25m" string had between its hours and its minutes, at
+  // the countdown's size.
+  heroMain: { flexDirection: 'row', alignItems: 'baseline', gap: 13 }, // tokens-ok-line: a word space at 54
+  heroMainExpanded: { gap: 19 }, // tokens-ok-line: a word space at 78
   // The question the app is opened to answer, at the size that says so.
   heroCountdown: { fontSize: 54, fontWeight: '700' }, // tokens-ok-line: display or Arabic scale, sized by hand
   heroCountdownExpanded: { fontSize: 78 }, // tokens-ok-line: display or Arabic scale, sized by hand

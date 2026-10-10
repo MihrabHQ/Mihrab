@@ -51,6 +51,14 @@ class MainActivity : ReactActivity() {
    */
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(null)
+    // The last Today screen as this window's first frame — see LaunchSnapshot.
+    LaunchSnapshot.show(this)
+    BootTimes.activity()
+  }
+
+  override fun onPause() {
+    LaunchSnapshot.capture(this)
+    super.onPause()
   }
 
   /**

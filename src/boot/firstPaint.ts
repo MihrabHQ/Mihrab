@@ -25,6 +25,8 @@
  * Marking is idempotent; the promise resolves once and stays resolved.
  */
 import { useEffect, useState } from 'react';
+import { bootMark, reportBoot } from './bootTimeline';
+import { hideLaunchSnapshot } from '../native/LaunchSnapshot';
 
 let done = false;
 let markDone: () => void = () => {};
@@ -47,18 +49,39 @@ let fallback: ReturnType<typeof setTimeout> | null = null;
  */
 function armFallback(): void {
   if (done || fallback) return;
-  fallback = setTimeout(() => markFirstPaint(), FIRST_PAINT_FALLBACK_MS);
+  fallback = setTimeout(() => markFirstPaint(true), FIRST_PAINT_FALLBACK_MS);
 }
 
 /** The first real frame has been handed to the screen. Idempotent. */
-export function markFirstPaint(): void {
+export function markFirstPaint(viaFallback: boolean = false): void {
   if (done) return;
   done = true;
+  bootMark(viaFallback === true ? 'paint-fallback' : 'paint');
+  reportBoot();
+  // The kept screen (Android) has covered the launch so far. Two frames
+  // and a beat more, so what arrives just after the first paint — the sky,
+  // the cards below — is drawn before the picture fades into it.
+  settleThenHideSnapshot();
   if (fallback) {
     clearTimeout(fallback);
     fallback = null;
   }
   markDone();
+}
+
+/** How long after the first paint the kept launch screen starts to fade. */
+export const SNAPSHOT_SETTLE_MS = 120;
+
+function settleThenHideSnapshot(): void {
+  if (typeof requestAnimationFrame !== 'function') {
+    hideLaunchSnapshot();
+    return;
+  }
+  requestAnimationFrame(() =>
+    requestAnimationFrame(() => {
+      setTimeout(hideLaunchSnapshot, SNAPSHOT_SETTLE_MS);
+    }),
+  );
 }
 
 /** Resolves after the first paint; already resolved if it has happened. */

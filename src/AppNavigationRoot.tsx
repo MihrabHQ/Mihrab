@@ -32,6 +32,7 @@ import {
   startWidgetPayloadSync,
 } from './widget/republishWidgetPayload';
 import { afterFirstPaint } from './boot/firstPaint';
+import { lookKeyOf, setLaunchSnapshotLook } from './native/LaunchSnapshot';
 import { getPrayerLiveActivityModule } from './native/PrayerLiveActivity';
 import { isMacCatalyst } from './responsive/breakpoints';
 import { rescheduleAyahOfDay } from './notifications/ayahOfDay';
@@ -73,6 +74,12 @@ export function AppNavigationRoot() {
   const systemScheme = useSystemColorScheme();
 
   useSyncWidgetUiHints();
+
+  // The kept launch screen is only shown under the settings it was taken
+  // with — see native/LaunchSnapshot.ts.
+  useEffect(() => {
+    if (hydrated) setLaunchSnapshotLook(lookKeyOf(settings));
+  }, [hydrated, settings]);
 
   /**
    * Bring the Quran files on disk in line with the ones this build reads —

@@ -147,3 +147,4 @@ Claude outputs/
 # What the TypeScript release tool, running beside release.sh, found to
 # disagree with it (docs/rewrite-plan.md, Phase 3). This machine's evidence.
 .release-shadow.log
+tools/startup-trace/out/

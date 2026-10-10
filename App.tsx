@@ -8,8 +8,10 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { AppNavigationRoot } from './src/AppNavigationRoot';
 import { PrayerSettingsProvider } from './src/context/PrayerSettingsContext';
+import { bootMark } from './src/boot/bootTimeline';
 
 function App() {
+  bootMark('app');
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
