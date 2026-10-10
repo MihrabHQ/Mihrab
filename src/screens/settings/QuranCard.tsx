@@ -332,7 +332,7 @@ function QuranCardImpl() {
           title={t('quran.volumeKeysTitle', 'Page turning')}
           footer={t('quran.volumeKeysHelp', {
             defaultValue:
-              'While the mushaf is open, volume up goes to the next page and volume down to the previous one. The buttons change the volume as usual again as soon as you select an ayah or leave the mushaf.',
+              'While the mushaf is open, volume down goes to the next page and volume up to the previous one. The buttons change the volume as usual again as soon as you select an ayah or leave the mushaf.',
           })}>
           <SettingsToggleRow
             testID="settings-volume-keys"
@@ -340,6 +340,29 @@ function QuranCardImpl() {
             value={quran.prefs.volumeKeyPaging}
             onValueChange={next => setQuranPrefs({ volumeKeyPaging: next })}
           />
+          {/* Both only while the buttons turn pages (#72): the direction
+              means nothing without them, and a page locked to touch with
+              nothing else to turn it would be stuck. */}
+          {quran.prefs.volumeKeyPaging ? (
+            <>
+              <SettingsToggleRow
+                testID="settings-volume-keys-up-forward"
+                title={t('quran.volumeKeysUpForward', 'Volume up goes to the next page')}
+                value={quran.prefs.volumeKeyUpForward}
+                onValueChange={next => setQuranPrefs({ volumeKeyUpForward: next })}
+              />
+              <SettingsToggleRow
+                testID="settings-volume-keys-touch-lock"
+                title={t('quran.volumeKeysTouchLock', 'Lock the page to touch')}
+                help={t(
+                  'quran.volumeKeysTouchLockHelp',
+                  'Swipes and taps on the page do nothing, so holding the phone cannot turn a page by accident. Press and hold the page to show or hide the controls.',
+                )}
+                value={quran.prefs.volumeKeyTouchLock}
+                onValueChange={next => setQuranPrefs({ volumeKeyTouchLock: next })}
+              />
+            </>
+          ) : null}
         </SettingsGroup>
       ) : null}
       {/* The same picker the muṣḥaf header opens, so the two entry

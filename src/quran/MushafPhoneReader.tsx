@@ -47,6 +47,7 @@ import {
   ScrollView,
   StatusBar,
   StyleSheet,
+  Text,
   View,
   useWindowDimensions,
   type ScrollViewInstance,
@@ -76,7 +77,9 @@ import { AyahActionSheet } from './mushaf/AyahActionSheet';
 import { MushafPageScrubber } from './MushafPageScrubber';
 import { MiniPlayer } from './audio/MiniPlayer';
 import { ActiveWordProbe } from './audio/ActiveWordProbe';
-import { useVolumeKeyPaging } from './useVolumeKeyPaging';
+import { touchLockActive, useVolumeKeyPaging } from './useVolumeKeyPaging';
+import { volumeKeysAvailable } from '../native/volumeKeys';
+import { useTranslation } from 'react-i18next';
 import { useRegisterKeyPaging } from './useKeyPaging';
 import { useMushafPager } from './useMushafPager';
 import { useMushafFontSet, warmAround } from './useMushafPageFont';
@@ -124,41 +127,46 @@ const PAGE_HEADER_PAD_TOP = 10;
 const PAGE_HEADER_CONTENT_H = 21;
 
 /**
- * The list's render window: ONE page at rest, three while it is being
- * touched.
+ * The list's render window: ONE page while the reader opens, then two
+ * either side of it, kept.
  *
- * ── WHY A PHONE MUṢḤAF MUST NOT HOLD A NEIGHBOUR AT REST ──────────────
+ * ── WHY IT ONCE HELD ONE PAGE AT REST, AND WHY IT NO LONGER NEEDS TO ──
  *
- * The window used to widen to three once the push transition was over —
- * the page being read and a neighbour either side — so the next page was
- * already drawn when the finger moved. Those neighbours are laid out at
- * ±one viewport, just outside the window.
+ * The window used to drop back to the page being read whenever the pager
+ * had been still for a few seconds, and widen to three again when a finger
+ * landed. The reason was rotation: the platform resizes the pager before
+ * any of our code runs, and the frame it composed under its rotation fade
+ * showed the current page and its waiting neighbour side by side. With no
+ * neighbour mounted there was nothing to reveal.
  *
- * Then the phone is turned. The native view is resized to the landscape
- * width in the platform's own layout pass, LONG before React Native has
- * re-rendered anything: the pager's viewport is suddenly twice as wide,
- * its children are still portrait-wide, and its scroll offset is still a
- * multiple of the portrait width. The frame the platform then shows —
- * under its own rotation cross-fade, so it is on screen for the length of
- * that animation — is the current page and its neighbour, side by side.
- * On a phone. Reported, exactly, as looking fragile and unstable.
+ * Since then the window is covered at the turn itself, natively — Android
+ * raises the cover in `onConfigurationChanged`, before the window draws at
+ * the new size, and iOS in `viewWillTransition` (RotationCover, and see
+ * `rotationFade.ts`) — so that frame is never on screen whatever is
+ * mounted behind it.
  *
- * Nothing in JavaScript can beat that frame: it is composed before any of
- * our code runs. What can be done is to make sure there is no second page
- * mounted to reveal. So the window is one at rest, and widens the moment a
- * finger lands on the pager — `onTouchStart`, not the scroll, so the
- * neighbours are drawn during the gap between touching and moving — then
- * narrows again once the reader has been still for a while.
+ * And the price of the narrow window was paid on every page turn that
+ * came after a pause, which is most of them in recitation (#72): the touch
+ * that started the swipe was also what began drawing the two neighbours —
+ * a typeface each and ~150 lines of text — on the same thread the drag
+ * needed. The first page of every turn stuttered. So now the neighbours,
+ * two each side, are drawn once the opening is over and stay drawn: the
+ * page the finger pulls in is already there, and so is the one after it
+ * for a reader turning quickly.
  *
- * (It is also right for OPENING, which is what it was first written for:
- * the first page's font and fifteen lines of text should not share the
- * thread with two more pages' worth under the push transition.)
+ * The opening still draws only the page being opened — its font and
+ * fifteen lines should not share the push transition with four more.
  */
-const WINDOW_RESTING = 1;
-const WINDOW_MOVING = 3;
+/** How long a press must be held on a touch-locked page to toggle the chrome. */
+const LOCKED_HOLD_MS = 600;
+/** How long the "touch is locked" note stays after a touch. */
+const LOCK_HINT_MS = 2200;
 
-/** How long the pager stays wide after it has stopped being touched. */
-const WINDOW_IDLE_MS = 2500;
+const WINDOW_OPENING = 1;
+const WINDOW_READING = 5;
+
+/** How long after opening the neighbours are drawn. */
+const WINDOW_OPEN_MS = 700;
 
 type PageItemProps = {
   page: number;
@@ -190,6 +198,12 @@ type PageItemProps = {
   onToggleFullscreen: () => void;
   onWordPress: (ref: AyahRef, page: number) => void;
   onOpenJump: () => void;
+  /**
+   * Touch locked (#72): the volume buttons turn the page, and the page
+   * ignores taps — a grip on the phone brushes it. A press and hold shows
+   * or hides the controls, which is the one thing the page still answers.
+   */
+  locked: boolean;
 };
 
 const PhonePageItem = React.memo(function PhonePageItem({
@@ -212,7 +226,11 @@ const PhonePageItem = React.memo(function PhonePageItem({
   onToggleFullscreen,
   onWordPress,
   onOpenJump,
+  locked,
 }: PageItemProps) {
+  // Locked: no tap does anything; a deliberate hold toggles the chrome.
+  const onTap = locked ? undefined : onToggleFullscreen;
+  const onHold = locked ? onToggleFullscreen : undefined;
   // Portrait: the page spans the width and is height-fitted — the surface
   // fills the box it is given, so the whole page is on screen with nothing
   // to scroll. Landscape: a READING zoom (1.6× the portrait width), so the
@@ -302,7 +320,9 @@ const PhonePageItem = React.memo(function PhonePageItem({
           landed on the strip. */}
       <Pressable
         accessible={false}
-        onPress={onToggleFullscreen}
+        onPress={onTap}
+        onLongPress={onHold}
+        delayLongPress={LOCKED_HOLD_MS}
         style={{ paddingTop: navPad }}>
         {/* THE ROW IS FULLSCREEN-ONLY NOW (redesign plan §4). Out of
             fullscreen it was a juz label and a tone pill on a strip above
@@ -353,7 +373,9 @@ const PhonePageItem = React.memo(function PhonePageItem({
           showsVerticalScrollIndicator={false}
           nestedScrollEnabled>
           <Pressable
-            onPress={onToggleFullscreen}
+            onPress={onTap}
+            onLongPress={onHold}
+            delayLongPress={LOCKED_HOLD_MS}
             style={[styles.pageWrap, { width: pageWidth }]}>
             <MushafTextPageSurface
               page={page}
@@ -370,8 +392,8 @@ const PhonePageItem = React.memo(function PhonePageItem({
               // lives — see the same line in MushafSpreadReader for why
               // this changed, and for why it is the handler itself and not
               // an arrow around it.
-              onWordPress={onWordPress}
-              onWordLongPress={onWordPress}
+              onWordPress={locked ? undefined : onWordPress}
+              onWordLongPress={locked ? undefined : onWordPress}
             />
           </Pressable>
           {/* THE MEDALLION IS GONE FROM THE PHONE.
@@ -393,12 +415,12 @@ const PhonePageItem = React.memo(function PhonePageItem({
             <MushafPageFooter
               page={page}
               ornament={ornament}
-              onPress={onOpenJump}
+              onPress={locked ? () => undefined : onOpenJump}
               showPageNumber={false}
               finish={{
                 day: finish.day,
                 when: finish.when,
-                onPress: finishKhatmahPortion,
+                onPress: locked ? () => undefined : finishKhatmahPortion,
               }}
             />
           ) : null}
@@ -419,6 +441,7 @@ export const MushafPhoneReader = React.memo(function MushafPhoneReader(
 ) {
   const { isFullscreen, onToggleFullscreen, veil } = props;
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
   const headerHeight = useHeaderHeight();
   const { palette } = useAppPalette();
   const { width, height } = useWindowDimensions();
@@ -599,26 +622,14 @@ export const MushafPhoneReader = React.memo(function MushafPhoneReader(
     [pageWidth],
   );
 
-  // One page at rest, three while the pager is being used — see the note on
-  // WINDOW_RESTING for the rotation this is really about.
-  const [windowSize, setWindowSize] = useState(WINDOW_RESTING);
-  const idleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const clearIdle = useCallback(() => {
-    if (idleTimer.current) clearTimeout(idleTimer.current);
-    idleTimer.current = null;
-  }, []);
-  const widenWindow = useCallback(() => {
-    clearIdle();
-    setWindowSize(WINDOW_MOVING);
-  }, [clearIdle]);
-  const narrowWindowSoon = useCallback(() => {
-    clearIdle();
-    idleTimer.current = setTimeout(
-      () => setWindowSize(WINDOW_RESTING),
-      WINDOW_IDLE_MS,
-    );
-  }, [clearIdle]);
-  useEffect(() => clearIdle, [clearIdle]);
+  // One page while opening, then the neighbours for good — see
+  // WINDOW_READING for why they no longer come and go.
+  const [windowSize, setWindowSize] = useState(WINDOW_OPENING);
+  const widenWindow = useCallback(() => setWindowSize(WINDOW_READING), []);
+  useEffect(() => {
+    const t = setTimeout(widenWindow, WINDOW_OPEN_MS);
+    return () => clearTimeout(t);
+  }, [widenWindow]);
 
   /**
    * The same pager the spread reader drives, with an index per page. It
@@ -631,10 +642,8 @@ export const MushafPhoneReader = React.memo(function MushafPhoneReader(
     (page: number, prevPage: number) => {
       commitPageTurn(page, prevPage);
       setCurrentPage(page);
-      // The turn is over: let the neighbours go again after a pause.
-      narrowWindowSoon();
     },
-    [commitPageTurn, setCurrentPage, narrowWindowSoon],
+    [commitPageTurn, setCurrentPage],
   );
   const { handlers: pagerHandlers, turnPage } = useMushafPager({
     list: listRef,
@@ -645,12 +654,11 @@ export const MushafPhoneReader = React.memo(function MushafPhoneReader(
     pageForIndex: indexPage,
     onTurn,
     onTurnStart: () => {
-      // A drag has begun: draw the neighbours if a touch has not already.
+      // A drag has begun before the opening widened the window: widen now.
       widenWindow();
       core.suspendFollow();
     },
     onSettleNoop: () => {
-      narrowWindowSoon();
       core.resumeFollow();
     },
   });
@@ -668,6 +676,28 @@ export const MushafPhoneReader = React.memo(function MushafPhoneReader(
     core.sheetVisible,
     core.jumpVisible,
     turnPage,
+    core.quran.prefs.volumeKeyUpForward,
+  );
+  // The page ignores touch while the buttons turn it, when asked (#72).
+  // Only with the buttons actually taken: a lock with no other way to turn
+  // the page would be a page that cannot be turned.
+  const locked = touchLockActive({
+    paging: core.quran.prefs.volumeKeyPaging,
+    lock: core.quran.prefs.volumeKeyTouchLock,
+    available: volumeKeysAvailable,
+  });
+  const [lockHint, setLockHint] = useState(false);
+  const lockHintTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const showLockHint = useCallback(() => {
+    if (lockHintTimer.current) clearTimeout(lockHintTimer.current);
+    setLockHint(true);
+    lockHintTimer.current = setTimeout(() => setLockHint(false), LOCK_HINT_MS);
+  }, []);
+  useEffect(
+    () => () => {
+      if (lockHintTimer.current) clearTimeout(lockHintTimer.current);
+    },
+    [],
   );
 
   // The neighbours' fonts, registered ahead of the swipe — from here, once
@@ -739,6 +769,7 @@ export const MushafPhoneReader = React.memo(function MushafPhoneReader(
         onToggleFullscreen={onToggleFullscreen}
         onWordPress={openSelection}
         onOpenJump={openJump}
+        locked={locked}
       />
     ),
     [
@@ -763,6 +794,7 @@ export const MushafPhoneReader = React.memo(function MushafPhoneReader(
       onToggleFullscreen,
       openSelection,
       openJump,
+      locked,
     ],
   );
 
@@ -795,14 +827,14 @@ export const MushafPhoneReader = React.memo(function MushafPhoneReader(
       />
       <View
         style={styles.listWrap}
-        // A finger on the pager means a page turn is coming: draw the
-        // neighbours now, in the gap before the drag starts. See
-        // WINDOW_RESTING.
-        onTouchStart={widenWindow}
-        // And let them go again once the reader has been still for a while
-        // — the turn's own animation is far shorter than that.
-        onTouchEnd={narrowWindowSoon}
-        onTouchCancel={narrowWindowSoon}
+        // A finger on the pager before the opening has widened the window
+        // means a turn is coming now: draw the neighbours at once.
+        onTouchStart={() => {
+          widenWindow();
+          // Locked: say why the page did not move, and how to get the
+          // controls, rather than look broken.
+          if (locked) showLockHint();
+        }}
         onLayout={e => setListH(e.nativeEvent.layout.height)}>
         <FlatList
           ref={listRef}
@@ -820,18 +852,23 @@ export const MushafPhoneReader = React.memo(function MushafPhoneReader(
           scrollEventThrottle={16}
           onScrollToIndexFailed={pagerHandlers.onScrollToIndexFailed}
           onScrollBeginDrag={pagerHandlers.onScrollBeginDrag}
+          // Touch-locked: only the volume buttons turn the page (#72).
+          scrollEnabled={!locked}
           // The content has been laid out at a new width (a rotation, a
           // resize, another muṣḥaf): re-anchor the settled page against
           // it. The re-anchor that runs when the width CHANGES is executed
           // on Android before the list has that width, and is clamped to
           // the old one — see `guardExpired` in useMushafPager.
           onContentSizeChange={pagerHandlers.onContentSizeChange}
-          // A page is a typeface plus ~150 text nodes, so a small window
-          // is plenty and keeps swiping instant — see WINDOW_RESTING.
+          // Two pages either side, drawn ahead and kept — see
+          // WINDOW_READING.
           windowSize={windowSize}
           maxToRenderPerBatch={2}
           initialNumToRender={1}
-          removeClippedSubviews
+          // Not clipped: a neighbour detached from the window had to be
+          // put back as the drag pulled it in, which is the moment the
+          // turn can least afford anything extra (#72).
+          removeClippedSubviews={false}
           style={{ backgroundColor: pageBg }}
         />
         {/* The rotation cover — see `phoneGeometryFits`. A plain sheet of
@@ -901,6 +938,29 @@ export const MushafPhoneReader = React.memo(function MushafPhoneReader(
         />
       ) : null}
 
+      {/* Touch-locked and touched (#72): why the page did not move, and
+          the way to the controls. Never in the way of a touch itself. */}
+      {locked && lockHint ? (
+        <View pointerEvents="none" style={styles.lockHintWrap}>
+          <View
+            style={[
+              styles.lockHint,
+              { backgroundColor: toneIsDark(tone) ? '#F2F2F2' : '#1F1F1F' }, // tokens-ok-line: a toast on either page tone
+            ]}>
+            <Text
+              style={[
+                styles.lockHintText,
+                { color: toneIsDark(tone) ? '#1F1F1F' : '#F2F2F2' }, // tokens-ok-line: the toast's own ink
+              ]}>
+              {t(
+                'quran.touchLockedHint',
+                'Touch is locked: the volume buttons turn the page. Press and hold for the controls.',
+              )}
+            </Text>
+          </View>
+        </View>
+      ) : null}
+
       {/* The fullscreen veil — see `fullscreenVeil.ts`. Last, and over the
           whole reader: the rail below the pager goes with the chrome, and a
           veil inside the pager left it uncovered — one frame of its control
@@ -968,6 +1028,20 @@ const styles = StyleSheet.create({
    * in the app's own direction.
    */
   listWrap: { flex: 1, direction: 'ltr' },
+  lockHintWrap: {
+    position: 'absolute',
+    start: SPACING.lg,
+    end: SPACING.lg,
+    bottom: '22%',
+    alignItems: 'center',
+  },
+  lockHint: {
+    borderRadius: 18,
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.sm,
+    opacity: 0.92,
+  },
+  lockHintText: { fontSize: 14, textAlign: 'center' }, // tokens-ok-line: toast caption
   item: { height: '100%' },
   column: { flex: 1 },
   /**

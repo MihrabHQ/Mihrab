@@ -162,6 +162,8 @@ export const DEFAULT_QURAN_STATE: QuranState = {
     wordReaderReciterId: '',
     tajweedColours: false,
     volumeKeyPaging: false,
+    volumeKeyUpForward: false,
+    volumeKeyTouchLock: false,
     hideMode: 'none',
     repeat: { eachAyah: 1, range: 1, pauseFactor: 0 },
     votdMode: 'translation',
@@ -578,6 +580,19 @@ function mergeStored(raw: unknown): QuranState {
       volumeKeyPaging:
         (r.prefs as { volumeKeyPaging?: unknown } | undefined)
           ?.volumeKeyPaging === true,
+      // #72 made volume DOWN the next page. Anyone who had the buttons on
+      // before then learned up-for-forward, and keeps it until they choose
+      // otherwise; everyone else gets the new default.
+      volumeKeyUpForward: (() => {
+        const p = r.prefs as
+          | { volumeKeyUpForward?: unknown; volumeKeyPaging?: unknown }
+          | undefined;
+        if (typeof p?.volumeKeyUpForward === 'boolean') return p.volumeKeyUpForward;
+        return p?.volumeKeyPaging === true;
+      })(),
+      volumeKeyTouchLock:
+        (r.prefs as { volumeKeyTouchLock?: unknown } | undefined)
+          ?.volumeKeyTouchLock === true,
       // Off unless explicitly on: the card was shown to everyone before
       // this was a setting, and the setting's default is off.
       verseOfDay:

@@ -408,11 +408,28 @@ export type QuranPrefs = {
   tajweedColours: boolean;
   /**
    * VOLUME BUTTONS TURN THE PAGE (issue #68, additive; Android phones).
-   * Volume up goes to the next page and volume down to the previous one
-   * while the muṣḥaf is open and nothing is selected. Off by default: the
-   * buttons are the phone's, and taking them is something to ask for.
+   * Volume down goes to the next page and volume up to the previous one
+   * (`volumeKeyUpForward` swaps them) while the muṣḥaf is open and nothing
+   * is selected. Off by default: the buttons are the phone's, and taking
+   * them is something to ask for.
    */
   volumeKeyPaging: boolean;
+  /**
+   * Volume UP turns to the next page (issue #72, additive). Off by
+   * default: down-for-forward is how most readers hold a phone and how
+   * the reader of #72 asked for it. On for anyone who turned the buttons
+   * on before this setting existed, when up WAS forward — their hands
+   * already know it (see the migration in quranState).
+   */
+  volumeKeyUpForward: boolean;
+  /**
+   * THE PAGE IGNORES TOUCH while the volume buttons turn it (issue #72,
+   * additive). A hand gripping the phone to reach the buttons brushes the
+   * screen and swiped a page away. With this on, swipes and taps on the
+   * page do nothing; a press-and-hold shows or hides the controls. Only
+   * offered, and only honoured, with `volumeKeyPaging` on.
+   */
+  volumeKeyTouchLock: boolean;
   /** Memorization masking in translation view. */
   hideMode: 'none' | 'arabic' | 'translation';
   repeat: RepeatSettings;

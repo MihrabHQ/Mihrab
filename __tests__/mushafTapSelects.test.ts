@@ -19,13 +19,14 @@ describe.each(['MushafSpreadReader.tsx', 'MushafPhoneReader.tsx'])('%s', file =>
   // handler reaches the surface through the page's `onWordPress` prop —
   // and the reader fills that prop with the core's `openSelection`.
   it('a tap on a word opens the ayah', () => {
-    expect(src).toMatch(/onWordPress=\{onWordPress\}/);
+    // The phone page hands it on unless the page is touch-locked (#72).
+    expect(src).toMatch(/onWordPress=\{(locked \? undefined : )?onWordPress\}/);
     expect(src).toMatch(/onWordPress=\{openSelection\}/);
     expect(src).toMatch(/const \{ [^}]*openSelection[^}]* \} = core;/);
   });
 
   it('and so does a long press, for hands that learned it that way', () => {
-    expect(src).toMatch(/onWordLongPress=\{onWordPress\}/);
+    expect(src).toMatch(/onWordLongPress=\{(locked \? undefined : )?onWordPress\}/);
   });
 
   it('the header strip toggles fullscreen', () => {
@@ -34,7 +35,8 @@ describe.each(['MushafSpreadReader.tsx', 'MushafPhoneReader.tsx'])('%s', file =>
     expect(src).toMatch(
       // The strip holds the header row in fullscreen and a gap out of it
       // (redesign phase 5b) — either way it is the strip that toggles.
-      /<Pressable\s+accessible=\{false\}\s+onPress=\{onToggleFullscreen\}\s+style=\{\{ paddingTop: navPad \}\}>[\s\S]*?<MushafPageHeader/,
+      // `onTap` on the phone: the toggle, unless touch-locked (#72).
+      /<Pressable\s+accessible=\{false\}\s+onPress=\{(onToggleFullscreen|onTap)\}[^>]*style=\{\{ paddingTop: navPad \}\}>[\s\S]*?<MushafPageHeader/,
     );
   });
 
@@ -43,13 +45,13 @@ describe.each(['MushafSpreadReader.tsx', 'MushafPhoneReader.tsx'])('%s', file =>
     // its children: the pill's label read out, the press landed on the
     // strip.
     const strip = src.match(
-      /<Pressable[^>]*onPress=\{onToggleFullscreen\}\s+style=\{\{ paddingTop: navPad \}\}>/,
+      /<Pressable[^>]*onPress=\{(onToggleFullscreen|onTap)\}[^>]*style=\{\{ paddingTop: navPad \}\}>/,
     );
     expect(strip).not.toBeNull();
     expect(strip![0]).toContain('accessible={false}');
   });
 
   it('and so do the margins around the page', () => {
-    expect(src).toMatch(/<Pressable\s+onPress=\{onToggleFullscreen\}[^>]*>\s*\n\s*<MushafTextPageSurface/);
+    expect(src).toMatch(/<Pressable\s+onPress=\{(onToggleFullscreen|onTap)\}[^>]*>\s*\n\s*<MushafTextPageSurface/);
   });
 });
