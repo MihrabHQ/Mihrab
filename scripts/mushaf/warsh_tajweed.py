@@ -57,6 +57,7 @@ WASL_DOT = "۬"       # the filled dot: hamzat al-waṣl of ال
 LOW_DOT = "۪"        # the empty low dot: taqlīl, or a changed hamza
 HAMZA_ABOVE, HAMZA_BELOW = "ٔ", "ٕ"
 TATWEEL = "ـ"
+ALEF_MADDA = "\u0622"  # آ precomposed
 YEH_BARREE = "ے"
 
 VOWELS = {FATHA, DAMMA, KASRA}
@@ -153,7 +154,13 @@ def tokenize(text: str) -> Word:
             # A bare kashīda stretches the line; it is not a letter.
             i = j
             continue
-        w.letters.append(Letter(ch, text[i + 1:j], i, j))
+        if ch == ALEF_MADDA:
+            # جَآءَنَا at 67:9 is the one word in the text written with the
+            # precomposed آ rather than alif + maddah; it is the same letter,
+            # so the madd rules see it as one (issue #64).
+            w.letters.append(Letter("ا", MADDAH + text[i + 1:j], i, j))
+        else:
+            w.letters.append(Letter(ch, text[i + 1:j], i, j))
         i = j
     return w
 

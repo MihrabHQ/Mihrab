@@ -204,6 +204,9 @@ def main() -> int:
     # The disjoined letters carry a madd lāzim, as in Ḥafṣ: الٓمٓ.
     case("muqattaat-l", "ألم", "ل", has=["madda_necessary"], surah=2)
     case("muqattaat-m", "ألم", "م", has=["madda_necessary"], surah=2)
+    # Issue #64 · جَآءَنَا at 67:9 is written with the precomposed آ, and is
+    # the same muttaṣil as جَآءَ written with alif + maddah.
+    case("mottasel-precomposed", "جآءنا", "آ", has=["madda_obligatory_mottasel"], surah=67)
 
     bad = RESULTS.count(False)
     print(f"\n{len(RESULTS) - bad} passed, {bad} failed")
