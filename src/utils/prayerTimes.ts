@@ -136,6 +136,34 @@ export function countdownParts(totalSeconds: number): CountdownParts {
   };
 }
 
+/** The hero's units, as the app's language writes them. */
+export type CountdownUnits = { hour: string; minute: string; second: string };
+
+/**
+ * The countdown as separate pieces — hours, minutes, seconds — each a
+ * number with its unit, so a row can lay them out in reading order.
+ *
+ * As one string ("5h 25m") the hours and minutes were a single Latin run
+ * inside a right-to-left row, which kept them in left-to-right order while
+ * the row put the seconds to their LEFT: read from the right in Arabic,
+ * that is minutes, hours, seconds (#71). As pieces, the row's own direction
+ * orders them — hours first from whichever side the language starts on —
+ * and each unit can be the language's own ("5س 25د 31ث").
+ */
+export function countdownPieces(
+  totalSeconds: number,
+  units: CountdownUnits,
+): { hours: string | null; minutes: string; seconds: string } {
+  const safe = Math.max(0, Math.floor(totalSeconds));
+  const h = Math.floor(safe / 3600);
+  const m = Math.floor((safe % 3600) / 60);
+  return {
+    hours: h > 0 ? `${h}${units.hour}` : null,
+    minutes: `${m}${units.minute}`,
+    seconds: `${String(safe % 60).padStart(2, '0')}${units.second}`,
+  };
+}
+
 export function getNextPrayerDisplay(
   today: TimingsMap,
   tomorrow: TimingsMap | undefined,

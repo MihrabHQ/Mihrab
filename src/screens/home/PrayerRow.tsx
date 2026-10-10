@@ -341,6 +341,22 @@ function PrayerRowImpl({
             maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}>
             {sizingTime}
           </Text>
+          {/* …and this row's own time, at the heaviest weight, with no
+              height: the column is then the WIDER of the two, not the
+              longer. Length stands in for width only in Latin: in Arabic
+              "6:01 ص" is shorter than "12:57 م" and still wider, because
+              ص is twice the width of م — so the bold next-prayer time did
+              not fit the column sized for the other and lost its ص to an
+              ellipsis (#71). */}
+          <Text
+            aria-hidden
+            accessible={false}
+            importantForAccessibility="no-hide-descendants"
+            style={[styles.time, tabularNumeralStyle, styles.timeSample, styles.timeOwnWidth]}
+            numberOfLines={1}
+            maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}>
+            {shown}
+          </Text>
           <Text
             style={[
               styles.time,
@@ -429,6 +445,8 @@ const styles = StyleSheet.create({
   },
   timeCol: { justifyContent: 'center' },
   timeSample: { opacity: 0, fontWeight: '700' },
+  // Width without height: see the own-time sizer above.
+  timeOwnWidth: { height: 0, overflow: 'hidden' },
   // Laid over the sample, flush with the trailing edge — `end`, so it is
   // the right edge in English and the left in Arabic.
   timeReal: { position: 'absolute', top: 0, end: 0 },
