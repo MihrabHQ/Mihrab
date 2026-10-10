@@ -20,6 +20,16 @@ export type ReleaseNote = {
 
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
+    code: 288,
+    version: '2.30.0',
+    date: '2026-10-10',
+    notes: {
+      en: '• Opens faster: the Today screen you last saw is the first thing on screen, and the countdown, sky and progress fast-forward to now.\n• Algeria: prayer times from the Ministry of Religious Affairs and Wakfs\' timetable for 68 cities (#70).\n• Hijri calendar: Indonesia (Government & NU, and Muhammadiyah) besides the standard one, plus a day adjustment that moves only the Hijri date.\n• Widgets get their own Settings → Widgets page; the text colour applies to every widget, in the app and on each widget\'s own settings screen.\n• Prayer-times widget (Android): show or hide the city, countdown and the day\'s times, and size the times.\n• Quran: a download manager, a Downloads settings page and content mirrors.\n• Muṣḥaf: volume down now turns to the next page (a setting flips it), an optional touch lock stops accidental swipes, and the first swipe no longer stutters (#72).\n• Arabic countdowns keep hours, minutes and seconds in order, and prayer times no longer clip (#71).\n• Warsh tajweed: a missing madd at 67:9 is coloured (#64).',
+      ar: '• فتح أسرع: آخر شاشة يوم رأيتها هي أول ما يظهر، ثم يتقدّم العدّ التنازلي والسماء وشريط التقدّم إلى الوقت الحالي.\n• الجزائر: مواقيت الصلاة من جدول وزارة الشؤون الدينية والأوقاف لـ68 مدينة (#70).\n• التقويم الهجري: إندونيسيا (الحكومة ونهضة العلماء، والمحمدية) إلى جانب التقويم القياسي، مع تعديل لليوم يغيّر التاريخ الهجري فقط.\n• للأدوات صفحة خاصة في الإعدادات ← الأدوات، ولون النص يسري على كل الأدوات، في التطبيق وفي شاشة إعدادات كل أداة.\n• أداة مواقيت الصلاة (أندرويد): إظهار المدينة والعدّ التنازلي ومواقيت اليوم أو إخفاؤها، وتغيير حجم المواقيت.\n• القرآن: مدير للتنزيلات، وصفحة إعدادات للتنزيلات، ومرايا للمحتوى.\n• المصحف: خفض الصوت ينتقل الآن إلى الصفحة التالية (ويمكن عكسه من الإعدادات)، وقفل اختياري للمس يمنع السحب غير المقصود، ولم يعد أول سحب يتقطّع (#72).\n• العدّ التنازلي بالعربية يحفظ ترتيب الساعات والدقائق والثواني، ولم تعد المواقيت تُقصّ (#71).\n• تجويد ورش: تلوين مدّ كان ناقصًا في 67:9 (#64).',
+      sv: '• Startar snabbare: Idag-skärmen du senast såg visas först, och nedräkningen, himlen och förloppet spolar fram till nu.\n• Algeriet: bönetider från religionsministeriets tidtabell för 68 städer (#70).\n• Hijrikalender: Indonesien (regeringen & NU samt Muhammadiyah) utöver standardkalendern, och en dagjustering som bara flyttar hijridatumet.\n• Widgetar har en egen sida Inställningar → Widgetar; textfärgen gäller alla widgetar, i appen och på varje widgets egen inställningsskärm.\n• Bönetidswidgeten (Android): visa eller dölj stad, nedräkning och dagens tider, och ändra tidernas storlek.\n• Koranen: en nedladdningshanterare, en sida för nedladdningar och speglar för innehållet.\n• Mushaf: volym ned bläddrar nu framåt (en inställning vänder på det), ett valfritt beröringslås stoppar oavsiktliga svep, och första svepet hackar inte längre (#72).\n• Arabisk nedräkning håller timmar, minuter och sekunder i ordning, och bönetiderna klipps inte längre (#71).\n• Warsh-tajwid: en saknad madd i 67:9 färgas (#64).',
+    },
+  },
+  {
     code: 287,
     version: '2.29.0',
     date: '2026-10-06',

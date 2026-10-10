@@ -24,9 +24,9 @@ Builds:
   # Since the MR merged (1 Aug 2026) the bot adds each version from the tag
   # on its own; this file is the mirror we keep in the app repo, not the
   # thing F-Droid reads.
-  - versionName: 2.29.0
-    versionCode: 287
-    commit: v2.29.0
+  - versionName: 2.30.0
+    versionCode: 288
+    commit: v2.30.0
     subdir: android/app
     sudo:
       - apt-get update
@@ -68,5 +68,5 @@ Builds:
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
-CurrentVersion: 2.29.0
-CurrentVersionCode: 287
+CurrentVersion: 2.30.0
+CurrentVersionCode: 288

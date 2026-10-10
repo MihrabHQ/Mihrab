@@ -1204,3 +1204,21 @@ Took 3 aborted attempt(s) before it ran clean:
   - 1 the last release left its lesson unwritten — fill in that '**Lesson:**' line in docs/release-log.md, commit it, and rerun
 
 **Lesson:** two of the three stops (a failing jest, origin ahead of main) were knowable before starting: pull and run the full jest suite first, and write the lesson in the same sitting as the release.
+
+## 2.30.0 (288) — 2026-10-10
+
+Took 1 aborted attempt(s) before it ran clean:
+
+  - 1 working tree has tracked changes — commit or stash them first
+
+Changed the release cycle itself:
+
+  - `.github/workflows/hijri-calendars.yml`
+  - `.github/workflows/hijri-isbat-reminder.yml`
+  - `.github/workflows/marw-dataset.yml`
+  - `docs/DISTRIBUTION.md`
+  - `scripts/release.sh`
+  - `scripts/release/preflight.ts`
+  - `scripts/release/publish.ts`
+
+**Lesson:** _(unfilled)_
