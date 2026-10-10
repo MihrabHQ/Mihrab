@@ -1,0 +1,9 @@
+• Startar snabbare: Idag-skärmen du senast såg visas först, och nedräkningen, himlen och förloppet spolar fram till nu.
+• Algeriet: bönetider från religionsministeriets tidtabell för 68 städer (#70).
+• Hijrikalender: Indonesien (regeringen & NU samt Muhammadiyah) utöver standardkalendern, och en dagjustering som bara flyttar hijridatumet.
+• Widgetar har en egen sida Inställningar → Widgetar; textfärgen gäller alla widgetar, i appen och på varje widgets egen inställningsskärm.
+• Bönetidswidgeten (Android): visa eller dölj stad, nedräkning och dagens tider, och ändra tidernas storlek.
+• Koranen: en nedladdningshanterare, en sida för nedladdningar och speglar för innehållet.
+• Mushaf: volym ned bläddrar nu framåt (en inställning vänder på det), ett valfritt beröringslås stoppar oavsiktliga svep, och första svepet hackar inte längre (#72).
+• Arabisk nedräkning håller timmar, minuter och sekunder i ordning, och bönetiderna klipps inte längre (#71).
+• Warsh-tajwid: en saknad madd i 67:9 färgas (#64).

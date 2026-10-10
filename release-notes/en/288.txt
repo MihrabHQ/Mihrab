@@ -1,0 +1,9 @@
+• Opens faster: the Today screen you last saw is the first thing on screen, and the countdown, sky and progress fast-forward to now.
+• Algeria: prayer times from the Ministry of Religious Affairs and Wakfs' timetable for 68 cities (#70).
+• Hijri calendar: Indonesia (Government & NU, and Muhammadiyah) besides the standard one, plus a day adjustment that moves only the Hijri date.
+• Widgets get their own Settings → Widgets page; the text colour applies to every widget, in the app and on each widget's own settings screen.
+• Prayer-times widget (Android): show or hide the city, countdown and the day's times, and size the times.
+• Quran: a download manager, a Downloads settings page and content mirrors.
+• Muṣḥaf: volume down now turns to the next page (a setting flips it), an optional touch lock stops accidental swipes, and the first swipe no longer stutters (#72).
+• Arabic countdowns keep hours, minutes and seconds in order, and prayer times no longer clip (#71).
+• Warsh tajweed: a missing madd at 67:9 is coloured (#64).

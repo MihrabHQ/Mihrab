@@ -1,0 +1,6 @@
+• Opens faster: the Today screen shows at once and catches up to the current time.
+• Algeria: prayer times from the Ministry of Religious Affairs (#70).
+• Hijri calendar: Indonesia (Government & NU, Muhammadiyah) and a day adjustment.
+• Widgets: a Settings → Widgets page and a text colour for every widget.
+• Quran: volume down turns to the next page, with an optional touch lock (#72).
+• Arabic countdowns read in the right order (#71); Warsh tajweed fixes (#64).

@@ -1203,4 +1203,4 @@ Took 3 aborted attempt(s) before it ran clean:
   - 1 origin/main has commits main does not — pull first
   - 1 the last release left its lesson unwritten — fill in that '**Lesson:**' line in docs/release-log.md, commit it, and rerun
 
-**Lesson:** _(unfilled)_
+**Lesson:** two of the three stops (a failing jest, origin ahead of main) were knowable before starting: pull and run the full jest suite first, and write the lesson in the same sitting as the release.

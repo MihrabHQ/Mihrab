@@ -1,0 +1,6 @@
+• Startar snabbare: Idag-skärmen visas direkt och hinner ikapp aktuell tid.
+• Algeriet: bönetider från religionsministeriet (#70).
+• Hijrikalender: Indonesien (regeringen & NU, Muhammadiyah) och dagjustering.
+• Widgetar: en sida Inställningar → Widgetar och textfärg för alla widgetar.
+• Koranen: volym ned bläddrar framåt, med valfritt beröringslås (#72).
+• Arabisk nedräkning visas i rätt ordning (#71); rättelser i Warsh-tajwid (#64).
