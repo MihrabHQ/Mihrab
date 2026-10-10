@@ -130,8 +130,8 @@ describe('the chip shows its own state', () => {
     // "Sunnah" says everything there is to say when there is only one of
     // them; with two, which of the two is the whole question.
     expect(text((await render('Maghrib', 0)).tree)).toContain('Sunnah');
-    expect(text((await render('Isha', 1)).tree)).toContain('1/2');
-    expect(text((await render('Isha', 2)).tree)).toContain('2/2');
+    expect(text((await render('Dhuhr', 1)).tree)).toContain('1/2');
+    expect(text((await render('Dhuhr', 2)).tree)).toContain('2/2');
   });
 });
 

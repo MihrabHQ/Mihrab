@@ -25,7 +25,14 @@ import type { JournalPrayer } from './journal';
 /**
  * How many sunnah prayers each fard prayer carries.
  *
- * These are the sunnah mu'akkadah as this app counts them. They differ by
+ * These are the sunnah mu'akkadah as this app counts them, one unit per
+ * occasion of the rawātib in the hadiths of Ibn ʿUmar and Umm Ḥabībah: two
+ * before Fajr; before and after Dhuhr; two after Maghrib; two after ʿIshāʾ.
+ * The prayer before ʿIshāʾ ("between every two adhans there is a prayer")
+ * is not muʾakkadah, so it is not counted — no more than one before ʿAṣr.
+ * ʿIshāʾ was 2 until issue #73, which made the full rawātib read as 6 of 7;
+ * a stored day with `isha: 2` is clamped to 1 on read, so it simply reads
+ * as complete. They differ by
  * school — Hanafis commonly count four before Dhuhr and four before Asr — and
  * this table is deliberately fixed rather than derived from the school
  * setting: the totals are the denominator of both the day's ring and the
@@ -41,7 +48,7 @@ export const SUNNAH_UNITS: Record<JournalPrayer, number> = {
   Dhuhr: 2,
   Asr: 0,
   Maghrib: 1,
-  Isha: 2,
+  Isha: 1,
 };
 
 /** Witr is one unit, and it counts toward the day like any other. */

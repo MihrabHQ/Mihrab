@@ -30,21 +30,21 @@ const full: SunnahDay = {
   fajr: 1,
   dhuhr: 2,
   maghrib: 1,
-  isha: 2,
+  isha: 1,
   witr: true,
   qiyam: 0,
 };
 
 describe('the counts', () => {
-  it('is 7 units a day: 1 + 2 + 0 + 1 + 2, plus Witr', () => {
+  it('is 6 units a day: 1 + 2 + 0 + 1 + 1, plus Witr (#73)', () => {
     expect(SUNNAH_UNITS).toEqual({
       Fajr: 1,
       Dhuhr: 2,
       Asr: 0,
       Maghrib: 1,
-      Isha: 2,
+      Isha: 1,
     });
-    expect(SUNNAH_TOTAL).toBe(7);
+    expect(SUNNAH_TOTAL).toBe(6);
   });
 
   it('gives Asr no field to write to at all', () => {
@@ -161,7 +161,6 @@ describe('the line round the square', () => {
       () => { day.dhuhr = 2; },
       () => { day.maghrib = 1; },
       () => { day.isha = 1; },
-      () => { day.isha = 2; },
       () => { day.witr = true; },
     ];
     for (const step of order) {
@@ -241,7 +240,7 @@ describe('setSunnah', () => {
     const log = setSunnah({}, '2026-08-18', { fajr: 1 });
     const snapshot = JSON.stringify(log);
     setSunnah(log, '2026-08-18', { witr: true });
-    setSunnah(log, '2026-08-19', { isha: 2 });
+    setSunnah(log, '2026-08-19', { isha: 1 });
     expect(JSON.stringify(log)).toBe(snapshot);
   });
 
@@ -469,5 +468,21 @@ describe('un-logging survives a paired device', () => {
     const merged = mergeSunnah(undated, dated);
     expect(merged[day].dhuhr).toBe(2);
     expect(merged[day].at).toBe(5_000);
+  });
+});
+
+describe('issue #73: ʿIshāʾ carries one sunnah muʾakkadah', () => {
+  it('reads a day stored with isha: 2 as complete, not as more than complete', () => {
+    const day = dayAt(
+      coerceSunnahLog({ '2026-08-18': { ...full, isha: 2 } }),
+      '2026-08-18',
+    );
+    expect(day.isha).toBe(1);
+    expect(sunnahCount(day)).toBe(SUNNAH_TOTAL);
+  });
+
+  it('cycles the ʿIshāʾ tile between logged and cleared', () => {
+    expect(cycleSunnah(0, SUNNAH_UNITS.Isha)).toBe(1);
+    expect(cycleSunnah(1, SUNNAH_UNITS.Isha)).toBe(0);
   });
 });

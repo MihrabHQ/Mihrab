@@ -177,7 +177,7 @@ describe('handlePrayerLogEvent — log with sunnah', () => {
       ['Fajr', 'fajr', 1],
       ['Dhuhr', 'dhuhr', 2],
       ['Maghrib', 'maghrib', 1],
-      ['Isha', 'isha', 2],
+      ['Isha', 'isha', 1],
     ] as const) {
       store.clear();
       await press(`journal-log-sunnah:${prayer}`, {
@@ -196,7 +196,7 @@ describe('handlePrayerLogEvent — log with sunnah', () => {
       data: { targetDate: '2026-08-09', prayer: 'Isha' },
     });
     const day = dayAt(sunnahLog(), '2026-08-09');
-    expect(day.isha).toBe(2);
+    expect(day.isha).toBe(1);
     expect(day.witr).toBe(false);
     expect(day.qiyam).toBe(0);
   });

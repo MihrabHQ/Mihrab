@@ -61,7 +61,7 @@ function populated(): SnapshotData {
     ] as SnapshotData['fasting'],
     dhikr: { '2026-08-17': 3, '2026-08-18': 1 },
     sunnah: {
-      '2026-08-17': { fajr: 1, dhuhr: 2, maghrib: 1, isha: 2, witr: true, qiyam: 4 },
+      '2026-08-17': { fajr: 1, dhuhr: 2, maghrib: 1, isha: 1, witr: true, qiyam: 4 },
     },
     quran: {
       ...DEFAULT_QURAN_STATE,

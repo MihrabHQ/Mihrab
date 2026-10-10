@@ -123,12 +123,12 @@ object PracticeGridBitmap {
 
   /**
    * Everything a complete day of sunnah holds — the five prayers' sunnah
-   * plus Witr, which is 7. It is `SUNNAH_TOTAL` in src/journal/sunnah.ts;
+   * plus Witr, which is 6. It is `SUNNAH_TOTAL` in src/journal/sunnah.ts;
    * the payload sends the raw count and the denominator has to live
    * somewhere, so it lives here with this note. A day that somehow reports
    * more is clamped rather than drawn as more than a full ring.
    */
-  private const val SUNNAH_TOTAL = 7
+  private const val SUNNAH_TOTAL = 6
 
   /**
    * A RemoteViews carrying bitmaps has to cross a Binder transaction, and
