@@ -127,6 +127,10 @@ internal object LaunchSnapshot {
    * picture shows the hero at the prayer rather than as it was.
    */
   fun capture(activity: Activity, heroFile: String? = null, heroX: Float = 0f, heroY: Float = 0f, fromJs: Boolean = false) {
+    // JS asks to keep the screen only once the live one is up and settled:
+    // a picture still over it at that point has outlived its hide — it
+    // comes down now rather than on the safety timer.
+    if (fromJs && overlay != null) hide()
     // JS asks only when the screen is worth keeping, and may have turned
     // `eligible` off again (for its posed picture) before this ran.
     if ((!eligible && !fromJs) || overlay != null || Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
@@ -299,6 +303,7 @@ internal object LaunchSnapshot {
 
   /** The live screen is committed: fade the picture into it. Idempotent. */
   fun hide() {
+    Log.i(TAG, "hide asked (showing=${overlay != null})")
     main.postDelayed({
       val view = overlay ?: return@postDelayed
       overlay = null

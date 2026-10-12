@@ -179,6 +179,8 @@
     "systemDynamicColorsHelp": "Verwendet die semantischen und dynamischen Farben Ihres Geräts in der App, unabhängig vom gewählten Design. Reines Schwarz (OLED) verdunkelt den Hintergrund immer noch, wenn der Dunkelmodus aktiviert ist.",
     "pureBlack": "Reines Schwarz (OLED)",
     "pureBlackHelp": "Echtschwarzer Hintergrund im Dunkelmodus für OLED-Displays.",
+    "launchAnimation": "Startanimation",
+    "launchAnimationHelp": "Beim Öffnen der App laufen der Countdown und der Fortschrittsbalken vom Beginn der aktuellen Gebetszeit bis jetzt. Ausgeschaltet öffnet sich die App so schnell wie möglich direkt auf der aktuellen Zeit.",
     "dataSource": "Datenquelle",
     "provider": "Anbieter von Gebetszeiten",
     "providerAutoLine": "Automatisch · {{label}}",

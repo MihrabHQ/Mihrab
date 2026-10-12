@@ -179,6 +179,8 @@
     "systemDynamicColorsHelp": "无论选择哪种主题，都在应用程序中使用设备的语义和动态颜色。当深色模式开启时，纯黑色 (OLED) 仍然会使背景变暗。",
     "pureBlack": "纯黑（OLED）",
     "pureBlackHelp": "OLED 显示器深色模式下的纯黑色背景。",
+    "launchAnimation": "启动动画",
+    "launchAnimationHelp": "打开应用时，倒计时和进度条会从当前礼拜时间的开始一直走到现在。关闭后，应用会尽快直接打开在当前时间。",
     "dataSource": "数据来源",
     "provider": "祈祷时间提供者",
     "providerAutoLine": "自动·{{label}}",

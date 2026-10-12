@@ -67,6 +67,8 @@ export type AppearanceSlice = Pick<
   // rendered by AppearanceCard, so it rides in this slice rather than
   // making the card subscribe to a second one.
   | 'showPracticeOnHome'
+  // The launch run, rendered by AppearanceCard too.
+  | 'launchAnimation'
 >;
 
 export type LocationSlice = Pick<
@@ -242,6 +244,7 @@ export function PrayerSettingsProvider({
       tintedSurfaces: settings.tintedSurfaces,
       savedAccentColors: settings.savedAccentColors,
       showPracticeOnHome: settings.showPracticeOnHome,
+      launchAnimation: settings.launchAnimation,
     }),
     [
       settings.appearance,
@@ -254,6 +257,7 @@ export function PrayerSettingsProvider({
       settings.tintedSurfaces,
       settings.savedAccentColors,
       settings.showPracticeOnHome,
+      settings.launchAnimation,
     ],
   );
 

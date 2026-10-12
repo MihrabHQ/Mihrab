@@ -179,6 +179,8 @@
     "systemDynamicColorsHelp": "Uses your device’s semantic and dynamic colors in the app, whichever theme you pick. Pure black (OLED) still darkens backgrounds when dark mode is on.",
     "pureBlack": "Pure black (OLED)",
     "pureBlackHelp": "True black background in dark mode for OLED displays.",
+    "launchAnimation": "Launch animation",
+    "launchAnimationHelp": "When the app opens, the countdown and the progress bar run from the start of the current prayer time to now. Off, the app opens straight on the current time, as quickly as it can.",
     "dataSource": "Data source",
     "provider": "Prayer times provider",
     "providerAutoLine": "Automatic · {{label}}",

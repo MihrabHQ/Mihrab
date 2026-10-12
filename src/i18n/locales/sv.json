@@ -179,6 +179,8 @@
     "systemDynamicColorsHelp": "Använder enhetens semantiska och dynamiska färger i appen, oavsett vilket tema du väljer. Ren svart (OLED) mörkar fortfarande bakgrunder i mörkt läge.",
     "pureBlack": "Helt svart (OLED)",
     "pureBlackHelp": "Helt svart bakgrund i mörkt läge för OLED-skärmar.",
+    "launchAnimation": "Startanimation",
+    "launchAnimationHelp": "När appen öppnas löper nedräkningen och förloppsindikatorn från den aktuella bönetidens början fram till nu. Avstängd öppnas appen direkt på den aktuella tiden, så snabbt som möjligt.",
     "dataSource": "Datakälla",
     "provider": "Leverantör av bönetider",
     "providerAutoLine": "Automatiskt · {{label}}",

@@ -210,7 +210,26 @@ describe('wiring', () => {
     expect(warp).toMatch(/if \(!start \|\| reduceMotion\) \{\s*run = null;/);
     expect(warp).toMatch(/holdLaunchSnapshot\(HOLD, true\)/);
     expect(warp).toMatch(/holdLaunchSnapshot\(HOLD, false\)/);
-    expect(card).toMatch(/useLaunchWarp\(reduceMotion, !posed\)/);
+    expect(card).toMatch(/useLaunchWarp\(reduceMotion \|\| !launchRunWanted, !posed\)/);
+  });
+
+  it('is a setting, on by default: off, nothing is posed and nothing runs', () => {
+    const types = read('src/settings/types.ts');
+    expect(types).toMatch(/launchAnimation: true,/);
+    expect(card).toMatch(/useLaunchWarp\(reduceMotion \|\| !launchRunWanted, !posed\)/);
+    expect(card).toMatch(/!fullBleedRunHeld && runWanted/);
+    expect(card).toMatch(/useEffect\(\(\) => setLaunchRunWanted\(runWanted\), \[runWanted\]\)/);
+    const appearance = read('src/screens/settings/AppearanceCard.tsx');
+    expect(appearance).toMatch(/updateSettings\(\{ launchAnimation: v \}\)/);
+    // Turned off with a posed picture on disk: that picture is let go and
+    // the screen kept again as it is.
+    const m = require('../src/native/LaunchSnapshot');
+    const eligible = require('react-native').NativeModules.MihrabLaunchSnapshot.setEligible as jest.Mock;
+    m._setPosedKeptForTests(true);
+    m.setLaunchSnapshotEligible(true);
+    expect(eligible).not.toHaveBeenLastCalledWith(true);
+    m.setLaunchRunWanted(false);
+    expect(eligible).toHaveBeenLastCalledWith(true);
   });
 
   it('keeps what the hero is aimed at beside the next picture', () => {

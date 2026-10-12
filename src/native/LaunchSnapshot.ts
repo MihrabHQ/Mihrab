@@ -199,11 +199,18 @@ export function setLaunchSnapshotLook(key: string): void {
 }
 
 /**
- * Once per window: the picture is only ever laid on a window's first
- * frame, and Today commits many times after that one.
+ * When JS first asked native to fade the picture out, this window. The
+ * picture is only ever laid on a window's first frame, and Today commits
+ * many times after that one: the ask is repeated on the commits of the
+ * next HIDE_REPEAT_MS (native takes it down once, whatever is asked
+ * after) and dropped after that. Repeated, not sent once and latched:
+ * seen on a Pixel 10 Pro, twice in a row and never since, a first ask
+ * that did not take the picture down, which then stayed for the whole
+ * of native's safety time — five seconds on a launch that was ready in
+ * half of one. A second ask a commit later is nothing; losing it was not.
  */
-let hideSent = false;
 let hideAt: number | null = null;
+export const HIDE_REPEAT_MS = 2000;
 
 /** When JS asked native to fade the picture out, if it has. */
 export function hideRequestedAt(): number | null {
@@ -255,10 +262,23 @@ export function setLaunchHeroState(targetAt: number, fromAt: number): void {
   }
 }
 
+/**
+ * The launch run setting (settings.launchAnimation). Off, a posed picture
+ * is no use — nothing would run from it, and its hero would jump in the
+ * fade — so one kept earlier is let go and the screen is kept again as
+ * it is (the twin is gone by then: TodayCard).
+ */
+export function setLaunchRunWanted(wanted: boolean): void {
+  if (wanted || !posedKept) return;
+  posedKept = false;
+  pushEligible();
+}
+
 export function hideLaunchSnapshot(): void {
-  if (!native || hideSent) return;
-  hideSent = true;
-  hideAt = Date.now();
+  if (!native) return;
+  const now = Date.now();
+  if (hideAt != null && now - hideAt > HIDE_REPEAT_MS) return;
+  if (hideAt == null) hideAt = now;
   try {
     native.hide();
   } catch {
@@ -274,7 +294,6 @@ export function hideLaunchSnapshot(): void {
  * last told, the posed picture on disk) stands.
  */
 export function newLaunchSnapshotWindow(): void {
-  hideSent = false;
   hideAt = null;
   shown = undefined;
   screenWorthy = false;
@@ -282,7 +301,10 @@ export function newLaunchSnapshotWindow(): void {
   pushEligible();
 }
 
-/** Test seam. */
+/** Test seams. */
+export function _setPosedKeptForTests(value: boolean): void {
+  posedKept = value;
+}
 export function _resetLaunchSnapshotForTests(): void {
   newLaunchSnapshotWindow();
   lastEligible = null;

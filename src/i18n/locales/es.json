@@ -179,6 +179,8 @@
     "systemDynamicColorsHelp": "Utiliza los colores semánticos y dinámicos de su dispositivo en la aplicación, sea cual sea el tema que elija. El negro puro (OLED) aún oscurece los fondos cuando el modo oscuro está activado.",
     "pureBlack": "Negro puro (OLED)",
     "pureBlackHelp": "Fondo negro verdadero en modo oscuro para pantallas OLED.",
+    "launchAnimation": "Animación de inicio",
+    "launchAnimationHelp": "Al abrir la app, la cuenta atrás y la barra de progreso avanzan desde el comienzo de la hora de oración actual hasta ahora. Desactivada, la app se abre directamente en la hora actual, lo más rápido posible.",
     "dataSource": "fuente de datos",
     "provider": "Proveedor de tiempos de oración",
     "providerAutoLine": "Automático · {{label}}",

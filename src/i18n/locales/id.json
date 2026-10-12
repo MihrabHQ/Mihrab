@@ -179,6 +179,8 @@
     "systemDynamicColorsHelp": "Menggunakan warna semantik dan dinamis perangkat Anda di aplikasi, apa pun tema yang Anda pilih. Hitam murni (OLED) tetap menggelapkan latar belakang saat mode gelap aktif.",
     "pureBlack": "Hitam murni (OLED)",
     "pureBlackHelp": "Latar belakang hitam sesungguhnya dalam mode gelap untuk tampilan OLED.",
+    "launchAnimation": "Animasi saat membuka",
+    "launchAnimationHelp": "Saat aplikasi dibuka, hitung mundur dan bilah kemajuan berjalan dari awal waktu salat saat ini hingga sekarang. Jika dimatikan, aplikasi langsung terbuka pada waktu saat ini, secepat mungkin.",
     "dataSource": "Sumber data",
     "provider": "Penyedia waktu sholat",
     "providerAutoLine": "Otomatis · {{label}}",

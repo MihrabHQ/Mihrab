@@ -46,7 +46,7 @@ import {
   warpRemaining,
   warpSkyAt,
 } from '../../boot/launchWarp';
-import { holdLaunchSnapshot, setLaunchHeroState } from '../../native/LaunchSnapshot';
+import { holdLaunchSnapshot, setLaunchHeroState, setLaunchRunWanted } from '../../native/LaunchSnapshot';
 import { registerPoseHero } from '../../boot/poseHero';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import { useClockFormatter } from '../../hooks/useClockFormatter';
@@ -254,6 +254,7 @@ const HeroToday = memo(function HeroToday({
   frozenAt,
   onInterval,
   onLayout,
+  launchRun: launchRunWanted = true,
 }: {
   /** What the countdown is aimed at: the next prayer, or the user's pick. */
   target: { name: string; at: Date };
@@ -297,6 +298,8 @@ const HeroToday = memo(function HeroToday({
   ownsStatusBar?: boolean;
   /** The status bar's height, which the sky's bodies keep out of. */
   statusBarInset?: number;
+  /** The launch run setting (settings.launchAnimation): off, none runs. */
+  launchRun?: boolean;
   /**
    * Full-bleed: the hero grows to fill what the page leaves it, the
    * countdown block sits at its foot, and the sky's sun, moon and stars
@@ -418,9 +421,11 @@ const HeroToday = memo(function HeroToday({
    * A cold start that opened on the kept picture of this screen draws the
    * hero first with the picture's numbers — the posed ones, at the prayer
    * — so the fade from picture to live is invisible, then runs them to
-   * the live ones: src/boot/launchWarp.ts. Not for the posed twin.
+   * the live ones: src/boot/launchWarp.ts. Not for the posed twin, and
+   * not with the setting off — then the hero is live from the first
+   * frame and changes inside the fade.
    */
-  const launchRun = useLaunchWarp(reduceMotion, !posed);
+  const launchRun = useLaunchWarp(reduceMotion || !launchRunWanted, !posed);
   const warp = launchRun?.start ?? null;
   const warpE = launchRun?.e ?? 1;
 
@@ -1236,8 +1241,14 @@ function TodayCardImpl({
     setInterval_(fromAt > 0 && targetAt > fromAt ? { fromAt, targetAt } : null);
   }, []);
   // Not while the launch run draws: the twin would be drawn for nothing.
+  // Nor with the run turned off: nothing would run from the pose, and a
+  // twin is a second hero to lay out and draw on every tick.
   const fullBleedRunHeld = useLaunchRunActive();
-  const twinUp = !!(target && heroBox && interval && chosenKey === null && !fullBleedRunHeld);
+  const runWanted = settings.launchAnimation;
+  useEffect(() => setLaunchRunWanted(runWanted), [runWanted]);
+  const twinUp = !!(
+    target && heroBox && interval && chosenKey === null && !fullBleedRunHeld && runWanted
+  );
   useEffect(() => {
     if (!twinUp || !interval) return undefined;
     registerPoseHero({ ref: poseRef, fromAt: interval.fromAt, targetAt: interval.targetAt });
@@ -1400,7 +1411,7 @@ function TodayCardImpl({
             kept launch picture shows instead of the hero as it is —
             boot/poseHero.ts. Only when there is an interval to pose at,
             nothing chosen, and no launch run drawing. */}
-        {target && heroBox && interval && chosenKey === null && !fullBleedRunHeld ? (
+        {twinUp && interval && heroBox && target ? (
           <View
             ref={poseRef}
             collapsable={false}
@@ -1439,6 +1450,7 @@ function TodayCardImpl({
             onExpire={clearChosen}
             onInterval={onInterval}
             onLayout={onRealHeroLayout}
+            launchRun={runWanted}
             today={timings}
             skyToday={skyTimings}
             latitude={latitude}

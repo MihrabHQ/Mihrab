@@ -405,6 +405,15 @@ export type PrayerAppSettings = {
    */
   logLateByClock: boolean;
   /**
+   * The launch run — on by default. A launch opens on a picture of the
+   * Today screen (native/LaunchSnapshot.ts); with this on, the picture's
+   * hero is posed at the current prayer and runs from there to now once
+   * the live screen is under it (boot/launchWarp.ts). Off, the picture
+   * is of the screen as it was left, nothing is posed or run, and it
+   * simply fades into the live screen: the quickest way to it.
+   */
+  launchAnimation: boolean;
+  /**
    * App accent color id — task #127. Drives the in-app accent and (when
    * `useSystemDynamicTheme` is off) also the widget highlight via the
    * sync logic in `syncWidgetUiHints.ts`. When `useSystemDynamicTheme`
@@ -737,6 +746,7 @@ export const DEFAULT_SETTINGS: PrayerAppSettings = {
   // of thing people uninstall an app over.
   endOfDayLogReminderEnabled: false,
   logLateByClock: false,
+  launchAnimation: true,
   // App accent defaults to brand green (matches the historical hardcoded
   // accent so users on existing installs see no visual diff after the
   // upgrade).

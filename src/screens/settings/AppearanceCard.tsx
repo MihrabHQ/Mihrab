@@ -32,6 +32,7 @@ import {
 } from './SettingsGroup';
 import { sharedSettingsStyles as s } from './sharedStyles';
 import { SPACING } from '../../theme/tokens';
+import { isMacCatalyst } from '../../responsive/breakpoints';
 
 /**
  * Appearance card: theme picker (System / Light / Dark), the colour theme
@@ -217,6 +218,19 @@ function AppearanceCardImpl() {
             help={t('settings.pureBlackHelp')}
             value={settings.pureBlackDark}
             onValueChange={v => updateSettings({ pureBlackDark: v })}
+          />
+        ) : null}
+
+        {/* The launch run (src/boot/launchWarp.ts). Off, a launch still
+            opens on the kept picture of Today — never the skeleton — and
+            simply fades into the live screen, with nothing posed or run:
+            the quickest way to it. The Mac has no picture and no run. */}
+        {Platform.OS === 'android' || (Platform.OS === 'ios' && !isMacCatalyst) ? (
+          <SettingsToggleRow
+            title={t('settings.launchAnimation')}
+            help={t('settings.launchAnimationHelp')}
+            value={settings.launchAnimation}
+            onValueChange={v => updateSettings({ launchAnimation: v })}
           />
         ) : null}
       </SettingsGroup>

@@ -179,6 +179,8 @@
     "systemDynamicColorsHelp": "Utilise les couleurs sémantiques et dynamiques de votre appareil dans l'application, quel que soit le thème choisi. Le noir pur (OLED) assombrit toujours les arrière-plans lorsque le mode sombre est activé.",
     "pureBlack": "Noir pur (OLED)",
     "pureBlackHelp": "Véritable fond noir en mode sombre pour les écrans OLED.",
+    "launchAnimation": "Animation au lancement",
+    "launchAnimationHelp": "À l'ouverture de l'app, le compte à rebours et la barre de progression défilent du début de l'heure de prière en cours jusqu'à maintenant. Désactivée, l'app s'ouvre directement sur l'heure actuelle, aussi vite que possible.",
     "dataSource": "Source de données",
     "provider": "Fournisseur d'heures de prière",
     "providerAutoLine": "Automatique · {{label}}",

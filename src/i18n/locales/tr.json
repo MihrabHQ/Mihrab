@@ -179,6 +179,8 @@
     "systemDynamicColorsHelp": "Hangi temayı seçerseniz seçin, uygulamada cihazınızın anlamsal ve dinamik renklerini kullanır. Saf siyah (OLED), karanlık mod açıkken arka planları hâlâ karartıyor.",
     "pureBlack": "Saf siyah (OLED)",
     "pureBlackHelp": "OLED ekranlar için karanlık modda gerçek siyah arka plan.",
+    "launchAnimation": "Açılış animasyonu",
+    "launchAnimationHelp": "Uygulama açıldığında geri sayım ve ilerleme çubuğu, mevcut namaz vaktinin başından şimdiye kadar akar. Kapalıyken uygulama olabildiğince hızlı şekilde doğrudan şimdiki zamanda açılır.",
     "dataSource": "Veri kaynağı",
     "provider": "Namaz vakitleri sağlayıcısı",
     "providerAutoLine": "Otomatik · {{label}}",

@@ -120,8 +120,9 @@ describe('the JS side', () => {
     expect(FIRST_PAINT).toMatch(/reportBoot\(\);[\s\S]{0,300}settleThenHideSnapshot\(\);/);
   });
 
-  it('asks native to hide once per process', () => {
+  it('asks native to hide on the commits of the first couple of seconds, then stops', () => {
     jest.resetModules();
+    jest.useFakeTimers();
     const hide = jest.fn();
     jest.doMock('react-native', () => ({
       Platform: { OS: 'android' },
@@ -129,8 +130,21 @@ describe('the JS side', () => {
     }));
     const m = require('../src/native/LaunchSnapshot');
     m.hideLaunchSnapshot();
+    const asked = m.hideRequestedAt();
+    jest.advanceTimersByTime(500);
     m.hideLaunchSnapshot();
-    expect(hide).toHaveBeenCalledTimes(1);
+    // Repeated — an ask that was lost is cheap to make again — and the
+    // first ask's time is what the run is timed from.
+    expect(hide).toHaveBeenCalledTimes(2);
+    expect(m.hideRequestedAt()).toBe(asked);
+    jest.advanceTimersByTime(m.HIDE_REPEAT_MS);
+    m.hideLaunchSnapshot();
+    expect(hide).toHaveBeenCalledTimes(2);
+    // A new window asks afresh.
+    m.newLaunchSnapshotWindow();
+    m.hideLaunchSnapshot();
+    expect(hide).toHaveBeenCalledTimes(3);
+    jest.useRealTimers();
     jest.dontMock('react-native');
   });
 
