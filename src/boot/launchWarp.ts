@@ -122,6 +122,8 @@ export function warpSkyAt(start: WarpStart, now: number, e: number): number {
 type Run = { start: WarpStart; t0: number | null; duration: number };
 /** undefined: not decided yet; null: no run this launch (or it is over). */
 let run: Run | null | undefined;
+/** Told when the run begins (its t0 is set), so a hero can start drawing it. */
+const onBegin = new Set<() => void>();
 
 const HOLD = 'hero-run';
 
@@ -139,6 +141,7 @@ function decide(reduceMotion: boolean): void {
   setTimeout(() => {
     r.t0 = Date.now();
     r.duration = warpDurationMs(Math.abs(r.t0 - start.at));
+    onBegin.forEach(fn => fn());
   }, warpDelayMs());
 }
 
@@ -161,6 +164,10 @@ export function warpProgress(now: number = Date.now()): { start: WarpStart; e: n
 /**
  * The run as a hero sees it, re-rendering the hero every frame while it
  * lasts and once more as it ends. Decides the run on the first call.
+ *
+ * Nothing is redrawn while the run waits for the fade: the hero holds the
+ * picture's numbers, still, and the JS thread is left to the launch's own
+ * work. The frames start when the run does.
  */
 export function useLaunchWarp(reduceMotion: boolean): { start: WarpStart; e: number } | null {
   decide(reduceMotion);
@@ -175,11 +182,20 @@ export function useLaunchWarp(reduceMotion: boolean): { start: WarpStart; e: num
   const live = progress != null;
   useEffect(() => {
     if (!live) return undefined;
-    let frame = requestAnimationFrame(function loop() {
+    let frame: number | null = null;
+    const loop = () => {
       bump();
-      if (warpProgress() != null) frame = requestAnimationFrame(loop);
-    });
-    return () => cancelAnimationFrame(frame);
+      frame = warpProgress() != null ? requestAnimationFrame(loop) : null;
+    };
+    const begin = () => {
+      if (frame == null) frame = requestAnimationFrame(loop);
+    };
+    if (run?.t0 != null) begin();
+    else onBegin.add(begin);
+    return () => {
+      onBegin.delete(begin);
+      if (frame != null) cancelAnimationFrame(frame);
+    };
   }, [live]);
   return progress;
 }
@@ -192,4 +208,5 @@ function clamp01(x: number): number {
 export function _resetLaunchWarpForTests(): void {
   claimed = false;
   run = undefined;
+  onBegin.clear();
 }

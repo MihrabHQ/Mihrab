@@ -84,6 +84,13 @@ internal object LaunchSnapshot {
 
   @Volatile private var eligible = false
   @Volatile private var preloaded: Future<Bitmap?>? = null
+  /**
+   * Whether a window has been created in this process. The picture is for
+   * the first one only: a process the system started earlier for a widget
+   * or an alarm has no live screen yet, and gets the picture decoded on the
+   * spot; a second activity (a rotation, a return) already has one.
+   */
+  private var windowSeen = false
   private var overlay: ImageView? = null
   /** The picture this process opened on, for JS: "at,targetAt,fromAt". */
   @Volatile var shownState: String = ""
@@ -198,8 +205,11 @@ internal object LaunchSnapshot {
 
   /** MainActivity.onCreate, after super: lay the kept screen over the window. */
   fun show(activity: Activity) {
-    val pending = preloaded ?: return
+    val first = !windowSeen
+    windowSeen = true
+    val pending = preloaded ?: if (first) decodeNow(activity) else null
     preloaded = null
+    if (pending == null) return
     if (!isPlainLaunch(activity.intent)) {
       Log.i(TAG, "not a plain launch: ${activity.intent}")
       return
@@ -231,6 +241,28 @@ internal object LaunchSnapshot {
     shownState = "${stored.at},${stored.heroTarget},${stored.heroFrom}"
     Log.i(TAG, "showing the kept screen")
     main.postDelayed({ hide() }, SAFETY_HIDE_MS)
+  }
+
+  /**
+   * The first window of a process that was started before it had one (a
+   * widget's refresh, an alarm) and so decoded nothing, or let its decode
+   * go: a few dozen milliseconds on the main thread, against a blank
+   * window for the whole of React Native's start.
+   */
+  private fun decodeNow(context: Context): Future<Bitmap?>? {
+    val stored = Meta.load(prefs(context)) ?: return null
+    if (!stored.stillCurrent(context)) return null
+    val file = File(dir(context), stored.file ?: return null)
+    if (!file.exists()) return null
+    return io.submit<Bitmap?> {
+      try {
+        val opts = BitmapFactory.Options()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) opts.inPreferredConfig = Bitmap.Config.HARDWARE
+        BitmapFactory.decodeFile(file.path, opts)
+      } catch (e: Throwable) {
+        null
+      }
+    }
   }
 
   /** The live screen is committed: fade the picture into it. Idempotent. */
@@ -285,6 +317,14 @@ internal object LaunchSnapshot {
     val heroTarget: Long = 0L,
     val heroFrom: Long = 0L,
     val file: String? = null,
+    /**
+     * What the system decides about the screen's look and the app's
+     * settings do not say: the language and its direction when the app
+     * follows the system's, the 12/24-hour clock when it follows the
+     * system's, and the wallpaper's colour under Material You. A change
+     * to any of them is a different screen.
+     */
+    val system: String = "",
   ) {
     fun save(p: android.content.SharedPreferences, name: String) {
       p.edit()
@@ -292,7 +332,7 @@ internal object LaunchSnapshot {
         .putFloat("font", fontScale).putInt("dpi", densityDpi).putInt("version", version)
         .putString("day", day).putLong("at", at).putString("look", look)
         .putLong("heroTarget", heroTarget).putLong("heroFrom", heroFrom)
-        .putString("file", name)
+        .putString("file", name).putString("system", system)
         .commit()
     }
 
@@ -311,6 +351,7 @@ internal object LaunchSnapshot {
       val c = activity.resources.configuration
       if ((c.uiMode and Configuration.UI_MODE_NIGHT_MASK) != night) return false
       if (c.fontScale != fontScale || c.densityDpi != densityDpi) return false
+      if (systemLook(activity) != system) return false
       val (w, h) = windowSize(activity)
       return w == width && h == height
     }
@@ -320,7 +361,16 @@ internal object LaunchSnapshot {
         val c = activity.resources.configuration
         val look = activity.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString("look_current", "") ?: ""
         return Meta(w, h, c.uiMode and Configuration.UI_MODE_NIGHT_MASK, c.fontScale, c.densityDpi,
-          BuildConfig.VERSION_CODE, dayOf(at), at, look, heroTarget, heroFrom)
+          BuildConfig.VERSION_CODE, dayOf(at), at, look, heroTarget, heroFrom, system = systemLook(activity))
+      }
+
+      fun systemLook(context: Context): String {
+        val c = context.resources.configuration
+        val locales = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) c.locales.toLanguageTags() else @Suppress("DEPRECATION") c.locale.toString()
+        val accent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+          try { context.getColor(android.R.color.system_accent1_500) } catch (e: Throwable) { 0 }
+        } else 0
+        return "$locales|${android.text.format.DateFormat.is24HourFormat(context)}|$accent"
       }
 
       fun load(p: android.content.SharedPreferences): Meta? {
@@ -330,6 +380,7 @@ internal object LaunchSnapshot {
           p.getInt("dpi", 0), p.getInt("version", -1), p.getString("day", "") ?: "",
           p.getLong("at", 0L), p.getString("look", "") ?: "",
           p.getLong("heroTarget", 0L), p.getLong("heroFrom", 0L), file,
+          p.getString("system", "") ?: "",
         )
       }
 

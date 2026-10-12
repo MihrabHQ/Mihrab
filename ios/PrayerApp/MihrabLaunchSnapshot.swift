@@ -59,6 +59,16 @@ final class LaunchSnapshotStore {
     var heroTarget: Int64
     var heroFrom: Int64
     var file: String
+    /// What the system decides and the app's settings do not say: the
+    /// language and its direction, and the 12/24-hour clock, when the
+    /// app follows the system's. A change to either is a different screen.
+    var system: String
+  }
+
+  private static var systemLook: String {
+    let locale = Locale.preferredLanguages.first ?? ""
+    let clock = DateFormatter.dateFormat(fromTemplate: "j", options: 0, locale: Locale.current) ?? ""
+    return "\(locale)|\(clock)"
   }
 
   // MARK: What JS tells us
@@ -103,7 +113,7 @@ final class LaunchSnapshotStore {
       textSize: scene.traitCollection.preferredContentSizeCategory.rawValue,
       version: Self.buildVersion, at: at,
       look: defaults.string(forKey: Self.prefix + "lookCurrent") ?? "",
-      heroTarget: target, heroFrom: from, file: "snapshot-\(at).jpg")
+      heroTarget: target, heroFrom: from, file: "snapshot-\(at).jpg", system: Self.systemLook)
     io.async { self.write(image, meta) }
     NSLog("[MihrabSnapshot] kept %.0fx%.0f", bounds.width, bounds.height)
     #endif
@@ -146,17 +156,29 @@ final class LaunchSnapshotStore {
       self.lock.unlock()
       ready.signal()
     }
+    // A process started for something other than a window — a push, a
+    // background task, iOS's prewarming — would otherwise hold a decoded
+    // screen for as long as it lives. The first window decodes it again.
+    DispatchQueue.main.asyncAfter(deadline: .now() + Self.safetyHide) {
+      guard self.overlay == nil, self.pending != nil else { return }
+      self.pending = nil
+      self.lock.lock()
+      self.decoded = nil
+      self.lock.unlock()
+    }
     #endif
   }
   private var decoded: UIImage?
+  /// Whether a window has connected in this process; the picture is for the first.
+  private var windowSeen = false
 
   /** In scene(_:willConnectTo:), after React Native has its root: lay the picture on top. */
   func show(in window: UIWindow, options: UIScene.ConnectionOptions) {
-    guard let pending else {
-      NSLog("[MihrabSnapshot] nothing kept to show")
-      return
-    }
+    let first = !windowSeen
+    windowSeen = true
+    let pending = self.pending
     self.pending = nil
+    guard first else { return }
     guard options.urlContexts.isEmpty, options.notificationResponse == nil,
           options.shortcutItem == nil, options.userActivities.isEmpty,
           let meta = load(), stillCurrent(meta), let scene = window.windowScene else { return }
@@ -164,12 +186,20 @@ final class LaunchSnapshotStore {
     guard abs(Double(size.width) - meta.width) < 0.5, abs(Double(size.height) - meta.height) < 0.5,
           abs(Double(window.screen.scale) - meta.scale) < 0.01,
           scene.traitCollection.userInterfaceStyle.rawValue == meta.style,
-          scene.traitCollection.preferredContentSizeCategory.rawValue == meta.textSize else { return }
-    guard pending.wait(timeout: .now() + Self.decodeWait) == .success else { return }
-    lock.lock()
-    let image = decoded
-    decoded = nil
-    lock.unlock()
+          scene.traitCollection.preferredContentSizeCategory.rawValue == meta.textSize,
+          Self.systemLook == meta.system else { return }
+    var image: UIImage?
+    if let pending {
+      guard pending.wait(timeout: .now() + Self.decodeWait) == .success else { return }
+      lock.lock()
+      image = decoded
+      decoded = nil
+      lock.unlock()
+    } else if let dir = Self.directory() {
+      // Prewarmed, or started for something else, and the decode let go:
+      // a few dozen milliseconds here against a blank first frame.
+      image = UIImage(contentsOfFile: dir.appendingPathComponent(meta.file).path)?.preparingForDisplay()
+    }
     guard let image else { return }
     let view = UIImageView(frame: window.bounds)
     view.image = image
@@ -219,7 +249,7 @@ final class LaunchSnapshotStore {
       "w": meta.width, "h": meta.height, "scale": meta.scale, "style": meta.style,
       "text": meta.textSize, "version": meta.version, "at": NSNumber(value: meta.at),
       "look": meta.look, "heroTarget": NSNumber(value: meta.heroTarget),
-      "heroFrom": NSNumber(value: meta.heroFrom), "file": meta.file,
+      "heroFrom": NSNumber(value: meta.heroFrom), "file": meta.file, "system": meta.system,
     ]
     defaults.set(record, forKey: Self.prefix + "meta")
   }
@@ -233,7 +263,8 @@ final class LaunchSnapshotStore {
       textSize: r["text"] as? String ?? "", version: r["version"] as? String ?? "",
       at: (r["at"] as? NSNumber)?.int64Value ?? 0, look: r["look"] as? String ?? "",
       heroTarget: (r["heroTarget"] as? NSNumber)?.int64Value ?? 0,
-      heroFrom: (r["heroFrom"] as? NSNumber)?.int64Value ?? 0, file: file)
+      heroFrom: (r["heroFrom"] as? NSNumber)?.int64Value ?? 0, file: file,
+      system: r["system"] as? String ?? "")
   }
 
   private static func directory() -> URL? {
