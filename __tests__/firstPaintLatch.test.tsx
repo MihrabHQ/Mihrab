@@ -127,13 +127,13 @@ describe('what is behind it', () => {
   });
 
   it('holds the alert schedule, the widget payload and the Live Activity', () => {
-    // Four gates in HomeScreen: the effect that reschedules alerts and
-    // reminders, the widget publish, the Live Activity sync, and the
-    // focus-time resync. Each returns before doing anything until the
+    // Five gates in HomeScreen: the effect that reschedules alerts and
+    // reminders, the widget publish, the Live Activity sync, the
+    // focus-time resync, and the log-timing windows (#74). Each returns before doing anything until the
     // paint has happened, and each lists the latch in its deps so it
     // runs when it does.
-    expect(home.match(/if \(!afterFirstPaint\) return;/g)).toHaveLength(4);
-    expect(home.match(/^\s+afterFirstPaint,$/gm)).toHaveLength(4);
+    expect(home.match(/if \(!afterFirstPaint\) return;/g)).toHaveLength(5);
+    expect(home.match(/^\s+afterFirstPaint,$/gm)).toHaveLength(5);
   });
 
   it('holds the widget-queue drain and the daily reminder rebuild at launch', () => {

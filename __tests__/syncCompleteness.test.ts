@@ -77,6 +77,8 @@ const STAYS: Record<string, string> = {
   'mihrab.listenProgress.v1':
     'device-local — where a listen on THIS phone stopped; the reading marker is what travels',
   'prayer_times_cache.v2': 'derived — recomputed from coordinates and method',
+  '@mihrab/logTiming/v1':
+    "derived — this phone's prayer windows and a copy of a setting, rewritten by Today (#74)",
   prayer_times_cache: 'derived — the legacy cache, migrated then deleted',
   'prayerapp.prayer.v1': 'dead — named in resetAppData but written nowhere',
   'mihrab.cityRegistry.v1': 'describes this phone — where it has been',

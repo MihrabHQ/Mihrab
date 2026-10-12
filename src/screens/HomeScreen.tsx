@@ -83,6 +83,8 @@ import { useTabBarInset } from '../navigation/tabBarInset';
 import { useTabBarScroll } from '../navigation/tabBarVisibility';
 import { HomeStatusBand } from './home/HomeStatusBand';
 import { rescheduleEndOfDayLogReminders } from '../notifications/endOfDayLog';
+import { windowEdges } from '../notifications/snoozeWindow';
+import { rememberLogTiming, windowsFromEdges } from '../journal/logTiming';
 import { syncPrayerSilence } from '../notifications/prayerSilence';
 import { rescheduleDuaReminders } from '../notifications/duaReminders';
 import { HomeFeaturesOffer } from '../home/HomeFeaturesOffer';
@@ -774,6 +776,23 @@ export function HomeScreen() {
     settings.prayerSilence,
     state,
     view,
+  ]);
+
+  // Mark late logs as late (issue #74): the notification and widget writers
+  // read the switch and the week's prayer windows from one small key, since
+  // they run without settings or prayer times loaded (journal/logTiming).
+  useEffect(() => {
+    if (!hydrated || state.phase !== 'ready' || state.provisional) return;
+    if (!afterFirstPaint) return;
+    const windows = windowsFromEdges(windowEdges(state.week, state.baseDate));
+    rememberLogTiming(settings.logLateByClock, windows).catch(e =>
+      console.warn('rememberLogTiming:', e),
+    );
+  }, [
+    hydrated,
+    state,
+    afterFirstPaint,
+    settings.logLateByClock,
   ]);
 
   /**

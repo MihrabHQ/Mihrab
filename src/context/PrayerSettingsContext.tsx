@@ -96,6 +96,7 @@ export type NotificationsSlice = Pick<
   | 'firstThirdEnabled'
   | 'malikiSecondTimesEnabled'
   | 'endOfDayLogReminderEnabled'
+  | 'logLateByClock'
   | 'morningDuaReminderEnabled'
   | 'eveningDuaReminderEnabled'
   | 'ayahOfDayEnabled'
@@ -296,6 +297,7 @@ export function PrayerSettingsProvider({
       firstThirdEnabled: settings.firstThirdEnabled,
       malikiSecondTimesEnabled: settings.malikiSecondTimesEnabled,
       endOfDayLogReminderEnabled: settings.endOfDayLogReminderEnabled,
+      logLateByClock: settings.logLateByClock,
       morningDuaReminderEnabled: settings.morningDuaReminderEnabled,
       eveningDuaReminderEnabled: settings.eveningDuaReminderEnabled,
       ayahOfDayEnabled: settings.ayahOfDayEnabled,
@@ -324,6 +326,7 @@ export function PrayerSettingsProvider({
       settings.firstThirdEnabled,
       settings.malikiSecondTimesEnabled,
       settings.endOfDayLogReminderEnabled,
+      settings.logLateByClock,
       settings.morningDuaReminderEnabled,
       settings.eveningDuaReminderEnabled,
       settings.ayahOfDayEnabled,

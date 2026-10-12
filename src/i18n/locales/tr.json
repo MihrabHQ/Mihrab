@@ -396,6 +396,8 @@
     "prayerOffsetsCount": "{{count}} ayarlandı",
     "endOfDayLog": "Gün sonu kayıt hatırlatması",
     "endOfDayLogHelp": "Yatsıdan on dakika sonra günün beş vaktinin kaydedilip kaydedilmeyeceğini sorar. Ertesi sabah yanıtlasanız da doğru gün kaydedilir.",
+    "logLateByClock": "Geç kayıtları geç olarak işaretle",
+    "logLateByClockHelp": "Bir namazı bildiriminden, alarm ekranından veya bir widget'tan vaktinin yarısı geçtikten sonra kaydederseniz vaktinde yerine geç olarak kaydedilir. Uygulama içinde kaydettikleriniz etkilenmez.",
     "prayerSounds": "Namaz sesleri",
     "prayerSoundsBlurb": "Her namaz için ezan, varsayılan bildirim veya sessiz",
     "prayerSoundsFooter": "Her namazın sizi nasıl uyaracağını seçin. Bu, ana ekrandaki her namazın düğmesiyle aynı seçimdir; birini değiştirmek diğerini de değiştirir. Ne Android ne de iOS, uygulamaların bildirim başına farklı ses düzeyi ayarlamasına izin verir; bu yüzden ses düzeyi telefonunuzu izler.",

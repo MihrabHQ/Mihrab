@@ -28,6 +28,10 @@
  * within the prayer's own window. Recording anything else would be inventing
  * a claim the user did not make; someone who prayed late will open the app
  * and say so, and this entry is editable like any other.
+ *
+ * Unless they asked for the clock's answer: with "Mark late logs as late"
+ * on (issue #74, off by default) a log made in the second half of the
+ * prayer's window, or after it, is recorded `late`. See `journal/logTiming`.
  */
 import notifee, { EventType, type Event } from '@notifee/react-native';
 import {
@@ -57,6 +61,7 @@ import {
 import { syncEndOfDayReminderForDay } from './endOfDayLog';
 import { dropDaruriAlertsForLogged } from './prayerNotifications';
 import { flushRecordSync } from '../sync/recordChanged';
+import { statusForExternalLog } from '../journal/logTiming';
 
 /**
  * The action's id. Defined HERE and re-exported to `prayerNotifications`
@@ -76,7 +81,7 @@ const LOG_ACTION_ID = JOURNAL_LOG_ACTION_ID;
  * the two buttons was pressed.
  *
  * It fills ONLY that prayer's own sunnah — Fajr 1, Dhuhr 2, Maghrib 1,
- * Isha 2. Witr and Qiyam al-Layl are left alone even on Isha: they are
+ * Isha 1 (#73). Witr and Qiyam al-Layl are left alone even on Isha: they are
  * prayed later in the night, and a button pressed as Isha comes in cannot
  * honestly claim them.
  */
@@ -177,14 +182,19 @@ export function targetDateForPress(
 }
 
 /**
- * Record `prayer` on `date` as on-time unless it already carries a status.
- * Returns false when there was nothing to write, so an accidental double
- * press cannot overwrite a "missed" the user set deliberately.
+ * Record `prayer` on `date` unless it already carries a status — `on-time`,
+ * or `late` when the reader has asked for the clock's answer and `now` is in
+ * the second half of the window (issue #74). `window` is the prayer's own
+ * start and end when the caller has them (a notification does); otherwise
+ * the stored windows are used. Returns false when there was nothing to
+ * write, so an accidental double press cannot overwrite a "missed" the user
+ * set deliberately.
  */
 export async function logPrayerOnTime(
   date: string,
   prayer: JournalPrayer,
   now: Date = new Date(),
+  window?: { s?: number; e?: number } | null,
 ): Promise<boolean> {
   // Strict, and the failure is allowed out: a journal that exists and
   // cannot be read right now is not one this write may replace with a
@@ -200,7 +210,10 @@ export async function logPrayerOnTime(
     }
   }
   if (getEntryStatus(entries, date, prayer)) return false;
-  const next = upsertEntry(entries, date, prayer, 'on-time', now);
+  const status = await statusForExternalLog(date, prayer, now.getTime(), window).catch(
+    () => 'on-time' as const,
+  );
+  const next = upsertEntry(entries, date, prayer, status, now);
   await durableEncryptedSet(JOURNAL_KEY, JSON.stringify(next));
   notifyPracticeChanged();
   // Logging the fifth prayer of the day should retire that evening's
@@ -252,6 +265,22 @@ export async function logSunnahFor(
 }
 
 /**
+ * The prayer's window as the notification knows it: it began at the instant
+ * in its id (`pt-<epochMs>-<Prayer>`) and ends at the `deadline` the
+ * scheduler stamped on it. Null when either half is missing.
+ */
+export function windowForPress(
+  data: Record<string, unknown> | undefined,
+  notificationId: string | undefined,
+): { s: number; e: number } | null {
+  if (!notificationId?.startsWith(PRAYER_ID_PREFIX)) return null;
+  const s = Number(notificationId.slice(PRAYER_ID_PREFIX.length).split('-')[0]);
+  const e = Number(data?.deadline);
+  if (!Number.isFinite(s) || s <= 0 || !Number.isFinite(e) || e <= s) return null;
+  return { s, e };
+}
+
+/**
  * Handle a press on either of a prayer notification's log actions. Returns
  * true when the event belonged to this feature, so the caller stops looking.
  */
@@ -272,7 +301,12 @@ export async function handlePrayerLogEvent(event: Event): Promise<boolean> {
     data,
     typeof notification?.id === 'string' ? notification.id : undefined,
   );
-  await logPrayerOnTime(date, prayer).catch(() => false);
+  await logPrayerOnTime(
+    date,
+    prayer,
+    new Date(),
+    windowForPress(data, typeof notification?.id === 'string' ? notification.id : undefined),
+  ).catch(() => false);
   // The sunnah AFTER the fard, and in its own store: the fard is the entry
   // that matters, and it must land even if this half throws.
   if (isSunnahLogActionId(actionId)) {

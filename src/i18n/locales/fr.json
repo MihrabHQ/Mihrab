@@ -397,6 +397,8 @@
     "prayerOffsetsCount": "{{count}} ajustées",
     "endOfDayLog": "Rappel de fin de journée",
     "endOfDayLogHelp": "Dix minutes après l’Isha, demande s’il faut consigner les cinq prières du jour. Y répondre le lendemain matin consigne quand même le bon jour.",
+    "logLateByClock": "Marquer les enregistrements tardifs comme en retard",
+    "logLateByClockHelp": "Si vous enregistrez une prière depuis sa notification, l'écran d'alarme ou un widget après la moitié de son temps, elle est notée en retard au lieu d'à l'heure. Ce que vous enregistrez dans l'app n'est pas concerné.",
     "prayerSounds": "Sons des prières",
     "prayerSoundsBlurb": "Adhan, alerte par défaut ou silence pour chaque prière",
     "prayerSoundsFooter": "Choisissez comment chaque prière s'annonce. C'est le même choix que le bouton de chaque prière sur l'écran d'accueil : modifier l'un modifie l'autre. Ni Android ni iOS ne permettent à une application de régler un volume différent par notification ; le volume suit donc celui de votre téléphone.",

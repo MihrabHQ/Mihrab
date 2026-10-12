@@ -397,6 +397,8 @@
     "prayerOffsetsCount": "{{count}} ajustadas",
     "endOfDayLog": "Recordatorio al final del día",
     "endOfDayLogHelp": "Diez minutos después del Isha pregunta si registrar las cinco oraciones del día. Responder a la mañana siguiente registra igualmente el día correcto.",
+    "logLateByClock": "Marcar los registros tardíos como tarde",
+    "logLateByClockHelp": "Si registras una oración desde su notificación, la pantalla de alarma o un widget cuando ya ha pasado la mitad de su tiempo, se guarda como tarde en lugar de a tiempo. Lo que registras en la app no cambia.",
     "prayerSounds": "Sonidos de oración",
     "prayerSoundsBlurb": "Adhan, alerta predeterminada o silencio para cada oración",
     "prayerSoundsFooter": "Elige cómo se anuncia cada oración. Es la misma opción que el botón de cada oración en la pantalla de inicio, así que cambiar una cambia la otra. Ni Android ni iOS permiten que una app fije un volumen distinto por notificación, por lo que el volumen sigue el de tu teléfono.",

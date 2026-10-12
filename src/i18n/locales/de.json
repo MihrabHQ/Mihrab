@@ -396,6 +396,8 @@
     "prayerOffsetsCount": "{{count}} angepasst",
     "endOfDayLog": "Erinnerung am Tagesende",
     "endOfDayLogHelp": "Zehn Minuten nach dem Isha fragt sie, ob die fünf Gebete des Tages eingetragen werden sollen. Auch eine Antwort am nächsten Morgen trägt den richtigen Tag ein.",
+    "logLateByClock": "Späte Einträge als verspätet markieren",
+    "logLateByClockHelp": "Wenn du ein Gebet über seine Benachrichtigung, den Alarmbildschirm oder ein Widget einträgst, nachdem die Hälfte seiner Zeit vorbei ist, wird es als verspätet statt pünktlich gespeichert. Einträge in der App sind nicht betroffen.",
     "prayerSounds": "Gebetstöne",
     "prayerSoundsBlurb": "Adhan, Standardton oder lautlos für jedes Gebet",
     "prayerSoundsFooter": "Wähle, wie sich jedes Gebet bemerkbar macht. Es ist dieselbe Auswahl wie die Schaltfläche an jedem Gebet auf dem Startbildschirm; eine Änderung wirkt auf beide. Weder Android noch iOS erlauben Apps eine eigene Lautstärke pro Benachrichtigung, daher richtet sich die Lautstärke nach deinem Telefon.",

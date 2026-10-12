@@ -396,6 +396,8 @@
     "prayerOffsetsCount": "{{count}} disesuaikan",
     "endOfDayLog": "Pengingat catatan akhir hari",
     "endOfDayLogHelp": "Sepuluh menit setelah Isya, menanyakan apakah lima salat hari itu dicatat. Menjawabnya keesokan pagi tetap mencatat hari yang benar.",
+    "logLateByClock": "Tandai catatan terlambat sebagai terlambat",
+    "logLateByClockHelp": "Jika Anda mencatat salat dari notifikasinya, layar alarm, atau widget setelah separuh waktunya lewat, salat itu dicatat terlambat, bukan tepat waktu. Catatan di dalam aplikasi tidak terpengaruh.",
     "prayerSounds": "Suara salat",
     "prayerSoundsBlurb": "Azan, notifikasi bawaan, atau senyap untuk tiap salat",
     "prayerSoundsFooter": "Pilih bagaimana tiap salat memberi tahu Anda. Ini pilihan yang sama dengan tombol di tiap salat pada layar utama, jadi mengubah yang satu mengubah yang lain. Android maupun iOS tidak mengizinkan aplikasi mengatur volume berbeda per notifikasi, jadi volume mengikuti pengaturan ponsel Anda.",

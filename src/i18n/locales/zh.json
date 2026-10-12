@@ -396,6 +396,8 @@
     "prayerOffsetsCount": "已调整 {{count}} 项",
     "endOfDayLog": "一天结束时的记录提醒",
     "endOfDayLogHelp": "宵礼后十分钟询问是否记录当天的五番拜功。第二天早上回应，仍会记入正确的日期。",
+    "logLateByClock": "将迟记录标为迟做",
+    "logLateByClockHelp": "当你在某次礼拜时间过半后，通过通知、闹钟界面或小组件记录它时，会记为“迟做”而不是“准时”。在应用内记录的礼拜不受影响。",
     "prayerSounds": "祷告提示音",
     "prayerSoundsBlurb": "每次祷告可选宣礼、默认提醒或静音",
     "prayerSoundsFooter": "选择每次祷告如何提醒你。这与主屏幕上每次祷告旁按钮的选择相同，修改其中一处另一处也会随之改变。Android 和 iOS 都不允许应用为每条通知单独设置音量，因此音量由手机设置决定。",

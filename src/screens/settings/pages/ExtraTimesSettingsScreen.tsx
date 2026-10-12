@@ -76,6 +76,14 @@ export function ExtraTimesSettingsScreen() {
           value={settings.endOfDayLogReminderEnabled}
           onValueChange={onToggleEndOfDayLog}
         />
+        {/* Issue #74, off by default: a log made from outside the app
+            takes the clock's answer — see journal/logTiming. */}
+        <SettingsToggleRow
+          title={t('settings.logLateByClock')}
+          help={t('settings.logLateByClockHelp')}
+          value={settings.logLateByClock}
+          onValueChange={v => updateSettings({ logLateByClock: v })}
+        />
       </SettingsGroup>
     </SettingsPage>
   );

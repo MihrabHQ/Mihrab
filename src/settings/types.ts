@@ -396,6 +396,15 @@ export type PrayerAppSettings = {
    */
   endOfDayLogReminderEnabled: boolean;
   /**
+   * Mark late logs as late — issue #74, off by default.
+   *
+   * A prayer logged from the notification, the full-screen alarm or a Log
+   * Today widget is recorded `on-time`. With this on, one logged in the
+   * second half of its window, or after it, is recorded `late` instead.
+   * Logs made in the app are not affected. See `journal/logTiming`.
+   */
+  logLateByClock: boolean;
+  /**
    * App accent color id — task #127. Drives the in-app accent and (when
    * `useSystemDynamicTheme` is off) also the widget highlight via the
    * sync logic in `syncWidgetUiHints.ts`. When `useSystemDynamicTheme`
@@ -727,6 +736,7 @@ export const DEFAULT_SETTINGS: PrayerAppSettings = {
   // Off until asked for: an unsolicited nightly notification is the kind
   // of thing people uninstall an app over.
   endOfDayLogReminderEnabled: false,
+  logLateByClock: false,
   // App accent defaults to brand green (matches the historical hardcoded
   // accent so users on existing installs see no visual diff after the
   // upgrade).

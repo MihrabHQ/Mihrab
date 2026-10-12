@@ -396,6 +396,8 @@
     "prayerOffsetsCount": "{{count}} adjusted",
     "endOfDayLog": "End-of-day log reminder",
     "endOfDayLogHelp": "Ten minutes after Isha, asks whether to log the day’s five prayers. Answering it the next morning still logs the right day.",
+    "logLateByClock": "Mark late logs as late",
+    "logLateByClockHelp": "When you log a prayer from its notification, the alarm screen or a widget after half of its time has passed, it is recorded as late instead of on time. Prayers you log in the app are not affected.",
     "prayerSounds": "Prayer sounds",
     "prayerSoundsBlurb": "Adhan, default alert or silent for each prayer",
     "prayerSoundsFooter": "Pick how each prayer announces itself. This is the same choice as the button on each prayer on the home screen, so changing one changes the other. Neither Android nor iOS lets an app set a different volume per notification, so volume follows your phone.",
