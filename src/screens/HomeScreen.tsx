@@ -12,11 +12,11 @@ import {
   Platform,
   ScrollView,
   StyleSheet,
-  useWindowDimensions,
   View,
   type LayoutChangeEvent,
   type ScrollViewInstance,
 } from 'react-native';
+import { useWindowSize } from '../responsive/windowSize';
 import notifee, {
   AndroidNotificationSetting,
   AuthorizationStatus,
@@ -84,7 +84,12 @@ import { useTabBarScroll } from '../navigation/tabBarVisibility';
 import { HomeStatusBand } from './home/HomeStatusBand';
 import { rescheduleEndOfDayLogReminders } from '../notifications/endOfDayLog';
 import { windowEdges } from '../notifications/snoozeWindow';
-import { rememberLogTiming, windowsFromEdges } from '../journal/logTiming';
+import {
+  rememberLogTiming,
+  windowsFromEdges,
+  withPreferredEnds,
+} from '../journal/logTiming';
+import { firstWindowEnd } from '../journal/quickLog';
 import { syncPrayerSilence } from '../notifications/prayerSilence';
 import { rescheduleDuaReminders } from '../notifications/duaReminders';
 import { HomeFeaturesOffer } from '../home/HomeFeaturesOffer';
@@ -210,7 +215,7 @@ export function HomeScreen() {
   const alertOverridePrint = alertOverride
     ? `${alertOverride.epoch}-${alertOverride.name}-${alertOverride.mode}`
     : '';
-  const { width: screenWidth, height: screenHeight } = useWindowDimensions();
+  const { width: screenWidth, height: screenHeight } = useWindowSize();
   // Cap the day-card width to the centered content column so the carousel
   // doesn't overflow the capped column on iPad/Mac windows.
   // Must equal the width the SIBLING cards actually render at — i.e. the
@@ -784,15 +789,23 @@ export function HomeScreen() {
   useEffect(() => {
     if (!hydrated || state.phase !== 'ready' || state.provisional) return;
     if (!afterFirstPaint) return;
-    const windows = windowsFromEdges(windowEdges(state.week, state.baseDate));
+    const halves = windowsFromEdges(windowEdges(state.week, state.baseDate));
+    // With the Mālikī second times on, the line is where the preferred time
+    // ends; `view.alertWeek` is the week that carries those boundaries.
+    const windows =
+      settings.malikiSecondTimesEnabled && view
+        ? withPreferredEnds(halves, view.alertWeek, state.baseDate, firstWindowEnd)
+        : halves;
     rememberLogTiming(settings.logLateByClock, windows).catch(e =>
       console.warn('rememberLogTiming:', e),
     );
   }, [
     hydrated,
     state,
+    view,
     afterFirstPaint,
     settings.logLateByClock,
+    settings.malikiSecondTimesEnabled,
   ]);
 
   /**

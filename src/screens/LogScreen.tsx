@@ -34,10 +34,10 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  useWindowDimensions,
   View,
   type ScrollViewInstance,
 } from 'react-native';
+import { useWindowSize } from '../responsive/windowSize';
 import { useTranslation } from 'react-i18next';
 import { useNavigation, useScrollToTop } from '@react-navigation/native';
 import notifee, { EventType } from '@notifee/react-native';
@@ -207,7 +207,7 @@ export function LogScreen() {
    * reclaiming the height it no longer paints. The day's card — the
    * thing the page is for — keeps its size.
    */
-  const windowHeight = useWindowDimensions().height;
+  const windowHeight = useWindowSize().height;
   const shortScreen = windowHeight > 0 && windowHeight < LOG_DENSE_BELOW_HEIGHT;
   const [heatmapH, setHeatmapH] = useState(0);
   const [optionsOpen, setOptionsOpen] = useState(false);

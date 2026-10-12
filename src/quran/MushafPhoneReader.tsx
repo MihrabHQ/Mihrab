@@ -49,9 +49,9 @@ import {
   StyleSheet,
   Text,
   View,
-  useWindowDimensions,
   type ScrollViewInstance,
 } from 'react-native';
+import { useWindowSize } from '../responsive/windowSize';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { useAppPalette } from '../hooks/useAppPalette';
@@ -444,7 +444,7 @@ export const MushafPhoneReader = React.memo(function MushafPhoneReader(
   const { t } = useTranslation();
   const headerHeight = useHeaderHeight();
   const { palette } = useAppPalette();
-  const { width, height } = useWindowDimensions();
+  const { width, height } = useWindowSize();
   const core = useMushafReaderCore(props);
   const {
     playback,

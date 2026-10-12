@@ -17,8 +17,8 @@ import {
   Pressable,
   StyleSheet,
   View,
-  useWindowDimensions,
 } from 'react-native';
+import { useWindowSize } from './windowSize';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAppPalette } from '../hooks/useAppPalette';
 import { useBreakpoint } from './breakpoints';
@@ -59,7 +59,7 @@ export function ResponsiveModal({
 }: Props) {
   const { palette } = useAppPalette();
   const insets = useSafeAreaInsets();
-  const { height } = useWindowDimensions();
+  const { height } = useWindowSize();
   const wide = useBreakpoint() !== 'compact';
 
   return (

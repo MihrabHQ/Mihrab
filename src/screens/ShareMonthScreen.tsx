@@ -12,9 +12,9 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  useWindowDimensions,
   View,
 } from 'react-native';
+import { useWindowSize } from '../responsive/windowSize';
 import { PinchGestureHandler, State } from 'react-native-gesture-handler';
 import Share from 'react-native-share';
 import ViewShot, { captureRef, type ViewShotRef } from 'react-native-view-shot';
@@ -145,7 +145,7 @@ export function ShareMonthScreen({ route, navigation, embedded }: Props & { navi
    */
   const sheetRtl = isRtlLanguage(sheetLang) !== appRtl;
 
-  const { width: screenWidth } = useWindowDimensions();
+  const { width: screenWidth } = useWindowSize();
   const A4_WIDTH = 794;
   const initialScale = Math.min(1, (screenWidth - 32) / A4_WIDTH);
 

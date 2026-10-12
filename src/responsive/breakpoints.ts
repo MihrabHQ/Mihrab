@@ -16,7 +16,8 @@
  * etc.).
  */
 
-import { Platform, useWindowDimensions } from 'react-native';
+import { Platform } from 'react-native';
+import { useWindowSize } from './windowSize';
 
 export type Breakpoint = 'compact' | 'regular' | 'expanded';
 
@@ -36,7 +37,7 @@ export function classifyWidth(width: number): Breakpoint {
 
 /** Hook variant — re-runs on orientation change / window resize. */
 export function useBreakpoint(): Breakpoint {
-  const { width } = useWindowDimensions();
+  const { width } = useWindowSize();
   return classifyWidth(width);
 }
 
@@ -79,7 +80,7 @@ export type Responsive = {
 
 /** One hook that bundles the values screens need, re-running on resize. */
 export function useResponsive(): Responsive {
-  const { width, height } = useWindowDimensions();
+  const { width, height } = useWindowSize();
   const bp = classifyWidth(width);
   return {
     width,
@@ -100,7 +101,7 @@ export function useColumns(
   minItemWidth: number,
   opts: { max?: number; gutter?: number; available?: number } = {},
 ): number {
-  const { width } = useWindowDimensions();
+  const { width } = useWindowSize();
   const gutter = opts.gutter ?? 12;
   const available = opts.available ?? contentColumnWidth(width);
   return columnsFor(available, minItemWidth, gutter, opts.max ?? 12);

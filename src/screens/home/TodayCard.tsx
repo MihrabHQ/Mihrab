@@ -28,12 +28,12 @@ import {
   StatusBar,
   StyleSheet,
   Text,
-  useWindowDimensions,
   View,
   type LayoutChangeEvent,
   type NativeScrollEvent,
   type NativeSyntheticEvent,
 } from 'react-native';
+import { useWindowSize } from '../../responsive/windowSize';
 import Svg, { Path } from 'react-native-svg';
 import { useTranslation } from 'react-i18next';
 import { useIsActive } from '../../hooks/useIsActive';
@@ -1182,7 +1182,7 @@ function TodayCardImpl({
    * times, the Mālikī boundaries. The design's whole point is the day on
    * one screen; 4dp less air per row is the cheapest way to keep it.
    */
-  const windowHeight = useWindowDimensions().height;
+  const windowHeight = useWindowSize().height;
   const shortScreen = windowHeight > 0 && windowHeight < DENSE_BELOW_HEIGHT;
   // Full-bleed: the hero's top padding clears the status bar; the sky
   // bleeds up under it. The card chrome — radius, edge, glass — is gone:

@@ -21,9 +21,9 @@ import {
   Pressable,
   StyleSheet,
   Text,
-  useWindowDimensions,
   View,
 } from 'react-native';
+import { useWindowSize } from '../../responsive/windowSize';
 import { useTranslation } from 'react-i18next';
 import { TilawahIcon } from '../../quran/audio/PlaybackIcons';
 import { TranslationIcon } from '../../theme/icons';
@@ -207,7 +207,7 @@ export function MushafSurahScreen({
    * into the stale one. Settled, not live — a drag is a hundred widths and
    * only the last one is worth a rebuild.
    */
-  const win = useWindowDimensions();
+  const win = useWindowSize();
   const headerW = useSettledMeasure(Math.round(win.width));
   const headerH = useSettledMeasure(Math.round(win.height));
   // A different surah means the reader's page title no longer applies.

@@ -24,9 +24,9 @@ import {
   Pressable,
   StyleSheet,
   Text,
-  useWindowDimensions,
   View,
 } from 'react-native';
+import { useWindowSize } from '../../responsive/windowSize';
 import { useTranslation } from 'react-i18next';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { TilawahIcon } from '../../quran/audio/PlaybackIcons';
@@ -133,7 +133,7 @@ export function TranslationSurahScreen({
   const activeWord = useActiveWordIndex();
   // The window's settled size, so the header row is rebuilt after a Mac
   // resize instead of answering the mouse where it used to be.
-  const win = useWindowDimensions();
+  const win = useWindowSize();
   const headerW = useSettledMeasure(Math.round(win.width));
   const headerH = useSettledMeasure(Math.round(win.height));
   const edition = useActiveEdition();

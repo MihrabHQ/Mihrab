@@ -27,7 +27,8 @@
  */
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useTranslation } from 'react-i18next';
-import { Animated, Platform, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { Animated, Platform, StyleSheet, View } from 'react-native';
+import { useWindowSize } from '../responsive/windowSize';
 import type { ViewStyle } from 'react-native';
 import { useEffect, useRef } from 'react';
 import { useAppPalette } from '../hooks/useAppPalette';
@@ -80,7 +81,7 @@ export function MainTabs() {
   useEffect(() => {
     setHoverTint(palette.textSolid);
   }, [palette.textSolid]);
-  const isDashboardWidth = useWindowDimensions().width >= HOME_DASHBOARD_MIN_WIDTH;
+  const isDashboardWidth = useWindowSize().width >= HOME_DASHBOARD_MIN_WIDTH;
   // Today's header survives only on the wide dashboard; see its options.
   const todayHeader = !isMacCatalyst && isDashboardWidth;
   const barBottom = useTabBarBottom();

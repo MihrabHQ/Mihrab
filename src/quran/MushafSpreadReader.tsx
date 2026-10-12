@@ -32,8 +32,8 @@ import {
   StyleSheet,
   Text,
   View,
-  useWindowDimensions,
 } from 'react-native';
+import { useWindowSize } from '../responsive/windowSize';
 import { afterInteractions } from '../utils/afterInteractions';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useHeaderHeight } from '@react-navigation/elements';
@@ -246,7 +246,7 @@ export const MushafSpreadReader = React.memo(function MushafSpreadReader(
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
   const { palette } = useAppPalette();
-  const { width, height } = useWindowDimensions();
+  const { width, height } = useWindowSize();
   const core = useMushafReaderCore(props);
   const {
     playback,

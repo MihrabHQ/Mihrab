@@ -6,9 +6,9 @@ import {
   Pressable,
   StyleSheet,
   Text,
-  useWindowDimensions,
   View,
 } from 'react-native';
+import { useWindowSize } from '../responsive/windowSize';
 import { useTranslation } from 'react-i18next';
 import { useAppPalette } from '../hooks/useAppPalette';
 import { useBreakpoint } from '../responsive/breakpoints';
@@ -71,7 +71,7 @@ export function TasbihScreen() {
   // Arabic directly. Hide it when the app language is Arabic.
   const showPronunciation = i18n.language !== 'ar';
   const { palette } = useAppPalette();
-  const { width, height } = useWindowDimensions();
+  const { width, height } = useWindowSize();
   useAndroidSubScreenBack();
   // No manual header offset (v2.8.5) — see the note in DuasScreen. Tasbih
   // is a tab now, and the tab navigator's header is opaque: it insets the
