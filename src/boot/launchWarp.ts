@@ -20,19 +20,20 @@
  * The picture's numbers come from the moment it was taken and what the
  * hero was aimed at then, which native keeps beside it (`setHeroState`).
  *
- * ── A PICTURE FROM THE SAME PRAYER ───────────────────────────────────
+ * ── THE PICTURE IS POSED AT THE PRAYER ───────────────────────────────
  *
- * Left at 13:00 and opened at 13:07, the picture is seven minutes behind
- * and the run is a twitch. So when the picture was taken after the current
- * prayer began — the app has been opened since the last prayer — the hero
- * first rewinds, quickly, to that prayer's own moment: the countdown to
- * the whole interval, the rail empty, the sky at the prayer's hour; and
- * then runs forward from there to now, the whole of the time since the
- * last prayer in one sweep. The fade still lands on the picture's numbers;
- * the rewind begins where the run would have.
+ * Left at 13:00 and opened at 13:07, a picture of the screen as it was
+ * would be seven minutes behind and the run a twitch. So the picture's
+ * hero is not the screen's: it is drawn posed at the start of the current
+ * interval — the countdown at the whole of it, the rail empty, the sky at
+ * the prayer's hour (boot/poseHero.ts) — and the run always sweeps the
+ * whole way from that prayer to now, whether seven minutes or three days
+ * have passed. A picture native kept on its own (unposed) runs from its
+ * own moment, as before.
  */
 import { useEffect, useReducer } from 'react';
 import { heroStateShown, hideRequestedAt, holdLaunchSnapshot } from '../native/LaunchSnapshot';
+import { holdSideWorkUntil } from './firstPaint';
 
 /**
  * From JS asking native to hide the picture to the fade having finished:
@@ -43,8 +44,6 @@ import { heroStateShown, hideRequestedAt, holdLaunchSnapshot } from '../native/L
 export const WARP_AFTER_HIDE_MS = 320;
 /** The longest a gap of hours is allowed to take to run through. */
 export const WARP_MAX_MS = 900;
-/** The rewind to the current prayer's start, before the run forward. */
-export const WARP_REWIND_MS = 220;
 const MINUTE = 60_000;
 const DAY = 24 * 60 * MINUTE;
 
@@ -69,7 +68,16 @@ export function claimLaunchWarp(): WarpStart | null {
   if (claimed) return null;
   claimed = true;
   const s = heroStateShown();
-  if (!s || !(s.targetAt > s.at)) return null;
+  if (!s) return null;
+  if (s.posed) {
+    if (!(s.targetAt > s.fromAt) || !(s.fromAt > 0)) return null;
+    return {
+      remaining: Math.max(0, Math.floor((s.targetAt - s.fromAt) / 1000)),
+      pct: 0,
+      at: s.fromAt,
+    };
+  }
+  if (!(s.targetAt > s.at)) return null;
   const span = s.targetAt - s.fromAt;
   return {
     // The hero ticks just after each of the clock's whole seconds (see
@@ -133,69 +141,44 @@ export function warpSkyAt(start: WarpStart, now: number, e: number): number {
 // in component state would start over — or never start — on the second.
 // Read from here, every hero sees the same moment of the same run.
 
-type Run = {
-  start: WarpStart;
-  /** Where the run begins after a rewind from `start`; null for none. */
-  via: WarpStart | null;
-  t0: number | null;
-  duration: number;
-};
+type Run = { start: WarpStart; t0: number | null; duration: number };
 /** undefined: not decided yet; null: no run this launch (or it is over). */
 let run: Run | null | undefined;
 /** Told when the run begins (its t0 is set), so a hero can start drawing it. */
 const onBegin = new Set<() => void>();
+/** Told when the run is over, however it ended. */
+let onEnd: (() => void) | null = null;
+
+function endRun(): void {
+  run = null;
+  holdLaunchSnapshot(HOLD, false);
+  onEnd?.();
+  onEnd = null;
+}
 
 const HOLD = 'hero-run';
 
-/** The live hero's current interval: the last prayer and the next. */
-export type Interval = { fromAt: number; targetAt: number };
-
-/**
- * The current prayer's own moment, when the picture was taken after it:
- * the run rewinds to this and sweeps forward. Null when the picture is
- * from before the prayer (the sweep crosses it anyway), from after the
- * next one (a clock that went back), or the hero has no interval to
- * speak of.
- */
-export function rewindTarget(start: WarpStart, interval: Interval | null | undefined): WarpStart | null {
-  if (!interval || !(interval.fromAt > 0) || !(interval.targetAt > interval.fromAt)) return null;
-  if (start.at < interval.fromAt || start.at >= interval.targetAt) return null;
-  return {
-    remaining: Math.max(0, Math.floor((interval.targetAt - interval.fromAt) / 1000)),
-    pct: 0,
-    at: interval.fromAt,
-  };
-}
-
-function lerpStart(a: WarpStart, b: WarpStart, k: number): WarpStart {
-  return {
-    remaining: Math.round(a.remaining + (b.remaining - a.remaining) * k),
-    pct: a.pct == null || b.pct == null ? b.pct : a.pct + (b.pct - a.pct) * k,
-    at: a.at + (b.at - a.at) * k,
-  };
-}
-
-/** Quick out, quick in: a rewind is a flick, not a journey. */
-function easeInOutQuad(k: number): number {
-  const c = clamp01(k);
-  return c < 0.5 ? 2 * c * c : 1 - Math.pow(-2 * c + 2, 2) / 2;
-}
-
-function decide(reduceMotion: boolean, interval?: Interval | null): void {
+function decide(reduceMotion: boolean): void {
   if (run !== undefined) return;
   const start = claimLaunchWarp();
   if (!start || reduceMotion) {
     run = null;
     return;
   }
-  const via = rewindTarget(start, interval);
-  const r: Run = { start, via, t0: null, duration: 0 };
+  const r: Run = { start, t0: null, duration: 0 };
   run = r;
   // A hero mid-run is not a screen to keep for the next launch.
   holdLaunchSnapshot(HOLD, true);
+  // And the launch's side work (alerts, widgets…) keeps off the JS thread
+  // until the run has drawn its last frame.
+  holdSideWorkUntil(
+    new Promise<void>(resolve => {
+      onEnd = resolve;
+    }),
+  );
   setTimeout(() => {
     r.t0 = Date.now();
-    r.duration = warpDurationMs(Math.abs(r.t0 - (via ?? start).at));
+    r.duration = warpDurationMs(Math.abs(r.t0 - start.at));
     onBegin.forEach(fn => fn());
   }, warpDelayMs());
 }
@@ -207,24 +190,12 @@ function decide(reduceMotion: boolean, interval?: Interval | null): void {
 export function warpProgress(now: number = Date.now()): { start: WarpStart; e: number } | null {
   if (!run) return null;
   if (run.t0 == null) return { start: run.start, e: 0 };
-  let since = now - run.t0;
-  if (run.via) {
-    // The rewind: the START itself moves, from the picture's numbers back
-    // to the prayer's, with the run not yet begun (e = 0) — so the hero
-    // draws it with no change to how it draws the run.
-    if (since < WARP_REWIND_MS) {
-      return { start: lerpStart(run.start, run.via, easeInOutQuad(since / WARP_REWIND_MS)), e: 0 };
-    }
-    since -= WARP_REWIND_MS;
-  }
-  const from = run.via ?? run.start;
-  const k = since / run.duration;
+  const k = (now - run.t0) / run.duration;
   if (k >= 1) {
-    run = null;
-    holdLaunchSnapshot(HOLD, false);
+    endRun();
     return null;
   }
-  return { start: from, e: easeOutCubic(k) };
+  return { start: run.start, e: easeOutCubic(k) };
 }
 
 /**
@@ -237,17 +208,14 @@ export function warpProgress(now: number = Date.now()): { start: WarpStart; e: n
  */
 export function useLaunchWarp(
   reduceMotion: boolean,
-  interval?: Interval | null,
+  enabled: boolean = true,
 ): { start: WarpStart; e: number } | null {
-  decide(reduceMotion, interval);
+  if (enabled) decide(reduceMotion);
   // The setting is read asynchronously and can arrive after the run was
   // decided: Reduce Motion stops it where it is.
-  if (reduceMotion && run) {
-    run = null;
-    holdLaunchSnapshot(HOLD, false);
-  }
+  if (enabled && reduceMotion && run) endRun();
   const [, bump] = useReducer((x: number) => x + 1, 0);
-  const progress = warpProgress();
+  const progress = enabled ? warpProgress() : null;
   const live = progress != null;
   useEffect(() => {
     if (!live) return undefined;
@@ -269,6 +237,22 @@ export function useLaunchWarp(
   return progress;
 }
 
+/** Whether a launch run is drawing (or about to): re-renders as it ends. */
+export function useLaunchRunActive(): boolean {
+  const [, bump] = useReducer((x: number) => x + 1, 0);
+  const active = !!run;
+  useEffect(() => {
+    if (!active) return undefined;
+    const prev = onEnd;
+    onEnd = () => {
+      prev?.();
+      bump();
+    };
+    return undefined;
+  }, [active]);
+  return active;
+}
+
 function clamp01(x: number): number {
   return Math.min(1, Math.max(0, x));
 }
@@ -278,4 +262,5 @@ export function _resetLaunchWarpForTests(): void {
   claimed = false;
   run = undefined;
   onBegin.clear();
+  onEnd = null;
 }

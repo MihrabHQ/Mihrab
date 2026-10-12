@@ -29,7 +29,24 @@ import { bootMark, reportBoot } from './bootTimeline';
 import { hideLaunchSnapshot } from '../native/LaunchSnapshot';
 
 let done = false;
+/** The side work may go: the paint has happened AND nothing is holding it. */
+let released = false;
 let markDone: () => void = () => {};
+/**
+ * Something on screen that the side work must not run under: the hero's
+ * launch run (src/boot/launchWarp.ts). The alert schedule, the widget
+ * payload and the rest took the JS thread for a few hundred milliseconds
+ * right after the first paint — which is exactly when the run draws its
+ * frames, and it stuttered. They wait until the run is over, or this long
+ * at most.
+ */
+let hold: Promise<void> | null = null;
+export const SIDE_WORK_HOLD_MAX_MS = 1500;
+
+export function holdSideWorkUntil(until: Promise<void>): void {
+  if (released) return;
+  hold = until;
+}
 let gate: Promise<void> = new Promise<void>(resolve => {
   markDone = resolve;
 });
@@ -66,7 +83,23 @@ export function markFirstPaint(viaFallback: boolean = false): void {
     clearTimeout(fallback);
     fallback = null;
   }
-  markDone();
+  const release = () => {
+    released = true;
+    markDone();
+  };
+  if (!hold) {
+    release();
+    return;
+  }
+  let timer: ReturnType<typeof setTimeout> | null = setTimeout(() => {
+    timer = null;
+    release();
+  }, SIDE_WORK_HOLD_MAX_MS);
+  void hold.then(() => {
+    if (timer) clearTimeout(timer);
+    timer = null;
+    release();
+  });
 }
 
 /** How long after the first paint the kept launch screen starts to fade. */
@@ -100,7 +133,7 @@ export function firstPaintDone(): boolean {
  * `true` immediately and never re-renders on its account.
  */
 export function useAfterFirstPaint(): boolean {
-  const [ready, setReady] = useState(done);
+  const [ready, setReady] = useState(released);
   useEffect(() => {
     if (ready) return undefined;
     let live = true;
@@ -117,6 +150,8 @@ export function useAfterFirstPaint(): boolean {
 /** Test seam: back to "not yet painted", with a fresh gate and timer. */
 export function _resetFirstPaintForTests(): void {
   done = false;
+  released = false;
+  hold = null;
   if (fallback) clearTimeout(fallback);
   fallback = null;
   gate = new Promise<void>(resolve => {

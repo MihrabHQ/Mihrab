@@ -42,6 +42,7 @@ final class LaunchSnapshotStore {
   private(set) var shownState = ""
   private var heroTarget: Int64 = 0
   private var heroFrom: Int64 = 0
+  private var heroPosed = false
   private var pending: DispatchSemaphore?
   private let lock = NSLock()
   private let io = DispatchQueue(label: "mihrab.launch-snapshot", qos: .userInitiated)
@@ -59,6 +60,8 @@ final class LaunchSnapshotStore {
     var heroTarget: Int64
     var heroFrom: Int64
     var file: String
+    /// The hero is drawn at `heroFrom`, posed, not as it was (src/boot/poseHero.ts).
+    var heroPosed: Bool
     /// What the system decides and the app's settings do not say: the
     /// language and its direction, and the 12/24-hour clock, when the
     /// app follows the system's. A change to either is a different screen.
@@ -79,32 +82,45 @@ final class LaunchSnapshotStore {
     }
   }
 
-  func setHeroState(targetAt: Int64, fromAt: Int64) {
+  func setHeroState(targetAt: Int64, fromAt: Int64, posed: Bool) {
     lock.lock()
     heroTarget = targetAt
     heroFrom = fromAt
+    heroPosed = posed
     lock.unlock()
   }
 
   // MARK: Keeping the screen
 
-  /** The scene is about to stop being active, or JS asked: keep the window. */
-  func capture(_ window: UIWindow?) {
+  /**
+   The scene is about to stop being active, or JS asked: keep the window.
+   With `heroFile` (a PNG of JS's posed twin of the hero) that image is drawn
+   over the window's hero at (`heroX`, `heroY`) points, so the picture shows
+   the hero at the prayer rather than as it was.
+   */
+  func capture(_ window: UIWindow?, heroFile: String? = nil, heroX: Double = 0, heroY: Double = 0, fromJs: Bool = false) {
     #if targetEnvironment(macCatalyst)
     return
     #else
-    guard eligible, overlay == nil, let window, let scene = window.windowScene else { return }
+    // JS asks only when the screen is worth keeping.
+    guard eligible || fromJs, overlay == nil, let window, let scene = window.windowScene else { return }
     let bounds = window.bounds
     guard bounds.width > 0, bounds.height > 0 else { return }
     let format = UIGraphicsImageRendererFormat()
     format.scale = window.screen.scale
     format.opaque = true
+    let heroPath = heroFile.map { $0.hasPrefix("file://") ? String($0.dropFirst(7)) : $0 }
+    let hero = heroPath.flatMap { UIImage(contentsOfFile: $0) }
     let image = UIGraphicsImageRenderer(bounds: bounds, format: format).image { _ in
       window.drawHierarchy(in: bounds, afterScreenUpdates: false)
+      hero?.draw(at: CGPoint(x: heroX, y: heroY))
     }
+    if let heroPath { try? FileManager.default.removeItem(atPath: heroPath) }
     lock.lock()
     let target = heroTarget
     let from = heroFrom
+    // The pose is JS's, and only JS's capture carries it.
+    let posed = hero != nil && heroPosed
     lock.unlock()
     let at = Int64(Date().timeIntervalSince1970 * 1000)
     let meta = Meta(
@@ -113,7 +129,7 @@ final class LaunchSnapshotStore {
       textSize: scene.traitCollection.preferredContentSizeCategory.rawValue,
       version: Self.buildVersion, at: at,
       look: defaults.string(forKey: Self.prefix + "lookCurrent") ?? "",
-      heroTarget: target, heroFrom: from, file: "snapshot-\(at).jpg", system: Self.systemLook)
+      heroTarget: target, heroFrom: from, file: "snapshot-\(at).jpg", heroPosed: posed, system: Self.systemLook)
     io.async { self.write(image, meta) }
     NSLog("[MihrabSnapshot] kept %.0fx%.0f", bounds.width, bounds.height)
     #endif
@@ -211,7 +227,7 @@ final class LaunchSnapshotStore {
     window.addSubview(view)
     overlay = view
     NSLog("[MihrabSnapshot] showing the kept screen")
-    shownState = "\(meta.at),\(meta.heroTarget),\(meta.heroFrom)"
+    shownState = "\(meta.at),\(meta.heroTarget),\(meta.heroFrom),\(meta.heroPosed ? 1 : 0)"
     DispatchQueue.main.asyncAfter(deadline: .now() + Self.safetyHide) { self.hide() }
   }
 
@@ -250,6 +266,7 @@ final class LaunchSnapshotStore {
       "text": meta.textSize, "version": meta.version, "at": NSNumber(value: meta.at),
       "look": meta.look, "heroTarget": NSNumber(value: meta.heroTarget),
       "heroFrom": NSNumber(value: meta.heroFrom), "file": meta.file, "system": meta.system,
+      "heroPosed": meta.heroPosed,
     ]
     defaults.set(record, forKey: Self.prefix + "meta")
   }
@@ -264,6 +281,7 @@ final class LaunchSnapshotStore {
       at: (r["at"] as? NSNumber)?.int64Value ?? 0, look: r["look"] as? String ?? "",
       heroTarget: (r["heroTarget"] as? NSNumber)?.int64Value ?? 0,
       heroFrom: (r["heroFrom"] as? NSNumber)?.int64Value ?? 0, file: file,
+      heroPosed: r["heroPosed"] as? Bool ?? false,
       system: r["system"] as? String ?? "")
   }
 
@@ -296,15 +314,15 @@ final class MihrabLaunchSnapshot: NSObject {
     LaunchSnapshotStore.shared.hide()
   }
 
-  @objc func captureNow() {
+  @objc func captureNow(_ heroFile: String?, x: Double, y: Double) {
     DispatchQueue.main.async {
       let window = (UIApplication.shared.delegate as? AppDelegate)?.window
-      LaunchSnapshotStore.shared.capture(window)
+      LaunchSnapshotStore.shared.capture(window, heroFile: heroFile, heroX: x, heroY: y, fromJs: true)
     }
   }
 
-  @objc func setHeroState(_ targetAt: Double, fromAt: Double) {
-    LaunchSnapshotStore.shared.setHeroState(targetAt: Int64(targetAt), fromAt: Int64(fromAt))
+  @objc func setHeroState(_ targetAt: Double, fromAt: Double, posed: Bool) {
+    LaunchSnapshotStore.shared.setHeroState(targetAt: Int64(targetAt), fromAt: Int64(fromAt), posed: posed)
   }
 
   @objc func getShownState() -> NSString {

@@ -22,16 +22,19 @@ class LaunchSnapshotModule(reactContext: ReactApplicationContext) :
   @ReactMethod
   fun hide() = LaunchSnapshot.hide()
 
-  /** Keep the screen as it is now (if it is worth keeping): see LaunchSnapshot.ts. */
+  /**
+   * Keep the screen as it is now (if it is worth keeping), with the posed
+   * hero in `heroFile` drawn at (x, y) dp when given: see LaunchSnapshot.ts.
+   */
   @ReactMethod
-  fun captureNow() {
+  fun captureNow(heroFile: String?, x: Double, y: Double) {
     val activity = reactApplicationContext.currentActivity ?: return
-    activity.runOnUiThread { LaunchSnapshot.capture(activity) }
+    activity.runOnUiThread { LaunchSnapshot.capture(activity, heroFile, x.toFloat(), y.toFloat(), fromJs = true) }
   }
 
   @ReactMethod
-  fun setHeroState(targetAt: Double, fromAt: Double) =
-    LaunchSnapshot.setHeroState(targetAt.toLong(), fromAt.toLong())
+  fun setHeroState(targetAt: Double, fromAt: Double, posed: Boolean) =
+    LaunchSnapshot.setHeroState(targetAt.toLong(), fromAt.toLong(), posed)
 
   /** Read once, at the first render of the hero: see src/boot/launchWarp.ts. */
   @ReactMethod(isBlockingSynchronousMethod = true)

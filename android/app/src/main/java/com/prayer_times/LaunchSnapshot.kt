@@ -100,11 +100,16 @@ internal object LaunchSnapshot {
     private set
   @Volatile private var heroTarget = 0L
   @Volatile private var heroFrom = 0L
+  @Volatile private var heroPosed = false
 
-  /** What the hero counts down to, and from — kept with the next picture. */
-  fun setHeroState(targetAt: Long, fromAt: Long) {
+  /**
+   * What the hero counts down to, and from — kept with the next picture.
+   * `posed`: the next picture shows the hero at `fromAt` (src/boot/poseHero.ts).
+   */
+  fun setHeroState(targetAt: Long, fromAt: Long, posed: Boolean) {
     heroTarget = targetAt
     heroFrom = fromAt
+    heroPosed = posed
   }
 
   // ── What JS tells us ─────────────────────────────────────────────────
@@ -122,12 +127,23 @@ internal object LaunchSnapshot {
 
   // ── Keeping the screen ───────────────────────────────────────────────
 
-  /** MainActivity.onPause: copy the window if Today is what it shows. */
-  fun capture(activity: Activity) {
-    if (!eligible || overlay != null || Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+  /**
+   * MainActivity.onPause, or JS: copy the window if Today is what it
+   * shows. With `heroFile` (a PNG, from JS's posed twin of the hero), that
+   * image is drawn over the window's hero at (`heroX`, `heroY`) dp, so the
+   * picture shows the hero at the prayer rather than as it was.
+   */
+  fun capture(activity: Activity, heroFile: String? = null, heroX: Float = 0f, heroY: Float = 0f, fromJs: Boolean = false) {
+    // JS asks only when the screen is worth keeping, and may have turned
+    // `eligible` off again (for its posed picture) before this ran.
+    if ((!eligible && !fromJs) || overlay != null || Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
       Log.i(TAG, "not kept: eligible=$eligible showing=${overlay != null}")
       return
     }
+    // The pose is JS's, and only JS's capture carries it: a copy native
+    // takes on its own shows the hero as it is.
+    val posed = heroFile != null && heroPosed
+    val density = activity.resources.displayMetrics.density
     val window = activity.window ?: return
     val decor = window.decorView
     val w = decor.width
@@ -138,18 +154,34 @@ internal object LaunchSnapshot {
     } catch (e: Throwable) {
       return
     }
-    val meta = Meta.current(activity, w, h, System.currentTimeMillis())
+    val meta = Meta.current(activity, w, h, System.currentTimeMillis(), posed)
     try {
       PixelCopy.request(window, bitmap, { result ->
         if (result == PixelCopy.SUCCESS) {
           val app = activity.applicationContext
-          io.execute { write(app, bitmap, meta) }
+          io.execute {
+            if (heroFile != null) drawHero(bitmap, heroFile, heroX * density, heroY * density)
+            write(app, bitmap, meta)
+          }
         } else {
           bitmap.recycle()
         }
       }, main)
     } catch (e: Throwable) {
       bitmap.recycle()
+    }
+  }
+
+  /** The posed hero over the window's: the file is JS's to make and ours to delete. */
+  private fun drawHero(window: Bitmap, file: String, x: Float, y: Float) {
+    try {
+      val path = file.removePrefix("file://")
+      val hero = BitmapFactory.decodeFile(path) ?: return
+      android.graphics.Canvas(window).drawBitmap(hero, x, y, null)
+      hero.recycle()
+      File(path).delete()
+    } catch (e: Throwable) {
+      Log.w(TAG, "could not draw the posed hero", e)
     }
   }
 
@@ -241,7 +273,7 @@ internal object LaunchSnapshot {
       ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT),
     ) ?: return
     overlay = view
-    shownState = "${stored.at},${stored.heroTarget},${stored.heroFrom}"
+    shownState = "${stored.at},${stored.heroTarget},${stored.heroFrom},${if (stored.heroPosed) 1 else 0}"
     Log.i(TAG, "showing the kept screen")
     main.postDelayed({ hide() }, SAFETY_HIDE_MS)
   }
@@ -320,6 +352,7 @@ internal object LaunchSnapshot {
     val heroTarget: Long = 0L,
     val heroFrom: Long = 0L,
     val file: String? = null,
+    val heroPosed: Boolean = false,
     /**
      * What the system decides about the screen's look and the app's
      * settings do not say: the language and its direction when the app
@@ -335,6 +368,7 @@ internal object LaunchSnapshot {
         .putFloat("font", fontScale).putInt("dpi", densityDpi).putInt("version", version)
         .putString("day", day).putLong("at", at).putString("look", look)
         .putLong("heroTarget", heroTarget).putLong("heroFrom", heroFrom)
+        .putBoolean("heroPosed", heroPosed)
         .putString("file", name).putString("system", system)
         .commit()
     }
@@ -360,11 +394,11 @@ internal object LaunchSnapshot {
     }
 
     companion object {
-      fun current(activity: Activity, w: Int, h: Int, at: Long): Meta {
+      fun current(activity: Activity, w: Int, h: Int, at: Long, posed: Boolean): Meta {
         val c = activity.resources.configuration
         val look = activity.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString("look_current", "") ?: ""
         return Meta(w, h, c.uiMode and Configuration.UI_MODE_NIGHT_MASK, c.fontScale, c.densityDpi,
-          BuildConfig.VERSION_CODE, dayOf(at), at, look, heroTarget, heroFrom, system = systemLook(activity))
+          BuildConfig.VERSION_CODE, dayOf(at), at, look, heroTarget, heroFrom, heroPosed = posed, system = systemLook(activity))
       }
 
       fun systemLook(context: Context): String {
@@ -383,6 +417,7 @@ internal object LaunchSnapshot {
           p.getInt("dpi", 0), p.getInt("version", -1), p.getString("day", "") ?: "",
           p.getLong("at", 0L), p.getString("look", "") ?: "",
           p.getLong("heroTarget", 0L), p.getLong("heroFrom", 0L), file,
+          p.getBoolean("heroPosed", false),
           p.getString("system", "") ?: "",
         )
       }

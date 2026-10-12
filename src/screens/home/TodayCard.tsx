@@ -32,6 +32,7 @@ import {
   type LayoutChangeEvent,
   type NativeScrollEvent,
   type NativeSyntheticEvent,
+  type HostInstance,
 } from 'react-native';
 import { useWindowSize } from '../../responsive/windowSize';
 import Svg, { Path } from 'react-native-svg';
@@ -39,12 +40,14 @@ import { useTranslation } from 'react-i18next';
 import { useIsActive } from '../../hooks/useIsActive';
 import { useReduceMotion } from '../../hooks/useReduceMotion';
 import {
+  useLaunchRunActive,
   useLaunchWarp,
   warpPct,
   warpRemaining,
   warpSkyAt,
 } from '../../boot/launchWarp';
 import { holdLaunchSnapshot, setLaunchHeroState } from '../../native/LaunchSnapshot';
+import { registerPoseHero } from '../../boot/poseHero';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import { useClockFormatter } from '../../hooks/useClockFormatter';
 import { usePrayerSettings } from '../../context/PrayerSettingsContext';
@@ -231,6 +234,8 @@ export type TodayCardProps = {
  * clock is re-read on the way back in so the number is never stale for a
  * frame.
  */
+const noop = () => {};
+
 const HeroToday = memo(function HeroToday({
   target,
   chosen,
@@ -246,6 +251,9 @@ const HeroToday = memo(function HeroToday({
   ownsStatusBar = false,
   statusBarInset = 0,
   fill = false,
+  frozenAt,
+  onInterval,
+  onLayout,
 }: {
   /** What the countdown is aimed at: the next prayer, or the user's pick. */
   target: { name: string; at: Date };
@@ -297,6 +305,15 @@ const HeroToday = memo(function HeroToday({
    * chip or the countdown.
    */
   fill?: boolean;
+  /**
+   * Posed: the hero as it was at this instant, and not a moment later —
+   * no ticking, no launch run. The twin the kept launch picture is drawn
+   * from (boot/poseHero.ts), posed at the start of the current interval.
+   */
+  frozenAt?: number;
+  /** The interval the rail measures, when it has one: last prayer, next. */
+  onInterval?: (fromAt: number, targetAt: number) => void;
+  onLayout?: (e: LayoutChangeEvent) => void;
 }) {
   const { t } = useTranslation();
   const clock = useClockFormatter();
@@ -305,10 +322,11 @@ const HeroToday = memo(function HeroToday({
   // leaves Today the focused route, so the timer never stopped.
   const active = useIsActive();
   const reduceMotion = useReduceMotion();
-  const [now, setNow] = useState(() => new Date());
+  const posed = frozenAt != null;
+  const [now, setNow] = useState(() => new Date(frozenAt ?? Date.now()));
 
   useEffect(() => {
-    if (!active) return undefined;
+    if (!active || posed) return undefined;
     // Immediately, not on the first interval: coming back from the background
     // the displayed countdown is as stale as the time spent away.
     setNow(new Date());
@@ -324,7 +342,7 @@ const HeroToday = memo(function HeroToday({
       clearTimeout(align);
       if (id) clearInterval(id);
     };
-  }, [active]);
+  }, [active, posed]);
 
   const remainingSeconds = Math.max(
     0,
@@ -398,15 +416,11 @@ const HeroToday = memo(function HeroToday({
 
   /**
    * A cold start that opened on the kept picture of this screen draws the
-   * hero first with the picture's numbers, so the fade from picture to
-   * live is invisible, then runs them to the live ones — see
-   * src/boot/launchWarp.ts. The current interval goes with it: a picture
-   * from this same prayer makes the run rewind to the prayer first.
+   * hero first with the picture's numbers — the posed ones, at the prayer
+   * — so the fade from picture to live is invisible, then runs them to
+   * the live ones: src/boot/launchWarp.ts. Not for the posed twin.
    */
-  const launchRun = useLaunchWarp(
-    reduceMotion,
-    rail ? { fromAt: rail.from.at.getTime(), targetAt: target.at.getTime() } : null,
-  );
+  const launchRun = useLaunchWarp(reduceMotion, !posed);
   const warp = launchRun?.start ?? null;
   const warpE = launchRun?.e ?? 1;
 
@@ -464,9 +478,13 @@ const HeroToday = memo(function HeroToday({
   const [heroH, setHeroH] = useState(0);
   const [topRowH, setTopRowH] = useState(0);
   const [block, setBlock] = useState<{ y: number; h: number } | null>(null);
-  const onHeroLayout = useCallback((e: LayoutChangeEvent) => {
-    setHeroH(Math.round(e.nativeEvent.layout.height));
-  }, []);
+  const onHeroLayout = useCallback(
+    (e: LayoutChangeEvent) => {
+      setHeroH(Math.round(e.nativeEvent.layout.height));
+      onLayout?.(e);
+    },
+    [onLayout],
+  );
   const onTopRowLayout = useCallback((e: LayoutChangeEvent) => {
     setTopRowH(Math.round(e.nativeEvent.layout.height));
   }, []);
@@ -512,14 +530,16 @@ const HeroToday = memo(function HeroToday({
   // next launch picture so that launch can run from them (launchWarp).
   const railFromAt = rail ? rail.from.at.getTime() : 0;
   useEffect(() => {
+    if (posed) return;
     setLaunchHeroState(target.at.getTime(), railFromAt);
-  }, [target.at, railFromAt]);
+    onInterval?.(railFromAt, target.at.getTime());
+  }, [posed, target.at, railFromAt, onInterval]);
   const railPct = rail ? (warp ? warpPct(warp, rail.pct, warpE) : rail.pct) : 0;
 
   return (
     <View
       style={[styles.hero, expanded && styles.heroExpanded, fill && styles.heroFill]}
-      onLayout={fill ? onHeroLayout : undefined}>
+      onLayout={fill || onLayout ? onHeroLayout : undefined}>
       {/* The sky, under everything and out to the card's edges — and, on
           the phone, up under the status bar. */}
       <HeroSky
@@ -1199,6 +1219,30 @@ function TodayCardImpl({
   // full-bleed phone layout with nothing above it.
   const underStatusBar = fullBleed && !roomy && !bannerAbove;
   const heroTop = underStatusBar ? insets.top + SPACING.md : SPACING.lg;
+  // The posed twin's place and pose: the real hero's box in the wrap, and
+  // the interval it counts (boot/poseHero.ts).
+  const [heroBox, setHeroBox] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
+  const [interval, setInterval_] = useState<{ fromAt: number; targetAt: number } | null>(null);
+  const poseRef = useRef<HostInstance>(null);
+  const onRealHeroLayout = useCallback((e: LayoutChangeEvent) => {
+    const { x, y, width, height } = e.nativeEvent.layout;
+    setHeroBox(prev =>
+      prev && prev.x === x && prev.y === y && prev.w === width && prev.h === height
+        ? prev
+        : { x, y, w: width, h: height },
+    );
+  }, []);
+  const onInterval = useCallback((fromAt: number, targetAt: number) => {
+    setInterval_(fromAt > 0 && targetAt > fromAt ? { fromAt, targetAt } : null);
+  }, []);
+  // Not while the launch run draws: the twin would be drawn for nothing.
+  const fullBleedRunHeld = useLaunchRunActive();
+  const twinUp = !!(target && heroBox && interval && chosenKey === null && !fullBleedRunHeld);
+  useEffect(() => {
+    if (!twinUp || !interval) return undefined;
+    registerPoseHero({ ref: poseRef, fromAt: interval.fromAt, targetAt: interval.targetAt });
+    return () => registerPoseHero(null);
+  }, [twinUp, interval]);
   /**
    * The hero's height on a roomy page: about a third of the window, never
    * under 300 and never over 460. A third keeps the sky the backdrop it
@@ -1352,11 +1396,49 @@ function TodayCardImpl({
           // would show as a band wherever the two disagreed by a pixel.
           { backgroundColor: fullBleed ? 'transparent' : palette.accentBg },
         ]}>
+        {/* The posed twin, under the real hero and never seen: what the
+            kept launch picture shows instead of the hero as it is —
+            boot/poseHero.ts. Only when there is an interval to pose at,
+            nothing chosen, and no launch run drawing. */}
+        {target && heroBox && interval && chosenKey === null && !fullBleedRunHeld ? (
+          <View
+            ref={poseRef}
+            collapsable={false}
+            pointerEvents="none"
+            importantForAccessibility="no-hide-descendants"
+            accessibilityElementsHidden
+            style={{
+              position: 'absolute',
+              left: heroBox.x,
+              top: heroBox.y,
+              width: heroBox.w,
+              height: heroBox.h,
+            }}>
+            <HeroToday
+              target={target}
+              chosen={false}
+              onExpire={noop}
+              today={timings}
+              skyToday={skyTimings}
+              latitude={latitude}
+              longitude={longitude}
+              tomorrowFajr={tomorrow?.Fajr}
+              expanded={expanded}
+              bleed={{ horizontal: SPACING.xl, top: heroTop, bottom: SPACING.lg }}
+              statusBarInset={underStatusBar ? insets.top : 0}
+              fill={fullBleed}
+              topRow={fullBleed ? { renderLocation, renderQibla } : undefined}
+              frozenAt={interval.fromAt}
+            />
+          </View>
+        ) : null}
         {target ? (
           <HeroToday
             target={target}
             chosen={chosenKey !== null}
             onExpire={clearChosen}
+            onInterval={onInterval}
+            onLayout={onRealHeroLayout}
             today={timings}
             skyToday={skyTimings}
             latitude={latitude}

@@ -16,16 +16,25 @@
  */
 import { NativeModules, Platform } from 'react-native';
 import { isMacCatalyst } from '../responsive/breakpoints';
+import { capturePoseHero, hasPoseHero } from '../boot/poseHero';
 
 type Native = {
   setEligible(value: boolean): void;
   setLookKey(key: string): void;
   hide(): void;
-  /** Copy the window now, if it is eligible. */
-  captureNow?(): void;
-  /** What the hero is aimed at now: kept with the next picture. */
-  setHeroState?(targetAt: number, fromAt: number): void;
-  /** The picture on screen: "at,targetAt,fromAt" (ms), or "" if none. */
+  /**
+   * Copy the window now, if it is eligible — with the hero drawn in its
+   * pose (see boot/poseHero.ts) from `heroFile` at (`x`, `y`) dp, when
+   * one is given.
+   */
+  captureNow?(heroFile: string | null, x: number, y: number): void;
+  /**
+   * What the hero is aimed at now, and from: kept with the next picture.
+   * `posed`: the picture shows the hero at `fromAt`, not at the moment it
+   * was taken.
+   */
+  setHeroState?(targetAt: number, fromAt: number, posed: boolean): void;
+  /** The picture on screen: "at,targetAt,fromAt,posed" (ms, 0/1), or "". */
   getShownState?(): string;
 };
 
@@ -56,13 +65,21 @@ export const KEEP_AFTER_MS = 300;
 export const KEEP_EVERY_MS = 10_000;
 let keepTimer: ReturnType<typeof setTimeout> | null = null;
 let lastKept = 0;
+/**
+ * A posed picture of this very screen is on disk: native's own copy on
+ * leaving (which would show the hero at the moment of leaving, not at the
+ * prayer) is held off until something on the screen changes.
+ */
+let posedKept = false;
 
 function pushEligible(): void {
   const value = screenWorthy && holds.size === 0;
-  if (!native || value === lastEligible) return;
-  lastEligible = value;
+  if (!value) posedKept = false;
+  const wanted = value && !posedKept;
+  if (!native || wanted === lastEligible) return;
+  lastEligible = wanted;
   try {
-    native.setEligible(value);
+    native.setEligible(wanted);
   } catch {
     // Best effort: the worst case is a launch without the picture.
   }
@@ -77,17 +94,53 @@ function pushEligible(): void {
    */
   if (keepTimer) clearTimeout(keepTimer);
   keepTimer = null;
-  if (value && native.captureNow) {
+  if (wanted && native.captureNow) {
     keepTimer = setTimeout(() => {
       keepTimer = null;
       if (!lastEligible || Date.now() - lastKept < KEEP_EVERY_MS) return;
       lastKept = Date.now();
-      try {
-        native.captureNow?.();
-      } catch {
-        // As above.
-      }
+      void keepNow();
     }, KEEP_AFTER_MS);
+  }
+}
+
+/**
+ * Keep the screen, with the hero at the prayer it is counting from
+ * (boot/poseHero.ts) when that hero is on hand; as it is otherwise.
+ */
+async function keepNow(): Promise<void> {
+  if (!native?.captureNow) return;
+  if (!hasPoseHero()) {
+    // As the screen is, and at once.
+    try {
+      native.captureNow(null, 0, 0);
+    } catch {
+      // As above.
+    }
+    return;
+  }
+  let posed: { file: string; x: number; y: number; targetAt: number; fromAt: number } | null = null;
+  try {
+    posed = await capturePoseHero();
+  } catch {
+    posed = null;
+  }
+  // The screen may have stopped being worth keeping while the pose drew.
+  if (!lastEligible) return;
+  try {
+    if (posed) {
+      native.setHeroState?.(posed.targetAt, posed.fromAt, true);
+      lastHero = `${posed.targetAt},${posed.fromAt},1`;
+      native.captureNow(posed.file, posed.x, posed.y);
+      posedKept = true;
+      // Native's own copy on leaving would undo the pose: off until the
+      // screen changes (pushEligible puts it back).
+      pushEligible();
+    } else {
+      native.captureNow(null, 0, 0);
+    }
+  } catch {
+    // As above.
   }
 }
 
@@ -144,7 +197,7 @@ export function hideRequestedAt(): number | null {
   return hideAt;
 }
 
-export type ShownHeroState = { at: number; targetAt: number; fromAt: number };
+export type ShownHeroState = { at: number; targetAt: number; fromAt: number; posed: boolean };
 let shown: ShownHeroState | null | undefined;
 
 /**
@@ -157,8 +210,10 @@ export function heroStateShown(): ShownHeroState | null {
   shown = null;
   try {
     const raw = native?.getShownState?.() ?? '';
-    const [at, targetAt, fromAt] = raw.split(',').map(Number);
-    if (at > 0 && targetAt > 0 && Number.isFinite(fromAt)) shown = { at, targetAt, fromAt };
+    const [at, targetAt, fromAt, posed] = raw.split(',').map(Number);
+    if (at > 0 && targetAt > 0 && Number.isFinite(fromAt)) {
+      shown = { at, targetAt, fromAt, posed: posed === 1 };
+    }
   } catch {
     // No picture, as far as JS is concerned.
   }
@@ -167,15 +222,23 @@ export function heroStateShown(): ShownHeroState | null {
 
 let lastHero = '';
 
-/** What the hero counts down to, and from: kept with the next picture. */
+/**
+ * What the hero counts down to, and from: kept with the next picture. A
+ * new interval is a new screen: a posed picture of the old one is let go.
+ */
 export function setLaunchHeroState(targetAt: number, fromAt: number): void {
-  const key = `${targetAt},${fromAt}`;
+  const key = `${targetAt},${fromAt},0`;
   if (!native?.setHeroState || key === lastHero) return;
+  const wasPosed = lastHero.endsWith(',1');
   lastHero = key;
   try {
-    native.setHeroState(targetAt, fromAt);
+    native.setHeroState(targetAt, fromAt, false);
   } catch {
     // The next launch fades instead of running.
+  }
+  if (wasPosed || posedKept) {
+    posedKept = false;
+    pushEligible();
   }
 }
 
@@ -199,6 +262,7 @@ export function _resetLaunchSnapshotForTests(): void {
   shown = undefined;
   lastHero = '';
   screenWorthy = false;
+  posedKept = false;
   holds.clear();
   if (keepTimer) clearTimeout(keepTimer);
   keepTimer = null;
