@@ -120,6 +120,50 @@ describe('keeping the screen while the app is open', () => {
     expect(capture).toHaveBeenCalledTimes(2);
     jest.useRealTimers();
   });
+
+  it('once the picture is posed, native keeps its hands off until a new prayer', async () => {
+    jest.useFakeTimers();
+    jest.doMock('react-native-view-shot', () => ({ captureRef: async () => 'file:///tmp/hero.png' }));
+    const rn = require('react-native');
+    const capture = jest.fn();
+    const eligible = jest.fn();
+    rn.NativeModules.MihrabLaunchSnapshot.captureNow = capture;
+    rn.NativeModules.MihrabLaunchSnapshot.setEligible = eligible;
+    rn.NativeModules.MihrabLaunchSnapshot.setHeroState = jest.fn();
+    const m = require('../src/native/LaunchSnapshot');
+    const pose = require('../src/boot/poseHero');
+    pose.registerPoseHero({
+      ref: { current: { measureInWindow: (cb: (x: number, y: number, w: number, h: number) => void) => cb(0, 40, 400, 300) } },
+      fromAt: 1_000,
+      targetAt: 5_000,
+    });
+    m.setLaunchSnapshotEligible(true);
+    // With a twin on hand, native never keeps the screen itself.
+    expect(eligible).not.toHaveBeenCalledWith(true);
+    jest.advanceTimersByTime(m.KEEP_AFTER_MS);
+    // The pose is drawn and measured in a few promise hops.
+    for (let i = 0; i < 20; i++) await Promise.resolve();
+    expect(capture).toHaveBeenCalledWith('file:///tmp/hero.png', 0, 40);
+    // …and the chip opening and closing changes nothing: no second keep
+    // of the same pose, and native still off.
+    m.holdLaunchSnapshot('help-chip', true);
+    m.holdLaunchSnapshot('help-chip', false);
+    jest.advanceTimersByTime(m.KEEP_EVERY_MS + m.KEEP_AFTER_MS);
+    expect(capture).toHaveBeenCalledTimes(1);
+    expect(eligible).not.toHaveBeenCalledWith(true);
+    // A new interval is a new screen: JS poses it afresh.
+    m.setLaunchHeroState(9_000, 5_000);
+    jest.advanceTimersByTime(m.KEEP_EVERY_MS + m.KEEP_AFTER_MS);
+    for (let i = 0; i < 20; i++) await Promise.resolve();
+    expect(capture).toHaveBeenCalledTimes(2);
+    // Without a twin (before Fajr with the rows hidden, say), and nothing
+    // posed for the interval, native is in.
+    pose.registerPoseHero(null);
+    m.setLaunchHeroState(13_000, 9_000);
+    expect(eligible).toHaveBeenLastCalledWith(true);
+    pose._resetPoseHeroForTests();
+    jest.useRealTimers();
+  });
 });
 
 describe('wiring', () => {

@@ -28,9 +28,17 @@ type Pose = {
 };
 
 let pose: Pose | null = null;
+const listeners = new Set<() => void>();
 
 export function registerPoseHero(p: Pose | null): void {
   pose = p;
+  listeners.forEach(fn => fn());
+}
+
+/** Told whenever a twin is registered or let go. */
+export function onPoseHeroChange(fn: () => void): () => void {
+  listeners.add(fn);
+  return () => listeners.delete(fn);
 }
 
 export function hasPoseHero(): boolean {
@@ -52,8 +60,10 @@ export async function capturePoseHero(): Promise<PosedHero | null> {
   const p = pose;
   const view = p?.ref.current;
   if (!p || !view) return null;
-  // Lazy: view-shot is only ever needed here and on the share screen.
-  const { captureRef } = await import('react-native-view-shot');
+  // Lazy: view-shot is only ever needed here and on the share screen, and
+  // nothing of it should load at boot.
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const { captureRef } = require('react-native-view-shot') as typeof import('react-native-view-shot');
   const file = await captureRef(view, { format: 'png', quality: 1, result: 'tmpfile' });
   const rect = await new Promise<{ x: number; y: number; w: number; h: number }>(resolve =>
     view.measureInWindow((x: number, y: number, w: number, h: number) => resolve({ x, y, w, h })),

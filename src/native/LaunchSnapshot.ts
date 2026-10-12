@@ -16,7 +16,7 @@
  */
 import { NativeModules, Platform } from 'react-native';
 import { isMacCatalyst } from '../responsive/breakpoints';
-import { capturePoseHero, hasPoseHero } from '../boot/poseHero';
+import { capturePoseHero, hasPoseHero, onPoseHeroChange } from '../boot/poseHero';
 
 type Native = {
   setEligible(value: boolean): void;
@@ -66,22 +66,33 @@ export const KEEP_EVERY_MS = 10_000;
 let keepTimer: ReturnType<typeof setTimeout> | null = null;
 let lastKept = 0;
 /**
- * A posed picture of this very screen is on disk: native's own copy on
- * leaving (which would show the hero at the moment of leaving, not at the
- * prayer) is held off until something on the screen changes.
+ * A posed picture of this interval is on disk. From then on native's own
+ * copy on leaving is held off: it would show the hero at the moment of
+ * leaving, not at the prayer, and undo the pose — the one thing the
+ * picture is for. It was reset whenever the screen stopped being worth
+ * keeping (the Help chip opening), and the next keep was then throttled
+ * and dropped while native was let back in: most launches opened on an
+ * unposed picture. Now it is reset only by a new interval, and a keep
+ * that is throttled waits its turn rather than being dropped.
  */
 let posedKept = false;
 
 function pushEligible(): void {
   const value = screenWorthy && holds.size === 0;
-  if (!value) posedKept = false;
-  const wanted = value && !posedKept;
-  if (!native || wanted === lastEligible) return;
-  lastEligible = wanted;
-  try {
-    native.setEligible(wanted);
-  } catch {
-    // Best effort: the worst case is a launch without the picture.
+  const keep = value && !posedKept;
+  // Native's own copy on leaving only where JS cannot pose one: with the
+  // twin on hand, JS keeps the screen itself (posed), and a visit too
+  // short for that leaves the previous posed picture, which is still the
+  // prayer's and still runs the whole way — better than an unposed one.
+  const wanted = keep && !hasPoseHero();
+  if (!native) return;
+  if (wanted !== lastEligible) {
+    lastEligible = wanted;
+    try {
+      native.setEligible(wanted);
+    } catch {
+      // Best effort: the worst case is a launch without the picture.
+    }
   }
   /**
    * Kept while the app is open, too, and not only when it is left. The
@@ -94,15 +105,19 @@ function pushEligible(): void {
    */
   if (keepTimer) clearTimeout(keepTimer);
   keepTimer = null;
-  if (wanted && native.captureNow) {
+  if (keep && native.captureNow) {
+    // Not more often than KEEP_EVERY_MS — but then, not never.
+    const wait = Math.max(KEEP_AFTER_MS, lastKept + KEEP_EVERY_MS - Date.now());
     keepTimer = setTimeout(() => {
       keepTimer = null;
-      if (!lastEligible || Date.now() - lastKept < KEEP_EVERY_MS) return;
+      if (!(screenWorthy && holds.size === 0) || posedKept) return;
       lastKept = Date.now();
       void keepNow();
-    }, KEEP_AFTER_MS);
+    }, wait);
   }
 }
+
+onPoseHeroChange(pushEligible);
 
 /**
  * Keep the screen, with the hero at the prayer it is counting from
@@ -126,15 +141,13 @@ async function keepNow(): Promise<void> {
     posed = null;
   }
   // The screen may have stopped being worth keeping while the pose drew.
-  if (!lastEligible) return;
+  if (!(screenWorthy && holds.size === 0)) return;
   try {
     if (posed) {
       native.setHeroState?.(posed.targetAt, posed.fromAt, true);
       lastHero = `${posed.targetAt},${posed.fromAt},1`;
       native.captureNow(posed.file, posed.x, posed.y);
       posedKept = true;
-      // Native's own copy on leaving would undo the pose: off until the
-      // screen changes (pushEligible puts it back).
       pushEligible();
     } else {
       native.captureNow(null, 0, 0);
