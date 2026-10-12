@@ -32,8 +32,13 @@
  * own moment, as before.
  */
 import { useEffect, useReducer } from 'react';
-import { heroStateShown, hideRequestedAt, holdLaunchSnapshot } from '../native/LaunchSnapshot';
-import { holdSideWorkUntil } from './firstPaint';
+import {
+  heroStateShown,
+  hideRequestedAt,
+  holdLaunchSnapshot,
+  newLaunchSnapshotWindow,
+} from '../native/LaunchSnapshot';
+import { holdSideWorkUntil, newFirstPaintWindow } from './firstPaint';
 
 /**
  * From JS asking native to hide the picture to the fade having finished:
@@ -60,7 +65,7 @@ export type WarpStart = {
 let claimed = false;
 
 /**
- * The picture's hero, once per process, for the first hero that asks.
+ * The picture's hero, once per window, for the first hero that asks.
  * Null when no picture was shown (a launch that drew the app itself) or
  * native kept nothing to start from.
  */
@@ -177,6 +182,8 @@ function decide(reduceMotion: boolean): void {
     }),
   );
   setTimeout(() => {
+    // A window that closed while its run waited for the fade.
+    if (run !== r) return;
     r.t0 = Date.now();
     r.duration = warpDurationMs(Math.abs(r.t0 - start.at));
     onBegin.forEach(fn => fn());
@@ -255,6 +262,31 @@ export function useLaunchRunActive(): boolean {
 
 function clamp01(x: number): number {
   return Math.min(1, Math.max(0, x));
+}
+
+// ── A window, not a process ──────────────────────────────────────────────
+//
+// Everything above is "once per launch" — and a launch is a window, not a
+// process. On Android a task swiped away in Recents leaves the process
+// behind, warm; the next tap on the icon makes a new window in it, on
+// which native lays the kept picture as on any launch (LaunchSnapshot.kt).
+// Without this, that window inherited the first one's "already claimed",
+// "already painted" and "already hidden": no run, and the picture came
+// down on native's safety timer, seconds late.
+
+/**
+ * The root of the app is mounting — once per window (App.tsx): the
+ * state of the launch starts over. A run the old window was in the
+ * middle of is over.
+ */
+export function beginLaunchWindow(): void {
+  if (run) endRun();
+  claimed = false;
+  run = undefined;
+  onBegin.clear();
+  onEnd = null;
+  newLaunchSnapshotWindow();
+  newFirstPaintWindow();
 }
 
 /** Test seam. */

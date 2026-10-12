@@ -87,15 +87,8 @@ internal object LaunchSnapshot {
 
   @Volatile private var eligible = false
   @Volatile private var preloaded: Future<Bitmap?>? = null
-  /**
-   * Whether a window has been created in this process. The picture is for
-   * the first one only: a process the system started earlier for a widget
-   * or an alarm has no live screen yet, and gets the picture decoded on the
-   * spot; a second activity (a rotation, a return) already has one.
-   */
-  private var windowSeen = false
   private var overlay: ImageView? = null
-  /** The picture this process opened on, for JS: "at,targetAt,fromAt". */
+  /** The picture this window opened on, for JS: "at,targetAt,fromAt,posed". */
   @Volatile var shownState: String = ""
     private set
   @Volatile private var heroTarget = 0L
@@ -238,13 +231,18 @@ internal object LaunchSnapshot {
     main.postDelayed({ preloaded = null }, SAFETY_HIDE_MS)
   }
 
-  /** MainActivity.onCreate, after super: lay the kept screen over the window. */
+  /**
+   * MainActivity.onCreate, after super: lay the kept screen over the
+   * window. Every window that opens the app, not only a process's first:
+   * a task swiped away in Recents leaves the process behind, and the next
+   * launch is a new window in it — a launch to the person, with the same
+   * wait for the live screen and the same run to come. A window that is
+   * not one (a rotation's, a deep link's) fails the checks below.
+   */
   fun show(activity: Activity) {
-    val first = !windowSeen
-    windowSeen = true
-    val pending = preloaded ?: if (first) decodeNow(activity) else null
+    shownState = ""
+    val warm = preloaded
     preloaded = null
-    if (pending == null) return
     if (!isPlainLaunch(activity.intent)) {
       Log.i(TAG, "not a plain launch: ${activity.intent}")
       return
@@ -254,6 +252,7 @@ internal object LaunchSnapshot {
       Log.i(TAG, "kept screen does not fit this window")
       return
     }
+    val pending = warm ?: decodeNow(activity, stored) ?: return
     val bitmap = try {
       pending.get(DECODE_WAIT_MS, TimeUnit.MILLISECONDS)
     } catch (e: Throwable) {
@@ -279,14 +278,12 @@ internal object LaunchSnapshot {
   }
 
   /**
-   * The first window of a process that was started before it had one (a
-   * widget's refresh, an alarm) and so decoded nothing, or let its decode
-   * go: a few dozen milliseconds on the main thread, against a blank
-   * window for the whole of React Native's start.
+   * A window of a process that decoded nothing for it — started before it
+   * had one (a widget's refresh, an alarm), or a process that already had
+   * a window and let its decode go: a few dozen milliseconds on the main
+   * thread, against a blank window for the whole of the screen's build.
    */
-  private fun decodeNow(context: Context): Future<Bitmap?>? {
-    val stored = Meta.load(prefs(context)) ?: return null
-    if (!stored.stillCurrent(context)) return null
+  private fun decodeNow(context: Context, stored: Meta): Future<Bitmap?>? {
     val file = File(dir(context), stored.file ?: return null)
     if (!file.exists()) return null
     return io.submit<Bitmap?> {

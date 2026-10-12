@@ -199,7 +199,7 @@ export function setLaunchSnapshotLook(key: string): void {
 }
 
 /**
- * Once per process: the picture is only ever laid on a cold start's first
+ * Once per window: the picture is only ever laid on a window's first
  * frame, and Today commits many times after that one.
  */
 let hideSent = false;
@@ -214,9 +214,9 @@ export type ShownHeroState = { at: number; targetAt: number; fromAt: number; pos
 let shown: ShownHeroState | null | undefined;
 
 /**
- * The picture this launch opened on — when it was taken and what its hero
+ * The picture this window opened on — when it was taken and what its hero
  * was counting down to, from what — or null if it opened on none. Asked
- * once; the answer does not change within a process.
+ * once; the answer does not change within a window.
  */
 export function heroStateShown(): ShownHeroState | null {
   if (shown !== undefined) return shown;
@@ -266,18 +266,28 @@ export function hideLaunchSnapshot(): void {
   }
 }
 
-/** Test seam. */
-export function _resetLaunchSnapshotForTests(): void {
-  lastEligible = null;
-  lastLook = null;
+/**
+ * A new window of this process is opening (src/boot/launchWarp.ts,
+ * `beginLaunchWindow`): what was this window's — the picture it opened
+ * on, whether the fade was asked for, what the old screen said about
+ * itself — starts over. What is the process's (the look, what native was
+ * last told, the posed picture on disk) stands.
+ */
+export function newLaunchSnapshotWindow(): void {
   hideSent = false;
   hideAt = null;
   shown = undefined;
-  lastHero = '';
   screenWorthy = false;
-  posedKept = false;
   holds.clear();
-  if (keepTimer) clearTimeout(keepTimer);
-  keepTimer = null;
+  pushEligible();
+}
+
+/** Test seam. */
+export function _resetLaunchSnapshotForTests(): void {
+  newLaunchSnapshotWindow();
+  lastEligible = null;
+  lastLook = null;
+  lastHero = '';
+  posedKept = false;
   lastKept = 0;
 }

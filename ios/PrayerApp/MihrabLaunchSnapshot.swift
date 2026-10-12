@@ -190,6 +190,9 @@ final class LaunchSnapshotStore {
 
   /** In scene(_:willConnectTo:), after React Native has its root: lay the picture on top. */
   func show(in window: UIWindow, options: UIScene.ConnectionOptions) {
+    // Each window's own: JS starts over for every window (App.tsx), and a
+    // later one must not read the first's.
+    shownState = ""
     let first = !windowSeen
     windowSeen = true
     let pending = self.pending

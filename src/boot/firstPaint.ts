@@ -147,8 +147,15 @@ export function useAfterFirstPaint(): boolean {
   return ready;
 }
 
-/** Test seam: back to "not yet painted", with a fresh gate and timer. */
-export function _resetFirstPaintForTests(): void {
+/**
+ * A new window of this process is opening (src/boot/launchWarp.ts,
+ * `beginLaunchWindow`): its first frame is yet to come, and the side work
+ * of that launch waits for it as a cold start's does. Whoever was still
+ * waiting on the old window's gate is let go — nothing of that window is
+ * worth holding for.
+ */
+export function newFirstPaintWindow(): void {
+  markDone();
   done = false;
   released = false;
   hold = null;
@@ -157,4 +164,9 @@ export function _resetFirstPaintForTests(): void {
   gate = new Promise<void>(resolve => {
     markDone = resolve;
   });
+}
+
+/** Test seam: back to "not yet painted", with a fresh gate and timer. */
+export function _resetFirstPaintForTests(): void {
+  newFirstPaintWindow();
 }

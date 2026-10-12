@@ -54,6 +54,35 @@ describe('the picture\'s numbers', () => {
     mockState.value = '';
     expect(claimLaunchWarp()).toBeNull();
   });
+
+  it('are read again for a new window of the same process', () => {
+    const m = require('../src/native/LaunchSnapshot');
+    const fp = require('../src/boot/firstPaint');
+    const { beginLaunchWindow } = require('../src/boot/launchWarp');
+    const hide = require('react-native').NativeModules.MihrabLaunchSnapshot.hide as jest.Mock;
+    hide.mockClear();
+    // The first window: a picture, claimed, painted, hidden.
+    const at = 1_000 * HOUR;
+    mockState.value = `${at},${at + 2 * HOUR},${at - 2 * HOUR},1`;
+    expect(claimLaunchWarp()).not.toBeNull();
+    fp.markFirstPaint();
+    m.hideLaunchSnapshot();
+    expect(hide).toHaveBeenCalledTimes(1);
+    expect(fp.firstPaintDone()).toBe(true);
+    // The task is swiped away; the process stays; a new window opens on
+    // a picture of its own — everything starts over.
+    mockState.value = `${at + HOUR},${at + 5 * HOUR},${at + HOUR},1`;
+    beginLaunchWindow();
+    expect(fp.firstPaintDone()).toBe(false);
+    expect(claimLaunchWarp()).toEqual({ remaining: 4 * 3600, pct: 0, at: at + HOUR });
+    m.hideLaunchSnapshot();
+    expect(hide).toHaveBeenCalledTimes(2);
+    // …and a window that opened on no picture runs nothing, whatever the
+    // first one opened on.
+    mockState.value = '';
+    beginLaunchWindow();
+    expect(claimLaunchWarp()).toBeNull();
+  });
 });
 
 describe('the run', () => {
