@@ -44,6 +44,7 @@ import {
   statusByClock,
   statusForExternalLog,
   windowsFromEdges,
+  withPreferredEnds,
 } from '../src/journal/logTiming';
 
 const H = 60 * 60 * 1000;
@@ -154,3 +155,33 @@ function press(id: string, deadline: string) {
     },
   } as never);
 }
+
+describe('the Mālikī line', () => {
+  it('is the end of the preferred time when it falls inside the window', () => {
+    const win = { s: at(13), e: at(17), f: at(14) };
+    expect(statusByClock(win, at(13, 59))).toBe('on-time');
+    expect(statusByClock(win, at(14))).toBe('late');
+  });
+
+  it('falls back to the half when the boundary is outside the window', () => {
+    expect(statusByClock({ s: at(13), e: at(17), f: at(18) }, at(14))).toBe('on-time');
+    expect(statusByClock({ s: at(13), e: at(17), f: at(18) }, at(15))).toBe('late');
+  });
+
+  it('is read from the day that carries the boundaries', () => {
+    const base = new Date(2026, 7, 9);
+    const w = withPreferredEnds(windowsFromEdges(EDGES), [{ DhuhrDaruri: '14:30' }], base, (p, t, b) =>
+      t[`${p}Daruri` as 'DhuhrDaruri'] ? new Date(b.getFullYear(), b.getMonth(), b.getDate(), 14, 30).getTime() : null,
+    );
+    expect(w.find(x => x.p === 'Dhuhr')?.f).toBe(at(14, 30));
+    expect(w.find(x => x.p === 'Asr')?.f).toBeUndefined();
+  });
+
+  it('applies to a notification press through the stored window', async () => {
+    const wins = windowsFromEdges(EDGES).map(x => (x.p === 'Dhuhr' ? { ...x, f: at(14) } : x));
+    await rememberLogTiming(true, wins, at(12));
+    expect(
+      await statusForExternalLog('2026-08-09', 'Dhuhr', at(14, 10), { s: at(13), e: at(17) }),
+    ).toBe('late');
+  });
+});

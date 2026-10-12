@@ -8,6 +8,10 @@
  * `logLateByClock` on, the reader has asked for the clock's answer
  * instead: a log made in the first half of the prayer's window is
  * `on-time`, one made in the second half or after it has closed is `late`.
+ * With the Mālikī second times on, the line is not the half but the end of
+ * the preferred (ikhtiyārī) time — the boundary the Today card draws and
+ * the second-time alerts ring at — wherever that boundary falls inside the
+ * window; a boundary outside it is ignored, as `quickLog` ignores it.
  * Logs made in the app itself are untouched — there the reader picks the
  * status, or is asked.
  *
@@ -45,6 +49,8 @@ export type PrayerWindow = {
   /** Start and end, epoch ms. */
   s: number;
   e: number;
+  /** Mālikī only: when the preferred time ends, epoch ms. */
+  f?: number;
 };
 
 type Stored = { on: boolean; windows: PrayerWindow[] };
@@ -81,13 +87,16 @@ export function windowsFromEdges(
  * to say against it.
  */
 export function statusByClock(
-  win: { s: number; e: number } | null | undefined,
+  win: { s: number; e: number; f?: number } | null | undefined,
   nowMs: number,
 ): 'on-time' | 'late' {
   if (!win || !Number.isFinite(win.s) || !Number.isFinite(win.e) || win.e <= win.s) {
     return 'on-time';
   }
   if (nowMs < win.s) return 'on-time';
+  if (win.f != null && Number.isFinite(win.f) && win.f > win.s && win.f < win.e) {
+    return nowMs < win.f ? 'on-time' : 'late';
+  }
   const share = (nowMs - win.s) / (win.e - win.s);
   return share < LATE_AFTER_FRACTION ? 'on-time' : 'late';
 }
@@ -104,7 +113,8 @@ async function readStored(): Promise<Stored | null> {
             typeof w.d === 'string' &&
             SALAH.includes(w.p as string) &&
             Number.isFinite(w.s) &&
-            Number.isFinite(w.e),
+            Number.isFinite(w.e) &&
+            (w.f === undefined || Number.isFinite(w.f)),
         )
       : [];
     return { on: v.on === true, windows };
@@ -146,9 +156,36 @@ export async function statusForExternalLog(
 ): Promise<'on-time' | 'late'> {
   const stored = await readStored();
   if (!stored?.on) return 'on-time';
-  if (hint && Number.isFinite(hint.s) && Number.isFinite(hint.e)) {
-    return statusByClock({ s: hint.s as number, e: hint.e as number }, nowMs);
-  }
   const win = stored.windows.find(w => w.d === date && w.p === prayer);
+  if (hint && Number.isFinite(hint.s) && Number.isFinite(hint.e)) {
+    // The notification's own start and end, and the stored Mālikī line.
+    return statusByClock({ s: hint.s as number, e: hint.e as number, f: win?.f }, nowMs);
+  }
   return statusByClock(win, nowMs);
+}
+
+/**
+ * Give each window its Mālikī line from the week that carries the
+ * `<Prayer>Daruri` boundaries (`days[i]` is the day `i` after `baseDay`).
+ * Windows of days the week does not hold, or with no boundary, keep the
+ * half-window rule.
+ */
+export function withPreferredEnds<T>(
+  windows: readonly PrayerWindow[],
+  days: readonly (T | undefined)[],
+  baseDay: Date,
+  firstEnd: (prayer: JournalPrayer, timings: T, base: Date) => number | null,
+): PrayerWindow[] {
+  const byDate = new Map<string, { timings: T; base: Date }>();
+  days.forEach((timings, i) => {
+    if (!timings) return;
+    const base = new Date(baseDay.getFullYear(), baseDay.getMonth(), baseDay.getDate() + i);
+    byDate.set(ymd(base.getTime()), { timings, base });
+  });
+  return windows.map(w => {
+    const day = byDate.get(w.d);
+    if (!day) return w;
+    const f = firstEnd(w.p, day.timings, day.base);
+    return f != null && f > w.s && f < w.e ? { ...w, f } : w;
+  });
 }

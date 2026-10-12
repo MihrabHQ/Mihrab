@@ -98,7 +98,7 @@ export type QuickLogPhase =
  * presence is the whole question: a table that carries them is a table
  * whose windows have two halves, and one that does not is unchanged.
  */
-function firstWindowEnd(
+export function firstWindowEnd(
   prayer: JournalPrayer,
   timings: TimingsMap,
   base: Date,
