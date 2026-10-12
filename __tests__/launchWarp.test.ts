@@ -23,6 +23,7 @@ jest.mock('react-native', () => ({
 import {
   _resetLaunchWarpForTests,
   claimLaunchWarp,
+  rewindTarget,
   easeOutCubic,
   warpDurationMs,
   warpPct,
@@ -53,6 +54,23 @@ describe('the picture\'s numbers', () => {
   it('are nothing when the launch drew no picture', () => {
     mockState.value = '';
     expect(claimLaunchWarp()).toBeNull();
+  });
+});
+
+describe('the rewind to the current prayer', () => {
+  const start = { remaining: 3 * 3600, pct: 0.25, at: 10 * HOUR };
+
+  it('is the prayer\'s own moment when the picture was taken after it', () => {
+    const via = rewindTarget(start, { fromAt: 9 * HOUR, targetAt: 13 * HOUR });
+    expect(via).toEqual({ remaining: 4 * 3600, pct: 0, at: 9 * HOUR });
+  });
+
+  it('is nothing when the picture is from before the prayer, or there is no interval', () => {
+    expect(rewindTarget(start, { fromAt: 11 * HOUR, targetAt: 13 * HOUR })).toBeNull();
+    expect(rewindTarget(start, { fromAt: 7 * HOUR, targetAt: 9 * HOUR })).toBeNull();
+    expect(rewindTarget(start, null)).toBeNull();
+    expect(rewindTarget(start, { fromAt: 0, targetAt: 13 * HOUR })).toBeNull();
+    expect(rewindTarget(start, { fromAt: 13 * HOUR, targetAt: 12 * HOUR })).toBeNull();
   });
 });
 
@@ -137,7 +155,7 @@ describe('wiring', () => {
     expect(warp).toMatch(/if \(!start \|\| reduceMotion\) \{\s*run = null;/);
     expect(warp).toMatch(/holdLaunchSnapshot\(HOLD, true\)/);
     expect(warp).toMatch(/holdLaunchSnapshot\(HOLD, false\)/);
-    expect(card).toMatch(/useLaunchWarp\(reduceMotion\)/);
+    expect(card).toMatch(/useLaunchWarp\(\s*reduceMotion,\s*rail \? \{ fromAt: rail\.from\.at\.getTime\(\), targetAt: target\.at\.getTime\(\) \} : null,\s*\)/);
   });
 
   it('keeps what the hero is aimed at beside the next picture', () => {

@@ -305,15 +305,6 @@ const HeroToday = memo(function HeroToday({
   // leaves Today the focused route, so the timer never stopped.
   const active = useIsActive();
   const reduceMotion = useReduceMotion();
-  /**
-   * A cold start that opened on the kept picture of this screen (Android)
-   * draws the hero first with the picture's numbers, so the fade from
-   * picture to live is invisible, then runs them to the live ones — see
-   * src/boot/launchWarp.ts.
-   */
-  const launchRun = useLaunchWarp(reduceMotion);
-  const warp = launchRun?.start ?? null;
-  const warpE = launchRun?.e ?? 1;
   const [now, setNow] = useState(() => new Date());
 
   useEffect(() => {
@@ -346,6 +337,78 @@ const HeroToday = memo(function HeroToday({
   useEffect(() => {
     if (chosen && remainingSeconds <= 0) onExpire();
   }, [chosen, remainingSeconds, onExpire]);
+
+  /**
+   * The rail measures the CURRENT interval — from the prayer that has most
+   * recently passed to the one being counted down to. Without a previous
+   * time to anchor it (before Fajr, or when the day's earlier entries are
+   * hidden by the optional-times toggles) there is no interval to be a
+   * fraction of, so the rail is simply not drawn.
+   */
+  const rail = useMemo(() => {
+    // A clock later than Maghrib's in the evening's rows (Isha, the First
+    // Third) that reads EARLIER than Maghrib has crossed midnight — a
+    // Stockholm June Isha is "00:47" — and belongs to tomorrow's date.
+    // Read as today's it had already "passed" at 23:00, and the rail ran
+    // from Isha to Isha with nothing in it.
+    const maghribAt = today.Maghrib
+      ? combineLocalDateAndTime(now, today.Maghrib).getTime()
+      : null;
+    const instant = (key: string, raw: string): Date => {
+      const at = combineLocalDateAndTime(now, raw);
+      if (
+        (key === 'Isha' || key === 'Firstthird') &&
+        maghribAt != null &&
+        at.getTime() < maghribAt
+      ) {
+        at.setDate(at.getDate() + 1);
+      }
+      return at;
+    };
+    // Today's instants AND yesterday's: before Fajr nothing of today has
+    // passed, and the rail used to vanish for the whole small-hours
+    // stretch — the one time a "how far into the night" bar is the most
+    // use. Last night's Isha is the same clock a day earlier.
+    const passed = DISPLAY_ORDER.map(key => ({
+      key,
+      raw: today[key],
+    }))
+      .filter(e => e.raw)
+      .flatMap(e => {
+        const at = instant(e.key, e.raw as string);
+        const yesterday = new Date(at);
+        yesterday.setDate(yesterday.getDate() - 1);
+        return [
+          { key: e.key, at },
+          { key: e.key, at: yesterday },
+        ];
+      })
+      .filter(e => e.at.getTime() <= now.getTime())
+      .sort((a, b) => a.at.getTime() - b.at.getTime());
+    const from = passed[passed.length - 1];
+    if (!from) return null;
+    const span = target.at.getTime() - from.at.getTime();
+    if (span <= 0) return null;
+    const pct = Math.max(
+      0,
+      Math.min(1, (now.getTime() - from.at.getTime()) / span),
+    );
+    return { from, pct };
+  }, [today, now, target.at]);
+
+  /**
+   * A cold start that opened on the kept picture of this screen draws the
+   * hero first with the picture's numbers, so the fade from picture to
+   * live is invisible, then runs them to the live ones — see
+   * src/boot/launchWarp.ts. The current interval goes with it: a picture
+   * from this same prayer makes the run rewind to the prayer first.
+   */
+  const launchRun = useLaunchWarp(
+    reduceMotion,
+    rail ? { fromAt: rail.from.at.getTime(), targetAt: target.at.getTime() } : null,
+  );
+  const warp = launchRun?.start ?? null;
+  const warpE = launchRun?.e ?? 1;
 
   const units = useMemo(
     () => ({
@@ -444,63 +507,6 @@ const HeroToday = memo(function HeroToday({
   const sceneTop = fill ? statusBarInset + topRowH + SPACING.md : 0;
   const sceneBottom = fill && block ? heroH - block.y + bleedBottom : 0;
 
-  /**
-   * The rail measures the CURRENT interval — from the prayer that has most
-   * recently passed to the one being counted down to. Without a previous
-   * time to anchor it (before Fajr, or when the day's earlier entries are
-   * hidden by the optional-times toggles) there is no interval to be a
-   * fraction of, so the rail is simply not drawn.
-   */
-  const rail = useMemo(() => {
-    // A clock later than Maghrib's in the evening's rows (Isha, the First
-    // Third) that reads EARLIER than Maghrib has crossed midnight — a
-    // Stockholm June Isha is "00:47" — and belongs to tomorrow's date.
-    // Read as today's it had already "passed" at 23:00, and the rail ran
-    // from Isha to Isha with nothing in it.
-    const maghribAt = today.Maghrib
-      ? combineLocalDateAndTime(now, today.Maghrib).getTime()
-      : null;
-    const instant = (key: string, raw: string): Date => {
-      const at = combineLocalDateAndTime(now, raw);
-      if (
-        (key === 'Isha' || key === 'Firstthird') &&
-        maghribAt != null &&
-        at.getTime() < maghribAt
-      ) {
-        at.setDate(at.getDate() + 1);
-      }
-      return at;
-    };
-    // Today's instants AND yesterday's: before Fajr nothing of today has
-    // passed, and the rail used to vanish for the whole small-hours
-    // stretch — the one time a "how far into the night" bar is the most
-    // use. Last night's Isha is the same clock a day earlier.
-    const passed = DISPLAY_ORDER.map(key => ({
-      key,
-      raw: today[key],
-    }))
-      .filter(e => e.raw)
-      .flatMap(e => {
-        const at = instant(e.key, e.raw as string);
-        const yesterday = new Date(at);
-        yesterday.setDate(yesterday.getDate() - 1);
-        return [
-          { key: e.key, at },
-          { key: e.key, at: yesterday },
-        ];
-      })
-      .filter(e => e.at.getTime() <= now.getTime())
-      .sort((a, b) => a.at.getTime() - b.at.getTime());
-    const from = passed[passed.length - 1];
-    if (!from) return null;
-    const span = target.at.getTime() - from.at.getTime();
-    if (span <= 0) return null;
-    const pct = Math.max(
-      0,
-      Math.min(1, (now.getTime() - from.at.getTime()) / span),
-    );
-    return { from, pct };
-  }, [today, now, target.at]);
 
   // What the countdown is aimed at, and the rail's start: kept with the
   // next launch picture so that launch can run from them (launchWarp).

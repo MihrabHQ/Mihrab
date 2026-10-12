@@ -72,7 +72,7 @@ import { Text, View, StyleSheet } from 'react-native';
 // eslint-disable-next-line import/first
 import { TodayCard } from '../src/screens/home/TodayCard';
 // eslint-disable-next-line import/first
-import { _resetLaunchWarpForTests, WARP_AFTER_HIDE_MS, WARP_MAX_MS } from '../src/boot/launchWarp';
+import { _resetLaunchWarpForTests, WARP_AFTER_HIDE_MS, WARP_MAX_MS, WARP_REWIND_MS } from '../src/boot/launchWarp';
 
 const TIMINGS = {
   Fajr: '05:00',
@@ -172,7 +172,7 @@ function simulate(pictureAt: Date, now: Date) {
   const tree = renderCard(now);
   const seconds: number[] = [shownSeconds(tree)];
   const rails: (number | null)[] = [shownRail(tree)];
-  const total = WARP_AFTER_HIDE_MS + WARP_MAX_MS + 200;
+  const total = WARP_AFTER_HIDE_MS + WARP_REWIND_MS + WARP_MAX_MS + 200;
   for (let t = 0; t < total; t += frame) {
     act(() => {
       jest.advanceTimersByTime(frame);
@@ -213,11 +213,43 @@ function expectRun(r: ReturnType<typeof simulate>) {
   }
 }
 
+/**
+ * A picture from the same prayer: the hero rewinds to the prayer's own
+ * moment — the whole interval on the countdown, an empty rail — and then
+ * runs forward from there to now.
+ */
+function expectRewindRun(r: ReturnType<typeof simulate>) {
+  expect(r.seconds[0]).toBe(r.cached);
+  expect(r.rails[0]).toBeCloseTo(r.cachedRail, 2);
+  const lh = heroAt(new Date(Date.now()));
+  const whole = Math.floor((lh.target.getTime() - lh.from.getTime()) / 1000);
+  // Up to the whole interval (the rewind), then down to the live count.
+  // Within a frame of the top: the first forward frame is already a little
+  // under the whole.
+  const peak = Math.max(...r.seconds);
+  expect(whole - peak).toBeGreaterThanOrEqual(0);
+  expect(whole - peak).toBeLessThanOrEqual(Math.max(2, whole * 0.01));
+  const peakAt = r.seconds.indexOf(peak);
+  expect(peakAt).toBeGreaterThan(0);
+  expect(Math.min(...r.rails.slice(0, peakAt + 1).map(x => x as number))).toBeLessThan(0.01);
+  for (let i = peakAt + 1; i < r.seconds.length; i++) {
+    expect(r.seconds[i] - r.seconds[i - 1]).toBeLessThanOrEqual(1);
+    expect((r.rails[i] as number) - (r.rails[i - 1] as number)).toBeGreaterThanOrEqual(-0.001);
+  }
+  expect(new Set(r.seconds).size).toBeGreaterThan(8);
+  expect(Math.abs(r.seconds[r.seconds.length - 1] - r.live)).toBeLessThanOrEqual(2);
+  expect(r.rails[r.rails.length - 1] as number).toBeCloseTo(r.liveRail, 2);
+}
+
 describe('the hero runs from the kept picture to now', () => {
   const D = new Date(2026, 9, 8);
 
-  it('a few minutes later, same prayer ahead', () => {
-    expectRun(simulate(day(D, '13:00'), day(D, '13:07')));
+  it('a few minutes later, same prayer ahead: rewinds to the prayer, then runs to now', () => {
+    expectRewindRun(simulate(day(D, '13:00'), day(D, '13:07')));
+  });
+
+  it('an hour later, same prayer ahead: the same', () => {
+    expectRewindRun(simulate(day(D, '13:00'), day(D, '14:30')));
   });
 
   it('after one prayer has passed', () => {
@@ -235,16 +267,24 @@ describe('the hero runs from the kept picture to now', () => {
     expectRun(simulate(day(D, '05:10'), day(D, '23:30')));
   });
 
-  it('across midnight', () => {
-    expectRun(simulate(day(D, '21:00'), day(D, '01:15', 1)));
+  it('across midnight, the same prayer still ahead: rewinds to Isha', () => {
+    expectRewindRun(simulate(day(D, '21:00'), day(D, '01:15', 1)));
+  });
+
+  it('across midnight, after Fajr', () => {
+    expectRun(simulate(day(D, '21:00'), day(D, '06:40', 1)));
   });
 
   it('after days away', () => {
     expectRun(simulate(day(D, '13:00', -3), day(D, '09:20')));
   });
 
-  it('when the clock has gone back', () => {
-    expectRun(simulate(day(D, '13:40'), day(D, '12:50')));
+  it('when the clock has gone back within the prayer: rewinds, then runs', () => {
+    expectRewindRun(simulate(day(D, '13:40'), day(D, '12:50')));
+  });
+
+  it('when the clock has gone back past the prayer', () => {
+    expectRun(simulate(day(D, '15:40'), day(D, '12:50')));
   });
 
   it('keeps ticking as usual once there', () => {
