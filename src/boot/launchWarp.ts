@@ -146,10 +146,43 @@ export function warpSkyAt(start: WarpStart, now: number, e: number): number {
 // in component state would start over — or never start — on the second.
 // Read from here, every hero sees the same moment of the same run.
 
-type Run = { start: WarpStart; t0: number | null; duration: number };
+type Run = {
+  start: WarpStart;
+  /** The fade is over: the run may draw. */
+  begun: boolean;
+  /** When its first frame was drawn, pushed forward by every stall since. */
+  t0: number | null;
+  duration: number;
+  /** When the run was last read — a frame drawn, or any render of the hero. */
+  lastSeen: number | null;
+};
+/**
+ * ── TIMED BY THE FRAMES DRAWN, NOT THE CLOCK ─────────────────────────
+ *
+ * The run's clock only runs while frames are being drawn. The launch's
+ * first second is the busiest the JS thread ever is — the day's times,
+ * the cards below, the schedule — and measured on a Pixel 10 Pro it
+ * stalls for 100–300 ms at a time right where the run draws; on a slow
+ * day for longer. Timed by the wall clock, a stall of the run's length
+ * meant the next frame drawn was its last: the hero froze at the
+ * picture's numbers, then jumped to now — the one thing the run exists
+ * to avoid. So a gap between two frames longer than a dropped frame or
+ * two is a stall, and the run resumes where it was: it starts when its
+ * first frame is drawn, not when the fade is over, and stalls push its
+ * start forward. Counted at every read of the run, not only in the frame
+ * loop: after a stall the hero's own second tick can render before the
+ * next frame, and that render must not find the run over either. A
+ * stall is still a freeze, but followed by the run, not by the jump.
+ * Whatever happens, it is over WARP_STALL_MAX_MS after it could have
+ * been, so the side work and the next keep are never held for a run
+ * that cannot draw.
+ */
+export const STALL_MS = 50;
+const FRAME_MS = 16;
+export const WARP_STALL_MAX_MS = 2500;
 /** undefined: not decided yet; null: no run this launch (or it is over). */
 let run: Run | null | undefined;
-/** Told when the run begins (its t0 is set), so a hero can start drawing it. */
+/** Told when the run begins (the fade is over), so a hero can start drawing it. */
 const onBegin = new Set<() => void>();
 /** Told when the run is over, however it ended. */
 let onEnd: (() => void) | null = null;
@@ -170,7 +203,7 @@ function decide(reduceMotion: boolean): void {
     run = null;
     return;
   }
-  const r: Run = { start, t0: null, duration: 0 };
+  const r: Run = { start, begun: false, t0: null, duration: 0, lastSeen: null };
   run = r;
   // A hero mid-run is not a screen to keep for the next launch.
   holdLaunchSnapshot(HOLD, true);
@@ -184,25 +217,36 @@ function decide(reduceMotion: boolean): void {
   setTimeout(() => {
     // A window that closed while its run waited for the fade.
     if (run !== r) return;
-    r.t0 = Date.now();
-    r.duration = warpDurationMs(Math.abs(r.t0 - start.at));
+    r.begun = true;
+    r.duration = warpDurationMs(Math.abs(Date.now() - start.at));
     onBegin.forEach(fn => fn());
+    setTimeout(() => {
+      if (run === r) endRun();
+    }, r.duration + WARP_STALL_MAX_MS);
   }, warpDelayMs());
 }
 
 /**
- * Where the run is: its start, and the eased progress 0…1 (0 until it
- * begins, while the picture fades). Null when there is no run, or it is over.
+ * Where the run is: its start, and the eased progress 0…1 (0 until its
+ * first frame, while the picture fades). Null when there is no run, or it
+ * is over.
  */
 export function warpProgress(now: number = Date.now()): { start: WarpStart; e: number } | null {
-  if (!run) return null;
-  if (run.t0 == null) return { start: run.start, e: 0 };
-  const k = (now - run.t0) / run.duration;
+  const r = run;
+  if (!r) return null;
+  if (!r.begun) return { start: r.start, e: 0 };
+  if (r.t0 == null) r.t0 = now;
+  else if (r.lastSeen != null) {
+    const gap = now - r.lastSeen;
+    if (gap > STALL_MS) r.t0 += gap - FRAME_MS;
+  }
+  r.lastSeen = now;
+  const k = (now - r.t0) / r.duration;
   if (k >= 1) {
     endRun();
     return null;
   }
-  return { start: run.start, e: easeOutCubic(k) };
+  return { start: r.start, e: easeOutCubic(k) };
 }
 
 /**
@@ -234,7 +278,7 @@ export function useLaunchWarp(
     const begin = () => {
       if (frame == null) frame = requestAnimationFrame(loop);
     };
-    if (run?.t0 != null) begin();
+    if (run?.begun) begin();
     else onBegin.add(begin);
     return () => {
       onBegin.delete(begin);

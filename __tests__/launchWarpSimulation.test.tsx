@@ -311,6 +311,45 @@ describe('the hero runs from the kept picture to now', () => {
     expect(Math.abs(after - mid)).toBeLessThan(Math.abs(cached - mid) + 120);
   });
 
+  it('pauses while the JS thread stalls, then carries on — never freezes and jumps', () => {
+    const pictureAt = day(D, '06:30');
+    const now = day(D, '19:00');
+    const h = heroAt(pictureAt);
+    mockShown.value = { at: pictureAt.getTime(), targetAt: h.target.getTime(), fromAt: h.from.getTime(), posed: true };
+    jest.setSystemTime(now);
+    const tree = renderCard(now);
+    const cached = shownSeconds(tree);
+    // The fade, then a few frames of the run.
+    act(() => {
+      jest.advanceTimersByTime(WARP_AFTER_HIDE_MS + 5 * frame);
+    });
+    const beforeStall = shownSeconds(tree);
+    expect(beforeStall).not.toBe(cached);
+    // The JS thread stalls for the whole of the run's length: no frame
+    // is drawn. Then frames come again.
+    const raf = (global as { requestAnimationFrame: unknown }).requestAnimationFrame;
+    (global as { requestAnimationFrame: unknown }).requestAnimationFrame = (cb: (t: number) => void) =>
+      setTimeout(() => cb(Date.now()), WARP_MAX_MS + 100) as unknown as number;
+    act(() => {
+      jest.advanceTimersByTime(WARP_MAX_MS + 100);
+    });
+    (global as { requestAnimationFrame: unknown }).requestAnimationFrame = raf;
+    const afterStall = shownSeconds(tree);
+    const live = Math.floor((heroAt(now).target.getTime() - Date.now()) / 1000);
+    // Resumed about where it stalled — not at the end.
+    expect(Math.abs(afterStall - beforeStall)).toBeLessThan(Math.abs(live - beforeStall) / 2);
+    // …and runs the rest of the way from there, through many values.
+    const seen = new Set<number>();
+    for (let t = 0; t < WARP_MAX_MS + 200; t += frame) {
+      act(() => {
+        jest.advanceTimersByTime(frame);
+      });
+      seen.add(shownSeconds(tree));
+    }
+    expect(seen.size).toBeGreaterThan(8);
+    expect(Math.abs(shownSeconds(tree) - live)).toBeLessThanOrEqual(3);
+  });
+
   it('does not run at all with Reduce Motion', () => {
     mockReduce.value = true;
     const pictureAt = day(D, '06:30');

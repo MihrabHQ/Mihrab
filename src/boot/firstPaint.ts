@@ -38,10 +38,11 @@ let markDone: () => void = () => {};
  * payload and the rest took the JS thread for a few hundred milliseconds
  * right after the first paint — which is exactly when the run draws its
  * frames, and it stuttered. They wait until the run is over, or this long
- * at most.
+ * at most — long enough for a run that stalled and resumed
+ * (launchWarp.ts, WARP_STALL_MAX_MS) to finish first.
  */
 let hold: Promise<void> | null = null;
-export const SIDE_WORK_HOLD_MAX_MS = 1500;
+export const SIDE_WORK_HOLD_MAX_MS = 3500;
 
 export function holdSideWorkUntil(until: Promise<void>): void {
   if (released) return;
