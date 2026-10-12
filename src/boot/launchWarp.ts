@@ -25,10 +25,11 @@ import { heroStateShown, hideRequestedAt, holdLaunchSnapshot } from '../native/L
 
 /**
  * From JS asking native to hide the picture to the fade having finished:
- * native waits MOUNT_GRACE_MS (120) and fades for FADE_MS (260); a frame
- * more so the run starts on the live screen alone.
+ * native waits MOUNT_GRACE_MS (80) and fades for FADE_MS (220); a frame
+ * more so the run starts on the live screen alone. The hero stands still
+ * at the picture's numbers for all of it, so it is as short as it can be.
  */
-export const WARP_AFTER_HIDE_MS = 400;
+export const WARP_AFTER_HIDE_MS = 320;
 /** The longest a gap of hours is allowed to take to run through. */
 export const WARP_MAX_MS = 900;
 const MINUTE = 60_000;

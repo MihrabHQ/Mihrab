@@ -71,13 +71,16 @@ internal object LaunchSnapshot {
   private const val DECODE_WAIT_MS = 600L
   /** The picture comes down by itself after this, whatever JS does. */
   private const val SAFETY_HIDE_MS = 5000L
-  private const val FADE_MS = 260L
+  private const val FADE_MS = 220L
   /**
    * From JS's commit of the live screen to the fade: the UI thread mounts
    * that commit and draws it in the next frame or two, whatever the JS
-   * thread is busy with afterwards.
+   * thread is busy with afterwards. Measured on a Pixel 10 Pro: the hero
+   * is still, with the picture's numbers, for every millisecond of this and
+   * the fade, so both are as short as a frame or two of margin allows
+   * (src/boot/launchWarp.ts, WARP_AFTER_HIDE_MS, follows them).
    */
-  private const val MOUNT_GRACE_MS = 120L
+  private const val MOUNT_GRACE_MS = 80L
 
   private val io = Executors.newSingleThreadExecutor { r -> Thread(r, "mihrab-snapshot").apply { isDaemon = true } }
   private val main = Handler(Looper.getMainLooper())

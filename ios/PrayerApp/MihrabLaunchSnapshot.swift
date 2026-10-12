@@ -32,8 +32,8 @@ final class LaunchSnapshotStore {
   private static let maxAge: TimeInterval = 30 * 24 * 60 * 60
   private static let decodeWait: TimeInterval = 0.6
   private static let safetyHide: TimeInterval = 5
-  private static let mountGrace: TimeInterval = 0.12
-  private static let fade: TimeInterval = 0.26
+  private static let mountGrace: TimeInterval = 0.08
+  private static let fade: TimeInterval = 0.22
   private static let prefix = "mihrab.launchSnapshot."
 
   /** Main thread only. */

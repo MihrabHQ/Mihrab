@@ -1,5 +1,6 @@
 package com.prayer_times
 
+import android.app.ActivityManager
 import android.app.Application
 import android.os.SystemClock
 import android.graphics.Typeface
@@ -53,6 +54,21 @@ class MainApplication : Application(), ReactApplication {
     DynamicColors.applyToActivitiesIfAvailable(this)
     registerBundledFonts()
     loadReactNative(this)
+    // The JavaScript runtime and the bundle, started here rather than when
+    // the activity asks for them: the two run on their own thread while the
+    // activity is created and the kept screen is put up, so the live screen
+    // arrives that much sooner. Only when this process is being started to
+    // show a window — a process the system started for a widget's refresh
+    // or an alarm would be running a whole app for nothing.
+    val importance = ActivityManager.RunningAppProcessInfo().also { ActivityManager.getMyMemoryState(it) }.importance
+    Log.i("MihrabBoot", "process importance at start: $importance")
+    if (importance <= ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
+      try {
+        reactHost.start()
+      } catch (t: Throwable) {
+        Log.w("MihrabBoot", "could not start React Native early", t)
+      }
+    }
     BootTimes.app(appStart, SystemClock.uptimeMillis())
   }
 
