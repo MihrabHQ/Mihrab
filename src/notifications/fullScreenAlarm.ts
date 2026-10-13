@@ -68,6 +68,23 @@ const PRAYER_SKY: Record<string, { passage: SkyPassage; t: number }> = {
 };
 
 /**
+ * The mood each prayer's alert wears under the Sky theme. Not the hero's
+ * exact moment: at the instant Fajr rings the mood is still the late
+ * night's, and at Asr's the afternoon's — Fajr looked like Isha and Asr
+ * like Dhuhr, five alerts in three looks. So each alert takes the mood its
+ * prayer is known by: Fajr the last of the dawn, the coral full at the
+ * horizon, Asr the gold coming into the afternoon, the others the hour
+ * they begin — Maghrib the deep magenta, Isha the indigo.
+ */
+const PRAYER_MOOD: Record<string, { passage: SkyPassage; t: number }> = {
+  Fajr: { passage: 'dawn', t: 1 },
+  Dhuhr: { passage: 'day', t: 0.55 },
+  Asr: { passage: 'sunset', t: 0.45 },
+  Maghrib: { passage: 'dusk', t: 0 },
+  Isha: { passage: 'night', t: 0 },
+};
+
+/**
  * Whether the app wears the Sky theme, for this module, which runs outside
  * React — the scheduler, the snooze, the Live Activity's toggle — and may
  * run with the app's process dead. Mirrored the way the clock format is
@@ -96,7 +113,7 @@ export function fullScreenAlarmSky(prayer: string): Record<string, string> {
   const at = PRAYER_SKY[prayer];
   if (!at) return {};
   if (skyThemeOn) {
-    const mood = skyMoodFor(at.passage, at.t);
+    const mood = skyMoodFor(PRAYER_MOOD[prayer].passage, PRAYER_MOOD[prayer].t);
     return {
       fsSkyTop: mood.heroTop,
       fsSkyMid: mood.heroMid,

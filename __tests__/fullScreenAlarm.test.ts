@@ -229,9 +229,9 @@ describe('alarm screen sky', () => {
     setFullScreenAlarmSkyTheme(true);
     try {
       const expected: Record<string, [string, number]> = {
-        Fajr: ['dawn', 0],
+        Fajr: ['dawn', 1],
         Dhuhr: ['day', 0.55],
-        Asr: ['sunset', 0],
+        Asr: ['sunset', 0.45],
         Maghrib: ['dusk', 0],
         Isha: ['night', 0],
       };
@@ -249,6 +249,15 @@ describe('alarm screen sky', () => {
       // Dhuhr rings into the light; Isha into the dark.
       expect(fullScreenAlarmData('Dhuhr').fsInk).toBe('dark');
       expect(fullScreenAlarmData('Isha').fsInk).toBe('light');
+      // Five alerts, five skies: no two share a top colour, and Fajr is
+      // not Isha's indigo nor Asr Dhuhr's blue.
+      const tops = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'].map(p => fullScreenAlarmData(p).fsSkyMid.toLowerCase());
+      expect(new Set(tops).size).toBe(5);
+      const { hexToOklch } = require('../src/theme/oklch');
+      const hue = (p: string) => hexToOklch(fullScreenAlarmData(p).fsSkyMid).h;
+      const apart = (a: number, b: number) => Math.min(Math.abs(a - b), 360 - Math.abs(a - b));
+      expect(apart(hue('Fajr'), hue('Isha'))).toBeGreaterThan(40);
+      expect(apart(hue('Asr'), hue('Dhuhr'))).toBeGreaterThan(90);
     } finally {
       setFullScreenAlarmSkyTheme(false);
     }
