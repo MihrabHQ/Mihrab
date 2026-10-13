@@ -60,7 +60,22 @@ export type SkyMood = {
   overlay: string;
 };
 
-export const SKY_MOODS: Record<SkyMoodName, SkyMood> = {
+/**
+ * The highlight behind the next prayer's row, a selected segment, a chip:
+ * the page tinted toward the accent — a fifth of the way on a dark page,
+ * where the accent is light and the tint can be deep; a tenth on a light
+ * one, where the accent is deep and the row must stay nearly white for
+ * the accent to read on it (the time is written on it in the accent).
+ * Derived, not picked, so every anchor's highlight sits in its own
+ * composition and clears AA for the accent and the ink on it.
+ */
+const HIGHLIGHT_DARK = 0.2;
+const HIGHLIGHT_LIGHT = 0.08;
+function withHighlight(m: Omit<SkyMood, 'accentBg'>): SkyMood {
+  return { ...m, accentBg: mixHexOklab(m.bg, m.accent, m.isDark ? HIGHLIGHT_DARK : HIGHLIGHT_LIGHT) };
+}
+
+const RAW_MOODS: Record<SkyMoodName, Omit<SkyMood, 'accentBg'>> = {
   /** Night & midnight: an obsidian indigo void, cyber cyan glowing on it, amethyst under the cards. */
   night: {
     name: 'night',
@@ -77,7 +92,6 @@ export const SKY_MOODS: Record<SkyMoodName, SkyMood> = {
     text: '#EEEAFF',
     muted: '#B4ADDB',
     accent: '#3DF2FF',
-    accentBg: '#113A47',
     onAccent: '#0B1020',
     accentSurface: '#171230',
     accentSurfaceStrong: '#2A1B4F',
@@ -101,7 +115,6 @@ export const SKY_MOODS: Record<SkyMoodName, SkyMood> = {
     text: '#FFF4EC',
     muted: '#D6C4EE',
     accent: '#FF7B62',
-    accentBg: '#4D2349',
     onAccent: '#2A0F08',
     accentSurface: '#24154A',
     accentSurfaceStrong: '#352162',
@@ -123,12 +136,11 @@ export const SKY_MOODS: Record<SkyMoodName, SkyMood> = {
     controlBg: '#FFE8D4',
     border: '#F2D6BE',
     text: '#2A1B3D',
-    muted: '#6E5C7E',
-    accent: '#C2361F',
-    accentBg: '#FFD9CF',
+    muted: '#665473',
+    accent: '#BB3219',
     onAccent: '#FFFFFF',
     accentSurface: '#FFEEDD',
-    accentSurfaceStrong: '#FFE1C8',
+    accentSurfaceStrong: '#FFE6D2',
     accentHairline: '#F0B48A',
     danger: '#B91C1C',
     overlay: 'rgba(42,27,61,0.45)',
@@ -147,12 +159,11 @@ export const SKY_MOODS: Record<SkyMoodName, SkyMood> = {
     controlBg: '#DBEDFF',
     border: '#BCDBF7',
     text: '#0B2545',
-    muted: '#4A6A8C',
-    accent: '#0968B8',
-    accentBg: '#D4EBFF',
+    muted: '#44607D',
+    accent: '#0760AB',
     onAccent: '#FFFFFF',
     accentSurface: '#E2F1FF',
-    accentSurfaceStrong: '#D0E8FF',
+    accentSurfaceStrong: '#D8ECFF',
     accentHairline: '#7FBEF5',
     danger: '#C62828',
     overlay: 'rgba(11,37,69,0.45)',
@@ -171,12 +182,11 @@ export const SKY_MOODS: Record<SkyMoodName, SkyMood> = {
     controlBg: '#FFE2C8',
     border: '#F4CCAA',
     text: '#3A1A2E',
-    muted: '#7B5468',
-    accent: '#BD3424',
-    accentBg: '#FFD5C9',
+    muted: '#744E62',
+    accent: '#B53020',
     onAccent: '#FFFFFF',
     accentSurface: '#FFEAD6',
-    accentSurfaceStrong: '#FFDDBF',
+    accentSurfaceStrong: '#FFE3CA',
     accentHairline: '#EFA46B',
     danger: '#B91C1C',
     overlay: 'rgba(58,26,46,0.45)',
@@ -197,7 +207,6 @@ export const SKY_MOODS: Record<SkyMoodName, SkyMood> = {
     text: '#FFEFF7',
     muted: '#E3B9D6',
     accent: '#FF57A6',
-    accentBg: '#5E1C4F',
     onAccent: '#2A0616',
     accentSurface: '#2C0E3A',
     accentSurfaceStrong: '#3F1655',
@@ -205,6 +214,15 @@ export const SKY_MOODS: Record<SkyMoodName, SkyMood> = {
     danger: '#FF5E62',
     overlay: 'rgba(20,4,30,0.7)',
   },
+};
+
+export const SKY_MOODS: Record<SkyMoodName, SkyMood> = {
+  night: withHighlight(RAW_MOODS.night),
+  dawn: withHighlight(RAW_MOODS.dawn),
+  morning: withHighlight(RAW_MOODS.morning),
+  midday: withHighlight(RAW_MOODS.midday),
+  golden: withHighlight(RAW_MOODS.golden),
+  sunset: withHighlight(RAW_MOODS.sunset),
 };
 
 /**
@@ -223,7 +241,7 @@ export const SKY_MOODS: Record<SkyMoodName, SkyMood> = {
  * its accent — it is the same hour, drifting — so the contrast floors
  * the test walks hold along the whole way.
  */
-const vary = (base: SkyMood, over: Partial<SkyMood>): SkyMood => ({ ...base, ...over });
+const vary = (base: SkyMood, over: Partial<SkyMood>): SkyMood => withHighlight({ ...base, ...over });
 const M = SKY_MOODS;
 const ANCHORS = {
   /** After Isha: the night still blue from the day it came out of. */

@@ -59,6 +59,16 @@ function expectLegible(mood: SkyMood) {
     expect(contrastRatio(mood.accent, ground)).toBeGreaterThanOrEqual(4.5);
   }
   expect(contrastRatio(mood.onAccent, mood.accent)).toBeGreaterThanOrEqual(4.5);
+  // The highlight (the next prayer's row, a selected segment): the time is
+  // written on it in the accent, the name in the ink.
+  expect(contrastRatio(mood.accent, mood.accentBg)).toBeGreaterThanOrEqual(4.5);
+  expect(contrastRatio(mood.text, mood.accentBg)).toBeGreaterThanOrEqual(4.5);
+  // The chrome bands (a header strip, the tab bar) carry the ink and the accent.
+  for (const band of [mood.accentSurface, mood.accentSurfaceStrong]) {
+    expect(contrastRatio(mood.text, band)).toBeGreaterThanOrEqual(4.5);
+    expect(contrastRatio(mood.muted, band)).toBeGreaterThanOrEqual(4.5);
+    expect(contrastRatio(mood.accent, band)).toBeGreaterThanOrEqual(4.5);
+  }
   // Dark moods have light ink and the other way round.
   expect(contrastRatio(mood.text, '#000000') > contrastRatio(mood.text, '#FFFFFF')).toBe(mood.isDark);
 }
