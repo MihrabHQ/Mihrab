@@ -44,6 +44,9 @@
 
 <img src="branding/readme/07_tilawah.png" width="32%" alt="Tilawah — Al-Mulk playing, with the reciter, the transport, speed, sleep timer and shuffle, and a live mushaf page with the recited word lit">&nbsp;<img src="branding/readme/08_fasting.png" width="32%" alt="Fasting — today's fast, the Ramadan and voluntary counts, and the coming Sunnah days">&nbsp;<img src="branding/readme/09_widgets.png" width="32%" alt="Android home-screen widgets — today’s six times, a row to log each prayer with one tap, and the next prayer with its countdown">
 
+<img src="branding/readme/11_sky.png" width="98%" alt="Five home screens fanned out — the Sky theme at dawn, morning, midday, the golden hour and dusk, the whole app recoloured by the hour">
+<br><sub>The Sky theme — the app painted from the sky over the countdown, changing through the day.</sub>
+
 <img src="branding/readme/10_alerts.png" width="98%" alt="Five full-screen prayer alerts fanned out, each in its hour’s colours under the Sky theme — Fajr’s dawn, Dhuhr’s blue, Asr’s gold, Maghrib’s magenta, Isha’s indigo — with Stop, Snooze and Log prayer">
 <br><sub>Full-screen prayer alerts on Android, under the Sky theme — each in its hour.</sub>
 
@@ -102,7 +105,7 @@
 
 ### The app itself
 
-- **Yours to look at** — Light, dark or system, pure-black for OLED, six colour themes (green, teal, blue, amber, rose, violet) or your own hex, and the platform's own palette when you want it: **Material You** on Android, **Liquid Glass** on iOS.
+- **Yours to look at** — Light, dark or system, pure-black for OLED, six colour themes (green, teal, blue, amber, rose, violet) or your own hex, and the platform's own palette when you want it: **Material You** on Android, **Liquid Glass** on iOS. Or **Sky**, which paints the whole app from the sky over the countdown and changes with the hour.
 - **Real Arabic typography** — Amiri Quran for ayah text with correct stacked diacritics, Amiri Naskh for duas, on both platforms.
 - **13 languages** — English, Arabic, Swedish, Bengali, Urdu, Hindi, French, Spanish, German, Turkish, Indonesian, Russian, and Chinese — every screen, every notification, every dua title, and the widgets too. Arabic and Urdu are fully RTL.
 - **A Mac app, not a phone app in a window** — The Catalyst build has the spread reader, keyboard paging, the surah sidebar and its own widgets in Notification Centre.

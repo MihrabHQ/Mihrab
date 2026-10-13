@@ -286,11 +286,12 @@ h2 { font-size: clamp(26px, 4vw, 34px); }
 }
 .spread { margin: 34px 0 0; }
 .spread img { aspect-ratio: 800 / 439; border-radius: 12px; }
-/* The five alert screens fanned into one picture, already cut out on a
-   transparent ground, so no frame of their own. */
-.alerts { margin: 34px 0 0; }
-.alerts img { display: block; width: 100%; height: auto; aspect-ratio: 1600 / 926; }
-.alerts figcaption { margin-top: 10px; font-size: 14px; color: var(--ink-soft); line-height: 1.45; }
+/* Five screens fanned into one picture (the Sky theme's hours, the
+   full-screen alerts), already cut out on a transparent ground, so no
+   frame of their own. */
+.fan { margin: 34px 0 0; }
+.fan img { display: block; width: 100%; height: auto; aspect-ratio: 1600 / 926; }
+.fan figcaption { margin-top: 10px; font-size: 14px; color: var(--ink-soft); line-height: 1.45; }
 @media (max-width: 860px) { .gallery { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 620px) {
   .gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 14px; }
