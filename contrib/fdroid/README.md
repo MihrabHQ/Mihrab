@@ -2,6 +2,15 @@
 
 Everything here is **upstream preparation**. The real merge request goes to **[fdroiddata on GitLab](https://gitlab.com/fdroid/fdroiddata)** (separate account/repo).
 
+> **Status: merged.** Mihrab has been in F-Droid since the MR merged on
+> 1 August 2026 — https://f-droid.org/packages/com.prayer_times/. The
+> recipe carries `AutoUpdateMode: Version` + `UpdateCheckMode: Tags`, so a
+> routine release needs **nothing** here: pushing the `vX.Y.Z` tag is the
+> whole of it, and F-Droid's checkupdates bot adds the build. The steps
+> below are for the one case left — the *recipe* itself changing (a new
+> NDK, gradle property or source dependency) — and for anyone setting a
+> fork up from scratch. `docs/DISTRIBUTION.md` §2 is the current flow.
+
 ## Files in this folder
 
 | File | Purpose |
