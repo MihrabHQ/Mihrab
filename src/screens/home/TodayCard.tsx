@@ -101,7 +101,7 @@ import { HeroSky, type SkyRun } from './HeroSky';
 import { HERO_Y, skyFrame, skyInkAt, skyMoment, themedSkyFrame, type SkyFrame, type SkyInkColors } from './skyModel';
 import { skyMoodFor } from '../../theme/skyMoods';
 import { setHeroSkyBand } from './heroSkyBand';
-import { publishSkyTheme } from '../../theme/skyTheme';
+import { publishSkyTheme, skyDayKey } from '../../theme/skyTheme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { QiblaChip } from './QiblaChip';
 import { HelpMihrabChip } from './HelpMihrabChip';
@@ -745,8 +745,13 @@ const HeroToday = memo(function HeroToday({
   }, [running, frame, liveMinuteKey, skyToday, today, tomorrowFajr, latitude, longitude]);
   useEffect(() => {
     if (posed) return;
-    publishSkyTheme({ top: liveSky.top, bottom: liveSky.bottom, passage: liveSky.passage, t: liveSky.t });
-  }, [posed, liveSky.top, liveSky.bottom, liveSky.passage, liveSky.t]);
+    // With the day's times, so the next launch can work the sky out for
+    // its own clock before the hero has drawn (theme/skyTheme.ts).
+    publishSkyTheme(
+      { top: liveSky.top, bottom: liveSky.bottom, passage: liveSky.passage, t: liveSky.t },
+      { day: skyDayKey(new Date(liveMinuteKey * 60_000)), times: skyToday ?? today, tomorrowFajr },
+    );
+  }, [posed, liveSky.top, liveSky.bottom, liveSky.passage, liveSky.t, liveMinuteKey, skyToday, today, tomorrowFajr]);
 
   // Memoised on the sky's step and the measured heights: the top row and
   // the eyebrow below are memoised on their ink, and the launch run

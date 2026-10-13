@@ -41,6 +41,7 @@ import {
   getSkyTheme,
   publishSkyTheme,
   restoreSkyTheme,
+  skyDayKey,
 } from '../src/theme/skyTheme';
 
 /** Moments of the day, as the hero would publish them. */
@@ -246,6 +247,32 @@ describe('the store', () => {
     publishSkyTheme({ ...SKIES.night, t: 0.53 });
     expect(getSkyTheme()).toBe(night);
   });
+
+  it('works the sky out for the launch\'s own clock from the day\'s times kept beside it', async () => {
+    // Left at 06:50 (dawn), reopened at 10:50: the first screen is the
+    // day's, not the dawn's and then the day's.
+    const times = { Fajr: '05:04', Sunrise: '07:13', Dhuhr: '12:39', Asr: '15:09', Maghrib: '17:55', Isha: '19:48' };
+    publishSkyTheme({ ...SKIES.dawn, t: 0.8 }, { day: skyDayKey(new Date(2026, 9, 13)), times, tomorrowFajr: '05:06' });
+    _resetSkyThemeForTests();
+    await restoreSkyTheme(() => new Date(2026, 9, 13, 10, 50));
+    expect(getSkyTheme().passage).toBe('day');
+    expect(getSkyTheme().t).toBeGreaterThan(0.4);
+    expect(getSkyTheme().t).toBeLessThan(0.5);
+    // Another day: the times are not this day's; the remembered sky stands.
+    _resetSkyThemeForTests();
+    await restoreSkyTheme(() => new Date(2026, 9, 14, 10, 50));
+    expect(getSkyTheme().passage).toBe('dawn');
+    // The hero's own publish of the same hour then changes nothing.
+    const off = useSkyThemeSubscribe();
+    _resetSkyThemeForTests();
+    await restoreSkyTheme(() => new Date(2026, 9, 13, 10, 50));
+    const before = getSkyTheme();
+    publishSkyTheme({ top: '#000000', bottom: '#ffffff', passage: 'day', t: before.t });
+    expect(getSkyTheme()).toBe(before);
+    off();
+    // Awaited with the settings, so the first render wears it.
+    expect(read('src/context/PrayerSettingsContext.tsx')).toMatch(/Promise\.all\(\[loadSettings\(\), restoreSkyTheme\(\)\]\)/);
+  });
 });
 
 describe('the hero under the theme', () => {
@@ -344,7 +371,7 @@ describe('access and polish', () => {
     // The look is the settings', not the hour's: a picture from another
     // hour fades into this one rather than leaving the launch on the
     // skeleton (the hero runs from the prayer's start under it anyway).
-    expect(root).toMatch(/setLaunchSnapshotLook\(lookKeyOf\(settings\)\);/);
+    expect(root).toMatch(/setLaunchSnapshotLook\(lookKeyOf\(settings\), settings\.appearance === 'system'\);/);
     expect(root).not.toMatch(/lookMoodKey/);
     const card = read('src/screens/home/TodayCard.tsx');
     expect(card).toMatch(/const moreContrast = useIncreasedContrast\(\);/);
@@ -361,11 +388,11 @@ describe('access and polish', () => {
 describe('wiring', () => {
   it('the hero publishes the live sky, the palettes read it, the card offers it', () => {
     const card = read('src/screens/home/TodayCard.tsx');
-    expect(card).toMatch(/publishSkyTheme\(\{ top: liveSky\.top, bottom: liveSky\.bottom, passage: liveSky\.passage, t: liveSky\.t \}\)/);
+    expect(card).toMatch(/publishSkyTheme\(\s*\{ top: liveSky\.top, bottom: liveSky\.bottom, passage: liveSky\.passage, t: liveSky\.t \},\s*\{ day: skyDayKey\(new Date\(liveMinuteKey \* 60_000\)\), times: skyToday \?\? today, tomorrowFajr \},\s*\)/);
     // The hour decides light or dark: the hooks take it off the palette.
     expect(read('src/hooks/useAppPalette.ts')).toMatch(/isDark: palette\.isDark/);
     expect(read('src/AppNavigationRoot.tsx')).toMatch(/const isDark = palette\.isDark;/);
-    expect(card).toMatch(/if \(posed\) return;\s*publishSkyTheme/);
+    expect(card).toMatch(/if \(posed\) return;[\s\S]{0,200}publishSkyTheme\(/);
     for (const p of ['src/hooks/useAppPalette.ts', 'src/AppNavigationRoot.tsx', 'src/quran/useScrubberChrome.ts']) {
       expect(read(p)).toMatch(/useSkyTheme\((settings\.)?appearance === 'sky'\)/);
     }

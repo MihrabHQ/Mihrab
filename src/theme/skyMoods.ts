@@ -440,18 +440,32 @@ const MIXED: (keyof SkyMood)[] = [
  * which is one view, moves every minute.
  */
 export const PALETTE_STEPS = 16;
+/**
+ * Remembered by moment: a mood is twenty colours mixed in OKLab, and the
+ * hero asks for the same one on every render — every second, and every
+ * frame of a launch run — while the palette, the widgets and the reader
+ * ask for the same quantised one. The sky moves in minutes, so a few
+ * hundred moments cover a day.
+ */
+const MOOD_CACHE = new Map<string, SkyMood>();
+const MOOD_CACHE_MAX = 512;
 export function skyMoodFor(passage: SkyPassage, t: number, steps?: number): SkyMood {
   const at = skyMoodAt(passage, t);
   const { from, to } = at;
   const u = steps ? Math.round(at.u * steps) / steps : at.u;
   if (u <= 0 || from === to) return from;
   if (u >= 1) return to;
+  const key = `${from.name}|${from.heroTop}|${to.heroTop}|${u.toFixed(4)}`;
+  const hit = MOOD_CACHE.get(key);
+  if (hit) return hit;
   const near = u < 0.5 ? from : to;
   const out: SkyMood = { ...near };
-  for (const key of MIXED) {
-    const mix = VIVID.has(key) ? mixHexVivid : mixHexOklab;
-    (out as unknown as Record<string, string>)[key] = mix(from[key] as string, to[key] as string, u);
+  for (const k of MIXED) {
+    const mix = VIVID.has(k) ? mixHexVivid : mixHexOklab;
+    (out as unknown as Record<string, string>)[k] = mix(from[k] as string, to[k] as string, u);
   }
+  if (MOOD_CACHE.size >= MOOD_CACHE_MAX) MOOD_CACHE.clear();
+  MOOD_CACHE.set(key, out);
   return out;
 }
 

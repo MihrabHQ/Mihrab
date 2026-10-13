@@ -26,7 +26,7 @@
  */
 import { useSyncExternalStore } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { SkyPassage } from '../screens/home/skyModel';
+import { skyMoment, type SkyPassage } from '../screens/home/skyModel';
 import { PALETTE_STEPS, skyMoodFor, type SkyMood } from './skyMoods';
 import { crossfadeScreen } from '../native/LaunchSnapshot';
 
@@ -40,6 +40,26 @@ export type SkyThemeColors = {
   t: number;
 };
 
+/**
+ * The day the sky was published from: its times, so a launch can work out
+ * the sky for ITS clock from the disk alone (`restoreSkyTheme`) rather
+ * than open in the colours of the hour the app was left in and change
+ * once the hero has drawn — a whole second render of every screen, right
+ * where the launch is busiest. `day` is the local date the times are for.
+ */
+export type SkyThemeDay = {
+  day: string;
+  times: Record<string, string | undefined>;
+  tomorrowFajr?: string;
+};
+
+/** The local date, yyyy-mm-dd. */
+export function skyDayKey(d: Date): string {
+  const m = d.getMonth() + 1;
+  const day = d.getDate();
+  return `${d.getFullYear()}-${m < 10 ? '0' : ''}${m}-${day < 10 ? '0' : ''}${day}`;
+}
+
 /** The night, until the hero has drawn anything. */
 export const DEFAULT_SKY_THEME: SkyThemeColors = { top: '#0B1230', bottom: '#1E2B5A', passage: 'night', t: 0.5 };
 const PASSAGES: ReadonlySet<string> = new Set(['night', 'dawn', 'day', 'sunset', 'dusk']);
@@ -49,6 +69,7 @@ const HEX = /^#[0-9a-fA-F]{6}$/;
 
 let current: SkyThemeColors = DEFAULT_SKY_THEME;
 let published = false;
+let currentDay: SkyThemeDay | null = null;
 const listeners = new Set<() => void>();
 
 function emit(): void {
@@ -81,9 +102,19 @@ function same(a: SkyThemeColors, b: SkyThemeColors): boolean {
   return (Object.keys(ma) as (keyof SkyMood)[]).every(k => ma[k] === mb[k]);
 }
 
+function persist(): void {
+  AsyncStorage.setItem(STORAGE_KEY, JSON.stringify({ ...current, day: currentDay ?? undefined })).catch(() => {
+    // Best effort: the next launch opens in the default night instead.
+  });
+}
+
 /** The hero says what its sky is. Idempotent for the same two colours. */
-export function publishSkyTheme(next: SkyThemeColors): void {
+export function publishSkyTheme(next: SkyThemeColors, day?: SkyThemeDay): void {
   if (!valid(next)) return;
+  if (day && (currentDay?.day !== day.day || currentDay.tomorrowFajr !== day.tomorrowFajr || currentDay.times !== day.times)) {
+    currentDay = day;
+    if (same(current, next)) persist();
+  }
   if (same(current, next)) {
     published = true;
     return;
@@ -100,30 +131,51 @@ export function publishSkyTheme(next: SkyThemeColors): void {
   published = true;
   if (flips) crossfadeScreen();
   emit();
-  AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(current)).catch(() => {
-    // Best effort: the next launch opens in the default night instead.
-  });
+  persist();
 }
 
 export function getSkyTheme(): SkyThemeColors {
   return current;
 }
 
+function validDay(v: unknown): v is SkyThemeDay {
+  if (typeof v !== 'object' || v == null) return false;
+  const d = v as SkyThemeDay;
+  return typeof d.day === 'string' && typeof d.times === 'object' && d.times != null;
+}
+
 /**
  * The last sky from disk, taken only if the hero has not published one
- * meanwhile — the live sky always wins over a remembered one.
+ * meanwhile — the live sky always wins over a remembered one. With the
+ * day's times kept beside it, the sky is worked out for the clock NOW,
+ * so the first screen is already the hour's and the hero's own publish
+ * changes nothing. Awaited with the settings (PrayerSettingsContext), so
+ * the first render is painted from it.
  */
 let restored: Promise<void> | null = null;
-export function restoreSkyTheme(): Promise<void> {
+export function restoreSkyTheme(now: () => Date = () => new Date()): Promise<void> {
   if (restored) return restored;
   restored = AsyncStorage.getItem(STORAGE_KEY)
     .then(raw => {
       if (published || !raw) return;
       const parsed: unknown = JSON.parse(raw);
-      if (valid(parsed) && !published) {
-        current = { top: parsed.top, bottom: parsed.bottom, passage: parsed.passage, t: parsed.t };
-        emit();
+      if (!valid(parsed) || published) return;
+      let next: SkyThemeColors = { top: parsed.top, bottom: parsed.bottom, passage: parsed.passage, t: parsed.t };
+      const day = (parsed as { day?: unknown }).day;
+      if (validDay(day)) {
+        const at = now();
+        if (day.day === skyDayKey(at)) {
+          try {
+            const m = skyMoment(day.times as Record<string, string>, at, day.tomorrowFajr);
+            next = { ...next, passage: m.passage, t: m.t };
+          } catch {
+            // The remembered sky as it was, then.
+          }
+        }
+        currentDay = day;
       }
+      current = next;
+      emit();
     })
     .catch(() => {
       // Nothing remembered, or unreadable: the default night stands.
@@ -154,6 +206,7 @@ export function _subscribeSkyThemeForTests(): () => void {
 }
 export function _resetSkyThemeForTests(): void {
   current = DEFAULT_SKY_THEME;
+  currentDay = null;
   published = false;
   restored = null;
   listeners.clear();

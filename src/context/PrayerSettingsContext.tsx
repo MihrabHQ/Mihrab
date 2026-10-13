@@ -10,6 +10,7 @@ import { applyMadhabNaming } from '../prayer/madhab';
 import i18n from '../i18n';
 import { setActiveClockFormat } from '../utils/activeClock';
 import { setFullScreenAlarmSkyTheme } from '../notifications/fullScreenAlarm';
+import { restoreSkyTheme } from '../theme/skyTheme';
 import { loadSettings, saveSettings } from '../settings/storage';
 import { bootMark } from '../boot/bootTimeline';
 import { setHijriCalendar } from '../hijri/calendar';
@@ -180,8 +181,11 @@ export function PrayerSettingsProvider({
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    loadSettings()
-      .then(loaded => setSettings(loaded))
+    // The Sky theme's remembered sky alongside: the first hydrated render
+    // is then painted in the hour's colours, not the night's and then the
+    // hour's — one render of every screen, not two (theme/skyTheme.ts).
+    Promise.all([loadSettings(), restoreSkyTheme()])
+      .then(([loaded]) => setSettings(loaded))
       .finally(() => {
         bootMark('settings');
         setHydrated(true);
