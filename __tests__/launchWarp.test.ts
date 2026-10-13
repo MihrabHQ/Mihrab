@@ -215,6 +215,14 @@ describe('wiring', () => {
     expect(card).toMatch(/left: SPACING\.xl,\s*top: heroTop,\s*width: heroBox\.w,\s*height: heroBox\.h,/);
   });
 
+  it('poses the twin at the interval it is given now, not the one it mounted at', () => {
+    // The twin lives all day; its frozen instant has to be the prop's at
+    // every render, or the picture poses at the last prayer with the
+    // next one's target.
+    expect(card).toMatch(/const frozenNow = useMemo\(\(\) => \(frozenAt != null \? new Date\(frozenAt\) : null\), \[frozenAt\]\);\s*const now = frozenNow \?\? liveNow;/);
+    expect(card).not.toMatch(/useState\(\(\) => new Date\(frozenAt/);
+  });
+
   it('runs every time but under Reduce Motion, and holds the picture back meanwhile', () => {
     const warp = read('src/boot/launchWarp.ts');
     expect(warp).toMatch(/if \(!start \|\| reduceMotion\) \{\s*run = null;/);

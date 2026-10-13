@@ -388,7 +388,18 @@ const HeroToday = memo(function HeroToday({
   const active = useIsActive();
   const reduceMotion = useReduceMotion();
   const posed = frozenAt != null;
-  const [now, setNow] = useState(() => new Date(frozenAt ?? Date.now()));
+  const [liveNow, setNow] = useState(() => new Date());
+  // THE POSE FOLLOWS THE INTERVAL. The twin is mounted once and stays up
+  // all day, and `frozenAt` moves on at every prayer; read into state once
+  // at mount, the twin stood at the prayer it mounted at while its target
+  // moved on — "Dhuhr in 7h 35m" from Fajr, the rail Fajr → Dhuhr, in the
+  // kept picture of a morning that had passed sunrise, and every launch
+  // opened on that before jumping to the real one. Derived, not stored:
+  // the frozen instant is the prop's, in the same render it arrives in,
+  // so no frame — and no capture (poseHero.ts) — sees the old pose with
+  // the new target.
+  const frozenNow = useMemo(() => (frozenAt != null ? new Date(frozenAt) : null), [frozenAt]);
+  const now = frozenNow ?? liveNow;
 
   useEffect(() => {
     if (!active || posed) return undefined;
