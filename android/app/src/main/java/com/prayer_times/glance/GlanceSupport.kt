@@ -373,6 +373,17 @@ internal fun fitTextSp(
 }
 
 /** The width one line of text takes, in dp. */
+/** A line of text at `sp`, as tall as a TextView draws it (font padding included). */
+internal fun textLineDp(context: Context, sp: Float, medium: Boolean): Float {
+  val metrics = context.resources.displayMetrics
+  val paint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
+    typeface = Typeface.create(if (medium) "sans-serif-medium" else "sans-serif", Typeface.NORMAL)
+    textSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, metrics)
+  }
+  val fm = paint.fontMetrics
+  return (fm.bottom - fm.top) / metrics.density
+}
+
 internal fun textWidthDp(context: Context, text: String, sp: Float, medium: Boolean): Float {
   val metrics = context.resources.displayMetrics
   val paint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
