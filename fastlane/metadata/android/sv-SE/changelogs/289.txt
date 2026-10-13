@@ -1,4 +1,4 @@
-• Temat Himmel: hela appen målad från himlen ovanför nedräkningen, skiftande med timmen. Inställningar → Utseende.
+• Temat Himmel: appen målad från himlen ovanför nedräkningen, skiftande med timmen – det en ny installation börjar i.
 • Helskärmsaviseringar bär sin bönetimme under temat Himmel.
 • Startanimationen är en inställning, på som standard.
 • Mushaf: läslås på alla plattformar — en låst sida bläddrar inte, men ett tryck på ett ord öppnar det ändå (#75).

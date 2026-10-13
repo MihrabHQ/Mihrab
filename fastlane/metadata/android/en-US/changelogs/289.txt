@@ -1,4 +1,4 @@
-• The Sky theme: the whole app painted from the sky over the countdown, changing with the hour. Settings → Appearance.
+• The Sky theme: the app painted from the sky over the countdown, changing with the hour — the look a new install opens in.
 • Full-screen alerts wear their prayer's hour under the Sky theme.
 • The launch run is a setting, on by default.
 • Muṣḥaf: a reading lock on every platform — a locked page does not turn, but a tap on a word still opens it (#75).
