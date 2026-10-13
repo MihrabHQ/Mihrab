@@ -158,6 +158,14 @@ one thing that copy does not carry — toggle Prayer alerts off and on in
 Settings → Notifications and allow the prompt, or the Today screen opens
 with a "permission denied" banner.
 
+The same day the phone hero's sun got its glow back (it had been drawn
+only during the launch run — see `glowCy` in HeroSky.tsx), so every
+phone and iPad home panel, `01_home` and `09_sky`, was shot again on
+the fixed build. A home panel with a bare sun is the old bug, not the
+look. The Android tablet's card was never affected and was kept. The
+simulator clock is the host's, so the Apple pair is the afternoon after
+Asr (Fajr, Dhuhr and Asr logged); the Android pair is 09:41.
+
 Captions live in `CAPTIONS` in `build_store.py`; one headline size per set
 (`headline_size`), balanced wrapping (no orphan word), and a landscape-only
 line break where the tablet's text column needs one (`LANDSCAPE_HEADLINES`).
