@@ -29,6 +29,7 @@ import {
   markResynced,
   shouldResync,
 } from '../utils/resyncGate';
+import { onClockJump } from '../utils/clockJumps';
 import { usePrayerDay } from '../hooks/usePrayerDay';
 import { clearTimezoneShiftNotice } from '../prayer/timezoneShift';
 import { refreshStoredPrayerData } from '../prayer/refreshStoredData';
@@ -641,7 +642,13 @@ export function HomeScreen() {
     // for (docs/design/background-power.md).
     if (!homeActive) return undefined;
     const id = setInterval(tick, 30_000);
-    return () => clearInterval(id);
+    // And at once when the clock jumps (utils/clockJumps): a day set back
+    // by hand showed a countdown of thirty-odd hours until the next look.
+    const off = onClockJump(tick);
+    return () => {
+      clearInterval(id);
+      off();
+    };
   }, [state, retry, view, homeActive]);
 
   useEffect(() => {

@@ -47,6 +47,7 @@ import {
   warpSkyAt,
 } from '../../boot/launchWarp';
 import { holdLaunchSnapshot, setLaunchHeroState, setLaunchRunWanted } from '../../native/LaunchSnapshot';
+import { forgetClockTicks, noteClockTick } from '../../utils/clockJumps';
 import { registerPoseHero } from '../../boot/poseHero';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import { useClockFormatter } from '../../hooks/useClockFormatter';
@@ -339,11 +340,19 @@ const HeroToday = memo(function HeroToday({
     let id: ReturnType<typeof setInterval> | null = null;
     const align = setTimeout(() => {
       setNow(new Date());
-      id = setInterval(() => setNow(new Date()), 1000);
+      id = setInterval(() => {
+        const t = Date.now();
+        // A tick far from a second after the last is the clock jumping
+        // (set by hand, corrected): the day may be another, and the
+        // watchdog that decides it looks now rather than in half a minute.
+        noteClockTick(t);
+        setNow(new Date(t));
+      }, 1000);
     }, 1000 - (Date.now() % 1000));
     return () => {
       clearTimeout(align);
       if (id) clearInterval(id);
+      forgetClockTicks();
     };
   }, [active, posed]);
 
