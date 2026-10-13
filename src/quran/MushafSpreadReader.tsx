@@ -48,7 +48,6 @@ import {
   MushafJumpModal,
   MushafPageFooter,
   MushafPageHeader,
-  MushafLockButton,
   useMushafReaderCore,
   type AyahMarkProps,
   type KhatmahFinish,
@@ -80,7 +79,7 @@ import {
   spreadPageWidth,
   useSettledSpreadGeometry,
 } from './spreadPageGeometry';
-import { RADIUS, SPACING } from '../theme/tokens';
+import { RADIUS } from '../theme/tokens';
 
 /**
  * Pages either side of the one being read whose fonts are registered
@@ -155,10 +154,12 @@ const SpreadColumn = React.memo(function SpreadColumn({
   wordsLive,
   lock,
 }: ColumnProps) {
-  // Locked: a tap on the margins or the strip does nothing; the hold that
-  // brings the chrome back lives on the phone, and here the chrome is
-  // never fully away — the sidebar and the chevrons stay.
-  const onTap = locked ? undefined : onToggleFullscreen;
+  // The margins and the strip still toggle fullscreen on a locked page:
+  // on an iPad they are the ONLY way in and out of fullscreen (no bar
+  // button, no hold), and the toggle loses nothing — the page stays, and
+  // the badge in the fullscreen band is the way to unlock once the
+  // header has gone.
+  const onTap = onToggleFullscreen;
   // Outer edge gets the full margin, the gutter side gets half of one —
   // the two halves together make a gutter equal to the outer margins.
   // rtl-safe: physical left/right on purpose. A muṣḥaf's spread is
@@ -770,16 +771,6 @@ export const MushafSpreadReader = React.memo(function MushafSpreadReader(
           onPeekPage={core.peekPage}
           onOpenJump={core.openJump}
           chrome={railChrome}
-          trailing={
-            <MushafLockButton
-              color={railChrome.accent}
-              backgroundColor={railChrome.control}
-              locked={locked}
-              onLock={() => setLock(true)}
-              onUnlock={() => setLock(false)}
-              onHint={() => undefined}
-            />
-          }
         />
       ) : null}
       </View>

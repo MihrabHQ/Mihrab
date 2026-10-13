@@ -28,10 +28,15 @@ import { useTranslation } from 'react-i18next';
 import { TilawahIcon } from '../../quran/audio/PlaybackIcons';
 import { TranslationIcon } from '../../theme/icons';
 import { desktopSize } from '../../responsive/desktop';
-import { MushafToneHeaderButton, useSettledMeasure } from '../../quran/mushafReaderCore';
+import {
+  MushafLockHeaderButton,
+  MushafToneHeaderButton,
+  useSettledMeasure,
+} from '../../quran/mushafReaderCore';
 import { TabBackButton } from '../../navigation/TabBackButton';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import { isMacCatalyst } from '../../responsive/breakpoints';
+import { DEVICE_CLASS } from '../../responsive/deviceClass';
 import type { SurahIndex } from '../../quran/quran';
 import { MushafReader } from '../../quran/MushafReader';
 import { SIDEBAR_WIDTH, sidebarShown } from '../../quran/MushafIndexSidebar';
@@ -415,7 +420,16 @@ export function MushafSurahScreen({
      * is still an edge pan. Going back on the Mac keeps the header's back
      * button, ⌘[, and the surah sidebar.
      */
-    const gestureEnabled = !isMacCatalyst;
+    /**
+     * AND THE READING LOCK (#75). With the page's own swipe switched off
+     * the horizontal pan reaches the navigator, whose interactive pop
+     * takes it — a swipe on a locked page closed the muṣḥaf (seen on the
+     * iPhone simulator, in Arabic, where the pop's edge is the whole
+     * width RN hands it). Locked means "this page stays": the back
+     * gesture goes with the page turn, and the header's arrow — reached
+     * by the deliberate hold that brings the chrome back — stays.
+     */
+    const gestureEnabled = !isMacCatalyst && !quran.prefs.touchLock;
 
     if (isFullscreen) {
       navigation.setOptions({
@@ -616,6 +630,13 @@ export function MushafSurahScreen({
           {/* The page tone, up here from the page bar: toggled a few times
               a year, where fullscreen — now the bar's button, under the
               thumb — is toggled every sitting. */}
+          {/* The reading lock (#75), on the spread reader only: an iPad
+              held upright has no page bar to carry it, and the Mac's
+              sidebar comes and goes with the window. The phone's lock
+              sits in its bar, under the thumb. */}
+          {DEVICE_CLASS !== 'phone' ? (
+            <MushafLockHeaderButton color={ink} size={desktopSize(18)} />
+          ) : null}
           <MushafToneHeaderButton color={ink} size={desktopSize(18)} />
         </View>
       ),
@@ -644,6 +665,7 @@ export function MushafSurahScreen({
     switchRiwayah,
     t,
     onToggleMode,
+    quran.prefs.touchLock,
     // The window's size, so a resize re-issues the header rather than
     // leaving UIKit holding a subview RN laid out for a different width.
     headerW,

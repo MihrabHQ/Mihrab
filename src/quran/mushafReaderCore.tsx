@@ -963,6 +963,19 @@ export function MushafPageHeader({
         </View>
       ) : null}
       {exitBtn}
+      {/* No exit cluster to ride in (the spread's band has no ✕): the
+          badge stands on its own at the row's other end. */}
+      {lock && !exitBtn ? (
+        <View style={styles.exitLock}>
+          <ReadingLockBadge
+            testID="mushaf-lock-badge"
+            ink={ornament}
+            ground={lock.ground}
+            onUnlock={lock.onUnlock}
+            onHint={lock.onHint}
+          />
+        </View>
+      ) : null}
       {show !== 'label' ? (
         // The pill names the tone a tap goes TO — paper → sepia → night →
         // auto → paper — the way it always named "Night" on the light
@@ -1075,6 +1088,8 @@ export function MushafLockButton({
   onLock,
   onUnlock,
   onHint,
+  bare = false,
+  size,
 }: {
   color: ColorValue;
   backgroundColor: ColorValue;
@@ -1082,9 +1097,13 @@ export function MushafLockButton({
   onLock: () => void;
   onUnlock: () => void;
   onHint: () => void;
+  /** In a header: no box, the glyph at the header's size. */
+  bare?: boolean;
+  size?: number;
 }) {
   const { t } = useTranslation();
   const ink = String(color);
+  const glyph = size ?? 18;
   // The same clock as the badge's. Unlike the badge, this button stays
   // mounted after it unlocks — re-rendered as the unlocked one while the
   // finger is still down — and the lift that ends the hold would then be
@@ -1121,8 +1140,8 @@ export function MushafLockButton({
       onPressOut={() => {
         if (locked) hold.end();
       }}
-      style={[styles.toneBtn, { backgroundColor }]}>
-      <Svg width={18} height={18} viewBox="0 0 24 24" fill="none">
+      style={bare ? styles.toneHeaderBtn : [styles.toneBtn, { backgroundColor }]}>
+      <Svg width={glyph} height={glyph} viewBox="0 0 24 24" fill="none">
         <Path
           d={locked ? 'M7 11V8a5 5 0 0 1 10 0v3' : 'M7 11V8a5 5 0 0 1 9.6-2'}
           stroke={ink}
@@ -1130,9 +1149,38 @@ export function MushafLockButton({
           strokeLinecap="round"
         />
         <Rect x="5" y="11" width="14" height="10" rx="2.5" fill={ink} />
+        {/* The keyhole: the box's colour in the bar; in a header, the
+            page's — which is what `backgroundColor` carries there. */}
         <Rect x="11" y="14" width="2" height="4" rx="1" fill={String(backgroundColor)} />
       </Svg>
     </Pressable>
+  );
+}
+
+/**
+ * The reading lock as a header mark, for the spread reader (#75): an iPad
+ * held upright and a Mac window too narrow for the sidebar have no page
+ * bar, so the lock lives beside the tone button, a bare mark in the
+ * page's ink like the header's other icons. The same rule as the bar
+ * button — a tap locks, a hold unlocks — and the badge in the fullscreen
+ * band is the way out once the header is hidden.
+ */
+export function MushafLockHeaderButton({ color, size }: { color: ColorValue; size: number }) {
+  const locked = useQuranState().prefs.touchLock;
+  const onLock = useCallback(() => setQuranPrefs({ touchLock: true }), []);
+  const onUnlock = useCallback(() => setQuranPrefs({ touchLock: false }), []);
+  const noop = useCallback(() => undefined, []);
+  return (
+    <MushafLockButton
+      color={color}
+      backgroundColor="transparent"
+      locked={locked}
+      onLock={onLock}
+      onUnlock={onUnlock}
+      onHint={noop}
+      bare
+      size={size}
+    />
   );
 }
 

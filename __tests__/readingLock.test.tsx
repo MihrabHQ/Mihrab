@@ -153,8 +153,15 @@ describe('the readers', () => {
       // The badge rides in the fullscreen band (MushafPageHeader), fed from
       // here; the bar button locks on a tap and unlocks on a hold.
       expect(src).toMatch(/const lockBadge = useMemo\([\s\S]{0,300}onUnlock: \(\) => setLock\(false\)/);
-      expect(src).toMatch(/<MushafLockButton[\s\S]{0,400}onLock=\{\(\) => setLock\(true\)\}[\s\S]{0,100}onUnlock=\{\(\) => setLock\(false\)\}/);
     }
+    // The phone's lock is in its page bar; the spread's is in the screen
+    // header, because an upright iPad has no bar to carry it.
+    expect(read('src/quran/MushafPhoneReader.tsx')).toMatch(
+      /<MushafLockButton[\s\S]{0,400}onLock=\{\(\) => setLock\(true\)\}[\s\S]{0,100}onUnlock=\{\(\) => setLock\(false\)\}/,
+    );
+    expect(read('src/screens/quran/MushafSurahScreen.tsx')).toMatch(
+      /\{DEVICE_CLASS !== 'phone' \? \(\s*<MushafLockHeaderButton/,
+    );
   });
 
   it('puts the badge in the fullscreen band, and the bar button needs a hold to unlock', () => {
@@ -168,6 +175,11 @@ describe('the readers', () => {
   it('lets a swipe along a line go, locked or not', () => {
     const page = read('src/quran/MushafTextPage.tsx');
     expect(page).toMatch(/if \(!tap\.wasTap\(e\)\) return;/);
+  });
+
+  it('takes the back swipe with the page swipe, so a locked page stays', () => {
+    const screen = read('src/screens/quran/MushafSurahScreen.tsx');
+    expect(screen).toMatch(/const gestureEnabled = !isMacCatalyst && !quran\.prefs\.touchLock;/);
   });
 
   it('explains itself the first time, once per device', () => {
