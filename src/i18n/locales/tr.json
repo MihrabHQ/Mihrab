@@ -2321,5 +2321,10 @@
   "featuresOffer": {
     "title": "Bazı özellikler siz isteyene kadar kapalıdır",
     "body": "İstediklerinizi açın. Hepsini daha sonra Ayarlar'dan değiştirebilirsiniz."
+  },
+  "skyOffer": {
+    "title": "Yeni bir görünüm: Gökyüzü",
+    "body": "Gökyüzü uygulamayı boyasın: gece, şafak, gündüz ve alacakaranlık, her biri kendi ışığında, geri sayımın üzerinde. Cihazınız açık ya da koyu modda olsun bu tek görünüm korunur. İstediğiniz zaman Ayarlar → Dış görünüş'ten değiştirebilirsiniz.",
+    "tryIt": "Gökyüzü'nü dene"
   }
 }

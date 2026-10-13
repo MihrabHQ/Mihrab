@@ -127,6 +127,14 @@ const STAYS: Record<string, string> = {
   'mihrab.fullScreenAsked.v1':
     'describes this phone — that the first-run walkthrough offered the ' +
     'full-screen alert here, so the home screen does not ask again',
+  'mihrab.skyAsked.v1':
+    'describes this phone — that the first-run walkthrough showed the Sky ' +
+    'theme here, so the home screen does not offer it again',
+  'mihrab.skyThemeOffer.v1':
+    'describes this phone — whether the home screen has offered the Sky ' +
+    'theme, once, to somebody from before it (src/home/SkyThemeOffer.tsx). ' +
+    'The theme itself is a setting, which travels; a new phone with Sky on ' +
+    'is never asked, and one without may as well be asked once',
   'mihrab.homeFeaturesOffer.notBefore.v1':
     'describes this phone — a day’s hold after the walkthrough finished, ' +
     'so the offer is not a second welcome',

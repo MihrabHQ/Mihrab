@@ -2321,5 +2321,10 @@
   "featuresOffer": {
     "title": "Några funktioner är avstängda tills du ber om dem",
     "body": "Slå på de du vill ha. Allt kan ändras senare i Inställningar."
+  },
+  "skyOffer": {
+    "title": "Ett nytt utseende: Himmel",
+    "body": "Låt himlen färga appen – natt, gryning, dag och skymning, var och en i sitt eget ljus, ovanför nedräkningen. Utseendet består oavsett om enheten är i ljust eller mörkt läge. Du kan ändra det när som helst under Inställningar → Utseende.",
+    "tryIt": "Prova Himmel"
   }
 }

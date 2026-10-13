@@ -2322,5 +2322,10 @@
   "featuresOffer": {
     "title": "Certaines fonctions sont désactivées tant que vous ne les demandez pas",
     "body": "Activez celles que vous voulez. Vous pourrez les modifier plus tard dans Réglages."
+  },
+  "skyOffer": {
+    "title": "Une nouvelle apparence : Ciel",
+    "body": "Laissez le ciel colorer l'app – nuit, aube, jour et crépuscule, chacun dans sa propre lumière, au-dessus du compte à rebours. Cette apparence unique reste la même, que votre appareil soit en mode clair ou sombre. Vous pouvez la changer à tout moment dans Réglages → Apparence.",
+    "tryIt": "Essayer Ciel"
   }
 }

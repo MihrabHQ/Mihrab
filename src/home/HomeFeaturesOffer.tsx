@@ -48,6 +48,12 @@ export type HomeFeature = 'fullScreen' | 'silence' | 'liveActivity';
 export const OFFER_KEY = 'mihrab.homeFeaturesOffer.v1';
 /** Written when the walkthrough finishes: it offered the full-screen alert. */
 export const FULL_SCREEN_ASKED_KEY = 'mihrab.fullScreenAsked.v1';
+/**
+ * Written when the walkthrough finishes: it showed the Sky theme. Anybody
+ * without it was here before Sky, and the home screen offers it to them
+ * once (SkyThemeOffer).
+ */
+export const SKY_ASKED_KEY = 'mihrab.skyAsked.v1';
 /** Not before this time (ms since epoch): a fresh walkthrough just ended. */
 export const NOT_BEFORE_KEY = 'mihrab.homeFeaturesOffer.notBefore.v1';
 
@@ -96,6 +102,7 @@ export function offerNotBefore(stored: string | null, installMs: number | null):
 export function markWalkthroughFinished(now: number = Date.now()): void {
   AsyncStorage.multiSet([
     [FULL_SCREEN_ASKED_KEY, '1'],
+    [SKY_ASKED_KEY, '1'],
     [NOT_BEFORE_KEY, String(now + AFTER_WALKTHROUGH_MS)],
   ]).catch(() => undefined);
 }

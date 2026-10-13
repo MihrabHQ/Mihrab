@@ -2321,5 +2321,10 @@
   "featuresOffer": {
     "title": "Beberapa fitur nonaktif sampai Anda memintanya",
     "body": "Aktifkan yang Anda mau. Semuanya bisa diubah nanti di Pengaturan."
+  },
+  "skyOffer": {
+    "title": "Tampilan baru: Langit",
+    "body": "Biarkan langit mewarnai aplikasi — malam, fajar, siang, dan senja, masing-masing dengan cahayanya sendiri, di atas hitung mundur. Satu tampilan itu bertahan baik perangkat Anda dalam mode terang maupun gelap. Anda bisa mengubahnya kapan saja di Pengaturan → Penampilan.",
+    "tryIt": "Coba Langit"
   }
 }

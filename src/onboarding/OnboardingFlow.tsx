@@ -113,8 +113,8 @@ export function OnboardingFlow() {
       // the Home banners carry that prompt forward with a path back.
       updateLocation({ locationOnboardingComplete: true });
     }
-    // The alerts step offered the full-screen alert: the home screen's
-    // later offer must not ask about it again.
+    // The alerts step offered the full-screen alert and the look step
+    // showed Sky: the home screen's later offers must not ask again.
     markWalkthroughFinished();
     updateSettings({ onboardingComplete: true });
     navigation.goBack();

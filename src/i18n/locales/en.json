@@ -2321,5 +2321,10 @@
   "featuresOffer": {
     "title": "A few things are off until you ask for them",
     "body": "Turn on any you want. Each can be changed later in Settings."
+  },
+  "skyOffer": {
+    "title": "A new look: Sky",
+    "body": "Let the sky colour the app — night, dawn, day and dusk, each in its own light, over the countdown. It keeps that one look whether your device is in light or dark mode. You can change it any time in Settings → Appearance.",
+    "tryIt": "Try Sky"
   }
 }

@@ -2322,5 +2322,10 @@
   "featuresOffer": {
     "title": "Algunas funciones están desactivadas hasta que las pidas",
     "body": "Activa las que quieras. Puedes cambiarlas más tarde en Ajustes."
+  },
+  "skyOffer": {
+    "title": "Un nuevo aspecto: Cielo",
+    "body": "Deja que el cielo pinte la app: noche, amanecer, día y atardecer, cada uno con su propia luz, sobre la cuenta atrás. Mantiene ese único aspecto tanto si el dispositivo está en modo claro como oscuro. Puedes cambiarlo cuando quieras en Ajustes → Apariencia.",
+    "tryIt": "Probar Cielo"
   }
 }

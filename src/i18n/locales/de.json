@@ -2321,5 +2321,10 @@
   "featuresOffer": {
     "title": "Einiges ist aus, bis du es einschaltest",
     "body": "Schalte ein, was du möchtest. Alles lässt sich später in den Einstellungen ändern."
+  },
+  "skyOffer": {
+    "title": "Ein neues Erscheinungsbild: Himmel",
+    "body": "Lass den Himmel die App färben – Nacht, Morgendämmerung, Tag und Abenddämmerung, jede in ihrem eigenen Licht, über dem Countdown. Dieses eine Erscheinungsbild bleibt, ob dein Gerät im hellen oder dunklen Modus ist. Du kannst es jederzeit unter Einstellungen → Aussehen ändern.",
+    "tryIt": "Himmel ausprobieren"
   }
 }
