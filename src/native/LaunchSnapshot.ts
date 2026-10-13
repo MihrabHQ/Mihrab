@@ -20,7 +20,8 @@ import { capturePoseHero, hasPoseHero, onPoseHeroChange } from '../boot/poseHero
 
 type Native = {
   setEligible(value: boolean): void;
-  setLookKey(key: string): void;
+  /** `nightMatters`: the screens follow the system's night mode (appearance "system"). */
+  setLookKey(key: string, nightMatters: boolean): void;
   hide(): void;
   /**
    * Copy the window now, if it is eligible — with the hero drawn in its
@@ -190,11 +191,12 @@ export function lookKeyOf(settings: object): string {
   return `${json.length.toString(36)}-${h.toString(36)}`;
 }
 
-export function setLaunchSnapshotLook(key: string): void {
-  if (!native || key === lastLook) return;
-  lastLook = key;
+export function setLaunchSnapshotLook(key: string, nightMatters: boolean): void {
+  const full = `${key}|${nightMatters ? 'n' : '-'}`;
+  if (!native || full === lastLook) return;
+  lastLook = full;
   try {
-    native.setLookKey(key);
+    native.setLookKey(key, nightMatters);
   } catch {
     // As above.
   }

@@ -112,10 +112,21 @@ internal object LaunchSnapshot {
     eligible = value
   }
 
-  /** The app's look (theme, accent, language…), as one opaque string. */
-  fun setLookKey(context: Context, key: String) {
+  /**
+   * The app's look (theme, accent, language…), as one opaque string.
+   * `nightMatters`: the app's own screens follow the system's night mode
+   * (appearance "system"), so a picture taken under the other one is not
+   * this screen. Under an explicit light or dark theme, or the Sky theme,
+   * which paints its own hour, the system's night mode decides nothing
+   * on screen — and a phone on a scheduled dark theme flips it at dusk
+   * and dawn, which refused every picture kept across them and opened
+   * the app on its skeleton.
+   */
+  fun setLookKey(context: Context, key: String, nightMatters: Boolean) {
     val p = prefs(context)
-    if (p.getString("look_current", null) != key) p.edit().putString("look_current", key).apply()
+    if (p.getString("look_current", null) != key || p.getBoolean("look_night_matters", true) != nightMatters) {
+      p.edit().putString("look_current", key).putBoolean("look_night_matters", nightMatters).apply()
+    }
   }
 
   // ── Keeping the screen ───────────────────────────────────────────────
@@ -441,7 +452,11 @@ internal object LaunchSnapshot {
     fun stillCurrent(context: Context): Boolean {
       val now = System.currentTimeMillis()
       if (version != BuildConfig.VERSION_CODE) return false
-      if (now - at !in 0..MAX_AGE_MS) return false
+      // Either way round: a clock set back after the picture was kept
+      // (corrected by hand, a time zone) leaves a picture from "the
+      // future", and it is still this screen — the hero runs from the
+      // prayer it is in whatever the picture's (launchWarp.ts).
+      if (Math.abs(now - at) > MAX_AGE_MS) return false
       val look = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString("look_current", null)
       return look != null && look == this.look
     }
@@ -450,7 +465,8 @@ internal object LaunchSnapshot {
     fun matches(activity: Activity): Boolean {
       if (!stillCurrent(activity)) return false
       val c = activity.resources.configuration
-      if ((c.uiMode and Configuration.UI_MODE_NIGHT_MASK) != night) return false
+      // -1: taken under a look the system's night mode has no say in.
+      if (night >= 0 && (c.uiMode and Configuration.UI_MODE_NIGHT_MASK) != night) return false
       if (c.fontScale != fontScale || c.densityDpi != densityDpi) return false
       if (systemLook(activity) != system) return false
       val (w, h) = windowSize(activity)
@@ -460,8 +476,10 @@ internal object LaunchSnapshot {
     companion object {
       fun current(activity: Activity, w: Int, h: Int, at: Long, posed: Boolean): Meta {
         val c = activity.resources.configuration
-        val look = activity.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString("look_current", "") ?: ""
-        return Meta(w, h, c.uiMode and Configuration.UI_MODE_NIGHT_MASK, c.fontScale, c.densityDpi,
+        val p = activity.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+        val look = p.getString("look_current", "") ?: ""
+        val night = if (p.getBoolean("look_night_matters", true)) c.uiMode and Configuration.UI_MODE_NIGHT_MASK else -1
+        return Meta(w, h, night, c.fontScale, c.densityDpi,
           BuildConfig.VERSION_CODE, dayOf(at), at, look, heroTarget, heroFrom, heroPosed = posed, system = systemLook(activity))
       }
 

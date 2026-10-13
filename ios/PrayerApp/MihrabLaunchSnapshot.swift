@@ -76,10 +76,21 @@ final class LaunchSnapshotStore {
 
   // MARK: What JS tells us
 
-  func setLookKey(_ key: String) {
+  /// `nightMatters`: the app's screens follow the system's light/dark (appearance
+  /// "system"); otherwise — an explicit theme, or the Sky theme painting its
+  /// own hour — the interface style decides nothing on screen, and a picture
+  /// kept under the other style is still this screen (its `style` is kept as -1).
+  func setLookKey(_ key: String, nightMatters: Bool) {
     if defaults.string(forKey: Self.prefix + "lookCurrent") != key {
       defaults.set(key, forKey: Self.prefix + "lookCurrent")
     }
+    if defaults.object(forKey: Self.prefix + "lookNightMatters") as? Bool != nightMatters {
+      defaults.set(nightMatters, forKey: Self.prefix + "lookNightMatters")
+    }
+  }
+
+  private var nightMatters: Bool {
+    defaults.object(forKey: Self.prefix + "lookNightMatters") as? Bool ?? true
   }
 
   func setHeroState(targetAt: Int64, fromAt: Int64, posed: Bool) {
@@ -125,7 +136,7 @@ final class LaunchSnapshotStore {
     let at = Int64(Date().timeIntervalSince1970 * 1000)
     let meta = Meta(
       width: Double(bounds.width), height: Double(bounds.height), scale: Double(format.scale),
-      style: scene.traitCollection.userInterfaceStyle.rawValue,
+      style: nightMatters ? scene.traitCollection.userInterfaceStyle.rawValue : -1,
       textSize: scene.traitCollection.preferredContentSizeCategory.rawValue,
       version: Self.buildVersion, at: at,
       look: defaults.string(forKey: Self.prefix + "lookCurrent") ?? "",
@@ -209,7 +220,7 @@ final class LaunchSnapshotStore {
     let size = window.bounds.size
     guard abs(Double(size.width) - meta.width) < 0.5, abs(Double(size.height) - meta.height) < 0.5,
           abs(Double(window.screen.scale) - meta.scale) < 0.01,
-          scene.traitCollection.userInterfaceStyle.rawValue == meta.style,
+          meta.style < 0 || scene.traitCollection.userInterfaceStyle.rawValue == meta.style,
           scene.traitCollection.preferredContentSizeCategory.rawValue == meta.textSize,
           Self.systemLook == meta.system else { return }
     var image: UIImage?
@@ -286,7 +297,9 @@ final class LaunchSnapshotStore {
   private func stillCurrent(_ meta: Meta) -> Bool {
     let now = Date().timeIntervalSince1970 * 1000
     let age = (now - Double(meta.at)) / 1000
-    guard meta.version == Self.buildVersion, age >= 0, age <= Self.maxAge else { return false }
+    // Either way round: a clock set back leaves a picture from "the future",
+    // and it is still this screen (the hero runs from the prayer it is in).
+    guard meta.version == Self.buildVersion, abs(age) <= Self.maxAge else { return false }
     guard let look = defaults.string(forKey: Self.prefix + "lookCurrent") else { return false }
     return look == meta.look
   }
@@ -337,8 +350,8 @@ final class MihrabLaunchSnapshot: NSObject {
     DispatchQueue.main.async { LaunchSnapshotStore.shared.eligible = value }
   }
 
-  @objc func setLookKey(_ key: String) {
-    LaunchSnapshotStore.shared.setLookKey(key)
+  @objc func setLookKey(_ key: String, nightMatters: Bool) {
+    LaunchSnapshotStore.shared.setLookKey(key, nightMatters: nightMatters)
   }
 
   @objc func hide() {

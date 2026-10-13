@@ -4,7 +4,7 @@
 @interface RCT_EXTERN_MODULE(MihrabLaunchSnapshot, NSObject)
 
 RCT_EXTERN_METHOD(setEligible:(BOOL)value)
-RCT_EXTERN_METHOD(setLookKey:(NSString *)key)
+RCT_EXTERN_METHOD(setLookKey:(NSString *)key nightMatters:(BOOL)nightMatters)
 RCT_EXTERN_METHOD(hide)
 RCT_EXTERN_METHOD(captureNow:(NSString * _Nullable)heroFile x:(double)x y:(double)y)
 RCT_EXTERN_METHOD(setHeroState:(double)targetAt fromAt:(double)fromAt posed:(BOOL)posed)

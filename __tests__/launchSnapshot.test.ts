@@ -91,7 +91,7 @@ describe('the iOS side', () => {
   it('is used only when it is the screen about to open, and never on the Mac', () => {
     for (const check of [
       'meta.version == Self.buildVersion',
-      'age <= Self.maxAge',
+      'abs(age) <= Self.maxAge',
       'look == meta.look',
       'userInterfaceStyle.rawValue == meta.style',
       'preferredContentSizeCategory.rawValue == meta.textSize',
@@ -152,7 +152,18 @@ describe('the JS side', () => {
     jest.dontMock('react-native');
   });
 
-  it('tells native what the app looks like', () => {
-    expect(ROOT).toMatch(/setLaunchSnapshotLook\(lookKeyOf\(settings\)\);/);
+  it('tells native what the app looks like, and whether the system\'s night mode is part of it', () => {
+    expect(ROOT).toMatch(/setLaunchSnapshotLook\(lookKeyOf\(settings\), settings\.appearance === 'system'\);/);
+    // A phone on a scheduled dark theme flips night mode at dusk and
+    // dawn; under an explicit theme or the Sky theme that changes nothing
+    // on screen, and the picture kept across it is still this screen.
+    const kt = read('android/app/src/main/java/com/prayer_times/LaunchSnapshot.kt');
+    const SWIFT = read('ios/PrayerApp/MihrabLaunchSnapshot.swift');
+    const BRIDGE = read('ios/PrayerApp/MihrabLaunchSnapshot.m');
+    expect(kt).toMatch(/if \(night >= 0 && \(c\.uiMode and Configuration\.UI_MODE_NIGHT_MASK\) != night\) return false/);
+    expect(kt).toMatch(/val night = if \(p\.getBoolean\("look_night_matters", true\)\)/);
+    expect(SWIFT).toMatch(/meta\.style < 0 \|\| scene\.traitCollection\.userInterfaceStyle\.rawValue == meta\.style/);
+    expect(SWIFT).toMatch(/style: nightMatters \? scene\.traitCollection\.userInterfaceStyle\.rawValue : -1/);
+    expect(BRIDGE).toContain('setLookKey:(NSString *)key nightMatters:(BOOL)nightMatters');
   });
 });

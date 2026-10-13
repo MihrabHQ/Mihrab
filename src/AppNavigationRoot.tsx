@@ -83,8 +83,11 @@ export function AppNavigationRoot() {
   // for half a second. A picture of the last hour fading into this one
   // over the launch's fade is the lesser thing by far; the hero runs
   // from this prayer's start under it either way (launchWarp.ts).
+  // The system's night mode is part of the look only while the app
+  // follows it: under an explicit theme, or the Sky theme's own hour, a
+  // picture kept under the other one is still this screen.
   useEffect(() => {
-    if (hydrated) setLaunchSnapshotLook(lookKeyOf(settings));
+    if (hydrated) setLaunchSnapshotLook(lookKeyOf(settings), settings.appearance === 'system');
   }, [hydrated, settings]);
 
   /**

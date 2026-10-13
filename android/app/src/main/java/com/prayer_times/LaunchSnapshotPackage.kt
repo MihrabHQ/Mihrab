@@ -17,7 +17,7 @@ class LaunchSnapshotModule(reactContext: ReactApplicationContext) :
   fun setEligible(value: Boolean) = LaunchSnapshot.setEligible(value)
 
   @ReactMethod
-  fun setLookKey(key: String) = LaunchSnapshot.setLookKey(reactApplicationContext, key)
+  fun setLookKey(key: String, nightMatters: Boolean) = LaunchSnapshot.setLookKey(reactApplicationContext, key, nightMatters)
 
   @ReactMethod
   fun hide() = LaunchSnapshot.hide()
