@@ -29,44 +29,68 @@ Bundle ids:
 
 | Layer | Detail |
 |---|---|
-| Runtime | React Native 0.83, Hermes, TypeScript strict |
+| Runtime | React Native 0.87 (new architecture), Hermes, TypeScript strict |
 | State | `PrayerSettingsContext` (AsyncStorage-backed) in `src/context/`, sliced into domain contexts (Appearance, Location, Notifications, DataSource, Widget, LiveActivity) |
-| Styling | `useAppPalette()` hook — never hardcode colours. Design tokens live in `src/theme/tokens.ts` |
+| Styling | `useAppPalette()` hook — never hardcode colours. Design tokens live in `src/theme/tokens.ts`; the palettes (light, dark, pure black, the six colour themes, Material You / Liquid Glass, and Sky — see §6) in `src/theme/` |
 | i18n | `src/i18n/` — 13 locales loaded statically; runtime switch via `i18n.changeLanguage(lang)` |
-| Tests | Jest — `npx jest` or `npx jest --testPathPattern=<name>` |
-| Native | Kotlin (Android: widgets, live activity, version info) + Swift (iOS: widgets, ActivityKit live activity, compass) |
+| Tests | Jest — `npx jest` or `npx jest --testPathPattern=<name>` (run with `NODE_ENV` unset or `test`) |
+| Native | Kotlin (Android: widgets, Live Activity, the alarm screen, Do Not Disturb, the launch picture, fonts, …) + Swift (iOS: widgets, ActivityKit, AlarmKit, compass, the launch picture, …) — the table in §5 |
 
 ## 3. Source layout
 
 ```
 src/
+├── backup/, sync/            Export/import, and the device-to-device sync (docs/design/sync-p2p.md)
+├── boot/                     The launch: launchWarp.ts — the run from the kept picture to now (§6)
+├── components/               Shared UI (Group, Row, SkyMoodStrip, …)
 ├── context/                  PrayerSettingsContext + domain slices
-├── i18n/                     i18next bootstrap + 13 locale JSONs
-├── hijri/                    Gregorian↔Hijri conversion (Umm al-Qura tabular)
+├── dhikr/, duas/, tasbih/    Adhkār, duas and the counter
+├── fasting/, ramadan/,       Fasting days, Ramadan, Jumuʿah/Eid treatment
+│   seasonal/
+├── home/                     The home screen's one-time offers (alerts, the Sky theme)
+├── hijri/                    Gregorian↔Hijri conversion — standard tabular, Indonesia
+│                             (Government & NU, Muhammadiyah), published overrides
 ├── hooks/                    usePrayerDay, usePrefetchSavedLocations, useAppPalette …
+├── i18n/                     i18next bootstrap + 13 locale JSONs
+├── journal/                  The prayer log (windows, late marking, timing)
 ├── liveActivity/             Cross-platform Live Activity orchestrator (syncLiveActivity.ts)
-├── native/                   Typed wrappers for Android+iOS native modules
-├── notifications/            notifee schedulers (prayer alerts, fasting reminders, live activity)
-├── prayer/                   prayerStorage.ts — AsyncStorage cache with write-mutex
-├── providers/                4 prayer-time data providers (aladhan, prayertimes_dev,
-│                             islamiskaForbundet, localAdhan) + validateTimings.ts
-├── quran/                    Quran data + reader screen, and audio/ — the shared
-│                             playback store behind the reader, Tilāwah and the mini-player
+├── native/                   Typed wrappers for Android+iOS native modules (§5)
+├── navigation/               Tabs, stacks, deep links
+├── notifications/            notifee schedulers: prayer alerts, the full-screen alarm,
+│                             Do Not Disturb, fasting and dua reminders, Live Activity
+├── onboarding/               The first-run walkthrough
+├── polish/                   What's new sheet + generated release notes, haptics, rate
+├── practice/                 Sunnah prayers (rawātib)
+├── prayer/                   prayerStorage.ts — AsyncStorage cache with write-mutex;
+│                             daruriTimes.ts — the Mālikī second times
+├── providers/                Prayer-time sources: aladhan, prayertimes_dev, localAdhan
+│                             (on device), and the bundled regional datasets — Sweden
+│                             (Islamiska Förbundet), Morocco (Habous), Algeria (MARW)
+│                             — plus validateTimings.ts and providerHealth.ts
+├── quran/                    Quran data + readers (muṣḥaf, sūrah, word reader, tajwīd),
+│                             the khatmah, downloads, and audio/ — the shared playback store
+├── responsive/               Breakpoints, the Mac/iPad dashboard, ResponsiveModal
 ├── screens/                  Top-level screens
-│   ├── home/                 HomeScreen sub-components
+│   ├── home/                 HomeScreen sub-components (TodayCard — the hero and its sky)
 │   └── settings/             Settings cards extracted from SettingsScreen
-├── seasonal/                 Jumu'ah / Ramadan / Eid treatment computation
 ├── settings/                 Settings types + storage glue
-├── theme/                    Palette + chrome (design tokens)
+├── share/, sound/            Month-sheet sharing; adhan sounds
+├── theme/                    Tokens, palettes, the Sky theme (skyMoods.ts, skyTheme.ts)
 ├── utils/                    Shared utils — prayerTimes math, coords helpers, …
 └── widget/                   buildWidgetPayload.ts + syncPrayerWidget.ts (cross-platform)
 
 android/                      Native Android sources + Gradle
 ios/                          iOS Xcode project + Pods
 contrib/fdroid/               F-Droid submission kit (yml, MR notes, checklist)
-docs/                         Architecture/design docs (data-sources.md, design/principles.md)
+data/                         Bundled datasets (regional timetables, Hijri overrides)
+docs/                         The website (index.html + 12 generated languages) and the
+                              design docs (data-sources.md, design/, release/, release-log.md)
+release-notes/                The in-app "What's new", one file per versionCode and language
+scripts/                      release.sh + scripts/release/ (the cut), build-site.js,
+                              build-release-notes.js, the audits (.claude/commands wrap them)
+tools/                        Dataset builders (habous, MARW, IFiS, hijri-calendars, qiraat)
 .claude/                      Slash commands + subagents (designer, reviewer, …)
-fastlane/metadata/android/    Play Store + F-Droid listing copy
+fastlane/metadata/            Play / App Store listing copy and the Play changelogs
 ```
 
 ### Key files
@@ -149,10 +173,24 @@ All Android Kotlin modules live in `android/app/src/main/java/com/prayer_times/`
 | `MihrabLiveActivity` | `MihrabLiveActivityModule.kt` | — | `src/native/MihrabLiveActivity.ts` | Post Android Live Activity ongoing notification with progress bar + chronometer + Android 16 chip metadata |
 | `PrayerLiveActivity` | — | `PrayerLiveActivity.swift` + `.m` | `src/native/PrayerLiveActivity.ts` | Start/update/end iOS ActivityKit Live Activity (Lock Screen + Dynamic Island) |
 | `Compass` | `CompassModule.kt` | `CompassModule.swift` + `.m` | `src/hooks/useQiblaCompass.ts` | Magnetometer stream for Qibla compass |
-| `PrayerBuildInfo` | `PrayerBuildInfoModule.kt` | — | `src/native/PrayerBuildInfo.ts` | Exposes the Android product flavor (`play` vs `fdroid`) so JS can hide IAP features on F-Droid |
+| `PrayerBuildInfo` | `PrayerBuildInfoModule.kt` | `PrayerBuildInfo.m` | `src/native/PrayerBuildInfo.ts` | Exposes the Android product flavor (`play` / `fdroid` / `github`) |
 | `AppVersion` | `AppVersionModule.kt` | `AppVersion.m` | inline | Exposes versionName + versionCode |
 | `SystemTheme` | `SystemThemePackage.kt` | — | inline | Material You dynamic-color current accent |
 | `SystemClock` | `SystemClockModule.kt` | `SystemClock.m` | `src/native/SystemClock.ts` | Is the device clock set to 24-hour time? (issue #18 — neither platform exposes this to JS). Constant `is24Hour` + method `readIs24Hour()` — **different names on purpose**: a method and a constant sharing a name leaves one unreachable in every bridge mode. |
+| `LaunchSnapshot` | `LaunchSnapshot.kt` + `LaunchSnapshotPackage.kt` | `MihrabLaunchSnapshot.swift` + `.m` | `src/native/LaunchSnapshot.ts` | The last Today screen kept as a picture and shown as a launch's first frame — see §6 |
+| `FullScreenAlarm` | `FullScreenAlarmModule.kt` + `PrayerAlarmActivity.kt` | — | `src/native/FullScreenAlarm.ts` | The full-screen prayer alert over the lock screen (#63), painted in the Sky theme's hour when the app wears it |
+| `PrayerAlarms` | — | `PrayerAlarms.swift` + `.m` | `src/native/PrayerAlarms.ts` | iOS 26 AlarmKit: ring like the Clock app, with Stop and Snooze (#63) |
+| `PrayerSilence` | `PrayerSilenceModule.kt` | — | `src/native/PrayerSilence.ts` | Do Not Disturb around the prayers you pick, scheduled natively so it runs with the app closed (#60) |
+| `AdhanPlayer` | — | `AdhanPlayer.swift` + `.m` | `src/native/AdhanPlayer.ts` | Plays the full adhan in the foreground; iOS caps notification sounds at 30 s |
+| `CustomAdhan` | `CustomAdhanModule.kt` | `CustomAdhan.swift` + `.m` | `src/native/CustomAdhan.ts` | Import the user's own adhan recording through the system picker |
+| `WordPlayer` | `WordPlayerModule.kt` | `WordPlayer.swift` + `.m` | `src/native/WordPlayer.ts` | One slice of an āyah recording — the word reader's player, beside the recitation's queue |
+| `AudioRoute` / `NowPlayingState` | — | `AudioRouteWatcher.swift`, `NowPlayingState.swift` | `src/native/AudioRoute.ts`, `NowPlayingState.ts` | Headphones-out pauses playback; the Mac's required now-playing state |
+| `VolumeKeys` | `VolumeKeysModule.kt` | — | `src/native/volumeKeys.ts` | The volume buttons as page-turn keys while the muṣḥaf captures them (#68) |
+| `MushafFont` / `MushafLine` | `MushafFontModule.kt`, `MushafLineView.kt` | `MushafFont.swift`, `MushafLine.swift` | `src/native/MushafFont.ts` | Runtime registration of the 604 page fonts; the native line view that draws a page line |
+| `DisplayCutout` / `RotationCover` | `DisplayCutoutModule.kt`, `RotationCover.kt` | — / `MihrabRotationCover.swift` | `src/native/DisplayCutout.ts`, `RotationCover.ts` | Where the camera is (the fullscreen muṣḥaf lays out beside it); a sheet of page colour the platform raises as the window turns |
+| `SyncFolder` / `ScanQr` / `SecureRandom` / `MihrabClipboard` | `SyncFolderModule.kt`, `ScanQrModule.kt`, `SecureRandomModule.kt`, `MihrabClipboardModule.kt` | `SyncFolder.swift`, `ScanQr.swift`, `SecureRandom.swift`, `MihrabClipboard.swift` | `src/native/FilePicker.ts`, `src/sync/` | The device-to-device sync's folder, pairing QR, keys and clipboard |
+| `WidgetQueueWatcher` | `WidgetQueueEvents.kt` | `WidgetQueueWatcher` (Darwin notification, Mac/iPad) | `src/native/WidgetQueueWatcher.ts` | The third drain trigger: a widget's log queue changed while the app was in front |
+| `MihrabKeepAwake` / `Haptics` / `KeyCommands` / `RateApp` | — | `.swift` + `.m` | inline | Screen awake while reading; haptics; Mac keyboard shortcuts; the App Store review prompt |
 
 All modules are registered in:
 - Android — `MainApplication.kt` `packageList`.
@@ -243,6 +281,25 @@ Each `*Card.tsx` in `src/screens/settings/` consumes its narrow slice, owns its 
 The Android implementation goes through the native Kotlin module, not notifee, because notifee 9.x doesn't expose Android 16's `setShortCriticalText` or `setRequestPromotedOngoing`. The orchestrator (`syncLiveActivity.ts`) routes through `MihrabLiveActivity.display()` on Android and `PrayerLiveActivity.start()` on iOS. The HomeScreen `useEffect` re-fires the sync on every state change + on focus.
 
 **On hardened shells (GrapheneOS, some MIUI builds), custom `RemoteViews` are silently stripped** at notification post time. The current implementation uses standard `InboxStyle` + `setProgress` + `setUsesChronometer` so it renders on every shell.
+
+**Held back while the app is in front.** `MihrabLiveActivityService` keeps the rich notification unposted while `MainActivity.resumed` is true — set from `onCreate`, so a launch's restart holds it too — and posts it on `onPause`. Otherwise a heads-up card slid over the hero on every open. The builder has `setOnlyAlertOnce`, and a "silent" line is NOT a fix: a promoted-ongoing notification strips the group trick that was tried first.
+
+### The launch picture and the launch run
+
+A cold start used to be a splash, a skeleton and then the page. Now it is the last Today screen, kept as a picture, shown as the first frame, with the hero then running from the prayer it counts from to now.
+
+- **The picture** (`LaunchSnapshot.kt`, `MihrabLaunchSnapshot.swift`, `src/native/LaunchSnapshot.ts`). Native keeps a PNG of the Today screen on leaving, with a *look key* (`setLaunchSnapshotLook(key, nightMatters)` — language, clock format, palette, Material You accent, and the system night mode only when the theme follows it, `settings.appearance === 'system'`) and the interval it was posed for. It is shown only when the look still matches, the window fits, and it is not older than `MAX_AGE_MS` (`abs()`, because a clock set back makes the age negative). JS captures a **posed twin** of the hero — the hero drawn at the start of the current interval, under the real one, whole with its bleed into the status bar — so every launch opens on the prayer and sweeps the whole way.
+- **The run** (`src/boot/launchWarp.ts`, used by `TodayCard`). A `WarpStart {remaining, pct, at, targetAt}` comes from the picture's pose, or from the current interval's start when there is no picture or it was posed for another interval. `decide()` → `begin()` → `markLaunchRunReady()`: the run does not start until the native `Animated` value has a listener (within `WARP_READY_MAX_MS`), so the sky, the rail and the countdown all move from the first frame; it is timed by frames drawn, not the clock, so a JS stall pauses it. The sky is driven by one native `Animated.timing` with the ease continued from where the run already is. It is a setting (on by default); off, the picture fades into the live screen.
+- **Rules.** A window is a launch (an app swiped away and reopened gets both); a widget's `mihrab://today` tap is a plain launch; the launch's side work (widgets, Live Activity, notifications) waits for the sweep. `__tests__/launchWarp.test.ts` and `launchWarpSimulation.test.tsx` hold the semantics; `tools/startup-trace/` measures a real phone.
+
+### The Sky theme
+
+`appearance: 'sky'` paints the whole app from the sky over the countdown — one look through light and dark — rather than tinting a palette.
+
+- **Moods** (`src/theme/skyMoods.ts`). A `SkyMood` is a set of tokens (hero stops, page, cards, controls, accent, ink, highlight …). Six named moods (`SKY_MOODS`: night, dawn, morning, midday, golden, sunset — what the strip shows) and, under them, `ANCHORS` hand-tuned for the hours (`nightEarly`, `midnight`, `nightLate`, `dawn`, `dawnBright`, `morning`, `morningLate`, `midday`, `afternoon`, `afternoonLate`, `golden`, `sunset`, `sunsetDeep`), every one checked for AA; `TIMELINE` says which anchors each passage (night, dawn, day, sunset, dusk) runs between and where. `skyMoodFor(passage, t)` mixes the two neighbours in OKLab, with `mixHexVivid` for the saturated set (chroma lerped, not averaged, so no grey between the warm hours and the blue), quantised to `PALETTE_STEPS` and memoised in `MOOD_CACHE` so the hero's minute ticks do not rebuild a palette. `widgetSkyColors` gives the Android widgets theirs.
+- **Publishing** (`src/theme/skyTheme.ts`). `TodayCard` is the one place that knows the sky; it calls `publishSkyTheme({top, bottom, passage, t}, day)` and `useAppPalette()` reads it. A polarity flip (a light mood to a dark one) crossfades. The current colours are persisted WITH the day's times (`SkyThemeDay`), and `restoreSkyTheme()` is awaited alongside `loadSettings()` in `PrayerSettingsContext`, so a launch opens in the hour's colours once, not three palettes in a row.
+- **Who else wears it.** The full-screen alarm (`fullScreenAlarm.ts` → `PrayerAlarmActivity.kt`, `PRAYER_MOOD` per prayer), the Android widgets, the muṣḥaf's chrome (which takes the theme rendered for the PAGE's mode — `railChrome.accent` — not the app's), the onboarding strip (`SkyMoodStrip`) and the one-time home-screen offer (`src/home/SkyThemeOffer.tsx`). The look key of the launch picture deliberately leaves the mood out, so a picture from an hour ago still fits.
+- **Design notes**: `docs/design/sky-palette.md`, `docs/themes-plan.md`.
 
 ## 7. Tests
 
