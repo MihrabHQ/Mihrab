@@ -41,6 +41,9 @@ const PAIRS: ReadonlyArray<readonly [string, string]> = [
   ['07_tilawah.png', 'shot-tilawah.png'],
   ['08_fasting.png', 'shot-fasting.png'],
   ['09_widgets.png', 'shot-widgets-android.png'],
+  // The two fans (branding/tools/fan.py): five screens in one picture.
+  ['10_alerts.png', 'shot-alerts.png'],
+  ['11_sky.png', 'shot-sky.png'],
 ];
 
 const sha = (p: string) =>
