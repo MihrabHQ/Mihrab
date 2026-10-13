@@ -24,6 +24,17 @@ export type SkyMoodName = 'night' | 'dawn' | 'morning' | 'midday' | 'golden' | '
 export type SkyMood = {
   name: SkyMoodName;
   isDark: boolean;
+  /**
+   * The hero's sky under this mood — three stops, top to foot. The foot is
+   * the page colour, so the sky runs into the page without an edge: the
+   * hero and the page are one composition, not a panel on a ground. The
+   * middle stop carries the hour's glow — the horizon's coral at dawn, the
+   * magenta at sunset, the amethyst of a night. The sun, the moon and the
+   * stars are still drawn over it from the real sky.
+   */
+  heroTop: string;
+  heroMid: string;
+  heroFoot: string;
   bg: string;
   card: string;
   controlBg: string;
@@ -46,6 +57,9 @@ export const SKY_MOODS: Record<SkyMoodName, SkyMood> = {
   night: {
     name: 'night',
     isDark: true,
+    heroTop: '#0A0818',
+    heroMid: '#2A1B55',
+    heroFoot: '#130F26',
     bg: '#130F26',
     card: '#1B1636',
     controlBg: '#261F49',
@@ -65,6 +79,9 @@ export const SKY_MOODS: Record<SkyMoodName, SkyMood> = {
   dawn: {
     name: 'dawn',
     isDark: true,
+    heroTop: '#140A33',
+    heroMid: '#7A2E7E',
+    heroFoot: '#1E1140',
     bg: '#1E1140',
     card: '#2A1A57',
     controlBg: '#38276E',
@@ -84,6 +101,9 @@ export const SKY_MOODS: Record<SkyMoodName, SkyMood> = {
   morning: {
     name: 'morning',
     isDark: false,
+    heroTop: '#FF9A6E',
+    heroMid: '#FFD7A8',
+    heroFoot: '#FFF4E8',
     bg: '#FFF4E8',
     card: '#FFFDF9',
     controlBg: '#FFE8D4',
@@ -103,6 +123,9 @@ export const SKY_MOODS: Record<SkyMoodName, SkyMood> = {
   midday: {
     name: 'midday',
     isDark: false,
+    heroTop: '#3F9BF5',
+    heroMid: '#A6D6FF',
+    heroFoot: '#EAF6FF',
     bg: '#EAF6FF',
     card: '#FFFFFF',
     controlBg: '#DBEDFF',
@@ -122,6 +145,9 @@ export const SKY_MOODS: Record<SkyMoodName, SkyMood> = {
   golden: {
     name: 'golden',
     isDark: false,
+    heroTop: '#F2903F',
+    heroMid: '#FFCF9A',
+    heroFoot: '#FFF0E0',
     bg: '#FFF0E0',
     card: '#FFFAF3',
     controlBg: '#FFE2C8',
@@ -141,6 +167,9 @@ export const SKY_MOODS: Record<SkyMoodName, SkyMood> = {
   sunset: {
     name: 'sunset',
     isDark: true,
+    heroTop: '#2B0A3D',
+    heroMid: '#C2256F',
+    heroFoot: '#24092F',
     bg: '#24092F',
     card: '#331245',
     controlBg: '#441B5A',
@@ -194,6 +223,9 @@ export function mixHexOklab(a: string, b: string, u: number): string {
 }
 
 const MIXED: (keyof SkyMood)[] = [
+  'heroTop',
+  'heroMid',
+  'heroFoot',
   'bg',
   'card',
   'controlBg',

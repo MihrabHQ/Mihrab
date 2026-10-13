@@ -25,7 +25,7 @@ import { contrastRatio } from '../src/theme/themeMap';
 // eslint-disable-next-line import/first
 import { SKY_MOODS, skyMoodAt, skyMoodFor, type SkyMood } from '../src/theme/skyMoods';
 // eslint-disable-next-line import/first
-import type { SkyPassage } from '../src/screens/home/skyModel';
+import { SKY_THEME_MID_AT, skyColorAt, themedSkyFrame, type SkyPassage } from '../src/screens/home/skyModel';
 // eslint-disable-next-line import/first
 import {
   _resetSkyThemeForTests,
@@ -166,6 +166,34 @@ describe('the store', () => {
     const night = getSkyTheme();
     publishSkyTheme({ ...SKIES.night, t: 0.53 });
     expect(getSkyTheme()).toBe(night);
+  });
+});
+
+describe('the hero under the theme', () => {
+  it('wears the hour\'s gradient, three stops, the foot on the page', () => {
+    const real = { passage: 'night', t: 0.5, top: '#0B1230', bottom: '#1E2B5A', glow: '#fff', stars: 1, body: { kind: 'none' } } as const;
+    const themed = themedSkyFrame(real, SKY_MOODS.night);
+    expect(themed.top).toBe(SKY_MOODS.night.heroTop);
+    expect(themed.mid).toBe(SKY_MOODS.night.heroMid);
+    expect(themed.bottom).toBe(SKY_MOODS.night.bg);
+    expect(themed.body).toBe(real.body);
+    // The colour at the middle stop is the middle stop's; the foot is the page.
+    expect(skyColorAt(themed, SKY_THEME_MID_AT).toLowerCase()).toBe(SKY_MOODS.night.heroMid.toLowerCase());
+    expect(skyColorAt(themed, 1).toLowerCase()).toBe(SKY_MOODS.night.bg.toLowerCase());
+    for (const mood of Object.values(SKY_MOODS)) expect(mood.heroFoot).toBe(mood.bg);
+  });
+
+  it('is painted in the hero and in the launch run\'s keyframes alike, glows by night, and has the fuller stars', () => {
+    const card = read('src/screens/home/TodayCard.tsx');
+    expect(card).toMatch(/skyTheme \? themedSkyFrame\(f, skyMoodFor\(f\.passage, f\.t\)\) : f/);
+    expect(card).toMatch(/return paint\(skyFrame\(skyMoment\(day, at, tomorrowFajr\)/);
+    expect(card).toMatch(/textShadowColor: `\$\{mood\.accent\}99`/);
+    expect(card).toMatch(/if \(!mood\.isDark\) return null;/);
+    expect(card).toMatch(/denseStars=\{skyTheme\}/);
+    const sky = read('src/screens/home/HeroSky.tsx');
+    expect(sky).toMatch(/const field = dense \? STAR_FIELD_DENSE : STAR_FIELD;/);
+    expect(sky).toMatch(/<Stop key="m" offset=\{frame\.midAt\} stopColor=\{frame\.mid\} \/>/);
+    expect(sky).toMatch(/<Stop key="m" offset=\{g\.midAt\} stopColor=\{g\.mid\} \/>/);
   });
 });
 

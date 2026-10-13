@@ -105,6 +105,7 @@ export type SkyRun = { frames: SkyFrame[]; progress: Animated.Value };
 function HeroSkyImpl({
   frame,
   run,
+  denseStars = false,
   bleed,
   sceneTop = 0,
   sceneBottom = 0,
@@ -112,6 +113,8 @@ function HeroSkyImpl({
   frame: SkyFrame;
   /** While a launch run draws: the sky as native layers, not `frame`. */
   run?: SkyRun;
+  /** The fuller field of stars (the Sky theme's night). */
+  denseStars?: boolean;
   /**
    * How far past its parent's box to draw, so a sky mounted inside the
    * padded hero still reaches the card's edges.
@@ -189,7 +192,7 @@ function HeroSkyImpl({
         },
       ]}>
       {running ? (
-        <SkyRunLayers run={run} width={Math.ceil(size.width)} height={Math.ceil(size.height)} scene={scene} />
+        <SkyRunLayers run={run} width={Math.ceil(size.width)} height={Math.ceil(size.height)} scene={scene} denseStars={denseStars} />
       ) : null}
       {running ? null : (
       <Svg
@@ -205,8 +208,13 @@ function HeroSkyImpl({
         height={size.height > 0 ? Math.ceil(size.height) : '100%'}>
         <Defs>
           <LinearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
-            <Stop offset="0" stopColor={top} />
-            <Stop offset="1" stopColor={bottom} />
+            {(frame.mid && frame.midAt != null
+              ? [
+                  <Stop key="t" offset="0" stopColor={top} />,
+                  <Stop key="m" offset={frame.midAt} stopColor={frame.mid} />,
+                  <Stop key="b" offset="1" stopColor={bottom} />,
+                ]
+              : [<Stop key="t" offset="0" stopColor={top} />, <Stop key="b" offset="1" stopColor={bottom} />])}
           </LinearGradient>
           {bodyXY && light ? (
             <RadialGradient
@@ -232,7 +240,7 @@ function HeroSkyImpl({
         </Defs>
         <Rect x="0" y="0" width="100%" height="100%" fill="url(#sky)" />
         {bodyXY ? <Rect x="0" y="0" width="100%" height="100%" fill="url(#glow)" /> : null}
-        {drawStars ? <Stars scene={scene} glow={glow} stars={stars} /> : null}
+        {drawStars ? <Stars scene={scene} glow={glow} stars={stars} dense={denseStars} /> : null}
         {body.kind === 'sun' && !cramped ? (
           <Circle
             cx={`${body.x * 100}%`}
@@ -299,11 +307,13 @@ function SkyRunLayersImpl({
   width,
   height,
   scene,
+  denseStars = false,
 }: {
   run: SkyRun;
   width: number;
   height: number;
   scene: Scene;
+  denseStars?: boolean;
 }) {
   const { frames, progress } = run;
   const K = frames.length;
@@ -358,7 +368,7 @@ function SkyRunLayersImpl({
     const moonOpacity = through(frames.map(f => (f.body.kind === 'moon' && !scene.cramped ? 1 : 0)));
     const moonPos = positions('moon');
     return {
-      gradients: frames.map((f, i) => ({ top: f.top, bottom: f.bottom, opacity: layerOpacity(i, 1) })),
+      gradients: frames.map((f, i) => ({ top: f.top, mid: f.mid, midAt: f.midAt, bottom: f.bottom, opacity: layerOpacity(i, 1) })),
       halo: haloPeak ? { light: haloPeak.light, opacity: haloOpacity } : null,
       haloScaleUp: Animated.multiply(haloScale, LAYER_DOWNSCALE),
       suns: body.map((b, i) => (b && b.kind === 'sun' ? { light: b.light, opacity: layerOpacity(i, b.alpha) } : null)),
@@ -404,8 +414,13 @@ function SkyRunLayersImpl({
           <Svg width={lw} height={lh}>
             <Defs>
               <LinearGradient id={`skyrun${i}`} x1="0" y1="0" x2="0" y2="1">
-                <Stop offset="0" stopColor={g.top} />
-                <Stop offset="1" stopColor={g.bottom} />
+                {(g.mid && g.midAt != null
+                  ? [
+                      <Stop key="t" offset="0" stopColor={g.top} />,
+                      <Stop key="m" offset={g.midAt} stopColor={g.mid} />,
+                      <Stop key="b" offset="1" stopColor={g.bottom} />,
+                    ]
+                  : [<Stop key="t" offset="0" stopColor={g.top} />, <Stop key="b" offset="1" stopColor={g.bottom} />])}
               </LinearGradient>
             </Defs>
             <Rect x="0" y="0" width="100%" height="100%" fill={`url(#skyrun${i})`} />
@@ -436,7 +451,7 @@ function SkyRunLayersImpl({
       {built.stars ? (
         <Animated.View style={[StyleSheet.absoluteFill, { opacity: built.stars.opacity }]}>
           <Svg width={width} height={height}>
-            <Stars scene={scene} glow={built.stars.glow} stars={1} />
+            <Stars scene={scene} glow={built.stars.glow} stars={1} dense={denseStars} />
           </Svg>
         </Animated.View>
       ) : null}
@@ -492,7 +507,7 @@ function sceneYOf(scene: Scene, fraction: number): number | `${number}%` {
 // A fixed, sparse field in the top strip: the same stars every night, so
 // the card does not twinkle from one render to the next, and none of
 // them behind the countdown.
-const STAR_FIELD: ReadonlyArray<readonly [number, number, number]> = [
+const STAR_FIELD: ReadonlyArray<readonly [number, number, number, number?]> = [
   [6, 30, 1.2],
   [16, 12, 0.9],
   [27, 34, 1.0],
@@ -503,15 +518,48 @@ const STAR_FIELD: ReadonlyArray<readonly [number, number, number]> = [
 ];
 
 /**
+ * The Sky theme's night: the same seven, and a dozen fainter ones between
+ * them — a field, not a scatter — with their own opacity (the fourth
+ * value) so the sky has depth: the bright few in front, the faint many
+ * behind. Still none behind the countdown.
+ */
+const STAR_FIELD_DENSE: ReadonlyArray<readonly [number, number, number, number?]> = [
+  ...STAR_FIELD,
+  [3, 10, 0.6, 0.5],
+  [11, 42, 0.7, 0.45],
+  [21, 22, 0.6, 0.5],
+  [33, 16, 0.7, 0.4],
+  [38, 38, 0.6, 0.5],
+  [50, 44, 0.8, 0.4],
+  [61, 6, 0.6, 0.5],
+  [71, 28, 0.7, 0.45],
+  [84, 36, 0.6, 0.5],
+  [90, 8, 0.9, 0.55],
+  [94, 24, 0.6, 0.4],
+  [48, 18, 0.5, 0.35],
+];
+
+/**
  * The stars: seven elements that change only as night comes or goes, kept
  * out of the sky's every redraw — a launch run redraws the sky dozens of
  * times in a second, and these were a third of each redraw's work.
  */
-const Stars = memo(function Stars({ scene, glow, stars }: { scene: Scene; glow: string; stars: number }) {
+const Stars = memo(function Stars({
+  scene,
+  glow,
+  stars,
+  dense = false,
+}: {
+  scene: Scene;
+  glow: string;
+  stars: number;
+  dense?: boolean;
+}) {
+  const field = dense ? STAR_FIELD_DENSE : STAR_FIELD;
   return (
     <>
-      {STAR_FIELD.map(([x, y, r], i) => (
-        <Circle key={i} cx={`${x}%`} cy={sceneYOf(scene, y / 100)} r={r} fill={glow} fillOpacity={0.85 * stars} />
+      {field.map(([x, y, r, a], i) => (
+        <Circle key={i} cx={`${x}%`} cy={sceneYOf(scene, y / 100)} r={r} fill={glow} fillOpacity={(a ?? 0.85) * stars} />
       ))}
     </>
   );

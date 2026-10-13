@@ -32,6 +32,9 @@ export type HeroSkyBand = {
   top: string;
   /** Its bottom colour. */
   bottom: string;
+  /** Its middle stop, when it has one (the Sky theme's hero). */
+  mid?: string;
+  midAt?: number;
   /** The height the gradient is drawn over, in dp — the hero plus its bleed. */
   skyH: number;
 };
@@ -44,7 +47,7 @@ function same(a: HeroSkyBand | null, b: HeroSkyBand | null): boolean {
   if (!a || !b) return false;
   // The height is measured, so it wobbles by fractions of a dp between
   // layouts; a whole dp is the smallest change worth waking the band for.
-  return a.top === b.top && a.bottom === b.bottom && Math.abs(a.skyH - b.skyH) < 1;
+  return a.top === b.top && a.bottom === b.bottom && a.mid === b.mid && Math.abs(a.skyH - b.skyH) < 1;
 }
 
 /** The hero says what its sky is. Returns the release, for an effect's cleanup. */

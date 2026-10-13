@@ -140,7 +140,7 @@ describe('the band is wired to the page', () => {
 
   it('the hero publishes its sky, and only the growing one', () => {
     expect(card).toMatch(/if \(!fill \|\| !\(skyH > 0\)\) return;/);
-    expect(card).toMatch(/return setHeroSkyBand\(\{ top: frame\.top, bottom: frame\.bottom, skyH \}\);/);
+    expect(card).toMatch(/return setHeroSkyBand\(\{ top: frame\.top, bottom: frame\.bottom, mid: frame\.mid, midAt: frame\.midAt, skyH \}\);/);
   });
 
   it('follows the scroll without re-rendering the page', () => {

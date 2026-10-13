@@ -261,6 +261,9 @@ export type SkyFrame = {
   t: number;
   top: string;
   bottom: string;
+  /** A third colour, at `midAt` of the height, when the sky has one (the Sky theme's hero). */
+  mid?: string;
+  midAt?: number;
   glow: string;
   /** 0–1: how visible the stars are. */
   stars: number;
@@ -419,8 +422,26 @@ export type SkyInkColors = {
 };
 
 /** The sky's colour at a fraction of the card's height. */
-export function skyColorAt(frame: Pick<SkyFrame, 'top' | 'bottom'>, y: number): string {
-  return mixHex(frame.top, frame.bottom, y);
+export function skyColorAt(frame: Pick<SkyFrame, 'top' | 'bottom' | 'mid' | 'midAt'>, y: number): string {
+  const k = Math.max(0, Math.min(1, y));
+  if (frame.mid && frame.midAt != null && frame.midAt > 0 && frame.midAt < 1) {
+    return k <= frame.midAt
+      ? mixHex(frame.top, frame.mid, k / frame.midAt)
+      : mixHex(frame.mid, frame.bottom, (k - frame.midAt) / (1 - frame.midAt));
+  }
+  return mixHex(frame.top, frame.bottom, k);
+}
+
+/** Where the Sky theme's middle stop sits: the glow is low, near the horizon. */
+export const SKY_THEME_MID_AT = 0.62;
+
+/**
+ * The frame, with its gradient repainted for the Sky theme (theme/skyMoods.ts):
+ * the hour's colours, three stops, the foot on the page. The bodies, the
+ * stars and the passage are the real sky's.
+ */
+export function themedSkyFrame(frame: SkyFrame, hero: { heroTop: string; heroMid: string; heroFoot: string }): SkyFrame {
+  return { ...frame, top: hero.heroTop, mid: hero.heroMid, midAt: SKY_THEME_MID_AT, bottom: hero.heroFoot };
 }
 
 /**
@@ -430,7 +451,7 @@ export function skyColorAt(frame: Pick<SkyFrame, 'top' | 'bottom'>, y: number): 
 export const INK_SWITCH_LUMINANCE = 0.18;
 
 /** The ink for an element drawn at height `y` of the card. */
-export function skyInkAt(frame: Pick<SkyFrame, 'top' | 'bottom'>, y: number): SkyInkColors {
+export function skyInkAt(frame: Pick<SkyFrame, 'top' | 'bottom' | 'mid' | 'midAt'>, y: number): SkyInkColors {
   const light = luminance(skyColorAt(frame, y)) < INK_SWITCH_LUMINANCE;
   return light
     ? {

@@ -93,7 +93,8 @@ import type { JournalPrayer } from '../../journal/journal';
 import { pagerPosition } from './pagerPosition';
 import { LogPassedPrayerSheet } from './LogPassedPrayerSheet';
 import { HeroSky, type SkyRun } from './HeroSky';
-import { HERO_Y, skyFrame, skyInkAt, skyMoment, type SkyInkColors } from './skyModel';
+import { HERO_Y, skyFrame, skyInkAt, skyMoment, themedSkyFrame, type SkyFrame, type SkyInkColors } from './skyModel';
+import { skyMoodFor } from '../../theme/skyMoods';
 import { setHeroSkyBand } from './heroSkyBand';
 import { publishSkyTheme } from '../../theme/skyTheme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -309,6 +310,7 @@ const HeroToday = memo(function HeroToday({
   onInterval,
   onLayout,
   launchRun: launchRunWanted = true,
+  skyTheme = false,
 }: {
   /** What the countdown is aimed at: the next prayer, or the user's pick. */
   target: { name: string; at: Date };
@@ -354,6 +356,11 @@ const HeroToday = memo(function HeroToday({
   statusBarInset?: number;
   /** The launch run setting (settings.launchAnimation): off, none runs. */
   launchRun?: boolean;
+  /**
+   * The app is in the Sky theme (theme/skyTheme.ts): the hero's gradient is
+   * the hour's mood, not the real sky's colours, and runs into the page.
+   */
+  skyTheme?: boolean;
   /**
    * Full-bleed: the hero grows to fill what the page leaves it, the
    * countdown block sits at its foot, and the sky's sun, moon and stars
@@ -499,6 +506,11 @@ const HeroToday = memo(function HeroToday({
    */
   const runProgress = useRef<Animated.Value | null>(null);
   if (!runProgress.current) runProgress.current = new Animated.Value(0, { useNativeDriver: true });
+  // The hero's sky as drawn: the real one, or the Sky theme's for the hour.
+  const paint = useCallback(
+    (f: SkyFrame): SkyFrame => (skyTheme ? themedSkyFrame(f, skyMoodFor(f.passage, f.t)) : f),
+    [skyTheme],
+  );
   const skyRunRef = useRef<SkyRun | null>(null);
   if (launchRun && warp && !skyRunRef.current) {
     const nowMs = now.getTime();
@@ -508,7 +520,7 @@ const HeroToday = memo(function HeroToday({
     const day = skyToday ?? today;
     const frames = Array.from({ length: K }, (_, i) => {
       const at = new Date(Math.floor(warpSkyAt(warp, nowMs, i / (K - 1)) / 60_000) * 60_000);
-      return skyFrame(skyMoment(day, at, tomorrowFajr), at, { latitude, longitude });
+      return paint(skyFrame(skyMoment(day, at, tomorrowFajr), at, { latitude, longitude }));
     });
     runProgress.current.setValue(0);
     skyRunRef.current = { frames, progress: runProgress.current };
@@ -553,15 +565,17 @@ const HeroToday = memo(function HeroToday({
   const minuteKey = Math.floor(skyAt / 60_000);
   const frame = useMemo(
     () =>
-      skyFrame(
-        skyMoment(skyToday ?? today, new Date(minuteKey * 60_000), tomorrowFajr),
-        new Date(minuteKey * 60_000),
-        // The reader's own coordinates, for the moon alone: the crescent
-        // hangs at a different angle in Jakarta than in Stockholm, and
-        // upside down in Cape Town. Nothing else in the sky uses them.
-        { latitude, longitude },
+      paint(
+        skyFrame(
+          skyMoment(skyToday ?? today, new Date(minuteKey * 60_000), tomorrowFajr),
+          new Date(minuteKey * 60_000),
+          // The reader's own coordinates, for the moon alone: the crescent
+          // hangs at a different angle in Jakarta than in Stockholm, and
+          // upside down in Cape Town. Nothing else in the sky uses them.
+          { latitude, longitude },
+        ),
       ),
-    [today, skyToday, tomorrowFajr, minuteKey, latitude, longitude],
+    [today, skyToday, tomorrowFajr, minuteKey, latitude, longitude, paint],
   );
   /**
    * The hero's ink comes from the sky, not the theme (skyModel.ts), and
@@ -616,8 +630,8 @@ const HeroToday = memo(function HeroToday({
    */
   useEffect(() => {
     if (!fill || !(skyH > 0)) return;
-    return setHeroSkyBand({ top: frame.top, bottom: frame.bottom, skyH });
-  }, [fill, frame.top, frame.bottom, skyH]);
+    return setHeroSkyBand({ top: frame.top, bottom: frame.bottom, mid: frame.mid, midAt: frame.midAt, skyH });
+  }, [fill, frame.top, frame.bottom, frame.mid, frame.midAt, skyH]);
   /**
    * The sky as it is NOW, for the app's Sky theme (theme/skyTheme.ts) —
    * not the launch run's sweep: the chrome takes the colours the run is
@@ -642,6 +656,23 @@ const HeroToday = memo(function HeroToday({
   const yEyebrow = measured ? heroY.eyebrow : HERO_Y.eyebrow;
   const yCountdown = measured ? heroY.countdown : HERO_Y.countdown;
   const yFoot = measured ? heroY.foot : HERO_Y.foot;
+  /**
+   * Under the Sky theme, by night, the countdown glows: a soft halo of the
+   * hour's accent behind the white digits — cyan at night, coral at dawn,
+   * magenta in the evening — which is what makes a dark page read as lit
+   * rather than merely dark. By day the ink is dark on a light sky and a
+   * glow would only blur it, so there is none.
+   */
+  const glow = useMemo(() => {
+    if (!skyTheme) return null;
+    const mood = skyMoodFor(frame.passage, frame.t);
+    if (!mood.isDark) return null;
+    return {
+      textShadowColor: `${mood.accent}99`,
+      textShadowRadius: 16,
+      textShadowOffset: { width: 0, height: 0 },
+    };
+  }, [skyTheme, frame.passage, frame.t]);
   const inkTop = useMemo(() => skyInkAt(frame, yEyebrow), [frame, yEyebrow]);
   const ink = useMemo(() => skyInkAt(frame, yCountdown), [frame, yCountdown]);
   const inkFoot = useMemo(() => skyInkAt(frame, yFoot), [frame, yFoot]);
@@ -682,6 +713,7 @@ const HeroToday = memo(function HeroToday({
       <HeroSky
         frame={frame}
         run={skyRun ?? undefined}
+        denseStars={skyTheme}
         sceneTop={sceneTop}
         sceneBottom={sceneBottom}
         bleed={
@@ -726,6 +758,7 @@ const HeroToday = memo(function HeroToday({
                 expanded && styles.heroCountdownExpanded,
                 tabularNumeralStyle,
                 { color: ink.text },
+                glow,
               ]}
               numberOfLines={1}
               maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}
@@ -739,6 +772,7 @@ const HeroToday = memo(function HeroToday({
               expanded && styles.heroCountdownExpanded,
               tabularNumeralStyle,
               { color: ink.text },
+              glow,
             ]}
             numberOfLines={1}
             maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}
@@ -1562,6 +1596,7 @@ function TodayCardImpl({
               fill={fullBleed}
               topRow={fullBleed ? { renderLocation, renderQibla } : undefined}
               frozenAt={interval.fromAt}
+              skyTheme={settings.appearance === 'sky'}
             />
           </View>
         ) : null}
@@ -1573,6 +1608,7 @@ function TodayCardImpl({
             onInterval={onInterval}
             onLayout={onRealHeroLayout}
             launchRun={runWanted}
+            skyTheme={settings.appearance === 'sky'}
             today={timings}
             skyToday={skyTimings}
             latitude={latitude}
