@@ -44,6 +44,9 @@
 
 <img src="branding/readme/07_tilawah.png" width="32%" alt="Tilawah — Al-Mulk playing, with the reciter, the transport, speed, sleep timer and shuffle, and a live mushaf page with the recited word lit">&nbsp;<img src="branding/readme/08_fasting.png" width="32%" alt="Fasting — today's fast, the Ramadan and voluntary counts, and the coming Sunnah days">&nbsp;<img src="branding/readme/09_widgets.png" width="32%" alt="Android home-screen widgets — today’s six times, a row to log each prayer with one tap, and the next prayer with its countdown">
 
+<img src="branding/readme/10_alerts.png" width="98%" alt="Five full-screen prayer alerts under the Sky theme, each in its hour’s colours — Fajr’s dawn, Dhuhr’s blue, Asr’s gold, Maghrib’s magenta, Isha’s indigo — with Stop, Snooze and Log prayer">
+<br><sub>Full-screen prayer alerts on Android, under the Sky theme — each in its hour.</sub>
+
 </div>
 
 ---
