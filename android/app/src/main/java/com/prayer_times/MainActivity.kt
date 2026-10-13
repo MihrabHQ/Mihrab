@@ -56,8 +56,16 @@ class MainActivity : ReactActivity() {
     BootTimes.activity()
   }
 
+  override fun onResume() {
+    super.onResume()
+    resumed = true
+  }
+
   override fun onPause() {
+    resumed = false
     LaunchSnapshot.capture(this)
+    // A Live Update held back while this was in front goes up now.
+    MihrabLiveActivityService.appPaused()
     super.onPause()
   }
 
@@ -161,5 +169,10 @@ class MainActivity : ReactActivity() {
     val isDark = (newConfig.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
         Configuration.UI_MODE_NIGHT_YES
     module.emitAppearanceChanged(if (isDark) "dark" else "light")
+  }
+
+  companion object {
+    /** Whether this activity is in front — the Live Update waits for it to leave. */
+    @Volatile var resumed = false
   }
 }

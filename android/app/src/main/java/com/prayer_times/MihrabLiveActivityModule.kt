@@ -640,6 +640,21 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
           .setColorized(false)
           .setOngoing(true)
           .setOnlyAlertOnce(true)
+          // Silent as a notification, not only by its channel: the channel
+          // is HIGH for the Android 16 chip, and on a HIGH channel a FRESH
+          // post peeks — a heads-up card over the hero for a few seconds on
+          // every launch after the process had been killed (the card is the
+          // foreground service's own, gone with the process, posted anew).
+          // A silent notification never peeks; only-alert-once covers the
+          // re-posts after it. The platform builder has no setSilent: this
+          // is what NotificationCompat's does — no sound, no vibration, and
+          // a group of one whose alerting is left to a summary that does
+          // not exist (Notification.suppressAlertingDueToGrouping).
+          .setSound(null)
+          .setVibrate(null)
+          .setDefaults(0)
+          .setGroup("mihrab_live_activity_silent")
+          .setGroupAlertBehavior(Notification.GROUP_ALERT_SUMMARY)
           .setLocalOnly(false)
           .setCategory(Notification.CATEGORY_NAVIGATION)
           .setVisibility(Notification.VISIBILITY_PUBLIC)

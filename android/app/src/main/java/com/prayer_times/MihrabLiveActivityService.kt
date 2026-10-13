@@ -67,6 +67,8 @@ import org.json.JSONObject
  * the platform / Play Store has a documented justification.
  */
 class MihrabLiveActivityService : Service() {
+  /** The rich notification is held back until the app is left (see onStartCommand). */
+  @Volatile private var richPending = false
 
   private val handler = Handler(Looper.getMainLooper())
   private var ticker: Runnable? = null
@@ -103,6 +105,7 @@ class MihrabLiveActivityService : Service() {
 
   override fun onCreate() {
     super.onCreate()
+    running = this
     screenOn = (getSystemService(Context.POWER_SERVICE) as? PowerManager)?.isInteractive ?: true
     runCatching {
       registerReceiver(
@@ -129,11 +132,63 @@ class MihrabLiveActivityService : Service() {
 
   /** Rebuild + re-post the rich notification from the cached payload now. */
   private fun repostNow() {
+    if (richPending) return
     val payload = lastPayload ?: return
     runCatching {
       NotificationManagerCompat.from(this)
         .notify(MihrabLiveActivityModule.NOTIF_ID, build(payload))
     }
+  }
+
+  /** The rich notification as the foreground service's own. */
+  private fun postRichForeground(payload: String) {
+    try {
+      val richNotif = build(payload)
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        startForeground(
+          MihrabLiveActivityModule.NOTIF_ID,
+          richNotif,
+          ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE,
+        )
+      } else {
+        startForeground(MihrabLiveActivityModule.NOTIF_ID, richNotif)
+      }
+      Log.i(TAG, "startForeground posted rich notification id=${MihrabLiveActivityModule.NOTIF_ID}")
+    } catch (t: Throwable) {
+      Log.w(TAG, "startForeground failed", t)
+    }
+  }
+
+  /** The quiet placeholder as the foreground service's own, for now. */
+  private fun startOnPlaceholder() {
+    runCatching {
+      MihrabLiveActivityModule.ensureFgsChannelExists(this)
+      val placeholder = androidx.core.app.NotificationCompat.Builder(this, MihrabLiveActivityModule.FGS_CHANNEL_ID)
+        .setSmallIcon(R.drawable.ic_stat_prayer)
+        .setSilent(true)
+        .build()
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        startForeground(MihrabLiveActivityModule.FGS_NOTIF_ID, placeholder, ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE)
+      } else {
+        startForeground(MihrabLiveActivityModule.FGS_NOTIF_ID, placeholder)
+      }
+    }.onFailure { Log.w(TAG, "placeholder startForeground failed", it) }
+  }
+
+  /** The app has been left: the held-back rich notification goes up now. */
+  private fun flushPendingRich() {
+    if (!richPending) return
+    val payload = lastPayload ?: return
+    richPending = false
+    postRichForeground(payload)
+    // The placeholder is the service's own until the rich one has taken
+    // over; cancelled at once it stayed, so a beat later.
+    handler.postDelayed({
+      runCatching { NotificationManagerCompat.from(this).cancel(MihrabLiveActivityModule.FGS_NOTIF_ID) }
+    }, 600)
+    // The ticker stood down while it was held back.
+    scheduleTicker()
+    Log.i(TAG, "rich notification posted on leaving the app")
   }
 
   /**
@@ -204,20 +259,29 @@ class MihrabLiveActivityService : Service() {
     // Single-notification architecture (v2.5.0): the rich ProgressStyle
     // notification IS the foreground-service notification. On this platform
     // it is still eligible for the Android 16 status-bar Live Update chip.
-    try {
-      val richNotif = build(payload)
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-        startForeground(
-          MihrabLiveActivityModule.NOTIF_ID,
-          richNotif,
-          ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE,
-        )
-      } else {
-        startForeground(MihrabLiveActivityModule.NOTIF_ID, richNotif)
-      }
-      Log.i(TAG, "startForeground posted rich notification id=${MihrabLiveActivityModule.NOTIF_ID}")
-    } catch (t: Throwable) {
-      Log.w(TAG, "startForeground failed", t)
+    //
+    // NOT WHILE THE PERSON IS LOOKING AT THE APP. A promoted (Live Update)
+    // notification peeks as a heads-up card the first time it is posted —
+    // the platform's doing, silent or not — and after the process had been
+    // killed its first post was the app's own launch: a card over the hero
+    // for a few seconds, every morning. So when the rich notification is
+    // not up and the app is in front, the service starts on the quiet
+    // placeholder instead and posts the rich one as the app is left
+    // (`MainActivity.onPause` → `appPaused`), where a Live Update coming
+    // up is what the person expects. Up already (an update), or the app
+    // not in front (a restart in the background, the wake alarm), it is
+    // posted at once as before.
+    val richUp = runCatching {
+      (getSystemService(NOTIFICATION_SERVICE) as android.app.NotificationManager)
+        .activeNotifications.any { it.id == MihrabLiveActivityModule.NOTIF_ID }
+    }.getOrDefault(false)
+    if (!richUp && MainActivity.resumed) {
+      richPending = true
+      startOnPlaceholder()
+      Log.i(TAG, "rich notification held back: the app is in front")
+    } else {
+      richPending = false
+      postRichForeground(payload)
     }
 
     scheduleTicker()
@@ -290,6 +354,8 @@ class MihrabLiveActivityService : Service() {
           payload
         }
         try {
+          // Held back while the app is in front: nothing to re-post yet.
+          if (richPending) return@Runnable
           val notif = build(currentPayload)
           NotificationManagerCompat.from(this)
             .notify(MihrabLiveActivityModule.NOTIF_ID, notif)
@@ -738,6 +804,7 @@ class MihrabLiveActivityService : Service() {
 
   override fun onDestroy() {
     super.onDestroy()
+    if (running === this) running = null
     runCatching { unregisterReceiver(screenReceiver) }
     cancelWakeAlarm(this)
     ticker?.let { handler.removeCallbacks(it) }
@@ -760,6 +827,13 @@ class MihrabLiveActivityService : Service() {
 
   companion object {
     const val TAG = "MihrabLiveActivitySvc"
+    /** The running instance, for `appPaused`. */
+    @Volatile private var running: MihrabLiveActivityService? = null
+
+    /** MainActivity.onPause: a rich notification held back while the app was in front goes up. */
+    fun appPaused() {
+      running?.flushPendingRich()
+    }
     const val EXTRA_PAYLOAD = "payload"
     /** Request code for the deep-sleep wake alarm (distinct from the widget's
      *  alarm request codes in PrayerWidgetProvider). */

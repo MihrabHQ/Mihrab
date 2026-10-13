@@ -43,7 +43,7 @@ describe('the native side', () => {
   });
 
   it('copies the window before React Native hears about the pause', () => {
-    expect(ACTIVITY).toMatch(/override fun onPause\(\) \{\s*LaunchSnapshot\.capture\(this\)\s*super\.onPause\(\)/);
+    expect(ACTIVITY).toMatch(/override fun onPause\(\) \{\s*resumed = false\s*LaunchSnapshot\.capture\(this\)[\s\S]{0,200}super\.onPause\(\)/);
   });
 
   it('is used only when it is the screen about to open', () => {
