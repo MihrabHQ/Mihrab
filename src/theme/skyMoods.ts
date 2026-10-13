@@ -283,6 +283,29 @@ const ANCHORS = {
     bodyLight: '#FFE08A',
   }),
   morning: M.morning,
+  /**
+   * Mid-morning: the haze between the coral and the blue. A peach and an
+   * azure mixed straight meet in grey, so the morning goes to the midday
+   * by way of rose and lilac — the sky's own way, the warm horizon fading
+   * under a blue coming down from above — and the accent by way of plum.
+   */
+  morningLate: vary(M.morning, {
+    heroTop: '#B49BD6',
+    heroMid: '#DCD6EC',
+    heroFoot: '#F5F2F9',
+    bg: '#F5F2F9',
+    card: '#FDFCFF',
+    controlBg: '#EAE4F4',
+    border: '#D4CBE6',
+    text: '#1E1E44',
+    muted: '#5A5878',
+    accent: '#8C2F78',
+    accentSurface: '#F1EAF8',
+    accentSurfaceStrong: '#EAE0F4',
+    accentHairline: '#B88ED0',
+    bodyLight: '#FFDD8A',
+    overlay: 'rgba(30,30,68,0.45)',
+  }),
   midday: M.midday,
   /** The afternoon: the same ice, a touch warmer and higher. */
   afternoon: vary(M.midday, {
@@ -291,6 +314,24 @@ const ANCHORS = {
     heroFoot: '#EDF5FC',
     bg: '#EDF5FC',
     bodyLight: '#FFE08A',
+  }),
+  /** Towards Asr's end: the blue going mauve before the gold comes in. */
+  afternoonLate: vary(M.midday, {
+    heroTop: '#B394C6',
+    heroMid: '#E4D8EA',
+    heroFoot: '#F7F2F4',
+    bg: '#F7F2F4',
+    card: '#FFFCFD',
+    controlBg: '#EFE3EC',
+    border: '#DCCADB',
+    text: '#281C3E',
+    muted: '#655572',
+    accent: '#7D3390',
+    accentSurface: '#F4EAF4',
+    accentSurfaceStrong: '#EEE0EE',
+    accentHairline: '#C494CC',
+    bodyLight: '#FFCF72',
+    overlay: 'rgba(40,28,62,0.45)',
   }),
   golden: M.golden,
   sunset: M.sunset,
@@ -319,12 +360,14 @@ const TIMELINE: Record<SkyPassage, Segment[]> = {
   ],
   // Sunrise is the switch to light.
   day: [
-    { from: 0, to: 0.3, a: ANCHORS.morning, b: ANCHORS.midday },
+    { from: 0, to: 0.15, a: ANCHORS.morning, b: ANCHORS.morningLate },
+    { from: 0.15, to: 0.3, a: ANCHORS.morningLate, b: ANCHORS.midday },
     { from: 0.3, to: 1, a: ANCHORS.midday, b: ANCHORS.afternoon },
   ],
   // Halfway to Maghrib the evening switches on.
   sunset: [
-    { from: 0, to: 0.5, a: ANCHORS.afternoon, b: ANCHORS.golden },
+    { from: 0, to: 0.25, a: ANCHORS.afternoon, b: ANCHORS.afternoonLate },
+    { from: 0.25, to: 0.5, a: ANCHORS.afternoonLate, b: ANCHORS.golden },
     { from: 0.5, to: 1, a: ANCHORS.sunset, b: ANCHORS.sunsetDeep },
   ],
   dusk: [{ from: 0, to: 1, a: ANCHORS.sunsetDeep, b: ANCHORS.nightEarly }],
@@ -349,6 +392,24 @@ export function mixHexOklab(a: string, b: string, u: number): string {
   const bb = lchToAb(B);
   return oklabToHex(A.L + (B.L - A.L) * u, aa.a + (bb.a - aa.a) * u, aa.b + (bb.b - aa.b) * u);
 }
+
+/**
+ * The same mix, its chroma kept: a straight line through OKLab between two
+ * hues cuts inside the wheel, so halfway it is greyer than either end. For
+ * the sky's own stops, the sun's light and the accent — the colours that
+ * carry the hour — the chroma is set back to the ends' own, mixed, and
+ * only the hue and the lightness travel straight.
+ */
+export function mixHexVivid(a: string, b: string, u: number): string {
+  if (u <= 0) return a;
+  if (u >= 1) return b;
+  const mixed = hexToOklch(mixHexOklab(a, b, u));
+  const Ca = hexToOklch(a).C;
+  const Cb = hexToOklch(b).C;
+  return oklchToHex({ ...mixed, C: Ca + (Cb - Ca) * u });
+}
+
+const VIVID: ReadonlySet<keyof SkyMood> = new Set(['heroTop', 'heroMid', 'bodyLight', 'accent']);
 
 const MIXED: (keyof SkyMood)[] = [
   'heroTop',
@@ -388,7 +449,8 @@ export function skyMoodFor(passage: SkyPassage, t: number, steps?: number): SkyM
   const near = u < 0.5 ? from : to;
   const out: SkyMood = { ...near };
   for (const key of MIXED) {
-    (out as unknown as Record<string, string>)[key] = mixHexOklab(from[key] as string, to[key] as string, u);
+    const mix = VIVID.has(key) ? mixHexVivid : mixHexOklab;
+    (out as unknown as Record<string, string>)[key] = mix(from[key] as string, to[key] as string, u);
   }
   return out;
 }

@@ -26,6 +26,7 @@ import { crossfadeScreen } from '../src/native/LaunchSnapshot';
 import { resolveAppPalette, resolveThemePaletteForMode, skyPalette } from '../src/theme/appPalette';
 // eslint-disable-next-line import/first
 import { contrastRatio } from '../src/theme/themeMap';
+import { hexToOklch } from '../src/theme/oklch';
 // eslint-disable-next-line import/first
 import { PALETTE_STEPS, SKY_MOODS, skyMoodAt, skyMoodFor, widgetSkyColors, type SkyMood } from '../src/theme/skyMoods';
 // eslint-disable-next-line import/first
@@ -114,6 +115,25 @@ describe('the moods', () => {
     expect(themed.body.kind === 'sun' && themed.body.light).toBe(SKY_MOODS.midday.bodyLight);
     expect(themed.body.kind === 'sun' && themed.body.halo).toBeGreaterThan(0.2);
     expect(themed.glow).toBe(SKY_MOODS.midday.starGlow);
+  });
+
+  it('never goes grey between a warm hour and a cool one — the sky keeps its colour through every mix', () => {
+    // Peach into azure, straight through OKLab, met in a grey; the late
+    // morning and the late afternoon carry the sky round by rose and
+    // lilac, and the hour's own colours keep their chroma on the way.
+    const passages: SkyPassage[] = ['day', 'sunset'];
+    for (const passage of passages) {
+      for (let t = 0; t <= 0.5001; t += 1 / 32) {
+        const mood = skyMoodFor(passage, t, PALETTE_STEPS);
+        expect(hexToOklch(mood.heroTop).C).toBeGreaterThanOrEqual(0.075);
+        expect(hexToOklch(mood.accent).C).toBeGreaterThanOrEqual(0.13);
+        expect(hexToOklch(mood.bodyLight).C).toBeGreaterThanOrEqual(0.08);
+      }
+    }
+    // Morning to midday goes by way of lilac, not green.
+    const lilac = hexToOklch(skyMoodFor('day', 0.15).heroTop).h;
+    expect(lilac).toBeGreaterThan(280);
+    expect(lilac).toBeLessThan(330);
   });
 
   it('is the night at night, the dawn before sunrise, the midday after, gold and then the evening before Maghrib, the night again after Isha', () => {
