@@ -1239,4 +1239,15 @@ Changed the release cycle itself:
 
   - `scripts/sync-version.js`
 
-**Lesson:** _(unfilled)_
+**Lesson:** the abort was the dataset bot's commit on origin — pull
+before starting, as 2.29.0 already said. The cycle change bit twice.
+sync-version.js now stamps package.json and its lockfile, but the
+release commit's list predated that, so 2.31.0 was tagged with
+package.json at 2.30.0 (fixed forward in 08518ec8: both files are in
+the commit and the revert). And CI went red on the tagged commit with
+every test passing: two suites left real timers running (launchWarp's
+animation frames, quranDownloadManager's stall watchdog), Jest did not
+exit and then exited 1 — local `jest` never showed it because it runs
+in parallel. Run `npx jest --ci --runInBand` before a release, the way
+CI does (fixed forward in ad7d1cc2). Xcode Cloud's workflow was paused,
+so iOS went up from this Mac.
