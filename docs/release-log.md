@@ -1221,4 +1221,10 @@ Changed the release cycle itself:
   - `scripts/release/preflight.ts`
   - `scripts/release/publish.ts`
 
-**Lesson:** _(unfilled)_
+**Lesson:** the one abort was a dirty tree — the same "do the housekeeping
+before starting" that 2.29.0 already said; it is now the first thing
+checked by hand before `release.sh` is run. The cycle change was the
+in-app note: a release now needs `release-notes/en/<code>.txt` as well
+as the three Play notes (P7b), so the notes for the NEXT release are
+written while the work is fresh, not at the cut — 289's were, with the
+changelog, before any version bump.

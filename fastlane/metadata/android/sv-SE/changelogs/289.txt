@@ -1,0 +1,6 @@
+• Temat Himmel: hela appen målad från himlen ovanför nedräkningen, skiftande genom dagen. Inställningar → Utseende.
+• Helskärmsaviseringar bär sin bönetimme under temat Himmel.
+• Startanimationen är en inställning, på som standard.
+• Mushaf: helskärm i sidfältet, sidtonen i sidhuvudet.
+• Logg: valfritt "Markera sena loggar som sena" (#74). Sunnah: isha har en sunnah mu'akkadah (#73).
+• Fixar för startbilden och Live Activity vid öppning.

@@ -1,0 +1,8 @@
+• Temat Himmel: hela appen målad från himlen ovanför nedräkningen – natt, gryning, morgon, middag, den gyllene timmen, skymning – och den skiftar genom dagen, i ett och samma utseende oavsett om telefonen är i ljust eller mörkt läge. Under Inställningar → Utseende, i introduktionen, och erbjuds en gång till alla som var här innan.
+• Helskärmsaviseringar för bön bär sin bönetimme under temat Himmel: fajrs gryning, dhuhrs blå, asrs guld, maghribs magenta, ishas indigo.
+• Startanimationen är en inställning, på som standard: appen öppnar på den senaste Idag-skärmen och nedräkningen, linjen och himlen sveper fram till nu; avstängd tonar bilden bara över i den levande skärmen.
+• Mushaf: helskärmsknappen sitter i sidfältet och sidtonen i sidhuvudet; sidans ram och markeringar tar sidfältets egen färg.
+• Logg: ett valfritt "Markera sena loggar som sena" – en logg från en avisering, alarmet eller en widget i andra halvan av tiden registreras som sen (#74); med de malikitiska andra tiderna på är en logg efter den föredragna tiden den sena.
+• Bönetidswidgeten (Android): med tiderna dolda fyller nästa bön kortet.
+• Sunnah: isha har en sunnah mu'akkadah, så de fulla rawatib blir sex (#73).
+• Åtgärdat: en fyrkant i början av fajr när appen öppnades igen, ett hack när hjälten ritade mot nästa bön, temat Himmel som öppnade på tre paletter, och ett Live Activity-kort över hjälten när appen öppnas.
