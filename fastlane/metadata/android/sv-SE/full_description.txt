@@ -3,7 +3,7 @@ Mihrab är en lugn följeslagare genom muslimens dag: bönerna, Koranen och åmi
 Håll fingret på ett ord i mushafen och hör just det ordet läsas. Följ det reciterade ordet när det lyser upp på sidan. Se tajwid i färg, för Hafs och för Warsh. Håll din loggbok och dina inställningar i takt mellan dina egna enheter, utan konto och utan server. Och varenda rad kod är öppen.
 
 BE
-- Bönetider för idag, veckan och månaden framåt — uträknade på telefonen, från en källa på nätet eller ur de publicerade nationella tabellerna för Sverige och Marocko — kan delas som bild eller PDF
+- Bönetider för idag, veckan och månaden framåt — uträknade på telefonen, från en källa på nätet eller ur de publicerade nationella tabellerna för Sverige, Marocko och Algeriet — kan delas som bild eller PDF
 - Böneutrop för varje bön, med sjutton adhan-inspelningar eller en egen, påminnelse före bönen och snooze
 - Tysta telefonen under själva bönen och låt ljudet komma tillbaka av sig självt
 - En fastnålad nedräkning till nästa bön på låsskärmen och i aviseringspanelen, i tre utföranden
@@ -34,6 +34,6 @@ DITT EGET
 - Android, iPhone, iPad och Mac, på 13 språk, med arabiska och urdu helt från höger till vänster
 - Ljust, mörkt och helsvart, sex färgteman, din egen accentfärg och Material You – eller Himmel, som målar hela appen från himlen ovanför nedräkningen och skiftar med timmen
 
-Nätet används bara när du väljer det: en källa för bönetider (AlAdhan, PrayTimes.dev eller de nationella tabellerna för Sverige och Marocko), platssökning via OpenStreetMap Nominatim, och nedladdning av Koranens sidor, översättningar, tafsir och recitationsljud. Dina koordinater stannar på din enhet.
+Nätet används bara när du väljer det: en källa för bönetider (AlAdhan, PrayTimes.dev eller de nationella tabellerna för Sverige, Marocko och Algeriet), platssökning via OpenStreetMap Nominatim, och nedladdning av Koranens sidor, översättningar, tafsir och recitationsljud. Dina koordinater stannar på din enhet.
 
 Mihrab är öppen källkod under AGPL-3.0-or-later.

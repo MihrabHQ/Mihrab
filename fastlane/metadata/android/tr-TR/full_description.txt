@@ -3,7 +3,7 @@ Mihrab, bir Müslümanın gününe eşlik eden sakin bir yoldaştır: namazlar, 
 Mushaftaki herhangi bir kelimeye basılı tutun ve yalnızca o kelimenin okunuşunu dinleyin. Okunan kelimeyi sayfada parlarken takip edin. Tecvidi renkli görün; Hafs ve Verş rivayetinde. Günlüğünüzü ve ayarlarınızı kendi cihazlarınız arasında eşit tutun; hesap yok, sunucu yok. Ve her satırı açık kaynaktır.
 
 NAMAZ
-- Bugünün, haftanın ve önümüzdeki ayın namaz vakitleri — telefonunuzda hesaplanır, bir sağlayıcıdan alınır ya da İsveç ve Fas'ın yayımlanmış resmî tablolarından gelir — görsel veya PDF olarak paylaşılabilir
+- Bugünün, haftanın ve önümüzdeki ayın namaz vakitleri — telefonunuzda hesaplanır, bir sağlayıcıdan alınır ya da İsveç, Fas ve Cezayir'in yayımlanmış resmî tablolarından gelir — görsel veya PDF olarak paylaşılabilir
 - Her vakit için ezan: on yedi kayıt ya da kendi kaydınız, vakit öncesi hatırlatma ve erteleme
 - Namaz süresince telefonu sessize alın; ses sonra kendiliğinden geri gelsin
 - Kilit ekranında ve bildirim panelinde bir sonraki namaza sabitlenmiş geri sayım, üç tasarımla
@@ -34,6 +34,6 @@ SİZİN
 - Android, iPhone, iPad ve Mac'te, Arapça ve Urduca tamamen sağdan sola olmak üzere 13 dilde
 - Açık, koyu ve saf siyah temalar, altı renk teması, kendi vurgu renginiz ve Material You – ya da uygulamanın tamamını geri sayımın üzerindeki gökyüzünden boyayan ve saatle değişen Gökyüzü
 
-Ağ yalnızca siz seçtiğinizde kullanılır: bir vakit sağlayıcısı (AlAdhan, PrayTimes.dev ya da İsveç ve Fas'ın resmî tabloları), OpenStreetMap Nominatim ile yer arama ve Kuran sayfaları, mealler, tefsirler ile tilavet seslerinin indirilmesi. Koordinatlarınız cihazınızda kalır.
+Ağ yalnızca siz seçtiğinizde kullanılır: bir vakit sağlayıcısı (AlAdhan, PrayTimes.dev ya da İsveç, Fas ve Cezayir'in resmî tabloları), OpenStreetMap Nominatim ile yer arama ve Kuran sayfaları, mealler, tefsirler ile tilavet seslerinin indirilmesi. Koordinatlarınız cihazınızda kalır.
 
 Mihrab, AGPL-3.0-or-later lisansıyla açık kaynaktır.

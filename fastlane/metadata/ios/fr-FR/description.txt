@@ -3,7 +3,7 @@ Mihrab est un compagnon serein pour la journée d'un musulman : les prières, le
 Maintenez n'importe quel mot du mushaf et entendez ce seul mot récité. Suivez le mot récité qui s'allume sur la page. Voyez le tajwid en couleur, en Hafs et en Warsh. Gardez votre journal et vos réglages à jour entre vos propres appareils, sans compte et sans serveur. Et chaque ligne du code est open source.
 
 PRIER
-- Les heures de prière du jour, de la semaine et du mois à venir — calculées sur votre téléphone, fournies par un service ou tirées des tables nationales publiées pour la Suède et le Maroc — à partager en image ou en PDF
+- Les heures de prière du jour, de la semaine et du mois à venir — calculées sur votre téléphone, fournies par un service ou tirées des tables nationales publiées pour la Suède, le Maroc et l'Algérie — à partager en image ou en PDF
 - L'adhan de chaque prière, avec dix-sept enregistrements ou le vôtre, un rappel avant et le report
 - Une Activité en direct qui décompte jusqu'à la prochaine prière, sur l'écran verrouillé et dans la Dynamic Island
 - Une boussole de qibla avec la force du signal et une vérification par le soleil
@@ -33,6 +33,6 @@ SE SOUVENIR
 - iPhone, iPad et Mac, en 13 langues, dont l'arabe et l'ourdou entièrement de droite à gauche
 - Clair, sombre et noir pur, six thèmes de couleur, votre couleur d'accent et Liquid Glass – ou Ciel, qui peint toute l'app d'après le ciel au-dessus du compte à rebours et change avec l'heure
 
-Le réseau n'est utilisé que lorsque vous le choisissez : un service d'heures de prière (AlAdhan, PrayTimes.dev ou les tables nationales de la Suède et du Maroc), la recherche de lieux via OpenStreetMap Nominatim, et le téléchargement des pages du Coran, des traductions, des tafsirs et des récitations. Vos coordonnées restent sur votre appareil.
+Le réseau n'est utilisé que lorsque vous le choisissez : un service d'heures de prière (AlAdhan, PrayTimes.dev ou les tables nationales de la Suède, du Maroc et de l'Algérie), la recherche de lieux via OpenStreetMap Nominatim, et le téléchargement des pages du Coran, des traductions, des tafsirs et des récitations. Vos coordonnées restent sur votre appareil.
 
 Mihrab est open source sous licence AGPL-3.0-or-later.

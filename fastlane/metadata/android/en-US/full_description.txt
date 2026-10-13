@@ -3,7 +3,7 @@ Mihrab is a calm companion for a Muslim's day: the prayers, the Quran, and the r
 Hold any word in the mushaf and hear that one word read. Follow the recited word as it lights up on the page. See tajweed in colour, on Hafs and on Warsh. Keep your journal and settings in step between your own devices, with no account and no server. And every line of it is open source.
 
 PRAY
-- Prayer times for today, the week and the month ahead — worked out on your phone, from a provider, or from the published national tables for Sweden and Morocco — shareable as an image or a PDF
+- Prayer times for today, the week and the month ahead — worked out on your phone, from a provider, or from the published national tables for Sweden, Morocco and Algeria — shareable as an image or a PDF
 - The adhan for each prayer, with seventeen recordings or your own, a reminder before it, and snooze
 - Silence the phone for the prayer itself, and let it come back on its own
 - A pinned countdown to the next prayer on the lock screen and in the notification shade, in three designs
@@ -34,6 +34,6 @@ YOURS
 - Android, iPhone, iPad and Mac, in 13 languages, with Arabic and Urdu fully right-to-left
 - Light, dark and pure black, six colour themes, your own accent colour, and Material You — or Sky, which paints the whole app from the sky over the countdown and changes with the hour
 
-The network is used only when you choose it: a prayer-time provider (AlAdhan, PrayTimes.dev, or the national tables for Sweden and Morocco), place search through OpenStreetMap Nominatim, and downloading Quran pages, translations, tafsir and recitation audio. Your coordinates stay on your device.
+The network is used only when you choose it: a prayer-time provider (AlAdhan, PrayTimes.dev, or the national tables for Sweden, Morocco and Algeria), place search through OpenStreetMap Nominatim, and downloading Quran pages, translations, tafsir and recitation audio. Your coordinates stay on your device.
 
 Mihrab is open source under AGPL-3.0-or-later.
