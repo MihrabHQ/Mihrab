@@ -27,6 +27,9 @@ const GRADLE = path.join(ROOT, 'android', 'app', 'build.gradle');
 const SITE = path.join(ROOT, 'docs', 'index.html');
 const SITE_SV = path.join(ROOT, 'docs', 'sv', 'index.html');
 const RECIPE = path.join(ROOT, 'contrib', 'fdroid', 'com.prayer_times.yml');
+const PACKAGE = path.join(ROOT, 'package.json');
+const LOCK = path.join(ROOT, 'package-lock.json');
+const PKG_NAME = JSON.parse(fs.readFileSync(PACKAGE, 'utf-8')).name;
 /** Every language page other than English and Swedish, which have rules of their own. */
 const OTHER_SITES = ['ar', 'bn', 'de', 'es', 'fr', 'hi', 'id', 'ru', 'tr', 'ur', 'zh'].map(
   lang => ({ lang, file: path.join(ROOT, 'docs', lang, 'index.html') }),
@@ -162,6 +165,33 @@ function rules({ versionName, versionCode }) {
       what: 'fdroid recipe: build commit tag',
       find: /commit: v[\d.]+/,
       replace: `commit: v${versionName}`,
+    },
+    // package.json. Nothing reads it for the version — gradle is the one
+    // source of truth — but it said 1.5.50 for a year while the app was at
+    // 2.30, and a wrong number in the most-read file of a repository is a
+    // wrong number someone will quote. Stamped, not trusted.
+    {
+      file: PACKAGE,
+      what: 'package.json: version',
+      find: /"version": "[\d.]+"/,
+      replace: `"version": "${versionName}"`,
+    },
+    // The lockfile carries the same number twice (the root entry and
+    // `packages[""]`), and npm rewrites it from package.json on the next
+    // install anyway — stamping it keeps `npm ci` from seeing a mismatch.
+    {
+      file: LOCK,
+      what: 'package-lock.json: root version',
+      find: /\n  "version": "[\d.]+"/,
+      replace: `\n  "version": "${versionName}"`,
+    },
+    {
+      file: LOCK,
+      what: 'package-lock.json: packages[""] version',
+      // Every dependency has a six-space `"version"` too; the root package
+      // is the one whose `"name"` is on the line before it.
+      find: /"": \{\n      "name": "[^"]+",\n      "version": "[\d.]+"/,
+      replace: `"": {\n      "name": "${PKG_NAME}",\n      "version": "${versionName}"`,
     },
   ];
 }

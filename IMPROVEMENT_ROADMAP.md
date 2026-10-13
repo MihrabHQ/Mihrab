@@ -109,10 +109,9 @@ change.
 
 ### 1.3 Build and release
 
-- **`package.json` says 1.5.50; the app is 2.30.0.** `scripts/sync-version.js`
-  updates the gradle, pbxproj and F-Droid entries but not `package.json`, so
-  it has drifted by about a year. Either sync it or make it explicit that
-  gradle is the only source of truth.
+- ~~**`package.json` says 1.5.50**~~ — stamped by `scripts/sync-version.js`
+  since 2026-10-13 (with the lockfile's two copies); gradle stays the one
+  source of truth.
 - **CI does not run eslint** (still true 2026-10-13). `ci.yml` runs
   `tsc --noEmit` and jest. The baseline is 6 errors and 536 warnings; the errors want fixing before the
   check is turned on, or it lands red.
