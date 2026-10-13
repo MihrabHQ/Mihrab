@@ -1228,3 +1228,15 @@ in-app note: a release now needs `release-notes/en/<code>.txt` as well
 as the three Play notes (P7b), so the notes for the NEXT release are
 written while the work is fresh, not at the cut — 289's were, with the
 changelog, before any version bump.
+
+## 2.31.0 (289) — 2026-10-13
+
+Took 1 aborted attempt(s) before it ran clean:
+
+  - 1 origin/main has commits main does not — pull first
+
+Changed the release cycle itself:
+
+  - `scripts/sync-version.js`
+
+**Lesson:** _(unfilled)_
