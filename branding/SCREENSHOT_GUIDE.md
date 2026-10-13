@@ -125,46 +125,32 @@ identity's own headline. Eight panels per phone set, in pillar order:
 
 The Android tablet has six: Today, the spread, Tilawah, duas, log, month.
 
-### The 2.31 additions (2026-10-13)
+### The 2.31 home panel (2026-10-13)
 
-Two panels joined the sets without moving any of the eight above:
+The first panel of every set — Android phone, Android tablet, iPhone and
+iPad — is the Today screen under the **Sky theme**, the look a new
+install starts in since 2.31. It is the only Sky panel: the home panel
+already shows it, so a second one would say the same thing twice. The
+caption stays the identity's ("For every prayer, and everything
+between"). The Play feature graphic is unchanged — it is drawn from the
+night Today screen, not from `01_home`. The full-screen alert is not in
+the store story.
 
-| # | Android phone | iPhone 6.9″ / iPad 13″ | Android tablet |
-|---|---|---|---|
-| 9 | Today under the **Sky theme** (`09_sky`) | same (`09_sky`) | same (`07_sky`) |
-| 10 | The **full-screen prayer alert**, Maghrib (`10_alert`) | — | — |
-
-The alert is Android-only because iOS has no in-app alert screen: there the
-alarm is AlarmKit's own system UI, which a simulator does not draw. Google
-Play takes at most eight phone screenshots, so the Play set is now TEN
-files and the eight to upload are picked by hand (`verify_store.py` allows
-ten on purpose); F-Droid shows all ten. The tenth F-Droid file is
-`9a_alert.png`, not `10_alert.png`: F-Droid orders by file name as a
-string, and `10_` would sort before `1_` and open the listing.
-
-How the two were shot. The Sky home is the 2.28 home recipe with
-`"appearance":"sky"` in `prayerapp.settings.v1`; the emulator's `geo fix`
-only lands while some app is actually asking for a location, so send it
-right after launching Mihrab, not before. The alert cannot be opened by a
-deep link — `PrayerAlarmActivity` finishes unless a posted notification
-carries it — so let the real alarm ring: pin the clock a minute before the
-prayer with `cmd alarm set-time` (plain `date` does not wake AlarmManager),
-turn the screen OFF with `input keyevent KEYCODE_SLEEP` (with the screen on
-Android shows a heads-up instead of the full-screen intent), wait for it,
-then `screencap`. On the simulators the app's data container was copied
-from the already-onboarded iPad Pro 11 sim (`simctl get_app_container … data`)
+How it was shot. Android: the 2.28 home recipe with `"appearance":"sky"`
+in `prayerapp.settings.v1`; the emulator's `geo fix` only lands while
+some app is actually asking for a location, so send it right after
+launching Mihrab, not before. Apple: the app's data container was copied
+from an already-onboarded simulator (`simctl get_app_container … data`)
 so neither device ran the walkthrough; the notification permission is the
 one thing that copy does not carry — toggle Prayer alerts off and on in
-Settings → Notifications and allow the prompt, or the Today screen opens
-with a "permission denied" banner.
+Settings → Notifications and allow the prompt, or Today opens with a
+"permission denied" banner. The simulator clock is the host's, so the
+Apple panels are the afternoon after Asr (Fajr, Dhuhr and Asr logged);
+the Android ones are 09:41.
 
-The same day the phone hero's sun got its glow back (it had been drawn
-only during the launch run — see `glowCy` in HeroSky.tsx), so every
-phone and iPad home panel, `01_home` and `09_sky`, was shot again on
-the fixed build. A home panel with a bare sun is the old bug, not the
-look. The Android tablet's card was never affected and was kept. The
-simulator clock is the host's, so the Apple pair is the afternoon after
-Asr (Fajr, Dhuhr and Asr logged); the Android pair is 09:41.
+The sun on the phone's hero glows (the halo had been drawn only during
+the launch run until `glowCy` in HeroSky.tsx fixed it): a home panel
+with a bare sun is that old bug, not the look.
 
 Captions live in `CAPTIONS` in `build_store.py`; one headline size per set
 (`headline_size`), balanced wrapping (no orphan word), and a landscape-only
