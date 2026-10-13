@@ -6,9 +6,43 @@ attributable per the `reviewer` subagent's rule (the `source` field on
 duas, ayahs, and event records is non-negotiable).
 
 All resources listed below are **free and permissively licensed** for
-inclusion in PrayerApp. The F-Droid build's "no proprietary content"
+inclusion in Mihrab. The F-Droid build's "no proprietary content"
 constraint is honored throughout — every dataset uses an OSI-approved
 or otherwise-FOSS-compatible license.
+
+## Where things stand (2026-10)
+
+The sections below are kept as the record of each decision — what was
+searched, what was rejected and why — and the "Current state" paragraphs
+under the first three are from the v1.x plan that preceded the work.
+What ships today:
+
+- **Quran text** — the full Tanzil Uthmani text and fourteen Tanzil-derived
+  translation editions, as app assets (`assets/quran/surahs/`,
+  `assets/quran/translations/`; `src/quran/translations.ts`). Tafsir and
+  the Arabic meanings of harder words are downloads
+  (`src/quran/tafsir.ts`, `wordMeanings.ts`; the `data-tafsir-v1` and
+  `data-wordmeanings-v1` tags), served through the content mirrors.
+- **The muṣḥaf** — the King Fahd Complex's QPC page fonts (v2, v4 and the
+  v4 tajweed pair, one font per page, downloaded on demand; manifests in
+  `src/quran/data/`), the Warsh riwāyah (`data-riwayah-v1`), tajweed
+  rules for both (below), and the calligraphic sūrah names
+  (`SurahNames.ttf`). `docs/mushaf-fidelity-rules.md` is the rendering
+  contract.
+- **Fonts** — Amiri, Amiri Quran, the medallion font built from Amiri's
+  outlines, and the sūrah-name font are bundled on both platforms
+  (`android/app/src/main/assets/fonts/README.md`,
+  `ios/PrayerApp/Resources/fonts/README.md`).
+- **Duas and adhkār** — `src/duas/duas.ts` (every entry with a `source`)
+  and `src/dhikr/dhikr.ts`.
+- **Prayer-time datasets** — the national tables for Sweden (Islamiska
+  Förbundet, `tools/ifis-dataset/`), Morocco (Habous,
+  `tools/habous-dataset/`) and Algeria (the Ministry of Religious Affairs
+  and Wakfs, `tools/algeria-ministry/`), each rebuilt by a workflow in
+  `.github/workflows/` into `data/prayer-times/` and fetched by city.
+- **Hijri calendars** — the standard tabular calendar, Indonesia's
+  (Government & NU; Muhammadiyah's KHGT) and the published overrides in
+  `data/hijri/v1/` (`tools/hijri-calendars/README.md`).
 
 ---
 
@@ -514,7 +548,7 @@ person to look does not mistake one for the other.
 
 ---
 
-## Tajweed colours — SHIPPED (unreleased) 2026-09-24
+## Tajweed colours — SHIPPED 2.26.0 (Ḥafṣ) and 2.27.0 (Warsh)
 
 ### The fonts
 
