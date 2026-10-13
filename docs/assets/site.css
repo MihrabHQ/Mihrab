@@ -286,12 +286,10 @@ h2 { font-size: clamp(26px, 4vw, 34px); }
 }
 .spread { margin: 34px 0 0; }
 .spread img { aspect-ratio: 800 / 439; border-radius: 12px; }
-/* The five alert screens: phones already cut out on a transparent ground,
-   so no frame of their own; on a narrow screen the row scrolls sideways
-   rather than shrinking five phones to thumbnails. */
+/* The five alert screens fanned into one picture, already cut out on a
+   transparent ground, so no frame of their own. */
 .alerts { margin: 34px 0 0; }
-.alerts-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-.alerts img { display: block; width: 100%; min-width: 860px; height: auto; aspect-ratio: 1600 / 676; }
+.alerts img { display: block; width: 100%; height: auto; aspect-ratio: 1600 / 926; }
 .alerts figcaption { margin-top: 10px; font-size: 14px; color: var(--ink-soft); line-height: 1.45; }
 @media (max-width: 860px) { .gallery { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 620px) {
