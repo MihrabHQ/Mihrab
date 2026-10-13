@@ -354,7 +354,7 @@ JOURNAL="$ROOT/docs/release-log.md"
 # site is fourteen files and a list of them here goes stale the moment it
 # grows. An abort that leaves half the site stamped is an abort that makes
 # the next run refuse to start on a dirty tree, with no clue why.
-REVERT="git checkout -- android/app/build.gradle ios/PrayerApp.xcodeproj/project.pbxproj docs contrib/fdroid/com.prayer_times.yml src/polish/releaseNotes.generated.ts"
+REVERT="git checkout -- android/app/build.gradle ios/PrayerApp.xcodeproj/project.pbxproj docs contrib/fdroid/com.prayer_times.yml src/polish/releaseNotes.generated.ts package.json package-lock.json"
 
 current_version() { grep -o 'versionName "[^"]*"' "$GRADLE_FILE" | head -1 | cut -d'"' -f2; }
 current_code()    { grep -o 'versionCode [0-9]*'  "$GRADLE_FILE" | head -1 | awk '{print $2}'; }
@@ -913,7 +913,8 @@ git add "$GRADLE_FILE" "$PBXPROJ" "$ROOT/docs" \
         "$ROOT/contrib/fdroid/com.prayer_times.yml" \
         "$JOURNAL" \
         "$ROOT/fastlane/metadata/android" \
-        "$ROOT/src/polish/releaseNotes.generated.ts" || die "git add failed"
+        "$ROOT/src/polish/releaseNotes.generated.ts" \
+        "$ROOT/package.json" "$ROOT/package-lock.json" || die "git add failed"
 git commit -q -m "Release $VERSION ($CODE)" || die "commit failed"
 ok "committed"
 

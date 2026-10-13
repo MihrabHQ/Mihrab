@@ -49,7 +49,7 @@ export const CATALYST_LOG = '/tmp/release-catalyst.log';
 // WHOLE: the site is fourteen files and a list goes stale the moment it
 // grows (2.15.0).
 export const REVERT =
-  'git checkout -- android/app/build.gradle ios/PrayerApp.xcodeproj/project.pbxproj docs contrib/fdroid/com.prayer_times.yml src/polish/releaseNotes.generated.ts';
+  'git checkout -- android/app/build.gradle ios/PrayerApp.xcodeproj/project.pbxproj docs contrib/fdroid/com.prayer_times.yml src/polish/releaseNotes.generated.ts package.json package-lock.json';
 
 export interface Built {
   apk: string;

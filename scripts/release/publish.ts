@@ -112,6 +112,11 @@ export const RELEASE_COMMIT_PATHS = [
   'fastlane/metadata/android',
   'release-notes',
   'src/polish/releaseNotes.generated.ts',
+  // Stamped by sync-version.js since 2.31.0 and left out of that release's
+  // commit: the tag said 2.31.0 everywhere but package.json, which went on
+  // saying 2.30.0 as an uncommitted change in the working tree.
+  'package.json',
+  'package-lock.json',
 ];
 export const commitMessage = (rel: Release) => `Release ${rel.version} (${rel.code})`;
 export const tagMessage = (rel: Release) => `Mihrab ${rel.version} (${rel.code})`;

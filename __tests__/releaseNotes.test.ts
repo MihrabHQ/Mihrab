@@ -118,6 +118,19 @@ describe('release.sh carries the table through a release', () => {
     const revert = /^REVERT="([^"]+)"/m.exec(script)?.[1] ?? '';
     expect(revert.split(' ')).toContain('src/polish/releaseNotes.generated.ts');
   });
+
+  it('commits and reverts the package version sync-version stamps', () => {
+    // 2.31.0 was tagged with package.json still at 2.30.0.
+    const { RELEASE_COMMIT_PATHS } = require('../scripts/release/publish');
+    const { REVERT } = require('../scripts/release/build');
+    for (const f of ['package.json', 'package-lock.json']) {
+      expect(RELEASE_COMMIT_PATHS).toContain(f);
+      expect(REVERT.split(' ')).toContain(f);
+      expect(/^REVERT="([^"]+)"/m.exec(script)?.[1].split(' ')).toContain(f);
+    }
+    const add = script.slice(script.indexOf('git add "$GRADLE_FILE"'));
+    expect(add.slice(0, add.indexOf('git commit -q -m "Release'))).toContain('"$ROOT/package.json" "$ROOT/package-lock.json"');
+  });
 });
 
 describe('what counts as the last seen version', () => {
