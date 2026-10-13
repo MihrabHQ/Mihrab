@@ -140,6 +140,17 @@ const SHOTS = [
   'widgets-android',
 ];
 
+/**
+ * The two fans — five screens of one picture — that follow the gallery:
+ * the Sky theme at five hours, and the five full-screen alerts under it.
+ * Each is versioned on its own, because each is retaken on its own
+ * (branding/tools/fan.py builds them from the single shots).
+ */
+const FANS = [
+  { id: 'sky', v: '?v=2026-10-13' },
+  { id: 'alerts', v: '?v=2026-10-13b' },
+];
+
 /** Pages written by hand, which the generator only patches between markers. */
 const HAND_WRITTEN = {
   en: path.join(DOCS, 'index.html'),
@@ -186,9 +197,9 @@ ${items}
  */
 function gallery(code, t) {
   const at = code === 'en' ? 'assets' : '../assets';
-  const shot = (id, w, h, alt, cap, cls) =>
+  const shot = (id, w, h, alt, cap, cls, v = SHOT_V) =>
     `<figure${cls ? ` class="${cls}"` : ''}>
-        <img src="${at}/img/shot-${id}.png${SHOT_V}" width="${w}" height="${h}" loading="lazy" decoding="async"
+        <img src="${at}/img/shot-${id}.png${v}" width="${w}" height="${h}" loading="lazy" decoding="async"
           alt="${esc(alt)}">
         <figcaption>${esc(cap)}</figcaption>
       </figure>`;
@@ -197,10 +208,16 @@ function gallery(code, t) {
     if (!s) throw new Error(`${code}: no strings for the "${id}" screenshot`);
     return `      <li>${shot(id, 810, 1800, s.alt, s.cap)}</li>`;
   }).join('\n');
+  const fans = FANS.map(({ id, v }) => {
+    const s = t.shots.fans && t.shots.fans[id];
+    if (!s) throw new Error(`${code}: no strings for the "${id}" fan`);
+    return `    ${shot(id, 1600, 926, s.alt, s.cap, 'fan', v)}`;
+  }).join('\n');
   return `    <ul class="gallery">
 ${items}
     </ul>
-    ${shot('spread', 1600, 878, t.shots.spread.alt, t.shots.spread.cap, 'spread')}`;
+    ${shot('spread', 1600, 878, t.shots.spread.alt, t.shots.spread.cap, 'spread')}
+${fans}`;
 }
 
 /** Reciprocal hreflang: a page that names only itself is ignored. */
@@ -542,4 +559,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { build, picker, hreflang, gallery, ORIGIN, SHOTS, SHOT_V };
+module.exports = { build, picker, hreflang, gallery, ORIGIN, SHOTS, SHOT_V, FANS };

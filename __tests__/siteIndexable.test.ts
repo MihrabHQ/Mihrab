@@ -29,11 +29,12 @@ const host = readFileSync(path.join(DOCS, 'CNAME'), 'utf-8').trim();
 const origin = `https://${host}`;
 
 type Shot = { alt: string; cap: string };
-type Shots = { items: Record<string, Shot>; spread: Shot };
+type Shots = { items: Record<string, Shot>; spread: Shot; fans: Record<string, Shot> };
 const SHOT_STRINGS = LANGS as unknown as Record<string, { shots: Shots }>;
-const { SHOTS, SHOT_V } = require('../scripts/build-site') as {
+const { SHOTS, SHOT_V, FANS } = require('../scripts/build-site') as {
   SHOTS: string[];
   SHOT_V: string;
+  FANS: { id: string; v: string }[];
 };
 
 describe('the page agrees with itself about where it lives', () => {
@@ -407,10 +408,15 @@ describe('every language the app speaks has a page', () => {
     for (const id of [...SHOTS, 'spread']) {
       expect(page).toContain(`src="${at}/img/shot-${id}.png${SHOT_V}"`);
     }
+    // The two fans were hand-written into the English page once, and the
+    // twelve others went without them: they are generated too now.
+    for (const { id, v } of FANS) {
+      expect(page).toContain(`src="${at}/img/shot-${id}.png${v}"`);
+    }
   });
 
   it('ships every picture the pages ask for', () => {
-    for (const id of [...SHOTS, 'spread']) {
+    for (const id of [...SHOTS, 'spread', ...FANS.map(f => f.id)]) {
       expect(existsSync(path.join(DOCS, 'assets', 'img', `shot-${id}.png`))).toBe(
         true,
       );
@@ -429,6 +435,12 @@ describe('every language the app speaks has a page', () => {
         expect(pageOf(code)).toContain(shots.items[id].cap);
       }
       expect(shots.spread.cap).not.toBe(english.spread.cap);
+      for (const { id } of FANS) {
+        expect(shots.fans[id].alt.trim()).not.toBe('');
+        expect(shots.fans[id].alt).not.toBe(english.fans[id].alt);
+        expect(shots.fans[id].cap).not.toBe(english.fans[id].cap);
+        expect(pageOf(code)).toContain(shots.fans[id].cap);
+      }
     },
   );
 
