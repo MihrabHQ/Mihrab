@@ -1,4 +1,4 @@
-• The Sky theme: the whole app painted from the sky over the countdown — night, dawn, morning, midday, the golden hour, dusk — changing through the day, in one look whether your phone is in light or dark mode. Settings → Appearance, in the first-run walkthrough, and offered once to everyone who was here before it.
+• The Sky theme: the whole app painted from the sky over the countdown — night, dawn, morning, midday, the golden hour, dusk — changing through the day, in one look whether your phone is in light or dark mode. The look a new install starts in; offered once to everyone who was here before it, and always in Settings → Appearance.
 • Full-screen prayer alerts take their prayer's hour under the Sky theme: Fajr's dawn, Dhuhr's blue, Asr's gold, Maghrib's magenta, Isha's indigo.
 • The launch run is a setting, on by default: the app opens on the last Today screen and the countdown, the rail and the sky sweep up to now; off, the picture simply fades into the live one.
 • Muṣḥaf: the fullscreen button is in the page bar and the page tone is in the header; the page's frame and marks take the page bar's own colour.

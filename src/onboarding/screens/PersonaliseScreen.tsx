@@ -224,23 +224,28 @@ export function PersonaliseScreen({
             value={settings.appearance}
             onChange={appearance => updateSettings({ appearance })}
           />
-          <View style={styles.strip}>
-            <SkyMoodStrip
-              testID="personalise-sky-strip"
-              selected={skyActive}
-              accent={String(palette.accent)}
-              accessibilityLabel={t('settings.themeSky')}
-              onPress={() => updateSettings({ appearance: 'sky' })}
-            />
-          </View>
-          <Text style={[s.help, { color: palette.muted, marginTop: SPACING.sm }]}>
-            {skyActive
-              ? t('settings.themeSkyHelp')
-              : t(
-                  'onboarding.personalise.skyOffer',
-                  'Or let the sky colour the app — night, dawn, day and dusk, each in its own light. Tap to try Sky.',
-                )}
-          </Text>
+          {/* The six moods belong to Sky and show only under it. Shown
+              beside System, Light and Dark they read as more choices on
+              the same control — six swatches that pick nothing of their
+              own — and sat above the colour theme, which they do not
+              belong to either. Sky is the default, so a first run sees
+              them; switching away takes them with it, and the colour
+              theme comes in their place. */}
+          {skyActive ? (
+            <>
+              <View style={styles.strip}>
+                <SkyMoodStrip
+                  testID="personalise-sky-strip"
+                  selected={false}
+                  accent={String(palette.accent)}
+                  accessibilityLabel={t('settings.themeSky')}
+                />
+              </View>
+              <Text style={[s.help, { color: palette.muted, marginTop: SPACING.sm }]}>
+                {t('settings.themeSkyHelp')}
+              </Text>
+            </>
+          ) : null}
         </SettingsBlock>
         {dynamicColours || skyActive ? null : (
           <SettingsBlock>

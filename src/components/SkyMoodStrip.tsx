@@ -4,6 +4,10 @@
  * (theme/skyMoods.ts). Tapping the strip picks the theme — a look is
  * offered by showing it, not by naming it — and the selected state is a
  * ring in the accent, as a swatch in the accent shelf is.
+ *
+ * Without `onPress` it is only the picture: what Sky does, shown under
+ * Sky once it is the theme (the walkthrough's Look group), with no ring
+ * and nothing to press.
  */
 import { memo } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
@@ -19,7 +23,7 @@ type Props = {
   selected: boolean;
   accent: string;
   accessibilityLabel: string;
-  onPress: () => void;
+  onPress?: () => void;
   testID?: string;
 };
 
@@ -41,6 +45,20 @@ function Tile({ mood, id }: { mood: SkyMood; id: string }) {
 }
 
 function SkyMoodStripImpl({ selected, accent, accessibilityLabel, onPress, testID }: Props) {
+  if (!onPress) {
+    return (
+      <View
+        testID={testID}
+        accessible
+        accessibilityRole="image"
+        accessibilityLabel={accessibilityLabel}
+        style={[styles.strip, { borderColor: 'transparent' }]}>
+        {ORDER.map(name => (
+          <Tile key={name} mood={SKY_MOODS[name]} id={`skyMoodStrip-${name}`} />
+        ))}
+      </View>
+    );
+  }
   return (
     <Pressable
       testID={testID}

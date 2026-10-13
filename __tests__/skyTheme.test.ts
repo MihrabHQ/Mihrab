@@ -14,6 +14,9 @@ jest.mock('@react-native-async-storage/async-storage', () => {
       setItem: jest.fn(async (k: string, v: string) => {
         store[k] = v;
       }),
+      removeItem: jest.fn(async (k: string) => {
+        delete store[k];
+      }),
     },
   };
 });
@@ -273,6 +276,29 @@ describe('the store', () => {
     // Awaited with the settings, so the first render wears it.
     expect(read('src/context/PrayerSettingsContext.tsx')).toMatch(/Promise\.all\(\[loadSettings\(\), restoreSkyTheme\(\)\]\)/);
   });
+
+  it('opens a first launch in the hour\'s sky, not the night, before there are any times', async () => {
+    // Sky is a new install's look (2.31), and a new install has no
+    // location and so no times: the walkthrough at 16:14 was the night.
+    const AsyncStorage = require('@react-native-async-storage/async-storage').default;
+    const at = async (h: number, m: number) => {
+      await AsyncStorage.removeItem("@mihrab/skyTheme/v1");
+      _resetSkyThemeForTests();
+      await restoreSkyTheme(() => new Date(2026, 9, 13, h, m));
+      return getSkyTheme().passage;
+    };
+    expect(await at(16, 14)).toBe('sunset');
+    expect(await at(10, 0)).toBe('day');
+    expect(await at(6, 0)).toBe('dawn');
+    expect(await at(19, 0)).toBe('dusk');
+    expect(await at(23, 0)).toBe('night');
+    // The hero's first real sky still wins.
+    await AsyncStorage.removeItem("@mihrab/skyTheme/v1");
+    _resetSkyThemeForTests();
+    publishSkyTheme(SKIES.dawn);
+    await restoreSkyTheme(() => new Date(2026, 9, 13, 16, 14));
+    expect(getSkyTheme()).toEqual(SKIES.dawn);
+  });
 });
 
 describe('the hero under the theme', () => {
@@ -367,10 +393,14 @@ describe('access and polish', () => {
   it('is offered in onboarding, keyed into the launch picture\'s look by mood, and the glow yields to increased contrast', () => {
     const personalise = read('src/onboarding/screens/PersonaliseScreen.tsx');
     expect(personalise).toMatch(/\{ key: 'sky', label: t\('settings\.themeSky'\) \}/);
-    // Offered as a picture of its moods, the picture the control; the
-    // colour theme steps aside once the sky paints the palette.
-    expect(personalise).toMatch(/<SkyMoodStrip[\s\S]*?onPress=\{\(\) => updateSettings\(\{ appearance: 'sky' \}\)\}/);
-    expect(personalise).toMatch(/skyActive\s+\? t\('settings\.themeSkyHelp'\)\s+: t\(\s*'onboarding\.personalise\.skyOffer'/);
+    // The six moods show only under Sky — beside System, Light and Dark
+    // they read as more choices on the same control — as a picture, with
+    // what Sky does under it; the colour theme takes their place under
+    // the other three.
+    expect(personalise).toMatch(/\{skyActive \? \(\s*<>\s*<View style=\{styles\.strip\}>\s*<SkyMoodStrip/);
+    expect(personalise).not.toMatch(/<SkyMoodStrip[^>]*onPress/);
+    expect(personalise).toMatch(/\{t\('settings\.themeSkyHelp'\)\}/);
+    expect(personalise).not.toMatch(/onboarding\.personalise\.skyOffer/);
     expect(personalise).toMatch(/\{dynamicColours \|\| skyActive \? null : \(/);
     const strip = read('src/components/SkyMoodStrip.tsx');
     for (const name of ['night', 'dawn', 'morning', 'midday', 'golden', 'sunset']) expect(strip).toContain(`'${name}'`);
@@ -378,7 +408,8 @@ describe('access and polish', () => {
     const locales = fs.readdirSync(path.join(__dirname, '..', 'src/i18n/locales')).filter(f => f.endsWith('.json'));
     for (const file of locales) {
       const json = JSON.parse(read(`src/i18n/locales/${file}`));
-      expect(typeof json.onboarding?.personalise?.skyOffer).toBe('string');
+      // The "tap to try Sky" line went with the strip it sat under.
+      expect(json.onboarding?.personalise?.skyOffer).toBeUndefined();
     }
     const root = read('src/AppNavigationRoot.tsx');
     // The look is the settings', not the hour's: a picture from another

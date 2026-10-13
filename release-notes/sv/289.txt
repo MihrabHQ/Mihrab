@@ -1,4 +1,4 @@
-• Temat Himmel: hela appen målad från himlen ovanför nedräkningen – natt, gryning, morgon, middag, den gyllene timmen, skymning – och den skiftar genom dagen, i ett och samma utseende oavsett om telefonen är i ljust eller mörkt läge. Under Inställningar → Utseende, i introduktionen, och erbjuds en gång till alla som var här innan.
+• Temat Himmel: hela appen målad från himlen ovanför nedräkningen – natt, gryning, morgon, middag, den gyllene timmen, skymning – och den skiftar genom dagen, i ett och samma utseende oavsett om telefonen är i ljust eller mörkt läge. Utseendet en ny installation börjar i; erbjuds en gång till alla som var här innan, och finns alltid under Inställningar → Utseende.
 • Helskärmsaviseringar för bön bär sin bönetimme under temat Himmel: fajrs gryning, dhuhrs blå, asrs guld, maghribs magenta, ishas indigo.
 • Startanimationen är en inställning, på som standard: appen öppnar på den senaste Idag-skärmen och nedräkningen, linjen och himlen sveper fram till nu; avstängd tonar bilden bara över i den levande skärmen.
 • Mushaf: helskärmsknappen sitter i sidfältet och sidtonen i sidhuvudet; sidans ram och markeringar tar sidfältets egen färg.

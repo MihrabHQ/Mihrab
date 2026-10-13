@@ -62,6 +62,29 @@ export function skyDayKey(d: Date): string {
 
 /** The night, until the hero has drawn anything. */
 export const DEFAULT_SKY_THEME: SkyThemeColors = { top: '#0B1230', bottom: '#1E2B5A', passage: 'night', t: 0.5 };
+
+/**
+ * A day of times for a sky before there are any: an install that has
+ * never had a location has no prayer times, and Sky is a new install's
+ * look (2.31). Without this the walkthrough was the night at four in the
+ * afternoon. Round figures for a middling latitude — the passage is
+ * right for the hour almost anywhere, and the first real times replace
+ * it within the walkthrough.
+ */
+const NOMINAL_DAY: Record<string, string> = {
+  Fajr: '05:00',
+  Sunrise: '06:30',
+  Dhuhr: '12:30',
+  Asr: '15:45',
+  Maghrib: '18:30',
+  Isha: '20:00',
+};
+
+/** The sky for `now` on the nominal day — the sky a first launch opens in. */
+export function nominalSkyTheme(now: Date): SkyThemeColors {
+  const m = skyMoment(NOMINAL_DAY, now);
+  return { ...DEFAULT_SKY_THEME, passage: m.passage, t: m.t };
+}
 const PASSAGES: ReadonlySet<string> = new Set(['night', 'dawn', 'day', 'sunset', 'dusk']);
 
 const STORAGE_KEY = '@mihrab/skyTheme/v1';
@@ -157,7 +180,14 @@ export function restoreSkyTheme(now: () => Date = () => new Date()): Promise<voi
   if (restored) return restored;
   restored = AsyncStorage.getItem(STORAGE_KEY)
     .then(raw => {
-      if (published || !raw) return;
+      if (published) return;
+      if (!raw) {
+        // Nothing kept: a first launch. The hour's sky on a nominal day
+        // rather than the default night, until the hero has real times.
+        current = nominalSkyTheme(now());
+        emit();
+        return;
+      }
       const parsed: unknown = JSON.parse(raw);
       if (!valid(parsed) || published) return;
       let next: SkyThemeColors = { top: parsed.top, bottom: parsed.bottom, passage: parsed.passage, t: parsed.t };

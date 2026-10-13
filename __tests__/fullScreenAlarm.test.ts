@@ -224,6 +224,9 @@ describe('alarm screen sky', () => {
   it('under the Sky theme is the hour\'s mood — three stops, its ink, its accent — and the native screen reads them', () => {
     const { setFullScreenAlarmSkyTheme, fullScreenAlarmSkyTheme } = require('../src/notifications/fullScreenAlarm');
     const { skyMoodFor } = require('../src/theme/skyMoods');
+    // Off to start from: a test above may have loaded settings, and a new
+    // install's default is Sky (2.31).
+    setFullScreenAlarmSkyTheme(false);
     expect(fullScreenAlarmSkyTheme()).toBe(false);
     expect(fullScreenAlarmData('Fajr').fsSkyMid).toBeUndefined();
     setFullScreenAlarmSkyTheme(true);

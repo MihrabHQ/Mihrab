@@ -682,7 +682,11 @@ export type PrayerAppSettings = {
 };
 
 export const DEFAULT_SETTINGS: PrayerAppSettings = {
-  appearance: 'system',
+  // Sky for a new install (2.31): the app's own look, the one the
+  // walkthrough opens on. An install from before keeps what it had —
+  // settings saved without an appearance are read as 'system' in
+  // storage.ts — and is offered Sky once instead (SkyThemeOffer).
+  appearance: 'sky',
   useSystemDynamicTheme: false,
   pureBlackDark: false,
   dataProvider: 'aladhan',
