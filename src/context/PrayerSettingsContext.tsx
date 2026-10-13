@@ -9,6 +9,7 @@ import React, {
 import { applyMadhabNaming } from '../prayer/madhab';
 import i18n from '../i18n';
 import { setActiveClockFormat } from '../utils/activeClock';
+import { setFullScreenAlarmSkyTheme } from '../notifications/fullScreenAlarm';
 import { loadSettings, saveSettings } from '../settings/storage';
 import { bootMark } from '../boot/bootTimeline';
 import { setHijriCalendar } from '../hijri/calendar';
@@ -210,6 +211,13 @@ export function PrayerSettingsProvider({
   useEffect(() => {
     setActiveClockFormat(settings.clockFormat);
   }, [settings.clockFormat]);
+
+  // The full-screen alert paints itself in the Sky theme's mood when the
+  // app wears it; the scheduler runs outside React, so the answer is
+  // mirrored for it the same way the clock format is.
+  useEffect(() => {
+    setFullScreenAlarmSkyTheme(settings.appearance === 'sky');
+  }, [settings.appearance]);
 
   const updateSettings = useCallback((patch: Partial<PrayerAppSettings>) => {
     setSettings(prev => {

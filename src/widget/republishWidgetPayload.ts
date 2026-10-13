@@ -34,6 +34,7 @@
  */
 import { AppState } from 'react-native';
 import { setActiveClockFormat } from '../utils/activeClock';
+import { setFullScreenAlarmSkyTheme } from '../notifications/fullScreenAlarm';
 import { refreshSystemIs24Hour } from '../native/SystemClock';
 import i18n from '../i18n';
 import { applyMadhabNaming } from '../prayer/madhab';
@@ -188,6 +189,7 @@ export async function republishWidgetPayload(
     // watched it flip to "17:31" until the app was next opened. Same
     // situation, and same fix, as `language` further down.
     setActiveClockFormat(settings.clockFormat);
+    setFullScreenAlarmSkyTheme(settings.appearance === 'sky');
     await refreshSystemIs24Hour();
     // And the language, for the same reason: every string in the payload —
     // the prayer names, the day labels, the clock's AM/PM words, the

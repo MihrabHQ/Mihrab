@@ -207,13 +207,22 @@ class PrayerAlarmActivity : Activity() {
     // fallback for an alert scheduled by an older build.
     val skyTop = parseColor(data.getString("fsSkyTop"), NIGHT_TOP)
     val skyBottom = parseColor(data.getString("fsSkyBottom"), NIGHT_BOTTOM)
+    // Under the Sky theme the alert is the hour's mood (theme/skyMoods.ts):
+    // a third stop carries the horizon's glow, the ink is the mood's own
+    // text colour and the Stop button is filled in its accent. Absent, the
+    // screen is the real sky in cream or black, as it always was.
+    val skyMid = data.getString("fsSkyMid")?.let { parseColor(it, 0) }?.takeIf { it != 0 }
+    val moodText = data.getString("fsText")?.let { parseColor(it, 0) }?.takeIf { it != 0 }
+    val moodAccent = data.getString("fsAccent")?.let { parseColor(it, 0) }?.takeIf { it != 0 }
+    val moodOnAccent = data.getString("fsOnAccent")?.let { parseColor(it, 0) }?.takeIf { it != 0 }
     // Reset every time: a second alert can arrive on this same screen
     // (onNewIntent) with a different sky, and the ink must follow it.
     val darkInk = data.getString("fsInk") == "dark"
-    ink = if (darkInk) Color.BLACK else CREAM
-    inkSoft = if (darkInk) Color.argb(168, 0, 0, 0) else CREAM_SOFT
-    inkLine = if (darkInk) Color.argb(140, 0, 0, 0) else CREAM_LINE
-    buttonText = skyTop
+    ink = moodText ?: if (darkInk) Color.BLACK else CREAM
+    inkSoft = moodText?.let { withAlpha(it, 190) } ?: if (darkInk) Color.argb(168, 0, 0, 0) else CREAM_SOFT
+    inkLine = moodText?.let { withAlpha(it, 150) } ?: if (darkInk) Color.argb(140, 0, 0, 0) else CREAM_LINE
+    buttonFill = moodAccent ?: ink
+    buttonText = if (moodAccent != null) (moodOnAccent ?: skyTop) else skyTop
     // Dark ink means a pale sky, so the clock and battery up top must be dark
     // too or they vanish into it.
     @Suppress("DEPRECATION")
@@ -237,7 +246,7 @@ class PrayerAlarmActivity : Activity() {
     val root = FrameLayout(this).apply {
       background = GradientDrawable(
         GradientDrawable.Orientation.TOP_BOTTOM,
-        intArrayOf(skyTop, skyBottom),
+        if (skyMid != null) intArrayOf(skyTop, skyMid, skyBottom) else intArrayOf(skyTop, skyBottom),
       )
       fitsSystemWindows = true
       layoutDirection = if (rtl) View.LAYOUT_DIRECTION_RTL else View.LAYOUT_DIRECTION_LTR
@@ -475,7 +484,7 @@ class PrayerAlarmActivity : Activity() {
     )
     background = GradientDrawable().apply {
       cornerRadius = dp(if (small) 20 else 32).toFloat()
-      if (filled) setColor(ink) else setStroke(dp(if (small) 1 else 2), inkLine)
+      if (filled) setColor(buttonFill) else setStroke(dp(if (small) 1 else 2), inkLine)
     }
     isClickable = true
     isFocusable = true
@@ -490,6 +499,10 @@ class PrayerAlarmActivity : Activity() {
   private var inkSoft = CREAM_SOFT
   private var inkLine = CREAM_LINE
   private var buttonText = NIGHT_TOP
+  private var buttonFill = CREAM
+
+  private fun withAlpha(color: Int, alpha: Int): Int =
+    Color.argb(alpha, Color.red(color), Color.green(color), Color.blue(color))
 
   private fun parseColor(value: String?, fallback: Int): Int =
     try {

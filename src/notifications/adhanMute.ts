@@ -66,7 +66,7 @@ import {
   ymdLocal,
 } from './scheduling';
 import { modesFor, type PrayerAlertMode } from '../settings/alertModes';
-import { fullScreenAlarmAndroid, fullScreenAlarmData } from './fullScreenAlarm';
+import { fullScreenAlarmAndroid, fullScreenAlarmData, setFullScreenAlarmSkyTheme } from './fullScreenAlarm';
 
 /**
  * AsyncStorage key holding the override.
@@ -334,6 +334,7 @@ async function syncPreReminder(
     // The non-React edge, same as the widget's headless republish: the
     // provider that normally mirrors this preference never mounts here.
     setActiveClockFormat(settings.clockFormat);
+    setFullScreenAlarmSkyTheme(settings.appearance === 'sky');
     const minutes = clampPrePrayerReminderMinutes(
       settings.prePrayerReminderMinutes,
     );

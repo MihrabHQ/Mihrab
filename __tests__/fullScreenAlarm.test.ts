@@ -220,6 +220,54 @@ describe('alarm screen sky', () => {
   it('a non-prayer carries none', () => {
     expect(fullScreenAlarmData('').fsSkyTop).toBeUndefined();
   });
+
+  it('under the Sky theme is the hour\'s mood — three stops, its ink, its accent — and the native screen reads them', () => {
+    const { setFullScreenAlarmSkyTheme, fullScreenAlarmSkyTheme } = require('../src/notifications/fullScreenAlarm');
+    const { skyMoodFor } = require('../src/theme/skyMoods');
+    expect(fullScreenAlarmSkyTheme()).toBe(false);
+    expect(fullScreenAlarmData('Fajr').fsSkyMid).toBeUndefined();
+    setFullScreenAlarmSkyTheme(true);
+    try {
+      const expected: Record<string, [string, number]> = {
+        Fajr: ['dawn', 0],
+        Dhuhr: ['day', 0.55],
+        Asr: ['sunset', 0],
+        Maghrib: ['dusk', 0],
+        Isha: ['night', 0],
+      };
+      for (const [prayer, [passage, t]] of Object.entries(expected)) {
+        const mood = skyMoodFor(passage, t);
+        const d = fullScreenAlarmData(prayer);
+        expect(d.fsSkyTop).toBe(mood.heroTop);
+        expect(d.fsSkyMid).toBe(mood.heroMid);
+        expect(d.fsSkyBottom).toBe(mood.heroFoot);
+        expect(d.fsText).toBe(mood.text);
+        expect(d.fsAccent).toBe(mood.accent);
+        expect(d.fsOnAccent).toBe(mood.onAccent);
+        expect(d.fsInk).toBe(mood.isDark ? 'light' : 'dark');
+      }
+      // Dhuhr rings into the light; Isha into the dark.
+      expect(fullScreenAlarmData('Dhuhr').fsInk).toBe('dark');
+      expect(fullScreenAlarmData('Isha').fsInk).toBe('light');
+    } finally {
+      setFullScreenAlarmSkyTheme(false);
+    }
+    const fs = require('fs');
+    const path = require('path');
+    const kt = fs.readFileSync(
+      path.join(__dirname, '..', 'android/app/src/main/java/com/prayer_times/PrayerAlarmActivity.kt'),
+      'utf-8',
+    );
+    for (const key of ['fsSkyMid', 'fsText', 'fsAccent', 'fsOnAccent']) expect(kt).toContain(`"${key}"`);
+    expect(kt).toMatch(/intArrayOf\(skyTop, skyMid, skyBottom\)/);
+    expect(kt).toMatch(/if \(filled\) setColor\(buttonFill\)/);
+    // Mirrored from the settings wherever the alert is built without React.
+    const read = (p: string) => fs.readFileSync(path.join(__dirname, '..', p), 'utf-8');
+    expect(read('src/context/PrayerSettingsContext.tsx')).toMatch(/setFullScreenAlarmSkyTheme\(settings\.appearance === 'sky'\)/);
+    expect(read('src/notifications/adhanMute.ts')).toMatch(/setFullScreenAlarmSkyTheme\(settings\.appearance === 'sky'\)/);
+    expect(read('src/widget/republishWidgetPayload.ts')).toMatch(/setFullScreenAlarmSkyTheme\(settings\.appearance === 'sky'\)/);
+    expect(read('src/notifications/notificationActions.ts')).toMatch(/setFullScreenAlarmSkyTheme\(\s*await loadSettings\(\)/);
+  });
 });
 
 describe('the notification beside a full-screen alert', () => {

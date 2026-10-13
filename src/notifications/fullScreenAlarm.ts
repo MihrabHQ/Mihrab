@@ -21,6 +21,7 @@ import { AndroidCategory } from '@notifee/react-native';
 import i18n from '../i18n';
 import { LAST_CHANCE_MINUTES, hasSnooze, minutesUntil, type SnoozeMenu } from './snoozeWindow';
 import { skyFrame, skyInkAt, type SkyPassage } from '../screens/home/skyModel';
+import { skyMoodFor } from '../theme/skyMoods';
 
 /** The native activity Notifee launches; resolved by class name. */
 export const PRAYER_ALARM_ACTIVITY = 'com.prayer_times.PrayerAlarmActivity';
@@ -66,10 +67,46 @@ const PRAYER_SKY: Record<string, { passage: SkyPassage; t: number }> = {
   Isha: { passage: 'night', t: 0 },
 };
 
-/** The hero's two sky colours for a prayer and whether text on it is light or dark. */
+/**
+ * Whether the app wears the Sky theme, for this module, which runs outside
+ * React — the scheduler, the snooze, the Live Activity's toggle — and may
+ * run with the app's process dead. Mirrored the way the clock format is
+ * (`utils/activeClock.ts`): set by `PrayerSettingsProvider` whenever the
+ * stored setting changes, and by the headless paths after they load the
+ * settings themselves.
+ */
+let skyThemeOn = false;
+export function setFullScreenAlarmSkyTheme(on: boolean): void {
+  skyThemeOn = on;
+}
+export function fullScreenAlarmSkyTheme(): boolean {
+  return skyThemeOn;
+}
+
+/**
+ * The sky the alarm screen paints for a prayer, and the ink on it.
+ *
+ * Under the Sky theme it is the hour's mood (theme/skyMoods.ts) — the same
+ * three-stop sky the hero shows at that moment, the mood's own text colour
+ * and its accent for the Stop button — so the alert that wakes the phone
+ * is the app it opens into. Otherwise the hero's real sky, two colours, in
+ * cream or black.
+ */
 export function fullScreenAlarmSky(prayer: string): Record<string, string> {
   const at = PRAYER_SKY[prayer];
   if (!at) return {};
+  if (skyThemeOn) {
+    const mood = skyMoodFor(at.passage, at.t);
+    return {
+      fsSkyTop: mood.heroTop,
+      fsSkyMid: mood.heroMid,
+      fsSkyBottom: mood.heroFoot,
+      fsInk: mood.isDark ? 'light' : 'dark',
+      fsText: mood.text,
+      fsAccent: mood.accent,
+      fsOnAccent: mood.onAccent,
+    };
+  }
   const frame = skyFrame({ ...at, daylight: null }, new Date());
   return {
     fsSkyTop: frame.top,

@@ -12,6 +12,7 @@
  */
 import notifee, { AndroidStyle, type Notification } from '@notifee/react-native';
 import i18n from '../i18n';
+import { loadSettings } from '../settings/storage';
 import { ADHAN_CONTROLS_CATEGORY_ID } from './adhanActionIds';
 import { SNOOZE_PRESETS, prayerAlertActions } from './prayerAlertActions';
 import { resolveSnooze, snoozeMenu, type SnoozeMenu } from './snoozeWindow';
@@ -21,6 +22,7 @@ import {
   fullScreenAlarmAndroid,
   fullScreenAlarmData,
   isFullScreenAlarm,
+  setFullScreenAlarmSkyTheme,
 } from './fullScreenAlarm';
 
 /** Ids of snoozed re-fires — deliberately NOT the `pt-` prefix used by the
@@ -167,6 +169,16 @@ export async function snoozePrayerNotification(
   const channelId = notification.android?.channelId ?? 'prayer-times-default';
   const iosSound = notification.ios?.sound;
   const fullScreen = isFullScreenAlarm(data);
+  // The re-fire may be built with the app's process dead, where nothing has
+  // mirrored the theme yet: read it, so a snoozed alert keeps the look the
+  // first one had.
+  if (fullScreen) {
+    setFullScreenAlarmSkyTheme(
+      await loadSettings()
+        .then(s => s.appearance === 'sky')
+        .catch(() => false),
+    );
+  }
   // The prayer name travels in the payload; without it there is nothing to
   // log, so the re-fire falls back to a snooze-only button.
   const actions = prayerAlertActions(
