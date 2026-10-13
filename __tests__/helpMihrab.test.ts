@@ -104,12 +104,13 @@ describe('the page', () => {
 
   it('is offered from the Today hero, on the far end of the "Fajr in" line', () => {
     const card = read('src/screens/home/TodayCard.tsx');
+    // The eyebrow row is its own memoised component (HeroEyebrow): the
+    // label first, the heart after it — the trailing end.
     const row = card.slice(card.indexOf('<View style={styles.heroEyebrowRow}>'));
-    // The eyebrow first, the heart after it: the trailing end.
-    expect(row.indexOf("t('home.nextPrayerIn'")).toBeGreaterThan(0);
-    expect(row.indexOf('topRow?.renderHelp?.(inkTop)')).toBeGreaterThan(
-      row.indexOf("t('home.nextPrayerIn'"),
-    );
+    expect(row.indexOf('{label}')).toBeGreaterThan(0);
+    expect(row.indexOf('{renderHelp?.(ink)}')).toBeGreaterThan(row.indexOf('{label}'));
+    expect(card).toMatch(/<HeroEyebrow label=\{eyebrowLabel\} ink=\{inkTop\} renderHelp=\{topRow\?\.renderHelp\} \/>/);
+    expect(card).toMatch(/t\('home\.nextPrayerIn', \{/);
     expect(read('src/screens/HomeScreen.tsx')).toMatch(/navigate\('SettingsHelpMihrab'\)/);
   });
 

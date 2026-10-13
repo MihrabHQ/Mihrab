@@ -46,6 +46,7 @@ import {
   warpRemaining,
   warpSkyAt,
 } from '../../boot/launchWarp';
+import { useAfterFirstPaint } from '../../boot/firstPaint';
 import { holdLaunchSnapshot, setLaunchHeroState, setLaunchRunWanted } from '../../native/LaunchSnapshot';
 import { forgetClockTicks, noteClockTick } from '../../utils/clockJumps';
 import { registerPoseHero } from '../../boot/poseHero';
@@ -236,6 +237,54 @@ export type TodayCardProps = {
  * frame.
  */
 const noop = () => {};
+
+/**
+ * The hero's top row — the location and Qibla chips, built by their
+ * render props — and its eyebrow with the Help Mihrab chip. Memoised on
+ * the ink, which changes with the sky's steps: a launch run redraws the
+ * hero every frame, and these chips cost more to rebuild than the
+ * countdown they sit above.
+ */
+const HeroTopRow = memo(function HeroTopRow({
+  topRow,
+  ink,
+  onLayout,
+}: {
+  topRow: { renderLocation?: (ink: SkyInkColors) => ReactNode; renderQibla?: (ink: SkyInkColors) => ReactNode };
+  ink: SkyInkColors;
+  onLayout?: (e: LayoutChangeEvent) => void;
+}) {
+  return (
+    <View style={styles.heroTopRow} onLayout={onLayout}>
+      <View style={styles.heroTopLeading}>{topRow.renderLocation?.(ink)}</View>
+      {topRow.renderQibla?.(ink)}
+    </View>
+  );
+});
+
+const HeroEyebrow = memo(function HeroEyebrow({
+  label,
+  ink,
+  renderHelp,
+}: {
+  label: string;
+  ink: SkyInkColors;
+  renderHelp?: (ink: SkyInkColors) => ReactNode;
+}) {
+  return (
+    <View style={styles.heroEyebrowRow}>
+      <Text
+        style={[styles.heroEyebrow, styles.heroEyebrowText, { color: ink.muted }]}
+        numberOfLines={1}
+        maxFontSizeMultiplier={TITLE_BAND_MAX_FONT_SCALE}>
+        {label}
+      </Text>
+      {renderHelp?.(ink)}
+    </View>
+  );
+});
+/** How many times the sky is redrawn over a launch run (see HeroToday). */
+export const SKY_RUN_STEPS = 30;
 
 const HeroToday = memo(function HeroToday({
   target,
@@ -461,7 +510,15 @@ const HeroToday = memo(function HeroToday({
    * redrawn on every tick; a passage is hours long, so a minute is a
    * fraction of a percent of it.
    */
-  const skyAt = warp ? warpSkyAt(warp, now.getTime(), warpE) : now.getTime();
+  //
+  // During the launch run the sky moves in SKY_RUN_STEPS steps, not once a
+  // frame. The sky is the dear part of a frame — the SVG's gradient,
+  // halo, stars and moon cost 8 ms of JS to reconcile, the whole budget
+  // of a 120 Hz frame, measured on a Pixel 10 Pro — and a wash of colour
+  // crossing a second reads the same in thirty steps as in a hundred.
+  // The countdown and the rail, which are cheap, still move every frame.
+  const skyE = launchRun ? Math.floor(warpE * SKY_RUN_STEPS) / SKY_RUN_STEPS : warpE;
+  const skyAt = warp ? warpSkyAt(warp, now.getTime(), skyE) : now.getTime();
   const minuteKey = Math.floor(skyAt / 60_000);
   const frame = useMemo(
     () =>
@@ -531,9 +588,27 @@ const HeroToday = memo(function HeroToday({
     return setHeroSkyBand({ top: frame.top, bottom: frame.bottom, skyH });
   }, [fill, frame.top, frame.bottom, skyH]);
 
-  const inkTop = skyInkAt(frame, measured ? heroY.eyebrow : HERO_Y.eyebrow);
-  const ink = skyInkAt(frame, measured ? heroY.countdown : HERO_Y.countdown);
-  const inkFoot = skyInkAt(frame, measured ? heroY.foot : HERO_Y.foot);
+  // Memoised on the sky's step and the measured heights: the top row and
+  // the eyebrow below are memoised on their ink, and the launch run
+  // redraws the hero every frame.
+  const yEyebrow = measured ? heroY.eyebrow : HERO_Y.eyebrow;
+  const yCountdown = measured ? heroY.countdown : HERO_Y.countdown;
+  const yFoot = measured ? heroY.foot : HERO_Y.foot;
+  const inkTop = useMemo(() => skyInkAt(frame, yEyebrow), [frame, yEyebrow]);
+  const ink = useMemo(() => skyInkAt(frame, yCountdown), [frame, yCountdown]);
+  const inkFoot = useMemo(() => skyInkAt(frame, yFoot), [frame, yFoot]);
+  const eyebrowLabel = useMemo(
+    () =>
+      t('home.nextPrayerIn', {
+        defaultValue: '{{prayer}} in',
+        prayer: t(`prayer.${target.name}`),
+      }),
+    [t, target.name],
+  );
+  const targetLabel = useMemo(() => t(`prayer.${target.name}`), [t, target.name]);
+  const railFromKey = rail?.from.key;
+  const railFromLabel = useMemo(() => (railFromKey ? t(`prayer.${railFromKey}`) : ''), [t, railFromKey]);
+  const targetClock = useMemo(() => clock.fromDate(target.at), [clock, target.at]);
   // The band the bodies keep out of: the status bar and the top row above,
   // the countdown block (and the hero's foot padding) below.
   const sceneTop = fill ? statusBarInset + topRowH + SPACING.md : 0;
@@ -581,28 +656,14 @@ const HeroToday = memo(function HeroToday({
         />
       ) : null}
       {topRow ? (
-        <View style={styles.heroTopRow} onLayout={fill ? onTopRowLayout : undefined}>
-          <View style={styles.heroTopLeading}>{topRow.renderLocation?.(inkTop)}</View>
-          {topRow.renderQibla?.(inkTop)}
-        </View>
+        <HeroTopRow topRow={topRow} ink={inkTop} onLayout={fill ? onTopRowLayout : undefined} />
       ) : null}
       {/* The room the sky's bodies move in. */}
       {fill ? <View style={styles.heroScene} /> : null}
       <View onLayout={fill ? onBlockLayout : undefined}>
       {/* "Fajr in" leading, and on the trailing end of the same line —
           the side with nothing on it — the heart that opens Help Mihrab. */}
-      <View style={styles.heroEyebrowRow}>
-        <Text
-          style={[styles.heroEyebrow, styles.heroEyebrowText, { color: inkTop.muted }]}
-          numberOfLines={1}
-          maxFontSizeMultiplier={TITLE_BAND_MAX_FONT_SCALE}>
-          {t('home.nextPrayerIn', {
-            defaultValue: '{{prayer}} in',
-            prayer: t(`prayer.${target.name}`),
-          })}
-        </Text>
-        {topRow?.renderHelp?.(inkTop)}
-      </View>
+      <HeroEyebrow label={eyebrowLabel} ink={inkTop} renderHelp={topRow?.renderHelp} />
       {/* Hours, minutes and seconds as pieces, so the row's direction puts
           them in reading order — hours first from the right in Arabic, from
           the left in English (#71). One string kept them left to right
@@ -653,7 +714,7 @@ const HeroToday = memo(function HeroToday({
           numberOfLines={1}
           maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}
           accessibilityLanguage="en-US">
-          {clock.fromDate(target.at)}
+          {targetClock}
         </Text>
       </View>
       {rail ? (
@@ -677,13 +738,13 @@ const HeroToday = memo(function HeroToday({
               style={[styles.railLabel, tabularNumeralStyle, { color: inkFoot.muted }]}
               numberOfLines={1}
               maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}>
-              {t(`prayer.${rail.from.key}`)}
+              {railFromLabel}
             </Text>
             <Text
               style={[styles.railLabel, tabularNumeralStyle, { color: inkFoot.muted }]}
               numberOfLines={1}
               maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}>
-              {t(`prayer.${target.name}`)}
+              {targetLabel}
             </Text>
           </View>
         </View>
@@ -1250,13 +1311,16 @@ function TodayCardImpl({
     setInterval_(fromAt > 0 && targetAt > fromAt ? { fromAt, targetAt } : null);
   }, []);
   // Not while the launch run draws: the twin would be drawn for nothing.
-  // Nor with the run turned off: nothing would run from the pose, and a
-  // twin is a second hero to lay out and draw on every tick.
+  // Nor before the launch's first paint and the run are over: the twin's
+  // sky is a second SVG to mount, 70–100 ms of JS right where the run's
+  // first frames go. Nor with the run turned off: nothing would run from
+  // the pose, and a twin is a second hero to lay out and draw on every tick.
   const fullBleedRunHeld = useLaunchRunActive();
+  const twinMayMount = useAfterFirstPaint();
   const runWanted = settings.launchAnimation;
   useEffect(() => setLaunchRunWanted(runWanted), [runWanted]);
   const twinUp = !!(
-    target && heroBox && interval && chosenKey === null && !fullBleedRunHeld && runWanted
+    target && heroBox && interval && chosenKey === null && !fullBleedRunHeld && twinMayMount && runWanted
   );
   useEffect(() => {
     if (!twinUp || !interval) return undefined;

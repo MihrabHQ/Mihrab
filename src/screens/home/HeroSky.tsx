@@ -141,26 +141,12 @@ function HeroSkyImpl({
         : { width, height: h },
     );
   }, []);
-  const scene = skyScene({ height, sceneTop, sceneBottom });
-  const { banded, cramped } = scene;
-  const sceneY = (fraction: number): number | `${number}%` =>
-    banded && scene.room > 0 ? scene.y(fraction) : `${fraction * 100}%`;
-
-  // A fixed, sparse field in the top strip: the same stars every night, so
-  // the card does not twinkle from one render to the next, and none of
-  // them behind the countdown.
-  const starField = useMemo(
-    () => [
-      [6, 30, 1.2],
-      [16, 12, 0.9],
-      [27, 34, 1.0],
-      [44, 8, 1.1],
-      [56, 26, 0.9],
-      [66, 40, 1.2],
-      [78, 14, 0.8],
-    ],
-    [],
-  );
+  // One scene per layout, not per render: the stars below are memoised on
+  // it, and a fresh object every render would redraw them every frame of
+  // a launch run for nothing.
+  const scene = useMemo(() => skyScene({ height, sceneTop, sceneBottom }), [height, sceneTop, sceneBottom]);
+  const { cramped } = scene;
+  const sceneY = (fraction: number) => sceneYOf(scene, fraction);
 
   const bodyXY = body.kind === 'none' || cramped ? null : { x: body.x, y: body.y };
   /**
@@ -228,18 +214,7 @@ function HeroSkyImpl({
         </Defs>
         <Rect x="0" y="0" width="100%" height="100%" fill="url(#sky)" />
         {bodyXY ? <Rect x="0" y="0" width="100%" height="100%" fill="url(#glow)" /> : null}
-        {drawStars
-          ? starField.map(([x, y, r], i) => (
-              <Circle
-                key={i}
-                cx={`${x}%`}
-                cy={sceneY(y / 100)}
-                r={r}
-                fill={glow}
-                fillOpacity={0.85 * stars}
-              />
-            ))
-          : null}
+        {drawStars ? <Stars scene={scene} glow={glow} stars={stars} /> : null}
         {body.kind === 'sun' && !cramped ? (
           <Circle
             cx={`${body.x * 100}%`}
@@ -264,6 +239,40 @@ function HeroSkyImpl({
   );
 }
 
+type Scene = ReturnType<typeof skyScene>;
+
+function sceneYOf(scene: Scene, fraction: number): number | `${number}%` {
+  return scene.banded && scene.room > 0 ? scene.y(fraction) : `${fraction * 100}%`;
+}
+
+// A fixed, sparse field in the top strip: the same stars every night, so
+// the card does not twinkle from one render to the next, and none of
+// them behind the countdown.
+const STAR_FIELD: ReadonlyArray<readonly [number, number, number]> = [
+  [6, 30, 1.2],
+  [16, 12, 0.9],
+  [27, 34, 1.0],
+  [44, 8, 1.1],
+  [56, 26, 0.9],
+  [66, 40, 1.2],
+  [78, 14, 0.8],
+];
+
+/**
+ * The stars: seven elements that change only as night comes or goes, kept
+ * out of the sky's every redraw — a launch run redraws the sky dozens of
+ * times in a second, and these were a third of each redraw's work.
+ */
+const Stars = memo(function Stars({ scene, glow, stars }: { scene: Scene; glow: string; stars: number }) {
+  return (
+    <>
+      {STAR_FIELD.map(([x, y, r], i) => (
+        <Circle key={i} cx={`${x}%`} cy={sceneYOf(scene, y / 100)} r={r} fill={glow} fillOpacity={0.85 * stars} />
+      ))}
+    </>
+  );
+});
+
 /**
  * A moon barely wider than a word, in tonight's real phase and turned the
  * way tonight's real moon is turned where the reader is standing.
@@ -277,7 +286,7 @@ function HeroSkyImpl({
  * The lit disc is drawn whole and the shadow laid over it in the sky's
  * own top colour, so the dark part of the moon is sky, as it is.
  */
-function Moon({
+const Moon = memo(function Moon({
   illuminated,
   tilt,
   lit,
@@ -305,7 +314,7 @@ function Moon({
       </G>
     </Svg>
   );
-}
+});
 
 /** Below this much light the disc is drawn as a ghost, not a sliver. */
 export const NEW_MOON_BELOW = 0.02;

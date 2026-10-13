@@ -202,7 +202,7 @@ describe('wiring', () => {
   it('draws the countdown, the rail and the sky from the run', () => {
     expect(card).toMatch(/warp \? warpRemaining\(warp, remainingSeconds, warpE\) : remainingSeconds/);
     expect(card).toMatch(/warp \? warpPct\(warp, rail\.pct, warpE\) : rail\.pct/);
-    expect(card).toMatch(/warp \? warpSkyAt\(warp, now\.getTime\(\), warpE\) : now\.getTime\(\)/);
+    expect(card).toMatch(/warp \? warpSkyAt\(warp, now\.getTime\(\), skyE\) : now\.getTime\(\)/);
   });
 
   it('runs every time but under Reduce Motion, and holds the picture back meanwhile', () => {
@@ -217,7 +217,7 @@ describe('wiring', () => {
     const types = read('src/settings/types.ts');
     expect(types).toMatch(/launchAnimation: true,/);
     expect(card).toMatch(/useLaunchWarp\(reduceMotion \|\| !launchRunWanted, !posed\)/);
-    expect(card).toMatch(/!fullBleedRunHeld && runWanted/);
+    expect(card).toMatch(/!fullBleedRunHeld && twinMayMount && runWanted/);
     expect(card).toMatch(/useEffect\(\(\) => setLaunchRunWanted\(runWanted\), \[runWanted\]\)/);
     const appearance = read('src/screens/settings/AppearanceCard.tsx');
     expect(appearance).toMatch(/updateSettings\(\{ launchAnimation: v \}\)/);
@@ -230,6 +230,19 @@ describe('wiring', () => {
     expect(eligible).not.toHaveBeenLastCalledWith(true);
     m.setLaunchRunWanted(false);
     expect(eligible).toHaveBeenLastCalledWith(true);
+  });
+
+  it('redraws the sky in steps over the run, and mounts the twin only after it', () => {
+    // The SVG is the dear part of a frame: thirty redraws, not one a frame.
+    expect(card).toMatch(/const skyE = launchRun \? Math\.floor\(warpE \* SKY_RUN_STEPS\) \/ SKY_RUN_STEPS : warpE;/);
+    expect(card).toMatch(/warpSkyAt\(warp, now\.getTime\(\), skyE\)/);
+    // And a second sky (the posed twin's) is not mounted under the run.
+    expect(card).toMatch(/const twinMayMount = useAfterFirstPaint\(\);/);
+    expect(card).toMatch(/!fullBleedRunHeld && twinMayMount && runWanted/);
+    const sky = read('src/screens/home/HeroSky.tsx');
+    expect(sky).toMatch(/const Stars = memo\(/);
+    expect(sky).toMatch(/const Moon = memo\(/);
+    expect(sky).toMatch(/useMemo\(\(\) => skyScene\(/);
   });
 
   it('keeps what the hero is aimed at beside the next picture', () => {

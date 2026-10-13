@@ -54,7 +54,10 @@ describe('the native side', () => {
       'UI_MODE_NIGHT_MASK',
       'fontScale != fontScale',
       'w == width && h == height',
-      'intent.data != null',
+      // A link opens something in the app, not the app — but the widgets'
+      // `mihrab://today` lands where a plain launch does.
+      '!isTodayLink(data)',
+      'uri.host == "today" && uri.path.isNullOrEmpty() && uri.query == null',
       'it.startsWith("android.")',
     ]) {
       expect(NATIVE).toContain(check);
@@ -92,7 +95,8 @@ describe('the iOS side', () => {
       'look == meta.look',
       'userInterfaceStyle.rawValue == meta.style',
       'preferredContentSizeCategory.rawValue == meta.textSize',
-      'options.urlContexts.isEmpty, options.notificationResponse == nil',
+      'guard todayOnly, options.notificationResponse == nil',
+      'c.url.host == "today" && c.url.path.isEmpty && c.url.query == nil',
       'isExcludedFromBackup = true',
       '#if targetEnvironment(macCatalyst)',
     ]) {
