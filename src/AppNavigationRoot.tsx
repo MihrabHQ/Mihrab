@@ -20,7 +20,6 @@ import {
 } from './native/SystemTheme';
 import {
   resolveAppPalette,
-  resolveEffectiveDark,
 } from './theme/appPalette';
 import { restoreSkyTheme, useSkyTheme } from './theme/skyTheme';
 import { buildNavigationTheme } from './theme/navigationTheme';
@@ -437,38 +436,11 @@ export function AppNavigationRoot() {
   // overrideUserInterfaceStyle; 'system' clears the override. iOS-only: Android
   // theming already flows through the palette + native nav-bar style + the
   // dynamic-colour restart path above, and an override there would fight it.
-  const isDark = useMemo(
-    () => resolveEffectiveDark(settings.appearance, systemScheme),
-    [settings.appearance, systemScheme],
-  );
-
-  useEffect(() => {
-    if (Platform.OS !== 'ios') return;
-    if (settings.appearance === 'system' && !isMacCatalyst) {
-      Appearance.setColorScheme('unspecified');
-      return;
-    }
-    // Explicit light/dark — and ALWAYS on Mac (Catalyst / iPad-on-Mac):
-    // pin the native chrome to the app's RESOLVED theme. On Mac the
-    // window trait (which the header's glass chip material follows) and
-    // RN's detected scheme can disagree, leaving a dark chip on a light
-    // app (reported 2026-07-16). Freezing the override to the resolved
-    // value keeps every native surface in step with the app theme.
-    // The Sky theme is one look, built on the night: dark chrome.
-    Appearance.setColorScheme(
-      settings.appearance === 'system' || settings.appearance === 'sky'
-        ? isDark
-          ? 'dark'
-          : 'light'
-        : settings.appearance,
-    );
-  }, [settings.appearance, isDark]);
   const sky = useSkyTheme(settings.appearance === 'sky');
   // The last sky from disk, for the moment before the hero has the day's.
   useEffect(() => {
     if (settings.appearance === 'sky') void restoreSkyTheme();
   }, [settings.appearance]);
-
   const palette = useMemo(
     () =>
       resolveAppPalette({
@@ -496,6 +468,30 @@ export function AppNavigationRoot() {
       sky,
     ],
   );
+  // The palette's own answer — under the Sky theme the hour decides it.
+  const isDark = palette.isDark;
+
+  useEffect(() => {
+    if (Platform.OS !== 'ios') return;
+    if (settings.appearance === 'system' && !isMacCatalyst) {
+      Appearance.setColorScheme('unspecified');
+      return;
+    }
+    // Explicit light/dark — and ALWAYS on Mac (Catalyst / iPad-on-Mac):
+    // pin the native chrome to the app's RESOLVED theme. On Mac the
+    // window trait (which the header's glass chip material follows) and
+    // RN's detected scheme can disagree, leaving a dark chip on a light
+    // app (reported 2026-07-16). Freezing the override to the resolved
+    // value keeps every native surface in step with the app theme.
+    // The Sky theme is one look, built on the night: dark chrome.
+    Appearance.setColorScheme(
+      settings.appearance === 'system' || settings.appearance === 'sky'
+        ? isDark
+          ? 'dark'
+          : 'light'
+        : settings.appearance,
+    );
+  }, [settings.appearance, isDark]);
 
   const navTheme = useMemo(
     () => buildNavigationTheme(palette, isDark),

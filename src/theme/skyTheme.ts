@@ -26,16 +26,22 @@
  */
 import { useSyncExternalStore } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import type { SkyPassage } from '../screens/home/skyModel';
+import { skyMoodFor, type SkyMood } from './skyMoods';
 
 export type SkyThemeColors = {
   /** The gradient's top colour, #RRGGBB. */
   top: string;
   /** Its bottom colour, #RRGGBB. */
   bottom: string;
+  /** Which passage of the day the sky is in, and how far through it (0–1). */
+  passage: SkyPassage;
+  t: number;
 };
 
 /** The night, until the hero has drawn anything. */
-export const DEFAULT_SKY_THEME: SkyThemeColors = { top: '#0B1230', bottom: '#1E2B5A' };
+export const DEFAULT_SKY_THEME: SkyThemeColors = { top: '#0B1230', bottom: '#1E2B5A', passage: 'night', t: 0.5 };
+const PASSAGES: ReadonlySet<string> = new Set(['night', 'dawn', 'day', 'sunset', 'dusk']);
 
 const STORAGE_KEY = '@mihrab/skyTheme/v1';
 const HEX = /^#[0-9a-fA-F]{6}$/;
@@ -49,22 +55,39 @@ function emit(): void {
 }
 
 function valid(v: unknown): v is SkyThemeColors {
+  if (typeof v !== 'object' || v == null) return false;
+  const s = v as SkyThemeColors;
   return (
-    typeof v === 'object' &&
-    v != null &&
-    HEX.test((v as SkyThemeColors).top ?? '') &&
-    HEX.test((v as SkyThemeColors).bottom ?? '')
+    HEX.test(s.top ?? '') &&
+    HEX.test(s.bottom ?? '') &&
+    PASSAGES.has(s.passage) &&
+    typeof s.t === 'number' &&
+    s.t >= 0 &&
+    s.t <= 1
   );
+}
+
+/**
+ * The same as far as the theme is concerned: the mood it makes is the
+ * same in every token. The sky's `t` moves every minute; through the
+ * night, and through most of the day, the mood does not, and the app is
+ * not re-rendered for a change it cannot see.
+ */
+function same(a: SkyThemeColors, b: SkyThemeColors): boolean {
+  if (a.passage !== b.passage) return false;
+  const ma = skyMoodFor(a.passage, a.t);
+  const mb = skyMoodFor(b.passage, b.t);
+  return (Object.keys(ma) as (keyof SkyMood)[]).every(k => ma[k] === mb[k]);
 }
 
 /** The hero says what its sky is. Idempotent for the same two colours. */
 export function publishSkyTheme(next: SkyThemeColors): void {
   if (!valid(next)) return;
-  if (current.top === next.top && current.bottom === next.bottom) {
+  if (same(current, next)) {
     published = true;
     return;
   }
-  current = { top: next.top, bottom: next.bottom };
+  current = { top: next.top, bottom: next.bottom, passage: next.passage, t: next.t };
   published = true;
   emit();
   AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(current)).catch(() => {
@@ -88,7 +111,7 @@ export function restoreSkyTheme(): Promise<void> {
       if (published || !raw) return;
       const parsed: unknown = JSON.parse(raw);
       if (valid(parsed) && !published) {
-        current = { top: parsed.top, bottom: parsed.bottom };
+        current = { top: parsed.top, bottom: parsed.bottom, passage: parsed.passage, t: parsed.t };
         emit();
       }
     })

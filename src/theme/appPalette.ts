@@ -5,9 +5,10 @@ import {
   PlatformColor,
 } from 'react-native';
 import { getResolvedAccentHex } from '../native/SystemTheme';
-import { contrast, legibleAccent } from '../settings/accentColors';
+import { legibleAccent } from '../settings/accentColors';
 import { hexToOklch, oklchToHex } from './oklch';
 import { DEFAULT_SKY_THEME, type SkyThemeColors } from './skyTheme';
+import { SKY_MOODS, skyMoodFor } from './skyMoods';
 import type { AppAccentId, AppearancePreference } from '../settings/types';
 
 export type AppPalette = {
@@ -125,7 +126,8 @@ export function resolveEffectiveDark(
   if (mode === 'dark') {
     return true;
   }
-  // The Sky theme is one look, built on the night ink (skyTheme.ts).
+  // The Sky theme decides for itself, by the hour (skyMoods.ts): read
+  // `isDark` off its palette. Dark here is only the answer before it has.
   if (mode === 'sky') {
     return true;
   }
@@ -723,54 +725,43 @@ export function buildAppPalette(
 // ── The Sky theme ────────────────────────────────────────────────────────
 
 /**
- * The app painted in the sky over the countdown — see skyTheme.ts for
- * what it is and where the two colours come from.
+ * The app painted for the hour — see skyTheme.ts for what the theme is and
+ * skyMoods.ts for the colours. The mood of this moment of the sky, mixed
+ * between its neighbours, becomes the palette token for token. Pure black
+ * sinks a dark mood's page to absolute black and leaves the rest of its
+ * ladder where it is, as it does for the other dark themes.
  *
- * The sky's hue is the hue of whichever end of its gradient is the more
- * saturated — the day's blue top rather than its cream horizon, the
- * dawn's rose horizon rather than its blue top — since that is the colour
- * the sky reads as; a mix of the two gave the day a slate grey. The
- * surfaces are the dark tonal ladder Verdant paints, in that hue: the
- * ladder's lightnesses and chromas are fixed, so a day sky and a night
- * sky give the same depth of ground, in the day's blue or the night's
- * ink. The accent is the sky's own colour lifted to L 0.74 and given at
- * least the chroma of a preset, then held to the accent contrast floor
- * against the ground, as a custom accent is. The ink is the standard
- * dark ink turned toward the hue — a whisper of chroma, so a warm sky has
- * warm text and a cold one cold, at the same lightness the contrast
- * floors were set for.
+ * `wantDark`: the mushaf's chrome asks for the theme's dark or light
+ * colours for its own page (`resolveThemePaletteForMode`). A light mood
+ * asked for dark gives the night; a dark one asked for light, the midday.
  */
-export function skyPalette(sky: SkyThemeColors, pureBlackDark: boolean): AppPalette {
-  const base = pureBlackDark ? DARK_PURE_BLACK_BASE : DARK_BASE;
-  const top = hexToOklch(sky.top);
-  const bottom = hexToOklch(sky.bottom);
-  const { C: chroma, h } = top.C >= bottom.C ? top : bottom;
-
-  const surfaces = darkTonalSurfaces(base, h);
-  const ground = String(surfaces.bg);
-  const accentSolid = legibleAccent(
-    oklchToHex({ L: 0.74, C: Math.max(0.1, Math.min(0.15, chroma * 1.5)), h }),
-    ground,
-  );
-  const accentBg = oklchToHex({ L: 0.3, C: 0.06, h });
-  const text = oklchToHex({ L: 0.94, C: 0.012, h });
-  const muted = oklchToHex({ L: 0.7, C: 0.02, h });
+export function skyPalette(sky: SkyThemeColors, pureBlackDark: boolean, wantDark?: boolean): AppPalette {
+  let mood = skyMoodFor(sky.passage, sky.t);
+  if (wantDark != null && mood.isDark !== wantDark) mood = wantDark ? SKY_MOODS.night : SKY_MOODS.midday;
+  const oled = pureBlackDark && mood.isDark;
   return {
-    ...base,
-    ...surfaces,
-    text,
-    muted,
-    accent: accentSolid,
-    accentBg,
-    accentSolid,
-    mutedSolid: muted,
-    textSolid: text,
-    isDark: true,
-    // A lifted accent is a mid-tone: white on it when white clears the UI
-    // floor (it reads better at small weights), the dark ink otherwise.
-    onAccent: contrast('#FFFFFF', accentSolid) >= 3 ? '#FFFFFF' : '#1A1814',
+    bg: oled ? '#000000' : mood.bg,
+    card: mood.card,
+    text: mood.text,
+    muted: mood.muted,
+    border: mood.border,
+    accent: mood.accent,
+    accentBg: mood.accentBg,
+    danger: mood.danger,
+    overlay: mood.overlay,
+    flatChrome: false,
+    glass: false,
+    controlBg: mood.controlBg,
+    accentSolid: mood.accent,
+    mutedSolid: mood.muted,
+    textSolid: mood.text,
+    isDark: mood.isDark,
+    onAccent: mood.onAccent,
     tintedSurfaces: true,
-    onAccentSurface: text,
+    accentSurface: oled ? '#000000' : mood.accentSurface,
+    accentSurfaceStrong: mood.accentSurfaceStrong,
+    onAccentSurface: mood.text,
+    accentHairline: mood.accentHairline,
   };
 }
 
@@ -799,9 +790,9 @@ export function resolveThemePaletteForMode(
   },
   isDark: boolean,
 ): AppPalette {
-  // The Sky theme is one look: the mushaf's own night takes it as it is.
+  // The Sky theme, in the polarity the page asks for.
   if (input.appearance === 'sky') {
-    return skyPalette(input.sky ?? DEFAULT_SKY_THEME, input.pureBlackDark);
+    return skyPalette(input.sky ?? DEFAULT_SKY_THEME, input.pureBlackDark, isDark);
   }
   if (shouldUseDynamicSystemColors(input.appearance, input.useSystemDynamicTheme)) {
     return buildDynamicSystemPalette(isDark, input.pureBlackDark, false);

@@ -633,8 +633,8 @@ const HeroToday = memo(function HeroToday({
   }, [running, frame, liveMinuteKey, skyToday, today, tomorrowFajr, latitude, longitude]);
   useEffect(() => {
     if (posed) return;
-    publishSkyTheme({ top: liveSky.top, bottom: liveSky.bottom });
-  }, [posed, liveSky.top, liveSky.bottom]);
+    publishSkyTheme({ top: liveSky.top, bottom: liveSky.bottom, passage: liveSky.passage, t: liveSky.t });
+  }, [posed, liveSky.top, liveSky.bottom, liveSky.passage, liveSky.t]);
 
   // Memoised on the sky's step and the measured heights: the top row and
   // the eyebrow below are memoised on their ink, and the launch run

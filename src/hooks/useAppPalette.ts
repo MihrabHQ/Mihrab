@@ -2,11 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Appearance, Platform } from 'react-native';
 import { usePrayerSettings } from '../context/PrayerSettingsContext';
 import { useSystemColorScheme } from './useSystemColorScheme';
-import {
-  resolveAppPalette,
-  resolveEffectiveDark,
-  type AppPalette,
-} from '../theme/appPalette';
+import { resolveAppPalette, type AppPalette } from '../theme/appPalette';
 import { useSkyTheme } from '../theme/skyTheme';
 
 export type { AppPalette };
@@ -54,10 +50,6 @@ export function useAppPalette(): {
     };
   }, []);
 
-  const isDark = useMemo(
-    () => resolveEffectiveDark(settings.appearance, systemScheme),
-    [settings.appearance, systemScheme],
-  );
   // The hero's sky, only under the Sky theme (theme/skyTheme.ts).
   const sky = useSkyTheme(settings.appearance === 'sky');
 
@@ -89,5 +81,6 @@ export function useAppPalette(): {
     ],
   );
 
-  return { palette, isDark };
+  // The palette's own answer: under the Sky theme the hour decides it.
+  return { palette, isDark: palette.isDark };
 }
