@@ -23,7 +23,7 @@ import { resolveAppPalette, resolveThemePaletteForMode, skyPalette } from '../sr
 // eslint-disable-next-line import/first
 import { contrastRatio } from '../src/theme/themeMap';
 // eslint-disable-next-line import/first
-import { SKY_MOODS, skyMoodAt, skyMoodFor, type SkyMood } from '../src/theme/skyMoods';
+import { PALETTE_STEPS, SKY_MOODS, skyMoodAt, skyMoodFor, type SkyMood } from '../src/theme/skyMoods';
 // eslint-disable-next-line import/first
 import { SKY_THEME_MID_AT, skyColorAt, themedSkyFrame, type SkyPassage } from '../src/screens/home/skyModel';
 // eslint-disable-next-line import/first
@@ -80,6 +80,25 @@ describe('the moods', () => {
     }
   });
 
+  it('moves a little every step of every passage — no two moments the same sky', () => {
+    const passages: SkyPassage[] = ['night', 'dawn', 'day', 'sunset', 'dusk'];
+    for (const passage of passages) {
+      let prev = skyMoodFor(passage, 0);
+      for (let t = 0.02; t <= 1.0001; t += 0.02) {
+        const mood = skyMoodFor(passage, t);
+        const moved = (['heroTop', 'heroMid', 'bg', 'bodyLight'] as const).some(k => mood[k] !== prev[k]);
+        expect(moved).toBe(true);
+        prev = mood;
+      }
+    }
+    // The sun and the moon and the stars take the hour's light.
+    const real = { passage: 'day', t: 0.5, top: '#000000', bottom: '#000000', glow: '#ffffff', stars: 0, body: { kind: 'sun', x: 0.5, y: 0.1, alpha: 1, light: '#FFFFFF', halo: 0.2 } } as const;
+    const themed = themedSkyFrame(real, SKY_MOODS.midday);
+    expect(themed.body.kind === 'sun' && themed.body.light).toBe(SKY_MOODS.midday.bodyLight);
+    expect(themed.body.kind === 'sun' && themed.body.halo).toBeGreaterThan(0.2);
+    expect(themed.glow).toBe(SKY_MOODS.midday.starGlow);
+  });
+
   it('is the night at night, the dawn before sunrise, the midday after, gold and then the evening before Maghrib, the night again after Isha', () => {
     expect(skyMoodFor('night', 0.3).name).toBe('night');
     expect(skyMoodFor('dawn', 0.9).name).toBe('dawn');
@@ -97,7 +116,7 @@ describe('the palette', () => {
   it.each(Object.entries(SKIES))('is the mood of the hour under a %s sky', (_name, sky) => {
     for (const pureBlack of [false, true]) {
       const p = skyPalette(sky, pureBlack);
-      const mood = skyMoodFor(sky.passage, sky.t);
+      const mood = skyMoodFor(sky.passage, sky.t, PALETTE_STEPS);
       expect(p.isDark).toBe(mood.isDark);
       expect(p.accentSolid).toBe(mood.accent);
       expect(p.textSolid).toBe(mood.text);
@@ -121,7 +140,7 @@ describe('the palette', () => {
     expect(at(SKIES.day, 'dark').isDark).toBe(false);
     expect(at(SKIES.night, 'light').isDark).toBe(true);
     // System colours and the colour theme have nothing to say under it.
-    expect(at(SKIES.day, 'light').accentSolid).toBe(SKY_MOODS.midday.accent);
+    expect(at(SKIES.day, 'light').accentSolid.toLowerCase()).toBe(SKY_MOODS.midday.accent.toLowerCase());
     // The mushaf's chrome asks for a polarity: a light mood asked for dark
     // gives the night; a dark one asked for light gives the midday.
     const forDark = resolveThemePaletteForMode(

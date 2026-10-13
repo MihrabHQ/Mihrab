@@ -27,7 +27,7 @@
 import { useSyncExternalStore } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { SkyPassage } from '../screens/home/skyModel';
-import { skyMoodFor, type SkyMood } from './skyMoods';
+import { PALETTE_STEPS, skyMoodFor, type SkyMood } from './skyMoods';
 
 export type SkyThemeColors = {
   /** The gradient's top colour, #RRGGBB. */
@@ -75,8 +75,8 @@ function valid(v: unknown): v is SkyThemeColors {
  */
 function same(a: SkyThemeColors, b: SkyThemeColors): boolean {
   if (a.passage !== b.passage) return false;
-  const ma = skyMoodFor(a.passage, a.t);
-  const mb = skyMoodFor(b.passage, b.t);
+  const ma = skyMoodFor(a.passage, a.t, PALETTE_STEPS);
+  const mb = skyMoodFor(b.passage, b.t, PALETTE_STEPS);
   return (Object.keys(ma) as (keyof SkyMood)[]).every(k => ma[k] === mb[k]);
 }
 

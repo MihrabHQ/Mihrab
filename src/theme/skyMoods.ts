@@ -35,6 +35,14 @@ export type SkyMood = {
   heroTop: string;
   heroMid: string;
   heroFoot: string;
+  /**
+   * The sun's or the moon's colour under this sky — its disc and its halo —
+   * and the stars'. The real sky lights them by altitude and phase; under
+   * the theme they are the hour's: a neon sunshine at dawn, white gold at
+   * midday, a tangerine at sunset, an icy moon and cyan stars at night.
+   */
+  bodyLight: string;
+  starGlow: string;
   bg: string;
   card: string;
   controlBg: string;
@@ -60,6 +68,8 @@ export const SKY_MOODS: Record<SkyMoodName, SkyMood> = {
     heroTop: '#0A0818',
     heroMid: '#2A1B55',
     heroFoot: '#130F26',
+    bodyLight: '#CFEFFF',
+    starGlow: '#9DE7FF',
     bg: '#130F26',
     card: '#1B1636',
     controlBg: '#261F49',
@@ -82,6 +92,8 @@ export const SKY_MOODS: Record<SkyMoodName, SkyMood> = {
     heroTop: '#140A33',
     heroMid: '#7A2E7E',
     heroFoot: '#1E1140',
+    bodyLight: '#FFD166',
+    starGlow: '#E9C8FF',
     bg: '#1E1140',
     card: '#2A1A57',
     controlBg: '#38276E',
@@ -104,6 +116,8 @@ export const SKY_MOODS: Record<SkyMoodName, SkyMood> = {
     heroTop: '#FF9A6E',
     heroMid: '#FFD7A8',
     heroFoot: '#FFF4E8',
+    bodyLight: '#FFC25C',
+    starGlow: '#FFFFFF',
     bg: '#FFF4E8',
     card: '#FFFDF9',
     controlBg: '#FFE8D4',
@@ -126,6 +140,8 @@ export const SKY_MOODS: Record<SkyMoodName, SkyMood> = {
     heroTop: '#3F9BF5',
     heroMid: '#A6D6FF',
     heroFoot: '#EAF6FF',
+    bodyLight: '#FFF3B0',
+    starGlow: '#FFFFFF',
     bg: '#EAF6FF',
     card: '#FFFFFF',
     controlBg: '#DBEDFF',
@@ -148,6 +164,8 @@ export const SKY_MOODS: Record<SkyMoodName, SkyMood> = {
     heroTop: '#F2903F',
     heroMid: '#FFCF9A',
     heroFoot: '#FFF0E0',
+    bodyLight: '#FFB03B',
+    starGlow: '#FFFFFF',
     bg: '#FFF0E0',
     card: '#FFFAF3',
     controlBg: '#FFE2C8',
@@ -170,6 +188,8 @@ export const SKY_MOODS: Record<SkyMoodName, SkyMood> = {
     heroTop: '#2B0A3D',
     heroMid: '#C2256F',
     heroFoot: '#24092F',
+    bodyLight: '#FF6A4D',
+    starGlow: '#FFC2E0',
     bg: '#24092F',
     card: '#331245',
     controlBg: '#441B5A',
@@ -188,27 +208,110 @@ export const SKY_MOODS: Record<SkyMoodName, SkyMood> = {
 };
 
 /**
- * Which mood, or which two and how far between them, this moment of the
- * sky is — see the top of the file for the switches.
+ * ── THE DAY, ANCHOR BY ANCHOR ────────────────────────────────────────
+ *
+ * Six moods would leave the app the same for hours — the whole night one
+ * indigo, three quarters of the day one ice. So between the moods are
+ * more anchors, each a variation on its mood (its ground a shade deeper
+ * or lighter, its glow drifting), and every passage of the day is a
+ * sequence of them mixed continuously: the night goes from a blue early
+ * night after Isha through its deepest at midnight to a violet before
+ * Fajr; the day from the morning's cream through the midday's ice to a
+ * warmer, higher afternoon; the evening deepens after the sun has gone.
+ * The colours move a little every minute, and no two minutes of the day
+ * are quite the same sky. A variation keeps its mood's name, its ink and
+ * its accent — it is the same hour, drifting — so the contrast floors
+ * the test walks hold along the whole way.
  */
+const vary = (base: SkyMood, over: Partial<SkyMood>): SkyMood => ({ ...base, ...over });
+const M = SKY_MOODS;
+const ANCHORS = {
+  /** After Isha: the night still blue from the day it came out of. */
+  nightEarly: vary(M.night, {
+    heroTop: '#0E0A26',
+    heroMid: '#2E2066',
+    heroFoot: '#15102C',
+    bg: '#15102C',
+    card: '#1E183B',
+    controlBg: '#29214F',
+    border: '#382F65',
+    accentSurface: '#191335',
+    bodyLight: '#D9CCFF',
+  }),
+  /** The deepest of the night. */
+  midnight: M.night,
+  /** Before Fajr: a violet creeping into the indigo. */
+  nightLate: vary(M.night, {
+    heroTop: '#0D0A28',
+    heroMid: '#3B1D63',
+    heroFoot: '#150F2B',
+    bg: '#150F2B',
+    card: '#1E1739',
+    accentSurface: '#1A1333',
+    bodyLight: '#E2D6FF',
+  }),
+  dawn: M.dawn,
+  /** The last of the dawn: the horizon's glow gone coral. */
+  dawnBright: vary(M.dawn, {
+    heroTop: '#1A0E42',
+    heroMid: '#B63C6B',
+    bodyLight: '#FFE08A',
+  }),
+  morning: M.morning,
+  midday: M.midday,
+  /** The afternoon: the same ice, a touch warmer and higher. */
+  afternoon: vary(M.midday, {
+    heroTop: '#5CA8F2',
+    heroMid: '#C2E1FF',
+    heroFoot: '#EDF5FC',
+    bg: '#EDF5FC',
+    bodyLight: '#FFE08A',
+  }),
+  golden: M.golden,
+  sunset: M.sunset,
+  /** The evening after the sun has gone: deeper, the magenta cooling. */
+  sunsetDeep: vary(M.sunset, {
+    heroTop: '#1E0734',
+    heroMid: '#9C1F6E',
+    heroFoot: '#1E0729',
+    bg: '#1E0729',
+    card: '#2C0F3C',
+    accentSurface: '#250B33',
+    bodyLight: '#FF7F9E',
+  }),
+};
+
+type Segment = { from: number; to: number; a: SkyMood; b: SkyMood };
+/** Each passage as segments of its progress, each a mix of two anchors. */
+const TIMELINE: Record<SkyPassage, Segment[]> = {
+  night: [
+    { from: 0, to: 0.5, a: ANCHORS.nightEarly, b: ANCHORS.midnight },
+    { from: 0.5, to: 1, a: ANCHORS.midnight, b: ANCHORS.nightLate },
+  ],
+  dawn: [
+    { from: 0, to: 0.35, a: ANCHORS.nightLate, b: ANCHORS.dawn },
+    { from: 0.35, to: 1, a: ANCHORS.dawn, b: ANCHORS.dawnBright },
+  ],
+  // Sunrise is the switch to light.
+  day: [
+    { from: 0, to: 0.3, a: ANCHORS.morning, b: ANCHORS.midday },
+    { from: 0.3, to: 1, a: ANCHORS.midday, b: ANCHORS.afternoon },
+  ],
+  // Halfway to Maghrib the evening switches on.
+  sunset: [
+    { from: 0, to: 0.5, a: ANCHORS.afternoon, b: ANCHORS.golden },
+    { from: 0.5, to: 1, a: ANCHORS.sunset, b: ANCHORS.sunsetDeep },
+  ],
+  dusk: [{ from: 0, to: 1, a: ANCHORS.sunsetDeep, b: ANCHORS.nightEarly }],
+};
+
+/** Which two anchors this moment of the sky is between, and how far. */
 export function skyMoodAt(passage: SkyPassage, t: number): { from: SkyMood; to: SkyMood; u: number } {
   const k = Math.max(0, Math.min(1, t));
-  const M = SKY_MOODS;
-  switch (passage) {
-    case 'night':
-      return { from: M.night, to: M.night, u: 0 };
-    case 'dawn':
-      // Out of the night into the dawn over its first third, then the dawn.
-      return k < 0.35 ? { from: M.night, to: M.dawn, u: k / 0.35 } : { from: M.dawn, to: M.dawn, u: 0 };
-    case 'day':
-      // Sunrise is the switch to light: the morning, warming into the midday.
-      return k < 0.25 ? { from: M.morning, to: M.midday, u: k / 0.25 } : { from: M.midday, to: M.midday, u: 0 };
-    case 'sunset':
-      // The afternoon turns gold; halfway to Maghrib the evening switches on.
-      return k < 0.5 ? { from: M.midday, to: M.golden, u: k / 0.5 } : { from: M.sunset, to: M.sunset, u: 0 };
-    case 'dusk':
-      return { from: M.sunset, to: M.night, u: k };
-  }
+  const segments = TIMELINE[passage];
+  const seg = segments.find(s => k < s.to) ?? segments[segments.length - 1];
+  const span = seg.to - seg.from || 1;
+  return { from: seg.a, to: seg.b, u: Math.max(0, Math.min(1, (k - seg.from) / span)) };
 }
 
 /** Two hexes mixed in OKLab — hue and lightness both travel straight. */
@@ -226,6 +329,8 @@ const MIXED: (keyof SkyMood)[] = [
   'heroTop',
   'heroMid',
   'heroFoot',
+  'bodyLight',
+  'starGlow',
   'bg',
   'card',
   'controlBg',
@@ -241,9 +346,18 @@ const MIXED: (keyof SkyMood)[] = [
   'danger',
 ];
 
-/** The mood of this moment, mixed; the overlay and the polarity are the nearer mood's. */
-export function skyMoodFor(passage: SkyPassage, t: number): SkyMood {
-  const { from, to, u } = skyMoodAt(passage, t);
+/**
+ * The mood of this moment, mixed; the overlay and the polarity are the
+ * nearer anchor's. `steps`: the mix in that many steps rather than
+ * continuous — the app's palette moves in steps (PALETTE_STEPS), since a
+ * change of palette re-renders every screen, while the hero's own sky,
+ * which is one view, moves every minute.
+ */
+export const PALETTE_STEPS = 16;
+export function skyMoodFor(passage: SkyPassage, t: number, steps?: number): SkyMood {
+  const at = skyMoodAt(passage, t);
+  const { from, to } = at;
+  const u = steps ? Math.round(at.u * steps) / steps : at.u;
   if (u <= 0 || from === to) return from;
   if (u >= 1) return to;
   const near = u < 0.5 ? from : to;

@@ -49,6 +49,7 @@ import {
   moonGlow,
   MOON_SURFACE,
   sunGlow,
+  SUN_GLOW_PEAK,
   SUN_SURFACE,
   tintedBy,
 } from './skyLight';
@@ -435,13 +436,32 @@ export function skyColorAt(frame: Pick<SkyFrame, 'top' | 'bottom' | 'mid' | 'mid
 /** Where the Sky theme's middle stop sits: the glow is low, near the horizon. */
 export const SKY_THEME_MID_AT = 0.62;
 
+/** How much harder a body glows under the theme: a neon, not a lamp. */
+const SKY_THEME_HALO = 1.35;
+
 /**
- * The frame, with its gradient repainted for the Sky theme (theme/skyMoods.ts):
- * the hour's colours, three stops, the foot on the page. The bodies, the
- * stars and the passage are the real sky's.
+ * The frame, repainted for the Sky theme (theme/skyMoods.ts): the hour's
+ * gradient, three stops, the foot on the page; the sun or the moon and
+ * the stars in the hour's own light, the halo a little stronger. Where
+ * the bodies are, their phase and their size are the real sky's.
  */
-export function themedSkyFrame(frame: SkyFrame, hero: { heroTop: string; heroMid: string; heroFoot: string }): SkyFrame {
-  return { ...frame, top: hero.heroTop, mid: hero.heroMid, midAt: SKY_THEME_MID_AT, bottom: hero.heroFoot };
+export function themedSkyFrame(
+  frame: SkyFrame,
+  hero: { heroTop: string; heroMid: string; heroFoot: string; bodyLight: string; starGlow: string },
+): SkyFrame {
+  const body: SkyBody =
+    frame.body.kind === 'none'
+      ? frame.body
+      : { ...frame.body, light: hero.bodyLight, halo: Math.min(SUN_GLOW_PEAK, frame.body.halo * SKY_THEME_HALO) };
+  return {
+    ...frame,
+    top: hero.heroTop,
+    mid: hero.heroMid,
+    midAt: SKY_THEME_MID_AT,
+    bottom: hero.heroFoot,
+    glow: hero.starGlow,
+    body,
+  };
 }
 
 /**

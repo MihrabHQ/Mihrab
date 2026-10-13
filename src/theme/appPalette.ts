@@ -8,7 +8,7 @@ import { getResolvedAccentHex } from '../native/SystemTheme';
 import { legibleAccent } from '../settings/accentColors';
 import { hexToOklch, oklchToHex } from './oklch';
 import { DEFAULT_SKY_THEME, type SkyThemeColors } from './skyTheme';
-import { SKY_MOODS, skyMoodFor } from './skyMoods';
+import { PALETTE_STEPS, SKY_MOODS, skyMoodFor } from './skyMoods';
 import type { AppAccentId, AppearancePreference } from '../settings/types';
 
 export type AppPalette = {
@@ -736,7 +736,7 @@ export function buildAppPalette(
  * asked for dark gives the night; a dark one asked for light, the midday.
  */
 export function skyPalette(sky: SkyThemeColors, pureBlackDark: boolean, wantDark?: boolean): AppPalette {
-  let mood = skyMoodFor(sky.passage, sky.t);
+  let mood = skyMoodFor(sky.passage, sky.t, PALETTE_STEPS);
   if (wantDark != null && mood.isDark !== wantDark) mood = wantDark ? SKY_MOODS.night : SKY_MOODS.midday;
   const oled = pureBlackDark && mood.isDark;
   return {
