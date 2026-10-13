@@ -177,9 +177,25 @@ describe('the readers', () => {
     expect(page).toMatch(/if \(!tap\.wasTap\(e\)\) return;/);
   });
 
+  it('frozen, the lines are not touch targets, so a hold on the words still brings the chrome', () => {
+    const page = read('src/quran/MushafTextPage.tsx');
+    expect(page).toMatch(/const inert = !onWordPress && !onWordLongPress;[\s\S]{0,200}pointerEvents=\{inert \? 'none' : 'auto'\}/);
+    // ...and the surface does not wrap an absent handler into a present one.
+    const surface = read('src/quran/MushafTextPageSurface.tsx');
+    expect(surface).toMatch(/onWordPress=\{onWordPress \? handleWordPress : undefined\}/);
+    expect(surface).toMatch(/onWordLongPress=\{onWordLongPress \? handleWordLongPress : undefined\}/);
+  });
+
   it('takes the back swipe with the page swipe, so a locked page stays', () => {
     const screen = read('src/screens/quran/MushafSurahScreen.tsx');
     expect(screen).toMatch(/const gestureEnabled = !isMacCatalyst && !quran\.prefs\.touchLock;/);
+  });
+
+  it('locks the rail too — the strip under the thumb', () => {
+    const rail = read('src/quran/MushafPageScrubber.tsx');
+    expect(rail).toMatch(/\{\.\.\.\(locked \? \{ onTouchStart: onLockedTouch \} : pan\.panHandlers\)\}/);
+    expect(rail).toMatch(/onPress=\{locked \? onLockedTouch : onOpenJump\}/);
+    expect(read('src/quran/MushafPhoneReader.tsx')).toMatch(/locked=\{locked\}\s*onLockedTouch=/);
   });
 
   it('explains itself the first time, once per device', () => {

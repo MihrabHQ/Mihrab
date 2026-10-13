@@ -255,8 +255,14 @@ function MushafTextPage({
   // The plates are set by their own rules — see `lineSpaceEm`.
   const framed = isFramedPage(page);
 
+  // No handlers at all — the reading lock's freeze (#75) — and the lines
+  // stop being touch targets, so a hold on the words reaches the page's
+  // own Pressable and brings the chrome back, as it does on the margins.
+  // Otherwise a line's Pressable would swallow the hold and do nothing.
+  const inert = !onWordPress && !onWordLongPress;
+
   const lines = (
-    <View style={[{ width }, style]}>
+    <View style={[{ width }, style]} pointerEvents={inert ? 'none' : 'auto'}>
       {layout.lines.map((line, index) => (
         <LineView
           key={index}

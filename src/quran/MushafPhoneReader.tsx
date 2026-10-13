@@ -1001,6 +1001,8 @@ export const MushafPhoneReader = React.memo(function MushafPhoneReader(
               : null
           }
           chrome={railChrome}
+          locked={locked}
+          onLockedTouch={() => showLockHint('touch')}
           trailing={
             <View style={styles.barButtons}>
               <MushafLockButton

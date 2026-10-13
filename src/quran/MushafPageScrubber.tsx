@@ -132,6 +132,15 @@ type Props = {
    * back to the app palette.
    */
   chrome?: ToneChrome;
+  /**
+   * The reading lock (#75): the rail is the one strip of chrome under the
+   * thumb that holds the phone, and a thumb that brushes it drags the
+   * whole muṣḥaf. Locked, the rail and the jump button do nothing but
+   * ask for the hint; the controls after the readout stay live — the lock
+   * itself is one of them.
+   */
+  locked?: boolean;
+  onLockedTouch?: () => void;
 };
 
 /** The touch target: the track sits in the middle of this. */
@@ -151,6 +160,8 @@ function MushafPageScrubberImpl({
   today = null,
   trailing,
   chrome,
+  locked = false,
+  onLockedTouch,
 }: Props) {
   const { t, i18n } = useTranslation();
   const totalPages = totalPagesForRiwayah(riwayah);
@@ -325,7 +336,7 @@ function MushafPageScrubberImpl({
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={t('quran.jumpToPage', 'Go to page')}
-          onPress={onOpenJump}
+          onPress={locked ? onLockedTouch : onOpenJump}
           hitSlop={10}
           style={[styles.jumpBtn, { backgroundColor: c.control }]}>
           <Text style={[styles.jumpGlyph, { color: c.accent }]}>
@@ -350,7 +361,9 @@ function MushafPageScrubberImpl({
         }}
         onLayout={onLayout}
         style={styles.railBox}
-        {...pan.panHandlers}>
+        // Locked: the rail is not a responder at all, so a brush of the
+        // thumb cannot drag the page; the touch says why instead.
+        {...(locked ? { onTouchStart: onLockedTouch } : pan.panHandlers)}>
         <View
           pointerEvents="none"
           style={[styles.track, { backgroundColor: c.control }]}>

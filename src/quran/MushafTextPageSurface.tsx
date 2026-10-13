@@ -416,8 +416,11 @@ function GlyphPageSurface({
       playing={playing}
       tint={tint}
       endInk={endInk}
-      onWordPress={handleWordPress}
-      onWordLongPress={handleWordLongPress}
+      // Absent stays absent (#75): the page only knows the words are
+      // inert if no handler reaches it, and a bound wrapper around nothing
+      // is still a handler.
+      onWordPress={onWordPress ? handleWordPress : undefined}
+      onWordLongPress={onWordLongPress ? handleWordLongPress : undefined}
       wordReader={wordReader}
     />
   );
@@ -540,8 +543,8 @@ function UnicodePageSurface({
       playing={playing}
       tint={tint}
       endInk={endInk}
-      onAyahPress={handlePress}
-      onAyahLongPress={handleLongPress}
+      onAyahPress={onWordPress ? handlePress : undefined}
+      onAyahLongPress={onWordLongPress ? handleLongPress : undefined}
     />
   );
 

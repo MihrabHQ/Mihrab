@@ -42,7 +42,7 @@ describe('the back swipe gets out of the page swipe’s way', () => {
   it('is off in the mushaf on the Mac', () => {
     // The muṣḥaf has its own screen now, so the guard is the platform
     // alone — there is no translation branch left in here to exclude.
-    expect(screen).toMatch(/const gestureEnabled = !isMacCatalyst;/);
+    expect(screen).toMatch(/const gestureEnabled = !isMacCatalyst && !quran\.prefs\.touchLock;/);
   });
 
   it('and set on both the windowed and the fullscreen reader', () => {

@@ -771,6 +771,7 @@ export const MushafSpreadReader = React.memo(function MushafSpreadReader(
           onPeekPage={core.peekPage}
           onOpenJump={core.openJump}
           chrome={railChrome}
+          locked={locked}
         />
       ) : null}
       </View>
