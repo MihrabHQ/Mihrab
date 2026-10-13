@@ -168,6 +168,8 @@
     "themeSystem": "Sistem",
     "themeLight": "Işık",
     "themeDark": "Karanlık",
+    "themeSky": "Gökyüzü",
+    "themeSkyHelp": "Gökyüzü, uygulamayı geri sayımın üzerindeki gökyüzünün renklerine boyar (gece, şafak, gündüz ve alacakaranlık) ve cihazınız açık ya da koyu modda olsun bu tek görünümü korur.",
     "themeHelp": "Sistem, cihazınızın açık veya karanlık moduyla eşleşir. Uygulamadaki platform paletini kullanmak için Sistem renklerini açın (Android'de Material You dahil). Düğmeler ve vurgular telefonunuzun ana rengini takip eder, böylece dinamik renk mevcut olduğunda uygulama duvar kağıdınızla eşleşir.",
     "clockFormat": "Saat biçimi",
     "clockFormatAuto": "Otomatik",

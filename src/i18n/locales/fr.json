@@ -168,6 +168,8 @@
     "themeSystem": "Système",
     "themeLight": "Lumière",
     "themeDark": "Sombre",
+    "themeSky": "Ciel",
+    "themeSkyHelp": "Ciel peint l'app aux couleurs du ciel au-dessus du compte à rebours – nuit, aube, jour et crépuscule – et garde cette apparence unique, que votre appareil soit en mode clair ou sombre.",
     "themeHelp": "Le système correspond au mode clair ou sombre de votre appareil. Activez les couleurs système pour utiliser la palette de plate-forme dans l'application (y compris Material You sur Android). Les boutons et les accents suivent la couleur principale de votre téléphone afin que l'application corresponde à votre fond d'écran lorsque la couleur dynamique est disponible.",
     "clockFormat": "Format de l'heure",
     "clockFormatAuto": "Automatique",

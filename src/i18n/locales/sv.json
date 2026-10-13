@@ -168,6 +168,8 @@
     "themeSystem": "System",
     "themeLight": "Ljust",
     "themeDark": "Mörkt",
+    "themeSky": "Himmel",
+    "themeSkyHelp": "Himmel målar appen i färgerna hos himlen ovanför nedräkningen – natt, gryning, dag och skymning – och behåller det utseendet oavsett om enheten är i ljust eller mörkt läge.",
     "themeHelp": "System följer enhetens ljust eller mörkt läge. Slå på Systemfärger för plattformspalett i appen (inkl. Material You på Android). Knappar och accenter följer enhetens primärfärg så appen matchar bakgrunden när dynamisk färg finns.",
     "clockFormat": "Tidsformat",
     "clockFormatAuto": "Automatiskt",

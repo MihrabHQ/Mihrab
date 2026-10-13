@@ -7,6 +7,7 @@ import {
   resolveEffectiveDark,
   type AppPalette,
 } from '../theme/appPalette';
+import { useSkyTheme } from '../theme/skyTheme';
 
 export type { AppPalette };
 
@@ -57,6 +58,8 @@ export function useAppPalette(): {
     () => resolveEffectiveDark(settings.appearance, systemScheme),
     [settings.appearance, systemScheme],
   );
+  // The hero's sky, only under the Sky theme (theme/skyTheme.ts).
+  const sky = useSkyTheme(settings.appearance === 'sky');
 
   const palette = useMemo(
     () =>
@@ -68,6 +71,7 @@ export function useAppPalette(): {
         appAccentId: settings.appAccentId,
         appAccentCustomHex: settings.appAccentCustomHex,
         tintedSurfaces: settings.tintedSurfaces,
+        sky,
       }),
     // `bump` is included so a manual Appearance event re-runs this even
     // when systemScheme appears unchanged from React's perspective.
@@ -80,6 +84,7 @@ export function useAppPalette(): {
       settings.appAccentCustomHex,
       settings.tintedSurfaces,
       systemScheme,
+      sky,
       bump,
     ],
   );

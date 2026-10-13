@@ -22,6 +22,7 @@ import {
   resolveAppPalette,
   resolveEffectiveDark,
 } from './theme/appPalette';
+import { restoreSkyTheme, useSkyTheme } from './theme/skyTheme';
 import { buildNavigationTheme } from './theme/navigationTheme';
 import { useSyncWidgetUiHints } from './widget/syncWidgetUiHints';
 import { onWidgetQueueChanged } from './native/WidgetQueueWatcher';
@@ -453,14 +454,20 @@ export function AppNavigationRoot() {
     // RN's detected scheme can disagree, leaving a dark chip on a light
     // app (reported 2026-07-16). Freezing the override to the resolved
     // value keeps every native surface in step with the app theme.
+    // The Sky theme is one look, built on the night: dark chrome.
     Appearance.setColorScheme(
-      settings.appearance === 'system'
+      settings.appearance === 'system' || settings.appearance === 'sky'
         ? isDark
           ? 'dark'
           : 'light'
         : settings.appearance,
     );
   }, [settings.appearance, isDark]);
+  const sky = useSkyTheme(settings.appearance === 'sky');
+  // The last sky from disk, for the moment before the hero has the day's.
+  useEffect(() => {
+    if (settings.appearance === 'sky') void restoreSkyTheme();
+  }, [settings.appearance]);
 
   const palette = useMemo(
     () =>
@@ -476,6 +483,7 @@ export function AppNavigationRoot() {
         // then paints a warm band under three-button nav (measured
         // #FAF7F2 under #D0E1CE content on the Pixel).
         tintedSurfaces: settings.tintedSurfaces,
+        sky,
       }),
     [
       settings.appearance,
@@ -485,6 +493,7 @@ export function AppNavigationRoot() {
       settings.appAccentCustomHex,
       settings.tintedSurfaces,
       systemScheme,
+      sky,
     ],
   );
 

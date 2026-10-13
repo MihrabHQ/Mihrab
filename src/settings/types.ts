@@ -20,7 +20,12 @@ export type PrayerDataProviderId =
   | 'marw'
   | 'local_adhan';
 
-export type AppearancePreference = 'system' | 'light' | 'dark';
+/**
+ * Which look the app is drawn in: the system's light or dark, one of them
+ * pinned, or 'sky' — one look through light and dark, painted in the
+ * colours of the hero's sky as it is now (theme/skyTheme.ts).
+ */
+export type AppearancePreference = 'system' | 'light' | 'dark' | 'sky';
 
 export type AppLanguage = 'en' | 'sv' | 'ar' | 'bn' | 'ur' | 'hi' | 'fr' | 'es' | 'de' | 'tr' | 'id' | 'ru' | 'zh';
 

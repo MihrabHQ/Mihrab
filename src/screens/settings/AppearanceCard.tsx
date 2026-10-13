@@ -120,12 +120,16 @@ function AppearanceCardImpl() {
     settings.useSystemDynamicTheme &&
     (Platform.OS === 'android' || Platform.OS === 'ios');
   const verdantActive = settings.tintedSurfaces && !dynamicColorsActive;
+  // The Sky theme owns the palette: one look painted from the hero's sky
+  // (theme/skyTheme.ts). The colour theme and system colours have nothing
+  // to decide under it, so they step aside; Pure black still has.
+  const skyActive = settings.appearance === 'sky';
 
   return (
     <>
       <SettingsGroup
         title={t('settings.appearance')}
-        footer={t('settings.themeHelp')}
+        footer={skyActive ? t('settings.themeSkyHelp') : t('settings.themeHelp')}
       >
         <SettingsBlock>
           <Text style={[s.label, { color: palette.muted }]}>
@@ -137,6 +141,7 @@ function AppearanceCardImpl() {
               { key: 'system', label: t('settings.themeSystem') },
               { key: 'light', label: t('settings.themeLight') },
               { key: 'dark', label: t('settings.themeDark') },
+              { key: 'sky', label: t('settings.themeSky') },
             ]}
             value={settings.appearance}
             onChange={appearance => updateSettings({ appearance })}
@@ -148,7 +153,7 @@ function AppearanceCardImpl() {
             (light stays classic). Custom colours are an accent only, since
             free-form washes are barred from the surfaces. Hidden under
             system colours, which own the palette. */}
-        {!dynamicColorsActive && (
+        {!dynamicColorsActive && !skyActive && (
           <SettingsBlock>
             <Text style={[s.label, { color: palette.muted }]}>
               {t('settings.colourTheme', 'Colour theme')}
@@ -175,7 +180,7 @@ function AppearanceCardImpl() {
             </Text>
           </SettingsBlock>
         )}
-        {Platform.OS === 'android' || Platform.OS === 'ios' ? (
+        {!skyActive && (Platform.OS === 'android' || Platform.OS === 'ios') ? (
           <SettingsToggleRow
             title={
               Platform.OS === 'ios'

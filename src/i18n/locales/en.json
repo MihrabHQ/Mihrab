@@ -168,6 +168,8 @@
     "themeSystem": "System",
     "themeLight": "Light",
     "themeDark": "Dark",
+    "themeSky": "Sky",
+    "themeSkyHelp": "Sky paints the app in the colours of the sky over the countdown — night, dawn, day and dusk — and keeps that one look whether your device is in light or dark mode.",
     "themeHelp": "System matches your device light or dark mode. Turn on System colors to use the platform palette in the app (including Material You on Android). Buttons and accents follow your phone’s primary color so the app matches your wallpaper when dynamic color is available.",
     "clockFormat": "Time format",
     "clockFormatAuto": "Automatic",

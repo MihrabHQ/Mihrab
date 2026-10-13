@@ -168,6 +168,8 @@
     "themeSystem": "Sistem",
     "themeLight": "Lampu",
     "themeDark": "Gelap",
+    "themeSky": "Langit",
+    "themeSkyHelp": "Langit mewarnai aplikasi dengan warna langit di atas hitung mundur — malam, fajar, siang, dan senja — dan mempertahankan satu tampilan itu baik perangkat Anda dalam mode terang maupun gelap.",
     "themeHelp": "Sistem mencocokkan mode terang atau gelap perangkat Anda. Aktifkan warna Sistem untuk menggunakan palet platform di aplikasi (termasuk Material You di Android). Tombol dan aksen mengikuti warna utama ponsel Anda sehingga aplikasi cocok dengan wallpaper Anda saat warna dinamis tersedia.",
     "clockFormat": "Format waktu",
     "clockFormatAuto": "Otomatis",

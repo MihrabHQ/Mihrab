@@ -12,6 +12,7 @@
 import { useMemo } from 'react';
 import { useAppearanceSettings } from '../context/PrayerSettingsContext';
 import { resolveThemePaletteForMode, type AppPalette } from '../theme/appPalette';
+import { useSkyTheme } from '../theme/skyTheme';
 import { scrubberChrome, toneIsDark, type MushafTone, type ToneChrome } from './mushafTone';
 
 /** The selected theme, rendered for this page's mode. */
@@ -25,6 +26,7 @@ export function usePagePalette(tone: MushafTone): AppPalette {
     appAccentCustomHex,
     tintedSurfaces,
   } = slice;
+  const sky = useSkyTheme(appearance === 'sky');
   return useMemo(
     () =>
       resolveThemePaletteForMode(
@@ -39,10 +41,12 @@ export function usePagePalette(tone: MushafTone): AppPalette {
           appAccentId,
           appAccentCustomHex,
           tintedSurfaces,
+          sky,
         },
         toneIsDark(tone),
       ),
     [
+      sky,
       tone,
       appearance,
       useSystemDynamicTheme,

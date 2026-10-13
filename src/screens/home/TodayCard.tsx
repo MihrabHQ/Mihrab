@@ -95,6 +95,7 @@ import { LogPassedPrayerSheet } from './LogPassedPrayerSheet';
 import { HeroSky, type SkyRun } from './HeroSky';
 import { HERO_Y, skyFrame, skyInkAt, skyMoment, type SkyInkColors } from './skyModel';
 import { setHeroSkyBand } from './heroSkyBand';
+import { publishSkyTheme } from '../../theme/skyTheme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { QiblaChip } from './QiblaChip';
 import { HelpMihrabChip } from './HelpMihrabChip';
@@ -617,6 +618,23 @@ const HeroToday = memo(function HeroToday({
     if (!fill || !(skyH > 0)) return;
     return setHeroSkyBand({ top: frame.top, bottom: frame.bottom, skyH });
   }, [fill, frame.top, frame.bottom, skyH]);
+  /**
+   * The sky as it is NOW, for the app's Sky theme (theme/skyTheme.ts) —
+   * not the launch run's sweep: the chrome takes the colours the run is
+   * heading for, in one change, while the hero runs there. The twin, posed
+   * at the prayer, says nothing.
+   */
+  const liveMinuteKey = Math.floor(now.getTime() / 60_000);
+  const running = launchRun != null;
+  const liveSky = useMemo(() => {
+    if (!running) return frame;
+    const at = new Date(liveMinuteKey * 60_000);
+    return skyFrame(skyMoment(skyToday ?? today, at, tomorrowFajr), at, { latitude, longitude });
+  }, [running, frame, liveMinuteKey, skyToday, today, tomorrowFajr, latitude, longitude]);
+  useEffect(() => {
+    if (posed) return;
+    publishSkyTheme({ top: liveSky.top, bottom: liveSky.bottom });
+  }, [posed, liveSky.top, liveSky.bottom]);
 
   // Memoised on the sky's step and the measured heights: the top row and
   // the eyebrow below are memoised on their ink, and the launch run
