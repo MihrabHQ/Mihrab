@@ -82,7 +82,10 @@ folder("branding/store-previews-ipad", (2064, 2752), count=(3, 10), exts=(".png"
 folder("fastlane/screenshots/ipad/13", (2064, 2752), count=(3, 10), exts=(".jpg",))
 
 # ---- Play ----
-folder("branding/play-previews", (1080, 2160), count=(2, 8), exts=(".png",))
+# Play's console takes at most 8 phone screenshots; the set holds 10 since
+# the Sky home and the full-screen alert joined it (2.31), and the eight
+# to upload are picked by hand at upload time. F-Droid shows all ten.
+folder("branding/play-previews", (1080, 2160), count=(2, 10), exts=(".png",))
 play_ratio("branding/play-previews", 2.0)
 folder("branding/play-previews-tablet", (2560, 1440), count=(4, 8), exts=(".png",))
 exact_ratio("branding/play-previews-tablet", 16 / 9)
@@ -109,7 +112,7 @@ for rel, size, mode in (
 # composed panel to F-Droid (its listing had a page of bare captures next to
 # the panels it had inherited, and read as two apps). Names in these folders
 # must stay stable — see the note in build_store.py.
-folder("fastlane/metadata/android/en-US/images/phoneScreenshots", (1080, 2160), count=(2, 8), exts=(".png",))
+folder("fastlane/metadata/android/en-US/images/phoneScreenshots", (1080, 2160), count=(2, 10), exts=(".png",))
 folder("fastlane/metadata/android/en-US/images/tenInchScreenshots", (2560, 1440), count=(2, 8), exts=(".png",))
 
 if problems:

@@ -82,6 +82,14 @@ CAPTIONS = {
         "Facing\\nthe Ka'bah",
         "A live bearing from your phone's own sensors",
     ),
+    "sky": (
+        "A home that keeps\\nthe sky's time",
+        "The Sky theme: sun, dusk and night drawn from your own prayer times",
+    ),
+    "alert": (
+        "Rings like\\nan alarm",
+        "A full-screen alert for each prayer, even on silent, with Stop and Snooze",
+    ),
 }
 
 # The tablet panels are landscape, and their text is a column beside the
@@ -89,6 +97,7 @@ CAPTIONS = {
 # break moves; the words are the same.
 LANDSCAPE_HEADLINES = {
     "home": "For every prayer,\\nand everything\\nbetween",
+    "sky": "A home that\\nkeeps the\\nsky's time",
 }
 
 
@@ -106,9 +115,16 @@ def caption(screen, landscape):
 # overwrites files F-Droid already holds rather than adding duplicates
 # beside them. The names no longer describe the picture — F-Droid shows
 # them in file-name order and never shows the name.
+#
+# F-Droid orders them by file NAME, as strings: a tenth panel named
+# "10_alert" would sort before "1_home" and open the listing. So the
+# tenth is "9a_alert" — after "9_sky" ('_' < 'a'), and nothing else moves.
 FDROID_SLOTS = {
-    "phoneScreenshots": ["1_home", "2_mushaf", "3_month", "4_duas", "5_tasbih", "6_journal", "7_qibla"],
-    "tenInchScreenshots": ["1_home", "2_spread", "3_month", "4_duas", "5_journal"],
+    "phoneScreenshots": [
+        "1_home", "2_mushaf", "3_month", "4_duas", "5_tasbih", "6_journal", "7_qibla",
+        "8_qibla", "9_sky", "9a_alert",
+    ],
+    "tenInchScreenshots": ["1_home", "2_spread", "3_month", "4_duas", "5_journal", "6_month", "7_sky"],
 }
 
 SETS = [
