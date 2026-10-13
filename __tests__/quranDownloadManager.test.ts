@@ -116,6 +116,14 @@ beforeEach(async () => {
   resetQuranDownloadState();
 });
 
+// The last test leaves a run going, and a run arms a six-minute stall
+// watchdog: a real timer that kept Jest alive after the suite and fired
+// into a torn-down environment — CI failed 2.31.0's commit on it with
+// every test passing.
+afterAll(() => {
+  resetQuranDownloadState();
+});
+
 /** Let the `.then` on the handle's promise, and its writes, settle. */
 async function settle(): Promise<void> {
   for (let i = 0; i < 6; i++) await Promise.resolve();

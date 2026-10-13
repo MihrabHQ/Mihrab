@@ -56,6 +56,10 @@ describe('the picture\'s numbers', () => {
   });
 
   it('are read again for a new window of the same process', () => {
+    // markFirstPaint schedules the picture's fade on animation frames —
+    // real ones outlived the test and fired into a torn-down environment,
+    // which turned CI red on 2.31.0's commit with every test passing.
+    jest.useFakeTimers();
     const m = require('../src/native/LaunchSnapshot');
     const fp = require('../src/boot/firstPaint');
     const { beginLaunchWindow } = require('../src/boot/launchWarp');
@@ -82,6 +86,8 @@ describe('the picture\'s numbers', () => {
     mockState.value = '';
     beginLaunchWindow();
     expect(claimLaunchWarp()).toBeNull();
+    jest.clearAllTimers();
+    jest.useRealTimers();
   });
 });
 
