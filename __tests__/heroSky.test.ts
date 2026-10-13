@@ -16,7 +16,7 @@ import {
   skyMoment,
   type SkyPassage,
 } from '../src/screens/home/skyModel';
-import { moonShadowPath } from '../src/screens/home/HeroSky';
+import { glowCy, moonShadowPath, skyScene } from '../src/screens/home/HeroSky';
 import { moonIllumination, moonPhaseFraction } from '../src/screens/home/moon';
 
 const read = (p: string) => readFileSync(join(__dirname, '..', p), 'utf8');
@@ -263,5 +263,29 @@ describe('the sun', () => {
     expect(f('dawn', 0.25).stars).toBeCloseTo(0.5, 5);
     expect(f('dawn', 0.6).stars).toBe(0);
     expect(f('day', 0.5).stars).toBe(0);
+  });
+});
+
+describe("the sun's glow", () => {
+  // The glow is a radial gradient in objectBoundingBox units, where a bare
+  // number is a FRACTION of the box: the dp a banded phone sky gives put
+  // the halo eighty skies below the card, and the phone's sun shone only
+  // during the launch run's native layers.
+  it('is centred on the body as a percentage of the sky, banded or not', () => {
+    const height = 420;
+    const scene = skyScene({ height, sceneTop: 96, sceneBottom: 180 });
+    expect(scene.banded).toBe(true);
+    const dp = scene.y(0.08);
+    expect(glowCy(dp, height)).toBe(`${(dp / height) * 100}%`);
+    const pct = parseFloat(glowCy(dp, height));
+    expect(pct).toBeGreaterThan(0);
+    expect(pct).toBeLessThan(100);
+    expect(glowCy('26%', height)).toBe('26%');
+    expect(glowCy(50, 0)).toBe('0%');
+  });
+
+  it('never hands the gradient a raw scene position', () => {
+    expect(read('src/screens/home/HeroSky.tsx')).not.toMatch(/cy=\{sceneY\(bodyXY\.y\)\}/);
+    expect(read('src/screens/home/HeroSky.tsx')).toMatch(/cy=\{glowCy\(sceneY\(bodyXY\.y\), height\)\}/);
   });
 });

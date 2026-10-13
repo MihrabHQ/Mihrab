@@ -231,7 +231,14 @@ function HeroSkyImpl({
             <RadialGradient
               id="glow"
               cx={`${bodyXY.x * 100}%`}
-              cy={sceneY(bodyXY.y)}
+              // A PERCENTAGE, always. The gradient is in the box's own
+              // units (objectBoundingBox, the default), where a bare
+              // number is a fraction of the height: the dp a banded sky
+              // gives (`sceneY` on the phone) put the halo's centre some
+              // eighty skies below the card, and the phone's sun shone
+              // only for the launch run's native layers, which place it
+              // in dp. The tablet, unbanded, always had its percentage.
+              cy={glowCy(sceneY(bodyXY.y), height)}
               // The halo grows with the light, not just brightens: a new
               // moon has almost none, a full one a soft ring, the noon
               // sun a wide wash. A fixed radius at varying opacity reads
@@ -517,6 +524,16 @@ const SkyRunLayers = memo(SkyRunLayersImpl);
 
 function sceneYOf(scene: Scene, fraction: number): number | `${number}%` {
   return scene.banded && scene.room > 0 ? scene.y(fraction) : `${fraction * 100}%`;
+}
+
+/**
+ * A body's height for the glow's radial gradient, which is in
+ * objectBoundingBox units: dp from the sky's top become a percentage of
+ * the sky's height. A percentage passes through as it is.
+ */
+export function glowCy(y: number | `${number}%`, height: number): `${number}%` {
+  if (typeof y !== 'number') return y;
+  return `${height > 0 ? (y / height) * 100 : 0}%`;
 }
 
 // A fixed, sparse field in the top strip: the same stars every night, so
