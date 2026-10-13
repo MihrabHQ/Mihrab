@@ -9,7 +9,7 @@
 import { readFileSync } from 'fs';
 import path from 'path';
 import {
-  touchLockActive,
+  readingLock,
   volumeKeyDirection,
   volumeKeysShouldTurnPages,
 } from '../src/quran/useVolumeKeyPaging';
@@ -50,21 +50,19 @@ describe('which way a button turns (#72)', () => {
   });
 });
 
-describe('the touch lock (#72)', () => {
-  it('holds only while the buttons turn pages', () => {
-    expect(touchLockActive({ paging: true, lock: true, available: true })).toBe(true);
-    // Never a page nothing can turn:
-    expect(touchLockActive({ paging: false, lock: true, available: true })).toBe(false);
-    expect(touchLockActive({ paging: true, lock: true, available: false })).toBe(false);
-    expect(touchLockActive({ paging: true, lock: false, available: true })).toBe(false);
+describe('the reading lock and the buttons (#72, #75)', () => {
+  it('the buttons turn a locked page where they are on', () => {
+    expect(readingLock({ lock: true, freeze: false, paging: true, available: true }).buttonsTurn).toBe(true);
+    expect(readingLock({ lock: true, freeze: false, paging: false, available: true }).buttonsTurn).toBe(false);
+    expect(readingLock({ lock: true, freeze: false, paging: true, available: false }).buttonsTurn).toBe(false);
+    expect(readingLock({ lock: false, freeze: false, paging: true, available: true }).buttonsTurn).toBe(false);
   });
 
-  it('stops the swipe and the taps, and a hold brings the controls', () => {
+  it('stops the swipe and the tap, and a hold brings the controls', () => {
     const phone = readFileSync(path.join(__dirname, '..', 'src/quran/MushafPhoneReader.tsx'), 'utf8');
     expect(phone).toMatch(/scrollEnabled=\{!locked\}/);
     expect(phone).toMatch(/const onTap = locked \? undefined : onToggleFullscreen;/);
     expect(phone).toMatch(/const onHold = locked \? onToggleFullscreen : undefined;/);
-    expect(phone).toMatch(/onWordPress=\{locked \? undefined : onWordPress\}/);
     // And says so when touched, rather than look broken.
     expect(phone).toMatch(/if \(locked\) showLockHint\(\);/);
   });
@@ -85,16 +83,16 @@ describe('the setting', () => {
     expect(card).toMatch(/volumeKeysAvailable\s*\?/);
   });
 
-  it('offers the direction and the lock only with the buttons on (#72)', () => {
+  it('offers the direction only with the buttons on (#72)', () => {
     const card = read('src/screens/settings/QuranCard.tsx');
     expect(card).toMatch(
-      /\{quran\.prefs\.volumeKeyPaging \? \([\s\S]{0,400}settings-volume-keys-up-forward[\s\S]{0,800}settings-volume-keys-touch-lock/,
+      /\{quran\.prefs\.volumeKeyPaging \? \([\s\S]{0,400}settings-volume-keys-up-forward/,
     );
   });
 
   it('keeps up-for-forward for anyone who had the buttons on before #72', () => {
     const state = read('src/quran/quranState.ts');
-    expect(state).toMatch(/volumeKeyUpForward: false,\s*\n\s*volumeKeyTouchLock: false,/);
+    expect(state).toMatch(/volumeKeyUpForward: false,\s*\n\s*touchLock: false,/);
     expect(state).toMatch(
       /if \(typeof p\?\.volumeKeyUpForward === 'boolean'\) return p\.volumeKeyUpForward;\s*return p\?\.volumeKeyPaging === true;/,
     );

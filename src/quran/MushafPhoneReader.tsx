@@ -67,6 +67,7 @@ import {
   MushafPageFooter,
   MushafPageHeader,
   MushafFullscreenButton,
+  MushafLockButton,
   useMushafReaderCore,
   type AyahMarkProps,
   type KhatmahFinish,
@@ -76,7 +77,9 @@ import { AyahActionSheet } from './mushaf/AyahActionSheet';
 import { MushafPageScrubber } from './MushafPageScrubber';
 import { MiniPlayer } from './audio/MiniPlayer';
 import { ActiveWordProbe } from './audio/ActiveWordProbe';
-import { touchLockActive, useVolumeKeyPaging } from './useVolumeKeyPaging';
+import { readingLock, useVolumeKeyPaging } from './useVolumeKeyPaging';
+import { setQuranPrefs } from './quranState';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { volumeKeysAvailable } from '../native/volumeKeys';
 import { useTranslation } from 'react-i18next';
 import { useRegisterKeyPaging } from './useKeyPaging';
@@ -160,6 +163,10 @@ const PAGE_HEADER_CONTENT_H = 21;
 const LOCKED_HOLD_MS = 600;
 /** How long the "touch is locked" note stays after a touch. */
 const LOCK_HINT_MS = 2200;
+/** The first time the lock goes on, its note stays long enough to read. */
+const LOCK_EXPLAIN_MS = 6000;
+/** Written once the first-lock note has been shown (#75). */
+export const LOCK_EXPLAINED_KEY = 'mihrab.quran.touchLockExplained.v1';
 
 const WINDOW_OPENING = 1;
 const WINDOW_READING = 5;
@@ -198,11 +205,15 @@ type PageItemProps = {
   onWordPress: (ref: AyahRef, page: number) => void;
   onOpenJump: () => void;
   /**
-   * Touch locked (#72): the volume buttons turn the page, and the page
-   * ignores taps — a grip on the phone brushes it. A press and hold shows
-   * or hides the controls, which is the one thing the page still answers.
+   * The reading lock (#72, #75): the page ignores swipes and taps — a grip
+   * on the phone brushes it. A press and hold shows or hides the controls,
+   * which the page always answers; a tap on a word still opens its āyah
+   * unless `wordsLive` is off (the freeze).
    */
   locked: boolean;
+  wordsLive: boolean;
+  /** The badge in the fullscreen band, while locked (#75). */
+  lock: { onUnlock: () => void; onHint: () => void; ground: string } | null;
 };
 
 const PhonePageItem = React.memo(function PhonePageItem({
@@ -226,6 +237,8 @@ const PhonePageItem = React.memo(function PhonePageItem({
   onWordPress,
   onOpenJump,
   locked,
+  wordsLive,
+  lock,
 }: PageItemProps) {
   // Locked: no tap does anything; a deliberate hold toggles the chrome.
   const onTap = locked ? undefined : onToggleFullscreen;
@@ -353,6 +366,7 @@ const PhonePageItem = React.memo(function PhonePageItem({
             // page is named — and the tap that used to open the jump
             // sheet from the rail's readout opens it from here.
             onPageNumberPress={onOpenJump}
+            lock={lock}
             // The phone is the one with a cutout in the middle of the
             // band. Where its position is known the cap above is exact;
             // where it is not, `island` asks for the centred one's share.
@@ -391,8 +405,8 @@ const PhonePageItem = React.memo(function PhonePageItem({
               // lives — see the same line in MushafSpreadReader for why
               // this changed, and for why it is the handler itself and not
               // an arrow around it.
-              onWordPress={locked ? undefined : onWordPress}
-              onWordLongPress={locked ? undefined : onWordPress}
+              onWordPress={wordsLive ? onWordPress : undefined}
+              onWordLongPress={wordsLive ? onWordPress : undefined}
             />
           </Pressable>
           {/* THE MEDALLION IS GONE FROM THE PHONE.
@@ -676,20 +690,26 @@ export const MushafPhoneReader = React.memo(function MushafPhoneReader(
     turnPage,
     core.quran.prefs.volumeKeyUpForward,
   );
-  // The page ignores touch while the buttons turn it, when asked (#72).
-  // Only with the buttons actually taken: a lock with no other way to turn
-  // the page would be a page that cannot be turned.
-  const locked = touchLockActive({
+  // The reading lock (#72, #75): the page ignores swipes and taps when
+  // asked, on every platform; the words stay live unless frozen; and the
+  // volume buttons, where they are on, still turn the locked page.
+  const lock = readingLock({
+    lock: core.quran.prefs.touchLock,
+    freeze: core.quran.prefs.touchLockFreeze,
     paging: core.quran.prefs.volumeKeyPaging,
-    lock: core.quran.prefs.volumeKeyTouchLock,
     available: volumeKeysAvailable,
   });
-  const [lockHint, setLockHint] = useState(false);
+  const locked = lock.locked;
+  const wordsLive = lock.wordsLive;
+  const [lockHint, setLockHint] = useState<'touch' | 'explain' | null>(null);
   const lockHintTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const showLockHint = useCallback(() => {
+  const showLockHint = useCallback((kind: 'touch' | 'explain' = 'touch') => {
     if (lockHintTimer.current) clearTimeout(lockHintTimer.current);
-    setLockHint(true);
-    lockHintTimer.current = setTimeout(() => setLockHint(false), LOCK_HINT_MS);
+    setLockHint(kind);
+    lockHintTimer.current = setTimeout(
+      () => setLockHint(null),
+      kind === 'explain' ? LOCK_EXPLAIN_MS : LOCK_HINT_MS,
+    );
   }, []);
   useEffect(
     () => () => {
@@ -697,6 +717,52 @@ export const MushafPhoneReader = React.memo(function MushafPhoneReader(
     },
     [],
   );
+  // The first lock explains itself (#75): what the page no longer answers,
+  // and that the words still do. Once per device; after that a touch on
+  // the locked page gets the short note.
+  useEffect(() => {
+    if (!locked) return undefined;
+    let live = true;
+    AsyncStorage.getItem(LOCK_EXPLAINED_KEY)
+      .then(seen => {
+        if (!live || seen === '1') return;
+        AsyncStorage.setItem(LOCK_EXPLAINED_KEY, '1').catch(() => undefined);
+        showLockHint('explain');
+      })
+      .catch(() => undefined);
+    return () => {
+      live = false;
+    };
+  }, [locked, showLockHint]);
+  const setLock = useCallback((next: boolean) => setQuranPrefs({ touchLock: next }), []);
+  const lockBadge = useMemo(
+    () =>
+      locked
+        ? {
+            onUnlock: () => setLock(false),
+            onHint: () => showLockHint('touch'),
+            ground: String(pageBg),
+          }
+        : null,
+    [locked, setLock, showLockHint, pageBg],
+  );
+  const lockHintText = (() => {
+    const unlock = t('quran.touchLockUnlockHint', 'Hold the lock to unlock.');
+    if (lockHint === 'explain') {
+      return `${t(
+        wordsLive ? 'quran.touchLockExplain' : 'quran.touchLockExplainFreeze',
+        wordsLive
+          ? 'The page is locked: it will not turn or scroll away under your hand, but a tap on a word still opens its āyah.'
+          : 'The page is locked and answers nothing but a press and hold.',
+      )} ${unlock}`;
+    }
+    return `${t(
+      lock.buttonsTurn ? 'quran.touchLockedHintButtons' : 'quran.touchLockedHint',
+      lock.buttonsTurn
+        ? 'The page is locked: the volume buttons turn it.'
+        : 'The page is locked.',
+    )} ${unlock}`;
+  })();
 
   // The neighbours' fonts, registered ahead of the swipe — from here, once
   // per turn, rather than as a per-page prop that changed on two pages
@@ -773,6 +839,8 @@ export const MushafPhoneReader = React.memo(function MushafPhoneReader(
         onWordPress={openSelection}
         onOpenJump={openJump}
         locked={locked}
+        wordsLive={wordsLive}
+        lock={lockBadge}
       />
     ),
     [
@@ -798,6 +866,8 @@ export const MushafPhoneReader = React.memo(function MushafPhoneReader(
       openSelection,
       openJump,
       locked,
+      wordsLive,
+      lockBadge,
     ],
   );
 
@@ -932,11 +1002,21 @@ export const MushafPhoneReader = React.memo(function MushafPhoneReader(
           }
           chrome={railChrome}
           trailing={
-            <MushafFullscreenButton
-              color={railChrome.accent}
-              backgroundColor={railChrome.control}
-              onPress={onToggleFullscreen}
-            />
+            <View style={styles.barButtons}>
+              <MushafLockButton
+                color={railChrome.accent}
+                backgroundColor={railChrome.control}
+                locked={locked}
+                onLock={() => setLock(true)}
+                onUnlock={() => setLock(false)}
+                onHint={() => showLockHint('touch')}
+              />
+              <MushafFullscreenButton
+                color={railChrome.accent}
+                backgroundColor={railChrome.control}
+                onPress={onToggleFullscreen}
+              />
+            </View>
           }
         />
       ) : null}
@@ -955,10 +1035,7 @@ export const MushafPhoneReader = React.memo(function MushafPhoneReader(
                 styles.lockHintText,
                 { color: toneIsDark(tone) ? '#1F1F1F' : '#F2F2F2' }, // tokens-ok-line: the toast's own ink
               ]}>
-              {t(
-                'quran.touchLockedHint',
-                'Touch is locked: the volume buttons turn the page. Press and hold for the controls.',
-              )}
+              {lockHintText}
             </Text>
           </View>
         </View>
@@ -1045,6 +1122,7 @@ const styles = StyleSheet.create({
     opacity: 0.92,
   },
   lockHintText: { fontSize: 14, textAlign: 'center' }, // tokens-ok-line: toast caption
+  barButtons: { flexDirection: 'row', gap: SPACING.xs },
   item: { height: '100%' },
   column: { flex: 1 },
   /**

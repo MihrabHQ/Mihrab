@@ -48,6 +48,7 @@ import {
   MushafJumpModal,
   MushafPageFooter,
   MushafPageHeader,
+  MushafLockButton,
   useMushafReaderCore,
   type AyahMarkProps,
   type KhatmahFinish,
@@ -69,6 +70,9 @@ import { findPageForAyah } from './pages';
 import { riwayahById, type RiwayahId } from './riwayat';
 import { toneIsDark, type MushafTone } from './mushafTone';
 import { useScrubberChrome } from './useScrubberChrome';
+import { readingLock } from './useVolumeKeyPaging';
+import { setQuranPrefs } from './quranState';
+import { volumeKeysAvailable } from '../native/volumeKeys';
 import {
   spreadColumn,
   spreadGeometry,
@@ -76,7 +80,7 @@ import {
   spreadPageWidth,
   useSettledSpreadGeometry,
 } from './spreadPageGeometry';
-import { RADIUS } from '../theme/tokens';
+import { RADIUS, SPACING } from '../theme/tokens';
 
 /**
  * Pages either side of the one being read whose fonts are registered
@@ -114,6 +118,10 @@ type ColumnProps = {
   onToggleFullscreen: () => void;
   onWordPress: (ref: AyahRef, page: number) => void;
   onOpenJump: () => void;
+  /** The reading lock (#75) — see MushafPhoneReader's PageItemProps. */
+  locked: boolean;
+  wordsLive: boolean;
+  lock: { onUnlock: () => void; onHint: () => void; ground: string } | null;
 };
 
 /**
@@ -143,7 +151,14 @@ const SpreadColumn = React.memo(function SpreadColumn({
   onToggleFullscreen,
   onWordPress,
   onOpenJump,
+  locked,
+  wordsLive,
+  lock,
 }: ColumnProps) {
+  // Locked: a tap on the margins or the strip does nothing; the hold that
+  // brings the chrome back lives on the phone, and here the chrome is
+  // never fully away — the sidebar and the chevrons stay.
+  const onTap = locked ? undefined : onToggleFullscreen;
   // Outer edge gets the full margin, the gutter side gets half of one —
   // the two halves together make a gutter equal to the outer margins.
   // rtl-safe: physical left/right on purpose. A muṣḥaf's spread is
@@ -171,7 +186,7 @@ const SpreadColumn = React.memo(function SpreadColumn({
           landed on the strip. */}
       <Pressable
         accessible={false}
-        onPress={onToggleFullscreen}
+        onPress={onTap}
         style={{ paddingTop: navPad }}>
         <MushafPageHeader
           page={page}
@@ -180,11 +195,14 @@ const SpreadColumn = React.memo(function SpreadColumn({
           ornament={ornament}
           riwayah={riwayah}
           show={chrome}
+          // The badge on the page that carries the name (the label side),
+          // in fullscreen only — out of it the sidebar's lock button is up.
+          lock={isFullscreen && chrome !== 'pill' ? lock : null}
         />
       </Pressable>
       <View style={[styles.pageBox, pad]}>
         {fit ? (
-          <Pressable onPress={onToggleFullscreen}>
+          <Pressable onPress={onTap}>
             <MushafTextPageSurface
               page={page}
               width={fit.pageW}
@@ -212,8 +230,8 @@ const SpreadColumn = React.memo(function SpreadColumn({
               // pieces on each page turn and each recited ayah. The screen
               // learned this once (mushafRenderChurn.test) and the readers
               // reintroduced it one level down.
-              onWordPress={onWordPress}
-              onWordLongPress={onWordPress}
+              onWordPress={wordsLive ? onWordPress : undefined}
+              onWordLongPress={wordsLive ? onWordPress : undefined}
             />
           </Pressable>
         ) : null}
@@ -221,13 +239,13 @@ const SpreadColumn = React.memo(function SpreadColumn({
       <MushafPageFooter
         page={page}
         ornament={ornament}
-        onPress={onOpenJump}
+        onPress={locked ? () => undefined : onOpenJump}
         finish={
           finish
             ? {
                 day: finish.day,
                 when: finish.when,
-                onPress: finishKhatmahPortion,
+                onPress: locked ? () => undefined : finishKhatmahPortion,
               }
             : null
         }
@@ -440,6 +458,23 @@ export const MushafSpreadReader = React.memo(function MushafSpreadReader(
 
   const { marks, finish, selected, openSelection, openJump } = core;
   const railChrome = useScrubberChrome(tone);
+  // The reading lock (#75), the same switch as the phone's.
+  const lock = readingLock({
+    lock: core.quran.prefs.touchLock,
+    freeze: core.quran.prefs.touchLockFreeze,
+    paging: core.quran.prefs.volumeKeyPaging,
+    available: volumeKeysAvailable,
+  });
+  const locked = lock.locked;
+  const wordsLive = lock.wordsLive;
+  const setLock = useCallback((next: boolean) => setQuranPrefs({ touchLock: next }), []);
+  const lockBadge = useMemo(
+    () =>
+      locked
+        ? { onUnlock: () => setLock(false), onHint: () => undefined, ground: String(pageBg) }
+        : null,
+    [locked, setLock, pageBg],
+  );
   // The page's accent — its frame, the beginning of a surah, the marks —
   // is the page bar's: the theme rendered for the PAGE's mode, not the
   // app's. On a night page under the Sky theme at a light hour the app's
@@ -501,10 +536,16 @@ export const MushafSpreadReader = React.memo(function MushafSpreadReader(
           onToggleFullscreen={onToggleFullscreen}
           onWordPress={openSelection}
           onOpenJump={openJump}
+          locked={locked}
+          wordsLive={wordsLive}
+          lock={lockBadge}
         />
       );
     },
     [
+      locked,
+      wordsLive,
+      lockBadge,
       totalPages,
       availH,
       navPad,
@@ -642,6 +683,9 @@ export const MushafSpreadReader = React.memo(function MushafSpreadReader(
           scrollEventThrottle={16}
           onScrollToIndexFailed={pagerHandlers.onScrollToIndexFailed}
           onScrollBeginDrag={pagerHandlers.onScrollBeginDrag}
+          // The reading lock (#75): no swipe turns the spread. The keys and
+          // the chevrons still do — those are not a brush of the hand.
+          scrollEnabled={!locked}
           // The content has been laid out at a new width (a rotation, a
           // resize, another muṣḥaf): re-anchor the settled page against
           // it. The re-anchor that runs when the width CHANGES is executed
@@ -726,6 +770,16 @@ export const MushafSpreadReader = React.memo(function MushafSpreadReader(
           onPeekPage={core.peekPage}
           onOpenJump={core.openJump}
           chrome={railChrome}
+          trailing={
+            <MushafLockButton
+              color={railChrome.accent}
+              backgroundColor={railChrome.control}
+              locked={locked}
+              onLock={() => setLock(true)}
+              onUnlock={() => setLock(false)}
+              onHint={() => undefined}
+            />
+          }
         />
       ) : null}
       </View>

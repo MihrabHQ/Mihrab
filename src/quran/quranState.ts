@@ -163,7 +163,8 @@ export const DEFAULT_QURAN_STATE: QuranState = {
     tajweedColours: false,
     volumeKeyPaging: false,
     volumeKeyUpForward: false,
-    volumeKeyTouchLock: false,
+    touchLock: false,
+    touchLockFreeze: false,
     hideMode: 'none',
     repeat: { eachAyah: 1, range: 1, pauseFactor: 0 },
     votdMode: 'translation',
@@ -590,9 +591,18 @@ function mergeStored(raw: unknown): QuranState {
         if (typeof p?.volumeKeyUpForward === 'boolean') return p.volumeKeyUpForward;
         return p?.volumeKeyPaging === true;
       })(),
-      volumeKeyTouchLock:
-        (r.prefs as { volumeKeyTouchLock?: unknown } | undefined)
-          ?.volumeKeyTouchLock === true,
+      // The lock under its new name, or the old one (#75): somebody who
+      // locked the page under the volume keys stays locked.
+      touchLock: (() => {
+        const p = r.prefs as
+          | { touchLock?: unknown; volumeKeyTouchLock?: unknown }
+          | undefined;
+        if (typeof p?.touchLock === 'boolean') return p.touchLock;
+        return p?.volumeKeyTouchLock === true;
+      })(),
+      touchLockFreeze:
+        (r.prefs as { touchLockFreeze?: unknown } | undefined)
+          ?.touchLockFreeze === true,
       // Off unless explicitly on: the card was shown to everyone before
       // this was a setting, and the setting's default is off.
       verseOfDay:

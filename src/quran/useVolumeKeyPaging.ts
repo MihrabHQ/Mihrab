@@ -33,16 +33,37 @@ export function volumeKeysShouldTurnPages(input: {
 }
 
 /**
- * Whether the page ignores touch (#72): asked for, AND the buttons are
- * turning pages — on a device without them, or with them off, a locked page
- * would be a page nothing could turn.
+ * What the reading lock lets through (#72, #75).
+ *
+ * The lock used to need the volume buttons — "a locked page would be a
+ * page nothing could turn" — which made it Android-only and made every
+ * tap on the page dead. Both were the wrong trade: the page CAN be turned,
+ * by unlocking (a hold on the badge), and somebody holding a page still
+ * wants the āyah under their finger. So the lock is its own switch on
+ * every platform; the words stay live unless the freeze is asked for; and
+ * the volume buttons, where they exist and are on, keep turning the page.
  */
-export function touchLockActive(input: {
-  paging: boolean;
+export type ReadingLock = {
+  /** Swipes, the tap-to-toggle, the footer and the jump do nothing. */
+  locked: boolean;
+  /** A tap or a hold on a word still opens its āyah. */
+  wordsLive: boolean;
+  /** The volume buttons turn the locked page (Android, paging on). */
+  buttonsTurn: boolean;
+};
+
+export function readingLock(input: {
   lock: boolean;
+  freeze: boolean;
+  paging: boolean;
   available: boolean;
-}): boolean {
-  return input.paging && input.lock && input.available;
+}): ReadingLock {
+  const locked = input.lock;
+  return {
+    locked,
+    wordsLive: !locked || !input.freeze,
+    buttonsTurn: locked && input.paging && input.available,
+  };
 }
 
 /**

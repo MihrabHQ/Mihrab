@@ -2,6 +2,7 @@
 • Full-screen prayer alerts take their prayer's hour under the Sky theme: Fajr's dawn, Dhuhr's blue, Asr's gold, Maghrib's magenta, Isha's indigo.
 • The launch run is a setting, on by default: the app opens on the last Today screen and the countdown, the rail and the sky sweep up to now; off, the picture simply fades into the live one.
 • Muṣḥaf: the fullscreen button is in the page bar and the page tone is in the header; the page's frame and marks take the page bar's own colour.
+• Reading lock: its own switch on every platform, in Settings → Quran and the page bar. A locked page does not turn under your hand, but a tap on a word still opens its āyah; hold the lock to unlock (#75).
 • Log: an optional "Mark late logs as late" — a log from a notification, the alarm or a widget in the second half of the window is recorded late (#74); with the Mālikī second times on, a log after the preferred time is the late one.
 • Prayer-times widget (Android): with the times hidden, the next prayer fills the card.
 • Sunnah: Isha carries one sunnah muʾakkadah, so the full rawātib make six (#73).

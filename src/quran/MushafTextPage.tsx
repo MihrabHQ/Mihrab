@@ -48,13 +48,14 @@
  * set that much larger. The `<Text>` paragraph described above remains
  * the fallback, and the lessons above are why it looks the way it does.
  */
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import {
   Pressable,
   StyleSheet,
   Text,
   View,
   processColor,
+  type GestureResponderEvent,
   type StyleProp,
   type ViewStyle,
 } from 'react-native';
@@ -357,6 +358,31 @@ type LineViewProps = {
   onLongPress: (w: MushafWord) => void;
 };
 
+/**
+ * A finger that MOVED is not a tap (#75). A line's Pressable is as wide as
+ * the page, so a swipe along it starts and ends inside the one element and
+ * Pressable calls it a press. Out of the lock the pager takes the gesture
+ * off the line before that can matter; locked, the pager is not listening,
+ * and a swipe meant to turn the page opened the āyah under its end. So a
+ * press that travelled further than a tap does is let go.
+ */
+const TAP_SLOP_PX = 12;
+function useTapOnly() {
+  const start = useRef<{ x: number; y: number } | null>(null);
+  const onPressIn = useCallback((e: GestureResponderEvent) => {
+    start.current = { x: e.nativeEvent.pageX, y: e.nativeEvent.pageY };
+  }, []);
+  const wasTap = useCallback((e: GestureResponderEvent) => {
+    const s = start.current;
+    if (!s) return true;
+    return (
+      Math.abs(e.nativeEvent.pageX - s.x) <= TAP_SLOP_PX &&
+      Math.abs(e.nativeEvent.pageY - s.y) <= TAP_SLOP_PX
+    );
+  }, []);
+  return { onPressIn, wasTap };
+}
+
 const LineView = React.memo(function LineView({
   line,
   measureEm,
@@ -375,6 +401,7 @@ const LineView = React.memo(function LineView({
   // carry the ayah and none of the others. Before the band/basmalah
   // returns: a hook, so it runs on every render of the line.
   const activeWord = useActiveWordOn(line);
+  const tap = useTapOnly();
   if (line.kind === 'surah') {
     // The band takes the full measure, as it does in the print, where a surah
     // opens across the whole text block rather than in a plate the width of
@@ -511,7 +538,9 @@ const LineView = React.memo(function LineView({
     return (
       <View style={[styles.line, { width, height: lineHeight }]}>
         <Pressable
+          onPressIn={tap.onPressIn}
           onPress={e => {
+            if (!tap.wasTap(e)) return;
             const w = wordAt(runRightEdge - e.nativeEvent.locationX);
             if (w) onPress(w);
           }}
@@ -603,7 +632,9 @@ const LineView = React.memo(function LineView({
   return (
     <View style={[styles.line, { width, height: lineHeight }]}>
       <Pressable
+        onPressIn={tap.onPressIn}
         onPress={e => {
+          if (!tap.wasTap(e)) return;
           const w = wordAt(runRightEdge - e.nativeEvent.locationX);
           if (w) onPress(w);
         }}

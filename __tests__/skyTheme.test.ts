@@ -356,7 +356,7 @@ describe('the reader', () => {
     // rendered for the page's mode.
     for (const file of ['src/quran/MushafPhoneReader.tsx', 'src/quran/MushafSpreadReader.tsx']) {
       const reader = read(file);
-      expect(reader).toMatch(/const railChrome = useScrubberChrome\(tone\);[\s\S]{0,600}?const accent = railChrome\.accent;/);
+      expect(reader).toMatch(/const railChrome = useScrubberChrome\(tone\);[\s\S]{0,1200}?const accent = railChrome\.accent;/);
       expect(reader).not.toMatch(/const accent = palette\.accentSolid;/);
       expect(reader).not.toMatch(/useAppPalette\(\)/);
     }

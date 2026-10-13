@@ -20,13 +20,13 @@ describe.each(['MushafSpreadReader.tsx', 'MushafPhoneReader.tsx'])('%s', file =>
   // and the reader fills that prop with the core's `openSelection`.
   it('a tap on a word opens the ayah', () => {
     // The phone page hands it on unless the page is touch-locked (#72).
-    expect(src).toMatch(/onWordPress=\{(locked \? undefined : )?onWordPress\}/);
+    expect(src).toMatch(/onWordPress=\{(wordsLive \? onWordPress : undefined|onWordPress)\}/);
     expect(src).toMatch(/onWordPress=\{openSelection\}/);
     expect(src).toMatch(/const \{ [^}]*openSelection[^}]* \} = core;/);
   });
 
   it('and so does a long press, for hands that learned it that way', () => {
-    expect(src).toMatch(/onWordLongPress=\{(locked \? undefined : )?onWordPress\}/);
+    expect(src).toMatch(/onWordLongPress=\{(wordsLive \? onWordPress : undefined|onWordPress)\}/);
   });
 
   it('the header strip toggles fullscreen', () => {

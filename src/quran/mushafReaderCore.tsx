@@ -24,6 +24,8 @@ import {
 } from 'react-native';
 import { useNavigation, usePreventRemove } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import Svg, { Path, Rect } from 'react-native-svg';
+import { ReadingLockBadge, useHoldToUnlock } from './ReadingLockBadge';
 import { useKeepAwake } from './keepAwakeLock';
 import type { FullscreenVeil } from './fullscreenVeil';
 import { SessionDot, useAnchorBookmarkId, useSessionColor } from './SessionDot';
@@ -792,9 +794,16 @@ export function MushafPageHeader({
   onExitFullscreen,
   exitInset = 0,
   onPageNumberPress,
+  lock,
 }: {
   page: number;
   isFullscreen: boolean;
+  /**
+   * The reading lock (#75), while it is on: the badge that unlocks on a
+   * hold, in the band beside the page number — the one strip in
+   * fullscreen that carries no text. `ground` is the page's colour.
+   */
+  lock?: { onUnlock: () => void; onHint: () => void; ground: string } | null;
   /** The page's tone; the pill offers the next one. */
   tone: MushafTone;
   ornament: string;
@@ -853,6 +862,17 @@ export function MushafPageHeader({
           // rtl-safe: physical by design, like `labelSide`.
           labelSide === 'start' ? { marginRight: exitInset } : { marginLeft: exitInset },
         ]}>
+        {lock ? (
+          <View style={styles.exitLock}>
+            <ReadingLockBadge
+              testID="mushaf-lock-badge"
+              ink={ornament}
+              ground={lock.ground}
+              onUnlock={lock.onUnlock}
+              onHint={lock.onHint}
+            />
+          </View>
+        ) : null}
         {onPageNumberPress ? (
           <Pressable
             accessibilityRole="button"
@@ -1035,6 +1055,83 @@ export function MushafFullscreenButton({
       onPress={onPress}
       style={[styles.toneBtn, { backgroundColor }]}>
       <Text style={[styles.fullscreenGlyph, { color }]}>⛶</Text>
+    </Pressable>
+  );
+}
+
+/**
+ * The reading lock as a bar button (#75), beside fullscreen: the two
+ * things a reader does on sitting down — fill the screen, and make sure a
+ * hand holding it cannot turn the page. Shut, the glyph is the padlock the
+ * badge in fullscreen carries; open, its shackle is lifted. Locking is a
+ * tap; unlocking is a HOLD, here as on the badge — the bar sits under the
+ * thumb that holds the phone, and a lock a brush of that thumb could undo
+ * is no lock. A tap on it while locked asks for the hint.
+ */
+export function MushafLockButton({
+  color,
+  backgroundColor,
+  locked,
+  onLock,
+  onUnlock,
+  onHint,
+}: {
+  color: ColorValue;
+  backgroundColor: ColorValue;
+  locked: boolean;
+  onLock: () => void;
+  onUnlock: () => void;
+  onHint: () => void;
+}) {
+  const { t } = useTranslation();
+  const ink = String(color);
+  // The same clock as the badge's. Unlike the badge, this button stays
+  // mounted after it unlocks — re-rendered as the unlocked one while the
+  // finger is still down — and the lift that ends the hold would then be
+  // the tap that locks it again. So the touch that unlocked is remembered
+  // until it lifts, and its lift locks nothing.
+  const unlockedByThisTouch = useRef(false);
+  const unlock = useCallback(() => {
+    unlockedByThisTouch.current = true;
+    onUnlock();
+  }, [onUnlock]);
+  const hold = useHoldToUnlock(unlock, onHint);
+  return (
+    <Pressable
+      testID="mushaf-lock-button"
+      accessibilityRole="button"
+      accessibilityState={{ selected: locked }}
+      accessibilityLabel={
+        locked
+          ? t('quran.touchLockBadge', 'Page locked. Hold to unlock.')
+          : t('quran.touchLockOn', 'Lock the page')
+      }
+      hitSlop={8}
+      onPress={() => {
+        if (locked || unlockedByThisTouch.current) return;
+        onLock();
+      }}
+      // Reset on the NEXT touch, not on the lift: Pressable's press-out
+      // comes before its press, and a flag cleared there is gone by the
+      // time the press asks for it.
+      onPressIn={() => {
+        unlockedByThisTouch.current = false;
+        if (locked) hold.begin();
+      }}
+      onPressOut={() => {
+        if (locked) hold.end();
+      }}
+      style={[styles.toneBtn, { backgroundColor }]}>
+      <Svg width={18} height={18} viewBox="0 0 24 24" fill="none">
+        <Path
+          d={locked ? 'M7 11V8a5 5 0 0 1 10 0v3' : 'M7 11V8a5 5 0 0 1 9.6-2'}
+          stroke={ink}
+          strokeWidth={2}
+          strokeLinecap="round"
+        />
+        <Rect x="5" y="11" width="14" height="10" rx="2.5" fill={ink} />
+        <Rect x="11" y="14" width="2" height="4" rx="1" fill={String(backgroundColor)} />
+      </Svg>
     </Pressable>
   );
 }
@@ -1270,6 +1367,7 @@ const styles = StyleSheet.create({
   },
   exitCluster: { flexDirection: 'row', alignItems: 'center', flexShrink: 0 },
   exitClusterFlip: { flexDirection: 'row-reverse' },
+  exitLock: { paddingHorizontal: SPACING.xs },
   // The page number beside the ✕: the same figures the rail's readout
   // used, in the page's ink, a tap away from the jump sheet.
   // A digit sits on its baseline and the ✕ is centred on the x-height,

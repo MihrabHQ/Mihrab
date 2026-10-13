@@ -2,6 +2,7 @@
 • Helskärmsaviseringar för bön bär sin bönetimme under temat Himmel: fajrs gryning, dhuhrs blå, asrs guld, maghribs magenta, ishas indigo.
 • Startanimationen är en inställning, på som standard: appen öppnar på den senaste Idag-skärmen och nedräkningen, linjen och himlen sveper fram till nu; avstängd tonar bilden bara över i den levande skärmen.
 • Mushaf: helskärmsknappen sitter i sidfältet och sidtonen i sidhuvudet; sidans ram och markeringar tar sidfältets egen färg.
+• Läslås: en egen inställning på alla plattformar, under Inställningar → Koranen och i sidfältet. En låst sida bläddrar inte under handen, men ett tryck på ett ord öppnar fortfarande dess ayah; håll låset för att låsa upp (#75).
 • Logg: ett valfritt "Markera sena loggar som sena" – en logg från en avisering, alarmet eller en widget i andra halvan av tiden registreras som sen (#74); med de malikitiska andra tiderna på är en logg efter den föredragna tiden den sena.
 • Bönetidswidgeten (Android): med tiderna dolda fyller nästa bön kortet.
 • Sunnah: isha har en sunnah mu'akkadah, så de fulla rawatib blir sex (#73).

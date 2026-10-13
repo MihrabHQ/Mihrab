@@ -138,6 +138,10 @@ const STAYS: Record<string, string> = {
   'mihrab.homeFeaturesOffer.notBefore.v1':
     'describes this phone — a day’s hold after the walkthrough finished, ' +
     'so the offer is not a second welcome',
+  'mihrab.quran.touchLockExplained.v1':
+    'describes this phone — that the reading lock has explained itself ' +
+    'here once (src/quran/MushafPhoneReader.tsx). The lock itself is a ' +
+    'Quran pref, which travels',
   'mihrab.quran.featuresOffer.v1':
     'describes this phone — whether the muṣḥaf has asked, once, about its ' +
     'two off-by-default features (src/quran/QuranFeaturesOffer.tsx). The ' +

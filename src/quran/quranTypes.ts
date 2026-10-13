@@ -423,13 +423,23 @@ export type QuranPrefs = {
    */
   volumeKeyUpForward: boolean;
   /**
-   * THE PAGE IGNORES TOUCH while the volume buttons turn it (issue #72,
-   * additive). A hand gripping the phone to reach the buttons brushes the
-   * screen and swiped a page away. With this on, swipes and taps on the
-   * page do nothing; a press-and-hold shows or hides the controls. Only
-   * offered, and only honoured, with `volumeKeyPaging` on.
+   * THE READING LOCK (issues #72 and #75, additive). The page does not
+   * turn to a swipe, a tap does not toggle the chrome, the footer and the
+   * jump do nothing — a hand holding the phone cannot lose the page. A
+   * press-and-hold still shows or hides the controls, a hold on the lock
+   * badge unlocks, and on Android with `volumeKeyPaging` the buttons still
+   * turn the page. Born as `volumeKeyTouchLock`, a sub-switch of the volume
+   * keys and Android-only; now its own switch on every platform (#75), and
+   * the old key is read as this one.
    */
-  volumeKeyTouchLock: boolean;
+  touchLock: boolean;
+  /**
+   * The lock also swallows taps on the words (#75). Off, a locked page
+   * still opens an āyah on a tap or a hold — tafsir, translation, play —
+   * which is what somebody holding a page is usually there for. On, the
+   * page answers nothing but the hold: pocket listening, a child.
+   */
+  touchLockFreeze: boolean;
   /** Memorization masking in translation view. */
   hideMode: 'none' | 'arabic' | 'translation';
   repeat: RepeatSettings;

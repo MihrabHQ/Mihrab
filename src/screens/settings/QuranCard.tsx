@@ -340,31 +340,58 @@ function QuranCardImpl() {
             value={quran.prefs.volumeKeyPaging}
             onValueChange={next => setQuranPrefs({ volumeKeyPaging: next })}
           />
-          {/* Both only while the buttons turn pages (#72): the direction
-              means nothing without them, and a page locked to touch with
-              nothing else to turn it would be stuck. */}
+          {/* Only while the buttons turn pages (#72): the direction means
+              nothing without them. */}
           {quran.prefs.volumeKeyPaging ? (
-            <>
-              <SettingsToggleRow
-                testID="settings-volume-keys-up-forward"
-                title={t('quran.volumeKeysUpForward', 'Volume up goes to the next page')}
-                value={quran.prefs.volumeKeyUpForward}
-                onValueChange={next => setQuranPrefs({ volumeKeyUpForward: next })}
-              />
-              <SettingsToggleRow
-                testID="settings-volume-keys-touch-lock"
-                title={t('quran.volumeKeysTouchLock', 'Lock the page to touch')}
-                help={t(
-                  'quran.volumeKeysTouchLockHelp',
-                  'Swipes and taps on the page do nothing, so holding the phone cannot turn a page by accident. Press and hold the page to show or hide the controls.',
-                )}
-                value={quran.prefs.volumeKeyTouchLock}
-                onValueChange={next => setQuranPrefs({ volumeKeyTouchLock: next })}
-              />
-            </>
+            <SettingsToggleRow
+              testID="settings-volume-keys-up-forward"
+              title={t('quran.volumeKeysUpForward', 'Volume up goes to the next page')}
+              value={quran.prefs.volumeKeyUpForward}
+              onValueChange={next => setQuranPrefs({ volumeKeyUpForward: next })}
+            />
           ) : null}
         </SettingsGroup>
       ) : null}
+      {/* THE READING LOCK (#72, #75), its own switch on every platform. It
+          was a sub-switch of the volume buttons, on the reasoning that a
+          locked page needs something else to turn it — but unlocking IS
+          that, and the lock is wanted on an iPhone held in bed as much as
+          on an Android phone. The muṣḥaf's page bar has the same switch,
+          and the badge on a locked page is the way out. */}
+      <SettingsGroup
+        title={t('quran.touchLockTitle', 'Reading lock')}
+        footer={
+          t('quran.touchLockHelp', {
+            defaultValue:
+              'A locked page does not turn or scroll away under your hand, and a tap does not hide or show the controls. A tap on a word still opens its ayah. Press and hold the page for the controls, and hold the lock in the corner of the page to unlock. The lock is also in the page bar.',
+          }) +
+          (volumeKeysAvailable
+            ? ' ' +
+              t(
+                'quran.touchLockHelpButtons',
+                'With the volume buttons turning pages, they still turn a locked page.',
+              )
+            : '')
+        }>
+        <SettingsToggleRow
+          testID="settings-touch-lock"
+          title={t('quran.touchLock', 'Lock the page to touch')}
+          value={quran.prefs.touchLock}
+          onValueChange={next => setQuranPrefs({ touchLock: next })}
+        />
+        {quran.prefs.touchLock ? (
+          <SettingsToggleRow
+            testID="settings-touch-lock-freeze"
+            title={t('quran.touchLockFreeze', 'Also ignore taps on the words')}
+            help={t(
+              'quran.touchLockFreezeHelp',
+              'For listening with the phone in a pocket, or a child: the page answers nothing but a press and hold.',
+            )}
+            value={quran.prefs.touchLockFreeze}
+            onValueChange={next => setQuranPrefs({ touchLockFreeze: next })}
+          />
+        ) : null}
+      </SettingsGroup>
       {/* The same picker the muṣḥaf header opens, so the two entry
           points cannot drift apart — including the one-time notice that
           a reflowing muṣḥaf breaks its lines differently

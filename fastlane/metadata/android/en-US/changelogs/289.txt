@@ -1,6 +1,6 @@
-• The Sky theme: the whole app painted from the sky over the countdown, changing through the day. Settings → Appearance.
+• The Sky theme: the whole app painted from the sky over the countdown, changing with the hour. Settings → Appearance.
 • Full-screen alerts wear their prayer's hour under the Sky theme.
 • The launch run is a setting, on by default.
-• Muṣḥaf: fullscreen in the page bar, the page tone in the header.
+• Muṣḥaf: a reading lock on every platform — a locked page does not turn, but a tap on a word still opens it (#75).
 • Log: optional "Mark late logs as late" (#74). Sunnah: Isha has one sunnah muʾakkadah (#73).
-• Fixes to the launch picture and the Live Activity on open.
+• Fixes to the launch picture and Live Activity.
