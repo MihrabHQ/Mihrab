@@ -668,8 +668,8 @@ const HeroToday = memo(function HeroToday({
     const mood = skyMoodFor(frame.passage, frame.t);
     if (!mood.isDark) return null;
     return {
-      textShadowColor: `${mood.accent}99`,
-      textShadowRadius: 16,
+      textShadowColor: `${mood.accent}73`,
+      textShadowRadius: 14,
       textShadowOffset: { width: 0, height: 0 },
     };
   }, [skyTheme, frame.passage, frame.t]);

@@ -76,26 +76,31 @@ function withHighlight(m: Omit<SkyMood, 'accentBg'>): SkyMood {
 }
 
 const RAW_MOODS: Record<SkyMoodName, Omit<SkyMood, 'accentBg'>> = {
-  /** Night & midnight: an obsidian indigo void, cyber cyan glowing on it, amethyst under the cards. */
+  /**
+ * Night & midnight: an obsidian indigo void, a soft cyan glowing on it,
+ * amethyst under the cards. Every glow here was once a neon and was
+ * taken down by a third of its chroma: it is a prayer app, and a colour
+ * should be warm to the eye, not loud — bright without being a sign.
+ */
   night: {
     name: 'night',
     isDark: true,
     heroTop: '#0A0818',
     heroMid: '#2A1B55',
     heroFoot: '#130F26',
-    bodyLight: '#CFEFFF',
-    starGlow: '#9DE7FF',
+    bodyLight: '#D7EDF8',
+    starGlow: '#B2E3F4',
     bg: '#130F26',
     card: '#1B1636',
     controlBg: '#261F49',
     border: '#352C5F',
     text: '#EEEAFF',
     muted: '#B4ADDB',
-    accent: '#3DF2FF',
+    accent: '#83E6F0',
     onAccent: '#0B1020',
     accentSurface: '#171230',
     accentSurfaceStrong: '#2A1B4F',
-    accentHairline: '#6E45A8',
+    accentHairline: '#6A4C9E',
     danger: '#FF6B8B',
     overlay: 'rgba(8,5,20,0.7)',
   },
@@ -104,9 +109,9 @@ const RAW_MOODS: Record<SkyMoodName, Omit<SkyMood, 'accentBg'>> = {
     name: 'dawn',
     isDark: true,
     heroTop: '#140A33',
-    heroMid: '#7A2E7E',
+    heroMid: '#703D72',
     heroFoot: '#1E1140',
-    bodyLight: '#FFD166',
+    bodyLight: '#F3D48E',
     starGlow: '#E9C8FF',
     bg: '#1E1140',
     card: '#2A1A57',
@@ -114,11 +119,11 @@ const RAW_MOODS: Record<SkyMoodName, Omit<SkyMood, 'accentBg'>> = {
     border: '#4B3889',
     text: '#FFF4EC',
     muted: '#D6C4EE',
-    accent: '#FF7B62',
+    accent: '#E88C79',
     onAccent: '#2A0F08',
     accentSurface: '#24154A',
     accentSurfaceStrong: '#352162',
-    accentHairline: '#9B51E0',
+    accentHairline: '#8F5BC8',
     danger: '#FF8A80',
     overlay: 'rgba(14,6,36,0.7)',
   },
@@ -126,7 +131,7 @@ const RAW_MOODS: Record<SkyMoodName, Omit<SkyMood, 'accentBg'>> = {
   morning: {
     name: 'morning',
     isDark: false,
-    heroTop: '#FF9A6E',
+    heroTop: '#ECA586',
     heroMid: '#FFD7A8',
     heroFoot: '#FFF4E8',
     bodyLight: '#FFC25C',
@@ -149,7 +154,7 @@ const RAW_MOODS: Record<SkyMoodName, Omit<SkyMood, 'accentBg'>> = {
   midday: {
     name: 'midday',
     isDark: false,
-    heroTop: '#3F9BF5',
+    heroTop: '#619CDA',
     heroMid: '#A6D6FF',
     heroFoot: '#EAF6FF',
     bodyLight: '#FFF3B0',
@@ -172,7 +177,7 @@ const RAW_MOODS: Record<SkyMoodName, Omit<SkyMood, 'accentBg'>> = {
   golden: {
     name: 'golden',
     isDark: false,
-    heroTop: '#F2903F',
+    heroTop: '#DF9A68',
     heroMid: '#FFCF9A',
     heroFoot: '#FFF0E0',
     bodyLight: '#FFB03B',
@@ -196,9 +201,9 @@ const RAW_MOODS: Record<SkyMoodName, Omit<SkyMood, 'accentBg'>> = {
     name: 'sunset',
     isDark: true,
     heroTop: '#2B0A3D',
-    heroMid: '#C2256F',
+    heroMid: '#AD476F',
     heroFoot: '#24092F',
-    bodyLight: '#FF6A4D',
+    bodyLight: '#E67F6A',
     starGlow: '#FFC2E0',
     bg: '#24092F',
     card: '#331245',
@@ -206,11 +211,11 @@ const RAW_MOODS: Record<SkyMoodName, Omit<SkyMood, 'accentBg'>> = {
     border: '#5C2C75',
     text: '#FFEFF7',
     muted: '#E3B9D6',
-    accent: '#FF57A6',
+    accent: '#E674A4',
     onAccent: '#2A0616',
     accentSurface: '#2C0E3A',
     accentSurfaceStrong: '#3F1655',
-    accentHairline: '#8A2387',
+    accentHairline: '#86357F',
     danger: '#FF5E62',
     overlay: 'rgba(20,4,30,0.7)',
   },
@@ -272,14 +277,14 @@ const ANCHORS = {
   /** The last of the dawn: the horizon's glow gone coral. */
   dawnBright: vary(M.dawn, {
     heroTop: '#1A0E42',
-    heroMid: '#B63C6B',
+    heroMid: '#A4516C',
     bodyLight: '#FFE08A',
   }),
   morning: M.morning,
   midday: M.midday,
   /** The afternoon: the same ice, a touch warmer and higher. */
   afternoon: vary(M.midday, {
-    heroTop: '#5CA8F2',
+    heroTop: '#6FA6DA',
     heroMid: '#C2E1FF',
     heroFoot: '#EDF5FC',
     bg: '#EDF5FC',
@@ -290,12 +295,12 @@ const ANCHORS = {
   /** The evening after the sun has gone: deeper, the magenta cooling. */
   sunsetDeep: vary(M.sunset, {
     heroTop: '#1E0734',
-    heroMid: '#9C1F6E',
+    heroMid: '#8C3A69',
     heroFoot: '#1E0729',
     bg: '#1E0729',
     card: '#2C0F3C',
     accentSurface: '#250B33',
-    bodyLight: '#FF7F9E',
+    bodyLight: '#E990A3',
   }),
 };
 

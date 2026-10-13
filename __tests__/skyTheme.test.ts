@@ -216,7 +216,7 @@ describe('the hero under the theme', () => {
     const card = read('src/screens/home/TodayCard.tsx');
     expect(card).toMatch(/skyTheme \? themedSkyFrame\(f, skyMoodFor\(f\.passage, f\.t\)\) : f/);
     expect(card).toMatch(/return paint\(skyFrame\(skyMoment\(day, at, tomorrowFajr\)/);
-    expect(card).toMatch(/textShadowColor: `\$\{mood\.accent\}99`/);
+    expect(card).toMatch(/textShadowColor: `\$\{mood\.accent\}73`/);
     expect(card).toMatch(/if \(!mood\.isDark\) return null;/);
     expect(card).toMatch(/denseStars=\{skyTheme\}/);
     const sky = read('src/screens/home/HeroSky.tsx');
