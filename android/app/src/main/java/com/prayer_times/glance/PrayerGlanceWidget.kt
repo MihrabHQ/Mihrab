@@ -16,12 +16,14 @@ import androidx.glance.appwidget.action.ActionCallback
 import androidx.glance.appwidget.action.actionRunCallback
 import androidx.glance.background
 import androidx.glance.layout.Alignment
+import androidx.glance.layout.Box
 import androidx.glance.layout.Column
 import androidx.glance.layout.ContentScale
 import androidx.glance.layout.Row
 import androidx.glance.layout.Spacer
 import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.fillMaxWidth
+import androidx.glance.layout.height
 import androidx.glance.layout.padding
 import androidx.glance.semantics.contentDescription
 import androidx.glance.semantics.semantics
@@ -406,8 +408,22 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
           }
         }
       } else {
-        // No table: the next prayer, large, says what the card is for.
-        NextBlock(context, m, size, top = 4 + slack)
+        // No table: the next prayer, large, says what the card is for — in
+        // the table's own segment, as tall as the times and the night row
+        // would be, so the rule and the line under it (the logged count)
+        // sit where they do with the table on, and the two layouts read as
+        // one card with and without its times.
+        val fontScale = context.resources.configuration.fontScale
+        fun lineDp(sp: Float) = sp * fontScale * LINE_HEIGHT
+        val tableDp = (8 + slack) + 4 + lineDp(9f) + lineDp(timeSp) + 4 + slack +
+          (m.night?.let { 4 + lineDp(11f) } ?: 0f)
+        val nextDp = (4 + slack) + lineDp(9f) + lineDp(NEXT_NAME_SP)
+        Box(
+          modifier = GlanceModifier.fillMaxWidth().height(maxOf(tableDp, nextDp).dp),
+          contentAlignment = Alignment.CenterStart,
+        ) {
+          Column(modifier = GlanceModifier.fillMaxWidth()) { NextBlock(context, m, size, top = 0) }
+        }
       }
       if (!tight) Rule(d.rule, top = 6, bottom = 8)
       Row(modifier = GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -608,6 +624,8 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     private const val NEXT_TIME_SP = 19f
 
     private const val NEXT_NAME_SP = 24f
+    /** Line height per sp, font padding included. */
+    private const val LINE_HEIGHT = 1.35f
     /** The countdown at the end of the next prayer's row, at the smallest. */
     private const val COUNTDOWN_ROW_SP = 15f
   }
