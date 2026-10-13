@@ -39,7 +39,7 @@ describe('lookKeyOf', () => {
 describe('the native side', () => {
   it('decodes from process start and lays the picture on the first frame', () => {
     expect(APPLICATION).toMatch(/super\.onCreate\(\)[\s\S]{0,200}LaunchSnapshot\.preload\(this\)/);
-    expect(ACTIVITY).toMatch(/super\.onCreate\(null\)\s*\/\/[^\n]*\n\s*LaunchSnapshot\.show\(this\)/);
+    expect(ACTIVITY).toMatch(/super\.onCreate\(null\)[\s\S]{0,400}?LaunchSnapshot\.show\(this\)/);
   });
 
   it('copies the window before React Native hears about the pause', () => {

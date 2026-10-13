@@ -51,6 +51,10 @@ class MainActivity : ReactActivity() {
    */
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(null)
+    // In front from here: the Live Update service can be (re)started by
+    // the system in the moment between this and onResume — a launch after
+    // the process had been killed — and must hold its card back then too.
+    resumed = true
     // The last Today screen as this window's first frame — see LaunchSnapshot.
     LaunchSnapshot.show(this)
     BootTimes.activity()
@@ -172,7 +176,11 @@ class MainActivity : ReactActivity() {
   }
 
   companion object {
-    /** Whether this activity is in front — the Live Update waits for it to leave. */
+    /**
+     * Whether this activity is in front — the Live Update waits for it to
+     * leave. True from onCreate, not only onResume: the service is often
+     * started by the system or by JS in the moment between the two.
+     */
     @Volatile var resumed = false
   }
 }
