@@ -341,13 +341,16 @@ describe('access and polish', () => {
       expect(typeof json.onboarding?.personalise?.skyOffer).toBe('string');
     }
     const root = read('src/AppNavigationRoot.tsx');
-    expect(root).toMatch(/const lookMoodKey = lookMood \? `\$\{lookMood\.name\}:\$\{lookMood\.isDark \? 'dark' : 'light'\}` : '';/);
-    expect(root).toMatch(/setLaunchSnapshotLook\(lookKeyOf\(settings\) \+ \(lookMoodKey \? `\|sky:\$\{lookMoodKey\}` : ''\)\)/);
+    // The look is the settings', not the hour's: a picture from another
+    // hour fades into this one rather than leaving the launch on the
+    // skeleton (the hero runs from the prayer's start under it anyway).
+    expect(root).toMatch(/setLaunchSnapshotLook\(lookKeyOf\(settings\)\);/);
+    expect(root).not.toMatch(/lookMoodKey/);
     const card = read('src/screens/home/TodayCard.tsx');
     expect(card).toMatch(/const moreContrast = useIncreasedContrast\(\);/);
     expect(card).toMatch(/if \(!skyTheme \|\| moreContrast\) return null;/);
     // The hero asks for the crossfade before it repaints across the switch.
-    expect(card).toMatch(/lastMoodDark\.current !== moodDark\) \{\s*crossfadeScreen\(\);/);
+    expect(card).toMatch(/if \(!posed && !launchRun && moodDark != null && lastMoodDark\.current != null && lastMoodDark\.current !== moodDark\) \{\s*crossfadeScreen\(\);/);
     const hook = read('src/hooks/useIncreasedContrast.ts');
     expect(hook).toMatch(/isDarkerSystemColorsEnabled/);
     expect(hook).toMatch(/isReduceTransparencyEnabled/);

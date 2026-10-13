@@ -184,16 +184,22 @@ function simulate(pictureAt: Date, now: Date, posed = false) {
     seconds.push(shownSeconds(tree));
     rails.push(shownRail(tree));
   }
+  const lh = heroAt(new Date(Date.now()));
+  const liveTarget = lh.target;
+  // A picture of a prayer that has passed: the run starts at THIS
+  // interval's start — the countdown whole, the rail empty — not at the
+  // picture's numbers (TodayCard, `ownStart`).
+  const stale = h.target.getTime() !== liveTarget.getTime();
   // What the picture showed: the hero ticks a moment past each second —
   // or, posed, the whole interval from its prayer.
-  const cached = posed
-    ? Math.floor((h.target.getTime() - h.from.getTime()) / 1000)
-    : Math.floor((h.target.getTime() - pictureAt.getTime() - 1) / 1000);
-  const liveTarget = heroAt(new Date(Date.now())).target;
+  const cached = stale
+    ? Math.floor((lh.target.getTime() - lh.from.getTime()) / 1000)
+    : posed
+      ? Math.floor((h.target.getTime() - h.from.getTime()) / 1000)
+      : Math.floor((h.target.getTime() - pictureAt.getTime() - 1) / 1000);
   const live = Math.floor((liveTarget.getTime() - Date.now()) / 1000);
   const span = h.target.getTime() - h.from.getTime();
-  const cachedRail = posed ? 0 : (pictureAt.getTime() - h.from.getTime()) / span;
-  const lh = heroAt(new Date(Date.now()));
+  const cachedRail = stale || posed ? 0 : (pictureAt.getTime() - h.from.getTime()) / span;
   const liveRail = (Date.now() - lh.from.getTime()) / (lh.target.getTime() - lh.from.getTime());
   return { tree, seconds, rails, cached, live, cachedRail, liveRail };
 }
@@ -250,8 +256,10 @@ describe('the hero runs from the kept picture to now', () => {
   it('after one prayer has passed', () => {
     const r = simulate(day(D, '14:30'), day(D, '15:40'));
     expectRun(r);
-    // 30 min to Asr then; 2h20 to Maghrib now: it counts up.
-    expect(r.seconds[r.seconds.length - 1]).toBeGreaterThan(r.seconds[0]);
+    // 30 min to Asr then — but Asr has come: the run starts at Asr, the
+    // whole 3h to Maghrib on the countdown, and counts down to 2h20.
+    expect(r.seconds[0]).toBe(3 * 3600);
+    expect(r.seconds[r.seconds.length - 1]).toBeLessThan(r.seconds[0]);
   });
 
   it('after several prayers', () => {
@@ -418,11 +426,23 @@ describe('the hero runs from the kept picture to now', () => {
     expect(shownSeconds(tree)).toBe(Math.floor((heroAt(now).target.getTime() - now.getTime()) / 1000));
   });
 
-  it('draws the live hero at once when the launch had no picture', () => {
+  it('runs from the interval\'s start when the launch had no picture', () => {
+    // The first launch ever, or a picture of another look not shown: the
+    // run is the hero's, not the picture's.
     mockShown.value = null;
     const now = day(D, '13:07');
     jest.setSystemTime(now);
     const tree = renderCard(now);
-    expect(shownSeconds(tree)).toBe(Math.floor((heroAt(now).target.getTime() - now.getTime()) / 1000));
+    const h = heroAt(now);
+    expect(shownSeconds(tree)).toBe(Math.floor((h.target.getTime() - h.from.getTime()) / 1000));
+    const seen = new Set<number>();
+    for (let t = 0; t < WARP_AFTER_HIDE_MS + WARP_MAX_MS + 200; t += frame) {
+      act(() => {
+        jest.advanceTimersByTime(frame);
+      });
+      seen.add(shownSeconds(tree));
+    }
+    expect(seen.size).toBeGreaterThan(8);
+    expect(Math.abs(shownSeconds(tree) - Math.floor((h.target.getTime() - Date.now()) / 1000))).toBeLessThanOrEqual(2);
   });
 });

@@ -44,6 +44,7 @@ import { useIncreasedContrast } from '../../hooks/useIncreasedContrast';
 import {
   easeOutCubic,
   launchRunDurationMs,
+  type WarpStart,
   markLaunchRunReady,
   useLaunchRunActive,
   useLaunchWarp,
@@ -509,8 +510,40 @@ const HeroToday = memo(function HeroToday({
    * not with the setting off — then the hero is live from the first
    * frame and changes inside the fade.
    */
-  const launchRun = useLaunchWarp(reduceMotion || !launchRunWanted, !posed);
-  const warp = launchRun?.start ?? null;
+  const launchRun = useLaunchWarp(reduceMotion || !launchRunWanted, !posed, rail?.from.at.getTime() ?? null);
+  /**
+   * A PICTURE OF A PRAYER THAT HAS PASSED runs from THIS prayer's start.
+   * The picture is kept posed at the prayer the hero was counting from
+   * when the app was left; left in the background across a prayer, it
+   * opens on a picture of the last one — "Dhuhr in 5h 26m" at a quarter
+   * past two. Run from that, the hero swept from sunrise's sky to now,
+   * the countdown from a number that was never this prayer's. The
+   * picture is still what the fade opens on (there is no other), but the
+   * run starts where every launch is meant to: at the start of the
+   * interval the hero is in, the countdown whole, the rail empty, the sky
+   * at the prayer's hour. Decided once, when the run is: the start must
+   * not move under a run.
+   */
+  const ownStart = useRef<WarpStart | null>(null);
+  const ownDecided = useRef(false);
+  const pictured = launchRun?.start ?? null;
+  if (!launchRun) {
+    ownStart.current = null;
+    ownDecided.current = false;
+  } else if (!ownDecided.current) {
+    ownDecided.current = true;
+    // No picture at all (launchWarp.ts, `decide`), or a picture of a
+    // prayer that has passed: the interval's own start.
+    if (rail && (!pictured || pictured.targetAt !== target.at.getTime())) {
+      ownStart.current = {
+        remaining: Math.max(0, Math.floor((target.at.getTime() - rail.from.at.getTime()) / 1000)),
+        pct: 0,
+        at: rail.from.at.getTime(),
+        targetAt: target.at.getTime(),
+      };
+    }
+  }
+  const warp = ownStart.current ?? pictured;
   const warpE = launchRun?.e ?? 1;
   /**
    * The run's sky is drawn off the JS thread (HeroSky, `SkyRunLayers`):
@@ -738,7 +771,12 @@ const HeroToday = memo(function HeroToday({
    */
   const moodDark = skyTheme ? skyMoodFor(frame.passage, frame.t).isDark : null;
   const lastMoodDark = useRef<boolean | null>(null);
-  if (!posed && moodDark != null && lastMoodDark.current != null && lastMoodDark.current !== moodDark) {
+  // Not during a launch run: the run's sky crosses the switch in its own
+  // native layers, and the page already wears the hour the run is heading
+  // for (`liveSky`). A still taken mid-run froze the countdown for the
+  // fade's length and let it go at the run's end — the jump the run
+  // exists to avoid.
+  if (!posed && !launchRun && moodDark != null && lastMoodDark.current != null && lastMoodDark.current !== moodDark) {
     crossfadeScreen();
   }
   lastMoodDark.current = moodDark;

@@ -153,6 +153,6 @@ describe('the JS side', () => {
   });
 
   it('tells native what the app looks like', () => {
-    expect(ROOT).toMatch(/setLaunchSnapshotLook\(lookKeyOf\(settings\) \+ /);
+    expect(ROOT).toMatch(/setLaunchSnapshotLook\(lookKeyOf\(settings\)\);/);
   });
 });

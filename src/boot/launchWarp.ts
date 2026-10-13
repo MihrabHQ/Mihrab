@@ -60,6 +60,8 @@ export type WarpStart = {
   pct: number | null;
   /** When the picture was taken: the sky's hour. */
   at: number;
+  /** What the picture's hero counted down to. */
+  targetAt: number;
 };
 
 let claimed = false;
@@ -80,6 +82,7 @@ export function claimLaunchWarp(): WarpStart | null {
       remaining: Math.max(0, Math.floor((s.targetAt - s.fromAt) / 1000)),
       pct: 0,
       at: s.fromAt,
+      targetAt: s.targetAt,
     };
   }
   if (!(s.targetAt > s.at)) return null;
@@ -92,6 +95,7 @@ export function claimLaunchWarp(): WarpStart | null {
     remaining: Math.max(0, Math.floor((s.targetAt - (s.at - (s.at % 1000)) - 1) / 1000)),
     pct: s.fromAt > 0 && span > 0 ? clamp01((s.at - s.fromAt) / span) : null,
     at: s.at,
+    targetAt: s.targetAt,
   };
 }
 
@@ -147,7 +151,10 @@ export function warpSkyAt(start: WarpStart, now: number, e: number): number {
 // Read from here, every hero sees the same moment of the same run.
 
 type Run = {
-  start: WarpStart;
+  /** The picture's hero, or null when the launch drew no picture (see `decide`). */
+  start: WarpStart | null;
+  /** The hour the run starts from — the picture's, or the interval's start. */
+  at: number;
   /** The fade is over: the run may draw. */
   begun: boolean;
   /** When its first frame was drawn, pushed forward by every stall since. */
@@ -218,14 +225,24 @@ function endRun(): void {
 
 const HOLD = 'hero-run';
 
-function decide(reduceMotion: boolean): void {
+/**
+ * `ownAt`: the start of the interval the hero is in, when it knows it.
+ * A launch that drew no picture — the first ever, or one whose picture
+ * was of another look (the Sky theme's dark hour after a light one:
+ * native/LaunchSnapshot.ts, the look key) — used to draw the live hero
+ * at once. It runs now all the same, from the interval's start to now
+ * (TodayCard, `ownStart`): the run is the hero's, not the picture's; the
+ * picture only hides the first paint when there is one to show.
+ */
+function decide(reduceMotion: boolean, ownAt: number | null | undefined): void {
   if (run !== undefined) return;
   const start = claimLaunchWarp();
-  if (!start || reduceMotion) {
+  const at = start?.at ?? ownAt;
+  if (at == null || reduceMotion) {
     run = null;
     return;
   }
-  const r: Run = { start, begun: false, t0: null, duration: 0, lastSeen: null, delayOver: false, ready: false };
+  const r: Run = { start, at, begun: false, t0: null, duration: 0, lastSeen: null, delayOver: false, ready: false };
   run = r;
   // A hero mid-run is not a screen to keep for the next launch.
   holdLaunchSnapshot(HOLD, true);
@@ -249,7 +266,7 @@ function decide(reduceMotion: boolean): void {
 function begin(r: Run): void {
   if (run !== r || r.begun) return;
   r.begun = true;
-  r.duration = warpDurationMs(Math.abs(Date.now() - r.start.at));
+  r.duration = warpDurationMs(Math.abs(Date.now() - r.at));
   onBegin.forEach(fn => fn());
   setTimeout(() => {
     if (run === r) endRun();
@@ -275,7 +292,7 @@ export function markLaunchRunReady(): void {
  * first frame, while the picture fades). Null when there is no run, or it
  * is over.
  */
-export function warpProgress(now: number = Date.now()): { start: WarpStart; e: number } | null {
+export function warpProgress(now: number = Date.now()): { start: WarpStart | null; e: number } | null {
   const r = run;
   if (!r) return null;
   if (!r.begun) return { start: r.start, e: 0 };
@@ -304,8 +321,9 @@ export function warpProgress(now: number = Date.now()): { start: WarpStart; e: n
 export function useLaunchWarp(
   reduceMotion: boolean,
   enabled: boolean = true,
-): { start: WarpStart; e: number } | null {
-  if (enabled) decide(reduceMotion);
+  ownAt?: number | null,
+): { start: WarpStart | null; e: number } | null {
+  if (enabled) decide(reduceMotion, ownAt);
   // The setting is read asynchronously and can arrive after the run was
   // decided: Reduce Motion stops it where it is.
   if (enabled && reduceMotion && run) endRun();

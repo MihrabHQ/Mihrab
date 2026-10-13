@@ -46,7 +46,7 @@ describe('the picture\'s numbers', () => {
     mockState.value = `${at},${at + 2 * HOUR},${at - 2 * HOUR}`;
     const start = claimLaunchWarp();
     // A moment past the picture's second, as the hero ticks: 1 s under.
-    expect(start).toEqual({ remaining: 7199, pct: 0.5, at });
+    expect(start).toEqual({ remaining: 7199, pct: 0.5, at, targetAt: at + 2 * HOUR });
     expect(claimLaunchWarp()).toBeNull();
   });
 
@@ -74,7 +74,7 @@ describe('the picture\'s numbers', () => {
     mockState.value = `${at + HOUR},${at + 5 * HOUR},${at + HOUR},1`;
     beginLaunchWindow();
     expect(fp.firstPaintDone()).toBe(false);
-    expect(claimLaunchWarp()).toEqual({ remaining: 4 * 3600, pct: 0, at: at + HOUR });
+    expect(claimLaunchWarp()).toEqual({ remaining: 4 * 3600, pct: 0, at: at + HOUR, targetAt: at + 5 * HOUR });
     m.hideLaunchSnapshot();
     expect(hide).toHaveBeenCalledTimes(2);
     // …and a window that opened on no picture runs nothing, whatever the
@@ -86,7 +86,7 @@ describe('the picture\'s numbers', () => {
 });
 
 describe('the run', () => {
-  const start = { remaining: 3 * 3600, pct: 0.25, at: 10 * HOUR };
+  const start = { remaining: 3 * 3600, pct: 0.25, at: 10 * HOUR, targetAt: 13 * HOUR };
 
   it('starts on the picture and ends on the live numbers — either way', () => {
     // Same prayer, later: counts down.
@@ -225,16 +225,17 @@ describe('wiring', () => {
 
   it('runs every time but under Reduce Motion, and holds the picture back meanwhile', () => {
     const warp = read('src/boot/launchWarp.ts');
-    expect(warp).toMatch(/if \(!start \|\| reduceMotion\) \{\s*run = null;/);
+    // No picture is no reason not to run: the interval's own start does.
+    expect(warp).toMatch(/const at = start\?\.at \?\? ownAt;\s*if \(at == null \|\| reduceMotion\) \{\s*run = null;/);
     expect(warp).toMatch(/holdLaunchSnapshot\(HOLD, true\)/);
     expect(warp).toMatch(/holdLaunchSnapshot\(HOLD, false\)/);
-    expect(card).toMatch(/useLaunchWarp\(reduceMotion \|\| !launchRunWanted, !posed\)/);
+    expect(card).toMatch(/useLaunchWarp\(reduceMotion \|\| !launchRunWanted, !posed, rail\?\.from\.at\.getTime\(\) \?\? null\)/);
   });
 
   it('is a setting, on by default: off, nothing is posed and nothing runs', () => {
     const types = read('src/settings/types.ts');
     expect(types).toMatch(/launchAnimation: true,/);
-    expect(card).toMatch(/useLaunchWarp\(reduceMotion \|\| !launchRunWanted, !posed\)/);
+    expect(card).toMatch(/useLaunchWarp\(reduceMotion \|\| !launchRunWanted, !posed, rail\?\.from\.at\.getTime\(\) \?\? null\)/);
     expect(card).toMatch(/!fullBleedRunHeld && twinMayMount && runWanted/);
     expect(card).toMatch(/useEffect\(\(\) => setLaunchRunWanted\(runWanted\), \[runWanted\]\)/);
     const appearance = read('src/screens/settings/AppearanceCard.tsx');
