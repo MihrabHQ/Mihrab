@@ -1,5 +1,5 @@
 import { memo, useCallback, useMemo, useState } from 'react';
-import { type LayoutChangeEvent, StyleSheet, View } from 'react-native';
+import { Animated, type LayoutChangeEvent, StyleSheet, View } from 'react-native';
 import Svg, {
   Circle,
   Defs,
@@ -94,13 +94,24 @@ export function skyScene({
  * content (absoluteFill, no pointer events); the content takes its ink
  * from the sky (`skyInkAt`), not from the theme.
  */
+/**
+ * A launch run's sky, drawn off the JS thread — see `SkyRunLayers`.
+ * `frames` are the sky at evenly spaced points of the run, the first at
+ * its start and the last at now; `progress` is the run's eased progress,
+ * 0…1, a native-driven value the hero sets once a frame.
+ */
+export type SkyRun = { frames: SkyFrame[]; progress: Animated.Value };
+
 function HeroSkyImpl({
   frame,
+  run,
   bleed,
   sceneTop = 0,
   sceneBottom = 0,
 }: {
   frame: SkyFrame;
+  /** While a launch run draws: the sky as native layers, not `frame`. */
+  run?: SkyRun;
   /**
    * How far past its parent's box to draw, so a sky mounted inside the
    * padded hero still reaches the card's edges.
@@ -148,6 +159,9 @@ function HeroSkyImpl({
   const { cramped } = scene;
   const sceneY = (fraction: number) => sceneYOf(scene, fraction);
 
+  // The run's sky is the layers', once the sky has a size to lay them in.
+  const running = run && size.width > 0 && size.height > 0;
+
   const bodyXY = body.kind === 'none' || cramped ? null : { x: body.x, y: body.y };
   /**
    * The light this body gives off — its colour where the reader is
@@ -174,6 +188,10 @@ function HeroSkyImpl({
           end: -bleed.horizontal,
         },
       ]}>
+      {running ? (
+        <SkyRunLayers run={run} width={Math.ceil(size.width)} height={Math.ceil(size.height)} scene={scene} />
+      ) : null}
+      {running ? null : (
       <Svg
         // ROUNDED UP, NOT AS MEASURED. A layout width is a fraction of a
         // dp — a 1280px screen at 3x measures 426.667 — and the surface
@@ -225,7 +243,8 @@ function HeroSkyImpl({
           />
         ) : null}
       </Svg>
-      {body.kind === 'moon' && !cramped ? (
+      )}
+      {!running && body.kind === 'moon' && !cramped ? (
         <View style={[styles.moon, { start: `${body.x * 100}%`, top: sceneY(body.y) }]}>
           <Moon
             illuminated={body.illuminated}
@@ -240,6 +259,231 @@ function HeroSkyImpl({
 }
 
 type Scene = ReturnType<typeof skyScene>;
+
+/**
+ * ── THE RUN'S SKY, OFF THE JS THREAD ─────────────────────────────────
+ *
+ * A launch run sweeps the sky from the picture's hour to now in under a
+ * second, and drawing that by re-rendering the SVG above every frame cost
+ * 8 ms of JS a frame on a Pixel 10 Pro — the whole of a 120 Hz frame —
+ * and stuttered with everything else the launch does on that thread.
+ *
+ * So while the run draws, the sky is not re-rendered at all. It is built
+ * ONCE as a stack of still layers — the gradient at each of a few
+ * keyframes of the sweep (one an hour of sky, at most nine), each
+ * keyframe's halo, the stars, the sun and the moon — and every layer's
+ * opacity and place is an interpolation of ONE native-driven value, the
+ * run's progress. The hero sets that value once a frame, a single call
+ * into native; the UI thread does the rest. The keyframes crossfade one
+ * into the next, which is what the sky model does between its own keys
+ * (skyModel.ts, `keyed`: colours mixed linearly), so the run through the
+ * dawn passes through the dawn's pinks, not from night straight to day.
+ *
+ * A layer is dropped (opacity 0, which Android and iOS do not draw) once
+ * the one above it is fully in, so at any moment two layers are drawn.
+ * The bodies ride shared transforms through the keyframes' positions.
+ *
+ * The gradient and halo layers are drawn at a quarter of the sky's size
+ * and scaled up by the UI thread: react-native-svg backs each SVG view
+ * with a bitmap of its own size, and a dozen full-size ones cost the UI
+ * thread half a second to make — which the JS thread then waited for,
+ * right where the run was due. A gradient loses nothing to the scaling.
+ * The stars, small and sharp, are drawn at full size; the sun is a plain
+ * view; the moon its own small SVG.
+ */
+const EPS = 1e-3;
+const LAYER_DOWNSCALE = 4;
+
+function SkyRunLayersImpl({
+  run,
+  width,
+  height,
+  scene,
+}: {
+  run: SkyRun;
+  width: number;
+  height: number;
+  scene: Scene;
+}) {
+  const { frames, progress } = run;
+  const K = frames.length;
+  const built = useMemo(() => {
+    const es = frames.map((_, i) => (K <= 1 ? 1 : i / (K - 1)));
+    const yPx = (fraction: number) => (scene.banded && scene.room > 0 ? scene.y(fraction) : fraction * height);
+    /** In at its keyframe, held until the next is in, then dropped. */
+    const layerOpacity = (i: number, peak: number) => {
+      if (K <= 1) return progress.interpolate({ inputRange: [0, 1], outputRange: [peak, peak] });
+      if (i === 0) {
+        return progress.interpolate({ inputRange: [0, es[1], es[1] + EPS], outputRange: [peak, peak, 0], extrapolate: 'clamp' });
+      }
+      if (i === K - 1) return progress.interpolate({ inputRange: [es[i - 1], 1], outputRange: [0, peak], extrapolate: 'clamp' });
+      return progress.interpolate({
+        inputRange: [es[i - 1], es[i], es[i + 1], es[i + 1] + EPS],
+        outputRange: [0, peak, peak, 0],
+        extrapolate: 'clamp',
+      });
+    };
+    /** A value per keyframe, followed through the run. */
+    const through = (values: number[]) =>
+      K <= 1
+        ? progress.interpolate({ inputRange: [0, 1], outputRange: [values[0], values[0]] })
+        : progress.interpolate({ inputRange: es, outputRange: values, extrapolate: 'clamp' });
+    /** Where a body is at each keyframe — held where it is not there. */
+    const positions = (kind: 'sun' | 'moon') => {
+      const raw = frames.map(f => (f.body.kind === kind ? { x: f.body.x * width, y: yPx(f.body.y) } : null));
+      const first = raw.find(p => p != null);
+      if (!first) return null;
+      let last = first;
+      return raw.map(p => (last = p ?? last));
+    };
+    const body = frames.map(f => (f.body.kind === 'none' || scene.cramped ? null : f.body));
+    const bodyPos = frames.map(f => (f.body.kind === 'none' ? null : { x: f.body.x * width, y: yPx(f.body.y) }));
+    const anyBody = body.some(b => b != null);
+    let held = bodyPos.find(p => p != null) ?? { x: 0, y: 0 };
+    const bodyXs = bodyPos.map(p => (held = p ?? held).x);
+    held = bodyPos.find(p => p != null) ?? { x: 0, y: 0 };
+    const bodyYs = bodyPos.map(p => (held = p ?? held).y);
+    const bodyTx = through(bodyXs);
+    const bodyTy = through(bodyYs);
+    // One halo, in the colour of the keyframe that glows the most (the
+    // tint hardly moves across a run; the strength and the place do).
+    const haloScale = through(
+      body.map(b => (b ? (HALO_MIN_R + (HALO_MAX_R - HALO_MIN_R) * Math.sqrt(b.halo / SUN_GLOW_PEAK)) / HALO_MAX_R : 0.01)),
+    );
+    const haloPeak = body.reduce<(typeof body)[number]>((m, b) => (b && (!m || b.halo > m.halo) ? b : m), null);
+    const haloOpacity = through(body.map(b => (b ? b.halo : 0)));
+    const starsPeak = frames.reduce((m, f) => (f.stars > m.stars ? f : m), frames[0]);
+    const starsOpacity = through(frames.map(f => (scene.cramped ? 0 : f.stars)));
+    const moonFrame = frames.find(f => f.body.kind === 'moon');
+    const moonOpacity = through(frames.map(f => (f.body.kind === 'moon' && !scene.cramped ? 1 : 0)));
+    const moonPos = positions('moon');
+    return {
+      gradients: frames.map((f, i) => ({ top: f.top, bottom: f.bottom, opacity: layerOpacity(i, 1) })),
+      halo: haloPeak ? { light: haloPeak.light, opacity: haloOpacity } : null,
+      haloScaleUp: Animated.multiply(haloScale, LAYER_DOWNSCALE),
+      suns: body.map((b, i) => (b && b.kind === 'sun' ? { light: b.light, opacity: layerOpacity(i, b.alpha) } : null)),
+      anyBody,
+      bodyTx,
+      bodyTy,
+      haloScale,
+      stars: starsPeak.stars > 0 && !scene.cramped ? { glow: starsPeak.glow, opacity: starsOpacity } : null,
+      moon:
+        moonFrame && moonFrame.body.kind === 'moon' && moonPos
+          ? {
+              illuminated: moonFrame.body.illuminated,
+              tilt: moonFrame.body.tilt,
+              lit: moonFrame.body.light,
+              shadow: moonFrame.top,
+              opacity: moonOpacity,
+              tx: through(moonPos.map(p => p.x)),
+              ty: through(moonPos.map(p => p.y)),
+            }
+          : null,
+    };
+  }, [frames, progress, K, width, height, scene]);
+
+  // The small canvas the gradient and the halo are drawn on, scaled up
+  // about its centre to cover the sky.
+  const lw = Math.ceil(width / LAYER_DOWNSCALE);
+  const lh = Math.ceil(height / LAYER_DOWNSCALE);
+  const small = { width: lw, height: lh } as const;
+
+  return (
+    <>
+      {built.gradients.map((g, i) => (
+        <Animated.View
+          key={`g${i}`}
+          style={{
+            position: 'absolute',
+            left: (width - lw) / 2,
+            top: (height - lh) / 2,
+            ...small,
+            opacity: g.opacity,
+            transform: [{ scale: LAYER_DOWNSCALE }],
+          }}>
+          <Svg width={lw} height={lh}>
+            <Defs>
+              <LinearGradient id={`skyrun${i}`} x1="0" y1="0" x2="0" y2="1">
+                <Stop offset="0" stopColor={g.top} />
+                <Stop offset="1" stopColor={g.bottom} />
+              </LinearGradient>
+            </Defs>
+            <Rect x="0" y="0" width="100%" height="100%" fill={`url(#skyrun${i})`} />
+          </Svg>
+        </Animated.View>
+      ))}
+      {built.anyBody && built.halo ? (
+        <Animated.View
+          style={{
+            position: 'absolute',
+            left: -lw / 2,
+            top: -lh / 2,
+            ...small,
+            opacity: built.halo.opacity,
+            transform: [{ translateX: built.bodyTx }, { translateY: built.bodyTy }, { scale: built.haloScaleUp }],
+          }}>
+          <Svg width={lw} height={lh}>
+            <Defs>
+              <RadialGradient id="halorun" cx="50%" cy="50%" r={`${HALO_MAX_R}%`}>
+                <Stop offset="0" stopColor={built.halo.light} stopOpacity={1} />
+                <Stop offset="1" stopColor={built.halo.light} stopOpacity={0} />
+              </RadialGradient>
+            </Defs>
+            <Rect x="0" y="0" width="100%" height="100%" fill="url(#halorun)" />
+          </Svg>
+        </Animated.View>
+      ) : null}
+      {built.stars ? (
+        <Animated.View style={[StyleSheet.absoluteFill, { opacity: built.stars.opacity }]}>
+          <Svg width={width} height={height}>
+            <Stars scene={scene} glow={built.stars.glow} stars={1} />
+          </Svg>
+        </Animated.View>
+      ) : null}
+      {built.anyBody
+        ? built.suns.map((s, i) =>
+            s ? (
+              <Animated.View
+                key={`s${i}`}
+                style={{
+                  position: 'absolute',
+                  left: -SUN_R,
+                  top: -SUN_R,
+                  width: SUN_R * 2,
+                  height: SUN_R * 2,
+                  borderRadius: SUN_R,
+                  backgroundColor: s.light,
+                  opacity: s.opacity,
+                  transform: [{ translateX: built.bodyTx }, { translateY: built.bodyTy }],
+                }}
+              />
+            ) : null,
+          )
+        : null}
+      {built.moon ? (
+        <Animated.View
+          style={[
+            styles.moon,
+            {
+              left: 0,
+              top: 0,
+              opacity: built.moon.opacity,
+              transform: [
+                { translateX: built.moon.tx },
+                { translateY: built.moon.ty },
+                { translateX: -MOON / 2 },
+                { translateY: -MOON / 2 },
+              ],
+            },
+          ]}>
+          <Moon illuminated={built.moon.illuminated} tilt={built.moon.tilt} lit={built.moon.lit} shadow={built.moon.shadow} />
+        </Animated.View>
+      ) : null}
+    </>
+  );
+}
+
+const SkyRunLayers = memo(SkyRunLayersImpl);
 
 function sceneYOf(scene: Scene, fraction: number): number | `${number}%` {
   return scene.banded && scene.room > 0 ? scene.y(fraction) : `${fraction * 100}%`;

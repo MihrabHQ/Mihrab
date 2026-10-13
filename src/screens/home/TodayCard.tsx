@@ -21,8 +21,9 @@
  * Both gestures drive one selection: tap a chip, or swipe the card body the
  * way the carousel used to work.
  */
-import React, { memo, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import React, { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import {
+  Animated,
   FlatList,
   Pressable,
   StatusBar,
@@ -91,7 +92,7 @@ import {
 import type { JournalPrayer } from '../../journal/journal';
 import { pagerPosition } from './pagerPosition';
 import { LogPassedPrayerSheet } from './LogPassedPrayerSheet';
-import { HeroSky } from './HeroSky';
+import { HeroSky, type SkyRun } from './HeroSky';
 import { HERO_Y, skyFrame, skyInkAt, skyMoment, type SkyInkColors } from './skyModel';
 import { setHeroSkyBand } from './heroSkyBand';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -283,8 +284,10 @@ const HeroEyebrow = memo(function HeroEyebrow({
     </View>
   );
 });
-/** How many times the sky is redrawn over a launch run (see HeroToday). */
+/** How many times the hero's ink is re-read from the sky over a launch run (see HeroToday). */
 export const SKY_RUN_STEPS = 30;
+/** The most keyframes the run's native sky is built from (HeroSky, `SkyRunLayers`). */
+export const SKY_RUN_KEYFRAMES_MAX = 9;
 
 const HeroToday = memo(function HeroToday({
   target,
@@ -486,6 +489,35 @@ const HeroToday = memo(function HeroToday({
   const launchRun = useLaunchWarp(reduceMotion || !launchRunWanted, !posed);
   const warp = launchRun?.start ?? null;
   const warpE = launchRun?.e ?? 1;
+  /**
+   * The run's sky is drawn off the JS thread (HeroSky, `SkyRunLayers`):
+   * built once when the run is decided — the sky at a few keyframes from
+   * the picture's hour to now — and driven by this one native value, the
+   * run's eased progress, set once a frame below. Kept for the run and
+   * let go when it is over, when the live sky takes over in one render.
+   */
+  const runProgress = useRef<Animated.Value | null>(null);
+  if (!runProgress.current) runProgress.current = new Animated.Value(0, { useNativeDriver: true });
+  const skyRunRef = useRef<SkyRun | null>(null);
+  if (launchRun && warp && !skyRunRef.current) {
+    const nowMs = now.getTime();
+    const from = warpSkyAt(warp, nowMs, 0);
+    const hours = Math.abs(nowMs - from) / 3600_000;
+    const K = Math.max(2, Math.min(SKY_RUN_KEYFRAMES_MAX, Math.ceil(hours) + 1));
+    const day = skyToday ?? today;
+    const frames = Array.from({ length: K }, (_, i) => {
+      const at = new Date(Math.floor(warpSkyAt(warp, nowMs, i / (K - 1)) / 60_000) * 60_000);
+      return skyFrame(skyMoment(day, at, tomorrowFajr), at, { latitude, longitude });
+    });
+    runProgress.current.setValue(0);
+    skyRunRef.current = { frames, progress: runProgress.current };
+  } else if (!launchRun && skyRunRef.current) {
+    skyRunRef.current = null;
+  }
+  const skyRun = skyRunRef.current;
+  useLayoutEffect(() => {
+    if (launchRun) runProgress.current?.setValue(warpE);
+  });
 
   const units = useMemo(
     () => ({
@@ -511,12 +543,10 @@ const HeroToday = memo(function HeroToday({
    * fraction of a percent of it.
    */
   //
-  // During the launch run the sky moves in SKY_RUN_STEPS steps, not once a
-  // frame. The sky is the dear part of a frame — the SVG's gradient,
-  // halo, stars and moon cost 8 ms of JS to reconcile, the whole budget
-  // of a 120 Hz frame, measured on a Pixel 10 Pro — and a wash of colour
-  // crossing a second reads the same in thirty steps as in a hundred.
-  // The countdown and the rail, which are cheap, still move every frame.
+  // During the launch run the drawn sky is the native layers' (above);
+  // this frame is read for the ink and the status-bar band, and moves in
+  // SKY_RUN_STEPS steps rather than once a frame — the ink is text colour,
+  // and thirty steps of it over a second read as one change.
   const skyE = launchRun ? Math.floor(warpE * SKY_RUN_STEPS) / SKY_RUN_STEPS : warpE;
   const skyAt = warp ? warpSkyAt(warp, now.getTime(), skyE) : now.getTime();
   const minuteKey = Math.floor(skyAt / 60_000);
@@ -633,6 +663,7 @@ const HeroToday = memo(function HeroToday({
           the phone, up under the status bar. */}
       <HeroSky
         frame={frame}
+        run={skyRun ?? undefined}
         sceneTop={sceneTop}
         sceneBottom={sceneBottom}
         bleed={

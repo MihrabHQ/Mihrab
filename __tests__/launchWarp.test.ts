@@ -232,8 +232,28 @@ describe('wiring', () => {
     expect(eligible).toHaveBeenLastCalledWith(true);
   });
 
-  it('redraws the sky in steps over the run, and mounts the twin only after it', () => {
-    // The SVG is the dear part of a frame: thirty redraws, not one a frame.
+  it('draws the run\'s sky off the JS thread: still layers driven by one native value', () => {
+    const sky = read('src/screens/home/HeroSky.tsx');
+    // The hero builds the keyframes once per run and owns the value…
+    expect(card).toMatch(/new Animated\.Value\(0, \{ useNativeDriver: true \}\)/);
+    expect(card).toMatch(/const K = Math\.max\(2, Math\.min\(SKY_RUN_KEYFRAMES_MAX, Math\.ceil\(hours\) \+ 1\)\);/);
+    expect(card).toMatch(/skyRunRef\.current = \{ frames, progress: runProgress\.current \};/);
+    // …sets it once a frame, after the countdown's commit…
+    expect(card).toMatch(/useLayoutEffect\(\(\) => \{\s*if \(launchRun\) runProgress\.current\?\.setValue\(warpE\);\s*\}\);/);
+    expect(card).toMatch(/run=\{skyRun \?\? undefined\}/);
+    // …and the sky draws the layers, not the frame, while it runs.
+    expect(sky).toMatch(/const running = run && size\.width > 0 && size\.height > 0;/);
+    expect(sky).toMatch(/<SkyRunLayers run=\{run\}/);
+    expect(sky).toMatch(/const SkyRunLayers = memo\(SkyRunLayersImpl\);/);
+    // Every layer is an interpolation of the one value; a layer is dropped
+    // once the next is in; the gradients and the halo are drawn small.
+    expect(sky).toMatch(/outputRange: \[0, peak, peak, 0\]/);
+    expect(sky).toMatch(/const LAYER_DOWNSCALE = 4;/);
+    expect(sky).toMatch(/transform: \[\{ scale: LAYER_DOWNSCALE \}\]/);
+    expect(sky).toMatch(/haloScaleUp: Animated\.multiply\(haloScale, LAYER_DOWNSCALE\)/);
+  });
+
+  it('re-reads the ink in steps over the run, and mounts the twin only after it', () => {
     expect(card).toMatch(/const skyE = launchRun \? Math\.floor\(warpE \* SKY_RUN_STEPS\) \/ SKY_RUN_STEPS : warpE;/);
     expect(card).toMatch(/warpSkyAt\(warp, now\.getTime\(\), skyE\)/);
     // And a second sky (the posed twin's) is not mounted under the run.
