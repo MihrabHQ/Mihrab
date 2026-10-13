@@ -319,38 +319,34 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
    * strip and the list say when the table is hidden, and the list's
    * headline always.
    *
-   * `countdownRoomDp` is the height the card has left for a countdown of
-   * its own line. With the table hidden that room is the point of the
-   * layout: the countdown was squeezed in at the end of the name's row at
-   * 15sp, beside a second "in" over its own "in …", and on a narrow card or
-   * with a long prayer name it was clipped or pushed off the edge while the
-   * space under it stood empty. Given the room (≥ COUNTDOWN_LINE_MIN_DP) it
-   * gets a line of its own, sized to the height and the width it has. With
-   * less — the table showing, or a card one row tall — it stays at the end
-   * of the row, at the row's size, and says "in" once.
+   * The countdown sits at the end of the name's row, never bigger than
+   * the name and never on a line of its own: sized to the room the row
+   * has left after the name and the time (measured on the longest it can
+   * read, "in 23:59:59"), from the name's size down to the row's small
+   * print. A line of its own, sized to the spare height, read as a
+   * second headline above an empty card.
    */
   @Composable
-  private fun NextBlock(context: Context, m: Model, size: CardSize, top: Int, countdownRoomDp: Int = 0) {
+  private fun NextBlock(context: Context, m: Model, size: CardSize, top: Int) {
     val d = m.display
     val width = if (size.widthDp > 0) (size.widthDp - STRIP_CONTENT_INSET_DP).toFloat() else 0f
     val half = width / 2f
     val timeSp = scaledTimeSp(context, listOf(m.nextTime), NEXT_TIME_SP, d.timeScale, half, medium = false)
     val at = m.nextAt.takeIf { d.showCountdown }
-    val ownLine = at != null && countdownRoomDp >= COUNTDOWN_LINE_MIN_DP
     Label(context.getString(R.string.widget_next_label), 9f, d.muted, medium = true, modifier = GlanceModifier.padding(top = top.dp))
     Row(modifier = GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom) {
-      if (m.nextName.isNotEmpty()) Label(m.nextName, 24f, d.text, medium = true)
+      if (m.nextName.isNotEmpty()) Label(m.nextName, NEXT_NAME_SP, d.text, medium = true)
       if (m.nextTime.isNotEmpty()) Label(m.nextTime, timeSp, m.colors.accent, modifier = GlanceModifier.padding(start = 8.dp))
       Spacer(GlanceModifier.defaultWeight())
-      if (at != null && !ownLine) Countdown(at, m.now, 15f, d.muted, GlanceModifier.padding(start = 8.dp))
-    }
-    if (at != null && ownLine) {
-      // As tall as the room allows, as wide as the card allows: measured on
-      // the longest the countdown can read ("in 23:59:59").
-      val sample = context.getString(R.string.widget_countdown_format, "23:59:59")
-      val byHeight = (countdownRoomDp / COUNTDOWN_LINE_HEIGHT).coerceIn(COUNTDOWN_MIN_SP, COUNTDOWN_MAX_SP)
-      val sp = fitTextSp(context, sample, width, byHeight, COUNTDOWN_MIN_SP, medium = true)
-      Countdown(at, m.now, sp, d.text, GlanceModifier.padding(top = 2.dp))
+      if (at != null) {
+        val sp = if (width <= 0f) COUNTDOWN_ROW_SP else {
+          val taken = textWidthDp(context, m.nextName, NEXT_NAME_SP, medium = true) +
+            (if (m.nextTime.isEmpty()) 0f else textWidthDp(context, m.nextTime, timeSp, medium = false) + 8f) + 8f
+          val sample = context.getString(R.string.widget_countdown_format, "23:59:59")
+          fitTextSp(context, sample, width - taken, NEXT_NAME_SP, COUNTDOWN_ROW_SP, medium = false)
+        }
+        Countdown(at, m.now, sp, d.muted, GlanceModifier.padding(start = 8.dp))
+      }
     }
   }
 
@@ -411,11 +407,7 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
         }
       } else {
         // No table: the next prayer, large, says what the card is for.
-        // What is left for the countdown: the card, less the header, the
-        // label and the name row above it and the rule and line below.
-        val graph = if (practice != null) STRIP_CHROME_DP / 2 else 0
-        val used = (if (oneRow) 0 else HEADER_DP) + 4 + NEXT_LABEL_DP + NEXT_ROW_DP + (if (tight) 0 else RULE_DP) + FOOT_LINE_DP + graph
-        NextBlock(context, m, size, top = 4 + slack, countdownRoomDp = if (h > 0) h - used else COUNTDOWN_LINE_MIN_DP)
+        NextBlock(context, m, size, top = 4 + slack)
       }
       if (!tight) Rule(d.rule, top = 6, bottom = 8)
       Row(modifier = GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -529,18 +521,7 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     val timeSp = scaledClockSp(context, shown.map { it.minutes }, m.clock, baseSp, d.timeScale, half)
     Column(modifier = GlanceModifier.fillMaxSize()) {
       Header(m.location, m.hijri, d)
-      NextBlock(
-        context,
-        m,
-        size,
-        top = 6,
-        // Only with the table hidden: the table is what the list is for.
-        countdownRoomDp = when {
-          d.showTable -> 0
-          h <= 0 -> COUNTDOWN_LINE_MIN_DP
-          else -> h - HEADER_DP - 6 - NEXT_LABEL_DP - NEXT_ROW_DP - (if (practice != null) h / 2 else 0)
-        },
-      )
+      NextBlock(context, m, size, top = 6)
       if (d.showTable) {
         Column(modifier = GlanceModifier.fillMaxWidth().defaultWeight().padding(top = 6.dp)) {
           for ((i, r) in shown.withIndex()) {
@@ -626,19 +607,9 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     /** The list's next-prayer time, as the layout drew it. */
     private const val NEXT_TIME_SP = 19f
 
-    /** The countdown on a line of its own (table hidden): its range, and
-     *  the least height worth giving it a line for. */
-    private const val COUNTDOWN_MIN_SP = 16f
-    private const val COUNTDOWN_MAX_SP = 40f
-    private const val COUNTDOWN_LINE_MIN_DP = 22
-    /** Line height per sp, font padding included. */
-    private const val COUNTDOWN_LINE_HEIGHT = 1.35f
-    /** What sits around the next-prayer block, as drawn. */
-    private const val HEADER_DP = 18
-    private const val NEXT_LABEL_DP = 13
-    private const val NEXT_ROW_DP = 34
-    private const val RULE_DP = 15
-    private const val FOOT_LINE_DP = 18
+    private const val NEXT_NAME_SP = 24f
+    /** The countdown at the end of the next prayer's row, at the smallest. */
+    private const val COUNTDOWN_ROW_SP = 15f
   }
 }
 
