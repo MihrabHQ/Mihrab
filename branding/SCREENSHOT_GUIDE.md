@@ -132,9 +132,12 @@ iPad — is the Today screen under the **Sky theme**, the look a new
 install starts in since 2.31. It is the only Sky panel: the home panel
 already shows it, so a second one would say the same thing twice. The
 caption stays the identity's ("For every prayer, and everything
-between"). The Play feature graphic is unchanged — it is drawn from the
-night Today screen, not from `01_home`. The full-screen alert is not in
-the store story.
+between"). The Play feature graphic is drawn from the night Today
+screen rather than `01_home` (a pale day sky washes out at banner size),
+and that is under Sky too: `branding/store/feature/home-sky-night.png`,
+21:41 on Friday 2 October with every prayer logged — the five logged by
+tapping each row's circle, after "‹" back from the tomorrow the screen
+turns to after Isha. The full-screen alert is not in the store story.
 
 How it was shot. Android: the 2.28 home recipe with `"appearance":"sky"`
 in `prayerapp.settings.v1`; the emulator's `geo fix` only lands while

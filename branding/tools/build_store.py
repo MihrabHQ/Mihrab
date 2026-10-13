@@ -279,8 +279,10 @@ def android_assets():
 
     play = os.path.join(ROOT, "branding/store/play")
     # The night Today screen, not the 09:41 panel: moon and stars over the
-    # countdown read at banner size where a pale day sky washes out.
-    home = os.path.join(ROOT, "branding", "screenshots-2.28", "and-home-night.png")
+    # countdown read at banner size where a pale day sky washes out. Under
+    # the Sky theme (2.31), the look a new install starts in — the indigo
+    # night with the moon's glow — every prayer logged, at 21:41.
+    home = os.path.join(ROOT, "branding", "store", "feature", "home-sky-night.png")
     fg = os.path.join(play, "feature-graphic-1024x500.png")
     icon = os.path.join(play, "icon-512.png")
     feature_graphic(fg, home)
