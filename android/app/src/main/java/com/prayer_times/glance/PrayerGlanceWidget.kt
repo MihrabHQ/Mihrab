@@ -367,7 +367,10 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
    */
   private fun nextNameSp(context: Context, m: Model, size: CardSize, segmentDp: Float): Float {
     val width = if (size.widthDp > 0) (size.widthDp - STRIP_CONTENT_INSET_DP).toFloat() else 0f
-    val room = segmentDp - textLineDp(context, 9f, medium = true)
+    // Not the whole of the room: a headline that fills its box edge to
+    // edge reads as shouting, and the table's own times sit in theirs
+    // with air above and below.
+    val room = (segmentDp - textLineDp(context, 9f, medium = true)) * NEXT_NAME_FILL
     var sp = (NEXT_NAME_SP * room / textLineDp(context, NEXT_NAME_SP, medium = true)).coerceIn(NEXT_NAME_SP, NEXT_NAME_MAX_SP)
     if (width <= 0f) return sp
     val countdown = if (m.display.showCountdown && m.nextAt != null)
@@ -655,8 +658,10 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     private const val NEXT_TIME_SP = 19f
 
     private const val NEXT_NAME_SP = 24f
-    /** The name in the strip with the table hidden, at the largest. */
-    private const val NEXT_NAME_MAX_SP = 44f
+    /** The name in the strip with the table hidden: at the largest, and
+     *  how much of the segment's height it grows into. */
+    private const val NEXT_NAME_MAX_SP = 32f
+    private const val NEXT_NAME_FILL = 0.7f
     /** The countdown at the end of the next prayer's row, at the smallest. */
     private const val COUNTDOWN_ROW_SP = 15f
   }
