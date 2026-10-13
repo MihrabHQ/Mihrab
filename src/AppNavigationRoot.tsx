@@ -22,6 +22,7 @@ import {
   resolveAppPalette,
 } from './theme/appPalette';
 import { restoreSkyTheme, useSkyTheme } from './theme/skyTheme';
+import { PALETTE_STEPS, skyMoodFor } from './theme/skyMoods';
 import { buildNavigationTheme } from './theme/navigationTheme';
 import { useSyncWidgetUiHints } from './widget/syncWidgetUiHints';
 import { onWidgetQueueChanged } from './native/WidgetQueueWatcher';
@@ -76,10 +77,18 @@ export function AppNavigationRoot() {
   useSyncWidgetUiHints();
 
   // The kept launch screen is only shown under the settings it was taken
-  // with — see native/LaunchSnapshot.ts.
+  // with — see native/LaunchSnapshot.ts. Under the Sky theme the look is
+  // the hour's mood too, by family (the night, the dawn, the midday…): a
+  // picture from another mood — the dawn's violet, opened at midday — is
+  // not used rather than faded through, while one from the same mood a
+  // shade on is, and fades. Not the exact colours: those move every few
+  // minutes, and a picture that was never usable is no picture.
+  const lookSky = useSkyTheme(settings.appearance === 'sky');
+  const lookMood = settings.appearance === 'sky' ? skyMoodFor(lookSky.passage, lookSky.t, PALETTE_STEPS) : null;
+  const lookMoodKey = lookMood ? `${lookMood.name}:${lookMood.isDark ? 'dark' : 'light'}` : '';
   useEffect(() => {
-    if (hydrated) setLaunchSnapshotLook(lookKeyOf(settings));
-  }, [hydrated, settings]);
+    if (hydrated) setLaunchSnapshotLook(lookKeyOf(settings) + (lookMoodKey ? `|sky:${lookMoodKey}` : ''));
+  }, [hydrated, settings, lookMoodKey]);
 
   /**
    * Bring the Quran files on disk in line with the ones this build reads —

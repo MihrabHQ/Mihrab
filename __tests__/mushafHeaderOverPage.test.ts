@@ -75,7 +75,7 @@ describe('the bar is the page, on every platform', () => {
     // is what actually reaches the strip.
     expect(screen).toMatch(/isMacCatalyst\s*\n?\s*\?\s*\{[\s\S]{0,120}headerBackground: \(\) => \(/);
     expect(screen).toMatch(
-      /headerBackground[\s\S]{0,120}backgroundColor: TONE_PAGE_BG\[tone\]/,
+      /headerBackground[\s\S]{0,120}backgroundColor: ground/,
     );
     // And not by asking, which is what did not work.
     expect(screen).not.toMatch(/\n\s*headerBlurEffect: 'none'/);
@@ -98,7 +98,7 @@ describe('the bar is the page, on every platform', () => {
     // content and flashed the navigator's background for a frame at the
     // bottom of the window on the way into fullscreen.
     expect(screen).toMatch(
-      /headerTransparent:\s*true,\s*\n\s*headerStyle:\s*\{\s*backgroundColor:\s*TONE_PAGE_BG\[tone\]\s*\},?\s*\n\s*\};/,
+      /headerTransparent:\s*true,\s*\n\s*headerStyle:\s*\{\s*backgroundColor:\s*ground\s*\},?\s*\n\s*\};/,
     );
   });
 });

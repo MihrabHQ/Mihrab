@@ -13,7 +13,14 @@ import { useMemo } from 'react';
 import { useAppearanceSettings } from '../context/PrayerSettingsContext';
 import { resolveThemePaletteForMode, type AppPalette } from '../theme/appPalette';
 import { useSkyTheme } from '../theme/skyTheme';
-import { scrubberChrome, toneIsDark, type MushafTone, type ToneChrome } from './mushafTone';
+import {
+  isThemedDarkPage,
+  scrubberChrome,
+  toneIsDark,
+  TONE_PAGE_BG,
+  type MushafTone,
+  type ToneChrome,
+} from './mushafTone';
 
 /** The selected theme, rendered for this page's mode. */
 export function usePagePalette(tone: MushafTone): AppPalette {
@@ -61,4 +68,20 @@ export function usePagePalette(tone: MushafTone): AppPalette {
 export function useScrubberChrome(tone: MushafTone): ToneChrome {
   const pagePalette = usePagePalette(tone);
   return useMemo(() => scrubberChrome(tone, pagePalette), [tone, pagePalette]);
+}
+
+/**
+ * The page's ground. The print's own (`TONE_PAGE_BG`) — except a night
+ * page under the Sky theme, which takes the hour's dark ground (the
+ * night's indigo, the evening's purple) so the theme carries into the
+ * screen read longest; at the same lightness as the OLED page is dark,
+ * and still absolute black when Pure black is on, since the palette
+ * rendered for the page already honours that. Paper and sepia are paper
+ * and sepia whatever the hour.
+ */
+export function usePageGround(tone: MushafTone): string {
+  const { slice } = useAppearanceSettings();
+  const pagePalette = usePagePalette(tone);
+  if (slice.appearance === 'sky' && isThemedDarkPage(tone, pagePalette)) return String(pagePalette.bg);
+  return TONE_PAGE_BG[tone];
 }

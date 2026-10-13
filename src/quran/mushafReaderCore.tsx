@@ -31,7 +31,7 @@ import { useIslamicDay } from '../hijri/useIslamicDay';
 import { PageProgressMark, usePageProgress } from './PageProgressMark';
 import { useKeyboardInset } from '../hooks/useKeyboardInset';
 import { useAppPalette } from '../hooks/useAppPalette';
-import { usePagePalette } from './useScrubberChrome';
+import { usePageGround, usePagePalette } from './useScrubberChrome';
 import {
   easternNumerals,
   findPageForAyah,
@@ -71,7 +71,6 @@ import {
   nextMushafTone,
   pageOrnament,
   prefsForTone,
-  TONE_PAGE_BG,
   toneIsDark,
   type MushafTone,
   type MushafToneChoice,
@@ -310,7 +309,10 @@ export function useMushafReaderCore({
   // page colour appears once — when it is known to be right. The window is
   // 5K on a Mac, which is where guessing wrong is impossible to miss.
   const hydrated = useQuranHydrated();
-  const pageBg = !hydrated ? 'transparent' : TONE_PAGE_BG[tone];
+  // The print's own ground — or, on a night page under the Sky theme, the
+  // hour's (useScrubberChrome, `usePageGround`).
+  const ground = usePageGround(tone);
+  const pageBg = !hydrated ? 'transparent' : ground;
   // The page's own gold — or, on a dark page painted by a colour theme,
   // that theme's dark accent, so the beginning of a surah and the page
   // bar's knob are the colour the reader chose (see `pageOrnament`).
@@ -367,10 +369,10 @@ export function useMushafReaderCore({
   useEffect(() => {
     if (!hydrated) return;
     return setSystemBarSurface({
-      color: TONE_PAGE_BG[tone],
+      color: ground,
       isDark: toneIsDark(tone),
     });
-  }, [hydrated, tone]);
+  }, [hydrated, tone, ground]);
 
   // ── Keep the screen awake while reading (QR-13, #52) ────────────────
   // Through the counted lock: Tilāwah holds it too, and is still on screen

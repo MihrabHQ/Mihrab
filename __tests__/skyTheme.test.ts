@@ -18,17 +18,24 @@ jest.mock('@react-native-async-storage/async-storage', () => {
   };
 });
 
+jest.mock('../src/native/LaunchSnapshot', () => ({ crossfadeScreen: jest.fn() }));
+
+// eslint-disable-next-line import/first
+import { crossfadeScreen } from '../src/native/LaunchSnapshot';
 // eslint-disable-next-line import/first
 import { resolveAppPalette, resolveThemePaletteForMode, skyPalette } from '../src/theme/appPalette';
 // eslint-disable-next-line import/first
 import { contrastRatio } from '../src/theme/themeMap';
 // eslint-disable-next-line import/first
-import { PALETTE_STEPS, SKY_MOODS, skyMoodAt, skyMoodFor, type SkyMood } from '../src/theme/skyMoods';
+import { PALETTE_STEPS, SKY_MOODS, skyMoodAt, skyMoodFor, widgetSkyColors, type SkyMood } from '../src/theme/skyMoods';
 // eslint-disable-next-line import/first
 import { SKY_THEME_MID_AT, skyColorAt, themedSkyFrame, type SkyPassage } from '../src/screens/home/skyModel';
 // eslint-disable-next-line import/first
+import { SUN_HORIZON_GROWTH, sunScaleAt } from '../src/screens/home/HeroSky';
+// eslint-disable-next-line import/first
 import {
   _resetSkyThemeForTests,
+  _subscribeSkyThemeForTests as useSkyThemeSubscribe,
   DEFAULT_SKY_THEME,
   getSkyTheme,
   publishSkyTheme,
@@ -171,6 +178,29 @@ describe('the palette', () => {
 });
 
 describe('the store', () => {
+  it('asks for a crossfade of the screen when the page turns from dark to light or back, and only then, and only while someone is looking', () => {
+    const fade = crossfadeScreen as jest.Mock;
+    fade.mockClear();
+    const off = useSkyThemeSubscribe();
+    // The first word from the hero is not a change.
+    publishSkyTheme({ ...SKIES.dawn, t: 0.9 });
+    expect(fade).not.toHaveBeenCalled();
+    // Sunrise: dark to light.
+    publishSkyTheme({ ...SKIES.day, t: 0.0 });
+    expect(fade).toHaveBeenCalledTimes(1);
+    // Through the day: no fade.
+    publishSkyTheme({ ...SKIES.day, t: 0.5 });
+    publishSkyTheme({ ...SKIES.golden });
+    expect(fade).toHaveBeenCalledTimes(1);
+    // Halfway to Maghrib: light to dark.
+    publishSkyTheme({ ...SKIES.sunset, t: 0.5 });
+    expect(fade).toHaveBeenCalledTimes(2);
+    // Nobody looking (the theme is off): no fade for a flip.
+    off();
+    publishSkyTheme({ ...SKIES.day, t: 0.5 });
+    expect(fade).toHaveBeenCalledTimes(2);
+  });
+
   it('keeps the last sky, on disk too, and the live sky beats the remembered one', async () => {
     expect(getSkyTheme()).toEqual(DEFAULT_SKY_THEME);
     publishSkyTheme(SKIES.dawn);
@@ -223,6 +253,71 @@ describe('the hero under the theme', () => {
     expect(sky).toMatch(/const field = dense \? STAR_FIELD_DENSE : STAR_FIELD;/);
     expect(sky).toMatch(/<Stop key="m" offset=\{frame\.midAt\} stopColor=\{frame\.mid\} \/>/);
     expect(sky).toMatch(/<Stop key="m" offset=\{g\.midAt\} stopColor=\{g\.mid\} \/>/);
+  });
+});
+
+describe('the widgets', () => {
+  it('take a dark card in the hour\'s hue with an accent that reads on it, at every hour', () => {
+    const passages: SkyPassage[] = ['night', 'dawn', 'day', 'sunset', 'dusk'];
+    for (const passage of passages) {
+      for (let t = 0; t <= 1.0001; t += 0.05) {
+        const { bg, accent } = widgetSkyColors(skyMoodFor(passage, t));
+        // Light text on the card: the card is dark whatever the app's page.
+        expect(contrastRatio('#FFFFFF', bg)).toBeGreaterThanOrEqual(7);
+        expect(contrastRatio(accent, bg)).toBeGreaterThanOrEqual(4.5);
+      }
+    }
+    expect(widgetSkyColors(SKY_MOODS.night)).toEqual({ bg: SKY_MOODS.night.bg, accent: SKY_MOODS.night.accent });
+    const hook = read('src/widget/syncWidgetUiHints.ts');
+    expect(hook).toMatch(/setAndroidWidgetSky\?\.\(skyBg, skyAccent\)/);
+    expect(hook).toMatch(/const skyColors = skyOn \? widgetSkyColors\(/);
+  });
+});
+
+describe('the sky\'s small life', () => {
+  it('the sun grows toward the horizon, in the still sky and in the run alike; three stars breathe, not under Reduce Motion', () => {
+    expect(sunScaleAt(0.08)).toBe(1);
+    expect(sunScaleAt(0.26)).toBeCloseTo(1 + SUN_HORIZON_GROWTH, 5);
+    expect(sunScaleAt(0.17)).toBeCloseTo(1 + SUN_HORIZON_GROWTH / 2, 5);
+    const sky = read('src/screens/home/HeroSky.tsx');
+    expect(sky).toMatch(/r=\{SUN_R \* sunScaleAt\(body\.y\)\}/);
+    expect(sky).toMatch(/sunScale: through\(body\.map\(b => \(b && b\.kind === 'sun' \? sunScaleAt\(b\.y\) : 1\)\)\)/);
+    expect(sky).toMatch(/\{ scale: built\.sunScale \}/);
+    expect(sky).toMatch(/\{!running && drawStars && denseStars \? \(\s*<Twinkle/);
+    expect(sky).toMatch(/if \(reduceMotion\) return undefined;/);
+    expect(sky).toMatch(/easing: Easing\.inOut\(Easing\.sin\), useNativeDriver: true/);
+  });
+});
+
+describe('the reader', () => {
+  it('paints a night page in the hour\'s dark ground under the theme, and nothing else', () => {
+    const chrome = read('src/quran/useScrubberChrome.ts');
+    expect(chrome).toMatch(/if \(slice\.appearance === 'sky' && isThemedDarkPage\(tone, pagePalette\)\) return String\(pagePalette\.bg\);/);
+    expect(chrome).toMatch(/return TONE_PAGE_BG\[tone\];/);
+    const core = read('src/quran/mushafReaderCore.tsx');
+    expect(core).toMatch(/const ground = usePageGround\(tone\);/);
+    expect(core).not.toMatch(/TONE_PAGE_BG\[tone\]/);
+    const surah = read('src/screens/quran/MushafSurahScreen.tsx');
+    expect(surah).toMatch(/const ground = usePageGround\(tone\);/);
+    expect(surah).not.toMatch(/TONE_PAGE_BG/);
+  });
+});
+
+describe('access and polish', () => {
+  it('is offered in onboarding, keyed into the launch picture\'s look by mood, and the glow yields to increased contrast', () => {
+    expect(read('src/onboarding/screens/PersonaliseScreen.tsx')).toMatch(/\{ key: 'sky', label: t\('settings\.themeSky'\) \}/);
+    const root = read('src/AppNavigationRoot.tsx');
+    expect(root).toMatch(/const lookMoodKey = lookMood \? `\$\{lookMood\.name\}:\$\{lookMood\.isDark \? 'dark' : 'light'\}` : '';/);
+    expect(root).toMatch(/setLaunchSnapshotLook\(lookKeyOf\(settings\) \+ \(lookMoodKey \? `\|sky:\$\{lookMoodKey\}` : ''\)\)/);
+    const card = read('src/screens/home/TodayCard.tsx');
+    expect(card).toMatch(/const moreContrast = useIncreasedContrast\(\);/);
+    expect(card).toMatch(/if \(!skyTheme \|\| moreContrast\) return null;/);
+    // The hero asks for the crossfade before it repaints across the switch.
+    expect(card).toMatch(/lastMoodDark\.current !== moodDark\) \{\s*crossfadeScreen\(\);/);
+    const hook = read('src/hooks/useIncreasedContrast.ts');
+    expect(hook).toMatch(/isDarkerSystemColorsEnabled/);
+    expect(hook).toMatch(/isReduceTransparencyEnabled/);
+    expect(hook).toMatch(/isHighTextContrastEnabled/);
   });
 });
 

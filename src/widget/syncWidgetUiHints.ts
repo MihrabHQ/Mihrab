@@ -4,6 +4,8 @@ import { usePrayerSettings } from '../context/PrayerSettingsContext';
 import type { PrayerAppSettings, WidgetHighlightId } from '../settings/types';
 import { getPrayerWidgetModule } from '../native/PrayerWidget';
 import { coerceWidgetTimeScale } from '../settings/storage';
+import { useSkyTheme } from '../theme/skyTheme';
+import { PALETTE_STEPS, skyMoodFor, widgetSkyColors } from '../theme/skyMoods';
 
 // 'dynamic' is gone (2026-08-27), so a native side still reporting it is
 // not adopted back into settings.
@@ -197,4 +199,18 @@ export function useSyncWidgetUiHints(): void {
     dynamicHl,
     settings,
   ]);
+
+  // The Sky theme on the widgets (theme/skyMoods.ts, `widgetSkyColors`):
+  // the hour's colours whenever they change, and nothing — the widget's
+  // own settings again — when the theme is off.
+  const skyOn = settings.appearance === 'sky';
+  const sky = useSkyTheme(skyOn);
+  const skyColors = skyOn ? widgetSkyColors(skyMoodFor(sky.passage, sky.t, PALETTE_STEPS)) : null;
+  const skyBg = skyColors?.bg ?? null;
+  const skyAccent = skyColors?.accent ?? null;
+  useEffect(() => {
+    if (!hydrated || !nativeSynced || Platform.OS !== 'android') return;
+    const mod = getPrayerWidgetModule();
+    void mod?.setAndroidWidgetSky?.(skyBg, skyAccent)?.catch(() => {});
+  }, [hydrated, nativeSynced, skyBg, skyAccent]);
 }

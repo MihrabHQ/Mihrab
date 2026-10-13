@@ -32,9 +32,21 @@ private data class WidgetStyle(
    * default) keeps the neutral #1C1C1E exactly.
    */
   val tinted: Boolean,
+  /**
+   * The app's Sky theme, when it is on: the card and the accent in the
+   * hour's own colours (a dark card in the hour's hue, whatever the app's
+   * own page is, since the widget draws light text), written by JS as the
+   * hour changes and cleared when the theme is turned off. Empty: not on.
+   */
+  val skyBg: String = "",
+  val skyAccent: String = "",
 ) {
+  private fun parseHexOrNull(h: String): Int? =
+    if (h.matches(Regex("^#([0-9A-Fa-f]{6})$"))) try { Color.parseColor(h) } catch (_: Exception) { null } else null
+
   fun backgroundArgb(): Int {
     val a = (bgOpacityPercent.coerceIn(0, 100) * 255 / 100f).toInt().coerceIn(0, 255)
+    parseHexOrNull(skyBg)?.let { return Color.argb(a, Color.red(it), Color.green(it), Color.blue(it)) }
     if (!tinted) return Color.argb(a, BASE_BG_R, BASE_BG_G, BASE_BG_B)
     // Wash the neutral card toward the accent. A modest fraction: the widget
     // draws light text on this dark card, so the card stays dark enough to
@@ -56,6 +68,7 @@ private data class WidgetStyle(
 
   /** Context-free accent resolution, shared by the highlight and the tint. */
   private fun highlightInt(): Int {
+    parseHexOrNull(skyAccent)?.let { return it }
     if (highlightId.equals("custom", ignoreCase = true)) {
       val h = highlightHex.trim()
       if (h.matches(Regex("^#([0-9A-Fa-f]{6})$"))) {
@@ -127,11 +140,15 @@ private fun readWidgetStyle(prefs: SharedPreferences): WidgetStyle {
   // resolves to green like any other unknown id.
   val tinted =
     prefs.getBoolean(PrayerWidgetProvider.PREFS_WIDGET_TINTED, false)
+  val skyBg = prefs.getString(PrayerWidgetProvider.PREFS_WIDGET_SKY_BG, "") ?: ""
+  val skyAccent = prefs.getString(PrayerWidgetProvider.PREFS_WIDGET_SKY_ACCENT, "") ?: ""
   return WidgetStyle(
     opacity.coerceIn(0, 100),
     hid.ifEmpty { "green" },
     hex,
     tinted,
+    skyBg,
+    skyAccent,
   )
 }
 
@@ -180,6 +197,8 @@ open class PrayerWidgetProvider : GlanceAppWidgetReceiver() {
     const val PREFS_WIDGET_HIGHLIGHT_DYNAMIC = "widget_highlight_dynamic"
     /** "Tinted surfaces": wash the widget card toward the accent. */
     const val PREFS_WIDGET_TINTED = "widget_tinted_surfaces"
+    const val PREFS_WIDGET_SKY_BG = "widget_sky_bg"
+    const val PREFS_WIDGET_SKY_ACCENT = "widget_sky_accent"
     /**
      * The language tag Mihrab itself is running in, copied out of the payload
      * when JS saves it. See `localized`.

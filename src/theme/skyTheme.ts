@@ -28,6 +28,7 @@ import { useSyncExternalStore } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { SkyPassage } from '../screens/home/skyModel';
 import { PALETTE_STEPS, skyMoodFor, type SkyMood } from './skyMoods';
+import { crossfadeScreen } from '../native/LaunchSnapshot';
 
 export type SkyThemeColors = {
   /** The gradient's top colour, #RRGGBB. */
@@ -87,8 +88,17 @@ export function publishSkyTheme(next: SkyThemeColors): void {
     published = true;
     return;
   }
+  // The page turns from dark to light or back (sunrise; the middle of the
+  // sunset): the only two moments the whole screen changes at once. A
+  // still of it now, faded over what it becomes — asked for before the
+  // change renders, and only while the theme is the one looking.
+  const flips =
+    published &&
+    listeners.size > 0 &&
+    skyMoodFor(current.passage, current.t).isDark !== skyMoodFor(next.passage, next.t).isDark;
   current = { top: next.top, bottom: next.bottom, passage: next.passage, t: next.t };
   published = true;
+  if (flips) crossfadeScreen();
   emit();
   AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(current)).catch(() => {
     // Best effort: the next launch opens in the default night instead.
@@ -138,7 +148,10 @@ export function useSkyTheme(enabled: boolean): SkyThemeColors {
   return useSyncExternalStore(enabled ? subscribe : noSubscribe, getSkyTheme, getSkyTheme);
 }
 
-/** Test seam. */
+/** Test seams. */
+export function _subscribeSkyThemeForTests(): () => void {
+  return subscribe(() => {});
+}
 export function _resetSkyThemeForTests(): void {
   current = DEFAULT_SKY_THEME;
   published = false;

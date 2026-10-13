@@ -1,5 +1,6 @@
-import { memo, useCallback, useMemo, useState } from 'react';
-import { Animated, type LayoutChangeEvent, StyleSheet, View } from 'react-native';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Animated, Easing, type LayoutChangeEvent, StyleSheet, View } from 'react-native';
+import { useReduceMotion } from '../../hooks/useReduceMotion';
 import Svg, {
   Circle,
   Defs,
@@ -25,6 +26,16 @@ const HALO_MAX_R = 38;
 export const MOON = 22;
 /** The sun's radius, dp. */
 export const SUN_R = 9;
+/**
+ * The sun near the horizon is drawn larger — up to this much more than
+ * at noon — as it looks: the air magnifies and reddens it as it rises
+ * and sets. `skyModel` puts it at y 0.26 on the horizon and 0.08 at noon.
+ */
+export const SUN_HORIZON_GROWTH = 0.6;
+export function sunScaleAt(y: number): number {
+  const horizon = Math.max(0, Math.min(1, (y - 0.08) / (0.26 - 0.08)));
+  return 1 + SUN_HORIZON_GROWTH * horizon;
+}
 /**
  * Below this much open sky, no body is drawn: a moon (22dp) in a 40dp
  * band already touches both edges. The gradient alone says the hour.
@@ -245,13 +256,16 @@ function HeroSkyImpl({
           <Circle
             cx={`${body.x * 100}%`}
             cy={sceneY(body.y)}
-            r={SUN_R}
+            r={SUN_R * sunScaleAt(body.y)}
             fill={body.light}
             fillOpacity={body.alpha}
           />
         ) : null}
       </Svg>
       )}
+      {!running && drawStars && denseStars ? (
+        <Twinkle scene={scene} glow={glow} stars={stars} width={size.width} height={size.height} />
+      ) : null}
       {!running && body.kind === 'moon' && !cramped ? (
         <View style={[styles.moon, { start: `${body.x * 100}%`, top: sceneY(body.y) }]}>
           <Moon
@@ -372,6 +386,7 @@ function SkyRunLayersImpl({
       halo: haloPeak ? { light: haloPeak.light, opacity: haloOpacity } : null,
       haloScaleUp: Animated.multiply(haloScale, LAYER_DOWNSCALE),
       suns: body.map((b, i) => (b && b.kind === 'sun' ? { light: b.light, opacity: layerOpacity(i, b.alpha) } : null)),
+      sunScale: through(body.map(b => (b && b.kind === 'sun' ? sunScaleAt(b.y) : 1))),
       anyBody,
       bodyTx,
       bodyTy,
@@ -469,7 +484,7 @@ function SkyRunLayersImpl({
                   borderRadius: SUN_R,
                   backgroundColor: s.light,
                   opacity: s.opacity,
-                  transform: [{ translateX: built.bodyTx }, { translateY: built.bodyTy }],
+                  transform: [{ translateX: built.bodyTx }, { translateY: built.bodyTy }, { scale: built.sunScale }],
                 }}
               />
             ) : null,
@@ -564,6 +579,76 @@ const Stars = memo(function Stars({
     </>
   );
 });
+
+/**
+ * Three of the night's stars breathing — a slow brightening and dimming,
+ * each on its own period, so the field is alive without ever drawing the
+ * eye. Native-driven opacity on three small views laid over the drawn
+ * stars; nothing on the JS thread after the loops start. Still under
+ * Reduce Motion, and gone with the stars by day.
+ */
+const TWINKLERS: ReadonlyArray<{ star: number; period: number; delay: number }> = [
+  { star: 1, period: 2600, delay: 0 },
+  { star: 5, period: 3400, delay: 900 },
+  { star: 10, period: 3000, delay: 1700 },
+];
+
+function TwinkleImpl({
+  scene,
+  glow,
+  stars,
+  width,
+  height,
+}: {
+  scene: Scene;
+  glow: string;
+  stars: number;
+  width: number;
+  height: number;
+}) {
+  const reduceMotion = useReduceMotion();
+  const values = useRef(TWINKLERS.map(() => new Animated.Value(0, { useNativeDriver: true }))).current;
+  useEffect(() => {
+    if (reduceMotion) return undefined;
+    const loops = TWINKLERS.map((tw, i) =>
+      Animated.loop(
+        Animated.sequence([
+          Animated.delay(tw.delay),
+          Animated.timing(values[i], { toValue: 1, duration: tw.period / 2, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
+          Animated.timing(values[i], { toValue: 0, duration: tw.period / 2, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
+        ]),
+      ),
+    );
+    loops.forEach(l => l.start());
+    return () => loops.forEach(l => l.stop());
+  }, [reduceMotion, values]);
+  if (reduceMotion || width <= 0 || height <= 0) return null;
+  return (
+    <>
+      {TWINKLERS.map((tw, i) => {
+        const [x, y, r] = STAR_FIELD_DENSE[tw.star];
+        const yPx = scene.banded && scene.room > 0 ? scene.y(y / 100) : (y / 100) * height;
+        const size = (r + 0.8) * 2;
+        return (
+          <Animated.View
+            key={tw.star}
+            style={{
+              position: 'absolute',
+              left: (x / 100) * width - size / 2,
+              top: yPx - size / 2,
+              width: size,
+              height: size,
+              borderRadius: size / 2,
+              backgroundColor: glow,
+              opacity: Animated.multiply(values[i], 0.75 * stars),
+            }}
+          />
+        );
+      })}
+    </>
+  );
+}
+const Twinkle = memo(TwinkleImpl);
 
 /**
  * A moon barely wider than a word, in tonight's real phase and turned the

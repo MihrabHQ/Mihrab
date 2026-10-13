@@ -239,6 +239,27 @@ class PrayerWidgetModule(private val reactContext: ReactApplicationContext) :
   }
 
   /**
+   * The app's Sky theme on the widgets: the card and the accent in the
+   * hour's colours, or both empty to let the widget's own settings decide
+   * again. See PrayerWidgetProvider.WidgetStyle.skyBg.
+   */
+  @ReactMethod
+  fun setAndroidWidgetSky(bgHex: String?, accentHex: String?, promise: Promise) {
+    try {
+      reactContext
+        .getSharedPreferences(PrayerWidgetProvider.PREFS_NAME, Context.MODE_PRIVATE)
+        .edit()
+        .putString(PrayerWidgetProvider.PREFS_WIDGET_SKY_BG, bgHex?.trim() ?: "")
+        .putString(PrayerWidgetProvider.PREFS_WIDGET_SKY_ACCENT, accentHex?.trim() ?: "")
+        .apply()
+      PrayerWidgetProvider.requestUpdate(reactContext)
+      promise.resolve(null)
+    } catch (e: Exception) {
+      promise.reject("E_WIDGET_SKY", e.message, e)
+    }
+  }
+
+  /**
    * The prayer-times widget's display options as stored — they can be
    * changed from the widget's own settings screen, so the app reads them
    * back. Null until either side has written them.

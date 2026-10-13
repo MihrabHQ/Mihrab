@@ -53,7 +53,7 @@ describe('the immersive reader', () => {
   const scrubber = read('src/quran/MushafPageScrubber.tsx');
 
   it('paints the header in the page tone on Android as well as iOS', () => {
-    expect(screen).toMatch(/headerStyle: \{ backgroundColor: TONE_PAGE_BG\[tone\] \}/);
+    expect(screen).toMatch(/headerStyle: \{ backgroundColor: ground \}/);
     expect(screen).toMatch(/headerTintColor: ink/);
     // No longer gated on iOS.
     expect(screen).not.toMatch(/const pageChrome =\s*\n?\s*isIOS && quranHydrated/);

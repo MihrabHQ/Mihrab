@@ -45,7 +45,8 @@ import { surahName } from '../../quran/surahName';
 import { useFullscreenVeil } from '../../quran/fullscreenVeil';
 import { useSwitchRiwayah } from '../../quran/useSwitchRiwayah';
 import Svg, { Path } from 'react-native-svg';
-import { mushafTone, toneIsDark, TONE_CHROME, TONE_PAGE_BG } from '../../quran/mushafTone';
+import { mushafTone, toneIsDark, TONE_CHROME } from '../../quran/mushafTone';
+import { usePageGround } from '../../quran/useScrubberChrome';
 import {
   useQuranState,
   useQuranHydrated,
@@ -103,6 +104,7 @@ export function MushafSurahScreen({
   // follow the PAGE, not the app theme (on "auto" the page itself follows
   // the theme, which is the one place the two agree by construction).
   const tone = mushafTone(quran.prefs, palette.isDark);
+  const ground = usePageGround(tone);
 
   // Incrementing signal → the reader opens its unified sheet scrolled to
   // the recitation section (the header "Audio" button).
@@ -234,7 +236,7 @@ export function MushafSurahScreen({
     // full-window white flash on a large Mac Catalyst window.
     const dark = toneIsDark(tone);
     const contentStyle = {
-      backgroundColor: !quranHydrated ? palette.bg : TONE_PAGE_BG[tone],
+      backgroundColor: !quranHydrated ? palette.bg : ground,
     };
     /**
      * Header colours follow the PAGE, not the app theme.
@@ -315,7 +317,7 @@ export function MushafSurahScreen({
       ? {
           headerStyle: { backgroundColor: 'transparent' },
           headerBackground: () => (
-            <View style={{ flex: 1, backgroundColor: TONE_PAGE_BG[tone] }}>
+            <View style={{ flex: 1, backgroundColor: ground }}>
               {sidebarUp ? (
                 <View
                   style={[
@@ -353,7 +355,7 @@ export function MushafSurahScreen({
              * Painted the page colour, so it looks exactly as it did.
              */
             headerTransparent: true,
-            headerStyle: { backgroundColor: TONE_PAGE_BG[tone] },
+            headerStyle: { backgroundColor: ground },
           };
     const pageChrome = quranHydrated
       ? {
@@ -647,6 +649,7 @@ export function MushafSurahScreen({
     sessionColor,
     palette.bg,
     tone,
+    ground,
     quranHydrated,
     riwayah,
     switchRiwayah,

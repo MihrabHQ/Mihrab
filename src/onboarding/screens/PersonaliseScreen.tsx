@@ -211,6 +211,7 @@ export function PersonaliseScreen({
                 { key: 'system', label: t('settings.themeSystem') },
                 { key: 'light', label: t('settings.themeLight') },
                 { key: 'dark', label: t('settings.themeDark') },
+                { key: 'sky', label: t('settings.themeSky') },
               ] as ReadonlyArray<{ key: AppearancePreference; label: string }>
             }
             value={settings.appearance}

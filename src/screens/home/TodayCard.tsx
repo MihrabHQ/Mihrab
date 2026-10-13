@@ -40,6 +40,7 @@ import Svg, { Path } from 'react-native-svg';
 import { useTranslation } from 'react-i18next';
 import { useIsActive } from '../../hooks/useIsActive';
 import { useReduceMotion } from '../../hooks/useReduceMotion';
+import { useIncreasedContrast } from '../../hooks/useIncreasedContrast';
 import {
   useLaunchRunActive,
   useLaunchWarp,
@@ -48,7 +49,7 @@ import {
   warpSkyAt,
 } from '../../boot/launchWarp';
 import { useAfterFirstPaint } from '../../boot/firstPaint';
-import { holdLaunchSnapshot, setLaunchHeroState, setLaunchRunWanted } from '../../native/LaunchSnapshot';
+import { crossfadeScreen, holdLaunchSnapshot, setLaunchHeroState, setLaunchRunWanted } from '../../native/LaunchSnapshot';
 import { forgetClockTicks, noteClockTick } from '../../utils/clockJumps';
 import { registerPoseHero } from '../../boot/poseHero';
 import { useAppPalette } from '../../hooks/useAppPalette';
@@ -663,8 +664,23 @@ const HeroToday = memo(function HeroToday({
    * rather than merely dark. By day the ink is dark on a light sky and a
    * glow would only blur it, so there is none.
    */
+  /**
+   * The hero is the first thing to repaint when the hour turns from dark to
+   * light or back (its sky is read every minute; the app's palette follows
+   * from what the hero publishes, a commit later). So the hero asks for the
+   * crossfade (native/LaunchSnapshot.ts, `crossfadeScreen`) BEFORE it
+   * repaints — a still of the screen as it is, faded over both commits —
+   * and the store's own ask a moment later finds one up and does nothing.
+   */
+  const moodDark = skyTheme ? skyMoodFor(frame.passage, frame.t).isDark : null;
+  const lastMoodDark = useRef<boolean | null>(null);
+  if (!posed && moodDark != null && lastMoodDark.current != null && lastMoodDark.current !== moodDark) {
+    crossfadeScreen();
+  }
+  lastMoodDark.current = moodDark;
+  const moreContrast = useIncreasedContrast();
   const glow = useMemo(() => {
-    if (!skyTheme) return null;
+    if (!skyTheme || moreContrast) return null;
     const mood = skyMoodFor(frame.passage, frame.t);
     if (!mood.isDark) return null;
     return {
@@ -672,7 +688,7 @@ const HeroToday = memo(function HeroToday({
       textShadowRadius: 14,
       textShadowOffset: { width: 0, height: 0 },
     };
-  }, [skyTheme, frame.passage, frame.t]);
+  }, [skyTheme, moreContrast, frame.passage, frame.t]);
   const inkTop = useMemo(() => skyInkAt(frame, yEyebrow), [frame, yEyebrow]);
   const ink = useMemo(() => skyInkAt(frame, yCountdown), [frame, yCountdown]);
   const inkFoot = useMemo(() => skyInkAt(frame, yFoot), [frame, yFoot]);

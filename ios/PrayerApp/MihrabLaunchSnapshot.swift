@@ -239,6 +239,29 @@ final class LaunchSnapshotStore {
     DispatchQueue.main.asyncAfter(deadline: .now() + Self.safetyHide) { self.hide() }
   }
 
+  /**
+   * A still of the window as it is now, laid over it and faded out once the
+   * screen underneath has changed — the Sky theme's switch from dark to
+   * light and back, as a crossfade rather than a cut. In memory only.
+   */
+  private var crossfadeView: UIView?
+  func crossfade(_ window: UIWindow?, durationMs: Double) {
+    guard let window, overlay == nil, crossfadeView == nil,
+          let still = window.snapshotView(afterScreenUpdates: false) else { return }
+    still.isUserInteractionEnabled = false
+    still.accessibilityElementsHidden = true
+    window.addSubview(still)
+    crossfadeView = still
+    DispatchQueue.main.asyncAfter(deadline: .now() + 2 * Self.mountGrace) {
+      UIView.animate(withDuration: durationMs / 1000, delay: 0, options: [.curveEaseOut], animations: {
+        still.alpha = 0
+      }, completion: { _ in
+        still.removeFromSuperview()
+        if self.crossfadeView === still { self.crossfadeView = nil }
+      })
+    }
+  }
+
   /** The live screen is committed: fade the picture into it. Idempotent. */
   func hide() {
     DispatchQueue.main.asyncAfter(deadline: .now() + Self.mountGrace) {
@@ -326,6 +349,13 @@ final class MihrabLaunchSnapshot: NSObject {
     DispatchQueue.main.async {
       let window = (UIApplication.shared.delegate as? AppDelegate)?.window
       LaunchSnapshotStore.shared.capture(window, heroFile: heroFile, heroX: x, heroY: y, fromJs: true)
+    }
+  }
+
+  @objc func crossfade(_ durationMs: Double) {
+    DispatchQueue.main.async {
+      let window = (UIApplication.shared.delegate as? AppDelegate)?.window
+      LaunchSnapshotStore.shared.crossfade(window, durationMs: durationMs)
     }
   }
 

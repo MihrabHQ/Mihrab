@@ -301,6 +301,60 @@ internal object LaunchSnapshot {
     }
   }
 
+  /**
+   * A still of the screen as it is now, laid over the window and faded out
+   * over `durationMs` once the screen underneath has changed — so a change
+   * of the whole page at once (the Sky theme's switch from the dawn's dark
+   * to the morning's light, and back in the evening) is a crossfade rather
+   * than a cut. In memory only, nothing kept. Idempotent while one is up.
+   */
+  private var crossfadeView: ImageView? = null
+  fun crossfade(activity: Activity, durationMs: Long) {
+    if (overlay != null || crossfadeView != null || Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
+    val window = activity.window ?: return
+    val decor = window.decorView as? ViewGroup ?: return
+    val w = decor.width
+    val h = decor.height
+    if (w <= 0 || h <= 0) return
+    val bitmap = try {
+      Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+    } catch (e: Throwable) {
+      return
+    }
+    try {
+      PixelCopy.request(window, bitmap, { result ->
+        if (result != PixelCopy.SUCCESS || crossfadeView != null) {
+          bitmap.recycle()
+          return@request
+        }
+        val view = ImageView(activity).apply {
+          setImageBitmap(bitmap)
+          scaleType = ImageView.ScaleType.FIT_XY
+          isClickable = false
+          importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
+        }
+        decor.addView(view, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+        crossfadeView = view
+        // Two frames for the new screen to be drawn underneath, then the fade.
+        main.postDelayed({
+          view.animate()
+            .alpha(0f)
+            .setDuration(durationMs)
+            .setInterpolator(DecelerateInterpolator())
+            .withEndAction {
+              decor.removeView(view)
+              view.setImageDrawable(null)
+              bitmap.recycle()
+              if (crossfadeView === view) crossfadeView = null
+            }
+            .start()
+        }, 2 * MOUNT_GRACE_MS)
+      }, main)
+    } catch (e: Throwable) {
+      bitmap.recycle()
+    }
+  }
+
   /** The live screen is committed: fade the picture into it. Idempotent. */
   fun hide() {
     Log.i(TAG, "hide asked (showing=${overlay != null})")

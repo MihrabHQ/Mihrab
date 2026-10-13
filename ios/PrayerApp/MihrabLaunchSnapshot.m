@@ -8,6 +8,7 @@ RCT_EXTERN_METHOD(setLookKey:(NSString *)key)
 RCT_EXTERN_METHOD(hide)
 RCT_EXTERN_METHOD(captureNow:(NSString * _Nullable)heroFile x:(double)x y:(double)y)
 RCT_EXTERN_METHOD(setHeroState:(double)targetAt fromAt:(double)fromAt posed:(BOOL)posed)
+RCT_EXTERN_METHOD(crossfade:(double)durationMs)
 RCT_EXTERN__BLOCKING_SYNCHRONOUS_METHOD(getShownState)
 
 @end

@@ -32,6 +32,13 @@ class LaunchSnapshotModule(reactContext: ReactApplicationContext) :
     activity.runOnUiThread { LaunchSnapshot.capture(activity, heroFile, x.toFloat(), y.toFloat(), fromJs = true) }
   }
 
+  /** A still of the screen, faded out over the next screen: see LaunchSnapshot.crossfade. */
+  @ReactMethod
+  fun crossfade(durationMs: Double) {
+    val activity = reactApplicationContext.currentActivity ?: return
+    activity.runOnUiThread { LaunchSnapshot.crossfade(activity, durationMs.toLong()) }
+  }
+
   @ReactMethod
   fun setHeroState(targetAt: Double, fromAt: Double, posed: Boolean) =
     LaunchSnapshot.setHeroState(targetAt.toLong(), fromAt.toLong(), posed)

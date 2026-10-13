@@ -36,6 +36,8 @@ type Native = {
   setHeroState?(targetAt: number, fromAt: number, posed: boolean): void;
   /** The picture on screen: "at,targetAt,fromAt,posed" (ms, 0/1), or "". */
   getShownState?(): string;
+  /** A still of the screen faded out over the next one, in `durationMs`. */
+  crossfade?(durationMs: number): void;
 };
 
 // Android and iPhone/iPad. Not the Mac: a window there is whatever size it
@@ -272,6 +274,21 @@ export function setLaunchRunWanted(wanted: boolean): void {
   if (wanted || !posedKept) return;
   posedKept = false;
   pushEligible();
+}
+
+/**
+ * The whole screen is about to change at once (the Sky theme's switch
+ * between a dark and a light hour): a still of it as it is, faded out over
+ * what it becomes. Call BEFORE the change is rendered; the still is taken
+ * from the frame on screen now. A no-op without the native side.
+ */
+export const CROSSFADE_MS = 650;
+export function crossfadeScreen(durationMs: number = CROSSFADE_MS): void {
+  try {
+    native?.crossfade?.(durationMs);
+  } catch {
+    // A cut instead of a fade.
+  }
 }
 
 export function hideLaunchSnapshot(): void {

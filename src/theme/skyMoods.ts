@@ -17,7 +17,7 @@
  * of a dark page and a light one is a grey page with unreadable ink.
  */
 import type { SkyPassage } from '../screens/home/skyModel';
-import { hexToOklch, lchToAb, oklabToHex } from './oklch';
+import { hexToOklch, lchToAb, oklabToHex, oklchToHex } from './oklch';
 
 export type SkyMoodName = 'night' | 'dawn' | 'morning' | 'midday' | 'golden' | 'sunset';
 
@@ -78,7 +78,9 @@ function withHighlight(m: Omit<SkyMood, 'accentBg'>): SkyMood {
 const RAW_MOODS: Record<SkyMoodName, Omit<SkyMood, 'accentBg'>> = {
   /**
  * Night & midnight: an obsidian indigo void, a soft cyan glowing on it,
- * amethyst under the cards. Every glow here was once a neon and was
+ * amethyst under the cards. The cards sit a clear step above the page
+ * (about 1.16:1, where 1.08 read as flat) with a hairline a step above
+ * them, so a menu has edges in the dark without being brighter. Every glow here was once a neon and was
  * taken down by a third of its chroma: it is a prayer app, and a colour
  * should be warm to the eye, not loud — bright without being a sign.
  */
@@ -91,9 +93,9 @@ const RAW_MOODS: Record<SkyMoodName, Omit<SkyMood, 'accentBg'>> = {
     bodyLight: '#D7EDF8',
     starGlow: '#B2E3F4',
     bg: '#130F26',
-    card: '#1B1636',
-    controlBg: '#261F49',
-    border: '#352C5F',
+    card: '#211D3D',
+    controlBg: '#2B2450',
+    border: '#3B3268',
     text: '#EEEAFF',
     muted: '#B4ADDB',
     accent: '#83E6F0',
@@ -116,7 +118,7 @@ const RAW_MOODS: Record<SkyMoodName, Omit<SkyMood, 'accentBg'>> = {
     bg: '#1E1140',
     card: '#2A1A57',
     controlBg: '#38276E',
-    border: '#4B3889',
+    border: '#52408F',
     text: '#FFF4EC',
     muted: '#D6C4EE',
     accent: '#E88C79',
@@ -208,7 +210,7 @@ const RAW_MOODS: Record<SkyMoodName, Omit<SkyMood, 'accentBg'>> = {
     bg: '#24092F',
     card: '#331245',
     controlBg: '#441B5A',
-    border: '#5C2C75',
+    border: '#64347D',
     text: '#FFEFF7',
     muted: '#E3B9D6',
     accent: '#E674A4',
@@ -255,9 +257,9 @@ const ANCHORS = {
     heroMid: '#2E2066',
     heroFoot: '#15102C',
     bg: '#15102C',
-    card: '#1E183B',
-    controlBg: '#29214F',
-    border: '#382F65',
+    card: '#241E45',
+    controlBg: '#2E2656',
+    border: '#3E3570',
     accentSurface: '#191335',
     bodyLight: '#D9CCFF',
   }),
@@ -269,7 +271,7 @@ const ANCHORS = {
     heroMid: '#3B1D63',
     heroFoot: '#150F2B',
     bg: '#150F2B',
-    card: '#1E1739',
+    card: '#231C43',
     accentSurface: '#1A1333',
     bodyLight: '#E2D6FF',
   }),
@@ -298,7 +300,7 @@ const ANCHORS = {
     heroMid: '#8C3A69',
     heroFoot: '#1E0729',
     bg: '#1E0729',
-    card: '#2C0F3C',
+    card: '#300F42',
     accentSurface: '#250B33',
     bodyLight: '#E990A3',
   }),
@@ -389,4 +391,20 @@ export function skyMoodFor(passage: SkyPassage, t: number, steps?: number): SkyM
     (out as unknown as Record<string, string>)[key] = mixHexOklab(from[key] as string, to[key] as string, u);
   }
   return out;
+}
+
+/**
+ * The home-screen widgets under the Sky theme. A widget draws light text
+ * on a dark card whatever the app's page is, so by day it takes a dark
+ * card in the hour's hue — the midday's blue, the afternoon's, the
+ * golden hour's amber — with the accent lifted to read on it; by night,
+ * the mood's own page and accent.
+ */
+export function widgetSkyColors(mood: SkyMood): { bg: string; accent: string } {
+  if (mood.isDark) return { bg: mood.bg, accent: mood.accent };
+  const hue = hexToOklch(mood.heroTop).h;
+  return {
+    bg: oklchToHex({ L: 0.24, C: 0.06, h: hue }),
+    accent: oklchToHex({ L: 0.8, C: 0.11, h: hue }),
+  };
 }

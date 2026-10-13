@@ -30,6 +30,11 @@ export interface PrayerWidgetInterface {
     tinted: boolean,
   ): Promise<void>;
   /**
+   * The Sky theme on the widgets: a dark card and an accent in the hour's
+   * colours, or both null to hand the widget back to its own settings.
+   */
+  setAndroidWidgetSky?(bgHex: string | null, accentHex: string | null): Promise<void>;
+  /**
    * The prayer-times widget's own display options: text colour, which parts
    * are shown, and the size of the times in percent. Absent on a binary
    * older than the one that added it.
