@@ -75,15 +75,19 @@ describe('the immersive reader', () => {
     expect(screen).toMatch(/'quran\.switchToTranslation'/);
   });
 
-  it('puts juz and tone in the page bar, and drops the row above the page', () => {
+  it('puts juz and fullscreen in the page bar, and drops the row above the page', () => {
     expect(scrubber).toMatch(/showJuz/);
     expect(scrubber).toMatch(/\{trailing\}/);
-    // The tone button is IN the bar (`trailing`), not in a row of its
-    // own above the page. Asked as "the rail is given it", rather than
-    // by the exact order of the props beside it — today's khatmah quota
-    // landed between them later (#46) and that is not this test's
-    // business.
-    expect(phone).toMatch(/<MushafPageScrubber[\s\S]*?trailing=\{\s*\n?\s*<MushafToneButton/);
+    // The bar's end button is IN the bar (`trailing`), not in a row of
+    // its own above the page. It was the tone; fullscreen sits there now,
+    // the control toggled every sitting under the thumb, and the tone
+    // went up to the header (mushafHeaderLayout.test.ts). Asked as "the
+    // rail is given it", rather than by the exact order of the props
+    // beside it — today's khatmah quota landed between them later (#46)
+    // and that is not this test's business.
+    expect(phone).toMatch(/<MushafPageScrubber[\s\S]*?trailing=\{\s*\n?\s*<MushafFullscreenButton/);
+    expect(phone).toMatch(/<MushafFullscreenButton[\s\S]*?onPress=\{onToggleFullscreen\}/);
+    expect(phone).not.toContain('<MushafToneButton');
     expect(phone).toMatch(/<MushafPageScrubber[\s\S]*?showJuz/);
     // Out of fullscreen there is no page-header row — only a gap.
     expect(phone).toMatch(

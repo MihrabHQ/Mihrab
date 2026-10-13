@@ -28,7 +28,7 @@ import { useTranslation } from 'react-i18next';
 import { TilawahIcon } from '../../quran/audio/PlaybackIcons';
 import { TranslationIcon } from '../../theme/icons';
 import { desktopSize } from '../../responsive/desktop';
-import { useSettledMeasure } from '../../quran/mushafReaderCore';
+import { MushafToneHeaderButton, useSettledMeasure } from '../../quran/mushafReaderCore';
 import { TabBackButton } from '../../navigation/TabBackButton';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import { isMacCatalyst } from '../../responsive/breakpoints';
@@ -613,21 +613,10 @@ export function MushafSurahScreen({
                 near-black. */}
             <TilawahIcon color={ink} size={desktopSize(22)} />
           </Pressable>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={t('quran.enterFullscreen', 'Enter fullscreen')}
-            onPress={() => requestFullscreen(true)}
-            hitSlop={10}
-            style={{ paddingHorizontal: SPACING.xs }}>
-            <Text
-              style={{
-                color: ink,
-                fontSize: desktopSize(18),
-                fontWeight: '700',
-              }}>
-              ⛶
-            </Text>
-          </Pressable>
+          {/* The page tone, up here from the page bar: toggled a few times
+              a year, where fullscreen — now the bar's button, under the
+              thumb — is toggled every sitting. */}
+          <MushafToneHeaderButton color={ink} size={desktopSize(18)} />
         </View>
       ),
     });

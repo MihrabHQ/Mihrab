@@ -1009,40 +1009,70 @@ export function toneSwitchLabel(t: Translate, next: MushafToneChoice): string {
 }
 
 /**
- * The tone control as a bar button (redesign plan §4): the same cycle as
- * the page-header pill — paper → sepia → night → paper — as one glyph in
- * the page bar beside the rail, where the phone keeps it now that the row
- * above the page is gone out of fullscreen. Same accessibility label as
- * the pill; the word the pill carried is what the label says.
+ * Fullscreen as a bar button: in the page bar beside the rail, under the
+ * thumb, where the tone control used to be. Fullscreen is the thing a
+ * reader toggles every sitting — the page tone a few times a year — so
+ * the daily one takes the reachable seat and the tone goes up to the
+ * header (`MushafToneHeaderButton`), beside the other once-in-a-while
+ * controls. The same box the tone button had, so the bar's end is
+ * unchanged.
  */
-export function MushafToneButton({
-  tone: _tone,
+export function MushafFullscreenButton({
   color,
   backgroundColor,
+  onPress,
 }: {
-  tone: MushafTone;
   color: ColorValue;
   backgroundColor: ColorValue;
+  onPress: () => void;
 }) {
   const { t } = useTranslation();
-  // The choice, not the drawn tone: `tone` colours the button; the cycle
-  // runs over what the reader chose, auto included.
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={t('quran.enterFullscreen', 'Enter fullscreen')}
+      hitSlop={8}
+      onPress={onPress}
+      style={[styles.toneBtn, { backgroundColor }]}>
+      <Text style={[styles.fullscreenGlyph, { color }]}>⛶</Text>
+    </Pressable>
+  );
+}
+
+/**
+ * The tone control as a header button: the same cycle as the page-header
+ * pill — paper → sepia → night → auto → paper — as one glyph among the
+ * header's icons, painted in the page's ink like them, with no box of its
+ * own (the header's buttons are bare marks). It shows the tone a tap goes
+ * TO, as the pill always has; the word lives in the accessibility label.
+ */
+export function MushafToneHeaderButton({
+  color,
+  size,
+}: {
+  color: ColorValue;
+  /** The header's glyph size — the screen scales it for the desktop. */
+  size: number;
+}) {
+  const { t } = useTranslation();
+  // The choice, not the drawn tone: the cycle runs over what the reader
+  // chose, auto included.
   const choice = mushafToneChoice(useQuranState().prefs);
   const next = nextMushafTone(choice);
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={toneSwitchLabel(t, next)}
-      hitSlop={8}
+      hitSlop={10}
       onPress={() => setQuranPrefs(prefsForTone(next))}
-      style={[styles.toneBtn, { backgroundColor }]}>
+      style={styles.toneHeaderBtn}>
       <Text
         style={[
           styles.toneGlyph,
           // The letter needs the weight the symbols have by their own
           // drawing, or "A" reads as text dropped into a row of icons.
           next === 'auto' && styles.toneGlyphLetter,
-          { color },
+          { color, fontSize: size, lineHeight: Math.round(size * 1.25) },
         ]}>
         {toneGlyph(next)}
       </Text>
@@ -1299,6 +1329,10 @@ const styles = StyleSheet.create({
   },
   toneGlyph: { fontSize: TYPE.body.fontSize, lineHeight: 20 },
   toneGlyphLetter: { fontWeight: '700' },
+  toneHeaderBtn: { paddingHorizontal: SPACING.xs },
+  // The frame glyph is drawn lighter than the sun and moon are; the bold
+  // weight brings it level with them, as it had in the header.
+  fullscreenGlyph: { fontSize: TYPE.body.fontSize, lineHeight: 20, fontWeight: '700' },
   pageFooter: {
     flexDirection: 'row',
     alignItems: 'center',

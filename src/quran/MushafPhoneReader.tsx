@@ -67,7 +67,7 @@ import {
   MushafJumpModal,
   MushafPageFooter,
   MushafPageHeader,
-  MushafToneButton,
+  MushafFullscreenButton,
   useMushafReaderCore,
   type AyahMarkProps,
   type KhatmahFinish,
@@ -929,10 +929,10 @@ export const MushafPhoneReader = React.memo(function MushafPhoneReader(
           }
           chrome={railChrome}
           trailing={
-            <MushafToneButton
-              tone={tone}
+            <MushafFullscreenButton
               color={railChrome.accent}
               backgroundColor={railChrome.control}
+              onPress={onToggleFullscreen}
             />
           }
         />

@@ -20,11 +20,14 @@ describe('the muṣḥaf header', () => {
     expect(left.indexOf('<TabBackButton')).toBeLessThan(left.indexOf('riwayahChoiceExists()'));
   });
 
-  it('keeps audio on the right, where the riwayah was, before fullscreen', () => {
+  it('keeps audio on the right, where the riwayah was, before the page tone', () => {
     expect(right).not.toContain('riwayahChoiceExists()');
     expect(left).not.toContain('<TilawahIcon');
     expect(right).toContain('<TilawahIcon');
-    expect(right.indexOf('<TilawahIcon')).toBeLessThan(right.indexOf("t('quran.enterFullscreen'"));
+    // Fullscreen moved down to the page bar — toggled every sitting, it
+    // belongs under the thumb — and the page tone took its seat up here.
+    expect(right).not.toContain("t('quran.enterFullscreen'");
+    expect(right.indexOf('<TilawahIcon')).toBeLessThan(right.indexOf('<MushafToneHeaderButton color={ink}'));
   });
 
   it("draws the arrow only when there is somewhere to go back to, in the page's ink", () => {
