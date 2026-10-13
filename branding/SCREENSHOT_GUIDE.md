@@ -146,6 +146,32 @@ time, shut down before the next one boots.
 Not yet handled: an iPad in iPadOS 26 draws a resize grabber in the
 bottom-right corner, and the simulator offers no way to turn windowing off.
 
+### The two fans (2026-10-13) — the Sky theme and the full-screen alerts
+
+Two pictures on the site and in the README are not single captures but
+five phone captures fanned into one — a hand of cards, the middle one in
+front, every screen's top in view, on a transparent ground:
+
+- `docs/assets/img/shot-sky.png` / `branding/readme/11_sky.png` — Today
+  under the Sky theme at five hours: dawn, morning, midday (front), the
+  golden hour, dusk.
+- `docs/assets/img/shot-alerts.png` / `branding/readme/10_alerts.png` —
+  the Android full-screen alert for the five prayers under the Sky theme:
+  Fajr, Dhuhr, Asr (front), Maghrib, Isha.
+
+They are built by `branding/tools/fan.py OUT.png A B C D E` from 1080×2400
+captures; the result is 1600×926. The site lists them in `FANS` in
+`scripts/build-site.js`, each with its own cache-buster — bump it when a
+fan is retaken — and captioned from `shots.fans` in
+`scripts/site/strings.json` in all thirteen languages;
+`__tests__/shotParity.test.ts` holds the README and site copies to the same
+bytes. The hours were captured on `Mihrab_API_37` with the Sky theme on,
+the clock pinned per capture; the alerts by firing each prayer's alarm
+(`PrayerAlarmActivity`) with the theme on. The single home shots
+(`shot-home*`, `01_home.png`) stay on the default theme on purpose — the
+fan is where Sky is shown, so the gallery keeps showing what a fresh
+install looks like.
+
 ---
 
 ## The 2.18 set (2026-09-09) — superseded by 2.28

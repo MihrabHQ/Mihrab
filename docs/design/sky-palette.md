@@ -7,6 +7,14 @@ view we can make the card with the text shift the color to make it more
 readable, there is also a need to make the text throughout the UI adapt
 to the light and dark colors of the UI as the day changes."*
 
+> **Status (2026-10-13): shipped as the Sky theme** — `appearance: 'sky'`,
+> on `main` after 2.30.0, unreleased. What was built, and where it departs
+> from this plan (anchors between the six moods, OKLab mixing with the
+> chroma kept, the day's times persisted with the theme, the reader's chrome
+> following the PAGE's mode), is in `ARCHITECTURE.md` §6 "The Sky theme";
+> the pictures are on the site and in the README. This document stays as
+> the reasoning.
+
 Companion reading: `docs/design/principles.md` (principle 5 is literally
 "time-of-day awareness — felt, not announced"), `docs/design/redesign-plan.md`
 (the pass that took colour *out*, which this has to answer for).

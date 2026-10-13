@@ -19,6 +19,14 @@ later ones are meaningless if the earlier ones are answered wrong:
 3. Where do the pictures come from, and under what licence? (§3.)
 4. How is it built, and what does it cost? (§4–§8.)
 
+> **Status (2026-10-13):** none of the photographic or video themes below
+> have been built. What shipped instead, first, is the **Sky theme**
+> (`docs/design/sky-palette.md`, `ARCHITECTURE.md` §6): the app painted from
+> the hero's own sky, which answers the "whole UI, changing with the day"
+> half of the ask with no asset, no licence and no download. The picture
+> themes remain a plan, and §1's conflict with the principles still has to
+> be settled before any of it is started.
+
 ---
 
 ## 1. The conflict, stated plainly

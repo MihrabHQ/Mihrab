@@ -1,6 +1,6 @@
 # Mihrab — Improvement Roadmap
 
-**Last verified against the code: 2026-09-06, at v2.16.0 (versionCode 261).**
+**Last verified against the code: 2026-10-13, at v2.30.0 (versionCode 288) plus the unreleased work on `main`.**
 
 This file was written for v1.5.56 and then went stale for about a year, which
 made it actively misleading: it kept proposing work that had already shipped —
@@ -49,7 +49,7 @@ month names are localised.
 **Privacy.** Coordinates are in `src/settings/secureStorage.ts` on encrypted
 storage, not AsyncStorage.
 
-**Testing.** 278 suites / 3851 tests, against the "existing 9" this file was
+**Testing.** 474 suites / ~6950 tests, against the "existing 9" this file was
 written beside. CI runs `tsc --noEmit` and the full suite on every push.
 
 **Features.** Saved locations, tasbih, Hijri events, Ramadan countdown, adhan
@@ -57,6 +57,18 @@ preview, notification actions, per-prayer offsets, iOS lock-screen
 complications (`accessoryCircular`/`Inline`/`Rectangular`), Jumu'ah highlight,
 share, the prayer journal, the dua library, the fasting tracker, custom adhan
 audio, backup/restore, and the full Quran reader with audio — all shipped.
+
+**Since 2.16.0 (checked 2026-10-13).** Tajweed colours for Ḥafṣ (2.26.0) and
+Warsh (2.27.0), the word reader, tafsir and word meanings as downloads, the
+Quran download manager and content mirrors; Tilāwah with its own place and
+suggestions; the device-to-device sync (`docs/design/sync-p2p.md`); the
+in-app "What's new" (`release-notes/`); the full-screen prayer alert (#63),
+Do Not Disturb at prayer time (#60), per-prayer sounds (#66), snooze
+rewording; the Mālikī late-log rules (#74); the Algerian Ministry's
+timetable (#70) and the Indonesian Hijri calendars; the prayer-times widget's
+own options; the launch picture and run (`ARCHITECTURE.md` §6); the colour
+themes and the Sky theme; the first-run walkthrough and the home screen's
+one-time offers; and `scripts/release.sh` with `docs/release-log.md`.
 
 ---
 
@@ -75,8 +87,12 @@ no `onStateChange`, so coming back means the tab resets to Home, the mushaf
 page is lost and scroll position is gone.
 
 **Fix:** persist navigation state plus the mushaf page and scroll offset, and
-restore on launch. A reclaim then costs a 470 ms flash instead of a reader's
-place. This is the highest-value item on the list.
+restore on launch. This is the highest-value item on the list.
+
+_2026-10-13:_ the launch picture and run (2.30.0) remove the flash — a
+reclaimed app opens on the last Today screen and sweeps to now — but only
+for Today. `NavigationContainer` still has no `initialState`: the tab and the
+reader's scroll position are still lost on a reclaim, and that half is open.
 
 ### 1.2 The last 1.74 MB of the JS bundle
 
@@ -93,12 +109,12 @@ change.
 
 ### 1.3 Build and release
 
-- **`package.json` says 1.5.50; the app is 2.16.0.** `scripts/sync-version.js`
+- **`package.json` says 1.5.50; the app is 2.30.0.** `scripts/sync-version.js`
   updates the gradle, pbxproj and F-Droid entries but not `package.json`, so
   it has drifted by about a year. Either sync it or make it explicit that
   gradle is the only source of truth.
-- **CI does not run eslint.** `ci.yml` runs `tsc --noEmit` and jest. The
-  baseline is 6 errors and 536 warnings; the errors want fixing before the
+- **CI does not run eslint** (still true 2026-10-13). `ci.yml` runs
+  `tsc --noEmit` and jest. The baseline is 6 errors and 536 warnings; the errors want fixing before the
   check is turned on, or it lands red.
 - **No `fastlane match` fallback for iOS.** Xcode Cloud is the path; there is
   no local lane for an offline emergency build.
@@ -140,9 +156,14 @@ Roughly by value ÷ cost.
 
 ## Part 3 — Waiting on a person, not on code
 
-- **Cut a release.** 20 commits on `main` since v2.16.0, including a
-  user-facing feature (the Live Activity's temporary alert-mode toggle and its
-  home-screen reset).
-- **Upload `app-play-release.aab` to Play** so the localized store listings go
-  live.
+- **Cut a release.** 58 commits on `main` since v2.30.0 — the Sky theme, the
+  launch picture's fixes, the mushaf button swap, the late-log rules — with
+  the notes for 289 already written (`release-notes/*/289.txt`,
+  `CHANGELOG.md` Unreleased). `main` is also ~55 commits ahead of `origin`
+  and unpushed.
+- **Upload the Play AAB** when the release is cut, so the listings (now with
+  the Sky theme and Algeria) go live; the App Store build goes by the local
+  route while Xcode Cloud's workflow is paused.
+- **The iOS side of the Sky theme and the launch run has not been checked on
+  a device**; the iOS widgets are not Sky-coloured.
 - **App Store Connect vendor number** is needed for real iOS install figures.

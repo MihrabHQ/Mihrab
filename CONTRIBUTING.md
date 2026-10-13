@@ -79,7 +79,7 @@ These are **non-negotiable**. The `reviewer` subagent in `.claude/agents/reviewe
 ## Tools that help you
 
 - **Slash commands** — `.claude/commands/*.md`.
-- **Subagents** — `.claude/agents/`. The `designer` subagent is the source of truth for visual decisions; the `reviewer` subagent is your pre-merge gate; `locale-translator` handles religious-terminology translation; `provider-doctor` diagnoses scraper / API drift on the four data providers.
+- **Subagents** — `.claude/agents/`. The `designer` subagent is the source of truth for visual decisions; the `reviewer` subagent is your pre-merge gate; `locale-translator` handles religious-terminology translation; `provider-doctor` diagnoses scraper / API drift on the prayer-time sources (the network providers and the Sweden, Morocco and Algeria datasets).
 - **Hooks** — `.claude/hooks/`. Run automatically on edit, prompt submit, and session end.
 
 ## Reporting bugs
