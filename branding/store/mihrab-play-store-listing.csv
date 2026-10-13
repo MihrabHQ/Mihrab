@@ -33,7 +33,7 @@ YOURS
 - Sync between your own devices with no account and no server of ours: sealed files in a folder you already keep in sync
 - Backup and restore to a file you keep
 - Android, iPhone, iPad and Mac, in 13 languages, with Arabic and Urdu fully right-to-left
-- Light, dark and pure black, six colour themes, your own accent colour, and Material You
+- Light, dark and pure black, six colour themes, your own accent colour, and Material You — or Sky, which paints the whole app from the sky over the countdown and changes with the hour
 
 The network is used only when you choose it: a prayer-time provider (AlAdhan, PrayTimes.dev, or the national tables for Sweden and Morocco), place search through OpenStreetMap Nominatim, and downloading Quran pages, translations, tafsir and recitation audio. Your coordinates stay on your device.
 
@@ -72,7 +72,7 @@ Mihrab is open source under AGPL-3.0-or-later."
 - مزامنة بين أجهزتك أنت بلا حساب وبلا خادم لنا: ملفات مختومة داخل مجلد تزامنه أصلًا
 - نسخ احتياطي واستعادة إلى ملف تحتفظ به أنت
 - أندرويد والآيفون والآيباد والماك، بثلاث عشرة لغة، والعربية والأردية من اليمين إلى اليسار بالكامل
-- فاتح وداكن وأسود تمامًا، وست سمات لونية، ولون مميّز تختاره، ودعم Material You
+- فاتح وداكن وأسود تمامًا، وست سمات لونية، ولون مميّز تختاره، ودعم Material You — أو «السماء»، التي تصبغ التطبيق كلّه من السماء فوق العدّ التنازلي وتتبدّل مع الساعة
 
 لا تُستخدم الشبكة إلا حين تختار ذلك: مزوّد للمواقيت (AlAdhan، أو PrayTimes.dev، أو الجداول الوطنية للسويد والمغرب)، والبحث عن الأماكن عبر OpenStreetMap Nominatim، وتنزيل صفحات القرآن والترجمات والتفاسير وتسجيلات التلاوة. وإحداثياتك تبقى على جهازك.
 
@@ -111,7 +111,7 @@ Mihrab is open source under AGPL-3.0-or-later."
 - অ্যাকাউন্ট ছাড়া এবং আমাদের কোনো সার্ভার ছাড়া আপনার নিজের ডিভাইসগুলোর মধ্যে সিঙ্ক: যে ফোল্ডার আপনি আগেই সিঙ্ক করেন, তাতে সিল করা ফাইল
 - আপনার রাখা ফাইলে ব্যাকআপ ও রিস্টোর
 - অ্যান্ড্রয়েড, আইফোন, আইপ্যাড ও ম্যাকে, ১৩টি ভাষায়, আরবি ও উর্দু সম্পূর্ণ ডান থেকে বামে
-- লাইট, ডার্ক ও গাঢ় কালো থিম, ছয়টি রঙের থিম, আপনার পছন্দের অ্যাকসেন্ট রং এবং Material You
+- লাইট, ডার্ক ও গাঢ় কালো থিম, ছয়টি রঙের থিম, আপনার পছন্দের অ্যাকসেন্ট রং এবং Material You — অথবা আকাশ, যা কাউন্টডাউনের উপরের আকাশ থেকে পুরো অ্যাপ রাঙায় এবং সময়ের সাথে বদলায়
 
 নেটওয়ার্ক ব্যবহার হয় শুধু আপনি চাইলে: নামাজের সময়ের সরবরাহকারী (AlAdhan, PrayTimes.dev, অথবা সুইডেন ও মরক্কোর জাতীয় তালিকা), OpenStreetMap Nominatim দিয়ে জায়গা খোঁজা, এবং কুরআনের পাতা, অনুবাদ, তাফসির ও তিলাওয়াতের অডিও ডাউনলোড। আপনার অবস্থানের তথ্য আপনার ডিভাইসেই থাকে।
 
@@ -150,7 +150,7 @@ DEINS
 - Abgleich zwischen deinen eigenen Geräten ohne Konto und ohne einen Server von uns: versiegelte Dateien in einem Ordner, den du ohnehin synchron hältst
 - Sicherung und Wiederherstellung in eine Datei, die du behältst
 - Android, iPhone, iPad und Mac, in 13 Sprachen, Arabisch und Urdu vollständig von rechts nach links
-- Hell, dunkel und tiefschwarz, sechs Farbthemen, deine eigene Akzentfarbe und Material You
+- Hell, dunkel und tiefschwarz, sechs Farbthemen, deine eigene Akzentfarbe und Material You – oder Himmel, das die ganze App aus dem Himmel über dem Countdown malt und sich mit der Stunde wandelt
 
 Das Netz wird nur genutzt, wenn du es wählst: ein Anbieter für Gebetszeiten (AlAdhan, PrayTimes.dev oder die Landestabellen für Schweden und Marokko), die Ortssuche über OpenStreetMap Nominatim und das Herunterladen von Koranseiten, Übersetzungen, Tafsir und Rezitationen. Deine Koordinaten bleiben auf deinem Gerät.
 
@@ -189,7 +189,7 @@ TUYO
 - Sincronización entre tus propios dispositivos sin cuenta y sin ningún servidor nuestro: archivos sellados en una carpeta que ya mantienes sincronizada
 - Copia de seguridad y restauración en un archivo que conservas tú
 - Android, iPhone, iPad y Mac, en 13 idiomas, con árabe y urdu totalmente de derecha a izquierda
-- Claro, oscuro y negro puro, seis temas de color, tu propio color de acento y Material You
+- Claro, oscuro y negro puro, seis temas de color, tu propio color de acento y Material You, o Cielo, que pinta toda la app a partir del cielo sobre la cuenta atrás y cambia con la hora
 
 La red solo se usa cuando tú lo eliges: un proveedor de horarios (AlAdhan, PrayTimes.dev o las tablas nacionales de Suecia y Marruecos), la búsqueda de lugares con OpenStreetMap Nominatim y la descarga de páginas del Corán, traducciones, tafsir y audio de recitación. Tus coordenadas se quedan en tu dispositivo.
 
@@ -228,7 +228,7 @@ SE SOUVENIR
 - Synchronisation entre vos propres appareils sans compte et sans aucun serveur à nous : des fichiers scellés dans un dossier que vous synchronisez déjà
 - Sauvegarde et restauration dans un fichier que vous gardez
 - Android, iPhone, iPad et Mac, en 13 langues, dont l'arabe et l'ourdou entièrement de droite à gauche
-- Clair, sombre et noir pur, six thèmes de couleur, votre couleur d'accent et Material You
+- Clair, sombre et noir pur, six thèmes de couleur, votre couleur d'accent et Material You – ou Ciel, qui peint toute l'app d'après le ciel au-dessus du compte à rebours et change avec l'heure
 
 Le réseau n'est utilisé que lorsque vous le choisissez : un service d'heures de prière (AlAdhan, PrayTimes.dev ou les tables nationales de la Suède et du Maroc), la recherche de lieux via OpenStreetMap Nominatim, et le téléchargement des pages du Coran, des traductions, des tafsirs et des récitations. Vos coordonnées restent sur votre appareil.
 
@@ -267,7 +267,7 @@ Mihrab est open source sous licence AGPL-3.0-or-later."
 - बिना अकाउंट और बिना हमारे किसी सर्वर के, आपके अपने डिवाइसों के बीच सिंक: उस फ़ोल्डर में सीलबंद फ़ाइलें जिसे आप पहले से सिंक करते हैं
 - अपनी रखी फ़ाइल में बैकअप और रीस्टोर
 - Android, iPhone, iPad और Mac पर, 13 भाषाओं में, अरबी और उर्दू पूरी तरह दाएँ से बाएँ
-- लाइट, डार्क और गहरी काली थीम, छह रंग-थीम, आपका अपना एक्सेंट रंग और Material You
+- लाइट, डार्क और गहरी काली थीम, छह रंग-थीम, आपका अपना एक्सेंट रंग और Material You — या आकाश, जो काउंटडाउन के ऊपर के आकाश से पूरे ऐप को रंगता है और समय के साथ बदलता है
 
 नेटवर्क का इस्तेमाल सिर्फ़ तब होता है जब आप चुनते हैं: नमाज़ के समय का प्रदाता (AlAdhan, PrayTimes.dev, या स्वीडन और मोरक्को की राष्ट्रीय तालिकाएँ), OpenStreetMap Nominatim से जगह की खोज, और क़ुरआन के पन्ने, अनुवाद, तफ़सीर और तिलावत का ऑडियो डाउनलोड करना। आपके निर्देशांक आपके डिवाइस पर ही रहते हैं।
 
@@ -306,7 +306,7 @@ MILIK ANDA
 - Sinkronisasi antarperangkat Anda sendiri tanpa akun dan tanpa server kami: berkas tersegel di folder yang memang sudah Anda sinkronkan
 - Cadangkan dan pulihkan ke berkas yang Anda simpan
 - Android, iPhone, iPad, dan Mac, dalam 13 bahasa, dengan bahasa Arab dan Urdu sepenuhnya dari kanan ke kiri
-- Tema terang, gelap, dan hitam pekat, enam tema warna, warna aksen pilihan Anda, dan Material You
+- Tema terang, gelap, dan hitam pekat, enam tema warna, warna aksen pilihan Anda, dan Material You — atau Langit, yang mewarnai seluruh aplikasi dari langit di atas hitung mundur dan berubah seiring jam
 
 Jaringan hanya digunakan saat Anda memilihnya: penyedia jadwal sholat (AlAdhan, PrayTimes.dev, atau tabel nasional Swedia dan Maroko), pencarian tempat melalui OpenStreetMap Nominatim, serta pengunduhan halaman Al-Quran, terjemahan, tafsir, dan audio tilawah. Koordinat Anda tetap di perangkat Anda.
 
@@ -345,7 +345,7 @@ Mihrab bersumber terbuka dengan lisensi AGPL-3.0-or-later."
 - Синхронизация между вашими собственными устройствами без аккаунта и без нашего сервера: запечатанные файлы в папке, которую вы и так синхронизируете
 - Резервная копия и восстановление в файл, который остаётся у вас
 - Android, iPhone, iPad и Mac, 13 языков, арабский и урду полностью справа налево
-- Светлая, тёмная и чёрная темы, шесть цветовых тем, ваш цвет акцента и Material You
+- Светлая, тёмная и чёрная темы, шесть цветовых тем, ваш цвет акцента и Material You — или «Небо», которое красит всё приложение по небу над обратным отсчётом и меняется с часом
 
 Сеть используется только тогда, когда вы этого хотите: поставщик времени намазов (AlAdhan, PrayTimes.dev или национальные таблицы Швеции и Марокко), поиск мест через OpenStreetMap Nominatim и загрузка страниц Корана, переводов, тафсиров и аудиозаписей чтения. Ваши координаты остаются на вашем устройстве.
 
@@ -384,7 +384,7 @@ DITT EGET
 - Synk mellan dina egna enheter utan konto och utan server av vår: förseglade filer i en mapp du redan synkar
 - Säkerhetskopiering och återställning till en fil du själv behåller
 - Android, iPhone, iPad och Mac, på 13 språk, med arabiska och urdu helt från höger till vänster
-- Ljust, mörkt och helsvart, sex färgteman, din egen accentfärg och Material You
+- Ljust, mörkt och helsvart, sex färgteman, din egen accentfärg och Material You – eller Himmel, som målar hela appen från himlen ovanför nedräkningen och skiftar med timmen
 
 Nätet används bara när du väljer det: en källa för bönetider (AlAdhan, PrayTimes.dev eller de nationella tabellerna för Sverige och Marocko), platssökning via OpenStreetMap Nominatim, och nedladdning av Koranens sidor, översättningar, tafsir och recitationsljud. Dina koordinater stannar på din enhet.
 
@@ -423,7 +423,7 @@ SİZİN
 - Hesapsız ve bize ait hiçbir sunucu olmadan, kendi cihazlarınız arasında eşitleme: zaten eşitlediğiniz bir klasörde mühürlü dosyalar
 - Sizde kalan bir dosyaya yedekleme ve geri yükleme
 - Android, iPhone, iPad ve Mac'te, Arapça ve Urduca tamamen sağdan sola olmak üzere 13 dilde
-- Açık, koyu ve saf siyah temalar, altı renk teması, kendi vurgu renginiz ve Material You
+- Açık, koyu ve saf siyah temalar, altı renk teması, kendi vurgu renginiz ve Material You – ya da uygulamanın tamamını geri sayımın üzerindeki gökyüzünden boyayan ve saatle değişen Gökyüzü
 
 Ağ yalnızca siz seçtiğinizde kullanılır: bir vakit sağlayıcısı (AlAdhan, PrayTimes.dev ya da İsveç ve Fas'ın resmî tabloları), OpenStreetMap Nominatim ile yer arama ve Kuran sayfaları, mealler, tefsirler ile tilavet seslerinin indirilmesi. Koordinatlarınız cihazınızda kalır.
 
@@ -462,7 +462,7 @@ Mihrab, AGPL-3.0-or-later lisansıyla açık kaynaktır."
 - بغیر اکاؤنٹ اور ہمارے کسی سرور کے بغیر، آپ کے اپنے آلات کے درمیان ہم آہنگی: اس فولڈر میں سیل بند فائلیں جسے آپ پہلے سے ہم آہنگ رکھتے ہیں
 - اپنی رکھی ہوئی فائل میں بیک اپ اور بحالی
 - اینڈرائیڈ، آئی فون، آئی پیڈ اور میک پر، 13 زبانوں میں، عربی اور اردو مکمل طور پر دائیں سے بائیں
-- ہلکی، گہری اور خالص سیاہ تھیمز، چھ رنگین تھیمز، آپ کا اپنا نمایاں رنگ اور Material You
+- ہلکی، گہری اور خالص سیاہ تھیمز، چھ رنگین تھیمز، آپ کا اپنا نمایاں رنگ اور Material You — یا آسمان، جو الٹی گنتی کے اوپر والے آسمان سے پوری ایپ کو رنگتا ہے اور وقت کے ساتھ بدلتا ہے
 
 نیٹ ورک صرف تب استعمال ہوتا ہے جب آپ چاہیں: نماز کے اوقات کا فراہم کنندہ (AlAdhan، PrayTimes.dev، یا سویڈن اور مراکش کے قومی جدول)، OpenStreetMap Nominatim کے ذریعے جگہ کی تلاش، اور قرآن کے صفحات، تراجم، تفاسیر اور تلاوت کی آڈیو ڈاؤن لوڈ کرنا۔ آپ کے نقاط آپ کے آلے پر ہی رہتے ہیں۔
 
@@ -501,7 +501,7 @@ Mihrab, AGPL-3.0-or-later lisansıyla açık kaynaktır."
 - 在你自己的设备之间同步，无需账户，不经过我们的任何服务器：密封文件存放在你本就在同步的文件夹中
 - 备份与恢复到你自己保存的文件
 - Android、iPhone、iPad 与 Mac，13 种语言，阿拉伯语与乌尔都语完整从右至左显示
-- 浅色、深色与纯黑主题，六种配色主题，自选强调色，以及 Material You
+- 浅色、深色与纯黑主题，六种配色主题，自选强调色，以及 Material You——或“天空”，以倒计时上方的天空为整个应用上色，并随时刻变化
 
 只有在你选择时才会使用网络：礼拜时间服务（AlAdhan、PrayTimes.dev，或瑞典与摩洛哥的国家时间表）、通过 OpenStreetMap Nominatim 搜索地点，以及下载古兰经页面、译本、经注与诵读音频。你的坐标只保存在你的设备上。
 

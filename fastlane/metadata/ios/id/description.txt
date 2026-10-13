@@ -31,7 +31,7 @@ MILIK ANDA
 - Sinkronisasi antarperangkat Anda sendiri tanpa akun dan tanpa server kami: berkas tersegel di folder yang memang sudah Anda sinkronkan
 - Cadangkan dan pulihkan ke berkas yang Anda simpan
 - iPhone, iPad, dan Mac, dalam 13 bahasa, dengan bahasa Arab dan Urdu sepenuhnya dari kanan ke kiri
-- Tema terang, gelap, dan hitam pekat, enam tema warna, warna aksen pilihan Anda, dan Liquid Glass
+- Tema terang, gelap, dan hitam pekat, enam tema warna, warna aksen pilihan Anda, dan Liquid Glass — atau Langit, yang mewarnai seluruh aplikasi dari langit di atas hitung mundur dan berubah seiring jam
 
 Jaringan hanya digunakan saat Anda memilihnya: penyedia jadwal sholat (AlAdhan, PrayTimes.dev, atau tabel nasional Swedia dan Maroko), pencarian tempat melalui OpenStreetMap Nominatim, serta pengunduhan halaman Al-Quran, terjemahan, tafsir, dan audio tilawah. Koordinat Anda tetap di perangkat Anda.
 

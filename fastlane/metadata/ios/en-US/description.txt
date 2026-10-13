@@ -31,7 +31,7 @@ YOURS
 - Sync between your own devices with no account and no server of ours: sealed files in a folder you already keep in sync
 - Backup and restore to a file you keep
 - iPhone, iPad and Mac, in 13 languages, with Arabic and Urdu fully right-to-left
-- Light, dark and pure black, six colour themes, your own accent colour, and Liquid Glass
+- Light, dark and pure black, six colour themes, your own accent colour, and Liquid Glass — or Sky, which paints the whole app from the sky over the countdown and changes with the hour
 
 The network is used only when you choose it: a prayer-time provider (AlAdhan, PrayTimes.dev, or the national tables for Sweden and Morocco), place search through OpenStreetMap Nominatim, and downloading Quran pages, translations, tafsir and recitation audio. Your coordinates stay on your device.
 

@@ -31,7 +31,7 @@ TUYO
 - Sincronización entre tus propios dispositivos sin cuenta y sin ningún servidor nuestro: archivos sellados en una carpeta que ya mantienes sincronizada
 - Copia de seguridad y restauración en un archivo que conservas tú
 - iPhone, iPad y Mac, en 13 idiomas, con árabe y urdu totalmente de derecha a izquierda
-- Claro, oscuro y negro puro, seis temas de color, tu propio color de acento y Liquid Glass
+- Claro, oscuro y negro puro, seis temas de color, tu propio color de acento y Liquid Glass, o Cielo, que pinta toda la app a partir del cielo sobre la cuenta atrás y cambia con la hora
 
 La red solo se usa cuando tú lo eliges: un proveedor de horarios (AlAdhan, PrayTimes.dev o las tablas nacionales de Suecia y Marruecos), la búsqueda de lugares con OpenStreetMap Nominatim y la descarga de páginas del Corán, traducciones, tafsir y audio de recitación. Tus coordenadas se quedan en tu dispositivo.
 

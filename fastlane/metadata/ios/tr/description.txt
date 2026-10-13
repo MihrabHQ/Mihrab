@@ -31,7 +31,7 @@ SİZİN
 - Hesapsız ve bize ait hiçbir sunucu olmadan, kendi cihazlarınız arasında eşitleme: zaten eşitlediğiniz bir klasörde mühürlü dosyalar
 - Sizde kalan bir dosyaya yedekleme ve geri yükleme
 - iPhone, iPad ve Mac'te, Arapça ve Urduca tamamen sağdan sola olmak üzere 13 dilde
-- Açık, koyu ve saf siyah temalar, altı renk teması, kendi vurgu renginiz ve Liquid Glass
+- Açık, koyu ve saf siyah temalar, altı renk teması, kendi vurgu renginiz ve Liquid Glass – ya da uygulamanın tamamını geri sayımın üzerindeki gökyüzünden boyayan ve saatle değişen Gökyüzü
 
 Ağ yalnızca siz seçtiğinizde kullanılır: bir vakit sağlayıcısı (AlAdhan, PrayTimes.dev ya da İsveç ve Fas'ın resmî tabloları), OpenStreetMap Nominatim ile yer arama ve Kuran sayfaları, mealler, tefsirler ile tilavet seslerinin indirilmesi. Koordinatlarınız cihazınızda kalır.
 

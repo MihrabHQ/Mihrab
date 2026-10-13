@@ -31,7 +31,7 @@ DITT EGET
 - Synk mellan dina egna enheter utan konto och utan server av vår: förseglade filer i en mapp du redan synkar
 - Säkerhetskopiering och återställning till en fil du själv behåller
 - iPhone, iPad och Mac, på 13 språk, med arabiska och urdu helt från höger till vänster
-- Ljust, mörkt och helsvart, sex färgteman, din egen accentfärg och Liquid Glass
+- Ljust, mörkt och helsvart, sex färgteman, din egen accentfärg och Liquid Glass – eller Himmel, som målar hela appen från himlen ovanför nedräkningen och skiftar med timmen
 
 Nätet används bara när du väljer det: en källa för bönetider (AlAdhan, PrayTimes.dev eller de nationella tabellerna för Sverige och Marocko), platssökning via OpenStreetMap Nominatim, och nedladdning av Koranens sidor, översättningar, tafsir och recitationsljud. Dina koordinater stannar på din enhet.
 

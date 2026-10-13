@@ -31,7 +31,7 @@ DEINS
 - Abgleich zwischen deinen eigenen Geräten ohne Konto und ohne einen Server von uns: versiegelte Dateien in einem Ordner, den du ohnehin synchron hältst
 - Sicherung und Wiederherstellung in eine Datei, die du behältst
 - iPhone, iPad und Mac, in 13 Sprachen, Arabisch und Urdu vollständig von rechts nach links
-- Hell, dunkel und tiefschwarz, sechs Farbthemen, deine eigene Akzentfarbe und Liquid Glass
+- Hell, dunkel und tiefschwarz, sechs Farbthemen, deine eigene Akzentfarbe und Liquid Glass – oder Himmel, das die ganze App aus dem Himmel über dem Countdown malt und sich mit der Stunde wandelt
 
 Das Netz wird nur genutzt, wenn du es wählst: ein Anbieter für Gebetszeiten (AlAdhan, PrayTimes.dev oder die Landestabellen für Schweden und Marokko), die Ortssuche über OpenStreetMap Nominatim und das Herunterladen von Koranseiten, Übersetzungen, Tafsir und Rezitationen. Deine Koordinaten bleiben auf deinem Gerät.
 

@@ -31,7 +31,7 @@ SE SOUVENIR
 - Synchronisation entre vos propres appareils sans compte et sans aucun serveur à nous : des fichiers scellés dans un dossier que vous synchronisez déjà
 - Sauvegarde et restauration dans un fichier que vous gardez
 - iPhone, iPad et Mac, en 13 langues, dont l'arabe et l'ourdou entièrement de droite à gauche
-- Clair, sombre et noir pur, six thèmes de couleur, votre couleur d'accent et Liquid Glass
+- Clair, sombre et noir pur, six thèmes de couleur, votre couleur d'accent et Liquid Glass – ou Ciel, qui peint toute l'app d'après le ciel au-dessus du compte à rebours et change avec l'heure
 
 Le réseau n'est utilisé que lorsque vous le choisissez : un service d'heures de prière (AlAdhan, PrayTimes.dev ou les tables nationales de la Suède et du Maroc), la recherche de lieux via OpenStreetMap Nominatim, et le téléchargement des pages du Coran, des traductions, des tafsirs et des récitations. Vos coordonnées restent sur votre appareil.
 
