@@ -198,7 +198,12 @@ final class LaunchSnapshotStore {
     let pending = self.pending
     self.pending = nil
     guard first else { return }
-    guard options.urlContexts.isEmpty, options.notificationResponse == nil,
+    // A link opens something in the app, not the app — except `mihrab://today`
+    // on its own, the widgets' tap, which lands where a plain launch does.
+    let todayOnly = options.urlContexts.allSatisfy { c in
+      c.url.scheme == "mihrab" && c.url.host == "today" && c.url.path.isEmpty && c.url.query == nil
+    }
+    guard todayOnly, options.notificationResponse == nil,
           options.shortcutItem == nil, options.userActivities.isEmpty,
           let meta = load(), stillCurrent(meta), let scene = window.windowScene else { return }
     let size = window.bounds.size

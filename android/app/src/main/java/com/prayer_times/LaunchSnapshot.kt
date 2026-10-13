@@ -322,18 +322,26 @@ internal object LaunchSnapshot {
 
   /**
    * Started to open the app, not to open something in it: no link (a
-   * widget's or a deep link's `mihrab://…`) and no extras of anyone but the
-   * system's (a notification's press action carries its own). The
-   * launcher's MAIN/LAUNCHER and Recents both pass; so does a bare
-   * `am start -n`, which is how tools/startup-trace measures it.
+   * deep link's `mihrab://…`) and no extras of anyone but the system's (a
+   * notification's press action carries its own). The launcher's
+   * MAIN/LAUNCHER and Recents both pass; so does a bare `am start -n`,
+   * which is how tools/startup-trace measures it. So does `mihrab://today`
+   * on its own — the widgets' tap — which lands on the very screen a plain
+   * launch does, and is how many people open the app every day.
    */
   private fun isPlainLaunch(intent: Intent?): Boolean {
     if (intent == null) return false
-    if (intent.action != null && intent.action != Intent.ACTION_MAIN) return false
-    if (intent.data != null) return false
+    val data = intent.data
+    if (data != null) {
+      if (intent.action != Intent.ACTION_VIEW || !isTodayLink(data)) return false
+    } else if (intent.action != null && intent.action != Intent.ACTION_MAIN) return false
     val extras = intent.extras ?: return true
     return extras.keySet().all { it.startsWith("android.") || it.startsWith("com.android.") }
   }
+
+  /** `mihrab://today`, and nothing more: no path, no query. */
+  private fun isTodayLink(uri: android.net.Uri): Boolean =
+    uri.scheme == "mihrab" && uri.host == "today" && uri.path.isNullOrEmpty() && uri.query == null
 
   private fun prefs(context: Context) = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
 
