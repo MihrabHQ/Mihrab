@@ -155,7 +155,29 @@ type Run = {
   duration: number;
   /** When the run was last read — a frame drawn, or any render of the hero. */
   lastSeen: number | null;
+  /** The fade's delay is over. */
+  delayOver: boolean;
+  /** The sky's native layers have taken a value (markLaunchRunReady). */
+  ready: boolean;
 };
+/**
+ * ── THE RUN WAITS FOR ITS SKY ────────────────────────────────────────
+ *
+ * The run's sky is drawn by native layers driven by one native value
+ * (HeroSky, `SkyRunLayers`), and those layers come alive a beat after
+ * they are mounted: nodes made, wired to their views, the first value
+ * taken — on the UI thread, behind the launch's own drawing. A run that
+ * began on the fade's clock alone began before that: its first frames
+ * set a value no layer was yet listening to, the sky stood at the
+ * picture's while the countdown ran, and when the layers caught up the
+ * sky jumped to wherever the run had got to — a third of the way into a
+ * morning, from the sunrise's peach straight to the midday's blue. So
+ * the hero says when the value has reached native (the value's own
+ * listener, which native calls once it has taken a value), and the run
+ * begins at the later of that and the fade — or WARP_READY_MAX_MS after
+ * the fade if the word never comes (no sky to draw, a size of zero).
+ */
+export const WARP_READY_MAX_MS = 700;
 /**
  * ── TIMED BY THE FRAMES DRAWN, NOT THE CLOCK ─────────────────────────
  *
@@ -203,7 +225,7 @@ function decide(reduceMotion: boolean): void {
     run = null;
     return;
   }
-  const r: Run = { start, begun: false, t0: null, duration: 0, lastSeen: null };
+  const r: Run = { start, begun: false, t0: null, duration: 0, lastSeen: null, delayOver: false, ready: false };
   run = r;
   // A hero mid-run is not a screen to keep for the next launch.
   holdLaunchSnapshot(HOLD, true);
@@ -217,13 +239,35 @@ function decide(reduceMotion: boolean): void {
   setTimeout(() => {
     // A window that closed while its run waited for the fade.
     if (run !== r) return;
-    r.begun = true;
-    r.duration = warpDurationMs(Math.abs(Date.now() - start.at));
-    onBegin.forEach(fn => fn());
-    setTimeout(() => {
-      if (run === r) endRun();
-    }, r.duration + WARP_STALL_MAX_MS);
+    r.delayOver = true;
+    if (r.ready) begin(r);
+    else setTimeout(() => begin(r), WARP_READY_MAX_MS);
   }, warpDelayMs());
+}
+
+/** The run's first frame may be drawn: the fade is over and the sky is live. */
+function begin(r: Run): void {
+  if (run !== r || r.begun) return;
+  r.begun = true;
+  r.duration = warpDurationMs(Math.abs(Date.now() - r.start.at));
+  onBegin.forEach(fn => fn());
+  setTimeout(() => {
+    if (run === r) endRun();
+  }, r.duration + WARP_STALL_MAX_MS);
+}
+
+/** The run's length, once begun — the sky's native animation is this long. */
+export function launchRunDurationMs(): number | null {
+  const r = run;
+  return r && r.begun ? r.duration : null;
+}
+
+/** The hero's word that the run's native value has been taken by native. */
+export function markLaunchRunReady(): void {
+  const r = run;
+  if (!r || r.ready) return;
+  r.ready = true;
+  if (r.delayOver) begin(r);
 }
 
 /**

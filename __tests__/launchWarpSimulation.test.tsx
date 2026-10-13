@@ -68,11 +68,11 @@ jest.mock('react-i18next', () => ({
 }));
 
 // eslint-disable-next-line import/first
-import { Text, View, StyleSheet } from 'react-native';
+import { Animated, Text, View, StyleSheet } from 'react-native';
 // eslint-disable-next-line import/first
 import { TodayCard } from '../src/screens/home/TodayCard';
 // eslint-disable-next-line import/first
-import { _resetLaunchWarpForTests, WARP_AFTER_HIDE_MS, WARP_MAX_MS } from '../src/boot/launchWarp';
+import { _resetLaunchWarpForTests, WARP_AFTER_HIDE_MS, WARP_MAX_MS, WARP_READY_MAX_MS } from '../src/boot/launchWarp';
 
 const TIMINGS = {
   Fajr: '05:00',
@@ -348,6 +348,63 @@ describe('the hero runs from the kept picture to now', () => {
     }
     expect(seen.size).toBeGreaterThan(8);
     expect(Math.abs(shownSeconds(tree) - live)).toBeLessThanOrEqual(3);
+  });
+
+  it('waits for the sky\'s native layers to take the value before it begins', () => {
+    // The value's listener is native's word that the layers are live. Hold
+    // it back: the fade passes and the hero still shows the picture's
+    // number; the word comes, and the run begins at once.
+    const original = Animated.Value.prototype.addListener;
+    const held: Array<(v: { value: number }) => void> = [];
+    Animated.Value.prototype.addListener = function (cb) {
+      held.push(cb);
+      return 'held';
+    } as typeof original;
+    try {
+      const pictureAt = day(D, '06:30');
+      const now = day(D, '19:00');
+      const h = heroAt(pictureAt);
+      mockShown.value = { at: pictureAt.getTime(), targetAt: h.target.getTime(), fromAt: h.from.getTime(), posed: true };
+      jest.setSystemTime(now);
+      const tree = renderCard(now);
+      const cached = shownSeconds(tree);
+      act(() => {
+        jest.advanceTimersByTime(WARP_AFTER_HIDE_MS + 10 * frame);
+      });
+      expect(shownSeconds(tree)).toBe(cached);
+      expect(held.length).toBeGreaterThan(0);
+      act(() => {
+        held.forEach(cb => cb({ value: 0 }));
+        jest.advanceTimersByTime(5 * frame);
+      });
+      expect(shownSeconds(tree)).not.toBe(cached);
+    } finally {
+      Animated.Value.prototype.addListener = original;
+    }
+  });
+
+  it('begins anyway, a little late, when the word never comes', () => {
+    const original = Animated.Value.prototype.addListener;
+    Animated.Value.prototype.addListener = (() => 'held') as typeof original;
+    try {
+      const pictureAt = day(D, '06:30');
+      const now = day(D, '19:00');
+      const h = heroAt(pictureAt);
+      mockShown.value = { at: pictureAt.getTime(), targetAt: h.target.getTime(), fromAt: h.from.getTime(), posed: true };
+      jest.setSystemTime(now);
+      const tree = renderCard(now);
+      const cached = shownSeconds(tree);
+      act(() => {
+        jest.advanceTimersByTime(WARP_AFTER_HIDE_MS + WARP_READY_MAX_MS - 2 * frame);
+      });
+      expect(shownSeconds(tree)).toBe(cached);
+      act(() => {
+        jest.advanceTimersByTime(6 * frame);
+      });
+      expect(shownSeconds(tree)).not.toBe(cached);
+    } finally {
+      Animated.Value.prototype.addListener = original;
+    }
   });
 
   it('does not run at all with Reduce Motion', () => {

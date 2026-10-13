@@ -42,6 +42,9 @@ import { useIsActive } from '../../hooks/useIsActive';
 import { useReduceMotion } from '../../hooks/useReduceMotion';
 import { useIncreasedContrast } from '../../hooks/useIncreasedContrast';
 import {
+  easeOutCubic,
+  launchRunDurationMs,
+  markLaunchRunReady,
   useLaunchRunActive,
   useLaunchWarp,
   warpPct,
@@ -540,9 +543,59 @@ const HeroToday = memo(function HeroToday({
     skyRunRef.current = null;
   }
   const skyRun = skyRunRef.current;
+  // THE SKY RUNS ON ITS OWN CLOCK, NATIVE. The run's progress was set
+  // into the native value once a frame from here; on the phone the first
+  // third of a morning's run drew no change of sky at all and then the
+  // whole of it at once — the per-frame values did not reach the layers
+  // in time, whatever queue they waited in, while the countdown beside
+  // them ran. So once the run begins, the sky's value is animated by
+  // native itself, from where the run is to its end over the run's
+  // remaining length, with the same easing from that point — one start,
+  // no frames to deliver. The countdown and the rail stay the frames'
+  // (stall-tolerant, launchWarp.ts): a stall then parts them for its
+  // length, the sky a little ahead, which is nothing beside a sky that
+  // stands and jumps.
+  const skyAnim = useRef<Animated.CompositeAnimation | null>(null);
   useLayoutEffect(() => {
-    if (launchRun) runProgress.current?.setValue(warpE);
+    const v = runProgress.current;
+    if (!v) return;
+    if (!launchRun) {
+      skyAnim.current?.stop();
+      skyAnim.current = null;
+      return;
+    }
+    if (skyAnim.current) return;
+    const duration = launchRunDurationMs();
+    if (duration == null) {
+      v.setValue(warpE);
+      return;
+    }
+    const e0 = warpE;
+    const k0 = 1 - Math.cbrt(Math.max(0, 1 - e0));
+    const left = Math.max(1, Math.round(duration * (1 - k0)));
+    v.setValue(e0);
+    skyAnim.current = Animated.timing(v, {
+      toValue: 1,
+      duration: left,
+      easing: t => (e0 >= 1 ? 1 : (easeOutCubic(k0 + t * (1 - k0)) - e0) / (1 - e0)),
+      useNativeDriver: true,
+    });
+    skyAnim.current.start();
   });
+  // The run waits for its sky (launchWarp.ts): native calls this listener
+  // once the value has reached it — the layers are wired and listening —
+  // and the run may begin. Until then its first frames would set a value
+  // no layer took, and the sky would jump to catch up. The listener is
+  // kept only while there is a run to wait for.
+  const waiting = !!(launchRun && skyRun && !launchRun.e);
+  useEffect(() => {
+    const v = runProgress.current;
+    if (!waiting || !v) return undefined;
+    const id = v.addListener(() => markLaunchRunReady());
+    // A value to take: the one the run starts from.
+    v.setValue(0);
+    return () => v.removeListener(id);
+  }, [waiting]);
 
   const units = useMemo(
     () => ({

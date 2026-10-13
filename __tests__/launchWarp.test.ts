@@ -256,8 +256,16 @@ describe('wiring', () => {
     expect(card).toMatch(/new Animated\.Value\(0, \{ useNativeDriver: true \}\)/);
     expect(card).toMatch(/const K = Math\.max\(2, Math\.min\(SKY_RUN_KEYFRAMES_MAX, Math\.ceil\(hours\) \+ 1\)\);/);
     expect(card).toMatch(/skyRunRef\.current = \{ frames, progress: runProgress\.current \};/);
-    // …sets it once a frame, after the countdown's commit…
-    expect(card).toMatch(/useLayoutEffect\(\(\) => \{\s*if \(launchRun\) runProgress\.current\?\.setValue\(warpE\);\s*\}\);/);
+    // …and once the run begins, hands it to native to animate to its end
+    // over the run's remaining length, with the run's own easing from
+    // where it is — the per-frame values did not reach the layers in time
+    // on the phone, and the sky stood and then jumped. Before it begins,
+    // the value is set from here (it is 0), and the run waits for native
+    // to have taken it (markLaunchRunReady).
+    expect(card).toMatch(/const duration = launchRunDurationMs\(\);\s*if \(duration == null\) \{\s*v\.setValue\(warpE\);\s*return;\s*\}/);
+    expect(card).toMatch(/skyAnim\.current = Animated\.timing\(v, \{\s*toValue: 1,\s*duration: left,[\s\S]*?useNativeDriver: true,\s*\}\);\s*skyAnim\.current\.start\(\);/);
+    expect(card).toMatch(/const k0 = 1 - Math\.cbrt\(Math\.max\(0, 1 - e0\)\);/);
+    expect(card).toMatch(/v\.addListener\(\(\) => markLaunchRunReady\(\)\)/);
     expect(card).toMatch(/run=\{skyRun \?\? undefined\}/);
     // …and the sky draws the layers, not the frame, while it runs.
     expect(sky).toMatch(/const running = run && size\.width > 0 && size\.height > 0;/);
