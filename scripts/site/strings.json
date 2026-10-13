@@ -246,7 +246,7 @@
       "cards": [
         {
           "h3": "صلِّ",
-          "p": "مواقيت الصلاة وعدّ تنازلي للصلاة القادمة، والأذان لكل صلاة، وبوصلة القبلة، وأدوات على الشاشة الرئيسية، وتسجيل كل صلاة بضغطة واحدة."
+          "p": "مواقيت الصلاة وعدّ تنازلي للصلاة القادمة، والأذان لكل صلاة، وبوصلة القبلة، وأدوات على الشاشة الرئيسية، وتسجيل كل صلاة بضغطة واحدة. تنبيه صلاة بملء الشاشة كالمنبّه، ولكل صلاة أن تختار الأذان أو تنبيهًا أو الصمت، وعلى أندرويد يهدأ الهاتف أثناء الصلاة نفسها."
         },
         {
           "h3": "اقرأ واستمع",
@@ -258,7 +258,7 @@
         },
         {
           "h3": "لك وحدك",
-          "p": "بلا حساب ولا إعلانات ولا تتبّع. مزامنة بين أجهزتك عبر مجلد تزامنه أصلًا، ونسخة احتياطية في ملف تحتفظ به، وشيفرة مفتوحة المصدر برخصة AGPL-3.0."
+          "p": "بلا حساب ولا إعلانات ولا تتبّع. مزامنة بين أجهزتك عبر مجلد تزامنه أصلًا، ونسخة احتياطية في ملف تحتفظ به، وشيفرة مفتوحة المصدر برخصة AGPL-3.0. فاتح وداكن وأسود تمامًا، وست سمات لونية — أو «السماء»، التي تصبغ التطبيق كلّه من السماء فوق العدّ التنازلي."
         }
       ]
     },
@@ -458,7 +458,7 @@
       "cards": [
         {
           "h3": "Kıl",
-          "p": "Sıradaki namaza geri sayımla namaz vakitleri, her namaz için ezan, kıble pusulası, ana ekran widget'ları — ve her namaz tek dokunuşla kaydedilir."
+          "p": "Sıradaki namaza geri sayımla namaz vakitleri, her namaz için ezan, kıble pusulası, ana ekran widget'ları — ve her namaz tek dokunuşla kaydedilir. Çalar saat gibi tam ekran bir namaz uyarısı, her namaz için ezan, uyarı ya da sessiz seçimi ve Android'de namazın kendisi sırasında sessize alınan telefon."
         },
         {
           "h3": "Oku ve dinle",
@@ -470,7 +470,7 @@
         },
         {
           "h3": "Sizin",
-          "p": "Hesap yok, reklam yok, takip yok. Zaten eşitlediğiniz bir klasör üzerinden kendi cihazlarınız arasında eşitleme, sakladığınız bir dosyaya yedek ve AGPL-3.0 altında tamamen açık kaynak kod."
+          "p": "Hesap yok, reklam yok, takip yok. Zaten eşitlediğiniz bir klasör üzerinden kendi cihazlarınız arasında eşitleme, sakladığınız bir dosyaya yedek ve AGPL-3.0 altında tamamen açık kaynak kod. Açık, koyu ya da saf siyah, altı renk teması — ya da tüm uygulamayı geri sayımın üzerindeki gökyüzünden boyayan Gökyüzü."
         }
       ]
     },
@@ -670,7 +670,7 @@
       "cards": [
         {
           "h3": "نماز",
-          "p": "اگلی نماز کی الٹی گنتی کے ساتھ نماز کے اوقات، ہر نماز کی اذان، قبلہ کمپاس، ہوم اسکرین وجٹس — اور ہر نماز ایک ٹیپ میں درج۔"
+          "p": "اگلی نماز کی الٹی گنتی کے ساتھ نماز کے اوقات، ہر نماز کی اذان، قبلہ کمپاس، ہوم اسکرین وجٹس — اور ہر نماز ایک ٹیپ میں درج۔ الارم گھڑی کی طرح پوری اسکرین کا نماز الرٹ، ہر نماز کے لیے اذان، الرٹ یا خاموشی کا انتخاب، اور اینڈرائیڈ پر خود نماز کے دوران خاموش فون۔"
         },
         {
           "h3": "پڑھیں اور سنیں",
@@ -682,7 +682,7 @@
         },
         {
           "h3": "صرف آپ کا",
-          "p": "نہ اکاؤنٹ، نہ اشتہار، نہ ٹریکنگ۔ اس فولڈر کے ذریعے اپنے ہی آلات میں ہم آہنگی جسے آپ پہلے سے سنک کرتے ہیں، اپنے پاس رکھی فائل میں بیک اپ، اور AGPL-3.0 کے تحت پورا کوڈ کھلا۔"
+          "p": "نہ اکاؤنٹ، نہ اشتہار، نہ ٹریکنگ۔ اس فولڈر کے ذریعے اپنے ہی آلات میں ہم آہنگی جسے آپ پہلے سے سنک کرتے ہیں، اپنے پاس رکھی فائل میں بیک اپ، اور AGPL-3.0 کے تحت پورا کوڈ کھلا۔ ہلکی، گہری یا خالص سیاہ، چھ رنگین تھیمز — یا آسمان، جو الٹی گنتی کے اوپر والے آسمان سے پوری ایپ کو رنگتا ہے۔"
         }
       ]
     },
@@ -882,7 +882,7 @@
       "cards": [
         {
           "h3": "Sholat",
-          "p": "Jadwal sholat dengan hitung mundur ke sholat berikutnya, adzan untuk setiap waktu, kompas kiblat, widget layar utama — dan setiap sholat dicatat dengan satu ketukan."
+          "p": "Jadwal sholat dengan hitung mundur ke sholat berikutnya, adzan untuk setiap waktu, kompas kiblat, widget layar utama — dan setiap sholat dicatat dengan satu ketukan. Pengingat sholat layar penuh seperti jam alarm, pilihan adzan, nada, atau senyap untuk tiap sholat, dan di Android ponsel hening selama sholat itu sendiri."
         },
         {
           "h3": "Baca dan dengarkan",
@@ -894,7 +894,7 @@
         },
         {
           "h3": "Milik Anda",
-          "p": "Tanpa akun, tanpa iklan, tanpa pelacakan. Sinkronisasi antara perangkat Anda sendiri lewat folder yang sudah Anda sinkronkan, cadangan ke berkas yang Anda simpan, dan seluruh kode terbuka di bawah AGPL-3.0."
+          "p": "Tanpa akun, tanpa iklan, tanpa pelacakan. Sinkronisasi antara perangkat Anda sendiri lewat folder yang sudah Anda sinkronkan, cadangan ke berkas yang Anda simpan, dan seluruh kode terbuka di bawah AGPL-3.0. Terang, gelap, atau hitam pekat, enam tema warna — atau Langit, yang mewarnai seluruh aplikasi dari langit di atas hitung mundur."
         }
       ]
     },
@@ -1094,7 +1094,7 @@
       "cards": [
         {
           "h3": "Beten",
-          "p": "Gebetszeiten mit Countdown zum nächsten Gebet, Adhan für jedes Gebet, Qibla-Kompass und Homescreen-Widgets – und jedes Gebet mit einem Tippen eingetragen."
+          "p": "Gebetszeiten mit Countdown zum nächsten Gebet, Adhan für jedes Gebet, Qibla-Kompass und Homescreen-Widgets – und jedes Gebet mit einem Tippen eingetragen. Ein Vollbild-Gebetsalarm wie ein Wecker, je Gebet Adhan, Hinweiston oder Stille, und unter Android ein Telefon, das während des Gebets selbst still ist."
         },
         {
           "h3": "Lesen und hören",
@@ -1106,7 +1106,7 @@
         },
         {
           "h3": "Ihr Eigenes",
-          "p": "Kein Konto, keine Werbung, kein Tracking. Abgleich zwischen Ihren eigenen Geräten über einen Ordner, den Sie ohnehin synchronisieren, eine Sicherung als Datei, und der gesamte Code quelloffen unter AGPL-3.0."
+          "p": "Kein Konto, keine Werbung, kein Tracking. Abgleich zwischen Ihren eigenen Geräten über einen Ordner, den Sie ohnehin synchronisieren, eine Sicherung als Datei, und der gesamte Code quelloffen unter AGPL-3.0. Hell, dunkel oder tiefschwarz, sechs Farbthemen – oder Himmel, das die ganze App aus dem Himmel über dem Countdown malt."
         }
       ]
     },
@@ -1306,7 +1306,7 @@
       "cards": [
         {
           "h3": "Prier",
-          "p": "Heures de prière et compte à rebours jusqu'à la prochaine, adhan pour chaque prière, boussole de la qibla, widgets pour l'écran d'accueil — et chaque prière consignée d'un seul geste."
+          "p": "Heures de prière et compte à rebours jusqu'à la prochaine, adhan pour chaque prière, boussole de la qibla, widgets pour l'écran d'accueil — et chaque prière consignée d'un seul geste. Une alerte de prière plein écran comme un réveil, pour chaque prière l'adhan, un signal ou le silence, et sur Android un téléphone qui se tait pendant la prière elle-même."
         },
         {
           "h3": "Lire et écouter",
@@ -1318,7 +1318,7 @@
         },
         {
           "h3": "À vous",
-          "p": "Pas de compte, pas de publicité, pas de pistage. Synchronisation entre vos propres appareils via un dossier que vous synchronisez déjà, sauvegarde dans un fichier que vous gardez, et tout le code ouvert sous AGPL-3.0."
+          "p": "Pas de compte, pas de publicité, pas de pistage. Synchronisation entre vos propres appareils via un dossier que vous synchronisez déjà, sauvegarde dans un fichier que vous gardez, et tout le code ouvert sous AGPL-3.0. Clair, sombre ou noir pur, six thèmes de couleur – ou Ciel, qui peint toute l'app d'après le ciel au-dessus du compte à rebours."
         }
       ]
     },
@@ -1518,7 +1518,7 @@
       "cards": [
         {
           "h3": "Rezar",
-          "p": "Horarios de oración con cuenta atrás hasta la siguiente, adhan para cada oración, brújula de la alquibla, widgets para la pantalla de inicio — y cada oración registrada con un toque."
+          "p": "Horarios de oración con cuenta atrás hasta la siguiente, adhan para cada oración, brújula de la alquibla, widgets para la pantalla de inicio — y cada oración registrada con un toque. Una alerta de oración a pantalla completa como un despertador, para cada oración adhan, aviso o silencio, y en Android un teléfono que calla durante la propia oración."
         },
         {
           "h3": "Leer y escuchar",
@@ -1530,7 +1530,7 @@
         },
         {
           "h3": "Tuyo",
-          "p": "Sin cuenta, sin anuncios, sin rastreo. Sincronización entre tus propios dispositivos mediante una carpeta que ya sincronizas, copia de seguridad en un archivo que guardas tú, y todo el código abierto bajo AGPL-3.0."
+          "p": "Sin cuenta, sin anuncios, sin rastreo. Sincronización entre tus propios dispositivos mediante una carpeta que ya sincronizas, copia de seguridad en un archivo que guardas tú, y todo el código abierto bajo AGPL-3.0. Claro, oscuro o negro puro, seis temas de color, o Cielo, que pinta toda la app a partir del cielo sobre la cuenta atrás."
         }
       ]
     },
@@ -1730,7 +1730,7 @@
       "cards": [
         {
           "h3": "Молитесь",
-          "p": "Время намаза с обратным отсчётом до следующего, азан для каждого намаза, компас киблы, виджеты — и каждый намаз отмечается одним касанием."
+          "p": "Время намаза с обратным отсчётом до следующего, азан для каждого намаза, компас киблы, виджеты — и каждый намаз отмечается одним касанием. Полноэкранное напоминание о молитве, как будильник, для каждого намаза азан, сигнал или тишина, а на Android телефон молчит во время самой молитвы."
         },
         {
           "h3": "Читайте и слушайте",
@@ -1742,7 +1742,7 @@
         },
         {
           "h3": "Только ваше",
-          "p": "Без аккаунта, без рекламы, без слежки. Синхронизация между вашими устройствами через папку, которую вы и так синхронизируете, резервная копия в файл и весь код открыт по AGPL-3.0."
+          "p": "Без аккаунта, без рекламы, без слежки. Синхронизация между вашими устройствами через папку, которую вы и так синхронизируете, резервная копия в файл и весь код открыт по AGPL-3.0. Светлая, тёмная или чёрная тема, шесть цветовых тем — или «Небо», которое красит всё приложение по небу над обратным отсчётом."
         }
       ]
     },
@@ -1942,7 +1942,7 @@
       "cards": [
         {
           "h3": "নামাজ",
-          "p": "পরের নামাজের কাউন্টডাউনসহ নামাজের সময়, প্রতি ওয়াক্তের আজান, কিবলা কম্পাস, হোম স্ক্রিন উইজেট — আর এক ছোঁয়ায় প্রতিটি নামাজ লিখে রাখা।"
+          "p": "পরের নামাজের কাউন্টডাউনসহ নামাজের সময়, প্রতি ওয়াক্তের আজান, কিবলা কম্পাস, হোম স্ক্রিন উইজেট — আর এক ছোঁয়ায় প্রতিটি নামাজ লিখে রাখা। অ্যালার্ম ঘড়ির মতো পূর্ণ-পর্দা নামাজের সতর্কবার্তা, প্রতি ওয়াক্তে আজান, সংকেত বা নীরবতার পছন্দ, আর অ্যান্ড্রয়েডে নামাজের সময়টুকু ফোন চুপ।"
         },
         {
           "h3": "পড়ুন ও শুনুন",
@@ -1954,7 +1954,7 @@
         },
         {
           "h3": "আপনার নিজের",
-          "p": "অ্যাকাউন্ট নেই, বিজ্ঞাপন নেই, ট্র্যাকিং নেই। আপনি আগে থেকেই সিঙ্ক করেন এমন একটি ফোল্ডারের মাধ্যমে নিজের ডিভাইসগুলোর মধ্যে সিঙ্ক, নিজের কাছে রাখা ফাইলে ব্যাকআপ, আর AGPL-3.0-এর অধীনে পুরো কোড উন্মুক্ত।"
+          "p": "অ্যাকাউন্ট নেই, বিজ্ঞাপন নেই, ট্র্যাকিং নেই। আপনি আগে থেকেই সিঙ্ক করেন এমন একটি ফোল্ডারের মাধ্যমে নিজের ডিভাইসগুলোর মধ্যে সিঙ্ক, নিজের কাছে রাখা ফাইলে ব্যাকআপ, আর AGPL-3.0-এর অধীনে পুরো কোড উন্মুক্ত। লাইট, ডার্ক বা গাঢ় কালো, ছয়টি রঙের থিম — অথবা আকাশ, যা কাউন্টডাউনের উপরের আকাশ থেকে পুরো অ্যাপ রাঙায়।"
         }
       ]
     },
@@ -2154,7 +2154,7 @@
       "cards": [
         {
           "h3": "नमाज़",
-          "p": "अगली नमाज़ की उलटी गिनती के साथ नमाज़ के समय, हर नमाज़ की अज़ान, क़िबला कम्पास, होम स्क्रीन विजेट — और हर नमाज़ एक टैप में दर्ज।"
+          "p": "अगली नमाज़ की उलटी गिनती के साथ नमाज़ के समय, हर नमाज़ की अज़ान, क़िबला कम्पास, होम स्क्रीन विजेट — और हर नमाज़ एक टैप में दर्ज। अलार्म घड़ी जैसी पूर्ण-स्क्रीन नमाज़ चेतावनी, हर नमाज़ के लिए अज़ान, सूचना या मौन का चुनाव, और एंड्रॉइड पर नमाज़ के दौरान चुप फ़ोन।"
         },
         {
           "h3": "पढ़ें और सुनें",
@@ -2166,7 +2166,7 @@
         },
         {
           "h3": "सिर्फ़ आपका",
-          "p": "न खाता, न विज्ञापन, न ट्रैकिंग। उस फ़ोल्डर के ज़रिए अपने ही डिवाइसों में सिंक जिसे आप पहले से सिंक करते हैं, आपके पास रहने वाली फ़ाइल में बैकअप, और AGPL-3.0 के तहत पूरा कोड खुला।"
+          "p": "न खाता, न विज्ञापन, न ट्रैकिंग। उस फ़ोल्डर के ज़रिए अपने ही डिवाइसों में सिंक जिसे आप पहले से सिंक करते हैं, आपके पास रहने वाली फ़ाइल में बैकअप, और AGPL-3.0 के तहत पूरा कोड खुला। लाइट, डार्क या गहरा काला, छह रंग-थीम — या आकाश, जो काउंटडाउन के ऊपर के आकाश से पूरे ऐप को रंगता है।"
         }
       ]
     },
@@ -2366,7 +2366,7 @@
       "cards": [
         {
           "h3": "礼拜",
-          "p": "礼拜时间与到下一次礼拜的倒计时、每番礼拜的宣礼、朝向罗盘、主屏小组件——每次礼拜一触即可记录。"
+          "p": "礼拜时间与到下一次礼拜的倒计时、每番礼拜的宣礼、朝向罗盘、主屏小组件——每次礼拜一触即可记录。全屏礼拜提醒如同闹钟；每番礼拜可选宣礼、提示音或静音；在 Android 上，手机在礼拜期间保持安静。"
         },
         {
           "h3": "诵读与聆听",
@@ -2378,7 +2378,7 @@
         },
         {
           "h3": "只属于您",
-          "p": "无需账号，没有广告，没有追踪。通过您本就在同步的文件夹在自己的设备之间同步，备份到您自己保存的文件，全部代码以 AGPL-3.0 开源。"
+          "p": "无需账号，没有广告，没有追踪。通过您本就在同步的文件夹在自己的设备之间同步，备份到您自己保存的文件，全部代码以 AGPL-3.0 开源。浅色、深色或纯黑，六种配色主题——或“天空”，以倒计时上方的天空为整个应用上色。"
         }
       ]
     },
