@@ -348,6 +348,19 @@ describe('the reader', () => {
     expect(surah).toMatch(/const ground = usePageGround\(tone\);/);
     expect(surah).not.toMatch(/TONE_PAGE_BG/);
   });
+
+  it('frames the page in the page bar\'s accent, not the app\'s', () => {
+    // A night page at a light hour: the app's accent is the midday's deep
+    // blue, which vanished on the black page while the bar wore the
+    // night's cyan. The page and its bar are one palette — the theme
+    // rendered for the page's mode.
+    for (const file of ['src/quran/MushafPhoneReader.tsx', 'src/quran/MushafSpreadReader.tsx']) {
+      const reader = read(file);
+      expect(reader).toMatch(/const railChrome = useScrubberChrome\(tone\);[\s\S]{0,600}?const accent = railChrome\.accent;/);
+      expect(reader).not.toMatch(/const accent = palette\.accentSolid;/);
+      expect(reader).not.toMatch(/useAppPalette\(\)/);
+    }
+  });
 });
 
 describe('access and polish', () => {

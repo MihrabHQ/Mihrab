@@ -38,7 +38,6 @@ import { afterInteractions } from '../utils/afterInteractions';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { useTranslation } from 'react-i18next';
-import { useAppPalette } from '../hooks/useAppPalette';
 import { useIsActive } from '../hooks/useIsActive';
 import { finishKhatmahPortion } from './khatmahActions';
 import { useRotationFade } from './rotationFade';
@@ -245,7 +244,6 @@ export const MushafSpreadReader = React.memo(function MushafSpreadReader(
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
-  const { palette } = useAppPalette();
   const { width, height } = useWindowSize();
   const core = useMushafReaderCore(props);
   const {
@@ -441,8 +439,13 @@ export const MushafSpreadReader = React.memo(function MushafSpreadReader(
   const finishPage = core.finish?.page ?? 0;
 
   const { marks, finish, selected, openSelection, openJump } = core;
-  const accent = palette.accentSolid;
   const railChrome = useScrubberChrome(tone);
+  // The page's accent — its frame, the beginning of a surah, the marks —
+  // is the page bar's: the theme rendered for the PAGE's mode, not the
+  // app's. On a night page under the Sky theme at a light hour the app's
+  // accent is the midday's deep blue, which vanished on the black page
+  // while the bar beside it wore the night's; the two now agree.
+  const accent = railChrome.accent;
   /**
    * The recited ayah, as far as the PAGE is concerned — null while nobody
    * is looking.
