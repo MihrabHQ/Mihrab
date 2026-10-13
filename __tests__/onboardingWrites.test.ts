@@ -335,7 +335,7 @@ describe('the personalisation shelf', () => {
   it('still hides the whole control under dynamic colours', () => {
     // The OS drives the app and the widget together in that mode, and a
     // colour control that cannot change anything is worse than none.
-    expect(src).toMatch(/dynamicColours \? null : \(/);
+    expect(src).toMatch(/dynamicColours \|\| skyActive \? null : \(/);
     expect(src).toMatch(/settings\.useSystemDynamicTheme/);
   });
 });

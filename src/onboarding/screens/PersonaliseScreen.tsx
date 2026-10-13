@@ -37,7 +37,7 @@
  * you want to skip?" is a question.
  */
 import { useMemo } from 'react';
-import { Platform, StyleSheet, Text } from 'react-native';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import {
@@ -52,6 +52,7 @@ import {
 import { sharedSettingsStyles as s } from '../../screens/settings/sharedStyles';
 import { SegmentedControl } from '../../components/ui';
 import { AccentShelf } from '../../components/AccentShelf';
+import { SkyMoodStrip } from '../../components/SkyMoodStrip';
 import type { AppearancePreference } from '../../settings/types';
 import { SPACING } from '../../theme/tokens';
 import { typeStyle } from '../../theme/typography';
@@ -102,6 +103,12 @@ export function PersonaliseScreen({
     (Platform.OS === 'android' || Platform.OS === 'ios');
 
   const alertsOn = settings.notificationsEnabled;
+
+  // The Sky theme paints the whole palette from the hour's sky, so the
+  // colour theme has nothing left to choose — the same rule Settings
+  // follows. It is offered here as a picture of its six moods, with a
+  // line of what it does; the picture is the control.
+  const skyActive = settings.appearance === 'sky';
 
   return (
     <OnboardingFrame
@@ -217,8 +224,25 @@ export function PersonaliseScreen({
             value={settings.appearance}
             onChange={appearance => updateSettings({ appearance })}
           />
+          <View style={styles.strip}>
+            <SkyMoodStrip
+              testID="personalise-sky-strip"
+              selected={skyActive}
+              accent={String(palette.accent)}
+              accessibilityLabel={t('settings.themeSky')}
+              onPress={() => updateSettings({ appearance: 'sky' })}
+            />
+          </View>
+          <Text style={[s.help, { color: palette.muted, marginTop: SPACING.sm }]}>
+            {skyActive
+              ? t('settings.themeSkyHelp')
+              : t(
+                  'onboarding.personalise.skyOffer',
+                  'Or let the sky colour the app — night, dawn, day and dusk, each in its own light. Tap to try Sky.',
+                )}
+          </Text>
         </SettingsBlock>
-        {dynamicColours ? null : (
+        {dynamicColours || skyActive ? null : (
           <SettingsBlock>
             <Text
               style={[typeStyle('label'), styles.label, { color: palette.muted }]}>
@@ -256,4 +280,5 @@ export function PersonaliseScreen({
 
 const styles = StyleSheet.create({
   label: { marginBottom: SPACING.sm },
+  strip: { marginTop: SPACING.md },
 });

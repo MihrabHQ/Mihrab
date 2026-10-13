@@ -325,7 +325,21 @@ describe('the reader', () => {
 
 describe('access and polish', () => {
   it('is offered in onboarding, keyed into the launch picture\'s look by mood, and the glow yields to increased contrast', () => {
-    expect(read('src/onboarding/screens/PersonaliseScreen.tsx')).toMatch(/\{ key: 'sky', label: t\('settings\.themeSky'\) \}/);
+    const personalise = read('src/onboarding/screens/PersonaliseScreen.tsx');
+    expect(personalise).toMatch(/\{ key: 'sky', label: t\('settings\.themeSky'\) \}/);
+    // Offered as a picture of its moods, the picture the control; the
+    // colour theme steps aside once the sky paints the palette.
+    expect(personalise).toMatch(/<SkyMoodStrip[\s\S]*?onPress=\{\(\) => updateSettings\(\{ appearance: 'sky' \}\)\}/);
+    expect(personalise).toMatch(/skyActive\s+\? t\('settings\.themeSkyHelp'\)\s+: t\(\s*'onboarding\.personalise\.skyOffer'/);
+    expect(personalise).toMatch(/\{dynamicColours \|\| skyActive \? null : \(/);
+    const strip = read('src/components/SkyMoodStrip.tsx');
+    for (const name of ['night', 'dawn', 'morning', 'midday', 'golden', 'sunset']) expect(strip).toContain(`'${name}'`);
+    expect(strip).toMatch(/accessibilityState=\{\{ selected \}\}/);
+    const locales = fs.readdirSync(path.join(__dirname, '..', 'src/i18n/locales')).filter(f => f.endsWith('.json'));
+    for (const file of locales) {
+      const json = JSON.parse(read(`src/i18n/locales/${file}`));
+      expect(typeof json.onboarding?.personalise?.skyOffer).toBe('string');
+    }
     const root = read('src/AppNavigationRoot.tsx');
     expect(root).toMatch(/const lookMoodKey = lookMood \? `\$\{lookMood\.name\}:\$\{lookMood\.isDark \? 'dark' : 'light'\}` : '';/);
     expect(root).toMatch(/setLaunchSnapshotLook\(lookKeyOf\(settings\) \+ \(lookMoodKey \? `\|sky:\$\{lookMoodKey\}` : ''\)\)/);
