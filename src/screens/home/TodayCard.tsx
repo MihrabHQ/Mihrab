@@ -1584,6 +1584,17 @@ function TodayCardImpl({
             boot/poseHero.ts. Only when there is an interval to pose at,
             nothing chosen, and no launch run drawing. */}
         {twinUp && interval && heroBox && target ? (
+          // THE CAPTURED BOX IS THE SKY'S, NOT THE HERO'S. The twin is
+          // drawn to a file by its ref (poseHero.ts, view-shot), and the
+          // file is the ref's own bounds: the hero's box, which its sky
+          // bleeds out of — under the status bar and out to the edges.
+          // Captured at the box, the picture lost the bleed, and the
+          // kept launch picture drew the posed hero into a frame of the
+          // real hero's sky as it was when the picture was taken: under
+          // the Sky theme, where the sky moves through a prayer, a dark
+          // square of Fajr inside the dawn's rose. So the ref is a view
+          // the size of the sky, and the hero sits inside it at the
+          // bleed's inset — the same box as before, drawn whole.
           <View
             ref={poseRef}
             collapsable={false}
@@ -1592,11 +1603,20 @@ function TodayCardImpl({
             accessibilityElementsHidden
             style={{
               position: 'absolute',
-              left: heroBox.x,
-              top: heroBox.y,
-              width: heroBox.w,
-              height: heroBox.h,
+              left: heroBox.x - SPACING.xl,
+              top: heroBox.y - heroTop,
+              width: heroBox.w + SPACING.xl * 2,
+              height: heroBox.h + heroTop + SPACING.lg,
             }}>
+            <View
+              collapsable={false}
+              style={{
+                position: 'absolute',
+                left: SPACING.xl,
+                top: heroTop,
+                width: heroBox.w,
+                height: heroBox.h,
+              }}>
             <HeroToday
               target={target}
               chosen={false}
@@ -1614,6 +1634,7 @@ function TodayCardImpl({
               frozenAt={interval.fromAt}
               skyTheme={settings.appearance === 'sky'}
             />
+            </View>
           </View>
         ) : null}
         {target ? (

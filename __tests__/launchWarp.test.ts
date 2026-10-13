@@ -205,6 +205,16 @@ describe('wiring', () => {
     expect(card).toMatch(/warp \? warpSkyAt\(warp, now\.getTime\(\), skyE\) : now\.getTime\(\)/);
   });
 
+  it('captures the posed twin at the sky\'s box, bleed and all, not the hero\'s', () => {
+    // view-shot draws the ref's own bounds, so a ref the size of the hero
+    // cut the sky's bleed off and the kept picture framed a posed Fajr in
+    // the live sky's edges — a square, under the Sky theme.
+    expect(card).toMatch(
+      /ref=\{poseRef\}[\s\S]*?left: heroBox\.x - SPACING\.xl,\s*top: heroBox\.y - heroTop,\s*width: heroBox\.w \+ SPACING\.xl \* 2,\s*height: heroBox\.h \+ heroTop \+ SPACING\.lg,/,
+    );
+    expect(card).toMatch(/left: SPACING\.xl,\s*top: heroTop,\s*width: heroBox\.w,\s*height: heroBox\.h,/);
+  });
+
   it('runs every time but under Reduce Motion, and holds the picture back meanwhile', () => {
     const warp = read('src/boot/launchWarp.ts');
     expect(warp).toMatch(/if \(!start \|\| reduceMotion\) \{\s*run = null;/);
