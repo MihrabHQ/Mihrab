@@ -2,7 +2,7 @@
 
 
 
-Generated 2026-10-14 15:10 UTC by tools/verify-methods. Each table the builders fetch, compared day by day with what the phone computes for that authority — the tables are the check on the calculation, not the thing distributed.
+Generated 2026-10-14 15:15 UTC by tools/verify-methods. Each table the builders fetch, compared day by day with what the phone computes for that authority — the tables are the check on the calculation, not the thing distributed.
 
 
 
