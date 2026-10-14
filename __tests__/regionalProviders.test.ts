@@ -40,7 +40,7 @@ describe('the table', () => {
     expect(regionalProviderForCoords({ latitude: 1.4927, longitude: 103.7414 })).toBe('jakim'); // Johor Bahru
     expect(regionalProviderForCoords({ latitude: 5.9804, longitude: 116.0735 })).toBe('jakim'); // Kota Kinabalu
     expect(regionalProviderForCoords({ latitude: 4.9031, longitude: 114.9398 })).toBeNull(); // Bandar Seri Begawan
-    expect(regionalProviderForCoords({ latitude: 1.1, longitude: 104.05 })).toBeNull(); // Batam
+    expect(regionalProviderForCoords({ latitude: 1.1, longitude: 104.05 })).toBe('kemenag'); // Batam, across the strait
     expect(regionalProviderForCoords(null)).toBeNull();
   });
 
