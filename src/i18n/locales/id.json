@@ -1839,7 +1839,12 @@
     "inUse": "dipakai",
     "habousWindow": "Kementerian hanya menerbitkan bulan Hijriah yang sedang berjalan, sehingga jendela ini berkurang satu hari setiap hari dan terisi lagi saat bulan berganti. Membangun ulang tidak memperpanjangnya.",
     "marwWindow": "Kementerian menerbitkan satu tahun Hijriah sekaligus, sebagai pembaruan aplikasinya sendiri. Jendela ini berlaku sampai akhir tahun itu dan diperbarui saat tahun berikutnya terbit, sekitar Juni.",
-    "sourceNamazvakti": "namazvakti.com"
+    "sourceNamazvakti": "namazvakti.com",
+    "serverNamazvakti": "Türkiye Takvimi · namazvakti.com",
+    "namazvaktiIndex": "Indeks kota yang dicantumkan situs, bukan jadwal: ponsel mencari kota terdekatnya di sini lalu mengambil jadwal setahun kota itu dari situs.",
+    "citiesPlaced": "{{located}} dari {{listed}} kota sudah dipetakan",
+    "nearestCity": "Kota Anda",
+    "yearFetched": "Tahun diunduh"
   },
   "log": {
     "legendPrayers": "0 → 5 salat",

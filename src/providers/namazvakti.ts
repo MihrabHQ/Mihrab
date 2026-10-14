@@ -41,8 +41,10 @@ import {
   PrayerTimes,
 } from 'adhan';
 import { httpUserAgent } from '../config/httpIdentity';
+import { recordServerIndex, type ServerStatus } from '../prayer/dataStatus';
 import {
   NAMAZVAKTI_DATASET_BASE_URL,
+  NAMAZVAKTI_INDEX_POLL_INTERVAL_MS,
   NAMAZVAKTI_MAX_CITY_KM,
   NAMAZVAKTI_ORIGIN,
   NAMAZVAKTI_REFETCH_AFTER_MS,
@@ -348,6 +350,60 @@ export async function namazvaktiCoverage(
   return 'no-city';
 }
 
+// ── STATISTICS ───────────────────────────────────────────────────────
+
+let nextIndexPollAt = 0;
+
+/**
+ * Read the city index's `index.json` for the statistics panel, as the other
+ * datasets' providers do: when it was built, whether the build was healthy,
+ * and how much of the site's city list it has placed so far. The provider
+ * itself never needs it — tiles and years carry their own ages — so only
+ * the panel calls this, and not more often than every six hours.
+ */
+export async function pollNamazvaktiIndexNow(force = false): Promise<void> {
+  const now = Date.now();
+  if (!force && now < nextIndexPollAt) return;
+  nextIndexPollAt = now + NAMAZVAKTI_INDEX_POLL_INTERVAL_MS;
+  const res = await fetchWithRetry(
+    `${NAMAZVAKTI_DATASET_BASE_URL}/index.json`,
+    { headers: { 'User-Agent': httpUserAgent('Islamic prayer app; dataset') } },
+    { maxAttempts: 2, baseDelayMs: 800, timeoutMs: 7000 },
+  );
+  if (!res.ok) return;
+  const idx = (await res.json()) as {
+    builtAt?: string;
+    serverStatus?: ServerStatus;
+    cities?: number;
+    located?: number;
+  };
+  await recordServerIndex(
+    'namazvakti',
+    {
+      builtAt: idx.builtAt ?? null,
+      serverStatus: idx.serverStatus,
+      citiesListed: typeof idx.cities === 'number' ? idx.cities : null,
+      citiesLocated: typeof idx.located === 'number' ? idx.located : null,
+    },
+    new Date(now + NAMAZVAKTI_INDEX_POLL_INTERVAL_MS),
+  );
+}
+
+/**
+ * What the phone holds for a place, without asking anything: the nearest
+ * listed city with times, how far it is, and when its year was fetched
+ * (null when none is held yet). For the statistics panel.
+ */
+export async function namazvaktiHeld(
+  latitude: number,
+  longitude: number,
+): Promise<{ city: NvCity; fetchedAt: string | null } | null> {
+  const city = await nearestNamazvaktiCity(latitude, longitude, true).catch(() => null);
+  if (!city) return null;
+  const year = memYears.get(city.id) ?? (await readJson<NamazvaktiYear>(`${CITY_PREFIX}${city.id}`));
+  return { city, fetchedAt: year?.fetchedAt ?? null };
+}
+
 // ── ON THE PHONE ─────────────────────────────────────────────────────
 
 /** The city height the site gives almost every city (a few large ones get 500). */
@@ -517,4 +573,5 @@ export function _resetNamazvaktiForTests(): void {
   yearInFlight.clear();
   failedAt.clear();
   noTable = null;
+  nextIndexPollAt = 0;
 }

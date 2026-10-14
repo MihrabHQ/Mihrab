@@ -1840,7 +1840,12 @@
     "inUse": "en uso",
     "habousWindow": "El ministerio solo publica el mes hiyrí en curso, así que esta ventana se acorta un día cada día y vuelve a llenarse al cambiar de mes. Reconstruirla no la alarga.",
     "marwWindow": "El ministerio publica un año hiyrí cada vez, como actualización de su propia app. Esta ventana llega hasta el final de ese año y se renueva cuando aparece el siguiente, hacia junio.",
-    "sourceNamazvakti": "namazvakti.com"
+    "sourceNamazvakti": "namazvakti.com",
+    "serverNamazvakti": "Türkiye Takvimi · namazvakti.com",
+    "namazvaktiIndex": "Un índice de las ciudades que lista el sitio, no de horarios: el teléfono encuentra aquí su ciudad más cercana y descarga su año del sitio.",
+    "citiesPlaced": "{{located}} de {{listed}} ciudades ubicadas",
+    "nearestCity": "Tu ciudad",
+    "yearFetched": "Año descargado"
   },
   "log": {
     "legendPrayers": "0 → 5 oraciones",

@@ -1839,7 +1839,12 @@
     "inUse": "kullanımda",
     "habousWindow": "Bakanlık yalnızca içinde bulunulan hicri ayı yayımlar; bu pencere her gün bir gün kısalır ve ay dönünce yeniden dolar. Yeniden derleme onu uzatmaz.",
     "marwWindow": "Bakanlık her seferinde bir hicri yılı, kendi uygulamasının güncellemesi olarak yayımlar. Bu pencere o yılın sonuna kadar uzanır ve bir sonraki yıl yayımlandığında, Haziran civarında, yenilenir.",
-    "sourceNamazvakti": "namazvakti.com"
+    "sourceNamazvakti": "namazvakti.com",
+    "serverNamazvakti": "Türkiye Takvimi · namazvakti.com",
+    "namazvaktiIndex": "Vakitlerin değil, sitenin listelediği şehirlerin dizini: telefon en yakın şehrini burada bulur ve o şehrin yılını siteden indirir.",
+    "citiesPlaced": "{{listed}} şehrin {{located}} tanesi konumlandı",
+    "nearestCity": "Şehriniz",
+    "yearFetched": "Yıl indirildi"
   },
   "log": {
     "legendPrayers": "0 → 5 namaz",

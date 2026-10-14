@@ -1839,7 +1839,12 @@
     "inUse": "使用中",
     "habousWindow": "该部只公布当前的希吉来月，因此这一区间每天缩短一天，并在月份更替时重新填满。重新构建并不能让它更长。",
     "marwWindow": "该部每次发布一个希吉来年，作为其官方应用的更新。这一区间持续到该年年底，并在下一年发布时（约在六月）更新。",
-    "sourceNamazvakti": "namazvakti.com"
+    "sourceNamazvakti": "namazvakti.com",
+    "serverNamazvakti": "Türkiye Takvimi · namazvakti.com",
+    "namazvaktiIndex": "这是该网站所列城市的索引，而非时间：手机在此找到最近的城市，再从网站下载该城市全年的时间。",
+    "citiesPlaced": "已定位 {{located}} / {{listed}} 个城市",
+    "nearestCity": "您的城市",
+    "yearFetched": "年度数据下载于"
   },
   "log": {
     "legendPrayers": "0 → 5 次礼拜",

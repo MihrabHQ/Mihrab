@@ -130,7 +130,7 @@ export function nextMarwServerRunAfter(from: Date = new Date()): Date {
 // ── NAMAZVAKTI.COM (TÜRKİYE TAKVİMİ) ─────────────────────────────────
 //
 // Not a mirror of the times, like the three above, but an index of the
-// site's ~100,000 cities (`tools/namazvakti-dataset`), in 5° tiles: the
+// site's ~120,000 cities (`tools/namazvakti-dataset`), in 5° tiles: the
 // phone reads its tile from here, picks the nearest city, and fetches that
 // city's year from the site itself. See `providers/namazvakti.ts`.
 
@@ -159,6 +159,20 @@ export const NAMAZVAKTI_RETRY_AFTER_MS = 6 * 60 * 60 * 1000; // 6 hours
  * method is then computed for their own coordinates.
  */
 export const NAMAZVAKTI_MAX_CITY_KM = 75;
+
+/** How often the statistics panel may re-read the index's `index.json`. */
+export const NAMAZVAKTI_INDEX_POLL_INTERVAL_MS = 6 * 60 * 60 * 1000; // 6 hours
+
+/** `.github/workflows/namazvakti-dataset.yml` cron `37 1 * * *`, for display only. */
+export const NAMAZVAKTI_SERVER_CRON_DAILY_UTC = { hour: 1, minute: 37 };
+
+/** The next city-index build (UTC) after `from` — daily. */
+export function nextNamazvaktiServerRunAfter(from: Date = new Date()): Date {
+  const d = new Date(from.getTime());
+  d.setUTCHours(NAMAZVAKTI_SERVER_CRON_DAILY_UTC.hour, NAMAZVAKTI_SERVER_CRON_DAILY_UTC.minute, 0, 0);
+  if (d.getTime() <= from.getTime()) d.setUTCDate(d.getUTCDate() + 1);
+  return d;
+}
 
 // ── HIJRI CORRECTIONS ─────────────────────────────────────────────────
 //

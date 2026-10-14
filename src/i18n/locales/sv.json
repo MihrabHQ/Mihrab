@@ -1839,7 +1839,12 @@
     "inUse": "används",
     "habousWindow": "Ministeriet publicerar bara den pågående hijrimånaden, så fönstret krymper med en dag varje dag och fylls på när månaden vänder. En ombyggnad gör det inte längre.",
     "marwWindow": "Ministeriet publicerar ett hijriår i taget, som en uppdatering av sin egen app. Fönstret räcker till årets slut och förnyas när nästa år kommer, runt juni.",
-    "sourceNamazvakti": "namazvakti.com"
+    "sourceNamazvakti": "namazvakti.com",
+    "serverNamazvakti": "Türkiye Takvimi · namazvakti.com",
+    "namazvaktiIndex": "Ett register över städerna som sajten listar, inte över tider: telefonen hittar sin närmaste stad här och hämtar stadens år från sajten.",
+    "citiesPlaced": "{{located}} av {{listed}} städer placerade",
+    "nearestCity": "Din stad",
+    "yearFetched": "Året hämtat"
   },
   "log": {
     "legendPrayers": "0 → 5 böner",

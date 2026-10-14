@@ -1840,7 +1840,12 @@
     "inUse": "utilisé",
     "habousWindow": "Le ministère ne publie que le mois hégirien en cours : cette fenêtre perd un jour par jour et se remplit de nouveau au changement de mois. Une reconstruction ne l’allonge pas.",
     "marwWindow": "Le ministère publie une année hégirienne à la fois, sous forme de mise à jour de sa propre application. Cette fenêtre court jusqu’à la fin de cette année et se renouvelle à la parution de la suivante, vers juin.",
-    "sourceNamazvakti": "namazvakti.com"
+    "sourceNamazvakti": "namazvakti.com",
+    "serverNamazvakti": "Türkiye Takvimi · namazvakti.com",
+    "namazvaktiIndex": "Un index des villes que liste le site, pas des horaires : le téléphone y trouve sa ville la plus proche et télécharge son année depuis le site.",
+    "citiesPlaced": "{{located}} villes placées sur {{listed}}",
+    "nearestCity": "Votre ville",
+    "yearFetched": "Année téléchargée"
   },
   "log": {
     "legendPrayers": "0 → 5 prières",

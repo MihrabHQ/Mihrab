@@ -21,6 +21,11 @@ import {
 } from '../../providers/islamiskaForbundetDataset';
 import { pollServerIndexNow as pollHabousIndexNow } from '../../providers/habousDataset';
 import { pollServerIndexNow as pollMarwIndexNow } from '../../providers/marwDataset';
+import {
+  getNamazvaktiTimes,
+  namazvaktiHeld,
+  pollNamazvaktiIndexNow,
+} from '../../providers/namazvakti';
 import { getCacheStatus } from '../../prayer/prayerStorage';
 import {
   getEffectiveDataProvider,
@@ -29,6 +34,7 @@ import {
 import {
   nextHabousServerRunAfter,
   nextMarwServerRunAfter,
+  nextNamazvaktiServerRunAfter,
   nextServerRunAfter,
 } from '../../config/datasets';
 import type { DataSource } from '../../providers/types';
@@ -81,6 +87,19 @@ const SERVERS: {
     coverageNoteDefault:
       'The ministry publishes a Hijri year at a time, as an update to its own app. This window runs to the end of that year and is renewed when the next one appears, around June.',
   },
+  {
+    // Not a mirror of times but an index of the site's cities: its coverage
+    // is how many it has placed on the map, and each city's year comes from
+    // the site itself, once a year.
+    id: 'namazvakti',
+    provider: 'namazvakti',
+    labelKey: 'dataStats.serverNamazvakti',
+    labelDefault: 'Türkiye Takvimi · namazvakti.com',
+    nextRun: nextNamazvaktiServerRunAfter,
+    coverageNoteKey: 'dataStats.namazvaktiIndex',
+    coverageNoteDefault:
+      'An index of the cities the site lists, not of times: the phone finds its nearest city here and fetches that city’s year from the site.',
+  },
 ];
 
 type DeviceCache = { total: number; lastFetchedAt: string | null };
@@ -103,6 +122,8 @@ function DataStatsPanelImpl() {
   // Which dataset this phone is actually being served by, so the panel can
   // mark it. Null when the effective provider is not a prepared dataset.
   const [active, setActive] = useState<ServerDatasetId | null>(null);
+  // namazvakti.com: the city this phone is served by, and when its year came.
+  const [nvHeld, setNvHeld] = useState<Awaited<ReturnType<typeof namazvaktiHeld>>>(null);
 
   const load = useCallback(() => {
     const coords = resolveCoordsFromSettings(settings);
@@ -122,7 +143,12 @@ function DataStatsPanelImpl() {
       // for ever — which is how the shared slot used to look after someone
       // travelled between the two regions.
       await Promise.all(
-        [pollServerIndexNow(), pollHabousIndexNow(), pollMarwIndexNow()].map(p =>
+        [
+          pollServerIndexNow(),
+          pollHabousIndexNow(),
+          pollMarwIndexNow(),
+          pollNamazvaktiIndexNow(),
+        ].map(p =>
           p.catch(() => {
             /* offline — keep whatever was recorded before */
           }),
@@ -139,6 +165,24 @@ function DataStatsPanelImpl() {
         } catch {
           /* dataset miss — leave the last recorded source */
         }
+      }
+      if (coords && provider === 'namazvakti') {
+        try {
+          // From what the phone holds — the panel asks the site nothing.
+          const r = await getNamazvaktiTimes({
+            latitude: coords.latitude,
+            longitude: coords.longitude,
+            date: new Date(),
+            school: settings.school,
+            offline: true,
+          });
+          if (r.source) await recordDataSource(r.source);
+        } catch {
+          /* no held day — leave the last recorded source */
+        }
+        setNvHeld(await namazvaktiHeld(coords.latitude, coords.longitude));
+      } else {
+        setNvHeld(null);
       }
       setStatus(await getDataStatus());
     })();
@@ -215,6 +259,14 @@ function DataStatsPanelImpl() {
   const sm = statusMeta();
   const expanded = settings.dataStatsExpanded;
   const coverageOf = (id: ServerDatasetId): string => {
+    if (id === 'namazvakti') {
+      const s = status?.servers.namazvakti;
+      if (s?.citiesLocated == null || s.citiesListed == null) return dash;
+      return t('dataStats.citiesPlaced', {
+        located: s.citiesLocated.toLocaleString(i18n.language || undefined),
+        listed: s.citiesListed.toLocaleString(i18n.language || undefined),
+      });
+    }
     const days = status?.servers[id]?.minCoverageDays;
     return days != null ? `${days} ${t('dataStats.daysUnit')}` : dash;
   };
@@ -323,6 +375,24 @@ function DataStatsPanelImpl() {
                 defaultValue: server.coverageNoteDefault,
               })}
             </Text>
+          ) : null}
+          {server.id === 'namazvakti' && active === 'namazvakti' ? (
+            <>
+              <Row
+                palette={palette}
+                label={t('dataStats.nearestCity')}
+                value={
+                  nvHeld
+                    ? `${nvHeld.city.name} · ${Math.round(nvHeld.city.distanceKm)} km`
+                    : dash
+                }
+              />
+              <Row
+                palette={palette}
+                label={t('dataStats.yearFetched')}
+                value={fmt(nvHeld?.fetchedAt)}
+              />
+            </>
           ) : null}
           <Row
             palette={palette}

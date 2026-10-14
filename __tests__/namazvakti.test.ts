@@ -35,6 +35,8 @@ import {
 import {
   _resetNamazvaktiForTests,
   namazvaktiCoverage,
+  namazvaktiHeld,
+  pollNamazvaktiIndexNow,
   computeNamazvaktiMethodTimes,
   getNamazvaktiTimes,
   temkinMinutes,
@@ -363,6 +365,33 @@ describe('the provider', () => {
     _resetNamazvaktiForTests();
     const r = await getNamazvaktiTimes({ ...coords, date: day, school: 0 });
     expect(r.source).toBe('namazvakti');
+  });
+
+  it('reports to the statistics panel like the other datasets', async () => {
+    const { getDataStatus, _resetDataStatusMemoForTests } = require('../src/prayer/dataStatus');
+    _resetDataStatusMemoForTests();
+    serve({
+      '/index.json': () =>
+        response(200, JSON.stringify({ builtAt: '2026-10-14T01:37:00Z', serverStatus: 'ok', cities: 121776, located: 40000 })),
+      '/tiles/50_5.json': () => response(200, COLOGNE_TILE),
+      'XML.php': () => response(200, COLOGNE),
+    });
+    await pollNamazvaktiIndexNow(true);
+    const s = (await getDataStatus()).servers.namazvakti;
+    expect(s.builtAt).toBe('2026-10-14T01:37:00Z');
+    expect(s.status).toBe('ok');
+    expect(s.citiesListed).toBe(121776);
+    expect(s.citiesLocated).toBe(40000);
+    // Not asked again within six hours.
+    const calls = mockFetch.mock.calls.length;
+    await pollNamazvaktiIndexNow();
+    expect(mockFetch.mock.calls.length).toBe(calls);
+    // The city and its year, from what the phone holds.
+    expect(await namazvaktiHeld(coords.latitude, coords.longitude)).toBeNull();
+    await getNamazvaktiTimes({ ...coords, date: day, school: 0 });
+    const held = await namazvaktiHeld(coords.latitude, coords.longitude);
+    expect(held?.city.name).toBe('Köln');
+    expect(held?.fetchedAt).toEqual(expect.any(String));
   });
 
   it('computes the calendar on the phone when the site cannot be reached — never AlAdhan', async () => {

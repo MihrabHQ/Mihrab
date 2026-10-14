@@ -1839,7 +1839,12 @@
     "inUse": "in use",
     "habousWindow": "The ministry publishes only the current Hijri month, so this window shrinks by a day each day and refills when the month turns. A rebuild cannot make it longer.",
     "marwWindow": "The ministry publishes a Hijri year at a time, as an update to its own app. This window runs to the end of that year and is renewed when the next one appears, around June.",
-    "sourceNamazvakti": "namazvakti.com"
+    "sourceNamazvakti": "namazvakti.com",
+    "serverNamazvakti": "Türkiye Takvimi · namazvakti.com",
+    "namazvaktiIndex": "An index of the cities the site lists, not of times: the phone finds its nearest city here and fetches that city’s year from the site.",
+    "citiesPlaced": "{{located}} of {{listed}} cities placed",
+    "nearestCity": "Your city",
+    "yearFetched": "Year downloaded"
   },
   "log": {
     "legendPrayers": "0 → 5 prayers",

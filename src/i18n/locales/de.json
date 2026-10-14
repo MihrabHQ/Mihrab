@@ -1839,7 +1839,12 @@
     "inUse": "aktiv",
     "habousWindow": "Das Ministerium veröffentlicht nur den laufenden Hidschri-Monat: Dieses Fenster schrumpft täglich um einen Tag und füllt sich beim Monatswechsel wieder. Ein Neuaufbau verlängert es nicht.",
     "marwWindow": "Das Ministerium veröffentlicht jeweils ein Hidschri-Jahr, als Update seiner eigenen App. Dieses Fenster reicht bis zum Ende dieses Jahres und wird erneuert, wenn das nächste erscheint, etwa im Juni.",
-    "sourceNamazvakti": "namazvakti.com"
+    "sourceNamazvakti": "namazvakti.com",
+    "serverNamazvakti": "Türkiye Takvimi · namazvakti.com",
+    "namazvaktiIndex": "Ein Verzeichnis der Städte, die die Website führt, nicht der Zeiten: Das Telefon findet hier seine nächste Stadt und lädt deren Jahr von der Website.",
+    "citiesPlaced": "{{located}} von {{listed}} Städten verortet",
+    "nearestCity": "Ihre Stadt",
+    "yearFetched": "Jahr geladen"
   },
   "log": {
     "legendPrayers": "0 → 5 Gebete",

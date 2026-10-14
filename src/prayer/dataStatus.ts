@@ -27,7 +27,7 @@ const KEY = 'mihrab.dataStatus.v1';
 export type ServerStatus = 'ok' | 'warning' | 'unknown';
 
 /** The prepared datasets that publish an `index.json`. */
-export const SERVER_DATASETS = ['ifis', 'habous', 'marw'] as const;
+export const SERVER_DATASETS = ['ifis', 'habous', 'marw', 'namazvakti'] as const;
 export type ServerDatasetId = (typeof SERVER_DATASETS)[number];
 
 export type ServerIndexStatus = {
@@ -35,6 +35,12 @@ export type ServerIndexStatus = {
   status: ServerStatus;
   minCoverageDays: number | null;
   deadCities: number | null;
+  /**
+   * namazvakti.com only: its index is of cities, not days — how many the
+   * site lists and how many the crawl has placed on the map so far.
+   */
+  citiesListed?: number | null;
+  citiesLocated?: number | null;
   checkedAt: string | null; // ISO — when the client last read index.json
   nextCheckDue: string | null; // ISO — earliest next client check
 };
@@ -59,6 +65,7 @@ function emptyServers(): Record<ServerDatasetId, ServerIndexStatus> {
     ifis: { ...EMPTY_SERVER },
     habous: { ...EMPTY_SERVER },
     marw: { ...EMPTY_SERVER },
+    namazvakti: { ...EMPTY_SERVER },
   };
 }
 
@@ -130,6 +137,8 @@ export async function recordServerIndex(
     serverStatus?: ServerStatus;
     minCoverageDays?: number | null;
     deadCities?: number | null;
+    citiesListed?: number | null;
+    citiesLocated?: number | null;
   },
   nextDue: Date,
 ): Promise<void> {
@@ -144,6 +153,8 @@ export async function recordServerIndex(
         status: idx.serverStatus ?? prev.status,
         minCoverageDays: idx.minCoverageDays ?? prev.minCoverageDays,
         deadCities: idx.deadCities ?? prev.deadCities,
+        citiesListed: idx.citiesListed ?? prev.citiesListed ?? null,
+        citiesLocated: idx.citiesLocated ?? prev.citiesLocated ?? null,
         checkedAt: new Date().toISOString(),
         nextCheckDue: nextDue.toISOString(),
       },
