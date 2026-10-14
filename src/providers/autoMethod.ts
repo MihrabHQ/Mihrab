@@ -20,7 +20,9 @@
  * honest answer.
  */
 import { isCoordinateInAlgeria } from '../utils/algeriaRegion';
+import { isCoordinateInMalaysia } from '../utils/malaysiaRegion';
 import { isCoordinateInMorocco } from '../utils/moroccoRegion';
+import { isCoordinateInSingapore } from '../utils/singaporeRegion';
 
 /** Muslim World League — the global default when nothing more specific applies. */
 export const DEFAULT_AUTO_METHOD = 3;
@@ -37,6 +39,9 @@ const AUTO_METHOD_REGIONS: readonly AutoMethodRegion[] = [
   { method: 19, covers: isCoordinateInAlgeria },
   // 21 = Morocco (Fajr 19°, Isha 17°, plus the ministry's own margins).
   { method: 21, covers: isCoordinateInMorocco },
+  // 11 = Singapore (MUIS, 20° / 18°), 17 = Malaysia (JAKIM, the same angles).
+  { method: 11, covers: isCoordinateInSingapore },
+  { method: 17, covers: isCoordinateInMalaysia },
 ];
 
 /**

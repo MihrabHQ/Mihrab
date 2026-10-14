@@ -1,0 +1,308 @@
+{
+  "version": 1,
+  "builtAt": "2026-10-14T12:22:16.180Z",
+  "timezone": "Asia/Kuala_Lumpur",
+  "source": "https://www.e-solat.gov.my",
+  "serverStatus": "ok",
+  "firstDate": "2026-10-07",
+  "lastDate": "2026-12-31",
+  "minCoverageDays": 78,
+  "deadCities": [],
+  "cities": [
+    {
+      "id": 1,
+      "city": "JHR01 · Pulau Aur, Pulau Pemanggil",
+      "cityEn": "Pulau Aur (JHR01)"
+    },
+    {
+      "id": 2,
+      "city": "JHR02 · Johor Bahru, Kota Tinggi, Mersing, Kulai",
+      "cityEn": "Johor Bahru (JHR02)"
+    },
+    {
+      "id": 3,
+      "city": "JHR03 · Kluang, Pontian",
+      "cityEn": "Kluang (JHR03)"
+    },
+    {
+      "id": 4,
+      "city": "JHR04 · Batu Pahat, Muar, Segamat, Tangkak, Gemas",
+      "cityEn": "Batu Pahat (JHR04)"
+    },
+    {
+      "id": 5,
+      "city": "KDH01 · Alor Setar, Jitra, Pokok Sena",
+      "cityEn": "Alor Setar (KDH01)"
+    },
+    {
+      "id": 6,
+      "city": "KDH02 · Sungai Petani, Yan, Pendang",
+      "cityEn": "Sungai Petani (KDH02)"
+    },
+    {
+      "id": 7,
+      "city": "KDH03 · Kuala Nerang, Sik",
+      "cityEn": "Kuala Nerang (KDH03)"
+    },
+    {
+      "id": 8,
+      "city": "KDH04 · Baling",
+      "cityEn": "Baling (KDH04)"
+    },
+    {
+      "id": 9,
+      "city": "KDH05 · Kulim, Bandar Baharu",
+      "cityEn": "Kulim (KDH05)"
+    },
+    {
+      "id": 10,
+      "city": "KDH06 · Langkawi",
+      "cityEn": "Langkawi (KDH06)"
+    },
+    {
+      "id": 11,
+      "city": "KDH07 · Gunung Jerai",
+      "cityEn": "Gunung Jerai (KDH07)"
+    },
+    {
+      "id": 12,
+      "city": "KTN01 · Kota Bharu, Bachok, Machang, Pasir Mas, Pasir Puteh, Tanah Merah, Tumpat, Kuala Krai",
+      "cityEn": "Kota Bharu (KTN01)"
+    },
+    {
+      "id": 13,
+      "city": "KTN02 · Gua Musang, Jeli, Lojing",
+      "cityEn": "Gua Musang (KTN02)"
+    },
+    {
+      "id": 14,
+      "city": "MLK01 · Melaka, Alor Gajah, Jasin",
+      "cityEn": "Melaka (MLK01)"
+    },
+    {
+      "id": 15,
+      "city": "NGS01 · Tampin, Bandar Seri Jempol",
+      "cityEn": "Tampin (NGS01)"
+    },
+    {
+      "id": 16,
+      "city": "NGS02 · Kuala Klawang, Kuala Pilah, Rembau",
+      "cityEn": "Kuala Klawang (NGS02)"
+    },
+    {
+      "id": 17,
+      "city": "NGS03 · Seremban, Port Dickson",
+      "cityEn": "Seremban (NGS03)"
+    },
+    {
+      "id": 18,
+      "city": "PHG01 · Pulau Tioman",
+      "cityEn": "Pulau Tioman (PHG01)"
+    },
+    {
+      "id": 19,
+      "city": "PHG02 · Kuantan, Pekan, Muadzam Shah",
+      "cityEn": "Kuantan (PHG02)"
+    },
+    {
+      "id": 20,
+      "city": "PHG03 · Jerantut, Temerloh, Maran, Bera, Jengka",
+      "cityEn": "Jerantut (PHG03)"
+    },
+    {
+      "id": 21,
+      "city": "PHG04 · Bentong, Kuala Lipis, Raub",
+      "cityEn": "Bentong (PHG04)"
+    },
+    {
+      "id": 22,
+      "city": "PHG05 · Genting Sempah, Janda Baik, Bukit Tinggi",
+      "cityEn": "Genting Sempah (PHG05)"
+    },
+    {
+      "id": 23,
+      "city": "PHG06 · Tanah Rata, Genting Highlands, Bukit Fraser",
+      "cityEn": "Tanah Rata (PHG06)"
+    },
+    {
+      "id": 24,
+      "city": "PHG07 · Kuala Rompin, Endau",
+      "cityEn": "Kuala Rompin (PHG07)"
+    },
+    {
+      "id": 25,
+      "city": "PLS01 · Kangar, Padang Besar, Arau",
+      "cityEn": "Kangar (PLS01)"
+    },
+    {
+      "id": 26,
+      "city": "PNG01 · George Town, Butterworth, Bukit Mertajam, Balik Pulau",
+      "cityEn": "George Town (PNG01)"
+    },
+    {
+      "id": 27,
+      "city": "PRK01 · Tapah, Slim River, Tanjung Malim",
+      "cityEn": "Tapah (PRK01)"
+    },
+    {
+      "id": 28,
+      "city": "PRK02 · Ipoh, Kuala Kangsar, Sungai Siput, Batu Gajah, Kampar",
+      "cityEn": "Ipoh (PRK02)"
+    },
+    {
+      "id": 29,
+      "city": "PRK03 · Gerik, Lenggong, Pengkalan Hulu",
+      "cityEn": "Gerik (PRK03)"
+    },
+    {
+      "id": 30,
+      "city": "PRK04 · Temengor, Belum",
+      "cityEn": "Temengor (PRK04)"
+    },
+    {
+      "id": 31,
+      "city": "PRK05 · Teluk Intan, Bagan Datuk, Seri Iskandar, Beruas, Parit, Lumut, Sitiawan, Pulau Pangkor, Kampung Gajah",
+      "cityEn": "Teluk Intan (PRK05)"
+    },
+    {
+      "id": 32,
+      "city": "PRK06 · Taiping, Selama, Bagan Serai, Parit Buntar",
+      "cityEn": "Taiping (PRK06)"
+    },
+    {
+      "id": 33,
+      "city": "PRK07 · Bukit Larut",
+      "cityEn": "Bukit Larut (PRK07)"
+    },
+    {
+      "id": 34,
+      "city": "SBH01 · Sandakan, Sukau",
+      "cityEn": "Sandakan (SBH01)"
+    },
+    {
+      "id": 35,
+      "city": "SBH02 · Beluran, Telupid",
+      "cityEn": "Beluran (SBH02)"
+    },
+    {
+      "id": 36,
+      "city": "SBH03 · Lahad Datu, Kunak, Semporna",
+      "cityEn": "Lahad Datu (SBH03)"
+    },
+    {
+      "id": 37,
+      "city": "SBH04 · Tawau, Kalabakan",
+      "cityEn": "Tawau (SBH04)"
+    },
+    {
+      "id": 38,
+      "city": "SBH05 · Kudat, Kota Marudu, Pitas",
+      "cityEn": "Kudat (SBH05)"
+    },
+    {
+      "id": 39,
+      "city": "SBH06 · Gunung Kinabalu",
+      "cityEn": "Gunung Kinabalu (SBH06)"
+    },
+    {
+      "id": 40,
+      "city": "SBH07 · Kota Kinabalu, Ranau, Kota Belud, Tuaran, Penampang, Papar",
+      "cityEn": "Kota Kinabalu (SBH07)"
+    },
+    {
+      "id": 41,
+      "city": "SBH08 · Keningau, Tambunan, Nabawan, Pensiangan",
+      "cityEn": "Keningau (SBH08)"
+    },
+    {
+      "id": 42,
+      "city": "SBH09 · Beaufort, Kuala Penyu, Sipitang, Tenom, Membakut",
+      "cityEn": "Beaufort (SBH09)"
+    },
+    {
+      "id": 43,
+      "city": "SGR01 · Shah Alam, Petaling Jaya, Gombak, Sepang, Kajang, Kuala Kubu Bharu",
+      "cityEn": "Shah Alam (SGR01)"
+    },
+    {
+      "id": 44,
+      "city": "SGR02 · Kuala Selangor, Sabak Bernam",
+      "cityEn": "Kuala Selangor (SGR02)"
+    },
+    {
+      "id": 45,
+      "city": "SGR03 · Klang, Banting",
+      "cityEn": "Klang (SGR03)"
+    },
+    {
+      "id": 46,
+      "city": "SWK01 · Limbang, Lawas",
+      "cityEn": "Limbang (SWK01)"
+    },
+    {
+      "id": 47,
+      "city": "SWK02 · Miri, Marudi, Niah",
+      "cityEn": "Miri (SWK02)"
+    },
+    {
+      "id": 48,
+      "city": "SWK03 · Bintulu, Belaga, Tatau",
+      "cityEn": "Bintulu (SWK03)"
+    },
+    {
+      "id": 49,
+      "city": "SWK04 · Sibu, Mukah, Kapit, Kanowit, Dalat",
+      "cityEn": "Sibu (SWK04)"
+    },
+    {
+      "id": 50,
+      "city": "SWK05 · Sarikei, Bintangor, Daro, Julau",
+      "cityEn": "Sarikei (SWK05)"
+    },
+    {
+      "id": 51,
+      "city": "SWK06 · Sri Aman, Betong, Saratok, Lubok Antu",
+      "cityEn": "Sri Aman (SWK06)"
+    },
+    {
+      "id": 52,
+      "city": "SWK07 · Serian, Kota Samarahan, Simunjan",
+      "cityEn": "Serian (SWK07)"
+    },
+    {
+      "id": 53,
+      "city": "SWK08 · Kuching, Bau, Lundu, Sematan",
+      "cityEn": "Kuching (SWK08)"
+    },
+    {
+      "id": 54,
+      "city": "TRG01 · Kuala Terengganu, Marang, Kuala Nerus",
+      "cityEn": "Kuala Terengganu (TRG01)"
+    },
+    {
+      "id": 55,
+      "city": "TRG02 · Jerteh, Setiu",
+      "cityEn": "Jerteh (TRG02)"
+    },
+    {
+      "id": 56,
+      "city": "TRG03 · Kuala Berang",
+      "cityEn": "Kuala Berang (TRG03)"
+    },
+    {
+      "id": 57,
+      "city": "TRG04 · Dungun, Chukai",
+      "cityEn": "Dungun (TRG04)"
+    },
+    {
+      "id": 58,
+      "city": "WLY01 · Kuala Lumpur, Putrajaya",
+      "cityEn": "Kuala Lumpur (WLY01)"
+    },
+    {
+      "id": 59,
+      "city": "WLY02 · Labuan",
+      "cityEn": "Labuan (WLY02)"
+    }
+  ]
+}

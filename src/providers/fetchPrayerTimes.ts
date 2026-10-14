@@ -6,6 +6,7 @@ import { getIslamiskaForbundetDatasetTimes } from './islamiskaForbundetDataset';
 import { getHabousDatasetTimes } from './habousDataset';
 import { getMarwDatasetTimes } from './marwDataset';
 import { computeNamazvaktiMethodTimes, getNamazvaktiTimes, nearestNamazvaktiCity } from './namazvakti';
+import { nationalTableFor } from './nationalTables';
 import { computeLocalAdhanTimes } from './localAdhan';
 import { autoMethodForCoords } from './autoMethod';
 import { ALGERIA_METHOD_ID } from './algeriaCities';
@@ -194,6 +195,34 @@ export async function fetchPrayerTimesUnified(
           date: p.date,
           calculationMethod: ALGERIA_METHOD_ID,
           // The Ministry publishes one (Shafi'i) Asr, and this stands in for it.
+          school: 0,
+        }),
+        source: 'local',
+      };
+      validateTimingShape(local.timings);
+      return local;
+    }
+    case 'muis':
+    case 'jakim': {
+      // A national table (Singapore's MUIS, Malaysia's JAKIM): the
+      // authority's published day for the nearest listed place, from the
+      // phone's copy. Past the published window — JAKIM's ends every
+      // 31 December until the January rebuild — or outside the country,
+      // the authority's own method is computed on the phone: both are
+      // 20° / 18°, AlAdhan's ids 11 and 17.
+      const table = nationalTableFor(p.provider)!;
+      try {
+        result = await table.getTimes({ latitude: p.latitude, longitude: p.longitude, date: p.date });
+        break;
+      } catch {
+        /* outside coverage, or past the published window */
+      }
+      const local: PrayerTimesResult = {
+        ...computeLocalAdhanTimes({
+          latitude: p.latitude,
+          longitude: p.longitude,
+          date: p.date,
+          calculationMethod: p.provider === 'muis' ? 11 : 17,
           school: 0,
         }),
         source: 'local',

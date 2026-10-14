@@ -524,6 +524,14 @@
     "namazvakti": {
       "name": "Türkiye Takvimi (namazvakti.com)",
       "desc": "Kalender Turki yang lebih hati-hati — Subuh pada 19°, Isya pada 17°, dengan margin pengaman (temkin) di setiap waktu — sebagaimana diterbitkan namazvakti.com untuk kota terdekatnya di seluruh dunia."
+    },
+    "muis": {
+      "name": "Singapura",
+      "desc": "Jadwal yang diterbitkan Majlis Ugama Islam Singapura, sebagaimana tersedia di portal data terbuka pemerintah."
+    },
+    "jakim": {
+      "name": "Malaysia",
+      "desc": "Jadwal e-Solat JAKIM untuk zon tempat Anda berada; lokasi Anda dicocokkan dengan kota terdekat dalam daftar zonnya."
     }
   },
   "compass": {
@@ -1705,8 +1713,14 @@
     "13": "Turki",
     "14": "Rusia",
     "15": "Komite Pengamatan Hilal Sedunia",
+    "16": "Dubai",
+    "17": "Malaysia (JAKIM)",
+    "18": "Tunisia",
     "19": "Aljazair",
+    "20": "Indonesia (Kemenag)",
     "21": "Maroko",
+    "22": "Portugal",
+    "23": "Yordania",
     "auto": "Otomatis (berdasarkan lokasi)"
   },
   "attributions": {
@@ -1844,7 +1858,10 @@
     "namazvaktiIndex": "Indeks kota yang dicantumkan situs, bukan jadwal: ponsel mencari kota terdekatnya di sini lalu mengambil jadwal setahun kota itu dari situs.",
     "citiesPlaced": "{{located}} dari {{listed}} kota sudah dipetakan",
     "nearestCity": "Kota Anda",
-    "yearFetched": "Tahun diunduh"
+    "yearFetched": "Tahun diunduh",
+    "serverSingapore": "Singapura · MUIS",
+    "serverMalaysia": "Malaysia · JAKIM e-Solat",
+    "jakimWindow": "JAKIM hanya menerbitkan tahun berjalan, jadi jendela ini berakhir 31 Desember dan dimulai lagi saat tahun baru diterbitkan pada hari-hari pertama Januari."
   },
   "log": {
     "legendPrayers": "0 → 5 salat",

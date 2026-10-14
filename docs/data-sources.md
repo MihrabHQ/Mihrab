@@ -40,9 +40,12 @@ What ships today:
   `tools/habous-dataset/`) and Algeria (the Ministry of Religious Affairs
   and Wakfs, `tools/algeria-ministry/`), each rebuilt by a workflow in
   `.github/workflows/` into `data/prayer-times/` and fetched by city.
-  Türkiye Takvimi (namazvakti.com) is different: a workflow builds only its
-  city index (`tools/namazvakti-dataset/`), and the phone fetches its
-  city's yearly table from the site itself.
+  Singapore (MUIS, from data.gov.sg) and Malaysia (JAKIM e-Solat) are
+  built by `tools/national-tables/` and read through one module,
+  `src/providers/nationalTable.ts`. Türkiye Takvimi (namazvakti.com) is
+  different: a workflow builds only its city index
+  (`tools/namazvakti-dataset/`), and the phone fetches its city's yearly
+  table from the site itself.
 - **Hijri calendars** — the standard tabular calendar, Indonesia's
   (Government & NU; Muhammadiyah's KHGT) and the published overrides in
   `data/hijri/v1/` (`tools/hijri-calendars/README.md`).

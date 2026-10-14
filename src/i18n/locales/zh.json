@@ -524,6 +524,14 @@
     "namazvakti": {
       "name": "Türkiye Takvimi (namazvakti.com)",
       "desc": "更为谨慎的土耳其历 — 晨礼 19°、宵礼 17°，每个时间均加安全余量（temkin）— 按 namazvakti.com 为全球最近城市发布的时间。"
+    },
+    "muis": {
+      "name": "新加坡",
+      "desc": "新加坡伊斯兰宗教理事会（MUIS）发布的时间表，取自政府开放数据门户。"
+    },
+    "jakim": {
+      "name": "马来西亚",
+      "desc": "JAKIM 的 e-Solat 时间表，按您所在的区域；您的位置会匹配到其区域列表中最近的城镇。"
     }
   },
   "compass": {
@@ -1705,8 +1713,14 @@
     "13": "土耳其",
     "14": "俄罗斯",
     "15": "世界月相观测委员会",
+    "16": "迪拜",
+    "17": "马来西亚（JAKIM）",
+    "18": "突尼斯",
     "19": "阿尔及利亚",
+    "20": "印度尼西亚（Kemenag）",
     "21": "摩洛哥",
+    "22": "葡萄牙",
+    "23": "约旦",
     "auto": "自动（按位置）"
   },
   "attributions": {
@@ -1844,7 +1858,10 @@
     "namazvaktiIndex": "这是该网站所列城市的索引，而非时间：手机在此找到最近的城市，再从网站下载该城市全年的时间。",
     "citiesPlaced": "已定位 {{located}} / {{listed}} 个城市",
     "nearestCity": "您的城市",
-    "yearFetched": "年度数据下载于"
+    "yearFetched": "年度数据下载于",
+    "serverSingapore": "新加坡 · MUIS",
+    "serverMalaysia": "马来西亚 · JAKIM e-Solat",
+    "jakimWindow": "JAKIM 仅发布当年的时间表，因此此窗口在 12 月 31 日结束，并在 1 月初新一年发布后重新开始。"
   },
   "log": {
     "legendPrayers": "0 → 5 次礼拜",

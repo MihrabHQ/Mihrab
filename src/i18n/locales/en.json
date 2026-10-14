@@ -524,6 +524,14 @@
     "namazvakti": {
       "name": "Türkiye Takvimi (namazvakti.com)",
       "desc": "The cautious Turkish calendar — Fajr at 19°, Isha at 17°, a safety margin (temkin) on every time — as namazvakti.com publishes it for the nearest of its cities worldwide."
+    },
+    "muis": {
+      "name": "Singapore",
+      "desc": "The Majlis Ugama Islam Singapura’s published timetable, as the government’s open-data portal carries it."
+    },
+    "jakim": {
+      "name": "Malaysia",
+      "desc": "JAKIM’s e-Solat timetable for the zone you are in; your location is matched to the nearest town in its zone list."
     }
   },
   "compass": {
@@ -1705,8 +1713,14 @@
     "13": "Turkey",
     "14": "Russia",
     "15": "Moonsighting Committee Worldwide",
+    "16": "Dubai",
+    "17": "Malaysia (JAKIM)",
+    "18": "Tunisia",
     "19": "Algeria",
+    "20": "Indonesia (Kemenag)",
     "21": "Morocco",
+    "22": "Portugal",
+    "23": "Jordan",
     "auto": "Automatic (by location)"
   },
   "attributions": {
@@ -1844,7 +1858,10 @@
     "namazvaktiIndex": "An index of the cities the site lists, not of times: the phone finds its nearest city here and fetches that city’s year from the site.",
     "citiesPlaced": "{{located}} of {{listed}} cities placed",
     "nearestCity": "Your city",
-    "yearFetched": "Year downloaded"
+    "yearFetched": "Year downloaded",
+    "serverSingapore": "Singapore · MUIS",
+    "serverMalaysia": "Malaysia · JAKIM e-Solat",
+    "jakimWindow": "JAKIM publishes the current year only, so this window ends on 31 December and starts again when the new year is published in the first days of January."
   },
   "log": {
     "legendPrayers": "0 → 5 prayers",

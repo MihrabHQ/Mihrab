@@ -1,0 +1,98 @@
+name: National prayer-time tables
+
+# Rebuilds the national tables that come from an authority's own published
+# data (tools/national-tables): Singapore's MUIS timetable from the
+# government's open-data portal, and Malaysia's JAKIM e-Solat zones from
+# the department's JSON endpoint. Both are mirrored as-is into
+# data/prayer-times/<country>/v1 and a seed bundled into the app.
+#
+# Weekly, and daily in the first week of January: e-Solat serves the current
+# year only, so the new year has to be picked up as soon as it appears, and
+# MUIS extends its CSV around the same time. Emails on failure. A day that
+# changes after it was published is listed in the run's summary.
+
+on:
+  schedule:
+    - cron: '19 2 * * 1' # Mondays, 02:19 UTC
+    - cron: '19 2 1-7 1 *' # every day, 1–7 January
+  workflow_dispatch:
+
+concurrency:
+  group: national-tables
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Singapore (MUIS)
+        id: muis
+        run: npx --yes tsx@4 tools/national-tables/muis.ts
+
+      - name: Malaysia (JAKIM e-Solat)
+        id: jakim
+        if: always()
+        run: npx --yes tsx@4 tools/national-tables/jakim.ts
+
+      - name: Commit refreshed tables
+        if: always()
+        run: |
+          git config user.name 'mihrab-dataset-bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add data/prayer-times/singapore data/prayer-times/malaysia \
+            src/providers/data/muisSeed.json src/providers/data/muisPlaces.json \
+            src/providers/data/jakimSeed.json src/providers/data/jakimPlaces.json
+          if git diff --cached --quiet; then
+            echo 'No table changes to commit.'
+            exit 0
+          fi
+          git commit -m "data: national tables ($(date -u +%F): Singapore ${{ steps.muis.outputs.coverage_days || '?' }} d, Malaysia ${{ steps.jakim.outputs.coverage_days || '?' }} d left)"
+          for attempt in 1 2 3; do
+            if git push; then
+              echo "Pushed on attempt ${attempt}."
+              exit 0
+            fi
+            echo "Push rejected (attempt ${attempt}) — rebasing onto latest main."
+            git pull --rebase -X theirs origin main || git rebase --abort || true
+            sleep 3
+          done
+          echo 'Failed to push the tables after 3 attempts.'
+          exit 1
+
+      - name: Email on failure
+        if: failure() && env.MAIL_SERVER != ''
+        env:
+          MAIL_SERVER: ${{ secrets.MAIL_SERVER }}
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.MAIL_SERVER }}
+          server_port: ${{ secrets.MAIL_PORT }}
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          from: Mihrab Dataset Bot <${{ secrets.MAIL_USERNAME }}>
+          to: mihrab@elghamri.se
+          subject: '[Mihrab] national prayer-time tables job FAILED'
+          body: |
+            The national tables run FAILED (Singapore MUIS / Malaysia JAKIM).
+
+            Usually one of:
+              • data.gov.sg or e-solat.gov.my down or changed shape,
+              • a published day out of order (the build refuses it), or
+              • the commit/push step failed.
+
+            Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            Phones keep the seed bundled in the app and whatever they last
+            downloaded; past the published window they compute the
+            authority's own method until the next successful run.

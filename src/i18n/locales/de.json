@@ -524,6 +524,14 @@
     "namazvakti": {
       "name": "Türkiye Takvimi (namazvakti.com)",
       "desc": "Der vorsichtige türkische Kalender — Fadschr bei 19°, Ischa bei 17°, ein Sicherheitszuschlag (Temkin) auf jede Zeit — so wie namazvakti.com ihn für die nächstgelegene seiner Städte weltweit veröffentlicht."
+    },
+    "muis": {
+      "name": "Singapur",
+      "desc": "Der veröffentlichte Zeitplan des Majlis Ugama Islam Singapura, wie ihn das Open-Data-Portal der Regierung bereitstellt."
+    },
+    "jakim": {
+      "name": "Malaysia",
+      "desc": "JAKIMs e-Solat-Zeitplan für Ihre Zone; Ihr Standort wird der nächsten Stadt in der Zonenliste zugeordnet."
     }
   },
   "compass": {
@@ -1705,8 +1713,14 @@
     "13": "Türkei",
     "14": "Russland",
     "15": "Moonsighting Committee Worldwide",
+    "16": "Dubai",
+    "17": "Malaysia (JAKIM)",
+    "18": "Tunesien",
     "19": "Algerien",
+    "20": "Indonesien (Kemenag)",
     "21": "Marokko",
+    "22": "Portugal",
+    "23": "Jordanien",
     "auto": "Automatisch (nach Standort)"
   },
   "attributions": {
@@ -1844,7 +1858,10 @@
     "namazvaktiIndex": "Ein Verzeichnis der Städte, die die Website führt, nicht der Zeiten: Das Telefon findet hier seine nächste Stadt und lädt deren Jahr von der Website.",
     "citiesPlaced": "{{located}} von {{listed}} Städten verortet",
     "nearestCity": "Ihre Stadt",
-    "yearFetched": "Jahr geladen"
+    "yearFetched": "Jahr geladen",
+    "serverSingapore": "Singapur · MUIS",
+    "serverMalaysia": "Malaysia · JAKIM e-Solat",
+    "jakimWindow": "JAKIM veröffentlicht nur das laufende Jahr, daher endet dieses Fenster am 31. Dezember und beginnt neu, sobald das neue Jahr in den ersten Januartagen veröffentlicht ist."
   },
   "log": {
     "legendPrayers": "0 → 5 Gebete",

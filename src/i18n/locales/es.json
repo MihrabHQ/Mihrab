@@ -525,6 +525,14 @@
     "namazvakti": {
       "name": "Türkiye Takvimi (namazvakti.com)",
       "desc": "El calendario turco más prudente — Fajr a 19°, Isha a 17°, un margen de seguridad (temkin) en cada hora — tal como namazvakti.com lo publica para la más cercana de sus ciudades en todo el mundo."
+    },
+    "muis": {
+      "name": "Singapur",
+      "desc": "El horario publicado por el Majlis Ugama Islam Singapura, tal como lo ofrece el portal de datos abiertos del gobierno."
+    },
+    "jakim": {
+      "name": "Malasia",
+      "desc": "El horario e-Solat de JAKIM para tu zona; tu ubicación se asocia a la localidad más cercana de su lista de zonas."
     }
   },
   "compass": {
@@ -1706,8 +1714,14 @@
     "13": "Turquía",
     "14": "Rusia",
     "15": "Comité Mundial de Observación de la Luna",
+    "16": "Dubái",
+    "17": "Malasia (JAKIM)",
+    "18": "Túnez",
     "19": "Argelia",
+    "20": "Indonesia (Kemenag)",
     "21": "Marruecos",
+    "22": "Portugal",
+    "23": "Jordania",
     "auto": "Automático (según ubicación)"
   },
   "attributions": {
@@ -1845,7 +1859,10 @@
     "namazvaktiIndex": "Un índice de las ciudades que lista el sitio, no de horarios: el teléfono encuentra aquí su ciudad más cercana y descarga su año del sitio.",
     "citiesPlaced": "{{located}} de {{listed}} ciudades ubicadas",
     "nearestCity": "Tu ciudad",
-    "yearFetched": "Año descargado"
+    "yearFetched": "Año descargado",
+    "serverSingapore": "Singapur · MUIS",
+    "serverMalaysia": "Malasia · JAKIM e-Solat",
+    "jakimWindow": "JAKIM publica solo el año en curso, así que esta ventana termina el 31 de diciembre y vuelve a empezar cuando se publica el nuevo año en los primeros días de enero."
   },
   "log": {
     "legendPrayers": "0 → 5 oraciones",

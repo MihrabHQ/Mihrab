@@ -24,7 +24,9 @@ describe('the table', () => {
     expect(REGIONAL_PROVIDER_REGIONS.map(r => r.id).sort()).toEqual([
       'habous',
       'islamiska_forbundet',
+      'jakim',
       'marw',
+      'muis',
     ]);
   });
 
@@ -32,6 +34,12 @@ describe('the table', () => {
     expect(regionalProviderForCoords(STOCKHOLM)).toBe('islamiska_forbundet');
     expect(regionalProviderForCoords(CASABLANCA)).toBe('habous');
     expect(regionalProviderForCoords(LONDON)).toBeNull();
+    // Singapore sits inside the peninsula's box and must win there.
+    expect(regionalProviderForCoords({ latitude: 1.3521, longitude: 103.8198 })).toBe('muis');
+    expect(regionalProviderForCoords({ latitude: 1.4927, longitude: 103.7414 })).toBe('jakim'); // Johor Bahru
+    expect(regionalProviderForCoords({ latitude: 5.9804, longitude: 116.0735 })).toBe('jakim'); // Kota Kinabalu
+    expect(regionalProviderForCoords({ latitude: 4.9031, longitude: 114.9398 })).toBeNull(); // Bandar Seri Begawan
+    expect(regionalProviderForCoords({ latitude: 1.1, longitude: 104.05 })).toBeNull(); // Batam
     expect(regionalProviderForCoords(null)).toBeNull();
   });
 

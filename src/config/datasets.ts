@@ -127,6 +127,33 @@ export function nextMarwServerRunAfter(from: Date = new Date()): Date {
   return d;
 }
 
+// ── NATIONAL TABLES (SINGAPORE, MALAYSIA) ────────────────────────────
+//
+// Published per place by the country's own authority and mirrored by
+// `tools/national-tables/`, read through `providers/nationalTable.ts`.
+
+export const MUIS_DATASET_BASE_URL =
+  'https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/data/prayer-times/singapore/v1';
+export const JAKIM_DATASET_BASE_URL =
+  'https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/data/prayer-times/malaysia/v1';
+
+/** Fallback refresh when the index poll cannot reach the server. */
+export const NATIONAL_TABLE_REFRESH_TTL_MS = 3 * 24 * 60 * 60 * 1000; // 3 days
+/** How often to re-read the tiny `index.json`. ±25% jitter at the call site. */
+export const NATIONAL_TABLE_INDEX_POLL_INTERVAL_MS = 6 * 60 * 60 * 1000; // 6 hours
+
+/** `.github/workflows/national-tables.yml` cron `19 2 * * 1`, for display only. */
+export const NATIONAL_TABLE_SERVER_CRON_UTC = { weekday: 1, hour: 2, minute: 19 }; // Mondays
+
+/** The next Monday run (UTC) after `from`. */
+export function nextNationalTableServerRunAfter(from: Date = new Date()): Date {
+  const d = new Date(from.getTime());
+  d.setUTCHours(NATIONAL_TABLE_SERVER_CRON_UTC.hour, NATIONAL_TABLE_SERVER_CRON_UTC.minute, 0, 0);
+  if (d.getTime() <= from.getTime()) d.setUTCDate(d.getUTCDate() + 1);
+  while (d.getUTCDay() !== NATIONAL_TABLE_SERVER_CRON_UTC.weekday) d.setUTCDate(d.getUTCDate() + 1);
+  return d;
+}
+
 // ── NAMAZVAKTI.COM (TÜRKİYE TAKVİMİ) ─────────────────────────────────
 //
 // Not a mirror of the times, like the three above, but an index of the

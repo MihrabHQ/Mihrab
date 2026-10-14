@@ -127,6 +127,35 @@ function parametersForMethod(methodId: number): CalculationParameters {
       // it falls back to past the published year.
       // Issue #70.
       return angles(18, 17, { maghrib: 3 });
+    case 16:
+      // Dubai — 18.2° both ends, Dhuhr and Maghrib held three minutes:
+      // AlAdhan's id 16, read against its Gulf method on two dates.
+      return angles(18.2, 18.2, { dhuhr: 3, maghrib: 3 });
+    case 17:
+      // Jabatan Kemajuan Islam Malaysia (JAKIM): 20° / 18°.
+      return angles(20, 18);
+    case 18:
+      // Tunisia: 18° / 18°.
+      return angles(18, 18);
+    case 20:
+      // Kementerian Agama Republik Indonesia: 20° / 18°.
+      return angles(20, 18);
+    case 22: {
+      // Comunidade Islâmica de Lisboa: Fajr 18°, Dhuhr held five minutes
+      // and Maghrib three, Isha a fixed 77 minutes after Maghrib — which
+      // adhan.js counts from true sunset, so 80 here. Read from AlAdhan's
+      // id 22 on two dates against the plain MWL times for Lisbon.
+      const p = CalculationMethod.Other();
+      p.fajrAngle = 18;
+      p.ishaAngle = 0;
+      p.ishaInterval = 80;
+      p.methodAdjustments = { ...p.methodAdjustments, dhuhr: 5, maghrib: 3 };
+      return p;
+    }
+    case 23:
+      // Ministry of Awqaf, Islamic Affairs and Holy Places, Jordan:
+      // 18° / 18°, Maghrib held five minutes.
+      return angles(18, 18, { maghrib: 5 });
     case 21:
       // Morocco — Ministry of Habous and Islamic Affairs.
       //

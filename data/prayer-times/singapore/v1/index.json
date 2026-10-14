@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "builtAt": "2026-10-14T12:19:04.618Z",
+  "timezone": "Asia/Singapore",
+  "source": "https://data.gov.sg/datasets/d_a6a206cba471fe04b62dd886ef5eaf22/view",
+  "serverStatus": "ok",
+  "firstDate": "2026-10-07",
+  "lastDate": "2026-12-31",
+  "minCoverageDays": 78,
+  "deadCities": [],
+  "cities": [
+    {
+      "id": 1,
+      "city": "Singapore",
+      "cityEn": "Singapore"
+    }
+  ]
+}

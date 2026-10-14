@@ -524,6 +524,14 @@
     "namazvakti": {
       "name": "Türkiye Takvimi (namazvakti.com)",
       "desc": "İhtiyatlı Türkiye Takvimi — imsak 19°, yatsı 17°, her vakte temkin — namazvakti.com’un dünya genelinde en yakın şehri için yayınladığı haliyle."
+    },
+    "muis": {
+      "name": "Singapur",
+      "desc": "Majlis Ugama Islam Singapura’nın yayımladığı vakit cetveli, hükümetin açık veri portalındaki haliyle."
+    },
+    "jakim": {
+      "name": "Malezya",
+      "desc": "Bulunduğunuz bölge için JAKIM’in e-Solat cetveli; konumunuz bölge listesindeki en yakın kasabayla eşleştirilir."
     }
   },
   "compass": {
@@ -1705,8 +1713,14 @@
     "13": "Türkiye",
     "14": "Rusya",
     "15": "Dünya Hilal Gözlem Komitesi",
+    "16": "Dubai",
+    "17": "Malezya (JAKIM)",
+    "18": "Tunus",
     "19": "Cezayir",
+    "20": "Endonezya (Kemenag)",
     "21": "Fas",
+    "22": "Portekiz",
+    "23": "Ürdün",
     "auto": "Otomatik (konuma göre)"
   },
   "attributions": {
@@ -1844,7 +1858,10 @@
     "namazvaktiIndex": "Vakitlerin değil, sitenin listelediği şehirlerin dizini: telefon en yakın şehrini burada bulur ve o şehrin yılını siteden indirir.",
     "citiesPlaced": "{{listed}} şehrin {{located}} tanesi konumlandı",
     "nearestCity": "Şehriniz",
-    "yearFetched": "Yıl indirildi"
+    "yearFetched": "Yıl indirildi",
+    "serverSingapore": "Singapur · MUIS",
+    "serverMalaysia": "Malezya · JAKIM e-Solat",
+    "jakimWindow": "JAKIM yalnızca içinde bulunulan yılı yayımlar; bu yüzden bu pencere 31 Aralık’ta biter ve yeni yıl Ocak’ın ilk günlerinde yayımlanınca yeniden başlar."
   },
   "log": {
     "legendPrayers": "0 → 5 namaz",

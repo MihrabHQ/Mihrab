@@ -35,6 +35,14 @@ export const CALCULATION_METHODS: CalculationMethodOption[] = [
   // "Algeria" too, but without the Maghrib margin, so the app computes this
   // one itself. Issue #70.
   { id: 19, name: 'Algeria', nameKey: 'methods.19' },
+  // The rest of AlAdhan's national conventions, so that nobody is left
+  // picking a neighbour's. Each is computed on the phone too.
+  { id: 16, name: 'Dubai', nameKey: 'methods.16' },
+  { id: 17, name: 'Malaysia (JAKIM)', nameKey: 'methods.17' },
+  { id: 20, name: 'Indonesia (Kemenag)', nameKey: 'methods.20' },
+  { id: 18, name: 'Tunisia', nameKey: 'methods.18' },
+  { id: 22, name: 'Portugal', nameKey: 'methods.22' },
+  { id: 23, name: 'Jordan', nameKey: 'methods.23' },
 ];
 
 /**

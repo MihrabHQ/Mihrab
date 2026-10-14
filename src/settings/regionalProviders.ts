@@ -16,6 +16,8 @@
  * see below.
  */
 import { isCoordinateInAlgeria } from '../utils/algeriaRegion';
+import { isCoordinateInMalaysia } from '../utils/malaysiaRegion';
+import { isCoordinateInSingapore } from '../utils/singaporeRegion';
 import { isCoordinateInMorocco } from '../utils/moroccoRegion';
 import { isCoordinateInSweden } from '../utils/swedenRegion';
 import type { PrayerDataProviderId } from './types';
@@ -34,6 +36,9 @@ export const REGIONAL_PROVIDER_REGIONS: readonly RegionalProviderRegion[] = [
   // ministry city back to Morocco.
   { id: 'marw', covers: isCoordinateInAlgeria },
   { id: 'habous', covers: isCoordinateInMorocco },
+  // Singapore before Malaysia: the island sits inside the peninsula's box.
+  { id: 'muis', covers: isCoordinateInSingapore },
+  { id: 'jakim', covers: isCoordinateInMalaysia },
 ];
 
 /** The regional source covering these coordinates, or null for nowhere special. */

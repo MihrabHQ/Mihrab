@@ -91,6 +91,8 @@ const STAYS: Record<string, string> = {
   'namazvakti.tile.v1.': 'derived — a cached city-index tile',
   'namazvakti.city.v1.': 'derived — a per-city yearly timetable cache',
   'namazvakti.noTable.v1': 'derived — cities the site was found to publish nothing for',
+  'muis.dataset.v1.city.': 'derived — Singapore’s published timetable, re-downloadable',
+  'jakim.dataset.v1.city.': 'derived — a JAKIM zone’s published timetable, re-downloadable',
   'habous.dataset.v1.city.':
     'derived — the ministry’s published timetable for one city, re-downloadable',
   'hijri.overrides.v1':

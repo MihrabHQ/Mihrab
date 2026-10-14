@@ -78,6 +78,22 @@ export const REGIONAL_PRAYER_PROVIDERS: ProviderOption[] = [
     nameKey: 'providers.marw.name',
     descriptionKey: 'providers.marw.desc',
   },
+  {
+    id: 'muis',
+    name: 'Singapore',
+    description:
+      'The Majlis Ugama Islam Singapura’s published timetable, as the government’s open-data portal carries it.',
+    nameKey: 'providers.muis.name',
+    descriptionKey: 'providers.muis.desc',
+  },
+  {
+    id: 'jakim',
+    name: 'Malaysia',
+    description:
+      'JAKIM’s e-Solat timetable for the zone you are in; your location is matched to the nearest town in its zone list.',
+    nameKey: 'providers.jakim.name',
+    descriptionKey: 'providers.jakim.desc',
+  },
 ];
 
 /** Full list for lookups, settings copy, and labels (order: mainstream then regional). */

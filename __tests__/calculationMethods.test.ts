@@ -207,6 +207,60 @@ describe('a Moroccan user has a method to pick', () => {
   });
 });
 
+/**
+ * The six national conventions added with the Türkiye Takvimi work, so
+ * that the picker names every country AlAdhan has a method for. Readings
+ * from AlAdhan on 30 Aug 2026 for each method's own capital. Pinned to
+ * within a minute rather than exactly: AlAdhan and adhan.js round a
+ * fractional angle like Dubai's 18.2° a minute apart, and Asr is the
+ * known one-to-two-minute shadow rounding as above.
+ */
+const ALADHAN_2026_10 = [
+  { id: 16, city: 'Dubai', latitude: 25.2048, longitude: 55.2708, timeZone: 'Asia/Dubai',
+    times: { Fajr: '04:39', Sunrise: '05:59', Dhuhr: '12:23', Asr: '15:49', Maghrib: '18:43', Isha: '20:00' } },
+  { id: 17, city: 'Kuala Lumpur', latitude: 3.139, longitude: 101.6869, timeZone: 'Asia/Kuala_Lumpur',
+    times: { Fajr: '05:51', Sunrise: '07:09', Dhuhr: '13:14', Asr: '16:24', Maghrib: '19:19', Isha: '20:29' } },
+  { id: 18, city: 'Tunis', latitude: 36.8065, longitude: 10.1815, timeZone: 'Africa/Tunis',
+    times: { Fajr: '04:18', Sunrise: '05:49', Dhuhr: '12:20', Asr: '16:00', Maghrib: '18:51', Isha: '20:22' } },
+  { id: 20, city: 'Jakarta', latitude: -6.2088, longitude: 106.8456, timeZone: 'Asia/Jakarta',
+    times: { Fajr: '04:36', Sunrise: '05:54', Dhuhr: '11:53', Asr: '15:12', Maghrib: '17:53', Isha: '19:03' } },
+  { id: 22, city: 'Lisbon', latitude: 38.7223, longitude: -9.1393, timeZone: 'Europe/Lisbon',
+    times: { Fajr: '05:30', Sunrise: '07:04', Dhuhr: '13:42', Asr: '17:18', Maghrib: '20:13', Isha: '21:30' } },
+  { id: 23, city: 'Amman', latitude: 31.9461, longitude: 35.9238, timeZone: 'Asia/Amman',
+    times: { Fajr: '04:45', Sunrise: '06:10', Dhuhr: '12:37', Asr: '16:13', Maghrib: '19:08', Isha: '20:28' } },
+] as const;
+
+describe('the six national conventions added in 2.32 agree with AlAdhan', () => {
+  it.each(ALADHAN_2026_10.map(c => [c.id, c.city, c] as const))('method %i (%s)', (_id, _city, fixture) => {
+    const got = computeLocalAdhanTimes({
+      latitude: fixture.latitude,
+      longitude: fixture.longitude,
+      date: DATE,
+      calculationMethod: fixture.id,
+      school: 0,
+    });
+    for (const [prayer, expected] of Object.entries(fixture.times)) {
+      const mine = minutes(inCityTime(got.timings[prayer as keyof typeof got.timings]!, fixture.timeZone));
+      const diff = minutes(expected) - mine;
+      const slack = prayer === 'Asr' ? 2 : 1;
+      expect(`${prayer} ${diff}`).toMatch(new RegExp(`^${prayer} (-1|0|1${slack === 2 ? '|2' : ''})$`));
+    }
+  });
+
+  it('are offered in the picker and named in every language', () => {
+    const { readdirSync, readFileSync } = require('fs');
+    const path = require('path');
+    const dir = path.join(__dirname, '..', 'src', 'i18n', 'locales');
+    for (const id of [16, 17, 18, 20, 22, 23]) {
+      expect(CALCULATION_METHODS.find(m => m.id === id)?.nameKey).toBe(`methods.${id}`);
+      for (const file of readdirSync(dir).filter((f: string) => f.endsWith('.json'))) {
+        const json = JSON.parse(readFileSync(path.join(dir, file), 'utf8'));
+        expect(`${file} ${id}: ${typeof json.methods?.[String(id)]}`).toBe(`${file} ${id}: string`);
+      }
+    }
+  });
+});
+
 describe('Morocco is checked against the ministry, not against AlAdhan', () => {
   /**
    * AlAdhan's method 21 is a good secondary source and it is what the app

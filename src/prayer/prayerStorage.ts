@@ -3,6 +3,7 @@ import { fetchPrayerTimesUnified } from '../providers/fetchPrayerTimes';
 import { getIslamiskaForbundetDatasetTimes } from '../providers/islamiskaForbundetDataset';
 import { getHabousDatasetTimes } from '../providers/habousDataset';
 import { getMarwDatasetTimes } from '../providers/marwDataset';
+import { nationalTableFor } from '../providers/nationalTables';
 import { getNamazvaktiTimes } from '../providers/namazvakti';
 import { computeLocalAdhanTimes } from '../providers/localAdhan';
 import type { PrayerTimesResult } from '../providers/types';
@@ -511,6 +512,7 @@ function hasPreparedDataset(provider: PrayerDataProviderId): boolean {
     provider === 'islamiska_forbundet' ||
     provider === 'habous' ||
     provider === 'marw' ||
+    nationalTableFor(provider) != null ||
     // Not a dataset of times but the same arrangement: a published year
     // held on the phone that overtakes any day cached from a fallback.
     provider === 'namazvakti'
@@ -533,6 +535,8 @@ function datasetTimesFor(
   }
   if (provider === 'habous') return getHabousDatasetTimes(q);
   if (provider === 'marw') return getMarwDatasetTimes(q);
+  const table = nationalTableFor(provider);
+  if (table) return table.getTimes(q);
   return getIslamiskaForbundetDatasetTimes(q);
 }
 

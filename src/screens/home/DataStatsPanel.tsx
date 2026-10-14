@@ -21,6 +21,7 @@ import {
 } from '../../providers/islamiskaForbundetDataset';
 import { pollServerIndexNow as pollHabousIndexNow } from '../../providers/habousDataset';
 import { pollServerIndexNow as pollMarwIndexNow } from '../../providers/marwDataset';
+import { jakimTable, muisTable } from '../../providers/nationalTables';
 import {
   getNamazvaktiTimes,
   namazvaktiHeld,
@@ -35,6 +36,7 @@ import {
   nextHabousServerRunAfter,
   nextMarwServerRunAfter,
   nextNamazvaktiServerRunAfter,
+  nextNationalTableServerRunAfter,
   nextServerRunAfter,
 } from '../../config/datasets';
 import type { DataSource } from '../../providers/types';
@@ -86,6 +88,23 @@ const SERVERS: {
     coverageNoteKey: 'dataStats.marwWindow',
     coverageNoteDefault:
       'The ministry publishes a Hijri year at a time, as an update to its own app. This window runs to the end of that year and is renewed when the next one appears, around June.',
+  },
+  {
+    id: 'muis',
+    provider: 'muis',
+    labelKey: 'dataStats.serverSingapore',
+    labelDefault: 'Singapore · MUIS',
+    nextRun: nextNationalTableServerRunAfter,
+  },
+  {
+    id: 'jakim',
+    provider: 'jakim',
+    labelKey: 'dataStats.serverMalaysia',
+    labelDefault: 'Malaysia · JAKIM e-Solat',
+    nextRun: nextNationalTableServerRunAfter,
+    coverageNoteKey: 'dataStats.jakimWindow',
+    coverageNoteDefault:
+      'JAKIM publishes the current year only, so this window ends on 31 December and starts again when the new year is published in the first days of January.',
   },
   {
     // Not a mirror of times but an index of the site's cities: its coverage
@@ -148,6 +167,8 @@ function DataStatsPanelImpl() {
           pollHabousIndexNow(),
           pollMarwIndexNow(),
           pollNamazvaktiIndexNow(),
+          muisTable.pollServerIndexNow(),
+          jakimTable.pollServerIndexNow(),
         ].map(p =>
           p.catch(() => {
             /* offline — keep whatever was recorded before */
