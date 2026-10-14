@@ -263,16 +263,26 @@
           <li><b>Adhan and reminders</b> <span>— seventeen built-in adhan recordings or one of your own,
             a pre-prayer reminder window, and exact-alarm scheduling so the call lands on time even
             under aggressive battery managers. Each prayer decides how it speaks — adhan, a plain
-            alert or silent — and snooze offers what the time left allows, down to a last chance
-            before the prayer ends.</span></li>
+            alert or silent — and can be changed for just the next one from Today. On Android the
+            adhan can play as an alarm, so it is heard with the phone on silent.</span></li>
+          <li><b>Snooze that knows when the prayer ends</b> <span>— 10 minutes at a tap, or 5, 15, 30
+            or 60, from the notification or the full-screen alert. Only lengths that leave at least
+            15 minutes of the prayer are offered; when none does, the button becomes “Last chance to
+            pray”, which comes back 15 or 5 minutes before the time runs out.</span></li>
           <li><b>A full-screen prayer alert</b> <span>— like an alarm clock, over the lock screen: the
             prayer, the next one under it, Stop, Snooze and Log prayer. On Android its own screen,
             painted in that prayer’s sky; on iOS 26 and later an AlarmKit alarm that rings through
             silent mode and Focus. Offered in the first-run walkthrough, off until you say so.</span></li>
           <li><b>Your choice of source, including national ones</b> <span>— AlAdhan, PrayTimes.dev,
-            calculation entirely on the device, or a published national table: Sweden (Islamiska
-            Förbundet), Morocco (the Ministry of Habous and Islamic Affairs) and Algeria (the Ministry
-            of Religious Affairs and Wakfs), matched to your nearest listed city.</span></li>
+            calculation entirely on the device, or a published table taken minute for minute: Sweden
+            (Islamiska Förbundet), Morocco (the Ministry of Habous and Islamic Affairs), Algeria (the
+            Ministry of Religious Affairs and Wakfs), Singapore (MUIS), Malaysia (JAKIM), Indonesia
+            (Kemenag) and Türkiye Takvimi, matched to your nearest listed city. If a table has nothing
+            for today, the app calculates the day with that authority’s own method and says
+            so.</span></li>
+          <li><b>23 calculation methods, or your own angles</b> <span>— the AlAdhan methods plus Dubai,
+            JAKIM, Kemenag, Tunisia, Portugal and Jordan; Umm al-Qura’s Isha moves to two hours in
+            Ramadan. Far north or south, choose how the short summer nights are shared out.</span></li>
           <li><b>Tuned to your mosque</b> <span>— per-prayer minute offsets, Hanafi or standard Asr, and
             the extra marks when you want them: sunrise, Islamic midnight, the last third of the night,
             the first third after Isha.</span></li>
@@ -281,8 +291,9 @@
             times. The Mālikī second times — when each prayer’s preferred time closes — are a
             switch of their own.</span></li>
           <li><b>Quiet for the prayer itself</b> <span>— on Android, the phone goes into Do Not
-            Disturb around the prayers you pick and comes back on its own; Jumuʿah has its own
-            length.</span></li>
+            Disturb around the prayers you pick, from the adhan or a few minutes before, and comes back
+            on its own; Jumuʿah has its own length. Alarms and whatever you already let through still
+            come through.</span></li>
           <li><b>More to remember, if you ask</b> <span>— dhikr reminders in your own words at any
             hour, fully offline; Surah Al-Kahf on Friday, Al-Mulk at night, the morning and evening
             adhkār; a khatmah reminder carrying the day’s portion. The Notifications page shows what is
@@ -301,7 +312,8 @@
             dynamic colour, adjustable background, a text colour of your own; on Android the
             prayer-times widget shows or hides the city, the countdown and the day’s times.</span></li>
           <li><b>Opens where you left it</b> <span>— the last Today screen is the first frame of a
-            launch, and the countdown, the sky and the day’s progress sweep up to now. Pull down on
+            launch, and the countdown — to the second, and to any prayer you tap — the sky and the
+            day’s progress sweep up to now. Pull down on
             Today to refresh the times; when the clocks change where you are, they refresh on their
             own.</span></li>
         </ul>
@@ -329,11 +341,11 @@
             instead.</span></li>
           <li><b>A facing-page spread on iPad and Mac</b> <span>— the pair of pages is the thing that
             turns, with the keyboard and a surah sidebar.</span></li>
-          <li><b>A tap on a word opens its ayah</b> <span>— 13 translations plus Ibn Kathir,
+          <li><b>A tap on a word opens its ayah</b> <span>— 14 translations plus Ibn Kathir,
             Maarif-ul-Quran, al-Muyassar and others, and the Arabic meanings of the harder words, all
             downloadable for offline reading; the tajweed rules in the ayah, coloured bookmarks, a
             share card, and the recitation controls.</span></li>
-          <li><b>42 reciters</b> <span>— streamed per ayah or downloaded per surah. For nine of them the
+          <li><b>44 reciters</b> <span>— streamed per ayah or downloaded per surah. For nine of them the
             recited word lights up on the page itself, and in landscape the column follows the reciter
             down it.</span></li>
           <li><b>Tilāwah — listening, as its own page</b> <span>— pick a reciter and it runs surah
@@ -364,14 +376,16 @@
             Arafah, Ashura, Six of Shawwal), with day-before reminders.</span></li>
           <li><b>Prayer journal</b> <span>— on time, late, missed or qadha, with private notes, a
             practice graph, streaks and what is owed. Loggable straight from the notification, with an
-            end-of-day nudge and tools to fill in whole months at once.</span></li>
+            end-of-day nudge, tools to fill in whole months at once, and a reset for a day, a month, a
+            year or everything.</span></li>
           <li><b>Sunnah prayers</b> <span>— the rawātib beside each fard prayer, Witr and the night
             prayer, logged on the same day and drawn in their own gold on the practice
             graph.</span></li>
           <li><b>Hijri calendar</b> <span>— with Ramadan, Eid and Jumu'ah treatments, and a Ramadan
             countdown on Home. The standard calendar or Indonesia’s (Government &amp; NU, or
             Muhammadiyah), with a day adjustment that moves only the Hijri date — and, if you ask,
-            the day can begin at maghrib.</span></li>
+            the day can begin at maghrib. When Indonesia’s sidang isbat announces a different date, the
+            correction reaches phones within hours.</span></li>
         </ul>
       </article>
       <article class="group">
@@ -588,9 +602,11 @@
         <h3>Goes over the network, when you choose it</h3>
         <ul>
           <li>Prayer times from the provider you pick — AlAdhan or PrayTimes.dev — which receives the
-            coordinates and dates it needs to answer. The national tables (Sweden, Morocco, Algeria) are prepared
-            files fetched from this project’s own repository: they are asked for a city, not for
-            you.</li>
+            coordinates and dates it needs to answer. The national tables (Sweden, Morocco, Algeria,
+            Singapore, Malaysia, Indonesia) are prepared files fetched from this project’s own
+            repository: they are asked for a city, not for you. With Türkiye Takvimi, the phone picks
+            the nearest listed city itself and asks namazvakti.com for that city’s year — the city’s
+            number, not your coordinates.</li>
           <li>Place search through <strong>OpenStreetMap Nominatim</strong>: your search text goes to
             them under their terms.</li>
           <li>Downloads of mushaf pages, translations, tafsir and recitation audio.</li>

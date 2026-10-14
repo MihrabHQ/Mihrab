@@ -246,11 +246,11 @@
       "cards": [
         {
           "h3": "صلِّ",
-          "p": "مواقيت الصلاة وعدّ تنازلي للصلاة القادمة، والأذان لكل صلاة، وبوصلة القبلة، وأدوات على الشاشة الرئيسية، وتسجيل كل صلاة بضغطة واحدة. تنبيه صلاة بملء الشاشة كالمنبّه، ولكل صلاة أن تختار الأذان أو تنبيهًا أو الصمت، وعلى أندرويد يهدأ الهاتف أثناء الصلاة نفسها."
+          "p": "مواقيت الصلاة وعدّ تنازلي للصلاة القادمة، والأذان لكل صلاة، وبوصلة القبلة، وأدوات على الشاشة الرئيسية، وتسجيل كل صلاة بضغطة واحدة. تنبيه صلاة بملء الشاشة كالمنبّه، ولكل صلاة أن تختار الأذان أو تنبيهًا أو الصمت، وعلى أندرويد يهدأ الهاتف أثناء الصلاة نفسها. والغفوة لا تُعرض إلا بقدر ما بقي من وقت الصلاة، حتى «الفرصة الأخيرة» قبل خروجه. والمواقيت من AlAdhan أو PrayTimes.dev أو محسوبة على الجهاز، أو من الجداول المنشورة في السويد والمغرب والجزائر وسنغافورة وماليزيا وإندونيسيا وتقويم Türkiye Takvimi."
         },
         {
           "h3": "اقرأ واستمع",
-          "p": "المصحف المدني كاملاً بأربع روايات، مع ألوان التجويد لحفص وورش، وقارئ الكلمات: اضغط مطوّلًا على كلمة فتسمعها وحدها. و42 قارئًا، والتلاوة سورة بعد سورة والشاشة مطفأة، والتفسير والترجمات وخطة الختمة. والتلاوة تحفظ موضعها، وتقترح ما تستحبّه السنّة في كل ساعة."
+          "p": "المصحف المدني كاملاً بأربع روايات، مع ألوان التجويد لحفص وورش، وقارئ الكلمات: اضغط مطوّلًا على كلمة فتسمعها وحدها. و44 قارئًا، والتلاوة سورة بعد سورة والشاشة مطفأة، والتفسير والترجمات وخطة الختمة. والتلاوة تحفظ موضعها، وتقترح ما تستحبّه السنّة في كل ساعة."
         },
         {
           "h3": "اذكر",
@@ -458,11 +458,11 @@
       "cards": [
         {
           "h3": "Kıl",
-          "p": "Sıradaki namaza geri sayımla namaz vakitleri, her namaz için ezan, kıble pusulası, ana ekran widget'ları — ve her namaz tek dokunuşla kaydedilir. Çalar saat gibi tam ekran bir namaz uyarısı, her namaz için ezan, uyarı ya da sessiz seçimi ve Android'de namazın kendisi sırasında sessize alınan telefon."
+          "p": "Sıradaki namaza geri sayımla namaz vakitleri, her namaz için ezan, kıble pusulası, ana ekran widget'ları — ve her namaz tek dokunuşla kaydedilir. Çalar saat gibi tam ekran bir namaz uyarısı, her namaz için ezan, uyarı ya da sessiz seçimi ve Android'de namazın kendisi sırasında sessize alınan telefon. Erteleme yalnızca vaktin yettiği kadar sunulur; vakit çıkmadan önce bir “son fırsat” kalır. Vakitler AlAdhan, PrayTimes.dev, cihazda hesaplama ya da İsveç, Fas, Cezayir, Singapur, Malezya, Endonezya ve Türkiye Takvimi’nin yayımlanmış takvimlerinden."
         },
         {
           "h3": "Oku ve dinle",
-          "p": "Dört rivayetiyle tam Medine mushafı; Hafs ve Verş için renkli tecvid ve bir kelime okuyucu: bir kelimeye basılı tutun, yalnızca o kelime okunsun. 42 kari, ekran kapalıyken sure sure tilavet, tefsir, mealler ve hatim planı. Tilavet kaldığınız yeri hatırlar ve o saatte sünnetin tavsiye ettiğini önerir."
+          "p": "Dört rivayetiyle tam Medine mushafı; Hafs ve Verş için renkli tecvid ve bir kelime okuyucu: bir kelimeye basılı tutun, yalnızca o kelime okunsun. 44 kari, ekran kapalıyken sure sure tilavet, tefsir, mealler ve hatim planı. Tilavet kaldığınız yeri hatırlar ve o saatte sünnetin tavsiye ettiğini önerir."
         },
         {
           "h3": "Zikret",
@@ -670,11 +670,11 @@
       "cards": [
         {
           "h3": "نماز",
-          "p": "اگلی نماز کی الٹی گنتی کے ساتھ نماز کے اوقات، ہر نماز کی اذان، قبلہ کمپاس، ہوم اسکرین وجٹس — اور ہر نماز ایک ٹیپ میں درج۔ الارم گھڑی کی طرح پوری اسکرین کا نماز الرٹ، ہر نماز کے لیے اذان، الرٹ یا خاموشی کا انتخاب، اور اینڈرائیڈ پر خود نماز کے دوران خاموش فون۔"
+          "p": "اگلی نماز کی الٹی گنتی کے ساتھ نماز کے اوقات، ہر نماز کی اذان، قبلہ کمپاس، ہوم اسکرین وجٹس — اور ہر نماز ایک ٹیپ میں درج۔ الارم گھڑی کی طرح پوری اسکرین کا نماز الرٹ، ہر نماز کے لیے اذان، الرٹ یا خاموشی کا انتخاب، اور اینڈرائیڈ پر خود نماز کے دوران خاموش فون۔ اسنوز صرف اتنا ملتا ہے جتنا نماز کا وقت باقی ہو، وقت ختم ہونے سے پہلے ایک «آخری موقع» تک۔ اوقات AlAdhan، PrayTimes.dev، فون پر حساب، یا سویڈن، مراکش، الجزائر، سنگاپور، ملائیشیا، انڈونیشیا اور Türkiye Takvimi کے شائع شدہ جدولوں سے۔"
         },
         {
           "h3": "پڑھیں اور سنیں",
-          "p": "چار روایتوں میں مکمل مدنی مصحف، حفص اور ورش کے لیے رنگین تجوید، اور لفظ خواں: کسی لفظ کو دبائے رکھیں، وہی ایک لفظ پڑھ کر سنایا جائے گا۔ 42 قاری، اسکرین بند ہونے پر سورت کے بعد سورت تلاوت، تفسیر، تراجم اور ختم کا منصوبہ۔ تلاوت آپ کی جگہ یاد رکھتی ہے اور بتاتی ہے کہ اس وقت سنت کیا پڑھنے کی ترغیب دیتی ہے۔"
+          "p": "چار روایتوں میں مکمل مدنی مصحف، حفص اور ورش کے لیے رنگین تجوید، اور لفظ خواں: کسی لفظ کو دبائے رکھیں، وہی ایک لفظ پڑھ کر سنایا جائے گا۔ 44 قاری، اسکرین بند ہونے پر سورت کے بعد سورت تلاوت، تفسیر، تراجم اور ختم کا منصوبہ۔ تلاوت آپ کی جگہ یاد رکھتی ہے اور بتاتی ہے کہ اس وقت سنت کیا پڑھنے کی ترغیب دیتی ہے۔"
         },
         {
           "h3": "ذکر",
@@ -882,11 +882,11 @@
       "cards": [
         {
           "h3": "Sholat",
-          "p": "Jadwal sholat dengan hitung mundur ke sholat berikutnya, adzan untuk setiap waktu, kompas kiblat, widget layar utama — dan setiap sholat dicatat dengan satu ketukan. Pengingat sholat layar penuh seperti jam alarm, pilihan adzan, nada, atau senyap untuk tiap sholat, dan di Android ponsel hening selama sholat itu sendiri."
+          "p": "Jadwal sholat dengan hitung mundur ke sholat berikutnya, adzan untuk setiap waktu, kompas kiblat, widget layar utama — dan setiap sholat dicatat dengan satu ketukan. Pengingat sholat layar penuh seperti jam alarm, pilihan adzan, nada, atau senyap untuk tiap sholat, dan di Android ponsel hening selama sholat itu sendiri. Tunda hanya ditawarkan selama waktu sholat masih cukup, hingga “kesempatan terakhir” sebelum waktunya habis. Jadwal dari AlAdhan, PrayTimes.dev, perhitungan di ponsel, atau tabel resmi Swedia, Maroko, Aljazair, Singapura, Malaysia (JAKIM), Indonesia (Kemenag) dan Türkiye Takvimi."
         },
         {
           "h3": "Baca dan dengarkan",
-          "p": "Mushaf Madinah lengkap dalam empat riwayat, dengan warna tajwid untuk Hafs dan Warsh serta pembaca kata: tahan sebuah kata dan hanya kata itu yang dibacakan. 42 qari, tilawah surah demi surah dengan layar mati, tafsir, terjemahan, dan rencana khatam. Tilawah mengingat posisi Anda dan menyarankan bacaan yang dianjurkan sunnah pada jam itu."
+          "p": "Mushaf Madinah lengkap dalam empat riwayat, dengan warna tajwid untuk Hafs dan Warsh serta pembaca kata: tahan sebuah kata dan hanya kata itu yang dibacakan. 44 qari, tilawah surah demi surah dengan layar mati, tafsir, terjemahan, dan rencana khatam. Tilawah mengingat posisi Anda dan menyarankan bacaan yang dianjurkan sunnah pada jam itu."
         },
         {
           "h3": "Berzikir",
@@ -1094,11 +1094,11 @@
       "cards": [
         {
           "h3": "Beten",
-          "p": "Gebetszeiten mit Countdown zum nächsten Gebet, Adhan für jedes Gebet, Qibla-Kompass und Homescreen-Widgets – und jedes Gebet mit einem Tippen eingetragen. Ein Vollbild-Gebetsalarm wie ein Wecker, je Gebet Adhan, Hinweiston oder Stille, und unter Android ein Telefon, das während des Gebets selbst still ist."
+          "p": "Gebetszeiten mit Countdown zum nächsten Gebet, Adhan für jedes Gebet, Qibla-Kompass und Homescreen-Widgets – und jedes Gebet mit einem Tippen eingetragen. Ein Vollbild-Gebetsalarm wie ein Wecker, je Gebet Adhan, Hinweiston oder Stille, und unter Android ein Telefon, das während des Gebets selbst still ist. Schlummern nur so lange, wie die Gebetszeit noch reicht, bis zur letzten Gelegenheit vor ihrem Ende. Zeiten von AlAdhan, PrayTimes.dev, auf dem Gerät berechnet oder aus den veröffentlichten Tabellen Schwedens, Marokkos, Algeriens, Singapurs, Malaysias, Indonesiens und der Türkiye Takvimi."
         },
         {
           "h3": "Lesen und hören",
-          "p": "Der vollständige Medina-Mushaf in vier Riwayat, mit Tajwid-Farben für Hafs und Warsh und einem Wortvorleser: ein Wort gedrückt halten, und genau dieses Wort wird vorgelesen. 42 Rezitatoren, Tilawa Sure für Sure bei ausgeschaltetem Bildschirm, Tafsir, Übersetzungen und ein Khatma-Plan. Die Tilawa merkt sich, wo Sie waren, und schlägt vor, was die Sunna zu dieser Stunde empfiehlt."
+          "p": "Der vollständige Medina-Mushaf in vier Riwayat, mit Tajwid-Farben für Hafs und Warsh und einem Wortvorleser: ein Wort gedrückt halten, und genau dieses Wort wird vorgelesen. 44 Rezitatoren, Tilawa Sure für Sure bei ausgeschaltetem Bildschirm, Tafsir, Übersetzungen und ein Khatma-Plan. Die Tilawa merkt sich, wo Sie waren, und schlägt vor, was die Sunna zu dieser Stunde empfiehlt."
         },
         {
           "h3": "Gedenken",
@@ -1306,11 +1306,11 @@
       "cards": [
         {
           "h3": "Prier",
-          "p": "Heures de prière et compte à rebours jusqu'à la prochaine, adhan pour chaque prière, boussole de la qibla, widgets pour l'écran d'accueil — et chaque prière consignée d'un seul geste. Une alerte de prière plein écran comme un réveil, pour chaque prière l'adhan, un signal ou le silence, et sur Android un téléphone qui se tait pendant la prière elle-même."
+          "p": "Heures de prière et compte à rebours jusqu'à la prochaine, adhan pour chaque prière, boussole de la qibla, widgets pour l'écran d'accueil — et chaque prière consignée d'un seul geste. Une alerte de prière plein écran comme un réveil, pour chaque prière l'adhan, un signal ou le silence, et sur Android un téléphone qui se tait pendant la prière elle-même. La répétition ne propose que ce que le temps restant permet, jusqu’à une « dernière chance » avant la fin de la prière. Horaires d’AlAdhan, de PrayTimes.dev, calculés sur l’appareil, ou tirés des tables officielles de Suède, du Maroc, d’Algérie, de Singapour, de Malaisie, d’Indonésie et de Türkiye Takvimi."
         },
         {
           "h3": "Lire et écouter",
-          "p": "Le mushaf de Médine complet en quatre riwayat, avec les couleurs du tajwid pour Hafs et Warsh et un lecteur de mots : maintenez un mot et c'est ce mot seul qui est lu. 42 récitateurs, la Tilawa sourate après sourate écran éteint, tafsir, traductions et plan de khatma. La Tilawa garde votre place et propose ce que la sunna recommande à cette heure."
+          "p": "Le mushaf de Médine complet en quatre riwayat, avec les couleurs du tajwid pour Hafs et Warsh et un lecteur de mots : maintenez un mot et c'est ce mot seul qui est lu. 44 récitateurs, la Tilawa sourate après sourate écran éteint, tafsir, traductions et plan de khatma. La Tilawa garde votre place et propose ce que la sunna recommande à cette heure."
         },
         {
           "h3": "Se souvenir",
@@ -1518,11 +1518,11 @@
       "cards": [
         {
           "h3": "Rezar",
-          "p": "Horarios de oración con cuenta atrás hasta la siguiente, adhan para cada oración, brújula de la alquibla, widgets para la pantalla de inicio — y cada oración registrada con un toque. Una alerta de oración a pantalla completa como un despertador, para cada oración adhan, aviso o silencio, y en Android un teléfono que calla durante la propia oración."
+          "p": "Horarios de oración con cuenta atrás hasta la siguiente, adhan para cada oración, brújula de la alquibla, widgets para la pantalla de inicio — y cada oración registrada con un toque. Una alerta de oración a pantalla completa como un despertador, para cada oración adhan, aviso o silencio, y en Android un teléfono que calla durante la propia oración. La posposición solo ofrece lo que permite el tiempo que queda, hasta una «última oportunidad» antes de que termine la oración. Horarios de AlAdhan, PrayTimes.dev, calculados en el teléfono o de las tablas oficiales de Suecia, Marruecos, Argelia, Singapur, Malasia, Indonesia y Türkiye Takvimi."
         },
         {
           "h3": "Leer y escuchar",
-          "p": "El mushaf de Medina completo en cuatro riwayat, con colores de tajwid para Hafs y Warsh y un lector de palabras: mantén pulsada una palabra y se lee esa palabra sola. 42 recitadores, Tilawa sura tras sura con la pantalla apagada, tafsir, traducciones y un plan de jatma. La Tilawa recuerda dónde lo dejaste y sugiere lo que la sunna recomienda a esa hora."
+          "p": "El mushaf de Medina completo en cuatro riwayat, con colores de tajwid para Hafs y Warsh y un lector de palabras: mantén pulsada una palabra y se lee esa palabra sola. 44 recitadores, Tilawa sura tras sura con la pantalla apagada, tafsir, traducciones y un plan de jatma. La Tilawa recuerda dónde lo dejaste y sugiere lo que la sunna recomienda a esa hora."
         },
         {
           "h3": "Recordar",
@@ -1730,11 +1730,11 @@
       "cards": [
         {
           "h3": "Молитесь",
-          "p": "Время намаза с обратным отсчётом до следующего, азан для каждого намаза, компас киблы, виджеты — и каждый намаз отмечается одним касанием. Полноэкранное напоминание о молитве, как будильник, для каждого намаза азан, сигнал или тишина, а на Android телефон молчит во время самой молитвы."
+          "p": "Время намаза с обратным отсчётом до следующего, азан для каждого намаза, компас киблы, виджеты — и каждый намаз отмечается одним касанием. Полноэкранное напоминание о молитве, как будильник, для каждого намаза азан, сигнал или тишина, а на Android телефон молчит во время самой молитвы. Отложить можно лишь настолько, насколько позволяет оставшееся время намаза, — вплоть до «последней возможности» перед его концом. Время от AlAdhan, PrayTimes.dev, расчёт на телефоне или официальные таблицы Швеции, Марокко, Алжира, Сингапура, Малайзии, Индонезии и Türkiye Takvimi."
         },
         {
           "h3": "Читайте и слушайте",
-          "p": "Полный мединский мусхаф в четырёх риваятах, с цветным таджвидом для Хафса и Варша и озвучкой слов: удерживайте слово — и прозвучит именно оно. 42 чтеца, тилява сура за сурой с выключенным экраном, тафсир, переводы и план хатма. Тилява помнит, где вы остановились, и предлагает то, что сунна советует читать в этот час."
+          "p": "Полный мединский мусхаф в четырёх риваятах, с цветным таджвидом для Хафса и Варша и озвучкой слов: удерживайте слово — и прозвучит именно оно. 44 чтеца, тилява сура за сурой с выключенным экраном, тафсир, переводы и план хатма. Тилява помнит, где вы остановились, и предлагает то, что сунна советует читать в этот час."
         },
         {
           "h3": "Поминайте",
@@ -1942,11 +1942,11 @@
       "cards": [
         {
           "h3": "নামাজ",
-          "p": "পরের নামাজের কাউন্টডাউনসহ নামাজের সময়, প্রতি ওয়াক্তের আজান, কিবলা কম্পাস, হোম স্ক্রিন উইজেট — আর এক ছোঁয়ায় প্রতিটি নামাজ লিখে রাখা। অ্যালার্ম ঘড়ির মতো পূর্ণ-পর্দা নামাজের সতর্কবার্তা, প্রতি ওয়াক্তে আজান, সংকেত বা নীরবতার পছন্দ, আর অ্যান্ড্রয়েডে নামাজের সময়টুকু ফোন চুপ।"
+          "p": "পরের নামাজের কাউন্টডাউনসহ নামাজের সময়, প্রতি ওয়াক্তের আজান, কিবলা কম্পাস, হোম স্ক্রিন উইজেট — আর এক ছোঁয়ায় প্রতিটি নামাজ লিখে রাখা। অ্যালার্ম ঘড়ির মতো পূর্ণ-পর্দা নামাজের সতর্কবার্তা, প্রতি ওয়াক্তে আজান, সংকেত বা নীরবতার পছন্দ, আর অ্যান্ড্রয়েডে নামাজের সময়টুকু ফোন চুপ। স্নুজ শুধু ততটুকুই দেওয়া হয় যতটুকু ওয়াক্ত বাকি আছে, ওয়াক্ত শেষ হওয়ার আগে একটি «শেষ সুযোগ» পর্যন্ত। সময় আসে AlAdhan, PrayTimes.dev, ফোনে হিসাব, অথবা সুইডেন, মরক্কো, আলজেরিয়া, সিঙ্গাপুর, মালয়েশিয়া, ইন্দোনেশিয়া ও Türkiye Takvimi-র প্রকাশিত সময়সূচি থেকে।"
         },
         {
           "h3": "পড়ুন ও শুনুন",
-          "p": "চার রিওয়ায়াতে পূর্ণ মদিনা মুসহাফ, হাফস ও ওয়ারশের জন্য রঙিন তাজবিদ, আর শব্দ-পাঠক: একটি শব্দ চেপে ধরুন, শুধু সেই শব্দটিই পড়ে শোনানো হবে। ৪২ জন কারি, স্ক্রিন বন্ধ রেখে সূরার পর সূরা তিলাওয়াত, তাফসির, অনুবাদ ও খতম পরিকল্পনা। তিলাওয়াত আপনার জায়গা মনে রাখে এবং সেই সময়ে সুন্নাহ যা পড়তে উৎসাহ দেয় তা প্রস্তাব করে।"
+          "p": "চার রিওয়ায়াতে পূর্ণ মদিনা মুসহাফ, হাফস ও ওয়ারশের জন্য রঙিন তাজবিদ, আর শব্দ-পাঠক: একটি শব্দ চেপে ধরুন, শুধু সেই শব্দটিই পড়ে শোনানো হবে। ৪৪ জন কারি, স্ক্রিন বন্ধ রেখে সূরার পর সূরা তিলাওয়াত, তাফসির, অনুবাদ ও খতম পরিকল্পনা। তিলাওয়াত আপনার জায়গা মনে রাখে এবং সেই সময়ে সুন্নাহ যা পড়তে উৎসাহ দেয় তা প্রস্তাব করে।"
         },
         {
           "h3": "জিকির",
@@ -2154,11 +2154,11 @@
       "cards": [
         {
           "h3": "नमाज़",
-          "p": "अगली नमाज़ की उलटी गिनती के साथ नमाज़ के समय, हर नमाज़ की अज़ान, क़िबला कम्पास, होम स्क्रीन विजेट — और हर नमाज़ एक टैप में दर्ज। अलार्म घड़ी जैसी पूर्ण-स्क्रीन नमाज़ चेतावनी, हर नमाज़ के लिए अज़ान, सूचना या मौन का चुनाव, और एंड्रॉइड पर नमाज़ के दौरान चुप फ़ोन।"
+          "p": "अगली नमाज़ की उलटी गिनती के साथ नमाज़ के समय, हर नमाज़ की अज़ान, क़िबला कम्पास, होम स्क्रीन विजेट — और हर नमाज़ एक टैप में दर्ज। अलार्म घड़ी जैसी पूर्ण-स्क्रीन नमाज़ चेतावनी, हर नमाज़ के लिए अज़ान, सूचना या मौन का चुनाव, और एंड्रॉइड पर नमाज़ के दौरान चुप फ़ोन। स्नूज़ उतना ही मिलता है जितना नमाज़ का वक़्त बाक़ी हो, वक़्त ख़त्म होने से पहले एक «आख़िरी मौक़ा» तक। समय AlAdhan, PrayTimes.dev, फ़ोन पर गणना, या स्वीडन, मोरक्को, अल्जीरिया, सिंगापुर, मलेशिया, इंडोनेशिया और Türkiye Takvimi की प्रकाशित तालिकाओं से।"
         },
         {
           "h3": "पढ़ें और सुनें",
-          "p": "चार रिवायतों में पूरा मदीना मुसहफ़, हफ़्स और वर्श के लिए रंगीन तजवीद, और शब्द-पाठक: किसी शब्द को दबाए रखें, वही एक शब्द पढ़कर सुनाया जाएगा। 42 क़ारी, स्क्रीन बंद रहते सूरह-दर-सूरह तिलावत, तफ़सीर, अनुवाद और ख़त्म की योजना। तिलावत आपकी जगह याद रखती है और बताती है कि उस वक़्त सुन्नत क्या पढ़ने की सलाह देती है।"
+          "p": "चार रिवायतों में पूरा मदीना मुसहफ़, हफ़्स और वर्श के लिए रंगीन तजवीद, और शब्द-पाठक: किसी शब्द को दबाए रखें, वही एक शब्द पढ़कर सुनाया जाएगा। 44 क़ारी, स्क्रीन बंद रहते सूरह-दर-सूरह तिलावत, तफ़सीर, अनुवाद और ख़त्म की योजना। तिलावत आपकी जगह याद रखती है और बताती है कि उस वक़्त सुन्नत क्या पढ़ने की सलाह देती है।"
         },
         {
           "h3": "ज़िक्र",
@@ -2366,11 +2366,11 @@
       "cards": [
         {
           "h3": "礼拜",
-          "p": "礼拜时间与到下一次礼拜的倒计时、每番礼拜的宣礼、朝向罗盘、主屏小组件——每次礼拜一触即可记录。全屏礼拜提醒如同闹钟；每番礼拜可选宣礼、提示音或静音；在 Android 上，手机在礼拜期间保持安静。"
+          "p": "礼拜时间与到下一次礼拜的倒计时、每番礼拜的宣礼、朝向罗盘、主屏小组件——每次礼拜一触即可记录。全屏礼拜提醒如同闹钟；每番礼拜可选宣礼、提示音或静音；在 Android 上，手机在礼拜期间保持安静。稍后提醒只提供礼拜时间还容许的时长，直到时间结束前的「最后机会」。时间来自 AlAdhan、PrayTimes.dev、本机计算，或瑞典、摩洛哥、阿尔及利亚、新加坡、马来西亚、印度尼西亚与 Türkiye Takvimi 公布的时间表。"
         },
         {
           "h3": "诵读与聆听",
-          "p": "四种传述的完整麦地那穆斯哈夫，哈夫斯与沃尔什均有泰吉威德着色，还有逐词朗读：长按一个词，就只朗读这个词。42 位诵读者，熄屏时逐章连续诵读，经注、译本与通读计划。诵读会记住你的进度，并按时辰推荐圣行所提倡的章节。"
+          "p": "四种传述的完整麦地那穆斯哈夫，哈夫斯与沃尔什均有泰吉威德着色，还有逐词朗读：长按一个词，就只朗读这个词。44 位诵读者，熄屏时逐章连续诵读，经注、译本与通读计划。诵读会记住你的进度，并按时辰推荐圣行所提倡的章节。"
         },
         {
           "h3": "记念",
