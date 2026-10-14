@@ -98,7 +98,20 @@ async function main(): Promise<number> {
         }
       }
       Object.assign(days, parseKemenagMonth(json!, p.name));
-      if (json!.kabko && json!.kabko.trim().toUpperCase() !== p.name.toUpperCase()) {
+      // The site's own name for the place must be the one asked for — the
+      // ids are md5 hashes of a list position, and a reordered list would
+      // silently hand every regency its neighbour's table. The site prints
+      // some names longer than its select does ("KAB. ADMINISTRASI
+      // KEPULAUAN SERIBU" for "KAB. KEPULAUAN SERIBU"), so one containing
+      // the other, word for word, is the same place.
+      const answered = (json!.kabko ?? '').trim().toUpperCase().replace(/\s+/g, ' ');
+      const asked = p.name.toUpperCase().replace(/\s+/g, ' ');
+      const sameWords = (x: string, y: string) => {
+        const a = x.split(' ');
+        const b = y.split(' ');
+        return a.length >= b.length ? b.every(w => a.includes(w)) : a.every(w => b.includes(w));
+      };
+      if (answered && answered !== asked && !sameWords(answered, asked)) {
         throw new BuildError(`${p.name}: the site answered for "${json!.kabko}" — the id list is stale`);
       }
     }

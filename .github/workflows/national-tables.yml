@@ -57,10 +57,12 @@ jobs:
         run: |
           git config user.name 'mihrab-dataset-bot'
           git config user.email 'actions@users.noreply.github.com'
-          git add data/prayer-times/singapore data/prayer-times/malaysia data/prayer-times/indonesia \
+          # A table that has not been built yet has no folder; add what exists.
+          git add -A -- data/prayer-times/singapore data/prayer-times/malaysia data/prayer-times/indonesia \
             src/providers/data/muisSeed.json src/providers/data/muisPlaces.json \
             src/providers/data/jakimSeed.json src/providers/data/jakimPlaces.json \
-            src/providers/data/kemenagSeed.json src/providers/data/kemenagPlaces.json
+            src/providers/data/kemenagSeed.json src/providers/data/kemenagPlaces.json 2>/dev/null \
+            || git add -A -- data/prayer-times/singapore data/prayer-times/malaysia src/providers/data
           if git diff --cached --quiet; then
             echo 'No table changes to commit.'
             exit 0
