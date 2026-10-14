@@ -83,6 +83,12 @@ const OVERRIDES: Record<number, { lat: number; lng: number }> = {
   115: { lat: 31.4833, lng: -8.1 }, // تامصلوحت — Tameslouht
   129: { lat: 31.2833, lng: -4.2667 }, // الريصاني — Rissani
   166: { lat: 20.9167, lng: -17.05 }, // الكويرة — Lagouira
+  // Geocoded hundreds of km off, found by fitting the ministry's whole table
+  // (tools/verify-methods/table-exact.py, October 2026): Assa was placed at
+  // 27.98°N, its table is the town at 28.6°N; Ikss was placed beside
+  // Casablanca, its table is in the High Atlas near Taliouine.
+  150: { lat: 28.6086, lng: -9.4269 }, // أسا — Assa
+  317: { lat: 30.95, lng: -7.85 }, // إيكس — Ikss
 };
 
 type CityFile = { id: number; city: string; days: Record<string, DatasetDayTuple> };

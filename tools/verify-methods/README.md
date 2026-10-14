@@ -209,3 +209,41 @@ only a sixth of them.
 - Research tools: `table-exact.py` (`resid`, `margins`, `fit`, `excess`;
   `DEC_AT`/`EOT_AT`, `PASSES`, `START`, `DEC_SHIFT`, `EOT_FIX`,
   `ROUND_HOURS` select the variants), `sun-jpl-grid.py`.
+
+## Morocco: the ministry's method, to the minute
+
+The ministry publishes a rolling month, so the reference is every day the
+repo has ever held: `history-union.py morocco ~/.cache/mihrab/morocco-history`
+gathers 77 days (late August to mid November 2026) for the 164 located
+cities from the dataset's git history. The rows before 17 September are
+on GMT+1, the rest on GMT (the country left GMT+1 on 20 September and the
+site republished); `table-exact.py` knows the boundary. The method (method
+21, `src/providers/moroccoMethod.ts`):
+
+- **A precise sun**, at each prayer's own moment — declination and
+  equation of time alike, iterated. Meeus's apparent sun with the full
+  nutation and his chapter-28 equation of time fits as well as JPL DE421
+  (Dhuhr 8 misses in 12,600); NOAA's series and the Almanac's, or the sun
+  once a day, are far worse.
+- Fajr 19°, **rounded down**; Isha 17° and Asr (one shadow, |φ − δ|)
+  to the nearest; Dhuhr the transit + 5, to the nearest.
+- **Sunrise** 2.9 min before, and **Maghrib** 3.85 after, the sun at
+  −0.833° less the city's horizon dip, and Maghrib takes 0.86 of the dip
+  sunrise takes. The dips are fitted per city (about 0.02° per √metre of
+  height, the app's old figure) and kept in
+  `src/providers/data/moroccoMethodPoints.json` with each city's point.
+  This part is the least settled: the odd constants say the ministry's
+  real rule is something else, and two months of autumn do not show how
+  it behaves in summer.
+- Two cities were geocoded far from their tables: **Assa** (placed at
+  27.98°N; its table is the town at 28.6°N) and **Ikss** (placed beside
+  Casablanca; its table is in the High Atlas near Taliouine). Both are
+  in `tools/habous-dataset/solveCoords.ts`'s overrides now.
+
+**Result:** 98.7 % of 75,768 times on the printed minute, every one within
+a minute: Dhuhr 99.9 %, Fajr, Asr and Isha about 99 %, sunrise 97.6 %,
+Maghrib 96.4 %.
+
+- The `habous` check compares to the minute, at those points and dips.
+- `mor`-prefixed research scripts were throwaway; the method's constants
+  can be re-derived with `table-exact.py morocco fit|dipfit|excess`.

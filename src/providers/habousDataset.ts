@@ -40,6 +40,27 @@ import {
   HABOUS_INDEX_POLL_INTERVAL_MS,
 } from '../config/datasets';
 import { nearestMoroccoCity } from './moroccoNearest';
+import { computeLocalAdhanTimes } from './localAdhan';
+import moroccoPoints from './data/moroccoMethodPoints.json';
+
+/**
+ * Morocco's times are the app's own calculation of the ministry's method
+ * (`moroccoMethod.ts`) at the nearest listed city's point and horizon, not
+ * the table itself (October 2026) — as for Sweden and Algeria. The table
+ * is kept, for the check against the source (tools/verify-methods), and
+ * set false this serves it again.
+ */
+let servesCalculation = true;
+export function moroccoServesCalculation(): boolean {
+  return servesCalculation;
+}
+/** Tests: exercise the table path. */
+export function setMoroccoServesCalculationForTests(v: boolean): void {
+  servesCalculation = v;
+}
+/** Each city's point and horizon dip (degrees) as the ministry computes it, fitted to its table. */
+const METHOD_POINTS = moroccoPoints as Record<string, number[]>;
+const MOROCCO_METHOD = 21;
 import { tupleToTimings } from './islamiskaForbundetParser';
 import type { DatasetDayTuple } from './datasetTuple';
 import { formatLocalDate } from '../utils/date';
@@ -232,6 +253,23 @@ export async function getHabousDatasetTimes(params: {
       `Nearest listed city "${nearest.name}" is ${Math.round(nearest.distanceKm)} km ` +
         `away (> ${MAX_DATASET_CITY_KM} km) — outside the ministry's coverage.`,
     );
+  }
+
+  if (servesCalculation) {
+    const point = METHOD_POINTS[String(nearest.id)];
+    return {
+      ...computeLocalAdhanTimes({
+        latitude: point?.[0] ?? nearest.lat,
+        longitude: point?.[1] ?? nearest.lng,
+        horizonDipDeg: point?.[2],
+        heightM: point ? undefined : nearest.heightM,
+        date: params.date,
+        calculationMethod: MOROCCO_METHOD,
+        school: 0,
+      }),
+      timezone: DEFAULT_TZ,
+      source: 'local',
+    };
   }
 
   const dateKey = formatLocalDate(params.date);

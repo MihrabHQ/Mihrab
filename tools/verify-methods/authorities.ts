@@ -27,6 +27,8 @@ export type Place = {
   heightM?: number;
   /** The authority's own allowance for the horizon, minutes, where it is a figure rather than a height. */
   horizonMin?: number;
+  /** The authority's own horizon dip for the place, degrees (Morocco's, fitted from its tables). */
+  horizonDipDeg?: number;
 };
 
 export type Authority = {
@@ -171,19 +173,31 @@ export const AUTHORITIES: Authority[] = [
     folder: 'morocco',
     method: 21,
     school: 0,
-    toleranceMin: 1,
-    maxOutsideShare: 0.02,
-    hardMaxMin: 10,
+    // The ministry's own method (moroccoMethod.ts) at each city's point and
+    // horizon as its tables show them (moroccoMethodPoints.json): the check
+    // is to the minute. About 1.3 % of times — most of them sunrise and
+    // Maghrib, whose height allowance is the least settled part — land a
+    // minute the other side (tools/verify-methods/README.md).
+    toleranceMin: 0,
+    maxOutsideShare: 0.025,
+    hardMaxMin: 1,
     alarm: true,
     // Cities the solver left without coordinates (tools/habous-dataset/
     // solveCoords.ts) have tables but no point to compute at; they are
     // not places until somebody places them.
-    places: () =>
-      readJson<{ id: number; name: string; lat: number | null; lng: number | null; heightM?: number; horizonMin?: number }[]>(
+    places: () => {
+      const points = readJson<Record<string, number[]>>(path.join(ROOT, 'src/providers/data/moroccoMethodPoints.json'));
+      return readJson<{ id: number; name: string; lat: number | null; lng: number | null; heightM?: number; horizonMin?: number }[]>(
         path.join(ROOT, 'src/providers/data/moroccoCities.json'),
       )
         .filter(c => typeof c.lat === 'number' && typeof c.lng === 'number')
-        .map(c => ({ file: `${c.id}.json`, name: c.name, lat: c.lat as number, lon: c.lng as number, tz: MOROCCO_TZ, heightM: c.heightM, horizonMin: c.horizonMin })),
+        .map(c => {
+          const p = points[String(c.id)];
+          return p
+            ? { file: `${c.id}.json`, name: c.name, lat: p[0], lon: p[1], tz: MOROCCO_TZ, horizonDipDeg: p[2] }
+            : { file: `${c.id}.json`, name: c.name, lat: c.lat as number, lon: c.lng as number, tz: MOROCCO_TZ, heightM: c.heightM };
+        });
+    },
   },
   {
     id: 'marw',

@@ -28,6 +28,10 @@ AUTH = {
                     root=os.path.expanduser('~/.cache/mihrab/morocco-history'),
                     # rows the site published before it moved to GMT, still on GMT+1
                     plus1_before='2026-09-17'),
+    # JAKIM: a zone's single table; the zone's first listed town to start from. jakim-year-fetch.py
+    # gathers the whole current year (the repo keeps only the coming window).
+    'malaysia': dict(folder='malaysia', tz='Asia/Kuala_Lumpur', coords='src/providers/data/jakimPlaces.json',
+                     root=os.path.expanduser('~/.cache/mihrab/malaysia-year')),
 }
 KEYS = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha']
 
@@ -94,7 +98,7 @@ def _raw_event(self, lat, lon, sun, angles, h0, asr_signed, shadow, iters=3):
             if DEC_AT != 'event': dec = at(fixed[DEC_AT])[0]
             if EOT_AT != 'event': eot = at(fixed[EOT_AT])[1]
             tr = 720 - 4 * lon - eot
-            alt = alt_of(dec)
+            alt = alt_of(at(t_noon)[0] if (os.environ.get('ASR_NOON_DEC') and alt_of.__name__ == 'asr_alt') else dec)
             c = (np.sin(alt * RAD) - sp * np.sin(dec)) / (cp * np.cos(dec))
             with np.errstate(invalid='ignore'):
                 h = np.where(np.abs(c) <= 1, np.degrees(np.arccos(np.clip(c, -1, 1))) * 4, np.nan)
@@ -104,7 +108,7 @@ def _raw_event(self, lat, lon, sun, angles, h0, asr_signed, shadow, iters=3):
     out['fajr'] = event(const(-angles[0]), -1, t_noon - 420)
     h0 = h0 - getattr(self, 'dip', 0.0)
     out['sunrise'] = event(const(h0), -1, t_noon - 360)
-    out['maghrib'] = event(const(h0), 1, t_noon + 360)
+    out['maghrib'] = event(const(h0 + getattr(self, 'dip', 0.0) * (1 - getattr(self, 'setq', 1.0))), 1, t_noon + 360)
     out['isha'] = event(const(-angles[1]), 1, t_noon + 420)
     def asr_alt(dec):
         z = lat - np.degrees(dec)
@@ -146,9 +150,10 @@ def fit_place(pl, cfg, fields, steps=(0.01, 0.002, 0.0005, 0.0001)):
 
 def load(auth):
     pts = json.load(open(os.path.join(REPO, AUTH[auth]['coords'])))
-    out = []
+    out = []; seen = set()
     for c in pts:
-        if c.get('lat') is None: continue
+        if c.get('lat') is None or c['id'] in seen: continue
+        seen.add(c['id'])
         if 'lon' not in c: c['lon'] = c.get('lng')
         f = os.path.join(data_root(auth), 'v1/cities', f"{c['id']}.json")
         if os.path.exists(f):
@@ -183,17 +188,39 @@ if __name__ == '__main__':
         coords = {c['id']: (pl.lat0, pl.lon0) for c, pl in places}
         fields = arg('--fields', ','.join(KEYS)).split(',')
         for it in range(arg('--iter', 3, int)):
+            raws = {c['id']: pl.raw(*coords[c['id']], cfg['sun'], cfg['hour'], cfg['angles'], cfg['h0'], cfg['signed']) for c, pl in places}
             for k in fields:
                 best = None
                 for mg in np.arange(cfg['margins'][k] - 1.5, cfg['margins'][k] + 1.5, 0.02):
-                    c2 = dict(cfg, margins=dict(cfg['margins'], **{k: mg}))
-                    tot = sum(misses(pl, *coords[c['id']], c2, [k]) for c, pl in places)
+                    tot = 0
+                    for c, pl in places:
+                        d = rounded(raws[c['id']][k] + mg, cfg['round']) - pl.p[k]
+                        tot += int((np.isfinite(d) & (d != 0)).sum())
                     if best is None or tot < best[0]: best = (tot, mg)
                 cfg['margins'][k] = round(float(best[1]), 3)
             tot = 0
             for c, pl in places:
                 b = fit_place(pl, cfg, fields); coords[c['id']] = (b[1], b[2]); tot += b[0]
             print(f'iter {it}: margins', cfg['margins'], 'misses', tot, flush=True)
+    elif mode == 'dipfit':
+        # with saved coordinates: each place's own horizon dip (degrees), from sunrise and Maghrib
+        saved = json.load(open(os.path.expanduser(arg('--coords'))))
+        fields = arg('--fields', 'sunrise,maghrib').split(',')
+        tot = n = 0; out = {}
+        for c, pl in places:
+            s = saved.get(str(c['id']))
+            if not s: continue
+            best = None
+            for dip in np.arange(float(os.environ.get("DIP_MIN", "-0.5")), 2.0, 0.005):
+                pl.dip = dip
+                m = misses(pl, s['lat'], s['lon'], cfg, fields)
+                if best is None or m < best[0]: best = (m, dip)
+            pl.dip = best[1]; out[str(c['id'])] = dict(s, dip=round(float(best[1]), 3), height=c.get('heightM'))
+            mm, per = misses(pl, s['lat'], s['lon'], cfg, KEYS, detail=True)
+            tot += mm; n += sum(x[1] for x in per.values())
+            print(f"{c['id']:>4} h {c.get('heightM')}  dip {best[1]:.3f}  k {best[1] / max(math.sqrt(c.get('heightM') or 0), 1e-9):.4f}  misses {mm} " + ' '.join(f'{k} {per[k][0]}/{per[k][1]}' for k in KEYS), flush=True)
+        print('TOTAL', tot, 'of', n)
+        if '--save' in sys.argv: json.dump(out, open(os.path.expanduser(arg('--save')), 'w'), indent=1)
     elif mode == 'excess':
         # with saved coordinates: for each miss, how far the raw time lies outside its printed minute's window
         saved = json.load(open(os.path.expanduser(arg('--coords'))))

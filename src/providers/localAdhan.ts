@@ -26,6 +26,7 @@ import { horizonDipMinutes, solarDeclinationDegrees } from '../prayer/horizonDip
 import { SWEDEN_METHOD_ID } from './swedenMethodId';
 import { congressTimes } from './congressMethod';
 import { algeriaTimes } from './algeriaMethod';
+import { moroccoTimes, MOROCCO_DIP_PER_SQRT_M } from './moroccoMethod';
 
 // ── METHOD IDS ARE ALADHAN'S, AND SO ARE THE ANGLES ───────────────────
 //
@@ -231,6 +232,11 @@ function parametersForMethod(methodId: number): CalculationParameters {
       // omits the Chourouq margin and uses +5 for Maghrib. Where the two
       // disagree the ministry wins: it is the authority the method is
       // named after. Issue #10.
+      //
+      // October 2026: the times are computed by `moroccoTimes`
+      // (`moroccoMethod.ts`), the ministry's method as 77 days of its tables
+      // for 164 cities show it; these parameters are its description, and
+      // what a point where a time does not form falls back to.
       return angles(19, 17, { sunrise: -3, dhuhr: 5, maghrib: 4 });
     default:
       return CalculationMethod.MuslimWorldLeague();
@@ -322,6 +328,12 @@ type LocalAdhanParams = {
    * place of the dip when set.
    */
   horizonMin?: number;
+  /**
+   * The horizon dip itself, degrees, where the authority's own figure for
+   * the place is known (Morocco's cities, fitted from its tables:
+   * `moroccoMethodPoints.json`). Takes the place of `heightM` when set.
+   */
+  horizonDipDeg?: number;
 };
 
 /**
@@ -407,6 +419,14 @@ export function computeLocalAdhanInstants(params: LocalAdhanParams): PrayerInsta
     const at = congressTimes(latitude, params.longitude, y, m, day, params.school === 1 ? 2 : 1);
     return { fajr: toMinute(at.fajr), sunrise: toMinute(at.sunrise), dhuhr: toMinute(at.dhuhr), asr: toMinute(at.asr), maghrib: toMinute(at.maghrib), isha: toMinute(at.isha) };
   }
+  if (methodId === MOROCCO_METHOD_ID_LOCAL) {
+    // The ministry's method (`moroccoMethod.ts`), on the minute as it prints.
+    const dip =
+      params.horizonDipDeg ??
+      (params.heightM && params.heightM > 0 ? MOROCCO_DIP_PER_SQRT_M * Math.sqrt(params.heightM) : 0);
+    const at = moroccoTimes(params.latitude, params.longitude, y, m, day, dip, params.school === 1 ? 2 : 1);
+    if (at) return at;
+  }
   if (methodId === ALGERIA_SIGNED_SHADOW_METHOD_ID) {
     // The Ministry's method (`algeriaMethod.ts`), on the minute as it prints.
     const at = algeriaTimes(params.latitude, params.longitude, y, m, day, params.school === 1 ? 2 : 1);
@@ -433,6 +453,7 @@ export function computeLocalAdhanInstants(params: LocalAdhanParams): PrayerInsta
 }
 
 const ALGERIA_SIGNED_SHADOW_METHOD_ID = 19;
+const MOROCCO_METHOD_ID_LOCAL = 21;
 
 export { SWEDEN_METHOD_ID };
 

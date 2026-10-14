@@ -1173,9 +1173,9 @@
   {
     "id": 150,
     "name": "أسا",
-    "lat": 27.978305,
-    "lng": -9.4375,
-    "source": "geocode-lat+ministry-lng",
+    "lat": 28.6086,
+    "lng": -9.4269,
+    "source": "town (ministry table fits 28.57, -9.45)",
     "heightM": 552,
     "horizonMin": 0
   },
@@ -1439,10 +1439,9 @@
   {
     "id": 317,
     "name": "إيكس",
-    "lat": 33.5850575,
-    "lng": -7.8438,
-    "source": "geocode-lat+ministry-lng",
-    "heightM": 0
+    "lat": 30.95,
+    "lng": -7.85,
+    "source": "fitted-to-ministry-table"
   },
   {
     "id": 318,

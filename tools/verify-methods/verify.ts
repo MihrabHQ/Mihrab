@@ -236,6 +236,7 @@ export function verifyAuthority(a: Authority, accepted: Accepted[]): Report {
         longitude: place.lon,
         heightM: place.heightM,
         horizonMin: place.horizonMin,
+        horizonDipDeg: place.horizonDipDeg,
         date: new Date(y, m - 1, d),
         calculationMethod: a.method,
         school: a.school,

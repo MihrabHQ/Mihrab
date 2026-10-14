@@ -2,92 +2,86 @@
  "id": "habous",
  "name": "Morocco — Ministry of Habous and Islamic Affairs",
  "method": 21,
- "toleranceMin": 1,
- "builtAt": "2026-10-14T21:00:40.817Z",
+ "toleranceMin": 0,
+ "builtAt": "2026-10-14T21:59:38.068Z",
  "tableBuiltAt": "2026-10-14T09:45:57.739Z",
  "places": 164,
  "placesMissing": 0,
  "days": 5248,
  "from": "2026-10-11",
  "to": "2026-11-11",
- "times": 31104,
- "within": 30818,
- "outsideShare": 0.0092,
- "maxAbs": 3,
+ "times": 31296,
+ "within": 30859,
+ "outsideShare": 0.014,
+ "maxAbs": 1,
  "perPrayer": {
   "Fajr": {
-   "times": 5184,
-   "within": 5184,
+   "times": 5216,
+   "within": 5201,
    "histogram": {
-    "0": 2646,
-    "+1": 2538
+    "0": 5201,
+    "-1": 12,
+    "+1": 3
    },
    "maxAbs": 1,
-   "meanDiff": 0.49
+   "meanDiff": 0
   },
   "Sunrise": {
-   "times": 5184,
-   "within": 4939,
+   "times": 5216,
+   "within": 5084,
    "histogram": {
-    "0": 2629,
-    "-1": 1144,
-    "+1": 1166,
-    "+2": 205,
-    "+3": 4,
-    "-2": 36
+    "0": 5076,
+    "+1": 135,
+    "-1": 5
    },
-   "maxAbs": 3,
-   "meanDiff": 0.07
+   "maxAbs": 1,
+   "meanDiff": 0.02
   },
   "Dhuhr": {
-   "times": 5184,
-   "within": 5184,
+   "times": 5216,
+   "within": 5213,
    "histogram": {
-    "0": 4960,
-    "+1": 126,
-    "-1": 98
+    "0": 5213,
+    "+1": 3
    },
    "maxAbs": 1,
-   "meanDiff": 0.01
+   "meanDiff": 0
   },
   "Asr": {
-   "times": 5184,
-   "within": 5184,
+   "times": 5216,
+   "within": 5120,
    "histogram": {
-    "0": 1648,
-    "-1": 3535,
-    "+1": 1
+    "0": 5119,
+    "-1": 97
    },
    "maxAbs": 1,
-   "meanDiff": -0.68
+   "meanDiff": -0.02
   },
   "Maghrib": {
-   "times": 5184,
-   "within": 5143,
+   "times": 5216,
+   "within": 5052,
    "histogram": {
-    "0": 2742,
-    "+1": 1834,
-    "-1": 567,
-    "-2": 16,
-    "+2": 25
-   },
-   "maxAbs": 2,
-   "meanDiff": 0.25
-  },
-  "Isha": {
-   "times": 5184,
-   "within": 5184,
-   "histogram": {
-    "0": 4908,
-    "+1": 42,
-    "-1": 234
+    "0": 5049,
+    "-1": 116,
+    "+1": 51
    },
    "maxAbs": 1,
-   "meanDiff": -0.04
+   "meanDiff": -0.01
+  },
+  "Isha": {
+   "times": 5216,
+   "within": 5189,
+   "histogram": {
+    "0": 5189,
+    "+1": 25,
+    "-1": 2
+   },
+   "maxAbs": 1,
+   "meanDiff": 0
   }
  },
  "misplaced": [],
- "accepted": 192,
+ "accepted": 12,
  "imsakBeforeFajr": 10,
  "copiedRows": 0,
  "copiedFrom": null,
@@ -97,484 +91,484 @@
  "alarmReasons": [],
  "worst": [
   {
-   "place": "بولمان",
-   "date": "2026-10-19",
-   "prayer": "Sunrise",
-   "theirs": "06:17",
-   "ours": "06:20",
-   "diff": 3
-  },
-  {
-   "place": "بولمان",
-   "date": "2026-10-24",
-   "prayer": "Sunrise",
-   "theirs": "06:21",
-   "ours": "06:24",
-   "diff": 3
-  },
-  {
-   "place": "بولمان",
-   "date": "2026-10-30",
-   "prayer": "Sunrise",
-   "theirs": "06:26",
-   "ours": "06:29",
-   "diff": 3
-  },
-  {
-   "place": "بولمان",
-   "date": "2026-11-07",
-   "prayer": "Sunrise",
-   "theirs": "06:33",
-   "ours": "06:36",
-   "diff": 3
-  },
-  {
-   "place": "تاوريرت",
-   "date": "2026-10-11",
-   "prayer": "Sunrise",
-   "theirs": "06:07",
-   "ours": "06:09",
-   "diff": 2
-  },
-  {
-   "place": "زاوية أحنصال",
-   "date": "2026-10-11",
-   "prayer": "Sunrise",
-   "theirs": "06:16",
-   "ours": "06:18",
-   "diff": 2
-  },
-  {
-   "place": "بولمان",
-   "date": "2026-10-11",
-   "prayer": "Sunrise",
-   "theirs": "06:11",
-   "ours": "06:13",
-   "diff": 2
-  },
-  {
-   "place": "أقا",
-   "date": "2026-10-11",
-   "prayer": "Sunrise",
-   "theirs": "06:25",
-   "ours": "06:27",
-   "diff": 2
-  },
-  {
-   "place": "أكدز",
-   "date": "2026-10-11",
-   "prayer": "Sunrise",
-   "theirs": "06:18",
-   "ours": "06:20",
-   "diff": 2
-  },
-  {
    "place": "تطوان",
-   "date": "2026-10-12",
+   "date": "2026-10-11",
    "prayer": "Sunrise",
    "theirs": "06:20",
-   "ours": "06:22",
-   "diff": 2
-  },
-  {
-   "place": "تطوان",
-   "date": "2026-10-12",
-   "prayer": "Maghrib",
-   "theirs": "17:56",
-   "ours": "17:54",
-   "diff": -2
-  },
-  {
-   "place": "تاوريرت",
-   "date": "2026-10-12",
-   "prayer": "Sunrise",
-   "theirs": "06:08",
-   "ours": "06:10",
-   "diff": 2
-  },
-  {
-   "place": "بني ملال",
-   "date": "2026-10-12",
-   "prayer": "Sunrise",
-   "theirs": "06:20",
-   "ours": "06:22",
-   "diff": 2
-  },
-  {
-   "place": "بولمان",
-   "date": "2026-10-12",
-   "prayer": "Sunrise",
-   "theirs": "06:12",
-   "ours": "06:14",
-   "diff": 2
-  },
-  {
-   "place": "كلتة زمور",
-   "date": "2026-10-12",
-   "prayer": "Sunrise",
-   "theirs": "06:43",
-   "ours": "06:41",
-   "diff": -2
-  },
-  {
-   "place": "فم زكيد",
-   "date": "2026-10-12",
-   "prayer": "Sunrise",
-   "theirs": "06:20",
-   "ours": "06:22",
-   "diff": 2
-  },
-  {
-   "place": "تطوان",
-   "date": "2026-10-13",
-   "prayer": "Sunrise",
-   "theirs": "06:21",
-   "ours": "06:23",
-   "diff": 2
-  },
-  {
-   "place": "زاوية أحنصال",
-   "date": "2026-10-13",
-   "prayer": "Sunrise",
-   "theirs": "06:17",
    "ours": "06:19",
-   "diff": 2
+   "diff": -1
   },
   {
-   "place": "دمنات",
-   "date": "2026-10-13",
-   "prayer": "Sunrise",
-   "theirs": "06:22",
-   "ours": "06:24",
-   "diff": 2
-  },
-  {
-   "place": "بولمان",
-   "date": "2026-10-13",
-   "prayer": "Sunrise",
-   "theirs": "06:13",
-   "ours": "06:15",
-   "diff": 2
-  },
-  {
-   "place": "الوليدية",
-   "date": "2026-10-13",
-   "prayer": "Sunrise",
-   "theirs": "06:36",
-   "ours": "06:34",
-   "diff": -2
-  },
-  {
-   "place": "أقا",
-   "date": "2026-10-13",
-   "prayer": "Sunrise",
-   "theirs": "06:26",
-   "ours": "06:28",
-   "diff": 2
-  },
-  {
-   "place": "تطوان",
-   "date": "2026-10-14",
-   "prayer": "Sunrise",
-   "theirs": "06:22",
-   "ours": "06:24",
-   "diff": 2
-  },
-  {
-   "place": "زاوية أحنصال",
-   "date": "2026-10-14",
-   "prayer": "Sunrise",
-   "theirs": "06:18",
-   "ours": "06:20",
-   "diff": 2
+   "place": "بركان",
+   "date": "2026-10-11",
+   "prayer": "Fajr",
+   "theirs": "04:42",
+   "ours": "04:43",
+   "diff": 1
   },
   {
    "place": "أزيلال",
-   "date": "2026-10-14",
-   "prayer": "Sunrise",
-   "theirs": "06:21",
-   "ours": "06:23",
-   "diff": 2
+   "date": "2026-10-11",
+   "prayer": "Maghrib",
+   "theirs": "18:06",
+   "ours": "18:07",
+   "diff": 1
   },
   {
-   "place": "دمنات",
-   "date": "2026-10-14",
-   "prayer": "Sunrise",
-   "theirs": "06:23",
-   "ours": "06:25",
-   "diff": 2
-  },
-  {
-   "place": "بولمان",
-   "date": "2026-10-14",
-   "prayer": "Sunrise",
-   "theirs": "06:14",
-   "ours": "06:16",
-   "diff": 2
-  },
-  {
-   "place": "رباط الخير",
-   "date": "2026-10-14",
-   "prayer": "Sunrise",
-   "theirs": "06:14",
-   "ours": "06:16",
-   "diff": 2
-  },
-  {
-   "place": "الوليدية",
-   "date": "2026-10-14",
-   "prayer": "Sunrise",
-   "theirs": "06:37",
-   "ours": "06:35",
-   "diff": -2
-  },
-  {
-   "place": "أقا",
-   "date": "2026-10-14",
-   "prayer": "Sunrise",
-   "theirs": "06:27",
-   "ours": "06:29",
-   "diff": 2
+   "place": "إغرم",
+   "date": "2026-10-11",
+   "prayer": "Maghrib",
+   "theirs": "18:15",
+   "ours": "18:16",
+   "diff": 1
   },
   {
    "place": "أكدز",
-   "date": "2026-10-14",
-   "prayer": "Sunrise",
-   "theirs": "06:20",
-   "ours": "06:22",
-   "diff": 2
+   "date": "2026-10-11",
+   "prayer": "Maghrib",
+   "theirs": "18:06",
+   "ours": "18:07",
+   "diff": 1
   },
   {
-   "place": "تازارين",
+   "place": "أسول",
+   "date": "2026-10-11",
+   "prayer": "Maghrib",
+   "theirs": "18:02",
+   "ours": "18:03",
+   "diff": 1
+  },
+  {
+   "place": "بويزكارن",
+   "date": "2026-10-11",
+   "prayer": "Asr",
+   "theirs": "15:45",
+   "ours": "15:44",
+   "diff": -1
+  },
+  {
+   "place": "فم زكيد",
+   "date": "2026-10-11",
+   "prayer": "Maghrib",
+   "theirs": "18:08",
+   "ours": "18:09",
+   "diff": 1
+  },
+  {
+   "place": "والماس",
+   "date": "2026-10-12",
+   "prayer": "Sunrise",
+   "theirs": "06:19",
+   "ours": "06:20",
+   "diff": 1
+  },
+  {
+   "place": "الجديدة",
+   "date": "2026-10-12",
+   "prayer": "Fajr",
+   "theirs": "05:09",
+   "ours": "05:08",
+   "diff": -1
+  },
+  {
+   "place": "زاوية أحنصال",
+   "date": "2026-10-12",
+   "prayer": "Maghrib",
+   "theirs": "18:04",
+   "ours": "18:05",
+   "diff": 1
+  },
+  {
+   "place": "إغرم",
+   "date": "2026-10-12",
+   "prayer": "Maghrib",
+   "theirs": "18:14",
+   "ours": "18:15",
+   "diff": 1
+  },
+  {
+   "place": "ميدلت",
+   "date": "2026-10-12",
+   "prayer": "Maghrib",
+   "theirs": "17:57",
+   "ours": "17:58",
+   "diff": 1
+  },
+  {
+   "place": "بويزكارن",
+   "date": "2026-10-12",
+   "prayer": "Sunrise",
+   "theirs": "06:34",
+   "ours": "06:33",
+   "diff": -1
+  },
+  {
+   "place": "زاوية مولاي ابراهيم",
+   "date": "2026-10-12",
+   "prayer": "Maghrib",
+   "theirs": "18:10",
+   "ours": "18:11",
+   "diff": 1
+  },
+  {
+   "place": "طنجة",
+   "date": "2026-10-13",
+   "prayer": "Dhuhr",
+   "theirs": "12:14",
+   "ours": "12:15",
+   "diff": 1
+  },
+  {
+   "place": "زايو",
+   "date": "2026-10-13",
+   "prayer": "Maghrib",
+   "theirs": "17:45",
+   "ours": "17:44",
+   "diff": -1
+  },
+  {
+   "place": "زاوية أحنصال",
+   "date": "2026-10-13",
+   "prayer": "Sunrise",
+   "theirs": "06:17",
+   "ours": "06:18",
+   "diff": 1
+  },
+  {
+   "place": "إملشيل",
+   "date": "2026-10-13",
+   "prayer": "Asr",
+   "theirs": "15:25",
+   "ours": "15:24",
+   "diff": -1
+  },
+  {
+   "place": "طرفاية",
+   "date": "2026-10-13",
+   "prayer": "Asr",
+   "theirs": "15:57",
+   "ours": "15:56",
+   "diff": -1
+  },
+  {
+   "place": "أصيلة",
+   "date": "2026-10-14",
+   "prayer": "Fajr",
+   "theirs": "04:59",
+   "ours": "05:00",
+   "diff": 1
+  },
+  {
+   "place": "تندرارة",
+   "date": "2026-10-14",
+   "prayer": "Maghrib",
+   "theirs": "17:43",
+   "ours": "17:44",
+   "diff": 1
+  },
+  {
+   "place": "العيون الشرقية",
+   "date": "2026-10-14",
+   "prayer": "Sunrise",
+   "theirs": "06:10",
+   "ours": "06:09",
+   "diff": -1
+  },
+  {
+   "place": "خنيفرة",
    "date": "2026-10-14",
    "prayer": "Maghrib",
    "theirs": "17:57",
-   "ours": "17:59",
-   "diff": 2
+   "ours": "17:58",
+   "diff": 1
   },
   {
-   "place": "كلتة زمور",
+   "place": "بولمان",
    "date": "2026-10-14",
-   "prayer": "Sunrise",
-   "theirs": "06:44",
-   "ours": "06:42",
-   "diff": -2
+   "prayer": "Maghrib",
+   "theirs": "17:55",
+   "ours": "17:56",
+   "diff": 1
   },
   {
-   "place": "تطوان",
+   "place": "تنغير",
+   "date": "2026-10-14",
+   "prayer": "Isha",
+   "theirs": "19:08",
+   "ours": "19:07",
+   "diff": -1
+  },
+  {
+   "place": "قلعة مكونة",
+   "date": "2026-10-14",
+   "prayer": "Maghrib",
+   "theirs": "18:01",
+   "ours": "18:02",
+   "diff": 1
+  },
+  {
+   "place": "أسا",
+   "date": "2026-10-14",
+   "prayer": "Asr",
+   "theirs": "15:42",
+   "ours": "15:41",
+   "diff": -1
+  },
+  {
+   "place": "بئر كندوز",
+   "date": "2026-10-14",
+   "prayer": "Maghrib",
+   "theirs": "18:47",
+   "ours": "18:46",
+   "diff": -1
+  },
+  {
+   "place": "مطماطة",
+   "date": "2026-10-14",
+   "prayer": "Maghrib",
+   "theirs": "17:49",
+   "ours": "17:50",
+   "diff": 1
+  },
+  {
+   "place": "كرسيف",
    "date": "2026-10-15",
    "prayer": "Maghrib",
-   "theirs": "17:52",
-   "ours": "17:50",
-   "diff": -2
+   "theirs": "17:45",
+   "ours": "17:44",
+   "diff": -1
   },
   {
    "place": "بولمان",
    "date": "2026-10-15",
-   "prayer": "Sunrise",
-   "theirs": "06:14",
-   "ours": "06:16",
-   "diff": 2
+   "prayer": "Fajr",
+   "theirs": "04:56",
+   "ours": "04:55",
+   "diff": -1
   },
   {
-   "place": "تاونات",
+   "place": "بولمان",
    "date": "2026-10-15",
-   "prayer": "Sunrise",
-   "theirs": "06:18",
-   "ours": "06:20",
-   "diff": 2
+   "prayer": "Maghrib",
+   "theirs": "17:54",
+   "ours": "17:55",
+   "diff": 1
   },
   {
-   "place": "تافراوت",
+   "place": "إملشيل",
    "date": "2026-10-15",
-   "prayer": "Sunrise",
-   "theirs": "06:30",
-   "ours": "06:32",
-   "diff": 2
-  },
-  {
-   "place": "أقا",
-   "date": "2026-10-15",
-   "prayer": "Sunrise",
-   "theirs": "06:27",
-   "ours": "06:29",
-   "diff": 2
+   "prayer": "Maghrib",
+   "theirs": "17:58",
+   "ours": "17:59",
+   "diff": 1
   },
   {
    "place": "أسول",
    "date": "2026-10-15",
    "prayer": "Maghrib",
    "theirs": "17:57",
-   "ours": "17:59",
-   "diff": 2
+   "ours": "17:58",
+   "diff": 1
   },
   {
-   "place": "تازارين",
+   "place": "أمسمرير",
    "date": "2026-10-15",
+   "prayer": "Maghrib",
+   "theirs": "17:59",
+   "ours": "18:00",
+   "diff": 1
+  },
+  {
+   "place": "بويزكارن",
+   "date": "2026-10-15",
+   "prayer": "Asr",
+   "theirs": "15:42",
+   "ours": "15:41",
+   "diff": -1
+  },
+  {
+   "place": "أولاد عياد",
+   "date": "2026-10-15",
+   "prayer": "Sunrise",
+   "theirs": "06:20",
+   "ours": "06:19",
+   "diff": -1
+  },
+  {
+   "place": "وزان",
+   "date": "2026-10-16",
+   "prayer": "Maghrib",
+   "theirs": "17:53",
+   "ours": "17:52",
+   "diff": -1
+  },
+  {
+   "place": "ابن أحمد",
+   "date": "2026-10-16",
+   "prayer": "Maghrib",
+   "theirs": "18:01",
+   "ours": "18:00",
+   "diff": -1
+  },
+  {
+   "place": "تنغير",
+   "date": "2026-10-16",
    "prayer": "Maghrib",
    "theirs": "17:56",
-   "ours": "17:58",
-   "diff": 2
-  },
-  {
-   "place": "أوسرد",
-   "date": "2026-10-15",
-   "prayer": "Maghrib",
-   "theirs": "18:36",
-   "ours": "18:38",
-   "diff": 2
-  },
-  {
-   "place": "عين العودة",
-   "date": "2026-10-15",
-   "prayer": "Sunrise",
-   "theirs": "06:29",
-   "ours": "06:27",
-   "diff": -2
-  },
-  {
-   "place": "فم زكيد",
-   "date": "2026-10-15",
-   "prayer": "Sunrise",
-   "theirs": "06:22",
-   "ours": "06:24",
-   "diff": 2
-  },
-  {
-   "place": "تطوان",
-   "date": "2026-10-16",
-   "prayer": "Maghrib",
-   "theirs": "17:51",
-   "ours": "17:49",
-   "diff": -2
-  },
-  {
-   "place": "تاوريرت",
-   "date": "2026-10-16",
-   "prayer": "Sunrise",
-   "theirs": "06:11",
-   "ours": "06:13",
-   "diff": 2
-  },
-  {
-   "place": "دمنات",
-   "date": "2026-10-16",
-   "prayer": "Sunrise",
-   "theirs": "06:24",
-   "ours": "06:26",
-   "diff": 2
-  },
-  {
-   "place": "بولمان",
-   "date": "2026-10-16",
-   "prayer": "Sunrise",
-   "theirs": "06:15",
-   "ours": "06:17",
-   "diff": 2
-  },
-  {
-   "place": "أقا",
-   "date": "2026-10-16",
-   "prayer": "Sunrise",
-   "theirs": "06:28",
-   "ours": "06:30",
-   "diff": 2
-  },
-  {
-   "place": "تازارين",
-   "date": "2026-10-16",
-   "prayer": "Maghrib",
-   "theirs": "17:55",
    "ours": "17:57",
-   "diff": 2
+   "diff": 1
   },
   {
-   "place": "العيون",
+   "place": "أسول",
+   "date": "2026-10-16",
+   "prayer": "Maghrib",
+   "theirs": "17:56",
+   "ours": "17:57",
+   "diff": 1
+  },
+  {
+   "place": "بئر كندوز",
    "date": "2026-10-16",
    "prayer": "Sunrise",
-   "theirs": "06:51",
-   "ours": "06:49",
-   "diff": -2
+   "theirs": "06:58",
+   "ours": "06:59",
+   "diff": 1
   },
   {
-   "place": "كلتة زمور",
+   "place": "سيدي غانم",
    "date": "2026-10-16",
-   "prayer": "Sunrise",
-   "theirs": "06:45",
-   "ours": "06:43",
-   "diff": -2
-  },
-  {
-   "place": "تاوريرت",
-   "date": "2026-10-17",
-   "prayer": "Sunrise",
-   "theirs": "06:12",
-   "ours": "06:14",
-   "diff": 2
+   "prayer": "Maghrib",
+   "theirs": "18:11",
+   "ours": "18:12",
+   "diff": 1
   },
   {
    "place": "زاوية أحنصال",
    "date": "2026-10-17",
    "prayer": "Sunrise",
    "theirs": "06:20",
-   "ours": "06:22",
-   "diff": 2
+   "ours": "06:21",
+   "diff": 1
   },
   {
-   "place": "دمنات",
+   "place": "أزيلال",
    "date": "2026-10-17",
-   "prayer": "Sunrise",
-   "theirs": "06:25",
-   "ours": "06:27",
-   "diff": 2
+   "prayer": "Maghrib",
+   "theirs": "17:59",
+   "ours": "18:00",
+   "diff": 1
   },
   {
-   "place": "بولمان",
+   "place": "تاهلة",
+   "date": "2026-10-17",
+   "prayer": "Asr",
+   "theirs": "15:15",
+   "ours": "15:14",
+   "diff": -1
+  },
+  {
+   "place": "كتامة",
+   "date": "2026-10-17",
+   "prayer": "Asr",
+   "theirs": "15:15",
+   "ours": "15:14",
+   "diff": -1
+  },
+  {
+   "place": "آزرو",
+   "date": "2026-10-17",
+   "prayer": "Maghrib",
+   "theirs": "17:52",
+   "ours": "17:53",
+   "diff": 1
+  },
+  {
+   "place": "الرشيدية",
    "date": "2026-10-17",
    "prayer": "Sunrise",
    "theirs": "06:16",
-   "ours": "06:18",
-   "diff": 2
+   "ours": "06:17",
+   "diff": 1
   },
   {
-   "place": "الوليدية",
-   "date": "2026-10-17",
-   "prayer": "Sunrise",
-   "theirs": "06:39",
-   "ours": "06:37",
-   "diff": -2
-  },
-  {
-   "place": "أكدز",
-   "date": "2026-10-17",
-   "prayer": "Sunrise",
-   "theirs": "06:22",
-   "ours": "06:24",
-   "diff": 2
-  },
-  {
-   "place": "تازارين",
+   "place": "ميدلت",
    "date": "2026-10-17",
    "prayer": "Maghrib",
-   "theirs": "17:54",
+   "theirs": "17:51",
+   "ours": "17:52",
+   "diff": 1
+  },
+  {
+   "place": "بومالن دادس",
+   "date": "2026-10-17",
+   "prayer": "Maghrib",
+   "theirs": "17:57",
+   "ours": "17:58",
+   "diff": 1
+  },
+  {
+   "place": "أسول",
+   "date": "2026-10-17",
+   "prayer": "Maghrib",
+   "theirs": "17:55",
    "ours": "17:56",
-   "diff": 2
+   "diff": 1
   },
   {
-   "place": "تطوان",
-   "date": "2026-10-18",
+   "place": "طرفاية",
+   "date": "2026-10-17",
    "prayer": "Sunrise",
-   "theirs": "06:25",
-   "ours": "06:27",
-   "diff": 2
+   "theirs": "06:50",
+   "ours": "06:51",
+   "diff": 1
   },
   {
-   "place": "زاوية أحنصال",
+   "place": "الخميسات",
    "date": "2026-10-18",
-   "prayer": "Sunrise",
-   "theirs": "06:21",
-   "ours": "06:23",
-   "diff": 2
+   "prayer": "Asr",
+   "theirs": "15:21",
+   "ours": "15:20",
+   "diff": -1
+  },
+  {
+   "place": "بومالن دادس",
+   "date": "2026-10-18",
+   "prayer": "Maghrib",
+   "theirs": "17:56",
+   "ours": "17:57",
+   "diff": 1
+  },
+  {
+   "place": "النيف",
+   "date": "2026-10-18",
+   "prayer": "Asr",
+   "theirs": "15:20",
+   "ours": "15:19",
+   "diff": -1
+  },
+  {
+   "place": "إيمنتانوت",
+   "date": "2026-10-18",
+   "prayer": "Isha",
+   "theirs": "19:16",
+   "ours": "19:17",
+   "diff": 1
+  },
+  {
+   "place": "بوعرفة",
+   "date": "2026-10-19",
+   "prayer": "Asr",
+   "theirs": "15:05",
+   "ours": "15:04",
+   "diff": -1
+  },
+  {
+   "place": "دريوش",
+   "date": "2026-10-19",
+   "prayer": "Dhuhr",
+   "theirs": "12:03",
+   "ours": "12:04",
+   "diff": 1
   }
  ]
 }
