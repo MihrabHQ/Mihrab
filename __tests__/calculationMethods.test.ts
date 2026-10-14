@@ -218,19 +218,15 @@ describe('a Moroccan user has a method to pick', () => {
 const ALADHAN_2026_10 = [
   { id: 16, city: 'Dubai', latitude: 25.2048, longitude: 55.2708, timeZone: 'Asia/Dubai',
     times: { Fajr: '04:39', Sunrise: '05:59', Dhuhr: '12:23', Asr: '15:49', Maghrib: '18:43', Isha: '20:00' } },
-  { id: 17, city: 'Kuala Lumpur', latitude: 3.139, longitude: 101.6869, timeZone: 'Asia/Kuala_Lumpur',
-    times: { Fajr: '05:51', Sunrise: '07:09', Dhuhr: '13:14', Asr: '16:24', Maghrib: '19:19', Isha: '20:29' } },
   { id: 18, city: 'Tunis', latitude: 36.8065, longitude: 10.1815, timeZone: 'Africa/Tunis',
     times: { Fajr: '04:18', Sunrise: '05:49', Dhuhr: '12:20', Asr: '16:00', Maghrib: '18:51', Isha: '20:22' } },
-  { id: 20, city: 'Jakarta', latitude: -6.2088, longitude: 106.8456, timeZone: 'Asia/Jakarta',
-    times: { Fajr: '04:36', Sunrise: '05:54', Dhuhr: '11:53', Asr: '15:12', Maghrib: '17:53', Isha: '19:03' } },
   { id: 22, city: 'Lisbon', latitude: 38.7223, longitude: -9.1393, timeZone: 'Europe/Lisbon',
     times: { Fajr: '05:30', Sunrise: '07:04', Dhuhr: '13:42', Asr: '17:18', Maghrib: '20:13', Isha: '21:30' } },
   { id: 23, city: 'Amman', latitude: 31.9461, longitude: 35.9238, timeZone: 'Asia/Amman',
     times: { Fajr: '04:45', Sunrise: '06:10', Dhuhr: '12:37', Asr: '16:13', Maghrib: '19:08', Isha: '20:28' } },
 ] as const;
 
-describe('the six national conventions added in 2.32 agree with AlAdhan', () => {
+describe('the national conventions added in 2.32 agree with AlAdhan (Malaysia and Indonesia are checked against their authorities below)', () => {
   it.each(ALADHAN_2026_10.map(c => [c.id, c.city, c] as const))('method %i (%s)', (_id, _city, fixture) => {
     const got = computeLocalAdhanTimes({
       latitude: fixture.latitude,
@@ -281,6 +277,95 @@ describe('Umm al-Qura holds Isha two hours after Maghrib in Ramadan', () => {
   });
   it('the rest of the year: 90', () => {
     expect(read(new Date(2026, 2, 25))).toBe('18:33 20:03');
+  });
+});
+
+describe('Malaysia is checked against JAKIM, not against AlAdhan', () => {
+  /**
+   * JAKIM's tables for every zone and the whole year are in the
+   * repository (the 'jakim' dataset). AlAdhan's 20° Fajr is ten minutes
+   * before them; the department's own is 18° with a margin.
+   */
+  const fs = require('fs');
+  const path = require('path');
+  const { JAKIM_ZONES } = require('../tools/national-tables/jakim-zones');
+  const DIR = path.join(__dirname, '..', 'data', 'prayer-times', 'malaysia', 'v1', 'cities');
+  const wall = (date: Date, hhmm: string) => {
+    const [h, m] = hhmm.split(':').map(Number);
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate(), h, m).toLocaleTimeString('en-GB', { timeZone: 'Asia/Kuala_Lumpur', hour: '2-digit', minute: '2-digit', hour12: false });
+  };
+
+  it('lands within a minute of the zone’s table nine times in ten, and never more than a few off', () => {
+    if (!fs.existsSync(DIR)) return; // not built in this checkout
+    let total = 0;
+    let close = 0;
+    JAKIM_ZONES.forEach((z: { towns: [string, number, number][] }, i: number) => {
+      const file = path.join(DIR, `${i + 1}.json`);
+      if (!fs.existsSync(file)) return;
+      const [, latitude, longitude] = z.towns[0];
+      const days = JSON.parse(fs.readFileSync(file, 'utf8')).days as Record<string, string[]>;
+      for (const [date, row] of Object.entries(days)) {
+        const [y, m, d] = date.split('-').map(Number);
+        const day = new Date(y, m - 1, d);
+        if (new Date(y, m - 1, d + 1).getTime() - day.getTime() !== 86_400_000) continue;
+        const got = computeLocalAdhanTimes({ latitude, longitude, date: day, calculationMethod: 17, school: 0 }).timings;
+        const mine = [got.Fajr, got.Sunrise, got.Dhuhr, got.Asr, got.Maghrib, got.Isha].map(t => minutes(wall(day, t)));
+        row.slice(1).forEach((theirs, k) => {
+          const diff = Math.abs(minutes(theirs) - mine[k]);
+          expect(diff).toBeLessThanOrEqual(8);
+          total++;
+          if (diff <= 1) close++;
+        });
+      }
+    });
+    expect(total).toBeGreaterThan(20000);
+    expect(close / total).toBeGreaterThan(0.88);
+  });
+});
+
+describe('Indonesia is checked against the ministry, not against AlAdhan', () => {
+  /**
+   * Kemenag adds a safety margin (ihtiyat) to every time and rounds up;
+   * AlAdhan's id 20 has the angles alone and runs two to three minutes
+   * early. Four cities across the archipelago, four months of 2026, from
+   * the ministry's own tables (bimasislam.kemenag.go.id, as mirrored by
+   * api.myquran.com, which keeps its ids and names).
+   */
+  const TABLES = require('./fixtures/kemenag/four-cities-2026.json') as Record<string, Record<string, string[]>>;
+  const CITIES: Record<string, [number, number, string]> = {
+    'KOTA JAKARTA': [-6.2088, 106.8456, 'Asia/Jakarta'],
+    'KOTA MEDAN': [3.5952, 98.6722, 'Asia/Jakarta'],
+    'KOTA MAKASSAR': [-5.1477, 119.4327, 'Asia/Makassar'],
+    'KOTA JAYAPURA': [-2.5337, 140.7181, 'Asia/Jayapura'],
+  };
+  const wall = (date: Date, hhmm: string, tz: string) => {
+    const [h, m] = hhmm.split(':').map(Number);
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate(), h, m).toLocaleTimeString('en-GB', { timeZone: tz, hour: '2-digit', minute: '2-digit', hour12: false });
+  };
+
+  it('lands on the ministry’s minute nine times in ten, and never more than a minute off', () => {
+    let total = 0;
+    let exact = 0;
+    for (const [city, days] of Object.entries(TABLES)) {
+      const [latitude, longitude, tz] = CITIES[city];
+      for (const [date, row] of Object.entries(days)) {
+        const [y, m, d] = date.split('-').map(Number);
+        const day = new Date(y, m - 1, d);
+        // The box's own clock change makes its wall clock ambiguous for an
+        // hour that day; the ministry's table is in Indonesia, which has none.
+        if (new Date(y, m - 1, d + 1).getTime() - day.getTime() !== 86_400_000) continue;
+        const got = computeLocalAdhanTimes({ latitude, longitude, date: day, calculationMethod: 20, school: 0 }).timings;
+        const mine = [got.Fajr, got.Sunrise, got.Dhuhr, got.Asr, got.Maghrib, got.Isha].map(t => minutes(wall(day, t, tz)));
+        row.forEach((theirs, i) => {
+          const diff = Math.abs(minutes(theirs) - mine[i]);
+          expect(`${city} ${date} #${i} off by ${diff}`).toMatch(/off by [01]$/);
+          total++;
+          if (diff === 0) exact++;
+        });
+      }
+    }
+    expect(total).toBeGreaterThan(2000);
+    expect(exact / total).toBeGreaterThan(0.9);
   });
 });
 

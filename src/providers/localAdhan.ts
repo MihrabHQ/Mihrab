@@ -144,14 +144,33 @@ function parametersForMethod(methodId: number): CalculationParameters {
       // AlAdhan's id 16, read against its Gulf method on two dates.
       return angles(18.2, 18.2, { dhuhr: 3, maghrib: 3 });
     case 17:
-      // Jabatan Kemajuan Islam Malaysia (JAKIM): 20° / 18°.
-      return angles(20, 18);
+      // Jabatan Kemajuan Islam Malaysia (JAKIM). AlAdhan's id 17 is
+      // 20° / 18°, but JAKIM's own e-Solat tables — all 59 zones, the
+      // whole of 2026 (data/prayer-times/malaysia) — sit ten minutes
+      // after a 20° Fajr and a minute and a half after an 18° one: the
+      // department publishes Subuh at 18°, with a small margin on every
+      // time, Dhuhr's a little larger. Fitted so that nine times in ten
+      // land within a minute of the zone's table; the rest of the spread
+      // is the zone's own reference point against the town matched to.
+      // Where the table is available the app serves that (the 'jakim'
+      // provider); this is the method it falls back to past 31 December.
+      return angles(18, 18, { fajr: 1.5, sunrise: -0.5, dhuhr: 2.4, asr: 1.5, maghrib: 1.5, isha: 1.3 });
     case 18:
       // Tunisia: 18° / 18°.
       return angles(18, 18);
     case 20:
-      // Kementerian Agama Republik Indonesia: 20° / 18°.
-      return angles(20, 18);
+      // Kementerian Agama Republik Indonesia: 20° / 18°, plus the
+      // ministry's ihtiyat — a safety margin on every time, rounded up:
+      // two minutes on Fajr, Asr and Isha, three on Dhuhr and Maghrib,
+      // and sunrise three minutes early. Read from the ministry's own
+      // tables for Jakarta, Medan, Makassar and Jayapura over four months
+      // of 2026 (__tests__/fixtures/kemenag): with these, 91–97 % of the
+      // times land on the ministry's minute and the rest a minute off.
+      // AlAdhan's id 20 has the angles alone, so it runs two to three
+      // minutes early; where the ministry's table is available the app
+      // serves that (the 'kemenag' provider), and this is the method it
+      // falls back to past the published window.
+      return angles(20, 18, { fajr: 2.5, sunrise: -3.1, dhuhr: 3.5, asr: 2.5, maghrib: 3.2, isha: 2.5 });
     case 22: {
       // Comunidade Islâmica de Lisboa: Fajr 18°, Dhuhr held five minutes
       // and Maghrib three, Isha a fixed 77 minutes after Maghrib — which
