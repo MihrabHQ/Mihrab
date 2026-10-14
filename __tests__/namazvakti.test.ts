@@ -20,9 +20,7 @@ jest.mock('../src/providers/aladhan', () => ({
   }),
 }));
 
-// eslint-disable-next-line import/first
 import { fetchWithRetry } from '../src/utils/fetchWithRetry';
-// eslint-disable-next-line import/first
 import {
   clockOf,
   nearestNvCity,
@@ -31,7 +29,6 @@ import {
   parseNamazvaktiXml,
   timingsFromRow,
 } from '../src/providers/namazvaktiParser';
-// eslint-disable-next-line import/first
 import {
   _resetNamazvaktiForTests,
   namazvaktiCoverage,
@@ -41,11 +38,8 @@ import {
   getNamazvaktiTimes,
   temkinMinutes,
 } from '../src/providers/namazvakti';
-// eslint-disable-next-line import/first
 import { fetchPrayerTimesUnified } from '../src/providers/fetchPrayerTimes';
-// eslint-disable-next-line import/first
 import { validateTimings } from '../src/providers/validateTimings';
-// eslint-disable-next-line import/first
 import {
   parseCityInfo,
   parseCityList,
@@ -53,9 +47,7 @@ import {
   parseStateList,
   tileKey,
 } from '../tools/namazvakti-dataset/parse';
-// eslint-disable-next-line import/first
 import { providerHidesCalculationMethod, providerHidesHanafiAsr } from '../src/settings/providerUi';
-// eslint-disable-next-line import/first
 import { MAINSTREAM_PRAYER_PROVIDERS } from '../src/settings/providersCatalog';
 
 const FIX = path.join(__dirname, 'fixtures/namazvakti');

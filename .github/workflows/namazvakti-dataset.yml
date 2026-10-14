@@ -5,7 +5,7 @@ name: namazvakti.com city index
 # phone fetches its own city's year from the site — but every city's
 # coordinates, in 5° tiles under data/prayer-times/namazvakti/v1.
 #
-# The first pass is ~100,000 polite requests, so it runs DAILY and carries
+# The first pass is ~120,000 polite requests, so it runs DAILY and carries
 # on where the last run stopped; once the index is complete a run is the
 # monthly re-read of the lists and the few new cities in them. Emails on
 # failure (the site down, the lists changed shape, or the push failing).

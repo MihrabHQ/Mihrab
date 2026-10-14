@@ -1,12 +1,13 @@
 /**
  * namazvakti.com — the Türkiye Takvimi calendar's times, for any of the
- * hundred thousand places the site publishes.
+ * some 120,000 places the site lists.
  *
  * ── WHAT IT IS ────────────────────────────────────────────────────────
  *
  * The more cautious Turkish calendar: Fajr at 19°, Isha at 17°, and a
- * temkin — a margin of about ten minutes, set per city from its latitude
- * and highest point — taken off the morning times and added to the rest.
+ * temkin — a margin of eight minutes at Cairo to twenty at Stockholm, set
+ * per city from its latitude and height — taken off the morning times and
+ * added to the rest. North of about 62° the site publishes no times.
  * Turkey's directorate used it until 1983, and the calendar many Turkish
  * communities hang on the wall still does. The Diyanet method this app
  * already has (method 13) is what replaced it.
@@ -24,7 +25,7 @@
  *      — one file, about 55 kB, once a year — and keeps it. The site is
  *      told a city, never coordinates.
  *   3. OFFLINE / OUT OF REACH. With no file for the day — no network yet,
- *      past the year the site serves, a place no published city is near —
+ *      past the year the site serves, a place no city with times is near —
  *      the calendar's method is computed on the phone (19° / 17° and the
  *      temkin), within a minute or two of the site.
  *
