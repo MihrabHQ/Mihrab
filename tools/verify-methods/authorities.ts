@@ -80,12 +80,16 @@ export const AUTHORITIES: Authority[] = [
     id: 'ifis',
     name: 'Sweden — Islamiska Förbundet',
     folder: '.', // data/prayer-times/v1 itself — the first table, before the folders
-    method: 'auto',
+    method: 24,
     school: 0,
     toleranceMin: 1,
-    maxOutsideShare: 0.02,
-    hardMaxMin: 10,
-    alarm: false, // no fitted method yet — the report shows how far the fallback is
+    // The tables' summer is a share of the night with a blend to the angles
+    // and a floor on the night, all read off the tables rather than
+    // published (localAdhan.ts); the blend's edges are a few minutes
+    // either way for a fortnight in April and in September.
+    maxOutsideShare: 0.15,
+    hardMaxMin: 15,
+    alarm: true,
     places: () => {
       const coords = readJson<Record<string, { lat: number; lng: number }>>(
         path.join(ROOT, 'src/providers/islamiskaForbundetCoords.json'),

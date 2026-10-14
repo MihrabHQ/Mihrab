@@ -11,6 +11,11 @@ import { computeLocalAdhanTimes } from './localAdhan';
 import { autoMethodForCoords } from './autoMethod';
 import { ALGERIA_METHOD_ID } from './algeriaCities';
 import { nearestMoroccoCity } from './moroccoNearest';
+import { SWEDEN_METHOD_ID } from './swedenMethodId';
+import {
+  getNearestIslamiskaForbundetCityWithDistance,
+  islamiskaForbundetCityCoords,
+} from './islamiskaForbundetNearest';
 import { isCoordinateInAlgeria } from '../utils/algeriaRegion';
 import { computeImsak, DEFAULT_IMSAK_OFFSET_MINUTES } from './imsak';
 import { validateTimings, validateTimingShape } from './validateTimings';
@@ -19,24 +24,52 @@ import {
   recordProviderResult,
 } from './providerHealth';
 
+/**
+ * Islamiska Förbundet's convention on the phone, for the listed city
+ * nearest the reader (the tables are per city) or, beyond the dataset's
+ * reach, for the reader's own spot.
+ */
+function swedenOnDevice(p: UnifiedFetchParams): PrayerTimesResult {
+  const near = getNearestIslamiskaForbundetCityWithDistance(p.latitude, p.longitude);
+  const city = near.distanceKm <= IFIS_STAND_IN_KM ? islamiskaForbundetCityCoords(near.city) : undefined;
+  const local: PrayerTimesResult = {
+    ...computeLocalAdhanTimes({
+      latitude: city?.lat ?? p.latitude,
+      longitude: city?.lng ?? p.longitude,
+      date: p.date,
+      calculationMethod: SWEDEN_METHOD_ID,
+      school: p.school,
+    }),
+    timezone: 'Europe/Stockholm',
+    source: 'local',
+  };
+  validateTimingShape(local.timings);
+  return local;
+}
+/** Within this of a listed Swedish city, its table's convention stands in at the city. */
+const IFIS_STAND_IN_KM = 250;
+
 /** Within this of a listed Moroccan city, the ministry's method stands in for its table. */
 const HABOUS_STAND_IN_KM = 200;
 const MOROCCO_METHOD_ID = 21;
 
 /**
- * The Algeria METHOD is computed on the device, not asked of AlAdhan:
- * AlAdhan's own "Algeria" method is the Ministry's angles without its
- * Maghrib margin, so it is three minutes early on Maghrib. (The Ministry's
- * published TABLE is the 'marw' provider; this is the method a user picks
- * by hand elsewhere, and the fallback past the table.) Returns null when
- * the method that applies is not Algeria's.
+ * Methods computed on the device whatever the provider: Algeria's, since
+ * AlAdhan's own "Algeria" is the Ministry's angles without its Maghrib
+ * margin (three minutes early) and its Asr without the Ministry's shadow;
+ * and Sweden's, Islamiska Förbundet's convention, which AlAdhan has no id
+ * for at all. (Each authority's published TABLE is its own provider —
+ * 'marw', 'islamiska_forbundet'; this is the method a user picks by hand
+ * elsewhere, and the fallback past the table.) Returns null when the
+ * method that applies is another.
  */
-function algeriaOnDevice(p: UnifiedFetchParams): PrayerTimesResult | null {
+const ON_DEVICE_METHODS: ReadonlySet<number> = new Set([ALGERIA_METHOD_ID, SWEDEN_METHOD_ID]);
+function onDeviceMethod(p: UnifiedFetchParams): PrayerTimesResult | null {
   const method =
     p.calculationMethod === 'auto'
       ? autoMethodForCoords(p.latitude, p.longitude)
       : p.calculationMethod;
-  if (method !== ALGERIA_METHOD_ID) return null;
+  if (!ON_DEVICE_METHODS.has(method)) return null;
   const local: PrayerTimesResult = {
     ...computeLocalAdhanTimes({
       latitude: p.latitude,
@@ -57,8 +90,8 @@ export async function fetchPrayerTimesUnified(
   let result: PrayerTimesResult;
   switch (p.provider) {
     case 'aladhan': {
-      const algeria = algeriaOnDevice(p);
-      if (algeria) return algeria;
+      const onDevice = onDeviceMethod(p);
+      if (onDevice) return onDevice;
       result = await fetchAladhanTimes({
         latitude: p.latitude,
         longitude: p.longitude,
@@ -93,21 +126,16 @@ export async function fetchPrayerTimesUnified(
         /* dataset miss — try the live sources below */
       }
       // The Swedish scraper origin regularly times out. After 3
-      // consecutive failures it enters a 12 h cooldown during which we
-      // silently serve AlAdhan for the same coordinates instead of
-      // hammering (and warn-spamming about) a dead origin. Cached days
-      // remain authoritative either way (see prayerStorage). The live
-      // scrape now acts as a FALLBACK rung behind the dataset above.
+      // consecutive failures it enters a 12 h cooldown during which the
+      // day is computed on the phone instead of hammering (and
+      // warn-spamming about) a dead origin — with Islamiska Förbundet's
+      // own convention (method 24, read off its tables), for the nearest
+      // listed city, so the stand-in is the table's own minute or near
+      // it. Cached days remain authoritative either way (see
+      // prayerStorage). The live scrape acts as a FALLBACK rung behind
+      // the dataset above.
       if (await isProviderCoolingDown('islamiska_forbundet')) {
-        result = await fetchAladhanTimes({
-          latitude: p.latitude,
-          longitude: p.longitude,
-          date: p.date,
-          method: p.calculationMethod,
-          school: p.school,
-        });
-        result.source = 'aladhan';
-        break;
+        return swedenOnDevice(p);
       }
       try {
         result = await fetchIslamiskaForbundetTimes({
@@ -119,21 +147,13 @@ export async function fetchPrayerTimesUnified(
         void recordProviderResult('islamiska_forbundet', true);
       } catch (e) {
         void recordProviderResult('islamiska_forbundet', false);
-        // Same-request failover (v2.7.30): don't make the caller wait
-        // for 3 failed sessions before the cooldown kicks in — serve
-        // AlAdhan for THIS request too. Only if the fallback also
-        // fails does the original scraper error propagate (so the
-        // caller's local-adhan last resort still applies).
+        // Same-request failover: don't make the caller wait for 3 failed
+        // sessions before the cooldown kicks in — compute THIS request
+        // too. (Until October 2026 this asked AlAdhan, whose nearest
+        // method is the Muslim World League's: an hour apart from the
+        // tables on a midsummer night.)
         try {
-          result = await fetchAladhanTimes({
-            latitude: p.latitude,
-            longitude: p.longitude,
-            date: p.date,
-            method: p.calculationMethod,
-            school: p.school,
-          });
-          result.source = 'aladhan';
-          break;
+          return swedenOnDevice(p);
         } catch {
           throw e;
         }

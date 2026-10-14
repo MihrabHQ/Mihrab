@@ -74,13 +74,13 @@ describe('verify-methods', () => {
     expect(other.accepted).toBe(0);
   });
 
-  it('reports only, without a fitted method', () => {
+  it('finds Sweden within its tolerance, the far north included', () => {
     if (!haveTable('ifis')) return;
-    const r = verifyAuthority(byId('ifis'), []);
-    expect(r.method).toBe('auto');
+    const accepted = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'tools', 'verify-methods', 'accepted.json'), 'utf8')) as Accepted[];
+    const r = verifyAuthority(byId('ifis'), accepted);
+    expect(r.method).toBe(24);
+    expect(r.within / r.times).toBeGreaterThan(0.85);
     expect(r.alarm).toBe(false);
-    expect(r.misplaced).toHaveLength(0);
-    expect(describeReport(r)).toMatch(/none fitted yet/);
   });
 
   it('knows which clock each Indonesian province keeps', () => {

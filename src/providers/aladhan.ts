@@ -11,6 +11,7 @@ import {
   CUSTOM_METHOD_ID,
   getCalculationPreferences,
 } from '../prayer/calculationPreferences';
+import { SWEDEN_METHOD_ID } from './swedenMethodId';
 
 const PROVIDER = 'aladhan';
 const BASE = 'https://api.aladhan.com/v1';
@@ -65,6 +66,11 @@ export async function fetchAladhanTimes(params: {
     // (null = sunset), Isha angle.
     query.append('method', String(CUSTOM_METHOD_ID));
     query.append('methodSettings', `${prefs.customFajrAngle},null,${prefs.customIshaAngle}`);
+  } else if (params.method === SWEDEN_METHOD_ID) {
+    // The app's own id, which AlAdhan has not; asked anyway (a caller
+    // that could not compute it), the nearest AlAdhan has for Sweden is
+    // the Muslim World League's angles.
+    query.append('method', '3');
   } else if (params.method !== 'auto' && params.method !== undefined) {
     query.append('method', String(params.method));
   } else {

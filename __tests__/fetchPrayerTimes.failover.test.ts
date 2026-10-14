@@ -1,10 +1,14 @@
 /**
- * Same-request AlAdhan failover for the Swedish scraper (v2.7.30).
+ * Same-request failover for the Swedish scraper (v2.7.30; the stand-in
+ * changed October 2026).
  *
  * Before, an islamiska_forbundet failure threw all the way up and the
  * caller fell back to on-device adhan — for THREE separate sessions —
- * until the cooldown finally routed to AlAdhan. Now the very request
- * that observed the failure retries against AlAdhan directly.
+ * until the cooldown finally routed elsewhere. Now the very request that
+ * observed the failure is computed on the phone with Islamiska
+ * Förbundet's own convention (method 24, read off its tables), for the
+ * nearest listed city. AlAdhan is no longer asked: its nearest method is
+ * the Muslim World League's, an hour from the tables on a midsummer night.
  */
 import { fetchPrayerTimesUnified } from '../src/providers/fetchPrayerTimes';
 import { __resetProviderHealthForTests } from '../src/providers/providerHealth';
@@ -16,6 +20,7 @@ jest.mock('../src/providers/islamiskaForbundet', () => ({
 jest.mock('../src/providers/aladhan', () => ({
   fetchAladhanTimes: jest.fn(),
 }));
+jest.unmock('adhan');
 // This suite exercises the LIVE scraper → AlAdhan failover, so force the
 // prepared-dataset rung (tried first) to miss and fall through.
 jest.mock('../src/providers/islamiskaForbundetDataset', () => ({
@@ -55,29 +60,19 @@ describe('islamiska_forbundet same-request failover', () => {
     jest.clearAllMocks();
   });
 
-  it('serves AlAdhan in the SAME call when the scraper fails', async () => {
+  it('computes Islamiska Förbundet’s convention in the SAME call when the scraper fails', async () => {
     (fetchIslamiskaForbundetTimes as jest.Mock).mockRejectedValue(
       new ProviderError('islamiska_forbundet', 'timeout', 'origin down'),
     );
-    (fetchAladhanTimes as jest.Mock).mockResolvedValue(GOOD);
 
     const res = await fetchPrayerTimesUnified(PARAMS);
-    expect(res.timings.Fajr).toBe('02:20');
-    expect(fetchAladhanTimes).toHaveBeenCalledTimes(1);
-  });
-
-  it('propagates the ORIGINAL scraper error when AlAdhan also fails', async () => {
-    const original = new ProviderError(
-      'islamiska_forbundet',
-      'timeout',
-      'origin down',
-    );
-    (fetchIslamiskaForbundetTimes as jest.Mock).mockRejectedValue(original);
-    (fetchAladhanTimes as jest.Mock).mockRejectedValue(
-      new Error('aladhan down too'),
-    );
-
-    await expect(fetchPrayerTimesUnified(PARAMS)).rejects.toBe(original);
+    expect(res.source).toBe('local');
+    expect(res.timezone).toBe('Europe/Stockholm');
+    expect(fetchAladhanTimes).not.toHaveBeenCalled();
+    // 6 July at Stockholm: the table's night share, not an 18° that the
+    // sun never reaches — Fajr a little after two, Isha a little after eleven.
+    expect(res.timings.Fajr >= '02:10' && res.timings.Fajr <= '02:30').toBe(true);
+    expect(res.timings.Isha >= '23:00' && res.timings.Isha <= '23:15').toBe(true);
   });
 
   it('still uses the scraper result when it succeeds', async () => {

@@ -103,5 +103,13 @@ three other things, each now in the data:
 - **Türkiye Takvimi** (namazvakti.com) is fetched per city by the phone,
   not mirrored; its method is fitted and checked in
   `tools/namazvakti-dataset/model-fit.ts` and `__tests__/namazvakti.test.ts`.
-- **Sweden** has no fitted method yet (`method: 'auto'`, report only):
-  Islamiska Förbundet's summer rule is still to be worked out.
+- **Türkiye Takvimi's** and **Sweden's** methods were both read off the
+  tables rather than published. Sweden's (method 24, `swedenTimes` in
+  `localAdhan.ts`): 18°/16° in winter; in summer a share of the night,
+  0.218 before sunrise and 0.195 after sunset, blending to the angles by
+  the midnight sun's depth; sunrise −7, Maghrib +7, Dhuhr +5, Asr +4; the
+  sun's position taken at the start of the day; and both the day and the
+  night floored at five hours about the printed Dhuhr or the midnight
+  twelve hours from it — which is the whole of the far north's summer and
+  winter. `by-month.ts` shows a place's residuals month by month; the
+  blend's edges in April and September are the few minutes left.

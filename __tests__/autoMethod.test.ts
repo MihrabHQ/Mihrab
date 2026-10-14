@@ -24,7 +24,8 @@ describe('autoMethodForCoords', () => {
   });
 
   test('everywhere else stays on the global default', () => {
-    expect(autoMethodForCoords(59.33, 18.07)).toBe(DEFAULT_AUTO_METHOD); // Stockholm
+    expect(autoMethodForCoords(59.33, 18.07)).toBe(24); // Stockholm — Islamiska Förbundet's own (October 2026)
+    expect(autoMethodForCoords(55.68, 12.57)).toBe(DEFAULT_AUTO_METHOD); // Copenhagen
     expect(autoMethodForCoords(21.4225, 39.8262)).toBe(DEFAULT_AUTO_METHOD); // Makkah
     expect(autoMethodForCoords(36.8065, 10.1815)).toBe(DEFAULT_AUTO_METHOD); // Tunis (Algiers is Algeria's own, #70)
     expect(autoMethodForCoords(0, 0)).toBe(DEFAULT_AUTO_METHOD);
@@ -67,16 +68,16 @@ describe('the computation actually uses it', () => {
     expect(auto.timings).not.toEqual(mwl.timings);
   });
 
-  test('outside Morocco "auto" is still MWL', () => {
-    const STOCKHOLM = { latitude: 59.33, longitude: 18.07 };
+  test('outside the countries with a convention of their own, "auto" is still MWL', () => {
+    const COPENHAGEN = { latitude: 55.68, longitude: 12.57 };
     const auto = computeLocalAdhanTimes({
-      ...STOCKHOLM,
+      ...COPENHAGEN,
       date: DAY,
       calculationMethod: 'auto',
       school: 0,
     });
     const mwl = computeLocalAdhanTimes({
-      ...STOCKHOLM,
+      ...COPENHAGEN,
       date: DAY,
       calculationMethod: 3,
       school: 0,

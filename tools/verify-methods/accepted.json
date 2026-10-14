@@ -37,5 +37,23 @@
     "authority": "kemenag",
     "place": "KAB. KEPULAUAN SELAYAR (Sulawesi Selatan)",
     "note": "Selayar's table is two minutes narrower at sunrise and Maghrib at every date; an allowance of the ministry's own. Served as published."
+  },
+  {
+    "authority": "ifis",
+    "place": "Kiruna",
+    "note": "Islamiska Förbundet prints Umeå's table for Kiruna (the same minutes, 68°N served as 64°N); served as published, and not the method's to match."
+  },
+  {
+    "authority": "ifis",
+    "place": "Ystad",
+    "note": "Ystad's table runs three minutes early in every prayer at every date — computed for a point some 0.75° east of the town. Served as published."
+  },
+  {
+    "authority": "ifis",
+    "prayer": "Asr",
+    "from": "2026-12-01",
+    "to": "2027-01-15",
+    "maxAbs": 140,
+    "note": "The polar night's Asr (Gällivare, Jokkmokk, Pajala): with the sun never climbing to the shadow the tables print Asr a little after Dhuhr, and on the days the sun first returns adhan.js's Asr is not yet sane. A few rows a year, in three towns."
   }
 ]

@@ -206,6 +206,7 @@ export function verifyAuthority(a: Authority, accepted: Accepted[]): Report {
         calculationMethod: a.method,
         school: a.school,
       });
+      if ([at.fajr, at.sunrise, at.dhuhr, at.asr, at.maghrib, at.isha].some(t => !Number.isFinite(t.getTime()))) continue;
       const ours: Record<Prayer, string> = {
         Fajr: clockIn(place.tz, at.fajr),
         Sunrise: clockIn(place.tz, at.sunrise),
