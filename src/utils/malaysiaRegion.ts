@@ -31,9 +31,9 @@ export function isCoordinateInMalaysia(latitude: number, longitude: number): boo
   if (inside(BRUNEI, latitude, longitude)) return false;
   const near = jakimTable.nearest(latitude, longitude);
   if (!near || near.distanceKm > REACH_KM) return false;
-  if (inside(BORNEO, latitude, longitude)) {
-    const indonesian = kemenagTable.nearest(latitude, longitude);
-    if (indonesian && indonesian.distanceKm < near.distanceKm) return false;
-  }
+  // Nearer to a JAKIM town than to any Indonesian regency — on Borneo and
+  // across the Strait of Malacca alike.
+  const indonesian = kemenagTable.nearest(latitude, longitude);
+  if (indonesian && indonesian.distanceKm < near.distanceKm) return false;
   return true;
 }

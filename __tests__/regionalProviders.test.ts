@@ -19,6 +19,56 @@ const STOCKHOLM = { latitude: 59.3293, longitude: 18.0686 };
 const CASABLANCA = { latitude: 33.5731, longitude: -7.5898 };
 const LONDON = { latitude: 51.5072, longitude: -0.1276 };
 
+/**
+ * Where each national table is recommended, and where it is not: the
+ * capitals and a few border towns, each with the source Automatic should
+ * pick there — or null for a place no table covers, where the global
+ * default answers. The neighbours matter most: a reader in Brunei, Dili,
+ * southern Thailand or Papua New Guinea must not be handed the table of
+ * the country next door.
+ */
+const PLACES: [string, number, number, string | null][] = [
+  ['Singapore', 1.3521, 103.8198, 'muis'],
+  ['Sentosa', 1.25, 103.83, 'muis'],
+  ['Johor Bahru, across the causeway', 1.4927, 103.7414, 'jakim'],
+  ['Kuala Lumpur', 3.139, 101.6869, 'jakim'],
+  ['Kota Kinabalu', 5.9804, 116.0735, 'jakim'],
+  ['Kuching', 1.5533, 110.3592, 'jakim'],
+  ['Langkawi', 6.35, 99.8, 'jakim'],
+  ['Tawau', 4.25, 117.89, 'jakim'],
+  ['Nunukan, twenty kilometres from Tawau', 4.13, 117.66, 'kemenag'],
+  ['Tarakan', 3.3, 117.63, 'kemenag'],
+  ['Jakarta', -6.2088, 106.8456, 'kemenag'],
+  ['Medan', 3.5952, 98.6722, 'kemenag'],
+  ['Batam, across the strait from Singapore', 1.1, 104.05, 'kemenag'],
+  ['Pontianak', -0.03, 109.33, 'kemenag'],
+  ['Jayapura', -2.53, 140.72, 'kemenag'],
+  ['Bandar Seri Begawan', 4.9031, 114.9398, null],
+  ['Dili', -8.556, 125.56, null],
+  ['Hat Yai', 7.0, 100.47, null],
+  ['Pattani', 6.87, 101.25, null],
+  ['Port Moresby', -9.44, 147.18, null],
+  ['Manila', 14.6, 120.98, null],
+  ['Darwin', -12.46, 130.84, null],
+  ['Stockholm', 59.3293, 18.0686, 'islamiska_forbundet'],
+  ['Casablanca', 33.5731, -7.5898, 'habous'],
+  ['Algiers', 36.75, 3.06, 'marw'],
+  ['London', 51.5072, -0.1276, null],
+];
+
+describe('each national table is recommended where it covers, and nowhere else', () => {
+  it.each(PLACES)('%s', (_name, latitude, longitude, want) => {
+    const coords = { latitude, longitude };
+    expect(regionalProviderForCoords(coords)).toBe(want);
+    // Automatic picks it there; pinned elsewhere, the pick is overridden.
+    expect(getEffectiveDataProvider(true, 'aladhan', coords)).toBe(want ?? 'aladhan');
+    for (const id of REGIONAL_PROVIDER_REGIONS.map(r => r.id)) {
+      expect(`${id} covers: ${regionalProviderCovers(id, coords)}`).toBe(`${id} covers: ${id === want}`);
+      expect(getEffectiveDataProvider(false, id, coords)).toBe(id === want ? id : 'aladhan');
+    }
+  });
+});
+
 describe('the table', () => {
   it('covers every country that has a published source', () => {
     expect(REGIONAL_PROVIDER_REGIONS.map(r => r.id).sort()).toEqual([
