@@ -32,18 +32,20 @@ async function get(url: string, until?: RegExp): Promise<string> {
     refs.push(...parseCityList(await get(`${ORIGIN}/CityList.php?countryID=${country.id}&state=${encodeURIComponent(s)}&WSLanguage=EN`)));
   }
   console.log(`${want}: ${states.length} states, ${refs.length} cities`);
-  const tiles = new Map<string, [number, number, number, string][]>();
+  type Row = [number, number, number, string] | [number, number, number, string, number];
+  const tiles = new Map<string, Row[]>();
   for (const ref of refs) {
     const info = parseCityInfo(await get(`${ORIGIN}/XML.php?cityID=${ref.id}`));
     if (!info || !Number.isFinite(info.lat)) continue;
     const key = tileKey(info.lat, info.lon);
-    tiles.set(key, [...(tiles.get(key) ?? []), [ref.id, info.lat, info.lon, ref.name]]);
+    const row: Row = info.height && info.height !== 250 ? [ref.id, info.lat, info.lon, ref.name, info.height] : [ref.id, info.lat, info.lon, ref.name];
+    tiles.set(key, [...(tiles.get(key) ?? []), row]);
   }
   fs.mkdirSync(DIR, { recursive: true });
   for (const [key, list] of tiles) {
     const file = path.join(DIR, `${key}.json`);
     const old = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')).cities : [];
-    const byId = new Map<number, [number, number, number, string]>(old.map((c: [number, number, number, string]) => [c[0], c]));
+    const byId = new Map<number, Row>(old.map((c: Row) => [c[0], c]));
     for (const c of list) byId.set(c[0], c);
     const cities = [...byId.values()].sort((a, b) => a[0] - b[0]);
     fs.writeFileSync(file, `${JSON.stringify({ v: 1, tile: key, cities })}\n`, 'utf8');

@@ -172,18 +172,19 @@ export function distanceKm(lat1: number, lon1: number, lat2: number, lon2: numbe
   return 2 * R * Math.asin(Math.sqrt(a));
 }
 
-export type NvCity = { id: number; lat: number; lon: number; name: string; distanceKm: number };
+/** A tile's row: [id, lat, lon, name], and the city's height in metres when it is not 250. */
+export type NvTileRow = readonly [number, number, number, string, number?];
 
-/** The nearest of the cities in some tiles' rows ([id, lat, lon, name]). */
-export function nearestNvCity(
-  lat: number,
-  lon: number,
-  rows: readonly (readonly [number, number, number, string])[],
-): NvCity | null {
+export type NvCity = { id: number; lat: number; lon: number; name: string; heightM: number; distanceKm: number };
+
+/** The nearest of the cities in some tiles' rows. */
+export function nearestNvCity(lat: number, lon: number, rows: readonly NvTileRow[]): NvCity | null {
   let best: NvCity | null = null;
-  for (const [id, cLat, cLon, name] of rows) {
+  for (const [id, cLat, cLon, name, height] of rows) {
     const d = distanceKm(lat, lon, cLat, cLon);
-    if (!best || d < best.distanceKm) best = { id, lat: cLat, lon: cLon, name, distanceKm: d };
+    if (!best || d < best.distanceKm) {
+      best = { id, lat: cLat, lon: cLon, name, heightM: height ?? 250, distanceKm: d };
+    }
   }
   return best;
 }

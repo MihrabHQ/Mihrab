@@ -468,7 +468,9 @@
     "silenceJumuahFixedHelp": "Banyak masjid mengadakan Jumat pada jam yang sama sepanjang tahun. Jika mati, jendela mengikuti Zuhur.",
     "silenceJumuahTime": "Waktu Jumat",
     "helpMihrab": "Bantu Mihrab",
-    "helpMihrabBlurb": "Beri nilai, ceritakan kepada orang lain, bagikan jadwal salat sebulan."
+    "helpMihrabBlurb": "Beri nilai, ceritakan kepada orang lain, bagikan jadwal salat sebulan.",
+    "calcHiddenNamazvakti": "Türkiye Takvimi punya metodenya sendiri (Subuh 19°, Isya 17°, dengan temkin), jadi daftar metode disembunyikan. Hanya pilihan Asar Hanafi yang berlaku.",
+    "calcHiddenPublished": "Sumber ini menerbitkan jadwalnya sendiri, jadi daftar metode disembunyikan."
   },
   "locationSetup": {
     "headline": "Tetapkan lokasi Anda",

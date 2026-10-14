@@ -468,7 +468,9 @@
     "silenceJumuahFixedHelp": "Birçok cami cumayı yıl boyunca aynı saatte kılar. Kapalıyken aralık öğleyi izler.",
     "silenceJumuahTime": "Cuma saati",
     "helpMihrab": "Mihrab'a destek ol",
-    "helpMihrabBlurb": "Değerlendir, başkalarına anlat, bir aylık namaz vakitlerini paylaş."
+    "helpMihrabBlurb": "Değerlendir, başkalarına anlat, bir aylık namaz vakitlerini paylaş.",
+    "calcHiddenNamazvakti": "Türkiye Takvimi kendi yöntemini kullanır (İmsak 19°, Yatsı 17°, temkinli), bu yüzden yöntem listesi gizlidir. Yalnızca Hanefi ikindi seçimi geçerlidir.",
+    "calcHiddenPublished": "Bu kaynak kendi vakit cetvelini yayımlar, bu yüzden yöntem listesi gizlidir."
   },
   "locationSetup": {
     "headline": "Konumunuzu ayarlayın",

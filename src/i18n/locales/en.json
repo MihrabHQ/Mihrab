@@ -468,7 +468,9 @@
     "silenceJumuahFixedHelp": "Many mosques hold Jumu'ah at the same time all year. Off, the window follows Dhuhr.",
     "silenceJumuahTime": "Jumu'ah time",
     "helpMihrab": "Help Mihrab",
-    "helpMihrabBlurb": "Rate it, tell people about it, share a month of prayer times."
+    "helpMihrabBlurb": "Rate it, tell people about it, share a month of prayer times.",
+    "calcHiddenNamazvakti": "Türkiye Takvimi has its own method (Fajr 19°, Isha 17°, with a temkin), so the method list is hidden. Only the Hanafi Asr choice applies.",
+    "calcHiddenPublished": "This source publishes its own timetable, so the method list is hidden."
   },
   "locationSetup": {
     "headline": "Set your location",

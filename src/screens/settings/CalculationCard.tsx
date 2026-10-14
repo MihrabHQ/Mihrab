@@ -203,7 +203,11 @@ function CalculationCardImpl({
           <Text style={[s.help, { color: palette.muted }]}>
             {effectiveProvider === 'islamiska_forbundet'
               ? t('settings.calcHiddenSweden')
-              : t('settings.calcHiddenPraytimes')}
+              : effectiveProvider === 'namazvakti'
+                ? t('settings.calcHiddenNamazvakti')
+                : effectiveProvider === 'prayertimes_dev'
+                  ? t('settings.calcHiddenPraytimes')
+                  : t('settings.calcHiddenPublished')}
           </Text>
         </SettingsBlock>
       ) : (

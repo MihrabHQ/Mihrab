@@ -5,7 +5,7 @@ import { fetchIslamiskaForbundetTimes } from './islamiskaForbundet';
 import { getIslamiskaForbundetDatasetTimes } from './islamiskaForbundetDataset';
 import { getHabousDatasetTimes } from './habousDataset';
 import { getMarwDatasetTimes } from './marwDataset';
-import { computeNamazvaktiMethodTimes, getNamazvaktiTimes } from './namazvakti';
+import { computeNamazvaktiMethodTimes, getNamazvaktiTimes, nearestNamazvaktiCity } from './namazvakti';
 import { computeLocalAdhanTimes } from './localAdhan';
 import { autoMethodForCoords } from './autoMethod';
 import { ALGERIA_METHOD_ID } from './algeriaCities';
@@ -218,11 +218,15 @@ export async function fetchPrayerTimesUnified(
       } catch {
         /* no published day — compute the method below */
       }
+      // The nearest listed city's height, if its tile is on the phone — it
+      // sets the temkin (Istanbul's 500 m is a minute more than 250 m).
+      const near = await nearestNamazvaktiCity(p.latitude, p.longitude, true).catch(() => null);
       const local = computeNamazvaktiMethodTimes({
         latitude: p.latitude,
         longitude: p.longitude,
         date: p.date,
         school: p.school,
+        heightM: near?.heightM,
       });
       validateTimingShape(local.timings);
       return local;

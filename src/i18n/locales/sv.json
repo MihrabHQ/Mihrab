@@ -468,7 +468,9 @@
     "silenceJumuahFixedHelp": "Många moskéer håller Jumu'ah på samma tid året runt. Av följer fönstret Dhuhr.",
     "silenceJumuahTime": "Tid för Jumu'ah",
     "helpMihrab": "Hjälp Mihrab",
-    "helpMihrabBlurb": "Betygsätt appen, berätta om den, dela en månads bönetider."
+    "helpMihrabBlurb": "Betygsätt appen, berätta om den, dela en månads bönetider.",
+    "calcHiddenNamazvakti": "Türkiye Takvimi har en egen metod (Fajr 19°, Isha 17°, med temkin), så metodlistan döljs. Bara valet av hanafitisk Asr gäller.",
+    "calcHiddenPublished": "Den här källan publicerar en egen tidtabell, så metodlistan döljs."
   },
   "locationSetup": {
     "headline": "Ange din plats",

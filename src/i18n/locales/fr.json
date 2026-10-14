@@ -469,7 +469,9 @@
     "silenceJumuahFixedHelp": "Beaucoup de mosquées tiennent la Joumou'a à la même heure toute l'année. Désactivé, la plage suit le Dhuhr.",
     "silenceJumuahTime": "Heure de la Joumou'a",
     "helpMihrab": "Aider Mihrab",
-    "helpMihrabBlurb": "Évaluez-la, parlez-en, partagez un mois d’horaires de prière."
+    "helpMihrabBlurb": "Évaluez-la, parlez-en, partagez un mois d’horaires de prière.",
+    "calcHiddenNamazvakti": "Türkiye Takvimi a sa propre méthode (Fajr 19°, Icha 17°, avec temkin) : la liste des méthodes est masquée. Seul le choix de l’Asr hanafite s’applique.",
+    "calcHiddenPublished": "Cette source publie ses propres horaires : la liste des méthodes est masquée."
   },
   "locationSetup": {
     "headline": "Définissez votre emplacement",

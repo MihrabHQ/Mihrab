@@ -469,7 +469,9 @@
     "silenceJumuahFixedHelp": "Muchas mezquitas celebran el Yumu'ah a la misma hora todo el año. Apagado, el periodo sigue al Dhuhr.",
     "silenceJumuahTime": "Hora del Yumu'ah",
     "helpMihrab": "Ayuda a Mihrab",
-    "helpMihrabBlurb": "Valórala, habla de ella, comparte un mes de horarios de oración."
+    "helpMihrabBlurb": "Valórala, habla de ella, comparte un mes de horarios de oración.",
+    "calcHiddenNamazvakti": "Türkiye Takvimi tiene su propio método (Fajr 19°, Isha 17°, con temkin), por eso la lista de métodos está oculta. Solo se aplica la opción de Asr hanafí.",
+    "calcHiddenPublished": "Esta fuente publica su propio horario, por eso la lista de métodos está oculta."
   },
   "locationSetup": {
     "headline": "Establece tu ubicación",

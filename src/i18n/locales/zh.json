@@ -468,7 +468,9 @@
     "silenceJumuahFixedHelp": "许多清真寺全年在同一时间举行主麻。关闭时，时段跟随晌礼。",
     "silenceJumuahTime": "主麻时间",
     "helpMihrab": "帮助 Mihrab",
-    "helpMihrabBlurb": "评分、告诉他人、分享一个月的礼拜时间。"
+    "helpMihrabBlurb": "评分、告诉他人、分享一个月的礼拜时间。",
+    "calcHiddenNamazvakti": "Türkiye Takvimi 有自己的算法（晨礼 19°、宵礼 17°，含 temkin 安全余量），因此隐藏算法列表。仅哈乃斐派晡礼选项适用。",
+    "calcHiddenPublished": "此来源发布自己的时间表，因此隐藏算法列表。"
   },
   "locationSetup": {
     "headline": "设置您的位置",

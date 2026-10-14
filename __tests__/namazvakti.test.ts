@@ -60,6 +60,7 @@ const fixture = (f: string) => fs.readFileSync(path.join(FIX, f), 'utf8');
 const read = (p: string) => fs.readFileSync(path.join(__dirname, '..', p), 'utf8');
 const COLOGNE = fixture('cologne-5887.xml');
 const ISTANBUL = fixture('istanbul-16741.xml');
+const STOCKHOLM = fixture('stockholm-16258.xml');
 const mockFetch = fetchWithRetry as jest.Mock;
 
 function response(status: number, body: string) {
@@ -202,7 +203,7 @@ describe('the city index the server builds', () => {
 
 describe('on the phone, without the site', () => {
   // The method, against the site's whole published year for two cities.
-  const compare = (xml: string, lat: number, lon: number, tz: string) => {
+  const compare = (xml: string, lat: number, lon: number, tz: string, heightM: number, tolerance: number) => {
     const year = parseNamazvaktiXml(xml, 2026);
     const keys = ['Imsak', 'Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'] as const;
     const min = (s: string) => Number(s.slice(0, 2)) * 60 + Number(s.slice(3));
@@ -214,29 +215,34 @@ describe('on the phone, without the site', () => {
       const [y, m, d] = date.split('-').map(Number);
       // The method formats in the test machine's zone; move each clock into
       // the city's zone, as it would read on a phone there.
-      const calc = computeNamazvaktiMethodTimes({ latitude: lat, longitude: lon, date: new Date(y, m - 1, d), school: 0 }).timings;
+      const calc = computeNamazvaktiMethodTimes({ latitude: lat, longitude: lon, date: new Date(y, m - 1, d), school: 0, heightM }).timings;
       const shift = zoneOffsetMin(tz, new Date(Date.UTC(y, m - 1, d, 12))) + new Date(y, m - 1, d, 12).getTimezoneOffset();
       for (const k of keys) {
         let diff = Math.abs(((min(calc[k]) + shift + 1440) % 1440) - min(site[k]));
         if (diff > 720) diff = 1440 - diff;
         total++;
-        if (diff <= 3) within++;
+        if (diff <= tolerance) within++;
       }
     }
     return within / total;
   };
 
-  it('computes the calendar within three minutes of the site on almost every time of the year', () => {
-    expect(compare(ISTANBUL, 41, 29, 'Europe/Istanbul')).toBe(1);
-    // Cologne has the held summer nights; one changeover day differs.
-    expect(compare(COLOGNE, 50.9333, 6.95, 'Europe/Berlin')).toBeGreaterThan(0.995);
+  it('computes the calendar to within a minute or two of the site, from Istanbul to Stockholm', () => {
+    // Istanbul's 41° and 500 m, Cologne's 51°, Stockholm's 59° — the
+    // temkin grows from 11 to 20 minutes across them.
+    expect(compare(ISTANBUL, 41, 29, 'Europe/Istanbul', 500, 1)).toBeGreaterThan(0.99);
+    expect(compare(COLOGNE, 50.9333, 6.95, 'Europe/Berlin', 250, 2)).toBeGreaterThan(0.99);
+    expect(compare(STOCKHOLM, 59.3167, 18.0667, 'Europe/Stockholm', 250, 2)).toBeGreaterThan(0.93);
+    expect(compare(STOCKHOLM, 59.3167, 18.0667, 'Europe/Stockholm', 250, 3)).toBeGreaterThan(0.99);
   });
 
-  it('takes the temkin from the latitude: ten at Istanbul, more further north', () => {
-    expect(temkinMinutes(41)).toBe(10);
-    expect(temkinMinutes(30)).toBe(10);
+  it('takes the temkin from the latitude and the city height, as the site does', () => {
+    expect(temkinMinutes(30)).toBe(8);
+    expect(temkinMinutes(41, 500)).toBe(11);
     expect(temkinMinutes(51)).toBe(13);
     expect(temkinMinutes(-51)).toBe(13);
+    expect(temkinMinutes(59.3)).toBe(20);
+    expect(Number.isFinite(temkinMinutes(78))).toBe(true);
   });
 });
 

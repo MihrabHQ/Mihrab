@@ -468,7 +468,9 @@
     "silenceJumuahFixedHelp": "Viele Moscheen halten das Freitagsgebet das ganze Jahr zur selben Zeit. Aus, folgt das Fenster dem Dhuhr.",
     "silenceJumuahTime": "Uhrzeit der Dschumua",
     "helpMihrab": "Mihrab unterstützen",
-    "helpMihrabBlurb": "Bewerten, weitererzählen, einen Monat Gebetszeiten teilen."
+    "helpMihrabBlurb": "Bewerten, weitererzählen, einen Monat Gebetszeiten teilen.",
+    "calcHiddenNamazvakti": "Türkiye Takvimi hat eine eigene Methode (Fadschr 19°, Ischa 17°, mit Temkin), daher ist die Methodenliste ausgeblendet. Nur die hanafitische Asr-Wahl gilt.",
+    "calcHiddenPublished": "Diese Quelle veröffentlicht einen eigenen Zeitplan, daher ist die Methodenliste ausgeblendet."
   },
   "locationSetup": {
     "headline": "Legen Sie Ihren Standort fest",

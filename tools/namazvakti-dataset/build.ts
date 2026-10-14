@@ -150,15 +150,17 @@ function writeCities(cities: Map<number, CityRow>): void {
 }
 
 /** One tile file: [id, lat, lon, name] per city, nearest-first search on the phone. */
-export type TileFile = { v: 1; tile: string; cities: [number, number, number, string][] };
+export type TileFile = { v: 1; tile: string; cities: TileRow[] };
+/** [id, lat, lon, name] and the height when it is not the usual 250 m. */
+type TileRow = [number, number, number, string] | [number, number, number, string, number];
 
 function writeTiles(cities: Map<number, CityRow>): number {
-  const tiles = new Map<string, [number, number, number, string][]>();
+  const tiles = new Map<string, TileRow[]>();
   for (const c of cities.values()) {
     if (!Number.isFinite(c.lat) || !Number.isFinite(c.lon)) continue;
     const key = tileKey(c.lat, c.lon);
     const list = tiles.get(key) ?? [];
-    list.push([c.id, c.lat, c.lon, clean(c.name)]);
+    list.push(c.height && c.height !== 250 ? [c.id, c.lat, c.lon, clean(c.name), c.height] : [c.id, c.lat, c.lon, clean(c.name)]);
     tiles.set(key, list);
   }
   fs.mkdirSync(TILES_DIR, { recursive: true });
