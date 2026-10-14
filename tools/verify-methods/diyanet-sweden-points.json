@@ -1,0 +1,957 @@
+{
+ "23211": {
+  "name": "AKERSBERGA",
+  "slug": "tranas",
+  "lat": 58.037,
+  "lon": 14.971,
+  "note": "Diyanet's record named AKERSBERGA is computed at Tranås (58.037, 14.971); Islamiska Förbundet's Tranås table is this record."
+ },
+ "14324": {
+  "name": "ALINGSAS",
+  "slug": "alingsas",
+  "lat": 57.932,
+  "lon": 12.538
+ },
+ "14310": {
+  "name": "ALTA",
+  "slug": null,
+  "lat": 59.268,
+  "lon": 18.191
+ },
+ "33269": {
+  "name": "AMAL",
+  "slug": "amal",
+  "lat": 59.05,
+  "lon": 12.694
+ },
+ "14326": {
+  "name": "ANGELHOLM",
+  "slug": "angelholm",
+  "lat": 56.244,
+  "lon": 12.872
+ },
+ "14327": {
+  "name": "ARVIKA",
+  "slug": null,
+  "lat": 59.666,
+  "lon": 12.59
+ },
+ "14280": {
+  "name": "ASA (Halland)",
+  "slug": null,
+  "lat": 57.345,
+  "lon": 12.133
+ },
+ "14328": {
+  "name": "AVESTA",
+  "slug": "avesta",
+  "lat": 60.154,
+  "lon": 16.175
+ },
+ "14311": {
+  "name": "BALSTA (U)",
+  "slug": null,
+  "lat": 59.584,
+  "lon": 17.494
+ },
+ "14292": {
+  "name": "BARA",
+  "slug": null,
+  "lat": 55.584,
+  "lon": 13.193
+ },
+ "21136": {
+  "name": "BENGTSFORS",
+  "slug": "bengtsfors",
+  "lat": 59.034,
+  "lon": 12.222
+ },
+ "14281": {
+  "name": "BILLDAL",
+  "slug": null,
+  "lat": 57.586,
+  "lon": 12.083
+ },
+ "14293": {
+  "name": "BJARRED (Malmo)",
+  "slug": null,
+  "lat": 55.718,
+  "lon": 13.021
+ },
+ "14312": {
+  "name": "BJORKNAS",
+  "slug": null,
+  "lat": 59.316,
+  "lon": 18.213
+ },
+ "14329": {
+  "name": "BODEN",
+  "slug": "boden",
+  "lat": 65.827,
+  "lon": 21.7
+ },
+ "14282": {
+  "name": "BOLLEBYGD",
+  "slug": null,
+  "lat": 57.678,
+  "lon": 12.609
+ },
+ "21137": {
+  "name": "BOLLNAS",
+  "slug": "bollnas",
+  "lat": 61.349,
+  "lon": 16.39
+ },
+ "14330": {
+  "name": "BORAS",
+  "slug": "boras",
+  "lat": 57.723,
+  "lon": 12.94
+ },
+ "14331": {
+  "name": "BORLANGE",
+  "slug": "borlange",
+  "lat": 60.484,
+  "lon": 15.439
+ },
+ "14332": {
+  "name": "BOTKYRKA",
+  "slug": null,
+  "lat": 59.251,
+  "lon": 17.806
+ },
+ "14294": {
+  "name": "DALBY (Malmo)",
+  "slug": null,
+  "lat": 55.667,
+  "lon": 13.347
+ },
+ "33267": {
+  "name": "EKSJO",
+  "slug": "eksjo",
+  "lat": 57.667,
+  "lon": 14.964
+ },
+ "14333": {
+  "name": "ENKOPING",
+  "slug": "enkoping",
+  "lat": 59.645,
+  "lon": 17.084
+ },
+ "14279": {
+  "name": "ESKILSTUNA",
+  "slug": "eskilstuna",
+  "lat": 59.372,
+  "lon": 16.513
+ },
+ "14334": {
+  "name": "ESLOV",
+  "slug": "eslov",
+  "lat": 55.837,
+  "lon": 13.296
+ },
+ "33280": {
+  "name": "FAGERSTA",
+  "slug": "fagersta",
+  "lat": 59.99,
+  "lon": 15.804
+ },
+ "14335": {
+  "name": "FALKENBERG",
+  "slug": "falkenberg",
+  "lat": 56.896,
+  "lon": 12.503
+ },
+ "16742": {
+  "name": "FALKOPİNG",
+  "slug": "falkoping",
+  "lat": 58.18,
+  "lon": 13.544
+ },
+ "14336": {
+  "name": "FALUN",
+  "slug": null,
+  "lat": 60.609,
+  "lon": 15.628
+ },
+ "14337": {
+  "name": "FINSPANG",
+  "slug": null,
+  "lat": 58.718,
+  "lon": 15.774
+ },
+ "21138": {
+  "name": "FLEN",
+  "slug": "flen",
+  "lat": 59.058,
+  "lon": 16.589
+ },
+ "21139": {
+  "name": "FLIPSTAD",
+  "slug": "filipstad",
+  "lat": 59.717,
+  "lon": 14.161
+ },
+ "14295": {
+  "name": "FURULUND (Malmo)",
+  "slug": null,
+  "lat": 55.777,
+  "lon": 13.087
+ },
+ "14338": {
+  "name": "GALLIVARE",
+  "slug": "gallivare",
+  "lat": 67.138,
+  "lon": 20.659
+ },
+ "14339": {
+  "name": "GAVLE",
+  "slug": "gavle",
+  "lat": 60.68,
+  "lon": 17.116
+ },
+ "14340": {
+  "name": "GISLAVED",
+  "slug": "gislaved",
+  "lat": 57.301,
+  "lon": 13.525
+ },
+ "21140": {
+  "name": "GNOSJO",
+  "slug": "gnosjo",
+  "lat": 57.368,
+  "lon": 13.726
+ },
+ "14320": {
+  "name": "GOTEBORG",
+  "slug": "goteborg",
+  "lat": 57.72,
+  "lon": 11.994
+ },
+ "14341": {
+  "name": "HALMSTAD",
+  "slug": "halmstad",
+  "lat": 56.666,
+  "lon": 12.859
+ },
+ "21141": {
+  "name": "HAPARANDA",
+  "slug": "haparanda",
+  "lat": 65.848,
+  "lon": 24.144
+ },
+ "14342": {
+  "name": "HARNOSAND",
+  "slug": "harnosand",
+  "lat": 62.638,
+  "lon": 17.929
+ },
+ "14344": {
+  "name": "HASSLEHOLM",
+  "slug": "hassleholm",
+  "lat": 56.156,
+  "lon": 13.762
+ },
+ "14275": {
+  "name": "HELSINGBORG",
+  "slug": "helsingborg",
+  "lat": 56.045,
+  "lon": 12.697
+ },
+ "14345": {
+  "name": "HOGANAS",
+  "slug": null,
+  "lat": 56.199,
+  "lon": 12.549
+ },
+ "33268": {
+  "name": "HOGSBY",
+  "slug": "hogsby",
+  "lat": 57.167,
+  "lon": 16.027
+ },
+ "14297": {
+  "name": "HOLLVIKSNAS",
+  "slug": null,
+  "lat": 55.417,
+  "lon": 12.944
+ },
+ "14283": {
+  "name": "HONO",
+  "slug": null,
+  "lat": 57.695,
+  "lon": 11.652
+ },
+ "14296": {
+  "name": "HOOR",
+  "slug": null,
+  "lat": 55.931,
+  "lon": 13.541
+ },
+ "14298": {
+  "name": "HORBY (S)",
+  "slug": "horby",
+  "lat": 55.8,
+  "lon": 13.661
+ },
+ "14343": {
+  "name": "HUDIKSVALL",
+  "slug": "hudiksvall",
+  "lat": 61.735,
+  "lon": 17.104
+ },
+ "21142": {
+  "name": "HULTSFRED",
+  "slug": "hultsfred",
+  "lat": 57.5,
+  "lon": 15.844
+ },
+ "14313": {
+  "name": "JAKOBSERG (S)",
+  "slug": null,
+  "lat": 59.417,
+  "lon": 17.827
+ },
+ "14314": {
+  "name": "JARNA (S)",
+  "slug": null,
+  "lat": 59.095,
+  "lon": 17.559
+ },
+ "21143": {
+  "name": "JOKKMOKK",
+  "slug": "jokkmokk",
+  "lat": 66.599,
+  "lon": 19.841
+ },
+ "14346": {
+  "name": "JONKOPING",
+  "slug": "jonkoping",
+  "lat": 57.784,
+  "lon": 14.163
+ },
+ "14347": {
+  "name": "KALMAR",
+  "slug": "kalmar",
+  "lat": 56.668,
+  "lon": 16.353
+ },
+ "14348": {
+  "name": "KARLSHAMM",
+  "slug": null,
+  "lat": 56.169,
+  "lon": 14.87
+ },
+ "14349": {
+  "name": "KARLSKOGA",
+  "slug": "karlskoga",
+  "lat": 59.333,
+  "lon": 14.502
+ },
+ "14352": {
+  "name": "KARLSKRONA",
+  "slug": "karlskrona",
+  "lat": 56.175,
+  "lon": 15.587
+ },
+ "14353": {
+  "name": "KARLSTAD",
+  "slug": "karlstad",
+  "lat": 59.378,
+  "lon": 13.498
+ },
+ "14354": {
+  "name": "KATRINEHOLM",
+  "slug": "katrineholm",
+  "lat": 58.991,
+  "lon": 16.202
+ },
+ "14284": {
+  "name": "KINNA (VG)",
+  "slug": null,
+  "lat": 57.493,
+  "lon": 12.652
+ },
+ "14400": {
+  "name": "KIRUNA",
+  "slug": "kiruna",
+  "lat": 67.859,
+  "lon": 20.226
+ },
+ "21144": {
+  "name": "KOPING",
+  "slug": "koping",
+  "lat": 59.514,
+  "lon": 15.989
+ },
+ "14355": {
+  "name": "KRAMFORS",
+  "slug": null,
+  "lat": 62.93,
+  "lon": 17.785
+ },
+ "14356": {
+  "name": "KRISTIANSTAD",
+  "slug": "kristianstad",
+  "lat": 56.03,
+  "lon": 14.158
+ },
+ "14357": {
+  "name": "KRISTINEHAMN",
+  "slug": "kristinehamn",
+  "lat": 59.317,
+  "lon": 14.115
+ },
+ "14358": {
+  "name": "KUNGSBACKA",
+  "slug": null,
+  "lat": 57.501,
+  "lon": 12.093
+ },
+ "14405": {
+  "name": "LAHOLM",
+  "slug": "laholm",
+  "lat": 56.52,
+  "lon": 13.044
+ },
+ "14272": {
+  "name": "LANDSKRONA",
+  "slug": "landskrona",
+  "lat": 55.878,
+  "lon": 12.832
+ },
+ "14285": {
+  "name": "LANDVETTER",
+  "slug": null,
+  "lat": 57.689,
+  "lon": 12.225
+ },
+ "14286": {
+  "name": "LERUM",
+  "slug": null,
+  "lat": 57.767,
+  "lon": 12.28
+ },
+ "21145": {
+  "name": "LESSEBO",
+  "slug": "lessebo",
+  "lat": 56.75,
+  "lon": 15.26
+ },
+ "14322": {
+  "name": "LIDKOPING",
+  "slug": "lidkoping",
+  "lat": 58.5,
+  "lon": 13.159
+ },
+ "14360": {
+  "name": "LINDESBERG",
+  "slug": null,
+  "lat": 59.601,
+  "lon": 15.23
+ },
+ "14287": {
+  "name": "LINDOME",
+  "slug": null,
+  "lat": 57.567,
+  "lon": 12.075
+ },
+ "14361": {
+  "name": "LINKOPING",
+  "slug": "linkoping",
+  "lat": 58.5,
+  "lon": 15.621
+ },
+ "14362": {
+  "name": "LJUNGBY",
+  "slug": null,
+  "lat": 56.835,
+  "lon": 13.939
+ },
+ "14363": {
+  "name": "LJUSDAL",
+  "slug": null,
+  "lat": 61.833,
+  "lon": 16.091
+ },
+ "14299": {
+  "name": "LOMMA",
+  "slug": null,
+  "lat": 55.673,
+  "lon": 13.074
+ },
+ "14364": {
+  "name": "LUDVIKA",
+  "slug": "ludvika",
+  "lat": 60.139,
+  "lon": 15.184
+ },
+ "14365": {
+  "name": "LULEA",
+  "slug": "lulea",
+  "lat": 65.6,
+  "lon": 22.157
+ },
+ "14273": {
+  "name": "LUND",
+  "slug": "lund",
+  "lat": 55.713,
+  "lon": 13.186
+ },
+ "14366": {
+  "name": "LYSEKIL",
+  "slug": "lysekil",
+  "lat": 58.275,
+  "lon": 11.44
+ },
+ "14350": {
+  "name": "MALMO",
+  "slug": "malmo",
+  "lat": 55.6,
+  "lon": 13.004
+ },
+ "14367": {
+  "name": "MARIESTAD",
+  "slug": "mariestad",
+  "lat": 58.711,
+  "lon": 13.827
+ },
+ "14370": {
+  "name": "MARSTA",
+  "slug": "marsta",
+  "lat": 59.619,
+  "lon": 17.851
+ },
+ "21146": {
+  "name": "MELLERUD",
+  "slug": "mellerud",
+  "lat": 58.7,
+  "lon": 12.461
+ },
+ "14325": {
+  "name": "MJOLBY",
+  "slug": "mjolby",
+  "lat": 58.322,
+  "lon": 15.136
+ },
+ "14289": {
+  "name": "MOLNDAL",
+  "slug": null,
+  "lat": 57.65,
+  "lon": 12.009
+ },
+ "33271": {
+  "name": "MONSTERAS",
+  "slug": "monsteras",
+  "lat": 57.033,
+  "lon": 16.444
+ },
+ "14368": {
+  "name": "MORA",
+  "slug": "mora",
+  "lat": 61.01,
+  "lon": 14.55
+ },
+ "14315": {
+  "name": "MORTNAS",
+  "slug": null,
+  "lat": 59.319,
+  "lon": 18.459
+ },
+ "14369": {
+  "name": "MOTALA",
+  "slug": null,
+  "lat": 58.538,
+  "lon": 15.043
+ },
+ "14374": {
+  "name": "NASSJO",
+  "slug": "nassjo",
+  "lat": 57.661,
+  "lon": 14.704
+ },
+ "14277": {
+  "name": "NORRKOPING",
+  "slug": "norrkoping",
+  "lat": 58.592,
+  "lon": 16.174
+ },
+ "14371": {
+  "name": "NORRTALJE",
+  "slug": "norrtalje",
+  "lat": 59.761,
+  "lon": 18.701
+ },
+ "33266": {
+  "name": "NYBRO",
+  "slug": "nybro",
+  "lat": 56.75,
+  "lon": 15.894
+ },
+ "14372": {
+  "name": "NYKOPING",
+  "slug": "nykoping",
+  "lat": 58.752,
+  "lon": 17.013
+ },
+ "14373": {
+  "name": "NYNASHAMN",
+  "slug": "nynashamn",
+  "lat": 58.908,
+  "lon": 17.949
+ },
+ "14404": {
+  "name": "OREBRO",
+  "slug": "orebro",
+  "lat": 59.277,
+  "lon": 15.211
+ },
+ "33270": {
+  "name": "ORNSKOLDSVIK",
+  "slug": "ornskoldsvik",
+  "lat": 63.291,
+  "lon": 18.71
+ },
+ "14375": {
+  "name": "OSKARSHAMN",
+  "slug": "oskarshamn",
+  "lat": 57.264,
+  "lon": 16.456
+ },
+ "14376": {
+  "name": "OSTERSUND",
+  "slug": "ostersund",
+  "lat": 63.179,
+  "lon": 14.644
+ },
+ "20084": {
+  "name": "OXELOSUND",
+  "slug": "oxelosund",
+  "lat": 58.675,
+  "lon": 17.13
+ },
+ "21133": {
+  "name": "PAJALA",
+  "slug": "pajala",
+  "lat": 67.206,
+  "lon": 23.397
+ },
+ "14288": {
+  "name": "PARTILLE",
+  "slug": null,
+  "lat": 57.733,
+  "lon": 12.11
+ },
+ "14377": {
+  "name": "PITEA",
+  "slug": "pitea",
+  "lat": 65.313,
+  "lon": 21.513
+ },
+ "14316": {
+  "name": "RIMBO",
+  "slug": null,
+  "lat": 59.748,
+  "lon": 18.361
+ },
+ "14278": {
+  "name": "RONNEBY",
+  "slug": "ronneby",
+  "lat": 56.206,
+  "lon": 15.279
+ },
+ "20087": {
+  "name": "SAFFLE",
+  "slug": "saffle",
+  "lat": 59.133,
+  "lon": 12.924
+ },
+ "14276": {
+  "name": "SALA",
+  "slug": "sala",
+  "lat": 59.926,
+  "lon": 16.589
+ },
+ "14378": {
+  "name": "SANDVIKEN",
+  "slug": null,
+  "lat": 60.618,
+  "lon": 16.771
+ },
+ "21131": {
+  "name": "SAVSJO",
+  "slug": "savsjo",
+  "lat": 57.401,
+  "lon": 14.668
+ },
+ "14379": {
+  "name": "SIGTUNA",
+  "slug": null,
+  "lat": 59.622,
+  "lon": 17.712
+ },
+ "14323": {
+  "name": "SIMRIS",
+  "slug": null,
+  "lat": 55.535,
+  "lon": 14.325
+ },
+ "14300": {
+  "name": "SIMRISHAMN",
+  "slug": "simrishamn",
+  "lat": 55.556,
+  "lon": 14.337
+ },
+ "14301": {
+  "name": "SJOBO",
+  "slug": null,
+  "lat": 55.633,
+  "lon": 13.694
+ },
+ "14302": {
+  "name": "SKANOR",
+  "slug": null,
+  "lat": 55.417,
+  "lon": 12.844
+ },
+ "14380": {
+  "name": "SKARA",
+  "slug": "skara",
+  "lat": 58.387,
+  "lon": 13.432
+ },
+ "14309": {
+  "name": "SKELLEFTEA",
+  "slug": "skelleftea",
+  "lat": 64.751,
+  "lon": 20.945
+ },
+ "14274": {
+  "name": "SKOVDE",
+  "slug": "skovde",
+  "lat": 58.385,
+  "lon": 13.842
+ },
+ "14303": {
+  "name": "SKURUP",
+  "slug": null,
+  "lat": 55.483,
+  "lon": 13.507
+ },
+ "14384": {
+  "name": "SODERHAMN",
+  "slug": "soderhamn",
+  "lat": 61.314,
+  "lon": 17.076
+ },
+ "14385": {
+  "name": "SODERTALJE",
+  "slug": "sodertalje",
+  "lat": 59.191,
+  "lon": 17.63
+ },
+ "14381": {
+  "name": "SOLLEFTEA",
+  "slug": "solleftea",
+  "lat": 63.183,
+  "lon": 17.26
+ },
+ "14386": {
+  "name": "SOLVESBORG",
+  "slug": "solvesborg",
+  "lat": 56.048,
+  "lon": 14.576
+ },
+ "14304": {
+  "name": "STAFFANSTROP",
+  "slug": null,
+  "lat": 55.642,
+  "lon": 13.2
+ },
+ "14291": {
+  "name": "STENKULLEN",
+  "slug": null,
+  "lat": 57.801,
+  "lon": 12.309
+ },
+ "14290": {
+  "name": "STENUNGSUND",
+  "slug": null,
+  "lat": 58.071,
+  "lon": 11.83
+ },
+ "14351": {
+  "name": "STOCKHOLM",
+  "slug": "stockholm",
+  "lat": 59.33,
+  "lon": 18.034
+ },
+ "14382": {
+  "name": "STRANGNAS",
+  "slug": "strangnas",
+  "lat": 59.375,
+  "lon": 17.018
+ },
+ "21147": {
+  "name": "STROMSTAD",
+  "slug": null,
+  "lat": 58.943,
+  "lon": 11.17
+ },
+ "14317": {
+  "name": "SUNDBYBERG",
+  "slug": null,
+  "lat": 59.377,
+  "lon": 17.948
+ },
+ "14383": {
+  "name": "SUNDSVALL",
+  "slug": "sundsvall",
+  "lat": 62.401,
+  "lon": 17.323
+ },
+ "14305": {
+  "name": "SVEDALA",
+  "slug": null,
+  "lat": 55.513,
+  "lon": 13.234
+ },
+ "16731": {
+  "name": "SVEG",
+  "slug": null,
+  "lat": 62.037,
+  "lon": 14.37
+ },
+ "14387": {
+  "name": "TIERP",
+  "slug": "tierp",
+  "lat": 60.343,
+  "lon": 17.509
+ },
+ "14306": {
+  "name": "TOMELILLA",
+  "slug": null,
+  "lat": 55.55,
+  "lon": 13.944
+ },
+ "21134": {
+  "name": "TRANEMO",
+  "slug": "tranemo",
+  "lat": 57.488,
+  "lon": 13.36
+ },
+ "14388": {
+  "name": "TRELLEBORG",
+  "slug": "trelleborg",
+  "lat": 55.376,
+  "lon": 13.159
+ },
+ "14389": {
+  "name": "TROLLHATTAN",
+  "slug": "trollhattan",
+  "lat": 58.284,
+  "lon": 12.308
+ },
+ "14390": {
+  "name": "UDDEVALLA",
+  "slug": "uddevalla",
+  "lat": 58.352,
+  "lon": 11.936
+ },
+ "14391": {
+  "name": "ULRICEHAMN",
+  "slug": "ulricehamn",
+  "lat": 57.796,
+  "lon": 13.415
+ },
+ "14401": {
+  "name": "UMEA",
+  "slug": "umea",
+  "lat": 63.834,
+  "lon": 20.238
+ },
+ "14402": {
+  "name": "UPPSALA",
+  "slug": "uppsala",
+  "lat": 59.862,
+  "lon": 17.636
+ },
+ "14318": {
+  "name": "VALLENTUNA",
+  "slug": null,
+  "lat": 59.542,
+  "lon": 18.073
+ },
+ "14392": {
+  "name": "VANERSBORG",
+  "slug": "vanersborg",
+  "lat": 58.369,
+  "lon": 12.329
+ },
+ "14393": {
+  "name": "VARBERG",
+  "slug": "varberg",
+  "lat": 57.106,
+  "lon": 12.254
+ },
+ "14394": {
+  "name": "VARNAMO",
+  "slug": "varnamo",
+  "lat": 57.18,
+  "lon": 14.052
+ },
+ "14395": {
+  "name": "VASTERAS",
+  "slug": "vasteras",
+  "lat": 59.62,
+  "lon": 16.544
+ },
+ "14396": {
+  "name": "VASTERVIK",
+  "slug": "vastervik",
+  "lat": 57.76,
+  "lon": 16.63
+ },
+ "14403": {
+  "name": "VAXJO",
+  "slug": "vaxjo",
+  "lat": 56.884,
+  "lon": 14.803
+ },
+ "14307": {
+  "name": "VELLINGE",
+  "slug": null,
+  "lat": 55.477,
+  "lon": 13.016
+ },
+ "14319": {
+  "name": "VENDELSO",
+  "slug": null,
+  "lat": 59.2,
+  "lon": 18.194
+ },
+ "14397": {
+  "name": "VETLANDA",
+  "slug": "vetlanda",
+  "lat": 57.426,
+  "lon": 15.079
+ },
+ "33272": {
+  "name": "VIMMERBY",
+  "slug": "vimmerby",
+  "lat": 57.667,
+  "lon": 15.844
+ },
+ "14398": {
+  "name": "VISBY",
+  "slug": "visby",
+  "lat": 57.635,
+  "lon": 18.292
+ },
+ "14399": {
+  "name": "YSTAD",
+  "slug": "ystad",
+  "lat": 55.43,
+  "lon": 13.136
+ }
+}

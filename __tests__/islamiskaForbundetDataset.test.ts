@@ -26,6 +26,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   getIslamiskaForbundetDatasetTimes,
   _resetDatasetMemoForTests,
+  setSwedenServesCalculationForTests,
 } from '../src/providers/islamiskaForbundetDataset';
 import { citySlug } from '../src/providers/islamiskaForbundetParser';
 import coords from '../src/providers/islamiskaForbundetCoords.json';
@@ -36,7 +37,19 @@ const STHLM = { latitude: 59.3293, longitude: 18.0686 };
 
 beforeEach(async () => {
   _resetDatasetMemoForTests();
+  setSwedenServesCalculationForTests(false); // the mirrored-table path
   await AsyncStorage.clear();
+});
+afterAll(() => setSwedenServesCalculationForTests(true));
+
+describe('Sweden serves its own calculation by default', () => {
+  it('answers with method 24 at the nearest city, offline, for any date', async () => {
+    setSwedenServesCalculationForTests(true);
+    const res = await getIslamiskaForbundetDatasetTimes({ ...STHLM, date: new Date(2031, 2, 3) });
+    expect(res.source).toBe('local');
+    expect(res.timezone).toBe('Europe/Stockholm');
+    expect(res.timings.Fajr).toMatch(/^\d\d:\d\d$/);
+  });
 });
 
 describe('getIslamiskaForbundetDatasetTimes', () => {

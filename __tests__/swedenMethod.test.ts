@@ -3,7 +3,7 @@
  * Diyanet's tables realise it (src/providers/congressMethod.ts), checked
  * against Islamiska Förbundet's tables in this checkout — which are those
  * tables. Coordinates are Diyanet's, read off the tables
- * (tools/verify-methods/diyanet-sweden-coords.json).
+ * (tools/verify-methods/diyanet-sweden-points.json; the coordinates file the app uses holds them).
  */
 import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
@@ -145,5 +145,29 @@ describe('Sweden — the Congress method (method 24)', () => {
     // and the formatted timings are those instants on the phone's clock
     const timings = computeLocalAdhanTimes({ latitude: STOCKHOLM.lat, longitude: STOCKHOLM.lon, date: new Date(2026, 10, 20), calculationMethod: SWEDEN_METHOD_ID, school: 0 }).timings;
     expect(Object.keys(timings)).toEqual(expect.arrayContaining(['Fajr', 'Isha']));
+  });
+
+  // Diyanet's own tables (awqatsalah.com), which Islamiska Förbundet republishes; points to
+  // three decimals as Diyanet keeps them (tools/verify-methods/diyanet-*.py).
+  it('prints an Asr that never forms at Dhuhr’s time: Kiruna in December', () => {
+    for (const d of [15, 20, 25]) {
+      const at = congressTimes(67.859, 20.226, 2024, 11, d);
+      expect(clockIn(at.asr)).toBe(clockIn(at.dhuhr));
+    }
+    expect(clockIn(congressTimes(67.859, 20.226, 2024, 11, 20).asr)).toBe('11:42');
+  });
+
+  it('never steps a floored sunrise back after midsummer: Piteå holds 03:16 through late July', () => {
+    for (const d of [27, 28, 29, 30]) expect(clockIn(congressTimes(65.313, 21.513, 2024, 6, d).sunrise)).toBe('03:16');
+  });
+
+  it('never steps a floored Maghrib back before midsummer: Kiruna holds 22:11 in mid-May', () => {
+    for (const d of [8, 11, 14, 16, 20]) expect(clockIn(congressTimes(67.859, 20.226, 2024, 4, d).maghrib)).toBe('22:11');
+  });
+
+  it('computes 2027 as Diyanet published it, not as last year: Umeå’s carried share moves', () => {
+    const r26 = congressYearInfo(63.834, 20.238, 2026).ratio!;
+    const r27 = congressYearInfo(63.834, 20.238, 2027).ratio!;
+    expect(Math.abs(r26 - r27)).toBeGreaterThan(0.005);
   });
 });

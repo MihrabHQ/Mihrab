@@ -106,38 +106,65 @@ three other things, each now in the data:
 - **Türkiye Takvimi's** method was read off the tables rather than
   published.
 
-## Sweden: the Congress method
+## Sweden: the Congress method, to the minute
 
-Islamiska Förbundet's tables are Diyanet's own (ezanvakti.emushaf.net,
-country 12), computed by the International Prayer Times Congress method
-(Istanbul 2021; awqatsalah.com, "Tespit Kriterleri"). Method 24 is that
-method, in `src/providers/congressMethod.ts`: the published rules plus
-what the tables turn out to do with them — the Almanac's low-precision
-sun taken at 0h UT; the carried night share over the day's own night,
-Fajr's scaled by 18/16; the gradual transition a straight line over the
-days on which the true time lies within twenty minutes of the takdir at
-the gap's edge; the five-hour floors each end on its own, and a
-midsummer night floored at both ends (or within a minute of it)
-anchoring the season's sunrise, Maghrib, Fajr and Isha.
+Islamiska Förbundet's tables are Diyanet's own, republished: the 2026
+rows are identical to what Diyanet's API (awqatsalah.com) serves for the
+same places. So the reference is **Diyanet's genuine tables**, 2024–2027,
+for all 160 Swedish places Diyanet lists — not the site's copy, which
+serves the previous year's figures for a year it has not published and
+prints Umeå's table for Kiruna. The method (method 24,
+`src/providers/congressMethod.ts`) is the International Prayer Times
+Congress method (Istanbul 2021, "Tespit Kriterleri") as Diyanet computes
+it, read off those tables:
 
-- `congress-model.py` is the Python model the method was reverse-
-  engineered in, day by day against a city's table:
-  `python3 tools/verify-methods/congress-model.py stockholm 59.3333 18.0333 --as-year 2026 --days 2027-04-01:2027-04-30`
-  (`--as-year 2026`: the site's 2027 rows are its 2026 rows copied).
-- `fit-all.py` finds, for every city, the coordinates Diyanet computes
-  its table for — an arc-minute grid about the town, scored on sunrise,
-  Dhuhr and Maghrib — and writes `diyanet-sweden-coords.json`, which
-  the checker and the dataset builder use. They are not always the
-  town's: Kiruna's table is computed for 64°N (Umeå's longitude),
-  Ystad's for a point west of the town, Gällivare's, Ludvika's and
-  Torsby's where the geocoder had not put them. `fit-wide.py` searches
-  further for such cases; `fit-sun.py` tests sun models and rounding;
-  `run-cities.sh` scores a list of cities; `congress-ts-check.ts` runs
-  the TypeScript port against a table.
-- The result: every time within a minute of the table on every day in
-  all 108 cities, and on the minute on 90–99 % of days. What remains is
-  Diyanet's own ephemeris constants and coordinate decimals, which the
-  tables alone cannot give. The carried share is fixed on the last day
-  the 18° dawn forms, so it moves from year to year (Umeå: 0.187 in
-  2026, 0.171 in 2027), which is how a copied year is told from a
-  published one (`src/prayer/swedenYearCheck.ts`).
+- **The sun**, once a day at 0h UT less 45 s: Meeus's mean elements and
+  equation of the centre (1.914602° − 0.004817°·T …), the *true*
+  longitude (no aberration, no nutation), the *apparent* obliquity (mean
+  plus the four-term nutation), the equation of time as L0 − α, plus
+  0.106 s. Each step was measured, not guessed: on any one day the 160
+  places round their Dhuhr at different points of the minute, and
+  intersecting their rounding windows pins Diyanet's equation of time
+  for that day to under a second (`diyanet-perday.py`); its difference
+  from the Almanac formula was a clean −0.0064·sin g minutes, which is
+  Meeus's equation of the centre; and so on down to a fraction of a
+  second. Horizon −0.833°; evaluating at each event's own moment, or
+  the precise apparent sun, is far worse.
+- **Coordinates** to three decimals of a degree — every latitude fitted
+  lands on one, and every longitude on one plus the same constant (the
+  0.106 s). They are the real towns, except Ystad, which Diyanet
+  computes 43 km west of the town, and Kungälv, ~200 km south.
+- **Asr** that never forms is printed at Dhuhr's time (the published
+  rule); Asr is never before Dhuhr.
+- **The floors**: the day and the night never shorter than five hours,
+  each end on its own. Where midsummer's night is floored at both ends
+  (to within a minute), the floored times never step back: before
+  midsummer sunrise is held against midsummer's Dhuhr and a floored
+  Maghrib against the latest Dhuhr since its floor began; after it,
+  against every Dhuhr since midsummer. Carried Fajr and Isha follow the
+  same rule.
+- **The carried share** is a third of the sharia night (Maghrib to the
+  next dawn) over the night, on the last day the 18° dawn forms; Isha is
+  that share of the night after Maghrib, Fajr 18/16 of it before
+  sunrise. The gradual transition is a straight line over the days the
+  true time lies within twenty minutes of the takdir at the gap's edge.
+  The share is fixed afresh each year (Umeå: 0.187 in 2026, 0.171 in
+  2027), which is how a copied year is told from a published one
+  (`src/prayer/swedenYearCheck.ts`).
+
+**Result:** 99.94 % of 1.39 million times on Diyanet's printed minute,
+every one within a minute; 0.06 % — about five per city over four
+years — are a fraction of a second the other side of the rounding
+point, the last of Diyanet's exact implementation.
+
+- `diyanet-fetch.py` downloads the tables (CI does, weekly; not
+  committed). `diyanet-sweden-points.json` is Diyanet's points; the
+  coordinates file the app uses holds them too.
+- The `diyanet` check compares to the minute; the `ifis` check compares
+  the site's table and sets aside rows that differ from Diyanet's own.
+- Research tools: `congress-model.py` (the model, `--diyanet <id>`),
+  `diyanet-exact.py` / `-joint.py` / `-allcities.py` / `-snap.py` (sun
+  model and coordinates), `diyanet-perday.py` (the day-by-day equation
+  of time), `diyanet-dhuhr.py`, `diyanet-all-prayers.py`,
+  `diyanet-fi-misses.py` (every miss, by regime), `diyanet-ts-check.ts`
+  (the app's TypeScript against every table).

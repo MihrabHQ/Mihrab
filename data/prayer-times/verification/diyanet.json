@@ -1,0 +1,576 @@
+{
+ "id": "diyanet",
+ "name": "Sweden — Diyanet (the tables Islamiska Förbundet republishes)",
+ "method": 24,
+ "toleranceMin": 0,
+ "builtAt": "2026-10-14T20:06:07.120Z",
+ "tableBuiltAt": "2026-10-14T19:57:57.385027+00:00",
+ "places": 159,
+ "placesMissing": 0,
+ "days": 231027,
+ "from": "2024-01-01",
+ "to": "2027-12-31",
+ "times": 1386162,
+ "within": 1385369,
+ "outsideShare": 0.0006,
+ "maxAbs": 1,
+ "perPrayer": {
+  "Fajr": {
+   "times": 231027,
+   "within": 230817,
+   "histogram": {
+    "0": 230817,
+    "+1": 178,
+    "-1": 32
+   },
+   "maxAbs": 1,
+   "meanDiff": 0
+  },
+  "Sunrise": {
+   "times": 231027,
+   "within": 230895,
+   "histogram": {
+    "0": 230895,
+    "-1": 60,
+    "+1": 72
+   },
+   "maxAbs": 1,
+   "meanDiff": 0
+  },
+  "Dhuhr": {
+   "times": 231027,
+   "within": 230938,
+   "histogram": {
+    "0": 230938,
+    "-1": 44,
+    "+1": 45
+   },
+   "maxAbs": 1,
+   "meanDiff": 0
+  },
+  "Asr": {
+   "times": 231027,
+   "within": 230953,
+   "histogram": {
+    "0": 230953,
+    "+1": 38,
+    "-1": 36
+   },
+   "maxAbs": 1,
+   "meanDiff": 0
+  },
+  "Maghrib": {
+   "times": 231027,
+   "within": 230928,
+   "histogram": {
+    "0": 230928,
+    "-1": 60,
+    "+1": 39
+   },
+   "maxAbs": 1,
+   "meanDiff": 0
+  },
+  "Isha": {
+   "times": 231027,
+   "within": 230838,
+   "histogram": {
+    "0": 230838,
+    "-1": 145,
+    "+1": 44
+   },
+   "maxAbs": 1,
+   "meanDiff": 0
+  }
+ },
+ "misplaced": [],
+ "accepted": 0,
+ "imsakBeforeFajr": null,
+ "copiedRows": 0,
+ "copiedFrom": null,
+ "sourceFaults": 0,
+ "sourceFaultPlaces": [],
+ "alarm": false,
+ "alarmReasons": [],
+ "worst": [
+  {
+   "place": "FALKENBERG",
+   "date": "2024-01-01",
+   "prayer": "Sunrise",
+   "theirs": "08:40",
+   "ours": "08:41",
+   "diff": 1
+  },
+  {
+   "place": "RONNEBY",
+   "date": "2024-01-02",
+   "prayer": "Maghrib",
+   "theirs": "15:40",
+   "ours": "15:41",
+   "diff": 1
+  },
+  {
+   "place": "SIGTUNA",
+   "date": "2024-01-04",
+   "prayer": "Asr",
+   "theirs": "12:56",
+   "ours": "12:57",
+   "diff": 1
+  },
+  {
+   "place": "LJUNGBY",
+   "date": "2024-01-05",
+   "prayer": "Fajr",
+   "theirs": "06:15",
+   "ours": "06:16",
+   "diff": 1
+  },
+  {
+   "place": "LANDVETTER",
+   "date": "2024-01-06",
+   "prayer": "Dhuhr",
+   "theirs": "12:21",
+   "ours": "12:22",
+   "diff": 1
+  },
+  {
+   "place": "ANGELHOLM",
+   "date": "2024-01-09",
+   "prayer": "Fajr",
+   "theirs": "06:17",
+   "ours": "06:18",
+   "diff": 1
+  },
+  {
+   "place": "LUND",
+   "date": "2024-01-10",
+   "prayer": "Asr",
+   "theirs": "13:44",
+   "ours": "13:45",
+   "diff": 1
+  },
+  {
+   "place": "SKARA",
+   "date": "2024-01-10",
+   "prayer": "Fajr",
+   "theirs": "06:18",
+   "ours": "06:19",
+   "diff": 1
+  },
+  {
+   "place": "TRANEMO",
+   "date": "2024-01-16",
+   "prayer": "Sunrise",
+   "theirs": "08:29",
+   "ours": "08:30",
+   "diff": 1
+  },
+  {
+   "place": "UMEA",
+   "date": "2024-01-18",
+   "prayer": "Maghrib",
+   "theirs": "14:48",
+   "ours": "14:47",
+   "diff": -1
+  },
+  {
+   "place": "ENKOPING",
+   "date": "2024-01-24",
+   "prayer": "Sunrise",
+   "theirs": "08:16",
+   "ours": "08:15",
+   "diff": -1
+  },
+  {
+   "place": "BALSTA (U)",
+   "date": "2024-01-26",
+   "prayer": "Sunrise",
+   "theirs": "08:10",
+   "ours": "08:09",
+   "diff": -1
+  },
+  {
+   "place": "NORRTALJE",
+   "date": "2024-02-06",
+   "prayer": "Maghrib",
+   "theirs": "16:18",
+   "ours": "16:17",
+   "diff": -1
+  },
+  {
+   "place": "HOLLVIKSNAS",
+   "date": "2024-02-09",
+   "prayer": "Fajr",
+   "theirs": "05:42",
+   "ours": "05:41",
+   "diff": -1
+  },
+  {
+   "place": "NYKOPING",
+   "date": "2024-02-10",
+   "prayer": "Asr",
+   "theirs": "14:06",
+   "ours": "14:05",
+   "diff": -1
+  },
+  {
+   "place": "SODERTALJE",
+   "date": "2024-02-10",
+   "prayer": "Fajr",
+   "theirs": "05:21",
+   "ours": "05:20",
+   "diff": -1
+  },
+  {
+   "place": "AVESTA",
+   "date": "2024-02-12",
+   "prayer": "Dhuhr",
+   "theirs": "12:15",
+   "ours": "12:14",
+   "diff": -1
+  },
+  {
+   "place": "LUND",
+   "date": "2024-02-15",
+   "prayer": "Isha",
+   "theirs": "19:00",
+   "ours": "18:59",
+   "diff": -1
+  },
+  {
+   "place": "KOPING",
+   "date": "2024-02-23",
+   "prayer": "Dhuhr",
+   "theirs": "12:15",
+   "ours": "12:14",
+   "diff": -1
+  },
+  {
+   "place": "LJUSDAL",
+   "date": "2024-02-26",
+   "prayer": "Isha",
+   "theirs": "19:17",
+   "ours": "19:18",
+   "diff": 1
+  },
+  {
+   "place": "STENUNGSUND",
+   "date": "2024-02-29",
+   "prayer": "Maghrib",
+   "theirs": "17:47",
+   "ours": "17:48",
+   "diff": 1
+  },
+  {
+   "place": "STENUNGSUND",
+   "date": "2024-03-10",
+   "prayer": "Asr",
+   "theirs": "15:18",
+   "ours": "15:19",
+   "diff": 1
+  },
+  {
+   "place": "KINNA (VG)",
+   "date": "2024-03-11",
+   "prayer": "Isha",
+   "theirs": "19:57",
+   "ours": "19:58",
+   "diff": 1
+  },
+  {
+   "place": "SJOBO",
+   "date": "2024-03-14",
+   "prayer": "Isha",
+   "theirs": "19:55",
+   "ours": "19:56",
+   "diff": 1
+  },
+  {
+   "place": "MARSTA",
+   "date": "2024-03-15",
+   "prayer": "Dhuhr",
+   "theirs": "12:02",
+   "ours": "12:03",
+   "diff": 1
+  },
+  {
+   "place": "SIMRIS",
+   "date": "2024-03-17",
+   "prayer": "Isha",
+   "theirs": "19:59",
+   "ours": "20:00",
+   "diff": 1
+  },
+  {
+   "place": "SIMRISHAMN",
+   "date": "2024-03-20",
+   "prayer": "Sunrise",
+   "theirs": "05:58",
+   "ours": "05:57",
+   "diff": -1
+  },
+  {
+   "place": "PAJALA",
+   "date": "2024-03-22",
+   "prayer": "Asr",
+   "theirs": "14:33",
+   "ours": "14:34",
+   "diff": 1
+  },
+  {
+   "place": "VIMMERBY",
+   "date": "2024-03-22",
+   "prayer": "Fajr",
+   "theirs": "03:37",
+   "ours": "03:36",
+   "diff": -1
+  },
+  {
+   "place": "KARLSKOGA",
+   "date": "2024-03-24",
+   "prayer": "Asr",
+   "theirs": "15:26",
+   "ours": "15:27",
+   "diff": 1
+  },
+  {
+   "place": "SOLLEFTEA",
+   "date": "2024-03-28",
+   "prayer": "Asr",
+   "theirs": "15:16",
+   "ours": "15:17",
+   "diff": 1
+  },
+  {
+   "place": "FINSPANG",
+   "date": "2024-03-29",
+   "prayer": "Isha",
+   "theirs": "20:38",
+   "ours": "20:39",
+   "diff": 1
+  },
+  {
+   "place": "FALUN",
+   "date": "2024-04-02",
+   "prayer": "Asr",
+   "theirs": "16:33",
+   "ours": "16:34",
+   "diff": 1
+  },
+  {
+   "place": "HOLLVIKSNAS",
+   "date": "2024-04-06",
+   "prayer": "Isha",
+   "theirs": "21:54",
+   "ours": "21:55",
+   "diff": 1
+  },
+  {
+   "place": "FURULUND (Malmo)",
+   "date": "2024-04-08",
+   "prayer": "Dhuhr",
+   "theirs": "13:14",
+   "ours": "13:15",
+   "diff": 1
+  },
+  {
+   "place": "SIMRISHAMN",
+   "date": "2024-04-08",
+   "prayer": "Dhuhr",
+   "theirs": "13:09",
+   "ours": "13:10",
+   "diff": 1
+  },
+  {
+   "place": "KARLSKRONA",
+   "date": "2024-04-08",
+   "prayer": "Dhuhr",
+   "theirs": "13:04",
+   "ours": "13:05",
+   "diff": 1
+  },
+  {
+   "place": "LUDVIKA",
+   "date": "2024-04-09",
+   "prayer": "Sunrise",
+   "theirs": "05:53",
+   "ours": "05:52",
+   "diff": -1
+  },
+  {
+   "place": "MALMO",
+   "date": "2024-04-11",
+   "prayer": "Isha",
+   "theirs": "22:08",
+   "ours": "22:07",
+   "diff": -1
+  },
+  {
+   "place": "MALMO",
+   "date": "2024-04-16",
+   "prayer": "Isha",
+   "theirs": "22:12",
+   "ours": "22:11",
+   "diff": -1
+  },
+  {
+   "place": "STRANGNAS",
+   "date": "2024-04-19",
+   "prayer": "Isha",
+   "theirs": "22:07",
+   "ours": "22:06",
+   "diff": -1
+  },
+  {
+   "place": "MALMO",
+   "date": "2024-04-21",
+   "prayer": "Isha",
+   "theirs": "22:16",
+   "ours": "22:15",
+   "diff": -1
+  },
+  {
+   "place": "JOKKMOKK",
+   "date": "2024-04-21",
+   "prayer": "Maghrib",
+   "theirs": "20:53",
+   "ours": "20:54",
+   "diff": 1
+  },
+  {
+   "place": "MALMO",
+   "date": "2024-04-26",
+   "prayer": "Isha",
+   "theirs": "22:20",
+   "ours": "22:19",
+   "diff": -1
+  },
+  {
+   "place": "HOLLVIKSNAS",
+   "date": "2024-04-29",
+   "prayer": "Sunrise",
+   "theirs": "05:24",
+   "ours": "05:23",
+   "diff": -1
+  },
+  {
+   "place": "HULTSFRED",
+   "date": "2024-04-30",
+   "prayer": "Isha",
+   "theirs": "22:19",
+   "ours": "22:18",
+   "diff": -1
+  },
+  {
+   "place": "MALMO",
+   "date": "2024-05-01",
+   "prayer": "Isha",
+   "theirs": "22:24",
+   "ours": "22:23",
+   "diff": -1
+  },
+  {
+   "place": "BODEN",
+   "date": "2024-05-03",
+   "prayer": "Isha",
+   "theirs": "22:35",
+   "ours": "22:34",
+   "diff": -1
+  },
+  {
+   "place": "RIMBO",
+   "date": "2024-05-06",
+   "prayer": "Isha",
+   "theirs": "22:25",
+   "ours": "22:24",
+   "diff": -1
+  },
+  {
+   "place": "MALMO",
+   "date": "2024-05-06",
+   "prayer": "Isha",
+   "theirs": "22:28",
+   "ours": "22:27",
+   "diff": -1
+  },
+  {
+   "place": "SODERTALJE",
+   "date": "2024-05-07",
+   "prayer": "Maghrib",
+   "theirs": "21:04",
+   "ours": "21:03",
+   "diff": -1
+  },
+  {
+   "place": "SIMRISHAMN",
+   "date": "2024-05-14",
+   "prayer": "Maghrib",
+   "theirs": "21:12",
+   "ours": "21:11",
+   "diff": -1
+  },
+  {
+   "place": "BJORKNAS",
+   "date": "2024-05-14",
+   "prayer": "Dhuhr",
+   "theirs": "12:49",
+   "ours": "12:48",
+   "diff": -1
+  },
+  {
+   "place": "SKOVDE",
+   "date": "2024-05-15",
+   "prayer": "Asr",
+   "theirs": "17:28",
+   "ours": "17:27",
+   "diff": -1
+  },
+  {
+   "place": "FAGERSTA",
+   "date": "2024-05-15",
+   "prayer": "Sunrise",
+   "theirs": "04:12",
+   "ours": "04:11",
+   "diff": -1
+  },
+  {
+   "place": "VETLANDA",
+   "date": "2024-05-17",
+   "prayer": "Isha",
+   "theirs": "22:38",
+   "ours": "22:37",
+   "diff": -1
+  },
+  {
+   "place": "HOGSBY",
+   "date": "2024-05-21",
+   "prayer": "Dhuhr",
+   "theirs": "12:58",
+   "ours": "12:57",
+   "diff": -1
+  },
+  {
+   "place": "FURULUND (Malmo)",
+   "date": "2024-05-22",
+   "prayer": "Isha",
+   "theirs": "22:50",
+   "ours": "22:49",
+   "diff": -1
+  },
+  {
+   "place": "BENGTSFORS",
+   "date": "2024-05-23",
+   "prayer": "Asr",
+   "theirs": "17:42",
+   "ours": "17:41",
+   "diff": -1
+  },
+  {
+   "place": "BOLLEBYGD",
+   "date": "2024-05-24",
+   "prayer": "Isha",
+   "theirs": "23:00",
+   "ours": "22:59",
+   "diff": -1
+  }
+ ]
+}

@@ -47,9 +47,6 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO = join(__dirname, '..', '..');
 
 const COORDS_PATH = join(REPO, 'src/providers/islamiskaForbundetCoords.json');
-// The coordinates the tables are computed for, read off the tables
-// (tools/verify-methods/fit-all.py) — not always the town's own.
-const TABLE_COORDS_PATH = join(REPO, 'tools/verify-methods/diyanet-sweden-coords.json');
 const OUT_DIR = join(REPO, 'data/prayer-times/v1');
 const CITIES_DIR = join(OUT_DIR, 'cities');
 const INDEX_PATH = join(OUT_DIR, 'index.json');
@@ -206,12 +203,8 @@ async function main(): Promise<void> {
     { lat: number; lng: number }
   >;
   const cities = Object.keys(coords).map(name => ({ name, slug: citySlug(name) }));
-  const tableCoords = existsSync(TABLE_COORDS_PATH)
-    ? (JSON.parse(await readFile(TABLE_COORDS_PATH, 'utf8')) as Record<string, { lat: number; lon: number }>)
-    : {};
-  /** The point a city's table is computed for. */
-  const pointOf = (c: { name: string; slug: string }) =>
-    tableCoords[c.slug] ?? { lat: coords[c.name].lat, lon: coords[c.name].lng };
+  /** The point a city's table is computed for (the coordinates file holds Diyanet's points). */
+  const pointOf = (c: { name: string; slug: string }) => ({ lat: coords[c.name].lat, lon: coords[c.name].lng });
 
   // Sanity: slugs must be unique or per-city files collide.
   const slugSet = new Set<string>();

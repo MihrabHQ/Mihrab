@@ -51,11 +51,40 @@ export type Authority = {
    * as that year rather than counted against the method.
    */
   copiedYears?: boolean;
+  /**
+   * Where the tables live when not under data/prayer-times/<folder>: an
+   * absolute directory holding v1/cities/ (a download the check makes and
+   * does not commit). A missing directory skips the authority.
+   */
+  root?: string;
+  /**
+   * Rows the source got wrong rather than the method: compared against the
+   * authority's own original, a row that differs from it is the
+   * republisher's fault and is set aside (reported, not counted).
+   */
+  original?: (place: Place) => Record<string, string[]> | null;
   places: () => Place[];
 };
 
 function readJson<T>(p: string): T {
   return JSON.parse(fs.readFileSync(p, 'utf8')) as T;
+}
+
+/** Diyanet's downloaded Swedish tables (diyanet-fetch.py); not committed. */
+export const DIYANET_ROOT = process.env.DIYANET_TABLES ?? path.join(require('node:os').homedir(), '.cache/mihrab/diyanet');
+
+let diyanetBySlug: Map<string, string> | null = null;
+/** Diyanet's own rows for an Islamiska Förbundet city, by its slug, or null if not downloaded. */
+function diyanetDaysFor(slug: string): Record<string, string[]> | null {
+  if (!diyanetBySlug) {
+    diyanetBySlug = new Map();
+    const pts = readJson<Record<string, { slug: string | null }>>(path.join(__dirname, 'diyanet-sweden-points.json'));
+    for (const [iid, v] of Object.entries(pts)) if (v.slug) diyanetBySlug.set(v.slug, iid);
+  }
+  const iid = diyanetBySlug.get(slug);
+  if (!iid) return null;
+  const f = path.join(DIYANET_ROOT, 'v1', 'cities', `${iid}.json`);
+  return fs.existsSync(f) ? (readJson<{ days: Record<string, string[]> }>(f).days ?? null) : null;
 }
 
 /** Indonesia prints each regency in its own zone; the province says which. */
@@ -89,42 +118,52 @@ export const AUTHORITIES: Authority[] = [
     method: 24,
     school: 0,
     toleranceMin: 1,
-    // The tables are Diyanet's, computed by the Congress method
-    // (src/providers/congressMethod.ts); the phone reproduces every time
-    // within a minute, and on the minute on 90–99 % of days — the rest is
-    // Diyanet's own ephemeris and coordinate decimals. Computed at the
-    // coordinates the tables were made for (diyanet-sweden-coords.json,
-    // fitted by fit-all.py), which are not always the town's: Kiruna's
-    // table is computed for 64°N, Ystad's for a point west of the town.
+    // The tables are Diyanet's (Islamiska Förbundet republishes them), and
+    // the method is Diyanet's (src/providers/congressMethod.ts), computed at
+    // the points Diyanet computes the cities at (the coordinates file).
+    // Rows where the site's table differs from Diyanet's own are the site's
+    // fault — another year's figures served for the next, one town's table
+    // printed for another — and are set aside when Diyanet's tables have
+    // been downloaded (diyanet-fetch.py; the 'diyanet' check below).
     maxOutsideShare: 0.01,
     hardMaxMin: 3,
     alarm: true,
-    // The site's 2027 pages carry 2026's figures until Diyanet's 2027
-    // tables are out (an hour off about the clock changes, and the
-    // carried night share of a different year).
     copiedYears: true,
+    original: place => diyanetDaysFor(place.file.replace(/\.json$/, '')),
     places: () => {
       const coords = readJson<Record<string, { lat: number; lng: number }>>(
         path.join(ROOT, 'src/providers/islamiskaForbundetCoords.json'),
       );
-      const diyanet = readJson<Record<string, { lat: number; lon: number }>>(
-        path.join(__dirname, 'diyanet-sweden-coords.json'),
-      );
       const { citySlug } = require('../../src/providers/islamiskaForbundetParser') as {
         citySlug: (s: string) => string;
       };
-      return Object.entries(coords).map(([name, c]) => {
-        const slug = citySlug(name);
-        const d = diyanet[slug];
-        return {
-          file: `${slug}.json`,
-          name,
-          lat: d ? d.lat : c.lat,
-          lon: d ? d.lon : c.lng,
-          tz: 'Europe/Stockholm',
-        };
-      });
+      return Object.entries(coords).map(([name, c]) => ({
+        file: `${citySlug(name)}.json`,
+        name,
+        lat: c.lat,
+        lon: c.lng,
+        tz: 'Europe/Stockholm',
+      }));
     },
+  },
+  {
+    id: 'diyanet',
+    name: 'Sweden — Diyanet (the tables Islamiska Förbundet republishes)',
+    folder: 'diyanet',
+    root: DIYANET_ROOT,
+    method: 24,
+    school: 0,
+    // The method is Diyanet's own, at Diyanet's own points: the check is to
+    // the minute. 0.06 % of times are a fraction of a second the other side
+    // of the rounding point (tools/verify-methods/README.md).
+    toleranceMin: 0,
+    maxOutsideShare: 0.002,
+    hardMaxMin: 1,
+    alarm: true,
+    places: () =>
+      Object.entries(readJson<Record<string, { name: string; lat: number; lon: number }>>(path.join(__dirname, 'diyanet-sweden-points.json'))).map(
+        ([iid, v]) => ({ file: `${iid}.json`, name: v.name, lat: v.lat, lon: v.lon, tz: 'Europe/Stockholm' }),
+      ),
   },
   {
     id: 'habous',
@@ -230,5 +269,5 @@ export const AUTHORITIES: Authority[] = [
 ];
 
 export function cityFile(a: Authority, p: Place): string {
-  return path.join(DATA, a.folder, 'v1', 'cities', p.file);
+  return path.join(a.root ?? path.join(DATA, a.folder), 'v1', 'cities', p.file);
 }

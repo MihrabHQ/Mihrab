@@ -103,6 +103,9 @@ export type Report = {
    */
   copiedRows: number;
   copiedFrom: string | null;
+  /** Rows set aside because the republished table differs from the authority's original. */
+  sourceFaults: number;
+  sourceFaultPlaces: string[];
   alarm: boolean;
   alarmReasons: string[];
   /** The worst rows, largest first — enough to see what kind of wrong. */
@@ -183,7 +186,7 @@ export function verifyAuthority(a: Authority, accepted: Accepted[]): Report {
   let to: string | null = null;
   let tableBuiltAt: string | null = null;
 
-  const indexPath = path.join(ROOT, 'data/prayer-times', a.folder, 'v1', 'index.json');
+  const indexPath = path.join(a.root ?? path.join(ROOT, 'data/prayer-times', a.folder), 'v1', 'index.json');
   if (fs.existsSync(indexPath)) {
     tableBuiltAt = (JSON.parse(fs.readFileSync(indexPath, 'utf8')) as { builtAt?: string }).builtAt ?? null;
   }
@@ -194,6 +197,8 @@ export function verifyAuthority(a: Authority, accepted: Accepted[]): Report {
   const byPlace = new Map<string, Row[]>();
   let copiedRows = 0;
   let copiedFrom: string | null = null;
+  let sourceFaults = 0;
+  const sourceFaultPlaces = new Set<string>();
 
   for (const place of places) {
     const file = cityFile(a, place);
@@ -202,9 +207,17 @@ export function verifyAuthority(a: Authority, accepted: Accepted[]): Report {
       continue;
     }
     const table = (JSON.parse(fs.readFileSync(file, 'utf8')) as { days: CityDays }).days ?? {};
+    const original = a.original ? a.original(place) : null;
     const rows: Row[] = [];
     for (const [date, row] of Object.entries(table)) {
       if (!row || row.length < 7) continue;
+      // The republisher's fault, not the method's: its row differs from the original's.
+      const confirmed = !!(original && original[date]);
+      if (confirmed && original![date].slice(1).some((t, i) => t !== row[i + 1])) {
+        sourceFaults++;
+        sourceFaultPlaces.add(place.name);
+        continue;
+      }
       if (dayLengthMinutes(date, place.tz) !== 1440) continue; // a clock change: the table's own convention, not the method's
       let [y, m, d] = date.split('-').map(Number);
       // The previous year's figures served for the date: the site has not
@@ -212,7 +225,8 @@ export function verifyAuthority(a: Authority, accepted: Accepted[]): Report {
       // computes the year asked for, and the tables will move when the
       // authority's do. (The builder drops such rows from now on; the
       // check here is for what was stored before it did.)
-      if (a.copiedYears && isPreviousYearsRow(date, row[1], row[6], place.lat, place.lon, place.tz)) {
+      // (A row the original confirms is that year's, whatever it resembles.)
+      if (a.copiedYears && !confirmed && isPreviousYearsRow(date, row[1], row[6], place.lat, place.lon, place.tz)) {
         copiedRows++;
         if (!copiedFrom || date < copiedFrom) copiedFrom = date;
         y -= 1;
@@ -239,7 +253,7 @@ export function verifyAuthority(a: Authority, accepted: Accepted[]): Report {
       if (!from || date < from) from = date;
       if (!to || date > to) to = date;
       const imsakGap = minutes(row[1]) - minutes(row[0]);
-      imsakOffsets[imsakGap] = (imsakOffsets[imsakGap] ?? 0) + 1;
+      if (Number.isFinite(imsakGap)) imsakOffsets[imsakGap] = (imsakOffsets[imsakGap] ?? 0) + 1;
       PRAYERS.forEach((prayer, k) => {
         const theirs = row[k + 1];
         const mine = ours[prayer];
@@ -359,6 +373,8 @@ export function verifyAuthority(a: Authority, accepted: Accepted[]): Report {
     imsakBeforeFajr: imsakMode ? Number(imsakMode[0]) : null,
     copiedRows,
     copiedFrom,
+    sourceFaults,
+    sourceFaultPlaces: [...sourceFaultPlaces].sort(),
     alarm: reasons.length > 0,
     alarmReasons: reasons,
     worst: mismatches.slice(0, 60),
@@ -387,6 +403,14 @@ export function describe(r: Report): string {
       `${r.times - r.within} of ${r.times} outside, worst ${r.maxAbs} min` +
       (r.imsakBeforeFajr != null ? ` · Imsak printed ${r.imsakBeforeFajr} min before Fajr` : ''),
   );
+  if (r.sourceFaults) {
+    lines.push('');
+    lines.push(
+      `${r.sourceFaults} rows set aside where the site's table differs from the original authority's ` +
+        `(${r.sourceFaultPlaces.length} places: ${r.sourceFaultPlaces.slice(0, 8).join(', ')}` +
+        `${r.sourceFaultPlaces.length > 8 ? ', …' : ''}) — the site's fault, not the method's.`,
+    );
+  }
   if (r.copiedRows) {
     lines.push('');
     lines.push(
@@ -464,6 +488,11 @@ export function main(argv: string[]): number {
   const reports: Report[] = [];
   const accepted = loadAccepted();
   for (const a of list) {
+    // A table the check downloads rather than commits (Diyanet's) and has not: nothing to say.
+    if (a.root && !fs.existsSync(path.join(a.root, 'v1', 'cities'))) {
+      console.warn(`${a.id}: no tables at ${a.root} — skipped (tools/verify-methods/diyanet-fetch.py)`);
+      continue;
+    }
     const r = verifyAuthority(a, accepted);
     reports.push(r);
     fs.writeFileSync(path.join(OUT_DIR, `${a.id}.json`), JSON.stringify(r, null, 1) + '\n');

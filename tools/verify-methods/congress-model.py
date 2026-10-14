@@ -8,7 +8,7 @@ tables Islamiska Förbundet prints for Sweden are Diyanet's, row for row.
 
 Exact-minute agreement per prayer is printed; the aim is 100 %.
 """
-import json, math, sys, datetime as dt
+import json, math, os, sys, datetime as dt
 from zoneinfo import ZoneInfo
 
 TZ = ZoneInfo('Europe/Stockholm')
@@ -24,12 +24,40 @@ BAND = 20             # minutes: the gradual transition's reach
 ANCHOR_SLACK = 1      # minutes: a midsummer night this close to the floor counts as floored
 ROUND = 'nearest'
 
-SUN = 'praytimes'
+SUN = 'diyanet'
 RATIO = 'next'
 ITER = 0
+RAMP_END = os.environ.get('RAMP_END', 'band')
+RATIO_ROUND = os.environ.get('RATIO_ROUND') == '1'
+CARRY_ROUND = os.environ.get('CARRY_ROUND') == '1'
+CARRY_RUN = os.environ.get('CARRY_RUN', '1') == '1'
+
+# Diyanet's sun, read off its tables (diyanet-*.py, October 2026): Meeus's mean elements and
+# equation of the centre, the TRUE (geometric) longitude, the apparent obliquity (mean + nutation),
+# the equation of time as L0 - RA, all at 0h UT less 45 s, the equation of time 0.106 s later.
+DIYANET_INSTANT_S = -45
+DIYANET_EOT_ADD_MIN = 0.00176
+
+def sun_diyanet(t_utc):
+    jd = t_utc.timestamp() / 86400 + 2440587.5
+    T = (jd - 2451545.0) / 36525
+    L0 = (280.46646 + T * (36000.76983 + 0.0003032 * T)) % 360
+    M = (357.52911 + T * (35999.05029 - 0.0001537 * T)) * RAD
+    C = (1.914602 - T * (0.004817 + 0.000014 * T)) * math.sin(M) + (0.019993 - 0.000101 * T) * math.sin(2 * M) + 0.000289 * math.sin(3 * M)
+    om = (125.04 - 1934.136 * T) * RAD
+    Lm = (280.4665 + 36000.7698 * T) * RAD; Lmoon = (218.3165 + 481267.8813 * T) * RAD
+    eps = 23 + (26 + (21.448 - T * (46.815 + T * (0.00059 - T * 0.001813))) / 60) / 60
+    eps += (9.20 * math.cos(om) + 0.57 * math.cos(2 * Lm) + 0.10 * math.cos(2 * Lmoon) - 0.09 * math.cos(2 * om)) / 3600
+    lam = L0 + C
+    ra = math.degrees(math.atan2(math.cos(eps * RAD) * math.sin(lam * RAD), math.cos(lam * RAD))) % 360
+    dec = math.asin(math.sin(eps * RAD) * math.sin(lam * RAD))
+    eot = ((L0 - ra + 180) % 360 - 180) * 4 + DIYANET_EOT_ADD_MIN
+    return dec, eot
 
 def sun_at(t_utc, lat, lon):
     """Declination (rad) and equation of time (minutes) at an instant."""
+    if SUN == 'diyanet':
+        return sun_diyanet(t_utc + dt.timedelta(seconds=DIYANET_INSTANT_S))
     if SUN == 'mixA':   # NOAA declination, Almanac equation of time
         return sun_noaa(t_utc, lat, lon)[0], sun_praytimes(t_utc)[1]
     if SUN == 'mixB':
@@ -138,23 +166,45 @@ class Model:
         ss = None if ss is None else ss + TEMKIN['maghrib']
         half = FLOOR / 2
         noon_up = 90 - abs(self.lat - s.dec / RAD) > RISE_SET
+        # the night is never shorter than five hours, 2.5 h either side of the midnight after the
+        # printed Dhuhr — or, where midsummer's night is floored at both ends, of the season's
+        # anchoring Dhuhr (dhuhr_extremes): the floored times never step back
+        if self.midsummer_floors():
+            hi, lo = self.dhuhr_extremes(day)
+            nsr, nss = hi - 720 + half, lo + 720 - half
+        else:
+            nsr, nss = dhuhr - 720 + half, dhuhr + 720 - half
         if sr is None or ss is None:
             # the sun neither rises nor sets: midnight sun (up at noon) or polar night
-            sr, ss = (dhuhr - 720 + half, dhuhr + 720 - half) if noon_up else (dhuhr - half, dhuhr + half)
+            sr, ss = (nsr, nss) if noon_up else (dhuhr - half, dhuhr + half)
         # the day is never shorter than five hours, about the printed Dhuhr — each end on its own
         sr = min(sr, dhuhr - half)
         ss = max(ss, dhuhr + half)
-        # nor is the night, about the midnight after
-        sr = max(sr, dhuhr - 720 + half)
-        ss = min(ss, dhuhr + 720 - half)
-        # and where midsummer's night is floored at both ends, that night anchors the whole season:
-        # no earlier sunrise, no later Maghrib
-        if self.midsummer_floors():
-            sol = self.solar(dt.date(day.year, 6, 21)).transit + TEMKIN['dhuhr']
-            sr = max(sr, sol - 720 + half)
-            ss = min(ss, sol + 720 - half)
+        sr = max(sr, nsr)
+        ss = min(ss, nss)
         self.cache[('rs', day)] = (sr, ss)
         return sr, ss
+
+    def dhuhr_extremes(self, day):
+        k = ('dx', day)
+        if k not in self.cache:
+            mid = dt.date(day.year, 6, 21)
+            dh = lambda d: self.solar(d).transit + TEMKIN['dhuhr']
+            if day <= mid:
+                # before midsummer: sunrise held against midsummer's Dhuhr; Maghrib, once floored,
+                # against the latest Dhuhr since its floor began — the floored Maghrib never steps back
+                d0 = day
+                while d0 > day - dt.timedelta(days=120) and self.maghrib_floored(d0 - DAY): d0 -= DAY
+                run = [dh(d0 + dt.timedelta(days=i)) for i in range((day - d0).days + 1)] if self.maghrib_floored(day) else [dh(day)]
+                self.cache[k] = (max(dh(day), dh(mid)), min(max(run), dh(mid)))
+            else:            # after it: every Dhuhr from midsummer on — the times never step back
+                vals = [dh(mid + dt.timedelta(days=i)) for i in range((day - mid).days + 1)]
+                self.cache[k] = (max(vals), min(vals))
+        return self.cache[k]
+
+    def maghrib_floored(self, day):
+        s = self.solar(day); st = s.setting(RISE_SET)
+        return st is None or st + TEMKIN['maghrib'] > s.transit + TEMKIN['dhuhr'] + 720 - FLOOR / 2
 
     def midsummer_floors(self):
         """Is the midsummer night floored at both ends — the day's own floors leaving it
@@ -186,6 +236,11 @@ class Model:
         while self.fajr18(d) is None: d -= DAY
         sr, ss = self.printed_rise_set(d)
         _, pss = self.printed_rise_set(d - DAY)
+        if RATIO_ROUND:   # the share from printed (minute-rounded) times
+            f18 = math.floor(self.fajr18(d) + 0.5); sr_, ss_ = math.floor(sr + 0.5), math.floor(ss + 0.5)
+            S = f18 + 1440 - ss_; N = 1440 - (ss_ - sr_)
+            self.cache['r'] = (S / 3) / N; self.cache['rday'] = d
+            return self.cache['r']
         if RATIO == 'prev':      # sharia night from the previous Maghrib to this dawn, over this day's night
             S = self.fajr18(d) - (pss - 1440); N = self.night(d)
         elif RATIO == 'prevN':   # same, over the previous day's night
@@ -211,16 +266,32 @@ class Model:
         return a, b
 
     def carried(self, day):
+        k = ('car', day)
+        if k not in self.cache: self.cache[k] = self._carried(day)
+        return self.cache[k]
+
+    def _carried(self, day):
         """Fajr and Isha from the carried ratio: Isha = Maghrib + r·N, Fajr = sunrise − r·(18/16)·N."""
         r = self.ratio()
         sr, ss = self.printed_rise_set(day)
-        n = self.night(day)
+        if CARRY_ROUND: sr, ss = math.floor(sr + 0.5), math.floor(ss + 0.5)
+        n = 1440 - (ss - sr)
         fajr, isha = sr - r * (FAJR / ISHA) * n, ss + r * n
-        # where the midsummer floors are in force, never an earlier Fajr nor a later Isha than at midsummer
-        mid = dt.date(day.year, 6, 21)
-        if day != mid and self.midsummer_floors():
-            mf, mi = self.carried(mid)
-            fajr, isha = max(fajr, mf), min(isha, mi)
+        # where the midsummer floors are in force: never an earlier Fajr nor a later Isha than on any
+        # day between midsummer and this one (the floored sunrise's running rule, carried through)
+        if self.midsummer_floors() and CARRY_RUN:
+            mid = dt.date(day.year, 6, 21)
+            if day > mid:
+                prev = self.carried(day - DAY)
+                fajr, isha = max(fajr, prev[0]), min(isha, prev[1])
+            elif day < mid:
+                mf, mi = self.carried(mid)
+                fajr, isha = max(fajr, mf), min(isha, mi)
+        elif self.midsummer_floors():
+            mid = dt.date(day.year, 6, 21)
+            if day != mid:
+                mf, mi = self.carried(mid)
+                fajr, isha = max(fajr, mf), min(isha, mi)
         return fajr, isha
 
     def times(self, day):
@@ -228,7 +299,7 @@ class Model:
         sr, ss = self.printed_rise_set(day)
         dhuhr = s.transit + TEMKIN['dhuhr']
         asr = s.asr()
-        asr = dhuhr + 2 if asr is None else asr + TEMKIN['asr']
+        asr = dhuhr if asr is None else asr + TEMKIN['asr']   # not formed: Dhuhr's time is Asr's (the published rule)
         asr = max(dhuhr, min(asr, ss))
         f18, i16 = self.fajr18(day), self.isha16(day)
         gap = self.gap_days()
@@ -287,7 +358,12 @@ class Model:
         inside = (far <= day < edge) if side == 'in' else (edge < day <= far)
         if not inside: return self.true(key, day)
         sign = 1 if key == 'fajr' else -1      # Fajr sits later than the takdir, Isha earlier
-        return T + sign * BAND * abs((day - edge).days) / abs((far - edge).days)
+        k = abs((day - edge).days); n = abs((far - edge).days)
+        if RAMP_END == 'true':     # the line ends on the true time of the far day
+            return T + (self.true(key, far) - T) * k / n
+        if RAMP_END == 'next':     # the line ends a day beyond, at the band's edge
+            return T + sign * BAND * k / (n + 1)
+        return T + sign * BAND * k / n
 
 def hhmm(m, day_start=None):
     if ROUND == 'nearest': x = math.floor(m + 0.5)
@@ -307,7 +383,18 @@ def main():
     if '--sun' in sys.argv: SUN = sys.argv[sys.argv.index('--sun') + 1]
     if '--ratio' in sys.argv: RATIO = sys.argv[sys.argv.index('--ratio') + 1]
     if '--hour' in sys.argv: SOLAR_HOUR = float(sys.argv[sys.argv.index('--hour') + 1])
-    table = json.load(open(f'/Users/hassan/git/mihrab/data/prayer-times/v1/cities/{slug}.json'))['days']
+    if '--diyanet' in sys.argv:
+        # Diyanet's own table for the place (diyanet-fetch.py cache), genuine years only
+        iid = sys.argv[sys.argv.index('--diyanet') + 1]
+        table = {}
+        for yy in range(2024, 2028):
+            pth = os.path.expanduser(f'~/.cache/mihrab/diyanet/raw/{iid}_{yy}.json')
+            if not os.path.exists(pth): continue
+            for r in json.load(open(pth)):
+                d_, m_, y_ = r['gregorianDateShort'].split('.')
+                table[f'{y_}-{m_}-{d_}'] = ['', r['fajr'], r['sunrise'], r['dhuhr'], r['asr'], r['maghrib'], r['isha']]
+    else:
+        table = json.load(open(f'/Users/hassan/git/mihrab/data/prayer-times/v1/cities/{slug}.json'))['days']
     as_year = int(sys.argv[sys.argv.index('--as-year') + 1]) if '--as-year' in sys.argv else None
     models = {}
     keys = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha']

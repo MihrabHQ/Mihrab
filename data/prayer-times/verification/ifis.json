@@ -3,218 +3,200 @@
  "name": "Sweden — Islamiska Förbundet",
  "method": 24,
  "toleranceMin": 1,
- "builtAt": "2026-10-14T18:28:51.695Z",
+ "builtAt": "2026-10-14T20:05:04.146Z",
  "tableBuiltAt": "2026-10-14T14:56:01.725Z",
  "places": 108,
  "placesMissing": 0,
- "days": 42374,
+ "days": 9725,
  "from": "2026-10-11",
  "to": "2027-11-16",
- "times": 254244,
- "within": 254229,
- "outsideShare": 0.0001,
- "maxAbs": 2,
+ "times": 57828,
+ "within": 57828,
+ "outsideShare": 0,
+ "maxAbs": 0,
  "perPrayer": {
   "Fajr": {
-   "times": 42374,
-   "within": 42372,
+   "times": 9638,
+   "within": 9638,
    "histogram": {
-    "0": 27109,
-    "-1": 9714,
-    "+1": 5549,
-    "+2": 2
+    "0": 9438,
+    "+1": 105,
+    "-1": 95
    },
-   "maxAbs": 2,
-   "meanDiff": -0.1
+   "maxAbs": 1,
+   "meanDiff": 0
   },
   "Sunrise": {
-   "times": 42374,
-   "within": 42370,
+   "times": 9638,
+   "within": 9638,
    "histogram": {
-    "0": 30601,
-    "-1": 4612,
-    "+1": 7157,
-    "-2": 4
+    "0": 9462,
+    "+1": 111,
+    "-1": 65
    },
-   "maxAbs": 2,
-   "meanDiff": 0.06
+   "maxAbs": 1,
+   "meanDiff": 0
   },
   "Dhuhr": {
-   "times": 42374,
-   "within": 42374,
+   "times": 9638,
+   "within": 9638,
    "histogram": {
-    "0": 40779,
-    "-1": 809,
-    "+1": 786
+    "0": 9614,
+    "+1": 16,
+    "-1": 8
    },
    "maxAbs": 1,
    "meanDiff": 0
   },
   "Asr": {
-   "times": 42374,
-   "within": 42374,
+   "times": 9638,
+   "within": 9638,
    "histogram": {
-    "0": 34218,
-    "+1": 3276,
-    "-1": 4880
+    "0": 9494,
+    "+1": 63,
+    "-1": 81
    },
    "maxAbs": 1,
-   "meanDiff": -0.04
+   "meanDiff": 0
   },
   "Maghrib": {
-   "times": 42374,
-   "within": 42371,
+   "times": 9638,
+   "within": 9638,
    "histogram": {
-    "0": 30175,
-    "-1": 7409,
-    "+1": 4787,
-    "-2": 2,
-    "+2": 1
+    "0": 9438,
+    "-1": 116,
+    "+1": 84
    },
-   "maxAbs": 2,
-   "meanDiff": -0.06
+   "maxAbs": 1,
+   "meanDiff": 0
   },
   "Isha": {
-   "times": 42374,
-   "within": 42368,
+   "times": 9638,
+   "within": 9638,
    "histogram": {
-    "0": 27452,
-    "+1": 9427,
-    "-1": 5489,
-    "-2": 5,
-    "+2": 1
+    "0": 9429,
+    "-1": 102,
+    "+1": 107
    },
-   "maxAbs": 2,
-   "meanDiff": 0.09
+   "maxAbs": 1,
+   "meanDiff": 0
   }
  },
  "misplaced": [],
- "accepted": 0,
+ "accepted": 522,
  "imsakBeforeFajr": 10,
- "copiedRows": 13248,
- "copiedFrom": "2027-03-05",
+ "copiedRows": 307,
+ "copiedFrom": "2027-03-31",
+ "sourceFaults": 32755,
+ "sourceFaultPlaces": [
+  "Alingsås",
+  "Avesta",
+  "Bengtsfors",
+  "Boden",
+  "Bollnäs",
+  "Borlänge",
+  "Borås",
+  "Eksjö",
+  "Enköping",
+  "Eskilstuna",
+  "Eslöv",
+  "Fagersta",
+  "Falkenberg",
+  "Falköping",
+  "Filipstad",
+  "Flen",
+  "Gislaved",
+  "Gnosjö",
+  "Gällivare",
+  "Gävle",
+  "Göteborg",
+  "Halmstad",
+  "Haparanda",
+  "Helsingborg",
+  "Hudiksvall",
+  "Hultsfred",
+  "Härnösand",
+  "Hässleholm",
+  "Högsby",
+  "Hörby",
+  "Jokkmokk",
+  "Jönköping",
+  "Kalmar",
+  "Karlskoga",
+  "Karlskrona",
+  "Karlstad",
+  "Katrineholm",
+  "Kiruna",
+  "Kristianstad",
+  "Kristinehamn",
+  "Köping",
+  "Laholm",
+  "Landskrona",
+  "Lessebo",
+  "Lidköping",
+  "Linköping",
+  "Ludvika",
+  "Luleå",
+  "Lund",
+  "Lysekil",
+  "Malmö",
+  "Mariestad",
+  "Mellerud",
+  "Mjölby",
+  "Mora",
+  "Märsta",
+  "Mönsterås",
+  "Norrköping",
+  "Norrtälje",
+  "Nybro",
+  "Nyköping",
+  "Nynäshamn",
+  "Nässjö",
+  "Oskarshamn",
+  "Oxelösund",
+  "Pajala",
+  "Piteå",
+  "Ronneby",
+  "Sala",
+  "Simrishamn",
+  "Skara",
+  "Skellefteå",
+  "Skövde",
+  "Sollefteå",
+  "Stockholm",
+  "Strängnäs",
+  "Sundsvall",
+  "Säffle",
+  "Sävsjö",
+  "Söderhamn",
+  "Södertälje",
+  "Sölvesborg",
+  "Tierp",
+  "Tranemo",
+  "Tranås",
+  "Trelleborg",
+  "Trollhättan",
+  "Uddevalla",
+  "Ulricehamn",
+  "Umeå",
+  "Uppsala",
+  "Varberg",
+  "Vetlanda",
+  "Vimmerby",
+  "Visby",
+  "Vänersborg",
+  "Värnamo",
+  "Västervik",
+  "Västerås",
+  "Växjö",
+  "Ystad",
+  "Ängelholm",
+  "Åmål",
+  "Örebro",
+  "Örnsköldsvik",
+  "Östersund"
+ ],
  "alarm": false,
  "alarmReasons": [],
- "worst": [
-  {
-   "place": "Jokkmokk",
-   "date": "2027-01-22",
-   "prayer": "Maghrib",
-   "theirs": "14:31",
-   "ours": "14:29",
-   "diff": -2
-  },
-  {
-   "place": "Jokkmokk",
-   "date": "2027-05-10",
-   "prayer": "Maghrib",
-   "theirs": "22:06",
-   "ours": "22:04",
-   "diff": -2
-  },
-  {
-   "place": "Örnsköldsvik",
-   "date": "2027-08-31",
-   "prayer": "Isha",
-   "theirs": "21:51",
-   "ours": "21:49",
-   "diff": -2
-  },
-  {
-   "place": "Örnsköldsvik",
-   "date": "2027-09-06",
-   "prayer": "Isha",
-   "theirs": "21:44",
-   "ours": "21:42",
-   "diff": -2
-  },
-  {
-   "place": "Örnsköldsvik",
-   "date": "2027-09-07",
-   "prayer": "Isha",
-   "theirs": "21:43",
-   "ours": "21:41",
-   "diff": -2
-  },
-  {
-   "place": "Örnsköldsvik",
-   "date": "2027-09-09",
-   "prayer": "Isha",
-   "theirs": "21:41",
-   "ours": "21:39",
-   "diff": -2
-  },
-  {
-   "place": "Örnsköldsvik",
-   "date": "2027-09-13",
-   "prayer": "Fajr",
-   "theirs": "03:39",
-   "ours": "03:41",
-   "diff": 2
-  },
-  {
-   "place": "Örnsköldsvik",
-   "date": "2027-09-14",
-   "prayer": "Fajr",
-   "theirs": "03:40",
-   "ours": "03:42",
-   "diff": 2
-  },
-  {
-   "place": "Örnsköldsvik",
-   "date": "2027-09-15",
-   "prayer": "Isha",
-   "theirs": "21:34",
-   "ours": "21:36",
-   "diff": 2
-  },
-  {
-   "place": "Örnsköldsvik",
-   "date": "2027-09-17",
-   "prayer": "Isha",
-   "theirs": "21:32",
-   "ours": "21:30",
-   "diff": -2
-  },
-  {
-   "place": "Gällivare",
-   "date": "2027-11-09",
-   "prayer": "Sunrise",
-   "theirs": "08:05",
-   "ours": "08:03",
-   "diff": -2
-  },
-  {
-   "place": "Gällivare",
-   "date": "2027-11-10",
-   "prayer": "Sunrise",
-   "theirs": "08:09",
-   "ours": "08:07",
-   "diff": -2
-  },
-  {
-   "place": "Pajala",
-   "date": "2027-11-11",
-   "prayer": "Sunrise",
-   "theirs": "08:03",
-   "ours": "08:01",
-   "diff": -2
-  },
-  {
-   "place": "Gällivare",
-   "date": "2027-11-15",
-   "prayer": "Sunrise",
-   "theirs": "08:30",
-   "ours": "08:28",
-   "diff": -2
-  },
-  {
-   "place": "Pajala",
-   "date": "2027-11-16",
-   "prayer": "Maghrib",
-   "theirs": "13:58",
-   "ours": "14:00",
-   "diff": 2
-  }
- ]
+ "worst": []
 }

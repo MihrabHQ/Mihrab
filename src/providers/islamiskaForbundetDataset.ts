@@ -25,7 +25,9 @@ import {
   IFIS_DATASET_BASE_URL,
   IFIS_INDEX_POLL_INTERVAL_MS,
 } from '../config/datasets';
-import { getNearestIslamiskaForbundetCityWithDistance } from './islamiskaForbundetNearest';
+import { getNearestIslamiskaForbundetCityWithDistance, islamiskaForbundetCityCoords } from './islamiskaForbundetNearest';
+import { computeLocalAdhanTimes } from './localAdhan';
+import { SWEDEN_METHOD_ID } from './swedenMethodId';
 import {
   citySlug,
   tupleToTimings,
@@ -53,6 +55,26 @@ const CACHE_PREFIX = 'ifis.dataset.v1.city.';
  * 250 km is generous — real Swedish locations are always well within it.
  */
 const MAX_DATASET_CITY_KM = 250;
+
+/**
+ * Sweden's times are the app's own calculation, not the scraped table
+ * (October 2026). Islamiska Förbundet republishes Diyanet's tables, and
+ * the app computes Diyanet's method (method 24, congressMethod.ts) for the
+ * nearest listed city at the point Diyanet computes it — on the printed
+ * minute on 99.94 % of times over 2024–2027, never a minute off, and with
+ * none of the site's faults (another year's figures served for the next,
+ * one town's table printed for another). The mirrored tables stay, for the
+ * weekly check against the source (tools/verify-methods). Set false to
+ * serve the mirrored table again, with the calculation behind it.
+ */
+let servesCalculation = true;
+export function swedenServesCalculation(): boolean {
+  return servesCalculation;
+}
+/** Tests: exercise the mirrored-table path. */
+export function setSwedenServesCalculationForTests(v: boolean): void {
+  servesCalculation = v;
+}
 
 /** `"YYYY-MM-DD" -> [Imsak,Fajr,Sunrise,Dhuhr,Asr,Maghrib,Isha]`. */
 type CityDays = Record<string, DatasetDayTuple>;
@@ -278,6 +300,20 @@ export async function getIslamiskaForbundetDatasetTimes(params: {
       `Nearest dataset city "${city}" is ${Math.round(distanceKm)} km away ` +
         `(> ${MAX_DATASET_CITY_KM} km) — coordinate is outside dataset coverage.`,
     );
+  }
+  if (servesCalculation) {
+    const at = islamiskaForbundetCityCoords(city);
+    return {
+      ...computeLocalAdhanTimes({
+        latitude: at?.lat ?? params.latitude,
+        longitude: at?.lng ?? params.longitude,
+        date: params.date,
+        calculationMethod: SWEDEN_METHOD_ID,
+        school: 0,
+      }),
+      timezone: DEFAULT_TZ,
+      source: 'local',
+    };
   }
   const slug = citySlug(city);
   const dateKey = formatLocalDate(params.date);
