@@ -19,15 +19,25 @@ jobs:
     steps:
       - name: Reach the page and the city list
         run: |
-          set -x
-          curl -sS -m 40 -c jar.txt -A 'Mihrab dataset builder (+https://github.com/MihrabHQ/Mihrab; mihrab@elghamri.se)' \
-            -o page.html -w 'page %{http_code} %{time_total}s\n' https://bimasislam.kemenag.go.id/jadwalshalat || echo 'page: no answer'
-          ls -la page.html 2>/dev/null && grep -o 'id="search_prov"' page.html | head -1 && \
-            grep -o '<option value="[0-9a-f]\{32\}">[^<]*' page.html | head -5
-          PROV=$(grep -o '<option value="[0-9a-f]\{32\}">[^<]*' page.html | head -1 | sed 's/.*value="\([0-9a-f]*\)".*/\1/')
-          [ -n "$PROV" ] && curl -sS -m 40 -b jar.txt -A 'Mihrab dataset builder' -X POST -d "x=$PROV" \
-            -w 'cities %{http_code}\n' https://bimasislam.kemenag.go.id/ajax/getKabkoshalat | head -c 600
+          set +e
+          UA='Mihrab dataset builder (+https://github.com/MihrabHQ/Mihrab; mihrab@elghamri.se)'
+          curl -sS -m 40 -c jar.txt -A "$UA" -o page.html -w 'page %{http_code} %{time_total}s\n' https://bimasislam.kemenag.go.id/jadwalshalat
+          echo '--- the province select, as served'
+          tr -d '\n' < page.html | grep -o '<select[^>]*search_prov.\{0,1500\}' | head -c 1500
           echo
-          KAB=$(curl -sS -m 40 -b jar.txt -A 'Mihrab dataset builder' -X POST -d "x=$PROV" https://bimasislam.kemenag.go.id/ajax/getKabkoshalat | grep -o 'value="[0-9a-f]\{32\}"' | head -1 | sed 's/value="//;s/"//')
-          [ -n "$KAB" ] && curl -sS -m 40 -b jar.txt -A 'Mihrab dataset builder' -X POST \
-            -d "x=$PROV&y=$KAB&bln=10&thn=2026" -w 'month %{http_code}\n' https://bimasislam.kemenag.go.id/ajax/getShalatbln | head -c 800
+          echo '--- every option'
+          grep -o '<option[^>]*>[^<]*' page.html | head -50
+          PROV=$(grep -o "<option[^>]*value=['\"][^'\"]*['\"]" page.html | grep -v "value=['\"]['\"]" | head -1 | sed "s/.*value=['\"]\([^'\"]*\)['\"].*/\1/")
+          echo "PROV=$PROV"
+          echo '--- cities'
+          curl -sS -m 40 -b jar.txt -A "$UA" -X POST -d "x=$PROV" -w '\ncities %{http_code}\n' https://bimasislam.kemenag.go.id/ajax/getKabkoshalat | head -c 1500
+          echo
+          KAB=$(curl -sS -m 40 -b jar.txt -A "$UA" -X POST -d "x=$PROV" https://bimasislam.kemenag.go.id/ajax/getKabkoshalat | grep -o "value=['\"][^'\"]*['\"]" | grep -v "value=['\"]['\"]" | head -1 | sed "s/value=['\"]//;s/['\"]$//")
+          echo "KAB=$KAB"
+          echo '--- a month'
+          curl -sS -m 40 -b jar.txt -A "$UA" -X POST -d "x=$PROV&y=$KAB&bln=10&thn=2026" -w '\nmonth %{http_code}\n' https://bimasislam.kemenag.go.id/ajax/getShalatbln | head -c 1200
+          echo
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kemenag-page
+          path: page.html
