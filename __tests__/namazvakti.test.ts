@@ -223,13 +223,18 @@ describe('on the phone, without the site', () => {
     return within / total;
   };
 
-  it('computes the calendar to within a minute or two of the site, from Istanbul to Stockholm', () => {
+  it('computes the calendar on the site’s minute, from Istanbul to Stockholm', () => {
     // Istanbul's 41° and 500 m, Cologne's 51°, Stockholm's 59° — the
-    // temkin grows from 11 to 20 minutes across them.
-    expect(compare(ISTANBUL, 41, 29, 'Europe/Istanbul', 500, 1)).toBeGreaterThan(0.99);
-    expect(compare(COLOGNE, 50.9333, 6.95, 'Europe/Berlin', 250, 2)).toBeGreaterThan(0.99);
-    expect(compare(STOCKHOLM, 59.3167, 18.0667, 'Europe/Stockholm', 250, 2)).toBeGreaterThan(0.93);
-    expect(compare(STOCKHOLM, 59.3167, 18.0667, 'Europe/Stockholm', 250, 3)).toBeGreaterThan(0.99);
+    // temkin grows from 10.8 to 19.1 minutes across them. The rest are a
+    // minute off: the site's files give a city's point to the arc-minute
+    // and it computes with a finer one.
+    expect(compare(ISTANBUL, 41, 29, 'Europe/Istanbul', 500, 0)).toBeGreaterThan(0.97);
+    expect(compare(ISTANBUL, 41, 29, 'Europe/Istanbul', 500, 1)).toBe(1);
+    expect(compare(COLOGNE, 50.9333, 6.95, 'Europe/Berlin', 250, 0)).toBeGreaterThan(0.9);
+    // One night at Cologne is further: the night the held summer times end, a day apart.
+    expect(compare(COLOGNE, 50.9333, 6.95, 'Europe/Berlin', 250, 1)).toBeGreaterThan(0.998);
+    expect(compare(STOCKHOLM, 59.3167, 18.0667, 'Europe/Stockholm', 250, 0)).toBeGreaterThan(0.93);
+    expect(compare(STOCKHOLM, 59.3167, 18.0667, 'Europe/Stockholm', 250, 1)).toBe(1);
   });
 
   it('takes the temkin from the latitude and the city height, as the site does', () => {

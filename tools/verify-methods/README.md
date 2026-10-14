@@ -281,3 +281,31 @@ per-place / per-day window scripts:
 a minute: Fajr, sunrise, Dhuhr, Maghrib and Isha about 99.6 %, Asr 98.7 %.
 
 - The `kemenag` check compares to the minute, at those points and classes.
+
+## Türkiye Takvimi: the calendar's method, to the minute
+
+The reference is the site's own year for 54 cities from 42°S to 60°N
+(`/tmp`-saved `XML.php?cityID=` files; `nv-resid.py` reads them, the
+standard meridian and the site's summer-time days included). Every column
+is the bare sun (a precise sun at each event's moment) plus one per-city
+constant, the temkin T, and a rounding:
+
+| column | rule |
+|---|---|
+| İmsâk | 19°, less T, rounded down |
+| Sabâh (Fajr) | 18°, rounded up — no temkin |
+| Sunrise | the level horizon (0°), less T and 2 min, rounded up |
+| Dhuhr, Asr, Isha (17°) | plus T, rounded up |
+| Maghrib | 0°, plus T and 2 min, rounded up |
+
+T is the time the sun takes on the summer solstice (declination 23.38°)
+to go from the level horizon to 1.462° below it at the site's 250 m, and
+1.719° at its 500 m — the only two heights it gives any city. The Dhuhr
+windows pin T per city to a hundredth of a minute.
+
+What is left is the city's point: the files give it to whole arc-minutes,
+truncated, and the site computes with the finer one — moving a city by
+less than 1′ makes even Sabâh, which has no temkin, exact. So at the file's
+point the method is on the site's minute about 95 % of the time below 50°
+(90 % with the high north's held summer nights) and within a minute
+otherwise. The phone serves the site's own year when it has it.

@@ -34,13 +34,6 @@
  * file is a far lighter load on the site than one job asking for all.
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {
-  CalculationMethod,
-  type CalculationParameters,
-  Coordinates,
-  Madhab,
-  PrayerTimes,
-} from 'adhan';
 import { httpUserAgent } from '../config/httpIdentity';
 import { recordServerIndex, type ServerStatus } from '../prayer/dataStatus';
 import {
@@ -55,7 +48,7 @@ import {
 import { formatLocalDate } from '../utils/date';
 import { fetchWithRetry } from '../utils/fetchWithRetry';
 import { formatLocalTime } from '../utils/prayerTimes';
-import { computedLatitude } from './localAdhan';
+import { meeusApparentSun } from './moroccoMethod';
 import { ProviderError } from './errors';
 import {
   nearestNvCity,
@@ -410,33 +403,42 @@ export async function namazvaktiHeld(
 /** The city height the site gives almost every city (a few large ones get 500). */
 export const NAMAZVAKTI_DEFAULT_HEIGHT_M = 250;
 
-/** How far the horizon dips below level from a height, degrees. */
-function horizonDip(heightM: number): number {
-  return (Math.acos(6_371_000 / (6_371_000 + Math.max(0, heightM))) * 180) / Math.PI;
+/**
+ * How far below the level horizon the calendar takes the city's own horizon,
+ * degrees, from its height. The site gives every city one of two heights,
+ * 250 m or 500 m, and its tables put that horizon at 1.462° and 1.719°
+ * (54 cities from 42°S to 47°N, every day of 2026 —
+ * tools/verify-methods/nv-resid.py); between and beyond, the line through
+ * the two in √height.
+ */
+function horizonDepth(heightM: number): number {
+  return 0.8416 + 0.03924 * Math.sqrt(Math.max(0, heightM));
 }
 
 /**
- * Minutes for the sun, on the summer solstice at this latitude, to go from
- * the level horizon to `depth` degrees below the city's own horizon — the
- * dip from its height plus `extra`. The calendar's temkin is this with
- * 0.97° and rounded up: 8 at Cairo, 11 at Istanbul (500 m), 13 at Cologne,
- * 20 at Stockholm — every city we measured, to the minute. Capped at 62°,
- * beyond which the site publishes no times.
+ * The calendar's temkin, exact: minutes for the sun, on the summer solstice
+ * at this latitude, to go from the level horizon down to the city's own
+ * horizon (`horizonDepth`). 7.7 at Cairo, 10.8 at Istanbul (500 m), 12.6 at
+ * Cologne, 19.6 at Stockholm. Capped at 62°, beyond which the site
+ * publishes no times.
  */
-function solsticeMinutes(latitude: number, heightM: number, extra: number): number {
+/** The solstice the temkin is measured on: the declination its tables fit best (to ±0.02°). */
+const SOLSTICE_DECLINATION = 23.38;
+
+export function temkinExact(latitude: number, heightM = NAMAZVAKTI_DEFAULT_HEIGHT_M): number {
   const rad = Math.PI / 180;
   const phi = Math.min(Math.abs(latitude), 62) * rad;
-  const dec = 23.44 * rad;
+  const dec = SOLSTICE_DECLINATION * rad;
   const hourAngle = (alt: number) =>
     Math.acos(
       Math.max(-1, Math.min(1, (Math.sin(alt * rad) - Math.sin(phi) * Math.sin(dec)) / (Math.cos(phi) * Math.cos(dec)))),
     );
-  return ((hourAngle(-(horizonDip(heightM) + extra)) - hourAngle(0)) / rad) * 4;
+  return ((hourAngle(-horizonDepth(heightM)) - hourAngle(0)) / rad) * 4;
 }
 
 /** The calendar's temkin at a latitude and city height, in whole minutes. */
 export function temkinMinutes(latitude: number, heightM = NAMAZVAKTI_DEFAULT_HEIGHT_M): number {
-  return Math.ceil(solsticeMinutes(latitude, heightM, 0.97));
+  return Math.ceil(temkinExact(latitude, heightM));
 }
 
 /**
@@ -483,20 +485,57 @@ function nightTimesDay(latitude: number, longitude: number, day: Date): Date {
 }
 
 /**
+ * The sun's events for a civil date at a point, minutes past 00:00 UT:
+ * Meeus's apparent sun at each event's own moment, iterated.
+ */
+function sunEvents(latitude: number, longitude: number, day: Date) {
+  const rad = Math.PI / 180;
+  const d0 = (Date.UTC(day.getFullYear(), day.getMonth(), day.getDate()) - Date.UTC(2000, 0, 1)) / 86_400_000 - 0.5;
+  const at = (t: number) => meeusApparentSun(d0 + t / 1440);
+  let noon = 720 - 4 * longitude;
+  for (let i = 0; i < 3; i++) noon = 720 - 4 * longitude - at(noon).eot;
+  const sp = Math.sin(latitude * rad);
+  const cp = Math.cos(latitude * rad);
+  const event = (altitudeOf: (dec: number) => number, sign: 1 | -1, start: number) => {
+    let t = start;
+    for (let i = 0; i < 3; i++) {
+      const { dec, eot } = at(t);
+      const c = (Math.sin(altitudeOf(dec) * rad) - sp * Math.sin(dec)) / (cp * Math.cos(dec));
+      t = 720 - 4 * longitude - eot + (sign * 4 * Math.acos(Math.max(-1, Math.min(1, c)))) / rad;
+    }
+    return t;
+  };
+  const level = (a: number) => () => a;
+  const asr = (shadow: number) => (dec: number) =>
+    Math.atan(1 / (shadow + Math.tan(Math.abs(latitude * rad - dec)))) / rad;
+  return {
+    fajr19: () => event(level(-19), -1, noon - 420),
+    fajr18: () => event(level(-18), -1, noon - 420),
+    sunrise: () => event(level(0), -1, noon - 360),
+    noon,
+    asr: (shadow: number) => event(asr(shadow), 1, noon + 200),
+    sunset: () => event(level(0), 1, noon + 360),
+    isha17: () => event(level(-17), 1, noon + 420),
+  };
+}
+
+/**
  * The calendar's method computed on the phone, from the rules its own
- * tables follow (fitted to the site's whole year for cities from Mecca to
- * Oslo — tools/namazvakti-dataset/model-fit.ts):
+ * tables follow (54 cities' whole 2026, from 42°S to 60°N —
+ * tools/verify-methods/nv-resid.py), with the city's temkin T (exact,
+ * `temkinExact`):
  *
- *   İmsâk   the sun at 19°, less the temkin, rounded down
- *   Sabâh   the sun at 18° — the time the calendar prints for Fajr
- *   Sunrise, Maghrib   the sun's 0.833° moved out by the horizon's share
- *           of the temkin (the same solstice measure, to 0.5° past the dip)
- *   Dhuhr, Asr, Isha (17°)   plus the temkin
+ *   İmsâk   the sun at 19°, less T, rounded down
+ *   Sabâh   the sun at 18°, rounded up — the time the calendar prints for Fajr
+ *   Sunrise the sun at the level horizon (0°), less T and two minutes
+ *   Dhuhr, Asr, Isha (17°)   plus T
+ *   Maghrib the sun at 0°, plus T and two minutes
  *
- * All but İmsâk are rounded up, towards caution, as the site rounds. Where
- * the sun no longer gets to 19° — a northern summer — the night times of
- * the last night it did are held, as the site does. Within a minute of
- * the site on about 97 % of times, within two on 99.5 %.
+ * Everything but İmsâk rounded up. Where the sun no longer gets to 19° — a
+ * northern summer — the night times of the last night it did are held, as
+ * the site does. At the city's own point the site's minute about 95 % of
+ * the time and the rest one minute off; the site's files give a city's
+ * point only to the arc-minute, and it computes with a finer one.
  */
 export function computeNamazvaktiMethodTimes(params: {
   latitude: number;
@@ -507,46 +546,32 @@ export function computeNamazvaktiMethodTimes(params: {
   heightM?: number;
 }): PrayerTimesResult {
   const height = params.heightM ?? NAMAZVAKTI_DEFAULT_HEIGHT_M;
-  const T = temkinMinutes(params.latitude, height);
-  const horizon = solsticeMinutes(params.latitude, height, 0.5);
-  const coords = (day: Date, calc: CalculationParameters) =>
-    new Coordinates(computedLatitude(params.latitude, params.longitude, day, calc), params.longitude);
-  const at = (day: Date, fajrAngle: number, ishaAngle: number) => {
-    const calc = CalculationMethod.Other();
-    calc.fajrAngle = fajrAngle;
-    calc.ishaAngle = ishaAngle;
-    calc.madhab = params.school === 1 ? Madhab.Hanafi : Madhab.Shafi;
-    // Exact times; each is rounded below the way the site rounds it.
-    calc.rounding = 'none' as CalculationParameters['rounding'];
-    return new PrayerTimes(coords(day, calc), day, calc);
-  };
-  const shift = (d: Date, min: number) => new Date(d.getTime() + min * 60_000);
-  /** Rounded up to the next whole minute. */
-  const up = (d: Date) => {
-    const t = Math.ceil(d.getTime() / 60_000) * 60_000;
-    return formatLocalTime(new Date(t));
-  };
-  const down = (d: Date) => formatLocalTime(new Date(Math.floor(d.getTime() / 60_000) * 60_000));
+  const T = temkinExact(params.latitude, height);
+  const { latitude, longitude } = params;
   const day = new Date(params.date.getFullYear(), params.date.getMonth(), params.date.getDate());
-  const pt = at(day, 19, 17);
-  const night = nightTimesDay(params.latitude, params.longitude, day);
-  const imsak = shift(at(night, 19, 17).fajr, -T);
-  const sabah = at(night, 18, 17).fajr;
+  const instant = (on: Date, minutes: number, round: 'up' | 'down') => {
+    const m = round === 'up' ? Math.ceil(minutes - 1e-9) : Math.floor(minutes + 1e-9);
+    return formatLocalTime(new Date(Date.UTC(on.getFullYear(), on.getMonth(), on.getDate()) + m * 60_000));
+  };
+  const today = sunEvents(latitude, longitude, day);
+  const night = nightTimesDay(latitude, longitude, day);
+  const nightSun = night === day ? today : sunEvents(latitude, longitude, night);
   // Isha falls in the night that begins this evening and ends tomorrow, so
   // it is tomorrow's night that decides — held from the evening before the
   // last night that reached 19°.
   const tomorrow = addDays(day, 1);
-  const ishaNight = nightTimesDay(params.latitude, params.longitude, tomorrow);
-  const isha = shift(at(ishaNight === tomorrow ? day : addDays(ishaNight, -1), 19, 17).isha, T);
+  const ishaNight = nightTimesDay(latitude, longitude, tomorrow);
+  const ishaDay = ishaNight === tomorrow ? day : addDays(ishaNight, -1);
+  const ishaSun = ishaDay === day ? today : sunEvents(latitude, longitude, ishaDay);
   return {
     timings: {
-      Imsak: down(imsak),
-      Fajr: up(sabah),
-      Sunrise: up(shift(pt.sunrise, -horizon)),
-      Dhuhr: up(shift(pt.dhuhr, T)),
-      Asr: up(shift(pt.asr, T)),
-      Maghrib: up(shift(pt.maghrib, horizon)),
-      Isha: up(isha),
+      Imsak: instant(night, nightSun.fajr19() - T, 'down'),
+      Fajr: instant(night, nightSun.fajr18(), 'up'),
+      Sunrise: instant(day, today.sunrise() - T - 2, 'up'),
+      Dhuhr: instant(day, today.noon + T, 'up'),
+      Asr: instant(day, today.asr(params.school === 1 ? 2 : 1) + T, 'up'),
+      Maghrib: instant(day, today.sunset() + T + 2, 'up'),
+      Isha: instant(ishaDay, ishaSun.isha17() + T, 'up'),
     },
     source: 'local',
   };
