@@ -11,6 +11,14 @@
  * Design notes:
  *   • Incremental: existing days are kept; only MISSING days up to the horizon
  *     are fetched, so steady-state runs make ~one request per city per new day.
+ *   • Checked: every row — fetched now or kept from before — must have its
+ *     Dhuhr within minutes of solar noon. The widget answers a date in a year
+ *     it has not published yet with the same date of THIS year, and between
+ *     the two years' clock changes that row is an hour off. Such rows are
+ *     dropped, not stored; the phone falls back for those days.
+ *   • Re-read: a stored day fetched REFRESH_AFTER_DAYS ago or more is fetched
+ *     again when the budget allows (nearest date first), so a year the site
+ *     publishes late replaces the copy it served meanwhile.
  *   • Date-major: fetches near-term dates for ALL cities first, so a budget cap
  *     still yields full near-term coverage everywhere (freshness passes).
  *   • Gentle: fixed delay between requests + bounded retries.
@@ -29,6 +37,7 @@ import {
   timingsToTuple,
   type DatasetDayTuple,
 } from '../../src/providers/islamiskaForbundetParser';
+import { dhuhrOffsetFromNoon, DHUHR_NOON_TOLERANCE_MIN } from '../../src/prayer/tableDayCheck';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO = join(__dirname, '..', '..');
@@ -50,6 +59,9 @@ const SEED_DAYS = intEnv('IFIS_SEED_DAYS', 60); // bundled seed window
 const MAX_REQUESTS = intEnv('IFIS_MAX_REQUESTS', 8000); // per-run request budget
 const MAX_WALL_MS = intEnv('IFIS_MAX_WALL_MIN', 50) * 60_000; // per-run time budget
 const REQUEST_DELAY_MS = intEnv('IFIS_REQUEST_DELAY_MS', 300);
+// A stored day this old is read again (budget allowing), in case the site
+// has since published the year it was copying from the current one.
+const REFRESH_AFTER_DAYS = intEnv('IFIS_REFRESH_AFTER_DAYS', 90);
 // Per-city upcoming-days coverage floor. The server must hold ≥ a month for
 // every city: warn (email, run stays green) under WARN, hard-fail under FAIL.
 const COVERAGE_WARN_DAYS = intEnv('IFIS_COVERAGE_WARN_DAYS', 40);
@@ -68,12 +80,15 @@ async function emitOutput(key: string, value: string): Promise<void> {
 }
 
 type CityDays = Record<string, DatasetDayTuple>;
+/** When each day was last read from the site (YYYY-MM-DD). Phones ignore it. */
+type FetchedOn = Record<string, string>;
 type CityFile = {
   city: string;
   slug: string;
   timezone: string;
   builtAt: string;
   days: CityDays;
+  fetched?: FetchedOn;
 };
 
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
@@ -137,15 +152,25 @@ async function fetchDay(city: string, dateKey: string): Promise<DatasetDayTuple 
   return null;
 }
 
-async function loadExistingCity(slug: string): Promise<CityDays> {
+async function loadExistingCity(slug: string): Promise<{ days: CityDays; fetched: FetchedOn }> {
   const p = join(CITIES_DIR, `${slug}.json`);
-  if (!existsSync(p)) return {};
+  if (!existsSync(p)) return { days: {}, fetched: {} };
   try {
     const parsed = JSON.parse(await readFile(p, 'utf8')) as CityFile;
-    return parsed.days ?? {};
+    return { days: parsed.days ?? {}, fetched: parsed.fetched ?? {} };
   } catch {
-    return {};
+    return { days: {}, fetched: {} };
   }
+}
+
+/**
+ * The row's Dhuhr against the sun's own noon. The authorities' margin is a
+ * few minutes; an hour means the row is the other side of a clock change —
+ * the widget's copy of this year standing in for a year it has not
+ * published. Returns the offset so the log can say how far.
+ */
+function dayOffsetFromNoon(dateKey: string, tuple: DatasetDayTuple, longitude: number): number {
+  return dhuhrOffsetFromNoon(dateKey, tuple[3], longitude, TZ);
 }
 
 async function main(): Promise<void> {
@@ -167,36 +192,92 @@ async function main(): Promise<void> {
 
   const today = stockholmToday();
   const dropBefore = addDays(today, -DROP_BEFORE_DAYS);
+  const refreshBefore = addDays(today, -REFRESH_AFTER_DAYS);
   const horizonKeys: string[] = [];
   for (let i = 0; i <= HORIZON_DAYS; i++) horizonKeys.push(addDays(today, i));
 
-  // Load + prune existing data.
+  // Load + prune existing data. A kept day is checked like a fetched one:
+  // the copies of 2026 that stood for 2027 were stored before the check
+  // existed, and the next build must not keep them.
   const data = new Map<string, CityDays>();
+  const fetchedOn = new Map<string, FetchedOn>();
+  const rejected: string[] = [];
   for (const c of cities) {
-    const days = await loadExistingCity(c.slug);
-    for (const k of Object.keys(days)) if (k < dropBefore) delete days[k];
+    const { days, fetched } = await loadExistingCity(c.slug);
+    for (const k of Object.keys(days)) {
+      if (k < dropBefore) {
+        delete days[k];
+        delete fetched[k];
+        continue;
+      }
+      const off = dayOffsetFromNoon(k, days[k], coords[c.name].lng);
+      if (!(Math.abs(off) <= DHUHR_NOON_TOLERANCE_MIN)) {
+        rejected.push(`${c.name} ${k} (kept; Dhuhr ${days[k][3]} is ${Math.round(off)} min from noon)`);
+        delete days[k];
+        delete fetched[k];
+      }
+    }
+    for (const k of Object.keys(fetched)) if (!days[k]) delete fetched[k];
     data.set(c.slug, days);
+    fetchedOn.set(c.slug, fetched);
   }
 
   // Date-major fetch of missing days, within budgets.
   const startedAt = Date.now();
   let requests = 0;
   let failures = 0;
+  let refreshed = 0;
   let budgetHit = false;
+  const outOfBudget = () => requests >= MAX_REQUESTS || Date.now() - startedAt >= MAX_WALL_MS;
+
+  /** Fetch one day and store it if it is that day's row. */
+  const readDay = async (c: { name: string; slug: string }, dateKey: string): Promise<void> => {
+    const days = data.get(c.slug)!;
+    const tuple = await fetchDay(c.name, dateKey);
+    requests++;
+    if (!tuple) {
+      failures++;
+    } else {
+      const off = dayOffsetFromNoon(dateKey, tuple, coords[c.name].lng);
+      if (Math.abs(off) <= DHUHR_NOON_TOLERANCE_MIN) {
+        days[dateKey] = tuple;
+        fetchedOn.get(c.slug)![dateKey] = today;
+      } else {
+        rejected.push(`${c.name} ${dateKey} (Dhuhr ${tuple[3]} is ${Math.round(off)} min from noon)`);
+        // A copy of another year. Whatever was stored for the day stays
+        // only if it passed its own check above; the copy does not replace it.
+      }
+    }
+    await sleep(REQUEST_DELAY_MS);
+  };
 
   outer: for (const dateKey of horizonKeys) {
     for (const c of cities) {
-      const days = data.get(c.slug)!;
-      if (days[dateKey]) continue; // already have it (incremental)
-      if (requests >= MAX_REQUESTS || Date.now() - startedAt >= MAX_WALL_MS) {
+      if (data.get(c.slug)![dateKey]) continue; // already have it (incremental)
+      if (outOfBudget()) {
         budgetHit = true;
         break outer;
       }
-      const tuple = await fetchDay(c.name, dateKey);
-      requests++;
-      if (tuple) days[dateKey] = tuple;
-      else failures++;
-      await sleep(REQUEST_DELAY_MS);
+      await readDay(c, dateKey);
+    }
+  }
+
+  // Then re-read what was fetched long ago, nearest date first. A day with no
+  // fetch stamp predates the stamps (October 2026) and counts as old.
+  if (!budgetHit) {
+    refresh: for (const dateKey of horizonKeys.slice(7)) {
+      for (const c of cities) {
+        const days = data.get(c.slug)!;
+        if (!days[dateKey]) continue;
+        const on = fetchedOn.get(c.slug)![dateKey];
+        if (on && on >= refreshBefore) continue;
+        if (outOfBudget()) {
+          budgetHit = true;
+          break refresh;
+        }
+        await readDay(c, dateKey);
+        refreshed++;
+      }
     }
   }
 
@@ -218,12 +299,18 @@ async function main(): Promise<void> {
     const sortedKeys = Object.keys(days).sort();
     const sortedDays: CityDays = {};
     for (const k of sortedKeys) sortedDays[k] = days[k];
+    const fetched: FetchedOn = {};
+    for (const k of sortedKeys) {
+      const on = fetchedOn.get(c.slug)![k];
+      if (on) fetched[k] = on;
+    }
     const file: CityFile = {
       city: c.name,
       slug: c.slug,
       timezone: TZ,
       builtAt,
       days: sortedDays,
+      fetched,
     };
     await writeFile(join(CITIES_DIR, `${c.slug}.json`), JSON.stringify(file) + '\n');
 
@@ -280,10 +367,20 @@ async function main(): Promise<void> {
   );
 
   console.log(
-    `[ifis-dataset] cities=${cities.length} requests=${requests} ` +
-      `failures=${failures} minCoverageDays=${minCoverage} (${minCoverageCity}) ` +
+    `[ifis-dataset] cities=${cities.length} requests=${requests} refreshed=${refreshed} ` +
+      `failures=${failures} rejected=${rejected.length} minCoverageDays=${minCoverage} (${minCoverageCity}) ` +
       `status=${serverStatus} dead=${deadCities.length} budgetHit=${budgetHit}`,
   );
+  if (rejected.length > 0) {
+    // Not fatal: the phone computes those days itself. Listed so a run's
+    // log says which days the site is still answering with another year.
+    console.warn(
+      `[ifis-dataset] ${rejected.length} row(s) rejected — another year's row served for the date:\n  ` +
+        rejected.slice(0, 40).join('\n  ') +
+        (rejected.length > 40 ? `\n  … and ${rejected.length - 40} more` : ''),
+    );
+    await emitOutput('rejected_days', String(rejected.length));
+  }
   if (deadCities.length > 0) {
     // Not fatal: these coordinates fall back to AlAdhan/on-device at runtime.
     console.warn(

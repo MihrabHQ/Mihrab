@@ -1,5 +1,6 @@
 import { httpUserAgent } from '../config/httpIdentity';
-import { getNearestIslamiskaForbundetCity } from './islamiskaForbundetNearest';
+import { getNearestIslamiskaForbundetCity, islamiskaForbundetCityCoords } from './islamiskaForbundetNearest';
+import { dhuhrOffsetFromNoon, DHUHR_NOON_TOLERANCE_MIN } from '../prayer/tableDayCheck';
 import { computeLocalAdhanTimes } from './localAdhan';
 import { formatLocalDate } from '../utils/date';
 import { fetchWithRetry } from '../utils/fetchWithRetry';
@@ -118,6 +119,25 @@ export async function fetchIslamiskaForbundetTimes(params: {
 
   const html = await res.text();
   const timings = parseIslamiskaForbundetHtml(html, widgetCity);
+
+  // Is this the day we asked for? Asked for a date in a year it has not
+  // published, the widget answers with the same date of the current year
+  // — and between the two years' clock changes that row is an hour off,
+  // Fajr before dawn. Dhuhr tells: it is solar noon plus a few minutes
+  // on every true row. A row that fails is refused as a shape error, so
+  // the caller's fallback computes the day instead (October 2026; the
+  // dataset builder applies the same check, tableDayCheck.ts).
+  const dateKey = formatLocalDate(params.date);
+  const cityLongitude = islamiskaForbundetCityCoords(widgetCity)?.lng ?? params.longitude;
+  const noonOffset = dhuhrOffsetFromNoon(dateKey, timings.Dhuhr, cityLongitude, 'Europe/Stockholm');
+  if (!(Math.abs(noonOffset) <= DHUHR_NOON_TOLERANCE_MIN)) {
+    throw new ProviderError(
+      PROVIDER,
+      'shape',
+      `Sweden source answered ${dateKey} with another day's row ` +
+        `(Dhuhr ${timings.Dhuhr} is ${Math.round(noonOffset)} min from solar noon)`,
+    );
+  }
 
   // Advisory comparison against on-device adhan — logged only, never thrown.
   //

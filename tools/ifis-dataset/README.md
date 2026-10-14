@@ -65,3 +65,17 @@ The parser is shared with the app (`src/providers/islamiskaForbundetParser.ts`)
 and owned by the `provider-doctor` subagent. If the bönetider HTML changes, the
 job fails the freshness/health gate and emails — fix the parser, add a fixture
 under `__tests__/fixtures/islamiskaForbundet/`, and re-run.
+
+## Rows that are not the day they claim to be
+
+Asked for a date in a year it has not published, the widget answers with
+the same date of the current year. Most days that is within a minute of
+the truth; between the two years' clock changes it is an hour off. The
+builder checks every row — fetched now or kept from before — against
+solar noon (`src/prayer/tableDayCheck.ts`): Dhuhr is noon plus four to
+six minutes on every true row, so a Dhuhr an hour from noon is refused
+and the day is left out (the phone computes it). The log lists the
+rejected days. Each stored day also carries the date it was last read
+(`fetched`, ignored by phones), and days read `IFIS_REFRESH_AFTER_DAYS`
+(90) ago or more are read again as the budget allows, nearest first, so
+a late-published year replaces the copy served meanwhile.

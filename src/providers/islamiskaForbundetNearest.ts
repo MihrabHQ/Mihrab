@@ -38,3 +38,8 @@ export function getNearestIslamiskaForbundetCityWithDistance(
 export function getNearestIslamiskaForbundetCity(latitude: number, longitude: number): string {
   return getNearestIslamiskaForbundetCityWithDistance(latitude, longitude).city;
 }
+
+/** The listed city's own coordinates — the point its table is computed for. */
+export function islamiskaForbundetCityCoords(city: string): CityCoords | undefined {
+  return cityCoords[city];
+}
