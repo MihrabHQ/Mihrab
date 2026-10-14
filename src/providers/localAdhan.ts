@@ -8,6 +8,18 @@ import {
 import type { PrayerTimesResult } from './types';
 import { formatLocalTime } from '../utils/prayerTimes';
 import { autoMethodForCoords } from './autoMethod';
+import { gregorianToHijri } from '../hijri/convert';
+import {
+  adhanHighLatitudeRule,
+  CUSTOM_METHOD_ID,
+  getCalculationPreferences,
+} from '../prayer/calculationPreferences';
+import { isRamadan } from '../hijri/events';
+
+/** AlAdhan's id for Umm al-Qura University, Makkah. */
+export const UMM_AL_QURA_METHOD_ID = 4;
+/** Isha after Maghrib in Ramadan, against 90 minutes the rest of the year. */
+export const UMM_AL_QURA_RAMADAN_ISHA_MINUTES = 120;
 import { computeImsak, DEFAULT_IMSAK_OFFSET_MINUTES } from './imsak';
 
 // ── METHOD IDS ARE ALADHAN'S, AND SO ARE THE ANGLES ───────────────────
@@ -156,6 +168,12 @@ function parametersForMethod(methodId: number): CalculationParameters {
       // Ministry of Awqaf, Islamic Affairs and Holy Places, Jordan:
       // 18° / 18°, Maghrib held five minutes.
       return angles(18, 18, { maghrib: 5 });
+    case CUSTOM_METHOD_ID: {
+      // The user's own angles, from Settings — what a mosque publishes
+      // as "we use 16° and 14°". AlAdhan's `method=99`.
+      const p = getCalculationPreferences();
+      return angles(p.customFajrAngle, p.customIshaAngle);
+    }
     case 21:
       // Morocco — Ministry of Habous and Islamic Affairs.
       //
@@ -259,8 +277,22 @@ export function computeLocalAdhanTimes(params: {
       ? autoMethodForCoords(params.latitude, params.longitude)
       : params.calculationMethod;
   const calc = parametersForMethod(methodId);
-  
+  // Umm al-Qura holds Isha 120 minutes after Maghrib in Ramadan rather
+  // than 90 — the convention the university publishes and AlAdhan serves
+  // (1 March 2026, Makkah: Maghrib 18:25, Isha 20:25). adhan.js's preset
+  // is the 90 all year, which was thirty minutes early offline each
+  // Ramadan. The month is read from the app's own Hijri calendar.
+  if (methodId === UMM_AL_QURA_METHOD_ID && isRamadan(gregorianToHijri(dayDate))) {
+    calc.ishaInterval = UMM_AL_QURA_RAMADAN_ISHA_MINUTES;
+  }
+
   calc.madhab = params.school === 1 ? Madhab.Hanafi : Madhab.Shafi;
+  // The summer-night rule, the same one AlAdhan is asked for (`aladhan.ts`),
+  // so online and offline agree north of 48.5°. The presets' own rules
+  // (Moonsighting's seasonal one) are left alone.
+  if (methodId !== 15) {
+    calc.highLatitudeRule = adhanHighLatitudeRule(getCalculationPreferences().highLatitudeRule);
+  }
   const latitude = computedLatitude(params.latitude, params.longitude, dayDate, calc);
   const pt = new PrayerTimes(new Coordinates(latitude, params.longitude), dayDate, calc);
   const fajrStr = formatLocalTime(pt.fajr);

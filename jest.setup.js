@@ -137,6 +137,11 @@ jest.mock('adhan', () => {
   return {
     Coordinates: function Coordinates() {},
     Madhab: { Hanafi: 'hanafi', Shafi: 'shafi' },
+    HighLatitudeRule: {
+      MiddleOfTheNight: 'middleofthenight',
+      SeventhOfTheNight: 'seventhofthenight',
+      TwilightAngle: 'twilightangle',
+    },
     CalculationMethod: CM,
     PrayerTimes: function PrayerTimes(_coords, _date, calc) {
       this.fajr = at(4, 30);

@@ -1,6 +1,7 @@
 // tokens-ok: default accent hexes for stored settings
 import type { HijriCalendarId } from '../hijri/calendar';
 import type { Madhab } from '../prayer/madhab';
+import type { HighLatitudeRuleId } from '../prayer/calculationPreferences';
 import type { PrePrayerReminderMinutes } from './prePrayerReminder';
 import type { NotificationSoundId } from '../notifications/notificationSounds';
 import type { PrayerOffsetMinutes } from './prayerOffsets';
@@ -163,6 +164,15 @@ export type PrayerAppSettings = {
    * computed answers.
    */
   madhab: Madhab | null;
+  /**
+   * What stands in for Fajr and Isha on the summer nights north of about
+   * 48.5° when the sun never sinks far enough — AlAdhan's three rules,
+   * under its names, applied the same online and on the phone.
+   */
+  highLatitudeRule: HighLatitudeRuleId;
+  /** The Fajr and Isha twilight angles behind the Custom method (id 99). */
+  customFajrAngle: number;
+  customIshaAngle: number;
   locationMode: LocationMode;
   manualLatitude: number;
   manualLongitude: number;
@@ -704,6 +714,9 @@ export const DEFAULT_SETTINGS: PrayerAppSettings = {
   calculationMethod: 'auto',
   school: 0,
   madhab: null,
+  highLatitudeRule: 'angle_based',
+  customFajrAngle: 18,
+  customIshaAngle: 17,
   // Default to GPS so first-run users in Sweden (or anywhere) don't get
   // stuck on a hardcoded "manual" placeholder if they skip onboarding.
   // Onboarding's manual-entry path explicitly switches this to 'manual'

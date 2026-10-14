@@ -471,7 +471,20 @@
     "helpMihrabBlurb": "评分、告诉他人、分享一个月的礼拜时间。",
     "calcHiddenNamazvakti": "Türkiye Takvimi 有自己的算法（晨礼 19°、宵礼 17°，含 temkin 安全余量），因此隐藏算法列表。仅哈乃斐派晡礼选项适用。",
     "calcHiddenPublished": "此来源发布自己的时间表，因此隐藏算法列表。",
-    "providerNamazvaktiNoCity": "namazvakti.com 没有您附近城市的时间，因此改在手机上按该历法的方法计算——通常与网站相差一两分钟以内。"
+    "providerNamazvaktiNoCity": "namazvakti.com 没有您附近城市的时间，因此改在手机上按该历法的方法计算——通常与网站相差一两分钟以内。",
+    "customAnglesHelp": "晨礼和宵礼时太阳在地平线以下的角度（度）——即清真寺所说的“我们采用 16° 和 14°”。介于 10 和 24 之间。",
+    "customFajrAngle": "晨礼角度",
+    "customIshaAngle": "宵礼角度",
+    "highLatitudeRule": "北方的夏夜",
+    "highLatitudeRuleHelp": "在约北纬 48° 以北，夏夜太阳下沉不够深，无法求得晨礼和宵礼时间，此时改用一条规则。在线与手机计算使用同一规则。",
+    "highLatitude": {
+      "angle_based": "按角度",
+      "angle_basedHelp": "按该算法自身的角度比例划分夜晚。AlAdhan 与本应用的默认值。",
+      "middle_of_night": "夜半",
+      "middle_of_nightHelp": "宵礼不晚于夜半，晨礼不早于夜半。",
+      "seventh_of_night": "夜之七分之一",
+      "seventh_of_nightHelp": "宵礼在夜的第一个七分之一之后，晨礼在最后一个七分之一。"
+    }
   },
   "locationSetup": {
     "headline": "设置您的位置",
@@ -1725,6 +1738,7 @@
     "21": "摩洛哥",
     "22": "葡萄牙",
     "23": "约旦",
+    "99": "自定义角度",
     "auto": "自动（按位置）"
   },
   "attributions": {

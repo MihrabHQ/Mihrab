@@ -16,6 +16,13 @@ import {
 } from '../hijri/calendar';
 import { loadCachedHijriOverrides } from '../hijri/overrides';
 import {
+  coerceCustomAngle,
+  coerceHighLatitudeRule,
+  DEFAULT_CUSTOM_FAJR_ANGLE,
+  DEFAULT_CUSTOM_ISHA_ANGLE,
+  setCalculationPreferences,
+} from '../prayer/calculationPreferences';
+import {
   extractSecureFields,
   hasSecureFields,
   loadSecureSettings,
@@ -172,6 +179,9 @@ export function loadSettings(): Promise<PrayerAppSettings> {
       setHijriCalendar(s.hijriCalendar, s.hijriAdjustDays);
       // …with the last announced corrections this phone downloaded.
       void loadCachedHijriOverrides();
+      // And every calculation after this is under the user's high-latitude
+      // rule and custom angles, in the same places.
+      setCalculationPreferences(s);
       return s;
     })
     .finally(() => {
@@ -429,6 +439,9 @@ async function loadSettingsUncached(): Promise<PrayerAppSettings> {
     ? (parsed.madhab as Madhab)
     : null;
   if (!madhabMatches(merged.madhab, merged.school)) merged.madhab = null;
+  merged.highLatitudeRule = coerceHighLatitudeRule(parsed.highLatitudeRule);
+  merged.customFajrAngle = coerceCustomAngle(parsed.customFajrAngle, DEFAULT_CUSTOM_FAJR_ANGLE);
+  merged.customIshaAngle = coerceCustomAngle(parsed.customIshaAngle, DEFAULT_CUSTOM_ISHA_ANGLE);
   merged.widgetHighlightId = coerceWidgetHighlightId(parsed.widgetHighlightId);
   merged.widgetHighlightCustomHex = coerceWidgetHighlightHex(
     parsed.widgetHighlightCustomHex,
@@ -484,6 +497,7 @@ async function performSave(settings: PrayerAppSettings): Promise<void> {
   // Before the write, not after: a read that starts during the write must
   // not be handed the promise that started before it.
   invalidateInflightLoad();
+  setCalculationPreferences(settings);
   const secure = extractSecureFields(settings as unknown as Record<string, unknown>);
   const plaintext = stripSecureFields(
     settings as unknown as Record<string, unknown>,

@@ -261,6 +261,29 @@ describe('the six national conventions added in 2.32 agree with AlAdhan', () => 
   });
 });
 
+describe('Umm al-Qura holds Isha two hours after Maghrib in Ramadan', () => {
+  // AlAdhan for Makkah, method 4: Ramadan 1447 ran 18 Feb – 19 Mar 2026.
+  const MAKKAH = { latitude: 21.4225, longitude: 39.8262 };
+  // `inCityTime` assumes 30 August; these dates are in March, on the other
+  // side of the box zone's clock change, so the wall clock is re-derived here.
+  const at = (date: Date, hhmm: string) => {
+    const [h, m] = hhmm.split(':').map(Number);
+    const local = new Date(date.getFullYear(), date.getMonth(), date.getDate(), h, m);
+    return local.toLocaleTimeString('en-GB', { timeZone: 'Asia/Riyadh', hour: '2-digit', minute: '2-digit', hour12: false });
+  };
+  const read = (date: Date) => {
+    const t = computeLocalAdhanTimes({ ...MAKKAH, date, calculationMethod: 4, school: 0 }).timings;
+    return `${at(date, t.Maghrib)} ${at(date, t.Isha)}`;
+  };
+  it('in Ramadan: 120 minutes, as AlAdhan serves it', () => {
+    expect(read(new Date(2026, 2, 1))).toBe('18:25 20:25');
+    expect(read(new Date(2026, 2, 15))).toBe('18:30 20:30');
+  });
+  it('the rest of the year: 90', () => {
+    expect(read(new Date(2026, 2, 25))).toBe('18:33 20:03');
+  });
+});
+
 describe('Morocco is checked against the ministry, not against AlAdhan', () => {
   /**
    * AlAdhan's method 21 is a good secondary source and it is what the app

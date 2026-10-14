@@ -8,6 +8,7 @@ import { getNamazvaktiTimes } from '../providers/namazvakti';
 import { computeLocalAdhanTimes } from '../providers/localAdhan';
 import type { PrayerTimesResult } from '../providers/types';
 import { recordDataSource } from './dataStatus';
+import { calculationPreferencesKey } from './calculationPreferences';
 import type { PrayerDataProviderId } from '../settings/types';
 import type { TimingsMap } from '../types/prayer';
 import { formatLocalDate } from '../utils/date';
@@ -126,6 +127,8 @@ function cacheKey(p: Omit<StoredPrayerData, 'months'>): string {
     p.longitude.toFixed(2),
     String(p.calculationMethod),
     String(p.school),
+    // Empty at the defaults, so nothing cached before these existed is lost.
+    calculationPreferencesKey(p.calculationMethod),
   ].join('|');
 }
 

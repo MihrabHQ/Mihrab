@@ -471,7 +471,20 @@
     "helpMihrabBlurb": "Betygsätt appen, berätta om den, dela en månads bönetider.",
     "calcHiddenNamazvakti": "Türkiye Takvimi har en egen metod (Fajr 19°, Isha 17°, med temkin), så metodlistan döljs. Bara valet av hanafitisk Asr gäller.",
     "calcHiddenPublished": "Den här källan publicerar en egen tidtabell, så metodlistan döljs.",
-    "providerNamazvaktiNoCity": "namazvakti.com har inga tider för någon stad nära dig, så kalenderns metod räknas ut i telefonen i stället – oftast inom en eller två minuter från sajten."
+    "providerNamazvaktiNoCity": "namazvakti.com har inga tider för någon stad nära dig, så kalenderns metod räknas ut i telefonen i stället – oftast inom en eller två minuter från sajten.",
+    "customAnglesHelp": "Solens vinkel under horisonten vid fajr och vid isha, i grader – det en moské anger som ”vi använder 16° och 14°”. Mellan 10 och 24.",
+    "customFajrAngle": "Fajr-vinkel",
+    "customIshaAngle": "Isha-vinkel",
+    "highLatitudeRule": "Sommarnätter i norr",
+    "highLatitudeRuleHelp": "Norr om ungefär 48° sjunker solen inte tillräckligt djupt under sommarnätterna för att fajr och isha ska kunna bestämmas, och en regel träder in. Samma regel används online och i telefonen.",
+    "highLatitude": {
+      "angle_based": "Vinkelbaserad",
+      "angle_basedHelp": "Natten delas efter metodens egna vinklar. AlAdhans standard, och appens.",
+      "middle_of_night": "Mitt i natten",
+      "middle_of_nightHelp": "Isha senast vid nattens mittpunkt, och fajr tidigast då.",
+      "seventh_of_night": "En sjundedel av natten",
+      "seventh_of_nightHelp": "Isha efter nattens första sjundedel, fajr vid den sista."
+    }
   },
   "locationSetup": {
     "headline": "Ange din plats",
@@ -1725,6 +1738,7 @@
     "21": "Marocko",
     "22": "Portugal",
     "23": "Jordanien",
+    "99": "Egna vinklar",
     "auto": "Automatiskt (efter plats)"
   },
   "attributions": {

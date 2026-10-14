@@ -472,7 +472,20 @@
     "helpMihrabBlurb": "Valórala, habla de ella, comparte un mes de horarios de oración.",
     "calcHiddenNamazvakti": "Türkiye Takvimi tiene su propio método (Fajr 19°, Isha 17°, con temkin), por eso la lista de métodos está oculta. Solo se aplica la opción de Asr hanafí.",
     "calcHiddenPublished": "Esta fuente publica su propio horario, por eso la lista de métodos está oculta.",
-    "providerNamazvaktiNoCity": "namazvakti.com no tiene horarios para ninguna ciudad cercana, así que el método del calendario se calcula en el teléfono; suele quedar a un minuto o dos del sitio."
+    "providerNamazvaktiNoCity": "namazvakti.com no tiene horarios para ninguna ciudad cercana, así que el método del calendario se calcula en el teléfono; suele quedar a un minuto o dos del sitio.",
+    "customAnglesHelp": "El ángulo del sol bajo el horizonte en Fajr y en Isha, en grados: lo que una mezquita indica como «usamos 16° y 14°». Entre 10 y 24.",
+    "customFajrAngle": "Ángulo de Fajr",
+    "customIshaAngle": "Ángulo de Isha",
+    "highLatitudeRule": "Noches de verano en el norte",
+    "highLatitudeRuleHelp": "Al norte de unos 48° el sol no desciende lo suficiente en las noches de verano para determinar Fajr e Isha, y se aplica una regla. Se usa la misma regla en línea y en el teléfono.",
+    "highLatitude": {
+      "angle_based": "Según el ángulo",
+      "angle_basedHelp": "La noche se divide según los ángulos del método. El valor predeterminado de AlAdhan y de la app.",
+      "middle_of_night": "Mitad de la noche",
+      "middle_of_nightHelp": "Isha no más tarde de la mitad de la noche, y Fajr no antes.",
+      "seventh_of_night": "Séptimo de la noche",
+      "seventh_of_nightHelp": "Isha tras el primer séptimo de la noche, Fajr en el último."
+    }
   },
   "locationSetup": {
     "headline": "Establece tu ubicación",
@@ -1726,6 +1739,7 @@
     "21": "Marruecos",
     "22": "Portugal",
     "23": "Jordania",
+    "99": "Ángulos personalizados",
     "auto": "Automático (según ubicación)"
   },
   "attributions": {

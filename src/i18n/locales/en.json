@@ -471,7 +471,20 @@
     "helpMihrabBlurb": "Rate it, tell people about it, share a month of prayer times.",
     "calcHiddenNamazvakti": "Türkiye Takvimi has its own method (Fajr 19°, Isha 17°, with a temkin), so the method list is hidden. Only the Hanafi Asr choice applies.",
     "calcHiddenPublished": "This source publishes its own timetable, so the method list is hidden.",
-    "providerNamazvaktiNoCity": "namazvakti.com has no times for a city near where you are, so the calendar’s method is calculated on the phone instead — usually within a minute or two of the site."
+    "providerNamazvaktiNoCity": "namazvakti.com has no times for a city near where you are, so the calendar’s method is calculated on the phone instead — usually within a minute or two of the site.",
+    "customAnglesHelp": "The sun’s angle below the horizon at Fajr and at Isha, in degrees — what a mosque states as “we use 16° and 14°”. Between 10 and 24.",
+    "customFajrAngle": "Fajr angle",
+    "customIshaAngle": "Isha angle",
+    "highLatitudeRule": "Summer nights in the north",
+    "highLatitudeRuleHelp": "North of about 48° the sun does not sink far enough on summer nights for Fajr and Isha to be found, and a rule stands in. The same rule is used online and on the phone.",
+    "highLatitude": {
+      "angle_based": "Angle-based",
+      "angle_basedHelp": "The night is divided by the method’s own angles. AlAdhan’s default, and the app’s.",
+      "middle_of_night": "Middle of the night",
+      "middle_of_nightHelp": "Isha no later than the night’s midpoint, and Fajr no earlier.",
+      "seventh_of_night": "Seventh of the night",
+      "seventh_of_nightHelp": "Isha after the first seventh of the night, Fajr at the last seventh."
+    }
   },
   "locationSetup": {
     "headline": "Set your location",
@@ -1725,6 +1738,7 @@
     "21": "Morocco",
     "22": "Portugal",
     "23": "Jordan",
+    "99": "Custom angles",
     "auto": "Automatic (by location)"
   },
   "attributions": {

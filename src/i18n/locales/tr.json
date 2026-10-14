@@ -471,7 +471,20 @@
     "helpMihrabBlurb": "Değerlendir, başkalarına anlat, bir aylık namaz vakitlerini paylaş.",
     "calcHiddenNamazvakti": "Türkiye Takvimi kendi yöntemini kullanır (İmsak 19°, Yatsı 17°, temkinli), bu yüzden yöntem listesi gizlidir. Yalnızca Hanefi ikindi seçimi geçerlidir.",
     "calcHiddenPublished": "Bu kaynak kendi vakit cetvelini yayımlar, bu yüzden yöntem listesi gizlidir.",
-    "providerNamazvaktiNoCity": "namazvakti.com’da yakınınızdaki bir şehir için vakit yok; bu yüzden takvimin yöntemi telefonda hesaplanıyor — genellikle sitedekinden bir iki dakika farkla."
+    "providerNamazvaktiNoCity": "namazvakti.com’da yakınınızdaki bir şehir için vakit yok; bu yüzden takvimin yöntemi telefonda hesaplanıyor — genellikle sitedekinden bir iki dakika farkla.",
+    "customAnglesHelp": "İmsak ve yatsıda güneşin ufkun altındaki açısı, derece olarak — caminin “16° ve 14° kullanıyoruz” diye bildirdiği değer. 10 ile 24 arasında.",
+    "customFajrAngle": "İmsak açısı",
+    "customIshaAngle": "Yatsı açısı",
+    "highLatitudeRule": "Kuzeyde yaz geceleri",
+    "highLatitudeRuleHelp": "Yaklaşık 48° kuzeyinde yaz gecelerinde güneş imsak ve yatsının bulunacağı kadar alçalmaz; yerine bir kural uygulanır. Çevrimiçi ve telefonda aynı kural kullanılır.",
+    "highLatitude": {
+      "angle_based": "Açıya göre",
+      "angle_basedHelp": "Gece, yöntemin kendi açılarına göre bölünür. AlAdhan’ın ve uygulamanın varsayılanı.",
+      "middle_of_night": "Gece yarısı",
+      "middle_of_nightHelp": "Yatsı gecenin ortasından geç, imsak ondan erken olmaz.",
+      "seventh_of_night": "Gecenin yedide biri",
+      "seventh_of_nightHelp": "Yatsı gecenin ilk yedide birinden sonra, imsak son yedide birinde."
+    }
   },
   "locationSetup": {
     "headline": "Konumunuzu ayarlayın",
@@ -1725,6 +1738,7 @@
     "21": "Fas",
     "22": "Portekiz",
     "23": "Ürdün",
+    "99": "Özel açılar",
     "auto": "Otomatik (konuma göre)"
   },
   "attributions": {

@@ -6,6 +6,11 @@ import {
   isNetworkError,
 } from './errors';
 import type { PrayerTimesResult } from './types';
+import {
+  ALADHAN_LATITUDE_ADJUSTMENT,
+  CUSTOM_METHOD_ID,
+  getCalculationPreferences,
+} from '../prayer/calculationPreferences';
 
 const PROVIDER = 'aladhan';
 const BASE = 'https://api.aladhan.com/v1';
@@ -54,7 +59,13 @@ export async function fetchAladhanTimes(params: {
   const query = new URLSearchParams();
   query.append('latitude', String(params.latitude));
   query.append('longitude', String(params.longitude));
-  if (params.method !== 'auto' && params.method !== undefined) {
+  const prefs = getCalculationPreferences();
+  if (params.method === CUSTOM_METHOD_ID) {
+    // The user's own angles: `methodSettings` is Fajr angle, Maghrib
+    // (null = sunset), Isha angle.
+    query.append('method', String(CUSTOM_METHOD_ID));
+    query.append('methodSettings', `${prefs.customFajrAngle},null,${prefs.customIshaAngle}`);
+  } else if (params.method !== 'auto' && params.method !== undefined) {
     query.append('method', String(params.method));
   } else {
     // If 'auto' or undefined, AlAdhan automatically selects the best method based on location.
@@ -63,6 +74,9 @@ export async function fetchAladhanTimes(params: {
   if (params.school !== undefined) {
     query.append('school', String(params.school));
   }
+  // The summer-night rule, named so it is the same one the phone computes
+  // with offline (`localAdhan.ts`); AlAdhan's default is the same ANGLE_BASED.
+  query.append('latitudeAdjustmentMethod', String(ALADHAN_LATITUDE_ADJUSTMENT[prefs.highLatitudeRule]));
   const url = `${BASE}/timings/${dateStr}?${query.toString()}`;
 
   let res: Response;

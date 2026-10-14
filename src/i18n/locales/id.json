@@ -471,7 +471,20 @@
     "helpMihrabBlurb": "Beri nilai, ceritakan kepada orang lain, bagikan jadwal salat sebulan.",
     "calcHiddenNamazvakti": "Türkiye Takvimi punya metodenya sendiri (Subuh 19°, Isya 17°, dengan temkin), jadi daftar metode disembunyikan. Hanya pilihan Asar Hanafi yang berlaku.",
     "calcHiddenPublished": "Sumber ini menerbitkan jadwalnya sendiri, jadi daftar metode disembunyikan.",
-    "providerNamazvaktiNoCity": "namazvakti.com tidak punya jadwal untuk kota di dekat Anda, jadi metode kalendernya dihitung di ponsel — biasanya selisih satu atau dua menit dari situsnya."
+    "providerNamazvaktiNoCity": "namazvakti.com tidak punya jadwal untuk kota di dekat Anda, jadi metode kalendernya dihitung di ponsel — biasanya selisih satu atau dua menit dari situsnya.",
+    "customAnglesHelp": "Sudut matahari di bawah ufuk saat Subuh dan Isya, dalam derajat — seperti pengumuman masjid “kami memakai 16° dan 14°”. Antara 10 dan 24.",
+    "customFajrAngle": "Sudut Subuh",
+    "customIshaAngle": "Sudut Isya",
+    "highLatitudeRule": "Malam musim panas di utara",
+    "highLatitudeRuleHelp": "Di utara sekitar 48° matahari tidak turun cukup jauh pada malam musim panas untuk menentukan Subuh dan Isya, sehingga sebuah aturan menggantikannya. Aturan yang sama dipakai daring dan di ponsel.",
+    "highLatitude": {
+      "angle_based": "Berdasarkan sudut",
+      "angle_basedHelp": "Malam dibagi menurut sudut metode itu sendiri. Bawaan AlAdhan dan aplikasi.",
+      "middle_of_night": "Tengah malam",
+      "middle_of_nightHelp": "Isya tidak lebih lambat dari tengah malam, dan Subuh tidak lebih awal.",
+      "seventh_of_night": "Sepertujuh malam",
+      "seventh_of_nightHelp": "Isya setelah sepertujuh pertama malam, Subuh pada sepertujuh terakhir."
+    }
   },
   "locationSetup": {
     "headline": "Tetapkan lokasi Anda",
@@ -1725,6 +1738,7 @@
     "21": "Maroko",
     "22": "Portugal",
     "23": "Yordania",
+    "99": "Sudut kustom",
     "auto": "Otomatis (berdasarkan lokasi)"
   },
   "attributions": {

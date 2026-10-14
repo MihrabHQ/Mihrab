@@ -1,8 +1,9 @@
 // hover-ok: list-row / settings-row / sheet pressables. Hover-state
 // treatment would visually noise these dense surfaces; the touch
 // feedback (pressed opacity / ripple) is the right affordance here.
-import { memo, useMemo } from 'react';
-import { Text } from 'react-native';
+import { memo, useCallback, useMemo, useState } from 'react';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { SPACING } from '../../theme/tokens';
 import { useTranslation } from 'react-i18next';
 import { usePrayerSettings } from '../../context/PrayerSettingsContext';
 import { useAppPalette } from '../../hooks/useAppPalette';
@@ -25,6 +26,16 @@ import {
 } from './SettingsGroup';
 import { sharedSettingsStyles as s } from './sharedStyles';
 import { HelpText } from '../../components/ui/InfoSheet';
+import { inputChromeStyle } from '../../theme/chrome';
+import {
+  coerceCustomAngle,
+  CUSTOM_ANGLE_MAX,
+  CUSTOM_ANGLE_MIN,
+  CUSTOM_METHOD_ID,
+  DEFAULT_CUSTOM_FAJR_ANGLE,
+  DEFAULT_CUSTOM_ISHA_ANGLE,
+} from '../../prayer/calculationPreferences';
+import { HighLatitudeModal } from './HighLatitudeModal';
 
 type CalculationCardProps = {
   onOpenMethodPicker: () => void;
@@ -46,6 +57,22 @@ function CalculationCardImpl({
   /** Custom, unless the stored school still describes the stored shadow. */
   const madhab = selectedMadhab(settings.madhab, settings.school);
   const { palette } = useAppPalette();
+  const [highLatModal, setHighLatModal] = useState(false);
+  const openHighLat = useCallback(() => setHighLatModal(true), []);
+  const closeHighLat = useCallback(() => setHighLatModal(false), []);
+  // The angle fields hold what is typed; the setting takes it once it is a
+  // number in range, so a half-typed "1" does not become 10°.
+  const [fajrDraft, setFajrDraft] = useState<string | null>(null);
+  const [ishaDraft, setIshaDraft] = useState<string | null>(null);
+  const commitAngle = useCallback(
+    (key: 'customFajrAngle' | 'customIshaAngle', text: string, fallback: number) => {
+      const n = Number(text.replace(',', '.'));
+      if (Number.isFinite(n) && n >= CUSTOM_ANGLE_MIN && n <= CUSTOM_ANGLE_MAX) {
+        updateSettings({ [key]: coerceCustomAngle(n, fallback) });
+      }
+    },
+    [updateSettings],
+  );
 
   const coordsForEffective = useMemo(
     () => resolveCoordsFromSettings(settings),
@@ -211,11 +238,58 @@ function CalculationCardImpl({
           </Text>
         </SettingsBlock>
       ) : (
-        <SettingsLinkRow
-          title={t('settings.method')}
-          value={getMethodLabel(settings.calculationMethod)}
-          onPress={onOpenMethodPicker}
-        />
+        <>
+          <SettingsLinkRow
+            title={t('settings.method')}
+            value={getMethodLabel(settings.calculationMethod)}
+            onPress={onOpenMethodPicker}
+          />
+          {settings.calculationMethod === CUSTOM_METHOD_ID ? (
+            <SettingsBlock>
+              <Text style={[s.help, { color: palette.muted }]}>{t('settings.customAnglesHelp')}</Text>
+              <View style={styles.angleRow}>
+                {(
+                  [
+                    ['customFajrAngle', 'settings.customFajrAngle', fajrDraft, setFajrDraft, DEFAULT_CUSTOM_FAJR_ANGLE],
+                    ['customIshaAngle', 'settings.customIshaAngle', ishaDraft, setIshaDraft, DEFAULT_CUSTOM_ISHA_ANGLE],
+                  ] as const
+                ).map(([key, labelKey, draft, setDraft, fallback]) => (
+                  <View key={key} style={styles.angleField}>
+                    <Text style={[s.help, { color: palette.muted }]}>{t(labelKey)}</Text>
+                    <TextInput
+                      testID={`settings-${key}`}
+                      accessibilityLabel={t(labelKey)}
+                      value={draft ?? String(settings[key])}
+                      onChangeText={text => {
+                        setDraft(text);
+                        commitAngle(key, text, fallback);
+                      }}
+                      onBlur={() => setDraft(null)}
+                      keyboardType="decimal-pad"
+                      maxLength={4}
+                      style={[s.input, inputChromeStyle(palette), { color: palette.text, backgroundColor: palette.bg }]}
+                    />
+                  </View>
+                ))}
+              </View>
+            </SettingsBlock>
+          ) : null}
+          {/* The summer-night rule: only where a method is computed, since a
+              published table has already decided. */}
+          <SettingsLinkRow
+            title={t('settings.highLatitudeRule')}
+            value={t(`settings.highLatitude.${settings.highLatitudeRule}`)}
+            help={t('settings.highLatitudeRuleHelp')}
+            onPress={openHighLat}
+          />
+          <HighLatitudeModal
+            visible={highLatModal}
+            current={settings.highLatitudeRule}
+            palette={palette}
+            onSelect={id => updateSettings({ highLatitudeRule: id })}
+            onClose={closeHighLat}
+          />
+        </>
       )}
 
       {/*
@@ -238,6 +312,11 @@ function CalculationCardImpl({
     </SettingsGroup>
   );
 }
+
+const styles = StyleSheet.create({
+  angleRow: { flexDirection: 'row', gap: SPACING.md, marginTop: SPACING.sm },
+  angleField: { flex: 1, gap: SPACING.xs },
+});
 
 function countNonZero(offsets: PrayerOffsetMinutes | undefined): number {
   if (!offsets) return 0;

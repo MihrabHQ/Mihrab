@@ -472,7 +472,20 @@
     "helpMihrabBlurb": "Évaluez-la, parlez-en, partagez un mois d’horaires de prière.",
     "calcHiddenNamazvakti": "Türkiye Takvimi a sa propre méthode (Fajr 19°, Icha 17°, avec temkin) : la liste des méthodes est masquée. Seul le choix de l’Asr hanafite s’applique.",
     "calcHiddenPublished": "Cette source publie ses propres horaires : la liste des méthodes est masquée.",
-    "providerNamazvaktiNoCity": "namazvakti.com n’a pas d’horaires pour une ville proche de vous : la méthode du calendrier est donc calculée sur le téléphone, en général à une ou deux minutes du site."
+    "providerNamazvaktiNoCity": "namazvakti.com n’a pas d’horaires pour une ville proche de vous : la méthode du calendrier est donc calculée sur le téléphone, en général à une ou deux minutes du site.",
+    "customAnglesHelp": "L’angle du soleil sous l’horizon au Fajr et à l’Icha, en degrés — ce qu’une mosquée annonce comme « nous utilisons 16° et 14° ». Entre 10 et 24.",
+    "customFajrAngle": "Angle du Fajr",
+    "customIshaAngle": "Angle de l’Icha",
+    "highLatitudeRule": "Nuits d’été dans le Nord",
+    "highLatitudeRuleHelp": "Au nord d’environ 48°, le soleil ne descend pas assez bas les nuits d’été pour déterminer le Fajr et l’Icha ; une règle s’applique alors. La même règle est utilisée en ligne et sur le téléphone.",
+    "highLatitude": {
+      "angle_based": "Selon l’angle",
+      "angle_basedHelp": "La nuit est divisée selon les angles de la méthode. Valeur par défaut d’AlAdhan et de l’app.",
+      "middle_of_night": "Milieu de la nuit",
+      "middle_of_nightHelp": "L’Icha au plus tard au milieu de la nuit, le Fajr au plus tôt.",
+      "seventh_of_night": "Septième de la nuit",
+      "seventh_of_nightHelp": "L’Icha après le premier septième de la nuit, le Fajr au dernier."
+    }
   },
   "locationSetup": {
     "headline": "Définissez votre emplacement",
@@ -1726,6 +1739,7 @@
     "21": "Maroc",
     "22": "Portugal",
     "23": "Jordanie",
+    "99": "Angles personnalisés",
     "auto": "Automatique (selon la localisation)"
   },
   "attributions": {
