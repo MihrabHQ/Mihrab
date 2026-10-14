@@ -1,0 +1,663 @@
+{
+ "id": "jakim",
+ "name": "Malaysia — JAKIM e-Solat",
+ "method": 17,
+ "toleranceMin": 1,
+ "builtAt": "2026-10-14T15:09:54.544Z",
+ "tableBuiltAt": "2026-10-14T13:24:00.344Z",
+ "places": 59,
+ "placesMissing": 0,
+ "days": 5074,
+ "from": "2026-10-07",
+ "to": "2026-12-31",
+ "times": 27864,
+ "within": 25558,
+ "outsideShare": 0.0828,
+ "maxAbs": 5,
+ "perPrayer": {
+  "Fajr": {
+   "times": 4644,
+   "within": 4442,
+   "histogram": {
+    "0": 2119,
+    "+1": 1222,
+    "-1": 1101,
+    "+2": 27,
+    "-2": 175
+   },
+   "maxAbs": 2,
+   "meanDiff": -0.04
+  },
+  "Sunrise": {
+   "times": 4644,
+   "within": 3345,
+   "histogram": {
+    "0": 1280,
+    "-1": 1211,
+    "-2": 608,
+    "+1": 854,
+    "-3": 94,
+    "+2": 579,
+    "+3": 18
+   },
+   "maxAbs": 3,
+   "meanDiff": -0.14
+  },
+  "Dhuhr": {
+   "times": 4644,
+   "within": 4540,
+   "histogram": {
+    "0": 2587,
+    "+1": 856,
+    "-1": 1097,
+    "-2": 104
+   },
+   "maxAbs": 2,
+   "meanDiff": -0.1
+  },
+  "Asr": {
+   "times": 4644,
+   "within": 4505,
+   "histogram": {
+    "0": 2554,
+    "+1": 898,
+    "-1": 1053,
+    "-2": 130,
+    "+2": 9
+   },
+   "maxAbs": 2,
+   "meanDiff": -0.09
+  },
+  "Maghrib": {
+   "times": 4644,
+   "within": 4464,
+   "histogram": {
+    "0": 2419,
+    "+1": 1188,
+    "-1": 857,
+    "-2": 133,
+    "-3": 18,
+    "+2": 29
+   },
+   "maxAbs": 3,
+   "meanDiff": 0.01
+  },
+  "Isha": {
+   "times": 4644,
+   "within": 4262,
+   "histogram": {
+    "0": 2350,
+    "+1": 895,
+    "-1": 1017,
+    "-2": 160,
+    "+3": 66,
+    "+4": 101,
+    "+5": 2,
+    "+2": 26,
+    "-3": 27
+   },
+   "maxAbs": 5,
+   "meanDiff": 0.03
+  }
+ },
+ "misplaced": [
+  {
+   "place": "Gunung Jerai (KDH07)",
+   "days": 86,
+   "median": {
+    "Fajr": 5,
+    "Sunrise": 4,
+    "Dhuhr": 1,
+    "Asr": 0,
+    "Maghrib": -4,
+    "Isha": -4
+   },
+   "maxAbs": 6,
+   "misplaced": true
+  },
+  {
+   "place": "Genting Sempah (PHG05)",
+   "days": 86,
+   "median": {
+    "Fajr": 1,
+    "Sunrise": 4,
+    "Dhuhr": 1,
+    "Asr": 1,
+    "Maghrib": -2,
+    "Isha": 1
+   },
+   "maxAbs": 5,
+   "misplaced": true
+  },
+  {
+   "place": "Tanah Rata (PHG06)",
+   "days": 86,
+   "median": {
+    "Fajr": 1,
+    "Sunrise": 6,
+    "Dhuhr": 1,
+    "Asr": 1,
+    "Maghrib": -5,
+    "Isha": 1
+   },
+   "maxAbs": 6,
+   "misplaced": true
+  },
+  {
+   "place": "Bukit Larut (PRK07)",
+   "days": 86,
+   "median": {
+    "Fajr": 1,
+    "Sunrise": 5,
+    "Dhuhr": 1,
+    "Asr": 1,
+    "Maghrib": -4,
+    "Isha": 1
+   },
+   "maxAbs": 6,
+   "misplaced": true
+  },
+  {
+   "place": "Gunung Kinabalu (SBH06)",
+   "days": 86,
+   "median": {
+    "Fajr": 1,
+    "Sunrise": 8,
+    "Dhuhr": 1,
+    "Asr": 1,
+    "Maghrib": -7,
+    "Isha": 1
+   },
+   "maxAbs": 8,
+   "misplaced": true
+  }
+ ],
+ "accepted": 0,
+ "imsakBeforeFajr": 10,
+ "alarm": true,
+ "alarmReasons": [
+  "5 place(s) disagree by a constant at every date — coordinates or a per-place margin, not the angles"
+ ],
+ "worst": [
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-11-29",
+   "prayer": "Isha",
+   "theirs": "20:04",
+   "ours": "20:09",
+   "diff": 5
+  },
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-12-11",
+   "prayer": "Isha",
+   "theirs": "20:09",
+   "ours": "20:14",
+   "diff": 5
+  },
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-10-08",
+   "prayer": "Isha",
+   "theirs": "20:06",
+   "ours": "20:10",
+   "diff": 4
+  },
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-10-09",
+   "prayer": "Isha",
+   "theirs": "20:06",
+   "ours": "20:10",
+   "diff": 4
+  },
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-10-11",
+   "prayer": "Isha",
+   "theirs": "20:05",
+   "ours": "20:09",
+   "diff": 4
+  },
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-10-13",
+   "prayer": "Isha",
+   "theirs": "20:04",
+   "ours": "20:08",
+   "diff": 4
+  },
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-10-14",
+   "prayer": "Isha",
+   "theirs": "20:04",
+   "ours": "20:08",
+   "diff": 4
+  },
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-10-16",
+   "prayer": "Isha",
+   "theirs": "20:03",
+   "ours": "20:07",
+   "diff": 4
+  },
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-10-17",
+   "prayer": "Isha",
+   "theirs": "20:03",
+   "ours": "20:07",
+   "diff": 4
+  },
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-10-18",
+   "prayer": "Isha",
+   "theirs": "20:03",
+   "ours": "20:07",
+   "diff": 4
+  },
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-10-20",
+   "prayer": "Isha",
+   "theirs": "20:02",
+   "ours": "20:06",
+   "diff": 4
+  },
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-10-21",
+   "prayer": "Isha",
+   "theirs": "20:02",
+   "ours": "20:06",
+   "diff": 4
+  },
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-10-22",
+   "prayer": "Isha",
+   "theirs": "20:02",
+   "ours": "20:06",
+   "diff": 4
+  },
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-10-24",
+   "prayer": "Isha",
+   "theirs": "20:01",
+   "ours": "20:05",
+   "diff": 4
+  },
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-10-25",
+   "prayer": "Isha",
+   "theirs": "20:01",
+   "ours": "20:05",
+   "diff": 4
+  },
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-10-26",
+   "prayer": "Isha",
+   "theirs": "20:01",
+   "ours": "20:05",
+   "diff": 4
+  },
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-10-27",
+   "prayer": "Isha",
+   "theirs": "20:01",
+   "ours": "20:05",
+   "diff": 4
+  },
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-10-28",
+   "prayer": "Isha",
+   "theirs": "20:01",
+   "ours": "20:05",
+   "diff": 4
+  },
+  {
+   "place": "Gua Musang (KTN02)",
+   "date": "2026-10-30",
+   "prayer": "Isha",
+   "theirs": "20:03",
+   "ours": "20:07",
+   "diff": 4
+  },
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-10-31",
+   "prayer": "Isha",
+   "theirs": "20:00",
+   "ours": "20:04",
+   "diff": 4
+  },
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-11-01",
+   "prayer": "Isha",
+   "theirs": "20:00",
+   "ours": "20:04",
+   "diff": 4
+  },
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-11-02",
+   "prayer": "Isha",
+   "theirs": "20:00",
+   "ours": "20:04",
+   "diff": 4
+  },
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-11-03",
+   "prayer": "Isha",
+   "theirs": "20:00",
+   "ours": "20:04",
+   "diff": 4
+  },
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-11-04",
+   "prayer": "Isha",
+   "theirs": "20:00",
+   "ours": "20:04",
+   "diff": 4
+  },
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-11-05",
+   "prayer": "Isha",
+   "theirs": "20:00",
+   "ours": "20:04",
+   "diff": 4
+  },
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-11-06",
+   "prayer": "Isha",
+   "theirs": "20:00",
+   "ours": "20:04",
+   "diff": 4
+  },
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-11-07",
+   "prayer": "Isha",
+   "theirs": "20:00",
+   "ours": "20:04",
+   "diff": 4
+  },
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-11-08",
+   "prayer": "Isha",
+   "theirs": "20:00",
+   "ours": "20:04",
+   "diff": 4
+  },
+  {
+   "place": "Gua Musang (KTN02)",
+   "date": "2026-11-08",
+   "prayer": "Isha",
+   "theirs": "20:03",
+   "ours": "20:07",
+   "diff": 4
+  },
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-11-09",
+   "prayer": "Isha",
+   "theirs": "20:00",
+   "ours": "20:04",
+   "diff": 4
+  },
+  {
+   "place": "Gua Musang (KTN02)",
+   "date": "2026-11-09",
+   "prayer": "Isha",
+   "theirs": "20:03",
+   "ours": "20:07",
+   "diff": 4
+  },
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-11-10",
+   "prayer": "Isha",
+   "theirs": "20:00",
+   "ours": "20:04",
+   "diff": 4
+  },
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-11-11",
+   "prayer": "Isha",
+   "theirs": "20:00",
+   "ours": "20:04",
+   "diff": 4
+  },
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-11-13",
+   "prayer": "Isha",
+   "theirs": "20:01",
+   "ours": "20:05",
+   "diff": 4
+  },
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-11-14",
+   "prayer": "Isha",
+   "theirs": "20:01",
+   "ours": "20:05",
+   "diff": 4
+  },
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-11-15",
+   "prayer": "Isha",
+   "theirs": "20:01",
+   "ours": "20:05",
+   "diff": 4
+  },
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-11-16",
+   "prayer": "Isha",
+   "theirs": "20:01",
+   "ours": "20:05",
+   "diff": 4
+  },
+  {
+   "place": "Gua Musang (KTN02)",
+   "date": "2026-11-16",
+   "prayer": "Isha",
+   "theirs": "20:04",
+   "ours": "20:08",
+   "diff": 4
+  },
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-11-17",
+   "prayer": "Isha",
+   "theirs": "20:01",
+   "ours": "20:05",
+   "diff": 4
+  },
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-11-18",
+   "prayer": "Isha",
+   "theirs": "20:01",
+   "ours": "20:05",
+   "diff": 4
+  },
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-11-19",
+   "prayer": "Isha",
+   "theirs": "20:02",
+   "ours": "20:06",
+   "diff": 4
+  },
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-11-20",
+   "prayer": "Isha",
+   "theirs": "20:02",
+   "ours": "20:06",
+   "diff": 4
+  },
+  {
+   "place": "Gua Musang (KTN02)",
+   "date": "2026-11-20",
+   "prayer": "Isha",
+   "theirs": "20:05",
+   "ours": "20:09",
+   "diff": 4
+  },
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-11-21",
+   "prayer": "Isha",
+   "theirs": "20:02",
+   "ours": "20:06",
+   "diff": 4
+  },
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-11-22",
+   "prayer": "Isha",
+   "theirs": "20:02",
+   "ours": "20:06",
+   "diff": 4
+  },
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-11-23",
+   "prayer": "Isha",
+   "theirs": "20:03",
+   "ours": "20:07",
+   "diff": 4
+  },
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-11-24",
+   "prayer": "Isha",
+   "theirs": "20:03",
+   "ours": "20:07",
+   "diff": 4
+  },
+  {
+   "place": "Gua Musang (KTN02)",
+   "date": "2026-11-24",
+   "prayer": "Isha",
+   "theirs": "20:06",
+   "ours": "20:10",
+   "diff": 4
+  },
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-11-25",
+   "prayer": "Isha",
+   "theirs": "20:03",
+   "ours": "20:07",
+   "diff": 4
+  },
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-11-26",
+   "prayer": "Isha",
+   "theirs": "20:03",
+   "ours": "20:07",
+   "diff": 4
+  },
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-11-27",
+   "prayer": "Isha",
+   "theirs": "20:04",
+   "ours": "20:08",
+   "diff": 4
+  },
+  {
+   "place": "Gua Musang (KTN02)",
+   "date": "2026-11-27",
+   "prayer": "Isha",
+   "theirs": "20:07",
+   "ours": "20:11",
+   "diff": 4
+  },
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-11-28",
+   "prayer": "Isha",
+   "theirs": "20:04",
+   "ours": "20:08",
+   "diff": 4
+  },
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-11-30",
+   "prayer": "Isha",
+   "theirs": "20:05",
+   "ours": "20:09",
+   "diff": 4
+  },
+  {
+   "place": "Gua Musang (KTN02)",
+   "date": "2026-11-30",
+   "prayer": "Isha",
+   "theirs": "20:08",
+   "ours": "20:12",
+   "diff": 4
+  },
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-12-01",
+   "prayer": "Isha",
+   "theirs": "20:05",
+   "ours": "20:09",
+   "diff": 4
+  },
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-12-02",
+   "prayer": "Isha",
+   "theirs": "20:06",
+   "ours": "20:10",
+   "diff": 4
+  },
+  {
+   "place": "Gua Musang (KTN02)",
+   "date": "2026-12-02",
+   "prayer": "Isha",
+   "theirs": "20:09",
+   "ours": "20:13",
+   "diff": 4
+  },
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-12-03",
+   "prayer": "Isha",
+   "theirs": "20:06",
+   "ours": "20:10",
+   "diff": 4
+  },
+  {
+   "place": "Kota Bharu (KTN01)",
+   "date": "2026-12-04",
+   "prayer": "Isha",
+   "theirs": "20:06",
+   "ours": "20:10",
+   "diff": 4
+  }
+ ]
+}

@@ -274,7 +274,17 @@ export function computedLatitude(
   return (latitude < 0 ? -1 : 1) * Math.min(Math.abs(latitude), NEAREST_LATITUDE);
 }
 
-export function computeLocalAdhanTimes(params: {
+/** The instants of the day's prayers, before any clock is applied. */
+export type PrayerInstants = {
+  fajr: Date;
+  sunrise: Date;
+  dhuhr: Date;
+  asr: Date;
+  maghrib: Date;
+  isha: Date;
+};
+
+type LocalAdhanParams = {
   latitude: number;
   longitude: number;
   date: Date;
@@ -282,12 +292,20 @@ export function computeLocalAdhanTimes(params: {
   school: number;
   /** Minutes before Fajr that Imsak fires. Defaults to the canonical 10. */
   imsakOffsetMinutes?: number;
-}): PrayerTimesResult {
+};
+
+/**
+ * The day's prayers as instants (Date), from the method's parameters —
+ * what `computeLocalAdhanTimes` formats on the phone's clock. Exposed so
+ * the verification tool can format them on the authority's clock
+ * instead, whatever zone the process runs in.
+ */
+export function computeLocalAdhanInstants(params: LocalAdhanParams): PrayerInstants {
   const y = params.date.getFullYear();
   const m = params.date.getMonth();
   const day = params.date.getDate();
   const dayDate = new Date(y, m, day);
-  
+
   // "Automatic" is AlAdhan's server-side choice; off the network we make the
   // same choice ourselves from the coordinates (see `autoMethod.ts`), rather
   // than falling back to MWL in a country that publishes its own parameters.
@@ -314,6 +332,11 @@ export function computeLocalAdhanTimes(params: {
   }
   const latitude = computedLatitude(params.latitude, params.longitude, dayDate, calc);
   const pt = new PrayerTimes(new Coordinates(latitude, params.longitude), dayDate, calc);
+  return { fajr: pt.fajr, sunrise: pt.sunrise, dhuhr: pt.dhuhr, asr: pt.asr, maghrib: pt.maghrib, isha: pt.isha };
+}
+
+export function computeLocalAdhanTimes(params: LocalAdhanParams): PrayerTimesResult {
+  const pt = computeLocalAdhanInstants(params);
   const fajrStr = formatLocalTime(pt.fajr);
   // Imsak is computed locally (adhan.js does not expose it). Default offset
   // is the most-common 10 minutes; will become user-configurable via task #21.

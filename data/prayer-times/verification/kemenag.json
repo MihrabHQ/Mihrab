@@ -1,0 +1,1599 @@
+{
+ "id": "kemenag",
+ "name": "Indonesia — Kemenag",
+ "method": 20,
+ "toleranceMin": 1,
+ "builtAt": "2026-10-14T15:10:06.936Z",
+ "tableBuiltAt": "2026-10-14T14:03:46.646Z",
+ "places": 517,
+ "placesMissing": 0,
+ "days": 44462,
+ "from": "2026-10-07",
+ "to": "2026-12-31",
+ "times": 230136,
+ "within": 216652,
+ "outsideShare": 0.0586,
+ "maxAbs": 5,
+ "perPrayer": {
+  "Fajr": {
+   "times": 38356,
+   "within": 35655,
+   "histogram": {
+    "0": 24229,
+    "-1": 5218,
+    "+1": 6208,
+    "-2": 1203,
+    "+2": 1050,
+    "-3": 154,
+    "+3": 245,
+    "+4": 47,
+    "+5": 2
+   },
+   "maxAbs": 5,
+   "meanDiff": 0.03
+  },
+  "Sunrise": {
+   "times": 38356,
+   "within": 35650,
+   "histogram": {
+    "0": 23346,
+    "-1": 4222,
+    "+1": 8082,
+    "-2": 1013,
+    "+2": 1328,
+    "-3": 72,
+    "+3": 242,
+    "+4": 51
+   },
+   "maxAbs": 4,
+   "meanDiff": 0.14
+  },
+  "Dhuhr": {
+   "times": 38356,
+   "within": 36343,
+   "histogram": {
+    "0": 24389,
+    "-1": 5658,
+    "+1": 6296,
+    "-2": 903,
+    "+2": 997,
+    "+3": 50,
+    "-3": 63
+   },
+   "maxAbs": 3,
+   "meanDiff": 0.02
+  },
+  "Asr": {
+   "times": 38356,
+   "within": 36230,
+   "histogram": {
+    "0": 24415,
+    "-1": 5526,
+    "+1": 6289,
+    "-2": 963,
+    "+2": 1003,
+    "-3": 66,
+    "+3": 91,
+    "+4": 3
+   },
+   "maxAbs": 4,
+   "meanDiff": 0.02
+  },
+  "Maghrib": {
+   "times": 38356,
+   "within": 36405,
+   "histogram": {
+    "0": 23922,
+    "-1": 6157,
+    "+1": 6326,
+    "+2": 892,
+    "-2": 818,
+    "+3": 128,
+    "-3": 113
+   },
+   "maxAbs": 3,
+   "meanDiff": 0.01
+  },
+  "Isha": {
+   "times": 38356,
+   "within": 36369,
+   "histogram": {
+    "0": 23608,
+    "-1": 6138,
+    "+1": 6623,
+    "+2": 950,
+    "-2": 771,
+    "+3": 131,
+    "-3": 134,
+    "+4": 1
+   },
+   "maxAbs": 4,
+   "meanDiff": 0.02
+  }
+ },
+ "misplaced": [
+  {
+   "place": "KAB. MALUKU BARAT DAYA (Maluku)",
+   "days": 86,
+   "median": {
+    "Fajr": 7,
+    "Sunrise": 7,
+    "Dhuhr": 6,
+    "Asr": 6,
+    "Maghrib": 6,
+    "Isha": 6
+   },
+   "maxAbs": 8,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. NIAS UTARA (Sumatera Utara)",
+   "days": 86,
+   "median": {
+    "Fajr": 5,
+    "Sunrise": 5,
+    "Dhuhr": 5,
+    "Asr": 5,
+    "Maghrib": 5,
+    "Isha": 5
+   },
+   "maxAbs": 5,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. EMPAT LAWANG (Sumatera Selatan)",
+   "days": 86,
+   "median": {
+    "Fajr": 4,
+    "Sunrise": 4,
+    "Dhuhr": 4,
+    "Asr": 4,
+    "Maghrib": 4,
+    "Isha": 4
+   },
+   "maxAbs": 5,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. MALINAU (Kalimantan Utara)",
+   "days": 86,
+   "median": {
+    "Fajr": 2,
+    "Sunrise": 2.5,
+    "Dhuhr": 4,
+    "Asr": 4,
+    "Maghrib": 5,
+    "Isha": 5
+   },
+   "maxAbs": 6,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. KONAWE KEPULAUAN (Sulawesi Tenggara)",
+   "days": 86,
+   "median": {
+    "Fajr": 3,
+    "Sunrise": 4,
+    "Dhuhr": 4,
+    "Asr": 4,
+    "Maghrib": 4,
+    "Isha": 4
+   },
+   "maxAbs": 4,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. YAPEN WAROPEN (Papua)",
+   "days": 86,
+   "median": {
+    "Fajr": -4,
+    "Sunrise": -4,
+    "Dhuhr": -4,
+    "Asr": -4,
+    "Maghrib": -3,
+    "Isha": -3
+   },
+   "maxAbs": 5,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. KEPULAUAN MENTAWAI (Sumatera Barat)",
+   "days": 86,
+   "median": {
+    "Fajr": 4,
+    "Sunrise": 4,
+    "Dhuhr": 3,
+    "Asr": 3,
+    "Maghrib": 2,
+    "Isha": 2
+   },
+   "maxAbs": 5,
+   "misplaced": true
+  },
+  {
+   "place": "PEKAJANG KAB. LINGGA (Kepulauan Riau)",
+   "days": 86,
+   "median": {
+    "Fajr": -5,
+    "Sunrise": -5,
+    "Dhuhr": -3,
+    "Asr": -3,
+    "Maghrib": 0,
+    "Isha": 0
+   },
+   "maxAbs": 6,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. KUTAI KARTANEGARA (Kalimantan Timur)",
+   "days": 86,
+   "median": {
+    "Fajr": 4,
+    "Sunrise": 4,
+    "Dhuhr": 3,
+    "Asr": 3,
+    "Maghrib": 2,
+    "Isha": 2
+   },
+   "maxAbs": 5,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. HALMAHERA TENGAH (Maluku Utara)",
+   "days": 86,
+   "median": {
+    "Fajr": -3,
+    "Sunrise": -3,
+    "Dhuhr": -3,
+    "Asr": -3,
+    "Maghrib": -3,
+    "Isha": -3
+   },
+   "maxAbs": 3,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. ASMAT (Papua)",
+   "days": 86,
+   "median": {
+    "Fajr": -3,
+    "Sunrise": -3,
+    "Dhuhr": -3,
+    "Asr": -3,
+    "Maghrib": -3,
+    "Isha": -3
+   },
+   "maxAbs": 3,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. FAKFAK (Papua Barat)",
+   "days": 86,
+   "median": {
+    "Fajr": -4,
+    "Sunrise": -3.5,
+    "Dhuhr": -3,
+    "Asr": -3,
+    "Maghrib": -3,
+    "Isha": -3
+   },
+   "maxAbs": 4,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. TAMBRAUW (Papua Barat)",
+   "days": 86,
+   "median": {
+    "Fajr": -3,
+    "Sunrise": -3,
+    "Dhuhr": -3,
+    "Asr": -3,
+    "Maghrib": -2,
+    "Isha": -2
+   },
+   "maxAbs": 4,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. KEPULAUAN SELAYAR (Sulawesi Selatan)",
+   "days": 86,
+   "median": {
+    "Fajr": -4,
+    "Sunrise": -4,
+    "Dhuhr": -2,
+    "Asr": -2,
+    "Maghrib": 0,
+    "Isha": 0
+   },
+   "maxAbs": 5,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. KARO (Sumatera Utara)",
+   "days": 86,
+   "median": {
+    "Fajr": 1,
+    "Sunrise": 5,
+    "Dhuhr": 1,
+    "Asr": 1,
+    "Maghrib": -3.5,
+    "Isha": 1
+   },
+   "maxAbs": 6,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. SIMALUNGUN (Sumatera Utara)",
+   "days": 86,
+   "median": {
+    "Fajr": 1,
+    "Sunrise": 5,
+    "Dhuhr": 1,
+    "Asr": 1,
+    "Maghrib": -4,
+    "Isha": 0
+   },
+   "maxAbs": 6,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. SOLOK (Sumatera Barat)",
+   "days": 86,
+   "median": {
+    "Fajr": -1,
+    "Sunrise": 4,
+    "Dhuhr": -1,
+    "Asr": -1,
+    "Maghrib": -5,
+    "Isha": -1
+   },
+   "maxAbs": 6,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. KERINCI (Jambi)",
+   "days": 86,
+   "median": {
+    "Fajr": -1,
+    "Sunrise": 3,
+    "Dhuhr": -1,
+    "Asr": -1,
+    "Maghrib": -5,
+    "Isha": -1
+   },
+   "maxAbs": 6,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. REJANG LEBONG (Bengkulu)",
+   "days": 86,
+   "median": {
+    "Fajr": -1,
+    "Sunrise": 4,
+    "Dhuhr": -1,
+    "Asr": -1,
+    "Maghrib": -5,
+    "Isha": -1
+   },
+   "maxAbs": 6,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. LAMPUNG BARAT (Lampung)",
+   "days": 86,
+   "median": {
+    "Fajr": -1,
+    "Sunrise": 3,
+    "Dhuhr": -1,
+    "Asr": -1,
+    "Maghrib": -5,
+    "Isha": -1
+   },
+   "maxAbs": 6,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. LEMBATA (Nusa Tenggara Timur)",
+   "days": 86,
+   "median": {
+    "Fajr": -0.5,
+    "Sunrise": 4,
+    "Dhuhr": -1,
+    "Asr": 0,
+    "Maghrib": -5,
+    "Isha": -1
+   },
+   "maxAbs": 5,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. TIMOR TENGAH SELATAN (Nusa Tenggara Timur)",
+   "days": 86,
+   "median": {
+    "Fajr": -1,
+    "Sunrise": 4,
+    "Dhuhr": -1,
+    "Asr": -1,
+    "Maghrib": -5,
+    "Isha": -1
+   },
+   "maxAbs": 6,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. TANA TORAJA (Sulawesi Selatan)",
+   "days": 86,
+   "median": {
+    "Fajr": 1,
+    "Sunrise": 5,
+    "Dhuhr": 1,
+    "Asr": 1,
+    "Maghrib": -4,
+    "Isha": 1
+   },
+   "maxAbs": 6,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. DEIYAI (Papua)",
+   "days": 86,
+   "median": {
+    "Fajr": -1,
+    "Sunrise": 3,
+    "Dhuhr": -1,
+    "Asr": -1,
+    "Maghrib": -5,
+    "Isha": 0
+   },
+   "maxAbs": 5,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. DOGIYAI (Papua)",
+   "days": 86,
+   "median": {
+    "Fajr": 1,
+    "Sunrise": 6,
+    "Dhuhr": 1,
+    "Asr": 1,
+    "Maghrib": -3,
+    "Isha": 1
+   },
+   "maxAbs": 6,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. INTAN JAYA (Papua)",
+   "days": 86,
+   "median": {
+    "Fajr": 6,
+    "Sunrise": 6,
+    "Dhuhr": 1,
+    "Asr": 1,
+    "Maghrib": -3,
+    "Isha": -3
+   },
+   "maxAbs": 7,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. TOLIKARA (Papua)",
+   "days": 86,
+   "median": {
+    "Fajr": 1,
+    "Sunrise": 5,
+    "Dhuhr": 1,
+    "Asr": 1,
+    "Maghrib": -4,
+    "Isha": 0
+   },
+   "maxAbs": 6,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. YALIMO (Papua)",
+   "days": 86,
+   "median": {
+    "Fajr": 0,
+    "Sunrise": 4,
+    "Dhuhr": -1,
+    "Asr": -1,
+    "Maghrib": -5,
+    "Isha": -1
+   },
+   "maxAbs": 6,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. PEGUNUNGAN ARFAK (Papua Barat)",
+   "days": 86,
+   "median": {
+    "Fajr": 5,
+    "Sunrise": 5,
+    "Dhuhr": 1,
+    "Asr": 1,
+    "Maghrib": -4,
+    "Isha": -4
+   },
+   "maxAbs": 6,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. ACEH TENGAH (Aceh)",
+   "days": 86,
+   "median": {
+    "Fajr": -1,
+    "Sunrise": 4,
+    "Dhuhr": -0.5,
+    "Asr": -1,
+    "Maghrib": -5,
+    "Isha": 0
+   },
+   "maxAbs": 5,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. BENER MERIAH (Aceh)",
+   "days": 86,
+   "median": {
+    "Fajr": 0,
+    "Sunrise": 4,
+    "Dhuhr": -0.5,
+    "Asr": 0,
+    "Maghrib": -5,
+    "Isha": 0
+   },
+   "maxAbs": 5,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. GAYO LUES (Aceh)",
+   "days": 86,
+   "median": {
+    "Fajr": 0,
+    "Sunrise": 4,
+    "Dhuhr": 0,
+    "Asr": 0,
+    "Maghrib": -4,
+    "Isha": 0
+   },
+   "maxAbs": 5,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. DAIRI (Sumatera Utara)",
+   "days": 86,
+   "median": {
+    "Fajr": 0,
+    "Sunrise": 4,
+    "Dhuhr": 0,
+    "Asr": 0,
+    "Maghrib": -4,
+    "Isha": 0
+   },
+   "maxAbs": 5,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. HUMBANG HASUNDUTAN (Sumatera Utara)",
+   "days": 86,
+   "median": {
+    "Fajr": 0,
+    "Sunrise": 4,
+    "Dhuhr": 0,
+    "Asr": 0,
+    "Maghrib": -4,
+    "Isha": 0
+   },
+   "maxAbs": 5,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. PAKPAK BHARAT (Sumatera Utara)",
+   "days": 86,
+   "median": {
+    "Fajr": 0,
+    "Sunrise": 4,
+    "Dhuhr": 0,
+    "Asr": 0,
+    "Maghrib": -4,
+    "Isha": 0
+   },
+   "maxAbs": 5,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. SAMOSIR (Sumatera Utara)",
+   "days": 86,
+   "median": {
+    "Fajr": 0,
+    "Sunrise": 4,
+    "Dhuhr": 0,
+    "Asr": 0,
+    "Maghrib": -5,
+    "Isha": 0
+   },
+   "maxAbs": 5,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. TAPANULI UTARA (Sumatera Utara)",
+   "days": 86,
+   "median": {
+    "Fajr": 0,
+    "Sunrise": 4,
+    "Dhuhr": 0,
+    "Asr": 0,
+    "Maghrib": -5,
+    "Isha": 0
+   },
+   "maxAbs": 5,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. TOBA SAMOSIR (Sumatera Utara)",
+   "days": 86,
+   "median": {
+    "Fajr": 0,
+    "Sunrise": 4,
+    "Dhuhr": 0,
+    "Asr": 0,
+    "Maghrib": -4,
+    "Isha": 0
+   },
+   "maxAbs": 5,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. SOLOK SELATAN (Sumatera Barat)",
+   "days": 86,
+   "median": {
+    "Fajr": 0,
+    "Sunrise": 4,
+    "Dhuhr": 0,
+    "Asr": 0,
+    "Maghrib": -4,
+    "Isha": 0
+   },
+   "maxAbs": 5,
+   "misplaced": true
+  },
+  {
+   "place": "KOTA BUKITTINGGI (Sumatera Barat)",
+   "days": 86,
+   "median": {
+    "Fajr": 0,
+    "Sunrise": 4,
+    "Dhuhr": 0,
+    "Asr": 0,
+    "Maghrib": -4,
+    "Isha": 0
+   },
+   "maxAbs": 5,
+   "misplaced": true
+  },
+  {
+   "place": "KOTA PADANGPANJANG (Sumatera Barat)",
+   "days": 86,
+   "median": {
+    "Fajr": 0,
+    "Sunrise": 4,
+    "Dhuhr": 0,
+    "Asr": 0,
+    "Maghrib": -4,
+    "Isha": 0
+   },
+   "maxAbs": 5,
+   "misplaced": true
+  },
+  {
+   "place": "KOTA SUNGAI PENUH (Jambi)",
+   "days": 86,
+   "median": {
+    "Fajr": 0,
+    "Sunrise": 4,
+    "Dhuhr": 0,
+    "Asr": 0,
+    "Maghrib": -4,
+    "Isha": 0
+   },
+   "maxAbs": 5,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. KEPAHIANG (Bengkulu)",
+   "days": 86,
+   "median": {
+    "Fajr": 0,
+    "Sunrise": 4,
+    "Dhuhr": 0,
+    "Asr": 0,
+    "Maghrib": -5,
+    "Isha": 0
+   },
+   "maxAbs": 5,
+   "misplaced": true
+  },
+  {
+   "place": "KOTA PAGAR ALAM (Sumatera Selatan)",
+   "days": 86,
+   "median": {
+    "Fajr": 0,
+    "Sunrise": 4,
+    "Dhuhr": 0,
+    "Asr": 0,
+    "Maghrib": -4,
+    "Isha": 0
+   },
+   "maxAbs": 5,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. BANDUNG (Jawa Barat)",
+   "days": 86,
+   "median": {
+    "Fajr": 0,
+    "Sunrise": 4,
+    "Dhuhr": 0,
+    "Asr": 0,
+    "Maghrib": -5,
+    "Isha": 0
+   },
+   "maxAbs": 5,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. BANDUNG BARAT (Jawa Barat)",
+   "days": 86,
+   "median": {
+    "Fajr": 0,
+    "Sunrise": 5,
+    "Dhuhr": 0,
+    "Asr": 0,
+    "Maghrib": -4,
+    "Isha": 0.5
+   },
+   "maxAbs": 5,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. GARUT (Jawa Barat)",
+   "days": 86,
+   "median": {
+    "Fajr": 0,
+    "Sunrise": 4,
+    "Dhuhr": 0,
+    "Asr": 0,
+    "Maghrib": -4,
+    "Isha": 0
+   },
+   "maxAbs": 5,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. KUNINGAN (Jawa Barat)",
+   "days": 86,
+   "median": {
+    "Fajr": 0,
+    "Sunrise": 4,
+    "Dhuhr": 0,
+    "Asr": 0,
+    "Maghrib": -5,
+    "Isha": 0
+   },
+   "maxAbs": 5,
+   "misplaced": true
+  },
+  {
+   "place": "KOTA BANDUNG (Jawa Barat)",
+   "days": 86,
+   "median": {
+    "Fajr": 0,
+    "Sunrise": 4,
+    "Dhuhr": 0,
+    "Asr": 0,
+    "Maghrib": -4,
+    "Isha": 0
+   },
+   "maxAbs": 5,
+   "misplaced": true
+  },
+  {
+   "place": "KOTA BOGOR (Jawa Barat)",
+   "days": 86,
+   "median": {
+    "Fajr": 0,
+    "Sunrise": 4,
+    "Dhuhr": 0,
+    "Asr": 0,
+    "Maghrib": -4,
+    "Isha": 0
+   },
+   "maxAbs": 5,
+   "misplaced": true
+  },
+  {
+   "place": "KOTA CIMAHI (Jawa Barat)",
+   "days": 86,
+   "median": {
+    "Fajr": 0,
+    "Sunrise": 4,
+    "Dhuhr": 0,
+    "Asr": 0,
+    "Maghrib": -4,
+    "Isha": 0
+   },
+   "maxAbs": 5,
+   "misplaced": true
+  },
+  {
+   "place": "KOTA SUKABUMI (Jawa Barat)",
+   "days": 86,
+   "median": {
+    "Fajr": 0,
+    "Sunrise": 4,
+    "Dhuhr": 0,
+    "Asr": 0,
+    "Maghrib": -4,
+    "Isha": 0
+   },
+   "maxAbs": 5,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. TEMANGGUNG (Jawa Tengah)",
+   "days": 86,
+   "median": {
+    "Fajr": 0,
+    "Sunrise": 5,
+    "Dhuhr": 0,
+    "Asr": 0,
+    "Maghrib": -4,
+    "Isha": 0
+   },
+   "maxAbs": 5,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. WONOSOBO (Jawa Tengah)",
+   "days": 86,
+   "median": {
+    "Fajr": 0,
+    "Sunrise": 4,
+    "Dhuhr": 0,
+    "Asr": 0,
+    "Maghrib": -4,
+    "Isha": 0
+   },
+   "maxAbs": 5,
+   "misplaced": true
+  },
+  {
+   "place": "KOTA SALATIGA (Jawa Tengah)",
+   "days": 86,
+   "median": {
+    "Fajr": 0,
+    "Sunrise": 4,
+    "Dhuhr": 0,
+    "Asr": 0,
+    "Maghrib": -4,
+    "Isha": 0
+   },
+   "maxAbs": 5,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. GRESIK (Jawa Timur)",
+   "days": 86,
+   "median": {
+    "Fajr": 2,
+    "Sunrise": 2,
+    "Dhuhr": 0,
+    "Asr": 0,
+    "Maghrib": -2,
+    "Isha": -3
+   },
+   "maxAbs": 4,
+   "misplaced": true
+  },
+  {
+   "place": "KOTA BATU (Jawa Timur)",
+   "days": 86,
+   "median": {
+    "Fajr": 0,
+    "Sunrise": 4,
+    "Dhuhr": 0,
+    "Asr": 0,
+    "Maghrib": -4,
+    "Isha": 0
+   },
+   "maxAbs": 5,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. MANGGARAI (Nusa Tenggara Timur)",
+   "days": 86,
+   "median": {
+    "Fajr": 0,
+    "Sunrise": 5,
+    "Dhuhr": 0,
+    "Asr": 0,
+    "Maghrib": -4,
+    "Isha": 0
+   },
+   "maxAbs": 5,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. NGADA (Nusa Tenggara Timur)",
+   "days": 86,
+   "median": {
+    "Fajr": 0,
+    "Sunrise": 4,
+    "Dhuhr": 0,
+    "Asr": 0,
+    "Maghrib": -5,
+    "Isha": 0
+   },
+   "maxAbs": 5,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. TORAJA UTARA (Sulawesi Selatan)",
+   "days": 86,
+   "median": {
+    "Fajr": 0,
+    "Sunrise": 5,
+    "Dhuhr": 0,
+    "Asr": 0,
+    "Maghrib": -4,
+    "Isha": 0
+   },
+   "maxAbs": 5,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. MINAHASA (Sulawesi Utara)",
+   "days": 86,
+   "median": {
+    "Fajr": 0,
+    "Sunrise": 5,
+    "Dhuhr": 0,
+    "Asr": 0,
+    "Maghrib": -4,
+    "Isha": 1
+   },
+   "maxAbs": 5,
+   "misplaced": true
+  },
+  {
+   "place": "KOTA TOMOHON (Sulawesi Utara)",
+   "days": 86,
+   "median": {
+    "Fajr": 0,
+    "Sunrise": 4,
+    "Dhuhr": 0,
+    "Asr": 0,
+    "Maghrib": -4,
+    "Isha": 0
+   },
+   "maxAbs": 5,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. MAMASA (Sulawesi Barat)",
+   "days": 86,
+   "median": {
+    "Fajr": 0,
+    "Sunrise": 5,
+    "Dhuhr": 0,
+    "Asr": 0,
+    "Maghrib": -4,
+    "Isha": 0
+   },
+   "maxAbs": 5,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. JAYAWIJAYA (Papua)",
+   "days": 86,
+   "median": {
+    "Fajr": 0,
+    "Sunrise": 4,
+    "Dhuhr": 0,
+    "Asr": 0,
+    "Maghrib": -4,
+    "Isha": 0
+   },
+   "maxAbs": 5,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. LANNY JAYA (Papua)",
+   "days": 86,
+   "median": {
+    "Fajr": 5,
+    "Sunrise": 5,
+    "Dhuhr": 0,
+    "Asr": 0,
+    "Maghrib": -4,
+    "Isha": -4
+   },
+   "maxAbs": 5,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. MAMBERAMO TENGAH (Papua)",
+   "days": 86,
+   "median": {
+    "Fajr": 0,
+    "Sunrise": 5,
+    "Dhuhr": 0,
+    "Asr": 0,
+    "Maghrib": -4,
+    "Isha": 0
+   },
+   "maxAbs": 5,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. PANIAI (Papua)",
+   "days": 86,
+   "median": {
+    "Fajr": 5,
+    "Sunrise": 5,
+    "Dhuhr": 0,
+    "Asr": 0,
+    "Maghrib": -5,
+    "Isha": -5
+   },
+   "maxAbs": 5,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. PEGUNUNGAN BINTANG (Papua)",
+   "days": 86,
+   "median": {
+    "Fajr": 1,
+    "Sunrise": 5,
+    "Dhuhr": 0,
+    "Asr": 0,
+    "Maghrib": -5,
+    "Isha": 0
+   },
+   "maxAbs": 6,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. PUNCAK (Papua)",
+   "days": 86,
+   "median": {
+    "Fajr": 5,
+    "Sunrise": 5,
+    "Dhuhr": 0,
+    "Asr": 1,
+    "Maghrib": -4,
+    "Isha": -4
+   },
+   "maxAbs": 6,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. PUNCAK JAYA (Papua)",
+   "days": 86,
+   "median": {
+    "Fajr": 4,
+    "Sunrise": 4,
+    "Dhuhr": 0,
+    "Asr": 0,
+    "Maghrib": -4,
+    "Isha": -4
+   },
+   "maxAbs": 5,
+   "misplaced": true
+  },
+  {
+   "place": "KAB. YAHUKIMO (Papua)",
+   "days": 86,
+   "median": {
+    "Fajr": 0,
+    "Sunrise": 5,
+    "Dhuhr": 0,
+    "Asr": 0,
+    "Maghrib": -4,
+    "Isha": 0
+   },
+   "maxAbs": 5,
+   "misplaced": true
+  }
+ ],
+ "accepted": 0,
+ "imsakBeforeFajr": 10,
+ "alarm": true,
+ "alarmReasons": [
+  "5.9% of times are more than 1 min from the table (allowed 5%) — the method",
+  "71 place(s) disagree by a constant at every date — coordinates or a per-place margin, not the angles"
+ ],
+ "worst": [
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-12-20",
+   "prayer": "Fajr",
+   "theirs": "03:55",
+   "ours": "04:00",
+   "diff": 5
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-12-24",
+   "prayer": "Fajr",
+   "theirs": "03:57",
+   "ours": "04:02",
+   "diff": 5
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-10-09",
+   "prayer": "Asr",
+   "theirs": "14:25",
+   "ours": "14:29",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-10-11",
+   "prayer": "Asr",
+   "theirs": "14:26",
+   "ours": "14:30",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-10-14",
+   "prayer": "Asr",
+   "theirs": "14:27",
+   "ours": "14:31",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-11-05",
+   "prayer": "Fajr",
+   "theirs": "03:48",
+   "ours": "03:52",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-11-12",
+   "prayer": "Fajr",
+   "theirs": "03:47",
+   "ours": "03:51",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-11-13",
+   "prayer": "Fajr",
+   "theirs": "03:47",
+   "ours": "03:51",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-11-14",
+   "prayer": "Fajr",
+   "theirs": "03:47",
+   "ours": "03:51",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-11-15",
+   "prayer": "Fajr",
+   "theirs": "03:47",
+   "ours": "03:51",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-11-16",
+   "prayer": "Fajr",
+   "theirs": "03:47",
+   "ours": "03:51",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-11-16",
+   "prayer": "Sunrise",
+   "theirs": "05:03",
+   "ours": "05:07",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-11-17",
+   "prayer": "Fajr",
+   "theirs": "03:47",
+   "ours": "03:51",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-11-17",
+   "prayer": "Sunrise",
+   "theirs": "05:03",
+   "ours": "05:07",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-11-18",
+   "prayer": "Fajr",
+   "theirs": "03:47",
+   "ours": "03:51",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-11-18",
+   "prayer": "Sunrise",
+   "theirs": "05:03",
+   "ours": "05:07",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-11-19",
+   "prayer": "Fajr",
+   "theirs": "03:47",
+   "ours": "03:51",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-11-20",
+   "prayer": "Fajr",
+   "theirs": "03:47",
+   "ours": "03:51",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-11-21",
+   "prayer": "Fajr",
+   "theirs": "03:47",
+   "ours": "03:51",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-11-22",
+   "prayer": "Fajr",
+   "theirs": "03:47",
+   "ours": "03:51",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-11-22",
+   "prayer": "Sunrise",
+   "theirs": "05:04",
+   "ours": "05:08",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-11-23",
+   "prayer": "Fajr",
+   "theirs": "03:47",
+   "ours": "03:51",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-11-23",
+   "prayer": "Sunrise",
+   "theirs": "05:04",
+   "ours": "05:08",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-11-24",
+   "prayer": "Sunrise",
+   "theirs": "05:04",
+   "ours": "05:08",
+   "diff": 4
+  },
+  {
+   "place": "KAB. KUTAI TIMUR (Kalimantan Timur)",
+   "date": "2026-11-25",
+   "prayer": "Sunrise",
+   "theirs": "05:50",
+   "ours": "05:54",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-11-26",
+   "prayer": "Sunrise",
+   "theirs": "05:05",
+   "ours": "05:09",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-11-27",
+   "prayer": "Fajr",
+   "theirs": "03:48",
+   "ours": "03:52",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-11-27",
+   "prayer": "Sunrise",
+   "theirs": "05:05",
+   "ours": "05:09",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-11-28",
+   "prayer": "Fajr",
+   "theirs": "03:48",
+   "ours": "03:52",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-11-28",
+   "prayer": "Sunrise",
+   "theirs": "05:05",
+   "ours": "05:09",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-11-29",
+   "prayer": "Fajr",
+   "theirs": "03:48",
+   "ours": "03:52",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-11-30",
+   "prayer": "Fajr",
+   "theirs": "03:48",
+   "ours": "03:52",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-11-30",
+   "prayer": "Sunrise",
+   "theirs": "05:06",
+   "ours": "05:10",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-12-01",
+   "prayer": "Sunrise",
+   "theirs": "05:06",
+   "ours": "05:10",
+   "diff": 4
+  },
+  {
+   "place": "KAB. KUTAI TIMUR (Kalimantan Timur)",
+   "date": "2026-12-01",
+   "prayer": "Sunrise",
+   "theirs": "05:52",
+   "ours": "05:56",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-12-02",
+   "prayer": "Fajr",
+   "theirs": "03:49",
+   "ours": "03:53",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-12-03",
+   "prayer": "Fajr",
+   "theirs": "03:49",
+   "ours": "03:53",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-12-03",
+   "prayer": "Sunrise",
+   "theirs": "05:07",
+   "ours": "05:11",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-12-04",
+   "prayer": "Fajr",
+   "theirs": "03:49",
+   "ours": "03:53",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-12-04",
+   "prayer": "Sunrise",
+   "theirs": "05:07",
+   "ours": "05:11",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-12-05",
+   "prayer": "Fajr",
+   "theirs": "03:50",
+   "ours": "03:54",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-12-05",
+   "prayer": "Sunrise",
+   "theirs": "05:08",
+   "ours": "05:12",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-12-06",
+   "prayer": "Fajr",
+   "theirs": "03:50",
+   "ours": "03:54",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-12-06",
+   "prayer": "Sunrise",
+   "theirs": "05:08",
+   "ours": "05:12",
+   "diff": 4
+  },
+  {
+   "place": "KAB. KUTAI TIMUR (Kalimantan Timur)",
+   "date": "2026-12-06",
+   "prayer": "Sunrise",
+   "theirs": "05:54",
+   "ours": "05:58",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-12-07",
+   "prayer": "Fajr",
+   "theirs": "03:50",
+   "ours": "03:54",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-12-08",
+   "prayer": "Fajr",
+   "theirs": "03:51",
+   "ours": "03:55",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-12-08",
+   "prayer": "Sunrise",
+   "theirs": "05:09",
+   "ours": "05:13",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-12-09",
+   "prayer": "Fajr",
+   "theirs": "03:51",
+   "ours": "03:55",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-12-09",
+   "prayer": "Sunrise",
+   "theirs": "05:09",
+   "ours": "05:13",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-12-10",
+   "prayer": "Fajr",
+   "theirs": "03:51",
+   "ours": "03:55",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-12-10",
+   "prayer": "Sunrise",
+   "theirs": "05:10",
+   "ours": "05:14",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-12-11",
+   "prayer": "Fajr",
+   "theirs": "03:52",
+   "ours": "03:56",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-12-11",
+   "prayer": "Sunrise",
+   "theirs": "05:10",
+   "ours": "05:14",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-12-12",
+   "prayer": "Fajr",
+   "theirs": "03:52",
+   "ours": "03:56",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-12-13",
+   "prayer": "Fajr",
+   "theirs": "03:52",
+   "ours": "03:56",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-12-13",
+   "prayer": "Sunrise",
+   "theirs": "05:11",
+   "ours": "05:15",
+   "diff": 4
+  },
+  {
+   "place": "KAB. KUTAI TIMUR (Kalimantan Timur)",
+   "date": "2026-12-13",
+   "prayer": "Sunrise",
+   "theirs": "05:57",
+   "ours": "06:01",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-12-14",
+   "prayer": "Fajr",
+   "theirs": "03:53",
+   "ours": "03:57",
+   "diff": 4
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-12-14",
+   "prayer": "Sunrise",
+   "theirs": "05:11",
+   "ours": "05:15",
+   "diff": 4
+  }
+ ]
+}

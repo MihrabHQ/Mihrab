@@ -1,0 +1,120 @@
+name: Verify the methods against the authorities
+
+# What the app distributes is its own calculation, fitted to each
+# authority; the tables the other workflows fetch are the check on it.
+# This runs the check (tools/verify-methods) after the weekly rebuilds,
+# commits the reports, and keeps one issue per authority that disagrees:
+# opened with the report when it first does, updated while it does,
+# closed when the two agree again. See tools/verify-methods/README.md.
+
+on:
+  schedule:
+    - cron: '41 6 * * 2' # Tuesdays, 06:41 UTC — after Monday's tables and Tuesday's Morocco
+  workflow_dispatch:
+
+concurrency:
+  group: verify-methods
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # The check runs the app's own calculation module, which reaches the
+      # app's storage and region modules; the whole tree, as CI installs it.
+      - name: Install dependencies
+        run: npm ci --no-audit
+
+      - name: Compare
+        id: verify
+        # Exit 4 is a disagreement — an issue, not a failed job. Anything
+        # else is the tool itself failing, which is.
+        run: |
+          set +e
+          npx --yes tsx@4 tools/verify-methods/verify.ts
+          code=$?
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          [ "$code" -eq 0 ] || [ "$code" -eq 4 ]
+
+      - name: Commit the reports
+        run: |
+          git config user.name 'mihrab-dataset-bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add -A -- data/prayer-times/verification
+          if git diff --cached --quiet; then
+            echo 'Reports unchanged.'
+            exit 0
+          fi
+          git commit -m "data: verification reports ($(date -u +%F))"
+          for attempt in 1 2 3; do
+            if git push; then exit 0; fi
+            git pull --rebase -X theirs origin main || git rebase --abort || true
+            sleep 3
+          done
+          exit 1
+
+      - name: Raise, update or close each authority's issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RAISED: ${{ steps.verify.outputs.raised }}
+          ALL: ${{ steps.verify.outputs.all }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -e
+          for id in $ALL; do
+            name=$(node -e "console.log(require('./data/prayer-times/verification/$id.json').name)")
+            title="Verification: $name"
+            number=$(gh issue list --state open --label verification --search "in:title \"$title\"" --json number,title \
+              --jq ".[] | select(.title == \"$title\") | .number" | head -n 1)
+            if echo " $RAISED " | grep -q " $id "; then
+              {
+                echo "The app's method for this authority no longer matches its published table. The report, from this week's tables:"
+                echo
+                cat "data/prayer-times/verification/$id.md"
+                echo
+                echo "Adjust the method (\`src/providers/localAdhan.ts\`), the place (\`src/providers/data/\`), or accept the difference with a note (\`tools/verify-methods/accepted.json\`). This issue is updated each week and closes itself once the two agree. [Run]($RUN_URL)"
+              } > body.md
+              if [ -n "$number" ]; then
+                gh issue edit "$number" --body-file body.md
+                gh issue comment "$number" --body "Still off this week — body updated. [Run]($RUN_URL)"
+                echo "Updated #$number ($id)"
+              else
+                gh label create verification --description "The app's method against an authority's table" --color D93F0B 2>/dev/null || true
+                gh issue create --title "$title" --label verification --body-file body.md
+                echo "Opened: $title"
+              fi
+            elif [ -n "$number" ]; then
+              gh issue close "$number" --comment "The method and the table agree again this week. [Run]($RUN_URL)"
+              echo "Closed #$number ($id)"
+            fi
+          done
+
+      - name: Email on failure
+        if: failure() && env.MAIL_SERVER != ''
+        env:
+          MAIL_SERVER: ${{ secrets.MAIL_SERVER }}
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.MAIL_SERVER }}
+          server_port: ${{ secrets.MAIL_PORT }}
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          from: Mihrab Dataset Bot <${{ secrets.MAIL_USERNAME }}>
+          to: mihrab@elghamri.se
+          subject: '[Mihrab] method verification job FAILED'
+          body: |
+            The verification run itself failed (not a mismatch — those open issues).
+            Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
