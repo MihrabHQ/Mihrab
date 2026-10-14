@@ -94,6 +94,14 @@ export const REGIONAL_PRAYER_PROVIDERS: ProviderOption[] = [
     nameKey: 'providers.jakim.name',
     descriptionKey: 'providers.jakim.desc',
   },
+  {
+    id: 'kemenag',
+    name: 'Indonesia',
+    description:
+      'The Ministry of Religious Affairs’ (Kemenag) published timetable for your regency or city; your location is matched to the nearest in its list.',
+    nameKey: 'providers.kemenag.name',
+    descriptionKey: 'providers.kemenag.desc',
+  },
 ];
 
 /** Full list for lookups, settings copy, and labels (order: mainstream then regional). */

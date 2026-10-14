@@ -532,6 +532,10 @@
     "jakim": {
       "name": "Malaysia",
       "desc": "JAKIMs e-Solat-Zeitplan für Ihre Zone; Ihr Standort wird der nächsten Stadt in der Zonenliste zugeordnet."
+    },
+    "kemenag": {
+      "name": "Indonesien",
+      "desc": "Der veröffentlichte Zeitplan des Religionsministeriums (Kemenag) für Ihren Regierungsbezirk oder Ihre Stadt; Ihr Standort wird dem nächsten in der Liste zugeordnet."
     }
   },
   "compass": {
@@ -1861,7 +1865,9 @@
     "yearFetched": "Jahr geladen",
     "serverSingapore": "Singapur · MUIS",
     "serverMalaysia": "Malaysia · JAKIM e-Solat",
-    "jakimWindow": "JAKIM veröffentlicht nur das laufende Jahr, daher endet dieses Fenster am 31. Dezember und beginnt neu, sobald das neue Jahr in den ersten Januartagen veröffentlicht ist."
+    "jakimWindow": "JAKIM veröffentlicht nur das laufende Jahr, daher endet dieses Fenster am 31. Dezember und beginnt neu, sobald das neue Jahr in den ersten Januartagen veröffentlicht ist.",
+    "serverIndonesia": "Indonesien · Kemenag",
+    "kemenagWindow": "Wird jeweils eine Saison im Voraus geladen – dieser Monat und die zwei folgenden – und jede Woche verlängert."
   },
   "log": {
     "legendPrayers": "0 → 5 Gebete",

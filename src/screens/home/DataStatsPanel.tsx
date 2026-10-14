@@ -21,7 +21,7 @@ import {
 } from '../../providers/islamiskaForbundetDataset';
 import { pollServerIndexNow as pollHabousIndexNow } from '../../providers/habousDataset';
 import { pollServerIndexNow as pollMarwIndexNow } from '../../providers/marwDataset';
-import { jakimTable, muisTable } from '../../providers/nationalTables';
+import { jakimTable, kemenagTable, muisTable } from '../../providers/nationalTables';
 import {
   getNamazvaktiTimes,
   namazvaktiHeld,
@@ -107,6 +107,16 @@ const SERVERS: {
       'JAKIM publishes the current year only, so this window ends on 31 December and starts again when the new year is published in the first days of January.',
   },
   {
+    id: 'kemenag',
+    provider: 'kemenag',
+    labelKey: 'dataStats.serverIndonesia',
+    labelDefault: 'Indonesia · Kemenag',
+    nextRun: nextNationalTableServerRunAfter,
+    coverageNoteKey: 'dataStats.kemenagWindow',
+    coverageNoteDefault:
+      'Fetched a season at a time — this month and the two after it — and extended every week.',
+  },
+  {
     // Not a mirror of times but an index of the site's cities: its coverage
     // is how many it has placed on the map, and each city's year comes from
     // the site itself, once a year.
@@ -169,6 +179,7 @@ function DataStatsPanelImpl() {
           pollNamazvaktiIndexNow(),
           muisTable.pollServerIndexNow(),
           jakimTable.pollServerIndexNow(),
+          kemenagTable.pollServerIndexNow(),
         ].map(p =>
           p.catch(() => {
             /* offline — keep whatever was recorded before */

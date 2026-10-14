@@ -532,6 +532,10 @@
     "jakim": {
       "name": "Malaysia",
       "desc": "Jadwal e-Solat JAKIM untuk zon tempat Anda berada; lokasi Anda dicocokkan dengan kota terdekat dalam daftar zonnya."
+    },
+    "kemenag": {
+      "name": "Indonesia",
+      "desc": "Jadwal yang diterbitkan Kementerian Agama (Kemenag) untuk kabupaten atau kota Anda; lokasi Anda dicocokkan dengan yang terdekat dalam daftarnya."
     }
   },
   "compass": {
@@ -1861,7 +1865,9 @@
     "yearFetched": "Tahun diunduh",
     "serverSingapore": "Singapura · MUIS",
     "serverMalaysia": "Malaysia · JAKIM e-Solat",
-    "jakimWindow": "JAKIM hanya menerbitkan tahun berjalan, jadi jendela ini berakhir 31 Desember dan dimulai lagi saat tahun baru diterbitkan pada hari-hari pertama Januari."
+    "jakimWindow": "JAKIM hanya menerbitkan tahun berjalan, jadi jendela ini berakhir 31 Desember dan dimulai lagi saat tahun baru diterbitkan pada hari-hari pertama Januari.",
+    "serverIndonesia": "Indonesia · Kemenag",
+    "kemenagWindow": "Diambil satu musim sekaligus — bulan ini dan dua bulan berikutnya — dan diperpanjang setiap minggu."
   },
   "log": {
     "legendPrayers": "0 → 5 salat",

@@ -532,6 +532,10 @@
     "jakim": {
       "name": "Malaysia",
       "desc": "JAKIM:s e-Solat-tidtabell för zonen du befinner dig i; din plats matchas mot närmaste ort i dess zonlista."
+    },
+    "kemenag": {
+      "name": "Indonesien",
+      "desc": "Religionsministeriets (Kemenag) publicerade tidtabell för ditt regentskap eller din stad; din plats matchas mot närmaste i listan."
     }
   },
   "compass": {
@@ -1861,7 +1865,9 @@
     "yearFetched": "Året hämtat",
     "serverSingapore": "Singapore · MUIS",
     "serverMalaysia": "Malaysia · JAKIM e-Solat",
-    "jakimWindow": "JAKIM publicerar bara innevarande år, så fönstret slutar den 31 december och börjar om när det nya året publiceras i början av januari."
+    "jakimWindow": "JAKIM publicerar bara innevarande år, så fönstret slutar den 31 december och börjar om när det nya året publiceras i början av januari.",
+    "serverIndonesia": "Indonesien · Kemenag",
+    "kemenagWindow": "Hämtas en säsong i taget – den här månaden och de två nästa – och förlängs varje vecka."
   },
   "log": {
     "legendPrayers": "0 → 5 böner",

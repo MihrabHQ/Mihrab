@@ -20,6 +20,7 @@
  * honest answer.
  */
 import { isCoordinateInAlgeria } from '../utils/algeriaRegion';
+import { isCoordinateInIndonesia } from '../utils/indonesiaRegion';
 import { isCoordinateInMalaysia } from '../utils/malaysiaRegion';
 import { isCoordinateInMorocco } from '../utils/moroccoRegion';
 import { isCoordinateInSingapore } from '../utils/singaporeRegion';
@@ -42,6 +43,8 @@ const AUTO_METHOD_REGIONS: readonly AutoMethodRegion[] = [
   // 11 = Singapore (MUIS, 20° / 18°), 17 = Malaysia (JAKIM, the same angles).
   { method: 11, covers: isCoordinateInSingapore },
   { method: 17, covers: isCoordinateInMalaysia },
+  // 20 = Indonesia (Kemenag, 20° / 18°).
+  { method: 20, covers: isCoordinateInIndonesia },
 ];
 
 /**

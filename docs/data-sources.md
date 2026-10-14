@@ -40,8 +40,9 @@ What ships today:
   `tools/habous-dataset/`) and Algeria (the Ministry of Religious Affairs
   and Wakfs, `tools/algeria-ministry/`), each rebuilt by a workflow in
   `.github/workflows/` into `data/prayer-times/` and fetched by city.
-  Singapore (MUIS, from data.gov.sg) and Malaysia (JAKIM e-Solat) are
-  built by `tools/national-tables/` and read through one module,
+  Singapore (MUIS, from data.gov.sg), Malaysia (JAKIM e-Solat) and
+  Indonesia (Kemenag) are built by `tools/national-tables/` and read
+  through one module,
   `src/providers/nationalTable.ts`. Türkiye Takvimi (namazvakti.com) is
   different: a workflow builds only its city index
   (`tools/namazvakti-dataset/`), and the phone fetches its city's yearly

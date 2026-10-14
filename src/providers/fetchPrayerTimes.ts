@@ -203,13 +203,15 @@ export async function fetchPrayerTimesUnified(
       return local;
     }
     case 'muis':
-    case 'jakim': {
-      // A national table (Singapore's MUIS, Malaysia's JAKIM): the
+    case 'jakim':
+    case 'kemenag': {
+      // A national table (Singapore's MUIS, Malaysia's JAKIM, Indonesia's
+      // Kemenag): the
       // authority's published day for the nearest listed place, from the
       // phone's copy. Past the published window — JAKIM's ends every
       // 31 December until the January rebuild — or outside the country,
-      // the authority's own method is computed on the phone: both are
-      // 20° / 18°, AlAdhan's ids 11 and 17.
+      // the authority's own method is computed on the phone: all three are
+      // 20° / 18°, AlAdhan's ids 11, 17 and 20.
       const table = nationalTableFor(p.provider)!;
       try {
         result = await table.getTimes({ latitude: p.latitude, longitude: p.longitude, date: p.date });
@@ -222,7 +224,7 @@ export async function fetchPrayerTimesUnified(
           latitude: p.latitude,
           longitude: p.longitude,
           date: p.date,
-          calculationMethod: p.provider === 'muis' ? 11 : 17,
+          calculationMethod: p.provider === 'muis' ? 11 : p.provider === 'jakim' ? 17 : 20,
           school: 0,
         }),
         source: 'local',

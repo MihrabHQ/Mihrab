@@ -17,10 +17,11 @@ jest.mock('../src/providers/aladhan', () => ({
 import { fetchWithRetry } from '../src/utils/fetchWithRetry';
 import { parseMuisCsv, SINGAPORE } from '../tools/national-tables/muis';
 import { parseJakimDate, parseJakimYear } from '../tools/national-tables/jakim';
+import { loadPlaces as loadKemenagPlaces, parseKemenagMonth } from '../tools/national-tables/kemenag';
 import { JAKIM_ZONES, jakimPlaces } from '../tools/national-tables/jakim-zones';
 import { checkDay, BuildError } from '../tools/national-tables/write';
 import { createNationalTable, seedTuple } from '../src/providers/nationalTable';
-import { _resetNationalTablesForTests, jakimTable, muisTable, nationalTableFor } from '../src/providers/nationalTables';
+import { _resetNationalTablesForTests, jakimTable, kemenagTable, muisTable, nationalTableFor } from '../src/providers/nationalTables';
 import { fetchPrayerTimesUnified } from '../src/providers/fetchPrayerTimes';
 import { getEffectiveDataProvider } from '../src/settings/effectiveProvider';
 import { autoMethodForCoords } from '../src/providers/autoMethod';
@@ -35,6 +36,9 @@ const mockFetch = fetchWithRetry as jest.Mock;
 const SG = { latitude: 1.3521, longitude: 103.8198 };
 const KL = { latitude: 3.139, longitude: 101.6869 };
 const KK = { latitude: 5.9804, longitude: 116.0735 };
+const JAKARTA = { latitude: -6.2088, longitude: 106.8456 };
+const NUNUKAN = { latitude: 4.13, longitude: 117.66 };
+const TAWAU = { latitude: 4.25, longitude: 117.89 };
 
 function response(status: number, body: string) {
   return { ok: status >= 200 && status < 300, status, text: async () => body, json: async () => JSON.parse(body) };
@@ -60,6 +64,27 @@ describe('the builders read what the authorities publish', () => {
     const days = parseJakimYear(sample);
     expect(days['2026-01-01']).toEqual([5 * 60 + 56, 6 * 60 + 6, 7 * 60 + 17, 13 * 60 + 19, 16 * 60 + 42, 19 * 60 + 17, 20 * 60 + 31]);
     expect(() => parseJakimYear({ prayerTime: [], status: 'NO RECORD!' })).toThrow(/NO RECORD/);
+  });
+
+  it('reads Kemenag’s month, and refuses an answer for another regency', () => {
+    const month = {
+      status: 1, message: 'Success', prov: 'JAWA BARAT', kabko: 'KAB. BANDUNG',
+      data: { '2026-10-01': { imsak: '04:10', subuh: '04:20', terbit: '05:28', dzuhur: '11:43', ashar: '14:50', maghrib: '17:52', isya: '18:56' } },
+    };
+    const full = { ...month, data: Object.fromEntries(Array.from({ length: 31 }, (_, i) => [`2026-10-${String(i + 1).padStart(2, '0')}`, month.data['2026-10-01']])) };
+    expect(parseKemenagMonth(full, 'KAB. BANDUNG')['2026-10-01']).toEqual([250, 260, 328, 703, 890, 1072, 1136]);
+    expect(() => parseKemenagMonth({ status: 0, message: 'Error Parameter', data: [] as never }, 'x')).toThrow(/Error Parameter/);
+    expect(() => parseKemenagMonth(month, 'x')).toThrow(/only 1 days/);
+    const places = loadKemenagPlaces();
+    expect(places.length).toBeGreaterThan(500);
+    expect(new Set(places.map(p => p.id)).size).toBe(places.length);
+    expect(new Set(places.map(p => p.kabId)).size).toBe(places.length);
+    for (const p of places) {
+      expect(p.lat).toBeGreaterThan(-11.2);
+      expect(p.lat).toBeLessThan(6.2);
+      expect(p.lon).toBeGreaterThan(94.9);
+      expect(p.lon).toBeLessThan(141.1);
+    }
   });
 
   it('refuses a day whose times are out of order or implausible', () => {
@@ -146,13 +171,18 @@ describe('on the phone', () => {
     expect(getEffectiveDataProvider(true, 'aladhan', KL)).toBe('jakim');
     expect(getEffectiveDataProvider(true, 'aladhan', KK)).toBe('jakim');
     expect(getEffectiveDataProvider(false, 'jakim', SG)).not.toBe('jakim');
+    expect(getEffectiveDataProvider(true, 'aladhan', JAKARTA)).toBe('kemenag');
+    // Across the Sabah border, twenty kilometres apart: each to its own ministry.
+    expect(getEffectiveDataProvider(true, 'aladhan', NUNUKAN)).toBe('kemenag');
+    expect(getEffectiveDataProvider(true, 'aladhan', TAWAU)).toBe('jakim');
+    expect(autoMethodForCoords(JAKARTA.latitude, JAKARTA.longitude)).toBe(20);
     expect(autoMethodForCoords(SG.latitude, SG.longitude)).toBe(11);
     expect(autoMethodForCoords(KL.latitude, KL.longitude)).toBe(17);
     expect(autoMethodForCoords(KK.latitude, KK.longitude)).toBe(17);
   });
 
   it('is offered as a regional source, with no method or madhab to pick', () => {
-    for (const id of ['muis', 'jakim'] as const) {
+    for (const id of ['muis', 'jakim', 'kemenag'] as const) {
       expect(REGIONAL_PRAYER_PROVIDERS.some(p => p.id === id)).toBe(true);
       expect(providerHidesCalculationMethod(id)).toBe(true);
       expect(providerHidesHanafiAsr(id)).toBe(true);
@@ -163,7 +193,7 @@ describe('on the phone', () => {
 
   it('bundles a seed that covers today for every place', () => {
     const today = new Date().toISOString().slice(0, 10);
-    for (const t of [muisTable, jakimTable]) {
+    for (const t of [muisTable, jakimTable, kemenagTable]) {
       expect(t.config.seed.start <= today).toBe(true);
       const ids = new Set(t.config.places.map(p => p.id));
       for (const id of ids) expect(seedTuple(t.config.seed, id, t.config.seed.start)).toBeDefined();

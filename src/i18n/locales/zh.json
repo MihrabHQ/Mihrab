@@ -532,6 +532,10 @@
     "jakim": {
       "name": "马来西亚",
       "desc": "JAKIM 的 e-Solat 时间表，按您所在的区域；您的位置会匹配到其区域列表中最近的城镇。"
+    },
+    "kemenag": {
+      "name": "印度尼西亚",
+      "desc": "宗教事务部（Kemenag）为您所在县或市发布的时间表；您的位置会匹配到其列表中最近的一个。"
     }
   },
   "compass": {
@@ -1861,7 +1865,9 @@
     "yearFetched": "年度数据下载于",
     "serverSingapore": "新加坡 · MUIS",
     "serverMalaysia": "马来西亚 · JAKIM e-Solat",
-    "jakimWindow": "JAKIM 仅发布当年的时间表，因此此窗口在 12 月 31 日结束，并在 1 月初新一年发布后重新开始。"
+    "jakimWindow": "JAKIM 仅发布当年的时间表，因此此窗口在 12 月 31 日结束，并在 1 月初新一年发布后重新开始。",
+    "serverIndonesia": "印度尼西亚 · Kemenag",
+    "kemenagWindow": "每次获取一个季度——本月及之后两个月——并每周延长。"
   },
   "log": {
     "legendPrayers": "0 → 5 次礼拜",

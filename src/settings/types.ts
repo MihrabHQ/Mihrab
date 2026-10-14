@@ -20,6 +20,7 @@ export type PrayerDataProviderId =
   | 'marw'
   | 'muis'
   | 'jakim'
+  | 'kemenag'
   | 'namazvakti'
   | 'local_adhan';
 

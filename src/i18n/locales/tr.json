@@ -532,6 +532,10 @@
     "jakim": {
       "name": "Malezya",
       "desc": "Bulunduğunuz bölge için JAKIM’in e-Solat cetveli; konumunuz bölge listesindeki en yakın kasabayla eşleştirilir."
+    },
+    "kemenag": {
+      "name": "Endonezya",
+      "desc": "Din İşleri Bakanlığı’nın (Kemenag) ilçeniz veya şehriniz için yayımladığı cetvel; konumunuz listedeki en yakınıyla eşleştirilir."
     }
   },
   "compass": {
@@ -1861,7 +1865,9 @@
     "yearFetched": "Yıl indirildi",
     "serverSingapore": "Singapur · MUIS",
     "serverMalaysia": "Malezya · JAKIM e-Solat",
-    "jakimWindow": "JAKIM yalnızca içinde bulunulan yılı yayımlar; bu yüzden bu pencere 31 Aralık’ta biter ve yeni yıl Ocak’ın ilk günlerinde yayımlanınca yeniden başlar."
+    "jakimWindow": "JAKIM yalnızca içinde bulunulan yılı yayımlar; bu yüzden bu pencere 31 Aralık’ta biter ve yeni yıl Ocak’ın ilk günlerinde yayımlanınca yeniden başlar.",
+    "serverIndonesia": "Endonezya · Kemenag",
+    "kemenagWindow": "Her seferinde bir mevsim alınır — bu ay ve sonraki iki ay — ve her hafta uzatılır."
   },
   "log": {
     "legendPrayers": "0 → 5 namaz",

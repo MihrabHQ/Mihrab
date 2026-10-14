@@ -25,6 +25,7 @@ describe('the table', () => {
       'habous',
       'islamiska_forbundet',
       'jakim',
+      'kemenag',
       'marw',
       'muis',
     ]);

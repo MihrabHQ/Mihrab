@@ -532,6 +532,10 @@
     "jakim": {
       "name": "Malaysia",
       "desc": "JAKIM’s e-Solat timetable for the zone you are in; your location is matched to the nearest town in its zone list."
+    },
+    "kemenag": {
+      "name": "Indonesia",
+      "desc": "The Ministry of Religious Affairs’ (Kemenag) published timetable for your regency or city; your location is matched to the nearest in its list."
     }
   },
   "compass": {
@@ -1861,7 +1865,9 @@
     "yearFetched": "Year downloaded",
     "serverSingapore": "Singapore · MUIS",
     "serverMalaysia": "Malaysia · JAKIM e-Solat",
-    "jakimWindow": "JAKIM publishes the current year only, so this window ends on 31 December and starts again when the new year is published in the first days of January."
+    "jakimWindow": "JAKIM publishes the current year only, so this window ends on 31 December and starts again when the new year is published in the first days of January.",
+    "serverIndonesia": "Indonesia · Kemenag",
+    "kemenagWindow": "Fetched a season at a time — this month and the two after it — and extended every week."
   },
   "log": {
     "legendPrayers": "0 → 5 prayers",

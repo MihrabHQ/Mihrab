@@ -4,6 +4,7 @@
  *
  *   • Singapore — MUIS, one table for the whole country (`muis`)
  *   • Malaysia — JAKIM e-Solat, 59 zones (`jakim`)
+ *   • Indonesia — Kemenag (Bimas Islam), 517 regencies and cities (`kemenag`)
  *
  * Each has a bundled seed (`data/<id>Seed.json`, the published window at
  * the last app build) and a place list (`data/<id>Places.json`), both
@@ -11,6 +12,7 @@
  */
 import {
   JAKIM_DATASET_BASE_URL,
+  KEMENAG_DATASET_BASE_URL,
   MUIS_DATASET_BASE_URL,
   NATIONAL_TABLE_INDEX_POLL_INTERVAL_MS,
   NATIONAL_TABLE_REFRESH_TTL_MS,
@@ -64,9 +66,26 @@ export const jakimTable = createNationalTable({
   indexPollIntervalMs: NATIONAL_TABLE_INDEX_POLL_INTERVAL_MS,
 });
 
+/**
+ * Indonesia: the ministry publishes per regency, and a regency's seat
+ * stands for it. Regencies in Papua and Kalimantan are large.
+ */
+export const kemenagTable = createNationalTable({
+  id: 'kemenag',
+  dataset: 'kemenag',
+  baseUrl: KEMENAG_DATASET_BASE_URL,
+  timezone: 'Asia/Jakarta',
+  places: placesOf(() => require('./data/kemenagPlaces.json')),
+  maxPlaceKm: 200,
+  seed: seedOf(() => require('./data/kemenagSeed.json')),
+  refreshTtlMs: NATIONAL_TABLE_REFRESH_TTL_MS,
+  indexPollIntervalMs: NATIONAL_TABLE_INDEX_POLL_INTERVAL_MS,
+});
+
 export const NATIONAL_TABLES: Partial<Record<PrayerDataProviderId, NationalTable>> = {
   muis: muisTable,
   jakim: jakimTable,
+  kemenag: kemenagTable,
 };
 
 /** The national table behind a provider id, or null for the providers that are not one. */

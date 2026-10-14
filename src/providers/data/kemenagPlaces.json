@@ -1,0 +1,3621 @@
+[
+ {
+  "id": 1,
+  "name": "KAB. ACEH BARAT",
+  "nameEn": "KAB. ACEH BARAT (Aceh)",
+  "lat": 4.4423,
+  "lon": 96.193
+ },
+ {
+  "id": 2,
+  "name": "KAB. ACEH BARAT DAYA",
+  "nameEn": "KAB. ACEH BARAT DAYA (Aceh)",
+  "lat": 3.8336,
+  "lon": 96.8516
+ },
+ {
+  "id": 3,
+  "name": "KAB. ACEH BESAR",
+  "nameEn": "KAB. ACEH BESAR (Aceh)",
+  "lat": 5.3542,
+  "lon": 95.4962
+ },
+ {
+  "id": 4,
+  "name": "KAB. ACEH JAYA",
+  "nameEn": "KAB. ACEH JAYA (Aceh)",
+  "lat": 4.8115,
+  "lon": 95.7002
+ },
+ {
+  "id": 5,
+  "name": "KAB. ACEH SELATAN",
+  "nameEn": "KAB. ACEH SELATAN (Aceh)",
+  "lat": 3.068,
+  "lon": 97.4688
+ },
+ {
+  "id": 6,
+  "name": "KAB. ACEH SINGKIL",
+  "nameEn": "KAB. ACEH SINGKIL (Aceh)",
+  "lat": 2.3759,
+  "lon": 97.9244
+ },
+ {
+  "id": 7,
+  "name": "KAB. ACEH TAMIANG",
+  "nameEn": "KAB. ACEH TAMIANG (Aceh)",
+  "lat": 4.2123,
+  "lon": 97.9147
+ },
+ {
+  "id": 8,
+  "name": "KAB. ACEH TENGAH",
+  "nameEn": "KAB. ACEH TENGAH (Aceh)",
+  "lat": 4.5643,
+  "lon": 96.9619
+ },
+ {
+  "id": 9,
+  "name": "KAB. ACEH TENGGARA",
+  "nameEn": "KAB. ACEH TENGGARA (Aceh)",
+  "lat": 3.3389,
+  "lon": 97.7456
+ },
+ {
+  "id": 10,
+  "name": "KAB. ACEH TIMUR",
+  "nameEn": "KAB. ACEH TIMUR (Aceh)",
+  "lat": 4.7017,
+  "lon": 97.645
+ },
+ {
+  "id": 11,
+  "name": "KAB. ACEH UTARA",
+  "nameEn": "KAB. ACEH UTARA (Aceh)",
+  "lat": 4.9912,
+  "lon": 97.1587
+ },
+ {
+  "id": 12,
+  "name": "KAB. BENER MERIAH",
+  "nameEn": "KAB. BENER MERIAH (Aceh)",
+  "lat": 4.7739,
+  "lon": 96.978
+ },
+ {
+  "id": 13,
+  "name": "KAB. BIREUEN",
+  "nameEn": "KAB. BIREUEN (Aceh)",
+  "lat": 5.0827,
+  "lon": 96.5921
+ },
+ {
+  "id": 14,
+  "name": "KAB. GAYO LUES",
+  "nameEn": "KAB. GAYO LUES (Aceh)",
+  "lat": 3.9776,
+  "lon": 97.3321
+ },
+ {
+  "id": 15,
+  "name": "KAB. NAGAN RAYA",
+  "nameEn": "KAB. NAGAN RAYA (Aceh)",
+  "lat": 4.1812,
+  "lon": 96.5258
+ },
+ {
+  "id": 16,
+  "name": "KAB. PIDIE",
+  "nameEn": "KAB. PIDIE (Aceh)",
+  "lat": 5.1143,
+  "lon": 95.9413
+ },
+ {
+  "id": 17,
+  "name": "KAB. PIDIE JAYA",
+  "nameEn": "KAB. PIDIE JAYA (Aceh)",
+  "lat": 5.1048,
+  "lon": 96.2117
+ },
+ {
+  "id": 18,
+  "name": "KAB. SIMEULUE",
+  "nameEn": "KAB. SIMEULUE (Aceh)",
+  "lat": 2.629,
+  "lon": 96.0221
+ },
+ {
+  "id": 19,
+  "name": "KOTA BANDA ACEH",
+  "nameEn": "KOTA BANDA ACEH (Aceh)",
+  "lat": 5.5528,
+  "lon": 95.3193
+ },
+ {
+  "id": 20,
+  "name": "KOTA LANGSA",
+  "nameEn": "KOTA LANGSA (Aceh)",
+  "lat": 4.4731,
+  "lon": 97.9682
+ },
+ {
+  "id": 21,
+  "name": "KOTA LHOKSEUMAWE",
+  "nameEn": "KOTA LHOKSEUMAWE (Aceh)",
+  "lat": 5.179,
+  "lon": 97.1481
+ },
+ {
+  "id": 22,
+  "name": "KOTA SABANG",
+  "nameEn": "KOTA SABANG (Aceh)",
+  "lat": 5.8927,
+  "lon": 95.3226
+ },
+ {
+  "id": 23,
+  "name": "KOTA SUBULUSSALAM",
+  "nameEn": "KOTA SUBULUSSALAM (Aceh)",
+  "lat": 2.6403,
+  "lon": 98.0052
+ },
+ {
+  "id": 24,
+  "name": "KAB. ASAHAN",
+  "nameEn": "KAB. ASAHAN (Sumatera Utara)",
+  "lat": 2.8518,
+  "lon": 99.6233
+ },
+ {
+  "id": 25,
+  "name": "KAB. BATU BARA",
+  "nameEn": "KAB. BATU BARA (Sumatera Utara)",
+  "lat": 3.2241,
+  "lon": 99.5036
+ },
+ {
+  "id": 26,
+  "name": "KAB. DAIRI",
+  "nameEn": "KAB. DAIRI (Sumatera Utara)",
+  "lat": 2.829,
+  "lon": 98.3123
+ },
+ {
+  "id": 27,
+  "name": "KAB. DELI SERDANG",
+  "nameEn": "KAB. DELI SERDANG (Sumatera Utara)",
+  "lat": 3.4745,
+  "lon": 98.7159
+ },
+ {
+  "id": 28,
+  "name": "KAB. HUMBANG HASUNDUTAN",
+  "nameEn": "KAB. HUMBANG HASUNDUTAN (Sumatera Utara)",
+  "lat": 2.2681,
+  "lon": 98.7681
+ },
+ {
+  "id": 29,
+  "name": "KAB. KARO",
+  "nameEn": "KAB. KARO (Sumatera Utara)",
+  "lat": 3.0804,
+  "lon": 98.3328
+ },
+ {
+  "id": 30,
+  "name": "KAB. LABUHANBATU",
+  "nameEn": "KAB. LABUHANBATU (Sumatera Utara)",
+  "lat": 2.4259,
+  "lon": 99.7678
+ },
+ {
+  "id": 31,
+  "name": "KAB. LABUHANBATU SELATAN",
+  "nameEn": "KAB. LABUHANBATU SELATAN (Sumatera Utara)",
+  "lat": 1.8933,
+  "lon": 100.0921
+ },
+ {
+  "id": 32,
+  "name": "KAB. LABUHANBATU UTARA",
+  "nameEn": "KAB. LABUHANBATU UTARA (Sumatera Utara)",
+  "lat": 2.4259,
+  "lon": 99.7678
+ },
+ {
+  "id": 33,
+  "name": "KAB. LANGKAT",
+  "nameEn": "KAB. LANGKAT (Sumatera Utara)",
+  "lat": 3.7617,
+  "lon": 98.1769
+ },
+ {
+  "id": 34,
+  "name": "KAB. MANDAILING NATAL",
+  "nameEn": "KAB. MANDAILING NATAL (Sumatera Utara)",
+  "lat": 0.7537,
+  "lon": 99.2164
+ },
+ {
+  "id": 35,
+  "name": "KAB. NIAS",
+  "nameEn": "KAB. NIAS (Sumatera Utara)",
+  "lat": 1.2893,
+  "lon": 97.613
+ },
+ {
+  "id": 36,
+  "name": "KAB. NIAS BARAT",
+  "nameEn": "KAB. NIAS BARAT (Sumatera Utara)",
+  "lat": 0.8965,
+  "lon": 97.3433
+ },
+ {
+  "id": 37,
+  "name": "KAB. NIAS SELATAN",
+  "nameEn": "KAB. NIAS SELATAN (Sumatera Utara)",
+  "lat": 0.0681,
+  "lon": 98.2622
+ },
+ {
+  "id": 38,
+  "name": "KAB. NIAS UTARA",
+  "nameEn": "KAB. NIAS UTARA (Sumatera Utara)",
+  "lat": 1.3748,
+  "lon": 97.1446
+ },
+ {
+  "id": 39,
+  "name": "KAB. PADANG LAWAS",
+  "nameEn": "KAB. PADANG LAWAS (Sumatera Utara)",
+  "lat": 1.6292,
+  "lon": 99.6926
+ },
+ {
+  "id": 40,
+  "name": "KAB. PADANG LAWAS UTARA",
+  "nameEn": "KAB. PADANG LAWAS UTARA (Sumatera Utara)",
+  "lat": 1.6292,
+  "lon": 99.6926
+ },
+ {
+  "id": 41,
+  "name": "KAB. PAKPAK BHARAT",
+  "nameEn": "KAB. PAKPAK BHARAT (Sumatera Utara)",
+  "lat": 2.5396,
+  "lon": 98.3205
+ },
+ {
+  "id": 42,
+  "name": "KAB. SAMOSIR",
+  "nameEn": "KAB. SAMOSIR (Sumatera Utara)",
+  "lat": 2.5936,
+  "lon": 98.8011
+ },
+ {
+  "id": 43,
+  "name": "KAB. SERDANG BEDAGAI",
+  "nameEn": "KAB. SERDANG BEDAGAI (Sumatera Utara)",
+  "lat": 3.3486,
+  "lon": 99.0001
+ },
+ {
+  "id": 44,
+  "name": "KAB. SIMALUNGUN",
+  "nameEn": "KAB. SIMALUNGUN (Sumatera Utara)",
+  "lat": 2.9507,
+  "lon": 98.7843
+ },
+ {
+  "id": 45,
+  "name": "KAB. TAPANULI SELATAN",
+  "nameEn": "KAB. TAPANULI SELATAN (Sumatera Utara)",
+  "lat": 1.5506,
+  "lon": 99.2104
+ },
+ {
+  "id": 46,
+  "name": "KAB. TAPANULI TENGAH",
+  "nameEn": "KAB. TAPANULI TENGAH (Sumatera Utara)",
+  "lat": 1.8241,
+  "lon": 98.2768
+ },
+ {
+  "id": 47,
+  "name": "KAB. TAPANULI UTARA",
+  "nameEn": "KAB. TAPANULI UTARA (Sumatera Utara)",
+  "lat": 1.9983,
+  "lon": 99.0605
+ },
+ {
+  "id": 48,
+  "name": "KAB. TOBA SAMOSIR",
+  "nameEn": "KAB. TOBA SAMOSIR (Sumatera Utara)",
+  "lat": 2.33,
+  "lon": 99.07
+ },
+ {
+  "id": 49,
+  "name": "KOTA BINJAI",
+  "nameEn": "KOTA BINJAI (Sumatera Utara)",
+  "lat": 3.6064,
+  "lon": 98.49
+ },
+ {
+  "id": 50,
+  "name": "KOTA GUNUNGSITOLI",
+  "nameEn": "KOTA GUNUNGSITOLI (Sumatera Utara)",
+  "lat": 1.2896,
+  "lon": 97.6131
+ },
+ {
+  "id": 51,
+  "name": "KOTA MEDAN",
+  "nameEn": "KOTA MEDAN (Sumatera Utara)",
+  "lat": 3.5895,
+  "lon": 98.6742
+ },
+ {
+  "id": 52,
+  "name": "KOTA PADANGSIDEMPUAN",
+  "nameEn": "KOTA PADANGSIDEMPUAN (Sumatera Utara)",
+  "lat": 1.3354,
+  "lon": 99.3032
+ },
+ {
+  "id": 53,
+  "name": "KOTA PEMATANGSIANTAR",
+  "nameEn": "KOTA PEMATANGSIANTAR (Sumatera Utara)",
+  "lat": 2.9589,
+  "lon": 99.0654
+ },
+ {
+  "id": 54,
+  "name": "KOTA SIBOLGA",
+  "nameEn": "KOTA SIBOLGA (Sumatera Utara)",
+  "lat": 1.7341,
+  "lon": 98.7897
+ },
+ {
+  "id": 55,
+  "name": "KOTA TANJUNGBALAI",
+  "nameEn": "KOTA TANJUNGBALAI (Sumatera Utara)",
+  "lat": 2.9703,
+  "lon": 99.8021
+ },
+ {
+  "id": 56,
+  "name": "KOTA TEBING TINGGI",
+  "nameEn": "KOTA TEBING TINGGI (Sumatera Utara)",
+  "lat": 3.3274,
+  "lon": 99.1623
+ },
+ {
+  "id": 57,
+  "name": "KAB. AGAM",
+  "nameEn": "KAB. AGAM (Sumatera Barat)",
+  "lat": -0.2547,
+  "lon": 100.17
+ },
+ {
+  "id": 58,
+  "name": "KAB. DHARMASRAYA",
+  "nameEn": "KAB. DHARMASRAYA (Sumatera Barat)",
+  "lat": -1.2586,
+  "lon": 101.5799
+ },
+ {
+  "id": 59,
+  "name": "KAB. KEPULAUAN MENTAWAI",
+  "nameEn": "KAB. KEPULAUAN MENTAWAI (Sumatera Barat)",
+  "lat": -1.3588,
+  "lon": 98.895
+ },
+ {
+  "id": 60,
+  "name": "KAB. LIMA PULUH KOTA",
+  "nameEn": "KAB. LIMA PULUH KOTA (Sumatera Barat)",
+  "lat": 0.0279,
+  "lon": 100.5913
+ },
+ {
+  "id": 61,
+  "name": "KAB. PADANG PARIAMAN",
+  "nameEn": "KAB. PADANG PARIAMAN (Sumatera Barat)",
+  "lat": -0.5691,
+  "lon": 100.277
+ },
+ {
+  "id": 62,
+  "name": "KAB. PASAMAN",
+  "nameEn": "KAB. PASAMAN (Sumatera Barat)",
+  "lat": 0.3974,
+  "lon": 100.025
+ },
+ {
+  "id": 63,
+  "name": "KAB. PASAMAN BARAT",
+  "nameEn": "KAB. PASAMAN BARAT (Sumatera Barat)",
+  "lat": 0.1875,
+  "lon": 99.6935
+ },
+ {
+  "id": 64,
+  "name": "KAB. PESISIR SELATAN",
+  "nameEn": "KAB. PESISIR SELATAN (Sumatera Barat)",
+  "lat": -1.7186,
+  "lon": 100.927
+ },
+ {
+  "id": 65,
+  "name": "KAB. SIJUNJUNG",
+  "nameEn": "KAB. SIJUNJUNG (Sumatera Barat)",
+  "lat": -0.6513,
+  "lon": 101.0708
+ },
+ {
+  "id": 66,
+  "name": "KAB. SOLOK",
+  "nameEn": "KAB. SOLOK (Sumatera Barat)",
+  "lat": -0.931,
+  "lon": 100.8043
+ },
+ {
+  "id": 67,
+  "name": "KAB. SOLOK SELATAN",
+  "nameEn": "KAB. SOLOK SELATAN (Sumatera Barat)",
+  "lat": -1.5573,
+  "lon": 101.2395
+ },
+ {
+  "id": 68,
+  "name": "KAB. TANAH DATAR",
+  "nameEn": "KAB. TANAH DATAR (Sumatera Barat)",
+  "lat": -0.469,
+  "lon": 100.6362
+ },
+ {
+  "id": 69,
+  "name": "KOTA BUKITTINGGI",
+  "nameEn": "KOTA BUKITTINGGI (Sumatera Barat)",
+  "lat": -0.3052,
+  "lon": 100.3695
+ },
+ {
+  "id": 70,
+  "name": "KOTA PADANG",
+  "nameEn": "KOTA PADANG (Sumatera Barat)",
+  "lat": -0.9248,
+  "lon": 100.3633
+ },
+ {
+  "id": 71,
+  "name": "KOTA PADANGPANJANG",
+  "nameEn": "KOTA PADANGPANJANG (Sumatera Barat)",
+  "lat": -0.4641,
+  "lon": 100.4024
+ },
+ {
+  "id": 72,
+  "name": "KOTA PARIAMAN",
+  "nameEn": "KOTA PARIAMAN (Sumatera Barat)",
+  "lat": -0.6264,
+  "lon": 100.1178
+ },
+ {
+  "id": 73,
+  "name": "KOTA PAYAKUMBUH",
+  "nameEn": "KOTA PAYAKUMBUH (Sumatera Barat)",
+  "lat": -0.2243,
+  "lon": 100.6319
+ },
+ {
+  "id": 74,
+  "name": "KOTA SAWAHLUNTO",
+  "nameEn": "KOTA SAWAHLUNTO (Sumatera Barat)",
+  "lat": -0.6818,
+  "lon": 100.7786
+ },
+ {
+  "id": 75,
+  "name": "KOTA SOLOK",
+  "nameEn": "KOTA SOLOK (Sumatera Barat)",
+  "lat": -0.7991,
+  "lon": 100.653
+ },
+ {
+  "id": 76,
+  "name": "KAB. BENGKALIS",
+  "nameEn": "KAB. BENGKALIS (Riau)",
+  "lat": 1.7697,
+  "lon": 101.9124
+ },
+ {
+  "id": 77,
+  "name": "KAB. INDRAGIRI HILIR",
+  "nameEn": "KAB. INDRAGIRI HILIR (Riau)",
+  "lat": -0.2709,
+  "lon": 103.3321
+ },
+ {
+  "id": 78,
+  "name": "KAB. INDRAGIRI HULU",
+  "nameEn": "KAB. INDRAGIRI HULU (Riau)",
+  "lat": -0.4979,
+  "lon": 102.3008
+ },
+ {
+  "id": 79,
+  "name": "KAB. KAMPAR",
+  "nameEn": "KAB. KAMPAR (Riau)",
+  "lat": 0.32,
+  "lon": 101.0617
+ },
+ {
+  "id": 80,
+  "name": "KAB. KEPULAUAN MERANTI",
+  "nameEn": "KAB. KEPULAUAN MERANTI (Riau)",
+  "lat": 1.0613,
+  "lon": 102.7019
+ },
+ {
+  "id": 81,
+  "name": "KAB. KUANTAN SINGINGI",
+  "nameEn": "KAB. KUANTAN SINGINGI (Riau)",
+  "lat": -0.4938,
+  "lon": 101.4897
+ },
+ {
+  "id": 82,
+  "name": "KAB. PELALAWAN",
+  "nameEn": "KAB. PELALAWAN (Riau)",
+  "lat": 0.2384,
+  "lon": 102.2619
+ },
+ {
+  "id": 83,
+  "name": "KAB. ROKAN HILIR",
+  "nameEn": "KAB. ROKAN HILIR (Riau)",
+  "lat": 2.2243,
+  "lon": 100.6968
+ },
+ {
+  "id": 84,
+  "name": "KAB. ROKAN HULU",
+  "nameEn": "KAB. ROKAN HULU (Riau)",
+  "lat": 0.9043,
+  "lon": 100.4574
+ },
+ {
+  "id": 85,
+  "name": "KAB. SIAK",
+  "nameEn": "KAB. SIAK (Riau)",
+  "lat": 0.8275,
+  "lon": 101.8462
+ },
+ {
+  "id": 86,
+  "name": "KOTA DUMAI",
+  "nameEn": "KOTA DUMAI (Riau)",
+  "lat": 1.6632,
+  "lon": 101.447
+ },
+ {
+  "id": 87,
+  "name": "KOTA PEKANBARU",
+  "nameEn": "KOTA PEKANBARU (Riau)",
+  "lat": 0.5262,
+  "lon": 101.4516
+ },
+ {
+  "id": 88,
+  "name": "KAB. BINTAN",
+  "nameEn": "KAB. BINTAN (Kepulauan Riau)",
+  "lat": 1.0197,
+  "lon": 104.5698
+ },
+ {
+  "id": 89,
+  "name": "KAB. KARIMUN",
+  "nameEn": "KAB. KARIMUN (Kepulauan Riau)",
+  "lat": 0.7654,
+  "lon": 103.4287
+ },
+ {
+  "id": 90,
+  "name": "KAB. KEPULAUAN ANAMBAS",
+  "nameEn": "KAB. KEPULAUAN ANAMBAS (Kepulauan Riau)",
+  "lat": 2.9389,
+  "lon": 105.7603
+ },
+ {
+  "id": 91,
+  "name": "KAB. LINGGA",
+  "nameEn": "KAB. LINGGA (Kepulauan Riau)",
+  "lat": -0.5095,
+  "lon": 104.4142
+ },
+ {
+  "id": 92,
+  "name": "KAB. NATUNA",
+  "nameEn": "KAB. NATUNA (Kepulauan Riau)",
+  "lat": 3.9305,
+  "lon": 108.1902
+ },
+ {
+  "id": 93,
+  "name": "KOTA BATAM",
+  "nameEn": "KOTA BATAM (Kepulauan Riau)",
+  "lat": 1.1031,
+  "lon": 104.0384
+ },
+ {
+  "id": 94,
+  "name": "KOTA TANJUNG PINANG",
+  "nameEn": "KOTA TANJUNG PINANG (Kepulauan Riau)",
+  "lat": 0.9237,
+  "lon": 104.4461
+ },
+ {
+  "id": 95,
+  "name": "PULAU TAMBELAN KAB. BINTAN",
+  "nameEn": "PULAU TAMBELAN KAB. BINTAN (Kepulauan Riau)",
+  "lat": 0.9869,
+  "lon": 107.5803
+ },
+ {
+  "id": 96,
+  "name": "PEKAJANG KAB. LINGGA",
+  "nameEn": "PEKAJANG KAB. LINGGA (Kepulauan Riau)",
+  "lat": -0.86,
+  "lon": 105.97
+ },
+ {
+  "id": 97,
+  "name": "PULAU SERASAN KAB. NATUNA",
+  "nameEn": "PULAU SERASAN KAB. NATUNA (Kepulauan Riau)",
+  "lat": 2.5207,
+  "lon": 109.0696
+ },
+ {
+  "id": 98,
+  "name": "PULAU MIDAI KAB. NATUNA",
+  "nameEn": "PULAU MIDAI KAB. NATUNA (Kepulauan Riau)",
+  "lat": 2.996,
+  "lon": 107.7796
+ },
+ {
+  "id": 99,
+  "name": "PULAU LAUT KAB. NATUNA",
+  "nameEn": "PULAU LAUT KAB. NATUNA (Kepulauan Riau)",
+  "lat": 4.7221,
+  "lon": 107.9797
+ },
+ {
+  "id": 100,
+  "name": "KAB. BATANGHARI",
+  "nameEn": "KAB. BATANGHARI (Jambi)",
+  "lat": -1.7126,
+  "lon": 103.2614
+ },
+ {
+  "id": 101,
+  "name": "KAB. BUNGO",
+  "nameEn": "KAB. BUNGO (Jambi)",
+  "lat": -1.5161,
+  "lon": 101.9848
+ },
+ {
+  "id": 102,
+  "name": "KAB. KERINCI",
+  "nameEn": "KAB. KERINCI (Jambi)",
+  "lat": -2.0633,
+  "lon": 101.6001
+ },
+ {
+  "id": 103,
+  "name": "KAB. MERANGIN",
+  "nameEn": "KAB. MERANGIN (Jambi)",
+  "lat": -2.2084,
+  "lon": 102.1171
+ },
+ {
+  "id": 104,
+  "name": "KAB. MUARO JAMBI",
+  "nameEn": "KAB. MUARO JAMBI (Jambi)",
+  "lat": -1.707,
+  "lon": 103.7875
+ },
+ {
+  "id": 105,
+  "name": "KAB. SAROLANGUN",
+  "nameEn": "KAB. SAROLANGUN (Jambi)",
+  "lat": -2.3312,
+  "lon": 102.6248
+ },
+ {
+  "id": 106,
+  "name": "KAB. TANJUNG JABUNG BARAT",
+  "nameEn": "KAB. TANJUNG JABUNG BARAT (Jambi)",
+  "lat": -1.0491,
+  "lon": 103.1097
+ },
+ {
+  "id": 107,
+  "name": "KAB. TANJUNG JABUNG TIMUR",
+  "nameEn": "KAB. TANJUNG JABUNG TIMUR (Jambi)",
+  "lat": -1.2097,
+  "lon": 104.2199
+ },
+ {
+  "id": 108,
+  "name": "KAB. TEBO",
+  "nameEn": "KAB. TEBO (Jambi)",
+  "lat": -1.3878,
+  "lon": 102.4174
+ },
+ {
+  "id": 109,
+  "name": "KOTA JAMBI",
+  "nameEn": "KOTA JAMBI (Jambi)",
+  "lat": -1.6297,
+  "lon": 103.6078
+ },
+ {
+  "id": 110,
+  "name": "KOTA SUNGAI PENUH",
+  "nameEn": "KOTA SUNGAI PENUH (Jambi)",
+  "lat": -2.0707,
+  "lon": 101.3961
+ },
+ {
+  "id": 111,
+  "name": "KAB. BENGKULU SELATAN",
+  "nameEn": "KAB. BENGKULU SELATAN (Bengkulu)",
+  "lat": -4.359,
+  "lon": 103.002
+ },
+ {
+  "id": 112,
+  "name": "KAB. BENGKULU TENGAH",
+  "nameEn": "KAB. BENGKULU TENGAH (Bengkulu)",
+  "lat": -3.6712,
+  "lon": 102.3876
+ },
+ {
+  "id": 113,
+  "name": "KAB. BENGKULU UTARA",
+  "nameEn": "KAB. BENGKULU UTARA (Bengkulu)",
+  "lat": -3.1891,
+  "lon": 101.8576
+ },
+ {
+  "id": 114,
+  "name": "KAB. KAUR",
+  "nameEn": "KAB. KAUR (Bengkulu)",
+  "lat": -4.5905,
+  "lon": 103.3653
+ },
+ {
+  "id": 115,
+  "name": "KAB. KEPAHIANG",
+  "nameEn": "KAB. KEPAHIANG (Bengkulu)",
+  "lat": -3.6479,
+  "lon": 102.6661
+ },
+ {
+  "id": 116,
+  "name": "KAB. LEBONG",
+  "nameEn": "KAB. LEBONG (Bengkulu)",
+  "lat": -3.0534,
+  "lon": 102.209
+ },
+ {
+  "id": 117,
+  "name": "KAB. MUKOMUKO",
+  "nameEn": "KAB. MUKOMUKO (Bengkulu)",
+  "lat": -2.7084,
+  "lon": 101.5548
+ },
+ {
+  "id": 118,
+  "name": "KAB. REJANG LEBONG",
+  "nameEn": "KAB. REJANG LEBONG (Bengkulu)",
+  "lat": -3.4389,
+  "lon": 102.6985
+ },
+ {
+  "id": 119,
+  "name": "KAB. SELUMA",
+  "nameEn": "KAB. SELUMA (Bengkulu)",
+  "lat": -4.0768,
+  "lon": 102.6718
+ },
+ {
+  "id": 120,
+  "name": "KOTA BENGKULU",
+  "nameEn": "KOTA BENGKULU (Bengkulu)",
+  "lat": -3.7923,
+  "lon": 102.2624
+ },
+ {
+  "id": 121,
+  "name": "KAB. BANYUASIN",
+  "nameEn": "KAB. BANYUASIN (Sumatera Selatan)",
+  "lat": -2.3939,
+  "lon": 104.7548
+ },
+ {
+  "id": 122,
+  "name": "KAB. EMPAT LAWANG",
+  "nameEn": "KAB. EMPAT LAWANG (Sumatera Selatan)",
+  "lat": -3.7155,
+  "lon": 102.9325
+ },
+ {
+  "id": 123,
+  "name": "KAB. LAHAT",
+  "nameEn": "KAB. LAHAT (Sumatera Selatan)",
+  "lat": -3.7854,
+  "lon": 103.5392
+ },
+ {
+  "id": 124,
+  "name": "KAB. MUARA ENIM",
+  "nameEn": "KAB. MUARA ENIM (Sumatera Selatan)",
+  "lat": -3.8467,
+  "lon": 103.9616
+ },
+ {
+  "id": 125,
+  "name": "KAB. MUSI BANYUASIN",
+  "nameEn": "KAB. MUSI BANYUASIN (Sumatera Selatan)",
+  "lat": -2.4909,
+  "lon": 103.7048
+ },
+ {
+  "id": 126,
+  "name": "KAB. MUSI RAWAS",
+  "nameEn": "KAB. MUSI RAWAS (Sumatera Selatan)",
+  "lat": -3.1758,
+  "lon": 103.25
+ },
+ {
+  "id": 127,
+  "name": "KAB. MUSI RAWAS UTARA",
+  "nameEn": "KAB. MUSI RAWAS UTARA (Sumatera Selatan)",
+  "lat": -2.7129,
+  "lon": 102.7456
+ },
+ {
+  "id": 128,
+  "name": "KAB. OGAN ILIR",
+  "nameEn": "KAB. OGAN ILIR (Sumatera Selatan)",
+  "lat": -3.4077,
+  "lon": 104.6508
+ },
+ {
+  "id": 129,
+  "name": "KAB. OGAN KOMERING ILIR",
+  "nameEn": "KAB. OGAN KOMERING ILIR (Sumatera Selatan)",
+  "lat": -3.3289,
+  "lon": 105.3998
+ },
+ {
+  "id": 130,
+  "name": "KAB. OGAN KOMERING ULU",
+  "nameEn": "KAB. OGAN KOMERING ULU (Sumatera Selatan)",
+  "lat": -4.1101,
+  "lon": 104.0083
+ },
+ {
+  "id": 131,
+  "name": "KAB. OGAN KOMERING ULU SELATAN",
+  "nameEn": "KAB. OGAN KOMERING ULU SELATAN (Sumatera Selatan)",
+  "lat": -4.5702,
+  "lon": 103.925
+ },
+ {
+  "id": 132,
+  "name": "KAB. OGAN KOMERING ULU TIMUR",
+  "nameEn": "KAB. OGAN KOMERING ULU TIMUR (Sumatera Selatan)",
+  "lat": -4.116,
+  "lon": 104.5585
+ },
+ {
+  "id": 133,
+  "name": "KAB. PENUKAL ABAB LEMATANG ILIR",
+  "nameEn": "KAB. PENUKAL ABAB LEMATANG ILIR (Sumatera Selatan)",
+  "lat": -3.214,
+  "lon": 104.0077
+ },
+ {
+  "id": 134,
+  "name": "KOTA LUBUKLINGGAU",
+  "nameEn": "KOTA LUBUKLINGGAU (Sumatera Selatan)",
+  "lat": -3.2917,
+  "lon": 102.8702
+ },
+ {
+  "id": 135,
+  "name": "KOTA PAGAR ALAM",
+  "nameEn": "KOTA PAGAR ALAM (Sumatera Selatan)",
+  "lat": -4.0212,
+  "lon": 103.2517
+ },
+ {
+  "id": 136,
+  "name": "KOTA PALEMBANG",
+  "nameEn": "KOTA PALEMBANG (Sumatera Selatan)",
+  "lat": -2.9888,
+  "lon": 104.7569
+ },
+ {
+  "id": 137,
+  "name": "KOTA PRABUMULIH",
+  "nameEn": "KOTA PRABUMULIH (Sumatera Selatan)",
+  "lat": -3.4383,
+  "lon": 104.231
+ },
+ {
+  "id": 138,
+  "name": "KAB. BANGKA",
+  "nameEn": "KAB. BANGKA (Kepulauan Bangka Belitung)",
+  "lat": -1.9251,
+  "lon": 105.9365
+ },
+ {
+  "id": 139,
+  "name": "KAB. BANGKA BARAT",
+  "nameEn": "KAB. BANGKA BARAT (Kepulauan Bangka Belitung)",
+  "lat": -1.8412,
+  "lon": 105.5519
+ },
+ {
+  "id": 140,
+  "name": "KAB. BANGKA SELATAN",
+  "nameEn": "KAB. BANGKA SELATAN (Kepulauan Bangka Belitung)",
+  "lat": -2.7769,
+  "lon": 106.294
+ },
+ {
+  "id": 141,
+  "name": "KAB. BANGKA TENGAH",
+  "nameEn": "KAB. BANGKA TENGAH (Kepulauan Bangka Belitung)",
+  "lat": -2.4305,
+  "lon": 106.1002
+ },
+ {
+  "id": 142,
+  "name": "KAB. BELITUNG",
+  "nameEn": "KAB. BELITUNG (Kepulauan Bangka Belitung)",
+  "lat": -2.8843,
+  "lon": 107.6632
+ },
+ {
+  "id": 143,
+  "name": "KAB. BELITUNG TIMUR",
+  "nameEn": "KAB. BELITUNG TIMUR (Kepulauan Bangka Belitung)",
+  "lat": -2.9165,
+  "lon": 108.0037
+ },
+ {
+  "id": 144,
+  "name": "KOTA PANGKAL PINANG",
+  "nameEn": "KOTA PANGKAL PINANG (Kepulauan Bangka Belitung)",
+  "lat": -2.1207,
+  "lon": 106.1135
+ },
+ {
+  "id": 145,
+  "name": "KAB. LAMPUNG TENGAH",
+  "nameEn": "KAB. LAMPUNG TENGAH (Lampung)",
+  "lat": -4.8728,
+  "lon": 105.326
+ },
+ {
+  "id": 146,
+  "name": "KAB. LAMPUNG UTARA",
+  "nameEn": "KAB. LAMPUNG UTARA (Lampung)",
+  "lat": -4.8086,
+  "lon": 104.8629
+ },
+ {
+  "id": 147,
+  "name": "KAB. LAMPUNG SELATAN",
+  "nameEn": "KAB. LAMPUNG SELATAN (Lampung)",
+  "lat": -5.5415,
+  "lon": 105.511
+ },
+ {
+  "id": 148,
+  "name": "KAB. LAMPUNG BARAT",
+  "nameEn": "KAB. LAMPUNG BARAT (Lampung)",
+  "lat": -5.1117,
+  "lon": 104.3058
+ },
+ {
+  "id": 149,
+  "name": "KAB. LAMPUNG TIMUR",
+  "nameEn": "KAB. LAMPUNG TIMUR (Lampung)",
+  "lat": -5.1197,
+  "lon": 105.5952
+ },
+ {
+  "id": 150,
+  "name": "KAB. MESUJI",
+  "nameEn": "KAB. MESUJI (Lampung)",
+  "lat": -3.9754,
+  "lon": 105.3749
+ },
+ {
+  "id": 151,
+  "name": "KAB. PESAWARAN",
+  "nameEn": "KAB. PESAWARAN (Lampung)",
+  "lat": -5.456,
+  "lon": 105.0847
+ },
+ {
+  "id": 152,
+  "name": "KAB. PESISIR BARAT",
+  "nameEn": "KAB. PESISIR BARAT (Lampung)",
+  "lat": -5.3669,
+  "lon": 104.1866
+ },
+ {
+  "id": 153,
+  "name": "KAB. PRINGSEWU",
+  "nameEn": "KAB. PRINGSEWU (Lampung)",
+  "lat": -5.3667,
+  "lon": 104.9722
+ },
+ {
+  "id": 154,
+  "name": "KAB. TULANG BAWANG",
+  "nameEn": "KAB. TULANG BAWANG (Lampung)",
+  "lat": -4.398,
+  "lon": 105.5543
+ },
+ {
+  "id": 155,
+  "name": "KAB. TULANG BAWANG BARAT",
+  "nameEn": "KAB. TULANG BAWANG BARAT (Lampung)",
+  "lat": -4.4323,
+  "lon": 105.1425
+ },
+ {
+  "id": 156,
+  "name": "KAB. TANGGAMUS",
+  "nameEn": "KAB. TANGGAMUS (Lampung)",
+  "lat": -5.5141,
+  "lon": 104.7771
+ },
+ {
+  "id": 157,
+  "name": "KAB. WAY KANAN",
+  "nameEn": "KAB. WAY KANAN (Lampung)",
+  "lat": -4.5669,
+  "lon": 104.5162
+ },
+ {
+  "id": 158,
+  "name": "KOTA BANDAR LAMPUNG",
+  "nameEn": "KOTA BANDAR LAMPUNG (Lampung)",
+  "lat": -5.4294,
+  "lon": 105.2626
+ },
+ {
+  "id": 159,
+  "name": "KOTA METRO",
+  "nameEn": "KOTA METRO (Lampung)",
+  "lat": -5.1147,
+  "lon": 105.3082
+ },
+ {
+  "id": 160,
+  "name": "KAB. LEBAK",
+  "nameEn": "KAB. LEBAK (Banten)",
+  "lat": -6.6432,
+  "lon": 106.1869
+ },
+ {
+  "id": 161,
+  "name": "KAB. PANDEGLANG",
+  "nameEn": "KAB. PANDEGLANG (Banten)",
+  "lat": -6.5474,
+  "lon": 105.7995
+ },
+ {
+  "id": 162,
+  "name": "KAB. SERANG",
+  "nameEn": "KAB. SERANG (Banten)",
+  "lat": -6.1057,
+  "lon": 105.9884
+ },
+ {
+  "id": 163,
+  "name": "KAB. TANGERANG",
+  "nameEn": "KAB. TANGERANG (Banten)",
+  "lat": -6.1644,
+  "lon": 106.4679
+ },
+ {
+  "id": 164,
+  "name": "KOTA CILEGON",
+  "nameEn": "KOTA CILEGON (Banten)",
+  "lat": -6.0174,
+  "lon": 106.0538
+ },
+ {
+  "id": 165,
+  "name": "KOTA SERANG",
+  "nameEn": "KOTA SERANG (Banten)",
+  "lat": -6.117,
+  "lon": 106.1518
+ },
+ {
+  "id": 166,
+  "name": "KOTA TANGERANG",
+  "nameEn": "KOTA TANGERANG (Banten)",
+  "lat": -6.1762,
+  "lon": 106.6382
+ },
+ {
+  "id": 167,
+  "name": "KOTA TANGERANG SELATAN",
+  "nameEn": "KOTA TANGERANG SELATAN (Banten)",
+  "lat": -6.3227,
+  "lon": 106.7086
+ },
+ {
+  "id": 168,
+  "name": "KAB. BANDUNG",
+  "nameEn": "KAB. BANDUNG (Jawa Barat)",
+  "lat": -7.0613,
+  "lon": 107.6343
+ },
+ {
+  "id": 169,
+  "name": "KAB. BANDUNG BARAT",
+  "nameEn": "KAB. BANDUNG BARAT (Jawa Barat)",
+  "lat": -6.8978,
+  "lon": 107.4124
+ },
+ {
+  "id": 170,
+  "name": "KAB. BEKASI",
+  "nameEn": "KAB. BEKASI (Jawa Barat)",
+  "lat": -6.2028,
+  "lon": 107.1649
+ },
+ {
+  "id": 171,
+  "name": "KAB. BOGOR",
+  "nameEn": "KAB. BOGOR (Jawa Barat)",
+  "lat": -6.5454,
+  "lon": 107.0018
+ },
+ {
+  "id": 172,
+  "name": "KAB. CIAMIS",
+  "nameEn": "KAB. CIAMIS (Jawa Barat)",
+  "lat": -7.3132,
+  "lon": 108.4049
+ },
+ {
+  "id": 173,
+  "name": "KAB. CIANJUR",
+  "nameEn": "KAB. CIANJUR (Jawa Barat)",
+  "lat": -7.054,
+  "lon": 107.0692
+ },
+ {
+  "id": 174,
+  "name": "KAB. CIREBON",
+  "nameEn": "KAB. CIREBON (Jawa Barat)",
+  "lat": -6.7612,
+  "lon": 108.4564
+ },
+ {
+  "id": 175,
+  "name": "KAB. GARUT",
+  "nameEn": "KAB. GARUT (Jawa Barat)",
+  "lat": -7.2163,
+  "lon": 107.9015
+ },
+ {
+  "id": 176,
+  "name": "KAB. INDRAMAYU",
+  "nameEn": "KAB. INDRAMAYU (Jawa Barat)",
+  "lat": -6.4418,
+  "lon": 108.1765
+ },
+ {
+  "id": 177,
+  "name": "KAB. KARAWANG",
+  "nameEn": "KAB. KARAWANG (Jawa Barat)",
+  "lat": -6.3022,
+  "lon": 107.3046
+ },
+ {
+  "id": 178,
+  "name": "KAB. KUNINGAN",
+  "nameEn": "KAB. KUNINGAN (Jawa Barat)",
+  "lat": -6.987,
+  "lon": 108.5538
+ },
+ {
+  "id": 179,
+  "name": "KAB. MAJALENGKA",
+  "nameEn": "KAB. MAJALENGKA (Jawa Barat)",
+  "lat": -6.8074,
+  "lon": 108.2788
+ },
+ {
+  "id": 180,
+  "name": "KAB. PANGANDARAN",
+  "nameEn": "KAB. PANGANDARAN (Jawa Barat)",
+  "lat": -7.6408,
+  "lon": 108.5567
+ },
+ {
+  "id": 181,
+  "name": "KAB. PURWAKARTA",
+  "nameEn": "KAB. PURWAKARTA (Jawa Barat)",
+  "lat": -6.5607,
+  "lon": 107.444
+ },
+ {
+  "id": 182,
+  "name": "KAB. SUBANG",
+  "nameEn": "KAB. SUBANG (Jawa Barat)",
+  "lat": -6.569,
+  "lon": 107.7587
+ },
+ {
+  "id": 183,
+  "name": "KAB. SUKABUMI",
+  "nameEn": "KAB. SUKABUMI (Jawa Barat)",
+  "lat": -7.0765,
+  "lon": 106.7347
+ },
+ {
+  "id": 184,
+  "name": "KAB. SUMEDANG",
+  "nameEn": "KAB. SUMEDANG (Jawa Barat)",
+  "lat": -6.8597,
+  "lon": 107.9207
+ },
+ {
+  "id": 185,
+  "name": "KAB. TASIKMALAYA",
+  "nameEn": "KAB. TASIKMALAYA (Jawa Barat)",
+  "lat": -7.4272,
+  "lon": 108.0684
+ },
+ {
+  "id": 186,
+  "name": "KOTA BANDUNG",
+  "nameEn": "KOTA BANDUNG (Jawa Barat)",
+  "lat": -6.9218,
+  "lon": 107.6071
+ },
+ {
+  "id": 187,
+  "name": "KOTA BANJAR",
+  "nameEn": "KOTA BANJAR (Jawa Barat)",
+  "lat": -7.3696,
+  "lon": 108.5415
+ },
+ {
+  "id": 188,
+  "name": "KOTA BEKASI",
+  "nameEn": "KOTA BEKASI (Jawa Barat)",
+  "lat": -6.235,
+  "lon": 106.9945
+ },
+ {
+  "id": 189,
+  "name": "KOTA BOGOR",
+  "nameEn": "KOTA BOGOR (Jawa Barat)",
+  "lat": -6.5964,
+  "lon": 106.7973
+ },
+ {
+  "id": 190,
+  "name": "KOTA CIMAHI",
+  "nameEn": "KOTA CIMAHI (Jawa Barat)",
+  "lat": -6.8732,
+  "lon": 107.5423
+ },
+ {
+  "id": 191,
+  "name": "KOTA CIREBON",
+  "nameEn": "KOTA CIREBON (Jawa Barat)",
+  "lat": -6.7137,
+  "lon": 108.5608
+ },
+ {
+  "id": 192,
+  "name": "KOTA DEPOK",
+  "nameEn": "KOTA DEPOK (Jawa Barat)",
+  "lat": -6.4072,
+  "lon": 106.8158
+ },
+ {
+  "id": 193,
+  "name": "KOTA SUKABUMI",
+  "nameEn": "KOTA SUKABUMI (Jawa Barat)",
+  "lat": -6.9199,
+  "lon": 106.9265
+ },
+ {
+  "id": 194,
+  "name": "KOTA TASIKMALAYA",
+  "nameEn": "KOTA TASIKMALAYA (Jawa Barat)",
+  "lat": -7.3262,
+  "lon": 108.2201
+ },
+ {
+  "id": 195,
+  "name": "KOTA JAKARTA",
+  "nameEn": "KOTA JAKARTA (DKI Jakarta)",
+  "lat": -6.2088,
+  "lon": 106.8456
+ },
+ {
+  "id": 196,
+  "name": "KAB. KEPULAUAN SERIBU",
+  "nameEn": "KAB. KEPULAUAN SERIBU (DKI Jakarta)",
+  "lat": -5.635,
+  "lon": 106.5804
+ },
+ {
+  "id": 197,
+  "name": "KAB. BANJARNEGARA",
+  "nameEn": "KAB. BANJARNEGARA (Jawa Tengah)",
+  "lat": -7.3559,
+  "lon": 109.6601
+ },
+ {
+  "id": 198,
+  "name": "KAB. BANYUMAS",
+  "nameEn": "KAB. BANYUMAS (Jawa Tengah)",
+  "lat": -7.4551,
+  "lon": 109.1167
+ },
+ {
+  "id": 199,
+  "name": "KAB. BATANG",
+  "nameEn": "KAB. BATANG (Jawa Tengah)",
+  "lat": -6.9105,
+  "lon": 109.7192
+ },
+ {
+  "id": 200,
+  "name": "KAB. BLORA",
+  "nameEn": "KAB. BLORA (Jawa Tengah)",
+  "lat": -7.1106,
+  "lon": 111.4204
+ },
+ {
+  "id": 201,
+  "name": "KAB. BOYOLALI",
+  "nameEn": "KAB. BOYOLALI (Jawa Tengah)",
+  "lat": -7.3872,
+  "lon": 110.7039
+ },
+ {
+  "id": 202,
+  "name": "KAB. BREBES",
+  "nameEn": "KAB. BREBES (Jawa Tengah)",
+  "lat": -7.0521,
+  "lon": 108.8881
+ },
+ {
+  "id": 203,
+  "name": "KAB. CILACAP",
+  "nameEn": "KAB. CILACAP (Jawa Tengah)",
+  "lat": -7.4617,
+  "lon": 108.8046
+ },
+ {
+  "id": 204,
+  "name": "KAB. DEMAK",
+  "nameEn": "KAB. DEMAK (Jawa Tengah)",
+  "lat": -6.9231,
+  "lon": 110.6277
+ },
+ {
+  "id": 205,
+  "name": "KAB. GROBOGAN",
+  "nameEn": "KAB. GROBOGAN (Jawa Tengah)",
+  "lat": -7.0965,
+  "lon": 110.8949
+ },
+ {
+  "id": 206,
+  "name": "KAB. JEPARA",
+  "nameEn": "KAB. JEPARA (Jawa Tengah)",
+  "lat": -6.5995,
+  "lon": 110.7832
+ },
+ {
+  "id": 207,
+  "name": "KAB. KARANGANYAR",
+  "nameEn": "KAB. KARANGANYAR (Jawa Tengah)",
+  "lat": -7.6197,
+  "lon": 111.0698
+ },
+ {
+  "id": 208,
+  "name": "KAB. KEBUMEN",
+  "nameEn": "KAB. KEBUMEN (Jawa Tengah)",
+  "lat": -7.644,
+  "lon": 109.6078
+ },
+ {
+  "id": 209,
+  "name": "KAB. KENDAL",
+  "nameEn": "KAB. KENDAL (Jawa Tengah)",
+  "lat": -7.0191,
+  "lon": 110.1375
+ },
+ {
+  "id": 210,
+  "name": "KAB. KLATEN",
+  "nameEn": "KAB. KLATEN (Jawa Tengah)",
+  "lat": -7.6732,
+  "lon": 110.6285
+ },
+ {
+  "id": 211,
+  "name": "KAB. KUDUS",
+  "nameEn": "KAB. KUDUS (Jawa Tengah)",
+  "lat": -6.7978,
+  "lon": 110.8679
+ },
+ {
+  "id": 212,
+  "name": "KAB. MAGELANG",
+  "nameEn": "KAB. MAGELANG (Jawa Tengah)",
+  "lat": -7.5136,
+  "lon": 110.2145
+ },
+ {
+  "id": 213,
+  "name": "KAB. PATI",
+  "nameEn": "KAB. PATI (Jawa Tengah)",
+  "lat": -6.7534,
+  "lon": 111.04
+ },
+ {
+  "id": 214,
+  "name": "KAB. PEKALONGAN",
+  "nameEn": "KAB. PEKALONGAN (Jawa Tengah)",
+  "lat": -7.0418,
+  "lon": 109.6199
+ },
+ {
+  "id": 215,
+  "name": "KAB. PEMALANG",
+  "nameEn": "KAB. PEMALANG (Jawa Tengah)",
+  "lat": -7.0111,
+  "lon": 109.3914
+ },
+ {
+  "id": 216,
+  "name": "KAB. PURBALINGGA",
+  "nameEn": "KAB. PURBALINGGA (Jawa Tengah)",
+  "lat": -7.3273,
+  "lon": 109.3999
+ },
+ {
+  "id": 217,
+  "name": "KAB. PURWOREJO",
+  "nameEn": "KAB. PURWOREJO (Jawa Tengah)",
+  "lat": -7.7075,
+  "lon": 109.9665
+ },
+ {
+  "id": 218,
+  "name": "KAB. REMBANG",
+  "nameEn": "KAB. REMBANG (Jawa Tengah)",
+  "lat": -6.7699,
+  "lon": 111.4557
+ },
+ {
+  "id": 219,
+  "name": "KAB. SEMARANG",
+  "nameEn": "KAB. SEMARANG (Jawa Tengah)",
+  "lat": -7.2877,
+  "lon": 110.4019
+ },
+ {
+  "id": 220,
+  "name": "KAB. SRAGEN",
+  "nameEn": "KAB. SRAGEN (Jawa Tengah)",
+  "lat": -7.3925,
+  "lon": 110.953
+ },
+ {
+  "id": 221,
+  "name": "KAB. SUKOHARJO",
+  "nameEn": "KAB. SUKOHARJO (Jawa Tengah)",
+  "lat": -7.6815,
+  "lon": 110.87
+ },
+ {
+  "id": 222,
+  "name": "KAB. TEGAL",
+  "nameEn": "KAB. TEGAL (Jawa Tengah)",
+  "lat": -7.0564,
+  "lon": 109.1316
+ },
+ {
+  "id": 223,
+  "name": "KAB. TEMANGGUNG",
+  "nameEn": "KAB. TEMANGGUNG (Jawa Tengah)",
+  "lat": -7.2398,
+  "lon": 110.1217
+ },
+ {
+  "id": 224,
+  "name": "KAB. WONOGIRI",
+  "nameEn": "KAB. WONOGIRI (Jawa Tengah)",
+  "lat": -7.9621,
+  "lon": 110.9576
+ },
+ {
+  "id": 225,
+  "name": "KAB. WONOSOBO",
+  "nameEn": "KAB. WONOSOBO (Jawa Tengah)",
+  "lat": -7.3998,
+  "lon": 109.921
+ },
+ {
+  "id": 226,
+  "name": "KOTA MAGELANG",
+  "nameEn": "KOTA MAGELANG (Jawa Tengah)",
+  "lat": -7.4771,
+  "lon": 110.2182
+ },
+ {
+  "id": 227,
+  "name": "KOTA PEKALONGAN",
+  "nameEn": "KOTA PEKALONGAN (Jawa Tengah)",
+  "lat": -6.8905,
+  "lon": 109.6761
+ },
+ {
+  "id": 228,
+  "name": "KOTA SALATIGA",
+  "nameEn": "KOTA SALATIGA (Jawa Tengah)",
+  "lat": -7.3303,
+  "lon": 110.4995
+ },
+ {
+  "id": 229,
+  "name": "KOTA SEMARANG",
+  "nameEn": "KOTA SEMARANG (Jawa Tengah)",
+  "lat": -6.9904,
+  "lon": 110.4229
+ },
+ {
+  "id": 230,
+  "name": "KOTA SURAKARTA",
+  "nameEn": "KOTA SURAKARTA (Jawa Tengah)",
+  "lat": -7.5692,
+  "lon": 110.8284
+ },
+ {
+  "id": 231,
+  "name": "KOTA TEGAL",
+  "nameEn": "KOTA TEGAL (Jawa Tengah)",
+  "lat": -6.8674,
+  "lon": 109.1378
+ },
+ {
+  "id": 232,
+  "name": "KAB. BANTUL",
+  "nameEn": "KAB. BANTUL (DI Yogyakarta)",
+  "lat": -7.8983,
+  "lon": 110.3856
+ },
+ {
+  "id": 233,
+  "name": "KAB. GUNUNGKIDUL",
+  "nameEn": "KAB. GUNUNGKIDUL (DI Yogyakarta)",
+  "lat": -7.993,
+  "lon": 110.5579
+ },
+ {
+  "id": 234,
+  "name": "KAB. KULON PROGO",
+  "nameEn": "KAB. KULON PROGO (DI Yogyakarta)",
+  "lat": -7.8123,
+  "lon": 110.148
+ },
+ {
+  "id": 235,
+  "name": "KAB. SLEMAN",
+  "nameEn": "KAB. SLEMAN (DI Yogyakarta)",
+  "lat": -7.6894,
+  "lon": 110.3813
+ },
+ {
+  "id": 236,
+  "name": "KOTA YOGYAKARTA",
+  "nameEn": "KOTA YOGYAKARTA (DI Yogyakarta)",
+  "lat": -7.8013,
+  "lon": 110.3647
+ },
+ {
+  "id": 237,
+  "name": "KAB. BANGKALAN",
+  "nameEn": "KAB. BANGKALAN (Jawa Timur)",
+  "lat": -7.0464,
+  "lon": 112.8962
+ },
+ {
+  "id": 238,
+  "name": "KAB. BANYUWANGI",
+  "nameEn": "KAB. BANYUWANGI (Jawa Timur)",
+  "lat": -8.3326,
+  "lon": 114.1416
+ },
+ {
+  "id": 239,
+  "name": "KAB. BLITAR",
+  "nameEn": "KAB. BLITAR (Jawa Timur)",
+  "lat": -8.1312,
+  "lon": 112.3116
+ },
+ {
+  "id": 240,
+  "name": "KAB. BOJONEGORO",
+  "nameEn": "KAB. BOJONEGORO (Jawa Timur)",
+  "lat": -7.2279,
+  "lon": 111.8146
+ },
+ {
+  "id": 241,
+  "name": "KAB. BONDOWOSO",
+  "nameEn": "KAB. BONDOWOSO (Jawa Timur)",
+  "lat": -7.9451,
+  "lon": 113.8821
+ },
+ {
+  "id": 242,
+  "name": "KAB. GRESIK",
+  "nameEn": "KAB. GRESIK (Jawa Timur)",
+  "lat": -5.7933,
+  "lon": 112.6598
+ },
+ {
+  "id": 243,
+  "name": "KAB. JEMBER",
+  "nameEn": "KAB. JEMBER (Jawa Timur)",
+  "lat": -8.2633,
+  "lon": 113.6279
+ },
+ {
+  "id": 244,
+  "name": "KAB. JOMBANG",
+  "nameEn": "KAB. JOMBANG (Jawa Timur)",
+  "lat": -7.5615,
+  "lon": 112.2413
+ },
+ {
+  "id": 245,
+  "name": "KAB. KEDIRI",
+  "nameEn": "KAB. KEDIRI (Jawa Timur)",
+  "lat": -7.8026,
+  "lon": 112.1686
+ },
+ {
+  "id": 246,
+  "name": "KAB. LAMONGAN",
+  "nameEn": "KAB. LAMONGAN (Jawa Timur)",
+  "lat": -7.1229,
+  "lon": 112.3282
+ },
+ {
+  "id": 247,
+  "name": "KAB. LUMAJANG",
+  "nameEn": "KAB. LUMAJANG (Jawa Timur)",
+  "lat": -8.1238,
+  "lon": 113.1437
+ },
+ {
+  "id": 248,
+  "name": "KAB. MADIUN",
+  "nameEn": "KAB. MADIUN (Jawa Timur)",
+  "lat": -7.6119,
+  "lon": 111.6732
+ },
+ {
+  "id": 249,
+  "name": "KAB. MAGETAN",
+  "nameEn": "KAB. MAGETAN (Jawa Timur)",
+  "lat": -7.6542,
+  "lon": 111.3361
+ },
+ {
+  "id": 250,
+  "name": "KAB. MALANG",
+  "nameEn": "KAB. MALANG (Jawa Timur)",
+  "lat": -8.1048,
+  "lon": 112.688
+ },
+ {
+  "id": 251,
+  "name": "KAB. MOJOKERTO",
+  "nameEn": "KAB. MOJOKERTO (Jawa Timur)",
+  "lat": -7.5413,
+  "lon": 112.5095
+ },
+ {
+  "id": 252,
+  "name": "KAB. NGANJUK",
+  "nameEn": "KAB. NGANJUK (Jawa Timur)",
+  "lat": -7.615,
+  "lon": 111.9465
+ },
+ {
+  "id": 253,
+  "name": "KAB. NGAWI",
+  "nameEn": "KAB. NGAWI (Jawa Timur)",
+  "lat": -7.4223,
+  "lon": 111.4229
+ },
+ {
+  "id": 254,
+  "name": "KAB. PACITAN",
+  "nameEn": "KAB. PACITAN (Jawa Timur)",
+  "lat": -8.1017,
+  "lon": 111.1447
+ },
+ {
+  "id": 255,
+  "name": "KAB. PAMEKASAN",
+  "nameEn": "KAB. PAMEKASAN (Jawa Timur)",
+  "lat": -7.0708,
+  "lon": 113.5004
+ },
+ {
+  "id": 256,
+  "name": "KAB. PASURUAN",
+  "nameEn": "KAB. PASURUAN (Jawa Timur)",
+  "lat": -7.7508,
+  "lon": 112.8185
+ },
+ {
+  "id": 257,
+  "name": "KAB. PONOROGO",
+  "nameEn": "KAB. PONOROGO (Jawa Timur)",
+  "lat": -7.9712,
+  "lon": 111.4989
+ },
+ {
+  "id": 258,
+  "name": "KAB. PROBOLINGGO",
+  "nameEn": "KAB. PROBOLINGGO (Jawa Timur)",
+  "lat": -7.8632,
+  "lon": 113.3051
+ },
+ {
+  "id": 259,
+  "name": "KAB. SAMPANG",
+  "nameEn": "KAB. SAMPANG (Jawa Timur)",
+  "lat": -7.0578,
+  "lon": 113.2541
+ },
+ {
+  "id": 260,
+  "name": "KAB. SIDOARJO",
+  "nameEn": "KAB. SIDOARJO (Jawa Timur)",
+  "lat": -7.454,
+  "lon": 112.6594
+ },
+ {
+  "id": 261,
+  "name": "KAB. SITUBONDO",
+  "nameEn": "KAB. SITUBONDO (Jawa Timur)",
+  "lat": -7.7986,
+  "lon": 114.2647
+ },
+ {
+  "id": 262,
+  "name": "KAB. SUMENEP",
+  "nameEn": "KAB. SUMENEP (Jawa Timur)",
+  "lat": -6.9992,
+  "lon": 113.8377
+ },
+ {
+  "id": 263,
+  "name": "KAB. TRENGGALEK",
+  "nameEn": "KAB. TRENGGALEK (Jawa Timur)",
+  "lat": -8.1359,
+  "lon": 111.6402
+ },
+ {
+  "id": 264,
+  "name": "KAB. TUBAN",
+  "nameEn": "KAB. TUBAN (Jawa Timur)",
+  "lat": -6.9596,
+  "lon": 111.8932
+ },
+ {
+  "id": 265,
+  "name": "KAB. TULUNGAGUNG",
+  "nameEn": "KAB. TULUNGAGUNG (Jawa Timur)",
+  "lat": -8.0729,
+  "lon": 111.8996
+ },
+ {
+  "id": 266,
+  "name": "KOTA BATU",
+  "nameEn": "KOTA BATU (Jawa Timur)",
+  "lat": -7.8712,
+  "lon": 112.5269
+ },
+ {
+  "id": 267,
+  "name": "KOTA BLITAR",
+  "nameEn": "KOTA BLITAR (Jawa Timur)",
+  "lat": -8.0982,
+  "lon": 112.1651
+ },
+ {
+  "id": 268,
+  "name": "KOTA KEDIRI",
+  "nameEn": "KOTA KEDIRI (Jawa Timur)",
+  "lat": -7.8111,
+  "lon": 112.0046
+ },
+ {
+  "id": 269,
+  "name": "KOTA MADIUN",
+  "nameEn": "KOTA MADIUN (Jawa Timur)",
+  "lat": -7.6291,
+  "lon": 111.5169
+ },
+ {
+  "id": 270,
+  "name": "KOTA MALANG",
+  "nameEn": "KOTA MALANG (Jawa Timur)",
+  "lat": -7.9771,
+  "lon": 112.634
+ },
+ {
+  "id": 271,
+  "name": "KOTA MOJOKERTO",
+  "nameEn": "KOTA MOJOKERTO (Jawa Timur)",
+  "lat": -7.4632,
+  "lon": 112.432
+ },
+ {
+  "id": 272,
+  "name": "KOTA PASURUAN",
+  "nameEn": "KOTA PASURUAN (Jawa Timur)",
+  "lat": -7.64,
+  "lon": 112.9071
+ },
+ {
+  "id": 273,
+  "name": "KOTA PROBOLINGGO",
+  "nameEn": "KOTA PROBOLINGGO (Jawa Timur)",
+  "lat": -7.7441,
+  "lon": 113.2158
+ },
+ {
+  "id": 274,
+  "name": "KOTA SURABAYA",
+  "nameEn": "KOTA SURABAYA (Jawa Timur)",
+  "lat": -7.2463,
+  "lon": 112.7378
+ },
+ {
+  "id": 275,
+  "name": "KAB. BADUNG",
+  "nameEn": "KAB. BADUNG (Bali)",
+  "lat": -8.5446,
+  "lon": 115.1985
+ },
+ {
+  "id": 276,
+  "name": "KAB. BANGLI",
+  "nameEn": "KAB. BANGLI (Bali)",
+  "lat": -8.3336,
+  "lon": 115.368
+ },
+ {
+  "id": 277,
+  "name": "KAB. BULELENG",
+  "nameEn": "KAB. BULELENG (Bali)",
+  "lat": -8.2222,
+  "lon": 114.995
+ },
+ {
+  "id": 278,
+  "name": "KAB. GIANYAR",
+  "nameEn": "KAB. GIANYAR (Bali)",
+  "lat": -8.4821,
+  "lon": 115.2856
+ },
+ {
+  "id": 279,
+  "name": "KAB. JEMBRANA",
+  "nameEn": "KAB. JEMBRANA (Bali)",
+  "lat": -8.314,
+  "lon": 114.6685
+ },
+ {
+  "id": 280,
+  "name": "KAB. KARANGASEM",
+  "nameEn": "KAB. KARANGASEM (Bali)",
+  "lat": -8.3588,
+  "lon": 115.5473
+ },
+ {
+  "id": 281,
+  "name": "KAB. KLUNGKUNG",
+  "nameEn": "KAB. KLUNGKUNG (Bali)",
+  "lat": -8.7455,
+  "lon": 115.5348
+ },
+ {
+  "id": 282,
+  "name": "KAB. TABANAN",
+  "nameEn": "KAB. TABANAN (Bali)",
+  "lat": -8.4403,
+  "lon": 115.0716
+ },
+ {
+  "id": 283,
+  "name": "KOTA DENPASAR",
+  "nameEn": "KOTA DENPASAR (Bali)",
+  "lat": -8.6653,
+  "lon": 115.2176
+ },
+ {
+  "id": 284,
+  "name": "KAB. BIMA",
+  "nameEn": "KAB. BIMA (Nusa Tenggara Barat)",
+  "lat": -8.5648,
+  "lon": 118.7625
+ },
+ {
+  "id": 285,
+  "name": "KAB. DOMPU",
+  "nameEn": "KAB. DOMPU (Nusa Tenggara Barat)",
+  "lat": -8.5165,
+  "lon": 118.3312
+ },
+ {
+  "id": 286,
+  "name": "KAB. LOMBOK BARAT",
+  "nameEn": "KAB. LOMBOK BARAT (Nusa Tenggara Barat)",
+  "lat": -8.6719,
+  "lon": 116.122
+ },
+ {
+  "id": 287,
+  "name": "KAB. LOMBOK TENGAH",
+  "nameEn": "KAB. LOMBOK TENGAH (Nusa Tenggara Barat)",
+  "lat": -8.7031,
+  "lon": 116.2899
+ },
+ {
+  "id": 288,
+  "name": "KAB. LOMBOK TIMUR",
+  "nameEn": "KAB. LOMBOK TIMUR (Nusa Tenggara Barat)",
+  "lat": -8.6331,
+  "lon": 116.5588
+ },
+ {
+  "id": 289,
+  "name": "KAB. LOMBOK UTARA",
+  "nameEn": "KAB. LOMBOK UTARA (Nusa Tenggara Barat)",
+  "lat": -8.3572,
+  "lon": 116.1609
+ },
+ {
+  "id": 290,
+  "name": "KAB. SUMBAWA",
+  "nameEn": "KAB. SUMBAWA (Nusa Tenggara Barat)",
+  "lat": -8.7341,
+  "lon": 117.496
+ },
+ {
+  "id": 291,
+  "name": "KAB. SUMBAWA BARAT",
+  "nameEn": "KAB. SUMBAWA BARAT (Nusa Tenggara Barat)",
+  "lat": -8.6585,
+  "lon": 116.9162
+ },
+ {
+  "id": 292,
+  "name": "KOTA BIMA",
+  "nameEn": "KOTA BIMA (Nusa Tenggara Barat)",
+  "lat": -8.4534,
+  "lon": 118.7277
+ },
+ {
+  "id": 293,
+  "name": "KOTA MATARAM",
+  "nameEn": "KOTA MATARAM (Nusa Tenggara Barat)",
+  "lat": -8.5838,
+  "lon": 116.1068
+ },
+ {
+  "id": 294,
+  "name": "KAB. ALOR",
+  "nameEn": "KAB. ALOR (Nusa Tenggara Timur)",
+  "lat": -8.2911,
+  "lon": 124.7777
+ },
+ {
+  "id": 295,
+  "name": "KAB. BELU",
+  "nameEn": "KAB. BELU (Nusa Tenggara Timur)",
+  "lat": -9.176,
+  "lon": 124.9164
+ },
+ {
+  "id": 296,
+  "name": "KAB. ENDE",
+  "nameEn": "KAB. ENDE (Nusa Tenggara Timur)",
+  "lat": -8.6729,
+  "lon": 121.6929
+ },
+ {
+  "id": 297,
+  "name": "KAB. FLORES TIMUR",
+  "nameEn": "KAB. FLORES TIMUR (Nusa Tenggara Timur)",
+  "lat": -8.3185,
+  "lon": 123.1658
+ },
+ {
+  "id": 298,
+  "name": "KAB. KUPANG",
+  "nameEn": "KAB. KUPANG (Nusa Tenggara Timur)",
+  "lat": -9.8476,
+  "lon": 123.8781
+ },
+ {
+  "id": 299,
+  "name": "KAB. LEMBATA",
+  "nameEn": "KAB. LEMBATA (Nusa Tenggara Timur)",
+  "lat": -8.3781,
+  "lon": 123.5446
+ },
+ {
+  "id": 300,
+  "name": "KAB. MALAKA",
+  "nameEn": "KAB. MALAKA (Nusa Tenggara Timur)",
+  "lat": -9.546,
+  "lon": 124.8764
+ },
+ {
+  "id": 301,
+  "name": "KAB. MANGGARAI",
+  "nameEn": "KAB. MANGGARAI (Nusa Tenggara Timur)",
+  "lat": -8.548,
+  "lon": 120.439
+ },
+ {
+  "id": 302,
+  "name": "KAB. MANGGARAI BARAT",
+  "nameEn": "KAB. MANGGARAI BARAT (Nusa Tenggara Timur)",
+  "lat": -8.5741,
+  "lon": 120.0611
+ },
+ {
+  "id": 303,
+  "name": "KAB. MANGGARAI TIMUR",
+  "nameEn": "KAB. MANGGARAI TIMUR (Nusa Tenggara Timur)",
+  "lat": -8.5738,
+  "lon": 120.6864
+ },
+ {
+  "id": 304,
+  "name": "KAB. NGADA",
+  "nameEn": "KAB. NGADA (Nusa Tenggara Timur)",
+  "lat": -8.6499,
+  "lon": 120.9867
+ },
+ {
+  "id": 305,
+  "name": "KAB. NAGEKEO",
+  "nameEn": "KAB. NAGEKEO (Nusa Tenggara Timur)",
+  "lat": -8.6759,
+  "lon": 121.2708
+ },
+ {
+  "id": 306,
+  "name": "KAB. ROTE NDAO",
+  "nameEn": "KAB. ROTE NDAO (Nusa Tenggara Timur)",
+  "lat": -10.687,
+  "lon": 123.2084
+ },
+ {
+  "id": 307,
+  "name": "KAB. SABU RAIJUA",
+  "nameEn": "KAB. SABU RAIJUA (Nusa Tenggara Timur)",
+  "lat": -10.5222,
+  "lon": 121.8885
+ },
+ {
+  "id": 308,
+  "name": "KAB. SIKKA",
+  "nameEn": "KAB. SIKKA (Nusa Tenggara Timur)",
+  "lat": -8.5946,
+  "lon": 122.0896
+ },
+ {
+  "id": 309,
+  "name": "KAB. SUMBA BARAT",
+  "nameEn": "KAB. SUMBA BARAT (Nusa Tenggara Timur)",
+  "lat": -9.5857,
+  "lon": 119.4439
+ },
+ {
+  "id": 310,
+  "name": "KAB. SUMBA BARAT DAYA",
+  "nameEn": "KAB. SUMBA BARAT DAYA (Nusa Tenggara Timur)",
+  "lat": -9.5378,
+  "lon": 119.1623
+ },
+ {
+  "id": 311,
+  "name": "KAB. SUMBA TENGAH",
+  "nameEn": "KAB. SUMBA TENGAH (Nusa Tenggara Timur)",
+  "lat": -9.5936,
+  "lon": 119.6663
+ },
+ {
+  "id": 312,
+  "name": "KAB. SUMBA TIMUR",
+  "nameEn": "KAB. SUMBA TIMUR (Nusa Tenggara Timur)",
+  "lat": -9.8343,
+  "lon": 120.2094
+ },
+ {
+  "id": 313,
+  "name": "KAB. TIMOR TENGAH SELATAN",
+  "nameEn": "KAB. TIMOR TENGAH SELATAN (Nusa Tenggara Timur)",
+  "lat": -9.8231,
+  "lon": 124.4356
+ },
+ {
+  "id": 314,
+  "name": "KAB. TIMOR TENGAH UTARA",
+  "nameEn": "KAB. TIMOR TENGAH UTARA (Nusa Tenggara Timur)",
+  "lat": -9.3406,
+  "lon": 124.6103
+ },
+ {
+  "id": 315,
+  "name": "KOTA KUPANG",
+  "nameEn": "KOTA KUPANG (Nusa Tenggara Timur)",
+  "lat": -10.1632,
+  "lon": 123.6018
+ },
+ {
+  "id": 316,
+  "name": "KAB. BENGKAYANG",
+  "nameEn": "KAB. BENGKAYANG (Kalimantan Barat)",
+  "lat": 1.0158,
+  "lon": 109.708
+ },
+ {
+  "id": 317,
+  "name": "KAB. KAPUAS HULU",
+  "nameEn": "KAB. KAPUAS HULU (Kalimantan Barat)",
+  "lat": 0.8274,
+  "lon": 112.7965
+ },
+ {
+  "id": 318,
+  "name": "KAB. KAYONG UTARA",
+  "nameEn": "KAB. KAYONG UTARA (Kalimantan Barat)",
+  "lat": -1.0435,
+  "lon": 110.0589
+ },
+ {
+  "id": 319,
+  "name": "KAB. KETAPANG",
+  "nameEn": "KAB. KETAPANG (Kalimantan Barat)",
+  "lat": -1.8447,
+  "lon": 109.9784
+ },
+ {
+  "id": 320,
+  "name": "KAB. KUBU RAYA",
+  "nameEn": "KAB. KUBU RAYA (Kalimantan Barat)",
+  "lat": -0.3695,
+  "lon": 109.5124
+ },
+ {
+  "id": 321,
+  "name": "KAB. LANDAK",
+  "nameEn": "KAB. LANDAK (Kalimantan Barat)",
+  "lat": 0.5046,
+  "lon": 109.707
+ },
+ {
+  "id": 322,
+  "name": "KAB. MELAWI",
+  "nameEn": "KAB. MELAWI (Kalimantan Barat)",
+  "lat": -0.7239,
+  "lon": 111.656
+ },
+ {
+  "id": 323,
+  "name": "KAB. MEMPAWAH",
+  "nameEn": "KAB. MEMPAWAH (Kalimantan Barat)",
+  "lat": 0.344,
+  "lon": 109.102
+ },
+ {
+  "id": 324,
+  "name": "KAB. SAMBAS",
+  "nameEn": "KAB. SAMBAS (Kalimantan Barat)",
+  "lat": 1.5219,
+  "lon": 109.4138
+ },
+ {
+  "id": 325,
+  "name": "KAB. SANGGAU",
+  "nameEn": "KAB. SANGGAU (Kalimantan Barat)",
+  "lat": 0.3502,
+  "lon": 110.547
+ },
+ {
+  "id": 326,
+  "name": "KAB. SEKADAU",
+  "nameEn": "KAB. SEKADAU (Kalimantan Barat)",
+  "lat": 0.0219,
+  "lon": 110.8883
+ },
+ {
+  "id": 327,
+  "name": "KAB. SINTANG",
+  "nameEn": "KAB. SINTANG (Kalimantan Barat)",
+  "lat": 0.0636,
+  "lon": 111.4866
+ },
+ {
+  "id": 328,
+  "name": "KOTA PONTIANAK",
+  "nameEn": "KOTA PONTIANAK (Kalimantan Barat)",
+  "lat": -0.0227,
+  "lon": 109.3447
+ },
+ {
+  "id": 329,
+  "name": "KOTA SINGKAWANG",
+  "nameEn": "KOTA SINGKAWANG (Kalimantan Barat)",
+  "lat": 0.907,
+  "lon": 108.989
+ },
+ {
+  "id": 330,
+  "name": "KAB. BALANGAN",
+  "nameEn": "KAB. BALANGAN (Kalimantan Selatan)",
+  "lat": -2.2879,
+  "lon": 115.6205
+ },
+ {
+  "id": 331,
+  "name": "KAB. BANJAR",
+  "nameEn": "KAB. BANJAR (Kalimantan Selatan)",
+  "lat": -3.2776,
+  "lon": 115.0284
+ },
+ {
+  "id": 332,
+  "name": "KAB. BARITO KUALA",
+  "nameEn": "KAB. BARITO KUALA (Kalimantan Selatan)",
+  "lat": -3.0193,
+  "lon": 114.6779
+ },
+ {
+  "id": 333,
+  "name": "KAB. HULU SUNGAI SELATAN",
+  "nameEn": "KAB. HULU SUNGAI SELATAN (Kalimantan Selatan)",
+  "lat": -2.7126,
+  "lon": 115.1588
+ },
+ {
+  "id": 334,
+  "name": "KAB. HULU SUNGAI TENGAH",
+  "nameEn": "KAB. HULU SUNGAI TENGAH (Kalimantan Selatan)",
+  "lat": -2.6188,
+  "lon": 115.4293
+ },
+ {
+  "id": 335,
+  "name": "KAB. HULU SUNGAI UTARA",
+  "nameEn": "KAB. HULU SUNGAI UTARA (Kalimantan Selatan)",
+  "lat": -2.4242,
+  "lon": 115.1597
+ },
+ {
+  "id": 336,
+  "name": "KAB. KOTABARU",
+  "nameEn": "KAB. KOTABARU (Kalimantan Selatan)",
+  "lat": -2.7951,
+  "lon": 115.9713
+ },
+ {
+  "id": 337,
+  "name": "KAB. TABALONG",
+  "nameEn": "KAB. TABALONG (Kalimantan Selatan)",
+  "lat": -1.8363,
+  "lon": 115.5155
+ },
+ {
+  "id": 338,
+  "name": "KAB. TANAH BUMBU",
+  "nameEn": "KAB. TANAH BUMBU (Kalimantan Selatan)",
+  "lat": -3.4473,
+  "lon": 115.7064
+ },
+ {
+  "id": 339,
+  "name": "KAB. TANAH LAUT",
+  "nameEn": "KAB. TANAH LAUT (Kalimantan Selatan)",
+  "lat": -3.844,
+  "lon": 114.9889
+ },
+ {
+  "id": 340,
+  "name": "KAB. TAPIN",
+  "nameEn": "KAB. TAPIN (Kalimantan Selatan)",
+  "lat": -2.8623,
+  "lon": 115.011
+ },
+ {
+  "id": 341,
+  "name": "KOTA BANJARBARU",
+  "nameEn": "KOTA BANJARBARU (Kalimantan Selatan)",
+  "lat": -3.4431,
+  "lon": 114.8308
+ },
+ {
+  "id": 342,
+  "name": "KOTA BANJARMASIN",
+  "nameEn": "KOTA BANJARMASIN (Kalimantan Selatan)",
+  "lat": -3.3187,
+  "lon": 114.5926
+ },
+ {
+  "id": 343,
+  "name": "KAB. BARITO SELATAN",
+  "nameEn": "KAB. BARITO SELATAN (Kalimantan Tengah)",
+  "lat": -1.9229,
+  "lon": 114.7889
+ },
+ {
+  "id": 344,
+  "name": "KAB. BARITO TIMUR",
+  "nameEn": "KAB. BARITO TIMUR (Kalimantan Tengah)",
+  "lat": -1.9819,
+  "lon": 115.1804
+ },
+ {
+  "id": 345,
+  "name": "KAB. BARITO UTARA",
+  "nameEn": "KAB. BARITO UTARA (Kalimantan Tengah)",
+  "lat": -0.7542,
+  "lon": 115.0451
+ },
+ {
+  "id": 346,
+  "name": "KAB. GUNUNG MAS",
+  "nameEn": "KAB. GUNUNG MAS (Kalimantan Tengah)",
+  "lat": -0.9678,
+  "lon": 113.5357
+ },
+ {
+  "id": 347,
+  "name": "KAB. KAPUAS",
+  "nameEn": "KAB. KAPUAS (Kalimantan Tengah)",
+  "lat": -1.9229,
+  "lon": 114.3364
+ },
+ {
+  "id": 348,
+  "name": "KAB. KATINGAN",
+  "nameEn": "KAB. KATINGAN (Kalimantan Tengah)",
+  "lat": -1.8596,
+  "lon": 113.3369
+ },
+ {
+  "id": 349,
+  "name": "KAB. KOTAWARINGIN BARAT",
+  "nameEn": "KAB. KOTAWARINGIN BARAT (Kalimantan Tengah)",
+  "lat": -2.5042,
+  "lon": 111.6468
+ },
+ {
+  "id": 350,
+  "name": "KAB. KOTAWARINGIN TIMUR",
+  "nameEn": "KAB. KOTAWARINGIN TIMUR (Kalimantan Tengah)",
+  "lat": -2.2515,
+  "lon": 112.7855
+ },
+ {
+  "id": 351,
+  "name": "KAB. LAMANDAU",
+  "nameEn": "KAB. LAMANDAU (Kalimantan Tengah)",
+  "lat": -1.7789,
+  "lon": 111.4173
+ },
+ {
+  "id": 352,
+  "name": "KAB. MURUNG RAYA",
+  "nameEn": "KAB. MURUNG RAYA (Kalimantan Tengah)",
+  "lat": -0.0685,
+  "lon": 114.1732
+ },
+ {
+  "id": 353,
+  "name": "KAB. PULANG PISAU",
+  "nameEn": "KAB. PULANG PISAU (Kalimantan Tengah)",
+  "lat": -2.4932,
+  "lon": 114.0405
+ },
+ {
+  "id": 354,
+  "name": "KAB. SUKAMARA",
+  "nameEn": "KAB. SUKAMARA (Kalimantan Tengah)",
+  "lat": -2.5602,
+  "lon": 111.1838
+ },
+ {
+  "id": 355,
+  "name": "KAB. SERUYAN",
+  "nameEn": "KAB. SERUYAN (Kalimantan Tengah)",
+  "lat": -2.1202,
+  "lon": 112.165
+ },
+ {
+  "id": 356,
+  "name": "KOTA PALANGKARAYA",
+  "nameEn": "KOTA PALANGKARAYA (Kalimantan Tengah)",
+  "lat": -2.2073,
+  "lon": 113.9164
+ },
+ {
+  "id": 357,
+  "name": "KAB. BERAU",
+  "nameEn": "KAB. BERAU (Kalimantan Timur)",
+  "lat": 1.7768,
+  "lon": 117.2692
+ },
+ {
+  "id": 358,
+  "name": "KAB. KUTAI BARAT",
+  "nameEn": "KAB. KUTAI BARAT (Kalimantan Timur)",
+  "lat": -0.4209,
+  "lon": 115.7652
+ },
+ {
+  "id": 359,
+  "name": "KAB. KUTAI KARTANEGARA",
+  "nameEn": "KAB. KUTAI KARTANEGARA (Kalimantan Timur)",
+  "lat": 0.1956,
+  "lon": 116.2004
+ },
+ {
+  "id": 360,
+  "name": "KAB. KUTAI TIMUR",
+  "nameEn": "KAB. KUTAI TIMUR (Kalimantan Timur)",
+  "lat": 0.9454,
+  "lon": 117.0111
+ },
+ {
+  "id": 361,
+  "name": "KAB. MAHAKAM ULU",
+  "nameEn": "KAB. MAHAKAM ULU (Kalimantan Timur)",
+  "lat": 0.6226,
+  "lon": 115.3131
+ },
+ {
+  "id": 362,
+  "name": "KAB. PASER",
+  "nameEn": "KAB. PASER (Kalimantan Timur)",
+  "lat": -1.6897,
+  "lon": 116.0158
+ },
+ {
+  "id": 363,
+  "name": "KAB. PENAJAM PASER UTARA",
+  "nameEn": "KAB. PENAJAM PASER UTARA (Kalimantan Timur)",
+  "lat": -1.1974,
+  "lon": 116.5673
+ },
+ {
+  "id": 364,
+  "name": "KOTA BALIKPAPAN",
+  "nameEn": "KOTA BALIKPAPAN (Kalimantan Timur)",
+  "lat": -1.2399,
+  "lon": 116.8593
+ },
+ {
+  "id": 365,
+  "name": "KOTA BONTANG",
+  "nameEn": "KOTA BONTANG (Kalimantan Timur)",
+  "lat": 0.1237,
+  "lon": 117.4717
+ },
+ {
+  "id": 366,
+  "name": "KOTA SAMARINDA",
+  "nameEn": "KOTA SAMARINDA (Kalimantan Timur)",
+  "lat": -0.5018,
+  "lon": 117.1393
+ },
+ {
+  "id": 367,
+  "name": "KAB. BULUNGAN",
+  "nameEn": "KAB. BULUNGAN (Kalimantan Utara)",
+  "lat": 2.762,
+  "lon": 117.0743
+ },
+ {
+  "id": 368,
+  "name": "KAB. MALINAU",
+  "nameEn": "KAB. MALINAU (Kalimantan Utara)",
+  "lat": 2.6186,
+  "lon": 115.6905
+ },
+ {
+  "id": 369,
+  "name": "KAB. NUNUKAN",
+  "nameEn": "KAB. NUNUKAN (Kalimantan Utara)",
+  "lat": 3.9075,
+  "lon": 117.0424
+ },
+ {
+  "id": 370,
+  "name": "KAB. TANA TIDUNG",
+  "nameEn": "KAB. TANA TIDUNG (Kalimantan Utara)",
+  "lat": 3.5553,
+  "lon": 117.0447
+ },
+ {
+  "id": 371,
+  "name": "KOTA TARAKAN",
+  "nameEn": "KOTA TARAKAN (Kalimantan Utara)",
+  "lat": 3.3,
+  "lon": 117.633
+ },
+ {
+  "id": 372,
+  "name": "KAB. BOALEMO",
+  "nameEn": "KAB. BOALEMO (Gorontalo)",
+  "lat": 0.6876,
+  "lon": 122.3357
+ },
+ {
+  "id": 373,
+  "name": "KAB. BONE BOLANGO",
+  "nameEn": "KAB. BONE BOLANGO (Gorontalo)",
+  "lat": 0.5564,
+  "lon": 123.31
+ },
+ {
+  "id": 374,
+  "name": "KAB. GORONTALO",
+  "nameEn": "KAB. GORONTALO (Gorontalo)",
+  "lat": 0.7012,
+  "lon": 122.7233
+ },
+ {
+  "id": 375,
+  "name": "KAB. GORONTALO UTARA",
+  "nameEn": "KAB. GORONTALO UTARA (Gorontalo)",
+  "lat": 0.8662,
+  "lon": 123.0495
+ },
+ {
+  "id": 376,
+  "name": "KAB. PAHUWATO",
+  "nameEn": "KAB. PAHUWATO (Gorontalo)",
+  "lat": 0.46,
+  "lon": 121.94
+ },
+ {
+  "id": 377,
+  "name": "KOTA GORONTALO",
+  "nameEn": "KOTA GORONTALO (Gorontalo)",
+  "lat": 0.5384,
+  "lon": 123.0595
+ },
+ {
+  "id": 378,
+  "name": "KAB. BANTAENG",
+  "nameEn": "KAB. BANTAENG (Sulawesi Selatan)",
+  "lat": -5.4709,
+  "lon": 119.9872
+ },
+ {
+  "id": 379,
+  "name": "KAB. BARRU",
+  "nameEn": "KAB. BARRU (Sulawesi Selatan)",
+  "lat": -4.4337,
+  "lon": 119.6778
+ },
+ {
+  "id": 380,
+  "name": "KAB. BONE",
+  "nameEn": "KAB. BONE (Sulawesi Selatan)",
+  "lat": -4.6801,
+  "lon": 120.0947
+ },
+ {
+  "id": 381,
+  "name": "KAB. BULUKUMBA",
+  "nameEn": "KAB. BULUKUMBA (Sulawesi Selatan)",
+  "lat": -5.5592,
+  "lon": 120.1929
+ },
+ {
+  "id": 382,
+  "name": "KAB. ENREKANG",
+  "nameEn": "KAB. ENREKANG (Sulawesi Selatan)",
+  "lat": -3.488,
+  "lon": 119.8658
+ },
+ {
+  "id": 383,
+  "name": "KAB. GOWA",
+  "nameEn": "KAB. GOWA (Sulawesi Selatan)",
+  "lat": -5.3291,
+  "lon": 119.766
+ },
+ {
+  "id": 384,
+  "name": "KAB. JENEPONTO",
+  "nameEn": "KAB. JENEPONTO (Sulawesi Selatan)",
+  "lat": -5.6797,
+  "lon": 119.7475
+ },
+ {
+  "id": 385,
+  "name": "KAB. KEPULAUAN SELAYAR",
+  "nameEn": "KAB. KEPULAUAN SELAYAR (Sulawesi Selatan)",
+  "lat": -7.3015,
+  "lon": 120.9627
+ },
+ {
+  "id": 386,
+  "name": "KAB. LUWU",
+  "nameEn": "KAB. LUWU (Sulawesi Selatan)",
+  "lat": -3.348,
+  "lon": 120.2214
+ },
+ {
+  "id": 387,
+  "name": "KAB. LUWU TIMUR",
+  "nameEn": "KAB. LUWU TIMUR (Sulawesi Selatan)",
+  "lat": -2.5305,
+  "lon": 121.1224
+ },
+ {
+  "id": 388,
+  "name": "KAB. LUWU UTARA",
+  "nameEn": "KAB. LUWU UTARA (Sulawesi Selatan)",
+  "lat": -2.4038,
+  "lon": 120.1301
+ },
+ {
+  "id": 389,
+  "name": "KAB. MAROS",
+  "nameEn": "KAB. MAROS (Sulawesi Selatan)",
+  "lat": -4.9655,
+  "lon": 119.6928
+ },
+ {
+  "id": 390,
+  "name": "KAB. PANGKAJENE DAN KEPULAUAN",
+  "nameEn": "KAB. PANGKAJENE DAN KEPULAUAN (Sulawesi Selatan)",
+  "lat": -4.7544,
+  "lon": 119.5893
+ },
+ {
+  "id": 391,
+  "name": "KAB. PINRANG",
+  "nameEn": "KAB. PINRANG (Sulawesi Selatan)",
+  "lat": -3.7933,
+  "lon": 119.6529
+ },
+ {
+  "id": 392,
+  "name": "KAB. SIDENRENG RAPPANG",
+  "nameEn": "KAB. SIDENRENG RAPPANG (Sulawesi Selatan)",
+  "lat": -3.8079,
+  "lon": 120.045
+ },
+ {
+  "id": 393,
+  "name": "KAB. SINJAI",
+  "nameEn": "KAB. SINJAI (Sulawesi Selatan)",
+  "lat": -5.2007,
+  "lon": 120.1442
+ },
+ {
+  "id": 394,
+  "name": "KAB. SOPPENG",
+  "nameEn": "KAB. SOPPENG (Sulawesi Selatan)",
+  "lat": -4.3189,
+  "lon": 119.9185
+ },
+ {
+  "id": 395,
+  "name": "KAB. TAKALAR",
+  "nameEn": "KAB. TAKALAR (Sulawesi Selatan)",
+  "lat": -5.4067,
+  "lon": 119.5375
+ },
+ {
+  "id": 396,
+  "name": "KAB. TANA TORAJA",
+  "nameEn": "KAB. TANA TORAJA (Sulawesi Selatan)",
+  "lat": -3.1169,
+  "lon": 119.6938
+ },
+ {
+  "id": 397,
+  "name": "KAB. TORAJA UTARA",
+  "nameEn": "KAB. TORAJA UTARA (Sulawesi Selatan)",
+  "lat": -2.8612,
+  "lon": 119.842
+ },
+ {
+  "id": 398,
+  "name": "KAB. WAJO",
+  "nameEn": "KAB. WAJO (Sulawesi Selatan)",
+  "lat": -3.9656,
+  "lon": 120.1279
+ },
+ {
+  "id": 399,
+  "name": "KOTA MAKASSAR",
+  "nameEn": "KOTA MAKASSAR (Sulawesi Selatan)",
+  "lat": -5.1343,
+  "lon": 119.4124
+ },
+ {
+  "id": 400,
+  "name": "KOTA PALOPO",
+  "nameEn": "KOTA PALOPO (Sulawesi Selatan)",
+  "lat": -2.9996,
+  "lon": 120.1921
+ },
+ {
+  "id": 401,
+  "name": "KOTA PAREPARE",
+  "nameEn": "KOTA PAREPARE (Sulawesi Selatan)",
+  "lat": -4.0057,
+  "lon": 119.6236
+ },
+ {
+  "id": 402,
+  "name": "KAB. BOMBANA",
+  "nameEn": "KAB. BOMBANA (Sulawesi Tenggara)",
+  "lat": -4.6393,
+  "lon": 121.7572
+ },
+ {
+  "id": 403,
+  "name": "KAB. BUTON",
+  "nameEn": "KAB. BUTON (Sulawesi Tenggara)",
+  "lat": -5.3543,
+  "lon": 122.9507
+ },
+ {
+  "id": 404,
+  "name": "KAB. BUTON SELATAN",
+  "nameEn": "KAB. BUTON SELATAN (Sulawesi Tenggara)",
+  "lat": -5.5914,
+  "lon": 122.7019
+ },
+ {
+  "id": 405,
+  "name": "KAB. BUTON TENGAH",
+  "nameEn": "KAB. BUTON TENGAH (Sulawesi Tenggara)",
+  "lat": -5.2918,
+  "lon": 122.3883
+ },
+ {
+  "id": 406,
+  "name": "KAB. BUTON UTARA",
+  "nameEn": "KAB. BUTON UTARA (Sulawesi Tenggara)",
+  "lat": -4.7565,
+  "lon": 122.9489
+ },
+ {
+  "id": 407,
+  "name": "KAB. KOLAKA",
+  "nameEn": "KAB. KOLAKA (Sulawesi Tenggara)",
+  "lat": -4.1214,
+  "lon": 121.6929
+ },
+ {
+  "id": 408,
+  "name": "KAB. KOLAKA TIMUR",
+  "nameEn": "KAB. KOLAKA TIMUR (Sulawesi Tenggara)",
+  "lat": -3.8207,
+  "lon": 121.7542
+ },
+ {
+  "id": 409,
+  "name": "KAB. KOLAKA UTARA",
+  "nameEn": "KAB. KOLAKA UTARA (Sulawesi Tenggara)",
+  "lat": -3.2605,
+  "lon": 121.0934
+ },
+ {
+  "id": 410,
+  "name": "KAB. KONAWE",
+  "nameEn": "KAB. KONAWE (Sulawesi Tenggara)",
+  "lat": -3.5117,
+  "lon": 121.6523
+ },
+ {
+  "id": 411,
+  "name": "KAB. KONAWE KEPULAUAN",
+  "nameEn": "KAB. KONAWE KEPULAUAN (Sulawesi Tenggara)",
+  "lat": -4.1195,
+  "lon": 123.0986
+ },
+ {
+  "id": 412,
+  "name": "KAB. KONAWE SELATAN",
+  "nameEn": "KAB. KONAWE SELATAN (Sulawesi Tenggara)",
+  "lat": -4.2599,
+  "lon": 122.4499
+ },
+ {
+  "id": 413,
+  "name": "KAB. KONAWE UTARA",
+  "nameEn": "KAB. KONAWE UTARA (Sulawesi Tenggara)",
+  "lat": -3.455,
+  "lon": 121.9763
+ },
+ {
+  "id": 414,
+  "name": "KAB. MUNA",
+  "nameEn": "KAB. MUNA (Sulawesi Tenggara)",
+  "lat": -4.9191,
+  "lon": 122.6918
+ },
+ {
+  "id": 415,
+  "name": "KAB. MUNA BARAT",
+  "nameEn": "KAB. MUNA BARAT (Sulawesi Tenggara)",
+  "lat": -4.8037,
+  "lon": 122.4515
+ },
+ {
+  "id": 416,
+  "name": "KAB. WAKATOBI",
+  "nameEn": "KAB. WAKATOBI (Sulawesi Tenggara)",
+  "lat": -5.3157,
+  "lon": 123.585
+ },
+ {
+  "id": 417,
+  "name": "KOTA BAU-BAU",
+  "nameEn": "KOTA BAU-BAU (Sulawesi Tenggara)",
+  "lat": -5.462,
+  "lon": 122.6058
+ },
+ {
+  "id": 418,
+  "name": "KOTA KENDARI",
+  "nameEn": "KOTA KENDARI (Sulawesi Tenggara)",
+  "lat": -3.9918,
+  "lon": 122.518
+ },
+ {
+  "id": 419,
+  "name": "KAB. BANGGAI",
+  "nameEn": "KAB. BANGGAI (Sulawesi Tengah)",
+  "lat": -0.921,
+  "lon": 122.6975
+ },
+ {
+  "id": 420,
+  "name": "KAB. BANGGAI KEPULAUAN",
+  "nameEn": "KAB. BANGGAI KEPULAUAN (Sulawesi Tengah)",
+  "lat": -1.3518,
+  "lon": 123.1809
+ },
+ {
+  "id": 421,
+  "name": "KAB. BANGGAI LAUT",
+  "nameEn": "KAB. BANGGAI LAUT (Sulawesi Tengah)",
+  "lat": -1.8428,
+  "lon": 123.1026
+ },
+ {
+  "id": 422,
+  "name": "KAB. BUOL",
+  "nameEn": "KAB. BUOL (Sulawesi Tengah)",
+  "lat": 1.0124,
+  "lon": 121.3121
+ },
+ {
+  "id": 423,
+  "name": "KAB. DONGGALA",
+  "nameEn": "KAB. DONGGALA (Sulawesi Tengah)",
+  "lat": -1.0478,
+  "lon": 119.6758
+ },
+ {
+  "id": 424,
+  "name": "KAB. MOROWALI",
+  "nameEn": "KAB. MOROWALI (Sulawesi Tengah)",
+  "lat": -2.7151,
+  "lon": 121.8824
+ },
+ {
+  "id": 425,
+  "name": "KAB. MOROWALI UTARA",
+  "nameEn": "KAB. MOROWALI UTARA (Sulawesi Tengah)",
+  "lat": -1.8419,
+  "lon": 121.0772
+ },
+ {
+  "id": 426,
+  "name": "KAB. PARIGI MOUTONG",
+  "nameEn": "KAB. PARIGI MOUTONG (Sulawesi Tengah)",
+  "lat": -0.2384,
+  "lon": 119.9599
+ },
+ {
+  "id": 427,
+  "name": "KAB. POSO",
+  "nameEn": "KAB. POSO (Sulawesi Tengah)",
+  "lat": -1.6569,
+  "lon": 120.5422
+ },
+ {
+  "id": 428,
+  "name": "KAB. SIGI",
+  "nameEn": "KAB. SIGI (Sulawesi Tengah)",
+  "lat": -1.3212,
+  "lon": 119.9987
+ },
+ {
+  "id": 429,
+  "name": "KAB. TOJO UNA-UNA",
+  "nameEn": "KAB. TOJO UNA-UNA (Sulawesi Tengah)",
+  "lat": -1.2131,
+  "lon": 121.6196
+ },
+ {
+  "id": 430,
+  "name": "KAB. TOLI-TOLI",
+  "nameEn": "KAB. TOLI-TOLI (Sulawesi Tengah)",
+  "lat": 1.0389,
+  "lon": 120.8145
+ },
+ {
+  "id": 431,
+  "name": "KOTA PALU",
+  "nameEn": "KOTA PALU (Sulawesi Tengah)",
+  "lat": -0.9052,
+  "lon": 119.8722
+ },
+ {
+  "id": 432,
+  "name": "KAB. BOLAANG MONGONDOW",
+  "nameEn": "KAB. BOLAANG MONGONDOW (Sulawesi Utara)",
+  "lat": 0.7208,
+  "lon": 123.987
+ },
+ {
+  "id": 433,
+  "name": "KAB. BOLAANG MONGONDOW SELATAN",
+  "nameEn": "KAB. BOLAANG MONGONDOW SELATAN (Sulawesi Utara)",
+  "lat": 0.4533,
+  "lon": 124.1796
+ },
+ {
+  "id": 434,
+  "name": "KAB. BOLAANG MONGONDOW TIMUR",
+  "nameEn": "KAB. BOLAANG MONGONDOW TIMUR (Sulawesi Utara)",
+  "lat": 0.7116,
+  "lon": 124.4895
+ },
+ {
+  "id": 435,
+  "name": "KAB. BOLAANG MONGONDOW UTARA",
+  "nameEn": "KAB. BOLAANG MONGONDOW UTARA (Sulawesi Utara)",
+  "lat": 0.7599,
+  "lon": 123.4849
+ },
+ {
+  "id": 436,
+  "name": "KAB. KEPULAUAN SANGIHE",
+  "nameEn": "KAB. KEPULAUAN SANGIHE (Sulawesi Utara)",
+  "lat": 3.5527,
+  "lon": 125.5466
+ },
+ {
+  "id": 437,
+  "name": "KAB. KEPULAUAN SIAU TAGULANDANG BIARO",
+  "nameEn": "KAB. KEPULAUAN SIAU TAGULANDANG BIARO (Sulawesi Utara)",
+  "lat": 2.3495,
+  "lon": 125.4203
+ },
+ {
+  "id": 438,
+  "name": "KAB. KEPULAUAN TALAUD",
+  "nameEn": "KAB. KEPULAUAN TALAUD (Sulawesi Utara)",
+  "lat": 4.2695,
+  "lon": 126.8135
+ },
+ {
+  "id": 439,
+  "name": "KAB. MINAHASA",
+  "nameEn": "KAB. MINAHASA (Sulawesi Utara)",
+  "lat": 1.2152,
+  "lon": 124.7979
+ },
+ {
+  "id": 440,
+  "name": "KAB. MINAHASA SELATAN",
+  "nameEn": "KAB. MINAHASA SELATAN (Sulawesi Utara)",
+  "lat": 1.0703,
+  "lon": 124.4362
+ },
+ {
+  "id": 441,
+  "name": "KAB. MINAHASA TENGGARA",
+  "nameEn": "KAB. MINAHASA TENGGARA (Sulawesi Utara)",
+  "lat": 0.9883,
+  "lon": 124.7307
+ },
+ {
+  "id": 442,
+  "name": "KAB. MINAHASA UTARA",
+  "nameEn": "KAB. MINAHASA UTARA (Sulawesi Utara)",
+  "lat": 1.5333,
+  "lon": 124.9999
+ },
+ {
+  "id": 443,
+  "name": "KOTA BITUNG",
+  "nameEn": "KOTA BITUNG (Sulawesi Utara)",
+  "lat": 1.4434,
+  "lon": 125.1941
+ },
+ {
+  "id": 444,
+  "name": "KOTA KOTAMOBAGU",
+  "nameEn": "KOTA KOTAMOBAGU (Sulawesi Utara)",
+  "lat": 0.7352,
+  "lon": 124.3154
+ },
+ {
+  "id": 445,
+  "name": "KOTA MANADO",
+  "nameEn": "KOTA MANADO (Sulawesi Utara)",
+  "lat": 1.49,
+  "lon": 124.8408
+ },
+ {
+  "id": 446,
+  "name": "KOTA TOMOHON",
+  "nameEn": "KOTA TOMOHON (Sulawesi Utara)",
+  "lat": 1.3256,
+  "lon": 124.8386
+ },
+ {
+  "id": 447,
+  "name": "KAB. MAJENE",
+  "nameEn": "KAB. MAJENE (Sulawesi Barat)",
+  "lat": -3.243,
+  "lon": 118.8733
+ },
+ {
+  "id": 448,
+  "name": "KAB. MAMASA",
+  "nameEn": "KAB. MAMASA (Sulawesi Barat)",
+  "lat": -3.0004,
+  "lon": 119.3209
+ },
+ {
+  "id": 449,
+  "name": "KAB. MAMUJU",
+  "nameEn": "KAB. MAMUJU (Sulawesi Barat)",
+  "lat": -2.5394,
+  "lon": 119.3889
+ },
+ {
+  "id": 450,
+  "name": "KAB. MAMUJU TENGAH",
+  "nameEn": "KAB. MAMUJU TENGAH (Sulawesi Barat)",
+  "lat": -2.0214,
+  "lon": 119.5405
+ },
+ {
+  "id": 451,
+  "name": "KAB. MAMUJU UTARA",
+  "nameEn": "KAB. MAMUJU UTARA (Sulawesi Barat)",
+  "lat": -1.18,
+  "lon": 119.37
+ },
+ {
+  "id": 452,
+  "name": "KAB. POLEWALI MANDAR",
+  "nameEn": "KAB. POLEWALI MANDAR (Sulawesi Barat)",
+  "lat": -3.3032,
+  "lon": 119.1451
+ },
+ {
+  "id": 453,
+  "name": "KAB. BURU",
+  "nameEn": "KAB. BURU (Maluku)",
+  "lat": -3.3539,
+  "lon": 126.6489
+ },
+ {
+  "id": 454,
+  "name": "KAB. BURU SELATAN",
+  "nameEn": "KAB. BURU SELATAN (Maluku)",
+  "lat": -3.4867,
+  "lon": 126.3502
+ },
+ {
+  "id": 455,
+  "name": "KAB. KEPULAUAN ARU",
+  "nameEn": "KAB. KEPULAUAN ARU (Maluku)",
+  "lat": -6.2279,
+  "lon": 134.4978
+ },
+ {
+  "id": 456,
+  "name": "KAB. MALUKU BARAT DAYA",
+  "nameEn": "KAB. MALUKU BARAT DAYA (Maluku)",
+  "lat": -7.7867,
+  "lon": 126.2428
+ },
+ {
+  "id": 457,
+  "name": "KAB. MALUKU TENGAH",
+  "nameEn": "KAB. MALUKU TENGAH (Maluku)",
+  "lat": -3.1214,
+  "lon": 129.46
+ },
+ {
+  "id": 458,
+  "name": "KAB. MALUKU TENGGARA",
+  "nameEn": "KAB. MALUKU TENGGARA (Maluku)",
+  "lat": -5.7715,
+  "lon": 132.7378
+ },
+ {
+  "id": 459,
+  "name": "KAB. MALUKU TENGGARA BARAT",
+  "nameEn": "KAB. MALUKU TENGGARA BARAT (Maluku)",
+  "lat": -7.97,
+  "lon": 131.3
+ },
+ {
+  "id": 460,
+  "name": "KAB. SERAM BAGIAN BARAT",
+  "nameEn": "KAB. SERAM BAGIAN BARAT (Maluku)",
+  "lat": -3.1642,
+  "lon": 128.4837
+ },
+ {
+  "id": 461,
+  "name": "KAB. SERAM BAGIAN TIMUR",
+  "nameEn": "KAB. SERAM BAGIAN TIMUR (Maluku)",
+  "lat": -3.4232,
+  "lon": 130.3911
+ },
+ {
+  "id": 462,
+  "name": "KOTA AMBON",
+  "nameEn": "KOTA AMBON (Maluku)",
+  "lat": -3.6959,
+  "lon": 128.1788
+ },
+ {
+  "id": 463,
+  "name": "KOTA TUAL",
+  "nameEn": "KOTA TUAL (Maluku)",
+  "lat": -5.5411,
+  "lon": 132.7188
+ },
+ {
+  "id": 464,
+  "name": "KAB. HALMAHERA BARAT",
+  "nameEn": "KAB. HALMAHERA BARAT (Maluku Utara)",
+  "lat": 1.3631,
+  "lon": 127.5738
+ },
+ {
+  "id": 465,
+  "name": "KAB. HALMAHERA TENGAH",
+  "nameEn": "KAB. HALMAHERA TENGAH (Maluku Utara)",
+  "lat": 0.3889,
+  "lon": 128.5832
+ },
+ {
+  "id": 466,
+  "name": "KAB. HALMAHERA UTARA",
+  "nameEn": "KAB. HALMAHERA UTARA (Maluku Utara)",
+  "lat": 1.6179,
+  "lon": 127.8585
+ },
+ {
+  "id": 467,
+  "name": "KAB. HALMAHERA SELATAN",
+  "nameEn": "KAB. HALMAHERA SELATAN (Maluku Utara)",
+  "lat": -1.5344,
+  "lon": 127.7166
+ },
+ {
+  "id": 468,
+  "name": "KAB. KEPULAUAN SULA",
+  "nameEn": "KAB. KEPULAUAN SULA (Maluku Utara)",
+  "lat": -1.8625,
+  "lon": 125.8306
+ },
+ {
+  "id": 469,
+  "name": "KAB. HALMAHERA TIMUR",
+  "nameEn": "KAB. HALMAHERA TIMUR (Maluku Utara)",
+  "lat": 1.0028,
+  "lon": 128.2488
+ },
+ {
+  "id": 470,
+  "name": "KAB. PULAU MOROTAI",
+  "nameEn": "KAB. PULAU MOROTAI (Maluku Utara)",
+  "lat": 2.3129,
+  "lon": 128.4419
+ },
+ {
+  "id": 471,
+  "name": "KAB. PULAU TALIABU",
+  "nameEn": "KAB. PULAU TALIABU (Maluku Utara)",
+  "lat": -1.8315,
+  "lon": 124.83
+ },
+ {
+  "id": 472,
+  "name": "KOTA TERNATE",
+  "nameEn": "KOTA TERNATE (Maluku Utara)",
+  "lat": 0.7852,
+  "lon": 127.3832
+ },
+ {
+  "id": 473,
+  "name": "KOTA TIDORE KEPULAUAN",
+  "nameEn": "KOTA TIDORE KEPULAUAN (Maluku Utara)",
+  "lat": 0.6787,
+  "lon": 127.4483
+ },
+ {
+  "id": 474,
+  "name": "KOTA SOFIFI",
+  "nameEn": "KOTA SOFIFI (Maluku Utara)",
+  "lat": 0.73,
+  "lon": 127.57
+ },
+ {
+  "id": 475,
+  "name": "KAB. ASMAT",
+  "nameEn": "KAB. ASMAT (Papua)",
+  "lat": -5.5314,
+  "lon": 138.7897
+ },
+ {
+  "id": 476,
+  "name": "KAB. BIAK NUMFOR",
+  "nameEn": "KAB. BIAK NUMFOR (Papua)",
+  "lat": -1.1592,
+  "lon": 136.0785
+ },
+ {
+  "id": 477,
+  "name": "KAB. BOVEN DIGOEL",
+  "nameEn": "KAB. BOVEN DIGOEL (Papua)",
+  "lat": -6.0392,
+  "lon": 140.4299
+ },
+ {
+  "id": 478,
+  "name": "KAB. DEIYAI",
+  "nameEn": "KAB. DEIYAI (Papua)",
+  "lat": -4.1879,
+  "lon": 136.4453
+ },
+ {
+  "id": 479,
+  "name": "KAB. DOGIYAI",
+  "nameEn": "KAB. DOGIYAI (Papua)",
+  "lat": -4.0048,
+  "lon": 135.7167
+ },
+ {
+  "id": 480,
+  "name": "KAB. INTAN JAYA",
+  "nameEn": "KAB. INTAN JAYA (Papua)",
+  "lat": -3.523,
+  "lon": 136.7185
+ },
+ {
+  "id": 481,
+  "name": "KAB. JAYAPURA",
+  "nameEn": "KAB. JAYAPURA (Papua)",
+  "lat": -3.0371,
+  "lon": 139.947
+ },
+ {
+  "id": 482,
+  "name": "KAB. JAYAWIJAYA",
+  "nameEn": "KAB. JAYAWIJAYA (Papua)",
+  "lat": -4.1153,
+  "lon": 138.965
+ },
+ {
+  "id": 483,
+  "name": "KAB. KEEROM",
+  "nameEn": "KAB. KEEROM (Papua)",
+  "lat": -3.3336,
+  "lon": 140.6727
+ },
+ {
+  "id": 484,
+  "name": "KAB. KEPULAUAN YAPEN",
+  "nameEn": "KAB. KEPULAUAN YAPEN (Papua)",
+  "lat": -1.7558,
+  "lon": 136.3665
+ },
+ {
+  "id": 485,
+  "name": "KAB. LANNY JAYA",
+  "nameEn": "KAB. LANNY JAYA (Papua)",
+  "lat": -3.9977,
+  "lon": 138.3731
+ },
+ {
+  "id": 486,
+  "name": "KAB. MAMBERAMO RAYA",
+  "nameEn": "KAB. MAMBERAMO RAYA (Papua)",
+  "lat": -2.3957,
+  "lon": 137.8169
+ },
+ {
+  "id": 487,
+  "name": "KAB. MAMBERAMO TENGAH",
+  "nameEn": "KAB. MAMBERAMO TENGAH (Papua)",
+  "lat": -3.5335,
+  "lon": 139.0177
+ },
+ {
+  "id": 488,
+  "name": "KAB. MAPPI",
+  "nameEn": "KAB. MAPPI (Papua)",
+  "lat": -6.3296,
+  "lon": 139.2877
+ },
+ {
+  "id": 489,
+  "name": "KAB. MERAUKE",
+  "nameEn": "KAB. MERAUKE (Papua)",
+  "lat": -8.4903,
+  "lon": 140.3956
+ },
+ {
+  "id": 490,
+  "name": "KAB. MIMIKA",
+  "nameEn": "KAB. MIMIKA (Papua)",
+  "lat": -4.5875,
+  "lon": 136.9478
+ },
+ {
+  "id": 491,
+  "name": "KAB. NABIRE",
+  "nameEn": "KAB. NABIRE (Papua)",
+  "lat": -3.3468,
+  "lon": 135.9503
+ },
+ {
+  "id": 492,
+  "name": "KAB. NDUGA",
+  "nameEn": "KAB. NDUGA (Papua)",
+  "lat": -4.4431,
+  "lon": 138.2248
+ },
+ {
+  "id": 493,
+  "name": "KAB. PANIAI",
+  "nameEn": "KAB. PANIAI (Papua)",
+  "lat": -3.7426,
+  "lon": 136.3778
+ },
+ {
+  "id": 494,
+  "name": "KAB. PEGUNUNGAN BINTANG",
+  "nameEn": "KAB. PEGUNUNGAN BINTANG (Papua)",
+  "lat": -4.4755,
+  "lon": 140.5577
+ },
+ {
+  "id": 495,
+  "name": "KAB. PUNCAK",
+  "nameEn": "KAB. PUNCAK (Papua)",
+  "lat": -3.6256,
+  "lon": 137.4892
+ },
+ {
+  "id": 496,
+  "name": "KAB. PUNCAK JAYA",
+  "nameEn": "KAB. PUNCAK JAYA (Papua)",
+  "lat": -3.7009,
+  "lon": 137.9649
+ },
+ {
+  "id": 497,
+  "name": "KAB. SARMI",
+  "nameEn": "KAB. SARMI (Papua)",
+  "lat": -2.5563,
+  "lon": 139.1077
+ },
+ {
+  "id": 498,
+  "name": "KAB. SUPIORI",
+  "nameEn": "KAB. SUPIORI (Papua)",
+  "lat": -0.7536,
+  "lon": 135.635
+ },
+ {
+  "id": 499,
+  "name": "KAB. TOLIKARA",
+  "nameEn": "KAB. TOLIKARA (Papua)",
+  "lat": -3.4497,
+  "lon": 138.3491
+ },
+ {
+  "id": 500,
+  "name": "KAB. WAROPEN",
+  "nameEn": "KAB. WAROPEN (Papua)",
+  "lat": -2.7188,
+  "lon": 136.6504
+ },
+ {
+  "id": 501,
+  "name": "KAB. YAHUKIMO",
+  "nameEn": "KAB. YAHUKIMO (Papua)",
+  "lat": -4.3739,
+  "lon": 139.4648
+ },
+ {
+  "id": 502,
+  "name": "KAB. YALIMO",
+  "nameEn": "KAB. YALIMO (Papua)",
+  "lat": -3.7353,
+  "lon": 139.5506
+ },
+ {
+  "id": 503,
+  "name": "KOTA JAYAPURA",
+  "nameEn": "KOTA JAYAPURA (Papua)",
+  "lat": -2.5388,
+  "lon": 140.7037
+ },
+ {
+  "id": 504,
+  "name": "KAB. YAPEN WAROPEN",
+  "nameEn": "KAB. YAPEN WAROPEN (Papua)",
+  "lat": -1.89,
+  "lon": 136.24
+ },
+ {
+  "id": 505,
+  "name": "KAB. FAKFAK",
+  "nameEn": "KAB. FAKFAK (Papua Barat)",
+  "lat": -3.2704,
+  "lon": 133.0888
+ },
+ {
+  "id": 506,
+  "name": "KAB. KAIMANA",
+  "nameEn": "KAB. KAIMANA (Papua Barat)",
+  "lat": -3.5158,
+  "lon": 134.3166
+ },
+ {
+  "id": 507,
+  "name": "KAB. MANOKWARI",
+  "nameEn": "KAB. MANOKWARI (Papua Barat)",
+  "lat": -0.9777,
+  "lon": 133.7538
+ },
+ {
+  "id": 508,
+  "name": "KAB. MANOKWARI SELATAN",
+  "nameEn": "KAB. MANOKWARI SELATAN (Papua Barat)",
+  "lat": -1.525,
+  "lon": 134.071
+ },
+ {
+  "id": 509,
+  "name": "KAB. MAYBRAT",
+  "nameEn": "KAB. MAYBRAT (Papua Barat)",
+  "lat": -1.4039,
+  "lon": 132.5871
+ },
+ {
+  "id": 510,
+  "name": "KAB. PEGUNUNGAN ARFAK",
+  "nameEn": "KAB. PEGUNUNGAN ARFAK (Papua Barat)",
+  "lat": -1.2612,
+  "lon": 133.6492
+ },
+ {
+  "id": 511,
+  "name": "KAB. RAJA AMPAT",
+  "nameEn": "KAB. RAJA AMPAT (Papua Barat)",
+  "lat": -0.7126,
+  "lon": 130.3034
+ },
+ {
+  "id": 512,
+  "name": "KAB. SORONG",
+  "nameEn": "KAB. SORONG (Papua Barat)",
+  "lat": -1.1548,
+  "lon": 131.5336
+ },
+ {
+  "id": 513,
+  "name": "KAB. SORONG SELATAN",
+  "nameEn": "KAB. SORONG SELATAN (Papua Barat)",
+  "lat": -1.6431,
+  "lon": 132.255
+ },
+ {
+  "id": 514,
+  "name": "KAB. TAMBRAUW",
+  "nameEn": "KAB. TAMBRAUW (Papua Barat)",
+  "lat": -0.8501,
+  "lon": 132.7244
+ },
+ {
+  "id": 515,
+  "name": "KAB. TELUK BINTUNI",
+  "nameEn": "KAB. TELUK BINTUNI (Papua Barat)",
+  "lat": -2.1139,
+  "lon": 133.5288
+ },
+ {
+  "id": 516,
+  "name": "KAB. TELUK WONDAMA",
+  "nameEn": "KAB. TELUK WONDAMA (Papua Barat)",
+  "lat": -2.6325,
+  "lon": 134.5661
+ },
+ {
+  "id": 517,
+  "name": "KOTA SORONG",
+  "nameEn": "KOTA SORONG (Papua Barat)",
+  "lat": -0.8634,
+  "lon": 131.2545
+ }
+]

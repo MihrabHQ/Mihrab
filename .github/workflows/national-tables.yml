@@ -3,7 +3,9 @@ name: National prayer-time tables
 # Rebuilds the national tables that come from an authority's own published
 # data (tools/national-tables): Singapore's MUIS timetable from the
 # government's open-data portal, and Malaysia's JAKIM e-Solat zones from
-# the department's JSON endpoint. Both are mirrored as-is into
+# the department's JSON endpoint, and Indonesia's Kemenag timetable per
+# regency from the ministry's schedule page (which answers GitHub's runners
+# but not every country). All are mirrored as-is into
 # data/prayer-times/<country>/v1 and a seed bundled into the app.
 #
 # Weekly, and daily in the first week of January: e-Solat serves the current
@@ -27,7 +29,7 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
 
@@ -45,19 +47,25 @@ jobs:
         if: always()
         run: npx --yes tsx@4 tools/national-tables/jakim.ts
 
+      - name: Indonesia (Kemenag)
+        id: kemenag
+        if: always()
+        run: npx --yes tsx@4 tools/national-tables/kemenag.ts
+
       - name: Commit refreshed tables
         if: always()
         run: |
           git config user.name 'mihrab-dataset-bot'
           git config user.email 'actions@users.noreply.github.com'
-          git add data/prayer-times/singapore data/prayer-times/malaysia \
+          git add data/prayer-times/singapore data/prayer-times/malaysia data/prayer-times/indonesia \
             src/providers/data/muisSeed.json src/providers/data/muisPlaces.json \
-            src/providers/data/jakimSeed.json src/providers/data/jakimPlaces.json
+            src/providers/data/jakimSeed.json src/providers/data/jakimPlaces.json \
+            src/providers/data/kemenagSeed.json src/providers/data/kemenagPlaces.json
           if git diff --cached --quiet; then
             echo 'No table changes to commit.'
             exit 0
           fi
-          git commit -m "data: national tables ($(date -u +%F): Singapore ${{ steps.muis.outputs.coverage_days || '?' }} d, Malaysia ${{ steps.jakim.outputs.coverage_days || '?' }} d left)"
+          git commit -m "data: national tables ($(date -u +%F): Singapore ${{ steps.muis.outputs.coverage_days || '?' }} d, Malaysia ${{ steps.jakim.outputs.coverage_days || '?' }} d, Indonesia ${{ steps.kemenag.outputs.coverage_days || '?' }} d left)"
           for attempt in 1 2 3; do
             if git push; then
               echo "Pushed on attempt ${attempt}."
@@ -84,10 +92,10 @@ jobs:
           to: mihrab@elghamri.se
           subject: '[Mihrab] national prayer-time tables job FAILED'
           body: |
-            The national tables run FAILED (Singapore MUIS / Malaysia JAKIM).
+            The national tables run FAILED (Singapore MUIS / Malaysia JAKIM / Indonesia Kemenag).
 
             Usually one of:
-              • data.gov.sg or e-solat.gov.my down or changed shape,
+              • data.gov.sg, e-solat.gov.my or bimasislam.kemenag.go.id down or changed shape,
               • a published day out of order (the build refuses it), or
               • the commit/push step failed.
 

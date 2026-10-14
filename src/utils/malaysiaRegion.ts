@@ -5,11 +5,11 @@
  * neighbours that fall inside them carved out: Singapore, Brunei, and the
  * Indonesian and Thai borders, which no rectangle follows, by the same
  * distance test `algeriaRegion.ts` uses — within reach of one of JAKIM's
- * own towns. Tawau and Nunukan are twenty kilometres apart across the
- * Indonesian border; a reader there who gets the wrong table can pick the
- * other by hand.
+ * own towns, and on Borneo nearer to one than to an Indonesian regency.
+ * Tawau and Nunukan are twenty kilometres apart across that border; a
+ * reader between them who gets the wrong table can pick the other by hand.
  */
-import { jakimTable } from '../providers/nationalTables';
+import { jakimTable, kemenagTable } from '../providers/nationalTables';
 import { isCoordinateInSingapore } from './singaporeRegion';
 
 /** Peninsular Malaysia, from Perlis to Johor. */
@@ -30,5 +30,10 @@ export function isCoordinateInMalaysia(latitude: number, longitude: number): boo
   if (isCoordinateInSingapore(latitude, longitude)) return false;
   if (inside(BRUNEI, latitude, longitude)) return false;
   const near = jakimTable.nearest(latitude, longitude);
-  return near != null && near.distanceKm <= REACH_KM;
+  if (!near || near.distanceKm > REACH_KM) return false;
+  if (inside(BORNEO, latitude, longitude)) {
+    const indonesian = kemenagTable.nearest(latitude, longitude);
+    if (indonesian && indonesian.distanceKm < near.distanceKm) return false;
+  }
+  return true;
 }

@@ -16,6 +16,7 @@
  * see below.
  */
 import { isCoordinateInAlgeria } from '../utils/algeriaRegion';
+import { isCoordinateInIndonesia } from '../utils/indonesiaRegion';
 import { isCoordinateInMalaysia } from '../utils/malaysiaRegion';
 import { isCoordinateInSingapore } from '../utils/singaporeRegion';
 import { isCoordinateInMorocco } from '../utils/moroccoRegion';
@@ -39,6 +40,7 @@ export const REGIONAL_PROVIDER_REGIONS: readonly RegionalProviderRegion[] = [
   // Singapore before Malaysia: the island sits inside the peninsula's box.
   { id: 'muis', covers: isCoordinateInSingapore },
   { id: 'jakim', covers: isCoordinateInMalaysia },
+  { id: 'kemenag', covers: isCoordinateInIndonesia },
 ];
 
 /** The regional source covering these coordinates, or null for nowhere special. */

@@ -533,6 +533,10 @@
     "jakim": {
       "name": "Malaisie",
       "desc": "Les horaires e-Solat du JAKIM pour votre zone ; votre position est rattachée à la ville la plus proche de sa liste de zones."
+    },
+    "kemenag": {
+      "name": "Indonésie",
+      "desc": "Les horaires publiés par le ministère des Affaires religieuses (Kemenag) pour votre régence ou votre ville ; votre position est rattachée à la plus proche de sa liste."
     }
   },
   "compass": {
@@ -1862,7 +1866,9 @@
     "yearFetched": "Année téléchargée",
     "serverSingapore": "Singapour · MUIS",
     "serverMalaysia": "Malaisie · JAKIM e-Solat",
-    "jakimWindow": "Le JAKIM ne publie que l’année en cours : cette fenêtre se termine le 31 décembre et reprend lorsque la nouvelle année est publiée dans les premiers jours de janvier."
+    "jakimWindow": "Le JAKIM ne publie que l’année en cours : cette fenêtre se termine le 31 décembre et reprend lorsque la nouvelle année est publiée dans les premiers jours de janvier.",
+    "serverIndonesia": "Indonésie · Kemenag",
+    "kemenagWindow": "Récupérés une saison à la fois — ce mois-ci et les deux suivants — et prolongés chaque semaine."
   },
   "log": {
     "legendPrayers": "0 → 5 prières",
