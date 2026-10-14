@@ -15,7 +15,10 @@
  *     Dhuhr within minutes of solar noon. The widget answers a date in a year
  *     it has not published yet with the same date of THIS year, and between
  *     the two years' clock changes that row is an hour off. Such rows are
- *     dropped, not stored; the phone falls back for those days.
+ *     dropped, not stored; the phone falls back for those days. The rest of
+ *     a copied year is caught by the method itself: a Fajr or Isha minutes
+ *     from the year's own computation and on the minute of the previous
+ *     year's (src/prayer/swedenYearCheck.ts) is the previous year's row.
  *   • Re-read: a stored day fetched REFRESH_AFTER_DAYS ago or more is fetched
  *     again when the budget allows (nearest date first), so a year the site
  *     publishes late replaces the copy it served meanwhile.
@@ -38,11 +41,15 @@ import {
   type DatasetDayTuple,
 } from '../../src/providers/islamiskaForbundetParser';
 import { dhuhrOffsetFromNoon, DHUHR_NOON_TOLERANCE_MIN } from '../../src/prayer/tableDayCheck';
+import { isPreviousYearsRow } from '../../src/prayer/swedenYearCheck';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO = join(__dirname, '..', '..');
 
 const COORDS_PATH = join(REPO, 'src/providers/islamiskaForbundetCoords.json');
+// The coordinates the tables are computed for, read off the tables
+// (tools/verify-methods/fit-all.py) — not always the town's own.
+const TABLE_COORDS_PATH = join(REPO, 'tools/verify-methods/diyanet-sweden-coords.json');
 const OUT_DIR = join(REPO, 'data/prayer-times/v1');
 const CITIES_DIR = join(OUT_DIR, 'cities');
 const INDEX_PATH = join(OUT_DIR, 'index.json');
@@ -173,6 +180,23 @@ function dayOffsetFromNoon(dateKey: string, tuple: DatasetDayTuple, longitude: n
   return dhuhrOffsetFromNoon(dateKey, tuple[3], longitude, TZ);
 }
 
+/**
+ * Why a row is not the day it claims to be, or null when it is: its Dhuhr an
+ * hour from noon, or its Fajr/Isha the previous year's.
+ */
+function rowRejection(
+  dateKey: string,
+  tuple: DatasetDayTuple,
+  point: { lat: number; lon: number },
+): string | null {
+  const off = dayOffsetFromNoon(dateKey, tuple, point.lon);
+  if (!(Math.abs(off) <= DHUHR_NOON_TOLERANCE_MIN)) return `Dhuhr ${tuple[3]} is ${Math.round(off)} min from noon`;
+  if (isPreviousYearsRow(dateKey, tuple[1], tuple[6], point.lat, point.lon, TZ)) {
+    return `Fajr ${tuple[1]} / Isha ${tuple[6]} are the previous year's`;
+  }
+  return null;
+}
+
 async function main(): Promise<void> {
   await mkdir(CITIES_DIR, { recursive: true });
   await mkdir(dirname(SEED_PATH), { recursive: true });
@@ -182,6 +206,12 @@ async function main(): Promise<void> {
     { lat: number; lng: number }
   >;
   const cities = Object.keys(coords).map(name => ({ name, slug: citySlug(name) }));
+  const tableCoords = existsSync(TABLE_COORDS_PATH)
+    ? (JSON.parse(await readFile(TABLE_COORDS_PATH, 'utf8')) as Record<string, { lat: number; lon: number }>)
+    : {};
+  /** The point a city's table is computed for. */
+  const pointOf = (c: { name: string; slug: string }) =>
+    tableCoords[c.slug] ?? { lat: coords[c.name].lat, lon: coords[c.name].lng };
 
   // Sanity: slugs must be unique or per-city files collide.
   const slugSet = new Set<string>();
@@ -210,9 +240,9 @@ async function main(): Promise<void> {
         delete fetched[k];
         continue;
       }
-      const off = dayOffsetFromNoon(k, days[k], coords[c.name].lng);
-      if (!(Math.abs(off) <= DHUHR_NOON_TOLERANCE_MIN)) {
-        rejected.push(`${c.name} ${k} (kept; Dhuhr ${days[k][3]} is ${Math.round(off)} min from noon)`);
+      const why = rowRejection(k, days[k], pointOf(c));
+      if (why) {
+        rejected.push(`${c.name} ${k} (kept; ${why})`);
         delete days[k];
         delete fetched[k];
       }
@@ -238,12 +268,12 @@ async function main(): Promise<void> {
     if (!tuple) {
       failures++;
     } else {
-      const off = dayOffsetFromNoon(dateKey, tuple, coords[c.name].lng);
-      if (Math.abs(off) <= DHUHR_NOON_TOLERANCE_MIN) {
+      const why = rowRejection(dateKey, tuple, pointOf(c));
+      if (!why) {
         days[dateKey] = tuple;
         fetchedOn.get(c.slug)![dateKey] = today;
       } else {
-        rejected.push(`${c.name} ${dateKey} (Dhuhr ${tuple[3]} is ${Math.round(off)} min from noon)`);
+        rejected.push(`${c.name} ${dateKey} (${why})`);
         // A copy of another year. Whatever was stored for the day stays
         // only if it passed its own check above; the copy does not replace it.
       }

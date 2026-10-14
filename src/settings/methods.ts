@@ -43,7 +43,7 @@ export const CALCULATION_METHODS: CalculationMethodOption[] = [
   { id: 18, name: 'Tunisia', nameKey: 'methods.18' },
   { id: 22, name: 'Portugal', nameKey: 'methods.22' },
   { id: 23, name: 'Jordan', nameKey: 'methods.23' },
-  // The app's own, read off Islamiska Förbundet's tables (localAdhan.ts); no AlAdhan id.
+  // The Congress method Diyanet computes Islamiska Förbundet's tables by (congressMethod.ts); no AlAdhan id.
   { id: 24, name: 'Sweden (Islamiska Förbundet)', nameKey: 'methods.24' },
   // The user's own angles, set in Settings under the method — AlAdhan's 99.
   { id: 99, name: 'Custom angles', nameKey: 'methods.99' },

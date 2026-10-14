@@ -17,6 +17,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { AUTHORITIES, cityFile, ROOT, type Authority } from './authorities';
 import { computeLocalAdhanInstants } from '../../src/providers/localAdhan';
+import { isPreviousYearsRow } from '../../src/prayer/swedenYearCheck';
 import { zoneOffsetMinutes } from '../../src/prayer/tableDayCheck';
 
 const OUT_DIR = path.join(ROOT, 'data/prayer-times/verification');
@@ -95,6 +96,13 @@ export type Report = {
   accepted: number;
   /** Imsak as the table prints it, minutes before its Fajr (mode). */
   imsakBeforeFajr: number | null;
+  /**
+   * Rows that repeat the previous year's figures for the same date — the
+   * site serving last year's table until the new one is out — compared as
+   * that year, and the earliest such date.
+   */
+  copiedRows: number;
+  copiedFrom: string | null;
   alarm: boolean;
   alarmReasons: string[];
   /** The worst rows, largest first — enough to see what kind of wrong. */
@@ -184,6 +192,8 @@ export function verifyAuthority(a: Authority, accepted: Accepted[]): Report {
   // only from places whose coordinates agree with the authority's.
   type Row = { date: string; prayer: Prayer; theirs: string; ours: string; diff: number };
   const byPlace = new Map<string, Row[]>();
+  let copiedRows = 0;
+  let copiedFrom: string | null = null;
 
   for (const place of places) {
     const file = cityFile(a, place);
@@ -196,7 +206,17 @@ export function verifyAuthority(a: Authority, accepted: Accepted[]): Report {
     for (const [date, row] of Object.entries(table)) {
       if (!row || row.length < 7) continue;
       if (dayLengthMinutes(date, place.tz) !== 1440) continue; // a clock change: the table's own convention, not the method's
-      const [y, m, d] = date.split('-').map(Number);
+      let [y, m, d] = date.split('-').map(Number);
+      // The previous year's figures served for the date: the site has not
+      // published this year yet. Compared as that year — the method
+      // computes the year asked for, and the tables will move when the
+      // authority's do. (The builder drops such rows from now on; the
+      // check here is for what was stored before it did.)
+      if (a.copiedYears && isPreviousYearsRow(date, row[1], row[6], place.lat, place.lon, place.tz)) {
+        copiedRows++;
+        if (!copiedFrom || date < copiedFrom) copiedFrom = date;
+        y -= 1;
+      }
       const at = computeLocalAdhanInstants({
         latitude: place.lat,
         longitude: place.lon,
@@ -337,6 +357,8 @@ export function verifyAuthority(a: Authority, accepted: Accepted[]): Report {
     misplaced,
     accepted: acceptedCount,
     imsakBeforeFajr: imsakMode ? Number(imsakMode[0]) : null,
+    copiedRows,
+    copiedFrom,
     alarm: reasons.length > 0,
     alarmReasons: reasons,
     worst: mismatches.slice(0, 60),
@@ -365,6 +387,13 @@ export function describe(r: Report): string {
       `${r.times - r.within} of ${r.times} outside, worst ${r.maxAbs} min` +
       (r.imsakBeforeFajr != null ? ` · Imsak printed ${r.imsakBeforeFajr} min before Fajr` : ''),
   );
+  if (r.copiedRows) {
+    lines.push('');
+    lines.push(
+      `${r.copiedRows} rows from ${r.copiedFrom} on repeat the previous year's figures for the date — the site has not ` +
+        `published that year yet — and are compared as the previous year.`,
+    );
+  }
   lines.push('');
   lines.push('| | within | mean | worst | distribution (minutes, ours − theirs) |');
   lines.push('|---|---|---|---|---|');

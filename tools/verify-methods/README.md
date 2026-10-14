@@ -103,13 +103,41 @@ three other things, each now in the data:
 - **Türkiye Takvimi** (namazvakti.com) is fetched per city by the phone,
   not mirrored; its method is fitted and checked in
   `tools/namazvakti-dataset/model-fit.ts` and `__tests__/namazvakti.test.ts`.
-- **Türkiye Takvimi's** and **Sweden's** methods were both read off the
-  tables rather than published. Sweden's (method 24, `swedenTimes` in
-  `localAdhan.ts`): 18°/16° in winter; in summer a share of the night,
-  0.218 before sunrise and 0.195 after sunset, blending to the angles by
-  the midnight sun's depth; sunrise −7, Maghrib +7, Dhuhr +5, Asr +4; the
-  sun's position taken at the start of the day; and both the day and the
-  night floored at five hours about the printed Dhuhr or the midnight
-  twelve hours from it — which is the whole of the far north's summer and
-  winter. `by-month.ts` shows a place's residuals month by month; the
-  blend's edges in April and September are the few minutes left.
+- **Türkiye Takvimi's** method was read off the tables rather than
+  published.
+
+## Sweden: the Congress method
+
+Islamiska Förbundet's tables are Diyanet's own (ezanvakti.emushaf.net,
+country 12), computed by the International Prayer Times Congress method
+(Istanbul 2021; awqatsalah.com, "Tespit Kriterleri"). Method 24 is that
+method, in `src/providers/congressMethod.ts`: the published rules plus
+what the tables turn out to do with them — the Almanac's low-precision
+sun taken at 0h UT; the carried night share over the day's own night,
+Fajr's scaled by 18/16; the gradual transition a straight line over the
+days on which the true time lies within twenty minutes of the takdir at
+the gap's edge; the five-hour floors each end on its own, and a
+midsummer night floored at both ends (or within a minute of it)
+anchoring the season's sunrise, Maghrib, Fajr and Isha.
+
+- `congress-model.py` is the Python model the method was reverse-
+  engineered in, day by day against a city's table:
+  `python3 tools/verify-methods/congress-model.py stockholm 59.3333 18.0333 --as-year 2026 --days 2027-04-01:2027-04-30`
+  (`--as-year 2026`: the site's 2027 rows are its 2026 rows copied).
+- `fit-all.py` finds, for every city, the coordinates Diyanet computes
+  its table for — an arc-minute grid about the town, scored on sunrise,
+  Dhuhr and Maghrib — and writes `diyanet-sweden-coords.json`, which
+  the checker and the dataset builder use. They are not always the
+  town's: Kiruna's table is computed for 64°N (Umeå's longitude),
+  Ystad's for a point west of the town, Gällivare's, Ludvika's and
+  Torsby's where the geocoder had not put them. `fit-wide.py` searches
+  further for such cases; `fit-sun.py` tests sun models and rounding;
+  `run-cities.sh` scores a list of cities; `congress-ts-check.ts` runs
+  the TypeScript port against a table.
+- The result: every time within a minute of the table on every day in
+  all 108 cities, and on the minute on 90–99 % of days. What remains is
+  Diyanet's own ephemeris constants and coordinate decimals, which the
+  tables alone cannot give. The carried share is fixed on the last day
+  the 18° dawn forms, so it moves from year to year (Umeå: 0.187 in
+  2026, 0.171 in 2027), which is how a copied year is told from a
+  published one (`src/prayer/swedenYearCheck.ts`).

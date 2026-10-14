@@ -45,6 +45,12 @@ export type Authority = {
   hardMaxMin: number;
   /** False: report only; the method is not fitted to this table yet. */
   alarm: boolean;
+  /**
+   * The site serves last year's figures for a year it has not published
+   * yet: a row identical to the previous year's for the date is compared
+   * as that year rather than counted against the method.
+   */
+  copiedYears?: boolean;
   places: () => Place[];
 };
 
@@ -83,27 +89,41 @@ export const AUTHORITIES: Authority[] = [
     method: 24,
     school: 0,
     toleranceMin: 1,
-    // The tables' summer is a share of the night with a blend to the angles
-    // and a floor on the night, all read off the tables rather than
-    // published (localAdhan.ts); the blend's edges are a few minutes
-    // either way for a fortnight in April and in September.
-    maxOutsideShare: 0.15,
-    hardMaxMin: 15,
+    // The tables are Diyanet's, computed by the Congress method
+    // (src/providers/congressMethod.ts); the phone reproduces every time
+    // within a minute, and on the minute on 90–99 % of days — the rest is
+    // Diyanet's own ephemeris and coordinate decimals. Computed at the
+    // coordinates the tables were made for (diyanet-sweden-coords.json,
+    // fitted by fit-all.py), which are not always the town's: Kiruna's
+    // table is computed for 64°N, Ystad's for a point west of the town.
+    maxOutsideShare: 0.01,
+    hardMaxMin: 3,
     alarm: true,
+    // The site's 2027 pages carry 2026's figures until Diyanet's 2027
+    // tables are out (an hour off about the clock changes, and the
+    // carried night share of a different year).
+    copiedYears: true,
     places: () => {
       const coords = readJson<Record<string, { lat: number; lng: number }>>(
         path.join(ROOT, 'src/providers/islamiskaForbundetCoords.json'),
       );
+      const diyanet = readJson<Record<string, { lat: number; lon: number }>>(
+        path.join(__dirname, 'diyanet-sweden-coords.json'),
+      );
       const { citySlug } = require('../../src/providers/islamiskaForbundetParser') as {
         citySlug: (s: string) => string;
       };
-      return Object.entries(coords).map(([name, c]) => ({
-        file: `${citySlug(name)}.json`,
-        name,
-        lat: c.lat,
-        lon: c.lng,
-        tz: 'Europe/Stockholm',
-      }));
+      return Object.entries(coords).map(([name, c]) => {
+        const slug = citySlug(name);
+        const d = diyanet[slug];
+        return {
+          file: `${slug}.json`,
+          name,
+          lat: d ? d.lat : c.lat,
+          lon: d ? d.lon : c.lng,
+          tz: 'Europe/Stockholm',
+        };
+      });
     },
   },
   {

@@ -3,679 +3,218 @@
  "name": "Sweden — Islamiska Förbundet",
  "method": 24,
  "toleranceMin": 1,
- "builtAt": "2026-10-14T16:51:11.394Z",
+ "builtAt": "2026-10-14T18:28:51.695Z",
  "tableBuiltAt": "2026-10-14T14:56:01.725Z",
  "places": 108,
  "placesMissing": 0,
  "days": 42374,
  "from": "2026-10-11",
  "to": "2027-11-16",
- "times": 249528,
- "within": 220492,
- "outsideShare": 0.1164,
- "maxAbs": 14,
+ "times": 254244,
+ "within": 254229,
+ "outsideShare": 0.0001,
+ "maxAbs": 2,
  "perPrayer": {
   "Fajr": {
-   "times": 41588,
-   "within": 31916,
+   "times": 42374,
+   "within": 42372,
    "histogram": {
-    "0": 17861,
-    "-1": 6681,
-    "+1": 7374,
-    "+2": 1941,
-    "+3": 752,
-    "+4": 285,
-    "+5": 140,
-    "-2": 2231,
-    "+6": 71,
-    "-3": 1345,
-    "-4": 993,
-    "-5": 715,
-    "-7": 297,
-    "-8": 202,
-    "-6": 474,
-    "+7": 32,
-    "+8": 20,
-    "-9": 105,
-    "-10": 33,
-    "+10": 11,
-    "+9": 13,
-    "+11": 10,
-    "+12": 2
+    "0": 27109,
+    "-1": 9714,
+    "+1": 5549,
+    "+2": 2
    },
-   "maxAbs": 12,
-   "meanDiff": -0.34
+   "maxAbs": 2,
+   "meanDiff": -0.1
   },
   "Sunrise": {
-   "times": 41588,
-   "within": 39998,
+   "times": 42374,
+   "within": 42370,
    "histogram": {
-    "0": 22775,
-    "-1": 7785,
-    "+1": 9438,
-    "-2": 110,
-    "+2": 830,
-    "+3": 431,
-    "+4": 136,
-    "+5": 19,
-    "+6": 1,
-    "-3": 35,
-    "-4": 25,
-    "-5": 3
+    "0": 30601,
+    "-1": 4612,
+    "+1": 7157,
+    "-2": 4
    },
-   "maxAbs": 6,
-   "meanDiff": 0.12
+   "maxAbs": 2,
+   "meanDiff": 0.06
   },
   "Dhuhr": {
-   "times": 41588,
-   "within": 40462,
+   "times": 42374,
+   "within": 42374,
    "histogram": {
-    "0": 35411,
-    "-1": 2173,
-    "+1": 2878,
-    "+2": 972,
-    "+3": 154
+    "0": 40779,
+    "-1": 809,
+    "+1": 786
    },
-   "maxAbs": 3,
-   "meanDiff": 0.07
+   "maxAbs": 1,
+   "meanDiff": 0
   },
   "Asr": {
-   "times": 41588,
-   "within": 34280,
+   "times": 42374,
+   "within": 42374,
    "histogram": {
-    "0": 12836,
-    "-2": 4157,
-    "-1": 10257,
-    "-3": 536,
-    "+1": 10096,
-    "+2": 2343,
-    "-4": 214,
-    "-5": 97,
-    "-6": 51,
-    "-7": 36,
-    "-8": 28,
-    "+3": 524,
-    "+4": 137,
-    "+5": 71,
-    "+6": 50,
-    "+7": 44,
-    "+8": 29,
-    "+9": 10,
-    "-9": 8,
-    "-10": 5,
-    "-11": 1,
-    "-12": 1,
-    "-14": 1,
-    "+109": 1,
-    "+69": 2,
-    "+47": 1,
-    "+35": 1,
-    "+28": 1,
-    "+24": 1,
-    "+20": 2,
-    "+19": 2,
-    "+17": 3,
-    "+15": 3,
-    "+14": 3,
-    "+13": 5,
-    "+11": 6,
-    "+10": 5,
-    "+99": 1,
-    "+50": 1,
-    "+39": 1,
-    "+33": 1,
-    "+29": 1,
-    "+25": 1,
-    "+23": 2,
-    "+21": 1,
-    "+12": 3,
-    "-13": 1,
-    "+91": 1,
-    "+56": 1,
-    "+41": 1,
-    "+32": 1,
-    "+27": 1,
-    "+18": 1,
-    "+16": 1
+    "0": 34218,
+    "+1": 3276,
+    "-1": 4880
    },
-   "maxAbs": 109,
-   "meanDiff": -0.07
+   "maxAbs": 1,
+   "meanDiff": -0.04
   },
   "Maghrib": {
-   "times": 41588,
-   "within": 40149,
+   "times": 42374,
+   "within": 42371,
    "histogram": {
-    "0": 21395,
-    "-1": 9737,
-    "+1": 9017,
-    "-2": 178,
-    "+2": 745,
-    "-3": 43,
-    "+3": 288,
-    "+6": 3,
-    "+5": 13,
-    "+4": 115,
-    "-4": 53,
-    "-5": 1
+    "0": 30175,
+    "-1": 7409,
+    "+1": 4787,
+    "-2": 2,
+    "+2": 1
    },
-   "maxAbs": 6,
-   "meanDiff": 0.04
+   "maxAbs": 2,
+   "meanDiff": -0.06
   },
   "Isha": {
-   "times": 41588,
-   "within": 33687,
+   "times": 42374,
+   "within": 42368,
    "histogram": {
-    "0": 18526,
-    "-1": 8383,
-    "-2": 1195,
-    "-3": 213,
-    "+1": 6778,
-    "+2": 2369,
-    "+3": 1522,
-    "+4": 1000,
-    "+5": 647,
-    "+6": 433,
-    "-4": 73,
-    "-6": 5,
-    "+7": 216,
-    "+8": 111,
-    "+9": 45,
-    "+10": 36,
-    "+11": 9,
-    "+12": 5,
-    "+13": 4,
-    "+14": 2,
-    "-5": 16
+    "0": 27452,
+    "+1": 9427,
+    "-1": 5489,
+    "-2": 5,
+    "+2": 1
    },
-   "maxAbs": 14,
-   "meanDiff": 0.42
+   "maxAbs": 2,
+   "meanDiff": 0.09
   }
  },
  "misplaced": [],
- "accepted": 5807,
+ "accepted": 0,
  "imsakBeforeFajr": 10,
+ "copiedRows": 13248,
+ "copiedFrom": "2027-03-05",
  "alarm": false,
  "alarmReasons": [],
  "worst": [
   {
-   "place": "Gällivare",
-   "date": "2026-11-27",
-   "prayer": "Asr",
-   "theirs": "11:45",
-   "ours": "11:31",
-   "diff": -14
-  },
-  {
-   "place": "Gällivare",
-   "date": "2027-01-16",
-   "prayer": "Asr",
-   "theirs": "12:08",
-   "ours": "12:22",
-   "diff": 14
-  },
-  {
-   "place": "Pajala",
-   "date": "2027-01-16",
-   "prayer": "Asr",
-   "theirs": "11:57",
-   "ours": "12:11",
-   "diff": 14
-  },
-  {
-   "place": "Gällivare",
-   "date": "2027-09-09",
-   "prayer": "Isha",
-   "theirs": "21:22",
-   "ours": "21:36",
-   "diff": 14
-  },
-  {
-   "place": "Gällivare",
-   "date": "2027-09-10",
-   "prayer": "Isha",
-   "theirs": "21:20",
-   "ours": "21:34",
-   "diff": 14
-  },
-  {
-   "place": "Pajala",
-   "date": "2026-11-27",
-   "prayer": "Asr",
-   "theirs": "11:34",
-   "ours": "11:21",
-   "diff": -13
-  },
-  {
-   "place": "Gällivare",
-   "date": "2027-01-17",
-   "prayer": "Asr",
-   "theirs": "12:10",
-   "ours": "12:23",
-   "diff": 13
-  },
-  {
-   "place": "Pajala",
-   "date": "2027-01-17",
-   "prayer": "Asr",
-   "theirs": "11:59",
-   "ours": "12:12",
-   "diff": 13
-  },
-  {
-   "place": "Gällivare",
-   "date": "2027-09-04",
-   "prayer": "Isha",
-   "theirs": "21:36",
-   "ours": "21:49",
-   "diff": 13
-  },
-  {
-   "place": "Gällivare",
-   "date": "2027-09-07",
-   "prayer": "Isha",
-   "theirs": "21:28",
-   "ours": "21:41",
-   "diff": 13
-  },
-  {
-   "place": "Gällivare",
-   "date": "2027-09-08",
-   "prayer": "Isha",
-   "theirs": "21:25",
-   "ours": "21:38",
-   "diff": 13
-  },
-  {
-   "place": "Gällivare",
-   "date": "2027-09-11",
-   "prayer": "Isha",
-   "theirs": "21:18",
-   "ours": "21:31",
-   "diff": 13
-  },
-  {
-   "place": "Gällivare",
-   "date": "2026-11-26",
-   "prayer": "Asr",
-   "theirs": "11:47",
-   "ours": "11:35",
-   "diff": -12
-  },
-  {
-   "place": "Pajala",
-   "date": "2027-01-18",
-   "prayer": "Asr",
-   "theirs": "12:01",
-   "ours": "12:13",
-   "diff": 12
-  },
-  {
-   "place": "Pajala",
-   "date": "2027-01-19",
-   "prayer": "Asr",
-   "theirs": "12:03",
-   "ours": "12:15",
-   "diff": 12
-  },
-  {
-   "place": "Gällivare",
-   "date": "2027-09-02",
-   "prayer": "Isha",
-   "theirs": "21:42",
-   "ours": "21:54",
-   "diff": 12
-  },
-  {
-   "place": "Gällivare",
-   "date": "2027-09-03",
-   "prayer": "Isha",
-   "theirs": "21:39",
-   "ours": "21:51",
-   "diff": 12
-  },
-  {
-   "place": "Gällivare",
-   "date": "2027-09-05",
-   "prayer": "Isha",
-   "theirs": "21:34",
-   "ours": "21:46",
-   "diff": 12
-  },
-  {
-   "place": "Gällivare",
-   "date": "2027-09-06",
-   "prayer": "Isha",
-   "theirs": "21:31",
-   "ours": "21:43",
-   "diff": 12
-  },
-  {
-   "place": "Gällivare",
-   "date": "2027-09-12",
-   "prayer": "Isha",
-   "theirs": "21:17",
-   "ours": "21:29",
-   "diff": 12
-  },
-  {
-   "place": "Pajala",
-   "date": "2027-10-01",
-   "prayer": "Fajr",
-   "theirs": "03:33",
-   "ours": "03:45",
-   "diff": 12
-  },
-  {
-   "place": "Pajala",
-   "date": "2027-10-02",
-   "prayer": "Fajr",
-   "theirs": "03:34",
-   "ours": "03:46",
-   "diff": 12
-  },
-  {
-   "place": "Gällivare",
-   "date": "2026-11-25",
-   "prayer": "Asr",
-   "theirs": "11:48",
-   "ours": "11:37",
-   "diff": -11
+   "place": "Jokkmokk",
+   "date": "2027-01-22",
+   "prayer": "Maghrib",
+   "theirs": "14:31",
+   "ours": "14:29",
+   "diff": -2
   },
   {
    "place": "Jokkmokk",
-   "date": "2027-01-16",
-   "prayer": "Asr",
-   "theirs": "12:16",
-   "ours": "12:27",
-   "diff": 11
-  },
-  {
-   "place": "Jokkmokk",
-   "date": "2027-01-17",
-   "prayer": "Asr",
-   "theirs": "12:18",
-   "ours": "12:29",
-   "diff": 11
-  },
-  {
-   "place": "Gällivare",
-   "date": "2027-01-18",
-   "prayer": "Asr",
-   "theirs": "12:13",
-   "ours": "12:24",
-   "diff": 11
-  },
-  {
-   "place": "Jokkmokk",
-   "date": "2027-01-18",
-   "prayer": "Asr",
-   "theirs": "12:20",
-   "ours": "12:31",
-   "diff": 11
-  },
-  {
-   "place": "Gällivare",
-   "date": "2027-01-19",
-   "prayer": "Asr",
-   "theirs": "12:15",
-   "ours": "12:26",
-   "diff": 11
-  },
-  {
-   "place": "Pajala",
-   "date": "2027-01-20",
-   "prayer": "Asr",
-   "theirs": "12:05",
-   "ours": "12:16",
-   "diff": 11
-  },
-  {
-   "place": "Pajala",
-   "date": "2027-03-14",
-   "prayer": "Fajr",
-   "theirs": "02:42",
-   "ours": "02:53",
-   "diff": 11
-  },
-  {
-   "place": "Gällivare",
-   "date": "2027-04-03",
-   "prayer": "Isha",
-   "theirs": "21:27",
-   "ours": "21:38",
-   "diff": 11
-  },
-  {
-   "place": "Gällivare",
-   "date": "2027-04-04",
-   "prayer": "Isha",
-   "theirs": "21:29",
-   "ours": "21:40",
-   "diff": 11
-  },
-  {
-   "place": "Gällivare",
-   "date": "2027-08-27",
-   "prayer": "Isha",
-   "theirs": "21:59",
-   "ours": "22:10",
-   "diff": 11
-  },
-  {
-   "place": "Gällivare",
-   "date": "2027-08-28",
-   "prayer": "Isha",
-   "theirs": "21:56",
-   "ours": "22:07",
-   "diff": 11
-  },
-  {
-   "place": "Gällivare",
-   "date": "2027-08-29",
-   "prayer": "Isha",
-   "theirs": "21:53",
+   "date": "2027-05-10",
+   "prayer": "Maghrib",
+   "theirs": "22:06",
    "ours": "22:04",
-   "diff": 11
+   "diff": -2
   },
   {
-   "place": "Gällivare",
-   "date": "2027-08-30",
-   "prayer": "Isha",
-   "theirs": "21:51",
-   "ours": "22:02",
-   "diff": 11
-  },
-  {
-   "place": "Gällivare",
+   "place": "Örnsköldsvik",
    "date": "2027-08-31",
    "prayer": "Isha",
-   "theirs": "21:48",
-   "ours": "21:59",
-   "diff": 11
+   "theirs": "21:51",
+   "ours": "21:49",
+   "diff": -2
   },
   {
-   "place": "Gällivare",
-   "date": "2027-09-01",
-   "prayer": "Isha",
-   "theirs": "21:45",
-   "ours": "21:56",
-   "diff": 11
-  },
-  {
-   "place": "Luleå",
+   "place": "Örnsköldsvik",
    "date": "2027-09-06",
    "prayer": "Isha",
-   "theirs": "21:22",
-   "ours": "21:33",
-   "diff": 11
+   "theirs": "21:44",
+   "ours": "21:42",
+   "diff": -2
   },
   {
-   "place": "Pajala",
-   "date": "2027-09-23",
-   "prayer": "Fajr",
-   "theirs": "03:26",
-   "ours": "03:37",
-   "diff": 11
+   "place": "Örnsköldsvik",
+   "date": "2027-09-07",
+   "prayer": "Isha",
+   "theirs": "21:43",
+   "ours": "21:41",
+   "diff": -2
   },
   {
-   "place": "Pajala",
-   "date": "2027-09-24",
-   "prayer": "Fajr",
-   "theirs": "03:27",
-   "ours": "03:38",
-   "diff": 11
+   "place": "Örnsköldsvik",
+   "date": "2027-09-09",
+   "prayer": "Isha",
+   "theirs": "21:41",
+   "ours": "21:39",
+   "diff": -2
   },
   {
-   "place": "Pajala",
-   "date": "2027-09-25",
+   "place": "Örnsköldsvik",
+   "date": "2027-09-13",
    "prayer": "Fajr",
-   "theirs": "03:28",
-   "ours": "03:39",
-   "diff": 11
-  },
-  {
-   "place": "Pajala",
-   "date": "2027-09-26",
-   "prayer": "Fajr",
-   "theirs": "03:29",
-   "ours": "03:40",
-   "diff": 11
-  },
-  {
-   "place": "Pajala",
-   "date": "2027-09-27",
-   "prayer": "Fajr",
-   "theirs": "03:30",
+   "theirs": "03:39",
    "ours": "03:41",
-   "diff": 11
+   "diff": 2
   },
   {
-   "place": "Pajala",
-   "date": "2027-09-28",
+   "place": "Örnsköldsvik",
+   "date": "2027-09-14",
    "prayer": "Fajr",
-   "theirs": "03:31",
+   "theirs": "03:40",
    "ours": "03:42",
-   "diff": 11
+   "diff": 2
   },
   {
-   "place": "Pajala",
-   "date": "2027-09-29",
-   "prayer": "Fajr",
-   "theirs": "03:32",
-   "ours": "03:43",
-   "diff": 11
+   "place": "Örnsköldsvik",
+   "date": "2027-09-15",
+   "prayer": "Isha",
+   "theirs": "21:34",
+   "ours": "21:36",
+   "diff": 2
   },
   {
-   "place": "Pajala",
-   "date": "2027-09-30",
-   "prayer": "Fajr",
-   "theirs": "03:33",
-   "ours": "03:44",
-   "diff": 11
-  },
-  {
-   "place": "Pajala",
-   "date": "2027-10-03",
-   "prayer": "Fajr",
-   "theirs": "03:37",
-   "ours": "03:48",
-   "diff": 11
+   "place": "Örnsköldsvik",
+   "date": "2027-09-17",
+   "prayer": "Isha",
+   "theirs": "21:32",
+   "ours": "21:30",
+   "diff": -2
   },
   {
    "place": "Gällivare",
-   "date": "2026-11-24",
-   "prayer": "Asr",
-   "theirs": "11:50",
-   "ours": "11:40",
-   "diff": -10
-  },
-  {
-   "place": "Pajala",
-   "date": "2026-11-25",
-   "prayer": "Asr",
-   "theirs": "11:37",
-   "ours": "11:27",
-   "diff": -10
-  },
-  {
-   "place": "Pajala",
-   "date": "2026-11-26",
-   "prayer": "Asr",
-   "theirs": "11:35",
-   "ours": "11:25",
-   "diff": -10
+   "date": "2027-11-09",
+   "prayer": "Sunrise",
+   "theirs": "08:05",
+   "ours": "08:03",
+   "diff": -2
   },
   {
    "place": "Gällivare",
-   "date": "2026-11-28",
-   "prayer": "Asr",
-   "theirs": "11:44",
-   "ours": "11:34",
-   "diff": -10
+   "date": "2027-11-10",
+   "prayer": "Sunrise",
+   "theirs": "08:09",
+   "ours": "08:07",
+   "diff": -2
+  },
+  {
+   "place": "Pajala",
+   "date": "2027-11-11",
+   "prayer": "Sunrise",
+   "theirs": "08:03",
+   "ours": "08:01",
+   "diff": -2
   },
   {
    "place": "Gällivare",
-   "date": "2027-01-20",
-   "prayer": "Asr",
-   "theirs": "12:17",
-   "ours": "12:27",
-   "diff": 10
-  },
-  {
-   "place": "Gällivare",
-   "date": "2027-01-21",
-   "prayer": "Asr",
-   "theirs": "12:19",
-   "ours": "12:29",
-   "diff": 10
+   "date": "2027-11-15",
+   "prayer": "Sunrise",
+   "theirs": "08:30",
+   "ours": "08:28",
+   "diff": -2
   },
   {
    "place": "Pajala",
-   "date": "2027-01-21",
-   "prayer": "Asr",
-   "theirs": "12:08",
-   "ours": "12:18",
-   "diff": 10
-  },
-  {
-   "place": "Gällivare",
-   "date": "2027-01-22",
-   "prayer": "Asr",
-   "theirs": "12:21",
-   "ours": "12:31",
-   "diff": 10
-  },
-  {
-   "place": "Pajala",
-   "date": "2027-01-22",
-   "prayer": "Asr",
-   "theirs": "12:10",
-   "ours": "12:20",
-   "diff": 10
-  },
-  {
-   "place": "Jokkmokk",
-   "date": "2027-03-15",
-   "prayer": "Fajr",
-   "theirs": "02:56",
-   "ours": "03:06",
-   "diff": 10
-  },
-  {
-   "place": "Pajala",
-   "date": "2027-03-15",
-   "prayer": "Fajr",
-   "theirs": "02:41",
-   "ours": "02:51",
-   "diff": 10
-  },
-  {
-   "place": "Pajala",
-   "date": "2027-03-20",
-   "prayer": "Fajr",
-   "theirs": "02:35",
-   "ours": "02:45",
-   "diff": 10
+   "date": "2027-11-16",
+   "prayer": "Maghrib",
+   "theirs": "13:58",
+   "ours": "14:00",
+   "diff": 2
   }
  ]
 }

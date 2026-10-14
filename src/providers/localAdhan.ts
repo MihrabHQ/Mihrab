@@ -24,6 +24,7 @@ export const UMM_AL_QURA_RAMADAN_ISHA_MINUTES = 120;
 import { computeImsak, DEFAULT_IMSAK_OFFSET_MINUTES } from './imsak';
 import { horizonDipMinutes, solarDeclinationDegrees } from '../prayer/horizonDip';
 import { SWEDEN_METHOD_ID } from './swedenMethodId';
+import { congressTimes } from './congressMethod';
 
 // ── METHOD IDS ARE ALADHAN'S, AND SO ARE THE ANGLES ───────────────────
 //
@@ -191,13 +192,13 @@ function parametersForMethod(methodId: number): CalculationParameters {
       // 18° / 18°, Maghrib held five minutes.
       return angles(18, 18, { maghrib: 5 });
     case SWEDEN_METHOD_ID: {
-      // Sweden — Islamiska Förbundet, read off its tables for all 108
-      // cities (tools/verify-methods, October 2026): Fajr 18°, Isha 16°,
-      // sunrise seven minutes early and Maghrib seven late, Dhuhr five
-      // late, Asr four late. See `swedenTimes` for the summer.
-      // The angles and margins here are the winter's; `swedenTimes` scales
-      // the angles with the night and holds the far north's summer.
-      const p = angles(SWEDEN_FAJR_ANGLE, SWEDEN_ISHA_ANGLE, { sunrise: -SWEDEN_SUNRISE_MARGIN_MIN, dhuhr: 5, asr: 4, maghrib: SWEDEN_MAGHRIB_MARGIN_MIN });
+      // Sweden — Islamiska Förbundet's tables, which are Diyanet's output
+      // of the International Prayer Times Congress method: Fajr 18°, Isha
+      // 16°, sunrise seven minutes early, Maghrib seven late, Dhuhr five
+      // late, Asr four late, with the five-hour floors and the carried
+      // night share of the summer. Computed by `congressTimes`, not by
+      // adhan.js; these parameters are the method's description only.
+      const p = angles(18, 16, { sunrise: -7, dhuhr: 5, asr: 4, maghrib: 7 });
       p.highLatitudeRule = HighLatitudeRule.MiddleOfTheNight;
       return p;
     }
@@ -372,7 +373,7 @@ export function computeLocalAdhanInstants(params: LocalAdhanParams): PrayerInsta
     calc.highLatitudeRule = adhanHighLatitudeRule(getCalculationPreferences().highLatitudeRule);
   }
   // Sweden's tables are computed at the city's own latitude to the polar
-  // edge, with floors on the day and the night (`swedenTimes`); the
+  // edge, with floors on the day and the night (`congressMethod.ts`); the
   // nearest-latitude substitute is for methods with no rule of their own.
   const latitude =
     methodId === SWEDEN_METHOD_ID
@@ -399,8 +400,9 @@ export function computeLocalAdhanInstants(params: LocalAdhanParams): PrayerInsta
         )
       : 0);
   if (methodId === SWEDEN_METHOD_ID) {
-    calc.rounding = 'none' as CalculationParameters['rounding'];
-    const at = swedenTimes(latitude, params.longitude, dayDate, calc);
+    // The Congress method, as Diyanet computes the Swedish tables
+    // (`congressMethod.ts`); rounded to the minute as they are printed.
+    const at = congressTimes(latitude, params.longitude, y, m, day, params.school === 1 ? 2 : 1);
     return { fajr: toMinute(at.fajr), sunrise: toMinute(at.sunrise), dhuhr: toMinute(at.dhuhr), asr: toMinute(at.asr), maghrib: toMinute(at.maghrib), isha: toMinute(at.isha) };
   }
   if (!(horizonMinutes > 0) && !signedShadowAsr) {
@@ -426,159 +428,6 @@ export function computeLocalAdhanInstants(params: LocalAdhanParams): PrayerInsta
 const ALGERIA_SIGNED_SHADOW_METHOD_ID = 19;
 
 export { SWEDEN_METHOD_ID };
-const SWEDEN_FAJR_ANGLE = 18;
-const SWEDEN_ISHA_ANGLE = 16;
-/** Fajr no earlier than this share of the night before sunrise … */
-const SWEDEN_FAJR_NIGHT_SHARE = 0.218;
-/** … and Isha no later than this share of the night after sunset. */
-const SWEDEN_ISHA_NIGHT_SHARE = 0.195;
-/**
- * Between the share and the angle the tables blend by the midnight
- * sun's depth, in an S-curve: half-and-half at 25.8° for Fajr and 24.2°
- * for Isha, a degree or so wide — and the depth they go by is not the
- * day's: Fajr's runs two and a half days behind, Isha's three ahead, so
- * spring and autumn differ at the same depth. All read off the tables;
- * none of it is a published rule.
- */
-const SWEDEN_FAJR_BLEND_DEPTH = 25.8;
-const SWEDEN_ISHA_BLEND_DEPTH = 24.2;
-const SWEDEN_BLEND_WIDTH = 1.3;
-const SWEDEN_FAJR_DEPTH_LAG_DAYS = 2.5;
-const SWEDEN_ISHA_DEPTH_LAG_DAYS = -3;
-const SWEDEN_SUNRISE_MARGIN_MIN = 7;
-const SWEDEN_MAGHRIB_MARGIN_MIN = 7;
-/**
- * Neither the day (sunrise to Maghrib, as printed) nor the night
- * (Maghrib to sunrise) is ever shorter than five hours: where the sun
- * would make it so, sunrise and Maghrib are set 150 minutes either side
- * of the printed Dhuhr, or of the midnight twelve hours from it — the
- * day's midnight or the summer solstice's, whichever lies further out.
- * Umeå in December: 09:11 and 14:11 about a Dhuhr of 11:41; from late
- * May to late July, 03:16 and 22:13–22:16.
- */
-const SWEDEN_FLOOR_MIN = 300;
-
-/**
- * Islamiska Förbundet's tables, as read off all 108 cities
- * (tools/verify-methods, October 2026):
- *
- *  - Fajr at 18° and Isha at 16° in winter; sunrise seven minutes early,
- *    Maghrib seven late, Dhuhr five late, Asr four late.
- *  - In summer, a share of the night: Fajr 0.218 of it before sunrise,
- *    Isha 0.195 after sunset — the same at Malmö and at Stockholm, from
- *    late April to late August, to three decimals. Between the two
- *    regimes the tables blend by the midnight sun's depth — see the
- *    constants above.
- *  - The day and the night are each floored at five hours (above).
- *  - The sun's position is taken at the start of the day rather than at
- *    the hour of each time, so each drifts by the day's change times the
- *    share of the day gone: Maghrib two minutes early in spring, two
- *    late in autumn. Reproduced, since the tables are the authority.
- *  - Kiruna's table is Umeå's, served rather than computed.
- */
-function swedenTimes(latitude: number, longitude: number, day: Date, calc: CalculationParameters): PrayerInstants {
-  const valid = (t: Date) => Number.isFinite(t.getTime());
-  const depthAt = (d: Date, lagDays: number) => {
-    // The sun at local solar midnight that begins the day, the tables' lag before it.
-    const midnight = new Date(
-      Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) - (longitude / 15) * 3_600_000 - lagDays * 86_400_000,
-    );
-    return 90 - Math.abs(latitude + solarDeclinationDegrees(midnight)); // degrees below the horizon at its lowest
-  };
-  const dayStartOf = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
-  /** The printed Dhuhr's clock, minutes past the day's local midnight. */
-  const dhuhrClock = (d: Date) =>
-    (new PrayerTimes(new Coordinates(latitude, longitude), d, calc).dhuhr.getTime() - dayStartOf(d)) / 60_000;
-  /** adhan's times for the day, with the floors on sunrise and Maghrib applied. */
-  const exact = (d: Date): PrayerInstants => {
-    const pt = new PrayerTimes(new Coordinates(latitude, longitude), d, calc);
-    const at = { fajr: pt.fajr, sunrise: pt.sunrise, dhuhr: pt.dhuhr, asr: pt.asr, maghrib: pt.maghrib, isha: pt.isha };
-    const start = dayStartOf(d);
-    const clockOf = (t: Date) => (t.getTime() - start) / 60_000;
-    const atClock = (minutes: number) => new Date(start + minutes * 60_000);
-    const half = SWEDEN_FLOOR_MIN / 2;
-    const noon = dhuhrClock(d); // about the printed Dhuhr, margin and all, not the true transit
-    // A Dhuhr not on the day at all is no sun to reason from (a stub in
-    // tests answers every date with one day's times): adhan's own answer.
-    if (!(noon > 0 && noon < 1440)) return at;
-    // The day no shorter than the floor about noon; the night no shorter
-    // than it about midnight — the day's, or the summer solstice's where
-    // that lies further out: the tables' sunrise never comes earlier, nor
-    // their Maghrib later, than the solstice's floor. Each is simply the
-    // nearer bound, so no test of the day's length is needed.
-    const solsticeNoon = dhuhrClock(new Date(d.getFullYear(), 5, 21));
-    const solstice = solsticeNoon > 0 && solsticeNoon < 1440 ? solsticeNoon : noon;
-    const earliestSunrise = Math.max(noon, solstice) - 720 + half;
-    const latestSunrise = noon - half;
-    const earliestMaghrib = noon + half;
-    const latestMaghrib = Math.min(noon, solstice) + 720 - half;
-    // Under the midnight sun or in the polar night adhan.js answers with
-    // a time of the wrong half of the day, or none; either way the floor
-    // is the answer.
-    const sane = (t: Date, from: number, to: number) => valid(t) && clockOf(t) > from && clockOf(t) < to;
-    const midnightSun = depthAt(d, 0) < 1; // the sun does not set: the night's floor is the answer, not the day's
-    const sunriseClock = sane(at.sunrise, noon - 720, noon) ? clockOf(at.sunrise) : midnightSun ? earliestSunrise : latestSunrise;
-    const maghribClock = sane(at.maghrib, noon, noon + 720) ? clockOf(at.maghrib) : midnightSun ? latestMaghrib : earliestMaghrib;
-    const sunrise = atClock(Math.min(latestSunrise, Math.max(earliestSunrise, sunriseClock)));
-    const maghrib = atClock(Math.max(earliestMaghrib, Math.min(latestMaghrib, maghribClock)));
-    // Asr lies between Dhuhr and Maghrib or it is not Asr; in the polar
-    // night, when the sun never climbs to the shadow, the tables print it
-    // a little after Dhuhr.
-    const asr = sane(at.asr, noon, clockOf(maghrib)) ? at.asr : atClock(noon + 2);
-    return { ...at, sunrise, asr, maghrib };
-  };
-  const trueSunrise = (at: PrayerInstants) => at.sunrise.getTime() + SWEDEN_SUNRISE_MARGIN_MIN * 60_000;
-  const trueSunset = (at: PrayerInstants) => at.maghrib.getTime() - SWEDEN_MAGHRIB_MARGIN_MIN * 60_000;
-
-  /** Fajr and Isha: the angle's time, the share's, or the blend. */
-  const night = (d: Date, at: PrayerInstants): PrayerInstants => {
-    const prev = exact(addDay(d, -1));
-    const next = exact(addDay(d, 1));
-    const before = trueSunrise(at) - trueSunset(prev);
-    const after = trueSunrise(next) - trueSunset(at);
-    // No night to take a share of (nothing sane to go by): adhan's own answer stands.
-    const aNight = (n: number) => n > 0 && n < 86_400_000;
-    if (!aNight(before) || !aNight(after)) return at;
-    const blend = (angleTime: Date, shareTime: number, blendDepth: number, lagDays: number) => {
-      const w = 1 / (1 + Math.exp(-(depthAt(d, lagDays) - blendDepth) / SWEDEN_BLEND_WIDTH));
-      if (!valid(angleTime) || w < 0.005) return new Date(shareTime);
-      if (w > 0.995) return angleTime;
-      return new Date((1 - w) * shareTime + w * angleTime.getTime());
-    };
-    return {
-      ...at,
-      fajr: blend(at.fajr, trueSunrise(at) - SWEDEN_FAJR_NIGHT_SHARE * before, SWEDEN_FAJR_BLEND_DEPTH, SWEDEN_FAJR_DEPTH_LAG_DAYS),
-      isha: blend(at.isha, trueSunset(at) + SWEDEN_ISHA_NIGHT_SHARE * after, SWEDEN_ISHA_BLEND_DEPTH, SWEDEN_ISHA_DEPTH_LAG_DAYS),
-    };
-  };
-  /**
-   * As the tables compute it, from the sun's position at the start of
-   * the day: the time less the share of the day gone times the
-   * day-to-day change. Linear, as adhan.js's own interpolation is.
-   */
-  const asTables = (d: Date, at: PrayerInstants, nextAt: PrayerInstants): PrayerInstants => {
-    const dayStart = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
-    const shift = (t: Date, tNext: Date) => {
-      if (!valid(t) || !valid(tNext)) return t;
-      const gone = (t.getTime() - dayStart) / 86_400_000;
-      const change = tNext.getTime() - t.getTime() - 86_400_000;
-      // A real day's change is minutes; anything else is no next day to go by.
-      if (!(Math.abs(change) < 30 * 60_000)) return t;
-      return new Date(t.getTime() - gone * change);
-    };
-    return {
-      fajr: shift(at.fajr, nextAt.fajr),
-      sunrise: shift(at.sunrise, nextAt.sunrise),
-      dhuhr: at.dhuhr,
-      asr: shift(at.asr, nextAt.asr),
-      maghrib: shift(at.maghrib, nextAt.maghrib),
-      isha: shift(at.isha, nextAt.isha),
-    };
-  };
-  return asTables(day, night(day, exact(day)), night(addDay(day, 1), exact(addDay(day, 1))));
-}
-
-const addDay = (d: Date, n: number) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
 
 /**
  * Asr from the signed noon shadow: the sun at the altitude whose shadow

@@ -1,6 +1,7 @@
 import { httpUserAgent } from '../config/httpIdentity';
 import { getNearestIslamiskaForbundetCity, islamiskaForbundetCityCoords } from './islamiskaForbundetNearest';
 import { dhuhrOffsetFromNoon, DHUHR_NOON_TOLERANCE_MIN } from '../prayer/tableDayCheck';
+import { isPreviousYearsRow } from '../prayer/swedenYearCheck';
 import { computeLocalAdhanTimes } from './localAdhan';
 import { formatLocalDate } from '../utils/date';
 import { fetchWithRetry } from '../utils/fetchWithRetry';
@@ -136,6 +137,18 @@ export async function fetchIslamiskaForbundetTimes(params: {
       'shape',
       `Sweden source answered ${dateKey} with another day's row ` +
         `(Dhuhr ${timings.Dhuhr} is ${Math.round(noonOffset)} min from solar noon)`,
+    );
+  }
+  // The rest of a copied year is caught by the method itself: the night
+  // share it carries through the summer is fixed afresh each year, so a
+  // Fajr or Isha minutes from this year's and on the minute of last
+  // year's is last year's row (swedenYearCheck.ts).
+  const cityLatitude = islamiskaForbundetCityCoords(widgetCity)?.lat ?? params.latitude;
+  if (isPreviousYearsRow(dateKey, timings.Fajr, timings.Isha, cityLatitude, cityLongitude, 'Europe/Stockholm')) {
+    throw new ProviderError(
+      PROVIDER,
+      'shape',
+      `Sweden source answered ${dateKey} with the previous year's row (Fajr ${timings.Fajr}, Isha ${timings.Isha})`,
     );
   }
 
