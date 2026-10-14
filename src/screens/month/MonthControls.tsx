@@ -42,6 +42,8 @@ type Props = {
   calculationMethod: number | 'auto';
   school: number;
   cacheStatus: { monthsStored: number; isExpired: boolean } | null;
+  /** The table in use has no row for today, so the phone is computing. */
+  tableFallback?: boolean;
   refreshingCache: boolean;
   refreshProgress: { current: number; total: number } | null;
   loading: boolean;
@@ -62,6 +64,7 @@ function MonthControlsImpl({
   calculationMethod,
   school,
   cacheStatus,
+  tableFallback,
   refreshingCache,
   refreshProgress,
   loading,
@@ -100,7 +103,10 @@ function MonthControlsImpl({
           // languages since the screen was written.
           (cacheStatus && !refreshingCache
             ? ` · ${t('month.monthsStored', { count: cacheStatus.monthsStored })}`
-            : '')
+            : '') +
+          // Past the published table, the phone stands in: say so here,
+          // where the times are read, not only in Settings.
+          (tableFallback ? ` · ${t('month.calculatedOnPhone')}` : '')
         }
         prevLabel={t('common.back')}
         nextLabel={t('common.continue')}

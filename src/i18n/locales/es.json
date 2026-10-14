@@ -138,7 +138,8 @@
     "hijri": "Hijri",
     "gregorian": "gregoriano",
     "prayerTimes": "Horarios de oración",
-    "daruriLegend": "La línea pequeña bajo Fayr, Asr e Isha indica cuándo acaba el primer tiempo (preferido) de cada una. El de Zuhr acaba cuando empieza Asr y el de Magrib cuando empieza Isha, así que esos dos son las columnas mismas. Los de Fayr y Asr son aproximados."
+    "daruriLegend": "La línea pequeña bajo Fayr, Asr e Isha indica cuándo acaba el primer tiempo (preferido) de cada una. El de Zuhr acaba cuando empieza Asr y el de Magrib cuando empieza Isha, así que esos dos son las columnas mismas. Los de Fayr y Asr son aproximados.",
+    "calculatedOnPhone": "hoy calculado en el teléfono"
   },
   "share": {
     "tagline": "El compañero del musulmán",
@@ -485,7 +486,8 @@
       "middle_of_nightHelp": "Isha no más tarde de la mitad de la noche, y Fajr no antes.",
       "seventh_of_night": "Séptimo de la noche",
       "seventh_of_nightHelp": "Isha tras el primer séptimo de la noche, Fajr en el último."
-    }
+    },
+    "providerTableFallback": "{{picked}} no tiene horarios publicados para hoy, así que su propio método se calcula en el teléfono hasta que la tabla vuelva a cubrirlo."
   },
   "locationSetup": {
     "headline": "Establece tu ubicación",

@@ -138,7 +138,8 @@
     "hijri": "Hicri",
     "gregorian": "Gregoryen",
     "prayerTimes": "Namaz Vakitleri",
-    "daruriLegend": "Sabah, ikindi ve yatsının altındaki küçük satır, her birinin ilk (tercih edilen) vaktinin ne zaman bittiğini gösterir. Öğlenin vakti ikindi girince, akşamınki yatsı girince biter; o ikisi zaten bu sütunların kendisidir. Sabah ve ikindininkiler yaklaşıktır."
+    "daruriLegend": "Sabah, ikindi ve yatsının altındaki küçük satır, her birinin ilk (tercih edilen) vaktinin ne zaman bittiğini gösterir. Öğlenin vakti ikindi girince, akşamınki yatsı girince biter; o ikisi zaten bu sütunların kendisidir. Sabah ve ikindininkiler yaklaşıktır.",
+    "calculatedOnPhone": "bugün telefonda hesaplandı"
   },
   "share": {
     "tagline": "Müslümanın yoldaşı",
@@ -484,7 +485,8 @@
       "middle_of_nightHelp": "Yatsı gecenin ortasından geç, imsak ondan erken olmaz.",
       "seventh_of_night": "Gecenin yedide biri",
       "seventh_of_nightHelp": "Yatsı gecenin ilk yedide birinden sonra, imsak son yedide birinde."
-    }
+    },
+    "providerTableFallback": "{{picked}} için bugün yayımlanmış vakit yok; cetvel bugünü yeniden kapsayana kadar kendi yöntemi telefonda hesaplanır."
   },
   "locationSetup": {
     "headline": "Konumunuzu ayarlayın",

@@ -138,7 +138,8 @@
     "hijri": "Hijri",
     "gregorian": "Gregoriansk",
     "prayerTimes": "Bönetider",
-    "daruriLegend": "Den lilla raden under Fajr, Asr och Isha är när respektive böns första (föredragna) tid går ut. Dhuhrs går ut när Asr börjar och Maghribs när Isha börjar, så de två är kolumnerna själva. Fajrs och Asrs är ungefärliga."
+    "daruriLegend": "Den lilla raden under Fajr, Asr och Isha är när respektive böns första (föredragna) tid går ut. Dhuhrs går ut när Asr börjar och Maghribs när Isha börjar, så de två är kolumnerna själva. Fajrs och Asrs är ungefärliga.",
+    "calculatedOnPhone": "i dag beräknat i telefonen"
   },
   "share": {
     "tagline": "Muslimens följeslagare",
@@ -484,7 +485,8 @@
       "middle_of_nightHelp": "Isha senast vid nattens mittpunkt, och fajr tidigast då.",
       "seventh_of_night": "En sjundedel av natten",
       "seventh_of_nightHelp": "Isha efter nattens första sjundedel, fajr vid den sista."
-    }
+    },
+    "providerTableFallback": "{{picked}} har inga publicerade tider för i dag, så dess egen metod räknas ut i telefonen tills tabellen täcker dagen igen."
   },
   "locationSetup": {
     "headline": "Ange din plats",

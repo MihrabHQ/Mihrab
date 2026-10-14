@@ -138,7 +138,8 @@
     "hijri": "Hijriah",
     "gregorian": "Gregorian",
     "prayerTimes": "Waktu Sholat",
-    "daruriLegend": "Baris kecil di bawah Subuh, Asar, dan Isya adalah kapan waktu pertama (pilihan) masing-masing berakhir. Zuhur berakhir saat Asar masuk dan Magrib saat Isya masuk, jadi keduanya adalah kolom itu sendiri. Milik Subuh dan Asar bersifat perkiraan."
+    "daruriLegend": "Baris kecil di bawah Subuh, Asar, dan Isya adalah kapan waktu pertama (pilihan) masing-masing berakhir. Zuhur berakhir saat Asar masuk dan Magrib saat Isya masuk, jadi keduanya adalah kolom itu sendiri. Milik Subuh dan Asar bersifat perkiraan.",
+    "calculatedOnPhone": "hari ini dihitung di ponsel"
   },
   "share": {
     "tagline": "Pendamping Muslim",
@@ -484,7 +485,8 @@
       "middle_of_nightHelp": "Isya tidak lebih lambat dari tengah malam, dan Subuh tidak lebih awal.",
       "seventh_of_night": "Sepertujuh malam",
       "seventh_of_nightHelp": "Isya setelah sepertujuh pertama malam, Subuh pada sepertujuh terakhir."
-    }
+    },
+    "providerTableFallback": "{{picked}} tidak punya jadwal terbitan untuk hari ini, jadi metodenya sendiri dihitung di ponsel sampai tabelnya mencakup hari ini lagi."
   },
   "locationSetup": {
     "headline": "Tetapkan lokasi Anda",

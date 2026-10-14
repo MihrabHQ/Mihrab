@@ -16,6 +16,7 @@ import {
   type MonthDayEntry,
 } from '../prayer/loadMonthPrayerTimes';
 import { getEffectiveDataProvider } from '../settings/effectiveProvider';
+import { useTableFallback } from '../hooks/useTableFallback';
 import { DISPLAY_ORDER } from '../types/prayer';
 import { injectNightTimes } from '../utils/nightTimes';
 import { injectDaruriTimes } from '../prayer/daruriTimes';
@@ -87,6 +88,7 @@ export function MonthTimesScreen() {
     () => getEffectiveDataProvider(settings.dataProviderAuto, settings.dataProvider, coordsForProvider),
     [settings.dataProviderAuto, settings.dataProvider, coordsForProvider],
   );
+  const tableFallback = useTableFallback(effectiveProvider, coordsForProvider, settings.calculationMethod, settings.school);
 
   const monthTitle = useMemo(() => {
     const d = new Date(viewYear, viewMonth, 1);
@@ -282,6 +284,7 @@ export function MonthTimesScreen() {
       calculationMethod={settings.calculationMethod}
       school={settings.school}
       cacheStatus={cacheStatus}
+      tableFallback={tableFallback === true}
       refreshingCache={refreshingCache}
       refreshProgress={refreshProgress}
       loading={loading}

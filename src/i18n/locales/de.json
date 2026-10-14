@@ -138,7 +138,8 @@
     "hijri": "Hijri",
     "gregorian": "Gregorianisch",
     "prayerTimes": "Gebetszeiten",
-    "daruriLegend": "Die kleine Zeile unter Fadschr, ʿAsr und ʿIschāʾ zeigt, wann deren erste (bevorzugte) Zeit endet. Zuhrs endet mit dem Beginn von ʿAsr und Maghribs mit dem Beginn von ʿIschāʾ — diese beiden sind also die Spalten selbst. Die von Fadschr und ʿAsr sind ungefähr."
+    "daruriLegend": "Die kleine Zeile unter Fadschr, ʿAsr und ʿIschāʾ zeigt, wann deren erste (bevorzugte) Zeit endet. Zuhrs endet mit dem Beginn von ʿAsr und Maghribs mit dem Beginn von ʿIschāʾ — diese beiden sind also die Spalten selbst. Die von Fadschr und ʿAsr sind ungefähr.",
+    "calculatedOnPhone": "heute auf dem Telefon berechnet"
   },
   "share": {
     "tagline": "Begleiter für Muslime",
@@ -484,7 +485,8 @@
       "middle_of_nightHelp": "Ischa spätestens zur Mitte der Nacht, Fadschr frühestens dann.",
       "seventh_of_night": "Siebtel der Nacht",
       "seventh_of_nightHelp": "Ischa nach dem ersten Siebtel der Nacht, Fadschr beim letzten."
-    }
+    },
+    "providerTableFallback": "{{picked}} hat für heute keine veröffentlichten Zeiten, daher wird seine eigene Methode auf dem Telefon berechnet, bis die Tabelle den Tag wieder abdeckt."
   },
   "locationSetup": {
     "headline": "Legen Sie Ihren Standort fest",

@@ -510,6 +510,11 @@ export async function getStoredPrayerTimes(
 }
 
 /** Providers backed by a prepared, server-built dataset. */
+/** Does this provider serve an authority's published table (with the phone's method behind it)? */
+export function isTableProvider(provider: PrayerDataProviderId): boolean {
+  return hasPreparedDataset(provider);
+}
+
 function hasPreparedDataset(provider: PrayerDataProviderId): boolean {
   return (
     provider === 'islamiska_forbundet' ||

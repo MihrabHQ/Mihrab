@@ -138,7 +138,8 @@
     "hijri": "Hijri",
     "gregorian": "grégorien",
     "prayerTimes": "Horaires de prière",
-    "daruriLegend": "La petite ligne sous Fajr, ʿAsr et ʿIshâ indique quand se termine le premier temps (préféré) de chacune. Celui de Zuhr se termine quand ʿAsr commence et celui de Maghrib quand ʿIshâ commence : ces deux-là sont donc les colonnes elles-mêmes. Ceux de Fajr et ʿAsr sont approximatifs."
+    "daruriLegend": "La petite ligne sous Fajr, ʿAsr et ʿIshâ indique quand se termine le premier temps (préféré) de chacune. Celui de Zuhr se termine quand ʿAsr commence et celui de Maghrib quand ʿIshâ commence : ces deux-là sont donc les colonnes elles-mêmes. Ceux de Fajr et ʿAsr sont approximatifs.",
+    "calculatedOnPhone": "aujourd’hui calculé sur le téléphone"
   },
   "share": {
     "tagline": "Le compagnon du musulman",
@@ -485,7 +486,8 @@
       "middle_of_nightHelp": "L’Icha au plus tard au milieu de la nuit, le Fajr au plus tôt.",
       "seventh_of_night": "Septième de la nuit",
       "seventh_of_nightHelp": "L’Icha après le premier septième de la nuit, le Fajr au dernier."
-    }
+    },
+    "providerTableFallback": "{{picked}} n’a pas d’horaires publiés pour aujourd’hui : sa propre méthode est calculée sur le téléphone jusqu’à ce que la table couvre à nouveau ce jour."
   },
   "locationSetup": {
     "headline": "Définissez votre emplacement",

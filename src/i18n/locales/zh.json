@@ -138,7 +138,8 @@
     "hijri": "回历",
     "gregorian": "公历",
     "prayerTimes": "祈祷时间",
-    "daruriLegend": "晨礼、晡礼、宵礼下方的小字，是各自首选时段结束的时刻。晌礼在晡礼开始时结束、昏礼在宵礼开始时结束，因此这两者就是那两列本身。晨礼与晡礼的为近似值。"
+    "daruriLegend": "晨礼、晡礼、宵礼下方的小字，是各自首选时段结束的时刻。晌礼在晡礼开始时结束、昏礼在宵礼开始时结束，因此这两者就是那两列本身。晨礼与晡礼的为近似值。",
+    "calculatedOnPhone": "今天由手机计算"
   },
   "share": {
     "tagline": "穆斯林的日常伴侣",
@@ -484,7 +485,8 @@
       "middle_of_nightHelp": "宵礼不晚于夜半，晨礼不早于夜半。",
       "seventh_of_night": "夜之七分之一",
       "seventh_of_nightHelp": "宵礼在夜的第一个七分之一之后，晨礼在最后一个七分之一。"
-    }
+    },
+    "providerTableFallback": "{{picked}} 没有今天的已发布时间，因此在时间表再次覆盖今天之前，改在手机上按其自身方法计算。"
   },
   "locationSetup": {
     "headline": "设置您的位置",

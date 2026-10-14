@@ -12,6 +12,7 @@ import {
 import { SettingsGroup, SettingsLinkRow } from './SettingsGroup';
 import { getCacheStatus } from '../../prayer/prayerStorage';
 import { useNamazvaktiCoverage } from '../../hooks/useNamazvaktiCoverage';
+import { useTableFallback } from '../../hooks/useTableFallback';
 import { refreshStoredPrayerData } from '../../prayer/refreshStoredData';
 
 type DataSourceCardProps = {
@@ -67,6 +68,12 @@ function DataSourceCardImpl({ onOpenProviderPicker }: DataSourceCardProps) {
     effectiveProvider === 'namazvakti',
   );
   const nvNoCity = effectiveProvider === 'namazvakti' && nvCoverage === 'no-city';
+  // The table in use has no row for today — past its window, or not yet
+  // downloaded — so the phone is computing the authority's method.
+  const tableFallback =
+    useTableFallback(effectiveProvider, coordsForEffective, settings.calculationMethod, settings.school) === true &&
+    !overridden &&
+    !nvNoCity;
 
   /**
    * ── REFRESHING WHAT IS STORED, FROM SETTINGS (issue #56 follow-on) ──
@@ -142,7 +149,9 @@ function DataSourceCardImpl({ onOpenProviderPicker }: DataSourceCardProps) {
               )
         }
         help={
-          settings.dataProviderAuto
+          tableFallback
+            ? t('settings.providerTableFallback', { picked: getProviderLabel(effectiveProvider) })
+            : settings.dataProviderAuto
             ? t('settings.providerAutoHelp')
             : overridden
               ? t('settings.providerOverridden', {
