@@ -34,6 +34,7 @@ import {
 // eslint-disable-next-line import/first
 import {
   _resetNamazvaktiForTests,
+  namazvaktiCoverage,
   computeNamazvaktiMethodTimes,
   getNamazvaktiTimes,
   temkinMinutes,
@@ -61,6 +62,7 @@ const read = (p: string) => fs.readFileSync(path.join(__dirname, '..', p), 'utf8
 const COLOGNE = fixture('cologne-5887.xml');
 const ISTANBUL = fixture('istanbul-16741.xml');
 const STOCKHOLM = fixture('stockholm-16258.xml');
+const UMEA_NO_TABLE = fixture('umea-16347.xml');
 const mockFetch = fetchWithRetry as jest.Mock;
 
 function response(status: number, body: string) {
@@ -329,6 +331,38 @@ describe('the provider', () => {
     } finally {
       spy.mockRestore();
     }
+  });
+
+  it('says where it has no city, so Settings can warn as for the national sources', async () => {
+    serve({ '/tiles/': () => response(404, '') });
+    await expect(namazvaktiCoverage(0, -30)).resolves.toBe('no-city');
+    serve({ '/tiles/50_5.json': () => response(200, COLOGNE_TILE), 'XML.php': () => response(200, COLOGNE) });
+    _resetNamazvaktiForTests();
+    await AsyncStorage.clear();
+    await expect(namazvaktiCoverage(coords.latitude, coords.longitude, day)).resolves.toBe('site');
+    mockFetch.mockRejectedValue(new Error('offline'));
+    _resetNamazvaktiForTests();
+    await AsyncStorage.clear();
+    await expect(namazvaktiCoverage(coords.latitude, coords.longitude, day)).resolves.toBe('unknown');
+  });
+
+  it('passes over a listed city the site publishes no times for — north of 62°', async () => {
+    const north = JSON.stringify({ v: 1, tile: '60_20', cities: [[16347, 63.8333, 20.25, 'Umea']] });
+    serve({ '/tiles/60_20.json': () => response(200, north), 'cityID=16347': () => response(200, UMEA_NO_TABLE) });
+    await expect(namazvaktiCoverage(63.83, 20.26, day)).resolves.toBe('no-city');
+    await expect(getNamazvaktiTimes({ latitude: 63.83, longitude: 20.26, date: day, school: 0 })).rejects.toThrow();
+    // Remembered: the site is not asked for that city again.
+    const asked = mockFetch.mock.calls.filter(([u]) => String(u).includes('cityID=16347')).length;
+    _resetNamazvaktiForTests();
+    await getNamazvaktiTimes({ latitude: 63.83, longitude: 20.26, date: day, school: 0 }).catch(() => {});
+    expect(mockFetch.mock.calls.filter(([u]) => String(u).includes('cityID=16347')).length).toBe(asked);
+    // And a nearer one without times does not hide a farther one with them.
+    const mixed = JSON.stringify({ v: 1, tile: '50_5', cities: [[16347, 50.94, 6.96, 'NoTimes'], [5887, 50.9333, 6.95, 'Köln']] });
+    serve({ '/tiles/50_5.json': () => response(200, mixed), 'cityID=16347': () => response(200, UMEA_NO_TABLE), 'cityID=5887': () => response(200, COLOGNE) });
+    await AsyncStorage.clear();
+    _resetNamazvaktiForTests();
+    const r = await getNamazvaktiTimes({ ...coords, date: day, school: 0 });
+    expect(r.source).toBe('namazvakti');
   });
 
   it('computes the calendar on the phone when the site cannot be reached — never AlAdhan', async () => {

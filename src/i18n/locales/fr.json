@@ -471,7 +471,8 @@
     "helpMihrab": "Aider Mihrab",
     "helpMihrabBlurb": "Évaluez-la, parlez-en, partagez un mois d’horaires de prière.",
     "calcHiddenNamazvakti": "Türkiye Takvimi a sa propre méthode (Fajr 19°, Icha 17°, avec temkin) : la liste des méthodes est masquée. Seul le choix de l’Asr hanafite s’applique.",
-    "calcHiddenPublished": "Cette source publie ses propres horaires : la liste des méthodes est masquée."
+    "calcHiddenPublished": "Cette source publie ses propres horaires : la liste des méthodes est masquée.",
+    "providerNamazvaktiNoCity": "namazvakti.com n’a pas d’horaires pour une ville proche de vous : la méthode du calendrier est donc calculée sur le téléphone, en général à une ou deux minutes du site."
   },
   "locationSetup": {
     "headline": "Définissez votre emplacement",
@@ -493,7 +494,8 @@
     "autoNow": "Là où vous êtes, c'est {{label}}.",
     "bestHere": "Convient à votre position",
     "outOfRegion": "Aucun horaire pour votre position — {{fallback}} serait utilisé à la place.",
-    "footer": "Les sources spécifiques aux pays utilisent des tables de prière officielles ou nationales où nous les intégrons. D'autres régions pourraient être ajoutées au fil du temps."
+    "footer": "Les sources spécifiques aux pays utilisent des tables de prière officielles ou nationales où nous les intégrons. D'autres régions pourraient être ajoutées au fil du temps.",
+    "namazvaktiNoCity": "Pas d’horaires pour une ville proche de vous — la méthode du calendrier serait calculée sur le téléphone."
   },
   "providers": {
     "aladhan": {

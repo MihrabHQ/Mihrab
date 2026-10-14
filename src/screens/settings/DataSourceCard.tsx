@@ -11,6 +11,7 @@ import {
 } from '../../settings/providersCatalog';
 import { SettingsGroup, SettingsLinkRow } from './SettingsGroup';
 import { getCacheStatus } from '../../prayer/prayerStorage';
+import { useNamazvaktiCoverage } from '../../hooks/useNamazvaktiCoverage';
 import { refreshStoredPrayerData } from '../../prayer/refreshStoredData';
 
 type DataSourceCardProps = {
@@ -57,6 +58,15 @@ function DataSourceCardImpl({ onOpenProviderPicker }: DataSourceCardProps) {
    */
   const overridden =
     !settings.dataProviderAuto && effectiveProvider !== settings.dataProvider;
+
+  // namazvakti.com is not redirected where it lists no city — its method is
+  // computed on the phone instead, which is still the calendar — but the
+  // row says so, as it does for the national sources.
+  const nvCoverage = useNamazvaktiCoverage(
+    coordsForEffective,
+    effectiveProvider === 'namazvakti',
+  );
+  const nvNoCity = effectiveProvider === 'namazvakti' && nvCoverage === 'no-city';
 
   /**
    * ── REFRESHING WHAT IS STORED, FROM SETTINGS (issue #56 follow-on) ──
@@ -141,7 +151,9 @@ function DataSourceCardImpl({ onOpenProviderPicker }: DataSourceCardProps) {
                   picked: getProviderLabel(settings.dataProvider),
                   used: getProviderLabel(effectiveProvider),
                 })
-              : lockedProviderDesc
+              : nvNoCity
+                ? t('settings.providerNamazvaktiNoCity')
+                : lockedProviderDesc
         }
         onPress={onOpenProviderPicker}
       />

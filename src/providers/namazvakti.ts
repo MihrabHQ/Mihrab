@@ -68,6 +68,8 @@ import type { PrayerTimesResult } from './types';
 const PROVIDER = 'namazvakti';
 const TILE_PREFIX = 'namazvakti.tile.v1.';
 const CITY_PREFIX = 'namazvakti.city.v1.';
+/** Ids of listed cities the site publishes no times for (north of about 62°). */
+const NO_TABLE_KEY = 'namazvakti.noTable.v1';
 
 type TileRow = NvTileRow;
 type CachedTile = { fetchedAt: number; cities: TileRow[] };
@@ -78,6 +80,22 @@ const memYears = new Map<number, NamazvaktiYear | null>();
 const yearInFlight = new Map<number, Promise<NamazvaktiYear | null>>();
 /** City id → when a fetch of its year last failed (ms), so a dead site is not asked on every render. */
 const failedAt = new Map<number, number>();
+/** Listed cities with no published times — skipped when picking the nearest. */
+let noTable: Set<number> | null = null;
+
+async function loadNoTable(): Promise<Set<number>> {
+  if (!noTable) noTable = new Set(await readJson<number[]>(NO_TABLE_KEY) ?? []);
+  return noTable;
+}
+
+async function markNoTable(cityId: number): Promise<void> {
+  const set = await loadNoTable();
+  set.add(cityId);
+  await writeJson(NO_TABLE_KEY, [...set]);
+}
+
+/** The site answered for the city, with its head and no days at all. */
+class NoTableError extends Error {}
 
 async function readJson<T>(key: string): Promise<T | null> {
   try {
@@ -174,9 +192,10 @@ export async function nearestNamazvaktiCity(
   const marginDeg = NAMAZVAKTI_MAX_CITY_KM / 111;
   const keys = nvTilesAround(latitude, longitude, marginDeg);
   const rows: TileRow[] = [];
+  const skip = await loadNoTable();
   for (const key of keys) {
     const tile = await loadTile(key, offline);
-    rows.push(...tile.cities);
+    for (const row of tile.cities) if (!skip.has(row[0])) rows.push(row);
   }
   const best = nearestNvCity(latitude, longitude, rows);
   return best && best.distanceKm <= NAMAZVAKTI_MAX_CITY_KM ? best : null;
@@ -191,7 +210,11 @@ async function fetchYear(cityId: number): Promise<NamazvaktiYear> {
   if (!res.ok) {
     throw new ProviderError(PROVIDER, 'network', `namazvakti.com answered HTTP ${res.status}.`);
   }
-  const parsed = parseNamazvaktiXml(await res.text(), new Date().getFullYear());
+  const xml = await res.text();
+  if (/<cityinfo\b/.test(xml) && !/<prayertimes\b/.test(xml)) {
+    throw new NoTableError(`namazvakti.com publishes no times for city ${cityId}.`);
+  }
+  const parsed = parseNamazvaktiXml(xml, new Date().getFullYear());
   if (parsed.cityId !== cityId) {
     throw new ProviderError(PROVIDER, 'shape', `Asked for city ${cityId}, got ${parsed.cityId}.`);
   }
@@ -231,7 +254,11 @@ async function loadYear(
         failedAt.delete(cityId);
         await writeJson(`${CITY_PREFIX}${cityId}`, year);
         return year;
-      } catch {
+      } catch (e) {
+        if (e instanceof NoTableError) {
+          await markNoTable(cityId);
+          return null;
+        }
         failedAt.set(cityId, Date.now());
         return held ?? null;
       } finally {
@@ -261,6 +288,7 @@ export async function getNamazvaktiTimes(params: {
   school: number;
   /** Only what the phone already holds — for the cache-only readers. */
   offline?: boolean;
+  retried?: boolean;
 }): Promise<PrayerTimesResult> {
   const offline = params.offline === true;
   const city = await nearestNamazvaktiCity(params.latitude, params.longitude, offline);
@@ -273,6 +301,10 @@ export async function getNamazvaktiTimes(params: {
   }
   const dateKey = formatLocalDate(params.date);
   const year = await loadYear(city.id, dateKey, offline);
+  if (!year && noTable?.has(city.id) && !params.retried) {
+    // The nearest listed city turned out to have no times: the next one, if near enough.
+    return getNamazvaktiTimes({ ...params, retried: true });
+  }
   const row = year?.days[dateKey];
   const timings = row ? timingsFromRow(row, params.school) : null;
   if (!timings) {
@@ -283,6 +315,37 @@ export async function getNamazvaktiTimes(params: {
     );
   }
   return { timings, source: 'namazvakti' };
+}
+
+/**
+ * Does the site have times for this place? 'site' when a listed city with
+ * published times is near enough, 'no-city' when none is (nothing listed
+ * within NAMAZVAKTI_MAX_CITY_KM, or only cities it publishes nothing for —
+ * north of about 62°), 'unknown' when the city index cannot be read. With
+ * 'no-city' the calendar's method is computed on the phone, and Settings
+ * says so — the other regional sources warn the same way.
+ */
+export type NamazvaktiCoverage = 'site' | 'no-city' | 'unknown';
+
+export async function namazvaktiCoverage(
+  latitude: number,
+  longitude: number,
+  date: Date = new Date(),
+): Promise<NamazvaktiCoverage> {
+  for (let attempt = 0; attempt < 2; attempt++) {
+    let city: NvCity | null;
+    try {
+      city = await nearestNamazvaktiCity(latitude, longitude);
+    } catch {
+      return 'unknown';
+    }
+    if (!city) return 'no-city';
+    // Reading the year is what finds a city with no times; the app needs
+    // the year anyway, so this costs nothing it would not spend.
+    const year = await loadYear(city.id, formatLocalDate(date));
+    if (year || !noTable?.has(city.id)) return 'site';
+  }
+  return 'no-city';
 }
 
 // ── ON THE PHONE ─────────────────────────────────────────────────────
@@ -453,4 +516,5 @@ export function _resetNamazvaktiForTests(): void {
   memYears.clear();
   yearInFlight.clear();
   failedAt.clear();
+  noTable = null;
 }

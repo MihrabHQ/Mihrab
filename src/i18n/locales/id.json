@@ -470,7 +470,8 @@
     "helpMihrab": "Bantu Mihrab",
     "helpMihrabBlurb": "Beri nilai, ceritakan kepada orang lain, bagikan jadwal salat sebulan.",
     "calcHiddenNamazvakti": "Türkiye Takvimi punya metodenya sendiri (Subuh 19°, Isya 17°, dengan temkin), jadi daftar metode disembunyikan. Hanya pilihan Asar Hanafi yang berlaku.",
-    "calcHiddenPublished": "Sumber ini menerbitkan jadwalnya sendiri, jadi daftar metode disembunyikan."
+    "calcHiddenPublished": "Sumber ini menerbitkan jadwalnya sendiri, jadi daftar metode disembunyikan.",
+    "providerNamazvaktiNoCity": "namazvakti.com tidak punya jadwal untuk kota di dekat Anda, jadi metode kalendernya dihitung di ponsel — biasanya selisih satu atau dua menit dari situsnya."
   },
   "locationSetup": {
     "headline": "Tetapkan lokasi Anda",
@@ -492,7 +493,8 @@
     "autoNow": "Di lokasi Anda sekarang, itu berarti {{label}}.",
     "bestHere": "Cocok dengan lokasi Anda",
     "outOfRegion": "Tidak ada jadwal untuk lokasi Anda — {{fallback}} akan dipakai sebagai gantinya.",
-    "footer": "Sumber khusus negara menggunakan tabel doa resmi atau nasional tempat kami mengintegrasikannya. Lebih banyak wilayah dapat ditambahkan seiring waktu."
+    "footer": "Sumber khusus negara menggunakan tabel doa resmi atau nasional tempat kami mengintegrasikannya. Lebih banyak wilayah dapat ditambahkan seiring waktu.",
+    "namazvaktiNoCity": "Tidak ada jadwal untuk kota di dekat Anda — metode kalendernya akan dihitung di ponsel."
   },
   "providers": {
     "aladhan": {

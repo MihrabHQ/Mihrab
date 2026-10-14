@@ -470,7 +470,8 @@
     "helpMihrab": "Hjälp Mihrab",
     "helpMihrabBlurb": "Betygsätt appen, berätta om den, dela en månads bönetider.",
     "calcHiddenNamazvakti": "Türkiye Takvimi har en egen metod (Fajr 19°, Isha 17°, med temkin), så metodlistan döljs. Bara valet av hanafitisk Asr gäller.",
-    "calcHiddenPublished": "Den här källan publicerar en egen tidtabell, så metodlistan döljs."
+    "calcHiddenPublished": "Den här källan publicerar en egen tidtabell, så metodlistan döljs.",
+    "providerNamazvaktiNoCity": "namazvakti.com har inga tider för någon stad nära dig, så kalenderns metod räknas ut i telefonen i stället – oftast inom en eller två minuter från sajten."
   },
   "locationSetup": {
     "headline": "Ange din plats",
@@ -492,7 +493,8 @@
     "autoNow": "Där du är nu blir det {{label}}.",
     "bestHere": "Passar där du är",
     "outOfRegion": "Inga tider för där du är — {{fallback}} skulle användas i stället.",
-    "footer": "Landspecifika källor använder officiella eller nationella bönetabeller där vi integrerar dem. Fler regioner kan läggas till över tid."
+    "footer": "Landspecifika källor använder officiella eller nationella bönetabeller där vi integrerar dem. Fler regioner kan läggas till över tid.",
+    "namazvaktiNoCity": "Inga tider för någon stad nära dig – kalenderns metod skulle räknas ut i telefonen i stället."
   },
   "providers": {
     "aladhan": {

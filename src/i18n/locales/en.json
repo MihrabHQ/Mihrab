@@ -470,7 +470,8 @@
     "helpMihrab": "Help Mihrab",
     "helpMihrabBlurb": "Rate it, tell people about it, share a month of prayer times.",
     "calcHiddenNamazvakti": "Türkiye Takvimi has its own method (Fajr 19°, Isha 17°, with a temkin), so the method list is hidden. Only the Hanafi Asr choice applies.",
-    "calcHiddenPublished": "This source publishes its own timetable, so the method list is hidden."
+    "calcHiddenPublished": "This source publishes its own timetable, so the method list is hidden.",
+    "providerNamazvaktiNoCity": "namazvakti.com has no times for a city near where you are, so the calendar’s method is calculated on the phone instead — usually within a minute or two of the site."
   },
   "locationSetup": {
     "headline": "Set your location",
@@ -492,7 +493,8 @@
     "autoNow": "Where you are now, that is {{label}}.",
     "bestHere": "Fits where you are",
     "outOfRegion": "No times for where you are — {{fallback}} would be used instead.",
-    "footer": "Country-specific sources use official or national prayer tables where we integrate them. More regions may be added over time."
+    "footer": "Country-specific sources use official or national prayer tables where we integrate them. More regions may be added over time.",
+    "namazvaktiNoCity": "No times for a city near you — the calendar’s method would be calculated on the phone instead."
   },
   "providers": {
     "aladhan": {

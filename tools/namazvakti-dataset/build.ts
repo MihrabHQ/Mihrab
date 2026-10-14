@@ -78,6 +78,13 @@ export type CityRow = {
   height: number;
   name: string;
   state: string;
+  /**
+   * False when the site lists the city but publishes no times for it —
+   * every city north of about 62°. Left out of the tiles, so a phone there
+   * is told the source has no times for it rather than sent a city that
+   * answers with nothing. Undefined until the crawl has looked.
+   */
+  table?: boolean;
 };
 
 type CrawlState = {
@@ -106,7 +113,7 @@ function emitOutput(key: string, value: string): void {
   if (out) fs.appendFileSync(out, `${key}=${value}\n`);
 }
 
-const TSV_HEADER = 'id\tcountryId\tlat\tlon\theight\tname\tstate';
+const TSV_HEADER = 'id\tcountryId\tlat\tlon\theight\tname\tstate\ttable';
 const clean = (s: string) => s.replace(/[\t\r\n]+/g, ' ').trim();
 
 export function readCities(file: string = CITIES_PATH): Map<number, CityRow> {
@@ -119,7 +126,7 @@ export function readCities(file: string = CITIES_PATH): Map<number, CityRow> {
   }
   for (const line of text.split('\n').slice(1)) {
     if (!line) continue;
-    const [id, countryId, lat, lon, height, name, state] = line.split('\t');
+    const [id, countryId, lat, lon, height, name, state, table] = line.split('\t');
     out.set(Number(id), {
       id: Number(id),
       countryId: Number(countryId),
@@ -128,6 +135,7 @@ export function readCities(file: string = CITIES_PATH): Map<number, CityRow> {
       height: Number(height) || 0,
       name: name ?? '',
       state: state ?? '',
+      table: table === '0' ? false : table === '1' ? true : undefined,
     });
   }
   return out;
@@ -144,6 +152,7 @@ function writeCities(cities: Map<number, CityRow>): void {
       c.height || 0,
       clean(c.name),
       clean(c.state),
+      c.table === false ? '0' : c.table ? '1' : '',
     ].join('\t'),
   );
   fs.writeFileSync(CITIES_PATH, `${[TSV_HEADER, ...lines].join('\n')}\n`, 'utf8');
@@ -157,7 +166,7 @@ type TileRow = [number, number, number, string] | [number, number, number, strin
 function writeTiles(cities: Map<number, CityRow>): number {
   const tiles = new Map<string, TileRow[]>();
   for (const c of cities.values()) {
-    if (!Number.isFinite(c.lat) || !Number.isFinite(c.lon)) continue;
+    if (!Number.isFinite(c.lat) || !Number.isFinite(c.lon) || c.table === false) continue;
     const key = tileKey(c.lat, c.lon);
     const list = tiles.get(key) ?? [];
     list.push(c.height && c.height !== 250 ? [c.id, c.lat, c.lon, clean(c.name), c.height] : [c.id, c.lat, c.lon, clean(c.name)]);
@@ -254,7 +263,8 @@ async function main(): Promise<number> {
     unlocatable: [],
   });
   const unlocatable = new Set(crawl.unlocatable);
-  const before = { cities: cities.size, located: [...cities.values()].filter(c => Number.isFinite(c.lat)).length };
+  const isDone = (c: CityRow) => Number.isFinite(c.lat) && c.table !== undefined;
+  const before = { cities: cities.size, located: [...cities.values()].filter(isDone).length };
 
   let finished = false;
   const save = () => {
@@ -263,7 +273,7 @@ async function main(): Promise<number> {
     fs.writeFileSync(COUNTRIES_PATH, `${JSON.stringify(countries, null, 1)}\n`, 'utf8');
     fs.writeFileSync(CRAWL_PATH, `${JSON.stringify(crawl)}\n`, 'utf8');
     const tiles = writeTiles(cities);
-    const located = [...cities.values()].filter(c => Number.isFinite(c.lat)).length;
+    const located = [...cities.values()].filter(isDone).length;
     const listDone = crawl.listCompletedAt != null;
     const index = {
       version: 1,
@@ -364,16 +374,20 @@ async function main(): Promise<number> {
 
     // ── 2. LOCATE ──────────────────────────────────────────────────────
     const todo = [...cities.values()]
-      .filter(c => !Number.isFinite(c.lat) && !unlocatable.has(c.id))
+      // Unlocated, or located before the crawl looked for a table (undefined).
+      .filter(c => (!Number.isFinite(c.lat) || c.table === undefined) && !unlocatable.has(c.id))
       .sort((a, b) => a.id - b.id);
     for (const c of todo) {
       if (budget.spent) break;
-      const head = await get(budget, `${ORIGIN}/XML.php?cityID=${c.id}`, /<cityinfo\b[^>]*>/);
+      // Read to the first day's row: the city's head, and whether the site
+      // publishes any times for it at all (a whole file without one is short).
+      const head = await get(budget, `${ORIGIN}/XML.php?cityID=${c.id}`, /<prayertimes\b/);
       const info = head ? parseCityInfo(head) : null;
       if (info) {
         c.lat = info.lat;
         c.lon = info.lon;
         c.height = info.height;
+        c.table = /<prayertimes\b/.test(head!);
         if (!c.countryId) c.countryId = info.countryId;
       } else if (head != null) {
         unlocatable.add(c.id);

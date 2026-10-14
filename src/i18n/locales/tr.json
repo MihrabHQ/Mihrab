@@ -470,7 +470,8 @@
     "helpMihrab": "Mihrab'a destek ol",
     "helpMihrabBlurb": "Değerlendir, başkalarına anlat, bir aylık namaz vakitlerini paylaş.",
     "calcHiddenNamazvakti": "Türkiye Takvimi kendi yöntemini kullanır (İmsak 19°, Yatsı 17°, temkinli), bu yüzden yöntem listesi gizlidir. Yalnızca Hanefi ikindi seçimi geçerlidir.",
-    "calcHiddenPublished": "Bu kaynak kendi vakit cetvelini yayımlar, bu yüzden yöntem listesi gizlidir."
+    "calcHiddenPublished": "Bu kaynak kendi vakit cetvelini yayımlar, bu yüzden yöntem listesi gizlidir.",
+    "providerNamazvaktiNoCity": "namazvakti.com’da yakınınızdaki bir şehir için vakit yok; bu yüzden takvimin yöntemi telefonda hesaplanıyor — genellikle sitedekinden bir iki dakika farkla."
   },
   "locationSetup": {
     "headline": "Konumunuzu ayarlayın",
@@ -492,7 +493,8 @@
     "autoNow": "Şu an bulunduğun yerde bu {{label}} demek.",
     "bestHere": "Bulunduğun yere uygun",
     "outOfRegion": "Bulunduğun yer için vakit yok — onun yerine {{fallback}} kullanılır.",
-    "footer": "Ülkeye özgü kaynaklar, entegre ettiğimiz resmi veya ulusal dua tablolarını kullanır. Zamanla daha fazla bölge eklenebilir."
+    "footer": "Ülkeye özgü kaynaklar, entegre ettiğimiz resmi veya ulusal dua tablolarını kullanır. Zamanla daha fazla bölge eklenebilir.",
+    "namazvaktiNoCity": "Yakınınızdaki bir şehir için vakit yok — takvimin yöntemi telefonda hesaplanır."
   },
   "providers": {
     "aladhan": {

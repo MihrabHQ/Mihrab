@@ -29,6 +29,7 @@ import type {
   PrayerAppSettings,
   PrayerDataProviderId,
 } from '../settings/types';
+import { useNamazvaktiCoverage } from '../hooks/useNamazvaktiCoverage';
 import { useSystemNavigationReserve } from '../navigation/tabBarInset';
 import { cardEdgeStyle, rowDividerStyle } from '../theme/chrome';
 import { RADIUS, SPACING } from '../theme/tokens';
@@ -103,6 +104,9 @@ function ProviderPickerModalImpl({
     [coords, settings.dataProvider],
   );
   const fallbackLabel = getProviderLabel(AUTO_DEFAULT_OUTSIDE_SWEDEN);
+  // namazvakti.com has no country outline — it covers the cities it lists,
+  // worldwide — so its row asks the city index, and only while open.
+  const nvCoverage = useNamazvaktiCoverage(coords, visible);
   const listData = useMemo<ListItem[]>(
     () => [
       { kind: 'auto' },
@@ -190,6 +194,9 @@ function ProviderPickerModalImpl({
         coords != null &&
         isRegionalProvider(item.id) &&
         !regionalProviderCovers(item.id, coords);
+      // Not redirected like the national sources: the calendar's own
+      // method, computed on the phone, is still the calendar.
+      const nvNoCity = item.id === 'namazvakti' && nvCoverage === 'no-city';
       return (
         <Pressable
           accessibilityRole="button"
@@ -231,10 +238,16 @@ function ProviderPickerModalImpl({
               })}
             </Text>
           ) : null}
+          {nvNoCity ? (
+            <Text style={[styles.rowWarn, { color: palette.danger }]}>
+              {t('provider.namazvaktiNoCity')}
+            </Text>
+          ) : null}
         </Pressable>
       );
     },
     [
+      nvCoverage,
       palette,
       settings.dataProviderAuto,
       settings.dataProvider,

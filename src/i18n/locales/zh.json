@@ -470,7 +470,8 @@
     "helpMihrab": "帮助 Mihrab",
     "helpMihrabBlurb": "评分、告诉他人、分享一个月的礼拜时间。",
     "calcHiddenNamazvakti": "Türkiye Takvimi 有自己的算法（晨礼 19°、宵礼 17°，含 temkin 安全余量），因此隐藏算法列表。仅哈乃斐派晡礼选项适用。",
-    "calcHiddenPublished": "此来源发布自己的时间表，因此隐藏算法列表。"
+    "calcHiddenPublished": "此来源发布自己的时间表，因此隐藏算法列表。",
+    "providerNamazvaktiNoCity": "namazvakti.com 没有您附近城市的时间，因此改在手机上按该历法的方法计算——通常与网站相差一两分钟以内。"
   },
   "locationSetup": {
     "headline": "设置您的位置",
@@ -492,7 +493,8 @@
     "autoNow": "在你现在的位置，那就是 {{label}}。",
     "bestHere": "适合你所在的位置",
     "outOfRegion": "没有你所在位置的时间——将改用 {{fallback}}。",
-    "footer": "特定国家/地区的来源使用官方或国家祈祷表，我们将它们整合在一起。随着时间的推移，可能会添加更多区域。"
+    "footer": "特定国家/地区的来源使用官方或国家祈祷表，我们将它们整合在一起。随着时间的推移，可能会添加更多区域。",
+    "namazvaktiNoCity": "没有您附近城市的时间——将改在手机上按该历法的方法计算。"
   },
   "providers": {
     "aladhan": {

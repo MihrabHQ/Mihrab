@@ -90,6 +90,7 @@ const STAYS: Record<string, string> = {
   'ifis.dataset.v1.city.': 'derived — a per-city timetable cache',
   'namazvakti.tile.v1.': 'derived — a cached city-index tile',
   'namazvakti.city.v1.': 'derived — a per-city yearly timetable cache',
+  'namazvakti.noTable.v1': 'derived — cities the site was found to publish nothing for',
   'habous.dataset.v1.city.':
     'derived — the ministry’s published timetable for one city, re-downloadable',
   'hijri.overrides.v1':

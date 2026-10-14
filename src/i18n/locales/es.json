@@ -471,7 +471,8 @@
     "helpMihrab": "Ayuda a Mihrab",
     "helpMihrabBlurb": "Valórala, habla de ella, comparte un mes de horarios de oración.",
     "calcHiddenNamazvakti": "Türkiye Takvimi tiene su propio método (Fajr 19°, Isha 17°, con temkin), por eso la lista de métodos está oculta. Solo se aplica la opción de Asr hanafí.",
-    "calcHiddenPublished": "Esta fuente publica su propio horario, por eso la lista de métodos está oculta."
+    "calcHiddenPublished": "Esta fuente publica su propio horario, por eso la lista de métodos está oculta.",
+    "providerNamazvaktiNoCity": "namazvakti.com no tiene horarios para ninguna ciudad cercana, así que el método del calendario se calcula en el teléfono; suele quedar a un minuto o dos del sitio."
   },
   "locationSetup": {
     "headline": "Establece tu ubicación",
@@ -493,7 +494,8 @@
     "autoNow": "Donde estás ahora, eso es {{label}}.",
     "bestHere": "Encaja con tu ubicación",
     "outOfRegion": "No hay horarios para donde estás; se usaría {{fallback}} en su lugar.",
-    "footer": "Las fuentes específicas de cada país utilizan mesas de oración oficiales o nacionales donde las integramos. Es posible que se agreguen más regiones con el tiempo."
+    "footer": "Las fuentes específicas de cada país utilizan mesas de oración oficiales o nacionales donde las integramos. Es posible que se agreguen más regiones con el tiempo.",
+    "namazvaktiNoCity": "No hay horarios para una ciudad cercana: el método del calendario se calcularía en el teléfono."
   },
   "providers": {
     "aladhan": {
