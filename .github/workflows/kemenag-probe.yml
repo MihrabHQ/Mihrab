@@ -17,27 +17,36 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Reach the page and the city list
+      - name: List provinces and cities
         run: |
           set +e
           UA='Mihrab dataset builder (+https://github.com/MihrabHQ/Mihrab; mihrab@elghamri.se)'
           curl -sS -m 40 -c jar.txt -A "$UA" -o page.html -w 'page %{http_code} %{time_total}s\n' https://bimasislam.kemenag.go.id/jadwalshalat
-          echo '--- the province select, as served'
-          tr -d '\n' < page.html | grep -o '<select[^>]*search_prov.\{0,1500\}' | head -c 1500
-          echo
-          echo '--- every option'
-          grep -o '<option[^>]*>[^<]*' page.html | head -50
-          PROV=$(grep -o "<option[^>]*value=['\"][^'\"]*['\"]" page.html | grep -v "value=['\"]['\"]" | head -1 | sed "s/.*value=['\"]\([^'\"]*\)['\"].*/\1/")
-          echo "PROV=$PROV"
-          echo '--- cities'
-          curl -sS -m 40 -b jar.txt -A "$UA" -X POST -d "x=$PROV" -w '\ncities %{http_code}\n' https://bimasislam.kemenag.go.id/ajax/getKabkoshalat | head -c 1500
-          echo
-          KAB=$(curl -sS -m 40 -b jar.txt -A "$UA" -X POST -d "x=$PROV" https://bimasislam.kemenag.go.id/ajax/getKabkoshalat | grep -o "value=['\"][^'\"]*['\"]" | grep -v "value=['\"]['\"]" | head -1 | sed "s/value=['\"]//;s/['\"]$//")
-          echo "KAB=$KAB"
-          echo '--- a month'
-          curl -sS -m 40 -b jar.txt -A "$UA" -X POST -d "x=$PROV&y=$KAB&bln=10&thn=2026" -w '\nmonth %{http_code}\n' https://bimasislam.kemenag.go.id/ajax/getShalatbln | head -c 1200
+          # The province select is served empty; the ids are md5 of the
+          # province number, as the site's own JavaScript and third-party
+          # readers use them. Try 1..40 and keep the ones that answer.
+          echo '{' > cities.json
+          first=1
+          for n in $(seq 1 40); do
+            id=$(printf '%s' "$n" | md5sum | cut -d' ' -f1)
+            body=$(curl -sS -m 40 -b jar.txt -A "$UA" -X POST -d "x=$id" https://bimasislam.kemenag.go.id/ajax/getKabkoshalat)
+            count=$(printf '%s' "$body" | grep -o '<option' | wc -l)
+            echo "province $n ($id): $count cities"
+            if [ "$count" -gt 0 ]; then
+              [ $first = 1 ] || echo ',' >> cities.json
+              first=0
+              printf '"%s": {"id": "%s", "options": %s}' "$n" "$id" "$(printf '%s' "$body" | python3 -c 'import sys,json,re,html; s=sys.stdin.read(); print(json.dumps([[a,html.unescape(b).strip()] for a,b in re.findall(r"<option[^>]*value=[\x27\"]([^\x27\"]+)[\x27\"][^>]*>([^<]*)", s)]))')" >> cities.json
+            fi
+            sleep 0.4
+          done
+          echo '}' >> cities.json
+          python3 -c "import json; d=json.load(open('cities.json')); print(len(d), 'provinces,', sum(len(v['options']) for v in d.values()), 'cities')"
+          PROV=$(printf '%s' 12 | md5sum | cut -d' ' -f1)
+          KAB=$(python3 -c "import json; d=json.load(open('cities.json')); print(d['12']['options'][0][0])")
+          echo "--- a month for 12/$KAB"
+          curl -sS -m 40 -b jar.txt -A "$UA" -X POST -d "x=$PROV&y=$KAB&bln=10&thn=2026" https://bimasislam.kemenag.go.id/ajax/getShalatbln | head -c 1500
           echo
       - uses: actions/upload-artifact@v4
         with:
-          name: kemenag-page
-          path: page.html
+          name: kemenag-cities
+          path: cities.json
