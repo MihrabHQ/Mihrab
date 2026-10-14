@@ -3,1726 +3,153 @@
  "name": "Morocco — Ministry of Habous and Islamic Affairs",
  "method": 21,
  "toleranceMin": 1,
- "builtAt": "2026-10-14T15:15:01.995Z",
+ "builtAt": "2026-10-14T15:38:19.094Z",
  "tableBuiltAt": "2026-10-14T09:45:57.739Z",
- "places": 191,
+ "places": 164,
  "placesMissing": 0,
- "days": 6112,
+ "days": 5248,
  "from": "2026-10-11",
  "to": "2026-11-11",
- "times": 14592,
- "within": 14170,
- "outsideShare": 0.0289,
- "maxAbs": 2,
+ "times": 31104,
+ "within": 30818,
+ "outsideShare": 0.0092,
+ "maxAbs": 3,
  "perPrayer": {
   "Fajr": {
-   "times": 2432,
-   "within": 2432,
+   "times": 5184,
+   "within": 5184,
    "histogram": {
-    "0": 1224,
-    "+1": 1208
+    "0": 2646,
+    "+1": 2538
    },
    "maxAbs": 1,
-   "meanDiff": 0.5
+   "meanDiff": 0.49
   },
   "Sunrise": {
-   "times": 2432,
-   "within": 2154,
+   "times": 5184,
+   "within": 4939,
    "histogram": {
-    "0": 1009,
-    "-1": 123,
-    "+1": 1022,
-    "+2": 278
+    "0": 2629,
+    "-1": 1144,
+    "+1": 1166,
+    "+2": 205,
+    "+3": 4,
+    "-2": 36
    },
-   "maxAbs": 2,
-   "meanDiff": 0.6
+   "maxAbs": 3,
+   "meanDiff": 0.07
   },
   "Dhuhr": {
-   "times": 2432,
-   "within": 2432,
+   "times": 5184,
+   "within": 5184,
    "histogram": {
-    "0": 2340,
-    "+1": 60,
-    "-1": 32
+    "0": 4960,
+    "+1": 126,
+    "-1": 98
    },
    "maxAbs": 1,
    "meanDiff": 0.01
   },
   "Asr": {
-   "times": 2432,
-   "within": 2432,
+   "times": 5184,
+   "within": 5184,
    "histogram": {
-    "0": 797,
-    "-1": 1634,
+    "0": 1648,
+    "-1": 3535,
     "+1": 1
    },
    "maxAbs": 1,
-   "meanDiff": -0.67
+   "meanDiff": -0.68
   },
   "Maghrib": {
-   "times": 2432,
-   "within": 2288,
+   "times": 5184,
+   "within": 5143,
    "histogram": {
-    "0": 1126,
-    "+1": 144,
-    "-1": 1018,
-    "-2": 144
+    "0": 2742,
+    "+1": 1834,
+    "-1": 567,
+    "-2": 16,
+    "+2": 25
    },
    "maxAbs": 2,
-   "meanDiff": -0.48
+   "meanDiff": 0.25
   },
   "Isha": {
-   "times": 2432,
-   "within": 2432,
+   "times": 5184,
+   "within": 5184,
    "histogram": {
-    "0": 2305,
-    "+1": 23,
-    "-1": 104
+    "0": 4908,
+    "+1": 42,
+    "-1": 234
    },
    "maxAbs": 1,
-   "meanDiff": -0.03
+   "meanDiff": -0.04
   }
  },
- "misplaced": [
-  {
-   "place": "بئر أنزاران",
-   "days": 32,
-   "median": {
-    "Fajr": -74,
-    "Sunrise": -79.5,
-    "Dhuhr": -58,
-    "Asr": -55.5,
-    "Maghrib": -36.5,
-    "Isha": -40.5
-   },
-   "maxAbs": 89,
-   "misplaced": true
-  },
-  {
-   "place": "أمكالة",
-   "days": 32,
-   "median": {
-    "Fajr": -62.5,
-    "Sunrise": -70,
-    "Dhuhr": -45,
-    "Asr": -41,
-    "Maghrib": -21.5,
-    "Isha": -27
-   },
-   "maxAbs": 80,
-   "misplaced": true
-  },
-  {
-   "place": "لمسيد",
-   "days": 32,
-   "median": {
-    "Fajr": -60.5,
-    "Sunrise": -68.5,
-    "Dhuhr": -43,
-    "Asr": -37,
-    "Maghrib": -17.5,
-    "Isha": -23.5
-   },
-   "maxAbs": 80,
-   "misplaced": true
-  },
-  {
-   "place": "تفاريتي",
-   "days": 32,
-   "median": {
-    "Fajr": -59,
-    "Sunrise": -64.5,
-    "Dhuhr": -42,
-    "Asr": -37.5,
-    "Maghrib": -19.5,
-    "Isha": -23.5
-   },
-   "maxAbs": 75,
-   "misplaced": true
-  },
-  {
-   "place": "بويكرة",
-   "days": 32,
-   "median": {
-    "Fajr": -55.5,
-    "Sunrise": -67,
-    "Dhuhr": -37,
-    "Asr": -29,
-    "Maghrib": -8,
-    "Isha": -16.5
-   },
-   "maxAbs": 79,
-   "misplaced": true
-  },
-  {
-   "place": "تولكولت",
-   "days": 32,
-   "median": {
-    "Fajr": -54.5,
-    "Sunrise": -63,
-    "Dhuhr": -36,
-    "Asr": -26.5,
-    "Maghrib": -8.5,
-    "Isha": -15.5
-   },
-   "maxAbs": 76,
-   "misplaced": true
-  },
-  {
-   "place": "فم لحصن",
-   "days": 32,
-   "median": {
-    "Fajr": -53.5,
-    "Sunrise": -60.5,
-    "Dhuhr": -35,
-    "Asr": -28.5,
-    "Maghrib": -10,
-    "Isha": -15.5
-   },
-   "maxAbs": 72,
-   "misplaced": true
-  },
-  {
-   "place": "قطارة",
-   "days": 32,
-   "median": {
-    "Fajr": -51.5,
-    "Sunrise": -62,
-    "Dhuhr": -32,
-    "Asr": -22.5,
-    "Maghrib": -2.5,
-    "Isha": -11.5
-   },
-   "maxAbs": 75,
-   "misplaced": true
-  },
-  {
-   "place": "آيت القاق",
-   "days": 32,
-   "median": {
-    "Fajr": -49.5,
-    "Sunrise": -56,
-    "Dhuhr": -31,
-    "Asr": -21.5,
-    "Maghrib": -5.5,
-    "Isha": -10.5
-   },
-   "maxAbs": 69,
-   "misplaced": true
-  },
-  {
-   "place": "أكايوار",
-   "days": 32,
-   "median": {
-    "Fajr": -49.5,
-    "Sunrise": -58.5,
-    "Dhuhr": -31,
-    "Asr": -21.5,
-    "Maghrib": -3.5,
-    "Isha": -10.5
-   },
-   "maxAbs": 71,
-   "misplaced": true
-  },
-  {
-   "place": "أسكين",
-   "days": 32,
-   "median": {
-    "Fajr": -49.5,
-    "Sunrise": -58.5,
-    "Dhuhr": -31,
-    "Asr": -21.5,
-    "Maghrib": -3,
-    "Isha": -10
-   },
-   "maxAbs": 71,
-   "misplaced": true
-  },
-  {
-   "place": "تفنتان",
-   "days": 32,
-   "median": {
-    "Fajr": -48.5,
-    "Sunrise": -59.5,
-    "Dhuhr": -30,
-    "Asr": -20.5,
-    "Maghrib": -0.5,
-    "Isha": -9
-   },
-   "maxAbs": 73,
-   "misplaced": true
-  },
-  {
-   "place": "كرس",
-   "days": 32,
-   "median": {
-    "Fajr": -49,
-    "Sunrise": -56.5,
-    "Dhuhr": -30,
-    "Asr": -20.5,
-    "Maghrib": -3.5,
-    "Isha": -9.5
-   },
-   "maxAbs": 69,
-   "misplaced": true
-  },
-  {
-   "place": "تيسنت",
-   "days": 32,
-   "median": {
-    "Fajr": -47.5,
-    "Sunrise": -54,
-    "Dhuhr": -29,
-    "Asr": -21,
-    "Maghrib": -3.5,
-    "Isha": -8.5
-   },
-   "maxAbs": 67,
-   "misplaced": true
-  },
-  {
-   "place": "هسكورة",
-   "days": 32,
-   "median": {
-    "Fajr": -44.5,
-    "Sunrise": -53,
-    "Dhuhr": -26,
-    "Asr": -16.5,
-    "Maghrib": 1.5,
-    "Isha": -5.5
-   },
-   "maxAbs": 66,
-   "misplaced": true
-  },
-  {
-   "place": "إيمين ثلاث",
-   "days": 32,
-   "median": {
-    "Fajr": -44.5,
-    "Sunrise": -54,
-    "Dhuhr": -26,
-    "Asr": -16,
-    "Maghrib": 2.5,
-    "Isha": -5
-   },
-   "maxAbs": 67,
-   "misplaced": true
-  },
-  {
-   "place": "سوق أربعاء الغرب",
-   "days": 32,
-   "median": {
-    "Fajr": -44.5,
-    "Sunrise": -60,
-    "Dhuhr": -25,
-    "Asr": -11.5,
-    "Maghrib": 9.5,
-    "Isha": -3.5
-   },
-   "maxAbs": 75,
-   "misplaced": true
-  },
-  {
-   "place": "أكدال أملشيل",
-   "days": 32,
-   "median": {
-    "Fajr": -40.5,
-    "Sunrise": -48,
-    "Dhuhr": -22,
-    "Asr": -11.5,
-    "Maghrib": 5.5,
-    "Isha": -0.5
-   },
-   "maxAbs": 61,
-   "misplaced": true
-  },
-  {
-   "place": "اكودال املشيل ميدلت",
-   "days": 32,
-   "median": {
-    "Fajr": -40.5,
-    "Sunrise": -50,
-    "Dhuhr": -22,
-    "Asr": -11.5,
-    "Maghrib": 6.5,
-    "Isha": -0.5
-   },
-   "maxAbs": 63,
-   "misplaced": true
-  },
-  {
-   "place": "يفرن",
-   "days": 32,
-   "median": {
-    "Fajr": -39.5,
-    "Sunrise": -49.5,
-    "Dhuhr": -20,
-    "Asr": -7.5,
-    "Maghrib": 9.5,
-    "Isha": 1.5
-   },
-   "maxAbs": 64,
-   "misplaced": true
-  },
-  {
-   "place": "المنزل بني يازغة",
-   "days": 32,
-   "median": {
-    "Fajr": -37.5,
-    "Sunrise": -49,
-    "Dhuhr": -18,
-    "Asr": -5.5,
-    "Maghrib": 12.5,
-    "Isha": 3.5
-   },
-   "maxAbs": 63,
-   "misplaced": true
-  },
-  {
-   "place": "خميس سيدي عبد الجليل",
-   "days": 32,
-   "median": {
-    "Fajr": -37.5,
-    "Sunrise": -50,
-    "Dhuhr": -18,
-    "Asr": -5,
-    "Maghrib": 14.5,
-    "Isha": 3.5
-   },
-   "maxAbs": 65,
-   "misplaced": true
-  },
-  {
-   "place": "بوسكور",
-   "days": 32,
-   "median": {
-    "Fajr": -33.5,
-    "Sunrise": -48,
-    "Dhuhr": -14,
-    "Asr": -0.5,
-    "Maghrib": 19.5,
-    "Isha": 7.5
-   },
-   "maxAbs": 63,
-   "misplaced": true
-  },
-  {
-   "place": "بني تجيت",
-   "days": 32,
-   "median": {
-    "Fajr": -32.5,
-    "Sunrise": -42,
-    "Dhuhr": -14,
-    "Asr": -2.5,
-    "Maghrib": 14.5,
-    "Isha": 7.5
-   },
-   "maxAbs": 55,
-   "misplaced": true
-  },
-  {
-   "place": "تنديت",
-   "days": 32,
-   "median": {
-    "Fajr": -33.5,
-    "Sunrise": -46,
-    "Dhuhr": -14,
-    "Asr": -1.5,
-    "Maghrib": 17,
-    "Isha": 7.5
-   },
-   "maxAbs": 60,
-   "misplaced": true
-  },
-  {
-   "place": "بني ادرار",
-   "days": 32,
-   "median": {
-    "Fajr": -27.5,
-    "Sunrise": -41,
-    "Dhuhr": -8,
-    "Asr": 6.5,
-    "Maghrib": 25.5,
-    "Isha": 14.5
-   },
-   "maxAbs": 56,
-   "misplaced": true
-  },
-  {
-   "place": "قصر إيش",
-   "days": 32,
-   "median": {
-    "Fajr": -23,
-    "Sunrise": -32.5,
-    "Dhuhr": -4,
-    "Asr": 7.5,
-    "Maghrib": 25.5,
-    "Isha": 17.5
-   },
-   "maxAbs": 46,
-   "misplaced": true
-  },
-  {
-   "place": "الرماني",
-   "days": 32,
-   "median": {
-    "Fajr": 1,
-    "Sunrise": 2,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -2,
-    "Isha": 0
-   },
-   "maxAbs": 2,
-   "misplaced": true
-  },
-  {
-   "place": "والماس",
-   "days": 32,
-   "median": {
-    "Fajr": 1,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -3,
-    "Isha": 0
-   },
-   "maxAbs": 4,
-   "misplaced": true
-  },
-  {
-   "place": "تطوان",
-   "days": 32,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 2,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -2,
-    "Isha": 0
-   },
-   "maxAbs": 2,
-   "misplaced": true
-  },
-  {
-   "place": "شفشاون",
-   "days": 32,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -3,
-    "Isha": 0
-   },
-   "maxAbs": 4,
-   "misplaced": true
-  },
-  {
-   "place": "سبتة",
-   "days": 32,
-   "median": {
-    "Fajr": 0.5,
-    "Sunrise": 2,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -2,
-    "Isha": 0
-   },
-   "maxAbs": 3,
-   "misplaced": true
-  },
-  {
-   "place": "باب برد",
-   "days": 32,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -3,
-    "Isha": 0
-   },
-   "maxAbs": 4,
-   "misplaced": true
-  },
-  {
-   "place": "وزان",
-   "days": 32,
-   "median": {
-    "Fajr": 1,
-    "Sunrise": 3,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -2,
-    "Isha": 0
-   },
-   "maxAbs": 3,
-   "misplaced": true
-  },
-  {
-   "place": "وجدة",
-   "days": 32,
-   "median": {
-    "Fajr": 1,
-    "Sunrise": 3,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -2,
-    "Isha": 0
-   },
-   "maxAbs": 3,
-   "misplaced": true
-  },
-  {
-   "place": "فكيك",
-   "days": 32,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 3,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -2,
-    "Isha": 0
-   },
-   "maxAbs": 3,
-   "misplaced": true
-  },
-  {
-   "place": "بوعرفة",
-   "days": 32,
-   "median": {
-    "Fajr": 1,
-    "Sunrise": 3,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -3,
-    "Isha": 0
-   },
-   "maxAbs": 3,
-   "misplaced": true
-  },
-  {
-   "place": "جرادة",
-   "days": 32,
-   "median": {
-    "Fajr": 1,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -3,
-    "Isha": 0
-   },
-   "maxAbs": 4,
-   "misplaced": true
-  },
-  {
-   "place": "عين الشعير",
-   "days": 32,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 3,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -2,
-    "Isha": 0
-   },
-   "maxAbs": 3,
-   "misplaced": true
-  },
-  {
-   "place": "تاوريرت",
-   "days": 32,
-   "median": {
-    "Fajr": 0.5,
-    "Sunrise": 3,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -3,
-    "Isha": 0
-   },
-   "maxAbs": 4,
-   "misplaced": true
-  },
-  {
-   "place": "دبدو",
-   "days": 32,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 3.5,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -3,
-    "Isha": 0
-   },
-   "maxAbs": 4,
-   "misplaced": true
-  },
-  {
-   "place": "تالسينت",
-   "days": 32,
-   "median": {
-    "Fajr": 1,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -3,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "تندرارة",
-   "days": 32,
-   "median": {
-    "Fajr": 0.5,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -3,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "العيون الشرقية",
-   "days": 32,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 2,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -2,
-    "Isha": 0
-   },
-   "maxAbs": 3,
-   "misplaced": true
-  },
-  {
-   "place": "تافوغالت",
-   "days": 32,
-   "median": {
-    "Fajr": 1,
-    "Sunrise": 3,
-    "Dhuhr": 0,
-    "Asr": -0.5,
-    "Maghrib": -2,
-    "Isha": 0
-   },
-   "maxAbs": 4,
-   "misplaced": true
-  },
-  {
-   "place": "فزوان",
-   "days": 32,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 3,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -2,
-    "Isha": 0
-   },
-   "maxAbs": 3,
-   "misplaced": true
-  },
-  {
-   "place": "زايو",
-   "days": 32,
-   "median": {
-    "Fajr": 1,
-    "Sunrise": 2,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -2,
-    "Isha": 0
-   },
-   "maxAbs": 3,
-   "misplaced": true
-  },
-  {
-   "place": "دريوش",
-   "days": 32,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 2,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -2,
-    "Isha": 0
-   },
-   "maxAbs": 3,
-   "misplaced": true
-  },
-  {
-   "place": "بوعنان",
-   "days": 32,
-   "median": {
-    "Fajr": 0.5,
-    "Sunrise": 3,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -2,
-    "Isha": 0
-   },
-   "maxAbs": 3,
-   "misplaced": true
-  },
-  {
-   "place": "البروج",
-   "days": 32,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 2,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -2,
-    "Isha": 0
-   },
-   "maxAbs": 2,
-   "misplaced": true
-  },
-  {
-   "place": "ابن أحمد",
-   "days": 32,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 2,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -2,
-    "Isha": 0
-   },
-   "maxAbs": 3,
-   "misplaced": true
-  },
-  {
-   "place": "خنيفرة",
-   "days": 32,
-   "median": {
-    "Fajr": 1,
-    "Sunrise": 3,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -3,
-    "Isha": 0
-   },
-   "maxAbs": 4,
-   "misplaced": true
-  },
-  {
-   "place": "مولاي بوعزة",
-   "days": 32,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 3,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -3,
-    "Isha": 0
-   },
-   "maxAbs": 3,
-   "misplaced": true
-  },
-  {
-   "place": "زاوية أحنصال",
-   "days": 32,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 6,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -5,
-    "Isha": 0
-   },
-   "maxAbs": 7,
-   "misplaced": true
-  },
-  {
-   "place": "بني ملال",
-   "days": 32,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -3,
-    "Isha": 0
-   },
-   "maxAbs": 4,
-   "misplaced": true
-  },
-  {
-   "place": "أزيلال",
-   "days": 32,
-   "median": {
-    "Fajr": 1,
-    "Sunrise": 5,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -4,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "الفقيه بنصالح",
-   "days": 32,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 2,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -2,
-    "Isha": 0
-   },
-   "maxAbs": 2,
-   "misplaced": true
-  },
-  {
-   "place": "دمنات",
-   "days": 32,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 5,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -4,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "القصيبة",
-   "days": 32,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -3,
-    "Isha": 0
-   },
-   "maxAbs": 4,
-   "misplaced": true
-  },
-  {
-   "place": "قصبة تادلة",
-   "days": 32,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 2,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -2,
-    "Isha": 0
-   },
-   "maxAbs": 2,
-   "misplaced": true
-  },
-  {
-   "place": "خريبكة",
-   "days": 32,
-   "median": {
-    "Fajr": 1,
-    "Sunrise": 3,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -2,
-    "Isha": 0
-   },
-   "maxAbs": 3,
-   "misplaced": true
-  },
-  {
-   "place": "وادي زم",
-   "days": 32,
-   "median": {
-    "Fajr": 1,
-    "Sunrise": 3,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -3,
-    "Isha": 0
-   },
-   "maxAbs": 4,
-   "misplaced": true
-  },
-  {
-   "place": "فاس",
-   "days": 32,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 2,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -2,
-    "Isha": 0
-   },
-   "maxAbs": 2,
-   "misplaced": true
-  },
-  {
-   "place": "صفرو",
-   "days": 32,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 3,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -3,
-    "Isha": 0
-   },
-   "maxAbs": 4,
-   "misplaced": true
+ "misplaced": [],
+ "accepted": 192,
+ "imsakBeforeFajr": 10,
+ "alarm": false,
+ "alarmReasons": [],
+ "worst": [
+  {
+   "place": "بولمان",
+   "date": "2026-10-19",
+   "prayer": "Sunrise",
+   "theirs": "06:17",
+   "ours": "06:20",
+   "diff": 3
   },
   {
    "place": "بولمان",
-   "days": 32,
-   "median": {
-    "Fajr": 0.5,
-    "Sunrise": 6,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -5,
-    "Isha": 0
-   },
-   "maxAbs": 7,
-   "misplaced": true
+   "date": "2026-10-24",
+   "prayer": "Sunrise",
+   "theirs": "06:21",
+   "ours": "06:24",
+   "diff": 3
   },
   {
-   "place": "ميسور",
-   "days": 32,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 3,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -2,
-    "Isha": 0
-   },
-   "maxAbs": 3,
-   "misplaced": true
+   "place": "بولمان",
+   "date": "2026-10-30",
+   "prayer": "Sunrise",
+   "theirs": "06:26",
+   "ours": "06:29",
+   "diff": 3
   },
   {
-   "place": "رباط الخير",
-   "days": 32,
-   "median": {
-    "Fajr": 1,
-    "Sunrise": 4.5,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -4,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
+   "place": "بولمان",
+   "date": "2026-11-07",
+   "prayer": "Sunrise",
+   "theirs": "06:33",
+   "ours": "06:36",
+   "diff": 3
   },
   {
-   "place": "إموزار كندر",
-   "days": 32,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -4,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
+   "place": "تاوريرت",
+   "date": "2026-10-11",
+   "prayer": "Sunrise",
+   "theirs": "06:07",
+   "ours": "06:09",
+   "diff": 2
   },
   {
-   "place": "تازة",
-   "days": 32,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 3,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -3,
-    "Isha": 0
-   },
-   "maxAbs": 3,
-   "misplaced": true
+   "place": "زاوية أحنصال",
+   "date": "2026-10-11",
+   "prayer": "Sunrise",
+   "theirs": "06:16",
+   "ours": "06:18",
+   "diff": 2
   },
   {
-   "place": "تاونات",
-   "days": 32,
-   "median": {
-    "Fajr": 1,
-    "Sunrise": 3,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -2,
-    "Isha": 0
-   },
-   "maxAbs": 4,
-   "misplaced": true
-  },
-  {
-   "place": "أكنول",
-   "days": 32,
-   "median": {
-    "Fajr": 0.5,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -3,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "تيزي وسلي",
-   "days": 32,
-   "median": {
-    "Fajr": 0.5,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -4,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "بورد",
-   "days": 32,
-   "median": {
-    "Fajr": 0.5,
-    "Sunrise": 3,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -2.5,
-    "Isha": 0
-   },
-   "maxAbs": 4,
-   "misplaced": true
-  },
-  {
-   "place": "تاهلة",
-   "days": 32,
-   "median": {
-    "Fajr": 1,
-    "Sunrise": 2,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -2,
-    "Isha": 0
-   },
-   "maxAbs": 3,
-   "misplaced": true
-  },
-  {
-   "place": "كتامة",
-   "days": 32,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 5,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -4,
-    "Isha": 0
-   },
-   "maxAbs": 6,
-   "misplaced": true
-  },
-  {
-   "place": "مكناس",
-   "days": 32,
-   "median": {
-    "Fajr": 0.5,
-    "Sunrise": 2,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -2,
-    "Isha": 0
-   },
-   "maxAbs": 3,
-   "misplaced": true
-  },
-  {
-   "place": "الحاجب",
-   "days": 32,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -3,
-    "Isha": 0
-   },
-   "maxAbs": 4,
-   "misplaced": true
-  },
-  {
-   "place": "زرهون",
-   "days": 32,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 3,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -3,
-    "Isha": 0
-   },
-   "maxAbs": 3,
-   "misplaced": true
-  },
-  {
-   "place": "آزرو",
-   "days": 32,
-   "median": {
-    "Fajr": 0.5,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -4,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "مراكش",
-   "days": 32,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 2,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -2,
-    "Isha": 0
-   },
-   "maxAbs": 2,
-   "misplaced": true
-  },
-  {
-   "place": "شيشاوة",
-   "days": 32,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 2,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -2,
-    "Isha": 0
-   },
-   "maxAbs": 2,
-   "misplaced": true
-  },
-  {
-   "place": "بنجرير",
-   "days": 32,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 2,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -2,
-    "Isha": 0
-   },
-   "maxAbs": 2,
-   "misplaced": true
-  },
-  {
-   "place": "الرحامنة",
-   "days": 32,
-   "median": {
-    "Fajr": 1,
-    "Sunrise": 2,
-    "Dhuhr": 0,
-    "Asr": 0,
-    "Maghrib": -2,
-    "Isha": 0
-   },
-   "maxAbs": 3,
-   "misplaced": true
-  },
-  {
-   "place": "تسلطانت",
-   "days": 32,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 2,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -2,
-    "Isha": 0
-   },
-   "maxAbs": 2,
-   "misplaced": true
-  },
-  {
-   "place": "تامصلوحت",
-   "days": 32,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 2,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -2,
-    "Isha": 0
-   },
-   "maxAbs": 3,
-   "misplaced": true
-  },
-  {
-   "place": "إغرم",
-   "days": 32,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 5,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -4,
-    "Isha": 0
-   },
-   "maxAbs": 6,
-   "misplaced": true
-  },
-  {
-   "place": "تالوين",
-   "days": 32,
-   "median": {
-    "Fajr": 1,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -3.5,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "تافراوت",
-   "days": 32,
-   "median": {
-    "Fajr": 1,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -4,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "طاطا",
-   "days": 32,
-   "median": {
-    "Fajr": 1,
-    "Sunrise": 2,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -2,
-    "Isha": 0
-   },
-   "maxAbs": 3,
-   "misplaced": true
+   "place": "بولمان",
+   "date": "2026-10-11",
+   "prayer": "Sunrise",
+   "theirs": "06:11",
+   "ours": "06:13",
+   "diff": 2
   },
   {
    "place": "أقا",
-   "days": 32,
-   "median": {
-    "Fajr": 0.5,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -3,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "الرشيدية",
-   "days": 32,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 3,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -3,
-    "Isha": 0
-   },
-   "maxAbs": 4,
-   "misplaced": true
-  },
-  {
-   "place": "الريصاني",
-   "days": 32,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 3,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -3,
-    "Isha": 0
-   },
-   "maxAbs": 4,
-   "misplaced": true
-  },
-  {
-   "place": "أرفود",
-   "days": 32,
-   "median": {
-    "Fajr": 1,
-    "Sunrise": 3,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -3,
-    "Isha": 0
-   },
-   "maxAbs": 4,
-   "misplaced": true
-  },
-  {
-   "place": "كلميمة",
-   "days": 32,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 3,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -3,
-    "Isha": 0
-   },
-   "maxAbs": 4,
-   "misplaced": true
-  },
-  {
-   "place": "إملشيل",
-   "days": 32,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 5.5,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -5,
-    "Isha": 0
-   },
-   "maxAbs": 6,
-   "misplaced": true
-  },
-  {
-   "place": "تنجداد",
-   "days": 32,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 3,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -3,
-    "Isha": 0
-   },
-   "maxAbs": 4,
-   "misplaced": true
-  },
-  {
-   "place": "الريش",
-   "days": 32,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -3,
-    "Isha": 0
-   },
-   "maxAbs": 4,
-   "misplaced": true
-  },
-  {
-   "place": "ميدلت",
-   "days": 32,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 5,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -4,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "زاكورة",
-   "days": 32,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 3,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -2,
-    "Isha": 0
-   },
-   "maxAbs": 3,
-   "misplaced": true
-  },
-  {
-   "place": "ورزازات",
-   "days": 32,
-   "median": {
-    "Fajr": 1,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -3,
-    "Isha": 0
-   },
-   "maxAbs": 4,
-   "misplaced": true
-  },
-  {
-   "place": "تنغير",
-   "days": 32,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -4,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "قلعة مكونة",
-   "days": 32,
-   "median": {
-    "Fajr": 1,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": 0,
-    "Maghrib": -3,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "أكدز",
-   "days": 32,
-   "median": {
-    "Fajr": 0.5,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -4,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "بومالن دادس",
-   "days": 32,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -3,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "النيف",
-   "days": 32,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 3,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -2,
-    "Isha": 0
-   },
-   "maxAbs": 3,
-   "misplaced": true
-  },
-  {
-   "place": "أسول",
-   "days": 32,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 7,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -5,
-    "Isha": 0
-   },
-   "maxAbs": 7,
-   "misplaced": true
-  },
-  {
-   "place": "أمسمرير",
-   "days": 32,
-   "median": {
-    "Fajr": 1,
-    "Sunrise": 5,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -4,
-    "Isha": 0
-   },
-   "maxAbs": 6,
-   "misplaced": true
-  },
-  {
-   "place": "كلميم",
-   "days": 32,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 2,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -2,
-    "Isha": 0
-   },
-   "maxAbs": 3,
-   "misplaced": true
-  },
-  {
-   "place": "إيمنتانوت",
-   "days": 32,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 3,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -3,
-    "Isha": 0
-   },
-   "maxAbs": 3,
-   "misplaced": true
-  },
-  {
-   "place": "سيدي غانم",
-   "days": 32,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 3,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -3,
-    "Isha": 0
-   },
-   "maxAbs": 4,
-   "misplaced": true
-  },
-  {
-   "place": "آيت ورير",
-   "days": 32,
-   "median": {
-    "Fajr": 1,
-    "Sunrise": 2,
-    "Dhuhr": 0,
-    "Asr": -0.5,
-    "Maghrib": -2,
-    "Isha": 0
-   },
-   "maxAbs": 3,
-   "misplaced": true
-  },
-  {
-   "place": "زاوية مولاي ابراهيم",
-   "days": 32,
-   "median": {
-    "Fajr": 1,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -3,
-    "Isha": 0
-   },
-   "maxAbs": 4,
-   "misplaced": true
-  },
-  {
-   "place": "إيكس",
-   "days": 32,
-   "median": {
-    "Fajr": 1,
-    "Sunrise": 9,
-    "Dhuhr": 0,
-    "Asr": -4,
-    "Maghrib": -8,
-    "Isha": -1
-   },
-   "maxAbs": 11,
-   "misplaced": true
-  },
-  {
-   "place": "فم زكيد",
-   "days": 32,
-   "median": {
-    "Fajr": 0.5,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": -1,
-    "Maghrib": -4,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  }
- ],
- "accepted": 0,
- "imsakBeforeFajr": 10,
- "alarm": true,
- "alarmReasons": [
-  "2.9% of times are more than 1 min from the table (allowed 2%) — the method",
-  "114 place(s) disagree by a constant at every date — coordinates or a per-place margin, not the angles"
- ],
- "worst": [
-  {
-   "place": "سيدي قاسم",
-   "date": "2026-10-11",
-   "prayer": "Sunrise",
-   "theirs": "06:20",
-   "ours": "06:22",
-   "diff": 2
-  },
-  {
-   "place": "كرسيف",
-   "date": "2026-10-11",
-   "prayer": "Maghrib",
-   "theirs": "17:50",
-   "ours": "17:48",
-   "diff": -2
-  },
-  {
-   "place": "سطات",
-   "date": "2026-10-11",
-   "prayer": "Sunrise",
-   "theirs": "06:27",
-   "ours": "06:29",
-   "diff": 2
-  },
-  {
-   "place": "مولاي يعقوب",
-   "date": "2026-10-11",
-   "prayer": "Sunrise",
-   "theirs": "06:18",
-   "ours": "06:20",
-   "diff": 2
-  },
-  {
-   "place": "قلعة السراغنة",
    "date": "2026-10-11",
    "prayer": "Sunrise",
    "theirs": "06:25",
@@ -1730,303 +157,215 @@
    "diff": 2
   },
   {
-   "place": "قلعة السراغنة",
+   "place": "أكدز",
    "date": "2026-10-11",
-   "prayer": "Maghrib",
-   "theirs": "18:08",
-   "ours": "18:06",
-   "diff": -2
-  },
-  {
-   "place": "تمنار",
-   "date": "2026-10-11",
-   "prayer": "Sunrise",
-   "theirs": "06:34",
-   "ours": "06:36",
-   "diff": 2
-  },
-  {
-   "place": "اليوسفية",
-   "date": "2026-10-11",
-   "prayer": "Sunrise",
-   "theirs": "06:30",
-   "ours": "06:32",
-   "diff": 2
-  },
-  {
-   "place": "اليوسفية",
-   "date": "2026-10-11",
-   "prayer": "Maghrib",
-   "theirs": "18:12",
-   "ours": "18:10",
-   "diff": -2
-  },
-  {
-   "place": "تازارين",
-   "date": "2026-10-11",
-   "prayer": "Sunrise",
-   "theirs": "06:17",
-   "ours": "06:19",
-   "diff": 2
-  },
-  {
-   "place": "بويزكارن",
-   "date": "2026-10-11",
-   "prayer": "Sunrise",
-   "theirs": "06:33",
-   "ours": "06:35",
-   "diff": 2
-  },
-  {
-   "place": "بويزكارن",
-   "date": "2026-10-11",
-   "prayer": "Maghrib",
-   "theirs": "18:19",
-   "ours": "18:17",
-   "diff": -2
-  },
-  {
-   "place": "الخميسات",
-   "date": "2026-10-12",
-   "prayer": "Sunrise",
-   "theirs": "06:22",
-   "ours": "06:24",
-   "diff": 2
-  },
-  {
-   "place": "الخميسات",
-   "date": "2026-10-12",
-   "prayer": "Maghrib",
-   "theirs": "18:00",
-   "ours": "17:58",
-   "diff": -2
-  },
-  {
-   "place": "تيفلت",
-   "date": "2026-10-12",
-   "prayer": "Sunrise",
-   "theirs": "06:23",
-   "ours": "06:25",
-   "diff": 2
-  },
-  {
-   "place": "تيفلت",
-   "date": "2026-10-12",
-   "prayer": "Maghrib",
-   "theirs": "18:01",
-   "ours": "17:59",
-   "diff": -2
-  },
-  {
-   "place": "سيدي قاسم",
-   "date": "2026-10-12",
-   "prayer": "Sunrise",
-   "theirs": "06:21",
-   "ours": "06:23",
-   "diff": 2
-  },
-  {
-   "place": "قلعة السراغنة",
-   "date": "2026-10-12",
-   "prayer": "Sunrise",
-   "theirs": "06:26",
-   "ours": "06:28",
-   "diff": 2
-  },
-  {
-   "place": "تازارين",
-   "date": "2026-10-12",
    "prayer": "Sunrise",
    "theirs": "06:18",
    "ours": "06:20",
    "diff": 2
   },
   {
-   "place": "تازارين",
+   "place": "تطوان",
+   "date": "2026-10-12",
+   "prayer": "Sunrise",
+   "theirs": "06:20",
+   "ours": "06:22",
+   "diff": 2
+  },
+  {
+   "place": "تطوان",
    "date": "2026-10-12",
    "prayer": "Maghrib",
-   "theirs": "18:00",
-   "ours": "17:58",
+   "theirs": "17:56",
+   "ours": "17:54",
    "diff": -2
   },
   {
-   "place": "بويزكارن",
+   "place": "تاوريرت",
    "date": "2026-10-12",
-   "prayer": "Maghrib",
-   "theirs": "18:18",
-   "ours": "18:16",
-   "diff": -2
-  },
-  {
-   "place": "الخميسات",
-   "date": "2026-10-13",
    "prayer": "Sunrise",
-   "theirs": "06:23",
-   "ours": "06:25",
+   "theirs": "06:08",
+   "ours": "06:10",
    "diff": 2
   },
   {
-   "place": "تيفلت",
-   "date": "2026-10-13",
+   "place": "بني ملال",
+   "date": "2026-10-12",
    "prayer": "Sunrise",
-   "theirs": "06:24",
-   "ours": "06:26",
+   "theirs": "06:20",
+   "ours": "06:22",
    "diff": 2
   },
   {
-   "place": "سيدي قاسم",
-   "date": "2026-10-13",
-   "prayer": "Maghrib",
-   "theirs": "17:57",
-   "ours": "17:55",
-   "diff": -2
-  },
-  {
-   "place": "الكارة",
-   "date": "2026-10-13",
+   "place": "بولمان",
+   "date": "2026-10-12",
    "prayer": "Sunrise",
-   "theirs": "06:27",
-   "ours": "06:29",
+   "theirs": "06:12",
+   "ours": "06:14",
    "diff": 2
   },
   {
-   "place": "واد أمليل",
-   "date": "2026-10-13",
+   "place": "كلتة زمور",
+   "date": "2026-10-12",
    "prayer": "Sunrise",
-   "theirs": "06:16",
-   "ours": "06:18",
+   "theirs": "06:43",
+   "ours": "06:41",
+   "diff": -2
+  },
+  {
+   "place": "فم زكيد",
+   "date": "2026-10-12",
+   "prayer": "Sunrise",
+   "theirs": "06:20",
+   "ours": "06:22",
    "diff": 2
   },
   {
-   "place": "واد أمليل",
-   "date": "2026-10-13",
-   "prayer": "Maghrib",
-   "theirs": "17:51",
-   "ours": "17:49",
-   "diff": -2
-  },
-  {
-   "place": "قلعة السراغنة",
+   "place": "تطوان",
    "date": "2026-10-13",
    "prayer": "Sunrise",
-   "theirs": "06:27",
-   "ours": "06:29",
+   "theirs": "06:21",
+   "ours": "06:23",
    "diff": 2
   },
   {
-   "place": "تازارين",
-   "date": "2026-10-13",
-   "prayer": "Maghrib",
-   "theirs": "17:59",
-   "ours": "17:57",
-   "diff": -2
-  },
-  {
-   "place": "بويزكارن",
+   "place": "زاوية أحنصال",
    "date": "2026-10-13",
    "prayer": "Sunrise",
-   "theirs": "06:34",
-   "ours": "06:36",
+   "theirs": "06:17",
+   "ours": "06:19",
    "diff": 2
   },
   {
-   "place": "بويزكارن",
+   "place": "دمنات",
    "date": "2026-10-13",
-   "prayer": "Maghrib",
-   "theirs": "18:17",
-   "ours": "18:15",
-   "diff": -2
+   "prayer": "Sunrise",
+   "theirs": "06:22",
+   "ours": "06:24",
+   "diff": 2
   },
   {
-   "place": "المحبس",
+   "place": "بولمان",
    "date": "2026-10-13",
-   "prayer": "Maghrib",
-   "theirs": "18:15",
-   "ours": "18:13",
-   "diff": -2
-  },
-  {
-   "place": "كرسيف",
-   "date": "2026-10-14",
    "prayer": "Sunrise",
    "theirs": "06:13",
    "ours": "06:15",
    "diff": 2
   },
   {
-   "place": "الكارة",
-   "date": "2026-10-14",
-   "prayer": "Sunrise",
-   "theirs": "06:28",
-   "ours": "06:30",
-   "diff": 2
-  },
-  {
-   "place": "تمنار",
-   "date": "2026-10-14",
+   "place": "الوليدية",
+   "date": "2026-10-13",
    "prayer": "Sunrise",
    "theirs": "06:36",
-   "ours": "06:38",
-   "diff": 2
-  },
-  {
-   "place": "تمنار",
-   "date": "2026-10-14",
-   "prayer": "Maghrib",
-   "theirs": "18:14",
-   "ours": "18:12",
-   "diff": -2
-  },
-  {
-   "place": "اليوسفية",
-   "date": "2026-10-14",
-   "prayer": "Sunrise",
-   "theirs": "06:32",
    "ours": "06:34",
-   "diff": 2
-  },
-  {
-   "place": "تازارين",
-   "date": "2026-10-14",
-   "prayer": "Sunrise",
-   "theirs": "06:19",
-   "ours": "06:21",
-   "diff": 2
-  },
-  {
-   "place": "بويزكارن",
-   "date": "2026-10-14",
-   "prayer": "Sunrise",
-   "theirs": "06:35",
-   "ours": "06:37",
-   "diff": 2
-  },
-  {
-   "place": "المحبس",
-   "date": "2026-10-14",
-   "prayer": "Sunrise",
-   "theirs": "06:31",
-   "ours": "06:33",
-   "diff": 2
-  },
-  {
-   "place": "المحبس",
-   "date": "2026-10-14",
-   "prayer": "Maghrib",
-   "theirs": "18:14",
-   "ours": "18:12",
    "diff": -2
   },
   {
-   "place": "سيدي قاسم",
-   "date": "2026-10-15",
+   "place": "أقا",
+   "date": "2026-10-13",
+   "prayer": "Sunrise",
+   "theirs": "06:26",
+   "ours": "06:28",
+   "diff": 2
+  },
+  {
+   "place": "تطوان",
+   "date": "2026-10-14",
+   "prayer": "Sunrise",
+   "theirs": "06:22",
+   "ours": "06:24",
+   "diff": 2
+  },
+  {
+   "place": "زاوية أحنصال",
+   "date": "2026-10-14",
+   "prayer": "Sunrise",
+   "theirs": "06:18",
+   "ours": "06:20",
+   "diff": 2
+  },
+  {
+   "place": "أزيلال",
+   "date": "2026-10-14",
+   "prayer": "Sunrise",
+   "theirs": "06:21",
+   "ours": "06:23",
+   "diff": 2
+  },
+  {
+   "place": "دمنات",
+   "date": "2026-10-14",
    "prayer": "Sunrise",
    "theirs": "06:23",
    "ours": "06:25",
    "diff": 2
   },
   {
-   "place": "كرسيف",
+   "place": "بولمان",
+   "date": "2026-10-14",
+   "prayer": "Sunrise",
+   "theirs": "06:14",
+   "ours": "06:16",
+   "diff": 2
+  },
+  {
+   "place": "رباط الخير",
+   "date": "2026-10-14",
+   "prayer": "Sunrise",
+   "theirs": "06:14",
+   "ours": "06:16",
+   "diff": 2
+  },
+  {
+   "place": "الوليدية",
+   "date": "2026-10-14",
+   "prayer": "Sunrise",
+   "theirs": "06:37",
+   "ours": "06:35",
+   "diff": -2
+  },
+  {
+   "place": "أقا",
+   "date": "2026-10-14",
+   "prayer": "Sunrise",
+   "theirs": "06:27",
+   "ours": "06:29",
+   "diff": 2
+  },
+  {
+   "place": "أكدز",
+   "date": "2026-10-14",
+   "prayer": "Sunrise",
+   "theirs": "06:20",
+   "ours": "06:22",
+   "diff": 2
+  },
+  {
+   "place": "تازارين",
+   "date": "2026-10-14",
+   "prayer": "Maghrib",
+   "theirs": "17:57",
+   "ours": "17:59",
+   "diff": 2
+  },
+  {
+   "place": "كلتة زمور",
+   "date": "2026-10-14",
+   "prayer": "Sunrise",
+   "theirs": "06:44",
+   "ours": "06:42",
+   "diff": -2
+  },
+  {
+   "place": "تطوان",
+   "date": "2026-10-15",
+   "prayer": "Maghrib",
+   "theirs": "17:52",
+   "ours": "17:50",
+   "diff": -2
+  },
+  {
+   "place": "بولمان",
    "date": "2026-10-15",
    "prayer": "Sunrise",
    "theirs": "06:14",
@@ -2034,15 +373,15 @@
    "diff": 2
   },
   {
-   "place": "كرسيف",
+   "place": "تاونات",
    "date": "2026-10-15",
-   "prayer": "Maghrib",
-   "theirs": "17:45",
-   "ours": "17:43",
-   "diff": -2
+   "prayer": "Sunrise",
+   "theirs": "06:18",
+   "ours": "06:20",
+   "diff": 2
   },
   {
-   "place": "سطات",
+   "place": "تافراوت",
    "date": "2026-10-15",
    "prayer": "Sunrise",
    "theirs": "06:30",
@@ -2050,111 +389,71 @@
    "diff": 2
   },
   {
-   "place": "سطات",
-   "date": "2026-10-15",
-   "prayer": "Maghrib",
-   "theirs": "18:03",
-   "ours": "18:01",
-   "diff": -2
-  },
-  {
-   "place": "مولاي يعقوب",
+   "place": "أقا",
    "date": "2026-10-15",
    "prayer": "Sunrise",
-   "theirs": "06:21",
-   "ours": "06:23",
+   "theirs": "06:27",
+   "ours": "06:29",
    "diff": 2
   },
   {
-   "place": "قلعة السراغنة",
-   "date": "2026-10-15",
-   "prayer": "Sunrise",
-   "theirs": "06:28",
-   "ours": "06:30",
-   "diff": 2
-  },
-  {
-   "place": "قلعة السراغنة",
+   "place": "أسول",
    "date": "2026-10-15",
    "prayer": "Maghrib",
-   "theirs": "18:03",
-   "ours": "18:01",
-   "diff": -2
-  },
-  {
-   "place": "اليوسفية",
-   "date": "2026-10-15",
-   "prayer": "Sunrise",
-   "theirs": "06:33",
-   "ours": "06:35",
+   "theirs": "17:57",
+   "ours": "17:59",
    "diff": 2
   },
   {
    "place": "تازارين",
    "date": "2026-10-15",
-   "prayer": "Sunrise",
-   "theirs": "06:20",
-   "ours": "06:22",
-   "diff": 2
-  },
-  {
-   "place": "الزاك",
-   "date": "2026-10-15",
-   "prayer": "Sunrise",
-   "theirs": "06:33",
-   "ours": "06:35",
-   "diff": 2
-  },
-  {
-   "place": "بويزكارن",
-   "date": "2026-10-15",
-   "prayer": "Sunrise",
-   "theirs": "06:35",
-   "ours": "06:37",
-   "diff": 2
-  },
-  {
-   "place": "المحبس",
-   "date": "2026-10-15",
-   "prayer": "Maghrib",
-   "theirs": "18:13",
-   "ours": "18:11",
-   "diff": -2
-  },
-  {
-   "place": "الخميسات",
-   "date": "2026-10-16",
-   "prayer": "Sunrise",
-   "theirs": "06:25",
-   "ours": "06:27",
-   "diff": 2
-  },
-  {
-   "place": "الخميسات",
-   "date": "2026-10-16",
-   "prayer": "Maghrib",
-   "theirs": "17:55",
-   "ours": "17:53",
-   "diff": -2
-  },
-  {
-   "place": "تيفلت",
-   "date": "2026-10-16",
-   "prayer": "Sunrise",
-   "theirs": "06:26",
-   "ours": "06:28",
-   "diff": 2
-  },
-  {
-   "place": "تيفلت",
-   "date": "2026-10-16",
    "prayer": "Maghrib",
    "theirs": "17:56",
-   "ours": "17:54",
+   "ours": "17:58",
+   "diff": 2
+  },
+  {
+   "place": "أوسرد",
+   "date": "2026-10-15",
+   "prayer": "Maghrib",
+   "theirs": "18:36",
+   "ours": "18:38",
+   "diff": 2
+  },
+  {
+   "place": "عين العودة",
+   "date": "2026-10-15",
+   "prayer": "Sunrise",
+   "theirs": "06:29",
+   "ours": "06:27",
    "diff": -2
   },
   {
-   "place": "سيدي قاسم",
+   "place": "فم زكيد",
+   "date": "2026-10-15",
+   "prayer": "Sunrise",
+   "theirs": "06:22",
+   "ours": "06:24",
+   "diff": 2
+  },
+  {
+   "place": "تطوان",
+   "date": "2026-10-16",
+   "prayer": "Maghrib",
+   "theirs": "17:51",
+   "ours": "17:49",
+   "diff": -2
+  },
+  {
+   "place": "تاوريرت",
+   "date": "2026-10-16",
+   "prayer": "Sunrise",
+   "theirs": "06:11",
+   "ours": "06:13",
+   "diff": 2
+  },
+  {
+   "place": "دمنات",
    "date": "2026-10-16",
    "prayer": "Sunrise",
    "theirs": "06:24",
@@ -2162,12 +461,116 @@
    "diff": 2
   },
   {
-   "place": "سيدي قاسم",
+   "place": "بولمان",
+   "date": "2026-10-16",
+   "prayer": "Sunrise",
+   "theirs": "06:15",
+   "ours": "06:17",
+   "diff": 2
+  },
+  {
+   "place": "أقا",
+   "date": "2026-10-16",
+   "prayer": "Sunrise",
+   "theirs": "06:28",
+   "ours": "06:30",
+   "diff": 2
+  },
+  {
+   "place": "تازارين",
    "date": "2026-10-16",
    "prayer": "Maghrib",
-   "theirs": "17:53",
-   "ours": "17:51",
+   "theirs": "17:55",
+   "ours": "17:57",
+   "diff": 2
+  },
+  {
+   "place": "العيون",
+   "date": "2026-10-16",
+   "prayer": "Sunrise",
+   "theirs": "06:51",
+   "ours": "06:49",
    "diff": -2
+  },
+  {
+   "place": "كلتة زمور",
+   "date": "2026-10-16",
+   "prayer": "Sunrise",
+   "theirs": "06:45",
+   "ours": "06:43",
+   "diff": -2
+  },
+  {
+   "place": "تاوريرت",
+   "date": "2026-10-17",
+   "prayer": "Sunrise",
+   "theirs": "06:12",
+   "ours": "06:14",
+   "diff": 2
+  },
+  {
+   "place": "زاوية أحنصال",
+   "date": "2026-10-17",
+   "prayer": "Sunrise",
+   "theirs": "06:20",
+   "ours": "06:22",
+   "diff": 2
+  },
+  {
+   "place": "دمنات",
+   "date": "2026-10-17",
+   "prayer": "Sunrise",
+   "theirs": "06:25",
+   "ours": "06:27",
+   "diff": 2
+  },
+  {
+   "place": "بولمان",
+   "date": "2026-10-17",
+   "prayer": "Sunrise",
+   "theirs": "06:16",
+   "ours": "06:18",
+   "diff": 2
+  },
+  {
+   "place": "الوليدية",
+   "date": "2026-10-17",
+   "prayer": "Sunrise",
+   "theirs": "06:39",
+   "ours": "06:37",
+   "diff": -2
+  },
+  {
+   "place": "أكدز",
+   "date": "2026-10-17",
+   "prayer": "Sunrise",
+   "theirs": "06:22",
+   "ours": "06:24",
+   "diff": 2
+  },
+  {
+   "place": "تازارين",
+   "date": "2026-10-17",
+   "prayer": "Maghrib",
+   "theirs": "17:54",
+   "ours": "17:56",
+   "diff": 2
+  },
+  {
+   "place": "تطوان",
+   "date": "2026-10-18",
+   "prayer": "Sunrise",
+   "theirs": "06:25",
+   "ours": "06:27",
+   "diff": 2
+  },
+  {
+   "place": "زاوية أحنصال",
+   "date": "2026-10-18",
+   "prayer": "Sunrise",
+   "theirs": "06:21",
+   "ours": "06:23",
+   "diff": 2
   }
  ]
 }

@@ -21,6 +21,7 @@ export const UMM_AL_QURA_METHOD_ID = 4;
 /** Isha after Maghrib in Ramadan, against 90 minutes the rest of the year. */
 export const UMM_AL_QURA_RAMADAN_ISHA_MINUTES = 120;
 import { computeImsak, DEFAULT_IMSAK_OFFSET_MINUTES } from './imsak';
+import { horizonDipMinutes, solarDeclinationDegrees } from '../prayer/horizonDip';
 
 // ── METHOD IDS ARE ALADHAN'S, AND SO ARE THE ANGLES ───────────────────
 //
@@ -292,7 +293,34 @@ type LocalAdhanParams = {
   school: number;
   /** Minutes before Fajr that Imsak fires. Defaults to the canonical 10. */
   imsakOffsetMinutes?: number;
+  /**
+   * Height above sea level, metres, when the place is a listed one whose
+   * authority lowers the horizon for it (see `horizonDip.ts`). Sunrise
+   * comes earlier and Maghrib later by the dip; nothing else moves.
+   */
+  heightM?: number;
+  /**
+   * The authority's own allowance for the place's horizon, minutes, where
+   * it is a figure rather than a height: Kemenag gives its highland
+   * regencies four and a half minutes whatever their height. Takes the
+   * place of the dip when set.
+   */
+  horizonMin?: number;
 };
+
+/**
+ * How much horizon each authority allows a height, degrees per √m.
+ * JAKIM's summit zones follow the textbook 1.76′; the Moroccan ministry's
+ * cities a gentler figure, and Kemenag's regencies their own — each read
+ * off the tables (tools/verify-methods). Any other method given a height
+ * gets the textbook value.
+ */
+export const HORIZON_DIP_DEGREES_PER_SQRT_M: Readonly<Record<number, number>> = {
+  17: 0.0293,
+  20: 0, // Kemenag classes a regency as highland or not (`horizonMin`); the height itself is not used
+  21: 0.02,
+};
+const DEFAULT_DIP_DEGREES_PER_SQRT_M = 0.0293;
 
 /**
  * The day's prayers as instants (Date), from the method's parameters —
@@ -331,8 +359,68 @@ export function computeLocalAdhanInstants(params: LocalAdhanParams): PrayerInsta
     calc.highLatitudeRule = adhanHighLatitudeRule(getCalculationPreferences().highLatitudeRule);
   }
   const latitude = computedLatitude(params.latitude, params.longitude, dayDate, calc);
+  // The Algerian ministry's Asr takes the noon shadow as tan(φ − δ) with
+  // its sign — no absolute value — so on the days the sun passes north
+  // of the zenith (In Guezzam and Tamanrasset about the June solstice)
+  // its shadow is shorter and its Asr earlier, thirteen minutes at In
+  // Guezzam on 5 June. Read off its tables (tools/verify-methods); the
+  // tables are served as published, and the stand-in follows them.
+  const signedShadowAsr =
+    methodId === ALGERIA_SIGNED_SHADOW_METHOD_ID &&
+    params.school !== 1 &&
+    solarDeclinationDegrees(dayDate) > params.latitude;
+  const horizonMinutes =
+    params.horizonMin ??
+    (params.heightM && params.heightM > 0
+      ? horizonDipMinutes(
+          params.latitude,
+          dayDate,
+          params.heightM,
+          HORIZON_DIP_DEGREES_PER_SQRT_M[methodId] ?? DEFAULT_DIP_DEGREES_PER_SQRT_M,
+        )
+      : 0);
+  if (!(horizonMinutes > 0) && !signedShadowAsr) {
+    const pt = new PrayerTimes(new Coordinates(latitude, params.longitude), dayDate, calc);
+    return { fajr: pt.fajr, sunrise: pt.sunrise, dhuhr: pt.dhuhr, asr: pt.asr, maghrib: pt.maghrib, isha: pt.isha };
+  }
+  // The horizon moves sunrise and Maghrib by a fraction of a minute, so
+  // the rounding to the minute has to come after the move, not before:
+  // the authority rounds its exact time, and so must this.
+  calc.rounding = 'none' as CalculationParameters['rounding'];
   const pt = new PrayerTimes(new Coordinates(latitude, params.longitude), dayDate, calc);
-  return { fajr: pt.fajr, sunrise: pt.sunrise, dhuhr: pt.dhuhr, asr: pt.asr, maghrib: pt.maghrib, isha: pt.isha };
+  const shiftMs = horizonMinutes * 60_000;
+  return {
+    fajr: toMinute(pt.fajr),
+    sunrise: toMinute(new Date(pt.sunrise.getTime() - shiftMs)),
+    dhuhr: toMinute(pt.dhuhr),
+    asr: toMinute(signedShadowAsr ? signedShadowAsrInstant(pt.dhuhr, params.latitude, dayDate) : pt.asr),
+    maghrib: toMinute(new Date(pt.maghrib.getTime() + shiftMs)),
+    isha: toMinute(pt.isha),
+  };
+}
+
+const ALGERIA_SIGNED_SHADOW_METHOD_ID = 19;
+
+/**
+ * Asr from the signed noon shadow: the sun at the altitude whose shadow
+ * is one length plus tan(φ − δ), φ − δ negative when the sun culminates
+ * north of the zenith. `transit` is the exact solar noon (Dhuhr with no
+ * margin and no rounding, which method 19 has).
+ */
+function signedShadowAsrInstant(transit: Date, latitude: number, day: Date): Date {
+  const rad = Math.PI / 180;
+  const phi = latitude * rad;
+  const delta = solarDeclinationDegrees(day) * rad;
+  const shadow = 1 + Math.tan(phi - delta);
+  const altitude = Math.atan(1 / shadow);
+  const cosH = (Math.sin(altitude) - Math.sin(phi) * Math.sin(delta)) / (Math.cos(phi) * Math.cos(delta));
+  const hours = (Math.acos(Math.max(-1, Math.min(1, cosH))) / rad) / 15;
+  return new Date(transit.getTime() + hours * 3_600_000);
+}
+
+/** The nearest minute, as adhan.js's own rounding gives it. */
+function toMinute(d: Date): Date {
+  return new Date(Math.round(d.getTime() / 60_000) * 60_000);
 }
 
 export function computeLocalAdhanTimes(params: LocalAdhanParams): PrayerTimesResult {

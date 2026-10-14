@@ -3,1597 +3,595 @@
  "name": "Indonesia — Kemenag",
  "method": 20,
  "toleranceMin": 1,
- "builtAt": "2026-10-14T15:15:30.462Z",
+ "builtAt": "2026-10-14T15:38:37.636Z",
  "tableBuiltAt": "2026-10-14T14:03:46.646Z",
  "places": 517,
  "placesMissing": 0,
  "days": 44462,
  "from": "2026-10-07",
  "to": "2026-12-31",
- "times": 230136,
- "within": 216652,
- "outsideShare": 0.0586,
- "maxAbs": 5,
+ "times": 264192,
+ "within": 256856,
+ "outsideShare": 0.0278,
+ "maxAbs": 7,
  "perPrayer": {
   "Fajr": {
-   "times": 38356,
-   "within": 35655,
+   "times": 44032,
+   "within": 42019,
    "histogram": {
-    "0": 24229,
-    "-1": 5218,
-    "+1": 6208,
-    "-2": 1203,
-    "+2": 1050,
-    "-3": 154,
-    "+3": 245,
-    "+4": 47,
-    "+5": 2
+    "0": 28509,
+    "-1": 6333,
+    "+1": 7177,
+    "-2": 676,
+    "+2": 726,
+    "-3": 81,
+    "+3": 14,
+    "+6": 122,
+    "+5": 243,
+    "+7": 10,
+    "+4": 141
    },
-   "maxAbs": 5,
-   "meanDiff": 0.03
+   "maxAbs": 7,
+   "meanDiff": 0.08
   },
   "Sunrise": {
-   "times": 38356,
-   "within": 35650,
+   "times": 44032,
+   "within": 42486,
    "histogram": {
-    "0": 23346,
-    "-1": 4222,
-    "+1": 8082,
-    "-2": 1013,
-    "+2": 1328,
-    "-3": 72,
-    "+3": 242,
-    "+4": 51
-   },
-   "maxAbs": 4,
-   "meanDiff": 0.14
-  },
-  "Dhuhr": {
-   "times": 38356,
-   "within": 36343,
-   "histogram": {
-    "0": 24389,
-    "-1": 5658,
-    "+1": 6296,
-    "-2": 903,
-    "+2": 997,
-    "+3": 50,
-    "-3": 63
+    "0": 27659,
+    "-1": 5564,
+    "+1": 9263,
+    "-2": 536,
+    "+2": 974,
+    "+3": 3,
+    "-3": 33
    },
    "maxAbs": 3,
-   "meanDiff": 0.02
+   "meanDiff": 0.1
+  },
+  "Dhuhr": {
+   "times": 44032,
+   "within": 43398,
+   "histogram": {
+    "0": 29631,
+    "-1": 6658,
+    "+1": 7109,
+    "-2": 300,
+    "+2": 334
+   },
+   "maxAbs": 2,
+   "meanDiff": 0.01
   },
   "Asr": {
-   "times": 38356,
-   "within": 36230,
+   "times": 44032,
+   "within": 43248,
    "histogram": {
-    "0": 24415,
-    "-1": 5526,
-    "+1": 6289,
-    "-2": 963,
-    "+2": 1003,
-    "-3": 66,
-    "+3": 91,
-    "+4": 3
+    "0": 29461,
+    "-1": 6562,
+    "+1": 7225,
+    "-2": 376,
+    "+2": 402,
+    "-3": 6
    },
-   "maxAbs": 4,
+   "maxAbs": 3,
    "meanDiff": 0.02
   },
   "Maghrib": {
-   "times": 38356,
-   "within": 36405,
+   "times": 44032,
+   "within": 43115,
    "histogram": {
-    "0": 23922,
-    "-1": 6157,
-    "+1": 6326,
-    "+2": 892,
-    "-2": 818,
-    "+3": 128,
-    "-3": 113
+    "0": 28279,
+    "-1": 6864,
+    "+1": 7972,
+    "+2": 477,
+    "-2": 401,
+    "-3": 39
    },
    "maxAbs": 3,
-   "meanDiff": 0.01
+   "meanDiff": 0.03
   },
   "Isha": {
-   "times": 38356,
-   "within": 36369,
+   "times": 44032,
+   "within": 42590,
    "histogram": {
-    "0": 23608,
-    "-1": 6138,
-    "+1": 6623,
-    "+2": 950,
-    "-2": 771,
-    "+3": 131,
-    "-3": 134,
-    "+4": 1
+    "0": 28046,
+    "-1": 7199,
+    "+1": 7345,
+    "+2": 497,
+    "-2": 377,
+    "-3": 168,
+    "-4": 296,
+    "-5": 104
    },
-   "maxAbs": 4,
-   "meanDiff": 0.02
+   "maxAbs": 5,
+   "meanDiff": -0.04
   }
  },
- "misplaced": [
+ "misplaced": [],
+ "accepted": 2580,
+ "imsakBeforeFajr": 10,
+ "alarm": false,
+ "alarmReasons": [],
+ "worst": [
   {
-   "place": "KAB. MALUKU BARAT DAYA (Maluku)",
-   "days": 86,
-   "median": {
-    "Fajr": 7,
-    "Sunrise": 7,
-    "Dhuhr": 6,
-    "Asr": 6,
-    "Maghrib": 6,
-    "Isha": 6
-   },
-   "maxAbs": 8,
-   "misplaced": true
-  },
-  {
-   "place": "KAB. NIAS UTARA (Sumatera Utara)",
-   "days": 86,
-   "median": {
-    "Fajr": 5,
-    "Sunrise": 5,
-    "Dhuhr": 5,
-    "Asr": 5,
-    "Maghrib": 5,
-    "Isha": 5
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "KAB. EMPAT LAWANG (Sumatera Selatan)",
-   "days": 86,
-   "median": {
-    "Fajr": 4,
-    "Sunrise": 4,
-    "Dhuhr": 4,
-    "Asr": 4,
-    "Maghrib": 4,
-    "Isha": 4
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "KAB. MALINAU (Kalimantan Utara)",
-   "days": 86,
-   "median": {
-    "Fajr": 2,
-    "Sunrise": 2.5,
-    "Dhuhr": 4,
-    "Asr": 4,
-    "Maghrib": 5,
-    "Isha": 5
-   },
-   "maxAbs": 6,
-   "misplaced": true
-  },
-  {
-   "place": "KAB. KONAWE KEPULAUAN (Sulawesi Tenggara)",
-   "days": 86,
-   "median": {
-    "Fajr": 3,
-    "Sunrise": 4,
-    "Dhuhr": 4,
-    "Asr": 4,
-    "Maghrib": 4,
-    "Isha": 4
-   },
-   "maxAbs": 4,
-   "misplaced": true
-  },
-  {
-   "place": "KAB. YAPEN WAROPEN (Papua)",
-   "days": 86,
-   "median": {
-    "Fajr": -4,
-    "Sunrise": -4,
-    "Dhuhr": -4,
-    "Asr": -4,
-    "Maghrib": -3,
-    "Isha": -3
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "KAB. KEPULAUAN MENTAWAI (Sumatera Barat)",
-   "days": 86,
-   "median": {
-    "Fajr": 4,
-    "Sunrise": 4,
-    "Dhuhr": 3,
-    "Asr": 3,
-    "Maghrib": 2,
-    "Isha": 2
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "PEKAJANG KAB. LINGGA (Kepulauan Riau)",
-   "days": 86,
-   "median": {
-    "Fajr": -5,
-    "Sunrise": -5,
-    "Dhuhr": -3,
-    "Asr": -3,
-    "Maghrib": 0,
-    "Isha": 0
-   },
-   "maxAbs": 6,
-   "misplaced": true
-  },
-  {
-   "place": "KAB. KUTAI KARTANEGARA (Kalimantan Timur)",
-   "days": 86,
-   "median": {
-    "Fajr": 4,
-    "Sunrise": 4,
-    "Dhuhr": 3,
-    "Asr": 3,
-    "Maghrib": 2,
-    "Isha": 2
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "KAB. HALMAHERA TENGAH (Maluku Utara)",
-   "days": 86,
-   "median": {
-    "Fajr": -3,
-    "Sunrise": -3,
-    "Dhuhr": -3,
-    "Asr": -3,
-    "Maghrib": -3,
-    "Isha": -3
-   },
-   "maxAbs": 3,
-   "misplaced": true
-  },
-  {
-   "place": "KAB. ASMAT (Papua)",
-   "days": 86,
-   "median": {
-    "Fajr": -3,
-    "Sunrise": -3,
-    "Dhuhr": -3,
-    "Asr": -3,
-    "Maghrib": -3,
-    "Isha": -3
-   },
-   "maxAbs": 3,
-   "misplaced": true
-  },
-  {
-   "place": "KAB. FAKFAK (Papua Barat)",
-   "days": 86,
-   "median": {
-    "Fajr": -4,
-    "Sunrise": -3.5,
-    "Dhuhr": -3,
-    "Asr": -3,
-    "Maghrib": -3,
-    "Isha": -3
-   },
-   "maxAbs": 4,
-   "misplaced": true
-  },
-  {
-   "place": "KAB. TAMBRAUW (Papua Barat)",
-   "days": 86,
-   "median": {
-    "Fajr": -3,
-    "Sunrise": -3,
-    "Dhuhr": -3,
-    "Asr": -3,
-    "Maghrib": -2,
-    "Isha": -2
-   },
-   "maxAbs": 4,
-   "misplaced": true
-  },
-  {
-   "place": "KAB. KEPULAUAN SELAYAR (Sulawesi Selatan)",
-   "days": 86,
-   "median": {
-    "Fajr": -4,
-    "Sunrise": -4,
-    "Dhuhr": -2,
-    "Asr": -2,
-    "Maghrib": 0,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "KAB. KARO (Sumatera Utara)",
-   "days": 86,
-   "median": {
-    "Fajr": 1,
-    "Sunrise": 5,
-    "Dhuhr": 1,
-    "Asr": 1,
-    "Maghrib": -3.5,
-    "Isha": 1
-   },
-   "maxAbs": 6,
-   "misplaced": true
-  },
-  {
-   "place": "KAB. SIMALUNGUN (Sumatera Utara)",
-   "days": 86,
-   "median": {
-    "Fajr": 1,
-    "Sunrise": 5,
-    "Dhuhr": 1,
-    "Asr": 1,
-    "Maghrib": -4,
-    "Isha": 0
-   },
-   "maxAbs": 6,
-   "misplaced": true
-  },
-  {
-   "place": "KAB. SOLOK (Sumatera Barat)",
-   "days": 86,
-   "median": {
-    "Fajr": -1,
-    "Sunrise": 4,
-    "Dhuhr": -1,
-    "Asr": -1,
-    "Maghrib": -5,
-    "Isha": -1
-   },
-   "maxAbs": 6,
-   "misplaced": true
-  },
-  {
-   "place": "KAB. KERINCI (Jambi)",
-   "days": 86,
-   "median": {
-    "Fajr": -1,
-    "Sunrise": 3,
-    "Dhuhr": -1,
-    "Asr": -1,
-    "Maghrib": -5,
-    "Isha": -1
-   },
-   "maxAbs": 6,
-   "misplaced": true
-  },
-  {
-   "place": "KAB. REJANG LEBONG (Bengkulu)",
-   "days": 86,
-   "median": {
-    "Fajr": -1,
-    "Sunrise": 4,
-    "Dhuhr": -1,
-    "Asr": -1,
-    "Maghrib": -5,
-    "Isha": -1
-   },
-   "maxAbs": 6,
-   "misplaced": true
-  },
-  {
-   "place": "KAB. LAMPUNG BARAT (Lampung)",
-   "days": 86,
-   "median": {
-    "Fajr": -1,
-    "Sunrise": 3,
-    "Dhuhr": -1,
-    "Asr": -1,
-    "Maghrib": -5,
-    "Isha": -1
-   },
-   "maxAbs": 6,
-   "misplaced": true
-  },
-  {
-   "place": "KAB. LEMBATA (Nusa Tenggara Timur)",
-   "days": 86,
-   "median": {
-    "Fajr": -0.5,
-    "Sunrise": 4,
-    "Dhuhr": -1,
-    "Asr": 0,
-    "Maghrib": -5,
-    "Isha": -1
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "KAB. TIMOR TENGAH SELATAN (Nusa Tenggara Timur)",
-   "days": 86,
-   "median": {
-    "Fajr": -1,
-    "Sunrise": 4,
-    "Dhuhr": -1,
-    "Asr": -1,
-    "Maghrib": -5,
-    "Isha": -1
-   },
-   "maxAbs": 6,
-   "misplaced": true
-  },
-  {
-   "place": "KAB. TANA TORAJA (Sulawesi Selatan)",
-   "days": 86,
-   "median": {
-    "Fajr": 1,
-    "Sunrise": 5,
-    "Dhuhr": 1,
-    "Asr": 1,
-    "Maghrib": -4,
-    "Isha": 1
-   },
-   "maxAbs": 6,
-   "misplaced": true
-  },
-  {
-   "place": "KAB. DEIYAI (Papua)",
-   "days": 86,
-   "median": {
-    "Fajr": -1,
-    "Sunrise": 3,
-    "Dhuhr": -1,
-    "Asr": -1,
-    "Maghrib": -5,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "KAB. DOGIYAI (Papua)",
-   "days": 86,
-   "median": {
-    "Fajr": 1,
-    "Sunrise": 6,
-    "Dhuhr": 1,
-    "Asr": 1,
-    "Maghrib": -3,
-    "Isha": 1
-   },
-   "maxAbs": 6,
-   "misplaced": true
+   "place": "KAB. INTAN JAYA (Papua)",
+   "date": "2026-11-23",
+   "prayer": "Fajr",
+   "theirs": "04:04",
+   "ours": "04:11",
+   "diff": 7
   },
   {
    "place": "KAB. INTAN JAYA (Papua)",
-   "days": 86,
-   "median": {
-    "Fajr": 6,
-    "Sunrise": 6,
-    "Dhuhr": 1,
-    "Asr": 1,
-    "Maghrib": -3,
-    "Isha": -3
-   },
-   "maxAbs": 7,
-   "misplaced": true
+   "date": "2026-11-30",
+   "prayer": "Fajr",
+   "theirs": "04:05",
+   "ours": "04:12",
+   "diff": 7
   },
   {
-   "place": "KAB. TOLIKARA (Papua)",
-   "days": 86,
-   "median": {
-    "Fajr": 1,
-    "Sunrise": 5,
-    "Dhuhr": 1,
-    "Asr": 1,
-    "Maghrib": -4,
-    "Isha": 0
-   },
-   "maxAbs": 6,
-   "misplaced": true
+   "place": "KAB. INTAN JAYA (Papua)",
+   "date": "2026-12-08",
+   "prayer": "Fajr",
+   "theirs": "04:07",
+   "ours": "04:14",
+   "diff": 7
   },
   {
-   "place": "KAB. YALIMO (Papua)",
-   "days": 86,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 4,
-    "Dhuhr": -1,
-    "Asr": -1,
-    "Maghrib": -5,
-    "Isha": -1
-   },
-   "maxAbs": 6,
-   "misplaced": true
+   "place": "KAB. INTAN JAYA (Papua)",
+   "date": "2026-12-11",
+   "prayer": "Fajr",
+   "theirs": "04:08",
+   "ours": "04:15",
+   "diff": 7
+  },
+  {
+   "place": "KAB. INTAN JAYA (Papua)",
+   "date": "2026-12-16",
+   "prayer": "Fajr",
+   "theirs": "04:10",
+   "ours": "04:17",
+   "diff": 7
+  },
+  {
+   "place": "KAB. INTAN JAYA (Papua)",
+   "date": "2026-12-18",
+   "prayer": "Fajr",
+   "theirs": "04:11",
+   "ours": "04:18",
+   "diff": 7
+  },
+  {
+   "place": "KAB. INTAN JAYA (Papua)",
+   "date": "2026-12-20",
+   "prayer": "Fajr",
+   "theirs": "04:12",
+   "ours": "04:19",
+   "diff": 7
+  },
+  {
+   "place": "KAB. INTAN JAYA (Papua)",
+   "date": "2026-12-26",
+   "prayer": "Fajr",
+   "theirs": "04:15",
+   "ours": "04:22",
+   "diff": 7
+  },
+  {
+   "place": "KAB. INTAN JAYA (Papua)",
+   "date": "2026-12-28",
+   "prayer": "Fajr",
+   "theirs": "04:16",
+   "ours": "04:23",
+   "diff": 7
+  },
+  {
+   "place": "KAB. INTAN JAYA (Papua)",
+   "date": "2026-12-30",
+   "prayer": "Fajr",
+   "theirs": "04:17",
+   "ours": "04:24",
+   "diff": 7
+  },
+  {
+   "place": "KAB. INTAN JAYA (Papua)",
+   "date": "2026-10-07",
+   "prayer": "Fajr",
+   "theirs": "04:16",
+   "ours": "04:22",
+   "diff": 6
+  },
+  {
+   "place": "KAB. INTAN JAYA (Papua)",
+   "date": "2026-10-09",
+   "prayer": "Fajr",
+   "theirs": "04:15",
+   "ours": "04:21",
+   "diff": 6
+  },
+  {
+   "place": "KAB. INTAN JAYA (Papua)",
+   "date": "2026-10-11",
+   "prayer": "Fajr",
+   "theirs": "04:14",
+   "ours": "04:20",
+   "diff": 6
+  },
+  {
+   "place": "KAB. INTAN JAYA (Papua)",
+   "date": "2026-10-12",
+   "prayer": "Fajr",
+   "theirs": "04:14",
+   "ours": "04:20",
+   "diff": 6
+  },
+  {
+   "place": "KAB. INTAN JAYA (Papua)",
+   "date": "2026-10-14",
+   "prayer": "Fajr",
+   "theirs": "04:13",
+   "ours": "04:19",
+   "diff": 6
+  },
+  {
+   "place": "KAB. INTAN JAYA (Papua)",
+   "date": "2026-10-16",
+   "prayer": "Fajr",
+   "theirs": "04:12",
+   "ours": "04:18",
+   "diff": 6
+  },
+  {
+   "place": "KAB. INTAN JAYA (Papua)",
+   "date": "2026-10-19",
+   "prayer": "Fajr",
+   "theirs": "04:11",
+   "ours": "04:17",
+   "diff": 6
+  },
+  {
+   "place": "KAB. INTAN JAYA (Papua)",
+   "date": "2026-10-21",
+   "prayer": "Fajr",
+   "theirs": "04:10",
+   "ours": "04:16",
+   "diff": 6
+  },
+  {
+   "place": "KAB. INTAN JAYA (Papua)",
+   "date": "2026-10-22",
+   "prayer": "Fajr",
+   "theirs": "04:10",
+   "ours": "04:16",
+   "diff": 6
   },
   {
    "place": "KAB. PEGUNUNGAN ARFAK (Papua Barat)",
-   "days": 86,
-   "median": {
-    "Fajr": 5,
-    "Sunrise": 5,
-    "Dhuhr": 1,
-    "Asr": 1,
-    "Maghrib": -4,
-    "Isha": -4
-   },
-   "maxAbs": 6,
-   "misplaced": true
+   "date": "2026-10-23",
+   "prayer": "Fajr",
+   "theirs": "04:24",
+   "ours": "04:30",
+   "diff": 6
   },
   {
-   "place": "KAB. ACEH TENGAH (Aceh)",
-   "days": 86,
-   "median": {
-    "Fajr": -1,
-    "Sunrise": 4,
-    "Dhuhr": -0.5,
-    "Asr": -1,
-    "Maghrib": -5,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
+   "place": "KAB. INTAN JAYA (Papua)",
+   "date": "2026-10-24",
+   "prayer": "Fajr",
+   "theirs": "04:09",
+   "ours": "04:15",
+   "diff": 6
   },
   {
-   "place": "KAB. BENER MERIAH (Aceh)",
-   "days": 86,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 4,
-    "Dhuhr": -0.5,
-    "Asr": 0,
-    "Maghrib": -5,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
+   "place": "KAB. INTAN JAYA (Papua)",
+   "date": "2026-10-25",
+   "prayer": "Fajr",
+   "theirs": "04:09",
+   "ours": "04:15",
+   "diff": 6
   },
   {
-   "place": "KAB. GAYO LUES (Aceh)",
-   "days": 86,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": 0,
-    "Maghrib": -4,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
+   "place": "KAB. INTAN JAYA (Papua)",
+   "date": "2026-10-27",
+   "prayer": "Fajr",
+   "theirs": "04:08",
+   "ours": "04:14",
+   "diff": 6
   },
   {
-   "place": "KAB. DAIRI (Sumatera Utara)",
-   "days": 86,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": 0,
-    "Maghrib": -4,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
+   "place": "KAB. PEGUNUNGAN ARFAK (Papua Barat)",
+   "date": "2026-10-27",
+   "prayer": "Fajr",
+   "theirs": "04:23",
+   "ours": "04:29",
+   "diff": 6
   },
   {
-   "place": "KAB. HUMBANG HASUNDUTAN (Sumatera Utara)",
-   "days": 86,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": 0,
-    "Maghrib": -4,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
+   "place": "KAB. INTAN JAYA (Papua)",
+   "date": "2026-10-28",
+   "prayer": "Fajr",
+   "theirs": "04:08",
+   "ours": "04:14",
+   "diff": 6
   },
   {
-   "place": "KAB. PAKPAK BHARAT (Sumatera Utara)",
-   "days": 86,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": 0,
-    "Maghrib": -4,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
+   "place": "KAB. INTAN JAYA (Papua)",
+   "date": "2026-10-30",
+   "prayer": "Fajr",
+   "theirs": "04:07",
+   "ours": "04:13",
+   "diff": 6
   },
   {
-   "place": "KAB. SAMOSIR (Sumatera Utara)",
-   "days": 86,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": 0,
-    "Maghrib": -5,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "KAB. TAPANULI UTARA (Sumatera Utara)",
-   "days": 86,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": 0,
-    "Maghrib": -5,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "KAB. TOBA SAMOSIR (Sumatera Utara)",
-   "days": 86,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": 0,
-    "Maghrib": -4,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "KAB. SOLOK SELATAN (Sumatera Barat)",
-   "days": 86,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": 0,
-    "Maghrib": -4,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "KOTA BUKITTINGGI (Sumatera Barat)",
-   "days": 86,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": 0,
-    "Maghrib": -4,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "KOTA PADANGPANJANG (Sumatera Barat)",
-   "days": 86,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": 0,
-    "Maghrib": -4,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "KOTA SUNGAI PENUH (Jambi)",
-   "days": 86,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": 0,
-    "Maghrib": -4,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "KAB. KEPAHIANG (Bengkulu)",
-   "days": 86,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": 0,
-    "Maghrib": -5,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "KOTA PAGAR ALAM (Sumatera Selatan)",
-   "days": 86,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": 0,
-    "Maghrib": -4,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "KAB. BANDUNG (Jawa Barat)",
-   "days": 86,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": 0,
-    "Maghrib": -5,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "KAB. BANDUNG BARAT (Jawa Barat)",
-   "days": 86,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 5,
-    "Dhuhr": 0,
-    "Asr": 0,
-    "Maghrib": -4,
-    "Isha": 0.5
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "KAB. GARUT (Jawa Barat)",
-   "days": 86,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": 0,
-    "Maghrib": -4,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "KAB. KUNINGAN (Jawa Barat)",
-   "days": 86,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": 0,
-    "Maghrib": -5,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "KOTA BANDUNG (Jawa Barat)",
-   "days": 86,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": 0,
-    "Maghrib": -4,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "KOTA BOGOR (Jawa Barat)",
-   "days": 86,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": 0,
-    "Maghrib": -4,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "KOTA CIMAHI (Jawa Barat)",
-   "days": 86,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": 0,
-    "Maghrib": -4,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "KOTA SUKABUMI (Jawa Barat)",
-   "days": 86,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": 0,
-    "Maghrib": -4,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "KAB. TEMANGGUNG (Jawa Tengah)",
-   "days": 86,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 5,
-    "Dhuhr": 0,
-    "Asr": 0,
-    "Maghrib": -4,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "KAB. WONOSOBO (Jawa Tengah)",
-   "days": 86,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": 0,
-    "Maghrib": -4,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "KOTA SALATIGA (Jawa Tengah)",
-   "days": 86,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": 0,
-    "Maghrib": -4,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "KAB. GRESIK (Jawa Timur)",
-   "days": 86,
-   "median": {
-    "Fajr": 2,
-    "Sunrise": 2,
-    "Dhuhr": 0,
-    "Asr": 0,
-    "Maghrib": -2,
-    "Isha": -3
-   },
-   "maxAbs": 4,
-   "misplaced": true
-  },
-  {
-   "place": "KOTA BATU (Jawa Timur)",
-   "days": 86,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": 0,
-    "Maghrib": -4,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "KAB. MANGGARAI (Nusa Tenggara Timur)",
-   "days": 86,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 5,
-    "Dhuhr": 0,
-    "Asr": 0,
-    "Maghrib": -4,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "KAB. NGADA (Nusa Tenggara Timur)",
-   "days": 86,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": 0,
-    "Maghrib": -5,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "KAB. TORAJA UTARA (Sulawesi Selatan)",
-   "days": 86,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 5,
-    "Dhuhr": 0,
-    "Asr": 0,
-    "Maghrib": -4,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "KAB. MINAHASA (Sulawesi Utara)",
-   "days": 86,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 5,
-    "Dhuhr": 0,
-    "Asr": 0,
-    "Maghrib": -4,
-    "Isha": 1
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "KOTA TOMOHON (Sulawesi Utara)",
-   "days": 86,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": 0,
-    "Maghrib": -4,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "KAB. MAMASA (Sulawesi Barat)",
-   "days": 86,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 5,
-    "Dhuhr": 0,
-    "Asr": 0,
-    "Maghrib": -4,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "KAB. JAYAWIJAYA (Papua)",
-   "days": 86,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": 0,
-    "Maghrib": -4,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "KAB. LANNY JAYA (Papua)",
-   "days": 86,
-   "median": {
-    "Fajr": 5,
-    "Sunrise": 5,
-    "Dhuhr": 0,
-    "Asr": 0,
-    "Maghrib": -4,
-    "Isha": -4
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "KAB. MAMBERAMO TENGAH (Papua)",
-   "days": 86,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 5,
-    "Dhuhr": 0,
-    "Asr": 0,
-    "Maghrib": -4,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "KAB. PANIAI (Papua)",
-   "days": 86,
-   "median": {
-    "Fajr": 5,
-    "Sunrise": 5,
-    "Dhuhr": 0,
-    "Asr": 0,
-    "Maghrib": -5,
-    "Isha": -5
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "KAB. PEGUNUNGAN BINTANG (Papua)",
-   "days": 86,
-   "median": {
-    "Fajr": 1,
-    "Sunrise": 5,
-    "Dhuhr": 0,
-    "Asr": 0,
-    "Maghrib": -5,
-    "Isha": 0
-   },
-   "maxAbs": 6,
-   "misplaced": true
+   "place": "KAB. INTAN JAYA (Papua)",
+   "date": "2026-10-31",
+   "prayer": "Fajr",
+   "theirs": "04:07",
+   "ours": "04:13",
+   "diff": 6
   },
   {
    "place": "KAB. PUNCAK (Papua)",
-   "days": 86,
-   "median": {
-    "Fajr": 5,
-    "Sunrise": 5,
-    "Dhuhr": 0,
-    "Asr": 1,
-    "Maghrib": -4,
-    "Isha": -4
-   },
-   "maxAbs": 6,
-   "misplaced": true
-  },
-  {
-   "place": "KAB. PUNCAK JAYA (Papua)",
-   "days": 86,
-   "median": {
-    "Fajr": 4,
-    "Sunrise": 4,
-    "Dhuhr": 0,
-    "Asr": 0,
-    "Maghrib": -4,
-    "Isha": -4
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  },
-  {
-   "place": "KAB. YAHUKIMO (Papua)",
-   "days": 86,
-   "median": {
-    "Fajr": 0,
-    "Sunrise": 5,
-    "Dhuhr": 0,
-    "Asr": 0,
-    "Maghrib": -4,
-    "Isha": 0
-   },
-   "maxAbs": 5,
-   "misplaced": true
-  }
- ],
- "accepted": 0,
- "imsakBeforeFajr": 10,
- "alarm": true,
- "alarmReasons": [
-  "5.9% of times are more than 1 min from the table (allowed 5%) — the method",
-  "71 place(s) disagree by a constant at every date — coordinates or a per-place margin, not the angles"
- ],
- "worst": [
-  {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
-   "date": "2026-12-20",
+   "date": "2026-10-31",
    "prayer": "Fajr",
-   "theirs": "03:55",
-   "ours": "04:00",
-   "diff": 5
+   "theirs": "04:04",
+   "ours": "04:10",
+   "diff": 6
   },
   {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
-   "date": "2026-12-24",
+   "place": "KAB. PEGUNUNGAN ARFAK (Papua Barat)",
+   "date": "2026-10-31",
    "prayer": "Fajr",
-   "theirs": "03:57",
-   "ours": "04:02",
-   "diff": 5
+   "theirs": "04:22",
+   "ours": "04:28",
+   "diff": 6
   },
   {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
-   "date": "2026-10-09",
-   "prayer": "Asr",
-   "theirs": "14:25",
-   "ours": "14:29",
-   "diff": 4
+   "place": "KAB. INTAN JAYA (Papua)",
+   "date": "2026-11-01",
+   "prayer": "Fajr",
+   "theirs": "04:07",
+   "ours": "04:13",
+   "diff": 6
   },
   {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
-   "date": "2026-10-11",
-   "prayer": "Asr",
-   "theirs": "14:26",
-   "ours": "14:30",
-   "diff": 4
+   "place": "KAB. INTAN JAYA (Papua)",
+   "date": "2026-11-03",
+   "prayer": "Fajr",
+   "theirs": "04:06",
+   "ours": "04:12",
+   "diff": 6
   },
   {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
-   "date": "2026-10-14",
-   "prayer": "Asr",
-   "theirs": "14:27",
-   "ours": "14:31",
-   "diff": 4
+   "place": "KAB. INTAN JAYA (Papua)",
+   "date": "2026-11-04",
+   "prayer": "Fajr",
+   "theirs": "04:06",
+   "ours": "04:12",
+   "diff": 6
   },
   {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "place": "KAB. PUNCAK (Papua)",
+   "date": "2026-11-04",
+   "prayer": "Fajr",
+   "theirs": "04:03",
+   "ours": "04:09",
+   "diff": 6
+  },
+  {
+   "place": "KAB. INTAN JAYA (Papua)",
    "date": "2026-11-05",
    "prayer": "Fajr",
-   "theirs": "03:48",
-   "ours": "03:52",
-   "diff": 4
+   "theirs": "04:06",
+   "ours": "04:12",
+   "diff": 6
   },
   {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "place": "KAB. PEGUNUNGAN ARFAK (Papua Barat)",
+   "date": "2026-11-06",
+   "prayer": "Fajr",
+   "theirs": "04:21",
+   "ours": "04:27",
+   "diff": 6
+  },
+  {
+   "place": "KAB. INTAN JAYA (Papua)",
+   "date": "2026-11-07",
+   "prayer": "Fajr",
+   "theirs": "04:05",
+   "ours": "04:11",
+   "diff": 6
+  },
+  {
+   "place": "KAB. PEGUNUNGAN ARFAK (Papua Barat)",
+   "date": "2026-11-07",
+   "prayer": "Fajr",
+   "theirs": "04:21",
+   "ours": "04:27",
+   "diff": 6
+  },
+  {
+   "place": "KAB. INTAN JAYA (Papua)",
+   "date": "2026-11-08",
+   "prayer": "Fajr",
+   "theirs": "04:05",
+   "ours": "04:11",
+   "diff": 6
+  },
+  {
+   "place": "KAB. INTAN JAYA (Papua)",
+   "date": "2026-11-09",
+   "prayer": "Fajr",
+   "theirs": "04:05",
+   "ours": "04:11",
+   "diff": 6
+  },
+  {
+   "place": "KAB. PUNCAK (Papua)",
+   "date": "2026-11-09",
+   "prayer": "Fajr",
+   "theirs": "04:02",
+   "ours": "04:08",
+   "diff": 6
+  },
+  {
+   "place": "KAB. INTAN JAYA (Papua)",
+   "date": "2026-11-10",
+   "prayer": "Fajr",
+   "theirs": "04:05",
+   "ours": "04:11",
+   "diff": 6
+  },
+  {
+   "place": "KAB. PUNCAK (Papua)",
+   "date": "2026-11-10",
+   "prayer": "Fajr",
+   "theirs": "04:02",
+   "ours": "04:08",
+   "diff": 6
+  },
+  {
+   "place": "KAB. INTAN JAYA (Papua)",
+   "date": "2026-11-11",
+   "prayer": "Fajr",
+   "theirs": "04:05",
+   "ours": "04:11",
+   "diff": 6
+  },
+  {
+   "place": "KAB. INTAN JAYA (Papua)",
    "date": "2026-11-12",
    "prayer": "Fajr",
-   "theirs": "03:47",
-   "ours": "03:51",
-   "diff": 4
+   "theirs": "04:05",
+   "ours": "04:11",
+   "diff": 6
   },
   {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "place": "KAB. INTAN JAYA (Papua)",
    "date": "2026-11-13",
    "prayer": "Fajr",
-   "theirs": "03:47",
-   "ours": "03:51",
-   "diff": 4
+   "theirs": "04:05",
+   "ours": "04:11",
+   "diff": 6
   },
   {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
-   "date": "2026-11-14",
-   "prayer": "Fajr",
-   "theirs": "03:47",
-   "ours": "03:51",
-   "diff": 4
-  },
-  {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "place": "KAB. INTAN JAYA (Papua)",
    "date": "2026-11-15",
    "prayer": "Fajr",
-   "theirs": "03:47",
-   "ours": "03:51",
-   "diff": 4
+   "theirs": "04:04",
+   "ours": "04:10",
+   "diff": 6
   },
   {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "place": "KAB. INTAN JAYA (Papua)",
    "date": "2026-11-16",
    "prayer": "Fajr",
-   "theirs": "03:47",
-   "ours": "03:51",
-   "diff": 4
+   "theirs": "04:04",
+   "ours": "04:10",
+   "diff": 6
   },
   {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
-   "date": "2026-11-16",
-   "prayer": "Sunrise",
-   "theirs": "05:03",
-   "ours": "05:07",
-   "diff": 4
-  },
-  {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "place": "KAB. INTAN JAYA (Papua)",
    "date": "2026-11-17",
    "prayer": "Fajr",
-   "theirs": "03:47",
-   "ours": "03:51",
-   "diff": 4
+   "theirs": "04:04",
+   "ours": "04:10",
+   "diff": 6
   },
   {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
-   "date": "2026-11-17",
-   "prayer": "Sunrise",
-   "theirs": "05:03",
-   "ours": "05:07",
-   "diff": 4
-  },
-  {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "place": "KAB. INTAN JAYA (Papua)",
    "date": "2026-11-18",
    "prayer": "Fajr",
-   "theirs": "03:47",
-   "ours": "03:51",
-   "diff": 4
+   "theirs": "04:04",
+   "ours": "04:10",
+   "diff": 6
   },
   {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
-   "date": "2026-11-18",
-   "prayer": "Sunrise",
-   "theirs": "05:03",
-   "ours": "05:07",
-   "diff": 4
-  },
-  {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "place": "KAB. INTAN JAYA (Papua)",
    "date": "2026-11-19",
    "prayer": "Fajr",
-   "theirs": "03:47",
-   "ours": "03:51",
-   "diff": 4
+   "theirs": "04:04",
+   "ours": "04:10",
+   "diff": 6
   },
   {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "place": "KAB. INTAN JAYA (Papua)",
    "date": "2026-11-20",
    "prayer": "Fajr",
-   "theirs": "03:47",
-   "ours": "03:51",
-   "diff": 4
+   "theirs": "04:04",
+   "ours": "04:10",
+   "diff": 6
   },
   {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "place": "KAB. INTAN JAYA (Papua)",
    "date": "2026-11-21",
    "prayer": "Fajr",
-   "theirs": "03:47",
-   "ours": "03:51",
-   "diff": 4
+   "theirs": "04:04",
+   "ours": "04:10",
+   "diff": 6
   },
   {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "place": "KAB. INTAN JAYA (Papua)",
    "date": "2026-11-22",
    "prayer": "Fajr",
-   "theirs": "03:47",
-   "ours": "03:51",
-   "diff": 4
+   "theirs": "04:04",
+   "ours": "04:10",
+   "diff": 6
   },
   {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
-   "date": "2026-11-22",
-   "prayer": "Sunrise",
-   "theirs": "05:04",
-   "ours": "05:08",
-   "diff": 4
-  },
-  {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "place": "KAB. PEGUNUNGAN ARFAK (Papua Barat)",
    "date": "2026-11-23",
    "prayer": "Fajr",
-   "theirs": "03:47",
-   "ours": "03:51",
-   "diff": 4
+   "theirs": "04:21",
+   "ours": "04:27",
+   "diff": 6
   },
   {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
-   "date": "2026-11-23",
-   "prayer": "Sunrise",
-   "theirs": "05:04",
-   "ours": "05:08",
-   "diff": 4
-  },
-  {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "place": "KAB. INTAN JAYA (Papua)",
    "date": "2026-11-24",
-   "prayer": "Sunrise",
-   "theirs": "05:04",
-   "ours": "05:08",
-   "diff": 4
+   "prayer": "Fajr",
+   "theirs": "04:05",
+   "ours": "04:11",
+   "diff": 6
   },
   {
-   "place": "KAB. KUTAI TIMUR (Kalimantan Timur)",
+   "place": "KAB. PEGUNUNGAN ARFAK (Papua Barat)",
+   "date": "2026-11-24",
+   "prayer": "Fajr",
+   "theirs": "04:21",
+   "ours": "04:27",
+   "diff": 6
+  },
+  {
+   "place": "KAB. INTAN JAYA (Papua)",
    "date": "2026-11-25",
-   "prayer": "Sunrise",
-   "theirs": "05:50",
-   "ours": "05:54",
-   "diff": 4
+   "prayer": "Fajr",
+   "theirs": "04:05",
+   "ours": "04:11",
+   "diff": 6
   },
   {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "place": "KAB. PEGUNUNGAN ARFAK (Papua Barat)",
+   "date": "2026-11-25",
+   "prayer": "Fajr",
+   "theirs": "04:21",
+   "ours": "04:27",
+   "diff": 6
+  },
+  {
+   "place": "KAB. INTAN JAYA (Papua)",
    "date": "2026-11-26",
-   "prayer": "Sunrise",
-   "theirs": "05:05",
-   "ours": "05:09",
-   "diff": 4
-  },
-  {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
-   "date": "2026-11-27",
    "prayer": "Fajr",
-   "theirs": "03:48",
-   "ours": "03:52",
-   "diff": 4
+   "theirs": "04:05",
+   "ours": "04:11",
+   "diff": 6
   },
   {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
-   "date": "2026-11-27",
-   "prayer": "Sunrise",
-   "theirs": "05:05",
-   "ours": "05:09",
-   "diff": 4
-  },
-  {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
-   "date": "2026-11-28",
+   "place": "KAB. PUNCAK (Papua)",
+   "date": "2026-11-26",
    "prayer": "Fajr",
-   "theirs": "03:48",
-   "ours": "03:52",
-   "diff": 4
-  },
-  {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
-   "date": "2026-11-28",
-   "prayer": "Sunrise",
-   "theirs": "05:05",
-   "ours": "05:09",
-   "diff": 4
-  },
-  {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
-   "date": "2026-11-29",
-   "prayer": "Fajr",
-   "theirs": "03:48",
-   "ours": "03:52",
-   "diff": 4
-  },
-  {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
-   "date": "2026-11-30",
-   "prayer": "Fajr",
-   "theirs": "03:48",
-   "ours": "03:52",
-   "diff": 4
-  },
-  {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
-   "date": "2026-11-30",
-   "prayer": "Sunrise",
-   "theirs": "05:06",
-   "ours": "05:10",
-   "diff": 4
-  },
-  {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
-   "date": "2026-12-01",
-   "prayer": "Sunrise",
-   "theirs": "05:06",
-   "ours": "05:10",
-   "diff": 4
-  },
-  {
-   "place": "KAB. KUTAI TIMUR (Kalimantan Timur)",
-   "date": "2026-12-01",
-   "prayer": "Sunrise",
-   "theirs": "05:52",
-   "ours": "05:56",
-   "diff": 4
-  },
-  {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
-   "date": "2026-12-02",
-   "prayer": "Fajr",
-   "theirs": "03:49",
-   "ours": "03:53",
-   "diff": 4
-  },
-  {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
-   "date": "2026-12-03",
-   "prayer": "Fajr",
-   "theirs": "03:49",
-   "ours": "03:53",
-   "diff": 4
-  },
-  {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
-   "date": "2026-12-03",
-   "prayer": "Sunrise",
-   "theirs": "05:07",
-   "ours": "05:11",
-   "diff": 4
-  },
-  {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
-   "date": "2026-12-04",
-   "prayer": "Fajr",
-   "theirs": "03:49",
-   "ours": "03:53",
-   "diff": 4
-  },
-  {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
-   "date": "2026-12-04",
-   "prayer": "Sunrise",
-   "theirs": "05:07",
-   "ours": "05:11",
-   "diff": 4
-  },
-  {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
-   "date": "2026-12-05",
-   "prayer": "Fajr",
-   "theirs": "03:50",
-   "ours": "03:54",
-   "diff": 4
-  },
-  {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
-   "date": "2026-12-05",
-   "prayer": "Sunrise",
-   "theirs": "05:08",
-   "ours": "05:12",
-   "diff": 4
-  },
-  {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
-   "date": "2026-12-06",
-   "prayer": "Fajr",
-   "theirs": "03:50",
-   "ours": "03:54",
-   "diff": 4
-  },
-  {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
-   "date": "2026-12-06",
-   "prayer": "Sunrise",
-   "theirs": "05:08",
-   "ours": "05:12",
-   "diff": 4
-  },
-  {
-   "place": "KAB. KUTAI TIMUR (Kalimantan Timur)",
-   "date": "2026-12-06",
-   "prayer": "Sunrise",
-   "theirs": "05:54",
-   "ours": "05:58",
-   "diff": 4
-  },
-  {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
-   "date": "2026-12-07",
-   "prayer": "Fajr",
-   "theirs": "03:50",
-   "ours": "03:54",
-   "diff": 4
-  },
-  {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
-   "date": "2026-12-08",
-   "prayer": "Fajr",
-   "theirs": "03:51",
-   "ours": "03:55",
-   "diff": 4
-  },
-  {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
-   "date": "2026-12-08",
-   "prayer": "Sunrise",
-   "theirs": "05:09",
-   "ours": "05:13",
-   "diff": 4
-  },
-  {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
-   "date": "2026-12-09",
-   "prayer": "Fajr",
-   "theirs": "03:51",
-   "ours": "03:55",
-   "diff": 4
-  },
-  {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
-   "date": "2026-12-09",
-   "prayer": "Sunrise",
-   "theirs": "05:09",
-   "ours": "05:13",
-   "diff": 4
-  },
-  {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
-   "date": "2026-12-10",
-   "prayer": "Fajr",
-   "theirs": "03:51",
-   "ours": "03:55",
-   "diff": 4
-  },
-  {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
-   "date": "2026-12-10",
-   "prayer": "Sunrise",
-   "theirs": "05:10",
-   "ours": "05:14",
-   "diff": 4
-  },
-  {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
-   "date": "2026-12-11",
-   "prayer": "Fajr",
-   "theirs": "03:52",
-   "ours": "03:56",
-   "diff": 4
-  },
-  {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
-   "date": "2026-12-11",
-   "prayer": "Sunrise",
-   "theirs": "05:10",
-   "ours": "05:14",
-   "diff": 4
-  },
-  {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
-   "date": "2026-12-12",
-   "prayer": "Fajr",
-   "theirs": "03:52",
-   "ours": "03:56",
-   "diff": 4
-  },
-  {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
-   "date": "2026-12-13",
-   "prayer": "Fajr",
-   "theirs": "03:52",
-   "ours": "03:56",
-   "diff": 4
-  },
-  {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
-   "date": "2026-12-13",
-   "prayer": "Sunrise",
-   "theirs": "05:11",
-   "ours": "05:15",
-   "diff": 4
-  },
-  {
-   "place": "KAB. KUTAI TIMUR (Kalimantan Timur)",
-   "date": "2026-12-13",
-   "prayer": "Sunrise",
-   "theirs": "05:57",
-   "ours": "06:01",
-   "diff": 4
-  },
-  {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
-   "date": "2026-12-14",
-   "prayer": "Fajr",
-   "theirs": "03:53",
-   "ours": "03:57",
-   "diff": 4
-  },
-  {
-   "place": "KAB. SERUYAN (Kalimantan Tengah)",
-   "date": "2026-12-14",
-   "prayer": "Sunrise",
-   "theirs": "05:11",
-   "ours": "05:15",
-   "diff": 4
+   "theirs": "04:02",
+   "ours": "04:08",
+   "diff": 6
   }
  ]
 }

@@ -25,39 +25,52 @@ describe('verify-methods', () => {
     expect(r.alarm).toBe(false);
   });
 
-  it('finds Algeria within a minute, bar the far south’s Asr', () => {
+  it('finds Algeria within a minute, the far south’s Asr included', () => {
     if (!haveTable('marw')) return;
     const r = verifyAuthority(byId('marw'), []);
     expect(r.within / r.times).toBeGreaterThan(0.99);
     for (const p of ['Fajr', 'Sunrise', 'Dhuhr', 'Maghrib', 'Isha'] as const) {
       expect(r.perPrayer[p].maxAbs).toBeLessThanOrEqual(1);
     }
+    expect(r.perPrayer.Asr.maxAbs).toBeLessThanOrEqual(2);
+    expect(r.alarm).toBe(false);
   });
 
-  it('tells a misplaced town from a wrong method', () => {
+  it('finds Morocco on the minute, hill towns at their height', () => {
     if (!haveTable('habous')) return;
     const r = verifyAuthority(byId('habous'), []);
-    // The far south of the ministry's list sits tens of minutes off in
-    // every prayer: coordinates. The method itself is on the minute.
-    expect(r.misplaced.length).toBeGreaterThan(0);
-    expect(Math.abs(r.misplaced[0].median.Dhuhr)).toBeGreaterThanOrEqual(3);
+    expect(r.within / r.times).toBeGreaterThan(0.98);
     expect(r.perPrayer.Dhuhr.maxAbs).toBeLessThanOrEqual(2);
+  });
+
+  it('tells a place the authority computes elsewhere from a wrong method', () => {
+    if (!haveTable('kemenag')) return;
+    // Without accepted.json: the regencies the ministry computes at a
+    // point of its own are off by a constant, and say so; the method is not.
+    const r = verifyAuthority(byId('kemenag'), []);
+    expect(r.misplaced.length).toBeGreaterThan(0);
     expect(r.alarmReasons.join(' ')).toMatch(/coordinates/);
+    expect(r.within / r.times).toBeGreaterThan(0.95);
+    // The entries set the whole place aside.
+    const accepted: Accepted[] = r.misplaced.map(m => ({ authority: 'kemenag', place: m.place, note: 'test' }));
+    const after = verifyAuthority(byId('kemenag'), accepted);
+    expect(after.misplaced).toHaveLength(0);
+    expect(after.accepted).toBeGreaterThan(0);
   });
 
   it('sets an accepted difference aside', () => {
-    if (!haveTable('marw')) return;
-    const before = verifyAuthority(byId('marw'), []);
+    if (!haveTable('jakim')) return;
+    const before = verifyAuthority(byId('jakim'), []);
     const worst = before.worst[0];
     if (!worst) return;
     const accepted: Accepted[] = [
-      { authority: 'marw', place: worst.place, prayer: worst.prayer, maxAbs: 20, note: 'test' },
+      { authority: 'jakim', place: worst.place, prayer: worst.prayer, maxAbs: 20, note: 'test' },
     ];
-    const after = verifyAuthority(byId('marw'), accepted);
+    const after = verifyAuthority(byId('jakim'), accepted);
     expect(after.accepted).toBeGreaterThan(0);
     expect(after.worst.some(w => w.place === worst.place && w.prayer === worst.prayer)).toBe(false);
     // An entry for another authority changes nothing.
-    const other = verifyAuthority(byId('marw'), [{ ...accepted[0], authority: 'muis' }]);
+    const other = verifyAuthority(byId('jakim'), [{ ...accepted[0], authority: 'muis' }]);
     expect(other.accepted).toBe(0);
   });
 

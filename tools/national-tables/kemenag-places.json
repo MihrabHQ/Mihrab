@@ -6,7 +6,8 @@
   "prov": "Aceh",
   "name": "KAB. ACEH BARAT",
   "lat": 4.4423,
-  "lon": 96.193
+  "lon": 96.193,
+  "heightM": 42
  },
  {
   "id": 2,
@@ -15,7 +16,8 @@
   "prov": "Aceh",
   "name": "KAB. ACEH BARAT DAYA",
   "lat": 3.8336,
-  "lon": 96.8516
+  "lon": 96.8516,
+  "heightM": 629
  },
  {
   "id": 3,
@@ -24,7 +26,8 @@
   "prov": "Aceh",
   "name": "KAB. ACEH BESAR",
   "lat": 5.3542,
-  "lon": 95.4962
+  "lon": 95.4962,
+  "heightM": 54
  },
  {
   "id": 4,
@@ -33,7 +36,8 @@
   "prov": "Aceh",
   "name": "KAB. ACEH JAYA",
   "lat": 4.8115,
-  "lon": 95.7002
+  "lon": 95.7002,
+  "heightM": 326
  },
  {
   "id": 5,
@@ -42,7 +46,8 @@
   "prov": "Aceh",
   "name": "KAB. ACEH SELATAN",
   "lat": 3.068,
-  "lon": 97.4688
+  "lon": 97.4688,
+  "heightM": 543
  },
  {
   "id": 6,
@@ -51,7 +56,8 @@
   "prov": "Aceh",
   "name": "KAB. ACEH SINGKIL",
   "lat": 2.3759,
-  "lon": 97.9244
+  "lon": 97.9244,
+  "heightM": 22
  },
  {
   "id": 7,
@@ -60,7 +66,8 @@
   "prov": "Aceh",
   "name": "KAB. ACEH TAMIANG",
   "lat": 4.2123,
-  "lon": 97.9147
+  "lon": 97.9147,
+  "heightM": 48
  },
  {
   "id": 8,
@@ -69,7 +76,9 @@
   "prov": "Aceh",
   "name": "KAB. ACEH TENGAH",
   "lat": 4.5643,
-  "lon": 96.9619
+  "lon": 96.9619,
+  "heightM": 1682,
+  "horizonMin": 4.5
  },
  {
   "id": 9,
@@ -78,7 +87,8 @@
   "prov": "Aceh",
   "name": "KAB. ACEH TENGGARA",
   "lat": 3.3389,
-  "lon": 97.7456
+  "lon": 97.7456,
+  "heightM": 1323
  },
  {
   "id": 10,
@@ -87,7 +97,8 @@
   "prov": "Aceh",
   "name": "KAB. ACEH TIMUR",
   "lat": 4.7017,
-  "lon": 97.645
+  "lon": 97.645,
+  "heightM": 229
  },
  {
   "id": 11,
@@ -96,7 +107,8 @@
   "prov": "Aceh",
   "name": "KAB. ACEH UTARA",
   "lat": 4.9912,
-  "lon": 97.1587
+  "lon": 97.1587,
+  "heightM": 49
  },
  {
   "id": 12,
@@ -105,7 +117,9 @@
   "prov": "Aceh",
   "name": "KAB. BENER MERIAH",
   "lat": 4.7739,
-  "lon": 96.978
+  "lon": 96.978,
+  "heightM": 1400,
+  "horizonMin": 4.5
  },
  {
   "id": 13,
@@ -114,7 +128,8 @@
   "prov": "Aceh",
   "name": "KAB. BIREUEN",
   "lat": 5.0827,
-  "lon": 96.5921
+  "lon": 96.5921,
+  "heightM": 257
  },
  {
   "id": 14,
@@ -123,7 +138,9 @@
   "prov": "Aceh",
   "name": "KAB. GAYO LUES",
   "lat": 3.9776,
-  "lon": 97.3321
+  "lon": 97.3321,
+  "heightM": 981,
+  "horizonMin": 4.5
  },
  {
   "id": 15,
@@ -132,7 +149,8 @@
   "prov": "Aceh",
   "name": "KAB. NAGAN RAYA",
   "lat": 4.1812,
-  "lon": 96.5258
+  "lon": 96.5258,
+  "heightM": 173
  },
  {
   "id": 16,
@@ -141,7 +159,8 @@
   "prov": "Aceh",
   "name": "KAB. PIDIE",
   "lat": 5.1143,
-  "lon": 95.9413
+  "lon": 95.9413,
+  "heightM": 479
  },
  {
   "id": 17,
@@ -150,7 +169,8 @@
   "prov": "Aceh",
   "name": "KAB. PIDIE JAYA",
   "lat": 5.1048,
-  "lon": 96.2117
+  "lon": 96.2117,
+  "heightM": 294
  },
  {
   "id": 18,
@@ -159,7 +179,8 @@
   "prov": "Aceh",
   "name": "KAB. SIMEULUE",
   "lat": 2.629,
-  "lon": 96.0221
+  "lon": 96.0221,
+  "heightM": 202
  },
  {
   "id": 19,
@@ -168,7 +189,8 @@
   "prov": "Aceh",
   "name": "KOTA BANDA ACEH",
   "lat": 5.5528,
-  "lon": 95.3193
+  "lon": 95.3193,
+  "heightM": 10
  },
  {
   "id": 20,
@@ -177,7 +199,8 @@
   "prov": "Aceh",
   "name": "KOTA LANGSA",
   "lat": 4.4731,
-  "lon": 97.9682
+  "lon": 97.9682,
+  "heightM": 9
  },
  {
   "id": 21,
@@ -186,7 +209,8 @@
   "prov": "Aceh",
   "name": "KOTA LHOKSEUMAWE",
   "lat": 5.179,
-  "lon": 97.1481
+  "lon": 97.1481,
+  "heightM": 5
  },
  {
   "id": 22,
@@ -195,7 +219,8 @@
   "prov": "Aceh",
   "name": "KOTA SABANG",
   "lat": 5.8927,
-  "lon": 95.3226
+  "lon": 95.3226,
+  "heightM": 39
  },
  {
   "id": 23,
@@ -204,7 +229,8 @@
   "prov": "Aceh",
   "name": "KOTA SUBULUSSALAM",
   "lat": 2.6403,
-  "lon": 98.0052
+  "lon": 98.0052,
+  "heightM": 83
  },
  {
   "id": 24,
@@ -213,7 +239,8 @@
   "prov": "Sumatera Utara",
   "name": "KAB. ASAHAN",
   "lat": 2.8518,
-  "lon": 99.6233
+  "lon": 99.6233,
+  "heightM": 42
  },
  {
   "id": 25,
@@ -222,7 +249,8 @@
   "prov": "Sumatera Utara",
   "name": "KAB. BATU BARA",
   "lat": 3.2241,
-  "lon": 99.5036
+  "lon": 99.5036,
+  "heightM": 9
  },
  {
   "id": 26,
@@ -231,7 +259,9 @@
   "prov": "Sumatera Utara",
   "name": "KAB. DAIRI",
   "lat": 2.829,
-  "lon": 98.3123
+  "lon": 98.3123,
+  "heightM": 732,
+  "horizonMin": 4.5
  },
  {
   "id": 27,
@@ -240,7 +270,8 @@
   "prov": "Sumatera Utara",
   "name": "KAB. DELI SERDANG",
   "lat": 3.4745,
-  "lon": 98.7159
+  "lon": 98.7159,
+  "heightM": 77
  },
  {
   "id": 28,
@@ -249,7 +280,9 @@
   "prov": "Sumatera Utara",
   "name": "KAB. HUMBANG HASUNDUTAN",
   "lat": 2.2681,
-  "lon": 98.7681
+  "lon": 98.7681,
+  "heightM": 1443,
+  "horizonMin": 4.5
  },
  {
   "id": 29,
@@ -258,7 +291,9 @@
   "prov": "Sumatera Utara",
   "name": "KAB. KARO",
   "lat": 3.0804,
-  "lon": 98.3328
+  "lon": 98.3328,
+  "heightM": 806,
+  "horizonMin": 4.5
  },
  {
   "id": 30,
@@ -267,7 +302,8 @@
   "prov": "Sumatera Utara",
   "name": "KAB. LABUHANBATU",
   "lat": 2.4259,
-  "lon": 99.7678
+  "lon": 99.7678,
+  "heightM": 8
  },
  {
   "id": 31,
@@ -276,7 +312,8 @@
   "prov": "Sumatera Utara",
   "name": "KAB. LABUHANBATU SELATAN",
   "lat": 1.8933,
-  "lon": 100.0921
+  "lon": 100.0921,
+  "heightM": 21
  },
  {
   "id": 32,
@@ -285,7 +322,8 @@
   "prov": "Sumatera Utara",
   "name": "KAB. LABUHANBATU UTARA",
   "lat": 2.4259,
-  "lon": 99.7678
+  "lon": 99.7678,
+  "heightM": 8
  },
  {
   "id": 33,
@@ -294,7 +332,8 @@
   "prov": "Sumatera Utara",
   "name": "KAB. LANGKAT",
   "lat": 3.7617,
-  "lon": 98.1769
+  "lon": 98.1769,
+  "heightM": 97
  },
  {
   "id": 34,
@@ -303,7 +342,8 @@
   "prov": "Sumatera Utara",
   "name": "KAB. MANDAILING NATAL",
   "lat": 0.7537,
-  "lon": 99.2164
+  "lon": 99.2164,
+  "heightM": 638
  },
  {
   "id": 35,
@@ -312,7 +352,8 @@
   "prov": "Sumatera Utara",
   "name": "KAB. NIAS",
   "lat": 1.2893,
-  "lon": 97.613
+  "lon": 97.613,
+  "heightM": 15
  },
  {
   "id": 36,
@@ -321,7 +362,8 @@
   "prov": "Sumatera Utara",
   "name": "KAB. NIAS BARAT",
   "lat": 0.8965,
-  "lon": 97.3433
+  "lon": 97.3433,
+  "heightM": 0
  },
  {
   "id": 37,
@@ -330,7 +372,8 @@
   "prov": "Sumatera Utara",
   "name": "KAB. NIAS SELATAN",
   "lat": 0.0681,
-  "lon": 98.2622
+  "lon": 97.7622,
+  "heightM": 0
  },
  {
   "id": 38,
@@ -339,7 +382,8 @@
   "prov": "Sumatera Utara",
   "name": "KAB. NIAS UTARA",
   "lat": 1.3748,
-  "lon": 97.1446
+  "lon": 97.1446,
+  "heightM": 56
  },
  {
   "id": 39,
@@ -348,7 +392,8 @@
   "prov": "Sumatera Utara",
   "name": "KAB. PADANG LAWAS",
   "lat": 1.6292,
-  "lon": 99.6926
+  "lon": 99.6926,
+  "heightM": 143
  },
  {
   "id": 40,
@@ -357,7 +402,8 @@
   "prov": "Sumatera Utara",
   "name": "KAB. PADANG LAWAS UTARA",
   "lat": 1.6292,
-  "lon": 99.6926
+  "lon": 99.6926,
+  "heightM": 143
  },
  {
   "id": 41,
@@ -366,7 +412,9 @@
   "prov": "Sumatera Utara",
   "name": "KAB. PAKPAK BHARAT",
   "lat": 2.5396,
-  "lon": 98.3205
+  "lon": 98.3205,
+  "heightM": 1008,
+  "horizonMin": 4.5
  },
  {
   "id": 42,
@@ -375,7 +423,9 @@
   "prov": "Sumatera Utara",
   "name": "KAB. SAMOSIR",
   "lat": 2.5936,
-  "lon": 98.8011
+  "lon": 98.8011,
+  "heightM": 1519,
+  "horizonMin": 4.5
  },
  {
   "id": 43,
@@ -384,7 +434,8 @@
   "prov": "Sumatera Utara",
   "name": "KAB. SERDANG BEDAGAI",
   "lat": 3.3486,
-  "lon": 99.0001
+  "lon": 99.0001,
+  "heightM": 57
  },
  {
   "id": 44,
@@ -393,7 +444,9 @@
   "prov": "Sumatera Utara",
   "name": "KAB. SIMALUNGUN",
   "lat": 2.9507,
-  "lon": 98.7843
+  "lon": 98.7843,
+  "heightM": 1083,
+  "horizonMin": 4.5
  },
  {
   "id": 45,
@@ -402,7 +455,8 @@
   "prov": "Sumatera Utara",
   "name": "KAB. TAPANULI SELATAN",
   "lat": 1.5506,
-  "lon": 99.2104
+  "lon": 99.2104,
+  "heightM": 903
  },
  {
   "id": 46,
@@ -411,7 +465,8 @@
   "prov": "Sumatera Utara",
   "name": "KAB. TAPANULI TENGAH",
   "lat": 1.8241,
-  "lon": 98.2768
+  "lon": 98.7768,
+  "heightM": 0
  },
  {
   "id": 47,
@@ -420,7 +475,9 @@
   "prov": "Sumatera Utara",
   "name": "KAB. TAPANULI UTARA",
   "lat": 1.9983,
-  "lon": 99.0605
+  "lon": 99.0605,
+  "heightM": 1400,
+  "horizonMin": 4.5
  },
  {
   "id": 48,
@@ -429,7 +486,9 @@
   "prov": "Sumatera Utara",
   "name": "KAB. TOBA SAMOSIR",
   "lat": 2.33,
-  "lon": 99.07
+  "lon": 99.07,
+  "heightM": 936,
+  "horizonMin": 4.5
  },
  {
   "id": 49,
@@ -438,7 +497,8 @@
   "prov": "Sumatera Utara",
   "name": "KOTA BINJAI",
   "lat": 3.6064,
-  "lon": 98.49
+  "lon": 98.49,
+  "heightM": 35
  },
  {
   "id": 50,
@@ -447,7 +507,8 @@
   "prov": "Sumatera Utara",
   "name": "KOTA GUNUNGSITOLI",
   "lat": 1.2896,
-  "lon": 97.6131
+  "lon": 97.6131,
+  "heightM": 15
  },
  {
   "id": 51,
@@ -456,7 +517,8 @@
   "prov": "Sumatera Utara",
   "name": "KOTA MEDAN",
   "lat": 3.5895,
-  "lon": 98.6742
+  "lon": 98.6742,
+  "heightM": 28
  },
  {
   "id": 52,
@@ -465,7 +527,8 @@
   "prov": "Sumatera Utara",
   "name": "KOTA PADANGSIDEMPUAN",
   "lat": 1.3354,
-  "lon": 99.3032
+  "lon": 99.3032,
+  "heightM": 275
  },
  {
   "id": 53,
@@ -474,7 +537,8 @@
   "prov": "Sumatera Utara",
   "name": "KOTA PEMATANGSIANTAR",
   "lat": 2.9589,
-  "lon": 99.0654
+  "lon": 99.0654,
+  "heightM": 394
  },
  {
   "id": 54,
@@ -483,7 +547,8 @@
   "prov": "Sumatera Utara",
   "name": "KOTA SIBOLGA",
   "lat": 1.7341,
-  "lon": 98.7897
+  "lon": 98.7897,
+  "heightM": 8
  },
  {
   "id": 55,
@@ -492,7 +557,8 @@
   "prov": "Sumatera Utara",
   "name": "KOTA TANJUNGBALAI",
   "lat": 2.9703,
-  "lon": 99.8021
+  "lon": 99.8021,
+  "heightM": 2
  },
  {
   "id": 56,
@@ -501,7 +567,8 @@
   "prov": "Sumatera Utara",
   "name": "KOTA TEBING TINGGI",
   "lat": 3.3274,
-  "lon": 99.1623
+  "lon": 99.1623,
+  "heightM": 25
  },
  {
   "id": 57,
@@ -510,7 +577,8 @@
   "prov": "Sumatera Barat",
   "name": "KAB. AGAM",
   "lat": -0.2547,
-  "lon": 100.17
+  "lon": 100.17,
+  "heightM": 463
  },
  {
   "id": 58,
@@ -519,7 +587,8 @@
   "prov": "Sumatera Barat",
   "name": "KAB. DHARMASRAYA",
   "lat": -1.2586,
-  "lon": 101.5799
+  "lon": 101.5799,
+  "heightM": 154
  },
  {
   "id": 59,
@@ -528,7 +597,8 @@
   "prov": "Sumatera Barat",
   "name": "KAB. KEPULAUAN MENTAWAI",
   "lat": -1.3588,
-  "lon": 98.895
+  "lon": 99.645,
+  "heightM": 186
  },
  {
   "id": 60,
@@ -537,7 +607,8 @@
   "prov": "Sumatera Barat",
   "name": "KAB. LIMA PULUH KOTA",
   "lat": 0.0279,
-  "lon": 100.5913
+  "lon": 100.5913,
+  "heightM": 1018
  },
  {
   "id": 61,
@@ -546,7 +617,8 @@
   "prov": "Sumatera Barat",
   "name": "KAB. PADANG PARIAMAN",
   "lat": -0.5691,
-  "lon": 100.277
+  "lon": 100.277,
+  "heightM": 92
  },
  {
   "id": 62,
@@ -555,7 +627,8 @@
   "prov": "Sumatera Barat",
   "name": "KAB. PASAMAN",
   "lat": 0.3974,
-  "lon": 100.025
+  "lon": 100.025,
+  "heightM": 501
  },
  {
   "id": 63,
@@ -564,7 +637,8 @@
   "prov": "Sumatera Barat",
   "name": "KAB. PASAMAN BARAT",
   "lat": 0.1875,
-  "lon": 99.6935
+  "lon": 99.6935,
+  "heightM": 11
  },
  {
   "id": 64,
@@ -573,7 +647,8 @@
   "prov": "Sumatera Barat",
   "name": "KAB. PESISIR SELATAN",
   "lat": -1.7186,
-  "lon": 100.927
+  "lon": 100.927,
+  "heightM": 592
  },
  {
   "id": 65,
@@ -582,7 +657,8 @@
   "prov": "Sumatera Barat",
   "name": "KAB. SIJUNJUNG",
   "lat": -0.6513,
-  "lon": 101.0708
+  "lon": 101.0708,
+  "heightM": 726
  },
  {
   "id": 66,
@@ -591,7 +667,9 @@
   "prov": "Sumatera Barat",
   "name": "KAB. SOLOK",
   "lat": -0.931,
-  "lon": 100.8043
+  "lon": 100.8043,
+  "heightM": 1055,
+  "horizonMin": 4.5
  },
  {
   "id": 67,
@@ -600,7 +678,9 @@
   "prov": "Sumatera Barat",
   "name": "KAB. SOLOK SELATAN",
   "lat": -1.5573,
-  "lon": 101.2395
+  "lon": 101.2395,
+  "heightM": 567,
+  "horizonMin": 4.5
  },
  {
   "id": 68,
@@ -609,7 +689,8 @@
   "prov": "Sumatera Barat",
   "name": "KAB. TANAH DATAR",
   "lat": -0.469,
-  "lon": 100.6362
+  "lon": 100.6362,
+  "heightM": 357
  },
  {
   "id": 69,
@@ -618,7 +699,9 @@
   "prov": "Sumatera Barat",
   "name": "KOTA BUKITTINGGI",
   "lat": -0.3052,
-  "lon": 100.3695
+  "lon": 100.3695,
+  "heightM": 936,
+  "horizonMin": 4.5
  },
  {
   "id": 70,
@@ -627,7 +710,8 @@
   "prov": "Sumatera Barat",
   "name": "KOTA PADANG",
   "lat": -0.9248,
-  "lon": 100.3633
+  "lon": 100.3633,
+  "heightM": 8
  },
  {
   "id": 71,
@@ -636,7 +720,9 @@
   "prov": "Sumatera Barat",
   "name": "KOTA PADANGPANJANG",
   "lat": -0.4641,
-  "lon": 100.4024
+  "lon": 100.4024,
+  "heightM": 785,
+  "horizonMin": 4.5
  },
  {
   "id": 72,
@@ -645,7 +731,8 @@
   "prov": "Sumatera Barat",
   "name": "KOTA PARIAMAN",
   "lat": -0.6264,
-  "lon": 100.1178
+  "lon": 100.1178,
+  "heightM": 5
  },
  {
   "id": 73,
@@ -654,7 +741,8 @@
   "prov": "Sumatera Barat",
   "name": "KOTA PAYAKUMBUH",
   "lat": -0.2243,
-  "lon": 100.6319
+  "lon": 100.6319,
+  "heightM": 516
  },
  {
   "id": 74,
@@ -663,7 +751,8 @@
   "prov": "Sumatera Barat",
   "name": "KOTA SAWAHLUNTO",
   "lat": -0.6818,
-  "lon": 100.7786
+  "lon": 100.7786,
+  "heightM": 250
  },
  {
   "id": 75,
@@ -672,7 +761,8 @@
   "prov": "Sumatera Barat",
   "name": "KOTA SOLOK",
   "lat": -0.7991,
-  "lon": 100.653
+  "lon": 100.653,
+  "heightM": 387
  },
  {
   "id": 76,
@@ -681,7 +771,8 @@
   "prov": "Riau",
   "name": "KAB. BENGKALIS",
   "lat": 1.7697,
-  "lon": 101.9124
+  "lon": 101.9124,
+  "heightM": 0
  },
  {
   "id": 77,
@@ -690,7 +781,8 @@
   "prov": "Riau",
   "name": "KAB. INDRAGIRI HILIR",
   "lat": -0.2709,
-  "lon": 103.3321
+  "lon": 103.3321,
+  "heightM": 4
  },
  {
   "id": 78,
@@ -699,7 +791,8 @@
   "prov": "Riau",
   "name": "KAB. INDRAGIRI HULU",
   "lat": -0.4979,
-  "lon": 102.3008
+  "lon": 102.3008,
+  "heightM": 22
  },
  {
   "id": 79,
@@ -708,7 +801,8 @@
   "prov": "Riau",
   "name": "KAB. KAMPAR",
   "lat": 0.32,
-  "lon": 101.0617
+  "lon": 101.0617,
+  "heightM": 63
  },
  {
   "id": 80,
@@ -717,7 +811,8 @@
   "prov": "Riau",
   "name": "KAB. KEPULAUAN MERANTI",
   "lat": 1.0613,
-  "lon": 102.7019
+  "lon": 102.7019,
+  "heightM": 7
  },
  {
   "id": 81,
@@ -726,7 +821,8 @@
   "prov": "Riau",
   "name": "KAB. KUANTAN SINGINGI",
   "lat": -0.4938,
-  "lon": 101.4897
+  "lon": 101.4897,
+  "heightM": 147
  },
  {
   "id": 82,
@@ -735,7 +831,8 @@
   "prov": "Riau",
   "name": "KAB. PELALAWAN",
   "lat": 0.2384,
-  "lon": 102.2619
+  "lon": 101.7619,
+  "heightM": 30
  },
  {
   "id": 83,
@@ -744,7 +841,8 @@
   "prov": "Riau",
   "name": "KAB. ROKAN HILIR",
   "lat": 2.2243,
-  "lon": 100.6968
+  "lon": 100.6968,
+  "heightM": 0
  },
  {
   "id": 84,
@@ -753,7 +851,8 @@
   "prov": "Riau",
   "name": "KAB. ROKAN HULU",
   "lat": 0.9043,
-  "lon": 100.4574
+  "lon": 100.4574,
+  "heightM": 57
  },
  {
   "id": 85,
@@ -762,7 +861,8 @@
   "prov": "Riau",
   "name": "KAB. SIAK",
   "lat": 0.8275,
-  "lon": 101.8462
+  "lon": 101.8462,
+  "heightM": 33
  },
  {
   "id": 86,
@@ -771,7 +871,8 @@
   "prov": "Riau",
   "name": "KOTA DUMAI",
   "lat": 1.6632,
-  "lon": 101.447
+  "lon": 101.447,
+  "heightM": 0
  },
  {
   "id": 87,
@@ -780,7 +881,8 @@
   "prov": "Riau",
   "name": "KOTA PEKANBARU",
   "lat": 0.5262,
-  "lon": 101.4516
+  "lon": 101.4516,
+  "heightM": 21
  },
  {
   "id": 88,
@@ -789,7 +891,8 @@
   "prov": "Kepulauan Riau",
   "name": "KAB. BINTAN",
   "lat": 1.0197,
-  "lon": 104.5698
+  "lon": 104.5698,
+  "heightM": 22
  },
  {
   "id": 89,
@@ -798,7 +901,8 @@
   "prov": "Kepulauan Riau",
   "name": "KAB. KARIMUN",
   "lat": 0.7654,
-  "lon": 103.4287
+  "lon": 103.4287,
+  "heightM": 25
  },
  {
   "id": 90,
@@ -807,7 +911,8 @@
   "prov": "Kepulauan Riau",
   "name": "KAB. KEPULAUAN ANAMBAS",
   "lat": 2.9389,
-  "lon": 105.7603
+  "lon": 106.2603,
+  "heightM": 229
  },
  {
   "id": 91,
@@ -816,7 +921,8 @@
   "prov": "Kepulauan Riau",
   "name": "KAB. LINGGA",
   "lat": -0.5095,
-  "lon": 104.4142
+  "lon": 104.4142,
+  "heightM": 47
  },
  {
   "id": 92,
@@ -825,7 +931,8 @@
   "prov": "Kepulauan Riau",
   "name": "KAB. NATUNA",
   "lat": 3.9305,
-  "lon": 108.1902
+  "lon": 108.1902,
+  "heightM": 35
  },
  {
   "id": 93,
@@ -834,7 +941,8 @@
   "prov": "Kepulauan Riau",
   "name": "KOTA BATAM",
   "lat": 1.1031,
-  "lon": 104.0384
+  "lon": 104.0384,
+  "heightM": 12
  },
  {
   "id": 94,
@@ -843,7 +951,8 @@
   "prov": "Kepulauan Riau",
   "name": "KOTA TANJUNG PINANG",
   "lat": 0.9237,
-  "lon": 104.4461
+  "lon": 104.4461,
+  "heightM": 28
  },
  {
   "id": 95,
@@ -852,7 +961,8 @@
   "prov": "Kepulauan Riau",
   "name": "PULAU TAMBELAN KAB. BINTAN",
   "lat": 0.9869,
-  "lon": 107.5803
+  "lon": 107.5803,
+  "heightM": 47
  },
  {
   "id": 96,
@@ -861,7 +971,8 @@
   "prov": "Kepulauan Riau",
   "name": "PEKAJANG KAB. LINGGA",
   "lat": -0.86,
-  "lon": 105.97
+  "lon": 105.22,
+  "heightM": 0
  },
  {
   "id": 97,
@@ -870,7 +981,8 @@
   "prov": "Kepulauan Riau",
   "name": "PULAU SERASAN KAB. NATUNA",
   "lat": 2.5207,
-  "lon": 109.0696
+  "lon": 109.0696,
+  "heightM": 3
  },
  {
   "id": 98,
@@ -879,7 +991,8 @@
   "prov": "Kepulauan Riau",
   "name": "PULAU MIDAI KAB. NATUNA",
   "lat": 2.996,
-  "lon": 107.7796
+  "lon": 107.7796,
+  "heightM": 106
  },
  {
   "id": 99,
@@ -888,7 +1001,8 @@
   "prov": "Kepulauan Riau",
   "name": "PULAU LAUT KAB. NATUNA",
   "lat": 4.7221,
-  "lon": 107.9797
+  "lon": 107.9797,
+  "heightM": 48
  },
  {
   "id": 100,
@@ -897,7 +1011,8 @@
   "prov": "Jambi",
   "name": "KAB. BATANGHARI",
   "lat": -1.7126,
-  "lon": 103.2614
+  "lon": 103.2614,
+  "heightM": 22
  },
  {
   "id": 101,
@@ -906,7 +1021,8 @@
   "prov": "Jambi",
   "name": "KAB. BUNGO",
   "lat": -1.5161,
-  "lon": 101.9848
+  "lon": 101.9848,
+  "heightM": 106
  },
  {
   "id": 102,
@@ -915,7 +1031,9 @@
   "prov": "Jambi",
   "name": "KAB. KERINCI",
   "lat": -2.0633,
-  "lon": 101.6001
+  "lon": 101.6001,
+  "heightM": 1484,
+  "horizonMin": 4.5
  },
  {
   "id": 103,
@@ -924,7 +1042,8 @@
   "prov": "Jambi",
   "name": "KAB. MERANGIN",
   "lat": -2.2084,
-  "lon": 102.1171
+  "lon": 102.1171,
+  "heightM": 192
  },
  {
   "id": 104,
@@ -933,7 +1052,8 @@
   "prov": "Jambi",
   "name": "KAB. MUARO JAMBI",
   "lat": -1.707,
-  "lon": 103.7875
+  "lon": 103.7875,
+  "heightM": 18
  },
  {
   "id": 105,
@@ -942,7 +1062,8 @@
   "prov": "Jambi",
   "name": "KAB. SAROLANGUN",
   "lat": -2.3312,
-  "lon": 102.6248
+  "lon": 102.6248,
+  "heightM": 59
  },
  {
   "id": 106,
@@ -951,7 +1072,8 @@
   "prov": "Jambi",
   "name": "KAB. TANJUNG JABUNG BARAT",
   "lat": -1.0491,
-  "lon": 103.1097
+  "lon": 103.1097,
+  "heightM": 33
  },
  {
   "id": 107,
@@ -960,7 +1082,8 @@
   "prov": "Jambi",
   "name": "KAB. TANJUNG JABUNG TIMUR",
   "lat": -1.2097,
-  "lon": 104.2199
+  "lon": 104.2199,
+  "heightM": 27
  },
  {
   "id": 108,
@@ -969,7 +1092,8 @@
   "prov": "Jambi",
   "name": "KAB. TEBO",
   "lat": -1.3878,
-  "lon": 102.4174
+  "lon": 102.4174,
+  "heightM": 44
  },
  {
   "id": 109,
@@ -978,7 +1102,8 @@
   "prov": "Jambi",
   "name": "KOTA JAMBI",
   "lat": -1.6297,
-  "lon": 103.6078
+  "lon": 103.6078,
+  "heightM": 15
  },
  {
   "id": 110,
@@ -987,7 +1112,9 @@
   "prov": "Jambi",
   "name": "KOTA SUNGAI PENUH",
   "lat": -2.0707,
-  "lon": 101.3961
+  "lon": 101.3961,
+  "heightM": 855,
+  "horizonMin": 4.5
  },
  {
   "id": 111,
@@ -996,7 +1123,8 @@
   "prov": "Bengkulu",
   "name": "KAB. BENGKULU SELATAN",
   "lat": -4.359,
-  "lon": 103.002
+  "lon": 103.002,
+  "heightM": 181
  },
  {
   "id": 112,
@@ -1005,7 +1133,8 @@
   "prov": "Bengkulu",
   "name": "KAB. BENGKULU TENGAH",
   "lat": -3.6712,
-  "lon": 102.3876
+  "lon": 102.3876,
+  "heightM": 42
  },
  {
   "id": 113,
@@ -1014,7 +1143,8 @@
   "prov": "Bengkulu",
   "name": "KAB. BENGKULU UTARA",
   "lat": -3.1891,
-  "lon": 101.8576
+  "lon": 101.8576,
+  "heightM": 36
  },
  {
   "id": 114,
@@ -1023,7 +1153,8 @@
   "prov": "Bengkulu",
   "name": "KAB. KAUR",
   "lat": -4.5905,
-  "lon": 103.3653
+  "lon": 103.3653,
+  "heightM": 340
  },
  {
   "id": 115,
@@ -1032,7 +1163,9 @@
   "prov": "Bengkulu",
   "name": "KAB. KEPAHIANG",
   "lat": -3.6479,
-  "lon": 102.6661
+  "lon": 102.6661,
+  "heightM": 632,
+  "horizonMin": 4.5
  },
  {
   "id": 116,
@@ -1041,7 +1174,8 @@
   "prov": "Bengkulu",
   "name": "KAB. LEBONG",
   "lat": -3.0534,
-  "lon": 102.209
+  "lon": 102.209,
+  "heightM": 806
  },
  {
   "id": 117,
@@ -1050,7 +1184,8 @@
   "prov": "Bengkulu",
   "name": "KAB. MUKOMUKO",
   "lat": -2.7084,
-  "lon": 101.5548
+  "lon": 101.0548,
+  "heightM": 356
  },
  {
   "id": 118,
@@ -1059,7 +1194,9 @@
   "prov": "Bengkulu",
   "name": "KAB. REJANG LEBONG",
   "lat": -3.4389,
-  "lon": 102.6985
+  "lon": 102.6985,
+  "heightM": 818,
+  "horizonMin": 4.5
  },
  {
   "id": 119,
@@ -1068,7 +1205,8 @@
   "prov": "Bengkulu",
   "name": "KAB. SELUMA",
   "lat": -4.0768,
-  "lon": 102.6718
+  "lon": 102.6718,
+  "heightM": 166
  },
  {
   "id": 120,
@@ -1077,7 +1215,8 @@
   "prov": "Bengkulu",
   "name": "KOTA BENGKULU",
   "lat": -3.7923,
-  "lon": 102.2624
+  "lon": 102.2624,
+  "heightM": 19
  },
  {
   "id": 121,
@@ -1086,7 +1225,8 @@
   "prov": "Sumatera Selatan",
   "name": "KAB. BANYUASIN",
   "lat": -2.3939,
-  "lon": 104.7548
+  "lon": 104.7548,
+  "heightM": 0
  },
  {
   "id": 122,
@@ -1095,7 +1235,8 @@
   "prov": "Sumatera Selatan",
   "name": "KAB. EMPAT LAWANG",
   "lat": -3.7155,
-  "lon": 102.9325
+  "lon": 102.9325,
+  "heightM": 440
  },
  {
   "id": 123,
@@ -1104,7 +1245,8 @@
   "prov": "Sumatera Selatan",
   "name": "KAB. LAHAT",
   "lat": -3.7854,
-  "lon": 103.5392
+  "lon": 103.5392,
+  "heightM": 114
  },
  {
   "id": 124,
@@ -1113,7 +1255,8 @@
   "prov": "Sumatera Selatan",
   "name": "KAB. MUARA ENIM",
   "lat": -3.8467,
-  "lon": 103.9616
+  "lon": 103.9616,
+  "heightM": 134
  },
  {
   "id": 125,
@@ -1122,7 +1265,8 @@
   "prov": "Sumatera Selatan",
   "name": "KAB. MUSI BANYUASIN",
   "lat": -2.4909,
-  "lon": 103.7048
+  "lon": 103.7048,
+  "heightM": 60
  },
  {
   "id": 126,
@@ -1131,7 +1275,8 @@
   "prov": "Sumatera Selatan",
   "name": "KAB. MUSI RAWAS",
   "lat": -3.1758,
-  "lon": 103.25
+  "lon": 103.25,
+  "heightM": 49
  },
  {
   "id": 127,
@@ -1140,7 +1285,8 @@
   "prov": "Sumatera Selatan",
   "name": "KAB. MUSI RAWAS UTARA",
   "lat": -2.7129,
-  "lon": 102.7456
+  "lon": 102.7456,
+  "heightM": 87
  },
  {
   "id": 128,
@@ -1149,7 +1295,8 @@
   "prov": "Sumatera Selatan",
   "name": "KAB. OGAN ILIR",
   "lat": -3.4077,
-  "lon": 104.6508
+  "lon": 104.6508,
+  "heightM": 25
  },
  {
   "id": 129,
@@ -1158,7 +1305,8 @@
   "prov": "Sumatera Selatan",
   "name": "KAB. OGAN KOMERING ILIR",
   "lat": -3.3289,
-  "lon": 105.3998
+  "lon": 104.8998,
+  "heightM": 3
  },
  {
   "id": 130,
@@ -1167,7 +1315,8 @@
   "prov": "Sumatera Selatan",
   "name": "KAB. OGAN KOMERING ULU",
   "lat": -4.1101,
-  "lon": 104.0083
+  "lon": 104.0083,
+  "heightM": 86
  },
  {
   "id": 131,
@@ -1176,7 +1325,8 @@
   "prov": "Sumatera Selatan",
   "name": "KAB. OGAN KOMERING ULU SELATAN",
   "lat": -4.5702,
-  "lon": 103.925
+  "lon": 103.925,
+  "heightM": 206
  },
  {
   "id": 132,
@@ -1185,7 +1335,8 @@
   "prov": "Sumatera Selatan",
   "name": "KAB. OGAN KOMERING ULU TIMUR",
   "lat": -4.116,
-  "lon": 104.5585
+  "lon": 104.5585,
+  "heightM": 76
  },
  {
   "id": 133,
@@ -1194,7 +1345,8 @@
   "prov": "Sumatera Selatan",
   "name": "KAB. PENUKAL ABAB LEMATANG ILIR",
   "lat": -3.214,
-  "lon": 104.0077
+  "lon": 104.0077,
+  "heightM": 38
  },
  {
   "id": 134,
@@ -1203,7 +1355,8 @@
   "prov": "Sumatera Selatan",
   "name": "KOTA LUBUKLINGGAU",
   "lat": -3.2917,
-  "lon": 102.8702
+  "lon": 102.8702,
+  "heightM": 134
  },
  {
   "id": 135,
@@ -1212,7 +1365,9 @@
   "prov": "Sumatera Selatan",
   "name": "KOTA PAGAR ALAM",
   "lat": -4.0212,
-  "lon": 103.2517
+  "lon": 103.2517,
+  "heightM": 712,
+  "horizonMin": 4.5
  },
  {
   "id": 136,
@@ -1221,7 +1376,8 @@
   "prov": "Sumatera Selatan",
   "name": "KOTA PALEMBANG",
   "lat": -2.9888,
-  "lon": 104.7569
+  "lon": 104.7569,
+  "heightM": 6
  },
  {
   "id": 137,
@@ -1230,7 +1386,8 @@
   "prov": "Sumatera Selatan",
   "name": "KOTA PRABUMULIH",
   "lat": -3.4383,
-  "lon": 104.231
+  "lon": 104.231,
+  "heightM": 50
  },
  {
   "id": 138,
@@ -1239,7 +1396,8 @@
   "prov": "Kepulauan Bangka Belitung",
   "name": "KAB. BANGKA",
   "lat": -1.9251,
-  "lon": 105.9365
+  "lon": 105.9365,
+  "heightM": 22
  },
  {
   "id": 139,
@@ -1248,7 +1406,8 @@
   "prov": "Kepulauan Bangka Belitung",
   "name": "KAB. BANGKA BARAT",
   "lat": -1.8412,
-  "lon": 105.5519
+  "lon": 105.5519,
+  "heightM": 37
  },
  {
   "id": 140,
@@ -1257,7 +1416,8 @@
   "prov": "Kepulauan Bangka Belitung",
   "name": "KAB. BANGKA SELATAN",
   "lat": -2.7769,
-  "lon": 106.294
+  "lon": 106.294,
+  "heightM": 15
  },
  {
   "id": 141,
@@ -1266,7 +1426,8 @@
   "prov": "Kepulauan Bangka Belitung",
   "name": "KAB. BANGKA TENGAH",
   "lat": -2.4305,
-  "lon": 106.1002
+  "lon": 106.1002,
+  "heightM": 24
  },
  {
   "id": 142,
@@ -1275,7 +1436,8 @@
   "prov": "Kepulauan Bangka Belitung",
   "name": "KAB. BELITUNG",
   "lat": -2.8843,
-  "lon": 107.6632
+  "lon": 107.6632,
+  "heightM": 20
  },
  {
   "id": 143,
@@ -1284,7 +1446,8 @@
   "prov": "Kepulauan Bangka Belitung",
   "name": "KAB. BELITUNG TIMUR",
   "lat": -2.9165,
-  "lon": 108.0037
+  "lon": 108.0037,
+  "heightM": 32
  },
  {
   "id": 144,
@@ -1293,7 +1456,8 @@
   "prov": "Kepulauan Bangka Belitung",
   "name": "KOTA PANGKAL PINANG",
   "lat": -2.1207,
-  "lon": 106.1135
+  "lon": 106.1135,
+  "heightM": 11
  },
  {
   "id": 145,
@@ -1302,7 +1466,8 @@
   "prov": "Lampung",
   "name": "KAB. LAMPUNG TENGAH",
   "lat": -4.8728,
-  "lon": 105.326
+  "lon": 105.326,
+  "heightM": 17
  },
  {
   "id": 146,
@@ -1311,7 +1476,8 @@
   "prov": "Lampung",
   "name": "KAB. LAMPUNG UTARA",
   "lat": -4.8086,
-  "lon": 104.8629
+  "lon": 104.8629,
+  "heightM": 37
  },
  {
   "id": 147,
@@ -1320,7 +1486,8 @@
   "prov": "Lampung",
   "name": "KAB. LAMPUNG SELATAN",
   "lat": -5.5415,
-  "lon": 105.511
+  "lon": 105.511,
+  "heightM": 56
  },
  {
   "id": 148,
@@ -1329,7 +1496,9 @@
   "prov": "Lampung",
   "name": "KAB. LAMPUNG BARAT",
   "lat": -5.1117,
-  "lon": 104.3058
+  "lon": 104.3058,
+  "heightM": 1437,
+  "horizonMin": 4.5
  },
  {
   "id": 149,
@@ -1338,7 +1507,8 @@
   "prov": "Lampung",
   "name": "KAB. LAMPUNG TIMUR",
   "lat": -5.1197,
-  "lon": 105.5952
+  "lon": 105.5952,
+  "heightM": 49
  },
  {
   "id": 150,
@@ -1347,7 +1517,8 @@
   "prov": "Lampung",
   "name": "KAB. MESUJI",
   "lat": -3.9754,
-  "lon": 105.3749
+  "lon": 105.3749,
+  "heightM": 18
  },
  {
   "id": 151,
@@ -1356,7 +1527,8 @@
   "prov": "Lampung",
   "name": "KAB. PESAWARAN",
   "lat": -5.456,
-  "lon": 105.0847
+  "lon": 105.0847,
+  "heightM": 437
  },
  {
   "id": 152,
@@ -1365,7 +1537,8 @@
   "prov": "Lampung",
   "name": "KAB. PESISIR BARAT",
   "lat": -5.3669,
-  "lon": 104.1866
+  "lon": 104.1866,
+  "heightM": 266
  },
  {
   "id": 153,
@@ -1374,7 +1547,8 @@
   "prov": "Lampung",
   "name": "KAB. PRINGSEWU",
   "lat": -5.3667,
-  "lon": 104.9722
+  "lon": 104.9722,
+  "heightM": 101
  },
  {
   "id": 154,
@@ -1383,7 +1557,8 @@
   "prov": "Lampung",
   "name": "KAB. TULANG BAWANG",
   "lat": -4.398,
-  "lon": 105.5543
+  "lon": 105.5543,
+  "heightM": 12
  },
  {
   "id": 155,
@@ -1392,7 +1567,8 @@
   "prov": "Lampung",
   "name": "KAB. TULANG BAWANG BARAT",
   "lat": -4.4323,
-  "lon": 105.1425
+  "lon": 105.1425,
+  "heightM": 7
  },
  {
   "id": 156,
@@ -1401,7 +1577,8 @@
   "prov": "Lampung",
   "name": "KAB. TANGGAMUS",
   "lat": -5.5141,
-  "lon": 104.7771
+  "lon": 104.7771,
+  "heightM": 503
  },
  {
   "id": 157,
@@ -1410,7 +1587,8 @@
   "prov": "Lampung",
   "name": "KAB. WAY KANAN",
   "lat": -4.5669,
-  "lon": 104.5162
+  "lon": 104.5162,
+  "heightM": 65
  },
  {
   "id": 158,
@@ -1419,7 +1597,8 @@
   "prov": "Lampung",
   "name": "KOTA BANDAR LAMPUNG",
   "lat": -5.4294,
-  "lon": 105.2626
+  "lon": 105.2626,
+  "heightM": 93
  },
  {
   "id": 159,
@@ -1428,7 +1607,8 @@
   "prov": "Lampung",
   "name": "KOTA METRO",
   "lat": -5.1147,
-  "lon": 105.3082
+  "lon": 105.3082,
+  "heightM": 62
  },
  {
   "id": 160,
@@ -1437,7 +1617,8 @@
   "prov": "Banten",
   "name": "KAB. LEBAK",
   "lat": -6.6432,
-  "lon": 106.1869
+  "lon": 106.1869,
+  "heightM": 504
  },
  {
   "id": 161,
@@ -1446,7 +1627,8 @@
   "prov": "Banten",
   "name": "KAB. PANDEGLANG",
   "lat": -6.5474,
-  "lon": 105.7995
+  "lon": 105.7995,
+  "heightM": 6
  },
  {
   "id": 162,
@@ -1455,7 +1637,8 @@
   "prov": "Banten",
   "name": "KAB. SERANG",
   "lat": -6.1057,
-  "lon": 105.9884
+  "lon": 105.9884,
+  "heightM": 160
  },
  {
   "id": 163,
@@ -1464,7 +1647,8 @@
   "prov": "Banten",
   "name": "KAB. TANGERANG",
   "lat": -6.1644,
-  "lon": 106.4679
+  "lon": 106.4679,
+  "heightM": 9
  },
  {
   "id": 164,
@@ -1473,7 +1657,8 @@
   "prov": "Banten",
   "name": "KOTA CILEGON",
   "lat": -6.0174,
-  "lon": 106.0538
+  "lon": 106.0538,
+  "heightM": 22
  },
  {
   "id": 165,
@@ -1482,7 +1667,8 @@
   "prov": "Banten",
   "name": "KOTA SERANG",
   "lat": -6.117,
-  "lon": 106.1518
+  "lon": 106.1518,
+  "heightM": 28
  },
  {
   "id": 166,
@@ -1491,7 +1677,8 @@
   "prov": "Banten",
   "name": "KOTA TANGERANG",
   "lat": -6.1762,
-  "lon": 106.6382
+  "lon": 106.6382,
+  "heightM": 15
  },
  {
   "id": 167,
@@ -1500,7 +1687,8 @@
   "prov": "Banten",
   "name": "KOTA TANGERANG SELATAN",
   "lat": -6.3227,
-  "lon": 106.7086
+  "lon": 106.7086,
+  "heightM": 51
  },
  {
   "id": 168,
@@ -1509,7 +1697,9 @@
   "prov": "Jawa Barat",
   "name": "KAB. BANDUNG",
   "lat": -7.0613,
-  "lon": 107.6343
+  "lon": 107.6343,
+  "heightM": 927,
+  "horizonMin": 4.5
  },
  {
   "id": 169,
@@ -1518,7 +1708,9 @@
   "prov": "Jawa Barat",
   "name": "KAB. BANDUNG BARAT",
   "lat": -6.8978,
-  "lon": 107.4124
+  "lon": 107.4124,
+  "heightM": 638,
+  "horizonMin": 4.5
  },
  {
   "id": 170,
@@ -1527,7 +1719,8 @@
   "prov": "Jawa Barat",
   "name": "KAB. BEKASI",
   "lat": -6.2028,
-  "lon": 107.1649
+  "lon": 107.1649,
+  "heightM": 8
  },
  {
   "id": 171,
@@ -1536,7 +1729,8 @@
   "prov": "Jawa Barat",
   "name": "KAB. BOGOR",
   "lat": -6.5454,
-  "lon": 107.0018
+  "lon": 107.0018,
+  "heightM": 317
  },
  {
   "id": 172,
@@ -1545,7 +1739,8 @@
   "prov": "Jawa Barat",
   "name": "KAB. CIAMIS",
   "lat": -7.3132,
-  "lon": 108.4049
+  "lon": 108.4049,
+  "heightM": 156
  },
  {
   "id": 173,
@@ -1554,7 +1749,8 @@
   "prov": "Jawa Barat",
   "name": "KAB. CIANJUR",
   "lat": -7.054,
-  "lon": 107.0692
+  "lon": 107.0692,
+  "heightM": 1186
  },
  {
   "id": 174,
@@ -1563,7 +1759,8 @@
   "prov": "Jawa Barat",
   "name": "KAB. CIREBON",
   "lat": -6.7612,
-  "lon": 108.4564
+  "lon": 108.4564,
+  "heightM": 77
  },
  {
   "id": 175,
@@ -1572,7 +1769,9 @@
   "prov": "Jawa Barat",
   "name": "KAB. GARUT",
   "lat": -7.2163,
-  "lon": 107.9015
+  "lon": 107.9015,
+  "heightM": 727,
+  "horizonMin": 4.5
  },
  {
   "id": 176,
@@ -1581,7 +1780,8 @@
   "prov": "Jawa Barat",
   "name": "KAB. INDRAMAYU",
   "lat": -6.4418,
-  "lon": 108.1765
+  "lon": 108.1765,
+  "heightM": 5
  },
  {
   "id": 177,
@@ -1590,7 +1790,8 @@
   "prov": "Jawa Barat",
   "name": "KAB. KARAWANG",
   "lat": -6.3022,
-  "lon": 107.3046
+  "lon": 107.3046,
+  "heightM": 24
  },
  {
   "id": 178,
@@ -1599,7 +1800,9 @@
   "prov": "Jawa Barat",
   "name": "KAB. KUNINGAN",
   "lat": -6.987,
-  "lon": 108.5538
+  "lon": 108.5538,
+  "heightM": 255,
+  "horizonMin": 4.5
  },
  {
   "id": 179,
@@ -1608,7 +1811,8 @@
   "prov": "Jawa Barat",
   "name": "KAB. MAJALENGKA",
   "lat": -6.8074,
-  "lon": 108.2788
+  "lon": 108.2788,
+  "heightM": 112
  },
  {
   "id": 180,
@@ -1617,7 +1821,8 @@
   "prov": "Jawa Barat",
   "name": "KAB. PANGANDARAN",
   "lat": -7.6408,
-  "lon": 108.5567
+  "lon": 108.5567,
+  "heightM": 53
  },
  {
   "id": 181,
@@ -1626,7 +1831,8 @@
   "prov": "Jawa Barat",
   "name": "KAB. PURWAKARTA",
   "lat": -6.5607,
-  "lon": 107.444
+  "lon": 107.444,
+  "heightM": 88
  },
  {
   "id": 182,
@@ -1635,7 +1841,8 @@
   "prov": "Jawa Barat",
   "name": "KAB. SUBANG",
   "lat": -6.569,
-  "lon": 107.7587
+  "lon": 107.7587,
+  "heightM": 95
  },
  {
   "id": 183,
@@ -1644,7 +1851,8 @@
   "prov": "Jawa Barat",
   "name": "KAB. SUKABUMI",
   "lat": -7.0765,
-  "lon": 106.7347
+  "lon": 106.7347,
+  "heightM": 696
  },
  {
   "id": 184,
@@ -1653,7 +1861,8 @@
   "prov": "Jawa Barat",
   "name": "KAB. SUMEDANG",
   "lat": -6.8597,
-  "lon": 107.9207
+  "lon": 107.9207,
+  "heightM": 463
  },
  {
   "id": 185,
@@ -1662,7 +1871,8 @@
   "prov": "Jawa Barat",
   "name": "KAB. TASIKMALAYA",
   "lat": -7.4272,
-  "lon": 108.0684
+  "lon": 108.0684,
+  "heightM": 453
  },
  {
   "id": 186,
@@ -1671,7 +1881,9 @@
   "prov": "Jawa Barat",
   "name": "KOTA BANDUNG",
   "lat": -6.9218,
-  "lon": 107.6071
+  "lon": 107.6071,
+  "heightM": 708,
+  "horizonMin": 4.5
  },
  {
   "id": 187,
@@ -1680,7 +1892,8 @@
   "prov": "Jawa Barat",
   "name": "KOTA BANJAR",
   "lat": -7.3696,
-  "lon": 108.5415
+  "lon": 108.5415,
+  "heightM": 30
  },
  {
   "id": 188,
@@ -1689,7 +1902,8 @@
   "prov": "Jawa Barat",
   "name": "KOTA BEKASI",
   "lat": -6.235,
-  "lon": 106.9945
+  "lon": 106.9945,
+  "heightM": 20
  },
  {
   "id": 189,
@@ -1698,7 +1912,9 @@
   "prov": "Jawa Barat",
   "name": "KOTA BOGOR",
   "lat": -6.5964,
-  "lon": 106.7973
+  "lon": 106.7973,
+  "heightM": 266,
+  "horizonMin": 4.5
  },
  {
   "id": 190,
@@ -1707,7 +1923,9 @@
   "prov": "Jawa Barat",
   "name": "KOTA CIMAHI",
   "lat": -6.8732,
-  "lon": 107.5423
+  "lon": 107.5423,
+  "heightM": 764,
+  "horizonMin": 4.5
  },
  {
   "id": 191,
@@ -1716,7 +1934,8 @@
   "prov": "Jawa Barat",
   "name": "KOTA CIREBON",
   "lat": -6.7137,
-  "lon": 108.5608
+  "lon": 108.5608,
+  "heightM": 6
  },
  {
   "id": 192,
@@ -1725,7 +1944,8 @@
   "prov": "Jawa Barat",
   "name": "KOTA DEPOK",
   "lat": -6.4072,
-  "lon": 106.8158
+  "lon": 106.8158,
+  "heightM": 94
  },
  {
   "id": 193,
@@ -1734,7 +1954,9 @@
   "prov": "Jawa Barat",
   "name": "KOTA SUKABUMI",
   "lat": -6.9199,
-  "lon": 106.9265
+  "lon": 106.9265,
+  "heightM": 607,
+  "horizonMin": 4.5
  },
  {
   "id": 194,
@@ -1743,7 +1965,8 @@
   "prov": "Jawa Barat",
   "name": "KOTA TASIKMALAYA",
   "lat": -7.3262,
-  "lon": 108.2201
+  "lon": 108.2201,
+  "heightM": 357
  },
  {
   "id": 195,
@@ -1752,7 +1975,8 @@
   "prov": "DKI Jakarta",
   "name": "KOTA JAKARTA",
   "lat": -6.2088,
-  "lon": 106.8456
+  "lon": 106.8456,
+  "heightM": 7
  },
  {
   "id": 196,
@@ -1761,7 +1985,8 @@
   "prov": "DKI Jakarta",
   "name": "KAB. KEPULAUAN SERIBU",
   "lat": -5.635,
-  "lon": 106.5804
+  "lon": 106.5804,
+  "heightM": 12
  },
  {
   "id": 197,
@@ -1770,7 +1995,8 @@
   "prov": "Jawa Tengah",
   "name": "KAB. BANJARNEGARA",
   "lat": -7.3559,
-  "lon": 109.6601
+  "lon": 109.6601,
+  "heightM": 274
  },
  {
   "id": 198,
@@ -1779,7 +2005,8 @@
   "prov": "Jawa Tengah",
   "name": "KAB. BANYUMAS",
   "lat": -7.4551,
-  "lon": 109.1167
+  "lon": 109.1167,
+  "heightM": 105
  },
  {
   "id": 199,
@@ -1788,7 +2015,8 @@
   "prov": "Jawa Tengah",
   "name": "KAB. BATANG",
   "lat": -6.9105,
-  "lon": 109.7192
+  "lon": 109.7192,
+  "heightM": 8
  },
  {
   "id": 200,
@@ -1797,7 +2025,8 @@
   "prov": "Jawa Tengah",
   "name": "KAB. BLORA",
   "lat": -7.1106,
-  "lon": 111.4204
+  "lon": 111.4204,
+  "heightM": 116
  },
  {
   "id": 201,
@@ -1806,7 +2035,8 @@
   "prov": "Jawa Tengah",
   "name": "KAB. BOYOLALI",
   "lat": -7.3872,
-  "lon": 110.7039
+  "lon": 110.7039,
+  "heightM": 307
  },
  {
   "id": 202,
@@ -1815,7 +2045,8 @@
   "prov": "Jawa Tengah",
   "name": "KAB. BREBES",
   "lat": -7.0521,
-  "lon": 108.8881
+  "lon": 108.8881,
+  "heightM": 51
  },
  {
   "id": 203,
@@ -1824,7 +2055,8 @@
   "prov": "Jawa Tengah",
   "name": "KAB. CILACAP",
   "lat": -7.4617,
-  "lon": 108.8046
+  "lon": 108.8046,
+  "heightM": 16
  },
  {
   "id": 204,
@@ -1833,7 +2065,8 @@
   "prov": "Jawa Tengah",
   "name": "KAB. DEMAK",
   "lat": -6.9231,
-  "lon": 110.6277
+  "lon": 110.6277,
+  "heightM": 7
  },
  {
   "id": 205,
@@ -1842,7 +2075,8 @@
   "prov": "Jawa Tengah",
   "name": "KAB. GROBOGAN",
   "lat": -7.0965,
-  "lon": 110.8949
+  "lon": 110.8949,
+  "heightM": 25
  },
  {
   "id": 206,
@@ -1851,7 +2085,8 @@
   "prov": "Jawa Tengah",
   "name": "KAB. JEPARA",
   "lat": -6.5995,
-  "lon": 110.7832
+  "lon": 110.7832,
+  "heightM": 248
  },
  {
   "id": 207,
@@ -1860,7 +2095,8 @@
   "prov": "Jawa Tengah",
   "name": "KAB. KARANGANYAR",
   "lat": -7.6197,
-  "lon": 111.0698
+  "lon": 111.0698,
+  "heightM": 566
  },
  {
   "id": 208,
@@ -1869,7 +2105,8 @@
   "prov": "Jawa Tengah",
   "name": "KAB. KEBUMEN",
   "lat": -7.644,
-  "lon": 109.6078
+  "lon": 109.6078,
+  "heightM": 24
  },
  {
   "id": 209,
@@ -1878,7 +2115,8 @@
   "prov": "Jawa Tengah",
   "name": "KAB. KENDAL",
   "lat": -7.0191,
-  "lon": 110.1375
+  "lon": 110.1375,
+  "heightM": 41
  },
  {
   "id": 210,
@@ -1887,7 +2125,8 @@
   "prov": "Jawa Tengah",
   "name": "KAB. KLATEN",
   "lat": -7.6732,
-  "lon": 110.6285
+  "lon": 110.6285,
+  "heightM": 183
  },
  {
   "id": 211,
@@ -1896,7 +2135,8 @@
   "prov": "Jawa Tengah",
   "name": "KAB. KUDUS",
   "lat": -6.7978,
-  "lon": 110.8679
+  "lon": 110.8679,
+  "heightM": 24
  },
  {
   "id": 212,
@@ -1905,7 +2145,8 @@
   "prov": "Jawa Tengah",
   "name": "KAB. MAGELANG",
   "lat": -7.5136,
-  "lon": 110.2145
+  "lon": 110.2145,
+  "heightM": 355
  },
  {
   "id": 213,
@@ -1914,7 +2155,8 @@
   "prov": "Jawa Tengah",
   "name": "KAB. PATI",
   "lat": -6.7534,
-  "lon": 111.04
+  "lon": 111.04,
+  "heightM": 12
  },
  {
   "id": 214,
@@ -1923,7 +2165,8 @@
   "prov": "Jawa Tengah",
   "name": "KAB. PEKALONGAN",
   "lat": -7.0418,
-  "lon": 109.6199
+  "lon": 109.6199,
+  "heightM": 114
  },
  {
   "id": 215,
@@ -1932,7 +2175,8 @@
   "prov": "Jawa Tengah",
   "name": "KAB. PEMALANG",
   "lat": -7.0111,
-  "lon": 109.3914
+  "lon": 109.3914,
+  "heightM": 76
  },
  {
   "id": 216,
@@ -1941,7 +2185,8 @@
   "prov": "Jawa Tengah",
   "name": "KAB. PURBALINGGA",
   "lat": -7.3273,
-  "lon": 109.3999
+  "lon": 109.3999,
+  "heightM": 144
  },
  {
   "id": 217,
@@ -1950,7 +2195,8 @@
   "prov": "Jawa Tengah",
   "name": "KAB. PURWOREJO",
   "lat": -7.7075,
-  "lon": 109.9665
+  "lon": 109.9665,
+  "heightM": 31
  },
  {
   "id": 218,
@@ -1959,7 +2205,8 @@
   "prov": "Jawa Tengah",
   "name": "KAB. REMBANG",
   "lat": -6.7699,
-  "lon": 111.4557
+  "lon": 111.4557,
+  "heightM": 49
  },
  {
   "id": 219,
@@ -1968,7 +2215,8 @@
   "prov": "Jawa Tengah",
   "name": "KAB. SEMARANG",
   "lat": -7.2877,
-  "lon": 110.4019
+  "lon": 110.4019,
+  "heightM": 470
  },
  {
   "id": 220,
@@ -1977,7 +2225,8 @@
   "prov": "Jawa Tengah",
   "name": "KAB. SRAGEN",
   "lat": -7.3925,
-  "lon": 110.953
+  "lon": 110.953,
+  "heightM": 78
  },
  {
   "id": 221,
@@ -1986,7 +2235,8 @@
   "prov": "Jawa Tengah",
   "name": "KAB. SUKOHARJO",
   "lat": -7.6815,
-  "lon": 110.87
+  "lon": 110.87,
+  "heightM": 108
  },
  {
   "id": 222,
@@ -1995,7 +2245,8 @@
   "prov": "Jawa Tengah",
   "name": "KAB. TEGAL",
   "lat": -7.0564,
-  "lon": 109.1316
+  "lon": 109.1316,
+  "heightM": 179
  },
  {
   "id": 223,
@@ -2004,7 +2255,9 @@
   "prov": "Jawa Tengah",
   "name": "KAB. TEMANGGUNG",
   "lat": -7.2398,
-  "lon": 110.1217
+  "lon": 110.1217,
+  "heightM": 700,
+  "horizonMin": 4.5
  },
  {
   "id": 224,
@@ -2013,7 +2266,8 @@
   "prov": "Jawa Tengah",
   "name": "KAB. WONOGIRI",
   "lat": -7.9621,
-  "lon": 110.9576
+  "lon": 110.9576,
+  "heightM": 186
  },
  {
   "id": 225,
@@ -2022,7 +2276,9 @@
   "prov": "Jawa Tengah",
   "name": "KAB. WONOSOBO",
   "lat": -7.3998,
-  "lon": 109.921
+  "lon": 109.921,
+  "heightM": 675,
+  "horizonMin": 4.5
  },
  {
   "id": 226,
@@ -2031,7 +2287,8 @@
   "prov": "Jawa Tengah",
   "name": "KOTA MAGELANG",
   "lat": -7.4771,
-  "lon": 110.2182
+  "lon": 110.2182,
+  "heightM": 387
  },
  {
   "id": 227,
@@ -2040,7 +2297,8 @@
   "prov": "Jawa Tengah",
   "name": "KOTA PEKALONGAN",
   "lat": -6.8905,
-  "lon": 109.6761
+  "lon": 109.6761,
+  "heightM": 8
  },
  {
   "id": 228,
@@ -2049,7 +2307,9 @@
   "prov": "Jawa Tengah",
   "name": "KOTA SALATIGA",
   "lat": -7.3303,
-  "lon": 110.4995
+  "lon": 110.4995,
+  "heightM": 578,
+  "horizonMin": 4.5
  },
  {
   "id": 229,
@@ -2058,7 +2318,8 @@
   "prov": "Jawa Tengah",
   "name": "KOTA SEMARANG",
   "lat": -6.9904,
-  "lon": 110.4229
+  "lon": 110.4229,
+  "heightM": 12
  },
  {
   "id": 230,
@@ -2067,7 +2328,8 @@
   "prov": "Jawa Tengah",
   "name": "KOTA SURAKARTA",
   "lat": -7.5692,
-  "lon": 110.8284
+  "lon": 110.8284,
+  "heightM": 99
  },
  {
   "id": 231,
@@ -2076,7 +2338,8 @@
   "prov": "Jawa Tengah",
   "name": "KOTA TEGAL",
   "lat": -6.8674,
-  "lon": 109.1378
+  "lon": 109.1378,
+  "heightM": 1
  },
  {
   "id": 232,
@@ -2085,7 +2348,8 @@
   "prov": "DI Yogyakarta",
   "name": "KAB. BANTUL",
   "lat": -7.8983,
-  "lon": 110.3856
+  "lon": 110.3856,
+  "heightM": 44
  },
  {
   "id": 233,
@@ -2094,7 +2358,8 @@
   "prov": "DI Yogyakarta",
   "name": "KAB. GUNUNGKIDUL",
   "lat": -7.993,
-  "lon": 110.5579
+  "lon": 110.5579,
+  "heightM": 164
  },
  {
   "id": 234,
@@ -2103,7 +2368,8 @@
   "prov": "DI Yogyakarta",
   "name": "KAB. KULON PROGO",
   "lat": -7.8123,
-  "lon": 110.148
+  "lon": 110.148,
+  "heightM": 88
  },
  {
   "id": 235,
@@ -2112,7 +2378,8 @@
   "prov": "DI Yogyakarta",
   "name": "KAB. SLEMAN",
   "lat": -7.6894,
-  "lon": 110.3813
+  "lon": 110.3813,
+  "heightM": 300
  },
  {
   "id": 236,
@@ -2121,7 +2388,8 @@
   "prov": "DI Yogyakarta",
   "name": "KOTA YOGYAKARTA",
   "lat": -7.8013,
-  "lon": 110.3647
+  "lon": 110.3647,
+  "heightM": 110
  },
  {
   "id": 237,
@@ -2130,7 +2398,8 @@
   "prov": "Jawa Timur",
   "name": "KAB. BANGKALAN",
   "lat": -7.0464,
-  "lon": 112.8962
+  "lon": 112.8962,
+  "heightM": 97
  },
  {
   "id": 238,
@@ -2139,7 +2408,8 @@
   "prov": "Jawa Timur",
   "name": "KAB. BANYUWANGI",
   "lat": -8.3326,
-  "lon": 114.1416
+  "lon": 114.1416,
+  "heightM": 221
  },
  {
   "id": 239,
@@ -2148,7 +2418,8 @@
   "prov": "Jawa Timur",
   "name": "KAB. BLITAR",
   "lat": -8.1312,
-  "lon": 112.3116
+  "lon": 112.3116,
+  "heightM": 214
  },
  {
   "id": 240,
@@ -2157,7 +2428,8 @@
   "prov": "Jawa Timur",
   "name": "KAB. BOJONEGORO",
   "lat": -7.2279,
-  "lon": 111.8146
+  "lon": 111.8146,
+  "heightM": 47
  },
  {
   "id": 241,
@@ -2166,7 +2438,8 @@
   "prov": "Jawa Timur",
   "name": "KAB. BONDOWOSO",
   "lat": -7.9451,
-  "lon": 113.8821
+  "lon": 113.8821,
+  "heightM": 315
  },
  {
   "id": 242,
@@ -2175,7 +2448,8 @@
   "prov": "Jawa Timur",
   "name": "KAB. GRESIK",
   "lat": -5.7933,
-  "lon": 112.6598
+  "lon": 112.6598,
+  "heightM": 483
  },
  {
   "id": 243,
@@ -2184,7 +2458,8 @@
   "prov": "Jawa Timur",
   "name": "KAB. JEMBER",
   "lat": -8.2633,
-  "lon": 113.6279
+  "lon": 113.6279,
+  "heightM": 54
  },
  {
   "id": 244,
@@ -2193,7 +2468,8 @@
   "prov": "Jawa Timur",
   "name": "KAB. JOMBANG",
   "lat": -7.5615,
-  "lon": 112.2413
+  "lon": 112.2413,
+  "heightM": 46
  },
  {
   "id": 245,
@@ -2202,7 +2478,8 @@
   "prov": "Jawa Timur",
   "name": "KAB. KEDIRI",
   "lat": -7.8026,
-  "lon": 112.1686
+  "lon": 112.1686,
+  "heightM": 159
  },
  {
   "id": 246,
@@ -2211,7 +2488,8 @@
   "prov": "Jawa Timur",
   "name": "KAB. LAMONGAN",
   "lat": -7.1229,
-  "lon": 112.3282
+  "lon": 112.3282,
+  "heightM": 15
  },
  {
   "id": 247,
@@ -2220,7 +2498,8 @@
   "prov": "Jawa Timur",
   "name": "KAB. LUMAJANG",
   "lat": -8.1238,
-  "lon": 113.1437
+  "lon": 113.1437,
+  "heightM": 192
  },
  {
   "id": 248,
@@ -2229,7 +2508,8 @@
   "prov": "Jawa Timur",
   "name": "KAB. MADIUN",
   "lat": -7.6119,
-  "lon": 111.6732
+  "lon": 111.6732,
+  "heightM": 158
  },
  {
   "id": 249,
@@ -2238,7 +2518,8 @@
   "prov": "Jawa Timur",
   "name": "KAB. MAGETAN",
   "lat": -7.6542,
-  "lon": 111.3361
+  "lon": 111.3361,
+  "heightM": 339
  },
  {
   "id": 250,
@@ -2247,7 +2528,8 @@
   "prov": "Jawa Timur",
   "name": "KAB. MALANG",
   "lat": -8.1048,
-  "lon": 112.688
+  "lon": 112.688,
+  "heightM": 455
  },
  {
   "id": 251,
@@ -2256,7 +2538,8 @@
   "prov": "Jawa Timur",
   "name": "KAB. MOJOKERTO",
   "lat": -7.5413,
-  "lon": 112.5095
+  "lon": 112.5095,
+  "heightM": 66
  },
  {
   "id": 252,
@@ -2265,7 +2548,8 @@
   "prov": "Jawa Timur",
   "name": "KAB. NGANJUK",
   "lat": -7.615,
-  "lon": 111.9465
+  "lon": 111.9465,
+  "heightM": 49
  },
  {
   "id": 253,
@@ -2274,7 +2558,8 @@
   "prov": "Jawa Timur",
   "name": "KAB. NGAWI",
   "lat": -7.4223,
-  "lon": 111.4229
+  "lon": 111.4229,
+  "heightM": 49
  },
  {
   "id": 254,
@@ -2283,7 +2568,8 @@
   "prov": "Jawa Timur",
   "name": "KAB. PACITAN",
   "lat": -8.1017,
-  "lon": 111.1447
+  "lon": 111.1447,
+  "heightM": 95
  },
  {
   "id": 255,
@@ -2292,7 +2578,8 @@
   "prov": "Jawa Timur",
   "name": "KAB. PAMEKASAN",
   "lat": -7.0708,
-  "lon": 113.5004
+  "lon": 113.5004,
+  "heightM": 184
  },
  {
   "id": 256,
@@ -2301,7 +2588,8 @@
   "prov": "Jawa Timur",
   "name": "KAB. PASURUAN",
   "lat": -7.7508,
-  "lon": 112.8185
+  "lon": 112.8185,
+  "heightM": 91
  },
  {
   "id": 257,
@@ -2310,7 +2598,8 @@
   "prov": "Jawa Timur",
   "name": "KAB. PONOROGO",
   "lat": -7.9712,
-  "lon": 111.4989
+  "lon": 111.4989,
+  "heightM": 142
  },
  {
   "id": 258,
@@ -2319,7 +2608,8 @@
   "prov": "Jawa Timur",
   "name": "KAB. PROBOLINGGO",
   "lat": -7.8632,
-  "lon": 113.3051
+  "lon": 113.3051,
+  "heightM": 102
  },
  {
   "id": 259,
@@ -2328,7 +2618,8 @@
   "prov": "Jawa Timur",
   "name": "KAB. SAMPANG",
   "lat": -7.0578,
-  "lon": 113.2541
+  "lon": 113.2541,
+  "heightM": 61
  },
  {
   "id": 260,
@@ -2337,7 +2628,8 @@
   "prov": "Jawa Timur",
   "name": "KAB. SIDOARJO",
   "lat": -7.454,
-  "lon": 112.6594
+  "lon": 112.6594,
+  "heightM": 5
  },
  {
   "id": 261,
@@ -2346,7 +2638,8 @@
   "prov": "Jawa Timur",
   "name": "KAB. SITUBONDO",
   "lat": -7.7986,
-  "lon": 114.2647
+  "lon": 114.2647,
+  "heightM": 85
  },
  {
   "id": 262,
@@ -2355,7 +2648,8 @@
   "prov": "Jawa Timur",
   "name": "KAB. SUMENEP",
   "lat": -6.9992,
-  "lon": 113.8377
+  "lon": 113.8377,
+  "heightM": 70
  },
  {
   "id": 263,
@@ -2364,7 +2658,8 @@
   "prov": "Jawa Timur",
   "name": "KAB. TRENGGALEK",
   "lat": -8.1359,
-  "lon": 111.6402
+  "lon": 111.6402,
+  "heightM": 376
  },
  {
   "id": 264,
@@ -2373,7 +2668,8 @@
   "prov": "Jawa Timur",
   "name": "KAB. TUBAN",
   "lat": -6.9596,
-  "lon": 111.8932
+  "lon": 111.8932,
+  "heightM": 181
  },
  {
   "id": 265,
@@ -2382,7 +2678,8 @@
   "prov": "Jawa Timur",
   "name": "KAB. TULUNGAGUNG",
   "lat": -8.0729,
-  "lon": 111.8996
+  "lon": 111.8996,
+  "heightM": 92
  },
  {
   "id": 266,
@@ -2391,7 +2688,9 @@
   "prov": "Jawa Timur",
   "name": "KOTA BATU",
   "lat": -7.8712,
-  "lon": 112.5269
+  "lon": 112.5269,
+  "heightM": 889,
+  "horizonMin": 4.5
  },
  {
   "id": 267,
@@ -2400,7 +2699,8 @@
   "prov": "Jawa Timur",
   "name": "KOTA BLITAR",
   "lat": -8.0982,
-  "lon": 112.1651
+  "lon": 112.1651,
+  "heightM": 176
  },
  {
   "id": 268,
@@ -2409,7 +2709,8 @@
   "prov": "Jawa Timur",
   "name": "KOTA KEDIRI",
   "lat": -7.8111,
-  "lon": 112.0046
+  "lon": 112.0046,
+  "heightM": 69
  },
  {
   "id": 269,
@@ -2418,7 +2719,8 @@
   "prov": "Jawa Timur",
   "name": "KOTA MADIUN",
   "lat": -7.6291,
-  "lon": 111.5169
+  "lon": 111.5169,
+  "heightM": 66
  },
  {
   "id": 270,
@@ -2427,7 +2729,8 @@
   "prov": "Jawa Timur",
   "name": "KOTA MALANG",
   "lat": -7.9771,
-  "lon": 112.634
+  "lon": 112.634,
+  "heightM": 451
  },
  {
   "id": 271,
@@ -2436,7 +2739,8 @@
   "prov": "Jawa Timur",
   "name": "KOTA MOJOKERTO",
   "lat": -7.4632,
-  "lon": 112.432
+  "lon": 112.432,
+  "heightM": 21
  },
  {
   "id": 272,
@@ -2445,7 +2749,8 @@
   "prov": "Jawa Timur",
   "name": "KOTA PASURUAN",
   "lat": -7.64,
-  "lon": 112.9071
+  "lon": 112.9071,
+  "heightM": 9
  },
  {
   "id": 273,
@@ -2454,7 +2759,8 @@
   "prov": "Jawa Timur",
   "name": "KOTA PROBOLINGGO",
   "lat": -7.7441,
-  "lon": 113.2158
+  "lon": 113.2158,
+  "heightM": 4
  },
  {
   "id": 274,
@@ -2463,7 +2769,8 @@
   "prov": "Jawa Timur",
   "name": "KOTA SURABAYA",
   "lat": -7.2463,
-  "lon": 112.7378
+  "lon": 112.7378,
+  "heightM": 2
  },
  {
   "id": 275,
@@ -2472,7 +2779,8 @@
   "prov": "Bali",
   "name": "KAB. BADUNG",
   "lat": -8.5446,
-  "lon": 115.1985
+  "lon": 115.1985,
+  "heightM": 141
  },
  {
   "id": 276,
@@ -2481,7 +2789,8 @@
   "prov": "Bali",
   "name": "KAB. BANGLI",
   "lat": -8.3336,
-  "lon": 115.368
+  "lon": 115.368,
+  "heightM": 993
  },
  {
   "id": 277,
@@ -2490,7 +2799,8 @@
   "prov": "Bali",
   "name": "KAB. BULELENG",
   "lat": -8.2222,
-  "lon": 114.995
+  "lon": 114.995,
+  "heightM": 447
  },
  {
   "id": 278,
@@ -2499,7 +2809,8 @@
   "prov": "Bali",
   "name": "KAB. GIANYAR",
   "lat": -8.4821,
-  "lon": 115.2856
+  "lon": 115.2856,
+  "heightM": 298
  },
  {
   "id": 279,
@@ -2508,7 +2819,8 @@
   "prov": "Bali",
   "name": "KAB. JEMBRANA",
   "lat": -8.314,
-  "lon": 114.6685
+  "lon": 114.6685,
+  "heightM": 191
  },
  {
   "id": 280,
@@ -2517,7 +2829,8 @@
   "prov": "Bali",
   "name": "KAB. KARANGASEM",
   "lat": -8.3588,
-  "lon": 115.5473
+  "lon": 115.5473,
+  "heightM": 1080
  },
  {
   "id": 281,
@@ -2526,7 +2839,8 @@
   "prov": "Bali",
   "name": "KAB. KLUNGKUNG",
   "lat": -8.7455,
-  "lon": 115.5348
+  "lon": 115.5348,
+  "heightM": 396
  },
  {
   "id": 282,
@@ -2535,7 +2849,8 @@
   "prov": "Bali",
   "name": "KAB. TABANAN",
   "lat": -8.4403,
-  "lon": 115.0716
+  "lon": 115.0716,
+  "heightM": 368
  },
  {
   "id": 283,
@@ -2544,7 +2859,8 @@
   "prov": "Bali",
   "name": "KOTA DENPASAR",
   "lat": -8.6653,
-  "lon": 115.2176
+  "lon": 115.2176,
+  "heightM": 21
  },
  {
   "id": 284,
@@ -2553,7 +2869,8 @@
   "prov": "Nusa Tenggara Barat",
   "name": "KAB. BIMA",
   "lat": -8.5648,
-  "lon": 118.7625
+  "lon": 118.7625,
+  "heightM": 395
  },
  {
   "id": 285,
@@ -2562,7 +2879,8 @@
   "prov": "Nusa Tenggara Barat",
   "name": "KAB. DOMPU",
   "lat": -8.5165,
-  "lon": 118.3312
+  "lon": 118.3312,
+  "heightM": 97
  },
  {
   "id": 286,
@@ -2571,7 +2889,8 @@
   "prov": "Nusa Tenggara Barat",
   "name": "KAB. LOMBOK BARAT",
   "lat": -8.6719,
-  "lon": 116.122
+  "lon": 116.122,
+  "heightM": 20
  },
  {
   "id": 287,
@@ -2580,7 +2899,8 @@
   "prov": "Nusa Tenggara Barat",
   "name": "KAB. LOMBOK TENGAH",
   "lat": -8.7031,
-  "lon": 116.2899
+  "lon": 116.2899,
+  "heightM": 118
  },
  {
   "id": 288,
@@ -2589,7 +2909,8 @@
   "prov": "Nusa Tenggara Barat",
   "name": "KAB. LOMBOK TIMUR",
   "lat": -8.6331,
-  "lon": 116.5588
+  "lon": 116.5588,
+  "heightM": 130
  },
  {
   "id": 289,
@@ -2598,7 +2919,8 @@
   "prov": "Nusa Tenggara Barat",
   "name": "KAB. LOMBOK UTARA",
   "lat": -8.3572,
-  "lon": 116.1609
+  "lon": 116.1609,
+  "heightM": 11
  },
  {
   "id": 290,
@@ -2607,7 +2929,8 @@
   "prov": "Nusa Tenggara Barat",
   "name": "KAB. SUMBAWA",
   "lat": -8.7341,
-  "lon": 117.496
+  "lon": 117.496,
+  "heightM": 356
  },
  {
   "id": 291,
@@ -2616,7 +2939,8 @@
   "prov": "Nusa Tenggara Barat",
   "name": "KAB. SUMBAWA BARAT",
   "lat": -8.6585,
-  "lon": 116.9162
+  "lon": 116.9162,
+  "heightM": 455
  },
  {
   "id": 292,
@@ -2625,7 +2949,8 @@
   "prov": "Nusa Tenggara Barat",
   "name": "KOTA BIMA",
   "lat": -8.4534,
-  "lon": 118.7277
+  "lon": 118.7277,
+  "heightM": 12
  },
  {
   "id": 293,
@@ -2634,7 +2959,8 @@
   "prov": "Nusa Tenggara Barat",
   "name": "KOTA MATARAM",
   "lat": -8.5838,
-  "lon": 116.1068
+  "lon": 116.1068,
+  "heightM": 20
  },
  {
   "id": 294,
@@ -2643,7 +2969,8 @@
   "prov": "Nusa Tenggara Timur",
   "name": "KAB. ALOR",
   "lat": -8.2911,
-  "lon": 124.7777
+  "lon": 124.7777,
+  "heightM": 1240
  },
  {
   "id": 295,
@@ -2652,7 +2979,8 @@
   "prov": "Nusa Tenggara Timur",
   "name": "KAB. BELU",
   "lat": -9.176,
-  "lon": 124.9164
+  "lon": 124.9164,
+  "heightM": 425
  },
  {
   "id": 296,
@@ -2661,7 +2989,8 @@
   "prov": "Nusa Tenggara Timur",
   "name": "KAB. ENDE",
   "lat": -8.6729,
-  "lon": 121.6929
+  "lon": 121.6929,
+  "heightM": 297
  },
  {
   "id": 297,
@@ -2670,7 +2999,8 @@
   "prov": "Nusa Tenggara Timur",
   "name": "KAB. FLORES TIMUR",
   "lat": -8.3185,
-  "lon": 123.1658
+  "lon": 123.1658,
+  "heightM": 591
  },
  {
   "id": 298,
@@ -2679,7 +3009,8 @@
   "prov": "Nusa Tenggara Timur",
   "name": "KAB. KUPANG",
   "lat": -9.8476,
-  "lon": 123.8781
+  "lon": 123.8781,
+  "heightM": 281
  },
  {
   "id": 299,
@@ -2688,7 +3019,9 @@
   "prov": "Nusa Tenggara Timur",
   "name": "KAB. LEMBATA",
   "lat": -8.3781,
-  "lon": 123.5446
+  "lon": 123.5446,
+  "heightM": 75,
+  "horizonMin": 4.5
  },
  {
   "id": 300,
@@ -2697,7 +3030,8 @@
   "prov": "Nusa Tenggara Timur",
   "name": "KAB. MALAKA",
   "lat": -9.546,
-  "lon": 124.8764
+  "lon": 124.8764,
+  "heightM": 267
  },
  {
   "id": 301,
@@ -2706,7 +3040,9 @@
   "prov": "Nusa Tenggara Timur",
   "name": "KAB. MANGGARAI",
   "lat": -8.548,
-  "lon": 120.439
+  "lon": 120.439,
+  "heightM": 623,
+  "horizonMin": 4.5
  },
  {
   "id": 302,
@@ -2715,7 +3051,8 @@
   "prov": "Nusa Tenggara Timur",
   "name": "KAB. MANGGARAI BARAT",
   "lat": -8.5741,
-  "lon": 120.0611
+  "lon": 120.0611,
+  "heightM": 577
  },
  {
   "id": 303,
@@ -2724,7 +3061,8 @@
   "prov": "Nusa Tenggara Timur",
   "name": "KAB. MANGGARAI TIMUR",
   "lat": -8.5738,
-  "lon": 120.6864
+  "lon": 120.6864,
+  "heightM": 1340
  },
  {
   "id": 304,
@@ -2733,7 +3071,9 @@
   "prov": "Nusa Tenggara Timur",
   "name": "KAB. NGADA",
   "lat": -8.6499,
-  "lon": 120.9867
+  "lon": 120.9867,
+  "heightM": 834,
+  "horizonMin": 4.5
  },
  {
   "id": 305,
@@ -2742,7 +3082,8 @@
   "prov": "Nusa Tenggara Timur",
   "name": "KAB. NAGEKEO",
   "lat": -8.6759,
-  "lon": 121.2708
+  "lon": 121.2708,
+  "heightM": 436
  },
  {
   "id": 306,
@@ -2751,7 +3092,8 @@
   "prov": "Nusa Tenggara Timur",
   "name": "KAB. ROTE NDAO",
   "lat": -10.687,
-  "lon": 123.2084
+  "lon": 123.2084,
+  "heightM": 183
  },
  {
   "id": 307,
@@ -2760,7 +3102,8 @@
   "prov": "Nusa Tenggara Timur",
   "name": "KAB. SABU RAIJUA",
   "lat": -10.5222,
-  "lon": 121.8885
+  "lon": 121.8885,
+  "heightM": 163
  },
  {
   "id": 308,
@@ -2769,7 +3112,8 @@
   "prov": "Nusa Tenggara Timur",
   "name": "KAB. SIKKA",
   "lat": -8.5946,
-  "lon": 122.0896
+  "lon": 122.0896,
+  "heightM": 365
  },
  {
   "id": 309,
@@ -2778,7 +3122,8 @@
   "prov": "Nusa Tenggara Timur",
   "name": "KAB. SUMBA BARAT",
   "lat": -9.5857,
-  "lon": 119.4439
+  "lon": 119.4439,
+  "heightM": 522
  },
  {
   "id": 310,
@@ -2787,7 +3132,8 @@
   "prov": "Nusa Tenggara Timur",
   "name": "KAB. SUMBA BARAT DAYA",
   "lat": -9.5378,
-  "lon": 119.1623
+  "lon": 119.1623,
+  "heightM": 383
  },
  {
   "id": 311,
@@ -2796,7 +3142,8 @@
   "prov": "Nusa Tenggara Timur",
   "name": "KAB. SUMBA TENGAH",
   "lat": -9.5936,
-  "lon": 119.6663
+  "lon": 119.6663,
+  "heightM": 459
  },
  {
   "id": 312,
@@ -2805,7 +3152,8 @@
   "prov": "Nusa Tenggara Timur",
   "name": "KAB. SUMBA TIMUR",
   "lat": -9.8343,
-  "lon": 120.2094
+  "lon": 120.2094,
+  "heightM": 90
  },
  {
   "id": 313,
@@ -2814,7 +3162,9 @@
   "prov": "Nusa Tenggara Timur",
   "name": "KAB. TIMOR TENGAH SELATAN",
   "lat": -9.8231,
-  "lon": 124.4356
+  "lon": 124.4356,
+  "heightM": 820,
+  "horizonMin": 4.5
  },
  {
   "id": 314,
@@ -2823,7 +3173,8 @@
   "prov": "Nusa Tenggara Timur",
   "name": "KAB. TIMOR TENGAH UTARA",
   "lat": -9.3406,
-  "lon": 124.6103
+  "lon": 124.6103,
+  "heightM": 465
  },
  {
   "id": 315,
@@ -2832,7 +3183,8 @@
   "prov": "Nusa Tenggara Timur",
   "name": "KOTA KUPANG",
   "lat": -10.1632,
-  "lon": 123.6018
+  "lon": 123.6018,
+  "heightM": 73
  },
  {
   "id": 316,
@@ -2841,7 +3193,8 @@
   "prov": "Kalimantan Barat",
   "name": "KAB. BENGKAYANG",
   "lat": 1.0158,
-  "lon": 109.708
+  "lon": 109.708,
+  "heightM": 122
  },
  {
   "id": 317,
@@ -2850,7 +3203,8 @@
   "prov": "Kalimantan Barat",
   "name": "KAB. KAPUAS HULU",
   "lat": 0.8274,
-  "lon": 112.7965
+  "lon": 112.7965,
+  "heightM": 61
  },
  {
   "id": 318,
@@ -2859,7 +3213,8 @@
   "prov": "Kalimantan Barat",
   "name": "KAB. KAYONG UTARA",
   "lat": -1.0435,
-  "lon": 110.0589
+  "lon": 110.0589,
+  "heightM": 17
  },
  {
   "id": 319,
@@ -2868,7 +3223,8 @@
   "prov": "Kalimantan Barat",
   "name": "KAB. KETAPANG",
   "lat": -1.8447,
-  "lon": 109.9784
+  "lon": 109.9784,
+  "heightM": 5
  },
  {
   "id": 320,
@@ -2877,7 +3233,8 @@
   "prov": "Kalimantan Barat",
   "name": "KAB. KUBU RAYA",
   "lat": -0.3695,
-  "lon": 109.5124
+  "lon": 109.5124,
+  "heightM": 6
  },
  {
   "id": 321,
@@ -2886,7 +3243,8 @@
   "prov": "Kalimantan Barat",
   "name": "KAB. LANDAK",
   "lat": 0.5046,
-  "lon": 109.707
+  "lon": 109.707,
+  "heightM": 74
  },
  {
   "id": 322,
@@ -2895,7 +3253,8 @@
   "prov": "Kalimantan Barat",
   "name": "KAB. MELAWI",
   "lat": -0.7239,
-  "lon": 111.656
+  "lon": 111.656,
+  "heightM": 142
  },
  {
   "id": 323,
@@ -2904,7 +3263,8 @@
   "prov": "Kalimantan Barat",
   "name": "KAB. MEMPAWAH",
   "lat": 0.344,
-  "lon": 109.102
+  "lon": 109.102,
+  "heightM": 19
  },
  {
   "id": 324,
@@ -2913,7 +3273,8 @@
   "prov": "Kalimantan Barat",
   "name": "KAB. SAMBAS",
   "lat": 1.5219,
-  "lon": 109.4138
+  "lon": 109.4138,
+  "heightM": 27
  },
  {
   "id": 325,
@@ -2922,7 +3283,8 @@
   "prov": "Kalimantan Barat",
   "name": "KAB. SANGGAU",
   "lat": 0.3502,
-  "lon": 110.547
+  "lon": 110.547,
+  "heightM": 34
  },
  {
   "id": 326,
@@ -2931,7 +3293,8 @@
   "prov": "Kalimantan Barat",
   "name": "KAB. SEKADAU",
   "lat": 0.0219,
-  "lon": 110.8883
+  "lon": 110.8883,
+  "heightM": 20
  },
  {
   "id": 327,
@@ -2940,7 +3303,8 @@
   "prov": "Kalimantan Barat",
   "name": "KAB. SINTANG",
   "lat": 0.0636,
-  "lon": 111.4866
+  "lon": 111.4866,
+  "heightM": 22
  },
  {
   "id": 328,
@@ -2949,7 +3313,8 @@
   "prov": "Kalimantan Barat",
   "name": "KOTA PONTIANAK",
   "lat": -0.0227,
-  "lon": 109.3447
+  "lon": 109.3447,
+  "heightM": 0
  },
  {
   "id": 329,
@@ -2958,7 +3323,8 @@
   "prov": "Kalimantan Barat",
   "name": "KOTA SINGKAWANG",
   "lat": 0.907,
-  "lon": 108.989
+  "lon": 108.989,
+  "heightM": 5
  },
  {
   "id": 330,
@@ -2967,7 +3333,8 @@
   "prov": "Kalimantan Selatan",
   "name": "KAB. BALANGAN",
   "lat": -2.2879,
-  "lon": 115.6205
+  "lon": 115.6205,
+  "heightM": 44
  },
  {
   "id": 331,
@@ -2976,7 +3343,8 @@
   "prov": "Kalimantan Selatan",
   "name": "KAB. BANJAR",
   "lat": -3.2776,
-  "lon": 115.0284
+  "lon": 115.0284,
+  "heightM": 40
  },
  {
   "id": 332,
@@ -2985,7 +3353,8 @@
   "prov": "Kalimantan Selatan",
   "name": "KAB. BARITO KUALA",
   "lat": -3.0193,
-  "lon": 114.6779
+  "lon": 114.6779,
+  "heightM": 9
  },
  {
   "id": 333,
@@ -2994,7 +3363,8 @@
   "prov": "Kalimantan Selatan",
   "name": "KAB. HULU SUNGAI SELATAN",
   "lat": -2.7126,
-  "lon": 115.1588
+  "lon": 115.1588,
+  "heightM": 4
  },
  {
   "id": 334,
@@ -3003,7 +3373,8 @@
   "prov": "Kalimantan Selatan",
   "name": "KAB. HULU SUNGAI TENGAH",
   "lat": -2.6188,
-  "lon": 115.4293
+  "lon": 115.4293,
+  "heightM": 20
  },
  {
   "id": 335,
@@ -3012,7 +3383,8 @@
   "prov": "Kalimantan Selatan",
   "name": "KAB. HULU SUNGAI UTARA",
   "lat": -2.4242,
-  "lon": 115.1597
+  "lon": 115.1597,
+  "heightM": 7
  },
  {
   "id": 336,
@@ -3021,7 +3393,8 @@
   "prov": "Kalimantan Selatan",
   "name": "KAB. KOTABARU",
   "lat": -2.7951,
-  "lon": 115.9713
+  "lon": 115.9713,
+  "heightM": 67
  },
  {
   "id": 337,
@@ -3030,7 +3403,8 @@
   "prov": "Kalimantan Selatan",
   "name": "KAB. TABALONG",
   "lat": -1.8363,
-  "lon": 115.5155
+  "lon": 115.5155,
+  "heightM": 83
  },
  {
   "id": 338,
@@ -3039,7 +3413,8 @@
   "prov": "Kalimantan Selatan",
   "name": "KAB. TANAH BUMBU",
   "lat": -3.4473,
-  "lon": 115.7064
+  "lon": 115.7064,
+  "heightM": 15
  },
  {
   "id": 339,
@@ -3048,7 +3423,8 @@
   "prov": "Kalimantan Selatan",
   "name": "KAB. TANAH LAUT",
   "lat": -3.844,
-  "lon": 114.9889
+  "lon": 114.9889,
+  "heightM": 45
  },
  {
   "id": 340,
@@ -3057,7 +3433,8 @@
   "prov": "Kalimantan Selatan",
   "name": "KAB. TAPIN",
   "lat": -2.8623,
-  "lon": 115.011
+  "lon": 115.011,
+  "heightM": 5
  },
  {
   "id": 341,
@@ -3066,7 +3443,8 @@
   "prov": "Kalimantan Selatan",
   "name": "KOTA BANJARBARU",
   "lat": -3.4431,
-  "lon": 114.8308
+  "lon": 114.8308,
+  "heightM": 31
  },
  {
   "id": 342,
@@ -3075,7 +3453,8 @@
   "prov": "Kalimantan Selatan",
   "name": "KOTA BANJARMASIN",
   "lat": -3.3187,
-  "lon": 114.5926
+  "lon": 114.5926,
+  "heightM": 7
  },
  {
   "id": 343,
@@ -3084,7 +3463,8 @@
   "prov": "Kalimantan Tengah",
   "name": "KAB. BARITO SELATAN",
   "lat": -1.9229,
-  "lon": 114.7889
+  "lon": 114.7889,
+  "heightM": 28
  },
  {
   "id": 344,
@@ -3093,7 +3473,8 @@
   "prov": "Kalimantan Tengah",
   "name": "KAB. BARITO TIMUR",
   "lat": -1.9819,
-  "lon": 115.1804
+  "lon": 115.1804,
+  "heightM": 34
  },
  {
   "id": 345,
@@ -3102,7 +3483,8 @@
   "prov": "Kalimantan Tengah",
   "name": "KAB. BARITO UTARA",
   "lat": -0.7542,
-  "lon": 115.0451
+  "lon": 115.0451,
+  "heightM": 35
  },
  {
   "id": 346,
@@ -3111,7 +3493,8 @@
   "prov": "Kalimantan Tengah",
   "name": "KAB. GUNUNG MAS",
   "lat": -0.9678,
-  "lon": 113.5357
+  "lon": 113.5357,
+  "heightM": 96
  },
  {
   "id": 347,
@@ -3120,7 +3503,8 @@
   "prov": "Kalimantan Tengah",
   "name": "KAB. KAPUAS",
   "lat": -1.9229,
-  "lon": 114.3364
+  "lon": 114.3364,
+  "heightM": 30
  },
  {
   "id": 348,
@@ -3129,7 +3513,8 @@
   "prov": "Kalimantan Tengah",
   "name": "KAB. KATINGAN",
   "lat": -1.8596,
-  "lon": 113.3369
+  "lon": 113.3369,
+  "heightM": 24
  },
  {
   "id": 349,
@@ -3138,7 +3523,8 @@
   "prov": "Kalimantan Tengah",
   "name": "KAB. KOTAWARINGIN BARAT",
   "lat": -2.5042,
-  "lon": 111.6468
+  "lon": 111.6468,
+  "heightM": 18
  },
  {
   "id": 350,
@@ -3147,7 +3533,8 @@
   "prov": "Kalimantan Tengah",
   "name": "KAB. KOTAWARINGIN TIMUR",
   "lat": -2.2515,
-  "lon": 112.7855
+  "lon": 112.7855,
+  "heightM": 12
  },
  {
   "id": 351,
@@ -3156,7 +3543,8 @@
   "prov": "Kalimantan Tengah",
   "name": "KAB. LAMANDAU",
   "lat": -1.7789,
-  "lon": 111.4173
+  "lon": 111.4173,
+  "heightM": 39
  },
  {
   "id": 352,
@@ -3165,7 +3553,8 @@
   "prov": "Kalimantan Tengah",
   "name": "KAB. MURUNG RAYA",
   "lat": -0.0685,
-  "lon": 114.1732
+  "lon": 114.6732,
+  "heightM": 144
  },
  {
   "id": 353,
@@ -3174,7 +3563,8 @@
   "prov": "Kalimantan Tengah",
   "name": "KAB. PULANG PISAU",
   "lat": -2.4932,
-  "lon": 114.0405
+  "lon": 114.0405,
+  "heightM": 8
  },
  {
   "id": 354,
@@ -3183,7 +3573,8 @@
   "prov": "Kalimantan Tengah",
   "name": "KAB. SUKAMARA",
   "lat": -2.5602,
-  "lon": 111.1838
+  "lon": 111.1838,
+  "heightM": 13
  },
  {
   "id": 355,
@@ -3192,7 +3583,8 @@
   "prov": "Kalimantan Tengah",
   "name": "KAB. SERUYAN",
   "lat": -2.1202,
-  "lon": 112.165
+  "lon": 112.665,
+  "heightM": 48
  },
  {
   "id": 356,
@@ -3201,7 +3593,8 @@
   "prov": "Kalimantan Tengah",
   "name": "KOTA PALANGKARAYA",
   "lat": -2.2073,
-  "lon": 113.9164
+  "lon": 113.9164,
+  "heightM": 12
  },
  {
   "id": 357,
@@ -3210,7 +3603,8 @@
   "prov": "Kalimantan Timur",
   "name": "KAB. BERAU",
   "lat": 1.7768,
-  "lon": 117.2692
+  "lon": 117.2692,
+  "heightM": 97
  },
  {
   "id": 358,
@@ -3219,7 +3613,8 @@
   "prov": "Kalimantan Timur",
   "name": "KAB. KUTAI BARAT",
   "lat": -0.4209,
-  "lon": 115.7652
+  "lon": 115.7652,
+  "heightM": 34
  },
  {
   "id": 359,
@@ -3228,7 +3623,8 @@
   "prov": "Kalimantan Timur",
   "name": "KAB. KUTAI KARTANEGARA",
   "lat": 0.1956,
-  "lon": 116.2004
+  "lon": 116.9504,
+  "heightM": 45
  },
  {
   "id": 360,
@@ -3237,7 +3633,8 @@
   "prov": "Kalimantan Timur",
   "name": "KAB. KUTAI TIMUR",
   "lat": 0.9454,
-  "lon": 117.0111
+  "lon": 117.5111,
+  "heightM": 115
  },
  {
   "id": 361,
@@ -3246,7 +3643,8 @@
   "prov": "Kalimantan Timur",
   "name": "KAB. MAHAKAM ULU",
   "lat": 0.6226,
-  "lon": 115.3131
+  "lon": 115.3131,
+  "heightM": 444
  },
  {
   "id": 362,
@@ -3255,7 +3653,8 @@
   "prov": "Kalimantan Timur",
   "name": "KAB. PASER",
   "lat": -1.6897,
-  "lon": 116.0158
+  "lon": 116.0158,
+  "heightM": 325
  },
  {
   "id": 363,
@@ -3264,7 +3663,8 @@
   "prov": "Kalimantan Timur",
   "name": "KAB. PENAJAM PASER UTARA",
   "lat": -1.1974,
-  "lon": 116.5673
+  "lon": 116.5673,
+  "heightM": 36
  },
  {
   "id": 364,
@@ -3273,7 +3673,8 @@
   "prov": "Kalimantan Timur",
   "name": "KOTA BALIKPAPAN",
   "lat": -1.2399,
-  "lon": 116.8593
+  "lon": 116.8593,
+  "heightM": 9
  },
  {
   "id": 365,
@@ -3282,7 +3683,8 @@
   "prov": "Kalimantan Timur",
   "name": "KOTA BONTANG",
   "lat": 0.1237,
-  "lon": 117.4717
+  "lon": 117.4717,
+  "heightM": 18
  },
  {
   "id": 366,
@@ -3291,7 +3693,8 @@
   "prov": "Kalimantan Timur",
   "name": "KOTA SAMARINDA",
   "lat": -0.5018,
-  "lon": 117.1393
+  "lon": 117.1393,
+  "heightM": 2
  },
  {
   "id": 367,
@@ -3300,7 +3703,8 @@
   "prov": "Kalimantan Utara",
   "name": "KAB. BULUNGAN",
   "lat": 2.762,
-  "lon": 117.0743
+  "lon": 117.0743,
+  "heightM": 154
  },
  {
   "id": 368,
@@ -3309,7 +3713,8 @@
   "prov": "Kalimantan Utara",
   "name": "KAB. MALINAU",
   "lat": 2.6186,
-  "lon": 115.6905
+  "lon": 116.6905,
+  "heightM": 457
  },
  {
   "id": 369,
@@ -3318,7 +3723,8 @@
   "prov": "Kalimantan Utara",
   "name": "KAB. NUNUKAN",
   "lat": 4.1333,
-  "lon": 117.6667
+  "lon": 117.6667,
+  "heightM": 24
  },
  {
   "id": 370,
@@ -3327,7 +3733,8 @@
   "prov": "Kalimantan Utara",
   "name": "KAB. TANA TIDUNG",
   "lat": 3.5553,
-  "lon": 117.0447
+  "lon": 117.0447,
+  "heightM": 33
  },
  {
   "id": 371,
@@ -3336,7 +3743,8 @@
   "prov": "Kalimantan Utara",
   "name": "KOTA TARAKAN",
   "lat": 3.3,
-  "lon": 117.633
+  "lon": 117.633,
+  "heightM": 48
  },
  {
   "id": 372,
@@ -3345,7 +3753,8 @@
   "prov": "Gorontalo",
   "name": "KAB. BOALEMO",
   "lat": 0.6876,
-  "lon": 122.3357
+  "lon": 122.3357,
+  "heightM": 246
  },
  {
   "id": 373,
@@ -3354,7 +3763,8 @@
   "prov": "Gorontalo",
   "name": "KAB. BONE BOLANGO",
   "lat": 0.5564,
-  "lon": 123.31
+  "lon": 123.31,
+  "heightM": 384
  },
  {
   "id": 374,
@@ -3363,7 +3773,8 @@
   "prov": "Gorontalo",
   "name": "KAB. GORONTALO",
   "lat": 0.7012,
-  "lon": 122.7233
+  "lon": 122.7233,
+  "heightM": 312
  },
  {
   "id": 375,
@@ -3372,7 +3783,8 @@
   "prov": "Gorontalo",
   "name": "KAB. GORONTALO UTARA",
   "lat": 0.8662,
-  "lon": 123.0495
+  "lon": 123.0495,
+  "heightM": 256
  },
  {
   "id": 376,
@@ -3381,7 +3793,8 @@
   "prov": "Gorontalo",
   "name": "KAB. PAHUWATO",
   "lat": 0.46,
-  "lon": 121.94
+  "lon": 121.94,
+  "heightM": 14
  },
  {
   "id": 377,
@@ -3390,7 +3803,8 @@
   "prov": "Gorontalo",
   "name": "KOTA GORONTALO",
   "lat": 0.5384,
-  "lon": 123.0595
+  "lon": 123.0595,
+  "heightM": 9
  },
  {
   "id": 378,
@@ -3399,7 +3813,8 @@
   "prov": "Sulawesi Selatan",
   "name": "KAB. BANTAENG",
   "lat": -5.4709,
-  "lon": 119.9872
+  "lon": 119.9872,
+  "heightM": 482
  },
  {
   "id": 379,
@@ -3408,7 +3823,8 @@
   "prov": "Sulawesi Selatan",
   "name": "KAB. BARRU",
   "lat": -4.4337,
-  "lon": 119.6778
+  "lon": 119.6778,
+  "heightM": 156
  },
  {
   "id": 380,
@@ -3417,7 +3833,8 @@
   "prov": "Sulawesi Selatan",
   "name": "KAB. BONE",
   "lat": -4.6801,
-  "lon": 120.0947
+  "lon": 120.0947,
+  "heightM": 459
  },
  {
   "id": 381,
@@ -3426,7 +3843,8 @@
   "prov": "Sulawesi Selatan",
   "name": "KAB. BULUKUMBA",
   "lat": -5.5592,
-  "lon": 120.1929
+  "lon": 120.1929,
+  "heightM": 9
  },
  {
   "id": 382,
@@ -3435,7 +3853,8 @@
   "prov": "Sulawesi Selatan",
   "name": "KAB. ENREKANG",
   "lat": -3.488,
-  "lon": 119.8658
+  "lon": 119.8658,
+  "heightM": 997
  },
  {
   "id": 383,
@@ -3444,7 +3863,8 @@
   "prov": "Sulawesi Selatan",
   "name": "KAB. GOWA",
   "lat": -5.3291,
-  "lon": 119.766
+  "lon": 119.766,
+  "heightM": 668
  },
  {
   "id": 384,
@@ -3453,7 +3873,8 @@
   "prov": "Sulawesi Selatan",
   "name": "KAB. JENEPONTO",
   "lat": -5.6797,
-  "lon": 119.7475
+  "lon": 119.7475,
+  "heightM": 27
  },
  {
   "id": 385,
@@ -3462,7 +3883,8 @@
   "prov": "Sulawesi Selatan",
   "name": "KAB. KEPULAUAN SELAYAR",
   "lat": -7.3015,
-  "lon": 120.9627
+  "lon": 120.4627,
+  "heightM": 141
  },
  {
   "id": 386,
@@ -3471,7 +3893,8 @@
   "prov": "Sulawesi Selatan",
   "name": "KAB. LUWU",
   "lat": -3.348,
-  "lon": 120.2214
+  "lon": 120.2214,
+  "heightM": 203
  },
  {
   "id": 387,
@@ -3480,7 +3903,8 @@
   "prov": "Sulawesi Selatan",
   "name": "KAB. LUWU TIMUR",
   "lat": -2.5305,
-  "lon": 121.1224
+  "lon": 121.1224,
+  "heightM": 241
  },
  {
   "id": 388,
@@ -3489,7 +3913,8 @@
   "prov": "Sulawesi Selatan",
   "name": "KAB. LUWU UTARA",
   "lat": -2.4038,
-  "lon": 120.1301
+  "lon": 120.1301,
+  "heightM": 1308
  },
  {
   "id": 389,
@@ -3498,7 +3923,8 @@
   "prov": "Sulawesi Selatan",
   "name": "KAB. MAROS",
   "lat": -4.9655,
-  "lon": 119.6928
+  "lon": 119.6928,
+  "heightM": 41
  },
  {
   "id": 390,
@@ -3507,7 +3933,8 @@
   "prov": "Sulawesi Selatan",
   "name": "KAB. PANGKAJENE DAN KEPULAUAN",
   "lat": -4.7544,
-  "lon": 119.5893
+  "lon": 119.5893,
+  "heightM": 12
  },
  {
   "id": 391,
@@ -3516,7 +3943,8 @@
   "prov": "Sulawesi Selatan",
   "name": "KAB. PINRANG",
   "lat": -3.7933,
-  "lon": 119.6529
+  "lon": 119.6529,
+  "heightM": 19
  },
  {
   "id": 392,
@@ -3525,7 +3953,8 @@
   "prov": "Sulawesi Selatan",
   "name": "KAB. SIDENRENG RAPPANG",
   "lat": -3.8079,
-  "lon": 120.045
+  "lon": 120.045,
+  "heightM": 50
  },
  {
   "id": 393,
@@ -3534,7 +3963,8 @@
   "prov": "Sulawesi Selatan",
   "name": "KAB. SINJAI",
   "lat": -5.2007,
-  "lon": 120.1442
+  "lon": 120.1442,
+  "heightM": 314
  },
  {
   "id": 394,
@@ -3543,7 +3973,8 @@
   "prov": "Sulawesi Selatan",
   "name": "KAB. SOPPENG",
   "lat": -4.3189,
-  "lon": 119.9185
+  "lon": 119.9185,
+  "heightM": 37
  },
  {
   "id": 395,
@@ -3552,7 +3983,8 @@
   "prov": "Sulawesi Selatan",
   "name": "KAB. TAKALAR",
   "lat": -5.4067,
-  "lon": 119.5375
+  "lon": 119.5375,
+  "heightM": 36
  },
  {
   "id": 396,
@@ -3561,7 +3993,9 @@
   "prov": "Sulawesi Selatan",
   "name": "KAB. TANA TORAJA",
   "lat": -3.1169,
-  "lon": 119.6938
+  "lon": 119.6938,
+  "heightM": 1641,
+  "horizonMin": 4.5
  },
  {
   "id": 397,
@@ -3570,7 +4004,9 @@
   "prov": "Sulawesi Selatan",
   "name": "KAB. TORAJA UTARA",
   "lat": -2.8612,
-  "lon": 119.842
+  "lon": 119.842,
+  "heightM": 1614,
+  "horizonMin": 4.5
  },
  {
   "id": 398,
@@ -3579,7 +4015,8 @@
   "prov": "Sulawesi Selatan",
   "name": "KAB. WAJO",
   "lat": -3.9656,
-  "lon": 120.1279
+  "lon": 120.1279,
+  "heightM": 57
  },
  {
   "id": 399,
@@ -3588,7 +4025,8 @@
   "prov": "Sulawesi Selatan",
   "name": "KOTA MAKASSAR",
   "lat": -5.1343,
-  "lon": 119.4124
+  "lon": 119.4124,
+  "heightM": 8
  },
  {
   "id": 400,
@@ -3597,7 +4035,8 @@
   "prov": "Sulawesi Selatan",
   "name": "KOTA PALOPO",
   "lat": -2.9996,
-  "lon": 120.1921
+  "lon": 120.1921,
+  "heightM": 13
  },
  {
   "id": 401,
@@ -3606,7 +4045,8 @@
   "prov": "Sulawesi Selatan",
   "name": "KOTA PAREPARE",
   "lat": -4.0057,
-  "lon": 119.6236
+  "lon": 119.6236,
+  "heightM": 9
  },
  {
   "id": 402,
@@ -3615,7 +4055,8 @@
   "prov": "Sulawesi Tenggara",
   "name": "KAB. BOMBANA",
   "lat": -4.6393,
-  "lon": 121.7572
+  "lon": 121.7572,
+  "heightM": 51
  },
  {
   "id": 403,
@@ -3624,7 +4065,8 @@
   "prov": "Sulawesi Tenggara",
   "name": "KAB. BUTON",
   "lat": -5.3543,
-  "lon": 122.9507
+  "lon": 122.9507,
+  "heightM": 229
  },
  {
   "id": 404,
@@ -3633,7 +4075,8 @@
   "prov": "Sulawesi Tenggara",
   "name": "KAB. BUTON SELATAN",
   "lat": -5.5914,
-  "lon": 122.7019
+  "lon": 122.7019,
+  "heightM": 195
  },
  {
   "id": 405,
@@ -3642,7 +4085,8 @@
   "prov": "Sulawesi Tenggara",
   "name": "KAB. BUTON TENGAH",
   "lat": -5.2918,
-  "lon": 122.3883
+  "lon": 122.3883,
+  "heightM": 95
  },
  {
   "id": 406,
@@ -3651,7 +4095,8 @@
   "prov": "Sulawesi Tenggara",
   "name": "KAB. BUTON UTARA",
   "lat": -4.7565,
-  "lon": 122.9489
+  "lon": 122.9489,
+  "heightM": 60
  },
  {
   "id": 407,
@@ -3660,7 +4105,8 @@
   "prov": "Sulawesi Tenggara",
   "name": "KAB. KOLAKA",
   "lat": -4.1214,
-  "lon": 121.6929
+  "lon": 121.6929,
+  "heightM": 51
  },
  {
   "id": 408,
@@ -3669,7 +4115,8 @@
   "prov": "Sulawesi Tenggara",
   "name": "KAB. KOLAKA TIMUR",
   "lat": -3.8207,
-  "lon": 121.7542
+  "lon": 121.7542,
+  "heightM": 253
  },
  {
   "id": 409,
@@ -3678,7 +4125,8 @@
   "prov": "Sulawesi Tenggara",
   "name": "KAB. KOLAKA UTARA",
   "lat": -3.2605,
-  "lon": 121.0934
+  "lon": 121.0934,
+  "heightM": 887
  },
  {
   "id": 410,
@@ -3687,7 +4135,8 @@
   "prov": "Sulawesi Tenggara",
   "name": "KAB. KONAWE",
   "lat": -3.5117,
-  "lon": 121.6523
+  "lon": 122.1523,
+  "heightM": 459
  },
  {
   "id": 411,
@@ -3696,7 +4145,8 @@
   "prov": "Sulawesi Tenggara",
   "name": "KAB. KONAWE KEPULAUAN",
   "lat": -4.1195,
-  "lon": 123.0986
+  "lon": 124.0986,
+  "heightM": 492
  },
  {
   "id": 412,
@@ -3705,7 +4155,8 @@
   "prov": "Sulawesi Tenggara",
   "name": "KAB. KONAWE SELATAN",
   "lat": -4.2599,
-  "lon": 122.4499
+  "lon": 122.4499,
+  "heightM": 240
  },
  {
   "id": 413,
@@ -3714,7 +4165,8 @@
   "prov": "Sulawesi Tenggara",
   "name": "KAB. KONAWE UTARA",
   "lat": -3.455,
-  "lon": 121.9763
+  "lon": 121.9763,
+  "heightM": 480
  },
  {
   "id": 414,
@@ -3723,7 +4175,8 @@
   "prov": "Sulawesi Tenggara",
   "name": "KAB. MUNA",
   "lat": -4.9191,
-  "lon": 122.6918
+  "lon": 122.6918,
+  "heightM": 185
  },
  {
   "id": 415,
@@ -3732,7 +4185,8 @@
   "prov": "Sulawesi Tenggara",
   "name": "KAB. MUNA BARAT",
   "lat": -4.8037,
-  "lon": 122.4515
+  "lon": 122.4515,
+  "heightM": 17
  },
  {
   "id": 416,
@@ -3741,7 +4195,8 @@
   "prov": "Sulawesi Tenggara",
   "name": "KAB. WAKATOBI",
   "lat": -5.3157,
-  "lon": 123.585
+  "lon": 123.585,
+  "heightM": 115
  },
  {
   "id": 417,
@@ -3750,7 +4205,8 @@
   "prov": "Sulawesi Tenggara",
   "name": "KOTA BAU-BAU",
   "lat": -5.462,
-  "lon": 122.6058
+  "lon": 122.6058,
+  "heightM": 6
  },
  {
   "id": 418,
@@ -3759,7 +4215,8 @@
   "prov": "Sulawesi Tenggara",
   "name": "KOTA KENDARI",
   "lat": -3.9918,
-  "lon": 122.518
+  "lon": 122.518,
+  "heightM": 0
  },
  {
   "id": 419,
@@ -3768,7 +4225,8 @@
   "prov": "Sulawesi Tengah",
   "name": "KAB. BANGGAI",
   "lat": -0.921,
-  "lon": 122.6975
+  "lon": 122.6975,
+  "heightM": 1252
  },
  {
   "id": 420,
@@ -3777,7 +4235,8 @@
   "prov": "Sulawesi Tengah",
   "name": "KAB. BANGGAI KEPULAUAN",
   "lat": -1.3518,
-  "lon": 123.1809
+  "lon": 123.1809,
+  "heightM": 132
  },
  {
   "id": 421,
@@ -3786,7 +4245,8 @@
   "prov": "Sulawesi Tengah",
   "name": "KAB. BANGGAI LAUT",
   "lat": -1.8428,
-  "lon": 123.1026
+  "lon": 123.6026,
+  "heightM": 451
  },
  {
   "id": 422,
@@ -3795,7 +4255,8 @@
   "prov": "Sulawesi Tengah",
   "name": "KAB. BUOL",
   "lat": 1.0124,
-  "lon": 121.3121
+  "lon": 121.3121,
+  "heightM": 211
  },
  {
   "id": 423,
@@ -3804,7 +4265,8 @@
   "prov": "Sulawesi Tengah",
   "name": "KAB. DONGGALA",
   "lat": -1.0478,
-  "lon": 119.6758
+  "lon": 119.6758,
+  "heightM": 417
  },
  {
   "id": 424,
@@ -3813,7 +4275,8 @@
   "prov": "Sulawesi Tengah",
   "name": "KAB. MOROWALI",
   "lat": -2.7151,
-  "lon": 121.8824
+  "lon": 121.8824,
+  "heightM": 864
  },
  {
   "id": 425,
@@ -3822,7 +4285,8 @@
   "prov": "Sulawesi Tengah",
   "name": "KAB. MOROWALI UTARA",
   "lat": -1.8419,
-  "lon": 121.0772
+  "lon": 121.0772,
+  "heightM": 442
  },
  {
   "id": 426,
@@ -3831,7 +4295,8 @@
   "prov": "Sulawesi Tengah",
   "name": "KAB. PARIGI MOUTONG",
   "lat": -0.2384,
-  "lon": 119.9599
+  "lon": 119.9599,
+  "heightM": 392
  },
  {
   "id": 427,
@@ -3840,7 +4305,8 @@
   "prov": "Sulawesi Tengah",
   "name": "KAB. POSO",
   "lat": -1.6569,
-  "lon": 120.5422
+  "lon": 120.5422,
+  "heightM": 857
  },
  {
   "id": 428,
@@ -3849,7 +4315,8 @@
   "prov": "Sulawesi Tengah",
   "name": "KAB. SIGI",
   "lat": -1.3212,
-  "lon": 119.9987
+  "lon": 119.9987,
+  "heightM": 1085
  },
  {
   "id": 429,
@@ -3858,7 +4325,8 @@
   "prov": "Sulawesi Tengah",
   "name": "KAB. TOJO UNA-UNA",
   "lat": -1.2131,
-  "lon": 121.6196
+  "lon": 121.6196,
+  "heightM": 125
  },
  {
   "id": 430,
@@ -3867,7 +4335,8 @@
   "prov": "Sulawesi Tengah",
   "name": "KAB. TOLI-TOLI",
   "lat": 1.0389,
-  "lon": 120.8145
+  "lon": 120.8145,
+  "heightM": 4
  },
  {
   "id": 431,
@@ -3876,7 +4345,8 @@
   "prov": "Sulawesi Tengah",
   "name": "KOTA PALU",
   "lat": -0.9052,
-  "lon": 119.8722
+  "lon": 119.8722,
+  "heightM": 17
  },
  {
   "id": 432,
@@ -3885,7 +4355,8 @@
   "prov": "Sulawesi Utara",
   "name": "KAB. BOLAANG MONGONDOW",
   "lat": 0.7208,
-  "lon": 123.987
+  "lon": 123.987,
+  "heightM": 1549
  },
  {
   "id": 433,
@@ -3894,7 +4365,8 @@
   "prov": "Sulawesi Utara",
   "name": "KAB. BOLAANG MONGONDOW SELATAN",
   "lat": 0.4533,
-  "lon": 124.1796
+  "lon": 124.1796,
+  "heightM": 280
  },
  {
   "id": 434,
@@ -3903,7 +4375,8 @@
   "prov": "Sulawesi Utara",
   "name": "KAB. BOLAANG MONGONDOW TIMUR",
   "lat": 0.7116,
-  "lon": 124.4895
+  "lon": 124.4895,
+  "heightM": 948
  },
  {
   "id": 435,
@@ -3912,7 +4385,8 @@
   "prov": "Sulawesi Utara",
   "name": "KAB. BOLAANG MONGONDOW UTARA",
   "lat": 0.7599,
-  "lon": 123.4849
+  "lon": 123.4849,
+  "heightM": 304
  },
  {
   "id": 436,
@@ -3921,7 +4395,8 @@
   "prov": "Sulawesi Utara",
   "name": "KAB. KEPULAUAN SANGIHE",
   "lat": 3.5527,
-  "lon": 125.5466
+  "lon": 125.5466,
+  "heightM": 317
  },
  {
   "id": 437,
@@ -3930,7 +4405,8 @@
   "prov": "Sulawesi Utara",
   "name": "KAB. KEPULAUAN SIAU TAGULANDANG BIARO",
   "lat": 2.3495,
-  "lon": 125.4203
+  "lon": 125.4203,
+  "heightM": 391
  },
  {
   "id": 438,
@@ -3939,7 +4415,8 @@
   "prov": "Sulawesi Utara",
   "name": "KAB. KEPULAUAN TALAUD",
   "lat": 4.2695,
-  "lon": 126.8135
+  "lon": 126.8135,
+  "heightM": 282
  },
  {
   "id": 439,
@@ -3948,7 +4425,9 @@
   "prov": "Sulawesi Utara",
   "name": "KAB. MINAHASA",
   "lat": 1.2152,
-  "lon": 124.7979
+  "lon": 124.7979,
+  "heightM": 813,
+  "horizonMin": 4.5
  },
  {
   "id": 440,
@@ -3957,7 +4436,8 @@
   "prov": "Sulawesi Utara",
   "name": "KAB. MINAHASA SELATAN",
   "lat": 1.0703,
-  "lon": 124.4362
+  "lon": 124.4362,
+  "heightM": 1294
  },
  {
   "id": 441,
@@ -3966,7 +4446,8 @@
   "prov": "Sulawesi Utara",
   "name": "KAB. MINAHASA TENGGARA",
   "lat": 0.9883,
-  "lon": 124.7307
+  "lon": 124.7307,
+  "heightM": 370
  },
  {
   "id": 442,
@@ -3975,7 +4456,8 @@
   "prov": "Sulawesi Utara",
   "name": "KAB. MINAHASA UTARA",
   "lat": 1.5333,
-  "lon": 124.9999
+  "lon": 124.9999,
+  "heightM": 222
  },
  {
   "id": 443,
@@ -3984,7 +4466,8 @@
   "prov": "Sulawesi Utara",
   "name": "KOTA BITUNG",
   "lat": 1.4434,
-  "lon": 125.1941
+  "lon": 125.1941,
+  "heightM": 9
  },
  {
   "id": 444,
@@ -3993,7 +4476,8 @@
   "prov": "Sulawesi Utara",
   "name": "KOTA KOTAMOBAGU",
   "lat": 0.7352,
-  "lon": 124.3154
+  "lon": 124.3154,
+  "heightM": 237
  },
  {
   "id": 445,
@@ -4002,7 +4486,8 @@
   "prov": "Sulawesi Utara",
   "name": "KOTA MANADO",
   "lat": 1.49,
-  "lon": 124.8408
+  "lon": 124.8408,
+  "heightM": 10
  },
  {
   "id": 446,
@@ -4011,7 +4496,9 @@
   "prov": "Sulawesi Utara",
   "name": "KOTA TOMOHON",
   "lat": 1.3256,
-  "lon": 124.8386
+  "lon": 124.8386,
+  "heightM": 770,
+  "horizonMin": 4.5
  },
  {
   "id": 447,
@@ -4020,7 +4507,8 @@
   "prov": "Sulawesi Barat",
   "name": "KAB. MAJENE",
   "lat": -3.243,
-  "lon": 118.8733
+  "lon": 118.8733,
+  "heightM": 240
  },
  {
   "id": 448,
@@ -4029,7 +4517,9 @@
   "prov": "Sulawesi Barat",
   "name": "KAB. MAMASA",
   "lat": -3.0004,
-  "lon": 119.3209
+  "lon": 119.3209,
+  "heightM": 1073,
+  "horizonMin": 4.5
  },
  {
   "id": 449,
@@ -4038,7 +4528,8 @@
   "prov": "Sulawesi Barat",
   "name": "KAB. MAMUJU",
   "lat": -2.5394,
-  "lon": 119.3889
+  "lon": 118.8889,
+  "heightM": 294
  },
  {
   "id": 450,
@@ -4047,7 +4538,8 @@
   "prov": "Sulawesi Barat",
   "name": "KAB. MAMUJU TENGAH",
   "lat": -2.0214,
-  "lon": 119.5405
+  "lon": 119.5405,
+  "heightM": 179
  },
  {
   "id": 451,
@@ -4056,7 +4548,8 @@
   "prov": "Sulawesi Barat",
   "name": "KAB. MAMUJU UTARA",
   "lat": -1.18,
-  "lon": 119.37
+  "lon": 119.37,
+  "heightM": 11
  },
  {
   "id": 452,
@@ -4065,7 +4558,8 @@
   "prov": "Sulawesi Barat",
   "name": "KAB. POLEWALI MANDAR",
   "lat": -3.3032,
-  "lon": 119.1451
+  "lon": 119.1451,
+  "heightM": 234
  },
  {
   "id": 453,
@@ -4074,7 +4568,8 @@
   "prov": "Maluku",
   "name": "KAB. BURU",
   "lat": -3.3539,
-  "lon": 126.6489
+  "lon": 127.1489,
+  "heightM": 841
  },
  {
   "id": 454,
@@ -4083,7 +4578,8 @@
   "prov": "Maluku",
   "name": "KAB. BURU SELATAN",
   "lat": -3.4867,
-  "lon": 126.3502
+  "lon": 126.8502,
+  "heightM": 861
  },
  {
   "id": 455,
@@ -4092,7 +4588,8 @@
   "prov": "Maluku",
   "name": "KAB. KEPULAUAN ARU",
   "lat": -6.2279,
-  "lon": 134.4978
+  "lon": 134.4978,
+  "heightM": 32
  },
  {
   "id": 456,
@@ -4101,7 +4598,8 @@
   "prov": "Maluku",
   "name": "KAB. MALUKU BARAT DAYA",
   "lat": -7.7867,
-  "lon": 126.2428
+  "lon": 127.7428,
+  "heightM": 769
  },
  {
   "id": 457,
@@ -4110,7 +4608,8 @@
   "prov": "Maluku",
   "name": "KAB. MALUKU TENGAH",
   "lat": -3.1214,
-  "lon": 129.46
+  "lon": 128.96,
+  "heightM": 1070
  },
  {
   "id": 458,
@@ -4119,7 +4618,8 @@
   "prov": "Maluku",
   "name": "KAB. MALUKU TENGGARA",
   "lat": -5.7715,
-  "lon": 132.7378
+  "lon": 132.7378,
+  "heightM": 67
  },
  {
   "id": 459,
@@ -4128,7 +4628,8 @@
   "prov": "Maluku",
   "name": "KAB. MALUKU TENGGARA BARAT",
   "lat": -7.97,
-  "lon": 131.3
+  "lon": 131.3,
+  "heightM": 0
  },
  {
   "id": 460,
@@ -4137,7 +4638,8 @@
   "prov": "Maluku",
   "name": "KAB. SERAM BAGIAN BARAT",
   "lat": -3.1642,
-  "lon": 128.4837
+  "lon": 128.4837,
+  "heightM": 552
  },
  {
   "id": 461,
@@ -4146,7 +4648,8 @@
   "prov": "Maluku",
   "name": "KAB. SERAM BAGIAN TIMUR",
   "lat": -3.4232,
-  "lon": 130.3911
+  "lon": 130.3911,
+  "heightM": 211
  },
  {
   "id": 462,
@@ -4155,7 +4658,8 @@
   "prov": "Maluku",
   "name": "KOTA AMBON",
   "lat": -3.6959,
-  "lon": 128.1788
+  "lon": 128.1788,
+  "heightM": 10
  },
  {
   "id": 463,
@@ -4164,7 +4668,8 @@
   "prov": "Maluku",
   "name": "KOTA TUAL",
   "lat": -5.5411,
-  "lon": 132.7188
+  "lon": 132.7188,
+  "heightM": 31
  },
  {
   "id": 464,
@@ -4173,7 +4678,8 @@
   "prov": "Maluku Utara",
   "name": "KAB. HALMAHERA BARAT",
   "lat": 1.3631,
-  "lon": 127.5738
+  "lon": 127.5738,
+  "heightM": 324
  },
  {
   "id": 465,
@@ -4182,7 +4688,8 @@
   "prov": "Maluku Utara",
   "name": "KAB. HALMAHERA TENGAH",
   "lat": 0.3889,
-  "lon": 128.5832
+  "lon": 127.8332,
+  "heightM": 425
  },
  {
   "id": 466,
@@ -4191,7 +4698,8 @@
   "prov": "Maluku Utara",
   "name": "KAB. HALMAHERA UTARA",
   "lat": 1.6179,
-  "lon": 127.8585
+  "lon": 127.8585,
+  "heightM": 402
  },
  {
   "id": 467,
@@ -4200,7 +4708,8 @@
   "prov": "Maluku Utara",
   "name": "KAB. HALMAHERA SELATAN",
   "lat": -1.5344,
-  "lon": 127.7166
+  "lon": 127.7166,
+  "heightM": 750
  },
  {
   "id": 468,
@@ -4209,7 +4718,8 @@
   "prov": "Maluku Utara",
   "name": "KAB. KEPULAUAN SULA",
   "lat": -1.8625,
-  "lon": 125.8306
+  "lon": 125.8306,
+  "heightM": 224
  },
  {
   "id": 469,
@@ -4218,7 +4728,8 @@
   "prov": "Maluku Utara",
   "name": "KAB. HALMAHERA TIMUR",
   "lat": 1.0028,
-  "lon": 128.2488
+  "lon": 128.2488,
+  "heightM": 483
  },
  {
   "id": 470,
@@ -4227,7 +4738,8 @@
   "prov": "Maluku Utara",
   "name": "KAB. PULAU MOROTAI",
   "lat": 2.3129,
-  "lon": 128.4419
+  "lon": 128.4419,
+  "heightM": 371
  },
  {
   "id": 471,
@@ -4236,7 +4748,8 @@
   "prov": "Maluku Utara",
   "name": "KAB. PULAU TALIABU",
   "lat": -1.8315,
-  "lon": 124.83
+  "lon": 124.33,
+  "heightM": 231
  },
  {
   "id": 472,
@@ -4245,7 +4758,8 @@
   "prov": "Maluku Utara",
   "name": "KOTA TERNATE",
   "lat": 0.7852,
-  "lon": 127.3832
+  "lon": 127.3832,
+  "heightM": 24
  },
  {
   "id": 473,
@@ -4254,7 +4768,8 @@
   "prov": "Maluku Utara",
   "name": "KOTA TIDORE KEPULAUAN",
   "lat": 0.6787,
-  "lon": 127.4483
+  "lon": 127.4483,
+  "heightM": 28
  },
  {
   "id": 474,
@@ -4263,7 +4778,8 @@
   "prov": "Maluku Utara",
   "name": "KOTA SOFIFI",
   "lat": 0.73,
-  "lon": 127.57
+  "lon": 127.57,
+  "heightM": 24
  },
  {
   "id": 475,
@@ -4272,7 +4788,8 @@
   "prov": "Papua",
   "name": "KAB. ASMAT",
   "lat": -5.5314,
-  "lon": 138.7897
+  "lon": 138.0397,
+  "heightM": 24
  },
  {
   "id": 476,
@@ -4281,7 +4798,8 @@
   "prov": "Papua",
   "name": "KAB. BIAK NUMFOR",
   "lat": -1.1592,
-  "lon": 136.0785
+  "lon": 136.0785,
+  "heightM": 44
  },
  {
   "id": 477,
@@ -4290,7 +4808,8 @@
   "prov": "Papua",
   "name": "KAB. BOVEN DIGOEL",
   "lat": -6.0392,
-  "lon": 140.4299
+  "lon": 140.4299,
+  "heightM": 36
  },
  {
   "id": 478,
@@ -4299,7 +4818,9 @@
   "prov": "Papua",
   "name": "KAB. DEIYAI",
   "lat": -4.1879,
-  "lon": 136.4453
+  "lon": 136.4453,
+  "heightM": 790,
+  "horizonMin": 4.5
  },
  {
   "id": 479,
@@ -4308,7 +4829,9 @@
   "prov": "Papua",
   "name": "KAB. DOGIYAI",
   "lat": -4.0048,
-  "lon": 135.7167
+  "lon": 135.7167,
+  "heightM": 2323,
+  "horizonMin": 4.5
  },
  {
   "id": 480,
@@ -4317,7 +4840,9 @@
   "prov": "Papua",
   "name": "KAB. INTAN JAYA",
   "lat": -3.523,
-  "lon": 136.7185
+  "lon": 136.7185,
+  "heightM": 2881,
+  "horizonMin": 4.5
  },
  {
   "id": 481,
@@ -4326,7 +4851,8 @@
   "prov": "Papua",
   "name": "KAB. JAYAPURA",
   "lat": -3.0371,
-  "lon": 139.947
+  "lon": 140.447,
+  "heightM": 263
  },
  {
   "id": 482,
@@ -4335,7 +4861,9 @@
   "prov": "Papua",
   "name": "KAB. JAYAWIJAYA",
   "lat": -4.1153,
-  "lon": 138.965
+  "lon": 138.965,
+  "heightM": 1645,
+  "horizonMin": 4.5
  },
  {
   "id": 483,
@@ -4344,7 +4872,8 @@
   "prov": "Papua",
   "name": "KAB. KEEROM",
   "lat": -3.3336,
-  "lon": 140.6727
+  "lon": 140.6727,
+  "heightM": 288
  },
  {
   "id": 484,
@@ -4353,7 +4882,8 @@
   "prov": "Papua",
   "name": "KAB. KEPULAUAN YAPEN",
   "lat": -1.7558,
-  "lon": 136.3665
+  "lon": 136.3665,
+  "heightM": 435
  },
  {
   "id": 485,
@@ -4362,7 +4892,9 @@
   "prov": "Papua",
   "name": "KAB. LANNY JAYA",
   "lat": -3.9977,
-  "lon": 138.3731
+  "lon": 138.3731,
+  "heightM": 2707,
+  "horizonMin": 4.5
  },
  {
   "id": 486,
@@ -4371,7 +4903,8 @@
   "prov": "Papua",
   "name": "KAB. MAMBERAMO RAYA",
   "lat": -2.3957,
-  "lon": 137.8169
+  "lon": 137.8169,
+  "heightM": 400
  },
  {
   "id": 487,
@@ -4380,7 +4913,9 @@
   "prov": "Papua",
   "name": "KAB. MAMBERAMO TENGAH",
   "lat": -3.5335,
-  "lon": 139.0177
+  "lon": 139.0177,
+  "heightM": 1293,
+  "horizonMin": 4.5
  },
  {
   "id": 488,
@@ -4389,7 +4924,8 @@
   "prov": "Papua",
   "name": "KAB. MAPPI",
   "lat": -6.3296,
-  "lon": 139.2877
+  "lon": 139.2877,
+  "heightM": 30
  },
  {
   "id": 489,
@@ -4398,7 +4934,8 @@
   "prov": "Papua",
   "name": "KAB. MERAUKE",
   "lat": -8.4903,
-  "lon": 140.3956
+  "lon": 140.3956,
+  "heightM": 5
  },
  {
   "id": 490,
@@ -4407,7 +4944,8 @@
   "prov": "Papua",
   "name": "KAB. MIMIKA",
   "lat": -4.5875,
-  "lon": 136.9478
+  "lon": 136.9478,
+  "heightM": 43
  },
  {
   "id": 491,
@@ -4416,7 +4954,8 @@
   "prov": "Papua",
   "name": "KAB. NABIRE",
   "lat": -3.3468,
-  "lon": 135.9503
+  "lon": 135.4503,
+  "heightM": 48
  },
  {
   "id": 492,
@@ -4425,7 +4964,8 @@
   "prov": "Papua",
   "name": "KAB. NDUGA",
   "lat": -4.4431,
-  "lon": 138.2248
+  "lon": 138.2248,
+  "heightM": 826
  },
  {
   "id": 493,
@@ -4434,7 +4974,9 @@
   "prov": "Papua",
   "name": "KAB. PANIAI",
   "lat": -3.7426,
-  "lon": 136.3778
+  "lon": 136.3778,
+  "heightM": 1917,
+  "horizonMin": 4.5
  },
  {
   "id": 494,
@@ -4443,7 +4985,9 @@
   "prov": "Papua",
   "name": "KAB. PEGUNUNGAN BINTANG",
   "lat": -4.4755,
-  "lon": 140.5577
+  "lon": 140.5577,
+  "heightM": 1576,
+  "horizonMin": 4.5
  },
  {
   "id": 495,
@@ -4452,7 +4996,9 @@
   "prov": "Papua",
   "name": "KAB. PUNCAK",
   "lat": -3.6256,
-  "lon": 137.4892
+  "lon": 137.4892,
+  "heightM": 2194,
+  "horizonMin": 4.5
  },
  {
   "id": 496,
@@ -4461,7 +5007,9 @@
   "prov": "Papua",
   "name": "KAB. PUNCAK JAYA",
   "lat": -3.7009,
-  "lon": 137.9649
+  "lon": 137.9649,
+  "heightM": 1839,
+  "horizonMin": 4.5
  },
  {
   "id": 497,
@@ -4470,7 +5018,8 @@
   "prov": "Papua",
   "name": "KAB. SARMI",
   "lat": -2.5563,
-  "lon": 139.1077
+  "lon": 139.1077,
+  "heightM": 993
  },
  {
   "id": 498,
@@ -4479,7 +5028,8 @@
   "prov": "Papua",
   "name": "KAB. SUPIORI",
   "lat": -0.7536,
-  "lon": 135.635
+  "lon": 135.635,
+  "heightM": 39
  },
  {
   "id": 499,
@@ -4488,7 +5038,9 @@
   "prov": "Papua",
   "name": "KAB. TOLIKARA",
   "lat": -3.4497,
-  "lon": 138.3491
+  "lon": 138.3491,
+  "heightM": 1203,
+  "horizonMin": 4.5
  },
  {
   "id": 500,
@@ -4497,7 +5049,8 @@
   "prov": "Papua",
   "name": "KAB. WAROPEN",
   "lat": -2.7188,
-  "lon": 136.6504
+  "lon": 136.6504,
+  "heightM": 241
  },
  {
   "id": 501,
@@ -4506,7 +5059,9 @@
   "prov": "Papua",
   "name": "KAB. YAHUKIMO",
   "lat": -4.3739,
-  "lon": 139.4648
+  "lon": 139.4648,
+  "heightM": 3548,
+  "horizonMin": 4.5
  },
  {
   "id": 502,
@@ -4515,7 +5070,9 @@
   "prov": "Papua",
   "name": "KAB. YALIMO",
   "lat": -3.7353,
-  "lon": 139.5506
+  "lon": 139.5506,
+  "heightM": 1011,
+  "horizonMin": 4.5
  },
  {
   "id": 503,
@@ -4524,7 +5081,8 @@
   "prov": "Papua",
   "name": "KOTA JAYAPURA",
   "lat": -2.5388,
-  "lon": 140.7037
+  "lon": 140.7037,
+  "heightM": 80
  },
  {
   "id": 504,
@@ -4533,7 +5091,8 @@
   "prov": "Papua",
   "name": "KAB. YAPEN WAROPEN",
   "lat": -1.89,
-  "lon": 136.24
+  "lon": 135.24,
+  "heightM": 9
  },
  {
   "id": 505,
@@ -4542,7 +5101,8 @@
   "prov": "Papua Barat",
   "name": "KAB. FAKFAK",
   "lat": -3.2704,
-  "lon": 133.0888
+  "lon": 132.3388,
+  "heightM": 79
  },
  {
   "id": 506,
@@ -4551,7 +5111,8 @@
   "prov": "Papua Barat",
   "name": "KAB. KAIMANA",
   "lat": -3.5158,
-  "lon": 134.3166
+  "lon": 133.8166,
+  "heightM": 735
  },
  {
   "id": 507,
@@ -4560,7 +5121,8 @@
   "prov": "Papua Barat",
   "name": "KAB. MANOKWARI",
   "lat": -0.9777,
-  "lon": 133.7538
+  "lon": 133.7538,
+  "heightM": 1218
  },
  {
   "id": 508,
@@ -4569,7 +5131,8 @@
   "prov": "Papua Barat",
   "name": "KAB. MANOKWARI SELATAN",
   "lat": -1.525,
-  "lon": 134.071
+  "lon": 134.071,
+  "heightM": 666
  },
  {
   "id": 509,
@@ -4578,7 +5141,8 @@
   "prov": "Papua Barat",
   "name": "KAB. MAYBRAT",
   "lat": -1.4039,
-  "lon": 132.5871
+  "lon": 132.5871,
+  "heightM": 131
  },
  {
   "id": 510,
@@ -4587,7 +5151,9 @@
   "prov": "Papua Barat",
   "name": "KAB. PEGUNUNGAN ARFAK",
   "lat": -1.2612,
-  "lon": 133.6492
+  "lon": 133.6492,
+  "heightM": 1681,
+  "horizonMin": 4.5
  },
  {
   "id": 511,
@@ -4596,7 +5162,8 @@
   "prov": "Papua Barat",
   "name": "KAB. RAJA AMPAT",
   "lat": -0.7126,
-  "lon": 130.3034
+  "lon": 130.8034,
+  "heightM": 0
  },
  {
   "id": 512,
@@ -4605,7 +5172,8 @@
   "prov": "Papua Barat",
   "name": "KAB. SORONG",
   "lat": -1.1548,
-  "lon": 131.5336
+  "lon": 131.5336,
+  "heightM": 27
  },
  {
   "id": 513,
@@ -4614,7 +5182,8 @@
   "prov": "Papua Barat",
   "name": "KAB. SORONG SELATAN",
   "lat": -1.6431,
-  "lon": 132.255
+  "lon": 132.255,
+  "heightM": 61
  },
  {
   "id": 514,
@@ -4623,7 +5192,8 @@
   "prov": "Papua Barat",
   "name": "KAB. TAMBRAUW",
   "lat": -0.8501,
-  "lon": 132.7244
+  "lon": 131.9744,
+  "heightM": 1190
  },
  {
   "id": 515,
@@ -4632,7 +5202,8 @@
   "prov": "Papua Barat",
   "name": "KAB. TELUK BINTUNI",
   "lat": -2.1139,
-  "lon": 133.5288
+  "lon": 133.5288,
+  "heightM": 13
  },
  {
   "id": 516,
@@ -4641,7 +5212,8 @@
   "prov": "Papua Barat",
   "name": "KAB. TELUK WONDAMA",
   "lat": -2.6325,
-  "lon": 134.5661
+  "lon": 134.5661,
+  "heightM": 557
  },
  {
   "id": 517,
@@ -4650,6 +5222,7 @@
   "prov": "Papua Barat",
   "name": "KOTA SORONG",
   "lat": -0.8634,
-  "lon": 131.2545
+  "lon": 131.2545,
+  "heightM": 28
  }
 ]

@@ -117,7 +117,7 @@ function circularDiff(a: number, b: number): number {
 function median(xs: number[]): number {
   if (!xs.length) return 0;
   const s = [...xs].sort((x, y) => x - y);
-  const mid = s.length >> 1;
+  const mid = Math.floor(s.length / 2);
   return s.length % 2 ? s[mid] : (s[mid - 1] + s[mid]) / 2;
 }
 
@@ -144,6 +144,11 @@ function loadAccepted(): Accepted[] {
   if (!fs.existsSync(ACCEPTED_PATH)) return [];
   return JSON.parse(fs.readFileSync(ACCEPTED_PATH, 'utf8')) as Accepted[];
 }
+/** An entry naming the place and nothing narrower: the whole place is understood. */
+function placeAccepted(list: Accepted[], a: Authority, place: string): Accepted | undefined {
+  return list.find(x => x.authority === a.id && x.place === place && !x.prayer && !x.from && !x.to && x.maxAbs == null);
+}
+
 function isAccepted(list: Accepted[], a: Authority, m: Mismatch): boolean {
   return list.some(
     x =>
@@ -195,6 +200,8 @@ export function verifyAuthority(a: Authority, accepted: Accepted[]): Report {
       const at = computeLocalAdhanInstants({
         latitude: place.lat,
         longitude: place.lon,
+        heightM: place.heightM,
+        horizonMin: place.horizonMin,
         date: new Date(y, m - 1, d),
         calculationMethod: a.method,
         school: a.school,
@@ -246,6 +253,10 @@ export function verifyAuthority(a: Authority, accepted: Accepted[]): Report {
           Math.abs(med.Sunrise - med.Maghrib) >= MISPLACED_DAYLENGTH_MIN),
     };
     if (stats.misplaced) {
+      if (placeAccepted(accepted, a, name)) {
+        acceptedCount += rows.length;
+        continue;
+      }
       misplaced.push(stats);
       continue;
     }

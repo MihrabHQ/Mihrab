@@ -23,6 +23,10 @@ export type Place = {
   lon: number;
   /** The clock the table is printed in. */
   tz: string;
+  /** Metres above sea level, where the authority lowers the horizon for the place. */
+  heightM?: number;
+  /** The authority's own allowance for the horizon, minutes, where it is a figure rather than a height. */
+  horizonMin?: number;
 };
 
 export type Authority = {
@@ -69,7 +73,7 @@ export function indonesiaZone(province: string): string {
  */
 const MOROCCO_TZ = 'Etc/GMT';
 
-type IdPlace = { id: number; name: string; nameEn?: string; lat: number; lon: number };
+type IdPlace = { id: number; name: string; nameEn?: string; lat: number; lon: number; heightM?: number; horizonMin?: number };
 
 export const AUTHORITIES: Authority[] = [
   {
@@ -108,10 +112,15 @@ export const AUTHORITIES: Authority[] = [
     maxOutsideShare: 0.02,
     hardMaxMin: 10,
     alarm: true,
+    // Cities the solver left without coordinates (tools/habous-dataset/
+    // solveCoords.ts) have tables but no point to compute at; they are
+    // not places until somebody places them.
     places: () =>
-      readJson<{ id: number; name: string; lat: number; lng: number }[]>(
+      readJson<{ id: number; name: string; lat: number | null; lng: number | null; heightM?: number; horizonMin?: number }[]>(
         path.join(ROOT, 'src/providers/data/moroccoCities.json'),
-      ).map(c => ({ file: `${c.id}.json`, name: c.name, lat: c.lat, lon: c.lng, tz: MOROCCO_TZ })),
+      )
+        .filter(c => typeof c.lat === 'number' && typeof c.lng === 'number')
+        .map(c => ({ file: `${c.id}.json`, name: c.name, lat: c.lat as number, lon: c.lng as number, tz: MOROCCO_TZ, heightM: c.heightM, horizonMin: c.horizonMin })),
   },
   {
     id: 'marw',
@@ -166,7 +175,7 @@ export const AUTHORITIES: Authority[] = [
     alarm: true,
     places: () => {
       const { JAKIM_ZONES } = require('../national-tables/jakim-zones') as {
-        JAKIM_ZONES: readonly { code: string; towns: [string, number, number][] }[];
+        JAKIM_ZONES: readonly { code: string; towns: [string, number, number, number][] }[];
       };
       return JAKIM_ZONES.map((z, i) => ({
         file: `${i + 1}.json`,
@@ -174,6 +183,7 @@ export const AUTHORITIES: Authority[] = [
         lat: z.towns[0][1],
         lon: z.towns[0][2],
         tz: 'Asia/Kuala_Lumpur',
+        heightM: z.towns[0][3],
       }));
     },
   },
@@ -190,7 +200,7 @@ export const AUTHORITIES: Authority[] = [
     places: () =>
       readJson<IdPlace[]>(path.join(ROOT, 'src/providers/data/kemenagPlaces.json')).map(c => {
         const province = /\(([^)]*)\)\s*$/.exec(c.nameEn ?? '')?.[1] ?? '';
-        return { file: `${c.id}.json`, name: c.nameEn ?? c.name, lat: c.lat, lon: c.lon, tz: indonesiaZone(province) };
+        return { file: `${c.id}.json`, name: c.nameEn ?? c.name, lat: c.lat, lon: c.lon, tz: indonesiaZone(province), heightM: c.heightM, horizonMin: c.horizonMin };
       }),
   },
 ];

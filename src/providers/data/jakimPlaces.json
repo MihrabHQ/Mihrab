@@ -4,1245 +4,1423 @@
   "name": "Pulau Aur",
   "nameEn": "Pulau Aur (JHR01)",
   "lat": 2.45,
-  "lon": 104.52
+  "lon": 104.52,
+  "heightM": 0
  },
  {
   "id": 1,
   "name": "Pulau Pemanggil",
   "nameEn": "Pulau Pemanggil (JHR01)",
   "lat": 2.58,
-  "lon": 104.33
+  "lon": 104.33,
+  "heightM": 0
  },
  {
   "id": 2,
   "name": "Johor Bahru",
   "nameEn": "Johor Bahru (JHR02)",
   "lat": 1.4927,
-  "lon": 103.7414
+  "lon": 103.7414,
+  "heightM": 0
  },
  {
   "id": 2,
   "name": "Kota Tinggi",
   "nameEn": "Kota Tinggi (JHR02)",
   "lat": 1.7381,
-  "lon": 103.8999
+  "lon": 103.8999,
+  "heightM": 0
  },
  {
   "id": 2,
   "name": "Mersing",
   "nameEn": "Mersing (JHR02)",
   "lat": 2.4312,
-  "lon": 103.8405
+  "lon": 103.8405,
+  "heightM": 0
  },
  {
   "id": 2,
   "name": "Kulai",
   "nameEn": "Kulai (JHR02)",
   "lat": 1.6561,
-  "lon": 103.6032
+  "lon": 103.6032,
+  "heightM": 0
  },
  {
   "id": 3,
   "name": "Kluang",
   "nameEn": "Kluang (JHR03)",
   "lat": 2.0251,
-  "lon": 103.3328
+  "lon": 103.3328,
+  "heightM": 0
  },
  {
   "id": 3,
   "name": "Pontian",
   "nameEn": "Pontian (JHR03)",
   "lat": 1.4866,
-  "lon": 103.3894
+  "lon": 103.3894,
+  "heightM": 0
  },
  {
   "id": 4,
   "name": "Batu Pahat",
   "nameEn": "Batu Pahat (JHR04)",
   "lat": 1.8548,
-  "lon": 102.9325
+  "lon": 102.9325,
+  "heightM": 0
  },
  {
   "id": 4,
   "name": "Muar",
   "nameEn": "Muar (JHR04)",
   "lat": 2.0442,
-  "lon": 102.5689
+  "lon": 102.5689,
+  "heightM": 0
  },
  {
   "id": 4,
   "name": "Segamat",
   "nameEn": "Segamat (JHR04)",
   "lat": 2.5148,
-  "lon": 102.8158
+  "lon": 102.8158,
+  "heightM": 0
  },
  {
   "id": 4,
   "name": "Tangkak",
   "nameEn": "Tangkak (JHR04)",
   "lat": 2.2673,
-  "lon": 102.5453
+  "lon": 102.5453,
+  "heightM": 0
  },
  {
   "id": 4,
   "name": "Gemas",
   "nameEn": "Gemas (JHR04)",
   "lat": 2.5766,
-  "lon": 102.611
+  "lon": 102.611,
+  "heightM": 0
  },
  {
   "id": 5,
   "name": "Alor Setar",
   "nameEn": "Alor Setar (KDH01)",
   "lat": 6.1248,
-  "lon": 100.3678
+  "lon": 100.3678,
+  "heightM": 0
  },
  {
   "id": 5,
   "name": "Jitra",
   "nameEn": "Jitra (KDH01)",
   "lat": 6.2641,
-  "lon": 100.4214
+  "lon": 100.4214,
+  "heightM": 0
  },
  {
   "id": 5,
   "name": "Pokok Sena",
   "nameEn": "Pokok Sena (KDH01)",
   "lat": 6.17,
-  "lon": 100.517
+  "lon": 100.517,
+  "heightM": 0
  },
  {
   "id": 6,
   "name": "Sungai Petani",
   "nameEn": "Sungai Petani (KDH02)",
   "lat": 5.647,
-  "lon": 100.487
+  "lon": 100.487,
+  "heightM": 0
  },
  {
   "id": 6,
   "name": "Yan",
   "nameEn": "Yan (KDH02)",
   "lat": 5.8,
-  "lon": 100.38
+  "lon": 100.38,
+  "heightM": 0
  },
  {
   "id": 6,
   "name": "Pendang",
   "nameEn": "Pendang (KDH02)",
   "lat": 5.996,
-  "lon": 100.475
+  "lon": 100.475,
+  "heightM": 0
  },
  {
   "id": 7,
   "name": "Kuala Nerang",
   "nameEn": "Kuala Nerang (KDH03)",
   "lat": 6.259,
-  "lon": 100.608
+  "lon": 100.608,
+  "heightM": 0
  },
  {
   "id": 7,
   "name": "Sik",
   "nameEn": "Sik (KDH03)",
   "lat": 5.816,
-  "lon": 100.738
+  "lon": 100.738,
+  "heightM": 0
  },
  {
   "id": 8,
   "name": "Baling",
   "nameEn": "Baling (KDH04)",
   "lat": 5.677,
-  "lon": 100.918
+  "lon": 100.918,
+  "heightM": 0
  },
  {
   "id": 9,
   "name": "Kulim",
   "nameEn": "Kulim (KDH05)",
   "lat": 5.365,
-  "lon": 100.562
+  "lon": 100.562,
+  "heightM": 0
  },
  {
   "id": 9,
   "name": "Bandar Baharu",
   "nameEn": "Bandar Baharu (KDH05)",
   "lat": 5.134,
-  "lon": 100.492
+  "lon": 100.492,
+  "heightM": 0
  },
  {
   "id": 10,
   "name": "Langkawi",
   "nameEn": "Langkawi (KDH06)",
   "lat": 6.35,
-  "lon": 99.8
+  "lon": 99.8,
+  "heightM": 0
  },
  {
   "id": 11,
   "name": "Gunung Jerai",
   "nameEn": "Gunung Jerai (KDH07)",
   "lat": 5.794,
-  "lon": 100.433
+  "lon": 100.433,
+  "heightM": 951
  },
  {
   "id": 12,
   "name": "Kota Bharu",
   "nameEn": "Kota Bharu (KTN01)",
   "lat": 6.1254,
-  "lon": 102.2381
+  "lon": 102.2381,
+  "heightM": 0
  },
  {
   "id": 12,
   "name": "Bachok",
   "nameEn": "Bachok (KTN01)",
   "lat": 6.059,
-  "lon": 102.41
+  "lon": 102.41,
+  "heightM": 0
  },
  {
   "id": 12,
   "name": "Machang",
   "nameEn": "Machang (KTN01)",
   "lat": 5.767,
-  "lon": 102.215
+  "lon": 102.215,
+  "heightM": 0
  },
  {
   "id": 12,
   "name": "Pasir Mas",
   "nameEn": "Pasir Mas (KTN01)",
   "lat": 6.049,
-  "lon": 102.14
+  "lon": 102.14,
+  "heightM": 0
  },
  {
   "id": 12,
   "name": "Pasir Puteh",
   "nameEn": "Pasir Puteh (KTN01)",
   "lat": 5.833,
-  "lon": 102.4
+  "lon": 102.4,
+  "heightM": 0
  },
  {
   "id": 12,
   "name": "Tanah Merah",
   "nameEn": "Tanah Merah (KTN01)",
   "lat": 5.807,
-  "lon": 102.148
+  "lon": 102.148,
+  "heightM": 0
  },
  {
   "id": 12,
   "name": "Tumpat",
   "nameEn": "Tumpat (KTN01)",
   "lat": 6.198,
-  "lon": 102.171
+  "lon": 102.171,
+  "heightM": 0
  },
  {
   "id": 12,
   "name": "Kuala Krai",
   "nameEn": "Kuala Krai (KTN01)",
   "lat": 5.532,
-  "lon": 102.2
+  "lon": 102.2,
+  "heightM": 0
  },
  {
   "id": 13,
   "name": "Gua Musang",
   "nameEn": "Gua Musang (KTN02)",
   "lat": 4.883,
-  "lon": 101.967
+  "lon": 101.967,
+  "heightM": 0
  },
  {
   "id": 13,
   "name": "Jeli",
   "nameEn": "Jeli (KTN02)",
   "lat": 5.702,
-  "lon": 101.843
+  "lon": 101.843,
+  "heightM": 0
  },
  {
   "id": 13,
   "name": "Lojing",
   "nameEn": "Lojing (KTN02)",
   "lat": 4.66,
-  "lon": 101.53
+  "lon": 101.53,
+  "heightM": 0
  },
  {
   "id": 14,
   "name": "Melaka",
   "nameEn": "Melaka (MLK01)",
   "lat": 2.1896,
-  "lon": 102.2501
+  "lon": 102.2501,
+  "heightM": 0
  },
  {
   "id": 14,
   "name": "Alor Gajah",
   "nameEn": "Alor Gajah (MLK01)",
   "lat": 2.381,
-  "lon": 102.209
+  "lon": 102.209,
+  "heightM": 0
  },
  {
   "id": 14,
   "name": "Jasin",
   "nameEn": "Jasin (MLK01)",
   "lat": 2.31,
-  "lon": 102.43
+  "lon": 102.43,
+  "heightM": 0
  },
  {
   "id": 15,
   "name": "Tampin",
   "nameEn": "Tampin (NGS01)",
   "lat": 2.47,
-  "lon": 102.23
+  "lon": 102.23,
+  "heightM": 0
  },
  {
   "id": 15,
   "name": "Bandar Seri Jempol",
   "nameEn": "Bandar Seri Jempol (NGS01)",
   "lat": 2.93,
-  "lon": 102.37
+  "lon": 102.37,
+  "heightM": 0
  },
  {
   "id": 16,
   "name": "Kuala Klawang",
   "nameEn": "Kuala Klawang (NGS02)",
   "lat": 2.946,
-  "lon": 102.07
+  "lon": 102.07,
+  "heightM": 0
  },
  {
   "id": 16,
   "name": "Kuala Pilah",
   "nameEn": "Kuala Pilah (NGS02)",
   "lat": 2.739,
-  "lon": 102.248
+  "lon": 102.248,
+  "heightM": 0
  },
  {
   "id": 16,
   "name": "Rembau",
   "nameEn": "Rembau (NGS02)",
   "lat": 2.59,
-  "lon": 102.092
+  "lon": 102.092,
+  "heightM": 0
  },
  {
   "id": 17,
   "name": "Seremban",
   "nameEn": "Seremban (NGS03)",
   "lat": 2.7258,
-  "lon": 101.9424
+  "lon": 101.9424,
+  "heightM": 0
  },
  {
   "id": 17,
   "name": "Port Dickson",
   "nameEn": "Port Dickson (NGS03)",
   "lat": 2.5228,
-  "lon": 101.796
+  "lon": 101.796,
+  "heightM": 0
  },
  {
   "id": 18,
   "name": "Pulau Tioman",
   "nameEn": "Pulau Tioman (PHG01)",
   "lat": 2.79,
-  "lon": 104.17
+  "lon": 104.17,
+  "heightM": 0
  },
  {
   "id": 19,
   "name": "Kuantan",
   "nameEn": "Kuantan (PHG02)",
   "lat": 3.8077,
-  "lon": 103.326
+  "lon": 103.326,
+  "heightM": 0
  },
  {
   "id": 19,
   "name": "Pekan",
   "nameEn": "Pekan (PHG02)",
   "lat": 3.49,
-  "lon": 103.39
+  "lon": 103.39,
+  "heightM": 0
  },
  {
   "id": 19,
   "name": "Muadzam Shah",
   "nameEn": "Muadzam Shah (PHG02)",
   "lat": 3.053,
-  "lon": 103.08
+  "lon": 103.08,
+  "heightM": 0
  },
  {
   "id": 20,
   "name": "Jerantut",
   "nameEn": "Jerantut (PHG03)",
   "lat": 3.936,
-  "lon": 102.362
+  "lon": 102.362,
+  "heightM": 0
  },
  {
   "id": 20,
   "name": "Temerloh",
   "nameEn": "Temerloh (PHG03)",
   "lat": 3.45,
-  "lon": 102.417
+  "lon": 102.417,
+  "heightM": 0
  },
  {
   "id": 20,
   "name": "Maran",
   "nameEn": "Maran (PHG03)",
   "lat": 3.58,
-  "lon": 102.77
+  "lon": 102.77,
+  "heightM": 0
  },
  {
   "id": 20,
   "name": "Bera",
   "nameEn": "Bera (PHG03)",
   "lat": 3.19,
-  "lon": 102.53
+  "lon": 102.53,
+  "heightM": 0
  },
  {
   "id": 20,
   "name": "Jengka",
   "nameEn": "Jengka (PHG03)",
   "lat": 3.75,
-  "lon": 102.55
+  "lon": 102.55,
+  "heightM": 0
  },
  {
   "id": 21,
   "name": "Bentong",
   "nameEn": "Bentong (PHG04)",
   "lat": 3.522,
-  "lon": 101.908
+  "lon": 101.908,
+  "heightM": 0
  },
  {
   "id": 21,
   "name": "Kuala Lipis",
   "nameEn": "Kuala Lipis (PHG04)",
   "lat": 4.184,
-  "lon": 102.047
+  "lon": 102.047,
+  "heightM": 0
  },
  {
   "id": 21,
   "name": "Raub",
   "nameEn": "Raub (PHG04)",
   "lat": 3.793,
-  "lon": 101.857
+  "lon": 101.857,
+  "heightM": 0
  },
  {
   "id": 22,
   "name": "Genting Sempah",
   "nameEn": "Genting Sempah (PHG05)",
   "lat": 3.373,
-  "lon": 101.776
+  "lon": 101.776,
+  "heightM": 813
  },
  {
   "id": 22,
   "name": "Janda Baik",
   "nameEn": "Janda Baik (PHG05)",
   "lat": 3.33,
-  "lon": 101.87
+  "lon": 101.87,
+  "heightM": 487
  },
  {
   "id": 22,
   "name": "Bukit Tinggi",
   "nameEn": "Bukit Tinggi (PHG05)",
   "lat": 3.37,
-  "lon": 101.83
+  "lon": 101.83,
+  "heightM": 555
  },
  {
   "id": 23,
   "name": "Tanah Rata",
   "nameEn": "Tanah Rata (PHG06)",
   "lat": 4.47,
-  "lon": 101.38
+  "lon": 101.38,
+  "heightM": 1437
  },
  {
   "id": 23,
   "name": "Genting Highlands",
   "nameEn": "Genting Highlands (PHG06)",
   "lat": 3.423,
-  "lon": 101.793
+  "lon": 101.793,
+  "heightM": 1758
  },
  {
   "id": 23,
   "name": "Bukit Fraser",
   "nameEn": "Bukit Fraser (PHG06)",
   "lat": 3.713,
-  "lon": 101.738
+  "lon": 101.738,
+  "heightM": 1219
  },
  {
   "id": 24,
   "name": "Kuala Rompin",
   "nameEn": "Kuala Rompin (PHG07)",
   "lat": 2.807,
-  "lon": 103.489
+  "lon": 103.489,
+  "heightM": 0
  },
  {
   "id": 24,
   "name": "Endau",
   "nameEn": "Endau (PHG07)",
   "lat": 2.656,
-  "lon": 103.622
+  "lon": 103.622,
+  "heightM": 0
  },
  {
   "id": 25,
   "name": "Kangar",
   "nameEn": "Kangar (PLS01)",
   "lat": 6.4414,
-  "lon": 100.1986
+  "lon": 100.1986,
+  "heightM": 0
  },
  {
   "id": 25,
   "name": "Padang Besar",
   "nameEn": "Padang Besar (PLS01)",
   "lat": 6.66,
-  "lon": 100.32
+  "lon": 100.32,
+  "heightM": 0
  },
  {
   "id": 25,
   "name": "Arau",
   "nameEn": "Arau (PLS01)",
   "lat": 6.43,
-  "lon": 100.27
+  "lon": 100.27,
+  "heightM": 0
  },
  {
   "id": 26,
   "name": "George Town",
   "nameEn": "George Town (PNG01)",
   "lat": 5.4141,
-  "lon": 100.3288
+  "lon": 100.3288,
+  "heightM": 0
  },
  {
   "id": 26,
   "name": "Butterworth",
   "nameEn": "Butterworth (PNG01)",
   "lat": 5.3992,
-  "lon": 100.3638
+  "lon": 100.3638,
+  "heightM": 0
  },
  {
   "id": 26,
   "name": "Bukit Mertajam",
   "nameEn": "Bukit Mertajam (PNG01)",
   "lat": 5.363,
-  "lon": 100.46
+  "lon": 100.46,
+  "heightM": 0
  },
  {
   "id": 26,
   "name": "Balik Pulau",
   "nameEn": "Balik Pulau (PNG01)",
   "lat": 5.35,
-  "lon": 100.23
+  "lon": 100.23,
+  "heightM": 0
  },
  {
   "id": 27,
   "name": "Tapah",
   "nameEn": "Tapah (PRK01)",
   "lat": 4.198,
-  "lon": 101.262
+  "lon": 101.262,
+  "heightM": 0
  },
  {
   "id": 27,
   "name": "Slim River",
   "nameEn": "Slim River (PRK01)",
   "lat": 3.83,
-  "lon": 101.41
+  "lon": 101.41,
+  "heightM": 0
  },
  {
   "id": 27,
   "name": "Tanjung Malim",
   "nameEn": "Tanjung Malim (PRK01)",
   "lat": 3.685,
-  "lon": 101.519
+  "lon": 101.519,
+  "heightM": 0
  },
  {
   "id": 28,
   "name": "Ipoh",
   "nameEn": "Ipoh (PRK02)",
   "lat": 4.5975,
-  "lon": 101.0901
+  "lon": 101.0901,
+  "heightM": 0
  },
  {
   "id": 28,
   "name": "Kuala Kangsar",
   "nameEn": "Kuala Kangsar (PRK02)",
   "lat": 4.77,
-  "lon": 100.94
+  "lon": 100.94,
+  "heightM": 0
  },
  {
   "id": 28,
   "name": "Sungai Siput",
   "nameEn": "Sungai Siput (PRK02)",
   "lat": 4.82,
-  "lon": 101.07
+  "lon": 101.07,
+  "heightM": 0
  },
  {
   "id": 28,
   "name": "Batu Gajah",
   "nameEn": "Batu Gajah (PRK02)",
   "lat": 4.469,
-  "lon": 101.04
+  "lon": 101.04,
+  "heightM": 0
  },
  {
   "id": 28,
   "name": "Kampar",
   "nameEn": "Kampar (PRK02)",
   "lat": 4.308,
-  "lon": 101.154
+  "lon": 101.154,
+  "heightM": 0
  },
  {
   "id": 29,
   "name": "Gerik",
   "nameEn": "Gerik (PRK03)",
   "lat": 5.43,
-  "lon": 101.13
+  "lon": 101.13,
+  "heightM": 0
  },
  {
   "id": 29,
   "name": "Lenggong",
   "nameEn": "Lenggong (PRK03)",
   "lat": 5.11,
-  "lon": 100.97
+  "lon": 100.97,
+  "heightM": 0
  },
  {
   "id": 29,
   "name": "Pengkalan Hulu",
   "nameEn": "Pengkalan Hulu (PRK03)",
   "lat": 5.71,
-  "lon": 101.06
+  "lon": 101.06,
+  "heightM": 0
  },
  {
   "id": 30,
   "name": "Temengor",
   "nameEn": "Temengor (PRK04)",
   "lat": 5.4,
-  "lon": 101.35
+  "lon": 101.35,
+  "heightM": 0
  },
  {
   "id": 30,
   "name": "Belum",
   "nameEn": "Belum (PRK04)",
   "lat": 5.6,
-  "lon": 101.4
+  "lon": 101.4,
+  "heightM": 0
  },
  {
   "id": 31,
   "name": "Teluk Intan",
   "nameEn": "Teluk Intan (PRK05)",
   "lat": 4.025,
-  "lon": 101.021
+  "lon": 101.021,
+  "heightM": 0
  },
  {
   "id": 31,
   "name": "Bagan Datuk",
   "nameEn": "Bagan Datuk (PRK05)",
   "lat": 3.984,
-  "lon": 100.784
+  "lon": 100.784,
+  "heightM": 0
  },
  {
   "id": 31,
   "name": "Seri Iskandar",
   "nameEn": "Seri Iskandar (PRK05)",
   "lat": 4.36,
-  "lon": 100.96
+  "lon": 100.96,
+  "heightM": 0
  },
  {
   "id": 31,
   "name": "Beruas",
   "nameEn": "Beruas (PRK05)",
   "lat": 4.5,
-  "lon": 100.81
+  "lon": 100.81,
+  "heightM": 0
  },
  {
   "id": 31,
   "name": "Parit",
   "nameEn": "Parit (PRK05)",
   "lat": 4.433,
-  "lon": 100.89
+  "lon": 100.89,
+  "heightM": 0
  },
  {
   "id": 31,
   "name": "Lumut",
   "nameEn": "Lumut (PRK05)",
   "lat": 4.233,
-  "lon": 100.63
+  "lon": 100.63,
+  "heightM": 0
  },
  {
   "id": 31,
   "name": "Sitiawan",
   "nameEn": "Sitiawan (PRK05)",
   "lat": 4.214,
-  "lon": 100.698
+  "lon": 100.698,
+  "heightM": 0
  },
  {
   "id": 31,
   "name": "Pulau Pangkor",
   "nameEn": "Pulau Pangkor (PRK05)",
   "lat": 4.23,
-  "lon": 100.56
+  "lon": 100.56,
+  "heightM": 0
  },
  {
   "id": 31,
   "name": "Kampung Gajah",
   "nameEn": "Kampung Gajah (PRK05)",
   "lat": 4.21,
-  "lon": 100.95
+  "lon": 100.95,
+  "heightM": 0
  },
  {
   "id": 32,
   "name": "Taiping",
   "nameEn": "Taiping (PRK06)",
   "lat": 4.85,
-  "lon": 100.74
+  "lon": 100.74,
+  "heightM": 0
  },
  {
   "id": 32,
   "name": "Selama",
   "nameEn": "Selama (PRK06)",
   "lat": 5.22,
-  "lon": 100.69
+  "lon": 100.69,
+  "heightM": 0
  },
  {
   "id": 32,
   "name": "Bagan Serai",
   "nameEn": "Bagan Serai (PRK06)",
   "lat": 5.01,
-  "lon": 100.54
+  "lon": 100.54,
+  "heightM": 0
  },
  {
   "id": 32,
   "name": "Parit Buntar",
   "nameEn": "Parit Buntar (PRK06)",
   "lat": 5.12,
-  "lon": 100.49
+  "lon": 100.49,
+  "heightM": 0
  },
  {
   "id": 33,
   "name": "Bukit Larut",
   "nameEn": "Bukit Larut (PRK07)",
   "lat": 4.86,
-  "lon": 100.79
+  "lon": 100.79,
+  "heightM": 943
  },
  {
   "id": 34,
   "name": "Sandakan",
   "nameEn": "Sandakan (SBH01)",
   "lat": 5.84,
-  "lon": 118.117
+  "lon": 118.117,
+  "heightM": 0
  },
  {
   "id": 34,
   "name": "Sukau",
   "nameEn": "Sukau (SBH01)",
   "lat": 5.53,
-  "lon": 118.29
+  "lon": 118.29,
+  "heightM": 0
  },
  {
   "id": 35,
   "name": "Beluran",
   "nameEn": "Beluran (SBH02)",
   "lat": 5.91,
-  "lon": 117.09
+  "lon": 117.09,
+  "heightM": 0
  },
  {
   "id": 35,
   "name": "Telupid",
   "nameEn": "Telupid (SBH02)",
   "lat": 5.63,
-  "lon": 117.13
+  "lon": 117.13,
+  "heightM": 0
  },
  {
   "id": 36,
   "name": "Lahad Datu",
   "nameEn": "Lahad Datu (SBH03)",
   "lat": 5.03,
-  "lon": 118.33
+  "lon": 118.33,
+  "heightM": 0
  },
  {
   "id": 36,
   "name": "Kunak",
   "nameEn": "Kunak (SBH03)",
   "lat": 4.68,
-  "lon": 118.25
+  "lon": 118.25,
+  "heightM": 0
  },
  {
   "id": 36,
   "name": "Semporna",
   "nameEn": "Semporna (SBH03)",
   "lat": 4.48,
-  "lon": 118.61
+  "lon": 118.61,
+  "heightM": 0
  },
  {
   "id": 37,
   "name": "Tawau",
   "nameEn": "Tawau (SBH04)",
   "lat": 4.25,
-  "lon": 117.89
+  "lon": 117.89,
+  "heightM": 0
  },
  {
   "id": 37,
   "name": "Kalabakan",
   "nameEn": "Kalabakan (SBH04)",
   "lat": 4.42,
-  "lon": 117.48
+  "lon": 117.48,
+  "heightM": 0
  },
  {
   "id": 38,
   "name": "Kudat",
   "nameEn": "Kudat (SBH05)",
   "lat": 6.89,
-  "lon": 116.84
+  "lon": 116.84,
+  "heightM": 0
  },
  {
   "id": 38,
   "name": "Kota Marudu",
   "nameEn": "Kota Marudu (SBH05)",
   "lat": 6.48,
-  "lon": 116.76
+  "lon": 116.76,
+  "heightM": 0
  },
  {
   "id": 38,
   "name": "Pitas",
   "nameEn": "Pitas (SBH05)",
   "lat": 6.67,
-  "lon": 117.04
+  "lon": 117.04,
+  "heightM": 0
  },
  {
   "id": 39,
   "name": "Gunung Kinabalu",
   "nameEn": "Gunung Kinabalu (SBH06)",
   "lat": 6.075,
-  "lon": 116.558
+  "lon": 116.558,
+  "heightM": 4046
  },
  {
   "id": 40,
   "name": "Kota Kinabalu",
   "nameEn": "Kota Kinabalu (SBH07)",
   "lat": 5.9804,
-  "lon": 116.0735
+  "lon": 116.0735,
+  "heightM": 0
  },
  {
   "id": 40,
   "name": "Ranau",
   "nameEn": "Ranau (SBH07)",
   "lat": 5.95,
-  "lon": 116.66
+  "lon": 116.66,
+  "heightM": 0
  },
  {
   "id": 40,
   "name": "Kota Belud",
   "nameEn": "Kota Belud (SBH07)",
   "lat": 6.35,
-  "lon": 116.43
+  "lon": 116.43,
+  "heightM": 0
  },
  {
   "id": 40,
   "name": "Tuaran",
   "nameEn": "Tuaran (SBH07)",
   "lat": 6.18,
-  "lon": 116.23
+  "lon": 116.23,
+  "heightM": 0
  },
  {
   "id": 40,
   "name": "Penampang",
   "nameEn": "Penampang (SBH07)",
   "lat": 5.93,
-  "lon": 116.1
+  "lon": 116.1,
+  "heightM": 0
  },
  {
   "id": 40,
   "name": "Papar",
   "nameEn": "Papar (SBH07)",
   "lat": 5.73,
-  "lon": 115.93
+  "lon": 115.93,
+  "heightM": 0
  },
  {
   "id": 41,
   "name": "Keningau",
   "nameEn": "Keningau (SBH08)",
   "lat": 5.34,
-  "lon": 116.16
+  "lon": 116.16,
+  "heightM": 0
  },
  {
   "id": 41,
   "name": "Tambunan",
   "nameEn": "Tambunan (SBH08)",
   "lat": 5.67,
-  "lon": 116.36
+  "lon": 116.36,
+  "heightM": 0
  },
  {
   "id": 41,
   "name": "Nabawan",
   "nameEn": "Nabawan (SBH08)",
   "lat": 5.07,
-  "lon": 116.45
+  "lon": 116.45,
+  "heightM": 0
  },
  {
   "id": 41,
   "name": "Pensiangan",
   "nameEn": "Pensiangan (SBH08)",
   "lat": 4.6,
-  "lon": 116.33
+  "lon": 116.33,
+  "heightM": 0
  },
  {
   "id": 42,
   "name": "Beaufort",
   "nameEn": "Beaufort (SBH09)",
   "lat": 5.347,
-  "lon": 115.745
+  "lon": 115.745,
+  "heightM": 0
  },
  {
   "id": 42,
   "name": "Kuala Penyu",
   "nameEn": "Kuala Penyu (SBH09)",
   "lat": 5.6,
-  "lon": 115.59
+  "lon": 115.59,
+  "heightM": 0
  },
  {
   "id": 42,
   "name": "Sipitang",
   "nameEn": "Sipitang (SBH09)",
   "lat": 5.08,
-  "lon": 115.55
+  "lon": 115.55,
+  "heightM": 0
  },
  {
   "id": 42,
   "name": "Tenom",
   "nameEn": "Tenom (SBH09)",
   "lat": 5.13,
-  "lon": 115.95
+  "lon": 115.95,
+  "heightM": 0
  },
  {
   "id": 42,
   "name": "Membakut",
   "nameEn": "Membakut (SBH09)",
   "lat": 5.46,
-  "lon": 115.79
+  "lon": 115.79,
+  "heightM": 0
  },
  {
   "id": 43,
   "name": "Shah Alam",
   "nameEn": "Shah Alam (SGR01)",
   "lat": 3.0733,
-  "lon": 101.5185
+  "lon": 101.5185,
+  "heightM": 0
  },
  {
   "id": 43,
   "name": "Petaling Jaya",
   "nameEn": "Petaling Jaya (SGR01)",
   "lat": 3.1073,
-  "lon": 101.6067
+  "lon": 101.6067,
+  "heightM": 0
  },
  {
   "id": 43,
   "name": "Gombak",
   "nameEn": "Gombak (SGR01)",
   "lat": 3.25,
-  "lon": 101.65
+  "lon": 101.65,
+  "heightM": 0
  },
  {
   "id": 43,
   "name": "Sepang",
   "nameEn": "Sepang (SGR01)",
   "lat": 2.69,
-  "lon": 101.75
+  "lon": 101.75,
+  "heightM": 0
  },
  {
   "id": 43,
   "name": "Kajang",
   "nameEn": "Kajang (SGR01)",
   "lat": 2.993,
-  "lon": 101.79
+  "lon": 101.79,
+  "heightM": 0
  },
  {
   "id": 43,
   "name": "Kuala Kubu Bharu",
   "nameEn": "Kuala Kubu Bharu (SGR01)",
   "lat": 3.56,
-  "lon": 101.65
+  "lon": 101.65,
+  "heightM": 0
  },
  {
   "id": 44,
   "name": "Kuala Selangor",
   "nameEn": "Kuala Selangor (SGR02)",
   "lat": 3.34,
-  "lon": 101.25
+  "lon": 101.25,
+  "heightM": 0
  },
  {
   "id": 44,
   "name": "Sabak Bernam",
   "nameEn": "Sabak Bernam (SGR02)",
   "lat": 3.77,
-  "lon": 100.99
+  "lon": 100.99,
+  "heightM": 0
  },
  {
   "id": 45,
   "name": "Klang",
   "nameEn": "Klang (SGR03)",
   "lat": 3.0449,
-  "lon": 101.4455
+  "lon": 101.4455,
+  "heightM": 0
  },
  {
   "id": 45,
   "name": "Banting",
   "nameEn": "Banting (SGR03)",
   "lat": 2.81,
-  "lon": 101.5
+  "lon": 101.5,
+  "heightM": 0
  },
  {
   "id": 46,
   "name": "Limbang",
   "nameEn": "Limbang (SWK01)",
   "lat": 4.75,
-  "lon": 115
+  "lon": 115,
+  "heightM": 0
  },
  {
   "id": 46,
   "name": "Lawas",
   "nameEn": "Lawas (SWK01)",
   "lat": 4.85,
-  "lon": 115.41
+  "lon": 115.41,
+  "heightM": 0
  },
  {
   "id": 47,
   "name": "Miri",
   "nameEn": "Miri (SWK02)",
   "lat": 4.4,
-  "lon": 113.99
+  "lon": 113.99,
+  "heightM": 0
  },
  {
   "id": 47,
   "name": "Marudi",
   "nameEn": "Marudi (SWK02)",
   "lat": 4.18,
-  "lon": 114.32
+  "lon": 114.32,
+  "heightM": 0
  },
  {
   "id": 47,
   "name": "Niah",
   "nameEn": "Niah (SWK02)",
   "lat": 3.87,
-  "lon": 113.75
+  "lon": 113.75,
+  "heightM": 0
  },
  {
   "id": 48,
   "name": "Bintulu",
   "nameEn": "Bintulu (SWK03)",
   "lat": 3.17,
-  "lon": 113.03
+  "lon": 113.03,
+  "heightM": 0
  },
  {
   "id": 48,
   "name": "Belaga",
   "nameEn": "Belaga (SWK03)",
   "lat": 2.7,
-  "lon": 113.78
+  "lon": 113.78,
+  "heightM": 0
  },
  {
   "id": 48,
   "name": "Tatau",
   "nameEn": "Tatau (SWK03)",
   "lat": 2.89,
-  "lon": 112.85
+  "lon": 112.85,
+  "heightM": 0
  },
  {
   "id": 49,
   "name": "Sibu",
   "nameEn": "Sibu (SWK04)",
   "lat": 2.287,
-  "lon": 111.83
+  "lon": 111.83,
+  "heightM": 0
  },
  {
   "id": 49,
   "name": "Mukah",
   "nameEn": "Mukah (SWK04)",
   "lat": 2.9,
-  "lon": 112.09
+  "lon": 112.09,
+  "heightM": 0
  },
  {
   "id": 49,
   "name": "Kapit",
   "nameEn": "Kapit (SWK04)",
   "lat": 2.016,
-  "lon": 112.933
+  "lon": 112.933,
+  "heightM": 0
  },
  {
   "id": 49,
   "name": "Kanowit",
   "nameEn": "Kanowit (SWK04)",
   "lat": 2.1,
-  "lon": 112.15
+  "lon": 112.15,
+  "heightM": 0
  },
  {
   "id": 49,
   "name": "Dalat",
   "nameEn": "Dalat (SWK04)",
   "lat": 2.74,
-  "lon": 111.94
+  "lon": 111.94,
+  "heightM": 0
  },
  {
   "id": 50,
   "name": "Sarikei",
   "nameEn": "Sarikei (SWK05)",
   "lat": 2.127,
-  "lon": 111.518
+  "lon": 111.518,
+  "heightM": 0
  },
  {
   "id": 50,
   "name": "Bintangor",
   "nameEn": "Bintangor (SWK05)",
   "lat": 2.17,
-  "lon": 111.63
+  "lon": 111.63,
+  "heightM": 0
  },
  {
   "id": 50,
   "name": "Daro",
   "nameEn": "Daro (SWK05)",
   "lat": 2.52,
-  "lon": 111.37
+  "lon": 111.37,
+  "heightM": 0
  },
  {
   "id": 50,
   "name": "Julau",
   "nameEn": "Julau (SWK05)",
   "lat": 1.96,
-  "lon": 111.8
+  "lon": 111.8,
+  "heightM": 0
  },
  {
   "id": 51,
   "name": "Sri Aman",
   "nameEn": "Sri Aman (SWK06)",
   "lat": 1.237,
-  "lon": 111.462
+  "lon": 111.462,
+  "heightM": 0
  },
  {
   "id": 51,
   "name": "Betong",
   "nameEn": "Betong (SWK06)",
   "lat": 1.41,
-  "lon": 111.52
+  "lon": 111.52,
+  "heightM": 0
  },
  {
   "id": 51,
   "name": "Saratok",
   "nameEn": "Saratok (SWK06)",
   "lat": 1.73,
-  "lon": 111.35
+  "lon": 111.35,
+  "heightM": 0
  },
  {
   "id": 51,
   "name": "Lubok Antu",
   "nameEn": "Lubok Antu (SWK06)",
   "lat": 1.04,
-  "lon": 111.83
+  "lon": 111.83,
+  "heightM": 0
  },
  {
   "id": 52,
   "name": "Serian",
   "nameEn": "Serian (SWK07)",
   "lat": 1.17,
-  "lon": 110.57
+  "lon": 110.57,
+  "heightM": 0
  },
  {
   "id": 52,
   "name": "Kota Samarahan",
   "nameEn": "Kota Samarahan (SWK07)",
   "lat": 1.46,
-  "lon": 110.49
+  "lon": 110.49,
+  "heightM": 0
  },
  {
   "id": 52,
   "name": "Simunjan",
   "nameEn": "Simunjan (SWK07)",
   "lat": 1.39,
-  "lon": 110.75
+  "lon": 110.75,
+  "heightM": 0
  },
  {
   "id": 53,
   "name": "Kuching",
   "nameEn": "Kuching (SWK08)",
   "lat": 1.5533,
-  "lon": 110.3592
+  "lon": 110.3592,
+  "heightM": 0
  },
  {
   "id": 53,
   "name": "Bau",
   "nameEn": "Bau (SWK08)",
   "lat": 1.42,
-  "lon": 110.15
+  "lon": 110.15,
+  "heightM": 0
  },
  {
   "id": 53,
   "name": "Lundu",
   "nameEn": "Lundu (SWK08)",
   "lat": 1.67,
-  "lon": 109.86
+  "lon": 109.86,
+  "heightM": 0
  },
  {
   "id": 53,
   "name": "Sematan",
   "nameEn": "Sematan (SWK08)",
   "lat": 1.81,
-  "lon": 109.77
+  "lon": 109.77,
+  "heightM": 0
  },
  {
   "id": 54,
   "name": "Kuala Terengganu",
   "nameEn": "Kuala Terengganu (TRG01)",
   "lat": 5.33,
-  "lon": 103.14
+  "lon": 103.14,
+  "heightM": 0
  },
  {
   "id": 54,
   "name": "Marang",
   "nameEn": "Marang (TRG01)",
   "lat": 5.2,
-  "lon": 103.21
+  "lon": 103.21,
+  "heightM": 0
  },
  {
   "id": 54,
   "name": "Kuala Nerus",
   "nameEn": "Kuala Nerus (TRG01)",
   "lat": 5.39,
-  "lon": 103.09
+  "lon": 103.09,
+  "heightM": 0
  },
  {
   "id": 55,
   "name": "Jerteh",
   "nameEn": "Jerteh (TRG02)",
   "lat": 5.74,
-  "lon": 102.49
+  "lon": 102.49,
+  "heightM": 0
  },
  {
   "id": 55,
   "name": "Setiu",
   "nameEn": "Setiu (TRG02)",
   "lat": 5.61,
-  "lon": 102.73
+  "lon": 102.73,
+  "heightM": 0
  },
  {
   "id": 56,
   "name": "Kuala Berang",
   "nameEn": "Kuala Berang (TRG03)",
   "lat": 5.07,
-  "lon": 102.96
+  "lon": 102.96,
+  "heightM": 0
  },
  {
   "id": 57,
   "name": "Dungun",
   "nameEn": "Dungun (TRG04)",
   "lat": 4.76,
-  "lon": 103.42
+  "lon": 103.42,
+  "heightM": 0
  },
  {
   "id": 57,
   "name": "Chukai",
   "nameEn": "Chukai (TRG04)",
   "lat": 4.23,
-  "lon": 103.42
+  "lon": 103.42,
+  "heightM": 0
  },
  {
   "id": 58,
   "name": "Kuala Lumpur",
   "nameEn": "Kuala Lumpur (WLY01)",
   "lat": 3.139,
-  "lon": 101.6869
+  "lon": 101.6869,
+  "heightM": 0
  },
  {
   "id": 58,
   "name": "Putrajaya",
   "nameEn": "Putrajaya (WLY01)",
   "lat": 2.9264,
-  "lon": 101.6964
+  "lon": 101.6964,
+  "heightM": 0
  },
  {
   "id": 59,
   "name": "Labuan",
   "nameEn": "Labuan (WLY02)",
   "lat": 5.28,
-  "lon": 115.24
+  "lon": 115.24,
+  "heightM": 0
  }
 ]

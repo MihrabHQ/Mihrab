@@ -34,6 +34,14 @@ export type KemenagPlace = {
   name: string;
   lat: number;
   lon: number;
+  /** Metres above sea level (SRTM at the point), for the record. */
+  heightM?: number;
+  /**
+   * The ministry's allowance for the horizon, minutes: its highland
+   * regencies get four and a half, the rest none, whatever the height —
+   * read off its tables (tools/verify-methods, October 2026).
+   */
+  horizonMin?: number;
 };
 
 type MonthResponse = {
@@ -115,7 +123,7 @@ async function main(): Promise<number> {
         throw new BuildError(`${p.name}: the site answered for "${json!.kabko}" — the id list is stale`);
       }
     }
-    places.push({ id: p.id, name: p.name, nameEn: `${p.name} (${p.prov})`, lat: p.lat, lon: p.lon, days });
+    places.push({ id: p.id, name: p.name, nameEn: `${p.name} (${p.prov})`, lat: p.lat, lon: p.lon, heightM: p.heightM, horizonMin: p.horizonMin, days });
     if (places.length % 50 === 0) console.log(`${places.length} places, ${requests} requests`);
   }
   const changes = changedPlaces(places, 'indonesia');

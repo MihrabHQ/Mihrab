@@ -18,6 +18,8 @@ export type PlaceTable = {
   nameEn?: string;
   lat: number;
   lon: number;
+  heightM?: number;
+  horizonMin?: number;
   /** YYYY-MM-DD → minutes. */
   days: Record<string, DayMinutes>;
 };
@@ -32,7 +34,7 @@ export type WriteOptions = {
    * What the app matches a reader to, when it is not one point per place:
    * Malaysia's zones are several towns each, all keyed by the zone's id.
    */
-  appPlaces?: { id: number; name: string; nameEn?: string; lat: number; lon: number }[];
+  appPlaces?: { id: number; name: string; nameEn?: string; lat: number; lon: number; heightM?: number; horizonMin?: number }[];
   timezone: string;
   source: string;
   /** Warn when fewer than this many days are left after today. */
@@ -138,7 +140,7 @@ export function writeTable(places: PlaceTable[], opt: WriteOptions) {
   fs.writeFileSync(
     path.join(ROOT, opt.placesFile),
     `${JSON.stringify(
-      opt.appPlaces ?? places.map(p => ({ id: p.id, name: p.name, nameEn: p.nameEn, lat: p.lat, lon: p.lon })),
+      opt.appPlaces ?? places.map(p => ({ id: p.id, name: p.name, nameEn: p.nameEn, lat: p.lat, lon: p.lon, heightM: p.heightM, horizonMin: p.horizonMin })),
       null,
       1,
     )}\n`,

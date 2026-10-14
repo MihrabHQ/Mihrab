@@ -73,6 +73,29 @@ without them accepts the whole authority, which is never what is meant.
 Every entry carries a `note` saying why — the file is the record of what
 was decided and on what grounds.
 
+## Heights, and what the first run found
+
+The first run (October 2026) found the angles right everywhere and
+three other things, each now in the data:
+
+- **A town on a hill.** The Moroccan ministry lowers the horizon for
+  every city by about 0.02° per √metre; JAKIM computes its five summit
+  zones at altitude with the textbook 0.0293°; Kemenag gives 56 highland
+  regencies a flat four and a half minutes whatever their height. So the
+  places files carry `heightM` (SRTM, `heights.py`) and, where the
+  authority's figure is not a height, `horizonMin`; the method applies
+  them to sunrise and Maghrib (`src/prayer/horizonDip.ts`), and the
+  phone's stand-in computes a listed place at the place, not at the
+  reader's own spot. `fit-dip.ts` finds an authority's coefficient.
+- **A regency computed elsewhere.** Thirty-two Kemenag regencies sat a
+  degree or so from the ministry's point (an archipelago's seat against
+  its centroid); `place-medians.ts` gives every place's constant, and
+  Dhuhr's says the longitude. Two the ministry itself computes on the
+  wrong island are kept at the true seat and accepted.
+- **A formula of the authority's own.** The Algerian ministry's Asr takes
+  the noon shadow with its sign, so south of the Tropic its Asr comes
+  early about the solstice; method 19 now does the same.
+
 ## What is not checked here
 
 - **AlAdhan and PrayTimes.dev** are services, not tables; the method

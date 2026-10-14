@@ -10,6 +10,7 @@ import { nationalTableFor } from './nationalTables';
 import { computeLocalAdhanTimes } from './localAdhan';
 import { autoMethodForCoords } from './autoMethod';
 import { ALGERIA_METHOD_ID } from './algeriaCities';
+import { nearestMoroccoCity } from './moroccoNearest';
 import { isCoordinateInAlgeria } from '../utils/algeriaRegion';
 import { computeImsak, DEFAULT_IMSAK_OFFSET_MINUTES } from './imsak';
 import { validateTimings, validateTimingShape } from './validateTimings';
@@ -17,6 +18,10 @@ import {
   isProviderCoolingDown,
   recordProviderResult,
 } from './providerHealth';
+
+/** Within this of a listed Moroccan city, the ministry's method stands in for its table. */
+const HABOUS_STAND_IN_KM = 200;
+const MOROCCO_METHOD_ID = 21;
 
 /**
  * The Algeria METHOD is computed on the device, not asked of AlAdhan:
@@ -139,10 +144,11 @@ export async function fetchPrayerTimesUnified(
       // The Ministry of Habous's own published tables, from the prepared
       // dataset. There is no live rung behind it: the ministry serves one
       // Hijri month at a time and its endpoint is unreliable enough that
-      // scraping it per device would be worse than not, so a miss goes
-      // straight to AlAdhan — which auto-selects the Morocco method — and
-      // then to the caller's on-device last resort, where the Morocco
-      // parameters now sit within a minute of the ministry.
+      // scraping it per device would be worse than not. Past the published
+      // month the ministry's method is computed on the phone, for the
+      // nearest listed city and at its height — the ministry lowers the
+      // horizon for a town on a hill, which AlAdhan's id 21 cannot — and
+      // only outside the ministry's reach is AlAdhan asked.
       // Morocco's rectangle takes in a strip of western Algeria — Tlemcen,
       // Maghnia — so a user there who pinned Morocco reaches this case. They
       // are not Moroccan, and Oujda's table is not theirs: they get the
@@ -160,6 +166,23 @@ export async function fetchPrayerTimesUnified(
           break;
         } catch {
           /* outside coverage, or past the published window */
+        }
+        const city = nearestMoroccoCity(p.latitude, p.longitude);
+        if (city && city.distanceKm <= HABOUS_STAND_IN_KM) {
+          const local: PrayerTimesResult = {
+            ...computeLocalAdhanTimes({
+              latitude: city.lat,
+              longitude: city.lng,
+              heightM: city.heightM,
+              horizonMin: city.horizonMin,
+              date: p.date,
+              calculationMethod: MOROCCO_METHOD_ID,
+              school: 0,
+            }),
+            source: 'local',
+          };
+          validateTimingShape(local.timings);
+          return local;
         }
       }
       result = await fetchAladhanTimes({
@@ -208,10 +231,13 @@ export async function fetchPrayerTimesUnified(
       // A national table (Singapore's MUIS, Malaysia's JAKIM, Indonesia's
       // Kemenag): the authority's published day for the nearest listed
       // place, from the phone's copy. Past the published window — JAKIM's
-      // ends every 31 December until the January rebuild — or outside the
-      // country, the authority's own method is computed on the phone
-      // (AlAdhan's ids 11, 17 and 20, each fitted to the authority's own
-      // tables in `localAdhan.ts`).
+      // ends every 31 December until the January rebuild — the authority's
+      // own method is computed on the phone (AlAdhan's ids 11, 17 and 20,
+      // each fitted to the authority's own tables in `localAdhan.ts`) for
+      // the listed place that would have served, at its height: a JAKIM
+      // zone's time is the zone's, not the reader's spot, and the summit
+      // zones are computed at the summit. Outside the country, for the
+      // reader's own coordinates.
       const table = nationalTableFor(p.provider)!;
       try {
         result = await table.getTimes({ latitude: p.latitude, longitude: p.longitude, date: p.date });
@@ -219,10 +245,13 @@ export async function fetchPrayerTimesUnified(
       } catch {
         /* outside coverage, or past the published window */
       }
+      const place = table.covers(p.latitude, p.longitude) ? table.nearest(p.latitude, p.longitude) : null;
       const local: PrayerTimesResult = {
         ...computeLocalAdhanTimes({
-          latitude: p.latitude,
-          longitude: p.longitude,
+          latitude: place?.lat ?? p.latitude,
+          longitude: place?.lon ?? p.longitude,
+          heightM: place?.heightM,
+          horizonMin: place?.horizonMin,
           date: p.date,
           calculationMethod: p.provider === 'muis' ? 11 : p.provider === 'jakim' ? 17 : 20,
           school: 0,

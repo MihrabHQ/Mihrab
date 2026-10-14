@@ -37,6 +37,10 @@ export type TablePlace = {
   nameEn?: string;
   lat: number;
   lon: number;
+  /** Metres above sea level, where the authority lowers the horizon for the place. */
+  heightM?: number;
+  /** The authority's own allowance for the horizon, minutes, where it is a figure rather than a height. */
+  horizonMin?: number;
 };
 
 export type NationalTableSeed = {

@@ -18,6 +18,10 @@ export type MoroccoCityEntry = {
   name: string;
   lat: number | null;
   lng: number | null;
+  /** Metres above sea level (SRTM at the point); the ministry lowers the horizon for it. */
+  heightM?: number;
+  /** The ministry's own allowance for the horizon, minutes, where its table says other than the height. */
+  horizonMin?: number;
 };
 
 /** Only cities that have coordinates can be matched against a location. */
@@ -44,7 +48,7 @@ function haversineKm(lat1: number, lon1: number, lat2: number, lon2: number): nu
 export function nearestMoroccoCity(
   latitude: number,
   longitude: number,
-): { id: number; name: string; distanceKm: number } | null {
+): { id: number; name: string; lat: number; lng: number; heightM: number; horizonMin?: number; distanceKm: number } | null {
   let best: MoroccoCityEntry | null = null;
   let bestKm = Infinity;
   for (const city of LOCATABLE) {
@@ -55,5 +59,13 @@ export function nearestMoroccoCity(
     }
   }
   if (!best) return null;
-  return { id: best.id, name: best.name, distanceKm: bestKm };
+  return {
+    id: best.id,
+    name: best.name,
+    lat: best.lat as number,
+    lng: best.lng as number,
+    heightM: best.heightM ?? 0,
+    horizonMin: best.horizonMin,
+    distanceKm: bestKm,
+  };
 }

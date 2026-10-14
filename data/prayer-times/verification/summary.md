@@ -2,7 +2,7 @@
 
 
 
-Generated 2026-10-14 15:15 UTC by tools/verify-methods. Each table the builders fetch, compared day by day with what the phone computes for that authority — the tables are the check on the calculation, not the thing distributed.
+Generated 2026-10-14 15:38 UTC by tools/verify-methods. Each table the builders fetch, compared day by day with what the phone computes for that authority — the tables are the check on the calculation, not the thing distributed.
 
 
 
@@ -53,147 +53,99 @@ Method — none fitted yet (the automatic fallback is shown) · 108 of 108 place
 
 </details>
 
-### ❌ Morocco — Ministry of Habous and Islamic Affairs
+### ✅ Morocco — Ministry of Habous and Islamic Affairs
 
-Method 21 · 191 of 191 places · 6112 place-days (2026-10-11 → 2026-11-11) · table built 2026-10-14
+Method 21 · 164 of 164 places · 5248 place-days (2026-10-11 → 2026-11-11) · table built 2026-10-14
 
-**97.1% within 1 min** over the well-placed places, 422 of 14592 outside, worst 2 min · Imsak printed 10 min before Fajr
+**99.1% within 1 min** over the well-placed places, 286 of 31104 outside, worst 3 min · Imsak printed 10 min before Fajr
 
 | | within | mean | worst | distribution (minutes, ours − theirs) |
 |---|---|---|---|---|
-| Fajr | 100.0% | +0.5 | 1 | 0: 1224, +1: 1208 |
-| Sunrise | 88.6% | +0.6 | 2 | -1: 123, 0: 1009, +1: 1022, +2: 278 |
-| Dhuhr | 100.0% | +0.01 | 1 | -1: 32, 0: 2340, +1: 60 |
-| Asr | 100.0% | -0.67 | 1 | -1: 1634, 0: 797, +1: 1 |
-| Maghrib | 94.1% | -0.48 | 2 | -2: 144, -1: 1018, 0: 1126, +1: 144 |
-| Isha | 100.0% | -0.03 | 1 | -1: 104, 0: 2305, +1: 23 |
+| Fajr | 100.0% | +0.49 | 1 | 0: 2646, +1: 2538 |
+| Sunrise | 95.3% | +0.07 | 3 | -2: 36, -1: 1144, 0: 2629, +1: 1166, +2: 205, +3: 4 |
+| Dhuhr | 100.0% | +0.01 | 1 | -1: 98, 0: 4960, +1: 126 |
+| Asr | 100.0% | -0.68 | 1 | -1: 3535, 0: 1648, +1: 1 |
+| Maghrib | 99.2% | +0.25 | 2 | -2: 16, -1: 567, 0: 2742, +1: 1834, +2: 25 |
+| Isha | 100.0% | -0.04 | 1 | -1: 234, 0: 4908, +1: 42 |
 
-**114 place(s) off by a constant at every date** — not the angles: our coordinates are not the authority's, or the authority gives that place its own margin (a horizon above or below the plain). Dhuhr says the longitude (4 min per degree); sunrise against Maghrib, the latitude or the height:
-
-| place | days | Fajr | Sunrise | Dhuhr | Asr | Maghrib | Isha |
-|---|---|---|---|---|---|---|---|
-| بئر أنزاران | 32 | -74 | -79.5 | -58 | -55.5 | -36.5 | -40.5 |
-| أمكالة | 32 | -62.5 | -70 | -45 | -41 | -21.5 | -27 |
-| لمسيد | 32 | -60.5 | -68.5 | -43 | -37 | -17.5 | -23.5 |
-| تفاريتي | 32 | -59 | -64.5 | -42 | -37.5 | -19.5 | -23.5 |
-| بويكرة | 32 | -55.5 | -67 | -37 | -29 | -8 | -16.5 |
-| تولكولت | 32 | -54.5 | -63 | -36 | -26.5 | -8.5 | -15.5 |
-| فم لحصن | 32 | -53.5 | -60.5 | -35 | -28.5 | -10 | -15.5 |
-| قطارة | 32 | -51.5 | -62 | -32 | -22.5 | -2.5 | -11.5 |
-| آيت القاق | 32 | -49.5 | -56 | -31 | -21.5 | -5.5 | -10.5 |
-| أكايوار | 32 | -49.5 | -58.5 | -31 | -21.5 | -3.5 | -10.5 |
-| أسكين | 32 | -49.5 | -58.5 | -31 | -21.5 | -3 | -10 |
-| تفنتان | 32 | -48.5 | -59.5 | -30 | -20.5 | -0.5 | -9 |
-| كرس | 32 | -49 | -56.5 | -30 | -20.5 | -3.5 | -9.5 |
-| تيسنت | 32 | -47.5 | -54 | -29 | -21 | -3.5 | -8.5 |
-| هسكورة | 32 | -44.5 | -53 | -26 | -16.5 | +1.5 | -5.5 |
-| إيمين ثلاث | 32 | -44.5 | -54 | -26 | -16 | +2.5 | -5 |
-| سوق أربعاء الغرب | 32 | -44.5 | -60 | -25 | -11.5 | +9.5 | -3.5 |
-| أكدال أملشيل | 32 | -40.5 | -48 | -22 | -11.5 | +5.5 | -0.5 |
-| اكودال املشيل ميدلت | 32 | -40.5 | -50 | -22 | -11.5 | +6.5 | -0.5 |
-| يفرن | 32 | -39.5 | -49.5 | -20 | -7.5 | +9.5 | +1.5 |
-| المنزل بني يازغة | 32 | -37.5 | -49 | -18 | -5.5 | +12.5 | +3.5 |
-| خميس سيدي عبد الجليل | 32 | -37.5 | -50 | -18 | -5 | +14.5 | +3.5 |
-| بوسكور | 32 | -33.5 | -48 | -14 | -0.5 | +19.5 | +7.5 |
-| بني تجيت | 32 | -32.5 | -42 | -14 | -2.5 | +14.5 | +7.5 |
-| تنديت | 32 | -33.5 | -46 | -14 | -1.5 | +17 | +7.5 |
-| بني ادرار | 32 | -27.5 | -41 | -8 | +6.5 | +25.5 | +14.5 |
-| قصر إيش | 32 | -23 | -32.5 | -4 | +7.5 | +25.5 | +17.5 |
-| الرماني | 32 | +1 | +2 | 0 | -1 | -2 | 0 |
-| والماس | 32 | +1 | +4 | 0 | -1 | -3 | 0 |
-| تطوان | 32 | 0 | +2 | 0 | -1 | -2 | 0 |
-| شفشاون | 32 | 0 | +4 | 0 | -1 | -3 | 0 |
-| سبتة | 32 | +0.5 | +2 | 0 | -1 | -2 | 0 |
-| باب برد | 32 | 0 | +4 | 0 | -1 | -3 | 0 |
-| وزان | 32 | +1 | +3 | 0 | -1 | -2 | 0 |
-| وجدة | 32 | +1 | +3 | 0 | -1 | -2 | 0 |
-| فكيك | 32 | 0 | +3 | 0 | -1 | -2 | 0 |
-| بوعرفة | 32 | +1 | +3 | 0 | -1 | -3 | 0 |
-| جرادة | 32 | +1 | +4 | 0 | -1 | -3 | 0 |
-| عين الشعير | 32 | 0 | +3 | 0 | -1 | -2 | 0 |
-| تاوريرت | 32 | +0.5 | +3 | 0 | -1 | -3 | 0 |
-| … and 74 more | | | | | | | |
-
-**Why this is raised:** 2.9% of times are more than 1 min from the table (allowed 2%) — the method; 114 place(s) disagree by a constant at every date — coordinates or a per-place margin, not the angles.
+192 row(s) set aside as understood (tools/verify-methods/accepted.json).
 
 <details><summary>The rows furthest off</summary>
 
 | place | date | prayer | table | ours | diff |
 |---|---|---|---|---|---|
-| سيدي قاسم | 2026-10-11 | Sunrise | 06:20 | 06:22 | +2 |
-| كرسيف | 2026-10-11 | Maghrib | 17:50 | 17:48 | -2 |
-| سطات | 2026-10-11 | Sunrise | 06:27 | 06:29 | +2 |
-| مولاي يعقوب | 2026-10-11 | Sunrise | 06:18 | 06:20 | +2 |
-| قلعة السراغنة | 2026-10-11 | Sunrise | 06:25 | 06:27 | +2 |
-| قلعة السراغنة | 2026-10-11 | Maghrib | 18:08 | 18:06 | -2 |
-| تمنار | 2026-10-11 | Sunrise | 06:34 | 06:36 | +2 |
-| اليوسفية | 2026-10-11 | Sunrise | 06:30 | 06:32 | +2 |
-| اليوسفية | 2026-10-11 | Maghrib | 18:12 | 18:10 | -2 |
-| تازارين | 2026-10-11 | Sunrise | 06:17 | 06:19 | +2 |
-| بويزكارن | 2026-10-11 | Sunrise | 06:33 | 06:35 | +2 |
-| بويزكارن | 2026-10-11 | Maghrib | 18:19 | 18:17 | -2 |
-| الخميسات | 2026-10-12 | Sunrise | 06:22 | 06:24 | +2 |
-| الخميسات | 2026-10-12 | Maghrib | 18:00 | 17:58 | -2 |
-| تيفلت | 2026-10-12 | Sunrise | 06:23 | 06:25 | +2 |
-| تيفلت | 2026-10-12 | Maghrib | 18:01 | 17:59 | -2 |
-| سيدي قاسم | 2026-10-12 | Sunrise | 06:21 | 06:23 | +2 |
-| قلعة السراغنة | 2026-10-12 | Sunrise | 06:26 | 06:28 | +2 |
-| تازارين | 2026-10-12 | Sunrise | 06:18 | 06:20 | +2 |
-| تازارين | 2026-10-12 | Maghrib | 18:00 | 17:58 | -2 |
-| بويزكارن | 2026-10-12 | Maghrib | 18:18 | 18:16 | -2 |
-| الخميسات | 2026-10-13 | Sunrise | 06:23 | 06:25 | +2 |
-| تيفلت | 2026-10-13 | Sunrise | 06:24 | 06:26 | +2 |
-| سيدي قاسم | 2026-10-13 | Maghrib | 17:57 | 17:55 | -2 |
-| الكارة | 2026-10-13 | Sunrise | 06:27 | 06:29 | +2 |
+| بولمان | 2026-10-19 | Sunrise | 06:17 | 06:20 | +3 |
+| بولمان | 2026-10-24 | Sunrise | 06:21 | 06:24 | +3 |
+| بولمان | 2026-10-30 | Sunrise | 06:26 | 06:29 | +3 |
+| بولمان | 2026-11-07 | Sunrise | 06:33 | 06:36 | +3 |
+| تاوريرت | 2026-10-11 | Sunrise | 06:07 | 06:09 | +2 |
+| زاوية أحنصال | 2026-10-11 | Sunrise | 06:16 | 06:18 | +2 |
+| بولمان | 2026-10-11 | Sunrise | 06:11 | 06:13 | +2 |
+| أقا | 2026-10-11 | Sunrise | 06:25 | 06:27 | +2 |
+| أكدز | 2026-10-11 | Sunrise | 06:18 | 06:20 | +2 |
+| تطوان | 2026-10-12 | Sunrise | 06:20 | 06:22 | +2 |
+| تطوان | 2026-10-12 | Maghrib | 17:56 | 17:54 | -2 |
+| تاوريرت | 2026-10-12 | Sunrise | 06:08 | 06:10 | +2 |
+| بني ملال | 2026-10-12 | Sunrise | 06:20 | 06:22 | +2 |
+| بولمان | 2026-10-12 | Sunrise | 06:12 | 06:14 | +2 |
+| كلتة زمور | 2026-10-12 | Sunrise | 06:43 | 06:41 | -2 |
+| فم زكيد | 2026-10-12 | Sunrise | 06:20 | 06:22 | +2 |
+| تطوان | 2026-10-13 | Sunrise | 06:21 | 06:23 | +2 |
+| زاوية أحنصال | 2026-10-13 | Sunrise | 06:17 | 06:19 | +2 |
+| دمنات | 2026-10-13 | Sunrise | 06:22 | 06:24 | +2 |
+| بولمان | 2026-10-13 | Sunrise | 06:13 | 06:15 | +2 |
+| الوليدية | 2026-10-13 | Sunrise | 06:36 | 06:34 | -2 |
+| أقا | 2026-10-13 | Sunrise | 06:26 | 06:28 | +2 |
+| تطوان | 2026-10-14 | Sunrise | 06:22 | 06:24 | +2 |
+| زاوية أحنصال | 2026-10-14 | Sunrise | 06:18 | 06:20 | +2 |
+| أزيلال | 2026-10-14 | Sunrise | 06:21 | 06:23 | +2 |
 
 </details>
 
-### ❌ Algeria — Ministry of Religious Affairs and Wakfs
+### ✅ Algeria — Ministry of Religious Affairs and Wakfs
 
 Method 19 · 68 of 68 places · 16864 place-days (2026-10-01 → 2027-06-05) · table built 2026-10-08
 
-**99.7% within 1 min** over the well-placed places, 296 of 101184 outside, worst 13 min · Imsak printed 10 min before Fajr
+**99.7% within 1 min** over the well-placed places, 274 of 101184 outside, worst 2 min · Imsak printed 10 min before Fajr
 
 | | within | mean | worst | distribution (minutes, ours − theirs) |
 |---|---|---|---|---|
 | Fajr | 100.0% | -0.48 | 1 | -1: 8105, 0: 8759 |
 | Sunrise | 100.0% | -0.48 | 1 | -1: 8032, 0: 8832 |
 | Dhuhr | 100.0% | -0.48 | 1 | -1: 8016, 0: 8848 |
-| Asr | 98.2% | -0.29 | 13 | -2: 274, -1: 5172, 0: 10705, +1: 691, +2: 1, +3: 3, +4: 3, +5: 4, +6: 1, +7: 1, +8: 2, +9: 1, +10: 2, +11: 2, +12: 1, +13: 1 |
+| Asr | 98.4% | -0.3 | 2 | -2: 274, -1: 5183, 0: 10719, +1: 688 |
 | Maghrib | 100.0% | -0.47 | 1 | -1: 7937, 0: 8927 |
 | Isha | 100.0% | -0.45 | 1 | -1: 7641, 0: 9223 |
-
-**Why this is raised:** a time is 13 min off (allowed 10).
 
 <details><summary>The rows furthest off</summary>
 
 | place | date | prayer | table | ours | diff |
 |---|---|---|---|---|---|
-| In Guezzam | 2027-06-05 | Asr | 15:42 | 15:55 | +13 |
-| In Guezzam | 2027-06-04 | Asr | 15:43 | 15:55 | +12 |
-| In Guezzam | 2027-06-02 | Asr | 15:43 | 15:54 | +11 |
-| In Guezzam | 2027-06-03 | Asr | 15:43 | 15:54 | +11 |
-| In Guezzam | 2027-05-31 | Asr | 15:43 | 15:53 | +10 |
-| In Guezzam | 2027-06-01 | Asr | 15:43 | 15:53 | +10 |
-| In Guezzam | 2027-05-30 | Asr | 15:43 | 15:52 | +9 |
-| In Guezzam | 2027-05-28 | Asr | 15:43 | 15:51 | +8 |
-| In Guezzam | 2027-05-29 | Asr | 15:43 | 15:51 | +8 |
-| In Guezzam | 2027-05-27 | Asr | 15:43 | 15:50 | +7 |
-| In Guezzam | 2027-05-26 | Asr | 15:44 | 15:50 | +6 |
-| In Guezzam | 2027-05-24 | Asr | 15:44 | 15:49 | +5 |
-| In Guezzam | 2027-05-25 | Asr | 15:44 | 15:49 | +5 |
-| Bordj Badji Mokhtar | 2027-06-04 | Asr | 16:07 | 16:12 | +5 |
-| Bordj Badji Mokhtar | 2027-06-05 | Asr | 16:07 | 16:12 | +5 |
-| In Guezzam | 2027-05-23 | Asr | 15:44 | 15:48 | +4 |
-| Bordj Badji Mokhtar | 2027-06-02 | Asr | 16:07 | 16:11 | +4 |
-| Bordj Badji Mokhtar | 2027-06-03 | Asr | 16:07 | 16:11 | +4 |
-| In Guezzam | 2027-05-22 | Asr | 15:44 | 15:47 | +3 |
-| Bordj Badji Mokhtar | 2027-05-31 | Asr | 16:07 | 16:10 | +3 |
-| Bordj Badji Mokhtar | 2027-06-01 | Asr | 16:07 | 16:10 | +3 |
 | Hassi R'mel | 2026-10-01 | Asr | 16:00 | 15:58 | -2 |
 | Ben Badis | 2026-10-01 | Asr | 16:16 | 16:14 | -2 |
 | Algiers | 2026-10-01 | Asr | 15:59 | 15:57 | -2 |
 | Bouira | 2026-10-01 | Asr | 15:56 | 15:54 | -2 |
+| Bejaia | 2026-10-01 | Asr | 15:51 | 15:49 | -2 |
+| Setif | 2026-10-01 | Asr | 15:50 | 15:48 | -2 |
+| Constantine | 2026-10-01 | Asr | 15:45 | 15:43 | -2 |
+| El Tarf | 2026-10-01 | Asr | 15:38 | 15:36 | -2 |
+| Tindouf | 2026-10-01 | Asr | 16:47 | 16:45 | -2 |
+| Touggourt | 2026-10-02 | Asr | 15:48 | 15:46 | -2 |
+| Ben Badis | 2026-10-02 | Asr | 16:15 | 16:13 | -2 |
+| Algiers | 2026-10-02 | Asr | 15:58 | 15:56 | -2 |
+| Bouira | 2026-10-02 | Asr | 15:55 | 15:53 | -2 |
+| Tizi Ouzou | 2026-10-02 | Asr | 15:54 | 15:52 | -2 |
+| Bejaia | 2026-10-02 | Asr | 15:50 | 15:48 | -2 |
+| Setif | 2026-10-02 | Asr | 15:49 | 15:47 | -2 |
+| Constantine | 2026-10-02 | Asr | 15:44 | 15:42 | -2 |
+| El Tarf | 2026-10-02 | Asr | 15:37 | 15:35 | -2 |
+| Illizi | 2026-10-02 | Asr | 15:40 | 15:38 | -2 |
+| Djanet | 2026-10-02 | Asr | 15:36 | 15:34 | -2 |
+| Touggourt | 2026-10-03 | Asr | 15:47 | 15:45 | -2 |
+| Ben Badis | 2026-10-03 | Asr | 16:14 | 16:12 | -2 |
+| Algiers | 2026-10-03 | Asr | 15:57 | 15:55 | -2 |
+| Blida | 2026-10-03 | Asr | 15:58 | 15:56 | -2 |
+| Tizi Ouzou | 2026-10-03 | Asr | 15:53 | 15:51 | -2 |
 
 </details>
 
@@ -212,157 +164,101 @@ Method 11 · 1 of 1 places · 86 place-days (2026-10-07 → 2026-12-31) · table
 | Maghrib | 100.0% | -0.19 | 1 | -1: 19, 0: 64, +1: 3 |
 | Isha | 100.0% | -0.27 | 1 | -1: 24, 0: 61, +1: 1 |
 
-### ❌ Malaysia — JAKIM e-Solat
+### ✅ Malaysia — JAKIM e-Solat
 
 Method 17 · 59 of 59 places · 5074 place-days (2026-10-07 → 2026-12-31) · table built 2026-10-14
 
-**91.7% within 1 min** over the well-placed places, 2306 of 27864 outside, worst 5 min · Imsak printed 10 min before Fajr
+**91.4% within 1 min** over the well-placed places, 2609 of 30444 outside, worst 6 min · Imsak printed 10 min before Fajr
 
 | | within | mean | worst | distribution (minutes, ours − theirs) |
 |---|---|---|---|---|
-| Fajr | 95.7% | -0.04 | 2 | -2: 175, -1: 1101, 0: 2119, +1: 1222, +2: 27 |
-| Sunrise | 72.0% | -0.14 | 3 | -3: 94, -2: 608, -1: 1211, 0: 1280, +1: 854, +2: 579, +3: 18 |
-| Dhuhr | 97.8% | -0.1 | 2 | -2: 104, -1: 1097, 0: 2587, +1: 856 |
-| Asr | 97.0% | -0.09 | 2 | -2: 130, -1: 1053, 0: 2554, +1: 898, +2: 9 |
-| Maghrib | 96.1% | +0.01 | 3 | -3: 18, -2: 133, -1: 857, 0: 2419, +1: 1188, +2: 29 |
-| Isha | 91.8% | +0.03 | 5 | -3: 27, -2: 160, -1: 1017, 0: 2350, +1: 895, +2: 26, +3: 66, +4: 101, +5: 2 |
+| Fajr | 93.8% | +0.12 | 6 | -2: 175, -1: 1101, 0: 2136, +1: 1521, +2: 55, +4: 9, +5: 72, +6: 5 |
+| Sunrise | 73.0% | -0.07 | 3 | -3: 94, -2: 608, -1: 1235, 0: 1431, +1: 1036, +2: 652, +3: 18 |
+| Dhuhr | 97.8% | -0.01 | 2 | -2: 104, -1: 1097, 0: 2647, +1: 1220, +2: 6 |
+| Asr | 96.8% | -0.02 | 2 | -2: 130, -1: 1057, 0: 2678, +1: 1179, +2: 30 |
+| Maghrib | 96.5% | +0.09 | 10 | -3: 18, -2: 133, -1: 890, 0: 2631, +1: 1342, +2: 29, +9: 21, +10: 10 |
+| Isha | 90.7% | +0.03 | 5 | -4: 51, -3: 61, -2: 161, -1: 1017, 0: 2382, +1: 1204, +2: 29, +3: 66, +4: 101, +5: 2 |
 
-**5 place(s) off by a constant at every date** — not the angles: our coordinates are not the authority's, or the authority gives that place its own margin (a horizon above or below the plain). Dhuhr says the longitude (4 min per degree); sunrise against Maghrib, the latitude or the height:
-
-| place | days | Fajr | Sunrise | Dhuhr | Asr | Maghrib | Isha |
-|---|---|---|---|---|---|---|---|
-| Gunung Jerai (KDH07) | 86 | +5 | +4 | +1 | 0 | -4 | -4 |
-| Genting Sempah (PHG05) | 86 | +1 | +4 | +1 | +1 | -2 | +1 |
-| Tanah Rata (PHG06) | 86 | +1 | +6 | +1 | +1 | -5 | +1 |
-| Bukit Larut (PRK07) | 86 | +1 | +5 | +1 | +1 | -4 | +1 |
-| Gunung Kinabalu (SBH06) | 86 | +1 | +8 | +1 | +1 | -7 | +1 |
-
-**Why this is raised:** 5 place(s) disagree by a constant at every date — coordinates or a per-place margin, not the angles.
+31 row(s) set aside as understood (tools/verify-methods/accepted.json).
 
 <details><summary>The rows furthest off</summary>
 
 | place | date | prayer | table | ours | diff |
 |---|---|---|---|---|---|
-| Kota Bharu (KTN01) | 2026-11-29 | Isha | 20:04 | 20:09 | +5 |
-| Kota Bharu (KTN01) | 2026-12-11 | Isha | 20:09 | 20:14 | +5 |
-| Kota Bharu (KTN01) | 2026-10-08 | Isha | 20:06 | 20:10 | +4 |
-| Kota Bharu (KTN01) | 2026-10-09 | Isha | 20:06 | 20:10 | +4 |
-| Kota Bharu (KTN01) | 2026-10-11 | Isha | 20:05 | 20:09 | +4 |
-| Kota Bharu (KTN01) | 2026-10-13 | Isha | 20:04 | 20:08 | +4 |
-| Kota Bharu (KTN01) | 2026-10-14 | Isha | 20:04 | 20:08 | +4 |
-| Kota Bharu (KTN01) | 2026-10-16 | Isha | 20:03 | 20:07 | +4 |
-| Kota Bharu (KTN01) | 2026-10-17 | Isha | 20:03 | 20:07 | +4 |
-| Kota Bharu (KTN01) | 2026-10-18 | Isha | 20:03 | 20:07 | +4 |
-| Kota Bharu (KTN01) | 2026-10-20 | Isha | 20:02 | 20:06 | +4 |
-| Kota Bharu (KTN01) | 2026-10-21 | Isha | 20:02 | 20:06 | +4 |
-| Kota Bharu (KTN01) | 2026-10-22 | Isha | 20:02 | 20:06 | +4 |
-| Kota Bharu (KTN01) | 2026-10-24 | Isha | 20:01 | 20:05 | +4 |
-| Kota Bharu (KTN01) | 2026-10-25 | Isha | 20:01 | 20:05 | +4 |
-| Kota Bharu (KTN01) | 2026-10-26 | Isha | 20:01 | 20:05 | +4 |
-| Kota Bharu (KTN01) | 2026-10-27 | Isha | 20:01 | 20:05 | +4 |
-| Kota Bharu (KTN01) | 2026-10-28 | Isha | 20:01 | 20:05 | +4 |
-| Gua Musang (KTN02) | 2026-10-30 | Isha | 20:03 | 20:07 | +4 |
-| Kota Bharu (KTN01) | 2026-10-31 | Isha | 20:00 | 20:04 | +4 |
-| Kota Bharu (KTN01) | 2026-11-01 | Isha | 20:00 | 20:04 | +4 |
-| Kota Bharu (KTN01) | 2026-11-02 | Isha | 20:00 | 20:04 | +4 |
-| Kota Bharu (KTN01) | 2026-11-03 | Isha | 20:00 | 20:04 | +4 |
-| Kota Bharu (KTN01) | 2026-11-04 | Isha | 20:00 | 20:04 | +4 |
-| Kota Bharu (KTN01) | 2026-11-05 | Isha | 20:00 | 20:04 | +4 |
+| Gunung Jerai (KDH07) | 2026-10-11 | Fajr | 05:51 | 05:57 | +6 |
+| Gunung Jerai (KDH07) | 2026-10-12 | Fajr | 05:51 | 05:57 | +6 |
+| Gunung Jerai (KDH07) | 2026-11-12 | Fajr | 05:50 | 05:56 | +6 |
+| Gunung Jerai (KDH07) | 2026-11-13 | Fajr | 05:50 | 05:56 | +6 |
+| Gunung Jerai (KDH07) | 2026-11-18 | Fajr | 05:51 | 05:57 | +6 |
+| Gunung Jerai (KDH07) | 2026-10-07 | Fajr | 05:52 | 05:57 | +5 |
+| Gunung Jerai (KDH07) | 2026-10-08 | Fajr | 05:52 | 05:57 | +5 |
+| Gunung Jerai (KDH07) | 2026-10-09 | Fajr | 05:52 | 05:57 | +5 |
+| Gunung Jerai (KDH07) | 2026-10-10 | Fajr | 05:52 | 05:57 | +5 |
+| Gunung Jerai (KDH07) | 2026-10-13 | Fajr | 05:51 | 05:56 | +5 |
+| Gunung Jerai (KDH07) | 2026-10-14 | Fajr | 05:51 | 05:56 | +5 |
+| Gunung Jerai (KDH07) | 2026-10-15 | Fajr | 05:51 | 05:56 | +5 |
+| Gunung Jerai (KDH07) | 2026-10-16 | Fajr | 05:51 | 05:56 | +5 |
+| Gunung Jerai (KDH07) | 2026-10-17 | Fajr | 05:51 | 05:56 | +5 |
+| Gunung Jerai (KDH07) | 2026-10-18 | Fajr | 05:51 | 05:56 | +5 |
+| Gunung Jerai (KDH07) | 2026-10-19 | Fajr | 05:51 | 05:56 | +5 |
+| Gunung Jerai (KDH07) | 2026-10-21 | Fajr | 05:50 | 05:55 | +5 |
+| Gunung Jerai (KDH07) | 2026-10-22 | Fajr | 05:50 | 05:55 | +5 |
+| Gunung Jerai (KDH07) | 2026-10-23 | Fajr | 05:50 | 05:55 | +5 |
+| Gunung Jerai (KDH07) | 2026-10-24 | Fajr | 05:50 | 05:55 | +5 |
+| Gunung Jerai (KDH07) | 2026-10-25 | Fajr | 05:50 | 05:55 | +5 |
+| Gunung Jerai (KDH07) | 2026-10-26 | Fajr | 05:50 | 05:55 | +5 |
+| Gunung Jerai (KDH07) | 2026-10-27 | Fajr | 05:50 | 05:55 | +5 |
+| Gunung Jerai (KDH07) | 2026-10-28 | Fajr | 05:50 | 05:55 | +5 |
+| Gunung Jerai (KDH07) | 2026-10-29 | Fajr | 05:50 | 05:55 | +5 |
 
 </details>
 
-### ❌ Indonesia — Kemenag
+### ✅ Indonesia — Kemenag
 
 Method 20 · 517 of 517 places · 44462 place-days (2026-10-07 → 2026-12-31) · table built 2026-10-14
 
-**94.1% within 1 min** over the well-placed places, 13484 of 230136 outside, worst 5 min · Imsak printed 10 min before Fajr
+**97.2% within 1 min** over the well-placed places, 7336 of 264192 outside, worst 7 min · Imsak printed 10 min before Fajr
 
 | | within | mean | worst | distribution (minutes, ours − theirs) |
 |---|---|---|---|---|
-| Fajr | 93.0% | +0.03 | 5 | -3: 154, -2: 1203, -1: 5218, 0: 24229, +1: 6208, +2: 1050, +3: 245, +4: 47, +5: 2 |
-| Sunrise | 92.9% | +0.14 | 4 | -3: 72, -2: 1013, -1: 4222, 0: 23346, +1: 8082, +2: 1328, +3: 242, +4: 51 |
-| Dhuhr | 94.8% | +0.02 | 3 | -3: 63, -2: 903, -1: 5658, 0: 24389, +1: 6296, +2: 997, +3: 50 |
-| Asr | 94.5% | +0.02 | 4 | -3: 66, -2: 963, -1: 5526, 0: 24415, +1: 6289, +2: 1003, +3: 91, +4: 3 |
-| Maghrib | 94.9% | +0.01 | 3 | -3: 113, -2: 818, -1: 6157, 0: 23922, +1: 6326, +2: 892, +3: 128 |
-| Isha | 94.8% | +0.02 | 4 | -3: 134, -2: 771, -1: 6138, 0: 23608, +1: 6623, +2: 950, +3: 131, +4: 1 |
+| Fajr | 95.4% | +0.08 | 7 | -3: 81, -2: 676, -1: 6333, 0: 28509, +1: 7177, +2: 726, +3: 14, +4: 141, +5: 243, +6: 122, +7: 10 |
+| Sunrise | 96.5% | +0.1 | 3 | -3: 33, -2: 536, -1: 5564, 0: 27659, +1: 9263, +2: 974, +3: 3 |
+| Dhuhr | 98.6% | +0.01 | 2 | -2: 300, -1: 6658, 0: 29631, +1: 7109, +2: 334 |
+| Asr | 98.2% | +0.02 | 3 | -3: 6, -2: 376, -1: 6562, 0: 29461, +1: 7225, +2: 402 |
+| Maghrib | 97.9% | +0.03 | 3 | -3: 39, -2: 401, -1: 6864, 0: 28279, +1: 7972, +2: 477 |
+| Isha | 96.7% | -0.04 | 5 | -5: 104, -4: 296, -3: 168, -2: 377, -1: 7199, 0: 28046, +1: 7345, +2: 497 |
 
-**71 place(s) off by a constant at every date** — not the angles: our coordinates are not the authority's, or the authority gives that place its own margin (a horizon above or below the plain). Dhuhr says the longitude (4 min per degree); sunrise against Maghrib, the latitude or the height:
-
-| place | days | Fajr | Sunrise | Dhuhr | Asr | Maghrib | Isha |
-|---|---|---|---|---|---|---|---|
-| KAB. MALUKU BARAT DAYA (Maluku) | 86 | +7 | +7 | +6 | +6 | +6 | +6 |
-| KAB. NIAS UTARA (Sumatera Utara) | 86 | +5 | +5 | +5 | +5 | +5 | +5 |
-| KAB. EMPAT LAWANG (Sumatera Selatan) | 86 | +4 | +4 | +4 | +4 | +4 | +4 |
-| KAB. MALINAU (Kalimantan Utara) | 86 | +2 | +2.5 | +4 | +4 | +5 | +5 |
-| KAB. KONAWE KEPULAUAN (Sulawesi Tenggara) | 86 | +3 | +4 | +4 | +4 | +4 | +4 |
-| KAB. YAPEN WAROPEN (Papua) | 86 | -4 | -4 | -4 | -4 | -3 | -3 |
-| KAB. KEPULAUAN MENTAWAI (Sumatera Barat) | 86 | +4 | +4 | +3 | +3 | +2 | +2 |
-| PEKAJANG KAB. LINGGA (Kepulauan Riau) | 86 | -5 | -5 | -3 | -3 | 0 | 0 |
-| KAB. KUTAI KARTANEGARA (Kalimantan Timur) | 86 | +4 | +4 | +3 | +3 | +2 | +2 |
-| KAB. HALMAHERA TENGAH (Maluku Utara) | 86 | -3 | -3 | -3 | -3 | -3 | -3 |
-| KAB. ASMAT (Papua) | 86 | -3 | -3 | -3 | -3 | -3 | -3 |
-| KAB. FAKFAK (Papua Barat) | 86 | -4 | -3.5 | -3 | -3 | -3 | -3 |
-| KAB. TAMBRAUW (Papua Barat) | 86 | -3 | -3 | -3 | -3 | -2 | -2 |
-| KAB. KEPULAUAN SELAYAR (Sulawesi Selatan) | 86 | -4 | -4 | -2 | -2 | 0 | 0 |
-| KAB. KARO (Sumatera Utara) | 86 | +1 | +5 | +1 | +1 | -3.5 | +1 |
-| KAB. SIMALUNGUN (Sumatera Utara) | 86 | +1 | +5 | +1 | +1 | -4 | 0 |
-| KAB. SOLOK (Sumatera Barat) | 86 | -1 | +4 | -1 | -1 | -5 | -1 |
-| KAB. KERINCI (Jambi) | 86 | -1 | +3 | -1 | -1 | -5 | -1 |
-| KAB. REJANG LEBONG (Bengkulu) | 86 | -1 | +4 | -1 | -1 | -5 | -1 |
-| KAB. LAMPUNG BARAT (Lampung) | 86 | -1 | +3 | -1 | -1 | -5 | -1 |
-| KAB. LEMBATA (Nusa Tenggara Timur) | 86 | -0.5 | +4 | -1 | 0 | -5 | -1 |
-| KAB. TIMOR TENGAH SELATAN (Nusa Tenggara Timur) | 86 | -1 | +4 | -1 | -1 | -5 | -1 |
-| KAB. TANA TORAJA (Sulawesi Selatan) | 86 | +1 | +5 | +1 | +1 | -4 | +1 |
-| KAB. DEIYAI (Papua) | 86 | -1 | +3 | -1 | -1 | -5 | 0 |
-| KAB. DOGIYAI (Papua) | 86 | +1 | +6 | +1 | +1 | -3 | +1 |
-| KAB. INTAN JAYA (Papua) | 86 | +6 | +6 | +1 | +1 | -3 | -3 |
-| KAB. TOLIKARA (Papua) | 86 | +1 | +5 | +1 | +1 | -4 | 0 |
-| KAB. YALIMO (Papua) | 86 | 0 | +4 | -1 | -1 | -5 | -1 |
-| KAB. PEGUNUNGAN ARFAK (Papua Barat) | 86 | +5 | +5 | +1 | +1 | -4 | -4 |
-| KAB. ACEH TENGAH (Aceh) | 86 | -1 | +4 | -0.5 | -1 | -5 | 0 |
-| KAB. BENER MERIAH (Aceh) | 86 | 0 | +4 | -0.5 | 0 | -5 | 0 |
-| KAB. GAYO LUES (Aceh) | 86 | 0 | +4 | 0 | 0 | -4 | 0 |
-| KAB. DAIRI (Sumatera Utara) | 86 | 0 | +4 | 0 | 0 | -4 | 0 |
-| KAB. HUMBANG HASUNDUTAN (Sumatera Utara) | 86 | 0 | +4 | 0 | 0 | -4 | 0 |
-| KAB. PAKPAK BHARAT (Sumatera Utara) | 86 | 0 | +4 | 0 | 0 | -4 | 0 |
-| KAB. SAMOSIR (Sumatera Utara) | 86 | 0 | +4 | 0 | 0 | -5 | 0 |
-| KAB. TAPANULI UTARA (Sumatera Utara) | 86 | 0 | +4 | 0 | 0 | -5 | 0 |
-| KAB. TOBA SAMOSIR (Sumatera Utara) | 86 | 0 | +4 | 0 | 0 | -4 | 0 |
-| KAB. SOLOK SELATAN (Sumatera Barat) | 86 | 0 | +4 | 0 | 0 | -4 | 0 |
-| KOTA BUKITTINGGI (Sumatera Barat) | 86 | 0 | +4 | 0 | 0 | -4 | 0 |
-| … and 31 more | | | | | | | |
-
-**Why this is raised:** 5.9% of times are more than 1 min from the table (allowed 5%) — the method; 71 place(s) disagree by a constant at every date — coordinates or a per-place margin, not the angles.
+2580 row(s) set aside as understood (tools/verify-methods/accepted.json).
 
 <details><summary>The rows furthest off</summary>
 
 | place | date | prayer | table | ours | diff |
 |---|---|---|---|---|---|
-| KAB. SERUYAN (Kalimantan Tengah) | 2026-12-20 | Fajr | 03:55 | 04:00 | +5 |
-| KAB. SERUYAN (Kalimantan Tengah) | 2026-12-24 | Fajr | 03:57 | 04:02 | +5 |
-| KAB. SERUYAN (Kalimantan Tengah) | 2026-10-09 | Asr | 14:25 | 14:29 | +4 |
-| KAB. SERUYAN (Kalimantan Tengah) | 2026-10-11 | Asr | 14:26 | 14:30 | +4 |
-| KAB. SERUYAN (Kalimantan Tengah) | 2026-10-14 | Asr | 14:27 | 14:31 | +4 |
-| KAB. SERUYAN (Kalimantan Tengah) | 2026-11-05 | Fajr | 03:48 | 03:52 | +4 |
-| KAB. SERUYAN (Kalimantan Tengah) | 2026-11-12 | Fajr | 03:47 | 03:51 | +4 |
-| KAB. SERUYAN (Kalimantan Tengah) | 2026-11-13 | Fajr | 03:47 | 03:51 | +4 |
-| KAB. SERUYAN (Kalimantan Tengah) | 2026-11-14 | Fajr | 03:47 | 03:51 | +4 |
-| KAB. SERUYAN (Kalimantan Tengah) | 2026-11-15 | Fajr | 03:47 | 03:51 | +4 |
-| KAB. SERUYAN (Kalimantan Tengah) | 2026-11-16 | Fajr | 03:47 | 03:51 | +4 |
-| KAB. SERUYAN (Kalimantan Tengah) | 2026-11-16 | Sunrise | 05:03 | 05:07 | +4 |
-| KAB. SERUYAN (Kalimantan Tengah) | 2026-11-17 | Fajr | 03:47 | 03:51 | +4 |
-| KAB. SERUYAN (Kalimantan Tengah) | 2026-11-17 | Sunrise | 05:03 | 05:07 | +4 |
-| KAB. SERUYAN (Kalimantan Tengah) | 2026-11-18 | Fajr | 03:47 | 03:51 | +4 |
-| KAB. SERUYAN (Kalimantan Tengah) | 2026-11-18 | Sunrise | 05:03 | 05:07 | +4 |
-| KAB. SERUYAN (Kalimantan Tengah) | 2026-11-19 | Fajr | 03:47 | 03:51 | +4 |
-| KAB. SERUYAN (Kalimantan Tengah) | 2026-11-20 | Fajr | 03:47 | 03:51 | +4 |
-| KAB. SERUYAN (Kalimantan Tengah) | 2026-11-21 | Fajr | 03:47 | 03:51 | +4 |
-| KAB. SERUYAN (Kalimantan Tengah) | 2026-11-22 | Fajr | 03:47 | 03:51 | +4 |
-| KAB. SERUYAN (Kalimantan Tengah) | 2026-11-22 | Sunrise | 05:04 | 05:08 | +4 |
-| KAB. SERUYAN (Kalimantan Tengah) | 2026-11-23 | Fajr | 03:47 | 03:51 | +4 |
-| KAB. SERUYAN (Kalimantan Tengah) | 2026-11-23 | Sunrise | 05:04 | 05:08 | +4 |
-| KAB. SERUYAN (Kalimantan Tengah) | 2026-11-24 | Sunrise | 05:04 | 05:08 | +4 |
-| KAB. KUTAI TIMUR (Kalimantan Timur) | 2026-11-25 | Sunrise | 05:50 | 05:54 | +4 |
+| KAB. INTAN JAYA (Papua) | 2026-11-23 | Fajr | 04:04 | 04:11 | +7 |
+| KAB. INTAN JAYA (Papua) | 2026-11-30 | Fajr | 04:05 | 04:12 | +7 |
+| KAB. INTAN JAYA (Papua) | 2026-12-08 | Fajr | 04:07 | 04:14 | +7 |
+| KAB. INTAN JAYA (Papua) | 2026-12-11 | Fajr | 04:08 | 04:15 | +7 |
+| KAB. INTAN JAYA (Papua) | 2026-12-16 | Fajr | 04:10 | 04:17 | +7 |
+| KAB. INTAN JAYA (Papua) | 2026-12-18 | Fajr | 04:11 | 04:18 | +7 |
+| KAB. INTAN JAYA (Papua) | 2026-12-20 | Fajr | 04:12 | 04:19 | +7 |
+| KAB. INTAN JAYA (Papua) | 2026-12-26 | Fajr | 04:15 | 04:22 | +7 |
+| KAB. INTAN JAYA (Papua) | 2026-12-28 | Fajr | 04:16 | 04:23 | +7 |
+| KAB. INTAN JAYA (Papua) | 2026-12-30 | Fajr | 04:17 | 04:24 | +7 |
+| KAB. INTAN JAYA (Papua) | 2026-10-07 | Fajr | 04:16 | 04:22 | +6 |
+| KAB. INTAN JAYA (Papua) | 2026-10-09 | Fajr | 04:15 | 04:21 | +6 |
+| KAB. INTAN JAYA (Papua) | 2026-10-11 | Fajr | 04:14 | 04:20 | +6 |
+| KAB. INTAN JAYA (Papua) | 2026-10-12 | Fajr | 04:14 | 04:20 | +6 |
+| KAB. INTAN JAYA (Papua) | 2026-10-14 | Fajr | 04:13 | 04:19 | +6 |
+| KAB. INTAN JAYA (Papua) | 2026-10-16 | Fajr | 04:12 | 04:18 | +6 |
+| KAB. INTAN JAYA (Papua) | 2026-10-19 | Fajr | 04:11 | 04:17 | +6 |
+| KAB. INTAN JAYA (Papua) | 2026-10-21 | Fajr | 04:10 | 04:16 | +6 |
+| KAB. INTAN JAYA (Papua) | 2026-10-22 | Fajr | 04:10 | 04:16 | +6 |
+| KAB. PEGUNUNGAN ARFAK (Papua Barat) | 2026-10-23 | Fajr | 04:24 | 04:30 | +6 |
+| KAB. INTAN JAYA (Papua) | 2026-10-24 | Fajr | 04:09 | 04:15 | +6 |
+| KAB. INTAN JAYA (Papua) | 2026-10-25 | Fajr | 04:09 | 04:15 | +6 |
+| KAB. INTAN JAYA (Papua) | 2026-10-27 | Fajr | 04:08 | 04:14 | +6 |
+| KAB. PEGUNUNGAN ARFAK (Papua Barat) | 2026-10-27 | Fajr | 04:23 | 04:29 | +6 |
+| KAB. INTAN JAYA (Papua) | 2026-10-28 | Fajr | 04:08 | 04:14 | +6 |
 
 </details>
 

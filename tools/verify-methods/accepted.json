@@ -1,1 +1,41 @@
-[]
+[
+  {
+    "authority": "kemenag",
+    "place": "KAB. NIAS UTARA (Sumatera Utara)",
+    "note": "The ministry computes Nias Utara about 1.25° east of the regency, on the Sumatran mainland; our point stays at Lotu so a reader on Nias is matched to Nias. Its table is served 1:1 regardless."
+  },
+  {
+    "authority": "kemenag",
+    "place": "KAB. EMPAT LAWANG (Sumatera Selatan)",
+    "note": "The ministry computes Empat Lawang about 1° east of Tebing Tinggi; our point stays at the seat for the same reason."
+  },
+  {
+    "authority": "habous",
+    "place": "إيكس",
+    "note": "The ministry's sunrise and Maghrib for إيكس are eight to nine minutes wider than any height at its coordinates explains; its table is served as published, and the stand-in is left at the plain until the city is placed properly."
+  },
+  {
+    "authority": "jakim",
+    "place": "Gunung Kinabalu (SBH06)",
+    "prayer": "Maghrib",
+    "from": "2026-12-01",
+    "to": "2026-12-31",
+    "maxAbs": 11,
+    "note": "JAKIM's December 2026 table drops the summit's allowance for Maghrib alone: 18:05 on 30 November, 17:57 on 1 December, while sunrise keeps it. Theirs; served as published."
+  },
+  {
+    "authority": "kemenag",
+    "place": "PEKAJANG KAB. LINGGA (Kepulauan Riau)",
+    "note": "Pekajang is an island the ministry lists apart from Lingga; its table is two to three minutes narrower than the point explains at every date — an allowance of its own. Served as published."
+  },
+  {
+    "authority": "kemenag",
+    "place": "KAB. GRESIK (Jawa Timur)",
+    "note": "The ministry's Gresik is two minutes narrower at every edge of the day, Fajr and Isha included — not a height. Served as published."
+  },
+  {
+    "authority": "kemenag",
+    "place": "KAB. KEPULAUAN SELAYAR (Sulawesi Selatan)",
+    "note": "Selayar's table is two minutes narrower at sunrise and Maghrib at every date; an allowance of the ministry's own. Served as published."
+  }
+]
