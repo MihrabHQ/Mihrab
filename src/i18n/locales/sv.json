@@ -516,6 +516,10 @@
     "marw": {
       "name": "Algeriet",
       "desc": "Tiderna som Ministeriet för religiösa frågor och waqf publicerar för listade algeriska städer; din plats matchas mot närmaste stad i listan."
+    },
+    "namazvakti": {
+      "name": "Türkiye Takvimi (namazvakti.com)",
+      "desc": "Den försiktiga turkiska kalendern — fajr vid 19°, isha vid 17°, en säkerhetsmarginal (temkin) på varje tid — som namazvakti.com publicerar den för närmaste av sina städer i hela världen."
     }
   },
   "compass": {
@@ -1830,7 +1834,8 @@
     "serverAlgeria": "Algeriet · marw.dz",
     "inUse": "används",
     "habousWindow": "Ministeriet publicerar bara den pågående hijrimånaden, så fönstret krymper med en dag varje dag och fylls på när månaden vänder. En ombyggnad gör det inte längre.",
-    "marwWindow": "Ministeriet publicerar ett hijriår i taget, som en uppdatering av sin egen app. Fönstret räcker till årets slut och förnyas när nästa år kommer, runt juni."
+    "marwWindow": "Ministeriet publicerar ett hijriår i taget, som en uppdatering av sin egen app. Fönstret räcker till årets slut och förnyas när nästa år kommer, runt juni.",
+    "sourceNamazvakti": "namazvakti.com"
   },
   "log": {
     "legendPrayers": "0 → 5 böner",

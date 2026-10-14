@@ -18,6 +18,7 @@ export type PrayerDataProviderId =
   | 'islamiska_forbundet'
   | 'habous'
   | 'marw'
+  | 'namazvakti'
   | 'local_adhan';
 
 /**

@@ -1,0 +1,104 @@
+name: namazvakti.com city index
+
+# Keeps the index of namazvakti.com's cities that the app finds its nearest
+# Türkiye Takvimi city in (tools/namazvakti-dataset). Not the times — the
+# phone fetches its own city's year from the site — but every city's
+# coordinates, in 5° tiles under data/prayer-times/namazvakti/v1.
+#
+# The first pass is ~100,000 polite requests, so it runs DAILY and carries
+# on where the last run stopped; once the index is complete a run is the
+# monthly re-read of the lists and the few new cities in them. Emails on
+# failure (the site down, the lists changed shape, or the push failing).
+#
+# Same mail secrets as the IFiS job (MAIL_SERVER, MAIL_PORT, MAIL_USERNAME,
+# MAIL_PASSWORD); without them only the email step is skipped.
+
+on:
+  schedule:
+    - cron: '37 1 * * *' # every day 01:37 UTC
+  workflow_dispatch:
+    inputs:
+      max_requests:
+        description: 'Per-run request budget'
+        required: false
+        default: '30000'
+      wall_minutes:
+        description: 'Per-run wall-clock budget in minutes (the job stops at 330)'
+        required: false
+        default: '300'
+
+concurrency:
+  group: namazvakti-dataset
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build city index
+        id: build
+        env:
+          NV_MAX_REQUESTS: ${{ github.event.inputs.max_requests || '30000' }}
+          NV_MAX_WALL_MIN: ${{ github.event.inputs.wall_minutes || '300' }}
+        run: npx --yes tsx@4 tools/namazvakti-dataset/build.ts
+
+      - name: Commit refreshed index
+        if: always() # keep whatever progress the run made, even if it stopped early
+        run: |
+          git config user.name 'mihrab-dataset-bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add data/prayer-times/namazvakti 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo 'No index changes to commit.'
+            exit 0
+          fi
+          git commit -m "data: namazvakti.com city index ($(date -u +%F), ${{ steps.build.outputs.located || '?' }}/${{ steps.build.outputs.cities || '?' }} located)"
+          for attempt in 1 2 3; do
+            if git push; then
+              echo "Pushed on attempt ${attempt}."
+              exit 0
+            fi
+            echo "Push rejected (attempt ${attempt}) — rebasing onto latest main."
+            git pull --rebase -X theirs origin main || git rebase --abort || true
+            sleep 3
+          done
+          echo 'Failed to push the index after 3 attempts.'
+          exit 1
+
+      - name: Email on failure
+        if: failure() && env.MAIL_SERVER != ''
+        env:
+          MAIL_SERVER: ${{ secrets.MAIL_SERVER }}
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.MAIL_SERVER }}
+          server_port: ${{ secrets.MAIL_PORT }}
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          from: Mihrab Dataset Bot <${{ secrets.MAIL_USERNAME }}>
+          to: mihrab@elghamri.se
+          subject: '[Mihrab] namazvakti.com city index job FAILED'
+          body: |
+            The namazvakti.com city-index run FAILED.
+
+            Usually one of:
+              • namazvakti.com is down or refusing (most requests failed),
+              • its country / state / city lists changed shape (too few
+                countries parsed), or
+              • the commit/push step failed.
+
+            Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            Phones keep the tiles they have and fetch their city's year from
+            the site directly, so nothing breaks at once; only new cities and
+            not-yet-located ones wait for the index.

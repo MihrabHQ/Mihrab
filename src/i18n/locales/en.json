@@ -516,6 +516,10 @@
     "marw": {
       "name": "Algeria",
       "desc": "The Ministry of Religious Affairs and Wakfs’ published times for listed Algerian cities; your location is matched to the nearest city in the list."
+    },
+    "namazvakti": {
+      "name": "Türkiye Takvimi (namazvakti.com)",
+      "desc": "The cautious Turkish calendar — Fajr at 19°, Isha at 17°, a safety margin (temkin) on every time — as namazvakti.com publishes it for the nearest of its cities worldwide."
     }
   },
   "compass": {
@@ -1830,7 +1834,8 @@
     "serverAlgeria": "Algeria · marw.dz",
     "inUse": "in use",
     "habousWindow": "The ministry publishes only the current Hijri month, so this window shrinks by a day each day and refills when the month turns. A rebuild cannot make it longer.",
-    "marwWindow": "The ministry publishes a Hijri year at a time, as an update to its own app. This window runs to the end of that year and is renewed when the next one appears, around June."
+    "marwWindow": "The ministry publishes a Hijri year at a time, as an update to its own app. This window runs to the end of that year and is renewed when the next one appears, around June.",
+    "sourceNamazvakti": "namazvakti.com"
   },
   "log": {
     "legendPrayers": "0 → 5 prayers",

@@ -8,7 +8,10 @@ export function providerHidesCalculationMethod(
     id === 'prayertimes_dev' ||
     id === 'islamiska_forbundet' ||
     id === 'habous' ||
-    id === 'marw'
+    id === 'marw' ||
+    // The calendar is its own method; the Hanafi Asr toggle still applies
+    // (it picks the calendar's Asr-ı sânî).
+    id === 'namazvakti'
   );
 }
 

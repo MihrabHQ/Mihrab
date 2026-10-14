@@ -49,6 +49,7 @@ import { deviceUtcOffsetMinutes } from '../utils/utcOffset';
 import { dropStoredMonths } from './prayerStorage';
 import { refetchHabousDatasetNow } from '../providers/habousDataset';
 import { refetchMarwDatasetNow } from '../providers/marwDataset';
+import { refetchNamazvaktiNow } from '../providers/namazvakti';
 import { refetchIslamiskaForbundetDatasetNow } from '../providers/islamiskaForbundetDataset';
 
 export { deviceUtcOffsetMinutes };
@@ -209,6 +210,10 @@ export async function refetchDatasetFor(params: {
   }
   if (params.provider === 'marw') {
     await refetchMarwDatasetNow(params.latitude, params.longitude);
+    return;
+  }
+  if (params.provider === 'namazvakti') {
+    await refetchNamazvaktiNow(params.latitude, params.longitude);
     return;
   }
   if (params.provider === 'islamiska_forbundet') {

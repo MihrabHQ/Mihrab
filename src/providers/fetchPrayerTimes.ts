@@ -5,6 +5,7 @@ import { fetchIslamiskaForbundetTimes } from './islamiskaForbundet';
 import { getIslamiskaForbundetDatasetTimes } from './islamiskaForbundetDataset';
 import { getHabousDatasetTimes } from './habousDataset';
 import { getMarwDatasetTimes } from './marwDataset';
+import { computeNamazvaktiMethodTimes, getNamazvaktiTimes } from './namazvakti';
 import { computeLocalAdhanTimes } from './localAdhan';
 import { autoMethodForCoords } from './autoMethod';
 import { ALGERIA_METHOD_ID } from './algeriaCities';
@@ -197,6 +198,32 @@ export async function fetchPrayerTimesUnified(
         }),
         source: 'local',
       };
+      validateTimingShape(local.timings);
+      return local;
+    }
+    case 'namazvakti': {
+      // namazvakti.com's published year for the nearest of its cities
+      // (fetched once a year and kept). Without one — offline before the
+      // first fetch, a date past the year the site serves, nowhere near a
+      // listed city — the calendar's own method is computed on the phone.
+      // AlAdhan is never asked: it has no method that is this calendar.
+      try {
+        result = await getNamazvaktiTimes({
+          latitude: p.latitude,
+          longitude: p.longitude,
+          date: p.date,
+          school: p.school,
+        });
+        break;
+      } catch {
+        /* no published day — compute the method below */
+      }
+      const local = computeNamazvaktiMethodTimes({
+        latitude: p.latitude,
+        longitude: p.longitude,
+        date: p.date,
+        school: p.school,
+      });
       validateTimingShape(local.timings);
       return local;
     }

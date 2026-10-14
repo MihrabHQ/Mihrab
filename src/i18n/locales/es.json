@@ -517,6 +517,10 @@
     "marw": {
       "name": "Argelia",
       "desc": "Los horarios que publica el Ministerio de Asuntos Religiosos y Wakfs para las ciudades argelinas de la lista; tu ubicación se asigna a la ciudad más cercana de la lista."
+    },
+    "namazvakti": {
+      "name": "Türkiye Takvimi (namazvakti.com)",
+      "desc": "El calendario turco más prudente — Fajr a 19°, Isha a 17°, un margen de seguridad (temkin) en cada hora — tal como namazvakti.com lo publica para la más cercana de sus ciudades en todo el mundo."
     }
   },
   "compass": {
@@ -1831,7 +1835,8 @@
     "serverAlgeria": "Argelia · marw.dz",
     "inUse": "en uso",
     "habousWindow": "El ministerio solo publica el mes hiyrí en curso, así que esta ventana se acorta un día cada día y vuelve a llenarse al cambiar de mes. Reconstruirla no la alarga.",
-    "marwWindow": "El ministerio publica un año hiyrí cada vez, como actualización de su propia app. Esta ventana llega hasta el final de ese año y se renueva cuando aparece el siguiente, hacia junio."
+    "marwWindow": "El ministerio publica un año hiyrí cada vez, como actualización de su propia app. Esta ventana llega hasta el final de ese año y se renueva cuando aparece el siguiente, hacia junio.",
+    "sourceNamazvakti": "namazvakti.com"
   },
   "log": {
     "legendPrayers": "0 → 5 oraciones",

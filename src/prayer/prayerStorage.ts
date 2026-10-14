@@ -3,6 +3,7 @@ import { fetchPrayerTimesUnified } from '../providers/fetchPrayerTimes';
 import { getIslamiskaForbundetDatasetTimes } from '../providers/islamiskaForbundetDataset';
 import { getHabousDatasetTimes } from '../providers/habousDataset';
 import { getMarwDatasetTimes } from '../providers/marwDataset';
+import { getNamazvaktiTimes } from '../providers/namazvakti';
 import { computeLocalAdhanTimes } from '../providers/localAdhan';
 import type { PrayerTimesResult } from '../providers/types';
 import { recordDataSource } from './dataStatus';
@@ -509,20 +510,27 @@ function hasPreparedDataset(provider: PrayerDataProviderId): boolean {
   return (
     provider === 'islamiska_forbundet' ||
     provider === 'habous' ||
-    provider === 'marw'
+    provider === 'marw' ||
+    // Not a dataset of times but the same arrangement: a published year
+    // held on the phone that overtakes any day cached from a fallback.
+    provider === 'namazvakti'
   );
 }
 
 /** That provider's dataset answer for one day (throws on a miss). */
 function datasetTimesFor(
   provider: PrayerDataProviderId,
-  params: { latitude: number; longitude: number; date: Date },
+  params: { latitude: number; longitude: number; date: Date; school: number },
+  offline = false,
 ) {
   const q = {
     latitude: params.latitude,
     longitude: params.longitude,
     date: params.date,
   };
+  if (provider === 'namazvakti') {
+    return getNamazvaktiTimes({ ...q, school: params.school, offline });
+  }
   if (provider === 'habous') return getHabousDatasetTimes(q);
   if (provider === 'marw') return getMarwDatasetTimes(q);
   return getIslamiskaForbundetDatasetTimes(q);
@@ -540,7 +548,7 @@ export async function getDatasetPrayerTimesOrNull(
 ): Promise<TimingsMap | null> {
   if (!hasPreparedDataset(params.provider)) return null;
   try {
-    const ds = await datasetTimesFor(params.provider, params);
+    const ds = await datasetTimesFor(params.provider, params, true);
     return ds.timings;
   } catch {
     /* dataset miss — the cache may still have it */

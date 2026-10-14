@@ -516,6 +516,10 @@
     "marw": {
       "name": "阿尔及利亚",
       "desc": "宗教事务和瓦克夫部为所列阿尔及利亚城市公布的时间；您的位置将匹配到列表中最近的城市。"
+    },
+    "namazvakti": {
+      "name": "Türkiye Takvimi (namazvakti.com)",
+      "desc": "更为谨慎的土耳其历 — 晨礼 19°、宵礼 17°，每个时间均加安全余量（temkin）— 按 namazvakti.com 为全球最近城市发布的时间。"
     }
   },
   "compass": {
@@ -1830,7 +1834,8 @@
     "serverAlgeria": "阿尔及利亚 · marw.dz",
     "inUse": "使用中",
     "habousWindow": "该部只公布当前的希吉来月，因此这一区间每天缩短一天，并在月份更替时重新填满。重新构建并不能让它更长。",
-    "marwWindow": "该部每次发布一个希吉来年，作为其官方应用的更新。这一区间持续到该年年底，并在下一年发布时（约在六月）更新。"
+    "marwWindow": "该部每次发布一个希吉来年，作为其官方应用的更新。这一区间持续到该年年底，并在下一年发布时（约在六月）更新。",
+    "sourceNamazvakti": "namazvakti.com"
   },
   "log": {
     "legendPrayers": "0 → 5 次礼拜",

@@ -127,6 +127,39 @@ export function nextMarwServerRunAfter(from: Date = new Date()): Date {
   return d;
 }
 
+// ── NAMAZVAKTI.COM (TÜRKİYE TAKVİMİ) ─────────────────────────────────
+//
+// Not a mirror of the times, like the three above, but an index of the
+// site's ~100,000 cities (`tools/namazvakti-dataset`), in 5° tiles: the
+// phone reads its tile from here, picks the nearest city, and fetches that
+// city's year from the site itself. See `providers/namazvakti.ts`.
+
+export const NAMAZVAKTI_DATASET_BASE_URL =
+  'https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/data/prayer-times/namazvakti/v1';
+
+/** The site the year files come from. */
+export const NAMAZVAKTI_ORIGIN = 'https://www.namazvakti.com';
+
+/** How long a tile of the city index is kept before it is read again. */
+export const NAMAZVAKTI_TILE_TTL_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
+
+/**
+ * Past this, a held year is fetched again in the background, in case the
+ * site has corrected it. The calendar is published a year at a time.
+ */
+export const NAMAZVAKTI_REFETCH_AFTER_MS = 45 * 24 * 60 * 60 * 1000; // 45 days
+
+/** After a failed fetch — or one that did not have the day — the site is not asked again for this long. */
+export const NAMAZVAKTI_RETRY_AFTER_MS = 6 * 60 * 60 * 1000; // 6 hours
+
+/**
+ * The furthest a reader may be from the site's nearest city and still be
+ * given its times. The site lists towns down to a few thousand people, so
+ * a reader further than this is somewhere it does not cover; the calendar's
+ * method is then computed for their own coordinates.
+ */
+export const NAMAZVAKTI_MAX_CITY_KM = 75;
+
 // ── HIJRI CORRECTIONS ─────────────────────────────────────────────────
 //
 // Announced Hijri month starts that replace the app's calendar tables —

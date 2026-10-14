@@ -516,6 +516,10 @@
     "marw": {
       "name": "Cezayir",
       "desc": "Din İşleri ve Vakıflar Bakanlığı'nın listelenen Cezayir şehirleri için yayımladığı vakitler; konumunuz listedeki en yakın şehirle eşleştirilir."
+    },
+    "namazvakti": {
+      "name": "Türkiye Takvimi (namazvakti.com)",
+      "desc": "İhtiyatlı Türkiye Takvimi — imsak 19°, yatsı 17°, her vakte temkin — namazvakti.com’un dünya genelinde en yakın şehri için yayınladığı haliyle."
     }
   },
   "compass": {
@@ -1830,7 +1834,8 @@
     "serverAlgeria": "Cezayir · marw.dz",
     "inUse": "kullanımda",
     "habousWindow": "Bakanlık yalnızca içinde bulunulan hicri ayı yayımlar; bu pencere her gün bir gün kısalır ve ay dönünce yeniden dolar. Yeniden derleme onu uzatmaz.",
-    "marwWindow": "Bakanlık her seferinde bir hicri yılı, kendi uygulamasının güncellemesi olarak yayımlar. Bu pencere o yılın sonuna kadar uzanır ve bir sonraki yıl yayımlandığında, Haziran civarında, yenilenir."
+    "marwWindow": "Bakanlık her seferinde bir hicri yılı, kendi uygulamasının güncellemesi olarak yayımlar. Bu pencere o yılın sonuna kadar uzanır ve bir sonraki yıl yayımlandığında, Haziran civarında, yenilenir.",
+    "sourceNamazvakti": "namazvakti.com"
   },
   "log": {
     "legendPrayers": "0 → 5 namaz",

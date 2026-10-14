@@ -88,6 +88,8 @@ const STAYS: Record<string, string> = {
   'prayerapp.providerHealth.v1': 'describes this phone — which host failed here',
   'islamiska_forbundet.reverse.v1': 'derived cache, and holds coordinates',
   'ifis.dataset.v1.city.': 'derived — a per-city timetable cache',
+  'namazvakti.tile.v1.': 'derived — a cached city-index tile',
+  'namazvakti.city.v1.': 'derived — a per-city yearly timetable cache',
   'habous.dataset.v1.city.':
     'derived — the ministry’s published timetable for one city, re-downloadable',
   'hijri.overrides.v1':

@@ -189,6 +189,8 @@ function DataStatsPanelImpl() {
         return t('dataStats.sourceSeed');
       case 'scrape':
         return t('dataStats.sourceScrape');
+      case 'namazvakti':
+        return t('dataStats.sourceNamazvakti');
       case 'aladhan':
         return t('dataStats.sourceAladhan');
       case 'local':

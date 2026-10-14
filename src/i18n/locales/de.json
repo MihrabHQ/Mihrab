@@ -516,6 +516,10 @@
     "marw": {
       "name": "Algerien",
       "desc": "Die vom Ministerium für religiöse Angelegenheiten und Wakf veröffentlichten Zeiten für gelistete algerische Städte; dein Standort wird der nächstgelegenen Stadt zugeordnet."
+    },
+    "namazvakti": {
+      "name": "Türkiye Takvimi (namazvakti.com)",
+      "desc": "Der vorsichtige türkische Kalender — Fadschr bei 19°, Ischa bei 17°, ein Sicherheitszuschlag (Temkin) auf jede Zeit — so wie namazvakti.com ihn für die nächstgelegene seiner Städte weltweit veröffentlicht."
     }
   },
   "compass": {
@@ -1830,7 +1834,8 @@
     "serverAlgeria": "Algerien · marw.dz",
     "inUse": "aktiv",
     "habousWindow": "Das Ministerium veröffentlicht nur den laufenden Hidschri-Monat: Dieses Fenster schrumpft täglich um einen Tag und füllt sich beim Monatswechsel wieder. Ein Neuaufbau verlängert es nicht.",
-    "marwWindow": "Das Ministerium veröffentlicht jeweils ein Hidschri-Jahr, als Update seiner eigenen App. Dieses Fenster reicht bis zum Ende dieses Jahres und wird erneuert, wenn das nächste erscheint, etwa im Juni."
+    "marwWindow": "Das Ministerium veröffentlicht jeweils ein Hidschri-Jahr, als Update seiner eigenen App. Dieses Fenster reicht bis zum Ende dieses Jahres und wird erneuert, wenn das nächste erscheint, etwa im Juni.",
+    "sourceNamazvakti": "namazvakti.com"
   },
   "log": {
     "legendPrayers": "0 → 5 Gebete",

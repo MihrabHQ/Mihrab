@@ -32,6 +32,14 @@ export const MAINSTREAM_PRAYER_PROVIDERS: ProviderOption[] = [
     descriptionKey: 'providers.prayertimes_dev.desc',
   },
   {
+    id: 'namazvakti',
+    name: 'Türkiye Takvimi (namazvakti.com)',
+    description:
+      'The cautious Turkish calendar — Fajr at 19°, Isha at 17°, a safety margin (temkin) on every time — as namazvakti.com publishes it for the nearest of its cities worldwide.',
+    nameKey: 'providers.namazvakti.name',
+    descriptionKey: 'providers.namazvakti.desc',
+  },
+  {
     id: 'local_adhan',
     name: 'On-device (Adhan JS)',
     description:

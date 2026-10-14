@@ -517,6 +517,10 @@
     "marw": {
       "name": "Algérie",
       "desc": "Les horaires publiés par le ministère des Affaires religieuses et des Wakfs pour les villes algériennes listées ; votre position est associée à la ville la plus proche de la liste."
+    },
+    "namazvakti": {
+      "name": "Türkiye Takvimi (namazvakti.com)",
+      "desc": "Le calendrier turc le plus prudent — Fajr à 19°, Isha à 17°, une marge de sécurité (temkin) sur chaque heure — tel que namazvakti.com le publie pour la plus proche de ses villes dans le monde."
     }
   },
   "compass": {
@@ -1831,7 +1835,8 @@
     "serverAlgeria": "Algérie · marw.dz",
     "inUse": "utilisé",
     "habousWindow": "Le ministère ne publie que le mois hégirien en cours : cette fenêtre perd un jour par jour et se remplit de nouveau au changement de mois. Une reconstruction ne l’allonge pas.",
-    "marwWindow": "Le ministère publie une année hégirienne à la fois, sous forme de mise à jour de sa propre application. Cette fenêtre court jusqu’à la fin de cette année et se renouvelle à la parution de la suivante, vers juin."
+    "marwWindow": "Le ministère publie une année hégirienne à la fois, sous forme de mise à jour de sa propre application. Cette fenêtre court jusqu’à la fin de cette année et se renouvelle à la parution de la suivante, vers juin.",
+    "sourceNamazvakti": "namazvakti.com"
   },
   "log": {
     "legendPrayers": "0 → 5 prières",
