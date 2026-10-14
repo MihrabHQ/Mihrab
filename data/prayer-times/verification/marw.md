@@ -2,45 +2,45 @@
 
 Method 19 · 68 of 68 places · 16864 place-days (2026-10-01 → 2027-06-05) · table built 2026-10-08
 
-**99.7% within 1 min** over the well-placed places, 274 of 101184 outside, worst 2 min · Imsak printed 10 min before Fajr
+**99.4% within 0 min** over the well-placed places, 642 of 101184 outside, worst 1 min · Imsak printed 10 min before Fajr
 
 | | within | mean | worst | distribution (minutes, ours − theirs) |
 |---|---|---|---|---|
-| Fajr | 100.0% | -0.48 | 1 | -1: 8105, 0: 8759 |
-| Sunrise | 100.0% | -0.48 | 1 | -1: 8032, 0: 8832 |
-| Dhuhr | 100.0% | -0.48 | 1 | -1: 8016, 0: 8848 |
-| Asr | 98.4% | -0.3 | 2 | -2: 274, -1: 5183, 0: 10719, +1: 688 |
-| Maghrib | 100.0% | -0.47 | 1 | -1: 7937, 0: 8927 |
-| Isha | 100.0% | -0.45 | 1 | -1: 7641, 0: 9223 |
+| Fajr | 99.3% | 0 | 1 | -1: 50, 0: 16743, +1: 71 |
+| Sunrise | 99.5% | 0 | 1 | -1: 21, 0: 16780, +1: 63 |
+| Dhuhr | 99.3% | 0 | 1 | -1: 51, 0: 16748, +1: 65 |
+| Asr | 99.3% | 0 | 1 | -1: 33, 0: 16754, +1: 77 |
+| Maghrib | 99.3% | 0 | 1 | -1: 75, 0: 16752, +1: 37 |
+| Isha | 99.4% | 0 | 1 | -1: 52, 0: 16765, +1: 47 |
 
 <details><summary>The rows furthest off</summary>
 
 | place | date | prayer | table | ours | diff |
 |---|---|---|---|---|---|
-| Hassi R'mel | 2026-10-01 | Asr | 16:00 | 15:58 | -2 |
-| Ben Badis | 2026-10-01 | Asr | 16:16 | 16:14 | -2 |
-| Algiers | 2026-10-01 | Asr | 15:59 | 15:57 | -2 |
-| Bouira | 2026-10-01 | Asr | 15:56 | 15:54 | -2 |
-| Bejaia | 2026-10-01 | Asr | 15:51 | 15:49 | -2 |
-| Setif | 2026-10-01 | Asr | 15:50 | 15:48 | -2 |
-| Constantine | 2026-10-01 | Asr | 15:45 | 15:43 | -2 |
-| El Tarf | 2026-10-01 | Asr | 15:38 | 15:36 | -2 |
-| Tindouf | 2026-10-01 | Asr | 16:47 | 16:45 | -2 |
-| Touggourt | 2026-10-02 | Asr | 15:48 | 15:46 | -2 |
-| Ben Badis | 2026-10-02 | Asr | 16:15 | 16:13 | -2 |
-| Algiers | 2026-10-02 | Asr | 15:58 | 15:56 | -2 |
-| Bouira | 2026-10-02 | Asr | 15:55 | 15:53 | -2 |
-| Tizi Ouzou | 2026-10-02 | Asr | 15:54 | 15:52 | -2 |
-| Bejaia | 2026-10-02 | Asr | 15:50 | 15:48 | -2 |
-| Setif | 2026-10-02 | Asr | 15:49 | 15:47 | -2 |
-| Constantine | 2026-10-02 | Asr | 15:44 | 15:42 | -2 |
-| El Tarf | 2026-10-02 | Asr | 15:37 | 15:35 | -2 |
-| Illizi | 2026-10-02 | Asr | 15:40 | 15:38 | -2 |
-| Djanet | 2026-10-02 | Asr | 15:36 | 15:34 | -2 |
-| Touggourt | 2026-10-03 | Asr | 15:47 | 15:45 | -2 |
-| Ben Badis | 2026-10-03 | Asr | 16:14 | 16:12 | -2 |
-| Algiers | 2026-10-03 | Asr | 15:57 | 15:55 | -2 |
-| Blida | 2026-10-03 | Asr | 15:58 | 15:56 | -2 |
-| Tizi Ouzou | 2026-10-03 | Asr | 15:53 | 15:51 | -2 |
+| Dellys | 2026-10-01 | Maghrib | 18:32 | 18:31 | -1 |
+| Bordj Bou Arreridj | 2026-10-01 | Isha | 19:45 | 19:46 | +1 |
+| Jijel | 2026-10-01 | Sunrise | 06:32 | 06:33 | +1 |
+| Reggane | 2026-10-01 | Dhuhr | 12:50 | 12:49 | -1 |
+| Ghardaia | 2026-10-01 | Isha | 19:48 | 19:47 | -1 |
+| Ain Temouchent | 2026-10-02 | Sunrise | 07:00 | 07:01 | +1 |
+| Blida | 2026-10-02 | Dhuhr | 12:39 | 12:38 | -1 |
+| Tipaza | 2026-10-03 | Maghrib | 18:34 | 18:35 | +1 |
+| Djelfa | 2026-10-04 | Fajr | 05:20 | 05:21 | +1 |
+| Guelma | 2026-10-04 | Dhuhr | 12:20 | 12:19 | -1 |
+| El Tarf | 2026-10-04 | Maghrib | 18:10 | 18:09 | -1 |
+| Tindouf | 2026-10-05 | Dhuhr | 13:22 | 13:21 | -1 |
+| Bechar | 2026-10-05 | Maghrib | 18:52 | 18:53 | +1 |
+| Hassi R'mel | 2026-10-06 | Dhuhr | 12:35 | 12:36 | +1 |
+| El Bayadh | 2026-10-06 | Fajr | 05:31 | 05:32 | +1 |
+| Sebdou | 2026-10-06 | Asr | 16:12 | 16:13 | +1 |
+| Ain Defla | 2026-10-06 | Isha | 19:49 | 19:50 | +1 |
+| In Salah | 2026-10-06 | Maghrib | 18:34 | 18:35 | +1 |
+| Tamanrasset | 2026-10-06 | Dhuhr | 12:26 | 12:27 | +1 |
+| Ain Oussara | 2026-10-07 | Maghrib | 18:27 | 18:28 | +1 |
+| Boumerdes | 2026-10-07 | Maghrib | 18:25 | 18:24 | -1 |
+| Saida | 2026-10-08 | Asr | 16:04 | 16:05 | +1 |
+| Naama | 2026-10-08 | Fajr | 05:39 | 05:38 | -1 |
+| Blida | 2026-10-08 | Asr | 15:52 | 15:53 | +1 |
+| Mostaganem | 2026-10-09 | Fajr | 05:36 | 05:37 | +1 |
 
 </details>

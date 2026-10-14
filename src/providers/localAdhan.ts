@@ -25,6 +25,7 @@ import { computeImsak, DEFAULT_IMSAK_OFFSET_MINUTES } from './imsak';
 import { horizonDipMinutes, solarDeclinationDegrees } from '../prayer/horizonDip';
 import { SWEDEN_METHOD_ID } from './swedenMethodId';
 import { congressTimes } from './congressMethod';
+import { algeriaTimes } from './algeriaMethod';
 
 // ── METHOD IDS ARE ALADHAN'S, AND SO ARE THE ANGLES ───────────────────
 //
@@ -138,10 +139,11 @@ function parametersForMethod(methodId: number): CalculationParameters {
       // calculation, and Maghrib 3.6 minutes past true sunset on average —
       // a 3-minute margin, rounded up. AlAdhan's own id 19 has the angles and
       // not the margin, which is why Maghrib there is three minutes early.
-      // Where the Ministry's own table is available the app serves that
-      // instead (the 'marw' provider, `marwDataset.ts`); this is the method
-      // it falls back to past the published year.
-      // Issue #70.
+      // The times themselves are computed by `algeriaTimes`
+      // (`algeriaMethod.ts`), the Ministry's own method as its table shows
+      // it — NOAA's Sun, every time rounded up — not by adhan.js; these
+      // parameters are its description, and what a point where a time
+      // does not form falls back to. Issue #70.
       return angles(18, 17, { maghrib: 3 });
     case 16:
       // Dubai — 18.2° both ends, Dhuhr and Maghrib held three minutes:
@@ -404,6 +406,11 @@ export function computeLocalAdhanInstants(params: LocalAdhanParams): PrayerInsta
     // (`congressMethod.ts`); rounded to the minute as they are printed.
     const at = congressTimes(latitude, params.longitude, y, m, day, params.school === 1 ? 2 : 1);
     return { fajr: toMinute(at.fajr), sunrise: toMinute(at.sunrise), dhuhr: toMinute(at.dhuhr), asr: toMinute(at.asr), maghrib: toMinute(at.maghrib), isha: toMinute(at.isha) };
+  }
+  if (methodId === ALGERIA_SIGNED_SHADOW_METHOD_ID) {
+    // The Ministry's method (`algeriaMethod.ts`), on the minute as it prints.
+    const at = algeriaTimes(params.latitude, params.longitude, y, m, day, params.school === 1 ? 2 : 1);
+    if (at) return at;
   }
   if (!(horizonMinutes > 0) && !signedShadowAsr) {
     const pt = new PrayerTimes(new Coordinates(latitude, params.longitude), dayDate, calc);

@@ -168,3 +168,44 @@ point, the last of Diyanet's exact implementation.
   of time), `diyanet-dhuhr.py`, `diyanet-all-prayers.py`,
   `diyanet-fi-misses.py` (every miss, by regime), `diyanet-ts-check.ts`
   (the app's TypeScript against every table).
+
+## Algeria: the Ministry's method, to the minute
+
+The reference is the Ministry's own table (its official app's database,
+`tools/algeria-ministry`): 68 cities, every day of 1448 AH. The method
+(method 19, `src/providers/algeriaMethod.ts`) was read off it with
+`table-exact.py`, the Sweden approach generalised (fit each city's point
+to its own table, then ask which model leaves the fewest misses):
+
+- **The sun is NOAA's** — the solar-calculator series for the equation of
+  time, its declination. Of every model tried it is the only one near the
+  table: Dhuhr alone, after the best longitude for each city, misses 83
+  of 16,864 times with NOAA against ~200 with Meeus's chapter-25 sun and
+  235 with the precise sun (JPL DE421, `sun-jpl-grid.py`).
+- **Dhuhr is the transit**, the equation of time taken there (iterated).
+- **Every other time** is the transit ± the hour angle from the
+  declination at that prayer's own moment (iterated), with the equation
+  of time kept at noon's value. Taking both at the moment, or both once a
+  day, is five to six times worse.
+- Fajr 18°, Isha 17°, sunrise and sunset −0.833°; **Asr from the noon
+  shadow tan(φ − δ) with its sign** (In Guezzam, Bordj Badji Mokhtar and
+  Tamanrasset come early about the June solstice); Maghrib sunset + 3.
+- **Every time rounded up** to the minute.
+- The points (`src/providers/data/algeriaMethodPoints.json`) sit within
+  a few seconds of time of the towns; they are not on any grid (whole
+  arc-minutes, 0.01° and 0.001° were all tried).
+
+**Result:** 99.37 % of 101,184 times on the Ministry's printed minute,
+every one within a minute. The misses are spread evenly over the cities,
+the prayers and the year, and each is within about a second of a minute's
+edge (median 0.5 s): their sun differs from NOAA's by a second or so, a
+little differently each day. No variant tried closes it — the evaluation
+instant, the number of iterations, the obliquity in the series, ΔT,
+single-precision arithmetic, rounding the equation of time or the clock
+time, a lunar term, the horizon; a smooth per-day correction removes
+only a sixth of them.
+
+- The `marw` check compares to the minute, at those points.
+- Research tools: `table-exact.py` (`resid`, `margins`, `fit`, `excess`;
+  `DEC_AT`/`EOT_AT`, `PASSES`, `START`, `DEC_SHIFT`, `EOT_FIX`,
+  `ROUND_HOURS` select the variants), `sun-jpl-grid.py`.

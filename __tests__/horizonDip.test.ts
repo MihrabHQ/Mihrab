@@ -131,11 +131,12 @@ describe('Kemenag’s highland class (method 20)', () => {
 
 describe('the Algerian ministry’s Asr (method 19)', () => {
   it('takes the signed noon shadow when the sun passes north of the zenith', () => {
-    // In Guezzam, 19.57°N: the ministry's table says Asr 15:42 on 5 June 2027 and 15:45 on 20 May.
+    // In Guezzam, 19.57°N, at the point the ministry computes it (algeriaMethodPoints.json):
+    // its table says Asr 15:42 on 5 June 2027 and 15:45 on 20 May.
     const asr = (y: number, m: number, d: number) =>
       clockIn(
         'Africa/Algiers',
-        computeLocalAdhanInstants({ latitude: 19.5667, longitude: 5.7667, date: new Date(y, m - 1, d), calculationMethod: 19, school: 0 }).asr,
+        computeLocalAdhanInstants({ latitude: 19.5617, longitude: 5.7732, date: new Date(y, m - 1, d), calculationMethod: 19, school: 0 }).asr,
       );
     expect(asr(2027, 6, 5)).toBe('15:42');
     expect(asr(2027, 5, 20)).toBe('15:45');

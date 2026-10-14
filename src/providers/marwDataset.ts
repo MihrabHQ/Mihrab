@@ -26,9 +26,11 @@
  * compactly — six minute counts per day from `start` — and turned into the
  * shared day tuple here.
  *
- * A miss (outside Algeria, or past the published year) throws, and the
- * caller falls through to the on-device Algeria calculation, which sits
- * within a minute or two of the Ministry.
+ * What is served by default, though, is the calculation (see
+ * `servesCalculation` below): the Ministry's own method, which gives the
+ * table's minute for 99.37 % of its times and is never a minute further.
+ * On the table path, a miss (outside Algeria, or past the published year)
+ * throws, and the caller falls through to that same calculation.
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { httpUserAgent } from '../config/httpIdentity';
@@ -37,7 +39,9 @@ import {
   MARW_DATASET_REFRESH_TTL_MS,
   MARW_INDEX_POLL_INTERVAL_MS,
 } from '../config/datasets';
-import { nearestAlgeriaCity } from './algeriaCities';
+import { nearestAlgeriaCity, ALGERIA_METHOD_ID } from './algeriaCities';
+import { computeLocalAdhanTimes } from './localAdhan';
+import methodPoints from './data/algeriaMethodPoints.json';
 import { tupleToTimings } from './islamiskaForbundetParser';
 import type { DatasetDayTuple } from './datasetTuple';
 import { formatLocalDate } from '../utils/date';
@@ -60,6 +64,24 @@ const IMSAK_BEFORE_FAJR_MIN = 10;
  * plainly not near any of them.
  */
 const MAX_DATASET_CITY_KM = 500;
+
+/**
+ * Algeria's times are the app's own calculation of the Ministry's method
+ * (`algeriaMethod.ts`) at the nearest listed city's point, not the table
+ * itself (October 2026) — the same arrangement as Sweden. The table is
+ * kept, for the check against the source (tools/verify-methods), and set
+ * false this serves it again.
+ */
+let servesCalculation = true;
+export function algeriaServesCalculation(): boolean {
+  return servesCalculation;
+}
+/** Tests: exercise the table path. */
+export function setAlgeriaServesCalculationForTests(v: boolean): void {
+  servesCalculation = v;
+}
+/** The point the Ministry computes each city at, fitted to its table (`table-exact.py`). */
+const METHOD_POINTS = methodPoints as Record<string, number[]>;
 
 type CityDays = Record<string, DatasetDayTuple>;
 type CityFile = {
@@ -256,6 +278,21 @@ export async function getMarwDatasetTimes(params: {
       `Nearest listed city "${nearest.nameEn}" is ${Math.round(nearest.distanceKm)} km ` +
         `away (> ${MAX_DATASET_CITY_KM} km) — outside the Ministry's coverage.`,
     );
+  }
+
+  if (servesCalculation) {
+    const [lat, lon] = METHOD_POINTS[String(nearest.id)] ?? [nearest.lat, nearest.lon];
+    return {
+      ...computeLocalAdhanTimes({
+        latitude: lat,
+        longitude: lon,
+        date: params.date,
+        calculationMethod: ALGERIA_METHOD_ID,
+        school: 0,
+      }),
+      timezone: DEFAULT_TZ,
+      source: 'local',
+    };
   }
 
   const dateKey = formatLocalDate(params.date);

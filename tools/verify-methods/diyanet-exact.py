@@ -105,7 +105,12 @@ def make_meeus28(full=False, use_L0_eot=False):
         return dec, eot
     return f
 
-def noaa(D):
+def make_noaa(y_corr=False, D_shift=0.0):
+    def f(D):
+        return noaa(D + D_shift, y_corr)
+    return f
+
+def noaa(D, y_corr=False):
     T = D / 36525
     L0 = (280.46646 + T * (36000.76983 + 0.0003032 * T)) % 360
     M = 357.52911 + T * (35999.05029 - 0.0001537 * T)
@@ -117,10 +122,29 @@ def noaa(D):
     eps0 = 23 + (26 + (21.448 - T * (46.815 + T * (0.00059 - T * 0.001813))) / 60) / 60
     eps = eps0 + 0.00256 * np.cos(om)
     dec = np.arcsin(np.sin(eps * RAD) * np.sin(lam * RAD))
-    y = np.tan(eps0 * RAD / 2) ** 2
+    y = np.tan((eps if y_corr else eps0) * RAD / 2) ** 2
     L0r = L0 * RAD
     eot = 4 / RAD * (y * np.sin(2 * L0r) - 2 * ecc * np.sin(Mr) + 4 * ecc * y * np.sin(Mr) * np.cos(2 * L0r) - 0.5 * y * y * np.sin(4 * L0r) - 1.25 * ecc * ecc * np.sin(2 * Mr))
     return dec, eot
+
+def noaa32(D):
+    f = np.float32
+    D = np.asarray(D, dtype=np.float32)
+    T = D / f(36525)
+    L0 = np.mod(f(280.46646) + T * (f(36000.76983) + f(0.0003032) * T), f(360))
+    M = f(357.52911) + T * (f(35999.05029) - f(0.0001537) * T)
+    ecc = f(0.016708634) - T * (f(0.000042037) + f(0.0000001267) * T)
+    Mr = M * f(RAD)
+    C = (f(1.914602) - T * (f(0.004817) + f(0.000014) * T)) * np.sin(Mr) + (f(0.019993) - f(0.000101) * T) * np.sin(2 * Mr) + f(0.000289) * np.sin(3 * Mr)
+    om = (f(125.04) - f(1934.136) * T) * f(RAD)
+    lam = L0 + C - f(0.00569) - f(0.00478) * np.sin(om)
+    eps0 = f(23) + (f(26) + (f(21.448) - T * (f(46.815) + T * (f(0.00059) - T * f(0.001813)))) / f(60)) / f(60)
+    eps = eps0 + f(0.00256) * np.cos(om)
+    dec = np.arcsin(np.sin(eps * f(RAD)) * np.sin(lam * f(RAD)))
+    y = np.tan(eps * f(RAD) / 2) ** 2
+    L0r = L0 * f(RAD)
+    eot = f(4 / RAD) * (y * np.sin(2 * L0r) - 2 * ecc * np.sin(Mr) + 4 * ecc * y * np.sin(Mr) * np.cos(2 * L0r) - f(0.5) * y * y * np.sin(4 * L0r) - f(1.25) * ecc * ecc * np.sin(2 * Mr))
+    return dec.astype(np.float64), eot.astype(np.float64)
 
 import os as _os
 DEC_ROUND = float(_os.environ.get('DEC_ROUND', '0'))   # arcminutes; 0 = none
@@ -129,10 +153,11 @@ def rounded(f):
     def g(D):
         dec, eot = f(D)
         if DEC_ROUND: dec = np.round(np.degrees(dec) * 60 / DEC_ROUND) * DEC_ROUND / 60 * RAD
-        if EOT_ROUND: eot = np.round(eot * 60 / EOT_ROUND) * EOT_ROUND / 60
+        if EOT_ROUND: _o = float(_os.environ.get('EOT_ROUND_OFF', '0')); eot = (np.round((eot * 60 + _o) / EOT_ROUND) * EOT_ROUND - _o) / 60
         return dec, eot
     return g
-MODELS = {'almanac': rounded(almanac), 'noaa': rounded(noaa), 'aa': rounded(aa_old),
+MODELS = {'almanac': rounded(almanac), 'noaa': rounded(noaa), 'noaa_y': rounded(make_noaa(True)), 'noaa32': rounded(noaa32),
+          'noaa_tt': rounded(make_noaa(False, 69.2/86400)), 'noaa_y_tt': rounded(make_noaa(True, 69.2/86400)), 'aa': rounded(aa_old),
           'm_true': rounded(make_meeus()), 'm_ab': rounded(make_meeus(aberr=True)),
           'm_app': rounded(make_meeus(aberr=True, nut_lon=True, nut_obl=True)),
           'm_ab_nl': rounded(make_meeus(aberr=True, nut_lon=True)), 'm_true_c2': rounded(make_meeus(c3=False)),
@@ -274,3 +299,32 @@ if __name__ == '__main__':
                 print(f'{model:8s} at={at:5s} iter={it}  lat {la:.5f} lon {lo:.5f}  misses(fit fields) {n}  ' +
                       ' '.join(f'{k} {hits.get(k,0)}/{total[k]}' for k in total), flush=True)
                 if '--verbose' in sys.argv: print('   worst', worst[:6])
+
+def _mix(dec_model, eot_model='noaa'):
+    def f(D):
+        return MODELS[dec_model](D)[0], MODELS[eot_model](D)[1]
+    return f
+for _k in ['almanac', 'm_true', 'm_app', 'aa', 'm_ab', 'd_app', 'm_no']:
+    MODELS['mix_' + _k] = _mix(_k)
+
+def _jpl():
+    g = None
+    def f(D):
+        nonlocal g
+        if g is None: g = np.load(_os.path.expanduser(_os.environ.get('SUN_JPL', '~/.cache/mihrab/sun-jpl.npz')))
+        D = np.asarray(D, dtype=float)
+        return np.interp(D, g['D'], g['dec']), np.interp(D, g['D'], g['eot'])
+    return f
+MODELS['jpl'] = rounded(_jpl())
+MODELS['mix_jpl'] = _mix('jpl')          # JPL declination, NOAA equation of time
+MODELS['jpl_eot_noaa_dec'] = _mix('noaa', 'jpl')
+
+def _moon(sign, amp=6.454):
+    def f(D):
+        dec, eot = noaa(D, True)
+        T = np.asarray(D) / 36525
+        Dm = (297.8501921 + 445267.1114034 * T) * RAD   # Moon's mean elongation
+        dl = amp / 3600 * np.sin(Dm)                      # Earth-Moon barycentre wobble in the Sun's longitude, deg
+        return dec, eot + sign * 4 * dl
+    return f
+MODELS['noaa_moon+'] = _moon(1); MODELS['noaa_moon-'] = _moon(-1)

@@ -191,18 +191,26 @@ export const AUTHORITIES: Authority[] = [
     folder: 'algeria',
     method: 19,
     school: 0,
-    toleranceMin: 1,
-    maxOutsideShare: 0.02,
-    hardMaxMin: 10,
+    // The Ministry's own method (algeriaMethod.ts) at the point it computes
+    // each city (algeriaMethodPoints.json): the check is to the minute.
+    // 0.63 % of times sit within about a second of a minute's edge and land
+    // on the other side (tools/verify-methods/README.md); none is further.
+    toleranceMin: 0,
+    maxOutsideShare: 0.008,
+    hardMaxMin: 1,
     alarm: true,
-    places: () =>
-      readJson<IdPlace[]>(path.join(ROOT, 'src/providers/data/algeriaCities.json')).map(c => ({
+    places: () => {
+      const points = readJson<Record<string, [number, number]>>(
+        path.join(ROOT, 'src/providers/data/algeriaMethodPoints.json'),
+      );
+      return readJson<IdPlace[]>(path.join(ROOT, 'src/providers/data/algeriaCities.json')).map(c => ({
         file: `${c.id}.json`,
         name: c.nameEn ?? c.name,
-        lat: c.lat,
-        lon: c.lon,
+        lat: points[String(c.id)]?.[0] ?? c.lat,
+        lon: points[String(c.id)]?.[1] ?? c.lon,
         tz: 'Africa/Algiers',
-      })),
+      }));
+    },
   },
   {
     id: 'muis',

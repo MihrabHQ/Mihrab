@@ -2,8 +2,8 @@
  "id": "marw",
  "name": "Algeria — Ministry of Religious Affairs and Wakfs",
  "method": 19,
- "toleranceMin": 1,
- "builtAt": "2026-10-14T20:06:13.230Z",
+ "toleranceMin": 0,
+ "builtAt": "2026-10-14T21:00:45.612Z",
  "tableBuiltAt": "2026-10-08T14:47:32.498Z",
  "places": 68,
  "placesMissing": 0,
@@ -11,71 +11,75 @@
  "from": "2026-10-01",
  "to": "2027-06-05",
  "times": 101184,
- "within": 100910,
- "outsideShare": 0.0027,
- "maxAbs": 2,
+ "within": 100542,
+ "outsideShare": 0.0063,
+ "maxAbs": 1,
  "perPrayer": {
   "Fajr": {
    "times": 16864,
-   "within": 16864,
+   "within": 16743,
    "histogram": {
-    "0": 8759,
-    "-1": 8105
+    "0": 16743,
+    "+1": 71,
+    "-1": 50
    },
    "maxAbs": 1,
-   "meanDiff": -0.48
+   "meanDiff": 0
   },
   "Sunrise": {
    "times": 16864,
-   "within": 16864,
+   "within": 16780,
    "histogram": {
-    "0": 8832,
-    "-1": 8032
+    "0": 16780,
+    "-1": 21,
+    "+1": 63
    },
    "maxAbs": 1,
-   "meanDiff": -0.48
+   "meanDiff": 0
   },
   "Dhuhr": {
    "times": 16864,
-   "within": 16864,
+   "within": 16748,
    "histogram": {
-    "0": 8848,
-    "-1": 8016
+    "0": 16748,
+    "+1": 65,
+    "-1": 51
    },
    "maxAbs": 1,
-   "meanDiff": -0.48
+   "meanDiff": 0
   },
   "Asr": {
    "times": 16864,
-   "within": 16590,
+   "within": 16754,
    "histogram": {
-    "0": 10719,
-    "-1": 5183,
-    "-2": 274,
-    "+1": 688
+    "0": 16754,
+    "+1": 77,
+    "-1": 33
    },
-   "maxAbs": 2,
-   "meanDiff": -0.3
+   "maxAbs": 1,
+   "meanDiff": 0
   },
   "Maghrib": {
    "times": 16864,
-   "within": 16864,
+   "within": 16752,
    "histogram": {
-    "0": 8927,
-    "-1": 7937
+    "0": 16752,
+    "-1": 75,
+    "+1": 37
    },
    "maxAbs": 1,
-   "meanDiff": -0.47
+   "meanDiff": 0
   },
   "Isha": {
    "times": 16864,
-   "within": 16864,
+   "within": 16765,
    "histogram": {
-    "0": 9223,
-    "-1": 7641
+    "0": 16765,
+    "+1": 47,
+    "-1": 52
    },
    "maxAbs": 1,
-   "meanDiff": -0.45
+   "meanDiff": 0
   }
  },
  "misplaced": [],
@@ -89,484 +93,484 @@
  "alarmReasons": [],
  "worst": [
   {
-   "place": "Hassi R'mel",
+   "place": "Dellys",
    "date": "2026-10-01",
-   "prayer": "Asr",
-   "theirs": "16:00",
-   "ours": "15:58",
-   "diff": -2
+   "prayer": "Maghrib",
+   "theirs": "18:32",
+   "ours": "18:31",
+   "diff": -1
   },
   {
-   "place": "Ben Badis",
+   "place": "Bordj Bou Arreridj",
    "date": "2026-10-01",
-   "prayer": "Asr",
-   "theirs": "16:16",
-   "ours": "16:14",
-   "diff": -2
-  },
-  {
-   "place": "Algiers",
-   "date": "2026-10-01",
-   "prayer": "Asr",
-   "theirs": "15:59",
-   "ours": "15:57",
-   "diff": -2
-  },
-  {
-   "place": "Bouira",
-   "date": "2026-10-01",
-   "prayer": "Asr",
-   "theirs": "15:56",
-   "ours": "15:54",
-   "diff": -2
-  },
-  {
-   "place": "Bejaia",
-   "date": "2026-10-01",
-   "prayer": "Asr",
-   "theirs": "15:51",
-   "ours": "15:49",
-   "diff": -2
-  },
-  {
-   "place": "Setif",
-   "date": "2026-10-01",
-   "prayer": "Asr",
-   "theirs": "15:50",
-   "ours": "15:48",
-   "diff": -2
-  },
-  {
-   "place": "Constantine",
-   "date": "2026-10-01",
-   "prayer": "Asr",
-   "theirs": "15:45",
-   "ours": "15:43",
-   "diff": -2
-  },
-  {
-   "place": "El Tarf",
-   "date": "2026-10-01",
-   "prayer": "Asr",
-   "theirs": "15:38",
-   "ours": "15:36",
-   "diff": -2
-  },
-  {
-   "place": "Tindouf",
-   "date": "2026-10-01",
-   "prayer": "Asr",
-   "theirs": "16:47",
-   "ours": "16:45",
-   "diff": -2
-  },
-  {
-   "place": "Touggourt",
-   "date": "2026-10-02",
-   "prayer": "Asr",
-   "theirs": "15:48",
-   "ours": "15:46",
-   "diff": -2
-  },
-  {
-   "place": "Ben Badis",
-   "date": "2026-10-02",
-   "prayer": "Asr",
-   "theirs": "16:15",
-   "ours": "16:13",
-   "diff": -2
-  },
-  {
-   "place": "Algiers",
-   "date": "2026-10-02",
-   "prayer": "Asr",
-   "theirs": "15:58",
-   "ours": "15:56",
-   "diff": -2
-  },
-  {
-   "place": "Bouira",
-   "date": "2026-10-02",
-   "prayer": "Asr",
-   "theirs": "15:55",
-   "ours": "15:53",
-   "diff": -2
-  },
-  {
-   "place": "Tizi Ouzou",
-   "date": "2026-10-02",
-   "prayer": "Asr",
-   "theirs": "15:54",
-   "ours": "15:52",
-   "diff": -2
-  },
-  {
-   "place": "Bejaia",
-   "date": "2026-10-02",
-   "prayer": "Asr",
-   "theirs": "15:50",
-   "ours": "15:48",
-   "diff": -2
-  },
-  {
-   "place": "Setif",
-   "date": "2026-10-02",
-   "prayer": "Asr",
-   "theirs": "15:49",
-   "ours": "15:47",
-   "diff": -2
-  },
-  {
-   "place": "Constantine",
-   "date": "2026-10-02",
-   "prayer": "Asr",
-   "theirs": "15:44",
-   "ours": "15:42",
-   "diff": -2
-  },
-  {
-   "place": "El Tarf",
-   "date": "2026-10-02",
-   "prayer": "Asr",
-   "theirs": "15:37",
-   "ours": "15:35",
-   "diff": -2
-  },
-  {
-   "place": "Illizi",
-   "date": "2026-10-02",
-   "prayer": "Asr",
-   "theirs": "15:40",
-   "ours": "15:38",
-   "diff": -2
-  },
-  {
-   "place": "Djanet",
-   "date": "2026-10-02",
-   "prayer": "Asr",
-   "theirs": "15:36",
-   "ours": "15:34",
-   "diff": -2
-  },
-  {
-   "place": "Touggourt",
-   "date": "2026-10-03",
-   "prayer": "Asr",
-   "theirs": "15:47",
-   "ours": "15:45",
-   "diff": -2
-  },
-  {
-   "place": "Ben Badis",
-   "date": "2026-10-03",
-   "prayer": "Asr",
-   "theirs": "16:14",
-   "ours": "16:12",
-   "diff": -2
-  },
-  {
-   "place": "Algiers",
-   "date": "2026-10-03",
-   "prayer": "Asr",
-   "theirs": "15:57",
-   "ours": "15:55",
-   "diff": -2
-  },
-  {
-   "place": "Blida",
-   "date": "2026-10-03",
-   "prayer": "Asr",
-   "theirs": "15:58",
-   "ours": "15:56",
-   "diff": -2
-  },
-  {
-   "place": "Tizi Ouzou",
-   "date": "2026-10-03",
-   "prayer": "Asr",
-   "theirs": "15:53",
-   "ours": "15:51",
-   "diff": -2
-  },
-  {
-   "place": "Bejaia",
-   "date": "2026-10-03",
-   "prayer": "Asr",
-   "theirs": "15:49",
-   "ours": "15:47",
-   "diff": -2
-  },
-  {
-   "place": "Setif",
-   "date": "2026-10-03",
-   "prayer": "Asr",
-   "theirs": "15:48",
-   "ours": "15:46",
-   "diff": -2
-  },
-  {
-   "place": "Constantine",
-   "date": "2026-10-03",
-   "prayer": "Asr",
-   "theirs": "15:43",
-   "ours": "15:41",
-   "diff": -2
-  },
-  {
-   "place": "Annaba",
-   "date": "2026-10-03",
-   "prayer": "Asr",
-   "theirs": "15:38",
-   "ours": "15:36",
-   "diff": -2
-  },
-  {
-   "place": "El Tarf",
-   "date": "2026-10-03",
-   "prayer": "Asr",
-   "theirs": "15:36",
-   "ours": "15:34",
-   "diff": -2
-  },
-  {
-   "place": "Beni Abbes",
-   "date": "2026-10-03",
-   "prayer": "Asr",
-   "theirs": "16:21",
-   "ours": "16:19",
-   "diff": -2
-  },
-  {
-   "place": "El Bayadh",
-   "date": "2026-10-04",
-   "prayer": "Asr",
-   "theirs": "16:06",
-   "ours": "16:04",
-   "diff": -2
-  },
-  {
-   "place": "Ben Badis",
-   "date": "2026-10-04",
-   "prayer": "Asr",
-   "theirs": "16:13",
-   "ours": "16:11",
-   "diff": -2
-  },
-  {
-   "place": "Algiers",
-   "date": "2026-10-04",
-   "prayer": "Asr",
-   "theirs": "15:56",
-   "ours": "15:54",
-   "diff": -2
-  },
-  {
-   "place": "Blida",
-   "date": "2026-10-04",
-   "prayer": "Asr",
-   "theirs": "15:57",
-   "ours": "15:55",
-   "diff": -2
-  },
-  {
-   "place": "Tizi Ouzou",
-   "date": "2026-10-04",
-   "prayer": "Asr",
-   "theirs": "15:52",
-   "ours": "15:50",
-   "diff": -2
-  },
-  {
-   "place": "Bejaia",
-   "date": "2026-10-04",
-   "prayer": "Asr",
-   "theirs": "15:48",
-   "ours": "15:46",
-   "diff": -2
-  },
-  {
-   "place": "Setif",
-   "date": "2026-10-04",
-   "prayer": "Asr",
-   "theirs": "15:47",
-   "ours": "15:45",
-   "diff": -2
+   "prayer": "Isha",
+   "theirs": "19:45",
+   "ours": "19:46",
+   "diff": 1
   },
   {
    "place": "Jijel",
-   "date": "2026-10-04",
-   "prayer": "Asr",
-   "theirs": "15:45",
-   "ours": "15:43",
-   "diff": -2
+   "date": "2026-10-01",
+   "prayer": "Sunrise",
+   "theirs": "06:32",
+   "ours": "06:33",
+   "diff": 1
   },
   {
-   "place": "Constantine",
-   "date": "2026-10-04",
-   "prayer": "Asr",
-   "theirs": "15:42",
-   "ours": "15:40",
-   "diff": -2
-  },
-  {
-   "place": "Annaba",
-   "date": "2026-10-04",
-   "prayer": "Asr",
-   "theirs": "15:37",
-   "ours": "15:35",
-   "diff": -2
-  },
-  {
-   "place": "El Tarf",
-   "date": "2026-10-04",
-   "prayer": "Asr",
-   "theirs": "15:35",
-   "ours": "15:33",
-   "diff": -2
-  },
-  {
-   "place": "Timimoun",
-   "date": "2026-10-04",
-   "prayer": "Asr",
-   "theirs": "16:11",
-   "ours": "16:09",
-   "diff": -2
+   "place": "Reggane",
+   "date": "2026-10-01",
+   "prayer": "Dhuhr",
+   "theirs": "12:50",
+   "ours": "12:49",
+   "diff": -1
   },
   {
    "place": "Ghardaia",
-   "date": "2026-10-04",
-   "prayer": "Asr",
-   "theirs": "15:56",
-   "ours": "15:54",
-   "diff": -2
+   "date": "2026-10-01",
+   "prayer": "Isha",
+   "theirs": "19:48",
+   "ours": "19:47",
+   "diff": -1
   },
   {
-   "place": "In Amenas",
-   "date": "2026-10-04",
-   "prayer": "Asr",
-   "theirs": "15:34",
-   "ours": "15:32",
-   "diff": -2
-  },
-  {
-   "place": "El Bayadh",
-   "date": "2026-10-05",
-   "prayer": "Asr",
-   "theirs": "16:05",
-   "ours": "16:03",
-   "diff": -2
-  },
-  {
-   "place": "Ben Badis",
-   "date": "2026-10-05",
-   "prayer": "Asr",
-   "theirs": "16:12",
-   "ours": "16:10",
-   "diff": -2
-  },
-  {
-   "place": "Algiers",
-   "date": "2026-10-05",
-   "prayer": "Asr",
-   "theirs": "15:55",
-   "ours": "15:53",
-   "diff": -2
+   "place": "Ain Temouchent",
+   "date": "2026-10-02",
+   "prayer": "Sunrise",
+   "theirs": "07:00",
+   "ours": "07:01",
+   "diff": 1
   },
   {
    "place": "Blida",
-   "date": "2026-10-05",
-   "prayer": "Asr",
-   "theirs": "15:56",
-   "ours": "15:54",
-   "diff": -2
+   "date": "2026-10-02",
+   "prayer": "Dhuhr",
+   "theirs": "12:39",
+   "ours": "12:38",
+   "diff": -1
   },
   {
-   "place": "Tizi Ouzou",
-   "date": "2026-10-05",
-   "prayer": "Asr",
-   "theirs": "15:51",
-   "ours": "15:49",
-   "diff": -2
+   "place": "Tipaza",
+   "date": "2026-10-03",
+   "prayer": "Maghrib",
+   "theirs": "18:34",
+   "ours": "18:35",
+   "diff": 1
   },
   {
-   "place": "Jijel",
-   "date": "2026-10-05",
-   "prayer": "Asr",
-   "theirs": "15:44",
-   "ours": "15:42",
-   "diff": -2
+   "place": "Djelfa",
+   "date": "2026-10-04",
+   "prayer": "Fajr",
+   "theirs": "05:20",
+   "ours": "05:21",
+   "diff": 1
   },
   {
-   "place": "Constantine",
-   "date": "2026-10-05",
-   "prayer": "Asr",
-   "theirs": "15:41",
-   "ours": "15:39",
-   "diff": -2
+   "place": "Guelma",
+   "date": "2026-10-04",
+   "prayer": "Dhuhr",
+   "theirs": "12:20",
+   "ours": "12:19",
+   "diff": -1
   },
   {
-   "place": "Annaba",
+   "place": "El Tarf",
+   "date": "2026-10-04",
+   "prayer": "Maghrib",
+   "theirs": "18:10",
+   "ours": "18:09",
+   "diff": -1
+  },
+  {
+   "place": "Tindouf",
    "date": "2026-10-05",
-   "prayer": "Asr",
-   "theirs": "15:36",
-   "ours": "15:34",
-   "diff": -2
+   "prayer": "Dhuhr",
+   "theirs": "13:22",
+   "ours": "13:21",
+   "diff": -1
   },
   {
    "place": "Bechar",
    "date": "2026-10-05",
+   "prayer": "Maghrib",
+   "theirs": "18:52",
+   "ours": "18:53",
+   "diff": 1
+  },
+  {
+   "place": "Hassi R'mel",
+   "date": "2026-10-06",
+   "prayer": "Dhuhr",
+   "theirs": "12:35",
+   "ours": "12:36",
+   "diff": 1
+  },
+  {
+   "place": "El Bayadh",
+   "date": "2026-10-06",
+   "prayer": "Fajr",
+   "theirs": "05:31",
+   "ours": "05:32",
+   "diff": 1
+  },
+  {
+   "place": "Sebdou",
+   "date": "2026-10-06",
    "prayer": "Asr",
-   "theirs": "16:19",
-   "ours": "16:17",
-   "diff": -2
+   "theirs": "16:12",
+   "ours": "16:13",
+   "diff": 1
+  },
+  {
+   "place": "Ain Defla",
+   "date": "2026-10-06",
+   "prayer": "Isha",
+   "theirs": "19:49",
+   "ours": "19:50",
+   "diff": 1
+  },
+  {
+   "place": "In Salah",
+   "date": "2026-10-06",
+   "prayer": "Maghrib",
+   "theirs": "18:34",
+   "ours": "18:35",
+   "diff": 1
+  },
+  {
+   "place": "Tamanrasset",
+   "date": "2026-10-06",
+   "prayer": "Dhuhr",
+   "theirs": "12:26",
+   "ours": "12:27",
+   "diff": 1
+  },
+  {
+   "place": "Ain Oussara",
+   "date": "2026-10-07",
+   "prayer": "Maghrib",
+   "theirs": "18:27",
+   "ours": "18:28",
+   "diff": 1
+  },
+  {
+   "place": "Boumerdes",
+   "date": "2026-10-07",
+   "prayer": "Maghrib",
+   "theirs": "18:25",
+   "ours": "18:24",
+   "diff": -1
+  },
+  {
+   "place": "Saida",
+   "date": "2026-10-08",
+   "prayer": "Asr",
+   "theirs": "16:04",
+   "ours": "16:05",
+   "diff": 1
+  },
+  {
+   "place": "Naama",
+   "date": "2026-10-08",
+   "prayer": "Fajr",
+   "theirs": "05:39",
+   "ours": "05:38",
+   "diff": -1
+  },
+  {
+   "place": "Blida",
+   "date": "2026-10-08",
+   "prayer": "Asr",
+   "theirs": "15:52",
+   "ours": "15:53",
+   "diff": 1
+  },
+  {
+   "place": "Mostaganem",
+   "date": "2026-10-09",
+   "prayer": "Fajr",
+   "theirs": "05:36",
+   "ours": "05:37",
+   "diff": 1
+  },
+  {
+   "place": "In Amenas",
+   "date": "2026-10-09",
+   "prayer": "Maghrib",
+   "theirs": "18:03",
+   "ours": "18:02",
+   "diff": -1
+  },
+  {
+   "place": "Sidi Bel Abbes",
+   "date": "2026-10-10",
+   "prayer": "Fajr",
+   "theirs": "05:41",
+   "ours": "05:40",
+   "diff": -1
+  },
+  {
+   "place": "Bir El Ater",
+   "date": "2026-10-11",
+   "prayer": "Sunrise",
+   "theirs": "06:30",
+   "ours": "06:31",
+   "diff": 1
+  },
+  {
+   "place": "Ain Defla",
+   "date": "2026-10-11",
+   "prayer": "Fajr",
+   "theirs": "05:30",
+   "ours": "05:31",
+   "diff": 1
+  },
+  {
+   "place": "Guelma",
+   "date": "2026-10-11",
+   "prayer": "Dhuhr",
+   "theirs": "12:18",
+   "ours": "12:17",
+   "diff": -1
   },
   {
    "place": "El Menia",
-   "date": "2026-10-05",
-   "prayer": "Asr",
-   "theirs": "15:59",
-   "ours": "15:57",
-   "diff": -2
+   "date": "2026-10-11",
+   "prayer": "Sunrise",
+   "theirs": "06:48",
+   "ours": "06:49",
+   "diff": 1
   },
   {
-   "place": "Ghardaia",
-   "date": "2026-10-05",
-   "prayer": "Asr",
-   "theirs": "15:55",
-   "ours": "15:53",
-   "diff": -2
+   "place": "Blida",
+   "date": "2026-10-12",
+   "prayer": "Sunrise",
+   "theirs": "06:54",
+   "ours": "06:53",
+   "diff": -1
   },
   {
-   "place": "In Guezzam",
-   "date": "2026-10-05",
+   "place": "Djelfa",
+   "date": "2026-10-13",
+   "prayer": "Fajr",
+   "theirs": "05:28",
+   "ours": "05:27",
+   "diff": -1
+  },
+  {
+   "place": "Biskra",
+   "date": "2026-10-13",
+   "prayer": "Fajr",
+   "theirs": "05:17",
+   "ours": "05:18",
+   "diff": 1
+  },
+  {
+   "place": "Relizane",
+   "date": "2026-10-13",
+   "prayer": "Dhuhr",
+   "theirs": "12:45",
+   "ours": "12:44",
+   "diff": -1
+  },
+  {
+   "place": "Khenchela",
+   "date": "2026-10-14",
+   "prayer": "Fajr",
+   "theirs": "05:13",
+   "ours": "05:12",
+   "diff": -1
+  },
+  {
+   "place": "Laghouat",
+   "date": "2026-10-14",
+   "prayer": "Maghrib",
+   "theirs": "18:19",
+   "ours": "18:20",
+   "diff": 1
+  },
+  {
+   "place": "Sidi Bel Abbes",
+   "date": "2026-10-14",
    "prayer": "Asr",
-   "theirs": "15:49",
-   "ours": "15:47",
-   "diff": -2
+   "theirs": "16:02",
+   "ours": "16:01",
+   "diff": -1
+  },
+  {
+   "place": "Tlemcen",
+   "date": "2026-10-15",
+   "prayer": "Dhuhr",
+   "theirs": "12:52",
+   "ours": "12:51",
+   "diff": -1
+  },
+  {
+   "place": "Khenchela",
+   "date": "2026-10-16",
+   "prayer": "Maghrib",
+   "theirs": "17:59",
+   "ours": "17:58",
+   "diff": -1
+  },
+  {
+   "place": "Maghnia",
+   "date": "2026-10-16",
+   "prayer": "Maghrib",
+   "theirs": "18:34",
+   "ours": "18:35",
+   "diff": 1
+  },
+  {
+   "place": "Ain Temouchent",
+   "date": "2026-10-17",
+   "prayer": "Maghrib",
+   "theirs": "18:30",
+   "ours": "18:31",
+   "diff": 1
+  },
+  {
+   "place": "Beni Abbes",
+   "date": "2026-10-17",
+   "prayer": "Asr",
+   "theirs": "16:10",
+   "ours": "16:09",
+   "diff": -1
   },
   {
    "place": "Illizi",
-   "date": "2026-10-05",
-   "prayer": "Asr",
-   "theirs": "15:38",
-   "ours": "15:36",
-   "diff": -2
+   "date": "2026-10-18",
+   "prayer": "Isha",
+   "theirs": "19:08",
+   "ours": "19:09",
+   "diff": 1
   },
   {
-   "place": "Beni Ounif",
-   "date": "2026-10-05",
-   "prayer": "Asr",
-   "theirs": "16:15",
-   "ours": "16:13",
-   "diff": -2
+   "place": "Ain El Melh",
+   "date": "2026-10-19",
+   "prayer": "Fajr",
+   "theirs": "05:29",
+   "ours": "05:28",
+   "diff": -1
   },
   {
-   "place": "El Oued",
-   "date": "2026-10-06",
+   "place": "Tissemsilt",
+   "date": "2026-10-19",
    "prayer": "Asr",
-   "theirs": "15:41",
-   "ours": "15:39",
-   "diff": -2
+   "theirs": "15:46",
+   "ours": "15:47",
+   "diff": 1
+  },
+  {
+   "place": "Sebdou",
+   "date": "2026-10-19",
+   "prayer": "Fajr",
+   "theirs": "05:50",
+   "ours": "05:51",
+   "diff": 1
+  },
+  {
+   "place": "Tamanrasset",
+   "date": "2026-10-19",
+   "prayer": "Fajr",
+   "theirs": "05:21",
+   "ours": "05:22",
+   "diff": 1
+  },
+  {
+   "place": "Naama",
+   "date": "2026-10-20",
+   "prayer": "Dhuhr",
+   "theirs": "12:46",
+   "ours": "12:47",
+   "diff": 1
+  },
+  {
+   "place": "Setif",
+   "date": "2026-10-21",
+   "prayer": "Asr",
+   "theirs": "15:30",
+   "ours": "15:29",
+   "diff": -1
+  },
+  {
+   "place": "Beni Abbes",
+   "date": "2026-10-21",
+   "prayer": "Isha",
+   "theirs": "19:48",
+   "ours": "19:47",
+   "diff": -1
+  },
+  {
+   "place": "Ben Badis",
+   "date": "2026-10-22",
+   "prayer": "Isha",
+   "theirs": "19:40",
+   "ours": "19:41",
+   "diff": 1
+  },
+  {
+   "place": "Beni Abbes",
+   "date": "2026-10-22",
+   "prayer": "Fajr",
+   "theirs": "05:56",
+   "ours": "05:55",
+   "diff": -1
+  },
+  {
+   "place": "Touggourt",
+   "date": "2026-10-23",
+   "prayer": "Dhuhr",
+   "theirs": "12:20",
+   "ours": "12:21",
+   "diff": 1
+  },
+  {
+   "place": "Blida",
+   "date": "2026-10-23",
+   "prayer": "Sunrise",
+   "theirs": "07:03",
+   "ours": "07:04",
+   "diff": 1
+  },
+  {
+   "place": "Djelfa",
+   "date": "2026-10-25",
+   "prayer": "Dhuhr",
+   "theirs": "12:31",
+   "ours": "12:32",
+   "diff": 1
+  },
+  {
+   "place": "Tlemcen",
+   "date": "2026-10-25",
+   "prayer": "Asr",
+   "theirs": "15:54",
+   "ours": "15:55",
+   "diff": 1
+  },
+  {
+   "place": "Medea",
+   "date": "2026-10-25",
+   "prayer": "Dhuhr",
+   "theirs": "12:33",
+   "ours": "12:34",
+   "diff": 1
+  },
+  {
+   "place": "Oum El Bouaghi",
+   "date": "2026-10-25",
+   "prayer": "Sunrise",
+   "theirs": "06:47",
+   "ours": "06:48",
+   "diff": 1
+  },
+  {
+   "place": "Guelma",
+   "date": "2026-10-25",
+   "prayer": "Fajr",
+   "theirs": "05:20",
+   "ours": "05:21",
+   "diff": 1
   }
  ]
 }
