@@ -310,6 +310,21 @@ describe('the provider', () => {
     );
   });
 
+  it('asks again the next day for a square the index had not reached', async () => {
+    const t0 = Date.now();
+    serve({ '/tiles/': () => response(404, '') });
+    await expect(getNamazvaktiTimes({ ...coords, date: day, school: 0 })).rejects.toThrow();
+    serve({ '/tiles/50_5.json': () => response(200, COLOGNE_TILE), 'XML.php': () => response(200, COLOGNE) });
+    const spy = jest.spyOn(Date, 'now').mockReturnValue(t0 + 25 * 60 * 60 * 1000);
+    try {
+      _resetNamazvaktiForTests();
+      const r = await getNamazvaktiTimes({ ...coords, date: day, school: 0 });
+      expect(r.source).toBe('namazvakti');
+    } finally {
+      spy.mockRestore();
+    }
+  });
+
   it('computes the calendar on the phone when the site cannot be reached — never AlAdhan', async () => {
     serve({
       '/tiles/50_5.json': () => response(200, COLOGNE_TILE),

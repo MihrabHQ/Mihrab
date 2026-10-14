@@ -99,10 +99,14 @@ async function writeJson(key: string, value: unknown): Promise<void> {
  * One tile of the city index: memory, then disk, then the CDN. `offline`
  * reads only what the phone holds, however old (an unknown tile is empty).
  */
+/** An empty square is asked again after a day: the index may not have reached it yet. */
+const EMPTY_TILE_TTL_MS = 24 * 60 * 60 * 1000;
+const tileTtl = (t: CachedTile) => (t.cities.length ? NAMAZVAKTI_TILE_TTL_MS : EMPTY_TILE_TTL_MS);
+
 async function loadTile(key: string, offline = false): Promise<CachedTile> {
   const now = Date.now();
   const mem = memTiles.get(key);
-  if (mem && (offline || now - mem.fetchedAt < NAMAZVAKTI_TILE_TTL_MS)) return mem;
+  if (mem && (offline || now - mem.fetchedAt < tileTtl(mem))) return mem;
   if (offline) {
     const disk = await readJson<CachedTile>(`${TILE_PREFIX}${key}`);
     if (disk) memTiles.set(key, disk);
@@ -112,7 +116,7 @@ async function loadTile(key: string, offline = false): Promise<CachedTile> {
   if (inFlight) return inFlight;
   const p = (async () => {
     const disk = mem ?? (await readJson<CachedTile>(`${TILE_PREFIX}${key}`));
-    if (disk && now - disk.fetchedAt < NAMAZVAKTI_TILE_TTL_MS) {
+    if (disk && now - disk.fetchedAt < tileTtl(disk)) {
       memTiles.set(key, disk);
       return disk;
     }
@@ -128,7 +132,7 @@ async function loadTile(key: string, offline = false): Promise<CachedTile> {
         cities = Array.isArray(body.cities) ? (body.cities as TileRow[]) : [];
       } else if (res.status === 404) {
         // A square of sea, or one the index has not reached yet:
-        // remembered as empty, and asked again when it ages out.
+        // remembered as empty for a day, then asked again.
         cities = [];
       } else {
         throw new Error(`HTTP ${res.status}`);
