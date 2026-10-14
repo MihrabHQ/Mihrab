@@ -68,6 +68,12 @@ export type NationalTableConfig = {
   /** Refresh a cached place when the index cannot be reached and the copy is older than this. */
   refreshTtlMs: number;
   indexPollIntervalMs: number;
+  /**
+   * The authority's own method, computed for the nearest listed place —
+   * served instead of the table when given (and not switched off for a
+   * test). The table stays, for the weekly check against the source.
+   */
+  calculate?: (place: NearestPlace, date: Date) => PrayerTimesResult;
 };
 
 type CityFile = {
@@ -141,6 +147,8 @@ export type NationalTable = {
   pollServerIndexNow(): Promise<void>;
   refetchNow(latitude: number, longitude: number): Promise<void>;
   _resetForTests(): void;
+  /** Tests: serve the table even where the method is computed. */
+  setServesCalculationForTests(v: boolean): void;
 };
 
 export function createNationalTable(config: NationalTableConfig): NationalTable {
@@ -149,6 +157,7 @@ export function createNationalTable(config: NationalTableConfig): NationalTable 
   const refreshInFlight = new Set<number>();
   let nextIndexPollAt = 0;
   let indexPollInFlight: Promise<IndexFile | null> | null = null;
+  let servesCalculation = true;
 
   async function loadCachedCity(id: number): Promise<CityFile | null> {
     if (memCity.has(id)) return memCity.get(id) ?? null;
@@ -260,6 +269,7 @@ export function createNationalTable(config: NationalTableConfig): NationalTable 
             `away (> ${config.maxPlaceKm} km) — outside the table's coverage.`,
         );
       }
+      if (config.calculate && servesCalculation) return config.calculate(near, params.date);
       const dateKey = formatLocalDate(params.date);
       const cached = await loadCachedCity(near.id);
       void maybeRefresh(near.id, cached);
@@ -299,6 +309,9 @@ export function createNationalTable(config: NationalTableConfig): NationalTable 
       refreshInFlight.clear();
       nextIndexPollAt = 0;
       indexPollInFlight = null;
+    },
+    setServesCalculationForTests(v: boolean) {
+      servesCalculation = v;
     },
   };
 }

@@ -45,15 +45,18 @@ describe('verify-methods', () => {
 
   it('tells a place the authority computes elsewhere from a wrong method', () => {
     if (!haveTable('kemenag')) return;
-    // Without accepted.json: the regencies the ministry computes at a
-    // point of its own are off by a constant, and say so; the method is not.
-    const r = verifyAuthority(byId('kemenag'), []);
+    // Every regency is at the ministry's own point now, so one is moved a
+    // degree east: it is off by a constant four minutes, and says so; the
+    // method is not.
+    const k = byId('kemenag');
+    const moved = { ...k, places: () => k.places().map(p => (p.file === '242.json' ? { ...p, lon: p.lon + 1 } : p)) };
+    const r = verifyAuthority(moved, []);
     expect(r.misplaced.length).toBeGreaterThan(0);
     expect(r.alarmReasons.join(' ')).toMatch(/coordinates/);
     expect(r.within / r.times).toBeGreaterThan(0.95);
     // The entries set the whole place aside.
     const accepted: Accepted[] = r.misplaced.map(m => ({ authority: 'kemenag', place: m.place, note: 'test' }));
-    const after = verifyAuthority(byId('kemenag'), accepted);
+    const after = verifyAuthority(moved, accepted);
     expect(after.misplaced).toHaveLength(0);
     expect(after.accepted).toBeGreaterThan(0);
   });

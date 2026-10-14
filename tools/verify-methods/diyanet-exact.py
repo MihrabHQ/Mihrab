@@ -328,3 +328,22 @@ def _moon(sign, amp=6.454):
         return dec, eot + sign * 4 * dl
     return f
 MODELS['noaa_moon+'] = _moon(1); MODELS['noaa_moon-'] = _moon(-1)
+
+def _doy(D):
+    """Day of year (1 = 1 Jan) and fraction of day UT, from days since J2000.0."""
+    import datetime as _dt
+    D = np.asarray(D, dtype=float)
+    jd0 = np.floor(D + 0.5)        # whole days since 2000-01-01 (0h UT)
+    frac = D + 0.5 - jd0
+    base = _dt.date(2000, 1, 1).toordinal()
+    doy = np.array([(_dt.date.fromordinal(int(base + j)) - _dt.date(_dt.date.fromordinal(int(base + j)).year, 1, 1)).days + 1 for j in np.atleast_1d(jd0)])
+    return doy.reshape(np.shape(D)) if np.ndim(D) else doy[0], frac
+
+def spencer(D):
+    doy, frac = _doy(D)
+    g = 2 * np.pi / 365 * (doy - 1 + (frac * 24 - 12) / 24)
+    eot = 229.18 * (0.000075 + 0.001868 * np.cos(g) - 0.032077 * np.sin(g) - 0.014615 * np.cos(2 * g) - 0.040849 * np.sin(2 * g))
+    dec = 0.006918 - 0.399912 * np.cos(g) + 0.070257 * np.sin(g) - 0.006758 * np.cos(2 * g) + 0.000907 * np.sin(2 * g) - 0.002697 * np.cos(3 * g) + 0.00148 * np.sin(3 * g)
+    return dec, eot
+MODELS['spencer'] = rounded(spencer)
+MODELS['spencer_eot'] = _mix('m28full', 'spencer')

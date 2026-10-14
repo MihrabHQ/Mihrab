@@ -970,8 +970,8 @@
   "kabId": "38913e1d6a7b94cb0f55994f679f5956",
   "prov": "Kepulauan Riau",
   "name": "PEKAJANG KAB. LINGGA",
-  "lat": -0.86,
-  "lon": 105.22,
+  "lat": 0.8005,
+  "lon": 105.2653,
   "heightM": 0
  },
  {
@@ -2447,8 +2447,8 @@
   "kabId": "f340f1b1f65b6df5b5e3f94d95b11daf",
   "prov": "Jawa Timur",
   "name": "KAB. GRESIK",
-  "lat": -5.7933,
-  "lon": 112.6598,
+  "lat": -7.167,
+  "lon": 112.614,
   "heightM": 483
  },
  {
@@ -3582,8 +3582,8 @@
   "kabId": "8dd48d6a2e2cad213179a3992c0be53c",
   "prov": "Kalimantan Tengah",
   "name": "KAB. SERUYAN",
-  "lat": -2.1202,
-  "lon": 112.665,
+  "lat": -3.3775,
+  "lon": 112.5528,
   "heightM": 48
  },
  {
@@ -3882,8 +3882,8 @@
   "kabId": "0584ce565c824b7b7f50282d9a19945b",
   "prov": "Sulawesi Selatan",
   "name": "KAB. KEPULAUAN SELAYAR",
-  "lat": -7.3015,
-  "lon": 120.4627,
+  "lat": -6.12,
+  "lon": 120.4605,
   "heightM": 141
  },
  {

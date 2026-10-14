@@ -247,3 +247,37 @@ Maghrib 96.4 %.
 - The `habous` check compares to the minute, at those points and dips.
 - `mor`-prefixed research scripts were throwaway; the method's constants
   can be re-derived with `table-exact.py morocco fit|dipfit|excess`.
+
+## Indonesia: Kemenag's method, to the minute
+
+The reference is Kemenag's table for all 517 regencies and cities
+(October–December 2026; the site answers only from GitHub's runners, so
+the window is what the dataset holds). The method (method 20,
+`src/providers/indonesiaMethod.ts`), read with `table-exact.py` and the
+per-place / per-day window scripts:
+
+- **A precise sun** at each prayer's own moment (Meeus's apparent sun),
+  iterated; Dhuhr at the transit.
+- Fajr 20°, Isha 18°; **sunrise and Maghrib at −1°**, and at −2° in the
+  56 regencies the ministry classes as highland (a flat 4.5 minutes was the
+  old stand-in; the degree fits, the minutes do not). In six highland
+  regencies of Papua (Intan Jaya, Lanny Jaya, Paniai, Puncak, Puncak Jaya,
+  Pegunungan Arfak) the degree is taken off Fajr and Isha as well.
+- **Everything rounded up**, after two minutes (Fajr, Asr, Maghrib, Isha),
+  three (Dhuhr) and minus three (sunrise). With those the margins between
+  the prayers come out whole minutes to 0.01 min across the country —
+  which is how the −1° horizon was found.
+- **Asr** is the open part. The noon shadow with the declination of noon,
+  and the hour angle from the sun at the moment, leaves a drift from −3 s
+  in October to +4 s in December, the same at every latitude. Taking the
+  shadow's declination 90 minutes before noon and the hour angle's sun at
+  five hours after noon flattens it; that fits, it is not a rule anyone
+  has published, and three months cannot say it holds in June.
+- Four regencies were geocoded to the wrong place: Gresik (Bawean island
+  for the town), Seruyan, Kepulauan Selayar and Pekajang (Lingga). They
+  are at the points the tables give now, in both place files.
+
+**Result:** 99.47 % of 266,772 times on the printed minute, every one within
+a minute: Fajr, sunrise, Dhuhr, Maghrib and Isha about 99.6 %, Asr 98.7 %.
+
+- The `kemenag` check compares to the minute, at those points and classes.

@@ -29,6 +29,8 @@ export type Place = {
   horizonMin?: number;
   /** The authority's own horizon dip for the place, degrees (Morocco's, fitted from its tables). */
   horizonDipDeg?: number;
+  /** Kemenag's Papuan highland regencies: the highland degree on Fajr and Isha too. */
+  twilightDip?: boolean;
 };
 
 export type Authority = {
@@ -278,15 +280,24 @@ export const AUTHORITIES: Authority[] = [
     folder: 'indonesia',
     method: 20,
     school: 0,
-    toleranceMin: 1,
-    maxOutsideShare: 0.05,
-    hardMaxMin: 10,
+    // The ministry's own method (indonesiaMethod.ts) at each regency's point
+    // and class (kemenagMethodPoints.json): the check is to the minute.
+    // About 0.5 % of times — most of them Asr, whose rule is the least
+    // settled — land a minute the other side (tools/verify-methods/README.md).
+    toleranceMin: 0,
+    maxOutsideShare: 0.008,
+    hardMaxMin: 1,
     alarm: true,
-    places: () =>
-      readJson<IdPlace[]>(path.join(ROOT, 'src/providers/data/kemenagPlaces.json')).map(c => {
+    places: () => {
+      const points = readJson<Record<string, number[]>>(path.join(ROOT, 'src/providers/data/kemenagMethodPoints.json'));
+      return readJson<IdPlace[]>(path.join(ROOT, 'src/providers/data/kemenagPlaces.json')).map(c => {
         const province = /\(([^)]*)\)\s*$/.exec(c.nameEn ?? '')?.[1] ?? '';
-        return { file: `${c.id}.json`, name: c.nameEn ?? c.name, lat: c.lat, lon: c.lon, tz: indonesiaZone(province), heightM: c.heightM, horizonMin: c.horizonMin };
-      }),
+        const p = points[String(c.id)];
+        return p
+          ? { file: `${c.id}.json`, name: c.nameEn ?? c.name, lat: p[0], lon: p[1], tz: indonesiaZone(province), horizonMin: p[2] & 1 ? 1 : undefined, twilightDip: (p[2] & 2) !== 0 }
+          : { file: `${c.id}.json`, name: c.nameEn ?? c.name, lat: c.lat, lon: c.lon, tz: indonesiaZone(province), heightM: c.heightM, horizonMin: c.horizonMin };
+      });
+    },
   },
 ];
 

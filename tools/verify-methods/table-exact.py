@@ -32,6 +32,8 @@ AUTH = {
     # gathers the whole current year (the repo keeps only the coming window).
     'malaysia': dict(folder='malaysia', tz='Asia/Kuala_Lumpur', coords='src/providers/data/jakimPlaces.json',
                      root=os.path.expanduser('~/.cache/mihrab/malaysia-year')),
+    # Kemenag: a regency or city each; the zone (WIB/WITA/WIT) from each file's own timezone.
+    'indonesia': dict(folder='indonesia', tz='file', coords='src/providers/data/kemenagPlaces.json'),
 }
 KEYS = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha']
 
@@ -48,8 +50,9 @@ def mins(s):
 
 class Place:
     def __init__(self, auth, pid, lat, lon):
-        a = AUTH[auth]; tz = ZoneInfo(a['tz'])
-        days = json.load(open(os.path.join(data_root(auth), 'v1/cities', f'{pid}.json')))['days']
+        a = AUTH[auth]
+        doc = json.load(open(os.path.join(data_root(auth), 'v1/cities', f'{pid}.json')))
+        days = doc['days']; tz = ZoneInfo(doc.get('timezone') if a['tz'] == 'file' else a['tz'])
         self.id, self.lat0, self.lon0 = pid, lat, lon
         self.dates = sorted(days)
         ds = [dt.date(*map(int, k.split('-'))) for k in self.dates]
@@ -94,11 +97,18 @@ def _raw_event(self, lat, lon, sun, angles, h0, asr_signed, shadow, iters=3):
     def event(alt_of, sign, start):
         t = start.copy() if START != 'ut0' else np.zeros(len(self.D0))
         for _ in range(iters):
-            dec, eot = at(t + DEC_SHIFT)
+            dec, eot = at(t + DEC_SHIFT) if not (os.environ.get('ASR_ALL_NOON') and alt_of.__name__ == 'asr_alt') else at(t_noon)
+            if os.environ.get('ASR_EOT_NOON') and alt_of.__name__ == 'asr_alt': eot = at(t_noon)[1]
+            if os.environ.get('ASR_FIX_UT') and alt_of.__name__ == 'asr_alt':
+                dec, eot = at(np.full(len(self.D0), float(os.environ['ASR_FIX_UT'])))
+            if os.environ.get('ASR_HA_DEC_NOON') and alt_of.__name__ == 'asr_alt': dec = at(t_noon)[0]
+            if os.environ.get('ASR_EOT_SHIFT') and alt_of.__name__ == 'asr_alt': eot = at(t + float(os.environ['ASR_EOT_SHIFT']))[1]
+            if os.environ.get('ASR_AT') and alt_of.__name__ == 'asr_alt':
+                dec, eot = at(t_noon + float(os.environ['ASR_AT']))   # the afternoon's sun from one moment
             if DEC_AT != 'event': dec = at(fixed[DEC_AT])[0]
             if EOT_AT != 'event': eot = at(fixed[EOT_AT])[1]
             tr = 720 - 4 * lon - eot
-            alt = alt_of(at(t_noon)[0] if (os.environ.get('ASR_NOON_DEC') and alt_of.__name__ == 'asr_alt') else dec)
+            alt = alt_of(at(t_noon + float(os.environ.get('ASR_SHADOW_AT', '0')))[0] if (os.environ.get('ASR_NOON_DEC') and not os.environ.get('ASR_FIX_UT') and alt_of.__name__ == 'asr_alt') else dec)
             c = (np.sin(alt * RAD) - sp * np.sin(dec)) / (cp * np.cos(dec))
             with np.errstate(invalid='ignore'):
                 h = np.where(np.abs(c) <= 1, np.degrees(np.arccos(np.clip(c, -1, 1))) * 4, np.nan)
@@ -113,7 +123,10 @@ def _raw_event(self, lat, lon, sun, angles, h0, asr_signed, shadow, iters=3):
     def asr_alt(dec):
         z = lat - np.degrees(dec)
         tz_ = np.tan(z * RAD) if asr_signed else np.tan(np.abs(z) * RAD)
-        return np.degrees(np.arctan(1 / (shadow + tz_)))
+        h = np.degrees(np.arctan(1 / (shadow + tz_)))
+        if os.environ.get('ASR_REFR'):  # the shadow's altitude taken as apparent: the true sun sits lower by the refraction
+            h = h + float(os.environ['ASR_REFR']) * 1.02 / np.tan(np.radians(h + 10.3 / (h + 5.11))) / 60
+        return h
     out['asr'] = event(asr_alt, 1, t_noon + 200)
     return out
 Place.raw_event = _raw_event
@@ -128,8 +141,9 @@ def rounded(x, how):
 def misses(pl, lat, lon, cfg, fields=KEYS, detail=False):
     r = pl.raw(lat, lon, cfg['sun'], cfg['hour'], cfg['angles'], cfg['h0'], cfg['signed'])
     n = 0; per = {}
+    hm = getattr(pl, 'hmin', 0.0)
     for k in fields:
-        v = rounded(r[k] + cfg['margins'][k], cfg['round'])
+        v = rounded(r[k] + cfg['margins'][k] + (-hm if k == 'sunrise' else hm if k == 'maghrib' else 0), cfg['round'])
         d = (v - pl.p[k] + 720) % 1440 - 720
         ok = np.isfinite(d) & np.isfinite(pl.p[k])
         m = int((ok & (d != 0)).sum()); n += m; per[k] = (int(ok.sum()) - m, int(ok.sum()))
@@ -160,6 +174,8 @@ def load(auth):
             pl = Place(auth, c['id'], c['lat'], c['lon'])
             # a town on a hill: the horizon lowered by DIP_K * sqrt(height in m) degrees
             pl.dip = float(os.environ.get('DIP_K', '0')) * math.sqrt(max(c.get('heightM') or 0, 0))
+            # an authority's flat allowance for the horizon, minutes (Kemenag's highland regencies)
+            pl.hmin = float(c.get('horizonMin') or 0)
             out.append((c, pl))
     return out
 
@@ -242,7 +258,12 @@ if __name__ == '__main__':
     elif mode == 'fit':
         fields = arg('--fields', ','.join(KEYS)).split(',')
         tot = n = 0; res = {}
+        G = arg('--grid', 0, float)  # a coarse search first, +-G degrees, when the start may be far off
         for c, pl in places:
+            if G:
+                g = min((misses(pl, la, lo, cfg, fields), la, lo) for la in np.arange(pl.lat0 - G, pl.lat0 + G + 1e-9, 0.05)
+                        for lo in np.arange(pl.lon0 - G, pl.lon0 + G + 1e-9, 0.05))
+                pl.lat0, pl.lon0 = g[1], g[2]
             b = fit_place(pl, cfg, fields)
             mm, per = misses(pl, b[1], b[2], cfg, KEYS, detail=True)
             res[c['id']] = dict(name=c.get('nameEn') or c.get('name'), lat=b[1], lon=b[2], misses=mm, per=per)

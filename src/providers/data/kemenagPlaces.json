@@ -778,8 +778,8 @@
   "id": 96,
   "name": "PEKAJANG KAB. LINGGA",
   "nameEn": "PEKAJANG KAB. LINGGA (Kepulauan Riau)",
-  "lat": -0.86,
-  "lon": 105.22,
+  "lat": 0.8005,
+  "lon": 105.2653,
   "heightM": 0
  },
  {
@@ -1963,8 +1963,8 @@
   "id": 242,
   "name": "KAB. GRESIK",
   "nameEn": "KAB. GRESIK (Jawa Timur)",
-  "lat": -5.7933,
-  "lon": 112.6598,
+  "lat": -7.167,
+  "lon": 112.614,
   "heightM": 483
  },
  {
@@ -2872,8 +2872,8 @@
   "id": 355,
   "name": "KAB. SERUYAN",
   "nameEn": "KAB. SERUYAN (Kalimantan Tengah)",
-  "lat": -2.1202,
-  "lon": 112.665,
+  "lat": -3.3775,
+  "lon": 112.5528,
   "heightM": 48
  },
  {
@@ -3112,8 +3112,8 @@
   "id": 385,
   "name": "KAB. KEPULAUAN SELAYAR",
   "nameEn": "KAB. KEPULAUAN SELAYAR (Sulawesi Selatan)",
-  "lat": -7.3015,
-  "lon": 120.4627,
+  "lat": -6.12,
+  "lon": 120.4605,
   "heightM": 141
  },
  {

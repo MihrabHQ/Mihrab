@@ -27,6 +27,7 @@ import { SWEDEN_METHOD_ID } from './swedenMethodId';
 import { congressTimes } from './congressMethod';
 import { algeriaTimes } from './algeriaMethod';
 import { moroccoTimes, MOROCCO_DIP_PER_SQRT_M } from './moroccoMethod';
+import { kemenagTimes } from './indonesiaMethod';
 
 // ── METHOD IDS ARE ALADHAN'S, AND SO ARE THE ANGLES ───────────────────
 //
@@ -174,9 +175,13 @@ function parametersForMethod(methodId: number): CalculationParameters {
       // of 2026 (__tests__/fixtures/kemenag): with these, 91–97 % of the
       // times land on the ministry's minute and the rest a minute off.
       // AlAdhan's id 20 has the angles alone, so it runs two to three
-      // minutes early; where the ministry's table is available the app
-      // serves that (the 'kemenag' provider), and this is the method it
-      // falls back to past the published window.
+      // minutes early.
+      //
+      // October 2026: the times are computed by `kemenagTimes`
+      // (`indonesiaMethod.ts`), the ministry's method as its tables for all
+      // 517 regencies show it — on its minute for 99.47 % of them; these
+      // parameters are its description and the fallback where a time does
+      // not form.
       return angles(20, 18, { fajr: 2.5, sunrise: -3.1, dhuhr: 3.5, asr: 2.5, maghrib: 3.2, isha: 2.5 });
     case 22: {
       // Comunidade Islâmica de Lisboa: Fajr 18°, Dhuhr held five minutes
@@ -334,6 +339,11 @@ type LocalAdhanParams = {
    * `moroccoMethodPoints.json`). Takes the place of `heightM` when set.
    */
   horizonDipDeg?: number;
+  /**
+   * Kemenag's six Papuan highland regencies, where the highland degree is
+   * taken off Fajr and Isha as well (`indonesiaMethod.ts`).
+   */
+  twilightDip?: boolean;
 };
 
 /**
@@ -419,6 +429,15 @@ export function computeLocalAdhanInstants(params: LocalAdhanParams): PrayerInsta
     const at = congressTimes(latitude, params.longitude, y, m, day, params.school === 1 ? 2 : 1);
     return { fajr: toMinute(at.fajr), sunrise: toMinute(at.sunrise), dhuhr: toMinute(at.dhuhr), asr: toMinute(at.asr), maghrib: toMinute(at.maghrib), isha: toMinute(at.isha) };
   }
+  if (methodId === KEMENAG_METHOD_ID_LOCAL) {
+    // The ministry's method (`indonesiaMethod.ts`), on the minute as it prints.
+    const at = kemenagTimes(params.latitude, params.longitude, y, m, day, {
+      highland: (params.horizonMin ?? 0) > 0,
+      twilightDip: params.twilightDip,
+      asrShadow: params.school === 1 ? 2 : 1,
+    });
+    if (at) return at;
+  }
   if (methodId === MOROCCO_METHOD_ID_LOCAL) {
     // The ministry's method (`moroccoMethod.ts`), on the minute as it prints.
     const dip =
@@ -454,6 +473,7 @@ export function computeLocalAdhanInstants(params: LocalAdhanParams): PrayerInsta
 
 const ALGERIA_SIGNED_SHADOW_METHOD_ID = 19;
 const MOROCCO_METHOD_ID_LOCAL = 21;
+const KEMENAG_METHOD_ID_LOCAL = 20;
 
 export { SWEDEN_METHOD_ID };
 
