@@ -18,6 +18,7 @@ import { TYPE } from '../../theme/typography';
  *   • `notifPermDenied` — iOS notification permission denied.
  *   • `timezoneShift` — the clocks changed where the reader is, and every
  *     time on this screen has just moved with them (issue #56).
+ *   • `methodNote` — the calculation behind the times is not current.
  */
 type PermissionBannersProps = {
   usingLocalFallback: boolean;
@@ -40,6 +41,13 @@ type PermissionBannersProps = {
   timezoneShift?: { from: number; to: number } | null;
   onDismissTimezoneShift?: () => void;
   /**
+   * The calculation behind these times is not current — past its correction
+   * list, newer tables still being checked, or a method that has moved on
+   * and needs an app update (`methodCurrency.ts`). Dismissible.
+   */
+  methodNote?: string | null;
+  onDismissMethodNote?: () => void;
+  /**
    * The status bar's height, when these are the first thing on a page
    * that runs to the top edge of the screen — the phone's Today.
    *
@@ -57,6 +65,8 @@ function PermissionBannersImpl({
   onRetryFetch,
   timezoneShift,
   onDismissTimezoneShift,
+  methodNote,
+  onDismissMethodNote,
   topInset = 0,
 }: PermissionBannersProps) {
   const { t } = useTranslation();
@@ -66,7 +76,8 @@ function PermissionBannersImpl({
     !usingLocalFallback &&
     !exactAlarmDenied &&
     !notifPermDenied &&
-    !timezoneShift
+    !timezoneShift &&
+    !methodNote
   ) {
     return null;
   }
@@ -107,6 +118,21 @@ function PermissionBannersImpl({
           </Text>
           <Pressable
             onPress={onDismissTimezoneShift}
+            hitSlop={8}
+            accessibilityRole="button"
+            accessibilityLabel={t('common.dismiss', 'Dismiss')}>
+            <Text style={[styles.action, { color: palette.accent }]}>
+              {t('common.dismiss', 'Dismiss')}
+            </Text>
+          </Pressable>
+        </View>
+      )}
+
+      {methodNote && (
+        <View style={[styles.banner, { backgroundColor: palette.accentBg }, leadStyle()]}>
+          <Text style={[styles.text, { color: palette.text }]}>{methodNote}</Text>
+          <Pressable
+            onPress={onDismissMethodNote}
             hitSlop={8}
             accessibilityRole="button"
             accessibilityLabel={t('common.dismiss', 'Dismiss')}>

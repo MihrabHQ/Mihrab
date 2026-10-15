@@ -510,7 +510,8 @@
     "outOfRegion": "Keine Zeiten für deinen Standort — stattdessen würde {{fallback}} verwendet.",
     "footer": "Länderspezifische Quellen verwenden offizielle oder nationale Gebetstabellen, sofern wir sie integrieren. Im Laufe der Zeit können weitere Regionen hinzugefügt werden.",
     "namazvaktiNoCity": "Keine Zeiten für eine Stadt in Ihrer Nähe – die Methode des Kalenders würde stattdessen auf dem Telefon berechnet.",
-    "diyanetOwn": "Die Diyanet führt keinen Ort in deiner Nähe — dies ist ihre Methode für deinen eigenen Standort."
+    "diyanetOwn": "Die Diyanet führt keinen Ort in deiner Nähe — dies ist ihre Methode für deinen eigenen Standort.",
+    "forLocation": "Für {{place}}. Jeder Ihrer Orte behält seine eigene Quelle."
   },
   "providers": {
     "aladhan": {
@@ -531,11 +532,11 @@
     },
     "habous": {
       "name": "Marokko",
-      "desc": "Die vom Ministerium für Habous und Islamische Angelegenheiten veröffentlichten Zeiten für gelistete marokkanische Städte; dein Standort wird der nächstgelegenen Stadt zugeordnet."
+      "desc": "Die Methode des Ministeriums für Habous und islamische Angelegenheiten, auf Ihrem Telefon für die nächstgelegene gelistete marokkanische Stadt berechnet — sie stimmt minutengenau mit den veröffentlichten Zeiten des Ministeriums überein."
     },
     "marw": {
       "name": "Algerien",
-      "desc": "Die vom Ministerium für religiöse Angelegenheiten und Wakf veröffentlichten Zeiten für gelistete algerische Städte; dein Standort wird der nächstgelegenen Stadt zugeordnet."
+      "desc": "Die Methode des Ministeriums für religiöse Angelegenheiten und Wakfs, auf Ihrem Telefon für die nächstgelegene gelistete algerische Stadt berechnet — sie stimmt minutengenau mit den veröffentlichten Zeiten des Ministeriums überein."
     },
     "namazvakti": {
       "name": "Türkiye Takvimi (namazvakti.com)",
@@ -555,7 +556,7 @@
     },
     "kemenag": {
       "name": "Indonesien",
-      "desc": "Der veröffentlichte Zeitplan des Religionsministeriums (Kemenag) für Ihren Regierungsbezirk oder Ihre Stadt; Ihr Standort wird dem nächsten in der Liste zugeordnet."
+      "desc": "Die Methode des Religionsministeriums (Kemenag), auf Ihrem Telefon für Ihren Regierungsbezirk oder Ihre Stadt berechnet — sie stimmt minutengenau mit dem veröffentlichten Zeitplan des Ministeriums überein."
     }
   },
   "compass": {
@@ -2392,5 +2393,13 @@
     "title": "Ein neues Erscheinungsbild: Himmel",
     "body": "Lass den Himmel die App färben – Nacht, Morgendämmerung, Tag und Abenddämmerung, jede in ihrem eigenen Licht, über dem Countdown. Dieses eine Erscheinungsbild bleibt, ob dein Gerät im hellen oder dunklen Modus ist. Du kannst es jederzeit unter Einstellungen → Aussehen ändern.",
     "tryIt": "Himmel ausprobieren"
+  },
+  "methodCurrency": {
+    "beyond": "Diese Zeiten werden mit der Methode der Behörde und ihrer Korrekturliste berechnet, die bis zum {{date}} reicht. Danach gilt die Methode allein: fast immer die veröffentlichte Minute, an seltenen Tagen eine Minute Abweichung, bis eine neuere Liste eintrifft.",
+    "checking": "Die Behörde hat neue Zeiten veröffentlicht, die noch mit der Methode abgeglichen werden. Bis dahin kann eine Zeit um eine Minute abweichen.",
+    "update": "Diese Berechnung wurde aktualisiert. Aktualisieren Sie Mihrab, damit die Zeiten minutengenau bleiben.",
+    "beyondShort": "nur Methode nach dem {{date}}",
+    "checkingShort": "neue Zeiten werden geprüft",
+    "updateShort": "Mihrab für die neueste Berechnung aktualisieren"
   }
 }

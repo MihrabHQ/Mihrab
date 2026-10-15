@@ -1,50 +1,28 @@
 /**
- * Rough WGS84 bounding box for Morocco, including Western Sahara.
+ * Morocco, with Western Sahara, whose cities the Ministry of Habous lists.
+ * Gibraltar, the Canaries, Mauritania and Algeria are not.
  *
- * The same shape as `swedenRegion.ts` and for the same reason: automatic
- * provider selection has to answer "is this coordinate in the country this
- * dataset covers?" instantly and offline, before any network call. A
- * reverse-geocoded country code would be exact but needs the network and
- * arrives too late to choose a provider with.
- *
- * The box necessarily takes in a strip of western Algeria and northern
- * Mauritania — Morocco's eastern border runs from about -1° in the north to
- * -8° in the south, and no rectangle follows that. Two guards make it
- * tolerable: the Canary Islands are carved out explicitly, being Spanish and
- * squarely inside the box, and the dataset provider refuses a nearest city
- * further than a few hundred kilometres away, so a coordinate deep in
- * Algeria falls through to the global source rather than silently being
- * served Oujda's table.
- *
- * Ceuta and Melilla are deliberately NOT carved out: the ministry publishes
- * سبتة and مليلية in its own city list, so the dataset covers them.
+ * By the country's outline (`countryAt.ts`), so a border town or a strait is
+ * answered by the side it is on — and by the ministry's own list where the
+ * outline and the list disagree: it publishes Ceuta and Melilla, so they are
+ * covered, and a listed town the 1:10m border runs through (Ahfir, Lagouira)
+ * is its own.
  */
-const MA_MIN_LAT = 20.7;
-const MA_MAX_LAT = 36.05;
-const MA_MIN_LNG = -17.1;
-const MA_MAX_LNG = -0.95;
+import { countryAt } from './countryAt';
+import { nearestMoroccoCity } from '../providers/moroccoNearest';
 
-/** The Canaries: Spanish, and inside any box drawn around Morocco. */
-function isCanaryIslands(latitude: number, longitude: number): boolean {
-  return (
-    latitude >= 27.4 &&
-    latitude <= 29.5 &&
-    longitude >= -18.3 &&
-    longitude <= -13.3
-  );
-}
+/** Ceuta and Melilla, which the ministry publishes, are covered to their edges. */
+const EXCLAVE_KM = 8;
+/** A listed town the outline's border runs through. */
+const LISTED_TOWN_KM = 5;
 
-export function isCoordinateInMorocco(
-  latitude: number,
-  longitude: number,
-): boolean {
-  if (
-    latitude < MA_MIN_LAT ||
-    latitude > MA_MAX_LAT ||
-    longitude < MA_MIN_LNG ||
-    longitude > MA_MAX_LNG
-  ) {
-    return false;
-  }
-  return !isCanaryIslands(latitude, longitude);
+export function isCoordinateInMorocco(latitude: number, longitude: number): boolean {
+  const code = countryAt(latitude, longitude);
+  if (code === 'MA') return true;
+  if (code !== 'ES' && code !== 'DZ' && code !== 'MR') return false;
+  const near = nearestMoroccoCity(latitude, longitude);
+  if (!near) return false;
+  return near.distanceKm <= (code === 'ES' ? EXCLAVE_KM : LISTED_TOWN_KM) &&
+    // Spain's cities the ministry lists are its two on the African coast.
+    (code !== 'ES' || latitude < 35.95);
 }

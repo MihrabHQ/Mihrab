@@ -239,6 +239,7 @@ export function verifyAuthority(a: Authority, accepted: Accepted[]): Report {
         horizonDipDeg: place.horizonDipDeg,
         horizonDipMaghribDeg: place.horizonDipMaghribDeg,
         twilightDip: place.twilightDip,
+        afternoonPoint: place.afternoonPoint,
         jakimZone: place.jakimZone,
         date: new Date(y, m - 1, d),
         calculationMethod: a.method,

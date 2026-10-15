@@ -16,6 +16,9 @@ import { deviceUtcOffsetMinutes } from '../utils/utcOffset';
 import { AppState } from 'react-native';
 import { SWEDEN_METHOD_ID } from '../providers/swedenMethodId';
 import { isCoordinateInTurkey } from '../utils/turkeyRegion';
+import { autoMethodForCoords } from '../providers/autoMethod';
+import { methodAuthorityFor } from '../providers/methodCurrency';
+import { correctionsKey } from '../providers/swedenCorrections';
 
 export type StoredPrayerData = {
   provider: PrayerDataProviderId;
@@ -134,7 +137,17 @@ function cacheKey(p: Omit<StoredPrayerData, 'months'>): string {
     // The Congress method's revision, where it answers: a day cached under
     // an earlier one is computed again, not kept.
     ...(computedByCongressMethod(p) ? [`cm=${CONGRESS_METHOD_REVISION}`] : []),
+    // Likewise the ministries' methods (Morocco, Algeria, Indonesia).
+    ...(computedByMinistryMethod(p) ? [`mm=${MINISTRY_METHOD_REVISION}`] : []),
+    // And the correction list in force: days stored under an older one are
+    // computed again when a newer list arrives (`methodCurrency.ts`).
+    ...correctionListKey(p),
   ].join('|');
+}
+
+function correctionListKey(p: Omit<StoredPrayerData, 'months'>): string[] {
+  const a = methodAuthorityFor(p.provider, p.calculationMethod, p.latitude, p.longitude);
+  return a ? [`cl=${correctionsKey(a)}`] : [];
 }
 
 /**
@@ -148,6 +161,21 @@ function computedByCongressMethod(p: Omit<StoredPrayerData, 'months'>): boolean 
   if (p.provider === 'diyanet') return true;
   if (p.calculationMethod === SWEDEN_METHOD_ID || p.calculationMethod === 13) return true;
   return p.calculationMethod === 'auto' && isCoordinateInTurkey(p.latitude, p.longitude);
+}
+
+/**
+ * Raised when the Moroccan, Algerian or Indonesian method changes what it
+ * prints. 1: each computed for the nearest listed place with the ministry's
+ * correction list (Morocco's horizons and clock refitted; Karawang's
+ * afternoon point), and methods 20 and 21 computed on the phone rather than
+ * asked of AlAdhan.
+ */
+const MINISTRY_METHOD_REVISION = 1;
+const MINISTRY_METHODS = new Set([19, 20, 21]);
+function computedByMinistryMethod(p: Omit<StoredPrayerData, 'months'>): boolean {
+  if (p.provider === 'habous' || p.provider === 'marw' || p.provider === 'kemenag') return true;
+  const method = p.calculationMethod === 'auto' ? autoMethodForCoords(p.latitude, p.longitude) : p.calculationMethod;
+  return MINISTRY_METHODS.has(method);
 }
 
 /** Race a promise against a timeout that throws if the promise hangs. */

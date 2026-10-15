@@ -56,18 +56,6 @@ const OUJDA = { latitude: 34.6867, longitude: -1.9114 };
 
 const six = (t: Record<string, string | undefined>) =>
   ['Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'].map(k => t[k]);
-/** A computed time is on the phone's clock; the Ministry prints Algeria's (UTC+1 all year). */
-const onAlgiersClock = (date: Date, hhmm: string | undefined) => {
-  if (!hhmm) return hhmm;
-  const [h, m] = hhmm.split(':').map(Number);
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate(), h, m).toLocaleTimeString('en-GB', {
-    timeZone: 'Africa/Algiers',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-  });
-};
-const sixInAlgiers = (date: Date, t: Record<string, string | undefined>) => six(t).map(x => onAlgiersClock(date, x));
 
 beforeEach(async () => {
   await AsyncStorage.clear();
@@ -147,7 +135,8 @@ describe('the Ministry’s times, as it prints them', () => {
     ['Algiers, last day of 1448', ALGIERS, new Date(2027, 5, 5), ['03:40', '05:30', '12:47', '16:38', '20:07', '21:46']],
   ])('%s', async (_label, at, date, expected) => {
     const r = await getMarwDatasetTimes({ ...(at as typeof ALGIERS), date: date as Date });
-    expect(sixInAlgiers(date as Date, r.timings)).toEqual(expected);
+    // on Algeria's clock, as the Ministry prints it, whatever the phone's
+    expect(six(r.timings)).toEqual(expected);
     expect(r.timezone).toBe('Africa/Algiers');
     expect(r.source).toBe('local');
   });
@@ -156,7 +145,7 @@ describe('the Ministry’s times, as it prints them', () => {
     // The textbook formula says 15:55; the Ministry publishes 15:42, and the
     // mosques there pray by the Ministry.
     const r = await getMarwDatasetTimes({ ...IN_GUEZZAM, date: new Date(2027, 5, 5) });
-    expect(onAlgiersClock(new Date(2027, 5, 5), r.timings.Asr)).toBe('15:42');
+    expect(r.timings.Asr).toBe('15:42');
   });
 
   it('computes the Ministry’s method for the city past the published year', async () => {
@@ -175,8 +164,8 @@ describe('who gets it', () => {
     }
   });
 
-  it('takes Tlemcen and Tindouf back from Morocco’s rectangle', () => {
-    expect(isCoordinateInMorocco(TLEMCEN.latitude, TLEMCEN.longitude)).toBe(true);
+  it('gives Tlemcen and Tindouf to Algeria, by the border', () => {
+    expect(isCoordinateInMorocco(TLEMCEN.latitude, TLEMCEN.longitude)).toBe(false);
     expect(regionalProviderForCoords(TLEMCEN)).toBe('marw');
     expect(regionalProviderForCoords({ latitude: 27.6711, longitude: -8.1474 })).toBe('marw');
   });
@@ -203,7 +192,7 @@ describe('the fetch chain', () => {
       school: 1, // a Hanafi setting left over from elsewhere does not apply
     });
     expect(r.source).toBe('local');
-    expect(onAlgiersClock(new Date(2026, 9, 8), r.timings.Asr)).toBe('15:51');
+    expect(r.timings.Asr).toBe('15:51');
   });
 
   it('computes the Algeria method past the published year, without AlAdhan', async () => {
@@ -217,18 +206,9 @@ describe('the fetch chain', () => {
     expect(r.source).toBe('local');
     // Within two minutes of the Ministry's last published day.
     const toMin = (t: string) => Number(t.slice(0, 2)) * 60 + Number(t.slice(3));
-    const inAlgiers = (hhmm: string) => {
-      const [h, m] = hhmm.split(':').map(Number);
-      return new Date(2027, 5, 6, h, m).toLocaleTimeString('en-GB', {
-        timeZone: 'Africa/Algiers',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false,
-      });
-    };
     const last = ['03:40', '05:30', '12:47', '16:38', '20:07', '21:46'].map(toMin);
     six(r.timings).forEach((t, i) =>
-      expect(Math.abs(toMin(inAlgiers(t!)) - last[i])).toBeLessThanOrEqual(2),
+      expect(Math.abs(toMin(t!) - last[i])).toBeLessThanOrEqual(2),
     );
   });
 
@@ -240,7 +220,7 @@ describe('the fetch chain', () => {
       calculationMethod: 'auto',
       school: 0,
     });
-    expect(sixInAlgiers(new Date(2026, 9, 8), r.timings)).toEqual(['05:42', '07:06', '12:53', '16:10', '18:43', '19:59']);
+    expect(six(r.timings)).toEqual(['05:42', '07:06', '12:53', '16:10', '18:43', '19:59']);
   });
 
   it('computes the method on the device for AlAdhan users in Algeria', async () => {

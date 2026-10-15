@@ -85,3 +85,16 @@ export const HIJRI_OVERRIDES_URL =
 /** How often a phone asks for it. An isbat is announced on the evening
  *  before the month begins, so a few hours is what keeps that night right. */
 export const HIJRI_OVERRIDES_POLL_MS = 3 * 60 * 60 * 1000; // 3 hours
+
+// ── THE METHODS' CERTIFICATION AND CORRECTION LISTS ──────────────────
+//
+// MihrabHQ/mihrab-methods certifies each computed method against its
+// authority's tables and publishes the correction list it certified
+// (`methodCurrency.ts`). A newer list for this build's method is taken
+// within a day; a method that has moved on is reported, not guessed at.
+
+export const METHODS_CERTIFICATION_URL =
+  'https://raw.githubusercontent.com/MihrabHQ/mihrab-methods/main/certification.json';
+export const METHODS_CORRECTIONS_BASE_URL =
+  'https://raw.githubusercontent.com/MihrabHQ/mihrab-methods/main/data/corrections';
+export const METHODS_CERTIFICATION_POLL_MS = 12 * 60 * 60 * 1000; // 12 hours

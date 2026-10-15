@@ -54,12 +54,10 @@ describe('outside', () => {
     expect(isCoordinateInMorocco(lat, lng)).toBe(false);
   });
 
-  it('admits the overspill it cannot avoid', () => {
-    // Tlemcen is in Algeria and inside the box: Morocco's eastern border
-    // runs from about -1° in the north to -8° in the south and no rectangle
-    // follows that. This is documented rather than pretended away — the
-    // dataset's distance cap is what stops an Algerian coordinate being
-    // served Oujda's table.
-    expect(isCoordinateInMorocco(34.8828, -1.315)).toBe(true);
+  it('follows the border, so Algeria’s side of it is not Morocco', () => {
+    // A rectangle took in Tlemcen; the country's outline does not.
+    expect(isCoordinateInMorocco(34.8828, -1.315)).toBe(false); // Tlemcen
+    expect(isCoordinateInMorocco(34.85, -1.73)).toBe(false); // Maghnia
+    expect(isCoordinateInMorocco(32.05, -1.25)).toBe(false); // Beni Ounif, beside Figuig
   });
 });

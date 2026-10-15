@@ -510,7 +510,8 @@
     "outOfRegion": "Bulunduğun yer için vakit yok — onun yerine {{fallback}} kullanılır.",
     "footer": "Ülkeye özgü kaynaklar, entegre ettiğimiz resmi veya ulusal dua tablolarını kullanır. Zamanla daha fazla bölge eklenebilir.",
     "namazvaktiNoCity": "Yakınınızdaki bir şehir için vakit yok — takvimin yöntemi telefonda hesaplanır.",
-    "diyanetOwn": "Diyanet yakınınızda bir yer listelemiyor — bu, kendi konumunuz için onun yöntemidir."
+    "diyanetOwn": "Diyanet yakınınızda bir yer listelemiyor — bu, kendi konumunuz için onun yöntemidir.",
+    "forLocation": "{{place}} için. Konumlarınızın her biri kendi kaynağını korur."
   },
   "providers": {
     "aladhan": {
@@ -531,11 +532,11 @@
     },
     "habous": {
       "name": "Fas",
-      "desc": "Habous ve İslami İşler Bakanlığı’nın listelenen Fas şehirleri için yayımladığı vakitler; konumunuz listedeki en yakın şehirle eşleştirilir."
+      "desc": "Habous ve İslami İşler Bakanlığı'nın yöntemi, telefonunuzda listedeki en yakın Fas şehri için hesaplanır — bakanlığın yayımladığı vakitlerle dakikası dakikasına uyar."
     },
     "marw": {
       "name": "Cezayir",
-      "desc": "Din İşleri ve Vakıflar Bakanlığı'nın listelenen Cezayir şehirleri için yayımladığı vakitler; konumunuz listedeki en yakın şehirle eşleştirilir."
+      "desc": "Din İşleri ve Vakıflar Bakanlığı'nın yöntemi, telefonunuzda listedeki en yakın Cezayir şehri için hesaplanır — bakanlığın yayımladığı vakitlerle dakikası dakikasına uyar."
     },
     "namazvakti": {
       "name": "Türkiye Takvimi (namazvakti.com)",
@@ -555,7 +556,7 @@
     },
     "kemenag": {
       "name": "Endonezya",
-      "desc": "Din İşleri Bakanlığı’nın (Kemenag) ilçeniz veya şehriniz için yayımladığı cetvel; konumunuz listedeki en yakınıyla eşleştirilir."
+      "desc": "Din İşleri Bakanlığı'nın (Kemenag) yöntemi, telefonunuzda bölgeniz veya şehriniz için hesaplanır — bakanlığın yayımladığı takvimle dakikası dakikasına uyar."
     }
   },
   "compass": {
@@ -2392,5 +2393,13 @@
     "title": "Yeni bir görünüm: Gökyüzü",
     "body": "Gökyüzü uygulamayı boyasın: gece, şafak, gündüz ve alacakaranlık, her biri kendi ışığında, geri sayımın üzerinde. Cihazınız açık ya da koyu modda olsun bu tek görünüm korunur. İstediğiniz zaman Ayarlar → Dış görünüş'ten değiştirebilirsiniz.",
     "tryIt": "Gökyüzü'nü dene"
+  },
+  "methodCurrency": {
+    "beyond": "Bu vakitler kurumun yöntemi ve {{date}} tarihine kadar geçerli düzeltme listesiyle hesaplanır. Sonrasında yalnızca yöntem kullanılır: neredeyse her zaman yayımlanan dakika, nadir bir günde bir dakika fark; daha yeni liste gelene kadar.",
+    "checking": "Kurum, yöntemle henüz karşılaştırılmakta olan yeni vakitler yayımladı. Bu tamamlanana kadar bir vakit bir dakika farklı olabilir.",
+    "update": "Bu hesaplama güncellendi. Vakitlerin yayımlanan dakikada kalması için Mihrab'ı güncelleyin.",
+    "beyondShort": "{{date}} sonrası yalnızca yöntem",
+    "checkingShort": "yeni vakitler kontrol ediliyor",
+    "updateShort": "en son hesaplama için Mihrab'ı güncelleyin"
   }
 }

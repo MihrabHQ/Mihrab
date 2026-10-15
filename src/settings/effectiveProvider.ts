@@ -87,8 +87,10 @@ export function getEffectiveDataProvider(
   // loads. The reverse — forcing a regional source on someone inside its
   // country — is left to automatic mode, because a deliberate pick of
   // something else is a choice worth respecting.
+  // Not covered: what Automatic picks there — the source that fits best
+  // (`locationProviders.ts` also turns the location's setting to Automatic).
   if (!regionalProviderCovers(dataProvider, coords)) {
-    return AUTO_DEFAULT_OUTSIDE_SWEDEN;
+    return regionalProviderForCoords(coords) ?? AUTO_DEFAULT_OUTSIDE_SWEDEN;
   }
   return dataProvider;
 }

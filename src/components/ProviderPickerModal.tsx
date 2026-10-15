@@ -84,9 +84,9 @@ function ProviderPickerModalImpl({
    *
    * A national source only holds tables for its own country. Pick Sweden
    * from Cairo and nothing warns you, nothing fails, and the app quietly
-   * serves AlAdhan instead — `getEffectiveDataProvider` redirects rather
-   * than mapping Cairo to the nearest Swedish city, which is the right
-   * call and was completely invisible. The row said Sweden, the times
+   * serves another source instead — the location goes back to Automatic
+   * (`locationProviders.ts`) rather than mapping Cairo to the nearest
+   * Swedish city, which is the right call and was completely invisible. The row said Sweden, the times
    * were AlAdhan's, and the two never met.
    *
    * So the list is told where the user is. One row is marked as the one
@@ -105,6 +105,12 @@ function ProviderPickerModalImpl({
     [coords, settings.dataProvider],
   );
   const fallbackLabel = getProviderLabel(AUTO_DEFAULT_OUTSIDE_SWEDEN);
+  const placeName =
+    settings.locationMode !== 'manual'
+      ? t('locations.useAuto', 'My location')
+      : (settings.locationPresets.find(p => p.id === settings.activeLocationPresetId)?.name ??
+        settings.manualLocationLabel ??
+        `${settings.manualLatitude.toFixed(2)}°, ${settings.manualLongitude.toFixed(2)}°`);
   // namazvakti.com has no country outline — it covers the cities it lists,
   // worldwide — so its row asks the city index, and only while open.
   const nvCoverage = useNamazvaktiCoverage(coords, visible);
@@ -298,6 +304,10 @@ function ProviderPickerModalImpl({
           <Text style={[styles.modalTitle, { color: palette.text }]}>
             {t('provider.modalTitle')}
           </Text>
+          {/* Each location keeps its own source (`locationProviders.ts`): say which this is for. */}
+          <Text style={[styles.modalSubtitle, { color: palette.muted }]}>
+            {t('provider.forLocation', { place: placeName })}
+          </Text>
           <FlatList
             data={listData}
             keyExtractor={keyExtractor}
@@ -356,6 +366,12 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.lg,
     paddingHorizontal: SPACING.lg,
     borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  modalSubtitle: {
+    fontSize: TYPE.footnote.fontSize,
+    paddingHorizontal: SPACING.lg,
+    marginTop: -SPACING.xs,
+    marginBottom: SPACING.sm,
   },
   titleRow: {
     flexDirection: 'row',

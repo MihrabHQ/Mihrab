@@ -15,6 +15,7 @@ import {
   setHijriCalendar,
 } from '../hijri/calendar';
 import { loadCachedHijriOverrides } from '../hijri/overrides';
+import { loadCachedMethodCurrency } from '../providers/methodCurrency';
 import {
   coerceCustomAngle,
   coerceHighLatitudeRule,
@@ -30,6 +31,7 @@ import {
   stripSecureFields,
   type SecureSettings,
 } from './secureStorage';
+import { coerceLocationProviders, seedLocationProviders } from './locationProviders';
 import {
   DEFAULT_SETTINGS,
   PRAYER_DATA_PROVIDER_IDS,
@@ -180,6 +182,8 @@ export function loadSettings(): Promise<PrayerAppSettings> {
       setHijriCalendar(s.hijriCalendar, s.hijriAdjustDays);
       // …with the last announced corrections this phone downloaded.
       void loadCachedHijriOverrides();
+      // …and the newest correction lists it downloaded for the methods it computes.
+      void loadCachedMethodCurrency();
       // And every calculation after this is under the user's high-latitude
       // rule and custom angles, in the same places.
       setCalculationPreferences(s);
@@ -474,6 +478,10 @@ async function loadSettingsUncached(): Promise<PrayerAppSettings> {
   ) {
     merged.activeLocationPresetId = undefined;
   }
+  // Each location's own prayer-time source; settings from before it get
+  // every location seeded with the one choice they shared.
+  merged.locationProviders = coerceLocationProviders(merged.locationProviders, PRAYER_DATA_PROVIDER_IDS);
+  Object.assign(merged, seedLocationProviders(merged));
   // Saved accent colours: absent on every blob written before they
   // existed, so an upgrade lands on an empty shelf rather than on
   // `undefined` — and anything that is not a hex is dropped rather than

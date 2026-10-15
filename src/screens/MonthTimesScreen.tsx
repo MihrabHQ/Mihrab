@@ -17,6 +17,8 @@ import {
 } from '../prayer/loadMonthPrayerTimes';
 import { getEffectiveDataProvider } from '../settings/effectiveProvider';
 import { useTableFallback } from '../hooks/useTableFallback';
+import { useMethodCurrency } from '../hooks/useMethodCurrency';
+import { methodCurrencyNote } from '../prayer/methodCurrencyNote';
 import { DISPLAY_ORDER } from '../types/prayer';
 import { injectNightTimes } from '../utils/nightTimes';
 import { injectDaruriTimes } from '../prayer/daruriTimes';
@@ -89,6 +91,9 @@ export function MonthTimesScreen() {
     [settings.dataProviderAuto, settings.dataProvider, coordsForProvider],
   );
   const tableFallback = useTableFallback(effectiveProvider, coordsForProvider, settings.calculationMethod, settings.school);
+  // The month's last day: a month that runs past the correction list says so.
+  const currency = useMethodCurrency(effectiveProvider, coordsForProvider, settings.calculationMethod, new Date(viewYear, viewMonth + 1, 0));
+  const methodNote = currency ? methodCurrencyNote(t, currency, i18n.language, true) : null;
 
   const monthTitle = useMemo(() => {
     const d = new Date(viewYear, viewMonth, 1);
@@ -285,6 +290,7 @@ export function MonthTimesScreen() {
       school={settings.school}
       cacheStatus={cacheStatus}
       tableFallback={tableFallback === true}
+      methodNote={methodNote}
       refreshingCache={refreshingCache}
       refreshProgress={refreshProgress}
       loading={loading}

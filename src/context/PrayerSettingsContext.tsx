@@ -12,6 +12,7 @@ import { setActiveClockFormat } from '../utils/activeClock';
 import { setFullScreenAlarmSkyTheme } from '../notifications/fullScreenAlarm';
 import { restoreSkyTheme } from '../theme/skyTheme';
 import { loadSettings, saveSettings } from '../settings/storage';
+import { applyLocationProviders } from '../settings/locationProviders';
 import { bootMark } from '../boot/bootTimeline';
 import { setHijriCalendar } from '../hijri/calendar';
 import {
@@ -85,6 +86,10 @@ export type LocationSlice = Pick<
   | 'locationOnboardingComplete'
   | 'locationPresets'
   | 'activeLocationPresetId'
+  // Each location's own source, shown in the location lists.
+  | 'locationProviders'
+  | 'dataProvider'
+  | 'dataProviderAuto'
 >;
 
 export type NotificationsSlice = Pick<
@@ -225,7 +230,10 @@ export function PrayerSettingsProvider({
 
   const updateSettings = useCallback((patch: Partial<PrayerAppSettings>) => {
     setSettings(prev => {
-      const next = { ...prev, ...patch };
+      // Each location keeps its own prayer-time source (`locationProviders.ts`):
+      // a change of location brings its choice in, a change of source stays
+      // with the location it was made for.
+      const next = applyLocationProviders(prev, patch);
       // The last GPS fix (`lastFetched*`, `autoLocationLabel`) survives a
       // mode switch on purpose. It used to be wiped here so automatic
       // never briefly showed a saved city's times — but the only reason it
@@ -285,6 +293,9 @@ export function PrayerSettingsProvider({
       locationOnboardingComplete: settings.locationOnboardingComplete,
       locationPresets: settings.locationPresets,
       activeLocationPresetId: settings.activeLocationPresetId,
+      locationProviders: settings.locationProviders,
+      dataProvider: settings.dataProvider,
+      dataProviderAuto: settings.dataProviderAuto,
     }),
     [
       settings.locationMode,
@@ -297,6 +308,9 @@ export function PrayerSettingsProvider({
       settings.locationOnboardingComplete,
       settings.locationPresets,
       settings.activeLocationPresetId,
+      settings.locationProviders,
+      settings.dataProvider,
+      settings.dataProviderAuto,
     ],
   );
 

@@ -5,8 +5,9 @@ import { getIslamiskaForbundetDatasetTimes } from './islamiskaForbundetDataset';
 import { getHabousDatasetTimes } from './habousDataset';
 import { getMarwDatasetTimes } from './marwDataset';
 import { computeNamazvaktiMethodTimes, getNamazvaktiTimes, namazvaktiCityPoint, nearestNamazvaktiCity } from './namazvakti';
-import { nationalTableFor } from './nationalTables';
+import { kemenagTimesNear, nationalTableFor } from './nationalTables';
 import { computeLocalAdhanTimes } from './localAdhan';
+import { MOROCCO_CLOCK, SWEDEN_CLOCK } from './locationClock';
 import { computeDiyanetTimes, DIYANET_METHOD_ID } from './diyanetMethod';
 import { autoMethodForCoords } from './autoMethod';
 import { ALGERIA_METHOD_ID } from './algeriaCities';
@@ -17,6 +18,7 @@ import {
   islamiskaForbundetCityCoords,
 } from './islamiskaForbundetNearest';
 import { isCoordinateInAlgeria } from '../utils/algeriaRegion';
+import { isCoordinateInMorocco } from '../utils/moroccoRegion';
 import { computeImsak, DEFAULT_IMSAK_OFFSET_MINUTES } from './imsak';
 import { validateTimings, validateTimingShape } from './validateTimings';
 
@@ -35,6 +37,8 @@ function swedenOnDevice(p: UnifiedFetchParams): PrayerTimesResult {
       date: p.date,
       calculationMethod: SWEDEN_METHOD_ID,
       school: p.school,
+      // a listed city's times on Sweden's clock, as the timetable prints them
+      placeClock: city ? SWEDEN_CLOCK : undefined,
     }),
     timezone: 'Europe/Stockholm',
     source: 'local',
@@ -48,26 +52,52 @@ const IFIS_STAND_IN_KM = 250;
 /** Within this of a listed Moroccan city, the ministry's method stands in for its table. */
 const HABOUS_STAND_IN_KM = 200;
 const MOROCCO_METHOD_ID = 21;
+const KEMENAG_METHOD_ID = 20;
 
 /**
- * Methods computed on the device whatever the provider: Algeria's, since
- * AlAdhan's own "Algeria" is the Ministry's angles without its Maghrib
- * margin (three minutes early) and its Asr without the Ministry's shadow;
- * Sweden's, Islamiska Förbundet's convention, which AlAdhan has no id
- * for at all; and Türkiye's, Diyanet's, which AlAdhan's id 13 gives as
- * the angles alone (`diyanetMethod.ts` computes it as Diyanet's tables
- * do). (Each authority is also its own provider — 'marw', 'diyanet',
- * 'islamiska_forbundet'; this is the method a user picks by hand
- * elsewhere, and the fallback past the listed cities.) Returns null when the
+ * Methods computed on the device whatever the provider, because each is an
+ * authority's own and AlAdhan's version of it is only its angles: Algeria's
+ * (19; AlAdhan lacks the Ministry's Maghrib margin and its signed Asr
+ * shadow), Indonesia's (20) and Morocco's (21), each read off the ministry's
+ * tables; Sweden's (24), which AlAdhan has no id for; and Türkiye's (13),
+ * Diyanet's. (Each authority is also its own provider — 'marw', 'kemenag',
+ * 'habous', 'islamiska_forbundet', 'diyanet'; this is the method a user
+ * picks by hand, or Automatic's, with another provider.) Inside the
+ * authority's country the method is computed for its nearest listed place,
+ * with its correction list, as the provider does — the ministry's printed
+ * minute; beyond them, for the reader's own spot. Returns null when the
  * method that applies is another.
  */
-const ON_DEVICE_METHODS: ReadonlySet<number> = new Set([ALGERIA_METHOD_ID, SWEDEN_METHOD_ID, DIYANET_METHOD_ID]);
-function onDeviceMethod(p: UnifiedFetchParams): PrayerTimesResult | null {
+const ON_DEVICE_METHODS: ReadonlySet<number> = new Set([
+  ALGERIA_METHOD_ID,
+  KEMENAG_METHOD_ID,
+  MOROCCO_METHOD_ID,
+  SWEDEN_METHOD_ID,
+  DIYANET_METHOD_ID,
+]);
+async function onDeviceMethod(p: UnifiedFetchParams): Promise<PrayerTimesResult | null> {
   const method =
     p.calculationMethod === 'auto'
       ? autoMethodForCoords(p.latitude, p.longitude)
       : p.calculationMethod;
   if (!ON_DEVICE_METHODS.has(method)) return null;
+  const at = { latitude: p.latitude, longitude: p.longitude, date: p.date, school: p.school };
+  let listed: PrayerTimesResult | null = null;
+  try {
+    if (method === ALGERIA_METHOD_ID && isCoordinateInAlgeria(p.latitude, p.longitude)) {
+      listed = await getMarwDatasetTimes(at);
+    } else if (method === MOROCCO_METHOD_ID && isCoordinateInMorocco(p.latitude, p.longitude) && !isCoordinateInAlgeria(p.latitude, p.longitude)) {
+      listed = await getHabousDatasetTimes(at);
+    } else if (method === KEMENAG_METHOD_ID) {
+      listed = kemenagTimesNear(p.latitude, p.longitude, p.date, p.school);
+    }
+  } catch {
+    /* beyond the listed places' reach: the method for the spot */
+  }
+  if (listed) {
+    validateTimingShape(listed.timings);
+    return listed;
+  }
   const local: PrayerTimesResult = {
     ...computeLocalAdhanTimes({
       latitude: p.latitude,
@@ -88,7 +118,7 @@ export async function fetchPrayerTimesUnified(
   let result: PrayerTimesResult;
   switch (p.provider) {
     case 'aladhan': {
-      const onDevice = onDeviceMethod(p);
+      const onDevice = await onDeviceMethod(p);
       if (onDevice) return onDevice;
       result = await fetchAladhanTimes({
         latitude: p.latitude,
@@ -127,14 +157,10 @@ export async function fetchPrayerTimesUnified(
       return swedenOnDevice(p);
     }
     case 'habous': {
-      // The Ministry of Habous's own published tables, from the prepared
-      // dataset. There is no live rung behind it: the ministry serves one
-      // Hijri month at a time and its endpoint is unreliable enough that
-      // scraping it per device would be worse than not. Past the published
-      // month the ministry's method is computed on the phone, for the
-      // nearest listed city and at its height — the ministry lowers the
-      // horizon for a town on a hill, which AlAdhan's id 21 cannot — and
-      // only outside the ministry's reach is AlAdhan asked.
+      // The Ministry of Habous's method, computed on the phone for the
+      // nearest listed city at the point and horizons the ministry computes
+      // it, with its correction list (`habousDataset.ts`). Beyond the listed
+      // cities' reach, AlAdhan.
       // Morocco's rectangle takes in a strip of western Algeria — Tlemcen,
       // Maghnia — so a user there who pinned Morocco reaches this case. They
       // are not Moroccan, and Oujda's table is not theirs: they get the
@@ -164,6 +190,7 @@ export async function fetchPrayerTimesUnified(
               date: p.date,
               calculationMethod: MOROCCO_METHOD_ID,
               school: 0,
+              placeClock: MOROCCO_CLOCK,
             }),
             source: 'local',
           };
@@ -182,11 +209,11 @@ export async function fetchPrayerTimesUnified(
       break;
     }
     case 'marw': {
-      // The Ministry of Religious Affairs and Wakfs's own table, from the
-      // prepared dataset (bundled for the year, refreshed from the CDN).
-      // Past the published year, or outside Algeria, the Algeria method is
-      // computed on the device — AlAdhan is not asked, because its id 19
-      // lacks the Ministry's Maghrib margin.
+      // The Ministry of Religious Affairs and Wakfs's method, computed on
+      // the phone for the nearest listed city at the point the Ministry
+      // computes it, with its correction list (`marwDataset.ts`). Outside
+      // Algeria, the Algeria method for the reader's own spot — AlAdhan is
+      // not asked, because its id 19 lacks the Ministry's Maghrib margin.
       try {
         result = await getMarwDatasetTimes({
           latitude: p.latitude,
@@ -214,9 +241,10 @@ export async function fetchPrayerTimesUnified(
     case 'muis':
     case 'jakim':
     case 'kemenag': {
-      // A national table (Singapore's MUIS, Malaysia's JAKIM, Indonesia's
-      // Kemenag): the authority's published day for the nearest listed
-      // place, from the phone's copy. Past the published window — JAKIM's
+      // A national source (Singapore's MUIS, Malaysia's JAKIM, Indonesia's
+      // Kemenag): the authority's day for the nearest listed place — the
+      // published table from the phone's copy for MUIS and JAKIM, the
+      // ministry's method with its correction list for Kemenag. Past the published window — JAKIM's
       // ends every 31 December until the January rebuild — the authority's
       // own method is computed on the phone (AlAdhan's ids 11, 17 and 20,
       // each fitted to the authority's own tables in `localAdhan.ts`) for

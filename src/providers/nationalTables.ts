@@ -18,8 +18,10 @@ import {
   NATIONAL_TABLE_REFRESH_TTL_MS,
 } from '../config/datasets';
 import type { PrayerDataProviderId } from '../settings/types';
-import { createNationalTable, type NationalTable, type NationalTableSeed, type TablePlace } from './nationalTable';
+import { createNationalTable, type NationalTable, type NationalTableSeed, type NearestPlace, type TablePlace } from './nationalTable';
+import type { PrayerTimesResult } from './types';
 import { computeLocalAdhanTimes } from './localAdhan';
+import { indonesiaClock } from './locationClock';
 import { fetchJakimLive, fetchMuisLive, jakimZoneCode } from './nationalLive';
 import kemenagPoints from './data/kemenagMethodPoints.json';
 
@@ -115,23 +117,39 @@ export const kemenagTable = createNationalTable({
   // its printed minute, every time, over the days its tables were checked.
   // Nothing is downloaded; the phone's clock is the zone.
   servesCalculation: true,
-  calculate: (place, date) => {
-    const p = KEMENAG_POINTS[String(place.id)];
-    const flags = p?.[2] ?? 0;
-    return {
-      ...computeLocalAdhanTimes({
-        latitude: p?.[0] ?? place.lat,
-        longitude: p?.[1] ?? place.lon,
-        horizonMin: flags & 1 ? 1 : place.horizonMin,
-        twilightDip: (flags & 2) !== 0,
-        date,
-        calculationMethod: 20,
-        school: 0,
-      }),
-      source: 'local',
-    };
-  },
+  calculate: (place, date) => kemenagAt(place, date, 0),
 });
+
+/** Kemenag's method for a listed regency, at the point(s) the ministry computes it, with its correction list. */
+function kemenagAt(place: NearestPlace, date: Date, school: number): PrayerTimesResult {
+  const p = KEMENAG_POINTS[String(place.id)];
+  const flags = p?.[2] ?? 0;
+  return {
+    ...computeLocalAdhanTimes({
+      latitude: p?.[0] ?? place.lat,
+      longitude: p?.[1] ?? place.lon,
+      horizonMin: flags & 1 ? 1 : place.horizonMin,
+      twilightDip: (flags & 2) !== 0,
+      afternoonPoint: p && p.length >= 5 ? ([p[3], p[4]] as const) : undefined,
+      date,
+      calculationMethod: 20,
+      school,
+      // on the regency's own clock, as Kemenag's table prints it
+      placeClock: indonesiaClock(place.nameEn),
+    }),
+    source: 'local',
+  };
+}
+
+/**
+ * Kemenag's times for the regency nearest a point (the method by hand, or
+ * Automatic, in Indonesia): null beyond the regencies' reach.
+ */
+export function kemenagTimesNear(latitude: number, longitude: number, date: Date, school: number): PrayerTimesResult | null {
+  if (!kemenagTable.covers(latitude, longitude)) return null;
+  const place = kemenagTable.nearest(latitude, longitude);
+  return place ? kemenagAt(place, date, school) : null;
+}
 
 export const NATIONAL_TABLES: Partial<Record<PrayerDataProviderId, NationalTable>> = {
   muis: muisTable,

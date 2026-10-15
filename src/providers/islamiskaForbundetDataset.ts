@@ -14,6 +14,7 @@ import { getNearestIslamiskaForbundetCityWithDistance, islamiskaForbundetCityCoo
 import { computeLocalAdhanTimes } from './localAdhan';
 import { SWEDEN_METHOD_ID } from './swedenMethodId';
 import { ProviderError } from './errors';
+import { SWEDEN_CLOCK } from './locationClock';
 import type { PrayerTimesResult } from './types';
 
 const PROVIDER = 'islamiska_forbundet';
@@ -63,6 +64,8 @@ export async function getIslamiskaForbundetDatasetTimes(params: {
       date: params.date,
       calculationMethod: SWEDEN_METHOD_ID,
       school: 0,
+      // on Sweden's clock, as the timetable prints it
+      placeClock: SWEDEN_CLOCK,
     }),
     timezone: DEFAULT_TZ,
     source: 'local',

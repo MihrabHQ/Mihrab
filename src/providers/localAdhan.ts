@@ -8,6 +8,7 @@ import {
 } from 'adhan';
 import type { PrayerTimesResult } from './types';
 import { formatLocalTime } from '../utils/prayerTimes';
+import { clockFormatter, type PlaceClock } from './locationClock';
 import { autoMethodForCoords } from './autoMethod';
 import { gregorianToHijri } from '../hijri/convert';
 import {
@@ -327,6 +328,13 @@ type LocalAdhanParams = {
   /** Minutes before Fajr that Imsak fires. Defaults to the canonical 10. */
   imsakOffsetMinutes?: number;
   /**
+   * The place's own clock, for a place listed by an authority whose table
+   * prints it there (`locationClock.ts`): the times are written on that
+   * clock when the phone is on another — as the table, and AlAdhan for the
+   * same place, show them. On the phone's clock otherwise.
+   */
+  placeClock?: PlaceClock;
+  /**
    * Height above sea level, metres, when the place is a listed one whose
    * authority lowers the horizon for it (see `horizonDip.ts`). Sunrise
    * comes earlier and Maghrib later by the dip; nothing else moves.
@@ -355,6 +363,8 @@ type LocalAdhanParams = {
    * taken off Fajr and Isha as well (`indonesiaMethod.ts`).
    */
   twilightDip?: boolean;
+  /** Kemenag: where the ministry computes this regency's Asr, Maghrib and Isha, when not at its point. */
+  afternoonPoint?: readonly [number, number];
   /**
    * The JAKIM zone (1-based, as `jakim-zones.ts` orders them) whose times
    * these are: method 17 then computes the zone's own (`malaysiaMethod.ts`),
@@ -474,6 +484,7 @@ export function computeLocalAdhanInstants(params: LocalAdhanParams): PrayerInsta
       highland: (params.horizonMin ?? 0) > 0,
       twilightDip: params.twilightDip,
       asrShadow: params.school === 1 ? 2 : 1,
+      afternoon: params.afternoonPoint,
     });
     // at a regency's own point, Kemenag's few times on the other side of a minute (`indonesiaCorrections.json`)
     if (at) return corrected(at, indonesiaCorrection(params.latitude, params.longitude, y, m, day), params.school);
@@ -551,7 +562,8 @@ function toMinute(d: Date): Date {
 
 export function computeLocalAdhanTimes(params: LocalAdhanParams): PrayerTimesResult {
   const pt = computeLocalAdhanInstants(params);
-  const fajrStr = formatLocalTime(pt.fajr);
+  const format = clockFormatter(params.placeClock);
+  const fajrStr = format(pt.fajr);
   // Imsak is computed locally (adhan.js does not expose it). Default offset
   // is the most-common 10 minutes; will become user-configurable via task #21.
   const imsakOffset =
@@ -559,11 +571,11 @@ export function computeLocalAdhanTimes(params: LocalAdhanParams): PrayerTimesRes
   return {
     timings: {
       Fajr: fajrStr,
-      Sunrise: formatLocalTime(pt.sunrise),
-      Dhuhr: formatLocalTime(pt.dhuhr),
-      Asr: formatLocalTime(pt.asr),
-      Maghrib: formatLocalTime(pt.maghrib),
-      Isha: formatLocalTime(pt.isha),
+      Sunrise: format(pt.sunrise),
+      Dhuhr: format(pt.dhuhr),
+      Asr: format(pt.asr),
+      Maghrib: format(pt.maghrib),
+      Isha: format(pt.isha),
       Imsak: computeImsak(fajrStr, imsakOffset),
     },
   };

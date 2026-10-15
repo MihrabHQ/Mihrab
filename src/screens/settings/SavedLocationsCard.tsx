@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useLocationSettings } from '../../context/PrayerSettingsContext';
+import { locationSourceLine } from '../../settings/locationSourceLine';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import { inputChromeStyle } from '../../theme/chrome';
 import {
@@ -384,6 +385,12 @@ function SavedLocationsCardImpl({
                       numberOfLines={1}>
                       {p.label ??
                         `${p.latitude.toFixed(4)}°, ${p.longitude.toFixed(4)}°`}
+                    </Text>
+                    {/* Its own prayer-time source (`locationProviders.ts`). */}
+                    <Text
+                      style={[styles.rowSub, { color: palette.muted }]}
+                      numberOfLines={1}>
+                      {locationSourceLine(settings, p.id, { latitude: p.latitude, longitude: p.longitude }, t)}
                     </Text>
                   </View>
                   <View style={styles.rowActions}>

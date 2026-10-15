@@ -18,8 +18,11 @@
  *   • every time rounded up, after a margin of two minutes (three for
  *     Dhuhr, minus three for sunrise).
  *
- * At each regency's own point (fitted to the table) this gives the
- * ministry's minute for 99.965 % of its times, and never a minute further.
+ * At each regency's own point (fitted to the table; Karawang's afternoon
+ * at a second one) this gives the ministry's minute for 99.969 % of its
+ * times, and never a minute further; the rest are within about a second
+ * of a minute's edge, with no pattern a model could take
+ * (`data/corrections/indonesia.json` has them).
  */
 import { preciseApparentSun } from './preciseSun';
 
@@ -35,6 +38,11 @@ export type KemenagPlaceOptions = {
   /** The highland degree on Fajr and Isha as well (six regencies of Papua). */
   twilightDip?: boolean;
   asrShadow?: number;
+  /**
+   * Where the ministry computes the regency's Asr, Maghrib and Isha, when not
+   * at its point (Karawang's afternoon is computed about 2 km north-east).
+   */
+  afternoon?: readonly [number, number];
 };
 
 const MARGIN = { fajr: 2, sunrise: -3, dhuhr: 3, asr: 2, maghrib: 2, isha: 2 };
@@ -98,6 +106,12 @@ export function kemenagTimes(
   opts: KemenagPlaceOptions = {},
 ): KemenagInstants | null {
   const r = kemenagRawMinutes(latitude, longitude, year, month, day, opts);
+  if (opts.afternoon) {
+    const pm = kemenagRawMinutes(opts.afternoon[0], opts.afternoon[1], year, month, day, opts);
+    r.asr = pm.asr;
+    r.maghrib = pm.maghrib;
+    r.isha = pm.isha;
+  }
   const all = [r.fajr, r.sunrise, r.dhuhr, r.asr, r.maghrib, r.isha];
   if (!all.every(Number.isFinite)) return null;
   const start = Date.UTC(year, month, day);

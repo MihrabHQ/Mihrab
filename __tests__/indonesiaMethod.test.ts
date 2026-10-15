@@ -31,12 +31,13 @@ withReferenceTables('indonesia')('Kemenag’s method', () => {
       const province = /\(([^)]*)\)\s*$/.exec(c.nameEn ?? '')?.[1] ?? '';
       const off = OFFSET[indonesiaZone(province)];
       const days = JSON.parse(fs.readFileSync(file, 'utf8')).days as Record<string, string[]>;
-      const [lat, lon, flags] = P[String(c.id)];
+      const [lat, lon, flags, pmLat, pmLon] = P[String(c.id)];
+      const pm = pmLat === undefined ? undefined : ([pmLat, pmLon] as const);
       for (const [key, row] of Object.entries(days)) {
         const [y, m, d] = key.split('-').map(Number);
         const at = corrected
-          ? computeLocalAdhanInstants({ latitude: lat, longitude: lon, horizonMin: flags & 1 ? 1 : 0, twilightDip: (flags & 2) !== 0, date: new Date(y, m - 1, d), calculationMethod: 20, school: 0 })
-          : kemenagTimes(lat, lon, y, m - 1, d, { highland: (flags & 1) !== 0, twilightDip: (flags & 2) !== 0 })!;
+          ? computeLocalAdhanInstants({ latitude: lat, longitude: lon, horizonMin: flags & 1 ? 1 : 0, twilightDip: (flags & 2) !== 0, afternoonPoint: pm, date: new Date(y, m - 1, d), calculationMethod: 20, school: 0 })
+          : kemenagTimes(lat, lon, y, m - 1, d, { highland: (flags & 1) !== 0, twilightDip: (flags & 2) !== 0, afternoon: pm })!;
         [at.fajr, at.sunrise, at.dhuhr, at.asr, at.maghrib, at.isha].forEach((x, i) => {
           const local = ((Math.round(x.getTime() / 60000) + off) % 1440 + 1440) % 1440;
           const diff = Math.abs(((local - toMin(row[i + 1]) + 720) % 1440 + 1440) % 1440 - 720);
@@ -49,10 +50,10 @@ withReferenceTables('indonesia')('Kemenag’s method', () => {
     return { same, total, worst };
   };
 
-  it('gives the published minute for at least 99.96% of the tables alone, never a minute further', () => {
+  it('gives the published minute for at least 99.968% of the tables alone, never a minute further', () => {
     const { same, total, worst } = compare(false);
     expect(total).toBeGreaterThan(200000);
-    expect(same / total).toBeGreaterThanOrEqual(0.9996);
+    expect(same / total).toBeGreaterThanOrEqual(0.99968);
     expect(worst).toBeLessThanOrEqual(1);
   });
 

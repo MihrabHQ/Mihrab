@@ -305,6 +305,13 @@ export type PrayerAppSettings = {
    */
   activeLocationPresetId?: string;
   /**
+   * Each location's own prayer-time source (`locationProviders.ts`), keyed
+   * by `locationKeyOf`: "My location", each saved location, an unsaved
+   * picked place. `dataProvider` / `dataProviderAuto` mirror the active
+   * one's.
+   */
+  locationProviders?: Record<string, { auto: boolean; provider: PrayerDataProviderId }>;
+  /**
    * Per-prayer offsets in minutes — task #22. Allows the user to nudge
    * each prayer ±N minutes to match a local mosque schedule. Empty object
    * (default) means no offsets are applied. See `applyOffsets()` in

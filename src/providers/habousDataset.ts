@@ -16,6 +16,7 @@ import { nearestMoroccoCity } from './moroccoNearest';
 import { computeLocalAdhanTimes } from './localAdhan';
 import moroccoPoints from './data/moroccoMethodPoints.json';
 import { ProviderError } from './errors';
+import { MOROCCO_CLOCK } from './locationClock';
 import type { PrayerTimesResult } from './types';
 
 const PROVIDER = 'habous';
@@ -42,6 +43,8 @@ export async function getHabousDatasetTimes(params: {
   latitude: number;
   longitude: number;
   date: Date;
+  /** Hanafi (1) Asr for a reader who keeps it; the ministry publishes the standard (0). */
+  school?: number;
 }): Promise<PrayerTimesResult> {
   const nearest = nearestMoroccoCity(params.latitude, params.longitude);
   if (!nearest) {
@@ -65,7 +68,9 @@ export async function getHabousDatasetTimes(params: {
       heightM: point ? undefined : nearest.heightM,
       date: params.date,
       calculationMethod: MOROCCO_METHOD,
-      school: 0,
+      school: params.school ?? 0,
+      // on the ministry's clock, as its table prints it
+      placeClock: MOROCCO_CLOCK,
     }),
     timezone: DEFAULT_TZ,
     source: 'local',

@@ -65,6 +65,7 @@ import {
   subscribeHijriCalendar,
 } from './hijri/calendar';
 import { loadCachedHijriOverrides, refreshHijriOverrides } from './hijri/overrides';
+import { refreshMethodCurrency } from './providers/methodCurrency';
 
 /** Gate key for the daily notification reschedules — see utils/resyncGate. */
 const DAILY_RESYNC_KEY = 'root.dailyReschedules';
@@ -123,6 +124,11 @@ export function AppNavigationRoot() {
       // prediction). Throttled on its own; adopting one moves the calendar,
       // which the subscription below turns into a forced resync.
       void refreshHijriOverrides();
+      // A newer correction list for the methods computed here (twice a day at
+      // most): taking one changes the times, so the reminders are rebuilt.
+      void refreshMethodCurrency().then(adopted => {
+        if (adopted && live && painted) sync(true);
+      });
       if (!force && now - lastDailySyncRef.current < 60 * 60 * 1000) return;
       // The hourly gate above stops it running on every single foreground.
       // This one stops the runs that DO get through from redoing work whose

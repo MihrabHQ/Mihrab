@@ -511,7 +511,8 @@
     "outOfRegion": "Aucun horaire pour votre position — {{fallback}} serait utilisé à la place.",
     "footer": "Les sources spécifiques aux pays utilisent des tables de prière officielles ou nationales où nous les intégrons. D'autres régions pourraient être ajoutées au fil du temps.",
     "namazvaktiNoCity": "Pas d’horaires pour une ville proche de vous — la méthode du calendrier serait calculée sur le téléphone.",
-    "diyanetOwn": "La Diyanet ne répertorie aucun lieu près de vous — voici sa méthode pour votre propre position."
+    "diyanetOwn": "La Diyanet ne répertorie aucun lieu près de vous — voici sa méthode pour votre propre position.",
+    "forLocation": "Pour {{place}}. Chacun de vos lieux garde sa propre source."
   },
   "providers": {
     "aladhan": {
@@ -532,11 +533,11 @@
     },
     "habous": {
       "name": "Maroc",
-      "desc": "Les horaires publiés par le ministère des Habous et des Affaires islamiques pour les villes marocaines répertoriées ; votre position est associée à la ville la plus proche."
+      "desc": "La méthode du ministère des Habous et des Affaires islamiques, calculée sur votre téléphone pour la ville marocaine listée la plus proche — elle correspond à la minute près aux horaires publiés par le ministère."
     },
     "marw": {
       "name": "Algérie",
-      "desc": "Les horaires publiés par le ministère des Affaires religieuses et des Wakfs pour les villes algériennes listées ; votre position est associée à la ville la plus proche de la liste."
+      "desc": "La méthode du ministère des Affaires religieuses et des Wakfs, calculée sur votre téléphone pour la ville algérienne listée la plus proche — elle correspond à la minute près aux horaires publiés par le ministère."
     },
     "namazvakti": {
       "name": "Türkiye Takvimi (namazvakti.com)",
@@ -556,7 +557,7 @@
     },
     "kemenag": {
       "name": "Indonésie",
-      "desc": "Les horaires publiés par le ministère des Affaires religieuses (Kemenag) pour votre régence ou votre ville ; votre position est rattachée à la plus proche de sa liste."
+      "desc": "La méthode du ministère des Affaires religieuses (Kemenag), calculée sur votre téléphone pour votre régence ou ville — elle correspond à la minute près au calendrier publié par le ministère."
     }
   },
   "compass": {
@@ -2393,5 +2394,13 @@
     "title": "Une nouvelle apparence : Ciel",
     "body": "Laissez le ciel colorer l'app – nuit, aube, jour et crépuscule, chacun dans sa propre lumière, au-dessus du compte à rebours. Cette apparence unique reste la même, que votre appareil soit en mode clair ou sombre. Vous pouvez la changer à tout moment dans Réglages → Apparence.",
     "tryIt": "Essayer Ciel"
+  },
+  "methodCurrency": {
+    "beyond": "Ces horaires sont calculés avec la méthode de l'autorité et sa liste de corrections, valable jusqu'au {{date}}. Ensuite, la méthode seule est utilisée : la minute publiée presque toujours, et un jour rare une minute d'écart, jusqu'à l'arrivée d'une liste plus récente.",
+    "checking": "L'autorité a publié de nouveaux horaires encore en cours de vérification face à la méthode. D'ici là, un horaire peut différer d'une minute.",
+    "update": "Ce calcul a été mis à jour. Mettez Mihrab à jour pour garder ces horaires à la minute publiée.",
+    "beyondShort": "méthode seule après le {{date}}",
+    "checkingShort": "nouveaux horaires en vérification",
+    "updateShort": "mettez Mihrab à jour pour le dernier calcul"
   }
 }

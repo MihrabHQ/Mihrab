@@ -44,6 +44,8 @@ type Props = {
   cacheStatus: { monthsStored: number; isExpired: boolean } | null;
   /** The table in use has no row for today, so the phone is computing. */
   tableFallback?: boolean;
+  /** The calculation is not current for this month (`methodCurrency.ts`): a short note, or null. */
+  methodNote?: string | null;
   refreshingCache: boolean;
   refreshProgress: { current: number; total: number } | null;
   loading: boolean;
@@ -65,6 +67,7 @@ function MonthControlsImpl({
   school,
   cacheStatus,
   tableFallback,
+  methodNote,
   refreshingCache,
   refreshProgress,
   loading,
@@ -106,7 +109,10 @@ function MonthControlsImpl({
             : '') +
           // Past the published table, the phone stands in: say so here,
           // where the times are read, not only in Settings.
-          (tableFallback ? ` · ${t('month.calculatedOnPhone')}` : '')
+          (tableFallback ? ` · ${t('month.calculatedOnPhone')}` : '') +
+          // A computed authority's calculation that is not current for the
+          // month: past its correction list, or awaiting an update.
+          (methodNote ? ` · ${methodNote}` : '')
         }
         prevLabel={t('common.back')}
         nextLabel={t('common.continue')}

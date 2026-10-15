@@ -17,6 +17,7 @@ import { nearestAlgeriaCity, ALGERIA_METHOD_ID } from './algeriaCities';
 import { computeLocalAdhanTimes } from './localAdhan';
 import methodPoints from './data/algeriaMethodPoints.json';
 import { ProviderError } from './errors';
+import { ALGERIA_CLOCK } from './locationClock';
 import type { PrayerTimesResult } from './types';
 
 const PROVIDER = 'marw';
@@ -43,6 +44,8 @@ export async function getMarwDatasetTimes(params: {
   latitude: number;
   longitude: number;
   date: Date;
+  /** Hanafi (1) Asr for a reader who keeps it; the ministry publishes the standard (0). */
+  school?: number;
 }): Promise<PrayerTimesResult> {
   const nearest = nearestAlgeriaCity(params.latitude, params.longitude);
   if (!nearest) {
@@ -63,7 +66,9 @@ export async function getMarwDatasetTimes(params: {
       longitude: lon,
       date: params.date,
       calculationMethod: ALGERIA_METHOD_ID,
-      school: 0,
+      school: params.school ?? 0,
+      // on Algeria's clock, as the Ministry's table prints it
+      placeClock: ALGERIA_CLOCK,
     }),
     timezone: DEFAULT_TZ,
     source: 'local',

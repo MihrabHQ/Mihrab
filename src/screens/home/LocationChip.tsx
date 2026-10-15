@@ -14,6 +14,8 @@ import { useTranslation } from 'react-i18next';
 import { useLocationSettings } from '../../context/PrayerSettingsContext';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import { findPreset } from '../../settings/locationPresets';
+import { locationSourceLine } from '../../settings/locationSourceLine';
+import { MY_LOCATION_KEY } from '../../settings/locationProviders';
 import { cardEdgeStyle } from '../../theme/chrome';
 import { RADIUS, SPACING } from '../../theme/tokens';
 import { TYPE, typeStyle } from '../../theme/typography';
@@ -297,11 +299,22 @@ function LocationChipImpl({ compactHeader = false, ink, onAddLocation }: Props) 
                 pressed && { opacity: 0.75 },
                 hovered && { opacity: 0.92 },
               ]}>
-              <Text
-                style={[typeStyle('body'), { color: palette.text, flex: 1 }]}
-                numberOfLines={1}>
-                {t('locations.useAuto', 'My location')}
-              </Text>
+              <View style={{ flex: 1 }}>
+                <Text style={[typeStyle('body'), { color: palette.text }]} numberOfLines={1}>
+                  {t('locations.useAuto', 'My location')}
+                </Text>
+                {/* Each location keeps its own source (`locationProviders.ts`). */}
+                <Text style={[typeStyle('footnote'), { color: palette.muted }]} numberOfLines={1}>
+                  {locationSourceLine(
+                    settings,
+                    MY_LOCATION_KEY,
+                    settings.lastFetchedLatitude != null && settings.lastFetchedLongitude != null
+                      ? { latitude: settings.lastFetchedLatitude, longitude: settings.lastFetchedLongitude }
+                      : null,
+                    t,
+                  )}
+                </Text>
+              </View>
               {isAuto ? (
                 <Text
                   accessibilityElementsHidden
@@ -338,9 +351,14 @@ function LocationChipImpl({ compactHeader = false, ink, onAddLocation }: Props) 
                     isActive && { backgroundColor: palette.accentBg },
                     pressed && { opacity: 0.75 }, hovered && { opacity: 0.92 },
                   ]}>
-                  <Text style={[typeStyle('body'), { color: palette.text, flex: 1 }]} numberOfLines={1}>
-                    {preset.name}
-                  </Text>
+                  <View style={{ flex: 1 }}>
+                    <Text style={[typeStyle('body'), { color: palette.text }]} numberOfLines={1}>
+                      {preset.name}
+                    </Text>
+                    <Text style={[typeStyle('footnote'), { color: palette.muted }]} numberOfLines={1}>
+                      {locationSourceLine(settings, preset.id, { latitude: preset.latitude, longitude: preset.longitude }, t)}
+                    </Text>
+                  </View>
                   {isActive ? (
                     <Text
                       accessibilityElementsHidden

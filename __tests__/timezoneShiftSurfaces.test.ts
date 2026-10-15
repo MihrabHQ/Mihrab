@@ -77,7 +77,7 @@ describe('the banner that explains the hour', () => {
   });
 
   it('clears the space above it, like every other banner there', () => {
-    expect(home).toMatch(/timezoneShift != null;/);
+    expect(home).toMatch(/timezoneShift != null( \|\||;)/);
   });
 });
 

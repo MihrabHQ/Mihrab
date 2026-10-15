@@ -60,11 +60,12 @@ describe('each national table is recommended where it covers, and nowhere else',
   it.each(PLACES)('%s', (_name, latitude, longitude, want) => {
     const coords = { latitude, longitude };
     expect(regionalProviderForCoords(coords)).toBe(want);
-    // Automatic picks it there; pinned elsewhere, the pick is overridden.
+    // Automatic picks it there; pinned elsewhere, the pick gives way to what
+    // Automatic picks there.
     expect(getEffectiveDataProvider(true, 'aladhan', coords)).toBe(want ?? 'aladhan');
     for (const id of REGIONAL_PROVIDER_REGIONS.map(r => r.id)) {
       expect(`${id} covers: ${regionalProviderCovers(id, coords)}`).toBe(`${id} covers: ${id === want}`);
-      expect(getEffectiveDataProvider(false, id, coords)).toBe(id === want ? id : 'aladhan');
+      expect(getEffectiveDataProvider(false, id, coords)).toBe(id === want ? id : (want ?? 'aladhan'));
     }
   });
 });
@@ -136,13 +137,13 @@ describe('a manual pick is honoured, with one guard', () => {
     );
   });
 
-  it('redirects a regional pick once the user has left', () => {
+  it('redirects a regional pick once the user has left, to what Automatic picks there', () => {
     // The source only holds its own country's cities and maps anything else
     // to its nearest listed one, so a Moroccan table would otherwise be
     // presented as a Swedish user's own.
-    expect(getEffectiveDataProvider(false, 'habous', STOCKHOLM)).toBe('aladhan');
+    expect(getEffectiveDataProvider(false, 'habous', STOCKHOLM)).toBe('islamiska_forbundet');
     expect(getEffectiveDataProvider(false, 'islamiska_forbundet', CASABLANCA)).toBe(
-      'aladhan',
+      'habous',
     );
     expect(getEffectiveDataProvider(false, 'habous', LONDON)).toBe('aladhan');
   });

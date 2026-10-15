@@ -25,6 +25,7 @@ import { useEffect } from 'react';
 import { usePrayerSettings } from '../context/PrayerSettingsContext';
 import { refreshPrayerDataCache } from '../prayer/prayerStorage';
 import { getEffectiveDataProvider } from '../settings/effectiveProvider';
+import { providerChoiceForPreset } from '../settings/locationProviders';
 
 export function usePrefetchSavedLocations(): void {
   const { settings } = usePrayerSettings();
@@ -51,9 +52,11 @@ export function usePrefetchSavedLocations(): void {
 
       for (const preset of ordered) {
         if (cancelled) return;
+        // Each saved location's own source (`locationProviders.ts`).
+        const choice = providerChoiceForPreset(settings, preset);
         const provider = getEffectiveDataProvider(
-          dataProviderAuto,
-          dataProvider,
+          choice.auto,
+          choice.provider,
           { latitude: preset.latitude, longitude: preset.longitude },
         );
         try {
@@ -85,5 +88,5 @@ export function usePrefetchSavedLocations(): void {
     // existing preset are immutable (a "modified" preset becomes a new id),
     // so referential identity of `presets` is enough.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [presets, activeId, calculationMethod, school, dataProviderAuto, dataProvider]);
+  }, [presets, activeId, calculationMethod, school, dataProviderAuto, dataProvider, settings.locationProviders]);
 }

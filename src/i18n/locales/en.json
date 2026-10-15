@@ -510,7 +510,8 @@
     "outOfRegion": "No times for where you are — {{fallback}} would be used instead.",
     "footer": "Country-specific sources use official or national prayer tables where we integrate them. More regions may be added over time.",
     "namazvaktiNoCity": "No times for a city near you — the calendar’s method would be calculated on the phone instead.",
-    "diyanetOwn": "Diyanet lists no place near you — this is its method for your own location."
+    "diyanetOwn": "Diyanet lists no place near you — this is its method for your own location.",
+    "forLocation": "For {{place}}. Each of your locations keeps its own source."
   },
   "providers": {
     "aladhan": {
@@ -531,11 +532,11 @@
     },
     "habous": {
       "name": "Morocco",
-      "desc": "The Ministry of Habous and Islamic Affairs’ published times for listed Moroccan cities; your location is matched to the nearest city in the list."
+      "desc": "The Ministry of Habous and Islamic Affairs’ method, calculated on your phone for the nearest listed Moroccan city — it matches the ministry’s published times to the minute."
     },
     "marw": {
       "name": "Algeria",
-      "desc": "The Ministry of Religious Affairs and Wakfs’ published times for listed Algerian cities; your location is matched to the nearest city in the list."
+      "desc": "The Ministry of Religious Affairs and Wakfs’ method, calculated on your phone for the nearest listed Algerian city — it matches the ministry’s published times to the minute."
     },
     "namazvakti": {
       "name": "Türkiye Takvimi (namazvakti.com)",
@@ -555,7 +556,7 @@
     },
     "kemenag": {
       "name": "Indonesia",
-      "desc": "The Ministry of Religious Affairs’ (Kemenag) published timetable for your regency or city; your location is matched to the nearest in its list."
+      "desc": "The Ministry of Religious Affairs’ (Kemenag) method, calculated on your phone for your regency or city — it matches the ministry’s published timetable to the minute."
     }
   },
   "compass": {
@@ -2392,5 +2393,13 @@
     "title": "A new look: Sky",
     "body": "Let the sky colour the app — night, dawn, day and dusk, each in its own light, over the countdown. It keeps that one look whether your device is in light or dark mode. You can change it any time in Settings → Appearance.",
     "tryIt": "Try Sky"
+  },
+  "methodCurrency": {
+    "beyond": "These times are calculated with the authority's method and its correction list, which runs to {{date}}. After that the method alone is used: the published minute nearly always, and on a rare day a minute off, until a newer list arrives.",
+    "checking": "The authority has published new times that are still being checked against the method. Until they are, a time may be a minute off.",
+    "update": "This calculation has been updated. Update Mihrab to keep these times on the published minute.",
+    "beyondShort": "method alone after {{date}}",
+    "checkingShort": "new times being checked",
+    "updateShort": "update Mihrab for the latest calculation"
   }
 }

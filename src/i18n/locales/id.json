@@ -510,7 +510,8 @@
     "outOfRegion": "Tidak ada jadwal untuk lokasi Anda — {{fallback}} akan dipakai sebagai gantinya.",
     "footer": "Sumber khusus negara menggunakan tabel doa resmi atau nasional tempat kami mengintegrasikannya. Lebih banyak wilayah dapat ditambahkan seiring waktu.",
     "namazvaktiNoCity": "Tidak ada jadwal untuk kota di dekat Anda — metode kalendernya akan dihitung di ponsel.",
-    "diyanetOwn": "Diyanet tidak mencantumkan tempat di dekat Anda — ini metodenya untuk lokasi Anda sendiri."
+    "diyanetOwn": "Diyanet tidak mencantumkan tempat di dekat Anda — ini metodenya untuk lokasi Anda sendiri.",
+    "forLocation": "Untuk {{place}}. Setiap lokasi Anda menyimpan sumbernya sendiri."
   },
   "providers": {
     "aladhan": {
@@ -531,11 +532,11 @@
     },
     "habous": {
       "name": "Maroko",
-      "desc": "Jadwal yang diterbitkan Kementerian Habous dan Urusan Islam untuk kota-kota Maroko yang terdaftar; lokasi Anda dicocokkan dengan kota terdekat."
+      "desc": "Metode Kementerian Habous dan Urusan Islam, dihitung di ponsel Anda untuk kota Maroko terdekat dalam daftar — sama persis hingga menit dengan waktu yang diterbitkan kementerian."
     },
     "marw": {
       "name": "Aljazair",
-      "desc": "Waktu yang diterbitkan Kementerian Urusan Agama dan Wakaf untuk kota-kota Aljazair yang terdaftar; lokasi Anda dicocokkan dengan kota terdekat dalam daftar."
+      "desc": "Metode Kementerian Urusan Agama dan Wakaf, dihitung di ponsel Anda untuk kota Aljazair terdekat dalam daftar — sama persis hingga menit dengan waktu yang diterbitkan kementerian."
     },
     "namazvakti": {
       "name": "Türkiye Takvimi (namazvakti.com)",
@@ -555,7 +556,7 @@
     },
     "kemenag": {
       "name": "Indonesia",
-      "desc": "Jadwal yang diterbitkan Kementerian Agama (Kemenag) untuk kabupaten atau kota Anda; lokasi Anda dicocokkan dengan yang terdekat dalam daftarnya."
+      "desc": "Metode Kementerian Agama (Kemenag), dihitung di ponsel Anda untuk kabupaten atau kota Anda — sama persis hingga menit dengan jadwal yang diterbitkan Kemenag."
     }
   },
   "compass": {
@@ -2392,5 +2393,13 @@
     "title": "Tampilan baru: Langit",
     "body": "Biarkan langit mewarnai aplikasi — malam, fajar, siang, dan senja, masing-masing dengan cahayanya sendiri, di atas hitung mundur. Satu tampilan itu bertahan baik perangkat Anda dalam mode terang maupun gelap. Anda bisa mengubahnya kapan saja di Pengaturan → Penampilan.",
     "tryIt": "Coba Langit"
+  },
+  "methodCurrency": {
+    "beyond": "Waktu ini dihitung dengan metode otoritas dan daftar koreksinya, yang berlaku hingga {{date}}. Setelah itu hanya metodenya yang dipakai: hampir selalu tepat pada menit yang diterbitkan, dan pada hari yang jarang selisih satu menit, sampai daftar yang lebih baru tiba.",
+    "checking": "Otoritas telah menerbitkan waktu baru yang masih diperiksa terhadap metodenya. Sampai selesai, satu waktu bisa selisih satu menit.",
+    "update": "Perhitungan ini telah diperbarui. Perbarui Mihrab agar waktu tetap tepat pada menit yang diterbitkan.",
+    "beyondShort": "hanya metode setelah {{date}}",
+    "checkingShort": "waktu baru sedang diperiksa",
+    "updateShort": "perbarui Mihrab untuk perhitungan terbaru"
   }
 }

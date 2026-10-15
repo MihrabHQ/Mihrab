@@ -34,6 +34,9 @@ import { usePrayerDay } from '../hooks/usePrayerDay';
 import { clearTimezoneShiftNotice } from '../prayer/timezoneShift';
 import { refreshStoredPrayerData } from '../prayer/refreshStoredData';
 import { getEffectiveDataProvider } from '../settings/effectiveProvider';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useMethodCurrency } from '../hooks/useMethodCurrency';
+import { methodCurrencyNote } from '../prayer/methodCurrencyNote';
 import {
   PullToRefreshFrame,
   usePullToRefresh,
@@ -101,6 +104,9 @@ import {
 } from '../polish/ChangelogSheet';
 import { SPACING } from '../theme/tokens';
 
+
+/** The calculation note last dismissed on Today (`state:to`). */
+const METHOD_NOTE_DISMISSED_KEY = 'home.methodNote.dismissed.v1';
 /**
  * HomeScreen orchestrator — task #8 split.
  *
@@ -377,11 +383,38 @@ export function HomeScreen() {
     state.timezoneShift.at !== tzNoticeDismissedAt
       ? state.timezoneShift
       : null;
+  // A computed authority's calculation that is not current (`methodCurrency.ts`):
+  // said once on Today, until dismissed; a change of state says it again.
+  const currency = useMethodCurrency(
+    refreshParams?.provider ?? 'aladhan',
+    refreshParams ? { latitude: refreshParams.latitude, longitude: refreshParams.longitude } : null,
+    settings.calculationMethod,
+  );
+  const currencyKey =
+    currency && currency.state !== 'current'
+      ? `${currency.state}:${currency.state === 'beyond' ? currency.to : ''}`
+      : null;
+  const [currencyDismissed, setCurrencyDismissed] = useState<string | null | undefined>(undefined);
+  useEffect(() => {
+    AsyncStorage.getItem(METHOD_NOTE_DISMISSED_KEY)
+      .then(v => setCurrencyDismissed(v))
+      .catch(() => setCurrencyDismissed(null));
+  }, []);
+  const methodNote =
+    currency && currencyKey && currencyDismissed !== undefined && currencyKey !== currencyDismissed
+      ? methodCurrencyNote(t, currency, i18n.language)
+      : null;
+  const dismissMethodNote = useCallback(() => {
+    if (!currencyKey) return;
+    setCurrencyDismissed(currencyKey);
+    AsyncStorage.setItem(METHOD_NOTE_DISMISSED_KEY, currencyKey).catch(() => undefined);
+  }, [currencyKey]);
   const hasBanner =
     (state.phase === 'ready' && state.usingLocalFallback === true) ||
     exactAlarmDenied ||
     notifPermDenied ||
-    timezoneShift != null;
+    timezoneShift != null ||
+    methodNote != null;
   const [nextInfo, setNextInfo] = useState<{ name: string; at: Date } | null>(
     null,
   );
@@ -1480,6 +1513,8 @@ export function HomeScreen() {
         notifPermDenied={notifPermDenied}
         onRetryFetch={retry}
         timezoneShift={timezoneShift}
+        methodNote={methodNote}
+        onDismissMethodNote={dismissMethodNote}
         onDismissTimezoneShift={() => {
           // Both halves: the module stops offering it to the next load,
           // and this screen stops drawing it now.

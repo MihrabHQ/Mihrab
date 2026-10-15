@@ -38,6 +38,8 @@ export type Place = {
   horizonDipMaghribDeg?: number;
   /** Kemenag's Papuan highland regencies: the highland degree on Fajr and Isha too. */
   twilightDip?: boolean;
+  /** Kemenag: where the ministry computes the regency's Asr, Maghrib and Isha, when not at its point. */
+  afternoonPoint?: readonly [number, number];
   /** A JAKIM zone (1-based): its times are the zone's (`malaysiaMethod.ts`). */
   jakimZone?: number;
 };
@@ -87,20 +89,6 @@ function readJson<T>(p: string): T {
 
 /** Diyanet's tables, among the reference tables; not committed here. */
 export const DIYANET_ROOT = process.env.DIYANET_TABLES ?? path.join(REFERENCE_TABLES, 'diyanet');
-
-let diyanetBySlug: Map<string, string> | null = null;
-/** Diyanet's own rows for an Islamiska Förbundet city, by its slug, or null if not downloaded. */
-function diyanetDaysFor(slug: string): Record<string, string[]> | null {
-  if (!diyanetBySlug) {
-    diyanetBySlug = new Map();
-    const pts = readJson<Record<string, { slug: string | null }>>(path.join(__dirname, 'diyanet-sweden-points.json'));
-    for (const [iid, v] of Object.entries(pts)) if (v.slug) diyanetBySlug.set(v.slug, iid);
-  }
-  const iid = diyanetBySlug.get(slug);
-  if (!iid) return null;
-  const f = path.join(DIYANET_ROOT, 'v1', 'cities', `${iid}.json`);
-  return fs.existsSync(f) ? (readJson<{ days: Record<string, string[]> }>(f).days ?? null) : null;
-}
 
 /** Indonesia prints each regency in its own zone; the province says which. */
 const WITA = new Set([
@@ -279,7 +267,7 @@ export const AUTHORITIES: Authority[] = [
         const province = /\(([^)]*)\)\s*$/.exec(c.nameEn ?? '')?.[1] ?? '';
         const p = points[String(c.id)];
         return p
-          ? { file: `${c.id}.json`, name: c.nameEn ?? c.name, lat: p[0], lon: p[1], tz: indonesiaZone(province), horizonMin: p[2] & 1 ? 1 : undefined, twilightDip: (p[2] & 2) !== 0 }
+          ? { file: `${c.id}.json`, name: c.nameEn ?? c.name, lat: p[0], lon: p[1], tz: indonesiaZone(province), horizonMin: p[2] & 1 ? 1 : undefined, twilightDip: (p[2] & 2) !== 0, afternoonPoint: p.length >= 5 ? ([p[3], p[4]] as const) : undefined }
           : { file: `${c.id}.json`, name: c.nameEn ?? c.name, lat: c.lat, lon: c.lon, tz: indonesiaZone(province), heightM: c.heightM, horizonMin: c.horizonMin };
       });
     },

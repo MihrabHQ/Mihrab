@@ -16,6 +16,9 @@ import { MAX_LOCATION_PRESETS } from '../src/settings/locationPresets';
 const mockUpdate = jest.fn();
 let mockSlice: Record<string, unknown> = {};
 
+// The source line under each location reads the provider catalogue (and the
+// app's i18n with it); these tests are about switching, not that line.
+jest.mock('../src/settings/locationSourceLine', () => ({ locationSourceLine: () => '' }));
 jest.mock('../src/context/PrayerSettingsContext', () => ({
   useLocationSettings: () => ({ slice: mockSlice, update: mockUpdate }),
 }));

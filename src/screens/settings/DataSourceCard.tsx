@@ -14,6 +14,8 @@ import { SettingsGroup, SettingsLinkRow } from './SettingsGroup';
 import { getCacheStatus } from '../../prayer/prayerStorage';
 import { useNamazvaktiCoverage } from '../../hooks/useNamazvaktiCoverage';
 import { useTableFallback } from '../../hooks/useTableFallback';
+import { useMethodCurrency } from '../../hooks/useMethodCurrency';
+import { methodCurrencyNote } from '../../prayer/methodCurrencyNote';
 import { refreshStoredPrayerData } from '../../prayer/refreshStoredData';
 
 type DataSourceCardProps = {
@@ -21,7 +23,7 @@ type DataSourceCardProps = {
 };
 
 function DataSourceCardImpl({ onOpenProviderPicker }: DataSourceCardProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { settings } = usePrayerSettings();
 
   const coordsForEffective = useMemo(
@@ -76,6 +78,10 @@ function DataSourceCardImpl({ onOpenProviderPicker }: DataSourceCardProps) {
       : 'place';
   // The table in use has no row for today — past its window, or not yet
   // downloaded — so the phone is computing the authority's method.
+  // The computed authorities: past the correction list, newer tables not yet
+  // checked, or a method that has moved on — said here, never hidden.
+  const currency = useMethodCurrency(effectiveProvider, coordsForEffective, settings.calculationMethod);
+  const currencyNote = !overridden && currency ? methodCurrencyNote(t, currency, i18n.language) : null;
   const tableFallback =
     useTableFallback(effectiveProvider, coordsForEffective, settings.calculationMethod, settings.school) === true &&
     !overridden &&
@@ -157,6 +163,8 @@ function DataSourceCardImpl({ onOpenProviderPicker }: DataSourceCardProps) {
         help={
           tableFallback
             ? t('settings.providerTableFallback', { picked: getProviderLabel(effectiveProvider) })
+            : currencyNote
+            ? currencyNote
             : settings.dataProviderAuto
             ? t('settings.providerAutoHelp')
             : overridden

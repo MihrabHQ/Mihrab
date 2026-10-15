@@ -99,6 +99,14 @@ const STAYS: Record<string, string> = {
   'hijri.overrides.v1':
     'derived — the announced Hijri month starts, re-downloadable from the server',
   'hijri.overrides.v1.checkedAt': 'describes this phone — when it last asked the server',
+  'methods.certification.v1':
+    'derived — the methods’ certification, re-downloadable from MihrabHQ/mihrab-methods',
+  'methods.certification.v1.checkedAt': 'describes this phone — when it last asked for the certification',
+  'methods.corrections.v1.':
+    'derived — a newer correction list for a method this build computes, re-downloadable',
+  my: 'not a store — the key "My location" has in settings.locationProviders',
+  manual: 'not a store — the key an unsaved picked place has in settings.locationProviders',
+  'home.methodNote.dismissed.v1': 'describes this phone — the calculation note last dismissed on its Today',
   'marw.dataset.v1.city.':
     'derived — the Algerian ministry’s published timetable for one city, re-downloadable',
   'mihrab.first_seen_day':

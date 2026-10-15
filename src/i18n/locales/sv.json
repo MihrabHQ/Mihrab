@@ -510,7 +510,8 @@
     "outOfRegion": "Inga tider för där du är — {{fallback}} skulle användas i stället.",
     "footer": "Landspecifika källor använder officiella eller nationella bönetabeller där vi integrerar dem. Fler regioner kan läggas till över tid.",
     "namazvaktiNoCity": "Inga tider för någon stad nära dig – kalenderns metod skulle räknas ut i telefonen i stället.",
-    "diyanetOwn": "Diyanet listar ingen plats nära dig — det här är dess metod för din egen plats."
+    "diyanetOwn": "Diyanet listar ingen plats nära dig — det här är dess metod för din egen plats.",
+    "forLocation": "För {{place}}. Var och en av dina platser behåller sin egen källa."
   },
   "providers": {
     "aladhan": {
@@ -531,11 +532,11 @@
     },
     "habous": {
       "name": "Marocko",
-      "desc": "Tiderna som Ministeriet för Habous och islamiska frågor publicerar för listade marockanska städer; din plats matchas mot närmaste stad i listan."
+      "desc": "Ministeriet för Habous och islamiska frågors metod, beräknad i telefonen för närmaste listade marockanska stad — den stämmer på minuten med ministeriets publicerade tider."
     },
     "marw": {
       "name": "Algeriet",
-      "desc": "Tiderna som Ministeriet för religiösa frågor och waqf publicerar för listade algeriska städer; din plats matchas mot närmaste stad i listan."
+      "desc": "Ministeriet för religiösa frågor och wakfs metod, beräknad i telefonen för närmaste listade algeriska stad — den stämmer på minuten med ministeriets publicerade tider."
     },
     "namazvakti": {
       "name": "Türkiye Takvimi (namazvakti.com)",
@@ -555,7 +556,7 @@
     },
     "kemenag": {
       "name": "Indonesien",
-      "desc": "Religionsministeriets (Kemenag) publicerade tidtabell för ditt regentskap eller din stad; din plats matchas mot närmaste i listan."
+      "desc": "Religionsministeriets (Kemenag) metod, beräknad i telefonen för ditt län eller din stad — den stämmer på minuten med ministeriets publicerade tidtabell."
     }
   },
   "compass": {
@@ -2392,5 +2393,13 @@
     "title": "Ett nytt utseende: Himmel",
     "body": "Låt himlen färga appen – natt, gryning, dag och skymning, var och en i sitt eget ljus, ovanför nedräkningen. Utseendet består oavsett om enheten är i ljust eller mörkt läge. Du kan ändra det när som helst under Inställningar → Utseende.",
     "tryIt": "Prova Himmel"
+  },
+  "methodCurrency": {
+    "beyond": "Tiderna beräknas med myndighetens metod och dess korrigeringslista, som gäller till och med {{date}}. Därefter används metoden ensam: nästan alltid den publicerade minuten, och någon enstaka dag en minut fel, tills en nyare lista kommer.",
+    "checking": "Myndigheten har publicerat nya tider som fortfarande kontrolleras mot metoden. Tills dess kan en tid vara en minut fel.",
+    "update": "Beräkningen har uppdaterats. Uppdatera Mihrab för att tiderna ska fortsätta stämma på minuten.",
+    "beyondShort": "endast metoden efter {{date}}",
+    "checkingShort": "nya tider kontrolleras",
+    "updateShort": "uppdatera Mihrab för den senaste beräkningen"
   }
 }
