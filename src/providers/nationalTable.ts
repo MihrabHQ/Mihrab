@@ -69,11 +69,24 @@ export type NationalTableConfig = {
   refreshTtlMs: number;
   indexPollIntervalMs: number;
   /**
-   * The authority's own method, computed for the nearest listed place —
-   * served instead of the table when given (and not switched off for a
-   * test). The table stays, for the weekly check against the source.
+   * The authority's own method, computed for the nearest listed place: what
+   * fills a day the table does not have (past the published window), and
+   * what is served instead of the table when `servesCalculation` is set.
    */
   calculate?: (place: NearestPlace, date: Date) => PrayerTimesResult;
+  /**
+   * Serve `calculate` rather than the table. Off for every table today
+   * (October 2026: the data comes from Mihrab's own repo; the move to the
+   * calculations is planned in docs/prayer-times-sources.md).
+   */
+  servesCalculation?: boolean;
+  /**
+   * The authority's own free API, asked only for a day neither the repo's
+   * copy nor the seed has (`nationalLive.ts`): its days for the place, or
+   * null when it cannot be read. Kept for the session and on the phone;
+   * after a failure it is not asked again for six hours.
+   */
+  live?: (place: NearestPlace) => Promise<Record<string, DatasetDayTuple> | null>;
 };
 
 type CityFile = {
@@ -157,7 +170,39 @@ export function createNationalTable(config: NationalTableConfig): NationalTable 
   const refreshInFlight = new Set<number>();
   let nextIndexPollAt = 0;
   let indexPollInFlight: Promise<IndexFile | null> | null = null;
-  let servesCalculation = true;
+  let servesCalculation = config.servesCalculation ?? false;
+  const liveKey = `${config.id}.live.v1.`;
+  const memLive = new Map<number, Record<string, DatasetDayTuple> | null>();
+  const liveFailedAt = new Map<number, number>();
+  const LIVE_RETRY_MS = 6 * 60 * 60 * 1000;
+
+  /** The source's own day, from the phone's copy of what it last answered or by asking it. */
+  async function liveTuple(place: NearestPlace, dateKey: string): Promise<DatasetDayTuple | undefined> {
+    if (!config.live) return undefined;
+    if (!memLive.has(place.id)) {
+      try {
+        const raw = await AsyncStorage.getItem(`${liveKey}${place.id}`);
+        memLive.set(place.id, raw ? (JSON.parse(raw) as Record<string, DatasetDayTuple>) : null);
+      } catch {
+        memLive.set(place.id, null);
+      }
+    }
+    const held = memLive.get(place.id)?.[dateKey];
+    if (held) return held;
+    if (Date.now() - (liveFailedAt.get(place.id) ?? 0) < LIVE_RETRY_MS) return undefined;
+    const days = await config.live(place).catch(() => null);
+    if (!days || !days[dateKey]) {
+      liveFailedAt.set(place.id, Date.now());
+      if (!days) return undefined;
+    }
+    memLive.set(place.id, days);
+    try {
+      await AsyncStorage.setItem(`${liveKey}${place.id}`, JSON.stringify(days));
+    } catch {
+      // Kept for the session either way.
+    }
+    return days[dateKey];
+  }
 
   async function loadCachedCity(id: number): Promise<CityFile | null> {
     if (memCity.has(id)) return memCity.get(id) ?? null;
@@ -276,6 +321,13 @@ export function createNationalTable(config: NationalTableConfig): NationalTable 
       const fromCache = cached?.days[dateKey];
       const tuple = fromCache ?? seedTuple(config.seed, near.id, dateKey);
       if (!tuple) {
+        // Not in the repo's copy: the source's own API, as a backup.
+        const live = await liveTuple(near, dateKey);
+        if (live) {
+          return { timings: tupleToTimings(live), timezone: cached?.timezone ?? config.seed.timezone ?? config.timezone, source: 'live' };
+        }
+        // Past the published window: the authority's method for the place.
+        if (config.calculate) return config.calculate(near, params.date);
         throw new ProviderError(
           config.id,
           'shape',
@@ -306,6 +358,8 @@ export function createNationalTable(config: NationalTableConfig): NationalTable 
     },
     _resetForTests() {
       memCity.clear();
+      memLive.clear();
+      liveFailedAt.clear();
       refreshInFlight.clear();
       nextIndexPollAt = 0;
       indexPollInFlight = null;

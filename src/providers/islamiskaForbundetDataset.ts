@@ -57,17 +57,15 @@ const CACHE_PREFIX = 'ifis.dataset.v1.city.';
 const MAX_DATASET_CITY_KM = 250;
 
 /**
- * Sweden's times are the app's own calculation, not the scraped table
- * (October 2026). Islamiska Förbundet republishes Diyanet's tables, and
- * the app computes Diyanet's method (method 24, congressMethod.ts) for the
- * nearest listed city at the point Diyanet computes it — on the printed
- * minute on 99.94 % of times over 2024–2027, never a minute off, and with
- * none of the site's faults (another year's figures served for the next,
- * one town's table printed for another). The mirrored tables stay, for the
- * weekly check against the source (tools/verify-methods). Set false to
- * serve the mirrored table again, with the calculation behind it.
+ * Sweden's times are the mirrored table from the repo (October 2026: the
+ * data comes from Mihrab's own repo, never the source directly). The app's
+ * own calculation of Diyanet's method (method 24, congressMethod.ts) at the
+ * point Diyanet computes each city — on the printed minute on 99.94 % of
+ * times over 2024–2027 — fills any day the mirror does not have, and is
+ * what the app will serve once the migration plan
+ * (docs/prayer-times-sources.md) is carried out. Set true to serve it now.
  */
-let servesCalculation = true;
+let servesCalculation = false;
 export function swedenServesCalculation(): boolean {
   return servesCalculation;
 }
@@ -301,7 +299,7 @@ export async function getIslamiskaForbundetDatasetTimes(params: {
         `(> ${MAX_DATASET_CITY_KM} km) — coordinate is outside dataset coverage.`,
     );
   }
-  if (servesCalculation) {
+  const calculated = (): PrayerTimesResult => {
     const at = islamiskaForbundetCityCoords(city);
     return {
       ...computeLocalAdhanTimes({
@@ -314,7 +312,8 @@ export async function getIslamiskaForbundetDatasetTimes(params: {
       timezone: DEFAULT_TZ,
       source: 'local',
     };
-  }
+  };
+  if (servesCalculation) return calculated();
   const slug = citySlug(city);
   const dateKey = formatLocalDate(params.date);
 
@@ -324,15 +323,8 @@ export async function getIslamiskaForbundetDatasetTimes(params: {
 
   const fromCache = cached?.days[dateKey];
   const tuple = fromCache ?? seed.cities[slug]?.[dateKey];
-  if (!tuple) {
-    throw new ProviderError(
-      PROVIDER,
-      'shape',
-      `No prepared dataset entry for "${city}" on ${dateKey} ` +
-        `(cache ${cached ? 'present' : 'empty'}, seed ` +
-        `${seed.cities[slug] ? 'has-city' : 'no-city'}).`,
-    );
-  }
+  // A day the mirror does not have: the method, at the city's point.
+  if (!tuple) return calculated();
 
   const source: DataSource = fromCache ? 'cdn' : 'seed';
   return {

@@ -21,6 +21,7 @@ import { loadPlaces as loadKemenagPlaces, parseKemenagMonth } from '../tools/nat
 import { JAKIM_ZONES, jakimPlaces } from '../tools/national-tables/jakim-zones';
 import { checkDay, BuildError } from '../tools/national-tables/write';
 import { createNationalTable, seedTuple } from '../src/providers/nationalTable';
+import { jakimZoneCode, parseJakimLive, parseMuisLive } from '../src/providers/nationalLive';
 import { _resetNationalTablesForTests, jakimTable, kemenagTable, muisTable, nationalTableFor } from '../src/providers/nationalTables';
 import { fetchPrayerTimesUnified } from '../src/providers/fetchPrayerTimes';
 import { getEffectiveDataProvider } from '../src/settings/effectiveProvider';
@@ -121,6 +122,28 @@ describe('the seed', () => {
   });
 });
 
+describe('the phone’s backup parsers read as the builders do', () => {
+  const clock = (m: number) => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
+  it('e-Solat’s year', () => {
+    const sample = JSON.parse(read('jakim-sgr01-sample.json'));
+    // The builder refuses fewer than 300 days; the sample's run repeated to a year (the dates repeat too).
+    const builder = parseJakimYear({ ...sample, prayerTime: Array.from({ length: 365 }, (_, i) => sample.prayerTime[i % sample.prayerTime.length]) });
+    const phone = parseJakimLive(sample);
+    expect(Object.keys(phone).sort()).toEqual(Object.keys(builder).sort());
+    for (const [k, d] of Object.entries(builder)) expect(phone[k]).toEqual(d.map(clock));
+  });
+  it('MUIS’s CSV', () => {
+    const csv = read('muis-head.csv');
+    const builder = parseMuisCsv(csv);
+    const phone = parseMuisLive(csv);
+    for (const [k, d] of Object.entries(builder)) expect(phone[k]).toEqual(d.map(clock));
+  });
+  it('names a JAKIM place’s zone', () => {
+    expect(jakimZoneCode('Kuala Lumpur (WLY01)')).toBe('WLY01');
+    expect(jakimZoneCode('Singapore')).toBeNull();
+  });
+});
+
 describe('on the phone', () => {
   beforeEach(async () => {
     _resetNationalTablesForTests();
@@ -146,6 +169,27 @@ describe('on the phone', () => {
     expect(past.source).toBe('local');
     const away = await fetchPrayerTimesUnified({ provider: 'muis', latitude: 51.5, longitude: -0.1, date: new Date(2026, 9, 14), calculationMethod: 'auto', school: 0 });
     expect(away.source).toBe('local');
+  });
+
+  it('asks e-Solat itself for a day the repo’s copy lacks, and remembers its answer', async () => {
+    const sample = JSON.parse(read('jakim-sgr01-sample.json')) as { prayerTime: { date: string }[] };
+    const first = sample.prayerTime[0].date; // "01-Jan-2026"-style
+    const [d, mon, y] = first.split('-');
+    const months: Record<string, number> = { Jan: 0, Feb: 1, Mac: 2, Apr: 3, Mei: 4, Jun: 5, Jul: 6, Ogos: 7, Sep: 8, Okt: 9, Nov: 10, Dis: 11 };
+    const date = new Date(Number(y), months[mon], Number(d));
+    const seen: string[] = [];
+    mockFetch.mockImplementation(async (url: string) => {
+      seen.push(url);
+      if (url.includes('e-solat.gov.my')) return response(200, JSON.stringify(sample));
+      return response(404, '');
+    });
+    const r = await jakimTable.getTimes({ ...KL, date });
+    // January 2026 is before the bundled seed's window, so only the source has it.
+    expect(r.source).toBe('live');
+    expect(seen.some(u => u.includes('zone=WLY01'))).toBe(true);
+    // The repo is asked first; the source only behind it.
+    expect(seen.findIndex(u => u.includes('e-solat.gov.my'))).toBeGreaterThanOrEqual(0);
+    expect(await AsyncStorage.getItem('jakim.live.v1.58')).toBeTruthy();
   });
 
   it('takes a newer file from the server and remembers it', async () => {

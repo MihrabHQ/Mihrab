@@ -20,6 +20,7 @@ import {
 import type { PrayerDataProviderId } from '../settings/types';
 import { createNationalTable, type NationalTable, type NationalTableSeed, type TablePlace } from './nationalTable';
 import { computeLocalAdhanTimes } from './localAdhan';
+import { fetchJakimLive, fetchMuisLive, jakimZoneCode } from './nationalLive';
 import kemenagPoints from './data/kemenagMethodPoints.json';
 
 /** Each regency's point as Kemenag computes it, and its class (1 highland, 2 the degree on Fajr and Isha too). */
@@ -52,6 +53,12 @@ export const muisTable = createNationalTable({
   seed: seedOf(() => require('./data/muisSeed.json')),
   refreshTtlMs: NATIONAL_TABLE_REFRESH_TTL_MS,
   indexPollIntervalMs: NATIONAL_TABLE_INDEX_POLL_INTERVAL_MS,
+  // A day the repo's copy lacks: MUIS's own table on data.gov.sg, then MUIS's method.
+  live: () => fetchMuisLive(),
+  calculate: (place, date) => ({
+    ...computeLocalAdhanTimes({ latitude: place.lat, longitude: place.lon, date, calculationMethod: 11, school: 0 }),
+    source: 'local',
+  }),
 });
 
 /**
@@ -69,6 +76,25 @@ export const jakimTable = createNationalTable({
   seed: seedOf(() => require('./data/jakimSeed.json')),
   refreshTtlMs: NATIONAL_TABLE_REFRESH_TTL_MS,
   indexPollIntervalMs: NATIONAL_TABLE_INDEX_POLL_INTERVAL_MS,
+  // A day the repo's copy lacks: the zone's year from e-Solat itself, then
+  // the zone's own computation (`malaysiaMethod.ts`) — past 31 December
+  // e-Solat has nothing either until JAKIM publishes the new year.
+  live: place => {
+    const code = jakimZoneCode(place.nameEn);
+    return code ? fetchJakimLive(code) : Promise.resolve(null);
+  },
+  calculate: (place, date) => ({
+    ...computeLocalAdhanTimes({
+      latitude: place.lat,
+      longitude: place.lon,
+      heightM: place.heightM,
+      jakimZone: place.id,
+      date,
+      calculationMethod: 17,
+      school: 0,
+    }),
+    source: 'local',
+  }),
 });
 
 /**
@@ -85,8 +111,10 @@ export const kemenagTable = createNationalTable({
   seed: seedOf(() => require('./data/kemenagSeed.json')),
   refreshTtlMs: NATIONAL_TABLE_REFRESH_TTL_MS,
   indexPollIntervalMs: NATIONAL_TABLE_INDEX_POLL_INTERVAL_MS,
-  // The ministry's own method at the regency's point (`indonesiaMethod.ts`),
-  // as for Sweden, Morocco and Algeria; the phone's clock is the zone.
+  // The ministry's own method at the regency's point (`indonesiaMethod.ts`):
+  // what fills a day the repo's copy lacks (Kemenag's site answers only the
+  // project's builders, so there is no live backup); the phone's clock is
+  // the zone.
   calculate: (place, date) => {
     const p = KEMENAG_POINTS[String(place.id)];
     const flags = p?.[2] ?? 0;

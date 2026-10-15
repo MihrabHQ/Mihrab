@@ -26,11 +26,11 @@
  * compactly — six minute counts per day from `start` — and turned into the
  * shared day tuple here.
  *
- * What is served by default, though, is the calculation (see
- * `servesCalculation` below): the Ministry's own method, which gives the
- * table's minute for 99.37 % of its times and is never a minute further.
- * On the table path, a miss (outside Algeria, or past the published year)
- * throws, and the caller falls through to that same calculation.
+ * The table is what is served (see `servesCalculation` below). A day it
+ * does not have — past the published year — is the Ministry's own method
+ * at the city's point, which gives the table's minute for 99.37 % of its
+ * times and is never a minute further; outside Algeria the lookup throws
+ * and the caller computes the same method for the reader's coordinates.
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { httpUserAgent } from '../config/httpIdentity';
@@ -66,13 +66,14 @@ const IMSAK_BEFORE_FAJR_MIN = 10;
 const MAX_DATASET_CITY_KM = 500;
 
 /**
- * Algeria's times are the app's own calculation of the Ministry's method
- * (`algeriaMethod.ts`) at the nearest listed city's point, not the table
- * itself (October 2026) — the same arrangement as Sweden. The table is
- * kept, for the check against the source (tools/verify-methods), and set
- * false this serves it again.
+ * Algeria's times are the Ministry's table, mirrored into the repo (October
+ * 2026: the data comes from Mihrab's own repo, never the source directly).
+ * The app's own calculation of the Ministry's method (`algeriaMethod.ts`) at
+ * the nearest listed city's point fills any day the mirror does not have,
+ * and is what the app will serve once the migration plan
+ * (docs/prayer-times-sources.md) is carried out. Set true to serve it now.
  */
-let servesCalculation = true;
+let servesCalculation = false;
 export function algeriaServesCalculation(): boolean {
   return servesCalculation;
 }
@@ -280,7 +281,7 @@ export async function getMarwDatasetTimes(params: {
     );
   }
 
-  if (servesCalculation) {
+  const calculated = (): PrayerTimesResult => {
     const [lat, lon] = METHOD_POINTS[String(nearest.id)] ?? [nearest.lat, nearest.lon];
     return {
       ...computeLocalAdhanTimes({
@@ -293,7 +294,8 @@ export async function getMarwDatasetTimes(params: {
       timezone: DEFAULT_TZ,
       source: 'local',
     };
-  }
+  };
+  if (servesCalculation) return calculated();
 
   const dateKey = formatLocalDate(params.date);
   const cached = await loadCachedCity(nearest.id);
@@ -301,14 +303,8 @@ export async function getMarwDatasetTimes(params: {
 
   const fromCache = cached?.days[dateKey];
   const tuple = fromCache ?? seedTuple(nearest.id, dateKey);
-  if (!tuple) {
-    throw new ProviderError(
-      PROVIDER,
-      'shape',
-      `No published entry for "${nearest.nameEn}" on ${dateKey} — past the ` +
-        "Ministry's published year, or before the window.",
-    );
-  }
+  // Past the published year: the method, at the city's point.
+  if (!tuple) return calculated();
 
   const source: DataSource = fromCache ? 'cdn' : 'seed';
   return {

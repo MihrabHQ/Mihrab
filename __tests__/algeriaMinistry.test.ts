@@ -150,10 +150,10 @@ describe('the Ministry’s times, as published', () => {
     expect(r.timings.Asr).toBe('15:42');
   });
 
-  it('misses past the published year, so the caller can compute', async () => {
-    await expect(
-      getMarwDatasetTimes({ ...ALGIERS, date: new Date(2027, 5, 6) }),
-    ).rejects.toThrow(/published/);
+  it('computes the Ministry’s method for the city past the published year', async () => {
+    const r = await getMarwDatasetTimes({ ...ALGIERS, date: new Date(2027, 5, 6) });
+    expect(r.source).toBe('local');
+    expect(r.timezone).toBe('Africa/Algiers');
   });
 
   it('prefers a downloaded table over the seed', async () => {

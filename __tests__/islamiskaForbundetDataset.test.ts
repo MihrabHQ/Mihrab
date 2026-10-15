@@ -82,12 +82,18 @@ describe('getIslamiskaForbundetDatasetTimes', () => {
     expect(res.timings.Fajr).toBe('02:22'); // cached, not the seed's 02:00
   });
 
-  it('throws ProviderError when neither cache nor seed cover the date', async () => {
+  it('computes Diyanet’s method for the city when neither cache nor seed cover the date', async () => {
+    const res = await getIslamiskaForbundetDatasetTimes({
+      ...STHLM,
+      date: new Date('2099-12-31T10:00:00Z'),
+    });
+    expect(res.source).toBe('local');
+    expect(res.timezone).toBe('Europe/Stockholm');
+  });
+
+  it('refuses a point outside the dataset’s reach, so the caller decides', async () => {
     await expect(
-      getIslamiskaForbundetDatasetTimes({
-        ...STHLM,
-        date: new Date('2099-12-31T10:00:00Z'),
-      }),
+      getIslamiskaForbundetDatasetTimes({ latitude: 40.4, longitude: -3.7, date: new Date('2099-12-31T10:00:00Z') }),
     ).rejects.toBeInstanceOf(ProviderError);
   });
 });

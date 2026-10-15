@@ -1,18 +1,12 @@
 /**
- * Same-request failover for the Swedish scraper (v2.7.30; the stand-in
- * changed October 2026).
- *
- * Before, an islamiska_forbundet failure threw all the way up and the
- * caller fell back to on-device adhan — for THREE separate sessions —
- * until the cooldown finally routed elsewhere. Now the very request that
- * observed the failure is computed on the phone with Islamiska
- * Förbundet's own convention (method 24, read off its tables), for the
- * nearest listed city. AlAdhan is no longer asked: its nearest method is
- * the Muslim World League's, an hour from the tables on a midsummer night.
+ * Sweden on the phone (October 2026): Islamiska Förbundet's tables come from
+ * Mihrab's repo, never from the site itself. Where the repo's mirror cannot
+ * answer — outside its reach — the day is computed on the phone with the
+ * method its tables follow (method 24), for the nearest listed city. The
+ * site's widget is not scraped and AlAdhan is not asked: its nearest method
+ * is the Muslim World League's, an hour from the tables on a midsummer night.
  */
 import { fetchPrayerTimesUnified } from '../src/providers/fetchPrayerTimes';
-import { __resetProviderHealthForTests } from '../src/providers/providerHealth';
-import { ProviderError } from '../src/providers/errors';
 
 jest.mock('../src/providers/islamiskaForbundet', () => ({
   fetchIslamiskaForbundetTimes: jest.fn(),
@@ -21,18 +15,15 @@ jest.mock('../src/providers/aladhan', () => ({
   fetchAladhanTimes: jest.fn(),
 }));
 jest.unmock('adhan');
-// This suite exercises the LIVE scraper → AlAdhan failover, so force the
-// prepared-dataset rung (tried first) to miss and fall through.
 jest.mock('../src/providers/islamiskaForbundetDataset', () => ({
-  getIslamiskaForbundetDatasetTimes: jest
-    .fn()
-    .mockRejectedValue(new Error('dataset miss (test)')),
+  getIslamiskaForbundetDatasetTimes: jest.fn(),
 }));
 
 import { fetchIslamiskaForbundetTimes } from '../src/providers/islamiskaForbundet';
 import { fetchAladhanTimes } from '../src/providers/aladhan';
+import { getIslamiskaForbundetDatasetTimes } from '../src/providers/islamiskaForbundetDataset';
 
-const GOOD = {
+const MIRRORED = {
   timings: {
     Imsak: '02:10',
     Fajr: '02:20',
@@ -43,6 +34,7 @@ const GOOD = {
     Isha: '23:35',
   },
   timezone: 'Europe/Stockholm',
+  source: 'cdn' as const,
 };
 
 const PARAMS = {
@@ -54,31 +46,28 @@ const PARAMS = {
   school: 0,
 };
 
-describe('islamiska_forbundet same-request failover', () => {
-  beforeEach(() => {
-    __resetProviderHealthForTests();
-    jest.clearAllMocks();
+describe('Islamiska Förbundet, from the repo', () => {
+  beforeEach(() => jest.clearAllMocks());
+
+  it('serves the repo’s mirrored day', async () => {
+    (getIslamiskaForbundetDatasetTimes as jest.Mock).mockResolvedValue(MIRRORED);
+    const res = await fetchPrayerTimesUnified(PARAMS);
+    expect(res.timings.Isha).toBe('23:35');
+    expect(res.source).toBe('cdn');
+    expect(fetchIslamiskaForbundetTimes).not.toHaveBeenCalled();
+    expect(fetchAladhanTimes).not.toHaveBeenCalled();
   });
 
-  it('computes Islamiska Förbundet’s convention in the SAME call when the scraper fails', async () => {
-    (fetchIslamiskaForbundetTimes as jest.Mock).mockRejectedValue(
-      new ProviderError('islamiska_forbundet', 'timeout', 'origin down'),
-    );
-
+  it('computes Islamiska Förbundet’s convention where the mirror cannot answer — never the site, never AlAdhan', async () => {
+    (getIslamiskaForbundetDatasetTimes as jest.Mock).mockRejectedValue(new Error('outside the dataset (test)'));
     const res = await fetchPrayerTimesUnified(PARAMS);
     expect(res.source).toBe('local');
     expect(res.timezone).toBe('Europe/Stockholm');
+    expect(fetchIslamiskaForbundetTimes).not.toHaveBeenCalled();
     expect(fetchAladhanTimes).not.toHaveBeenCalled();
     // 6 July at Stockholm: the table's night share, not an 18° that the
     // sun never reaches — Fajr a little after two, Isha a little after eleven.
     expect(res.timings.Fajr >= '02:10' && res.timings.Fajr <= '02:30').toBe(true);
     expect(res.timings.Isha >= '23:00' && res.timings.Isha <= '23:15').toBe(true);
-  });
-
-  it('still uses the scraper result when it succeeds', async () => {
-    (fetchIslamiskaForbundetTimes as jest.Mock).mockResolvedValue(GOOD);
-    const res = await fetchPrayerTimesUnified(PARAMS);
-    expect(res.timings.Isha).toBe('23:35');
-    expect(fetchAladhanTimes).not.toHaveBeenCalled();
   });
 });

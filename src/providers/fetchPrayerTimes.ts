@@ -1,7 +1,6 @@
 import type { PrayerTimesResult, UnifiedFetchParams } from './types';
 import { fetchAladhanTimes } from './aladhan';
 import { fetchPrayTimesDev } from './praytimesDev';
-import { fetchIslamiskaForbundetTimes } from './islamiskaForbundet';
 import { getIslamiskaForbundetDatasetTimes } from './islamiskaForbundetDataset';
 import { getHabousDatasetTimes } from './habousDataset';
 import { getMarwDatasetTimes } from './marwDataset';
@@ -19,10 +18,6 @@ import {
 import { isCoordinateInAlgeria } from '../utils/algeriaRegion';
 import { computeImsak, DEFAULT_IMSAK_OFFSET_MINUTES } from './imsak';
 import { validateTimings, validateTimingShape } from './validateTimings';
-import {
-  isProviderCoolingDown,
-  recordProviderResult,
-} from './providerHealth';
 
 /**
  * Islamiska Förbundet's convention on the phone, for the listed city
@@ -111,10 +106,13 @@ export async function fetchPrayerTimesUnified(
       });
       break;
     case 'islamiska_forbundet': {
-      // 0. Prepared dataset FIRST (v2.7.x): a scheduled server-side job mirrors
-      // the bönetider times into a static CDN file (+ a bundled seed), so the
-      // normal path has NO live dependency on the flaky origin. A miss (date
-      // beyond the dataset / unknown city) falls through to the live chain.
+      // Islamiska Förbundet's tables, mirrored into Mihrab's repo by the
+      // scheduled job (tools/ifis-dataset) and read from there — the phone
+      // never scrapes the site itself (October 2026: every source's data
+      // comes from the repo, docs/prayer-times-sources.md). A day the mirror
+      // does not have is Diyanet's method computed for the nearest listed
+      // city inside the dataset module; outside the dataset's reach it is
+      // computed for the reader's own coordinates.
       try {
         result = await getIslamiskaForbundetDatasetTimes({
           latitude: p.latitude,
@@ -123,42 +121,9 @@ export async function fetchPrayerTimesUnified(
         });
         break;
       } catch {
-        /* dataset miss — try the live sources below */
+        /* outside the dataset's reach */
       }
-      // The Swedish scraper origin regularly times out. After 3
-      // consecutive failures it enters a 12 h cooldown during which the
-      // day is computed on the phone instead of hammering (and
-      // warn-spamming about) a dead origin — with Islamiska Förbundet's
-      // own convention (method 24, read off its tables), for the nearest
-      // listed city, so the stand-in is the table's own minute or near
-      // it. Cached days remain authoritative either way (see
-      // prayerStorage). The live scrape acts as a FALLBACK rung behind
-      // the dataset above.
-      if (await isProviderCoolingDown('islamiska_forbundet')) {
-        return swedenOnDevice(p);
-      }
-      try {
-        result = await fetchIslamiskaForbundetTimes({
-          latitude: p.latitude,
-          longitude: p.longitude,
-          date: p.date,
-        });
-        result.source = 'scrape';
-        void recordProviderResult('islamiska_forbundet', true);
-      } catch (e) {
-        void recordProviderResult('islamiska_forbundet', false);
-        // Same-request failover: don't make the caller wait for 3 failed
-        // sessions before the cooldown kicks in — compute THIS request
-        // too. (Until October 2026 this asked AlAdhan, whose nearest
-        // method is the Muslim World League's: an hour apart from the
-        // tables on a midsummer night.)
-        try {
-          return swedenOnDevice(p);
-        } catch {
-          throw e;
-        }
-      }
-      break;
+      return swedenOnDevice(p);
     }
     case 'habous': {
       // The Ministry of Habous's own published tables, from the prepared
@@ -353,6 +318,9 @@ export async function fetchPrayerTimesUnified(
   }
   // Throw early if the provider returned a structurally invalid response so
   // callers can fall through to the local-adhan fallback instead of caching garbage.
-  validateTimings(result.timings);
+  // A day a dataset computed itself (past its window) is in the phone's own
+  // clock, as every on-device answer is: its shape is what is checked.
+  if (result.source === 'local') validateTimingShape(result.timings);
+  else validateTimings(result.timings);
   return result;
 }

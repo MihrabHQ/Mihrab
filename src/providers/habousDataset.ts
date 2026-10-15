@@ -44,13 +44,15 @@ import { computeLocalAdhanTimes } from './localAdhan';
 import moroccoPoints from './data/moroccoMethodPoints.json';
 
 /**
- * Morocco's times are the app's own calculation of the ministry's method
- * (`moroccoMethod.ts`) at the nearest listed city's point and horizon, not
- * the table itself (October 2026) — as for Sweden and Algeria. The table
- * is kept, for the check against the source (tools/verify-methods), and
- * set false this serves it again.
+ * Morocco's times are the ministry's table, mirrored into the repo (October
+ * 2026: the data comes from Mihrab's own repo, never the source directly).
+ * The app's own calculation of the ministry's method (`moroccoMethod.ts`) at
+ * the nearest listed city's point and horizon fills any day the mirror does
+ * not have — the ministry publishes a month at a time — and is what the app
+ * will serve once the migration plan (docs/prayer-times-sources.md) is
+ * carried out. Set true to serve it now.
  */
-let servesCalculation = true;
+let servesCalculation = false;
 export function moroccoServesCalculation(): boolean {
   return servesCalculation;
 }
@@ -255,7 +257,7 @@ export async function getHabousDatasetTimes(params: {
     );
   }
 
-  if (servesCalculation) {
+  const calculated = (): PrayerTimesResult => {
     const point = METHOD_POINTS[String(nearest.id)];
     return {
       ...computeLocalAdhanTimes({
@@ -270,7 +272,8 @@ export async function getHabousDatasetTimes(params: {
       timezone: DEFAULT_TZ,
       source: 'local',
     };
-  }
+  };
+  if (servesCalculation) return calculated();
 
   const dateKey = formatLocalDate(params.date);
   const cached = await loadCachedCity(nearest.id);
@@ -278,17 +281,8 @@ export async function getHabousDatasetTimes(params: {
 
   const fromCache = cached?.days[dateKey];
   const tuple = fromCache ?? seed.cities?.[String(nearest.id)]?.[dateKey];
-  if (!tuple) {
-    throw new ProviderError(
-      PROVIDER,
-      'shape',
-      `No published entry for "${nearest.name}" on ${dateKey} ` +
-        `(cache ${cached ? 'present' : 'empty'}, seed ` +
-        `${seed.cities?.[String(nearest.id)] ? 'has-city' : 'no-city'}). ` +
-        'The ministry publishes one Hijri month at a time, so this is ordinary ' +
-        'past the window rather than a fault.',
-    );
-  }
+  // Past the published month: the method, at the city's point and horizon.
+  if (!tuple) return calculated();
 
   const source: DataSource = fromCache ? 'cdn' : 'seed';
   return {
