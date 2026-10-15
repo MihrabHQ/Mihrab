@@ -17,13 +17,15 @@
  *    twenty minutes before (Isha) or after (Fajr) the takdir.
  *
  * What the tables turn out to do with them, read off Diyanet's own tables
- * for all 160 Swedish places, 2024–2027 (tools/verify-methods/diyanet-*.py;
- * 99.94 % of times on the printed minute, the rest a fraction of a second
- * from the rounding point):
+ * for all 160 Swedish places, 2024–2027 (99.98 % of times on the printed
+ * minute, the rest a fraction of a second from the rounding point):
  *  - The sun is taken once a day, at 0h UT less 45 s: Meeus's mean
  *    elements and equation of the centre, the TRUE (geometric) longitude,
  *    the apparent obliquity (mean plus nutation), the equation of time as
- *    the mean longitude less the right ascension, 0.106 s later.
+ *    the mean longitude less the right ascension, 0.106 s later; and
+ *    two small waves by the mean longitude the formula leaves out: a few
+ *    hundredths of a second on the transit, a tenth of an arc-second on
+ *    the declination.
  *  - Coordinates are kept to three decimals of a degree.
  *  - Asr that never forms is printed at Dhuhr's time.
  *  - The night a share is taken of is the day's own: 24 h less the
@@ -72,6 +74,30 @@ const SUN_INSTANT_S = -45;
 const EOT_ADD_MIN = 0.00176;
 
 /**
+ * Seconds Diyanet's transit runs later than the formula below, by the sun's
+ * mean longitude: an annual wave of a few hundredths of a second, read off
+ * every Dhuhr of Diyanet's Swedish tables 2024–2027 (the largest margin that
+ * leaves none of them off; the two halves of the span give the same wave).
+ */
+function eotResidualS(L: number): number {
+  return (
+    0.033377 * Math.sin(L) + 0.007721 * Math.cos(L) -
+    0.000229 * Math.sin(2 * L) + 0.004198 * Math.cos(2 * L) -
+    0.02346 * Math.sin(3 * L) - 0.026434 * Math.cos(3 * L)
+  );
+}
+
+/**
+ * Degrees Diyanet's declination runs above the formula below: a wave of a
+ * tenth of an arc-second by the sun's mean longitude, read off the times of
+ * Diyanet's Swedish tables 2024–2027 that sit at a minute's edge (fitted on
+ * either two years, it holds on the other two).
+ */
+function decResidualDeg(L: number): number {
+  return -1.1539e-5 - 3.6174e-5 * Math.sin(L) - 2.1101e-5 * Math.cos(L) + 2.0235e-5 * Math.sin(2 * L) - 2.2534e-5 * Math.cos(2 * L);
+}
+
+/**
  * Declination (radians) and equation of time (minutes), as Diyanet's tables
  * take them: Meeus's mean elements, the true longitude, the apparent obliquity.
  */
@@ -92,8 +118,8 @@ function sunAt(utcMs: number): { dec: number; eot: number } {
     (9.2 * Math.cos(om) + 0.57 * Math.cos(2 * Ls) + 0.1 * Math.cos(2 * Lm) - 0.09 * Math.cos(2 * om)) / 3600;
   const lam = (L0 + C) * RAD;
   const ra = ((((Math.atan2(Math.cos(eps * RAD) * Math.sin(lam), Math.cos(lam)) / RAD) % 360) + 360) % 360);
-  const dec = Math.asin(Math.sin(eps * RAD) * Math.sin(lam));
-  const eot = (((((L0 - ra + 180) % 360) + 360) % 360) - 180) * 4 + EOT_ADD_MIN;
+  const dec = Math.asin(Math.sin(eps * RAD) * Math.sin(lam)) + decResidualDeg(L0 * RAD) * RAD;
+  const eot = (((((L0 - ra + 180) % 360) + 360) % 360) - 180) * 4 + EOT_ADD_MIN - eotResidualS(L0 * RAD) / 60;
   return { dec, eot };
 }
 

@@ -39,7 +39,16 @@ export function getNearestIslamiskaForbundetCity(latitude: number, longitude: nu
   return getNearestIslamiskaForbundetCityWithDistance(latitude, longitude).city;
 }
 
-/** The listed city's own coordinates — the point its table is computed for. */
+/**
+ * Where Diyanet computes a city whose table is not for the town itself:
+ * Islamiska Förbundet's Ystad is Diyanet's, computed 43 km west of the town.
+ * The town's own place still decides which city is nearest.
+ */
+const COMPUTED_AT: Record<string, CityCoords> = {
+  Ystad: { lat: 55.43, lng: 13.136 },
+};
+
+/** The point the listed city's table is computed for (the city's own coordinates unless Diyanet's differ). */
 export function islamiskaForbundetCityCoords(city: string): CityCoords | undefined {
-  return cityCoords[city];
+  return COMPUTED_AT[city] ?? cityCoords[city];
 }

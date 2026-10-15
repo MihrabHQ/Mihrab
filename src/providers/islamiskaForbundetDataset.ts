@@ -60,7 +60,7 @@ const MAX_DATASET_CITY_KM = 250;
  * Sweden's times are the mirrored table from the repo (October 2026: the
  * data comes from Mihrab's own repo, never the source directly). The app's
  * own calculation of Diyanet's method (method 24, congressMethod.ts) at the
- * point Diyanet computes each city — on the printed minute on 99.94 % of
+ * point Diyanet computes each city — on the printed minute on 99.98 % of
  * times over 2024–2027 — fills any day the mirror does not have, and is
  * what the app will serve once the migration plan
  * (docs/prayer-times-sources.md) is carried out. Set true to serve it now.
