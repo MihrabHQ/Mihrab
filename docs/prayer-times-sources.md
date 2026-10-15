@@ -37,7 +37,7 @@ served, and the calculation fills the days it does not have.
 
 | Source | Into the repo by | Why no live backup | Calculation behind it |
 |---|---|---|---|
-| **Sweden** — Islamiska Förbundet (Diyanet's tables) | `tools/ifis-dataset/` (weekly) | a scraped site; Diyanet's own API needs an account and allows ~5 requests a day | method 24 (`congressMethod.ts`): 99.98 % on Diyanet’s minute, 99.96 % on Islamiska Förbundet’s |
+| **Sweden** — Islamiska Förbundet (Diyanet's tables) | `tools/ifis-dataset/` (weekly) | a scraped site; Diyanet's own API needs an account and allows ~5 requests a day | method 24 (`congressMethod.ts` with `swedenCorrections.ts`): 100 % on Diyanet’s and Islamiska Förbundet’s minute, 2024–2027 (99.98 % by the method alone) |
 | **Morocco** — Habous | `tools/habous-dataset/` (daily) | scraped HTML, a month at a time | method 21 (`moroccoMethod.ts`): 98.6 % |
 | **Algeria** — Ministry of Religious Affairs | `tools/algeria-ministry/` | the ministry's app database, rebuilt from its APK | method 19 (`algeriaMethod.ts`): 99.4 % |
 | **Indonesia** — Kemenag | `tools/national-tables/kemenag.ts` (weekly) | the site answers only the project's builders | method 20 (`indonesiaMethod.ts`): 99.965 % |
@@ -66,7 +66,7 @@ What is left for each:
   times no single point fits, and times within a fraction of a second of the
   rounding point. Needs a year of tables (the site gives three months), to
   confirm the Asr rule in June.
-- **Sweden** (99.98 %): differences at a fraction of a second of the
+- **Sweden** (100 % with the correction list; 99.98 % without): differences at a fraction of a second of the
   rounding point; the site's own copy differs from Diyanet's on ~1.6 % of
   rows, and those are the site's.
 - **Algeria** (99.4 %): a residual of about a second, day to day, in the

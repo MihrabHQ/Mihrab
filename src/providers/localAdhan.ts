@@ -25,6 +25,7 @@ import { computeImsak, DEFAULT_IMSAK_OFFSET_MINUTES } from './imsak';
 import { horizonDipMinutes, solarDeclinationDegrees } from '../prayer/horizonDip';
 import { SWEDEN_METHOD_ID } from './swedenMethodId';
 import { congressTimes } from './congressMethod';
+import { swedenCorrection } from './swedenCorrections';
 import { algeriaTimes } from './algeriaMethod';
 import { moroccoTimes, MOROCCO_DIP_PER_SQRT_M } from './moroccoMethod';
 import { kemenagTimes } from './indonesiaMethod';
@@ -435,9 +436,20 @@ export function computeLocalAdhanInstants(params: LocalAdhanParams): PrayerInsta
       : 0);
   if (methodId === SWEDEN_METHOD_ID) {
     // The Congress method, as Diyanet computes the Swedish tables
-    // (`congressMethod.ts`); rounded to the minute as they are printed.
+    // (`congressMethod.ts`); rounded to the minute as they are printed, then
+    // the correction list for the few times Diyanet's program rounds the
+    // other way (`swedenCorrections.ts`; at its points, the standard Asr only).
     const at = congressTimes(latitude, params.longitude, y, m, day, params.school === 1 ? 2 : 1);
-    return { fajr: toMinute(at.fajr), sunrise: toMinute(at.sunrise), dhuhr: toMinute(at.dhuhr), asr: toMinute(at.asr), maghrib: toMinute(at.maghrib), isha: toMinute(at.isha) };
+    const c = swedenCorrection(latitude, params.longitude, y, m, day);
+    const fix = (d: Date, step: number | undefined) => new Date(toMinute(d).getTime() + (step ?? 0) * 60_000);
+    return {
+      fajr: fix(at.fajr, c?.fajr),
+      sunrise: fix(at.sunrise, c?.sunrise),
+      dhuhr: fix(at.dhuhr, c?.dhuhr),
+      asr: fix(at.asr, params.school === 1 ? 0 : c?.asr),
+      maghrib: fix(at.maghrib, c?.maghrib),
+      isha: fix(at.isha, c?.isha),
+    };
   }
   if (methodId === JAKIM_METHOD_ID_LOCAL && params.jakimZone != null) {
     // The zone's times as JAKIM computes them (`malaysiaMethod.ts`), on the minute.
