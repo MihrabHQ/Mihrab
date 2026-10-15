@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "builtAt": "2026-10-15T00:25:08.306Z",
+  "source": "https://www.namazvakti.com",
+  "tileDeg": 5,
+  "serverStatus": "ok",
+  "cities": 121776,
+  "located": 121775,
+  "tiles": 753,
+  "countries": 235,
+  "listStartedAt": "2026-10-14T09:25:31.983Z",
+  "listCompletedAt": "2026-10-14T09:52:50.532Z",
+  "complete": false
+}
