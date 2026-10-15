@@ -27,7 +27,7 @@ import { formatLocalDate } from '../utils/date';
 import { fetchWithRetry } from '../utils/fetchWithRetry';
 import type { DatasetDayTuple } from './datasetTuple';
 import { ProviderError } from './errors';
-import { tupleToTimings } from './islamiskaForbundetParser';
+import { tupleToTimings } from './datasetTuple';
 import type { DataSource, PrayerTimesResult } from './types';
 
 export type TablePlace = {

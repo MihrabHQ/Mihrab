@@ -2,7 +2,7 @@
  * One place's mean difference per prayer, by month (ours − theirs,
  * minutes): where in the year a method goes wrong.
  *
- *   npx tsx tools/verify-methods/by-month.ts ifis stockholm.json
+ *   npx tsx tools/verify-methods/by-month.ts habous <city>.json
  */
 import * as fs from 'node:fs';
 import { AUTHORITIES, cityFile } from './authorities';

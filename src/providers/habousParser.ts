@@ -3,7 +3,7 @@
  * times — habous.gov.ma/prieres/index.php?ville=N.
  *
  * Deliberately imports ONLY pure modules, for the same reason
- * `islamiskaForbundetParser.ts` does: this has to be importable from the
+ * the other parsers does: this has to be importable from the
  * React Native app AND from a plain Node script (the scheduled dataset
  * builder) without dragging in AsyncStorage or native modules.
  *

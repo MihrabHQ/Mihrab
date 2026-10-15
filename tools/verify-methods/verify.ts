@@ -8,7 +8,7 @@
  * not — the workflow then opens (or updates) that authority's issue.
  *
  *   npx tsx tools/verify-methods/verify.ts            # all
- *   npx tsx tools/verify-methods/verify.ts jakim ifis # some
+ *   npx tsx tools/verify-methods/verify.ts jakim diyanet # some
  *
  * The clock: the app formats times in the phone's zone; here the same
  * instants are formatted in the authority's, whatever zone this runs in.

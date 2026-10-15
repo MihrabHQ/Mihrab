@@ -10,7 +10,7 @@ name: namazvakti.com city index
 # monthly re-read of the lists and the few new cities in them. Emails on
 # failure (the site down, the lists changed shape, or the push failing).
 #
-# Same mail secrets as the IFiS job (MAIL_SERVER, MAIL_PORT, MAIL_USERNAME,
+# Same mail secrets as the other dataset jobs (MAIL_SERVER, MAIL_PORT, MAIL_USERNAME,
 # MAIL_PASSWORD); without them only the email step is skipped.
 
 on:

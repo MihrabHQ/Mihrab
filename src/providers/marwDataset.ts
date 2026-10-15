@@ -42,7 +42,7 @@ import {
 import { nearestAlgeriaCity, ALGERIA_METHOD_ID } from './algeriaCities';
 import { computeLocalAdhanTimes } from './localAdhan';
 import methodPoints from './data/algeriaMethodPoints.json';
-import { tupleToTimings } from './islamiskaForbundetParser';
+import { tupleToTimings } from './datasetTuple';
 import type { DatasetDayTuple } from './datasetTuple';
 import { formatLocalDate } from '../utils/date';
 import { fetchWithRetry } from '../utils/fetchWithRetry';

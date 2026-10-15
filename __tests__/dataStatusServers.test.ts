@@ -1,19 +1,15 @@
 /**
  * Two prepared datasets, two server records.
  *
- * Sweden (Islamiska Förbundet) and Morocco (Habous) are built by different
+ * Algeria (the Ministry's year) and Morocco (Habous) are built by different
  * jobs on different cadences and cover different windows — most of a year
- * ahead against a couple of weeks. Both used to write their `index.json`
- * snapshot into one slot, so the statistics panel reported whichever had
- * polled last under a heading that named neither: a phone in Stockholm
- * showing eleven days of coverage, which is the Moroccan number and looks
- * like a broken Swedish server.
+ * ahead against a couple of weeks. Datasets used to write their
+ * `index.json` snapshot into one slot, so the statistics panel reported
+ * whichever had polled last under a heading that named neither: one
+ * country's eleven days of coverage, looking like another's broken server.
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {
-  nextHabousServerRunAfter,
-  nextServerRunAfter,
-} from '../src/config/datasets';
+import { nextHabousServerRunAfter } from '../src/config/datasets';
 import {
   getDataStatus,
   recordDataSource,
@@ -28,7 +24,7 @@ beforeEach(async () => {
   _resetDataStatusMemoForTests();
 });
 
-const SWEDEN = {
+const ALGERIA = {
   builtAt: '2026-08-17T03:17:00.000Z',
   serverStatus: 'ok' as const,
   minCoverageDays: 331,
@@ -43,26 +39,26 @@ const MOROCCO = {
 
 describe('the two servers are recorded apart', () => {
   it('keeps both snapshots', async () => {
-    await recordServerIndex('ifis', SWEDEN, new Date('2026-08-21T12:00:00Z'));
+    await recordServerIndex('marw', ALGERIA, new Date('2026-08-21T12:00:00Z'));
     await recordServerIndex('habous', MOROCCO, new Date('2026-08-21T13:00:00Z'));
 
     const s = await getDataStatus();
-    expect(s.servers.ifis.minCoverageDays).toBe(331);
+    expect(s.servers.marw.minCoverageDays).toBe(331);
     expect(s.servers.habous.minCoverageDays).toBe(11);
-    expect(s.servers.ifis.builtAt).toBe(SWEDEN.builtAt);
+    expect(s.servers.marw.builtAt).toBe(ALGERIA.builtAt);
     expect(s.servers.habous.builtAt).toBe(MOROCCO.builtAt);
   });
 
   it('the later poll does not overwrite the other one', async () => {
-    // The bug, in one assertion: Morocco polling after Sweden used to leave
-    // Sweden reading 11 days.
-    await recordServerIndex('ifis', SWEDEN, new Date('2026-08-21T12:00:00Z'));
+    // The bug, in one assertion: Morocco polling after Algeria used to leave
+    // Algeria reading 11 days.
+    await recordServerIndex('marw', ALGERIA, new Date('2026-08-21T12:00:00Z'));
     await recordServerIndex('habous', MOROCCO, new Date('2026-08-21T13:00:00Z'));
     await recordServerIndex('habous', MOROCCO, new Date('2026-08-21T19:00:00Z'));
 
     const s = await getDataStatus();
-    expect(s.servers.ifis.minCoverageDays).toBe(331);
-    expect(s.servers.ifis.nextCheckDue).toBe('2026-08-21T12:00:00.000Z');
+    expect(s.servers.marw.minCoverageDays).toBe(331);
+    expect(s.servers.marw.nextCheckDue).toBe('2026-08-21T12:00:00.000Z');
     expect(s.servers.habous.nextCheckDue).toBe('2026-08-21T19:00:00.000Z');
   });
 
@@ -73,7 +69,7 @@ describe('the two servers are recorded apart', () => {
   });
 
   it('starts a dataset that has never answered at unknown', async () => {
-    await recordServerIndex('ifis', SWEDEN, new Date('2026-08-21T12:00:00Z'));
+    await recordServerIndex('marw', ALGERIA, new Date('2026-08-21T12:00:00Z'));
     const s = await getDataStatus();
     expect(s.servers.habous.status).toBe('unknown');
     expect(s.servers.habous.minCoverageDays).toBeNull();
@@ -104,9 +100,9 @@ describe('a blob written before the split', () => {
     const s = await getDataStatus();
     expect(s.lastSource).toBe('cdn');
     expect(s.lastSourceAt).toBe('2026-08-20T09:00:00.000Z');
-    expect(s.servers.ifis.minCoverageDays).toBeNull();
+    expect(s.servers.marw.minCoverageDays).toBeNull();
     expect(s.servers.habous.minCoverageDays).toBeNull();
-    expect(s.servers.ifis.status).toBe('unknown');
+    expect(s.servers.marw.status).toBe('unknown');
   });
 
   it('survives a corrupt blob', async () => {
@@ -119,16 +115,8 @@ describe('a blob written before the split', () => {
 });
 
 describe('and they are expected at different times', () => {
-  // Sweden walks a horizon once a week; Morocco can only see the Hijri month
-  // its ministry's page is currently showing, so it accumulates daily. The
-  // panel showed Sweden's Monday against both, which is the shared slot's
-  // mistake wearing a different hat.
-  it('Sweden is weekly, on the Monday', () => {
-    const next = nextServerRunAfter(new Date('2026-08-21T09:00:00Z'));
-    expect(next.getUTCDay()).toBe(1);
-    expect(next.toISOString()).toBe('2026-08-24T03:17:00.000Z');
-  });
-
+  // Morocco can only see the Hijri month its ministry's page is currently
+  // showing, so it accumulates daily.
   it('Morocco is the next 04:41, today or tomorrow', () => {
     expect(nextHabousServerRunAfter(new Date('2026-08-21T04:00:00Z')).toISOString())
       .toBe('2026-08-21T04:41:00.000Z');

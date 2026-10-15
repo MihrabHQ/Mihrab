@@ -118,41 +118,6 @@ type IdPlace = { id: number; name: string; nameEn?: string; lat: number; lon: nu
 
 export const AUTHORITIES: Authority[] = [
   {
-    id: 'ifis',
-    name: 'Sweden — Islamiska Förbundet',
-    folder: '.', // data/prayer-times/v1 itself — the first table, before the folders
-    method: 24,
-    school: 0,
-    toleranceMin: 1,
-    // The tables are Diyanet's (Islamiska Förbundet republishes them), and
-    // the method is Diyanet's (src/providers/congressMethod.ts), computed at
-    // the points Diyanet computes the cities at (the coordinates file).
-    // Rows where the site's table differs from Diyanet's own are the site's
-    // fault — another year's figures served for the next, one town's table
-    // printed for another — and are set aside when Diyanet's tables have
-    // been downloaded (diyanet-fetch.py; the 'diyanet' check below).
-    maxOutsideShare: 0.01,
-    hardMaxMin: 3,
-    alarm: true,
-    copiedYears: true,
-    original: place => diyanetDaysFor(place.file.replace(/\.json$/, '')),
-    places: () => {
-      const coords = readJson<Record<string, { lat: number; lng: number }>>(
-        path.join(ROOT, 'src/providers/islamiskaForbundetCoords.json'),
-      );
-      const { citySlug } = require('../../src/providers/islamiskaForbundetParser') as {
-        citySlug: (s: string) => string;
-      };
-      return Object.entries(coords).map(([name, c]) => ({
-        file: `${citySlug(name)}.json`,
-        name,
-        lat: c.lat,
-        lon: c.lng,
-        tz: 'Europe/Stockholm',
-      }));
-    },
-  },
-  {
     id: 'diyanet',
     name: 'Sweden — Diyanet (the tables Islamiska Förbundet republishes)',
     folder: 'diyanet',

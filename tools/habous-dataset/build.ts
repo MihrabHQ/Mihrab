@@ -1,15 +1,13 @@
 /**
  * Build the Moroccan prayer-times dataset from the ministry's own pages.
  *
- * Same shape as `tools/ifis-dataset/build.ts` — per-city JSON committed to
- * the repo, an index the app polls, and a bundled seed so a fresh install
- * works before it has downloaded anything. Read that file first; this one
- * only explains where Morocco differs.
+ * Per-city JSON committed to the repo, an index the app polls, and a
+ * bundled seed so a fresh install works before it has downloaded anything.
  *
- * ── THE ONE STRUCTURAL DIFFERENCE ─────────────────────────────────────
+ * ── NO DATE PARAMETER ─────────────────────────────────────────────────
  *
- * Islamiska Förbundet answers a query for A GIVEN DATE, so its builder can
- * walk a 400-day horizon. The ministry has no such parameter: `index.php`
+ * A source that answers a query for A GIVEN DATE lets a builder walk a
+ * 400-day horizon. The ministry has no such parameter: `index.php`
  * takes a `ville` and nothing else, and returns whatever HIJRI MONTH it is
  * currently showing. One request buys about thirty days and you cannot ask
  * for the thirty after them.

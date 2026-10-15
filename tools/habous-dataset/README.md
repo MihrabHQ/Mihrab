@@ -3,9 +3,8 @@
 Prayer times as the Moroccan Ministry of Habous and Islamic Affairs
 publishes them — `habous.gov.ma/prieres/index.php?ville=N`.
 
-Same shape as `tools/ifis-dataset`: scrape server-side on a schedule, commit
-per-city JSON, and let the app read that instead of computing an
-approximation.
+Scrape server-side on a schedule, commit per-city JSON, and let the app
+read that instead of computing an approximation.
 
 ## What the source is like
 
@@ -78,9 +77,9 @@ Across four probe runs the ministry returned, in order:
 `UNABLE_TO_VERIFY_LEAF_SIGNATURE`, the same again, `ECONNRESET`, and then a
 run whose three attempts were TLS failure / `UND_ERR_CONNECT_TIMEOUT` / TLS
 failure before the verified request succeeded. So: retry, back off, and
-treat a bad run as a bad run rather than as data. The IFiS builder's
-origin-health gate (`requests >= 20 && failRate > 0.5` → give up without
-committing) is the right shape here too.
+treat a bad run as a bad run rather than as data. An origin-health gate
+(`requests >= 20 && failRate > 0.5` → give up without committing) is the
+right shape.
 
 ## The probe
 

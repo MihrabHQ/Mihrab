@@ -19,7 +19,6 @@ import {
 } from '../src/providers/imsak';
 import { validateTimings } from '../src/providers/validateTimings';
 import { computeLocalAdhanTimes } from '../src/providers/localAdhan';
-import { parseIslamiskaForbundetHtml } from '../src/providers/islamiskaForbundet';
 
 describe('timeMinusMinutes', () => {
   test('subtracts within the same day', () => {
@@ -157,75 +156,5 @@ describe('computeLocalAdhanTimes returns Imsak', () => {
       imsakOffsetMinutes: 20,
     });
     expect(result.timings.Imsak).toBe(computeImsak(result.timings.Fajr, 20));
-  });
-});
-
-describe('Islamiska Förbundet parser: Ramadan column detection', () => {
-  function buildHtml(times: string[]): string {
-    return `
-      <html><body>
-        <table>
-          ${times.map(t => `<tr><td>${t}</td></tr>`).join('')}
-        </table>
-      </body></html>`;
-  }
-
-  test('regular response (6 times): computes Imsak fallback from Fajr', () => {
-    // Suppress the debug log for cleaner test output.
-    const debugSpy = jest.spyOn(console, 'debug').mockImplementation(() => {});
-    const html = buildHtml(['05:30', '07:45', '12:00', '14:30', '16:00', '17:30']);
-    const result = parseIslamiskaForbundetHtml(html, 'Stockholm');
-    expect(result.Imsak).toBe('05:20'); // Fajr 05:30 − 10
-    expect(result.Fajr).toBe('05:30');
-    debugSpy.mockRestore();
-  });
-
-  test('Ramadan response (7 times): extracts Imsak as the leading column', () => {
-    // Conventional column order: Imsak | Fajr | Sunrise | Dhuhr | Asr | Maghrib | Isha
-    const html = buildHtml([
-      '04:00', // Imsak
-      '04:10', // Fajr
-      '06:30', // Sunrise
-      '13:00', // Dhuhr
-      '17:00', // Asr
-      '19:30', // Maghrib
-      '21:00', // Isha
-    ]);
-    const result = parseIslamiskaForbundetHtml(html, 'Stockholm');
-    expect(result.Imsak).toBe('04:00'); // Real, not computed
-    expect(result.Fajr).toBe('04:10');
-    expect(result.Sunrise).toBe('06:30');
-    expect(result.Isha).toBe('21:00');
-  });
-
-  test('throws if 7-token response has Imsak after Fajr (column order swapped)', () => {
-    // If the site swaps the order, the leading "Imsak" would be > Fajr.
-    const html = buildHtml([
-      '06:30', // Pretend this is Imsak — but it's actually after Fajr
-      '04:10', // Fajr
-      '07:00',
-      '13:00',
-      '17:00',
-      '19:30',
-      '21:00',
-    ]);
-    expect(() => parseIslamiskaForbundetHtml(html, 'Stockholm')).toThrow(
-      /column order.*changed/i,
-    );
-  });
-
-  test('Ramadan response with high-latitude wrap (Imsak late evening, Fajr after midnight)', () => {
-    const html = buildHtml([
-      '23:30', // Imsak (previous evening)
-      '00:48', // Fajr (just past midnight)
-      '03:30', // Sunrise
-      '12:50',
-      '17:00',
-      '21:50',
-      '23:55', // Isha
-    ]);
-    const result = parseIslamiskaForbundetHtml(html, 'Stockholm');
-    expect(result.Imsak).toBe('23:30');
-    expect(result.Fajr).toBe('00:48');
   });
 });

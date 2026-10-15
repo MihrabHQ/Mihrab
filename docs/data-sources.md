@@ -35,18 +35,22 @@ What ships today:
   `ios/PrayerApp/Resources/fonts/README.md`).
 - **Duas and adhkār** — `src/duas/duas.ts` (every entry with a `source`)
   and `src/dhikr/dhikr.ts`.
-- **Prayer-time datasets** — the national tables for Sweden (Islamiska
-  Förbundet, `tools/ifis-dataset/`), Morocco (Habous,
+- **Prayer-time datasets** — the national tables for Morocco (Habous,
   `tools/habous-dataset/`) and Algeria (the Ministry of Religious Affairs
   and Wakfs, `tools/algeria-ministry/`), each rebuilt by a workflow in
   `.github/workflows/` into `data/prayer-times/` and fetched by city.
+  Sweden (Islamiska Förbundet) is not a table: the phone calculates it
+  with the International Prayer Times Congress method as Diyanet computes
+  the Swedish tables (`src/providers/congressMethod.ts`, with the
+  correction list `src/providers/swedenCorrections.ts`); source:
+  [MihrabHQ/mihrab-methods](https://github.com/MihrabHQ/mihrab-methods).
   Singapore (MUIS, from data.gov.sg), Malaysia (JAKIM e-Solat) and
   Indonesia (Kemenag) are built by `tools/national-tables/` and read
   through one module,
   `src/providers/nationalTable.ts`. Türkiye Takvimi (namazvakti.com):
   a workflow builds its city index (`tools/namazvakti-dataset/`). Where
   each table is served from, what stands behind it, and the plan to move
-  the scraped ones to Mihrab's own calculations:
+  the rest to Mihrab's own calculations:
   `docs/prayer-times-sources.md`.
 - **Hijri calendars** — the standard tabular calendar, Indonesia's
   (Government & NU; Muhammadiyah's KHGT) and the published overrides in

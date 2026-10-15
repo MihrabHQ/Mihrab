@@ -136,11 +136,11 @@ describe('unfolded', () => {
     }
   });
 
-  it('lists both prepared datasets, not one', () => {
+  it('lists each prepared dataset, not one', () => {
     const shown = texts(render().root);
     // These carry defaultValues, which the stub `t` returns.
-    expect(shown).toContain('Sweden · Islamiska Förbundet');
     expect(shown).toContain('Morocco · Habous');
+    expect(shown).toContain('Algeria · Ministry of Religious Affairs');
   });
 });
 

@@ -64,9 +64,10 @@ src/
 ├── prayer/                   prayerStorage.ts — AsyncStorage cache with write-mutex;
 │                             daruriTimes.ts — the Mālikī second times
 ├── providers/                Prayer-time sources: aladhan, prayertimes_dev, localAdhan
-│                             (on device), and the bundled regional datasets — Sweden
-│                             (Islamiska Förbundet), Morocco (Habous), Algeria (MARW)
-│                             — plus validateTimings.ts and providerHealth.ts
+│                             (on device), Sweden's own calculation (congressMethod.ts
+│                             + swedenCorrections.ts), the bundled regional datasets —
+│                             Morocco (Habous), Algeria (MARW) — plus validateTimings.ts
+│                             and providerHealth.ts
 ├── quran/                    Quran data + readers (muṣḥaf, sūrah, word reader, tajwīd),
 │                             the khatmah, downloads, and audio/ — the shared playback store
 ├── responsive/               Breakpoints, the Mac/iPad dashboard, ResponsiveModal
@@ -88,7 +89,7 @@ docs/                         The website (index.html + 12 generated languages) 
 release-notes/                The in-app "What's new", one file per versionCode and language
 scripts/                      release.sh + scripts/release/ (the cut), build-site.js,
                               build-release-notes.js, the audits (.claude/commands wrap them)
-tools/                        Dataset builders (habous, MARW, IFiS, hijri-calendars, qiraat)
+tools/                        Dataset builders (habous, MARW, hijri-calendars, qiraat)
 .claude/                      Slash commands + subagents (designer, reviewer, …)
 fastlane/metadata/            Play / App Store listing copy and the Play changelogs
 ```
@@ -100,7 +101,7 @@ fastlane/metadata/            Play / App Store listing copy and the Play changel
 - `src/providers/fetchPrayerTimes.ts` — fan-out to all providers; calls `validateTimings()` on every response.
 - `src/providers/validateTimings.ts` — asserts all 6 keys present and `HH:MM` formatted; throws on failure.
 - `src/providers/localAdhan.ts` — on-device fallback (adhan.js); used when network fails.
-- `src/providers/islamiskaForbundet.ts` — Sweden-specific HTML scraper with 6-hour sanity check.
+- `src/providers/congressMethod.ts` — Sweden's times, calculated on the phone: the International Prayer Times Congress method as Diyanet computes the tables Islamiska Förbundet publishes, with the yearly correction list in `swedenCorrections.ts`. Source: [MihrabHQ/mihrab-methods](https://github.com/MihrabHQ/mihrab-methods).
 
 **GPS & location**
 - `src/hooks/usePrayerDay.ts` — instant-load pattern (shows cached coords, GPS in background, refetches only if device moved >~1 km via `coordsChangedSignificantly`).

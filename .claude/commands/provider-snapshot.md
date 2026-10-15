@@ -14,11 +14,11 @@ Without arguments: uses today's date and Stockholm coords.
 With `--ramadan`: uses a known Ramadan reference date for the current Hijri year (or last year's Ramadan if outside Ramadan).
 
 The script:
-1. Fetches AlAdhan, PrayTimes.dev, Islamiska Förbundet, and computes local adhan for Stockholm.
+1. Fetches AlAdhan and PrayTimes.dev, and computes local adhan for Stockholm.
 2. Diffs each response against `__tests__/fixtures/snapshots/<provider>-<date>.json|html`.
 3. Reports any change in shape, missing fields, or sanity-check failures.
 4. Updates the snapshot if `--update` is passed.
 
 If a provider has changed its response shape, invoke the `provider-doctor` subagent to investigate, propose a fix, and write a regression test.
 
-Run before any release. Run during Ramadan especially — Islamiska Förbundet's Ramadan timetable format is the riskiest moving target.
+Run before any release, and during Ramadan especially, when providers' formats change most.

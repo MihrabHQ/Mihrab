@@ -4,7 +4,7 @@ name: Reuse check
 # Runs on GitHub so it does not depend on any machine being switched on.
 # Opens an issue AND emails when something changes; stays silent otherwise.
 #
-# Email uses the same secrets as the IFiS dataset job (MAIL_SERVER, MAIL_PORT,
+# Email uses the same secrets as the dataset jobs (MAIL_SERVER, MAIL_PORT,
 # MAIL_USERNAME, MAIL_PASSWORD). If they are unset the job still runs and still
 # opens the issue; only the mail step is skipped.
 
@@ -97,7 +97,7 @@ jobs:
             --title "Reuse check: something changed ($(date -u +%Y-%m-%d))" \
             --body-file issue-body.md
 
-      # Same channel the IFiS dataset job uses, so alerts from this repo all
+      # Same channel the dataset jobs use, so alerts from this repo all
       # arrive the same way. The issue is the durable record; this is the nudge
       # that makes it get read.
       - name: Email if something changed

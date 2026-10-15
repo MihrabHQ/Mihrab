@@ -525,8 +525,9 @@ Local builds use "Sign to Run Locally" / "Personal Team" signing — they won't 
 Every `vX.Y.Z` tag must have a matching `CURRENT_PROJECT_VERSION` in `project.pbxproj`. Xcode Cloud reads this directly when archiving; if the build number is the same as a previous TestFlight build, App Store Connect rejects the upload.
 
 **This is why the Default workflow does not build data-only pushes.** The
-dataset bot (`.github/workflows/ifis-dataset.yml`) commits refreshed prayer
-times to `main` without touching app code, so the version is unchanged from
+dataset bots (the workflows that rebuild the national tables, such as
+`.github/workflows/habous-dataset.yml`) commit refreshed prayer times to
+`main` without touching app code, so the version is unchanged from
 the release before it — and every one of those pushes started a nine-minute
 archive that could only ever die at "Preparing build for App Store Connect
 failed", a duplicate build number (build 517, 2026-08-17). The failure is

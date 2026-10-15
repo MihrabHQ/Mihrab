@@ -275,7 +275,9 @@
             silent mode and Focus. Offered in the first-run walkthrough, off until you say so.</span></li>
           <li><b>Your choice of source, including national ones</b> <span>— AlAdhan, PrayTimes.dev,
             calculation entirely on the device, or a national authority: Sweden (Islamiska Förbundet),
-            Morocco (the Ministry of Habous and Islamic Affairs), Algeria (the Ministry of Religious
+            calculated on the phone, offline, with the method Diyanet computes the Swedish timetables by
+            and on their printed minute for 2024–2027 (<a href="https://github.com/MihrabHQ/mihrab-methods">the method’s
+            source</a>); Morocco (the Ministry of Habous and Islamic Affairs), Algeria (the Ministry of Religious
             Affairs and Wakfs) and Indonesia (Kemenag), computed by the authority’s own method and checked to the minute
             against its table every week; Singapore (MUIS), Malaysia (JAKIM) and
             Türkiye Takvimi, their published tables taken minute for minute. All are matched to your
@@ -283,7 +285,7 @@
             for today, the app calculates the day with that authority’s own method and says
             so.</span></li>
           <li><b>24 calculation methods, or your own angles</b> <span>— the AlAdhan methods plus Dubai,
-            JAKIM, Kemenag, Tunisia, Portugal, Jordan and Sweden (the Istanbul congress method behind Islamiska Förbundet’s tables),
+            JAKIM, Kemenag, Tunisia, Portugal, Jordan and Sweden (the Istanbul congress method behind Islamiska Förbundet’s tables, <a href="https://github.com/MihrabHQ/mihrab-methods">published on its own</a>),
             each checked against its authority’s tables every week; Umm al-Qura’s Isha moves to two
             hours in Ramadan. Far north or south, choose how the short summer nights are shared out.</span></li>
           <li><b>Tuned to your mosque</b> <span>— per-prayer minute offsets, Hanafi or standard Asr, and
@@ -424,17 +426,19 @@
 <section class="sweden" id="sverige" lang="sv">
   <div class="wrap">
     <p class="eyebrow">Bönetider i Sverige</p>
-    <h2>Islamiska Förbundets tidtabell, i en app som inte spårar dig</h2>
-    <p class="lede">De flesta bönetidsappar räknar ut tiderna själva och hamnar någon minut från den
-      tidtabell din moské faktiskt följer. Mihrab kan i stället använda <strong>Islamiska Förbundets
-      publicerade tider</strong> för orten närmast dig — samma tabell som moskén, utan att du behöver
-      slå upp den varje dag.</p>
+    <h2>Islamiska Förbundets tider, i en app som inte spårar dig</h2>
+    <p class="lede">De flesta bönetidsappar räknar med en allmän metod och hamnar några minuter från
+      den tidtabell din moské faktiskt följer. Mihrab ger dig i stället <strong>Islamiska Förbundets
+      tider</strong> för orten närmast dig: telefonen räknar ut dem med Diyanets metod, den som
+      förbundets tidtabeller beräknas med, och de stämmer på minuten mot de publicerade tidtabellerna
+      för 2024–2027. Uträkningen sker på telefonen, utan uppkoppling och utan spårning. Källan är
+      öppen: <a href="https://github.com/MihrabHQ/mihrab-methods">mihrab-methods</a> på GitHub.</p>
     <div class="cols">
       <article class="card span">
         <h3>Så fungerar det</h3>
         <ul>
           <li>Välj <strong>Sverige (Islamiska Förbundet)</strong> som källa i inställningarna.</li>
-          <li>Tiderna matchas mot närmaste ort. <strong>108 svenska orter</strong> finns med —
+          <li>Tiderna räknas för närmaste ort. <strong>108 svenska orter</strong> finns med —
             Stockholm, Göteborg, Malmö, Uppsala, Västerås, Örebro, Linköping, Helsingborg,
             Jönköping, Norrköping, Lund, Umeå, Borås, Södertälje, Eskilstuna, Sundsvall och
             resten.</li>
@@ -605,9 +609,10 @@
         <h3>Goes over the network, when you choose it</h3>
         <ul>
           <li>Prayer times from the provider you pick — AlAdhan or PrayTimes.dev — which receives the
-            coordinates and dates it needs to answer. The national tables (Sweden, Morocco, Algeria,
-            Singapore, Malaysia, Indonesia) are prepared files fetched from this project’s own
-            repository: they are asked for a city, not for you. With Türkiye Takvimi, the phone picks
+            coordinates and dates it needs to answer. The national tables (Morocco, Algeria, Singapore,
+            Malaysia, Indonesia) are prepared files fetched from this project’s own repository: they
+            are asked for a city, not for you. Sweden’s times are calculated on the phone and fetch
+            nothing. With Türkiye Takvimi, the phone picks
             the nearest listed city itself and asks namazvakti.com for that city’s year — the city’s
             number, not your coordinates.</li>
           <li>Place search through <strong>OpenStreetMap Nominatim</strong>: your search text goes to

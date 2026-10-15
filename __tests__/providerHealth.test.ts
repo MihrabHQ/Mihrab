@@ -1,5 +1,5 @@
 /**
- * Provider failure cooldown (v2.7.28) — the Swedish scraper stops being
+ * Provider failure cooldown (v2.7.28) — a failing source stops being
  * retried after consecutive failures.
  */
 import {
@@ -10,7 +10,7 @@ import {
   FAILURE_THRESHOLD,
 } from '../src/providers/providerHealth';
 
-const P = 'islamiska_forbundet';
+const P = 'habous';
 
 describe('providerHealth cooldown', () => {
   beforeEach(() => {

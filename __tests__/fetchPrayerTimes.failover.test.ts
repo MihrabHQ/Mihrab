@@ -1,41 +1,18 @@
 /**
- * Sweden on the phone (October 2026): Islamiska Förbundet's tables come from
- * Mihrab's repo, never from the site itself. Where the repo's mirror cannot
- * answer — outside its reach — the day is computed on the phone with the
- * method its tables follow (method 24), for the nearest listed city. The
- * site's widget is not scraped and AlAdhan is not asked: its nearest method
- * is the Muslim World League's, an hour from the tables on a midsummer night.
+ * Sweden on the phone (October 2026): Islamiska Förbundet's cities are
+ * calculated with Diyanet's method (method 24) — nothing is fetched. Beyond
+ * the listed cities' reach the day is computed for the reader's own spot.
+ * AlAdhan is not asked: its nearest method is the Muslim World League's,
+ * an hour from Islamiska Förbundet's times on a midsummer night.
  */
 import { fetchPrayerTimesUnified } from '../src/providers/fetchPrayerTimes';
 
-jest.mock('../src/providers/islamiskaForbundet', () => ({
-  fetchIslamiskaForbundetTimes: jest.fn(),
-}));
 jest.mock('../src/providers/aladhan', () => ({
   fetchAladhanTimes: jest.fn(),
 }));
 jest.unmock('adhan');
-jest.mock('../src/providers/islamiskaForbundetDataset', () => ({
-  getIslamiskaForbundetDatasetTimes: jest.fn(),
-}));
 
-import { fetchIslamiskaForbundetTimes } from '../src/providers/islamiskaForbundet';
 import { fetchAladhanTimes } from '../src/providers/aladhan';
-import { getIslamiskaForbundetDatasetTimes } from '../src/providers/islamiskaForbundetDataset';
-
-const MIRRORED = {
-  timings: {
-    Imsak: '02:10',
-    Fajr: '02:20',
-    Sunrise: '03:40',
-    Dhuhr: '12:55',
-    Asr: '17:30',
-    Maghrib: '22:05',
-    Isha: '23:35',
-  },
-  timezone: 'Europe/Stockholm',
-  source: 'cdn' as const,
-};
 
 const PARAMS = {
   provider: 'islamiska_forbundet' as const,
@@ -46,28 +23,23 @@ const PARAMS = {
   school: 0,
 };
 
-describe('Islamiska Förbundet, from the repo', () => {
+describe('Islamiska Förbundet, calculated', () => {
   beforeEach(() => jest.clearAllMocks());
 
-  it('serves the repo’s mirrored day', async () => {
-    (getIslamiskaForbundetDatasetTimes as jest.Mock).mockResolvedValue(MIRRORED);
-    const res = await fetchPrayerTimesUnified(PARAMS);
-    expect(res.timings.Isha).toBe('23:35');
-    expect(res.source).toBe('cdn');
-    expect(fetchIslamiskaForbundetTimes).not.toHaveBeenCalled();
-    expect(fetchAladhanTimes).not.toHaveBeenCalled();
-  });
-
-  it('computes Islamiska Förbundet’s convention where the mirror cannot answer — never the site, never AlAdhan', async () => {
-    (getIslamiskaForbundetDatasetTimes as jest.Mock).mockRejectedValue(new Error('outside the dataset (test)'));
+  it('computes the nearest listed city on the phone — never AlAdhan', async () => {
     const res = await fetchPrayerTimesUnified(PARAMS);
     expect(res.source).toBe('local');
     expect(res.timezone).toBe('Europe/Stockholm');
-    expect(fetchIslamiskaForbundetTimes).not.toHaveBeenCalled();
     expect(fetchAladhanTimes).not.toHaveBeenCalled();
-    // 6 July at Stockholm: the table's night share, not an 18° that the
+    // 6 July at Stockholm: the carried night share, not an 18° that the
     // sun never reaches — Fajr a little after two, Isha a little after eleven.
     expect(res.timings.Fajr >= '02:10' && res.timings.Fajr <= '02:30').toBe(true);
     expect(res.timings.Isha >= '23:00' && res.timings.Isha <= '23:15').toBe(true);
+  });
+
+  it('computes the reader’s own spot beyond the listed cities’ reach', async () => {
+    const res = await fetchPrayerTimesUnified({ ...PARAMS, latitude: 69.5, longitude: 30.5 });
+    expect(res.source).toBe('local');
+    expect(fetchAladhanTimes).not.toHaveBeenCalled();
   });
 });

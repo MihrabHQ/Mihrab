@@ -22,6 +22,26 @@ Behind the repo, each source has a fallback, in this order:
 
 ## The sources
 
+### Sweden: calculated on the phone, nothing fetched
+
+Sweden is not a mirrored table. The app calculates Islamiska Förbundet's
+times on the phone, offline: the International Prayer Times Congress method
+(Istanbul 2021) as Diyanet computes the Swedish tables, which Islamiska
+Förbundet publishes — method 24, "Sweden (Islamiska Förbundet)"
+(`src/providers/congressMethod.ts`), at the point each of Islamiska
+Förbundet's 108 cities is computed at. With a small correction list
+(`src/providers/swedenCorrections.ts` and
+`src/providers/data/swedenCorrections.json`: 270 one-minute adjustments at
+published city points) it is on the printed minute for every time of
+Diyanet's and Islamiska Förbundet's timetables over 2024–2027, 1.39 million
+times; by the method alone 99.98 %, every time within the minute. The list
+covers the years the timetables do and is renewed each year. Where
+Islamiska Förbundet's own copy differs from Diyanet's (a year served
+copied, Kiruna printed with Umeå's table), the app follows Diyanet.
+
+Source: [MihrabHQ/mihrab-methods](https://github.com/MihrabHQ/mihrab-methods) (`src/methods/sweden.ts`),
+where the method and its check against the timetables live.
+
 ### Free APIs, mirrored, the API as backup
 
 | Source | Into the repo by | Phone's backup | Calculation behind it |
@@ -33,23 +53,21 @@ Behind the repo, each source has a fallback, in this order:
 ### Scraped or account-only sources, mirrored, no live backup
 
 The phone never asks these sources: their mirror in the repo is what is
-served, and the calculation fills the days it does not have — except Sweden,
-which now serves the calculation (below).
+served, and the calculation fills the days it does not have.
 
 | Source | Into the repo by | Why no live backup | Calculation behind it |
 |---|---|---|---|
-| **Sweden** — Islamiska Förbundet (Diyanet's tables) | `tools/ifis-dataset/` (weekly) | a scraped site; Diyanet's own API needs an account and allows ~5 requests a day | method 24 (`congressMethod.ts` with `swedenCorrections.ts`): 100 % on Diyanet’s and Islamiska Förbundet’s minute, 2024–2027 (99.98 % by the method alone) |
 | **Morocco** — Habous | `tools/habous-dataset/` (daily) | scraped HTML, a month at a time | method 21 (`moroccoMethod.ts`): 98.6 % |
 | **Algeria** — Ministry of Religious Affairs | `tools/algeria-ministry/` | the ministry's app database, rebuilt from its APK | method 19 (`algeriaMethod.ts`): 99.4 % |
 | **Indonesia** — Kemenag | `tools/national-tables/kemenag.ts` (weekly) | the site answers only the project's builders | method 20 (`indonesiaMethod.ts`): 99.965 % |
 
-## The plan: these four to calculations
+## The plan: these three to calculations
 
 The calculations above are already in the app, behind each table, and
 checked every week against the mirrored tables
 (`data/prayer-times/verification/`). Each source moves to serving the
 calculation — a switch per source: `servesCalculation` in
-`islamiskaForbundetDataset.ts`, `habousDataset.ts`, `marwDataset.ts`, and
+`habousDataset.ts`, `marwDataset.ts`, and
 the table's config in `nationalTables.ts` — when:
 
 1. **It is on the authority's minute for every time of a full year** of its
@@ -59,7 +77,7 @@ the table's config in `nationalTables.ts` — when:
 2. **It has held there for three months of the weekly check** with no new
    difference, including a change of year.
 3. **The weekly check stays on afterwards**, with an alarm on any
-   difference, and the scrapers stay in place to feed it.
+   difference, and the table builders stay in place to feed it.
 
 What is left for each:
 
@@ -67,15 +85,9 @@ What is left for each:
   times no single point fits, and times within a fraction of a second of the
   rounding point. Needs a year of tables (the site gives three months), to
   confirm the Asr rule in June.
-- **Sweden — switched (October 2026).** The app serves the calculation
-  (`servesCalculation` true in `islamiskaForbundetDataset.ts`): on the printed
-  minute for every time of Diyanet's and Islamiska Förbundet's tables over
-  2024–2027 with the correction list (`swedenCorrections.ts`, from
-  MihrabHQ/mihrab-methods; 99.98 % by the method alone). The list covers the
-  years the tables do and is renewed each year; the mirror and the weekly
-  check stay in place. Where the site's own copy differs from Diyanet's (a
-  year it serves copied, Kiruna printed with Umeå's table), the app follows
-  Diyanet.
+- **Sweden — done (October 2026).** Served by the calculation alone (above),
+  from [MihrabHQ/mihrab-methods](https://github.com/MihrabHQ/mihrab-methods); nothing is fetched for
+  Sweden any more.
 - **Algeria** (99.4 %): a residual of about a second, day to day, in the
   sun the ministry uses — not yet modelled.
 - **Morocco** (98.6 %): a few cities' points and a seasonal 2–3 s drift in

@@ -1,386 +1,79 @@
 /**
- * Islamiska Förbundet — prepared-dataset source (v2.7.x).
+ * Sweden — Islamiska Förbundet's cities, calculated on the phone.
  *
- * Instead of scraping the flaky bönetider widget on every device, a scheduled
- * GitHub Actions job scrapes it once and publishes per-city JSON + a small
- * `index.json` (see `tools/ifis-dataset/`). This module serves those times:
- *
- *   1. cached host mirror  — the per-city file we last fetched from the CDN.
- *   2. bundled seed        — a compact snapshot shipped inside the app.
- *
- * Refresh timing: on lookup (throttled to ~6 h with jitter) the client reads
- * the tiny `index.json` to learn the server's latest build time. Because the
- * server commits atomically at the END of its run, a client that polls mid-run
- * just sees the previous build and skips — no collision. The per-city file is
- * re-downloaded only when the server's build timestamp advances, so devices
- * update within hours of a publish and never mid-write.
- *
- * A lookup that finds neither cache nor seed throws `ProviderError('shape')` so
- * the caller falls through to the live scrape → AlAdhan → local-adhan chain.
- * Runtime never blocks on the network: polling/refresh are fire-and-forget.
+ * The times are the International Prayer Times Congress method as Diyanet
+ * computes the Swedish timetables Islamiska Förbundet publishes (method 24,
+ * `congressMethod.ts`), at the point each listed city is computed at, with
+ * the correction list (`swedenCorrections.ts`) for the few times Diyanet's
+ * own arithmetic rounds the other way. On the printed minute for every time
+ * of those timetables over 2024–2027; the method alone, 99.98 %, every time
+ * within the minute. Nothing is fetched: the source is the open
+ * MihrabHQ/mihrab-methods (src/methods/sweden.ts).
  */
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { httpUserAgent } from '../config/httpIdentity';
-import {
-  IFIS_DATASET_BASE_URL,
-  IFIS_INDEX_POLL_INTERVAL_MS,
-} from '../config/datasets';
 import { getNearestIslamiskaForbundetCityWithDistance, islamiskaForbundetCityCoords } from './islamiskaForbundetNearest';
 import { computeLocalAdhanTimes } from './localAdhan';
 import { SWEDEN_METHOD_ID } from './swedenMethodId';
-import {
-  citySlug,
-  tupleToTimings,
-  type DatasetDayTuple,
-} from './islamiskaForbundetParser';
-import { formatLocalDate } from '../utils/date';
-import { fetchWithRetry } from '../utils/fetchWithRetry';
 import { ProviderError } from './errors';
-import { recordServerIndex, type ServerStatus } from '../prayer/dataStatus';
-import type { DataSource, PrayerTimesResult } from './types';
-import seedJson from './data/ifisSeed.json';
+import type { PrayerTimesResult } from './types';
 
 const PROVIDER = 'islamiska_forbundet';
 const DEFAULT_TZ = 'Europe/Stockholm';
-const CACHE_PREFIX = 'ifis.dataset.v1.city.';
 
 /**
  * Defence-in-depth distance cap. The provider is already region-guarded to
  * Sweden before this module is consulted, but the coarse Sweden bounding box
  * can catch a few non-Swedish slivers (e.g. Åland, border areas). If the
- * nearest dataset city is absurdly far, the coordinate isn't really "in" any
- * covered city, so we MISS and let the caller fall through to the live scrape
- * / AlAdhan / on-device chain (which computes for the exact coordinate) rather
- * than serving a Swedish city's times to somewhere hundreds of km away.
- * 250 km is generous — real Swedish locations are always well within it.
+ * nearest listed city is absurdly far, the coordinate isn't really "in" any
+ * of them, so we miss and let the caller fall through to AlAdhan / the
+ * on-device chain (which computes for the exact coordinate) rather than
+ * serving a Swedish city's times to somewhere hundreds of km away. 250 km is
+ * generous — real Swedish locations are always well within it.
  */
-const MAX_DATASET_CITY_KM = 250;
+const MAX_CITY_KM = 250;
 
-/**
- * Sweden's times are the app's own calculation of Diyanet's method (method
- * 24, congressMethod.ts) at the point Diyanet computes each city, with the
- * correction list (swedenCorrections.ts): on the printed minute for every
- * time of Diyanet's and Islamiska Förbundet's tables over 2024–2027
- * (October 2026, docs/prayer-times-sources.md). The mirrored table path
- * below is kept for tests and as the way back; nothing is fetched while the
- * calculation is served.
- */
-let servesCalculation = true;
+/** Sweden is served by the calculation (kept for callers that ask). */
 export function swedenServesCalculation(): boolean {
-  return servesCalculation;
-}
-/** Tests: exercise the mirrored-table path. */
-export function setSwedenServesCalculationForTests(v: boolean): void {
-  servesCalculation = v;
-}
-
-/** `"YYYY-MM-DD" -> [Imsak,Fajr,Sunrise,Dhuhr,Asr,Maghrib,Isha]`. */
-type CityDays = Record<string, DatasetDayTuple>;
-
-type SeedFile = {
-  version: number;
-  builtAt: string | null;
-  timezone: string;
-  cities: Record<string, CityDays>; // keyed by slug
-};
-
-type HostCityFile = {
-  city: string;
-  slug: string;
-  timezone: string;
-  builtAt: string;
-  days: CityDays;
-};
-
-type ServerIndex = {
-  builtAt?: string;
-  minCoverageDays?: number;
-  deadCities?: string[];
-  serverStatus?: ServerStatus;
-};
-
-type CachedCity = {
-  fetchedAt: number;
-  builtAt: string | null; // the server build the cached file came from
-  timezone: string;
-  days: CityDays;
-};
-
-// `as unknown as` because resolveJsonModule infers the day arrays as `string[]`,
-// which doesn't structurally overlap the fixed 7-tuple in DatasetDayTuple.
-const seed = seedJson as unknown as SeedFile;
-
-const memCity = new Map<string, CachedCity>();
-const refreshInFlight = new Map<string, Promise<void>>();
-
-// In-memory throttle: earliest time we'll re-read index.json (jittered).
-let nextIndexPollAt = 0;
-let indexPollInFlight: Promise<ServerIndex | null> | null = null;
-
-function cacheKey(slug: string): string {
-  return `${CACHE_PREFIX}${slug}`;
-}
-
-function jitter(ms: number): number {
-  return Math.round(ms * (0.75 + Math.random() * 0.5)); // ±25%
+  return true;
 }
 
 /**
- * The city file's read, shared while it is in flight.
+ * The prayer times of the listed city nearest a coordinate, for a date.
  *
- * `memCity` makes the SECOND ask free, but a cold start makes its first
- * seven asks at once — one per day of the week — and every one of them
- * found the memo empty, read the file and parsed it. Seven reads, seven
- * parses, one city. Sharing the promise makes the first ask the only
- * one; the memo takes over from there.
- */
-const cityReadInFlight = new Map<string, Promise<CachedCity | null>>();
-
-function loadCachedCity(slug: string): Promise<CachedCity | null> {
-  const memo = memCity.get(slug);
-  if (memo) return Promise.resolve(memo);
-  const pending = cityReadInFlight.get(slug);
-  if (pending) return pending;
-  const p = readCachedCity(slug).finally(() => {
-    if (cityReadInFlight.get(slug) === p) cityReadInFlight.delete(slug);
-  });
-  cityReadInFlight.set(slug, p);
-  return p;
-}
-
-async function readCachedCity(slug: string): Promise<CachedCity | null> {
-  try {
-    const raw = await AsyncStorage.getItem(cacheKey(slug));
-    if (!raw) return null;
-    const parsed = JSON.parse(raw) as CachedCity;
-    if (parsed && parsed.days && typeof parsed.days === 'object') {
-      // A download that landed while this read was in flight has already
-      // put a newer file in the memo; the older one on disk must not
-      // replace it. Whatever is in the memo by now is the answer.
-      const newer = memCity.get(slug);
-      if (newer) return newer;
-      memCity.set(slug, parsed);
-      return parsed;
-    }
-  } catch {
-    /* corrupt cache — treat as absent */
-  }
-  return null;
-}
-
-/** Download the per-city file and cache it (with the server's build stamp). */
-function downloadCity(slug: string): Promise<void> {
-  const existing = refreshInFlight.get(slug);
-  if (existing) return existing;
-  const p = (async () => {
-    try {
-      const res = await fetchWithRetry(
-        `${IFIS_DATASET_BASE_URL}/cities/${slug}.json`,
-        {
-          method: 'GET',
-          headers: {
-            Accept: 'application/json',
-            'User-Agent': httpUserAgent('Islamic prayer app; dataset'),
-          },
-        },
-        { maxAttempts: 2, baseDelayMs: 500, timeoutMs: 6000 },
-      );
-      if (!res.ok) return;
-      const file = (await res.json()) as HostCityFile;
-      if (!file || !file.days || Object.keys(file.days).length === 0) return;
-      const entry: CachedCity = {
-        fetchedAt: Date.now(),
-        builtAt: file.builtAt ?? null,
-        timezone: file.timezone || DEFAULT_TZ,
-        days: file.days,
-      };
-      memCity.set(slug, entry);
-      // A read still in flight would settle with the OLD file and put it
-      // in the memo over this one. Drop it; anyone waiting re-asks and
-      // gets the memo.
-      cityReadInFlight.delete(slug);
-      await AsyncStorage.setItem(cacheKey(slug), JSON.stringify(entry));
-    } catch {
-      /* offline / CDN hiccup — keep prior data */
-    } finally {
-      refreshInFlight.delete(slug);
-    }
-  })();
-  refreshInFlight.set(slug, p);
-  return p;
-}
-
-/** Read index.json (throttled). Records server status for the stats panel. */
-function pollServerIndex(): Promise<ServerIndex | null> {
-  if (Date.now() < nextIndexPollAt) return Promise.resolve(null);
-  if (indexPollInFlight) return indexPollInFlight;
-  indexPollInFlight = (async () => {
-    try {
-      const res = await fetchWithRetry(
-        `${IFIS_DATASET_BASE_URL}/index.json`,
-        {
-          method: 'GET',
-          headers: {
-            Accept: 'application/json',
-            'User-Agent': httpUserAgent('Islamic prayer app; dataset'),
-          },
-        },
-        { maxAttempts: 2, baseDelayMs: 500, timeoutMs: 6000 },
-      );
-      if (!res.ok) return null;
-      const idx = (await res.json()) as ServerIndex;
-      const interval = jitter(IFIS_INDEX_POLL_INTERVAL_MS);
-      nextIndexPollAt = Date.now() + interval;
-      // Derive status from coverage when the index predates the serverStatus
-      // field (older builds), so the panel isn't stuck on "unknown".
-      const status: ServerStatus =
-        idx.serverStatus ??
-        (typeof idx.minCoverageDays === 'number'
-          ? idx.minCoverageDays >= 40
-            ? 'ok'
-            : 'warning'
-          : 'unknown');
-      await recordServerIndex(
-        'ifis',
-        {
-          builtAt: idx.builtAt ?? null,
-          serverStatus: status,
-          minCoverageDays: idx.minCoverageDays ?? null,
-          deadCities: Array.isArray(idx.deadCities) ? idx.deadCities.length : null,
-        },
-        new Date(nextIndexPollAt),
-      );
-      return idx;
-    } catch {
-      // Even on failure, back off so we don't hammer a flaky CDN.
-      nextIndexPollAt = Date.now() + jitter(IFIS_INDEX_POLL_INTERVAL_MS);
-      return null;
-    } finally {
-      indexPollInFlight = null;
-    }
-  })();
-  return indexPollInFlight;
-}
-
-/**
- * Fire-and-forget: poll the server index, and download the city file only when
- * the server has a newer build than our cache (or we have no cache yet).
- */
-async function maybeRefresh(slug: string, cached: CachedCity | null): Promise<void> {
-  const idx = await pollServerIndex();
-  const serverBuilt = idx?.builtAt ?? null;
-  const needsDownload =
-    !cached ||
-    (serverBuilt != null && serverBuilt !== cached.builtAt);
-  if (needsDownload) await downloadCity(slug);
-}
-
-/**
- * Resolve prayer times for a coordinate+date from the prepared dataset.
- * Answers from whatever is on hand (cache → seed) without waiting; the server
- * poll + any download run in the background for subsequent lookups.
- *
- * @throws ProviderError('shape') when neither cache nor seed cover the date.
+ * @throws ProviderError('shape') when no listed city is within 250 km.
  */
 export async function getIslamiskaForbundetDatasetTimes(params: {
   latitude: number;
   longitude: number;
   date: Date;
 }): Promise<PrayerTimesResult> {
-  const { city, distanceKm } = getNearestIslamiskaForbundetCityWithDistance(
-    params.latitude,
-    params.longitude,
-  );
-  if (distanceKm > MAX_DATASET_CITY_KM) {
+  const { city, distanceKm } = getNearestIslamiskaForbundetCityWithDistance(params.latitude, params.longitude);
+  if (distanceKm > MAX_CITY_KM) {
     throw new ProviderError(
       PROVIDER,
       'shape',
-      `Nearest dataset city "${city}" is ${Math.round(distanceKm)} km away ` +
-        `(> ${MAX_DATASET_CITY_KM} km) — coordinate is outside dataset coverage.`,
+      `Nearest listed city "${city}" is ${Math.round(distanceKm)} km away ` +
+        `(> ${MAX_CITY_KM} km) — coordinate is outside Sweden's coverage.`,
     );
   }
-  const calculated = (): PrayerTimesResult => {
-    const at = islamiskaForbundetCityCoords(city);
-    return {
-      ...computeLocalAdhanTimes({
-        latitude: at?.lat ?? params.latitude,
-        longitude: at?.lng ?? params.longitude,
-        date: params.date,
-        calculationMethod: SWEDEN_METHOD_ID,
-        school: 0,
-      }),
-      timezone: DEFAULT_TZ,
-      source: 'local',
-    };
-  };
-  if (servesCalculation) return calculated();
-  const slug = citySlug(city);
-  const dateKey = formatLocalDate(params.date);
-
-  const cached = await loadCachedCity(slug);
-  // Background: keep the mirror fresh without blocking this answer.
-  void maybeRefresh(slug, cached);
-
-  const fromCache = cached?.days[dateKey];
-  const tuple = fromCache ?? seed.cities[slug]?.[dateKey];
-  // A day the mirror does not have: the method, at the city's point.
-  if (!tuple) return calculated();
-
-  const source: DataSource = fromCache ? 'cdn' : 'seed';
+  const at = islamiskaForbundetCityCoords(city);
   return {
-    timings: tupleToTimings(tuple),
-    timezone: cached?.timezone ?? seed.timezone ?? DEFAULT_TZ,
-    source,
+    ...computeLocalAdhanTimes({
+      latitude: at?.lat ?? params.latitude,
+      longitude: at?.lng ?? params.longitude,
+      date: params.date,
+      calculationMethod: SWEDEN_METHOD_ID,
+      school: 0,
+    }),
+    timezone: DEFAULT_TZ,
+    source: 'local',
   };
 }
 
 /**
- * Proactively refresh the server-index snapshot (throttled the same way as the
- * lookup path). Lets the statistics panel show the last server-run status +
- * next-check time even when prayer times are being served from a warm cache
- * (so no dataset fetch would otherwise fire).
+ * Throw stored times away and fetch them again — issue #56. Sweden's times
+ * are calculated, so there is nothing to fetch; kept so the clock-change
+ * refresh can treat every source alike.
  */
-export async function pollServerIndexNow(): Promise<void> {
-  await pollServerIndex();
-}
-
-/**
- * Throw the cached table away and fetch it now — issue #56, and the same
- * note as `refetchHabousDatasetNow`.
- *
- * Sweden's own clock changes twice a year and those are already right: the
- * published rows for late October were scraped with October's rule and say
- * what October says. What this is for is the rule CHANGING — a country
- * deciding, as Morocco did, that next month's clocks are not what last
- * month's file assumed. Nothing about that is Moroccan, so it lives on
- * both datasets.
- */
-export async function refetchIslamiskaForbundetDatasetNow(
-  latitude: number,
-  longitude: number,
-): Promise<void> {
-  if (servesCalculation) return; // the calculation needs no table
-  const { city, distanceKm } = getNearestIslamiskaForbundetCityWithDistance(
-    latitude,
-    longitude,
-  );
-  if (distanceKm > MAX_DATASET_CITY_KM) return;
-  const slug = citySlug(city);
-  memCity.delete(slug);
-  nextIndexPollAt = 0;
-  try {
-    await AsyncStorage.removeItem(cacheKey(slug));
-  } catch {
-    // Superseded by the download below either way.
-  }
-  await downloadCity(slug);
-}
-
-/** Test seam: clear the in-process memo (does not touch AsyncStorage). */
-export function _resetDatasetMemoForTests(): void {
-  memCity.clear();
-  cityReadInFlight.clear();
-  refreshInFlight.clear();
-  nextIndexPollAt = 0;
-  indexPollInFlight = null;
+export async function refetchIslamiskaForbundetDatasetNow(_latitude: number, _longitude: number): Promise<void> {
+  return;
 }

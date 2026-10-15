@@ -2,10 +2,9 @@
  * Morocco — the Ministry of Habous's published tables, served from a
  * prepared dataset.
  *
- * The same arrangement as `islamiskaForbundetDataset.ts`: a scheduled job
- * scrapes the ministry once, server-side, and commits per-city JSON plus a
- * small `index.json` (see `tools/habous-dataset/`). Devices read that. Read
- * the Swedish module first; this explains only what differs.
+ * A scheduled job reads the ministry once, server-side, and commits
+ * per-city JSON plus a small `index.json` (see `tools/habous-dataset/`).
+ * Devices read that: the cached host copy first, then the bundled seed.
  *
  * ── WHY A DATASET AND NOT A CALCULATION ───────────────────────────────
  *
@@ -63,7 +62,7 @@ export function setMoroccoServesCalculationForTests(v: boolean): void {
 /** Each city's point and horizon dip (degrees) as the ministry computes it, fitted to its table. */
 const METHOD_POINTS = moroccoPoints as Record<string, number[]>;
 const MOROCCO_METHOD = 21;
-import { tupleToTimings } from './islamiskaForbundetParser';
+import { tupleToTimings } from './datasetTuple';
 import type { DatasetDayTuple } from './datasetTuple';
 import { formatLocalDate } from '../utils/date';
 import { fetchWithRetry } from '../utils/fetchWithRetry';

@@ -15,10 +15,6 @@ import {
   type DataStatus,
   type ServerDatasetId,
 } from '../../prayer/dataStatus';
-import {
-  getIslamiskaForbundetDatasetTimes,
-  pollServerIndexNow,
-} from '../../providers/islamiskaForbundetDataset';
 import { pollServerIndexNow as pollHabousIndexNow } from '../../providers/habousDataset';
 import { pollServerIndexNow as pollMarwIndexNow } from '../../providers/marwDataset';
 import { jakimTable, kemenagTable, muisTable } from '../../providers/nationalTables';
@@ -37,7 +33,6 @@ import {
   nextMarwServerRunAfter,
   nextNamazvaktiServerRunAfter,
   nextNationalTableServerRunAfter,
-  nextServerRunAfter,
 } from '../../config/datasets';
 import type { DataSource } from '../../providers/types';
 import type { PrayerDataProviderId } from '../../settings/types';
@@ -62,13 +57,6 @@ const SERVERS: {
   coverageNoteKey?: string;
   coverageNoteDefault?: string;
 }[] = [
-  {
-    id: 'ifis',
-    provider: 'islamiska_forbundet',
-    labelKey: 'dataStats.serverSweden',
-    labelDefault: 'Sweden · Islamiska Förbundet',
-    nextRun: nextServerRunAfter,
-  },
   {
     id: 'habous',
     provider: 'habous',
@@ -173,7 +161,6 @@ function DataStatsPanelImpl() {
       // travelled between the two regions.
       await Promise.all(
         [
-          pollServerIndexNow(),
           pollHabousIndexNow(),
           pollMarwIndexNow(),
           pollNamazvaktiIndexNow(),
@@ -187,16 +174,8 @@ function DataStatsPanelImpl() {
         ),
       );
       if (coords && provider === 'islamiska_forbundet') {
-        try {
-          const r = await getIslamiskaForbundetDatasetTimes({
-            latitude: coords.latitude,
-            longitude: coords.longitude,
-            date: new Date(),
-          });
-          if (r.source) await recordDataSource(r.source);
-        } catch {
-          /* dataset miss — leave the last recorded source */
-        }
+        // Sweden is calculated on the phone: nothing to poll or hold.
+        await recordDataSource('local');
       }
       if (coords && provider === 'namazvakti') {
         try {
@@ -263,8 +242,6 @@ function DataStatsPanelImpl() {
         return t('dataStats.sourceCdn');
       case 'seed':
         return t('dataStats.sourceSeed');
-      case 'scrape':
-        return t('dataStats.sourceScrape');
       case 'namazvakti':
         return t('dataStats.sourceNamazvakti');
       case 'aladhan':
@@ -375,11 +352,9 @@ function DataStatsPanelImpl() {
       />
       <Row palette={palette} label={t('dataStats.daysStored')} value={cache ? `${cache.total} ${t('dataStats.daysUnit')}` : dash} last />
 
-      {/* One block per prepared dataset. Two servers, two build jobs, two
-          windows — Sweden runs most of a year ahead, Morocco a couple of
-          weeks — and they used to share a single set of rows, so a phone in
-          Stockholm could be shown Morocco's coverage under a heading that
-          named neither. */}
+      {/* One block per prepared dataset: each its own server, build job and
+          window. They used to share a single set of rows, so a phone could be
+          shown another country's coverage under a heading that named neither. */}
       {SERVERS.map(server => (
         <View key={server.id}>
           <View style={[styles.groupGap, { borderTopColor: palette.border }]} />

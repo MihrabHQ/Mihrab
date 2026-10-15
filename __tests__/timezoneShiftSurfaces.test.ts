@@ -43,13 +43,12 @@ describe('the check happens in front of the load', () => {
 });
 
 describe('the dataset is re-downloaded rather than re-polled', () => {
-  it('on both published tables, because no country owns this', () => {
-    for (const src of [habous, ifis]) {
-      expect(src).toMatch(/nextIndexPollAt = 0/);
-      expect(src).toMatch(/removeItem\(/);
-      expect(src).toMatch(/await downloadCity\(/);
-    }
+  it('on the published table, because no country owns this', () => {
+    expect(habous).toMatch(/nextIndexPollAt = 0/);
+    expect(habous).toMatch(/removeItem\(/);
+    expect(habous).toMatch(/await downloadCity\(/);
     expect(habous).toContain('refetchHabousDatasetNow');
+    // Sweden is calculated: its refresh is there, and has nothing to fetch.
     expect(ifis).toContain('refetchIslamiskaForbundetDatasetNow');
   });
 

@@ -571,13 +571,11 @@ export async function getDatasetPrayerTimesOrNull(
 export async function getOrFetchPrayerTimes(
   params: Omit<StoredPrayerData, 'months'> & { date: Date },
 ): Promise<TimingsMap> {
-  // For Sweden, consult the prepared dataset BEFORE the local cache. The
-  // dataset is the authoritative Islamiska Förbundet source, so any day the
-  // server now covers is served as exact IFiS times — a day that was cached
-  // earlier from a fallback (AlAdhan/computed, before the server reached that
-  // far out) auto-upgrades the moment the server's coverage catches up, with
-  // no cache rewrite. A miss (beyond coverage / offline) falls through to the
-  // cache and the normal fetch chain, so offline + far-future still work.
+  // For Sweden, consult the calculation BEFORE the local cache: it is
+  // Islamiska Förbundet's times for the nearest listed city, computed on
+  // the phone, so a day cached earlier from another source is answered
+  // afresh with no cache rewrite. A miss (beyond the listed cities' reach)
+  // falls through to the cache and the normal fetch chain.
   //
   // Morocco is the same arrangement and gets the same treatment: the
   // ministry publishes one Hijri month at a time, so a day fetched today

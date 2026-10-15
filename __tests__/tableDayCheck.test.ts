@@ -1,18 +1,11 @@
 /**
  * A published row must be the day it claims to be.
  *
- * Islamiska Förbundet's widget, asked for a 2027 date before 2027 is
- * published, answers with 2026's same date; between the two years' clock
- * changes (28 March, 25–30 October 2027) that row is an hour off. Dhuhr
- * gives it away: solar noon plus a few minutes on every true row.
+ * A timetable asked for a 2027 date before 2027 is published may answer
+ * with 2026's same date; between the two years' clock changes (28 March,
+ * 25–30 October 2027) that row is an hour off. Dhuhr gives it away: solar
+ * noon plus a few minutes on every true row.
  */
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
-
-jest.mock('../src/utils/fetchWithRetry', () => ({
-  fetchWithRetry: jest.fn(),
-}));
-
 import {
   dhuhrOffsetFromNoon,
   equationOfTimeMinutes,
@@ -20,8 +13,7 @@ import {
   solarNoonMinutes,
   zoneOffsetMinutes,
 } from '../src/prayer/tableDayCheck';
-import { fetchWithRetry } from '../src/utils/fetchWithRetry';
-import { fetchIslamiskaForbundetTimes } from '../src/providers/islamiskaForbundet';
+import { congressTimes } from '../src/providers/congressMethod';
 
 const STOCKHOLM_LON = 18.0686;
 const TZ = 'Europe/Stockholm';
@@ -49,14 +41,13 @@ describe('solar arithmetic', () => {
   });
 });
 
-describe('the Stockholm table', () => {
-  const file = join(__dirname, '..', 'data', 'prayer-times', 'v1', 'cities', 'stockholm.json');
-  const days = JSON.parse(readFileSync(file, 'utf8')).days as Record<string, string[]>;
-
-  it('has every stored Dhuhr four to six minutes past solar noon', () => {
-    for (const [date, row] of Object.entries(days)) {
-      const off = dhuhrOffsetFromNoon(date, row[3], STOCKHOLM_LON, TZ);
-      expect({ date, off: Math.round(off) }).toEqual({ date, off: expect.any(Number) });
+describe('Stockholm', () => {
+  it('has every Dhuhr of a year four to six minutes past solar noon', () => {
+    const fmt = new Intl.DateTimeFormat('en-GB', { timeZone: TZ, hourCycle: 'h23', hour: '2-digit', minute: '2-digit' });
+    for (let d = new Date(2026, 0, 1); d.getFullYear() === 2026; d.setDate(d.getDate() + 1)) {
+      const t = congressTimes(59.33, STOCKHOLM_LON, 2026, d.getMonth(), d.getDate());
+      const date = `2026-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      const off = dhuhrOffsetFromNoon(date, fmt.format(new Date(Math.round(t.dhuhr.getTime() / 60_000) * 60_000)), STOCKHOLM_LON, TZ);
       expect(off).toBeGreaterThanOrEqual(3.5);
       expect(off).toBeLessThanOrEqual(6.5);
     }
@@ -73,29 +64,3 @@ describe('the Stockholm table', () => {
   });
 });
 
-describe('the live scraper', () => {
-  const html = (times: string[]) => `
-    <html><body><table class="bonetider-widget">
-      <tr><td>Fajr</td><td>${times[0]}</td></tr>
-      <tr><td>Soluppgång</td><td>${times[1]}</td></tr>
-      <tr><td>Dhuhr</td><td>${times[2]}</td></tr>
-      <tr><td>Asr</td><td>${times[3]}</td></tr>
-      <tr><td>Maghrib</td><td>${times[4]}</td></tr>
-      <tr><td>Isha</td><td>${times[5]}</td></tr>
-    </table></body></html>`;
-  const answer = (body: string) =>
-    (fetchWithRetry as jest.Mock).mockResolvedValue({ ok: true, status: 200, text: async () => body });
-
-  it('takes the row when its Dhuhr is the day’s noon', async () => {
-    answer(html(['04:36', '06:47', '11:37', '13:39', '16:17', '18:12']));
-    const r = await fetchIslamiskaForbundetTimes({ latitude: 59.33, longitude: 18.07, date: new Date(2026, 9, 27) });
-    expect(r.timings.Dhuhr).toBe('11:37');
-  });
-
-  it('refuses the same row for 27 October 2027, an hour off', async () => {
-    answer(html(['04:36', '06:47', '11:37', '13:39', '16:17', '18:12']));
-    await expect(
-      fetchIslamiskaForbundetTimes({ latitude: 59.33, longitude: 18.07, date: new Date(2027, 9, 27) }),
-    ).rejects.toMatchObject({ category: 'shape' });
-  });
-});

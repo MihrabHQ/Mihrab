@@ -1,13 +1,12 @@
 /**
  * Provider health / cooldown — v2.7.28.
  *
- * The Swedish city source (islamiskaforbundet.se) is an HTML scraper
- * over a small origin that regularly times out. Before this module,
- * every daily fetch retried it first and logged a noisy failure chain.
- * Now: after N consecutive failures the provider enters a cooldown
- * window during which fetches silently use the global fallback
- * (AlAdhan) — the app keeps serving times from cache + fallback and
- * probes the Swedish source again only after the window expires.
+ * A source on a small origin that regularly times out used to be retried
+ * first on every daily fetch, logging a noisy failure chain. Now: after N
+ * consecutive failures the provider enters a cooldown window during which
+ * fetches silently use the global fallback (AlAdhan) — the app keeps
+ * serving times from cache + fallback and probes the source again only
+ * after the window expires.
  *
  * Persisted so the cooldown survives app restarts.
  */

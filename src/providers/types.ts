@@ -9,7 +9,6 @@ import type { PrayerDataProviderId } from '../settings/types';
 export type DataSource =
   | 'cdn' // cached CDN mirror of the prepared Sweden dataset
   | 'seed' // bundled offline seed
-  | 'scrape' // live Islamiska Förbundet widget scrape
   | 'namazvakti' // a year fetched from namazvakti.com (Türkiye Takvimi)
   | 'live' // the authority's own API, asked as a backup to the repo's copy
   | 'aladhan' // AlAdhan API

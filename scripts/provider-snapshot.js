@@ -64,7 +64,7 @@ if (!fs.existsSync(FIXTURES)) {
     console.error(`✗ aladhan — ${e.message}`);
   }
 
-  // PrayTimes.dev, Islamiska Förbundet, local adhan to be added as the providers
+  // PrayTimes.dev and local adhan to be added as the providers
   // are built up in task #7. For now this script proves the pattern.
 
   const snapshotPath = path.join(FIXTURES, `aladhan-${isoDate(date)}.json`);

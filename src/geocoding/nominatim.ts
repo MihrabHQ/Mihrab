@@ -233,7 +233,7 @@ export function cleanLocalityName(raw: string): string {
   return name.replace(/[\s,;·]+$/, '').trim() || raw.trim();
 }
 
-/** Reverse geocode coordinates to a locality (for Sweden IF bönetider, etc.). */
+/** Reverse geocode coordinates to a locality. */
 export async function reverseLocality(
   latitude: number,
   longitude: number,

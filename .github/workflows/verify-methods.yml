@@ -38,10 +38,9 @@ jobs:
       - name: Install dependencies
         run: npm ci --no-audit
 
-      # Diyanet's own Swedish tables — what Islamiska Förbundet republishes —
-      # this year and next, for the 'diyanet' check (to the minute) and to
-      # tell the site's faults from the method's in the 'ifis' one. Not
-      # committed: their data, used only to check ours.
+      # Diyanet's own Swedish tables — the timetables Islamiska Förbundet
+      # publishes — this year and next, for the 'diyanet' check (to the
+      # minute). Not committed: their data, used only to check ours.
       - name: Download Diyanet's Swedish tables
         run: python3 tools/verify-methods/diyanet-fetch.py --out "$RUNNER_TEMP/diyanet"
 

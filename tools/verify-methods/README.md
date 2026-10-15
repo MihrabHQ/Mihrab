@@ -19,7 +19,7 @@ by minute. It writes:
 
 ```sh
 npx tsx tools/verify-methods/verify.ts            # all
-npx tsx tools/verify-methods/verify.ts jakim ifis # some
+npx tsx tools/verify-methods/verify.ts jakim diyanet # some
 ```
 
 Exit 4 means an authority that is meant to match does not; the workflow
@@ -108,6 +108,10 @@ three other things, each now in the data:
 
 ## Sweden: the Congress method, to the minute
 
+The method is published on its own as
+[MihrabHQ/mihrab-methods](https://github.com/MihrabHQ/mihrab-methods) (`src/methods/sweden.ts`); the app
+computes it on the phone and fetches nothing for Sweden.
+
 Islamiska Förbundet's tables are Diyanet's own, republished: the 2026
 rows are identical to what Diyanet's API (awqatsalah.com) serves for the
 same places. So the reference is **Diyanet's genuine tables**, 2024–2027,
@@ -160,8 +164,9 @@ point, the last of Diyanet's exact implementation.
 - `diyanet-fetch.py` downloads the tables (CI does, weekly; not
   committed). `diyanet-sweden-points.json` is Diyanet's points; the
   coordinates file the app uses holds them too.
-- The `diyanet` check compares to the minute; the `ifis` check compares
-  the site's table and sets aside rows that differ from Diyanet's own.
+- The `diyanet` check compares to the minute. The app serves the method
+  itself (with the correction list, `src/providers/swedenCorrections.ts`);
+  its source is MihrabHQ/mihrab-methods.
 - Research tools: `congress-model.py` (the model, `--diyanet <id>`),
   `diyanet-exact.py` / `-joint.py` / `-allcities.py` / `-snap.py` (sun
   model and coordinates), `diyanet-perday.py` (the day-by-day equation

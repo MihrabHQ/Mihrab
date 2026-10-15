@@ -21,7 +21,7 @@ import { validateTimings, validateTimingShape } from './validateTimings';
 
 /**
  * Islamiska Förbundet's convention on the phone, for the listed city
- * nearest the reader (the tables are per city) or, beyond the dataset's
+ * nearest the reader (the times are per city) or, beyond the listed cities'
  * reach, for the reader's own spot.
  */
 function swedenOnDevice(p: UnifiedFetchParams): PrayerTimesResult {
@@ -41,7 +41,7 @@ function swedenOnDevice(p: UnifiedFetchParams): PrayerTimesResult {
   validateTimingShape(local.timings);
   return local;
 }
-/** Within this of a listed Swedish city, its table's convention stands in at the city. */
+/** Within this of a listed Swedish city, the city's times stand in. */
 const IFIS_STAND_IN_KM = 250;
 
 /** Within this of a listed Moroccan city, the ministry's method stands in for its table. */
@@ -53,9 +53,9 @@ const MOROCCO_METHOD_ID = 21;
  * AlAdhan's own "Algeria" is the Ministry's angles without its Maghrib
  * margin (three minutes early) and its Asr without the Ministry's shadow;
  * and Sweden's, Islamiska Förbundet's convention, which AlAdhan has no id
- * for at all. (Each authority's published TABLE is its own provider —
- * 'marw', 'islamiska_forbundet'; this is the method a user picks by hand
- * elsewhere, and the fallback past the table.) Returns null when the
+ * for at all. (Each authority is also its own provider — 'marw',
+ * 'islamiska_forbundet'; this is the method a user picks by hand
+ * elsewhere, and the fallback past the listed cities.) Returns null when the
  * method that applies is another.
  */
 const ON_DEVICE_METHODS: ReadonlySet<number> = new Set([ALGERIA_METHOD_ID, SWEDEN_METHOD_ID]);
@@ -106,13 +106,11 @@ export async function fetchPrayerTimesUnified(
       });
       break;
     case 'islamiska_forbundet': {
-      // Islamiska Förbundet's tables, mirrored into Mihrab's repo by the
-      // scheduled job (tools/ifis-dataset) and read from there — the phone
-      // never scrapes the site itself (October 2026: every source's data
-      // comes from the repo, docs/prayer-times-sources.md). A day the mirror
-      // does not have is Diyanet's method computed for the nearest listed
-      // city inside the dataset module; outside the dataset's reach it is
-      // computed for the reader's own coordinates.
+      // Islamiska Förbundet's cities, calculated on the phone: Diyanet's
+      // method (congressMethod.ts, with swedenCorrections.ts) for the
+      // nearest listed city — the source is MihrabHQ/mihrab-methods.
+      // Beyond the listed cities' reach it is computed for the reader's own
+      // coordinates.
       try {
         result = await getIslamiskaForbundetDatasetTimes({
           latitude: p.latitude,
@@ -121,7 +119,7 @@ export async function fetchPrayerTimesUnified(
         });
         break;
       } catch {
-        /* outside the dataset's reach */
+        /* beyond the listed cities' reach */
       }
       return swedenOnDevice(p);
     }

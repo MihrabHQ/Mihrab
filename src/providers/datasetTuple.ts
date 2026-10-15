@@ -2,11 +2,11 @@
  * The on-disk shape a prayer-times dataset day takes, shared by every
  * country that has one.
  *
- * Lifted out of `islamiskaForbundetParser.ts` when Morocco became the second
- * tenant. Nothing here is Swedish or Moroccan — it is the column order the
- * builders write and the app reads, and both countries' datasets are
- * byte-compatible because of it.
+ * Nothing here is any one country's — it is the column order the builders
+ * write and the app reads, and every country's dataset is byte-compatible
+ * because of it.
  */
+import type { TimingsMap } from '../types/prayer';
 
 /** Fixed on-disk column order for dataset day tuples. */
 export const DATASET_TIME_KEYS = [
@@ -29,3 +29,16 @@ export type DatasetDayTuple = [
   string,
   string,
 ];
+
+/** Build a TimingsMap from a dataset day tuple (DATASET_TIME_KEYS order). */
+export function tupleToTimings(t: DatasetDayTuple): TimingsMap {
+  return {
+    Imsak: t[0],
+    Fajr: t[1],
+    Sunrise: t[2],
+    Dhuhr: t[3],
+    Asr: t[4],
+    Maghrib: t[5],
+    Isha: t[6],
+  };
+}

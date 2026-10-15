@@ -3,8 +3,8 @@
  * powers the Settings → data statistics panel (gated by `showDataStats`).
  *
  * Two independent facts are tracked:
- *   • the SOURCE that produced the most recent fresh fetch (cdn / seed / scrape
- *     / aladhan / local), recorded by the fetch chain in prayerStorage; and
+ *   • the SOURCE that produced the most recent fresh fetch (cdn / seed /
+ *     aladhan / local), recorded by the fetch chain in prayerStorage; and
  *   • the SERVER index snapshot for each prepared dataset — last build time,
  *     status, min coverage — recorded by that dataset's provider when it polls
  *     its `index.json`, plus when the client last checked and when it will
@@ -12,12 +12,10 @@
  *
  * THE SERVER SNAPSHOT IS PER DATASET, and for a while it was not.
  *
- * Sweden (Islamiska Förbundet) and Morocco (Habous) are two servers, built by
- * two jobs, covering different windows: the Swedish set runs most of a year
- * ahead, the Moroccan one a couple of weeks. Both wrote into a single slot, so
- * the panel showed whichever had polled most recently under a heading that
- * named neither. A phone in Stockholm reported eleven days of coverage — the
- * Moroccan number, on a Swedish screen, with nothing to say so.
+ * Each dataset is its own server, built by its own job, covering its own
+ * window. They once wrote into a single slot, so the panel showed whichever
+ * had polled most recently under a heading that named neither — one
+ * country's coverage on another country's screen, with nothing to say so.
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { DataSource } from '../providers/types';
@@ -27,7 +25,7 @@ const KEY = 'mihrab.dataStatus.v1';
 export type ServerStatus = 'ok' | 'warning' | 'unknown';
 
 /** The prepared datasets that publish an `index.json`. */
-export const SERVER_DATASETS = ['ifis', 'habous', 'marw', 'namazvakti', 'muis', 'jakim', 'kemenag'] as const;
+export const SERVER_DATASETS = ['habous', 'marw', 'namazvakti', 'muis', 'jakim', 'kemenag'] as const;
 export type ServerDatasetId = (typeof SERVER_DATASETS)[number];
 
 export type ServerIndexStatus = {
@@ -62,7 +60,6 @@ const EMPTY_SERVER: ServerIndexStatus = {
 
 function emptyServers(): Record<ServerDatasetId, ServerIndexStatus> {
   return {
-    ifis: { ...EMPTY_SERVER },
     habous: { ...EMPTY_SERVER },
     marw: { ...EMPTY_SERVER },
     namazvakti: { ...EMPTY_SERVER },

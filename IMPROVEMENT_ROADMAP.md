@@ -36,8 +36,9 @@ content sources — recitation, timings, page fonts, tafsir, riwayah installs �
 were brought in on 2026-09-06 and now all carry deadlines, with a source scan
 that fails the build if a new one is added without.
 
-**Correctness.** `validateTimings` checks ordering, not just shape; the
-Islamiska Förbundet scraper is a parser module with its own tests; DST
+**Correctness.** `validateTimings` checks ordering, not just shape;
+Sweden's calculation is on the printed minute of Diyanet's and Islamiska
+Förbundet's timetables for 2024–2027 ([mihrab-methods](https://github.com/MihrabHQ/mihrab-methods)); DST
 transitions, AsyncStorage quota, exact-alarm revocation, pre-reminder
 clamping, widget rollover with no tomorrow, and the `(0,0)` coordinate guard
 all have tests.

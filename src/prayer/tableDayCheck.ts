@@ -1,19 +1,17 @@
 /**
  * Is a published day's row the day it claims to be?
  *
- * Islamiska Förbundet's widget, asked for a date in a year it has not
- * published yet, answers with the same date of the current year. For most
- * of the year that is within a minute of the truth, since the sun keeps
- * to its calendar; but the clocks do not change on the same dates two
- * years running, so for the days between the two changes every time is
- * an hour off — Fajr an hour before dawn. Found in October 2026, when
- * all of 2027 in the dataset turned out to be 2026 read twice.
+ * A timetable that has not published a year yet may serve the same date
+ * of the current year in its place. For most of the year that is within a
+ * minute of the truth, since the sun keeps to its calendar; but the clocks
+ * do not change on the same dates two years running, so for the days
+ * between the two changes every time is an hour off — Fajr an hour before
+ * dawn.
  *
  * The test needs no table of the authority's habits: Dhuhr is solar noon
  * plus a few minutes of caution wherever it is published, so a Dhuhr
  * more than a quarter of an hour from the sun's own noon is not this
- * day's Dhuhr. Pure arithmetic — the builder runs it on every row it
- * fetches, the phone on every row it scrapes.
+ * day's Dhuhr. Pure arithmetic — the method checks run it on every row.
  */
 
 const RAD = Math.PI / 180;

@@ -1,119 +1,38 @@
 /**
- * Prepared-dataset source for Sweden (islamiskaForbundetDataset.ts).
- *
- * Verifies the runtime lookup order (cached CDN mirror → bundled seed → miss)
- * and the slug contract shared with the dataset builder.
+ * Sweden (islamiskaForbundetDataset.ts): Islamiska Förbundet's cities,
+ * calculated on the phone with Diyanet's method — nothing fetched.
  */
+jest.unmock('adhan');
 
-// Inject a deterministic bundled seed.
-jest.mock('../src/providers/data/ifisSeed.json', () => ({
-  version: 1,
-  builtAt: '2026-07-01T00:00:00Z',
-  timezone: 'Europe/Stockholm',
-  cities: {
-    stockholm: {
-      '2099-01-01': ['01:00', '02:00', '03:00', '12:00', '15:00', '18:00', '20:00'],
-    },
-  },
-}));
-
-// Never hit the network during the opportunistic refresh.
 jest.mock('../src/utils/fetchWithRetry', () => ({
   fetchWithRetry: jest.fn().mockRejectedValue(new Error('no network in test')),
 }));
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {
-  getIslamiskaForbundetDatasetTimes,
-  _resetDatasetMemoForTests,
-  setSwedenServesCalculationForTests,
-} from '../src/providers/islamiskaForbundetDataset';
-import { citySlug } from '../src/providers/islamiskaForbundetParser';
-import coords from '../src/providers/islamiskaForbundetCoords.json';
+import { getIslamiskaForbundetDatasetTimes, swedenServesCalculation } from '../src/providers/islamiskaForbundetDataset';
+import { computeLocalAdhanTimes } from '../src/providers/localAdhan';
+import { SWEDEN_METHOD_ID } from '../src/providers/swedenMethodId';
+import { fetchWithRetry } from '../src/utils/fetchWithRetry';
 import { ProviderError } from '../src/providers/errors';
 
-// Stockholm — nearest city resolves to "Stockholm" (slug "stockholm").
+// Stockholm — the nearest listed city is "Stockholm".
 const STHLM = { latitude: 59.3293, longitude: 18.0686 };
 
-beforeEach(async () => {
-  _resetDatasetMemoForTests();
-  setSwedenServesCalculationForTests(false); // the mirrored-table path
-  await AsyncStorage.clear();
-});
-afterAll(() => setSwedenServesCalculationForTests(true));
-
-describe('Sweden serves its own calculation by default', () => {
-  it('answers with method 24 at the nearest city, offline, for any date', async () => {
-    setSwedenServesCalculationForTests(true);
-    const res = await getIslamiskaForbundetDatasetTimes({ ...STHLM, date: new Date(2031, 2, 3) });
+describe('Sweden, calculated', () => {
+  it('answers with method 24 at the nearest listed city, offline, for any date', async () => {
+    expect(swedenServesCalculation()).toBe(true);
+    const date = new Date(2031, 2, 3);
+    const res = await getIslamiskaForbundetDatasetTimes({ ...STHLM, date });
     expect(res.source).toBe('local');
     expect(res.timezone).toBe('Europe/Stockholm');
-    expect(res.timings.Fajr).toMatch(/^\d\d:\d\d$/);
-  });
-});
-
-describe('getIslamiskaForbundetDatasetTimes', () => {
-  it('serves times from the bundled seed', async () => {
-    const res = await getIslamiskaForbundetDatasetTimes({
-      ...STHLM,
-      date: new Date('2099-01-01T10:00:00Z'),
-    });
-    expect(res.timings.Fajr).toBe('02:00');
-    expect(res.timings.Isha).toBe('20:00');
-    expect(res.timings.Imsak).toBe('01:00');
-    expect(res.timezone).toBe('Europe/Stockholm');
+    // the city's own point (59.330, 18.034), not the reader's
+    const atCity = computeLocalAdhanTimes({ latitude: 59.33, longitude: 18.034, date, calculationMethod: SWEDEN_METHOD_ID, school: 0 });
+    expect(res.timings).toEqual(atCity.timings);
+    expect(fetchWithRetry).not.toHaveBeenCalled();
   });
 
-  it('prefers a fresh cached CDN mirror over the seed', async () => {
-    await AsyncStorage.setItem(
-      'ifis.dataset.v1.city.stockholm',
-      JSON.stringify({
-        fetchedAt: Date.now(),
-        timezone: 'Europe/Stockholm',
-        days: {
-          '2099-01-01': ['01:11', '02:22', '03:33', '12:44', '15:55', '18:11', '20:22'],
-        },
-      }),
-    );
-    const res = await getIslamiskaForbundetDatasetTimes({
-      ...STHLM,
-      date: new Date('2099-01-01T10:00:00Z'),
-    });
-    expect(res.timings.Fajr).toBe('02:22'); // cached, not the seed's 02:00
-  });
-
-  it('computes Diyanet’s method for the city when neither cache nor seed cover the date', async () => {
-    const res = await getIslamiskaForbundetDatasetTimes({
-      ...STHLM,
-      date: new Date('2099-12-31T10:00:00Z'),
-    });
-    expect(res.source).toBe('local');
-    expect(res.timezone).toBe('Europe/Stockholm');
-  });
-
-  it('refuses a point outside the dataset’s reach, so the caller decides', async () => {
+  it('refuses a point beyond the listed cities’ reach, so the caller decides', async () => {
     await expect(
       getIslamiskaForbundetDatasetTimes({ latitude: 40.4, longitude: -3.7, date: new Date('2099-12-31T10:00:00Z') }),
     ).rejects.toBeInstanceOf(ProviderError);
-  });
-});
-
-describe('citySlug contract', () => {
-  it('produces a unique slug for every Swedish city (builder relies on this)', () => {
-    const names = Object.keys(coords as Record<string, unknown>);
-    const slugs = names.map(citySlug);
-    expect(new Set(slugs).size).toBe(names.length);
-  });
-
-  it('slugs are ASCII [a-z0-9-] only', () => {
-    for (const name of Object.keys(coords as Record<string, unknown>)) {
-      expect(citySlug(name)).toMatch(/^[a-z0-9-]+$/);
-    }
-  });
-
-  it('transliterates Swedish letters', () => {
-    expect(citySlug('Alingsås')).toBe('alingsas');
-    expect(citySlug('Örebro')).toBe('orebro');
-    expect(citySlug('Växjö')).toBe('vaxjo');
   });
 });
