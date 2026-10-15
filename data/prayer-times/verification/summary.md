@@ -2,7 +2,7 @@
 
 
 
-Generated 2026-10-14 23:09 UTC by tools/verify-methods. Each table the builders fetch, compared day by day with what the phone computes for that authority — the tables are the check on the calculation, not the thing distributed.
+Generated 2026-10-15 07:25 UTC by tools/verify-methods. Each table the builders fetch, compared day by day with what the phone computes for that authority — the tables are the check on the calculation, not the thing distributed.
 
 
 
@@ -238,48 +238,48 @@ Method 17 · 59 of 59 places · 5074 place-days (2026-10-07 → 2026-12-31) · t
 
 Method 20 · 517 of 517 places · 44462 place-days (2026-10-07 → 2026-12-31) · table built 2026-10-14
 
-**99.5% within 0 min** over the well-placed places, 1408 of 266772 outside, worst 1 min · Imsak printed 10 min before Fajr
+**100.0% within 0 min** over the well-placed places, 93 of 266772 outside, worst 1 min · Imsak printed 10 min before Fajr
 
 | | within | mean | worst | distribution (minutes, ours − theirs) |
 |---|---|---|---|---|
-| Fajr | 99.7% | 0 | 1 | -1: 116, 0: 44307, +1: 39 |
-| Sunrise | 99.6% | 0 | 1 | -1: 125, 0: 44267, +1: 70 |
-| Dhuhr | 99.6% | 0 | 1 | -1: 84, 0: 44303, +1: 75 |
-| Asr | 98.7% | 0 | 1 | -1: 281, 0: 43900, +1: 281 |
-| Maghrib | 99.6% | 0 | 1 | -1: 54, 0: 44295, +1: 113 |
-| Isha | 99.6% | 0 | 1 | -1: 63, 0: 44282, +1: 117 |
+| Fajr | 100.0% | 0 | 1 | -1: 10, 0: 44446, +1: 6 |
+| Sunrise | 99.9% | 0 | 1 | -1: 13, 0: 44436, +1: 13 |
+| Dhuhr | 100.0% | 0 | 1 | -1: 1, 0: 44461 |
+| Asr | 100.0% | 0 | 1 | -1: 8, 0: 44442, +1: 12 |
+| Maghrib | 100.0% | 0 | 1 | -1: 7, 0: 44440, +1: 15 |
+| Isha | 100.0% | 0 | 1 | -1: 3, 0: 44453, +1: 6 |
 
-10 row(s) set aside as understood (tools/verify-methods/accepted.json).
+1 row(s) set aside as understood (tools/verify-methods/accepted.json).
 
 <details><summary>The rows furthest off</summary>
 
 | place | date | prayer | table | ours | diff |
 |---|---|---|---|---|---|
-| KAB. KARO (Sumatera Utara) | 2026-10-07 | Asr | 15:29 | 15:30 | +1 |
-| KOTA LUBUKLINGGAU (Sumatera Selatan) | 2026-10-07 | Asr | 15:03 | 15:04 | +1 |
-| KAB. LAMPUNG SELATAN (Lampung) | 2026-10-07 | Asr | 14:50 | 14:49 | -1 |
-| KAB. PRINGSEWU (Lampung) | 2026-10-07 | Asr | 14:51 | 14:52 | +1 |
-| KAB. BEKASI (Jawa Barat) | 2026-10-07 | Asr | 14:45 | 14:44 | -1 |
-| KAB. CIANJUR (Jawa Barat) | 2026-10-07 | Asr | 14:46 | 14:45 | -1 |
-| KAB. KUNINGAN (Jawa Barat) | 2026-10-07 | Dhuhr | 11:38 | 11:37 | -1 |
-| KAB. KUNINGAN (Jawa Barat) | 2026-10-07 | Asr | 14:41 | 14:40 | -1 |
-| KAB. SUBANG (Jawa Barat) | 2026-10-07 | Asr | 14:43 | 14:42 | -1 |
-| KAB. SUMEDANG (Jawa Barat) | 2026-10-07 | Asr | 14:43 | 14:42 | -1 |
-| KOTA JAKARTA (DKI Jakarta) | 2026-10-07 | Asr | 14:46 | 14:45 | -1 |
-| KAB. BANJARNEGARA (Jawa Tengah) | 2026-10-07 | Asr | 14:37 | 14:36 | -1 |
-| KAB. KENDAL (Jawa Tengah) | 2026-10-07 | Asr | 14:34 | 14:33 | -1 |
-| KAB. REMBANG (Jawa Tengah) | 2026-10-07 | Asr | 14:29 | 14:28 | -1 |
-| KAB. SUKOHARJO (Jawa Tengah) | 2026-10-07 | Asr | 14:33 | 14:32 | -1 |
-| KAB. TEMANGGUNG (Jawa Tengah) | 2026-10-07 | Asr | 14:35 | 14:34 | -1 |
-| KOTA PEKALONGAN (Jawa Tengah) | 2026-10-07 | Asr | 14:36 | 14:35 | -1 |
-| KAB. SLEMAN (DI Yogyakarta) | 2026-10-07 | Asr | 14:35 | 14:34 | -1 |
-| KAB. BANGKALAN (Jawa Timur) | 2026-10-07 | Asr | 14:24 | 14:23 | -1 |
-| KAB. MAGETAN (Jawa Timur) | 2026-10-07 | Asr | 14:31 | 14:30 | -1 |
-| KAB. MALANG (Jawa Timur) | 2026-10-07 | Asr | 14:27 | 14:26 | -1 |
-| KAB. NGAWI (Jawa Timur) | 2026-10-07 | Asr | 14:30 | 14:29 | -1 |
-| KAB. PACITAN (Jawa Timur) | 2026-10-07 | Asr | 14:33 | 14:32 | -1 |
-| KAB. PASURUAN (Jawa Timur) | 2026-10-07 | Asr | 14:25 | 14:24 | -1 |
-| KAB. SIDOARJO (Jawa Timur) | 2026-10-07 | Asr | 14:25 | 14:24 | -1 |
+| KAB. KOLAKA TIMUR (Sulawesi Tenggara) | 2026-10-08 | Asr | 14:47 | 14:46 | -1 |
+| KAB. INTAN JAYA (Papua) | 2026-10-08 | Asr | 14:47 | 14:46 | -1 |
+| KOTA SIBOLGA (Sumatera Utara) | 2026-10-09 | Sunrise | 06:07 | 06:06 | -1 |
+| KAB. INDRAGIRI HULU (Riau) | 2026-10-09 | Fajr | 04:40 | 04:39 | -1 |
+| KAB. KARAWANG (Jawa Barat) | 2026-10-09 | Maghrib | 17:47 | 17:48 | +1 |
+| KOTA CILEGON (Banten) | 2026-10-10 | Fajr | 04:22 | 04:21 | -1 |
+| KAB. KARAWANG (Jawa Barat) | 2026-10-10 | Isha | 18:56 | 18:57 | +1 |
+| KOTA DEPOK (Jawa Barat) | 2026-10-10 | Maghrib | 17:50 | 17:49 | -1 |
+| KOTA SAMARINDA (Kalimantan Timur) | 2026-10-10 | Asr | 15:12 | 15:11 | -1 |
+| KOTA SIBOLGA (Sumatera Utara) | 2026-10-11 | Fajr | 04:55 | 04:54 | -1 |
+| KAB. MELAWI (Kalimantan Barat) | 2026-10-11 | Maghrib | 17:27 | 17:26 | -1 |
+| KAB. SERUYAN (Kalimantan Tengah) | 2026-10-11 | Sunrise | 05:09 | 05:08 | -1 |
+| KAB. GORONTALO (Gorontalo) | 2026-10-12 | Sunrise | 05:29 | 05:28 | -1 |
+| KAB. PUNCAK (Papua) | 2026-10-12 | Sunrise | 05:24 | 05:23 | -1 |
+| KAB. LOMBOK TIMUR (Nusa Tenggara Barat) | 2026-10-13 | Asr | 15:06 | 15:07 | +1 |
+| KAB. SOLOK SELATAN (Sumatera Barat) | 2026-10-14 | Maghrib | 18:13 | 18:12 | -1 |
+| KOTA MALANG (Jawa Timur) | 2026-10-14 | Sunrise | 05:05 | 05:04 | -1 |
+| KAB. LEMBATA (Nusa Tenggara Timur) | 2026-10-14 | Asr | 14:37 | 14:38 | +1 |
+| KOTA TOMOHON (Sulawesi Utara) | 2026-10-14 | Maghrib | 17:37 | 17:36 | -1 |
+| KAB. KARAWANG (Jawa Barat) | 2026-10-15 | Isha | 18:56 | 18:57 | +1 |
+| KOTA SIBOLGA (Sumatera Utara) | 2026-10-16 | Asr | 15:29 | 15:28 | -1 |
+| KAB. BANYUWANGI (Jawa Timur) | 2026-10-16 | Sunrise | 04:57 | 04:56 | -1 |
+| KAB. ACEH TENGAH (Aceh) | 2026-10-18 | Asr | 15:39 | 15:38 | -1 |
+| KAB. SOLOK (Sumatera Barat) | 2026-10-19 | Asr | 15:20 | 15:19 | -1 |
+| KAB. BONDOWOSO (Jawa Timur) | 2026-10-22 | Sunrise | 04:57 | 04:56 | -1 |
 
 </details>
 

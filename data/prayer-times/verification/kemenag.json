@@ -3,7 +3,7 @@
  "name": "Indonesia — Kemenag",
  "method": 20,
  "toleranceMin": 0,
- "builtAt": "2026-10-14T23:09:31.138Z",
+ "builtAt": "2026-10-15T07:25:49.480Z",
  "tableBuiltAt": "2026-10-14T14:03:46.646Z",
  "places": 517,
  "placesMissing": 0,
@@ -11,79 +11,78 @@
  "from": "2026-10-07",
  "to": "2026-12-31",
  "times": 266772,
- "within": 265364,
- "outsideShare": 0.0053,
+ "within": 266679,
+ "outsideShare": 0.0003,
  "maxAbs": 1,
  "perPrayer": {
   "Fajr": {
    "times": 44462,
-   "within": 44307,
+   "within": 44446,
    "histogram": {
-    "0": 44307,
-    "-1": 116,
-    "+1": 39
+    "0": 44446,
+    "+1": 6,
+    "-1": 10
    },
    "maxAbs": 1,
    "meanDiff": 0
   },
   "Sunrise": {
    "times": 44462,
-   "within": 44267,
+   "within": 44436,
    "histogram": {
-    "0": 44267,
-    "-1": 125,
-    "+1": 70
+    "0": 44436,
+    "+1": 13,
+    "-1": 13
    },
    "maxAbs": 1,
    "meanDiff": 0
   },
   "Dhuhr": {
    "times": 44462,
-   "within": 44306,
+   "within": 44461,
    "histogram": {
-    "0": 44303,
-    "-1": 84,
-    "+1": 75
+    "0": 44461,
+    "-1": 1
    },
    "maxAbs": 1,
    "meanDiff": 0
   },
   "Asr": {
    "times": 44462,
-   "within": 43906,
+   "within": 44443,
    "histogram": {
-    "0": 43900,
-    "+1": 281,
-    "-1": 281
+    "0": 44442,
+    "-1": 8,
+    "+1": 12
    },
    "maxAbs": 1,
    "meanDiff": 0
   },
   "Maghrib": {
    "times": 44462,
-   "within": 44295,
+   "within": 44440,
    "histogram": {
-    "0": 44295,
-    "-1": 54,
-    "+1": 113
+    "0": 44440,
+    "+1": 15,
+    "-1": 7
    },
    "maxAbs": 1,
    "meanDiff": 0
   },
   "Isha": {
    "times": 44462,
-   "within": 44283,
+   "within": 44453,
    "histogram": {
-    "0": 44282,
-    "-1": 63,
-    "+1": 117
+    "0": 44453,
+    "+1": 6,
+    "-1": 3
    },
    "maxAbs": 1,
    "meanDiff": 0
   }
  },
  "misplaced": [],
- "accepted": 10,
+ "accepted": 1,
  "imsakBeforeFajr": 10,
  "copiedRows": 0,
  "copiedFrom": null,
@@ -93,467 +92,11 @@
  "alarmReasons": [],
  "worst": [
   {
-   "place": "KAB. KARO (Sumatera Utara)",
-   "date": "2026-10-07",
-   "prayer": "Asr",
-   "theirs": "15:29",
-   "ours": "15:30",
-   "diff": 1
-  },
-  {
-   "place": "KOTA LUBUKLINGGAU (Sumatera Selatan)",
-   "date": "2026-10-07",
-   "prayer": "Asr",
-   "theirs": "15:03",
-   "ours": "15:04",
-   "diff": 1
-  },
-  {
-   "place": "KAB. LAMPUNG SELATAN (Lampung)",
-   "date": "2026-10-07",
-   "prayer": "Asr",
-   "theirs": "14:50",
-   "ours": "14:49",
-   "diff": -1
-  },
-  {
-   "place": "KAB. PRINGSEWU (Lampung)",
-   "date": "2026-10-07",
-   "prayer": "Asr",
-   "theirs": "14:51",
-   "ours": "14:52",
-   "diff": 1
-  },
-  {
-   "place": "KAB. BEKASI (Jawa Barat)",
-   "date": "2026-10-07",
-   "prayer": "Asr",
-   "theirs": "14:45",
-   "ours": "14:44",
-   "diff": -1
-  },
-  {
-   "place": "KAB. CIANJUR (Jawa Barat)",
-   "date": "2026-10-07",
-   "prayer": "Asr",
-   "theirs": "14:46",
-   "ours": "14:45",
-   "diff": -1
-  },
-  {
-   "place": "KAB. KUNINGAN (Jawa Barat)",
-   "date": "2026-10-07",
-   "prayer": "Dhuhr",
-   "theirs": "11:38",
-   "ours": "11:37",
-   "diff": -1
-  },
-  {
-   "place": "KAB. KUNINGAN (Jawa Barat)",
-   "date": "2026-10-07",
-   "prayer": "Asr",
-   "theirs": "14:41",
-   "ours": "14:40",
-   "diff": -1
-  },
-  {
-   "place": "KAB. SUBANG (Jawa Barat)",
-   "date": "2026-10-07",
-   "prayer": "Asr",
-   "theirs": "14:43",
-   "ours": "14:42",
-   "diff": -1
-  },
-  {
-   "place": "KAB. SUMEDANG (Jawa Barat)",
-   "date": "2026-10-07",
-   "prayer": "Asr",
-   "theirs": "14:43",
-   "ours": "14:42",
-   "diff": -1
-  },
-  {
-   "place": "KOTA JAKARTA (DKI Jakarta)",
-   "date": "2026-10-07",
-   "prayer": "Asr",
-   "theirs": "14:46",
-   "ours": "14:45",
-   "diff": -1
-  },
-  {
-   "place": "KAB. BANJARNEGARA (Jawa Tengah)",
-   "date": "2026-10-07",
-   "prayer": "Asr",
-   "theirs": "14:37",
-   "ours": "14:36",
-   "diff": -1
-  },
-  {
-   "place": "KAB. KENDAL (Jawa Tengah)",
-   "date": "2026-10-07",
-   "prayer": "Asr",
-   "theirs": "14:34",
-   "ours": "14:33",
-   "diff": -1
-  },
-  {
-   "place": "KAB. REMBANG (Jawa Tengah)",
-   "date": "2026-10-07",
-   "prayer": "Asr",
-   "theirs": "14:29",
-   "ours": "14:28",
-   "diff": -1
-  },
-  {
-   "place": "KAB. SUKOHARJO (Jawa Tengah)",
-   "date": "2026-10-07",
-   "prayer": "Asr",
-   "theirs": "14:33",
-   "ours": "14:32",
-   "diff": -1
-  },
-  {
-   "place": "KAB. TEMANGGUNG (Jawa Tengah)",
-   "date": "2026-10-07",
-   "prayer": "Asr",
-   "theirs": "14:35",
-   "ours": "14:34",
-   "diff": -1
-  },
-  {
-   "place": "KOTA PEKALONGAN (Jawa Tengah)",
-   "date": "2026-10-07",
-   "prayer": "Asr",
-   "theirs": "14:36",
-   "ours": "14:35",
-   "diff": -1
-  },
-  {
-   "place": "KAB. SLEMAN (DI Yogyakarta)",
-   "date": "2026-10-07",
-   "prayer": "Asr",
-   "theirs": "14:35",
-   "ours": "14:34",
-   "diff": -1
-  },
-  {
-   "place": "KAB. BANGKALAN (Jawa Timur)",
-   "date": "2026-10-07",
-   "prayer": "Asr",
-   "theirs": "14:24",
-   "ours": "14:23",
-   "diff": -1
-  },
-  {
-   "place": "KAB. MAGETAN (Jawa Timur)",
-   "date": "2026-10-07",
-   "prayer": "Asr",
-   "theirs": "14:31",
-   "ours": "14:30",
-   "diff": -1
-  },
-  {
-   "place": "KAB. MALANG (Jawa Timur)",
-   "date": "2026-10-07",
-   "prayer": "Asr",
-   "theirs": "14:27",
-   "ours": "14:26",
-   "diff": -1
-  },
-  {
-   "place": "KAB. NGAWI (Jawa Timur)",
-   "date": "2026-10-07",
-   "prayer": "Asr",
-   "theirs": "14:30",
-   "ours": "14:29",
-   "diff": -1
-  },
-  {
-   "place": "KAB. PACITAN (Jawa Timur)",
-   "date": "2026-10-07",
-   "prayer": "Asr",
-   "theirs": "14:33",
-   "ours": "14:32",
-   "diff": -1
-  },
-  {
-   "place": "KAB. PASURUAN (Jawa Timur)",
-   "date": "2026-10-07",
-   "prayer": "Asr",
-   "theirs": "14:25",
-   "ours": "14:24",
-   "diff": -1
-  },
-  {
-   "place": "KAB. SIDOARJO (Jawa Timur)",
-   "date": "2026-10-07",
-   "prayer": "Asr",
-   "theirs": "14:25",
-   "ours": "14:24",
-   "diff": -1
-  },
-  {
-   "place": "KAB. LOMBOK UTARA (Nusa Tenggara Barat)",
-   "date": "2026-10-07",
-   "prayer": "Asr",
-   "theirs": "15:13",
-   "ours": "15:12",
-   "diff": -1
-  },
-  {
-   "place": "KAB. SUMBAWA BARAT (Nusa Tenggara Barat)",
-   "date": "2026-10-07",
-   "prayer": "Asr",
-   "theirs": "15:11",
-   "ours": "15:10",
-   "diff": -1
-  },
-  {
-   "place": "KAB. ENDE (Nusa Tenggara Timur)",
-   "date": "2026-10-07",
-   "prayer": "Asr",
-   "theirs": "14:52",
-   "ours": "14:51",
-   "diff": -1
-  },
-  {
-   "place": "KAB. LEMBATA (Nusa Tenggara Timur)",
-   "date": "2026-10-07",
-   "prayer": "Asr",
-   "theirs": "14:44",
-   "ours": "14:43",
-   "diff": -1
-  },
-  {
-   "place": "KAB. SABU RAIJUA (Nusa Tenggara Timur)",
-   "date": "2026-10-07",
-   "prayer": "Asr",
-   "theirs": "14:54",
-   "ours": "14:53",
-   "diff": -1
-  },
-  {
-   "place": "KAB. SUMBA TIMUR (Nusa Tenggara Timur)",
-   "date": "2026-10-07",
-   "prayer": "Asr",
-   "theirs": "14:59",
-   "ours": "14:58",
-   "diff": -1
-  },
-  {
-   "place": "KAB. TIMOR TENGAH SELATAN (Nusa Tenggara Timur)",
-   "date": "2026-10-07",
-   "prayer": "Sunrise",
-   "theirs": "05:16",
-   "ours": "05:17",
-   "diff": 1
-  },
-  {
-   "place": "KAB. TAKALAR (Sulawesi Selatan)",
-   "date": "2026-10-07",
-   "prayer": "Asr",
-   "theirs": "14:53",
-   "ours": "14:54",
-   "diff": 1
-  },
-  {
-   "place": "KAB. HALMAHERA TIMUR (Maluku Utara)",
-   "date": "2026-10-07",
-   "prayer": "Asr",
-   "theirs": "15:28",
-   "ours": "15:27",
-   "diff": -1
-  },
-  {
-   "place": "KAB. BOVEN DIGOEL (Papua)",
-   "date": "2026-10-07",
-   "prayer": "Asr",
-   "theirs": "14:32",
-   "ours": "14:31",
-   "diff": -1
-  },
-  {
-   "place": "KOTA BANDA ACEH (Aceh)",
-   "date": "2026-10-08",
-   "prayer": "Fajr",
-   "theirs": "05:11",
-   "ours": "05:10",
-   "diff": -1
-  },
-  {
-   "place": "KAB. TOBA SAMOSIR (Sumatera Utara)",
-   "date": "2026-10-08",
-   "prayer": "Fajr",
-   "theirs": "04:55",
-   "ours": "04:54",
-   "diff": -1
-  },
-  {
-   "place": "KAB. KEPAHIANG (Bengkulu)",
+   "place": "KAB. KOLAKA TIMUR (Sulawesi Tenggara)",
    "date": "2026-10-08",
    "prayer": "Asr",
-   "theirs": "15:04",
-   "ours": "15:05",
-   "diff": 1
-  },
-  {
-   "place": "KAB. BELITUNG (Kepulauan Bangka Belitung)",
-   "date": "2026-10-08",
-   "prayer": "Sunrise",
-   "theirs": "05:30",
-   "ours": "05:29",
-   "diff": -1
-  },
-  {
-   "place": "KAB. BANDUNG (Jawa Barat)",
-   "date": "2026-10-08",
-   "prayer": "Asr",
-   "theirs": "14:44",
-   "ours": "14:43",
-   "diff": -1
-  },
-  {
-   "place": "KAB. BEKASI (Jawa Barat)",
-   "date": "2026-10-08",
-   "prayer": "Asr",
-   "theirs": "14:44",
-   "ours": "14:43",
-   "diff": -1
-  },
-  {
-   "place": "KOTA JAKARTA (DKI Jakarta)",
-   "date": "2026-10-08",
-   "prayer": "Asr",
-   "theirs": "14:45",
-   "ours": "14:44",
-   "diff": -1
-  },
-  {
-   "place": "KAB. BANYUMAS (Jawa Tengah)",
-   "date": "2026-10-08",
-   "prayer": "Asr",
-   "theirs": "14:38",
-   "ours": "14:37",
-   "diff": -1
-  },
-  {
-   "place": "KAB. BATANG (Jawa Tengah)",
-   "date": "2026-10-08",
-   "prayer": "Asr",
-   "theirs": "14:35",
-   "ours": "14:34",
-   "diff": -1
-  },
-  {
-   "place": "KAB. KLATEN (Jawa Tengah)",
-   "date": "2026-10-08",
-   "prayer": "Asr",
-   "theirs": "14:33",
-   "ours": "14:32",
-   "diff": -1
-  },
-  {
-   "place": "KAB. REMBANG (Jawa Tengah)",
-   "date": "2026-10-08",
-   "prayer": "Asr",
-   "theirs": "14:28",
-   "ours": "14:27",
-   "diff": -1
-  },
-  {
-   "place": "KAB. TEMANGGUNG (Jawa Tengah)",
-   "date": "2026-10-08",
-   "prayer": "Asr",
-   "theirs": "14:34",
-   "ours": "14:33",
-   "diff": -1
-  },
-  {
-   "place": "KAB. WONOGIRI (Jawa Tengah)",
-   "date": "2026-10-08",
-   "prayer": "Asr",
-   "theirs": "14:32",
-   "ours": "14:31",
-   "diff": -1
-  },
-  {
-   "place": "KOTA SURAKARTA (Jawa Tengah)",
-   "date": "2026-10-08",
-   "prayer": "Asr",
-   "theirs": "14:32",
-   "ours": "14:31",
-   "diff": -1
-  },
-  {
-   "place": "KAB. BANYUWANGI (Jawa Timur)",
-   "date": "2026-10-08",
-   "prayer": "Asr",
-   "theirs": "14:19",
-   "ours": "14:18",
-   "diff": -1
-  },
-  {
-   "place": "KAB. PONOROGO (Jawa Timur)",
-   "date": "2026-10-08",
-   "prayer": "Asr",
-   "theirs": "14:30",
-   "ours": "14:29",
-   "diff": -1
-  },
-  {
-   "place": "KAB. PROBOLINGGO (Jawa Timur)",
-   "date": "2026-10-08",
-   "prayer": "Asr",
-   "theirs": "14:22",
-   "ours": "14:21",
-   "diff": -1
-  },
-  {
-   "place": "KAB. BULELENG (Bali)",
-   "date": "2026-10-08",
-   "prayer": "Asr",
-   "theirs": "15:16",
-   "ours": "15:15",
-   "diff": -1
-  },
-  {
-   "place": "KAB. KLUNGKUNG (Bali)",
-   "date": "2026-10-08",
-   "prayer": "Isha",
-   "theirs": "19:25",
-   "ours": "19:26",
-   "diff": 1
-  },
-  {
-   "place": "KAB. NAGEKEO (Nusa Tenggara Timur)",
-   "date": "2026-10-08",
-   "prayer": "Asr",
-   "theirs": "14:52",
-   "ours": "14:51",
-   "diff": -1
-  },
-  {
-   "place": "KAB. ROTE NDAO (Nusa Tenggara Timur)",
-   "date": "2026-10-08",
-   "prayer": "Asr",
-   "theirs": "14:49",
-   "ours": "14:48",
-   "diff": -1
-  },
-  {
-   "place": "KAB. HALMAHERA BARAT (Maluku Utara)",
-   "date": "2026-10-08",
-   "prayer": "Asr",
-   "theirs": "15:32",
-   "ours": "15:31",
-   "diff": -1
-  },
-  {
-   "place": "KAB. BOVEN DIGOEL (Papua)",
-   "date": "2026-10-08",
-   "prayer": "Asr",
-   "theirs": "14:31",
-   "ours": "14:30",
+   "theirs": "14:47",
+   "ours": "14:46",
    "diff": -1
   },
   {
@@ -565,12 +108,468 @@
    "diff": -1
   },
   {
-   "place": "KAB. LANNY JAYA (Papua)",
-   "date": "2026-10-08",
+   "place": "KOTA SIBOLGA (Sumatera Utara)",
+   "date": "2026-10-09",
+   "prayer": "Sunrise",
+   "theirs": "06:07",
+   "ours": "06:06",
+   "diff": -1
+  },
+  {
+   "place": "KAB. INDRAGIRI HULU (Riau)",
+   "date": "2026-10-09",
+   "prayer": "Fajr",
+   "theirs": "04:40",
+   "ours": "04:39",
+   "diff": -1
+  },
+  {
+   "place": "KAB. KARAWANG (Jawa Barat)",
+   "date": "2026-10-09",
+   "prayer": "Maghrib",
+   "theirs": "17:47",
+   "ours": "17:48",
+   "diff": 1
+  },
+  {
+   "place": "KOTA CILEGON (Banten)",
+   "date": "2026-10-10",
+   "prayer": "Fajr",
+   "theirs": "04:22",
+   "ours": "04:21",
+   "diff": -1
+  },
+  {
+   "place": "KAB. KARAWANG (Jawa Barat)",
+   "date": "2026-10-10",
+   "prayer": "Isha",
+   "theirs": "18:56",
+   "ours": "18:57",
+   "diff": 1
+  },
+  {
+   "place": "KOTA DEPOK (Jawa Barat)",
+   "date": "2026-10-10",
+   "prayer": "Maghrib",
+   "theirs": "17:50",
+   "ours": "17:49",
+   "diff": -1
+  },
+  {
+   "place": "KOTA SAMARINDA (Kalimantan Timur)",
+   "date": "2026-10-10",
+   "prayer": "Asr",
+   "theirs": "15:12",
+   "ours": "15:11",
+   "diff": -1
+  },
+  {
+   "place": "KOTA SIBOLGA (Sumatera Utara)",
+   "date": "2026-10-11",
+   "prayer": "Fajr",
+   "theirs": "04:55",
+   "ours": "04:54",
+   "diff": -1
+  },
+  {
+   "place": "KAB. MELAWI (Kalimantan Barat)",
+   "date": "2026-10-11",
+   "prayer": "Maghrib",
+   "theirs": "17:27",
+   "ours": "17:26",
+   "diff": -1
+  },
+  {
+   "place": "KAB. SERUYAN (Kalimantan Tengah)",
+   "date": "2026-10-11",
+   "prayer": "Sunrise",
+   "theirs": "05:09",
+   "ours": "05:08",
+   "diff": -1
+  },
+  {
+   "place": "KAB. GORONTALO (Gorontalo)",
+   "date": "2026-10-12",
+   "prayer": "Sunrise",
+   "theirs": "05:29",
+   "ours": "05:28",
+   "diff": -1
+  },
+  {
+   "place": "KAB. PUNCAK (Papua)",
+   "date": "2026-10-12",
+   "prayer": "Sunrise",
+   "theirs": "05:24",
+   "ours": "05:23",
+   "diff": -1
+  },
+  {
+   "place": "KAB. LOMBOK TIMUR (Nusa Tenggara Barat)",
+   "date": "2026-10-13",
+   "prayer": "Asr",
+   "theirs": "15:06",
+   "ours": "15:07",
+   "diff": 1
+  },
+  {
+   "place": "KAB. SOLOK SELATAN (Sumatera Barat)",
+   "date": "2026-10-14",
+   "prayer": "Maghrib",
+   "theirs": "18:13",
+   "ours": "18:12",
+   "diff": -1
+  },
+  {
+   "place": "KOTA MALANG (Jawa Timur)",
+   "date": "2026-10-14",
+   "prayer": "Sunrise",
+   "theirs": "05:05",
+   "ours": "05:04",
+   "diff": -1
+  },
+  {
+   "place": "KAB. LEMBATA (Nusa Tenggara Timur)",
+   "date": "2026-10-14",
+   "prayer": "Asr",
+   "theirs": "14:37",
+   "ours": "14:38",
+   "diff": 1
+  },
+  {
+   "place": "KOTA TOMOHON (Sulawesi Utara)",
+   "date": "2026-10-14",
+   "prayer": "Maghrib",
+   "theirs": "17:37",
+   "ours": "17:36",
+   "diff": -1
+  },
+  {
+   "place": "KAB. KARAWANG (Jawa Barat)",
+   "date": "2026-10-15",
+   "prayer": "Isha",
+   "theirs": "18:56",
+   "ours": "18:57",
+   "diff": 1
+  },
+  {
+   "place": "KOTA SIBOLGA (Sumatera Utara)",
+   "date": "2026-10-16",
+   "prayer": "Asr",
+   "theirs": "15:29",
+   "ours": "15:28",
+   "diff": -1
+  },
+  {
+   "place": "KAB. BANYUWANGI (Jawa Timur)",
+   "date": "2026-10-16",
+   "prayer": "Sunrise",
+   "theirs": "04:57",
+   "ours": "04:56",
+   "diff": -1
+  },
+  {
+   "place": "KAB. ACEH TENGAH (Aceh)",
+   "date": "2026-10-18",
+   "prayer": "Asr",
+   "theirs": "15:39",
+   "ours": "15:38",
+   "diff": -1
+  },
+  {
+   "place": "KAB. SOLOK (Sumatera Barat)",
+   "date": "2026-10-19",
+   "prayer": "Asr",
+   "theirs": "15:20",
+   "ours": "15:19",
+   "diff": -1
+  },
+  {
+   "place": "KAB. BONDOWOSO (Jawa Timur)",
+   "date": "2026-10-22",
+   "prayer": "Sunrise",
+   "theirs": "04:57",
+   "ours": "04:56",
+   "diff": -1
+  },
+  {
+   "place": "KOTA BOGOR (Jawa Barat)",
+   "date": "2026-10-23",
+   "prayer": "Isha",
+   "theirs": "19:00",
+   "ours": "18:59",
+   "diff": -1
+  },
+  {
+   "place": "KAB. NIAS SELATAN (Sumatera Utara)",
+   "date": "2026-10-25",
+   "prayer": "Isha",
+   "theirs": "19:29",
+   "ours": "19:28",
+   "diff": -1
+  },
+  {
+   "place": "KAB. SLEMAN (DI Yogyakarta)",
+   "date": "2026-10-25",
+   "prayer": "Fajr",
+   "theirs": "03:56",
+   "ours": "03:55",
+   "diff": -1
+  },
+  {
+   "place": "KOTA SIBOLGA (Sumatera Utara)",
+   "date": "2026-10-29",
+   "prayer": "Fajr",
+   "theirs": "04:51",
+   "ours": "04:50",
+   "diff": -1
+  },
+  {
+   "place": "KAB. KARAWANG (Jawa Barat)",
+   "date": "2026-10-29",
+   "prayer": "Asr",
+   "theirs": "14:51",
+   "ours": "14:52",
+   "diff": 1
+  },
+  {
+   "place": "KOTA BOGOR (Jawa Barat)",
+   "date": "2026-10-29",
+   "prayer": "Fajr",
+   "theirs": "04:10",
+   "ours": "04:09",
+   "diff": -1
+  },
+  {
+   "place": "KAB. HALMAHERA TENGAH (Maluku Utara)",
+   "date": "2026-10-29",
+   "prayer": "Maghrib",
+   "theirs": "18:19",
+   "ours": "18:18",
+   "diff": -1
+  },
+  {
+   "place": "KAB. KARAWANG (Jawa Barat)",
+   "date": "2026-10-31",
+   "prayer": "Maghrib",
+   "theirs": "17:47",
+   "ours": "17:48",
+   "diff": 1
+  },
+  {
+   "place": "KAB. BANDUNG BARAT (Jawa Barat)",
+   "date": "2026-11-03",
+   "prayer": "Fajr",
+   "theirs": "04:04",
+   "ours": "04:05",
+   "diff": 1
+  },
+  {
+   "place": "KOTA TEGAL (Jawa Tengah)",
+   "date": "2026-11-03",
+   "prayer": "Dhuhr",
+   "theirs": "11:31",
+   "ours": "11:30",
+   "diff": -1
+  },
+  {
+   "place": "KAB. SABU RAIJUA (Nusa Tenggara Timur)",
+   "date": "2026-11-03",
+   "prayer": "Asr",
+   "theirs": "14:51",
+   "ours": "14:52",
+   "diff": 1
+  },
+  {
+   "place": "KOTA BANDUNG (Jawa Barat)",
+   "date": "2026-11-05",
+   "prayer": "Sunrise",
+   "theirs": "05:15",
+   "ours": "05:14",
+   "diff": -1
+  },
+  {
+   "place": "KAB. MANGGARAI TIMUR (Nusa Tenggara Timur)",
+   "date": "2026-11-07",
+   "prayer": "Asr",
+   "theirs": "15:00",
+   "ours": "15:01",
+   "diff": 1
+  },
+  {
+   "place": "KAB. PACITAN (Jawa Timur)",
+   "date": "2026-11-11",
+   "prayer": "Sunrise",
+   "theirs": "05:03",
+   "ours": "05:02",
+   "diff": -1
+  },
+  {
+   "place": "KAB. MUKOMUKO (Bengkulu)",
+   "date": "2026-11-12",
+   "prayer": "Isha",
+   "theirs": "19:22",
+   "ours": "19:21",
+   "diff": -1
+  },
+  {
+   "place": "KAB. TAMBRAUW (Papua Barat)",
+   "date": "2026-11-13",
+   "prayer": "Sunrise",
+   "theirs": "05:48",
+   "ours": "05:49",
+   "diff": 1
+  },
+  {
+   "place": "KAB. KARO (Sumatera Utara)",
+   "date": "2026-11-14",
+   "prayer": "Sunrise",
+   "theirs": "06:03",
+   "ours": "06:04",
+   "diff": 1
+  },
+  {
+   "place": "KAB. SOPPENG (Sulawesi Selatan)",
+   "date": "2026-11-14",
+   "prayer": "Fajr",
+   "theirs": "04:17",
+   "ours": "04:16",
+   "diff": -1
+  },
+  {
+   "place": "KAB. MANGGARAI TIMUR (Nusa Tenggara Timur)",
+   "date": "2026-11-16",
+   "prayer": "Asr",
+   "theirs": "15:05",
+   "ours": "15:06",
+   "diff": 1
+  },
+  {
+   "place": "KOTA PASURUAN (Jawa Timur)",
+   "date": "2026-11-17",
+   "prayer": "Asr",
+   "theirs": "14:37",
+   "ours": "14:38",
+   "diff": 1
+  },
+  {
+   "place": "KAB. MAMBERAMO RAYA (Papua)",
+   "date": "2026-11-20",
+   "prayer": "Maghrib",
+   "theirs": "17:43",
+   "ours": "17:44",
+   "diff": 1
+  },
+  {
+   "place": "KOTA PADANG (Sumatera Barat)",
+   "date": "2026-11-21",
+   "prayer": "Maghrib",
+   "theirs": "18:13",
+   "ours": "18:12",
+   "diff": -1
+  },
+  {
+   "place": "KAB. BANGKALAN (Jawa Timur)",
+   "date": "2026-11-21",
    "prayer": "Asr",
    "theirs": "14:41",
    "ours": "14:40",
    "diff": -1
+  },
+  {
+   "place": "KAB. KARO (Sumatera Utara)",
+   "date": "2026-11-22",
+   "prayer": "Sunrise",
+   "theirs": "06:05",
+   "ours": "06:06",
+   "diff": 1
+  },
+  {
+   "place": "KAB. TOBA SAMOSIR (Sumatera Utara)",
+   "date": "2026-11-22",
+   "prayer": "Maghrib",
+   "theirs": "18:18",
+   "ours": "18:17",
+   "diff": -1
+  },
+  {
+   "place": "KOTA BUKITTINGGI (Sumatera Barat)",
+   "date": "2026-11-22",
+   "prayer": "Isha",
+   "theirs": "19:24",
+   "ours": "19:25",
+   "diff": 1
+  },
+  {
+   "place": "KAB. LAHAT (Sumatera Selatan)",
+   "date": "2026-11-22",
+   "prayer": "Sunrise",
+   "theirs": "05:39",
+   "ours": "05:40",
+   "diff": 1
+  },
+  {
+   "place": "KOTA SIBOLGA (Sumatera Utara)",
+   "date": "2026-11-25",
+   "prayer": "Sunrise",
+   "theirs": "06:08",
+   "ours": "06:07",
+   "diff": -1
+  },
+  {
+   "place": "KOTA BANDA ACEH (Aceh)",
+   "date": "2026-11-27",
+   "prayer": "Maghrib",
+   "theirs": "18:24",
+   "ours": "18:25",
+   "diff": 1
+  },
+  {
+   "place": "KAB. BENGKULU TENGAH (Bengkulu)",
+   "date": "2026-11-27",
+   "prayer": "Maghrib",
+   "theirs": "18:10",
+   "ours": "18:11",
+   "diff": 1
+  },
+  {
+   "place": "KAB. TAMBRAUW (Papua Barat)",
+   "date": "2026-11-27",
+   "prayer": "Sunrise",
+   "theirs": "05:51",
+   "ours": "05:52",
+   "diff": 1
+  },
+  {
+   "place": "KAB. KARO (Sumatera Utara)",
+   "date": "2026-11-28",
+   "prayer": "Sunrise",
+   "theirs": "06:07",
+   "ours": "06:08",
+   "diff": 1
+  },
+  {
+   "place": "KOTA SIBOLGA (Sumatera Utara)",
+   "date": "2026-11-28",
+   "prayer": "Sunrise",
+   "theirs": "06:09",
+   "ours": "06:08",
+   "diff": -1
+  },
+  {
+   "place": "KAB. KARAWANG (Jawa Barat)",
+   "date": "2026-11-28",
+   "prayer": "Maghrib",
+   "theirs": "17:55",
+   "ours": "17:56",
+   "diff": 1
+  },
+  {
+   "place": "KOTA PASURUAN (Jawa Timur)",
+   "date": "2026-11-28",
+   "prayer": "Asr",
+   "theirs": "14:43",
+   "ours": "14:44",
+   "diff": 1
   }
  ]
 }

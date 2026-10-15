@@ -179,7 +179,7 @@ function parametersForMethod(methodId: number): CalculationParameters {
       //
       // October 2026: the times are computed by `kemenagTimes`
       // (`indonesiaMethod.ts`), the ministry's method as its tables for all
-      // 517 regencies show it — on its minute for 99.47 % of them; these
+      // 517 regencies show it — on its minute for 99.965 % of them; these
       // parameters are its description and the fallback where a time does
       // not form.
       return angles(20, 18, { fajr: 2.5, sunrise: -3.1, dhuhr: 3.5, asr: 2.5, maghrib: 3.2, isha: 2.5 });

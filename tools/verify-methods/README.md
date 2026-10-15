@@ -256,8 +256,11 @@ the window is what the dataset holds). The method (method 20,
 `src/providers/indonesiaMethod.ts`), read with `table-exact.py` and the
 per-place / per-day window scripts:
 
-- **A precise sun** at each prayer's own moment (Meeus's apparent sun),
-  iterated; Dhuhr at the transit.
+- **A precise sun** at each prayer's own moment (`preciseApparentSun`,
+  VSOP87 — as JPL's to a tenth of a second), iterated; Dhuhr at the
+  transit. Meeus's short series, used first, drifts by about a second
+  against it: allowed one free shift per place and column, the Meeus sun
+  still left 380 of the non-Asr times off; this one leaves 31.
 - Fajr 20°, Isha 18°; **sunrise and Maghrib at −1°**, and at −2° in the
   56 regencies the ministry classes as highland (a flat 4.5 minutes was the
   old stand-in; the degree fits, the minutes do not). In six highland
@@ -267,18 +270,29 @@ per-place / per-day window scripts:
   three (Dhuhr) and minus three (sunrise). With those the margins between
   the prayers come out whole minutes to 0.01 min across the country —
   which is how the −1° horizon was found.
-- **Asr** is the open part. The noon shadow with the declination of noon,
-  and the hour angle from the sun at the moment, leaves a drift from −3 s
-  in October to +4 s in December, the same at every latitude. Taking the
-  shadow's declination 90 minutes before noon and the hour angle's sun at
-  five hours after noon flattens it; that fits, it is not a rule anyone
-  has published, and three months cannot say it holds in June.
+- **Asr**: the noon shadow from the sun's declination at **00:00 UT of
+  the day** — an almanac's daily entry — and the hour angle from the sun
+  at Asr itself, iterated; margin two minutes like the rest. With a free
+  shift per place, Asr then misses 5 times of 44,462; the declination at
+  noon or at Asr misses 1,100–2,300. (The first fit, the shadow's
+  declination 90 minutes before noon and the sun of five hours after noon
+  for the hour angle, was the Meeus sun's way of approximating this.)
+- **The points** are fitted to the table, latitude and longitude together
+  against all six columns (throwaway scripts: per place and column the
+  band of shifts that keeps every day on its minute, the point solved for
+  linearly inside them, three rounds): median 0.3 km from the old point,
+  at most 2.9 km.
 - Four regencies were geocoded to the wrong place: Gresik (Bawean island
   for the town), Seruyan, Kepulauan Selayar and Pekajang (Lingga). They
   are at the points the tables give now, in both place files.
 
-**Result:** 99.47 % of 266,772 times on the printed minute, every one within
-a minute: Fajr, sunrise, Dhuhr, Maghrib and Isha about 99.6 %, Asr 98.7 %.
+**Result:** 99.965 % of 266,772 times on the printed minute (94 off), every
+one within a minute: Dhuhr 1 off, Fajr 16, sunrise 26, Asr 20, Maghrib 22,
+Isha 9. Two regencies hold a fifth of them: Karawang (177), whose Asr,
+Maghrib and Isha are a minute early on ten scattered days, and 54, whose
+Fajr and sunrise are a minute late on eight — no single point fits either.
+The rest are one or two a place, times within a fraction of a second of
+the rounding point, where the ministry's sun and this one part.
 
 - The `kemenag` check compares to the minute, at those points and classes.
 

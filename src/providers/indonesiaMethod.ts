@@ -6,22 +6,23 @@
  * 2026, `data/prayer-times/indonesia`) with `tools/verify-methods/
  * table-exact.py` and the scripts beside it:
  *
- *   • a precise Sun (Meeus's apparent Sun, `meeusApparentSun`), taken at
- *     each prayer's own moment, iterated;
+ *   • the precise apparent Sun (`preciseApparentSun`, as JPL's to a tenth
+ *     of a second), taken at each prayer's own moment, iterated — Meeus's
+ *     shorter series drifts by a second and left a minute in two hundred
+ *     off;
  *   • Fajr 20°, Isha 18°; sunrise and Maghrib at −1°, and at −2° in the
  *     regencies the ministry classes as highland — in six highland
  *     regencies of Papua the degree is taken off Fajr and Isha too;
- *   • Asr from the noon shadow, with the Sun's declination an hour and a
- *     half before noon for the shadow and the Sun of five hours after noon
- *     for the hour angle. This is what fits the table, not a rule anyone
- *     has written down, and it rests on three months (see the README);
+ *   • Asr when the shadow is its length plus the noon shadow, the noon
+ *     shadow from the Sun's declination at 00:00 UT of the day (as an
+ *     almanac's daily entry gives it), the hour angle from the Sun at Asr;
  *   • every time rounded up, after a margin of two minutes (three for
  *     Dhuhr, minus three for sunrise).
  *
- * At each regency's own point this gives the ministry's minute for 99.47 %
- * of its times, and never a minute further.
+ * At each regency's own point (fitted to the table) this gives the
+ * ministry's minute for 99.965 % of its times, and never a minute further.
  */
-import { meeusApparentSun } from './moroccoMethod';
+import { preciseApparentSun } from './preciseSun';
 
 const RAD = Math.PI / 180;
 const DAY_MS = 86_400_000;
@@ -37,9 +38,8 @@ export type KemenagPlaceOptions = {
   asrShadow?: number;
 };
 
-const MARGIN = { fajr: 2, sunrise: -3, dhuhr: 3, asr: 1.96, maghrib: 2, isha: 2 };
-const ASR_SHADOW_DEC_AT = -90;
-const ASR_SUN_AT = 300;
+const MARGIN = { fajr: 2, sunrise: -3, dhuhr: 3, asr: 2, maghrib: 2, isha: 2 };
+const ASR_ITERATIONS = 4;
 
 /** Exact times with the margins, minutes past 00:00 UT of the civil date, before rounding. */
 export function kemenagRawMinutes(
@@ -51,7 +51,7 @@ export function kemenagRawMinutes(
   opts: KemenagPlaceOptions = {},
 ): { fajr: number; sunrise: number; dhuhr: number; asr: number; maghrib: number; isha: number } {
   const d0 = (Date.UTC(year, month, day) - Date.UTC(2000, 0, 1)) / DAY_MS - 0.5;
-  const at = (t: number) => meeusApparentSun(d0 + t / 1440);
+  const at = (t: number) => preciseApparentSun(d0 + t / 1440);
   let noon = 720 - 4 * longitude;
   for (let i = 0; i < ITERATIONS; i++) noon = 720 - 4 * longitude - at(noon).eot;
   const sp = Math.sin(latitude * RAD);
@@ -71,10 +71,14 @@ export function kemenagRawMinutes(
   };
   const twilight = opts.twilightDip ? 1 : 0;
   const horizon = opts.highland ? -2 : -1;
-  const shadowDec = at(noon + ASR_SHADOW_DEC_AT).dec;
+  // The noon shadow from the declination at 00:00 UT; the hour angle from the Sun at Asr, iterated.
+  const shadowDec = at(0).dec;
   const asrAlt = Math.atan(1 / ((opts.asrShadow ?? 1) + Math.tan(Math.abs(latitude * RAD - shadowDec)))) / RAD;
-  const asrSun = at(noon + ASR_SUN_AT);
-  const asr = 720 - 4 * longitude - asrSun.eot + hourAngle(asrAlt, asrSun.dec);
+  let asr = noon + 200;
+  for (let i = 0; i < ASR_ITERATIONS; i++) {
+    const { dec, eot } = at(asr);
+    asr = 720 - 4 * longitude - eot + hourAngle(asrAlt, dec);
+  }
   return {
     fajr: event(-20 - twilight, -1, noon - 420) + MARGIN.fajr,
     sunrise: event(horizon, -1, noon - 360) + MARGIN.sunrise,

@@ -21,7 +21,7 @@ const toMin = (t: string) => Number(t.slice(0, 2)) * 60 + Number(t.slice(3));
 afterAll(() => kemenagTable.setServesCalculationForTests(true));
 
 describe('Kemenag’s method', () => {
-  it('gives the published minute for at least 99.4% of the tables, never a minute further', () => {
+  it('gives the published minute for at least 99.96% of the tables, never a minute further', () => {
     let same = 0;
     let total = 0;
     let worst = 0;
@@ -45,7 +45,7 @@ describe('Kemenag’s method', () => {
       }
     }
     expect(total).toBeGreaterThan(200000);
-    expect(same / total).toBeGreaterThanOrEqual(0.994);
+    expect(same / total).toBeGreaterThanOrEqual(0.9996);
     expect(worst).toBeLessThanOrEqual(1);
   });
 });
