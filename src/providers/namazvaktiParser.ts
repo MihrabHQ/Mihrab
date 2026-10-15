@@ -56,6 +56,8 @@ export type NamazvaktiYear = {
   fetchedAt: string;
   /** YYYY-MM-DD → the fourteen columns, as published. */
   days: Record<string, string[]>;
+  /** Where the phone got it: Mihrab's mirror, or the site itself (absent for a copy held before October 2026). */
+  via?: 'mirror' | 'site';
 };
 
 function attr(tag: string, name: string): string | undefined {

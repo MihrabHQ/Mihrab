@@ -1,19 +1,15 @@
 /**
  * Build the namazvakti.com city index the app looks its nearest city up in.
  *
- * ── WHY AN INDEX AND NOT THE TIMES ────────────────────────────────────
+ * ── THE INDEX, AND THE TIMES BESIDE IT ───────────────────────────────
  *
- * Sweden's builder (tools/ifis-dataset) mirrors the TIMES: 109 cities, a
- * rolling window, a few megabytes. namazvakti.com publishes about a hundred
- * thousand places, and a year of times for each is gigabytes — not a thing
- * to keep in a git repository or serve from its raw CDN. What the site does
- * NOT have is a way to find "the nearest city to these coordinates": no
- * search, no API, only lists to click through. So the server-side job here
+ * namazvakti.com has no way to find "the nearest city to these
+ * coordinates": no search, no API, only lists to click through. So this job
  * does the part a phone cannot — walk every list once and read every city's
- * coordinates — and publishes it as small geographic tiles. The phone then
- * fetches its own nearest city's year straight from the site, once a year
- * (src/providers/namazvakti.ts). A hundred thousand phones asking for their
- * one file each is far gentler on the site than one job mirroring them all.
+ * coordinates — and publishes it as small geographic tiles. The cities'
+ * yearly TIMES are mirrored by `years.ts` beside it, into a release of this
+ * repository rather than git (some 55 MB a year): the phone reads its
+ * city's year from there, and the site only when the mirror lacks it.
  *
  * ── HOW IT RUNS ───────────────────────────────────────────────────────
  *

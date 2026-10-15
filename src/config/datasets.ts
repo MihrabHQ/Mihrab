@@ -158,15 +158,15 @@ export function nextNationalTableServerRunAfter(from: Date = new Date()): Date {
 
 // ── NAMAZVAKTI.COM (TÜRKİYE TAKVİMİ) ─────────────────────────────────
 //
-// Not a mirror of the times, like the three above, but an index of the
-// site's ~120,000 cities (`tools/namazvakti-dataset`), in 5° tiles: the
-// phone reads its tile from here, picks the nearest city, and fetches that
-// city's year from the site itself. See `providers/namazvakti.ts`.
+// An index of the site's ~120,000 cities (`tools/namazvakti-dataset`), in 5°
+// tiles: the phone reads its tile from here and picks the nearest city. The
+// city's year comes from the `data-namazvakti-<year>` release (mirrors.ts,
+// `years.ts`), the site itself only behind it. See `providers/namazvakti.ts`.
 
 export const NAMAZVAKTI_DATASET_BASE_URL =
   'https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/data/prayer-times/namazvakti/v1';
 
-/** The site the year files come from. */
+/** The site itself, asked for a city's year only when Mihrab's mirror does not have it. */
 export const NAMAZVAKTI_ORIGIN = 'https://www.namazvakti.com';
 
 /** How long a tile of the city index is kept before it is read again. */

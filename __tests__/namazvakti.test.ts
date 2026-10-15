@@ -40,6 +40,7 @@ import {
   temkinMinutes,
 } from '../src/providers/namazvakti';
 import { fetchPrayerTimesUnified } from '../src/providers/fetchPrayerTimes';
+import { namazvaktiBucketAsset, NV_PACK_BUCKETS, packYear } from '../src/providers/namazvaktiPack';
 import { validateTimings } from '../src/providers/validateTimings';
 import {
   parseCityInfo,
@@ -304,6 +305,41 @@ describe('the provider', () => {
     const site = urls.filter(u => u.includes('namazvakti.com'));
     expect(site).toEqual(['https://www.namazvakti.com/XML.php?cityID=5887']);
     expect(urls.join(' ')).not.toMatch(/50\.94|6\.96|arz=|tul=/);
+  });
+
+  it('reads the year from Mihrab’s mirror first, and does not ask the site', async () => {
+    const zlib = require('zlib') as typeof import('zlib');
+    const year = parseNamazvaktiXml(COLOGNE, 2026);
+    const bucket = { v: 1, bucket: 5887 % NV_PACK_BUCKETS, year: 2026, builtAt: 'x', cities: { '5887': packYear(year) } };
+    const gz = zlib.gzipSync(JSON.stringify(bucket));
+    serve({
+      '/tiles/50_5.json': () => response(200, COLOGNE_TILE),
+      [`/releases/download/data-namazvakti-2026/${namazvaktiBucketAsset(5887)}`]: () => ({
+        ...response(200, ''),
+        arrayBuffer: async () => gz.buffer.slice(gz.byteOffset, gz.byteOffset + gz.byteLength),
+      }),
+      'XML.php?cityID=5887': () => {
+        throw new Error('the site must not be asked when the mirror has the city');
+      },
+    });
+    const r = await getNamazvaktiTimes({ ...coords, date: day, school: 0 });
+    expect(r.timings.Fajr).toBe('06:04');
+    expect(r.source).toBe('cdn');
+    expect(mockFetch.mock.calls.map(c => String(c[0])).some(u => u.includes('namazvakti.com'))).toBe(false);
+  });
+
+  it('asks the site only when the mirror does not have the city', async () => {
+    serve({
+      '/tiles/50_5.json': () => response(200, COLOGNE_TILE),
+      'XML.php?cityID=5887': () => response(200, COLOGNE),
+    });
+    const r = await getNamazvaktiTimes({ ...coords, date: day, school: 0 });
+    expect(r.source).toBe('namazvakti');
+    const urls = mockFetch.mock.calls.map(c => String(c[0]));
+    const mirrorAt = urls.findIndex(u => u.includes('/releases/download/data-namazvakti-2026/'));
+    const siteAt = urls.findIndex(u => u.includes('namazvakti.com/XML.php'));
+    expect(mirrorAt).toBeGreaterThanOrEqual(0);
+    expect(siteAt).toBeGreaterThan(mirrorAt);
   });
 
   it('keeps the year: a second day and a second launch ask nothing', async () => {

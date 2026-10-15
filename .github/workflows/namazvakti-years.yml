@@ -1,0 +1,109 @@
+name: namazvakti.com yearly tables
+
+# Mirrors namazvakti.com's (Türkiye Takvimi's) yearly tables for every city
+# the index has (tools/namazvakti-dataset/years.ts), so the phone reads its
+# city's year from Mihrab's repo and asks the site only as a backup
+# (docs/prayer-times-sources.md). ~120,000 cities are ~55 MB a year, so they
+# are not committed: they are assets of the `data-namazvakti-<year>` release,
+# 512 gzipped files by city id, updated in place.
+#
+# Daily, within a polite request budget: a new year takes a few days of runs,
+# then each run re-reads the cities read longest ago. Emails on failure, with
+# the same mail secrets as the other dataset jobs.
+
+on:
+  schedule:
+    - cron: '53 2 * * *' # every day 02:53 UTC
+  workflow_dispatch:
+    inputs:
+      max_requests:
+        description: 'Per-run request budget'
+        required: false
+        default: '25000'
+      wall_minutes:
+        description: 'Per-run wall-clock budget in minutes (the job stops at 330)'
+        required: false
+        default: '300'
+
+concurrency:
+  group: namazvakti-years
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: The year's release
+        id: rel
+        run: |
+          year=$(date -u +%Y)
+          tag="data-namazvakti-${year}"
+          echo "year=${year}" >> "$GITHUB_OUTPUT"
+          echo "tag=${tag}" >> "$GITHUB_OUTPUT"
+          if ! gh release view "$tag" >/dev/null 2>&1; then
+            gh release create "$tag" --latest=false \
+              --title "Data: namazvakti.com tables, ${year}" \
+              --notes "Türkiye Takvimi (namazvakti.com) yearly tables for every city it lists, packed in 512 files by city id (src/providers/namazvaktiPack.ts). Built by .github/workflows/namazvakti-years.yml; read by the app (src/providers/namazvakti.ts). Not an app release."
+          fi
+          mkdir -p work
+          gh release download "$tag" --dir work --pattern '*.json.gz' --skip-existing || true
+          ls work | wc -l
+
+      - name: Read the cities due
+        id: build
+        env:
+          NV_YEARS_DIR: work
+          NV_YEAR: ${{ steps.rel.outputs.year }}
+          NV_MAX_REQUESTS: ${{ github.event.inputs.max_requests || '25000' }}
+          NV_MAX_WALL_MIN: ${{ github.event.inputs.wall_minutes || '300' }}
+        run: npx --yes tsx@4 tools/namazvakti-dataset/years.ts
+
+      - name: Publish the changed files
+        if: always() && steps.rel.outcome == 'success'
+        run: |
+          cd work
+          if [ ! -s changed.txt ]; then
+            echo 'No files changed.'
+            exit 0
+          fi
+          # Upload in batches so a long list stays well inside the command line.
+          xargs -n 100 gh release upload "${{ steps.rel.outputs.tag }}" --clobber < changed.txt
+          gh release upload "${{ steps.rel.outputs.tag }}" index.json --clobber
+          echo "Uploaded $(wc -l < changed.txt) files; ${{ steps.build.outputs.held || '?' }}/${{ steps.build.outputs.cities || '?' }} cities held."
+
+      - name: Email on failure
+        if: failure() && env.MAIL_SERVER != ''
+        env:
+          MAIL_SERVER: ${{ secrets.MAIL_SERVER }}
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.MAIL_SERVER }}
+          server_port: ${{ secrets.MAIL_PORT }}
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          from: Mihrab Dataset Bot <${{ secrets.MAIL_USERNAME }}>
+          to: mihrab@elghamri.se
+          subject: '[Mihrab] namazvakti.com yearly tables job FAILED'
+          body: |
+            The namazvakti.com yearly-tables run FAILED.
+
+            Usually one of:
+              • namazvakti.com is down or refusing (most requests failed), or
+              • the release download or upload failed.
+
+            Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            Phones keep the year they hold and ask the site itself for a city
+            the mirror does not have, so nothing breaks at once.

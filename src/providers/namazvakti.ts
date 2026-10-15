@@ -21,17 +21,19 @@
  *      on this repository's CDN. The phone fetches the tile it is in (a
  *      5° square — it says nothing finer about where the reader is) and
  *      picks the nearest city.
- *   2. THE YEAR. The phone then asks the site itself for that city's year
- *      — one file, about 55 kB, once a year — and keeps it. The site is
- *      told a city, never coordinates.
+ *   2. THE YEAR. The phone reads that city's year from Mihrab's own mirror
+ *      of the site (tools/namazvakti-dataset/years.ts — the
+ *      `data-namazvakti-<year>` release of this repository, the cities in
+ *      512 files by id, ~100 kB each) and keeps it. Only when the mirror
+ *      does not have the city yet — a new year's first days, a city new to
+ *      the site — is the site itself asked, for that one city's file
+ *      (October 2026: every table from the repo, the source as a backup —
+ *      docs/prayer-times-sources.md). The site is told a city, never
+ *      coordinates.
  *   3. OFFLINE / OUT OF REACH. With no file for the day — no network yet,
- *      past the year the site serves, a place no city with times is near —
- *      the calendar's method is computed on the phone (19° / 17° and the
- *      temkin), within a minute or two of the site.
- *
- * Mirroring the TIMES, the way Sweden's dataset does, was not an option:
- * a year for every city is gigabytes. Every phone asking for its own one
- * file is a far lighter load on the site than one job asking for all.
+ *      past the year published, a place no city with times is near — the
+ *      calendar's method is computed on the phone, at the city's own point
+ *      fitted from a year it holds (`fitNamazvaktiPoint`).
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { httpUserAgent } from '../config/httpIdentity';
@@ -48,6 +50,10 @@ import {
 import { formatLocalDate } from '../utils/date';
 import { fetchWithRetry } from '../utils/fetchWithRetry';
 import { formatLocalTime } from '../utils/prayerTimes';
+import { gunzipSync, strFromU8 } from 'fflate';
+import { fromBase64 } from '../sync/secureRandom';
+import { mirrorUrl } from '../config/mirrors';
+import { namazvaktiBucketAsset, namazvaktiYearTag, unpackYear, type PackedBucket } from './namazvaktiPack';
 import { preciseApparentSun } from './preciseSun';
 import { ProviderError } from './errors';
 import {
@@ -198,7 +204,65 @@ export async function nearestNamazvaktiCity(
   return best && best.distanceKm <= NAMAZVAKTI_MAX_CITY_KM ? best : null;
 }
 
-async function fetchYear(cityId: number): Promise<NamazvaktiYear> {
+/**
+ * A response's bytes: `arrayBuffer` where it works, else the body as a data
+ * URL, as the font store reads it (React Native's has not always had one).
+ */
+async function bytesOf(res: Response): Promise<Uint8Array> {
+  if (typeof res.arrayBuffer === 'function') {
+    try {
+      return new Uint8Array(await res.arrayBuffer());
+    } catch {
+      // Fall through to the blob.
+    }
+  }
+  const blob = await res.blob();
+  const base64 = await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('read failed'));
+    reader.onloadend = () => {
+      const result = String(reader.result ?? '');
+      resolve(result.slice(result.indexOf(',') + 1));
+    };
+    reader.readAsDataURL(blob);
+  });
+  return fromBase64(base64);
+}
+
+/** The city's year from Mihrab's mirror of the site, or null when the mirror does not have it. */
+async function fetchMirroredYear(cityId: number, year: number): Promise<NamazvaktiYear | null> {
+  try {
+    const res = await fetchWithRetry(
+      mirrorUrl(namazvaktiYearTag(year), namazvaktiBucketAsset(cityId)),
+      { headers: { 'User-Agent': httpUserAgent('Islamic prayer app; dataset') } },
+      { maxAttempts: 2, baseDelayMs: 1000, timeoutMs: 20000 },
+    );
+    if (!res.ok) return null;
+    const file = JSON.parse(strFromU8(gunzipSync(await bytesOf(res)))) as PackedBucket;
+    const packed = file.cities?.[String(cityId)];
+    if (!packed) return null;
+    // Held from now: its age is the phone's copy's, so it is read again on the phone's schedule.
+    return { ...unpackYear(packed, cityId), fetchedAt: new Date().toISOString(), via: 'mirror' };
+  } catch {
+    return null;
+  }
+}
+
+/** The city's year: Mihrab's mirror first, the site itself only behind it. */
+async function fetchYear(cityId: number, dateKey: string): Promise<NamazvaktiYear> {
+  const year = /^\d{4}-/.test(dateKey) ? Number(dateKey.slice(0, 4)) : new Date().getFullYear();
+  const mirrored = await fetchMirroredYear(cityId, year);
+  if (mirrored && (!dateKey || mirrored.days[dateKey])) return mirrored;
+  try {
+    return await fetchSiteYear(cityId);
+  } catch (e) {
+    // The site cannot answer either: whatever the mirror had is better than nothing.
+    if (mirrored) return mirrored;
+    throw e;
+  }
+}
+
+async function fetchSiteYear(cityId: number): Promise<NamazvaktiYear> {
   const res = await fetchWithRetry(
     `${NAMAZVAKTI_ORIGIN}/XML.php?cityID=${cityId}`,
     { headers: { 'User-Agent': httpUserAgent('Islamic prayer app') } },
@@ -215,7 +279,7 @@ async function fetchYear(cityId: number): Promise<NamazvaktiYear> {
   if (parsed.cityId !== cityId) {
     throw new ProviderError(PROVIDER, 'shape', `Asked for city ${cityId}, got ${parsed.cityId}.`);
   }
-  return parsed;
+  return { ...parsed, via: 'site' };
 }
 
 /**
@@ -246,7 +310,7 @@ async function loadYear(
   if (!p) {
     p = (async () => {
       try {
-        const year = await fetchYear(cityId);
+        const year = await fetchYear(cityId, dateKey);
         memYears.set(cityId, year);
         failedAt.delete(cityId);
         await writeJson(`${CITY_PREFIX}${cityId}`, year);
@@ -311,7 +375,7 @@ export async function getNamazvaktiTimes(params: {
       `No published day for ${city.name} on ${dateKey}.`,
     );
   }
-  return { timings, source: 'namazvakti' };
+  return { timings, source: year?.via === 'mirror' ? 'cdn' : 'namazvakti' };
 }
 
 /**

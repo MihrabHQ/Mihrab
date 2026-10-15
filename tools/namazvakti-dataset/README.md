@@ -1,14 +1,15 @@
 # namazvakti.com city index
 
 The Türkiye Takvimi source (namazvakti.com) publishes a year of times for every
-city it lists — tens of thousands of them, worldwide — at
-`https://www.namazvakti.com/XML.php?cityID=<id>`. Those yearly tables are small
-and the phone fetches them itself, one city, once a year. What the phone cannot
-do is find the right city: the site has no search by coordinates that it
-documents, and its lists are country → state → city pages.
+city it lists — about 118,000 with times, worldwide — at
+`https://www.namazvakti.com/XML.php?cityID=<id>`. Two jobs mirror it into this
+repository, so the phone reads Mihrab's copy and asks the site only as a backup
+(docs/prayer-times-sources.md):
 
-So this job builds only the **index**: every city's id, name and coordinates,
-cut into 5° tiles the phone can fetch for where it is.
+- **the index** (`build.ts`, below): every city's id, name and coordinates, cut
+  into 5° tiles the phone can fetch for where it is — the site has no search by
+  coordinates and its lists are country → state → city pages;
+- **the yearly tables** (`years.ts`, at the end): every city's year, packed.
 
 ## What it produces (`data/prayer-times/namazvakti/v1/`)
 
@@ -20,8 +21,9 @@ cut into 5° tiles the phone can fetch for where it is.
 | `countries.json`, `crawl.json` | Crawl state, so a run resumes where the last stopped |
 
 The app (`src/providers/namazvakti.ts`) fetches the tile around the phone and
-its neighbours, picks the nearest city within 75 km, then fetches that city's
-year from the site and keeps it. Without the site it computes the same
+its neighbours, picks the nearest city within 75 km, then reads that city's
+year from the mirror (the site only when the mirror does not have it) and
+keeps it. Without the site it computes the same
 calendar on the phone (`computeNamazvaktiMethodTimes`, fitted to the site's
 tables from Mecca to Oslo) — never AlAdhan.
 
@@ -62,3 +64,22 @@ Every request carries a User-Agent naming the project and a contact address.
   cities, per time: the evidence for the on-phone method.
 - `model-fit.ts` — scores the on-phone method (temkin 0.97°, horizon 0.5°)
   against saved years: about 97 % of times within a minute, 99.5 % within two.
+
+## The yearly tables (`years.ts`)
+
+Every located city with times, its year packed by
+`src/providers/namazvaktiPack.ts` (eight columns, a character a day; ~460 bytes
+a city gzipped, round-tripped exactly — `__tests__/namazvaktiPack.test.ts`),
+spread over 512 gzipped files by city id (`b<id % 512>.json.gz`, ~100 kB each)
+plus `index.json`. About 55 MB a year: too much for git history and the raw
+CDN, so they are assets of the **`data-namazvakti-<year>` release** of this
+repository, updated in place by `.github/workflows/namazvakti-years.yml`
+(daily): download the year's files, read the cities due — first those the
+mirror does not have, then those read longest ago (`NV_REFRESH_DAYS`, 60) —
+within a request budget (`NV_MAX_REQUESTS`, 25,000, 0.4 s apart), upload the
+files that changed. A full pass is about five days of runs; a new year's
+release is created on 1 January, and until a city is in it the phone asks the
+site for that city.
+
+The site's file carries no year — it is always the current one — so a run
+stores what it reads as the current UTC year's.

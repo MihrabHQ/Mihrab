@@ -6,7 +6,8 @@ source can be down, slow, rate-limited, change shape or block a country,
 and the phone should not notice. The scheduled workflows in
 `.github/workflows/` fetch each source into the repo (or, where a source is
 too large for git, into a release of this repo), the app reads that, and the
-bundled seed carries a fresh install offline.
+bundled seed carries a fresh install offline. (namazvakti.com's tables, ~55 MB a
+year, are the one source kept as release assets rather than in git.)
 
 Behind the repo, each source has a fallback, in this order:
 
@@ -27,7 +28,7 @@ Behind the repo, each source has a fallback, in this order:
 |---|---|---|---|
 | **Malaysia** — JAKIM e-Solat, 59 zones | `tools/national-tables/jakim.ts` (weekly; daily in early January) | e-Solat's JSON for the zone (`nationalLive.ts`) | `malaysiaMethod.ts`, the zone's extreme over a few fitted points: 95 % on the minute, 99.9 % within one |
 | **Singapore** — MUIS | `tools/national-tables/muis.ts` (weekly) | data.gov.sg's CSV (`nationalLive.ts`) | method 11 (fitted angles): within a minute, ~70 % on it |
-| **Türkiye Takvimi** — namazvakti.com | `tools/namazvakti-dataset/` (the city index; the yearly tables in progress — see below) | the city's XML from the site | `namazvakti.ts`, at the city's point fitted from its year: 99.86 % on the minute |
+| **Türkiye Takvimi** — namazvakti.com | `tools/namazvakti-dataset/`: the city index into git (`build.ts`), every city's year into the `data-namazvakti-<year>` release (`years.ts`, daily) | the city's XML from the site | `namazvakti.ts`, at the city's point fitted from its year: 99.86 % on the minute |
 
 ### Scraped or account-only sources, mirrored, no live backup
 
