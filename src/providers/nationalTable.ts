@@ -59,12 +59,14 @@ export type NationalTableConfig = {
   id: string;
   /** The statistics panel's slot. */
   dataset: ServerDatasetId;
-  baseUrl: string;
+  /** Where the repo's copy of the table is served; none for a table computed on the phone. */
+  baseUrl?: string;
   timezone: string;
   places: readonly TablePlace[];
   /** A point further than this from every listed place is outside the country's table. */
   maxPlaceKm: number;
-  seed: NationalTableSeed;
+  /** The published window bundled at build time; none for a table computed on the phone. */
+  seed?: NationalTableSeed;
   /** Refresh a cached place when the index cannot be reached and the copy is older than this. */
   refreshTtlMs: number;
   indexPollIntervalMs: number;
@@ -75,9 +77,9 @@ export type NationalTableConfig = {
    */
   calculate?: (place: NearestPlace, date: Date) => PrayerTimesResult;
   /**
-   * Serve `calculate` rather than the table. Off for every table today
-   * (October 2026: the data comes from Mihrab's own repo; the move to the
-   * calculations is planned in docs/prayer-times-sources.md).
+   * Serve `calculate` rather than the table: Kemenag's, whose method with
+   * its correction list gives its printed minute. Off for the free tables
+   * (MUIS, JAKIM), served from the repo's copy.
    */
   servesCalculation?: boolean;
   /**
@@ -164,7 +166,10 @@ export type NationalTable = {
   setServesCalculationForTests(v: boolean): void;
 };
 
+const NO_SEED: NationalTableSeed = { version: 0, builtAt: '', start: '', days: 0, cities: {} };
+
 export function createNationalTable(config: NationalTableConfig): NationalTable {
+  const seed = config.seed ?? NO_SEED;
   const cachePrefix = `${config.id}.dataset.v1.city.`;
   const memCity = new Map<number, CityFile | null>();
   const refreshInFlight = new Set<number>();
@@ -218,6 +223,7 @@ export function createNationalTable(config: NationalTableConfig): NationalTable 
   }
 
   async function pollServerIndex(): Promise<IndexFile | null> {
+    if (!config.baseUrl) return null;
     const now = Date.now();
     if (now < nextIndexPollAt) return null;
     if (indexPollInFlight) return indexPollInFlight;
@@ -253,7 +259,7 @@ export function createNationalTable(config: NationalTableConfig): NationalTable 
   }
 
   async function downloadCity(id: number): Promise<void> {
-    if (refreshInFlight.has(id)) return;
+    if (!config.baseUrl || refreshInFlight.has(id)) return;
     refreshInFlight.add(id);
     try {
       const res = await fetchWithRetry(
@@ -278,7 +284,7 @@ export function createNationalTable(config: NationalTableConfig): NationalTable 
     const index = await pollServerIndex();
     const serverBuilt = index?.builtAt;
     if (!cached) {
-      if (serverBuilt && serverBuilt !== config.seed.builtAt) await downloadCity(id);
+      if (serverBuilt && serverBuilt !== seed.builtAt) await downloadCity(id);
       return;
     }
     if (serverBuilt && serverBuilt !== cached.builtAt) {
@@ -319,12 +325,12 @@ export function createNationalTable(config: NationalTableConfig): NationalTable 
       const cached = await loadCachedCity(near.id);
       void maybeRefresh(near.id, cached);
       const fromCache = cached?.days[dateKey];
-      const tuple = fromCache ?? seedTuple(config.seed, near.id, dateKey);
+      const tuple = fromCache ?? seedTuple(seed, near.id, dateKey);
       if (!tuple) {
         // Not in the repo's copy: the source's own API, as a backup.
         const live = await liveTuple(near, dateKey);
         if (live) {
-          return { timings: tupleToTimings(live), timezone: cached?.timezone ?? config.seed.timezone ?? config.timezone, source: 'live' };
+          return { timings: tupleToTimings(live), timezone: cached?.timezone ?? seed.timezone ?? config.timezone, source: 'live' };
         }
         // Past the published window: the authority's method for the place.
         if (config.calculate) return config.calculate(near, params.date);
@@ -337,7 +343,7 @@ export function createNationalTable(config: NationalTableConfig): NationalTable 
       const source: DataSource = fromCache ? 'cdn' : 'seed';
       return {
         timings: tupleToTimings(tuple),
-        timezone: cached?.timezone ?? config.seed.timezone ?? config.timezone,
+        timezone: cached?.timezone ?? seed.timezone ?? config.timezone,
         source,
       };
     },

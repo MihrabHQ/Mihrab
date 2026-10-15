@@ -40,6 +40,14 @@ export const MAINSTREAM_PRAYER_PROVIDERS: ProviderOption[] = [
     descriptionKey: 'providers.namazvakti.desc',
   },
   {
+    id: 'diyanet',
+    name: 'Diyanet',
+    description:
+      'The Turkish Presidency of Religious Affairs’ worldwide method (the 2021 Prayer Times Congress), calculated on your phone for your own location — matches Diyanet’s published tables to the minute.',
+    nameKey: 'providers.diyanet.name',
+    descriptionKey: 'providers.diyanet.desc',
+  },
+  {
     id: 'local_adhan',
     name: 'On-device (Adhan JS)',
     description:

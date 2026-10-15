@@ -2,9 +2,7 @@
  * Morocco — the Ministry of Habous and Islamic Affairs's method, as its
  * timetable is computed (issue #10).
  *
- * Read off 77 days of the ministry's tables for its 164 located cities
- * (the git history of `data/prayer-times/morocco`, gathered by
- * `tools/verify-methods/history-union.py`) with `table-exact.py`:
+ * Read off 77 days of the ministry's tables for its 164 located cities:
  *
  *   • a precise Sun — Meeus's apparent Sun with the full nutation and his
  *     chapter-28 equation of time; a JPL ephemeris fits no better, NOAA's
@@ -12,16 +10,18 @@
  *     moment (iterated), declination and equation of time alike;
  *   • Fajr 19°, Isha 17°, Asr one shadow length (Shafi'i);
  *   • Dhuhr five minutes after the transit;
- *   • sunrise 2.9 minutes before, and Maghrib 3.85 after, the Sun at
- *     −0.833° less the city's own horizon dip — which at Maghrib counts
- *     0.86 of what it does at sunrise;
+ *   • sunrise 2.85 minutes before, and Maghrib 3.7 after, the Sun's upper
+ *     limb on the horizon — refraction 34′ and the Sun's semi-diameter for
+ *     its distance that day — less the city's own horizon dip;
  *   • Fajr rounded down to the minute, the rest to the nearest.
  *
- * The dip is the ministry's own per city, fitted from its table
- * (`data/moroccoMethodPoints.json`, about 0.02° per √metre of height);
- * elsewhere it is 0.02°·√height. At its cities this gives the ministry's
- * printed minute for about 98.7 % of times, and is never further than one
- * (tools/verify-methods/README.md).
+ * The dip is the ministry's own per city and per side — the horizon east
+ * at sunrise, west at Maghrib, which mountains or the sea make different —
+ * fitted from its tables with the city's point (`data/moroccoMethodPoints.json`,
+ * about 0.02° per √metre of height); elsewhere 0.02°·√height, 0.86 of it at
+ * Maghrib. On 77 days of the ministry's tables for its 164 located cities
+ * this is its printed minute for 99.12 % of times, and never further than
+ * one; `data/corrections/morocco.json` holds the rest.
  */
 
 const RAD = Math.PI / 180;
@@ -61,7 +61,10 @@ export function meeusApparentSun(d: number): { dec: number; eot: number } {
 }
 
 const ITERATIONS = 3;
-/** The share of the horizon dip Maghrib takes, against sunrise's whole. */
+/** Minutes before the horizon crossing that the ministry prints sunrise, and after it Maghrib. */
+export const MOROCCO_SUNRISE_MARGIN = -2.85;
+export const MOROCCO_MAGHRIB_MARGIN = 3.7;
+/** The share of the horizon dip Maghrib takes, against sunrise's whole, where a city's own is not known. */
 export const MOROCCO_MAGHRIB_DIP_SHARE = 0.86;
 /** Degrees of dip per √metre where the ministry's own value is not known. */
 export const MOROCCO_DIP_PER_SQRT_M = 0.02;
@@ -75,6 +78,8 @@ export function moroccoRawMinutes(
   day: number,
   dipDeg = 0,
   asrShadow = 1,
+  /** The horizon's dip westward, at Maghrib; MOROCCO_MAGHRIB_DIP_SHARE of `dipDeg` when not known. */
+  dipMaghribDeg = MOROCCO_MAGHRIB_DIP_SHARE * dipDeg,
 ): { fajr: number; sunrise: number; dhuhr: number; asr: number; maghrib: number; isha: number } {
   const d0 = (Date.UTC(year, month, day) - Date.UTC(2000, 0, 1)) / DAY_MS - 0.5;
   const at = (t: number) => meeusApparentSun(d0 + t / 1440);
@@ -82,6 +87,10 @@ export function moroccoRawMinutes(
   for (let i = 0; i < ITERATIONS; i++) noon = 720 - 4 * longitude - at(noon).eot;
   const sp = Math.sin(latitude * RAD);
   const cp = Math.cos(latitude * RAD);
+  // the upper limb on the horizon: refraction 34′ and the semi-diameter for the Sun's distance that day
+  const T = (d0 + noon / 1440) / 36525;
+  const Ma = (357.52911 + 35999.05029 * T) * RAD;
+  const horizon = -(34 / 60 + 0.26667 / (1.00014 - 0.016708 * Math.cos(Ma) - 0.00014 * Math.cos(2 * Ma)));
   const event = (altitudeOf: (dec: number) => number, sign: 1 | -1, start: number): number => {
     let t = start;
     for (let i = 0; i < ITERATIONS; i++) {
@@ -97,10 +106,10 @@ export function moroccoRawMinutes(
     Math.atan(1 / (asrShadow + Math.tan(Math.abs(latitude - dec / RAD) * RAD))) / RAD;
   return {
     fajr: event(fixed(-19), -1, noon - 420) - 0.5,
-    sunrise: event(fixed(-0.833 - dipDeg), -1, noon - 360) - 2.9,
+    sunrise: event(fixed(horizon - dipDeg), -1, noon - 360) + MOROCCO_SUNRISE_MARGIN,
     dhuhr: noon + 5,
     asr: event(asrAltitude, 1, noon + 200),
-    maghrib: event(fixed(-0.833 - MOROCCO_MAGHRIB_DIP_SHARE * dipDeg), 1, noon + 360) + 3.85,
+    maghrib: event(fixed(horizon - dipMaghribDeg), 1, noon + 360) + MOROCCO_MAGHRIB_MARGIN,
     isha: event(fixed(-17), 1, noon + 420),
   };
 }
@@ -117,8 +126,9 @@ export function moroccoTimes(
   day: number,
   dipDeg = 0,
   asrShadow = 1,
+  dipMaghribDeg?: number,
 ): MoroccoInstants | null {
-  const r = moroccoRawMinutes(latitude, longitude, year, month, day, dipDeg, asrShadow);
+  const r = moroccoRawMinutes(latitude, longitude, year, month, day, dipDeg, asrShadow, dipMaghribDeg);
   const all = [r.fajr, r.sunrise, r.dhuhr, r.asr, r.maghrib, r.isha];
   if (!all.every(Number.isFinite)) return null;
   const start = Date.UTC(year, month, day);

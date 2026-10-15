@@ -2,9 +2,8 @@
  * The cities the Algerian Ministry of Religious Affairs and Wakfs publishes
  * prayer times for, and the nearest of them to a point.
  *
- * `data/algeriaCities.json` is written by `tools/algeria-ministry/build.ts`
- * from the Ministry's own timetable (its official app's database), with
- * coordinates from `tools/algeria-ministry/cities.ts`.
+ * `data/algeriaCities.json` lists them as the Ministry's own timetable
+ * does, with each city's coordinates.
  */
 import cities from './data/algeriaCities.json';
 

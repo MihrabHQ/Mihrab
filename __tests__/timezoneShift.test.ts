@@ -28,16 +28,18 @@ import { formatUtcOffset } from '../src/utils/utcOffset';
 
 const CASABLANCA = { latitude: 33.5731, longitude: -7.5898 };
 const STOCKHOLM = { latitude: 59.3293, longitude: 18.0686 };
+const KUALA_LUMPUR = { latitude: 3.139, longitude: 101.6869 };
 
 const mockDrop = jest.fn(async () => true);
 jest.mock('../src/prayer/prayerStorage', () => ({
   dropStoredMonths: (...a: unknown[]) => mockDrop(...(a as [])),
 }));
 
-const mockHabous = jest.fn(async () => {});
+const mockTable = jest.fn(async () => {});
 const mockIfis = jest.fn(async () => {});
-jest.mock('../src/providers/habousDataset', () => ({
-  refetchHabousDatasetNow: (...a: unknown[]) => mockHabous(...(a as [])),
+jest.mock('../src/providers/nationalTables', () => ({
+  nationalTableFor: (id: string) =>
+    id === 'jakim' ? { refetchNow: (...a: unknown[]) => mockTable(...(a as [])) } : null,
 }));
 jest.mock('../src/providers/islamiskaForbundetDataset', () => ({
   refetchIslamiskaForbundetDatasetNow: (...a: unknown[]) => mockIfis(...(a as [])),
@@ -61,7 +63,7 @@ const params = (over: Record<string, unknown> = {}) => ({
 beforeEach(async () => {
   await AsyncStorage.clear();
   mockDrop.mockClear();
-  mockHabous.mockClear();
+  mockTable.mockClear();
   mockIfis.mockClear();
   _resetTimezoneShiftForTests();
 });
@@ -135,7 +137,7 @@ describe('what a shift throws away', () => {
   };
   afterEach(() => jest.restoreAllMocks());
 
-  it('drops this location and re-downloads the table it reads from', async () => {
+  it('drops this location; Morocco is computed, so nothing is downloaded', async () => {
     setOffset(60);
     await settleTimezoneShift(params()); // records +1, changes nothing
     expect(mockDrop).not.toHaveBeenCalled();
@@ -145,12 +147,16 @@ describe('what a shift throws away', () => {
 
     expect(shift).toMatchObject({ from: 60, to: 0 });
     expect(mockDrop).toHaveBeenCalledTimes(1);
-    // The dataset above all: for Morocco it is consulted BEFORE the cache,
-    // so an untouched city file means the refilled cache is never read.
-    expect(mockHabous).toHaveBeenCalledWith(
-      CASABLANCA.latitude,
-      CASABLANCA.longitude,
-    );
+    // The ministry's method runs on the device's clock: no table to replace.
+    expect(mockTable).not.toHaveBeenCalled();
+  });
+
+  it('re-downloads the table a served source reads from', async () => {
+    setOffset(480);
+    await settleTimezoneShift(params({ provider: 'jakim', ...KUALA_LUMPUR }));
+    setOffset(540);
+    await settleTimezoneShift(params({ provider: 'jakim', ...KUALA_LUMPUR }));
+    expect(mockTable).toHaveBeenCalledWith(KUALA_LUMPUR.latitude, KUALA_LUMPUR.longitude);
   });
 
   it('asks the right provider, and nothing of one with no table', async () => {
@@ -162,13 +168,13 @@ describe('what a shift throws away', () => {
       params({ provider: 'islamiska_forbundet', ...STOCKHOLM }),
     );
     expect(mockIfis).toHaveBeenCalled();
-    expect(mockHabous).not.toHaveBeenCalled();
+    expect(mockTable).not.toHaveBeenCalled();
 
     setOffset(180);
     await settleTimezoneShift(params({ provider: 'aladhan' }));
     // Nothing published to re-download; the cache drop is the whole of it.
     expect(mockIfis).toHaveBeenCalledTimes(1);
-    expect(mockHabous).not.toHaveBeenCalled();
+    expect(mockTable).not.toHaveBeenCalled();
   });
 
   it('drops only the location being loaded, never the traveller\'s others', async () => {
@@ -189,14 +195,15 @@ describe('what a shift throws away', () => {
     // Offline when the clocks change: the download throws, the stored rows
     // still go, and the computed chain answers from the device's own clock
     // — which is by definition running under the new rule.
-    mockHabous.mockRejectedValueOnce(new Error('offline'));
-    setOffset(60);
-    await settleTimezoneShift(params());
-    setOffset(0);
+    mockTable.mockRejectedValueOnce(new Error('offline'));
+    const kl = params({ provider: 'jakim', ...KUALA_LUMPUR });
+    setOffset(480);
+    await settleTimezoneShift(kl);
+    setOffset(540);
 
-    await expect(settleTimezoneShift(params())).resolves.toMatchObject({
-      from: 60,
-      to: 0,
+    await expect(settleTimezoneShift(kl)).resolves.toMatchObject({
+      from: 480,
+      to: 540,
     });
     expect(mockDrop).toHaveBeenCalled();
   });

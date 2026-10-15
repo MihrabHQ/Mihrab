@@ -3,8 +3,7 @@
  * timetable is computed.
  *
  * Read off its table for all 517 regencies and cities (October–December
- * 2026, `data/prayer-times/indonesia`) with `tools/verify-methods/
- * table-exact.py` and the scripts beside it:
+ * 2026):
  *
  *   • the precise apparent Sun (`preciseApparentSun`, as JPL's to a tenth
  *     of a second), taken at each prayer's own moment, iterated — Meeus's

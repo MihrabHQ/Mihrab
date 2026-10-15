@@ -32,6 +32,7 @@ import {
 } from './secureStorage';
 import {
   DEFAULT_SETTINGS,
+  PRAYER_DATA_PROVIDER_IDS,
   WIDGET_TIME_SCALE_MAX,
   WIDGET_TIME_SCALE_MIN,
   WIDGET_TIME_SCALE_STEP,
@@ -279,6 +280,13 @@ async function loadSettingsUncached(): Promise<PrayerAppSettings> {
   }
   if (!('dataProviderAuto' in parsed)) {
     merged.dataProviderAuto = false;
+  }
+  // A source this build does not know — picked in a newer build and brought
+  // here by sync or a backup — would fall to the on-device rung on every
+  // fetch under a name the screens cannot show. Automatic answers instead.
+  if (!(PRAYER_DATA_PROVIDER_IDS as readonly string[]).includes(merged.dataProvider)) {
+    merged.dataProvider = DEFAULT_SETTINGS.dataProvider;
+    merged.dataProviderAuto = true;
   }
   if (!('appearance' in parsed)) {
     merged.appearance = 'system';

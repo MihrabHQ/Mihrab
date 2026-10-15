@@ -47,8 +47,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { PrayerDataProviderId } from '../settings/types';
 import { deviceUtcOffsetMinutes } from '../utils/utcOffset';
 import { dropStoredMonths } from './prayerStorage';
-import { refetchHabousDatasetNow } from '../providers/habousDataset';
-import { refetchMarwDatasetNow } from '../providers/marwDataset';
 import { nationalTableFor } from '../providers/nationalTables';
 import { refetchNamazvaktiNow } from '../providers/namazvakti';
 import { refetchIslamiskaForbundetDatasetNow } from '../providers/islamiskaForbundetDataset';
@@ -205,14 +203,6 @@ export async function refetchDatasetFor(params: {
   latitude: number;
   longitude: number;
 }): Promise<void> {
-  if (params.provider === 'habous') {
-    await refetchHabousDatasetNow(params.latitude, params.longitude);
-    return;
-  }
-  if (params.provider === 'marw') {
-    await refetchMarwDatasetNow(params.latitude, params.longitude);
-    return;
-  }
   if (params.provider === 'namazvakti') {
     await refetchNamazvaktiNow(params.latitude, params.longitude);
     return;

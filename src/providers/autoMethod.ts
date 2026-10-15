@@ -25,6 +25,7 @@ import { isCoordinateInMalaysia } from '../utils/malaysiaRegion';
 import { isCoordinateInMorocco } from '../utils/moroccoRegion';
 import { isCoordinateInSingapore } from '../utils/singaporeRegion';
 import { isCoordinateInSweden } from '../utils/swedenRegion';
+import { isCoordinateInTurkey } from '../utils/turkeyRegion';
 import { SWEDEN_METHOD_ID } from './swedenMethodId';
 
 /** Muslim World League — the global default when nothing more specific applies. */
@@ -50,6 +51,8 @@ const AUTO_METHOD_REGIONS: readonly AutoMethodRegion[] = [
   // 24 = Sweden (Islamiska Förbundet's own convention — the app's id, read
   // off its tables; AlAdhan has none, so it is computed on the device).
   { method: SWEDEN_METHOD_ID, covers: isCoordinateInSweden },
+  // 13 = Türkiye (Diyanet's own method, computed on the device).
+  { method: 13, covers: isCoordinateInTurkey },
 ];
 
 /**

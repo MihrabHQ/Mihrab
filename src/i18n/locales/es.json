@@ -510,7 +510,8 @@
     "bestHere": "Encaja con tu ubicación",
     "outOfRegion": "No hay horarios para donde estás; se usaría {{fallback}} en su lugar.",
     "footer": "Las fuentes específicas de cada país utilizan mesas de oración oficiales o nacionales donde las integramos. Es posible que se agreguen más regiones con el tiempo.",
-    "namazvaktiNoCity": "No hay horarios para una ciudad cercana: el método del calendario se calcularía en el teléfono."
+    "namazvaktiNoCity": "No hay horarios para una ciudad cercana: el método del calendario se calcularía en el teléfono.",
+    "diyanetOwn": "La Diyanet no tiene ningún lugar cerca de ti — este es su método para tu propia ubicación."
   },
   "providers": {
     "aladhan": {
@@ -540,6 +541,10 @@
     "namazvakti": {
       "name": "Türkiye Takvimi (namazvakti.com)",
       "desc": "El calendario turco más prudente — Fajr a 19°, Isha a 17°, un margen de seguridad (temkin) en cada hora — tal como namazvakti.com lo publica para la más cercana de sus ciudades en todo el mundo."
+    },
+    "diyanet": {
+      "name": "Diyanet",
+      "desc": "El método mundial de la Diyanet (Congreso de Horarios de Oración de 2021), calculado en tu teléfono para tu ubicación — coincide al minuto con las tablas publicadas por la Diyanet."
     },
     "muis": {
       "name": "Singapur",
@@ -1730,7 +1735,7 @@
     "10": "Catar",
     "11": "Singapur",
     "12": "Francia",
-    "13": "Turquía",
+    "13": "Turquía (Diyanet)",
     "14": "Rusia",
     "15": "Comité Mundial de Observación de la Luna",
     "16": "Dubái",

@@ -1,0 +1,59 @@
+name: Feed for earlier versions
+
+# Versions up to 2.31 read Sweden's, Morocco's and Algeria's times from
+# data/prayer-times/{v1,morocco/v1,algeria/v1}. The app now computes them;
+# this keeps those files filled with what it computes (the authorities'
+# methods and correction lists), from the first of the month to three
+# months ahead, so earlier versions keep the printed minute too
+# (tools/compat-feed/build.ts). Files change only when a day does: at the
+# turn of a month, or when a correction list is renewed.
+
+on:
+  schedule:
+    - cron: '17 3 * * *' # daily 03:17 UTC; commits only on a change
+  push:
+    branches: [main]
+    paths:
+      - 'src/providers/data/*Corrections.json'
+      - 'src/providers/*Method.ts'
+      - 'tools/compat-feed/**'
+  workflow_dispatch:
+
+concurrency:
+  group: compat-feed
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm ci --no-audit --ignore-scripts
+      - name: Sweden
+        run: TZ=Europe/Stockholm npx --yes tsx@4 tools/compat-feed/build.ts sweden
+      - name: Morocco
+        run: TZ=Etc/GMT npx --yes tsx@4 tools/compat-feed/build.ts morocco
+      - name: Algeria
+        run: TZ=Africa/Algiers npx --yes tsx@4 tools/compat-feed/build.ts algeria
+      - name: Commit
+        run: |
+          git add -A -- data/prayer-times/v1 data/prayer-times/morocco data/prayer-times/algeria
+          git diff --cached --quiet && { echo 'unchanged'; exit 0; }
+          git config user.name 'mihrab-dataset-bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m "data: feed for earlier versions ($(date -u +%F))"
+          for i in 1 2 3; do
+            git push && exit 0
+            git pull --rebase -X theirs origin main || git rebase --abort || true
+            sleep 3
+          done
+          exit 1

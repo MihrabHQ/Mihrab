@@ -2,11 +2,15 @@
 
 What Mihrab distributes should be its own calculation — a method fitted
 to each authority (`src/providers/localAdhan.ts`) — not a copy of the
-authority's table. The tables the builders fetch (`tools/*-dataset`,
-`tools/national-tables`) are kept for one purpose: to prove the
-calculation right, day by day, and to say so the moment it is not.
+authority's table. Sweden, Diyanet, Morocco, Algeria and Indonesia are
+already computed on the phone, with each authority's small correction
+list; those methods are developed and certified in
+[MihrabHQ/mihrab-methods](https://github.com/MihrabHQ/mihrab-methods),
+and the app copies them. Singapore's and Malaysia's free tables are still
+served from this repo (`tools/national-tables`), with the authority's
+method standing in past their window; this checks that method.
 
-`verify.ts` takes every fetched table, computes each place's days with
+`verify.ts` takes the tables, computes each place's days with
 the method the phone uses for that authority, and compares them minute
 by minute. It writes:
 
@@ -19,12 +23,12 @@ by minute. It writes:
 
 ```sh
 npx tsx tools/verify-methods/verify.ts            # all
-npx tsx tools/verify-methods/verify.ts jakim diyanet # some
+npx tsx tools/verify-methods/verify.ts muis jakim # some
 ```
 
 Exit 4 means an authority that is meant to match does not; the workflow
 (`.github/workflows/verify-methods.yml`, Tuesdays after the tables are
-rebuilt) then opens or updates `Verification: <authority>` with the
+rebuilt, Singapore and Malaysia) then opens or updates `Verification: <authority>` with the
 section, and closes it again once the two agree.
 
 ## Reading a report
@@ -82,7 +86,7 @@ three other things, each now in the data:
   every city by about 0.02° per √metre; JAKIM computes its five summit
   zones at altitude with the textbook 0.0293°; Kemenag gives 56 highland
   regencies a flat four and a half minutes whatever their height. So the
-  places files carry `heightM` (SRTM, `heights.py`) and, where the
+  places files carry `heightM` (SRTM) and, where the
   authority's figure is not a height, `horizonMin`; the method applies
   them to sunrise and Maghrib (`src/prayer/horizonDip.ts`), and the
   phone's stand-in computes a listed place at the place, not at the
@@ -106,200 +110,15 @@ three other things, each now in the data:
 - **Türkiye Takvimi's** method was read off the tables rather than
   published.
 
-## Sweden: the Congress method, to the minute
+## Sweden, Diyanet, Morocco, Algeria, Indonesia
 
-The method is published on its own as
-[MihrabHQ/mihrab-methods](https://github.com/MihrabHQ/mihrab-methods) (`src/methods/sweden.ts`); the app
-computes it on the phone and fetches nothing for Sweden.
-
-Islamiska Förbundet's tables are Diyanet's own, republished: the 2026
-rows are identical to what Diyanet's API (awqatsalah.com) serves for the
-same places. So the reference is **Diyanet's genuine tables**, 2024–2027,
-for all 160 Swedish places Diyanet lists — not the site's copy, which
-serves the previous year's figures for a year it has not published and
-prints Umeå's table for Kiruna. The method (method 24,
-`src/providers/congressMethod.ts`) is the International Prayer Times
-Congress method (Istanbul 2021, "Tespit Kriterleri") as Diyanet computes
-it, read off those tables:
-
-- **The sun**, once a day at 0h UT less 45 s: Meeus's mean elements and
-  equation of the centre (1.914602° − 0.004817°·T …), the *true*
-  longitude (no aberration, no nutation), the *apparent* obliquity (mean
-  plus the four-term nutation), the equation of time as L0 − α, plus
-  0.106 s. Each step was measured, not guessed: on any one day the 160
-  places round their Dhuhr at different points of the minute, and
-  intersecting their rounding windows pins Diyanet's equation of time
-  for that day to under a second (`diyanet-perday.py`); its difference
-  from the Almanac formula was a clean −0.0064·sin g minutes, which is
-  Meeus's equation of the centre; and so on down to a fraction of a
-  second. Horizon −0.833°; evaluating at each event's own moment, or
-  the precise apparent sun, is far worse.
-- **Coordinates** to three decimals of a degree — every latitude fitted
-  lands on one, and every longitude on one plus the same constant (the
-  0.106 s). They are the real towns, except Ystad, which Diyanet
-  computes 43 km west of the town, and Kungälv, ~200 km south.
-- **Asr** that never forms is printed at Dhuhr's time (the published
-  rule); Asr is never before Dhuhr.
-- **The floors**: the day and the night never shorter than five hours,
-  each end on its own. Where midsummer's night is floored at both ends
-  (to within a minute), the floored times never step back: before
-  midsummer sunrise is held against midsummer's Dhuhr and a floored
-  Maghrib against the latest Dhuhr since its floor began; after it,
-  against every Dhuhr since midsummer. Carried Fajr and Isha follow the
-  same rule.
-- **The carried share** is a third of the sharia night (Maghrib to the
-  next dawn) over the night, on the last day the 18° dawn forms; Isha is
-  that share of the night after Maghrib, Fajr 18/16 of it before
-  sunrise. The gradual transition is a straight line over the days the
-  true time lies within twenty minutes of the takdir at the gap's edge.
-  The share is fixed afresh each year (Umeå: 0.187 in 2026, 0.171 in
-  2027), which is how a copied year is told from a published one
-  (`src/prayer/swedenYearCheck.ts`).
-
-**Result:** 99.94 % of 1.39 million times on Diyanet's printed minute,
-every one within a minute; 0.06 % — about five per city over four
-years — are a fraction of a second the other side of the rounding
-point, the last of Diyanet's exact implementation.
-
-- `diyanet-fetch.py` downloads the tables (CI does, weekly; not
-  committed). `diyanet-sweden-points.json` is Diyanet's points; the
-  coordinates file the app uses holds them too.
-- The `diyanet` check compares to the minute. The app serves the method
-  itself (with the correction list, `src/providers/swedenCorrections.ts`);
-  its source is MihrabHQ/mihrab-methods.
-- Research tools: `congress-model.py` (the model, `--diyanet <id>`),
-  `diyanet-exact.py` / `-joint.py` / `-allcities.py` / `-snap.py` (sun
-  model and coordinates), `diyanet-perday.py` (the day-by-day equation
-  of time), `diyanet-dhuhr.py`, `diyanet-all-prayers.py`,
-  `diyanet-fi-misses.py` (every miss, by regime), `diyanet-ts-check.ts`
-  (the app's TypeScript against every table).
-
-## Algeria: the Ministry's method, to the minute
-
-The reference is the Ministry's own table (its official app's database,
-`tools/algeria-ministry`): 68 cities, every day of 1448 AH. The method
-(method 19, `src/providers/algeriaMethod.ts`) was read off it with
-`table-exact.py`, the Sweden approach generalised (fit each city's point
-to its own table, then ask which model leaves the fewest misses):
-
-- **The sun is NOAA's** — the solar-calculator series for the equation of
-  time, its declination. Of every model tried it is the only one near the
-  table: Dhuhr alone, after the best longitude for each city, misses 83
-  of 16,864 times with NOAA against ~200 with Meeus's chapter-25 sun and
-  235 with the precise sun (JPL DE421, `sun-jpl-grid.py`).
-- **Dhuhr is the transit**, the equation of time taken there (iterated).
-- **Every other time** is the transit ± the hour angle from the
-  declination at that prayer's own moment (iterated), with the equation
-  of time kept at noon's value. Taking both at the moment, or both once a
-  day, is five to six times worse.
-- Fajr 18°, Isha 17°, sunrise and sunset −0.833°; **Asr from the noon
-  shadow tan(φ − δ) with its sign** (In Guezzam, Bordj Badji Mokhtar and
-  Tamanrasset come early about the June solstice); Maghrib sunset + 3.
-- **Every time rounded up** to the minute.
-- The points (`src/providers/data/algeriaMethodPoints.json`) sit within
-  a few seconds of time of the towns; they are not on any grid (whole
-  arc-minutes, 0.01° and 0.001° were all tried).
-
-**Result:** 99.37 % of 101,184 times on the Ministry's printed minute,
-every one within a minute. The misses are spread evenly over the cities,
-the prayers and the year, and each is within about a second of a minute's
-edge (median 0.5 s): their sun differs from NOAA's by a second or so, a
-little differently each day. No variant tried closes it — the evaluation
-instant, the number of iterations, the obliquity in the series, ΔT,
-single-precision arithmetic, rounding the equation of time or the clock
-time, a lunar term, the horizon; a smooth per-day correction removes
-only a sixth of them.
-
-- The `marw` check compares to the minute, at those points.
-- Research tools: `table-exact.py` (`resid`, `margins`, `fit`, `excess`;
-  `DEC_AT`/`EOT_AT`, `PASSES`, `START`, `DEC_SHIFT`, `EOT_FIX`,
-  `ROUND_HOURS` select the variants), `sun-jpl-grid.py`.
-
-## Morocco: the ministry's method, to the minute
-
-The ministry publishes a rolling month, so the reference is every day the
-repo has ever held: `history-union.py morocco ~/.cache/mihrab/morocco-history`
-gathers 77 days (late August to mid November 2026) for the 164 located
-cities from the dataset's git history. The rows before 17 September are
-on GMT+1, the rest on GMT (the country left GMT+1 on 20 September and the
-site republished); `table-exact.py` knows the boundary. The method (method
-21, `src/providers/moroccoMethod.ts`):
-
-- **A precise sun**, at each prayer's own moment — declination and
-  equation of time alike, iterated. Meeus's apparent sun with the full
-  nutation and his chapter-28 equation of time fits as well as JPL DE421
-  (Dhuhr 8 misses in 12,600); NOAA's series and the Almanac's, or the sun
-  once a day, are far worse.
-- Fajr 19°, **rounded down**; Isha 17° and Asr (one shadow, |φ − δ|)
-  to the nearest; Dhuhr the transit + 5, to the nearest.
-- **Sunrise** 2.9 min before, and **Maghrib** 3.85 after, the sun at
-  −0.833° less the city's horizon dip, and Maghrib takes 0.86 of the dip
-  sunrise takes. The dips are fitted per city (about 0.02° per √metre of
-  height, the app's old figure) and kept in
-  `src/providers/data/moroccoMethodPoints.json` with each city's point.
-  This part is the least settled: the odd constants say the ministry's
-  real rule is something else, and two months of autumn do not show how
-  it behaves in summer.
-- Two cities were geocoded far from their tables: **Assa** (placed at
-  27.98°N; its table is the town at 28.6°N) and **Ikss** (placed beside
-  Casablanca; its table is in the High Atlas near Taliouine). Both are
-  in `tools/habous-dataset/solveCoords.ts`'s overrides now.
-
-**Result:** 98.7 % of 75,768 times on the printed minute, every one within
-a minute: Dhuhr 99.9 %, Fajr, Asr and Isha about 99 %, sunrise 97.6 %,
-Maghrib 96.4 %.
-
-- The `habous` check compares to the minute, at those points and dips.
-- `mor`-prefixed research scripts were throwaway; the method's constants
-  can be re-derived with `table-exact.py morocco fit|dipfit|excess`.
-
-## Indonesia: Kemenag's method, to the minute
-
-The reference is Kemenag's table for all 517 regencies and cities
-(October–December 2026; the site answers only from GitHub's runners, so
-the window is what the dataset holds). The method (method 20,
-`src/providers/indonesiaMethod.ts`), read with `table-exact.py` and the
-per-place / per-day window scripts:
-
-- **A precise sun** at each prayer's own moment (`preciseApparentSun`,
-  VSOP87 — as JPL's to a tenth of a second), iterated; Dhuhr at the
-  transit. Meeus's short series, used first, drifts by about a second
-  against it: allowed one free shift per place and column, the Meeus sun
-  still left 380 of the non-Asr times off; this one leaves 31.
-- Fajr 20°, Isha 18°; **sunrise and Maghrib at −1°**, and at −2° in the
-  56 regencies the ministry classes as highland (a flat 4.5 minutes was the
-  old stand-in; the degree fits, the minutes do not). In six highland
-  regencies of Papua (Intan Jaya, Lanny Jaya, Paniai, Puncak, Puncak Jaya,
-  Pegunungan Arfak) the degree is taken off Fajr and Isha as well.
-- **Everything rounded up**, after two minutes (Fajr, Asr, Maghrib, Isha),
-  three (Dhuhr) and minus three (sunrise). With those the margins between
-  the prayers come out whole minutes to 0.01 min across the country —
-  which is how the −1° horizon was found.
-- **Asr**: the noon shadow from the sun's declination at **00:00 UT of
-  the day** — an almanac's daily entry — and the hour angle from the sun
-  at Asr itself, iterated; margin two minutes like the rest. With a free
-  shift per place, Asr then misses 5 times of 44,462; the declination at
-  noon or at Asr misses 1,100–2,300. (The first fit, the shadow's
-  declination 90 minutes before noon and the sun of five hours after noon
-  for the hour angle, was the Meeus sun's way of approximating this.)
-- **The points** are fitted to the table, latitude and longitude together
-  against all six columns (throwaway scripts: per place and column the
-  band of shifts that keeps every day on its minute, the point solved for
-  linearly inside them, three rounds): median 0.3 km from the old point,
-  at most 2.9 km.
-- Four regencies were geocoded to the wrong place: Gresik (Bawean island
-  for the town), Seruyan, Kepulauan Selayar and Pekajang (Lingga). They
-  are at the points the tables give now, in both place files.
-
-**Result:** 99.965 % of 266,772 times on the printed minute (94 off), every
-one within a minute: Dhuhr 1 off, Fajr 16, sunrise 26, Asr 20, Maghrib 22,
-Isha 9. Two regencies hold a fifth of them: Karawang (177), whose Asr,
-Maghrib and Isha are a minute early on ten scattered days, and 54, whose
-Fajr and sunrise are a minute late on eight — no single point fits either.
-The rest are one or two a place, times within a fraction of a second of
-the rounding point, where the ministry's sun and this one part.
-
-- The `kemenag` check compares to the minute, at those points and classes.
+Computed on the phone, each with its authority's correction list, and on
+every printed minute of the authority's tables over the dates checked:
+the methods, their accuracy and how each was read off the tables are in
+[MihrabHQ/mihrab-methods](https://github.com/MihrabHQ/mihrab-methods). The
+check runs here too where those reference tables are checked out
+(the folder `MIHRAB_TABLES` names):
+`verify.ts diyanet habous marw kemenag`.
 
 ## Malaysia: JAKIM's zone times, to the minute where read
 

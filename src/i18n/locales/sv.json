@@ -509,7 +509,8 @@
     "bestHere": "Passar där du är",
     "outOfRegion": "Inga tider för där du är — {{fallback}} skulle användas i stället.",
     "footer": "Landspecifika källor använder officiella eller nationella bönetabeller där vi integrerar dem. Fler regioner kan läggas till över tid.",
-    "namazvaktiNoCity": "Inga tider för någon stad nära dig – kalenderns metod skulle räknas ut i telefonen i stället."
+    "namazvaktiNoCity": "Inga tider för någon stad nära dig – kalenderns metod skulle räknas ut i telefonen i stället.",
+    "diyanetOwn": "Diyanet listar ingen plats nära dig — det här är dess metod för din egen plats."
   },
   "providers": {
     "aladhan": {
@@ -539,6 +540,10 @@
     "namazvakti": {
       "name": "Türkiye Takvimi (namazvakti.com)",
       "desc": "Den försiktiga turkiska kalendern — fajr vid 19°, isha vid 17°, en säkerhetsmarginal (temkin) på varje tid — som namazvakti.com publicerar den för närmaste av sina städer i hela världen."
+    },
+    "diyanet": {
+      "name": "Diyanet",
+      "desc": "Diyanets världsomspännande metod (Bönetidskongressen 2021), beräknad i telefonen för din egen plats — stämmer med Diyanets publicerade tabeller på minuten."
     },
     "muis": {
       "name": "Singapore",
@@ -1729,7 +1734,7 @@
     "10": "Qatar",
     "11": "Singapore",
     "12": "Frankrike",
-    "13": "Turkiet",
+    "13": "Turkiet (Diyanet)",
     "14": "Ryssland",
     "15": "Moonsighting Committee Worldwide",
     "16": "Dubai",

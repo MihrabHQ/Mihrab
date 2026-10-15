@@ -139,8 +139,10 @@ describe('unfolded', () => {
   it('lists each prepared dataset, not one', () => {
     const shown = texts(render().root);
     // These carry defaultValues, which the stub `t` returns.
-    expect(shown).toContain('Morocco · Habous');
-    expect(shown).toContain('Algeria · Ministry of Religious Affairs');
+    expect(shown).toContain('Singapore · MUIS');
+    expect(shown).toContain('Malaysia · JAKIM e-Solat');
+    // Computed on the phone: no server to report on.
+    expect(shown).not.toContain('Morocco · Habous');
   });
 });
 

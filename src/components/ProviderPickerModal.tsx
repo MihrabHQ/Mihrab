@@ -30,6 +30,7 @@ import type {
   PrayerDataProviderId,
 } from '../settings/types';
 import { useNamazvaktiCoverage } from '../hooks/useNamazvaktiCoverage';
+import { diyanetCoverage } from '../providers/diyanetMethod';
 import { useSystemNavigationReserve } from '../navigation/tabBarInset';
 import { cardEdgeStyle, rowDividerStyle } from '../theme/chrome';
 import { RADIUS, SPACING } from '../theme/tokens';
@@ -197,6 +198,10 @@ function ProviderPickerModalImpl({
       // Not redirected like the national sources: the calendar's own
       // method, computed on the phone, is still the calendar.
       const nvNoCity = item.id === 'namazvakti' && nvCoverage === 'no-city';
+      const diyanetNote =
+        item.id === 'diyanet' && coords
+          ? diyanetCoverage(coords.latitude, coords.longitude)
+          : 'place';
       return (
         <Pressable
           accessibilityRole="button"
@@ -236,6 +241,11 @@ function ProviderPickerModalImpl({
                   'No times for where you are — {{fallback}} would be used instead.',
                 fallback: fallbackLabel,
               })}
+            </Text>
+          ) : null}
+          {diyanetNote === 'own' ? (
+            <Text style={[styles.rowWarn, { color: palette.muted }]}>
+              {t('provider.diyanetOwn')}
             </Text>
           ) : null}
           {nvNoCity ? (

@@ -43,22 +43,14 @@ describe('the check happens in front of the load', () => {
 });
 
 describe('the dataset is re-downloaded rather than re-polled', () => {
-  it('on the published table, because no country owns this', () => {
-    expect(habous).toMatch(/nextIndexPollAt = 0/);
-    expect(habous).toMatch(/removeItem\(/);
-    expect(habous).toMatch(/await downloadCity\(/);
-    expect(habous).toContain('refetchHabousDatasetNow');
-    // Sweden is calculated: its refresh is there, and has nothing to fetch.
+  it('on a served table, because no country owns this', () => {
+    const table = read('src', 'providers', 'nationalTable.ts');
+    expect(table).toMatch(/nextIndexPollAt = 0/);
+    expect(table).toMatch(/removeItem\(/);
+    expect(table).toMatch(/await downloadCity\(/);
+    // Sweden and Morocco are calculated on the device's clock: nothing to fetch.
     expect(ifis).toContain('refetchIslamiskaForbundetDatasetNow');
-  });
-
-  it('which is the six hours the report waited', () => {
-    // The polite path asks index.json at most every six hours, and only
-    // while a lookup is happening. That is right for a builder quietly
-    // accumulating another Hijri month and wrong for a country that has
-    // just moved.
-    const config = read('src', 'config', 'datasets.ts');
-    expect(config).toMatch(/HABOUS_INDEX_POLL_INTERVAL_MS = 6 \* 60 \* 60 \* 1000/);
+    expect(habous).not.toMatch(/fetch/);
   });
 });
 

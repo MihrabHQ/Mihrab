@@ -43,6 +43,15 @@
  *    takdir at the gap's edge: twenty minutes away at the far end, the
  *    takdir at the edge.
  *
+ * Beyond Sweden the same code gives Diyanet's tables worldwide, read off
+ * them for places on six continents:
+ *  - Where the dawn forms all summer but midsummer's true Isha (at 16°)
+ *    falls later than the share carried from that night, midsummer is the
+ *    takdir's day — a gap of one day, with its ramps (from about 44.4°
+ *    north: Austria, central France, northern Bosnia).
+ *  - Isha is printed at 16° in some countries and 17° in others; the
+ *    high-latitude rules are worked at 16° either way (`ishaDeg`).
+ *
  * Times are minutes past 0h UT of the date, a frame the clock changes
  * cannot bend; `congressTimes` turns them into instants.
  */
@@ -51,7 +60,14 @@ const RAD = Math.PI / 180;
 const DAY_MS = 86_400_000;
 const RISE_SET = -0.833;
 const FAJR_ANGLE = -18;
-const ISHA_ANGLE = -16;
+/**
+ * Isha's depression: the Congress's 16° (Diyanet's in much of Europe,
+ * Russia, Central Asia, China and North America), or Diyanet's own 17°
+ * (elsewhere). The high-latitude rules are the Congress's at 16° either way;
+ * the angle sets only the true Isha printed.
+ */
+export const CONGRESS_ISHA_DEG = 16;
+export const DIYANET_ISHA_DEG = 17;
 const TEMKIN = { sunrise: -7, dhuhr: 5, asr: 4, maghrib: 7 } as const;
 /** Minutes: the day and the night are never shorter. */
 const FLOOR = 300;
@@ -157,7 +173,7 @@ class Solar {
 }
 
 type RiseSet = { sr: number; ss: number; held?: boolean };
-type Ramp = { edge: DayKey; T: number; far: DayKey | null };
+type Ramp = { edge: DayKey; T: number; far: DayKey | null; bump?: boolean };
 
 /** The method for one place and one year; everything it needs of the year is worked out once. */
 class CongressYear {
@@ -170,7 +186,17 @@ class CongressYear {
   private readonly extremes = new Map<DayKey, [number, number]>();
   private readonly carriedCache = new Map<DayKey, [number, number]>();
 
-  constructor(readonly lat: number, readonly lon: number, readonly year: number) {}
+  private readonly ishaAngle: number;
+  /**
+   * `clockOffset`: minutes east of UTC of the clock the table is printed in,
+   * when known. Diyanet walks the gradual transition on that clock, which
+   * matters only where the true time just past the gap falls on the other
+   * side of local midnight from the takdir (far east of a zone's meridian,
+   * as at Aihui): see `ramp`.
+   */
+  constructor(readonly lat: number, readonly lon: number, readonly year: number, ishaDeg = CONGRESS_ISHA_DEG, readonly clockOffset?: number) {
+    this.ishaAngle = -ishaDeg;
+  }
 
   solar(day: DayKey): Solar {
     let s = this.solars.get(day);
@@ -310,7 +336,7 @@ class CongressYear {
     return this.solar(day).rising(FAJR_ANGLE);
   }
   isha16(day: DayKey): number | null {
-    return this.solar(day).setting(ISHA_ANGLE);
+    return this.solar(day).setting(this.ishaAngle);
   }
   trueTime(key: 'fajr' | 'isha', day: DayKey): number | null {
     return key === 'fajr' ? this.fajr18(day) : this.isha16(day);
@@ -321,8 +347,16 @@ class CongressYear {
     if (this.gap !== undefined) return this.gap;
     const mid = dayKeyOf(this.year, 5, 21);
     if (this.fajr18(mid) !== null) {
-      this.gap = null;
-      return null;
+      // The dawn forms all summer, but where midsummer's true Isha falls
+      // later than the share carried from that night would put it, Diyanet
+      // takes midsummer as the takdir's day and ramps to it as at a gap's
+      // edge (Austria, central France, northern Bosnia — from about 44.4°).
+      // The rule is the northern summer's; south of the equator the true
+      // times stand.
+      // (at the Congress's 16°, whatever Isha's printed angle)
+      const isha = this.solar(mid).setting(-CONGRESS_ISHA_DEG);
+      this.gap = this.lat > 0 && isha !== null && this.carriedRaw(mid)[1] < isha ? [mid, mid] : null;
+      return this.gap;
     }
     let a = mid;
     while (this.fajr18(a - 1) === null && mid - a < SEARCH_DAYS) a -= 1;
@@ -363,7 +397,7 @@ class CongressYear {
     const r = this.ratio() ?? 0;
     const { sr, ss } = this.riseSet(day);
     const n = this.night(day);
-    return [sr - r * (FAJR_ANGLE / ISHA_ANGLE) * n, ss + r * n];
+    return [sr - r * (FAJR_ANGLE / -CONGRESS_ISHA_DEG) * n, ss + r * n];
   }
 
   /**
@@ -413,14 +447,22 @@ class CongressYear {
       const T = this.carried(edge)[idx];
       const step = side === 'in' ? -1 : 1;
       let far: DayKey | null = null;
+      // On the table's clock, a true time just after the gap that lands on the
+      // other side of local midnight from the takdir is already past the band
+      // (Fajr after the gap only — before it, and for Isha, the transition is walked as ever):
+      // there is no transition, the gap's last day is printed the band away
+      // from the takdir, and the true times follow (Diyanet's tables at Aihui).
+      const first = this.trueTime(key, edge + step);
+      const localDay = (m: number) => Math.floor((m + (this.clockOffset ?? 0)) / 1440);
+      const wrapped = side === 'out' && key === 'fajr' && this.clockOffset !== undefined && first !== null && localDay(first) !== localDay(T);
       // walking away from the gap the true time starts far beyond T, enters the
       // band and leaves it again; the far end is the last day of that run
-      for (let d = edge + step; Math.abs(d - edge) < SEARCH_DAYS; d += step) {
+      for (let d = edge + step; !wrapped && Math.abs(d - edge) < SEARCH_DAYS; d += step) {
         const t = this.trueTime(key, d);
         if (t !== null && Math.abs(t - T) <= BAND) far = d;
         else if (far !== null) break;
       }
-      ramp = { edge, T, far };
+      ramp = { edge, T, far, bump: wrapped };
       this.ramps.set(cacheKey, ramp);
     }
     const { edge, T, far } = ramp;
@@ -445,7 +487,17 @@ class CongressYear {
     const gap = this.gapDays();
     if (gap) {
       const [d1, d2] = gap;
-      if (d1 <= day && day <= d2) [fajr, isha] = this.carried(day);
+      if (d1 <= day && day <= d2) {
+        [fajr, isha] = this.carried(day);
+        // the gap's edge where the transition is skipped (`ramp`): the band away
+        if (day === d1 || day === d2) {
+          const side = day === d1 ? 'in' : 'out';
+          this.ramp(day, side, 'fajr');
+          this.ramp(day, side, 'isha');
+          if (this.ramps.get(side + 'fajr')?.bump && fajr !== null) fajr += BAND;
+          if (this.ramps.get(side + 'isha')?.bump && isha !== null) isha -= BAND;
+        }
+      }
       else if (day < d1) {
         fajr = this.ramp(day, 'in', 'fajr');
         isha = this.ramp(day, 'in', 'isha');
@@ -468,12 +520,12 @@ class CongressYear {
 const years = new Map<string, CongressYear>();
 const MAX_CACHED_YEARS = 12;
 
-function yearFor(lat: number, lon: number, year: number): CongressYear {
-  const key = `${lat.toFixed(5)},${lon.toFixed(5)},${year}`;
+function yearFor(lat: number, lon: number, year: number, ishaDeg = CONGRESS_ISHA_DEG, clockOffset?: number): CongressYear {
+  const key = `${lat.toFixed(5)},${lon.toFixed(5)},${year},${ishaDeg},${clockOffset ?? ''}`;
   let cy = years.get(key);
   if (!cy) {
     if (years.size >= MAX_CACHED_YEARS) years.delete(years.keys().next().value as string);
-    cy = new CongressYear(lat, lon, year);
+    cy = new CongressYear(lat, lon, year, ishaDeg, clockOffset);
     years.set(key, cy);
   }
   return cy;
@@ -484,7 +536,10 @@ export type CongressInstants = { fajr: Date; sunrise: Date; dhuhr: Date; asr: Da
 /**
  * The Congress method's times for a calendar date (year, month 0–11, day),
  * as instants, unrounded. `asrShadow` is 1 for the standard Asr, 2 for the
- * Hanafi one; the tables print the standard.
+ * Hanafi one; the tables print the standard. `ishaDeg` is Isha's depression:
+ * 16° (the Congress's, Diyanet's in Europe and North America) or 17°
+ * (Diyanet's everywhere else). `clockOffset` is the table's clock, minutes
+ * east of UTC (its standard time), where known — see CongressYear.
  */
 export function congressTimes(
   latitude: number,
@@ -493,9 +548,11 @@ export function congressTimes(
   month: number,
   day: number,
   asrShadow = 1,
+  ishaDeg = CONGRESS_ISHA_DEG,
+  clockOffset?: number,
 ): CongressInstants {
   const key = dayKeyOf(year, month, day);
-  const t = yearFor(latitude, longitude, year).times(key, asrShadow);
+  const t = yearFor(latitude, longitude, year, ishaDeg, clockOffset).times(key, asrShadow);
   const start = key * DAY_MS;
   const at = (m: number) => new Date(start + m * 60_000);
   return { fajr: at(t.fajr), sunrise: at(t.sunrise), dhuhr: at(t.dhuhr), asr: at(t.asr), maghrib: at(t.maghrib), isha: at(t.isha) };

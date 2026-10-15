@@ -2,8 +2,7 @@
  * Algeria — the Ministry of Religious Affairs and Wakfs's method, as its
  * timetable is computed (issue #70).
  *
- * Read off the Ministry's own 1448 AH table (68 cities, 248 days each,
- * `data/prayer-times/algeria`) with `tools/verify-methods/table-exact.py`:
+ * Read off the Ministry's own 1448 AH table (68 cities, 248 days each):
  *
  *   • the Sun from NOAA's formulas (the solar-calculator series for the
  *     equation of time; its declination). They fit the table far better

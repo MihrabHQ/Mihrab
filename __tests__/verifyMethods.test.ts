@@ -1,7 +1,8 @@
 /**
  * The checker that proves the app's methods against the authorities'
- * tables (tools/verify-methods). Run on the tables in this checkout —
- * the ones the builders fetch and the workflow verifies weekly.
+ * tables (tools/verify-methods): Singapore's and Malaysia's in this
+ * checkout, the computed authorities' in the reference tables
+ * (MIHRAB_TABLES; skipped where they are not there).
  */
 import * as fs from 'node:fs';
 import * as path from 'node:path';
@@ -13,7 +14,7 @@ import { describe as describeReport, verifyAuthority, type Accepted } from '../t
 
 const byId = (id: string) => AUTHORITIES.find(a => a.id === id)!;
 const haveTable = (id: string) =>
-  fs.existsSync(path.join(__dirname, '..', 'data', 'prayer-times', byId(id).folder, 'v1', 'index.json'));
+  fs.existsSync(path.join(byId(id).root ?? path.join(__dirname, '..', 'data', 'prayer-times', byId(id).folder), 'v1', 'index.json'));
 
 describe('verify-methods', () => {
   it('finds Singapore on the ministry’s minute', () => {

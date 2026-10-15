@@ -17,7 +17,7 @@ jest.mock('../src/providers/aladhan', () => ({
 import { fetchWithRetry } from '../src/utils/fetchWithRetry';
 import { parseMuisCsv, SINGAPORE } from '../tools/national-tables/muis';
 import { parseJakimDate, parseJakimYear } from '../tools/national-tables/jakim';
-import { loadPlaces as loadKemenagPlaces, parseKemenagMonth } from '../tools/national-tables/kemenag';
+import kemenagPlaces from '../src/providers/data/kemenagPlaces.json';
 import { JAKIM_ZONES, jakimPlaces } from '../tools/national-tables/jakim-zones';
 import { checkDay, BuildError } from '../tools/national-tables/write';
 import { createNationalTable, seedTuple } from '../src/providers/nationalTable';
@@ -67,19 +67,11 @@ describe('the builders read what the authorities publish', () => {
     expect(() => parseJakimYear({ prayerTime: [], status: 'NO RECORD!' })).toThrow(/NO RECORD/);
   });
 
-  it('reads Kemenag’s month, and refuses an answer for another regency', () => {
-    const month = {
-      status: 1, message: 'Success', prov: 'JAWA BARAT', kabko: 'KAB. BANDUNG',
-      data: { '2026-10-01': { imsak: '04:10', subuh: '04:20', terbit: '05:28', dzuhur: '11:43', ashar: '14:50', maghrib: '17:52', isya: '18:56' } },
-    };
-    const full = { ...month, data: Object.fromEntries(Array.from({ length: 31 }, (_, i) => [`2026-10-${String(i + 1).padStart(2, '0')}`, month.data['2026-10-01']])) };
-    expect(parseKemenagMonth(full, 'KAB. BANDUNG')['2026-10-01']).toEqual([250, 260, 328, 703, 890, 1072, 1136]);
-    expect(() => parseKemenagMonth({ status: 0, message: 'Error Parameter', data: [] as never }, 'x')).toThrow(/Error Parameter/);
-    expect(() => parseKemenagMonth(month, 'x')).toThrow(/only 1 days/);
-    const places = loadKemenagPlaces();
+  it('lists Kemenag’s regencies, each once and in Indonesia', () => {
+    const places = kemenagPlaces as { id: number; nameEn: string; lat: number; lon: number }[];
     expect(places.length).toBeGreaterThan(500);
     expect(new Set(places.map(p => p.id)).size).toBe(places.length);
-    expect(new Set(places.map(p => p.kabId)).size).toBe(places.length);
+    expect(new Set(places.map(p => p.nameEn)).size).toBe(places.length);
     for (const p of places) {
       expect(p.lat).toBeGreaterThan(-11.2);
       expect(p.lat).toBeLessThan(6.2);
@@ -235,17 +227,17 @@ describe('on the phone', () => {
     expect(nationalTableFor('aladhan')).toBeNull();
   });
 
-  it('bundles a seed that covers today for every place', () => {
+  it('bundles a seed that covers today for every place of the served tables', () => {
     const today = new Date().toISOString().slice(0, 10);
-    for (const t of [muisTable, jakimTable, kemenagTable]) {
-      // Kemenag's seed is built on a GitHub runner — the ministry's site
-      // does not answer from Europe — so a checkout may not have it yet;
-      // the phone then computes the ministry's method until the CDN fills.
-      if (t.config.seed.version === 0) continue;
-      expect(t.config.seed.start <= today).toBe(true);
+    for (const t of [muisTable, jakimTable]) {
+      const seed = t.config.seed!;
+      expect(seed.start <= today).toBe(true);
       const ids = new Set(t.config.places.map(p => p.id));
-      for (const id of ids) expect(seedTuple(t.config.seed, id, t.config.seed.start)).toBeDefined();
+      for (const id of ids) expect(seedTuple(seed, id, seed.start)).toBeDefined();
     }
+    // Kemenag's is computed on the phone: no seed, nothing downloaded.
+    expect(kemenagTable.config.seed).toBeUndefined();
+    expect(kemenagTable.config.baseUrl).toBeUndefined();
     expect(createNationalTable({ ...muisTable.config, id: 'x' }).nearest(SG.latitude, SG.longitude)?.name).toBe(SINGAPORE.name);
   });
 });

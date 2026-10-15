@@ -21,6 +21,7 @@ import { isCoordinateInMalaysia } from '../utils/malaysiaRegion';
 import { isCoordinateInSingapore } from '../utils/singaporeRegion';
 import { isCoordinateInMorocco } from '../utils/moroccoRegion';
 import { isCoordinateInSweden } from '../utils/swedenRegion';
+import { isCoordinateInTurkey } from '../utils/turkeyRegion';
 import type { PrayerDataProviderId } from './types';
 
 export type RegionalProviderRegion = {
@@ -43,13 +44,24 @@ export const REGIONAL_PROVIDER_REGIONS: readonly RegionalProviderRegion[] = [
   { id: 'kemenag', covers: isCoordinateInIndonesia },
 ];
 
-/** The regional source covering these coordinates, or null for nowhere special. */
+/**
+ * Worldwide sources that are also an authority's own in one country, and
+ * what Automatic picks there: Diyanet in Türkiye. Unlike the national
+ * sources above they answer everywhere, so they are never "out of region"
+ * and a pinned one is never redirected — this list only decides where
+ * Automatic (and "Fits where you are") lands on them.
+ */
+export const HOME_PROVIDER_REGIONS: readonly RegionalProviderRegion[] = [
+  { id: 'diyanet', covers: isCoordinateInTurkey },
+];
+
+/** The source Automatic picks for these coordinates, or null for the worldwide default. */
 export function regionalProviderForCoords(coords: {
   latitude: number;
   longitude: number;
 } | null): PrayerDataProviderId | null {
   if (!coords) return null;
-  for (const region of REGIONAL_PROVIDER_REGIONS) {
+  for (const region of [...REGIONAL_PROVIDER_REGIONS, ...HOME_PROVIDER_REGIONS]) {
     if (region.covers(coords.latitude, coords.longitude)) return region.id;
   }
   return null;

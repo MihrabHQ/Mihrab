@@ -237,6 +237,7 @@ export function verifyAuthority(a: Authority, accepted: Accepted[]): Report {
         heightM: place.heightM,
         horizonMin: place.horizonMin,
         horizonDipDeg: place.horizonDipDeg,
+        horizonDipMaghribDeg: place.horizonDipMaghribDeg,
         twilightDip: place.twilightDip,
         jakimZone: place.jakimZone,
         date: new Date(y, m - 1, d),
@@ -244,13 +245,14 @@ export function verifyAuthority(a: Authority, accepted: Accepted[]): Report {
         school: a.school,
       });
       if ([at.fajr, at.sunrise, at.dhuhr, at.asr, at.maghrib, at.isha].some(t => !Number.isFinite(t.getTime()))) continue;
+      const tz = a.tableClock?.(date) ?? place.tz;
       const ours: Record<Prayer, string> = {
-        Fajr: clockIn(place.tz, at.fajr),
-        Sunrise: clockIn(place.tz, at.sunrise),
-        Dhuhr: clockIn(place.tz, at.dhuhr),
-        Asr: clockIn(place.tz, at.asr),
-        Maghrib: clockIn(place.tz, at.maghrib),
-        Isha: clockIn(place.tz, at.isha),
+        Fajr: clockIn(tz, at.fajr),
+        Sunrise: clockIn(tz, at.sunrise),
+        Dhuhr: clockIn(tz, at.dhuhr),
+        Asr: clockIn(tz, at.asr),
+        Maghrib: clockIn(tz, at.maghrib),
+        Isha: clockIn(tz, at.isha),
       };
       days++;
       if (!from || date < from) from = date;
@@ -493,7 +495,7 @@ export function main(argv: string[]): number {
   for (const a of list) {
     // A table the check downloads rather than commits (Diyanet's) and has not: nothing to say.
     if (a.root && !fs.existsSync(path.join(a.root, 'v1', 'cities'))) {
-      console.warn(`${a.id}: no tables at ${a.root} — skipped (tools/verify-methods/diyanet-fetch.py)`);
+      console.warn(`${a.id}: no tables at ${a.root} — skipped (the reference tables: MIHRAB_TABLES)`);
       continue;
     }
     const r = verifyAuthority(a, accepted);

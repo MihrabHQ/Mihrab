@@ -11,12 +11,18 @@ jest.unmock('adhan');
 
 import { horizonDipDegrees, horizonDipMinutes, solarDeclinationDegrees } from '../src/prayer/horizonDip';
 import { computeLocalAdhanInstants, HORIZON_DIP_DEGREES_PER_SQRT_M } from '../src/providers/localAdhan';
+import { referenceCities } from './fixtures/referenceTables';
 
 const clockIn = (tz: string, at: Date) =>
   new Intl.DateTimeFormat('en-GB', { timeZone: tz, hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(at);
 
-const table = (folder: string, id: number) => {
-  const f = join(__dirname, '..', 'data', 'prayer-times', folder, 'v1', 'cities', `${id}.json`);
+/** Malaysia's table is in this repo; Morocco's is a reference table (`fixtures/referenceTables.ts`). */
+const tableFile = (folder: 'morocco' | 'malaysia', id: number) =>
+  folder === 'malaysia'
+    ? join(__dirname, '..', 'data', 'prayer-times', 'malaysia', 'v1', 'cities', `${id}.json`)
+    : join(referenceCities(folder) ?? join(__dirname, 'nowhere'), `${id}.json`);
+const table = (folder: 'morocco' | 'malaysia', id: number) => {
+  const f = tableFile(folder, id);
   try {
     return JSON.parse(readFileSync(f, 'utf8')).days as Record<string, string[]>;
   } catch {
@@ -48,7 +54,7 @@ describe('the Moroccan ministry’s hill towns (method 21)', () => {
   it('computes Midelt at 1,478 m on the ministry’s minute', () => {
     const days = table('morocco', 136);
     if (!days) return;
-    const file = JSON.parse(readFileSync(join(__dirname, '..', 'data', 'prayer-times', 'morocco', 'v1', 'cities', '136.json'), 'utf8'));
+    const file = JSON.parse(readFileSync(tableFile('morocco', 136), 'utf8'));
     expect(file.city).toBe('ميدلت');
     let within = 0;
     let total = 0;
@@ -64,7 +70,8 @@ describe('the Moroccan ministry’s hill towns (method 21)', () => {
       });
       for (const [k, t] of [[2, at.sunrise], [5, at.maghrib]] as const) {
         const theirs = row[k];
-        const ours = clockIn('Etc/GMT', t);
+        // the tables' own clock: GMT+1 until 17 September 2026, GMT since
+        const ours = clockIn(date < '2026-09-17' ? 'Etc/GMT-1' : 'Etc/GMT', t);
         const diff = Math.abs(Number(ours.slice(0, 2)) * 60 + Number(ours.slice(3)) - (Number(theirs.slice(0, 2)) * 60 + Number(theirs.slice(3))));
         total++;
         if (diff <= 1) within++;

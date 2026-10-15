@@ -1140,6 +1140,28 @@ function TodayCardImpl({
     },
     [pageWidth, todayIndex, pagePosition],
   );
+  /**
+   * ── THE PAGES MOVE UNDER A PAGER THAT DOES NOT ──────────────────────
+   *
+   * The pager is told where to open once, at mount (`initialScrollIndex`),
+   * and after that keeps its scroll offset. But the pages are the days
+   * behind us THEN today and the week, and the days behind arrive late: the
+   * first paint (the on-device week, or a cache read) can have none, the
+   * real load a week of them. Every page index then moves by that many while
+   * the offset stays put, and the page on screen is another day's — seen on
+   * a device as yesterday's rows, with yesterday's log, under a bar saying
+   * "Tomorrow", until the day was turned by hand. (Right to left the pages
+   * are counted from the other end, so a week that grows moves them too.)
+   * So whenever the layout of pages changes, put the pager back on the day
+   * the card is on — without animation: nothing moved for the reader.
+   */
+  const pagesLayoutKey = `${todayIndex}:${pages.length}`;
+  const laidOutAs = useRef(pagesLayoutKey);
+  useEffect(() => {
+    if (laidOutAs.current === pagesLayoutKey) return;
+    laidOutAs.current = pagesLayoutKey;
+    scrollToDay(selected, false);
+  }, [pagesLayoutKey, selected, scrollToDay]);
   const onPageSettled = useCallback(
     (e: NativeSyntheticEvent<NativeScrollEvent>) => {
       if (pageWidth <= 0) return;

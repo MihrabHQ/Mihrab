@@ -510,7 +510,8 @@
     "bestHere": "Convient à votre position",
     "outOfRegion": "Aucun horaire pour votre position — {{fallback}} serait utilisé à la place.",
     "footer": "Les sources spécifiques aux pays utilisent des tables de prière officielles ou nationales où nous les intégrons. D'autres régions pourraient être ajoutées au fil du temps.",
-    "namazvaktiNoCity": "Pas d’horaires pour une ville proche de vous — la méthode du calendrier serait calculée sur le téléphone."
+    "namazvaktiNoCity": "Pas d’horaires pour une ville proche de vous — la méthode du calendrier serait calculée sur le téléphone.",
+    "diyanetOwn": "La Diyanet ne répertorie aucun lieu près de vous — voici sa méthode pour votre propre position."
   },
   "providers": {
     "aladhan": {
@@ -540,6 +541,10 @@
     "namazvakti": {
       "name": "Türkiye Takvimi (namazvakti.com)",
       "desc": "Le calendrier turc le plus prudent — Fajr à 19°, Isha à 17°, une marge de sécurité (temkin) sur chaque heure — tel que namazvakti.com le publie pour la plus proche de ses villes dans le monde."
+    },
+    "diyanet": {
+      "name": "Diyanet",
+      "desc": "La méthode mondiale de la Diyanet (Congrès des horaires de prière de 2021), calculée sur votre téléphone pour votre position — elle correspond à la minute près aux tableaux publiés par la Diyanet."
     },
     "muis": {
       "name": "Singapour",
@@ -1730,7 +1735,7 @@
     "10": "Qatar",
     "11": "Singapour",
     "12": "France",
-    "13": "Turquie",
+    "13": "Turquie (Diyanet)",
     "14": "Russie",
     "15": "Comité mondial d'observation de la lune",
     "16": "Dubaï",

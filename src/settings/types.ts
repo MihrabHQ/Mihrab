@@ -13,17 +13,20 @@ import { DEFAULT_READING_SCALE } from '../theme/readingText';
 
 export type LocationMode = 'automatic' | 'manual';
 
-export type PrayerDataProviderId =
-  | 'aladhan'
-  | 'prayertimes_dev'
-  | 'islamiska_forbundet'
-  | 'habous'
-  | 'marw'
-  | 'muis'
-  | 'jakim'
-  | 'kemenag'
-  | 'namazvakti'
-  | 'local_adhan';
+export const PRAYER_DATA_PROVIDER_IDS = [
+  'aladhan',
+  'prayertimes_dev',
+  'islamiska_forbundet',
+  'habous',
+  'marw',
+  'muis',
+  'jakim',
+  'kemenag',
+  'namazvakti',
+  'diyanet',
+  'local_adhan',
+] as const;
+export type PrayerDataProviderId = (typeof PRAYER_DATA_PROVIDER_IDS)[number];
 
 /**
  * Which look the app is drawn in: the system's light or dark, one of them

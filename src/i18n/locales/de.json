@@ -509,7 +509,8 @@
     "bestHere": "Passt zu deinem Standort",
     "outOfRegion": "Keine Zeiten für deinen Standort — stattdessen würde {{fallback}} verwendet.",
     "footer": "Länderspezifische Quellen verwenden offizielle oder nationale Gebetstabellen, sofern wir sie integrieren. Im Laufe der Zeit können weitere Regionen hinzugefügt werden.",
-    "namazvaktiNoCity": "Keine Zeiten für eine Stadt in Ihrer Nähe – die Methode des Kalenders würde stattdessen auf dem Telefon berechnet."
+    "namazvaktiNoCity": "Keine Zeiten für eine Stadt in Ihrer Nähe – die Methode des Kalenders würde stattdessen auf dem Telefon berechnet.",
+    "diyanetOwn": "Die Diyanet führt keinen Ort in deiner Nähe — dies ist ihre Methode für deinen eigenen Standort."
   },
   "providers": {
     "aladhan": {
@@ -539,6 +540,10 @@
     "namazvakti": {
       "name": "Türkiye Takvimi (namazvakti.com)",
       "desc": "Der vorsichtige türkische Kalender — Fadschr bei 19°, Ischa bei 17°, ein Sicherheitszuschlag (Temkin) auf jede Zeit — so wie namazvakti.com ihn für die nächstgelegene seiner Städte weltweit veröffentlicht."
+    },
+    "diyanet": {
+      "name": "Diyanet",
+      "desc": "Die weltweite Methode der Diyanet (Gebetszeitenkongress 2021), auf deinem Handy für deinen Standort berechnet — stimmt minutengenau mit den veröffentlichten Tabellen der Diyanet überein."
     },
     "muis": {
       "name": "Singapur",
@@ -1729,7 +1734,7 @@
     "10": "Katar",
     "11": "Singapur",
     "12": "Frankreich",
-    "13": "Türkei",
+    "13": "Türkei (Diyanet)",
     "14": "Russland",
     "15": "Moonsighting Committee Worldwide",
     "16": "Dubai",

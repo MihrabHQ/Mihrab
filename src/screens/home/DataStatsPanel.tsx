@@ -15,9 +15,7 @@ import {
   type DataStatus,
   type ServerDatasetId,
 } from '../../prayer/dataStatus';
-import { pollServerIndexNow as pollHabousIndexNow } from '../../providers/habousDataset';
-import { pollServerIndexNow as pollMarwIndexNow } from '../../providers/marwDataset';
-import { jakimTable, kemenagTable, muisTable } from '../../providers/nationalTables';
+import { jakimTable, muisTable } from '../../providers/nationalTables';
 import {
   getNamazvaktiTimes,
   namazvaktiHeld,
@@ -29,8 +27,6 @@ import {
   resolveCoordsFromSettings,
 } from '../../settings/effectiveProvider';
 import {
-  nextHabousServerRunAfter,
-  nextMarwServerRunAfter,
   nextNamazvaktiServerRunAfter,
   nextNationalTableServerRunAfter,
 } from '../../config/datasets';
@@ -51,32 +47,12 @@ const SERVERS: {
   nextRun: () => Date;
   /**
    * Why this dataset's window is the size it is, where the number alone is
-   * misleading — Morocco's and Algeria's. It is the difference between "the
+   * misleading — Malaysia's. It is the difference between "the
    * build is broken" and "that is everything the ministry publishes".
    */
   coverageNoteKey?: string;
   coverageNoteDefault?: string;
 }[] = [
-  {
-    id: 'habous',
-    provider: 'habous',
-    labelKey: 'dataStats.serverMorocco',
-    labelDefault: 'Morocco · Habous',
-    nextRun: nextHabousServerRunAfter,
-    coverageNoteKey: 'dataStats.habousWindow',
-    coverageNoteDefault:
-      'The ministry publishes only the current Hijri month, so this window shrinks by a day each day and refills when the month turns. A rebuild cannot make it longer.',
-  },
-  {
-    id: 'marw',
-    provider: 'marw',
-    labelKey: 'dataStats.serverAlgeria',
-    labelDefault: 'Algeria · Ministry of Religious Affairs',
-    nextRun: nextMarwServerRunAfter,
-    coverageNoteKey: 'dataStats.marwWindow',
-    coverageNoteDefault:
-      'The ministry publishes a Hijri year at a time, as an update to its own app. This window runs to the end of that year and is renewed when the next one appears, around June.',
-  },
   {
     id: 'muis',
     provider: 'muis',
@@ -93,16 +69,6 @@ const SERVERS: {
     coverageNoteKey: 'dataStats.jakimWindow',
     coverageNoteDefault:
       'JAKIM publishes the current year only, so this window ends on 31 December and starts again when the new year is published in the first days of January.',
-  },
-  {
-    id: 'kemenag',
-    provider: 'kemenag',
-    labelKey: 'dataStats.serverIndonesia',
-    labelDefault: 'Indonesia · Kemenag',
-    nextRun: nextNationalTableServerRunAfter,
-    coverageNoteKey: 'dataStats.kemenagWindow',
-    coverageNoteDefault:
-      'Fetched a season at a time — this month and the two after it — and extended every week.',
   },
   {
     // Not a mirror of times but an index of the site's cities: its coverage
@@ -155,26 +121,22 @@ function DataStatsPanelImpl() {
     setActive(SERVERS.find(s => s.provider === provider)?.id ?? null);
 
     void (async () => {
-      // Both servers, whichever one is serving this phone. The panel reports
-      // on both, and a dataset that is never polled reads "not checked yet"
-      // for ever — which is how the shared slot used to look after someone
-      // travelled between the two regions.
+      // Every server, whichever one is serving this phone. The panel reports
+      // on all of them, and a dataset that is never polled reads "not checked
+      // yet" for ever.
       await Promise.all(
         [
-          pollHabousIndexNow(),
-          pollMarwIndexNow(),
           pollNamazvaktiIndexNow(),
           muisTable.pollServerIndexNow(),
           jakimTable.pollServerIndexNow(),
-          kemenagTable.pollServerIndexNow(),
         ].map(p =>
           p.catch(() => {
             /* offline — keep whatever was recorded before */
           }),
         ),
       );
-      if (coords && provider === 'islamiska_forbundet') {
-        // Sweden is calculated on the phone: nothing to poll or hold.
+      if (coords && (provider === 'islamiska_forbundet' || provider === 'habous' || provider === 'marw' || provider === 'kemenag' || provider === 'diyanet')) {
+        // Calculated on the phone (the authority's method and correction list): nothing to poll or hold.
         await recordDataSource('local');
       }
       if (coords && provider === 'namazvakti') {

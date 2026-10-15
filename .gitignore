@@ -148,3 +148,6 @@ Claude outputs/
 # disagree with it (docs/rewrite-plan.md, Phase 3). This machine's evidence.
 .release-shadow.log
 tools/startup-trace/out/
+
+# The reference tables the computed methods are checked against (MIHRAB_TABLES; a link to them)
+/.tables

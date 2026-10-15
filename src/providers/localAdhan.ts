@@ -25,7 +25,8 @@ import { computeImsak, DEFAULT_IMSAK_OFFSET_MINUTES } from './imsak';
 import { horizonDipMinutes, solarDeclinationDegrees } from '../prayer/horizonDip';
 import { SWEDEN_METHOD_ID } from './swedenMethodId';
 import { congressTimes } from './congressMethod';
-import { swedenCorrection } from './swedenCorrections';
+import { algeriaCorrection, indonesiaCorrection, moroccoCorrection, swedenCorrection } from './swedenCorrections';
+import { DIYANET_METHOD_ID, diyanetInstants } from './diyanetMethod';
 import { algeriaTimes } from './algeriaMethod';
 import { moroccoTimes, MOROCCO_DIP_PER_SQRT_M } from './moroccoMethod';
 import { kemenagTimes } from './indonesiaMethod';
@@ -345,6 +346,11 @@ type LocalAdhanParams = {
    */
   horizonDipDeg?: number;
   /**
+   * Morocco: the horizon's dip westward, at Maghrib, where the ministry's
+   * own figure for the city is known (it differs from the eastward one).
+   */
+  horizonDipMaghribDeg?: number;
+  /**
    * Kemenag's six Papuan highland regencies, where the highland degree is
    * taken off Fajr and Isha as well (`indonesiaMethod.ts`).
    */
@@ -434,6 +440,12 @@ export function computeLocalAdhanInstants(params: LocalAdhanParams): PrayerInsta
           HORIZON_DIP_DEGREES_PER_SQRT_M[methodId] ?? DEFAULT_DIP_DEGREES_PER_SQRT_M,
         )
       : 0);
+  if (methodId === DIYANET_METHOD_ID) {
+    // Türkiye's method is Diyanet's: computed as its tables are, for the
+    // spot (`diyanetMethod.ts`) — not adhan.js's "Turkey" preset, which is
+    // its angles without the temkins, the floors or the summer rule.
+    return diyanetInstants(params.latitude, params.longitude, params.date, params.school);
+  }
   if (methodId === SWEDEN_METHOD_ID) {
     // The Congress method, as Diyanet computes the Swedish tables
     // (`congressMethod.ts`); rounded to the minute as they are printed, then
@@ -463,20 +475,23 @@ export function computeLocalAdhanInstants(params: LocalAdhanParams): PrayerInsta
       twilightDip: params.twilightDip,
       asrShadow: params.school === 1 ? 2 : 1,
     });
-    if (at) return at;
+    // at a regency's own point, Kemenag's few times on the other side of a minute (`indonesiaCorrections.json`)
+    if (at) return corrected(at, indonesiaCorrection(params.latitude, params.longitude, y, m, day), params.school);
   }
   if (methodId === MOROCCO_METHOD_ID_LOCAL) {
     // The ministry's method (`moroccoMethod.ts`), on the minute as it prints.
     const dip =
       params.horizonDipDeg ??
       (params.heightM && params.heightM > 0 ? MOROCCO_DIP_PER_SQRT_M * Math.sqrt(params.heightM) : 0);
-    const at = moroccoTimes(params.latitude, params.longitude, y, m, day, dip, params.school === 1 ? 2 : 1);
-    if (at) return at;
+    const at = moroccoTimes(params.latitude, params.longitude, y, m, day, dip, params.school === 1 ? 2 : 1, params.horizonDipMaghribDeg);
+    // at a city's own point, the ministry's few times on the other side of a minute (`moroccoCorrections.json`)
+    if (at) return corrected(at, moroccoCorrection(params.latitude, params.longitude, y, m, day), params.school);
   }
   if (methodId === ALGERIA_SIGNED_SHADOW_METHOD_ID) {
     // The Ministry's method (`algeriaMethod.ts`), on the minute as it prints.
     const at = algeriaTimes(params.latitude, params.longitude, y, m, day, params.school === 1 ? 2 : 1);
-    if (at) return at;
+    // at a city's own point, the Ministry's few times on the other side of a minute (`algeriaCorrections.json`)
+    if (at) return corrected(at, algeriaCorrection(params.latitude, params.longitude, y, m, day), params.school);
   }
   if (!(horizonMinutes > 0) && !signedShadowAsr) {
     const pt = new PrayerTimes(new Coordinates(latitude, params.longitude), dayDate, calc);
@@ -500,6 +515,13 @@ export function computeLocalAdhanInstants(params: LocalAdhanParams): PrayerInsta
 
 const ALGERIA_SIGNED_SHADOW_METHOD_ID = 19;
 const MOROCCO_METHOD_ID_LOCAL = 21;
+type PrayerInstantKey = 'fajr' | 'sunrise' | 'dhuhr' | 'asr' | 'maghrib' | 'isha';
+/** An authority's correction list applied: each listed time a minute over (the standard Asr only). */
+function corrected<T extends Record<PrayerInstantKey, Date>>(at: T, c: Partial<Record<PrayerInstantKey, number>> | undefined, school: number): T {
+  if (!c) return at;
+  const mv = (k: PrayerInstantKey) => new Date(at[k].getTime() + (k === 'asr' && school === 1 ? 0 : (c[k] ?? 0)) * 60_000);
+  return { ...at, fajr: mv('fajr'), sunrise: mv('sunrise'), dhuhr: mv('dhuhr'), asr: mv('asr'), maghrib: mv('maghrib'), isha: mv('isha') };
+}
 const KEMENAG_METHOD_ID_LOCAL = 20;
 const JAKIM_METHOD_ID_LOCAL = 17;
 

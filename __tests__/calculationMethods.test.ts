@@ -460,9 +460,10 @@ describe('Morocco is checked against the ministry, not against AlAdhan', () => {
     // assertion so the numbers cannot be "tidied" back to AlAdhan's.
     const sunriseOffsets = days.map(d => d.delta.Sunrise);
     const maghribOffsets = days.map(d => d.delta.Maghrib);
-    // Without sunrise −3 these would sit around +3, and without maghrib +4
-    // rather than +5, around +1.
-    expect(Math.max(...sunriseOffsets)).toBeLessThanOrEqual(0);
+    // Without the sunrise margin (about −3) these would sit around +3, and
+    // without the Maghrib margin, around +1. (Rabat at a plain point and
+    // horizon here, so a day may round a minute late.)
+    expect(Math.max(...sunriseOffsets)).toBeLessThanOrEqual(1);
     expect(Math.max(...maghribOffsets)).toBeLessThanOrEqual(1);
   });
 });

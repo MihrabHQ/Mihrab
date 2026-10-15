@@ -1,8 +1,8 @@
 /**
  * Morocco — the ministry's own method (`moroccoMethod.ts`), computed at
  * each listed city's point and horizon (`moroccoMethodPoints.json`), held
- * against the ministry's published tables in `data/prayer-times/morocco`
- * (in GMT, which Morocco keeps since 20 September 2026).
+ * against the ministry's published tables (`fixtures/referenceTables.ts`;
+ * in GMT+1 until 17 September 2026, GMT since).
  */
 jest.unmock('adhan');
 
@@ -11,22 +11,19 @@ import path from 'path';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { moroccoTimes } from '../src/providers/moroccoMethod';
 import { computeLocalAdhanInstants } from '../src/providers/localAdhan';
-import {
-  getHabousDatasetTimes,
-  setMoroccoServesCalculationForTests,
-} from '../src/providers/habousDataset';
+import { getHabousDatasetTimes } from '../src/providers/habousDataset';
+import { referenceCities, withReferenceTables } from './fixtures/referenceTables';
 import points from '../src/providers/data/moroccoMethodPoints.json';
 import { nearestMoroccoCity } from '../src/providers/moroccoNearest';
 
 const P = points as Record<string, number[]>;
-const dir = path.join(__dirname, '..', 'data', 'prayer-times', 'morocco', 'v1', 'cities');
 const gmtMin = (d: Date) => ((Math.round(d.getTime() / 60000) % 1440) + 1440) % 1440;
 const toMin = (t: string) => Number(t.slice(0, 2)) * 60 + Number(t.slice(3));
 
-afterAll(() => setMoroccoServesCalculationForTests(true));
-
-describe('the ministry’s method', () => {
-  it('gives the published minute for at least 98% of the tables, never a minute further', () => {
+withReferenceTables('morocco')('the ministry’s method, against its tables', () => {
+  const KEYS = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'] as const;
+  const compare = (corrected: boolean) => {
+    const dir = referenceCities('morocco')!;
     let same = 0;
     let total = 0;
     let worst = 0;
@@ -34,23 +31,39 @@ describe('the ministry’s method', () => {
       const file = path.join(dir, `${id}.json`);
       if (!fs.existsSync(file)) continue;
       const days = JSON.parse(fs.readFileSync(file, 'utf8')).days as Record<string, string[]>;
-      const [lat, lon, dip] = P[id];
+      const [lat, lon, dip, dipMaghrib] = P[id];
       for (const [key, row] of Object.entries(days)) {
         const [y, m, d] = key.split('-').map(Number);
-        const at = moroccoTimes(lat, lon, y, m - 1, d, dip)!;
-        [at.fajr, at.sunrise, at.dhuhr, at.asr, at.maghrib, at.isha].forEach((x, i) => {
-          const diff = Math.abs(((gmtMin(x) - toMin(row[i + 1]) + 720) % 1440 + 1440) % 1440 - 720);
+        const at = corrected
+          ? computeLocalAdhanInstants({ latitude: lat, longitude: lon, date: new Date(y, m - 1, d), calculationMethod: 21, school: 0, horizonDipDeg: dip, horizonDipMaghribDeg: dipMaghrib })
+          : moroccoTimes(lat, lon, y, m - 1, d, dip, 1, dipMaghrib)!;
+        const clock = key < '2026-09-17' ? 60 : 0; // the tables' own clock
+        KEYS.forEach((k, i) => {
+          const diff = Math.abs(((gmtMin(at[k]) + clock - toMin(row[i + 1]) + 720) % 1440 + 1440) % 1440 - 720);
           total++;
           if (diff === 0) same++;
           worst = Math.max(worst, diff);
         });
       }
     }
-    expect(total).toBeGreaterThan(20000);
-    expect(same / total).toBeGreaterThanOrEqual(0.98);
+    return { same, total, worst };
+  };
+
+  it('gives the published minute for at least 99% of the tables, never a minute further', () => {
+    const { same, total, worst } = compare(false);
+    expect(total).toBeGreaterThan(70000);
+    expect(same / total).toBeGreaterThanOrEqual(0.99);
     expect(worst).toBeLessThanOrEqual(1);
   });
 
+  it('with the correction list, gives every published minute', () => {
+    const { same, total } = compare(true);
+    expect(same).toBe(total);
+  });
+
+});
+
+describe('the ministry’s method', () => {
   it('is what method 21 computes, the horizon taken from the height where the ministry’s is not known', () => {
     const day = new Date(2026, 9, 20);
     const a = computeLocalAdhanInstants({ latitude: 34.02, longitude: -6.84, date: day, calculationMethod: 21, school: 0, heightM: 400 });
@@ -63,7 +76,6 @@ describe('the ministry’s method', () => {
 describe('the habous source serves the calculation', () => {
   beforeEach(async () => {
     await AsyncStorage.clear();
-    setMoroccoServesCalculationForTests(true);
   });
 
   it('at the nearest city, offline, for any date', async () => {

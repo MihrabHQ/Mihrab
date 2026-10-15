@@ -2,14 +2,15 @@
 
 The countries whose authority publishes a table per place, mirrored as-is
 and served through one module in the app (`src/providers/nationalTable.ts`,
-instances in `nationalTables.ts`). Sweden, Morocco and Algeria predate this
-and have their own modules; anything new goes here.
+instances in `nationalTables.ts`). Indonesia's Kemenag table is served
+through the same module but computed on the phone (its method and
+correction list, from MihrabHQ/mihrab-methods); its places list,
+`src/providers/data/kemenagPlaces.json`, is the only data it needs.
 
 | Country | Source | Builder | Places |
 |---|---|---|---|
 | Singapore | MUIS's timetable on [data.gov.sg](https://data.gov.sg/datasets/d_a6a206cba471fe04b62dd886ef5eaf22/view) (Open Data Licence) | `muis.ts` | 1 |
 | Malaysia | JAKIM's [e-Solat](https://www.e-solat.gov.my) JSON endpoint, per zone | `jakim.ts` | 59 zones, 178 towns (`jakim-zones.ts`) |
-| Indonesia | Kemenag's [schedule page](https://bimasislam.kemenag.go.id/jadwalshalat), per regency | `kemenag.ts` | 517 regencies and cities (`kemenag-places.json`) |
 
 ## What a builder produces
 
@@ -39,13 +40,6 @@ January, because e-Solat serves the current year only — the window ends on
 31 December and the phone computes JAKIM's own method (20° / 18°) for the
 days until the January run lands. MUIS publishes a year ahead, around the
 same time.
-
-Indonesia is fetched a season at a time (this month and the next two,
-`KEMENAG_MONTHS`), ~1,500 requests a run, because the ministry serves a
-month per request. Its site does not answer from Sweden, so that builder
-only runs on GitHub; `kemenag-probe.yml` is how the regency list was read,
-and `kemenag-places.json` carries it with coordinates from OpenStreetMap's
-Nominatim (ODbL), looked up once.
 
 Run locally: `npx tsx tools/national-tables/muis.ts`, `… /jakim.ts`.
 `TABLE_TODAY=YYYY-MM-DD` fixes "today" for a reproducible build.

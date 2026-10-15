@@ -1,18 +1,17 @@
 /**
  * Algeria — the Ministry of Religious Affairs and Wakfs (issue #70).
  *
- * The reporter prays by the Ministry's timetable. The app now serves that
- * timetable itself, read from the Ministry's own app (see
- * `tools/algeria-ministry/`), the way it serves Morocco's and Sweden's:
+ * The reporter prays by the Ministry's timetable. The app computes it, the
+ * way it computes Morocco's and Sweden's:
  *
  *   - the 'marw' provider, chosen automatically in Algeria — including the
  *     strip of it Morocco's rectangle takes in;
- *   - the Ministry's times for the nearest listed city, exactly;
- *   - past the published year, the Algeria method (18° / 17°, Maghrib +3)
- *     computed on the device.
+ *   - the Ministry's method at the point it computes the nearest listed
+ *     city, with its correction list: the printed minute, exactly;
+ *   - for any date, offline.
  *
  * The expected times below were read off the Ministry's own app by hand,
- * not derived from the dataset they check.
+ * not derived from the method they check.
  */
 jest.unmock('adhan');
 
@@ -29,12 +28,7 @@ import fs from 'fs';
 import path from 'path';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fetchPrayerTimesUnified } from '../src/providers/fetchPrayerTimes';
-import {
-  getMarwDatasetTimes,
-  seedTuple,
-  setAlgeriaServesCalculationForTests,
-  _resetMarwDatasetMemoForTests,
-} from '../src/providers/marwDataset';
+import { getMarwDatasetTimes } from '../src/providers/marwDataset';
 import { computeLocalAdhanInstants } from '../src/providers/localAdhan';
 import { algeriaTimes } from '../src/providers/algeriaMethod';
 import methodPoints from '../src/providers/data/algeriaMethodPoints.json';
@@ -52,7 +46,7 @@ import {
 } from '../src/settings/providerUi';
 import { isCoordinateInAlgeria } from '../src/utils/algeriaRegion';
 import { isCoordinateInMorocco } from '../src/utils/moroccoRegion';
-import seed from '../src/providers/data/marwSeed.json';
+import { referenceCities, withReferenceTables } from './fixtures/referenceTables';
 
 const ALGIERS = { latitude: 36.7538, longitude: 3.0588 };
 const TLEMCEN = { latitude: 34.878, longitude: -1.315 };
@@ -62,21 +56,29 @@ const OUJDA = { latitude: 34.6867, longitude: -1.9114 };
 
 const six = (t: Record<string, string | undefined>) =>
   ['Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'].map(k => t[k]);
+/** A computed time is on the phone's clock; the Ministry prints Algeria's (UTC+1 all year). */
+const onAlgiersClock = (date: Date, hhmm: string | undefined) => {
+  if (!hhmm) return hhmm;
+  const [h, m] = hhmm.split(':').map(Number);
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate(), h, m).toLocaleTimeString('en-GB', {
+    timeZone: 'Africa/Algiers',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  });
+};
+const sixInAlgiers = (date: Date, t: Record<string, string | undefined>) => six(t).map(x => onAlgiersClock(date, x));
 
 beforeEach(async () => {
-  _resetMarwDatasetMemoForTests();
-  setAlgeriaServesCalculationForTests(false); // the table path, unless a test says otherwise
   await AsyncStorage.clear();
 });
-afterAll(() => setAlgeriaServesCalculationForTests(true));
 
 /** Minutes past midnight on Algeria's clock (UTC+1 all year). */
 const algiersMin = (d: Date) => (((Math.round(d.getTime() / 60000) + 60) % 1440) + 1440) % 1440;
 const hhmm = (m: number) => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
 
 describe('the Ministry’s method, computed (algeriaMethod.ts)', () => {
-  it('serves the calculation by default, at the nearest city’s point', async () => {
-    setAlgeriaServesCalculationForTests(true);
+  it('serves the calculation, at the nearest city’s point, for any date', async () => {
     const r = await getMarwDatasetTimes({ ...ALGIERS, date: new Date(2031, 2, 3) });
     expect(r.source).toBe('local');
     expect(r.timezone).toBe('Africa/Algiers');
@@ -95,41 +97,49 @@ describe('the Ministry’s method, computed (algeriaMethod.ts)', () => {
     (expected as (string | undefined)[]).forEach((e, i) => e && expect(got[i]).toBe(e));
   });
 
-  it('matches the whole published year to the minute 99.3% of the time, never by more than a minute', () => {
+});
+
+withReferenceTables('algeria')('the Ministry’s published year', () => {
+  const compare = (corrected: boolean) => {
     const points = methodPoints as Record<string, number[]>;
-    const cities = seed.cities as Record<string, number[]>;
-    const start = new Date(`${seed.start}T00:00:00Z`);
+    const dir = referenceCities('algeria')!;
     let same = 0;
     let total = 0;
     let worst = 0;
     for (const c of ALGERIA_CITIES) {
       const [lat, lon] = points[String(c.id)];
-      const flat = cities[String(c.id)];
-      for (let i = 0; i < seed.days; i++) {
-        const day = new Date(start.getTime() + i * 86400000);
-        const at = computeLocalAdhanInstants({
-          latitude: lat,
-          longitude: lon,
-          date: new Date(day.getUTCFullYear(), day.getUTCMonth(), day.getUTCDate()),
-          calculationMethod: ALGERIA_METHOD_ID,
-          school: 0,
-        });
-        const ours = [at.fajr, at.sunrise, at.dhuhr, at.asr, at.maghrib, at.isha].map(algiersMin);
-        ours.forEach((v, k) => {
-          const diff = Math.abs(((v - flat[i * 6 + k] + 720) % 1440 + 1440) % 1440 - 720);
+      const days = JSON.parse(fs.readFileSync(path.join(dir, `${c.id}.json`), 'utf8')).days as Record<string, string[]>;
+      for (const [key, row] of Object.entries(days)) {
+        const [y, m, d] = key.split('-').map(Number);
+        const at = corrected
+          ? computeLocalAdhanInstants({ latitude: lat, longitude: lon, date: new Date(y, m - 1, d), calculationMethod: ALGERIA_METHOD_ID, school: 0 })
+          : algeriaTimes(lat, lon, y, m - 1, d)!;
+        [at.fajr, at.sunrise, at.dhuhr, at.asr, at.maghrib, at.isha].map(algiersMin).forEach((v, k) => {
+          const theirs = Number(row[k + 1].slice(0, 2)) * 60 + Number(row[k + 1].slice(3));
+          const diff = Math.abs(((v - theirs + 720) % 1440 + 1440) % 1440 - 720);
           total++;
           if (diff === 0) same++;
           worst = Math.max(worst, diff);
         });
       }
     }
-    expect(total).toBe(ALGERIA_CITIES.length * seed.days * 6);
+    return { same, total, worst };
+  };
+
+  it('is matched to the minute 99.3% of the time by the method alone, never by more than a minute', () => {
+    const { same, total, worst } = compare(false);
+    expect(total).toBeGreaterThan(100000);
     expect(same / total).toBeGreaterThanOrEqual(0.993);
     expect(worst).toBeLessThanOrEqual(1);
   });
+
+  it('is matched every time with the correction list', () => {
+    const { same, total } = compare(true);
+    expect(same).toBe(total);
+  });
 });
 
-describe('the Ministry’s times, as published', () => {
+describe('the Ministry’s times, as it prints them', () => {
   it.each([
     ['Algiers, 8 Oct 2026', ALGIERS, new Date(2026, 9, 8), ['05:23', '06:49', '12:36', '15:51', '18:25', '19:43']],
     ['Oran, 8 Oct 2026', ORAN, new Date(2026, 9, 8), ['05:39', '07:03', '12:51', '16:07', '18:40', '19:57']],
@@ -137,59 +147,22 @@ describe('the Ministry’s times, as published', () => {
     ['Algiers, last day of 1448', ALGIERS, new Date(2027, 5, 5), ['03:40', '05:30', '12:47', '16:38', '20:07', '21:46']],
   ])('%s', async (_label, at, date, expected) => {
     const r = await getMarwDatasetTimes({ ...(at as typeof ALGIERS), date: date as Date });
-    expect(six(r.timings)).toEqual(expected);
-    expect(r.timings.Imsak).toBeDefined();
+    expect(sixInAlgiers(date as Date, r.timings)).toEqual(expected);
     expect(r.timezone).toBe('Africa/Algiers');
-    expect(r.source).toBe('seed');
+    expect(r.source).toBe('local');
   });
 
   it('keeps the Ministry’s Asr where the sun passes the zenith (In Guezzam)', async () => {
     // The textbook formula says 15:55; the Ministry publishes 15:42, and the
     // mosques there pray by the Ministry.
     const r = await getMarwDatasetTimes({ ...IN_GUEZZAM, date: new Date(2027, 5, 5) });
-    expect(r.timings.Asr).toBe('15:42');
+    expect(onAlgiersClock(new Date(2027, 5, 5), r.timings.Asr)).toBe('15:42');
   });
 
   it('computes the Ministry’s method for the city past the published year', async () => {
     const r = await getMarwDatasetTimes({ ...ALGIERS, date: new Date(2027, 5, 6) });
     expect(r.source).toBe('local');
     expect(r.timezone).toBe('Africa/Algiers');
-  });
-
-  it('prefers a downloaded table over the seed', async () => {
-    const city = nearestAlgeriaCity(ALGIERS.latitude, ALGIERS.longitude)!;
-    await AsyncStorage.setItem(
-      `marw.dataset.v1.city.${city.id}`,
-      JSON.stringify({
-        id: city.id,
-        city: city.name,
-        timezone: 'Africa/Algiers',
-        builtAt: '2027-06-01T00:00:00Z',
-        days: { '2027-06-20': ['03:28', '03:38', '05:29', '12:51', '16:43', '20:14', '21:55'] },
-      }),
-    );
-    const r = await getMarwDatasetTimes({ ...ALGIERS, date: new Date(2027, 5, 20) });
-    expect(r.source).toBe('cdn');
-    expect(r.timings.Maghrib).toBe('20:14');
-  });
-});
-
-describe('the bundled seed', () => {
-  it('agrees with the published per-city files, every city and day', () => {
-    const dir = path.join(__dirname, '..', 'data', 'prayer-times', 'algeria', 'v1', 'cities');
-    const files = fs.readdirSync(dir).filter(f => f.endsWith('.json'));
-    expect(files.length).toBe(ALGERIA_CITIES.length);
-    for (const f of files) {
-      const file = JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8'));
-      const days = Object.keys(file.days);
-      expect(days.length).toBe(seed.days);
-      for (const d of days) expect(seedTuple(file.id, d)).toEqual(file.days[d]);
-    }
-  });
-
-  it('covers every listed city', () => {
-    const cities = seed.cities as Record<string, number[]>;
-    for (const c of ALGERIA_CITIES) expect(cities[String(c.id)]).toBeDefined();
   });
 });
 
@@ -221,7 +194,7 @@ describe('who gets it', () => {
 });
 
 describe('the fetch chain', () => {
-  it('serves the Ministry’s table', async () => {
+  it('serves the Ministry’s times', async () => {
     const r = await fetchPrayerTimesUnified({
       provider: 'marw',
       ...ALGIERS,
@@ -229,8 +202,8 @@ describe('the fetch chain', () => {
       calculationMethod: 'auto',
       school: 1, // a Hanafi setting left over from elsewhere does not apply
     });
-    expect(r.source).toBe('seed');
-    expect(r.timings.Asr).toBe('15:51');
+    expect(r.source).toBe('local');
+    expect(onAlgiersClock(new Date(2026, 9, 8), r.timings.Asr)).toBe('15:51');
   });
 
   it('computes the Algeria method past the published year, without AlAdhan', async () => {
@@ -267,7 +240,7 @@ describe('the fetch chain', () => {
       calculationMethod: 'auto',
       school: 0,
     });
-    expect(six(r.timings)).toEqual(['05:42', '07:06', '12:53', '16:10', '18:43', '19:59']);
+    expect(sixInAlgiers(new Date(2026, 9, 8), r.timings)).toEqual(['05:42', '07:06', '12:53', '16:10', '18:43', '19:59']);
   });
 
   it('computes the method on the device for AlAdhan users in Algeria', async () => {

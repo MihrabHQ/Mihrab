@@ -509,7 +509,8 @@
     "bestHere": "Bulunduğun yere uygun",
     "outOfRegion": "Bulunduğun yer için vakit yok — onun yerine {{fallback}} kullanılır.",
     "footer": "Ülkeye özgü kaynaklar, entegre ettiğimiz resmi veya ulusal dua tablolarını kullanır. Zamanla daha fazla bölge eklenebilir.",
-    "namazvaktiNoCity": "Yakınınızdaki bir şehir için vakit yok — takvimin yöntemi telefonda hesaplanır."
+    "namazvaktiNoCity": "Yakınınızdaki bir şehir için vakit yok — takvimin yöntemi telefonda hesaplanır.",
+    "diyanetOwn": "Diyanet yakınınızda bir yer listelemiyor — bu, kendi konumunuz için onun yöntemidir."
   },
   "providers": {
     "aladhan": {
@@ -539,6 +540,10 @@
     "namazvakti": {
       "name": "Türkiye Takvimi (namazvakti.com)",
       "desc": "İhtiyatlı Türkiye Takvimi — imsak 19°, yatsı 17°, her vakte temkin — namazvakti.com’un dünya genelinde en yakın şehri için yayınladığı haliyle."
+    },
+    "diyanet": {
+      "name": "Diyanet",
+      "desc": "Diyanet İşleri Başkanlığı’nın dünya geneli yöntemi (2021 Uluslararası Namaz Vakitleri Kongresi), telefonunuzda kendi konumunuz için hesaplanır — Diyanet’in yayımladığı takvimlerle dakikası dakikasına uyar."
     },
     "muis": {
       "name": "Singapur",
@@ -1729,7 +1734,7 @@
     "10": "Katar",
     "11": "Singapur",
     "12": "Fransa",
-    "13": "Türkiye",
+    "13": "Türkiye (Diyanet)",
     "14": "Rusya",
     "15": "Dünya Hilal Gözlem Komitesi",
     "16": "Dubai",

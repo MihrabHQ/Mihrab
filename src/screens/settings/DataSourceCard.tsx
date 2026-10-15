@@ -1,3 +1,4 @@
+import { diyanetCoverage } from '../../providers/diyanetMethod';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { usePrayerSettings } from '../../context/PrayerSettingsContext';
@@ -68,6 +69,11 @@ function DataSourceCardImpl({ onOpenProviderPicker }: DataSourceCardProps) {
     effectiveProvider === 'namazvakti',
   );
   const nvNoCity = effectiveProvider === 'namazvakti' && nvCoverage === 'no-city';
+  // Diyanet answers everywhere, but says where it is not on Diyanet's minute.
+  const diyanetNote =
+    effectiveProvider === 'diyanet' && coordsForEffective
+      ? diyanetCoverage(coordsForEffective.latitude, coordsForEffective.longitude)
+      : 'place';
   // The table in use has no row for today — past its window, or not yet
   // downloaded — so the phone is computing the authority's method.
   const tableFallback =
@@ -162,7 +168,9 @@ function DataSourceCardImpl({ onOpenProviderPicker }: DataSourceCardProps) {
                 })
               : nvNoCity
                 ? t('settings.providerNamazvaktiNoCity')
-                : lockedProviderDesc
+                : diyanetNote === 'own'
+                  ? t('provider.diyanetOwn')
+                  : lockedProviderDesc
         }
         onPress={onOpenProviderPicker}
       />

@@ -1,8 +1,11 @@
 /**
  * The authorities whose published tables the app's own methods are checked
- * against — one entry per table the builders fetch (tools/*-dataset,
- * tools/national-tables), with the method the phone computes for it and
- * how close the two are expected to be.
+ * against, with the method the phone computes for each and how close the
+ * two are expected to be. Singapore's and Malaysia's tables are in this
+ * repo (tools/national-tables); Diyanet's, Morocco's, Algeria's and
+ * Indonesia's are reference tables outside it (the folder MIHRAB_TABLES
+ * names, laid out <authority>/v1/cities), and an authority whose tables
+ * are not there is skipped.
  *
  * The idea (October 2026): what Mihrab distributes should be its own
  * calculation, fitted to each authority; the fetched tables are kept to
@@ -14,6 +17,8 @@ import * as path from 'node:path';
 
 export const ROOT = path.join(__dirname, '../..');
 const DATA = path.join(ROOT, 'data/prayer-times');
+/** The reference tables the app's computed authorities are certified against (not in this repo). */
+export const REFERENCE_TABLES = process.env.MIHRAB_TABLES ?? path.join(ROOT, '.tables');
 
 export type Place = {
   /** The city file under data/prayer-times/<folder>/v1/cities/. */
@@ -29,6 +34,8 @@ export type Place = {
   horizonMin?: number;
   /** The authority's own horizon dip for the place, degrees (Morocco's, fitted from its tables). */
   horizonDipDeg?: number;
+  /** Its western (Maghrib) horizon dip, degrees, where it differs from the eastern. */
+  horizonDipMaghribDeg?: number;
   /** Kemenag's Papuan highland regencies: the highland degree on Fajr and Isha too. */
   twilightDip?: boolean;
   /** A JAKIM zone (1-based): its times are the zone's (`malaysiaMethod.ts`). */
@@ -63,6 +70,8 @@ export type Authority = {
    * does not commit). A missing directory skips the authority.
    */
   root?: string;
+  /** The clock a date's row is printed in, where the table keeps its own (Morocco's tables switched before its clocks). */
+  tableClock?: (date: string) => string;
   /**
    * Rows the source got wrong rather than the method: compared against the
    * authority's own original, a row that differs from it is the
@@ -76,8 +85,8 @@ function readJson<T>(p: string): T {
   return JSON.parse(fs.readFileSync(p, 'utf8')) as T;
 }
 
-/** Diyanet's downloaded Swedish tables (diyanet-fetch.py); not committed. */
-export const DIYANET_ROOT = process.env.DIYANET_TABLES ?? path.join(require('node:os').homedir(), '.cache/mihrab/diyanet');
+/** Diyanet's tables, among the reference tables; not committed here. */
+export const DIYANET_ROOT = process.env.DIYANET_TABLES ?? path.join(REFERENCE_TABLES, 'diyanet');
 
 let diyanetBySlug: Map<string, string> | null = null;
 /** Diyanet's own rows for an Islamiska Förbundet city, by its slug, or null if not downloaded. */
@@ -140,13 +149,17 @@ export const AUTHORITIES: Authority[] = [
     id: 'habous',
     name: 'Morocco — Ministry of Habous and Islamic Affairs',
     folder: 'morocco',
+    root: path.join(REFERENCE_TABLES, 'morocco'),
+    // GMT+1 until 17 September 2026 (three days before the clocks), GMT since.
+    tableClock: date => (date < '2026-09-17' ? 'Etc/GMT-1' : MOROCCO_TZ),
     method: 21,
     school: 0,
     // The ministry's own method (moroccoMethod.ts) at each city's point and
     // horizon as its tables show them (moroccoMethodPoints.json): the check
-    // is to the minute. About 1.3 % of times — most of them sunrise and
-    // Maghrib, whose height allowance is the least settled part — land a
-    // minute the other side (tools/verify-methods/README.md).
+    // is to the minute. About 1 % of times — most of them sunrise and
+    // Maghrib — land a minute the other side; the app's correction list
+    // (moroccoCorrections.json) puts the listed ones back, but this check
+    // holds the method alone (tools/verify-methods/README.md).
     toleranceMin: 0,
     maxOutsideShare: 0.025,
     hardMaxMin: 1,
@@ -163,7 +176,7 @@ export const AUTHORITIES: Authority[] = [
         .map(c => {
           const p = points[String(c.id)];
           return p
-            ? { file: `${c.id}.json`, name: c.name, lat: p[0], lon: p[1], tz: MOROCCO_TZ, horizonDipDeg: p[2] }
+            ? { file: `${c.id}.json`, name: c.name, lat: p[0], lon: p[1], tz: MOROCCO_TZ, horizonDipDeg: p[2], horizonDipMaghribDeg: p[3] }
             : { file: `${c.id}.json`, name: c.name, lat: c.lat as number, lon: c.lng as number, tz: MOROCCO_TZ, heightM: c.heightM };
         });
     },
@@ -172,6 +185,7 @@ export const AUTHORITIES: Authority[] = [
     id: 'marw',
     name: 'Algeria — Ministry of Religious Affairs and Wakfs',
     folder: 'algeria',
+    root: path.join(REFERENCE_TABLES, 'algeria'),
     method: 19,
     school: 0,
     // The Ministry's own method (algeriaMethod.ts) at the point it computes
@@ -248,6 +262,7 @@ export const AUTHORITIES: Authority[] = [
     id: 'kemenag',
     name: 'Indonesia — Kemenag',
     folder: 'indonesia',
+    root: path.join(REFERENCE_TABLES, 'indonesia'),
     method: 20,
     school: 0,
     // The ministry's own method (indonesiaMethod.ts) at each regency's point

@@ -7,6 +7,7 @@ import { getMarwDatasetTimes } from './marwDataset';
 import { computeNamazvaktiMethodTimes, getNamazvaktiTimes, namazvaktiCityPoint, nearestNamazvaktiCity } from './namazvakti';
 import { nationalTableFor } from './nationalTables';
 import { computeLocalAdhanTimes } from './localAdhan';
+import { computeDiyanetTimes, DIYANET_METHOD_ID } from './diyanetMethod';
 import { autoMethodForCoords } from './autoMethod';
 import { ALGERIA_METHOD_ID } from './algeriaCities';
 import { nearestMoroccoCity } from './moroccoNearest';
@@ -52,13 +53,15 @@ const MOROCCO_METHOD_ID = 21;
  * Methods computed on the device whatever the provider: Algeria's, since
  * AlAdhan's own "Algeria" is the Ministry's angles without its Maghrib
  * margin (three minutes early) and its Asr without the Ministry's shadow;
- * and Sweden's, Islamiska Förbundet's convention, which AlAdhan has no id
- * for at all. (Each authority is also its own provider — 'marw',
+ * Sweden's, Islamiska Förbundet's convention, which AlAdhan has no id
+ * for at all; and Türkiye's, Diyanet's, which AlAdhan's id 13 gives as
+ * the angles alone (`diyanetMethod.ts` computes it as Diyanet's tables
+ * do). (Each authority is also its own provider — 'marw', 'diyanet',
  * 'islamiska_forbundet'; this is the method a user picks by hand
  * elsewhere, and the fallback past the listed cities.) Returns null when the
  * method that applies is another.
  */
-const ON_DEVICE_METHODS: ReadonlySet<number> = new Set([ALGERIA_METHOD_ID, SWEDEN_METHOD_ID]);
+const ON_DEVICE_METHODS: ReadonlySet<number> = new Set([ALGERIA_METHOD_ID, SWEDEN_METHOD_ID, DIYANET_METHOD_ID]);
 function onDeviceMethod(p: UnifiedFetchParams): PrayerTimesResult | null {
   const method =
     p.calculationMethod === 'auto'
@@ -277,6 +280,19 @@ export async function fetchPrayerTimesUnified(
         school: p.school,
         heightM: near?.heightM,
         temkin: point?.temkin,
+      });
+      validateTimingShape(local.timings);
+      return local;
+    }
+    case 'diyanet': {
+      // Diyanet's worldwide method, computed on the phone for the reader's
+      // own coordinates (`diyanetMethod.ts`). Nothing is fetched: the method
+      // is the table.
+      const local = computeDiyanetTimes({
+        latitude: p.latitude,
+        longitude: p.longitude,
+        date: p.date,
+        school: p.school,
       });
       validateTimingShape(local.timings);
       return local;

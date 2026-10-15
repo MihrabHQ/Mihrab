@@ -22,7 +22,8 @@ export const CALCULATION_METHODS: CalculationMethodOption[] = [
   { id: 10, name: 'Qatar', nameKey: 'methods.10' },
   { id: 11, name: 'Singapore', nameKey: 'methods.11' },
   { id: 12, name: 'France', nameKey: 'methods.12' },
-  { id: 13, name: 'Turkey', nameKey: 'methods.13' },
+  // Diyanet's method, computed on the phone as its tables are (`diyanetMethod.ts`).
+  { id: 13, name: 'Turkey (Diyanet)', nameKey: 'methods.13' },
   { id: 14, name: 'Russia', nameKey: 'methods.14' },
   { id: 15, name: 'Moonsighting Committee Worldwide', nameKey: 'methods.15' },
   // AlAdhan already auto-selects this for Moroccan coordinates, so the

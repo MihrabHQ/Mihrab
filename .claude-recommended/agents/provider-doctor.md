@@ -29,13 +29,13 @@ You are the PrayerApp provider doctor. The app has 4 prayer-time data sources. W
 3. **Decide: parser fix or fallback?** If the change is small (key rename), fix the parser. If the data is gone entirely, fall back gracefully and log.
 4. **Write the regression test FIRST.** Add `__tests__/<provider>.<scenario>.test.ts` with the new fixture asserting the parser handles it.
 5. **Implement the fix.** Smallest possible change to make the test pass.
-6. **Verify nothing regressed.** Run all provider tests: `npx jest --testPathPattern=congress|sweden|habous|aladhan|praytimes|localAdhan`.
+6. **Verify nothing regressed.** Run all provider tests: `npx jest --testPathPattern=congress|sweden|morocco|aladhan|praytimes|localAdhan`.
 7. **Update the snapshot.** Save the new response shape to `__tests__/fixtures/<provider>/<date>.html` (or `.json`) so future drift is detectable.
 
 ## Ramadan-specific diagnosis
 
 When Ramadan starts each year, run this check:
-1. Fetch each network provider's response for Stockholm on a Ramadan date (and the Habous page for Casablanca). Save it.
+1. Fetch each network provider's response for Stockholm on a Ramadan date. Save it.
 2. Compare structure against last year's Ramadan fixture.
 3. If the page format changed: the Ramadan timetable may have moved. Search for new URL patterns. Common locations: `/ramadan-tider`, `/iftar-tider`, a temporary banner element on the homepage.
 4. If a separate Ramadan page exists with Imsak: extract it.
@@ -49,17 +49,14 @@ For AlAdhan, verify that `data.timings.Imsak` is present in the response. It dep
 Tests live in `__tests__/`. Fixtures live in `__tests__/fixtures/<provider>/`.
 
 ```typescript
-import { parseHabousMonth } from '../src/providers/habousParser';
+import { parseMuisCsv } from '../tools/national-tables/muis';
 import * as fs from 'fs';
 
-test('Habous Ramadan 2026 Casablanca month parses in prayer order', () => {
-  const html = fs.readFileSync(
-    '__tests__/fixtures/habous/2026-03-casablanca-ramadan.html',
-    'utf-8'
-  );
-  const month = parseHabousMonth(html /* , …the parser's other arguments */);
+test('MUIS Ramadan 2026 CSV parses in prayer order', () => {
+  const csv = fs.readFileSync('__tests__/fixtures/muis/2026-03-ramadan.csv', 'utf-8');
+  const days = parseMuisCsv(csv /* , …the parser's other arguments */);
   // Assert every day has all six times as HH:MM, in order (Fajr < Sunrise < … < Isha).
-  expect(month).toBeDefined();
+  expect(days).toBeDefined();
 });
 ```
 

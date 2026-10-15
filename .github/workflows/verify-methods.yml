@@ -1,15 +1,16 @@
 name: Verify the methods against the authorities
 
-# What the app distributes is its own calculation, fitted to each
-# authority; the tables the other workflows fetch are the check on it.
-# This runs the check (tools/verify-methods) after the weekly rebuilds,
-# commits the reports, and keeps one issue per authority that disagrees:
+# Singapore's and Malaysia's tables are served from this repo; the app's
+# own calculation of each stands in past their published window. This
+# checks that calculation against the tables (tools/verify-methods) after
+# the weekly rebuild, commits the reports, and keeps one issue per
+# authority that disagrees:
 # opened with the report when it first does, updated while it does,
 # closed when the two agree again. See tools/verify-methods/README.md.
 
 on:
   schedule:
-    - cron: '41 6 * * 2' # Tuesdays, 06:41 UTC — after Monday's tables and Tuesday's Morocco
+    - cron: '41 6 * * 2' # Tuesdays, 06:41 UTC — after Monday's tables
   workflow_dispatch:
 
 concurrency:
@@ -41,9 +42,6 @@ jobs:
       # Diyanet's own Swedish tables — the timetables Islamiska Förbundet
       # publishes — this year and next, for the 'diyanet' check (to the
       # minute). Not committed: their data, used only to check ours.
-      - name: Download Diyanet's Swedish tables
-        run: python3 tools/verify-methods/diyanet-fetch.py --out "$RUNNER_TEMP/diyanet"
-
       - name: Compare
         id: verify
         env:

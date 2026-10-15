@@ -5,6 +5,7 @@
  * tables. Coordinates are Diyanet's, read off the tables
  * (tools/verify-methods/diyanet-sweden-points.json; the coordinates file the app uses holds them).
  */
+import { referenceCities } from './fixtures/referenceTables';
 import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -28,8 +29,9 @@ const LULEA = { lat: 65.6, lon: 22.1667 };
 const BODEN = { lat: 65.8333, lon: 21.7 };
 
 function table(slug: string): Record<string, string[]> | null {
-  const f = join(__dirname, '..', 'data', 'prayer-times', 'v1', 'cities', `${slug}.json`);
-  return existsSync(f) ? JSON.parse(readFileSync(f, 'utf8')).days : null;
+  const dir = referenceCities('sweden');
+  const f = dir ? join(dir, `${slug}.json`) : '';
+  return f && existsSync(f) ? JSON.parse(readFileSync(f, 'utf8')).days : null;
 }
 
 /** Share of the city's rows within `tol` minutes, per prayer, over the dates given. */

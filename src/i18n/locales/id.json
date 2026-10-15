@@ -509,7 +509,8 @@
     "bestHere": "Cocok dengan lokasi Anda",
     "outOfRegion": "Tidak ada jadwal untuk lokasi Anda — {{fallback}} akan dipakai sebagai gantinya.",
     "footer": "Sumber khusus negara menggunakan tabel doa resmi atau nasional tempat kami mengintegrasikannya. Lebih banyak wilayah dapat ditambahkan seiring waktu.",
-    "namazvaktiNoCity": "Tidak ada jadwal untuk kota di dekat Anda — metode kalendernya akan dihitung di ponsel."
+    "namazvaktiNoCity": "Tidak ada jadwal untuk kota di dekat Anda — metode kalendernya akan dihitung di ponsel.",
+    "diyanetOwn": "Diyanet tidak mencantumkan tempat di dekat Anda — ini metodenya untuk lokasi Anda sendiri."
   },
   "providers": {
     "aladhan": {
@@ -539,6 +540,10 @@
     "namazvakti": {
       "name": "Türkiye Takvimi (namazvakti.com)",
       "desc": "Kalender Turki yang lebih hati-hati — Subuh pada 19°, Isya pada 17°, dengan margin pengaman (temkin) di setiap waktu — sebagaimana diterbitkan namazvakti.com untuk kota terdekatnya di seluruh dunia."
+    },
+    "diyanet": {
+      "name": "Diyanet",
+      "desc": "Metode Diyanet untuk seluruh dunia (Kongres Waktu Salat 2021), dihitung di ponsel Anda untuk lokasi Anda — sesuai dengan tabel terbitan Diyanet hingga menitnya."
     },
     "muis": {
       "name": "Singapura",
@@ -1729,7 +1734,7 @@
     "10": "Qatar",
     "11": "Singapura",
     "12": "Prancis",
-    "13": "Turki",
+    "13": "Turki (Diyanet)",
     "14": "Rusia",
     "15": "Komite Pengamatan Hilal Sedunia",
     "16": "Dubai",

@@ -14,7 +14,9 @@ export function providerHidesCalculationMethod(
     id === 'kemenag' ||
     // The calendar is its own method; the Hanafi Asr toggle still applies
     // (it picks the calendar's Asr-ı sânî).
-    id === 'namazvakti'
+    id === 'namazvakti' ||
+    // Diyanet's method is fixed; its Asr-ı sânî is the Hanafi toggle.
+    id === 'diyanet'
   );
 }
 

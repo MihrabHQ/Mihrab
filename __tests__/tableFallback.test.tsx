@@ -49,7 +49,7 @@ describe('the table-fallback indication', () => {
 
     // JAKIM's seed covers today in a built checkout; past its last day the
     // phone stands in. A seed that is not built counts as past it too.
-    const seed = jakimTable.config.seed;
+    const seed = jakimTable.config.seed!;
     const covered = seed.version > 0 && seed.start <= new Date().toISOString().slice(0, 10);
     expect(await answer(['jakim', KL, 'auto', 0])).toBe(!covered);
     // Somewhere no table reaches, the table is not the answer either.

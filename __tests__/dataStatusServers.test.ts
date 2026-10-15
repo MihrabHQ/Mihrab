@@ -9,7 +9,6 @@
  * country's eleven days of coverage, looking like another's broken server.
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { nextHabousServerRunAfter } from '../src/config/datasets';
 import {
   getDataStatus,
   recordDataSource,
@@ -111,21 +110,5 @@ describe('a blob written before the split', () => {
     const s = await getDataStatus();
     expect(s.lastSource).toBeNull();
     expect(s.servers.habous.status).toBe('unknown');
-  });
-});
-
-describe('and they are expected at different times', () => {
-  // Morocco can only see the Hijri month its ministry's page is currently
-  // showing, so it accumulates daily.
-  it('Morocco is the next 04:41, today or tomorrow', () => {
-    expect(nextHabousServerRunAfter(new Date('2026-08-21T04:00:00Z')).toISOString())
-      .toBe('2026-08-21T04:41:00.000Z');
-    expect(nextHabousServerRunAfter(new Date('2026-08-21T09:00:00Z')).toISOString())
-      .toBe('2026-08-22T04:41:00.000Z');
-  });
-
-  it('and rolls the month, not just the day number', () => {
-    expect(nextHabousServerRunAfter(new Date('2026-08-31T23:00:00Z')).toISOString())
-      .toBe('2026-09-01T04:41:00.000Z');
   });
 });

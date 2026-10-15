@@ -1,238 +1,42 @@
 /**
- * Morocco — the Ministry of Habous's published tables, served from a
- * prepared dataset.
+ * Morocco — the Ministry of Habous's times, computed on the phone.
  *
- * A scheduled job reads the ministry once, server-side, and commits
- * per-city JSON plus a small `index.json` (see `tools/habous-dataset/`).
- * Devices read that: the cached host copy first, then the bundled seed.
+ * The ministry's own method (`moroccoMethod.ts`, from MihrabHQ/mihrab-methods)
+ * at the nearest listed city's point and horizons, with the correction list
+ * for the few times the ministry's program rounds the other way
+ * (`moroccoCorrections.json`, applied in `localAdhan.ts`): its printed
+ * minute, every time, over the days its tables were checked. Offline, for
+ * any date; nothing is downloaded.
  *
- * ── WHY A DATASET AND NOT A CALCULATION ───────────────────────────────
- *
- * The app CAN compute Moroccan times, and since the Morocco method gained
- * the ministry's own margins it lands within a minute of the published
- * table (see `localAdhan.ts`). But the ministry computes each city from its
- * own reference point, and those are not published — so a calculation from
- * the user's GPS is always close and never identical. Where an authority
- * publishes the times its country prays by, serving those beats
- * approximating them.
- *
- * ── THE SHORTER WINDOW ────────────────────────────────────────────────
- *
- * The ministry's page has no date parameter: it returns whatever Hijri
- * month it is showing. So the builder cannot walk a horizon, it accumulates
- * one month at a time, and the forward window is weeks rather than the
- * Swedish year. A miss here is therefore ordinary rather than alarming, and
- * it falls through to the computed chain — which for Morocco is a good
- * fallback rather than a cliff.
- *
- * ── KEYED BY ID, NOT NAME ─────────────────────────────────────────────
- *
- * The ministry's `ville` id addresses the page and names the file. Its
- * Arabic city names are NOT unique — تاهلة appears twice — so keying by
- * name would quietly lose a city.
+ * Earlier versions served a mirror of the ministry's table and fell back to
+ * this calculation for any day the mirror lacked, so they keep working on
+ * the calculation alone.
  */
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { httpUserAgent } from '../config/httpIdentity';
-import {
-  HABOUS_DATASET_BASE_URL,
-  HABOUS_DATASET_REFRESH_TTL_MS,
-  HABOUS_INDEX_POLL_INTERVAL_MS,
-} from '../config/datasets';
 import { nearestMoroccoCity } from './moroccoNearest';
 import { computeLocalAdhanTimes } from './localAdhan';
 import moroccoPoints from './data/moroccoMethodPoints.json';
-
-/**
- * Morocco's times are the ministry's table, mirrored into the repo (October
- * 2026: the data comes from Mihrab's own repo, never the source directly).
- * The app's own calculation of the ministry's method (`moroccoMethod.ts`) at
- * the nearest listed city's point and horizon fills any day the mirror does
- * not have — the ministry publishes a month at a time — and is what the app
- * will serve once the migration plan (docs/prayer-times-sources.md) is
- * carried out. Set true to serve it now.
- */
-let servesCalculation = false;
-export function moroccoServesCalculation(): boolean {
-  return servesCalculation;
-}
-/** Tests: exercise the table path. */
-export function setMoroccoServesCalculationForTests(v: boolean): void {
-  servesCalculation = v;
-}
-/** Each city's point and horizon dip (degrees) as the ministry computes it, fitted to its table. */
-const METHOD_POINTS = moroccoPoints as Record<string, number[]>;
-const MOROCCO_METHOD = 21;
-import { tupleToTimings } from './datasetTuple';
-import type { DatasetDayTuple } from './datasetTuple';
-import { formatLocalDate } from '../utils/date';
-import { fetchWithRetry } from '../utils/fetchWithRetry';
 import { ProviderError } from './errors';
-import { recordServerIndex, type ServerStatus } from '../prayer/dataStatus';
-import type { DataSource, PrayerTimesResult } from './types';
+import type { PrayerTimesResult } from './types';
 
 const PROVIDER = 'habous';
 const DEFAULT_TZ = 'Africa/Casablanca';
-const CACHE_PREFIX = 'habous.dataset.v1.city.';
+const MOROCCO_METHOD = 21;
+/** Each city's point and horizon dips (degrees, sunrise and Maghrib) as the ministry computes it, fitted to its tables. */
+const METHOD_POINTS = moroccoPoints as Record<string, number[]>;
 
 /**
- * Defence-in-depth distance cap, as in the Swedish module and for the same
- * reason — more sharply needed here. No rectangle follows Morocco's eastern
- * border, so `isCoordinateInMorocco` takes in a strip of western Algeria.
- * A user there would otherwise be handed Oujda's table as their own. 200 km
- * is comfortably more than any real Moroccan location is from a listed city
- * — there are 191 of them — while still catching the overspill.
+ * Defence-in-depth distance cap. No rectangle follows Morocco's eastern
+ * border, so `isCoordinateInMorocco` takes in a strip of western Algeria; a
+ * user there is not handed Oujda's times as their own. 200 km is comfortably
+ * more than any real Moroccan location is from a listed city.
  */
 const MAX_DATASET_CITY_KM = 200;
 
-type CityDays = Record<string, DatasetDayTuple>;
-type CityFile = {
-  id: number;
-  city: string;
-  timezone?: string;
-  builtAt: string;
-  days: CityDays;
-};
-type SeedFile = {
-  version: number;
-  builtAt: string;
-  timezone?: string;
-  cities: Record<string, CityDays>;
-};
-type IndexFile = {
-  builtAt?: string;
-  timezone?: string;
-  serverStatus?: ServerStatus;
-  minCoverageDays?: number;
-  deadCities?: number[];
-};
-
 /**
- * The bundled seed, if there is one yet.
+ * The ministry's times for the nearest listed city.
  *
- * `require` rather than `import` on purpose: the file is written by the
- * dataset builder, so a checkout that has never run it does not have one.
- * A missing seed is a provider that always misses and falls through to the
- * computed chain, which is the correct behaviour — not a build failure.
- */
-function loadSeed(): SeedFile {
-  try {
-    return require('./data/habousSeed.json') as SeedFile;
-  } catch {
-    return { version: 0, builtAt: '', cities: {} };
-  }
-}
-
-const seed = loadSeed();
-
-const memCity = new Map<number, CityFile | null>();
-const refreshInFlight = new Set<number>();
-let nextIndexPollAt = 0;
-let indexPollInFlight: Promise<IndexFile | null> | null = null;
-
-/** ±25% so devices do not all wake against the CDN at the same moment. */
-function jitter(ms: number): number {
-  return Math.round(ms * (0.75 + Math.random() * 0.5));
-}
-
-async function loadCachedCity(id: number): Promise<CityFile | null> {
-  if (memCity.has(id)) return memCity.get(id) ?? null;
-  try {
-    const raw = await AsyncStorage.getItem(`${CACHE_PREFIX}${id}`);
-    const parsed = raw ? (JSON.parse(raw) as CityFile) : null;
-    memCity.set(id, parsed);
-    return parsed;
-  } catch {
-    memCity.set(id, null);
-    return null;
-  }
-}
-
-async function pollServerIndex(): Promise<IndexFile | null> {
-  const now = Date.now();
-  if (now < nextIndexPollAt) return null;
-  if (indexPollInFlight) return indexPollInFlight;
-  indexPollInFlight = (async () => {
-    try {
-      const res = await fetchWithRetry(
-        `${HABOUS_DATASET_BASE_URL}/index.json`,
-        { headers: { 'User-Agent': httpUserAgent('Islamic prayer app; dataset') } },
-        { maxAttempts: 2, baseDelayMs: 800, timeoutMs: 7000 },
-      );
-      if (!res.ok) return null;
-      const index = (await res.json()) as IndexFile;
-      const dueAt = Date.now() + jitter(HABOUS_INDEX_POLL_INTERVAL_MS);
-      await recordServerIndex(
-        'habous',
-        {
-          builtAt: index.builtAt ?? null,
-          serverStatus: index.serverStatus,
-          minCoverageDays: index.minCoverageDays ?? null,
-          deadCities: Array.isArray(index.deadCities) ? index.deadCities.length : null,
-        },
-        new Date(dueAt),
-      );
-      return index;
-    } catch {
-      return null;
-    } finally {
-      nextIndexPollAt = Date.now() + jitter(HABOUS_INDEX_POLL_INTERVAL_MS);
-      indexPollInFlight = null;
-    }
-  })();
-  return indexPollInFlight;
-}
-
-async function downloadCity(id: number): Promise<void> {
-  if (refreshInFlight.has(id)) return;
-  refreshInFlight.add(id);
-  try {
-    const res = await fetchWithRetry(
-      `${HABOUS_DATASET_BASE_URL}/cities/${id}.json`,
-      { headers: { 'User-Agent': httpUserAgent('Islamic prayer app; dataset') } },
-      { maxAttempts: 2, baseDelayMs: 800, timeoutMs: 9000 },
-    );
-    if (!res.ok) return;
-    const file = (await res.json()) as CityFile;
-    if (!file || typeof file.days !== 'object') return;
-    await AsyncStorage.setItem(`${CACHE_PREFIX}${id}`, JSON.stringify(file));
-    memCity.set(id, file);
-  } catch {
-    // Silent by design: this is a background refresh, and the answer the
-    // caller is waiting on has already been served from cache or seed.
-  } finally {
-    refreshInFlight.delete(id);
-  }
-}
-
-/**
- * Fire-and-forget freshness. Never awaited by a lookup — the times are
- * already in hand by the time this runs.
- */
-async function maybeRefresh(id: number, cached: CityFile | null): Promise<void> {
-  const index = await pollServerIndex();
-  const serverBuilt = index?.builtAt;
-  if (!cached) {
-    await downloadCity(id);
-    return;
-  }
-  if (serverBuilt && serverBuilt !== cached.builtAt) {
-    await downloadCity(id);
-    return;
-  }
-  // The index was unreachable: fall back to a plain age check so a device
-  // that cannot see the index still refreshes eventually.
-  const age = Date.now() - Date.parse(cached.builtAt);
-  if (Number.isFinite(age) && age > HABOUS_DATASET_REFRESH_TTL_MS) {
-    await downloadCity(id);
-  }
-}
-
-/**
- * The ministry's published times for the nearest listed city.
- *
- * @throws ProviderError('shape') when the coordinate is out of coverage or
- * neither cache nor seed holds the date — the caller then falls through to
- * the computed chain.
+ * @throws ProviderError('shape') when the coordinate is out of coverage —
+ * the caller then falls through to the computed chain.
  */
 export async function getHabousDatasetTimes(params: {
   latitude: number;
@@ -241,11 +45,7 @@ export async function getHabousDatasetTimes(params: {
 }): Promise<PrayerTimesResult> {
   const nearest = nearestMoroccoCity(params.latitude, params.longitude);
   if (!nearest) {
-    throw new ProviderError(
-      PROVIDER,
-      'shape',
-      'No Moroccan city has coordinates yet — run the habous-cities workflow.',
-    );
+    throw new ProviderError(PROVIDER, 'shape', 'No Moroccan city list is bundled.');
   }
   if (nearest.distanceKm > MAX_DATASET_CITY_KM) {
     throw new ProviderError(
@@ -255,95 +55,19 @@ export async function getHabousDatasetTimes(params: {
         `away (> ${MAX_DATASET_CITY_KM} km) — outside the ministry's coverage.`,
     );
   }
-
-  const calculated = (): PrayerTimesResult => {
-    const point = METHOD_POINTS[String(nearest.id)];
-    return {
-      ...computeLocalAdhanTimes({
-        latitude: point?.[0] ?? nearest.lat,
-        longitude: point?.[1] ?? nearest.lng,
-        horizonDipDeg: point?.[2],
-        heightM: point ? undefined : nearest.heightM,
-        date: params.date,
-        calculationMethod: MOROCCO_METHOD,
-        school: 0,
-      }),
-      timezone: DEFAULT_TZ,
-      source: 'local',
-    };
-  };
-  if (servesCalculation) return calculated();
-
-  const dateKey = formatLocalDate(params.date);
-  const cached = await loadCachedCity(nearest.id);
-  void maybeRefresh(nearest.id, cached);
-
-  const fromCache = cached?.days[dateKey];
-  const tuple = fromCache ?? seed.cities?.[String(nearest.id)]?.[dateKey];
-  // Past the published month: the method, at the city's point and horizon.
-  if (!tuple) return calculated();
-
-  const source: DataSource = fromCache ? 'cdn' : 'seed';
+  const point = METHOD_POINTS[String(nearest.id)];
   return {
-    timings: tupleToTimings(tuple),
-    timezone: cached?.timezone ?? seed.timezone ?? DEFAULT_TZ,
-    source,
+    ...computeLocalAdhanTimes({
+      latitude: point?.[0] ?? nearest.lat,
+      longitude: point?.[1] ?? nearest.lng,
+      horizonDipDeg: point?.[2],
+      horizonDipMaghribDeg: point?.[3],
+      heightM: point ? undefined : nearest.heightM,
+      date: params.date,
+      calculationMethod: MOROCCO_METHOD,
+      school: 0,
+    }),
+    timezone: DEFAULT_TZ,
+    source: 'local',
   };
-}
-
-/**
- * Proactively refresh the Moroccan server-index snapshot (throttled the same
- * way as the lookup path), so the statistics panel can report this dataset's
- * coverage whether or not the phone is currently being served by it. The
- * Swedish provider has had this for a while; the panel now reads both, and a
- * panel that can only poll one of two servers reports the other as unknown
- * forever.
- */
-export async function pollServerIndexNow(): Promise<void> {
-  await pollServerIndex();
-}
-
-/**
- * THROW THE CACHED TABLE AWAY AND FETCH IT NOW — issue #56.
- *
- * The ordinary refresh is polite: it asks `index.json` at most every six
- * hours, and only while a lookup is happening. That is right for the case
- * it was built for, which is the builder quietly accumulating another
- * Hijri month.
- *
- * It is wrong for the case that brought this in. When Morocco abolished
- * GMT+1 every row in the cached file became an hour wrong at once, and a
- * device that had polled ten minutes earlier went on serving it for most
- * of a working day. So an offset change resets the poll clock, drops the
- * memo AND the stored copy, and downloads again — the one thing the polite
- * path will not do.
- *
- * Awaited, unlike `maybeRefresh`: the caller is invalidating BEFORE it
- * loads, and the whole point is that the next lookup sees the new file.
- * The seed is left alone — it ships with the app and is replaced by the
- * download, not by this.
- */
-export async function refetchHabousDatasetNow(
-  latitude: number,
-  longitude: number,
-): Promise<void> {
-  const nearest = nearestMoroccoCity(latitude, longitude);
-  if (!nearest || nearest.distanceKm > MAX_DATASET_CITY_KM) return;
-  memCity.delete(nearest.id);
-  nextIndexPollAt = 0;
-  try {
-    await AsyncStorage.removeItem(`${CACHE_PREFIX}${nearest.id}`);
-  } catch {
-    // A stored copy that will not go away is still superseded by the
-    // download below, which overwrites it.
-  }
-  await downloadCity(nearest.id);
-}
-
-/** Test seam: clear the in-process memo (does not touch AsyncStorage). */
-export function _resetHabousDatasetMemoForTests(): void {
-  memCity.clear();
-  refreshInFlight.clear();
-  nextIndexPollAt = 0;
-  indexPollInFlight = null;
 }

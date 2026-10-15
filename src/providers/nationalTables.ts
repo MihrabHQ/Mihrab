@@ -4,15 +4,15 @@
  *
  *   • Singapore — MUIS, one table for the whole country (`muis`)
  *   • Malaysia — JAKIM e-Solat, 59 zones (`jakim`)
- *   • Indonesia — Kemenag (Bimas Islam), 517 regencies and cities (`kemenag`)
+ *   • Indonesia — Kemenag (Bimas Islam), 517 regencies and cities (`kemenag`),
+ *     computed on the phone (its method and correction list)
  *
- * Each has a bundled seed (`data/<id>Seed.json`, the published window at
- * the last app build) and a place list (`data/<id>Places.json`), both
- * written by `tools/national-tables/`.
+ * Singapore and Malaysia have a bundled seed (`data/<id>Seed.json`, the
+ * published window at the last app build) and a place list
+ * (`data/<id>Places.json`), both written by `tools/national-tables/`.
  */
 import {
   JAKIM_DATASET_BASE_URL,
-  KEMENAG_DATASET_BASE_URL,
   MUIS_DATASET_BASE_URL,
   NATIONAL_TABLE_INDEX_POLL_INTERVAL_MS,
   NATIONAL_TABLE_REFRESH_TTL_MS,
@@ -104,17 +104,17 @@ export const jakimTable = createNationalTable({
 export const kemenagTable = createNationalTable({
   id: 'kemenag',
   dataset: 'kemenag',
-  baseUrl: KEMENAG_DATASET_BASE_URL,
   timezone: 'Asia/Jakarta',
   places: placesOf(() => require('./data/kemenagPlaces.json')),
   maxPlaceKm: 200,
-  seed: seedOf(() => require('./data/kemenagSeed.json')),
   refreshTtlMs: NATIONAL_TABLE_REFRESH_TTL_MS,
   indexPollIntervalMs: NATIONAL_TABLE_INDEX_POLL_INTERVAL_MS,
-  // The ministry's own method at the regency's point (`indonesiaMethod.ts`):
-  // what fills a day the repo's copy lacks (Kemenag's site answers only the
-  // project's builders, so there is no live backup); the phone's clock is
-  // the zone.
+  // The ministry's own method at the regency's point (`indonesiaMethod.ts`,
+  // from MihrabHQ/mihrab-methods), with the correction list for the few
+  // times its program rounds the other way (`indonesiaCorrections.json`):
+  // its printed minute, every time, over the days its tables were checked.
+  // Nothing is downloaded; the phone's clock is the zone.
+  servesCalculation: true,
   calculate: (place, date) => {
     const p = KEMENAG_POINTS[String(place.id)];
     const flags = p?.[2] ?? 0;

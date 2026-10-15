@@ -14,6 +14,8 @@ import type { TimingsMap } from '../types/prayer';
 import { formatLocalDate } from '../utils/date';
 import { deviceUtcOffsetMinutes } from '../utils/utcOffset';
 import { AppState } from 'react-native';
+import { SWEDEN_METHOD_ID } from '../providers/swedenMethodId';
+import { isCoordinateInTurkey } from '../utils/turkeyRegion';
 
 export type StoredPrayerData = {
   provider: PrayerDataProviderId;
@@ -129,7 +131,23 @@ function cacheKey(p: Omit<StoredPrayerData, 'months'>): string {
     String(p.school),
     // Empty at the defaults, so nothing cached before these existed is lost.
     calculationPreferencesKey(p.calculationMethod),
+    // The Congress method's revision, where it answers: a day cached under
+    // an earlier one is computed again, not kept.
+    ...(computedByCongressMethod(p) ? [`cm=${CONGRESS_METHOD_REVISION}`] : []),
   ].join('|');
+}
+
+/**
+ * Raised when `congressMethod.ts` changes what it prints. 2: the takdir at
+ * midsummer from about 44.4° north, Isha's angle by country, and Türkiye's
+ * method (13, and Automatic there) computed as Diyanet's rather than asked
+ * of AlAdhan.
+ */
+const CONGRESS_METHOD_REVISION = 2;
+function computedByCongressMethod(p: Omit<StoredPrayerData, 'months'>): boolean {
+  if (p.provider === 'diyanet') return true;
+  if (p.calculationMethod === SWEDEN_METHOD_ID || p.calculationMethod === 13) return true;
+  return p.calculationMethod === 'auto' && isCoordinateInTurkey(p.latitude, p.longitude);
 }
 
 /** Race a promise against a timeout that throws if the promise hangs. */
