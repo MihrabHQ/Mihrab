@@ -33,7 +33,8 @@ Behind the repo, each source has a fallback, in this order:
 ### Scraped or account-only sources, mirrored, no live backup
 
 The phone never asks these sources: their mirror in the repo is what is
-served, and the calculation fills the days it does not have.
+served, and the calculation fills the days it does not have — except Sweden,
+which now serves the calculation (below).
 
 | Source | Into the repo by | Why no live backup | Calculation behind it |
 |---|---|---|---|
@@ -66,9 +67,15 @@ What is left for each:
   times no single point fits, and times within a fraction of a second of the
   rounding point. Needs a year of tables (the site gives three months), to
   confirm the Asr rule in June.
-- **Sweden** (100 % with the correction list; 99.98 % without): differences at a fraction of a second of the
-  rounding point; the site's own copy differs from Diyanet's on ~1.6 % of
-  rows, and those are the site's.
+- **Sweden — switched (October 2026).** The app serves the calculation
+  (`servesCalculation` true in `islamiskaForbundetDataset.ts`): on the printed
+  minute for every time of Diyanet's and Islamiska Förbundet's tables over
+  2024–2027 with the correction list (`swedenCorrections.ts`, from
+  MihrabHQ/mihrab-methods; 99.98 % by the method alone). The list covers the
+  years the tables do and is renewed each year; the mirror and the weekly
+  check stay in place. Where the site's own copy differs from Diyanet's (a
+  year it serves copied, Kiruna printed with Umeå's table), the app follows
+  Diyanet.
 - **Algeria** (99.4 %): a residual of about a second, day to day, in the
   sun the ministry uses — not yet modelled.
 - **Morocco** (98.6 %): a few cities' points and a seasonal 2–3 s drift in

@@ -57,15 +57,15 @@ const CACHE_PREFIX = 'ifis.dataset.v1.city.';
 const MAX_DATASET_CITY_KM = 250;
 
 /**
- * Sweden's times are the mirrored table from the repo (October 2026: the
- * data comes from Mihrab's own repo, never the source directly). The app's
- * own calculation of Diyanet's method (method 24, congressMethod.ts) at the
- * point Diyanet computes each city, with the correction list
- * (swedenCorrections.ts) — on the printed minute for every time over 2024–2027 — fills any day the mirror does not have, and is
- * what the app will serve once the migration plan
- * (docs/prayer-times-sources.md) is carried out. Set true to serve it now.
+ * Sweden's times are the app's own calculation of Diyanet's method (method
+ * 24, congressMethod.ts) at the point Diyanet computes each city, with the
+ * correction list (swedenCorrections.ts): on the printed minute for every
+ * time of Diyanet's and Islamiska Förbundet's tables over 2024–2027
+ * (October 2026, docs/prayer-times-sources.md). The mirrored table path
+ * below is kept for tests and as the way back; nothing is fetched while the
+ * calculation is served.
  */
-let servesCalculation = false;
+let servesCalculation = true;
 export function swedenServesCalculation(): boolean {
   return servesCalculation;
 }
@@ -359,6 +359,7 @@ export async function refetchIslamiskaForbundetDatasetNow(
   latitude: number,
   longitude: number,
 ): Promise<void> {
+  if (servesCalculation) return; // the calculation needs no table
   const { city, distanceKm } = getNearestIslamiskaForbundetCityWithDistance(
     latitude,
     longitude,
