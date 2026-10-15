@@ -51,13 +51,15 @@ def raw_times(lat, lon, dates, sun='m28full', at_event=True):
         t = start.copy()
         for _ in range(3):
             dec, eot = at(t if at_event else noon)
+            if os.environ.get('NV_EOT_NOON'): eot = at(noon)[1]
             c = (np.sin(np.radians(alt_of(dec))) - sp * np.sin(dec)) / (cp * np.cos(dec))
             with np.errstate(invalid='ignore'):
                 h = np.where(np.abs(c) <= 1, np.degrees(np.arccos(np.clip(c, -1, 1))) * 4, np.nan)
             t = 720 - 4 * lon - eot + sign * h
         return t
     K = lambda a: (lambda dec: a)
-    asr = lambda s: (lambda dec: np.degrees(np.arctan(1 / (s + np.tan(np.abs(lat * RAD - dec))))))
+    dnoon = at(noon)[0]
+    asr = lambda s: (lambda dec: np.degrees(np.arctan(1 / (s + np.tan(np.abs(lat * RAD - (dnoon if os.environ.get('NV_ASR_NOON_DEC') else dec)))))))
     return dict(f19=ev(K(-19), -1, noon - 420), f18=ev(K(-18), -1, noon - 420), rise=ev(K(0), -1, noon - 360), noon=noon,
                 asr1=ev(asr(1), 1, noon + 200), asr2=ev(asr(2), 1, noon + 240), set=ev(K(0), 1, noon + 360),
                 i17=ev(K(-17), 1, noon + 420), i19=ev(K(-19), 1, noon + 420))

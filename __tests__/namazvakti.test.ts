@@ -35,6 +35,7 @@ import {
   namazvaktiHeld,
   pollNamazvaktiIndexNow,
   computeNamazvaktiMethodTimes,
+  fitNamazvaktiPoint,
   getNamazvaktiTimes,
   temkinMinutes,
 } from '../src/providers/namazvakti';
@@ -199,7 +200,7 @@ describe('the city index the server builds', () => {
 
 describe('on the phone, without the site', () => {
   // The method, against the site's whole published year for two cities.
-  const compare = (xml: string, lat: number, lon: number, tz: string, heightM: number, tolerance: number) => {
+  const compare = (xml: string, lat: number, lon: number, tz: string, heightM: number, tolerance: number, temkin?: number) => {
     const year = parseNamazvaktiXml(xml, 2026);
     const keys = ['Imsak', 'Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'] as const;
     const min = (s: string) => Number(s.slice(0, 2)) * 60 + Number(s.slice(3));
@@ -211,7 +212,7 @@ describe('on the phone, without the site', () => {
       const [y, m, d] = date.split('-').map(Number);
       // The method formats in the test machine's zone; move each clock into
       // the city's zone, as it would read on a phone there.
-      const calc = computeNamazvaktiMethodTimes({ latitude: lat, longitude: lon, date: new Date(y, m - 1, d), school: 0, heightM }).timings;
+      const calc = computeNamazvaktiMethodTimes({ latitude: lat, longitude: lon, date: new Date(y, m - 1, d), school: 0, heightM, temkin }).timings;
       const shift = zoneOffsetMin(tz, new Date(Date.UTC(y, m - 1, d, 12))) + new Date(y, m - 1, d, 12).getTimezoneOffset();
       for (const k of keys) {
         let diff = Math.abs(((min(calc[k]) + shift + 1440) % 1440) - min(site[k]));
@@ -228,13 +229,29 @@ describe('on the phone, without the site', () => {
     // temkin grows from 10.8 to 19.1 minutes across them. The rest are a
     // minute off: the site's files give a city's point to the arc-minute
     // and it computes with a finer one.
-    expect(compare(ISTANBUL, 41, 29, 'Europe/Istanbul', 500, 0)).toBeGreaterThan(0.97);
+    expect(compare(ISTANBUL, 41, 29, 'Europe/Istanbul', 500, 0)).toBeGreaterThan(0.99);
     expect(compare(ISTANBUL, 41, 29, 'Europe/Istanbul', 500, 1)).toBe(1);
-    expect(compare(COLOGNE, 50.9333, 6.95, 'Europe/Berlin', 250, 0)).toBeGreaterThan(0.9);
-    // One night at Cologne is further: the night the held summer times end, a day apart.
-    expect(compare(COLOGNE, 50.9333, 6.95, 'Europe/Berlin', 250, 1)).toBeGreaterThan(0.998);
-    expect(compare(STOCKHOLM, 59.3167, 18.0667, 'Europe/Stockholm', 250, 0)).toBeGreaterThan(0.93);
-    expect(compare(STOCKHOLM, 59.3167, 18.0667, 'Europe/Stockholm', 250, 1)).toBe(1);
+    expect(compare(COLOGNE, 50.9333, 6.95, 'Europe/Berlin', 250, 0)).toBeGreaterThan(0.88);
+    expect(compare(COLOGNE, 50.9333, 6.95, 'Europe/Berlin', 250, 1)).toBe(1);
+    expect(compare(STOCKHOLM, 59.3167, 18.0667, 'Europe/Stockholm', 250, 0)).toBeGreaterThan(0.95);
+    // The truncated point puts one night Stockholm stops holding a day out.
+    expect(compare(STOCKHOLM, 59.3167, 18.0667, 'Europe/Stockholm', 250, 1)).toBeGreaterThan(0.998);
+  });
+
+  it('is on the site’s minute at the city’s own point, fitted from a year it published', () => {
+    // The files truncate a city's point to the arc-minute; the year itself
+    // gives the finer one (and the city's temkin to a hundredth of a minute).
+    const exact = (xml: string, lat: number, lon: number, tz: string, heightM: number) => {
+      const p = fitNamazvaktiPoint(parseNamazvaktiXml(xml, 2026), { lat, lon, heightM })!;
+      expect(Math.abs(p.lat - lat)).toBeLessThan(1.2 / 60);
+      expect(Math.abs(p.lon - lon)).toBeLessThan(1.2 / 60);
+      return compare(xml, p.lat, p.lon, tz, heightM, 0, p.temkin);
+    };
+    // Stockholm and Cologne every time of 2026, held summer nights and all;
+    // Istanbul all but a few around the December solstice.
+    expect(exact(STOCKHOLM, 59.3167, 18.0667, 'Europe/Stockholm', 250)).toBe(1);
+    expect(exact(COLOGNE, 50.9333, 6.95, 'Europe/Berlin', 250)).toBeGreaterThan(0.999);
+    expect(exact(ISTANBUL, 41, 29, 'Europe/Istanbul', 500)).toBeGreaterThan(0.995);
   });
 
   it('takes the temkin from the latitude and the city height, as the site does', () => {

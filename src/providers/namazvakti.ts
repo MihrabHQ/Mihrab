@@ -48,9 +48,10 @@ import {
 import { formatLocalDate } from '../utils/date';
 import { fetchWithRetry } from '../utils/fetchWithRetry';
 import { formatLocalTime } from '../utils/prayerTimes';
-import { meeusApparentSun } from './moroccoMethod';
+import { preciseApparentSun } from './preciseSun';
 import { ProviderError } from './errors';
 import {
+  NV_COL,
   nearestNvCity,
   nvTilesAround,
   parseNamazvaktiXml,
@@ -442,28 +443,25 @@ export function temkinMinutes(latitude: number, heightM = NAMAZVAKTI_DEFAULT_HEI
 }
 
 /**
- * Solar declination at the night’s lowest sun, degrees (the almanac’s low-precision
- * formula, good to about 0.01°). Precise enough to find the very night the
- * sun stops reaching 19° — a cruder sine curve picked the wrong night at
- * Stockholm and held a time half an hour off for four months.
+ * Does the sun get `angle` degrees below the horizon at all in the night
+ * that ends on the morning of `day`?
+ *
+ * The site counts the night as reaching when the sun's lowest point does
+ * with the declination of either of two moments: the local solar midnight
+ * that begins the day, or 12:00 UT of the day. That rule, and no single
+ * moment, reproduces the first and last held nights of all 61 cities above
+ * 48° in the saved files (spring and autumn, Cologne to Oslo, London to
+ * the Russian Far East) — the midnight alone gets the spring right and
+ * resumes the autumn a night late.
  */
-function declination(day: Date, longitude: number): number {
-  const rad = Math.PI / 180;
-  // At the night's lowest sun — local solar midnight that begins the day.
-  const n =
-    (Date.UTC(day.getFullYear(), day.getMonth(), day.getDate()) - (longitude / 15) * 3_600_000 - Date.UTC(2000, 0, 1, 12)) /
-    86_400_000;
-  const L = 280.46 + 0.9856474 * n;
-  const g = (357.528 + 0.9856003 * n) * rad;
-  const lambda = (L + 1.915 * Math.sin(g) + 0.02 * Math.sin(2 * g)) * rad;
-  const epsilon = (23.439 - 0.0000004 * n) * rad;
-  return Math.asin(Math.sin(epsilon) * Math.sin(lambda)) / rad;
-}
-
-/** Does the sun get `angle` degrees below the horizon at all, that night? */
 function reachesAngle(latitude: number, longitude: number, day: Date, angle: number): boolean {
-  const lowest = Math.abs(latitude + declination(day, longitude)) - 90;
-  return lowest <= -angle;
+  const rad = Math.PI / 180;
+  const base = Date.UTC(day.getFullYear(), day.getMonth(), day.getDate()) - Date.UTC(2000, 0, 1, 12);
+  const decAt = (ms: number) => preciseApparentSun(ms / 86_400_000).dec / rad;
+  const lowest = (dec: number) => Math.abs(latitude + dec) - 90;
+  const midnight = lowest(decAt(base - (longitude / 15) * 3_600_000));
+  const noonUT = lowest(decAt(base + 12 * 3_600_000));
+  return Math.min(midnight, noonUT) <= -angle;
 }
 
 const addDays = (d: Date, n: number) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
@@ -486,14 +484,26 @@ function nightTimesDay(latitude: number, longitude: number, day: Date): Date {
 
 /**
  * The sun's events for a civil date at a point, minutes past 00:00 UT:
- * Meeus's apparent sun at each event's own moment, iterated.
+ * the precise apparent sun (`preciseApparentSun`) at each event's own
+ * moment, iterated. Meeus's shorter series drifts about a second over the
+ * year against the site's sun, which alone cost one time in fifty; the
+ * precise one does not.
  */
-function sunEvents(latitude: number, longitude: number, day: Date) {
+function sunEvents(
+  latitude: number,
+  longitude: number,
+  day: Date,
+  sun: (d: number) => { dec: number; eot: number } = preciseApparentSun,
+) {
   const rad = Math.PI / 180;
   const d0 = (Date.UTC(day.getFullYear(), day.getMonth(), day.getDate()) - Date.UTC(2000, 0, 1)) / 86_400_000 - 0.5;
-  const at = (t: number) => meeusApparentSun(d0 + t / 1440);
+  const at = (t: number) => sun(d0 + t / 1440);
   let noon = 720 - 4 * longitude;
   for (let i = 0; i < 3; i++) noon = 720 - 4 * longitude - at(noon).eot;
+  // Asr's shadow is measured from the noon sun's declination (the hour angle
+  // still from the sun at Asr itself): a third fewer Asr misses than the
+  // declination at Asr.
+  const noonDec = at(noon).dec;
   const sp = Math.sin(latitude * rad);
   const cp = Math.cos(latitude * rad);
   const event = (altitudeOf: (dec: number) => number, sign: 1 | -1, start: number) => {
@@ -506,8 +516,8 @@ function sunEvents(latitude: number, longitude: number, day: Date) {
     return t;
   };
   const level = (a: number) => () => a;
-  const asr = (shadow: number) => (dec: number) =>
-    Math.atan(1 / (shadow + Math.tan(Math.abs(latitude * rad - dec)))) / rad;
+  const asr = (shadow: number) => () =>
+    Math.atan(1 / (shadow + Math.tan(Math.abs(latitude * rad - noonDec)))) / rad;
   return {
     fajr19: () => event(level(-19), -1, noon - 420),
     fajr18: () => event(level(-18), -1, noon - 420),
@@ -533,9 +543,13 @@ function sunEvents(latitude: number, longitude: number, day: Date) {
  *
  * Everything but İmsâk rounded up. Where the sun no longer gets to 19° — a
  * northern summer — the night times of the last night it did are held, as
- * the site does. At the city's own point the site's minute about 95 % of
- * the time and the rest one minute off; the site's files give a city's
- * point only to the arc-minute, and it computes with a finer one.
+ * the site does. The site's files give a city's point only to the
+ * arc-minute, and it computes with a finer one: at the listed point the
+ * site's minute about 94 % of the time (the rest one minute off); at the
+ * point fitted from a year it published (`fitNamazvaktiPoint`, with the
+ * city's `temkin`) all but about one time in a thousand — 118 saved cities
+ * from 42°S to 60°N, 301,392 times: 46 with none off, 102 with two or
+ * fewer in the year, and five south of Stockholm that fit no point.
  */
 export function computeNamazvaktiMethodTimes(params: {
   latitude: number;
@@ -544,9 +558,11 @@ export function computeNamazvaktiMethodTimes(params: {
   school: number;
   /** The nearest listed city's height, when known. */
   heightM?: number;
+  /** The city's own temkin, when fitted from its year (`fitNamazvaktiPoint`). */
+  temkin?: number;
 }): PrayerTimesResult {
   const height = params.heightM ?? NAMAZVAKTI_DEFAULT_HEIGHT_M;
-  const T = temkinExact(params.latitude, height);
+  const T = params.temkin ?? temkinExact(params.latitude, height);
   const { latitude, longitude } = params;
   const day = new Date(params.date.getFullYear(), params.date.getMonth(), params.date.getDate());
   const instant = (on: Date, minutes: number, round: 'up' | 'down') => {
@@ -577,11 +593,177 @@ export function computeNamazvaktiMethodTimes(params: {
   };
 }
 
+/** A city's point as the site computes it, and its temkin. */
+export type NamazvaktiFittedPoint = { lat: number; lon: number; temkin: number; misses: number; checked: number };
+
+/**
+ * The site's own point for a city, and its temkin, from a year it published.
+ *
+ * The site's files give a city's latitude and longitude only to the
+ * arc-minute (truncated), and it computes with finer ones; its temkin also
+ * strays from the solstice formula by a few hundredths of a minute. At the
+ * truncated point a twentieth of its times come out a minute off; at the
+ * fitted one almost none (about one a year per city, against JPL's sun).
+ *
+ * Every published time is a band its exact time must fall in. With the
+ * latitude fixed, a longitude change moves every time by the same amount
+ * a, and the temkin moves the times that carry it by ±T — so for each
+ * candidate latitude and temkin the best a is the deepest overlap of the
+ * bands, found on a grid. Whole hours (and half and quarter hours) of
+ * clock offset fall away: each band is taken modulo a quarter of an hour.
+ */
+export function fitNamazvaktiPoint(
+  year: Pick<NamazvaktiYear, 'days'>,
+  city: { lat: number; lon: number; heightM?: number },
+): NamazvaktiFittedPoint | null {
+  const keys = Object.keys(year.days).sort();
+  if (keys.length < 30) return null;
+  const T0 = temkinExact(city.lat, city.heightM ?? NAMAZVAKTI_DEFAULT_HEIGHT_M);
+  // The sun at each 0h UT across the year, interpolated (quadratically) between.
+  const first = new Date(`${keys[0]}T00:00:00Z`);
+  const dFirst = (first.getTime() - Date.UTC(2000, 0, 1)) / 86_400_000 - 0.5 - 2;
+  const samples: { dec: number; eot: number }[] = [];
+  const last = new Date(`${keys[keys.length - 1]}T00:00:00Z`);
+  const span = Math.round((last.getTime() - first.getTime()) / 86_400_000) + 5;
+  for (let k = 0; k <= span; k++) samples.push(preciseApparentSun(dFirst + k));
+  const sun = (d: number) => {
+    const x = d - dFirst;
+    const k = Math.min(samples.length - 2, Math.max(1, Math.round(x)));
+    const u = x - k;
+    const q = (f: (s: { dec: number; eot: number }) => number) => {
+      const a = f(samples[k - 1]), b = f(samples[k]), c = f(samples[k + 1]);
+      return b + (u * (c - a)) / 2 + (u * u * (c - 2 * b + a)) / 2;
+    };
+    return { dec: q(s => s.dec), eot: q(s => s.eot) };
+  };
+  // What each column is: its time from the events, how T enters (s), its fixed add, its rounding.
+  const COLS: { col: number; s: number; add: number; up: boolean; night: boolean; ev: (e: ReturnType<typeof sunEvents>) => number }[] = [
+    { col: NV_COL.imsak, s: -1, add: 0, up: false, night: true, ev: e => e.fajr19() },
+    { col: NV_COL.sabah, s: 0, add: 0, up: true, night: true, ev: e => e.fajr18() },
+    { col: NV_COL.sunrise, s: -1, add: -2, up: true, night: false, ev: e => e.sunrise() },
+    { col: NV_COL.dhuhr, s: 1, add: 0, up: true, night: false, ev: e => e.noon },
+    { col: NV_COL.asr, s: 1, add: 0, up: true, night: false, ev: e => e.asr(1) },
+    { col: NV_COL.maghrib, s: 1, add: 2, up: true, night: false, ev: e => e.sunset() },
+    { col: NV_COL.isha, s: 1, add: 0, up: true, night: true, ev: e => e.isha17() },
+  ];
+  const published = keys.map(k => {
+    const row = year.days[k];
+    return COLS.map(c => {
+      const m = /^(\*?)(\d{1,2}):(\d{2})$/.exec((row[c.col] ?? '').trim());
+      // Held night times (`*`) are not the day's own.
+      if (!m || (m[1] && c.night)) return NaN;
+      return Number(m[2]) * 60 + Number(m[3]);
+    });
+  });
+  // A held time repeats the night it was held from: that night counts once more for each day it stands for.
+  const weight = published.map(row => row.map(() => 1));
+  COLS.forEach((c, j) => {
+    let from = -1;
+    keys.forEach((k, i) => {
+      if (Number.isFinite(published[i][j])) from = i;
+      else if (from >= 0 && c.night && (year.days[k][c.col] ?? '').trim().startsWith('*')) weight[from][j]++;
+    });
+  });
+  const days = keys.map(k => {
+    const [y, mo, d] = k.split('-').map(Number);
+    return new Date(y, mo - 1, d);
+  });
+  const sign = (v: number) => (v < 0 ? -1 : 1);
+  const STEP = 0.0005; // minutes of a
+  const SPAN = 0.6;
+  const NB = Math.round((2 * SPAN) / STEP) + 1;
+  const hist = new Int32Array(NB + 1);
+  type Band = { lo: number; s: number; w: number };
+  /** The bands of every published time, at a latitude: a + s·dT ∈ [lo, lo + 1). */
+  const bandsAt = (lat: number): Band[] => {
+    const out: Band[] = [];
+    days.forEach((day, i) => {
+      const e = sunEvents(lat, city.lon, day, sun);
+      COLS.forEach((c, j) => {
+        const o = published[i][j];
+        const x = c.ev(e);
+        if (!Number.isFinite(o) || !Number.isFinite(x)) return;
+        // Published minute o: rounded up, o − 1 < x + add + s·T + a + zone ≤ o.
+        let r = o - (x + c.add + c.s * T0) - (c.up ? 1 : 0);
+        r -= 15 * Math.round(r / 15);
+        out.push({ lo: r, s: c.s, w: weight[i][j] });
+      });
+    });
+    return out;
+  };
+  /** The deepest overlap of the bands over a, at a temkin change dT: [count, a]. */
+  const bestA = (bands: Band[], dT: number): [number, number] => {
+    hist.fill(0);
+    for (const b of bands) {
+      const lo = b.lo - b.s * dT;
+      const i0 = Math.max(0, Math.ceil((lo + SPAN) / STEP - 1e-9));
+      const i1 = Math.min(NB, Math.ceil((lo + 1 + SPAN) / STEP - 1e-9));
+      if (i0 >= i1) continue;
+      hist[i0] += b.w;
+      hist[i1] -= b.w;
+    }
+    let run = 0, best = -1, bi = 0, bj = 0;
+    for (let i = 0; i < NB; i++) {
+      run += hist[i];
+      if (run > best) { best = run; bi = bj = i; } else if (run === best && bj === i - 1) bj = i;
+    }
+    return [best, ((bi + bj) / 2) * STEP - SPAN];
+  };
+  let best = { count: -1, dLat: 0, dT: 0, a: 0, n: 0 };
+  const tryLat = (dLat: number, dTs: number[]) => {
+    const bands = bandsAt(city.lat + sign(city.lat) * dLat);
+    const n = bands.reduce((s, b) => s + b.w, 0);
+    for (const dT of dTs) {
+      const [count, a] = bestA(bands, dT);
+      if (count > best.count) best = { count, dLat, dT, a, n };
+    }
+  };
+  const range = (lo: number, hi: number, step: number) => {
+    const out: number[] = [];
+    for (let v = lo; v <= hi + 1e-12; v += step) out.push(v);
+    return out;
+  };
+  // Coarse: the truncation box (0 to 1′ from the zero side), T within ±0.06.
+  for (const dLat of range(0, 1 / 60, 0.1 / 60)) tryLat(dLat, range(-0.06, 0.06, 0.005));
+  // Fine, around the best.
+  const c0 = best;
+  for (const dLat of range(c0.dLat - 0.1 / 60, c0.dLat + 0.1 / 60, 0.01 / 60)) {
+    tryLat(dLat, range(c0.dT - 0.005, c0.dT + 0.005, 0.0005));
+  }
+  return {
+    lat: city.lat + sign(city.lat) * best.dLat,
+    // a = −4·Δlon (minutes per degree), the band offsets carry the times' shift.
+    lon: city.lon - best.a / 4,
+    temkin: T0 + best.dT,
+    misses: best.n - best.count,
+    checked: best.n,
+  };
+}
+
+/** City id → its fitted point (null: no year held, or none that fits). */
+const memFits = new Map<number, NamazvaktiFittedPoint | null>();
+
+/**
+ * The site's own point for a listed city, fitted from the year the phone
+ * holds for it (`fitNamazvaktiPoint`), or null when it holds none. A fit
+ * that leaves more than one time in a hundred off is not used. Kept for
+ * the session: the point does not change from year to year.
+ */
+export async function namazvaktiCityPoint(city: NvCity): Promise<NamazvaktiFittedPoint | null> {
+  if (memFits.has(city.id)) return memFits.get(city.id)!;
+  const year = await loadYear(city.id, '', true).catch(() => null);
+  const fit = year ? fitNamazvaktiPoint(year, city) : null;
+  const usable = fit && fit.misses <= 0.01 * fit.checked ? fit : null;
+  if (year) memFits.set(city.id, usable);
+  return usable;
+}
+
 /** Drop what is held for the nearest city and fetch its year again. */
 export async function refetchNamazvaktiNow(latitude: number, longitude: number): Promise<void> {
   const city = await nearestNamazvaktiCity(latitude, longitude).catch(() => null);
   if (!city) return;
   memYears.delete(city.id);
+  memFits.delete(city.id);
   failedAt.delete(city.id);
   try {
     await AsyncStorage.removeItem(`${CITY_PREFIX}${city.id}`);
@@ -596,6 +778,7 @@ export function _resetNamazvaktiForTests(): void {
   memTiles.clear();
   tileInFlight.clear();
   memYears.clear();
+  memFits.clear();
   yearInFlight.clear();
   failedAt.clear();
   noTable = null;

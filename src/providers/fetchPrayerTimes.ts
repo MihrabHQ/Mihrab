@@ -5,7 +5,7 @@ import { fetchIslamiskaForbundetTimes } from './islamiskaForbundet';
 import { getIslamiskaForbundetDatasetTimes } from './islamiskaForbundetDataset';
 import { getHabousDatasetTimes } from './habousDataset';
 import { getMarwDatasetTimes } from './marwDataset';
-import { computeNamazvaktiMethodTimes, getNamazvaktiTimes, nearestNamazvaktiCity } from './namazvakti';
+import { computeNamazvaktiMethodTimes, getNamazvaktiTimes, namazvaktiCityPoint, nearestNamazvaktiCity } from './namazvakti';
 import { nationalTableFor } from './nationalTables';
 import { computeLocalAdhanTimes } from './localAdhan';
 import { autoMethodForCoords } from './autoMethod';
@@ -301,13 +301,17 @@ export async function fetchPrayerTimesUnified(
       // The nearest listed city's height, if its tile is on the phone — it
       // sets the temkin (Istanbul's 500 m is a minute more than 250 m).
       const near = await nearestNamazvaktiCity(p.latitude, p.longitude, true).catch(() => null);
-      // At the city's own point, as the site computes it, when one is near.
+      // At the city's own point, as the site computes it, when one is near —
+      // to the site's own precision when the phone holds a year of the
+      // city's to fit it from (the listed point is cut to the arc-minute).
+      const point = near ? await namazvaktiCityPoint(near).catch(() => null) : null;
       const local = computeNamazvaktiMethodTimes({
-        latitude: near?.lat ?? p.latitude,
-        longitude: near?.lon ?? p.longitude,
+        latitude: point?.lat ?? near?.lat ?? p.latitude,
+        longitude: point?.lon ?? near?.lon ?? p.longitude,
         date: p.date,
         school: p.school,
         heightM: near?.heightM,
+        temkin: point?.temkin,
       });
       validateTimingShape(local.timings);
       return local;
