@@ -272,6 +272,8 @@ export async function fetchPrayerTimesUnified(
           longitude: place?.lon ?? p.longitude,
           heightM: place?.heightM,
           horizonMin: place?.horizonMin,
+          // A JAKIM zone's times are the zone's (`malaysiaMethod.ts`).
+          jakimZone: p.provider === 'jakim' && place ? place.id : undefined,
           date: p.date,
           calculationMethod: p.provider === 'muis' ? 11 : p.provider === 'jakim' ? 17 : 20,
           school: 0,

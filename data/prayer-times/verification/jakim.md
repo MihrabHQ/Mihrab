@@ -2,16 +2,16 @@
 
 Method 17 · 59 of 59 places · 5074 place-days (2026-10-07 → 2026-12-31) · table built 2026-10-14
 
-**91.4% within 1 min** over the well-placed places, 2609 of 30444 outside, worst 6 min · Imsak printed 10 min before Fajr
+**94.9% within 0 min** over the well-placed places, 1543 of 30444 outside, worst 1 min · Imsak printed 10 min before Fajr
 
 | | within | mean | worst | distribution (minutes, ours − theirs) |
 |---|---|---|---|---|
-| Fajr | 93.8% | +0.12 | 6 | -2: 175, -1: 1101, 0: 2136, +1: 1521, +2: 55, +4: 9, +5: 72, +6: 5 |
-| Sunrise | 73.0% | -0.07 | 3 | -3: 94, -2: 608, -1: 1235, 0: 1431, +1: 1036, +2: 652, +3: 18 |
-| Dhuhr | 97.8% | -0.01 | 2 | -2: 104, -1: 1097, 0: 2647, +1: 1220, +2: 6 |
-| Asr | 96.8% | -0.02 | 2 | -2: 130, -1: 1057, 0: 2678, +1: 1179, +2: 30 |
-| Maghrib | 96.5% | +0.09 | 10 | -3: 18, -2: 133, -1: 890, 0: 2631, +1: 1342, +2: 29, +9: 21, +10: 10 |
-| Isha | 90.7% | +0.03 | 5 | -4: 51, -3: 61, -2: 161, -1: 1017, 0: 2382, +1: 1204, +2: 29, +3: 66, +4: 101, +5: 2 |
+| Fajr | 96.4% | +0.01 | 1 | -1: 57, 0: 4889, +1: 128 |
+| Sunrise | 94.4% | -0.02 | 1 | -1: 201, 0: 4791, +1: 82 |
+| Dhuhr | 96.7% | -0.01 | 1 | -1: 117, 0: 4906, +1: 51 |
+| Asr | 91.7% | -0.03 | 1 | -1: 288, 0: 4654, +1: 132 |
+| Maghrib | 95.7% | +0.06 | 9 | -1: 94, 0: 4826, +1: 123, +8: 20, +9: 11 |
+| Isha | 94.7% | +0.03 | 1 | -1: 60, 0: 4804, +1: 210 |
 
 31 row(s) set aside as understood (tools/verify-methods/accepted.json).
 
@@ -19,30 +19,30 @@ Method 17 · 59 of 59 places · 5074 place-days (2026-10-07 → 2026-12-31) · t
 
 | place | date | prayer | table | ours | diff |
 |---|---|---|---|---|---|
-| Gunung Jerai (KDH07) | 2026-10-11 | Fajr | 05:51 | 05:57 | +6 |
-| Gunung Jerai (KDH07) | 2026-10-12 | Fajr | 05:51 | 05:57 | +6 |
-| Gunung Jerai (KDH07) | 2026-11-12 | Fajr | 05:50 | 05:56 | +6 |
-| Gunung Jerai (KDH07) | 2026-11-13 | Fajr | 05:50 | 05:56 | +6 |
-| Gunung Jerai (KDH07) | 2026-11-18 | Fajr | 05:51 | 05:57 | +6 |
-| Gunung Jerai (KDH07) | 2026-10-07 | Fajr | 05:52 | 05:57 | +5 |
-| Gunung Jerai (KDH07) | 2026-10-08 | Fajr | 05:52 | 05:57 | +5 |
-| Gunung Jerai (KDH07) | 2026-10-09 | Fajr | 05:52 | 05:57 | +5 |
-| Gunung Jerai (KDH07) | 2026-10-10 | Fajr | 05:52 | 05:57 | +5 |
-| Gunung Jerai (KDH07) | 2026-10-13 | Fajr | 05:51 | 05:56 | +5 |
-| Gunung Jerai (KDH07) | 2026-10-14 | Fajr | 05:51 | 05:56 | +5 |
-| Gunung Jerai (KDH07) | 2026-10-15 | Fajr | 05:51 | 05:56 | +5 |
-| Gunung Jerai (KDH07) | 2026-10-16 | Fajr | 05:51 | 05:56 | +5 |
-| Gunung Jerai (KDH07) | 2026-10-17 | Fajr | 05:51 | 05:56 | +5 |
-| Gunung Jerai (KDH07) | 2026-10-18 | Fajr | 05:51 | 05:56 | +5 |
-| Gunung Jerai (KDH07) | 2026-10-19 | Fajr | 05:51 | 05:56 | +5 |
-| Gunung Jerai (KDH07) | 2026-10-21 | Fajr | 05:50 | 05:55 | +5 |
-| Gunung Jerai (KDH07) | 2026-10-22 | Fajr | 05:50 | 05:55 | +5 |
-| Gunung Jerai (KDH07) | 2026-10-23 | Fajr | 05:50 | 05:55 | +5 |
-| Gunung Jerai (KDH07) | 2026-10-24 | Fajr | 05:50 | 05:55 | +5 |
-| Gunung Jerai (KDH07) | 2026-10-25 | Fajr | 05:50 | 05:55 | +5 |
-| Gunung Jerai (KDH07) | 2026-10-26 | Fajr | 05:50 | 05:55 | +5 |
-| Gunung Jerai (KDH07) | 2026-10-27 | Fajr | 05:50 | 05:55 | +5 |
-| Gunung Jerai (KDH07) | 2026-10-28 | Fajr | 05:50 | 05:55 | +5 |
-| Gunung Jerai (KDH07) | 2026-10-29 | Fajr | 05:50 | 05:55 | +5 |
+| Alor Setar (KDH01) | 2026-10-07 | Sunrise | 07:03 | 07:04 | +1 |
+| Alor Setar (KDH01) | 2026-10-07 | Dhuhr | 13:08 | 13:09 | +1 |
+| Alor Setar (KDH01) | 2026-10-07 | Maghrib | 19:08 | 19:09 | +1 |
+| Sungai Petani (KDH02) | 2026-10-07 | Dhuhr | 13:07 | 13:08 | +1 |
+| Kuala Nerang (KDH03) | 2026-10-07 | Sunrise | 07:01 | 07:02 | +1 |
+| Kuala Nerang (KDH03) | 2026-10-07 | Dhuhr | 13:07 | 13:08 | +1 |
+| Kuala Nerang (KDH03) | 2026-10-07 | Maghrib | 19:07 | 19:08 | +1 |
+| Baling (KDH04) | 2026-10-07 | Sunrise | 07:01 | 07:02 | +1 |
+| Baling (KDH04) | 2026-10-07 | Dhuhr | 13:06 | 13:07 | +1 |
+| Kulim (KDH05) | 2026-10-07 | Sunrise | 07:02 | 07:03 | +1 |
+| Kulim (KDH05) | 2026-10-07 | Dhuhr | 13:07 | 13:08 | +1 |
+| Kulim (KDH05) | 2026-10-07 | Maghrib | 19:07 | 19:08 | +1 |
+| Langkawi (KDH06) | 2026-10-07 | Sunrise | 07:06 | 07:07 | +1 |
+| Langkawi (KDH06) | 2026-10-07 | Dhuhr | 13:10 | 13:11 | +1 |
+| Gunung Jerai (KDH07) | 2026-10-07 | Sunrise | 06:59 | 07:00 | +1 |
+| Gunung Jerai (KDH07) | 2026-10-07 | Dhuhr | 13:07 | 13:08 | +1 |
+| Gunung Jerai (KDH07) | 2026-10-07 | Maghrib | 19:11 | 19:12 | +1 |
+| Kota Bharu (KTN01) | 2026-10-07 | Maghrib | 19:02 | 19:01 | -1 |
+| Gerik (PRK03) | 2026-10-07 | Fajr | 05:55 | 05:54 | -1 |
+| Teluk Intan (PRK05) | 2026-10-07 | Asr | 16:20 | 16:21 | +1 |
+| Limbang (SWK01) | 2026-10-07 | Maghrib | 18:11 | 18:10 | -1 |
+| Jerteh (TRG02) | 2026-10-07 | Sunrise | 06:56 | 06:57 | +1 |
+| Kuala Berang (TRG03) | 2026-10-07 | Asr | 16:14 | 16:13 | -1 |
+| Dungun (TRG04) | 2026-10-07 | Maghrib | 18:59 | 18:58 | -1 |
+| Alor Setar (KDH01) | 2026-10-08 | Sunrise | 07:03 | 07:04 | +1 |
 
 </details>

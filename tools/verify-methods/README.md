@@ -296,6 +296,44 @@ the rounding point, where the ministry's sun and this one part.
 
 - The `kemenag` check compares to the minute, at those points and classes.
 
+## Malaysia: JAKIM's zone times, to the minute where read
+
+The reference is JAKIM's e-Solat year for all 59 zones, 2024, 2025 and
+2026 (`jakim-year-fetch.py <out> [year]`; the API answers past years).
+A zone's time is not one town's:
+
+- **The extreme over a few points of the zone.** Every time is the latest
+  of the times at two or three points (the earliest, for sunrise, which
+  ends Fajr), then a margin, then the minute rounded up — Fajr and Isha
+  18°, sunrise and Maghrib at −0°50′, Asr at its length plus the noon
+  shadow, the precise sun at each moment. One point per zone leaves a
+  seasonal drift of a minute and more; the latest of three takes Kuala
+  Lumpur's Fajr from 87 misses a year to 1. The points and margins are
+  fitted per zone and prayer on 2025–2026 (`/tmp` scripts:
+  greedy on a 0.05° grid, then refined), stored in
+  `src/providers/data/jakimMethodZones.json`.
+- **Johor's and Pahang's Asr** take the noon shadow from the declination at
+  00:00 UT of the day, as Kemenag's does: 0–3 misses in three years where
+  the declination at Asr gives 170.
+
+**Result:** on JAKIM's minute for 95.1 % of 2025 and 95.1 % of 2026, 99.9 %
+within a minute; 2024, held out of the fit, 92.5 % (98.7 % within a minute
+— Perlis and Gunung Kinabalu printed other figures that year, and NGS02's
+2025 table has eleven days in a twelve-hour clock). What is not read yet:
+
+- **Dhuhr in Johor, Pahang and Kedah** (about 36 a year per zone): the
+  offset from the transit steps by 15–30 s from week to week, largest when
+  the noon sun is near the zenith; no rounding, sun time or eot formula
+  tried reproduces it. Kedah's seven zones print the same Dhuhr pattern
+  shifted by whole minutes, as do JHR02, JHR04 and PHG02.
+- **Asr in Negeri Sembilan, Penang and Perak** (60–85 a year per zone), not
+  smooth enough for any seasonal correction.
+- **Kedah** generally (20–130 a year per column).
+
+These look like each state's own software. The app serves JAKIM's table
+where it has one; this calculation is what it falls back to past the
+published year.
+
 ## Türkiye Takvimi: the calendar's method, to the minute
 
 The reference is the site's own year for 54 cities from 42°S to 60°N

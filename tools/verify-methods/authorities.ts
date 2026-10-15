@@ -31,6 +31,8 @@ export type Place = {
   horizonDipDeg?: number;
   /** Kemenag's Papuan highland regencies: the highland degree on Fajr and Isha too. */
   twilightDip?: boolean;
+  /** A JAKIM zone (1-based): its times are the zone's (`malaysiaMethod.ts`). */
+  jakimZone?: number;
 };
 
 export type Authority = {
@@ -253,12 +255,14 @@ export const AUTHORITIES: Authority[] = [
     folder: 'malaysia',
     method: 17,
     school: 0,
-    toleranceMin: 1,
-    // A zone's single time is computed for a reference point the ministry
-    // chose; our place is its first listed town. Two minutes either way is
-    // the zone, not the method.
-    maxOutsideShare: 0.1,
-    hardMaxMin: 8,
+    // A zone's time is the extreme over a few points of it, fitted per zone
+    // and prayer (malaysiaMethod.ts, jakimMethodZones.json): the check is to
+    // the minute. About 5 % land a minute the other side — some states'
+    // Dhuhr and Asr, and Kedah's times, follow a rule not yet read
+    // (tools/verify-methods/README.md).
+    toleranceMin: 0,
+    maxOutsideShare: 0.07,
+    hardMaxMin: 1,
     alarm: true,
     places: () => {
       const { JAKIM_ZONES } = require('../national-tables/jakim-zones') as {
@@ -271,6 +275,7 @@ export const AUTHORITIES: Authority[] = [
         lon: z.towns[0][2],
         tz: 'Asia/Kuala_Lumpur',
         heightM: z.towns[0][3],
+        jakimZone: i + 1,
       }));
     },
   },

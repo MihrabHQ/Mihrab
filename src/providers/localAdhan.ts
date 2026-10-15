@@ -28,6 +28,7 @@ import { congressTimes } from './congressMethod';
 import { algeriaTimes } from './algeriaMethod';
 import { moroccoTimes, MOROCCO_DIP_PER_SQRT_M } from './moroccoMethod';
 import { kemenagTimes } from './indonesiaMethod';
+import { jakimTimes } from './malaysiaMethod';
 
 // ── METHOD IDS ARE ALADHAN'S, AND SO ARE THE ANGLES ───────────────────
 //
@@ -161,7 +162,10 @@ function parametersForMethod(methodId: number): CalculationParameters {
       // land within a minute of the zone's table; the rest of the spread
       // is the zone's own reference point against the town matched to.
       // Where the table is available the app serves that (the 'jakim'
-      // provider); this is the method it falls back to past 31 December.
+      // provider). For a zone (`jakimZone`) the fallback past 31 December
+      // is the zone's own computation (`malaysiaMethod.ts`), on JAKIM's
+      // minute about 95 % of the time and within one otherwise; these
+      // angles are for a point outside the zones.
       return angles(18, 18, { fajr: 1.5, sunrise: -0.5, dhuhr: 2.4, asr: 1.5, maghrib: 1.5, isha: 1.3 });
     case 18:
       // Tunisia: 18° / 18°.
@@ -344,6 +348,12 @@ type LocalAdhanParams = {
    * taken off Fajr and Isha as well (`indonesiaMethod.ts`).
    */
   twilightDip?: boolean;
+  /**
+   * The JAKIM zone (1-based, as `jakim-zones.ts` orders them) whose times
+   * these are: method 17 then computes the zone's own (`malaysiaMethod.ts`),
+   * not a point's.
+   */
+  jakimZone?: number;
 };
 
 /**
@@ -429,6 +439,11 @@ export function computeLocalAdhanInstants(params: LocalAdhanParams): PrayerInsta
     const at = congressTimes(latitude, params.longitude, y, m, day, params.school === 1 ? 2 : 1);
     return { fajr: toMinute(at.fajr), sunrise: toMinute(at.sunrise), dhuhr: toMinute(at.dhuhr), asr: toMinute(at.asr), maghrib: toMinute(at.maghrib), isha: toMinute(at.isha) };
   }
+  if (methodId === JAKIM_METHOD_ID_LOCAL && params.jakimZone != null) {
+    // The zone's times as JAKIM computes them (`malaysiaMethod.ts`), on the minute.
+    const at = jakimTimes(params.jakimZone, y, m, day, params.school === 1 ? 2 : 1);
+    if (at) return at;
+  }
   if (methodId === KEMENAG_METHOD_ID_LOCAL) {
     // The ministry's method (`indonesiaMethod.ts`), on the minute as it prints.
     const at = kemenagTimes(params.latitude, params.longitude, y, m, day, {
@@ -474,6 +489,7 @@ export function computeLocalAdhanInstants(params: LocalAdhanParams): PrayerInsta
 const ALGERIA_SIGNED_SHADOW_METHOD_ID = 19;
 const MOROCCO_METHOD_ID_LOCAL = 21;
 const KEMENAG_METHOD_ID_LOCAL = 20;
+const JAKIM_METHOD_ID_LOCAL = 17;
 
 export { SWEDEN_METHOD_ID };
 

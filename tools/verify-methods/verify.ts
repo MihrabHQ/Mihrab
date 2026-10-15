@@ -238,6 +238,7 @@ export function verifyAuthority(a: Authority, accepted: Accepted[]): Report {
         horizonMin: place.horizonMin,
         horizonDipDeg: place.horizonDipDeg,
         twilightDip: place.twilightDip,
+        jakimZone: place.jakimZone,
         date: new Date(y, m - 1, d),
         calculationMethod: a.method,
         school: a.school,
