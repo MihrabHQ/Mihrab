@@ -156,7 +156,7 @@ class Solar {
   }
 }
 
-type RiseSet = { sr: number; ss: number };
+type RiseSet = { sr: number; ss: number; held?: boolean };
 type Ramp = { edge: DayKey; T: number; far: DayKey | null };
 
 /** The method for one place and one year; everything it needs of the year is worked out once. */
@@ -216,7 +216,22 @@ class CongressYear {
     // the day no shorter than five hours about the printed Dhuhr, each end on its own; then the night
     sr = Math.max(Math.min(sr, dhuhr - half), nsr);
     ss = Math.min(Math.max(ss, dhuhr + half), nss);
-    const rs = { sr, ss };
+    // where midsummer anchors the season, Maghrib is held at the latest since midsummer until it
+    // falls of itself (Torsby, whose midsummer night is just over five hours: its sunset still
+    // gets later for a few days after the solstice, and the table holds midsummer's Maghrib)
+    let held: boolean | undefined;
+    if (this.midsummerFloors(day)) {
+      const mid = midsummerOf(day);
+      if (day === mid) held = true;
+      else if (day > mid) {
+        const prev = this.riseSet(day - 1);
+        if (prev.held && ss > prev.ss) {
+          ss = prev.ss;
+          held = true;
+        }
+      }
+    }
+    const rs = { sr, ss, held };
     this.riseSets.set(day, rs);
     return rs;
   }
