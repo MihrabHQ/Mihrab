@@ -1274,4 +1274,12 @@ Changed the release cycle itself:
   - `scripts/release/build.ts`
   - `scripts/release/publish.ts`
 
-**Lesson:** _(unfilled)_
+**Lesson:** the cycle change was the dataset jobs: the authorities'
+tables moved to the private mihrab-methods-data, and the namazvakti.com
+mirror became release assets. Its first run failed at the upload — 512
+files replaced at once trip GitHub's secondary rate limit (about 500
+content-creating requests an hour, and `--clobber` is two) — so a run now
+fills files one after another and uploads them paced and retried
+(b7b96f86). Anything that writes release assets in bulk has to be paced
+from the start. And run `npx jest --ci --runInBand` before a release, as
+2.31.0 said: it passed here, in six minutes.
