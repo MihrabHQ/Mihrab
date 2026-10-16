@@ -257,7 +257,7 @@ function renderPage(code, langs, version) {
     softwareVersion: version.versionName,
     url: `${ORIGIN}${t.path}`,
     inLanguage: code,
-    image: `${ORIGIN}/assets/img/og-hero.png?v=2026-10-16`,
+    image: `${ORIGIN}/assets/img/og-hero.png?v=2026-10-16b`,
     description: t.description,
     isAccessibleForFree: true,
     offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
@@ -308,14 +308,14 @@ ${hreflang(langs)}
 <meta property="og:title" content="${esc(t.title)}">
 <meta property="og:description" content="${esc(t.description)}">
 <meta property="og:url" content="${ORIGIN}${t.path}">
-<meta property="og:image" content="${ORIGIN}/assets/img/og-hero.png?v=2026-10-16">
+<meta property="og:image" content="${ORIGIN}/assets/img/og-hero.png?v=2026-10-16b">
 <meta property="og:image:width" content="1600">
 <meta property="og:image:height" content="900">
 <meta property="og:locale" content="${code}">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${esc(t.title)}">
 <meta name="twitter:description" content="${esc(t.description)}">
-<meta name="twitter:image" content="${ORIGIN}/assets/img/og-hero.png?v=2026-10-16">
+<meta name="twitter:image" content="${ORIGIN}/assets/img/og-hero.png?v=2026-10-16b">
 <script type="application/ld+json">
 ${ld(app)}
 </script>

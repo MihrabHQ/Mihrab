@@ -143,6 +143,8 @@ sheet at 05:00, duas at 08:30, tasbih at 19:25, the log at 17:30 and
 fasting at 10:00 — Casablanca, 17–18 October. The widget figures are
 unchanged. The practice graph was filled with the Log's "Fill the past
 three months", and the tajweed colour pages downloaded on the emulator.
+`github-hero.png` / `og-hero.png` were then rebuilt from this set —
+`and-home` (sunset), `and-mushaf` and `and-duas` — with `compose_wide.hero`.
 
 Two emulator traps from this pass:
 
