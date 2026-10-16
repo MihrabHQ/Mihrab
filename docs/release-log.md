@@ -1251,3 +1251,27 @@ exit and then exited 1 — local `jest` never showed it because it runs
 in parallel. Run `npx jest --ci --runInBand` before a release, the way
 CI does (fixed forward in ad7d1cc2). Xcode Cloud's workflow was paused,
 so iOS went up from this Mac.
+
+## 2.32.0 (290) — 2026-10-16
+
+Ran clean on the first attempt.
+
+Changed the release cycle itself:
+
+  - `.github/workflows/compat-feed.yml`
+  - `.github/workflows/habous-cities.yml`
+  - `.github/workflows/habous-dataset.yml`
+  - `.github/workflows/habous-probe.yml`
+  - `.github/workflows/ifis-dataset.yml`
+  - `.github/workflows/marw-dataset.yml`
+  - `.github/workflows/namazvakti-dataset.yml`
+  - `.github/workflows/namazvakti-years.yml`
+  - `.github/workflows/national-tables.yml`
+  - `.github/workflows/reuse-check.yml`
+  - `.github/workflows/verify-methods.yml`
+  - `docs/DISTRIBUTION.md`
+  - `scripts/release.sh`
+  - `scripts/release/build.ts`
+  - `scripts/release/publish.ts`
+
+**Lesson:** _(unfilled)_
