@@ -105,6 +105,70 @@ By default `~/Desktop/Simulator Screenshot - <device> - <date>.png`. If your des
 
 ---
 
+## The Realistic-sky retake (2026-10-16)
+
+Realistic became the Sky theme's default colouring, and the hero took the
+Sky design in every look, so everything showing the Today hero was shot
+again on `Mihrab_API_37` with the current beta build, Casablanca on
+automatic, Friday 16 October:
+
+- `and-home`, `and-home-dark`, `and-home-maliki` — System look (light /
+  dark), 09:41, Fajr logged. They now show the new hero in a plain look.
+- `and-sky-colours` (new) — Settings → Appearance with Sky on and the
+  Sky colours picker under it; `shot-sky-colours` on the site, after the
+  dark home, captioned in all thirteen languages in `strings.json`.
+- `and-home-night` and `store/feature/home-sky-night.png` — Sky, 21:41,
+  all five logged; the Play feature graphic is built from it.
+- `store/play/01_home.png` — Sky (Realistic), 09:41;
+  `store/play-tablet/01_home.png` — the same on the resized emulator,
+  Thursday 15 October (the 16th's later logs would read "5 of 5").
+- The two fans, rebuilt with `fan.py`: Sky (Realistic) at 07:05, 09:41,
+  13:00, 17:45 and 19:25; the alerts for the day's five prayers.
+- `github-hero.png` / `og-hero.png` — now built from the Android set
+  (`store/play/01_home.png`, `and-mushaf`, `and-duas`) so the front phone
+  shows the current hero.
+
+### The site gallery through one day under Sky (same day, later)
+
+The site's phone gallery (and so the README grid) was then retaken under
+the **Sky theme, Realistic**, each screen at a different hour so the page
+shows the theme's shades: Today at 18:35 (sunset, the low sun), Today
+with the Mālikī times at 07:40 (sunrise cream), Today at 21:45 (night,
+the moon) in the `home-dark` slot — captioned "at night" now —
+Appearance at 10:00, Tilāwah playing at 19:25 and suggesting at 20:40,
+the reciters at 09:15, the muṣḥaf playing at 16:45, the Tajweed sheet at
+17:30 (golden), the night page at 23:00, memorising at 18:15, the Quran
+tab at 06:55 (dawn), Qibla at 12:30, the month at 07:50, the shareable
+sheet at 05:00, duas at 08:30, tasbih at 19:25, the log at 17:30 and
+fasting at 10:00 — Casablanca, 17–18 October. The widget figures are
+unchanged. The practice graph was filled with the Log's "Fill the past
+three months", and the tajweed colour pages downloaded on the emulator.
+
+Two emulator traps from this pass:
+
+- **DNS.** This Mac resolves through a local resolver (`scutil --dns`
+  shows a 127.x address) and plain UDP DNS out is blocked, so a cold-booted
+  emulator has no names at all (`ping github.com` → unknown host) and every
+  download sits at 0 %. Boot it with that resolver:
+  `emulator -avd Mihrab_API_37 -no-window -dns-server 127.179.240.220`.
+- **Location after a reboot.** `adb emu geo fix` stops landing once the
+  clock is set ahead of the host's (the fix carries the host's time and is
+  dropped as old), and the emulator's default spot is Mendocino County.
+  Use a test provider instead, which follows the device clock:
+  `cmd location providers add-test-provider gps`, `set-test-provider-enabled
+  gps true`, `set-test-provider-location gps --location 33.5945,-7.62`
+  (and the same for `fused`), then pull Today to refresh.
+
+`uiautomator dump` never returns on these screens (the countdown keeps the
+UI from going idle), so taps are aimed from screenshots: a 405-wide preview
+is the 1080 screen divided by 2.667.
+
+Not retaken: the iPhone and iPad store sets (`store/ios-6.9`,
+`store/ipad-13`) still show the Vibrant hero of 2.31 — they need a
+simulator build of this version. Run the emulator headless
+(`emulator -avd Mihrab_API_37 -no-window`) when the Mac is busy: with a
+window it was starved to the point that `adb shell` calls hung for minutes.
+
 ## The 2.28 set (2026-10-02) — READ THIS ONE FIRST
 
 The store story now follows `branding/IDENTITY.md`: the companion, not a

@@ -3,7 +3,7 @@ Mihrab adalah pendamping yang tenang bagi hari seorang Muslim: sholat, Al-Quran,
 Tahan kata apa pun di mushaf dan dengarkan kata itu dibacakan. Ikuti kata yang sedang dibaca saat menyala di halaman. Lihat tajwid berwarna, pada Hafs dan Warsy. Jaga catatan dan pengaturan tetap selaras di antara perangkat Anda sendiri, tanpa akun dan tanpa server. Dan setiap barisnya bersumber terbuka.
 
 SHOLAT
-- Jadwal sholat hari ini, sepekan, dan sebulan ke depan — dihitung di ponsel, dari penyedia, atau dari tabel nasional resmi Swedia, Maroko, Aljazair, Singapura, Malaysia, dan Indonesia — dapat dibagikan sebagai gambar atau PDF
+- Jadwal sholat hari ini, sepekan, dan sebulan ke depan — dihitung di ponsel, dari penyedia, atau dari tabel nasional resmi Swedia, Maroko, Aljazair, Singapura, Malaysia, dan Indonesia, atau Diyanet untuk 8.291 tempat di Turki dan dunia — dapat dibagikan sebagai gambar atau PDF
 - Adzan untuk setiap waktu sholat, dengan tujuh belas rekaman atau rekaman Anda sendiri, pengingat sebelumnya, dan tunda yang hanya menawarkan sisa waktu sholat, hingga kesempatan terakhir sebelum waktunya habis
 - Pengingat sholat yang berbunyi seperti jam alarm, bahkan dalam mode senyap dan Fokus (iOS 26 ke atas)
 - Aktivitas Langsung yang menghitung mundur ke sholat berikutnya, di Layar Terkunci dan di Dynamic Island
@@ -32,8 +32,8 @@ MILIK ANDA
 - Sinkronisasi antarperangkat Anda sendiri tanpa akun dan tanpa server kami: berkas tersegel di folder yang memang sudah Anda sinkronkan
 - Cadangkan dan pulihkan ke berkas yang Anda simpan
 - iPhone, iPad, dan Mac, dalam 13 bahasa, dengan bahasa Arab dan Urdu sepenuhnya dari kanan ke kiri
-- Tema terang, gelap, dan hitam pekat, enam tema warna, warna aksen pilihan Anda, dan Liquid Glass — atau Langit, yang mewarnai seluruh aplikasi dari langit di atas hitung mundur dan berubah seiring jam
+- Tema terang, gelap, dan hitam pekat, enam tema warna, warna aksen pilihan Anda, dan Liquid Glass — atau Langit, yang mewarnai seluruh aplikasi dari langit di atas hitung mundur dan berubah seiring jam, dalam warna realistis atau cerah
 
-Jaringan hanya digunakan saat Anda memilihnya: penyedia jadwal sholat (AlAdhan, PrayTimes.dev, Türkiye Takvimi, atau tabel nasional Swedia, Maroko, Aljazair, Singapura, Malaysia, dan Indonesia), pencarian tempat melalui OpenStreetMap Nominatim, serta pengunduhan halaman Al-Quran, terjemahan, tafsir, dan audio tilawah. Koordinat Anda tetap di perangkat Anda.
+Jaringan hanya digunakan saat Anda memilihnya: penyedia jadwal sholat (AlAdhan, Türkiye Takvimi, atau tabel nasional Swedia, Maroko, Aljazair, Singapura, Malaysia, dan Indonesia), pencarian tempat melalui OpenStreetMap Nominatim, serta pengunduhan halaman Al-Quran, terjemahan, tafsir, dan audio tilawah. Koordinat Anda tetap di perangkat Anda.
 
 Mihrab bersumber terbuka dengan lisensi AGPL-3.0-or-later.

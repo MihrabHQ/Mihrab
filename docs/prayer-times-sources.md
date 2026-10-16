@@ -37,7 +37,7 @@ on the authority's printed minute over the tables checked:
 | Authority | Method | By the method alone | Checked over |
 |---|---|---|---|
 | **Sweden** — Islamiska Förbundet (Diyanet's tables) | method 24, `congressMethod.ts`, 108 cities | 99.98 % | 2024–2027, 1.39 M times |
-| **Diyanet** — Türkiye and worldwide | method 13, `diyanetMethod.ts` | — | 2024–2027, 8.06 M times |
+| **Diyanet** — Türkiye and worldwide | method 13, `diyanetMethod.ts`, 8,291 places (880 districts, 7,252 abroad, Sweden's 159) | 99.987 % | 2024–2027, 70.0 M times |
 | **Morocco** — Habous | method 21, `moroccoMethod.ts`, 164 cities | 99.12 % | 27 Aug → 11 Nov 2026, 75,768 times |
 | **Algeria** — Ministry of Religious Affairs | method 19, `algeriaMethod.ts`, 68 cities | 99.37 % | 1448 AH, 101,184 times |
 | **Indonesia** — Kemenag | method 20, `indonesiaMethod.ts`, 517 regencies | 99.97 % | Oct → Dec 2026, 266,772 times |

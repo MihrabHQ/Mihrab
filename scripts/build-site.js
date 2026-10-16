@@ -116,11 +116,12 @@ function badgeList(names, imgBase, indent = '      ', flags = {}) {
  * bytes moved under an unchanged URL, and the widget shots have now been
  * retaken twice on 2026-09-06.
  */
-const SHOT_V = '?v=2026-10-02';
+const SHOT_V = '?v=2026-10-16b';
 const SHOTS = [
   'home',
   'home-maliki',
   'home-dark',
+  'sky-colours',
   'tilawah',
   'tilawah-suggest',
   'reciters',
@@ -147,8 +148,8 @@ const SHOTS = [
  * (branding/tools/fan.py builds them from the single shots).
  */
 const FANS = [
-  { id: 'sky', v: '?v=2026-10-13' },
-  { id: 'alerts', v: '?v=2026-10-13b' },
+  { id: 'sky', v: '?v=2026-10-16' },
+  { id: 'alerts', v: '?v=2026-10-16' },
 ];
 
 /** Pages written by hand, which the generator only patches between markers. */
@@ -256,7 +257,7 @@ function renderPage(code, langs, version) {
     softwareVersion: version.versionName,
     url: `${ORIGIN}${t.path}`,
     inLanguage: code,
-    image: `${ORIGIN}/assets/img/og-hero.png?v=2026-09-03`,
+    image: `${ORIGIN}/assets/img/og-hero.png?v=2026-10-16`,
     description: t.description,
     isAccessibleForFree: true,
     offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
@@ -307,14 +308,14 @@ ${hreflang(langs)}
 <meta property="og:title" content="${esc(t.title)}">
 <meta property="og:description" content="${esc(t.description)}">
 <meta property="og:url" content="${ORIGIN}${t.path}">
-<meta property="og:image" content="${ORIGIN}/assets/img/og-hero.png?v=2026-09-03">
+<meta property="og:image" content="${ORIGIN}/assets/img/og-hero.png?v=2026-10-16">
 <meta property="og:image:width" content="1600">
 <meta property="og:image:height" content="900">
 <meta property="og:locale" content="${code}">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${esc(t.title)}">
 <meta name="twitter:description" content="${esc(t.description)}">
-<meta name="twitter:image" content="${ORIGIN}/assets/img/og-hero.png?v=2026-09-03">
+<meta name="twitter:image" content="${ORIGIN}/assets/img/og-hero.png?v=2026-10-16">
 <script type="application/ld+json">
 ${ld(app)}
 </script>
@@ -393,6 +394,15 @@ ${badgeList(['obtainium', 'googleplay', 'fdroid', 'github'], '../assets/img/badg
   </div>
 </section>
 
+<section class="shots" id="screenshots">
+  <div class="wrap">
+    <p class="eyebrow">${esc(t.shots.eyebrow)}</p>
+    <h2>${esc(t.shots.h2)}</h2>
+    <p class="lede">${esc(t.shots.lede)}</p>
+${gallery(code, t)}
+  </div>
+</section>
+
 <section class="features">
   <div class="wrap">
     <p class="eyebrow">${esc(t.features.eyebrow)}</p>
@@ -407,15 +417,6 @@ ${t.features.cards
   )
   .join('\n')}
     </div>
-  </div>
-</section>
-
-<section class="shots" id="screenshots">
-  <div class="wrap">
-    <p class="eyebrow">${esc(t.shots.eyebrow)}</p>
-    <h2>${esc(t.shots.h2)}</h2>
-    <p class="lede">${esc(t.shots.lede)}</p>
-${gallery(code, t)}
   </div>
 </section>
 

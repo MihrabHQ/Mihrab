@@ -3,7 +3,7 @@ Mihrab ist ein ruhiger Begleiter für den Tag eines Muslims: die Gebete, der Kor
 Halte ein Wort im Mushaf gedrückt und hör genau dieses Wort vorgelesen. Folge dem rezitierten Wort, während es auf der Seite aufleuchtet. Sieh Tadschwid in Farbe, in Hafs und in Warsch. Halte Tagebuch und Einstellungen zwischen deinen eigenen Geräten abgeglichen – ohne Konto und ohne Server. Und jede Zeile davon ist Open Source.
 
 BETEN
-- Gebetszeiten für heute, die Woche und den kommenden Monat – auf dem Gerät berechnet, von einem Anbieter oder aus den veröffentlichten Landestabellen für Schweden, Marokko, Algerien, Singapur, Malaysia und Indonesien – als Bild oder PDF teilbar
+- Gebetszeiten für heute, die Woche und den kommenden Monat – auf dem Gerät berechnet, von einem Anbieter oder aus den veröffentlichten Landestabellen für Schweden, Marokko, Algerien, Singapur, Malaysia und Indonesien oder denen der Diyanet für 8.291 Orte in der Türkei und weltweit – als Bild oder PDF teilbar
 - Der Adhan zu jedem Gebet, mit siebzehn Aufnahmen oder deiner eigenen, einer Erinnerung davor und Schlummern, das nur anbietet, was die Gebetszeit noch hergibt – bis zur letzten Gelegenheit vor ihrem Ende
 - Ein Vollbild-Gebetsalarm über dem Sperrbildschirm, wie ein Wecker, mit Stopp, Schlummern und Gebet eintragen
 - Das Telefon für das Gebet selbst stummschalten und den Ton danach von selbst zurückkommen lassen – „Bitte nicht stören“ ab dem Adhan oder ein paar Minuten davor, mit eigener Dauer für das Freitagsgebet
@@ -33,8 +33,8 @@ DEINS
 - Abgleich zwischen deinen eigenen Geräten ohne Konto und ohne einen Server von uns: versiegelte Dateien in einem Ordner, den du ohnehin synchron hältst
 - Sicherung und Wiederherstellung in eine Datei, die du behältst
 - Android, iPhone, iPad und Mac, in 13 Sprachen, Arabisch und Urdu vollständig von rechts nach links
-- Hell, dunkel und tiefschwarz, sechs Farbthemen, deine eigene Akzentfarbe und Material You – oder Himmel, das die ganze App aus dem Himmel über dem Countdown malt und sich mit der Stunde wandelt
+- Hell, dunkel und tiefschwarz, sechs Farbthemen, deine eigene Akzentfarbe und Material You – oder Himmel, das die ganze App aus dem Himmel über dem Countdown malt und sich mit der Stunde wandelt – realistisch oder lebhaft
 
-Das Netz wird nur genutzt, wenn du es wählst: ein Anbieter für Gebetszeiten (AlAdhan, PrayTimes.dev, Türkiye Takvimi oder die Landestabellen für Schweden, Marokko, Algerien, Singapur, Malaysia und Indonesien), die Ortssuche über OpenStreetMap Nominatim und das Herunterladen von Koranseiten, Übersetzungen, Tafsir und Rezitationen. Deine Koordinaten bleiben auf deinem Gerät.
+Das Netz wird nur genutzt, wenn du es wählst: ein Anbieter für Gebetszeiten (AlAdhan, Türkiye Takvimi oder die Landestabellen für Schweden, Marokko, Algerien, Singapur, Malaysia und Indonesien), die Ortssuche über OpenStreetMap Nominatim und das Herunterladen von Koranseiten, Übersetzungen, Tafsir und Rezitationen. Deine Koordinaten bleiben auf deinem Gerät.
 
 Mihrab ist Open Source unter AGPL-3.0-or-later.

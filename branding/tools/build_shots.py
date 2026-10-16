@@ -85,6 +85,7 @@ GALLERY = [
     ('and-home', 'shot-home'),
     ('and-home-dark', 'shot-home-dark'),
     ('and-home-maliki', 'shot-home-maliki'),
+    ('and-sky-colours', 'shot-sky-colours'),
     ('and-mushaf', 'shot-mushaf'),
     ('and-ayah-tajweed', 'shot-ayah'),
     ('and-mushaf-night', 'shot-mushaf-dark'),

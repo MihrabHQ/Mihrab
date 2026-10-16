@@ -6,7 +6,7 @@
     "shots": {
       "items": {
         "home": {
-          "alt": "Home screen: a drawn sky behind the next prayer and a live countdown, the day above the times, and a check beside each prayer.",
+          "alt": "Home screen under the Sky theme at sunset: the low sun in a rose and violet sky behind a live countdown to Maghrib, the day above the times, and a check beside each prayer prayed.",
           "cap": "Home — the day’s sky and the countdown"
         },
         "home-maliki": {
@@ -14,8 +14,12 @@
           "cap": "Maliki second times"
         },
         "home-dark": {
-          "alt": "The same home screen in the dark theme — the sky stays true to the hour, so a morning sky sits above a dark page.",
-          "cap": "Home, dark"
+          "alt": "The same home screen at night: the moon in its phase among the stars, every prayer of the day checked, the countdown running to Fajr.",
+          "cap": "Home, at night"
+        },
+        "sky-colours": {
+          "alt": "Settings, Appearance: the theme set to Sky and, under it, the Sky colours — Realistic chosen, Vibrant beside it — each shown by its six skies, from night to dusk.",
+          "cap": "Sky colours — Realistic or Vibrant"
         },
         "tilawah": {
           "alt": "Tilāwah playing Al-Mulk: the reciter, the transport, speed, sleep timer and shuffle, with a live muṣḥaf page below and the recited word lit.",
@@ -92,12 +96,12 @@
       },
       "fans": {
         "sky": {
-          "alt": "Five home screens fanned out, the same day under the Sky theme at five hours: the violet and coral of dawn before sunrise, the peach of early morning, the blue of midday in front, the gold of late afternoon, and the magenta of dusk — the countdown, the day's times and the reading card recoloured in each.",
-          "cap": "The Sky theme: the whole app painted from the sky over the countdown, changing through the day — dawn, morning, midday, the golden hour, dusk, night — in one look whether the phone is in light or dark mode."
+          "alt": "Five home screens fanned out, the same day under the Sky theme in its Realistic colours at five hours: the navy and rose of dawn before sunrise, the pale blue of morning, the clear blue of midday in front, the amber of late afternoon, and the violet of dusk over a red horizon — the countdown, the day's times and the reading card recoloured in each.",
+          "cap": "The Sky theme: the whole app painted from the sky over the countdown, changing through the day — dawn, morning, midday, the golden hour, dusk, night. Its Realistic colours, the sky as it looks, are the default; Vibrant ones, bold for each hour, are a tap away."
         },
         "alerts": {
-          "alt": "Five full-screen prayer alerts fanned out like a hand of cards, each in its hour's colours under the Sky theme: Fajr in the violet and coral of dawn, Dhuhr in the midday blue, Asr in the golden hour in front, Maghrib in the deep magenta of sunset, Isha in the indigo of night — each with Stop, Snooze and Log prayer buttons.",
-          "cap": "With the phone locked, a prayer alert can take the whole screen, like an alarm clock. Under the Sky theme each one wears its hour — Fajr’s dawn, Dhuhr’s blue, Asr’s gold, Maghrib’s magenta, Isha’s indigo — with Stop, Snooze and Log prayer at hand."
+          "alt": "Five full-screen prayer alerts fanned out like a hand of cards, each in its hour's colours under the Sky theme: Fajr in the navy and rose of dawn, Dhuhr in the midday blue, Asr in the amber of late afternoon in front, Maghrib in violet over the red of sunset, Isha in the deep blue of night — each with Stop, Snooze and Log prayer buttons.",
+          "cap": "With the phone locked, a prayer alert can take the whole screen, like an alarm clock. Under the Sky theme each one wears its hour — Fajr’s dawn, Dhuhr’s blue, Asr’s amber, Maghrib’s sunset, Isha’s night — with Stop, Snooze and Log prayer at hand."
         }
       }
     },
@@ -115,7 +119,7 @@
     "shots": {
       "items": {
         "home": {
-          "alt": "Startskärmen: en tecknad himmel bakom nästa bön och en levande nedräkning, dagen ovanför tiderna och en bock vid varje bön.",
+          "alt": "Startskärmen under temat Himmel i solnedgången: den låga solen på en rosa och violett himmel bakom en levande nedräkning till maghrib, dagen ovanför tiderna och en bock vid varje bön som betts.",
           "cap": "Start — dygnets himmel och nedräkningen"
         },
         "home-maliki": {
@@ -123,8 +127,12 @@
           "cap": "Malikitiska andratider"
         },
         "home-dark": {
-          "alt": "Samma startskärm i det mörka temat — himlen följer timmen, så en morgonhimmel ligger över en mörk sida.",
-          "cap": "Start, mörkt"
+          "alt": "Samma startskärm på natten: månen i sin fas bland stjärnorna, dagens alla böner avbockade, nedräkningen mot fajr.",
+          "cap": "Start, på natten"
+        },
+        "sky-colours": {
+          "alt": "Inställningar, Utseende: temat satt till Himmel och under det Himlens färger — Realistisk vald, Livfull bredvid — var och en visad med sina sex himlar, från natt till skymning.",
+          "cap": "Himlens färger — Realistisk eller Livfull"
         },
         "tilawah": {
           "alt": "Tilāwah spelar al-Mulk: recitatör, uppspelningskontroller, hastighet, sovtimer och blandning, med en levande muṣḥaf-sida under där det reciterade ordet lyser.",
@@ -201,12 +209,12 @@
       },
       "fans": {
         "sky": {
-          "alt": "Fem startskärmar i solfjäder, samma dag under temat Himmel vid fem tider: gryningens violett och korall före soluppgången, den tidiga morgonens persika, middagens blå längst fram, den sena eftermiddagens guld och skymningens magenta — nedräkningen, dagens tider och läskortet omfärgade i var och en.",
-          "cap": "Temat Himmel: hela appen målad från himlen ovanför nedräkningen, och den skiftar genom dagen — gryning, morgon, middag, den gyllene timmen, skymning, natt — i ett och samma utseende oavsett om telefonen är i ljust eller mörkt läge."
+          "alt": "Fem startskärmar i solfjäder, samma dag under temat Himmel i Realistiska färger vid fem tider: gryningens marinblått och rosa före soluppgången, morgonens ljusblå, middagens klarblå längst fram, den sena eftermiddagens bärnsten och skymningens violett över en röd horisont — nedräkningen, dagens tider och läskortet omfärgade i var och en.",
+          "cap": "Temat Himmel: hela appen målad från himlen ovanför nedräkningen, och den skiftar genom dagen — gryning, morgon, middag, den gyllene timmen, skymning, natt. Realistiska färger, himlen som den ser ut, är förvalda; Livfulla, klara färger för varje timme, finns ett tryck bort."
         },
         "alerts": {
-          "alt": "Fem helskärmsaviseringar för bön i solfjäder som en hand kort, var och en i sin timmes färger under temat Himmel: fajr i gryningens violett och korall, dhuhr i middagens blå, asr i den gyllene timmen längst fram, maghrib i solnedgångens djupa magenta, isha i nattens indigo — var och en med knapparna Stoppa, Snooza och Logga bön.",
-          "cap": "Med telefonen låst kan en bönavisering ta hela skärmen, som en väckarklocka. Under temat Himmel bär var och en sin timme — fajrs gryning, dhuhrs blå, asrs guld, maghribs magenta, ishas indigo — med Stoppa, Snooza och Logga bön nära till hands."
+          "alt": "Fem helskärmsaviseringar för bön i solfjäder som en hand kort, var och en i sin timmes färger under temat Himmel: fajr i gryningens marinblått och rosa, dhuhr i middagens blå, asr i den sena eftermiddagens bärnsten längst fram, maghrib i violett över solnedgångens rött, isha i nattens djupblå — var och en med knapparna Stoppa, Snooza och Logga bön.",
+          "cap": "Med telefonen låst kan en bönavisering ta hela skärmen, som en väckarklocka. Under temat Himmel bär var och en sin timme — fajrs gryning, dhuhrs blå, asrs bärnsten, maghribs solnedgång, ishas natt — med Stoppa, Snooza och Logga bön nära till hands."
         }
       }
     },
@@ -246,7 +254,7 @@
       "cards": [
         {
           "h3": "صلِّ",
-          "p": "مواقيت الصلاة وعدّ تنازلي للصلاة القادمة، والأذان لكل صلاة، وبوصلة القبلة، وأدوات على الشاشة الرئيسية، وتسجيل كل صلاة بضغطة واحدة. تنبيه صلاة بملء الشاشة كالمنبّه، ولكل صلاة أن تختار الأذان أو تنبيهًا أو الصمت، وعلى أندرويد يهدأ الهاتف أثناء الصلاة نفسها. والغفوة لا تُعرض إلا بقدر ما بقي من وقت الصلاة، حتى «الفرصة الأخيرة» قبل خروجه. والمواقيت من AlAdhan أو PrayTimes.dev أو محسوبة على الجهاز، أو من الجداول المنشورة في السويد والمغرب والجزائر وسنغافورة وماليزيا وإندونيسيا وتقويم Türkiye Takvimi."
+          "p": "مواقيت الصلاة وعدّ تنازلي للصلاة القادمة، والأذان لكل صلاة، وبوصلة القبلة، وأدوات على الشاشة الرئيسية، وتسجيل كل صلاة بضغطة واحدة. تنبيه صلاة بملء الشاشة كالمنبّه، ولكل صلاة أن تختار الأذان أو تنبيهًا أو الصمت، وعلى أندرويد يهدأ الهاتف أثناء الصلاة نفسها. والغفوة لا تُعرض إلا بقدر ما بقي من وقت الصلاة، حتى «الفرصة الأخيرة» قبل خروجه. والمواقيت من AlAdhan أو محسوبة على الجهاز، أو من الجداول المنشورة في السويد، وجداول ديانت لـ8291 موضعًا في تركيا والعالم، والمغرب والجزائر وسنغافورة وماليزيا وإندونيسيا وتقويم Türkiye Takvimi."
         },
         {
           "h3": "اقرأ واستمع",
@@ -258,7 +266,7 @@
         },
         {
           "h3": "لك وحدك",
-          "p": "بلا حساب ولا إعلانات ولا تتبّع. مزامنة بين أجهزتك عبر مجلد تزامنه أصلًا، ونسخة احتياطية في ملف تحتفظ به، وشيفرة مفتوحة المصدر برخصة AGPL-3.0. فاتح وداكن وأسود تمامًا، وست سمات لونية — أو «السماء»، التي تصبغ التطبيق كلّه من السماء فوق العدّ التنازلي."
+          "p": "بلا حساب ولا إعلانات ولا تتبّع. مزامنة بين أجهزتك عبر مجلد تزامنه أصلًا، ونسخة احتياطية في ملف تحتفظ به، وشيفرة مفتوحة المصدر برخصة AGPL-3.0. فاتح وداكن وأسود تمامًا، وست سمات لونية — أو «السماء»، التي تصبغ التطبيق كلّه من السماء فوق العدّ التنازلي، بألوان واقعية أو زاهية."
         }
       ]
     },
@@ -330,10 +338,10 @@
     "shots": {
       "eyebrow": "لقطات الشاشة",
       "h2": "كيف يبدو التطبيق",
-      "lede": "فاتح وداكن، على الهاتف واللوحي. المصحف هو صفحة المدينة المطبوعة نفسها لا صورة عنها. اللقطات بالإنجليزية، والتطبيق يتحدث العربية كذلك.",
+      "lede": "بمظهر «السماء» بألوانه الواقعية، عبر ساعات يوم واحد. المصحف هو صفحة المدينة المطبوعة نفسها لا صورة عنها. اللقطات بالإنجليزية، والتطبيق يتحدث العربية كذلك.",
       "items": {
         "home": {
-          "alt": "شاشة اليوم: سماء مرسومة خلف الصلاة القادمة وعدّ تنازلي حيّ، والتاريخ فوق الأوقات، وعلامة إلى جانب كل صلاة.",
+          "alt": "شاشة اليوم تحت مظهر «السماء» عند الغروب: الشمس المنخفضة في سماء وردية وبنفسجية خلف عدّ تنازلي حيّ إلى المغرب، والتاريخ فوق الأوقات، وعلامة إلى جانب كل صلاة أُدّيت.",
           "cap": "اليوم — سماء اليوم والعدّ التنازلي"
         },
         "home-maliki": {
@@ -341,8 +349,12 @@
           "cap": "الأوقات الثانية المالكية"
         },
         "home-dark": {
-          "alt": "الشاشة نفسها في السمة الداكنة — السماء تتبع الساعة، فسماء الصباح فوق صفحة داكنة.",
-          "cap": "اليوم، داكن"
+          "alt": "الشاشة نفسها ليلًا: القمر في طوره بين النجوم، وصلوات اليوم كلها معلَّمة، والعدّ التنازلي إلى الفجر.",
+          "cap": "اليوم، ليلًا"
+        },
+        "sky-colours": {
+          "alt": "الإعدادات، المظهر: السمة على «السماء»، وتحتها ألوان السماء — «واقعية» مختارة و«زاهية» بجانبها — كلٌّ تعرضه سماواته الست، من الليل إلى الغسق.",
+          "cap": "ألوان السماء — واقعية أو زاهية"
         },
         "tilawah": {
           "alt": "التلاوة تُسمِع سورة الملك: القارئ وأزرار التشغيل والسرعة ومؤقّت النوم والخلط، وتحتها صفحة المصحف والكلمة المتلوّة مضاءة.",
@@ -419,12 +431,12 @@
       },
       "fans": {
         "sky": {
-          "alt": "خمس شاشات رئيسية مفرودة كمروحة، اليوم نفسه تحت مظهر «السماء» في خمس ساعات: بنفسجيّ الفجر ومرجانيّه قبل الشروق، خوخيّ الصباح الباكر، أزرق الظهيرة في المقدّمة، ذهبيّ العصر المتأخّر، وأرجوانيّ الغسق — العدّ التنازلي وأوقات اليوم وبطاقة القراءة بألوان كلّ ساعة.",
-          "cap": "مظهر «السماء»: التطبيق كلّه مصبوغ من السماء فوق العدّ التنازلي، يتبدّل على مدار اليوم — فجر وصباح وظهيرة وساعة ذهبية وغسق وليل — بمظهر واحد سواء كان الهاتف في الوضع الفاتح أو الداكن."
+          "alt": "خمس شاشات رئيسية مفرودة كمروحة، اليوم نفسه تحت مظهر «السماء» بألوانه الواقعية في خمس ساعات: كحليّ الفجر وورديّه قبل الشروق، أزرق الصباح الباهت، أزرق الظهيرة الصافي في المقدّمة، كهرمانيّ العصر المتأخّر، وبنفسجيّ الغسق فوق أفق أحمر — العدّ التنازلي وأوقات اليوم وبطاقة القراءة بألوان كلّ ساعة.",
+          "cap": "مظهر «السماء»: التطبيق كلّه مصبوغ من السماء فوق العدّ التنازلي، يتبدّل على مدار اليوم — فجر وصباح وظهيرة وساعة ذهبية وغسق وليل. ألوانه الواقعية، السماء كما تُرى، هي الافتراضية؛ والزاهية، الجريئة لكلّ ساعة، على بُعد لمسة."
         },
         "alerts": {
-          "alt": "خمسة تنبيهات صلاة بملء الشاشة مفرودة كأوراق لعب، كلٌّ بألوان ساعته تحت مظهر «السماء»: الفجر ببنفسجيّ الفجر ومرجانيّه، الظهر بأزرق الظهيرة، العصر بالساعة الذهبية في المقدّمة، المغرب بأرجوانيّ الغروب العميق، العشاء بنيليّ الليل — ولكلٍّ أزرار إيقاف وغفوة وتسجيل الصلاة.",
-          "cap": "والهاتف مقفل، يمكن لتنبيه الصلاة أن يملأ الشاشة كلّها كالمنبّه. تحت مظهر «السماء» يلبس كلّ تنبيه ساعته — فجر الفجر، وأزرق الظهر، وذهبيّ العصر، وأرجوانيّ المغرب، ونيليّ العشاء — وأزرار الإيقاف والغفوة وتسجيل الصلاة في المتناول."
+          "alt": "خمسة تنبيهات صلاة بملء الشاشة مفرودة كأوراق لعب، كلٌّ بألوان ساعته تحت مظهر «السماء»: الفجر بكحليّ الفجر وورديّه، الظهر بأزرق الظهيرة، العصر بكهرمانيّ آخر النهار في المقدّمة، المغرب ببنفسجيّ فوق حمرة الغروب، العشاء بزرقة الليل العميقة — ولكلٍّ أزرار إيقاف وغفوة وتسجيل الصلاة.",
+          "cap": "والهاتف مقفل، يمكن لتنبيه الصلاة أن يملأ الشاشة كلّها كالمنبّه. تحت مظهر «السماء» يلبس كلّ تنبيه ساعته — فجر الفجر، وأزرق الظهر، وكهرمانيّ العصر، وغروب المغرب، وليل العشاء — وأزرار الإيقاف والغفوة وتسجيل الصلاة في المتناول."
         }
       }
     }
@@ -458,7 +470,7 @@
       "cards": [
         {
           "h3": "Kıl",
-          "p": "Sıradaki namaza geri sayımla namaz vakitleri, her namaz için ezan, kıble pusulası, ana ekran widget'ları — ve her namaz tek dokunuşla kaydedilir. Çalar saat gibi tam ekran bir namaz uyarısı, her namaz için ezan, uyarı ya da sessiz seçimi ve Android'de namazın kendisi sırasında sessize alınan telefon. Erteleme yalnızca vaktin yettiği kadar sunulur; vakit çıkmadan önce bir “son fırsat” kalır. Vakitler AlAdhan, PrayTimes.dev, cihazda hesaplama ya da İsveç, Fas, Cezayir, Singapur, Malezya, Endonezya ve Türkiye Takvimi’nin yayımlanmış takvimlerinden."
+          "p": "Sıradaki namaza geri sayımla namaz vakitleri, her namaz için ezan, kıble pusulası, ana ekran widget'ları — ve her namaz tek dokunuşla kaydedilir. Çalar saat gibi tam ekran bir namaz uyarısı, her namaz için ezan, uyarı ya da sessiz seçimi ve Android'de namazın kendisi sırasında sessize alınan telefon. Erteleme yalnızca vaktin yettiği kadar sunulur; vakit çıkmadan önce bir “son fırsat” kalır. Vakitler AlAdhan, cihazda hesaplama ya da İsveç, Diyanet (Türkiye’de ve dünyada 8.291 yer), Fas, Cezayir, Singapur, Malezya, Endonezya ve Türkiye Takvimi’nin yayımlanmış takvimlerinden."
         },
         {
           "h3": "Oku ve dinle",
@@ -470,7 +482,7 @@
         },
         {
           "h3": "Sizin",
-          "p": "Hesap yok, reklam yok, takip yok. Zaten eşitlediğiniz bir klasör üzerinden kendi cihazlarınız arasında eşitleme, sakladığınız bir dosyaya yedek ve AGPL-3.0 altında tamamen açık kaynak kod. Açık, koyu ya da saf siyah, altı renk teması — ya da tüm uygulamayı geri sayımın üzerindeki gökyüzünden boyayan Gökyüzü."
+          "p": "Hesap yok, reklam yok, takip yok. Zaten eşitlediğiniz bir klasör üzerinden kendi cihazlarınız arasında eşitleme, sakladığınız bir dosyaya yedek ve AGPL-3.0 altında tamamen açık kaynak kod. Açık, koyu ya da saf siyah, altı renk teması — ya da tüm uygulamayı geri sayımın üzerindeki gökyüzünden boyayan Gökyüzü; gerçekçi ya da canlı renklerle."
         }
       ]
     },
@@ -542,10 +554,10 @@
     "shots": {
       "eyebrow": "Ekran görüntüleri",
       "h2": "Nasıl görünüyor",
-      "lede": "Açık ve koyu, telefon ve tablet. Mushaf, basılı Medine sayfasının kendisi; onun bir fotoğrafı değil. Görsellerdeki uygulama İngilizce; uygulama Türkçe de konuşuyor.",
+      "lede": "Gökyüzü teması, Gerçekçi renkleriyle, bir günün saatleri boyunca. Mushaf, basılı Medine sayfasının kendisi; onun bir fotoğrafı değil. Görsellerdeki uygulama İngilizce; uygulama Türkçe de konuşuyor.",
       "items": {
         "home": {
-          "alt": "Bugün ekranı: sıradaki namazın arkasında çizilmiş bir gökyüzü ve canlı geri sayım, vakitlerin üstünde gün ve her namazın yanında bir işaret.",
+          "alt": "Gün batımında Gökyüzü temasıyla Bugün ekranı: pembe ve mor bir gökyüzünde alçalan güneş, akşama canlı geri sayım, vakitlerin üstünde gün ve kılınan her namazın yanında bir işaret.",
           "cap": "Bugün — günün gökyüzü ve geri sayım"
         },
         "home-maliki": {
@@ -553,8 +565,12 @@
           "cap": "Maliki ikinci vakitleri"
         },
         "home-dark": {
-          "alt": "Aynı ekran koyu temada — gökyüzü saati izler, böylece sabah gökyüzü koyu bir sayfanın üstünde durur.",
-          "cap": "Bugün, koyu"
+          "alt": "Aynı ekran gece: yıldızlar arasında evresindeki ay, günün bütün namazları işaretli, geri sayım sabaha.",
+          "cap": "Bugün, gece"
+        },
+        "sky-colours": {
+          "alt": "Ayarlar, Görünüm: tema Gökyüzü’nde ve altında Gökyüzü renkleri — Gerçekçi seçili, yanında Canlı — her biri geceden alacakaranlığa altı gökyüzüyle gösteriliyor.",
+          "cap": "Gökyüzü renkleri — Gerçekçi ya da Canlı"
         },
         "tilawah": {
           "alt": "Tilâvet Mülk sûresini okuyor: kâri, oynatma denetimleri, hız, uyku zamanlayıcısı ve karışık çalma; altında okunan kelimenin ışıdığı canlı mushaf sayfası.",
@@ -631,12 +647,12 @@
       },
       "fans": {
         "sky": {
-          "alt": "Yelpaze gibi açılmış beş ana ekran, aynı gün Gökyüzü temasında beş saatte: gün doğumundan önce şafağın mor ve mercanı, erken sabahın şeftalisi, önde öğlenin mavisi, geç öğleden sonranın altını ve alacakaranlığın eflatunu — geri sayım, günün vakitleri ve okuma kartı her birinde yeniden renklenmiş.",
-          "cap": "Gökyüzü teması: tüm uygulama geri sayımın üzerindeki gökyüzünden boyanır ve gün boyunca değişir — şafak, sabah, öğle, altın saat, alacakaranlık, gece — telefon açık ya da koyu modda olsun tek bir görünümde."
+          "alt": "Yelpaze gibi açılmış beş ana ekran, aynı gün Gökyüzü temasının Gerçekçi renklerinde beş saatte: gün doğumundan önce şafağın lacivert ve pembesi, sabahın açık mavisi, önde öğlenin berrak mavisi, geç öğleden sonranın kehribarı ve kızıl ufkun üzerinde alacakaranlığın moru — geri sayım, günün vakitleri ve okuma kartı her birinde yeniden renklenmiş.",
+          "cap": "Gökyüzü teması: tüm uygulama geri sayımın üzerindeki gökyüzünden boyanır ve gün boyunca değişir — şafak, sabah, öğle, altın saat, alacakaranlık, gece. Gökyüzünü göründüğü gibi veren Gerçekçi renkler varsayılandır; her saat için cesur Canlı renkler bir dokunuş uzakta."
         },
         "alerts": {
-          "alt": "Bir el iskambil gibi açılmış beş tam ekran namaz uyarısı, her biri Gökyüzü temasında kendi saatinin renklerinde: sabah şafağın mor ve mercanında, öğle öğlenin mavisinde, ikindi önde altın saatte, akşam gün batımının koyu eflatununda, yatsı gecenin çivit mavisinde — her birinde Durdur, Ertele ve Namazı kaydet düğmeleri.",
-          "cap": "Telefon kilitliyken bir namaz uyarısı çalar saat gibi tüm ekranı kaplayabilir. Gökyüzü temasında her biri kendi saatini giyer — sabahın şafağı, öğlenin mavisi, ikindinin altını, akşamın eflatunu, yatsının çivit mavisi — Durdur, Ertele ve Namazı kaydet elinizin altında."
+          "alt": "Bir el iskambil gibi açılmış beş tam ekran namaz uyarısı, her biri Gökyüzü temasında kendi saatinin renklerinde: sabah şafağın lacivert ve pembesinde, öğle öğlenin mavisinde, ikindi önde akşamüstünün kehribarında, akşam gün batımının kızılı üzerinde morda, yatsı gecenin koyu mavisinde — her birinde Durdur, Ertele ve Namazı kaydet düğmeleri.",
+          "cap": "Telefon kilitliyken bir namaz uyarısı çalar saat gibi tüm ekranı kaplayabilir. Gökyüzü temasında her biri kendi saatini giyer — sabahın şafağı, öğlenin mavisi, ikindinin kehribarı, akşamın gün batımı, yatsının gecesi — Durdur, Ertele ve Namazı kaydet elinizin altında."
         }
       }
     }
@@ -670,7 +686,7 @@
       "cards": [
         {
           "h3": "نماز",
-          "p": "اگلی نماز کی الٹی گنتی کے ساتھ نماز کے اوقات، ہر نماز کی اذان، قبلہ کمپاس، ہوم اسکرین وجٹس — اور ہر نماز ایک ٹیپ میں درج۔ الارم گھڑی کی طرح پوری اسکرین کا نماز الرٹ، ہر نماز کے لیے اذان، الرٹ یا خاموشی کا انتخاب، اور اینڈرائیڈ پر خود نماز کے دوران خاموش فون۔ اسنوز صرف اتنا ملتا ہے جتنا نماز کا وقت باقی ہو، وقت ختم ہونے سے پہلے ایک «آخری موقع» تک۔ اوقات AlAdhan، PrayTimes.dev، فون پر حساب، یا سویڈن، مراکش، الجزائر، سنگاپور، ملائیشیا، انڈونیشیا اور Türkiye Takvimi کے شائع شدہ جدولوں سے۔"
+          "p": "اگلی نماز کی الٹی گنتی کے ساتھ نماز کے اوقات، ہر نماز کی اذان، قبلہ کمپاس، ہوم اسکرین وجٹس — اور ہر نماز ایک ٹیپ میں درج۔ الارم گھڑی کی طرح پوری اسکرین کا نماز الرٹ، ہر نماز کے لیے اذان، الرٹ یا خاموشی کا انتخاب، اور اینڈرائیڈ پر خود نماز کے دوران خاموش فون۔ اسنوز صرف اتنا ملتا ہے جتنا نماز کا وقت باقی ہو، وقت ختم ہونے سے پہلے ایک «آخری موقع» تک۔ اوقات AlAdhan، فون پر حساب، یا سویڈن، دیانت (ترکی اور دنیا بھر میں 8,291 مقامات)، مراکش، الجزائر، سنگاپور، ملائیشیا، انڈونیشیا اور Türkiye Takvimi کے شائع شدہ جدولوں سے۔"
         },
         {
           "h3": "پڑھیں اور سنیں",
@@ -682,7 +698,7 @@
         },
         {
           "h3": "صرف آپ کا",
-          "p": "نہ اکاؤنٹ، نہ اشتہار، نہ ٹریکنگ۔ اس فولڈر کے ذریعے اپنے ہی آلات میں ہم آہنگی جسے آپ پہلے سے سنک کرتے ہیں، اپنے پاس رکھی فائل میں بیک اپ، اور AGPL-3.0 کے تحت پورا کوڈ کھلا۔ ہلکی، گہری یا خالص سیاہ، چھ رنگین تھیمز — یا آسمان، جو الٹی گنتی کے اوپر والے آسمان سے پوری ایپ کو رنگتا ہے۔"
+          "p": "نہ اکاؤنٹ، نہ اشتہار، نہ ٹریکنگ۔ اس فولڈر کے ذریعے اپنے ہی آلات میں ہم آہنگی جسے آپ پہلے سے سنک کرتے ہیں، اپنے پاس رکھی فائل میں بیک اپ، اور AGPL-3.0 کے تحت پورا کوڈ کھلا۔ ہلکی، گہری یا خالص سیاہ، چھ رنگین تھیمز — یا آسمان، جو الٹی گنتی کے اوپر والے آسمان سے پوری ایپ کو رنگتا ہے، حقیقی یا شوخ رنگوں میں۔"
         }
       ]
     },
@@ -754,10 +770,10 @@
     "shots": {
       "eyebrow": "اسکرین شاٹس",
       "h2": "دیکھنے میں کیسا ہے",
-      "lede": "روشن اور تاریک، فون اور ٹیبلٹ۔ مصحف مدینہ کا چھپا ہوا صفحہ ہی ہے، اُس کی تصویر نہیں۔ تصاویر میں ایپ انگریزی میں ہے؛ یہ اردو بھی بولتی ہے۔",
+      "lede": "آسمان تھیم اپنے حقیقی رنگوں میں، ایک دن کے پہروں میں۔ مصحف مدینہ کا چھپا ہوا صفحہ ہی ہے، اُس کی تصویر نہیں۔ تصاویر میں ایپ انگریزی میں ہے؛ یہ اردو بھی بولتی ہے۔",
       "items": {
         "home": {
-          "alt": "آج کی اسکرین: اگلی نماز کے پیچھے بنایا ہوا آسمان اور چلتی ہوئی گنتی، اوقات کے اوپر دن، اور ہر نماز کے ساتھ ایک نشان۔",
+          "alt": "غروب کے وقت آسمان تھیم میں آج کی اسکرین: گلابی اور بنفشی آسمان میں ڈوبتا سورج، مغرب تک چلتی گنتی، اوقات کے اوپر دن، اور ہر ادا کی گئی نماز کے ساتھ نشان۔",
           "cap": "آج — دن کا آسمان اور گنتی"
         },
         "home-maliki": {
@@ -765,8 +781,12 @@
           "cap": "مالکی ثانوی اوقات"
         },
         "home-dark": {
-          "alt": "وہی اسکرین گہرے تھیم میں — آسمان وقت کے ساتھ چلتا ہے، سو صبح کا آسمان گہرے صفحے کے اوپر۔",
-          "cap": "آج، گہرا"
+          "alt": "وہی اسکرین رات کو: ستاروں کے بیچ اپنی منزل میں چاند، دن کی سب نمازیں نشان زد، گنتی فجر کی طرف۔",
+          "cap": "آج، رات کو"
+        },
+        "sky-colours": {
+          "alt": "ترتیبات، ظاہری شکل: تھیم آسمان پر، اور اس کے نیچے آسمان کے رنگ — حقیقی منتخب، ساتھ میں شوخ — ہر ایک اپنے چھ آسمانوں سے دکھایا گیا، رات سے شام تک۔",
+          "cap": "آسمان کے رنگ — حقیقی یا شوخ"
         },
         "tilawah": {
           "alt": "تلاوت میں سورۃ الملک: قاری، پلے بیک کنٹرول، رفتار، سلیپ ٹائمر اور شفل، اور نیچے زندہ مصحف کا صفحہ جس پر پڑھا جانے والا لفظ روشن ہے۔",
@@ -843,12 +863,12 @@
       },
       "fans": {
         "sky": {
-          "alt": "پنکھے کی طرح پھیلی پانچ ہوم اسکرینیں، ایک ہی دن آسمان تھیم میں پانچ وقتوں پر: طلوع سے پہلے فجر کا بنفشی اور مرجانی، صبح سویرے کا آڑو رنگ، سامنے دوپہر کا نیلا، سہ پہر کا سنہری اور شام کا ارغوانی — الٹی گنتی، دن کے اوقات اور تلاوت کا کارڈ ہر ایک میں نئے رنگ میں۔",
-          "cap": "آسمان تھیم: پوری ایپ الٹی گنتی کے اوپر والے آسمان سے رنگی جاتی ہے اور دن بھر بدلتی رہتی ہے — فجر، صبح، دوپہر، سنہری گھڑی، شام، رات — ایک ہی روپ میں، فون لائٹ موڈ میں ہو یا ڈارک۔"
+          "alt": "پنکھے کی طرح پھیلی پانچ ہوم اسکرینیں، ایک ہی دن آسمان تھیم کے حقیقی رنگوں میں پانچ وقتوں پر: طلوع سے پہلے فجر کا گہرا نیلا اور گلابی، صبح کا ہلکا نیلا، سامنے دوپہر کا صاف نیلا، سہ پہر کا کہربائی اور سرخ افق پر شام کا بنفشی — الٹی گنتی، دن کے اوقات اور تلاوت کا کارڈ ہر ایک میں نئے رنگ میں۔",
+          "cap": "آسمان تھیم: پوری ایپ الٹی گنتی کے اوپر والے آسمان سے رنگی جاتی ہے اور دن بھر بدلتی رہتی ہے — فجر، صبح، دوپہر، سنہری گھڑی، شام، رات۔ حقیقی رنگ، آسمان جیسا دکھتا ہے، طے شدہ ہیں؛ شوخ رنگ، ہر وقت کے لیے بھرپور، ایک ٹیپ کی دوری پر۔"
         },
         "alerts": {
-          "alt": "تاش کے پتوں کی طرح پھیلے پانچ پوری اسکرین کے نماز الرٹ، ہر ایک آسمان تھیم میں اپنے وقت کے رنگوں میں: فجر فجر کے بنفشی اور مرجانی میں، ظہر دوپہر کے نیلے میں، عصر سامنے سنہری گھڑی میں، مغرب غروب کے گہرے ارغوانی میں، عشاء رات کے نیلگوں میں — ہر ایک میں روکیں، اسنوز اور نماز درج کریں کے بٹن۔",
-          "cap": "فون لاک ہو تو نماز کا الرٹ الارم گھڑی کی طرح پوری اسکرین لے سکتا ہے۔ آسمان تھیم میں ہر الرٹ اپنا وقت پہنتا ہے — فجر کی پو پھٹ، ظہر کا نیلا، عصر کا سنہری، مغرب کا ارغوانی، عشاء کا نیلگوں — روکیں، اسنوز اور نماز درج کریں ہاتھ کے قریب۔"
+          "alt": "تاش کے پتوں کی طرح پھیلے پانچ پوری اسکرین کے نماز الرٹ، ہر ایک آسمان تھیم میں اپنے وقت کے رنگوں میں: فجر پو پھٹنے کے گہرے نیلے اور گلابی میں، ظہر دوپہر کے نیلے میں، عصر سامنے سہ پہر کے کہربائی میں، مغرب غروب کی سرخی پر بنفشی میں، عشاء رات کے گہرے نیلے میں — ہر ایک میں روکیں، اسنوز اور نماز درج کریں کے بٹن۔",
+          "cap": "فون لاک ہو تو نماز کا الرٹ الارم گھڑی کی طرح پوری اسکرین لے سکتا ہے۔ آسمان تھیم میں ہر الرٹ اپنا وقت پہنتا ہے — فجر کی پو پھٹ، ظہر کا نیلا، عصر کا کہربائی، مغرب کا غروب، عشاء کی رات — روکیں، اسنوز اور نماز درج کریں ہاتھ کے قریب۔"
         }
       }
     }
@@ -882,7 +902,7 @@
       "cards": [
         {
           "h3": "Sholat",
-          "p": "Jadwal sholat dengan hitung mundur ke sholat berikutnya, adzan untuk setiap waktu, kompas kiblat, widget layar utama — dan setiap sholat dicatat dengan satu ketukan. Pengingat sholat layar penuh seperti jam alarm, pilihan adzan, nada, atau senyap untuk tiap sholat, dan di Android ponsel hening selama sholat itu sendiri. Tunda hanya ditawarkan selama waktu sholat masih cukup, hingga “kesempatan terakhir” sebelum waktunya habis. Jadwal dari AlAdhan, PrayTimes.dev, perhitungan di ponsel, atau tabel resmi Swedia, Maroko, Aljazair, Singapura, Malaysia (JAKIM), Indonesia (Kemenag) dan Türkiye Takvimi."
+          "p": "Jadwal sholat dengan hitung mundur ke sholat berikutnya, adzan untuk setiap waktu, kompas kiblat, widget layar utama — dan setiap sholat dicatat dengan satu ketukan. Pengingat sholat layar penuh seperti jam alarm, pilihan adzan, nada, atau senyap untuk tiap sholat, dan di Android ponsel hening selama sholat itu sendiri. Tunda hanya ditawarkan selama waktu sholat masih cukup, hingga “kesempatan terakhir” sebelum waktunya habis. Jadwal dari AlAdhan, perhitungan di ponsel, atau tabel resmi Swedia, Diyanet (8.291 tempat di Turki dan dunia), Maroko, Aljazair, Singapura, Malaysia (JAKIM), Indonesia (Kemenag) dan Türkiye Takvimi."
         },
         {
           "h3": "Baca dan dengarkan",
@@ -894,7 +914,7 @@
         },
         {
           "h3": "Milik Anda",
-          "p": "Tanpa akun, tanpa iklan, tanpa pelacakan. Sinkronisasi antara perangkat Anda sendiri lewat folder yang sudah Anda sinkronkan, cadangan ke berkas yang Anda simpan, dan seluruh kode terbuka di bawah AGPL-3.0. Terang, gelap, atau hitam pekat, enam tema warna — atau Langit, yang mewarnai seluruh aplikasi dari langit di atas hitung mundur."
+          "p": "Tanpa akun, tanpa iklan, tanpa pelacakan. Sinkronisasi antara perangkat Anda sendiri lewat folder yang sudah Anda sinkronkan, cadangan ke berkas yang Anda simpan, dan seluruh kode terbuka di bawah AGPL-3.0. Terang, gelap, atau hitam pekat, enam tema warna — atau Langit, yang mewarnai seluruh aplikasi dari langit di atas hitung mundur, dalam warna realistis atau cerah."
         }
       ]
     },
@@ -966,10 +986,10 @@
     "shots": {
       "eyebrow": "Tangkapan layar",
       "h2": "Seperti apa tampilannya",
-      "lede": "Terang dan gelap, ponsel dan tablet. Mushafnya adalah halaman Madinah cetakan itu sendiri, bukan fotonya. Aplikasi pada gambar berbahasa Inggris; aplikasinya berbahasa Indonesia juga.",
+      "lede": "Tema Langit dengan warna Realistis, sepanjang jam-jam satu hari. Mushafnya adalah halaman Madinah cetakan itu sendiri, bukan fotonya. Aplikasi pada gambar berbahasa Inggris; aplikasinya berbahasa Indonesia juga.",
       "items": {
         "home": {
-          "alt": "Layar Hari Ini: langit yang digambar di belakang salat berikutnya dan hitungan waktu yang hidup, tanggal di atas jadwal, dan tanda centang di samping setiap salat.",
+          "alt": "Layar Hari Ini dengan tema Langit saat matahari terbenam: matahari rendah di langit merah muda dan ungu di belakang hitung mundur ke Magrib, tanggal di atas jadwal, dan tanda centang di samping setiap salat yang ditunaikan.",
           "cap": "Hari Ini — langit hari itu dan hitungannya"
         },
         "home-maliki": {
@@ -977,8 +997,12 @@
           "cap": "Waktu kedua Maliki"
         },
         "home-dark": {
-          "alt": "Layar yang sama dalam tema gelap — langit mengikuti jam, jadi langit pagi berada di atas halaman gelap.",
-          "cap": "Hari Ini, gelap"
+          "alt": "Layar yang sama pada malam hari: bulan dalam fasenya di antara bintang, semua salat hari itu tercentang, hitung mundur menuju Subuh.",
+          "cap": "Hari Ini, malam hari"
+        },
+        "sky-colours": {
+          "alt": "Pengaturan, Tampilan: tema diatur ke Langit dan di bawahnya Warna langit — Realistis dipilih, Cerah di sampingnya — masing-masing ditunjukkan dengan enam langitnya, dari malam hingga senja.",
+          "cap": "Warna langit — Realistis atau Cerah"
         },
         "tilawah": {
           "alt": "Tilāwah memutar Al-Mulk: qari, kendali pemutaran, kecepatan, pengatur waktu tidur dan acak, dengan halaman mushaf di bawahnya tempat kata yang dibaca menyala.",
@@ -1055,12 +1079,12 @@
       },
       "fans": {
         "sky": {
-          "alt": "Lima layar beranda dikipaskan, hari yang sama dalam tema Langit pada lima waktu: ungu dan koral fajar sebelum matahari terbit, persik pagi awal, biru tengah hari di depan, emas sore menjelang petang, dan magenta senja — hitung mundur, waktu salat hari itu, dan kartu bacaan diwarnai ulang di masing-masing.",
-          "cap": "Tema Langit: seluruh aplikasi diwarnai dari langit di atas hitung mundur dan berubah sepanjang hari — fajar, pagi, tengah hari, jam keemasan, senja, malam — dalam satu tampilan baik ponsel dalam mode terang maupun gelap."
+          "alt": "Lima layar beranda dikipaskan, hari yang sama dalam tema Langit dengan warna Realistis pada lima waktu: biru tua dan merah muda fajar sebelum matahari terbit, biru pucat pagi, biru jernih tengah hari di depan, kuning amber sore, dan ungu senja di atas cakrawala merah — hitung mundur, waktu salat hari itu, dan kartu bacaan diwarnai ulang di masing-masing.",
+          "cap": "Tema Langit: seluruh aplikasi diwarnai dari langit di atas hitung mundur dan berubah sepanjang hari — fajar, pagi, tengah hari, jam keemasan, senja, malam. Warna Realistis, langit sebagaimana tampaknya, adalah bawaannya; warna Cerah, tegas untuk setiap waktu, tinggal satu ketukan."
         },
         "alerts": {
-          "alt": "Lima pengingat salat layar penuh dikipaskan seperti kartu di tangan, masing-masing dalam warna waktunya pada tema Langit: Subuh dalam ungu dan koral fajar, Zuhur dalam biru tengah hari, Asar dalam jam keemasan di depan, Magrib dalam magenta pekat matahari terbenam, Isya dalam nila malam — masing-masing dengan tombol Hentikan, Tunda, dan Catat salat.",
-          "cap": "Saat ponsel terkunci, pengingat salat bisa memenuhi seluruh layar seperti jam alarm. Dalam tema Langit masing-masing mengenakan waktunya — fajar Subuh, biru Zuhur, emas Asar, magenta Magrib, nila Isya — dengan Hentikan, Tunda, dan Catat salat dalam jangkauan."
+          "alt": "Lima pengingat salat layar penuh dikipaskan seperti kartu di tangan, masing-masing dalam warna waktunya pada tema Langit: Subuh dalam biru tua dan merah muda fajar, Zuhur dalam biru tengah hari, Asar dalam amber sore di depan, Magrib dalam ungu di atas merah matahari terbenam, Isya dalam biru pekat malam — masing-masing dengan tombol Hentikan, Tunda, dan Catat salat.",
+          "cap": "Saat ponsel terkunci, pengingat salat bisa memenuhi seluruh layar seperti jam alarm. Dalam tema Langit masing-masing mengenakan waktunya — fajar Subuh, biru Zuhur, amber Asar, senja Magrib, malam Isya — dengan Hentikan, Tunda, dan Catat salat dalam jangkauan."
         }
       }
     }
@@ -1094,7 +1118,7 @@
       "cards": [
         {
           "h3": "Beten",
-          "p": "Gebetszeiten mit Countdown zum nächsten Gebet, Adhan für jedes Gebet, Qibla-Kompass und Homescreen-Widgets – und jedes Gebet mit einem Tippen eingetragen. Ein Vollbild-Gebetsalarm wie ein Wecker, je Gebet Adhan, Hinweiston oder Stille, und unter Android ein Telefon, das während des Gebets selbst still ist. Schlummern nur so lange, wie die Gebetszeit noch reicht, bis zur letzten Gelegenheit vor ihrem Ende. Zeiten von AlAdhan, PrayTimes.dev, auf dem Gerät berechnet oder aus den veröffentlichten Tabellen Schwedens, Marokkos, Algeriens, Singapurs, Malaysias, Indonesiens und der Türkiye Takvimi."
+          "p": "Gebetszeiten mit Countdown zum nächsten Gebet, Adhan für jedes Gebet, Qibla-Kompass und Homescreen-Widgets – und jedes Gebet mit einem Tippen eingetragen. Ein Vollbild-Gebetsalarm wie ein Wecker, je Gebet Adhan, Hinweiston oder Stille, und unter Android ein Telefon, das während des Gebets selbst still ist. Schlummern nur so lange, wie die Gebetszeit noch reicht, bis zur letzten Gelegenheit vor ihrem Ende. Zeiten von AlAdhan, auf dem Gerät berechnet oder aus den veröffentlichten Tabellen Schwedens, der Diyanet (8.291 Orte in der Türkei und weltweit), Marokkos, Algeriens, Singapurs, Malaysias, Indonesiens und der Türkiye Takvimi."
         },
         {
           "h3": "Lesen und hören",
@@ -1106,7 +1130,7 @@
         },
         {
           "h3": "Ihr Eigenes",
-          "p": "Kein Konto, keine Werbung, kein Tracking. Abgleich zwischen Ihren eigenen Geräten über einen Ordner, den Sie ohnehin synchronisieren, eine Sicherung als Datei, und der gesamte Code quelloffen unter AGPL-3.0. Hell, dunkel oder tiefschwarz, sechs Farbthemen – oder Himmel, das die ganze App aus dem Himmel über dem Countdown malt."
+          "p": "Kein Konto, keine Werbung, kein Tracking. Abgleich zwischen Ihren eigenen Geräten über einen Ordner, den Sie ohnehin synchronisieren, eine Sicherung als Datei, und der gesamte Code quelloffen unter AGPL-3.0. Hell, dunkel oder tiefschwarz, sechs Farbthemen – oder Himmel, das die ganze App aus dem Himmel über dem Countdown malt, in realistischen oder lebhaften Farben."
         }
       ]
     },
@@ -1178,10 +1202,10 @@
     "shots": {
       "eyebrow": "Bildschirmfotos",
       "h2": "So sieht sie aus",
-      "lede": "Hell und dunkel, Telefon und Tablet. Der Mushaf ist die gedruckte Medina-Seite selbst, kein Bild davon. Die App auf den Aufnahmen ist englisch; sie spricht auch Deutsch.",
+      "lede": "Im Thema Himmel mit realistischen Farben, durch die Stunden eines Tages. Der Mushaf ist die gedruckte Medina-Seite selbst, kein Bild davon. Die App auf den Aufnahmen ist englisch; sie spricht auch Deutsch.",
       "items": {
         "home": {
-          "alt": "Startseite: ein gezeichneter Himmel hinter dem nächsten Gebet und ein lebendiger Countdown, das Datum über den Zeiten und ein Häkchen neben jedem Gebet.",
+          "alt": "Startseite im Thema Himmel bei Sonnenuntergang: die tiefe Sonne an einem rosa-violetten Himmel hinter einem lebendigen Countdown bis Maghrib, das Datum über den Zeiten und ein Häkchen neben jedem verrichteten Gebet.",
           "cap": "Start — der Himmel des Tages und der Countdown"
         },
         "home-maliki": {
@@ -1189,8 +1213,12 @@
           "cap": "Malikitische Zweitzeiten"
         },
         "home-dark": {
-          "alt": "Dieselbe Startseite im dunklen Thema — der Himmel folgt der Stunde, ein Morgenhimmel steht also über einer dunklen Seite.",
-          "cap": "Start, dunkel"
+          "alt": "Dieselbe Startseite in der Nacht: der Mond in seiner Phase zwischen den Sternen, alle Gebete des Tages abgehakt, der Countdown läuft auf Fadschr zu.",
+          "cap": "Start, in der Nacht"
+        },
+        "sky-colours": {
+          "alt": "Einstellungen, Erscheinungsbild: das Thema auf Himmel und darunter die Himmelsfarben — Realistisch gewählt, Lebhaft daneben — jede mit ihren sechs Himmeln gezeigt, von der Nacht bis zur Abenddämmerung.",
+          "cap": "Himmelsfarben — Realistisch oder Lebhaft"
         },
         "tilawah": {
           "alt": "Tilāwah spielt al-Mulk: Rezitator, Wiedergabesteuerung, Tempo, Sleeptimer und Zufallswiedergabe, darunter eine lebende Muṣḥaf-Seite, auf der das rezitierte Wort leuchtet.",
@@ -1267,12 +1295,12 @@
       },
       "fans": {
         "sky": {
-          "alt": "Fünf Startbildschirme aufgefächert, derselbe Tag im Thema Himmel zu fünf Stunden: das Violett und Korallenrot der Dämmerung vor Sonnenaufgang, das Pfirsich des frühen Morgens, das Blau des Mittags vorn, das Gold des späten Nachmittags und das Magenta der Abenddämmerung – Countdown, Tageszeiten und Lesekarte in jedem neu gefärbt.",
-          "cap": "Das Thema Himmel: die ganze App aus dem Himmel über dem Countdown gemalt, im Lauf des Tages wechselnd – Dämmerung, Morgen, Mittag, goldene Stunde, Abenddämmerung, Nacht – in einem Erscheinungsbild, ob das Telefon im hellen oder dunklen Modus ist."
+          "alt": "Fünf Startbildschirme aufgefächert, derselbe Tag im Thema Himmel in seinen realistischen Farben zu fünf Stunden: das Marineblau und Rosa der Dämmerung vor Sonnenaufgang, das blasse Blau des Morgens, das klare Blau des Mittags vorn, der Bernstein des späten Nachmittags und das Violett der Abenddämmerung über rotem Horizont – Countdown, Tageszeiten und Lesekarte in jedem neu gefärbt.",
+          "cap": "Das Thema Himmel: die ganze App aus dem Himmel über dem Countdown gemalt, im Lauf des Tages wechselnd – Dämmerung, Morgen, Mittag, goldene Stunde, Abenddämmerung, Nacht. Die realistischen Farben, der Himmel, wie er aussieht, sind voreingestellt; lebhafte, kräftig für jede Stunde, sind einen Tipp entfernt."
         },
         "alerts": {
-          "alt": "Fünf Vollbild-Gebetsalarme aufgefächert wie ein Kartenblatt, jeder in den Farben seiner Stunde im Thema Himmel: Fadschr im Violett und Korallenrot der Dämmerung, Dhuhr im Mittagsblau, Asr in der goldenen Stunde vorn, Maghrib im tiefen Magenta des Sonnenuntergangs, Ischa im Indigo der Nacht – jeder mit den Tasten Stopp, Schlummern und Gebet eintragen.",
-          "cap": "Bei gesperrtem Telefon kann ein Gebetsalarm den ganzen Bildschirm einnehmen, wie ein Wecker. Im Thema Himmel trägt jeder seine Stunde – Fadschrs Dämmerung, Dhuhrs Blau, Asrs Gold, Maghribs Magenta, Ischas Indigo – mit Stopp, Schlummern und Gebet eintragen griffbereit."
+          "alt": "Fünf Vollbild-Gebetsalarme aufgefächert wie ein Kartenblatt, jeder in den Farben seiner Stunde im Thema Himmel: Fadschr im Marineblau und Rosa der Dämmerung, Dhuhr im Mittagsblau, Asr im Bernstein des späten Nachmittags vorn, Maghrib in Violett über dem Rot des Sonnenuntergangs, Ischa im tiefen Blau der Nacht – jeder mit den Tasten Stopp, Schlummern und Gebet eintragen.",
+          "cap": "Bei gesperrtem Telefon kann ein Gebetsalarm den ganzen Bildschirm einnehmen, wie ein Wecker. Im Thema Himmel trägt jeder seine Stunde – Fadschrs Dämmerung, Dhuhrs Blau, Asrs Bernstein, Maghribs Sonnenuntergang, Ischas Nacht – mit Stopp, Schlummern und Gebet eintragen griffbereit."
         }
       }
     }
@@ -1306,7 +1334,7 @@
       "cards": [
         {
           "h3": "Prier",
-          "p": "Heures de prière et compte à rebours jusqu'à la prochaine, adhan pour chaque prière, boussole de la qibla, widgets pour l'écran d'accueil — et chaque prière consignée d'un seul geste. Une alerte de prière plein écran comme un réveil, pour chaque prière l'adhan, un signal ou le silence, et sur Android un téléphone qui se tait pendant la prière elle-même. La répétition ne propose que ce que le temps restant permet, jusqu’à une « dernière chance » avant la fin de la prière. Horaires d’AlAdhan, de PrayTimes.dev, calculés sur l’appareil, ou tirés des tables officielles de Suède, du Maroc, d’Algérie, de Singapour, de Malaisie, d’Indonésie et de Türkiye Takvimi."
+          "p": "Heures de prière et compte à rebours jusqu'à la prochaine, adhan pour chaque prière, boussole de la qibla, widgets pour l'écran d'accueil — et chaque prière consignée d'un seul geste. Une alerte de prière plein écran comme un réveil, pour chaque prière l'adhan, un signal ou le silence, et sur Android un téléphone qui se tait pendant la prière elle-même. La répétition ne propose que ce que le temps restant permet, jusqu’à une « dernière chance » avant la fin de la prière. Horaires d’AlAdhan, calculés sur l’appareil, ou tirés des tables officielles de Suède, de la Diyanet (8 291 lieux en Turquie et dans le monde), du Maroc, d’Algérie, de Singapour, de Malaisie, d’Indonésie et de Türkiye Takvimi."
         },
         {
           "h3": "Lire et écouter",
@@ -1318,7 +1346,7 @@
         },
         {
           "h3": "À vous",
-          "p": "Pas de compte, pas de publicité, pas de pistage. Synchronisation entre vos propres appareils via un dossier que vous synchronisez déjà, sauvegarde dans un fichier que vous gardez, et tout le code ouvert sous AGPL-3.0. Clair, sombre ou noir pur, six thèmes de couleur – ou Ciel, qui peint toute l'app d'après le ciel au-dessus du compte à rebours."
+          "p": "Pas de compte, pas de publicité, pas de pistage. Synchronisation entre vos propres appareils via un dossier que vous synchronisez déjà, sauvegarde dans un fichier que vous gardez, et tout le code ouvert sous AGPL-3.0. Clair, sombre ou noir pur, six thèmes de couleur – ou Ciel, qui peint toute l'app d'après le ciel au-dessus du compte à rebours, en couleurs réalistes ou vives."
         }
       ]
     },
@@ -1390,10 +1418,10 @@
     "shots": {
       "eyebrow": "Captures d’écran",
       "h2": "À quoi ça ressemble",
-      "lede": "Clair et sombre, téléphone et tablette. Le mushaf est la page de Médine imprimée elle-même, pas une image de celle-ci. L’application des captures est en anglais ; elle parle aussi français.",
+      "lede": "Sous le thème Ciel en couleurs réalistes, au fil des heures d’une journée. Le mushaf est la page de Médine imprimée elle-même, pas une image de celle-ci. L’application des captures est en anglais ; elle parle aussi français.",
       "items": {
         "home": {
-          "alt": "Écran d’accueil : un ciel dessiné derrière la prochaine prière et un compte à rebours vivant, la date au-dessus des horaires, et une case à cocher près de chaque prière.",
+          "alt": "Écran d’accueil sous le thème Ciel au coucher du soleil : le soleil bas dans un ciel rose et violet derrière un compte à rebours vivant jusqu’à Maghrib, la date au-dessus des horaires, et une coche près de chaque prière accomplie.",
           "cap": "Accueil — le ciel du jour et le compte à rebours"
         },
         "home-maliki": {
@@ -1401,8 +1429,12 @@
           "cap": "Les seconds temps malikites"
         },
         "home-dark": {
-          "alt": "Le même écran dans le thème sombre — le ciel suit l’heure, un ciel du matin se pose donc sur une page sombre.",
-          "cap": "Accueil, sombre"
+          "alt": "Le même écran la nuit : la lune dans sa phase parmi les étoiles, toutes les prières du jour cochées, le compte à rebours vers Fajr.",
+          "cap": "Accueil, la nuit"
+        },
+        "sky-colours": {
+          "alt": "Réglages, Apparence : le thème sur Ciel et, dessous, les Couleurs du ciel — Réaliste choisi, Vif à côté — chacune montrée par ses six ciels, de la nuit au crépuscule.",
+          "cap": "Couleurs du ciel — Réaliste ou Vif"
         },
         "tilawah": {
           "alt": "La Tilāwah joue al-Mulk : le récitateur, les commandes, la vitesse, la minuterie et la lecture aléatoire, avec dessous une page de muṣḥaf vivante où le mot récité s’allume.",
@@ -1479,12 +1511,12 @@
       },
       "fans": {
         "sky": {
-          "alt": "Cinq écrans d’accueil en éventail, la même journée sous le thème Ciel à cinq heures : le violet et le corail de l’aube avant le lever du soleil, la pêche du petit matin, le bleu de midi devant, l’or de la fin d’après-midi et le magenta du crépuscule – le compte à rebours, les horaires du jour et la carte de lecture recolorés dans chacun.",
-          "cap": "Le thème Ciel : toute l’app peinte d’après le ciel au-dessus du compte à rebours, changeant au fil de la journée – aube, matin, midi, heure dorée, crépuscule, nuit – en une seule apparence, que le téléphone soit en mode clair ou sombre."
+          "alt": "Cinq écrans d’accueil en éventail, la même journée sous le thème Ciel dans ses couleurs réalistes à cinq heures : le bleu marine et le rose de l’aube avant le lever du soleil, le bleu pâle du matin, le bleu clair de midi devant, l’ambre de la fin d’après-midi et le violet du crépuscule sur un horizon rouge – le compte à rebours, les horaires du jour et la carte de lecture recolorés dans chacun.",
+          "cap": "Le thème Ciel : toute l’app peinte d’après le ciel au-dessus du compte à rebours, changeant au fil de la journée – aube, matin, midi, heure dorée, crépuscule, nuit. Ses couleurs réalistes, le ciel tel qu’il paraît, sont celles par défaut ; les vives, franches pour chaque heure, sont à un geste."
         },
         "alerts": {
-          "alt": "Cinq alertes de prière plein écran en éventail comme une main de cartes, chacune aux couleurs de son heure sous le thème Ciel : Fajr dans le violet et le corail de l’aube, Dhuhr dans le bleu de midi, Asr dans l’heure dorée devant, Maghrib dans le magenta profond du couchant, Isha dans l’indigo de la nuit – chacune avec les boutons Arrêter, Répéter et Consigner la prière.",
-          "cap": "Téléphone verrouillé, une alerte de prière peut occuper tout l’écran, comme un réveil. Sous le thème Ciel chacune porte son heure – l’aube de Fajr, le bleu de Dhuhr, l’or d’Asr, le magenta de Maghrib, l’indigo d’Isha – avec Arrêter, Répéter et Consigner la prière à portée de main."
+          "alt": "Cinq alertes de prière plein écran en éventail comme une main de cartes, chacune aux couleurs de son heure sous le thème Ciel : Fajr dans le bleu marine et le rose de l’aube, Dhuhr dans le bleu de midi, Asr dans l’ambre de la fin d’après-midi devant, Maghrib en violet sur le rouge du couchant, Isha dans le bleu profond de la nuit – chacune avec les boutons Arrêter, Répéter et Consigner la prière.",
+          "cap": "Téléphone verrouillé, une alerte de prière peut occuper tout l’écran, comme un réveil. Sous le thème Ciel chacune porte son heure – l’aube de Fajr, le bleu de Dhuhr, l’ambre d’Asr, le couchant de Maghrib, la nuit d’Isha – avec Arrêter, Répéter et Consigner la prière à portée de main."
         }
       }
     }
@@ -1518,7 +1550,7 @@
       "cards": [
         {
           "h3": "Rezar",
-          "p": "Horarios de oración con cuenta atrás hasta la siguiente, adhan para cada oración, brújula de la alquibla, widgets para la pantalla de inicio — y cada oración registrada con un toque. Una alerta de oración a pantalla completa como un despertador, para cada oración adhan, aviso o silencio, y en Android un teléfono que calla durante la propia oración. La posposición solo ofrece lo que permite el tiempo que queda, hasta una «última oportunidad» antes de que termine la oración. Horarios de AlAdhan, PrayTimes.dev, calculados en el teléfono o de las tablas oficiales de Suecia, Marruecos, Argelia, Singapur, Malasia, Indonesia y Türkiye Takvimi."
+          "p": "Horarios de oración con cuenta atrás hasta la siguiente, adhan para cada oración, brújula de la alquibla, widgets para la pantalla de inicio — y cada oración registrada con un toque. Una alerta de oración a pantalla completa como un despertador, para cada oración adhan, aviso o silencio, y en Android un teléfono que calla durante la propia oración. La posposición solo ofrece lo que permite el tiempo que queda, hasta una «última oportunidad» antes de que termine la oración. Horarios de AlAdhan, calculados en el teléfono o de las tablas oficiales de Suecia, la Diyanet (8.291 lugares en Turquía y el mundo), Marruecos, Argelia, Singapur, Malasia, Indonesia y Türkiye Takvimi."
         },
         {
           "h3": "Leer y escuchar",
@@ -1530,7 +1562,7 @@
         },
         {
           "h3": "Tuyo",
-          "p": "Sin cuenta, sin anuncios, sin rastreo. Sincronización entre tus propios dispositivos mediante una carpeta que ya sincronizas, copia de seguridad en un archivo que guardas tú, y todo el código abierto bajo AGPL-3.0. Claro, oscuro o negro puro, seis temas de color, o Cielo, que pinta toda la app a partir del cielo sobre la cuenta atrás."
+          "p": "Sin cuenta, sin anuncios, sin rastreo. Sincronización entre tus propios dispositivos mediante una carpeta que ya sincronizas, copia de seguridad en un archivo que guardas tú, y todo el código abierto bajo AGPL-3.0. Claro, oscuro o negro puro, seis temas de color, o Cielo, que pinta toda la app a partir del cielo sobre la cuenta atrás, en colores realistas o vibrantes."
         }
       ]
     },
@@ -1602,10 +1634,10 @@
     "shots": {
       "eyebrow": "Capturas de pantalla",
       "h2": "Qué aspecto tiene",
-      "lede": "Claro y oscuro, teléfono y tableta. El mushaf es la página de Medina impresa, no una foto de ella. La app de las capturas está en inglés; también habla español.",
+      "lede": "Con el tema Cielo en colores realistas, a lo largo de las horas de un día. El mushaf es la página de Medina impresa, no una foto de ella. La app de las capturas está en inglés; también habla español.",
       "items": {
         "home": {
-          "alt": "Pantalla de inicio: un cielo dibujado detrás de la próxima oración y una cuenta atrás viva, la fecha sobre los horarios y una casilla junto a cada oración.",
+          "alt": "Pantalla de inicio con el tema Cielo al atardecer: el sol bajo en un cielo rosa y violeta tras una cuenta atrás viva hasta Maghrib, la fecha sobre los horarios y una marca junto a cada oración hecha.",
           "cap": "Inicio — el cielo del día y la cuenta atrás"
         },
         "home-maliki": {
@@ -1613,8 +1645,12 @@
           "cap": "Segundos tiempos malikíes"
         },
         "home-dark": {
-          "alt": "La misma pantalla en el tema oscuro — el cielo sigue la hora, así que un cielo de mañana queda sobre una página oscura.",
-          "cap": "Inicio, oscuro"
+          "alt": "La misma pantalla de noche: la luna en su fase entre las estrellas, todas las oraciones del día marcadas, la cuenta atrás hacia Fajr.",
+          "cap": "Inicio, de noche"
+        },
+        "sky-colours": {
+          "alt": "Ajustes, Apariencia: el tema en Cielo y, debajo, los Colores del cielo (Realista elegido, Vibrante al lado), cada uno mostrado con sus seis cielos, de la noche al crepúsculo.",
+          "cap": "Colores del cielo: Realista o Vibrante"
         },
         "tilawah": {
           "alt": "Tilāwah reproduciendo al-Mulk: el recitador, los controles, la velocidad, el temporizador y el modo aleatorio, con una página de muṣḥaf debajo donde se enciende la palabra recitada.",
@@ -1691,12 +1727,12 @@
       },
       "fans": {
         "sky": {
-          "alt": "Cinco pantallas de inicio en abanico, el mismo día con el tema Cielo a cinco horas: el violeta y el coral del alba antes de salir el sol, el melocotón de la primera mañana, el azul del mediodía delante, el oro de la tarde avanzada y el magenta del crepúsculo; la cuenta atrás, los horarios del día y la tarjeta de lectura recoloreados en cada una.",
-          "cap": "El tema Cielo: toda la app pintada a partir del cielo sobre la cuenta atrás, cambiando a lo largo del día (alba, mañana, mediodía, hora dorada, crepúsculo, noche) con un único aspecto tanto si el teléfono está en modo claro como oscuro."
+          "alt": "Cinco pantallas de inicio en abanico, el mismo día con el tema Cielo en sus colores realistas a cinco horas: el azul marino y el rosa del alba antes de salir el sol, el azul pálido de la mañana, el azul limpio del mediodía delante, el ámbar de la tarde avanzada y el violeta del crepúsculo sobre un horizonte rojo; la cuenta atrás, los horarios del día y la tarjeta de lectura recoloreados en cada una.",
+          "cap": "El tema Cielo: toda la app pintada a partir del cielo sobre la cuenta atrás, cambiando a lo largo del día (alba, mañana, mediodía, hora dorada, crepúsculo, noche). Sus colores realistas, el cielo tal como se ve, vienen por defecto; los vibrantes, intensos para cada hora, están a un toque."
         },
         "alerts": {
-          "alt": "Cinco alertas de oración a pantalla completa en abanico como una mano de cartas, cada una con los colores de su hora bajo el tema Cielo: Fajr en el violeta y el coral del alba, Dhuhr en el azul del mediodía, Asr en la hora dorada delante, Maghrib en el magenta profundo del ocaso, Isha en el índigo de la noche; cada una con los botones Detener, Posponer y Registrar oración.",
-          "cap": "Con el teléfono bloqueado, una alerta de oración puede ocupar toda la pantalla, como un despertador. Bajo el tema Cielo cada una viste su hora (el alba de Fajr, el azul de Dhuhr, el oro de Asr, el magenta de Maghrib, el índigo de Isha) con Detener, Posponer y Registrar oración a mano."
+          "alt": "Cinco alertas de oración a pantalla completa en abanico como una mano de cartas, cada una con los colores de su hora bajo el tema Cielo: Fajr en el azul marino y el rosa del alba, Dhuhr en el azul del mediodía, Asr en el ámbar de la tarde delante, Maghrib en violeta sobre el rojo del ocaso, Isha en el azul profundo de la noche; cada una con los botones Detener, Posponer y Registrar oración.",
+          "cap": "Con el teléfono bloqueado, una alerta de oración puede ocupar toda la pantalla, como un despertador. Bajo el tema Cielo cada una viste su hora (el alba de Fajr, el azul de Dhuhr, el ámbar de Asr, el ocaso de Maghrib, la noche de Isha) con Detener, Posponer y Registrar oración a mano."
         }
       }
     }
@@ -1730,7 +1766,7 @@
       "cards": [
         {
           "h3": "Молитесь",
-          "p": "Время намаза с обратным отсчётом до следующего, азан для каждого намаза, компас киблы, виджеты — и каждый намаз отмечается одним касанием. Полноэкранное напоминание о молитве, как будильник, для каждого намаза азан, сигнал или тишина, а на Android телефон молчит во время самой молитвы. Отложить можно лишь настолько, насколько позволяет оставшееся время намаза, — вплоть до «последней возможности» перед его концом. Время от AlAdhan, PrayTimes.dev, расчёт на телефоне или официальные таблицы Швеции, Марокко, Алжира, Сингапура, Малайзии, Индонезии и Türkiye Takvimi."
+          "p": "Время намаза с обратным отсчётом до следующего, азан для каждого намаза, компас киблы, виджеты — и каждый намаз отмечается одним касанием. Полноэкранное напоминание о молитве, как будильник, для каждого намаза азан, сигнал или тишина, а на Android телефон молчит во время самой молитвы. Отложить можно лишь настолько, насколько позволяет оставшееся время намаза, — вплоть до «последней возможности» перед его концом. Время от AlAdhan, расчёт на телефоне или официальные таблицы Швеции, Диянета (8291 место в Турции и по всему миру), Марокко, Алжира, Сингапура, Малайзии, Индонезии и Türkiye Takvimi."
         },
         {
           "h3": "Читайте и слушайте",
@@ -1742,7 +1778,7 @@
         },
         {
           "h3": "Только ваше",
-          "p": "Без аккаунта, без рекламы, без слежки. Синхронизация между вашими устройствами через папку, которую вы и так синхронизируете, резервная копия в файл и весь код открыт по AGPL-3.0. Светлая, тёмная или чёрная тема, шесть цветовых тем — или «Небо», которое красит всё приложение по небу над обратным отсчётом."
+          "p": "Без аккаунта, без рекламы, без слежки. Синхронизация между вашими устройствами через папку, которую вы и так синхронизируете, резервная копия в файл и весь код открыт по AGPL-3.0. Светлая, тёмная или чёрная тема, шесть цветовых тем — или «Небо», которое красит всё приложение по небу над обратным отсчётом, в реалистичных или ярких цветах."
         }
       ]
     },
@@ -1814,10 +1850,10 @@
     "shots": {
       "eyebrow": "Скриншоты",
       "h2": "Как это выглядит",
-      "lede": "Светлая и тёмная тема, телефон и планшет. Мусхаф — это сама печатная мединская страница, а не её снимок. На скриншотах приложение по-английски; по-русски оно говорит так же.",
+      "lede": "Тема «Небо» в реалистичных цветах, через часы одного дня. Мусхаф — это сама печатная мединская страница, а не её снимок. На скриншотах приложение по-английски; по-русски оно говорит так же.",
       "items": {
         "home": {
-          "alt": "Главный экран: нарисованное небо за следующей молитвой и живой обратный отсчёт, дата над временами и отметка рядом с каждой молитвой.",
+          "alt": "Главный экран в теме «Небо» на закате: низкое солнце в розово-фиолетовом небе за живым обратным отсчётом до магриба, дата над временами и отметка у каждой совершённой молитвы.",
           "cap": "Сегодня — небо дня и обратный отсчёт"
         },
         "home-maliki": {
@@ -1825,8 +1861,12 @@
           "cap": "Маликитские вторые времена"
         },
         "home-dark": {
-          "alt": "Тот же экран в тёмной теме — небо следует за часом, поэтому утреннее небо стоит над тёмной страницей.",
-          "cap": "Сегодня, тёмная тема"
+          "alt": "Тот же экран ночью: луна в своей фазе среди звёзд, все молитвы дня отмечены, отсчёт идёт к фаджру.",
+          "cap": "Сегодня, ночью"
+        },
+        "sky-colours": {
+          "alt": "Настройки, оформление: тема «Небо», а под ней цвета неба — выбраны «Реалистичные», рядом «Яркие», — каждые показаны своими шестью небесами, от ночи до сумерек.",
+          "cap": "Цвета неба — реалистичные или яркие"
         },
         "tilawah": {
           "alt": "Тилява читает суру «аль-Мульк»: чтец, кнопки воспроизведения, скорость, таймер сна и перемешивание, а ниже — живая страница мусхафа с подсвеченным словом.",
@@ -1903,12 +1943,12 @@
       },
       "fans": {
         "sky": {
-          "alt": "Пять главных экранов веером, один и тот же день в теме «Небо» в пять часов: фиолетовый и коралловый рассвета перед восходом, персиковый раннего утра, синий полудня впереди, золото позднего дня и пурпур сумерек — обратный отсчёт, времена дня и карточка чтения перекрашены в каждом.",
-          "cap": "Тема «Небо»: всё приложение окрашено по небу над обратным отсчётом и меняется в течение дня — рассвет, утро, полдень, золотой час, сумерки, ночь — в одном виде, светлая или тёмная тема на телефоне."
+          "alt": "Пять главных экранов веером, один и тот же день в теме «Небо» в реалистичных цветах в пять часов: тёмно-синий и розовый рассвета перед восходом, бледно-голубой утра, чистая синева полудня впереди, янтарь позднего дня и фиолетовые сумерки над красным горизонтом — обратный отсчёт, времена дня и карточка чтения перекрашены в каждом.",
+          "cap": "Тема «Небо»: всё приложение окрашено по небу над обратным отсчётом и меняется в течение дня — рассвет, утро, полдень, золотой час, сумерки, ночь. Реалистичные цвета, небо как оно есть, — по умолчанию; яркие, насыщенные для каждого часа, — в одно касание."
         },
         "alerts": {
-          "alt": "Пять полноэкранных напоминаний о молитве веером, как карты в руке, каждое в цветах своего часа в теме «Небо»: фаджр в фиолетовом и коралловом рассвета, зухр в полуденной синеве, аср в золотом часе впереди, магриб в густом пурпуре заката, иша в индиго ночи — у каждого кнопки «Стоп», «Отложить» и «Отметить молитву».",
-          "cap": "При заблокированном телефоне напоминание о молитве может занять весь экран, как будильник. В теме «Небо» каждое носит свой час — рассвет фаджра, синеву зухра, золото асра, пурпур магриба, индиго иши — а «Стоп», «Отложить» и «Отметить молитву» под рукой."
+          "alt": "Пять полноэкранных напоминаний о молитве веером, как карты в руке, каждое в цветах своего часа в теме «Небо»: фаджр в тёмно-синем и розовом рассвета, зухр в полуденной синеве, аср в янтаре позднего дня впереди, магриб в фиолетовом над красным закатом, иша в глубокой синеве ночи — у каждого кнопки «Стоп», «Отложить» и «Отметить молитву».",
+          "cap": "При заблокированном телефоне напоминание о молитве может занять весь экран, как будильник. В теме «Небо» каждое носит свой час — рассвет фаджра, синеву зухра, янтарь асра, закат магриба, ночь иши — а «Стоп», «Отложить» и «Отметить молитву» под рукой."
         }
       }
     }
@@ -1942,7 +1982,7 @@
       "cards": [
         {
           "h3": "নামাজ",
-          "p": "পরের নামাজের কাউন্টডাউনসহ নামাজের সময়, প্রতি ওয়াক্তের আজান, কিবলা কম্পাস, হোম স্ক্রিন উইজেট — আর এক ছোঁয়ায় প্রতিটি নামাজ লিখে রাখা। অ্যালার্ম ঘড়ির মতো পূর্ণ-পর্দা নামাজের সতর্কবার্তা, প্রতি ওয়াক্তে আজান, সংকেত বা নীরবতার পছন্দ, আর অ্যান্ড্রয়েডে নামাজের সময়টুকু ফোন চুপ। স্নুজ শুধু ততটুকুই দেওয়া হয় যতটুকু ওয়াক্ত বাকি আছে, ওয়াক্ত শেষ হওয়ার আগে একটি «শেষ সুযোগ» পর্যন্ত। সময় আসে AlAdhan, PrayTimes.dev, ফোনে হিসাব, অথবা সুইডেন, মরক্কো, আলজেরিয়া, সিঙ্গাপুর, মালয়েশিয়া, ইন্দোনেশিয়া ও Türkiye Takvimi-র প্রকাশিত সময়সূচি থেকে।"
+          "p": "পরের নামাজের কাউন্টডাউনসহ নামাজের সময়, প্রতি ওয়াক্তের আজান, কিবলা কম্পাস, হোম স্ক্রিন উইজেট — আর এক ছোঁয়ায় প্রতিটি নামাজ লিখে রাখা। অ্যালার্ম ঘড়ির মতো পূর্ণ-পর্দা নামাজের সতর্কবার্তা, প্রতি ওয়াক্তে আজান, সংকেত বা নীরবতার পছন্দ, আর অ্যান্ড্রয়েডে নামাজের সময়টুকু ফোন চুপ। স্নুজ শুধু ততটুকুই দেওয়া হয় যতটুকু ওয়াক্ত বাকি আছে, ওয়াক্ত শেষ হওয়ার আগে একটি «শেষ সুযোগ» পর্যন্ত। সময় আসে AlAdhan, ফোনে হিসাব, অথবা সুইডেন, দিয়ানেত (তুরস্ক ও বিশ্বজুড়ে ৮,২৯১টি স্থান), মরক্কো, আলজেরিয়া, সিঙ্গাপুর, মালয়েশিয়া, ইন্দোনেশিয়া ও Türkiye Takvimi-র প্রকাশিত সময়সূচি থেকে।"
         },
         {
           "h3": "পড়ুন ও শুনুন",
@@ -1954,7 +1994,7 @@
         },
         {
           "h3": "আপনার নিজের",
-          "p": "অ্যাকাউন্ট নেই, বিজ্ঞাপন নেই, ট্র্যাকিং নেই। আপনি আগে থেকেই সিঙ্ক করেন এমন একটি ফোল্ডারের মাধ্যমে নিজের ডিভাইসগুলোর মধ্যে সিঙ্ক, নিজের কাছে রাখা ফাইলে ব্যাকআপ, আর AGPL-3.0-এর অধীনে পুরো কোড উন্মুক্ত। লাইট, ডার্ক বা গাঢ় কালো, ছয়টি রঙের থিম — অথবা আকাশ, যা কাউন্টডাউনের উপরের আকাশ থেকে পুরো অ্যাপ রাঙায়।"
+          "p": "অ্যাকাউন্ট নেই, বিজ্ঞাপন নেই, ট্র্যাকিং নেই। আপনি আগে থেকেই সিঙ্ক করেন এমন একটি ফোল্ডারের মাধ্যমে নিজের ডিভাইসগুলোর মধ্যে সিঙ্ক, নিজের কাছে রাখা ফাইলে ব্যাকআপ, আর AGPL-3.0-এর অধীনে পুরো কোড উন্মুক্ত। লাইট, ডার্ক বা গাঢ় কালো, ছয়টি রঙের থিম — অথবা আকাশ, যা কাউন্টডাউনের উপরের আকাশ থেকে পুরো অ্যাপ রাঙায়, বাস্তবসম্মত বা উজ্জ্বল রঙে।"
         }
       ]
     },
@@ -2026,10 +2066,10 @@
     "shots": {
       "eyebrow": "স্ক্রিনশট",
       "h2": "দেখতে কেমন",
-      "lede": "আলো আর অন্ধকার, ফোন আর ট্যাবলেট। মুসহাফ হলো ছাপা মদিনা পৃষ্ঠাটিই, তার ছবি নয়। ছবিতে অ্যাপটি ইংরেজিতে; বাংলাও সে বলে।",
+      "lede": "আকাশ থিম, বাস্তবসম্মত রঙে, একটি দিনের প্রহর জুড়ে। মুসহাফ হলো ছাপা মদিনা পৃষ্ঠাটিই, তার ছবি নয়। ছবিতে অ্যাপটি ইংরেজিতে; বাংলাও সে বলে।",
       "items": {
         "home": {
-          "alt": "হোম স্ক্রিন: পরের নামাজের পিছনে আঁকা আকাশ ও চলমান কাউন্টডাউন, সময়ের উপরে দিন, আর প্রতিটি নামাজের পাশে একটি টিক।",
+          "alt": "সূর্যাস্তে আকাশ থিমে হোম স্ক্রিন: গোলাপি-বেগুনি আকাশে নিচু সূর্য, মাগরিব পর্যন্ত চলমান কাউন্টডাউন, সময়ের উপরে দিন, আর আদায় করা প্রতিটি নামাজের পাশে টিক।",
           "cap": "হোম — দিনের আকাশ ও কাউন্টডাউন"
         },
         "home-maliki": {
@@ -2037,8 +2077,12 @@
           "cap": "মালিকি দ্বিতীয় সময়"
         },
         "home-dark": {
-          "alt": "একই হোম স্ক্রিন গাঢ় থিমে — আকাশ ঘণ্টার সঙ্গে চলে, তাই সকালের আকাশ গাঢ় পৃষ্ঠার উপরে।",
-          "cap": "হোম, গাঢ়"
+          "alt": "একই স্ক্রিন রাতে: তারাদের মাঝে নিজের কলায় চাঁদ, দিনের সব নামাজে টিক, কাউন্টডাউন ফজরের দিকে।",
+          "cap": "হোম, রাতে"
+        },
+        "sky-colours": {
+          "alt": "সেটিংস, চেহারা: থিম আকাশ-এ, আর তার নিচে আকাশের রং — বাস্তবসম্মত বাছাই করা, পাশে উজ্জ্বল — প্রতিটি দেখানো তার ছয়টি আকাশ দিয়ে, রাত থেকে সন্ধ্যা পর্যন্ত।",
+          "cap": "আকাশের রং — বাস্তবসম্মত বা উজ্জ্বল"
         },
         "tilawah": {
           "alt": "তিলাওয়াতে সূরা আল-মুলক: ক্বারী, প্লেব্যাক নিয়ন্ত্রণ, গতি, স্লিপ টাইমার ও শাফল, আর নিচে জীবন্ত মুসহাফ পাতা যেখানে পঠিত শব্দটি আলোকিত।",
@@ -2115,12 +2159,12 @@
       },
       "fans": {
         "sky": {
-          "alt": "পাখার মতো ছড়ানো পাঁচটি হোম স্ক্রিন, একই দিন আকাশ থিমে পাঁচ সময়ে: সূর্যোদয়ের আগে ভোরের বেগুনি ও প্রবাল, সকালের পিচ রং, সামনে দুপুরের নীল, শেষ বিকেলের সোনালি আর সন্ধ্যার ম্যাজেন্টা — কাউন্টডাউন, দিনের সময় আর পাঠের কার্ড প্রতিটিতে নতুন রঙে।",
-          "cap": "আকাশ থিম: কাউন্টডাউনের উপরের আকাশ থেকে পুরো অ্যাপ রাঙানো, দিনভর বদলায় — ভোর, সকাল, দুপুর, সোনালি সময়, সন্ধ্যা, রাত — একই রূপে, ফোন লাইট মোডে থাকুক বা ডার্কে।"
+          "alt": "পাখার মতো ছড়ানো পাঁচটি হোম স্ক্রিন, একই দিন আকাশ থিমের বাস্তবসম্মত রঙে পাঁচ সময়ে: সূর্যোদয়ের আগে ভোরের গাঢ় নীল ও গোলাপি, সকালের ফিকে নীল, সামনে দুপুরের স্বচ্ছ নীল, শেষ বিকেলের অ্যাম্বার আর লাল দিগন্তের উপর সন্ধ্যার বেগুনি — কাউন্টডাউন, দিনের সময় আর পাঠের কার্ড প্রতিটিতে নতুন রঙে।",
+          "cap": "আকাশ থিম: কাউন্টডাউনের উপরের আকাশ থেকে পুরো অ্যাপ রাঙানো, দিনভর বদলায় — ভোর, সকাল, দুপুর, সোনালি সময়, সন্ধ্যা, রাত। বাস্তবসম্মত রং, আকাশ যেমন দেখায়, ডিফল্ট; উজ্জ্বল রং, প্রতি সময়ের জন্য গাঢ়, এক ছোঁয়া দূরে।"
         },
         "alerts": {
-          "alt": "হাতে তাসের মতো ছড়ানো পাঁচটি পূর্ণ-পর্দা নামাজের সতর্কবার্তা, প্রতিটি আকাশ থিমে নিজের সময়ের রঙে: ফজর ভোরের বেগুনি ও প্রবালে, যোহর দুপুরের নীলে, আসর সামনে সোনালি সময়ে, মাগরিব সূর্যাস্তের গাঢ় ম্যাজেন্টায়, এশা রাতের নীলচে বেগুনিতে — প্রতিটিতে থামান, স্নুজ ও নামাজ লিখুন বোতাম।",
-          "cap": "ফোন লক থাকলে নামাজের সতর্কবার্তা অ্যালার্ম ঘড়ির মতো পুরো পর্দা নিতে পারে। আকাশ থিমে প্রতিটি নিজের সময় পরে — ফজরের ভোর, যোহরের নীল, আসরের সোনালি, মাগরিবের ম্যাজেন্টা, এশার নীলচে বেগুনি — থামান, স্নুজ ও নামাজ লিখুন হাতের কাছে।"
+          "alt": "হাতে তাসের মতো ছড়ানো পাঁচটি পূর্ণ-পর্দা নামাজের সতর্কবার্তা, প্রতিটি আকাশ থিমে নিজের সময়ের রঙে: ফজর ভোরের গাঢ় নীল ও গোলাপিতে, যোহর দুপুরের নীলে, আসর সামনে শেষ বিকেলের অ্যাম্বারে, মাগরিব সূর্যাস্তের লালের উপর বেগুনিতে, এশা রাতের গভীর নীলে — প্রতিটিতে থামান, স্নুজ ও নামাজ লিখুন বোতাম।",
+          "cap": "ফোন লক থাকলে নামাজের সতর্কবার্তা অ্যালার্ম ঘড়ির মতো পুরো পর্দা নিতে পারে। আকাশ থিমে প্রতিটি নিজের সময় পরে — ফজরের ভোর, যোহরের নীল, আসরের অ্যাম্বার, মাগরিবের সূর্যাস্ত, এশার রাত — থামান, স্নুজ ও নামাজ লিখুন হাতের কাছে।"
         }
       }
     }
@@ -2154,7 +2198,7 @@
       "cards": [
         {
           "h3": "नमाज़",
-          "p": "अगली नमाज़ की उलटी गिनती के साथ नमाज़ के समय, हर नमाज़ की अज़ान, क़िबला कम्पास, होम स्क्रीन विजेट — और हर नमाज़ एक टैप में दर्ज। अलार्म घड़ी जैसी पूर्ण-स्क्रीन नमाज़ चेतावनी, हर नमाज़ के लिए अज़ान, सूचना या मौन का चुनाव, और एंड्रॉइड पर नमाज़ के दौरान चुप फ़ोन। स्नूज़ उतना ही मिलता है जितना नमाज़ का वक़्त बाक़ी हो, वक़्त ख़त्म होने से पहले एक «आख़िरी मौक़ा» तक। समय AlAdhan, PrayTimes.dev, फ़ोन पर गणना, या स्वीडन, मोरक्को, अल्जीरिया, सिंगापुर, मलेशिया, इंडोनेशिया और Türkiye Takvimi की प्रकाशित तालिकाओं से।"
+          "p": "अगली नमाज़ की उलटी गिनती के साथ नमाज़ के समय, हर नमाज़ की अज़ान, क़िबला कम्पास, होम स्क्रीन विजेट — और हर नमाज़ एक टैप में दर्ज। अलार्म घड़ी जैसी पूर्ण-स्क्रीन नमाज़ चेतावनी, हर नमाज़ के लिए अज़ान, सूचना या मौन का चुनाव, और एंड्रॉइड पर नमाज़ के दौरान चुप फ़ोन। स्नूज़ उतना ही मिलता है जितना नमाज़ का वक़्त बाक़ी हो, वक़्त ख़त्म होने से पहले एक «आख़िरी मौक़ा» तक। समय AlAdhan, फ़ोन पर गणना, या स्वीडन, दियानत (तुर्की और दुनिया भर में 8,291 जगहें), मोरक्को, अल्जीरिया, सिंगापुर, मलेशिया, इंडोनेशिया और Türkiye Takvimi की प्रकाशित तालिकाओं से।"
         },
         {
           "h3": "पढ़ें और सुनें",
@@ -2166,7 +2210,7 @@
         },
         {
           "h3": "सिर्फ़ आपका",
-          "p": "न खाता, न विज्ञापन, न ट्रैकिंग। उस फ़ोल्डर के ज़रिए अपने ही डिवाइसों में सिंक जिसे आप पहले से सिंक करते हैं, आपके पास रहने वाली फ़ाइल में बैकअप, और AGPL-3.0 के तहत पूरा कोड खुला। लाइट, डार्क या गहरा काला, छह रंग-थीम — या आकाश, जो काउंटडाउन के ऊपर के आकाश से पूरे ऐप को रंगता है।"
+          "p": "न खाता, न विज्ञापन, न ट्रैकिंग। उस फ़ोल्डर के ज़रिए अपने ही डिवाइसों में सिंक जिसे आप पहले से सिंक करते हैं, आपके पास रहने वाली फ़ाइल में बैकअप, और AGPL-3.0 के तहत पूरा कोड खुला। लाइट, डार्क या गहरा काला, छह रंग-थीम — या आकाश, जो काउंटडाउन के ऊपर के आकाश से पूरे ऐप को रंगता है, यथार्थ या चटकीले रंगों में।"
         }
       ]
     },
@@ -2238,10 +2282,10 @@
     "shots": {
       "eyebrow": "स्क्रीनशॉट",
       "h2": "यह दिखता कैसा है",
-      "lede": "उजाला और अँधेरा, फ़ोन और टैबलेट। मुसहफ़ छपा हुआ मदीना पृष्ठ ही है, उसकी तस्वीर नहीं। तस्वीरों में ऐप अंग्रेज़ी में है; हिंदी भी वह बोलता है।",
+      "lede": "आकाश थीम, यथार्थ रंगों में, एक दिन के पहरों में। मुसहफ़ छपा हुआ मदीना पृष्ठ ही है, उसकी तस्वीर नहीं। तस्वीरों में ऐप अंग्रेज़ी में है; हिंदी भी वह बोलता है।",
       "items": {
         "home": {
-          "alt": "होम स्क्रीन: अगली नमाज़ के पीछे चित्रित आकाश और चलती गिनती, समयों के ऊपर दिन, और हर नमाज़ के पास एक निशान।",
+          "alt": "सूर्यास्त के समय आकाश थीम में होम स्क्रीन: गुलाबी और बैंगनी आकाश में ढलता सूरज, मग़रिब तक चलती गिनती, समयों के ऊपर दिन, और अदा की गई हर नमाज़ के पास निशान।",
           "cap": "होम — दिन का आकाश और गिनती"
         },
         "home-maliki": {
@@ -2249,8 +2293,12 @@
           "cap": "मालिकी दूसरे समय"
         },
         "home-dark": {
-          "alt": "वही होम स्क्रीन गहरे थीम में — आकाश घंटे के साथ चलता है, इसलिए सुबह का आकाश गहरे पृष्ठ के ऊपर।",
-          "cap": "होम, गहरा"
+          "alt": "वही स्क्रीन रात में: तारों के बीच अपनी कला में चाँद, दिन की सब नमाज़ें निशान लगी, गिनती फ़ज्र की ओर।",
+          "cap": "होम, रात में"
+        },
+        "sky-colours": {
+          "alt": "सेटिंग्स, रूप: थीम आकाश पर, और उसके नीचे आकाश के रंग — यथार्थ चुना हुआ, बगल में चटकीले — हर एक अपने छह आकाशों से दिखाया गया, रात से साँझ तक।",
+          "cap": "आकाश के रंग — यथार्थ या चटकीले"
         },
         "tilawah": {
           "alt": "तिलावत में सूरह अल-मुल्क: क़ारी, प्लेबैक नियंत्रण, गति, स्लीप टाइमर और शफ़ल, और नीचे जीवंत मुसहफ़ पन्ना जिस पर पढ़ा जा रहा शब्द रोशन है।",
@@ -2327,12 +2375,12 @@
       },
       "fans": {
         "sky": {
-          "alt": "पंखे की तरह फैली पाँच होम स्क्रीनें, एक ही दिन आकाश थीम में पाँच समयों पर: सूर्योदय से पहले भोर का बैंगनी और मूँगिया, तड़के का आड़ू रंग, सामने दोपहर का नीला, ढलती दोपहर का सुनहरा और साँझ का मैजेंटा — काउंटडाउन, दिन के समय और पढ़ने का कार्ड हर एक में नए रंग में।",
-          "cap": "आकाश थीम: काउंटडाउन के ऊपर के आकाश से पूरा ऐप रंगा जाता है और दिन भर बदलता रहता है — भोर, सुबह, दोपहर, सुनहरी घड़ी, साँझ, रात — एक ही रूप में, फ़ोन लाइट मोड में हो या डार्क।"
+          "alt": "पंखे की तरह फैली पाँच होम स्क्रीनें, एक ही दिन आकाश थीम के यथार्थ रंगों में पाँच समयों पर: सूर्योदय से पहले भोर का गहरा नीला और गुलाबी, सुबह का हल्का नीला, सामने दोपहर का साफ़ नीला, ढलती दोपहर का कहरुबाई और लाल क्षितिज पर साँझ का बैंगनी — काउंटडाउन, दिन के समय और पढ़ने का कार्ड हर एक में नए रंग में।",
+          "cap": "आकाश थीम: काउंटडाउन के ऊपर के आकाश से पूरा ऐप रंगा जाता है और दिन भर बदलता रहता है — भोर, सुबह, दोपहर, सुनहरी घड़ी, साँझ, रात। यथार्थ रंग, आकाश जैसा दिखता है, डिफ़ॉल्ट हैं; चटकीले रंग, हर समय के लिए गाढ़े, एक टैप दूर।"
         },
         "alerts": {
-          "alt": "ताश के पत्तों की तरह फैली पाँच पूर्ण-स्क्रीन नमाज़ चेतावनियाँ, हर एक आकाश थीम में अपने समय के रंगों में: फ़ज्र भोर के बैंगनी और मूँगिया में, ज़ुहर दोपहर के नीले में, अस्र सामने सुनहरी घड़ी में, मग़रिब सूर्यास्त के गहरे मैजेंटा में, इशा रात के नील में — हर एक में रोकें, स्नूज़ और नमाज़ दर्ज करें बटन।",
-          "cap": "फ़ोन लॉक हो तो नमाज़ की चेतावनी अलार्म घड़ी की तरह पूरी स्क्रीन ले सकती है। आकाश थीम में हर एक अपना समय पहनती है — फ़ज्र की भोर, ज़ुहर का नीला, अस्र का सुनहरा, मग़रिब का मैजेंटा, इशा का नील — रोकें, स्नूज़ और नमाज़ दर्ज करें हाथ के पास।"
+          "alt": "ताश के पत्तों की तरह फैली पाँच पूर्ण-स्क्रीन नमाज़ चेतावनियाँ, हर एक आकाश थीम में अपने समय के रंगों में: फ़ज्र भोर के गहरे नीले और गुलाबी में, ज़ुहर दोपहर के नीले में, अस्र सामने ढलती दोपहर के कहरुबाई में, मग़रिब सूर्यास्त की लाली पर बैंगनी में, इशा रात के गहरे नीले में — हर एक में रोकें, स्नूज़ और नमाज़ दर्ज करें बटन।",
+          "cap": "फ़ोन लॉक हो तो नमाज़ की चेतावनी अलार्म घड़ी की तरह पूरी स्क्रीन ले सकती है। आकाश थीम में हर एक अपना समय पहनती है — फ़ज्र की भोर, ज़ुहर का नीला, अस्र का कहरुबाई, मग़रिब का सूर्यास्त, इशा की रात — रोकें, स्नूज़ और नमाज़ दर्ज करें हाथ के पास।"
         }
       }
     }
@@ -2366,7 +2414,7 @@
       "cards": [
         {
           "h3": "礼拜",
-          "p": "礼拜时间与到下一次礼拜的倒计时、每番礼拜的宣礼、朝向罗盘、主屏小组件——每次礼拜一触即可记录。全屏礼拜提醒如同闹钟；每番礼拜可选宣礼、提示音或静音；在 Android 上，手机在礼拜期间保持安静。稍后提醒只提供礼拜时间还容许的时长，直到时间结束前的「最后机会」。时间来自 AlAdhan、PrayTimes.dev、本机计算，或瑞典、摩洛哥、阿尔及利亚、新加坡、马来西亚、印度尼西亚与 Türkiye Takvimi 公布的时间表。"
+          "p": "礼拜时间与到下一次礼拜的倒计时、每番礼拜的宣礼、朝向罗盘、主屏小组件——每次礼拜一触即可记录。全屏礼拜提醒如同闹钟；每番礼拜可选宣礼、提示音或静音；在 Android 上，手机在礼拜期间保持安静。稍后提醒只提供礼拜时间还容许的时长，直到时间结束前的「最后机会」。时间来自 AlAdhan、本机计算，或瑞典、土耳其宗教事务局 Diyanet（土耳其及世界各地 8,291 处）、摩洛哥、阿尔及利亚、新加坡、马来西亚、印度尼西亚与 Türkiye Takvimi 公布的时间表。"
         },
         {
           "h3": "诵读与聆听",
@@ -2378,7 +2426,7 @@
         },
         {
           "h3": "只属于您",
-          "p": "无需账号，没有广告，没有追踪。通过您本就在同步的文件夹在自己的设备之间同步，备份到您自己保存的文件，全部代码以 AGPL-3.0 开源。浅色、深色或纯黑，六种配色主题——或“天空”，以倒计时上方的天空为整个应用上色。"
+          "p": "无需账号，没有广告，没有追踪。通过您本就在同步的文件夹在自己的设备之间同步，备份到您自己保存的文件，全部代码以 AGPL-3.0 开源。浅色、深色或纯黑，六种配色主题——或“天空”，以倒计时上方的天空为整个应用上色，可选写实或鲜明的色彩。"
         }
       ]
     },
@@ -2450,10 +2498,10 @@
     "shots": {
       "eyebrow": "应用截图",
       "h2": "它长什么样",
-      "lede": "浅色与深色，手机与平板。穆斯哈夫就是印刷的麦地那版页面本身，而不是它的图片。截图里的应用是英文的；它同样说中文。",
+      "lede": "“天空”主题的写实配色，贯穿一天的各个时辰。穆斯哈夫就是印刷的麦地那版页面本身，而不是它的图片。截图里的应用是英文的；它同样说中文。",
       "items": {
         "home": {
-          "alt": "主屏幕：下一次礼拜背后是一片绘制的天空与实时倒计时，时刻表上方是日期，每次礼拜旁有一个勾选。",
+          "alt": "日落时“天空”主题下的主屏幕：粉紫色天空中低垂的太阳，背后是到昏礼的实时倒计时，时刻表上方是日期，已完成的每次礼拜旁有勾选。",
           "cap": "主页 —— 当日的天空与倒计时"
         },
         "home-maliki": {
@@ -2461,8 +2509,12 @@
           "cap": "马立克派次要时段"
         },
         "home-dark": {
-          "alt": "同一主屏幕的深色主题——天空随时辰变化，所以清晨的天空落在深色页面之上。",
-          "cap": "主页，深色"
+          "alt": "同一主屏幕的夜晚：群星间呈其月相的月亮，当日礼拜全部勾选，倒计时走向晨礼。",
+          "cap": "主页，夜晚"
+        },
+        "sky-colours": {
+          "alt": "设置中的外观：主题设为“天空”，下方是天空配色——已选“写实”，旁边是“鲜明”——各以从夜晚到黄昏的六片天空展示。",
+          "cap": "天空配色——写实或鲜明"
         },
         "tilawah": {
           "alt": "诵读国权章：诵读者、播放控制、语速、睡眠定时与随机播放，下方是实时的穆斯哈夫页面，正在诵读的词被点亮。",
@@ -2539,12 +2591,12 @@
       },
       "fans": {
         "sky": {
-          "alt": "五个主屏幕呈扇形展开，同一天在“天空”主题下的五个时刻：日出前黎明的紫与珊瑚色、清晨的桃色、居前的正午之蓝、傍晚前的金色，以及黄昏的洋红——倒计时、当日礼拜时间和阅读卡片在每一幅中都换了颜色。",
-          "cap": "“天空”主题：整个应用以倒计时上方的天空上色，随一天而变——黎明、清晨、正午、金色时刻、黄昏、夜晚——无论手机处于浅色还是深色模式，都是同一种外观。"
+          "alt": "五个主屏幕呈扇形展开，同一天在“天空”主题的写实配色下的五个时刻：日出前黎明的深蓝与玫瑰色、清晨的淡蓝、居前的正午澄蓝、傍晚前的琥珀色，以及红色地平线上黄昏的紫——倒计时、当日礼拜时间和阅读卡片在每一幅中都换了颜色。",
+          "cap": "“天空”主题：整个应用以倒计时上方的天空上色，随一天而变——黎明、清晨、正午、金色时刻、黄昏、夜晚。写实配色如天空本来的样子，是默认；鲜明配色为每个时刻浓墨重彩，轻点即换。"
         },
         "alerts": {
-          "alt": "五个全屏礼拜提醒像一手扑克牌般扇形展开，每一个都在“天空”主题下穿着自己时刻的颜色：晨礼是黎明的紫与珊瑚色，晌礼是正午的蓝，晡礼居前在金色时刻，昏礼是日落的深洋红，宵礼是夜的靛蓝——各带有停止、稍后提醒和记录礼拜按钮。",
-          "cap": "手机锁定时，礼拜提醒可以像闹钟一样占满整个屏幕。在“天空”主题下每一个都穿着自己的时刻——晨礼的黎明、晌礼的蓝、晡礼的金、昏礼的洋红、宵礼的靛蓝——停止、稍后提醒和记录礼拜就在手边。"
+          "alt": "五个全屏礼拜提醒像一手扑克牌般扇形展开，每一个都在“天空”主题下穿着自己时刻的颜色：晨礼是黎明的深蓝与玫瑰色，晌礼是正午的蓝，晡礼居前是傍晚前的琥珀色，昏礼是落日红霞上的紫，宵礼是夜的深蓝——各带有停止、稍后提醒和记录礼拜按钮。",
+          "cap": "手机锁定时，礼拜提醒可以像闹钟一样占满整个屏幕。在“天空”主题下每一个都穿着自己的时刻——晨礼的黎明、晌礼的蓝、晡礼的琥珀、昏礼的落日、宵礼的夜——停止、稍后提醒和记录礼拜就在手边。"
         }
       }
     }

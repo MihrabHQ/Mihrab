@@ -269,7 +269,7 @@ h2 { font-size: clamp(26px, 4vw, 34px); }
   .card.span ul { columns: 2; column-gap: 40px; }
   .card.span li { break-inside: avoid; }
 }
-.shots { background: var(--surface); }
+.shots { background: var(--paper); }
 .gallery {
   margin: 32px 0 0; padding: 0; list-style: none;
   display: grid; gap: 26px 20px; grid-template-columns: repeat(4, minmax(0, 1fr));
