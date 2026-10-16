@@ -85,7 +85,7 @@ describe('the immersive reader', () => {
     // rail is given it", rather than by the exact order of the props
     // beside it — today's khatmah quota landed between them later (#46)
     // and that is not this test's business.
-    expect(phone).toMatch(/<MushafPageScrubber[\s\S]*?trailing=\{[\s\S]{0,400}?<MushafFullscreenButton/);
+    expect(phone).toMatch(/<MushafPageScrubber[\s\S]*?trailing=\{[\s\S]{0,800}?<MushafFullscreenButton/);
     expect(phone).toMatch(/<MushafFullscreenButton[\s\S]*?onPress=\{onToggleFullscreen\}/);
     expect(phone).not.toContain('<MushafToneButton');
     expect(phone).toMatch(/<MushafPageScrubber[\s\S]*?showJuz/);

@@ -1,3 +1,4 @@
+import { DEFAULT_SKY_VARIANT, isSkyVariant } from '../theme/skyMoods';
 import { MADHABS, madhabMatches, type Madhab } from '../prayer/madhab';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { resolveDeviceLanguage } from '../i18n/deviceLanguage';
@@ -374,6 +375,10 @@ async function loadSettingsUncached(): Promise<PrayerAppSettings> {
   // Non-boolean garbage also collapses to Classic.
   if (typeof parsed.tintedSurfaces !== 'boolean') {
     merged.tintedSurfaces = false;
+  }
+  // The Sky theme's colours: Vibrant unless a known variant was kept.
+  if (!isSkyVariant(merged.skyVariant)) {
+    merged.skyVariant = DEFAULT_SKY_VARIANT;
   }
   // Reconcile coords with the active location preset — task #137. The
   // user's coordinates live in two places: `manualLatitude/Longitude`

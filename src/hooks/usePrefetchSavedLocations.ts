@@ -58,6 +58,7 @@ export function usePrefetchSavedLocations(): void {
           choice.auto,
           choice.provider,
           { latitude: preset.latitude, longitude: preset.longitude },
+          settings.calculationMethod,
         );
         try {
           await refreshPrayerDataCache(

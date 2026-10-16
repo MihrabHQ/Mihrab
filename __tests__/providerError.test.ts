@@ -20,7 +20,7 @@ describe('ProviderError', () => {
 
   test('attaches optional status, attempts, cause', () => {
     const cause = new Error('socket hangup');
-    const e = new ProviderError('prayertimes_dev', 'server', 'Bad gateway', {
+    const e = new ProviderError('aladhan', 'server', 'Bad gateway', {
       status: 502,
       attempts: 3,
       cause,

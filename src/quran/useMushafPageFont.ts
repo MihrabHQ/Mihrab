@@ -10,6 +10,7 @@
  * The pin/unpin pair is what stops the font slot pool from recycling a font
  * out from under a page that is still on screen.
  */
+import { COLOUR_FONTS_DRAWN } from './tajweed/tajweedSupport';
 import { useEffect, useState } from 'react';
 import { afterInteractions } from '../utils/afterInteractions';
 import {
@@ -40,7 +41,10 @@ import { useQuranState } from './quranState';
  */
 export function useMushafFontSet(nightMode: boolean): MushafFontSet {
   const { prefs } = useQuranState();
-  const set: MushafFontSet = prefs.tajweedColours ? tajweedFontSet(nightMode) : 'v2';
+  // Plain fonts where the colour fonts would draw in one colour anyway
+  // (tajweed/tajweedSupport.ts): the V4 shapes, uncoloured, are not the page.
+  const set: MushafFontSet =
+    prefs.tajweedColours && COLOUR_FONTS_DRAWN ? tajweedFontSet(nightMode) : 'v2';
   setMushafGlyphSet(set === 'v2' ? 'v2' : 'tajweed');
   return set;
 }

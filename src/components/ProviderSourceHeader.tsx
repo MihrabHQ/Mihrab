@@ -41,6 +41,7 @@ export function ProviderSourceHeader({
     settings.dataProviderAuto,
     settings.dataProvider,
     coords,
+    settings.calculationMethod,
   );
 
   return (

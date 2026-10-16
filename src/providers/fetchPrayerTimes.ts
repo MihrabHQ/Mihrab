@@ -1,6 +1,5 @@
 import type { PrayerTimesResult, UnifiedFetchParams } from './types';
 import { fetchAladhanTimes } from './aladhan';
-import { fetchPrayTimesDev } from './praytimesDev';
 import { getIslamiskaForbundetDatasetTimes } from './islamiskaForbundetDataset';
 import { getHabousDatasetTimes } from './habousDataset';
 import { getMarwDatasetTimes } from './marwDataset';
@@ -130,14 +129,6 @@ export async function fetchPrayerTimesUnified(
       result.source = 'aladhan';
       break;
     }
-    case 'prayertimes_dev':
-      result = await fetchPrayTimesDev({
-        latitude: p.latitude,
-        longitude: p.longitude,
-        date: p.date,
-        school: p.school,
-      });
-      break;
     case 'islamiska_forbundet': {
       // Islamiska Förbundet's cities, calculated on the phone: Diyanet's
       // method (congressMethod.ts, with swedenCorrections.ts) for the

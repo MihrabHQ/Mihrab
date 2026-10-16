@@ -15,6 +15,7 @@
  * behind that one rather than asking to come back later; tapping again
  * takes it out of the queue.
  */
+import { tajweedUnavailable } from '../../../quran/tajweed/tajweedSupport';
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -36,7 +37,6 @@ import {
 } from '../../../quran/quranDownloadManager';
 import { setQuranPrefs, useQuranState } from '../../../quran/quranState';
 import { riwayahById } from '../../../quran/riwayat';
-import { riwayahHasTajweed } from '../../../quran/tajweed/rules';
 import { SettingsGroup, SettingsLinkRow, SettingsToggleRow } from '../SettingsGroup';
 import { SettingsPage } from '../SettingsPage';
 
@@ -51,7 +51,8 @@ export function TajweedSettingsScreen() {
   const hafs = riwayahById(prefs.riwayah).render !== 'unicode';
   // Ḥafṣ draws the colours from its tajwīd fonts, Warsh from its own
   // spans over the text; Qālūn and Shuʿbah have neither yet.
-  const coloured = riwayahHasTajweed(prefs.riwayah);
+  const unavailable = tajweedUnavailable(prefs.riwayah);
+  const coloured = unavailable === null;
   // The set the muṣḥaf draws right now, listed first and marked.
   const inUse = tajweedFontSet(toneIsDark(mushafTone(prefs, isDark)));
 
@@ -151,15 +152,20 @@ export function TajweedSettingsScreen() {
                 defaultValue:
                   "Letters are tinted in the King Fahd Complex's colours: grey is not sounded, green hums, red stretches, light blue bounces. Turn it on while learning; plain ink is a tap away.",
               })
-            : t(
-                'tajweed.warshNote',
-                'The colours are drawn on the Hafs mushaf. Switch back to Hafs to see them.',
-              )
+            : unavailable === 'device'
+              ? t('tajweed.deviceNote', {
+                  defaultValue:
+                    "This phone's Android cannot draw the colours inside the mushaf's letters. They need Android 10 or newer.",
+                })
+              : t(
+                  'tajweed.warshNote',
+                  'The colours are drawn on the Hafs mushaf. Switch back to Hafs to see them.',
+                )
         }>
         <SettingsToggleRow
           testID="settings-tajweed-colours"
           title={t('tajweed.toggle', 'Colour the mushaf by tajweed rule')}
-          value={prefs.tajweedColours}
+          value={prefs.tajweedColours && coloured}
           disabled={!coloured}
           onValueChange={next => setQuranPrefs({ tajweedColours: next })}
         />
@@ -173,7 +179,8 @@ export function TajweedSettingsScreen() {
         />
       </SettingsGroup>
 
-      {hafs ? (
+      {/* Pages this Android cannot colour are not offered. */}
+      {hafs && unavailable !== 'device' ? (
         <SettingsGroup
           title={t('tajweed.offlineTitle', 'For reading offline')}
           footer={t('tajweed.downloadAllHelp', {

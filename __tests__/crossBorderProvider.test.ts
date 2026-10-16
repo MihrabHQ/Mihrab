@@ -14,19 +14,19 @@ const GOTHENBURG = { latitude: 57.7089, longitude: 11.9746 };
 
 describe('getEffectiveDataProvider — travel', () => {
   it('automatic: Sweden → islamiska_forbundet', () => {
-    expect(getEffectiveDataProvider(true, 'aladhan', STOCKHOLM)).toBe(
+    expect(getEffectiveDataProvider(true, 'aladhan', STOCKHOLM, 'auto')).toBe(
       'islamiska_forbundet',
     );
-    expect(getEffectiveDataProvider(true, 'aladhan', GOTHENBURG)).toBe(
+    expect(getEffectiveDataProvider(true, 'aladhan', GOTHENBURG, 'auto')).toBe(
       'islamiska_forbundet',
     );
   });
 
   it('automatic: abroad → global default (not Swedish times)', () => {
-    expect(getEffectiveDataProvider(true, 'aladhan', LONDON)).not.toBe(
+    expect(getEffectiveDataProvider(true, 'aladhan', LONDON, 'auto')).not.toBe(
       'islamiska_forbundet',
     );
-    expect(getEffectiveDataProvider(true, 'aladhan', MECCA)).not.toBe(
+    expect(getEffectiveDataProvider(true, 'aladhan', MECCA, 'auto')).not.toBe(
       'islamiska_forbundet',
     );
   });
@@ -35,11 +35,11 @@ describe('getEffectiveDataProvider — travel', () => {
     // Traveler from Sweden with IFiS pinned lands in London: must not keep
     // serving Swedish times.
     expect(
-      getEffectiveDataProvider(false, 'islamiska_forbundet', LONDON),
+      getEffectiveDataProvider(false, 'islamiska_forbundet', LONDON, 'auto'),
     ).not.toBe('islamiska_forbundet');
     // Back in Sweden, the pin is honoured.
     expect(
-      getEffectiveDataProvider(false, 'islamiska_forbundet', STOCKHOLM),
+      getEffectiveDataProvider(false, 'islamiska_forbundet', STOCKHOLM, 'auto'),
     ).toBe('islamiska_forbundet');
   });
 });

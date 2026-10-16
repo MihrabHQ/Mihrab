@@ -113,6 +113,41 @@ func logIsDue(
   return at <= WallClock.minutes(of: when, calendar: calendar)
 }
 
+/// The Log's day (#81): the payload's `today` block while it is today's.
+///
+/// The block is the journal as the app last saw it, dated the day it was
+/// written. The Log's day turns at local midnight, and a phone left alone
+/// overnight has not run the app since: the card kept drawing yesterday —
+/// its ticks, "5 of 5" — until the app was opened, and a chip tapped the
+/// next morning was queued against yesterday. Once the date has moved on,
+/// the block is rolled forward from the schedule the payload already
+/// carries: today's five at today's times, nothing recorded, which is what
+/// the journal holds for a day nobody has logged yet (taps since are in the
+/// queue, added on top). Nil when the payload has no entry for today.
+func logToday(
+  _ p: WidgetPayload,
+  at when: Date,
+  calendar: Calendar = WallClock.localCalendar
+) -> (today: WidgetPayload.Today, day: WidgetPayload.Day?)? {
+  guard let block = p.today else { return nil }
+  let key = WallClock.dateKey(when, calendar: calendar)
+  // Today's, or ahead of the clock (a clock set back): as written.
+  if block.dateKey >= key { return (block, nil) }
+  guard let day = p.days?.first(where: { $0.dateKey == key }) else { return nil }
+  let prayers = block.prayers.map { pr -> WidgetPayload.TodayPrayer in
+    let row = day.rows.first { $0.key == pr.key }
+    var rolled = WidgetPayload.TodayPrayer(
+      key: pr.key, name: pr.name, time: row?.time ?? "", status: nil, due: false)
+    rolled.display = row?.display
+    rolled.minutes = row?.minutes
+    return rolled
+  }
+  return (
+    WidgetPayload.Today(dateKey: key, logged: 0, loggable: block.loggable, owed: 0, prayers: prayers),
+    day
+  )
+}
+
 struct LogTodayProvider: TimelineProvider {
   func placeholder(in context: Context) -> LogTodayEntry {
     LogTodayEntry(date: Date(), today: Self.sample, streak: 12, queued: [])
@@ -143,9 +178,14 @@ struct LogTodayProvider: TimelineProvider {
       // boundaries. Without the second the card sat on "Isha" with the
       // First Third half an hour gone.
       // Minutes, not "HH:mm" (step 1.7).
-      var times = (p.today?.prayers ?? []).map(\.at)
+      // Today's block, rolled onto today's date if the app has not run
+      // since midnight (#81) — and that day's own rows.
+      let rolled = logToday(p, at: now)
+      var times = (rolled?.today.prayers ?? []).map(\.at)
       times += widgetEvents(
-        rows: p.rows, sunriseRow: p.sunriseRow, extraRows: p.extraRows
+        rows: rolled?.day?.rows ?? p.rows,
+        sunriseRow: rolled?.day != nil ? rolled?.day?.sunriseRow : p.sunriseRow,
+        extraRows: rolled?.day != nil ? rolled?.day?.extraRows : p.extraRows
       ).map(\.at)
       for minutes in times {
         if let d = widgetDate(minutes: minutes, on: now), d > now, d < nextMidnight {
@@ -161,14 +201,20 @@ struct LogTodayProvider: TimelineProvider {
   }
 
   private func entry(at when: Date, payload p: WidgetPayload?, fallback: Bool) -> LogTodayEntry {
-    let today = p?.today ?? (fallback ? Self.sample : nil)
+    // Rolled onto the entry's own date when the app has not run since
+    // midnight (#81), so the chips, a tap and the countdown agree on the day.
+    let rolled = p.flatMap { logToday($0, at: when) }
+    let today = rolled?.today ?? (fallback ? Self.sample : nil)
     return LogTodayEntry(
       date: when,
       today: today,
       streak: p?.practice?.streak ?? (fallback ? 12 : nil),
       queued: today.map { WidgetLogQueue.pending(for: $0.dateKey) } ?? [],
-      events: p.map {
-        widgetEvents(rows: $0.rows, sunriseRow: $0.sunriseRow, extraRows: $0.extraRows)
+      events: p.map { p in
+        if let day = rolled?.day {
+          return widgetEvents(rows: day.rows, sunriseRow: day.sunriseRow, extraRows: day.extraRows)
+        }
+        return widgetEvents(rows: p.rows, sunriseRow: p.sunriseRow, extraRows: p.extraRows)
       } ?? []
     )
   }

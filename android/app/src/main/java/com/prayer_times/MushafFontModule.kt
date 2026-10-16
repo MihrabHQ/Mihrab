@@ -37,10 +37,13 @@ class MushafFontModule(reactContext: ReactApplicationContext) :
   @ReactMethod
   fun registerFont(family: String, path: String, promise: Promise) {
     try {
-      val file = File(path)
-      if (!file.exists() || file.length() == 0L) {
+      val given = File(path)
+      if (!given.exists() || given.length() == 0L) {
         throw IllegalArgumentException("font missing: $path")
       }
+      // The tajwīd night palette, with its ink written in where the
+      // platform cannot draw "the text's colour" (Android 10–11).
+      val file = TajweedInkPatch.fileFor(reactApplicationContext, given)
       val typeface = Typeface.createFromFile(file)
         ?: throw IllegalStateException("createFromFile returned null: $path")
       // Register the same typeface for every style so a stray fontWeight or

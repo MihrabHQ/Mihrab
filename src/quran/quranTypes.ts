@@ -440,6 +440,16 @@ export type QuranPrefs = {
    * page answers nothing but the hold: pocket listening, a child.
    */
   touchLockFreeze: boolean;
+  /**
+   * The lock's button on the page: in the phone's page bar, in the spread
+   * reader's header. Off by default — most readers never lock the page,
+   * and a button they do not use is one more thing beside the page. Turned
+   * on with the volume buttons (`volumeKeyPaging`), whose readers are the
+   * ones holding the phone one-handed, and by itself in Settings → Quran.
+   * A locked page shows it whatever this says, so the way out is never
+   * hidden.
+   */
+  lockButton: boolean;
   /** Memorization masking in translation view. */
   hideMode: 'none' | 'arabic' | 'translation';
   repeat: RepeatSettings;

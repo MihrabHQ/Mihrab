@@ -100,9 +100,9 @@ function ProviderPickerModalImpl({
   const preferred = useMemo(
     () =>
       coords
-        ? getEffectiveDataProvider(true, settings.dataProvider, coords)
+        ? getEffectiveDataProvider(true, settings.dataProvider, coords, settings.calculationMethod)
         : null,
-    [coords, settings.dataProvider],
+    [coords, settings.dataProvider, settings.calculationMethod],
   );
   const fallbackLabel = getProviderLabel(AUTO_DEFAULT_OUTSIDE_SWEDEN);
   const placeName =

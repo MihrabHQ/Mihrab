@@ -10,7 +10,14 @@
 jest.unmock('adhan');
 
 import { congressTimes } from '../src/providers/congressMethod';
-import { computeDiyanetTimes, diyanetIshaDeg } from '../src/providers/diyanetMethod';
+import {
+  computeDiyanetTimes,
+  diyanetIshaDeg,
+  diyanetInstants,
+  diyanetPlaces,
+  nearestDiyanetPlace,
+  placeClock,
+} from '../src/providers/diyanetMethod';
 
 type Place = { name: string; lat: number; lon: number; zone: string; days: Record<string, string[]> };
 const PLACES: Place[] = [
@@ -63,11 +70,62 @@ describe('Diyanet — the Congress method worldwide', () => {
     expect(at(42.66, 21.17)).toBe(17); // Pristina
     expect(at(32.72, -117.16)).toBe(16); // San Diego
     expect(at(32.52, -117.04)).toBe(17); // Tijuana
+    expect(at(64.18, -51.72)).toBe(16); // Nuuk
+    expect(at(69.22, -51.1)).toBe(16); // Ilulissat
   });
 
   it('gives the day’s six times and an Imsak on the phone', () => {
     const r = computeDiyanetTimes({ latitude: 59.33, longitude: 18.07, date: new Date(2026, 5, 21), school: 0 });
     expect(r.source).toBe('local');
     for (const k of ['Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha', 'Imsak']) expect(r.timings[k as keyof typeof r.timings]).toMatch(/^\d\d:\d\d$/);
+  });
+});
+
+/**
+ * The places Diyanet lists, as mihrab-methods certifies them (2024–2027, every
+ * time on the printed minute): Türkiye's 880 districts, Sweden's 159 places,
+ * and 7,252 places in 197 other countries — 192 of them printed on a clock of
+ * their own, which the method walks its high-latitude rules on. A few days of
+ * Diyanet's own tables for places added with the catalogue, read in the
+ * table's own clock.
+ */
+describe('the places Diyanet lists', () => {
+  it('are all here: Türkiye, Sweden, and the rest of the world', () => {
+    const all = diyanetPlaces();
+    expect(all).toHaveLength(8291);
+    expect(all.filter(p => p.years)).toHaveLength(880);
+    expect(all.filter(p => p.list === 'sweden')).toHaveLength(159);
+    expect(all.filter(p => p.clock)).toHaveLength(192);
+  });
+
+  it('read a table’s own clock where it keeps one, and the phone’s elsewhere', () => {
+    const calgary = nearestDiyanetPlace(51.042, -114.066)!;
+    expect(calgary.name).toBe('Calgary');
+    // Alberta's tables keep summer time from 2026 on.
+    expect(placeClock(calgary, 2025, 11, 21, 0)).toBe(-420);
+    expect(placeClock(calgary, 2026, 11, 21, 0)).toBe(-360);
+    expect(placeClock(nearestDiyanetPlace(-32.936, -60.671), 2026, 3, 10, -180)).toBe(-180);
+  });
+
+  // `zone`: the zone's offset, for a table on its zone's clock.
+  type Day = { name: string; lat: number; lon: number; date: string; printed: string[]; zone?: number };
+  const DAYS: Day[] = [
+    { name: 'Calgary', lat: 51.042, lon: -114.066, date: '2026-06-21', printed: ['03:49', '05:14', '13:43', '18:04', '22:02', '23:17'] },
+    { name: 'Calgary', lat: 51.042, lon: -114.066, date: '2026-12-21', printed: ['07:34', '09:30', '13:39', '15:19', '17:38', '19:21'] },
+    { name: 'Asuncion', lat: -25.298, lon: -57.636, date: '2024-07-15', printed: ['06:15', '07:28', '13:02', '16:01', '18:25', '19:34'] },
+    { name: 'Asuncion', lat: -25.298, lon: -57.636, date: '2026-07-15', printed: ['06:15', '07:29', '13:02', '16:01', '18:25', '19:34'] },
+    { name: 'Rosario', lat: -32.936, lon: -60.671, date: '2026-04-10', zone: -180, printed: ['05:59', '07:14', '13:09', '16:23', '18:55', '20:05'] },
+    { name: 'Nuuk', lat: 64.182, lon: -51.74, date: '2026-06-21', printed: ['03:00', '04:04', '13:34', '18:26', '23:04', '00:00'] },
+  ];
+  it.each(DAYS)('give $name its printed minute on $date', ({ lat, lon, date, printed, zone }) => {
+    const [y, m, d] = date.split('-').map(Number);
+    const place = nearestDiyanetPlace(lat, lon)!;
+    const off = placeClock(place, y, m - 1, d, zone ?? 0);
+    const at = diyanetInstants(lat, lon, new Date(y, m - 1, d), 0);
+    const hhmm = (t: Date) => {
+      const min = (((Math.round(t.getTime() / 60_000) + off) % 1440) + 1440) % 1440;
+      return `${String(Math.floor(min / 60)).padStart(2, '0')}:${String(min % 60).padStart(2, '0')}`;
+    };
+    expect(['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'].map(k => hhmm(at[k as keyof typeof at]))).toEqual(printed);
   });
 });

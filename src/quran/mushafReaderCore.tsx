@@ -809,7 +809,12 @@ export function MushafPageHeader({
   ornament: string;
   /** Which muṣḥaf's page this is — the juz label is a fact about ITS print. */
   riwayah?: RiwayahId;
-  show?: 'both' | 'label' | 'pill';
+  /**
+   * 'none': the row keeps its height and draws neither — the spread's
+   * pill page, now that the tone is the header's (`MushafToneHeaderButton`)
+   * and a second copy on the page was one control in two places.
+   */
+  show?: 'both' | 'label' | 'pill' | 'none';
   /**
    * Which PHYSICAL side the label sits on when it is alone in the row —
    * the fullscreen phone puts it on the side away from the camera (see
@@ -906,7 +911,7 @@ export function MushafPageHeader({
         // ends, and a name at the end means the button comes first.
         exitBtn && labelSide !== 'start' && styles.pageHeaderReversed,
       ]}>
-      {show !== 'pill' ? (
+      {show === 'both' || show === 'label' ? (
         <View
           style={[
             styles.pageHeaderLabelRow,
@@ -976,7 +981,7 @@ export function MushafPageHeader({
           />
         </View>
       ) : null}
-      {show !== 'label' ? (
+      {show === 'both' || show === 'pill' ? (
         // The pill names the tone a tap goes TO — paper → sepia → night →
         // auto → paper — the way it always named "Night" on the light
         // page. It cycles the CHOICE, not the drawn tone: on auto the
@@ -1068,6 +1073,46 @@ export function MushafFullscreenButton({
       onPress={onPress}
       style={[styles.toneBtn, { backgroundColor }]}>
       <Text style={[styles.fullscreenGlyph, { color }]}>⛶</Text>
+    </Pressable>
+  );
+}
+
+/**
+ * Fullscreen as a header mark, for the spread reader — the iPad and the
+ * Mac, which have no page bar to carry `MushafFullscreenButton`: there the
+ * only ways in were a tap on the page's margins or its header strip, which
+ * nobody guesses. A bare glyph in the page's ink, like the header's other
+ * marks; out again by the same strip, the margins, or Esc.
+ */
+export function MushafFullscreenHeaderButton({
+  color,
+  size,
+  onPress,
+}: {
+  color: ColorValue;
+  /** The header's glyph size — the screen scales it for the desktop. */
+  size: number;
+  onPress: () => void;
+}) {
+  const { t } = useTranslation();
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={t('quran.enterFullscreen', 'Enter fullscreen')}
+      hitSlop={10}
+      onPress={onPress}
+      style={styles.toneHeaderBtn}>
+      {/* Drawn, not typed: as a character the frame sat on its font's
+          baseline, off the line the lock and the tone are centred on. */}
+      <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+        <Path
+          d="M4 9V5.5A1.5 1.5 0 0 1 5.5 4H9M15 4h3.5A1.5 1.5 0 0 1 20 5.5V9M20 15v3.5a1.5 1.5 0 0 1-1.5 1.5H15M9 20H5.5A1.5 1.5 0 0 1 4 18.5V15"
+          stroke={String(color)}
+          strokeWidth={2.2}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </Svg>
     </Pressable>
   );
 }
@@ -1166,10 +1211,12 @@ export function MushafLockButton({
  * band is the way out once the header is hidden.
  */
 export function MushafLockHeaderButton({ color, size }: { color: ColorValue; size: number }) {
-  const locked = useQuranState().prefs.touchLock;
+  const { touchLock: locked, lockButton } = useQuranState().prefs;
   const onLock = useCallback(() => setQuranPrefs({ touchLock: true }), []);
   const onUnlock = useCallback(() => setQuranPrefs({ touchLock: false }), []);
   const noop = useCallback(() => undefined, []);
+  // Only when asked for (`lockButton`), and always on a locked page.
+  if (!lockButton && !locked) return null;
   return (
     <MushafLockButton
       color={color}

@@ -36,8 +36,10 @@ function DataSourceCardImpl({ onOpenProviderPicker }: DataSourceCardProps) {
         settings.dataProviderAuto,
         settings.dataProvider,
         coordsForEffective,
+        settings.calculationMethod,
       ),
     [
+      settings.calculationMethod,
       settings.dataProviderAuto,
       settings.dataProvider,
       coordsForEffective,

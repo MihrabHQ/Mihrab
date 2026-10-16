@@ -8,7 +8,7 @@ import { getResolvedAccentHex } from '../native/SystemTheme';
 import { legibleAccent } from '../settings/accentColors';
 import { hexToOklch, oklchToHex } from './oklch';
 import { DEFAULT_SKY_THEME, type SkyThemeColors } from './skyTheme';
-import { PALETTE_STEPS, SKY_MOODS, skyMoodFor } from './skyMoods';
+import { activeSkyVariant, PALETTE_STEPS, SKY_MOODS_BY_VARIANT, skyMoodFor } from './skyMoods';
 import type { AppAccentId, AppearancePreference } from '../settings/types';
 
 export type AppPalette = {
@@ -737,7 +737,10 @@ export function buildAppPalette(
  */
 export function skyPalette(sky: SkyThemeColors, pureBlackDark: boolean, wantDark?: boolean): AppPalette {
   let mood = skyMoodFor(sky.passage, sky.t, PALETTE_STEPS);
-  if (wantDark != null && mood.isDark !== wantDark) mood = wantDark ? SKY_MOODS.night : SKY_MOODS.midday;
+  if (wantDark != null && mood.isDark !== wantDark) {
+    const moods = SKY_MOODS_BY_VARIANT[activeSkyVariant()];
+    mood = wantDark ? moods.night : moods.midday;
+  }
   const oled = pureBlackDark && mood.isDark;
   return {
     bg: oled ? '#000000' : mood.bg,

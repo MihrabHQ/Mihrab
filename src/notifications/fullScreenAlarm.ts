@@ -21,7 +21,7 @@ import { AndroidCategory } from '@notifee/react-native';
 import i18n from '../i18n';
 import { LAST_CHANCE_MINUTES, hasSnooze, minutesUntil, type SnoozeMenu } from './snoozeWindow';
 import { skyFrame, skyInkAt, type SkyPassage } from '../screens/home/skyModel';
-import { skyMoodFor } from '../theme/skyMoods';
+import { setActiveSkyVariant, skyMoodFor, type SkyVariant } from '../theme/skyMoods';
 
 /** The native activity Notifee launches; resolved by class name. */
 export const PRAYER_ALARM_ACTIVITY = 'com.prayer_times.PrayerAlarmActivity';
@@ -93,8 +93,10 @@ const PRAYER_MOOD: Record<string, { passage: SkyPassage; t: number }> = {
  * settings themselves.
  */
 let skyThemeOn = false;
-export function setFullScreenAlarmSkyTheme(on: boolean): void {
+/** `variant`: which of the Sky theme's colours (Vibrant or Realistic) it wears. */
+export function setFullScreenAlarmSkyTheme(on: boolean, variant?: SkyVariant): void {
   skyThemeOn = on;
+  if (variant) setActiveSkyVariant(variant);
 }
 export function fullScreenAlarmSkyTheme(): boolean {
   return skyThemeOn;

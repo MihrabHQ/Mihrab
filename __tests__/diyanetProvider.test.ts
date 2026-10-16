@@ -39,20 +39,34 @@ const STOCKHOLM = at(59.33, 18.07);
 
 describe('where Diyanet is recommended', () => {
   it('is what Automatic picks in Türkiye', () => {
-    expect(getEffectiveDataProvider(true, 'aladhan', ISTANBUL)).toBe('diyanet');
-    expect(getEffectiveDataProvider(true, 'aladhan', VAN)).toBe('diyanet');
+    expect(getEffectiveDataProvider(true, 'aladhan', ISTANBUL, 'auto')).toBe('diyanet');
+    expect(getEffectiveDataProvider(true, 'aladhan', VAN, 'auto')).toBe('diyanet');
   });
 
-  it('is not picked anywhere else — the national sources keep their countries', () => {
-    expect(getEffectiveDataProvider(true, 'aladhan', ATHENS)).toBe('aladhan');
-    expect(getEffectiveDataProvider(true, 'aladhan', CAIRO)).toBe('aladhan');
-    expect(getEffectiveDataProvider(true, 'aladhan', STOCKHOLM)).toBe('islamiska_forbundet');
+  it('is picked near a place it lists, further away not — and the national sources keep their countries', () => {
+    expect(getEffectiveDataProvider(true, 'aladhan', ATHENS, 'auto')).toBe('diyanet');
+    expect(getEffectiveDataProvider(true, 'aladhan', CAIRO, 'auto')).toBe('diyanet');
+    expect(getEffectiveDataProvider(true, 'aladhan', at(-23.7, 133.88), 'auto')).toBe('aladhan'); // Alice Springs
+    expect(getEffectiveDataProvider(true, 'aladhan', at(7.0, 100.47), 'auto')).toBe('aladhan'); // Hat Yai
+    expect(getEffectiveDataProvider(true, 'aladhan', STOCKHOLM, 'auto')).toBe('islamiska_forbundet');
+    expect(getEffectiveDataProvider(true, 'aladhan', at(33.5731, -7.5898), 'auto')).toBe('habous'); // Casablanca
+    expect(getEffectiveDataProvider(true, 'aladhan', at(-6.2088, 106.8456), 'auto')).toBe('kemenag'); // Jakarta
+  });
+
+  it('is not picked near a place it lists when the reader chose a calculation method of their own', () => {
+    // Diyanet's method is fixed; picking it would set the reader's choice aside without a word.
+    expect(getEffectiveDataProvider(true, 'aladhan', ATHENS, 2)).toBe('aladhan');
+    expect(getEffectiveDataProvider(true, 'aladhan', CAIRO, 5)).toBe('aladhan');
+    // Türkiye is Diyanet's own country: Automatic picks it there whatever the method, as before.
+    expect(getEffectiveDataProvider(true, 'aladhan', at(41.01, 28.98), 2)).toBe('diyanet');
+    // A national source still comes first.
+    expect(getEffectiveDataProvider(true, 'aladhan', STOCKHOLM, 2)).toBe('islamiska_forbundet');
   });
 
   it('is never redirected when pinned, since it answers everywhere', () => {
     expect(isRegionalProvider('diyanet')).toBe(false);
-    expect(getEffectiveDataProvider(false, 'diyanet', CAIRO)).toBe('diyanet');
-    expect(getEffectiveDataProvider(false, 'diyanet', at(-54.8, -68.3))).toBe('diyanet');
+    expect(getEffectiveDataProvider(false, 'diyanet', CAIRO, 'auto')).toBe('diyanet');
+    expect(getEffectiveDataProvider(false, 'diyanet', at(-54.8, -68.3), 'auto')).toBe('diyanet');
   });
 
   it('keeps the Greek islands off the Turkish coast out of Türkiye', () => {
@@ -85,6 +99,18 @@ describe('a stored source this build does not know', () => {
     const s = await storedAs({ dataProvider: 'some_future_source', dataProviderAuto: false });
     expect(s.dataProviderAuto).toBe(true);
     expect(s.dataProvider).toBe('aladhan');
+  });
+
+  it('moves PrayTimes.dev, which is gone, to Automatic — for every location', async () => {
+    const s = await storedAs({
+      dataProvider: 'prayertimes_dev',
+      dataProviderAuto: false,
+      locationProviders: { home: { auto: false, provider: 'prayertimes_dev' }, work: { auto: false, provider: 'diyanet' } },
+    });
+    expect(s.dataProviderAuto).toBe(true);
+    expect(s.dataProvider).toBe('aladhan');
+    expect(s.locationProviders?.home).toEqual({ auto: true, provider: 'aladhan' });
+    expect(s.locationProviders?.work).toEqual({ auto: false, provider: 'diyanet' });
   });
 
   it('keeps a known one, Diyanet included', async () => {

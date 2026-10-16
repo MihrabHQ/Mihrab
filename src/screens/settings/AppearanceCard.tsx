@@ -24,6 +24,7 @@ import { restartApp as nativeRestartApp } from '../../native/SystemTheme';
 import { saveSettings } from '../../settings/storage';
 import { useClockFormatter } from '../../hooks/useClockFormatter';
 import type { ClockFormat } from '../../utils/clockFormat';
+import { SkyVariantPicker } from '../../components/SkyVariantPicker';
 import { SegmentedControl } from '../../components/ui';
 import {
   SettingsBlock,
@@ -147,6 +148,33 @@ function AppearanceCardImpl() {
             onChange={appearance => updateSettings({ appearance })}
           />
         </SettingsBlock>
+
+        {/* The Sky theme's colours, under it as the colour theme is under
+            the others: Vibrant (the representative palette it shipped
+            with) or Realistic (the sky as it looks, a calmer page) —
+            theme/skyMoods.ts. Realistic is the default. */}
+        {skyActive && (
+          <SettingsBlock>
+            <Text style={[s.label, { color: palette.muted }]}>
+              {t('settings.skyVariant', 'Sky colours')}
+            </Text>
+            {/* Each shown by its six skies, as in the walkthrough. */}
+            <SkyVariantPicker
+              testID="appearance-skyVariant"
+              value={settings.skyVariant}
+              onChange={skyVariant => updateSettings({ skyVariant })}
+              accent={String(palette.accent)}
+              text={String(palette.text)}
+              muted={String(palette.muted)}
+            />
+            <Text style={[s.help, { color: palette.muted, marginTop: SPACING.sm }]}>
+              {t(
+                'settings.skyVariantHelp',
+                'Vibrant paints each hour in bold, representative colours. Realistic follows the sky as it looks, over a calmer, nearly neutral page.',
+              )}
+            </Text>
+          </SettingsBlock>
+        )}
 
         {/* Colour theme — the alternative to system colours. Classic is the
             app's own paper and ink; a preset themes dark mode in that colour

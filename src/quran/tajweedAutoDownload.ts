@@ -50,8 +50,10 @@ import {
   fontSetOf,
   queueQuranDownload,
   quranDownloadState,
+  subscribeQuranDownload,
 } from './quranDownloadManager';
 import { isFreeConnection } from './quranDownloadResume';
+import { COLOUR_FONTS_DRAWN } from './tajweed/tajweedSupport';
 
 const otherPalette = (set: MushafFontSet): MushafFontSet =>
   set === 'tajweed-dark' ? 'tajweed-light' : 'tajweed-dark';
@@ -82,6 +84,8 @@ export async function tajweedSetsToFetch(input: {
 }
 
 async function onSwitchedOn(): Promise<void> {
+  // 170 MB of colours this Android would draw in one colour: not fetched.
+  if (!COLOUR_FONTS_DRAWN) return;
   const { prefs } = getQuranState();
   const hafs = riwayahById(prefs.riwayah).render !== 'unicode';
   const appDark = Appearance.getColorScheme() === 'dark';
@@ -116,11 +120,35 @@ function onSwitchedOff(): void {
  */
 export function startTajweedAutoDownload(): () => void {
   let last = getQuranState().prefs.tajweedColours;
-  return subscribeQuranState(() => {
+  const offPref = subscribeQuranState(() => {
     const next = getQuranState().prefs.tajweedColours;
     if (next === last) return;
     last = next;
     if (next) onSwitchedOn().catch(() => undefined);
     else onSwitchedOff();
   });
+  /**
+   * THE COLOURS WAIT FOR THE BOOK, AND THEN THEY COME.
+   *
+   * The switch asks for nothing while the plain muṣḥaf is not on the
+   * device — the reader's own download comes first (above). But that was
+   * the end of it: switched on during the muṣḥaf's first download (the
+   * guide is one tap from the surah list, the offer appears on the first
+   * page), the colours were never fetched, the pages stayed plain, and
+   * nothing said why until the switch was turned off and on again. So the
+   * end of a plain muṣḥaf download asks again, as the switch would have.
+   */
+  let plainRunning = false;
+  const offDownload = subscribeQuranDownload(s => {
+    const running = s.running;
+    const nowPlain = running?.kind === 'fonts' && fontSetOf(running) === 'v2';
+    if (plainRunning && !nowPlain && getQuranState().prefs.tajweedColours) {
+      onSwitchedOn().catch(() => undefined);
+    }
+    plainRunning = nowPlain;
+  });
+  return () => {
+    offPref();
+    offDownload();
+  };
 }

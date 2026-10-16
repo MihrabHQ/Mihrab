@@ -27,7 +27,7 @@
 import { useSyncExternalStore } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { skyMoment, type SkyPassage } from '../screens/home/skyModel';
-import { PALETTE_STEPS, skyMoodFor, type SkyMood } from './skyMoods';
+import { DEFAULT_SKY_VARIANT, isSkyVariant, PALETTE_STEPS, setActiveSkyVariant, skyMoodFor, type SkyMood, type SkyVariant } from './skyMoods';
 import { crossfadeScreen } from '../native/LaunchSnapshot';
 
 export type SkyThemeColors = {
@@ -161,6 +161,24 @@ export function getSkyTheme(): SkyThemeColors {
   return current;
 }
 
+/**
+ * Which colours the theme wears — Vibrant or Realistic (skyMoods.ts) —
+ * from the settings. The sky itself is unchanged, but every reader's
+ * palette is not: the snapshot is renewed so they re-render with it.
+ */
+// The variant the readers last rendered — the store's own, not the module's:
+// the alert's mirror (fullScreenAlarm.ts) may set the module's first, and
+// the readers must still hear of the change.
+let shownVariant: SkyVariant = DEFAULT_SKY_VARIANT;
+export function setSkyVariant(v: SkyVariant | undefined): void {
+  const next = isSkyVariant(v) ? v : DEFAULT_SKY_VARIANT;
+  setActiveSkyVariant(next);
+  if (next === shownVariant) return;
+  shownVariant = next;
+  current = { ...current };
+  emit();
+}
+
 function validDay(v: unknown): v is SkyThemeDay {
   if (typeof v !== 'object' || v == null) return false;
   const d = v as SkyThemeDay;
@@ -235,6 +253,8 @@ export function _subscribeSkyThemeForTests(): () => void {
   return subscribe(() => {});
 }
 export function _resetSkyThemeForTests(): void {
+  setActiveSkyVariant(DEFAULT_SKY_VARIANT);
+  shownVariant = DEFAULT_SKY_VARIANT;
   current = DEFAULT_SKY_THEME;
   currentDay = null;
   published = false;

@@ -189,7 +189,7 @@ export async function republishWidgetPayload(
     // watched it flip to "17:31" until the app was next opened. Same
     // situation, and same fix, as `language` further down.
     setActiveClockFormat(settings.clockFormat);
-    setFullScreenAlarmSkyTheme(settings.appearance === 'sky');
+    setFullScreenAlarmSkyTheme(settings.appearance === 'sky', settings.skyVariant);
     await refreshSystemIs24Hour();
     // And the language, for the same reason: every string in the payload —
     // the prayer names, the day labels, the clock's AM/PM words, the
@@ -209,6 +209,7 @@ export async function republishWidgetPayload(
         settings.dataProviderAuto,
         settings.dataProvider,
         coords,
+        settings.calculationMethod,
       ),
       latitude: coords.latitude,
       longitude: coords.longitude,

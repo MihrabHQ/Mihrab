@@ -7,7 +7,6 @@ import {
   PrayerTimes,
 } from 'adhan';
 import type { PrayerTimesResult } from './types';
-import { formatLocalTime } from '../utils/prayerTimes';
 import { clockFormatter, type PlaceClock } from './locationClock';
 import { autoMethodForCoords } from './autoMethod';
 import { gregorianToHijri } from '../hijri/convert';

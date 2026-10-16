@@ -338,7 +338,12 @@ function QuranCardImpl() {
             testID="settings-volume-keys"
             title={t('quran.volumeKeys', 'Turn pages with the volume buttons')}
             value={quran.prefs.volumeKeyPaging}
-            onValueChange={next => setQuranPrefs({ volumeKeyPaging: next })}
+            // The lock's button comes with the buttons: whoever turns
+            // pages with them is holding the phone in one hand. Turning
+            // them off leaves the button as it is.
+            onValueChange={next =>
+              setQuranPrefs(next ? { volumeKeyPaging: true, lockButton: true } : { volumeKeyPaging: false })
+            }
           />
           {/* Only while the buttons turn pages (#72): the direction means
               nothing without them. */}
@@ -356,14 +361,15 @@ function QuranCardImpl() {
           was a sub-switch of the volume buttons, on the reasoning that a
           locked page needs something else to turn it — but unlocking IS
           that, and the lock is wanted on an iPhone held in bed as much as
-          on an Android phone. The muṣḥaf's page bar has the same switch,
-          and the badge on a locked page is the way out. */}
+          on an Android phone. The muṣḥaf's page bar has the same switch
+          when `lockButton` is on, and the badge on a locked page is the
+          way out. */}
       <SettingsGroup
         title={t('quran.touchLockTitle', 'Reading lock')}
         footer={
           t('quran.touchLockHelp', {
             defaultValue:
-              'A locked page does not turn or scroll away under your hand, and a tap does not hide or show the controls. A tap on a word still opens its ayah. Press and hold the page for the controls, and hold the lock in the corner of the page to unlock. The lock is also in the page bar.',
+              'A locked page does not turn or scroll away under your hand, and a tap does not hide or show the controls. A tap on a word still opens its ayah. Press and hold the page for the controls, and hold the lock in the corner of the page to unlock.',
           }) +
           (volumeKeysAvailable
             ? ' ' +
@@ -391,6 +397,13 @@ function QuranCardImpl() {
             onValueChange={next => setQuranPrefs({ touchLockFreeze: next })}
           />
         ) : null}
+        <SettingsToggleRow
+          testID="settings-lock-button"
+          title={t('quran.lockButton', 'Show the lock button')}
+          help={t('quran.lockButtonHelp', 'On the mushaf: a tap on it locks the page, a hold unlocks it.')}
+          value={quran.prefs.lockButton}
+          onValueChange={next => setQuranPrefs({ lockButton: next })}
+        />
       </SettingsGroup>
       {/* The same picker the muṣḥaf header opens, so the two entry
           points cannot drift apart — including the one-time notice that

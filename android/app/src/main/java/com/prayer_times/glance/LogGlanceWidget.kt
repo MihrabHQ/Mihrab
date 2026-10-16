@@ -83,7 +83,9 @@ internal class LogGlanceWidget : MihrabGlanceWidget("log") {
     val result = guarded("log") {
       val now = Now.current()
       val p = GlancePayload.live(context, now)
-      p?.today?.let { model(context, p, it, now) }
+      // Today's block, rolled onto today's date if the app has not run
+      // since midnight (#81).
+      p?.let { GlancePayload.todayOf(it, now) }?.let { model(context, p, it, now) }
     }
     val colors = result.getOrNull()?.colors ?: Colors.of(context)
     // The Log, not the app wherever it was (#27).
@@ -127,7 +129,9 @@ internal class LogGlanceWidget : MihrabGlanceWidget("log") {
       chips = chips,
       footLeft = footerLeft(context, today, pending, describesToday, now),
       next = nextEvent(p, today, describesToday, now),
-      practice = p.practice,
+      // The practice line counts today's logs too: on a rolled day the
+      // payload's count is yesterday's, and today's is what the chips say.
+      practice = if (today === p.today) p.practice else p.practice?.copy(loggedToday = logged),
       now = now,
     )
   }
@@ -352,7 +356,9 @@ class LogTap : ActionCallback {
   override suspend fun onAction(context: Context, glanceId: GlanceId, parameters: ActionParameters) {
     val prayer = parameters[PRAYER] ?: return
     if (!WidgetLogQueue.PRAYERS.contains(prayer)) return
-    val date = GlancePayload.live(context, Now.current())?.today?.dateKey.orEmpty()
+    // The day the chip was drawn under — rolled onto today, as the card is.
+    val now = Now.current()
+    val date = GlancePayload.live(context, now)?.let { GlancePayload.todayOf(it, now) }?.dateKey.orEmpty()
     if (date.isEmpty()) return
     WidgetLogQueue.tap(context, date, prayer)
     WidgetQueueEvents.postChanged(context)

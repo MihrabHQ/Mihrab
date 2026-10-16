@@ -31,7 +31,7 @@ import { resolveAppPalette, resolveThemePaletteForMode, skyPalette } from '../sr
 import { contrastRatio } from '../src/theme/themeMap';
 import { hexToOklch } from '../src/theme/oklch';
 // eslint-disable-next-line import/first
-import { PALETTE_STEPS, SKY_MOODS, skyMoodAt, skyMoodFor, widgetSkyColors, type SkyMood } from '../src/theme/skyMoods';
+import { activeSkyVariant, PALETTE_STEPS, REALISTIC_SKY_MOODS, SKY_MOODS, skyMoodAt, skyMoodFor, widgetSkyColors, type SkyMood } from '../src/theme/skyMoods';
 // eslint-disable-next-line import/first
 import { SKY_THEME_MID_AT, skyColorAt, themedSkyFrame, type SkyPassage } from '../src/screens/home/skyModel';
 // eslint-disable-next-line import/first
@@ -44,6 +44,7 @@ import {
   getSkyTheme,
   publishSkyTheme,
   restoreSkyTheme,
+  setSkyVariant,
   skyDayKey,
 } from '../src/theme/skyTheme';
 
@@ -58,7 +59,12 @@ const SKIES = {
 
 const read = (p: string) => fs.readFileSync(path.join(__dirname, '..', p), 'utf-8');
 
-beforeEach(_resetSkyThemeForTests);
+// Most of this file pins Vibrant's own colours (SKY_MOODS); Realistic,
+// the default, has its own describe below and starts from here too.
+beforeEach(() => {
+  _resetSkyThemeForTests();
+  setSkyVariant('vibrant');
+});
 
 /** Every token reads on every ground it is drawn on. */
 function expectLegible(mood: SkyMood) {
@@ -317,11 +323,16 @@ describe('the hero under the theme', () => {
 
   it('is painted in the hero and in the launch run\'s keyframes alike, glows by night, and has the fuller stars', () => {
     const card = read('src/screens/home/TodayCard.tsx');
-    expect(card).toMatch(/skyTheme \? themedSkyFrame\(f, skyMoodFor\(f\.passage, f\.t\)\) : f/);
+    // Every look has the theme's hero: Sky in the chosen colours, the
+    // others in Realistic's, running into the page the theme draws.
+    expect(card).toMatch(/const heroVariant: SkyVariant = skyTheme \? skyVariant : 'realistic';/);
+    expect(card).toMatch(/if \(skyTheme\) return themedSkyFrame\(f, mood\);/);
+    expect(card).toMatch(/\{ \.\.\.mood, heroFoot: pageBg \},\s*mood\.isDark === pageDark \? SKY_THEME_MID_AT : lowMidAt/);
+    expect(card).toMatch(/\[skyTheme, heroVariant, pageBg, pageDark, lowMidAt\]/);
     expect(card).toMatch(/return paint\(skyFrame\(skyMoment\(day, at, tomorrowFajr\)/);
     expect(card).toMatch(/textShadowColor: `\$\{mood\.accent\}73`/);
     expect(card).toMatch(/if \(!mood\.isDark\) return null;/);
-    expect(card).toMatch(/denseStars=\{skyTheme\}/);
+    expect(card).toMatch(/\n\s+denseStars\n/);
     const sky = read('src/screens/home/HeroSky.tsx');
     expect(sky).toMatch(/const field = dense \? STAR_FIELD_DENSE : STAR_FIELD;/);
     expect(sky).toMatch(/<Stop key="m" offset=\{frame\.midAt\} stopColor=\{frame\.mid\} \/>/);
@@ -397,8 +408,13 @@ describe('access and polish', () => {
     // they read as more choices on the same control — as a picture, with
     // what Sky does under it; the colour theme takes their place under
     // the other three.
-    expect(personalise).toMatch(/\{skyActive \? \(\s*<>\s*<View style=\{styles\.strip\}>\s*<SkyMoodStrip/);
-    expect(personalise).not.toMatch(/<SkyMoodStrip[^>]*onPress/);
+    // Under Sky: its two colourings, each by its six skies, to pick from.
+    expect(personalise).toMatch(/\{skyActive \? \(\s*<>[\s\S]{0,200}<View style=\{styles\.strip\}>\s*<SkyVariantPicker/);
+    expect(personalise).toMatch(/onChange=\{skyVariant => updateSettings\(\{ skyVariant \}\)\}/);
+    expect(read('src/screens/settings/AppearanceCard.tsx')).toMatch(/<SkyVariantPicker\s+testID="appearance-skyVariant"/);
+    const picker = read('src/components/SkyVariantPicker.tsx');
+    expect(picker).toMatch(/\{ key: 'realistic'[\s\S]*\{ key: 'vibrant'/);
+    expect(picker).toMatch(/variant=\{o\.key\}/);
     expect(personalise).toMatch(/\{t\('settings\.themeSkyHelp'\)\}/);
     expect(personalise).not.toMatch(/onboarding\.personalise\.skyOffer/);
     expect(personalise).toMatch(/\{dynamicColours \|\| skyActive \? null : \(/);
@@ -419,7 +435,7 @@ describe('access and polish', () => {
     expect(root).not.toMatch(/lookMoodKey/);
     const card = read('src/screens/home/TodayCard.tsx');
     expect(card).toMatch(/const moreContrast = useIncreasedContrast\(\);/);
-    expect(card).toMatch(/if \(!skyTheme \|\| moreContrast\) return null;/);
+    expect(card).toMatch(/if \(moreContrast\) return null;/);
     // The hero asks for the crossfade before it repaints across the switch.
     expect(card).toMatch(/if \(!posed && !launchRun && moodDark != null && lastMoodDark\.current != null && lastMoodDark\.current !== moodDark\) \{\s*crossfadeScreen\(\);/);
     const hook = read('src/hooks/useIncreasedContrast.ts');
@@ -447,6 +463,117 @@ describe('wiring', () => {
       const strings = JSON.parse(read(`src/i18n/locales/${lang}.json`));
       expect(typeof strings.settings.themeSky).toBe('string');
       expect(typeof strings.settings.themeSkyHelp).toBe('string');
+    }
+  });
+});
+
+describe('Realistic', () => {
+  const passages: SkyPassage[] = ['night', 'dawn', 'day', 'sunset', 'dusk'];
+
+  it.each(Object.values(REALISTIC_SKY_MOODS))('$name reads on every surface', mood => {
+    expectLegible(mood);
+  });
+
+  it('reads all the way through every mix, turns dark and light at the same moments as Vibrant, and moves every step', () => {
+    for (const passage of passages) {
+      let prev = skyMoodFor(passage, 0, undefined, 'realistic');
+      for (let t = 0; t <= 1.0001; t += 0.02) {
+        const mood = skyMoodFor(passage, t, undefined, 'realistic');
+        expectLegible(mood);
+        const { from, to } = skyMoodAt(passage, t, 'realistic');
+        expect(from.isDark).toBe(to.isDark);
+        expect(mood.isDark).toBe(skyMoodFor(passage, t, undefined, 'vibrant').isDark);
+        expect(mood.name).toBe(skyMoodFor(passage, t, undefined, 'vibrant').name);
+        if (t > 0) {
+          expect((['heroTop', 'heroMid', 'bg', 'bodyLight'] as const).some(k => mood[k] !== prev[k])).toBe(true);
+        }
+        prev = mood;
+      }
+    }
+  });
+
+  it('is calmer than Vibrant: a nearly neutral page and a quieter accent at every hour', () => {
+    for (const passage of passages) {
+      for (let t = 0; t <= 1.0001; t += 0.05) {
+        const r = skyMoodFor(passage, t, undefined, 'realistic');
+        const v = skyMoodFor(passage, t, undefined, 'vibrant');
+        expect(hexToOklch(r.bg).C).toBeLessThanOrEqual(0.05);
+        expect(hexToOklch(r.bg).C).toBeLessThanOrEqual(hexToOklch(v.bg).C + 0.005);
+        expect(hexToOklch(r.accent).C).toBeLessThanOrEqual(hexToOklch(v.accent).C + 0.01);
+      }
+    }
+  });
+
+  it('follows the sky as it looks: blue by day, navy by night, the horizon warm at dawn and sunset', () => {
+    const hue = (h: string) => hexToOklch(h).h;
+    const blue = (h: string) => hue(h) > 225 && hue(h) < 285;
+    expect(blue(REALISTIC_SKY_MOODS.midday.heroTop)).toBe(true);
+    expect(blue(REALISTIC_SKY_MOODS.night.heroTop)).toBe(true);
+    expect(blue(REALISTIC_SKY_MOODS.morning.heroTop)).toBe(true);
+    expect(blue(REALISTIC_SKY_MOODS.sunset.heroTop)).toBe(true);
+    for (const warm of [REALISTIC_SKY_MOODS.morning.heroMid, REALISTIC_SKY_MOODS.golden.heroMid, REALISTIC_SKY_MOODS.sunset.heroMid]) {
+      expect(hue(warm) < 90 || hue(warm) > 340).toBe(true);
+    }
+  });
+
+  it('is Realistic by default', () => {
+    const { DEFAULT_SKY_VARIANT } = jest.requireActual('../src/theme/skyMoods');
+    expect(DEFAULT_SKY_VARIANT).toBe('realistic');
+    expect(read('src/settings/types.ts')).toMatch(/skyVariant: 'realistic',/);
+  });
+
+  it('is what the palette wears once the setting says so, and the readers re-render with it', () => {
+    const off = useSkyThemeSubscribe();
+    publishSkyTheme(SKIES.day);
+    setSkyVariant('vibrant');
+    const before = getSkyTheme();
+    expect(skyPalette(before, false).accentSolid).toBe(skyMoodFor('day', 0.6, PALETTE_STEPS, 'vibrant').accent);
+    setSkyVariant('realistic');
+    expect(activeSkyVariant()).toBe('realistic');
+    // A new snapshot, so every useSkyTheme reader renders the new palette.
+    expect(getSkyTheme()).not.toBe(before);
+    expect(getSkyTheme()).toEqual(before);
+    expect(skyPalette(getSkyTheme(), false).accentSolid).toBe(skyMoodFor('day', 0.6, PALETTE_STEPS, 'realistic').accent);
+    // The mushaf's polarity fallback is the variant's own.
+    expect(skyPalette(SKIES.day, false, true).accentSolid).toBe(REALISTIC_SKY_MOODS.night.accent);
+    // The same variant again is not a change; garbage is the default, Realistic.
+    const now = getSkyTheme();
+    setSkyVariant('realistic');
+    expect(getSkyTheme()).toBe(now);
+    setSkyVariant('neon' as never);
+    expect(activeSkyVariant()).toBe('realistic');
+    off();
+  });
+
+  it('re-renders the readers even when the alert mirror set the variant first', () => {
+    // The settings effect mirrors the variant for the full-screen alert as
+    // well; whichever runs first, the screens must still hear of it.
+    const { setFullScreenAlarmSkyTheme } = jest.requireActual('../src/notifications/fullScreenAlarm');
+    const before = getSkyTheme();
+    setFullScreenAlarmSkyTheme(true, 'realistic');
+    setSkyVariant('realistic');
+    expect(getSkyTheme()).not.toBe(before);
+    const ctx = read('src/context/PrayerSettingsContext.tsx');
+    expect(ctx.indexOf('setSkyVariant(settings.skyVariant)')).toBeLessThan(ctx.indexOf("setFullScreenAlarmSkyTheme(settings.appearance === 'sky', settings.skyVariant)"));
+  });
+
+  it('is picked under Sky in Appearance, kept in the settings, mirrored for the alert, in every language', () => {
+    const appearance = read('src/screens/settings/AppearanceCard.tsx');
+    expect(appearance).toMatch(/\{skyActive && \([\s\S]{0,400}settings\.skyVariant/);
+    expect(read('src/components/SkyVariantPicker.tsx')).toMatch(/key: 'realistic'[\s\S]{0,160}key: 'vibrant'/);
+    expect(read('src/settings/types.ts')).toMatch(/skyVariant: 'realistic'/);
+    expect(read('src/settings/storage.ts')).toMatch(/if \(!isSkyVariant\(merged\.skyVariant\)\)/);
+    const ctx = read('src/context/PrayerSettingsContext.tsx');
+    expect(ctx).toMatch(/setSkyVariant\(loaded\.skyVariant\);\s*setSettings\(loaded\)/);
+    expect(ctx).toMatch(/setFullScreenAlarmSkyTheme\(settings\.appearance === 'sky', settings\.skyVariant\)/);
+    for (const p of ['src/widget/republishWidgetPayload.ts', 'src/notifications/adhanMute.ts']) {
+      expect(read(p)).toMatch(/setFullScreenAlarmSkyTheme\(settings\.appearance === 'sky', settings\.skyVariant\)/);
+    }
+    for (const lang of ['en', 'sv', 'ar', 'de', 'fr', 'es', 'tr', 'id', 'ur', 'hi', 'bn', 'ru', 'zh']) {
+      const strings = JSON.parse(read(`src/i18n/locales/${lang}.json`));
+      for (const k of ['skyVariant', 'skyVariantVibrant', 'skyVariantRealistic', 'skyVariantHelp']) {
+        expect(typeof strings.settings[k]).toBe('string');
+      }
     }
   });
 });

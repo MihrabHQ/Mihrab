@@ -154,9 +154,10 @@ function correctionListKey(p: Omit<StoredPrayerData, 'months'>): string[] {
  * Raised when `congressMethod.ts` changes what it prints. 2: the takdir at
  * midsummer from about 44.4° north, Isha's angle by country, and Türkiye's
  * method (13, and Automatic there) computed as Diyanet's rather than asked
- * of AlAdhan.
+ * of AlAdhan. 3: the places Diyanet lists worldwide, each table on its own
+ * clock where it keeps one, and Greenland's Isha at 16°.
  */
-const CONGRESS_METHOD_REVISION = 2;
+const CONGRESS_METHOD_REVISION = 3;
 function computedByCongressMethod(p: Omit<StoredPrayerData, 'months'>): boolean {
   if (p.provider === 'diyanet') return true;
   if (p.calculationMethod === SWEDEN_METHOD_ID || p.calculationMethod === 13) return true;

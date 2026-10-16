@@ -10,7 +10,7 @@ import { applyMadhabNaming } from '../prayer/madhab';
 import i18n from '../i18n';
 import { setActiveClockFormat } from '../utils/activeClock';
 import { setFullScreenAlarmSkyTheme } from '../notifications/fullScreenAlarm';
-import { restoreSkyTheme } from '../theme/skyTheme';
+import { restoreSkyTheme, setSkyVariant } from '../theme/skyTheme';
 import { loadSettings, saveSettings } from '../settings/storage';
 import { applyLocationProviders } from '../settings/locationProviders';
 import { bootMark } from '../boot/bootTimeline';
@@ -59,6 +59,8 @@ export type AppearanceSlice = Pick<
   // Promotes the accent to the app's main colour; rendered by
   // AppearanceCard right under the accent picker, so it rides this slice.
   | 'tintedSurfaces'
+  // Vibrant or Realistic, under the Sky theme (theme/skyMoods.ts).
+  | 'skyVariant'
   // The shelf of kept custom colours, drawn by the same swatch row as
   // the presets — so the card that renders one renders the other.
   | 'savedAccentColors'
@@ -90,6 +92,8 @@ export type LocationSlice = Pick<
   | 'locationProviders'
   | 'dataProvider'
   | 'dataProviderAuto'
+  // Automatic's source near a place Diyanet lists depends on it (`effectiveProvider.ts`).
+  | 'calculationMethod'
 >;
 
 export type NotificationsSlice = Pick<
@@ -190,7 +194,11 @@ export function PrayerSettingsProvider({
     // is then painted in the hour's colours, not the night's and then the
     // hour's — one render of every screen, not two (theme/skyTheme.ts).
     Promise.all([loadSettings(), restoreSkyTheme()])
-      .then(([loaded]) => setSettings(loaded))
+      .then(([loaded]) => {
+        // The Sky theme's colours before the first painted render.
+        setSkyVariant(loaded.skyVariant);
+        setSettings(loaded);
+      })
       .finally(() => {
         bootMark('settings');
         setHydrated(true);
@@ -225,8 +233,9 @@ export function PrayerSettingsProvider({
   // app wears it; the scheduler runs outside React, so the answer is
   // mirrored for it the same way the clock format is.
   useEffect(() => {
-    setFullScreenAlarmSkyTheme(settings.appearance === 'sky');
-  }, [settings.appearance]);
+    setSkyVariant(settings.skyVariant);
+    setFullScreenAlarmSkyTheme(settings.appearance === 'sky', settings.skyVariant);
+  }, [settings.appearance, settings.skyVariant]);
 
   const updateSettings = useCallback((patch: Partial<PrayerAppSettings>) => {
     setSettings(prev => {
@@ -262,6 +271,7 @@ export function PrayerSettingsProvider({
       appAccentId: settings.appAccentId,
       appAccentCustomHex: settings.appAccentCustomHex,
       tintedSurfaces: settings.tintedSurfaces,
+      skyVariant: settings.skyVariant,
       savedAccentColors: settings.savedAccentColors,
       showPracticeOnHome: settings.showPracticeOnHome,
       launchAnimation: settings.launchAnimation,
@@ -275,6 +285,7 @@ export function PrayerSettingsProvider({
       settings.appAccentId,
       settings.appAccentCustomHex,
       settings.tintedSurfaces,
+      settings.skyVariant,
       settings.savedAccentColors,
       settings.showPracticeOnHome,
       settings.launchAnimation,
@@ -296,6 +307,7 @@ export function PrayerSettingsProvider({
       locationProviders: settings.locationProviders,
       dataProvider: settings.dataProvider,
       dataProviderAuto: settings.dataProviderAuto,
+      calculationMethod: settings.calculationMethod,
     }),
     [
       settings.locationMode,
@@ -308,6 +320,7 @@ export function PrayerSettingsProvider({
       settings.locationOnboardingComplete,
       settings.locationPresets,
       settings.activeLocationPresetId,
+      settings.calculationMethod,
       settings.locationProviders,
       settings.dataProvider,
       settings.dataProviderAuto,

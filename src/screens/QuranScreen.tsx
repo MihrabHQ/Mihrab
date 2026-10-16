@@ -94,6 +94,7 @@ import { TilawahRow } from './quran/TilawahRow';
 import { KhatmahEntry } from './quran/KhatmahEntry';
 import { useTabBarScroll } from '../navigation/tabBarVisibility';
 import { RADIUS, SPACING } from '../theme/tokens';
+import { tajweedColoursShown } from '../quran/tajweed/tajweedSupport';
 
 type Tab = 'surah' | 'juz' | 'bookmarks';
 const TABS: Tab[] = ['surah', 'juz', 'bookmarks'];
@@ -207,7 +208,7 @@ export function QuranScreen() {
   // data — the largest file in the app — comes in now, once the list has
   // settled, instead of during the push transition of the surah they tap.
   const riwayahForWarm = quran.prefs.riwayah;
-  const tajweedForWarm = quran.prefs.tajweedColours;
+  const tajweedForWarm = tajweedColoursShown(quran.prefs.riwayah, quran.prefs.tajweedColours);
   useEffect(() => {
     const task = afterInteractions(() =>
       warmMushafLayout(riwayahForWarm, tajweedForWarm),

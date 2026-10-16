@@ -435,6 +435,14 @@ export function skyColorAt(frame: Pick<SkyFrame, 'top' | 'bottom' | 'mid' | 'mid
 
 /** Where the Sky theme's middle stop sits: the glow is low, near the horizon. */
 export const SKY_THEME_MID_AT = 0.62;
+/**
+ * Where it sits when the sky runs into a page of the other polarity — a
+ * night sky over Light's paper, a day sky over Dark's: below the
+ * countdown's foot (HERO_Y.foot), so the countdown, the rail and its
+ * labels are all on the sky, in one ink, and only the band under them
+ * fades into the page.
+ */
+export const SKY_FADE_LOW_MID_AT = 0.88;
 
 /** How much harder a body glows under the theme: a neon, not a lamp. */
 const SKY_THEME_HALO = 1.35;
@@ -448,6 +456,7 @@ const SKY_THEME_HALO = 1.35;
 export function themedSkyFrame(
   frame: SkyFrame,
   hero: { heroTop: string; heroMid: string; heroFoot: string; bodyLight: string; starGlow: string },
+  midAt: number = SKY_THEME_MID_AT,
 ): SkyFrame {
   const body: SkyBody =
     frame.body.kind === 'none'
@@ -457,7 +466,7 @@ export function themedSkyFrame(
     ...frame,
     top: hero.heroTop,
     mid: hero.heroMid,
-    midAt: SKY_THEME_MID_AT,
+    midAt,
     bottom: hero.heroFoot,
     glow: hero.starGlow,
     body,

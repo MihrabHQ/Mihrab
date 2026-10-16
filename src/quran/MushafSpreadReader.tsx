@@ -96,7 +96,7 @@ const WINDOW_READING = 3;
 type ColumnProps = {
   page: number;
   colW: number;
-  chrome: 'both' | 'label' | 'pill';
+  chrome: 'both' | 'label' | 'pill' | 'none';
   /** Which half of a spread this is; 'single' when there is no pair. */
   side: 'left' | 'right' | 'single';
   /** The column's page size and margin, or null while the geometry does
@@ -198,7 +198,7 @@ const SpreadColumn = React.memo(function SpreadColumn({
           show={chrome}
           // The badge on the page that carries the name (the label side),
           // in fullscreen only — out of it the sidebar's lock button is up.
-          lock={isFullscreen && chrome !== 'pill' ? lock : null}
+          lock={isFullscreen && (chrome === 'both' || chrome === 'label') ? lock : null}
         />
       </Pressable>
       <View style={[styles.pageBox, pad]}>
@@ -511,7 +511,7 @@ export const MushafSpreadReader = React.memo(function MushafSpreadReader(
     (
       page: number | null,
       colW: number,
-      chrome: 'both' | 'label' | 'pill',
+      chrome: 'both' | 'label' | 'pill' | 'none',
       side: 'left' | 'right' | 'single' = 'single',
     ) => {
       if (page == null || page < 1 || page > totalPages) {
@@ -574,15 +574,16 @@ export const MushafSpreadReader = React.memo(function MushafSpreadReader(
         // Portrait: one centred page fills the item.
         return (
           <View style={[styles.item, { width: pageWidth, backgroundColor: pageBg }]}>
-            {renderColumn(index + 1, pageWidth, 'both')}
+            {renderColumn(index + 1, pageWidth, 'label')}
           </View>
         );
       }
       const spread = spreadForPage(index * 2 + 1, totalPages);
       // The item lays out physically LTR (the app drives RTL via text, not
       // I18nManager): even page on the left half, odd page on the right.
-      // Chrome splits across the spread's outer corners — label at the
-      // outer right, night pill at the outer left.
+      // The label at the outer right. The outer left used to carry the
+      // tone pill; the tone is the header's now (MushafToneHeaderButton),
+      // so that corner keeps its row and draws nothing.
       return (
         <View
           style={[
@@ -590,7 +591,7 @@ export const MushafSpreadReader = React.memo(function MushafSpreadReader(
             styles.spreadRow,
             { width: pageWidth, backgroundColor: pageBg },
           ]}>
-          {renderColumn(spread.left, pageWidth / 2, 'pill', 'left')}
+          {renderColumn(spread.left, pageWidth / 2, 'none', 'left')}
           {renderColumn(spread.right, pageWidth / 2, 'label', 'right')}
           {/* The gutter's own line. A printed muṣḥaf has a fold here and
               the eye uses it: without one, two pages of the same text at

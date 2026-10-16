@@ -296,6 +296,7 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
         settings.dataProviderAuto,
         settings.dataProvider,
         coords,
+        settings.calculationMethod,
       );
 
       /**
@@ -948,6 +949,7 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
         settings.dataProviderAuto,
         settings.dataProvider,
         { latitude: lat, longitude: lng },
+        settings.calculationMethod,
       );
       maybeFullSyncOnWifi({
         provider,

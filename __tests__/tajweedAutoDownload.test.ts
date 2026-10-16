@@ -137,3 +137,24 @@ describe('what a bulk download skips', () => {
     config.mockRestore();
   });
 });
+
+/**
+ * Switched on during the plain muṣḥaf's first download — the guide is one
+ * tap from the surah list, the offer appears on the first page — the
+ * colours were never fetched: the switch asks for nothing until the book is
+ * on the device, and nothing asked again. Reported from an Android 9 phone
+ * as "tajweed cannot apply".
+ */
+describe('the colours follow the book', () => {
+  it('asks again when a plain muṣḥaf download ends with the switch on', () => {
+    const src = require('fs').readFileSync(
+      require('path').join(__dirname, '..', 'src', 'quran', 'tajweedAutoDownload.ts'),
+      'utf8',
+    );
+    expect(src).toMatch(/subscribeQuranDownload\(s => \{/);
+    expect(src).toMatch(/const nowPlain = running\?\.kind === 'fonts' && fontSetOf\(running\) === 'v2';/);
+    expect(src).toMatch(/if \(plainRunning && !nowPlain && getQuranState\(\)\.prefs\.tajweedColours\) \{\s*onSwitchedOn\(\)/);
+    // Both subscriptions go when the root effect does.
+    expect(src).toMatch(/offPref\(\);\s*offDownload\(\);/);
+  });
+});

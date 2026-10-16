@@ -173,7 +173,8 @@ describe('who gets it', () => {
   it('leaves Morocco and Tunisia alone', () => {
     expect(regionalProviderForCoords(OUJDA)).toBe('habous');
     expect(regionalProviderForCoords({ latitude: 33.5731, longitude: -7.5898 })).toBe('habous');
-    expect(regionalProviderForCoords({ latitude: 36.8065, longitude: 10.1815 })).toBeNull();
+    // Tunis has no national table here; Diyanet lists it.
+    expect(regionalProviderForCoords({ latitude: 36.8065, longitude: 10.1815 })).toBe('diyanet');
   });
 
   it('hides the method and madhab pickers, as for the other published tables', () => {

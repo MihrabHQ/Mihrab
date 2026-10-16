@@ -15,11 +15,41 @@
  * ground turns from dark to light or back, which is a switch at a
  * moment of the day (sunrise; the middle of the sunset), because a mix
  * of a dark page and a light one is a grey page with unreadable ink.
+ *
+ * Two variants, picked under Appearance → Sky: these, Vibrant, and
+ * Realistic — the sky as it looks (the hero's own colours, skyModel.ts:
+ * a navy night, a dawn of slate blue with a rose horizon, a clear blue
+ * day, an orange horizon under a blue evening) over a page that is
+ * nearly neutral, tinted only toward the hour, and calmer accents. Same
+ * hours, same anchors, same switches between dark and light, same floors.
  */
 import type { SkyPassage } from '../screens/home/skyModel';
 import { hexToOklch, lchToAb, oklabToHex, oklchToHex } from './oklch';
 
 export type SkyMoodName = 'night' | 'dawn' | 'morning' | 'midday' | 'golden' | 'sunset';
+
+/** Which colours the Sky theme wears: the representative ones, or the sky's own. */
+export type SkyVariant = 'vibrant' | 'realistic';
+export const SKY_VARIANTS: readonly SkyVariant[] = ['vibrant', 'realistic'];
+// Realistic by default: the calmer of the two, the sky as it looks.
+export const DEFAULT_SKY_VARIANT: SkyVariant = 'realistic';
+export function isSkyVariant(v: unknown): v is SkyVariant {
+  return v === 'vibrant' || v === 'realistic';
+}
+
+/**
+ * The variant in force, for the callers that have no settings to ask —
+ * the sky store, the full-screen alert, the hero's frame. Set from the
+ * settings (`setSkyVariant` in skyTheme.ts), which also re-renders the
+ * palette's readers.
+ */
+let activeVariant: SkyVariant = DEFAULT_SKY_VARIANT;
+export function activeSkyVariant(): SkyVariant {
+  return activeVariant;
+}
+export function setActiveSkyVariant(v: SkyVariant): void {
+  activeVariant = isSkyVariant(v) ? v : DEFAULT_SKY_VARIANT;
+}
 
 export type SkyMood = {
   name: SkyMoodName;
@@ -223,13 +253,175 @@ const RAW_MOODS: Record<SkyMoodName, Omit<SkyMood, 'accentBg'>> = {
   },
 };
 
-export const SKY_MOODS: Record<SkyMoodName, SkyMood> = {
-  night: withHighlight(RAW_MOODS.night),
-  dawn: withHighlight(RAW_MOODS.dawn),
-  morning: withHighlight(RAW_MOODS.morning),
-  midday: withHighlight(RAW_MOODS.midday),
-  golden: withHighlight(RAW_MOODS.golden),
-  sunset: withHighlight(RAW_MOODS.sunset),
+const moodsOf = (raw: Record<SkyMoodName, Omit<SkyMood, 'accentBg'>>): Record<SkyMoodName, SkyMood> => ({
+  night: withHighlight(raw.night),
+  dawn: withHighlight(raw.dawn),
+  morning: withHighlight(raw.morning),
+  midday: withHighlight(raw.midday),
+  golden: withHighlight(raw.golden),
+  sunset: withHighlight(raw.sunset),
+});
+
+/** Vibrant's moods (the theme as it first shipped). */
+export const SKY_MOODS: Record<SkyMoodName, SkyMood> = moodsOf(RAW_MOODS);
+
+/**
+ * REALISTIC — the sky as it looks. The hero takes the real sky's colours
+ * (the default theme's, skyModel.ts) at each hour; the page under it is
+ * nearly neutral — a paper warmed or cooled toward the hour by a few
+ * degrees, never painted in it; the cards are white by day and a step
+ * above the page by night; the accent is the hour's light, taken down to
+ * what a sky shows: moonlight blue, a dawn peach, terracotta, a clear
+ * blue, amber, the afterglow's orange. The same tokens, the same floors.
+ */
+const REALISTIC_RAW: Record<SkyMoodName, Omit<SkyMood, 'accentBg'>> = {
+  /** Night: navy, a moonlit blue on it. */
+  night: {
+    name: 'night',
+    isDark: true,
+    heroTop: '#060B24',
+    heroMid: '#17245C',
+    heroFoot: '#0D1428',
+    bodyLight: '#E4EAF4',
+    starGlow: '#D6E0F2',
+    bg: '#0D1428',
+    card: '#182036',
+    controlBg: '#1F2942',
+    border: '#2E3A57',
+    text: '#E8ECF4',
+    muted: '#A3AEC4',
+    accent: '#9DB8E8',
+    onAccent: '#0B1224',
+    accentSurface: '#111930',
+    accentSurfaceStrong: '#1B2440',
+    accentHairline: '#3E5180',
+    danger: '#F28B8B',
+    overlay: 'rgba(5,8,18,0.7)',
+  },
+  /** Dawn: slate blue, the horizon going rose, a peach for the hand. */
+  dawn: {
+    name: 'dawn',
+    isDark: true,
+    heroTop: '#0E1750',
+    heroMid: '#634481',
+    heroFoot: '#131A33',
+    bodyLight: '#F4C99A',
+    starGlow: '#DCDDF0',
+    bg: '#131A33',
+    card: '#1E2643',
+    controlBg: '#262F50',
+    border: '#384266',
+    text: '#F1EEF2',
+    muted: '#B4B4CA',
+    accent: '#E9A88A',
+    onAccent: '#24130B',
+    accentSurface: '#172040',
+    accentSurfaceStrong: '#222B4C',
+    accentHairline: '#6A5878',
+    danger: '#F28B8B',
+    overlay: 'rgba(8,10,26,0.7)',
+  },
+  /** Early morning: a pale blue over the warm haze, a paper page, terracotta. */
+  morning: {
+    name: 'morning',
+    isDark: false,
+    heroTop: '#77A6E7',
+    heroMid: '#FED29C',
+    heroFoot: '#F7F4EF',
+    bodyLight: '#FFD98F',
+    starGlow: '#FFFFFF',
+    bg: '#F7F4EF',
+    card: '#FFFFFF',
+    controlBg: '#ECE8E1',
+    border: '#DCD5CA',
+    text: '#1D2430',
+    muted: '#555E6C',
+    accent: '#9B4A24',
+    onAccent: '#FFFFFF',
+    accentSurface: '#F2EEE8',
+    accentSurfaceStrong: '#EDE7DF',
+    accentHairline: '#D8B399',
+    danger: '#B42318',
+    overlay: 'rgba(29,36,48,0.45)',
+  },
+  /** Midday: a clear blue sky, a cool page, a blue for the hand. */
+  midday: {
+    name: 'midday',
+    isDark: false,
+    heroTop: '#378BE5',
+    heroMid: '#9DCEFC',
+    heroFoot: '#F1F5F9',
+    bodyLight: '#FFF4D2',
+    starGlow: '#FFFFFF',
+    bg: '#F1F5F9',
+    card: '#FFFFFF',
+    controlBg: '#E2E9F1',
+    border: '#CBD7E3',
+    text: '#13202F',
+    muted: '#4C5B6C',
+    accent: '#285C91',
+    onAccent: '#FFFFFF',
+    accentSurface: '#E9EFF5',
+    accentSurfaceStrong: '#E0E8F1',
+    accentHairline: '#98B5D3',
+    danger: '#B42318',
+    overlay: 'rgba(19,32,47,0.45)',
+  },
+  /** Late afternoon: the blue fading over a warm horizon, amber. */
+  golden: {
+    name: 'golden',
+    isDark: false,
+    heroTop: '#688AD7',
+    heroMid: '#FFB769',
+    heroFoot: '#F9F2E8',
+    bodyLight: '#FFBE6A',
+    starGlow: '#FFFFFF',
+    bg: '#F9F2E8',
+    card: '#FFFDF9',
+    controlBg: '#F0E5D6',
+    border: '#E3D2BC',
+    text: '#2A2018',
+    muted: '#66574A',
+    accent: '#9A4F14',
+    onAccent: '#FFFFFF',
+    accentSurface: '#F5EBDF',
+    accentSurfaceStrong: '#F0E4D5',
+    accentHairline: '#DDB084',
+    danger: '#B42318',
+    overlay: 'rgba(42,32,24,0.45)',
+  },
+  /** Sunset & evening: a blue evening over the red horizon, the afterglow's orange. */
+  sunset: {
+    name: 'sunset',
+    isDark: true,
+    heroTop: '#2D2E7D',
+    heroMid: '#CD4E54',
+    heroFoot: '#171A30',
+    bodyLight: '#F29A66',
+    starGlow: '#EEDCD6',
+    bg: '#171A30',
+    card: '#222540',
+    controlBg: '#2A2E4C',
+    border: '#3C3F62',
+    text: '#F3EEEC',
+    muted: '#BCB6C0',
+    accent: '#EE9F72',
+    onAccent: '#26120A',
+    accentSurface: '#1C1F38',
+    accentSurfaceStrong: '#272A46',
+    accentHairline: '#74566A',
+    danger: '#F4847E',
+    overlay: 'rgba(10,10,22,0.7)',
+  },
+};
+
+/** Realistic's moods. */
+export const REALISTIC_SKY_MOODS: Record<SkyMoodName, SkyMood> = moodsOf(REALISTIC_RAW);
+
+/** Each variant's six moods. */
+export const SKY_MOODS_BY_VARIANT: Record<SkyVariant, Record<SkyMoodName, SkyMood>> = {
+  vibrant: SKY_MOODS,
+  realistic: REALISTIC_SKY_MOODS,
 };
 
 /**
@@ -347,36 +539,137 @@ const ANCHORS = {
   }),
 };
 
+/**
+ * Realistic's anchors: the same hours, drifting the way the real sky does —
+ * the night bluest after Isha and before Fajr, the dawn's horizon going
+ * from rose to salmon, the morning's haze clearing into the blue, the
+ * afternoon's blue paling over a warm horizon before the gold, the
+ * evening deepening to indigo. Between the morning's terracotta and the
+ * midday's blue, and the afternoon's blue and the gold, the hand passes
+ * through a muted plum, the way the sky's own mixes do.
+ */
+const R = REALISTIC_SKY_MOODS;
+const REALISTIC_ANCHORS: typeof ANCHORS = {
+  nightEarly: vary(R.night, {
+    heroTop: '#0A1335',
+    heroMid: '#253486',
+    heroFoot: '#0F172E',
+    bg: '#0F172E',
+    card: '#1A2339',
+    controlBg: '#212C46',
+    accentSurface: '#131B33',
+    bodyLight: '#D8E2F8',
+  }),
+  midnight: R.night,
+  nightLate: vary(R.night, {
+    heroTop: '#0A123E',
+    heroMid: '#2D358D',
+    heroFoot: '#0F162D',
+    bg: '#0F162D',
+    card: '#1A2239',
+    accentSurface: '#131A33',
+    bodyLight: '#ECE8F6',
+  }),
+  dawn: R.dawn,
+  dawnBright: vary(R.dawn, {
+    heroTop: '#244091',
+    heroMid: '#BE5D78',
+    bodyLight: '#FAD39C',
+  }),
+  morning: R.morning,
+  morningLate: vary(R.morning, {
+    heroTop: '#619DE6',
+    heroMid: '#DAE4EF',
+    heroFoot: '#F4F6F8',
+    bg: '#F4F6F8',
+    card: '#FFFFFF',
+    controlBg: '#E7EBF0',
+    border: '#D3DAE2',
+    text: '#1A2531',
+    muted: '#52606E',
+    accent: '#5B5C86',
+    accentSurface: '#EDF0F3',
+    accentSurfaceStrong: '#E6EAEF',
+    accentHairline: '#B3BDD0',
+    bodyLight: '#FFE6A8',
+    overlay: 'rgba(26,37,49,0.45)',
+  }),
+  midday: R.midday,
+  afternoon: vary(R.midday, {
+    heroTop: '#4A9AE8',
+    heroMid: '#B4D7F7',
+    heroFoot: '#F2F5F8',
+    bg: '#F2F5F8',
+    bodyLight: '#FFEFC2',
+  }),
+  afternoonLate: vary(R.midday, {
+    heroTop: '#5D8FDB',
+    heroMid: '#E9DCC0',
+    heroFoot: '#F6F4F0',
+    bg: '#F6F4F0',
+    card: '#FFFEFC',
+    controlBg: '#ECE8E2',
+    border: '#DCD6CD',
+    text: '#1F2430',
+    muted: '#575C68',
+    accent: '#6A5070',
+    accentSurface: '#F1EEEA',
+    accentSurfaceStrong: '#ECE8E3',
+    accentHairline: '#C2B4AE',
+    bodyLight: '#FFDC94',
+    overlay: 'rgba(31,36,48,0.45)',
+  }),
+  golden: R.golden,
+  sunset: R.sunset,
+  sunsetDeep: vary(R.sunset, {
+    heroTop: '#1D1F6C',
+    heroMid: '#8E4777',
+    heroFoot: '#141830',
+    bg: '#141830',
+    card: '#1F2340',
+    accentSurface: '#191C36',
+    bodyLight: '#E48E78',
+  }),
+};
+
 type Segment = { from: number; to: number; a: SkyMood; b: SkyMood };
 /** Each passage as segments of its progress, each a mix of two anchors. */
-const TIMELINE: Record<SkyPassage, Segment[]> = {
+const timelineOf = (A: typeof ANCHORS): Record<SkyPassage, Segment[]> => ({
   night: [
-    { from: 0, to: 0.5, a: ANCHORS.nightEarly, b: ANCHORS.midnight },
-    { from: 0.5, to: 1, a: ANCHORS.midnight, b: ANCHORS.nightLate },
+    { from: 0, to: 0.5, a: A.nightEarly, b: A.midnight },
+    { from: 0.5, to: 1, a: A.midnight, b: A.nightLate },
   ],
   dawn: [
-    { from: 0, to: 0.35, a: ANCHORS.nightLate, b: ANCHORS.dawn },
-    { from: 0.35, to: 1, a: ANCHORS.dawn, b: ANCHORS.dawnBright },
+    { from: 0, to: 0.35, a: A.nightLate, b: A.dawn },
+    { from: 0.35, to: 1, a: A.dawn, b: A.dawnBright },
   ],
   // Sunrise is the switch to light.
   day: [
-    { from: 0, to: 0.15, a: ANCHORS.morning, b: ANCHORS.morningLate },
-    { from: 0.15, to: 0.3, a: ANCHORS.morningLate, b: ANCHORS.midday },
-    { from: 0.3, to: 1, a: ANCHORS.midday, b: ANCHORS.afternoon },
+    { from: 0, to: 0.15, a: A.morning, b: A.morningLate },
+    { from: 0.15, to: 0.3, a: A.morningLate, b: A.midday },
+    { from: 0.3, to: 1, a: A.midday, b: A.afternoon },
   ],
   // Halfway to Maghrib the evening switches on.
   sunset: [
-    { from: 0, to: 0.25, a: ANCHORS.afternoon, b: ANCHORS.afternoonLate },
-    { from: 0.25, to: 0.5, a: ANCHORS.afternoonLate, b: ANCHORS.golden },
-    { from: 0.5, to: 1, a: ANCHORS.sunset, b: ANCHORS.sunsetDeep },
+    { from: 0, to: 0.25, a: A.afternoon, b: A.afternoonLate },
+    { from: 0.25, to: 0.5, a: A.afternoonLate, b: A.golden },
+    { from: 0.5, to: 1, a: A.sunset, b: A.sunsetDeep },
   ],
-  dusk: [{ from: 0, to: 1, a: ANCHORS.sunsetDeep, b: ANCHORS.nightEarly }],
+  dusk: [{ from: 0, to: 1, a: A.sunsetDeep, b: A.nightEarly }],
+});
+const TIMELINES: Record<SkyVariant, Record<SkyPassage, Segment[]>> = {
+  vibrant: timelineOf(ANCHORS),
+  realistic: timelineOf(REALISTIC_ANCHORS),
 };
 
 /** Which two anchors this moment of the sky is between, and how far. */
-export function skyMoodAt(passage: SkyPassage, t: number): { from: SkyMood; to: SkyMood; u: number } {
+export function skyMoodAt(
+  passage: SkyPassage,
+  t: number,
+  variant: SkyVariant = activeVariant,
+): { from: SkyMood; to: SkyMood; u: number } {
   const k = Math.max(0, Math.min(1, t));
-  const segments = TIMELINE[passage];
+  const segments = TIMELINES[isSkyVariant(variant) ? variant : DEFAULT_SKY_VARIANT][passage];
   const seg = segments.find(s => k < s.to) ?? segments[segments.length - 1];
   const span = seg.to - seg.from || 1;
   return { from: seg.a, to: seg.b, u: Math.max(0, Math.min(1, (k - seg.from) / span)) };
@@ -449,13 +742,13 @@ export const PALETTE_STEPS = 16;
  */
 const MOOD_CACHE = new Map<string, SkyMood>();
 const MOOD_CACHE_MAX = 512;
-export function skyMoodFor(passage: SkyPassage, t: number, steps?: number): SkyMood {
-  const at = skyMoodAt(passage, t);
+export function skyMoodFor(passage: SkyPassage, t: number, steps?: number, variant: SkyVariant = activeVariant): SkyMood {
+  const at = skyMoodAt(passage, t, variant);
   const { from, to } = at;
   const u = steps ? Math.round(at.u * steps) / steps : at.u;
   if (u <= 0 || from === to) return from;
   if (u >= 1) return to;
-  const key = `${from.name}|${from.heroTop}|${to.heroTop}|${u.toFixed(4)}`;
+  const key = `${variant}|${from.name}|${from.heroTop}|${to.heroTop}|${u.toFixed(4)}`;
   const hit = MOOD_CACHE.get(key);
   if (hit) return hit;
   const near = u < 0.5 ? from : to;

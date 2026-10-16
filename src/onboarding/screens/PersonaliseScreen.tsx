@@ -52,7 +52,7 @@ import {
 import { sharedSettingsStyles as s } from '../../screens/settings/sharedStyles';
 import { SegmentedControl } from '../../components/ui';
 import { AccentShelf } from '../../components/AccentShelf';
-import { SkyMoodStrip } from '../../components/SkyMoodStrip';
+import { SkyVariantPicker } from '../../components/SkyVariantPicker';
 import type { AppearancePreference } from '../../settings/types';
 import { SPACING } from '../../theme/tokens';
 import { typeStyle } from '../../theme/typography';
@@ -233,12 +233,16 @@ export function PersonaliseScreen({
               theme comes in their place. */}
           {skyActive ? (
             <>
+              {/* Sky's two colourings, each by its six skies: Realistic
+                  (the default) and Vibrant. */}
               <View style={styles.strip}>
-                <SkyMoodStrip
-                  testID="personalise-sky-strip"
-                  selected={false}
+                <SkyVariantPicker
+                  testID="personalise-sky-variant"
+                  value={settings.skyVariant}
+                  onChange={skyVariant => updateSettings({ skyVariant })}
                   accent={String(palette.accent)}
-                  accessibilityLabel={t('settings.themeSky')}
+                  text={String(palette.text)}
+                  muted={String(palette.muted)}
                 />
               </View>
               <Text style={[s.help, { color: palette.muted, marginTop: SPACING.sm }]}>

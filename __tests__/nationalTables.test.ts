@@ -203,14 +203,14 @@ describe('on the phone', () => {
   });
 
   it('is what Automatic picks in Singapore and Malaysia, with the matching method offline', () => {
-    expect(getEffectiveDataProvider(true, 'aladhan', SG)).toBe('muis');
-    expect(getEffectiveDataProvider(true, 'aladhan', KL)).toBe('jakim');
-    expect(getEffectiveDataProvider(true, 'aladhan', KK)).toBe('jakim');
-    expect(getEffectiveDataProvider(false, 'jakim', SG)).not.toBe('jakim');
-    expect(getEffectiveDataProvider(true, 'aladhan', JAKARTA)).toBe('kemenag');
+    expect(getEffectiveDataProvider(true, 'aladhan', SG, 'auto')).toBe('muis');
+    expect(getEffectiveDataProvider(true, 'aladhan', KL, 'auto')).toBe('jakim');
+    expect(getEffectiveDataProvider(true, 'aladhan', KK, 'auto')).toBe('jakim');
+    expect(getEffectiveDataProvider(false, 'jakim', SG, 'auto')).not.toBe('jakim');
+    expect(getEffectiveDataProvider(true, 'aladhan', JAKARTA, 'auto')).toBe('kemenag');
     // Across the Sabah border, twenty kilometres apart: each to its own ministry.
-    expect(getEffectiveDataProvider(true, 'aladhan', NUNUKAN)).toBe('kemenag');
-    expect(getEffectiveDataProvider(true, 'aladhan', TAWAU)).toBe('jakim');
+    expect(getEffectiveDataProvider(true, 'aladhan', NUNUKAN, 'auto')).toBe('kemenag');
+    expect(getEffectiveDataProvider(true, 'aladhan', TAWAU, 'auto')).toBe('jakim');
     expect(autoMethodForCoords(JAKARTA.latitude, JAKARTA.longitude)).toBe(20);
     expect(autoMethodForCoords(SG.latitude, SG.longitude)).toBe(11);
     expect(autoMethodForCoords(KL.latitude, KL.longitude)).toBe(17);

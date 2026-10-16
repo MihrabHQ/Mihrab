@@ -138,6 +138,45 @@ internal object GlancePayload {
     read(context)?.takeUnless { p -> p.days.none { !it.estimated && it.dateKey >= now.dateKey } }
 
   /**
+   * The Log's day (#81): the payload's `today` block while it is today's.
+   *
+   * The block is the journal as the app last saw it, written for the date
+   * it was written on. The Log's day turns at local midnight, and a phone
+   * left alone overnight has not run the app since: the card kept drawing
+   * yesterday — its date, its ticks, "5 of 5" — until the app was opened,
+   * and a tap on a chip the next morning was queued against yesterday.
+   * So once the date has moved on, the block is rolled forward here from
+   * the schedule the payload already carries: today's five at today's
+   * times, nothing recorded. That is what the journal holds for a day
+   * nobody has logged yet; anything tapped on the card since is in the
+   * queue, which the card adds on top. Null when the payload has no entry
+   * for today, and the card says it does not know rather than guess.
+   */
+  fun todayOf(p: WidgetContract.Payload, now: Now): WidgetContract.Today? {
+    val block = p.today ?: return null
+    // Today's, or ahead of the clock (a clock set back): as written.
+    if (block.dateKey >= now.dateKey) return block
+    val day = p.days.firstOrNull { it.dateKey == now.dateKey && !it.estimated }
+      ?: p.days.firstOrNull { it.dateKey == now.dateKey }
+      ?: return null
+    return WidgetContract.Today(
+      dateKey = now.dateKey,
+      logged = 0,
+      loggable = block.loggable,
+      owed = 0,
+      prayers = block.prayers.map { pr ->
+        WidgetContract.TodayPrayer(
+          key = pr.key,
+          name = pr.name,
+          minutes = day.prayers.firstOrNull { it.key == pr.key }?.minutes,
+          status = null,
+          due = false,
+        )
+      },
+    )
+  }
+
+  /**
    * Whether the payload's single-day blocks (`today`, `hijri`) are about
    * today: the `today` block's own date, else the first real day's.
    */

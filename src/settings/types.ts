@@ -1,4 +1,5 @@
 // tokens-ok: default accent hexes for stored settings
+import type { SkyVariant } from '../theme/skyMoods';
 import type { HijriCalendarId } from '../hijri/calendar';
 import type { Madhab } from '../prayer/madhab';
 import type { HighLatitudeRuleId } from '../prayer/calculationPreferences';
@@ -15,7 +16,6 @@ export type LocationMode = 'automatic' | 'manual';
 
 export const PRAYER_DATA_PROVIDER_IDS = [
   'aladhan',
-  'prayertimes_dev',
   'islamiska_forbundet',
   'habous',
   'marw',
@@ -470,6 +470,14 @@ export type PrayerAppSettings = {
    * render outside React — see `syncWidgetUiHints.ts`, the Live Activity
    * payload, and the prayer-notification builder.
    */
+  /**
+   * Which colours the Sky theme wears (theme/skyMoods.ts): 'vibrant', the
+   * representative palette it first shipped with, or 'realistic', the sky
+   * as it looks over a nearly neutral page — the default. Picked under
+   * Appearance and in the walkthrough when Sky is the theme; kept when it
+   * is not, for the next time it is.
+   */
+  skyVariant: SkyVariant;
   tintedSurfaces: boolean;
   /**
    * Custom colours the user has kept, newest first — see
@@ -791,6 +799,7 @@ export const DEFAULT_SETTINGS: PrayerAppSettings = {
   // New installs open on the green colour theme (walkthrough + Settings).
   // Upgrades without this key stay Classic — see storage.ts.
   tintedSurfaces: true,
+  skyVariant: 'realistic',
   // Nobody starts with a colour they did not pick.
   savedAccentColors: [],
   // Live Activity defaults: OFF; when enabled, the detail-rich layout

@@ -31,6 +31,7 @@ import { desktopSize } from '../../responsive/desktop';
 import {
   MushafLockHeaderButton,
   MushafToneHeaderButton,
+  MushafFullscreenHeaderButton,
   useSettledMeasure,
 } from '../../quran/mushafReaderCore';
 import { TabBackButton } from '../../navigation/TabBackButton';
@@ -448,6 +449,63 @@ export function MushafSurahScreen({
       });
       return;
     }
+    const backButton = navigation.canGoBack() ? (
+      <TabBackButton
+        onPress={() => navigation.goBack()}
+        inNativeHeader
+        color={ink}
+      />
+    ) : null;
+    // The riwayah's pill — only in the muṣḥaf, because the translation
+    // reader draws its Arabic from the ayah database, which is Hafs. A
+    // control that appeared to change the script there would be lying.
+    const riwayahChip = riwayahChoiceExists() ? (
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={t('quran.riwayahPickerOpen', {
+          defaultValue: 'Reading tradition: {{name}}. Tap to change.',
+          name: t(riwayahById(riwayah).nameKey, riwayahById(riwayah).arabic),
+        })}
+        onPress={() => setRiwayahPickerVisible(true)}
+        hitSlop={8}
+        // A PILL, in the page's own chrome: the name was a bare
+        // word with a caret after it, floating in the bar beside
+        // the back arrow, and read as a title rather than a
+        // control. On the tone's control surface, with the
+        // chevron drawn rather than typed, it is a button.
+        style={({ pressed }) => [
+          riwayahPill.pill,
+          { backgroundColor: TONE_CHROME[tone].control },
+          pressed && riwayahPill.pressed,
+        ]}>
+        {/* The muṣḥaf you are IN, with the chevron that says there
+            are others — see `RiwayahPicker` for why this stopped
+            naming the next one instead. */}
+        <Text
+          style={{
+            ...arabicTextStyle('body'),
+            color: ink,
+            fontSize: desktopSize(15),
+            // The Arabic style's line height is a reading line's;
+            // a pill is as tall as its glyphs.
+            lineHeight: desktopSize(22),
+            includeFontPadding: false,
+            fontWeight: '700',
+          }}>
+          {riwayahById(riwayah).arabic}
+        </Text>
+        <Svg width={desktopSize(12)} height={desktopSize(12)} viewBox="0 0 12 12">
+          <Path
+            d="M2.5 4.5 6 8l3.5-3.5"
+            stroke={ink}
+            strokeWidth={1.8}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            fill="none"
+          />
+        </Svg>
+      </Pressable>
+    ) : null;
     navigation.setOptions({
       headerShown: true,
       gestureEnabled,
@@ -525,65 +583,44 @@ export function MushafSurahScreen({
             headerSide.row,
             navigation.canGoBack() ? null : headerSide.padStart,
           ]}>
-          {navigation.canGoBack() ? (
-            <TabBackButton
-              onPress={() => navigation.goBack()}
-              inNativeHeader
-              color={ink}
-            />
-          ) : null}
-          {riwayahChoiceExists() ? (
-            // Only here, because the translation reader draws its Arabic
-            // from the ayah database, which is Hafs. A control that
-            // appeared to change the script there would be lying.
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={t('quran.riwayahPickerOpen', {
-                defaultValue: 'Reading tradition: {{name}}. Tap to change.',
-                name: t(riwayahById(riwayah).nameKey, riwayahById(riwayah).arabic),
-              })}
-              onPress={() => setRiwayahPickerVisible(true)}
-              hitSlop={8}
-              // A PILL, in the page's own chrome: the name was a bare
-              // word with a caret after it, floating in the bar beside
-              // the back arrow, and read as a title rather than a
-              // control. On the tone's control surface, with the
-              // chevron drawn rather than typed, it is a button.
-              style={({ pressed }) => [
-                riwayahPill.pill,
-                { backgroundColor: TONE_CHROME[tone].control },
-                pressed && riwayahPill.pressed,
-              ]}>
-              {/* The muṣḥaf you are IN, with the chevron that says there
-                  are others — see `RiwayahPicker` for why this stopped
-                  naming the next one instead. */}
-              <Text
-                style={{
-                  ...arabicTextStyle('body'),
-                  color: ink,
-                  fontSize: desktopSize(15),
-                  // The Arabic style's line height is a reading line's;
-                  // a pill is as tall as its glyphs.
-                  lineHeight: desktopSize(22),
-                  includeFontPadding: false,
-                  fontWeight: '700',
-                }}>
-                {riwayahById(riwayah).arabic}
-              </Text>
-              <Svg width={desktopSize(12)} height={desktopSize(12)} viewBox="0 0 12 12">
-                <Path
-                  d="M2.5 4.5 6 8l3.5-3.5"
-                  stroke={ink}
-                  strokeWidth={1.8}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  fill="none"
-                />
-              </Svg>
-            </Pressable>
-          ) : null}
+          {backButton}
+          {riwayahChip}
         </View>
       ),
+      /**
+       * WITH THE INDEX UP, THE RIWAYAH STANDS OVER THE PAGE (Mac, iPad).
+       *
+       * The bar's leading slot is over the index sidebar, so the pill sat
+       * above the surah list, beside the back arrow — a control about the
+       * page, over the list. Here it is on the same bar as the page's own
+       * controls, at the page's leading edge, opposite them: the arrow
+       * keeps the corner, a fixed space carries the pill past the index.
+       * Separate items, so the arrow keeps its capsule and the space
+       * between them is empty bar. Without the index (a narrow window, an
+       * iPad held upright) the slot is over the page already and the pair
+       * stay together as above.
+       */
+      unstable_headerLeftItems:
+        Platform.OS === 'ios' && sidebarUp && riwayahChip
+          ? () => [
+              ...(backButton
+                ? [{ type: 'custom' as const, element: <View key={`back-${headerW}x${headerH}`}>{backButton}</View> }]
+                : []),
+              // The space as an item of its own: React Navigation drops
+              // `spacing` items beside custom ones. No glass behind it, and
+              // none behind the pill, which draws its own.
+              {
+                type: 'custom' as const,
+                hidesSharedBackground: true,
+                element: <View style={{ width: Math.max(0, SIDEBAR_WIDTH - RIWAYAH_PAST_INDEX) }} />,
+              },
+              {
+                type: 'custom' as const,
+                hidesSharedBackground: true,
+                element: <View key={`riwayah-${headerW}x${headerH}`}>{riwayahChip}</View>,
+              },
+            ]
+          : undefined,
       headerRight: () => (
         // Wider gaps on the Mac: these are pointer targets on a desktop,
         // not thumb targets on a tablet, and Catalyst has already scaled
@@ -638,6 +675,12 @@ export function MushafSurahScreen({
             <MushafLockHeaderButton color={ink} size={desktopSize(18)} />
           ) : null}
           <MushafToneHeaderButton color={ink} size={desktopSize(18)} />
+          {/* Fullscreen, on the spread reader: the phone's sits in its
+              page bar, and the iPad and the Mac had no button for it at
+              all — only the page's margins and header strip. */}
+          {DEVICE_CLASS !== 'phone' ? (
+            <MushafFullscreenHeaderButton color={ink} size={desktopSize(18)} onPress={toggleFullscreen} />
+          ) : null}
         </View>
       ),
     });
@@ -666,6 +709,7 @@ export function MushafSurahScreen({
     t,
     onToggleMode,
     quran.prefs.touchLock,
+    toggleFullscreen,
     // The window's size, so a resize re-issues the header rather than
     // leaving UIKit holding a subview RN laid out for a different width.
     headerW,
@@ -717,6 +761,13 @@ export function MushafSurahScreen({
     </>
   );
 }
+
+/**
+ * What of the index's width the bar has already spent before the riwayah's
+ * space: its leading inset, the back arrow's capsule and the gaps between
+ * items — so the pill lands at the page's leading edge (measured on the Mac).
+ */
+const RIWAYAH_PAST_INDEX = desktopSize(50);
 
 const headerSide = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: desktopSize(10) },

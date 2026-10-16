@@ -24,14 +24,6 @@ export const MAINSTREAM_PRAYER_PROVIDERS: ProviderOption[] = [
     descriptionKey: 'providers.aladhan.desc',
   },
   {
-    id: 'prayertimes_dev',
-    name: 'PrayTimes.dev',
-    description:
-      'Independent API — UK-style angles & offsets; Hanafi/Shafi; global coordinates.',
-    nameKey: 'providers.prayertimes_dev.name',
-    descriptionKey: 'providers.prayertimes_dev.desc',
-  },
-  {
     id: 'namazvakti',
     name: 'Türkiye Takvimi (namazvakti.com)',
     description:

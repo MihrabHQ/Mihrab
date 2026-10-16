@@ -84,8 +84,9 @@ function CalculationCardImpl({
         settings.dataProviderAuto,
         settings.dataProvider,
         coordsForEffective,
+        settings.calculationMethod,
       ),
-    [settings.dataProviderAuto, settings.dataProvider, coordsForEffective],
+    [settings.dataProviderAuto, settings.dataProvider, coordsForEffective, settings.calculationMethod],
   );
 
   return (
@@ -232,9 +233,7 @@ function CalculationCardImpl({
               ? t('settings.calcHiddenSweden')
               : effectiveProvider === 'namazvakti'
                 ? t('settings.calcHiddenNamazvakti')
-                : effectiveProvider === 'prayertimes_dev'
-                  ? t('settings.calcHiddenPraytimes')
-                  : t('settings.calcHiddenPublished')}
+                : t('settings.calcHiddenPublished')}
           </Text>
         </SettingsBlock>
       ) : (

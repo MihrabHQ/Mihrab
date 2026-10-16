@@ -207,8 +207,10 @@ export function ShareMonthScreen({ route, navigation, embedded }: Props & { navi
         settings.dataProviderAuto,
         settings.dataProvider,
         coordsForProvider,
+        settings.calculationMethod,
       ),
     [
+      settings.calculationMethod,
       settings.dataProviderAuto,
       settings.dataProvider,
       coordsForProvider,

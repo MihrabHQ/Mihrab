@@ -15,6 +15,7 @@ export function locationSourceLine(
     | 'locationPresets'
     | 'dataProvider'
     | 'dataProviderAuto'
+    | 'calculationMethod'
     | 'locationProviders'
     | 'manualLatitude'
     | 'manualLongitude'
@@ -26,7 +27,7 @@ export function locationSourceLine(
   t: (key: string, opts: Record<string, unknown>) => string,
 ): string {
   const c = providerChoiceForKey(s, key);
-  const used = getEffectiveDataProvider(c.auto, c.provider, coords);
+  const used = getEffectiveDataProvider(c.auto, c.provider, coords, s.calculationMethod);
   return c.auto
     ? t('settings.providerAutoLine', { label: getProviderLabel(used) })
     : getProviderLabel(used);

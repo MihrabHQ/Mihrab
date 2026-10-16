@@ -18,11 +18,13 @@ import {
 const STOCKHOLM = { latitude: 59.3293, longitude: 18.0686 };
 const CASABLANCA = { latitude: 33.5731, longitude: -7.5898 };
 const LONDON = { latitude: 51.5072, longitude: -0.1276 };
+const ALICE_SPRINGS = { latitude: -23.7, longitude: 133.88 }; // no place Diyanet lists within reach
 
 /**
  * Where each national table is recommended, and where it is not: the
  * capitals and a few border towns, each with the source Automatic should
- * pick there — or null for a place no table covers, where the global
+ * pick there — Diyanet near a place it lists (no national table there),
+ * or null for a place neither covers, where the global
  * default answers. The neighbours matter most: a reader in Brunei, Dili,
  * southern Thailand or Papua New Guinea must not be handed the table of
  * the country next door.
@@ -43,17 +45,17 @@ const PLACES: [string, number, number, string | null][] = [
   ['Batam, across the strait from Singapore', 1.1, 104.05, 'kemenag'],
   ['Pontianak', -0.03, 109.33, 'kemenag'],
   ['Jayapura', -2.53, 140.72, 'kemenag'],
-  ['Bandar Seri Begawan', 4.9031, 114.9398, null],
-  ['Dili', -8.556, 125.56, null],
+  ['Bandar Seri Begawan', 4.9031, 114.9398, 'diyanet'],
+  ['Dili', -8.556, 125.56, 'diyanet'],
   ['Hat Yai', 7.0, 100.47, null],
   ['Pattani', 6.87, 101.25, null],
-  ['Port Moresby', -9.44, 147.18, null],
-  ['Manila', 14.6, 120.98, null],
-  ['Darwin', -12.46, 130.84, null],
+  ['Port Moresby', -9.44, 147.18, 'diyanet'],
+  ['Manila', 14.6, 120.98, 'diyanet'],
+  ['Darwin', -12.46, 130.84, 'diyanet'],
   ['Stockholm', 59.3293, 18.0686, 'islamiska_forbundet'],
   ['Casablanca', 33.5731, -7.5898, 'habous'],
   ['Algiers', 36.75, 3.06, 'marw'],
-  ['London', 51.5072, -0.1276, null],
+  ['London', 51.5072, -0.1276, 'diyanet'],
 ];
 
 describe('each national table is recommended where it covers, and nowhere else', () => {
@@ -62,10 +64,10 @@ describe('each national table is recommended where it covers, and nowhere else',
     expect(regionalProviderForCoords(coords)).toBe(want);
     // Automatic picks it there; pinned elsewhere, the pick gives way to what
     // Automatic picks there.
-    expect(getEffectiveDataProvider(true, 'aladhan', coords)).toBe(want ?? 'aladhan');
+    expect(getEffectiveDataProvider(true, 'aladhan', coords, 'auto')).toBe(want ?? 'aladhan');
     for (const id of REGIONAL_PROVIDER_REGIONS.map(r => r.id)) {
       expect(`${id} covers: ${regionalProviderCovers(id, coords)}`).toBe(`${id} covers: ${id === want}`);
-      expect(getEffectiveDataProvider(false, id, coords)).toBe(id === want ? id : (want ?? 'aladhan'));
+      expect(getEffectiveDataProvider(false, id, coords, 'auto')).toBe(id === want ? id : (want ?? 'aladhan'));
     }
   });
 });
@@ -85,12 +87,13 @@ describe('the table', () => {
   it('names the source for a coordinate, or nothing', () => {
     expect(regionalProviderForCoords(STOCKHOLM)).toBe('islamiska_forbundet');
     expect(regionalProviderForCoords(CASABLANCA)).toBe('habous');
-    expect(regionalProviderForCoords(LONDON)).toBeNull();
+    expect(regionalProviderForCoords(LONDON)).toBe('diyanet'); // near a place Diyanet lists
+    expect(regionalProviderForCoords(ALICE_SPRINGS)).toBeNull();
     // Singapore sits inside the peninsula's box and must win there.
     expect(regionalProviderForCoords({ latitude: 1.3521, longitude: 103.8198 })).toBe('muis');
     expect(regionalProviderForCoords({ latitude: 1.4927, longitude: 103.7414 })).toBe('jakim'); // Johor Bahru
     expect(regionalProviderForCoords({ latitude: 5.9804, longitude: 116.0735 })).toBe('jakim'); // Kota Kinabalu
-    expect(regionalProviderForCoords({ latitude: 4.9031, longitude: 114.9398 })).toBeNull(); // Bandar Seri Begawan
+    expect(regionalProviderForCoords({ latitude: 4.9031, longitude: 114.9398 })).toBe('diyanet'); // Bandar Seri Begawan, which Diyanet lists
     expect(regionalProviderForCoords({ latitude: 1.1, longitude: 104.05 })).toBe('kemenag'); // Batam, across the strait
     expect(regionalProviderForCoords(null)).toBeNull();
   });
@@ -119,20 +122,21 @@ describe('automatic mode follows the user', () => {
   it.each([
     ['Sweden', STOCKHOLM, 'islamiska_forbundet'],
     ['Morocco', CASABLANCA, 'habous'],
-    ['anywhere else', LONDON, 'aladhan'],
+    ['a place Diyanet lists', LONDON, 'diyanet'],
+    ['anywhere else', ALICE_SPRINGS, 'aladhan'],
   ])('in %s', (_where, coords, expected) => {
-    expect(getEffectiveDataProvider(true, 'aladhan', coords)).toBe(expected);
+    expect(getEffectiveDataProvider(true, 'aladhan', coords, 'auto')).toBe(expected);
   });
 
   it('falls back to the global source with no location', () => {
-    expect(getEffectiveDataProvider(true, 'aladhan', null)).toBe('aladhan');
+    expect(getEffectiveDataProvider(true, 'aladhan', null, 'auto')).toBe('aladhan');
   });
 });
 
 describe('a manual pick is honoured, with one guard', () => {
   it('keeps a regional pick inside its own country', () => {
-    expect(getEffectiveDataProvider(false, 'habous', CASABLANCA)).toBe('habous');
-    expect(getEffectiveDataProvider(false, 'islamiska_forbundet', STOCKHOLM)).toBe(
+    expect(getEffectiveDataProvider(false, 'habous', CASABLANCA, 'auto')).toBe('habous');
+    expect(getEffectiveDataProvider(false, 'islamiska_forbundet', STOCKHOLM, 'auto')).toBe(
       'islamiska_forbundet',
     );
   });
@@ -141,21 +145,22 @@ describe('a manual pick is honoured, with one guard', () => {
     // The source only holds its own country's cities and maps anything else
     // to its nearest listed one, so a Moroccan table would otherwise be
     // presented as a Swedish user's own.
-    expect(getEffectiveDataProvider(false, 'habous', STOCKHOLM)).toBe('islamiska_forbundet');
-    expect(getEffectiveDataProvider(false, 'islamiska_forbundet', CASABLANCA)).toBe(
+    expect(getEffectiveDataProvider(false, 'habous', STOCKHOLM, 'auto')).toBe('islamiska_forbundet');
+    expect(getEffectiveDataProvider(false, 'islamiska_forbundet', CASABLANCA, 'auto')).toBe(
       'habous',
     );
-    expect(getEffectiveDataProvider(false, 'habous', LONDON)).toBe('aladhan');
+    expect(getEffectiveDataProvider(false, 'habous', LONDON, 'auto')).toBe('diyanet');
+    expect(getEffectiveDataProvider(false, 'habous', ALICE_SPRINGS, 'auto')).toBe('aladhan');
   });
 
   it('does not force a regional source on someone who chose otherwise', () => {
     // Being in Morocco does not overrule a deliberate pick of something
     // else. That direction is automatic mode's job.
-    expect(getEffectiveDataProvider(false, 'aladhan', CASABLANCA)).toBe('aladhan');
-    expect(getEffectiveDataProvider(false, 'local_adhan', CASABLANCA)).toBe('local_adhan');
+    expect(getEffectiveDataProvider(false, 'aladhan', CASABLANCA, 'auto')).toBe('aladhan');
+    expect(getEffectiveDataProvider(false, 'local_adhan', CASABLANCA, 'auto')).toBe('local_adhan');
   });
 
   it('leaves the pick untouched until a location is known', () => {
-    expect(getEffectiveDataProvider(false, 'habous', null)).toBe('habous');
+    expect(getEffectiveDataProvider(false, 'habous', null, 'auto')).toBe('habous');
   });
 });

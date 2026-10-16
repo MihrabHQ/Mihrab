@@ -55,8 +55,20 @@ export type DiyanetPlace = {
   years?: Record<string, number[]>;
   /** Which correction list its points are keyed in. */
   list: 'sweden' | 'diyanet';
+  /**
+   * The clock its table is printed in, where that is no zone's: from each
+   * date on, minutes east of UTC — Alberta's tables keeping summer time
+   * from 2026, Mexico's having it in 2025, Queensland's and Western
+   * Australia's in 2024, 2025 and 2027, Xinjiang's on Beijing time. The instants are the method's
+   * either way; the method walks its high-latitude rules on this clock.
+   */
+  clock?: [string, number][];
 };
-type PlacesFile = { places: [string, string, number, number, number, string?][]; turkey: Record<string, Record<string, number[]>> };
+type PlacesFile = {
+  places: [string, string, number, number, number, string?][];
+  turkey: Record<string, Record<string, number[]>>;
+  clocks?: Record<string, [string, number][]>;
+};
 
 let placesCache: DiyanetPlace[] | null = null;
 export function diyanetPlaces(): DiyanetPlace[] {
@@ -70,6 +82,7 @@ export function diyanetPlaces(): DiyanetPlace[] {
     ishaDeg,
     years: f.turkey[id],
     list: list === 's' ? 'sweden' : 'diyanet',
+    clock: f.clocks?.[id],
   }));
   return placesCache;
 }
@@ -86,7 +99,16 @@ const km = (aLat: number, aLon: number, bLat: number, bLon: number) => {
 };
 
 /** The listed place nearest the reader, if one is near enough to be theirs. */
+let lastAsked: { latitude: number; longitude: number; place: DiyanetPlace | null } | null = null;
 export function nearestDiyanetPlace(latitude: number, longitude: number): DiyanetPlace | null {
+  // Asked again and again for the same spot: every render that resolves the
+  // source (Automatic picks Diyanet near a listed place) asks it.
+  if (lastAsked && lastAsked.latitude === latitude && lastAsked.longitude === longitude) return lastAsked.place;
+  const place = findNearestDiyanetPlace(latitude, longitude);
+  lastAsked = { latitude, longitude, place };
+  return place;
+}
+function findNearestDiyanetPlace(latitude: number, longitude: number): DiyanetPlace | null {
   let best: DiyanetPlace | null = null;
   let bestKm = Infinity;
   for (const p of diyanetPlaces()) {
@@ -99,6 +121,15 @@ export function nearestDiyanetPlace(latitude: number, longitude: number): Diyane
   }
   if (!best) return null;
   return bestKm <= (best.years ? SNAP_KM_TURKEY : SNAP_KM_ABROAD) ? best : null;
+}
+
+/** The clock a place's table prints a date in: its own where it keeps one, else the phone's. */
+export function placeClock(place: DiyanetPlace | null, y: number, m: number, d: number, phoneClock: number): number {
+  if (!place?.clock) return phoneClock;
+  const date = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+  let off = place.clock[0][1];
+  for (const [from, o] of place.clock) if (from <= date) off = o;
+  return off;
 }
 
 /** Türkiye: each prayer at its own point for the year (the nearest year's beyond the tables). */
@@ -133,8 +164,8 @@ export function diyanetInstants(latitude: number, longitude: number, date: Date,
   const d = date.getDate();
   const asrShadow = school === 1 ? 2 : 1;
   // The clock the day is kept in — Diyanet walks its summer transition on it (`congressMethod.ts`)
-  const clock = -new Date(y, m, d, 12).getTimezoneOffset();
   const place = nearestDiyanetPlace(latitude, longitude);
+  const clock = placeClock(place, y, m, d, -new Date(y, m, d, 12).getTimezoneOffset());
   let at: CongressInstants;
   let fix: Partial<Record<keyof Instants, number>> | undefined;
   if (place) {

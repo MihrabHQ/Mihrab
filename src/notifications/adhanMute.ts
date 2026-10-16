@@ -334,7 +334,7 @@ async function syncPreReminder(
     // The non-React edge, same as the widget's headless republish: the
     // provider that normally mirrors this preference never mounts here.
     setActiveClockFormat(settings.clockFormat);
-    setFullScreenAlarmSkyTheme(settings.appearance === 'sky');
+    setFullScreenAlarmSkyTheme(settings.appearance === 'sky', settings.skyVariant);
     const minutes = clampPrePrayerReminderMinutes(
       settings.prePrayerReminderMinutes,
     );

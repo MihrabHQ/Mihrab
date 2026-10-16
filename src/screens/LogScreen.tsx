@@ -805,6 +805,7 @@ export function LogScreen() {
         settings.dataProviderAuto,
         settings.dataProvider,
         { latitude: lat, longitude: lon },
+        settings.calculationMethod,
       ),
       latitude: lat,
       longitude: lon,

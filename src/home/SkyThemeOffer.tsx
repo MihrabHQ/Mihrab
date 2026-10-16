@@ -133,6 +133,7 @@ export function SkyThemeOffer({ ready }: { ready: boolean }) {
         </View>
         <SkyMoodStrip
           testID="sky-offer-strip"
+          variant={settings.skyVariant}
           selected={false}
           accent={String(palette.accent)}
           accessibilityLabel={t('settings.themeSky')}

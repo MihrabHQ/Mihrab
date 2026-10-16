@@ -22,6 +22,7 @@ import { isCoordinateInSingapore } from '../utils/singaporeRegion';
 import { isCoordinateInMorocco } from '../utils/moroccoRegion';
 import { isCoordinateInSweden } from '../utils/swedenRegion';
 import { isCoordinateInTurkey } from '../utils/turkeyRegion';
+import { nearestDiyanetPlace } from '../providers/diyanetMethod';
 import type { PrayerDataProviderId } from './types';
 
 export type RegionalProviderRegion = {
@@ -45,23 +46,43 @@ export const REGIONAL_PROVIDER_REGIONS: readonly RegionalProviderRegion[] = [
 ];
 
 /**
- * Worldwide sources that are also an authority's own in one country, and
- * what Automatic picks there: Diyanet in Türkiye. Unlike the national
- * sources above they answer everywhere, so they are never "out of region"
- * and a pinned one is never redirected — this list only decides where
- * Automatic (and "Fits where you are") lands on them.
+ * Worldwide sources that are also the authority's own throughout a country,
+ * and what Automatic picks there, near a listed place or not: Diyanet in
+ * Türkiye and Northern Cyprus. Add a country here where its mosques pray by
+ * Diyanet's tables as a whole. Unlike the national sources above these
+ * answer everywhere, so they are never "out of region" and a pinned one is
+ * never redirected — this list only decides where Automatic (and "Fits
+ * where you are") lands on them.
  */
 export const HOME_PROVIDER_REGIONS: readonly RegionalProviderRegion[] = [
   { id: 'diyanet', covers: isCoordinateInTurkey },
 ];
 
-/** The source Automatic picks for these coordinates, or null for the worldwide default. */
-export function regionalProviderForCoords(coords: {
-  latitude: number;
-  longitude: number;
-} | null): PrayerDataProviderId | null {
+/**
+ * Everywhere else, Automatic takes Diyanet wherever it lists a place near
+ * the reader — some 8,000 worldwide, each on the printed minute of
+ * Diyanet's own table (`diyanetMethod.ts`) — and the worldwide default only
+ * further from any. A country's own published source still comes first.
+ */
+export const NEAR_LISTED_PLACE_REGIONS: readonly RegionalProviderRegion[] = [
+  { id: 'diyanet', covers: (latitude, longitude) => nearestDiyanetPlace(latitude, longitude) !== null },
+];
+
+/**
+ * The source Automatic picks for these coordinates, or null for the worldwide
+ * default. `nearListed`: whether Diyanet's tables near a listed place are in
+ * the running — not when the reader has chosen a calculation method of their
+ * own, which Diyanet's fixed method would silently set aside.
+ */
+export function regionalProviderForCoords(
+  coords: { latitude: number; longitude: number } | null,
+  nearListed = true,
+): PrayerDataProviderId | null {
   if (!coords) return null;
-  for (const region of [...REGIONAL_PROVIDER_REGIONS, ...HOME_PROVIDER_REGIONS]) {
+  const regions = nearListed
+    ? [...REGIONAL_PROVIDER_REGIONS, ...HOME_PROVIDER_REGIONS, ...NEAR_LISTED_PLACE_REGIONS]
+    : [...REGIONAL_PROVIDER_REGIONS, ...HOME_PROVIDER_REGIONS];
+  for (const region of regions) {
     if (region.covers(coords.latitude, coords.longitude)) return region.id;
   }
   return null;

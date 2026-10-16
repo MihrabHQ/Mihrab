@@ -14,24 +14,30 @@ const left = src.slice(src.indexOf('headerLeft: () =>'), src.indexOf('headerRigh
 const right = src.slice(src.indexOf('headerRight: () =>'));
 
 describe('the muṣḥaf header', () => {
-  it('puts the riwayah beside the back arrow', () => {
-    expect(left).toContain('<TabBackButton');
-    expect(left).toContain('riwayahChoiceExists()');
-    expect(left.indexOf('<TabBackButton')).toBeLessThan(left.indexOf('riwayahChoiceExists()'));
+  it('puts the riwayah beside the back arrow, and over the page while the index is up', () => {
+    // The two controls are made once and placed by the header's two forms.
+    expect(src).toMatch(/const backButton = navigation\.canGoBack\(\) \? \(\s*<TabBackButton/);
+    expect(src).toContain('const riwayahChip = riwayahChoiceExists() ? (');
+    expect(left).toMatch(/\{backButton\}\s*\{riwayahChip\}/);
+    // With the index up (Mac, iPad), the pill stands at the page's leading
+    // edge: the arrow, a fixed space the index's width, then the pill.
+    expect(left).toMatch(/unstable_headerLeftItems:\s*Platform\.OS === 'ios' && sidebarUp && riwayahChip/);
+    expect(left).toContain('SIDEBAR_WIDTH - RIWAYAH_PAST_INDEX');
+    expect(left.indexOf('{backButton}</View>')).toBeLessThan(left.indexOf('{riwayahChip}</View>'));
   });
 
-  it('keeps audio on the right, where the riwayah was, before the page tone', () => {
-    expect(right).not.toContain('riwayahChoiceExists()');
+  it('keeps audio on the right, where the riwayah was, before the page tone and fullscreen', () => {
+    expect(right).not.toContain('riwayahChip');
     expect(left).not.toContain('<TilawahIcon');
     expect(right).toContain('<TilawahIcon');
-    // Fullscreen moved down to the page bar — toggled every sitting, it
-    // belongs under the thumb — and the page tone took its seat up here.
-    expect(right).not.toContain("t('quran.enterFullscreen'");
     expect(right.indexOf('<TilawahIcon')).toBeLessThan(right.indexOf('<MushafToneHeaderButton color={ink}'));
+    // The phone's fullscreen is in its page bar; the spread reader, which
+    // has none, has it here, last.
+    expect(right).toMatch(/DEVICE_CLASS !== 'phone' \? \(\s*<MushafFullscreenHeaderButton color=\{ink\}[^>]*onPress=\{toggleFullscreen\}/);
+    expect(right.indexOf('<MushafToneHeaderButton color={ink}')).toBeLessThan(right.indexOf('<MushafFullscreenHeaderButton'));
   });
 
   it("draws the arrow only when there is somewhere to go back to, in the page's ink", () => {
-    expect(left).toMatch(/navigation\.canGoBack\(\) \? \(\s*<TabBackButton/);
-    expect(left).toContain('color={ink}');
+    expect(src).toMatch(/navigation\.canGoBack\(\) \? \(\s*<TabBackButton[\s\S]{0,120}color=\{ink\}/);
   });
 });

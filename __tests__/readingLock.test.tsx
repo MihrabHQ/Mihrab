@@ -143,6 +143,31 @@ describe('the stored preference', () => {
   });
 });
 
+describe('the lock button', () => {
+  it('is off by default', () => {
+    expect(coerceQuranState({ prefs: {} } as never).prefs.lockButton).toBe(false);
+  });
+  it('stays for whoever had a use for it before it was a setting', () => {
+    expect(coerceQuranState({ prefs: { volumeKeyPaging: true } } as never).prefs.lockButton).toBe(true);
+    expect(coerceQuranState({ prefs: { touchLock: true } } as never).prefs.lockButton).toBe(true);
+    expect(coerceQuranState({ prefs: { volumeKeyTouchLock: true } } as never).prefs.lockButton).toBe(true);
+    expect(
+      coerceQuranState({ prefs: { volumeKeyPaging: true, lockButton: false } } as never).prefs.lockButton,
+    ).toBe(false);
+  });
+  it('comes on with the volume buttons, and has its own switch', () => {
+    const src = read('src/screens/settings/QuranCard.tsx');
+    expect(src).toMatch(/next \? \{ volumeKeyPaging: true, lockButton: true \} : \{ volumeKeyPaging: false \}/);
+    expect(src).toMatch(/testID="settings-lock-button"[\s\S]{0,300}setQuranPrefs\(\{ lockButton: next \}\)/);
+  });
+  it('is shown only when asked for, or on a locked page', () => {
+    expect(read('src/quran/MushafPhoneReader.tsx')).toMatch(
+      /\{core\.quran\.prefs\.lockButton \|\| locked \? \(\s*<MushafLockButton/,
+    );
+    expect(read('src/quran/mushafReaderCore.tsx')).toMatch(/if \(!lockButton && !locked\) return null;/);
+  });
+});
+
 describe('the readers', () => {
   it('keep the words live on a locked page, and drop them only for the freeze', () => {
     for (const f of ['src/quran/MushafPhoneReader.tsx', 'src/quran/MushafSpreadReader.tsx']) {

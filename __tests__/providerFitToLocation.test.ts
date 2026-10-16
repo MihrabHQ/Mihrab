@@ -21,17 +21,20 @@ const read = (p: string) => fs.readFileSync(path.join(REPO, p), 'utf-8');
 
 const STOCKHOLM = { latitude: 59.33, longitude: 18.07 };
 const CAIRO = { latitude: 30.04, longitude: 31.24 };
+const ALICE_SPRINGS = { latitude: -23.7, longitude: 133.88 }; // no place Diyanet lists within reach
 
 describe('a national source picked from outside its country', () => {
-  it('is redirected to the worldwide default', () => {
+  it('is redirected to what Automatic picks there', () => {
+    // Cairo is a place Diyanet lists; Alice Springs is far from any.
+    expect(getEffectiveDataProvider(false, 'islamiska_forbundet', CAIRO, 'auto')).toBe('diyanet');
     expect(
-      getEffectiveDataProvider(false, 'islamiska_forbundet', CAIRO),
+      getEffectiveDataProvider(false, 'islamiska_forbundet', ALICE_SPRINGS, 'auto'),
     ).toBe(AUTO_DEFAULT_OUTSIDE_SWEDEN);
   });
 
   it('is honoured inside it', () => {
     expect(
-      getEffectiveDataProvider(false, 'islamiska_forbundet', STOCKHOLM),
+      getEffectiveDataProvider(false, 'islamiska_forbundet', STOCKHOLM, 'auto'),
     ).toBe('islamiska_forbundet');
   });
 
@@ -41,7 +44,7 @@ describe('a national source picked from outside its country', () => {
    * start, before location has loaded.
    */
   it('is left alone while the location is unknown', () => {
-    expect(getEffectiveDataProvider(false, 'islamiska_forbundet', null)).toBe(
+    expect(getEffectiveDataProvider(false, 'islamiska_forbundet', null, 'auto')).toBe(
       'islamiska_forbundet',
     );
   });

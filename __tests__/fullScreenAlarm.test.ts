@@ -275,10 +275,11 @@ describe('alarm screen sky', () => {
     expect(kt).toMatch(/if \(filled\) setColor\(buttonFill\)/);
     // Mirrored from the settings wherever the alert is built without React.
     const read = (p: string) => fs.readFileSync(path.join(__dirname, '..', p), 'utf-8');
-    expect(read('src/context/PrayerSettingsContext.tsx')).toMatch(/setFullScreenAlarmSkyTheme\(settings\.appearance === 'sky'\)/);
-    expect(read('src/notifications/adhanMute.ts')).toMatch(/setFullScreenAlarmSkyTheme\(settings\.appearance === 'sky'\)/);
-    expect(read('src/widget/republishWidgetPayload.ts')).toMatch(/setFullScreenAlarmSkyTheme\(settings\.appearance === 'sky'\)/);
-    expect(read('src/notifications/notificationActions.ts')).toMatch(/setFullScreenAlarmSkyTheme\(\s*await loadSettings\(\)/);
+    // …with the Sky theme's colours (Vibrant or Realistic) beside it.
+    for (const p of ['src/context/PrayerSettingsContext.tsx', 'src/notifications/adhanMute.ts', 'src/widget/republishWidgetPayload.ts']) {
+      expect(read(p)).toMatch(/setFullScreenAlarmSkyTheme\(settings\.appearance === 'sky', settings\.skyVariant\)/);
+    }
+    expect(read('src/notifications/notificationActions.ts')).toMatch(/await loadSettings\(\)\s*\.then\(s => \(\{ on: s\.appearance === 'sky', variant: s\.skyVariant \}\)\)[\s\S]{0,120}setFullScreenAlarmSkyTheme\(theme\.on, theme\.variant\)/);
   });
 });
 

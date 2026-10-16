@@ -58,24 +58,24 @@ it('keeps a source picked for "My location" to "My location"', () => {
 
 it('keeps each saved location’s source to itself', () => {
   let s = usePreset(start(), cairo);
-  s = pick(s, 'prayertimes_dev');
+  s = pick(s, 'local_adhan');
   s = usePreset(s, rabat);
   s = pick(s, 'aladhan');
   s = useMyLocation(s);
   expect(s.dataProviderAuto).toBe(true); // "My location" untouched
-  expect(providerChoiceForPreset(s, cairo)).toEqual({ auto: false, provider: 'prayertimes_dev' });
+  expect(providerChoiceForPreset(s, cairo)).toEqual({ auto: false, provider: 'local_adhan' });
   expect(providerChoiceForPreset(s, rabat)).toEqual({ auto: false, provider: 'aladhan' });
   s = usePreset(s, cairo);
-  expect(s.dataProvider).toBe('prayertimes_dev');
+  expect(s.dataProvider).toBe('local_adhan');
   expect(s.dataProviderAuto).toBe(false);
 });
 
 it('changing "My location"’s source changes nothing for the others', () => {
   let s = usePreset(start(), cairo);
-  s = pick(s, 'prayertimes_dev');
+  s = pick(s, 'local_adhan');
   s = useMyLocation(s);
   s = pick(s, 'diyanet');
-  expect(providerChoiceForPreset(s, cairo)).toEqual({ auto: false, provider: 'prayertimes_dev' });
+  expect(providerChoiceForPreset(s, cairo)).toEqual({ auto: false, provider: 'local_adhan' });
   expect(providerChoiceForPreset(s, rabat).auto).toBe(true);
 });
 
@@ -83,7 +83,7 @@ it('turns "My location" back to Automatic when it travels out of its source’s 
   let s = pick(start(), 'islamiska_forbundet');
   s = apply(s, { lastFetchedLatitude: ISTANBUL.latitude, lastFetchedLongitude: ISTANBUL.longitude });
   expect(s.dataProviderAuto).toBe(true);
-  expect(getEffectiveDataProvider(s.dataProviderAuto, s.dataProvider, ISTANBUL)).toBe('diyanet');
+  expect(getEffectiveDataProvider(s.dataProviderAuto, s.dataProvider, ISTANBUL, 'auto')).toBe('diyanet');
 });
 
 it('keeps it while it still covers where the phone is', () => {
@@ -94,7 +94,7 @@ it('keeps it while it still covers where the phone is', () => {
 });
 
 it('a source that works everywhere is kept everywhere', () => {
-  let s = pick(start(), 'prayertimes_dev');
+  let s = pick(start(), 'local_adhan');
   s = apply(s, { lastFetchedLatitude: LONDON.latitude, lastFetchedLongitude: LONDON.longitude });
   expect(s.dataProviderAuto).toBe(false);
 });
@@ -107,21 +107,22 @@ it('a regional source picked where it does not answer is not kept', () => {
 });
 
 it('Automatic outside a pinned source’s country picks what fits best there, not the global default', () => {
-  expect(getEffectiveDataProvider(false, 'islamiska_forbundet', RABAT)).toBe('habous');
-  expect(getEffectiveDataProvider(false, 'islamiska_forbundet', LONDON)).toBe('aladhan');
+  expect(getEffectiveDataProvider(false, 'islamiska_forbundet', RABAT, 'auto')).toBe('habous');
+  expect(getEffectiveDataProvider(false, 'islamiska_forbundet', LONDON, 'auto')).toBe('diyanet'); // a place Diyanet lists
+  expect(getEffectiveDataProvider(false, 'islamiska_forbundet', { latitude: -23.7, longitude: 133.88 }, 'auto')).toBe('aladhan');
 });
 
 it('a deleted saved location takes its choice with it', () => {
   let s = usePreset(start(), cairo);
-  s = pick(s, 'prayertimes_dev');
+  s = pick(s, 'local_adhan');
   s = useMyLocation(s);
   s = apply(s, { locationPresets: [rabat] });
   expect(s.locationProviders?.[cairo.id]).toBeUndefined();
 });
 
 it('settings from before start every location on the choice they shared', () => {
-  const old = { ...start(), dataProviderAuto: false, dataProvider: 'prayertimes_dev' as const, locationProviders: undefined };
+  const old = { ...start(), dataProviderAuto: false, dataProvider: 'local_adhan' as const, locationProviders: undefined };
   const s = seedLocationProviders(old);
-  expect(providerChoiceForPreset(useMyLocation(s), cairo)).toEqual({ auto: false, provider: 'prayertimes_dev' });
-  expect(usePreset(s, rabat).dataProvider).toBe('prayertimes_dev');
+  expect(providerChoiceForPreset(useMyLocation(s), cairo)).toEqual({ auto: false, provider: 'local_adhan' });
+  expect(usePreset(s, rabat).dataProvider).toBe('local_adhan');
 });

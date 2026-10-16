@@ -31,6 +31,7 @@ import { selectQuranCardState } from '../../quran/quranCardState';
 import { ResumeDoors } from '../../quran/ResumeDoors';
 import type { KhatmahTarget } from '../../quran/khatmahTarget';
 import { HOME_TABLE_RADIUS } from './tokens';
+import { tajweedColoursShown } from '../../quran/tajweed/tajweedSupport';
 
 type Props = {
   /** Open the reader at a place — surah, and the page or the ayah. */
@@ -61,7 +62,7 @@ function QuranCardImpl({ onOpenAt, onOpenQuran }: Props) {
   const readsMushaf =
     quran.lastRead?.mode === 'mushaf' || card.khatmah != null || card.homeBookmark != null;
   const riwayah = quran.prefs.riwayah;
-  const tajweed = quran.prefs.tajweedColours;
+  const tajweed = tajweedColoursShown(riwayah, quran.prefs.tajweedColours);
   useEffect(() => {
     if (!readsMushaf) return;
     const task = afterInteractions(() =>

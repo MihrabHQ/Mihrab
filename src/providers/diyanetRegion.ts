@@ -4,8 +4,8 @@
  *
  * 16°: Europe — but for Spain, Portugal, Greece, Bulgaria, Albania,
  * Montenegro, North Macedonia, Kosovo, Malta and Cyprus — with Russia,
- * Ukraine, Belarus, Kazakhstan, Mongolia and China; the United States and
- * Canada. 17°: Türkiye and everywhere else.
+ * Ukraine, Belarus, Kazakhstan, Mongolia and China; the United States,
+ * Canada and Greenland. 17°: Türkiye and everywhere else.
  *
  * The outlines are coarse (tens of kilometres at the borders that matter:
  * the Pyrenees, the Danube, the Balkans, the Caucasus, Central Asia, the
@@ -67,9 +67,10 @@ const NORTH_AMERICA: Poly = [
   [84, -169], [66, -168.6], [60, -180], [51, -180], [50, -130], [40, -127], [33, -121], [32.4, -117.4],
 ];
 
-/** Iceland, Hawaii, and Chukotka east of 180°. */
+/** Iceland, Greenland, Hawaii, and Chukotka east of 180°. */
 const BOXES: ReadonlyArray<readonly [number, number, number, number]> = [
   [62.5, 67.5, -25, -12.5],
+  [59.5, 84, -73.5, -11],
   [18.5, 22.5, -160.6, -154.5],
   [64, 72, -180, -168.8],
 ];

@@ -8,6 +8,7 @@
  * Shown when the sheet's Tajweed tab is open — the sheet decides, and
  * keeps the reader's choice (`ayahSheetPanel`).
  */
+import { COLOUR_FONTS_DRAWN, tajweedColoursShown } from './tajweedSupport';
 import { useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View, type StyleProp, type TextStyle } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -73,7 +74,7 @@ export function TajweedAyahSection({
     };
   }, [open, surah, ayah, prefs.riwayah]);
 
-  const coloursOn = prefs.tajweedColours;
+  const coloursOn = tajweedColoursShown(prefs.riwayah, prefs.tajweedColours);
   const hafs = riwayahById(prefs.riwayah).render !== 'unicode';
   const warsh = prefs.riwayah === 'warsh';
   // The page's own words, for the chips — by position, as the rules count.
@@ -182,7 +183,7 @@ export function TajweedAyahSection({
                     {t('tajweed.sheetMore', 'All the colours explained')} ›
                   </Text>
                 </Pressable>
-                {!coloursOn && hafs ? (
+                {!coloursOn && hafs && COLOUR_FONTS_DRAWN ? (
                   <Pressable
                     accessibilityRole="button"
                     hitSlop={8}

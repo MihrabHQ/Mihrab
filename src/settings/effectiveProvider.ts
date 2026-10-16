@@ -69,13 +69,21 @@ export function getEffectiveDataProvider(
   dataProviderAuto: boolean,
   dataProvider: PrayerDataProviderId,
   coords: { latitude: number; longitude: number } | null,
+  /**
+   * The calculation method setting. Automatic takes Diyanet near a place it
+   * lists only while this is Automatic too: a method the reader chose is
+   * theirs, and Diyanet's own would set it aside without a word.
+   */
+  calculationMethod: PrayerAppSettings['calculationMethod'],
 ): PrayerDataProviderId {
+  const nearListed = calculationMethod === 'auto';
   if (dataProviderAuto) {
-    // Automatic: a country with its own published tables gets them, and
-    // everywhere else gets the global default. Switches as the user moves.
+    // Automatic: a country with its own published tables gets them; near a
+    // place Diyanet lists, Diyanet's table; everywhere else the global
+    // default. Switches as the user moves.
     // The countries live in `regionalProviders.ts` — this branch does not
     // name any of them, which is the point of the table.
-    return regionalProviderForCoords(coords) ?? AUTO_DEFAULT_OUTSIDE_SWEDEN;
+    return regionalProviderForCoords(coords, nearListed) ?? AUTO_DEFAULT_OUTSIDE_SWEDEN;
   }
 
   // Manual provider — honour the user's pick, with ONE safety guard. A
@@ -90,7 +98,7 @@ export function getEffectiveDataProvider(
   // Not covered: what Automatic picks there — the source that fits best
   // (`locationProviders.ts` also turns the location's setting to Automatic).
   if (!regionalProviderCovers(dataProvider, coords)) {
-    return regionalProviderForCoords(coords) ?? AUTO_DEFAULT_OUTSIDE_SWEDEN;
+    return regionalProviderForCoords(coords, nearListed) ?? AUTO_DEFAULT_OUTSIDE_SWEDEN;
   }
   return dataProvider;
 }

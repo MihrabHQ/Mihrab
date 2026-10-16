@@ -115,6 +115,7 @@ function DataStatsPanelImpl() {
           settings.dataProviderAuto,
           settings.dataProvider,
           coords,
+          settings.calculationMethod,
         )
       : null;
 

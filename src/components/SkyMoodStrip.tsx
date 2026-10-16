@@ -5,6 +5,8 @@
  * offered by showing it, not by naming it — and the selected state is a
  * ring in the accent, as a swatch in the accent shelf is.
  *
+ * `variant` picks whose six skies: Realistic's or Vibrant's.
+ *
  * Without `onPress` it is only the picture: what Sky does, shown under
  * Sky once it is the theme (the walkthrough's Look group), with no ring
  * and nothing to press.
@@ -13,7 +15,7 @@ import { memo } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 import { RADIUS, SPACING } from '../theme/tokens';
-import { SKY_MOODS, type SkyMood } from '../theme/skyMoods';
+import { DEFAULT_SKY_VARIANT, SKY_MOODS_BY_VARIANT, type SkyMood, type SkyVariant } from '../theme/skyMoods';
 
 const ORDER: ReadonlyArray<SkyMood['name']> = ['night', 'dawn', 'morning', 'midday', 'golden', 'sunset'];
 const TILE_H = 44;
@@ -25,6 +27,7 @@ type Props = {
   accessibilityLabel: string;
   onPress?: () => void;
   testID?: string;
+  variant?: SkyVariant;
 };
 
 function Tile({ mood, id }: { mood: SkyMood; id: string }) {
@@ -44,7 +47,8 @@ function Tile({ mood, id }: { mood: SkyMood; id: string }) {
   );
 }
 
-function SkyMoodStripImpl({ selected, accent, accessibilityLabel, onPress, testID }: Props) {
+function SkyMoodStripImpl({ selected, accent, accessibilityLabel, onPress, testID, variant = DEFAULT_SKY_VARIANT }: Props) {
+  const moods = SKY_MOODS_BY_VARIANT[variant];
   if (!onPress) {
     return (
       <View
@@ -54,7 +58,7 @@ function SkyMoodStripImpl({ selected, accent, accessibilityLabel, onPress, testI
         accessibilityLabel={accessibilityLabel}
         style={[styles.strip, { borderColor: 'transparent' }]}>
         {ORDER.map(name => (
-          <Tile key={name} mood={SKY_MOODS[name]} id={`skyMoodStrip-${name}`} />
+          <Tile key={name} mood={moods[name]} id={`skyMoodStrip-${variant}-${name}`} />
         ))}
       </View>
     );
@@ -71,7 +75,7 @@ function SkyMoodStripImpl({ selected, accent, accessibilityLabel, onPress, testI
         { borderColor: selected ? accent : 'transparent', opacity: pressed ? 0.85 : 1 },
       ]}>
       {ORDER.map(name => (
-        <Tile key={name} mood={SKY_MOODS[name]} id={`skyMoodStrip-${name}`} />
+        <Tile key={name} mood={moods[name]} id={`skyMoodStrip-${variant}-${name}`} />
       ))}
     </Pressable>
   );

@@ -165,6 +165,7 @@ export const DEFAULT_QURAN_STATE: QuranState = {
     volumeKeyUpForward: false,
     touchLock: false,
     touchLockFreeze: false,
+    lockButton: false,
     hideMode: 'none',
     repeat: { eachAyah: 1, range: 1, pauseFactor: 0 },
     votdMode: 'translation',
@@ -603,6 +604,25 @@ function mergeStored(raw: unknown): QuranState {
       touchLockFreeze:
         (r.prefs as { touchLockFreeze?: unknown } | undefined)
           ?.touchLockFreeze === true,
+      // From before it was a setting, the button was always there: it
+      // stays for somebody who turns pages with the volume buttons or has
+      // the page locked, and goes for everyone else.
+      lockButton: (() => {
+        const p = r.prefs as
+          | {
+              lockButton?: unknown;
+              volumeKeyPaging?: unknown;
+              touchLock?: unknown;
+              volumeKeyTouchLock?: unknown;
+            }
+          | undefined;
+        if (typeof p?.lockButton === 'boolean') return p.lockButton;
+        return (
+          p?.volumeKeyPaging === true ||
+          p?.touchLock === true ||
+          p?.volumeKeyTouchLock === true
+        );
+      })(),
       // Off unless explicitly on: the card was shown to everyone before
       // this was a setting, and the setting's default is off.
       verseOfDay:

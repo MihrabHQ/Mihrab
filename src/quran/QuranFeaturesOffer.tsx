@@ -20,6 +20,7 @@
  * download the same way the Settings switch does — see
  * `tajweedAutoDownload`.
  */
+import { COLOUR_FONTS_DRAWN } from './tajweed/tajweedSupport';
 import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Switch, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -45,9 +46,12 @@ export function offerableQuranFeatures(input: {
   warsh?: boolean;
   tajweedColours: boolean;
   wordReader: boolean;
+  /** Whether this device draws the Ḥafṣ colour fonts (tajweed/tajweedSupport.ts). */
+  colourFontsDrawn?: boolean;
 }): QuranFeature[] {
   const out: QuranFeature[] = [];
-  if ((input.hafs || input.warsh) && !input.tajweedColours) out.push('tajweedColours');
+  const coloursHere = input.warsh || (input.hafs && input.colourFontsDrawn !== false);
+  if (coloursHere && !input.tajweedColours) out.push('tajweedColours');
   if (input.hafs && !input.wordReader) out.push('wordReader');
   return out;
 }
@@ -79,6 +83,7 @@ export function useQuranFeaturesOffer(ready: boolean): {
           warsh: prefs.riwayah === 'warsh',
           tajweedColours: prefs.tajweedColours,
           wordReader: prefs.wordReader,
+          colourFontsDrawn: COLOUR_FONTS_DRAWN,
         });
         if (offer.length === 0) return;
         timer = setTimeout(() => {

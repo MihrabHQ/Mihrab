@@ -98,8 +98,18 @@ import type { JournalPrayer } from '../../journal/journal';
 import { pagerPosition } from './pagerPosition';
 import { LogPassedPrayerSheet } from './LogPassedPrayerSheet';
 import { HeroSky, type SkyRun } from './HeroSky';
-import { HERO_Y, skyFrame, skyInkAt, skyMoment, themedSkyFrame, type SkyFrame, type SkyInkColors } from './skyModel';
-import { skyMoodFor } from '../../theme/skyMoods';
+import {
+  HERO_Y,
+  SKY_FADE_LOW_MID_AT,
+  SKY_THEME_MID_AT,
+  skyFrame,
+  skyInkAt,
+  skyMoment,
+  themedSkyFrame,
+  type SkyFrame,
+  type SkyInkColors,
+} from './skyModel';
+import { skyMoodFor, type SkyVariant } from '../../theme/skyMoods';
 import { setHeroSkyBand } from './heroSkyBand';
 import { publishSkyTheme, skyDayKey } from '../../theme/skyTheme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -129,6 +139,8 @@ import { TYPE } from '../../theme/typography';
  * it and a generous hit slop instead.
  */
 const CHEVRON_SIZE = 20;
+/** The countdown's halo under the Sky theme by night — its blur, and the room its text is given for it. */
+const GLOW_RADIUS = 14;
 
 /** How long the day line carries an answer to a tap it could not record. */
 const HINT_MS = 2600;
@@ -316,6 +328,7 @@ const HeroToday = memo(function HeroToday({
   onLayout,
   launchRun: launchRunWanted = true,
   skyTheme = false,
+  skyVariant = 'realistic',
 }: {
   /** What the countdown is aimed at: the next prayer, or the user's pick. */
   target: { name: string; at: Date };
@@ -366,6 +379,12 @@ const HeroToday = memo(function HeroToday({
    * the hour's mood, not the real sky's colours, and runs into the page.
    */
   skyTheme?: boolean;
+  /**
+   * Whose colours the Sky theme's hero wears (settings.skyVariant). Asked
+   * for here rather than read from skyMoods' module state, so a change
+   * repaints the hero at once rather than at its next minute.
+   */
+  skyVariant?: SkyVariant;
   /**
    * Full-bleed: the hero grows to fill what the page leaves it, the
    * countdown block sits at its foot, and the sky's sun, moon and stars
@@ -554,10 +573,33 @@ const HeroToday = memo(function HeroToday({
    */
   const runProgress = useRef<Animated.Value | null>(null);
   if (!runProgress.current) runProgress.current = new Animated.Value(0, { useNativeDriver: true });
-  // The hero's sky as drawn: the real one, or the Sky theme's for the hour.
+  /**
+   * The hero's sky as drawn: the Sky theme's design — three stops, the
+   * horizon's glow low in the sky, running into the page — in every look.
+   * Under Sky, the chosen colours over a page that wears the hour; under
+   * System, Light and Dark, Realistic's colours run into the page the
+   * theme draws. (The real sky's two-stop gradient, which stopped at the
+   * page with an edge, is what the other looks had before.)
+   */
+  const { palette: pagePalette } = useAppPalette();
+  const heroVariant: SkyVariant = skyTheme ? skyVariant : 'realistic';
+  const pageBg = String(pagePalette.bg);
+  const pageDark = pagePalette.isDark;
+  // Where the sky starts fading into a page of the other polarity: just
+  // under the countdown block's foot, once the growing hero has measured
+  // it (set below), so the block is all on the sky.
+  const [lowMidAt, setLowMidAt] = useState(SKY_FADE_LOW_MID_AT);
   const paint = useCallback(
-    (f: SkyFrame): SkyFrame => (skyTheme ? themedSkyFrame(f, skyMoodFor(f.passage, f.t)) : f),
-    [skyTheme],
+    (f: SkyFrame): SkyFrame => {
+      const mood = skyMoodFor(f.passage, f.t, undefined, heroVariant);
+      if (skyTheme) return themedSkyFrame(f, mood);
+      return themedSkyFrame(
+        f,
+        { ...mood, heroFoot: pageBg },
+        mood.isDark === pageDark ? SKY_THEME_MID_AT : lowMidAt,
+      );
+    },
+    [skyTheme, heroVariant, pageBg, pageDark, lowMidAt],
   );
   const skyRunRef = useRef<SkyRun | null>(null);
   if (launchRun && warp && !skyRunRef.current) {
@@ -719,6 +761,11 @@ const HeroToday = memo(function HeroToday({
         foot: (bleedTop + block.y + block.h) / skyH,
       }
     : HERO_Y;
+  const footY = heroY.foot;
+  useEffect(() => {
+    const at = measured ? Math.min(0.97, Math.round((footY + 0.015) * 200) / 200) : SKY_FADE_LOW_MID_AT;
+    setLowMidAt(prev => (prev === at ? prev : Math.max(SKY_FADE_LOW_MID_AT, at)));
+  }, [measured, footY]);
   /**
    * The band behind the status bar wears this sky — it is the one view
    * that has to know the gradient without being inside it. Published only
@@ -774,7 +821,7 @@ const HeroToday = memo(function HeroToday({
    * repaints — a still of the screen as it is, faded over both commits —
    * and the store's own ask a moment later finds one up and does nothing.
    */
-  const moodDark = skyTheme ? skyMoodFor(frame.passage, frame.t).isDark : null;
+  const moodDark = skyTheme ? skyMoodFor(frame.passage, frame.t, undefined, heroVariant).isDark : null;
   const lastMoodDark = useRef<boolean | null>(null);
   // Not during a launch run: the run's sky crosses the switch in its own
   // native layers, and the page already wears the hour the run is heading
@@ -787,15 +834,24 @@ const HeroToday = memo(function HeroToday({
   lastMoodDark.current = moodDark;
   const moreContrast = useIncreasedContrast();
   const glow = useMemo(() => {
-    if (!skyTheme || moreContrast) return null;
-    const mood = skyMoodFor(frame.passage, frame.t);
+    // The digits' halo on a night sky, in every look now that every look
+    // has the Sky theme's hero.
+    if (moreContrast) return null;
+    const mood = skyMoodFor(frame.passage, frame.t, undefined, heroVariant);
     if (!mood.isDark) return null;
     return {
       textShadowColor: `${mood.accent}73`,
-      textShadowRadius: 14,
+      textShadowRadius: GLOW_RADIUS,
       textShadowOffset: { width: 0, height: 0 },
+      // UIKit draws a text view's shadow inside the view's own frame, so a
+      // halo wider than the glyphs was cut square at the frame — on the
+      // Mac a hard-edged box round each piece, sharpest at the right of
+      // the minutes. The frame is grown by the halo and the room taken
+      // back, so the halo has room and the row does not move.
+      padding: GLOW_RADIUS,
+      margin: -GLOW_RADIUS,
     };
-  }, [skyTheme, moreContrast, frame.passage, frame.t]);
+  }, [heroVariant, moreContrast, frame.passage, frame.t]);
   const inkTop = useMemo(() => skyInkAt(frame, yEyebrow), [frame, yEyebrow]);
   const ink = useMemo(() => skyInkAt(frame, yCountdown), [frame, yCountdown]);
   const inkFoot = useMemo(() => skyInkAt(frame, yFoot), [frame, yFoot]);
@@ -836,7 +892,7 @@ const HeroToday = memo(function HeroToday({
       <HeroSky
         frame={frame}
         run={skyRun ?? undefined}
-        denseStars={skyTheme}
+        denseStars
         sceneTop={sceneTop}
         sceneBottom={sceneBottom}
         bleed={
@@ -1762,6 +1818,7 @@ function TodayCardImpl({
               topRow={fullBleed ? { renderLocation, renderQibla } : undefined}
               frozenAt={interval.fromAt}
               skyTheme={settings.appearance === 'sky'}
+              skyVariant={settings.skyVariant}
             />
             </View>
           </View>
@@ -1775,6 +1832,7 @@ function TodayCardImpl({
             onLayout={onRealHeroLayout}
             launchRun={runWanted}
             skyTheme={settings.appearance === 'sky'}
+            skyVariant={settings.skyVariant}
             today={timings}
             skyToday={skyTimings}
             latitude={latitude}

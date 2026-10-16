@@ -32,7 +32,7 @@
  *
  * ── WHY IT IS COMPUTED HERE AND NOT FETCHED ───────────────────────────
  *
- * No provider publishes these. Not AlAdhan, not PrayTimes.dev, not the
+ * No provider publishes these. Not AlAdhan, not the
  * Habous table the issue is written from. They are derived from solar
  * geometry at the user's own coordinates, which is the one thing the app
  * can always do for itself, and they are shown beside whichever source

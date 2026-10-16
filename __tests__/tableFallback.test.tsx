@@ -39,7 +39,7 @@ describe('the table-fallback indication', () => {
     for (const id of ['islamiska_forbundet', 'habous', 'marw', 'muis', 'jakim', 'kemenag', 'namazvakti'] as const) {
       expect(`${id} ${isTableProvider(id)}`).toBe(`${id} true`);
     }
-    for (const id of ['aladhan', 'prayertimes_dev', 'local_adhan'] as const) {
+    for (const id of ['aladhan', 'local_adhan'] as const) {
       expect(`${id} ${isTableProvider(id)}`).toBe(`${id} false`);
     }
   });

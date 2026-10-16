@@ -173,11 +173,10 @@ export async function snoozePrayerNotification(
   // mirrored the theme yet: read it, so a snoozed alert keeps the look the
   // first one had.
   if (fullScreen) {
-    setFullScreenAlarmSkyTheme(
-      await loadSettings()
-        .then(s => s.appearance === 'sky')
-        .catch(() => false),
-    );
+    const theme = await loadSettings()
+      .then(s => ({ on: s.appearance === 'sky', variant: s.skyVariant }))
+      .catch(() => ({ on: false, variant: undefined }));
+    setFullScreenAlarmSkyTheme(theme.on, theme.variant);
   }
   // The prayer name travels in the payload; without it there is nothing to
   // log, so the re-fire falls back to a snooze-only button.

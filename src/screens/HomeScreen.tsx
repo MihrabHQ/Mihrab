@@ -356,6 +356,7 @@ export function HomeScreen() {
             settings.dataProviderAuto,
             settings.dataProvider,
             { latitude: state.latitude, longitude: state.longitude },
+            settings.calculationMethod,
           ),
           latitude: state.latitude,
           longitude: state.longitude,

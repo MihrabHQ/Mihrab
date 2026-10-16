@@ -111,6 +111,7 @@ import { ChoiceSheet } from '../../components/ui/ChoiceSheet';
 import { MODAL_ORIENTATIONS } from '../../components/modalOrientations';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RADIUS, SPACING } from '../../theme/tokens';
+import { tajweedColoursShown } from '../tajweed/tajweedSupport';
 
 /** The sheet's own padding, before the safe-area insets are added to it. */
 const SHEET_H_PADDING = 18;
@@ -698,7 +699,7 @@ export function AyahActionSheet({
                 ayah={ayah}
                 fontSize={AYAH_GLYPH_SIZE}
                 color={String(palette.text)}
-                glyphs={state.prefs.tajweedColours ? 'tajweed' : 'v2'}
+                glyphs={tajweedColoursShown(state.prefs.riwayah, state.prefs.tajweedColours) ? 'tajweed' : 'v2'}
                 onWordPress={
                   panel === 'tajweed'
                     ? w => {

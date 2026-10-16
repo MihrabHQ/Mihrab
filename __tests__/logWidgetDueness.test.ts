@@ -118,7 +118,7 @@ describe('ios and macos decide dueness per timeline entry', () => {
     // minutes to it.
     expect(logToday).toMatch(/private func nextEvent\(\)/);
     expect(logToday).toMatch(
-      /widgetEvents\(rows: \$0\.rows, sunriseRow: \$0\.sunriseRow, extraRows: \$0\.extraRows\)/,
+      /widgetEvents\(rows: p\.rows, sunriseRow: p\.sunriseRow, extraRows: p\.extraRows\)/,
     );
     expect(logToday).not.toMatch(/first\(where: \{ !isDue\(\$0, t\) \}\)/);
   });
@@ -158,5 +158,49 @@ describe('the payload still carries the flag', () => {
     expect(times).toMatch(
       /export function formatDisplayTime[\s\S]*?padStart\(2, '0'\)}:\$\{String\(minute\)\.padStart\(2, '0'\)}/,
     );
+  });
+});
+
+/**
+ * #81: the Log widget did not move to the next day by itself.
+ *
+ * The `today` block is the journal as the app last saw it, dated when it
+ * was written. Overnight with the app closed, the card kept drawing
+ * yesterday's date and ticks, and a chip tapped in the morning was queued
+ * against yesterday — until the app was opened. Both renderers now roll the
+ * block onto today's date from the schedule the payload already carries:
+ * today's five at today's times, nothing recorded, taps on top.
+ */
+describe('the Log widget rolls onto the new day without the app (#81)', () => {
+  const glance = kt('glance/LogGlanceWidget.kt');
+  const support = kt('glance/GlanceSupport.kt');
+  const swift = readFileSync(path.join(ROOT, 'ios', 'PrayerWidgetExtension', 'LogTodayWidget.swift'), 'utf8');
+
+  it('android: an older block is rebuilt for today, from today\'s schedule, with nothing logged', () => {
+    const fn = support.slice(support.indexOf('fun todayOf('), support.indexOf('fun describesToday('));
+    expect(fn).toMatch(/if \(block\.dateKey >= now\.dateKey\) return block/);
+    expect(fn).toMatch(/p\.days\.firstOrNull \{ it\.dateKey == now\.dateKey && !it\.estimated \}/);
+    expect(fn).toMatch(/dateKey = now\.dateKey,\s*logged = 0,/);
+    expect(fn).toMatch(/minutes = day\.prayers\.firstOrNull \{ it\.key == pr\.key \}\?\.minutes,\s*status = null,/);
+  });
+
+  it('android: the card and a tap both use the rolled day', () => {
+    expect(glance).toMatch(/GlancePayload\.todayOf\(it, now\)\s*\}\?\.let \{ model\(context, p, it, now\) \}/);
+    const tap = glance.slice(glance.indexOf('class LogTap'));
+    expect(tap).toMatch(/GlancePayload\.todayOf\(it, now\) \}\?\.dateKey/);
+    expect(tap).not.toMatch(/\?\.today\?\.dateKey/);
+    // "3 of 5 today" on the graph line follows the chips on a rolled day.
+    expect(glance).toMatch(/if \(today === p\.today\) p\.practice else p\.practice\?\.copy\(loggedToday = logged\)/);
+  });
+
+  it('ios: the entry and the timeline use the rolled day and its rows', () => {
+    const fn = swift.slice(swift.indexOf('func logToday('), swift.indexOf('struct LogTodayProvider'));
+    expect(fn).toMatch(/if block\.dateKey >= key \{ return \(block, nil\) \}/);
+    expect(fn).toMatch(/p\.days\?\.first\(where: \{ \$0\.dateKey == key \}\)/);
+    expect(fn).toMatch(/status: nil, due: false/);
+    expect(fn).toMatch(/WidgetPayload\.Today\(dateKey: key, logged: 0,/);
+    expect(swift).toMatch(/let rolled = p\.flatMap \{ logToday\(\$0, at: when\) \}/);
+    expect(swift).toMatch(/queued: today\.map \{ WidgetLogQueue\.pending\(for: \$0\.dateKey\) \}/);
+    expect(swift).toMatch(/let rolled = logToday\(p, at: now\)/);
   });
 });

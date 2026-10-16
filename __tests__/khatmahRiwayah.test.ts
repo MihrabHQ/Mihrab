@@ -182,6 +182,7 @@ describe('two devices reading the same khatmah in different muṣḥafs', () => 
     volumeKeyUpForward: false,
     touchLock: false,
     touchLockFreeze: false,
+    lockButton: false,
     hideMode: 'none',
     repeat: { eachAyah: 1, range: 1, pauseFactor: 0 },
     votdMode: 'translation',

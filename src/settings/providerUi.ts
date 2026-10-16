@@ -5,7 +5,6 @@ export function providerHidesCalculationMethod(
   id: PrayerDataProviderId,
 ): boolean {
   return (
-    id === 'prayertimes_dev' ||
     id === 'islamiska_forbundet' ||
     id === 'habous' ||
     id === 'marw' ||

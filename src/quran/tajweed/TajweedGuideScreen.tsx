@@ -8,6 +8,7 @@
  * top — and every rule carries an example from the muṣḥaf that can be
  * heard here or opened on its page.
  */
+import { tajweedUnavailable } from './tajweedSupport';
 import { useCallback, useState } from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -28,7 +29,6 @@ import {
   type TajweedFamilyId,
   type TajweedRule,
   familiesFor,
-  riwayahHasTajweed,
 } from './rules';
 import { speakWord } from './TajweedAyahSection';
 import { TajweedSwatch } from './TajweedText';
@@ -56,7 +56,9 @@ export function TajweedGuideScreen() {
   const systemBottom = Platform.OS === 'android' ? systemNav : 0;
   const { prefs } = useQuranState();
   // Warsh has colours of its own (issue #58) and rules Ḥafṣ does not.
-  const coloured = riwayahHasTajweed(prefs.riwayah);
+  // …and an Android before 10 cannot draw Ḥafṣ's (tajweedSupport.ts).
+  const unavailable = tajweedUnavailable(prefs.riwayah);
+  const coloured = unavailable === null;
   const warsh = prefs.riwayah === 'warsh';
   const [busy, setBusy] = useState<string | null>(null);
 
@@ -101,7 +103,7 @@ export function TajweedGuideScreen() {
             </Text>
             <Switch
               testID="tajweed-guide-toggle"
-              value={prefs.tajweedColours}
+              value={prefs.tajweedColours && coloured}
               onValueChange={next => setQuranPrefs({ tajweedColours: next })}
               accessibilityLabel={t('tajweed.toggle', 'Colour the mushaf by tajweed rule')}
               trackColor={{ true: palette.accentSolid, false: String(palette.border) }}
@@ -110,7 +112,7 @@ export function TajweedGuideScreen() {
           </View>
         ) : (
           <Text style={[styles.note, { color: palette.muted }]}>
-            {t('tajweed.warshNote')}
+            {unavailable === 'device' ? t('tajweed.deviceNote') : t('tajweed.warshNote')}
           </Text>
         )}
 

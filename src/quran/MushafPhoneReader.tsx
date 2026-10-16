@@ -1005,14 +1005,18 @@ export const MushafPhoneReader = React.memo(function MushafPhoneReader(
           onLockedTouch={() => showLockHint('touch')}
           trailing={
             <View style={styles.barButtons}>
-              <MushafLockButton
-                color={railChrome.accent}
-                backgroundColor={railChrome.control}
-                locked={locked}
-                onLock={() => setLock(true)}
-                onUnlock={() => setLock(false)}
-                onHint={() => showLockHint('touch')}
-              />
+              {/* Only when asked for in Settings (or with the volume
+                  buttons on), and always on a locked page: the way out. */}
+              {core.quran.prefs.lockButton || locked ? (
+                <MushafLockButton
+                  color={railChrome.accent}
+                  backgroundColor={railChrome.control}
+                  locked={locked}
+                  onLock={() => setLock(true)}
+                  onUnlock={() => setLock(false)}
+                  onHint={() => showLockHint('touch')}
+                />
+              ) : null}
               <MushafFullscreenButton
                 color={railChrome.accent}
                 backgroundColor={railChrome.control}

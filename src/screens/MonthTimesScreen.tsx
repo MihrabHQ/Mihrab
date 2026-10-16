@@ -87,8 +87,8 @@ export function MonthTimesScreen() {
   }, [needsGpsPrime, lat, lng]);
 
   const effectiveProvider = useMemo(
-    () => getEffectiveDataProvider(settings.dataProviderAuto, settings.dataProvider, coordsForProvider),
-    [settings.dataProviderAuto, settings.dataProvider, coordsForProvider],
+    () => getEffectiveDataProvider(settings.dataProviderAuto, settings.dataProvider, coordsForProvider, settings.calculationMethod),
+    [settings.dataProviderAuto, settings.dataProvider, coordsForProvider, settings.calculationMethod],
   );
   const tableFallback = useTableFallback(effectiveProvider, coordsForProvider, settings.calculationMethod, settings.school);
   // The month's last day: a month that runs past the correction list says so.
