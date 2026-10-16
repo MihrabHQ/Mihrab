@@ -1,0 +1,10 @@
+• Diyanet as a prayer-time source, worldwide: the table of the Diyanet place nearest you, calculated on the phone and on Diyanet's printed minute — every district of Türkiye and Northern Cyprus and 7,252 places in 197 other countries, checked against 70 million printed times. Automatic picks it in Türkiye and wherever Diyanet lists a place near you and your country has no source of its own. Türkiye's calculation method (13) is now Diyanet's own.
+• Sweden, Morocco, Algeria and Indonesia: each authority's own method, calculated on the phone at the point it computes your nearest listed place, with its correction list — on the printed minute, offline, for any date.
+• New sources: Singapore (MUIS), Malaysia (JAKIM, all 59 zones), Indonesia (Kemenag, 517 regencies) and Türkiye Takvimi (namazvakti.com, cities worldwide), each served from Mihrab's own copy of the published tables.
+• Each location keeps its own source; Automatic now knows a country by its border, not a rectangle.
+• The app says when a calculation is not current, and takes newer correction lists by itself.
+• Six more calculation methods, your own Fajr and Isha angles, and the summer-night rule as a setting.
+• The Sky theme in two colourings: Realistic, the sky as it looks (the default), or Vibrant. Picked by their six skies in the walkthrough and under Appearance. The home screen's sky has the Sky design in every look.
+• Muṣḥaf: the lock button is off until you ask for it (on with the volume buttons).
+• PrayTimes.dev is no longer a source — its public service has closed; a location set to it moves to Automatic.
+• Fixed: the Log widget turns to the new day by itself (#81). Tajweed colours: unsupported on Android 9 and earlier, which cannot draw them, and the night page's letters on Android 10–12. The day under the bar is the day the bar names.

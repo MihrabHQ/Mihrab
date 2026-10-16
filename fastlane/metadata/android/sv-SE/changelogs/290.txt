@@ -1,0 +1,5 @@
+• Diyanet som källa: tabellens minut för 8 291 orter i Turkiet och världen; Automatisk väljer den nära dem.
+• Sverige, Marocko, Algeriet och Indonesien räknas ut på telefonen, på myndighetens minut. Singapore, Malaysia och Türkiye Takvimi som källor.
+• Varje plats behåller sin egen källa.
+• Himmel i realistiska eller livfulla färger, och himlens design i alla utseenden.
+• Fixat: loggwidgeten byter till den nya dagen (#81); tajwidfärger på äldre Android.

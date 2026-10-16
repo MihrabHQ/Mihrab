@@ -1,0 +1,10 @@
+• Diyanet som källa för bönetider, i hela världen: tabellen för den Diyanet-ort som ligger närmast dig, uträknad på telefonen och på Diyanets tryckta minut – varje distrikt i Turkiet och Nordcypern och 7 252 orter i 197 andra länder, kontrollerat mot 70 miljoner tryckta tider. Automatisk väljer den i Turkiet och där Diyanet listar en ort nära dig och ditt land saknar egen källa. Turkiets beräkningsmetod (13) är nu Diyanets egen.
+• Sverige, Marocko, Algeriet och Indonesien: varje myndighets egen metod, uträknad på telefonen vid den punkt den räknar din närmaste listade ort, med sin rättelselista – på den tryckta minuten, utan uppkoppling, för vilket datum som helst.
+• Nya källor: Singapore (MUIS), Malaysia (JAKIM, alla 59 zoner), Indonesien (Kemenag, 517 regentskap) och Türkiye Takvimi (namazvakti.com, städer i hela världen), var och en ur Mihrabs egen kopia av de publicerade tabellerna.
+• Varje plats behåller sin egen källa; Automatisk känner nu ett land på dess gräns, inte på en rektangel.
+• Appen säger till när en uträkning inte är aktuell, och hämtar nyare rättelselistor själv.
+• Sex nya beräkningsmetoder, egna vinklar för fajr och isha, och regeln för sommarnätter som en inställning.
+• Temat Himmel i två färgsättningar: Realistisk, himlen som den ser ut (förvald), eller Livfull. Välj bland deras sex himlar i introduktionen och under Utseende. Startskärmens himmel har Himlens design i alla utseenden.
+• Mushaf: låsknappen är av tills du ber om den (på med volymknapparna).
+• PrayTimes.dev är inte längre en källa – den öppna tjänsten har stängt; en plats som använde den går över till Automatisk.
+• Fixat: loggwidgeten byter till den nya dagen av sig själv (#81). Tajwidfärger: stöds inte på Android 9 och äldre, som inte kan rita dem, och nattsidans bokstäver på Android 10–12. Dagen under listen är den dag listen säger.
