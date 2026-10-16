@@ -105141,7 +105141,7 @@ id	countryId	lat	lon	height	name	state	table
 121808	64	45.1667	0.4333	250	Chantérac	Nouvelle-Aquitaine	1
 121809	64	45.15	0.4333	250	Maury	Nouvelle-Aquitaine	1
 121810	64	45.15	0.4333	250	Beautery	Nouvelle-Aquitaine	1
-121811	64			0	Bouyssou	Nouvelle-Aquitaine	
+121811	64	45.15	0.4333	250	Bouyssou	Nouvelle-Aquitaine	1
 121812	64	45.1333	0.4333	250	Saint-Germain-du-Salembre	Nouvelle-Aquitaine	1
 121813	64	45.1	0.5	250	Saint-LEon-sur-l Isle	Nouvelle-Aquitaine	1
 121814	64	45.15	0.3833	250	Saint-Vincent-de-Connezac	Nouvelle-Aquitaine	1
