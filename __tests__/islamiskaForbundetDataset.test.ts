@@ -11,6 +11,7 @@ jest.mock('../src/utils/fetchWithRetry', () => ({
 import { getIslamiskaForbundetDatasetTimes, swedenServesCalculation } from '../src/providers/islamiskaForbundetDataset';
 import { computeLocalAdhanTimes } from '../src/providers/localAdhan';
 import { SWEDEN_METHOD_ID } from '../src/providers/swedenMethodId';
+import { SWEDEN_CLOCK } from '../src/providers/locationClock';
 import { fetchWithRetry } from '../src/utils/fetchWithRetry';
 import { ProviderError } from '../src/providers/errors';
 
@@ -24,8 +25,9 @@ describe('Sweden, calculated', () => {
     const res = await getIslamiskaForbundetDatasetTimes({ ...STHLM, date });
     expect(res.source).toBe('local');
     expect(res.timezone).toBe('Europe/Stockholm');
-    // the city's own point (59.330, 18.034), not the reader's
-    const atCity = computeLocalAdhanTimes({ latitude: 59.33, longitude: 18.034, date, calculationMethod: SWEDEN_METHOD_ID, school: 0 });
+    // the city's own point (59.330, 18.034), not the reader's — on Sweden's
+    // clock, as the source prints it, whatever zone the runner keeps
+    const atCity = computeLocalAdhanTimes({ latitude: 59.33, longitude: 18.034, date, calculationMethod: SWEDEN_METHOD_ID, school: 0, placeClock: SWEDEN_CLOCK });
     expect(res.timings).toEqual(atCity.timings);
     expect(fetchWithRetry).not.toHaveBeenCalled();
   });

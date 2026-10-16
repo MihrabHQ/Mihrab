@@ -15,6 +15,7 @@ jest.unmock('adhan');
 import { fetchAladhanTimes } from '../src/providers/aladhan';
 import { computeLocalAdhanInstants, computeLocalAdhanTimes } from '../src/providers/localAdhan';
 import { SWEDEN_METHOD_ID } from '../src/providers/swedenMethodId';
+import { SWEDEN_CLOCK } from '../src/providers/locationClock';
 
 const PARAMS = {
   provider: 'islamiska_forbundet' as const,
@@ -41,7 +42,8 @@ describe('Islamiska Förbundet, calculated', () => {
       new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Stockholm', hourCycle: 'h23', hour: '2-digit', minute: '2-digit' }).format(d);
     expect(stockholm(city.fajr) >= '02:10' && stockholm(city.fajr) <= '02:30').toBe(true);
     expect(stockholm(city.isha) >= '23:00' && stockholm(city.isha) <= '23:15').toBe(true);
-    const asServed = computeLocalAdhanTimes({ latitude: 59.33, longitude: 18.034, date: PARAMS.date, calculationMethod: SWEDEN_METHOD_ID, school: 0 });
+    // served on Sweden's clock, whatever zone the runner keeps
+    const asServed = computeLocalAdhanTimes({ latitude: 59.33, longitude: 18.034, date: PARAMS.date, calculationMethod: SWEDEN_METHOD_ID, school: 0, placeClock: SWEDEN_CLOCK });
     expect(res.timings).toEqual(asServed.timings);
   });
 
