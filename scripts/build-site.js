@@ -116,12 +116,11 @@ function badgeList(names, imgBase, indent = '      ', flags = {}) {
  * bytes moved under an unchanged URL, and the widget shots have now been
  * retaken twice on 2026-09-06.
  */
-const SHOT_V = '?v=2026-10-16b';
+const SHOT_V = '?v=2026-10-16c';
 const SHOTS = [
   'home',
   'home-maliki',
   'home-dark',
-  'sky-colours',
   'tilawah',
   'tilawah-suggest',
   'reciters',

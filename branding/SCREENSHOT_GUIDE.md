@@ -114,9 +114,6 @@ automatic, Friday 16 October:
 
 - `and-home`, `and-home-dark`, `and-home-maliki` — System look (light /
   dark), 09:41, Fajr logged. They now show the new hero in a plain look.
-- `and-sky-colours` (new) — Settings → Appearance with Sky on and the
-  Sky colours picker under it; `shot-sky-colours` on the site, after the
-  dark home, captioned in all thirteen languages in `strings.json`.
 - `and-home-night` and `store/feature/home-sky-night.png` — Sky, 21:41,
   all five logged; the Play feature graphic is built from it.
 - `store/play/01_home.png` — Sky (Realistic), 09:41;
@@ -135,7 +132,7 @@ the **Sky theme, Realistic**, each screen at a different hour so the page
 shows the theme's shades: Today at 18:35 (sunset, the low sun), Today
 with the Mālikī times at 07:40 (sunrise cream), Today at 21:45 (night,
 the moon) in the `home-dark` slot — captioned "at night" now —
-Appearance at 10:00, Tilāwah playing at 19:25 and suggesting at 20:40,
+Tilāwah playing at 19:25 and suggesting at 20:40,
 the reciters at 09:15, the muṣḥaf playing at 16:45, the Tajweed sheet at
 17:30 (golden), the night page at 23:00, memorising at 18:15, the Quran
 tab at 06:55 (dawn), Qibla at 12:30, the month at 07:50, the shareable

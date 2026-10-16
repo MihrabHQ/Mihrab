@@ -17,10 +17,6 @@
           "alt": "The same home screen at night: the moon in its phase among the stars, every prayer of the day checked, the countdown running to Fajr.",
           "cap": "Home, at night"
         },
-        "sky-colours": {
-          "alt": "Settings, Appearance: the theme set to Sky and, under it, the Sky colours — Realistic chosen, Vibrant beside it — each shown by its six skies, from night to dusk.",
-          "cap": "Sky colours — Realistic or Vibrant"
-        },
         "tilawah": {
           "alt": "Tilāwah playing Al-Mulk: the reciter, the transport, speed, sleep timer and shuffle, with a live muṣḥaf page below and the recited word lit.",
           "cap": "Tilāwah — put it on and let it run"
@@ -129,10 +125,6 @@
         "home-dark": {
           "alt": "Samma startskärm på natten: månen i sin fas bland stjärnorna, dagens alla böner avbockade, nedräkningen mot fajr.",
           "cap": "Start, på natten"
-        },
-        "sky-colours": {
-          "alt": "Inställningar, Utseende: temat satt till Himmel och under det Himlens färger — Realistisk vald, Livfull bredvid — var och en visad med sina sex himlar, från natt till skymning.",
-          "cap": "Himlens färger — Realistisk eller Livfull"
         },
         "tilawah": {
           "alt": "Tilāwah spelar al-Mulk: recitatör, uppspelningskontroller, hastighet, sovtimer och blandning, med en levande muṣḥaf-sida under där det reciterade ordet lyser.",
@@ -352,10 +344,6 @@
           "alt": "الشاشة نفسها ليلًا: القمر في طوره بين النجوم، وصلوات اليوم كلها معلَّمة، والعدّ التنازلي إلى الفجر.",
           "cap": "اليوم، ليلًا"
         },
-        "sky-colours": {
-          "alt": "الإعدادات، المظهر: السمة على «السماء»، وتحتها ألوان السماء — «واقعية» مختارة و«زاهية» بجانبها — كلٌّ تعرضه سماواته الست، من الليل إلى الغسق.",
-          "cap": "ألوان السماء — واقعية أو زاهية"
-        },
         "tilawah": {
           "alt": "التلاوة تُسمِع سورة الملك: القارئ وأزرار التشغيل والسرعة ومؤقّت النوم والخلط، وتحتها صفحة المصحف والكلمة المتلوّة مضاءة.",
           "cap": "التلاوة — شغّلها ودعها تمضي"
@@ -567,10 +555,6 @@
         "home-dark": {
           "alt": "Aynı ekran gece: yıldızlar arasında evresindeki ay, günün bütün namazları işaretli, geri sayım sabaha.",
           "cap": "Bugün, gece"
-        },
-        "sky-colours": {
-          "alt": "Ayarlar, Görünüm: tema Gökyüzü’nde ve altında Gökyüzü renkleri — Gerçekçi seçili, yanında Canlı — her biri geceden alacakaranlığa altı gökyüzüyle gösteriliyor.",
-          "cap": "Gökyüzü renkleri — Gerçekçi ya da Canlı"
         },
         "tilawah": {
           "alt": "Tilâvet Mülk sûresini okuyor: kâri, oynatma denetimleri, hız, uyku zamanlayıcısı ve karışık çalma; altında okunan kelimenin ışıdığı canlı mushaf sayfası.",
@@ -784,10 +768,6 @@
           "alt": "وہی اسکرین رات کو: ستاروں کے بیچ اپنی منزل میں چاند، دن کی سب نمازیں نشان زد، گنتی فجر کی طرف۔",
           "cap": "آج، رات کو"
         },
-        "sky-colours": {
-          "alt": "ترتیبات، ظاہری شکل: تھیم آسمان پر، اور اس کے نیچے آسمان کے رنگ — حقیقی منتخب، ساتھ میں شوخ — ہر ایک اپنے چھ آسمانوں سے دکھایا گیا، رات سے شام تک۔",
-          "cap": "آسمان کے رنگ — حقیقی یا شوخ"
-        },
         "tilawah": {
           "alt": "تلاوت میں سورۃ الملک: قاری، پلے بیک کنٹرول، رفتار، سلیپ ٹائمر اور شفل، اور نیچے زندہ مصحف کا صفحہ جس پر پڑھا جانے والا لفظ روشن ہے۔",
           "cap": "تلاوت — لگا دیجیے اور چلنے دیجیے"
@@ -999,10 +979,6 @@
         "home-dark": {
           "alt": "Layar yang sama pada malam hari: bulan dalam fasenya di antara bintang, semua salat hari itu tercentang, hitung mundur menuju Subuh.",
           "cap": "Hari Ini, malam hari"
-        },
-        "sky-colours": {
-          "alt": "Pengaturan, Tampilan: tema diatur ke Langit dan di bawahnya Warna langit — Realistis dipilih, Cerah di sampingnya — masing-masing ditunjukkan dengan enam langitnya, dari malam hingga senja.",
-          "cap": "Warna langit — Realistis atau Cerah"
         },
         "tilawah": {
           "alt": "Tilāwah memutar Al-Mulk: qari, kendali pemutaran, kecepatan, pengatur waktu tidur dan acak, dengan halaman mushaf di bawahnya tempat kata yang dibaca menyala.",
@@ -1216,10 +1192,6 @@
           "alt": "Dieselbe Startseite in der Nacht: der Mond in seiner Phase zwischen den Sternen, alle Gebete des Tages abgehakt, der Countdown läuft auf Fadschr zu.",
           "cap": "Start, in der Nacht"
         },
-        "sky-colours": {
-          "alt": "Einstellungen, Erscheinungsbild: das Thema auf Himmel und darunter die Himmelsfarben — Realistisch gewählt, Lebhaft daneben — jede mit ihren sechs Himmeln gezeigt, von der Nacht bis zur Abenddämmerung.",
-          "cap": "Himmelsfarben — Realistisch oder Lebhaft"
-        },
         "tilawah": {
           "alt": "Tilāwah spielt al-Mulk: Rezitator, Wiedergabesteuerung, Tempo, Sleeptimer und Zufallswiedergabe, darunter eine lebende Muṣḥaf-Seite, auf der das rezitierte Wort leuchtet.",
           "cap": "Tilawa — anmachen und laufen lassen"
@@ -1431,10 +1403,6 @@
         "home-dark": {
           "alt": "Le même écran la nuit : la lune dans sa phase parmi les étoiles, toutes les prières du jour cochées, le compte à rebours vers Fajr.",
           "cap": "Accueil, la nuit"
-        },
-        "sky-colours": {
-          "alt": "Réglages, Apparence : le thème sur Ciel et, dessous, les Couleurs du ciel — Réaliste choisi, Vif à côté — chacune montrée par ses six ciels, de la nuit au crépuscule.",
-          "cap": "Couleurs du ciel — Réaliste ou Vif"
         },
         "tilawah": {
           "alt": "La Tilāwah joue al-Mulk : le récitateur, les commandes, la vitesse, la minuterie et la lecture aléatoire, avec dessous une page de muṣḥaf vivante où le mot récité s’allume.",
@@ -1648,10 +1616,6 @@
           "alt": "La misma pantalla de noche: la luna en su fase entre las estrellas, todas las oraciones del día marcadas, la cuenta atrás hacia Fajr.",
           "cap": "Inicio, de noche"
         },
-        "sky-colours": {
-          "alt": "Ajustes, Apariencia: el tema en Cielo y, debajo, los Colores del cielo (Realista elegido, Vibrante al lado), cada uno mostrado con sus seis cielos, de la noche al crepúsculo.",
-          "cap": "Colores del cielo: Realista o Vibrante"
-        },
         "tilawah": {
           "alt": "Tilāwah reproduciendo al-Mulk: el recitador, los controles, la velocidad, el temporizador y el modo aleatorio, con una página de muṣḥaf debajo donde se enciende la palabra recitada.",
           "cap": "Tilawah — la pones y sigue sola"
@@ -1863,10 +1827,6 @@
         "home-dark": {
           "alt": "Тот же экран ночью: луна в своей фазе среди звёзд, все молитвы дня отмечены, отсчёт идёт к фаджру.",
           "cap": "Сегодня, ночью"
-        },
-        "sky-colours": {
-          "alt": "Настройки, оформление: тема «Небо», а под ней цвета неба — выбраны «Реалистичные», рядом «Яркие», — каждые показаны своими шестью небесами, от ночи до сумерек.",
-          "cap": "Цвета неба — реалистичные или яркие"
         },
         "tilawah": {
           "alt": "Тилява читает суру «аль-Мульк»: чтец, кнопки воспроизведения, скорость, таймер сна и перемешивание, а ниже — живая страница мусхафа с подсвеченным словом.",
@@ -2080,10 +2040,6 @@
           "alt": "একই স্ক্রিন রাতে: তারাদের মাঝে নিজের কলায় চাঁদ, দিনের সব নামাজে টিক, কাউন্টডাউন ফজরের দিকে।",
           "cap": "হোম, রাতে"
         },
-        "sky-colours": {
-          "alt": "সেটিংস, চেহারা: থিম আকাশ-এ, আর তার নিচে আকাশের রং — বাস্তবসম্মত বাছাই করা, পাশে উজ্জ্বল — প্রতিটি দেখানো তার ছয়টি আকাশ দিয়ে, রাত থেকে সন্ধ্যা পর্যন্ত।",
-          "cap": "আকাশের রং — বাস্তবসম্মত বা উজ্জ্বল"
-        },
         "tilawah": {
           "alt": "তিলাওয়াতে সূরা আল-মুলক: ক্বারী, প্লেব্যাক নিয়ন্ত্রণ, গতি, স্লিপ টাইমার ও শাফল, আর নিচে জীবন্ত মুসহাফ পাতা যেখানে পঠিত শব্দটি আলোকিত।",
           "cap": "তিলাওয়াত — চালিয়ে দিন, চলতে থাকবে"
@@ -2296,10 +2252,6 @@
           "alt": "वही स्क्रीन रात में: तारों के बीच अपनी कला में चाँद, दिन की सब नमाज़ें निशान लगी, गिनती फ़ज्र की ओर।",
           "cap": "होम, रात में"
         },
-        "sky-colours": {
-          "alt": "सेटिंग्स, रूप: थीम आकाश पर, और उसके नीचे आकाश के रंग — यथार्थ चुना हुआ, बगल में चटकीले — हर एक अपने छह आकाशों से दिखाया गया, रात से साँझ तक।",
-          "cap": "आकाश के रंग — यथार्थ या चटकीले"
-        },
         "tilawah": {
           "alt": "तिलावत में सूरह अल-मुल्क: क़ारी, प्लेबैक नियंत्रण, गति, स्लीप टाइमर और शफ़ल, और नीचे जीवंत मुसहफ़ पन्ना जिस पर पढ़ा जा रहा शब्द रोशन है।",
           "cap": "तिलावत — लगाइए और चलने दीजिए"
@@ -2511,10 +2463,6 @@
         "home-dark": {
           "alt": "同一主屏幕的夜晚：群星间呈其月相的月亮，当日礼拜全部勾选，倒计时走向晨礼。",
           "cap": "主页，夜晚"
-        },
-        "sky-colours": {
-          "alt": "设置中的外观：主题设为“天空”，下方是天空配色——已选“写实”，旁边是“鲜明”——各以从夜晚到黄昏的六片天空展示。",
-          "cap": "天空配色——写实或鲜明"
         },
         "tilawah": {
           "alt": "诵读国权章：诵读者、播放控制、语速、睡眠定时与随机播放，下方是实时的穆斯哈夫页面，正在诵读的词被点亮。",
