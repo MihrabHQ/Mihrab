@@ -78,9 +78,24 @@ jobs:
             echo 'No files changed.'
             exit 0
           fi
-          # Upload in batches so a long list stays well inside the command line.
-          xargs -n 100 gh release upload "${{ steps.rel.outputs.tag }}" --clobber < changed.txt
-          gh release upload "${{ steps.rel.outputs.tag }}" index.json --clobber
+          # One file at a time, paced and retried: GitHub's secondary rate
+          # limit (about 80 content-creating requests a minute, 500 an hour;
+          # a --clobber is a delete and an upload) refused the first run's
+          # 512 files sent 100 at a time. years.ts fills files one after
+          # another, so a run changes about a hundred of them.
+          up() {
+            for wait in 60 120 240 480; do
+              gh release upload "${{ steps.rel.outputs.tag }}" "$1" --clobber < /dev/null && return 0
+              echo "  $1: retrying in ${wait}s"; sleep "$wait"
+            done
+            gh release upload "${{ steps.rel.outputs.tag }}" "$1" --clobber < /dev/null
+          }
+          while read -r f; do
+            [ -n "$f" ] || continue
+            up "$f"
+            sleep 2
+          done < changed.txt
+          up index.json
           echo "Uploaded $(wc -l < changed.txt) files; ${{ steps.build.outputs.held || '?' }}/${{ steps.build.outputs.cities || '?' }} cities held."
 
       - name: Email on failure

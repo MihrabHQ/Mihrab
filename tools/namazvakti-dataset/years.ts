@@ -106,15 +106,21 @@ async function main(): Promise<number> {
       files.set(name, held && held.year === year ? held : { v: 1, bucket: c.id % NV_PACK_BUCKETS, year, builtAt: '', cities: {} });
     }
   }
-  // Missing first, then the oldest read.
+  // Missing first, then the oldest read — and, among equals, file by file.
+  // Every file the run touches is a release asset to replace, and GitHub
+  // allows about 500 content-creating requests an hour (a replace is two):
+  // taking the cities in id order put a few in each of all 512 files, so the
+  // first run's upload hit that limit and lost the run. File by file, a
+  // run's 25,000 cities fill some 110 files and leave the rest untouched.
   const age = (id: number) => {
     const p = files.get(fileOf.get(id)!)!.cities[String(id)];
     return p ? Date.parse(`${p.f}T00:00:00Z`) : -Infinity;
   };
+  const bucketOf = (id: number) => id % NV_PACK_BUCKETS;
   const queue = cities
     .map(c => c.id)
     .filter(id => started - age(id) > refreshMs)
-    .sort((a, b) => age(a) - age(b) || a - b);
+    .sort((a, b) => age(a) - age(b) || bucketOf(a) - bucketOf(b) || a - b);
   console.log(`${cities.length} cities with times, ${queue.length} to read for ${year}`);
 
   const changed = new Set<string>();
