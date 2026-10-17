@@ -28,9 +28,12 @@ import {
 import {
   extractSecureFields,
   hasSecureFields,
-  loadSecureSettings,
+  readSecureSettings,
+  saveSecureFallback,
   saveSecureSettings,
+  SECURE_FIELD_NAMES,
   stripSecureFields,
+  type SecureRead,
   type SecureSettings,
 } from './secureStorage';
 import {
@@ -216,6 +219,156 @@ function invalidateInflightLoad(): void {
 }
 
 /**
+ * THE LOCATION STORE COULD NOT BE READ.
+ *
+ * Coordinates and saved locations live in the Keychain/Keystore, and that
+ * read can fail — a phone not yet unlocked since a restart, a corrupt
+ * entry. The load then carries on with the defaults for those fields
+ * (0, 0, no saved locations) so the app still opens. But the settings the
+ * app now holds were never what is stored, and every save writes the whole
+ * thing back: the next theme change wrote 0, 0 and an empty list over the
+ * real ones, and — since locations kept their own sources — a provider map
+ * pruned of every saved location, with the active one dropped and its
+ * source turned to Automatic.
+ *
+ * So the failure is remembered, with the location fields as they were
+ * handed out, and every save from then on (the app's state came from that
+ * load and stays in memory for the session) asks again before writing:
+ *
+ *  - Location untouched since that load: the location fields and the
+ *    choices that hang off them (`LOCATION_DERIVED_FIELDS`) are left on
+ *    disk exactly as they are; everything else is saved.
+ *  - Location changed by the user, store still unreadable: their location
+ *    goes to the plaintext fallback only (`saveSecureFallback`), so it
+ *    survives a relaunch without being written over the unseen entry.
+ *  - Location changed, store readable again: only the fields they changed
+ *    are written, onto what is stored; saved locations are joined by id
+ *    rather than replaced, since one they never saw is not one they removed.
+ *
+ * Once a save finds the store readable and the app's location the same as
+ * what is stored, there is nothing left to protect and saves go back to
+ * normal.
+ */
+let unreadLocation: { handedOut: SecureSettings } | null = null;
+
+/** Plaintext fields that are derived from, or point into, the location store. */
+const LOCATION_DERIVED_FIELDS = [
+  'locationMode',
+  'activeLocationPresetId',
+  'dataProvider',
+  'dataProviderAuto',
+  'locationProviders',
+] as const;
+
+function noteSecureRead(
+  settings: PrayerAppSettings,
+  failed: boolean,
+): PrayerAppSettings {
+  // Only the first failure's values: a second failed load hands out the
+  // same defaults, and a later successful one does not reach the state the
+  // app already took from the first (see above).
+  if (failed && !unreadLocation) {
+    unreadLocation = {
+      handedOut: extractSecureFields(
+        settings as unknown as Record<string, unknown>,
+      ),
+    };
+  }
+  return settings;
+}
+
+function sameJson(a: unknown, b: unknown): boolean {
+  return JSON.stringify(a) === JSON.stringify(b);
+}
+
+function asRecord(v: unknown): Record<string, unknown> | null {
+  return v && typeof v === 'object' && !Array.isArray(v)
+    ? (v as Record<string, unknown>)
+    : null;
+}
+
+async function readPlaintextOnDisk(): Promise<Record<string, unknown> | null> {
+  try {
+    const raw = await AsyncStorage.getItem(KEY);
+    if (!raw) return {};
+    return asRecord(JSON.parse(raw)) ?? {};
+  } catch {
+    return null;
+  }
+}
+
+type SavePlan = {
+  secure: SecureSettings;
+  secureTarget: 'store' | 'fallback' | 'none';
+  /** Null: leave the plaintext blob as it is. */
+  plaintext: Record<string, unknown> | null;
+};
+
+async function planSaveWithUnreadLocation(
+  state: { handedOut: SecureSettings },
+  mem: SecureSettings,
+  plaintext: Record<string, unknown>,
+): Promise<SavePlan> {
+  const base = state.handedOut as Record<string, unknown>;
+  const ours = mem as Record<string, unknown>;
+  const changed = SECURE_FIELD_NAMES.filter(f => !sameJson(ours[f], base[f]));
+  const [onDisk, read] = await Promise.all([
+    readPlaintextOnDisk(),
+    readSecureSettings().catch(
+      (): SecureRead => ({ settings: {}, failed: true }),
+    ),
+  ]);
+
+  if (changed.length === 0) {
+    if (!read.failed && sameJson(mem, read.settings)) unreadLocation = null;
+    // Can't see what is on disk: then nothing is written over it either.
+    if (!onDisk) return { secure: mem, secureTarget: 'none', plaintext: null };
+    const out = { ...plaintext };
+    for (const f of LOCATION_DERIVED_FIELDS) {
+      if (f in onDisk) out[f] = onDisk[f];
+      else delete out[f];
+    }
+    // A blob from before the encrypted store, waiting to be migrated.
+    for (const f of SECURE_FIELD_NAMES) {
+      if (onDisk[f] !== undefined) out[f] = onDisk[f];
+    }
+    return { secure: mem, secureTarget: 'none', plaintext: out };
+  }
+
+  // The user set a location this session: theirs, with every other
+  // location's source that is on disk kept beside it.
+  const out = { ...plaintext };
+  const diskMap = asRecord(onDisk?.locationProviders);
+  const memMap = asRecord(plaintext.locationProviders);
+  if (diskMap) out.locationProviders = { ...diskMap, ...(memMap ?? {}) };
+  if (read.failed)
+    return { secure: mem, secureTarget: 'fallback', plaintext: out };
+
+  const stored = read.settings as Record<string, unknown>;
+  const merged: Record<string, unknown> = { ...stored };
+  for (const f of changed) {
+    if (f === 'locationPresets') {
+      const mine = mem.locationPresets ?? [];
+      const ids = new Set(mine.map(p => p.id));
+      merged.locationPresets = [
+        ...mine,
+        ...(read.settings.locationPresets ?? []).filter(p => !ids.has(p.id)),
+      ];
+    } else if (ours[f] === undefined) {
+      delete merged[f];
+    } else {
+      merged[f] = ours[f];
+    }
+  }
+  if (sameJson(merged, ours)) unreadLocation = null;
+  return {
+    secure: merged as SecureSettings,
+    secureTarget: 'store',
+    plaintext: out,
+  };
+}
+
+/**
  * Load settings — task #16.
  *
  * Settings live in TWO stores:
@@ -263,23 +416,29 @@ async function loadSettingsUncached(): Promise<PrayerAppSettings> {
   let secure: SecureSettings = {};
   const [plainResult, secureResult] = await Promise.allSettled([
     AsyncStorage.getItem(KEY),
-    loadSecureSettings(),
+    readSecureSettings(),
   ]);
   if (plainResult.status === 'rejected') {
     return DEFAULT_SETTINGS;
   }
   plaintextRaw = plainResult.value;
   if (secureResult.status === 'fulfilled') {
-    secure = secureResult.value;
+    secure = secureResult.value.settings;
   }
-  // A rejected secure read was already logged inside loadSecureSettings;
-  // fall through with empty, as before.
+  // A failed secure read was already logged inside readSecureSettings. The
+  // app goes on with empty location fields, so it still runs — but what it
+  // hands out is not what is stored, and saves must not write it back.
+  const secureFailed =
+    secureResult.status === 'rejected' || secureResult.value.failed;
 
   if (!plaintextRaw) {
     // First-ever launch (no plaintext blob). Encrypted store may still
     // hold coordinates from a partially-completed prior session — merge.
     // The UI language follows the device here, not the 'en' default.
-    return { ...DEFAULT_SETTINGS, language: deviceLanguage(), ...secure };
+    return noteSecureRead(
+      { ...DEFAULT_SETTINGS, language: deviceLanguage(), ...secure },
+      secureFailed,
+    );
   }
 
   let parsed: Partial<PrayerAppSettings> & Record<string, unknown>;
@@ -287,13 +446,18 @@ async function loadSettingsUncached(): Promise<PrayerAppSettings> {
     parsed = JSON.parse(plaintextRaw) as Partial<PrayerAppSettings> &
       Record<string, unknown>;
   } catch {
-    return { ...DEFAULT_SETTINGS, language: deviceLanguage(), ...secure };
+    return noteSecureRead(
+      { ...DEFAULT_SETTINGS, language: deviceLanguage(), ...secure },
+      secureFailed,
+    );
   }
 
   // Migration: if the plaintext blob still has coordinate fields, this is a
   // pre-task-#16 install. Copy them into the encrypted store, then strip
   // them from the plaintext blob and re-save.
-  if (hasSecureFields(parsed)) {
+  // Not while the encrypted store is unreadable: the copy would be written
+  // over an entry nobody could see. The plaintext keeps them till next time.
+  if (hasSecureFields(parsed) && !secureFailed) {
     const fromPlain = extractSecureFields(parsed);
     // Encrypted store wins on overlap (it's the newer, authoritative source
     // for sensitive fields if the user already migrated partially).
@@ -592,7 +756,7 @@ async function loadSettingsUncached(): Promise<PrayerAppSettings> {
   // `undefined` — and anything that is not a hex is dropped rather than
   // guessed at, because there is no honest correction for "blue".
   merged.savedAccentColors = coerceSavedAccents(merged.savedAccentColors);
-  return merged;
+  return noteSecureRead(merged, secureFailed);
 }
 
 /**
@@ -619,27 +783,41 @@ async function performSave(settings: PrayerAppSettings): Promise<void> {
   // not be handed the promise that started before it.
   invalidateInflightLoad();
   setCalculationPreferences(settings);
-  const secure = extractSecureFields(
-    settings as unknown as Record<string, unknown>,
-  );
-  const plaintext = stripSecureFields(
-    settings as unknown as Record<string, unknown>,
-  );
+  let plan: SavePlan = {
+    secure: extractSecureFields(settings as unknown as Record<string, unknown>),
+    secureTarget: 'store',
+    plaintext: stripSecureFields(
+      settings as unknown as Record<string, unknown>,
+    ),
+  };
+  if (unreadLocation) {
+    plan = await planSaveWithUnreadLocation(
+      unreadLocation,
+      plan.secure,
+      plan.plaintext as Record<string, unknown>,
+    );
+  }
   // Persist secure fields first. saveSecureSettings now writes to a plaintext
   // AsyncStorage fallback if the encrypted store rejects (task #141), so
   // user coordinates / presets survive a broken Keychain. We still want the
   // plaintext settings save to proceed regardless — non-secure fields like
   // theme, language, and method changes shouldn't be blocked by a Keychain
   // outage. Catch and log; do not re-throw.
-  try {
-    await saveSecureSettings(secure);
-  } catch (e) {
-    console.warn(
-      'saveSettings: secure save failed, fallback engaged. Continuing with plaintext save.',
-      e,
-    );
+  if (plan.secureTarget === 'store') {
+    try {
+      await saveSecureSettings(plan.secure);
+    } catch (e) {
+      console.warn(
+        'saveSettings: secure save failed, fallback engaged. Continuing with plaintext save.',
+        e,
+      );
+    }
+  } else if (plan.secureTarget === 'fallback') {
+    await saveSecureFallback(plan.secure);
   }
-  await AsyncStorage.setItem(KEY, JSON.stringify(plaintext));
+  if (plan.plaintext) {
+    await AsyncStorage.setItem(KEY, JSON.stringify(plan.plaintext));
+  }
 }
 
 export function saveSettings(settings: PrayerAppSettings): Promise<void> {
@@ -692,6 +870,8 @@ export async function resetAppData(): Promise<void> {
     'mihrab.listenProgress.v1',
   ];
   invalidateInflightLoad();
+  // Nothing left to protect: the reset is the one write meant to erase it.
+  unreadLocation = null;
   try {
     await AsyncStorage.multiRemove(asyncKeys);
   } catch (e) {
@@ -719,4 +899,10 @@ export async function resetAppData(): Promise<void> {
   } catch (e) {
     console.warn('EncryptedStorage reset failed:', e);
   }
+}
+
+/** Test seam: forget a failed location read from an earlier test. */
+export function _resetSettingsStorageForTests(): void {
+  unreadLocation = null;
+  inflightLoad = null;
 }
