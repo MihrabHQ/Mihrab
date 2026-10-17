@@ -97,8 +97,15 @@ export function algeriaRawMinutes(
     return t;
   };
   const fixed = (a: number) => () => a;
-  const asrAltitude = (dec: number) =>
-    Math.atan(1 / (asrShadow + Math.tan((latitude - dec / RAD) * RAD))) / RAD;
+  // The Ministry's signed noon shadow is a northern one: south of the
+  // equator the Sun is north of the zenith most of the year, and the signed
+  // shadow there put Asr at Dhuhr or hours early (Pago Pago, 21 June). The
+  // method computed there (the 'marw' provider abroad, method 19 by hand)
+  // takes the shadow's length, as every other method does.
+  const asrAltitude = (dec: number) => {
+    const noonShadow = Math.tan((latitude - dec / RAD) * RAD);
+    return Math.atan(1 / (asrShadow + (latitude >= 0 ? noonShadow : Math.abs(noonShadow)))) / RAD;
+  };
   return {
     fajr: event(fixed(-18), -1, noon - 420),
     sunrise: event(fixed(-0.833), -1, noon - 360),

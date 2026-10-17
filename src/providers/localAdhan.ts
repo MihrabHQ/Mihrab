@@ -475,6 +475,8 @@ export function computeLocalAdhanInstants(
   const signedShadowAsr =
     methodId === ALGERIA_SIGNED_SHADOW_METHOD_ID &&
     params.school !== 1 &&
+    // a northern convention (`algeriaMethod.ts`): south of the equator the plain shadow
+    params.latitude >= 0 &&
     solarDeclinationDegrees(dayDate) > params.latitude;
   const horizonMinutes =
     params.horizonMin ??
