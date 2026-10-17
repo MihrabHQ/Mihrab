@@ -14,7 +14,7 @@ import { DEVICE_CLOCK, formatLocalTime } from '../utils/prayerTimes';
 import {
   civilInZone,
   deviceZone,
-  GMT_ZONES,
+  fixedOffsetMinutes,
   zoneOffsetMinutes,
 } from '../utils/zoneClock';
 import { deviceClockSkewSeconds } from './clockSkew';
@@ -45,9 +45,12 @@ export function formatInZone(d: Date, zone: string): string {
   // `Etc/` ones; a RangeError there is caught below and the times quietly
   // fall back to the phone's clock — the very thing Morocco's `away` exists
   // to avoid on a phone outside Morocco.
-  if (GMT_ZONES.has(zone)) {
-    return `${String(d.getUTCHours()).padStart(2, '0')}:${String(
-      d.getUTCMinutes(),
+  // So are the fixed offsets a longitude gives (`placeZone.ts`).
+  const fixed = fixedOffsetMinutes(zone);
+  if (fixed != null) {
+    const wall = new Date(d.getTime() + fixed * 60_000);
+    return `${String(wall.getUTCHours()).padStart(2, '0')}:${String(
+      wall.getUTCMinutes(),
     ).padStart(2, '0')}`;
   }
   try {

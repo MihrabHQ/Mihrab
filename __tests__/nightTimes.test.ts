@@ -4,7 +4,11 @@ import {
   filterOptionalTimes,
 } from '../src/utils/nightTimes';
 import type { TimingsMap } from '../src/types/prayer';
-import { combineLocalDateAndTime, eventAt } from '../src/utils/prayerTimes';
+import {
+  addDays,
+  combineLocalDateAndTime,
+  eventAt,
+} from '../src/utils/prayerTimes';
 
 describe('clockNightTimes (Maghrib → Fajr, classical basis)', () => {
   it('computes the midpoint and last-third for a normal night', () => {
@@ -83,7 +87,17 @@ describe('injectNightTimes across a clock change', () => {
     fraction: number,
   ) => {
     const m = combineLocalDateAndTime(eveningDate, maghrib, clock).getTime();
-    const f = combineLocalDateAndTime(morningDate, fajr, clock).getTime();
+    // The first Fajr after that Maghrib: on a phone across the date line
+    // from the clock (Kiritimati, for Stockholm) two of the phone's days
+    // can name the same date on it the night the clocks go back.
+    let f = combineLocalDateAndTime(morningDate, fajr, clock).getTime();
+    for (let i = 1; f <= m && i <= 2; i++) {
+      f = combineLocalDateAndTime(
+        addDays(morningDate, i),
+        fajr,
+        clock,
+      ).getTime();
+    }
     return m + (f - m) * fraction;
   };
 

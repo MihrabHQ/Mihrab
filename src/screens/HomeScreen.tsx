@@ -593,6 +593,10 @@ export function HomeScreen() {
        * five boundaries, and that difference is the whole feature.
        */
       alertWeek: tableWithDaruri ?? table.week,
+      /** The day before `alertWeek`, for an ʿIshāʾ of last night still ahead. */
+      alertYesterday: (pastWithDaruri ?? table.past)[0] as
+        | TimingsMap
+        | undefined,
       la: mk({
         Sunrise: settings.sunriseEnabled,
         Midnight: settings.islamicMidnightEnabled,
@@ -644,36 +648,73 @@ export function HomeScreen() {
     const clock = state.clock;
     const base = state.baseDate;
     if (!readZone(clock)) {
+      const withYesterday = <T extends { past: TimingsMap[] }>(v: T) => ({
+        ...v,
+        yesterday: v.past[0] as TimingsMap | undefined,
+      });
       return {
         ...view,
+        table: withYesterday(view.table),
+        la: withYesterday(view.la),
+        widget: withYesterday(view.widget),
         windowWeek: state.week,
         today: state.today,
         tomorrow: state.tomorrow,
       };
     }
     const tomorrowBase = addDays(base, 1);
-    const days = (d: TimingsMap[]) => daysOnDeviceClock(d, base, clock);
+    /**
+     * A week regrouped on the phone's days (`phoneDaysOf`), with the day
+     * before it where there is one — its times that fall on the phone's
+     * today come from it rather than from an estimate, and its own ʿIshāʾ
+     * past midnight is still ahead in the small hours.
+     */
+    const regroup = (week: TimingsMap[], before?: TimingsMap) => {
+      if (!before) {
+        return {
+          yesterday: undefined,
+          week: daysOnDeviceClock(week, base, clock),
+        };
+      }
+      const all = daysOnDeviceClock(
+        [before, ...week],
+        addDays(base, -1),
+        clock,
+      );
+      return { yesterday: all[0], week: all.slice(1) };
+    };
+    // Today and tomorrow are the regrouped week's first two phone days:
+    // a time of the place's that falls on the phone's evening before is
+    // the phone's, not the place's date's.
     const set = (v: {
       today: TimingsMap;
       tomorrow?: TimingsMap;
       week: TimingsMap[];
-    }) => ({
-      ...v,
-      today: onDeviceClock(v.today, base, clock),
-      tomorrow: v.tomorrow
-        ? onDeviceClock(v.tomorrow, tomorrowBase, clock)
-        : undefined,
-      week: days(v.week),
-    });
+      past: TimingsMap[];
+    }) => {
+      const { yesterday, week } = regroup(v.week, v.past[0]);
+      return {
+        ...v,
+        yesterday,
+        today: week[0] ?? onDeviceClock(v.today, base, clock),
+        tomorrow: v.tomorrow
+          ? week[1] ?? onDeviceClock(v.tomorrow, tomorrowBase, clock)
+          : undefined,
+        week,
+      };
+    };
+    const windowWeek = regroup(state.week, state.past?.[0]).week;
+    const alerts = regroup(view.alertWeek, view.alertYesterday);
     return {
       table: set(view.table),
-      alertWeek: days(view.alertWeek),
+      alertWeek: alerts.week,
+      alertYesterday: alerts.yesterday,
       la: set(view.la),
       widget: set(view.widget),
-      windowWeek: days(state.week),
-      today: onDeviceClock(state.today, base, clock),
+      windowWeek,
+      today: windowWeek[0] ?? onDeviceClock(state.today, base, clock),
       tomorrow: state.tomorrow
-        ? onDeviceClock(state.tomorrow, tomorrowBase, clock)
+        ? windowWeek[1] ?? onDeviceClock(state.tomorrow, tomorrowBase, clock)
         : undefined,
     };
   }, [state, view]);
@@ -713,6 +754,7 @@ export function HomeScreen() {
             view.table.tomorrow,
             current,
             state.clock,
+            view.table.past[0],
           )
         : null;
       setNextInfo(prev => {
@@ -770,6 +812,8 @@ export function HomeScreen() {
       // On the phone's clock: the schedule reads every time on it.
       today: phoneView.table.today,
       tomorrow: phoneView.table.tomorrow,
+      // Last night's ʿIshāʾ past midnight is still ahead in the small hours.
+      yesterday: phoneView.alertYesterday,
       // Anchor the schedule to the day the maps were FETCHED for — if this
       // sync fires with stale state just after midnight, yesterday's map
       // must not be pinned onto today's date (early-adhan bug, v2.7.38).
@@ -1029,6 +1073,8 @@ export function HomeScreen() {
           // On the phone's clock: the schedule reads every time on it.
           today: phoneView.table.today,
           tomorrow: phoneView.table.tomorrow,
+          // Last night's ʿIshāʾ past midnight is still ahead in the small hours.
+          yesterday: phoneView.alertYesterday,
           baseDate: state.baseDate,
           // The alert week, not the drawn one — with the rows off they
           // differ by exactly the boundaries this schedule is for.
@@ -1071,6 +1117,7 @@ export function HomeScreen() {
               { jumuah: t.jumuah, ramadan: t.ramadan, eid: t.eid },
               phoneView.widget.week,
               extras,
+              phoneView.widget.yesterday,
             ),
           )
           .catch(e => console.warn('syncPrayerWidget (focus):', e));
@@ -1081,6 +1128,7 @@ export function HomeScreen() {
           today: phoneView.la.today,
           tomorrow: phoneView.la.tomorrow,
           week: phoneView.la.week,
+          yesterday: phoneView.la.yesterday,
           now: new Date(),
           locationName: locationLabel,
           coords: { lat: state.latitude, lng: state.longitude },
@@ -1196,6 +1244,7 @@ export function HomeScreen() {
           },
           phoneView.widget.week,
           extras,
+          phoneView.widget.yesterday,
         ),
       )
       .catch(e => console.warn('syncPrayerWidget (effect):', e));
@@ -1248,6 +1297,7 @@ export function HomeScreen() {
       today: phoneView.la.today,
       tomorrow: phoneView.la.tomorrow,
       week: phoneView.la.week,
+      yesterday: phoneView.la.yesterday,
       now: new Date(),
       locationName: locationLabel,
       coords: { lat: state.latitude, lng: state.longitude },

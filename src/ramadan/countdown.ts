@@ -13,7 +13,7 @@
  *   • Otherwise the next event is Suhoor / next-day Imsak.
  */
 
-import { addDays, combineLocalDateAndTime, startOfLocalDay } from '../utils/prayerTimes';
+import { addDays, eventAt, startOfLocalDay } from '../utils/prayerTimes';
 import type { TimingsMap } from '../types/prayer';
 
 export type RamadanCountdownEvent = {
@@ -29,11 +29,9 @@ export type RamadanCountdownEvent = {
  * is the evening BEFORE: read on the day itself it was a suhoor cutoff still
  * ahead all afternoon, and the card counted down to it instead of to iftar.
  */
-function imsakOn(day: Date, imsak: string, maghrib: string): Date {
-  const at = combineLocalDateAndTime(day, imsak);
-  return at > combineLocalDateAndTime(day, maghrib)
-    ? combineLocalDateAndTime(addDays(day, -1), imsak)
-    : at;
+function imsakOn(day: Date, imsak: string): Date {
+  // `eventAt`'s rule: an Imsak from 18:00 on is the evening before.
+  return eventAt('Imsak', { Imsak: imsak }, day);
 }
 
 /**
@@ -53,8 +51,8 @@ export function getNextRamadanEvent(
   if (!imsakStr || !maghribStr) return null;
 
   const dayStart = startOfLocalDay(now);
-  const imsakAt = imsakOn(dayStart, imsakStr, maghribStr);
-  const maghribAt = combineLocalDateAndTime(dayStart, maghribStr);
+  const imsakAt = imsakOn(dayStart, imsakStr);
+  const maghribAt = eventAt('Maghrib', { Maghrib: maghribStr }, dayStart);
 
   if (now < imsakAt) {
     // Pre-dawn — countdown to Suhoor cutoff (Imsak).
@@ -70,6 +68,6 @@ export function getNextRamadanEvent(
   const tomorrowDay = addDays(dayStart, 1);
   return {
     type: 'suhoor',
-    at: imsakOn(tomorrowDay, tomorrowImsak, tomorrow?.Maghrib ?? maghribStr),
+    at: imsakOn(tomorrowDay, tomorrowImsak),
   };
 }

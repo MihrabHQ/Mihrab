@@ -156,7 +156,9 @@ describe('namazvakti.com at the turn of the year', () => {
     await getNamazvaktiTimes({ ...COLOGNE, date: new Date(2026, 11, 30) });
     const asked = () =>
       net.calls.filter(u => u.includes('data-namazvakti-2027')).length;
-    for (const d of [3, 4, 5, 6]) {
+    // From the 4th: on a phone across the date line (Kiritimati) the 3rd
+    // is still Cologne's 2nd, which 2026's file holds.
+    for (const d of [4, 5, 6, 7]) {
       await expect(
         getNamazvaktiTimes({ ...COLOGNE, date: new Date(2027, 0, d) }),
       ).rejects.toThrow(/No published day/);

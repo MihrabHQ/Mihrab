@@ -40,7 +40,7 @@
  * second-time alerts of a prayer that has been answered.
  */
 import { useCallback, useMemo, useRef } from 'react';
-import { addDays, combineLocalDateAndTime, startOfLocalDay } from '../utils/prayerTimes';
+import { addDays, combineLocalDateAndTime, eventAt, startOfLocalDay } from '../utils/prayerTimes';
 import type { TimingsMap } from '../types/prayer';
 import {
   clearEntry,
@@ -90,13 +90,11 @@ export type QuickLogPhase =
   | 'after-window';
 
 /**
- * When a row of the card happens. Ishāʾ (and its boundary) printed before
- * the day's Maghrib is past midnight — Stockholm in June — and is that
- * evening's, on the next date: the rule `dayRollover` reads the card by.
- * Read on its own date it was a time already behind the whole day, so
- * Ishāʾ was "on time" from noon, before it had come, and Maghrib's window,
- * ending there, never closed. The next date on the day's own clock, not
- * the phone's: the two can change their offset on different nights.
+ * When a row of the card happens: `eventAt`, whose rule puts an Ishāʾ (and
+ * its boundary) printed past midnight — Stockholm in June — on the next
+ * date, the evening it belongs to. Read on its own date it was a time
+ * already behind the whole day, so Ishāʾ was "on time" from noon, before it
+ * had come, and Maghrib's window, ending there, never closed.
  */
 function onCard(
   key: string,
@@ -104,12 +102,7 @@ function onCard(
   base: Date,
   clock?: string | null,
 ): Date {
-  const raw = timings[key];
-  const at = combineLocalDateAndTime(base, raw, clock);
-  if ((key !== 'Isha' && key !== 'IshaDaruri') || !timings.Maghrib) return at;
-  return at < combineLocalDateAndTime(base, timings.Maghrib, clock)
-    ? combineLocalDateAndTime(addDays(base, 1), raw, clock)
-    : at;
+  return eventAt(key, timings, base, clock);
 }
 
 /**

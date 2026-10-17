@@ -24,6 +24,7 @@ import type { TimingsMap } from '../types/prayer';
 import { isFridayBeforeMaghrib } from '../widget/lockScreenPayload';
 import {
   combineLocalDateAndTime,
+  eventAt,
   startOfLocalDay,
 } from '../utils/prayerTimes';
 
@@ -85,7 +86,8 @@ export function isInTahajjudWindow(
   const isha = today.Isha;
   if (!isha) return false;
   const dayStart = startOfLocalDay(now);
-  const ishaAt = combineLocalDateAndTime(dayStart, isha);
+  // Past midnight (Stockholm in June) it is still this evening's: `eventAt`.
+  const ishaAt = eventAt('Isha', today, dayStart);
   const ishaPlusOne = new Date(ishaAt.getTime() + 60 * 60_000);
   // Fajr — use tomorrow's if today's has already passed.
   const fajrToday = today.Fajr ? combineLocalDateAndTime(dayStart, today.Fajr) : null;

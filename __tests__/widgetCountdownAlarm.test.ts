@@ -169,7 +169,11 @@ describe('the cards agree on what they are counting to', () => {
     // To tomorrow's first row, as an instant — the same answer the alarm
     // is armed with, handed to the Chronometer as elapsed time.
     expect(glanceSupport).toMatch(
-      /earliest\(ahead \+ \(tomorrow\?\.let \{ eventsOf\(it, WallClock\.MINUTES_PER_DAY\) \} \?: emptyList\(\)\)\)/,
+      /earliest\(soon \+ \(tomorrow\?\.let \{ eventsOf\(it, WallClock\.MINUTES_PER_DAY\) \} \?: emptyList\(\)\)\)/,
+    );
+    // And, just after midnight, last night's ʿIshāʾ past it (1442 on its day).
+    expect(glanceSupport).toMatch(
+      /eventsOf\(yesterday, -WallClock\.MINUTES_PER_DAY\)\.filter \{ it\.at > nowMinutes \}/,
     );
     expect(glanceSupport).toMatch(/fun epochMs\(\): Long\? = WallClock\.epochMs\(day\.dateKey, minutes\)/);
     expect(glanceSupport).toMatch(/SystemClock\.elapsedRealtime\(\) \+ left/);

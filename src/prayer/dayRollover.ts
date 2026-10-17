@@ -23,25 +23,20 @@
  * key in `DISPLAY_ORDER` gets both cases right without knowing which is
  * which.
  *
- * ── THE TWO ROWS THAT CAN FALL AFTER MIDNIGHT ─────────────────────────
+ * ── THE ROWS THAT CAN FALL AFTER MIDNIGHT ─────────────────────────────
  *
  * Ishāʾ and the First Third are printed on this card but can happen on the
  * next calendar day — Stockholm in June puts Ishāʾ past 00:00 — and a naive
  * "today at 00:15" is sixteen hours in the PAST, which would read as a day
- * already spent at breakfast. Both are pushed a day when they land before
- * Maghrib, which is the same rule the card's own progress rail uses.
+ * already spent at breakfast. Each row is placed by `eventAt`, whose rule
+ * (`rowDateShift`) is the scheduler's and the widgets' too.
  */
 import { DISPLAY_ORDER, type TimingsMap } from '../types/prayer';
-import { addDays, combineLocalDateAndTime } from '../utils/prayerTimes';
+import { eventAt } from '../utils/prayerTimes';
 
 /**
  * The instant one row of this card happens, or null when the row is absent
  * or its clock string is unreadable.
- *
- * Not `utils/prayerTimes.eventAt`: that one pushes the First Third past
- * midnight but not Ishāʾ, because the scheduler it was written for reads
- * Ishāʾ off the day it actually falls on. This reads the card, where both
- * are printed on the evening they belong to.
  */
 function instantOf(
   key: string,
@@ -49,16 +44,9 @@ function instantOf(
   dayStart: Date,
   clock?: string | null,
 ): Date | null {
-  const raw = timings[key];
-  if (!raw) return null;
+  if (!timings[key]) return null;
   try {
-    const at = combineLocalDateAndTime(dayStart, raw, clock);
-    if (key !== 'Isha' && key !== 'Firstthird') return at;
-    const maghrib = timings.Maghrib;
-    if (!maghrib) return at;
-    return at < combineLocalDateAndTime(dayStart, maghrib, clock)
-      ? combineLocalDateAndTime(addDays(dayStart, 1), raw, clock)
-      : at;
+    return eventAt(key, timings, dayStart, clock);
   } catch {
     // An unreadable time is a row that cannot be placed, not a throw: the
     // rest of the day still answers the question.

@@ -15,6 +15,7 @@ import {
   addDays,
   combineLocalDateAndTime,
   computeNextSalah,
+  eventAt,
   formatDisplayTime,
   formatLocalTime,
   getNextPrayerDisplay,
@@ -324,6 +325,14 @@ export function buildWidgetPayload(
    * to count commas to find out which `undefined` is which.
    */
   extras?: WidgetExtras,
+  /**
+   * The day before `today`, where the caller holds it. Its ʿIshāʾ (or a
+   * First Third) past midnight is that evening's (`rowDateShift`) and still
+   * ahead in today's small hours: it is what comes next, and the day rides
+   * in `days` — before today's — for as long as it has a time ahead, so the
+   * widgets count down to it too.
+   */
+  yesterday?: TimingsMap,
 ): WidgetPrayerPayload {
   if (coords && coords.lat === 0 && coords.lng === 0) {
     throw new Error(
@@ -351,7 +360,7 @@ export function buildWidgetPayload(
   // when the user has turned it on, and someone who has asked to be told
   // about the Last Third has asked for a countdown to it — on the widget
   // as much as on the Lock Screen.
-  let next = getNextPrayerDisplay(today, tomorrow, now);
+  let next = getNextPrayerDisplay(today, tomorrow, now, undefined, yesterday);
   // Soft fallback: after Isha + no tomorrow data, still surface "Fajr next" by
   // estimating from today's Fajr applied to tomorrow's calendar date. The
   // widget shows something useful instead of a null nextKey + stale times.
@@ -391,7 +400,23 @@ export function buildWidgetPayload(
       : tomorrow
         ? [today, tomorrow]
         : [today];
-  const days = buildDays(weekSource, now);
+  const yesterdayAhead =
+    yesterday != null &&
+    Object.keys(yesterday).some(key => {
+      try {
+        return (
+          eventAt(key, yesterday, addDays(startOfLocalDay(now), -1)) > now
+        );
+      } catch {
+        return false;
+      }
+    });
+  const days = [
+    ...(yesterdayAhead
+      ? buildDays([yesterday as TimingsMap], addDays(now, -1))
+      : []),
+    ...buildDays(weekSource, now),
+  ];
 
   return {
     dayLabel,

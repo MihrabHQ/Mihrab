@@ -449,12 +449,16 @@ open class PrayerWidgetProvider : GlanceAppWidgetReceiver() {
     private fun nextBoundaryMillis(o: JSONObject): Long? {
       val todayKey = todayDateKey()
       val tomorrow = dayAfter(o, todayKey)
+      val yesterday = dayBefore(o, todayKey)
       return WidgetInstants.next(
         nowMs = System.currentTimeMillis(),
         dayKey = todayKey,
         dayMinutes = boundaryMinutes(selectTodayDay(o), o),
         nextDayKey = tomorrow?.optString("dateKey"),
         nextDayMinutes = tomorrow?.let { boundaryMinutes(it, o) }.orEmpty(),
+        // Last night's ʿIshāʾ past midnight (1442 on its day) is still ahead.
+        prevDayKey = yesterday?.optString("dateKey"),
+        prevDayMinutes = yesterday?.let { boundaryMinutes(it, o) }.orEmpty(),
       )?.epochMs
     }
 
@@ -479,6 +483,19 @@ open class PrayerWidgetProvider : GlanceAppWidgetReceiver() {
         for (i in 0 until extra.length()) extra.optJSONObject(i)?.let { out.add(it) }
       }
       return out
+    }
+
+    /** The day before `key` in the payload's window, or null at its start. */
+    private fun dayBefore(o: JSONObject, key: String): JSONObject? {
+      val days = o.optJSONArray("days") ?: return null
+      if (key.isEmpty()) return null
+      var prev: JSONObject? = null
+      for (i in 0 until days.length()) {
+        val day = days.optJSONObject(i) ?: continue
+        if (day.optString("dateKey") == key) return prev
+        prev = day
+      }
+      return null
     }
 
     /** The day after `key` in the payload's window, or null past its end. */

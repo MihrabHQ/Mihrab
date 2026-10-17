@@ -93,7 +93,9 @@ const PLACES: Place[] = [
     source: { auto: false, provider: 'local_adhan' },
     effective: 'local_adhan',
     fajrUtc: [9.5, 11],
-    clock: undefined,
+    // Computed on the phone for a place six hours west: on the place's
+    // clock — the longitude's hour, the app knowing no zone for it.
+    clock: 'Etc/GMT+5',
   },
 ];
 

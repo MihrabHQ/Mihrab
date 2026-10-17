@@ -2,6 +2,7 @@ import type { TimingsMap } from '../types/prayer';
 import {
   addDays,
   combineLocalDateAndTime,
+  eventAt,
   extractClock,
   formatLocalTime,
   startOfLocalDay,
@@ -179,14 +180,23 @@ function instantNightTimes(
   clock?: string | null,
 ): TimingsMap {
   const nightOf = (eveningDate: Date, maghrib: string, fajr: string) => {
-    const m = combineLocalDateAndTime(eveningDate, maghrib, clock).getTime();
-    // Fajr is the morning after, as on the clock faces (`clockNightTimes`).
-    const nextMorning = toMinutes(fajr) <= toMinutes(maghrib);
-    const f = combineLocalDateAndTime(
-      nextMorning ? addDays(eveningDate, 1) : eveningDate,
-      fajr,
+    // Maghrib on its row's date (`eventAt`: after midnight where the sun
+    // sets past it), and Fajr the first after it — the morning after, as
+    // on the clock faces (`clockNightTimes`).
+    const m = eventAt(
+      'Maghrib',
+      { Maghrib: maghrib },
+      eveningDate,
       clock,
     ).getTime();
+    let f = combineLocalDateAndTime(eveningDate, fajr, clock).getTime();
+    for (let i = 1; f <= m && i <= 2; i++) {
+      f = combineLocalDateAndTime(
+        addDays(eveningDate, i),
+        fajr,
+        clock,
+      ).getTime();
+    }
     return (fraction: number) =>
       new Date(Math.round((m + (f - m) * fraction) / 60_000) * 60_000);
   };

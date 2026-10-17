@@ -43,6 +43,7 @@ import { subscribeQuranState } from '../quran/quranState';
 import { subscribeTasbihState } from '../tasbih/tasbihStore';
 import {
   WIDGET_WINDOW_DAYS,
+  cachedPrayerDaysBefore,
   cachedPrayerDaysFrom,
   type DayWindowParams,
 } from '../prayer/widgetDayWindow';
@@ -60,8 +61,9 @@ import type { PrayerAppSettings } from '../settings/types';
 import type { TimingsMap } from '../types/prayer';
 import {
   addDays,
-  combineLocalDateAndTime,
-  onDeviceClock,
+  eventAt,
+  phoneDaysOf,
+  type ClockedTimings,
 } from '../utils/prayerTimes';
 import { setTodaysMaghrib } from '../hijri/islamicDay';
 import { filterOptionalTimes, injectNightTimes } from '../utils/nightTimes';
@@ -142,22 +144,48 @@ function labelFor(settings: PrayerAppSettings): string {
  * Gapless: both readers stop at the first day they cannot produce, because
  * every consumer of these arrays indexes them as `today + i`.
  *
- * On the PHONE's clock: the widgets read every time on it (WallClock.kt,
- * WallClock.swift), and a saved place in another zone whose source writes
- * it on its own clock would otherwise count down to the wrong instants.
+ * On the PHONE's days and clock: the widgets read every time on it
+ * (WallClock.kt, WallClock.swift), and a saved place in another zone whose
+ * source writes it on its own clock would otherwise count down to the
+ * wrong instants — and, far enough away, list a Fajr from the phone's
+ * evening before as this day's (`phoneDaysOf`).
  */
 export async function rawWindow(
   params: DayWindowParams,
   now: Date,
 ): Promise<TimingsMap[]> {
+  return phoneDaysOf(await placeWindow(params, now), now);
+}
+
+/**
+ * `rawWindow`, and the phone's day before it where the device holds it:
+ * last night's ʿIshāʾ past midnight is still ahead in today's small hours
+ * (`rowDateShift`), and a window from today on had nothing to say about it.
+ */
+export async function rawWindowWithYesterday(
+  params: DayWindowParams,
+  now: Date,
+): Promise<{ yesterday?: TimingsMap; days: TimingsMap[] }> {
+  const place = await placeWindow(params, now);
+  const before = place.length
+    ? await cachedPrayerDaysBefore(params, now).catch(() => [])
+    : [];
+  if (before.length === 0) return { days: phoneDaysOf(place, now) };
+  const all = phoneDaysOf([before[0], ...place], addDays(now, -1));
+  return { yesterday: all[0], days: all.slice(1) };
+}
+
+/** The window on the place's own days, each with its clock. */
+async function placeWindow(
+  params: DayWindowParams,
+  now: Date,
+): Promise<ClockedTimings[]> {
   const cached = await cachedPrayerDaysFrom(0, params, now);
-  if (cached.length > 0) {
-    return cached.map((d, i) => onDeviceClock(d.timings, addDays(now, i), d.clock));
-  }
+  if (cached.length > 0) return cached;
 
   // The provider's own answer from the phone (its listed place, its clock,
   // its corrections), never the network: a headless refresh must not fetch.
-  const local: TimingsMap[] = [];
+  const local: ClockedTimings[] = [];
   for (let i = 0; i < WIDGET_WINDOW_DAYS; i++) {
     try {
       const date = addDays(now, i);
@@ -169,18 +197,16 @@ export async function rawWindow(
         calculationMethod: params.calculationMethod,
         school: params.school,
         offline: true,
-      })
-        .then(r => onDeviceClock(r.timings, date, r.clock))
-        .catch(() =>
-          computeLocalAdhanTimes({
-            latitude: params.latitude,
-            longitude: params.longitude,
-            date,
-            calculationMethod: params.calculationMethod,
-            school: params.school,
-          }).timings,
-        );
-      local.push(day);
+      }).catch(() =>
+        computeLocalAdhanTimes({
+          latitude: params.latitude,
+          longitude: params.longitude,
+          date,
+          calculationMethod: params.calculationMethod,
+          school: params.school,
+        }),
+      );
+      local.push({ timings: day.timings, clock: day.clock });
     } catch {
       break;
     }
@@ -242,7 +268,10 @@ export async function republishWidgetPayload(
       school: settings.school,
     };
 
-    const raw = await rawWindow(params, now);
+    const { yesterday: rawYesterday, days: raw } = await rawWindowWithYesterday(
+      params,
+      now,
+    );
     if (raw.length === 0) return false;
 
     // Offsets are applied at read time and the night times are derived from
@@ -261,6 +290,18 @@ export async function republishWidgetPayload(
       Firstthird: settings.firstThirdEnabled,
     };
     const week = window.map(day => filterOptionalTimes(day, optional));
+    // Yesterday, the same way, for an ʿIshāʾ of last night still ahead.
+    const yesterday = rawYesterday
+      ? filterOptionalTimes(
+          injectNightTimes(
+            [rawYesterday, raw[0]].map(day =>
+              applyOffsets(day, settings.prayerOffsets),
+            ),
+            addDays(now, -1),
+          )[0],
+          optional,
+        )
+      : undefined;
 
     /**
      * TODAY'S MAGHRIB, FOR EVERYTHING THAT ASKS WHAT DAY IT IS.
@@ -280,7 +321,7 @@ export async function republishWidgetPayload(
     try {
       setTodaysMaghrib(
         settings.islamicDayFromMaghrib && window[0].Maghrib
-          ? combineLocalDateAndTime(now, window[0].Maghrib)
+          ? eventAt('Maghrib', window[0], now)
           : null,
       );
     } catch {
@@ -311,6 +352,7 @@ export async function republishWidgetPayload(
       { jumuah: seasonal.jumuah, ramadan: seasonal.ramadan, eid: seasonal.eid },
       week,
       extras,
+      yesterday,
     );
     return true;
   } catch (e) {

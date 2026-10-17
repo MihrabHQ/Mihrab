@@ -42,6 +42,8 @@ import {
 import { fetchPrayerTimesUnified } from '../src/providers/fetchPrayerTimes';
 import { namazvaktiBucketAsset, NV_PACK_BUCKETS, packYear } from '../src/providers/namazvaktiPack';
 import { validateTimings } from '../src/providers/validateTimings';
+import { placeCivilDay } from '../src/providers/locationClock';
+import { placeZoneFor } from '../src/providers/placeZone';
 import {
   parseCityInfo,
   parseCityList,
@@ -279,6 +281,15 @@ describe('the provider', () => {
   const COLOGNE_TILE = JSON.stringify({ v: 1, tile: '50_5', cities: [[5887, 50.9333, 6.95, 'Köln'], [5789, 52.5167, 13.4, 'Berlin']] });
   const coords = { latitude: 50.94, longitude: 6.96 };
   const day = new Date(2026, 9, 14);
+  /**
+   * The published Fajr of the city's own day for the phone's 14 October: on
+   * a phone across the date line (Kiritimati) that is Köln's 13th
+   * (`placeCivilDay`, as every source's day is read).
+   */
+  const fajrForDay = () => {
+    const c = placeCivilDay(day, placeZoneFor(50.9333, 6.95, day));
+    return c.d === 14 ? '06:04' : '06:03';
+  };
 
   beforeEach(async () => {
     _resetNamazvaktiForTests();
@@ -299,7 +310,7 @@ describe('the provider', () => {
       'XML.php?cityID=5887': () => response(200, COLOGNE),
     });
     const r = await getNamazvaktiTimes({ ...coords, date: day, school: 0 });
-    expect(r.timings.Fajr).toBe('06:04');
+    expect(r.timings.Fajr).toBe(fajrForDay());
     expect(r.source).toBe('namazvakti');
     const urls = mockFetch.mock.calls.map(c => String(c[0]));
     const site = urls.filter(u => u.includes('namazvakti.com'));
@@ -323,7 +334,7 @@ describe('the provider', () => {
       },
     });
     const r = await getNamazvaktiTimes({ ...coords, date: day, school: 0 });
-    expect(r.timings.Fajr).toBe('06:04');
+    expect(r.timings.Fajr).toBe(fajrForDay());
     expect(r.source).toBe('cdn');
     expect(mockFetch.mock.calls.map(c => String(c[0])).some(u => u.includes('namazvakti.com'))).toBe(false);
   });

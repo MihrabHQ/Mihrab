@@ -1,5 +1,10 @@
 import type { NextSalahName, TimingsMap } from '../types/prayer';
 import { isNonPrayerEvent, NEXT_SALAH_ORDER } from '../types/prayer';
+import {
+  EARLY_MORNING_THRESHOLD_MIN,
+  LATE_EVENING_THRESHOLD_MIN,
+  LATE_MAGHRIB_LIMIT_MIN,
+} from '../providers/validateTimings';
 import { civilInZone, deviceZone, instantOnZoneClock } from './zoneClock';
 
 /**
@@ -112,30 +117,69 @@ export function startOfLocalDay(d: Date): Date {
 }
 
 /**
- * The date a day's entry actually falls on.
+ * WHICH DATE A ROW'S CLOCK TIME IS ON — the one rule, applied here and
+ * nowhere else.
  *
- * Every row of a day card is that day's clock time on that day — with one
- * exception. The first third of the night belongs to the night the day
- * BEGINS (see `nightTimes.ts`), and at high latitude in midsummer that
- * night's first third can land past local midnight: Maghrib 22:00 with
- * Fajr 02:00 gives 23:20, which is fine, but push Maghrib to 23:10 and it
- * reads 00:23 — the small hours of the NEXT day, not of this one. Pinned
- * to this day it would be counted down to, and announced, some twenty-three
- * hours early.
+ * Every row of a day card is that day's clock time on that day, with the
+ * exceptions `validateTimings` already allows a day to have:
  *
- * Any night mark whose clock falls before Maghrib's is therefore on the
- * other side of midnight. Nothing else on the card needs this: Islamic
- * Midnight and the Last Third belong to the night that ENDS here, and
- * their pre-dawn times are already this day's.
+ *   - ʿIshāʾ may pass midnight (Stockholm in June prints 00:02): read on
+ *     its own date it was the small hours of THIS morning, before the
+ *     day's Fajr. So was the First Third of the night that begins on the
+ *     card (Maghrib 23:10 gives 00:23 — see `nightTimes.ts`), and so are
+ *     the Mālikī boundaries of Maghrib and ʿIshāʾ (`daruriTimes.ts`). Any
+ *     of them earlier than 06:00 is on the NEXT date.
+ *   - Maghrib itself, where the sun sets after midnight (Reykjavik and
+ *     Tromsø in early summer), is earlier than 03:00 and on the next date.
+ *   - Imsak, where Fajr is just past midnight, is printed the evening
+ *     before (18:00 or later) and is on the PREVIOUS date.
+ *
+ * Midnight and the Last Third are not on the list: `nightTimes.ts` writes
+ * each of them as the mark that falls on the card's own date.
+ *
+ * Per row, from its own clock time and nothing else, so a day rewritten on
+ * another clock (`phoneDaysOf`) can be written to be read back by it. Before
+ * this lived in each reader — the rollover, the quick log, the end-of-day
+ * prompt and the Mālikī boundaries pushed ʿIshāʾ past midnight while the
+ * scheduler, the widget and the countdown read it on its own date — and on
+ * the night the season carried ʿIshāʾ across midnight two adhans rang three
+ * minutes apart, or none.
  */
+const NEXT_DATE_BEFORE: Readonly<Record<string, number>> = {
+  Isha: EARLY_MORNING_THRESHOLD_MIN,
+  Firstthird: EARLY_MORNING_THRESHOLD_MIN,
+  IshaDaruri: EARLY_MORNING_THRESHOLD_MIN,
+  MaghribDaruri: EARLY_MORNING_THRESHOLD_MIN,
+  Maghrib: LATE_MAGHRIB_LIMIT_MIN,
+};
+const PREVIOUS_DATE_FROM: Readonly<Record<string, number>> = {
+  Imsak: LATE_EVENING_THRESHOLD_MIN,
+};
+
 /**
- * When an event on `base`'s card actually happens.
+ * Days from the card's date to the date row `name`'s clock time `raw` is
+ * on: 1 for an ʿIshāʾ past midnight, -1 for an Imsak the evening before,
+ * else 0 (and 0 for anything unreadable).
+ */
+export function rowDateShift(name: string, raw: string | undefined): number {
+  const before = NEXT_DATE_BEFORE[name];
+  const from = PREVIOUS_DATE_FROM[name];
+  if (before == null && from == null) return 0;
+  const m = raw ? /(\d{1,2}):(\d{2})/.exec(raw) : null;
+  if (!m) return 0;
+  const minutes = parseInt(m[1], 10) * 60 + parseInt(m[2], 10);
+  if (before != null && minutes < before) return 1;
+  if (from != null && minutes >= from && minutes < 1440) return -1;
+  return 0;
+}
+
+/**
+ * When a row of `base`'s card happens: its clock time on the day's clock
+ * (`clock`), on the date `rowDateShift` says.
  *
- * Exported because it is the one place that knows the First Third of the
- * night belongs to the evening it starts in and not to the date its clock
- * time falls on. Anything asking "which occurrence is this row" has to
- * ask the same way the scheduler does, or the two name different
- * instants for the same row.
+ * Every reader asking "which occurrence is this row" asks here — the
+ * scheduler, the countdown, the rollover, the quick log, the widgets'
+ * contract — or two of them name different instants for the same row.
  */
 export function eventAt(
   name: string,
@@ -143,21 +187,27 @@ export function eventAt(
   base: Date,
   clock?: string | null,
 ): Date {
-  const at = combineLocalDateAndTime(base, timings[name], clock);
-  if (name !== 'Firstthird' || !timings.Maghrib) return at;
-  return at < combineLocalDateAndTime(base, timings.Maghrib, clock)
-    ? combineLocalDateAndTime(addDays(base, 1), timings[name], clock)
-    : at;
+  const raw = timings[name];
+  const shift = rowDateShift(name, raw);
+  return combineLocalDateAndTime(
+    shift === 0 ? base : addDays(base, shift),
+    raw,
+    clock,
+  );
 }
+
+/** A clock time as the days hold them: "HH:mm". */
+const CLOCK_TEXT = /^(\d{1,2}):(\d{2})$/;
 
 /**
  * A day's times rewritten from the clock they are on to another, the same
- * instants: `to` a zone, or `'device'` for the phone's. For what cannot be
- * told which clock to read on — the widgets and the Live Activity, whose
- * native code reads every time on the phone's clock, and the alert
- * schedule's many readers — and for putting the days of one place on one
- * clock. Anything that is not a time passes through; with both clocks the
- * same, the day itself is returned.
+ * instants (each read by `eventAt`): `to` a zone, or `'device'` for the
+ * phone's. For putting the days of one place on one clock, where the two
+ * clocks are a few hours apart at most; anything that is not a time passes
+ * through, and with both clocks the same the day itself is returned. A
+ * time that falls on another date of the target clock than the day's
+ * cannot say so in "HH:mm" — onto the PHONE's clock, take the days
+ * together with `phoneDaysOf`, which regroups them.
  */
 export function onClock(
   timings: TimingsMap,
@@ -170,13 +220,11 @@ export function onClock(
   if (fromZone === toZone) return timings;
   const out: TimingsMap = {};
   for (const [key, value] of Object.entries(timings)) {
-    const m =
-      typeof value === 'string' ? /^(\d{1,2}):(\d{2})$/.exec(value) : null;
-    if (!m) {
+    if (typeof value !== 'string' || !CLOCK_TEXT.test(value)) {
       out[key] = value;
       continue;
     }
-    const at = combineLocalDateAndTime(base, value, from);
+    const at = eventAt(key, timings, base, from);
     if (!toZone) {
       out[key] = formatLocalTime(at);
       continue;
@@ -205,23 +253,144 @@ export function wallClockDate(
   return c ? new Date(c.y, c.m - 1, c.d, c.h, c.min) : at;
 }
 
-/** A day on the phone's clock — `onClock` to `'device'`. */
+/** A day's times and the clock they are written on (`DEVICE_CLOCK`). */
+export type ClockedTimings = {
+  timings: TimingsMap;
+  clock?: string | null;
+};
+
+/** Whole phone days from `from` (a local midnight) to the day `at` is on. */
+function phoneDayIndex(from: Date, at: Date): number {
+  return Math.round(
+    (startOfLocalDay(at).getTime() - from.getTime()) / 86_400_000,
+  );
+}
+
+/**
+ * A place's consecutive days (`days[i]` is the place's day for the phone's
+ * `base + i`, as the producers choose it — `placeCivilDay`) REGROUPED onto
+ * the phone's days: `result[i]` holds, in "HH:mm" on the phone's clock,
+ * every time that falls on the phone's `base + i` — reading back by
+ * `eventAt` on that date as the very instant.
+ *
+ * For what cannot be told which clock to read on — the widgets and the Live
+ * Activity, whose native code reads every time on the phone's clock, and
+ * the alert schedule's many readers. Rewritten a day at a time, a saved
+ * Jakarta on a phone in Stockholm read Fajr 23:12, Sunrise 00:30 … Isha
+ * 14:00 on one date: Fajr is Jakarta's 04:12, the evening BEFORE on the
+ * phone, and read on the date it was written for it came a day late, after
+ * that day's Isha. Here each time goes to the phone day it is on: that
+ * phone day's Fajr is 23:12, Jakarta's next morning, and its Sunrise to
+ * Isha are the 00:30 to 14:00 of Jakarta's day — in the order they happen.
+ * ʿIshāʾ and the other evening rows keep `rowDateShift`'s rule: one past
+ * the phone's midnight stays on the evening it belongs to (the widgets'
+ * contract counts it past 1440).
+ *
+ * At the window's edges a phone day can want a time from a place day the
+ * window does not hold (Kolkata's morning holds New York's previous
+ * evening): that one is the nearest day's clock time on the place's
+ * neighbouring date, a minute or two from the real one. Times that fall
+ * before the first phone day or after the last are dropped — the first and
+ * last place days are partly outside the window. Inside it nothing is
+ * dropped, except where the phone's clock itself gives a day two of the
+ * same time (the night it goes back, or a time drifting across its
+ * midnight): "HH:mm" holds one, and the earlier is kept. The day the
+ * clock skips an hour can have none.
+ *
+ * The very same objects where every day is on the phone's clock already.
+ */
+export function phoneDaysOf(days: ClockedTimings[], base: Date): TimingsMap[] {
+  if (days.every(d => !readZone(d.clock))) return days.map(d => d.timings);
+  const n = days.length;
+  const start = startOfLocalDay(base);
+  const found: Array<Map<string, Date[]>> = days.map(() => new Map());
+  const passThrough: TimingsMap[] = days.map(() => ({}));
+  const keys: string[] = [];
+  const place = (key: string, at: Date): void => {
+    if (Number.isNaN(at.getTime())) return;
+    const home =
+      phoneDayIndex(start, at) - rowDateShift(key, formatLocalTime(at));
+    if (home < 0 || home >= n) return;
+    const list = found[home].get(key);
+    if (list) list.push(at);
+    else found[home].set(key, [at]);
+  };
+  const read = (day: ClockedTimings, key: string, date: Date): Date | null => {
+    try {
+      return eventAt(key, day.timings, date, day.clock);
+    } catch {
+      return null;
+    }
+  };
+  days.forEach((day, i) => {
+    const date = addDays(start, i);
+    for (const [key, value] of Object.entries(day.timings)) {
+      if (typeof value !== 'string' || !CLOCK_TEXT.test(value)) {
+        passThrough[i][key] = value;
+        continue;
+      }
+      if (!keys.includes(key)) keys.push(key);
+      const at = read(day, key, date);
+      if (at) place(key, at);
+    }
+  });
+  // The edges: what the place's day before the window, or after it, would
+  // have put on the first or last phone day.
+  for (const key of keys) {
+    const edges: Array<[number, number, number]> = [
+      [0, 0, -1],
+      [n - 1, n - 1, n],
+    ];
+    for (const [row, from, onDay] of edges) {
+      if (found[row].has(key) || days[from].timings[key] == null) continue;
+      const at = read(days[from], key, addDays(start, onDay));
+      if (!at) continue;
+      const home =
+        phoneDayIndex(start, at) - rowDateShift(key, formatLocalTime(at));
+      if (home === row) found[row].set(key, [at]);
+    }
+  }
+  return days.map((_, i) => {
+    const out: TimingsMap = {};
+    for (const key of keys) {
+      const list = found[i].get(key);
+      if (!list) continue;
+      const first = list.reduce((a, b) => (b.getTime() < a.getTime() ? b : a));
+      out[key] = formatLocalTime(first);
+    }
+    for (const [key, value] of Object.entries(passThrough[i])) {
+      if (!(key in out)) out[key] = value;
+    }
+    return out;
+  });
+}
+
+/**
+ * One day on the phone's clock — `phoneDaysOf` for a window of one: the
+ * times that fall on the phone's `base`, those from the place's
+ * neighbouring dates at this day's clock times. Prefer `phoneDaysOf` over
+ * the run of days where there is one.
+ */
 export function onDeviceClock(
   timings: TimingsMap,
   base: Date,
   clock: string | null | undefined,
 ): TimingsMap {
-  return onClock(timings, base, clock, DEVICE_CLOCK);
+  if (!readZone(clock)) return timings;
+  return phoneDaysOf([{ timings, clock }], base)[0];
 }
 
-/** Consecutive days from `base` (`days[i]` is `base + i`) on the phone's clock. */
+/** Consecutive days from `base` (`days[i]` is `base + i`), regrouped on the phone's days (`phoneDaysOf`). */
 export function daysOnDeviceClock(
   days: TimingsMap[],
   base: Date,
   clock: string | null | undefined,
 ): TimingsMap[] {
   if (!readZone(clock)) return days;
-  return days.map((d, i) => onDeviceClock(d, addDays(base, i), clock));
+  return phoneDaysOf(
+    days.map(timings => ({ timings, clock })),
+    base,
+  );
 }
 
 export function computeNextSalah(
@@ -315,6 +484,13 @@ export function getNextPrayerDisplay(
   now: Date,
   /** The clock both days are written on (`DEVICE_CLOCK`). */
   clock?: string | null,
+  /**
+   * Yesterday's day, where the caller holds it: its ʿIshāʾ (or another
+   * evening row) past midnight is still ahead in the small hours of today
+   * (`rowDateShift`), and without it the countdown skipped from midnight
+   * straight to Fajr.
+   */
+  yesterday?: TimingsMap,
 ): { name: string; at: Date } | null {
   // Gather every still-upcoming event from today plus every event tomorrow,
   // then return the chronologically earliest. This is order-agnostic, so it
@@ -324,12 +500,16 @@ export function getNextPrayerDisplay(
   // exactly as before (next salāh during the day; tomorrow's Fajr after Isha).
   const dayStart = startOfLocalDay(now);
   const candidates: { name: string; at: Date }[] = [];
-  for (const name of NEXT_SALAH_ORDER) {
-    const raw = today[name];
-    if (!raw) continue;
-    const at = eventAt(name, today, dayStart, clock);
-    if (at > now) candidates.push({ name, at });
-  }
+  const ahead = (day: TimingsMap, base: Date) => {
+    for (const name of NEXT_SALAH_ORDER) {
+      const raw = day[name];
+      if (!raw) continue;
+      const at = eventAt(name, day, base, clock);
+      if (at > now) candidates.push({ name, at });
+    }
+  };
+  if (yesterday) ahead(yesterday, addDays(dayStart, -1));
+  ahead(today, dayStart);
   if (tomorrow) {
     const tomorrowDay = addDays(dayStart, 1);
     for (const name of NEXT_SALAH_ORDER) {
@@ -375,6 +555,13 @@ export function buildUpcomingSalahEvents(
   extraDays: TimingsMap[] = [],
   /** The clock every one of the days is written on (`DEVICE_CLOCK`). */
   clock?: string | null,
+  /**
+   * The day before `today`, where the caller holds it: its ʿIshāʾ past
+   * midnight is still to come in today's small hours (`rowDateShift`), and
+   * a schedule rebuilt after midnight from today on dropped that night's
+   * alert.
+   */
+  yesterday?: TimingsMap,
 ): { name: string; at: Date }[] {
   const dayStart = startOfLocalDay(baseDay);
   const events: { name: string; at: Date }[] = [];
@@ -387,6 +574,7 @@ export function buildUpcomingSalahEvents(
       }
     }
   };
+  if (yesterday) pushDay(yesterday, -1);
   pushDay(today, 0);
   if (tomorrow) pushDay(tomorrow, 1);
   extraDays.forEach((t, i) => pushDay(t, 2 + i));

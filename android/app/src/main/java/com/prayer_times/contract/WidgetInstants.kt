@@ -36,7 +36,9 @@ object WidgetInstants {
    * no following one has nothing honest to count down to.
    *
    * @param dayMinutes minutes after the midnight that starts `dayKey`; a
-   *   night mark after midnight carries 1440 and more.
+   *   night mark or an ʿIshāʾ after midnight carries 1440 and more.
+   * @param prevDayKey the day before `dayKey`, whose times past its
+   *   midnight (an ʿIshāʾ at 1442) can still be ahead in the small hours.
    */
   fun next(
     nowMs: Long,
@@ -45,11 +47,22 @@ object WidgetInstants {
     nextDayKey: String?,
     nextDayMinutes: Collection<Int>,
     zone: TimeZone = TimeZone.getDefault(),
+    prevDayKey: String? = null,
+    prevDayMinutes: Collection<Int> = emptyList(),
   ): Next? {
     var best: Next? = null
     for (m in dayMinutes) {
       val at = WallClock.epochMs(dayKey, m, zone) ?: continue
       if (at > nowMs && (best == null || at < best.epochMs)) best = Next(at, m, nextDay = false)
+    }
+    if (prevDayKey != null) {
+      for (m in prevDayMinutes) {
+        if (m < WallClock.MINUTES_PER_DAY) continue
+        val at = WallClock.epochMs(prevDayKey, m, zone) ?: continue
+        if (at > nowMs && (best == null || at < best.epochMs)) {
+          best = Next(at, m - WallClock.MINUTES_PER_DAY, nextDay = false)
+        }
+      }
     }
     if (best != null) return best
 

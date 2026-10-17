@@ -126,7 +126,7 @@
 import { firstThirdOn } from '../utils/nightTimes';
 import {
   addDays,
-  combineLocalDateAndTime,
+  eventAt,
   readZone,
   startOfLocalDay,
 } from '../utils/prayerTimes';
@@ -621,10 +621,10 @@ export function coerceDaruriAlerts(value: unknown): DaruriKey[] {
 /**
  * Ask the caller whether this boundary's prayer is audible on this day.
  *
- * The prayer's instant is `base` plus its own clock time — `base`, not
- * the boundary's date: Ishāʾ's boundary can land after midnight while
- * the prayer it belongs to is still on the evening before, and the
- * question being asked is about the prayer.
+ * The prayer's instant is its own row on `base`'s card (`eventAt`), not
+ * the boundary's: Ishāʾ's boundary can land after midnight while the
+ * prayer it belongs to is still on the evening before, and the question
+ * being asked is about the prayer.
  *
  * A clock that will not parse leaves the alert standing. Dropping an
  * alert because a time could not be read would be the wrong way round:
@@ -642,7 +642,7 @@ function prayerSpeaks(
   const clock = day[prayer];
   if (!clock) return true;
   try {
-    return isAudible(prayer, combineLocalDateAndTime(base, clock).getTime());
+    return isAudible(prayer, eventAt(prayer, day, base).getTime());
   } catch {
     return true;
   }
@@ -700,23 +700,13 @@ export function buildDaruriAlertEvents(
       if (!clock) continue;
       let at: Date;
       try {
-        at = combineLocalDateAndTime(base, clock);
+        // Ishāʾ's boundary is a third of the way into the night that BEGINS
+        // on this day, so at a long summer latitude it lands after local
+        // midnight — 00:23 for a 23:10 Maghrib — and belongs to tomorrow's
+        // date: `eventAt`'s rule, the same instant as `Firstthird`.
+        at = eventAt(key, day, base);
       } catch {
         continue;
-      }
-      // Ishāʾ's boundary is a third of the way into the night that BEGINS
-      // on this day, so at a long summer latitude it lands after local
-      // midnight — 00:23 for a 23:10 Maghrib — and belongs to tomorrow's
-      // date, not to this one. Exactly the rule `eventAt` applies to
-      // `Firstthird`, which is the same instant under its other name.
-      if (key === 'IshaDaruri' && day.Maghrib) {
-        try {
-          if (at < combineLocalDateAndTime(base, day.Maghrib)) {
-            at = addDays(at, 1);
-          }
-        } catch {
-          // Unparseable Maghrib — the boundary stands on its own date.
-        }
       }
       out.push({ name: key, at: new Date(at.getTime() - leadMinutes * 60_000) });
     }
@@ -820,9 +810,10 @@ export function daruriWindowEnd(
   const clock = day[row];
   if (!clock) return null;
   try {
-    return combineLocalDateAndTime(
+    return eventAt(
+      row,
+      day,
       addDays(startOfLocalDay(baseDay), dayIndex),
-      clock,
       dayClock,
     );
   } catch {
@@ -879,14 +870,9 @@ export function daruriRowState(
   let firstEndAt: Date;
   try {
     const dayStart = startOfLocalDay(baseDay);
-    firstEndAt = combineLocalDateAndTime(dayStart, firstEnd, clock);
     // Ishāʾ's boundary can fall after midnight and then belongs to the
-    // next date — the same rule `buildDaruriAlertEvents` applies.
-    if (key === 'IshaDaruri' && week[0]?.Maghrib) {
-      if (firstEndAt < combineLocalDateAndTime(dayStart, week[0].Maghrib, clock)) {
-        firstEndAt = combineLocalDateAndTime(addDays(dayStart, 1), firstEnd, clock);
-      }
-    }
+    // next date — `eventAt`'s rule, as `buildDaruriAlertEvents` reads it.
+    firstEndAt = eventAt(key, week[0], dayStart, clock);
   } catch {
     return first;
   }
