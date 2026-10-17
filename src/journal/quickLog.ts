@@ -90,6 +90,29 @@ export type QuickLogPhase =
   | 'after-window';
 
 /**
+ * When a row of the card happens. Ishāʾ (and its boundary) printed before
+ * the day's Maghrib is past midnight — Stockholm in June — and is that
+ * evening's, on the next date: the rule `dayRollover` reads the card by.
+ * Read on its own date it was a time already behind the whole day, so
+ * Ishāʾ was "on time" from noon, before it had come, and Maghrib's window,
+ * ending there, never closed. The next date on the day's own clock, not
+ * the phone's: the two can change their offset on different nights.
+ */
+function onCard(
+  key: string,
+  timings: TimingsMap,
+  base: Date,
+  clock?: string | null,
+): Date {
+  const raw = timings[key];
+  const at = combineLocalDateAndTime(base, raw, clock);
+  if ((key !== 'Isha' && key !== 'IshaDaruri') || !timings.Maghrib) return at;
+  return at < combineLocalDateAndTime(base, timings.Maghrib, clock)
+    ? combineLocalDateAndTime(addDays(base, 1), raw, clock)
+    : at;
+}
+
+/**
  * When the PREFERRED window closes, for a reader who has the Mālikī
  * second times on — or null for everyone else.
  *
@@ -108,15 +131,9 @@ export function firstWindowEnd(
   const clock = timings[`${prayer}Daruri` as keyof TimingsMap];
   if (!clock) return null;
   try {
-    let at = combineLocalDateAndTime(base, clock, dayClock);
     // Ishāʾ's boundary can fall after midnight, and then belongs to the
     // next date — the same rule `daruriRowState` and the alerts apply.
-    if (prayer === 'Isha' && timings.Maghrib) {
-      if (at < combineLocalDateAndTime(base, timings.Maghrib, dayClock)) {
-        at = addDays(at, 1);
-      }
-    }
-    return at.getTime();
+    return onCard(`${prayer}Daruri`, timings, base, dayClock).getTime();
   } catch {
     return null;
   }
@@ -139,12 +156,12 @@ export function quickLogPhase(
   const raw = timings[prayer];
   if (!raw) return 'not-yet';
   const base = startOfLocalDay(day);
-  const start = combineLocalDateAndTime(base, raw, clock).getTime();
+  const start = onCard(prayer, timings, base, clock).getTime();
   if (now.getTime() < start) return 'not-yet';
   const endKey = WINDOW_END[prayer];
   let end: number;
   if (endKey && timings[endKey]) {
-    end = combineLocalDateAndTime(base, timings[endKey], clock).getTime();
+    end = onCard(endKey, timings, base, clock).getTime();
   } else if (tomorrow?.Fajr) {
     end = combineLocalDateAndTime(addDays(base, 1), tomorrow.Fajr, clock).getTime();
   } else {
