@@ -17,19 +17,10 @@ export type PlaceClock = {
   zone: string;
   /**
    * The zone to write the times in when the phone is elsewhere, where the
-   * place's own may be stale in a phone's zone data.
+   * place's own may be stale in a phone's zone data (Morocco left GMT+1 in
+   * 2026; the ministry prints GMT).
    */
   away?: string;
-  /**
-   * Write on `away` even when the phone says it is in `zone`. Morocco left
-   * GMT+1 in 2026 and the ministry prints GMT, but a phone whose zone data
-   * predates the change still runs Africa/Casablanca an hour ahead — every
-   * Huawei without Google's updates among them (issue #82: Fajr read 06:09
-   * for the ministry's 05:09). Such a phone has had its clock set to GMT by
-   * hand, so the ministry's minute is the one its owner reads, and the one
-   * its alarms are set by.
-   */
-  always?: boolean;
 };
 
 function deviceZone(): string | undefined {
@@ -56,12 +47,12 @@ export function formatInZone(d: Date, zone: string): string {
 /** How to write a place's instants: on the phone's clock when it is the place's, else on the place's. */
 export function clockFormatter(clock: PlaceClock | undefined): (d: Date) => string {
   if (!clock) return formatLocalTime;
-  if (!clock.always && deviceZone() === clock.zone) return formatLocalTime;
+  if (deviceZone() === clock.zone) return formatLocalTime;
   const zone = clock.away ?? clock.zone;
   return (d: Date) => formatInZone(d, zone);
 }
 
-export const MOROCCO_CLOCK: PlaceClock = { zone: 'Africa/Casablanca', away: 'Etc/GMT', always: true };
+export const MOROCCO_CLOCK: PlaceClock = { zone: 'Africa/Casablanca', away: 'Etc/GMT' };
 export const ALGERIA_CLOCK: PlaceClock = { zone: 'Africa/Algiers' };
 export const SWEDEN_CLOCK: PlaceClock = { zone: 'Europe/Stockholm' };
 
