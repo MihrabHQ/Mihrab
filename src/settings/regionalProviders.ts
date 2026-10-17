@@ -22,7 +22,11 @@ import { isCoordinateInSingapore } from '../utils/singaporeRegion';
 import { isCoordinateInMorocco } from '../utils/moroccoRegion';
 import { isCoordinateInSweden } from '../utils/swedenRegion';
 import { isCoordinateInTurkey } from '../utils/turkeyRegion';
-import { memoByCoordinate, nationalMethodCountryAt } from '../utils/countryAt';
+import {
+  countryAt,
+  memoByCoordinate,
+  nationalMethodCountryAt,
+} from '../utils/countryAt';
 import { nearestDiyanetPlace } from '../providers/diyanetMethod';
 import type { PrayerDataProviderId } from './types';
 
@@ -81,7 +85,14 @@ export const HOME_PROVIDER_REGIONS: readonly RegionalProviderRegion[] = [
  * (`nationalMethodCountryAt`) AlAdhan's Automatic computes the national
  * method, and a Diyanet place nearby — Mecca, Tehran, Cairo, Moscow — does
  * not trade it for Diyanet's.
+ *
+ * Nor does the Republic of Cyprus (`NOT_NEAR_DIYANET`): Diyanet lists
+ * Northern Cyprus's districts, and Nicosia south of the line, Larnaca and
+ * Limassol are within reach of them — but the Republic's mosques do not pray
+ * by Diyanet's tables, and its Automatic is AlAdhan's.
  */
+const NOT_NEAR_DIYANET: ReadonlySet<string> = new Set(['CY']);
+
 export const NEAR_LISTED_PLACE_REGIONS: readonly RegionalProviderRegion[] = [
   {
     id: 'diyanet',
@@ -89,6 +100,7 @@ export const NEAR_LISTED_PLACE_REGIONS: readonly RegionalProviderRegion[] = [
     // with a method of their own it saves the walk through 8,000 places.
     covers: (latitude, longitude) =>
       nationalMethodCountryAt(latitude, longitude) === null &&
+      !NOT_NEAR_DIYANET.has(countryAt(latitude, longitude) ?? '') &&
       nearestDiyanetPlace(latitude, longitude) !== null,
     yieldsToChosenMethod: true,
   },

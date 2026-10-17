@@ -17,6 +17,8 @@
  *    sources do not;
  *  - a country with a calculation method of its own gets AlAdhan (its
  *    method), never Diyanet for a place Diyanet lists nearby;
+ *  - the Republic of Cyprus AlAdhan, though Northern Cyprus's districts
+ *    are near;
  *  - anywhere else, Diyanet where it lists a place within 25 km, else
  *    AlAdhan;
  *  - offline, Automatic's method is the country's own where it has one.
@@ -147,6 +149,12 @@ describe('the routing matrix', () => {
         expect(row.auto).toBe(own.source);
         expect(row.method).toBe(own.method);
         expect(row.chosen3).toBe(own.yields ? 'aladhan' : own.source);
+      } else if (country === 'CY') {
+        // The Republic of Cyprus: no source of its own and not Diyanet's,
+        // however near Northern Cyprus's districts (CHANGELOG).
+        expect(row.auto).toBe('aladhan');
+        expect(row.method).toBe(3);
+        expect(row.chosen3).toBe('aladhan');
       } else if (country in NATIONAL_METHOD) {
         // Its own method, by AlAdhan: never Diyanet for a listed place nearby.
         expect(nationalMethodCountryAt(latitude, longitude)).toBe(country);
