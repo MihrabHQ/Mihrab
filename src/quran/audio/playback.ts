@@ -30,7 +30,14 @@ import { DEFAULT_RIWAYAH, resolveRiwayah, type RiwayahId } from '../riwayat';
 import { filesOf } from '../riwayahAudio';
 import { trimFor } from './recitationEdges';
 import * as seams from './seams';
-import { ayahAudioUrl, findReciter } from './reciters';
+import { ayahAudioUrl, findReciter, type Reciter } from './reciters';
+import {
+  isRestTrack,
+  restAsset,
+  restPieces,
+  restTrackId,
+  spokenSeconds,
+} from './rest';
 import { localAudioPathIfAny, prefetchAyahAudio } from './audioStore';
 import { setNowPlayingState } from '../../native/NowPlayingState';
 import { noteListenPaused, recordListened } from './listenProgress';
@@ -62,6 +69,12 @@ export type PlaybackStatus = {
    * describes.
    */
   gap: AyahRef | null;
+  /**
+   * The drill is resting after `active` — a silent track is playing
+   * (rest.ts). The ayah stays lit; what is heard is nothing, so nothing
+   * inside the ayah (a word) is.
+   */
+  resting?: boolean;
 };
 
 const IDLE: PlaybackStatus = {
@@ -70,6 +83,7 @@ const IDLE: PlaybackStatus = {
   loading: false,
   reciterId: 'husary',
   gap: null,
+  resting: false,
 };
 
 let status: PlaybackStatus = IDLE;
@@ -163,7 +177,7 @@ async function applyPlayerOptions(): Promise<void> {
       Capability.SkipToNext,
     ],
     progressUpdateEventInterval: 1,
-    });
+  });
 }
 
 /** Whether the command centre has been bound against a real track. */
@@ -224,14 +238,20 @@ async function ensureSetup(): Promise<void> {
 
     // Mirror player state into the status store.
     TrackPlayer.addEventListener(Event.PlaybackActiveTrackChanged, e => {
-      const ref = e.track ? parseTrackId(String(e.track.id)) : null;
-      setStatus({ active: ref });
-      // The join: skip this file's leading silence, rest if the drill
-      // asks, and aim at its last sound (seams.ts; natively on Android).
+      // A drill's rest is silence after an ayah, not an ayah (rest.ts): the
+      // ayah just heard stays lit through it, and the listening place does
+      // not move.
+      const resting = isRestTrack(e.track);
+      const ref = e.track && !resting ? parseTrackId(String(e.track.id)) : null;
+      if (resting) setStatus({ resting: true });
+      else setStatus({ active: ref, resting: false });
+      // The join: skip this file's leading silence and aim at its last
+      // sound (seams.ts; natively on Android). A rest has neither.
       void seams.onTrackChanged(e);
       // The listening place moves with a continuous listen, and only with
       // one: a range played from the reader is the reader's business.
-      if (ref && listening) recordListened(ref, status.reciterId);
+      if (ref && listening)
+        recordListened({ ...ref, riwayah: queueRiwayah }, status.reciterId);
       // The first track the player ever loads is the moment iOS will
       // accept the remote commands — see applyPlayerOptions. Once only:
       // after that the binding survives every later track by itself.
@@ -290,14 +310,17 @@ async function ensureSetup(): Promise<void> {
       const ref = getPlaybackStatus().active;
       if (!ref) return;
       // The FILE that failed, which is not the ayah's number in a riwayah
-      // that counts differently (riwayahAudio.ts).
+      // that counts differently (riwayahAudio.ts). A rest is a file in the
+      // app itself, never a gap in a download.
       void TrackPlayer.getActiveTrack()
         .then(track =>
-          localAudioPathIfAny(
-            getPlaybackStatus().reciterId,
-            ref.surah,
-            fileAyahOf(track) ?? ref.ayah,
-          ),
+          isRestTrack(track)
+            ? 'bundled'
+            : localAudioPathIfAny(
+                getPlaybackStatus().reciterId,
+                ref.surah,
+                fileAyahOf(track) ?? ref.ayah,
+              ),
         )
         .then(local => {
           if (!local) setStatus({ gap: ref, playing: false, loading: false });
@@ -345,7 +368,11 @@ function swapToLocal(i: number, id: string, path: string): Promise<void> {
     // cause the very gap this removes. A different id means a different
     // queue, and this file waits for its own pass.
     if (idx == null || i < idx + 2 || !track) return;
-    if (track.id !== id || typeof track.url !== 'string' || !track.url.startsWith('http')) {
+    if (
+      track.id !== id ||
+      typeof track.url !== 'string' ||
+      !track.url.startsWith('http')
+    ) {
       return;
     }
     await TrackPlayer.remove([i]);
@@ -373,10 +400,14 @@ async function snapshotQueue(): Promise<QueueSnapshot | null> {
 async function prefetchUpcoming({ queue, idx }: QueueSnapshot): Promise<void> {
   try {
     const reciterId = status.reciterId;
-    const last = Math.min(idx + PREFETCH_AHEAD, queue.length - 1);
-    for (let i = idx + 1; i <= last; i++) {
+    // The next few FILES: a drill's rests between them are in the app
+    // already, and do not count.
+    let ahead = 0;
+    for (let i = idx + 1; i < queue.length && ahead < PREFETCH_AHEAD; i++) {
       const tr = queue[i];
-      if (!tr || typeof tr.url !== 'string' || !tr.url.startsWith('http')) {
+      if (!tr || isRestTrack(tr)) continue;
+      ahead++;
+      if (typeof tr.url !== 'string' || !tr.url.startsWith('http')) {
         continue;
       }
       const ref = parseTrackId(String(tr.id));
@@ -533,6 +564,9 @@ async function buildTracks(
   // A drill repeats each ayah: the second half of a split ayah is then
   // heard in its own repetitions, shared file and all, rather than once.
   repeating = false,
+  // The drill's "pause between repeats": rest for the ayah's recited
+  // length × this after each ayah (rest.ts). 0 is no rest.
+  restFactor = 0,
 ): Promise<Track[]> {
   const reciter = findReciter(reciterId);
   const riwayah = queueRiwayah;
@@ -541,19 +575,22 @@ async function buildTracks(
   // differently (`riwayahAudio.ts`). Each file is a track, and every track
   // carries the AYAH in its id: that is what the page lights, while the
   // file says what is heard.
-  const plan: Array<{ r: AyahRef; file: number }> = [];
+  //
+  // `n` is which of `refs` the file is for, so a rest can follow the LAST
+  // file of each: an ayah heard in two files rests once, after both.
+  const plan: Array<{ r: AyahRef; file: number; n: number }> = [];
   let before = previous;
-  for (const r of refs) {
+  refs.forEach((r, n) => {
     const afterPrevious =
       !repeating &&
       before != null &&
       before.surah === r.surah &&
       before.ayah === r.ayah - 1;
     for (const file of filesOf(riwayah, r.surah, r.ayah, afterPrevious)) {
-      plan.push({ r, file });
+      plan.push({ r, file, n });
     }
     before = r;
-  }
+  });
   // Resolve local paths once per unique file.
   const localByKey = new Map<string, string | null>();
   for (const { r, file } of plan) {
@@ -562,11 +599,33 @@ async function buildTracks(
       localByKey.set(key, await localAudioPathIfAny(reciterId, r.surah, file));
     }
   }
-  return plan.map(({ r, file }, i) => {
+  // The rest after each ayah, in silent pieces — one look per ayah.
+  const restsAfter = new Map<number, number[]>();
+  if (restFactor > 0) {
+    const restByAyah = new Map<string, number[]>();
+    for (let i = 0; i < plan.length; i++) {
+      const { r, n } = plan[i];
+      // Not after the ayah's first file when it has a second, and not after
+      // the last of the queue: the drill is over there.
+      if (i + 1 >= plan.length || plan[i + 1].n === n) continue;
+      let first = i;
+      while (first > 0 && plan[first - 1].n === n) first--;
+      const files = plan.slice(first, i + 1).map(p => p.file);
+      const key = `${r.surah}:${files.join(',')}`;
+      let pieces = restByAyah.get(key);
+      if (!pieces) {
+        pieces = await restFor(reciter, r.surah, files, restFactor);
+        restByAyah.set(key, pieces);
+      }
+      if (pieces.length > 0) restsAfter.set(i, pieces);
+    }
+  }
+  const tracks: Track[] = [];
+  plan.forEach(({ r, file }, i) => {
     const local = localByKey.get(`${r.surah}:${file}`);
     const meta = findSurah(r.surah);
-    return {
-      id: trackId(r.surah, r.ayah, indexOffset + i),
+    const ayahTrack: Track = {
+      id: trackId(r.surah, r.ayah, indexOffset + tracks.length),
       url: local ? `file://${local}` : ayahAudioUrl(reciter, r.surah, file),
       fileAyah: file,
       // The silence at the file's two ends, skipped by the player so one
@@ -595,7 +654,40 @@ async function buildTracks(
       album: meta?.romanized ?? undefined,
       artwork: ARTWORK,
     };
+    tracks.push(ayahTrack);
+    // The rest: silence, under the ayah's own title and reciter so the lock
+    // screen does not flicker to something else and back. No trims, no
+    // file: nothing to join and nothing to download.
+    for (const ms of restsAfter.get(i) ?? []) {
+      tracks.push({
+        id: restTrackId(r.surah, r.ayah, indexOffset + tracks.length),
+        // A bundled file, as `require` gives it; the player resolves it
+        // (its `AddTrack` type means to allow this and, intersected with
+        // `Track`, does not).
+        url: restAsset(ms) as unknown as string,
+        title: ayahTrack.title,
+        artist: ayahTrack.artist,
+        album: ayahTrack.album,
+        artwork: ARTWORK,
+      });
+    }
   });
+  return tracks;
+}
+
+/** The silent pieces to rest for after an ayah heard in `files`. */
+async function restFor(
+  reciter: Reciter,
+  surah: number,
+  files: readonly number[],
+  factor: number,
+): Promise<number[]> {
+  try {
+    const spoken = await spokenSeconds(reciter, surah, files);
+    return spoken == null ? [] : restPieces(spoken * factor);
+  } catch {
+    return [];
+  }
 }
 
 // ── Listening: past the end of a surah ───────────────────────────────
@@ -626,7 +718,8 @@ export function nextAyahRef(
   riwayah: RiwayahId = queueRiwayah,
 ): AyahRef | null {
   if (!findSurah(ref.surah)) return null;
-  if (ref.ayah < ayahsIn(ref.surah, riwayah)) return { surah: ref.surah, ayah: ref.ayah + 1 };
+  if (ref.ayah < ayahsIn(ref.surah, riwayah))
+    return { surah: ref.surah, ayah: ref.ayah + 1 };
   if (ref.surah >= 114) return null;
   return { surah: ref.surah + 1, ayah: 1 };
 }
@@ -713,9 +806,18 @@ async function reshapeListenTail(): Promise<void> {
     }
     // Re-checked after the await: a stop or a new listen may have landed.
     if (!listening || !listenCursor) return;
-    const { refs, cursor } = listenWindow(listenCursor, LISTEN_WINDOW, nextListenRef);
+    const { refs, cursor } = listenWindow(
+      listenCursor,
+      LISTEN_WINDOW,
+      nextListenRef,
+    );
     listenCursor = cursor;
-    const tracks = await buildTracks(refs, status.reciterId, listenIndex, lastKept);
+    const tracks = await buildTracks(
+      refs,
+      status.reciterId,
+      listenIndex,
+      lastKept,
+    );
     listenIndex += tracks.length;
     await TrackPlayer.add(tracks);
   } catch {
@@ -737,7 +839,8 @@ export function _resetShuffleForTests(): void {
 /** The step the listening queue walks with — sequential, or shuffled. */
 function nextListenRef(ref: AyahRef): AyahRef | null {
   if (!findSurah(ref.surah)) return null;
-  if (ref.ayah < ayahsIn(ref.surah)) return { surah: ref.surah, ayah: ref.ayah + 1 };
+  if (ref.ayah < ayahsIn(ref.surah))
+    return { surah: ref.surah, ayah: ref.ayah + 1 };
   if (!shuffle) return nextAyahRef(ref);
   return { surah: pickNextSurah(ref.surah), ayah: 1 };
 }
@@ -784,7 +887,12 @@ async function extendListening({ queue, idx }: QueueSnapshot): Promise<void> {
     // window and play every ayah twice.
     listenCursor = cursor;
     const lastQueued = parseTrackId(String(queue[queue.length - 1]?.id ?? ''));
-    const tracks = await buildTracks(refs, status.reciterId, listenIndex, lastQueued);
+    const tracks = await buildTracks(
+      refs,
+      status.reciterId,
+      listenIndex,
+      lastQueued,
+    );
     listenIndex += tracks.length;
     await TrackPlayer.add(tracks);
   } catch {
@@ -824,16 +932,27 @@ export async function playRange(
   setStatus({ reciterId: prefs.reciterId, loading: true, gap: null });
   let refs = expandRange(from, to);
   let repeating = false;
+  let restFactor = 0;
   if (opts.useRepeats !== false) {
-    refs = applyRepeats(refs, prefs.repeat.eachAyah, prefs.repeat.range);
-    repeating = prefs.repeat.eachAyah > 1;
+    const { eachAyah, range, pauseFactor } = prefs.repeat;
+    refs = applyRepeats(refs, eachAyah, range);
+    repeating = eachAyah > 1;
+    // Only a drill rests: a range heard once is a listen.
+    if (eachAyah > 1 || range > 1) restFactor = Math.max(0, pauseFactor || 0);
   }
-  const tracks = await buildTracks(refs, prefs.reciterId, 0, null, repeating);
+  const tracks = await buildTracks(
+    refs,
+    prefs.reciterId,
+    0,
+    null,
+    repeating,
+    restFactor,
+  );
   await TrackPlayer.reset();
   await TrackPlayer.add(tracks);
   await TrackPlayer.setRate(prefs.playbackRate);
   await TrackPlayer.play();
-  setStatus({ active: from, playing: true });
+  setStatus({ active: from, playing: true, resting: false });
 }
 
 export async function pausePlayback(): Promise<void> {
@@ -884,8 +1003,8 @@ export async function listenFrom(
   listening = true;
   listenCursor = cursor;
   listenIndex = tracks.length;
-  recordListened(start, prefs.reciterId);
-  setStatus({ active: start, playing: true });
+  recordListened({ ...start, riwayah: queueRiwayah }, prefs.reciterId);
+  setStatus({ active: start, playing: true, resting: false });
 }
 
 /** Is a continuous listen the thing that is playing? */
@@ -954,6 +1073,8 @@ export async function seekTo(seconds: number): Promise<void> {
  * ayah starts again from its first file, and so starts a new step.
  */
 function continuesPrevious(queue: Track[], i: number): boolean {
+  // A drill's rest between them makes two tracks two steps (and a rest is
+  // not an ayah: `parseTrackId` below reads it as nothing).
   if (i <= 0) return false;
   const a = parseTrackId(String(queue[i - 1]?.id ?? ''));
   const b = parseTrackId(String(queue[i]?.id ?? ''));
@@ -970,13 +1091,23 @@ function stepStart(queue: Track[], idx: number): number {
   return i;
 }
 
+/**
+ * A drill's rests are stepped over both ways: "next" from an ayah is the
+ * next ayah, not the silence after it, and a rest belongs to the ayah
+ * before it — "previous" during one goes where it would from that ayah.
+ */
 export async function skipToNextAyah(): Promise<void> {
   await ensureSetup();
   const snap = await snapshotQueue();
   if (!snap) return;
   const { queue, idx } = snap;
   let i = idx + 1;
-  while (i < queue.length && continuesPrevious(queue, i)) i++;
+  while (
+    i < queue.length &&
+    (isRestTrack(queue[i]) || continuesPrevious(queue, i))
+  ) {
+    i++;
+  }
   if (i >= queue.length) return; // end of queue
   await TrackPlayer.skip(i).catch(() => undefined);
 }
@@ -986,9 +1117,13 @@ export async function skipToPreviousAyah(): Promise<void> {
   const snap = await snapshotQueue();
   if (!snap) return;
   const { queue, idx } = snap;
-  const here = stepStart(queue, idx);
-  if (here === 0) return;
-  await TrackPlayer.skip(stepStart(queue, here - 1)).catch(() => undefined);
+  let k = idx;
+  while (k > 0 && isRestTrack(queue[k])) k--;
+  const here = stepStart(queue, k);
+  let j = here - 1;
+  while (j >= 0 && isRestTrack(queue[j])) j--;
+  if (j < 0) return;
+  await TrackPlayer.skip(stepStart(queue, j)).catch(() => undefined);
 }
 
 export async function setPlaybackRate(rate: number): Promise<void> {

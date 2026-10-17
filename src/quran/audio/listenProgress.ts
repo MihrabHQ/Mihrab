@@ -22,6 +22,9 @@
  */
 import { useSyncExternalStore } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getQuranState, hydrateQuranState } from '../quranState';
+import { DEFAULT_RIWAYAH, coerceRiwayahId, type RiwayahId } from '../riwayat';
+import { hafsSpan, riwayahAyahOf } from '../riwayahAudio';
 
 export type ListenProgress = {
   surah: number;
@@ -31,6 +34,16 @@ export type ListenProgress = {
   at: number;
   /** When the listen was paused, ms; null while it plays or once stopped. */
   pausedAt: number | null;
+  /**
+   * Whose count `ayah` is in — the riwayah the listen was in (#83).
+   *
+   * Absent on a place saved before it was kept, which is in the Ḥafṣ count
+   * whatever the reader was: until #83 the queue was numbered by the
+   * recordings, and they are all cut by Ḥafṣ. A Warsh reader's place saved
+   * then as 79:40 is Warsh 79:39 — Warsh's 37 is Ḥafṣ 37 and 38 — and
+   * resuming at "79:40" would start an ayah on. See `settleListenRiwayah`.
+   */
+  riwayah?: RiwayahId;
 };
 
 export const LISTEN_PROGRESS_KEY = 'mihrab.listenProgress.v1';
@@ -60,9 +73,10 @@ function scheduleSave(): void {
   saveTimer = setTimeout(() => {
     saveTimer = null;
     const value = current;
-    void (value
-      ? AsyncStorage.setItem(LISTEN_PROGRESS_KEY, JSON.stringify(value))
-      : AsyncStorage.removeItem(LISTEN_PROGRESS_KEY)
+    void (
+      value
+        ? AsyncStorage.setItem(LISTEN_PROGRESS_KEY, JSON.stringify(value))
+        : AsyncStorage.removeItem(LISTEN_PROGRESS_KEY)
     ).catch(() => undefined);
   }, SAVE_DELAY_MS);
 }
@@ -77,13 +91,50 @@ export function coerceListenProgress(raw: unknown): ListenProgress | null {
   if (!Number.isInteger(ayah) || ayah < 1) return null;
   const at = Number(r.at);
   const pausedAt = r.pausedAt == null ? null : Number(r.pausedAt);
+  const riwayah =
+    typeof r.riwayah === 'string' ? coerceRiwayahId(r.riwayah) : undefined;
   return {
     surah,
     ayah,
     reciterId: typeof r.reciterId === 'string' ? r.reciterId : '',
     at: Number.isFinite(at) ? at : 0,
     pausedAt: pausedAt != null && Number.isFinite(pausedAt) ? pausedAt : null,
+    ...(riwayah ? { riwayah } : {}),
   };
+}
+
+/**
+ * The same place, counted the way `riwayah` counts.
+ *
+ * Through the recordings' Ḥafṣ count, which every riwayah maps to and from
+ * (riwayahAudio.ts): the place's first file, then the ayah of `riwayah`
+ * that holds it. A place with no riwayah is in the Ḥafṣ count — see
+ * `ListenProgress.riwayah`.
+ */
+export function listenPlaceIn(
+  p: ListenProgress,
+  riwayah: RiwayahId,
+): ListenProgress {
+  const from = p.riwayah ?? DEFAULT_RIWAYAH;
+  if (from === riwayah) return p.riwayah ? p : { ...p, riwayah };
+  const hafs = hafsSpan(from, p.surah, p.ayah)[0];
+  return { ...p, ayah: riwayahAyahOf(riwayah, p.surah, hafs), riwayah };
+}
+
+/**
+ * Put the stored place in the reader's count, once, and keep it so.
+ *
+ * Run when the place is read from storage: a place saved before the
+ * riwayah was kept is converted from Ḥafṣ and written back with its
+ * riwayah, and is never converted again.
+ */
+export function settleListenRiwayah(riwayah: RiwayahId): void {
+  if (!current) return;
+  const next = listenPlaceIn(current, riwayah);
+  if (next === current) return;
+  current = next;
+  emit();
+  scheduleSave();
 }
 
 /** Read what was stored, once. Safe to call again; later calls do nothing. */
@@ -99,6 +150,21 @@ export async function loadListenProgress(): Promise<void> {
     }
   } catch {
     /* nothing stored, or unreadable: no listening place yet */
+  }
+  // The place in the reader's count, before anyone resumes from it: one
+  // saved before the riwayah was kept (Ḥafṣ), or in another riwayah than
+  // the reader's now.
+  if (current) {
+    try {
+      await hydrateQuranState();
+      // The reader's CHOICE, not what is drawable this instant: on a cold
+      // start a Warsh muṣḥaf may not be loaded yet, and `resolveRiwayah`
+      // would answer Ḥafṣ and stamp the place with it (riwayat.ts). The
+      // count itself is bundled (riwayahAudio.ts).
+      settleListenRiwayah(coerceRiwayahId(getQuranState().prefs.riwayah));
+    } catch {
+      /* best effort: the place stays where it was */
+    }
   }
 }
 
@@ -118,9 +184,12 @@ export function useListenProgress(): ListenProgress | null {
   );
 }
 
-/** A listen reached this ayah. */
+/**
+ * A listen reached this ayah — counted as `ref.riwayah` counts, the
+ * listen's own riwayah (playback.ts `queueRiwayah`).
+ */
 export function recordListened(
-  ref: { surah: number; ayah: number },
+  ref: { surah: number; ayah: number; riwayah?: RiwayahId },
   reciterId: string,
   now: number = Date.now(),
 ): void {
@@ -128,17 +197,28 @@ export function recordListened(
     current &&
     current.surah === ref.surah &&
     current.ayah === ref.ayah &&
+    current.riwayah === ref.riwayah &&
     current.pausedAt == null
   ) {
     return;
   }
-  current = { surah: ref.surah, ayah: ref.ayah, reciterId, at: now, pausedAt: null };
+  current = {
+    surah: ref.surah,
+    ayah: ref.ayah,
+    reciterId,
+    at: now,
+    pausedAt: null,
+    ...(ref.riwayah ? { riwayah: ref.riwayah } : {}),
+  };
   emit();
   scheduleSave();
 }
 
 /** The listen was paused (`true`) or is playing again (`false`). */
-export function noteListenPaused(paused: boolean, now: number = Date.now()): void {
+export function noteListenPaused(
+  paused: boolean,
+  now: number = Date.now(),
+): void {
   if (!current) return;
   const pausedAt = paused ? current.pausedAt ?? now : null;
   if (pausedAt === current.pausedAt) return;

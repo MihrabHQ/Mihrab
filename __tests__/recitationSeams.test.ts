@@ -91,17 +91,21 @@ describe('the queue carries the joins', () => {
     expect(q[1].trimEnd).toBeCloseTo(0.57, 2);
   });
 
-  it('never pauses the player: no track asks for a rest, drill or not', async () => {
-    // A rest is a paused player waiting on a timer, and a paused app is
-    // one iOS suspends and Android stops waking: the drill would stop
-    // after its first ayah with the screen off.
+  it('never pauses the player: a drill rests on silent tracks, which are not trimmed', async () => {
+    // A rest that paused the player and waited on a timer would stop the
+    // drill with the screen off: a paused app is one iOS suspends and
+    // Android stops waking. The rest is silence in the queue (rest.ts).
     setQuranPrefs({
       repeat: { eachAyah: 3, range: 1, pauseFactor: 0.5 },
     } as never);
     await playRange({ surah: 79, ayah: 19 }, { surah: 79, ayah: 20 });
     const q = queued();
-    expect(q).toHaveLength(6);
-    expect(q.some(t => 'restFactor' in t)).toBe(false);
+    const ayahs = q.filter(t => !String(t.id).startsWith('rest:'));
+    const rests = q.filter(t => String(t.id).startsWith('rest:'));
+    expect(ayahs).toHaveLength(6);
+    expect(rests.length).toBeGreaterThanOrEqual(5);
+    expect(rests.some(t => 'trimStart' in t || 'trimEnd' in t)).toBe(false);
+    expect(tp.pause).not.toHaveBeenCalled();
   });
 });
 
@@ -155,6 +159,20 @@ describe('keeping the join (iOS and the Mac)', () => {
     });
     await seams.watchSeam();
     expect(tp.skipToNext).not.toHaveBeenCalled();
+  });
+
+  it('leaves a drill’s rest alone: it plays to its end', async () => {
+    const rest = { id: 'rest:79:20:2', url: 1 } as unknown as Track;
+    tp.getActiveTrack.mockResolvedValue(rest);
+    tp.getPlaybackState.mockResolvedValue({ state: State.Playing });
+    tp.getProgress.mockResolvedValue({ position: 0, duration: 2, buffered: 2 });
+    await seams.onTrackChanged({ track: rest });
+    await flush();
+    jest.advanceTimersByTime(5000);
+    await flush();
+    expect(tp.seekTo).not.toHaveBeenCalled();
+    expect(tp.skipToNext).not.toHaveBeenCalled();
+    expect(tp.pause).not.toHaveBeenCalled();
   });
 
   it('does nothing for a reset, which reports no track', async () => {

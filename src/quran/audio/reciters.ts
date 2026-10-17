@@ -68,7 +68,20 @@ export type Reciter = {
    * forty-two times would say nothing.
    */
   riwayah?: RiwayahId;
+  /**
+   * About how long this reciter takes over a word, in seconds — for the
+   * memorisation drill's rest when a file's length was not measured
+   * (rest.ts). Absent means a murattal pace, `DEFAULT_SECONDS_PER_WORD`;
+   * the slow styles say so. An estimate only: the measured length
+   * (recitationEdges.ts) is used wherever there is one.
+   */
+  secondsPerWord?: number;
 };
+
+/** A murattal pace, for a reciter that does not give its own. */
+export const DEFAULT_SECONDS_PER_WORD = 0.55;
+/** The slow styles: mujawwad, and the teaching recitation. */
+const SLOW_SECONDS_PER_WORD = 0.9;
 
 /**
  * Warsh ʿan Nāfiʿ — issue #46.
@@ -311,6 +324,7 @@ export const RECITERS: ReadonlyArray<Reciter> = [
     arabicName: 'عبد الباسط عبد الصمد — مجود',
     folder: 'Abdul_Basit_Mujawwad_128kbps',
     hasTimings: false,
+    secondsPerWord: SLOW_SECONDS_PER_WORD,
     aliases: ['abdel basset mujawwad', 'mujawwad', 'mujawad'],
   },
   {
@@ -319,6 +333,7 @@ export const RECITERS: ReadonlyArray<Reciter> = [
     arabicName: 'محمد صديق المنشاوي — مجود',
     folder: 'Minshawy_Mujawwad_192kbps',
     hasTimings: false,
+    secondsPerWord: SLOW_SECONDS_PER_WORD,
     aliases: ['minshawy', 'menshawi', 'mujawwad', 'mujawad'],
   },
   {
@@ -327,6 +342,7 @@ export const RECITERS: ReadonlyArray<Reciter> = [
     arabicName: 'محمود خليل الحصري — مجود',
     folder: 'Husary_Mujawwad_64kbps',
     hasTimings: false,
+    secondsPerWord: SLOW_SECONDS_PER_WORD,
     aliases: ['hosary', 'husari', 'mujawwad', 'mujawad'],
   },
   {
@@ -335,6 +351,7 @@ export const RECITERS: ReadonlyArray<Reciter> = [
     arabicName: 'محمود خليل الحصري — المعلم',
     folder: 'Husary_Muallim_128kbps',
     hasTimings: false,
+    secondsPerWord: SLOW_SECONDS_PER_WORD,
     aliases: ['hosary', 'husari', 'muallim', 'mualim', 'teacher'],
   },
   {

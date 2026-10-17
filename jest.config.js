@@ -24,6 +24,15 @@ module.exports = {
     '/__tests__/fixtures/',
   ],
   modulePathIgnorePatterns: ['/notifee_fork/'],
+  // Bundled sounds — the drill's silent rests (src/quran/audio/rest.ts) —
+  // are `require`d like images, and stand in for themselves the same way.
+  // Merged with the preset's own transforms, not in place of them.
+  transform: {
+    '^.+\\.(js|ts|tsx)$': 'babel-jest',
+    '^.+\\.(mp3|wav)$': require.resolve(
+      '@react-native/jest-preset/jest/assetFileTransformer.js',
+    ),
+  },
   transformIgnorePatterns: [
     'node_modules/(?!((jest-)?react-native|@react-native(-community)?|react-native-safe-area-context|react-native-screens|react-native-gesture-handler|@react-navigation/|react-native-sensors|react-native-svg|rxjs))',
   ],

@@ -35,8 +35,14 @@ export const TAIL_KEEP = 0.25;
 /** Less than this is not worth a seek. */
 export const MIN_TRIM = 0.15;
 
-/** Two bytes per ayah in mushaf order: the silence before and after, in 20 ms. */
-type Table = { v: number; e: string };
+/**
+ * `e`: two bytes per ayah in mushaf order, the silence before and after,
+ * in 20 ms. `d` (format 3 on): two more per ayah, the file's whole length
+ * in tenths of a second, big-endian, 0 where it was not measured. A
+ * format-2 table has no `d`: the lengths came with the tool's third run,
+ * and a table measured before it still trims as it did.
+ */
+type Table = { v: number; e: string; d?: string };
 
 /* eslint-disable @typescript-eslint/no-require-imports */
 const TABLES: Record<string, () => Table> = {
@@ -97,22 +103,40 @@ function decode(b64: string): Uint8Array {
   return out;
 }
 
-const decoded = new Map<string, Uint8Array | null>();
+type Decoded = { edges: Uint8Array; lengths: Uint8Array | null };
 
-function edgesOf(folder: string): Uint8Array | null {
+const decoded = new Map<string, Decoded | null>();
+const testTables = new Map<string, Table>();
+
+function tableOf(folder: string): Decoded | null {
   if (decoded.has(folder)) return decoded.get(folder)!;
-  const load = TABLES[folder];
-  let bytes: Uint8Array | null = null;
+  const given = testTables.get(folder);
+  const load = given ? () => given : TABLES[folder];
+  let out: Decoded | null = null;
   if (load) {
     try {
       const table = load();
-      if (table.v === 2) bytes = decode(table.e);
+      if (table.v === 2 || table.v === 3) {
+        const edges = decode(table.e);
+        const lengths =
+          table.v === 3 && typeof table.d === 'string' ? decode(table.d) : null;
+        if (edges.length === 6236 * 2) {
+          out = {
+            edges,
+            lengths: lengths && lengths.length === 6236 * 2 ? lengths : null,
+          };
+        }
+      }
     } catch {
-      bytes = null;
+      out = null;
     }
   }
-  decoded.set(folder, bytes && bytes.length === 6236 * 2 ? bytes : null);
-  return decoded.get(folder)!;
+  decoded.set(folder, out);
+  return out;
+}
+
+function edgesOf(folder: string): Uint8Array | null {
+  return tableOf(folder)?.edges ?? null;
 }
 
 export type Trim = { trimStart?: number; trimEnd?: number };
@@ -137,6 +161,43 @@ export function trimFor(folder: string, surah: number, fileAyah: number): Trim {
   return out;
 }
 
+/**
+ * How long the recitation in a file lasts, in seconds — its whole length
+ * less the silence measured at its two ends — or undefined when the file's
+ * length was not measured.
+ *
+ * What the drill's "pause between repeats" rests for (rest.ts). A file's
+ * length is not known before it plays, so it is measured with the edges
+ * (`tools/recitation-edges/edges.py`, format 3). Tables measured before
+ * the lengths were added have none, and the drill then estimates from the
+ * ayah's words.
+ */
+export function spokenSecondsOf(
+  folder: string,
+  surah: number,
+  fileAyah: number,
+): number | undefined {
+  const table = tableOf(folder);
+  if (!table?.lengths) return undefined;
+  const n = ayahIndexOf(surah, fileAyah) - 1;
+  if (!(n >= 0 && n < 6236)) return undefined;
+  const length = ((table.lengths[n * 2] << 8) | table.lengths[n * 2 + 1]) / 10;
+  if (!(length > 0)) return undefined;
+  const lead = table.edges[n * 2];
+  const tail = table.edges[n * 2 + 1];
+  const silence = lead === 255 && tail === 255 ? 0 : (lead + tail) / 50;
+  return Math.max(0, Math.round((length - silence) * 100) / 100);
+}
+
+/** For tests: a table as if it had been read from a file. */
+export function _setRecitationTableForTests(
+  folder: string,
+  table: Table,
+): void {
+  decoded.delete(folder);
+  testTables.set(folder, table);
+}
+
 /** Which reciters have measured joins. */
 export function hasEdges(folder: string): boolean {
   return folder in TABLES;
@@ -145,4 +206,5 @@ export function hasEdges(folder: string): boolean {
 /** For tests. */
 export function _resetRecitationEdgesForTests(): void {
   decoded.clear();
+  testTables.clear();
 }
