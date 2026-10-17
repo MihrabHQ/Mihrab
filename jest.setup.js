@@ -309,6 +309,9 @@ jest.mock('react-native-track-player', () => ({
     // The gapless prefetch and the listening top-up both walk the queue
     // relative to where playback is, and both hot-swap entries behind it.
     getActiveTrackIndex: jest.fn(async () => 0),
+    getActiveTrack: jest.fn(async () => undefined),
+    getTrack: jest.fn(async () => undefined),
+    skip: jest.fn(async () => {}),
     remove: jest.fn(async () => {}),
   },
   useProgress: jest.fn(() => ({ position: 0, duration: 0, buffered: 0 })),

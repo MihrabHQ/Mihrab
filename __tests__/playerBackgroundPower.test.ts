@@ -122,7 +122,7 @@ describe('the engine, per ayah', () => {
   it('swaps a prefetched file in by index, not by scanning', () => {
     expect(engine).toMatch(/TrackPlayer\.getTrack\(i\)/);
     // Still never the entry the player may already be buffering.
-    expect(engine).toMatch(/i < idx2 \+ 2/);
+    expect(engine).toMatch(/i < idx \+ 2/);
   });
 });
 

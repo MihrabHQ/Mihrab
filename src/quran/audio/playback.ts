@@ -314,6 +314,41 @@ async function ensureSetup(): Promise<void> {
 const PREFETCH_AHEAD = 3;
 const inFlightPrefetch = new Set<string>();
 
+/**
+ * ONE SWAP AT A TIME.
+ *
+ * A swap is a remove and an add at the same index, by index rather than
+ * by scanning a fresh copy of the whole queue. That is only sound if
+ * nothing else moves entries between the two — and the swaps themselves
+ * did: three files fetched together finish together, and a remove of 4
+ * landing between another swap's remove of 5 and its add put the queue
+ * out of order. Heard as an ayah skipped, played twice, or played after
+ * the one that follows it (seen on the emulator as 3 → 5 → 4). Chained,
+ * each swap re-reads its index after the last one has finished, and the
+ * id check below is then a true statement about the queue.
+ */
+let swapChain: Promise<void> = Promise.resolve();
+
+function swapToLocal(i: number, id: string, path: string): Promise<void> {
+  const run = async () => {
+    const [idx, track] = await Promise.all([
+      TrackPlayer.getActiveTrackIndex(),
+      TrackPlayer.getTrack(i),
+    ]);
+    // Entries closer than +2 may already be buffering; replacing one would
+    // cause the very gap this removes. A different id means a different
+    // queue, and this file waits for its own pass.
+    if (idx == null || i < idx + 2 || !track) return;
+    if (track.id !== id || typeof track.url !== 'string' || !track.url.startsWith('http')) {
+      return;
+    }
+    await TrackPlayer.remove([i]);
+    await TrackPlayer.add({ ...track, url: `file://${path}` }, i);
+  };
+  swapChain = swapChain.then(run, run).catch(() => undefined);
+  return swapChain;
+}
+
 /** The queue and where we are in it, as of one moment. */
 type QueueSnapshot = { queue: Track[]; idx: number };
 
@@ -348,26 +383,7 @@ async function prefetchUpcoming({ queue, idx }: QueueSnapshot): Promise<void> {
         .then(async path => {
           inFlightPrefetch.delete(key);
           if (!path) return;
-          // The swap, by INDEX rather than by scanning a fresh copy of the
-          // whole queue. The entry was at `i` when the file was asked for,
-          // and nothing moves entries about: a swap is a remove and an add
-          // at the same place, a top-up appends, and a rebuild (`listenFrom`)
-          // issues ids from a counter that never repeats — so one track
-          // fetched by index either IS the entry, or the queue is a
-          // different queue and this file waits for its own pass.
-          const [idx2, t2] = await Promise.all([
-            TrackPlayer.getActiveTrackIndex(),
-            TrackPlayer.getTrack(i),
-          ]);
-          if (idx2 == null || i < idx2 + 2 || !t2) return;
-          if (
-            t2.id === tr.id &&
-            typeof t2.url === 'string' &&
-            t2.url.startsWith('http')
-          ) {
-            await TrackPlayer.remove([i]);
-            await TrackPlayer.add({ ...t2, url: `file://${path}` }, i);
-          }
+          await swapToLocal(i, String(tr.id), path);
         })
         .catch(() => {
           inFlightPrefetch.delete(key);

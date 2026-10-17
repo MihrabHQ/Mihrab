@@ -13,7 +13,11 @@ import {
   _resetRiwayahDataCacheForTests,
   _setRiwayahDataForTests,
 } from '../src/quran/riwayahData';
-import { playFromAyah, playRange, stopPlayback } from '../src/quran/audio/playback';
+import {
+  playFromAyah,
+  playRange,
+  stopPlayback,
+} from '../src/quran/audio/playback';
 import { setQuranPrefs } from '../src/quran/quranState';
 
 jest.mock('../src/quran/audio/audioStore', () => ({
@@ -72,7 +76,9 @@ describe('which files an ayah is heard in', () => {
       const s = i + 1;
       const heard: number[] = [];
       for (let a = 1; a <= n; a++) heard.push(...filesOf('warsh', s, a, a > 1));
-      expect(heard).toEqual(Array.from({ length: ayahCount(s) }, (_, k) => k + 1));
+      expect(heard).toEqual(
+        Array.from({ length: ayahCount(s) }, (_, k) => k + 1),
+      );
     });
   });
 });
@@ -107,7 +113,10 @@ describe('the queue a Warsh reader starts', () => {
   it('lights the Warsh ayah and plays the file it is recited in', async () => {
     await playFromAyah(79, 36);
     const q = queued();
-    const pairs = q.map(t => [t.id.split(':').slice(0, 2).join(':'), t.url.slice(-10)]);
+    const pairs = q.map(t => [
+      t.id.split(':').slice(0, 2).join(':'),
+      t.url.slice(-10),
+    ]);
     expect(pairs).toEqual([
       ['79:36', '079036.mp3'],
       ['79:37', '079037.mp3'],
@@ -127,7 +136,15 @@ describe('the queue a Warsh reader starts', () => {
   });
 
   it('reaches al-Māʾidah 122, which Ḥafṣ does not have', async () => {
-    await playRange({ surah: 5, ayah: 120 }, { surah: 5, ayah: 122 }, { useRepeats: false });
-    expect(queued().map(t => t.url.slice(-10))).toEqual(['005118.mp3', '005119.mp3', '005120.mp3']);
+    await playRange(
+      { surah: 5, ayah: 120 },
+      { surah: 5, ayah: 122 },
+      { useRepeats: false },
+    );
+    expect(queued().map(t => t.url.slice(-10))).toEqual([
+      '005118.mp3',
+      '005119.mp3',
+      '005120.mp3',
+    ]);
   });
 });
