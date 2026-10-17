@@ -250,7 +250,8 @@ async function ensureSetup(): Promise<void> {
       void seams.onTrackChanged(e);
       // The listening place moves with a continuous listen, and only with
       // one: a range played from the reader is the reader's business.
-      if (ref && listening) recordListened(ref, status.reciterId);
+      if (ref && listening)
+        recordListened({ ...ref, riwayah: queueRiwayah }, status.reciterId);
       // The first track the player ever loads is the moment iOS will
       // accept the remote commands — see applyPlayerOptions. Once only:
       // after that the binding survives every later track by itself.
@@ -1002,7 +1003,7 @@ export async function listenFrom(
   listening = true;
   listenCursor = cursor;
   listenIndex = tracks.length;
-  recordListened(start, prefs.reciterId);
+  recordListened({ ...start, riwayah: queueRiwayah }, prefs.reciterId);
   setStatus({ active: start, playing: true, resting: false });
 }
 
