@@ -40,6 +40,58 @@ export function deviceClockSkewSeconds(now = Date.now()): number {
 
 type WithHeaders = { headers?: { get(name: string): string | null } | null };
 
+const MONTHS = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
+const IMF_FIXDATE =
+  /^(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun), (\d{2}) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (\d{4}) (\d{2}):(\d{2}):(\d{2}) GMT$/;
+
+/**
+ * An HTTP `Date` header as an instant (ms), or NaN.
+ *
+ * The header is RFC 7231's IMF-fixdate — "Sun, 06 Nov 1994 08:49:37 GMT" —
+ * and is read here by its grammar, field by field, rather than by
+ * `Date.parse`, whose handling of anything but ISO 8601 is left to each
+ * engine (Hermes's is not V8's). `Date.parse` is the fallback, for the
+ * obsolete forms (RFC 850, asctime) a server may still send.
+ */
+export function parseHttpDate(header: string): number {
+  const m = IMF_FIXDATE.exec(header.trim());
+  if (m) {
+    const [, d, mon, y, h, min, sec] = m;
+    const day = Number(d);
+    const hour = Number(h);
+    const minute = Number(min);
+    const second = Number(sec);
+    const month = MONTHS.indexOf(mon);
+    const t = Date.UTC(Number(y), month, day, hour, minute, second);
+    // Out-of-range fields (31 Feb, 25:00) roll over in Date.UTC: refuse them.
+    const back = new Date(t);
+    if (
+      hour <= 23 &&
+      minute <= 59 &&
+      second <= 60 &&
+      back.getUTCDate() === day &&
+      back.getUTCMonth() === month
+    ) {
+      return t;
+    }
+    return NaN;
+  }
+  return Date.parse(header);
+}
+
 /**
  * Note the server's time from a response's `Date` header. `deviceNowMs` is
  * the phone's time when the response arrived. A missing or unreadable
@@ -56,7 +108,7 @@ export function noteServerDate(
     return;
   }
   if (!header) return;
-  const server = Date.parse(header);
+  const server = parseHttpDate(header);
   if (!Number.isFinite(server)) return;
   skew = {
     seconds: Math.round((server - deviceNowMs) / 1000),
