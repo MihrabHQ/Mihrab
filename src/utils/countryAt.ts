@@ -16,14 +16,33 @@
  */
 import shapes from './data/countryShapes.json';
 
-type Shapes = { scale: number; targets: string[]; countries: Record<string, number[][][]> };
+type Shapes = {
+  scale: number;
+  targets: string[];
+  countries: Record<string, number[][][]>;
+  national: Record<string, number[][][]>;
+};
 const DATA = shapes as Shapes;
 /** Offshore, or a coast the outline cut: the nearest country this close. */
 export const COASTAL_REACH_KM = 25;
 
-type Ring = { xs: Float64Array; ys: Float64Array; minX: number; minY: number; maxX: number; maxY: number };
+type Ring = {
+  xs: Float64Array;
+  ys: Float64Array;
+  minX: number;
+  minY: number;
+  maxX: number;
+  maxY: number;
+};
 type Poly = { outer: Ring; holes: Ring[] };
-type Country = { code: string; polys: Poly[]; minX: number; minY: number; maxX: number; maxY: number };
+type Country = {
+  code: string;
+  polys: Poly[];
+  minX: number;
+  minY: number;
+  maxX: number;
+  maxY: number;
+};
 
 let countries: Country[] | null = null;
 
@@ -31,7 +50,10 @@ function ring(flat: number[], scale: number): Ring {
   const n = flat.length / 2;
   const xs = new Float64Array(n);
   const ys = new Float64Array(n);
-  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  let minX = Infinity,
+    minY = Infinity,
+    maxX = -Infinity,
+    maxY = -Infinity;
   for (let i = 0; i < n; i++) {
     const x = flat[2 * i] / scale;
     const y = flat[2 * i + 1] / scale;
@@ -45,10 +67,12 @@ function ring(flat: number[], scale: number): Ring {
   return { xs, ys, minX, minY, maxX, maxY };
 }
 
-function load(): Country[] {
-  if (countries) return countries;
-  countries = Object.entries(DATA.countries).map(([code, polys]) => {
-    const ps = polys.map(rings => ({ outer: ring(rings[0], DATA.scale), holes: rings.slice(1).map(r => ring(r, DATA.scale)) }));
+function build(source: Record<string, number[][][]>): Country[] {
+  return Object.entries(source).map(([code, polys]) => {
+    const ps = polys.map(rings => ({
+      outer: ring(rings[0], DATA.scale),
+      holes: rings.slice(1).map(r => ring(r, DATA.scale)),
+    }));
     return {
       code,
       polys: ps,
@@ -58,6 +82,10 @@ function load(): Country[] {
       maxY: Math.max(...ps.map(p => p.outer.maxY)),
     };
   });
+}
+
+function load(): Country[] {
+  if (!countries) countries = build(DATA.countries);
   return countries;
 }
 
@@ -66,7 +94,11 @@ function inRing(r: Ring, x: number, y: number): boolean {
   let hit = false;
   const { xs, ys } = r;
   for (let i = 0, j = xs.length - 1; i < xs.length; j = i++) {
-    if (ys[i] > y !== ys[j] > y && x < ((xs[j] - xs[i]) * (y - ys[i])) / (ys[j] - ys[i]) + xs[i]) hit = !hit;
+    if (
+      ys[i] > y !== ys[j] > y &&
+      x < ((xs[j] - xs[i]) * (y - ys[i])) / (ys[j] - ys[i]) + xs[i]
+    )
+      hit = !hit;
   }
   return hit;
 }
@@ -78,12 +110,17 @@ function edgeKm(r: Ring, x: number, y: number): number {
   let best = Infinity;
   const { xs, ys } = r;
   for (let i = 0, j = xs.length - 1; i < xs.length; j = i++) {
-    const ax = (xs[j] - x) * kx, ay = (ys[j] - y) * ky;
-    const bx = (xs[i] - x) * kx, by = (ys[i] - y) * ky;
-    const dx = bx - ax, dy = by - ay;
+    const ax = (xs[j] - x) * kx,
+      ay = (ys[j] - y) * ky;
+    const bx = (xs[i] - x) * kx,
+      by = (ys[i] - y) * ky;
+    const dx = bx - ax,
+      dy = by - ay;
     const len = dx * dx + dy * dy;
-    const t = len > 0 ? Math.max(0, Math.min(1, -(ax * dx + ay * dy) / len)) : 0;
-    const px = ax + t * dx, py = ay + t * dy;
+    const t =
+      len > 0 ? Math.max(0, Math.min(1, -(ax * dx + ay * dy) / len)) : 0;
+    const px = ax + t * dx,
+      py = ay + t * dy;
     const d = px * px + py * py;
     if (d < best) best = d;
   }
@@ -126,32 +163,111 @@ export function countryAt(latitude: number, longitude: number): string | null {
   let code: string | null = fixAt(latitude, longitude);
   for (const c of code ? [] : all) {
     if (x < c.minX || x > c.maxX || y < c.minY || y > c.maxY) continue;
-    if (c.polys.some(p => inRing(p.outer, x, y) && !p.holes.some(h => inRing(h, x, y)))) {
+    if (
+      c.polys.some(
+        p => inRing(p.outer, x, y) && !p.holes.some(h => inRing(h, x, y)),
+      )
+    ) {
       code = c.code;
       break;
     }
   }
-  if (!code) {
-    // On no land: the nearest country within reach (a ferry, a beach the outline missed).
-    const reachDeg = COASTAL_REACH_KM / 80;
-    let best = COASTAL_REACH_KM;
-    for (const c of all) {
-      if (x < c.minX - reachDeg || x > c.maxX + reachDeg || y < c.minY - reachDeg || y > c.maxY + reachDeg) continue;
-      for (const p of c.polys) {
-        const r = p.outer;
-        if (x < r.minX - reachDeg || x > r.maxX + reachDeg || y < r.minY - reachDeg || y > r.maxY + reachDeg) continue;
-        const d = edgeKm(r, x, y);
-        if (d < best) {
-          best = d;
-          code = c.code;
-        }
-      }
-    }
-  }
+  if (!code) code = nearestWithin(all, x, y, COASTAL_REACH_KM);
   last = { lat: latitude, lon: longitude, code };
   return code;
 }
 
+/** On no land: the nearest country within reach (a ferry, a beach the outline missed). */
+function nearestWithin(
+  all: Country[],
+  x: number,
+  y: number,
+  reachKm: number,
+): string | null {
+  const reachDeg = reachKm / 80;
+  let best = reachKm;
+  let code: string | null = null;
+  for (const c of all) {
+    if (
+      x < c.minX - reachDeg ||
+      x > c.maxX + reachDeg ||
+      y < c.minY - reachDeg ||
+      y > c.maxY + reachDeg
+    )
+      continue;
+    for (const p of c.polys) {
+      const r = p.outer;
+      if (
+        x < r.minX - reachDeg ||
+        x > r.maxX + reachDeg ||
+        y < r.minY - reachDeg ||
+        y > r.maxY + reachDeg
+      )
+        continue;
+      const d = edgeKm(r, x, y);
+      if (d < best) {
+        best = d;
+        code = c.code;
+      }
+    }
+  }
+  return code;
+}
+
+/**
+ * COUNTRIES WITH A CALCULATION METHOD OF THEIR OWN.
+ *
+ * Saudi Arabia, the Gulf states, Iran, Iraq, Jordan, Egypt, Pakistan,
+ * India, Bangladesh, Russia, Tunisia and Portugal: where AlAdhan's Automatic
+ * picks the country's own method (Umm al-Qura, Egypt, Karachi, Tehran, Gulf,
+ * Kuwait, Qatar, Dubai, Russia, Tunisia, Portugal, Jordan), which Automatic
+ * must not trade for Diyanet's table only because Diyanet lists a place
+ * nearby. Their outlines (`national` in the shapes file) are rough — a few
+ * kilometres, Russia's ten — since nothing finer is needed: where the precise
+ * outlines above reach, they answer; elsewhere a point within
+ * `NATIONAL_REACH_KM` of a rough outline counts as inside, so an error near a
+ * border or a coast leaves the reader on the country's own method, which is
+ * what Automatic gave there before Diyanet.
+ */
+export const NATIONAL_METHOD_COUNTRIES: readonly string[] = Object.keys(
+  DATA.national,
+).sort();
+const NATIONAL_SET = new Set(NATIONAL_METHOD_COUNTRIES);
+export const NATIONAL_REACH_KM = 10;
+
+let national: Country[] | null = null;
+
+/** The country with a method of its own at this point (ISO alpha-2), or null. */
+export function nationalMethodCountryAt(
+  latitude: number,
+  longitude: number,
+): string | null {
+  const precise = countryAt(latitude, longitude);
+  if (precise) return NATIONAL_SET.has(precise) ? precise : null;
+  if (!national) national = build(DATA.national);
+  for (const c of national) {
+    if (
+      longitude < c.minX ||
+      longitude > c.maxX ||
+      latitude < c.minY ||
+      latitude > c.maxY
+    )
+      continue;
+    if (
+      c.polys.some(
+        p =>
+          inRing(p.outer, longitude, latitude) &&
+          !p.holes.some(h => inRing(h, longitude, latitude)),
+      )
+    ) {
+      return c.code;
+    }
+  }
+  return nearestWithin(national, longitude, latitude, NATIONAL_REACH_KM);
+}
+
 /** Is the point in this country (by `countryAt`)? */
-export const isInCountry = (code: string) => (latitude: number, longitude: number): boolean =>
-  countryAt(latitude, longitude) === code;
+export const isInCountry =
+  (code: string) =>
+  (latitude: number, longitude: number): boolean =>
+    countryAt(latitude, longitude) === code;

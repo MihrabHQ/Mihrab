@@ -207,6 +207,7 @@
     "methodModalTitle": "Método de cálculo",
     "hanafiAsr": "Hanafi Asr",
     "hanafiAsrHelp": "Mayor longitud de sombra para Asr (escuela = 1)",
+    "hanafiAsrPublished": "Esta fuente publica una sola hora de Asr, la shafi'í (una longitud de sombra); el Asr hanafí no se muestra.",
     "notifications": "Notificaciones",
     "prayerAlerts": "Alertas de oración",
     "prayerAlertsHelp": "Programado para las cinco oraciones diarias (Fajr-Isha). Es posible que Android requiera acceso exacto a la alarma para una sincronización confiable.",

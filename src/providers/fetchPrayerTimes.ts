@@ -3,7 +3,12 @@ import { fetchAladhanTimes } from './aladhan';
 import { getIslamiskaForbundetDatasetTimes } from './islamiskaForbundetDataset';
 import { getHabousDatasetTimes } from './habousDataset';
 import { getMarwDatasetTimes } from './marwDataset';
-import { computeNamazvaktiMethodTimes, getNamazvaktiTimes, namazvaktiCityPoint, nearestNamazvaktiCity } from './namazvakti';
+import {
+  computeNamazvaktiMethodTimes,
+  getNamazvaktiTimes,
+  namazvaktiCityPoint,
+  nearestNamazvaktiCity,
+} from './namazvakti';
 import { kemenagTimesNear, nationalTableFor } from './nationalTables';
 import { computeLocalAdhanTimes } from './localAdhan';
 import { MOROCCO_CLOCK, SWEDEN_CLOCK } from './locationClock';
@@ -19,7 +24,11 @@ import {
 import { isCoordinateInAlgeria } from '../utils/algeriaRegion';
 import { isCoordinateInMorocco } from '../utils/moroccoRegion';
 import { computeImsak, DEFAULT_IMSAK_OFFSET_MINUTES } from './imsak';
-import { inPrayerOrder, validateTimings, validateTimingShape } from './validateTimings';
+import {
+  inPrayerOrder,
+  validateTimings,
+  validateTimingShape,
+} from './validateTimings';
 
 /**
  * Islamiska Förbundet's convention on the phone, for the listed city
@@ -27,8 +36,14 @@ import { inPrayerOrder, validateTimings, validateTimingShape } from './validateT
  * reach, for the reader's own spot.
  */
 function swedenOnDevice(p: UnifiedFetchParams): PrayerTimesResult {
-  const near = getNearestIslamiskaForbundetCityWithDistance(p.latitude, p.longitude);
-  const city = near.distanceKm <= IFIS_STAND_IN_KM ? islamiskaForbundetCityCoords(near.city) : undefined;
+  const near = getNearestIslamiskaForbundetCityWithDistance(
+    p.latitude,
+    p.longitude,
+  );
+  const city =
+    near.distanceKm <= IFIS_STAND_IN_KM
+      ? islamiskaForbundetCityCoords(near.city)
+      : undefined;
   const local: PrayerTimesResult = {
     ...computeLocalAdhanTimes({
       latitude: city?.lat ?? p.latitude,
@@ -74,18 +89,32 @@ const ON_DEVICE_METHODS: ReadonlySet<number> = new Set([
   SWEDEN_METHOD_ID,
   DIYANET_METHOD_ID,
 ]);
-async function onDeviceMethod(p: UnifiedFetchParams): Promise<PrayerTimesResult | null> {
+async function onDeviceMethod(
+  p: UnifiedFetchParams,
+): Promise<PrayerTimesResult | null> {
   const method =
     p.calculationMethod === 'auto'
       ? autoMethodForCoords(p.latitude, p.longitude)
       : p.calculationMethod;
   if (!ON_DEVICE_METHODS.has(method)) return null;
-  const at = { latitude: p.latitude, longitude: p.longitude, date: p.date, school: p.school };
+  const at = {
+    latitude: p.latitude,
+    longitude: p.longitude,
+    date: p.date,
+    school: p.school,
+  };
   let listed: PrayerTimesResult | null = null;
   try {
-    if (method === ALGERIA_METHOD_ID && isCoordinateInAlgeria(p.latitude, p.longitude)) {
+    if (
+      method === ALGERIA_METHOD_ID &&
+      isCoordinateInAlgeria(p.latitude, p.longitude)
+    ) {
       listed = await getMarwDatasetTimes(at);
-    } else if (method === MOROCCO_METHOD_ID && isCoordinateInMorocco(p.latitude, p.longitude) && !isCoordinateInAlgeria(p.latitude, p.longitude)) {
+    } else if (
+      method === MOROCCO_METHOD_ID &&
+      isCoordinateInMorocco(p.latitude, p.longitude) &&
+      !isCoordinateInAlgeria(p.latitude, p.longitude)
+    ) {
       listed = await getHabousDatasetTimes(at);
     } else if (method === KEMENAG_METHOD_ID) {
       listed = kemenagTimesNear(p.latitude, p.longitude, p.date, p.school);
@@ -262,13 +291,31 @@ export async function fetchPrayerTimesUnified(
       // zones are computed at the summit. Outside the country, for the
       // reader's own coordinates.
       const table = nationalTableFor(p.provider)!;
+      // Kemenag's is a calculation, so it can take Hanafi Asr (two shadow
+      // lengths) where the reader asks for it — Asr from the same method,
+      // without the correction list's Shafi'i Asr. MUIS's and JAKIM's
+      // tables print one Asr, the Shafi'i, and their days stand as printed
+      // (Settings hides the toggle and says so).
+      const hanafiKemenag = p.provider === 'kemenag' && p.school === 1;
       try {
-        result = await table.getTimes({ latitude: p.latitude, longitude: p.longitude, date: p.date });
+        if (hanafiKemenag) {
+          const listed = kemenagTimesNear(p.latitude, p.longitude, p.date, 1);
+          if (!listed) throw new Error('kemenag: outside coverage');
+          result = listed;
+        } else {
+          result = await table.getTimes({
+            latitude: p.latitude,
+            longitude: p.longitude,
+            date: p.date,
+          });
+        }
         break;
       } catch {
         /* outside coverage, or past the published window */
       }
-      const place = table.covers(p.latitude, p.longitude) ? table.nearest(p.latitude, p.longitude) : null;
+      const place = table.covers(p.latitude, p.longitude)
+        ? table.nearest(p.latitude, p.longitude)
+        : null;
       const local: PrayerTimesResult = {
         ...computeLocalAdhanTimes({
           latitude: place?.lat ?? p.latitude,
@@ -278,8 +325,10 @@ export async function fetchPrayerTimesUnified(
           // A JAKIM zone's times are the zone's (`malaysiaMethod.ts`).
           jakimZone: p.provider === 'jakim' && place ? place.id : undefined,
           date: p.date,
-          calculationMethod: p.provider === 'muis' ? 11 : p.provider === 'jakim' ? 17 : 20,
-          school: 0,
+          calculationMethod:
+            p.provider === 'muis' ? 11 : p.provider === 'jakim' ? 17 : 20,
+          // MUIS and JAKIM: the table's Shafi'i Asr, the same on a computed day as a printed one.
+          school: hanafiKemenag ? 1 : 0,
         }),
         source: 'local',
       };
@@ -306,11 +355,17 @@ export async function fetchPrayerTimesUnified(
       }
       // The nearest listed city's height, if its tile is on the phone — it
       // sets the temkin (Istanbul's 500 m is a minute more than 250 m).
-      const near = await nearestNamazvaktiCity(p.latitude, p.longitude, true).catch(() => null);
+      const near = await nearestNamazvaktiCity(
+        p.latitude,
+        p.longitude,
+        true,
+      ).catch(() => null);
       // At the city's own point, as the site computes it, when one is near —
       // to the site's own precision when the phone holds a year of the
       // city's to fit it from (the listed point is cut to the arc-minute).
-      const point = near ? await namazvaktiCityPoint(near).catch(() => null) : null;
+      const point = near
+        ? await namazvaktiCityPoint(near).catch(() => null)
+        : null;
       const local = computeNamazvaktiMethodTimes({
         latitude: point?.lat ?? near?.lat ?? p.latitude,
         longitude: point?.lon ?? near?.lon ?? p.longitude,

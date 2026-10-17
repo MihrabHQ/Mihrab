@@ -207,6 +207,7 @@
     "methodModalTitle": "Berechnungsmethode",
     "hanafiAsr": "Hanafi Asr",
     "hanafiAsrHelp": "Größere Schattenlänge für Asr (Schule = 1)",
+    "hanafiAsrPublished": "Diese Quelle veröffentlicht eine einzige Asr-Zeit, die schafiitische (eine Schattenlänge); die hanafitische Asr wird nicht angezeigt.",
     "notifications": "Benachrichtigungen",
     "prayerAlerts": "Gebetsalarme",
     "prayerAlertsHelp": "Geplant für die fünf täglichen Gebete (Fajr–Isha). Für ein zuverlässiges Timing benötigt Android möglicherweise den Zugriff auf den genauen Alarm.",

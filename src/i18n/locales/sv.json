@@ -207,6 +207,7 @@
     "methodModalTitle": "Beräkningsmetod",
     "hanafiAsr": "Hanafi asr",
     "hanafiAsrHelp": "Längre skugga för asr (skola = 1)",
+    "hanafiAsrPublished": "Den här källan publicerar en enda asr-tid, den shafiitiska (en skugglängd); den hanafitiska asr visas inte.",
     "notifications": "Aviseringar",
     "prayerAlerts": "Bönepåminnelser",
     "prayerAlertsHelp": "Planeras för de fem dagliga bönerna (Fajr–Isha). Android kan kräva exakt larm för pålitlig tid.",

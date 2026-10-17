@@ -31,6 +31,23 @@ NEIGHBOURS = {
     'CYP': 'CY', 'CNM': 'CY', 'ESB': 'CY', 'WSB': 'CY', 'GRC': 'GR', 'BGR': 'BG', 'SYR': 'SY', 'IRQ': 'IQ', 'IRN': 'IR',
     'GEO': 'GE', 'ARM': 'AM', 'AZE': 'AZ',
 }
+# Countries with a calculation method of their own, which AlAdhan's Automatic
+# picks there and the app lists (Umm al-Qura, Egypt, Karachi, Tehran, Gulf,
+# Kuwait, Qatar, Dubai, Russia, Tunisia, Portugal, Jordan): Automatic does not
+# hand these to Diyanet for being near a place it lists. Only a rough outline
+# is needed — a point the coarse outline misplaces near a border is answered
+# by the precise outlines above where they reach, and otherwise errs toward
+# AlAdhan's national method — so they are kept whole, simplified to about
+# 3 km (India and Bangladesh 4, Russia 10), with islands under ~200 km²
+# (Russia's under ~2,000) left to the reach.
+NATIONAL = {
+    'SAU': 'SA', 'ARE': 'AE', 'QAT': 'QA', 'KWT': 'KW', 'BHR': 'BH', 'OMN': 'OM', 'IRN': 'IR', 'IRQ': 'IQ',
+    'JOR': 'JO', 'EGY': 'EG', 'PAK': 'PK', 'IND': 'IN', 'BGD': 'BD', 'RUS': 'RU', 'TUN': 'TN', 'PRT': 'PT',
+}
+NATIONAL_TOLERANCE = 0.03
+NATIONAL_TOLERANCE_BY = {'RU': 0.1, 'IN': 0.04, 'BD': 0.04}
+NATIONAL_MIN_AREA = 0.02
+NATIONAL_MIN_AREA_BY = {'RU': 0.2}
 MARGIN = 0.6        # degrees around each target country the neighbours are kept in
 TOLERANCE = 0.007   # simplification, degrees (Visvalingam–Whyatt, as GEOS's coverage simplifier does it)
 MIN_AREA = 0.0003   # islands smaller than this (deg², ~3 km²) are left to the coastal reach
@@ -42,8 +59,11 @@ SCALE = 10_000      # coordinates stored as integers of 1e-4 degree
 
 src = json.load(open(sys.argv[1]))
 geoms = {}
+national = {}
 for f in src['features']:
     a3 = f['properties']['ADM0_A3']
+    if a3 in NATIONAL:
+        national.setdefault(NATIONAL[a3], []).append(shape(f['geometry']).buffer(0))
     code = TARGETS.get(a3) or NEIGHBOURS.get(a3)
     if not code:
         continue
@@ -90,13 +110,45 @@ for code in codes:
     if polys:
         out[code] = polys
 
+def flatten(g, min_area):
+    """Polygons as rings of flat scaled integers; returns (polys, points)."""
+    polys, n = [], 0
+    for p in polygons(g):
+        if p.area < min_area:
+            continue
+        rings = []
+        for ring in [p.exterior, *p.interiors]:
+            flat = []
+            for x, y in list(ring.coords)[:-1]:
+                flat += [round(x * SCALE), round(y * SCALE)]
+            if len(flat) >= 6:
+                rings.append(flat)
+                n += len(flat) // 2
+        if rings:
+            polys.append(rings)
+    return polys, n
+
+national = {c: unary_union(g) for c, g in national.items()}
+ncodes = sorted(national)
+nout = {}
+npoints = 0
+for tol in sorted(set([NATIONAL_TOLERANCE, *NATIONAL_TOLERANCE_BY.values()])):
+    group = [c for c in ncodes if NATIONAL_TOLERANCE_BY.get(c, NATIONAL_TOLERANCE) == tol]
+    for c, g in zip(group, shapely.coverage_simplify([national[c] for c in group], tol)):
+        polys, n = flatten(g, NATIONAL_MIN_AREA_BY.get(c, NATIONAL_MIN_AREA))
+        if polys:
+            nout[c] = polys
+            npoints += n
+
 doc = {
     'source': 'Natural Earth 1:10m admin-0 countries (public domain), tools/regions/build.py',
     'scale': SCALE,
     'targets': target_codes,
     'countries': out,
+    # Rough outlines of the countries with a method of their own (NATIONAL).
+    'national': nout,
 }
 dest = os.path.join(os.path.dirname(__file__), '..', '..', 'src', 'utils', 'data', 'countryShapes.json')
 os.makedirs(os.path.dirname(dest), exist_ok=True)
 json.dump(doc, open(dest, 'w'), separators=(',', ':'))
-print(f'{len(out)} countries, {points} points, {os.path.getsize(dest) // 1024} KB')
+print(f'{len(out)} countries, {points} points; {len(nout)} national, {npoints} points; {os.path.getsize(dest) // 1024} KB')

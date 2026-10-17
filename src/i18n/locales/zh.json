@@ -207,6 +207,7 @@
     "methodModalTitle": "计算方法",
     "hanafiAsr": "哈乃斐晡礼",
     "hanafiAsrHelp": "Asr 的阴影长度更大（学校 = 1）",
+    "hanafiAsrPublished": "此来源只公布一个晡礼时间，即沙斐仪派的（一倍影长）；不显示哈乃斐派的晡礼时间。",
     "notifications": "通知",
     "prayerAlerts": "祷告提醒",
     "prayerAlertsHelp": "安排每日五次祈祷（Fajr-Isha）。 Android 可能需要精确的警报访问才能实现可靠的计时。",

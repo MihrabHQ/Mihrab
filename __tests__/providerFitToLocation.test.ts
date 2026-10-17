@@ -25,10 +25,26 @@ const ALICE_SPRINGS = { latitude: -23.7, longitude: 133.88 }; // no place Diyane
 
 describe('a national source picked from outside its country', () => {
   it('is redirected to what Automatic picks there', () => {
-    // Cairo is a place Diyanet lists; Alice Springs is far from any.
-    expect(getEffectiveDataProvider(false, 'islamiska_forbundet', CAIRO, 'auto')).toBe('diyanet');
+    // Cairo is a place Diyanet lists, but Egypt has a method of its own, which
+    // AlAdhan's Automatic computes; Alice Springs is far from any place.
     expect(
-      getEffectiveDataProvider(false, 'islamiska_forbundet', ALICE_SPRINGS, 'auto'),
+      getEffectiveDataProvider(false, 'islamiska_forbundet', CAIRO, 'auto'),
+    ).toBe('aladhan');
+    expect(
+      getEffectiveDataProvider(
+        false,
+        'islamiska_forbundet',
+        { latitude: 48.8566, longitude: 2.3522 },
+        'auto',
+      ),
+    ).toBe('diyanet'); // Paris
+    expect(
+      getEffectiveDataProvider(
+        false,
+        'islamiska_forbundet',
+        ALICE_SPRINGS,
+        'auto',
+      ),
     ).toBe(AUTO_DEFAULT_OUTSIDE_SWEDEN);
   });
 
@@ -44,9 +60,9 @@ describe('a national source picked from outside its country', () => {
    * start, before location has loaded.
    */
   it('is left alone while the location is unknown', () => {
-    expect(getEffectiveDataProvider(false, 'islamiska_forbundet', null, 'auto')).toBe(
-      'islamiska_forbundet',
-    );
+    expect(
+      getEffectiveDataProvider(false, 'islamiska_forbundet', null, 'auto'),
+    ).toBe('islamiska_forbundet');
   });
 });
 

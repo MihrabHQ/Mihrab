@@ -22,6 +22,7 @@ import { isCoordinateInSingapore } from '../utils/singaporeRegion';
 import { isCoordinateInMorocco } from '../utils/moroccoRegion';
 import { isCoordinateInSweden } from '../utils/swedenRegion';
 import { isCoordinateInTurkey } from '../utils/turkeyRegion';
+import { nationalMethodCountryAt } from '../utils/countryAt';
 import { nearestDiyanetPlace } from '../providers/diyanetMethod';
 import type { PrayerDataProviderId } from './types';
 
@@ -29,6 +30,12 @@ export type RegionalProviderRegion = {
   id: PrayerDataProviderId;
   /** Does this coordinate fall inside the country this source publishes for? */
   covers: (latitude: number, longitude: number) => boolean;
+  /**
+   * Automatic passes this source over when the reader has chosen a
+   * calculation method by hand: its own fixed method would set theirs aside
+   * without a word, so AlAdhan (or the phone) computes their method instead.
+   */
+  yieldsToChosenMethod?: boolean;
 };
 
 export const REGIONAL_PROVIDER_REGIONS: readonly RegionalProviderRegion[] = [
@@ -40,9 +47,15 @@ export const REGIONAL_PROVIDER_REGIONS: readonly RegionalProviderRegion[] = [
   { id: 'marw', covers: isCoordinateInAlgeria },
   { id: 'habous', covers: isCoordinateInMorocco },
   // Singapore before Malaysia: the island sits inside the peninsula's box.
-  { id: 'muis', covers: isCoordinateInSingapore },
-  { id: 'jakim', covers: isCoordinateInMalaysia },
-  { id: 'kemenag', covers: isCoordinateInIndonesia },
+  // These three, like Diyanet in Türkiye, give way to a method chosen by
+  // hand (`yieldsToChosenMethod`).
+  { id: 'muis', covers: isCoordinateInSingapore, yieldsToChosenMethod: true },
+  { id: 'jakim', covers: isCoordinateInMalaysia, yieldsToChosenMethod: true },
+  {
+    id: 'kemenag',
+    covers: isCoordinateInIndonesia,
+    yieldsToChosenMethod: true,
+  },
 ];
 
 /**
@@ -55,35 +68,56 @@ export const REGIONAL_PROVIDER_REGIONS: readonly RegionalProviderRegion[] = [
  * where you are") lands on them.
  */
 export const HOME_PROVIDER_REGIONS: readonly RegionalProviderRegion[] = [
-  { id: 'diyanet', covers: isCoordinateInTurkey },
+  { id: 'diyanet', covers: isCoordinateInTurkey, yieldsToChosenMethod: true },
 ];
 
 /**
- * Everywhere else, Automatic takes Diyanet wherever it lists a place near
- * the reader — some 8,000 worldwide, each on the printed minute of
- * Diyanet's own table (`diyanetMethod.ts`) — and the worldwide default only
- * further from any. A country's own published source still comes first.
+ * Elsewhere, Automatic takes Diyanet wherever it lists a place near the
+ * reader — some 8,000 worldwide, each on the printed minute of Diyanet's own
+ * table (`diyanetMethod.ts`) — and the worldwide default only further from
+ * any. A country's own published source still comes first, and so does a
+ * country's own calculation method: in Saudi Arabia, the Gulf, Iran, Iraq,
+ * Jordan, Egypt, Pakistan, India, Bangladesh, Russia, Tunisia and Portugal
+ * (`nationalMethodCountryAt`) AlAdhan's Automatic computes the national
+ * method, and a Diyanet place nearby — Mecca, Tehran, Cairo, Moscow — does
+ * not trade it for Diyanet's.
  */
 export const NEAR_LISTED_PLACE_REGIONS: readonly RegionalProviderRegion[] = [
-  { id: 'diyanet', covers: (latitude, longitude) => nearestDiyanetPlace(latitude, longitude) !== null },
+  {
+    id: 'diyanet',
+    covers: (latitude, longitude) =>
+      nearestDiyanetPlace(latitude, longitude) !== null &&
+      nationalMethodCountryAt(latitude, longitude) === null,
+    yieldsToChosenMethod: true,
+  },
 ];
 
 /**
  * The source Automatic picks for these coordinates, or null for the worldwide
- * default. `nearListed`: whether Diyanet's tables near a listed place are in
- * the running — not when the reader has chosen a calculation method of their
- * own, which Diyanet's fixed method would silently set aside.
+ * default. `methodIsAutomatic`: false when the reader has chosen a
+ * calculation method of their own; then the sources with a fixed method of
+ * their own (`yieldsToChosenMethod`: Diyanet, near a listed place or in
+ * Türkiye, and MUIS, JAKIM and Kemenag) are passed over, since they would set
+ * the chosen method aside without a word.
  */
 export function regionalProviderForCoords(
   coords: { latitude: number; longitude: number } | null,
-  nearListed = true,
+  methodIsAutomatic = true,
 ): PrayerDataProviderId | null {
   if (!coords) return null;
-  const regions = nearListed
-    ? [...REGIONAL_PROVIDER_REGIONS, ...HOME_PROVIDER_REGIONS, ...NEAR_LISTED_PLACE_REGIONS]
-    : [...REGIONAL_PROVIDER_REGIONS, ...HOME_PROVIDER_REGIONS];
-  for (const region of regions) {
-    if (region.covers(coords.latitude, coords.longitude)) return region.id;
+  for (const region of [
+    ...REGIONAL_PROVIDER_REGIONS,
+    ...HOME_PROVIDER_REGIONS,
+    ...NEAR_LISTED_PLACE_REGIONS,
+  ]) {
+    if (region.covers(coords.latitude, coords.longitude)) {
+      // In a country whose source gives way, the reader's method is computed
+      // there (AlAdhan) — not the next region down, which would be Diyanet
+      // near a listed place.
+      return !methodIsAutomatic && region.yieldsToChosenMethod
+        ? null
+        : region.id;
+    }
   }
   return null;
 }

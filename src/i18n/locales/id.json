@@ -207,6 +207,7 @@
     "methodModalTitle": "Metode perhitungan",
     "hanafiAsr": "Hanafi Ashar",
     "hanafiAsrHelp": "Panjang bayangan Ashar lebih besar (sekolah = 1)",
+    "hanafiAsrPublished": "Sumber ini menerbitkan satu waktu Ashar, yaitu Syafi'i (satu panjang bayangan); Ashar Hanafi tidak ditampilkan.",
     "notifications": "Pemberitahuan",
     "prayerAlerts": "Peringatan doa",
     "prayerAlertsHelp": "Dijadwalkan untuk shalat lima waktu (Fajr – Isya). Android mungkin memerlukan akses alarm yang tepat agar pengaturan waktu dapat diandalkan.",

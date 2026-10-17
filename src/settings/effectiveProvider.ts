@@ -2,6 +2,7 @@ import {
   regionalProviderCovers,
   regionalProviderForCoords,
 } from './regionalProviders';
+import { isCoordinateInTurkey } from '../utils/turkeyRegion';
 import type { PrayerAppSettings, PrayerDataProviderId } from './types';
 
 /** When automatic mode is on and coordinates are outside Sweden, use this source. */
@@ -70,20 +71,24 @@ export function getEffectiveDataProvider(
   dataProvider: PrayerDataProviderId,
   coords: { latitude: number; longitude: number } | null,
   /**
-   * The calculation method setting. Automatic takes Diyanet near a place it
-   * lists only while this is Automatic too: a method the reader chose is
-   * theirs, and Diyanet's own would set it aside without a word.
+   * The calculation method setting. Automatic takes Diyanet — near a place
+   * it lists or in Türkiye — and MUIS, JAKIM and Kemenag only while this is
+   * Automatic too: a method the reader chose is theirs, and the source's own
+   * would set it aside without a word.
    */
   calculationMethod: PrayerAppSettings['calculationMethod'],
 ): PrayerDataProviderId {
-  const nearListed = calculationMethod === 'auto';
+  const methodIsAutomatic = calculationMethod === 'auto';
   if (dataProviderAuto) {
     // Automatic: a country with its own published tables gets them; near a
     // place Diyanet lists, Diyanet's table; everywhere else the global
     // default. Switches as the user moves.
     // The countries live in `regionalProviders.ts` — this branch does not
     // name any of them, which is the point of the table.
-    return regionalProviderForCoords(coords, nearListed) ?? AUTO_DEFAULT_OUTSIDE_SWEDEN;
+    return (
+      regionalProviderForCoords(coords, methodIsAutomatic) ??
+      AUTO_DEFAULT_OUTSIDE_SWEDEN
+    );
   }
 
   // Manual provider — honour the user's pick, with ONE safety guard. A
@@ -98,7 +103,38 @@ export function getEffectiveDataProvider(
   // Not covered: what Automatic picks there — the source that fits best
   // (`locationProviders.ts` also turns the location's setting to Automatic).
   if (!regionalProviderCovers(dataProvider, coords)) {
-    return regionalProviderForCoords(coords, nearListed) ?? AUTO_DEFAULT_OUTSIDE_SWEDEN;
+    return (
+      regionalProviderForCoords(coords, methodIsAutomatic) ??
+      AUTO_DEFAULT_OUTSIDE_SWEDEN
+    );
   }
   return dataProvider;
+}
+
+/**
+ * Is the source Diyanet here only for being near a place it lists — not
+ * pinned by hand, and not Türkiye's own? Then a calculation method chosen
+ * under Calculation takes the source back to AlAdhan with that method
+ * (`getEffectiveDataProvider`), so the method picker is offered rather than
+ * hidden as it is under a source with a fixed method.
+ */
+export function isDiyanetByProximity(
+  dataProviderAuto: boolean,
+  dataProvider: PrayerDataProviderId,
+  coords: { latitude: number; longitude: number } | null,
+  calculationMethod: PrayerAppSettings['calculationMethod'],
+): boolean {
+  if (!coords || isCoordinateInTurkey(coords.latitude, coords.longitude))
+    return false;
+  return (
+    getEffectiveDataProvider(
+      dataProviderAuto,
+      dataProvider,
+      coords,
+      calculationMethod,
+    ) === 'diyanet' &&
+    // Would a method of the reader's own move it? Not for a pinned Diyanet.
+    getEffectiveDataProvider(dataProviderAuto, dataProvider, coords, 3) !==
+      'diyanet'
+  );
 }

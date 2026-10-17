@@ -207,6 +207,7 @@
     "methodModalTitle": "Méthode de calcul",
     "hanafiAsr": "Hanafi Asr",
     "hanafiAsrHelp": "Plus grande longueur d’ombre pour Asr (école = 1)",
+    "hanafiAsrPublished": "Cette source publie une seule heure d’Asr, la chaféite (une longueur d’ombre) ; l’Asr hanafite n’est pas affiché.",
     "notifications": "Notifications",
     "prayerAlerts": "Alertes de prière",
     "prayerAlertsHelp": "Prévu pour les cinq prières quotidiennes (Fajr-Isha). Android peut nécessiter un accès à l'alarme exacte pour une synchronisation fiable.",

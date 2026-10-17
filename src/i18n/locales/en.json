@@ -207,6 +207,7 @@
     "methodModalTitle": "Calculation method",
     "hanafiAsr": "Hanafi Asr",
     "hanafiAsrHelp": "Larger shadow length for Asr (school = 1)",
+    "hanafiAsrPublished": "This source publishes one Asr time, the Shafi'i (one shadow length); the Hanafi Asr is not shown.",
     "notifications": "Notifications",
     "prayerAlerts": "Prayer alerts",
     "prayerAlertsHelp": "Scheduled for the five daily prayers (Fajr–Isha). Android may require exact-alarm access for reliable timing.",

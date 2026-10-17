@@ -207,6 +207,7 @@
     "methodModalTitle": "Hesaplama yöntemi",
     "hanafiAsr": "Hanefi Asr",
     "hanafiAsrHelp": "İkindi için daha büyük gölge uzunluğu (okul = 1)",
+    "hanafiAsrPublished": "Bu kaynak tek bir ikindi vakti yayımlar, Şafiî (bir gölge boyu); Hanefî ikindi gösterilmez.",
     "notifications": "Bildirimler",
     "prayerAlerts": "Namaz uyarıları",
     "prayerAlertsHelp": "Beş vakit namaz (Sabah-Yatsı) için planlanmıştır. Android, güvenilir zamanlama için tam alarm erişimi gerektirebilir.",

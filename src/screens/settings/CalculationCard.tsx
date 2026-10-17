@@ -9,6 +9,7 @@ import { usePrayerSettings } from '../../context/PrayerSettingsContext';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import {
   getEffectiveDataProvider,
+  isDiyanetByProximity,
   resolveCoordsFromSettings,
 } from '../../settings/effectiveProvider';
 import {
@@ -65,9 +66,17 @@ function CalculationCardImpl({
   const [fajrDraft, setFajrDraft] = useState<string | null>(null);
   const [ishaDraft, setIshaDraft] = useState<string | null>(null);
   const commitAngle = useCallback(
-    (key: 'customFajrAngle' | 'customIshaAngle', text: string, fallback: number) => {
+    (
+      key: 'customFajrAngle' | 'customIshaAngle',
+      text: string,
+      fallback: number,
+    ) => {
       const n = Number(text.replace(',', '.'));
-      if (Number.isFinite(n) && n >= CUSTOM_ANGLE_MIN && n <= CUSTOM_ANGLE_MAX) {
+      if (
+        Number.isFinite(n) &&
+        n >= CUSTOM_ANGLE_MIN &&
+        n <= CUSTOM_ANGLE_MAX
+      ) {
         updateSettings({ [key]: coerceCustomAngle(n, fallback) });
       }
     },
@@ -86,7 +95,31 @@ function CalculationCardImpl({
         coordsForEffective,
         settings.calculationMethod,
       ),
-    [settings.dataProviderAuto, settings.dataProvider, coordsForEffective, settings.calculationMethod],
+    [
+      settings.dataProviderAuto,
+      settings.dataProvider,
+      coordsForEffective,
+      settings.calculationMethod,
+    ],
+  );
+  // Diyanet only for a listed place nearby: a method chosen here takes the
+  // source back to AlAdhan with it, so the picker is offered.
+  const hidesMethod = useMemo(
+    () =>
+      providerHidesCalculationMethod(effectiveProvider) &&
+      !isDiyanetByProximity(
+        settings.dataProviderAuto,
+        settings.dataProvider,
+        coordsForEffective,
+        settings.calculationMethod,
+      ),
+    [
+      effectiveProvider,
+      settings.dataProviderAuto,
+      settings.dataProvider,
+      coordsForEffective,
+      settings.calculationMethod,
+    ],
   );
 
   return (
@@ -128,7 +161,17 @@ function CalculationCardImpl({
         }
         onPress={onOpenMadhabPicker}
       />
-      {providerHidesHanafiAsr(effectiveProvider) ? null : (
+      {providerHidesHanafiAsr(effectiveProvider) ? (
+        // The source prints one Asr: say so to a reader who asked for the
+        // Hanafi one, rather than leave the school row unexplained.
+        settings.school === 1 ? (
+          <SettingsBlock>
+            <Text style={[s.help, { color: palette.muted }]}>
+              {t('settings.hanafiAsrPublished')}
+            </Text>
+          </SettingsBlock>
+        ) : null
+      ) : (
         <>
           <SettingsToggleRow
             title={t('settings.hanafiAsr')}
@@ -198,7 +241,9 @@ function CalculationCardImpl({
               page reading as documentation (redesign-plan P7). */}
           <HelpText
             title={t('settings.malikiSecondTimes', 'Maliki second times')}
-            text={`${t('settings.malikiSecondTimesModelled')}\n\n${t('settings.malikiSecondTimesSource')}`}
+            text={`${t('settings.malikiSecondTimesModelled')}\n\n${t(
+              'settings.malikiSecondTimesSource',
+            )}`}
             style={s.help}
             color={palette.muted}
           />
@@ -226,14 +271,14 @@ function CalculationCardImpl({
 
       {/* The method, at the foot of the card — see the note at the top of
           this group for why it is no longer the first row. */}
-      {providerHidesCalculationMethod(effectiveProvider) ? (
+      {hidesMethod ? (
         <SettingsBlock>
           <Text style={[s.help, { color: palette.muted }]}>
             {effectiveProvider === 'islamiska_forbundet'
               ? t('settings.calcHiddenSweden')
               : effectiveProvider === 'namazvakti'
-                ? t('settings.calcHiddenNamazvakti')
-                : t('settings.calcHiddenPublished')}
+              ? t('settings.calcHiddenNamazvakti')
+              : t('settings.calcHiddenPublished')}
           </Text>
         </SettingsBlock>
       ) : (
@@ -245,16 +290,32 @@ function CalculationCardImpl({
           />
           {settings.calculationMethod === CUSTOM_METHOD_ID ? (
             <SettingsBlock>
-              <Text style={[s.help, { color: palette.muted }]}>{t('settings.customAnglesHelp')}</Text>
+              <Text style={[s.help, { color: palette.muted }]}>
+                {t('settings.customAnglesHelp')}
+              </Text>
               <View style={styles.angleRow}>
                 {(
                   [
-                    ['customFajrAngle', 'settings.customFajrAngle', fajrDraft, setFajrDraft, DEFAULT_CUSTOM_FAJR_ANGLE],
-                    ['customIshaAngle', 'settings.customIshaAngle', ishaDraft, setIshaDraft, DEFAULT_CUSTOM_ISHA_ANGLE],
+                    [
+                      'customFajrAngle',
+                      'settings.customFajrAngle',
+                      fajrDraft,
+                      setFajrDraft,
+                      DEFAULT_CUSTOM_FAJR_ANGLE,
+                    ],
+                    [
+                      'customIshaAngle',
+                      'settings.customIshaAngle',
+                      ishaDraft,
+                      setIshaDraft,
+                      DEFAULT_CUSTOM_ISHA_ANGLE,
+                    ],
                   ] as const
                 ).map(([key, labelKey, draft, setDraft, fallback]) => (
                   <View key={key} style={styles.angleField}>
-                    <Text style={[s.help, { color: palette.muted }]}>{t(labelKey)}</Text>
+                    <Text style={[s.help, { color: palette.muted }]}>
+                      {t(labelKey)}
+                    </Text>
                     <TextInput
                       testID={`settings-${key}`}
                       accessibilityLabel={t(labelKey)}
@@ -266,7 +327,11 @@ function CalculationCardImpl({
                       onBlur={() => setDraft(null)}
                       keyboardType="decimal-pad"
                       maxLength={4}
-                      style={[s.input, inputChromeStyle(palette), { color: palette.text, backgroundColor: palette.bg }]}
+                      style={[
+                        s.input,
+                        inputChromeStyle(palette),
+                        { color: palette.text, backgroundColor: palette.bg },
+                      ]}
                     />
                   </View>
                 ))}
@@ -274,20 +339,25 @@ function CalculationCardImpl({
             </SettingsBlock>
           ) : null}
           {/* The summer-night rule: only where a method is computed, since a
-              published table has already decided. */}
-          <SettingsLinkRow
-            title={t('settings.highLatitudeRule')}
-            value={t(`settings.highLatitude.${settings.highLatitudeRule}`)}
-            help={t('settings.highLatitudeRuleHelp')}
-            onPress={openHighLat}
-          />
-          <HighLatitudeModal
-            visible={highLatModal}
-            current={settings.highLatitudeRule}
-            palette={palette}
-            onSelect={id => updateSettings({ highLatitudeRule: id })}
-            onClose={closeHighLat}
-          />
+              published table has already decided — Diyanet's too, where
+              the picker is offered only to leave it. */}
+          {effectiveProvider === 'diyanet' ? null : (
+            <>
+              <SettingsLinkRow
+                title={t('settings.highLatitudeRule')}
+                value={t(`settings.highLatitude.${settings.highLatitudeRule}`)}
+                help={t('settings.highLatitudeRuleHelp')}
+                onPress={openHighLat}
+              />
+              <HighLatitudeModal
+                visible={highLatModal}
+                current={settings.highLatitudeRule}
+                palette={palette}
+                onSelect={id => updateSettings({ highLatitudeRule: id })}
+                onClose={closeHighLat}
+              />
+            </>
+          )}
         </>
       )}
 

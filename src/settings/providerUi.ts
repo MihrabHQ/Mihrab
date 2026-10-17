@@ -19,8 +19,19 @@ export function providerHidesCalculationMethod(
   );
 }
 
-/** Hanafi Asr toggle is hidden (organization publishes a single schedule). */
+/**
+ * Hanafi Asr toggle is hidden: the authority publishes a single schedule, with
+ * one (Shafi'i) Asr, and the source serves it as printed — Settings says so
+ * where the reader's school is Hanafi. Kemenag is not among them: its times are
+ * the ministry's method computed on the phone, which takes the Hanafi shadow
+ * as Diyanet's does.
+ */
 export function providerHidesHanafiAsr(id: PrayerDataProviderId): boolean {
-  // Both publish a single schedule; there is no madhab to choose within it.
-  return id === 'islamiska_forbundet' || id === 'habous' || id === 'marw' || id === 'muis' || id === 'jakim' || id === 'kemenag';
+  return (
+    id === 'islamiska_forbundet' ||
+    id === 'habous' ||
+    id === 'marw' ||
+    id === 'muis' ||
+    id === 'jakim'
+  );
 }
