@@ -21,7 +21,10 @@
  */
 import { HighLatitudeRule } from 'adhan';
 
-export type HighLatitudeRuleId = 'angle_based' | 'middle_of_night' | 'seventh_of_night';
+export type HighLatitudeRuleId =
+  | 'angle_based'
+  | 'middle_of_night'
+  | 'seventh_of_night';
 
 export const HIGH_LATITUDE_RULES: readonly HighLatitudeRuleId[] = [
   'angle_based',
@@ -38,7 +41,9 @@ export const ALADHAN_LATITUDE_ADJUSTMENT: Record<HighLatitudeRuleId, number> = {
   angle_based: 3,
 };
 
-export function adhanHighLatitudeRule(id: HighLatitudeRuleId): (typeof HighLatitudeRule)[keyof typeof HighLatitudeRule] {
+export function adhanHighLatitudeRule(
+  id: HighLatitudeRuleId,
+): (typeof HighLatitudeRule)[keyof typeof HighLatitudeRule] {
   switch (id) {
     case 'middle_of_night':
       return HighLatitudeRule.MiddleOfTheNight;
@@ -75,18 +80,40 @@ export function coerceHighLatitudeRule(value: unknown): HighLatitudeRuleId {
     : DEFAULT_HIGH_LATITUDE_RULE;
 }
 
-/** A custom angle, to a tenth of a degree and within the twilight range. */
+/**
+ * A custom angle, to a tenth of a degree and within the twilight range.
+ *
+ * Only a number, or a string that spells one, is an angle. `Number()` reads
+ * null, '', false and [] as 0, which the clamp then turned into 10° — a
+ * Fajr nearly an hour late for somebody who never chose an angle at all.
+ */
 export function coerceCustomAngle(value: unknown, fallback: number): number {
-  const n = typeof value === 'number' ? value : Number(value);
+  let n: number;
+  if (typeof value === 'number') n = value;
+  else if (typeof value === 'string' && value.trim() !== '') n = Number(value);
+  else return fallback;
   if (!Number.isFinite(n)) return fallback;
-  return Math.min(CUSTOM_ANGLE_MAX, Math.max(CUSTOM_ANGLE_MIN, Math.round(n * 10) / 10));
+  return Math.min(
+    CUSTOM_ANGLE_MAX,
+    Math.max(CUSTOM_ANGLE_MIN, Math.round(n * 10) / 10),
+  );
 }
 
-export function setCalculationPreferences(next: Partial<CalculationPreferences>): void {
+export function setCalculationPreferences(
+  next: Partial<CalculationPreferences>,
+): void {
   prefs = {
-    highLatitudeRule: coerceHighLatitudeRule(next.highLatitudeRule ?? prefs.highLatitudeRule),
-    customFajrAngle: coerceCustomAngle(next.customFajrAngle ?? prefs.customFajrAngle, DEFAULT_CUSTOM_FAJR_ANGLE),
-    customIshaAngle: coerceCustomAngle(next.customIshaAngle ?? prefs.customIshaAngle, DEFAULT_CUSTOM_ISHA_ANGLE),
+    highLatitudeRule: coerceHighLatitudeRule(
+      next.highLatitudeRule ?? prefs.highLatitudeRule,
+    ),
+    customFajrAngle: coerceCustomAngle(
+      next.customFajrAngle ?? prefs.customFajrAngle,
+      DEFAULT_CUSTOM_FAJR_ANGLE,
+    ),
+    customIshaAngle: coerceCustomAngle(
+      next.customIshaAngle ?? prefs.customIshaAngle,
+      DEFAULT_CUSTOM_ISHA_ANGLE,
+    ),
   };
 }
 
@@ -100,8 +127,10 @@ export function getCalculationPreferences(): CalculationPreferences {
  */
 export function calculationPreferencesKey(method: number | 'auto'): string {
   const parts: string[] = [];
-  if (prefs.highLatitudeRule !== DEFAULT_HIGH_LATITUDE_RULE) parts.push(`hl=${prefs.highLatitudeRule}`);
-  if (method === CUSTOM_METHOD_ID) parts.push(`ca=${prefs.customFajrAngle}/${prefs.customIshaAngle}`);
+  if (prefs.highLatitudeRule !== DEFAULT_HIGH_LATITUDE_RULE)
+    parts.push(`hl=${prefs.highLatitudeRule}`);
+  if (method === CUSTOM_METHOD_ID)
+    parts.push(`ca=${prefs.customFajrAngle}/${prefs.customIshaAngle}`);
   return parts.join(';');
 }
 

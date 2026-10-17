@@ -88,7 +88,10 @@ async function readFallback(): Promise<SecureSettings | null> {
 
 async function writeFallback(s: SecureSettings): Promise<void> {
   try {
-    await AsyncStorage.setItem(SECURE_FALLBACK_KEY, JSON.stringify(sanitize(s)));
+    await AsyncStorage.setItem(
+      SECURE_FALLBACK_KEY,
+      JSON.stringify(sanitize(s)),
+    );
   } catch (e) {
     // Even AsyncStorage is failing. Last-resort log; nothing else we can do.
     console.warn('secureStorage.writeFallback failed:', e);
@@ -103,24 +106,54 @@ async function clearFallback(): Promise<void> {
   }
 }
 
-export async function loadSecureSettings(): Promise<SecureSettings> {
+/**
+ * What a read of the secure store found, and whether it COULD read it.
+ *
+ * `failed` is true only when the encrypted store threw (locked Keychain,
+ * corrupt entry) and there was no fallback to stand in for it — when the
+ * empty result is "unknown", not "nothing saved". A caller that is going
+ * to write the result back needs the difference: writing an unknown as an
+ * empty one is how a locked Keychain at launch erased somebody's saved
+ * locations on the next unrelated settings change.
+ */
+export type SecureRead = { settings: SecureSettings; failed: boolean };
+
+export async function readSecureSettings(): Promise<SecureRead> {
   // Try the encrypted store first. If that returns nothing OR throws, fall
   // back to the plaintext AsyncStorage entry written when a previous save
   // failed — task #141. Without this fallback, a transient Keychain error
   // would erase the user's saved coordinates / presets on the next session.
+  let failed = false;
   try {
     const raw = await EncryptedStorage.getItem(SECURE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw) as Partial<SecureSettings>;
-      return sanitize(parsed);
+      return { settings: sanitize(parsed), failed: false };
     }
   } catch (e) {
     console.warn('secureStorage.loadSecureSettings (encrypted) failed:', e);
+    failed = true;
   }
 
+  // The fallback is written only by a save the encrypted store refused and
+  // drained by the next one it accepted, so when it exists it is the newest.
   const fallback = await readFallback();
-  if (fallback) return fallback;
-  return {};
+  if (fallback) return { settings: fallback, failed: false };
+  return { settings: {}, failed };
+}
+
+export async function loadSecureSettings(): Promise<SecureSettings> {
+  return (await readSecureSettings()).settings;
+}
+
+/**
+ * Write to the plaintext fallback only, leaving the encrypted entry as it
+ * is. For a location the user set while the encrypted store could not be
+ * read: it must survive a relaunch, and it must not be written over an
+ * entry nobody could see.
+ */
+export async function saveSecureFallback(s: SecureSettings): Promise<void> {
+  await writeFallback(sanitize(s));
 }
 
 export async function saveSecureSettings(s: SecureSettings): Promise<void> {
@@ -136,7 +169,10 @@ export async function saveSecureSettings(s: SecureSettings): Promise<void> {
     // builds, secure enclave locked, etc.). Persist to plaintext AsyncStorage
     // so the next session still has the user's coords + presets, and re-throw
     // so the caller can surface a recoverable warning if it wants to.
-    console.error('secureStorage.saveSecureSettings failed (using fallback):', e);
+    console.error(
+      'secureStorage.saveSecureSettings failed (using fallback):',
+      e,
+    );
     await writeFallback(sanitized);
     throw e;
   }

@@ -237,9 +237,11 @@ function pickPin(a: KhatmahPlan, b: KhatmahPlan): KhatmahPlan['position'] {
    * would throw away every pin an un-updated device makes.
    */
   if (sa === 0) {
-    return ((b.position?.page ?? -1) > (a.position?.page ?? -1)
-      ? b.position
-      : a.position) ?? null;
+    return (
+      ((b.position?.page ?? -1) > (a.position?.page ?? -1)
+        ? b.position
+        : a.position) ?? null
+    );
   }
   // Both dated, in the same millisecond: a removal is the stronger claim,
   // and two live pins are ordered by how far through the book they sit.
@@ -278,7 +280,12 @@ function strongerPacing(a: KhatmahPlan, b: KhatmahPlan): KhatmahPlan {
 }
 
 type Pacing = Pick<KhatmahPlan, 'targetDays'> &
-  Partial<Pick<KhatmahPlan, 'deadline' | 'pacedAt' | 'pacedDay' | 'pacedFrom' | 'pace'>>;
+  Partial<
+    Pick<
+      KhatmahPlan,
+      'deadline' | 'pacedAt' | 'pacedDay' | 'pacedFrom' | 'pace'
+    >
+  >;
 
 /**
  * TODAY'S CUT GOES WITH THE DATE IT WAS CUT FOR.
@@ -303,7 +310,11 @@ function paceFor(
   return (a.deadline === deadline ? a : b).pace;
 }
 
-function pickPacing(a: KhatmahPlan, b: KhatmahPlan, marks: readonly AyahMark[]): Pacing {
+function pickPacing(
+  a: KhatmahPlan,
+  b: KhatmahPlan,
+  marks: readonly AyahMark[],
+): Pacing {
   const sa = a.pacedAt ?? 0;
   const sb = b.pacedAt ?? 0;
   /**
@@ -316,10 +327,10 @@ function pickPacing(a: KhatmahPlan, b: KhatmahPlan, marks: readonly AyahMark[]):
   if (sa === 0 && sb === 0) {
     const deadline =
       !a.deadline || !b.deadline
-        ? (a.deadline ?? b.deadline)
+        ? a.deadline ?? b.deadline
         : a.deadline >= b.deadline
-          ? a.deadline
-          : b.deadline;
+        ? a.deadline
+        : b.deadline;
     const pace = paceFor(a, b, deadline, marks);
     return {
       targetDays: Math.max(a.targetDays, b.targetDays),
@@ -349,7 +360,8 @@ function pickPace(
   marks: readonly AyahMark[],
 ): KhatmahPlan['pace'] {
   if (!a.pace || !b.pace) return a.pace ?? b.pace;
-  if (a.pace.day !== b.pace.day) return a.pace.day > b.pace.day ? a.pace : b.pace;
+  if (a.pace.day !== b.pace.day)
+    return a.pace.day > b.pace.day ? a.pace : b.pace;
   /**
    * TWO CUTS THAT DO NOT TOUCH WERE MADE FROM TWO DIFFERENT PLACES, and
    * the earliest opening (below) is only right when the place was the
@@ -386,9 +398,14 @@ function pickPace(
 /** The per-device day baseline, copied only when the device has one. */
 function dayStateOf(
   plan: KhatmahPlan,
-): Pick<KhatmahPlan, 'dayStartDate' | 'dayStartPagesRead' | 'dayStartAyahsRead'> {
+): Pick<
+  KhatmahPlan,
+  'dayStartDate' | 'dayStartPagesRead' | 'dayStartAyahsRead'
+> {
   return {
-    ...(plan.dayStartDate !== undefined ? { dayStartDate: plan.dayStartDate } : {}),
+    ...(plan.dayStartDate !== undefined
+      ? { dayStartDate: plan.dayStartDate }
+      : {}),
     ...(plan.dayStartPagesRead !== undefined
       ? { dayStartPagesRead: plan.dayStartPagesRead }
       : {}),
@@ -445,7 +462,7 @@ export function mergeKhatmah(
     const completedAt =
       mine.completedAt != null && p.completedAt != null
         ? Math.min(mine.completedAt, p.completedAt)
-        : (mine.completedAt ?? p.completedAt);
+        : mine.completedAt ?? p.completedAt;
     // ABANDONMENT WINS, and it is why this field exists. A plan deleted
     // on one device used to be simply absent from its snapshot, which is
     // indistinguishable from a plan the OTHER device had just made — so
@@ -495,11 +512,12 @@ export function mergeKhatmah(
         )
       : undefined;
     const ayahsRead = contiguous ?? maxAyahsRead;
-    const pagesReadOut = contiguous !== undefined ? pagesThroughAyahs(contiguous) : pagesRead;
+    const pagesReadOut =
+      contiguous !== undefined ? pagesThroughAyahs(contiguous) : pagesRead;
     const abandonedAt =
       mine.abandonedAt != null && p.abandonedAt != null
         ? Math.min(mine.abandonedAt, p.abandonedAt)
-        : (mine.abandonedAt ?? p.abandonedAt);
+        : mine.abandonedAt ?? p.abandonedAt;
     /**
      * THE PIN IS WHOEVER SPOKE LAST, because taking one off is speaking.
      *
@@ -580,7 +598,9 @@ export function mergeKhatmah(
       // must not come out of the merge carrying deadline-shaped keys.
       ...(deadline ? { deadline } : {}),
       ...(pacing.pacedAt ? { pacedAt: pacing.pacedAt } : {}),
-      ...(pacing.pacedFrom !== undefined ? { pacedFrom: pacing.pacedFrom } : {}),
+      ...(pacing.pacedFrom !== undefined
+        ? { pacedFrom: pacing.pacedFrom }
+        : {}),
       ...(pacing.pacedDay !== undefined ? { pacedDay: pacing.pacedDay } : {}),
       ...(pace && deadline ? { pace } : {}),
       /**
@@ -620,23 +640,23 @@ export function mergeKhatmah(
     if (!pacing.pacedAt) delete merged.pacedAt;
     if (!pace) delete merged.pace;
     byId.set(p.id, merged);
-      /**
-       * THE DAY'S BASELINE IS THIS DEVICE'S, always.
-       *
-       * `dayStartDate` and the two numbers beside it answer "how much of
-       * this has happened since MY day began" — a local clock, a local
-       * calendar day, and a snapshot taken when this device first looked
-       * today. The spread above handed all three to whichever side was
-       * incoming, so a phone that had not been opened since last week
-       * reset the Mac's "today" to last week's baseline and today's
-       * reading appeared to jump; merging the other way round gave the
-       * other answer, which is the same bug wearing its other face — the
-       * merge was not commutative in these fields at all.
-       *
-       * They are not synced state. They stay whatever this device said,
-       * including staying ABSENT if it had none, and `withDaySnapshot`
-       * re-takes them on the next local write anyway.
-       */
+    /**
+     * THE DAY'S BASELINE IS THIS DEVICE'S, always.
+     *
+     * `dayStartDate` and the two numbers beside it answer "how much of
+     * this has happened since MY day began" — a local clock, a local
+     * calendar day, and a snapshot taken when this device first looked
+     * today. The spread above handed all three to whichever side was
+     * incoming, so a phone that had not been opened since last week
+     * reset the Mac's "today" to last week's baseline and today's
+     * reading appeared to jump; merging the other way round gave the
+     * other answer, which is the same bug wearing its other face — the
+     * merge was not commutative in these fields at all.
+     *
+     * They are not synced state. They stay whatever this device said,
+     * including staying ABSENT if it had none, and `withDaySnapshot`
+     * re-takes them on the next local write anyway.
+     */
   }
   // Plans with different ids are different plans, and the union keeps
   // them all — including two LIVE ones, when each device started its own
@@ -646,7 +666,8 @@ export function mergeKhatmah(
   // came out in whichever order the sides were passed, so the two devices
   // of one sync stored different lists.
   return oneLivePlan([...byId.values()]).sort(
-    (a, b) => a.startedAt - b.startedAt || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0),
+    (a, b) =>
+      a.startedAt - b.startedAt || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0),
   );
 }
 
@@ -666,7 +687,10 @@ export function mergeKhatmah(
  * dropped on the next sync without a word. `prefsUpdatedAt` is written
  * by `setQuranPrefs` and by nothing else.
  */
-export function mergeQuran(local: QuranState, incoming: QuranState): QuranState {
+export function mergeQuran(
+  local: QuranState,
+  incoming: QuranState,
+): QuranState {
   // NEWEST COPY WINS, by id. It used to be first copy wins — the local one
   // kept, the incoming one dropped — which was correct while a bookmark
   // could not change after it was made. A following bookmark can: it
@@ -741,7 +765,7 @@ export function mergeQuran(local: QuranState, incoming: QuranState): QuranState 
   const prefsStamp = (s: QuranState) =>
     s.prefsUpdatedAt && s.prefsUpdatedAt > 0
       ? s.prefsUpdatedAt
-      : (s.lastRead?.updatedAt ?? 0);
+      : s.lastRead?.updatedAt ?? 0;
   const minePrefsAt = prefsStamp(local);
   const theirPrefsAt = prefsStamp(incoming);
   const theirPrefsAreNewer = theirPrefsAt > minePrefsAt;
@@ -790,6 +814,95 @@ export function mergeShallow(
   return { ...local, ...incoming };
 }
 
+/** The per-location keys that are not a saved location's id (`locationProviders.ts`). */
+const ACTIVE_LOCATION_KEYS = ['my', 'manual'];
+
+function isPlainObject(v: unknown): v is Record<string, unknown> {
+  return Boolean(v) && typeof v === 'object' && !Array.isArray(v);
+}
+
+/**
+ * A map for settings saved before locations kept their own sources, the way
+ * `seedLocationProviders` builds it on load: every location starts from the
+ * one choice they all shared. Built here from OUR choice, because after the
+ * merge the shared fields hold the peer's, and the load would seed from those.
+ */
+function seededMap(
+  local: Record<string, unknown>,
+  localLocation: Record<string, unknown>,
+): Record<string, unknown> | null {
+  if (typeof local.dataProvider !== 'string') return null;
+  const choice = {
+    auto:
+      typeof local.dataProviderAuto === 'boolean'
+        ? local.dataProviderAuto
+        : false,
+    provider: local.dataProvider,
+  };
+  const map: Record<string, unknown> = {};
+  for (const k of ACTIVE_LOCATION_KEYS) map[k] = choice;
+  const presets = localLocation.locationPresets;
+  if (Array.isArray(presets)) {
+    for (const p of presets) {
+      if (isPlainObject(p) && typeof p.id === 'string') map[p.id] = choice;
+    }
+  }
+  return map;
+}
+
+/**
+ * Settings, with each location's prayer-time source merged key by key.
+ *
+ * `locationProviders` is keyed by the ids of the sending device's saved
+ * locations, and those live in the location category — which is off by
+ * default. Taken wholesale, a settings-only sync replaced this phone's map
+ * with one naming none of its own saved places, and every one of them fell
+ * back to Automatic without a word. So every local entry stays; a peer's
+ * entry comes over only for a location this phone has (My location, the
+ * unsaved place, or a saved location with the same id), or for any of its
+ * locations when the location category is being taken in the same merge,
+ * so the peer's saved places arrive with their sources. A peer from before
+ * per-location sources carries no map and leaves this one alone.
+ */
+export function mergeSettings(
+  local: Record<string, unknown>,
+  incoming: Record<string, unknown>,
+  options: { localLocation: Record<string, unknown>; withLocation: boolean },
+): Record<string, unknown> {
+  const out = mergeShallow(local, incoming);
+  const own = isPlainObject(local.locationProviders)
+    ? local.locationProviders
+    : null;
+  const theirs = isPlainObject(incoming.locationProviders)
+    ? incoming.locationProviders
+    : null;
+  if (!theirs) {
+    // Nothing usable from the peer: ours, exactly as it was (or absent).
+    if (own) out.locationProviders = own;
+    else delete out.locationProviders;
+    return out;
+  }
+  const mine = own ?? seededMap(local, options.localLocation);
+  if (options.withLocation) {
+    out.locationProviders = { ...(mine ?? {}), ...theirs };
+    return out;
+  }
+  const here = new Set<string>(ACTIVE_LOCATION_KEYS);
+  for (const k of Object.keys(mine ?? {})) here.add(k);
+  const presets = options.localLocation.locationPresets;
+  if (Array.isArray(presets)) {
+    for (const p of presets) {
+      if (isPlainObject(p) && typeof p.id === 'string') here.add(p.id);
+    }
+  }
+  const merged: Record<string, unknown> = { ...(mine ?? {}) };
+  for (const [k, v] of Object.entries(theirs)) {
+    if (here.has(k)) merged[k] = v;
+  }
+  out.locationProviders = merged;
+  return out;
+}
+
 /**
  * Fold a snapshot into the local data, honouring BOTH what the snapshot
  * carries and what the user asked to accept.
@@ -822,7 +935,10 @@ export function mergeData(
       accept.quran && d.quran ? mergeQuran(local.quran, d.quran) : local.quran,
     settings:
       accept.settings && d.settings
-        ? mergeShallow(local.settings, d.settings)
+        ? mergeSettings(local.settings, d.settings, {
+            localLocation: local.location,
+            withLocation: Boolean(accept.location && d.location),
+          })
         : local.settings,
     location:
       accept.location && d.location
