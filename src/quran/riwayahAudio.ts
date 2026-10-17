@@ -107,6 +107,33 @@ export function filesOf(
   return out;
 }
 
+/**
+ * The ayah of this riwayah that holds a Ḥafṣ-numbered one.
+ *
+ * For anything written once in the Ḥafṣ count and offered to every reader —
+ * "Al-Baqarah, the last two ayahs" is 2:285–286 in Ḥafṣ and 2:284–285 in
+ * Warsh. Where two of this riwayah's ayahs share the Ḥafṣ one (a split),
+ * `end` picks the later, so a passage ending there keeps its last words.
+ */
+export function riwayahAyahOf(
+  riwayah: RiwayahId,
+  surah: number,
+  hafsAyah: number,
+  end = false,
+): number {
+  if (!COUNT[riwayah]) return hafsAyah;
+  let found = 0;
+  for (let a = 1; a <= hafsAyah + 2; a++) {
+    const [first, last] = hafsSpan(riwayah, surah, a);
+    if (first > hafsAyah) break;
+    if (last >= hafsAyah) {
+      found = a;
+      if (!end) break;
+    }
+  }
+  return found || hafsAyah;
+}
+
 /** For tests. */
 export function _resetRiwayahAudioCacheForTests(): void {
   cache.clear();

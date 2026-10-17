@@ -11,6 +11,8 @@ import { useProgressWhileActive } from './useProgressWhileActive';
 import { loadReciterTimings } from './audioStore';
 import { findReciter } from './reciters';
 import { usePlaybackStatus } from './playback';
+import { useQuranState } from '../quranState';
+import { DEFAULT_RIWAYAH, resolveRiwayah } from '../riwayat';
 
 type TimingsMap = { [key: string]: number[][] };
 
@@ -132,6 +134,7 @@ export function useActiveWordIndex(): {
   wordIndex: number;
 } | null {
   const { active, playing, reciterId } = usePlaybackStatus();
+  const riwayah = resolveRiwayah(useQuranState().prefs.riwayah);
   // Four times a second, and only while a human can see the word it
   // lights. The probes that mount this are gated the same way, so this
   // is belt and braces — but the hook is exported, and the next caller
@@ -154,6 +157,11 @@ export function useActiveWordIndex(): {
   }, [playing, active, reciterId, timings]);
 
   if (!active || !playing || !timings) return null;
+  // The timings are the Ḥafṣ text's words, keyed by the Ḥafṣ ayah. Another
+  // riwayah numbers its ayahs its own way (riwayahAudio.ts) and spells its
+  // own words, so neither the key nor the word index would point at what is
+  // on the page — the ayah is lit, and that is the honest ceiling there.
+  if (riwayah !== DEFAULT_RIWAYAH) return null;
   const segments = timings[`${active.surah}:${active.ayah}`];
   if (!segments || segments.length === 0) return null;
   const ms = position * 1000;

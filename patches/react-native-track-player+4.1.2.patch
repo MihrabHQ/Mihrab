@@ -2378,24 +2378,19 @@ diff --git a/node_modules/react-native-track-player/android/src/main/java/com/do
 index 0000000..0000000 100644
 --- a/node_modules/react-native-track-player/android/src/main/java/com/doublesymmetry/trackplayer/service/MusicService.kt
 +++ b/node_modules/react-native-track-player/android/src/main/java/com/doublesymmetry/trackplayer/service/MusicService.kt
-@@ -47,6 +47,92 @@
+@@ -47,6 +47,59 @@
      private val scope = MainScope()
      private var progressUpdateJob: Job? = null
  
 +    // ── Mihrab: the joins between ayahs ─────────────────────────────────
 +    //
-+    // A track may carry `trimStart` / `trimEnd` (seconds of silence to skip
-+    // at either end of the file) and `restFactor` (pause after it for its
-+    // spoken length × this — the memorisation drill). Done here and not in
-+    // JS because JS timers stop when the app is in the background, and a
-+    // recitation is listened to with the screen off. One coroutine per
-+    // track, asleep until the moment it is needed: no polling across the
-+    // bridge. See src/quran/audio/seams.ts for the same on iOS.
++    // A track may carry `trimStart` / `trimEnd`: seconds of silence to skip
++    // at either end of its file. Done here and not in JS because JS timers
++    // stop when the app is in the background, and a recitation is listened
++    // to with the screen off. One coroutine per track, asleep until the
++    // moment it is needed, and only while playing: nothing here pauses the
++    // player. See src/quran/audio/seams.ts for the same on iOS.
 +    private var seamJob: Job? = null
-+    private var restJob: Job? = null
-+    private var advancedAtSeam = false
-+    /** Spoken length of the current track, seconds, once its duration is known. */
-+    private var spokenSeconds = 0.0
 +
 +    private fun Bundle?.seconds(key: String): Double? =
 +        if (this != null && containsKey(key)) getDouble(key).takeIf { it > 0.0 } else null
@@ -2404,19 +2399,12 @@ index 0000000..0000000 100644
 +        if (index == null || !::player.isInitialized) null
 +        else (player.items.getOrNull(index) as? TrackAudioItem)?.track?.originalItem
 +
-+    private fun cancelRest() {
-+        restJob?.cancel()
-+        restJob = null
-+    }
-+
 +    private fun watchSeam() {
 +        seamJob?.cancel()
 +        seamJob = null
 +        if (!::player.isInitialized || !player.isPlaying) return
 +        val index = player.currentIndex
-+        val extras = extrasAt(index) ?: return
-+        val trimStart = extras.seconds("trimStart") ?: 0.0
-+        val trimEnd = extras.seconds("trimEnd")
++        val trimEnd = extrasAt(index).seconds("trimEnd") ?: return
 +        seamJob = scope.launch {
 +            while (isActive) {
 +                if (player.currentIndex != index) return@launch
@@ -2425,15 +2413,11 @@ index 0000000..0000000 100644
 +                    delay(200)
 +                    continue
 +                }
-+                spokenSeconds = (duration - (trimEnd ?: 0.0) - trimStart).coerceAtLeast(0.0)
-+                if (trimEnd == null || trimEnd >= duration) return@launch
++                if (trimEnd >= duration) return@launch
 +                val left = duration - trimEnd - player.position / 1000.0
 +                if (left <= 0.02) {
 +                    // The last ayah of the queue ends as recorded.
-+                    if (player.nextItem != null) {
-+                        advancedAtSeam = true
-+                        player.next()
-+                    }
++                    if (player.nextItem != null) player.next()
 +                    return@launch
 +                }
 +                val speed = player.playbackSpeed.toDouble().coerceAtLeast(0.25)
@@ -2442,28 +2426,11 @@ index 0000000..0000000 100644
 +        }
 +    }
 +
-+    private fun onSeamTransition(reason: AudioItemTransitionReason?) {
-+        val natural = advancedAtSeam || reason is AudioItemTransitionReason.AUTO
-+        advancedAtSeam = false
-+        cancelRest()
-+        val previousSpoken = spokenSeconds
-+        spokenSeconds = 0.0
-+        val current = extrasAt(player.currentIndex)
-+        val trimStart = current.seconds("trimStart")
++    private fun onSeamTransition() {
++        if (!::player.isInitialized || player.items.isEmpty()) return
++        val trimStart = extrasAt(player.currentIndex).seconds("trimStart")
 +        if (trimStart != null && player.position < trimStart * 1000 - 50) {
 +            player.seek((trimStart * 1000).toLong(), TimeUnit.MILLISECONDS)
-+        }
-+        val factor = extrasAt(player.previousIndex).seconds("restFactor")
-+        if (natural && factor != null && previousSpoken > 0.0) {
-+            val restMs = (previousSpoken * factor * 1000).toLong().coerceAtMost(30_000L)
-+            if (restMs >= 250) {
-+                player.pause()
-+                restJob = scope.launch {
-+                    delay(restMs)
-+                    restJob = null
-+                    player.play()
-+                }
-+            }
 +        }
 +        watchSeam()
 +    }
@@ -2471,68 +2438,21 @@ index 0000000..0000000 100644
      /**
       * Use [appKilledPlaybackBehavior] instead.
       */
-@@ -322,21 +408,25 @@
- 
-     @MainThread
-     fun clear() {
-+        cancelRest()
-         player.clear()
-     }
- 
-     @MainThread
-     fun play() {
-+        cancelRest()
-         player.play()
-     }
- 
-     @MainThread
-     fun pause() {
-+        cancelRest()
-         player.pause()
-     }
- 
-     @MainThread
-     fun stop() {
-+        cancelRest()
-         player.stop()
-     }
- 
-@@ -352,27 +442,34 @@
- 
-     @MainThread
-     fun skip(index: Int) {
-+        cancelRest()
-         player.jumpToItem(index)
-     }
- 
-     @MainThread
-     fun skipToNext() {
-+        cancelRest()
-         player.next()
-     }
- 
-     @MainThread
-     fun skipToPrevious() {
-+        cancelRest()
-         player.previous()
-     }
- 
+@@ -368,11 +421,13 @@
      @MainThread
      fun seekTo(seconds: Float) {
-+        cancelRest()
          player.seek((seconds * 1000).toLong(), TimeUnit.MILLISECONDS)
 +        watchSeam()
      }
  
      @MainThread
      fun seekBy(offset: Float) {
-+        cancelRest()
          player.seekBy((offset.toLong()), TimeUnit.SECONDS)
 +        watchSeam()
      }
  
      @MainThread
-@@ -389,6 +486,7 @@
+@@ -389,6 +444,7 @@
      @MainThread
      fun setRate(value: Float) {
          player.playbackSpeed = value
@@ -2540,7 +2460,7 @@ index 0000000..0000000 100644
      }
  
      @MainThread
-@@ -605,6 +703,10 @@
+@@ -605,6 +661,10 @@
          scope.launch {
              event.stateChange.collect {
                  emit(MusicEvents.PLAYBACK_STATE, getPlayerStateBundle(it))
@@ -2551,23 +2471,15 @@ index 0000000..0000000 100644
  
                  if (it == AudioPlayerState.ENDED && player.nextItem == null) {
                      emitQueueEndedEvent()
-@@ -621,11 +723,15 @@
+@@ -621,6 +681,7 @@
                          (it?.oldPosition ?: 0).toSeconds()
                      )
                  }
-+                onSeamTransition(it)
++                onSeamTransition()
              }
          }
  
-         scope.launch {
-             event.onAudioFocusChanged.collect {
-+                // A call or another app took the sound: a rest must not
-+                // start the recitation over it.
-+                cancelRest()
-                 Bundle().apply {
-                     putBoolean(IS_FOCUS_LOSS_PERMANENT_KEY, it.isFocusLostPermanently)
-                     putBoolean(IS_PAUSED_KEY, it.isPaused)
-@@ -738,10 +844,29 @@
+@@ -738,10 +799,29 @@
          }
          return bundle
      }
@@ -2598,7 +2510,7 @@ index 0000000..0000000 100644
              ?.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
              ?.emit(event, data?.let { Arguments.fromBundle(it) })
      }
-@@ -751,7 +876,7 @@
+@@ -751,7 +831,7 @@
          val payload = Arguments.createArray()
          data.forEach { payload.pushMap(Arguments.fromBundle(it)) }
  
@@ -2607,12 +2519,11 @@ index 0000000..0000000 100644
              ?.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
              ?.emit(event, payload)
      }
-@@ -804,6 +929,8 @@
+@@ -804,6 +884,7 @@
          }
  
          progressUpdateJob?.cancel()
 +        seamJob?.cancel()
-+        cancelRest()
      }
  
      @MainThread

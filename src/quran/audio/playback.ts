@@ -445,18 +445,27 @@ export function expandRange(
   riwayah: RiwayahId = queueRiwayah,
 ): AyahRef[] {
   const out: AyahRef[] = [];
-  let s = from.surah;
-  let a = from.ayah;
+  // Both ends inside their surahs, as THIS riwayah counts them. An end
+  // written in another count — Al-Baqarah 2:286 for a Warsh reader, whose
+  // Al-Baqarah has 285 — never came round, and the walk ran on to An-Nās.
+  const clamp = (r: AyahRef): AyahRef => ({
+    surah: r.surah,
+    ayah: Math.max(1, Math.min(r.ayah, ayahsIn(r.surah, riwayah))),
+  });
+  const start = clamp(from);
+  let s = start.surah;
+  let a = start.ayah;
   // Guard: inverted ranges play just the starting ayah.
+  const last = clamp(to);
   const end =
-    to.surah < from.surah ||
-    (to.surah === from.surah && to.ayah < from.ayah)
-      ? from
-      : to;
+    last.surah < start.surah ||
+    (last.surah === start.surah && last.ayah < start.ayah)
+      ? start
+      : last;
   for (;;) {
     out.push({ surah: s, ayah: a });
     if (s === end.surah && a === end.ayah) break;
-    if (!findSurah(s)) break;
+    if (s > end.surah || !findSurah(s)) break;
     if (a < ayahsIn(s, riwayah)) {
       a += 1;
     } else if (s < 114) {
@@ -521,9 +530,9 @@ async function buildTracks(
   // The ayah queued just before `refs[0]`, when this is a top-up: it may
   // already have played a file the first of these shares.
   previous: AyahRef | null = null,
-  // Pause after each ayah for its own length × this — the memorisation
-  // drill's "recite it back in the gap". Only a drill passes it.
-  restFactor = 0,
+  // A drill repeats each ayah: the second half of a split ayah is then
+  // heard in its own repetitions, shared file and all, rather than once.
+  repeating = false,
 ): Promise<Track[]> {
   const reciter = findReciter(reciterId);
   const riwayah = queueRiwayah;
@@ -532,13 +541,17 @@ async function buildTracks(
   // differently (`riwayahAudio.ts`). Each file is a track, and every track
   // carries the AYAH in its id: that is what the page lights, while the
   // file says what is heard.
-  const plan: Array<{ r: AyahRef; file: number; last: boolean }> = [];
+  const plan: Array<{ r: AyahRef; file: number }> = [];
   let before = previous;
   for (const r of refs) {
     const afterPrevious =
-      before != null && before.surah === r.surah && before.ayah === r.ayah - 1;
-    const files = filesOf(riwayah, r.surah, r.ayah, afterPrevious);
-    files.forEach((file, k) => plan.push({ r, file, last: k === files.length - 1 }));
+      !repeating &&
+      before != null &&
+      before.surah === r.surah &&
+      before.ayah === r.ayah - 1;
+    for (const file of filesOf(riwayah, r.surah, r.ayah, afterPrevious)) {
+      plan.push({ r, file });
+    }
     before = r;
   }
   // Resolve local paths once per unique file.
@@ -549,7 +562,7 @@ async function buildTracks(
       localByKey.set(key, await localAudioPathIfAny(reciterId, r.surah, file));
     }
   }
-  return plan.map(({ r, file, last }, i) => {
+  return plan.map(({ r, file }, i) => {
     const local = localByKey.get(`${r.surah}:${file}`);
     const meta = findSurah(r.surah);
     return {
@@ -560,9 +573,6 @@ async function buildTracks(
       // ayah runs into the next with a breath, not a stop
       // (recitationEdges.ts, seams.ts).
       ...trimFor(reciter.folder, r.surah, file),
-      // After the ayah's last file only: an ayah in two files is one
-      // ayah to recite back.
-      ...(restFactor > 0 && last ? { restFactor } : {}),
       /**
        * THE SURAH, AND HOW FAR INTO IT — because the bar cannot say so.
        *
@@ -809,21 +819,16 @@ export async function playRange(
   // A deliberate range replaces a continuous listen. The two cannot both
   // be true of one queue, and the one the user just asked for wins.
   endListening();
-  seams.cancelRest();
   const prefs = getQuranState().prefs;
   queueRiwayah = resolveRiwayah(prefs.riwayah);
   setStatus({ reciterId: prefs.reciterId, loading: true, gap: null });
   let refs = expandRange(from, to);
-  let restFactor = 0;
+  let repeating = false;
   if (opts.useRepeats !== false) {
     refs = applyRepeats(refs, prefs.repeat.eachAyah, prefs.repeat.range);
-    // "Pause between repeats" is the drill's, and a range heard once has
-    // no repeats to pause between — a plain listen never stops.
-    if (prefs.repeat.eachAyah > 1 || prefs.repeat.range > 1) {
-      restFactor = Math.max(0, prefs.repeat.pauseFactor);
-    }
+    repeating = prefs.repeat.eachAyah > 1;
   }
-  const tracks = await buildTracks(refs, prefs.reciterId, 0, null, restFactor);
+  const tracks = await buildTracks(refs, prefs.reciterId, 0, null, repeating);
   await TrackPlayer.reset();
   await TrackPlayer.add(tracks);
   await TrackPlayer.setRate(prefs.playbackRate);
@@ -833,13 +838,11 @@ export async function playRange(
 
 export async function pausePlayback(): Promise<void> {
   await ensureSetup();
-  seams.cancelRest();
   await TrackPlayer.pause();
 }
 
 export async function resumePlayback(): Promise<void> {
   await ensureSetup();
-  seams.cancelRest();
   await TrackPlayer.play();
 }
 
@@ -861,7 +864,6 @@ export async function listenFrom(
 ): Promise<void> {
   if (!findSurah(surah)) return;
   await ensureSetup();
-  seams.cancelRest();
   const prefs = getQuranState().prefs;
   queueRiwayah = resolveRiwayah(prefs.riwayah);
   setStatus({ reciterId: prefs.reciterId, loading: true, gap: null });
@@ -931,7 +933,6 @@ export async function listenPreviousSurah(): Promise<void> {
 
 export async function stopPlayback(): Promise<void> {
   endListening();
-  seams.cancelRest();
   if (!setupPromise) return; // never started — nothing to stop
   await TrackPlayer.reset();
   setStatus({ active: null, playing: false, loading: false });
@@ -940,7 +941,6 @@ export async function stopPlayback(): Promise<void> {
 /** Move within the ayah being recited. */
 export async function seekTo(seconds: number): Promise<void> {
   await ensureSetup();
-  seams.cancelRest();
   await TrackPlayer.seekTo(Math.max(0, seconds));
   void seams.watchSeam();
 }
@@ -978,7 +978,6 @@ export async function skipToNextAyah(): Promise<void> {
   let i = idx + 1;
   while (i < queue.length && continuesPrevious(queue, i)) i++;
   if (i >= queue.length) return; // end of queue
-  seams.cancelRest();
   await TrackPlayer.skip(i).catch(() => undefined);
 }
 
@@ -989,7 +988,6 @@ export async function skipToPreviousAyah(): Promise<void> {
   const { queue, idx } = snap;
   const here = stepStart(queue, idx);
   if (here === 0) return;
-  seams.cancelRest();
   await TrackPlayer.skip(stepStart(queue, here - 1)).catch(() => undefined);
 }
 

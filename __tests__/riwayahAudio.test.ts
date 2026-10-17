@@ -7,7 +7,7 @@
  * before the one on the page, all the way to the end of the surah.
  */
 import TrackPlayer from 'react-native-track-player';
-import { filesOf, hafsSpan } from '../src/quran/riwayahAudio';
+import { filesOf, hafsSpan, riwayahAyahOf } from '../src/quran/riwayahAudio';
 import { ayahCount } from '../src/quran/ayahIndex';
 import {
   _resetRiwayahDataCacheForTests,
@@ -145,6 +145,72 @@ describe('the queue a Warsh reader starts', () => {
       '005118.mp3',
       '005119.mp3',
       '005120.mp3',
+    ]);
+  });
+});
+
+describe('passages written in the Ḥafṣ count', () => {
+  const counts = warshCounts();
+  beforeAll(() => {
+    _setRiwayahDataForTests('warsh', {
+      pages: [{ page: 1, start: { surah: 1, ayah: 1 } }],
+      surahs: [],
+      ayahCounts: counts,
+      text: { '1:1': 'x' },
+    } as never);
+    setQuranPrefs({ riwayah: 'warsh', reciterId: 'warsh-dosari' } as never);
+  });
+  afterAll(() => {
+    setQuranPrefs({ riwayah: 'hafs' } as never);
+    _resetRiwayahDataCacheForTests();
+  });
+  beforeEach(async () => {
+    await stopPlayback();
+    jest.clearAllMocks();
+  });
+  const queued = () =>
+    tp.add.mock.calls[tp.add.mock.calls.length - 1][0] as Array<{
+      id: string;
+      url: string;
+    }>;
+
+  it('names "the last two ayahs of Al-Baqarah" in Warsh', () => {
+    expect(riwayahAyahOf('warsh', 2, 285)).toBe(284);
+    expect(riwayahAyahOf('warsh', 2, 286, true)).toBe(285);
+    expect(riwayahAyahOf('hafs', 2, 286, true)).toBe(286);
+    // A split: Ḥafṣ 1:7 is Warsh 6 and 7.
+    expect(riwayahAyahOf('warsh', 1, 7)).toBe(6);
+    expect(riwayahAyahOf('warsh', 1, 7, true)).toBe(7);
+  });
+
+  it('stops at the end of the surah when an end is past it, never running on to An-Nās', async () => {
+    // 2:286 does not exist in Warsh; the passage ends at 2:285.
+    await playRange(
+      { surah: 2, ayah: 285 },
+      { surah: 2, ayah: 286 },
+      { useRepeats: false },
+    );
+    const q = queued();
+    expect(q.map(t => t.id.split(':').slice(0, 2).join(':'))).toEqual([
+      '2:285',
+    ]);
+    expect(q[0].url.slice(-10)).toBe('002286.mp3');
+  });
+
+  it('hears a split ayah in each of its own repetitions in a drill', async () => {
+    setQuranPrefs({
+      repeat: { eachAyah: 2, range: 1, pauseFactor: 0 },
+    } as never);
+    await playRange({ surah: 1, ayah: 6 }, { surah: 1, ayah: 7 });
+    setQuranPrefs({
+      repeat: { eachAyah: 1, range: 1, pauseFactor: 0 },
+    } as never);
+    // 6, 6, 7, 7 — and 7 is Ḥafṣ 7, the file it shares with 6.
+    expect(queued().map(t => t.url.slice(-10))).toEqual([
+      '001007.mp3',
+      '001007.mp3',
+      '001007.mp3',
+      '001007.mp3',
     ]);
   });
 });

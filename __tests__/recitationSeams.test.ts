@@ -5,8 +5,7 @@
  * second at every join for Husary, the default — so a continuous listen
  * stopped between every ayah. The measured silence is skipped at each end
  * (recitationEdges.ts), and the player keeps the join (natively on
- * Android, seams.ts elsewhere). And the memorisation drill's pause between
- * repeats, which never paused, now does — and only in a drill.
+ * Android, seams.ts elsewhere).
  */
 import TrackPlayer, { State, type Track } from 'react-native-track-player';
 import {
@@ -85,22 +84,24 @@ describe('the queue carries the joins', () => {
       Record<string, unknown>
     >;
 
-  it('trims Husary, and a listen with no repeats never rests', async () => {
+  it('trims Husary', async () => {
     await playRange({ surah: 79, ayah: 19 }, { surah: 79, ayah: 21 });
     const q = queued();
     expect(q[1].trimStart).toBeCloseTo(0.48, 2);
     expect(q[1].trimEnd).toBeCloseTo(0.57, 2);
-    expect(q.some(t => 'restFactor' in t)).toBe(false);
   });
 
-  it('rests after each ayah in a drill, at the factor set', async () => {
+  it('never pauses the player: no track asks for a rest, drill or not', async () => {
+    // A rest is a paused player waiting on a timer, and a paused app is
+    // one iOS suspends and Android stops waking: the drill would stop
+    // after its first ayah with the screen off.
     setQuranPrefs({
       repeat: { eachAyah: 3, range: 1, pauseFactor: 0.5 },
     } as never);
     await playRange({ surah: 79, ayah: 19 }, { surah: 79, ayah: 20 });
     const q = queued();
     expect(q).toHaveLength(6);
-    expect(q.every(t => t.restFactor === 0.5)).toBe(true);
+    expect(q.some(t => 'restFactor' in t)).toBe(false);
   });
 });
 
@@ -156,48 +157,10 @@ describe('keeping the join (iOS and the Mac)', () => {
     expect(tp.skipToNext).not.toHaveBeenCalled();
   });
 
-  it('rests after a drill ayah for its spoken length × the factor, and a tap on play ends it', async () => {
-    // The ayah that just ended: 7 s, of which 6.4 s spoken.
-    tp.getActiveTrack.mockResolvedValue(track({ trimEnd: 0.6, restFactor: 1 }));
-    tp.getPlaybackState.mockResolvedValue({ state: State.Playing });
-    tp.getProgress.mockResolvedValue({ position: 1, duration: 7, buffered: 7 });
-    await seams.watchSeam();
-
-    tp.getProgress.mockResolvedValue({ position: 0, duration: 0, buffered: 0 });
-    await seams.onTrackChanged({
-      track: track({}),
-      lastTrack: track({ trimEnd: 0.6, restFactor: 1 }),
-      lastPosition: 7,
-    });
-    expect(tp.pause).toHaveBeenCalledTimes(1);
-    jest.advanceTimersByTime(6000);
-    expect(tp.play).not.toHaveBeenCalled();
-    jest.advanceTimersByTime(500);
-    expect(tp.play).toHaveBeenCalledTimes(1);
-
-    // Again, and the user's hand ends the rest.
-    tp.play.mockClear();
-    await seams.watchSeam();
-    await seams.onTrackChanged({
-      track: track({}),
-      lastTrack: track({ trimEnd: 0.6, restFactor: 1 }),
-      lastPosition: 7,
-    });
-    seams.cancelRest();
-    jest.advanceTimersByTime(10_000);
-    expect(tp.play).not.toHaveBeenCalled();
-  });
-
-  it('does not rest after a skip', async () => {
-    tp.getActiveTrack.mockResolvedValue(track({ restFactor: 1 }));
-    tp.getPlaybackState.mockResolvedValue({ state: State.Playing });
-    tp.getProgress.mockResolvedValue({ position: 1, duration: 7, buffered: 7 });
-    await seams.watchSeam();
-    await seams.onTrackChanged({
-      track: track({}),
-      lastTrack: track({ restFactor: 1 }),
-      lastPosition: 2,
-    });
+  it('does nothing for a reset, which reports no track', async () => {
+    tp.getProgress.mockResolvedValue({ position: 0, duration: 7, buffered: 0 });
+    await seams.onTrackChanged({ track: null });
+    expect(tp.seekTo).not.toHaveBeenCalled();
     expect(tp.pause).not.toHaveBeenCalled();
   });
 });

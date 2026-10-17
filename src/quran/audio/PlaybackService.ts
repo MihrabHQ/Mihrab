@@ -1,25 +1,25 @@
 /**
  * Headless playback service — registered in index.js via
  * `TrackPlayer.registerPlaybackService`. Handles lock-screen /
- * notification remote events.
- *
- * The memorisation pause between repeats (QR-19) used to live here, on
- * `PlaybackActiveTrackChanged`, and never once paused: it measured the
- * track by `lastTrack.duration`, which is only what the app put on the
- * track — nothing, since nobody knows a file's length before it plays — and
- * its resume was a JS timer, which Android stops in the background. It is
- * now a property of the queue (`restFactor`, only on a drill's tracks) kept
- * by the player itself on Android and by `seams.ts` elsewhere. A remote
- * control ends a rest, as the app's own controls do.
+ * notification remote events, and implements the memorization
+ * pause-between-repeats (QR-19): when a track finishes naturally and
+ * `prefs.repeat.pauseFactor > 0`, playback pauses for
+ * `duration × factor` before the next repeat starts — the classic
+ * "recite it back in the gap" hifz drill.
  */
 import TrackPlayer, { Event } from 'react-native-track-player';
+import { getQuranState, hydrateQuranState } from '../quranState';
 import { listenNextSurah, listenPreviousSurah } from './playback';
-import { cancelRest } from './seams';
 
 export async function PlaybackService(): Promise<void> {
-  // Any hand on a remote control ends a rest (seams.ts). On Android the
-  // player's service already does so itself.
-  const clearPauseTimer = cancelRest;
+  let pauseTimer: ReturnType<typeof setTimeout> | null = null;
+
+  const clearPauseTimer = () => {
+    if (pauseTimer != null) {
+      clearTimeout(pauseTimer);
+      pauseTimer = null;
+    }
+  };
 
   TrackPlayer.addEventListener(Event.RemotePlay, () => {
     clearPauseTimer();
@@ -63,14 +63,32 @@ export async function PlaybackService(): Promise<void> {
     void TrackPlayer.reset();
   });
   TrackPlayer.addEventListener(Event.RemoteSeek, e => {
-    clearPauseTimer();
     void TrackPlayer.seekTo(e.position);
   });
   TrackPlayer.addEventListener(Event.RemoteDuck, e => {
-    // A call or another app took the sound: a rest must not start the
-    // recitation again over it.
-    clearPauseTimer();
     // autoHandleInterruptions covers most cases; this is the fallback.
     if (e.paused) void TrackPlayer.pause();
+  });
+
+  // Pause-between-repeats. PlaybackActiveTrackChanged fires with the
+  // outgoing track's final position; a natural end has position ≈
+  // duration (skips land well short of it).
+  TrackPlayer.addEventListener(Event.PlaybackActiveTrackChanged, async e => {
+    clearPauseTimer();
+    await hydrateQuranState();
+    const factor = getQuranState().prefs.repeat.pauseFactor;
+    if (factor <= 0) return;
+    const last = e.lastTrack;
+    const lastPos = e.lastPosition ?? 0;
+    const lastDuration = last?.duration ?? 0;
+    const naturalEnd = lastDuration > 0 && lastPos >= lastDuration - 0.4;
+    if (!last || !naturalEnd) return;
+    const pauseMs = Math.min(30_000, lastDuration * factor * 1000);
+    if (pauseMs < 250) return;
+    await TrackPlayer.pause();
+    pauseTimer = setTimeout(() => {
+      pauseTimer = null;
+      void TrackPlayer.play();
+    }, pauseMs);
   });
 }

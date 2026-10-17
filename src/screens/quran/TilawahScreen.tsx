@@ -69,6 +69,7 @@ import { ActiveWordProbe } from '../../quran/audio/ActiveWordProbe';
 import { ayahLineIndex } from '../../quran/mushafFollowScroll';
 import { ayahCountForRiwayah, findPageForAyah } from '../../quran/pages';
 import { resolveRiwayah } from '../../quran/riwayat';
+import { riwayahAyahOf } from '../../quran/riwayahAudio';
 import { SURAHS, type SurahIndex } from '../../quran/quran';
 import {
   isListening,
@@ -670,14 +671,25 @@ export function TilawahScreen() {
     setShuffleSurahs(true);
     void listenFrom(1 + Math.floor(Math.random() * SURAHS.length), 1);
   }, []);
-  const playSuggestion = useCallback((sg: ListenSuggestion) => {
-    if (sg.to) {
-      // A passage: just these ayahs, and stop.
-      void playRange({ surah: sg.surah, ayah: sg.ayah }, sg.to, { useRepeats: false });
-      return;
-    }
-    void listenFrom(sg.surah, sg.ayah);
-  }, []);
+  const riwayah = resolveRiwayah(quran.prefs.riwayah);
+  const playSuggestion = useCallback(
+    (sg: ListenSuggestion) => {
+      // Suggestions are written in the Ḥafṣ count; the queue speaks the
+      // reader's (riwayahAudio.ts).
+      const from = { surah: sg.surah, ayah: riwayahAyahOf(riwayah, sg.surah, sg.ayah) };
+      if (sg.to) {
+        // A passage: just these ayahs, and stop.
+        const to = {
+          surah: sg.to.surah,
+          ayah: riwayahAyahOf(riwayah, sg.to.surah, sg.to.ayah, true),
+        };
+        void playRange(from, to, { useRepeats: false });
+        return;
+      }
+      void listenFrom(from.surah, from.ayah);
+    },
+    [riwayah],
+  );
 
   // ── Two progressions, one inside the other ──────────────────────────
   //
