@@ -325,14 +325,28 @@ export function isQuotaError(e: unknown): boolean {
   );
 }
 
-function pickOldestMonthKey(data: StoredPrayerData): string | null {
-  const keys = Object.keys(data.months);
+/**
+ * The month to give up first when the cache must shrink: one already behind
+ * us (the oldest of them), else the one furthest ahead — and the month we
+ * are in only when it is all there is. The oldest key outright was this
+ * month as soon as the past ones were gone, which is how a full disk evicted
+ * today along with the day just fetched for it, and the next load fetched
+ * it again, and lost it again.
+ */
+function pickEvictableMonthKey(
+  data: StoredPrayerData,
+  now: Date = new Date(),
+): string | null {
+  const keys = Object.keys(data.months).sort();
   if (keys.length === 0) return null;
-  return keys.reduce((a, b) => (a < b ? a : b));
+  const current = getMonthKey(now);
+  if (keys[0] < current) return keys[0];
+  const last = keys[keys.length - 1];
+  return last > current ? last : keys[0];
 }
 
 function evictOldestMonth(entry: CacheEntry): CacheEntry | null {
-  const oldest = pickOldestMonthKey(entry);
+  const oldest = pickEvictableMonthKey(entry);
   if (!oldest) return null;
   const months = { ...entry.months };
   delete months[oldest];

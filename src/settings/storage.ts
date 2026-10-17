@@ -277,6 +277,20 @@ function noteSecureRead(
   return settings;
 }
 
+/**
+ * THE PLAINTEXT SETTINGS COULD NOT BE READ.
+ *
+ * The same hazard as `unreadLocation`, for the other store. A failed read of
+ * the plaintext blob (a storage error at launch) handed out the defaults —
+ * and dropped the location store's values that HAD been read — so the app
+ * opened on the welcome flow at (0, 0), and the first save after it wrote
+ * the defaults over every preference and an empty list over the saved
+ * locations. Now the location store's values are kept, and every save from
+ * then on writes only the fields changed since that load onto what is on
+ * disk, or nothing while the blob still cannot be read.
+ */
+let unreadPlaintext: { handedOut: Record<string, unknown> } | null = null;
+
 function sameJson(a: unknown, b: unknown): boolean {
   return JSON.stringify(a) === JSON.stringify(b);
 }
@@ -418,10 +432,6 @@ async function loadSettingsUncached(): Promise<PrayerAppSettings> {
     AsyncStorage.getItem(KEY),
     readSecureSettings(),
   ]);
-  if (plainResult.status === 'rejected') {
-    return DEFAULT_SETTINGS;
-  }
-  plaintextRaw = plainResult.value;
   if (secureResult.status === 'fulfilled') {
     secure = secureResult.value.settings;
   }
@@ -430,6 +440,29 @@ async function loadSettingsUncached(): Promise<PrayerAppSettings> {
   // hands out is not what is stored, and saves must not write it back.
   const secureFailed =
     secureResult.status === 'rejected' || secureResult.value.failed;
+  if (plainResult.status === 'rejected') {
+    console.warn(
+      'loadSettings: the settings could not be read',
+      plainResult.reason,
+    );
+    // An install with a location store has been through the welcome flow.
+    const known = Object.keys(secure).length > 0;
+    const handedOut: PrayerAppSettings = {
+      ...DEFAULT_SETTINGS,
+      language: deviceLanguage(),
+      ...(known
+        ? { onboardingComplete: true, locationOnboardingComplete: true }
+        : {}),
+      ...secure,
+    };
+    unreadPlaintext ??= {
+      handedOut: stripSecureFields(
+        handedOut as unknown as Record<string, unknown>,
+      ),
+    };
+    return noteSecureRead(handedOut, secureFailed);
+  }
+  plaintextRaw = plainResult.value;
 
   if (!plaintextRaw) {
     // First-ever launch (no plaintext blob). Encrypted store may still
@@ -797,6 +830,24 @@ async function performSave(settings: PrayerAppSettings): Promise<void> {
       plan.plaintext as Record<string, unknown>,
     );
   }
+  if (unreadPlaintext && plan.plaintext) {
+    // Only what was changed since the defaults were handed out, onto what is
+    // on disk — and nothing while that still cannot be read.
+    const onDisk = await readPlaintextOnDisk();
+    const base = unreadPlaintext.handedOut;
+    const mine = plan.plaintext;
+    if (!onDisk) {
+      plan = { ...plan, plaintext: null };
+    } else {
+      const out: Record<string, unknown> = { ...onDisk };
+      for (const k of new Set([...Object.keys(mine), ...Object.keys(base)])) {
+        if (sameJson(mine[k], base[k])) continue;
+        if (mine[k] === undefined) delete out[k];
+        else out[k] = mine[k];
+      }
+      plan = { ...plan, plaintext: out };
+    }
+  }
   // Persist secure fields first. saveSecureSettings now writes to a plaintext
   // AsyncStorage fallback if the encrypted store rejects (task #141), so
   // user coordinates / presets survive a broken Keychain. We still want the
@@ -872,6 +923,7 @@ export async function resetAppData(): Promise<void> {
   invalidateInflightLoad();
   // Nothing left to protect: the reset is the one write meant to erase it.
   unreadLocation = null;
+  unreadPlaintext = null;
   try {
     await AsyncStorage.multiRemove(asyncKeys);
   } catch (e) {
@@ -904,5 +956,6 @@ export async function resetAppData(): Promise<void> {
 /** Test seam: forget a failed location read from an earlier test. */
 export function _resetSettingsStorageForTests(): void {
   unreadLocation = null;
+  unreadPlaintext = null;
   inflightLoad = null;
 }
