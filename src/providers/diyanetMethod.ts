@@ -30,6 +30,7 @@ import { computeImsak, DEFAULT_IMSAK_OFFSET_MINUTES } from './imsak';
 import { diyanetUsesCongressIsha } from './diyanetRegion';
 import { diyanetCorrection, swedenCorrection } from './swedenCorrections';
 import placesFile from './data/diyanetPlaces.json';
+import { isCoordinateInTurkey } from '../utils/turkeyRegion';
 
 /** Isha's depression in Diyanet's tables for the country a spot is in (`diyanetRegion.ts`). */
 export function diyanetIshaDeg(latitude: number, longitude: number): number {
@@ -120,7 +121,10 @@ function findNearestDiyanetPlace(latitude: number, longitude: number): DiyanetPl
     }
   }
   if (!best) return null;
-  return bestKm <= (best.years ? SNAP_KM_TURKEY : SNAP_KM_ABROAD) ? best : null;
+  if (bestKm <= SNAP_KM_ABROAD) return best;
+  // A district's reach is Türkiye's own: from Svilengrad, Chios, Aleppo or
+  // Batumi a district over the border 25–40 km off is not the reader's place.
+  return best.years && bestKm <= SNAP_KM_TURKEY && isCoordinateInTurkey(latitude, longitude) ? best : null;
 }
 
 /** The clock a place's table prints a date in: its own where it keeps one, else the phone's. */
