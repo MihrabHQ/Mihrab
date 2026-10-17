@@ -59,8 +59,18 @@ export function formatInZone(d: Date, zone: string): string {
     }).formatToParts(d);
     const h = parts.find(p => p.type === 'hour')?.value;
     const m = parts.find(p => p.type === 'minute')?.value;
-    if (h == null || m == null) return formatLocalTime(d);
-    return `${h.padStart(2, '0')}:${m.padStart(2, '0')}`;
+    // What is written here is stored and parsed back (`extractClock`, the
+    // widgets' "HH:mm" readers), which read Latin digits only: an engine
+    // that wrote another script's digits, or a 24 for midnight, must not
+    // reach the cache.
+    if (
+      h == null ||
+      m == null ||
+      !/^[0-9]{1,2}$/.test(h) ||
+      !/^[0-9]{2}$/.test(m)
+    )
+      return formatLocalTime(d);
+    return `${String(Number(h) % 24).padStart(2, '0')}:${m}`;
   } catch {
     return formatLocalTime(d);
   }

@@ -33,7 +33,10 @@ import {
   rawWindow,
   republishWidgetPayload,
 } from '../widget/republishWidgetPayload';
-import { syncPrayerNotifications } from './prayerNotifications';
+import {
+  prayerSyncsAsked,
+  syncPrayerNotifications,
+} from './prayerNotifications';
 
 /** The installed version the alerts were last written for. */
 export const ALERTS_VERSION_KEY = 'mihrab.alertsWrittenForVersion';
@@ -59,6 +62,14 @@ export function installedBuildStamp(): string | null {
  */
 export async function resyncPrayerAlertsFromStorage(
   now: Date = new Date(),
+  /**
+   * `prayerSyncsAsked()` when the work began. Today may write the schedule
+   * while this one is built from storage; its write is from the live
+   * location and the fetched days, and this one, later in the chain, would
+   * replace it. Then this build's code has already written the alerts, and
+   * this one stands down.
+   */
+  asked: number = prayerSyncsAsked(),
 ): Promise<boolean> {
   const settings = await loadSettings();
   const coords = resolveCoordsFromSettings(settings);
@@ -123,6 +134,7 @@ export async function resyncPrayerAlertsFromStorage(
   } catch {
     /* the notifications' own default; Today's next write puts the accent back */
   }
+  if (prayerSyncsAsked() !== asked) return true;
   await syncPrayerNotifications({
     enabled: settings.notificationsEnabled,
     prePrayerReminderMinutes: settings.prePrayerReminderMinutes,
@@ -175,6 +187,7 @@ export function resyncAfterUpdate(
 async function run(now: Date): Promise<AfterUpdateResult> {
   const stamp = installedBuildStamp();
   if (!stamp) return 'unknown-version';
+  const asked = prayerSyncsAsked();
   try {
     if ((await AsyncStorage.getItem(ALERTS_VERSION_KEY)) === stamp)
       return 'same-version';
@@ -183,7 +196,7 @@ async function run(now: Date): Promise<AfterUpdateResult> {
   }
   try {
     await republishWidgetPayload('launch', now);
-    await resyncPrayerAlertsFromStorage(now);
+    await resyncPrayerAlertsFromStorage(now, asked);
     await AsyncStorage.setItem(ALERTS_VERSION_KEY, stamp);
     return 'rewritten';
   } catch (e) {

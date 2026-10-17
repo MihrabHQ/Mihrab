@@ -503,9 +503,20 @@ export async function dropDaruriAlertsForLogged(
  * leave an alert twice or not at all. A run waits for the one before it.
  */
 let syncChain: Promise<unknown> = Promise.resolve();
+let syncsAsked = 0;
+/**
+ * How many writes of the schedule this process has asked for. The write an
+ * update starts (`afterUpdate.ts`) is built from storage; one asked for
+ * while it was being built — Today's, from what is on screen — is the
+ * better one, and the later write in the chain wins.
+ */
+export function prayerSyncsAsked(): number {
+  return syncsAsked;
+}
 export function syncPrayerNotifications(
   params: Parameters<typeof syncPrayerNotificationsNow>[0],
 ): Promise<SyncPrayerNotificationsResult> {
+  syncsAsked += 1;
   const run = syncChain.then(
     () => syncPrayerNotificationsNow(params),
     () => syncPrayerNotificationsNow(params),

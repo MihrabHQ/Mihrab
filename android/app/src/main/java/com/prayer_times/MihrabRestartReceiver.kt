@@ -65,8 +65,11 @@ class MihrabRestartReceiver : BroadcastReceiver() {
     // anyway, the app's own start does it.
     if (action == Intent.ACTION_MY_PACKAGE_REPLACED) {
       try {
-        HeadlessJsTaskService.acquireWakeLockNow(context)
+        // The wake lock only once the start is accepted: it has no timeout
+        // and only the service's onDestroy releases it, so taken before a
+        // start that is refused it would be held until the process dies.
         if (context.startService(Intent(context, AlertsResyncHeadlessService::class.java)) != null) {
+          HeadlessJsTaskService.acquireWakeLockNow(context)
           Log.i(TAG, "$action — rewriting the prayer alerts")
         }
       } catch (e: IllegalStateException) {
