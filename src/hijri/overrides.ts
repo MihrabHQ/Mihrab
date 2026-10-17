@@ -13,9 +13,13 @@
  * typo on the server cannot move a date.
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { HIJRI_OVERRIDES_URL, HIJRI_OVERRIDES_POLL_MS } from '../config/datasets';
+import {
+  HIJRI_OVERRIDES_URL,
+  HIJRI_OVERRIDES_POLL_MS,
+} from '../config/datasets';
 import { httpUserAgent } from '../config/httpIdentity';
 import { fetchWithRetry } from '../utils/fetchWithRetry';
+import { noteServerDate } from '../providers/clockSkew';
 import { hijriOverridesUpdated, setHijriOverrides } from './calendar';
 import { parseOverrides, updatedMs, type OverridesFile } from './overridesFile';
 
@@ -64,13 +68,16 @@ async function refresh(force: boolean): Promise<boolean> {
       const last = Number(await AsyncStorage.getItem(CHECKED_KEY));
       const age = Date.now() - last;
       // A clock set back (age < 0) asks now rather than waiting it out.
-      if (Number.isFinite(age) && age >= 0 && age < HIJRI_OVERRIDES_POLL_MS) return false;
+      if (Number.isFinite(age) && age >= 0 && age < HIJRI_OVERRIDES_POLL_MS)
+        return false;
     }
     const res = await fetchWithRetry(
       HIJRI_OVERRIDES_URL,
       { headers: { 'User-Agent': httpUserAgent('Islamic prayer app; hijri') } },
       { maxAttempts: 2, baseDelayMs: 800, timeoutMs: 7000 },
     );
+    // The server's time, for a phone whose clock was set by hand (`clockSkew.ts`).
+    noteServerDate(res);
     await AsyncStorage.setItem(CHECKED_KEY, String(Date.now()));
     if (!res.ok) return false;
     const file = parseOverrides(await res.json());

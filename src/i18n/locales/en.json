@@ -192,6 +192,7 @@
     "provider": "Prayer times provider",
     "providerAutoLine": "Automatic · {{label}}",
     "providerAutoHelp": "Where a country publishes its own timetable — Sweden, Morocco, Algeria, Singapore, Malaysia — prayer times come from it; elsewhere, AlAdhan. Pick a source below to lock one provider.",
+    "zoneDataStale": "Your phone's time-zone data is out of date: it still puts Morocco at GMT+1, which Morocco left in September 2026. A software update for the phone puts it right.",
     "providerOverridden": "{{picked}} has no times for where you are, so {{used}} is answering instead.",
     "location": "Location",
     "automatic": "Automatic",

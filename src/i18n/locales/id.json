@@ -192,6 +192,7 @@
     "provider": "Penyedia waktu sholat",
     "providerAutoLine": "Otomatis · {{label}}",
     "providerAutoHelp": "Di negara yang menerbitkan jadwalnya sendiri — Swedia, Maroko, Aljazair, Singapura, Malaysia — jadwal diambil dari sana; di tempat lain dari AlAdhan. Pilih sumber di bawah untuk mengunci satu penyedia.",
+    "zoneDataStale": "Data zona waktu ponsel Anda sudah usang: masih menempatkan Maroko di GMT+1, yang ditinggalkan Maroko pada September 2026. Pembaruan perangkat lunak ponsel akan memperbaikinya.",
     "providerOverridden": "{{picked}} tidak punya jadwal untuk lokasi Anda, jadi {{used}} yang dipakai.",
     "location": "Lokasi",
     "automatic": "Otomatis",

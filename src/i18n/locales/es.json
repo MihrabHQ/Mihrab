@@ -192,6 +192,7 @@
     "provider": "Proveedor de tiempos de oración",
     "providerAutoLine": "Automático · {{label}}",
     "providerAutoHelp": "Donde un país publica su propio horario (Suecia, Marruecos, Argelia, Singapur, Malasia) los horarios vienen de él; en otros lugares, de AlAdhan. Elige una fuente abajo para fijar un proveedor.",
+    "zoneDataStale": "Los datos de zona horaria de tu teléfono están desactualizados: todavía sitúan Marruecos en GMT+1, que Marruecos abandonó en septiembre de 2026. Una actualización del software del teléfono lo corrige.",
     "providerOverridden": "{{picked}} no tiene horarios para donde estás, así que responde {{used}}.",
     "location": "Ubicación",
     "automatic": "Automático",

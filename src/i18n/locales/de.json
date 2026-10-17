@@ -192,6 +192,7 @@
     "provider": "Anbieter von Gebetszeiten",
     "providerAutoLine": "Automatisch · {{label}}",
     "providerAutoHelp": "Wo ein Land einen eigenen Zeitplan veröffentlicht – Schweden, Marokko, Algerien, Singapur, Malaysia – kommen die Gebetszeiten von dort; sonst von AlAdhan. Wählen Sie unten eine Quelle, um einen Anbieter festzulegen.",
+    "zoneDataStale": "Die Zeitzonendaten Ihres Telefons sind veraltet: Sie setzen Marokko noch auf GMT+1, das Marokko im September 2026 aufgegeben hat. Ein Software-Update des Telefons behebt das.",
     "providerOverridden": "{{picked}} hat keine Zeiten für deinen Standort, deshalb antwortet {{used}}.",
     "location": "Standort",
     "automatic": "Automatisch",

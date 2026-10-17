@@ -16,6 +16,10 @@ import { useNamazvaktiCoverage } from '../../hooks/useNamazvaktiCoverage';
 import { useTableFallback } from '../../hooks/useTableFallback';
 import { useMethodCurrency } from '../../hooks/useMethodCurrency';
 import { methodCurrencyNote } from '../../prayer/methodCurrencyNote';
+import {
+  MOROCCO_CLOCK,
+  phoneZoneDataStale,
+} from '../../providers/locationClock';
 import { refreshStoredPrayerData } from '../../prayer/refreshStoredData';
 
 type DataSourceCardProps = {
@@ -72,20 +76,39 @@ function DataSourceCardImpl({ onOpenProviderPicker }: DataSourceCardProps) {
     coordsForEffective,
     effectiveProvider === 'namazvakti',
   );
-  const nvNoCity = effectiveProvider === 'namazvakti' && nvCoverage === 'no-city';
+  const nvNoCity =
+    effectiveProvider === 'namazvakti' && nvCoverage === 'no-city';
   // Diyanet answers everywhere, but says where it is not on Diyanet's minute.
   const diyanetNote =
     effectiveProvider === 'diyanet' && coordsForEffective
-      ? diyanetCoverage(coordsForEffective.latitude, coordsForEffective.longitude)
+      ? diyanetCoverage(
+          coordsForEffective.latitude,
+          coordsForEffective.longitude,
+        )
       : 'place';
   // The table in use has no row for today — past its window, or not yet
   // downloaded — so the phone is computing the authority's method.
   // The computed authorities: past the correction list, newer tables not yet
   // checked, or a method that has moved on — said here, never hidden.
-  const currency = useMethodCurrency(effectiveProvider, coordsForEffective, settings.calculationMethod);
-  const currencyNote = !overridden && currency ? methodCurrencyNote(t, currency, i18n.language) : null;
+  const currency = useMethodCurrency(
+    effectiveProvider,
+    coordsForEffective,
+    settings.calculationMethod,
+  );
+  const currencyNote =
+    !overridden && currency
+      ? methodCurrencyNote(t, currency, i18n.language)
+      : null;
+  // A phone in Morocco whose zone data still runs it at GMT+1 (#82): its
+  // owner should know, since every app's times are affected.
+  const zoneDataStale = phoneZoneDataStale(MOROCCO_CLOCK);
   const tableFallback =
-    useTableFallback(effectiveProvider, coordsForEffective, settings.calculationMethod, settings.school) === true &&
+    useTableFallback(
+      effectiveProvider,
+      coordsForEffective,
+      settings.calculationMethod,
+      settings.school,
+    ) === true &&
     !overridden &&
     !nvNoCity;
 
@@ -123,9 +146,10 @@ function DataSourceCardImpl({ onOpenProviderPicker }: DataSourceCardProps) {
     Number.isFinite(cacheParams.longitude) &&
     !(cacheParams.latitude === 0 && cacheParams.longitude === 0);
   const [stored, setStored] = useState<number | null>(null);
-  const [progress, setProgress] = useState<{ current: number; total: number } | null>(
-    null,
-  );
+  const [progress, setProgress] = useState<{
+    current: number;
+    total: number;
+  } | null>(null);
 
   const readStatus = useCallback(() => {
     if (!located) return;
@@ -164,23 +188,27 @@ function DataSourceCardImpl({ onOpenProviderPicker }: DataSourceCardProps) {
         }
         help={
           tableFallback
-            ? t('settings.providerTableFallback', { picked: getProviderLabel(effectiveProvider) })
+            ? t('settings.providerTableFallback', {
+                picked: getProviderLabel(effectiveProvider),
+              })
             : currencyNote
             ? currencyNote
+            : zoneDataStale
+            ? t('settings.zoneDataStale')
             : settings.dataProviderAuto
             ? t('settings.providerAutoHelp')
             : overridden
-              ? t('settings.providerOverridden', {
-                  defaultValue:
-                    '{{picked}} has no times for where you are, so {{used}} is answering instead.',
-                  picked: getProviderLabel(settings.dataProvider),
-                  used: getProviderLabel(effectiveProvider),
-                })
-              : nvNoCity
-                ? t('settings.providerNamazvaktiNoCity')
-                : diyanetNote === 'own'
-                  ? t('provider.diyanetOwn')
-                  : lockedProviderDesc
+            ? t('settings.providerOverridden', {
+                defaultValue:
+                  '{{picked}} has no times for where you are, so {{used}} is answering instead.',
+                picked: getProviderLabel(settings.dataProvider),
+                used: getProviderLabel(effectiveProvider),
+              })
+            : nvNoCity
+            ? t('settings.providerNamazvaktiNoCity')
+            : diyanetNote === 'own'
+            ? t('provider.diyanetOwn')
+            : lockedProviderDesc
         }
         onPress={onOpenProviderPicker}
       />
@@ -196,8 +224,8 @@ function DataSourceCardImpl({ onOpenProviderPicker }: DataSourceCardProps) {
                   (progress.current / Math.max(1, progress.total)) * 100,
                 )}%`
               : stored != null
-                ? t('month.monthsStored', { count: stored })
-                : undefined
+              ? t('month.monthsStored', { count: stored })
+              : undefined
           }
           help={t('settings.refreshStoredHelp', {
             defaultValue:

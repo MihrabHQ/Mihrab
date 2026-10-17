@@ -28,6 +28,7 @@ import {
 } from '../config/datasets';
 import { httpUserAgent } from '../config/httpIdentity';
 import { fetchWithRetry } from '../utils/fetchWithRetry';
+import { hydrateClockSkew, noteServerDate } from './clockSkew';
 import { METHOD_REVISION } from './methodRevisions';
 import {
   CORRECTION_AUTHORITIES,
@@ -51,7 +52,11 @@ const STATE_KEY = 'methods.certification.v1';
 const CHECKED_KEY = 'methods.certification.v1.checkedAt';
 const LIST_KEY = (a: CorrectionAuthority) => `methods.corrections.v1.${a}`;
 
-export type RemoteEntry = { certified: boolean; revision?: number; corrections?: CorrectionsSummary };
+export type RemoteEntry = {
+  certified: boolean;
+  revision?: number;
+  corrections?: CorrectionsSummary;
+};
 type Remote = Partial<Record<CorrectionAuthority, RemoteEntry>>;
 let remote: Remote = {};
 const listeners = new Set<() => void>();
@@ -67,8 +72,13 @@ const same = (a?: CorrectionsSummary, b?: CorrectionsSummary) =>
   !!a && !!b && a.from === b.from && a.to === b.to && a.entries === b.entries;
 
 /** Take a list for this build's method that is newer than the one in force. */
-function adopt(authority: CorrectionAuthority, list: Corrections, revision: number | undefined): boolean {
-  if (revision !== METHOD_REVISION[authority] || !isCorrections(list)) return false;
+function adopt(
+  authority: CorrectionAuthority,
+  list: Corrections,
+  revision: number | undefined,
+): boolean {
+  if (revision !== METHOD_REVISION[authority] || !isCorrections(list))
+    return false;
   const now = correctionsInForce(authority);
   const next = summarize(list);
   if (same(now, next) || next.to < now.to) return false;
@@ -81,13 +91,17 @@ function parseRemote(x: unknown): Remote | null {
   const out: Remote = {};
   for (const a of CORRECTION_AUTHORITIES) {
     const e = (x as Record<string, unknown>)[a] as RemoteEntry | undefined;
-    if (!e || typeof e !== 'object' || typeof e.certified !== 'boolean') continue;
+    if (!e || typeof e !== 'object' || typeof e.certified !== 'boolean')
+      continue;
     const c = e.corrections;
     out[a] = {
       certified: e.certified,
       revision: typeof e.revision === 'number' ? e.revision : undefined,
       corrections:
-        c && typeof c.from === 'string' && typeof c.to === 'string' && typeof c.entries === 'number'
+        c &&
+        typeof c.from === 'string' &&
+        typeof c.to === 'string' &&
+        typeof c.entries === 'number'
           ? { from: c.from, to: c.to, entries: c.entries }
           : undefined,
     };
@@ -97,13 +111,19 @@ function parseRemote(x: unknown): Remote | null {
 
 /** What was last downloaded: the lists and the certification. Cheap; call at start. */
 export async function loadCachedMethodCurrency(): Promise<void> {
+  // And how far the phone's clock was from the server's (`clockSkew.ts`):
+  // Morocco's times are written by it.
+  await hydrateClockSkew();
   try {
     const raw = await AsyncStorage.getItem(STATE_KEY);
     remote = (raw && parseRemote(JSON.parse(raw))) || {};
     for (const a of CORRECTION_AUTHORITIES) {
       const stored = await AsyncStorage.getItem(LIST_KEY(a));
       if (!stored) continue;
-      const { revision, list } = JSON.parse(stored) as { revision?: number; list: Corrections };
+      const { revision, list } = JSON.parse(stored) as {
+        revision?: number;
+        list: Corrections;
+      };
       adopt(a, list, revision);
     }
   } catch {
@@ -126,16 +146,25 @@ export function refreshMethodCurrency(force = false): Promise<boolean> {
   return inFlight;
 }
 
-const headers = { headers: { 'User-Agent': httpUserAgent('Islamic prayer app; methods') } };
+const headers = {
+  headers: { 'User-Agent': httpUserAgent('Islamic prayer app; methods') },
+};
 const retry = { maxAttempts: 2, baseDelayMs: 800, timeoutMs: 8000 };
 
 async function refresh(force: boolean): Promise<boolean> {
   try {
     if (!force) {
       const age = Date.now() - Number(await AsyncStorage.getItem(CHECKED_KEY));
-      if (Number.isFinite(age) && age >= 0 && age < METHODS_CERTIFICATION_POLL_MS) return false;
+      if (
+        Number.isFinite(age) &&
+        age >= 0 &&
+        age < METHODS_CERTIFICATION_POLL_MS
+      )
+        return false;
     }
     const res = await fetchWithRetry(METHODS_CERTIFICATION_URL, headers, retry);
+    // The server's time, for a phone whose clock was set by hand (`clockSkew.ts`).
+    noteServerDate(res);
     await AsyncStorage.setItem(CHECKED_KEY, String(Date.now()));
     if (!res.ok) return false;
     const next = parseRemote(await res.json());
@@ -145,17 +174,26 @@ async function refresh(force: boolean): Promise<boolean> {
     let adopted = false;
     for (const a of CORRECTION_AUTHORITIES) {
       const e = next[a];
-      if (!e?.certified || e.revision !== METHOD_REVISION[a] || !e.corrections) continue;
+      if (!e?.certified || e.revision !== METHOD_REVISION[a] || !e.corrections)
+        continue;
       const now = correctionsInForce(a);
       if (same(now, e.corrections) || e.corrections.to < now.to) continue;
-      const lr = await fetchWithRetry(`${METHODS_CORRECTIONS_BASE_URL}/${a}.json`, headers, retry);
+      const lr = await fetchWithRetry(
+        `${METHODS_CORRECTIONS_BASE_URL}/${a}.json`,
+        headers,
+        retry,
+      );
       if (!lr.ok) continue;
       const list = (await lr.json()) as Corrections;
       // The file must be the list the certification names, or it is not taken.
-      if (!isCorrections(list) || !same(summarize(list), e.corrections)) continue;
+      if (!isCorrections(list) || !same(summarize(list), e.corrections))
+        continue;
       if (adopt(a, list, e.revision)) {
         adopted = true;
-        await AsyncStorage.setItem(LIST_KEY(a), JSON.stringify({ revision: e.revision, list }));
+        await AsyncStorage.setItem(
+          LIST_KEY(a),
+          JSON.stringify({ revision: e.revision, list }),
+        );
       }
     }
     changed();
@@ -185,12 +223,24 @@ export function methodAuthorityFor(
       return 'indonesia';
     case 'aladhan': {
       // A ministry's method by hand, or Automatic's, has its list only inside the country.
-      const m = calculationMethod === 'auto' ? autoMethodForCoords(latitude, longitude) : calculationMethod;
-      if (m === SWEDEN_METHOD_ID) return isCoordinateInSweden(latitude, longitude) ? 'sweden' : null;
+      const m =
+        calculationMethod === 'auto'
+          ? autoMethodForCoords(latitude, longitude)
+          : calculationMethod;
+      if (m === SWEDEN_METHOD_ID)
+        return isCoordinateInSweden(latitude, longitude) ? 'sweden' : null;
       if (m === 13) return 'diyanet';
-      if (m === 21) return isCoordinateInMorocco(latitude, longitude) && !isCoordinateInAlgeria(latitude, longitude) ? 'morocco' : null;
-      if (m === 19) return isCoordinateInAlgeria(latitude, longitude) ? 'algeria' : null;
-      if (m === 20) return isCoordinateInIndonesia(latitude, longitude) ? 'indonesia' : null;
+      if (m === 21)
+        return isCoordinateInMorocco(latitude, longitude) &&
+          !isCoordinateInAlgeria(latitude, longitude)
+          ? 'morocco'
+          : null;
+      if (m === 19)
+        return isCoordinateInAlgeria(latitude, longitude) ? 'algeria' : null;
+      if (m === 20)
+        return isCoordinateInIndonesia(latitude, longitude)
+          ? 'indonesia'
+          : null;
       return null;
     }
     default:
@@ -205,12 +255,18 @@ export type MethodCurrency =
   | { state: 'update' };
 
 const dateKey = (d: Date) =>
-  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(
+    d.getDate(),
+  ).padStart(2, '0')}`;
 
 /** Is this authority's calculation current for the day? */
-export function methodCurrency(authority: CorrectionAuthority, date: Date = new Date()): MethodCurrency {
+export function methodCurrency(
+  authority: CorrectionAuthority,
+  date: Date = new Date(),
+): MethodCurrency {
   const r = remote[authority];
-  if (r?.revision !== undefined && r.revision > METHOD_REVISION[authority]) return { state: 'update' };
+  if (r?.revision !== undefined && r.revision > METHOD_REVISION[authority])
+    return { state: 'update' };
   if (r && !r.certified) return { state: 'checking' };
   const list = correctionsInForce(authority);
   const day = dateKey(date);

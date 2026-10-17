@@ -192,6 +192,7 @@
     "provider": "Namaz vakitleri sağlayıcısı",
     "providerAutoLine": "Otomatik · {{label}}",
     "providerAutoHelp": "Kendi vakit cetvelini yayımlayan ülkelerde — İsveç, Fas, Cezayir, Singapur, Malezya — vakitler oradan gelir; başka yerlerde AlAdhan’dan. Tek bir sağlayıcıya sabitlemek için aşağıdan bir kaynak seçin.",
+    "zoneDataStale": "Telefonunuzun saat dilimi verileri eski: Fas'ı hâlâ GMT+1'de gösteriyor; Fas bunu Eylül 2026'da bıraktı. Telefonun yazılım güncellemesi bunu düzeltir.",
     "providerOverridden": "{{picked}} bulunduğun yer için vakit vermiyor, bu yüzden {{used}} kullanılıyor.",
     "location": "Konum",
     "automatic": "Otomatik",

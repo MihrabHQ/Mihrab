@@ -102,6 +102,7 @@ const STAYS: Record<string, string> = {
   'methods.certification.v1':
     'derived — the methods’ certification, re-downloadable from MihrabHQ/mihrab-methods',
   'methods.certification.v1.checkedAt': 'describes this phone — when it last asked for the certification',
+  'clock.skew.v1': 'describes this phone — how far its clock was from the server’s, and when',
   'methods.corrections.v1.':
     'derived — a newer correction list for a method this build computes, re-downloadable',
   my: 'not a store — the key "My location" has in settings.locationProviders',

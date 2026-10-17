@@ -192,6 +192,7 @@
     "provider": "祈祷时间提供者",
     "providerAutoLine": "自动·{{label}}",
     "providerAutoHelp": "在发布本国时间表的国家（瑞典、摩洛哥、阿尔及利亚、新加坡、马来西亚），时间来自该表；其他地区来自 AlAdhan。在下方选择一个来源以固定提供方。",
+    "zoneDataStale": "您手机的时区数据已过时：仍将摩洛哥设为 GMT+1，而摩洛哥已于 2026 年 9 月取消。更新手机系统软件即可修正。",
     "providerOverridden": "{{picked}} 没有你所在位置的时间，因此改由 {{used}} 提供。",
     "location": "地点",
     "automatic": "自动",

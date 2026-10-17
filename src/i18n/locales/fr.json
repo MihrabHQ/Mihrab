@@ -192,6 +192,7 @@
     "provider": "Fournisseur d'heures de prière",
     "providerAutoLine": "Automatique · {{label}}",
     "providerAutoHelp": "Là où un pays publie ses propres horaires — Suède, Maroc, Algérie, Singapour, Malaisie — ils en proviennent ; ailleurs, d’AlAdhan. Choisissez une source ci-dessous pour fixer un fournisseur.",
+    "zoneDataStale": "Les données de fuseau horaire de votre téléphone sont périmées : elles placent encore le Maroc à GMT+1, que le Maroc a quitté en septembre 2026. Une mise à jour logicielle du téléphone corrige cela.",
     "providerOverridden": "{{picked}} n'a pas d'horaires pour votre position, c'est donc {{used}} qui répond.",
     "location": "Emplacement",
     "automatic": "Automatique",
