@@ -34,7 +34,7 @@ describe('the gate', () => {
     // The strip is tied to the manager's state alone — ANY download, not
     // only this screen's fonts, since the ayah sheet's per-surah tilāwah
     // download is started from inside this reader and then dismissed.
-    expect(gate).toMatch(/run\.running != null \? \(/);
+    expect(gate).toMatch(/stripShowsRun\(run\) \? \(/);
   });
 
   it('says what will happen before it is asked to', () => {

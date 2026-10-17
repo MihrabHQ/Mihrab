@@ -36,7 +36,9 @@ it('the reader mini player keeps previous, play and next left to right too', () 
     path.join(__dirname, '..', 'src/quran/audio/MiniPlayer.tsx'),
     'utf8',
   );
-  expect(mini).toMatch(/transport: \{ flexDirection: 'row', alignItems: 'center', gap: 2, direction: 'ltr' \}/);
+  expect(mini).toMatch(
+    /transport: \{\s*flexDirection: 'row',\s*alignItems: 'center',\s*gap: 2,\s*direction: 'ltr',/,
+  );
   const i = mini.indexOf('<View style={styles.transport}>');
   expect(i).toBeGreaterThan(0);
   expect(mini.indexOf("sideBtn('⏮︎'")).toBeGreaterThan(i);
