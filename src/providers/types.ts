@@ -28,4 +28,13 @@ export type UnifiedFetchParams = {
   date: Date;
   calculationMethod: number | 'auto';
   school: number;
+  /**
+   * Answer from the phone alone: every on-device path as usual, and where
+   * the provider would go to the network (AlAdhan, namazvakti.com) the
+   * method computed instead. For the readers that must not fetch — the
+   * widget's headless refresh — and the fallback after a fetch failed, so
+   * either is the PROVIDER's answer (its listed place, clock, corrections)
+   * rather than a generic calculation at the raw coordinates.
+   */
+  offline?: boolean;
 };

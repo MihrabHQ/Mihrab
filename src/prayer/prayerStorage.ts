@@ -522,6 +522,22 @@ async function fetchWithLocalLastResort(
         'computing on device.',
       e,
     );
+    // The PROVIDER's answer from the phone where it has one — Morocco's
+    // listed city on the ministry's clock, Diyanet's method, a national
+    // table's place — and only then the bare calculation.
+    try {
+      return await fetchPrayerTimesUnified({
+        provider: params.provider,
+        latitude: params.latitude,
+        longitude: params.longitude,
+        date: params.date,
+        calculationMethod: params.calculationMethod,
+        school: params.school,
+        offline: true,
+      });
+    } catch {
+      /* the bare calculation below */
+    }
     return {
       ...computeLocalAdhanTimes({
         latitude: params.latitude,
@@ -574,8 +590,33 @@ function hasPreparedDataset(provider: PrayerDataProviderId): boolean {
   );
 }
 
-/** That provider's dataset answer for one day (throws on a miss). */
-function datasetTimesFor(
+/**
+ * That provider's dataset answer for one day (throws on a miss).
+ *
+ * Checked like every other source's answer: a day from a downloaded table
+ * reached the screens unexamined, and an empty or impossible time there
+ * ("", "25:99") is the crash of issue #61 by another door. A bad day is a
+ * miss, and the chain below answers it.
+ */
+async function datasetTimesFor(
+  provider: PrayerDataProviderId,
+  params: { latitude: number; longitude: number; date: Date; school: number },
+  offline = false,
+) {
+  const ds = await rawDatasetTimesFor(provider, params, offline);
+  for (const key of DAY_KEYS) {
+    const v = ds.timings[key];
+    if (typeof v !== 'string' || !CLOCK.test(v)) {
+      throw new Error(`dataset day: ${key} is ${JSON.stringify(v)}`);
+    }
+  }
+  return ds;
+}
+const DAY_KEYS = ['Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'] as const;
+/** A time a clock can show: 00:00–23:59. */
+const CLOCK = /^([01]\d|2[0-3]):[0-5]\d$/;
+
+function rawDatasetTimesFor(
   provider: PrayerDataProviderId,
   params: { latitude: number; longitude: number; date: Date; school: number },
   offline = false,

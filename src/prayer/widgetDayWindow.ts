@@ -13,6 +13,7 @@
 import {
   getCachedPrayerTimesMany,
   getDatasetPrayerTimesOrNull,
+  isTableProvider,
 } from './prayerStorage';
 import type { PrayerAppSettings } from '../settings/types';
 import type { TimingsMap } from '../types/prayer';
@@ -62,6 +63,21 @@ export async function cachedDaysFrom(
   // would have learned from one parse.
   const dates: Date[] = [];
   for (let i = from; i < WIDGET_WINDOW_DAYS; i++) dates.push(addDays(now, i));
+  // A source that serves an authority's table (Morocco's, Sweden's, the
+  // national ones, namazvakti's year) is never written to the cache: its
+  // day is read from the phone's own copy every time, and the cache had
+  // nothing for it — so a widget refreshed with the app closed fell to a
+  // generic calculation at the raw coordinates, off the table's place,
+  // clock and corrections (Morocco an hour, Diyanet's Berlin nine minutes).
+  if (isTableProvider(params.provider)) {
+    const out: TimingsMap[] = [];
+    for (const date of dates) {
+      const day = await getDatasetPrayerTimesOrNull({ ...params, date }).catch(() => null);
+      if (!day) break;
+      out.push(day);
+    }
+    if (out.length > 0) return out;
+  }
   let days: Array<TimingsMap | null>;
   try {
     days = await getCachedPrayerTimesMany(params, dates);

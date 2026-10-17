@@ -21,6 +21,15 @@ function timeToMinutes(t: string): number {
  *
  * Returns the offending key pair on failure, or `null` on success.
  */
+/** Are the five prayers and sunrise in their order (Isha may pass midnight)? */
+export function inPrayerOrder(timings: TimingsMap): boolean {
+  try {
+    return findOrderViolation(timings) == null;
+  } catch {
+    return false;
+  }
+}
+
 function findOrderViolation(timings: TimingsMap): string | null {
   const f = timeToMinutes(timings.Fajr!);
   const sr = timeToMinutes(timings.Sunrise!);

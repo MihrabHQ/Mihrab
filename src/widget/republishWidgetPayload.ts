@@ -47,6 +47,7 @@ import {
   type DayWindowParams,
 } from '../prayer/widgetDayWindow';
 import { computeLocalAdhanTimes } from '../providers/localAdhan';
+import { fetchPrayerTimesUnified } from '../providers/fetchPrayerTimes';
 import { computeSeasonalTreatment } from '../seasonal/treatments';
 import {
   getEffectiveDataProvider,
@@ -144,18 +145,32 @@ async function rawWindow(
   const cached = await cachedDaysFrom(0, params, now);
   if (cached.length > 0) return cached;
 
+  // The provider's own answer from the phone (its listed place, its clock,
+  // its corrections), never the network: a headless refresh must not fetch.
   const local: TimingsMap[] = [];
   for (let i = 0; i < WIDGET_WINDOW_DAYS; i++) {
     try {
-      local.push(
-        computeLocalAdhanTimes({
-          latitude: params.latitude,
-          longitude: params.longitude,
-          date: addDays(now, i),
-          calculationMethod: params.calculationMethod,
-          school: params.school,
-        }).timings,
-      );
+      const date = addDays(now, i);
+      const day = await fetchPrayerTimesUnified({
+        provider: params.provider,
+        latitude: params.latitude,
+        longitude: params.longitude,
+        date,
+        calculationMethod: params.calculationMethod,
+        school: params.school,
+        offline: true,
+      })
+        .then(r => r.timings)
+        .catch(() =>
+          computeLocalAdhanTimes({
+            latitude: params.latitude,
+            longitude: params.longitude,
+            date,
+            calculationMethod: params.calculationMethod,
+            school: params.school,
+          }).timings,
+        );
+      local.push(day);
     } catch {
       break;
     }

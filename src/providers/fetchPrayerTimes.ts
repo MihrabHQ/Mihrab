@@ -19,7 +19,7 @@ import {
 import { isCoordinateInAlgeria } from '../utils/algeriaRegion';
 import { isCoordinateInMorocco } from '../utils/moroccoRegion';
 import { computeImsak, DEFAULT_IMSAK_OFFSET_MINUTES } from './imsak';
-import { validateTimings, validateTimingShape } from './validateTimings';
+import { inPrayerOrder, validateTimings, validateTimingShape } from './validateTimings';
 
 /**
  * Islamiska Förbundet's convention on the phone, for the listed city
@@ -111,6 +111,22 @@ async function onDeviceMethod(p: UnifiedFetchParams): Promise<PrayerTimesResult 
   return local;
 }
 
+/** The user's method on the phone, where the provider would have asked the network. */
+function offlineMethod(p: UnifiedFetchParams): PrayerTimesResult {
+  const local: PrayerTimesResult = {
+    ...computeLocalAdhanTimes({
+      latitude: p.latitude,
+      longitude: p.longitude,
+      date: p.date,
+      calculationMethod: p.calculationMethod,
+      school: p.school,
+    }),
+    source: 'local',
+  };
+  validateTimingShape(local.timings);
+  return local;
+}
+
 export async function fetchPrayerTimesUnified(
   p: UnifiedFetchParams,
 ): Promise<PrayerTimesResult> {
@@ -119,6 +135,7 @@ export async function fetchPrayerTimesUnified(
     case 'aladhan': {
       const onDevice = await onDeviceMethod(p);
       if (onDevice) return onDevice;
+      if (p.offline) return offlineMethod(p);
       result = await fetchAladhanTimes({
         latitude: p.latitude,
         longitude: p.longitude,
@@ -189,6 +206,7 @@ export async function fetchPrayerTimesUnified(
           return local;
         }
       }
+      if (p.offline) return offlineMethod(p);
       result = await fetchAladhanTimes({
         latitude: p.latitude,
         longitude: p.longitude,
@@ -280,6 +298,7 @@ export async function fetchPrayerTimesUnified(
           longitude: p.longitude,
           date: p.date,
           school: p.school,
+          offline: p.offline,
         });
         break;
       } catch {
@@ -301,6 +320,21 @@ export async function fetchPrayerTimesUnified(
         temkin: point?.temkin,
       });
       validateTimingShape(local.timings);
+      // The calendar has no rule for where the twilight does not end or
+      // the sun does not set — the site lists no city north of about 62° —
+      // and computed there it puts Maghrib before Asr (Tromsø, a third of
+      // the year). Diyanet's method is the same school's, with the rules
+      // for those latitudes its own tables use.
+      if (!inPrayerOrder(local.timings)) {
+        const diyanet = computeDiyanetTimes({
+          latitude: p.latitude,
+          longitude: p.longitude,
+          date: p.date,
+          school: p.school,
+        });
+        validateTimingShape(diyanet.timings);
+        return diyanet;
+      }
       return local;
     }
     case 'diyanet': {
