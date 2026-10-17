@@ -119,10 +119,13 @@ test('a day the phone stood in for is kept on its own clock beside a slot on the
   await settle();
   const key = formatLocalDate(other);
   expect(slot().clock).toBe('Africa/Casablanca');
-  expect(slot().dayClocks).toEqual({ [key]: 'device' });
+  // Kept on the zone the phone was in, not on "the phone's clock": read
+  // after a flight, the stand-in still names the clock it was written on.
+  const here = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  expect(slot().dayClocks).toEqual({ [key]: here });
   const [a, b] = await getCachedPrayerDaysMany(RABAT, [day, other]);
   expect(a?.clock).toBe('Africa/Casablanca');
-  expect(b?.clock).toBe('device');
+  expect(b?.clock).toBe(here);
 
   // Online again, the provider replaces the stand-in, and its clock goes
   // back to the slot's.

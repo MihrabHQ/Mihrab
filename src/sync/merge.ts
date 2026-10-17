@@ -851,6 +851,31 @@ function seededMap(
 }
 
 /**
+ * The plaintext settings that say WHICH place this phone is on. They travel
+ * with the location category, not the settings one: taken alone they point
+ * at a place this phone does not have — another phone's saved location, or
+ * "manual" over coordinates never set here, which is (0, 0) and the "set a
+ * location" screen in place of the times.
+ */
+const ACTIVE_PLACE_FIELDS = ['locationMode', 'activeLocationPresetId'] as const;
+
+/** The per-location key of the place a settings blob is on (`locationKeyOf`). */
+function activeLocationKeyOf(settings: Record<string, unknown>): string {
+  if (settings.locationMode !== 'manual') return 'my';
+  return typeof settings.activeLocationPresetId === 'string'
+    ? settings.activeLocationPresetId
+    : 'manual';
+}
+
+function isChoice(v: unknown): v is { auto: boolean; provider: string } {
+  return (
+    isPlainObject(v) &&
+    typeof v.auto === 'boolean' &&
+    typeof v.provider === 'string'
+  );
+}
+
+/**
  * Settings, with each location's prayer-time source merged key by key.
  *
  * `locationProviders` is keyed by the ids of the sending device's saved
@@ -863,13 +888,53 @@ function seededMap(
  * locations when the location category is being taken in the same merge,
  * so the peer's saved places arrive with their sources. A peer from before
  * per-location sources carries no map and leaves this one alone.
+ *
+ * Without the location category, this phone also stays on the place it is
+ * on (`ACTIVE_PLACE_FIELDS`), and the source the app reads for it
+ * (`dataProvider` / `dataProviderAuto`, which mirror the ACTIVE place's
+ * entry) is that place's entry in the merged map — not the other phone's
+ * active place's, which is a different place.
  */
 export function mergeSettings(
   local: Record<string, unknown>,
   incoming: Record<string, unknown>,
   options: { localLocation: Record<string, unknown>; withLocation: boolean },
 ): Record<string, unknown> {
-  const out = mergeShallow(local, incoming);
+  const out = mergeLocationProviders(
+    mergeShallow(local, incoming),
+    local,
+    incoming,
+    options,
+  );
+  if (options.withLocation) return out;
+  for (const f of ACTIVE_PLACE_FIELDS) {
+    if (f in local) out[f] = local[f];
+    else delete out[f];
+  }
+  const map = isPlainObject(out.locationProviders)
+    ? out.locationProviders
+    : null;
+  if (map) {
+    const choice = map[activeLocationKeyOf(local)];
+    if (isChoice(choice)) {
+      out.dataProvider = choice.provider;
+      out.dataProviderAuto = choice.auto;
+    } else {
+      for (const f of ['dataProvider', 'dataProviderAuto'] as const) {
+        if (f in local) out[f] = local[f];
+        else delete out[f];
+      }
+    }
+  }
+  return out;
+}
+
+function mergeLocationProviders(
+  out: Record<string, unknown>,
+  local: Record<string, unknown>,
+  incoming: Record<string, unknown>,
+  options: { localLocation: Record<string, unknown>; withLocation: boolean },
+): Record<string, unknown> {
   const own = isPlainObject(local.locationProviders)
     ? local.locationProviders
     : null;
@@ -900,6 +965,38 @@ export function mergeSettings(
     if (here.has(k)) merged[k] = v;
   }
   out.locationProviders = merged;
+  return out;
+}
+
+/**
+ * The location category: the incoming device's values win field by field,
+ * as for settings — except the saved locations, which are joined by id
+ * rather than replaced. Taken as one field, a sync from a phone with other
+ * saved places deleted every one of this phone's that the other did not
+ * have (and the next sync back carried the loss to the other phone too),
+ * while their sources were kept in `locationProviders` for places that no
+ * longer existed. A place both phones have takes the incoming copy.
+ */
+export function mergeLocation(
+  local: Record<string, unknown>,
+  incoming: Record<string, unknown>,
+): Record<string, unknown> {
+  const out = mergeShallow(local, incoming);
+  const theirs = incoming.locationPresets;
+  const ours = local.locationPresets;
+  if (Array.isArray(theirs) && Array.isArray(ours)) {
+    const ids = new Set(
+      theirs
+        .filter(p => isPlainObject(p) && typeof p.id === 'string')
+        .map(p => (p as { id: string }).id),
+    );
+    out.locationPresets = [
+      ...theirs,
+      ...ours.filter(
+        p => !(isPlainObject(p) && typeof p.id === 'string' && ids.has(p.id)),
+      ),
+    ];
+  }
   return out;
 }
 
@@ -942,7 +1039,7 @@ export function mergeData(
         : local.settings,
     location:
       accept.location && d.location
-        ? mergeShallow(local.location, d.location)
+        ? mergeLocation(local.location, d.location)
         : local.location,
   };
 }

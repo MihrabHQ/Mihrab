@@ -29,6 +29,7 @@ import {
   shouldResync,
 } from '../utils/resyncGate';
 import { getEffectiveDataProvider } from '../settings/effectiveProvider';
+import { setCalculationPreferences } from '../prayer/calculationPreferences';
 import type { PrayerAppSettings, PrayerDataProviderId } from '../settings/types';
 import type { TimingsMap } from '../types/prayer';
 import {
@@ -351,6 +352,15 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
     ) => {
       const gen = ++loadGenerationRef.current;
       bootMark('load');
+      // The high-latitude rule and the custom angles are read from a module
+      // (the calculation and the cache key both ask it), and the settings
+      // save that publishes them there is queued behind every earlier save.
+      // This load is for THESE settings: publish them before anything reads.
+      setCalculationPreferences({
+        highLatitudeRule: settings.highLatitudeRule,
+        customFajrAngle: settings.customFajrAngle,
+        customIshaAngle: settings.customIshaAngle,
+      });
       loadedCoordsRef.current = { lat: latitude, lng: longitude };
       const coords = { latitude, longitude };
       const provider = getEffectiveDataProvider(
@@ -774,6 +784,13 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
       // school are here. Stable between settings writes, so listing it
       // costs nothing on a normal render.
       settings.prayerOffsets,
+      // These change the answer as much as the method does — a different
+      // AlAdhan query, a different on-device calculation, a different cache
+      // key — so a change to one of them is a new load, not a stale screen
+      // until the next launch.
+      settings.highLatitudeRule,
+      settings.customFajrAngle,
+      settings.customIshaAngle,
     ],
   );
 
