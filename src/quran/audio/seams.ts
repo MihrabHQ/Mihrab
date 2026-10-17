@@ -15,9 +15,10 @@
  *
  * Both happen only WHILE PLAYING, which is what keeps them safe in the
  * background: nothing here pauses the player and waits to start it again.
- * (The memorisation drill's "pause between repeats" would have to, and a
- * paused app is one iOS suspends and Android stops waking — so that pause
- * is not done here; see PlaybackService.)
+ * (The memorisation drill's "pause between repeats" is silent tracks in
+ * the queue, played like any other — rest.ts. They carry no trims, so
+ * nothing here touches them: a rest plays to its end and the next ayah
+ * starts.)
  *
  * One timer, aimed at the moment it is needed and re-aimed whenever the
  * clock moves (a seek, a rate change, a pause) — never a poll that runs

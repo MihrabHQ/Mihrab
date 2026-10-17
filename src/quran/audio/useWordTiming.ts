@@ -133,7 +133,7 @@ export function useActiveWordIndex(): {
   ayah: number;
   wordIndex: number;
 } | null {
-  const { active, playing, reciterId } = usePlaybackStatus();
+  const { active, playing, reciterId, resting } = usePlaybackStatus();
   const riwayah = resolveRiwayah(useQuranState().prefs.riwayah);
   // Four times a second, and only while a human can see the word it
   // lights. The probes that mount this are gated the same way, so this
@@ -157,6 +157,9 @@ export function useActiveWordIndex(): {
   }, [playing, active, reciterId, timings]);
 
   if (!active || !playing || !timings) return null;
+  // A drill's rest plays silence under the ayah's highlight; the position
+  // is the silence's, and no word is being recited (rest.ts).
+  if (resting) return null;
   // The timings are the Ḥafṣ text's words, keyed by the Ḥafṣ ayah. Another
   // riwayah numbers its ayahs its own way (riwayahAudio.ts) and spells its
   // own words, so neither the key nor the word index would point at what is

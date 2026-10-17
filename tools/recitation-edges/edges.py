@@ -1,5 +1,6 @@
 """
-The silence at each end of every recording, for the reciters who have it.
+The silence at each end of every recording, and its length, for the
+reciters who have it.
 
 Usage:  python3 tools/recitation-edges/edges.py [folder ...]
         (no folders: every folder in RECITERS below)
@@ -19,15 +20,25 @@ last is kept down to -45 dB. A file with no clear silence at an end gets 0
 there, so it is never trimmed on a guess. The app keeps a breath at each
 end on top of this.
 
-Output: src/quran/data/recitationEdges/<folder>.json, {"v":2,"e":"<base64>"},
-two bytes per ayah in mushaf order (1:1 … 114:6), lead then tail; 255,255
-for a file that could not be read (the app trims nothing there).
+And the file's whole length, which nothing knows before the file plays:
+the memorisation drill's "pause between repeats" rests for as long as the
+ayah is recited (length less both silences; src/quran/audio/rest.ts).
+
+Output: src/quran/data/recitationEdges/<folder>.json,
+{"v":3,"e":"<base64>","d":"<base64>"}. `e`: two bytes per ayah in mushaf
+order (1:1 … 114:6), lead then tail; 255,255 for a file that could not be
+read (the app trims nothing there). `d`: two bytes per ayah, big-endian,
+the file's length in tenths of a second; 0 where it could not be read.
+Format 2 was `e` alone; the app reads both.
 
 Measured, not derived from the quran-align word timings: those end before
 the sound does in most of Husary's files (median 0.8 s, up to 3 s), and a
 cut there would clip the recitation.
 
-Resumable: progress is kept in /tmp/recitation-edges/<folder>.jsonl.
+Resumable: progress is kept in /tmp/recitation-edges/<folder>.jsonl. A
+line written by the format-2 tool has no length and is measured again, so
+the first run after the lengths were added downloads every file once more
+(about an hour for the eighteen reciters).
 """
 import base64
 import json
@@ -84,7 +95,8 @@ THRESHOLD_DB = -45.0
 
 
 def edges(path):
-    """(lead, tail) of sustained silence in seconds, or None if unreadable."""
+    """(lead, tail, length) in seconds: the sustained silence at each end
+    and the whole file, or None if unreadable."""
     pcm = subprocess.run(
         ['ffmpeg', '-v', 'quiet', '-i', path, '-ac', '1', '-ar', '16000', '-f', 's16le', '-'],
         capture_output=True).stdout
@@ -92,16 +104,16 @@ def edges(path):
     frames = len(x) // FRAME
     if frames < WINDOW:
         return None
+    duration = len(x) / RATE
     rms = np.sqrt((x[: frames * FRAME].reshape(frames, FRAME) ** 2).mean(axis=1) + 1e-12)
     loud = (20 * np.log10(rms) > THRESHOLD_DB).astype(np.int32)
     sustained = np.nonzero(np.convolve(loud, np.ones(WINDOW, dtype=np.int32), 'valid') >= NEED)[0]
     if len(sustained) == 0:
-        return 0.0, 0.0  # nothing clearly sounded: trim nothing
+        return 0.0, 0.0, duration  # nothing clearly sounded: trim nothing
     first = sustained[0] + int(np.argmax(loud[sustained[0]:sustained[0] + WINDOW]))
     last = sustained[-1] + WINDOW - 1
     last -= int(np.argmax(loud[last - WINDOW + 1:last + 1][::-1]))
-    duration = len(x) / RATE
-    return first * FRAME / RATE, max(0.0, duration - (last + 1) * FRAME / RATE)
+    return first * FRAME / RATE, max(0.0, duration - (last + 1) * FRAME / RATE), duration
 
 
 def measure(folder, s, a):
@@ -118,7 +130,8 @@ def measure(folder, s, a):
         e = edges(path)
         if e is None:
             return None
-        return [min(254, round(e[0] * 50)), min(254, round(e[1] * 50))]
+        return [min(254, round(e[0] * 50)), min(254, round(e[1] * 50)),
+                min(65535, max(1, round(e[2] * 10)))]
     finally:
         try:
             os.remove(path)
@@ -135,7 +148,8 @@ def run(folder):
     if os.path.exists(progress):
         for line in open(progress):
             k, v = json.loads(line)
-            done[k] = v
+            if len(v) >= 3:  # a format-2 line has no length: measure again
+                done[k] = v
     refs = [(s, a) for s in range(1, 115) for a in range(1, AYAH_COUNTS[s - 1] + 1)]
     todo = [r for r in refs if f'{r[0]}:{r[1]}' not in done]
     print(f'{folder}: {len(done)} done, {len(todo)} to measure', flush=True)
@@ -148,12 +162,16 @@ def run(folder):
             log.flush()
     missing = [f'{s}:{a}' for s, a in refs if f'{s}:{a}' not in done]
     out = bytearray()
+    lengths = bytearray()
     for s, a in refs:
-        out += bytes(done.get(f'{s}:{a}', [255, 255]))
+        v = done.get(f'{s}:{a}', [255, 255, 0])
+        out += bytes(v[:2])
+        lengths += v[2].to_bytes(2, 'big')
     leads = sorted(v[0] for v in done.values())
     tails = sorted(v[1] for v in done.values())
     with open(os.path.join(OUT, f'{name}.json'), 'w') as f:
-        json.dump({'v': 2, 'e': base64.b64encode(bytes(out)).decode()}, f)
+        json.dump({'v': 3, 'e': base64.b64encode(bytes(out)).decode(),
+                   'd': base64.b64encode(bytes(lengths)).decode()}, f)
         f.write('\n')
     med = lambda v: v[len(v) // 2] / 50 if v else 0
     print(f'{folder}: lead median {med(leads):.2f}s, tail median {med(tails):.2f}s, '
