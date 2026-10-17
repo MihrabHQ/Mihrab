@@ -28,6 +28,7 @@ import {
   dayTzFingerprint,
   markResynced,
   shouldResync,
+  weekTimesKey,
 } from '../utils/resyncGate';
 import { onClockJump } from '../utils/clockJumps';
 import { usePrayerDay } from '../hooks/usePrayerDay';
@@ -806,6 +807,9 @@ export function HomeScreen() {
       new Date(),
       String(settings.endOfDayLogReminderEnabled),
       state.baseDate.getTime(),
+      // The times themselves: a saved place switched to within the gap is
+      // the same day, zone and setting, and must still rewrite.
+      weekTimesKey(phoneView.table.week),
     );
     if (shouldResync(EOD_RESYNC_KEY, eodPrint)) {
       rescheduleEndOfDayLogReminders({
@@ -829,6 +833,7 @@ export function HomeScreen() {
       new Date(),
       `${settings.morningDuaReminderEnabled}:${settings.eveningDuaReminderEnabled}`,
       state.baseDate.getTime(),
+      weekTimesKey(phoneView.table.week),
     );
     if (shouldResync(DUA_RESYNC_KEY, duaPrint)) {
       rescheduleDuaReminders({
@@ -850,6 +855,7 @@ export function HomeScreen() {
       JSON.stringify(settings.prayerSilence),
       String(clockHour12),
       state.baseDate.getTime(),
+      weekTimesKey(phoneView.alertWeek),
     );
     if (Platform.OS === 'android' && shouldResync(SILENCE_RESYNC_KEY, silencePrint)) {
       syncPrayerSilence({

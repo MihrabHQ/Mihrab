@@ -83,3 +83,25 @@ export function dayTzFingerprint(now: Date, ...extra: (string | number)[]): stri
   const day = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
   return [day, now.getTimezoneOffset(), ...extra].join('|');
 }
+
+/**
+ * A key for a week of prayer times, for a fingerprint whose work is written
+ * FROM those times: the end-of-day prompt, the adhkār reminders and the
+ * quiet windows. Without it, switching to a saved place within the gap read
+ * as "nothing changed" — same day, same zone, same settings — and the old
+ * place's reminders stayed scheduled. Every time of every day, in a fixed
+ * key order, so the same week always gives the same key.
+ */
+export function weekTimesKey(
+  week: ReadonlyArray<Readonly<Record<string, string>>> | undefined,
+): string {
+  if (!week) return '';
+  return week
+    .map(day =>
+      Object.keys(day)
+        .sort()
+        .map(k => `${k}=${day[k]}`)
+        .join(','),
+    )
+    .join(';');
+}
