@@ -72,7 +72,9 @@ export async function cachedDaysFrom(
   if (isTableProvider(params.provider)) {
     const out: TimingsMap[] = [];
     for (const date of dates) {
-      const day = await getDatasetPrayerTimesOrNull({ ...params, date }).catch(() => null);
+      const day = await getDatasetPrayerTimesOrNull({ ...params, date }).catch(
+        () => null,
+      );
       if (!day) break;
       out.push(day);
     }
