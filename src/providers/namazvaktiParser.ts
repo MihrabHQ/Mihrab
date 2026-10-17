@@ -58,6 +58,12 @@ export type NamazvaktiYear = {
   days: Record<string, string[]>;
   /** Where the phone got it: Mihrab's mirror, or the site itself (absent for a copy held before October 2026). */
   via?: 'mirror' | 'site';
+  /**
+   * The phone's copy only: calendar year → when it was last asked for
+   * (ISO), so a year neither the mirror nor the site has yet is not asked
+   * for again on every read (`loadYear`).
+   */
+  askedFor?: Record<string, string>;
 };
 
 function attr(tag: string, name: string): string | undefined {

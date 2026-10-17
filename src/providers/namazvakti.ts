@@ -325,7 +325,13 @@ async function loadYear(
   const age = held ? Date.now() - Date.parse(held.fetchedAt) : Infinity;
   const hasDay = !!held?.days[dateKey];
   const recentlyFailed = Date.now() - (failedAt.get(cityId) ?? 0) < NAMAZVAKTI_RETRY_AFTER_MS;
-  const needed = !hasDay && !(held && age < NAMAZVAKTI_RETRY_AFTER_MS);
+  // A day missing from what is held is fetched unless ITS year was asked
+  // for lately: at the turn of the year the copy held is the other year's,
+  // and a 2026 fetched this morning says nothing about whether 2027 is out.
+  const want = dateKey.slice(0, 4);
+  const askedAt = held ? held.askedFor?.[want] ?? (String(held.year) === want ? held.fetchedAt : undefined) : undefined;
+  const askedRecently = askedAt != null && Date.now() - Date.parse(askedAt) < NAMAZVAKTI_RETRY_AFTER_MS;
+  const needed = !hasDay && !askedRecently;
   const stale = hasDay && age > NAMAZVAKTI_REFETCH_AFTER_MS;
   if ((!needed && !stale) || recentlyFailed) return held ?? null;
   // A background refill is already asking with the long timeouts: what is
@@ -338,7 +344,7 @@ async function loadYear(
     const quick = !sessionAnswered;
     p = (async () => {
       try {
-        const year = await fetchYear(cityId, dateKey, quick);
+        const year = withHeldYear(await fetchYear(cityId, dateKey, quick), memYears.get(cityId), dateKey);
         memYears.set(cityId, year);
         failedAt.delete(cityId);
         await writeJson(`${CITY_PREFIX}${cityId}`, year);
@@ -368,12 +374,32 @@ async function loadYear(
   return p;
 }
 
+/**
+ * A fetched year, with the days of the year beside it that the phone already
+ * held kept: each file runs from 31 December to 2 January, and the days the
+ * fill asks for at the turn of the year are on both sides of it. Replaced
+ * outright, the copy swapped from one year to the other and back, and each
+ * swap left the other side's days to the computed method. The year asked for
+ * is noted (`askedFor`) whether or not the answer had it.
+ */
+function withHeldYear(fetched: NamazvaktiYear, held: NamazvaktiYear | null | undefined, dateKey: string): NamazvaktiYear {
+  const want = dateKey.slice(0, 4);
+  const askedFor = { ...(held?.askedFor ?? {}), ...(/^\d{4}$/.test(want) ? { [want]: new Date().toISOString() } : {}) };
+  if (!held || held.cityId !== fetched.cityId) return { ...fetched, askedFor };
+  const days: Record<string, string[]> = {};
+  for (const [k, v] of Object.entries(held.days)) {
+    if (Math.abs(Number(k.slice(0, 4)) - fetched.year) <= 1) days[k] = v;
+  }
+  for (const k of Object.keys(askedFor)) if (Math.abs(Number(k) - fetched.year) > 1) delete askedFor[k];
+  return { ...fetched, days: { ...days, ...fetched.days }, askedFor };
+}
+
 /** Fetch a city's year again with the long timeouts, without anyone waiting on it. */
 function startRefill(cityId: number, dateKey: string): void {
   if (refillInFlight.has(cityId)) return;
   const p = (async () => {
     try {
-      const year = await fetchYear(cityId, dateKey, false);
+      const year = withHeldYear(await fetchYear(cityId, dateKey, false), memYears.get(cityId), dateKey);
       memYears.set(cityId, year);
       failedAt.delete(cityId);
       await writeJson(`${CITY_PREFIX}${cityId}`, year);
