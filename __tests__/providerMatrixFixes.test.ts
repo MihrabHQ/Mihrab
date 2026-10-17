@@ -330,7 +330,7 @@ describe('the storage chain when the network answers garbage', () => {
         school: 0,
         date: c.date,
       };
-      const answers = [];
+      const answers: Array<Awaited<ReturnType<typeof getOrFetchPrayerDay>>> = [];
       for (const mode of ['offline', 'html', 'truncated'] as const) {
         await AsyncStorage.clear();
         _resetNationalTablesForTests();
