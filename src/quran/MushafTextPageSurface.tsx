@@ -627,6 +627,7 @@ function UnicodePageSurface({
   khatmahTarget,
   onWordPress,
   onWordLongPress,
+  tight = false,
 }: MushafTextPageSurfaceProps) {
   const nightMode = toneIsDark(tone);
   const handlePress = React.useCallback(
@@ -692,6 +693,8 @@ function UnicodePageSurface({
       endInk={endInk}
       onAyahPress={onWordPress ? handlePress : undefined}
       onAyahLongPress={onWordLongPress ? handleLongPress : undefined}
+      // The plates keep their rows where they are, inside their frame.
+      tight={tight && !framed}
     />
   );
 

@@ -617,6 +617,13 @@ export type MushafUnicodePageProps = {
   endInk?: AyahEndInk;
   onAyahPress?: (ref: AyahRef) => void;
   onAyahLongPress?: (ref: AyahRef) => void;
+  /**
+   * The box is the whole page and nothing scrolls it: the printed rows
+   * are pulled so the first row's ink starts at the top and the last
+   * row's ends at the bottom, rather than at the font's metrics — see
+   * `fitPrintedRows`. Off where the column scrolls.
+   */
+  tight?: boolean;
 };
 
 
@@ -719,6 +726,7 @@ function MushafUnicodePage({
   endInk = NO_AYAH_END_INK,
   onAyahPress,
   onAyahLongPress,
+  tight = false,
 }: MushafUnicodePageProps) {
   const blocks = useMemo(
     () => unicodePageBlocks(page, riwayah),
@@ -846,6 +854,7 @@ function MushafUnicodePage({
         onAyahLongPress={onAyahLongPress}
         tajweed={tajweed}
         darkPage={darkPage}
+        edge={tight ? printedEdgeInk(riwayah, page) : null}
       />
     );
   }
@@ -970,30 +979,117 @@ function MushafUnicodePage({
 }
 
 /**
- * A page laid out on the print's own lines.
- *
- * ── WHY NOTHING HERE IS MODELLED ──────────────────────────────────────
- *
- * The first four attempts at this priced the text: an advance per
- * character, a width per medallion, a solved word gap. Every one of them
- * produced a page that was either short of the margin — a hole in the
- * setting — or past it. And past it is not a cosmetic fault: a line wider
- * than its box does not clip on Android, it WRAPS, and the wrapped
- * remainder is drawn below a row whose height leaves no room for it. Page
- * 8 lost the last letter of الْعَذَابِ that way, and line six lost its ayah
- * number, with nothing on screen to say either had happened.
- *
- * So nothing is priced. Each line is laid out in a box far wider than it
- * can need, which makes wrapping impossible and therefore makes losing a
- * word impossible. It is then MEASURED, and scaled horizontally to the
- * measure exactly. A line cannot come out short, because the scale is
- * computed from its own drawn width; and it cannot come out long, for the
- * same reason.
- *
- * The type size is chosen so the median line needs no scaling at all,
- * which keeps what scaling remains small and even — a few per cent either
- * way, spread across the page rather than piled onto one line.
+ * Amiri Quran's vertical metrics, in ems — what the platform lays a row
+ * out with (hhea, and the typo metrics say the same). The face reaches
+ * high: the stacked marks over the name of Allah go to 1.78 em on most
+ * pages, which is why the ascent is where it is.
  */
+const AMIRI_ASCENT_EM = 1.815;
+const AMIRI_DESCENT_EM = 0.634;
+
+/** The hair the tight fit keeps between the edge ink and the clip, dp. */
+const PRINTED_BREATH = 2;
+
+/** How far a printed page's edge rows' ink reaches, in ems — `printedEdgeInk`. */
+export type PrintedEdgeInk = { above: number | null; below: number | null };
+
+type PrintedEdgeTable = Record<string, Record<string, [number | null, number | null]>>;
+let printedEdgeTable: PrintedEdgeTable | null = null;
+
+/**
+ * What this page's first row reaches up to and its last row down to, in
+ * the face the page is set in — measured by shaping every ayah the edge
+ * rows carry (`scripts/mushaf/measure_unicode_edge_ink.py`; the Warsh
+ * table serves Qālūn, as the line table does). Null when the edge row is
+ * a band or a basmalah, or the page is not in the table.
+ */
+export function printedEdgeInk(riwayah: RiwayahId, page: number): PrintedEdgeInk | null {
+  if (printedEdgeTable == null) {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    printedEdgeTable = require('./data/unicodeEdgeInk.json') as PrintedEdgeTable;
+  }
+  const key = riwayah === 'qalun' ? 'warsh' : riwayah;
+  const entry = printedEdgeTable[key]?.[String(page)];
+  if (!entry) return null;
+  return { above: entry[0], below: entry[1] };
+}
+
+/**
+ * The rows' height, and where they sit in the box.
+ *
+ * Loose (no `edge`): rows of `height / count`, capped at the leading the
+ * type can take, centred by what is left (`margin`). What was above the
+ * first row's ink is then the face's ascent past the ink, and half of
+ * whatever leading the row has — a void the reader called wasted, on
+ * every page, above the first line and below the last.
+ *
+ * Tight: the first row is pulled up by exactly that blank, and the last
+ * down by its own, so the ink starts a hair inside the box and ends a
+ * hair inside it; the rows get the room. Where the row is SHORTER than
+ * the face's box (it is, by 0.4 em, at the printed leading) the platforms
+ * place the deficit differently — Android halves it, iOS takes it off one
+ * side — so the room is taken as the smaller of the two, and the shift is
+ * never negative: the row's own view clips its ink anyway, and a reserve
+ * for ink that is not drawn is just the void back.
+ */
+export function fitPrintedRows(
+  fontSize: number,
+  height: number,
+  count: number,
+  edge: PrintedEdgeInk | null,
+): {
+  rowHeight: number;
+  margin: number;
+  shiftTop: number;
+  shiftBottom: number;
+} {
+  const cap = fontSize * PRINTED_LINE_HEIGHT_EM * MAX_PRINTED_LEADING;
+  const loose = (rowHeight: number) => ({
+    rowHeight,
+    margin: Math.max(0, (height - rowHeight * count) / 2),
+    shiftTop: 0,
+    shiftBottom: 0,
+  });
+  if (!edge || count < 1 || !(fontSize > 0)) {
+    return loose(Math.min(height / count, cap));
+  }
+  const box = (AMIRI_ASCENT_EM + AMIRI_DESCENT_EM) * fontSize;
+  const room = (rowHeight: number, metric: number) => {
+    const leading = rowHeight - box;
+    // Positive leading is split evenly everywhere; a deficit is assumed
+    // to come off this side in full.
+    return metric * fontSize + (leading >= 0 ? leading / 2 : leading);
+  };
+  // What is blank past the ink, less the hair kept between ink and clip.
+  const shifts = (rowHeight: number) => ({
+    top:
+      edge.above != null
+        ? Math.max(
+            0,
+            room(rowHeight, AMIRI_ASCENT_EM) - edge.above * fontSize - PRINTED_BREATH,
+          )
+        : 0,
+    bottom:
+      edge.below != null
+        ? Math.max(
+            0,
+            room(rowHeight, AMIRI_DESCENT_EM) - edge.below * fontSize - PRINTED_BREATH,
+          )
+        : 0,
+  });
+  // The shift depends on the row height it is taken out of, and the row
+  // height on the shift: a fixed point, settled in a few passes.
+  let rowHeight = height / count;
+  let s = shifts(rowHeight);
+  for (let pass = 0; pass < 4; pass++) {
+    rowHeight = (height + s.top + s.bottom) / count;
+    s = shifts(rowHeight);
+  }
+  if (rowHeight > cap) return loose(cap);
+  if (s.top === 0 && s.bottom === 0) return loose(Math.min(height / count, cap));
+  return { rowHeight, margin: 0, shiftTop: s.top, shiftBottom: s.bottom };
+}
+
 function PrintedPageBody({
   pageKey,
   rows,
@@ -1007,6 +1103,7 @@ function PrintedPageBody({
   onAyahLongPress,
   tajweed = NO_TAJWEED,
   darkPage = false,
+  edge = null,
 }: {
   /** Identifies the page whose measured line widths are cached. */
   pageKey: string;
@@ -1022,6 +1119,8 @@ function PrintedPageBody({
   /** The Warsh tajwīd runs per āyah, or none. */
   tajweed?: WarshTajweedLookup;
   darkPage?: boolean;
+  /** How far this page's edge rows' ink reaches — the tight fit; null for the loose. */
+  edge?: PrintedEdgeInk | null;
 }) {
   const measure = width;
   // How many of each āyah's words the rows above have drawn — the render
@@ -1142,11 +1241,8 @@ function PrintedPageBody({
       measure / PRINTED_TYPICAL_LINE_EM,
     ),
   );
-  const rowHeight = Math.min(
-    height / rows.length,
-    fontSize * PRINTED_LINE_HEIGHT_EM * MAX_PRINTED_LEADING,
-  );
-  const margin = Math.max(0, (height - rowHeight * rows.length) / 2);
+  const fit = fitPrintedRows(fontSize, height, rows.length, edge);
+  const { rowHeight, margin } = fit;
 
   const onLineLayout = React.useCallback(
     (index: number, drawn: number, spaceEm: number, gaps: number) => {
@@ -1195,6 +1291,8 @@ function PrintedPageBody({
     // The rows are as tall as the type needs, so a box taller than the
     // page's own proportions gives it a margin rather than stretching it.
     <View style={{ width, height, paddingTop: margin }}>
+      {/* The tight fit's negative margins — see `fitPrintedRows`. */}
+      <View style={{ marginTop: -fit.shiftTop, marginBottom: -fit.shiftBottom }}>
       {rows.map((row, index) => {
         if (row.empty) {
           const ornament = ornaments[index];
@@ -1369,6 +1467,7 @@ function PrintedPageBody({
           </View>
         );
       })}
+      </View>
     </View>
   );
 }
