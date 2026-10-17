@@ -22,7 +22,7 @@ import { isCoordinateInSingapore } from '../utils/singaporeRegion';
 import { isCoordinateInMorocco } from '../utils/moroccoRegion';
 import { isCoordinateInSweden } from '../utils/swedenRegion';
 import { isCoordinateInTurkey } from '../utils/turkeyRegion';
-import { nationalMethodCountryAt } from '../utils/countryAt';
+import { memoByCoordinate, nationalMethodCountryAt } from '../utils/countryAt';
 import { nearestDiyanetPlace } from '../providers/diyanetMethod';
 import type { PrayerDataProviderId } from './types';
 
@@ -85,12 +85,26 @@ export const HOME_PROVIDER_REGIONS: readonly RegionalProviderRegion[] = [
 export const NEAR_LISTED_PLACE_REGIONS: readonly RegionalProviderRegion[] = [
   {
     id: 'diyanet',
+    // The country first: it is the cheaper question, and in the countries
+    // with a method of their own it saves the walk through 8,000 places.
     covers: (latitude, longitude) =>
-      nearestDiyanetPlace(latitude, longitude) !== null &&
-      nationalMethodCountryAt(latitude, longitude) === null,
+      nationalMethodCountryAt(latitude, longitude) === null &&
+      nearestDiyanetPlace(latitude, longitude) !== null,
     yieldsToChosenMethod: true,
   },
 ];
+
+const ALL_REGIONS: readonly RegionalProviderRegion[] = [
+  ...REGIONAL_PROVIDER_REGIONS,
+  ...HOME_PROVIDER_REGIONS,
+  ...NEAR_LISTED_PLACE_REGIONS,
+];
+
+/** The first region covering these coordinates — asked on every settings read, so kept. */
+const firstRegionAt = memoByCoordinate(
+  (latitude: number, longitude: number): RegionalProviderRegion | null =>
+    ALL_REGIONS.find(region => region.covers(latitude, longitude)) ?? null,
+);
 
 /**
  * The source Automatic picks for these coordinates, or null for the worldwide
@@ -105,21 +119,12 @@ export function regionalProviderForCoords(
   methodIsAutomatic = true,
 ): PrayerDataProviderId | null {
   if (!coords) return null;
-  for (const region of [
-    ...REGIONAL_PROVIDER_REGIONS,
-    ...HOME_PROVIDER_REGIONS,
-    ...NEAR_LISTED_PLACE_REGIONS,
-  ]) {
-    if (region.covers(coords.latitude, coords.longitude)) {
-      // In a country whose source gives way, the reader's method is computed
-      // there (AlAdhan) — not the next region down, which would be Diyanet
-      // near a listed place.
-      return !methodIsAutomatic && region.yieldsToChosenMethod
-        ? null
-        : region.id;
-    }
-  }
-  return null;
+  const region = firstRegionAt(coords.latitude, coords.longitude);
+  if (!region) return null;
+  // In a country whose source gives way, the reader's method is computed
+  // there (AlAdhan) — not the next region down, which would be Diyanet
+  // near a listed place.
+  return !methodIsAutomatic && region.yieldsToChosenMethod ? null : region.id;
 }
 
 /** Is this a country-specific source, i.e. one that only has data for its own region? */

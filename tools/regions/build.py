@@ -48,6 +48,15 @@ NATIONAL_TOLERANCE = 0.03
 NATIONAL_TOLERANCE_BY = {'RU': 0.1, 'IN': 0.04, 'BD': 0.04}
 NATIONAL_MIN_AREA = 0.02
 NATIONAL_MIN_AREA_BY = {'RU': 0.2}
+# Other countries' land next to those (Badajoz by Portugal, Narva by Russia,
+# Jericho by Jordan, Astara by Iran): the rough outlines and their reach
+# cross a land border by up to ten kilometres or more, and a town there is
+# not on the neighbour's method. Everything not in NATIONAL within FOREIGN_STRIP
+# degrees of them, shrunk by FOREIGN_TOLERANCE before it is simplified by as
+# much, so that it never reaches over the border into the country itself.
+FOREIGN_STRIP = 0.4
+FOREIGN_TOLERANCE = 0.003
+FOREIGN_MIN_AREA = 0.0003
 MARGIN = 0.6        # degrees around each target country the neighbours are kept in
 TOLERANCE = 0.007   # simplification, degrees (Visvalingam–Whyatt, as GEOS's coverage simplifier does it)
 MIN_AREA = 0.0003   # islands smaller than this (deg², ~3 km²) are left to the coastal reach
@@ -60,10 +69,13 @@ SCALE = 10_000      # coordinates stored as integers of 1e-4 degree
 src = json.load(open(sys.argv[1]))
 geoms = {}
 national = {}
+others = []
 for f in src['features']:
     a3 = f['properties']['ADM0_A3']
     if a3 in NATIONAL:
         national.setdefault(NATIONAL[a3], []).append(shape(f['geometry']).buffer(0))
+    else:
+        others.append(shape(f['geometry']).buffer(0))
     code = TARGETS.get(a3) or NEIGHBOURS.get(a3)
     if not code:
         continue
@@ -140,6 +152,13 @@ for tol in sorted(set([NATIONAL_TOLERANCE, *NATIONAL_TOLERANCE_BY.values()])):
             nout[c] = polys
             npoints += n
 
+# Another country's land beside the national ones (FOREIGN_STRIP above).
+national_all = unary_union(list(national.values()))
+strip = shapely.simplify(national_all, 0.05).buffer(FOREIGN_STRIP, quad_segs=1)
+foreign = unary_union(others).intersection(strip).buffer(-FOREIGN_TOLERANCE)
+foreign = shapely.simplify(foreign, FOREIGN_TOLERANCE, preserve_topology=True)
+fout, fpoints = flatten(foreign, FOREIGN_MIN_AREA)
+
 doc = {
     'source': 'Natural Earth 1:10m admin-0 countries (public domain), tools/regions/build.py',
     'scale': SCALE,
@@ -147,8 +166,10 @@ doc = {
     'countries': out,
     # Rough outlines of the countries with a method of their own (NATIONAL).
     'national': nout,
+    # Other countries' land along the national ones' borders, as polygons.
+    'foreign': fout,
 }
 dest = os.path.join(os.path.dirname(__file__), '..', '..', 'src', 'utils', 'data', 'countryShapes.json')
 os.makedirs(os.path.dirname(dest), exist_ok=True)
 json.dump(doc, open(dest, 'w'), separators=(',', ':'))
-print(f'{len(out)} countries, {points} points; {len(nout)} national, {npoints} points; {os.path.getsize(dest) // 1024} KB')
+print(f'{len(out)} countries, {points} points; {len(nout)} national, {npoints} points; foreign {len(fout)} polygons, {fpoints} points; {os.path.getsize(dest) // 1024} KB')
