@@ -74,6 +74,7 @@ All notable changes to this project are documented here. The format is inspired 
 - **A clock that jumps is noticed on the hero's next tick,** not on the watchdog's next look — a day set back showed a countdown of thirty-odd hours for up to half a minute.
 - **Mac: the app is laid out from the window's measured size,** not the stale one Catalyst reports at launch.
 - **Custom angles, the calculation method, the source setting and the per-prayer offsets are checked when settings load.** A custom Fajr or Isha angle saved empty — by a backup, a sync from another phone, or an edited file — came back as 10°, nearly an hour away from the angle meant; it now comes back as the default angle. A method this version does not know now loads as Automatic, an automatic-source setting that is not on or off loads as Automatic, and offsets that are not minutes are dropped, so none of them can reach a calculation.
+- **Syncing or restoring settings keeps each saved location's prayer-time source.** Settings carry the source chosen for every saved location, but the saved locations themselves only come over when Location is ticked, which it is not by default. A settings-only sync or restore from a phone with other saved locations replaced the whole list of choices with that phone's, so every saved location here quietly went back to Automatic. Each location now keeps its own choice; another phone's choice comes over for a location both phones have, and for its own saved locations when they come over in the same sync.
 
 ## [2.30.0] — 2026-10-10
 
