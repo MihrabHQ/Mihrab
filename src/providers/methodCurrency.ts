@@ -139,13 +139,19 @@ async function hydrate(): Promise<void> {
     const raw = await AsyncStorage.getItem(STATE_KEY);
     remote = (raw && parseRemote(JSON.parse(raw))) || {};
     for (const a of CORRECTION_AUTHORITIES) {
-      const stored = await AsyncStorage.getItem(LIST_KEY(a));
-      if (!stored) continue;
-      const { revision, list } = JSON.parse(stored) as {
-        revision?: number;
-        list: Corrections;
-      };
-      adopt(a, list, revision);
+      // Each on its own: a copy that cannot be read is that authority's
+      // bundled list, not every later authority's too.
+      try {
+        const stored = await AsyncStorage.getItem(LIST_KEY(a));
+        if (!stored) continue;
+        const { revision, list } = JSON.parse(stored) as {
+          revision?: number;
+          list: Corrections;
+        };
+        adopt(a, list, revision);
+      } catch {
+        /* this one's bundled list stands */
+      }
     }
   } catch {
     /* the bundled lists stand */
@@ -199,13 +205,20 @@ async function refresh(force: boolean): Promise<boolean> {
         continue;
       const now = correctionsInForce(a);
       if (same(now, e.corrections) || e.corrections.to < now.to) continue;
-      const lr = await fetchWithRetry(
-        `${METHODS_CORRECTIONS_BASE_URL}/${a}.json`,
-        headers,
-        retry,
-      );
-      if (!lr.ok) continue;
-      const list = (await lr.json()) as Corrections;
+      let list: Corrections;
+      try {
+        const lr = await fetchWithRetry(
+          `${METHODS_CORRECTIONS_BASE_URL}/${a}.json`,
+          headers,
+          retry,
+        );
+        if (!lr.ok) continue;
+        list = (await lr.json()) as Corrections;
+      } catch {
+        // A download cut short is this list missed, not the round: the
+        // other authorities' lists are still taken.
+        continue;
+      }
       // The file must be the list the certification names, or it is not taken.
       if (!isCorrections(list) || !same(summarize(list), e.corrections))
         continue;
