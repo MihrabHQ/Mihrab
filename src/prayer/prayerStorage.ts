@@ -7,6 +7,7 @@ import { nationalTableFor } from '../providers/nationalTables';
 import { getNamazvaktiTimes } from '../providers/namazvakti';
 import { computeLocalAdhanTimes } from '../providers/localAdhan';
 import type { PrayerTimesResult } from '../providers/types';
+import { inPrayerOrder } from '../providers/validateTimings';
 import { recordDataSource } from './dataStatus';
 import { calculationPreferencesKey } from './calculationPreferences';
 import type { PrayerDataProviderId } from '../settings/types';
@@ -609,6 +610,12 @@ async function datasetTimesFor(
     if (typeof v !== 'string' || !CLOCK.test(v)) {
       throw new Error(`dataset day: ${key} is ${JSON.stringify(v)}`);
     }
+  }
+  // A national table's day is the authority's, built and checked on the
+  // server; one out of order here is damage on the way, not a far-north
+  // day (those are namazvakti's, whose own Fajr can fall the evening before).
+  if (nationalTableFor(provider) && !inPrayerOrder(ds.timings)) {
+    throw new Error('dataset day: out of order');
   }
   return ds;
 }
