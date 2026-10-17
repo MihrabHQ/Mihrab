@@ -82,6 +82,8 @@ const STAYS: Record<string, string> = {
   '@mihrab/skyTheme/v1':
     'derived — the last sky the hero drew, kept for the moment before it draws again; the next phone draws its own',
   prayer_times_cache: 'derived — the legacy cache, migrated then deleted',
+  'prayer_times_cache.schema':
+    'describes this phone — which cache schema its launch sweep last cleared up after',
   'prayerapp.prayer.v1': 'dead — named in resetAppData but written nowhere',
   'mihrab.cityRegistry.v1': 'describes this phone — where it has been',
   'mihrab.dataStatus.v1': 'derived — diagnostics about the last fetch',

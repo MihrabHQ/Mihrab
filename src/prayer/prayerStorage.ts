@@ -127,6 +127,16 @@ function getDayKey(date: Date): string {
  * instead of creating a new one each fetch.
  */
 function cacheKey(p: Omit<StoredPrayerData, 'months'>): string {
+  return cacheKeyWith(p, calculationPreferencesKey(p.calculationMethod));
+}
+
+/**
+ * The key with the calculation preferences' part given — the sweep's
+ * question is "is this slot's key what it would be today, under the
+ * preferences it was stored under", because a slot for another
+ * high-latitude rule is a choice the user can come back to, not debris.
+ */
+function cacheKeyWith(p: Omit<StoredPrayerData, 'months'>, preferencesPart: string): string {
   return [
     p.provider,
     p.latitude.toFixed(2),
@@ -134,7 +144,7 @@ function cacheKey(p: Omit<StoredPrayerData, 'months'>): string {
     String(p.calculationMethod),
     String(p.school),
     // Empty at the defaults, so nothing cached before these existed is lost.
-    calculationPreferencesKey(p.calculationMethod),
+    preferencesPart,
     // The Congress method's revision, where it answers: a day cached under
     // an earlier one is computed again, not kept.
     ...(computedByCongressMethod(p) ? [`cm=${CONGRESS_METHOD_REVISION}`] : []),
@@ -280,6 +290,155 @@ function readRawV2(): Promise<string | null> {
 }
 
 /**
+ * THE CACHE'S SCHEMA — raised when what is stored, or where, changes in a
+ * way that leaves something behind for the launch sweep to clear.
+ * 1: the sweep itself (2.33): slots under keys no longer built (2.31's,
+ * without the preferences part; any under a superseded correction list or
+ * method revision) and the per-city files of the Swedish, Moroccan and
+ * Algerian datasets, which those countries' calculation replaced.
+ */
+export const CACHE_SCHEMA_VERSION = 1;
+const SCHEMA_KEY = 'prayer_times_cache.schema';
+/** Where the retired datasets kept a downloaded city's file. */
+const RETIRED_DATASET_PREFIXES = [
+  'ifis.dataset.v1.city.',
+  'habous.dataset.v1.city.',
+  'marw.dataset.v1.city.',
+];
+
+/**
+ * The most the cache may hold, serialized. A location's year is about
+ * 170 KB, so this is six or seven of them; past it the slots touched
+ * longest ago go first. Android's AsyncStorage keeps a value in one SQLite
+ * row read whole through a 2 MB cursor window, so a blob that kept growing
+ * with every place visited would one day stop being readable at all.
+ */
+export const CACHE_MAX_CHARS = 1_200_000;
+
+/** Is a stored slot under the key the app would build for it today? */
+function isCurrentSlot(storedKey: string, entry: CacheEntry): boolean {
+  if (
+    !entry ||
+    typeof entry !== 'object' ||
+    typeof entry.latitude !== 'number' ||
+    typeof entry.longitude !== 'number' ||
+    !entry.months ||
+    typeof entry.months !== 'object'
+  ) {
+    return false;
+  }
+  const parts = storedKey.split('|');
+  // 2.31 and earlier: provider|lat|lng|method|school, no preferences part.
+  if (parts.length < 6) return false;
+  try {
+    return cacheKeyWith(entry, parts[5]) === storedKey;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Once per launch, before the first read: drop what can no longer be read.
+ *
+ * A slot is found by the key built from its parameters, and that key has
+ * grown (the preferences part in 2.32, the method revisions, the correction
+ * list in force). A slot under a key no longer built is never read again,
+ * but it was carried in every read and write of the blob, for ever — a
+ * year a location, after an update, or after each new correction list.
+ * The retired datasets' city files are the same, outside the blob.
+ *
+ * Only once the downloaded correction lists are read: before that the key
+ * this would compare against is the bundled list's, and a year stored under
+ * the downloaded one would look stale.
+ */
+let slotSweep: Promise<void> | null = null;
+let retiredSweep: Promise<void> | null = null;
+function sweepOnce(listsRead: boolean): Promise<void> {
+  // Decided by the first read of the launch. When the lists were not read
+  // in time the slots are left for the next launch: sweeping them later
+  // would race the reads and writes already under way.
+  slotSweep ??= listsRead ? sweepSlots() : Promise.resolve();
+  retiredSweep ??= sweepRetiredDatasets();
+  return Promise.all([slotSweep, retiredSweep]).then(() => undefined);
+}
+
+/** Tests: a fresh launch. */
+export function _resetCacheSweepForTests(): void {
+  slotSweep = null;
+  retiredSweep = null;
+}
+
+async function sweepSlots(): Promise<void> {
+  {
+    try {
+      const raw = await readRawV2();
+      const parsed = raw ? (JSON.parse(raw) as V2Shape) : null;
+      if (parsed && typeof parsed === 'object' && parsed.caches && typeof parsed.caches === 'object') {
+        const caches: Record<string, CacheEntry> = {};
+        let dropped = 0;
+        for (const [k, entry] of Object.entries(parsed.caches)) {
+          if (isCurrentSlot(k, entry)) caches[k] = entry;
+          else dropped += 1;
+        }
+        if (dropped > 0) await saveV2Once({ ...parsed, caches });
+      }
+    } catch {
+      /* the cache stands as it is; the next launch tries again */
+    }
+  }
+}
+
+async function sweepRetiredDatasets(): Promise<void> {
+  try {
+    if ((await AsyncStorage.getItem(SCHEMA_KEY)) === String(CACHE_SCHEMA_VERSION)) return;
+    const keys: readonly string[] =
+      typeof AsyncStorage.getAllKeys === 'function' ? await AsyncStorage.getAllKeys() : [];
+    const retired = keys.filter(k => RETIRED_DATASET_PREFIXES.some(prefix => k.startsWith(prefix)));
+    if (retired.length > 0) {
+      if (typeof AsyncStorage.multiRemove === 'function') await AsyncStorage.multiRemove(retired);
+      else for (const k of retired) await AsyncStorage.removeItem(k);
+    }
+    await AsyncStorage.setItem(SCHEMA_KEY, String(CACHE_SCHEMA_VERSION));
+  } catch {
+    /* the next launch tries again */
+  }
+}
+
+/**
+ * Keep the blob under `CACHE_MAX_CHARS`: the slots accessed longest ago go
+ * first, the one being written last of all — and only then its oldest
+ * months. Returns the shape to write, serialized.
+ */
+function capToSize(v2: V2Shape, activeKey: string): { shape: V2Shape; json: string } {
+  let json = JSON.stringify(v2);
+  if (json.length <= CACHE_MAX_CHARS) return { shape: v2, json };
+  const caches = { ...v2.caches };
+  const stamp = (k: string) => Date.parse(caches[k]?.lastAccessedAt) || 0;
+  const others = Object.keys(caches)
+    .filter(k => k !== activeKey)
+    .sort((a, b) => stamp(a) - stamp(b));
+  let size = json.length;
+  for (const k of others) {
+    if (size <= CACHE_MAX_CHARS) break;
+    size -= JSON.stringify(k).length + 1 + JSON.stringify(caches[k]).length + 1;
+    delete caches[k];
+  }
+  let shape: V2Shape = { ...v2, caches };
+  json = JSON.stringify(shape);
+  while (json.length > CACHE_MAX_CHARS && caches[activeKey]) {
+    const slim = evictOldestMonth(caches[activeKey]);
+    if (!slim) break;
+    caches[activeKey] = slim;
+    shape = { ...v2, caches };
+    json = JSON.stringify(shape);
+  }
+  if (others.some(k => !(k in caches))) {
+    console.warn('prayerStorage: over the size cap, evicted the least recently used locations');
+  }
+  return { shape, json };
+}
+
+/**
  * How long a cache read waits for the downloaded correction lists before
  * going ahead under the ones in memory. Storage answers in milliseconds; a
  * hung bridge must not take the times with it.
@@ -314,7 +473,7 @@ async function awaitMethodCurrency(): Promise<boolean> {
 }
 
 async function loadV2(): Promise<V2Shape> {
-  await awaitMethodCurrency();
+  await sweepOnce(await awaitMethodCurrency());
   // Try the v2 shape first.
   try {
     const raw = await readRawV2();
@@ -358,20 +517,21 @@ async function loadV2(): Promise<V2Shape> {
   return { caches: {} };
 }
 
-async function saveV2Once(v2: V2Shape): Promise<SaveResult> {
+async function saveV2Once(v2: V2Shape, json: string = JSON.stringify(v2)): Promise<SaveResult> {
   // A read that is still in flight would answer with the blob from before
   // this write; nobody who asks from here on may be handed it.
   rawV2Inflight = null;
   try {
-    await AsyncStorage.setItem(STORAGE_KEY_V2, JSON.stringify(v2));
+    await AsyncStorage.setItem(STORAGE_KEY_V2, json);
     return { ok: true };
   } catch (e) {
     return { ok: false, reason: isQuotaError(e) ? 'quota' : 'unknown', error: e };
   }
 }
 
-async function saveV2(v2: V2Shape, activeKey: string): Promise<SaveResult> {
-  let attempt = await saveV2Once(v2);
+async function saveV2(full: V2Shape, activeKey: string): Promise<SaveResult> {
+  const { shape: v2, json } = capToSize(full, activeKey);
+  let attempt = await saveV2Once(v2, json);
   if (attempt.ok) return attempt;
 
   // Quota pressure — evict oldest month from the active cache first.

@@ -74,6 +74,7 @@ All notable changes to this project are documented here. The format is inspired 
 - **A clock that jumps is noticed on the hero's next tick,** not on the watchdog's next look — a day set back showed a countdown of thirty-odd hours for up to half a minute.
 - **Mac: the app is laid out from the window's measured size,** not the stale one Catalyst reports at launch.
 - **The stored year is found at once after a restart where a newer correction list was downloaded.** Days stored under a correction list the app had downloaded were missed for the first moments after a restart, because the downloaded list had not been read back yet: the widget could come up empty and a fill fetched again what was already on the phone. Reading stored times now waits for that list.
+- **Stored prayer times no longer pile up.** Times stored by earlier versions under a layout the app no longer reads (2.31's, and any stored under an earlier correction list), and the Swedish, Moroccan and Algerian timetable files the on-phone calculation replaced, stayed on the phone for good and were read and rewritten with every update of the stored times. They are now cleared once after the update, and the store is held to about 1.2 MB, the places looked at longest ago making way first.
 
 ## [2.30.0] — 2026-10-10
 
