@@ -627,6 +627,20 @@ describe("Ishāʾ's boundary agrees with the row it shares an instant with", () 
     }
   });
 
+  it('agrees across the night the clocks go back', () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { injectNightTimes } = require('../src/utils/nightTimes');
+    const clock = 'Europe/Stockholm';
+    const week: TimingsMap[] = [
+      { Fajr: '05:40', Sunrise: '07:50', Dhuhr: '12:45', Asr: '15:10', Maghrib: '17:40', Isha: '19:30' },
+      { Fajr: '04:42', Sunrise: '06:52', Dhuhr: '11:45', Asr: '14:08', Maghrib: '16:37', Isha: '18:30' },
+    ];
+    const start = new Date(2026, 9, 24);
+    const withNight = injectNightTimes(week, start, clock);
+    const out = injectDaruriTimes(withNight, start, 59.33, 18.07, 1, clock);
+    expect(out[0].IshaDaruri).toBe(out[0].Firstthird);
+  });
+
   /**
    * The last day is the one that used to fail, and it fails invisibly:
    * a `·` under Ishāʾ on the last row of every month, next to a

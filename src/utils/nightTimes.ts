@@ -134,6 +134,28 @@ export function injectNightTimes(
 }
 
 /**
+ * The end of the first third of the night that begins on `date` — Maghrib
+ * then to the next Fajr — measured between instants on `clock` as
+ * `injectNightTimes` does with a date, so the Mālikī Ishāʾ boundary stays
+ * the very instant of the `Firstthird` row (`daruriTimes.ts`).
+ */
+export function firstThirdOn(
+  date: Date,
+  maghrib: string,
+  nextFajr: string,
+  clock?: string | null,
+): string {
+  const day = startOfLocalDay(date);
+  return instantNightTimes(
+    day,
+    maghrib,
+    { Fajr: nextFajr, Maghrib: maghrib },
+    nextFajr,
+    clock,
+  ).Firstthird;
+}
+
+/**
  * The night marks of the day `date`, measured between INSTANTS.
  *
  * On clock faces the night the clocks go back (Stockholm, 24→25 October) is

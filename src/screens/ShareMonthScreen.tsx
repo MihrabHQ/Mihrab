@@ -288,7 +288,10 @@ export function ShareMonthScreen({ route, navigation, embedded }: Props & { navi
    */
   const sheetRows = useMemo(() => {
     if (!rows) return rows;
-    const times = injectNightTimes(rows.map(r => r.timings));
+    const times = injectNightTimes(
+      rows.map(r => r.timings),
+      rows[0]?.date,
+    );
     return rows.map((r, i) => ({ ...r, timings: times[i] }));
   }, [rows]);
 

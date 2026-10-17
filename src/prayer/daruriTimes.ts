@@ -123,7 +123,7 @@
  * docs/latitude-45-substitute.md has the measurement and what would
  * change the answer; the code is on `issue-20-lat45-substitute`.
  */
-import { clockNightTimes } from '../utils/nightTimes';
+import { firstThirdOn } from '../utils/nightTimes';
 import {
   addDays,
   combineLocalDateAndTime,
@@ -519,7 +519,7 @@ export function daruriTimesForDay(
   // Ishāʾ: the first third of the night, inside (Isha, next Fajr).
   if (timings.Maghrib && nightEnd) {
     try {
-      const third = clockNightTimes(timings.Maghrib, nightEnd).Firstthird;
+      const third = firstThirdOn(date, timings.Maghrib, nightEnd, clock);
       if (inside(third, timings.Isha, nightEnd)) out.IshaDaruri = third;
     } catch {
       // An unparseable time from a provider — leave Ishāʾ's boundary out
