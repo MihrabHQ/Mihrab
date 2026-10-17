@@ -15,8 +15,10 @@
 import {
   DEFAULT_IMSAK_OFFSET_MINUTES,
   computeImsak,
+  computeImsakAt,
   timeMinusMinutes,
 } from '../src/providers/imsak';
+import { formatInZone } from '../src/providers/locationClock';
 import { validateTimings } from '../src/providers/validateTimings';
 import { computeLocalAdhanTimes } from '../src/providers/localAdhan';
 
@@ -156,5 +158,31 @@ describe('computeLocalAdhanTimes returns Imsak', () => {
       imsakOffsetMinutes: 20,
     });
     expect(result.timings.Imsak).toBe(computeImsak(result.timings.Fajr, 20));
+  });
+});
+
+describe('computeImsakAt — on the instant, on Fajr’s clock', () => {
+  const stockholm = (d: Date) => formatInZone(d, 'Europe/Stockholm');
+
+  it('the spring-forward morning: never a time inside the skipped hour', () => {
+    // 29 March 2026: 02:00 CET → 03:00 CEST. Fajr 03:05 CEST is 01:05 UTC;
+    // ten minutes before it is 00:55 UTC — 01:55 CET, not 02:55.
+    const fajr = new Date(Date.UTC(2026, 2, 29, 1, 5));
+    expect(stockholm(fajr)).toBe('03:05');
+    expect(computeImsakAt(fajr, stockholm, 10)).toBe('01:55');
+  });
+
+  it('any other morning, the clock-face rule to the minute', () => {
+    const fajr = new Date(Date.UTC(2026, 9, 17, 3, 12, 40));
+    expect(computeImsakAt(fajr, stockholm, 10)).toBe(
+      computeImsak(stockholm(fajr), 10),
+    );
+  });
+
+  it('a Fajr that does not form keeps the clock-face rule', () => {
+    const fmt = () => '--:--';
+    expect(computeImsakAt(new Date(NaN), fmt, 10)).toBe(
+      computeImsak('--:--', 10),
+    );
   });
 });

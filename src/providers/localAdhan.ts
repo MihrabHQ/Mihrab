@@ -21,7 +21,7 @@ import { isRamadan } from '../hijri/events';
 export const UMM_AL_QURA_METHOD_ID = 4;
 /** Isha after Maghrib in Ramadan, against 90 minutes the rest of the year. */
 export const UMM_AL_QURA_RAMADAN_ISHA_MINUTES = 120;
-import { computeImsak, DEFAULT_IMSAK_OFFSET_MINUTES } from './imsak';
+import { computeImsakAt, DEFAULT_IMSAK_OFFSET_MINUTES } from './imsak';
 import {
   horizonDipMinutes,
   solarDeclinationDegrees,
@@ -714,7 +714,9 @@ export function computeLocalAdhanTimes(
       Asr: format(pt.asr),
       Maghrib: format(pt.maghrib),
       Isha: format(pt.isha),
-      Imsak: computeImsak(fajrStr, imsakOffset),
+      // On the instant, not the clock face: a spring-forward morning has
+      // no 02:55 (imsak.ts).
+      Imsak: computeImsakAt(pt.fajr, format, imsakOffset),
     },
     clock: zone,
   };

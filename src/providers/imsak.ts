@@ -51,3 +51,26 @@ export function computeImsak(
 ): string {
   return timeMinusMinutes(fajr, offsetMinutes);
 }
+
+/**
+ * Imsak from Fajr's instant, written on the clock Fajr is written on.
+ *
+ * Fajr − 10 minutes on the clock face is a time the clock never shows on
+ * the morning it springs forward: Fajr at 03:05 CEST put Imsak at 02:55,
+ * inside the hour that does not exist. Taken on the instant — ten minutes
+ * before Fajr's — and written on the same clock, it is 01:55 CET, the
+ * moment ten minutes before Fajr. Any other morning the two agree to the
+ * minute, since the formatter maps a whole-minute step to a whole-minute
+ * step. Where Fajr has no instant (it does not form), the clock-face rule.
+ */
+export function computeImsakAt(
+  fajr: Date,
+  format: (d: Date) => string,
+  offsetMinutes: number = DEFAULT_IMSAK_OFFSET_MINUTES,
+): string {
+  if (!Number.isFinite(fajr.getTime())) {
+    return computeImsak(format(fajr), offsetMinutes);
+  }
+  const offset = Math.max(0, Math.min(offsetMinutes, 24 * 60 - 1));
+  return format(new Date(fajr.getTime() - offset * 60_000));
+}
