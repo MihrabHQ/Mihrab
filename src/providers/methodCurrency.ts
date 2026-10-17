@@ -96,7 +96,28 @@ function parseRemote(x: unknown): Remote | null {
 }
 
 /** What was last downloaded: the lists and the certification. Cheap; call at start. */
-export async function loadCachedMethodCurrency(): Promise<void> {
+export function loadCachedMethodCurrency(): Promise<void> {
+  const p = hydrate();
+  hydration = p;
+  return p;
+}
+
+/**
+ * The read of what was last downloaded, the first one or the latest.
+ *
+ * The list in force is part of the prayer cache's key (`prayerStorage.ts`),
+ * and settings start this read without waiting for it — so a read of the
+ * cache in the first moments after a cold start asked under the BUNDLED
+ * list's key and missed a year stored under the downloaded one. Anything
+ * whose answer depends on the list in force waits here first. Starts the
+ * read if nobody has; once it has settled this is a resolved promise.
+ */
+let hydration: Promise<void> | null = null;
+export function methodCurrencyReady(): Promise<void> {
+  return (hydration ??= hydrate());
+}
+
+async function hydrate(): Promise<void> {
   try {
     const raw = await AsyncStorage.getItem(STATE_KEY);
     remote = (raw && parseRemote(JSON.parse(raw))) || {};
@@ -222,4 +243,5 @@ export function methodCurrency(authority: CorrectionAuthority, date: Date = new 
 export function _resetMethodCurrencyForTests(): void {
   remote = {};
   inFlight = null;
+  hydration = null;
 }

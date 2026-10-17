@@ -73,6 +73,7 @@ All notable changes to this project are documented here. The format is inspired 
 - **Log: with the Mālikī second times on, a log after the preferred time ends is the late one,** not the half-window (#74).
 - **A clock that jumps is noticed on the hero's next tick,** not on the watchdog's next look — a day set back showed a countdown of thirty-odd hours for up to half a minute.
 - **Mac: the app is laid out from the window's measured size,** not the stale one Catalyst reports at launch.
+- **The stored year is found at once after a restart where a newer correction list was downloaded.** Days stored under a correction list the app had downloaded were missed for the first moments after a restart, because the downloaded list had not been read back yet: the widget could come up empty and a fill fetched again what was already on the phone. Reading stored times now waits for that list.
 
 ## [2.30.0] — 2026-10-10
 

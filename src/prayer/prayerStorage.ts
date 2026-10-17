@@ -18,7 +18,7 @@ import { AppState } from 'react-native';
 import { SWEDEN_METHOD_ID } from '../providers/swedenMethodId';
 import { isCoordinateInTurkey } from '../utils/turkeyRegion';
 import { autoMethodForCoords } from '../providers/autoMethod';
-import { methodAuthorityFor } from '../providers/methodCurrency';
+import { methodAuthorityFor, methodCurrencyReady } from '../providers/methodCurrency';
 import { correctionsKey } from '../providers/swedenCorrections';
 
 export type StoredPrayerData = {
@@ -279,7 +279,42 @@ function readRawV2(): Promise<string | null> {
   return p;
 }
 
+/**
+ * How long a cache read waits for the downloaded correction lists before
+ * going ahead under the ones in memory. Storage answers in milliseconds; a
+ * hung bridge must not take the times with it.
+ */
+const METHOD_CURRENCY_WAIT_MS = 3000;
+
+/**
+ * The correction list in force is part of `cacheKey`. Settings start the
+ * read of the downloaded lists without waiting for it, so a cache read in
+ * the first moments of a cold start asked under the BUNDLED list's key and
+ * missed a year stored under the downloaded one — the widget's window came
+ * back empty, a fill fetched again what was on the phone. Every read and
+ * write of the cache waits for that read first; once it has settled this is
+ * a resolved promise. True when it settled, false when it timed out.
+ */
+async function awaitMethodCurrency(): Promise<boolean> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const timedOut = new Promise<false>(resolve => {
+    timer = setTimeout(() => resolve(false), METHOD_CURRENCY_WAIT_MS);
+  });
+  try {
+    return await Promise.race([
+      methodCurrencyReady().then(
+        () => true,
+        () => true,
+      ),
+      timedOut,
+    ]);
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
+}
+
 async function loadV2(): Promise<V2Shape> {
+  await awaitMethodCurrency();
   // Try the v2 shape first.
   try {
     const raw = await readRawV2();
@@ -1139,6 +1174,7 @@ function isAppBackgrounded(): boolean {
 export async function maybeFullSyncOnWifi(
   params: Omit<StoredPrayerData, 'months'>,
 ): Promise<boolean> {
+  await awaitMethodCurrency();
   const k = cacheKey(params);
   const now = Date.now();
   const last = _lastFullSyncAttemptByKey.get(k) ?? 0;
