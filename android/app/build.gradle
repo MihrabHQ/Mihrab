@@ -207,6 +207,9 @@ android {
         // are already in this collection and should stay.
         ignoreAssetsPatterns.addAll([
             "!app-icon-square.png",
+            // The drill's silent rests: `require`d from JS (rest.ts), so
+            // Metro ships them in res/raw. A directory, ignored by name.
+            "!audio",
             "!badge-appstore.png",
             "!badge-googleplay.png",
             "!qr-code.png",
