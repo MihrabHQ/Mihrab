@@ -68,6 +68,7 @@ import {
   withPaceOfDay,
 } from './khatmahEdits';
 import { getQuranState, updateQuranState } from './quranState';
+import { readingSessionOwner } from './readingSession';
 
 /**
  * Begin a plan.
@@ -522,6 +523,24 @@ export function khatmahTracksPage(
  * as both arguments (see mushafReaderCore), so the rail, go-to-page, a
  * bookmark and a search result all land with nothing completed, which is
  * the distinction this function actually cares about.
+ *
+ * ── A READING THAT IS NOT THE KHATMAH'S STARTS WHERE THE PLAN IS — #84 ──
+ *
+ * The window is the portion the reader stands in, and near the end of a
+ * plan a portion can be the rest of the book. So a reader fifty pages
+ * from finishing who opened An-Nāziʿāt from the index to memorise it had
+ * every page turned there credited — it is inside today's portion — and
+ * the khatmah's place jumped thirty pages ahead to it. "Continue khatmah"
+ * then opened An-Nāziʿāt, and the pages in between became a gap.
+ *
+ * Who opened the reader settles it (`readingSession`). Opened from the
+ * khatmah's own door, the window is the rule, as it always was: reading
+ * ahead in the portion is the khatmah's reading. Opened from anywhere
+ * else — the index, a juz, a bookmark — a turn counts for the plan only
+ * where the plan is: on the page holding its next unread ayah, or behind
+ * it filling a gap. Read today's pages having come in from the index and
+ * they still count, from the first one on; reading somewhere ahead is
+ * reading, and leaves the plan where it was.
  */
 export function recordKhatmahPageTurn(
   prevPage: number,
@@ -530,6 +549,14 @@ export function recordKhatmahPageTurn(
 ): void {
   if (!khatmahTracksPage(prevPage, riwayah)) return;
   if (newPage <= prevPage) return;
+  const owner = readingSessionOwner();
+  if (owner && owner.kind !== 'khatmah') {
+    const plan = activeKhatmah(getQuranState());
+    const first = firstAyahOfPage(prevPage, riwayah);
+    if (plan && ayahIndexOf(first.surah, first.ayah) > khatmahReachAyah(plan) + 1) {
+      return;
+    }
+  }
   // The pages left behind are `prevPage … newPage - 1` — every one of
   // them, because a fling settles several pages on (#44) and the reader
   // saw all of them. That span is also what the reading may CLAIM about

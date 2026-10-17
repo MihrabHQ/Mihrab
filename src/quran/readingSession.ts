@@ -36,14 +36,17 @@
  * set when it opens, forgotten when it closes — so it is never stored
  * and never synced.
  *
- * THE KHATMAH IS A DOOR, NOT A RULE. Its crediting keeps deciding for
- * itself, first, however the reader was entered: read today's portion
+ * THE KHATMAH IS A DOOR, AND HOW FAR IT REACHES. Read today's portion
  * having come in from the surah index and it counts, which is what the
- * reader asked for and what `khatmahTracksPage` does. What the khatmah
- * owner is for is the CHROME — the done-marks beside the surah name
- * belong to a khatmah reading and to nothing else. Opening Al-Fatiha
- * from the index, months into a plan, used to put a green check in the
- * header of a reading that had nothing to do with the khatmah.
+ * reader asked for. But only from where the plan stands: a visit opened
+ * anywhere but the khatmah's own door credits the plan on the page of its
+ * next unread ayah and behind it, never ahead — reading ahead in the
+ * portion is the khatmah's only when the khatmah was opened (#84;
+ * `recordKhatmahPageTurn`). The khatmah owner is also the CHROME — the
+ * done-marks beside the surah name belong to a khatmah reading and to
+ * nothing else. Opening Al-Fatiha from the index, months into a plan, used
+ * to put a green check in the header of a reading that had nothing to do
+ * with the khatmah.
  */
 /**
  * THREE TRAILS, ONE BOOK, ONE NAME FOR EACH.
