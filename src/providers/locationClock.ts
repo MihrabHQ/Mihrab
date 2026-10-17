@@ -130,6 +130,40 @@ export function civilInZone(
   }
 }
 
+/**
+ * The place's own civil date for the day the phone calls `date` (month
+ * 0-based). On the phone's clock, or with no place clock, the phone's date.
+ * Elsewhere, the place's date at the phone's noon that day: the same date
+ * wherever the two clocks are less than twelve hours apart, and across the
+ * date line the day the place is on for most of the phone's day — a phone on
+ * Kiritimati (UTC+14) asking for Rabat's 16 October gets Rabat's 15th, which
+ * is the day Rabat is on until two in the Kiritimati afternoon. The phone's
+ * date when the phone cannot say.
+ */
+export function placeCivilDay(
+  date: Date,
+  clock: PlaceClock | undefined,
+): { y: number; m: number; d: number } {
+  const phone = {
+    y: date.getFullYear(),
+    m: date.getMonth(),
+    d: date.getDate(),
+  };
+  const here = deviceZone();
+  if (!clock || here === clock.zone) return phone;
+  // The phone's day and noon by its zone, as Intl gives them — what the Date
+  // getters answer on a phone — and by the getters where Intl cannot say.
+  const own = here ? civilInZone(date, here) : null;
+  const day = own ? { y: own.y, m: own.m - 1, d: own.d } : phone;
+  const offset = here ? zoneOffsetMinutes(here, date) : null;
+  const noon =
+    offset == null
+      ? new Date(day.y, day.m, day.d, 12)
+      : new Date(Date.UTC(day.y, day.m, day.d, 12) - offset * 60_000);
+  const at = civilInZone(noon, clock.away ?? clock.zone);
+  return at ? { y: at.y, m: at.m - 1, d: at.d } : phone;
+}
+
 const staleMemo = new Map<string, number | null>();
 /**
  * How far the phone's zone data is off the zone's current rule, in minutes
