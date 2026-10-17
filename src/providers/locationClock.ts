@@ -31,8 +31,19 @@ function deviceZone(): string | undefined {
   }
 }
 
+/** Zones that are GMT all year, written without asking Intl. */
+const GMT_ZONES = new Set(['Etc/GMT', 'Etc/UTC', 'UTC', 'GMT', 'Africa/Abidjan']);
+
 /** "HH:MM" of an instant on a zone's clock; the phone's on any failure. */
 export function formatInZone(d: Date, zone: string): string {
+  // GMT is arithmetic, not a lookup. Hermes on iOS resolves `timeZone`
+  // through the system's list of zone names, which need not hold the
+  // `Etc/` ones; a RangeError there is caught below and the times quietly
+  // fall back to the phone's clock — the very thing Morocco's `away` exists
+  // to avoid on a phone outside Morocco.
+  if (GMT_ZONES.has(zone)) {
+    return `${String(d.getUTCHours()).padStart(2, '0')}:${String(d.getUTCMinutes()).padStart(2, '0')}`;
+  }
   try {
     const parts = new Intl.DateTimeFormat('en-GB', { timeZone: zone, hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).formatToParts(d);
     const h = parts.find(p => p.type === 'hour')?.value;
