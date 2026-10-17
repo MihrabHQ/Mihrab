@@ -101,6 +101,8 @@ import {
   resumeQuranDownload,
   startQuranDownload,
   subscribeQuranDownload,
+  hideQuranDownloadStrip,
+  stripShowsRun,
 } from '../src/quran/quranDownloadManager';
 
 const FONTS = { kind: 'fonts' } as const;
@@ -224,6 +226,29 @@ describe('one at a time, across both kinds', () => {
     await Promise.resolve();
     expect(startQuranDownload(HUSARY)).toBe(true);
     expect(mockHandles[1].what).toBe('audio:husary');
+  });
+});
+
+describe('the strip, put away', () => {
+  it('hides for the rest of the run and comes back for the next', async () => {
+    startQuranDownload(FONTS);
+    expect(stripShowsRun(quranDownloadState())).toBe(true);
+    hideQuranDownloadStrip();
+    expect(quranDownloadState().hidden).toBe(true);
+    expect(stripShowsRun(quranDownloadState())).toBe(false);
+    // Still running: hiding the strip is not cancelling the download.
+    expect(quranDownloadState().running).toEqual(FONTS);
+    expect(mockHandles[0].cancel).not.toHaveBeenCalled();
+    mockHandles[0].resolve(true);
+    await Promise.resolve();
+    await Promise.resolve();
+    startQuranDownload(HUSARY);
+    expect(stripShowsRun(quranDownloadState())).toBe(true);
+  });
+
+  it('is a no-op with nothing running', () => {
+    hideQuranDownloadStrip();
+    expect(quranDownloadState().hidden).toBeFalsy();
   });
 });
 

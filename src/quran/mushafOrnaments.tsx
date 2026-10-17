@@ -54,6 +54,9 @@ function diamondPath(cx: number, cy: number, r: number): string {
  * its height. Exported because the name that sits inside has to be sized from
  * what is left over — see `surahBandFieldHeight`.
  */
+/** The surah name's line box, in em of its size — see `SurahBandRow`. */
+const BAND_NAME_LINE_EM = 2.2;
+
 const BAND_STROKE = 0.028;
 const BAND_COURSE = 0.12;
 
@@ -333,9 +336,21 @@ export function SurahBandRow({
               fontFamily: FONTS.arabicQuran,
               fontSize: nameSize,
               color: colors.heading,
-              // The glyph box is centred in the full field, so ascenders and
-              // descenders share the clearance evenly.
-              lineHeight: fieldHeight,
+              /**
+               * The line is taller than the field ON PURPOSE. The field's
+               * height was the line height, so the glyph box would sit
+               * centred in it — and on Android a line height shorter than
+               * the font's own box takes the difference out of the ascent
+               * AND the descent, then clips the text view to what is left:
+               * the tails of ق and ن in the surah's name were cut flat
+               * along the band's inner rule. Twice the size is room for the
+               * deepest tail and the tallest alif both; the extra leading
+               * is split evenly, so the name is still centred on the field,
+               * and what overhangs is drawn over the band's course, which
+               * draws nothing there.
+               */
+              lineHeight: Math.ceil(nameSize * BAND_NAME_LINE_EM),
+              includeFontPadding: false,
             }}
           >
             {`${SURAH_WORD}${name}`}

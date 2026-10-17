@@ -50,7 +50,8 @@
     "listJoin": " & ",
     "confirmDelete": "Tryck igen för att ta bort",
     "learnMore": "Läs mer",
-    "dismiss": "Avfärda"
+    "dismiss": "Avfärda",
+    "hide": "Dölj"
   },
   "home": {
     "loadingPrayer": "Laddar bönetider…",
@@ -1147,7 +1148,9 @@
     "bookmark": "Bokmärke",
     "bookmarkColor": "Bokmärkesfärg {{color}}",
     "playFromHere": "Spela upp härifrån",
-    "repeatAyah": "Upprepa denna ayah",
+    "playThisAyah": "Spela upp denna ayah",
+    "playOnRepeat": "Spela upp på repeat",
+    "loopingChip": "Spelas på repeat",
     "buffering": "Buffrar…",
     "previousAyah": "Föregående ayah",
     "nextAyah": "Nästa ayah",

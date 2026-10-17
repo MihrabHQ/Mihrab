@@ -80,7 +80,7 @@ import {
   queueQuranDownload,
   subscribeQuranDownload,
 } from '../quranDownloadManager';
-import { playFromAyah, playRange } from '../audio/playback';
+import { playAyahOnRepeat, playFromAyah, playRange } from '../audio/playback';
 import { RecitationControls } from '../audio/RecitationControls';
 import { ShareAyahModal } from './ShareAyahModal';
 import {
@@ -1355,6 +1355,13 @@ export function AyahActionSheet({
             }}
           >
             <SectionHead label={t('quran.playSection', 'Play')} tight />
+            {/* Three ways to hear it, in the order they are reached for:
+                on from here (the one that keeps reading), this ayah once,
+                this ayah until stopped. "Repeat this ayah" used to be the
+                memorisation drill in disguise — it played the ayah the
+                number of times the repeat setting said, which with the
+                setting at 1 was once, and nobody could tell from the label
+                which it would be. */}
             <View style={styles.actionsRow}>
               <RowAction
                 label={t('quran.playFromHere', 'Play from here')}
@@ -1367,18 +1374,38 @@ export function AyahActionSheet({
                   void playFromAyah(surah, ayah);
                 }}
               />
+            </View>
+            <View style={[styles.actionsRow, styles.actionsRowBelow]}>
               <RowAction
-                label={t('quran.repeatAyah', 'Repeat this ayah')}
+                label={t('quran.playThisAyah', 'Play this ayah')}
+                glyph="▶"
+                compact
+                grow
+                onPress={() => {
+                  onClose();
+                  void playRange(
+                    { surah, ayah },
+                    { surah, ayah },
+                    { useRepeats: false },
+                  );
+                }}
+              />
+              <RowAction
+                label={t('quran.playOnRepeat', 'Play on repeat')}
                 glyph="↻"
                 compact
                 grow
                 onPress={() => {
                   onClose();
-                  void playRange({ surah, ayah }, { surah, ayah });
+                  void playAyahOnRepeat(surah, ayah);
                 }}
               />
             </View>
-            <RecitationControls surahNumber={surah} onStartPlayback={onClose} />
+            <RecitationControls
+              surahNumber={surah}
+              ayah={ayah}
+              onStartPlayback={onClose}
+            />
           </View>
         </ScrollView>
       </View>
@@ -1676,4 +1703,5 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: SPACING.sm,
   },
+  actionsRowBelow: { marginTop: SPACING.sm },
 });

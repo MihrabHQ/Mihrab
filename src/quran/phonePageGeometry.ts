@@ -73,8 +73,14 @@ export const LANDSCAPE_ZOOM = 1.6;
  * is `PAGE_TOP_GAP`, so the first line does not sit against the header.
  */
 export const HEADER_RESERVE = 34;
-/** What sits above the page out of fullscreen: a breath, not a row. */
-export const PAGE_TOP_GAP = 8;
+/**
+ * What sits above the page out of fullscreen. The page's own reserve for
+ * the marks above its first line (`fitLinesWithInk`) is already a breath;
+ * this only keeps the header's edge off the ink. It was 8, and with the
+ * reserve and the first line's leading on top of it the text started a
+ * finger's width below the header — the blank was the complaint.
+ */
+export const PAGE_TOP_GAP = 2;
 
 /**
  * What a footer costs when one IS drawn.
@@ -99,8 +105,12 @@ export const FOOTER_RESERVE = 42;
  * 42dp put the last ayah hard against the top edge of the player card,
  * and the band of nothing became no band at all, which reads as the text
  * running UNDER the card. A page wants to end, not stop.
+ *
+ * Eight, down from fourteen: the page keeps its own reserve below its
+ * last line's ink (`fitLinesWithInk`), so the band of nothing was this
+ * AND that, and the two together read as wasted.
  */
-export const FOOTER_GAP = 14;
+export const FOOTER_GAP = 8;
 
 /** How long the inputs have to stay still before a geometry is published. */
 export const GEOMETRY_QUIET_MS = 100;

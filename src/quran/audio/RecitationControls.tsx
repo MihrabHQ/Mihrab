@@ -37,6 +37,13 @@ import { TYPE } from '../../theme/typography';
 type Props = {
   /** Surah context for the range player + offline download. */
   surahNumber: number;
+  /**
+   * The ayah the sheet was opened on, when it was opened on one. The
+   * range ends here: "1 to this ayah" is what a reader who tapped it
+   * wants to hear — the page they just read, not the whole surah they
+   * would then have to trim by hand.
+   */
+  ayah?: number;
   /** Called right before playback starts (to dismiss the host sheet). */
   onStartPlayback?: () => void;
 };
@@ -44,7 +51,7 @@ type Props = {
 const RATES = [0.75, 1, 1.25, 1.5, 2];
 const PAUSE_FACTORS = [0, 0.5, 1, 2];
 
-export function RecitationControls({ surahNumber, onStartPlayback }: Props) {
+export function RecitationControls({ surahNumber, ayah, onStartPlayback }: Props) {
   const { t, i18n } = useTranslation();
   const { palette } = useAppPalette();
   const { prefs } = useQuranState();
@@ -109,8 +116,9 @@ export function RecitationControls({ surahNumber, onStartPlayback }: Props) {
   const complete = status != null && status.missing.length === 0 && status.total > 0;
   const partial = status != null && status.have > 0 && status.missing.length > 0;
 
+  const rangeEnd = ayah != null && ayah >= 1 ? Math.min(ayah, ayahs) : ayahs;
   const [fromText, setFromText] = useState('1');
-  const [toText, setToText] = useState(String(ayahs));
+  const [toText, setToText] = useState(String(rangeEnd));
 
   const refreshStatus = useRef<() => void>(() => undefined);
   useEffect(() => {
@@ -142,9 +150,9 @@ export function RecitationControls({ surahNumber, onStartPlayback }: Props) {
   }, [download.running]);
 
   useEffect(() => {
-    setToText(String(ayahs));
+    setToText(String(rangeEnd));
     setFromText('1');
-  }, [surahNumber, ayahs]);
+  }, [surahNumber, rangeEnd]);
 
   /**
    * Download what is missing — which on a fresh surah is all of it, and

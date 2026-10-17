@@ -50,7 +50,8 @@
     "listJoin": " y ",
     "confirmDelete": "Toca otra vez para eliminar",
     "learnMore": "Más información",
-    "dismiss": "Descartar"
+    "dismiss": "Descartar",
+    "hide": "Ocultar"
   },
   "home": {
     "loadingPrayer": "Cargando tiempos de oración…",
@@ -1148,7 +1149,9 @@
     "bookmark": "Marcador",
     "bookmarkColor": "Color de marcador {{color}}",
     "playFromHere": "Reproducir desde aquí",
-    "repeatAyah": "Repetir esta aleya",
+    "playThisAyah": "Reproducir esta aleya",
+    "playOnRepeat": "Reproducir en bucle",
+    "loopingChip": "Reproduciendo en bucle",
     "buffering": "Almacenando en búfer…",
     "previousAyah": "Aleya anterior",
     "nextAyah": "Aleya siguiente",

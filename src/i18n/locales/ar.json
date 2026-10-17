@@ -50,7 +50,8 @@
     "listJoin": " و",
     "confirmDelete": "اضغط مرة أخرى للحذف",
     "learnMore": "اعرف المزيد",
-    "dismiss": "إخفاء"
+    "dismiss": "إخفاء",
+    "hide": "إخفاء"
   },
   "home": {
     "loadingPrayer": "جارٍ تحميل أوقات الصلاة…",
@@ -1151,7 +1152,9 @@
     "bookmark": "إشارة مرجعية",
     "bookmarkColor": "لون الإشارة المرجعية {{color}}",
     "playFromHere": "التشغيل من هنا",
-    "repeatAyah": "تكرار هذه الآية",
+    "playThisAyah": "تشغيل هذه الآية",
+    "playOnRepeat": "تشغيل متكرر",
+    "loopingChip": "تشغيل متكرر",
     "buffering": "جارٍ التحميل المؤقت…",
     "previousAyah": "الآية السابقة",
     "nextAyah": "الآية التالية",

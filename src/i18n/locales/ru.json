@@ -50,7 +50,8 @@
     "listJoin": " и ",
     "confirmDelete": "Нажмите ещё раз, чтобы удалить",
     "learnMore": "Подробнее",
-    "dismiss": "Скрыть"
+    "dismiss": "Скрыть",
+    "hide": "Скрыть"
   },
   "home": {
     "loadingPrayer": "Загрузка времени намазов…",
@@ -1163,7 +1164,9 @@
     "bookmark": "Закладка",
     "bookmarkColor": "Цвет закладки {{color}}",
     "playFromHere": "Воспроизвести отсюда",
-    "repeatAyah": "Повторить этот аят",
+    "playThisAyah": "Воспроизвести этот аят",
+    "playOnRepeat": "Воспроизводить по кругу",
+    "loopingChip": "Воспроизводится по кругу",
     "buffering": "Буферизация…",
     "previousAyah": "Предыдущий аят",
     "nextAyah": "Следующий аят",

@@ -50,7 +50,8 @@
     "listJoin": " & ",
     "confirmDelete": "Zum Löschen erneut tippen",
     "learnMore": "Mehr erfahren",
-    "dismiss": "Ausblenden"
+    "dismiss": "Ausblenden",
+    "hide": "Ausblenden"
   },
   "home": {
     "loadingPrayer": "Gebetszeiten werden geladen…",
@@ -1147,7 +1148,9 @@
     "bookmark": "Lesezeichen",
     "bookmarkColor": "Lesezeichenfarbe {{color}}",
     "playFromHere": "Ab hier abspielen",
-    "repeatAyah": "Diese Ayah wiederholen",
+    "playThisAyah": "Diese Ayah abspielen",
+    "playOnRepeat": "In Dauerschleife abspielen",
+    "loopingChip": "Läuft in Dauerschleife",
     "buffering": "Puffern…",
     "previousAyah": "Vorherige Ayah",
     "nextAyah": "Nächste Ayah",

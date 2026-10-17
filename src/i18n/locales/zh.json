@@ -50,7 +50,8 @@
     "listJoin": " 与 ",
     "confirmDelete": "再次点按以删除",
     "learnMore": "了解更多",
-    "dismiss": "关闭"
+    "dismiss": "关闭",
+    "hide": "隐藏"
   },
   "home": {
     "loadingPrayer": "正在加载祈祷时间...",
@@ -1147,7 +1148,9 @@
     "bookmark": "书签",
     "bookmarkColor": "书签颜色 {{color}}",
     "playFromHere": "从这里播放",
-    "repeatAyah": "重复此节",
+    "playThisAyah": "播放此节",
+    "playOnRepeat": "循环播放",
+    "loopingChip": "循环播放中",
     "buffering": "缓冲中…",
     "previousAyah": "上一节",
     "nextAyah": "下一节",

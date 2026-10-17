@@ -31,6 +31,7 @@ import { findTafsirEdition, tafsirNameInSentence } from './tafsir';
 import {
   cancelQuranDownload,
   dismissResumableJob,
+  hideQuranDownloadStrip,
   fontSetOf,
   jobSurahName,
   riwayahLabel,
@@ -105,6 +106,8 @@ export function QuranDownloadStripView({
     );
   }
 
+  if (run.hidden) return null;
+
   const { done, total } = run.progress;
   const pct = total > 0 ? Math.round((done / total) * 100) : 0;
 
@@ -168,15 +171,30 @@ export function QuranDownloadStripView({
           numberOfLines={1}>
           {label}
         </Text>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={t('common.cancel', 'Cancel')}
-          hitSlop={10}
-          onPress={() => cancelQuranDownload()}>
-          <Text style={[styles.stripCancel, { color: palette.accentSolid }]}>
-            {t('common.cancel', 'Cancel')}
-          </Text>
-        </Pressable>
+        {/* Two answers to a line that stays for minutes: stop it, or
+            stop looking at it. A mushaf or a whole reciter is a long
+            download, and the reader who started it on purpose does not
+            need the top of every page telling them so until it is done. */}
+        <View style={styles.stripActions}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t('common.hide', 'Hide')}
+            hitSlop={10}
+            onPress={() => hideQuranDownloadStrip()}>
+            <Text style={[styles.stripCancel, { color: palette.muted }]}>
+              {t('common.hide', 'Hide')}
+            </Text>
+          </Pressable>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t('common.cancel', 'Cancel')}
+            hitSlop={10}
+            onPress={() => cancelQuranDownload()}>
+            <Text style={[styles.stripCancel, { color: palette.accentSolid }]}>
+              {t('common.cancel', 'Cancel')}
+            </Text>
+          </Pressable>
+        </View>
       </View>
       <View style={[styles.stripTrack, { backgroundColor: palette.accentBg }]}>
         <View

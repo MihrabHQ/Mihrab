@@ -53,7 +53,7 @@ export function MiniPlayer({
 } = {}) {
   const { t } = useTranslation();
   const { palette } = useAppPalette();
-  const { active, playing, loading, reciterId, gap } = usePlaybackStatus();
+  const { active, playing, loading, reciterId, gap, looping } = usePlaybackStatus();
   const { prefs } = useQuranState();
   // Only while someone is looking — see the hook. Listening from the
   // reader with the screen off used to keep this polling for the whole
@@ -144,6 +144,7 @@ export function MiniPlayer({
               accessibilityRole="button"
               accessibilityLabel={t('quran.chooseReciter', 'Choose reciter')}
               hitSlop={6}
+              style={styles.reciterName}
               onPress={() => setPickerVisible(true)}>
               <Text
                 numberOfLines={1}
@@ -182,7 +183,15 @@ export function MiniPlayer({
                 </Text>
               </View>
             ) : null}
-            {prefs.repeat.eachAyah > 1 ? (
+            {looping ? (
+              <View
+                accessibilityLabel={t('quran.loopingChip', 'Playing on repeat')}
+                style={[styles.stateChip, { backgroundColor: palette.controlBg }]}>
+                <Text style={[styles.stateChipLabel, { color: palette.text }]}>
+                  {'↻ ∞'}
+                </Text>
+              </View>
+            ) : prefs.repeat.eachAyah > 1 ? (
               <View style={[styles.stateChip, { backgroundColor: palette.controlBg }]}>
                 <Text style={[styles.stateChipLabel, { color: palette.text }]}>
                   {`↻ ${prefs.repeat.eachAyah}`}
@@ -280,9 +289,29 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.sm,
     gap: 2,
   },
-  info: { flex: 1, marginEnd: SPACING.sm },
-  subRow: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm, marginTop: 1 },
-  stateChip: { paddingHorizontal: SPACING.sm, paddingVertical: 1, borderRadius: RADIUS.sm },
+  /**
+   * THE NAME GIVES WAY, NOT THE ROW. `flex: 1` alone lets a flex child
+   * keep its content's minimum width, so a long reciter name plus three
+   * chips (page, speed, repeat) pushed the chips under the ⏮ button — the
+   * ↻ sat behind it, half visible. `minWidth: 0` lets this column be
+   * narrower than its content; the name then shrinks (it is the one that
+   * ellipsises) and the chips keep their size, in the room that is there.
+   */
+  info: { flex: 1, minWidth: 0, marginEnd: SPACING.sm },
+  subRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.sm,
+    marginTop: 1,
+    overflow: 'hidden',
+  },
+  reciterName: { flexShrink: 1, minWidth: 0 },
+  stateChip: {
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: 1,
+    borderRadius: RADIUS.sm,
+    flexShrink: 0,
+  },
   stateChipLabel: {
     fontSize: TYPE.caption.fontSize,
     fontWeight: '700',
@@ -299,7 +328,13 @@ const styles = StyleSheet.create({
   title: { fontSize: TYPE.callout.fontSize, fontWeight: '700', fontVariant: ['tabular-nums'] },
   sub: { fontSize: TYPE.caption.fontSize, fontWeight: '600' },
   sideBtn: { paddingHorizontal: SPACING.sm, paddingVertical: SPACING.sm },
-  transport: { flexDirection: 'row', alignItems: 'center', gap: 2, direction: 'ltr' },
+  transport: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 2,
+    direction: 'ltr',
+    flexShrink: 0,
+  },
   sideGlyph: { fontSize: TYPE.title3.fontSize, fontWeight: '700' },
   closeGlyph: { fontSize: TYPE.callout.fontSize, fontWeight: '700' },
   playBtn: {

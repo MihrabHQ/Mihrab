@@ -109,6 +109,18 @@ describe('what the strip says', () => {
     ).join(' ');
     expect(said).toMatch(/cancel/i);
   });
+
+  it('offers to be put away, next to it', () => {
+    const said = texts(
+      render(state({ kind: 'surah', reciterId: 'husary', surah: 2 }, 1, 286)),
+    ).join(' ');
+    expect(said).toMatch(/hide/i);
+  });
+
+  it('is gone once put away, while the download goes on', () => {
+    const s = state({ kind: 'surah', reciterId: 'husary', surah: 2 }, 1, 286);
+    expect(mount({ ...s, hidden: true }).toJSON()).toBeNull();
+  });
 });
 
 describe('what the strip draws', () => {

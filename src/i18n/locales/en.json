@@ -50,7 +50,8 @@
     "listJoin": " & ",
     "confirmDelete": "Tap again to delete",
     "learnMore": "Learn more",
-    "dismiss": "Dismiss"
+    "dismiss": "Dismiss",
+    "hide": "Hide"
   },
   "home": {
     "loadingPrayer": "Loading prayer times…",
@@ -1147,7 +1148,9 @@
     "bookmark": "Bookmark",
     "bookmarkColor": "Bookmark color {{color}}",
     "playFromHere": "Play from here",
-    "repeatAyah": "Repeat this ayah",
+    "playThisAyah": "Play this ayah",
+    "playOnRepeat": "Play on repeat",
+    "loopingChip": "Playing on repeat",
     "buffering": "Buffering…",
     "previousAyah": "Previous ayah",
     "nextAyah": "Next ayah",

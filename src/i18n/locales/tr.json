@@ -50,7 +50,8 @@
     "listJoin": " ve ",
     "confirmDelete": "Silmek için tekrar dokunun",
     "learnMore": "Daha fazla bilgi",
-    "dismiss": "Kapat"
+    "dismiss": "Kapat",
+    "hide": "Gizle"
   },
   "home": {
     "loadingPrayer": "Namaz vakitleri yükleniyor…",
@@ -1147,7 +1148,9 @@
     "bookmark": "Yer imi",
     "bookmarkColor": "Yer imi rengi {{color}}",
     "playFromHere": "Buradan oynat",
-    "repeatAyah": "Bu ayeti tekrarla",
+    "playThisAyah": "Bu ayeti oynat",
+    "playOnRepeat": "Sürekli tekrarla",
+    "loopingChip": "Sürekli tekrarlanıyor",
     "buffering": "Arabelleğe alınıyor…",
     "previousAyah": "Önceki ayet",
     "nextAyah": "Sonraki ayet",

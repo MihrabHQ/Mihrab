@@ -50,7 +50,8 @@
     "listJoin": " & ",
     "confirmDelete": "Ketuk lagi untuk menghapus",
     "learnMore": "Pelajari lebih lanjut",
-    "dismiss": "Tutup"
+    "dismiss": "Tutup",
+    "hide": "Sembunyikan"
   },
   "home": {
     "loadingPrayer": "Memuat waktu sholat…",
@@ -1147,7 +1148,9 @@
     "bookmark": "Penanda",
     "bookmarkColor": "Warna penanda {{color}}",
     "playFromHere": "Putar dari sini",
-    "repeatAyah": "Ulangi ayat ini",
+    "playThisAyah": "Putar ayat ini",
+    "playOnRepeat": "Putar berulang",
+    "loopingChip": "Diputar berulang",
     "buffering": "Buffering…",
     "previousAyah": "Ayat sebelumnya",
     "nextAyah": "Ayat berikutnya",

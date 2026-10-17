@@ -50,7 +50,8 @@
     "listJoin": " ও ",
     "confirmDelete": "মুছতে আবার চাপুন",
     "learnMore": "আরও জানুন",
-    "dismiss": "খারিজ করুন"
+    "dismiss": "খারিজ করুন",
+    "hide": "লুকান"
   },
   "home": {
     "loadingPrayer": "নামাজের সময় লোড হচ্ছে...",
@@ -1147,7 +1148,9 @@
     "bookmark": "বুকমার্ক",
     "bookmarkColor": "বুকমার্কের রং {{color}}",
     "playFromHere": "এখান থেকে চালান",
-    "repeatAyah": "এই আয়াত পুনরাবৃত্তি করুন",
+    "playThisAyah": "এই আয়াত চালান",
+    "playOnRepeat": "বারবার চালান",
+    "loopingChip": "বারবার চলছে",
     "buffering": "বাফার হচ্ছে…",
     "previousAyah": "পূর্ববর্তী আয়াত",
     "nextAyah": "পরবর্তী আয়াত",

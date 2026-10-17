@@ -49,6 +49,7 @@ import {
   fontSetOf,
   quranDownloadState,
   startQuranDownload,
+  stripShowsRun,
   subscribeQuranDownload,
 } from './quranDownloadManager';
 import {
@@ -299,7 +300,7 @@ export function MushafReader(props: Props) {
   // header's chips. In fullscreen there is no header and the status bar is
   // hidden, so it clears the cutout instead.
   const strip =
-    run.running != null ? (
+    stripShowsRun(run) ? (
       <QuranDownloadStripView run={run} top={stripTop} />
     ) : null;
 

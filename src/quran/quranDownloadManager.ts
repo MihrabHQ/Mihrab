@@ -121,6 +121,14 @@ export type QuranDownloadState = {
   running: QuranDownloadJob | null;
   progress: MushafDownloadProgress;
   /**
+   * The reader put the strip away for this run ("Hide", next to Cancel).
+   * The download goes on exactly as before — the notification still
+   * counts it up, the settings rows still show it — only the line across
+   * the top of every Quran screen is gone. Cleared when the next run
+   * starts: a new download is news again.
+   */
+  hidden?: boolean;
+  /**
    * How the last run ended, for a screen that was not mounted when it did.
    * Cleared when the next one starts.
    */
@@ -632,7 +640,12 @@ export function startQuranDownload(job: QuranDownloadJob): boolean {
     watchdog: null,
   };
   current = run;
-  publish({ running: job, progress: initialProgress(job), last: null });
+  publish({
+    running: job,
+    progress: initialProgress(job),
+    last: null,
+    hidden: false,
+  });
 
   /**
    * THE NOTE GOES DOWN AT THE START, not only when the network takes the
@@ -922,6 +935,17 @@ export async function hydrateResumableJob(): Promise<QuranDownloadJob | null> {
   } catch {
     return null;
   }
+}
+
+/** Put the strip away for the rest of this run. The download goes on. */
+export function hideQuranDownloadStrip(): void {
+  if (!state.running || state.hidden) return;
+  publish({ ...state, hidden: true });
+}
+
+/** Is there a run for the strip to show — one running, and not hidden? */
+export function stripShowsRun(s: QuranDownloadState): boolean {
+  return s.running != null && !s.hidden;
 }
 
 /** Stop it. Whatever landed on disk stays there and is usable. */

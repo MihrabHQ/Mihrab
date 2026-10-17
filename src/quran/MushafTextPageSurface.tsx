@@ -57,6 +57,14 @@ export type MushafTextPageSurfaceProps = {
   width: number;
   /** Height of the page box in dp; lines divide it evenly. */
   height: number;
+  /**
+   * The box is the whole page and nothing scrolls it: pull the outer
+   * lines' leading to the edges rather than leave it blank above the
+   * first line and below the last — see `fitLinesWithInk`. Off where the
+   * column scrolls (its clip would then cut the first line's marks) and
+   * on the plates.
+   */
+  tight?: boolean;
   /** Which muṣḥaf. Absent means Hafs, which is what every reader meant
    *  before there was a second one. */
   riwayah?: RiwayahId;
@@ -231,8 +239,9 @@ export function fitLinesWithInk(
   fontSize: number,
   boxH: number,
   lineCount: number,
-): { lineHeight: number; top: number; bottom: number } {
-  const flat = { lineHeight: boxH / lineCount, top: 0, bottom: 0 };
+  tight: boolean = false,
+): { lineHeight: number; top: number; bottom: number; shift: number } {
+  const flat = { lineHeight: boxH / lineCount, top: 0, bottom: 0, shift: 0 };
   if (!(fontSize > 0) || !(boxH > 0) || lineCount < 1) return flat;
   let lineHeight = boxH / lineCount;
   let ink = lineInkPadding(fontSize, lineHeight);
@@ -249,7 +258,40 @@ export function fitLinesWithInk(
   // A box too small to hold the reserve keeps its lines rather than
   // collapsing them: a squeezed page beats no page.
   if (!(boxH - ink.top - ink.bottom > 0)) return flat;
-  return { lineHeight, top: ink.top, bottom: ink.bottom };
+  if (tight && lineCount > 1) {
+    /**
+     * THE FIRST AND LAST LINES' LEADING GOES TO THE EDGES, NOT THE BLANK.
+     *
+     * A portrait page is fifteen lines stretched over the box, and the
+     * stretch is leading: each line's box is taller than the type, and
+     * the type sits in the middle of it. Between lines that is the
+     * spacing the print has. At the top and bottom it is half a line's
+     * leading of nothing — above the first line's ink, below the last —
+     * on top of the ink reserve and the chrome gaps, and the three
+     * together were the "wasted space" at the top and bottom of the page.
+     *
+     * So in a box that does not scroll, the lines are pitched so that the
+     * first line's box starts half its leading ABOVE the block and the
+     * last ends half below (`shift`, applied as a negative margin by the
+     * caller): the ink then starts where the reserve ends, and the leading
+     * it would have had is shared out between the lines instead.
+     */
+    const natural = fontSize * MUSHAF_LINE_HEIGHT_EM;
+    const inner = boxH - ink.top - ink.bottom;
+    const pitched = (inner - natural) / (lineCount - 1);
+    if (pitched > natural) {
+      // The reserve was solved for the stretched pitch; the pitch grew,
+      // so the reserve can only have shrunk, and keeping the larger one
+      // is the safe side of a dp.
+      return {
+        lineHeight: pitched,
+        top: ink.top,
+        bottom: ink.bottom,
+        shift: (pitched - natural) / 2,
+      };
+    }
+  }
+  return { lineHeight, top: ink.top, bottom: ink.bottom, shift: 0 };
 }
 
 /**
@@ -318,6 +360,7 @@ function GlyphPageSurface({
   onWordPress,
   onWordLongPress,
   prefetchRadius = 0,
+  tight = false,
 }: MushafTextPageSurfaceProps) {
   const nightMode = toneIsDark(tone);
   // The set before the layout: `getPageLayout` measures with the set's
@@ -403,6 +446,8 @@ function GlyphPageSurface({
     pageFontSize(page, width, layout),
     height - inset * (framed ? 1.2 : 0),
     lineCount,
+    // The plates keep their leading: their frame is drawn to the box.
+    tight && !framed,
   );
 
   const drawn = (
@@ -440,7 +485,14 @@ function GlyphPageSurface({
             paddingBottom: fit.bottom,
           },
         ]}>
-        {drawn}
+        {fit.shift > 0 ? (
+          // The outer lines' half-leading, pulled out of the block — see
+          // `fitLinesWithInk`. Into the reserve, which is room for ink
+          // and has none of its own.
+          <View style={{ marginVertical: -fit.shift }}>{drawn}</View>
+        ) : (
+          drawn
+        )}
       </View>
     );
   }

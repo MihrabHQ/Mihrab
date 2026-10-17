@@ -50,7 +50,8 @@
     "listJoin": " اور ",
     "confirmDelete": "حذف کرنے کے لیے دوبارہ دبائیں",
     "learnMore": "مزید جانیں",
-    "dismiss": "چھپائیں"
+    "dismiss": "چھپائیں",
+    "hide": "چھپائیں"
   },
   "home": {
     "loadingPrayer": "نماز کے اوقات لوڈ ہو رہے ہیں…",
@@ -1147,7 +1148,9 @@
     "bookmark": "بک مارک",
     "bookmarkColor": "بک مارک کا رنگ {{color}}",
     "playFromHere": "یہاں سے چلائیں",
-    "repeatAyah": "اس آیت کو دہرائیں",
+    "playThisAyah": "یہ آیت چلائیں",
+    "playOnRepeat": "بار بار چلائیں",
+    "loopingChip": "بار بار چل رہی ہے",
     "buffering": "بفرنگ…",
     "previousAyah": "پچھلی آیت",
     "nextAyah": "اگلی آیت",

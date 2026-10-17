@@ -57,6 +57,37 @@ describe('fitLinesWithInk', () => {
     expect(fit.bottom).toBeGreaterThanOrEqual(needed.bottom - 1);
   });
 
+  it('pulls the outer lines\' leading to the edges in a box that does not scroll', () => {
+    // Fifteen lines of 25dp type are ~644dp at their natural pitch; in a
+    // 760dp box the stretch is leading. Tight, that leading is shared out
+    // between the lines and none of it is left above the first or below
+    // the last: the block is still exactly the box, and the first line's
+    // box starts half its leading above the block.
+    const fs = 25;
+    const box = 760;
+    const loose = fitLinesWithInk(fs, box, LINES);
+    const tight = fitLinesWithInk(fs, box, LINES, true);
+    const natural = fs * MUSHAF_LINE_HEIGHT_EM;
+    expect(loose.shift).toBe(0);
+    expect(tight.shift).toBeGreaterThan(0);
+    expect(tight.lineHeight).toBeGreaterThan(loose.lineHeight);
+    expect(tight.shift).toBeCloseTo((tight.lineHeight - natural) / 2, 5);
+    expect(
+      tight.lineHeight * LINES - 2 * tight.shift + tight.top + tight.bottom,
+    ).toBeCloseTo(box, 5);
+    expect(tight.top).toBeGreaterThan(0);
+  });
+
+  it('leaves a box shorter than the natural pitch alone, tight or not', () => {
+    // Nothing to pull: when the lines are squeezed there is no leading at
+    // the edges, and a negative shift would pile the lines on each other.
+    const fs = 25;
+    const box = 600;
+    const tight = fitLinesWithInk(fs, box, LINES, true);
+    expect(tight.shift).toBe(0);
+    expect(tight).toEqual(fitLinesWithInk(fs, box, LINES));
+  });
+
   it('keeps the lines rather than collapsing them in an impossible box', () => {
     // A box smaller than the ink needs is a bad layout, not a crash. The
     // page draws squeezed; it never draws at a negative line height.
@@ -66,7 +97,7 @@ describe('fitLinesWithInk', () => {
 
   it('does nothing without a font size to measure the ink against', () => {
     const fit = fitLinesWithInk(0, 640, LINES);
-    expect(fit).toEqual({ lineHeight: 640 / LINES, top: 0, bottom: 0 });
+    expect(fit).toEqual({ lineHeight: 640 / LINES, top: 0, bottom: 0, shift: 0 });
   });
 });
 

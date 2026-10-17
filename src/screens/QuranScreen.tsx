@@ -89,6 +89,7 @@ import {
   QuranDownloadStripView,
   useQuranDownloadRun,
 } from '../quran/QuranDownloadStrip';
+import { stripShowsRun } from '../quran/quranDownloadManager';
 import { SyncHeaderButton } from './sync/SyncHeaderButton';
 import { TilawahRow } from './quran/TilawahRow';
 import { KhatmahEntry } from './quran/KhatmahEntry';
@@ -234,7 +235,7 @@ export function QuranScreen() {
    * status bar, or the page would open with a band of nothing in it.
    */
   const download = useQuranDownloadRun();
-  const stripOn = download.running != null;
+  const stripOn = stripShowsRun(download);
   const listTop = stripOn ? SPACING.md : pageTop;
   // The bar gets out of the way while reading — see tabBarVisibility.ts.
   const tabBarScroll = useTabBarScroll();

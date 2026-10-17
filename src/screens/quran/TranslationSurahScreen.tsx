@@ -35,6 +35,7 @@ import {
   QuranDownloadStripView,
   useQuranDownloadRun,
 } from '../../quran/QuranDownloadStrip';
+import { stripShowsRun } from '../../quran/quranDownloadManager';
 import { desktopSize } from '../../responsive/desktop';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAppPalette } from '../../hooks/useAppPalette';
@@ -805,7 +806,7 @@ export function TranslationSurahScreen({
           tilāwah download and then closes, so this is where it can be
           watched from. iOS floats its header over the content, so the
           strip clears it; Android's is opaque and in flow. */}
-      {download.running ? (
+      {stripShowsRun(download) ? (
         <QuranDownloadStripView
           run={download}
           top={Platform.OS === 'ios' ? headerHeight : 0}

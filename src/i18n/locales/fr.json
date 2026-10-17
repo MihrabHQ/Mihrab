@@ -50,7 +50,8 @@
     "listJoin": " et ",
     "confirmDelete": "Appuyez à nouveau pour supprimer",
     "learnMore": "En savoir plus",
-    "dismiss": "Ignorer"
+    "dismiss": "Ignorer",
+    "hide": "Masquer"
   },
   "home": {
     "loadingPrayer": "Chargement des heures de prière…",
@@ -1148,7 +1149,9 @@
     "bookmark": "Signet",
     "bookmarkColor": "Couleur de signet {{color}}",
     "playFromHere": "Lire à partir d'ici",
-    "repeatAyah": "Répéter ce verset",
+    "playThisAyah": "Lire ce verset",
+    "playOnRepeat": "Lire en boucle",
+    "loopingChip": "Lecture en boucle",
     "buffering": "Mise en mémoire tampon…",
     "previousAyah": "Verset précédent",
     "nextAyah": "Verset suivant",

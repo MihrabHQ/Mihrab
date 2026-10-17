@@ -394,6 +394,7 @@ const PhonePageItem = React.memo(function PhonePageItem({
               page={page}
               width={geometry.textWidth}
               height={pageBoxH}
+              tight={!geometry.scrolling}
               riwayah={riwayah}
               tone={tone}
               accentColor={accent}

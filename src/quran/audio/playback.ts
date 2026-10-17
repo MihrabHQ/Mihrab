@@ -15,6 +15,7 @@
  */
 import { useSyncExternalStore } from 'react';
 import TrackPlayer, {
+  RepeatMode,
   AppKilledPlaybackBehavior,
   Capability,
   Event,
@@ -75,6 +76,13 @@ export type PlaybackStatus = {
    * inside the ayah (a word) is.
    */
   resting?: boolean;
+  /**
+   * One ayah, round and round until stopped ("Play on repeat" in the
+   * ayah sheet). The queue holds the ayah's files and the player loops
+   * the queue, so the lock screen, the headphones and the screen going
+   * off all leave it looping — a timer here would not survive them.
+   */
+  looping?: boolean;
 };
 
 const IDLE: PlaybackStatus = {
@@ -84,6 +92,7 @@ const IDLE: PlaybackStatus = {
   reciterId: 'husary',
   gap: null,
   resting: false,
+  looping: false,
 };
 
 let status: PlaybackStatus = IDLE;
@@ -917,6 +926,40 @@ export async function playFromAyah(surah: number, ayah: number): Promise<void> {
   );
 }
 
+/**
+ * Loop the queue, or stop looping it. Every start of something new goes
+ * through here with `false`: the player keeps its repeat mode across
+ * `reset()`, so a listen started after a loop would otherwise loop too.
+ */
+async function setLoop(on: boolean): Promise<void> {
+  await TrackPlayer.setRepeatMode(on ? RepeatMode.Queue : RepeatMode.Off).catch(
+    () => undefined,
+  );
+  setStatus({ looping: on });
+}
+
+/**
+ * Play one ayah over and over, until stopped or something else is
+ * played. Not the memorisation drill (`playRange` with repeats): that
+ * counts, this does not — it is for sitting with an ayah.
+ */
+export async function playAyahOnRepeat(surah: number, ayah: number): Promise<void> {
+  if (!findSurah(surah)) return;
+  await ensureSetup();
+  endListening();
+  const prefs = getQuranState().prefs;
+  queueRiwayah = resolveRiwayah(prefs.riwayah);
+  setStatus({ reciterId: prefs.reciterId, loading: true, gap: null });
+  const ref = { surah, ayah };
+  const tracks = await buildTracks(expandRange(ref, ref), prefs.reciterId, 0);
+  await TrackPlayer.reset();
+  await TrackPlayer.add(tracks);
+  await TrackPlayer.setRate(prefs.playbackRate);
+  await setLoop(true);
+  await TrackPlayer.play();
+  setStatus({ active: ref, playing: true, resting: false });
+}
+
 /** Play an explicit range with (optionally) the memorization repeats. */
 export async function playRange(
   from: AyahRef,
@@ -949,6 +992,7 @@ export async function playRange(
     restFactor,
   );
   await TrackPlayer.reset();
+  await setLoop(false);
   await TrackPlayer.add(tracks);
   await TrackPlayer.setRate(prefs.playbackRate);
   await TrackPlayer.play();
@@ -994,6 +1038,7 @@ export async function listenFrom(
   const { refs, cursor } = listenWindow(start, LISTEN_WINDOW, nextListenRef);
   const tracks = await buildTracks(refs, prefs.reciterId, 0);
   await TrackPlayer.reset();
+  await setLoop(false);
   await TrackPlayer.add(tracks);
   await TrackPlayer.setRate(prefs.playbackRate);
   await TrackPlayer.play();
@@ -1054,6 +1099,7 @@ export async function stopPlayback(): Promise<void> {
   endListening();
   if (!setupPromise) return; // never started — nothing to stop
   await TrackPlayer.reset();
+  await setLoop(false);
   setStatus({ active: null, playing: false, loading: false });
 }
 

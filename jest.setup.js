@@ -316,7 +316,10 @@ jest.mock('react-native-track-player', () => ({
     getRate: jest.fn(async () => 1),
     skip: jest.fn(async () => {}),
     remove: jest.fn(async () => {}),
+    setRepeatMode: jest.fn(async () => {}),
+    getRepeatMode: jest.fn(async () => 0),
   },
+  RepeatMode: { Off: 0, Track: 1, Queue: 2 },
   useProgress: jest.fn(() => ({ position: 0, duration: 0, buffered: 0 })),
   usePlaybackState: jest.fn(() => ({ state: 'none' })),
   State: {
