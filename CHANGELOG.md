@@ -73,6 +73,7 @@ All notable changes to this project are documented here. The format is inspired 
 - **Log: with the Mālikī second times on, a log after the preferred time ends is the late one,** not the half-window (#74).
 - **A clock that jumps is noticed on the hero's next tick,** not on the watchdog's next look — a day set back showed a countdown of thirty-odd hours for up to half a minute.
 - **Mac: the app is laid out from the window's measured size,** not the stale one Catalyst reports at launch.
+- **Custom angles, the calculation method, the source setting and the per-prayer offsets are checked when settings load.** A custom Fajr or Isha angle saved empty — by a backup, a sync from another phone, or an edited file — came back as 10°, nearly an hour away from the angle meant; it now comes back as the default angle. A method this version does not know now loads as Automatic, an automatic-source setting that is not on or off loads as Automatic, and offsets that are not minutes are dropped, so none of them can reach a calculation.
 
 ## [2.30.0] — 2026-10-10
 

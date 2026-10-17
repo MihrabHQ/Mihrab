@@ -20,6 +20,7 @@ import { loadCachedMethodCurrency } from '../providers/methodCurrency';
 import {
   coerceCustomAngle,
   coerceHighLatitudeRule,
+  CUSTOM_METHOD_ID,
   DEFAULT_CUSTOM_FAJR_ANGLE,
   DEFAULT_CUSTOM_ISHA_ANGLE,
   setCalculationPreferences,
@@ -32,7 +33,12 @@ import {
   stripSecureFields,
   type SecureSettings,
 } from './secureStorage';
-import { coerceLocationProviders, seedLocationProviders } from './locationProviders';
+import {
+  coerceLocationProviders,
+  seedLocationProviders,
+} from './locationProviders';
+import { CALCULATION_METHODS } from './methodList';
+import { coercePrayerOffsets } from './prayerOffsets';
 import {
   DEFAULT_SETTINGS,
   PRAYER_DATA_PROVIDER_IDS,
@@ -46,7 +52,21 @@ import {
 
 const KEY = 'prayerapp.settings.v1';
 
-const LANGUAGES: AppLanguage[] = ['en', 'sv', 'ar', 'bn', 'ur', 'hi', 'fr', 'es', 'de', 'tr', 'id', 'ru', 'zh'];
+const LANGUAGES: AppLanguage[] = [
+  'en',
+  'sv',
+  'ar',
+  'bn',
+  'ur',
+  'hi',
+  'fr',
+  'es',
+  'de',
+  'tr',
+  'id',
+  'ru',
+  'zh',
+];
 
 // No 'dynamic': removed 2026-08-27. A stored 'dynamic' from an older
 // build falls through to the default, which is the colour that build was
@@ -88,11 +108,26 @@ function deviceLanguage(): AppLanguage {
  * which is exactly the install that should have been following the phone
  * all along.
  */
-function coerceLanguagePicked(
-  parsed: Record<string, unknown>,
-): boolean {
+function coerceLanguagePicked(parsed: Record<string, unknown>): boolean {
   if (typeof parsed.languagePicked === 'boolean') return parsed.languagePicked;
   return 'language' in parsed && coerceLanguage(parsed.language) !== 'en';
+}
+
+const KNOWN_METHOD_IDS: ReadonlyArray<number | 'auto'> =
+  CALCULATION_METHODS.map(m => m.id);
+
+/** 'auto', or a method id this build lists (Custom, 99, among them). */
+function coerceCalculationMethod(
+  value: unknown,
+): PrayerAppSettings['calculationMethod'] {
+  if (value === undefined) return DEFAULT_SETTINGS.calculationMethod;
+  if (
+    value === CUSTOM_METHOD_ID ||
+    KNOWN_METHOD_IDS.includes(value as number | 'auto')
+  ) {
+    return value as PrayerAppSettings['calculationMethod'];
+  }
+  return DEFAULT_SETTINGS.calculationMethod;
 }
 
 function coerceWidgetHighlightId(value: unknown): WidgetHighlightId {
@@ -128,7 +163,10 @@ function renameProvider(value: unknown, from: string, to: string): unknown {
   const out: Record<string, unknown> = {};
   for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
     const c = v as { provider?: unknown } | null;
-    out[k] = c && typeof c === 'object' && c.provider === from ? { ...c, provider: to } : v;
+    out[k] =
+      c && typeof c === 'object' && c.provider === from
+        ? { ...c, provider: to }
+        : v;
   }
   return out;
 }
@@ -137,8 +175,12 @@ export function coerceWidgetTimeScale(value: unknown): number {
   if (typeof value !== 'number' || !Number.isFinite(value)) {
     return DEFAULT_SETTINGS.androidWidgetTimeScale;
   }
-  const snapped = Math.round(value / WIDGET_TIME_SCALE_STEP) * WIDGET_TIME_SCALE_STEP;
-  return Math.min(WIDGET_TIME_SCALE_MAX, Math.max(WIDGET_TIME_SCALE_MIN, snapped));
+  const snapped =
+    Math.round(value / WIDGET_TIME_SCALE_STEP) * WIDGET_TIME_SCALE_STEP;
+  return Math.min(
+    WIDGET_TIME_SCALE_MAX,
+    Math.max(WIDGET_TIME_SCALE_MIN, snapped),
+  );
 }
 
 function coerceWidgetOpacity(value: unknown): number {
@@ -299,6 +341,11 @@ async function loadSettingsUncached(): Promise<PrayerAppSettings> {
   }
   if (!('dataProviderAuto' in parsed)) {
     merged.dataProviderAuto = false;
+  } else if (typeof merged.dataProviderAuto !== 'boolean') {
+    // Present but not a boolean: a hand-edited blob, or a peer's garbage
+    // brought in by sync. Truthy garbage read as "pinned" or "automatic"
+    // by accident; the default is the honest answer.
+    merged.dataProviderAuto = DEFAULT_SETTINGS.dataProviderAuto;
   }
   // PrayTimes.dev is gone (2.32.0), and had been answering 404 for a while
   // before that: its users were getting their own method and Asr computed
@@ -312,10 +359,19 @@ async function loadSettingsUncached(): Promise<PrayerAppSettings> {
   // A source this build does not know — picked in a newer build and brought
   // here by sync or a backup — would fall to the on-device rung on every
   // fetch under a name the screens cannot show. Automatic answers instead.
-  if (!(PRAYER_DATA_PROVIDER_IDS as readonly string[]).includes(merged.dataProvider)) {
+  if (
+    !(PRAYER_DATA_PROVIDER_IDS as readonly string[]).includes(
+      merged.dataProvider,
+    )
+  ) {
     merged.dataProvider = DEFAULT_SETTINGS.dataProvider;
     merged.dataProviderAuto = true;
   }
+  // A method this build cannot compute — a string, a number from no table —
+  // would reach every calculation as an id nobody can resolve.
+  merged.calculationMethod = coerceCalculationMethod(parsed.calculationMethod);
+  // Each offset clamped to what the stepper allows; anything else dropped.
+  merged.prayerOffsets = coercePrayerOffsets(parsed.prayerOffsets);
   if (!('appearance' in parsed)) {
     merged.appearance = 'system';
   }
@@ -441,9 +497,12 @@ async function loadSettingsUncached(): Promise<PrayerAppSettings> {
     DEFAULT_SETTINGS.androidWidgetTextColor,
   );
   merged.androidWidgetShowLocation = parsed.androidWidgetShowLocation !== false;
-  merged.androidWidgetShowCountdown = parsed.androidWidgetShowCountdown !== false;
+  merged.androidWidgetShowCountdown =
+    parsed.androidWidgetShowCountdown !== false;
   merged.androidWidgetShowTable = parsed.androidWidgetShowTable !== false;
-  merged.androidWidgetTimeScale = coerceWidgetTimeScale(parsed.androidWidgetTimeScale);
+  merged.androidWidgetTimeScale = coerceWidgetTimeScale(
+    parsed.androidWidgetTimeScale,
+  );
   merged.clockFormat = coerceClockFormat(parsed.clockFormat);
   // Snapped, not merged: a value between rungs — an older ladder, a
   // hand-edited blob — would leave the stepper unable to say where it is.
@@ -462,14 +521,17 @@ async function loadSettingsUncached(): Promise<PrayerAppSettings> {
   // Alerts are opt-in per boundary and the list is the kill-switch, so a
   // blob holding anything but a known key must come back empty rather
   // than scheduling something nobody chose.
-  merged.malikiSecondTimeAlerts = coerceDaruriAlerts(parsed.malikiSecondTimeAlerts);
+  merged.malikiSecondTimeAlerts = coerceDaruriAlerts(
+    parsed.malikiSecondTimeAlerts,
+  );
   // #29. Every field of every reminder comes back through a coercion,
   // and a malformed one is dropped rather than repaired: these schedule
   // notifications, and an hour of NaN is a trigger that never fires or
   // fires now. Same treatment as the location presets beside them.
   merged.dhikrReminders = coerceDhikrReminders(parsed.dhikrReminders);
   merged.malikiSecondTimeAlertMinutes = coercePrePrayerReminderMinutes(
-    parsed.malikiSecondTimeAlertMinutes ?? DEFAULT_SETTINGS.malikiSecondTimeAlertMinutes,
+    parsed.malikiSecondTimeAlertMinutes ??
+      DEFAULT_SETTINGS.malikiSecondTimeAlertMinutes,
   );
   // #21. A stored blob naming a school this build does not know, or a
   // school that no longer matches the ʿaṣr shadow beside it, comes back as
@@ -480,8 +542,14 @@ async function loadSettingsUncached(): Promise<PrayerAppSettings> {
     : null;
   if (!madhabMatches(merged.madhab, merged.school)) merged.madhab = null;
   merged.highLatitudeRule = coerceHighLatitudeRule(parsed.highLatitudeRule);
-  merged.customFajrAngle = coerceCustomAngle(parsed.customFajrAngle, DEFAULT_CUSTOM_FAJR_ANGLE);
-  merged.customIshaAngle = coerceCustomAngle(parsed.customIshaAngle, DEFAULT_CUSTOM_ISHA_ANGLE);
+  merged.customFajrAngle = coerceCustomAngle(
+    parsed.customFajrAngle,
+    DEFAULT_CUSTOM_FAJR_ANGLE,
+  );
+  merged.customIshaAngle = coerceCustomAngle(
+    parsed.customIshaAngle,
+    DEFAULT_CUSTOM_ISHA_ANGLE,
+  );
   merged.widgetHighlightId = coerceWidgetHighlightId(parsed.widgetHighlightId);
   merged.widgetHighlightCustomHex = coerceWidgetHighlightHex(
     parsed.widgetHighlightCustomHex,
@@ -489,7 +557,9 @@ async function loadSettingsUncached(): Promise<PrayerAppSettings> {
   merged.prePrayerReminderMinutes = coercePrePrayerReminderMinutes(
     parsed.prePrayerReminderMinutes,
   );
-  merged.notificationSound = coerceNotificationSoundId(parsed.notificationSound);
+  merged.notificationSound = coerceNotificationSoundId(
+    parsed.notificationSound,
+  );
   // Migrate locationMode: 'gps' was renamed to 'automatic' in v1.5.52+
   if ((merged.locationMode as string) === 'gps') {
     merged.locationMode = 'automatic';
@@ -509,7 +579,11 @@ async function loadSettingsUncached(): Promise<PrayerAppSettings> {
   // Each location's own prayer-time source; settings from before it get
   // every location seeded with the one choice they shared.
   merged.locationProviders = coerceLocationProviders(
-    renameProvider(merged.locationProviders, REMOVED_PRAYTIMES_DEV, 'local_adhan'),
+    renameProvider(
+      merged.locationProviders,
+      REMOVED_PRAYTIMES_DEV,
+      'local_adhan',
+    ),
     PRAYER_DATA_PROVIDER_IDS,
   );
   Object.assign(merged, seedLocationProviders(merged));
@@ -545,7 +619,9 @@ async function performSave(settings: PrayerAppSettings): Promise<void> {
   // not be handed the promise that started before it.
   invalidateInflightLoad();
   setCalculationPreferences(settings);
-  const secure = extractSecureFields(settings as unknown as Record<string, unknown>);
+  const secure = extractSecureFields(
+    settings as unknown as Record<string, unknown>,
+  );
   const plaintext = stripSecureFields(
     settings as unknown as Record<string, unknown>,
   );
