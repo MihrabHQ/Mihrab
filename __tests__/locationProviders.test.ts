@@ -126,3 +126,47 @@ it('settings from before start every location on the choice they shared', () => 
   expect(providerChoiceForPreset(useMyLocation(s), cairo)).toEqual({ auto: false, provider: 'local_adhan' });
   expect(usePreset(s, rabat).dataProvider).toBe('local_adhan');
 });
+
+it('crossing the Torne mid-session: Haparanda’s pin goes back to Automatic in Tornio, and stays there', () => {
+  let s = pick(apply(start(), { lastFetchedLatitude: 65.8355, lastFetchedLongitude: 24.1368 }), 'islamiska_forbundet');
+  expect(s.dataProviderAuto).toBe(false); // Haparanda, Sweden
+  s = apply(s, { lastFetchedLatitude: 65.8481, lastFetchedLongitude: 24.1466 }); // Tornio, Finland
+  expect(s.dataProviderAuto).toBe(true);
+  // Finland has no source or method of its own: the Diyanet place there.
+  expect(getEffectiveDataProvider(s.dataProviderAuto, s.dataProvider, { latitude: 65.8481, longitude: 24.1466 }, 'auto')).toBe('diyanet');
+  s = apply(s, { lastFetchedLatitude: 65.8355, lastFetchedLongitude: 24.1368 }); // back
+  expect(s.dataProviderAuto).toBe(true);
+  expect(getEffectiveDataProvider(s.dataProviderAuto, s.dataProvider, { latitude: 65.8355, longitude: 24.1368 }, 'auto')).toBe('islamiska_forbundet');
+});
+
+it('switching between saved places either side of a strait keeps each one’s choice', () => {
+  const sg = { id: 'loc_sg', name: 'Singapore', latitude: 1.3521, longitude: 103.8198 };
+  const jb = { id: 'loc_jb', name: 'Johor Bahru', latitude: 1.4927, longitude: 103.7414 };
+  let s = { ...start(), locationPresets: [sg, jb] };
+  s = pick(usePreset(s, sg), 'muis');
+  s = pick(usePreset(s, jb), 'local_adhan');
+  s = usePreset(s, sg);
+  expect([s.dataProviderAuto, s.dataProvider]).toEqual([false, 'muis']);
+  s = usePreset(s, jb);
+  expect([s.dataProviderAuto, s.dataProvider]).toEqual([false, 'local_adhan']);
+  // MUIS picked for Johor Bahru: not Singapore — Automatic, which is JAKIM there.
+  s = pick(s, 'muis');
+  expect(s.dataProviderAuto).toBe(true);
+  expect(getEffectiveDataProvider(s.dataProviderAuto, s.dataProvider, jb, 'auto')).toBe('jakim');
+});
+
+it('a location not yet set — (0, 0) — does not turn a pin to Automatic', () => {
+  // The settings hold (0, 0) before a place is chosen, and while the
+  // location store cannot be read at launch: no country, so no verdict.
+  let s = usePreset(start(), rabat);
+  s = pick(s, 'habous');
+  expect(s.dataProviderAuto).toBe(false);
+  s = apply(s, { manualLatitude: 0, manualLongitude: 0 });
+  expect([s.dataProviderAuto, s.dataProvider]).toEqual([false, 'habous']);
+  s = apply(s, { manualLatitude: Number.NaN, manualLongitude: Number.NaN });
+  expect([s.dataProviderAuto, s.dataProvider]).toEqual([false, 'habous']);
+  // "My location" before the first fix.
+  let m = pick(start(), 'islamiska_forbundet');
+  m = apply(m, { lastFetchedLatitude: 0, lastFetchedLongitude: 0 });
+  expect([m.dataProviderAuto, m.dataProvider]).toEqual([false, 'islamiska_forbundet']);
+});
