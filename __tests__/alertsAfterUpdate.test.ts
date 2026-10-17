@@ -194,6 +194,13 @@ test('the Android side starts the task on an update, and index.js registers it',
     'utf8',
   );
   expect(manifest).toMatch(/android:name="\.AlertsResyncHeadlessService"/);
+  // Started with startService and never promoted: a foreground service
+  // type it never uses is a claim Play's review asks to justify.
+  expect(manifest).toMatch(
+    /android:name="\.AlertsResyncHeadlessService"\s*\n\s*android:exported="false" \/>/,
+  );
+  expect(receiver).not.toMatch(/startForegroundService\(\s*Intent\(context, AlertsResyncHeadlessService/);
+  expect(service).not.toMatch(/startForeground\(/);
   const index = fs.readFileSync(path.join(root, 'index.js'), 'utf8');
   expect(index).toMatch(
     /registerHeadlessTask\('AlertsResync', \(\) => alertsResyncTask\)/,
