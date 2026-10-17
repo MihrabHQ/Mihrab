@@ -109,6 +109,20 @@ type IndexFile = {
 
 export type NearestPlace = TablePlace & { distanceKm: number };
 
+/**
+ * A downloaded city file worth keeping: an object whose `days` is a plain
+ * object. `typeof null === 'object'`, so `"days": null` passed the old
+ * check, was stored, and then every read of the table threw on it until
+ * the server's next build; an array is no table of days either.
+ */
+export function isCityFile(x: unknown): x is CityFile {
+  if (!x || typeof x !== 'object' || Array.isArray(x)) return false;
+  const days = (x as { days?: unknown }).days;
+  if (!days || typeof days !== 'object' || Array.isArray(days)) return false;
+  const proto = Object.getPrototypeOf(days);
+  return proto === Object.prototype || proto === null;
+}
+
 export function nearestPlace(
   places: readonly TablePlace[],
   latitude: number,
@@ -195,18 +209,41 @@ export function createNationalTable(config: NationalTableConfig): NationalTable 
     const held = memLive.get(place.id)?.[dateKey];
     if (held) return held;
     if (Date.now() - (liveFailedAt.get(place.id) ?? 0) < LIVE_RETRY_MS) return undefined;
-    const days = await config.live(place).catch(() => null);
+    const days = await askLive(place);
     if (!days || !days[dateKey]) {
       liveFailedAt.set(place.id, Date.now());
       if (!days) return undefined;
     }
-    memLive.set(place.id, days);
-    try {
-      await AsyncStorage.setItem(`${liveKey}${place.id}`, JSON.stringify(days));
-    } catch {
-      // Kept for the session either way.
-    }
     return days[dateKey];
+  }
+
+  /**
+   * One request to the source's own API per place and year, however many
+   * days ask at once. Each answer is a whole year, and the cache fill asks
+   * four days at a time: every one of them missed the repo's copy in the
+   * same instant and fired its own full-year download.
+   */
+  const liveInFlight = new Map<string, Promise<Record<string, DatasetDayTuple> | null>>();
+  function askLive(place: NearestPlace): Promise<Record<string, DatasetDayTuple> | null> {
+    const key = `${place.id}:${new Date().getFullYear()}`;
+    const running = liveInFlight.get(key);
+    if (running) return running;
+    const p = (async () => {
+      const days = await config.live!(place).catch(() => null);
+      if (days) {
+        memLive.set(place.id, days);
+        try {
+          await AsyncStorage.setItem(`${liveKey}${place.id}`, JSON.stringify(days));
+        } catch {
+          // Kept for the session either way.
+        }
+      }
+      return days;
+    })().finally(() => {
+      liveInFlight.delete(key);
+    });
+    liveInFlight.set(key, p);
+    return p;
   }
 
   async function loadCachedCity(id: number): Promise<CityFile | null> {
@@ -214,8 +251,10 @@ export function createNationalTable(config: NationalTableConfig): NationalTable 
     try {
       const raw = await AsyncStorage.getItem(`${cachePrefix}${id}`);
       const parsed = raw ? (JSON.parse(raw) as CityFile) : null;
-      memCity.set(id, parsed);
-      return parsed;
+      // A file stored before its days were checked (`isCityFile`) is no copy.
+      const held = parsed && isCityFile(parsed) ? parsed : null;
+      memCity.set(id, held);
+      return held;
     } catch {
       memCity.set(id, null);
       return null;
@@ -268,8 +307,8 @@ export function createNationalTable(config: NationalTableConfig): NationalTable 
         { maxAttempts: 2, baseDelayMs: 800, timeoutMs: 9000 },
       );
       if (!res.ok) return;
-      const file = (await res.json()) as CityFile;
-      if (!file || typeof file.days !== 'object') return;
+      const file = (await res.json()) as unknown;
+      if (!isCityFile(file)) return;
       await AsyncStorage.setItem(`${cachePrefix}${id}`, JSON.stringify(file));
       memCity.set(id, file);
     } catch {
@@ -366,6 +405,7 @@ export function createNationalTable(config: NationalTableConfig): NationalTable 
       memCity.clear();
       memLive.clear();
       liveFailedAt.clear();
+      liveInFlight.clear();
       refreshInFlight.clear();
       nextIndexPollAt = 0;
       indexPollInFlight = null;
