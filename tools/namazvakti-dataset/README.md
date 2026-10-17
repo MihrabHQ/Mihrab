@@ -81,5 +81,12 @@ files that changed. A full pass is about five days of runs; a new year's
 release is created on 1 January, and until a city is in it the phone asks the
 site for that city.
 
-The site's file carries no year — it is always the current one — so a run
-stores what it reads as the current UTC year's.
+Each answer is filed under the year the file itself gives (`<!--2027-->`).
+From 1 December a run builds next year's release as well: the cities it
+lacks are asked first, and while the site still serves this year's file the
+run notices after a few answers and spends the rest of its budget on this
+year. The workflow checks every file of a release downloaded before a run
+(one that did not download is left alone, never rebuilt from a part of its
+cities), and after the upload that the release has every file the run's
+`index.json` counts (`years.ts verify`); one it still lacks is read again
+first by the next run.
