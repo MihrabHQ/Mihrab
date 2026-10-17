@@ -67,7 +67,8 @@ import MushafTextPageSurface, {
 } from '../../quran/MushafTextPageSurface';
 import { ActiveWordProbe } from '../../quran/audio/ActiveWordProbe';
 import { ayahLineIndex } from '../../quran/mushafFollowScroll';
-import { findPageForAyah } from '../../quran/pages';
+import { ayahCountForRiwayah, findPageForAyah } from '../../quran/pages';
+import { resolveRiwayah } from '../../quran/riwayat';
 import { SURAHS, type SurahIndex } from '../../quran/quran';
 import {
   isListening,
@@ -630,6 +631,11 @@ export function TilawahScreen() {
       s => s.number === (status.active?.surah ?? listened?.surah ?? 1),
     ) ?? SURAHS[0];
   const shownAyah = status.active?.ayah ?? listened?.ayah ?? 1;
+  // Counted as the queue counts: the reader's riwayah (issue #83).
+  const shownAyahCount = ayahCountForRiwayah(
+    resolveRiwayah(quran.prefs.riwayah),
+    shownSurah.number,
+  );
 
   const togglePlay = useCallback(() => {
     if (status.playing) {
@@ -691,7 +697,7 @@ export function TilawahScreen() {
     ? 0
     : Math.max(
         0,
-        Math.min(1, (shownAyah - 1 + ayahRatio) / shownSurah.ayahCount),
+        Math.min(1, (shownAyah - 1 + ayahRatio) / shownAyahCount),
       );
 
   const seekSurah = useCallback(
@@ -701,14 +707,11 @@ export function TilawahScreen() {
       // starting a listen does.
       const target = Math.max(
         1,
-        Math.min(
-          shownSurah.ayahCount,
-          Math.floor(ratio * shownSurah.ayahCount) + 1,
-        ),
+        Math.min(shownAyahCount, Math.floor(ratio * shownAyahCount) + 1),
       );
       void listenFrom(shownSurah.number, target);
     },
-    [shownSurah],
+    [shownSurah, shownAyahCount],
   );
 
   /**

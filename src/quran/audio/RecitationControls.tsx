@@ -10,6 +10,8 @@ import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import { findSurah } from '../quran';
+import { ayahCountForRiwayah } from '../pages';
+import { resolveRiwayah } from '../riwayat';
 import { surahName } from '../surahName';
 import { findReciter } from './reciters';
 import { ReciterPickerSheet } from './ReciterPickerSheet';
@@ -47,6 +49,9 @@ export function RecitationControls({ surahNumber, onStartPlayback }: Props) {
   const { palette } = useAppPalette();
   const { prefs } = useQuranState();
   const meta = findSurah(surahNumber);
+  // The range is typed in the reader's numbering — Warsh's al-Māʾidah runs
+  // to 122 — and the player turns it into files (issue #83).
+  const ayahs = ayahCountForRiwayah(resolveRiwayah(prefs.riwayah), surahNumber);
   const surahLabel = meta ? surahName(meta, i18n.language) : '';
 
   const [reciterPickerVisible, setReciterPickerVisible] = useState(false);
@@ -105,7 +110,7 @@ export function RecitationControls({ surahNumber, onStartPlayback }: Props) {
   const partial = status != null && status.have > 0 && status.missing.length > 0;
 
   const [fromText, setFromText] = useState('1');
-  const [toText, setToText] = useState(String(meta?.ayahCount ?? 1));
+  const [toText, setToText] = useState(String(ayahs));
 
   const refreshStatus = useRef<() => void>(() => undefined);
   useEffect(() => {
@@ -137,9 +142,9 @@ export function RecitationControls({ surahNumber, onStartPlayback }: Props) {
   }, [download.running]);
 
   useEffect(() => {
-    setToText(String(meta?.ayahCount ?? 1));
+    setToText(String(ayahs));
     setFromText('1');
-  }, [surahNumber, meta?.ayahCount]);
+  }, [surahNumber, ayahs]);
 
   /**
    * Download what is missing — which on a fresh surah is all of it, and
@@ -282,7 +287,7 @@ export function RecitationControls({ surahNumber, onStartPlayback }: Props) {
             compact
             glyph="▶"
             onPress={() => {
-              const max = meta?.ayahCount ?? 1;
+              const max = ayahs;
               const from = Math.max(1, Math.min(max, Number(fromText) || 1));
               const to = Math.max(from, Math.min(max, Number(toText) || max));
               onStartPlayback?.();

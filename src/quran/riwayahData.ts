@@ -91,7 +91,11 @@ export function hydrateRiwayahData(): Promise<void> {
       // `writeRiwayahDataset`. Treat it as absent rather than draw a
       // muṣḥaf nobody can account for.
       if (!provenance) continue;
-      pageCache.set(id, { pages: dataset.pages, surahs: dataset.surahs });
+      pageCache.set(id, {
+        pages: dataset.pages,
+        surahs: dataset.surahs,
+        ayahCounts: dataset.ayahCounts,
+      });
       textCache.set(id, dataset.text);
       provenanceCache.set(id, provenance);
     }
@@ -160,7 +164,11 @@ export async function installRiwayahDataset(
   from: string,
 ): Promise<RiwayahProvenance> {
   const provenance = await writeRiwayahDataset(id, dataset, from);
-  pageCache.set(id, { pages: dataset.pages, surahs: dataset.surahs });
+  pageCache.set(id, {
+    pages: dataset.pages,
+    surahs: dataset.surahs,
+    ayahCounts: dataset.ayahCounts,
+  });
   textCache.set(id, dataset.text);
   provenanceCache.set(id, provenance);
   publish();
@@ -209,7 +217,11 @@ export function _setRiwayahDataForTests(
   id: RiwayahId,
   dataset: RiwayahDataset,
 ): void {
-  pageCache.set(id, { pages: dataset.pages, surahs: dataset.surahs });
+  pageCache.set(id, {
+    pages: dataset.pages,
+    surahs: dataset.surahs,
+    ayahCounts: dataset.ayahCounts,
+  });
   textCache.set(id, dataset.text);
   provenanceCache.set(id, {
     from: 'test',

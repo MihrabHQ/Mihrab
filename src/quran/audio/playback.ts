@@ -25,6 +25,9 @@ import TrackPlayer, {
 } from 'react-native-track-player';
 import { findSurah, SURAHS } from '../quran';
 import { getQuranState } from '../quranState';
+import { ayahCountForRiwayah } from '../pages';
+import { DEFAULT_RIWAYAH, resolveRiwayah, type RiwayahId } from '../riwayat';
+import { filesOf } from '../riwayahAudio';
 import { ayahAudioUrl, findReciter } from './reciters';
 import { localAudioPathIfAny, prefetchAyahAudio } from './audioStore';
 import { setNowPlayingState } from '../../native/NowPlayingState';
@@ -280,7 +283,16 @@ async function ensureSetup(): Promise<void> {
     TrackPlayer.addEventListener(Event.PlaybackError, () => {
       const ref = getPlaybackStatus().active;
       if (!ref) return;
-      void localAudioPathIfAny(getPlaybackStatus().reciterId, ref.surah, ref.ayah)
+      // The FILE that failed, which is not the ayah's number in a riwayah
+      // that counts differently (riwayahAudio.ts).
+      void TrackPlayer.getActiveTrack()
+        .then(track =>
+          localAudioPathIfAny(
+            getPlaybackStatus().reciterId,
+            ref.surah,
+            fileAyahOf(track) ?? ref.ayah,
+          ),
+        )
         .then(local => {
           if (!local) setStatus({ gap: ref, playing: false, loading: false });
         })
@@ -328,10 +340,11 @@ async function prefetchUpcoming({ queue, idx }: QueueSnapshot): Promise<void> {
       }
       const ref = parseTrackId(String(tr.id));
       if (!ref) continue;
-      const key = `${reciterId}:${ref.surah}:${ref.ayah}`;
+      const file = fileAyahOf(tr) ?? ref.ayah;
+      const key = `${reciterId}:${ref.surah}:${file}`;
       if (inFlightPrefetch.has(key)) continue;
       inFlightPrefetch.add(key);
-      void prefetchAyahAudio(reciterId, ref.surah, ref.ayah)
+      void prefetchAyahAudio(reciterId, ref.surah, file)
         .then(async path => {
           inFlightPrefetch.delete(key);
           if (!path) return;
@@ -380,8 +393,35 @@ export function parseTrackId(id: string): AyahRef | null {
   return { surah: Number(m[1]), ayah: Number(m[2]) };
 }
 
+/**
+ * WHOSE NUMBERING THE QUEUE IS IN.
+ *
+ * The reader's: an ayah in the queue is the ayah lit on the page and the
+ * one the page turns to, so it is counted the way the muṣḥaf on screen
+ * counts. The recordings are cut by the Ḥafṣ count whatever the riwayah,
+ * and `buildTracks` turns each ayah into its files (`riwayahAudio.ts`,
+ * issue #83). Fixed when a queue is built, so a queue never changes
+ * numbering halfway through.
+ */
+let queueRiwayah: RiwayahId = DEFAULT_RIWAYAH;
+
+/** Ayahs in a surah, counted as the queue counts them. */
+function ayahsIn(surah: number, riwayah: RiwayahId = queueRiwayah): number {
+  return ayahCountForRiwayah(riwayah, surah);
+}
+
+/** The recording file a track plays, when it is not the ayah's own number. */
+function fileAyahOf(track: Track | null | undefined): number | undefined {
+  const n = (track as { fileAyah?: unknown } | null | undefined)?.fileAyah;
+  return typeof n === 'number' ? n : undefined;
+}
+
 /** Expand a contiguous ayah range into the ordered play list (no repeats). */
-export function expandRange(from: AyahRef, to: AyahRef): AyahRef[] {
+export function expandRange(
+  from: AyahRef,
+  to: AyahRef,
+  riwayah: RiwayahId = queueRiwayah,
+): AyahRef[] {
   const out: AyahRef[] = [];
   let s = from.surah;
   let a = from.ayah;
@@ -394,9 +434,8 @@ export function expandRange(from: AyahRef, to: AyahRef): AyahRef[] {
   for (;;) {
     out.push({ surah: s, ayah: a });
     if (s === end.surah && a === end.ayah) break;
-    const meta = findSurah(s);
-    if (!meta) break;
-    if (a < meta.ayahCount) {
+    if (!findSurah(s)) break;
+    if (a < ayahsIn(s, riwayah)) {
       a += 1;
     } else if (s < 114) {
       s += 1;
@@ -457,25 +496,42 @@ async function buildTracks(
   // the top-ups a continuous listen appends, or two ayahs share one id and
   // the active-track lookup starts answering with the wrong one.
   indexOffset = 0,
+  // The ayah queued just before `refs[0]`, when this is a top-up: it may
+  // already have played a file the first of these shares.
+  previous: AyahRef | null = null,
 ): Promise<Track[]> {
   const reciter = findReciter(reciterId);
-  // Resolve local paths once per unique ayah.
-  const localByKey = new Map<string, string | null>();
+  const riwayah = queueRiwayah;
+  // An ayah is one recording in Ḥafṣ and one, two, three — or, for the
+  // second half of a split, none of its own — in a riwayah that counts
+  // differently (`riwayahAudio.ts`). Each file is a track, and every track
+  // carries the AYAH in its id: that is what the page lights, while the
+  // file says what is heard.
+  const plan: Array<{ r: AyahRef; file: number }> = [];
+  let before = previous;
   for (const r of refs) {
-    const key = `${r.surah}:${r.ayah}`;
+    const afterPrevious =
+      before != null && before.surah === r.surah && before.ayah === r.ayah - 1;
+    for (const file of filesOf(riwayah, r.surah, r.ayah, afterPrevious)) {
+      plan.push({ r, file });
+    }
+    before = r;
+  }
+  // Resolve local paths once per unique file.
+  const localByKey = new Map<string, string | null>();
+  for (const { r, file } of plan) {
+    const key = `${r.surah}:${file}`;
     if (!localByKey.has(key)) {
-      localByKey.set(
-        key,
-        await localAudioPathIfAny(reciterId, r.surah, r.ayah),
-      );
+      localByKey.set(key, await localAudioPathIfAny(reciterId, r.surah, file));
     }
   }
-  return refs.map((r, i) => {
-    const local = localByKey.get(`${r.surah}:${r.ayah}`);
+  return plan.map(({ r, file }, i) => {
+    const local = localByKey.get(`${r.surah}:${file}`);
     const meta = findSurah(r.surah);
     return {
       id: trackId(r.surah, r.ayah, indexOffset + i),
-      url: local ? `file://${local}` : ayahAudioUrl(reciter, r.surah, r.ayah),
+      url: local ? `file://${local}` : ayahAudioUrl(reciter, r.surah, file),
+      fileAyah: file,
       /**
        * THE SURAH, AND HOW FAR INTO IT — because the bar cannot say so.
        *
@@ -491,7 +547,7 @@ async function buildTracks(
        * like it is answering and is not.
        */
       title: meta
-        ? `${meta.romanized} · ${r.ayah} / ${meta.ayahCount}`
+        ? `${meta.romanized} · ${r.ayah} / ${ayahsIn(r.surah, riwayah)}`
         : `${r.surah}:${r.ayah}`,
       artist: reciter.name,
       // The surah on its own, for the surfaces that show an album line.
@@ -524,10 +580,12 @@ let listenCursor: AyahRef | null = null;
 let listenIndex = 0;
 
 /** The ayah after this one, or null at 114:6. */
-export function nextAyahRef(ref: AyahRef): AyahRef | null {
-  const meta = findSurah(ref.surah);
-  if (!meta) return null;
-  if (ref.ayah < meta.ayahCount) return { surah: ref.surah, ayah: ref.ayah + 1 };
+export function nextAyahRef(
+  ref: AyahRef,
+  riwayah: RiwayahId = queueRiwayah,
+): AyahRef | null {
+  if (!findSurah(ref.surah)) return null;
+  if (ref.ayah < ayahsIn(ref.surah, riwayah)) return { surah: ref.surah, ayah: ref.ayah + 1 };
   if (ref.surah >= 114) return null;
   return { surah: ref.surah + 1, ayah: 1 };
 }
@@ -616,8 +674,8 @@ async function reshapeListenTail(): Promise<void> {
     if (!listening || !listenCursor) return;
     const { refs, cursor } = listenWindow(listenCursor, LISTEN_WINDOW, nextListenRef);
     listenCursor = cursor;
-    const tracks = await buildTracks(refs, status.reciterId, listenIndex);
-    listenIndex += refs.length;
+    const tracks = await buildTracks(refs, status.reciterId, listenIndex, lastKept);
+    listenIndex += tracks.length;
     await TrackPlayer.add(tracks);
   } catch {
     // Best effort: the queue that was there keeps playing, and the next
@@ -637,9 +695,8 @@ export function _resetShuffleForTests(): void {
 
 /** The step the listening queue walks with — sequential, or shuffled. */
 function nextListenRef(ref: AyahRef): AyahRef | null {
-  const meta = findSurah(ref.surah);
-  if (!meta) return null;
-  if (ref.ayah < meta.ayahCount) return { surah: ref.surah, ayah: ref.ayah + 1 };
+  if (!findSurah(ref.surah)) return null;
+  if (ref.ayah < ayahsIn(ref.surah)) return { surah: ref.surah, ayah: ref.ayah + 1 };
   if (!shuffle) return nextAyahRef(ref);
   return { surah: pickNextSurah(ref.surah), ayah: 1 };
 }
@@ -685,8 +742,9 @@ async function extendListening({ queue, idx }: QueueSnapshot): Promise<void> {
     // changes in quick succession would otherwise both queue the same
     // window and play every ayah twice.
     listenCursor = cursor;
-    const tracks = await buildTracks(refs, status.reciterId, listenIndex);
-    listenIndex += refs.length;
+    const lastQueued = parseTrackId(String(queue[queue.length - 1]?.id ?? ''));
+    const tracks = await buildTracks(refs, status.reciterId, listenIndex, lastQueued);
+    listenIndex += tracks.length;
     await TrackPlayer.add(tracks);
   } catch {
     // A top-up that fails leaves what is queued playing. The next track
@@ -701,11 +759,11 @@ async function extendListening({ queue, idx }: QueueSnapshot): Promise<void> {
  * here" listening flow). Repeat settings apply only via `playRange`.
  */
 export async function playFromAyah(surah: number, ayah: number): Promise<void> {
-  const meta = findSurah(surah);
-  if (!meta) return;
+  if (!findSurah(surah)) return;
+  const riwayah = resolveRiwayah(getQuranState().prefs.riwayah);
   await playRange(
     { surah, ayah },
-    { surah, ayah: meta.ayahCount },
+    { surah, ayah: ayahsIn(surah, riwayah) },
     { useRepeats: false },
   );
 }
@@ -721,6 +779,7 @@ export async function playRange(
   // be true of one queue, and the one the user just asked for wins.
   endListening();
   const prefs = getQuranState().prefs;
+  queueRiwayah = resolveRiwayah(prefs.riwayah);
   setStatus({ reciterId: prefs.reciterId, loading: true, gap: null });
   let refs = expandRange(from, to);
   if (opts.useRepeats !== false) {
@@ -760,12 +819,12 @@ export async function listenFrom(
   surah: number,
   ayah: number = 1,
 ): Promise<void> {
-  const meta = findSurah(surah);
-  if (!meta) return;
+  if (!findSurah(surah)) return;
   await ensureSetup();
   const prefs = getQuranState().prefs;
+  queueRiwayah = resolveRiwayah(prefs.riwayah);
   setStatus({ reciterId: prefs.reciterId, loading: true, gap: null });
-  const start = { surah, ayah: Math.max(1, Math.min(meta.ayahCount, ayah)) };
+  const start = { surah, ayah: Math.max(1, Math.min(ayahsIn(surah), ayah)) };
   // The preference is the record; the screen pushes it on mount, but a
   // listen started from the notification or a widget may never have had
   // the screen open. Read it here so the first window is already shaped.
@@ -781,7 +840,7 @@ export async function listenFrom(
   // reset.
   listening = true;
   listenCursor = cursor;
-  listenIndex = refs.length;
+  listenIndex = tracks.length;
   recordListened(start, prefs.reciterId);
   setStatus({ active: start, playing: true });
 }
@@ -842,14 +901,50 @@ export async function seekTo(seconds: number): Promise<void> {
   await TrackPlayer.seekTo(Math.max(0, seconds));
 }
 
+/**
+ * The ayah buttons step by AYAH, which is not always by track: an ayah
+ * the Madani count makes of two Ḥafṣ ayahs is two files in a row
+ * (`buildTracks`), and "next" from its first half means the ayah after
+ * it, not its second half. A track continues the one before it when both
+ * are the same ayah and its file is the next one up; a repeat of the
+ * ayah starts again from its first file, and so starts a new step.
+ */
+function continuesPrevious(queue: Track[], i: number): boolean {
+  if (i <= 0) return false;
+  const a = parseTrackId(String(queue[i - 1]?.id ?? ''));
+  const b = parseTrackId(String(queue[i]?.id ?? ''));
+  if (!a || !b || a.surah !== b.surah || a.ayah !== b.ayah) return false;
+  const fa = fileAyahOf(queue[i - 1]);
+  const fb = fileAyahOf(queue[i]);
+  return fa != null && fb != null && fb === fa + 1;
+}
+
+/** The first track of the ayah the track at `idx` belongs to. */
+function stepStart(queue: Track[], idx: number): number {
+  let i = idx;
+  while (continuesPrevious(queue, i)) i--;
+  return i;
+}
+
 export async function skipToNextAyah(): Promise<void> {
   await ensureSetup();
-  await TrackPlayer.skipToNext().catch(() => undefined /* end of queue */);
+  const snap = await snapshotQueue();
+  if (!snap) return;
+  const { queue, idx } = snap;
+  let i = idx + 1;
+  while (i < queue.length && continuesPrevious(queue, i)) i++;
+  if (i >= queue.length) return; // end of queue
+  await TrackPlayer.skip(i).catch(() => undefined);
 }
 
 export async function skipToPreviousAyah(): Promise<void> {
   await ensureSetup();
-  await TrackPlayer.skipToPrevious().catch(() => undefined);
+  const snap = await snapshotQueue();
+  if (!snap) return;
+  const { queue, idx } = snap;
+  const here = stepStart(queue, idx);
+  if (here === 0) return;
+  await TrackPlayer.skip(stepStart(queue, here - 1)).catch(() => undefined);
 }
 
 export async function setPlaybackRate(rate: number): Promise<void> {
