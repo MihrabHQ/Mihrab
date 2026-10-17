@@ -21,7 +21,7 @@ import type { PrayerDataProviderId } from '../settings/types';
 import { createNationalTable, type NationalTable, type NationalTableSeed, type NearestPlace, type TablePlace } from './nationalTable';
 import type { PrayerTimesResult } from './types';
 import { computeLocalAdhanTimes } from './localAdhan';
-import { indonesiaClock } from './locationClock';
+import { indonesiaClock, type PlaceClock } from './locationClock';
 import { fetchJakimLive, fetchMuisLive, jakimZoneCode } from './nationalLive';
 import kemenagPoints from './data/kemenagMethodPoints.json';
 
@@ -44,6 +44,13 @@ function placesOf(load: () => unknown): TablePlace[] {
   }
 }
 
+/**
+ * The clock each table prints on — Sabah and Sarawak keep Kuala Lumpur's
+ * (Asia/Kuching is the same UTC+8, with no summer time).
+ */
+export const MUIS_CLOCK: PlaceClock = { zone: 'Asia/Singapore' };
+export const JAKIM_CLOCK: PlaceClock = { zone: 'Asia/Kuala_Lumpur' };
+
 /** Singapore: the island and its islets, nothing further. */
 export const muisTable = createNationalTable({
   id: 'muis',
@@ -58,7 +65,15 @@ export const muisTable = createNationalTable({
   // A day the repo's copy lacks: MUIS's own table on data.gov.sg, then MUIS's method.
   live: () => fetchMuisLive(),
   calculate: (place, date) => ({
-    ...computeLocalAdhanTimes({ latitude: place.lat, longitude: place.lon, date, calculationMethod: 11, school: 0 }),
+    ...computeLocalAdhanTimes({
+      latitude: place.lat,
+      longitude: place.lon,
+      date,
+      calculationMethod: 11,
+      school: 0,
+      // on Singapore's clock, as the table's own days are
+      placeClock: MUIS_CLOCK,
+    }),
     source: 'local',
   }),
 });
@@ -94,6 +109,8 @@ export const jakimTable = createNationalTable({
       date,
       calculationMethod: 17,
       school: 0,
+      // on Malaysia's clock, as the table's own days are
+      placeClock: JAKIM_CLOCK,
     }),
     source: 'local',
   }),

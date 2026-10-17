@@ -23,10 +23,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { httpUserAgent } from '../config/httpIdentity';
 import { recordServerIndex, type ServerDatasetId, type ServerStatus } from '../prayer/dataStatus';
 import { distanceKm } from '../utils/coords';
-import { formatLocalDate } from '../utils/date';
 import { fetchWithRetry } from '../utils/fetchWithRetry';
 import type { DatasetDayTuple } from './datasetTuple';
 import { ProviderError } from './errors';
+import { placeCivilDay } from './locationClock';
 import { tupleToTimings } from './datasetTuple';
 import type { DataSource, PrayerTimesResult } from './types';
 
@@ -360,7 +360,12 @@ export function createNationalTable(config: NationalTableConfig): NationalTable 
         );
       }
       if (config.calculate && servesCalculation) return config.calculate(near, params.date);
-      const dateKey = formatLocalDate(params.date);
+      // The place's own day for the phone's: the row the readers take the
+      // day's times from (`utils/prayerTimes.ts`, the zone's date at the
+      // phone's noon) and the day the method is computed for past the
+      // window — the phone's date unless the date line is between them.
+      const pd = placeCivilDay(params.date, { zone: config.timezone });
+      const dateKey = `${pd.y}-${String(pd.m + 1).padStart(2, '0')}-${String(pd.d).padStart(2, '0')}`;
       const cached = await loadCachedCity(near.id);
       void maybeRefresh(near.id, cached);
       const fromCache = cached?.days[dateKey];

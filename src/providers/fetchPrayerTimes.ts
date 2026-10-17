@@ -9,9 +9,14 @@ import {
   namazvaktiCityPoint,
   nearestNamazvaktiCity,
 } from './namazvakti';
-import { kemenagTimesNear, nationalTableFor } from './nationalTables';
+import {
+  JAKIM_CLOCK,
+  kemenagTimesNear,
+  MUIS_CLOCK,
+  nationalTableFor,
+} from './nationalTables';
 import { computeLocalAdhanTimes } from './localAdhan';
-import { MOROCCO_CLOCK, SWEDEN_CLOCK } from './locationClock';
+import { indonesiaClock, MOROCCO_CLOCK, SWEDEN_CLOCK } from './locationClock';
 import { DEVICE_CLOCK } from '../utils/prayerTimes';
 import { computeDiyanetTimes, DIYANET_METHOD_ID } from './diyanetMethod';
 import { autoMethodForCoords } from './autoMethod';
@@ -388,6 +393,14 @@ export async function fetchPrayerTimesUnified(
           horizonMin: place?.horizonMin,
           // A JAKIM zone's times are the zone's (`malaysiaMethod.ts`).
           jakimZone: p.provider === 'jakim' && place ? place.id : undefined,
+          // A listed place's day on its own clock, as its table prints it.
+          placeClock: !place
+            ? undefined
+            : p.provider === 'muis'
+            ? MUIS_CLOCK
+            : p.provider === 'jakim'
+            ? JAKIM_CLOCK
+            : indonesiaClock(place.nameEn),
           date: p.date,
           calculationMethod:
             p.provider === 'muis' ? 11 : p.provider === 'jakim' ? 17 : 20,
