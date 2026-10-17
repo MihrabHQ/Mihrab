@@ -7,6 +7,7 @@ import fs from 'fs';
 import path from 'path';
 import zlib from 'zlib';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { deviceZone } from '../src/utils/zoneClock';
 
 jest.unmock('adhan');
 jest.mock('../src/utils/fetchWithRetry', () => ({
@@ -337,8 +338,14 @@ describe('the storage chain when the network answers garbage', () => {
         net.mode = mode;
         answers.push(await getOrFetchPrayerDay(params));
       }
-      expect(answers[1]).toEqual(answers[0]);
-      expect(answers[2]).toEqual(answers[0]);
+      // A day written on the phone's clock is kept under the zone the
+      // phone is in (prayerStorage `keptClock`); the two names are one clock.
+      const named = (a: (typeof answers)[number]) => ({
+        ...a,
+        clock: a.clock === 'device' ? (deviceZone() ?? 'device') : a.clock,
+      });
+      expect(named(answers[1])).toEqual(named(answers[0]));
+      expect(named(answers[2])).toEqual(named(answers[0]));
     },
   );
 

@@ -18,6 +18,8 @@ jest.mock('../../src/native/AppVersion', () => ({
 }));
 jest.mock('../../src/notifications/prayerNotifications', () => ({
   syncPrayerNotifications: jest.fn(async () => ({ status: 'scheduled' })),
+  // No other alert write is asked for during these scenarios.
+  prayerSyncsAsked: jest.fn(() => 0),
 }));
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
