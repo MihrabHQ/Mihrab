@@ -119,6 +119,20 @@ function coerceHexColor(value: unknown, fallback: string): string {
 }
 
 /** Snapped to the stepper's rungs and clamped to its ends. */
+/** The id PrayTimes.dev was stored under, before it was removed in 2.32.0. */
+const REMOVED_PRAYTIMES_DEV = 'prayertimes_dev';
+
+/** A location-providers map with one source id renamed, choices kept. */
+function renameProvider(value: unknown, from: string, to: string): unknown {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return value;
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
+    const c = v as { provider?: unknown } | null;
+    out[k] = c && typeof c === 'object' && c.provider === from ? { ...c, provider: to } : v;
+  }
+  return out;
+}
+
 export function coerceWidgetTimeScale(value: unknown): number {
   if (typeof value !== 'number' || !Number.isFinite(value)) {
     return DEFAULT_SETTINGS.androidWidgetTimeScale;
@@ -285,6 +299,15 @@ async function loadSettingsUncached(): Promise<PrayerAppSettings> {
   }
   if (!('dataProviderAuto' in parsed)) {
     merged.dataProviderAuto = false;
+  }
+  // PrayTimes.dev is gone (2.32.0), and had been answering 404 for a while
+  // before that: its users were getting their own method and Asr computed
+  // on the phone, by the fallback under every source. The on-device source
+  // IS that, so they keep exactly the times they had. Sending them to
+  // Automatic instead handed a Stockholm user Islamiska Förbundet's method
+  // with the Hanafi Asr they had chosen set aside.
+  if ((merged.dataProvider as string) === REMOVED_PRAYTIMES_DEV) {
+    merged.dataProvider = 'local_adhan';
   }
   // A source this build does not know — picked in a newer build and brought
   // here by sync or a backup — would fall to the on-device rung on every
@@ -485,7 +508,10 @@ async function loadSettingsUncached(): Promise<PrayerAppSettings> {
   }
   // Each location's own prayer-time source; settings from before it get
   // every location seeded with the one choice they shared.
-  merged.locationProviders = coerceLocationProviders(merged.locationProviders, PRAYER_DATA_PROVIDER_IDS);
+  merged.locationProviders = coerceLocationProviders(
+    renameProvider(merged.locationProviders, REMOVED_PRAYTIMES_DEV, 'local_adhan'),
+    PRAYER_DATA_PROVIDER_IDS,
+  );
   Object.assign(merged, seedLocationProviders(merged));
   // Saved accent colours: absent on every blob written before they
   // existed, so an upgrade lands on an empty shelf rather than on
