@@ -211,7 +211,10 @@ export function MonthTimesScreen() {
    */
   const nightRows = useMemo(() => {
     if (!rows) return rows;
-    let times = injectNightTimes(rows.map(r => r.timings));
+    let times = injectNightTimes(
+      rows.map(r => r.timings),
+      rows[0]?.date,
+    );
     // The Mālikī second times, over the same consecutive run — issue #19.
     // A month IS the window `injectDaruriTimes` wants, and the table is
     // where a reader browses a week and can see what the boundaries do

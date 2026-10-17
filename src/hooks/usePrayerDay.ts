@@ -281,7 +281,10 @@ export function buildProvisionalWeek(params: {
     }
   }
   if (week.length === 0) return null;
-  return injectNightTimes(applyOffsetsToWeek(week, params.prayerOffsets));
+  return injectNightTimes(
+    applyOffsetsToWeek(week, params.prayerOffsets),
+    params.now,
+  );
 }
 
 /** Gate key for the foreground refresh. */
@@ -507,6 +510,8 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
         // Last Third) from the adjusted Maghrib/Fajr so they track any nudge.
         const offsettedWeek = injectNightTimes(
           applyOffsetsToWeek(weekTimings, settings.prayerOffsets),
+          now,
+          clock,
         );
 
         // Whether the local cache needs a background fill — asked above, in
@@ -578,6 +583,8 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
                     weekTimings.concat(widgetExtra),
                     settings.prayerOffsets,
                   ),
+                  now,
+                  clock,
                 )
               : offsettedWeek;
 
@@ -615,6 +622,8 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
                   pastRaw.slice().reverse().concat(weekTimings[0]),
                   settings.prayerOffsets,
                 ),
+                addDays(now, -pastRaw.length),
+                clock,
               )
                 .slice(0, pastRaw.length)
                 .reverse()
@@ -738,6 +747,7 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
               localPast.concat(localWeek),
               settings.prayerOffsets,
             ),
+            addDays(now, -localPast.length),
           );
           const offsettedLocalPast = offsettedLocalSpan
             .slice(0, localPast.length)

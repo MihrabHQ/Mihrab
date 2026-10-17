@@ -100,6 +100,7 @@ export async function resyncPrayerAlertsFromStorage(
   // Unfiltered: Fajr ends at sunrise whether or not its row is shown.
   const windowWeek = injectNightTimes(
     raw.map(day => applyOffsets(day, settings.prayerOffsets)),
+    now,
   );
   const week = windowWeek.map(day =>
     filterOptionalTimes(day, {

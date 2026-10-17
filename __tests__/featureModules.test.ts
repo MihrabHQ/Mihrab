@@ -151,6 +151,18 @@ describe('ramadan countdown', () => {
     expect(event?.at.getDate()).toBe(10);
   });
 
+  test('an Imsak printed after Maghrib is the evening before', () => {
+    // Fajr just past midnight: Imsak 23:55 belongs to the night before.
+    const north = { ...TODAY, Imsak: '23:55', Fajr: '00:05', Maghrib: '22:30' };
+    const noon = getNextRamadanEvent(north, north, new Date(2026, 3, 9, 12, 0));
+    expect(noon?.type).toBe('iftar');
+    expect(noon?.at.getHours()).toBe(22);
+    const night = getNextRamadanEvent(north, north, new Date(2026, 3, 9, 23, 0));
+    expect(night?.type).toBe('suhoor');
+    expect(night?.at.getDate()).toBe(9);
+    expect(night?.at.getHours()).toBe(23);
+  });
+
   test('returns null when imsak missing', () => {
     expect(getNextRamadanEvent({ ...TODAY, Imsak: undefined as unknown as string }, undefined, new Date())).toBeNull();
   });

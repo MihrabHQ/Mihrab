@@ -45,6 +45,18 @@ describe('ishaTriggerAt', () => {
     expect(at!.getMinutes()).toBe(5);
   });
 
+  it('reads an Isha printed past midnight on the evening it belongs to', () => {
+    // Isha 00:20 on 2 Aug's row is the night of the 2nd: the prompt for the
+    // 2nd lands at 00:30 on the 3rd, not at 00:30 on the 2nd, before Fajr.
+    const at = ishaTriggerAt(day, {
+      Maghrib: '22:05',
+      Isha: '00:20',
+    } as TimingsMap);
+    expect(at!.getDate()).toBe(3);
+    expect(at!.getHours()).toBe(0);
+    expect(at!.getMinutes()).toBe(30);
+  });
+
   it('ignores a timezone suffix, which the API sometimes appends', () => {
     const at = ishaTriggerAt(day, { Isha: '22:39 (CEST)' } as TimingsMap);
     expect(at!.getHours()).toBe(22);

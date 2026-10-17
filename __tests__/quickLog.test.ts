@@ -59,6 +59,20 @@ describe('the window', () => {
     expect(quickLogStatus('Isha', day, oneAm, tomorrow)).toBeNull();
   });
 
+  it('reads an Isha printed past midnight on the evening it belongs to', () => {
+    // Stockholm in June: Isha 00:47 on the 8th's card is the night of the 8th.
+    const june = { ...day, Maghrib: '22:05', Isha: '00:47' };
+    const tomorrow = { ...june, Fajr: '02:29' };
+    // 22:30 on the 8th: Maghrib's window is open, Isha has not come.
+    expect(quickLogPhase('Isha', june, at('22:30'), tomorrow)).toBe('not-yet');
+    expect(quickLogPhase('Maghrib', june, at('22:30'), tomorrow)).toBe('in-window');
+    // 00:50 on the 9th, still the 8th's card: Isha is in, Maghrib is over.
+    const after = new Date(2026, 8, 9, 0, 50);
+    const card = new Date(2026, 8, 8);
+    expect(quickLogPhase('Isha', june, after, tomorrow, card)).toBe('in-window');
+    expect(quickLogPhase('Maghrib', june, after, tomorrow, card)).toBe('after-window');
+  });
+
   it('treats a window the data puts before its own start as open', () => {
     const odd = { ...day, Sunrise: '04:00' }; // sunrise before Fajr: broken feed / polar
     expect(quickLogStatus('Fajr', odd, at('05:00'))).toBe('on-time');

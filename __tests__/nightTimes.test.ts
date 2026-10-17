@@ -4,6 +4,7 @@ import {
   filterOptionalTimes,
 } from '../src/utils/nightTimes';
 import type { TimingsMap } from '../src/types/prayer';
+import { combineLocalDateAndTime, eventAt } from '../src/utils/prayerTimes';
 
 describe('clockNightTimes (Maghrib → Fajr, classical basis)', () => {
   it('computes the midpoint and last-third for a normal night', () => {
@@ -64,6 +65,78 @@ describe('injectNightTimes', () => {
     const snapshot = JSON.stringify(week);
     injectNightTimes(week);
     expect(JSON.stringify(week)).toBe(snapshot);
+  });
+});
+
+/**
+ * With the week's date the night is measured between instants, on the
+ * week's clock, and each mark is the one that falls on its row's date.
+ */
+describe('injectNightTimes across a clock change', () => {
+  const minutesOff = (a: Date, b: number) => Math.abs(a.getTime() - b) / 60_000;
+  const markOf = (
+    clock: string,
+    eveningDate: Date,
+    maghrib: string,
+    morningDate: Date,
+    fajr: string,
+    fraction: number,
+  ) => {
+    const m = combineLocalDateAndTime(eveningDate, maghrib, clock).getTime();
+    const f = combineLocalDateAndTime(morningDate, fajr, clock).getTime();
+    return m + (f - m) * fraction;
+  };
+
+  it('the night the clocks go back (Stockholm, 25 October 2026)', () => {
+    const clock = 'Europe/Stockholm';
+    const d = (n: number) => new Date(2026, 9, n);
+    const week = [
+      { Fajr: '05:40', Maghrib: '17:40' },
+      { Fajr: '04:42', Maghrib: '16:37' },
+      { Fajr: '04:44', Maghrib: '16:35' },
+    ];
+    const out = injectNightTimes(week, d(24), clock);
+    // The night 24→25 is 12h02, not the 11h02 the clock faces show: its
+    // last third and the first third of the 24th were 40 and 20 min early.
+    const last = markOf(clock, d(24), '17:40', d(25), '04:42', 2 / 3);
+    expect(
+      minutesOff(eventAt('Lastthird', out[1], d(25), clock), last),
+    ).toBeLessThan(1);
+    const first = markOf(clock, d(24), '17:40', d(25), '04:42', 1 / 3);
+    expect(
+      minutesOff(eventAt('Firstthird', out[0], d(24), clock), first),
+    ).toBeLessThan(1);
+    // Midnight on the 25th's row falls in an evening, so it is tonight's
+    // (25→26), as every reader puts it — not last night's an hour off.
+    const mid = markOf(clock, d(25), '16:37', d(26), '04:44', 1 / 2);
+    expect(
+      minutesOff(eventAt('Midnight', out[1], d(25), clock), mid),
+    ).toBeLessThan(1);
+  });
+
+  it('the night the clocks go forward (New York, 8 March 2026)', () => {
+    const clock = 'America/New_York';
+    const d = (n: number) => new Date(2026, 2, n);
+    const week = [
+      { Fajr: '05:35', Maghrib: '17:55' },
+      { Fajr: '06:33', Maghrib: '19:56' },
+    ];
+    const out = injectNightTimes(week, d(7), clock);
+    const last = markOf(clock, d(7), '17:55', d(8), '06:33', 2 / 3);
+    expect(
+      minutesOff(eventAt('Lastthird', out[1], d(8), clock), last),
+    ).toBeLessThan(1);
+  });
+
+  it('on an ordinary night writes what the clock faces do, to the minute', () => {
+    const week = [
+      { Fajr: '03:00', Maghrib: '22:00' },
+      { Fajr: '03:02', Maghrib: '22:02' },
+      { Fajr: '03:04', Maghrib: '22:04' },
+    ];
+    const byFace = injectNightTimes(week);
+    const byInstant = injectNightTimes(week, new Date(2026, 5, 10));
+    expect(byInstant[1]).toEqual(byFace[1]);
   });
 });
 

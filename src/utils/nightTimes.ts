@@ -1,5 +1,12 @@
 import type { TimingsMap } from '../types/prayer';
-import { extractClock } from './prayerTimes';
+import {
+  addDays,
+  combineLocalDateAndTime,
+  extractClock,
+  formatLocalTime,
+  startOfLocalDay,
+  wallClockDate,
+} from './prayerTimes';
 
 /**
  * Derived "night" times — the end of the First Third, Islamic Midnight and
@@ -84,13 +91,35 @@ export function clockNightTimes(
  *
  * Pure: returns a new array with new day objects; never mutates the input.
  */
-export function injectNightTimes(week: TimingsMap[]): TimingsMap[] {
+export function injectNightTimes(
+  week: TimingsMap[],
+  /**
+   * The date of `week[0]`, and the clock the week is written on
+   * (`DEVICE_CLOCK`). With a date the night is measured between instants
+   * rather than clock faces — see `instantNightTimes` — and without one
+   * (a month sheet) on the clock faces, as before.
+   */
+  base?: Date,
+  clock?: string | null,
+): TimingsMap[] {
   return week.map((day, i) => {
     const prevMaghrib = i > 0 ? week[i - 1].Maghrib : day.Maghrib;
     const nextFajr = i < week.length - 1 ? week[i + 1].Fajr : day.Fajr;
     const fajr = day.Fajr;
     if (!prevMaghrib || !fajr) return day;
     try {
+      if (base) {
+        return {
+          ...day,
+          ...instantNightTimes(
+            addDays(startOfLocalDay(base), i),
+            prevMaghrib,
+            day,
+            nextFajr,
+            clock,
+          ),
+        };
+      }
       const { Midnight, Lastthird } = clockNightTimes(prevMaghrib, fajr);
       const out: TimingsMap = { ...day, Midnight, Lastthird };
       if (day.Maghrib && nextFajr) {
@@ -102,6 +131,80 @@ export function injectNightTimes(week: TimingsMap[]): TimingsMap[] {
       return day;
     }
   });
+}
+
+/**
+ * The end of the first third of the night that begins on `date` — Maghrib
+ * then to the next Fajr — measured between instants on `clock` as
+ * `injectNightTimes` does with a date, so the Mālikī Ishāʾ boundary stays
+ * the very instant of the `Firstthird` row (`daruriTimes.ts`).
+ */
+export function firstThirdOn(
+  date: Date,
+  maghrib: string,
+  nextFajr: string,
+  clock?: string | null,
+): string {
+  const day = startOfLocalDay(date);
+  return instantNightTimes(
+    day,
+    maghrib,
+    { Fajr: nextFajr, Maghrib: maghrib },
+    nextFajr,
+    clock,
+  ).Firstthird;
+}
+
+/**
+ * The night marks of the day `date`, measured between INSTANTS.
+ *
+ * On clock faces the night the clocks go back (Stockholm, 24→25 October) is
+ * an hour shorter than it is, and the night they go forward an hour longer:
+ * the Last Third came forty minutes early, the First Third twenty. Here the
+ * night is Maghrib's instant to Fajr's, the mark an instant between them,
+ * written back on the day's clock.
+ *
+ * And each mark is the one that falls on this date, which is the date every
+ * reader puts it on (`eventAt`): Midnight of the night that ends this
+ * morning is often still yesterday evening (23:40), and read on this date it
+ * named tonight's. Measured from yesterday, that is a minute off on most
+ * days and an hour on the night the clocks change, so where it falls before
+ * this date's midnight, tonight's own mark is written instead.
+ */
+function instantNightTimes(
+  date: Date,
+  prevMaghrib: string,
+  day: TimingsMap,
+  nextFajr: string | undefined,
+  clock?: string | null,
+): TimingsMap {
+  const nightOf = (eveningDate: Date, maghrib: string, fajr: string) => {
+    const m = combineLocalDateAndTime(eveningDate, maghrib, clock).getTime();
+    // Fajr is the morning after, as on the clock faces (`clockNightTimes`).
+    const nextMorning = toMinutes(fajr) <= toMinutes(maghrib);
+    const f = combineLocalDateAndTime(
+      nextMorning ? addDays(eveningDate, 1) : eveningDate,
+      fajr,
+      clock,
+    ).getTime();
+    return (fraction: number) =>
+      new Date(Math.round((m + (f - m) * fraction) / 60_000) * 60_000);
+  };
+  const write = (at: Date) => formatLocalTime(wallClockDate(at, clock));
+  const dayStart = combineLocalDateAndTime(date, '00:00', clock).getTime();
+  const ending = nightOf(addDays(date, -1), prevMaghrib, day.Fajr);
+  const beginning =
+    day.Maghrib && nextFajr ? nightOf(date, day.Maghrib, nextFajr) : null;
+  const onThisDate = (fraction: number) => {
+    const at = ending(fraction);
+    return at.getTime() < dayStart && beginning ? beginning(fraction) : at;
+  };
+  const out: TimingsMap = {
+    Midnight: write(onThisDate(1 / 2)),
+    Lastthird: write(onThisDate(2 / 3)),
+  };
+  if (beginning) out.Firstthird = write(beginning(1 / 3));
+  return out;
 }
 
 /** Which of the optional non-prayer entries are currently enabled. */

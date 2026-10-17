@@ -250,6 +250,7 @@ export async function republishWidgetPayload(
     // once, in this order, before anything is sliced off it.
     const window = injectNightTimes(
       raw.map(day => applyOffsets(day, settings.prayerOffsets)),
+      now,
     );
     const optional = {
       // Sunrise is not optional on a widget: a table with a gap where it

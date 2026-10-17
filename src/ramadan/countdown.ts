@@ -24,6 +24,19 @@ export type RamadanCountdownEvent = {
 };
 
 /**
+ * When a day's fast begins. An Imsak printed after the day's Maghrib — Fajr
+ * just past midnight at a high latitude, which `validateTimings` accepts —
+ * is the evening BEFORE: read on the day itself it was a suhoor cutoff still
+ * ahead all afternoon, and the card counted down to it instead of to iftar.
+ */
+function imsakOn(day: Date, imsak: string, maghrib: string): Date {
+  const at = combineLocalDateAndTime(day, imsak);
+  return at > combineLocalDateAndTime(day, maghrib)
+    ? combineLocalDateAndTime(addDays(day, -1), imsak)
+    : at;
+}
+
+/**
  * Compute the next Suhoor / Iftar moment from today and (optionally)
  * tomorrow's prayer times.
  *
@@ -40,7 +53,7 @@ export function getNextRamadanEvent(
   if (!imsakStr || !maghribStr) return null;
 
   const dayStart = startOfLocalDay(now);
-  const imsakAt = combineLocalDateAndTime(dayStart, imsakStr);
+  const imsakAt = imsakOn(dayStart, imsakStr, maghribStr);
   const maghribAt = combineLocalDateAndTime(dayStart, maghribStr);
 
   if (now < imsakAt) {
@@ -57,6 +70,6 @@ export function getNextRamadanEvent(
   const tomorrowDay = addDays(dayStart, 1);
   return {
     type: 'suhoor',
-    at: combineLocalDateAndTime(tomorrowDay, tomorrowImsak),
+    at: imsakOn(tomorrowDay, tomorrowImsak, tomorrow?.Maghrib ?? maghribStr),
   };
 }
