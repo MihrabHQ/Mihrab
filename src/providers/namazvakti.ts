@@ -49,15 +49,11 @@ import {
 } from '../config/datasets';
 import { formatLocalDate } from '../utils/date';
 import { fetchWithRetry } from '../utils/fetchWithRetry';
+import { formatLocalTime } from '../utils/prayerTimes';
 import { gunzipSync, strFromU8 } from 'fflate';
 import { fromBase64 } from '../sync/secureRandom';
 import { mirrorUrl } from '../config/mirrors';
-import {
-  namazvaktiBucketAsset,
-  namazvaktiYearTag,
-  unpackYear,
-  type PackedBucket,
-} from './namazvaktiPack';
+import { namazvaktiBucketAsset, namazvaktiYearTag, unpackYear, type PackedBucket } from './namazvaktiPack';
 import { preciseApparentSun } from './preciseSun';
 import { ProviderError } from './errors';
 import {
@@ -71,11 +67,7 @@ import {
   type NvTileRow,
 } from './namazvaktiParser';
 import type { PrayerTimesResult } from './types';
-import {
-  clockFormatter,
-  placeCivilDay,
-  type PlaceClock,
-} from './locationClock';
+import { clockFormatter, placeCivilDay, type PlaceClock } from './locationClock';
 
 const PROVIDER = 'namazvakti';
 const TILE_PREFIX = 'namazvakti.tile.v1.';
@@ -95,9 +87,29 @@ const failedAt = new Map<number, number>();
 /** Listed cities with no published times — skipped when picking the nearest. */
 let noTable: Set<number> | null = null;
 
+/**
+ * Has this session given an answer yet?
+ *
+ * The first answer is somebody looking at an empty screen. With a tile on
+ * the phone but the mirror and the site black-holed (a captive portal, a
+ * dead uplink), the requests behind it ran their full course — the mirror
+ * twice at 20 s, the site twice at 15 s, with the waits between — and the
+ * first time came after about 72 s. Until a first answer has been given,
+ * every request is one attempt of a few seconds (`QUICK`), and a year that
+ * did not come that way is fetched again in the background, with the long
+ * timeouts, for the next read.
+ */
+let sessionAnswered = false;
+type Budget = { maxAttempts: number; baseDelayMs: number; timeoutMs: number };
+const QUICK: Budget = { maxAttempts: 1, baseDelayMs: 0, timeoutMs: 6000 };
+const TILE_BUDGET: Budget = { maxAttempts: 2, baseDelayMs: 800, timeoutMs: 9000 };
+const MIRROR_BUDGET: Budget = { maxAttempts: 2, baseDelayMs: 1000, timeoutMs: 20000 };
+const SITE_BUDGET: Budget = { maxAttempts: 2, baseDelayMs: 1500, timeoutMs: 15000 };
+/** City id → its background refill, after a quick first attempt missed. */
+const refillInFlight = new Map<number, Promise<void>>();
+
 async function loadNoTable(): Promise<Set<number>> {
-  if (!noTable)
-    noTable = new Set((await readJson<number[]>(NO_TABLE_KEY)) ?? []);
+  if (!noTable) noTable = new Set(await readJson<number[]>(NO_TABLE_KEY) ?? []);
   return noTable;
 }
 
@@ -133,8 +145,7 @@ async function writeJson(key: string, value: unknown): Promise<void> {
  */
 /** An empty square is asked again after a day: the index may not have reached it yet. */
 const EMPTY_TILE_TTL_MS = 24 * 60 * 60 * 1000;
-const tileTtl = (t: CachedTile) =>
-  t.cities.length ? NAMAZVAKTI_TILE_TTL_MS : EMPTY_TILE_TTL_MS;
+const tileTtl = (t: CachedTile) => (t.cities.length ? NAMAZVAKTI_TILE_TTL_MS : EMPTY_TILE_TTL_MS);
 
 async function loadTile(key: string, offline = false): Promise<CachedTile> {
   const now = Date.now();
@@ -156,12 +167,8 @@ async function loadTile(key: string, offline = false): Promise<CachedTile> {
     try {
       const res = await fetchWithRetry(
         `${NAMAZVAKTI_DATASET_BASE_URL}/tiles/${key}.json`,
-        {
-          headers: {
-            'User-Agent': httpUserAgent('Islamic prayer app; dataset'),
-          },
-        },
-        { maxAttempts: 2, baseDelayMs: 800, timeoutMs: 9000 },
+        { headers: { 'User-Agent': httpUserAgent('Islamic prayer app; dataset') } },
+        sessionAnswered ? TILE_BUDGET : QUICK,
       );
       let cities: TileRow[];
       if (res.ok) {
@@ -184,11 +191,7 @@ async function loadTile(key: string, offline = false): Promise<CachedTile> {
         memTiles.set(key, disk);
         return disk;
       }
-      throw new ProviderError(
-        PROVIDER,
-        'network',
-        `City index tile ${key} unavailable.`,
-      );
+      throw new ProviderError(PROVIDER, 'network', `City index tile ${key} unavailable.`);
     }
   })();
   tileInFlight.set(key, p);
@@ -249,47 +252,31 @@ async function bytesOf(res: Response): Promise<Uint8Array> {
 }
 
 /** The city's year from Mihrab's mirror of the site, or null when the mirror does not have it. */
-async function fetchMirroredYear(
-  cityId: number,
-  year: number,
-): Promise<NamazvaktiYear | null> {
+async function fetchMirroredYear(cityId: number, year: number, quick = false): Promise<NamazvaktiYear | null> {
   try {
     const res = await fetchWithRetry(
       mirrorUrl(namazvaktiYearTag(year), namazvaktiBucketAsset(cityId)),
-      {
-        headers: { 'User-Agent': httpUserAgent('Islamic prayer app; dataset') },
-      },
-      { maxAttempts: 2, baseDelayMs: 1000, timeoutMs: 20000 },
+      { headers: { 'User-Agent': httpUserAgent('Islamic prayer app; dataset') } },
+      quick ? QUICK : MIRROR_BUDGET,
     );
     if (!res.ok) return null;
-    const file = JSON.parse(
-      strFromU8(gunzipSync(await bytesOf(res))),
-    ) as PackedBucket;
+    const file = JSON.parse(strFromU8(gunzipSync(await bytesOf(res)))) as PackedBucket;
     const packed = file.cities?.[String(cityId)];
     if (!packed) return null;
     // Held from now: its age is the phone's copy's, so it is read again on the phone's schedule.
-    return {
-      ...unpackYear(packed, cityId),
-      fetchedAt: new Date().toISOString(),
-      via: 'mirror',
-    };
+    return { ...unpackYear(packed, cityId), fetchedAt: new Date().toISOString(), via: 'mirror' };
   } catch {
     return null;
   }
 }
 
 /** The city's year: Mihrab's mirror first, the site itself only behind it. */
-async function fetchYear(
-  cityId: number,
-  dateKey: string,
-): Promise<NamazvaktiYear> {
-  const year = /^\d{4}-/.test(dateKey)
-    ? Number(dateKey.slice(0, 4))
-    : new Date().getFullYear();
-  const mirrored = await fetchMirroredYear(cityId, year);
+async function fetchYear(cityId: number, dateKey: string, quick = false): Promise<NamazvaktiYear> {
+  const year = /^\d{4}-/.test(dateKey) ? Number(dateKey.slice(0, 4)) : new Date().getFullYear();
+  const mirrored = await fetchMirroredYear(cityId, year, quick);
   if (mirrored && (!dateKey || mirrored.days[dateKey])) return mirrored;
   try {
-    return await fetchSiteYear(cityId);
+    return await fetchSiteYear(cityId, quick);
   } catch (e) {
     // The site cannot answer either: whatever the mirror had is better than nothing.
     if (mirrored) return mirrored;
@@ -297,32 +284,22 @@ async function fetchYear(
   }
 }
 
-async function fetchSiteYear(cityId: number): Promise<NamazvaktiYear> {
+async function fetchSiteYear(cityId: number, quick = false): Promise<NamazvaktiYear> {
   const res = await fetchWithRetry(
     `${NAMAZVAKTI_ORIGIN}/XML.php?cityID=${cityId}`,
     { headers: { 'User-Agent': httpUserAgent('Islamic prayer app') } },
-    { maxAttempts: 2, baseDelayMs: 1500, timeoutMs: 15000 },
+    quick ? QUICK : SITE_BUDGET,
   );
   if (!res.ok) {
-    throw new ProviderError(
-      PROVIDER,
-      'network',
-      `namazvakti.com answered HTTP ${res.status}.`,
-    );
+    throw new ProviderError(PROVIDER, 'network', `namazvakti.com answered HTTP ${res.status}.`);
   }
   const xml = await res.text();
   if (/<cityinfo\b/.test(xml) && !/<prayertimes\b/.test(xml)) {
-    throw new NoTableError(
-      `namazvakti.com publishes no times for city ${cityId}.`,
-    );
+    throw new NoTableError(`namazvakti.com publishes no times for city ${cityId}.`);
   }
   const parsed = parseNamazvaktiXml(xml, new Date().getFullYear());
   if (parsed.cityId !== cityId) {
-    throw new ProviderError(
-      PROVIDER,
-      'shape',
-      `Asked for city ${cityId}, got ${parsed.cityId}.`,
-    );
+    throw new ProviderError(PROVIDER, 'shape', `Asked for city ${cityId}, got ${parsed.cityId}.`);
   }
   return { ...parsed, via: 'site' };
 }
@@ -346,17 +323,21 @@ async function loadYear(
   if (offline) return held ?? null;
   const age = held ? Date.now() - Date.parse(held.fetchedAt) : Infinity;
   const hasDay = !!held?.days[dateKey];
-  const recentlyFailed =
-    Date.now() - (failedAt.get(cityId) ?? 0) < NAMAZVAKTI_RETRY_AFTER_MS;
+  const recentlyFailed = Date.now() - (failedAt.get(cityId) ?? 0) < NAMAZVAKTI_RETRY_AFTER_MS;
   const needed = !hasDay && !(held && age < NAMAZVAKTI_RETRY_AFTER_MS);
   const stale = hasDay && age > NAMAZVAKTI_REFETCH_AFTER_MS;
   if ((!needed && !stale) || recentlyFailed) return held ?? null;
+  // A background refill is already asking with the long timeouts: what is
+  // held answers now (the method is computed for a day it lacks), and the
+  // refill lands for the next read.
+  if (refillInFlight.has(cityId)) return held ?? null;
 
   let p = yearInFlight.get(cityId);
   if (!p) {
+    const quick = !sessionAnswered;
     p = (async () => {
       try {
-        const year = await fetchYear(cityId, dateKey);
+        const year = await fetchYear(cityId, dateKey, quick);
         memYears.set(cityId, year);
         failedAt.delete(cityId);
         await writeJson(`${CITY_PREFIX}${cityId}`, year);
@@ -366,7 +347,13 @@ async function loadYear(
           await markNoTable(cityId);
           return null;
         }
-        failedAt.set(cityId, Date.now());
+        if (quick && !(e instanceof ProviderError)) {
+          // The quick first try had no answer in time (a site that answers
+          // with an error has answered): the patient one, in the background.
+          startRefill(cityId, dateKey);
+        } else {
+          failedAt.set(cityId, Date.now());
+        }
         return held ?? null;
       } finally {
         yearInFlight.delete(cityId);
@@ -378,6 +365,25 @@ async function loadYear(
   // next read. A missing day waits for the site.
   if (stale) return held ?? null;
   return p;
+}
+
+/** Fetch a city's year again with the long timeouts, without anyone waiting on it. */
+function startRefill(cityId: number, dateKey: string): void {
+  if (refillInFlight.has(cityId)) return;
+  const p = (async () => {
+    try {
+      const year = await fetchYear(cityId, dateKey, false);
+      memYears.set(cityId, year);
+      failedAt.delete(cityId);
+      await writeJson(`${CITY_PREFIX}${cityId}`, year);
+    } catch (e) {
+      if (e instanceof NoTableError) await markNoTable(cityId);
+      else failedAt.set(cityId, Date.now());
+    }
+  })().finally(() => {
+    refillInFlight.delete(cityId);
+  });
+  refillInFlight.set(cityId, p);
 }
 
 /**
@@ -398,11 +404,22 @@ export async function getNamazvaktiTimes(params: {
   retried?: boolean;
 }): Promise<PrayerTimesResult> {
   const offline = params.offline === true;
-  const city = await nearestNamazvaktiCity(
-    params.latitude,
-    params.longitude,
-    offline,
-  );
+  if (offline) return namazvaktiTimesFor(params, true);
+  try {
+    return await namazvaktiTimesFor(params, false);
+  } finally {
+    // Whatever it was — a published day or a miss the caller computes —
+    // the first answer has been given; from now on the network is waited
+    // for as long as it takes.
+    sessionAnswered = true;
+  }
+}
+
+async function namazvaktiTimesFor(
+  params: Parameters<typeof getNamazvaktiTimes>[0],
+  offline: boolean,
+): Promise<PrayerTimesResult> {
+  const city = await nearestNamazvaktiCity(params.latitude, params.longitude, offline);
   if (!city) {
     throw new ProviderError(
       PROVIDER,
@@ -414,7 +431,7 @@ export async function getNamazvaktiTimes(params: {
   const year = await loadYear(city.id, dateKey, offline);
   if (!year && noTable?.has(city.id) && !params.retried) {
     // The nearest listed city turned out to have no times: the next one, if near enough.
-    return getNamazvaktiTimes({ ...params, retried: true });
+    return namazvaktiTimesFor({ ...params, retried: true }, offline);
   }
   const row = year?.days[dateKey];
   const timings = row ? timingsFromRow(row, params.school) : null;
@@ -507,13 +524,9 @@ export async function namazvaktiHeld(
   latitude: number,
   longitude: number,
 ): Promise<{ city: NvCity; fetchedAt: string | null } | null> {
-  const city = await nearestNamazvaktiCity(latitude, longitude, true).catch(
-    () => null,
-  );
+  const city = await nearestNamazvaktiCity(latitude, longitude, true).catch(() => null);
   if (!city) return null;
-  const year =
-    memYears.get(city.id) ??
-    (await readJson<NamazvaktiYear>(`${CITY_PREFIX}${city.id}`));
+  const year = memYears.get(city.id) ?? (await readJson<NamazvaktiYear>(`${CITY_PREFIX}${city.id}`));
   return { city, fetchedAt: year?.fetchedAt ?? null };
 }
 
@@ -544,32 +557,19 @@ function horizonDepth(heightM: number): number {
 /** The solstice the temkin is measured on: the declination its tables fit best (to ±0.02°). */
 const SOLSTICE_DECLINATION = 23.38;
 
-export function temkinExact(
-  latitude: number,
-  heightM = NAMAZVAKTI_DEFAULT_HEIGHT_M,
-): number {
+export function temkinExact(latitude: number, heightM = NAMAZVAKTI_DEFAULT_HEIGHT_M): number {
   const rad = Math.PI / 180;
   const phi = Math.min(Math.abs(latitude), 62) * rad;
   const dec = SOLSTICE_DECLINATION * rad;
   const hourAngle = (alt: number) =>
     Math.acos(
-      Math.max(
-        -1,
-        Math.min(
-          1,
-          (Math.sin(alt * rad) - Math.sin(phi) * Math.sin(dec)) /
-            (Math.cos(phi) * Math.cos(dec)),
-        ),
-      ),
+      Math.max(-1, Math.min(1, (Math.sin(alt * rad) - Math.sin(phi) * Math.sin(dec)) / (Math.cos(phi) * Math.cos(dec)))),
     );
   return ((hourAngle(-horizonDepth(heightM)) - hourAngle(0)) / rad) * 4;
 }
 
 /** The calendar's temkin at a latitude and city height, in whole minutes. */
-export function temkinMinutes(
-  latitude: number,
-  heightM = NAMAZVAKTI_DEFAULT_HEIGHT_M,
-): number {
+export function temkinMinutes(latitude: number, heightM = NAMAZVAKTI_DEFAULT_HEIGHT_M): number {
   return Math.ceil(temkinExact(latitude, heightM));
 }
 
@@ -585,16 +585,9 @@ export function temkinMinutes(
  * the Russian Far East) — the midnight alone gets the spring right and
  * resumes the autumn a night late.
  */
-function reachesAngle(
-  latitude: number,
-  longitude: number,
-  day: Date,
-  angle: number,
-): boolean {
+function reachesAngle(latitude: number, longitude: number, day: Date, angle: number): boolean {
   const rad = Math.PI / 180;
-  const base =
-    Date.UTC(day.getFullYear(), day.getMonth(), day.getDate()) -
-    Date.UTC(2000, 0, 1, 12);
+  const base = Date.UTC(day.getFullYear(), day.getMonth(), day.getDate()) - Date.UTC(2000, 0, 1, 12);
   const decAt = (ms: number) => preciseApparentSun(ms / 86_400_000).dec / rad;
   const lowest = (dec: number) => Math.abs(latitude + dec) - 90;
   const midnight = lowest(decAt(base - (longitude / 15) * 3_600_000));
@@ -602,8 +595,7 @@ function reachesAngle(
   return Math.min(midnight, noonUT) <= -angle;
 }
 
-const addDays = (d: Date, n: number) =>
-  new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
+const addDays = (d: Date, n: number) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
 
 /**
  * The day whose night times stand for this one. Where the sun no longer
@@ -635,11 +627,7 @@ function sunEvents(
   sun: (d: number) => { dec: number; eot: number } = preciseApparentSun,
 ) {
   const rad = Math.PI / 180;
-  const d0 =
-    (Date.UTC(day.getFullYear(), day.getMonth(), day.getDate()) -
-      Date.UTC(2000, 0, 1)) /
-      86_400_000 -
-    0.5;
+  const d0 = (Date.UTC(day.getFullYear(), day.getMonth(), day.getDate()) - Date.UTC(2000, 0, 1)) / 86_400_000 - 0.5;
   const at = (t: number) => sun(d0 + t / 1440);
   let noon = 720 - 4 * longitude;
   for (let i = 0; i < 3; i++) noon = 720 - 4 * longitude - at(noon).eot;
@@ -649,29 +637,18 @@ function sunEvents(
   const noonDec = at(noon).dec;
   const sp = Math.sin(latitude * rad);
   const cp = Math.cos(latitude * rad);
-  const event = (
-    altitudeOf: (dec: number) => number,
-    sign: 1 | -1,
-    start: number,
-  ) => {
+  const event = (altitudeOf: (dec: number) => number, sign: 1 | -1, start: number) => {
     let t = start;
     for (let i = 0; i < 3; i++) {
       const { dec, eot } = at(t);
-      const c =
-        (Math.sin(altitudeOf(dec) * rad) - sp * Math.sin(dec)) /
-        (cp * Math.cos(dec));
-      t =
-        720 -
-        4 * longitude -
-        eot +
-        (sign * 4 * Math.acos(Math.max(-1, Math.min(1, c)))) / rad;
+      const c = (Math.sin(altitudeOf(dec) * rad) - sp * Math.sin(dec)) / (cp * Math.cos(dec));
+      t = 720 - 4 * longitude - eot + (sign * 4 * Math.acos(Math.max(-1, Math.min(1, c)))) / rad;
     }
     return t;
   };
   const level = (a: number) => () => a;
   const asr = (shadow: number) => () =>
-    Math.atan(1 / (shadow + Math.tan(Math.abs(latitude * rad - noonDec)))) /
-    rad;
+    Math.atan(1 / (shadow + Math.tan(Math.abs(latitude * rad - noonDec)))) / rad;
   return {
     fajr19: () => event(level(-19), -1, noon - 420),
     fajr18: () => event(level(-18), -1, noon - 420),
@@ -728,26 +705,19 @@ export function computeNamazvaktiMethodTimes(params: {
   const day = new Date(civil.y, civil.m, civil.d);
   const format = clockFormatter(params.placeClock);
   const instant = (on: Date, minutes: number, round: 'up' | 'down') => {
-    const m =
-      round === 'up' ? Math.ceil(minutes - 1e-9) : Math.floor(minutes + 1e-9);
-    return format(
-      new Date(
-        Date.UTC(on.getFullYear(), on.getMonth(), on.getDate()) + m * 60_000,
-      ),
-    );
+    const m = round === 'up' ? Math.ceil(minutes - 1e-9) : Math.floor(minutes + 1e-9);
+    return format(new Date(Date.UTC(on.getFullYear(), on.getMonth(), on.getDate()) + m * 60_000));
   };
   const today = sunEvents(latitude, longitude, day);
   const night = nightTimesDay(latitude, longitude, day);
-  const nightSun =
-    night === day ? today : sunEvents(latitude, longitude, night);
+  const nightSun = night === day ? today : sunEvents(latitude, longitude, night);
   // Isha falls in the night that begins this evening and ends tomorrow, so
   // it is tomorrow's night that decides — held from the evening before the
   // last night that reached 19°.
   const tomorrow = addDays(day, 1);
   const ishaNight = nightTimesDay(latitude, longitude, tomorrow);
   const ishaDay = ishaNight === tomorrow ? day : addDays(ishaNight, -1);
-  const ishaSun =
-    ishaDay === day ? today : sunEvents(latitude, longitude, ishaDay);
+  const ishaSun = ishaDay === day ? today : sunEvents(latitude, longitude, ishaDay);
   return {
     timings: {
       Imsak: instant(night, nightSun.fajr19() - T, 'down'),
@@ -763,13 +733,7 @@ export function computeNamazvaktiMethodTimes(params: {
 }
 
 /** A city's point as the site computes it, and its temkin. */
-export type NamazvaktiFittedPoint = {
-  lat: number;
-  lon: number;
-  temkin: number;
-  misses: number;
-  checked: number;
-};
+export type NamazvaktiFittedPoint = { lat: number; lon: number; temkin: number; misses: number; checked: number };
 
 /**
  * The site's own point for a city, and its temkin, from a year it published.
@@ -796,8 +760,7 @@ export function fitNamazvaktiPoint(
   const T0 = temkinExact(city.lat, city.heightM ?? NAMAZVAKTI_DEFAULT_HEIGHT_M);
   // The sun at each 0h UT across the year, interpolated (quadratically) between.
   const first = new Date(`${keys[0]}T00:00:00Z`);
-  const dFirst =
-    (first.getTime() - Date.UTC(2000, 0, 1)) / 86_400_000 - 0.5 - 2;
+  const dFirst = (first.getTime() - Date.UTC(2000, 0, 1)) / 86_400_000 - 0.5 - 2;
   const samples: { dec: number; eot: number }[] = [];
   const last = new Date(`${keys[keys.length - 1]}T00:00:00Z`);
   const span = Math.round((last.getTime() - first.getTime()) / 86_400_000) + 5;
@@ -807,78 +770,20 @@ export function fitNamazvaktiPoint(
     const k = Math.min(samples.length - 2, Math.max(1, Math.round(x)));
     const u = x - k;
     const q = (f: (s: { dec: number; eot: number }) => number) => {
-      const a = f(samples[k - 1]),
-        b = f(samples[k]),
-        c = f(samples[k + 1]);
+      const a = f(samples[k - 1]), b = f(samples[k]), c = f(samples[k + 1]);
       return b + (u * (c - a)) / 2 + (u * u * (c - 2 * b + a)) / 2;
     };
     return { dec: q(s => s.dec), eot: q(s => s.eot) };
   };
   // What each column is: its time from the events, how T enters (s), its fixed add, its rounding.
-  const COLS: {
-    col: number;
-    s: number;
-    add: number;
-    up: boolean;
-    night: boolean;
-    ev: (e: ReturnType<typeof sunEvents>) => number;
-  }[] = [
-    {
-      col: NV_COL.imsak,
-      s: -1,
-      add: 0,
-      up: false,
-      night: true,
-      ev: e => e.fajr19(),
-    },
-    {
-      col: NV_COL.sabah,
-      s: 0,
-      add: 0,
-      up: true,
-      night: true,
-      ev: e => e.fajr18(),
-    },
-    {
-      col: NV_COL.sunrise,
-      s: -1,
-      add: -2,
-      up: true,
-      night: false,
-      ev: e => e.sunrise(),
-    },
-    {
-      col: NV_COL.dhuhr,
-      s: 1,
-      add: 0,
-      up: true,
-      night: false,
-      ev: e => e.noon,
-    },
-    {
-      col: NV_COL.asr,
-      s: 1,
-      add: 0,
-      up: true,
-      night: false,
-      ev: e => e.asr(1),
-    },
-    {
-      col: NV_COL.maghrib,
-      s: 1,
-      add: 2,
-      up: true,
-      night: false,
-      ev: e => e.sunset(),
-    },
-    {
-      col: NV_COL.isha,
-      s: 1,
-      add: 0,
-      up: true,
-      night: true,
-      ev: e => e.isha17(),
-    },
+  const COLS: { col: number; s: number; add: number; up: boolean; night: boolean; ev: (e: ReturnType<typeof sunEvents>) => number }[] = [
+    { col: NV_COL.imsak, s: -1, add: 0, up: false, night: true, ev: e => e.fajr19() },
+    { col: NV_COL.sabah, s: 0, add: 0, up: true, night: true, ev: e => e.fajr18() },
+    { col: NV_COL.sunrise, s: -1, add: -2, up: true, night: false, ev: e => e.sunrise() },
+    { col: NV_COL.dhuhr, s: 1, add: 0, up: true, night: false, ev: e => e.noon },
+    { col: NV_COL.asr, s: 1, add: 0, up: true, night: false, ev: e => e.asr(1) },
+    { col: NV_COL.maghrib, s: 1, add: 2, up: true, night: false, ev: e => e.sunset() },
+    { col: NV_COL.isha, s: 1, add: 0, up: true, night: true, ev: e => e.isha17() },
   ];
   const published = keys.map(k => {
     const row = year.days[k];
@@ -895,12 +800,7 @@ export function fitNamazvaktiPoint(
     let from = -1;
     keys.forEach((k, i) => {
       if (Number.isFinite(published[i][j])) from = i;
-      else if (
-        from >= 0 &&
-        c.night &&
-        (year.days[k][c.col] ?? '').trim().startsWith('*')
-      )
-        weight[from][j]++;
+      else if (from >= 0 && c.night && (year.days[k][c.col] ?? '').trim().startsWith('*')) weight[from][j]++;
     });
   });
   const days = keys.map(k => {
@@ -941,16 +841,10 @@ export function fitNamazvaktiPoint(
       hist[i0] += b.w;
       hist[i1] -= b.w;
     }
-    let run = 0,
-      best = -1,
-      bi = 0,
-      bj = 0;
+    let run = 0, best = -1, bi = 0, bj = 0;
     for (let i = 0; i < NB; i++) {
       run += hist[i];
-      if (run > best) {
-        best = run;
-        bi = bj = i;
-      } else if (run === best && bj === i - 1) bj = i;
+      if (run > best) { best = run; bi = bj = i; } else if (run === best && bj === i - 1) bj = i;
     }
     return [best, ((bi + bj) / 2) * STEP - SPAN];
   };
@@ -969,8 +863,7 @@ export function fitNamazvaktiPoint(
     return out;
   };
   // Coarse: the truncation box (0 to 1′ from the zero side), T within ±0.06.
-  for (const dLat of range(0, 1 / 60, 0.1 / 60))
-    tryLat(dLat, range(-0.06, 0.06, 0.005));
+  for (const dLat of range(0, 1 / 60, 0.1 / 60)) tryLat(dLat, range(-0.06, 0.06, 0.005));
   // Fine, around the best.
   const c0 = best;
   for (const dLat of range(c0.dLat - 0.1 / 60, c0.dLat + 0.1 / 60, 0.01 / 60)) {
@@ -995,9 +888,7 @@ const memFits = new Map<number, NamazvaktiFittedPoint | null>();
  * that leaves more than one time in a hundred off is not used. Kept for
  * the session: the point does not change from year to year.
  */
-export async function namazvaktiCityPoint(
-  city: NvCity,
-): Promise<NamazvaktiFittedPoint | null> {
+export async function namazvaktiCityPoint(city: NvCity): Promise<NamazvaktiFittedPoint | null> {
   if (memFits.has(city.id)) return memFits.get(city.id)!;
   const year = await loadYear(city.id, '', true).catch(() => null);
   const fit = year ? fitNamazvaktiPoint(year, city) : null;
@@ -1007,13 +898,8 @@ export async function namazvaktiCityPoint(
 }
 
 /** Drop what is held for the nearest city and fetch its year again. */
-export async function refetchNamazvaktiNow(
-  latitude: number,
-  longitude: number,
-): Promise<void> {
-  const city = await nearestNamazvaktiCity(latitude, longitude).catch(
-    () => null,
-  );
+export async function refetchNamazvaktiNow(latitude: number, longitude: number): Promise<void> {
+  const city = await nearestNamazvaktiCity(latitude, longitude).catch(() => null);
   if (!city) return;
   memYears.delete(city.id);
   memFits.delete(city.id);
@@ -1036,4 +922,11 @@ export function _resetNamazvaktiForTests(): void {
   failedAt.clear();
   noTable = null;
   nextIndexPollAt = 0;
+  sessionAnswered = false;
+  refillInFlight.clear();
+}
+
+/** Tests: wait for any background refill. */
+export async function _settleNamazvaktiRefillsForTests(): Promise<void> {
+  await Promise.all([...refillInFlight.values()]);
 }

@@ -494,7 +494,27 @@ export async function dropDaruriAlertsForLogged(
   }
 }
 
-export async function syncPrayerNotifications(params: {
+/**
+ * One write of the schedule at a time.
+ *
+ * Each run cancels what the app owns and writes the next days again. Two
+ * at once — Today's, and the one an update starts at the app's root
+ * (`afterUpdate.ts`) — interleave their cancels and their writes, and can
+ * leave an alert twice or not at all. A run waits for the one before it.
+ */
+let syncChain: Promise<unknown> = Promise.resolve();
+export function syncPrayerNotifications(
+  params: Parameters<typeof syncPrayerNotificationsNow>[0],
+): Promise<SyncPrayerNotificationsResult> {
+  const run = syncChain.then(
+    () => syncPrayerNotificationsNow(params),
+    () => syncPrayerNotificationsNow(params),
+  );
+  syncChain = run.catch(() => undefined);
+  return run;
+}
+
+async function syncPrayerNotificationsNow(params: {
   enabled: boolean;
   prePrayerReminderMinutes: number;
   notificationSound: NotificationSoundId;

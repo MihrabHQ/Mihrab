@@ -49,14 +49,17 @@ export function formatAladhanDate(d: Date): string {
   return `${day}-${month}-${d.getFullYear()}`;
 }
 
-export async function fetchAladhanTimes(params: {
+/**
+ * The query every AlAdhan request sends for a place and a method: the same
+ * for a day and for a month, so the two can never disagree about which
+ * method, school or summer-night rule they asked for.
+ */
+function aladhanQuery(params: {
   latitude: number;
   longitude: number;
-  date: Date;
   method?: number | 'auto';
   school?: number;
-}): Promise<PrayerTimesResult> {
-  const dateStr = formatAladhanDate(params.date);
+}): URLSearchParams {
   const query = new URLSearchParams();
   query.append('latitude', String(params.latitude));
   query.append('longitude', String(params.longitude));
@@ -83,15 +86,17 @@ export async function fetchAladhanTimes(params: {
   // The summer-night rule, named so it is the same one the phone computes
   // with offline (`localAdhan.ts`); AlAdhan's default is the same ANGLE_BASED.
   query.append('latitudeAdjustmentMethod', String(ALADHAN_LATITUDE_ADJUSTMENT[prefs.highLatitudeRule]));
-  const url = `${BASE}/timings/${dateStr}?${query.toString()}`;
+  return query;
+}
 
+/** GET an AlAdhan URL and hand back its `code: 200` payload, or throw a ProviderError. */
+async function aladhanGet<T extends { code: number; status: string }>(
+  url: string,
+  retry: { maxAttempts: number; baseDelayMs: number; timeoutMs: number },
+): Promise<T> {
   let res: Response;
   try {
-    res = await fetchWithRetry(url, undefined, {
-      maxAttempts: 4,
-      baseDelayMs: 1000,
-      timeoutMs: 7000,
-    });
+    res = await fetchWithRetry(url, undefined, retry);
   } catch (e) {
     if (isAbortOrTimeoutError(e)) {
       throw new ProviderError(PROVIDER, 'timeout', 'AlAdhan request timed out', { cause: e });
@@ -127,12 +132,27 @@ export async function fetchAladhanTimes(params: {
     );
   }
 
-  let json: AladhanTimingsResponse;
   try {
-    json = (await res.json()) as AladhanTimingsResponse;
+    return (await res.json()) as T;
   } catch (e) {
     throw new ProviderError(PROVIDER, 'shape', 'AlAdhan response was not valid JSON', { cause: e });
   }
+}
+
+export async function fetchAladhanTimes(params: {
+  latitude: number;
+  longitude: number;
+  date: Date;
+  method?: number | 'auto';
+  school?: number;
+}): Promise<PrayerTimesResult> {
+  const dateStr = formatAladhanDate(params.date);
+  const url = `${BASE}/timings/${dateStr}?${aladhanQuery(params).toString()}`;
+  const json = await aladhanGet<AladhanTimingsResponse>(url, {
+    maxAttempts: 4,
+    baseDelayMs: 1000,
+    timeoutMs: 7000,
+  });
   if (json.code !== 200 || !json.data?.timings) {
     throw new ProviderError(
       PROVIDER,
@@ -144,4 +164,71 @@ export async function fetchAladhanTimes(params: {
     timings: json.data.timings,
     timezone: json.data.meta?.timezone,
   };
+}
+
+type AladhanCalendarResponse = {
+  code: number;
+  status: string;
+  data?: Array<{
+    timings?: Record<string, unknown>;
+    date?: { gregorian?: { date?: string } };
+    meta?: { timezone?: string };
+  }>;
+};
+
+/** One day of a month from AlAdhan's calendar, not yet checked. */
+export type AladhanCalendarDay = {
+  /** `YYYY-MM-DD`. */
+  date: string;
+  timings: TimingsMap;
+  timezone?: string;
+};
+
+/**
+ * A whole month from AlAdhan in one request (`/v1/calendar/{year}/{month}`)
+ * — the same query as a single day's (`aladhanQuery`). A year's fill was
+ * ~365 requests; it is twelve.
+ *
+ * The calendar writes every time with its zone after it ("05:12 (CEST)");
+ * the zone is cut off so a day reads exactly as the single-day endpoint's.
+ * Each day is handed back unchecked: the caller validates it as it would a
+ * single day's answer and skips the ones that fail. A day whose date cannot
+ * be read is left out.
+ */
+export async function fetchAladhanCalendar(params: {
+  latitude: number;
+  longitude: number;
+  /** Full year. */
+  year: number;
+  /** 1–12. */
+  month: number;
+  method?: number | 'auto';
+  school?: number;
+}): Promise<AladhanCalendarDay[]> {
+  const url = `${BASE}/calendar/${params.year}/${params.month}?${aladhanQuery(params).toString()}`;
+  // Two attempts, not four: a month that does not come is filled a day at
+  // a time by the caller, which has its own retries.
+  const json = await aladhanGet<AladhanCalendarResponse>(url, {
+    maxAttempts: 2,
+    baseDelayMs: 1000,
+    timeoutMs: 15000,
+  });
+  if (json.code !== 200 || !Array.isArray(json.data)) {
+    throw new ProviderError(
+      PROVIDER,
+      'shape',
+      json.status || 'AlAdhan returned an unexpected calendar shape',
+    );
+  }
+  const out: AladhanCalendarDay[] = [];
+  for (const item of json.data) {
+    const m = /^(\d{2})-(\d{2})-(\d{4})$/.exec(item?.date?.gregorian?.date ?? '');
+    if (!m || !item.timings || typeof item.timings !== 'object') continue;
+    const timings: TimingsMap = {};
+    for (const [k, v] of Object.entries(item.timings)) {
+      if (typeof v === 'string') timings[k] = v.replace(/\s*\(.*\)\s*$/, '');
+    }
+    out.push({ date: `${m[3]}-${m[2]}-${m[1]}`, timings, timezone: item.meta?.timezone });
+  }
+  return out;
 }

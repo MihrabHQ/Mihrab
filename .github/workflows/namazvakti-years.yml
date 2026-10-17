@@ -8,8 +8,11 @@ name: namazvakti.com yearly tables
 # 512 gzipped files by city id, updated in place.
 #
 # Daily, within a polite request budget: a new year takes a few days of runs,
-# then each run re-reads the cities read longest ago. Emails on failure, with
-# the same mail secrets as the other dataset jobs.
+# then each run re-reads the cities read longest ago. From 1 December the
+# next year's release is built too, from the files the site serves for it.
+# After the upload, the release is checked against the index: every file it
+# counts must be there. Emails on failure, with the same mail secrets as the
+# other dataset jobs.
 
 on:
   schedule:
@@ -45,27 +48,45 @@ jobs:
         with:
           node-version: '20'
 
-      - name: The year's release
+      - name: The years' releases
         id: rel
         run: |
-          year=$(date -u +%Y)
-          tag="data-namazvakti-${year}"
-          echo "year=${year}" >> "$GITHUB_OUTPUT"
-          echo "tag=${tag}" >> "$GITHUB_OUTPUT"
-          if ! gh release view "$tag" >/dev/null 2>&1; then
-            gh release create "$tag" --latest=false \
-              --title "Data: namazvakti.com tables, ${year}" \
-              --notes "Türkiye Takvimi (namazvakti.com) yearly tables for every city it lists, packed in 512 files by city id (src/providers/namazvaktiPack.ts). Built by .github/workflows/namazvakti-years.yml; read by the app (src/providers/namazvakti.ts). Not an app release."
-          fi
-          mkdir -p work
-          gh release download "$tag" --dir work --pattern '*.json.gz' --skip-existing || true
-          ls work | wc -l
+          # This year, and from 1 December the next as well: the site serves
+          # next year's file from some day in December, and each answer is
+          # filed under the year the file itself gives (years.ts).
+          y=$(date -u +%Y)
+          years="$y"
+          [ "$(date -u +%m)" = "12" ] && years="$y $((y + 1))"
+          echo "years=${years}" >> "$GITHUB_OUTPUT"
+          for year in $years; do
+            tag="data-namazvakti-${year}"
+            dir="work/${year}"
+            mkdir -p "$dir"
+            if ! gh release view "$tag" >/dev/null 2>&1; then
+              : > "$dir/release-assets.txt"
+              continue
+            fi
+            gh release view "$tag" --json assets --jq '.assets[].name' > "$dir/release-assets.txt"
+            for attempt in 1 2 3; do
+              gh release download "$tag" --dir "$dir" --pattern '*.json.gz' --pattern 'index.json' --skip-existing && break
+              echo "  download incomplete; retrying in 60s"; sleep 60
+            done
+            # Every file the release has must be on disk: years.ts would
+            # otherwise rebuild a missing one from the cities it reads this
+            # run and upload it over the fuller one.
+            absent=$( (grep '\.json\.gz$' "$dir/release-assets.txt" || true) | while read -r f; do [ -s "$dir/$f" ] || echo "$f"; done)
+            if [ -n "$absent" ]; then
+              echo "Not downloaded from ${tag}: ${absent}"
+              exit 1
+            fi
+            echo "${tag}: $(ls "$dir" | grep -c '\.json\.gz$') files"
+          done
 
       - name: Read the cities due
         id: build
         env:
           NV_YEARS_DIR: work
-          NV_YEAR: ${{ steps.rel.outputs.year }}
+          NV_YEARS: ${{ steps.rel.outputs.years }}
           NV_MAX_REQUESTS: ${{ github.event.inputs.max_requests || '25000' }}
           NV_MAX_WALL_MIN: ${{ github.event.inputs.wall_minutes || '300' }}
         run: npx --yes tsx@4 tools/namazvakti-dataset/years.ts
@@ -73,30 +94,70 @@ jobs:
       - name: Publish the changed files
         if: always() && steps.rel.outcome == 'success'
         run: |
-          cd work
-          if [ ! -s changed.txt ]; then
-            echo 'No files changed.'
-            exit 0
-          fi
           # One file at a time, paced and retried: GitHub's secondary rate
           # limit (about 80 content-creating requests a minute, 500 an hour;
           # a --clobber is a delete and an upload) refused the first run's
           # 512 files sent 100 at a time. years.ts fills files one after
-          # another, so a run changes about a hundred of them.
+          # another, so a run changes about a hundred of them. A file that
+          # still fails does not stop the others: the check below finds it.
           up() {
             for wait in 60 120 240 480; do
-              gh release upload "${{ steps.rel.outputs.tag }}" "$1" --clobber < /dev/null && return 0
+              gh release upload "$tag" "$1" --clobber < /dev/null && return 0
               echo "  $1: retrying in ${wait}s"; sleep "$wait"
             done
-            gh release upload "${{ steps.rel.outputs.tag }}" "$1" --clobber < /dev/null
+            gh release upload "$tag" "$1" --clobber < /dev/null
           }
-          while read -r f; do
-            [ -n "$f" ] || continue
-            up "$f"
-            sleep 2
-          done < changed.txt
-          up index.json
-          echo "Uploaded $(wc -l < changed.txt) files; ${{ steps.build.outputs.held || '?' }}/${{ steps.build.outputs.cities || '?' }} cities held."
+          for year in ${{ steps.rel.outputs.years }}; do
+            tag="data-namazvakti-${year}"
+            dir="work/${year}"
+            if [ ! -s "$dir/changed.txt" ]; then
+              echo "${year}: no files changed."
+              continue
+            fi
+            if ! gh release view "$tag" >/dev/null 2>&1; then
+              gh release create "$tag" --latest=false \
+                --title "Data: namazvakti.com tables, ${year}" \
+                --notes "Türkiye Takvimi (namazvakti.com) yearly tables for every city it lists, packed in 512 files by city id (src/providers/namazvaktiPack.ts). Built by .github/workflows/namazvakti-years.yml; read by the app (src/providers/namazvakti.ts). Not an app release."
+            fi
+            failed=0
+            while read -r f; do
+              [ -n "$f" ] || continue
+              (cd "$dir" && up "$f") || { echo "  ${f}: not uploaded"; failed=$((failed + 1)); }
+              sleep 2
+            done < "$dir/changed.txt"
+            (cd "$dir" && up index.json) || echo "  index.json: not uploaded"
+            echo "${year}: uploaded $(( $(wc -l < "$dir/changed.txt") - failed )) of $(wc -l < "$dir/changed.txt") files."
+          done
+
+      - name: Check the release has every file the index counts
+        if: always() && steps.rel.outcome == 'success'
+        run: |
+          up() {
+            for wait in 60 120 240; do
+              gh release upload "$tag" "$1" --clobber < /dev/null && return 0
+              sleep "$wait"
+            done
+            return 1
+          }
+          bad=0
+          for year in ${{ steps.rel.outputs.years }}; do
+            tag="data-namazvakti-${year}"
+            dir="work/${year}"
+            [ -s "$dir/index.json" ] || continue
+            gh release view "$tag" >/dev/null 2>&1 || continue
+            gh release view "$tag" --json assets --jq '.assets[].name' > "$dir/release-assets.txt"
+            missing=$(npx --yes tsx@4 tools/namazvakti-dataset/years.ts verify "$dir")
+            for f in $missing; do
+              if [ -s "$dir/$f" ] && (cd "$dir" && up "$f"); then
+                echo "${year}: uploaded the missing ${f}"
+              else
+                echo "${year}: ${f} is counted by the index and not in the release"
+                bad=1
+              fi
+            done
+          done
+          # A file still missing is read again first by the next run (years.ts).
+          exit "$bad"
 
       - name: Email on failure
         if: failure() && env.MAIL_SERVER != ''

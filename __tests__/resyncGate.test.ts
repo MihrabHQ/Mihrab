@@ -159,7 +159,12 @@ describe('the opportunistic year-ahead fill can be stopped', () => {
     // `break`, not `return`: the single write after the loop is what makes a
     // stop resumable. A `return` here would throw away the whole run.
     expect(src).toMatch(
-      /if \(i \+ concurrency >= floorPrefix && shouldContinue && !shouldContinue\(\)\) \{\n\s*break;/,
+      /if \(i \+ concurrency >= floorPrefix && \(stopped \|\| \(shouldContinue && !shouldContinue\(\)\)\)\) \{\n\s*break;/,
+    );
+    // AlAdhan's months (asked a month at a time) stop the same way, and
+    // only past the floor.
+    expect(src).toMatch(
+      /if \(new Date\(y, m - 1, 1\) > floorEnd && shouldContinue && !shouldContinue\(\)\) \{\n\s*stopped = true;\n\s*break;/,
     );
   });
 
@@ -170,8 +175,10 @@ describe('the opportunistic year-ahead fill can be stopped', () => {
     // behavioural proof; this pins the guard itself so it cannot be
     // simplified back out.
     expect(src).toMatch(/MIN_GUARANTEED_DAYS = 31/);
-    expect(src).toMatch(/const floorPrefix = forward\.filter/);
-    expect(src).toMatch(/i \+ concurrency >= floorPrefix && shouldContinue/);
+    expect(src).toMatch(/const floorPrefix = remaining\.filter\(d => d >= startOfToday && d <= floorEnd\)/);
+    expect(src).toMatch(/i \+ concurrency >= floorPrefix && \(stopped \|\| \(shouldContinue/);
+    // Stopped among the months, what the floor still lacks is fetched anyway.
+    expect(src).toMatch(/if \(stopped\) remaining = remaining\.filter\(d => d >= startOfToday && d <= floorEnd\)/);
   });
 
   test('the Wi-Fi trigger passes the app-state check', () => {

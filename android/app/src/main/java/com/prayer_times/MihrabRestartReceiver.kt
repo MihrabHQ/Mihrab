@@ -5,11 +5,13 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import androidx.core.content.ContextCompat
+import com.facebook.react.HeadlessJsTaskService
 
 /**
  * Restarts the Live Activity foreground service after an app update or
  * device reboot, so the user doesn't need to open the app to get the
- * notification back.
+ * notification back — and, after an update, has the new version write the
+ * prayer alerts again (AlertsResyncHeadlessService).
  *
  * Handles two intents:
  *
@@ -52,6 +54,26 @@ class MihrabRestartReceiver : BroadcastReceiver() {
       PrayerWidgetProvider.requestUpdate(context)
     } catch (t: Throwable) {
       Log.w(TAG, "Failed to refresh widgets after $action", t)
+    }
+
+    // After an update, the prayer alerts: the previous version scheduled the
+    // next few days, at the times it worked out, and they fire as written
+    // until the app is opened and Today rewrites them — which a widget's
+    // deep link into another tab never does. The JS task writes them again
+    // now (AlertsResyncHeadlessService). The update broadcast is one of the
+    // wake-ups a background service may still be started from; refused
+    // anyway, the app's own start does it.
+    if (action == Intent.ACTION_MY_PACKAGE_REPLACED) {
+      try {
+        HeadlessJsTaskService.acquireWakeLockNow(context)
+        if (context.startService(Intent(context, AlertsResyncHeadlessService::class.java)) != null) {
+          Log.i(TAG, "$action — rewriting the prayer alerts")
+        }
+      } catch (e: IllegalStateException) {
+        Log.i(TAG, "$action — alert rewrite refused in the background; the app's start will do it")
+      } catch (t: Throwable) {
+        Log.w(TAG, "Failed to start the alert rewrite after $action", t)
+      }
     }
 
     val payload = MihrabLiveActivityModule.currentPayload(context)

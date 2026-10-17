@@ -432,6 +432,18 @@
           android:value="prayerCountdown" />
       </service>
 
+      <!-- Runs the JS "AlertsResync" task after an app update, started by
+           MihrabRestartReceiver: the new version writes the prayer alerts
+           again instead of leaving the previous version's to fire. -->
+      <service
+        android:name=".AlertsResyncHeadlessService"
+        android:exported="false"
+        android:foregroundServiceType="specialUse">
+        <property
+          android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+          android:value="prayerCountdown" />
+      </service>
+
       <!-- Serves the user's imported adhan to whoever plays notification
            sounds. The file lives in this app's private storage, so a file://
            URI would be unreadable outside the process; this turns it into a

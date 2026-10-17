@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { fetchPrayerTimesUnified } from '../providers/fetchPrayerTimes';
+import { asksAladhan, fetchAladhanMonth, fetchPrayerTimesUnified } from '../providers/fetchPrayerTimes';
 import { getIslamiskaForbundetDatasetTimes } from '../providers/islamiskaForbundetDataset';
 import { getHabousDatasetTimes } from '../providers/habousDataset';
 import { getMarwDatasetTimes } from '../providers/marwDataset';
@@ -18,7 +18,7 @@ import { AppState } from 'react-native';
 import { SWEDEN_METHOD_ID } from '../providers/swedenMethodId';
 import { isCoordinateInTurkey } from '../utils/turkeyRegion';
 import { autoMethodForCoords } from '../providers/autoMethod';
-import { methodAuthorityFor } from '../providers/methodCurrency';
+import { methodAuthorityFor, methodCurrencyReady } from '../providers/methodCurrency';
 import { correctionsKey } from '../providers/swedenCorrections';
 
 export type StoredPrayerData = {
@@ -79,6 +79,15 @@ type CacheEntry = StoredPrayerData & {
    * as "unknown" rather than as a mismatch — see `timezoneShift.ts`.
    */
   utcOffsetMinutes?: number;
+  /**
+   * Days (`YYYY-MM-DD`) stored from the phone's own calculation because the
+   * provider missed them — offline, rate-limited, down. Kept beside the
+   * months rather than in them: the widget and every other reader take a
+   * day's TimingsMap as it is. A marked day is asked of the provider again
+   * once the phone is online (`refetchFallbackDays`) and the mark goes when
+   * the provider answers; before this, such a day was kept for good.
+   */
+  fallbackDays?: string[];
 };
 
 type V2Shape = {
@@ -127,6 +136,16 @@ function getDayKey(date: Date): string {
  * instead of creating a new one each fetch.
  */
 function cacheKey(p: Omit<StoredPrayerData, 'months'>): string {
+  return cacheKeyWith(p, calculationPreferencesKey(p.calculationMethod));
+}
+
+/**
+ * The key with the calculation preferences' part given — the sweep's
+ * question is "is this slot's key what it would be today, under the
+ * preferences it was stored under", because a slot for another
+ * high-latitude rule is a choice the user can come back to, not debris.
+ */
+function cacheKeyWith(p: Omit<StoredPrayerData, 'months'>, preferencesPart: string): string {
   return [
     p.provider,
     p.latitude.toFixed(2),
@@ -134,7 +153,7 @@ function cacheKey(p: Omit<StoredPrayerData, 'months'>): string {
     String(p.calculationMethod),
     String(p.school),
     // Empty at the defaults, so nothing cached before these existed is lost.
-    calculationPreferencesKey(p.calculationMethod),
+    preferencesPart,
     // The Congress method's revision, where it answers: a day cached under
     // an earlier one is computed again, not kept.
     ...(computedByCongressMethod(p) ? [`cm=${CONGRESS_METHOD_REVISION}`] : []),
@@ -279,7 +298,191 @@ function readRawV2(): Promise<string | null> {
   return p;
 }
 
+/**
+ * THE CACHE'S SCHEMA — raised when what is stored, or where, changes in a
+ * way that leaves something behind for the launch sweep to clear.
+ * 1: the sweep itself (2.33): slots under keys no longer built (2.31's,
+ * without the preferences part; any under a superseded correction list or
+ * method revision) and the per-city files of the Swedish, Moroccan and
+ * Algerian datasets, which those countries' calculation replaced.
+ */
+export const CACHE_SCHEMA_VERSION = 1;
+const SCHEMA_KEY = 'prayer_times_cache.schema';
+/** Where the retired datasets kept a downloaded city's file. */
+const RETIRED_DATASET_PREFIXES = [
+  'ifis.dataset.v1.city.',
+  'habous.dataset.v1.city.',
+  'marw.dataset.v1.city.',
+];
+
+/**
+ * The most the cache may hold, serialized. A location's year is about
+ * 170 KB, so this is six or seven of them; past it the slots touched
+ * longest ago go first. Android's AsyncStorage keeps a value in one SQLite
+ * row read whole through a 2 MB cursor window, so a blob that kept growing
+ * with every place visited would one day stop being readable at all.
+ */
+export const CACHE_MAX_CHARS = 1_200_000;
+
+/** Is a stored slot under the key the app would build for it today? */
+function isCurrentSlot(storedKey: string, entry: CacheEntry): boolean {
+  if (
+    !entry ||
+    typeof entry !== 'object' ||
+    typeof entry.latitude !== 'number' ||
+    typeof entry.longitude !== 'number' ||
+    !entry.months ||
+    typeof entry.months !== 'object'
+  ) {
+    return false;
+  }
+  const parts = storedKey.split('|');
+  // 2.31 and earlier: provider|lat|lng|method|school, no preferences part.
+  if (parts.length < 6) return false;
+  try {
+    return cacheKeyWith(entry, parts[5]) === storedKey;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Once per launch, before the first read: drop what can no longer be read.
+ *
+ * A slot is found by the key built from its parameters, and that key has
+ * grown (the preferences part in 2.32, the method revisions, the correction
+ * list in force). A slot under a key no longer built is never read again,
+ * but it was carried in every read and write of the blob, for ever — a
+ * year a location, after an update, or after each new correction list.
+ * The retired datasets' city files are the same, outside the blob.
+ *
+ * Only once the downloaded correction lists are read: before that the key
+ * this would compare against is the bundled list's, and a year stored under
+ * the downloaded one would look stale.
+ */
+let slotSweep: Promise<void> | null = null;
+let retiredSweep: Promise<void> | null = null;
+function sweepOnce(listsRead: boolean): Promise<void> {
+  // Decided by the first read of the launch. When the lists were not read
+  // in time the slots are left for the next launch: sweeping them later
+  // would race the reads and writes already under way.
+  slotSweep ??= listsRead ? sweepSlots() : Promise.resolve();
+  retiredSweep ??= sweepRetiredDatasets();
+  return Promise.all([slotSweep, retiredSweep]).then(() => undefined);
+}
+
+/** Tests: a fresh launch. */
+export function _resetCacheSweepForTests(): void {
+  slotSweep = null;
+  retiredSweep = null;
+}
+
+async function sweepSlots(): Promise<void> {
+  {
+    try {
+      const raw = await readRawV2();
+      const parsed = raw ? (JSON.parse(raw) as V2Shape) : null;
+      if (parsed && typeof parsed === 'object' && parsed.caches && typeof parsed.caches === 'object') {
+        const caches: Record<string, CacheEntry> = {};
+        let dropped = 0;
+        for (const [k, entry] of Object.entries(parsed.caches)) {
+          if (isCurrentSlot(k, entry)) caches[k] = entry;
+          else dropped += 1;
+        }
+        if (dropped > 0) await saveV2Once({ ...parsed, caches });
+      }
+    } catch {
+      /* the cache stands as it is; the next launch tries again */
+    }
+  }
+}
+
+async function sweepRetiredDatasets(): Promise<void> {
+  try {
+    if ((await AsyncStorage.getItem(SCHEMA_KEY)) === String(CACHE_SCHEMA_VERSION)) return;
+    const keys: readonly string[] =
+      typeof AsyncStorage.getAllKeys === 'function' ? await AsyncStorage.getAllKeys() : [];
+    const retired = keys.filter(k => RETIRED_DATASET_PREFIXES.some(prefix => k.startsWith(prefix)));
+    if (retired.length > 0) {
+      if (typeof AsyncStorage.multiRemove === 'function') await AsyncStorage.multiRemove(retired);
+      else for (const k of retired) await AsyncStorage.removeItem(k);
+    }
+    await AsyncStorage.setItem(SCHEMA_KEY, String(CACHE_SCHEMA_VERSION));
+  } catch {
+    /* the next launch tries again */
+  }
+}
+
+/**
+ * Keep the blob under `CACHE_MAX_CHARS`: the slots accessed longest ago go
+ * first, the one being written last of all — and only then its oldest
+ * months. Returns the shape to write, serialized.
+ */
+function capToSize(v2: V2Shape, activeKey: string): { shape: V2Shape; json: string } {
+  let json = JSON.stringify(v2);
+  if (json.length <= CACHE_MAX_CHARS) return { shape: v2, json };
+  const caches = { ...v2.caches };
+  const stamp = (k: string) => Date.parse(caches[k]?.lastAccessedAt) || 0;
+  const others = Object.keys(caches)
+    .filter(k => k !== activeKey)
+    .sort((a, b) => stamp(a) - stamp(b));
+  let size = json.length;
+  for (const k of others) {
+    if (size <= CACHE_MAX_CHARS) break;
+    size -= JSON.stringify(k).length + 1 + JSON.stringify(caches[k]).length + 1;
+    delete caches[k];
+  }
+  let shape: V2Shape = { ...v2, caches };
+  json = JSON.stringify(shape);
+  while (json.length > CACHE_MAX_CHARS && caches[activeKey]) {
+    const slim = evictOldestMonth(caches[activeKey]);
+    if (!slim) break;
+    caches[activeKey] = slim;
+    shape = { ...v2, caches };
+    json = JSON.stringify(shape);
+  }
+  if (others.some(k => !(k in caches))) {
+    console.warn('prayerStorage: over the size cap, evicted the least recently used locations');
+  }
+  return { shape, json };
+}
+
+/**
+ * How long a cache read waits for the downloaded correction lists before
+ * going ahead under the ones in memory. Storage answers in milliseconds; a
+ * hung bridge must not take the times with it.
+ */
+const METHOD_CURRENCY_WAIT_MS = 3000;
+
+/**
+ * The correction list in force is part of `cacheKey`. Settings start the
+ * read of the downloaded lists without waiting for it, so a cache read in
+ * the first moments of a cold start asked under the BUNDLED list's key and
+ * missed a year stored under the downloaded one — the widget's window came
+ * back empty, a fill fetched again what was on the phone. Every read and
+ * write of the cache waits for that read first; once it has settled this is
+ * a resolved promise. True when it settled, false when it timed out.
+ */
+async function awaitMethodCurrency(): Promise<boolean> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const timedOut = new Promise<false>(resolve => {
+    timer = setTimeout(() => resolve(false), METHOD_CURRENCY_WAIT_MS);
+  });
+  try {
+    return await Promise.race([
+      methodCurrencyReady().then(
+        () => true,
+        () => true,
+      ),
+      timedOut,
+    ]);
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
+}
+
 async function loadV2(): Promise<V2Shape> {
+  await sweepOnce(await awaitMethodCurrency());
   // Try the v2 shape first.
   try {
     const raw = await readRawV2();
@@ -323,20 +526,21 @@ async function loadV2(): Promise<V2Shape> {
   return { caches: {} };
 }
 
-async function saveV2Once(v2: V2Shape): Promise<SaveResult> {
+async function saveV2Once(v2: V2Shape, json: string = JSON.stringify(v2)): Promise<SaveResult> {
   // A read that is still in flight would answer with the blob from before
   // this write; nobody who asks from here on may be handed it.
   rawV2Inflight = null;
   try {
-    await AsyncStorage.setItem(STORAGE_KEY_V2, JSON.stringify(v2));
+    await AsyncStorage.setItem(STORAGE_KEY_V2, json);
     return { ok: true };
   } catch (e) {
     return { ok: false, reason: isQuotaError(e) ? 'quota' : 'unknown', error: e };
   }
 }
 
-async function saveV2(v2: V2Shape, activeKey: string): Promise<SaveResult> {
-  let attempt = await saveV2Once(v2);
+async function saveV2(full: V2Shape, activeKey: string): Promise<SaveResult> {
+  const { shape: v2, json } = capToSize(full, activeKey);
+  let attempt = await saveV2Once(v2, json);
   if (attempt.ok) return attempt;
 
   // Quota pressure — evict oldest month from the active cache first.
@@ -420,7 +624,7 @@ export async function getStoredPrayerData(): Promise<StoredPrayerData | null> {
   });
   // Strip lastAccessedAt to keep the public StoredPrayerData shape stable.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { lastAccessedAt: _ts, ...rest } = v2.caches[newest];
+  const { lastAccessedAt: _ts, fallbackDays: _marks, ...rest } = v2.caches[newest];
   return rest;
 }
 
@@ -502,9 +706,14 @@ function isReadableDay(day: TimingsMap): boolean {
  * read at the top of `getOrFetchPrayerTimes` overtakes a cached fallback the
  * moment the published window reaches that date.
  */
+type LastResortResult = PrayerTimesResult & {
+  /** The provider missed and this is the phone's stand-in (see `fallbackDays`). */
+  fellBack?: boolean;
+};
+
 async function fetchWithLocalLastResort(
   params: Omit<StoredPrayerData, 'months'> & { date: Date },
-): Promise<PrayerTimesResult> {
+): Promise<LastResortResult> {
   try {
     return await fetchPrayerTimesUnified({
       provider: params.provider,
@@ -527,7 +736,7 @@ async function fetchWithLocalLastResort(
     // listed city on the ministry's clock, Diyanet's method, a national
     // table's place — and only then the bare calculation.
     try {
-      return await fetchPrayerTimesUnified({
+      const offline = await fetchPrayerTimesUnified({
         provider: params.provider,
         latitude: params.latitude,
         longitude: params.longitude,
@@ -536,6 +745,7 @@ async function fetchWithLocalLastResort(
         school: params.school,
         offline: true,
       });
+      return { ...offline, fellBack: true };
     } catch {
       /* the bare calculation below */
     }
@@ -548,6 +758,7 @@ async function fetchWithLocalLastResort(
         school: params.school,
       }),
       source: 'local',
+      fellBack: true,
     };
   }
 }
@@ -722,6 +933,7 @@ export async function getOrFetchPrayerTimes(
                 lastAccessedAt: new Date().toISOString(),
                 lastFetchedAt: new Date().toISOString(),
                 utcOffsetMinutes: deviceUtcOffsetMinutes(),
+                ...markedDays(existing?.fallbackDays, res.fellBack ? [dayKey] : [], res.fellBack ? [] : [dayKey], months),
               },
             },
           };
@@ -888,7 +1100,6 @@ export async function refreshPrayerDataCache(
    */
   const floorEnd = new Date(startOfToday);
   floorEnd.setDate(floorEnd.getDate() + MIN_GUARANTEED_DAYS - 1);
-  const floorPrefix = forward.filter(d => d <= floorEnd).length;
 
   if (datesToFetch.length === 0) {
     if (onProgress) onProgress(1, 1);
@@ -898,9 +1109,67 @@ export async function refreshPrayerDataCache(
   const concurrency = 4;
   let completed = 0;
   const months = { ...existing.months };
+  const fellBack: string[] = [];
+  const answered: string[] = [];
 
-  for (let i = 0; i < datesToFetch.length; i += concurrency) {
-    const batch = datesToFetch.slice(i, i + concurrency);
+  /**
+   * AlAdhan answers a whole month in one request (its calendar), so where
+   * the days would be asked of AlAdhan a month is asked at once: a year's
+   * fill is twelve requests instead of ~365. Each day is checked as a single
+   * day's answer is, and one that fails is not stored but left to the
+   * day-by-day loop below, as is everything after a month that does not
+   * come (offline, rate-limited). A month with a single day missing is
+   * asked as that day.
+   */
+  let remaining = datesToFetch;
+  let stopped = false;
+  if (
+    typeof asksAladhan === 'function' &&
+    typeof fetchAladhanMonth === 'function' &&
+    asksAladhan(params)
+  ) {
+    const byMonth = new Map<string, Date[]>();
+    for (const d of datesToFetch) {
+      const mk = getMonthKey(d);
+      byMonth.set(mk, [...(byMonth.get(mk) ?? []), d]);
+    }
+    const done = new Set<string>();
+    for (const mk of [...byMonth.keys()].sort()) {
+      const dates = byMonth.get(mk)!;
+      if (dates.length < 2) continue;
+      const [y, m] = mk.split('-').map(Number);
+      // Past the floor, a month is opportunistic and may be stopped.
+      if (new Date(y, m - 1, 1) > floorEnd && shouldContinue && !shouldContinue()) {
+        stopped = true;
+        break;
+      }
+      let answer: Map<string, PrayerTimesResult>;
+      try {
+        answer = await fetchAladhanMonth(params, y, m);
+      } catch (e) {
+        console.warn(`AlAdhan's calendar for ${mk} did not come; filling day by day`, e);
+        break;
+      }
+      for (const date of dates) {
+        const dayKey = getDayKey(date);
+        const day = answer.get(dayKey);
+        if (!day) continue;
+        months[mk] = { ...(months[mk] ?? {}), [dayKey]: day.timings };
+        answered.push(dayKey);
+        done.add(dayKey);
+        completed += 1;
+      }
+      if (onProgress) onProgress(completed, datesToFetch.length);
+      await new Promise(resolve => setTimeout(() => resolve(undefined), 100));
+    }
+    remaining = datesToFetch.filter(d => !done.has(getDayKey(d)));
+    // Stopped by the caller: only what the floor still lacks.
+    if (stopped) remaining = remaining.filter(d => d >= startOfToday && d <= floorEnd);
+  }
+  const floorPrefix = remaining.filter(d => d >= startOfToday && d <= floorEnd).length;
+
+  for (let i = 0; i < remaining.length; i += concurrency) {
+    const batch = remaining.slice(i, i + concurrency);
     const batchResult = await Promise.all(
       batch.map(async date => {
         try {
@@ -912,7 +1181,7 @@ export async function refreshPrayerDataCache(
             calculationMethod: params.calculationMethod,
             school: params.school,
           });
-          return { date, timings: res.timings };
+          return { date, timings: res.timings, fellBack: res.fellBack === true };
         } catch (e) {
           // Background fill failures are best-effort. warn (not error) so
           // dev builds don'\''t flash a red LogBox banner over the UI for a
@@ -929,6 +1198,7 @@ export async function refreshPrayerDataCache(
         const dayKey = getDayKey(item.date);
         if (!months[monthKey]) months[monthKey] = {};
         months[monthKey][dayKey] = item.timings;
+        (item.fellBack ? fellBack : answered).push(dayKey);
       }
     }
 
@@ -940,7 +1210,7 @@ export async function refreshPrayerDataCache(
     // paid for. `break` rather than `return` — the single write below is what
     // keeps the days fetched so far, so stopping is resumable by
     // construction and nothing is lost.
-    if (i + concurrency >= floorPrefix && shouldContinue && !shouldContinue()) {
+    if (i + concurrency >= floorPrefix && (stopped || (shouldContinue && !shouldContinue()))) {
       break;
     }
 
@@ -963,10 +1233,147 @@ export async function refreshPrayerDataCache(
         lastAccessedAt: new Date().toISOString(),
         lastFetchedAt: new Date().toISOString(),
         utcOffsetMinutes: deviceUtcOffsetMinutes(),
+        ...markedDays(existing.fallbackDays, fellBack, answered, months),
       },
     },
   };
   await saveV2(next, k);
+}
+
+/**
+ * The `fallbackDays` field for an entry: the marks it had, plus `add`,
+ * less `clear`, and only for days the months still hold. Spread into the
+ * entry — absent when nothing is marked, so an entry with no stand-ins
+ * looks exactly as it did before marks existed.
+ */
+function markedDays(
+  had: readonly string[] | undefined,
+  add: readonly string[],
+  clear: readonly string[],
+  months: CacheEntry['months'],
+): { fallbackDays?: string[] } {
+  const out = new Set(Array.isArray(had) ? had : []);
+  for (const d of add) out.add(d);
+  for (const d of clear) out.delete(d);
+  for (const d of out) {
+    if (!months[d.slice(0, 7)]?.[d]) out.delete(d);
+  }
+  return out.size > 0 ? { fallbackDays: [...out].sort() } : {};
+}
+
+/** Days asked again per batch, and the most asked in one go. */
+const FALLBACK_REFETCH_BATCH = 4;
+const FALLBACK_REFETCH_MAX = 62;
+const _fallbackRefetchInflight = new Map<string, Promise<number>>();
+
+/**
+ * Ask the provider again for the days this location holds from the phone's
+ * own calculation (`fallbackDays`), a few at a time — today onwards first,
+ * then the days behind — replacing each one the provider answers and
+ * clearing its mark. A batch the provider misses entirely ends the run (the
+ * phone is still offline, or the provider still down); the marks stay for
+ * the next. Stops when the app goes to the background. Returns how many
+ * days were replaced.
+ *
+ * Called when the phone is online (`usePrayerDay`'s connectivity listener).
+ */
+export function refetchFallbackDays(
+  params: Omit<StoredPrayerData, 'months'>,
+  maxDays: number = FALLBACK_REFETCH_MAX,
+): Promise<number> {
+  const inflightKey = JSON.stringify([params.provider, params.latitude, params.longitude, params.calculationMethod, params.school]);
+  const running = _fallbackRefetchInflight.get(inflightKey);
+  if (running) return running;
+  const p = refetchFallbackDaysOnce(params, maxDays).finally(() => {
+    _fallbackRefetchInflight.delete(inflightKey);
+  });
+  _fallbackRefetchInflight.set(inflightKey, p);
+  return p;
+}
+
+async function refetchFallbackDaysOnce(
+  params: Omit<StoredPrayerData, 'months'>,
+  maxDays: number,
+): Promise<number> {
+  if (params.provider === 'local_adhan') return 0;
+  const v2 = await loadV2();
+  const entry = v2.caches[cacheKey(params)];
+  const marked = (entry?.fallbackDays ?? []).filter(d => entry?.months[d.slice(0, 7)]?.[d]);
+  if (marked.length === 0) return 0;
+  const today = formatLocalDate(new Date());
+  const order = [
+    ...marked.filter(d => d >= today).sort(),
+    ...marked.filter(d => d < today).sort().reverse(),
+  ].slice(0, maxDays);
+
+  let replaced = 0;
+  for (let i = 0; i < order.length; i += FALLBACK_REFETCH_BATCH) {
+    if (i > 0 && isAppBackgrounded()) break;
+    const batch = order.slice(i, i + FALLBACK_REFETCH_BATCH);
+    const answers = await Promise.all(
+      batch.map(async dayKey => {
+        const [y, m, d] = dayKey.split('-').map(Number);
+        try {
+          const res = await fetchPrayerTimesUnified({
+            provider: params.provider,
+            latitude: params.latitude,
+            longitude: params.longitude,
+            date: new Date(y, m - 1, d),
+            calculationMethod: params.calculationMethod,
+            school: params.school,
+          });
+          return { dayKey, timings: res.timings };
+        } catch {
+          return null;
+        }
+      }),
+    );
+    const got = answers.filter((a): a is { dayKey: string; timings: TimingsMap } => a != null);
+    if (got.length === 0) break;
+    await queueCacheWrite('fallback refetch', async () => {
+      const now = await loadV2();
+      const k = cacheKey(params);
+      const current = now.caches[k];
+      if (!current) return;
+      const months = { ...current.months };
+      for (const { dayKey, timings } of got) {
+        const mk = dayKey.slice(0, 7);
+        if (!months[mk]?.[dayKey]) continue; // dropped meanwhile; not brought back
+        months[mk] = { ...months[mk], [dayKey]: timings };
+      }
+      await saveV2(
+        {
+          caches: {
+            ...now.caches,
+            [k]: {
+              ...current,
+              months,
+              fallbackDays: undefined,
+              lastFetchedAt: new Date().toISOString(),
+              utcOffsetMinutes: deviceUtcOffsetMinutes(),
+              ...markedDays(current.fallbackDays, [], got.map(a => a.dayKey), months),
+            },
+          },
+        },
+        k,
+      );
+    });
+    replaced += got.length;
+  }
+  return replaced;
+}
+
+/** Run a cache write after every write queued before it (the write mutex). */
+function queueCacheWrite(label: string, write: () => Promise<void>): Promise<void> {
+  const run = _writeMutex.then(async () => {
+    try {
+      await withTimeout(write(), MUTEX_TIMEOUT_MS, label);
+    } catch (e) {
+      console.warn(`prayerStorage: ${label} failed`, e);
+    }
+  });
+  _writeMutex = run;
+  return run;
 }
 
 /**
@@ -1000,6 +1407,7 @@ export async function dropStoredMonths(
             [k]: {
               ...entry,
               months: {},
+              fallbackDays: undefined,
               // The offset the empty entry now stands for, so the next
               // load does not read the drop as another shift.
               utcOffsetMinutes: deviceUtcOffsetMinutes(),
@@ -1048,7 +1456,10 @@ export async function refetchStoredMonths(
         }
         if (!touched) return;
         await saveV2Once({
-          caches: { ...v2.caches, [k]: { ...entry, months } },
+          caches: {
+            ...v2.caches,
+            [k]: { ...entry, months, fallbackDays: undefined, ...markedDays(entry.fallbackDays, [], [], months) },
+          },
         });
       })(),
       MUTEX_TIMEOUT_MS,
@@ -1139,6 +1550,7 @@ function isAppBackgrounded(): boolean {
 export async function maybeFullSyncOnWifi(
   params: Omit<StoredPrayerData, 'months'>,
 ): Promise<boolean> {
+  await awaitMethodCurrency();
   const k = cacheKey(params);
   const now = Date.now();
   const last = _lastFullSyncAttemptByKey.get(k) ?? 0;

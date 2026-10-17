@@ -138,7 +138,7 @@ function labelFor(settings: PrayerAppSettings): string {
  * Gapless: both readers stop at the first day they cannot produce, because
  * every consumer of these arrays indexes them as `today + i`.
  */
-async function rawWindow(
+export async function rawWindow(
   params: DayWindowParams,
   now: Date,
 ): Promise<TimingsMap[]> {
