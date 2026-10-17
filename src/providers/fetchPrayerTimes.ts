@@ -1,5 +1,5 @@
 import type { PrayerTimesResult, UnifiedFetchParams } from './types';
-import { fetchAladhanTimes } from './aladhan';
+import { fetchAladhanCalendar, fetchAladhanTimes } from './aladhan';
 import { getIslamiskaForbundetDatasetTimes } from './islamiskaForbundetDataset';
 import { getHabousDatasetTimes } from './habousDataset';
 import { getMarwDatasetTimes } from './marwDataset';
@@ -109,6 +109,60 @@ async function onDeviceMethod(p: UnifiedFetchParams): Promise<PrayerTimesResult 
   };
   validateTimingShape(local.timings);
   return local;
+}
+
+/**
+ * Would `fetchPrayerTimesUnified` ask AlAdhan for these parameters? The
+ * AlAdhan provider with a method that is not computed on the phone — the
+ * case a month can be asked of AlAdhan's calendar in one request.
+ */
+export function asksAladhan(p: {
+  provider: UnifiedFetchParams['provider'];
+  latitude: number;
+  longitude: number;
+  calculationMethod: UnifiedFetchParams['calculationMethod'];
+}): boolean {
+  if (p.provider !== 'aladhan') return false;
+  const method =
+    p.calculationMethod === 'auto'
+      ? autoMethodForCoords(p.latitude, p.longitude)
+      : p.calculationMethod;
+  return !ON_DEVICE_METHODS.has(method);
+}
+
+/**
+ * A month of AlAdhan's days (`month` 1–12), each checked as a single day's
+ * answer is below — Imsak made sure of, then `validateTimings` — and keyed
+ * `YYYY-MM-DD`. A day that fails is left out, for the caller to ask for on
+ * its own; the request failing throws.
+ */
+export async function fetchAladhanMonth(
+  p: Pick<UnifiedFetchParams, 'latitude' | 'longitude' | 'calculationMethod' | 'school'>,
+  year: number,
+  month: number,
+): Promise<Map<string, PrayerTimesResult>> {
+  const days = await fetchAladhanCalendar({
+    latitude: p.latitude,
+    longitude: p.longitude,
+    year,
+    month,
+    method: p.calculationMethod,
+    school: p.school,
+  });
+  const out = new Map<string, PrayerTimesResult>();
+  for (const day of days) {
+    let timings = day.timings;
+    if (!timings.Imsak && timings.Fajr) {
+      timings = { ...timings, Imsak: computeImsak(timings.Fajr, DEFAULT_IMSAK_OFFSET_MINUTES) };
+    }
+    try {
+      validateTimings(timings);
+    } catch {
+      continue;
+    }
+    out.set(day.date, { timings, timezone: day.timezone, source: 'aladhan' });
+  }
+  return out;
 }
 
 /** The user's method on the phone, where the provider would have asked the network. */

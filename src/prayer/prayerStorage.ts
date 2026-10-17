@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { fetchPrayerTimesUnified } from '../providers/fetchPrayerTimes';
+import { asksAladhan, fetchAladhanMonth, fetchPrayerTimesUnified } from '../providers/fetchPrayerTimes';
 import { getIslamiskaForbundetDatasetTimes } from '../providers/islamiskaForbundetDataset';
 import { getHabousDatasetTimes } from '../providers/habousDataset';
 import { getMarwDatasetTimes } from '../providers/marwDataset';
@@ -1100,7 +1100,6 @@ export async function refreshPrayerDataCache(
    */
   const floorEnd = new Date(startOfToday);
   floorEnd.setDate(floorEnd.getDate() + MIN_GUARANTEED_DAYS - 1);
-  const floorPrefix = forward.filter(d => d <= floorEnd).length;
 
   if (datesToFetch.length === 0) {
     if (onProgress) onProgress(1, 1);
@@ -1113,8 +1112,64 @@ export async function refreshPrayerDataCache(
   const fellBack: string[] = [];
   const answered: string[] = [];
 
-  for (let i = 0; i < datesToFetch.length; i += concurrency) {
-    const batch = datesToFetch.slice(i, i + concurrency);
+  /**
+   * AlAdhan answers a whole month in one request (its calendar), so where
+   * the days would be asked of AlAdhan a month is asked at once: a year's
+   * fill is twelve requests instead of ~365. Each day is checked as a single
+   * day's answer is, and one that fails is not stored but left to the
+   * day-by-day loop below, as is everything after a month that does not
+   * come (offline, rate-limited). A month with a single day missing is
+   * asked as that day.
+   */
+  let remaining = datesToFetch;
+  let stopped = false;
+  if (
+    typeof asksAladhan === 'function' &&
+    typeof fetchAladhanMonth === 'function' &&
+    asksAladhan(params)
+  ) {
+    const byMonth = new Map<string, Date[]>();
+    for (const d of datesToFetch) {
+      const mk = getMonthKey(d);
+      byMonth.set(mk, [...(byMonth.get(mk) ?? []), d]);
+    }
+    const done = new Set<string>();
+    for (const mk of [...byMonth.keys()].sort()) {
+      const dates = byMonth.get(mk)!;
+      if (dates.length < 2) continue;
+      const [y, m] = mk.split('-').map(Number);
+      // Past the floor, a month is opportunistic and may be stopped.
+      if (new Date(y, m - 1, 1) > floorEnd && shouldContinue && !shouldContinue()) {
+        stopped = true;
+        break;
+      }
+      let answer: Map<string, PrayerTimesResult>;
+      try {
+        answer = await fetchAladhanMonth(params, y, m);
+      } catch (e) {
+        console.warn(`AlAdhan's calendar for ${mk} did not come; filling day by day`, e);
+        break;
+      }
+      for (const date of dates) {
+        const dayKey = getDayKey(date);
+        const day = answer.get(dayKey);
+        if (!day) continue;
+        months[mk] = { ...(months[mk] ?? {}), [dayKey]: day.timings };
+        answered.push(dayKey);
+        done.add(dayKey);
+        completed += 1;
+      }
+      if (onProgress) onProgress(completed, datesToFetch.length);
+      await new Promise(resolve => setTimeout(() => resolve(undefined), 100));
+    }
+    remaining = datesToFetch.filter(d => !done.has(getDayKey(d)));
+    // Stopped by the caller: only what the floor still lacks.
+    if (stopped) remaining = remaining.filter(d => d >= startOfToday && d <= floorEnd);
+  }
+  const floorPrefix = remaining.filter(d => d >= startOfToday && d <= floorEnd).length;
+
+  for (let i = 0; i < remaining.length; i += concurrency) {
+    const batch = remaining.slice(i, i + concurrency);
     const batchResult = await Promise.all(
       batch.map(async date => {
         try {
@@ -1155,7 +1210,7 @@ export async function refreshPrayerDataCache(
     // paid for. `break` rather than `return` — the single write below is what
     // keeps the days fetched so far, so stopping is resumable by
     // construction and nothing is lost.
-    if (i + concurrency >= floorPrefix && shouldContinue && !shouldContinue()) {
+    if (i + concurrency >= floorPrefix && (stopped || (shouldContinue && !shouldContinue()))) {
       break;
     }
 
