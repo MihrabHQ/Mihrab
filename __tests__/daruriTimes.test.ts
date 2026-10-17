@@ -612,7 +612,7 @@ describe("Ishāʾ's boundary agrees with the row it shares an instant with", () 
   it('is present on every day of a window, including the last', () => {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { injectNightTimes } = require('../src/utils/nightTimes');
-    const withNight = injectNightTimes(raw);
+    const withNight = injectNightTimes(raw, START);
     const out = injectDaruriTimes(withNight, START, CASA.lat, CASA.lng);
 
     for (const [i, day] of out.entries()) {
@@ -649,7 +649,7 @@ describe("Ishāʾ's boundary agrees with the row it shares an instant with", () 
   it('agrees on the last day, where the proxy is doing the work', () => {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { injectNightTimes } = require('../src/utils/nightTimes');
-    const withNight = injectNightTimes(raw);
+    const withNight = injectNightTimes(raw, START);
     const out = injectDaruriTimes(withNight, START, CASA.lat, CASA.lng);
     const last = out[out.length - 1];
     expect(last.IshaDaruri).toBe(last.Firstthird);
