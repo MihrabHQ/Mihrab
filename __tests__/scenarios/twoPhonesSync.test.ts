@@ -239,6 +239,12 @@ describe('settings with location', () => {
       auto: false,
       provider: 'local_adhan',
     });
+    // A's own saved place is still A's, with its source.
+    expect(after.locationPresets.map(p => p.id).sort()).toEqual(
+      [BERLIN.id, HOME.id, NYC.id].sort(),
+    );
+    // (Automatic, as it was: under Automatic the provider is only a hint.)
+    expect(providerChoiceForKey(after, HOME.id).auto).toBe(true);
   });
 
   it('settings declined on the receiving side: nothing about the place moves', async () => {

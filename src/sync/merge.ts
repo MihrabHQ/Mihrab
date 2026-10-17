@@ -969,6 +969,38 @@ function mergeLocationProviders(
 }
 
 /**
+ * The location category: the incoming device's values win field by field,
+ * as for settings — except the saved locations, which are joined by id
+ * rather than replaced. Taken as one field, a sync from a phone with other
+ * saved places deleted every one of this phone's that the other did not
+ * have (and the next sync back carried the loss to the other phone too),
+ * while their sources were kept in `locationProviders` for places that no
+ * longer existed. A place both phones have takes the incoming copy.
+ */
+export function mergeLocation(
+  local: Record<string, unknown>,
+  incoming: Record<string, unknown>,
+): Record<string, unknown> {
+  const out = mergeShallow(local, incoming);
+  const theirs = incoming.locationPresets;
+  const ours = local.locationPresets;
+  if (Array.isArray(theirs) && Array.isArray(ours)) {
+    const ids = new Set(
+      theirs
+        .filter(p => isPlainObject(p) && typeof p.id === 'string')
+        .map(p => (p as { id: string }).id),
+    );
+    out.locationPresets = [
+      ...theirs,
+      ...ours.filter(
+        p => !(isPlainObject(p) && typeof p.id === 'string' && ids.has(p.id)),
+      ),
+    ];
+  }
+  return out;
+}
+
+/**
  * Fold a snapshot into the local data, honouring BOTH what the snapshot
  * carries and what the user asked to accept.
  *
@@ -1007,7 +1039,7 @@ export function mergeData(
         : local.settings,
     location:
       accept.location && d.location
-        ? mergeShallow(local.location, d.location)
+        ? mergeLocation(local.location, d.location)
         : local.location,
   };
 }
