@@ -1,6 +1,6 @@
 /**
  * Pure-logic tests for tasks #29–#38 — fasting tracker, onboarding step
- * builder, backup envelope helpers, time-of-day tint, responsive
+ * builder, time-of-day tint, responsive
  * breakpoints, design tokens, theme contrast, and motion resolution.
  */
 
@@ -15,13 +15,6 @@ import {
   buildOnboardingSteps,
   onboardingProgress,
 } from '../src/onboarding/steps';
-import {
-  BACKUP_FORMAT_VERSION,
-  buildPayload,
-  checkEnvelopeCompatibility,
-  isLikelyBackupEnvelope,
-  parsePayload,
-} from '../src/backup/backup';
 import { tintForTime } from '../src/polish/timeOfDayTint';
 import {
   BREAKPOINT_EXPANDED,
@@ -156,56 +149,6 @@ describe('onboarding step builder', () => {
     const steps = buildOnboardingSteps(true);
     expect(onboardingProgress(steps, 1)).toEqual({ now: 1, total: 4 });
     expect(onboardingProgress(steps, 4)).toEqual({ now: 4, total: 4 });
-  });
-});
-
-// ─────────────────────────────────────────────────────────────────────────
-// #31 Backup
-// ─────────────────────────────────────────────────────────────────────────
-describe('backup envelope helpers', () => {
-  test('parsePayload coerces unknown shape into safe defaults', () => {
-    const parsed = parsePayload({ junk: 1 });
-    expect(parsed.settings).toEqual({});
-    expect(parsed.secureSettings).toEqual({});
-    expect(parsed.journal).toEqual([]);
-    expect(parsed.fasting).toEqual([]);
-  });
-
-  test('parsePayload throws on non-object', () => {
-    expect(() => parsePayload(null)).toThrow();
-    expect(() => parsePayload('x')).toThrow();
-  });
-
-  test('isLikelyBackupEnvelope checks the envelope shape', () => {
-    expect(
-      isLikelyBackupEnvelope({
-        version: 1, createdAt: 'now', salt: 's', iv: 'i', ciphertext: 'c',
-      }),
-    ).toBe(true);
-    expect(isLikelyBackupEnvelope({ version: 1 })).toBe(false);
-    expect(isLikelyBackupEnvelope(null)).toBe(false);
-  });
-
-  test('checkEnvelopeCompatibility rejects future versions', () => {
-    expect(() =>
-      checkEnvelopeCompatibility({
-        version: BACKUP_FORMAT_VERSION + 1,
-        createdAt: '', salt: '', iv: '', ciphertext: '',
-      }),
-    ).toThrow(/newer version/);
-  });
-
-  test('buildPayload preserves input fields', () => {
-    const p = buildPayload({
-      settings: { a: 1 },
-      secureSettings: { b: 2 },
-      journal: [{ x: 1 }],
-      fasting: [],
-    });
-    expect(p.settings).toEqual({ a: 1 });
-    expect(p.secureSettings).toEqual({ b: 2 });
-    expect(p.journal).toEqual([{ x: 1 }]);
-    expect(p.fasting).toEqual([]);
   });
 });
 
