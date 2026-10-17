@@ -22,6 +22,7 @@ import {
   pendingTimezoneShift,
   clearTimezoneShiftNotice,
   settleTimezoneShift,
+  timezoneShiftAwaitingFix,
   _resetTimezoneShiftForTests,
 } from '../src/prayer/timezoneShift';
 import { formatUtcOffset } from '../src/utils/utcOffset';
@@ -206,5 +207,99 @@ describe('what a shift throws away', () => {
       to: 540,
     });
     expect(mockDrop).toHaveBeenCalled();
+  });
+});
+
+describe('a zone’s own summer time is not a shift', () => {
+  // Every EU summer-time change used to show the notice and drop the
+  // current place's stored year — costly on a phone that is offline — when
+  // nothing about the stored times was wrong: they were written under the
+  // zone's rules, the change included.
+  const EU_END = Date.UTC(2026, 9, 25, 1, 0); // 03:00 CEST → 02:00 CET
+  let zone = 'Europe/Stockholm';
+  beforeEach(() => {
+    zone = 'Europe/Stockholm';
+    jest
+      .spyOn(Intl.DateTimeFormat.prototype, 'resolvedOptions')
+      .mockImplementation(
+        () => ({ timeZone: zone }) as Intl.ResolvedDateTimeFormatOptions,
+      );
+    jest
+      .spyOn(Date.prototype, 'getTimezoneOffset')
+      .mockImplementation(function (this: Date) {
+        if (zone === 'Africa/Casablanca') return 0;
+        return this.getTime() >= EU_END ? -60 : -120;
+      });
+  });
+  afterEach(() => jest.restoreAllMocks());
+
+  const sthlm = params({ provider: 'islamiska_forbundet', ...STOCKHOLM });
+
+  it('the end of EU summer time: no notice, nothing dropped', async () => {
+    await settleTimezoneShift({ ...sthlm, now: new Date(Date.UTC(2026, 9, 24, 18)) });
+    _resetTimezoneShiftForTests(); // the next morning's launch
+    const shift = await settleTimezoneShift({
+      ...sthlm,
+      now: new Date(Date.UTC(2026, 9, 25, 7)),
+    });
+    expect(shift).toBeNull();
+    expect(pendingTimezoneShift()).toBeNull();
+    expect(mockDrop).not.toHaveBeenCalled();
+    expect(mockIfis).not.toHaveBeenCalled();
+  });
+
+  it('a minute either side of the change is still foreseen', async () => {
+    await settleTimezoneShift({ ...sthlm, now: new Date(EU_END - 60_000) });
+    expect(
+      await noticeTimezoneShift(new Date(EU_END + 60_000)),
+    ).toBeNull();
+  });
+
+  it('a change the zone’s rules did not foresee still is one', async () => {
+    // Morocco abolishing GMT+1 on a phone whose zone data learnt it late:
+    // the same zone name, an offset its stored forecast did not have.
+    await settleTimezoneShift({ ...sthlm, now: new Date(Date.UTC(2026, 6, 1)) });
+    (Date.prototype.getTimezoneOffset as jest.Mock).mockReturnValue(-180);
+    const shift = await settleTimezoneShift({
+      ...sthlm,
+      now: new Date(Date.UTC(2026, 6, 2)),
+    });
+    expect(shift).toMatchObject({ from: 120, to: 180 });
+    expect(mockDrop).toHaveBeenCalledTimes(1);
+  });
+
+  it('Stockholm → Casablanca: the last fix only looks; Casablanca is checked', async () => {
+    const now = new Date(Date.UTC(2026, 9, 17, 12));
+    await settleTimezoneShift({ ...sthlm, provider: 'aladhan', now });
+    _resetTimezoneShiftForTests(); // landed; the app opens
+
+    zone = 'Africa/Casablanca';
+    // The launch paints the last fix — Stockholm — while GPS works.
+    const painted = await settleTimezoneShift({
+      ...sthlm,
+      provider: 'aladhan',
+      provisionalFix: true,
+      now,
+    });
+    expect(painted).toBeNull();
+    expect(mockDrop).not.toHaveBeenCalled(); // Stockholm's year is kept
+    expect(pendingTimezoneShift()).toBeNull();
+    await expect(timezoneShiftAwaitingFix()).resolves.toBe(true);
+
+    // The fix lands in Casablanca, and that load is the one checked.
+    const shift = await settleTimezoneShift({ ...params(), now });
+    expect(shift).toMatchObject({ from: 120, to: 0 });
+    expect(mockDrop).toHaveBeenCalledTimes(1);
+    expect(mockDrop).toHaveBeenCalledWith(expect.objectContaining(CASABLANCA));
+    expect(mockDrop).not.toHaveBeenCalledWith(expect.objectContaining(STOCKHOLM));
+    await expect(timezoneShiftAwaitingFix()).resolves.toBe(false);
+  });
+
+  it('a new zone at the same offset is not a shift', async () => {
+    const now = new Date(Date.UTC(2026, 9, 17, 12));
+    await settleTimezoneShift({ ...sthlm, now });
+    zone = 'Europe/Berlin';
+    expect(await settleTimezoneShift({ ...sthlm, now })).toBeNull();
+    expect(mockDrop).not.toHaveBeenCalled();
   });
 });

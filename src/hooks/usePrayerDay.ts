@@ -21,6 +21,7 @@ import { computeNamazvaktiMethodTimes } from '../providers/namazvakti';
 import {
   settleTimezoneShift,
   pendingTimezoneShift,
+  timezoneShiftAwaitingFix,
   type TimezoneShift,
 } from '../prayer/timezoneShift';
 import {
@@ -352,6 +353,9 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
       isBackgroundRefresh: boolean = false,
       label?: string,
       fromAuto: boolean = false,
+      // The last fix, painted while a new one is found: the clocks check
+      // only looks (see settleTimezoneShift).
+      provisionalFix: boolean = false,
     ) => {
       const gen = ++loadGenerationRef.current;
       bootMark('load');
@@ -395,6 +399,7 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
         longitude,
         calculationMethod: settings.calculationMethod,
         school: settings.school,
+        provisionalFix,
       }).catch(() => null);
       bootMark('tz');
       if (gen !== loadGenerationRef.current) return;
@@ -856,11 +861,26 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
       const cachedLabel = autoRef.current.label;
       const hasCached = cachedLat != null && cachedLng != null;
 
+      // A clocks change seen on the last fix's load and still owed: no new
+      // place is coming (no permission, no fix, or the fix is the same
+      // city), so the place on screen is where the phone is — check it.
+      const settleOwedShift = () => {
+        timezoneShiftAwaitingFix()
+          .then(owed => {
+            const loaded = loadedCoordsRef.current;
+            if (!owed || !loaded) return;
+            return loadTimes(loaded.lat, loaded.lng, true, undefined, true);
+          })
+          .catch(() => {});
+      };
+
       if (hasCached) {
         // Instantly render last-known times while GPS resolves in background.
         // isBackgroundRefresh=true prevents the 'loading' flash. Seed the chip
         // with the previously-resolved city name so it doesn't flash coords.
-        loadTimes(cachedLat, cachedLng, true, cachedLabel, true).catch(() => {});
+        loadTimes(cachedLat, cachedLng, true, cachedLabel, true, true).catch(
+          () => {},
+        );
       } else if (!isBackgroundRefresh) {
         setState({ phase: 'loading' });
       }
@@ -879,6 +899,7 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
             // "permission denied" wall (#125).
             setState({ phase: 'permission_denied' });
           }
+          settleOwedShift();
           return;
         }
       }
@@ -971,14 +992,17 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
             summary.displayName,
             true, // GPS-resolved fix
           ).catch(() => {});
-        } else if (summary.displayName) {
-          // Same city, but we may now have a nicer name than the seed — patch
-          // it onto the ready state without a re-fetch.
-          setState(cur =>
-            cur.phase === 'ready'
-              ? { ...cur, cityName: summary.displayName }
-              : cur,
-          );
+        } else {
+          if (summary.displayName) {
+            // Same city, but we may now have a nicer name than the seed —
+            // patch it onto the ready state without a re-fetch.
+            setState(cur =>
+              cur.phase === 'ready'
+                ? { ...cur, cityName: summary.displayName }
+                : cur,
+            );
+          }
+          settleOwedShift();
         }
       };
 
@@ -995,6 +1019,7 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
         err => {
           clearTimeout(watchdog);
           if (watchdogFired || gotAnyFix) return;
+          settleOwedShift();
           if (!hasCached && !isBackgroundRefresh) {
             // No fix at all AND no previously-saved location → send the user
             // to manual entry rather than stranding them (#125).

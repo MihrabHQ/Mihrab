@@ -11,7 +11,9 @@
  * and neither should have to import the other to get it — see issue #56.
  */
 export function deviceUtcOffsetMinutes(at: Date = new Date()): number {
-  return -at.getTimezoneOffset();
+  // `0 -`, not unary minus: GMT is 0, not -0 (which a strict comparison
+  // and a stored JSON both tell apart from 0 in places).
+  return 0 - at.getTimezoneOffset();
 }
 
 /**

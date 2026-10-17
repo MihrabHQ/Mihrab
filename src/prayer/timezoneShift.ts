@@ -46,6 +46,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { PrayerDataProviderId } from '../settings/types';
 import { deviceUtcOffsetMinutes } from '../utils/utcOffset';
+import { deviceZone } from '../utils/zoneClock';
 import { dropStoredMonths } from './prayerStorage';
 import { nationalTableFor } from '../providers/nationalTables';
 import { refetchNamazvaktiNow } from '../providers/namazvakti';
@@ -56,23 +57,117 @@ export { deviceUtcOffsetMinutes };
 const KEY = 'mihrab.prayer.utcOffset.v1';
 
 /**
- * The offset this process has already settled, so the check costs one
+ * ── THE ZONE, NOT JUST THE OFFSET ─────────────────────────────────────
+ *
+ * The offset alone took every summer-time change for "the clocks changed":
+ * twice a year the notice showed and the current place's stored year was
+ * dropped — a year of times gone for a phone that may be offline — when
+ * nothing about them was wrong. A zone's own summer time is in its rules,
+ * and every stored time was written under those rules, the change included.
+ *
+ * So the record holds the zone's NAME too, and what its rules said the
+ * offset would do from then on (`forecast`: each change over the next 400
+ * days). An offset that moved under the same zone name, the way the rules
+ * said it would, is that zone's summer time and not a shift. One that moved
+ * under the same name the rules did NOT foresee is the rules themselves
+ * changing — Morocco abolishing GMT+1, on a phone whose zone data learnt it
+ * after the times were stored — and is a shift, as it always was. A new
+ * zone name with a new offset is a shift (the phone was carried, or set,
+ * to another zone). Where the phone cannot name its zone, the offset alone
+ * decides, as before.
+ */
+type Forecast = {
+  /** The offset the rules gave at `at`, the base the changes are read against. */
+  base: number;
+  /** [instant ms, offset after it] for each change the rules foresaw. */
+  changes: [number, number][];
+  /** The last instant the forecast covers. */
+  until: number;
+};
+
+type Known = {
+  minutes: number;
+  zone?: string;
+  at?: number;
+  forecast?: Forecast;
+};
+
+const FORECAST_DAYS = 400;
+/** A record this old is re-written on a quiet check, so its forecast never runs out. */
+const REFRESH_AFTER_MS = 180 * 86_400_000;
+
+const offsetAt = (t: number) => 0 - new Date(t).getTimezoneOffset();
+
+/**
+ * Every change of the device zone's offset over the next FORECAST_DAYS,
+ * each to the minute: a day's step finds it, a bisection places it. A few
+ * hundred `Date`s, once per record.
+ */
+function forecastFrom(at: number): Forecast {
+  const DAY = 86_400_000;
+  const base = offsetAt(at);
+  const changes: [number, number][] = [];
+  let prevT = at;
+  let prev = base;
+  const until = at + FORECAST_DAYS * DAY;
+  for (let t = at + DAY; t <= until; t += DAY) {
+    const o = offsetAt(t);
+    if (o === prev) {
+      prevT = t;
+      continue;
+    }
+    let lo = prevT;
+    let hi = t;
+    while (hi - lo > 60_000) {
+      const mid = lo + Math.floor((hi - lo) / 2);
+      if (offsetAt(mid) === prev) lo = mid;
+      else hi = mid;
+    }
+    changes.push([hi, o]);
+    prev = o;
+    prevT = t;
+  }
+  return { base, changes, until };
+}
+
+/** The offset the stored record's rules foresaw for `now`; null past its horizon. */
+function foreseen(k: Known, now: number): number | null {
+  const f = k.forecast;
+  if (!f || k.at == null || now < k.at || now > f.until) return null;
+  let o = f.base;
+  for (const [t, after] of f.changes) {
+    if (t <= now) o = after;
+    else break;
+  }
+  return k.minutes + (o - f.base);
+}
+
+/**
+ * The record this process has already settled, so the check costs one
  * AsyncStorage read per launch rather than one per load. `null` means "not
  * read yet"; `undefined` inside the stored shape means a device that has
  * never stored prayer times, which is not a shift.
  */
-let known: number | null = null;
-let reading: Promise<number | null> | null = null;
+let known: Known | null = null;
+let reading: Promise<Known | null> | null = null;
 
-async function lastKnownOffset(): Promise<number | null> {
+async function lastKnown(): Promise<Known | null> {
   if (known !== null) return known;
   if (!reading) {
     reading = (async () => {
       try {
         const raw = await AsyncStorage.getItem(KEY);
         if (raw == null) return null;
-        const value = Number(JSON.parse(raw)?.minutes);
-        return Number.isFinite(value) ? value : null;
+        const parsed = JSON.parse(raw);
+        const minutes = Number(parsed?.minutes);
+        if (!Number.isFinite(minutes)) return null;
+        const at = Date.parse(parsed?.at);
+        return {
+          minutes,
+          zone: typeof parsed?.zone === 'string' ? parsed.zone : undefined,
+          at: Number.isFinite(at) ? at : undefined,
+          forecast: parsed?.forecast ?? undefined,
+        };
       } catch {
         return null;
       } finally {
@@ -85,12 +180,18 @@ async function lastKnownOffset(): Promise<number | null> {
   return value;
 }
 
-async function remember(minutes: number): Promise<void> {
-  known = minutes;
+async function remember(
+  minutes: number,
+  zone: string | undefined,
+  now: Date,
+): Promise<void> {
+  const at = now.getTime();
+  const record: Known = { minutes, zone, at, forecast: forecastFrom(at) };
+  known = record;
   try {
     await AsyncStorage.setItem(
       KEY,
-      JSON.stringify({ minutes, at: new Date().toISOString() }),
+      JSON.stringify({ ...record, at: now.toISOString() }),
     );
   } catch {
     // Then it is re-detected next launch, which costs one extra refresh
@@ -111,26 +212,55 @@ export type TimezoneShift = {
 let pending: TimezoneShift | null = null;
 
 /**
- * Has the device's offset moved since prayer times were last stored?
+ * Has the device's clock moved under a rule the stored times did not know?
  *
  * Records the new offset as it answers, so the shift is reported exactly
  * once however many loads follow. A device that has never stored an offset
  * — a first launch, or an upgrade from a build without this — records the
  * current one and reports nothing: there is no stale data to distrust,
- * only an unknown past.
+ * only an unknown past. A zone's own summer time is not a shift (see the
+ * note on `Forecast`).
+ *
+ * `peek` answers without recording: for a load of coordinates that may not
+ * be where the phone is (the last fix, before a new one lands), which must
+ * neither use up the check nor act on it.
  */
 export async function noticeTimezoneShift(
   now: Date = new Date(),
+  peek = false,
 ): Promise<TimezoneShift | null> {
   const to = deviceUtcOffsetMinutes(now);
-  const from = await lastKnownOffset();
+  const zone = deviceZone();
+  const from = await lastKnown();
   if (from === null) {
-    await remember(to);
+    if (!peek) await remember(to, zone, now);
     return null;
   }
-  if (from === to) return null;
-  await remember(to);
-  const shift: TimezoneShift = { from, to, at: now.getTime() };
+  if (from.minutes === to) {
+    // Nothing moved. A record from before the zone was kept, one for
+    // another zone at the same offset, or one whose forecast is running
+    // out is brought up to date quietly.
+    const stale =
+      from.zone !== zone ||
+      !from.forecast ||
+      from.at == null ||
+      now.getTime() - from.at > REFRESH_AFTER_MS;
+    if (stale && !peek) await remember(to, zone, now);
+    return null;
+  }
+  if (
+    zone != null &&
+    from.zone === zone &&
+    foreseen(from, now.getTime()) === to
+  ) {
+    // The zone's own summer time, which every stored time already allows
+    // for: nothing to tell, nothing to drop.
+    if (!peek) await remember(to, zone, now);
+    return null;
+  }
+  const shift: TimezoneShift = { from: from.minutes, to, at: now.getTime() };
+  if (peek) return shift;
+  await remember(to, zone, now);
   pending = shift;
   return shift;
 }
@@ -155,6 +285,8 @@ export function _resetTimezoneShiftForTests(): void {
   known = null;
   reading = null;
   pending = null;
+  awaitingFix = false;
+  looking = null;
 }
 
 /**
@@ -218,12 +350,33 @@ export async function refetchDatasetFor(params: {
 }
 
 /**
+ * Whether a shift was seen on a load of the last fix and is still waiting
+ * for the load of where the phone actually is.
+ */
+let awaitingFix = false;
+/** The look in flight, so a caller asking right after it is not answered early. */
+let looking: Promise<unknown> | null = null;
+
+export async function timezoneShiftAwaitingFix(): Promise<boolean> {
+  if (looking) await looking.catch(() => null);
+  return awaitingFix;
+}
+
+/**
  * The whole check, for a caller that is about to load prayer times.
  *
  * Cheap and idempotent: after the first call in a process it is a number
  * comparison. Put in front of the load rather than beside it, because the
  * ordering is the fix — a load that starts before the invalidation reads
  * exactly the stale rows this exists to throw away.
+ *
+ * `provisionalFix`: the coordinates are the LAST fix, painted while a new
+ * one is found. After a flight that is the city left behind — Stockholm's
+ * year would be dropped, though nothing about Stockholm's times changed,
+ * and the check used up, so Casablanca, loaded a moment later from the new
+ * fix, was never checked at all. Such a load only looks: the check stays
+ * armed for the load of where the phone is, and `timezoneShiftAwaitingFix`
+ * tells the caller one is owed if no new place comes.
  */
 export async function settleTimezoneShift(params: {
   provider: PrayerDataProviderId;
@@ -231,9 +384,23 @@ export async function settleTimezoneShift(params: {
   longitude: number;
   calculationMethod: number | 'auto';
   school: number;
+  provisionalFix?: boolean;
+  /** The moment of the check; tests pin it. */
+  now?: Date;
 }): Promise<TimezoneShift | null> {
-  const shift = await noticeTimezoneShift();
+  const { provisionalFix, now = new Date(), ...where } = params;
+  if (provisionalFix) {
+    const look = noticeTimezoneShift(now, true);
+    looking = look;
+    const seen = await look.finally(() => {
+      if (looking === look) looking = null;
+    });
+    if (seen) awaitingFix = true;
+    return null;
+  }
+  awaitingFix = false;
+  const shift = await noticeTimezoneShift(now);
   if (!shift) return null;
-  await applyTimezoneShift(params);
+  await applyTimezoneShift(where);
   return shift;
 }

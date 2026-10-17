@@ -42,6 +42,23 @@ describe('the check happens in front of the load', () => {
   });
 });
 
+describe('the check is for where the phone is, not the last fix', () => {
+  it('the launch paint of the last fix only looks', () => {
+    expect(hook).toMatch(
+      /loadTimes\(cachedLat, cachedLng, true, cachedLabel, true, true\)/,
+    );
+    expect(hook).toMatch(/settleTimezoneShift\(\{[\s\S]{0,200}provisionalFix,/);
+  });
+
+  it('and one owed is settled when no new place comes', () => {
+    // Same city, no permission, no fix: the place on screen is where the
+    // phone is, so it is checked there.
+    const calls = hook.match(/settleOwedShift\(\);/g) ?? [];
+    expect(calls.length).toBe(3);
+    expect(hook).toContain('timezoneShiftAwaitingFix()');
+  });
+});
+
 describe('the dataset is re-downloaded rather than re-polled', () => {
   it('on a served table, because no country owns this', () => {
     const table = read('src', 'providers', 'nationalTable.ts');
