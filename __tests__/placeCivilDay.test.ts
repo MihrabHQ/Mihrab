@@ -17,12 +17,16 @@ import {
 } from '../src/providers/locationClock';
 import { computeLocalAdhanTimes } from '../src/providers/localAdhan';
 import { computeNamazvaktiMethodTimes } from '../src/providers/namazvakti';
+import { _resetZoneCacheForTests } from '../src/utils/zoneClock';
 
 const RABAT = { latitude: 34.02, longitude: -6.84 };
 
 let zoneSpy: jest.SpyInstance;
-const phoneIn = (timeZone: string) =>
+const phoneIn = (timeZone: string) => {
+  // The phone's zone is cached; a mocked change must drop it.
+  _resetZoneCacheForTests();
   zoneSpy.mockReturnValue({ timeZone } as Intl.ResolvedDateTimeFormatOptions);
+};
 beforeEach(() => {
   zoneSpy = jest.spyOn(Intl.DateTimeFormat.prototype, 'resolvedOptions');
 });

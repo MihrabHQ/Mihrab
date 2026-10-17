@@ -5,13 +5,44 @@
  * back into an instant) need. A leaf, so neither has to import the other.
  */
 
-/** The phone's own zone (IANA), or undefined where Intl cannot say. */
+/**
+ * The zone as last resolved, and the device offset it was resolved under.
+ * Building a formatter to ask Intl is the slow part on Hermes, and the
+ * question is asked for every stored day and every time read back.
+ */
+let zoneCache: { zone: string | undefined; offset: number } | null = null;
+
+/**
+ * The phone's own zone (IANA), or undefined where Intl cannot say.
+ *
+ * Kept until something could have changed it: the app coming back to the
+ * foreground (`invalidateDeviceZone`, from deviceZoneAppState.ts — the zone
+ * is changed in the phone's settings, with the app in the background), or
+ * the device's offset moving under it (a zone changed by the network while
+ * the app runs moves the offset with it, in all but the rare move between
+ * two zones on the same offset, which the next foreground catches).
+ */
 export function deviceZone(): string | undefined {
+  const offset = new Date().getTimezoneOffset();
+  if (zoneCache && zoneCache.offset === offset) return zoneCache.zone;
+  let zone: string | undefined;
   try {
-    return Intl.DateTimeFormat().resolvedOptions().timeZone;
+    zone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   } catch {
-    return undefined;
+    zone = undefined;
   }
+  zoneCache = { zone, offset };
+  return zone;
+}
+
+/** Ask Intl again on the next `deviceZone()`. */
+export function invalidateDeviceZone(): void {
+  zoneCache = null;
+}
+
+/** Tests that change the phone's zone (a mocked `resolvedOptions`). */
+export function _resetZoneCacheForTests(): void {
+  zoneCache = null;
 }
 
 /** Zones that are GMT all year, written without asking Intl. */

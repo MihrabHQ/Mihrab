@@ -20,6 +20,9 @@ import { alertsResyncTask } from './src/notifications/afterUpdate';
 // Side effect: subscribes to durable writes so a change to the record
 // schedules a sync round. See src/sync/recordChanged.ts.
 import './src/sync/recordChanged';
+// Side effect: the phone's zone is asked again on every return to the
+// foreground. See src/utils/deviceZoneAppState.ts.
+import './src/utils/deviceZoneAppState';
 
 // The React Native module name MUST match what the native side requests
 // in `getMainComponentName()` (Android: MainActivity.kt) and the iOS

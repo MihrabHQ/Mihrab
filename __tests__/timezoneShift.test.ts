@@ -26,6 +26,7 @@ import {
   _resetTimezoneShiftForTests,
 } from '../src/prayer/timezoneShift';
 import { formatUtcOffset } from '../src/utils/utcOffset';
+import { _resetZoneCacheForTests } from '../src/utils/zoneClock';
 
 const CASABLANCA = { latitude: 33.5731, longitude: -7.5898 };
 const STOCKHOLM = { latitude: 59.3293, longitude: 18.0686 };
@@ -299,6 +300,7 @@ describe('a zone’s own summer time is not a shift', () => {
     const now = new Date(Date.UTC(2026, 9, 17, 12));
     await settleTimezoneShift({ ...sthlm, now });
     zone = 'Europe/Berlin';
+    _resetZoneCacheForTests(); // the same offset: the cache would not notice
     expect(await settleTimezoneShift({ ...sthlm, now })).toBeNull();
     expect(mockDrop).not.toHaveBeenCalled();
   });

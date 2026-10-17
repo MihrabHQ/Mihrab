@@ -514,3 +514,15 @@ global.fetch = jest.fn((input, init) => {
   }
   return Promise.reject(new TypeError('Network request failed (jest: no network)'));
 });
+
+// The phone's zone is cached (src/utils/zoneClock.ts, `deviceZone`) and
+// invalidated by a foreground or an offset change — neither of which a
+// test's mocked `resolvedOptions` brings. Each test starts uncached; one
+// that changes the zone mid-test resets it itself.
+beforeEach(() => {
+  try {
+    require('./src/utils/zoneClock')._resetZoneCacheForTests?.();
+  } catch (e) {
+    // A suite that mocks the module away has nothing to reset.
+  }
+});
