@@ -56,7 +56,9 @@ function swedenOnDevice(p: UnifiedFetchParams): PrayerTimesResult {
       longitude: city?.lng ?? p.longitude,
       date: p.date,
       calculationMethod: SWEDEN_METHOD_ID,
-      school: p.school,
+      // One Asr, the standard, as the timetable prints and the listed
+      // cities give it; Settings says so to a Hanafi reader.
+      school: 0,
       // a listed city's times on Sweden's clock, as the timetable prints them
       placeClock: city ? SWEDEN_CLOCK : undefined,
     }),

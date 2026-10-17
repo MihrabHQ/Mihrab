@@ -22,9 +22,12 @@ export function providerHidesCalculationMethod(
 /**
  * Hanafi Asr toggle is hidden: the authority publishes a single schedule, with
  * one (Shafi'i) Asr, and the source serves it as printed — Settings says so
- * where the reader's school is Hanafi. Kemenag is not among them: its times are
- * the ministry's method computed on the phone, which takes the Hanafi shadow
- * as Diyanet's does.
+ * where the reader's school is Hanafi. Sweden's, Morocco's and Algeria's are
+ * computed on the phone, but each reproduces a ministry's printed table, and
+ * every path of those sources (the listed city, and the stand-in beyond it)
+ * keeps the printed, standard Asr on purpose. Kemenag is not among them: its
+ * times are the ministry's method computed on the phone, which takes the
+ * Hanafi shadow as Diyanet's does.
  */
 export function providerHidesHanafiAsr(id: PrayerDataProviderId): boolean {
   return (
