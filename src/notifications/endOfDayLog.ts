@@ -98,6 +98,14 @@ export function ishaTriggerAt(
   if (hour > 23 || minute > 59) return null;
   const at = new Date(day);
   at.setHours(hour, minute, 0, 0);
+  // An Isha printed before the day's Maghrib is past midnight — Stockholm
+  // in June — and belongs to this day's evening, not to its small hours:
+  // read on `day` it asked to log the day before any of it was prayed.
+  const mg = /^\s*(\d{1,2}):(\d{2})/.exec(timings?.Maghrib ?? '');
+  if (mg && hour * 60 + minute < Number(mg[1]) * 60 + Number(mg[2])) {
+    at.setDate(at.getDate() + 1);
+    at.setHours(hour, minute, 0, 0);
+  }
   return new Date(at.getTime() + MINUTES_AFTER_ISHA * 60_000);
 }
 
