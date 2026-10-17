@@ -79,6 +79,15 @@ type CacheEntry = StoredPrayerData & {
    * as "unknown" rather than as a mismatch — see `timezoneShift.ts`.
    */
   utcOffsetMinutes?: number;
+  /**
+   * Days (`YYYY-MM-DD`) stored from the phone's own calculation because the
+   * provider missed them — offline, rate-limited, down. Kept beside the
+   * months rather than in them: the widget and every other reader take a
+   * day's TimingsMap as it is. A marked day is asked of the provider again
+   * once the phone is online (`refetchFallbackDays`) and the mark goes when
+   * the provider answers; before this, such a day was kept for good.
+   */
+  fallbackDays?: string[];
 };
 
 type V2Shape = {
@@ -615,7 +624,7 @@ export async function getStoredPrayerData(): Promise<StoredPrayerData | null> {
   });
   // Strip lastAccessedAt to keep the public StoredPrayerData shape stable.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { lastAccessedAt: _ts, ...rest } = v2.caches[newest];
+  const { lastAccessedAt: _ts, fallbackDays: _marks, ...rest } = v2.caches[newest];
   return rest;
 }
 
@@ -697,9 +706,14 @@ function isReadableDay(day: TimingsMap): boolean {
  * read at the top of `getOrFetchPrayerTimes` overtakes a cached fallback the
  * moment the published window reaches that date.
  */
+type LastResortResult = PrayerTimesResult & {
+  /** The provider missed and this is the phone's stand-in (see `fallbackDays`). */
+  fellBack?: boolean;
+};
+
 async function fetchWithLocalLastResort(
   params: Omit<StoredPrayerData, 'months'> & { date: Date },
-): Promise<PrayerTimesResult> {
+): Promise<LastResortResult> {
   try {
     return await fetchPrayerTimesUnified({
       provider: params.provider,
@@ -722,7 +736,7 @@ async function fetchWithLocalLastResort(
     // listed city on the ministry's clock, Diyanet's method, a national
     // table's place — and only then the bare calculation.
     try {
-      return await fetchPrayerTimesUnified({
+      const offline = await fetchPrayerTimesUnified({
         provider: params.provider,
         latitude: params.latitude,
         longitude: params.longitude,
@@ -731,6 +745,7 @@ async function fetchWithLocalLastResort(
         school: params.school,
         offline: true,
       });
+      return { ...offline, fellBack: true };
     } catch {
       /* the bare calculation below */
     }
@@ -743,6 +758,7 @@ async function fetchWithLocalLastResort(
         school: params.school,
       }),
       source: 'local',
+      fellBack: true,
     };
   }
 }
@@ -917,6 +933,7 @@ export async function getOrFetchPrayerTimes(
                 lastAccessedAt: new Date().toISOString(),
                 lastFetchedAt: new Date().toISOString(),
                 utcOffsetMinutes: deviceUtcOffsetMinutes(),
+                ...markedDays(existing?.fallbackDays, res.fellBack ? [dayKey] : [], res.fellBack ? [] : [dayKey], months),
               },
             },
           };
@@ -1093,6 +1110,8 @@ export async function refreshPrayerDataCache(
   const concurrency = 4;
   let completed = 0;
   const months = { ...existing.months };
+  const fellBack: string[] = [];
+  const answered: string[] = [];
 
   for (let i = 0; i < datesToFetch.length; i += concurrency) {
     const batch = datesToFetch.slice(i, i + concurrency);
@@ -1107,7 +1126,7 @@ export async function refreshPrayerDataCache(
             calculationMethod: params.calculationMethod,
             school: params.school,
           });
-          return { date, timings: res.timings };
+          return { date, timings: res.timings, fellBack: res.fellBack === true };
         } catch (e) {
           // Background fill failures are best-effort. warn (not error) so
           // dev builds don'\''t flash a red LogBox banner over the UI for a
@@ -1124,6 +1143,7 @@ export async function refreshPrayerDataCache(
         const dayKey = getDayKey(item.date);
         if (!months[monthKey]) months[monthKey] = {};
         months[monthKey][dayKey] = item.timings;
+        (item.fellBack ? fellBack : answered).push(dayKey);
       }
     }
 
@@ -1158,10 +1178,147 @@ export async function refreshPrayerDataCache(
         lastAccessedAt: new Date().toISOString(),
         lastFetchedAt: new Date().toISOString(),
         utcOffsetMinutes: deviceUtcOffsetMinutes(),
+        ...markedDays(existing.fallbackDays, fellBack, answered, months),
       },
     },
   };
   await saveV2(next, k);
+}
+
+/**
+ * The `fallbackDays` field for an entry: the marks it had, plus `add`,
+ * less `clear`, and only for days the months still hold. Spread into the
+ * entry — absent when nothing is marked, so an entry with no stand-ins
+ * looks exactly as it did before marks existed.
+ */
+function markedDays(
+  had: readonly string[] | undefined,
+  add: readonly string[],
+  clear: readonly string[],
+  months: CacheEntry['months'],
+): { fallbackDays?: string[] } {
+  const out = new Set(Array.isArray(had) ? had : []);
+  for (const d of add) out.add(d);
+  for (const d of clear) out.delete(d);
+  for (const d of out) {
+    if (!months[d.slice(0, 7)]?.[d]) out.delete(d);
+  }
+  return out.size > 0 ? { fallbackDays: [...out].sort() } : {};
+}
+
+/** Days asked again per batch, and the most asked in one go. */
+const FALLBACK_REFETCH_BATCH = 4;
+const FALLBACK_REFETCH_MAX = 62;
+const _fallbackRefetchInflight = new Map<string, Promise<number>>();
+
+/**
+ * Ask the provider again for the days this location holds from the phone's
+ * own calculation (`fallbackDays`), a few at a time — today onwards first,
+ * then the days behind — replacing each one the provider answers and
+ * clearing its mark. A batch the provider misses entirely ends the run (the
+ * phone is still offline, or the provider still down); the marks stay for
+ * the next. Stops when the app goes to the background. Returns how many
+ * days were replaced.
+ *
+ * Called when the phone is online (`usePrayerDay`'s connectivity listener).
+ */
+export function refetchFallbackDays(
+  params: Omit<StoredPrayerData, 'months'>,
+  maxDays: number = FALLBACK_REFETCH_MAX,
+): Promise<number> {
+  const inflightKey = JSON.stringify([params.provider, params.latitude, params.longitude, params.calculationMethod, params.school]);
+  const running = _fallbackRefetchInflight.get(inflightKey);
+  if (running) return running;
+  const p = refetchFallbackDaysOnce(params, maxDays).finally(() => {
+    _fallbackRefetchInflight.delete(inflightKey);
+  });
+  _fallbackRefetchInflight.set(inflightKey, p);
+  return p;
+}
+
+async function refetchFallbackDaysOnce(
+  params: Omit<StoredPrayerData, 'months'>,
+  maxDays: number,
+): Promise<number> {
+  if (params.provider === 'local_adhan') return 0;
+  const v2 = await loadV2();
+  const entry = v2.caches[cacheKey(params)];
+  const marked = (entry?.fallbackDays ?? []).filter(d => entry?.months[d.slice(0, 7)]?.[d]);
+  if (marked.length === 0) return 0;
+  const today = formatLocalDate(new Date());
+  const order = [
+    ...marked.filter(d => d >= today).sort(),
+    ...marked.filter(d => d < today).sort().reverse(),
+  ].slice(0, maxDays);
+
+  let replaced = 0;
+  for (let i = 0; i < order.length; i += FALLBACK_REFETCH_BATCH) {
+    if (i > 0 && isAppBackgrounded()) break;
+    const batch = order.slice(i, i + FALLBACK_REFETCH_BATCH);
+    const answers = await Promise.all(
+      batch.map(async dayKey => {
+        const [y, m, d] = dayKey.split('-').map(Number);
+        try {
+          const res = await fetchPrayerTimesUnified({
+            provider: params.provider,
+            latitude: params.latitude,
+            longitude: params.longitude,
+            date: new Date(y, m - 1, d),
+            calculationMethod: params.calculationMethod,
+            school: params.school,
+          });
+          return { dayKey, timings: res.timings };
+        } catch {
+          return null;
+        }
+      }),
+    );
+    const got = answers.filter((a): a is { dayKey: string; timings: TimingsMap } => a != null);
+    if (got.length === 0) break;
+    await queueCacheWrite('fallback refetch', async () => {
+      const now = await loadV2();
+      const k = cacheKey(params);
+      const current = now.caches[k];
+      if (!current) return;
+      const months = { ...current.months };
+      for (const { dayKey, timings } of got) {
+        const mk = dayKey.slice(0, 7);
+        if (!months[mk]?.[dayKey]) continue; // dropped meanwhile; not brought back
+        months[mk] = { ...months[mk], [dayKey]: timings };
+      }
+      await saveV2(
+        {
+          caches: {
+            ...now.caches,
+            [k]: {
+              ...current,
+              months,
+              fallbackDays: undefined,
+              lastFetchedAt: new Date().toISOString(),
+              utcOffsetMinutes: deviceUtcOffsetMinutes(),
+              ...markedDays(current.fallbackDays, [], got.map(a => a.dayKey), months),
+            },
+          },
+        },
+        k,
+      );
+    });
+    replaced += got.length;
+  }
+  return replaced;
+}
+
+/** Run a cache write after every write queued before it (the write mutex). */
+function queueCacheWrite(label: string, write: () => Promise<void>): Promise<void> {
+  const run = _writeMutex.then(async () => {
+    try {
+      await withTimeout(write(), MUTEX_TIMEOUT_MS, label);
+    } catch (e) {
+      console.warn(`prayerStorage: ${label} failed`, e);
+    }
+  });
+  _writeMutex = run;
+  return run;
 }
 
 /**
@@ -1195,6 +1352,7 @@ export async function dropStoredMonths(
             [k]: {
               ...entry,
               months: {},
+              fallbackDays: undefined,
               // The offset the empty entry now stands for, so the next
               // load does not read the drop as another shift.
               utcOffsetMinutes: deviceUtcOffsetMinutes(),
@@ -1243,7 +1401,10 @@ export async function refetchStoredMonths(
         }
         if (!touched) return;
         await saveV2Once({
-          caches: { ...v2.caches, [k]: { ...entry, months } },
+          caches: {
+            ...v2.caches,
+            [k]: { ...entry, months, fallbackDays: undefined, ...markedDays(entry.fallbackDays, [], [], months) },
+          },
         });
       })(),
       MUTEX_TIMEOUT_MS,

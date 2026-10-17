@@ -9,6 +9,7 @@ import {
   getCacheStatus,
   refreshPrayerDataCache,
   maybeFullSyncOnWifi,
+  refetchFallbackDays,
   purgeCachesNear,
 } from '../prayer/prayerStorage';
 import { getPositionStaged } from '../utils/getPosition';
@@ -931,7 +932,7 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
       return;
     }
     const unsubscribeNetInfo = NetInfo.addEventListener(netState => {
-      if (!netState.isConnected || netState.type !== 'wifi') {
+      if (!netState.isConnected) {
         return;
       }
       const lat =
@@ -951,13 +952,25 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
         { latitude: lat, longitude: lng },
         settings.calculationMethod,
       );
-      maybeFullSyncOnWifi({
+      const params = {
         provider,
         latitude: lat,
         longitude: lng,
         calculationMethod: settings.calculationMethod,
         school: settings.school,
-      }).catch(e => console.warn('WiFi-triggered sync check failed:', e));
+      };
+      // Online on any network: the days stored from the phone's own
+      // calculation while the provider could not be reached are asked
+      // again, a few at a time, and replaced by the provider's answer.
+      refetchFallbackDays(params).catch(e =>
+        console.warn('Re-fetching stand-in days failed:', e),
+      );
+      if (netState.type !== 'wifi') {
+        return;
+      }
+      maybeFullSyncOnWifi(params).catch(e =>
+        console.warn('WiFi-triggered sync check failed:', e),
+      );
     });
     return () => {
       unsubscribeNetInfo();
