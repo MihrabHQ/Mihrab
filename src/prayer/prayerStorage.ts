@@ -18,6 +18,7 @@ import { deviceUtcOffsetMinutes } from '../utils/utcOffset';
 import { AppState } from 'react-native';
 import { SWEDEN_METHOD_ID } from '../providers/swedenMethodId';
 import { isCoordinateInTurkey } from '../utils/turkeyRegion';
+import { isCoordinateInAlgeria } from '../utils/algeriaRegion';
 import { autoMethodForCoords } from '../providers/autoMethod';
 import { methodAuthorityFor, methodCurrencyReady } from '../providers/methodCurrency';
 import { correctionsKey } from '../providers/swedenCorrections';
@@ -920,7 +921,11 @@ function rawDatasetTimesFor(
   if (provider === 'namazvakti') {
     return getNamazvaktiTimes({ ...q, school: params.school, offline });
   }
-  if (provider === 'habous') return getHabousDatasetTimes(q);
+  // Morocco's rectangle takes in western Algeria (Tlemcen, Maghnia): there the
+  // Algerian Ministry's day, as `fetchPrayerTimesUnified` answers — not Oujda's.
+  if (provider === 'habous') {
+    return isCoordinateInAlgeria(q.latitude, q.longitude) ? getMarwDatasetTimes(q) : getHabousDatasetTimes(q);
+  }
   if (provider === 'marw') return getMarwDatasetTimes(q);
   const table = nationalTableFor(provider);
   if (table) return table.getTimes(q);
