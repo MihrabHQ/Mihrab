@@ -1,7 +1,10 @@
 import type { NextSalahName, TimingsMap } from '../types/prayer';
-import { NEXT_SALAH_ORDER } from '../types/prayer';
+import { isNonPrayerEvent, NEXT_SALAH_ORDER } from '../types/prayer';
 
-export function extractClock(timeStr: string): { hour: number; minute: number } {
+export function extractClock(timeStr: string): {
+  hour: number;
+  minute: number;
+} {
   const match = timeStr.match(/(\d{1,2}):(\d{2})/);
   if (!match) {
     throw new Error(`Unrecognized time format: ${timeStr}`);
@@ -242,6 +245,33 @@ export function buildUpcomingSalahEvents(
   return events
     .filter(e => e.at.getTime() > cutoff)
     .sort((a, b) => a.at.getTime() - b.at.getTime());
+}
+
+/**
+ * One alert per instant.
+ *
+ * Two events can fall on the same minute: in the polar night Diyanet's
+ * tables (and Sweden's, the same method) print Asr at Dhuhr's time when it
+ * never forms — Tromsø on 21 December, Dhuhr and Asr both 11:47 — and two
+ * alerts would ring, and two adhans play, at once. The first in the day's
+ * order is kept (Dhuhr, whose time it is), and a prayer before Sunrise or a
+ * night mark on the same instant. `events` must be in time order, as
+ * `buildUpcomingSalahEvents` returns them.
+ */
+export function oneEventPerInstant<T extends { name: string; at: Date }>(
+  events: T[],
+): T[] {
+  const out: T[] = [];
+  for (const e of events) {
+    const prev = out[out.length - 1];
+    if (prev && prev.at.getTime() === e.at.getTime()) {
+      if (isNonPrayerEvent(prev.name) && !isNonPrayerEvent(e.name))
+        out[out.length - 1] = e;
+      continue;
+    }
+    out.push(e);
+  }
+  return out;
 }
 
 /**

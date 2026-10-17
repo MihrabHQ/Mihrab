@@ -60,14 +60,12 @@ import {
 // somewhere neither module imports the other from.
 export { clampPrePrayerReminderMinutes };
 import type { TimingsMap } from '../types/prayer';
-import {
-  loggedByDate,
-  storedJournalEntries,
-} from '../journal/loggedPrayers';
+import { loggedByDate, storedJournalEntries } from '../journal/loggedPrayers';
 import { isNonPrayerEvent } from '../types/prayer';
 import {
   buildPrePrayerReminderEvents,
   buildUpcomingSalahEvents,
+  oneEventPerInstant,
 } from '../utils/prayerTimes';
 
 /** Sunrise + the two night times are not salāh: default sound, no adhan, no
@@ -185,7 +183,8 @@ async function clearStaleDisplayedPrayerNotifications(
 const PRAYER_NOTIFICATION_ID_PREFIX = 'pt-';
 /** The brand green (APP_ACCENT_SWATCHES.green), for a caller with no palette to hand. */
 const DEFAULT_NOTIFICATION_ACCENT =
-  APP_ACCENT_SWATCHES.find(s => s.id === 'green')?.light ?? APP_ACCENT_SWATCHES[0].light;
+  APP_ACCENT_SWATCHES.find(s => s.id === 'green')?.light ??
+  APP_ACCENT_SWATCHES[0].light;
 
 const PREVIEW_NOTIFICATION_ID = 'adhan_preview';
 let _previewCancelTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -274,7 +273,7 @@ async function ensureChannel(
       `Prayer times (${i18n.t(option.labelKey)}) — alarm`,
       // null means "the imported recording", which the native side reads
       // from disk. Bundled adhans name their res/raw resource.
-      selectedSound === 'custom' ? null : (option.androidSound ?? null),
+      selectedSound === 'custom' ? null : option.androidSound ?? null,
     );
   } else {
     await deleteAdhanChannel(alarmId);
@@ -466,7 +465,9 @@ export async function dropDaruriAlertsForLogged(
     // Redrawn from the id alone: the instant is in it, and the body of
     // this notification never mentions a time.
     const names = keep
-      .map(k => i18n.t(`prayer.${DARURI_OF[k]}`, { defaultValue: DARURI_OF[k] }))
+      .map(k =>
+        i18n.t(`prayer.${DARURI_OF[k]}`, { defaultValue: DARURI_OF[k] }),
+      )
       .join(i18n.t('common.listJoin', { defaultValue: ' & ' }));
     const body = i18n.t('alertCopy.daruriExpired', {
       defaultValue: 'The time has ended — pray it as qada',
@@ -667,9 +668,13 @@ export async function syncPrayerNotifications(params: {
   // Silent means no alarm is registered, not a muted one. It is the only
   // version of "silent" that also keeps the prayer off the lock screen,
   // and it is what someone who silenced Fajr is asking for.
-  const audibleEvents = salahEvents.filter(
+  let audibleEvents = salahEvents.filter(
     e => modeAt(e.name, e.at.getTime()) !== 'silent',
   );
+  // One alert per instant (`oneEventPerInstant`): a polar-night Asr printed
+  // at Dhuhr's minute is not a second alarm. After the silent filter, so a
+  // silenced Dhuhr leaves the Asr at that minute to ring.
+  audibleEvents = oneEventPerInstant(audibleEvents);
   const reminderEvents =
     reminderMinutes > 0
       ? buildPrePrayerReminderEvents(audibleEvents, reminderMinutes, now)
@@ -687,11 +692,11 @@ export async function syncPrayerNotifications(params: {
   const daruriLogged =
     (params.daruriAlerts ?? []).length === 0
       ? undefined
-      : (params.daruriLogged ??
+      : params.daruriLogged ??
         loggedByDate(
           await storedJournalEntries().catch(() => []),
           daruriDatesFrom(params.baseDate ?? now),
-        ));
+        );
 
   /**
    * A boundary belongs to its prayer, and follows it into silence.
@@ -709,7 +714,11 @@ export async function syncPrayerNotifications(params: {
     modeAt(name, atMs) !== 'silent';
 
   const daruriEvents = buildDaruriAlertEvents(
-    [params.today, ...(params.tomorrow ? [params.tomorrow] : []), ...(params.week?.slice(2, 4) ?? [])],
+    [
+      params.today,
+      ...(params.tomorrow ? [params.tomorrow] : []),
+      ...(params.week?.slice(2, 4) ?? []),
+    ],
     params.baseDate ?? now,
     params.daruriAlerts ?? [],
     daruriMinutes,
@@ -834,9 +843,7 @@ export async function syncPrayerNotifications(params: {
         // a bundled one: the user's own recording lives in Library/Sounds,
         // which AlarmKit does not read, so it rings the system tone.
         sound:
-          wantsAdhan && eventSound.id !== 'custom'
-            ? eventTargets.iosSound
-            : '',
+          wantsAdhan && eventSound.id !== 'custom' ? eventTargets.iosSound : '',
         stopLabel: i18n.t('common.stop', { defaultValue: 'Stop' }),
         snoozeLabel: i18n.t('alertCopy.snoozeAction', 'Snooze'),
         pauseLabel: i18n.t('common.pause', 'Pause'),
@@ -862,7 +869,9 @@ export async function syncPrayerNotifications(params: {
     const nextLine = nextEvent
       ? i18n.t('alertCopy.nextEvent', {
           defaultValue: 'Next: {{prayer}} at {{time}}',
-          prayer: i18n.t(`prayer.${nextEvent.name}`, { defaultValue: nextEvent.name }),
+          prayer: i18n.t(`prayer.${nextEvent.name}`, {
+            defaultValue: nextEvent.name,
+          }),
           time: clock.fromDate(nextEvent.at),
         })
       : '';
@@ -927,7 +936,9 @@ export async function syncPrayerNotifications(params: {
           // uses it to play the FULL adhan on tap / when the app is open, since
           // iOS caps the notification sound itself at 30s.
           adhanSound: eventSound.id,
-          ...(fullScreen ? fullScreenAlarmData(e.name, nextLine, snoozeOptions, endsAt) : {}),
+          ...(fullScreen
+            ? fullScreenAlarmData(e.name, nextLine, snoozeOptions, endsAt)
+            : {}),
         },
         ios: {
           ...(alarmCovers ? {} : { sound: eventTargets.iosSound }),
@@ -950,7 +961,9 @@ export async function syncPrayerNotifications(params: {
           visibility: AndroidVisibility.PUBLIC,
           // The call to prayer is an alarm; a plain alert is a reminder.
           // Android ranks and styles the two differently.
-          category: wantsAdhan ? AndroidCategory.ALARM : AndroidCategory.REMINDER,
+          category: wantsAdhan
+            ? AndroidCategory.ALARM
+            : AndroidCategory.REMINDER,
           pressAction: { id: 'default' },
           // Self-clear when the next prayer arrives (see timeoutAfterMs above).
           timeoutAfter: timeoutAfterMs,
@@ -1006,7 +1019,9 @@ export async function syncPrayerNotifications(params: {
         title: i18n.t(`prayer.${e.name}`, { defaultValue: e.name }),
         // The prayer's clock time in the header — the reminder's whole
         // point is the arithmetic it saves.
-        subtitle: clock.fromDate(new Date(e.at.getTime() + reminderMinutes * 60_000)),
+        subtitle: clock.fromDate(
+          new Date(e.at.getTime() + reminderMinutes * 60_000),
+        ),
         body: preBody,
         ios: {
           sound: reminderSound.iosSound,
@@ -1087,7 +1102,9 @@ export async function syncPrayerNotifications(params: {
   // at Maghrib and so do Maghrib and Ishāʾ at the next Fajr.
   for (const e of daruriEndEvents) {
     const names = e.keys
-      .map(k => i18n.t(`prayer.${DARURI_OF[k]}`, { defaultValue: DARURI_OF[k] }))
+      .map(k =>
+        i18n.t(`prayer.${DARURI_OF[k]}`, { defaultValue: DARURI_OF[k] }),
+      )
       .join(i18n.t('common.listJoin', { defaultValue: ' & ' }));
     const body = i18n.t('alertCopy.daruriExpired', {
       defaultValue: 'The time has ended — pray it as qaḍāʾ',
