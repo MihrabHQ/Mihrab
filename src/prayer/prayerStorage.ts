@@ -14,6 +14,7 @@ import type { PrayerDataProviderId } from '../settings/types';
 import type { TimingsMap } from '../types/prayer';
 import { formatLocalDate } from '../utils/date';
 import { DEVICE_CLOCK } from '../utils/prayerTimes';
+import { deviceZone } from '../utils/zoneClock';
 import { deviceUtcOffsetMinutes } from '../utils/utcOffset';
 import { AppState } from 'react-native';
 import { SWEDEN_METHOD_ID } from '../providers/swedenMethodId';
@@ -120,12 +121,30 @@ function dayClockIn(
 }
 
 /**
+ * The clock a day is KEPT on: its own, and for a day written on the phone's
+ * clock, the zone the phone was in when it was written.
+ *
+ * "The phone's clock" is not a clock a stored day can be read on later: it
+ * is whatever zone the phone is in at the time of reading. A saved New York
+ * computed on a phone in Stockholm is written in Stockholm's wall-clock
+ * strings; read back on a phone that has since flown to Casablanca, every
+ * one of them was an hour off — alerts included — and the timezone-shift
+ * invalidation only ever drops the location being loaded. Named, it reads
+ * exactly as before while the phone stays in that zone (`readZone` treats
+ * the phone's own zone as the phone's clock) and correctly once it leaves.
+ */
+function keptClock(clock: string | undefined): string {
+  if (clock && clock !== DEVICE_CLOCK) return clock;
+  return deviceZone() ?? DEVICE_CLOCK;
+}
+
+/**
  * The `clock` and `dayClocks` fields for an entry after `writes` (day, clock
  * its times are on), for the days the months still hold. The slot keeps the
  * clock it has; a slot with no days yet takes the first write's; an older
- * slot with days and no clock is on the phone's. Spread into the entry —
- * both absent for a slot on the phone's clock throughout, so such an entry
- * looks exactly as it did before clocks were kept.
+ * slot with days and no clock is on the phone's (and a day written on the
+ * phone's clock in the zone it is in now joins it, as before clocks were
+ * kept). Spread into the entry.
  */
 function clockedDays(
   had: Pick<CacheEntry, 'clock' | 'dayClocks' | 'months'> | undefined,
@@ -135,11 +154,11 @@ function clockedDays(
   const hadDays =
     !!had && Object.values(had.months ?? {}).some(m => Object.keys(m ?? {}).length > 0);
   const slot =
-    had?.clock ?? (hadDays ? DEVICE_CLOCK : writes[0]?.[1] ?? DEVICE_CLOCK);
+    had?.clock ?? (hadDays ? DEVICE_CLOCK : keptClock(writes[0]?.[1]));
   const out: Record<string, string> = { ...(had?.dayClocks ?? {}) };
   for (const [dayKey, clock] of writes) {
-    const c = clock ?? DEVICE_CLOCK;
-    if (c === slot) delete out[dayKey];
+    const c = keptClock(clock);
+    if (c === slot || (slot === DEVICE_CLOCK && c === deviceZone())) delete out[dayKey];
     else out[dayKey] = c;
   }
   for (const d of Object.keys(out)) {
