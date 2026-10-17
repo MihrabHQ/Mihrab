@@ -351,3 +351,25 @@ describe('settings', () => {
     expect(after.clockFormat).toBe('12');
   });
 });
+
+it('"Show onboarding again" leaves no coordinates behind in the prayer cache or the city registry', async () => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { resetAppData } = require('../../src/settings/storage');
+  await prayerStorage.getOrFetchPrayerDay({
+    provider: 'local_adhan',
+    latitude: 59.33,
+    longitude: 18.07,
+    calculationMethod: 3,
+    school: 0,
+    date: new Date(2026, 9, 17, 12),
+  });
+  await settle(5);
+  await realSet(
+    'mihrab.cityRegistry.v1',
+    JSON.stringify({ cities: [{ anchorLat: 59.33, anchorLng: 18.07 }] }),
+  );
+  expect(await realGet(CACHE_KEY)).toContain('59.33');
+  await resetAppData();
+  expect(await realGet(CACHE_KEY)).toBeNull();
+  expect(await realGet('mihrab.cityRegistry.v1')).toBeNull();
+});

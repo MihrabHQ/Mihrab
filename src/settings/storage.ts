@@ -919,6 +919,13 @@ export async function resetAppData(): Promise<void> {
     'islamiska_forbundet.reverse.v1',
     // Where the last Tilāwah listen stopped (quran/audio/listenProgress).
     'mihrab.listenProgress.v1',
+    // The prayer-times cache itself (`prayerStorage.ts`) and its legacy
+    // key: every slot is keyed by the coordinates it was fetched for.
+    // ('prayerapp.prayer.v1' above is a name nothing ever wrote to.)
+    'prayer_times_cache.v2',
+    'prayer_times_cache',
+    // Where the phone has been, city by city (`cityRegistry.ts`).
+    'mihrab.cityRegistry.v1',
   ];
   invalidateInflightLoad();
   // Nothing left to protect: the reset is the one write meant to erase it.
