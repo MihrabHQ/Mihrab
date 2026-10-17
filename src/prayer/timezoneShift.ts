@@ -221,9 +221,10 @@ let pending: TimezoneShift | null = null;
  * only an unknown past. A zone's own summer time is not a shift (see the
  * note on `Forecast`).
  *
- * `peek` answers without recording: for a load of coordinates that may not
- * be where the phone is (the last fix, before a new one lands), which must
- * neither use up the check nor act on it.
+ * `peek` does not record a shift it finds: for a load of coordinates that
+ * may not be where the phone is (the last fix, before a new one lands),
+ * which must neither use up the check nor act on it. What is not a shift —
+ * a first record, a zone's own summer time — is recorded either way.
  */
 export async function noticeTimezoneShift(
   now: Date = new Date(),
@@ -233,7 +234,7 @@ export async function noticeTimezoneShift(
   const zone = deviceZone();
   const from = await lastKnown();
   if (from === null) {
-    if (!peek) await remember(to, zone, now);
+    await remember(to, zone, now);
     return null;
   }
   if (from.minutes === to) {
@@ -245,7 +246,7 @@ export async function noticeTimezoneShift(
       !from.forecast ||
       from.at == null ||
       now.getTime() - from.at > REFRESH_AFTER_MS;
-    if (stale && !peek) await remember(to, zone, now);
+    if (stale) await remember(to, zone, now);
     return null;
   }
   if (
@@ -255,7 +256,7 @@ export async function noticeTimezoneShift(
   ) {
     // The zone's own summer time, which every stored time already allows
     // for: nothing to tell, nothing to drop.
-    if (!peek) await remember(to, zone, now);
+    await remember(to, zone, now);
     return null;
   }
   const shift: TimezoneShift = { from: from.minutes, to, at: now.getTime() };

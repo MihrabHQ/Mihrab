@@ -296,6 +296,18 @@ describe('a zone’s own summer time is not a shift', () => {
     await expect(timezoneShiftAwaitingFix()).resolves.toBe(false);
   });
 
+  it('a first launch on the last fix still records the clock it is on', async () => {
+    // Otherwise a phone whose fixes never move the city never records one,
+    // and the flight after it is not noticed.
+    const now = new Date(Date.UTC(2026, 9, 17, 12));
+    await settleTimezoneShift({ ...sthlm, provisionalFix: true, now });
+    zone = 'Africa/Casablanca';
+    expect(await settleTimezoneShift({ ...params(), now })).toMatchObject({
+      from: 120,
+      to: 0,
+    });
+  });
+
   it('a new zone at the same offset is not a shift', async () => {
     const now = new Date(Date.UTC(2026, 9, 17, 12));
     await settleTimezoneShift({ ...sthlm, now });
