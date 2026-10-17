@@ -919,17 +919,34 @@ export function fitNamazvaktiPoint(
 const memFits = new Map<number, NamazvaktiFittedPoint | null>();
 
 /**
+ * The fit, on disk beside the city's year: about six and a half seconds of
+ * a phone's time per city, which every launch spent again on its first
+ * miss. Stamped with the `fetchedAt` of the year it was fitted from, so a
+ * year fetched again (a new year, a correction) is fitted again.
+ */
+const FIT_PREFIX = 'namazvakti.fit.v1.';
+type StoredFit = { fetchedAt: string; fit: NamazvaktiFittedPoint | null };
+
+/**
  * The site's own point for a listed city, fitted from the year the phone
  * holds for it (`fitNamazvaktiPoint`), or null when it holds none. A fit
  * that leaves more than one time in a hundred off is not used. Kept for
- * the session: the point does not change from year to year.
+ * the session, and on disk for as long as the year it came from: the point
+ * does not change from year to year.
  */
 export async function namazvaktiCityPoint(city: NvCity): Promise<NamazvaktiFittedPoint | null> {
   if (memFits.has(city.id)) return memFits.get(city.id)!;
   const year = await loadYear(city.id, '', true).catch(() => null);
-  const fit = year ? fitNamazvaktiPoint(year, city) : null;
+  if (!year) return null;
+  const stored = await readJson<StoredFit>(`${FIT_PREFIX}${city.id}`);
+  if (stored && stored.fetchedAt === year.fetchedAt && 'fit' in stored) {
+    memFits.set(city.id, stored.fit);
+    return stored.fit;
+  }
+  const fit = fitNamazvaktiPoint(year, city);
   const usable = fit && fit.misses <= 0.01 * fit.checked ? fit : null;
-  if (year) memFits.set(city.id, usable);
+  memFits.set(city.id, usable);
+  await writeJson(`${FIT_PREFIX}${city.id}`, { fetchedAt: year.fetchedAt, fit: usable } satisfies StoredFit);
   return usable;
 }
 
@@ -941,7 +958,7 @@ export async function refetchNamazvaktiNow(latitude: number, longitude: number):
   memFits.delete(city.id);
   failedAt.delete(city.id);
   try {
-    await AsyncStorage.removeItem(`${CITY_PREFIX}${city.id}`);
+    await AsyncStorage.multiRemove([`${CITY_PREFIX}${city.id}`, `${FIT_PREFIX}${city.id}`]);
   } catch {
     // Replaced by the fetch below either way.
   }
