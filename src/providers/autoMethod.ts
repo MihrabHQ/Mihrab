@@ -18,6 +18,12 @@
  * country's own method is in `CALCULATION_METHODS` and the region predicate
  * already exists for provider routing. Everywhere else MWL remains the
  * honest answer.
+ *
+ * The countries with a method of their own (`nationalMethodCountryAt`) are
+ * such a predicate: Automatic routes them to AlAdhan BECAUSE its Automatic
+ * computes the country's method there, so offline the phone must too —
+ * Mecca's Isha on MWL's 17° instead of Umm al-Qura's ninety minutes (two
+ * hours in Ramadan) was the error this file exists to prevent.
  */
 import { isCoordinateInAlgeria } from '../utils/algeriaRegion';
 import { isCoordinateInIndonesia } from '../utils/indonesiaRegion';
@@ -26,6 +32,7 @@ import { isCoordinateInMorocco } from '../utils/moroccoRegion';
 import { isCoordinateInSingapore } from '../utils/singaporeRegion';
 import { isCoordinateInSweden } from '../utils/swedenRegion';
 import { isCoordinateInTurkey } from '../utils/turkeyRegion';
+import { nationalMethodCountryAt } from '../utils/countryAt';
 import { SWEDEN_METHOD_ID } from './swedenMethodId';
 
 /** Muslim World League — the global default when nothing more specific applies. */
@@ -56,6 +63,28 @@ const AUTO_METHOD_REGIONS: readonly AutoMethodRegion[] = [
 ];
 
 /**
+ * The method each country with one of its own computes, as listed under
+ * Calculation method. Bahrain, Oman and Iraq are left on MWL: which of the
+ * Gulf's, Qatar's, Dubai's, Kuwait's or Tehran's AlAdhan gives them is not
+ * read off anything here, and a guess would be a second, quieter error.
+ */
+const NATIONAL_AUTO_METHOD: Readonly<Record<string, number>> = {
+  SA: 4, // Umm al-Qura
+  EG: 5, // Egyptian General Authority of Survey
+  PK: 1, // University of Islamic Sciences, Karachi
+  IN: 1,
+  BD: 1,
+  IR: 7, // Institute of Geophysics, University of Tehran
+  KW: 9,
+  QA: 10,
+  AE: 16, // Dubai
+  RU: 14,
+  TN: 18,
+  PT: 22,
+  JO: 23,
+};
+
+/**
  * The method to compute with when the user has chosen "Automatic".
  *
  * Mirrors what AlAdhan would have auto-selected for these coordinates, for
@@ -68,5 +97,6 @@ export function autoMethodForCoords(
   for (const region of AUTO_METHOD_REGIONS) {
     if (region.covers(latitude, longitude)) return region.method;
   }
-  return DEFAULT_AUTO_METHOD;
+  const national = nationalMethodCountryAt(latitude, longitude);
+  return (national && NATIONAL_AUTO_METHOD[national]) || DEFAULT_AUTO_METHOD;
 }
