@@ -86,6 +86,27 @@ const failedAt = new Map<number, number>();
 /** Listed cities with no published times — skipped when picking the nearest. */
 let noTable: Set<number> | null = null;
 
+/**
+ * Has this session given an answer yet?
+ *
+ * The first answer is somebody looking at an empty screen. With a tile on
+ * the phone but the mirror and the site black-holed (a captive portal, a
+ * dead uplink), the requests behind it ran their full course — the mirror
+ * twice at 20 s, the site twice at 15 s, with the waits between — and the
+ * first time came after about 72 s. Until a first answer has been given,
+ * every request is one attempt of a few seconds (`QUICK`), and a year that
+ * did not come that way is fetched again in the background, with the long
+ * timeouts, for the next read.
+ */
+let sessionAnswered = false;
+type Budget = { maxAttempts: number; baseDelayMs: number; timeoutMs: number };
+const QUICK: Budget = { maxAttempts: 1, baseDelayMs: 0, timeoutMs: 6000 };
+const TILE_BUDGET: Budget = { maxAttempts: 2, baseDelayMs: 800, timeoutMs: 9000 };
+const MIRROR_BUDGET: Budget = { maxAttempts: 2, baseDelayMs: 1000, timeoutMs: 20000 };
+const SITE_BUDGET: Budget = { maxAttempts: 2, baseDelayMs: 1500, timeoutMs: 15000 };
+/** City id → its background refill, after a quick first attempt missed. */
+const refillInFlight = new Map<number, Promise<void>>();
+
 async function loadNoTable(): Promise<Set<number>> {
   if (!noTable) noTable = new Set(await readJson<number[]>(NO_TABLE_KEY) ?? []);
   return noTable;
@@ -146,7 +167,7 @@ async function loadTile(key: string, offline = false): Promise<CachedTile> {
       const res = await fetchWithRetry(
         `${NAMAZVAKTI_DATASET_BASE_URL}/tiles/${key}.json`,
         { headers: { 'User-Agent': httpUserAgent('Islamic prayer app; dataset') } },
-        { maxAttempts: 2, baseDelayMs: 800, timeoutMs: 9000 },
+        sessionAnswered ? TILE_BUDGET : QUICK,
       );
       let cities: TileRow[];
       if (res.ok) {
@@ -230,12 +251,12 @@ async function bytesOf(res: Response): Promise<Uint8Array> {
 }
 
 /** The city's year from Mihrab's mirror of the site, or null when the mirror does not have it. */
-async function fetchMirroredYear(cityId: number, year: number): Promise<NamazvaktiYear | null> {
+async function fetchMirroredYear(cityId: number, year: number, quick = false): Promise<NamazvaktiYear | null> {
   try {
     const res = await fetchWithRetry(
       mirrorUrl(namazvaktiYearTag(year), namazvaktiBucketAsset(cityId)),
       { headers: { 'User-Agent': httpUserAgent('Islamic prayer app; dataset') } },
-      { maxAttempts: 2, baseDelayMs: 1000, timeoutMs: 20000 },
+      quick ? QUICK : MIRROR_BUDGET,
     );
     if (!res.ok) return null;
     const file = JSON.parse(strFromU8(gunzipSync(await bytesOf(res)))) as PackedBucket;
@@ -249,12 +270,12 @@ async function fetchMirroredYear(cityId: number, year: number): Promise<Namazvak
 }
 
 /** The city's year: Mihrab's mirror first, the site itself only behind it. */
-async function fetchYear(cityId: number, dateKey: string): Promise<NamazvaktiYear> {
+async function fetchYear(cityId: number, dateKey: string, quick = false): Promise<NamazvaktiYear> {
   const year = /^\d{4}-/.test(dateKey) ? Number(dateKey.slice(0, 4)) : new Date().getFullYear();
-  const mirrored = await fetchMirroredYear(cityId, year);
+  const mirrored = await fetchMirroredYear(cityId, year, quick);
   if (mirrored && (!dateKey || mirrored.days[dateKey])) return mirrored;
   try {
-    return await fetchSiteYear(cityId);
+    return await fetchSiteYear(cityId, quick);
   } catch (e) {
     // The site cannot answer either: whatever the mirror had is better than nothing.
     if (mirrored) return mirrored;
@@ -262,11 +283,11 @@ async function fetchYear(cityId: number, dateKey: string): Promise<NamazvaktiYea
   }
 }
 
-async function fetchSiteYear(cityId: number): Promise<NamazvaktiYear> {
+async function fetchSiteYear(cityId: number, quick = false): Promise<NamazvaktiYear> {
   const res = await fetchWithRetry(
     `${NAMAZVAKTI_ORIGIN}/XML.php?cityID=${cityId}`,
     { headers: { 'User-Agent': httpUserAgent('Islamic prayer app') } },
-    { maxAttempts: 2, baseDelayMs: 1500, timeoutMs: 15000 },
+    quick ? QUICK : SITE_BUDGET,
   );
   if (!res.ok) {
     throw new ProviderError(PROVIDER, 'network', `namazvakti.com answered HTTP ${res.status}.`);
@@ -305,12 +326,17 @@ async function loadYear(
   const needed = !hasDay && !(held && age < NAMAZVAKTI_RETRY_AFTER_MS);
   const stale = hasDay && age > NAMAZVAKTI_REFETCH_AFTER_MS;
   if ((!needed && !stale) || recentlyFailed) return held ?? null;
+  // A background refill is already asking with the long timeouts: what is
+  // held answers now (the method is computed for a day it lacks), and the
+  // refill lands for the next read.
+  if (refillInFlight.has(cityId)) return held ?? null;
 
   let p = yearInFlight.get(cityId);
   if (!p) {
+    const quick = !sessionAnswered;
     p = (async () => {
       try {
-        const year = await fetchYear(cityId, dateKey);
+        const year = await fetchYear(cityId, dateKey, quick);
         memYears.set(cityId, year);
         failedAt.delete(cityId);
         await writeJson(`${CITY_PREFIX}${cityId}`, year);
@@ -320,7 +346,13 @@ async function loadYear(
           await markNoTable(cityId);
           return null;
         }
-        failedAt.set(cityId, Date.now());
+        if (quick && !(e instanceof ProviderError)) {
+          // The quick first try had no answer in time (a site that answers
+          // with an error has answered): the patient one, in the background.
+          startRefill(cityId, dateKey);
+        } else {
+          failedAt.set(cityId, Date.now());
+        }
         return held ?? null;
       } finally {
         yearInFlight.delete(cityId);
@@ -332,6 +364,25 @@ async function loadYear(
   // next read. A missing day waits for the site.
   if (stale) return held ?? null;
   return p;
+}
+
+/** Fetch a city's year again with the long timeouts, without anyone waiting on it. */
+function startRefill(cityId: number, dateKey: string): void {
+  if (refillInFlight.has(cityId)) return;
+  const p = (async () => {
+    try {
+      const year = await fetchYear(cityId, dateKey, false);
+      memYears.set(cityId, year);
+      failedAt.delete(cityId);
+      await writeJson(`${CITY_PREFIX}${cityId}`, year);
+    } catch (e) {
+      if (e instanceof NoTableError) await markNoTable(cityId);
+      else failedAt.set(cityId, Date.now());
+    }
+  })().finally(() => {
+    refillInFlight.delete(cityId);
+  });
+  refillInFlight.set(cityId, p);
 }
 
 /**
@@ -352,6 +403,21 @@ export async function getNamazvaktiTimes(params: {
   retried?: boolean;
 }): Promise<PrayerTimesResult> {
   const offline = params.offline === true;
+  if (offline) return namazvaktiTimesFor(params, true);
+  try {
+    return await namazvaktiTimesFor(params, false);
+  } finally {
+    // Whatever it was — a published day or a miss the caller computes —
+    // the first answer has been given; from now on the network is waited
+    // for as long as it takes.
+    sessionAnswered = true;
+  }
+}
+
+async function namazvaktiTimesFor(
+  params: Parameters<typeof getNamazvaktiTimes>[0],
+  offline: boolean,
+): Promise<PrayerTimesResult> {
   const city = await nearestNamazvaktiCity(params.latitude, params.longitude, offline);
   if (!city) {
     throw new ProviderError(
@@ -364,7 +430,7 @@ export async function getNamazvaktiTimes(params: {
   const year = await loadYear(city.id, dateKey, offline);
   if (!year && noTable?.has(city.id) && !params.retried) {
     // The nearest listed city turned out to have no times: the next one, if near enough.
-    return getNamazvaktiTimes({ ...params, retried: true });
+    return namazvaktiTimesFor({ ...params, retried: true }, offline);
   }
   const row = year?.days[dateKey];
   const timings = row ? timingsFromRow(row, params.school) : null;
@@ -847,4 +913,11 @@ export function _resetNamazvaktiForTests(): void {
   failedAt.clear();
   noTable = null;
   nextIndexPollAt = 0;
+  sessionAnswered = false;
+  refillInFlight.clear();
+}
+
+/** Tests: wait for any background refill. */
+export async function _settleNamazvaktiRefillsForTests(): Promise<void> {
+  await Promise.all([...refillInFlight.values()]);
 }

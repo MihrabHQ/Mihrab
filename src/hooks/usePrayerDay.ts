@@ -16,6 +16,7 @@ import { getPositionStaged } from '../utils/getPosition';
 import { recordLocationFix } from '../prayer/cityRegistry';
 import { reverseLocality, type ReverseLocality } from '../geocoding/nominatim';
 import { computeLocalAdhanTimes } from '../providers/localAdhan';
+import { computeNamazvaktiMethodTimes } from '../providers/namazvakti';
 import {
   settleTimezoneShift,
   pendingTimezoneShift,
@@ -27,7 +28,7 @@ import {
   shouldResync,
 } from '../utils/resyncGate';
 import { getEffectiveDataProvider } from '../settings/effectiveProvider';
-import type { PrayerAppSettings } from '../settings/types';
+import type { PrayerAppSettings, PrayerDataProviderId } from '../settings/types';
 import type { TimingsMap } from '../types/prayer';
 import { addDays, startOfLocalDay } from '../utils/prayerTimes';
 import {
@@ -202,18 +203,34 @@ export function buildProvisionalWeek(params: {
   school: PrayerAppSettings['school'];
   prayerOffsets: PrayerOffsetMinutes | undefined;
   now: Date;
+  /**
+   * The source the week will come from. Türkiye Takvimi's calendar is not
+   * the settings' method (its Fajr at 19°, Isha at 17° and the temkin move
+   * every time by ten minutes or more), so painting the settings' method
+   * first and swapping to the calendar a moment later — or a minute later,
+   * on a slow network — showed a week that was never going to be right.
+   */
+  provider?: PrayerDataProviderId;
 }): TimingsMap[] | null {
   const week: TimingsMap[] = [];
   for (let i = 0; i < WEEK_DAYS; i++) {
     try {
+      const date = addDays(params.now, i);
       week.push(
-        computeLocalAdhanTimes({
-          latitude: params.latitude,
-          longitude: params.longitude,
-          date: addDays(params.now, i),
-          calculationMethod: params.calculationMethod,
-          school: params.school,
-        }).timings,
+        params.provider === 'namazvakti'
+          ? computeNamazvaktiMethodTimes({
+              latitude: params.latitude,
+              longitude: params.longitude,
+              date,
+              school: params.school,
+            }).timings
+          : computeLocalAdhanTimes({
+              latitude: params.latitude,
+              longitude: params.longitude,
+              date,
+              calculationMethod: params.calculationMethod,
+              school: params.school,
+            }).timings,
       );
     } catch {
       break;
@@ -341,6 +358,7 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
           school: settings.school,
           prayerOffsets: settings.prayerOffsets,
           now: provisionalNow,
+          provider,
         });
         if (provisional) {
           setState(prev => ({
