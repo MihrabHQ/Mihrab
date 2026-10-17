@@ -77,7 +77,12 @@ const pad = (n: number) => String(n).padStart(2, '0');
  * @throws Error when the file is not a namazvakti year — so a changed
  * format, an error page or a truncated download is never served as times.
  */
-export function parseNamazvaktiXml(xml: string, year: number, fetchedAt = new Date().toISOString()): NamazvaktiYear {
+export function parseNamazvaktiXml(xml: string, fallbackYear: number, fetchedAt = new Date().toISOString()): NamazvaktiYear {
+  // The file says which year it is (`<?xml …?><!--2026-->`). The phone's
+  // year is only a guess at it: a file fetched on 31 December for the
+  // year about to begin would be filed a year early.
+  const stamped = /^\s*(?:<\?xml[^>]*\?>)?\s*<!--\s*(\d{4})\s*-->/.exec(xml);
+  const year = stamped ? Number(stamped[1]) : fallbackYear;
   const root = /<cityinfo\b[^>]*>/.exec(xml);
   if (!root) throw new Error('namazvakti: no <cityinfo> in the response');
   const cityId = Number(attr(root[0], 'ID'));

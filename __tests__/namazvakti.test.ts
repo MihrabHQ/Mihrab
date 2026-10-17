@@ -498,3 +498,18 @@ describe('wiring', () => {
     expect(wf).toMatch(/data\/prayer-times\/namazvakti/);
   });
 });
+
+describe('the year a site file is for', () => {
+  it('is the one the file names, not the phone’s', () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const xml: string = require('fs').readFileSync(
+      require('path').join(__dirname, 'fixtures/namazvakti/istanbul-16741.xml'),
+      'utf8',
+    );
+    // Fetched on 31 December 2025 for the year about to begin.
+    const parsed = parseNamazvaktiXml(xml, 2025);
+    expect(parsed.year).toBe(2026);
+    expect(parsed.days['2026-06-15']).toBeDefined();
+    expect(parsed.days['2025-12-31']).toBeDefined();
+  });
+});

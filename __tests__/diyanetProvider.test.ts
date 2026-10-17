@@ -101,15 +101,15 @@ describe('a stored source this build does not know', () => {
     expect(s.dataProvider).toBe('aladhan');
   });
 
-  it('moves PrayTimes.dev, which is gone, to Automatic — for every location', async () => {
+  it('moves PrayTimes.dev, which is gone, to the on-device source it was falling back to — for every location', async () => {
     const s = await storedAs({
       dataProvider: 'prayertimes_dev',
       dataProviderAuto: false,
       locationProviders: { home: { auto: false, provider: 'prayertimes_dev' }, work: { auto: false, provider: 'diyanet' } },
     });
-    expect(s.dataProviderAuto).toBe(true);
-    expect(s.dataProvider).toBe('aladhan');
-    expect(s.locationProviders?.home).toEqual({ auto: true, provider: 'aladhan' });
+    expect(s.dataProviderAuto).toBe(false);
+    expect(s.dataProvider).toBe('local_adhan');
+    expect(s.locationProviders?.home).toEqual({ auto: false, provider: 'local_adhan' });
     expect(s.locationProviders?.work).toEqual({ auto: false, provider: 'diyanet' });
   });
 

@@ -145,10 +145,41 @@ function perPrayer(p: DiyanetPlace, y: number, m: number, d: number, asrShadow: 
  * The table prints the whole day in the clock kept at noon: on the morning the
  * clocks go forward a Fajr before the change is printed in the new time.
  */
-function onDaysClock(at: Date, date: Date): Date {
+function onDaysClock(at: Date, date: Date, place: DiyanetPlace | null, longitude: number): Date {
   const noon = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 12);
+  if (!phoneKeepsPlacesClock(noon, date, place, longitude)) return at;
   const shift = at.getTimezoneOffset() - noon.getTimezoneOffset();
   return shift ? new Date(at.getTime() + shift * 60_000) : at;
+}
+
+/**
+ * Is the phone's clock the place's, so that the phone's changeover is the
+ * place's too?
+ *
+ * The shift above is taken from the PHONE's zone, which is the place's only
+ * when the reader is there. For a saved place elsewhere it moved the
+ * place's times on the phone's changeover day: New York's 1 November moved
+ * a saved Stockholm's Fajr an hour, Stockholm's 25 October a saved
+ * Jakarta's. A place that keeps its own clock says so (`clock`); for the
+ * rest, a phone whose standard time is more than two hours from the
+ * place's longitude is somewhere else, and its changeover is not the
+ * place's.
+ */
+function phoneKeepsPlacesClock(
+  noon: Date,
+  date: Date,
+  place: DiyanetPlace | null,
+  longitude: number,
+): boolean {
+  if (place?.clock) {
+    return -noon.getTimezoneOffset() === placeClock(place, date.getFullYear(), date.getMonth(), date.getDate(), 0);
+  }
+  const y = date.getFullYear();
+  const standard = -Math.max(
+    new Date(y, 0, 1, 12).getTimezoneOffset(),
+    new Date(y, 6, 1, 12).getTimezoneOffset(),
+  );
+  return Math.abs(standard / 4 - longitude) <= 30;
 }
 
 type Instants = Record<'fajr' | 'sunrise' | 'dhuhr' | 'asr' | 'maghrib' | 'isha', Date>;
@@ -178,7 +209,7 @@ export function diyanetInstants(latitude: number, longitude: number, date: Date,
   for (const k of ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'] as const) {
     // the correction list is for the standard Asr only
     const step = k === 'asr' && school === 1 ? 0 : (fix?.[k] ?? 0);
-    out[k] = onDaysClock(new Date(toMinute(at[k]).getTime() + step * 60_000), date);
+    out[k] = onDaysClock(new Date(toMinute(at[k]).getTime() + step * 60_000), date, place, longitude);
   }
   return out;
 }
