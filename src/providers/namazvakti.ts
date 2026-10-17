@@ -68,7 +68,7 @@ import {
 } from './namazvaktiParser';
 import type { PrayerTimesResult } from './types';
 import { clockFor, placeCivilDay, type PlaceClock } from './locationClock';
-import { DEVICE_CLOCK } from '../utils/prayerTimes';
+import { placeZoneFor } from './placeZone';
 
 const PROVIDER = 'namazvakti';
 const TILE_PREFIX = 'namazvakti.tile.v1.';
@@ -454,7 +454,11 @@ async function namazvaktiTimesFor(
       `No namazvakti.com city within ${NAMAZVAKTI_MAX_CITY_KM} km.`,
     );
   }
-  const dateKey = formatLocalDate(params.date);
+  // The city's own day and clock (`placeZone.ts`): the site prints each
+  // city on that city's clock, and the city's zone is not in its files.
+  const cityClock = placeZoneFor(city.lat, city.lon, params.date);
+  const civil = placeCivilDay(params.date, cityClock);
+  const dateKey = formatLocalDate(new Date(civil.y, civil.m, civil.d));
   const year = await loadYear(city.id, dateKey, offline);
   if (!year && noTable?.has(city.id) && !params.retried) {
     // The nearest listed city turned out to have no times: the next one, if near enough.
@@ -472,11 +476,11 @@ async function namazvaktiTimesFor(
   return {
     timings,
     source: year?.via === 'mirror' ? 'cdn' : 'namazvakti',
-    // The site prints each city on that city's own clock, and the city's
-    // zone is not in its files: read on the phone's, as before. Right where
-    // the readers of Türkiye Takvimi are — in or near the city they chose —
-    // and an hour off only for a saved city in another zone.
-    clock: DEVICE_CLOCK,
+    // The strings as published, read on the city's clock: the phone's where
+    // the two agree, else the city's zone — exact for the countries the app
+    // knows (Türkiye's Istanbul time), the longitude's hour elsewhere, an
+    // hour off a summer clock but no longer a whole zone off.
+    clock: clockFor(cityClock).zone,
   };
 }
 

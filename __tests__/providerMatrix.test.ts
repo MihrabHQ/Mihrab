@@ -346,8 +346,9 @@ describe.each(PROVIDERS)('%s', provider => {
       // the phone in the place's zone), against the instants under UTC.
       if (online && readable(online, place, day)) {
         const pd = placeDateOf(online, day);
-        // AlAdhan is asked for the phone's date; across the date line that is not the place's (reported).
-        const comparable = provider !== 'aladhan' || pd === c.ds;
+        // AlAdhan is asked for the place's own date, as every source is
+        // read: the same day's instants in every zone.
+        const comparable = true;
         const k = key(c, pd);
         const ins = instantsOf(online, day);
         if (WRITE_GOLDEN) golden[k] = ins;

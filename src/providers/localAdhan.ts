@@ -8,6 +8,7 @@ import {
 } from 'adhan';
 import type { PrayerTimesResult } from './types';
 import { clockFor, placeCivilDay, type PlaceClock } from './locationClock';
+import { DEVICE_CLOCK } from '../utils/prayerTimes';
 import { autoMethodForCoords } from './autoMethod';
 import { gregorianToHijri } from '../hijri/convert';
 import {
@@ -493,11 +494,14 @@ export function computeLocalAdhanInstants(
     // Türkiye's method is Diyanet's: computed as its tables are, for the
     // spot (`diyanetMethod.ts`) — not adhan.js's "Turkey" preset, which is
     // its angles without the temkins, the floors or the summer rule.
+    const written = clockFor(params.placeClock).zone;
     return diyanetInstants(
       params.latitude,
       params.longitude,
       params.placeClock ? dayDate : params.date,
       params.school,
+      // On the place's clock, its changeover is the place's (`placeZone.ts`).
+      written === DEVICE_CLOCK ? undefined : written,
     );
   }
   if (methodId === SWEDEN_METHOD_ID) {

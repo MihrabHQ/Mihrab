@@ -6,6 +6,8 @@ import { getMarwDatasetTimes } from '../providers/marwDataset';
 import { nationalTableFor } from '../providers/nationalTables';
 import { getNamazvaktiTimes } from '../providers/namazvakti';
 import { computeLocalAdhanTimes } from '../providers/localAdhan';
+import { placeCivilDay } from '../providers/locationClock';
+import { notePlaceZone } from '../providers/placeZone';
 import type { PrayerTimesResult } from '../providers/types';
 import { inPrayerOrder } from '../providers/validateTimings';
 import { recordDataSource } from './dataStatus';
@@ -773,6 +775,7 @@ export async function getCachedPrayerDaysMany(
   const v2 = await loadV2();
   const entry = v2.caches[cacheKey(params)];
   if (!entry) return dates.map(() => null);
+  noteAladhanZone(params, entry);
   return dates.map(date => {
     const month = entry.months[getMonthKey(date)];
     const dayKey = getDayKey(date);
@@ -781,6 +784,35 @@ export async function getCachedPrayerDaysMany(
       ? { timings: day, clock: dayClockIn(entry, dayKey) }
       : null;
   });
+}
+
+/**
+ * Tell `placeZone.ts` the zone AlAdhan named for a slot's coordinates: the
+ * clock of a day AlAdhan answered (`meta.timezone`), not of one the phone
+ * computed when it missed (`fallbackDays`). What a calculation for the same
+ * place, by another source, writes its day on.
+ */
+function noteAladhanZone(
+  params: Omit<StoredPrayerData, 'months'>,
+  entry: CacheEntry,
+): void {
+  // A hint: never the reason a read fails.
+  try {
+    if (!entry.clock || !asksAladhan(params)) return;
+    const fallback = new Set(entry.fallbackDays ?? []);
+    for (const month of Object.values(entry.months ?? {})) {
+      for (const dayKey of Object.keys(month ?? {})) {
+        if (fallback.has(dayKey)) continue;
+        const clock = dayClockIn(entry, dayKey);
+        if (clock !== DEVICE_CLOCK) {
+          notePlaceZone(params.latitude, params.longitude, clock);
+        }
+        return;
+      }
+    }
+  } catch {
+    /* no hint */
+  }
 }
 
 /**
@@ -1280,7 +1312,14 @@ export async function refreshPrayerDataCache(
       }
       for (const date of dates) {
         const dayKey = getDayKey(date);
-        const day = answer.get(dayKey);
+        // The place's own day for the phone's (`placeCivilDay`): the same
+        // date unless the date line is between them, as a single day's
+        // request asks it (`aladhanDay`).
+        const zone = answer.values().next().value?.timezone;
+        const civil = zone ? placeCivilDay(date, { zone }) : null;
+        const day = answer.get(
+          civil ? getDayKey(new Date(civil.y, civil.m, civil.d)) : dayKey,
+        );
         if (!day) continue;
         months[mk] = { ...(months[mk] ?? {}), [dayKey]: day.timings };
         answered.push(dayKey);

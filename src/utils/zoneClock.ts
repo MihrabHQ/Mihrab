@@ -23,6 +23,23 @@ export const GMT_ZONES: ReadonlySet<string> = new Set([
   'Africa/Abidjan',
 ]);
 
+/**
+ * A zone that keeps one offset all year, in minutes east — 0 for GMT, and
+ * the POSIX-style `Etc/GMT±N` zones (`Etc/GMT-3` is three hours EAST of
+ * Greenwich, the sign inverted) that `placeZone.ts` derives from a
+ * longitude — or null for any other. Read by arithmetic, never by Intl:
+ * Hermes on iOS resolves `timeZone` through the system's list of zone
+ * names, which need not hold the `Etc/` ones.
+ */
+export function fixedOffsetMinutes(zone: string): number | null {
+  if (GMT_ZONES.has(zone)) return 0;
+  const m = /^Etc\/GMT([+-])(\d{1,2})$/.exec(zone);
+  if (!m) return null;
+  const hours = parseInt(m[2], 10);
+  if (hours > 14) return null;
+  return (m[1] === '+' ? -1 : 1) * hours * 60;
+}
+
 /** One formatter per zone and shape: building them is the slow part on Hermes. */
 const formatters = new Map<string, Intl.DateTimeFormat>();
 /** The constructor the cache was filled from; a replaced one (a test's) empties it. */
@@ -59,13 +76,15 @@ export function civilInZone(
   zone: string,
   withTime = false,
 ): { y: number; m: number; d: number; h: number; min: number } | null {
-  if (GMT_ZONES.has(zone)) {
+  const fixed = fixedOffsetMinutes(zone);
+  if (fixed != null) {
+    const wall = new Date(at.getTime() + fixed * 60_000);
     return {
-      y: at.getUTCFullYear(),
-      m: at.getUTCMonth() + 1,
-      d: at.getUTCDate(),
-      h: at.getUTCHours(),
-      min: at.getUTCMinutes(),
+      y: wall.getUTCFullYear(),
+      m: wall.getUTCMonth() + 1,
+      d: wall.getUTCDate(),
+      h: wall.getUTCHours(),
+      min: wall.getUTCMinutes(),
     };
   }
   try {
@@ -89,7 +108,8 @@ export function civilInZone(
  * data; null when the phone cannot say.
  */
 export function zoneOffsetMinutes(zone: string, at: Date): number | null {
-  if (GMT_ZONES.has(zone)) return 0;
+  const fixed = fixedOffsetMinutes(zone);
+  if (fixed != null) return fixed;
   const ymd = civilInZone(at, zone, true);
   if (!ymd) return null;
   const wall = Date.UTC(ymd.y, ymd.m - 1, ymd.d, ymd.h, ymd.min);

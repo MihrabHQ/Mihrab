@@ -24,7 +24,9 @@
  * (`diyanetRegion.ts`).
  */
 import type { PrayerTimesResult } from './types';
-import { DEVICE_CLOCK, formatLocalTime } from '../utils/prayerTimes';
+import { DEVICE_CLOCK } from '../utils/prayerTimes';
+import { instantOnZoneClock, zoneOffsetMinutes } from '../utils/zoneClock';
+import { clockFor, placeCivilDay, type PlaceClock } from './locationClock';
 import { congressTimes, CONGRESS_ISHA_DEG, DIYANET_ISHA_DEG, type CongressInstants } from './congressMethod';
 import { computeImsak, DEFAULT_IMSAK_OFFSET_MINUTES } from './imsak';
 import { diyanetUsesCongressIsha } from './diyanetRegion';
@@ -149,7 +151,18 @@ function perPrayer(p: DiyanetPlace, y: number, m: number, d: number, asrShadow: 
  * The table prints the whole day in the clock kept at noon: on the morning the
  * clocks go forward a Fajr before the change is printed in the new time.
  */
-function onDaysClock(at: Date, date: Date, place: DiyanetPlace | null, longitude: number): Date {
+function onDaysClock(at: Date, date: Date, place: DiyanetPlace | null, longitude: number, zone?: string): Date {
+  if (zone) {
+    // Written on the place's own clock (`placeZone.ts`): its changeover,
+    // where the table keeps that clock.
+    const noonAt = instantOnZoneClock(zone, date.getFullYear(), date.getMonth(), date.getDate(), 12, 0);
+    const noonOff = noonAt ? zoneOffsetMinutes(zone, noonAt) : null;
+    const atOff = zoneOffsetMinutes(zone, at);
+    if (noonOff == null || atOff == null) return at;
+    if (place?.clock && noonOff !== placeClock(place, date.getFullYear(), date.getMonth(), date.getDate(), 0)) return at;
+    const shift = noonOff - atOff;
+    return shift ? new Date(at.getTime() + shift * 60_000) : at;
+  }
   const noon = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 12);
   if (!phoneKeepsPlacesClock(noon, date, place, longitude)) return at;
   const shift = at.getTimezoneOffset() - noon.getTimezoneOffset();
@@ -191,16 +204,21 @@ type Instants = Record<'fajr' | 'sunrise' | 'dhuhr' | 'asr' | 'maghrib' | 'isha'
 /**
  * Diyanet's six times for a spot and a civil date, as instants on the printed
  * minute: the nearest listed place's table when one is near, else the method
- * for the spot itself.
+ * for the spot itself. `zone`: the clock the day is written on, where it is
+ * the place's and not the phone's (`placeZone.ts`) — `date` is then the
+ * place's own civil date.
  */
-export function diyanetInstants(latitude: number, longitude: number, date: Date, school: number): Instants {
+export function diyanetInstants(latitude: number, longitude: number, date: Date, school: number, zone?: string): Instants {
   const y = date.getFullYear();
   const m = date.getMonth();
   const d = date.getDate();
   const asrShadow = school === 1 ? 2 : 1;
   // The clock the day is kept in — Diyanet walks its summer transition on it (`congressMethod.ts`)
   const place = nearestDiyanetPlace(latitude, longitude);
-  const clock = placeClock(place, y, m, d, -new Date(y, m, d, 12).getTimezoneOffset());
+  const zoneNoon = zone ? instantOnZoneClock(zone, y, m, d, 12, 0) : null;
+  const dayOffset =
+    (zone && zoneNoon ? zoneOffsetMinutes(zone, zoneNoon) : null) ?? -new Date(y, m, d, 12).getTimezoneOffset();
+  const clock = placeClock(place, y, m, d, dayOffset);
   let at: CongressInstants;
   let fix: Partial<Record<keyof Instants, number>> | undefined;
   if (place) {
@@ -213,7 +231,7 @@ export function diyanetInstants(latitude: number, longitude: number, date: Date,
   for (const k of ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'] as const) {
     // the correction list is for the standard Asr only
     const step = k === 'asr' && school === 1 ? 0 : (fix?.[k] ?? 0);
-    out[k] = onDaysClock(new Date(toMinute(at[k]).getTime() + step * 60_000), date, place, longitude);
+    out[k] = onDaysClock(new Date(toMinute(at[k]).getTime() + step * 60_000), date, place, longitude, zone);
   }
   return out;
 }
@@ -224,31 +242,44 @@ export function diyanetCoverage(latitude: number, longitude: number): 'place' | 
 }
 
 /**
- * Diyanet's times for a place and a civil date, in the phone's clock.
- * `school` 1 gives the Hanafi Asr (two shadow lengths); the tables print
- * the standard.
+ * Diyanet's times for a place and a civil date, on the phone's clock — or,
+ * with `placeClock` for a place in another zone (`placeZone.ts`), the
+ * place's own day on the place's clock, as its table prints it: written on
+ * the phone's, Stockholm's midsummer Fajr (01:54) was 23:54 the evening
+ * before on a phone on UTC. `school` 1 gives the Hanafi Asr (two shadow
+ * lengths); the tables print the standard.
  */
 export function computeDiyanetTimes(params: {
   latitude: number;
   longitude: number;
   date: Date;
   school: number;
+  placeClock?: PlaceClock;
 }): PrayerTimesResult {
-  const at = diyanetInstants(params.latitude, params.longitude, params.date, params.school);
-  const fajr = formatLocalTime(at.fajr);
+  const { format, zone } = clockFor(params.placeClock);
+  const onPlace = zone !== DEVICE_CLOCK;
+  const civil = onPlace ? placeCivilDay(params.date, params.placeClock) : null;
+  const at = diyanetInstants(
+    params.latitude,
+    params.longitude,
+    civil ? new Date(civil.y, civil.m, civil.d) : params.date,
+    params.school,
+    onPlace ? zone : undefined,
+  );
+  const fajr = format(at.fajr);
   return {
     timings: {
       Fajr: fajr,
-      Sunrise: formatLocalTime(at.sunrise),
-      Dhuhr: formatLocalTime(at.dhuhr),
-      Asr: formatLocalTime(at.asr),
-      Maghrib: formatLocalTime(at.maghrib),
-      Isha: formatLocalTime(at.isha),
+      Sunrise: format(at.sunrise),
+      Dhuhr: format(at.dhuhr),
+      Asr: format(at.asr),
+      Maghrib: format(at.maghrib),
+      Isha: format(at.isha),
       Imsak: computeImsak(fajr, DEFAULT_IMSAK_OFFSET_MINUTES),
     },
     source: 'local',
-    // True instants written on the phone's clock (a listed place's own
-    // clock steers the method, not the writing).
-    clock: DEVICE_CLOCK,
+    // True instants, written on the phone's clock or the place's (a listed
+    // place's own clock steers the method, not the writing).
+    clock: zone,
   };
 }

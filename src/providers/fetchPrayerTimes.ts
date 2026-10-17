@@ -16,7 +16,14 @@ import {
   nationalTableFor,
 } from './nationalTables';
 import { computeLocalAdhanTimes } from './localAdhan';
-import { indonesiaClock, MOROCCO_CLOCK, SWEDEN_CLOCK } from './locationClock';
+import {
+  indonesiaClock,
+  MOROCCO_CLOCK,
+  placeCivilDay,
+  SWEDEN_CLOCK,
+  type PlaceClock,
+} from './locationClock';
+import { notePlaceZone, placeZoneFor } from './placeZone';
 import { DEVICE_CLOCK } from '../utils/prayerTimes';
 import { computeDiyanetTimes, DIYANET_METHOD_ID } from './diyanetMethod';
 import { autoMethodForCoords } from './autoMethod';
@@ -57,8 +64,11 @@ function swedenOnDevice(p: UnifiedFetchParams): PrayerTimesResult {
       date: p.date,
       calculationMethod: SWEDEN_METHOD_ID,
       school: p.school,
-      // a listed city's times on Sweden's clock, as the timetable prints them
-      placeClock: city ? SWEDEN_CLOCK : undefined,
+      // a listed city's times on Sweden's clock, as the timetable prints
+      // them; beyond the cities, on the reader's spot's own (`placeZone.ts`)
+      placeClock: city
+        ? SWEDEN_CLOCK
+        : placeZoneFor(p.latitude, p.longitude, p.date),
     }),
     timezone: 'Europe/Stockholm',
     source: 'local',
@@ -139,6 +149,7 @@ async function onDeviceMethod(
       date: p.date,
       calculationMethod: method,
       school: p.school,
+      placeClock: placeZoneFor(p.latitude, p.longitude, p.date),
     }),
     source: 'local',
   };
@@ -195,6 +206,7 @@ export async function fetchAladhanMonth(
     } catch {
       continue;
     }
+    notePlaceZone(p.latitude, p.longitude, day.timezone);
     out.set(day.date, {
       timings,
       timezone: day.timezone,
@@ -205,7 +217,45 @@ export async function fetchAladhanMonth(
   return out;
 }
 
-/** The user's method on the phone, where the provider would have asked the network. */
+/**
+ * AlAdhan's day for the place's own date for the phone's (`placeCivilDay`),
+ * as every reader of a day on the place's clock reads it and as the phone
+ * computes it offline: the phone's date wherever the two clocks are within
+ * twelve hours; across the date line (Kiritimati asking for Cologne) the
+ * place's day before — AlAdhan's answer for the phone's date was read a day
+ * early. The date is chosen by the place's clock as far as the app knows it
+ * (`placeZone.ts`); where the zone AlAdhan names puts the place on another
+ * date, that day is asked for instead (once: the zone is then known).
+ */
+async function askAladhan(p: UnifiedFetchParams): Promise<PrayerTimesResult> {
+  const ask = (date: Date) =>
+    fetchAladhanTimes({
+      latitude: p.latitude,
+      longitude: p.longitude,
+      date,
+      method: p.calculationMethod,
+      school: p.school,
+    });
+  const dayOn = (zone: PlaceClock | undefined) => {
+    const c = placeCivilDay(p.date, zone);
+    return c.y === p.date.getFullYear() &&
+      c.m === p.date.getMonth() &&
+      c.d === p.date.getDate()
+      ? p.date
+      : new Date(c.y, c.m, c.d);
+  };
+  const asked = dayOn(placeZoneFor(p.latitude, p.longitude, p.date));
+  const result = await ask(asked);
+  notePlaceZone(p.latitude, p.longitude, result.timezone);
+  if (!result.timezone) return result;
+  const right = dayOn({ zone: result.timezone });
+  return right.getTime() === asked.getTime() ? result : ask(right);
+}
+
+/**
+ * The user's method on the phone, where the provider would have asked the
+ * network — on the place's clock, as AlAdhan writes it (`placeZone.ts`).
+ */
 function offlineMethod(p: UnifiedFetchParams): PrayerTimesResult {
   const local: PrayerTimesResult = {
     ...computeLocalAdhanTimes({
@@ -214,6 +264,7 @@ function offlineMethod(p: UnifiedFetchParams): PrayerTimesResult {
       date: p.date,
       calculationMethod: p.calculationMethod,
       school: p.school,
+      placeClock: placeZoneFor(p.latitude, p.longitude, p.date),
     }),
     source: 'local',
   };
@@ -230,13 +281,7 @@ export async function fetchPrayerTimesUnified(
       const onDevice = await onDeviceMethod(p);
       if (onDevice) return onDevice;
       if (p.offline) return offlineMethod(p);
-      result = await fetchAladhanTimes({
-        latitude: p.latitude,
-        longitude: p.longitude,
-        date: p.date,
-        method: p.calculationMethod,
-        school: p.school,
-      });
+      result = await askAladhan(p);
       result.source = 'aladhan';
       // AlAdhan writes a place's times on the place's clock (`meta.timezone`).
       result.clock = result.timezone ?? DEVICE_CLOCK;
@@ -303,13 +348,7 @@ export async function fetchPrayerTimesUnified(
         }
       }
       if (p.offline) return offlineMethod(p);
-      result = await fetchAladhanTimes({
-        latitude: p.latitude,
-        longitude: p.longitude,
-        date: p.date,
-        method: p.calculationMethod,
-        school: p.school,
-      });
+      result = await askAladhan(p);
       result.source = 'aladhan';
       // AlAdhan writes a place's times on the place's clock (`meta.timezone`).
       result.clock = result.timezone ?? DEVICE_CLOCK;
@@ -339,6 +378,7 @@ export async function fetchPrayerTimesUnified(
           calculationMethod: ALGERIA_METHOD_ID,
           // The Ministry publishes one (Shafi'i) Asr, and this stands in for it.
           school: 0,
+          placeClock: placeZoneFor(p.latitude, p.longitude, p.date),
         }),
         source: 'local',
       };
@@ -393,9 +433,10 @@ export async function fetchPrayerTimesUnified(
           horizonMin: place?.horizonMin,
           // A JAKIM zone's times are the zone's (`malaysiaMethod.ts`).
           jakimZone: p.provider === 'jakim' && place ? place.id : undefined,
-          // A listed place's day on its own clock, as its table prints it.
+          // A listed place's day on its own clock, as its table prints it;
+          // outside the country, the reader's spot's (`placeZone.ts`).
           placeClock: !place
-            ? undefined
+            ? placeZoneFor(p.latitude, p.longitude, p.date)
             : p.provider === 'muis'
             ? MUIS_CLOCK
             : p.provider === 'jakim'
@@ -443,13 +484,17 @@ export async function fetchPrayerTimesUnified(
       const point = near
         ? await namazvaktiCityPoint(near).catch(() => null)
         : null;
+      const atLat = point?.lat ?? near?.lat ?? p.latitude;
+      const atLon = point?.lon ?? near?.lon ?? p.longitude;
       const local = computeNamazvaktiMethodTimes({
-        latitude: point?.lat ?? near?.lat ?? p.latitude,
-        longitude: point?.lon ?? near?.lon ?? p.longitude,
+        latitude: atLat,
+        longitude: atLon,
         date: p.date,
         school: p.school,
         heightM: near?.heightM,
         temkin: point?.temkin,
+        // The city's day on the city's clock, as the site prints it.
+        placeClock: placeZoneFor(atLat, atLon, p.date),
       });
       validateTimingShape(local.timings);
       // The calendar has no rule for where the twilight does not end or
@@ -463,6 +508,7 @@ export async function fetchPrayerTimesUnified(
           longitude: p.longitude,
           date: p.date,
           school: p.school,
+          placeClock: placeZoneFor(p.latitude, p.longitude, p.date),
         });
         validateTimingShape(diyanet.timings);
         return diyanet;
@@ -478,6 +524,8 @@ export async function fetchPrayerTimesUnified(
         longitude: p.longitude,
         date: p.date,
         school: p.school,
+        // On the place's clock where it is not the phone's (`placeZone.ts`).
+        placeClock: placeZoneFor(p.latitude, p.longitude, p.date),
       });
       validateTimingShape(local.timings);
       return local;
@@ -493,6 +541,9 @@ export async function fetchPrayerTimesUnified(
           date: p.date,
           calculationMethod: p.calculationMethod,
           school: p.school,
+          // A saved place in another zone, on its own clock: written on
+          // the phone's, its day landed on the phone's date (`placeZone.ts`).
+          placeClock: placeZoneFor(p.latitude, p.longitude, p.date),
         }),
         source: 'local',
       };
