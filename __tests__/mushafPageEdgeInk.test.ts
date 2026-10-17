@@ -19,9 +19,14 @@
 import {
   fitLinesWithInk,
   mushafPageColumnHeight,
+  pageEdgeInk,
 } from '../src/quran/MushafTextPageSurface';
 import { MUSHAF_LINE_HEIGHT_EM } from '../src/quran/MushafTextPage';
-import { lineInkPadding } from '../src/quran/mushafLayout';
+import {
+  MUSHAF_FONT_ASCENT_EM,
+  MUSHAF_FONT_DESCENT_EM,
+  lineInkPadding,
+} from '../src/quran/mushafLayout';
 
 const LINES = 15;
 
@@ -57,35 +62,69 @@ describe('fitLinesWithInk', () => {
     expect(fit.bottom).toBeGreaterThanOrEqual(needed.bottom - 1);
   });
 
-  it('pulls the outer lines\' leading to the edges in a box that does not scroll', () => {
-    // Fifteen lines of 25dp type are ~644dp at their natural pitch; in a
-    // 760dp box the stretch is leading. Tight, that leading is shared out
-    // between the lines and none of it is left above the first or below
-    // the last: the block is still exactly the box, and the first line's
-    // box starts half its leading above the block.
+  it('puts the edge lines\' ink at the edges when told how far it reaches', () => {
+    // Page 571's first line reaches 1.198 em up and its last 0.46 em
+    // down. Tight, the first line's box is pulled above the block by
+    // exactly the blank its own ink would leave — the half-leading plus
+    // the font's ascent past the ink — and the last below it likewise,
+    // so the ink starts and ends a hair inside the block, and the block
+    // is still the box.
     const fs = 25;
     const box = 760;
+    const edge = { above: 1.198, below: 0.4596 };
     const loose = fitLinesWithInk(fs, box, LINES);
-    const tight = fitLinesWithInk(fs, box, LINES, true);
-    const natural = fs * MUSHAF_LINE_HEIGHT_EM;
-    expect(loose.shift).toBe(0);
-    expect(tight.shift).toBeGreaterThan(0);
-    expect(tight.lineHeight).toBeGreaterThan(loose.lineHeight);
-    expect(tight.shift).toBeCloseTo((tight.lineHeight - natural) / 2, 5);
+    const tight = fitLinesWithInk(fs, box, LINES, edge);
+    const p = tight.lineHeight;
+    expect(p).toBeGreaterThan(loose.lineHeight);
+    // Room above the first baseline is ascent + half the leading; what
+    // is left past the ink is the shift.
+    const leading = p - (MUSHAF_FONT_ASCENT_EM + MUSHAF_FONT_DESCENT_EM) * fs;
+    const roomAbove = MUSHAF_FONT_ASCENT_EM * fs + leading / 2;
+    const roomBelow = MUSHAF_FONT_DESCENT_EM * fs + leading / 2;
+    expect(tight.shiftTop).toBeCloseTo(roomAbove - edge.above * fs, 5);
+    expect(tight.shiftBottom).toBeCloseTo(roomBelow - edge.below * fs, 5);
     expect(
-      tight.lineHeight * LINES - 2 * tight.shift + tight.top + tight.bottom,
+      p * LINES - tight.shiftTop - tight.shiftBottom + tight.top + tight.bottom,
     ).toBeCloseTo(box, 5);
     expect(tight.top).toBeGreaterThan(0);
+    expect(tight.top).toBeLessThan(loose.top);
   });
 
-  it('leaves a box shorter than the natural pitch alone, tight or not', () => {
-    // Nothing to pull: when the lines are squeezed there is no leading at
-    // the edges, and a negative shift would pile the lines on each other.
+  it('reserves room instead when an edge line reaches past its box', () => {
+    // Page 556's kind of first line: ink 1.64 em up, past the ascent and
+    // the half-leading. The shift goes negative — a positive margin, which
+    // is the reserve the loose fit would have made, sized to this page.
+    const fs = 25;
+    const tight = fitLinesWithInk(fs, 760, LINES, { above: 1.64, below: 0.3 });
+    expect(tight.shiftTop).toBeLessThan(0);
+    expect(tight.shiftBottom).toBeGreaterThan(0);
+  });
+
+  it('leaves a band or basmalah edge row where it is', () => {
+    const fs = 25;
+    const tight = fitLinesWithInk(fs, 760, LINES, { above: null, below: 0.46 });
+    expect(tight.shiftTop).toBe(0);
+    expect(tight.shiftBottom).toBeGreaterThan(0);
+  });
+
+  it('falls back to the loose fit in a box shorter than the natural pitch', () => {
+    // Squeezed lines have negative leading, where the platforms disagree
+    // on where the ink lands; the reserve is the safe page there.
     const fs = 25;
     const box = 600;
-    const tight = fitLinesWithInk(fs, box, LINES, true);
-    expect(tight.shift).toBe(0);
+    const tight = fitLinesWithInk(fs, box, LINES, { above: 1.2, below: 0.46 });
     expect(tight).toEqual(fitLinesWithInk(fs, box, LINES));
+    expect(tight.shiftTop).toBe(0);
+  });
+
+  it('knows each page\'s own reach, for both glyph sets', () => {
+    const v2 = pageEdgeInk(571, 'v2');
+    expect(v2).not.toBeNull();
+    expect(v2!.above).toBeGreaterThan(1);
+    expect(v2!.above).toBeLessThan(1.64);
+    expect(pageEdgeInk(571, 'tajweed-light')!.below).toBeGreaterThan(0);
+    // Page 1 opens with the surah band: no text ink on its first line.
+    expect(pageEdgeInk(1, 'v2')!.above).toBeNull();
   });
 
   it('keeps the lines rather than collapsing them in an impossible box', () => {
@@ -97,7 +136,13 @@ describe('fitLinesWithInk', () => {
 
   it('does nothing without a font size to measure the ink against', () => {
     const fit = fitLinesWithInk(0, 640, LINES);
-    expect(fit).toEqual({ lineHeight: 640 / LINES, top: 0, bottom: 0, shift: 0 });
+    expect(fit).toEqual({
+      lineHeight: 640 / LINES,
+      top: 0,
+      bottom: 0,
+      shiftTop: 0,
+      shiftBottom: 0,
+    });
   });
 });
 

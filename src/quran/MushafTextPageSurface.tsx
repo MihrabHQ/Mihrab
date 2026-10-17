@@ -27,6 +27,8 @@ import MushafTextPage, {
 import MushafUnicodePage from './MushafUnicodePage';
 import { useWordReaderEnabled } from './audio/wordReader';
 import {
+  MUSHAF_FONT_ASCENT_EM,
+  MUSHAF_FONT_DESCENT_EM,
   MUSHAF_PAGE_INSET_EM,
   getPageLayout,
   isFramedPage,
@@ -38,6 +40,7 @@ import {
 import { DEFAULT_RIWAYAH, riwayahById, type RiwayahId } from './riwayat';
 import { toneIsDark, type MushafTone } from './mushafTone';
 import { useMushafFontSet, useMushafPageFont } from './useMushafPageFont';
+import type { MushafFontSet } from './mushafFontStore';
 import { ayahEndInk, ayahTint, withAlpha, type AyahRefLike } from './ayahMarks';
 import type { QuranBookmark } from './quranTypes';
 
@@ -235,13 +238,71 @@ export function pageFontSize(
  * (`mushafPageColumnHeight`), which keeps the landscape reading zoom
  * exactly where it was.
  */
+/** How far a page's edge lines' ink reaches, in ems — see `pageEdgeInk`. */
+export type PageEdgeInk = {
+  /** Above the baseline on the FIRST line; null when that line is a band or basmalah. */
+  above: number | null;
+  /** Below the baseline on the LAST line; null likewise. */
+  below: number | null;
+};
+
+type EdgeInkTable = {
+  v2: Array<[number | null, number | null] | null>;
+  tajweed: Array<[number | null, number | null] | null>;
+};
+let edgeInkTable: EdgeInkTable | null = null;
+
+/**
+ * What this page's first line reaches up to and its last line down to,
+ * measured glyph by glyph over the page's own font
+ * (`scripts/mushaf/measure_edge_ink.py`). The constants in
+ * `mushafLayout.ts` are the worst case over all 604 fonts; the page's own
+ * figure is what lets a portrait page start at its ink rather than at the
+ * worst case's.
+ */
+export function pageEdgeInk(
+  page: number,
+  set: MushafFontSet = 'v2',
+): PageEdgeInk | null {
+  if (edgeInkTable == null) {
+    edgeInkTable = require('./data/mushafEdgeInk.json') as EdgeInkTable;
+  }
+  const table = set === 'v2' ? edgeInkTable.v2 : edgeInkTable.tajweed;
+  const entry = table[page - 1];
+  if (!entry) return null;
+  return { above: entry[0], below: entry[1] };
+}
+
+/** The hair the tight fit keeps between the edge ink and the clip, dp. */
+const TIGHT_BREATH = 2;
+
+export type LineFit = {
+  lineHeight: number;
+  /** Padding above the first line's box and below the last's, dp. */
+  top: number;
+  bottom: number;
+  /**
+   * How far the first line's box is pulled ABOVE the padded block, and the
+   * last's below it, dp — a negative margin, so the ink sits at the
+   * padding. Zero in the loose fit.
+   */
+  shiftTop: number;
+  shiftBottom: number;
+};
+
 export function fitLinesWithInk(
   fontSize: number,
   boxH: number,
   lineCount: number,
-  tight: boolean = false,
-): { lineHeight: number; top: number; bottom: number; shift: number } {
-  const flat = { lineHeight: boxH / lineCount, top: 0, bottom: 0, shift: 0 };
+  edge: PageEdgeInk | null = null,
+): LineFit {
+  const flat = {
+    lineHeight: boxH / lineCount,
+    top: 0,
+    bottom: 0,
+    shiftTop: 0,
+    shiftBottom: 0,
+  };
   if (!(fontSize > 0) || !(boxH > 0) || lineCount < 1) return flat;
   let lineHeight = boxH / lineCount;
   let ink = lineInkPadding(fontSize, lineHeight);
@@ -258,40 +319,68 @@ export function fitLinesWithInk(
   // A box too small to hold the reserve keeps its lines rather than
   // collapsing them: a squeezed page beats no page.
   if (!(boxH - ink.top - ink.bottom > 0)) return flat;
-  if (tight && lineCount > 1) {
-    /**
-     * THE FIRST AND LAST LINES' LEADING GOES TO THE EDGES, NOT THE BLANK.
-     *
-     * A portrait page is fifteen lines stretched over the box, and the
-     * stretch is leading: each line's box is taller than the type, and
-     * the type sits in the middle of it. Between lines that is the
-     * spacing the print has. At the top and bottom it is half a line's
-     * leading of nothing — above the first line's ink, below the last —
-     * on top of the ink reserve and the chrome gaps, and the three
-     * together were the "wasted space" at the top and bottom of the page.
-     *
-     * So in a box that does not scroll, the lines are pitched so that the
-     * first line's box starts half its leading ABOVE the block and the
-     * last ends half below (`shift`, applied as a negative margin by the
-     * caller): the ink then starts where the reserve ends, and the leading
-     * it would have had is shared out between the lines instead.
-     */
-    const natural = fontSize * MUSHAF_LINE_HEIGHT_EM;
-    const inner = boxH - ink.top - ink.bottom;
-    const pitched = (inner - natural) / (lineCount - 1);
-    if (pitched > natural) {
-      // The reserve was solved for the stretched pitch; the pitch grew,
-      // so the reserve can only have shrunk, and keeping the larger one
-      // is the safe side of a dp.
-      return {
-        lineHeight: pitched,
-        top: ink.top,
-        bottom: ink.bottom,
-        shift: (pitched - natural) / 2,
-      };
-    }
-  }
-  return { lineHeight, top: ink.top, bottom: ink.bottom, shift: 0 };
+  const loose = {
+    lineHeight,
+    top: ink.top,
+    bottom: ink.bottom,
+    shiftTop: 0,
+    shiftBottom: 0,
+  };
+  if (!edge) return loose;
+
+  /**
+   * THE TIGHT FIT: THE INK AT THE EDGES, NOT THE WORST CASE.
+   *
+   * A portrait page is fifteen lines stretched over a box that nothing
+   * scrolls, and what was above the first line's ink was three things
+   * stacked: the reserve for the tallest mark in any of the 604 fonts,
+   * the half of the stretch that fell above the first line, and the
+   * font's own ascent above where this page's first line actually
+   * reaches. The same three below the last line. Together they were a
+   * finger's width of nothing at the top and bottom of every page — the
+   * "wasted space" — while the lines in between were spaced for it.
+   *
+   * With the page's own reach known (`pageEdgeInk`), the first line's
+   * box is placed so its ink starts a hair below the block's top, and
+   * the last's so its ink ends a hair above the bottom: the box is
+   * pulled up by what would otherwise be blank (`shiftTop`, applied as a
+   * negative margin), and that room is shared out between the lines
+   * instead. The block is still exactly the box it was given.
+   *
+   * Where the room above a line's baseline is `A + L/2` for a font ascent
+   * `A` and leading `L = p − (A + D)` (both platforms split a positive
+   * leading evenly), the blank above the first line's ink is
+   * `p/2 + (A − (A+D)/2 − above)·fs`, linear in the pitch `p`; likewise
+   * below. So the pitch that makes the block the box is one division. A
+   * page whose edge line is a band or a basmalah keeps that row as it
+   * is: it draws inside its own height.
+   */
+  const natural = fontSize * MUSHAF_LINE_HEIGHT_EM;
+  const half = (MUSHAF_FONT_ASCENT_EM + MUSHAF_FONT_DESCENT_EM) / 2;
+  const slopeTop = edge.above != null ? 0.5 : 0;
+  const offsetTop =
+    edge.above != null
+      ? fontSize * (MUSHAF_FONT_ASCENT_EM - half - edge.above)
+      : 0;
+  const slopeBottom = edge.below != null ? 0.5 : 0;
+  const offsetBottom =
+    edge.below != null
+      ? fontSize * (MUSHAF_FONT_DESCENT_EM - half - edge.below)
+      : 0;
+  const inner = boxH - 2 * TIGHT_BREATH;
+  const divisor = lineCount - slopeTop - slopeBottom;
+  const pitched = (inner + offsetTop + offsetBottom) / divisor;
+  // Squeezed below the natural pitch the leading goes negative, and the
+  // platforms stop agreeing on where a line's ink lands; the loose fit
+  // and its reserve are the safe page there.
+  if (!(pitched >= natural)) return loose;
+  return {
+    lineHeight: pitched,
+    top: TIGHT_BREATH,
+    bottom: TIGHT_BREATH,
+    shiftTop: slopeTop * pitched + offsetTop,
+    shiftBottom: slopeBottom * pitched + offsetBottom,
+  };
 }
 
 /**
@@ -447,7 +536,7 @@ function GlyphPageSurface({
     height - inset * (framed ? 1.2 : 0),
     lineCount,
     // The plates keep their leading: their frame is drawn to the box.
-    tight && !framed,
+    tight && !framed ? pageEdgeInk(page, fontSet) : null,
   );
 
   const drawn = (
@@ -485,11 +574,17 @@ function GlyphPageSurface({
             paddingBottom: fit.bottom,
           },
         ]}>
-        {fit.shift > 0 ? (
-          // The outer lines' half-leading, pulled out of the block — see
-          // `fitLinesWithInk`. Into the reserve, which is room for ink
-          // and has none of its own.
-          <View style={{ marginVertical: -fit.shift }}>{drawn}</View>
+        {fit.shiftTop !== 0 || fit.shiftBottom !== 0 ? (
+          // The edge lines pulled to the edges — the tight fit, see
+          // `fitLinesWithInk`. A negative margin: the blank above the
+          // first line's ink goes above the block, where the padding is.
+          <View
+            style={{
+              marginTop: -fit.shiftTop,
+              marginBottom: -fit.shiftBottom,
+            }}>
+            {drawn}
+          </View>
         ) : (
           drawn
         )}
