@@ -14,8 +14,11 @@ jest.mock('../src/native/AppVersion', () => ({
     return mockVersion;
   },
 }));
+/** Writes of the schedule asked for by anyone else in the process (Today). */
+const mockSyncsAsked = { n: 0 };
 jest.mock('../src/notifications/prayerNotifications', () => ({
   syncPrayerNotifications: jest.fn(async () => ({ status: 'scheduled' })),
+  prayerSyncsAsked: () => mockSyncsAsked.n,
 }));
 jest.mock('../src/widget/republishWidgetPayload', () => ({
   republishWidgetPayload: jest.fn(async () => true),
@@ -54,6 +57,7 @@ beforeEach(async () => {
   _resetAfterUpdateForTests();
   mockVersion.versionName = '2.33.0';
   mockVersion.buildNumber = '233';
+  mockSyncsAsked.n = 0;
   (loadSettings as jest.Mock).mockResolvedValue({
     ...DEFAULT_SETTINGS,
     locationMode: 'manual',
@@ -132,6 +136,18 @@ test('no location yet: nothing to write, and the build is recorded', async () =>
   expect(await AsyncStorage.getItem(ALERTS_VERSION_KEY)).toBe('2.33.0+233');
 });
 
+test('Today wrote the alerts while these were built: Today’s stand, and the build is recorded', async () => {
+  // The widget's republish is where the time goes; Today, mounted beside
+  // the root, writes its schedule from the live fix and the fetched days.
+  republish.mockImplementationOnce(async () => {
+    mockSyncsAsked.n += 1;
+    return true;
+  });
+  expect(await resyncAfterUpdate()).toBe('rewritten');
+  expect(sync).not.toHaveBeenCalled();
+  expect(await AsyncStorage.getItem(ALERTS_VERSION_KEY)).toBe('2.33.0+233');
+});
+
 test('a build that cannot say its version does nothing', async () => {
   mockVersion.versionName = undefined;
   mockVersion.buildNumber = undefined;
@@ -153,6 +169,18 @@ test('the Android side starts the task on an update, and index.js registers it',
   expect(receiver).toMatch(
     /ACTION_MY_PACKAGE_REPLACED\) \{[\s\S]*AlertsResyncHeadlessService/,
   );
+  // The wake lock has no timeout and only the service's onDestroy releases
+  // it: taken before a start that is refused, it would be held until the
+  // process died. Taken once the start is accepted, as React Native's own
+  // docs and the app's other receivers do.
+  const start = receiver.indexOf(
+    'startService(Intent(context, AlertsResyncHeadlessService::class.java))',
+  );
+  const lock = receiver.indexOf(
+    'HeadlessJsTaskService.acquireWakeLockNow(context)',
+  );
+  expect(start).toBeGreaterThan(-1);
+  expect(lock).toBeGreaterThan(start);
   const service = fs.readFileSync(
     path.join(
       root,
