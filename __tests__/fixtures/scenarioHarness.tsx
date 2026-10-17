@@ -28,9 +28,16 @@ import { markFirstPaint } from '../../src/boot/firstPaint';
  */
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const realProcess = require('vm').runInThisContext('process') as NodeJS.Process;
+const ZONE_BEFORE = realProcess.env.TZ;
 export function setZone(zone: string): void {
   realProcess.env.TZ = zone;
 }
+// The outer process is the jest WORKER, which runs other suites after this
+// one: put its zone back, or they run in whatever zone a scenario left.
+afterAll(() => {
+  if (ZONE_BEFORE === undefined) delete realProcess.env.TZ;
+  else realProcess.env.TZ = ZONE_BEFORE;
+});
 export function currentZone(): string {
   return Intl.DateTimeFormat().resolvedOptions().timeZone;
 }
