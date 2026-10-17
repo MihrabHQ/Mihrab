@@ -24,6 +24,10 @@ jest.mock('../src/prayer/prayerStorage', () => ({
   // One read for the whole window, answered per date — see
   // `getCachedPrayerTimesMany`. It used to be one read per day.
   getCachedPrayerTimesMany: jest.fn(),
+  // A table-serving source is read from its table, not the cache
+  // (`cachedDaysFrom`); these days come from the cache.
+  isTableProvider: jest.fn(() => false),
+  getDatasetPrayerTimesOrNull: jest.fn(async () => null),
 }));
 jest.mock('../src/widget/collectWidgetExtras', () => ({
   collectWidgetExtras: jest.fn(async () => ({})),
@@ -145,6 +149,7 @@ describe('republishWidgetPayload', () => {
       r => r.key === 'Fajr',
     );
     expect(fajr?.time).toMatch(/^\d{2}:\d{2}$/);
+    expect(global.fetch).not.toHaveBeenCalled();
   });
 
   test('a store that throws costs the push, not the caller', async () => {
