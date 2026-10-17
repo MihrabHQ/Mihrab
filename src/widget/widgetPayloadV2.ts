@@ -13,8 +13,9 @@
  *   - times become minutes after local midnight of their day, and the text
  *     is written natively from them and the `clock` block;
  *   - each day records the UTC offset it was built under (#56);
- *   - the First Third, when it falls after midnight, keeps its day and
- *     counts past 1440, where v1 left the reader to work that out;
+ *   - a row on the next date — ʿIshāʾ or the First Third after midnight —
+ *     keeps its day and counts past 1440, where v1 left the reader to work
+ *     that out (`eventAt`'s rule);
  *   - a day the app had no times for — after ʿIshāʾ with no tomorrow —
  *     travels as its own `estimated` day instead of as top-level rows;
  *   - the top-level "shown day" and "next" fields are gone: they are a
@@ -37,6 +38,7 @@ import {
   type WidgetContractRow,
   type WidgetContractToday,
 } from './contract.generated';
+import { rowDateShift } from '../utils/prayerTimes';
 import type { WidgetTodayPrayer } from './widgetBlocks';
 import {
   contractDateKey,
@@ -48,22 +50,21 @@ import {
 
 type WidgetTodayPrayerKey = WidgetTodayPrayer['key'];
 
-/** The v1 row as v2 carries it. `maghrib` places a First Third after midnight. */
-function rowV2(
-  row: WidgetPrayerRow,
-  maghrib: number | null,
-): WidgetContractRow {
-  let minutes = minutesFromHHmm(row.time);
-  // The same rule as `eventAt` in utils/prayerTimes: a First Third that reads
-  // earlier than Maghrib is the one after the midnight that ends the day.
-  if (
-    row.key === 'Firstthird' &&
-    minutes != null &&
-    maghrib != null &&
-    minutes < maghrib
-  ) {
-    minutes += 1440;
-  }
+/**
+ * A row's minutes after the midnight that starts its day: past 1440 for a
+ * row on the next date — an ʿIshāʾ or a First Third after midnight — and
+ * below 0 for an Imsak the evening before, by the rule `eventAt` reads the
+ * app's own days with (`rowDateShift` in utils/prayerTimes).
+ */
+function contractMinutes(key: string, time: string): number | null {
+  const minutes = minutesFromHHmm(time);
+  if (minutes == null) return null;
+  return minutes + rowDateShift(key, time) * 1440;
+}
+
+/** The v1 row as v2 carries it. */
+function rowV2(row: WidgetPrayerRow): WidgetContractRow {
+  const minutes = contractMinutes(row.key, row.time);
   return {
     key: row.key,
     name: row.name,
@@ -80,16 +81,14 @@ function dayV2(
   extraRows: WidgetPrayerRow[] | undefined,
   estimated: boolean,
 ): WidgetContractDay {
-  const maghribRow = rows.find(r => r.key === 'Maghrib');
-  const maghrib = maghribRow ? minutesFromHHmm(maghribRow.time) : null;
   const offset = utcOffsetMinutesAtNoon(dateKey);
-  const extras = (extraRows ?? []).map(r => rowV2(r, maghrib));
+  const extras = (extraRows ?? []).map(rowV2);
   return {
     dateKey,
     ...(offset == null ? {} : { utcOffsetMinutes: offset }),
     label,
-    prayers: rows.map(r => rowV2(r, maghrib)),
-    ...(sunriseRow ? { sunrise: rowV2(sunriseRow, maghrib) } : {}),
+    prayers: rows.map(rowV2),
+    ...(sunriseRow ? { sunrise: rowV2(sunriseRow) } : {}),
     ...(extras.length > 0 ? { extras } : {}),
     ...(estimated ? { estimated: true } : {}),
   };
@@ -109,7 +108,7 @@ function todayV2(
     loggable: today.loggable,
     owed: today.owed,
     prayers: today.prayers.map(p => {
-      const minutes = minutesFromHHmm(p.time);
+      const minutes = contractMinutes(p.key, p.time);
       return {
         key: p.key,
         name: p.name,
@@ -302,9 +301,11 @@ export type WidgetNow = {
  *     still ahead (`now` is then -1);
  *   - the day shown is today while any of its times is still ahead, else
  *     the day after;
- *   - "next" is the earliest of today's times still ahead and all of the
- *     next day's — or, when the next day is an estimate, its Fajr. Its `at`
- *     counts minutes from today's midnight, past 1440 for tomorrow.
+ *   - "next" is the earliest of today's times still ahead (and the day
+ *     before's, one past its midnight — an ʿIshāʾ at 1442 — still ahead)
+ *     and all of the next day's — or, when the next day is an estimate, its
+ *     Fajr. Its `at` counts minutes from today's midnight, past 1440 for
+ *     tomorrow (the day before's is its own minutes less 1440).
  *
  * Null when there are no days at all.
  */
@@ -332,17 +333,29 @@ export function widgetMoment(
   }
   const today = days[todayIndex];
   const tomorrow: WidgetContractDay | undefined = days[todayIndex + 1];
+  // The day before today, while one of its rows past its midnight (an
+  // ʿIshāʾ at 1442) is still ahead: what comes next in the small hours.
+  const yesterday: WidgetContractDay | undefined =
+    today.dateKey === todayKey && todayIndex > 0
+      ? days[todayIndex - 1]
+      : undefined;
 
   const ahead = eventsOf(today, 0).filter(e => e.at > now);
   const shown = ahead.length > 0 || !tomorrow ? today : tomorrow;
+  const soon = [
+    ...(yesterday && !yesterday.estimated
+      ? eventsOf(yesterday, -1440).filter(e => e.at > now)
+      : []),
+    ...ahead,
+  ];
 
   let next: Event | null;
   if (tomorrow?.estimated) {
     next =
-      earliest(ahead) ??
+      earliest(soon) ??
       earliest(eventsOf(tomorrow, 1440).filter(e => e.row.key === 'Fajr'));
   } else {
-    next = earliest([...ahead, ...(tomorrow ? eventsOf(tomorrow, 1440) : [])]);
+    next = earliest([...soon, ...(tomorrow ? eventsOf(tomorrow, 1440) : [])]);
   }
   return { today, todayIndex, tomorrow, shown, now, next };
 }

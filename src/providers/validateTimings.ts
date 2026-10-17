@@ -3,10 +3,16 @@ import type { TimingsMap } from '../types/prayer';
 const REQUIRED_KEYS = ['Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'] as const;
 const OPTIONAL_KEYS = ['Imsak', 'Midnight', 'Firstthird', 'Lastthird'] as const;
 const HH_MM = /^\d{2}:\d{2}$/;
-const EARLY_MORNING_THRESHOLD_MIN = 6 * 60; // 06:00
-const LATE_EVENING_THRESHOLD_MIN = 18 * 60; // 18:00
+/**
+ * An Isha (or a mark of the evening's night) before this is past the
+ * midnight that ends its evening — the rule every reader takes a day by
+ * (`rowDateShift` in utils/prayerTimes.ts).
+ */
+export const EARLY_MORNING_THRESHOLD_MIN = 6 * 60; // 06:00
+/** An Imsak from this on is the evening before its Fajr (polar summer). */
+export const LATE_EVENING_THRESHOLD_MIN = 18 * 60; // 18:00
 /** A Maghrib before this is after midnight, not before Asr (`validateTimings`). */
-const LATE_MAGHRIB_LIMIT_MIN = 3 * 60; // 03:00
+export const LATE_MAGHRIB_LIMIT_MIN = 3 * 60; // 03:00
 /** …provided it is no further than this after Asr. */
 const LATE_MAGHRIB_AFTER_ASR_MAX_MIN = 9 * 60;
 

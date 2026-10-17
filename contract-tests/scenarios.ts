@@ -71,6 +71,17 @@ const NIGHT: TimingsMap = {
   Firstthird: '00:05',
 };
 
+/** A high-latitude summer day: ʿIshāʾ past the midnight that ends it. */
+const SUMMER: TimingsMap = {
+  Fajr: '02:10',
+  Sunrise: '03:40',
+  Dhuhr: '13:05',
+  Asr: '17:20',
+  Maghrib: '22:10',
+  // That evening's, on the next date: the rule `eventAt` applies.
+  Isha: '00:20',
+};
+
 const EXTRAS: WidgetExtras = {
   today: {
     dateKey: '2026-04-09',
@@ -166,6 +177,7 @@ type Spec = {
   week?: TimingsMap[];
   today?: TimingsMap;
   tomorrow?: TimingsMap | null;
+  yesterday?: TimingsMap;
   extras?: WidgetExtras;
   seasonal?: WidgetPrayerPayload['seasonal'];
   location?: string;
@@ -268,6 +280,14 @@ const SPECS: Spec[] = [
     at: [16, 0],
     week: WEEK,
   },
+  {
+    name: 'just past midnight, last night’s ʿIshāʾ is next',
+    language: 'en',
+    clock: '24',
+    at: [0, 10],
+    yesterday: SUMMER,
+    week: [shift(SUMMER, 1), shift(SUMMER, 2)],
+  },
 ];
 
 /**
@@ -322,6 +342,7 @@ export async function widgetScenarios(): Promise<WidgetScenario[]> {
         s.seasonal,
         s.week,
         withHijri(withClock(s.extras), now),
+        s.yesterday,
       );
       const clock = contractClock(activeClock().hour12, i18n.language);
       const v2 = widgetPayloadV2FromV1(v1, { clock, now });

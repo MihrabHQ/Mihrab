@@ -56,14 +56,22 @@ object WidgetPayloadV1 {
     val today = days[todayIndex]
     val tomorrow = days.getOrNull(todayIndex + 1)
 
+    // The day before today, while one of its rows past its midnight (an
+    // ʿIshāʾ at 1442) is still ahead: what comes next in the small hours.
+    val yesterday = if (today.dateKey == todayKey && todayIndex > 0) days[todayIndex - 1] else null
+
     val ahead = eventsOf(today, 0).filter { it.at > now }
     val shown = if (ahead.isNotEmpty() || tomorrow == null) today else tomorrow
+    val behind =
+      if (yesterday == null || yesterday.estimated) emptyList()
+      else eventsOf(yesterday, -1440).filter { it.at > now }
+    val soon = behind + ahead
 
     val next: Event? =
       if (tomorrow?.estimated == true) {
-        earliest(ahead) ?: earliest(eventsOf(tomorrow, 1440).filter { it.row.key == "Fajr" })
+        earliest(soon) ?: earliest(eventsOf(tomorrow, 1440).filter { it.row.key == "Fajr" })
       } else {
-        earliest(ahead + (tomorrow?.let { eventsOf(it, 1440) } ?: emptyList()))
+        earliest(soon + (tomorrow?.let { eventsOf(it, 1440) } ?: emptyList()))
       }
     return Moment(today, tomorrow, shown, now, next)
   }

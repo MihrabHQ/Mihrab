@@ -245,15 +245,31 @@ describe('the widget’s window for a saved Rabat', () => {
     );
     expect(window.length).toBeGreaterThan(1);
     // The widget reads "HH:mm" on the phone's clock (WallClock.kt / .swift);
-    // that reading is the authority's instant.
+    // that reading is the authority's instant — of the place's day or a
+    // neighbouring one, whichever falls on the phone's day (`phoneDaysOf`;
+    // across the date line the phone's day holds two of the place's). The
+    // window's first day can take a time from the place's day before it,
+    // which it does not hold: that one is its clock time a day on, a
+    // minute or two from the real one.
+    const placeDay = (d: Date) =>
+      params.provider === 'habous'
+        ? getHabousDatasetTimes({ ...RABAT, date: d })
+        : getIslamiskaForbundetDatasetTimes({ ...STOCKHOLM, date: d });
+    const near = await Promise.all([-1, 0, 1].map(i => placeDay(addDays(day, i))));
     for (const key of ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha']) {
-      expect(
-        sameMinuteOfDay(
-          combineLocalDateAndTime(day, window[0][key]),
-          eventAt(key, res.timings, day, res.clock),
+      const at = eventAt(key, window[0], day).getTime();
+      const off = Math.min(
+        ...near.map((r, i) =>
+          Math.abs(at - eventAt(key, r.timings, addDays(day, i - 1), r.clock).getTime()),
         ),
-      ).toBe(true);
+      );
+      expect(off).toBeLessThanOrEqual(3 * 60_000);
+      // On the phone's day (an evening row past midnight on its evening).
+      expect(
+        Math.floor((at - day.getTime()) / 86_400_000),
+      ).toBeLessThanOrEqual(1);
     }
+    expect(res.timings.Fajr).toBeDefined();
   });
 });
 

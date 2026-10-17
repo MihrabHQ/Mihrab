@@ -97,6 +97,20 @@ class WidgetInstantsTest {
   }
 
   @Test
+  fun lastNightsIshaPastMidnightIsStillAheadInTheSmallHours() {
+    // An ʿIshāʾ at 00:02 is its evening's: 1442 on the 10th. Just after
+    // midnight on the 11th it is what comes next, not the 11th's Fajr.
+    val now = utc("2026-06-10T22:01:00Z") // 00:01 CEST on the 11th
+    val next = WidgetInstants.next(
+      now, "2026-06-11", listOf(minutes(2, 10)) + day.drop(1), "2026-06-12", day, zone,
+      prevDayKey = "2026-06-10", prevDayMinutes = day.dropLast(1) + minutes(24, 2),
+    )!!
+    assertFalse(next.nextDay)
+    assertEquals(minutes(0, 2), next.minutes)
+    assertEquals(utc("2026-06-10T22:02:00Z"), next.epochMs)
+  }
+
+  @Test
   fun withNoDayAfterItTheDaysOwnFirstStandsIn() {
     val now = utc("2026-06-10T19:00:00Z") // 21:00 CEST, after Isha
     val next = WidgetInstants.next(now, "2026-06-10", day, null, emptyList(), zone)!!

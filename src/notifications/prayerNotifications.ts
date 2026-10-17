@@ -63,9 +63,11 @@ import type { TimingsMap } from '../types/prayer';
 import { loggedByDate, storedJournalEntries } from '../journal/loggedPrayers';
 import { isNonPrayerEvent } from '../types/prayer';
 import {
+  addDays,
   buildPrePrayerReminderEvents,
   buildUpcomingSalahEvents,
   oneEventPerInstant,
+  startOfLocalDay,
 } from '../utils/prayerTimes';
 
 /** Sunrise + the two night times are not salāh: default sound, no adhan, no
@@ -537,6 +539,12 @@ async function syncPrayerNotificationsNow(params: {
   prayerAlertFullScreen?: boolean;
   today: TimingsMap;
   tomorrow?: TimingsMap;
+  /**
+   * The day before `today`, where the caller holds it: an ʿIshāʾ printed
+   * past midnight is that evening's and still ahead in today's small hours
+   * (`rowDateShift`); a sync then, from today on, dropped its alert.
+   */
+  yesterday?: TimingsMap;
   /** The local calendar day `today` was fetched for — see
    *  buildUpcomingSalahEvents. Pass whenever available. */
   baseDate?: Date;
@@ -684,14 +692,20 @@ async function syncPrayerNotificationsNow(params: {
     // Capped so a sync stays a few dozen AlarmManager registrations, well
     // under the per-app alarm limit and quick enough for an on-focus sync.
     params.week?.slice(2, 4) ?? [],
+    undefined,
+    params.yesterday,
   );
   // Where each prayer's window ends, for the snooze menu: the next edge of
   // the day's own order, from the same cached days the events came from.
-  const windowEdgeList = windowEdges(
+  const edgeDays =
     params.windowWeek && params.windowWeek.length > 0
       ? params.windowWeek.slice(0, 4)
-      : [params.today, params.tomorrow, ...(params.week?.slice(2, 4) ?? [])],
-    params.baseDate ?? now,
+      : [params.today, params.tomorrow, ...(params.week?.slice(2, 4) ?? [])];
+  const windowEdgeList = windowEdges(
+    params.yesterday ? [params.yesterday, ...edgeDays] : edgeDays,
+    params.yesterday
+      ? addDays(startOfLocalDay(params.baseDate ?? now), -1)
+      : params.baseDate ?? now,
   );
   const reminderMinutes = clampPrePrayerReminderMinutes(
     params.prePrayerReminderMinutes,
@@ -744,13 +758,19 @@ async function syncPrayerNotificationsNow(params: {
   const prayerSpeaksAt = (name: string, atMs: number) =>
     modeAt(name, atMs) !== 'silent';
 
+  // Yesterday's boundaries past midnight are still ahead (`eventAt`).
+  const leadDays = [
+    ...(params.yesterday ? [params.yesterday] : []),
+    params.today,
+    ...(params.tomorrow ? [params.tomorrow] : []),
+    ...(params.week?.slice(2, 4) ?? []),
+  ];
+  const leadBase = params.yesterday
+    ? addDays(startOfLocalDay(params.baseDate ?? now), -1)
+    : params.baseDate ?? now;
   const daruriEvents = buildDaruriAlertEvents(
-    [
-      params.today,
-      ...(params.tomorrow ? [params.tomorrow] : []),
-      ...(params.week?.slice(2, 4) ?? []),
-    ],
-    params.baseDate ?? now,
+    leadDays,
+    leadBase,
     params.daruriAlerts ?? [],
     daruriMinutes,
     now,

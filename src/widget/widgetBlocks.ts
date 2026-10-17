@@ -25,7 +25,7 @@ import type {
 import type { FastEntry } from '../fasting/fasting';
 import type { TimingsMap } from '../types/prayer';
 import {
-  combineLocalDateAndTime,
+  eventAt,
   formatDisplayTime,
   startOfLocalDay,
 } from '../utils/prayerTimes';
@@ -454,7 +454,8 @@ export function buildTodayBlock(input: {
 
   const prayers: WidgetTodayPrayer[] = WIDGET_LOGGABLE.map(key => {
     const raw = input.timings[key];
-    const at = raw ? combineLocalDateAndTime(midnight, raw) : null;
+    // An Ishāʾ past midnight is due that night, not this morning (`eventAt`).
+    const at = raw ? eventAt(key, input.timings, midnight) : null;
     const entry = todays.find(e => e.prayer === key);
     const time = raw ? formatDisplayTime(raw) : '—';
     const display = raw ? activeClock()(time) : time;

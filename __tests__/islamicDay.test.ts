@@ -187,7 +187,7 @@ describe('the khatmah day follows the boundary', () => {
       'utf8',
     );
     expect(root).toMatch(/setTodaysMaghrib\(/);
-    expect(root).toMatch(/combineLocalDateAndTime\(now, window\[0\]\.Maghrib\)/);
+    expect(root).toMatch(/eventAt\('Maghrib', window\[0\], now\)/);
   });
 });
 

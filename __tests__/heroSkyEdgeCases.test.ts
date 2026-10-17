@@ -431,12 +431,10 @@ describe('the rows adapt to the phone and to the table', () => {
   it('the rail reads an Isha past midnight as tomorrow’s, like the sky does', () => {
     // Stockholm in June: Isha "00:47". As a clock on today's date it had
     // "passed" at 23:00, and the rail ran from Isha to Isha with nothing
-    // in it. The evening's rows that read earlier than Maghrib are the
-    // next day's.
+    // in it. The evening's rows past midnight are the next day's — by
+    // `eventAt`, the rule every reader of a row shares (`rowDateShift`).
     const rail = card.slice(card.indexOf('const rail = useMemo'), card.indexOf('return { from, pct };'));
-    expect(rail).toMatch(/key === 'Isha' \|\| key === 'Firstthird'/);
-    expect(rail).toMatch(/at\.getTime\(\) < maghribAt/);
-    expect(rail).toMatch(/combineLocalDateAndTime\(addDays\(now, 1\), raw, dayClock\)/);
+    expect(rail).toMatch(/eventAt\(key, today, now, dayClock\)/);
     expect(rail).toMatch(/\.sort\(\(a, b\) => a\.at\.getTime\(\) - b\.at\.getTime\(\)\)/);
     // And before Fajr it runs from LAST night's Isha, not from nothing.
     expect(rail).toMatch(/yesterday\.setDate\(yesterday\.getDate\(\) - 1\)/);

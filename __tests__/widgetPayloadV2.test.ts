@@ -113,6 +113,32 @@ describe('widget payload v2', () => {
     expect(s.v1.nextKey).toBe('Firstthird');
   });
 
+  it('counts an ʿIshāʾ past midnight on its evening, and after midnight it is still next', () => {
+    const s = scenarios.find(
+      x => x.name === 'just past midnight, last night’s ʿIshāʾ is next',
+    )!;
+    // Yesterday rides in the window while its ʿIshāʾ is ahead, at 1440 + 20.
+    expect(s.v2.days.map(d => d.dateKey)).toEqual([
+      '2026-04-08',
+      '2026-04-09',
+      '2026-04-10',
+    ]);
+    const isha = s.v2.days[0].prayers.find(r => r.key === 'Isha')!;
+    expect(isha.minutes).toBe(1440 + 20);
+    expect(s.v1.nextKey).toBe('Isha');
+    expect(s.v1.nextPrayerTime).toBe('00:20');
+    // Today's own ʿIshāʾ is tonight's, not this morning's.
+    expect(
+      s.v2.days[1].prayers.find(r => r.key === 'Isha')!.minutes,
+    ).toBe(1440 + 21);
+    const back = widgetPayloadV1FromV2(
+      readWidgetContractPayload(wire(s.v2))!,
+      s.now,
+    )!;
+    expect(back.nextKey).toBe('Isha');
+    expect(back.nextPrayerTime).toBe('00:20');
+  });
+
   it('writes a time that does not occur as no minutes, and the adapter draws the dash', () => {
     const s = scenarios.find(x => x.name === 'ʿIshāʾ does not occur here')!;
     const isha = s.v2.days[0].prayers.find(r => r.key === 'Isha')!;

@@ -132,6 +132,8 @@ async function syncLiveActivityImpl(args: {
   /** Consecutive days starting today — drives the multi-day rollover so the
    *  Live Activity advances to the correct day without the app being opened. */
   week?: TimingsMap[] | null;
+  /** The day before `today`: last night's ʿIshāʾ past midnight is still ahead. */
+  yesterday?: TimingsMap;
   now?: Date;
   locationName?: string;
   coords?: WidgetCoords;
@@ -180,6 +182,8 @@ async function syncLiveActivityImpl(args: {
       args.coords,
       args.seasonal,
       args.week ?? undefined,
+      undefined,
+      args.yesterday,
     );
   } catch (e) {
     console.warn('[liveActivity] payload build failed', e);

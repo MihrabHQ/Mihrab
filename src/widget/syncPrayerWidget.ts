@@ -31,6 +31,8 @@ export async function syncPrayerWidget(
   week?: TimingsMap[],
   /** Practice / today / reading / hijri / tasbih blocks. */
   extras?: WidgetExtras,
+  /** The day before `today`: last night's ʿIshāʾ past midnight is still ahead. */
+  yesterday?: TimingsMap,
 ): Promise<void> {
   if (Platform.OS !== 'ios' && Platform.OS !== 'android') {
     return;
@@ -48,6 +50,7 @@ export async function syncPrayerWidget(
     seasonal,
     week,
     extras,
+    yesterday,
   );
   const json = JSON.stringify(payload);
   if (mod.setDataV2) {

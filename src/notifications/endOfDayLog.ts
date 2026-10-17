@@ -51,6 +51,7 @@ import {
 import { JOURNAL_KEY, notifyPracticeChanged } from '../practice/practiceStore';
 import { flushRecordSync } from '../sync/recordChanged';
 import type { TimingsMap } from '../types/prayer';
+import { eventAt } from '../utils/prayerTimes';
 
 /** The action's id — also the iOS category, one action inside it. */
 export const END_OF_DAY_ACTION_ID = 'log-day-all';
@@ -93,19 +94,12 @@ export function ishaTriggerAt(
   if (typeof raw !== 'string') return null;
   const m = /^\s*(\d{1,2}):(\d{2})/.exec(raw);
   if (!m) return null;
-  const hour = Number(m[1]);
-  const minute = Number(m[2]);
-  if (hour > 23 || minute > 59) return null;
-  const at = new Date(day);
-  at.setHours(hour, minute, 0, 0);
-  // An Isha printed before the day's Maghrib is past midnight — Stockholm
-  // in June — and belongs to this day's evening, not to its small hours:
-  // read on `day` it asked to log the day before any of it was prayed.
-  const mg = /^\s*(\d{1,2}):(\d{2})/.exec(timings?.Maghrib ?? '');
-  if (mg && hour * 60 + minute < Number(mg[1]) * 60 + Number(mg[2])) {
-    at.setDate(at.getDate() + 1);
-    at.setHours(hour, minute, 0, 0);
-  }
+  if (Number(m[1]) > 23 || Number(m[2]) > 59) return null;
+  // An Isha printed past midnight — Stockholm in June — belongs to this
+  // day's evening, not to its small hours: read on `day` it asked to log
+  // the day before any of it was prayed. The date is `eventAt`'s, the
+  // scheduler's own.
+  const at = eventAt('Isha', { Isha: `${m[1]}:${m[2]}` }, day);
   return new Date(at.getTime() + MINUTES_AFTER_ISHA * 60_000);
 }
 

@@ -173,7 +173,7 @@ module.exports = {
         [
           'minutes',
           t.int(),
-          'Minutes after local midnight of the day: 0–1439, or 1440 and more for a night mark that falls after the midnight ending the day (the First Third, some nights). Null when the time does not occur at this latitude; draw a dash.',
+          'Minutes after local midnight of the day: 0–1439, or 1440 and more for a row that falls after the midnight ending the day (ʿIshāʾ or the First Third past midnight, some nights), and below 0 for one on the evening before (an Imsak at a high latitude). Null when the time does not occur at this latitude; draw a dash.',
         ],
       ],
     },

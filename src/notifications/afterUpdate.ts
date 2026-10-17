@@ -29,8 +29,10 @@ import { loadSettings } from '../settings/storage';
 import { resolveAppPalette } from '../theme/appPalette';
 import { activeClock } from '../utils/activeClock';
 import { filterOptionalTimes, injectNightTimes } from '../utils/nightTimes';
+import type { TimingsMap } from '../types/prayer';
+import { addDays } from '../utils/prayerTimes';
 import {
-  rawWindow,
+  rawWindowWithYesterday,
   republishWidgetPayload,
 } from '../widget/republishWidgetPayload';
 import {
@@ -81,7 +83,7 @@ export async function resyncPrayerAlertsFromStorage(
   ) {
     return false;
   }
-  const raw = await rawWindow(
+  const { yesterday: rawYesterday, days: raw } = await rawWindowWithYesterday(
     {
       provider: getEffectiveDataProvider(
         settings.dataProviderAuto,
@@ -119,6 +121,32 @@ export async function resyncPrayerAlertsFromStorage(
         settings.school === 1 ? 2 : 1,
       )
     : week;
+  // Yesterday, the same way: last night's ʿIshāʾ past midnight is still
+  // ahead in the small hours (`rowDateShift`).
+  let yesterday: TimingsMap | undefined;
+  if (rawYesterday) {
+    const [y] = injectNightTimes(
+      [rawYesterday, raw[0]].map(day =>
+        applyOffsets(day, settings.prayerOffsets),
+      ),
+      addDays(now, -1),
+    );
+    const shown = filterOptionalTimes(y, {
+      Sunrise: settings.sunriseEnabled,
+      Midnight: settings.islamicMidnightEnabled,
+      Lastthird: settings.lastThirdEnabled,
+      Firstthird: settings.firstThirdEnabled,
+    });
+    yesterday = settings.malikiSecondTimesEnabled
+      ? injectDaruriTimes(
+          [shown, week[0]],
+          addDays(now, -1),
+          coords.latitude,
+          coords.longitude,
+          settings.school === 1 ? 2 : 1,
+        )[0]
+      : shown;
+  }
   let accentColor: string | undefined;
   try {
     const palette = resolveAppPalette({
@@ -144,6 +172,7 @@ export async function resyncPrayerAlertsFromStorage(
     prayerAlertFullScreen: settings.prayerAlertFullScreen,
     today: alertWeek[0],
     tomorrow: alertWeek[1],
+    yesterday,
     baseDate: new Date(now.getFullYear(), now.getMonth(), now.getDate()),
     week: alertWeek,
     windowWeek,

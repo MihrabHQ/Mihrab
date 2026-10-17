@@ -64,14 +64,23 @@ enum WidgetPayloadV1 {
     let today = days[ti]
     let tomorrow: WidgetContract.Day? = ti + 1 < days.count ? days[ti + 1] : nil
 
+    // The day before today, while one of its rows past its midnight (an
+    // ʿIshāʾ at 1442) is still ahead: what comes next in the small hours.
+    let yesterday: WidgetContract.Day? =
+      today.dateKey == todayKey && ti > 0 ? days[ti - 1] : nil
+
     let ahead = events(of: today, offset: 0).filter { $0.at > now }
     let shown = (!ahead.isEmpty || tomorrow == nil) ? today : tomorrow!
+    let behind: [Event] = yesterday.map { y -> [Event] in
+      y.estimated ? [] : events(of: y, offset: -1440).filter { $0.at > now }
+    } ?? []
+    let soon = behind + ahead
 
     let next: Event?
     if let tomorrow, tomorrow.estimated {
-      next = earliest(ahead) ?? earliest(events(of: tomorrow, offset: 1440).filter { $0.row.key == "Fajr" })
+      next = earliest(soon) ?? earliest(events(of: tomorrow, offset: 1440).filter { $0.row.key == "Fajr" })
     } else {
-      next = earliest(ahead + (tomorrow.map { events(of: $0, offset: 1440) } ?? []))
+      next = earliest(soon + (tomorrow.map { events(of: $0, offset: 1440) } ?? []))
     }
     return Moment(today: today, tomorrow: tomorrow, shown: shown, now: now, next: next)
   }

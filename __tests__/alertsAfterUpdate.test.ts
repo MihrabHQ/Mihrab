@@ -22,7 +22,7 @@ jest.mock('../src/notifications/prayerNotifications', () => ({
 }));
 jest.mock('../src/widget/republishWidgetPayload', () => ({
   republishWidgetPayload: jest.fn(async () => true),
-  rawWindow: jest.fn(async () => {
+  rawWindowWithYesterday: jest.fn(async () => {
     const day = {
       Fajr: '05:10',
       Sunrise: '06:50',
@@ -31,7 +31,7 @@ jest.mock('../src/widget/republishWidgetPayload', () => ({
       Maghrib: '18:05',
       Isha: '19:40',
     };
-    return Array.from({ length: 7 }, () => ({ ...day }));
+    return { days: Array.from({ length: 7 }, () => ({ ...day })) };
   }),
 }));
 jest.mock('../src/settings/storage', () => ({ loadSettings: jest.fn() }));

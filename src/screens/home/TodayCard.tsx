@@ -82,7 +82,6 @@ import { lastTimeOfDay } from '../../prayer/dayRollover';
 import type { TimingsMap } from '../../types/prayer';
 import {
   addDays,
-  combineLocalDateAndTime,
   countdownPieces,
   eventAt,
   onClock,
@@ -482,25 +481,11 @@ const HeroToday = memo(function HeroToday({
    * fraction of, so the rail is simply not drawn.
    */
   const rail = useMemo(() => {
-    // A clock later than Maghrib's in the evening's rows (Isha, the First
-    // Third) that reads EARLIER than Maghrib has crossed midnight — a
-    // Stockholm June Isha is "00:47" — and belongs to tomorrow's date.
+    // An evening row past midnight (Isha, the First Third — a Stockholm
+    // June Isha is "00:47") belongs to tomorrow's date: `eventAt`'s rule.
     // Read as today's it had already "passed" at 23:00, and the rail ran
     // from Isha to Isha with nothing in it.
-    const maghribAt = today.Maghrib
-      ? combineLocalDateAndTime(now, today.Maghrib, dayClock).getTime()
-      : null;
-    const instant = (key: string, raw: string): Date => {
-      const at = combineLocalDateAndTime(now, raw, dayClock);
-      if (
-        (key === 'Isha' || key === 'Firstthird') &&
-        maghribAt != null &&
-        at.getTime() < maghribAt
-      ) {
-        return combineLocalDateAndTime(addDays(now, 1), raw, dayClock);
-      }
-      return at;
-    };
+    const instant = (key: string): Date => eventAt(key, today, now, dayClock);
     // Today's instants AND yesterday's: before Fajr nothing of today has
     // passed, and the rail used to vanish for the whole small-hours
     // stretch — the one time a "how far into the night" bar is the most
@@ -511,7 +496,7 @@ const HeroToday = memo(function HeroToday({
     }))
       .filter(e => e.raw)
       .flatMap(e => {
-        const at = instant(e.key, e.raw as string);
+        const at = instant(e.key);
         const yesterday = new Date(at);
         yesterday.setDate(yesterday.getDate() - 1);
         return [
@@ -1427,7 +1412,7 @@ function TodayCardImpl({
     for (const key of visibleRows) {
       const raw = timings[key];
       if (!raw) continue;
-      if (combineLocalDateAndTime(now, raw, dayClock).getTime() > now.getTime()) {
+      if (eventAt(key, timings, now, dayClock).getTime() > now.getTime()) {
         out.add(key);
       }
     }
@@ -1444,7 +1429,7 @@ function TodayCardImpl({
     if (!raw) return nextInfo;
     return {
       name: chosenKey,
-      at: combineLocalDateAndTime(new Date(), raw, dayClock),
+      at: eventAt(chosenKey, timings, new Date(), dayClock),
     };
   }, [nextInfo, chosenKey, timings, dayClock]);
 
@@ -1571,7 +1556,7 @@ function TodayCardImpl({
       const clockOf = today[k];
       if (!clockOf) continue;
       try {
-        const at = combineLocalDateAndTime(new Date(nowMs), clockOf, dayClock).getTime();
+        const at = eventAt(k, today, new Date(nowMs), dayClock).getTime();
         if (at > nowMs && at < next) next = at;
       } catch {
         /* a malformed boundary is a line not drawn, not a timer */

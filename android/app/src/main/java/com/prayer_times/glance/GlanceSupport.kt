@@ -259,12 +259,19 @@ internal class Schedule(
       val today = days[todayIndex]
       val tomorrow = days.getOrNull(todayIndex + 1)
       val ahead = eventsOf(today, 0).filter { it.at > nowMinutes }
+      // The day before today, while one of its rows past its midnight (an
+      // ʿIshāʾ at 1442) is still ahead: what comes next in the small hours.
+      val yesterday = if (today.dateKey == now.dateKey && todayIndex > 0) days[todayIndex - 1] else null
+      val behind =
+        if (yesterday == null || yesterday.estimated) emptyList()
+        else eventsOf(yesterday, -WallClock.MINUTES_PER_DAY).filter { it.at > nowMinutes }
+      val soon = behind + ahead
       val next =
         if (tomorrow?.estimated == true) {
           // An estimated day repeats the day before; only its Fajr is offered.
-          earliest(ahead) ?: earliest(eventsOf(tomorrow, WallClock.MINUTES_PER_DAY).filter { it.row.key == "Fajr" })
+          earliest(soon) ?: earliest(eventsOf(tomorrow, WallClock.MINUTES_PER_DAY).filter { it.row.key == "Fajr" })
         } else {
-          earliest(ahead + (tomorrow?.let { eventsOf(it, WallClock.MINUTES_PER_DAY) } ?: emptyList()))
+          earliest(soon + (tomorrow?.let { eventsOf(it, WallClock.MINUTES_PER_DAY) } ?: emptyList()))
         }
       val shown = if (ahead.isNotEmpty() || tomorrow == null) today else tomorrow
       // The table is today's own entry while there is one — the times roll
