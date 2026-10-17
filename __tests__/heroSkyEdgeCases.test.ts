@@ -436,7 +436,7 @@ describe('the rows adapt to the phone and to the table', () => {
     const rail = card.slice(card.indexOf('const rail = useMemo'), card.indexOf('return { from, pct };'));
     expect(rail).toMatch(/key === 'Isha' \|\| key === 'Firstthird'/);
     expect(rail).toMatch(/at\.getTime\(\) < maghribAt/);
-    expect(rail).toMatch(/setDate\(at\.getDate\(\) \+ 1\)/);
+    expect(rail).toMatch(/combineLocalDateAndTime\(addDays\(now, 1\), raw, dayClock\)/);
     expect(rail).toMatch(/\.sort\(\(a, b\) => a\.at\.getTime\(\) - b\.at\.getTime\(\)\)/);
     // And before Fajr it runs from LAST night's Isha, not from nothing.
     expect(rail).toMatch(/yesterday\.setDate\(yesterday\.getDate\(\) - 1\)/);

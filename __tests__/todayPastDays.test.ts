@@ -20,6 +20,15 @@ jest.mock('../src/prayer/prayerStorage', () => ({
   // ONCE for every day the dataset did not have. Never a fetch.
   getDatasetPrayerTimesOrNull: (...a: unknown[]) => mockDataset(...a),
   getCachedPrayerTimesMany: (...a: unknown[]) => mockMany(...a),
+  // The same two, each day with the clock it is written on (the phone's).
+  getDatasetPrayerDayOrNull: async (...a: unknown[]) => {
+    const t = await mockDataset(...a);
+    return t ? { timings: t, clock: 'device' } : null;
+  },
+  getCachedPrayerDaysMany: async (...a: unknown[]) =>
+    ((await mockMany(...a)) as unknown[]).map(t =>
+      t ? { timings: t, clock: 'device' } : null,
+    ),
 }));
 
 const read = (p: string) =>
@@ -95,7 +104,7 @@ describe('the days behind today', () => {
     // The two dataset providers are served before the cache and never
     // written to it — a cache-only reader saw nothing for them.
     const src = readFileSync(join(__dirname, '..', 'src/prayer/widgetDayWindow.ts'), 'utf8');
-    expect(src).toMatch(/getDatasetPrayerTimesOrNull\(\{ \.\.\.params, date \}\)/);
+    expect(src).toMatch(/getDatasetPrayerDayOrNull\(\{ \.\.\.params, date \}\)/);
     const storage = readFileSync(join(__dirname, '..', 'src/prayer/prayerStorage.ts'), 'utf8');
     const fn = storage.slice(storage.indexOf('export async function getStoredPrayerTimes'), storage.indexOf('export async function getOrFetchPrayerTimes'));
     expect(fn).toMatch(/getIslamiskaForbundetDatasetTimes/);

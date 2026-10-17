@@ -10,8 +10,16 @@
  * for the ministry's 05:05). Where the phone is on another clock, these are
  * written on the place's, as the table writes them.
  */
-import { formatLocalTime } from '../utils/prayerTimes';
+import { DEVICE_CLOCK, formatLocalTime } from '../utils/prayerTimes';
+import {
+  civilInZone,
+  deviceZone,
+  GMT_ZONES,
+  zoneOffsetMinutes,
+} from '../utils/zoneClock';
 import { deviceClockSkewSeconds } from './clockSkew';
+
+export { civilInZone, deviceZone, zoneOffsetMinutes };
 
 export type PlaceClock = {
   /** The place's zone (IANA). */
@@ -29,23 +37,6 @@ export type PlaceClock = {
    */
   rule?: { probe: string; offsetMinutes: number };
 };
-
-export function deviceZone(): string | undefined {
-  try {
-    return Intl.DateTimeFormat().resolvedOptions().timeZone;
-  } catch {
-    return undefined;
-  }
-}
-
-/** Zones that are GMT all year, written without asking Intl. */
-const GMT_ZONES = new Set([
-  'Etc/GMT',
-  'Etc/UTC',
-  'UTC',
-  'GMT',
-  'Africa/Abidjan',
-]);
 
 /** "HH:MM" of an instant on a zone's clock; the phone's on any failure. */
 export function formatInZone(d: Date, zone: string): string {
@@ -72,61 +63,6 @@ export function formatInZone(d: Date, zone: string): string {
     return `${h.padStart(2, '0')}:${m.padStart(2, '0')}`;
   } catch {
     return formatLocalTime(d);
-  }
-}
-
-/**
- * A zone's offset from UTC at an instant (minutes east), by the phone's zone
- * data; null when the phone cannot say.
- */
-export function zoneOffsetMinutes(zone: string, at: Date): number | null {
-  if (GMT_ZONES.has(zone)) return 0;
-  const ymd = civilInZone(at, zone, true);
-  if (!ymd) return null;
-  const wall = Date.UTC(ymd.y, ymd.m - 1, ymd.d, ymd.h, ymd.min);
-  return Math.round((wall - Math.floor(at.getTime() / 60000) * 60000) / 60000);
-}
-
-/**
- * The civil date (and, with `withTime`, the hour and minute) of an instant
- * on a zone's clock; null when the phone cannot say (no Intl, an unknown
- * zone).
- */
-export function civilInZone(
-  at: Date,
-  zone: string,
-  withTime = false,
-): { y: number; m: number; d: number; h: number; min: number } | null {
-  if (GMT_ZONES.has(zone)) {
-    return {
-      y: at.getUTCFullYear(),
-      m: at.getUTCMonth() + 1,
-      d: at.getUTCDate(),
-      h: at.getUTCHours(),
-      min: at.getUTCMinutes(),
-    };
-  }
-  try {
-    const parts = new Intl.DateTimeFormat('en-US', {
-      timeZone: zone,
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      ...(withTime
-        ? { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' as const }
-        : {}),
-    }).formatToParts(at);
-    const n = (type: string) => Number(parts.find(p => p.type === type)?.value);
-    const out = {
-      y: n('year'),
-      m: n('month'),
-      d: n('day'),
-      h: withTime ? n('hour') % 24 : 0,
-      min: withTime ? n('minute') : 0,
-    };
-    return Object.values(out).every(Number.isFinite) ? out : null;
-  } catch {
-    return null;
   }
 }
 
@@ -220,11 +156,33 @@ export function phoneClockSetByHand(clock: PlaceClock | undefined): boolean {
 export function clockFormatter(
   clock: PlaceClock | undefined,
 ): (d: Date) => string {
-  if (!clock) return formatLocalTime;
-  if (deviceZone() === clock.zone && !phoneClockSetByHand(clock))
-    return formatLocalTime;
+  return clockFor(clock).format;
+}
+
+/**
+ * `clockFormatter`, and the clock the times it writes are to be read on:
+ * `'device'` where they are written on the phone's (and where a phone set by
+ * hand reads the ministry's GMT on its own clock, as its alerts must), else
+ * the zone they are written in — the tag a result carries
+ * (`PrayerTimesResult.clock`) so that a saved place's times are read back on
+ * its clock and not on the phone's (`utils/prayerTimes.ts`).
+ */
+export function clockFor(clock: PlaceClock | undefined): {
+  format: (d: Date) => string;
+  zone: string;
+} {
+  if (!clock) return { format: formatLocalTime, zone: DEVICE_CLOCK };
+  if (deviceZone() === clock.zone) {
+    // Set by hand: written on GMT so that they read right on the phone's
+    // own (wrong) clock — which is the clock they are read on.
+    if (phoneClockSetByHand(clock)) {
+      const zone = clock.away ?? clock.zone;
+      return { format: (d: Date) => formatInZone(d, zone), zone: DEVICE_CLOCK };
+    }
+    return { format: formatLocalTime, zone: DEVICE_CLOCK };
+  }
   const zone = clock.away ?? clock.zone;
-  return (d: Date) => formatInZone(d, zone);
+  return { format: (d: Date) => formatInZone(d, zone), zone };
 }
 
 /** Test seam: forget what was read of the phone's zone data. */

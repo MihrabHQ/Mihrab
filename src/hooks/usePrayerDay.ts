@@ -5,12 +5,13 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState, Platform } from 'react-native';
 import { requestAndroidLocationPermission } from '../utils/locationPermission';
 import {
-  getOrFetchPrayerTimes,
+  getOrFetchPrayerDay,
   getCacheStatus,
   refreshPrayerDataCache,
   maybeFullSyncOnWifi,
   refetchFallbackDays,
   purgeCachesNear,
+  type PrayerDay,
 } from '../prayer/prayerStorage';
 import { getPositionStaged } from '../utils/getPosition';
 import { recordLocationFix } from '../prayer/cityRegistry';
@@ -30,12 +31,18 @@ import {
 import { getEffectiveDataProvider } from '../settings/effectiveProvider';
 import type { PrayerAppSettings, PrayerDataProviderId } from '../settings/types';
 import type { TimingsMap } from '../types/prayer';
-import { addDays, startOfLocalDay } from '../utils/prayerTimes';
+import {
+  addDays,
+  DEVICE_CLOCK,
+  onClock,
+  readZone,
+  startOfLocalDay,
+} from '../utils/prayerTimes';
 import {
   PAST_DAYS,
   WIDGET_WINDOW_DAYS,
-  cachedDaysBefore,
-  cachedDaysFrom,
+  cachedPrayerDaysBefore,
+  cachedPrayerDaysFrom,
 } from '../prayer/widgetDayWindow';
 
 /** How many consecutive days (today + N-1 more) to fetch and expose. */
@@ -82,6 +89,16 @@ export type PrayerDayState =
        * adhan + duplicate-alert bug).
        */
       baseDate: Date;
+      /**
+       * The clock every day below is written on — an IANA zone, or absent
+       * for the phone's (`DEVICE_CLOCK`). A saved place in another zone
+       * whose source writes it on its own clock (its authority's table,
+       * AlAdhan) is on that zone's; everything that turns these times into
+       * instants reads them on it (`combineLocalDateAndTime`), and what
+       * cannot be told — the widget, the Live Activity, the alert schedule —
+       * is handed them rewritten on the phone's (`daysOnDeviceClock`).
+       */
+      clock?: string;
       /** Convenience alias for week[0]. */
       today: TimingsMap;
       /** Convenience alias for week[1] (may be undefined). */
@@ -179,6 +196,32 @@ function applyOffsetsToWeek(
 ): TimingsMap[] {
   if (!offsets || Object.keys(offsets).length === 0) return week;
   return week.map(t => applyOffsets(t, offsets));
+}
+
+/**
+ * The clock a load's days are put on: today's — a saved place's own, where
+ * its source writes it there, else the phone's. One clock for every day on
+ * screen, so that the night times, the offsets and the carousel compare like
+ * with like; a day on another clock is rewritten onto it (`onClock`).
+ * Today's rather than the first one on a place's clock: a slot stored before
+ * clocks were kept reads as the phone's, and its days stay exactly as they
+ * were while days written since are added to it.
+ */
+export function clockOfDays(days: readonly PrayerDay[]): string {
+  const today = days[0]?.clock;
+  return readZone(today) ? (today as string) : DEVICE_CLOCK;
+}
+
+/** Consecutive days from `start`, each rewritten onto `clock`. */
+export function daysOnClock(
+  days: readonly PrayerDay[],
+  start: Date,
+  clock: string,
+  step: 1 | -1 = 1,
+): TimingsMap[] {
+  return days.map((d, i) =>
+    onClock(d.timings, addDays(start, i * step), d.clock, clock),
+  );
 }
 
 /**
@@ -414,7 +457,7 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
         );
         const weekResults = await Promise.allSettled(
           Array.from({ length: WEEK_DAYS }, (_, i) =>
-            getOrFetchPrayerTimes({
+            getOrFetchPrayerDay({
               provider,
               latitude,
               longitude,
@@ -430,18 +473,23 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
 
         // Build a gapless week: stop at the first failure so callers can rely
         // on week[i] corresponding to today + i days without holes.
-        const weekTimings: TimingsMap[] = [];
+        const weekDays: PrayerDay[] = [];
         for (const result of weekResults) {
           if (result.status === 'fulfilled') {
-            weekTimings.push(result.value);
+            weekDays.push(result.value);
           } else {
             break;
           }
         }
 
-        if (weekTimings.length === 0) {
+        if (weekDays.length === 0) {
           throw new Error('No prayer times available');
         }
+        // Every day on one clock: the place's where a source wrote it there
+        // (a saved place in another zone), else the phone's — which for the
+        // reader's own place is the same thing and changes nothing.
+        const clock = clockOfDays(weekDays);
+        const weekTimings = daysOnClock(weekDays, now, clock);
 
         // Apply per-prayer offsets at READ time so the cache stays raw —
         // a setting change immediately re-derives without a re-fetch.
@@ -498,16 +546,20 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
           // and put through the same offset + night-time pipeline as
           // `week`, because deriving it from the already-offset week
           // would apply the user's adjustment twice.
-          const widgetExtra = await cachedDaysFrom(
-            weekTimings.length,
-            {
-              provider,
-              latitude,
-              longitude,
-              calculationMethod: settings.calculationMethod,
-              school: settings.school,
-            },
-            now,
+          const widgetExtra = daysOnClock(
+            await cachedPrayerDaysFrom(
+              weekTimings.length,
+              {
+                provider,
+                latitude,
+                longitude,
+                calculationMethod: settings.calculationMethod,
+                school: settings.school,
+              },
+              now,
+            ),
+            addDays(now, weekTimings.length),
+            clock,
           );
           const offsettedWidgetWeek =
             widgetExtra.length > 0
@@ -536,7 +588,7 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
         // and the result is turned back. On the critical path because the
         // carousel's indices are derived from its length — one millisecond,
         // measured, and the card is wrong without it.
-        const pastRaw = await cachedDaysBefore(
+        const pastRaw = await cachedPrayerDaysBefore(
           {
             provider,
             latitude,
@@ -545,7 +597,7 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
             school: settings.school,
           },
           now,
-        );
+        ).then(days => daysOnClock(days, addDays(now, -1), clock, -1));
         const offsettedPast =
           pastRaw.length > 0
             ? injectNightTimes(
@@ -569,6 +621,7 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
           // carry one (e.g. the instant cached re-render before geocoding).
           cityName: label ?? (prev.phase === 'ready' ? prev.cityName : undefined),
           baseDate: startOfLocalDay(now),
+          ...(clock === DEVICE_CLOCK ? {} : { clock }),
           today: offsettedWeek[0],
           tomorrow: offsettedWeek[1],
           week: offsettedWeek,

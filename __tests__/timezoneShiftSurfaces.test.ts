@@ -24,7 +24,7 @@ describe('the check happens in front of the load', () => {
     // The ordering IS the fix: a load that starts first reads exactly the
     // rows the invalidation exists to throw away.
     const at = hook.indexOf('await settleTimezoneShift');
-    const fetchAt = hook.indexOf('getOrFetchPrayerTimes({');
+    const fetchAt = hook.indexOf('getOrFetchPrayerDay({');
     expect(at).toBeGreaterThan(0);
     expect(at).toBeLessThan(fetchAt);
   });

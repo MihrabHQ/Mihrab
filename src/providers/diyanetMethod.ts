@@ -24,7 +24,7 @@
  * (`diyanetRegion.ts`).
  */
 import type { PrayerTimesResult } from './types';
-import { formatLocalTime } from '../utils/prayerTimes';
+import { DEVICE_CLOCK, formatLocalTime } from '../utils/prayerTimes';
 import { congressTimes, CONGRESS_ISHA_DEG, DIYANET_ISHA_DEG, type CongressInstants } from './congressMethod';
 import { computeImsak, DEFAULT_IMSAK_OFFSET_MINUTES } from './imsak';
 import { diyanetUsesCongressIsha } from './diyanetRegion';
@@ -243,5 +243,8 @@ export function computeDiyanetTimes(params: {
       Imsak: computeImsak(fajr, DEFAULT_IMSAK_OFFSET_MINUTES),
     },
     source: 'local',
+    // True instants written on the phone's clock (a listed place's own
+    // clock steers the method, not the writing).
+    clock: DEVICE_CLOCK,
   };
 }

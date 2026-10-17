@@ -13,6 +13,7 @@ import { calculationPreferencesKey } from './calculationPreferences';
 import type { PrayerDataProviderId } from '../settings/types';
 import type { TimingsMap } from '../types/prayer';
 import { formatLocalDate } from '../utils/date';
+import { DEVICE_CLOCK } from '../utils/prayerTimes';
 import { deviceUtcOffsetMinutes } from '../utils/utcOffset';
 import { AppState } from 'react-native';
 import { SWEDEN_METHOD_ID } from '../providers/swedenMethodId';
@@ -88,7 +89,67 @@ type CacheEntry = StoredPrayerData & {
    * the provider answers; before this, such a day was kept for good.
    */
   fallbackDays?: string[];
+  /**
+   * THE CLOCK THESE TIMES ARE WRITTEN ON — an IANA zone, or absent for the
+   * phone's (`DEVICE_CLOCK`, `utils/prayerTimes.ts`).
+   *
+   * A slot is one provider, place and method, so its days are on one clock:
+   * a saved Rabat from AlAdhan on Rabat's, wherever the phone is. Kept beside
+   * the months, not in them — the widget and every other reader take a day's
+   * TimingsMap as it is. Absent on entries written before it existed, which
+   * read as the phone's clock, as they always were.
+   */
+  clock?: string;
+  /**
+   * The days on another clock than the slot's (`YYYY-MM-DD` → clock): a day
+   * the phone computed when the provider missed it, on the phone's clock in
+   * a slot on the place's. Absent when there are none.
+   */
+  dayClocks?: Record<string, string>;
 };
+
+/** A cached or freshly read day, and the clock its times are written on. */
+export type PrayerDay = { timings: TimingsMap; clock: string };
+
+/** The clock a stored day is written on. */
+function dayClockIn(
+  entry: Pick<CacheEntry, 'clock' | 'dayClocks'>,
+  dayKey: string,
+): string {
+  return entry.dayClocks?.[dayKey] ?? entry.clock ?? DEVICE_CLOCK;
+}
+
+/**
+ * The `clock` and `dayClocks` fields for an entry after `writes` (day, clock
+ * its times are on), for the days the months still hold. The slot keeps the
+ * clock it has; a slot with no days yet takes the first write's; an older
+ * slot with days and no clock is on the phone's. Spread into the entry —
+ * both absent for a slot on the phone's clock throughout, so such an entry
+ * looks exactly as it did before clocks were kept.
+ */
+function clockedDays(
+  had: Pick<CacheEntry, 'clock' | 'dayClocks' | 'months'> | undefined,
+  writes: ReadonlyArray<readonly [string, string | undefined]>,
+  months: CacheEntry['months'],
+): { clock?: string; dayClocks?: Record<string, string> } {
+  const hadDays =
+    !!had && Object.values(had.months ?? {}).some(m => Object.keys(m ?? {}).length > 0);
+  const slot =
+    had?.clock ?? (hadDays ? DEVICE_CLOCK : writes[0]?.[1] ?? DEVICE_CLOCK);
+  const out: Record<string, string> = { ...(had?.dayClocks ?? {}) };
+  for (const [dayKey, clock] of writes) {
+    const c = clock ?? DEVICE_CLOCK;
+    if (c === slot) delete out[dayKey];
+    else out[dayKey] = c;
+  }
+  for (const d of Object.keys(out)) {
+    if (!months[d.slice(0, 7)]?.[d]) delete out[d];
+  }
+  return {
+    clock: slot === DEVICE_CLOCK ? undefined : slot,
+    dayClocks: Object.keys(out).length > 0 ? out : undefined,
+  };
+}
 
 type V2Shape = {
   /**
@@ -624,7 +685,7 @@ export async function getStoredPrayerData(): Promise<StoredPrayerData | null> {
   });
   // Strip lastAccessedAt to keep the public StoredPrayerData shape stable.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { lastAccessedAt: _ts, fallbackDays: _marks, ...rest } = v2.caches[newest];
+  const { lastAccessedAt: _ts, fallbackDays: _marks, clock: _clock, dayClocks: _dayClocks, ...rest } = v2.caches[newest];
   return rest;
 }
 
@@ -665,14 +726,26 @@ export async function getCachedPrayerTimesMany(
   params: Omit<StoredPrayerData, 'months'>,
   dates: readonly Date[],
 ): Promise<Array<TimingsMap | null>> {
+  const days = await getCachedPrayerDaysMany(params, dates);
+  return days.map(d => (d ? d.timings : null));
+}
+
+/** `getCachedPrayerTimesMany`, each day with the clock it is written on. */
+export async function getCachedPrayerDaysMany(
+  params: Omit<StoredPrayerData, 'months'>,
+  dates: readonly Date[],
+): Promise<Array<PrayerDay | null>> {
   if (dates.length === 0) return [];
   const v2 = await loadV2();
   const entry = v2.caches[cacheKey(params)];
   if (!entry) return dates.map(() => null);
   return dates.map(date => {
     const month = entry.months[getMonthKey(date)];
-    const day = month ? month[getDayKey(date)] : undefined;
-    return day && isReadableDay(day) ? day : null;
+    const dayKey = getDayKey(date);
+    const day = month ? month[dayKey] : undefined;
+    return day && isReadableDay(day)
+      ? { timings: day, clock: dayClockIn(entry, dayKey) }
+      : null;
   });
 }
 
@@ -864,10 +937,18 @@ function rawDatasetTimesFor(
 export async function getDatasetPrayerTimesOrNull(
   params: Omit<StoredPrayerData, 'months'> & { date: Date },
 ): Promise<TimingsMap | null> {
+  const day = await getDatasetPrayerDayOrNull(params);
+  return day ? day.timings : null;
+}
+
+/** `getDatasetPrayerTimesOrNull`, with the clock the day is written on. */
+export async function getDatasetPrayerDayOrNull(
+  params: Omit<StoredPrayerData, 'months'> & { date: Date },
+): Promise<PrayerDay | null> {
   if (!hasPreparedDataset(params.provider)) return null;
   try {
     const ds = await datasetTimesFor(params.provider, params, true);
-    return ds.timings;
+    return { timings: ds.timings, clock: ds.clock ?? DEVICE_CLOCK };
   } catch {
     /* dataset miss — the cache may still have it */
     return null;
@@ -877,6 +958,13 @@ export async function getDatasetPrayerTimesOrNull(
 export async function getOrFetchPrayerTimes(
   params: Omit<StoredPrayerData, 'months'> & { date: Date },
 ): Promise<TimingsMap> {
+  return (await getOrFetchPrayerDay(params)).timings;
+}
+
+/** `getOrFetchPrayerTimes`, with the clock the day is written on. */
+export async function getOrFetchPrayerDay(
+  params: Omit<StoredPrayerData, 'months'> & { date: Date },
+): Promise<PrayerDay> {
   // For Sweden, consult the calculation BEFORE the local cache: it is
   // Islamiska Förbundet's times for the nearest listed city, computed on
   // the phone, so a day cached earlier from another source is answered
@@ -892,13 +980,13 @@ export async function getOrFetchPrayerTimes(
     try {
       const ds = await datasetTimesFor(params.provider, params);
       if (ds.source) void recordDataSource(ds.source);
-      return ds.timings;
+      return { timings: ds.timings, clock: ds.clock ?? DEVICE_CLOCK };
     } catch {
       /* dataset miss — use the cache / fetch chain below */
     }
   }
 
-  const cached = await getCachedPrayerTimes(params);
+  const [cached] = await getCachedPrayerDaysMany(params, [params.date]);
   if (cached) return cached;
 
   const res = await fetchWithLocalLastResort(params);
@@ -934,6 +1022,7 @@ export async function getOrFetchPrayerTimes(
                 lastFetchedAt: new Date().toISOString(),
                 utcOffsetMinutes: deviceUtcOffsetMinutes(),
                 ...markedDays(existing?.fallbackDays, res.fellBack ? [dayKey] : [], res.fellBack ? [] : [dayKey], months),
+                ...clockedDays(existing, [[dayKey, res.clock]], months),
               },
             },
           };
@@ -947,7 +1036,7 @@ export async function getOrFetchPrayerTimes(
     }
   });
 
-  return res.timings;
+  return { timings: res.timings, clock: res.clock ?? DEVICE_CLOCK };
 }
 
 /**
@@ -1111,6 +1200,7 @@ export async function refreshPrayerDataCache(
   const months = { ...existing.months };
   const fellBack: string[] = [];
   const answered: string[] = [];
+  const clocks: Array<[string, string | undefined]> = [];
 
   /**
    * AlAdhan answers a whole month in one request (its calendar), so where
@@ -1156,6 +1246,7 @@ export async function refreshPrayerDataCache(
         if (!day) continue;
         months[mk] = { ...(months[mk] ?? {}), [dayKey]: day.timings };
         answered.push(dayKey);
+        clocks.push([dayKey, day.clock]);
         done.add(dayKey);
         completed += 1;
       }
@@ -1181,7 +1272,7 @@ export async function refreshPrayerDataCache(
             calculationMethod: params.calculationMethod,
             school: params.school,
           });
-          return { date, timings: res.timings, fellBack: res.fellBack === true };
+          return { date, timings: res.timings, fellBack: res.fellBack === true, clock: res.clock };
         } catch (e) {
           // Background fill failures are best-effort. warn (not error) so
           // dev builds don'\''t flash a red LogBox banner over the UI for a
@@ -1199,6 +1290,7 @@ export async function refreshPrayerDataCache(
         if (!months[monthKey]) months[monthKey] = {};
         months[monthKey][dayKey] = item.timings;
         (item.fellBack ? fellBack : answered).push(dayKey);
+        clocks.push([dayKey, item.clock]);
       }
     }
 
@@ -1234,6 +1326,10 @@ export async function refreshPrayerDataCache(
         lastFetchedAt: new Date().toISOString(),
         utcOffsetMinutes: deviceUtcOffsetMinutes(),
         ...markedDays(existing.fallbackDays, fellBack, answered, months),
+        // The days written since `existing` was read are in `months` (read
+        // from it) or written by others under their own clocks; the slot's
+        // own marks are the latest read's.
+        ...clockedDays(v2After.caches[k] ?? existing, clocks, months),
       },
     },
   };
@@ -1322,13 +1418,15 @@ async function refetchFallbackDaysOnce(
             calculationMethod: params.calculationMethod,
             school: params.school,
           });
-          return { dayKey, timings: res.timings };
+          return { dayKey, timings: res.timings, clock: res.clock };
         } catch {
           return null;
         }
       }),
     );
-    const got = answers.filter((a): a is { dayKey: string; timings: TimingsMap } => a != null);
+    const got = answers.filter(
+      (a): a is { dayKey: string; timings: TimingsMap; clock: string | undefined } => a != null,
+    );
     if (got.length === 0) break;
     await queueCacheWrite('fallback refetch', async () => {
       const now = await loadV2();
@@ -1352,6 +1450,11 @@ async function refetchFallbackDaysOnce(
               lastFetchedAt: new Date().toISOString(),
               utcOffsetMinutes: deviceUtcOffsetMinutes(),
               ...markedDays(current.fallbackDays, [], got.map(a => a.dayKey), months),
+              ...clockedDays(
+                current,
+                got.filter(a => months[a.dayKey.slice(0, 7)]?.[a.dayKey] === a.timings).map(a => [a.dayKey, a.clock] as const),
+                months,
+              ),
             },
           },
         },
@@ -1408,6 +1511,9 @@ export async function dropStoredMonths(
               ...entry,
               months: {},
               fallbackDays: undefined,
+              // Emptied: the next fill names the slot's clock afresh.
+              clock: undefined,
+              dayClocks: undefined,
               // The offset the empty entry now stands for, so the next
               // load does not read the drop as another shift.
               utcOffsetMinutes: deviceUtcOffsetMinutes(),
@@ -1458,7 +1564,14 @@ export async function refetchStoredMonths(
         await saveV2Once({
           caches: {
             ...v2.caches,
-            [k]: { ...entry, months, fallbackDays: undefined, ...markedDays(entry.fallbackDays, [], [], months) },
+            [k]: {
+              ...entry,
+              months,
+              fallbackDays: undefined,
+              dayClocks: undefined,
+              ...markedDays(entry.fallbackDays, [], [], months),
+              ...clockedDays(entry, [], months),
+            },
           },
         });
       })(),

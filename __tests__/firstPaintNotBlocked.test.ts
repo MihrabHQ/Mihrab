@@ -58,10 +58,10 @@ describe('the first paint waits only for the times it draws', () => {
     expect(laterAt).toBeGreaterThan(-1);
     expect(readyAt).toBeGreaterThan(laterAt);
     // Still read — just not with a skeleton on screen.
-    expect(deferred).toContain('await cachedDaysFrom(');
+    expect(deferred).toContain('await cachedPrayerDaysFrom(');
     // And read NOWHERE else, so no second call can creep onto the
     // critical path while this one stays put.
-    expect(HOOK.match(/await cachedDaysFrom\(/g)).toHaveLength(1);
+    expect(HOOK.match(/await cachedPrayerDaysFrom\(/g)).toHaveLength(1);
   });
 
   it('does not await the follow-up either', () => {
@@ -85,10 +85,10 @@ describe('the first paint waits only for the times it draws', () => {
     // date — every prayer row gone, on the one screen the app is for.
     //
     // So: read before the publish, and published with it.
-    expect(deferred).not.toContain('cachedDaysBefore');
+    expect(deferred).not.toContain('cachedPrayerDaysBefore');
     const beforeReady = HOOK.slice(0, readyAt);
-    expect(beforeReady).toContain('const pastRaw = await cachedDaysBefore(');
-    expect(HOOK.match(/await cachedDaysBefore\(/g)).toHaveLength(1);
+    expect(beforeReady).toContain('const pastRaw = await cachedPrayerDaysBefore(');
+    expect(HOOK.match(/await cachedPrayerDaysBefore\(/g)).toHaveLength(1);
   });
 });
 

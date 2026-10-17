@@ -53,9 +53,13 @@ import { useWidgetDataRevision } from '../widget/useWidgetDataRevision';
 import { syncLiveActivity } from '../liveActivity/syncLiveActivity';
 import {
   addDays,
+  daysOnDeviceClock,
   getNextPrayerDisplay,
+  onDeviceClock,
+  readZone,
 } from '../utils/prayerTimes';
 import { filterOptionalTimes } from '../utils/nightTimes';
+import type { TimingsMap } from '../types/prayer';
 import { injectDaruriTimes } from '../prayer/daruriTimes';
 import { useClockFormatter } from '../hooks/useClockFormatter';
 import { qiblaBearingFrom } from '../utils/qibla';
@@ -563,6 +567,8 @@ export function HomeScreen() {
           state.longitude,
           // `school` is 1 for Ḥanafī ʿAṣr (the 2:1 shadow), 0 otherwise.
           settings.school === 1 ? 2 : 1,
+          // on the days' own clock, as their rows are written
+          state.clock,
         )
       : null;
     const tableWithDaruri = span ? span.slice(table.past.length) : null;
@@ -622,6 +628,55 @@ export function HomeScreen() {
     settings.school,
   ]);
 
+  /**
+   * The same days on the PHONE's clock, for everything that writes them out
+   * of the app or reads them as instants without being told a clock — the
+   * alert schedule and its reminders, the quiet windows, the widget, the
+   * Live Activity, the late-log windows, the Ramadan countdown. A saved
+   * place in another zone is drawn on its own clock (`state.clock`); its
+   * alarms and the widgets' countdowns must still land on the right
+   * instants, and native code reads every time on the phone's clock. The
+   * very same objects when the days are on the phone's clock already.
+   */
+  const phoneView = useMemo(() => {
+    if (state.phase !== 'ready' || !view) return null;
+    const clock = state.clock;
+    const base = state.baseDate;
+    if (!readZone(clock)) {
+      return {
+        ...view,
+        windowWeek: state.week,
+        today: state.today,
+        tomorrow: state.tomorrow,
+      };
+    }
+    const tomorrowBase = addDays(base, 1);
+    const days = (d: TimingsMap[]) => daysOnDeviceClock(d, base, clock);
+    const set = (v: {
+      today: TimingsMap;
+      tomorrow?: TimingsMap;
+      week: TimingsMap[];
+    }) => ({
+      ...v,
+      today: onDeviceClock(v.today, base, clock),
+      tomorrow: v.tomorrow
+        ? onDeviceClock(v.tomorrow, tomorrowBase, clock)
+        : undefined,
+      week: days(v.week),
+    });
+    return {
+      table: set(view.table),
+      alertWeek: days(view.alertWeek),
+      la: set(view.la),
+      widget: set(view.widget),
+      windowWeek: days(state.week),
+      today: onDeviceClock(state.today, base, clock),
+      tomorrow: state.tomorrow
+        ? onDeviceClock(state.tomorrow, tomorrowBase, clock)
+        : undefined,
+    };
+  }, [state, view]);
+
   const loadedDateKeyRef = useRef<string | null>(null);
   const loadedTzOffsetRef = useRef<number | null>(null);
 
@@ -652,7 +707,12 @@ export function HomeScreen() {
         return;
       }
       const next = view
-        ? getNextPrayerDisplay(view.table.today, view.table.tomorrow, current)
+        ? getNextPrayerDisplay(
+            view.table.today,
+            view.table.tomorrow,
+            current,
+            state.clock,
+          )
         : null;
       setNextInfo(prev => {
         if (
@@ -690,7 +750,13 @@ export function HomeScreen() {
     // Not on the on-device times that fill the moment after a location
     // change (`provisional`): writing those out would gate the provider's
     // times a beat later as "already done". Only a settled answer syncs.
-    if (!hydrated || state.phase !== 'ready' || !view || state.provisional)
+    if (
+      !hydrated ||
+      state.phase !== 'ready' ||
+      !view ||
+      !phoneView ||
+      state.provisional
+    )
       return;
     // After the card is on screen, not in the same breath as drawing it.
     if (!afterFirstPaint) return;
@@ -700,17 +766,18 @@ export function HomeScreen() {
       notificationSound: settings.notificationSound,
       adhanUsesAlarmStream: settings.adhanUsesAlarmStream,
       prayerAlertFullScreen: settings.prayerAlertFullScreen,
-      today: view.table.today,
-      tomorrow: view.table.tomorrow,
+      // On the phone's clock: the schedule reads every time on it.
+      today: phoneView.table.today,
+      tomorrow: phoneView.table.tomorrow,
       // Anchor the schedule to the day the maps were FETCHED for — if this
       // sync fires with stale state just after midnight, yesterday's map
       // must not be pinned onto today's date (early-adhan bug, v2.7.38).
       baseDate: state.baseDate,
       // Extra cached days extend coverage past tomorrow so alerts keep
       // firing when the app isn't opened for a couple of days (v2.7.40).
-      week: view.alertWeek,
+      week: phoneView.alertWeek,
       // Unfiltered, so Fajr ends at sunrise even with the Sunrise row hidden.
-      windowWeek: state.week,
+      windowWeek: phoneView.windowWeek,
       // Only when the times themselves are on: an alert about a boundary
       // the card is not showing would be the app announcing something the
       // reader cannot go and look at.
@@ -743,7 +810,7 @@ export function HomeScreen() {
     if (shouldResync(EOD_RESYNC_KEY, eodPrint)) {
       rescheduleEndOfDayLogReminders({
         enabled: settings.endOfDayLogReminderEnabled,
-        week: view.table.week,
+        week: phoneView.table.week,
         baseDate: state.baseDate,
       })
         .then(() => markResynced(EOD_RESYNC_KEY, eodPrint))
@@ -767,7 +834,7 @@ export function HomeScreen() {
       rescheduleDuaReminders({
         morning: settings.morningDuaReminderEnabled,
         evening: settings.eveningDuaReminderEnabled,
-        week: view.table.week,
+        week: phoneView.table.week,
         baseDate: state.baseDate,
       })
         .then(() => markResynced(DUA_RESYNC_KEY, duaPrint))
@@ -787,10 +854,10 @@ export function HomeScreen() {
     if (Platform.OS === 'android' && shouldResync(SILENCE_RESYNC_KEY, silencePrint)) {
       syncPrayerSilence({
         settings: settings.prayerSilence,
-        today: view.table.today,
-        tomorrow: view.table.tomorrow,
+        today: phoneView.table.today,
+        tomorrow: phoneView.table.tomorrow,
         baseDate: state.baseDate,
-        week: view.alertWeek,
+        week: phoneView.alertWeek,
         hour12: clockHour12,
       })
         .then(() => markResynced(SILENCE_RESYNC_KEY, silencePrint))
@@ -823,6 +890,7 @@ export function HomeScreen() {
     settings.prayerSilence,
     state,
     view,
+    phoneView,
   ]);
 
   // Mark late logs as late (issue #74): the notification and widget writers
@@ -831,20 +899,28 @@ export function HomeScreen() {
   useEffect(() => {
     if (!hydrated || state.phase !== 'ready' || state.provisional) return;
     if (!afterFirstPaint) return;
-    const halves = windowsFromEdges(windowEdges(state.week, state.baseDate));
+    if (!phoneView) return;
+    // On the phone's clock, which the writers read the windows on.
+    const halves = windowsFromEdges(
+      windowEdges(phoneView.windowWeek, state.baseDate),
+    );
     // With the Mālikī second times on, the line is where the preferred time
-    // ends; `view.alertWeek` is the week that carries those boundaries.
-    const windows =
-      settings.malikiSecondTimesEnabled && view
-        ? withPreferredEnds(halves, view.alertWeek, state.baseDate, firstWindowEnd)
-        : halves;
+    // ends; `alertWeek` is the week that carries those boundaries.
+    const windows = settings.malikiSecondTimesEnabled
+      ? withPreferredEnds(
+          halves,
+          phoneView.alertWeek,
+          state.baseDate,
+          firstWindowEnd,
+        )
+      : halves;
     rememberLogTiming(settings.logLateByClock, windows).catch(e =>
       console.warn('rememberLogTiming:', e),
     );
   }, [
     hydrated,
     state,
-    view,
+    phoneView,
     afterFirstPaint,
     settings.logLateByClock,
     settings.malikiSecondTimesEnabled,
@@ -880,7 +956,13 @@ export function HomeScreen() {
       // Not on the on-device times that fill the moment after a location
       // change (`provisional`): writing those out would gate the provider's
       // times a beat later as "already done". Only a settled answer syncs.
-      if (!hydrated || state.phase !== 'ready' || !view || state.provisional)
+      if (
+        !hydrated ||
+        state.phase !== 'ready' ||
+        !view ||
+        !phoneView ||
+        state.provisional
+      )
         return;
       if (!afterFirstPaint) return;
       // Every focus of the Today tab used to tear down and rewrite the whole
@@ -938,13 +1020,14 @@ export function HomeScreen() {
           notificationSound: settings.notificationSound,
           adhanUsesAlarmStream: settings.adhanUsesAlarmStream,
           prayerAlertFullScreen: settings.prayerAlertFullScreen,
-          today: view.table.today,
-          tomorrow: view.table.tomorrow,
+          // On the phone's clock: the schedule reads every time on it.
+          today: phoneView.table.today,
+          tomorrow: phoneView.table.tomorrow,
           baseDate: state.baseDate,
           // The alert week, not the drawn one — with the rows off they
           // differ by exactly the boundaries this schedule is for.
-          week: view.alertWeek,
-          windowWeek: state.week,
+          week: phoneView.alertWeek,
+          windowWeek: phoneView.windowWeek,
           hour12: clockHour12,
           accentColor: palette.accentSolid,
           // Tinted surfaces: colourise the whole notification with the accent.
@@ -963,21 +1046,24 @@ export function HomeScreen() {
           .catch(e => console.warn('syncPrayerNotifications (focus):', e));
       }
       {
+        // The widget and the Live Activity read every time on the phone's
+        // clock (WallClock.kt / WallClock.swift): they are handed the days
+        // on it.
         const t = computeSeasonalTreatment(
-          view.table.today,
-          view.table.tomorrow,
+          phoneView.table.today,
+          phoneView.table.tomorrow,
           new Date(),
         );
-        collectWidgetExtras({ timings: view.widget.today, now: new Date() })
+        collectWidgetExtras({ timings: phoneView.widget.today, now: new Date() })
           .then(extras =>
             syncPrayerWidget(
-              view.widget.today,
-              view.widget.tomorrow,
+              phoneView.widget.today,
+              phoneView.widget.tomorrow,
               new Date(),
               locationLabel,
               { lat: state.latitude, lng: state.longitude },
               { jumuah: t.jumuah, ramadan: t.ramadan, eid: t.eid },
-              view.widget.week,
+              phoneView.widget.week,
               extras,
             ),
           )
@@ -986,9 +1072,9 @@ export function HomeScreen() {
         // notification stays in sync with what's on the home screen.
         syncLiveActivity({
           options: { enabled: settings.liveActivityEnabled },
-          today: view.la.today,
-          tomorrow: view.la.tomorrow,
-          week: view.la.week,
+          today: phoneView.la.today,
+          tomorrow: phoneView.la.tomorrow,
+          week: phoneView.la.week,
           now: new Date(),
           locationName: locationLabel,
           coords: { lat: state.latitude, lng: state.longitude },
@@ -1056,6 +1142,7 @@ export function HomeScreen() {
       alertOverridePrint,
       state,
       view,
+      phoneView,
       locationLabel,
       settings.liveActivityEnabled,
       // `palette.accentSolid` is derived from the accent id and its custom
@@ -1081,16 +1168,18 @@ export function HomeScreen() {
     if (!hydrated || state.phase !== 'ready' || !view || state.provisional)
       return;
     if (!afterFirstPaint) return;
+    if (!phoneView) return;
+    // On the phone's clock, which the widgets read every time on.
     const seasonal = computeSeasonalTreatment(
-      view.table.today,
-      view.table.tomorrow,
+      phoneView.table.today,
+      phoneView.table.tomorrow,
       new Date(),
     );
-    collectWidgetExtras({ timings: view.widget.today, now: new Date() })
+    collectWidgetExtras({ timings: phoneView.widget.today, now: new Date() })
       .then(extras =>
         syncPrayerWidget(
-          view.widget.today,
-          view.widget.tomorrow,
+          phoneView.widget.today,
+          phoneView.widget.tomorrow,
           new Date(),
           locationLabel,
           { lat: state.latitude, lng: state.longitude },
@@ -1099,7 +1188,7 @@ export function HomeScreen() {
             ramadan: seasonal.ramadan,
             eid: seasonal.eid,
           },
-          view.widget.week,
+          phoneView.widget.week,
           extras,
         ),
       )
@@ -1109,6 +1198,7 @@ export function HomeScreen() {
     hydrated,
     state,
     view,
+    phoneView,
     locationLabel,
     // A prayer logged, a page turned or a bead counted changes what the
     // widget should say without changing any prayer time — so the payload
@@ -1140,16 +1230,18 @@ export function HomeScreen() {
     if (!hydrated || state.phase !== 'ready' || !view || state.provisional)
       return;
     if (!afterFirstPaint) return;
+    if (!phoneView) return;
+    // On the phone's clock, which the Live Activity reads every time on.
     const seasonal = computeSeasonalTreatment(
-      view.table.today,
-      view.table.tomorrow,
+      phoneView.table.today,
+      phoneView.table.tomorrow,
       new Date(),
     );
     syncLiveActivity({
       options: { enabled: settings.liveActivityEnabled },
-      today: view.la.today,
-      tomorrow: view.la.tomorrow,
-      week: view.la.week,
+      today: phoneView.la.today,
+      tomorrow: phoneView.la.tomorrow,
+      week: phoneView.la.week,
       now: new Date(),
       locationName: locationLabel,
       coords: { lat: state.latitude, lng: state.longitude },
@@ -1180,6 +1272,7 @@ export function HomeScreen() {
     hydrated,
     state,
     view,
+    phoneView,
     // nextInfo is the computed "which prayer is next right now" value.
     // The 30-second watchdog updates it whenever a prayer passes, triggering
     // this effect to re-sync the Live Activity with the new next prayer.
@@ -1543,6 +1636,7 @@ export function HomeScreen() {
             // The raw day, Sunrise included whatever the rows say: the sky
             // needs it to know where dawn ends.
             skyTimings={state.phase === 'ready' ? state.today : undefined}
+            dayClock={state.phase === 'ready' ? state.clock : undefined}
             latitude={readyLat}
             longitude={readyLng}
             nextInfo={nextInfo}
@@ -1581,7 +1675,11 @@ export function HomeScreen() {
           />
         );
         const ramadanCard = (
-          <RamadanCountdownCard today={state.today} tomorrow={state.tomorrow} />
+          // Its countdown and its time are read on the phone's clock.
+          <RamadanCountdownCard
+            today={phoneView?.today ?? state.today}
+            tomorrow={phoneView ? phoneView.tomorrow : state.tomorrow}
+          />
         );
         const quranShortcut = (
           <QuranCard onOpenAt={handleOpenQuranAt} onOpenQuran={handleOpenQuran} />

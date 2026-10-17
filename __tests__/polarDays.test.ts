@@ -74,7 +74,7 @@ describe('a day with no sunrise or sunset', () => {
 describe('what an earlier version left behind', () => {
   it('reads a cached "NaN:NaN" day as a miss, so it is fetched again', () => {
     const storage = readFileSync(join(__dirname, '..', 'src', 'prayer', 'prayerStorage.ts'), 'utf8');
-    expect(storage).toContain('return day && isReadableDay(day) ? day : null;');
+    expect(storage).toMatch(/return day && isReadableDay\(day\)\s*\?/);
     expect(storage).toContain("return !Object.values(day).some(v => typeof v === 'string' && v.includes('NaN'));");
     expect(() => validateTimingShape({ Fajr: 'NaN:NaN' } as never)).toThrow();
   });

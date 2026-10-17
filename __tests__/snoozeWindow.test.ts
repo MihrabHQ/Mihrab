@@ -161,7 +161,9 @@ describe('Fajr ends at sunrise even when the Sunrise row is hidden', () => {
     const fs = require('fs');
     const path = require('path');
     const home = fs.readFileSync(path.join(__dirname, '../src/screens/HomeScreen.tsx'), 'utf8');
-    expect((home.match(/windowWeek: state\.week/g) ?? []).length).toBe(2);
+    // Both sync call sites, the unfiltered week on the phone's clock.
+    expect((home.match(/windowWeek: phoneView\.windowWeek/g) ?? []).length).toBe(2);
+    expect(home).toMatch(/windowWeek: (state\.week|days\(state\.week\))/);
     const sync = fs.readFileSync(path.join(__dirname, '../src/notifications/prayerNotifications.ts'), 'utf8');
     expect(sync).toMatch(/params\.windowWeek/);
   });

@@ -67,7 +67,8 @@ import {
   type NvTileRow,
 } from './namazvaktiParser';
 import type { PrayerTimesResult } from './types';
-import { clockFormatter, placeCivilDay, type PlaceClock } from './locationClock';
+import { clockFor, placeCivilDay, type PlaceClock } from './locationClock';
+import { DEVICE_CLOCK } from '../utils/prayerTimes';
 
 const PROVIDER = 'namazvakti';
 const TILE_PREFIX = 'namazvakti.tile.v1.';
@@ -442,7 +443,15 @@ async function namazvaktiTimesFor(
       `No published day for ${city.name} on ${dateKey}.`,
     );
   }
-  return { timings, source: year?.via === 'mirror' ? 'cdn' : 'namazvakti' };
+  return {
+    timings,
+    source: year?.via === 'mirror' ? 'cdn' : 'namazvakti',
+    // The site prints each city on that city's own clock, and the city's
+    // zone is not in its files: read on the phone's, as before. Right where
+    // the readers of Türkiye Takvimi are — in or near the city they chose —
+    // and an hour off only for a saved city in another zone.
+    clock: DEVICE_CLOCK,
+  };
 }
 
 /**
@@ -703,7 +712,7 @@ export function computeNamazvaktiMethodTimes(params: {
   const { latitude, longitude } = params;
   const civil = placeCivilDay(params.date, params.placeClock);
   const day = new Date(civil.y, civil.m, civil.d);
-  const format = clockFormatter(params.placeClock);
+  const { format, zone } = clockFor(params.placeClock);
   const instant = (on: Date, minutes: number, round: 'up' | 'down') => {
     const m = round === 'up' ? Math.ceil(minutes - 1e-9) : Math.floor(minutes + 1e-9);
     return format(new Date(Date.UTC(on.getFullYear(), on.getMonth(), on.getDate()) + m * 60_000));
@@ -729,6 +738,7 @@ export function computeNamazvaktiMethodTimes(params: {
       Isha: instant(ishaDay, ishaSun.isha17() + T, 'up'),
     },
     source: 'local',
+    clock: zone,
   };
 }
 

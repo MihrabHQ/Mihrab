@@ -47,15 +47,18 @@ function instantOf(
   key: string,
   timings: TimingsMap,
   dayStart: Date,
+  clock?: string | null,
 ): Date | null {
   const raw = timings[key];
   if (!raw) return null;
   try {
-    const at = combineLocalDateAndTime(dayStart, raw);
+    const at = combineLocalDateAndTime(dayStart, raw, clock);
     if (key !== 'Isha' && key !== 'Firstthird') return at;
     const maghrib = timings.Maghrib;
     if (!maghrib) return at;
-    return at < combineLocalDateAndTime(dayStart, maghrib) ? addDays(at, 1) : at;
+    return at < combineLocalDateAndTime(dayStart, maghrib, clock)
+      ? combineLocalDateAndTime(addDays(dayStart, 1), raw, clock)
+      : at;
   } catch {
     // An unreadable time is a row that cannot be placed, not a throw: the
     // rest of the day still answers the question.
@@ -72,10 +75,12 @@ function instantOf(
 export function lastTimeOfDay(
   timings: TimingsMap,
   dayStart: Date,
+  /** The clock the day is written on (`DEVICE_CLOCK`). */
+  clock?: string | null,
 ): Date | null {
   let last: Date | null = null;
   for (const key of DISPLAY_ORDER) {
-    const at = instantOf(key, timings, dayStart);
+    const at = instantOf(key, timings, dayStart, clock);
     if (!at) continue;
     if (!last || at.getTime() > last.getTime()) last = at;
   }
@@ -87,7 +92,8 @@ export function dayIsSpent(
   timings: TimingsMap,
   dayStart: Date,
   now: Date,
+  clock?: string | null,
 ): boolean {
-  const last = lastTimeOfDay(timings, dayStart);
+  const last = lastTimeOfDay(timings, dayStart, clock);
   return last != null && now.getTime() > last.getTime();
 }

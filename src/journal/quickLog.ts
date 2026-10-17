@@ -102,15 +102,17 @@ export function firstWindowEnd(
   prayer: JournalPrayer,
   timings: TimingsMap,
   base: Date,
+  /** The clock the day is written on (`DEVICE_CLOCK`). */
+  dayClock?: string | null,
 ): number | null {
   const clock = timings[`${prayer}Daruri` as keyof TimingsMap];
   if (!clock) return null;
   try {
-    let at = combineLocalDateAndTime(base, clock);
+    let at = combineLocalDateAndTime(base, clock, dayClock);
     // Ishāʾ's boundary can fall after midnight, and then belongs to the
     // next date — the same rule `daruriRowState` and the alerts apply.
     if (prayer === 'Isha' && timings.Maghrib) {
-      if (at < combineLocalDateAndTime(base, timings.Maghrib)) {
+      if (at < combineLocalDateAndTime(base, timings.Maghrib, dayClock)) {
         at = addDays(at, 1);
       }
     }
@@ -131,18 +133,20 @@ export function quickLogPhase(
   now: Date,
   tomorrow?: TimingsMap,
   day: Date = now,
+  /** The clock both days are written on (`DEVICE_CLOCK`). */
+  clock?: string | null,
 ): QuickLogPhase {
   const raw = timings[prayer];
   if (!raw) return 'not-yet';
   const base = startOfLocalDay(day);
-  const start = combineLocalDateAndTime(base, raw).getTime();
+  const start = combineLocalDateAndTime(base, raw, clock).getTime();
   if (now.getTime() < start) return 'not-yet';
   const endKey = WINDOW_END[prayer];
   let end: number;
   if (endKey && timings[endKey]) {
-    end = combineLocalDateAndTime(base, timings[endKey]).getTime();
+    end = combineLocalDateAndTime(base, timings[endKey], clock).getTime();
   } else if (tomorrow?.Fajr) {
-    end = combineLocalDateAndTime(addDays(base, 1), tomorrow.Fajr).getTime();
+    end = combineLocalDateAndTime(addDays(base, 1), tomorrow.Fajr, clock).getTime();
   } else {
     const eod = new Date(base);
     eod.setHours(23, 59, 59, 999);
@@ -157,7 +161,7 @@ export function quickLogPhase(
   // meant to divide is no boundary — a modelled angle at a high latitude
   // can land past sunrise — and the window stays whole rather than
   // asking a question built on it.
-  const first = firstWindowEnd(prayer, timings, base);
+  const first = firstWindowEnd(prayer, timings, base, clock);
   if (first != null && first > start && first < end && now.getTime() >= first) {
     return 'after-first';
   }
@@ -202,8 +206,9 @@ export function quickLogStatus(
   now: Date,
   tomorrow?: TimingsMap,
   day: Date = now,
+  clock?: string | null,
 ): 'on-time' | 'ask' | null {
-  const phase = quickLogPhase(prayer, timings, now, tomorrow, day);
+  const phase = quickLogPhase(prayer, timings, now, tomorrow, day, clock);
   if (phase === 'not-yet') return null;
   return phase === 'in-window' ? 'on-time' : 'ask';
 }
@@ -232,7 +237,7 @@ export type QuickLog = {
   toggle: (
     prayer: JournalPrayer,
     timings: TimingsMap,
-    options?: { day?: Date; tomorrow?: TimingsMap },
+    options?: { day?: Date; tomorrow?: TimingsMap; clock?: string },
   ) => Promise<'ask' | 'written' | 'nothing'>;
   /**
    * Which answers that question should offer, and the phase it is asked
@@ -241,7 +246,7 @@ export type QuickLog = {
   askedAt: (
     prayer: JournalPrayer,
     timings: TimingsMap,
-    options?: { day?: Date; tomorrow?: TimingsMap },
+    options?: { day?: Date; tomorrow?: TimingsMap; clock?: string },
   ) => { phase: QuickLogPhase; answers: readonly PassedPrayerAnswer[] };
   /** Record `prayer` on `day` with the answer the user gave. */
   record: (
@@ -284,7 +289,7 @@ export function useQuickLog(): QuickLog {
     async (
       prayer: JournalPrayer,
       timings: TimingsMap,
-      options: { day?: Date; tomorrow?: TimingsMap } = {},
+      options: { day?: Date; tomorrow?: TimingsMap; clock?: string } = {},
     ): Promise<'ask' | 'written' | 'nothing'> => {
       // NEVER FROM AN UNHYDRATED STORE. Before the read lands (or after a
       // read that failed) `journal` is the empty array the hook starts
@@ -301,7 +306,14 @@ export function useQuickLog(): QuickLog {
         await persist(clearEntry(prev, date, prayer), date);
         return 'written';
       }
-      const status = quickLogStatus(prayer, timings, now, options.tomorrow, day);
+      const status = quickLogStatus(
+        prayer,
+        timings,
+        now,
+        options.tomorrow,
+        day,
+        options.clock,
+      );
       if (!status) return 'nothing';
       if (status === 'ask') return 'ask';
       await persist(upsertEntry(prev, date, prayer, status), date);
@@ -314,7 +326,7 @@ export function useQuickLog(): QuickLog {
     (
       prayer: JournalPrayer,
       timings: TimingsMap,
-      options: { day?: Date; tomorrow?: TimingsMap } = {},
+      options: { day?: Date; tomorrow?: TimingsMap; clock?: string } = {},
     ) => {
       const now = new Date();
       const phase = quickLogPhase(
@@ -323,6 +335,7 @@ export function useQuickLog(): QuickLog {
         now,
         options.tomorrow,
         options.day ?? now,
+        options.clock,
       );
       return { phase, answers: passedPrayerAnswers(phase) };
     },

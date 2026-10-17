@@ -85,7 +85,9 @@ import {
   combineLocalDateAndTime,
   countdownPieces,
   eventAt,
+  onClock,
   startOfLocalDay,
+  wallClockDate,
 } from '../../utils/prayerTimes';
 import { isRtlLanguage } from '../../i18n/layoutDirection';
 import {
@@ -185,6 +187,12 @@ export type TodayCardProps = {
   /** The reader's coordinates, for the moon's tilt — see skyFrame. */
   latitude?: number;
   longitude?: number;
+  /**
+   * The clock the days are written on — a zone, or absent for the phone's
+   * (`DEVICE_CLOCK`). A saved place in another zone shows its own clock's
+   * times, and every instant here is read on it.
+   */
+  dayClock?: string;
   nextInfo: { name: string; at: Date } | null;
   /** Changing this returns the strip to today (e.g. the user moved city). */
   resetKey: string;
@@ -329,7 +337,10 @@ const HeroToday = memo(function HeroToday({
   launchRun: launchRunWanted = true,
   skyTheme = false,
   skyVariant = 'realistic',
+  dayClock,
 }: {
+  /** The clock `today` is written on (`TodayCardProps.dayClock`). */
+  dayClock?: string;
   /** What the countdown is aimed at: the next prayer, or the user's pick. */
   target: { name: string; at: Date };
   /** True when the user aimed it rather than it simply being next. */
@@ -477,16 +488,16 @@ const HeroToday = memo(function HeroToday({
     // Read as today's it had already "passed" at 23:00, and the rail ran
     // from Isha to Isha with nothing in it.
     const maghribAt = today.Maghrib
-      ? combineLocalDateAndTime(now, today.Maghrib).getTime()
+      ? combineLocalDateAndTime(now, today.Maghrib, dayClock).getTime()
       : null;
     const instant = (key: string, raw: string): Date => {
-      const at = combineLocalDateAndTime(now, raw);
+      const at = combineLocalDateAndTime(now, raw, dayClock);
       if (
         (key === 'Isha' || key === 'Firstthird') &&
         maghribAt != null &&
         at.getTime() < maghribAt
       ) {
-        at.setDate(at.getDate() + 1);
+        return combineLocalDateAndTime(addDays(now, 1), raw, dayClock);
       }
       return at;
     };
@@ -519,7 +530,7 @@ const HeroToday = memo(function HeroToday({
       Math.min(1, (now.getTime() - from.at.getTime()) / span),
     );
     return { from, pct };
-  }, [today, now, target.at]);
+  }, [today, now, target.at, dayClock]);
 
   /**
    * A cold start that opened on the kept picture of this screen draws the
@@ -866,7 +877,11 @@ const HeroToday = memo(function HeroToday({
   const targetLabel = useMemo(() => t(`prayer.${target.name}`), [t, target.name]);
   const railFromKey = rail?.from.key;
   const railFromLabel = useMemo(() => (railFromKey ? t(`prayer.${railFromKey}`) : ''), [t, railFromKey]);
-  const targetClock = useMemo(() => clock.fromDate(target.at), [clock, target.at]);
+  // On the day's clock, as the rows are: a saved place's own time.
+  const targetClock = useMemo(
+    () => clock.fromDate(wallClockDate(target.at, dayClock)),
+    [clock, target.at, dayClock],
+  );
   // The band the bodies keep out of: the status bar and the top row above,
   // the countdown block (and the hero's foot padding) below.
   const sceneTop = fill ? statusBarInset + topRowH + SPACING.md : 0;
@@ -1037,6 +1052,7 @@ function TodayCardImpl({
   skyTimings,
   latitude,
   longitude,
+  dayClock,
 }: TodayCardProps) {
   const { t, i18n } = useTranslation();
   const { palette } = useAppPalette();
@@ -1093,8 +1109,8 @@ function TodayCardImpl({
    */
   const [spentTick, setSpentTick] = useState(0);
   const lastToday = useMemo(
-    () => lastTimeOfDay(week[0] ?? {}, startOfLocalDay(new Date())),
-    [week],
+    () => lastTimeOfDay(week[0] ?? {}, startOfLocalDay(new Date()), dayClock),
+    [week, dayClock],
   );
   /**
    * Only with a tomorrow to land on. A one-day week — the offline cache
@@ -1315,7 +1331,7 @@ function TodayCardImpl({
       const base = addDays(startOfLocalDay(new Date()), offset);
       for (const key of rows) {
         if (key !== override.name) continue;
-        if (ymdLocal(eventAt(key, dayTimings, base)) !== override.date) continue;
+        if (ymdLocal(eventAt(key, dayTimings, base, dayClock)) !== override.date) continue;
         // AND ONLY WHEN IT STILL DIFFERS FROM THE ROW. An override is
         // written against an instant and the standing setting can move
         // under it: silence one Fajr from the card, then set the Fajr row
@@ -1327,7 +1343,7 @@ function TodayCardImpl({
       }
       return null;
     },
-    [override, alertsEnabled, alertModeOf],
+    [override, alertsEnabled, alertModeOf, dayClock],
   );
   /**
    * What the row is set to when nobody has overridden it — what reset
@@ -1411,7 +1427,7 @@ function TodayCardImpl({
     for (const key of visibleRows) {
       const raw = timings[key];
       if (!raw) continue;
-      if (combineLocalDateAndTime(now, raw).getTime() > now.getTime()) {
+      if (combineLocalDateAndTime(now, raw, dayClock).getTime() > now.getTime()) {
         out.add(key);
       }
     }
@@ -1419,7 +1435,7 @@ function TodayCardImpl({
     // `now` is deliberately not a dependency: it is re-read on every render
     // this memo would run for anyway, and adding it would defeat the memo.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [timings, visibleRows.join(','), nextInfo?.name]);
+  }, [timings, visibleRows.join(','), nextInfo?.name, dayClock]);
 
   const target = useMemo(() => {
     if (!nextInfo) return null;
@@ -1428,9 +1444,9 @@ function TodayCardImpl({
     if (!raw) return nextInfo;
     return {
       name: chosenKey,
-      at: combineLocalDateAndTime(new Date(), raw),
+      at: combineLocalDateAndTime(new Date(), raw, dayClock),
     };
-  }, [nextInfo, chosenKey, timings]);
+  }, [nextInfo, chosenKey, timings, dayClock]);
 
   /**
    * The check beside each salāh — see quickLog.ts. Today only: a tap on
@@ -1438,6 +1454,21 @@ function TodayCardImpl({
    */
   const quickLog = useQuickLog();
   const tomorrow = week[1];
+  /**
+   * The sky's day and tomorrow's Fajr on the PHONE's clock: the sky places
+   * the sun by the phone's own clock, which a saved place in another zone
+   * is not written on. The same objects when the days are on the phone's.
+   */
+  const skyDay = useMemo(() => {
+    const day = skyTimings ?? timings;
+    const base = startOfLocalDay(new Date());
+    return onClock(day, base, dayClock, undefined);
+  }, [skyTimings, timings, dayClock]);
+  const skyTomorrowFajr = useMemo(() => {
+    if (!tomorrow?.Fajr) return undefined;
+    const base = addDays(startOfLocalDay(new Date()), 1);
+    return onClock({ Fajr: tomorrow.Fajr }, base, dayClock, undefined).Fajr;
+  }, [tomorrow?.Fajr, dayClock]);
   const logNow = new Date();
   /**
    * The question a tap on a passed prayer opens — see quickLog.ts. Holds
@@ -1477,13 +1508,13 @@ function TodayCardImpl({
   const toggleLog = useCallback(
     async (prayer: JournalPrayer, dayTimings: TimingsMap, offset: number) => {
       const day = addDays(startOfLocalDay(new Date()), offset);
-      const options = { day, tomorrow: dayAt(offset + 1) };
+      const options = { day, tomorrow: dayAt(offset + 1), clock: dayClock };
       const outcome = await quickLog.toggle(prayer, dayTimings, options);
       if (outcome === 'nothing') {
         // The one reason a tap is refused that the reader can act on: the
         // prayer has not come. (An unread journal takes no press at all.)
         if (
-          quickLogPhase(prayer, dayTimings, new Date(), options.tomorrow, day) ===
+          quickLogPhase(prayer, dayTimings, new Date(), options.tomorrow, day, dayClock) ===
           'not-yet'
         ) {
           say(t('journal.notYet', 'Not yet — its time has not come'));
@@ -1503,7 +1534,7 @@ function TodayCardImpl({
         secondOpen: phase === 'after-first',
       });
     },
-    [quickLog, dayAt, say, t],
+    [quickLog, dayAt, say, t, dayClock],
   );
   const answerPassed = useCallback(
     (status: PassedPrayerAnswer) => {
@@ -1540,7 +1571,7 @@ function TodayCardImpl({
       const clockOf = today[k];
       if (!clockOf) continue;
       try {
-        const at = combineLocalDateAndTime(new Date(nowMs), clockOf).getTime();
+        const at = combineLocalDateAndTime(new Date(nowMs), clockOf, dayClock).getTime();
         if (at > nowMs && at < next) next = at;
       } catch {
         /* a malformed boundary is a line not drawn, not a timer */
@@ -1552,7 +1583,7 @@ function TodayCardImpl({
       Math.min(next - nowMs + 250, 0x7fffffff),
     );
     return () => clearTimeout(id);
-  }, [week, daruriTick]);
+  }, [week, daruriTick, dayClock]);
 
   const clearChosen = useCallback(() => setChosenKey(null), []);
   const aimAt = useCallback(
@@ -1665,6 +1696,7 @@ function TodayCardImpl({
             daruriKey,
             logNow,
             isSalah(key) && quickLog.statusOf(key) != null,
+            dayClock,
           )
         : {
             phase: 'first',
@@ -1721,7 +1753,7 @@ function TodayCardImpl({
           loggable && isSalah(key)
             ? {
                 status: quickLog.statusOf(key, day),
-                phase: quickLogPhase(key, dayTimings, logNow, nextDay, day),
+                phase: quickLogPhase(key, dayTimings, logNow, nextDay, day, dayClock),
                 // Until the journal has been read there is nothing to
                 // show and nothing safe to record: the ring at a whisper,
                 // exactly as for a prayer whose time has not come — and
@@ -1807,10 +1839,11 @@ function TodayCardImpl({
               chosen={false}
               onExpire={noop}
               today={timings}
-              skyToday={skyTimings}
+              skyToday={skyDay}
               latitude={latitude}
               longitude={longitude}
-              tomorrowFajr={tomorrow?.Fajr}
+              tomorrowFajr={skyTomorrowFajr}
+              dayClock={dayClock}
               expanded={expanded}
               bleed={{ horizontal: SPACING.xl, top: heroTop, bottom: SPACING.lg }}
               statusBarInset={underStatusBar ? insets.top : 0}
@@ -1834,10 +1867,11 @@ function TodayCardImpl({
             skyTheme={settings.appearance === 'sky'}
             skyVariant={settings.skyVariant}
             today={timings}
-            skyToday={skyTimings}
+            skyToday={skyDay}
             latitude={latitude}
             longitude={longitude}
-            tomorrowFajr={tomorrow?.Fajr}
+            tomorrowFajr={skyTomorrowFajr}
+            dayClock={dayClock}
             expanded={expanded}
             bleed={{ horizontal: SPACING.xl, top: heroTop, bottom: SPACING.lg }}
             statusBarInset={underStatusBar ? insets.top : 0}

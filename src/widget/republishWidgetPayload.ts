@@ -43,7 +43,7 @@ import { subscribeQuranState } from '../quran/quranState';
 import { subscribeTasbihState } from '../tasbih/tasbihStore';
 import {
   WIDGET_WINDOW_DAYS,
-  cachedDaysFrom,
+  cachedPrayerDaysFrom,
   type DayWindowParams,
 } from '../prayer/widgetDayWindow';
 import { computeLocalAdhanTimes } from '../providers/localAdhan';
@@ -58,7 +58,11 @@ import { applyOffsets } from '../settings/prayerOffsets';
 import { loadSettings } from '../settings/storage';
 import type { PrayerAppSettings } from '../settings/types';
 import type { TimingsMap } from '../types/prayer';
-import { addDays, combineLocalDateAndTime } from '../utils/prayerTimes';
+import {
+  addDays,
+  combineLocalDateAndTime,
+  onDeviceClock,
+} from '../utils/prayerTimes';
 import { setTodaysMaghrib } from '../hijri/islamicDay';
 import { filterOptionalTimes, injectNightTimes } from '../utils/nightTimes';
 import { collectWidgetExtras } from './collectWidgetExtras';
@@ -137,13 +141,19 @@ function labelFor(settings: PrayerAppSettings): string {
  *
  * Gapless: both readers stop at the first day they cannot produce, because
  * every consumer of these arrays indexes them as `today + i`.
+ *
+ * On the PHONE's clock: the widgets read every time on it (WallClock.kt,
+ * WallClock.swift), and a saved place in another zone whose source writes
+ * it on its own clock would otherwise count down to the wrong instants.
  */
 export async function rawWindow(
   params: DayWindowParams,
   now: Date,
 ): Promise<TimingsMap[]> {
-  const cached = await cachedDaysFrom(0, params, now);
-  if (cached.length > 0) return cached;
+  const cached = await cachedPrayerDaysFrom(0, params, now);
+  if (cached.length > 0) {
+    return cached.map((d, i) => onDeviceClock(d.timings, addDays(now, i), d.clock));
+  }
 
   // The provider's own answer from the phone (its listed place, its clock,
   // its corrections), never the network: a headless refresh must not fetch.
@@ -160,7 +170,7 @@ export async function rawWindow(
         school: params.school,
         offline: true,
       })
-        .then(r => r.timings)
+        .then(r => onDeviceClock(r.timings, date, r.clock))
         .catch(() =>
           computeLocalAdhanTimes({
             latitude: params.latitude,

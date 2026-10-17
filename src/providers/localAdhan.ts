@@ -7,11 +7,7 @@ import {
   PrayerTimes,
 } from 'adhan';
 import type { PrayerTimesResult } from './types';
-import {
-  clockFormatter,
-  placeCivilDay,
-  type PlaceClock,
-} from './locationClock';
+import { clockFor, placeCivilDay, type PlaceClock } from './locationClock';
 import { autoMethodForCoords } from './autoMethod';
 import { gregorianToHijri } from '../hijri/convert';
 import {
@@ -703,7 +699,7 @@ export function computeLocalAdhanTimes(
   params: LocalAdhanParams,
 ): PrayerTimesResult {
   const pt = computeLocalAdhanInstants(params);
-  const format = clockFormatter(params.placeClock);
+  const { format, zone } = clockFor(params.placeClock);
   const fajrStr = format(pt.fajr);
   // Imsak is computed locally (adhan.js does not expose it). Default offset
   // is the most-common 10 minutes; will become user-configurable via task #21.
@@ -718,5 +714,6 @@ export function computeLocalAdhanTimes(
       Isha: format(pt.isha),
       Imsak: computeImsak(fajrStr, imsakOffset),
     },
+    clock: zone,
   };
 }

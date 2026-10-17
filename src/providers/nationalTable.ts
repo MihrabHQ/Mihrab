@@ -369,7 +369,9 @@ export function createNationalTable(config: NationalTableConfig): NationalTable 
         // Not in the repo's copy: the source's own API, as a backup.
         const live = await liveTuple(near, dateKey);
         if (live) {
-          return { timings: tupleToTimings(live), timezone: cached?.timezone ?? seed.timezone ?? config.timezone, source: 'live' };
+          const timezone = cached?.timezone ?? seed.timezone ?? config.timezone;
+          // the authority's table, on the place's clock
+          return { timings: tupleToTimings(live), timezone, source: 'live', clock: timezone };
         }
         // Past the published window: the authority's method for the place.
         if (config.calculate) return config.calculate(near, params.date);
@@ -380,10 +382,13 @@ export function createNationalTable(config: NationalTableConfig): NationalTable 
         );
       }
       const source: DataSource = fromCache ? 'cdn' : 'seed';
+      const timezone = cached?.timezone ?? seed.timezone ?? config.timezone;
       return {
         timings: tupleToTimings(tuple),
-        timezone: cached?.timezone ?? seed.timezone ?? config.timezone,
+        timezone,
         source,
+        // printed on the place's clock, as the authority publishes it
+        clock: timezone,
       };
     },
     async pollServerIndexNow() {

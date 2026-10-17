@@ -19,6 +19,13 @@ export type PrayerTimesResult = {
   timezone?: string;
   /** Which source produced these timings (set by the fetch chain). */
   source?: DataSource;
+  /**
+   * The clock the times are written on: an IANA zone, or `'device'` for the
+   * phone's (`DEVICE_CLOCK` in `utils/prayerTimes.ts`). Not `timezone`, which
+   * names the place's zone whatever clock the strings are on. Absent is the
+   * phone's.
+   */
+  clock?: string;
 };
 
 export type UnifiedFetchParams = {

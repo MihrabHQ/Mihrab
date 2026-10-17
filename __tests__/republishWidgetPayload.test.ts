@@ -20,15 +20,25 @@ jest.mock('../src/native/PrayerWidget', () => ({
   getPrayerWidgetModule: jest.fn(),
 }));
 jest.mock('../src/settings/storage', () => ({ loadSettings: jest.fn() }));
-jest.mock('../src/prayer/prayerStorage', () => ({
+jest.mock('../src/prayer/prayerStorage', () => {
   // One read for the whole window, answered per date — see
   // `getCachedPrayerTimesMany`. It used to be one read per day.
-  getCachedPrayerTimesMany: jest.fn(),
-  // A table-serving source is read from its table, not the cache
-  // (`cachedDaysFrom`); these days come from the cache.
-  isTableProvider: jest.fn(() => false),
-  getDatasetPrayerTimesOrNull: jest.fn(async () => null),
-}));
+  const many = jest.fn();
+  return {
+    getCachedPrayerTimesMany: many,
+    // The same read, each day with its clock (the phone's here).
+    getCachedPrayerDaysMany: jest.fn(async (p: unknown, dates: Date[]) =>
+      ((await many(p, dates)) as Array<TimingsMap | null>).map(t =>
+        t ? { timings: t, clock: 'device' } : null,
+      ),
+    ),
+    // A table-serving source is read from its table, not the cache
+    // (`cachedDaysFrom`); these days come from the cache.
+    isTableProvider: jest.fn(() => false),
+    getDatasetPrayerTimesOrNull: jest.fn(async () => null),
+    getDatasetPrayerDayOrNull: jest.fn(async () => null),
+  };
+});
 jest.mock('../src/widget/collectWidgetExtras', () => ({
   collectWidgetExtras: jest.fn(async () => ({})),
 }));

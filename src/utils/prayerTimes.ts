@@ -1,5 +1,52 @@
 import type { NextSalahName, TimingsMap } from '../types/prayer';
 import { isNonPrayerEvent, NEXT_SALAH_ORDER } from '../types/prayer';
+import { civilInZone, deviceZone, instantOnZoneClock } from './zoneClock';
+
+/**
+ * WHOSE CLOCK A DAY'S "HH:mm" STRINGS ARE WRITTEN ON.
+ *
+ * Every time the app holds is a wall-clock string, and a string is only an
+ * instant once a clock is named. Most answers are written on the phone's
+ * (`'device'`); an authority's table for a place in another zone is written
+ * on the place's (`providers/locationClock.ts`), and so is AlAdhan's answer
+ * for it. Read on the phone's clock, a saved Rabat on a phone in Stockholm
+ * counted down to, and alerted at, 05:05 Stockholm time for the ministry's
+ * 05:05 GMT — an hour early. So each answer says which clock it is on
+ * (`PrayerTimesResult.clock`), the cache keeps it with the day, and the
+ * instant is made here, in one place, on that clock.
+ *
+ * An IANA zone, or `'device'`. Absent is `'device'`: what every day stored
+ * before this existed was read as.
+ */
+export const DEVICE_CLOCK = 'device';
+
+/**
+ * The zone to read a day on, or null for the phone's own clock: for
+ * `'device'`, for no tag, and for the phone's own zone (read on the phone's
+ * clock, as before — its zone data, stale or not, is what its alarms run on).
+ */
+export function readZone(clock: string | null | undefined): string | null {
+  if (!clock || clock === DEVICE_CLOCK) return null;
+  if (clock === deviceZone()) return null;
+  return clock;
+}
+
+/**
+ * The instant `hour`:`minute` on a zone's clock, on the day that zone is on
+ * at the phone's noon of `day` — the place's own date for the phone's, as
+ * the producers chose it (`placeCivilDay`). Null where the phone cannot say.
+ */
+function onZoneClock(
+  day: Date,
+  hour: number,
+  minute: number,
+  zone: string,
+): Date | null {
+  const noon = new Date(day.getFullYear(), day.getMonth(), day.getDate(), 12);
+  const civil = civilInZone(noon, zone);
+  if (!civil) return null;
+  return instantOnZoneClock(zone, civil.y, civil.m - 1, civil.d, hour, minute);
+}
 
 export function extractClock(timeStr: string): {
   hour: number;
@@ -31,8 +78,22 @@ export function isSameLocalDay(a: Date, b: Date): boolean {
   );
 }
 
-export function combineLocalDateAndTime(day: Date, timeStr: string): Date {
+/**
+ * The instant a day's time names. `clock` is the clock the time is written on
+ * (see `DEVICE_CLOCK`); without one, or where the phone cannot read the zone,
+ * the phone's.
+ */
+export function combineLocalDateAndTime(
+  day: Date,
+  timeStr: string,
+  clock?: string | null,
+): Date {
   const { hour, minute } = extractClock(timeStr);
+  const zone = readZone(clock);
+  if (zone) {
+    const at = onZoneClock(day, hour, minute, zone);
+    if (at) return at;
+  }
   const out = new Date(day);
   out.setHours(hour, minute, 0, 0);
   return out;
@@ -76,17 +137,98 @@ export function startOfLocalDay(d: Date): Date {
  * ask the same way the scheduler does, or the two name different
  * instants for the same row.
  */
-export function eventAt(name: string, timings: TimingsMap, base: Date): Date {
-  const at = combineLocalDateAndTime(base, timings[name]);
+export function eventAt(
+  name: string,
+  timings: TimingsMap,
+  base: Date,
+  clock?: string | null,
+): Date {
+  const at = combineLocalDateAndTime(base, timings[name], clock);
   if (name !== 'Firstthird' || !timings.Maghrib) return at;
-  return at < combineLocalDateAndTime(base, timings.Maghrib)
-    ? addDays(at, 1)
+  return at < combineLocalDateAndTime(base, timings.Maghrib, clock)
+    ? combineLocalDateAndTime(addDays(base, 1), timings[name], clock)
     : at;
+}
+
+/**
+ * A day's times rewritten from the clock they are on to another, the same
+ * instants: `to` a zone, or `'device'` for the phone's. For what cannot be
+ * told which clock to read on — the widgets and the Live Activity, whose
+ * native code reads every time on the phone's clock, and the alert
+ * schedule's many readers — and for putting the days of one place on one
+ * clock. Anything that is not a time passes through; with both clocks the
+ * same, the day itself is returned.
+ */
+export function onClock(
+  timings: TimingsMap,
+  base: Date,
+  from: string | null | undefined,
+  to: string | null | undefined,
+): TimingsMap {
+  const fromZone = readZone(from);
+  const toZone = readZone(to);
+  if (fromZone === toZone) return timings;
+  const out: TimingsMap = {};
+  for (const [key, value] of Object.entries(timings)) {
+    const m =
+      typeof value === 'string' ? /^(\d{1,2}):(\d{2})$/.exec(value) : null;
+    if (!m) {
+      out[key] = value;
+      continue;
+    }
+    const at = combineLocalDateAndTime(base, value, from);
+    if (!toZone) {
+      out[key] = formatLocalTime(at);
+      continue;
+    }
+    const c = civilInZone(at, toZone, true);
+    out[key] = c
+      ? `${String(c.h).padStart(2, '0')}:${String(c.min).padStart(2, '0')}`
+      : value;
+  }
+  return out;
+}
+
+/**
+ * For DISPLAY only: a Date whose phone-local fields read `at` on `clock`'s
+ * wall clock, so a formatter that writes the phone's local time (the app's
+ * `fromDate`) writes it as the day's rows are written. `at` itself where the
+ * clock is the phone's or cannot be read. Never an instant to schedule on.
+ */
+export function wallClockDate(
+  at: Date,
+  clock: string | null | undefined,
+): Date {
+  const zone = readZone(clock);
+  if (!zone) return at;
+  const c = civilInZone(at, zone, true);
+  return c ? new Date(c.y, c.m - 1, c.d, c.h, c.min) : at;
+}
+
+/** A day on the phone's clock — `onClock` to `'device'`. */
+export function onDeviceClock(
+  timings: TimingsMap,
+  base: Date,
+  clock: string | null | undefined,
+): TimingsMap {
+  return onClock(timings, base, clock, DEVICE_CLOCK);
+}
+
+/** Consecutive days from `base` (`days[i]` is `base + i`) on the phone's clock. */
+export function daysOnDeviceClock(
+  days: TimingsMap[],
+  base: Date,
+  clock: string | null | undefined,
+): TimingsMap[] {
+  if (!readZone(clock)) return days;
+  return days.map((d, i) => onDeviceClock(d, addDays(base, i), clock));
 }
 
 export function computeNextSalah(
   timings: TimingsMap,
   now: Date,
+  /** The clock the day is written on (`DEVICE_CLOCK`). */
+  clock?: string | null,
 ): { name: NextSalahName; at: Date } | null {
   const dayStart = startOfLocalDay(now);
   for (const name of NEXT_SALAH_ORDER) {
@@ -94,7 +236,7 @@ export function computeNextSalah(
     if (!raw) {
       continue;
     }
-    const at = eventAt(name, timings, dayStart);
+    const at = eventAt(name, timings, dayStart, clock);
     if (at > now) {
       return { name, at };
     }
@@ -171,6 +313,8 @@ export function getNextPrayerDisplay(
   today: TimingsMap,
   tomorrow: TimingsMap | undefined,
   now: Date,
+  /** The clock both days are written on (`DEVICE_CLOCK`). */
+  clock?: string | null,
 ): { name: string; at: Date } | null {
   // Gather every still-upcoming event from today plus every event tomorrow,
   // then return the chronologically earliest. This is order-agnostic, so it
@@ -183,7 +327,7 @@ export function getNextPrayerDisplay(
   for (const name of NEXT_SALAH_ORDER) {
     const raw = today[name];
     if (!raw) continue;
-    const at = eventAt(name, today, dayStart);
+    const at = eventAt(name, today, dayStart, clock);
     if (at > now) candidates.push({ name, at });
   }
   if (tomorrow) {
@@ -191,7 +335,10 @@ export function getNextPrayerDisplay(
     for (const name of NEXT_SALAH_ORDER) {
       const raw = tomorrow[name];
       if (!raw) continue;
-      candidates.push({ name, at: eventAt(name, tomorrow, tomorrowDay) });
+      candidates.push({
+        name,
+        at: eventAt(name, tomorrow, tomorrowDay, clock),
+      });
     }
   }
   if (candidates.length === 0) return null;
@@ -226,6 +373,8 @@ export function buildUpcomingSalahEvents(
    * who turned it off hit the gap directly.)
    */
   extraDays: TimingsMap[] = [],
+  /** The clock every one of the days is written on (`DEVICE_CLOCK`). */
+  clock?: string | null,
 ): { name: string; at: Date }[] {
   const dayStart = startOfLocalDay(baseDay);
   const events: { name: string; at: Date }[] = [];
@@ -234,7 +383,7 @@ export function buildUpcomingSalahEvents(
     for (const name of NEXT_SALAH_ORDER) {
       const raw = timings[name];
       if (raw) {
-        events.push({ name, at: eventAt(name, timings, base) });
+        events.push({ name, at: eventAt(name, timings, base, clock) });
       }
     }
   };

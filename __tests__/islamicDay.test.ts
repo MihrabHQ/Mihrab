@@ -200,7 +200,7 @@ describe('what the boundary deliberately does NOT move', () => {
       join(__dirname, '..', 'src', 'screens', 'home', 'TodayCard.tsx'),
       'utf8',
     );
-    expect(card).toMatch(/lastTimeOfDay\(week\[0\] \?\? \{\}, startOfLocalDay\(new Date\(\)\)\)/);
+    expect(card).toMatch(/lastTimeOfDay\(week\[0\] \?\? \{\}, startOfLocalDay\(new Date\(\)\), dayClock\)/);
     const rollover = readFileSync(
       join(__dirname, '..', 'src', 'prayer', 'dayRollover.ts'),
       'utf8',

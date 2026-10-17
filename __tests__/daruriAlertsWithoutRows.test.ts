@@ -61,9 +61,9 @@ describe('drawing and announcing are separate', () => {
   it('schedules from the alert week, not the drawn one', () => {
     // Both sync call sites — the effect and the focus resync — and the
     // quiet windows (issue #60), computed from the same week.
-    const uses = HOME.match(/week: view\.alertWeek,/g) ?? [];
+    const uses = HOME.match(/week: phoneView\.alertWeek,/g) ?? [];
     expect(uses).toHaveLength(3);
-    expect(HOME).not.toMatch(/syncPrayerNotifications\([\s\S]{0,900}?week: view\.table\.week,/);
+    expect(HOME).not.toMatch(/syncPrayerNotifications\([\s\S]{0,900}?week: (phoneView|view)\.table\.week,/);
   });
 
   it('passes the end-of-window switch through at both sites', () => {

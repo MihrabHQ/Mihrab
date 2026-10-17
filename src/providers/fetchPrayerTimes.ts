@@ -12,6 +12,7 @@ import {
 import { kemenagTimesNear, nationalTableFor } from './nationalTables';
 import { computeLocalAdhanTimes } from './localAdhan';
 import { MOROCCO_CLOCK, SWEDEN_CLOCK } from './locationClock';
+import { DEVICE_CLOCK } from '../utils/prayerTimes';
 import { computeDiyanetTimes, DIYANET_METHOD_ID } from './diyanetMethod';
 import { autoMethodForCoords } from './autoMethod';
 import { ALGERIA_METHOD_ID } from './algeriaCities';
@@ -189,7 +190,12 @@ export async function fetchAladhanMonth(
     } catch {
       continue;
     }
-    out.set(day.date, { timings, timezone: day.timezone, source: 'aladhan' });
+    out.set(day.date, {
+      timings,
+      timezone: day.timezone,
+      source: 'aladhan',
+      clock: day.timezone ?? DEVICE_CLOCK,
+    });
   }
   return out;
 }
@@ -227,6 +233,8 @@ export async function fetchPrayerTimesUnified(
         school: p.school,
       });
       result.source = 'aladhan';
+      // AlAdhan writes a place's times on the place's clock (`meta.timezone`).
+      result.clock = result.timezone ?? DEVICE_CLOCK;
       break;
     }
     case 'islamiska_forbundet': {
@@ -298,6 +306,8 @@ export async function fetchPrayerTimesUnified(
         school: p.school,
       });
       result.source = 'aladhan';
+      // AlAdhan writes a place's times on the place's clock (`meta.timezone`).
+      result.clock = result.timezone ?? DEVICE_CLOCK;
       break;
     }
     case 'marw': {
