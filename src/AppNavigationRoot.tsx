@@ -65,6 +65,7 @@ import {
   subscribeHijriCalendar,
 } from './hijri/calendar';
 import { loadCachedHijriOverrides, refreshHijriOverrides } from './hijri/overrides';
+import { resyncAfterUpdate } from './notifications/afterUpdate';
 import { refreshMethodCurrency } from './providers/methodCurrency';
 
 /** Gate key for the daily notification reschedules — see utils/resyncGate. */
@@ -327,6 +328,15 @@ export function AppNavigationRoot() {
   // fire opened the app on a screen that could not refresh them. Here it runs
   // for the whole life of the app whichever screen the user landed on.
   useEffect(() => startWidgetPayloadSync(), []);
+
+  // The first start of a new version: the alerts the previous one scheduled
+  // are written again here, before any screen — Today is where they are
+  // otherwise written, and a widget's deep link may never open it. Once per
+  // build (notifications/afterUpdate.ts); on Android the update broadcast
+  // has usually done it already, headless.
+  useEffect(() => {
+    void resyncAfterUpdate();
+  }, []);
 
   // Pull in whatever the other devices wrote, from the ROOT and for the same
   // reason: sync should already have happened by the time the user reaches

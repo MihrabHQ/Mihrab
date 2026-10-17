@@ -16,6 +16,7 @@ import { registerAdhanSafetyControls } from './src/notifications/adhanSafetyCont
 import { adhanMuteToggleTask } from './src/notifications/adhanMute';
 import { prayerAlarmActionTask } from './src/notifications/prayerAlarmTask';
 import { widgetRefreshTask } from './src/widget/widgetRefreshTask';
+import { alertsResyncTask } from './src/notifications/afterUpdate';
 // Side effect: subscribes to durable writes so a change to the record
 // schedules a sync round. See src/sync/recordChanged.ts.
 import './src/sync/recordChanged';
@@ -111,3 +112,9 @@ AppRegistry.registerHeadlessTask('WidgetRefresh', () => widgetRefreshTask);
 // buttons (issue #63). Dispatched by PrayerAlarmHeadlessService; must match
 // its task name.
 AppRegistry.registerHeadlessTask('PrayerAlarmAction', () => prayerAlarmActionTask);
+
+// HeadlessJS task started by the app-update broadcast (Android): the prayer
+// alerts the previous version scheduled are written again, and the widget
+// payload with them, without waiting for the app to be opened. Dispatched by
+// AlertsResyncHeadlessService; must match its task name.
+AppRegistry.registerHeadlessTask('AlertsResync', () => alertsResyncTask);
