@@ -342,7 +342,8 @@ describe('the method stays available by hand', () => {
       ALGERIA_METHOD_ID,
     );
     expect(autoMethodForCoords(OUJDA.latitude, OUJDA.longitude)).toBe(21);
-    expect(autoMethodForCoords(36.8065, 10.1815)).toBe(3); // Tunis
+    // Tunis: not Algeria's — Tunisia's own (18), as AlAdhan computes there.
+    expect(autoMethodForCoords(36.8065, 10.1815)).toBe(18);
   });
 
   it('is listed and named in every language the app speaks', () => {

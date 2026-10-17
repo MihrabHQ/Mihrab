@@ -15,33 +15,39 @@ export type ProviderCoordState = {
   longitude?: number;
 };
 
+/**
+ * A coordinate that is a place: finite, and not (0, 0), the "no location
+ * set" the settings hold before one is chosen or while the location store
+ * cannot be read (`storage.ts`). Taken for a place, it was out of every
+ * national source's country, and a source picked by hand went to Automatic
+ * for a location nobody had set (`locationProviders.ts`).
+ */
+function placeOrNull(
+  latitude: unknown,
+  longitude: unknown,
+): { latitude: number; longitude: number } | null {
+  if (typeof latitude !== 'number' || typeof longitude !== 'number')
+    return null;
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return null;
+  if (latitude === 0 && longitude === 0) return null;
+  return { latitude, longitude };
+}
+
 export function resolveCoordsForProvider(
   settings: PrayerAppSettings,
   state: ProviderCoordState,
 ): { latitude: number; longitude: number } | null {
   if (settings.locationMode === 'manual') {
-    return {
-      latitude: settings.manualLatitude,
-      longitude: settings.manualLongitude,
-    };
+    return placeOrNull(settings.manualLatitude, settings.manualLongitude);
   }
   if (state.phase === 'ready') {
-    const lat = state.latitude;
-    const lng = state.longitude;
-    if (typeof lat === 'number' && typeof lng === 'number') {
-      return { latitude: lat, longitude: lng };
-    }
+    const fix = placeOrNull(state.latitude, state.longitude);
+    if (fix) return fix;
   }
-  if (
-    settings.lastFetchedLatitude != null &&
-    settings.lastFetchedLongitude != null
-  ) {
-    return {
-      latitude: settings.lastFetchedLatitude,
-      longitude: settings.lastFetchedLongitude,
-    };
-  }
-  return null;
+  return placeOrNull(
+    settings.lastFetchedLatitude,
+    settings.lastFetchedLongitude,
+  );
 }
 
 /** Coords for Settings UI when Home may not be mounted (GPS: last fetch only). */
@@ -49,21 +55,12 @@ export function resolveCoordsFromSettings(
   settings: PrayerAppSettings,
 ): { latitude: number; longitude: number } | null {
   if (settings.locationMode === 'manual') {
-    return {
-      latitude: settings.manualLatitude,
-      longitude: settings.manualLongitude,
-    };
+    return placeOrNull(settings.manualLatitude, settings.manualLongitude);
   }
-  if (
-    settings.lastFetchedLatitude != null &&
-    settings.lastFetchedLongitude != null
-  ) {
-    return {
-      latitude: settings.lastFetchedLatitude,
-      longitude: settings.lastFetchedLongitude,
-    };
-  }
-  return null;
+  return placeOrNull(
+    settings.lastFetchedLatitude,
+    settings.lastFetchedLongitude,
+  );
 }
 
 export function getEffectiveDataProvider(
