@@ -36,7 +36,7 @@ describe('upgrading from a build that had no onboardingComplete', () => {
     delete old.onboardingComplete;
     delete old.locationOnboardingComplete;
     old.notificationsEnabled = true;
-    old.calculationMethod = 'mwl';
+    old.calculationMethod = 3; // Muslim World League
     await AsyncStorage.setItem(KEY, JSON.stringify(old));
 
     const loaded = await loadSettings();
@@ -46,7 +46,7 @@ describe('upgrading from a build that had no onboardingComplete', () => {
     expect(loaded.locationOnboardingComplete).toBe(true);
     // Their actual settings survive untouched.
     expect(loaded.notificationsEnabled).toBe(true);
-    expect(loaded.calculationMethod).toBe('mwl');
+    expect(loaded.calculationMethod).toBe(3);
   });
 
   it('leaves a stored false alone', async () => {
