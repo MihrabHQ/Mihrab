@@ -1283,3 +1283,15 @@ fills files one after another and uploads them paced and retried
 (b7b96f86). Anything that writes release assets in bulk has to be paced
 from the start. And run `npx jest --ci --runInBand` before a release, as
 2.31.0 said: it passed here, in six minutes.
+
+## 2.32.1 (291) — 2026-10-18
+
+Took 1 aborted attempt(s) before it ran clean:
+
+  - 1 working tree has tracked changes — commit or stash them first
+
+Changed the release cycle itself:
+
+  - `.github/workflows/namazvakti-years.yml`
+
+**Lesson:** _(unfilled)_
