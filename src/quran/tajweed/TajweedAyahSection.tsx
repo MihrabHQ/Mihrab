@@ -21,7 +21,7 @@ import { SPACING } from '../../theme/tokens';
 import { useReadingText } from '../../hooks/useReadingText';
 import { hold, release } from '../audio/wordReader';
 import { setQuranPrefs, useQuranState } from '../quranState';
-import { riwayahById, riwayahFontFamily } from '../riwayat';
+import { resolveRiwayah, riwayahById, riwayahFontFamily } from '../riwayat';
 import { riwayahAyahText } from '../riwayahData';
 import { loadTajweedAyah, type TajweedAyah } from './tajweedData';
 import {
@@ -59,11 +59,13 @@ export function TajweedAyahSection({
   const readingText = useReadingText();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { prefs } = useQuranState();
+  // The riwayah the muṣḥaf draws — Ḥafṣ where the stored one is not on this device (`resolveRiwayah`).
+  const riwayah = resolveRiwayah(prefs.riwayah);
   const open = true;
   const [data, setData] = useState<TajweedAyah | null | undefined>(undefined);
 
   useEffect(() => {
-    if (!open || prefs.riwayah === 'warsh') return;
+    if (!open || riwayah === 'warsh') return;
     let alive = true;
     setData(undefined);
     void loadTajweedAyah(surah, ayah).then(res => {
@@ -72,11 +74,11 @@ export function TajweedAyahSection({
     return () => {
       alive = false;
     };
-  }, [open, surah, ayah, prefs.riwayah]);
+  }, [open, surah, ayah, riwayah]);
 
-  const coloursOn = tajweedColoursShown(prefs.riwayah, prefs.tajweedColours);
-  const hafs = riwayahById(prefs.riwayah).render !== 'unicode';
-  const warsh = prefs.riwayah === 'warsh';
+  const coloursOn = tajweedColoursShown(riwayah, prefs.tajweedColours);
+  const hafs = riwayahById(riwayah).render !== 'unicode';
+  const warsh = riwayah === 'warsh';
   // The page's own words, for the chips — by position, as the rules count.
   const glyphs = useMemo(() => (open ? ayahGlyphWords(surah, ayah) : []), [open, surah, ayah]);
   const glyphAt = (position: number) => glyphs.find(g => g.position === position && !g.isEnd);

@@ -19,6 +19,7 @@ import type { RootStackParamList } from '../../navigation/types';
 import { useSystemNavigationReserve } from '../../navigation/tabBarInset';
 import { CenteredColumn } from '../../responsive/CenteredColumn';
 import { cardEdgeStyle } from '../../theme/chrome';
+import { resolveRiwayah } from '../riwayat';
 import { RADIUS, SPACING } from '../../theme/tokens';
 import { TYPE, arabicTextStyle } from '../../theme/typography';
 import { findPageForAyah } from '../pages';
@@ -55,11 +56,13 @@ export function TajweedGuideScreen() {
   const systemNav = useSystemNavigationReserve();
   const systemBottom = Platform.OS === 'android' ? systemNav : 0;
   const { prefs } = useQuranState();
+  // The riwayah the muṣḥaf draws — Ḥafṣ where the stored one is not on this device (`resolveRiwayah`).
+  const riwayah = resolveRiwayah(prefs.riwayah);
   // Warsh has colours of its own (issue #58) and rules Ḥafṣ does not.
   // …and an Android before 10 cannot draw Ḥafṣ's (tajweedSupport.ts).
-  const unavailable = tajweedUnavailable(prefs.riwayah);
+  const unavailable = tajweedUnavailable(riwayah);
   const coloured = unavailable === null;
-  const warsh = prefs.riwayah === 'warsh';
+  const warsh = riwayah === 'warsh';
   const [busy, setBusy] = useState<string | null>(null);
 
   const hear = useCallback(async (rule: TajweedRule) => {
@@ -77,11 +80,11 @@ export function TajweedGuideScreen() {
       const { surah, ayah } = rule.example;
       navigation.navigate('QuranSurah', {
         surahNumber: surah,
-        initialPage: findPageForAyah(surah, ayah, prefs.riwayah),
+        initialPage: findPageForAyah(surah, ayah, riwayah),
         scrollToAyah: ayah,
       });
     },
-    [navigation, prefs.riwayah],
+    [navigation, riwayah],
   );
 
   const card = { backgroundColor: palette.card, ...cardEdgeStyle(palette) };
@@ -150,8 +153,8 @@ export function TajweedGuideScreen() {
           {t('tajweed.guidePractice')}
         </Text>
 
-        {familiesFor(prefs.riwayah).map(family => {
-          const rules = rulesOfFamily(family, prefs.riwayah);
+        {familiesFor(riwayah).map(family => {
+          const rules = rulesOfFamily(family, riwayah);
           const lead = rules[0];
           return (
             <View key={family} style={[styles.card, card]}>
