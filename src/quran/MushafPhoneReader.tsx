@@ -401,6 +401,17 @@ const PhonePageItem = React.memo(function PhonePageItem({
       </Pressable>
       {geometry ? (
         <ScrollView
+          /**
+           * A FRESH COLUMN FOR EVERY LAYOUT. Fullscreen in and out,
+           * rotation, the player coming and going: each is a new box for
+           * the page, and on Android a change of box under a page being
+           * recited — its lines re-rendering several times a second for
+           * the highlight — could leave some lines' views drawn where the
+           * previous layout had them: lines over the band, two lines in the
+           * wrong order, until the page was turned. The layout's own key
+           * gives each box its own views, laid out once, at that box.
+           */
+          key={`${geometryKey(geometry)}:${isFullscreen ? 'f' : 'w'}:${scrolls ? 's' : 'p'}`}
           ref={columnRef}
           style={styles.column}
           contentContainerStyle={
@@ -1013,6 +1024,10 @@ export const MushafPhoneReader = React.memo(function MushafPhoneReader(
           to a distant page is not what anyone is doing mid-recitation. */}
       {!railYieldsToPlayer && !isFullscreen ? (
         <MushafPageScrubber
+          // Its views were seen kept at the other orientation's place —
+          // the rail across the middle of a portrait page, the ⛶ off the
+          // edge — after a turn and back. A turn gives it new ones.
+          key={`${width}x${height}`}
           page={currentPage}
           riwayah={riwayah}
           onSelectPage={core.jumpToPage}

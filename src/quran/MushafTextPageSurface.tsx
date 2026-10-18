@@ -574,20 +574,20 @@ function GlyphPageSurface({
             paddingBottom: fit.bottom,
           },
         ]}>
-        {fit.shiftTop !== 0 || fit.shiftBottom !== 0 ? (
-          // The edge lines pulled to the edges — the tight fit, see
-          // `fitLinesWithInk`. A negative margin: the blank above the
-          // first line's ink goes above the block, where the padding is.
-          <View
-            style={{
-              marginTop: -fit.shiftTop,
-              marginBottom: -fit.shiftBottom,
-            }}>
-            {drawn}
-          </View>
-        ) : (
-          drawn
-        )}
+        {/* The edge lines pulled to the edges — the tight fit, see
+            `fitLinesWithInk`: a negative margin, the blank above the
+            first line's ink going above the block, where the padding is.
+            Always this wrapper, zero or not: a wrapper that came and went
+            with the fit was a different tree, and every line on the page
+            was unmounted and mounted again on the way in and out of
+            fullscreen. */}
+        <View
+          style={{
+            marginTop: -fit.shiftTop,
+            marginBottom: -fit.shiftBottom,
+          }}>
+          {drawn}
+        </View>
       </View>
     );
   }

@@ -181,3 +181,34 @@ describe('fullscreen keeps the page fit it had', () => {
     );
   });
 });
+
+describe('a change of layout gives the page and the rail new views', () => {
+  const { readFileSync } = require('fs') as typeof import('fs');
+  const { join } = require('path') as typeof import('path');
+  const reader = readFileSync(
+    join(__dirname, '..', 'src/quran/MushafPhoneReader.tsx'),
+    'utf8',
+  );
+  const surface = readFileSync(
+    join(__dirname, '..', 'src/quran/MushafTextPageSurface.tsx'),
+    'utf8',
+  );
+
+  it('keys the page column by its layout, fullscreen and scrolling', () => {
+    expect(reader).toMatch(
+      /key=\{`\$\{geometryKey\(geometry\)\}:\$\{isFullscreen \? 'f' : 'w'\}:\$\{scrolls \? 's' : 'p'\}`\}/,
+    );
+  });
+
+  it('keys the rail by the window', () => {
+    expect(reader).toMatch(
+      /<MushafPageScrubber\s*\/\/[\s\S]{0,300}key=\{`\$\{width\}x\$\{height\}`\}/,
+    );
+  });
+
+  it('keeps one tree for the page whether the fit is tight or not', () => {
+    expect(surface).not.toMatch(
+      /fit\.shiftTop !== 0 \|\| fit\.shiftBottom !== 0 \?/,
+    );
+  });
+});
