@@ -564,7 +564,7 @@ table.accuracy tfoot td { font-weight: 600; }
       --surface-2: rgba(255, 255, 255, .06);
     }
   }
-  .card, .platform, .channel, .review, .table-scroll { background: var(--card); }
+  .card, .platform, .channel, .review, .group, .table-scroll { background: var(--card); }
   @keyframes prayer-day {
     /* Fajr — dawn: indigo, the first rose at the horizon */
     0%   { --sky-a: color-mix(in oklab, #244091 var(--sky-amt), var(--sky-base));
