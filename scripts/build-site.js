@@ -221,6 +221,47 @@ ${items}
 ${fans}`;
 }
 
+/**
+ * What people write: store reviews (scripts/site/reviews.json) as a band of
+ * cards drifting left to right, in a loop, with no script. The list is
+ * written twice — the second copy hidden from assistive tech — so a
+ * translateX of half its width loops without a seam. Each review keeps its
+ * own language and direction; one not in English carries our translation.
+ */
+const REVIEWS = path.join(__dirname, 'site', 'reviews.json');
+const STAR = '<svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.8l2.83 5.74 6.33.92-4.58 4.46 1.08 6.3L12 17.25l-5.66 2.97 1.08-6.3-4.58-4.46 6.33-.92z"/></svg>';
+const RTL = new Set(['ar', 'ur', 'fa', 'he']);
+
+function reviews(code, t) {
+  const r = t.reviews;
+  if (!r) throw new Error(`${code}: no strings for the reviews`);
+  const list = JSON.parse(fs.readFileSync(REVIEWS, 'utf-8')).reviews;
+  const fmt = new Intl.DateTimeFormat(code === 'zh' ? 'zh-CN' : code, { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' });
+  const card = (v, hidden) => {
+    const dir = RTL.has(v.lang) ? ' dir="rtl"' : '';
+    const title = v.title ? `\n          <p class="review-title" lang="${v.lang}"${dir}>${esc(v.title)}</p>` : '';
+    const tr = v.en ? `\n          <p class="review-tr" lang="en" dir="ltr"><span>${esc(r.translated)}</span> ${esc(v.en)}</p>` : '';
+    return `      <li${hidden ? ' aria-hidden="true"' : ''}><figure class="review">
+          <p class="stars" aria-label="5/5">${STAR.repeat(5)}</p>${title}
+          <blockquote lang="${v.lang}"${dir}>${esc(v.text)}</blockquote>${tr}
+          <figcaption><span class="who" dir="auto">${esc(v.name)}</span> · ${esc(v.store)} · <time datetime="${v.date}">${esc(fmt.format(new Date(v.date + 'T00:00:00Z')))}</time></figcaption>
+        </figure></li>`;
+  };
+  return `<section class="voices" id="reviews">
+  <div class="wrap">
+    <p class="eyebrow">${esc(r.eyebrow)}</p>
+    <h2>${esc(r.h2)}</h2>
+    <p class="lede">${esc(r.note)}</p>
+  </div>
+  <div class="marquee" dir="ltr">
+    <ul class="marquee-track">
+${list.map(v => card(v, false)).join('\n')}
+${list.map(v => card(v, true)).join('\n')}
+    </ul>
+  </div>
+</section>`;
+}
+
 /** Reciprocal hreflang: a page that names only itself is ignored. */
 function hreflang(langs) {
   const lines = Object.entries(langs).map(
@@ -440,6 +481,10 @@ ${gallery(code, t)}
   </div>
 </section>
 
+<!-- reviews:start -->
+${reviews(code, t)}
+<!-- reviews:end -->
+
 <section class="features">
   <div class="wrap">
     <p class="eyebrow">${esc(t.features.eyebrow)}</p>
@@ -559,6 +604,7 @@ function build() {
       text = patchBlock(text, 'hreflang', hreflang(langs));
       text = patchBlock(text, 'langpicker', picker(langs, code));
       text = patchBlock(text, 'gallery', gallery(code, l));
+      text = patchBlock(text, 'reviews', reviews(code, l));
       files.set(file, fillPage(text, code));
       continue;
     }

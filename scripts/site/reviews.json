@@ -1,0 +1,15 @@
+{
+  "$comment": "Store reviews shown on the site, as written. Names shortened to a first name and an initial (or the store nickname). `en` is our translation when the review is in another language. Add one by appending; the site rebuilds from this file.",
+  "reviews": [
+    { "name": "Samah E.", "store": "Google Play", "date": "2026-10-14", "lang": "ar", "text": "جزاكم الله خيرا", "en": "May God reward you with good." },
+    { "name": "Stockholms användare", "store": "App Store", "date": "2026-10-02", "lang": "sv", "title": "Bra jobbat", "text": "Må Allah belöna dig med الجنة", "en": "Well done. May Allah reward you with Paradise." },
+    { "name": "Muhammad U.", "store": "Google Play", "date": "2026-10-13", "lang": "en", "text": "extremely useful app. for a practicing muslim. its a blessing" },
+    { "name": "Anassss78", "store": "App Store", "date": "2026-08-21", "lang": "en", "title": "Recomendation", "text": "This app is very helpful the fact that it’s add free with a lot amazing features is outstanding" },
+    { "name": "Yassine Y.", "store": "Google Play", "date": "2026-10-12", "lang": "ar", "text": "تطبيق رائع", "en": "A wonderful app." },
+    { "name": "Somaya D.", "store": "Google Play", "date": "2026-09-04", "lang": "ar", "text": "تطبيق رااائع جدا، فيه جدول متابعة للإشراف على صلاة الصلوات في وقتها والعديد من الميزات الخاصة.. وأيضاً مسبحة أو خاتم تسبيح.. وفيه ميزة إمكانية بدء ختمة ومتابعة تقدمك في القراءة.. وكذلك يعرض آية كل يوم مع تفسيرها وترجمتها للغة الانجليزية… الخلاصة: تطبيق أسطوري بمعنى الكلمة، ومواقيته منضبطة جدا… وكذلك يمكنك من خلاله معرفة اتجاه القبلة", "en": "A truly wonderful app. A log to keep each prayer on time and many special features: a tasbih, a khatmah you can start and follow, an ayah each day with its tafsir and English translation. In short, a legendary app in every sense, and its times are very precise. It also shows the qibla." },
+    { "name": "خاغل", "store": "App Store", "date": "2026-05-27", "lang": "en", "title": "Best app for prayers and muslims! Great features and without announcements.", "text": "The best app for a muslim" },
+    { "name": "Shaaban A.", "store": "Google Play", "date": "2026-10-11", "lang": "ar", "text": "رائع، بارك الله فيكم وجزاكم الله خيرا", "en": "Wonderful. May God bless you and reward you with good." },
+    { "name": "Zini12", "store": "App Store", "date": "2026-05-28", "lang": "en", "title": "Best app thank you man", "text": "Thank u" },
+    { "name": "Mahmoud S.", "store": "Google Play", "date": "2026-09-13", "lang": "ar", "text": "روعه روعه روعه ممتاز جدا", "en": "Wonderful, wonderful, wonderful. Excellent." }
+  ]
+}
