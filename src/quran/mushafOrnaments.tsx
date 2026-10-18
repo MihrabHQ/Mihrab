@@ -361,6 +361,7 @@ export function SurahBandRow({
   );
   const name = findSurah(surah)?.arabic ?? '';
   const lift = surahNameLift(surah) * nameSize;
+  const nameLine = Math.ceil(nameSize * BAND_NAME_LINE_EM);
   return (
     <View style={[rowStyles.row, { height: rowHeight }]}>
       <View style={{ width, height: bandHeight }}>
@@ -389,7 +390,17 @@ export function SurahBandRow({
                * tail and the tallest alif both; what overhangs the field
                * is drawn over the band's course, which is clear there.
                */
-              lineHeight: Math.ceil(nameSize * BAND_NAME_LINE_EM),
+              lineHeight: nameLine,
+              /**
+               * And the view is that tall too. The line is taller than the
+               * band, and a column shrinks a child to fit by default: the
+               * text view came out the band's height, placed at its top,
+               * with the taller line drawn from there — the name a couple
+               * of points low before anything else. Not shrunk, a child
+               * taller than its column is centred on it, overflow and all.
+               */
+              height: nameLine,
+              flexShrink: 0,
               // Both platforms centre the font's METRIC box in the line;
               // this moves the name so its INK is centred instead — see
               // `surahNameLift`.
