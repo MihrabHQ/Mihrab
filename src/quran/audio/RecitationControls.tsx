@@ -46,12 +46,19 @@ type Props = {
   ayah?: number;
   /** Called right before playback starts (to dismiss the host sheet). */
   onStartPlayback?: () => void;
+  /** Offer "Hide while reviewing" — only where it does something (the translation view). */
+  showHideForReview?: boolean;
 };
 
 const RATES = [0.75, 1, 1.25, 1.5, 2];
 const PAUSE_FACTORS = [0, 0.5, 1, 2];
 
-export function RecitationControls({ surahNumber, ayah, onStartPlayback }: Props) {
+export function RecitationControls({
+  surahNumber,
+  ayah,
+  onStartPlayback,
+  showHideForReview = false,
+}: Props) {
   const { t, i18n } = useTranslation();
   const { palette } = useAppPalette();
   const { prefs } = useQuranState();
@@ -245,22 +252,26 @@ export function RecitationControls({ surahNumber, ayah, onStartPlayback }: Props
         v => (v === 0 ? t('quran.none', 'None') : `${v}×`),
       )}
 
-      <View style={styles.row}>
-        <Text style={[styles.rowLabel, { color: palette.text }]}>
-          {t('quran.hideForReview', 'Hide while reviewing')}
-        </Text>
-      </View>
-      {chipRow(
-        ['none', 'arabic', 'translation'] as const,
-        prefs.hideMode,
-        v => setQuranPrefs({ hideMode: v }),
-        v =>
-          v === 'none'
-            ? t('quran.none', 'None')
-            : v === 'arabic'
-              ? t('quran.hideArabic', 'Arabic')
-              : t('quran.hideTranslation', 'Translation'),
-      )}
+      {showHideForReview ? (
+        <>
+          <View style={styles.row}>
+            <Text style={[styles.rowLabel, { color: palette.text }]}>
+              {t('quran.hideForReview', 'Hide while reviewing')}
+            </Text>
+          </View>
+          {chipRow(
+            ['none', 'arabic', 'translation'] as const,
+            prefs.hideMode,
+            v => setQuranPrefs({ hideMode: v }),
+            v =>
+              v === 'none'
+                ? t('quran.none', 'None')
+                : v === 'arabic'
+                  ? t('quran.hideArabic', 'Arabic')
+                  : t('quran.hideTranslation', 'Translation'),
+          )}
+        </>
+      ) : null}
 
       {/* Range player */}
       <SectionHead

@@ -22,15 +22,21 @@ beforeEach(() => __resetQuranStateForTests());
 describe('the kept choice', () => {
   it('is none by default, and none for a blob from before it or with nonsense in it', () => {
     expect(DEFAULT_QURAN_STATE.prefs.ayahSheetPanel).toBe('none');
-    expect(coerceQuranState({ version: 1, prefs: {} }).prefs.ayahSheetPanel).toBe('none');
     expect(
-      coerceQuranState({ version: 1, prefs: { ayahSheetPanel: 'sideways' } }).prefs.ayahSheetPanel,
+      coerceQuranState({ version: 1, prefs: {} }).prefs.ayahSheetPanel,
+    ).toBe('none');
+    expect(
+      coerceQuranState({ version: 1, prefs: { ayahSheetPanel: 'sideways' } })
+        .prefs.ayahSheetPanel,
     ).toBe('none');
   });
 
   it('keeps each of the three', () => {
     for (const p of ['translation', 'tafsir', 'tajweed'] as const) {
-      expect(coerceQuranState({ version: 1, prefs: { ayahSheetPanel: p } }).prefs.ayahSheetPanel).toBe(p);
+      expect(
+        coerceQuranState({ version: 1, prefs: { ayahSheetPanel: p } }).prefs
+          .ayahSheetPanel,
+      ).toBe(p);
     }
     setQuranPrefs({ ayahSheetPanel: 'tafsir' });
     expect(getQuranState().prefs.ayahSheetPanel).toBe('tafsir');
@@ -41,15 +47,21 @@ describe('the sheet', () => {
   it('draws one row of tabs, and tapping the open one puts it away', () => {
     expect(sheet).toContain('accessibilityRole="tablist"');
     expect(sheet).toContain('accessibilityRole="tab"');
-    expect(sheet).toContain("setQuranPrefs({ ayahSheetPanel: panel === next ? 'none' : next });");
+    expect(sheet).toContain(
+      "setQuranPrefs({ ayahSheetPanel: panel === next ? 'none' : next });",
+    );
     expect(sheet).toContain("const translationOpen = panel === 'translation';");
     expect(sheet).toContain("const tafsirOpen = panel === 'tafsir';");
     expect(sheet).toContain("{panel === 'tajweed' ? (");
   });
 
   it('offers Tajweed only where the muṣḥaf has it', () => {
-    expect(sheet).toMatch(/\.\.\.\(\s*tajweedOffered\s*\?\s*\[\s*\[\s*'tajweed'/);
-    expect(sheet).toMatch(/state\.prefs\.ayahSheetPanel === 'tajweed' && !tajweedOffered\s*\?\s*'none'/);
+    expect(sheet).toMatch(
+      /\.\.\.\(\s*tajweedOffered\s*\?\s*\[\s*\[\s*'tajweed'/,
+    );
+    expect(sheet).toMatch(
+      /state\.prefs\.ayahSheetPanel === 'tajweed' && !tajweedOffered\s*\?\s*'none'/,
+    );
   });
 });
 
@@ -61,19 +73,58 @@ describe('the play section', () => {
 
   it('puts the reciter last, after speed, memorisation and the range', () => {
     const at = (s: string) => controls.indexOf(s);
-    expect(at("<SectionHead label={t('quran.speed', 'Speed')} first tight />")).toBeGreaterThan(-1);
-    expect(at("label={t('quran.reciter', 'Reciter')}")).toBeGreaterThan(at("defaultValue: 'Play a range of {{surah}}'"));
-    expect(at("label={t('quran.reciter', 'Reciter')}")).toBeLessThan(at('<ReciterPickerSheet'));
+    expect(
+      at("<SectionHead label={t('quran.speed', 'Speed')} first tight />"),
+    ).toBeGreaterThan(-1);
+    expect(at("label={t('quran.reciter', 'Reciter')}")).toBeGreaterThan(
+      at("defaultValue: 'Play a range of {{surah}}'"),
+    );
+    expect(at("label={t('quran.reciter', 'Reciter')}")).toBeLessThan(
+      at('<ReciterPickerSheet'),
+    );
   });
 
   it('keeps the download and delete buttons apart, on one row', () => {
-    expect(controls).toContain("dlWrap: { flexDirection: 'row', marginTop: SPACING.sm, gap: SPACING.sm },");
+    expect(controls).toContain(
+      "dlWrap: { flexDirection: 'row', marginTop: SPACING.sm, gap: SPACING.sm },",
+    );
   });
 
   it('is compact: segmented choices, small buttons and steppers', () => {
-    expect(controls).toContain('<Segments values={values} selected={selected} onSelect={onSelect} format={format} />');
+    expect(controls).toContain(
+      '<Segments values={values} selected={selected} onSelect={onSelect} format={format} />',
+    );
     expect(controls).not.toMatch(/<Chip\b/);
     expect(controls).toMatch(/atMax=\{value >= max\}\s*compact/);
-    expect(sheet).toMatch(/label=\{t\('quran\.playFromHere', 'Play from here'\)\}\s*glyph="▶"\s*emphasized\s*compact\s*grow/);
+    expect(sheet).toMatch(
+      /label=\{t\('quran\.playFromHere', 'Play from here'\)\}\s*glyph="▶"\s*emphasized\s*compact\s*grow/,
+    );
+  });
+});
+
+describe('"Hide while reviewing" is offered only where it does something', () => {
+  const fs = require('fs') as typeof import('fs');
+  const path = require('path') as typeof import('path');
+  const read = (p: string) =>
+    fs.readFileSync(path.join(__dirname, '..', p), 'utf8');
+
+  it('is behind an opt-in in the controls, off by default', () => {
+    const controls = read('src/quran/audio/RecitationControls.tsx');
+    expect(controls).toMatch(/showHideForReview = false/);
+    expect(controls).toMatch(
+      /\{showHideForReview \? \(\s*<>[\s\S]{0,200}quran\.hideForReview/,
+    );
+  });
+
+  it('is asked for by the translation view and by no mushaf reader', () => {
+    expect(read('src/screens/quran/TranslationSurahScreen.tsx')).toMatch(
+      /<AyahActionSheet[\s\S]{0,400}showHideForReview\b/,
+    );
+    for (const reader of [
+      'src/quran/MushafPhoneReader.tsx',
+      'src/quran/MushafSpreadReader.tsx',
+    ]) {
+      expect(read(reader)).not.toMatch(/showHideForReview/);
+    }
   });
 });

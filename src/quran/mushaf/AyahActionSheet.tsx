@@ -131,6 +131,13 @@ type Props = {
   page: number;
   /** Open pre-scrolled to the recitation section (header button). */
   scrollToAudio?: boolean;
+  /**
+   * Offer "Hide while reviewing". Only the translation view reads it —
+   * it masks the Arabic or the translation of each ayah card until
+   * tapped — so the mushaf, which has neither card nor translation,
+   * leaves it out rather than show a setting that changes nothing there.
+   */
+  showHideForReview?: boolean;
 };
 
 /**
@@ -187,6 +194,7 @@ export function AyahActionSheet({
   ayah,
   page,
   scrollToAudio,
+  showHideForReview = false,
 }: Props) {
   const { t } = useTranslation();
   const { palette } = useAppPalette();
@@ -1405,6 +1413,7 @@ export function AyahActionSheet({
               surahNumber={surah}
               ayah={ayah}
               onStartPlayback={onClose}
+              showHideForReview={showHideForReview}
             />
           </View>
         </ScrollView>

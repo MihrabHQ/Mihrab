@@ -896,6 +896,7 @@ export function TranslationSurahScreen({
           ayah={selectedAyah}
           page={findPageForAyah(surahNumber, selectedAyah)}
           scrollToAudio={sheetScrollAudio}
+          showHideForReview
         />
       ) : null}
 
