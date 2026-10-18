@@ -106,6 +106,12 @@
       "android": "Android",
       "flag": "Obtainium is recommended: first to get every update, and it updates itself.",
       "getObtainium": "Don’t have it? Get Obtainium"
+    },
+    "reviews": {
+      "eyebrow": "From the stores",
+      "h2": "What people write",
+      "note": "Five stars, in their words — as they wrote them on Google Play and the App Store.",
+      "translated": "Translated"
     }
   },
   "sv": {
@@ -215,6 +221,12 @@
       "android": "Android",
       "flag": "Obtainium rekommenderas: först med varje uppdatering, och uppdaterar sig själv.",
       "getObtainium": "Har du det inte? Hämta Obtainium"
+    },
+    "reviews": {
+      "eyebrow": "Från butikerna",
+      "h2": "Vad folk skriver",
+      "note": "Fem stjärnor, med deras egna ord — så som de skrev dem på Google Play och App Store.",
+      "translated": "Översatt"
     }
   },
   "ar": {
@@ -453,6 +465,12 @@
         }
       ],
       "note": "محراب تطبيق مستقل، لا يتبع أي وزارة ولا يتحدث باسمها. الطريقة والتحقق منها مفتوحان للجميع: [mihrab-methods](https://github.com/MihrabHQ/mihrab-methods)."
+    },
+    "reviews": {
+      "eyebrow": "من المتاجر",
+      "h2": "ماذا يكتب الناس",
+      "note": "خمس نجوم، بكلماتهم كما كتبوها على Google Play وApp Store.",
+      "translated": "مترجم"
     }
   },
   "tr": {
@@ -684,6 +702,12 @@
         }
       ],
       "note": "Mihrab bağımsızdır; Diyanet İşleri Başkanlığı ile bağlantısı yoktur ve onun adına konuşmaz. Yöntem ve doğrulaması açık kaynaktır: [mihrab-methods](https://github.com/MihrabHQ/mihrab-methods)."
+    },
+    "reviews": {
+      "eyebrow": "Mağazalardan",
+      "h2": "İnsanlar ne yazıyor",
+      "note": "Beş yıldız, kendi sözleriyle — Google Play ve App Store'da yazdıkları gibi.",
+      "translated": "Çeviri"
     }
   },
   "ur": {
@@ -896,6 +920,12 @@
           "cap": "فون لاک ہو تو نماز کا الرٹ الارم گھڑی کی طرح پوری اسکرین لے سکتا ہے۔ آسمان تھیم میں ہر الرٹ اپنا وقت پہنتا ہے — فجر کی پو پھٹ، ظہر کا نیلا، عصر کا کہربائی، مغرب کا غروب، عشاء کی رات — روکیں، اسنوز اور نماز درج کریں ہاتھ کے قریب۔"
         }
       }
+    },
+    "reviews": {
+      "eyebrow": "اسٹورز سے",
+      "h2": "لوگ کیا لکھتے ہیں",
+      "note": "پانچ ستارے، اُن کے اپنے الفاظ میں — جیسے انہوں نے Google Play اور App Store پر لکھے۔",
+      "translated": "ترجمہ"
     }
   },
   "id": {
@@ -1127,6 +1157,12 @@
         }
       ],
       "note": "Mihrab independen dan tidak berafiliasi dengan Kementerian Agama, serta tidak berbicara atas namanya. Metode dan verifikasinya terbuka: [mihrab-methods](https://github.com/MihrabHQ/mihrab-methods)."
+    },
+    "reviews": {
+      "eyebrow": "Dari toko aplikasi",
+      "h2": "Apa kata mereka",
+      "note": "Lima bintang, dengan kata-kata mereka sendiri — seperti yang mereka tulis di Google Play dan App Store.",
+      "translated": "Terjemahan"
     }
   },
   "de": {
@@ -1339,6 +1375,12 @@
           "cap": "Bei gesperrtem Telefon kann ein Gebetsalarm den ganzen Bildschirm einnehmen, wie ein Wecker. Im Thema Himmel trägt jeder seine Stunde – Fadschrs Dämmerung, Dhuhrs Blau, Asrs Bernstein, Maghribs Sonnenuntergang, Ischas Nacht – mit Stopp, Schlummern und Gebet eintragen griffbereit."
         }
       }
+    },
+    "reviews": {
+      "eyebrow": "Aus den Stores",
+      "h2": "Was Nutzer schreiben",
+      "note": "Fünf Sterne, in ihren eigenen Worten — so, wie sie sie bei Google Play und im App Store geschrieben haben.",
+      "translated": "Übersetzt"
     }
   },
   "fr": {
@@ -1577,6 +1619,12 @@
         }
       ],
       "note": "Mihrab est indépendant : il n’est affilié à aucun ministère et ne parle pas en leur nom. La méthode et sa vérification sont publiques : [mihrab-methods](https://github.com/MihrabHQ/mihrab-methods)."
+    },
+    "reviews": {
+      "eyebrow": "Dans les stores",
+      "h2": "Ce qu’en disent les utilisateurs",
+      "note": "Cinq étoiles, dans leurs mots — tels qu’ils les ont écrits sur Google Play et l’App Store.",
+      "translated": "Traduit"
     }
   },
   "es": {
@@ -1789,6 +1837,12 @@
           "cap": "Con el teléfono bloqueado, una alerta de oración puede ocupar toda la pantalla, como un despertador. Bajo el tema Cielo cada una viste su hora (el alba de Fajr, el azul de Dhuhr, el ámbar de Asr, el ocaso de Maghrib, la noche de Isha) con Detener, Posponer y Registrar oración a mano."
         }
       }
+    },
+    "reviews": {
+      "eyebrow": "De las tiendas",
+      "h2": "Lo que escribe la gente",
+      "note": "Cinco estrellas, con sus palabras — tal como las escribieron en Google Play y en la App Store.",
+      "translated": "Traducido"
     }
   },
   "ru": {
@@ -2001,6 +2055,12 @@
           "cap": "При заблокированном телефоне напоминание о молитве может занять весь экран, как будильник. В теме «Небо» каждое носит свой час — рассвет фаджра, синеву зухра, янтарь асра, закат магриба, ночь иши — а «Стоп», «Отложить» и «Отметить молитву» под рукой."
         }
       }
+    },
+    "reviews": {
+      "eyebrow": "Из магазинов",
+      "h2": "Что пишут люди",
+      "note": "Пять звёзд, их собственными словами — так, как они написали в Google Play и App Store.",
+      "translated": "Перевод"
     }
   },
   "bn": {
@@ -2213,6 +2273,12 @@
           "cap": "ফোন লক থাকলে নামাজের সতর্কবার্তা অ্যালার্ম ঘড়ির মতো পুরো পর্দা নিতে পারে। আকাশ থিমে প্রতিটি নিজের সময় পরে — ফজরের ভোর, যোহরের নীল, আসরের অ্যাম্বার, মাগরিবের সূর্যাস্ত, এশার রাত — থামান, স্নুজ ও নামাজ লিখুন হাতের কাছে।"
         }
       }
+    },
+    "reviews": {
+      "eyebrow": "স্টোর থেকে",
+      "h2": "মানুষ কী লেখেন",
+      "note": "পাঁচ তারা, তাঁদের নিজের ভাষায় — যেমনটি তাঁরা Google Play ও App Store-এ লিখেছেন।",
+      "translated": "অনুবাদ"
     }
   },
   "hi": {
@@ -2425,6 +2491,12 @@
           "cap": "फ़ोन लॉक हो तो नमाज़ की चेतावनी अलार्म घड़ी की तरह पूरी स्क्रीन ले सकती है। आकाश थीम में हर एक अपना समय पहनती है — फ़ज्र की भोर, ज़ुहर का नीला, अस्र का कहरुबाई, मग़रिब का सूर्यास्त, इशा की रात — रोकें, स्नूज़ और नमाज़ दर्ज करें हाथ के पास।"
         }
       }
+    },
+    "reviews": {
+      "eyebrow": "स्टोर से",
+      "h2": "लोग क्या लिखते हैं",
+      "note": "पाँच सितारे, उनके अपने शब्दों में — जैसा उन्होंने Google Play और App Store पर लिखा।",
+      "translated": "अनुवाद"
     }
   },
   "zh": {
@@ -2637,6 +2709,12 @@
           "cap": "手机锁定时，礼拜提醒可以像闹钟一样占满整个屏幕。在“天空”主题下每一个都穿着自己的时刻——晨礼的黎明、晌礼的蓝、晡礼的琥珀、昏礼的落日、宵礼的夜——停止、稍后提醒和记录礼拜就在手边。"
         }
       }
+    },
+    "reviews": {
+      "eyebrow": "来自应用商店",
+      "h2": "用户怎么说",
+      "note": "五星评价，原话照录——来自 Google Play 和 App Store。",
+      "translated": "译文"
     }
   }
 }

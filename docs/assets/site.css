@@ -228,6 +228,56 @@ h2 { font-size: clamp(26px, 4vw, 34px); }
 .note {
   margin-top: 22px; font-size: 14.5px; color: var(--ink-soft); max-width: var(--measure);
 }
+/* ---- reviews: a band of store reviews drifting left to right ----
+ * The list is in the page twice; moving the track from -50% to 0 brings the
+ * second copy exactly where the first began, so the loop has no seam. It
+ * pauses under the pointer or keyboard focus, and with reduced motion it is
+ * a plain row to scroll. */
+.voices { padding-bottom: 72px; overflow: hidden; }
+.marquee {
+  margin-top: 30px; overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+          mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+}
+.marquee-track {
+  list-style: none; margin: 0; padding: 8px 0 14px;
+  display: flex; gap: 18px; width: max-content;
+  animation: voices-drift 90s linear infinite;
+}
+.marquee:hover .marquee-track, .marquee:focus-within .marquee-track { animation-play-state: paused; }
+@keyframes voices-drift { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+.marquee-track > li { flex: none; display: flex; }
+.review {
+  margin: 0; width: 330px; display: flex; flex-direction: column; gap: 10px;
+  border: 1px solid var(--line); border-radius: var(--radius);
+  background: var(--surface); padding: 20px 22px 18px; box-shadow: var(--shadow);
+}
+.review .stars { margin: 0; display: flex; gap: 3px; color: #C9962B; }
+.review .stars svg { width: 15px; height: 15px; }
+.review-title { margin: 0; font-weight: 650; font-size: 16px; line-height: 1.35; }
+.review blockquote {
+  margin: 0; font-size: 16px; line-height: 1.55; color: var(--ink);
+  display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;
+}
+.review blockquote[lang="ar"] { font-size: 17.5px; line-height: 1.7; }
+.review-tr {
+  margin: 0; font-size: 14px; line-height: 1.5; color: var(--ink-soft);
+  display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;
+}
+.review-tr span {
+  font-size: 11px; letter-spacing: .06em; text-transform: uppercase; margin-right: 4px; opacity: .8;
+}
+.review figcaption { margin-top: auto; font-size: 13px; color: var(--ink-soft); }
+.review .who { color: var(--ink); font-weight: 600; }
+@media (prefers-color-scheme: dark) { .review .stars { color: #E2B85A; } }
+@media (max-width: 560px) { .review { width: 280px; } }
+@media (prefers-reduced-motion: reduce) {
+  .marquee { overflow-x: auto; -webkit-mask-image: none; mask-image: none; scroll-snap-type: x mandatory; }
+  .marquee-track { animation: none; padding-inline: 20px; }
+  .marquee-track > li { scroll-snap-align: start; }
+  .marquee-track > li[aria-hidden="true"] { display: none; }
+}
+
 /* ---- features ---- */
 .groups {
   margin-top: 34px; display: grid; gap: 20px;
