@@ -38,6 +38,41 @@ afterAll(() => {
   if (ZONE_BEFORE === undefined) delete realProcess.env.TZ;
   else realProcess.env.TZ = ZONE_BEFORE;
 });
+/**
+ * A PHONE WITH MOROCCO'S OLD ZONE DATA, whatever this Node's is.
+ *
+ * The #82 scenarios are about a phone whose zone data predates Morocco
+ * leaving GMT+1 (2026), and they used to rely on Node's own data being
+ * that old. Node 22.23 ships tzdata 2026c, which knows the change, and on
+ * it every such test ran a CURRENT phone: CI failed on the 2.32.1 commit.
+ * So the stale phone is made here, not found: the process clock runs at
+ * UTC+1 (what the Date getters read), the phone says it is in
+ * Africa/Casablanca, and Intl answers +1 for that zone.
+ *
+ * Call from `beforeEach` — the spy goes with `jest.restoreAllMocks()`.
+ */
+export function emulateStaleMoroccoPhone(): void {
+  realProcess.env.TZ = 'Etc/GMT-1'; // POSIX sign: UTC+1
+  const Real = Intl.DateTimeFormat;
+  jest.spyOn(Intl, 'DateTimeFormat').mockImplementation(((
+    locale?: string | string[],
+    opts?: Intl.DateTimeFormatOptions,
+  ) => {
+    const asked = opts?.timeZone;
+    const fmt = new Real(
+      locale,
+      asked === 'Africa/Casablanca' ? { ...opts, timeZone: 'Etc/GMT-1' } : opts,
+    );
+    const resolved = fmt.resolvedOptions.bind(fmt);
+    // The zone it was asked for, or — asked for none — the phone's.
+    fmt.resolvedOptions = () => ({
+      ...resolved(),
+      timeZone: asked ?? 'Africa/Casablanca',
+    });
+    return fmt;
+  }) as never);
+}
+
 export function currentZone(): string {
   return Intl.DateTimeFormat().resolvedOptions().timeZone;
 }

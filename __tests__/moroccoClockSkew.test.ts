@@ -51,9 +51,12 @@ const nowS = () => Math.floor(Date.now() / 1000) * 1000;
 const serverAhead = (now: number, ms: number) =>
   response(new Date(now + ms).toUTCString());
 
+/** Node's own, before any test puts a phone of its own in its place. */
+const NODE_DTF = Intl.DateTimeFormat;
+
 /** A phone whose zone data knows Morocco is GMT. */
 function upToDateZoneData(): () => void {
-  const Real = Intl.DateTimeFormat;
+  const Real = NODE_DTF;
   const spy = jest
     .spyOn(Intl, 'DateTimeFormat')
     .mockImplementation(
@@ -68,18 +71,43 @@ function upToDateZoneData(): () => void {
   return () => spy.mockRestore();
 }
 
+/**
+ * A phone whose zone data still has Morocco at GMT+1 — made here, not found:
+ * Node 22.23 carries tzdata 2026c, which knows Morocco left it, and these
+ * tests then ran a current phone (CI on the 2.32.1 commit).
+ */
+function staleZoneData(): jest.SpyInstance {
+  const Real = NODE_DTF;
+  return jest
+    .spyOn(Intl, 'DateTimeFormat')
+    .mockImplementation(
+      ((locale?: string | string[], opts?: Intl.DateTimeFormatOptions) =>
+        new Real(
+          locale,
+          opts?.timeZone === 'Africa/Casablanca'
+            ? { ...opts, timeZone: 'Etc/GMT-1' }
+            : opts,
+        )) as never,
+    );
+}
+
 let zoneSpy: jest.SpyInstance;
+let staleSpy: jest.SpyInstance;
 beforeEach(async () => {
   _resetClockSkewForTests();
   _resetZoneDataMemoForTests();
   await AsyncStorage.clear();
   zoneSpy = jest
-    .spyOn(Intl.DateTimeFormat.prototype, 'resolvedOptions')
+    .spyOn(NODE_DTF.prototype, 'resolvedOptions')
     .mockReturnValue({
       timeZone: 'Africa/Casablanca',
     } as Intl.ResolvedDateTimeFormatOptions);
+  staleSpy = staleZoneData();
 });
-afterEach(() => zoneSpy.mockRestore());
+afterEach(() => {
+  zoneSpy.mockRestore();
+  staleSpy.mockRestore();
+});
 
 describe('the phone’s zone data', () => {
   it('is stale where Intl still gives Morocco +1 in December 2026', () => {

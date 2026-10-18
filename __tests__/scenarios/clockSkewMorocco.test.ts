@@ -1,8 +1,9 @@
 /**
  * SCENARIO 8 — the phone's clock against the server's (#82).
  *
- * Node's zone data here is from before Morocco left GMT+1, which is exactly
- * the stale phone in the issue: Africa/Casablanca at +1 in October 2026.
+ * The phone is the stale one in the issue — Africa/Casablanca at +1 in
+ * October 2026 — made so by `emulateStaleMoroccoPhone`, whatever zone data
+ * this Node carries.
  * The skew is learnt the way the app learns it — from the `Date` header of
  * the certification the app polls anyway — and the times are the Moroccan
  * ministry's, read through the real provider chain:
@@ -33,9 +34,9 @@ import {
 import { _resetZoneDataMemoForTests } from '../../src/providers/locationClock';
 import { _resetCorrectionsForTests } from '../../src/providers/swedenCorrections';
 import {
+  emulateStaleMoroccoPhone,
   goOnline,
   response,
-  setZone,
   toMin,
 } from '../fixtures/scenarioHarness';
 
@@ -66,8 +67,8 @@ async function freshLaunch(at: Date) {
   prayerStorage._resetCacheSweepForTests();
 }
 
-beforeAll(() => setZone('Africa/Casablanca'));
 beforeEach(async () => {
+  emulateStaleMoroccoPhone();
   jest.useFakeTimers({
     now: PHONE_NOW,
     doNotFake: [

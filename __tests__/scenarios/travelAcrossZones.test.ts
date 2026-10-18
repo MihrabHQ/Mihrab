@@ -246,7 +246,9 @@ it('Stockholm → Casablanca → New York', async () => {
   st = await settledAt(probe, CASABLANCA);
   // The notice is raised (from Stockholm's +120 to this phone's Casablanca).
   expect(st.timezoneShift?.from).toBe(120);
-  expect(st.timezoneShift?.to).toBe(-new Date().getTimezoneOffset());
+  // `0 - x`, not `-x`: where Casablanca is GMT the offset is 0, and
+  // -0 is not 0 to `toBe`.
+  expect(st.timezoneShift?.to).toBe(0 - new Date().getTimezoneOffset());
   // Today is Casablanca's, at real instants: the server's 05:17 on
   // Casablanca's clock, read on the days' clock, is that instant.
   const fajr = combineLocalDateAndTime(st.baseDate, st.today.Fajr, st.clock);
