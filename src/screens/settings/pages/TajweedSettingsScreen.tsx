@@ -36,7 +36,7 @@ import {
   subscribeQuranDownload,
 } from '../../../quran/quranDownloadManager';
 import { setQuranPrefs, useQuranState } from '../../../quran/quranState';
-import { riwayahById } from '../../../quran/riwayat';
+import { resolveRiwayah, riwayahById } from '../../../quran/riwayat';
 import { SettingsGroup, SettingsLinkRow, SettingsToggleRow } from '../SettingsGroup';
 import { SettingsPage } from '../SettingsPage';
 
@@ -48,10 +48,12 @@ export function TajweedSettingsScreen() {
   const { palette, isDark } = useAppPalette();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { prefs } = useQuranState();
-  const hafs = riwayahById(prefs.riwayah).render !== 'unicode';
+  // The riwayah the muṣḥaf draws — Ḥafṣ where the stored one is not on this device (`resolveRiwayah`).
+  const riwayah = resolveRiwayah(prefs.riwayah);
+  const hafs = riwayahById(riwayah).render !== 'unicode';
   // Ḥafṣ draws the colours from its tajwīd fonts, Warsh from its own
   // spans over the text; Qālūn and Shuʿbah have neither yet.
-  const unavailable = tajweedUnavailable(prefs.riwayah);
+  const unavailable = tajweedUnavailable(riwayah);
   const coloured = unavailable === null;
   // The set the muṣḥaf draws right now, listed first and marked.
   const inUse = tajweedFontSet(toneIsDark(mushafTone(prefs, isDark)));

@@ -43,7 +43,7 @@ import { fontStoreKnownComplete, fontStoreStats, tajweedFontSet } from './mushaf
 import type { MushafFontSet } from './mushafFontStore';
 import { MUSHAF_TOTAL_PAGES } from './mushafImages';
 import { mushafTone, mushafToneChoice, toneIsDark } from './mushafTone';
-import { riwayahById } from './riwayat';
+import { resolveRiwayah, riwayahById } from './riwayat';
 import {
   cancelQuranDownload,
   dequeueQuranDownload,
@@ -87,7 +87,7 @@ async function onSwitchedOn(): Promise<void> {
   // 170 MB of colours this Android would draw in one colour: not fetched.
   if (!COLOUR_FONTS_DRAWN) return;
   const { prefs } = getQuranState();
-  const hafs = riwayahById(prefs.riwayah).render !== 'unicode';
+  const hafs = riwayahById(resolveRiwayah(prefs.riwayah)).render !== 'unicode';
   const appDark = Appearance.getColorScheme() === 'dark';
   const inUse = tajweedFontSet(toneIsDark(mushafTone(prefs, appDark)));
   const sets = await tajweedSetsToFetch({

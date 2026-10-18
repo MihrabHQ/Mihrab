@@ -32,7 +32,7 @@ import { ResponsiveModal } from '../responsive/ResponsiveModal';
 import { RADIUS, SPACING } from '../theme/tokens';
 import { typeStyle } from '../theme/typography';
 import { setQuranPrefs, useQuranState } from './quranState';
-import { riwayahById } from './riwayat';
+import { resolveRiwayah, riwayahById } from './riwayat';
 
 export type QuranFeature = 'tajweedColours' | 'wordReader';
 
@@ -79,8 +79,8 @@ export function useQuranFeaturesOffer(ready: boolean): {
       .then(seen => {
         if (!live || seen) return;
         const offer = offerableQuranFeatures({
-          hafs: riwayahById(prefs.riwayah).render !== 'unicode',
-          warsh: prefs.riwayah === 'warsh',
+          hafs: riwayahById(resolveRiwayah(prefs.riwayah)).render !== 'unicode',
+          warsh: resolveRiwayah(prefs.riwayah) === 'warsh',
           tajweedColours: prefs.tajweedColours,
           wordReader: prefs.wordReader,
           colourFontsDrawn: COLOUR_FONTS_DRAWN,
@@ -183,7 +183,7 @@ export function QuranFeaturesOfferSheet({
             />
           ))}
         </Group>
-        {features.includes('tajweedColours') && prefs.riwayah !== 'warsh' ? (
+        {features.includes('tajweedColours') && resolveRiwayah(prefs.riwayah) !== 'warsh' ? (
           <Text style={[typeStyle('footnote'), styles.note, { color: palette.muted }]}>
             {t('quran.featuresOfferTajweedNote', {
               defaultValue:
