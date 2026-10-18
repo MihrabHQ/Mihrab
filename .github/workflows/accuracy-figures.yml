@@ -20,6 +20,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  issues: write
 
 concurrency:
   group: accuracy-figures
@@ -66,9 +67,24 @@ jobs:
             echo
             echo "Checked in the job: \`build-site.js --check\` and \`build-copy.js --check\` (store limits, wording). CI does not start on its own for a pull request opened by a workflow; close and reopen it to run the full suite."
           } > body.md
+          title="Accuracy figures: mihrab-methods' record as of ${checked:-today}"
           if [ -n "$(gh pr list --head "$branch" --state open --json number -q '.[0].number')" ]; then
-            gh pr edit "$branch" --body-file body.md
+            gh pr edit "$branch" --title "$title" --body-file body.md
+            echo "Pull request refreshed for $branch." | tee -a "$GITHUB_STEP_SUMMARY"
+          elif gh pr create --head "$branch" --base main --title "$title" --body-file body.md; then
+            echo "Pull request opened for $branch." | tee -a "$GITHUB_STEP_SUMMARY"
           else
-            gh pr create --head "$branch" --base main --title "Accuracy figures: mihrab-methods' record as of ${checked:-today}" --body-file body.md
+            # The repository does not let workflows open pull requests
+            # (Settings → Actions → "Allow GitHub Actions to create and
+            # approve pull requests"). The branch is pushed; an issue links
+            # to it so the change is not missed.
+            url="https://github.com/${GITHUB_REPOSITORY}/compare/main...${branch}?expand=1"
+            { echo "The branch \`$branch\` is ready; open the pull request: $url"; echo; cat body.md; } > issue.md
+            num=$(gh issue list --state open --search "in:title \"Accuracy figures:\"" --json number -q '.[0].number')
+            if [ -n "$num" ]; then
+              gh issue edit "$num" --title "$title" --body-file issue.md
+            else
+              gh issue create --title "$title" --body-file issue.md
+            fi
+            echo "Branch $branch pushed; issue opened or refreshed with the pull-request link: $url" | tee -a "$GITHUB_STEP_SUMMARY"
           fi
-          echo "Pull request opened or refreshed for $branch." | tee -a "$GITHUB_STEP_SUMMARY"
