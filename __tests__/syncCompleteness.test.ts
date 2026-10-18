@@ -114,6 +114,8 @@ const STAYS: Record<string, string> = {
   my: 'not a store — the key "My location" has in settings.locationProviders',
   manual: 'not a store — the key an unsaved picked place has in settings.locationProviders',
   'home.methodNote.dismissed.v1': 'describes this phone — the calculation note last dismissed on its Today',
+  'home.zoneNote.dismissed.v1':
+    'describes this phone — its zone data, and the note about it dismissed on its Today (#82)',
   'marw.dataset.v1.city.':
     'derived — the Algerian ministry’s published timetable for one city, re-downloadable',
   'mihrab.first_seen_day':
