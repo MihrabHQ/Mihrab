@@ -502,7 +502,19 @@ table.accuracy tfoot td { font-weight: 600; }
     background: linear-gradient(180deg, var(--sky-a) 0%, var(--sky-b) 100%);
   }
   /* The bands let the sky through; the cards keep their own surface. */
-  .install, .shots, .accuracy-section, .features, .sweden, .privacy, .faq, .support, .developers, footer { background: transparent; }
+  .install, .shots, .accuracy-section, .features, .sweden, .privacy, .faq, .support, .developers, footer, .towns { background: transparent; }
+  /* One card for the whole page, a pane of the sky rather than a block of
+     the old green paper: white glass by day, night glass in the dark. */
+  :root { --card: rgba(255, 255, 255, .80); }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --card: rgba(13, 17, 33, .58);
+      --line: rgba(255, 255, 255, .10);
+      --frame: rgba(255, 255, 255, .12);
+      --surface-2: rgba(255, 255, 255, .06);
+    }
+  }
+  .card, .platform, .channel, .review, .table-scroll { background: var(--card); }
   @keyframes prayer-day {
     /* Fajr — dawn: indigo, the first rose at the horizon */
     0%   { --sky-a: color-mix(in oklab, #244091 var(--sky-amt), var(--sky-base));
