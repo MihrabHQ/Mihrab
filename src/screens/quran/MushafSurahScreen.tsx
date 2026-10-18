@@ -38,6 +38,7 @@ import { TabBackButton } from '../../navigation/TabBackButton';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import { isMacCatalyst } from '../../responsive/breakpoints';
 import { DEVICE_CLASS } from '../../responsive/deviceClass';
+import { useLandscapeFullscreen } from '../../quran/landscapeFullscreen';
 import type { SurahIndex } from '../../quran/quran';
 import { MushafReader } from '../../quran/MushafReader';
 import { SIDEBAR_WIDTH, sidebarShown } from '../../quran/MushafIndexSidebar';
@@ -218,6 +219,13 @@ export function MushafSurahScreen({
   const win = useWindowSize();
   const headerW = useSettledMeasure(Math.round(win.width));
   const headerH = useSettledMeasure(Math.round(win.height));
+
+  // On its side, a phone reads fullscreen — see `landscapeFullscreen.ts`.
+  useLandscapeFullscreen(
+    DEVICE_CLASS === 'phone' && win.width > win.height,
+    isFullscreen,
+    requestFullscreen,
+  );
   // A different surah means the reader's page title no longer applies.
   useEffect(() => {
     setReaderTitle(null);
