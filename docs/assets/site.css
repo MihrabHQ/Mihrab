@@ -490,8 +490,8 @@ table.accuracy tfoot td { font-weight: 600; }
     background: linear-gradient(180deg, var(--sky-a) 0%, var(--sky-b) 100%);
   }
   /* The bands let the sky through; the cards keep their own surface. */
-  .install, .shots, .accuracy-section, .features, .privacy, .faq, .support, .developers { background: transparent; }
-  .sweden, footer { background: color-mix(in oklab, var(--surface-2) 45%, transparent); }
+  .install, .shots, .accuracy-section, .features, .sweden, .privacy, .faq, .support, .developers { background: transparent; }
+  footer { background: color-mix(in oklab, var(--surface-2) 45%, transparent); }
   @keyframes prayer-day {
     /* Fajr — dawn: indigo, the first rose at the horizon */
     0%   { --sky-a: color-mix(in oklab, #244091 var(--sky-amt), var(--sky-base));
