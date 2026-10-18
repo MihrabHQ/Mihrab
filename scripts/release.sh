@@ -638,6 +638,20 @@ sed -i '' "s/MARKETING_VERSION = $OLD_VERSION;/MARKETING_VERSION = $VERSION;/g" 
 # kept the previous version while docs/index.html moved — which
 # `build-site.js --check` (and the test that runs it) then failed on,
 # after the tag.
+# The accuracy figures, like the version: every release quotes
+# mihrab-methods' certification record as it stands today, not the copy
+# synced whenever someone last remembered to. The sync refuses a record the
+# generators cannot quote from; without the network the committed copy
+# stays, and the release says so rather than failing.
+if node "$ROOT/scripts/copy/sync-certification.js" https://raw.githubusercontent.com/MihrabHQ/mihrab-methods/main >/dev/null; then
+  node "$ROOT/scripts/build-copy.js" >/dev/null || die "build-copy failed after syncing the certification"
+  node "$ROOT/scripts/build-copy.js" --check >/dev/null || die "the store copy is out of date or over a limit after syncing"
+  git -C "$ROOT" diff --quiet -- data/methods/certification.json \
+    && ok "accuracy figures: current" \
+    || ok "accuracy figures: updated from mihrab-methods (site, README and store copy rebuilt)"
+else
+  warn "could not read mihrab-methods' certification; the release keeps the committed figures"
+fi
 node "$ROOT/scripts/sync-version.js" >/dev/null || die "sync-version failed"
 node "$ROOT/scripts/build-site.js" >/dev/null || die "build-site failed"
 node "$ROOT/scripts/build-site.js" --check >/dev/null \

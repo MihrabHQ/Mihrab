@@ -70,7 +70,11 @@ unsure whether a change touches 1 or 2, assume it does.
 - **Accuracy figures** come only from `data/methods/certification.json`
   (synced from mihrab-methods) through the generators — never typed by hand:
   `node scripts/copy/sync-certification.js ../mihrab-methods`, then
-  `node scripts/build-site.js` and `node scripts/build-copy.js`. Wording:
+  `node scripts/build-site.js` and `node scripts/build-copy.js`. This also
+  happens by itself: every release syncs from mihrab-methods' `main`
+  (`scripts/release.sh`), and `.github/workflows/accuracy-figures.yml` checks
+  daily and opens an "Accuracy figures" pull request when a figure changed —
+  review the numbers, then merge. Wording:
   "matches the published timetable of …", never "official"; no "the only"
   or "the first"; Mihrab is independent and not affiliated with any
   authority. Full rules: [scripts/copy/README.md](scripts/copy/README.md).
