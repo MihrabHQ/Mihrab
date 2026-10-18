@@ -198,6 +198,19 @@ export function clockFor(clock: PlaceClock | undefined): {
   return { format: (d: Date) => formatInZone(d, zone), zone };
 }
 
+/**
+ * Is the phone in this place's zone with stale zone data AND on network
+ * time — so that its clock, and the times written on it, run ahead of the
+ * place's real clock by the zone data's lag? (A clock set back by hand is
+ * the other case, `phoneClockSetByHand`, and reads right.) The reader of
+ * such a phone should be told, on Today, that setting the zone by hand puts
+ * both the clock and the times right — issue #82's reporter found that
+ * himself, on a phone that will get no zone-data update.
+ */
+export function phoneClockRunsOnStaleZone(clock: PlaceClock | undefined): boolean {
+  return phoneZoneDataStale(clock) && !phoneClockSetByHand(clock);
+}
+
 /** Test seam: forget what was read of the phone's zone data. */
 export function _resetZoneDataMemoForTests(): void {
   staleMemo.clear();

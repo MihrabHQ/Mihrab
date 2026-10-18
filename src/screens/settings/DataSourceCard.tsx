@@ -18,7 +18,7 @@ import { useMethodCurrency } from '../../hooks/useMethodCurrency';
 import { methodCurrencyNote } from '../../prayer/methodCurrencyNote';
 import {
   MOROCCO_CLOCK,
-  phoneZoneDataStale,
+  phoneClockRunsOnStaleZone,
 } from '../../providers/locationClock';
 import { refreshStoredPrayerData } from '../../prayer/refreshStoredData';
 
@@ -101,7 +101,7 @@ function DataSourceCardImpl({ onOpenProviderPicker }: DataSourceCardProps) {
       : null;
   // A phone in Morocco whose zone data still runs it at GMT+1 (#82): its
   // owner should know, since every app's times are affected.
-  const zoneDataStale = phoneZoneDataStale(MOROCCO_CLOCK);
+  const zoneDataStale = phoneClockRunsOnStaleZone(MOROCCO_CLOCK);
   const tableFallback =
     useTableFallback(
       effectiveProvider,

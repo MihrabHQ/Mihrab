@@ -48,6 +48,13 @@ type PermissionBannersProps = {
   methodNote?: string | null;
   onDismissMethodNote?: () => void;
   /**
+   * The phone's zone data is stale for the place it is in, and its clock —
+   * and these times, written on it — run ahead of the place's (#82).
+   * Dismissible; says what to set by hand.
+   */
+  zoneNote?: string | null;
+  onDismissZoneNote?: () => void;
+  /**
    * The status bar's height, when these are the first thing on a page
    * that runs to the top edge of the screen — the phone's Today.
    *
@@ -67,6 +74,8 @@ function PermissionBannersImpl({
   onDismissTimezoneShift,
   methodNote,
   onDismissMethodNote,
+  zoneNote,
+  onDismissZoneNote,
   topInset = 0,
 }: PermissionBannersProps) {
   const { t } = useTranslation();
@@ -77,7 +86,8 @@ function PermissionBannersImpl({
     !exactAlarmDenied &&
     !notifPermDenied &&
     !timezoneShift &&
-    !methodNote
+    !methodNote &&
+    !zoneNote
   ) {
     return null;
   }
@@ -133,6 +143,21 @@ function PermissionBannersImpl({
           <Text style={[styles.text, { color: palette.text }]}>{methodNote}</Text>
           <Pressable
             onPress={onDismissMethodNote}
+            hitSlop={8}
+            accessibilityRole="button"
+            accessibilityLabel={t('common.dismiss', 'Dismiss')}>
+            <Text style={[styles.action, { color: palette.accent }]}>
+              {t('common.dismiss', 'Dismiss')}
+            </Text>
+          </Pressable>
+        </View>
+      )}
+
+      {zoneNote && (
+        <View style={[styles.banner, { backgroundColor: palette.accentBg }, leadStyle()]}>
+          <Text style={[styles.text, { color: palette.text }]}>{zoneNote}</Text>
+          <Pressable
+            onPress={onDismissZoneNote}
             hitSlop={8}
             accessibilityRole="button"
             accessibilityLabel={t('common.dismiss', 'Dismiss')}>

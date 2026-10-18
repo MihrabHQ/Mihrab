@@ -31,6 +31,7 @@ import {
   clockFormatter,
   formatInZone,
   MOROCCO_CLOCK,
+  phoneClockRunsOnStaleZone,
   phoneClockSetByHand,
   phoneZoneDataStale,
   zoneOffsetMinutes,
@@ -118,6 +119,7 @@ describe('three phones in Morocco', () => {
       const now = nowS();
       noteServerDate(serverAhead(now, 3600_000), now);
       expect(phoneClockSetByHand(MOROCCO_CLOCK)).toBe(false);
+      expect(phoneClockRunsOnStaleZone(MOROCCO_CLOCK)).toBe(false);
       expect(clockFormatter(MOROCCO_CLOCK)).toBe(formatLocalTime);
     } finally {
       restore();
@@ -130,6 +132,9 @@ describe('three phones in Morocco', () => {
     expect(deviceClockSkewSeconds(now)).toBe(2);
     expect(phoneClockSetByHand(MOROCCO_CLOCK)).toBe(false);
     expect(clockFormatter(MOROCCO_CLOCK)).toBe(formatLocalTime);
+    // … and this is the phone whose owner is told, on Today, to set the
+    // zone by hand (#82's reporter's own finding).
+    expect(phoneClockRunsOnStaleZone(MOROCCO_CLOCK)).toBe(true);
   });
 
   it('stale zone data, clock set back by hand: the ministry’s GMT', () => {
@@ -137,6 +142,8 @@ describe('three phones in Morocco', () => {
     // The server is an hour (and the few minutes a hand-set clock is off) ahead.
     noteServerDate(serverAhead(now, 3600_000 + 4 * 60_000), now);
     expect(phoneClockSetByHand(MOROCCO_CLOCK)).toBe(true);
+    // Reads right already: nothing to tell.
+    expect(phoneClockRunsOnStaleZone(MOROCCO_CLOCK)).toBe(false);
     expect(clockFormatter(MOROCCO_CLOCK)).not.toBe(formatLocalTime);
     expect(clockFormatter(MOROCCO_CLOCK)(FAJR)).toBe('05:05');
   });

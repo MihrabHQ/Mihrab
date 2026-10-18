@@ -33,6 +33,11 @@ import {
 import { onClockJump } from '../utils/clockJumps';
 import { usePrayerDay } from '../hooks/usePrayerDay';
 import { clearTimezoneShiftNotice } from '../prayer/timezoneShift';
+import {
+  MOROCCO_CLOCK,
+  phoneClockRunsOnStaleZone,
+  zoneDataLagMinutes,
+} from '../providers/locationClock';
 import { refreshStoredPrayerData } from '../prayer/refreshStoredData';
 import { getEffectiveDataProvider } from '../settings/effectiveProvider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -112,6 +117,8 @@ import { SPACING } from '../theme/tokens';
 
 /** The calculation note last dismissed on Today (`state:to`). */
 const METHOD_NOTE_DISMISSED_KEY = 'home.methodNote.dismissed.v1';
+/** The stale-zone-data note dismissed on Today (#82) — the zone and its lag. */
+const ZONE_NOTE_DISMISSED_KEY = 'home.zoneNote.dismissed.v1';
 /**
  * HomeScreen orchestrator — task #8 split.
  *
@@ -415,12 +422,39 @@ export function HomeScreen() {
     setCurrencyDismissed(currencyKey);
     AsyncStorage.setItem(METHOD_NOTE_DISMISSED_KEY, currencyKey).catch(() => undefined);
   }, [currencyKey]);
+  /**
+   * A phone in Morocco whose zone data still runs it at GMT+1, on network
+   * time (#82): its clock, and the times here written on it, read an hour
+   * ahead of the ministry's. The settings card says so too, but that is
+   * not where a reader who sees 06:09 for the mosque's 05:09 looks. Said
+   * once, with the one thing that puts it right on a phone that will get
+   * no zone-data update — the reporter's own finding.
+   */
+  const zoneKey = phoneClockRunsOnStaleZone(MOROCCO_CLOCK)
+    ? `${MOROCCO_CLOCK.zone}:${zoneDataLagMinutes(MOROCCO_CLOCK)}`
+    : null;
+  const [zoneDismissed, setZoneDismissed] = useState<string | null | undefined>(undefined);
+  useEffect(() => {
+    AsyncStorage.getItem(ZONE_NOTE_DISMISSED_KEY)
+      .then(v => setZoneDismissed(v))
+      .catch(() => setZoneDismissed(null));
+  }, []);
+  const zoneNote =
+    zoneKey && zoneDismissed !== undefined && zoneKey !== zoneDismissed
+      ? t('home.zoneDataStaleNotice')
+      : null;
+  const dismissZoneNote = useCallback(() => {
+    if (!zoneKey) return;
+    setZoneDismissed(zoneKey);
+    AsyncStorage.setItem(ZONE_NOTE_DISMISSED_KEY, zoneKey).catch(() => undefined);
+  }, [zoneKey]);
   const hasBanner =
     (state.phase === 'ready' && state.usingLocalFallback === true) ||
     exactAlarmDenied ||
     notifPermDenied ||
     timezoneShift != null ||
-    methodNote != null;
+    methodNote != null ||
+    zoneNote != null;
   const [nextInfo, setNextInfo] = useState<{ name: string; at: Date } | null>(
     null,
   );
@@ -1665,6 +1699,8 @@ export function HomeScreen() {
         timezoneShift={timezoneShift}
         methodNote={methodNote}
         onDismissMethodNote={dismissMethodNote}
+        zoneNote={zoneNote}
+        onDismissZoneNote={dismissZoneNote}
         onDismissTimezoneShift={() => {
           // Both halves: the module stops offering it to the next load,
           // and this screen stops drawing it now.
