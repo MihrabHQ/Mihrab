@@ -1,50 +1,50 @@
 "Language code","Language","App name","Short description","Full description"
-"en-US","English (United States)","Mihrab: The Muslim Companion","Prayer times, adhan, the Quran, duas and qibla in one calm, private app.","Mihrab is a calm companion for a Muslim's day: the prayers, the Quran, and the remembrance in between, in one private app.
+"en-US","English (United States)","Mihrab: The Muslim Companion","Prayer times matching Diyanet, Kemenag & more to the minute. Quran, dua, qibla.","Prayer times that match the published timetable to the printed minute: Diyanet’s in Türkiye and worldwide, Islamiska Förbundet’s in Sweden, and those of Morocco’s Ministry of Habous, Algeria’s Ministry of Religious Affairs and Indonesia’s Kemenag.
+Each authority’s own method is calculated on your phone and checked, day by day, against its published timetables: 0 of 71.8 million times off the printed minute, last checked 18 October 2026.
+Singapore (MUIS), Malaysia (JAKIM) and Türkiye Takvimi are their published tables, used as printed. Everywhere else, times come from AlAdhan or a calculation method you choose, with per-prayer offsets to match your mosque.
 
-Hold any word in the mushaf and hear that one word read. Follow the recited word as it lights up on the page. See tajweed in colour, on Hafs and on Warsh. Keep your journal and settings in step between your own devices, with no account and no server. And every line of it is open source.
+Around the prayers, Mihrab is a calm companion for a Muslim’s day: the Quran, and the remembrance in between, with no ads and no account.
 
 PRAY
-- Prayer times for today, the week and the month ahead — worked out on your phone, from a provider, or from the published national tables for Sweden, Morocco, Algeria, Singapore, Malaysia and Indonesia, or Diyanet’s for 8,291 places in Türkiye and worldwide — shareable as an image or a PDF
-- The adhan for each prayer, with seventeen recordings or your own, a reminder before it, and a snooze that offers only what the prayer's time still allows, down to a last chance before it ends
+- Today, the week and the month ahead — shareable as an image or a PDF
+- The adhan for each prayer, from built-in recordings or your own, a reminder before it, and a snooze that offers only what the prayer’s time still allows
 - A full-screen prayer alert over the lock screen, like an alarm clock, with Stop, Snooze and Log prayer
-- Silence the phone for the prayer itself, and let it come back on its own — Do Not Disturb from the adhan or a few minutes before, with its own length for Jumu'ah
-- A pinned countdown to the next prayer on the lock screen and in the notification shade, in three designs
+- Silence the phone for the prayer itself and let it come back on its own, with its own length for Jumu'ah
+- A pinned countdown to the next prayer on the lock screen and in the notification shade
+- Hanafi or standard Asr, and a minute offset for each prayer
 - Qibla compass with signal strength and a cross-check against the sun
 - Log each prayer with one tap; the journal keeps the record, the streak and the graph
-- Home-screen widgets: prayer times in three sizes, today's log, Hijri date, streak, tasbih and reading
+- Home-screen widgets for the prayer times, today's log, the Hijri date, tasbih and reading
 
 READ AND LISTEN
 - The Madinah mushaf, drawn as text from the King Fahd Complex's page fonts and sharp at any size — and Warsh, Qalun and Shu'bah beside it
 - Tajweed colours, every rule explained — on Hafs and on Warsh
 - The word reader: hold a word to hear it read on its own
-- 44 reciters, and for those with word timings, the recited word lit on the page
-- Tilawah: surah into surah with the screen off, with a sleep timer and a speed control; it keeps your place and suggests what the sunnah recommends at that hour — Al-Kahf on Friday, Al-Mulk at night
-- 14 translations and classical tafsir, kept for offline reading
+- A choice of reciters, and for those with word timings, the recited word lit on the page
+- Tilawah: surah into surah with the screen off, with a sleep timer and a speed control
+- Translations and classical tafsir, kept for offline reading
 - Memorisation tools, bookmarks, and khatmah plans that follow the page you are on
 
 REMEMBER
-- More than 100 duas from Hisn al-Muslim, with transliteration and translation
+- Duas from Hisn al-Muslim, with transliteration and translation
 - A tasbih counter for the dhikr after prayer and beyond
 - A fasting log for Ramadan and the Sunnah fasts, with reminders
-- The Hijri calendar with Ramadan, Eid and Jumu'ah, and an ayah of the day
+- The Hijri calendar with Ramadan, Eid and Jumu'ah
 
 YOURS
 - No ads, no analytics, no trackers, no account
-- Works offline once your location is set and the pages you want are on the phone
 - Sync between your own devices with no account and no server of ours: sealed files in a folder you already keep in sync
 - Backup and restore to a file you keep
-- Android, iPhone, iPad and Mac, in 13 languages, with Arabic and Urdu fully right-to-left
-- Light, dark and pure black, six colour themes, your own accent colour, and Material You — or Sky, which paints the whole app from the sky over the countdown and changes with the hour — in Realistic or Vibrant colours
+- Android, iPhone, iPad and Mac, with Arabic and Urdu fully right-to-left
 
-The network is used only when you choose it: a prayer-time provider (AlAdhan, Türkiye Takvimi, or the national tables for Sweden, Morocco, Algeria, Singapore, Malaysia and Indonesia), place search through OpenStreetMap Nominatim, and downloading Quran pages, translations, tafsir and recitation audio. Your coordinates stay on your device.
+WHAT GOES OVER THE NETWORK
+Where your times come from decides what is sent. For Sweden, Diyanet’s places, Morocco, Algeria and Indonesia the times are calculated on the phone and no prayer-time request is made. Elsewhere, AlAdhan (api.aladhan.com) receives your coordinates and the date. Malaysia’s and Singapore’s tables come from Mihrab’s GitHub repository by city, with the authority’s own service as a backup; Türkiye Takvimi by a map tile around you, and namazvakti.com only a city’s number. With automatic location, your city’s name is looked up from your coordinates through OpenStreetMap Nominatim; place search sends what you type. The app checks Mihrab’s GitHub repositories for correction-list and Hijri-date updates, and downloads Quran pages, translations, tafsir and recitation when you ask. Nothing is sent to the developer.
 
-Mihrab is open source under AGPL-3.0-or-later."
+Mihrab is independent. It is not affiliated with or endorsed by Diyanet, Islamiska Förbundet, the Moroccan or Algerian ministries, Kemenag, MUIS, JAKIM or Türkiye Takvimi: it matches their published timetables and does not speak for them. Open source under AGPL-3.0-or-later."
 "ar","Arabic","محراب: رفيق المسلم","مواقيت الصلاة والأذان والقرآن والأدعية والقبلة في تطبيق هادئ يحفظ خصوصيتك.","محراب رفيقٌ هادئ في يوم المسلم: الصلوات، والقرآن الكريم، والذكر فيما بينها، في تطبيق واحد يحفظ خصوصيتك.
 
-اضغط مطوّلًا على أي كلمة في المصحف فتسمعها وحدها. تابع الكلمة المتلوّة وهي تُضيء على الصفحة. شاهد أحكام التجويد بالألوان، لرواية حفص ولرواية ورش. واجعل سجلّك وإعداداتك متزامنة بين أجهزتك أنت، بلا حساب وبلا خادم. وكل سطر من شيفرته مفتوح المصدر.
-
 صلِّ
-- مواقيت الصلاة لليوم وللأسبوع وللشهر القادم — تُحسب على هاتفك، أو من مزوّد على الإنترنت، أو من الجداول الوطنية المنشورة للسويد والمغرب والجزائر وسنغافورة وماليزيا وإندونيسيا، أو جداول ديانت لـ8291 موضعًا في تركيا والعالم — قابلة للمشاركة صورةً أو ملف PDF
+- مواقيت اليوم والأسبوع والشهر القادم — مطابقة حتى الدقيقة المطبوعة لجداول ديانت ورابطة الإسلام في السويد (Islamiska Förbundet) ووزارتي المغرب والجزائر ووزارة الشؤون الدينية الإندونيسية (Kemenag)، تُحسب على الهاتف؛ وجداول MUIS وJAKIM وTürkiye Takvimi كما نُشرت؛ وAlAdhan في غيرها — قابلة للمشاركة صورةً أو PDF
 - الأذان لكل صلاة، مع سبعة عشر تسجيلًا أو تسجيل من عندك، وتذكير قبل الوقت، وغفوة لا تعرض إلا ما يتّسع له وقت الصلاة، حتى فرصة أخيرة قبل خروجه
 - تنبيه صلاة بملء الشاشة فوق شاشة القفل كالمنبّه، مع إيقاف وغفوة وتسجيل الصلاة
 - أسكت الهاتف وقت الصلاة نفسها، ثم يعود صوته تلقائيًا بعدها — وضع «عدم الإزعاج» من الأذان أو قبله ببضع دقائق، وللجمعة مدّتها الخاصة
@@ -76,15 +76,15 @@ Mihrab is open source under AGPL-3.0-or-later."
 - أندرويد والآيفون والآيباد والماك، بثلاث عشرة لغة، والعربية والأردية من اليمين إلى اليسار بالكامل
 - فاتح وداكن وأسود تمامًا، وست سمات لونية، ولون مميّز تختاره، ودعم Material You — أو «السماء»، التي تصبغ التطبيق كلّه من السماء فوق العدّ التنازلي وتتبدّل مع الساعة، بألوان واقعية أو زاهية
 
-لا تُستخدم الشبكة إلا حين تختار ذلك: مزوّد للمواقيت (AlAdhan، Türkiye Takvimi، أو الجداول الوطنية للسويد والمغرب والجزائر وسنغافورة وماليزيا وإندونيسيا)، والبحث عن الأماكن عبر OpenStreetMap Nominatim، وتنزيل صفحات القرآن والترجمات والتفاسير وتسجيلات التلاوة. وإحداثياتك تبقى على جهازك.
+عبر الشبكة: تُحسب المواقيت على الهاتف للسويد وأماكن ديانت والمغرب والجزائر وإندونيسيا دون أي طلب؛ وفي غيرها تتلقى AlAdhan إحداثياتك والتاريخ. ومع الموقع التلقائي يُسأل OpenStreetMap عن اسم مدينتك، بموقع مقرَّب إلى نحو كيلومتر. ويقرأ التطبيق ملفات تحديث صغيرة من GitHub المشروع، وينزّل صفحات القرآن والترجمات والتفاسير والتلاوات حين تطلبها. لا يُرسَل شيء إلى المطوّر.
+
+محراب مستقل، ولا يتبع أي جهة يطابق جداولها المنشورة ولا يتحدث باسمها.
 
 محراب مفتوح المصدر برخصة AGPL-3.0-or-later."
 "bn-BD","Bengali","মিহরাব: মুসলিমের সঙ্গী","নামাজের সময়, আজান, কুরআন, দোয়া ও কিবলা — এক শান্ত, ব্যক্তিগত অ্যাপে।","মিহরাব একজন মুসলিমের দিনের শান্ত সঙ্গী: নামাজ, কুরআন এবং এর মাঝের জিকির — একটি ব্যক্তিগত অ্যাপে।
 
-মুসহাফের যেকোনো শব্দ চেপে ধরে রাখুন আর শুধু সেই শব্দের তিলাওয়াত শুনুন। পড়া হচ্ছে এমন শব্দটি পাতায় জ্বলে ওঠে, সহজেই অনুসরণ করা যায়। রঙে তাজবিদ দেখুন, হাফস ও ওয়ারশ দুটিতেই। আপনার নিজের ডিভাইসগুলোর মধ্যে ডায়েরি ও সেটিংস একই রাখুন — অ্যাকাউন্ট ছাড়া, সার্ভার ছাড়া। আর এর প্রতিটি লাইন ওপেন সোর্স।
-
 নামাজ
-- আজ, এই সপ্তাহ ও সামনের মাসের নামাজের সময় — ফোনেই হিসাব, কোনো সরবরাহকারী থেকে, অথবা সুইডেন, মরক্কো, আলজেরিয়া, সিঙ্গাপুর, মালয়েশিয়া ও ইন্দোনেশিয়ার প্রকাশিত জাতীয় তালিকা, অথবা তুরস্ক ও বিশ্বের ৮,২৯১টি স্থানের জন্য দিয়ানেতের তালিকা থেকে — ছবি বা PDF হিসেবে শেয়ার করা যায়
+- আজ, এই সপ্তাহ ও সামনের মাসের নামাজের সময় — দিয়ানেত, ইসলামিস্কা ফোরবুন্দেত, মরক্কো ও আলজেরিয়ার মন্ত্রণালয় এবং কেমেনাগের প্রকাশিত সময়সূচির সঙ্গে ছাপা মিনিট পর্যন্ত মেলে, ফোনেই হিসাব; MUIS, JAKIM ও Türkiye Takvimi যেমন প্রকাশিত; অন্যত্র AlAdhan — ছবি বা PDF হিসেবে শেয়ার করা যায়
 - প্রতিটি নামাজের আজান: সতেরোটি রেকর্ডিং বা আপনার নিজেরটি, আগে থেকে মনে করিয়ে দেওয়া এবং এমন স্নুজ যা শুধু ওয়াক্তের বাকি সময়টুকুই দেয়, ওয়াক্ত শেষ হওয়ার আগে একটি শেষ সুযোগ পর্যন্ত
 - লক স্ক্রিনের ওপর অ্যালার্ম ঘড়ির মতো পূর্ণ-পর্দা নামাজের সতর্কবার্তা, থামান, স্নুজ ও নামাজ লিখুন বোতামসহ
 - নামাজের সময় ফোন নীরব করুন, পরে শব্দ নিজে থেকেই ফিরে আসবে — আজান থেকে বা কয়েক মিনিট আগে থেকে «বিরক্ত করবেন না», জুমার জন্য আলাদা সময়
@@ -116,15 +116,15 @@ Mihrab is open source under AGPL-3.0-or-later."
 - অ্যান্ড্রয়েড, আইফোন, আইপ্যাড ও ম্যাকে, ১৩টি ভাষায়, আরবি ও উর্দু সম্পূর্ণ ডান থেকে বামে
 - লাইট, ডার্ক ও গাঢ় কালো থিম, ছয়টি রঙের থিম, আপনার পছন্দের অ্যাকসেন্ট রং এবং Material You — অথবা আকাশ, যা কাউন্টডাউনের উপরের আকাশ থেকে পুরো অ্যাপ রাঙায় এবং সময়ের সাথে বদলায়, বাস্তবসম্মত বা উজ্জ্বল রঙে
 
-নেটওয়ার্ক ব্যবহার হয় শুধু আপনি চাইলে: নামাজের সময়ের সরবরাহকারী (AlAdhan, Türkiye Takvimi, অথবা সুইডেন, মরক্কো, আলজেরিয়া, সিঙ্গাপুর, মালয়েশিয়া ও ইন্দোনেশিয়ার জাতীয় তালিকা), OpenStreetMap Nominatim দিয়ে জায়গা খোঁজা, এবং কুরআনের পাতা, অনুবাদ, তাফসির ও তিলাওয়াতের অডিও ডাউনলোড। আপনার অবস্থানের তথ্য আপনার ডিভাইসেই থাকে।
+নেটওয়ার্কে: সুইডেন, দিয়ানেতের স্থান, মরক্কো, আলজেরিয়া ও ইন্দোনেশিয়ার সময় ফোনেই হিসাব হয়, কোনো অনুরোধ ছাড়াই; অন্যত্র AlAdhan আপনার স্থানাঙ্ক ও তারিখ পায়। স্বয়ংক্রিয় অবস্থানে আপনার শহরের নাম OpenStreetMap-এর কাছে জানতে চাওয়া হয়, অবস্থান প্রায় এক কিলোমিটারে গোল করে। অ্যাপটি প্রকল্পের GitHub থেকে ছোট আপডেট ফাইল পড়ে, আর আপনি চাইলে কুরআনের পৃষ্ঠা, অনুবাদ, তাফসির ও তিলাওয়াত ডাউনলোড করে। ডেভেলপারের কাছে কিছুই যায় না।
+
+মিহরাব স্বাধীন; যে কর্তৃপক্ষগুলোর প্রকাশিত সময়সূচির সঙ্গে এটি মেলে, তাদের কারও সঙ্গে এর কোনো সম্পর্ক নেই এবং এটি তাদের হয়ে কথা বলে না।
 
 মিহরাব AGPL-3.0-or-later লাইসেন্সে ওপেন সোর্স।"
 "de-DE","German","Mihrab: Begleiter für Muslime","Gebetszeiten, Adhan, Koran, Duas und Qibla in einer ruhigen, privaten App.","Mihrab ist ein ruhiger Begleiter für den Tag eines Muslims: die Gebete, der Koran und das Gedenken dazwischen – in einer App, die privat bleibt.
 
-Halte ein Wort im Mushaf gedrückt und hör genau dieses Wort vorgelesen. Folge dem rezitierten Wort, während es auf der Seite aufleuchtet. Sieh Tadschwid in Farbe, in Hafs und in Warsch. Halte Tagebuch und Einstellungen zwischen deinen eigenen Geräten abgeglichen – ohne Konto und ohne Server. Und jede Zeile davon ist Open Source.
-
 BETEN
-- Gebetszeiten für heute, die Woche und den kommenden Monat – auf dem Gerät berechnet, von einem Anbieter oder aus den veröffentlichten Landestabellen für Schweden, Marokko, Algerien, Singapur, Malaysia und Indonesien oder denen der Diyanet für 8.291 Orte in der Türkei und weltweit – als Bild oder PDF teilbar
+- Gebetszeiten für heute, die Woche und den kommenden Monat – auf die gedruckte Minute gleich mit den veröffentlichten Zeitplänen der Diyanet, von Islamiska Förbundet, der Ministerien Marokkos und Algeriens und von Kemenag, auf dem Telefon berechnet; MUIS, JAKIM und Türkiye Takvimi wie veröffentlicht; anderswo AlAdhan – als Bild oder PDF teilbar
 - Der Adhan zu jedem Gebet, mit siebzehn Aufnahmen oder deiner eigenen, einer Erinnerung davor und Schlummern, das nur anbietet, was die Gebetszeit noch hergibt – bis zur letzten Gelegenheit vor ihrem Ende
 - Ein Vollbild-Gebetsalarm über dem Sperrbildschirm, wie ein Wecker, mit Stopp, Schlummern und Gebet eintragen
 - Das Telefon für das Gebet selbst stummschalten und den Ton danach von selbst zurückkommen lassen – „Bitte nicht stören“ ab dem Adhan oder ein paar Minuten davor, mit eigener Dauer für das Freitagsgebet
@@ -156,15 +156,15 @@ DEINS
 - Android, iPhone, iPad und Mac, in 13 Sprachen, Arabisch und Urdu vollständig von rechts nach links
 - Hell, dunkel und tiefschwarz, sechs Farbthemen, deine eigene Akzentfarbe und Material You – oder Himmel, das die ganze App aus dem Himmel über dem Countdown malt und sich mit der Stunde wandelt – realistisch oder lebhaft
 
-Das Netz wird nur genutzt, wenn du es wählst: ein Anbieter für Gebetszeiten (AlAdhan, Türkiye Takvimi oder die Landestabellen für Schweden, Marokko, Algerien, Singapur, Malaysia und Indonesien), die Ortssuche über OpenStreetMap Nominatim und das Herunterladen von Koranseiten, Übersetzungen, Tafsir und Rezitationen. Deine Koordinaten bleiben auf deinem Gerät.
+Übers Netz: Für Schweden, Diyanets Orte, Marokko, Algerien und Indonesien werden die Zeiten auf dem Telefon berechnet, ohne Anfrage; anderswo erhält AlAdhan deine Koordinaten und das Datum. Mit automatischem Standort wird OpenStreetMap nach dem Namen deines Ortes gefragt, die Position auf etwa einen Kilometer gerundet. Die App liest kleine Update-Dateien vom GitHub des Projekts und lädt Koranseiten, Übersetzungen, Tafsir und Rezitationen, wenn du sie anforderst. Nichts geht an den Entwickler.
+
+Mihrab ist unabhängig und mit keiner der Stellen verbunden, deren veröffentlichte Zeitpläne es trifft; es spricht nicht für sie.
 
 Mihrab ist Open Source unter AGPL-3.0-or-later."
 "es-ES","Spanish","Mihrab: compañero musulmán","Horarios de oración, adhan, Corán, duas y alquibla en una app serena y privada.","Mihrab es un compañero sereno para el día de un musulmán: las oraciones, el Corán y el recuerdo de Dios entre ellas, en una sola app privada.
 
-Mantén pulsada cualquier palabra del mushaf y oirás esa palabra recitada. Sigue la palabra recitada mientras se ilumina en la página. Mira el tajwid en color, en Hafs y en Warsh. Mantén tu diario y tus ajustes al día entre tus propios dispositivos, sin cuenta y sin servidor. Y cada línea es de código abierto.
-
 REZAR
-- Horarios de oración para hoy, la semana y el mes siguiente —calculados en tu teléfono, obtenidos de un proveedor o de las tablas nacionales publicadas de Suecia, Marruecos, Argelia, Singapur, Malasia e Indonesia, o de la Diyanet para 8.291 lugares de Turquía y el mundo—, que puedes compartir como imagen o PDF
+- Horarios de hoy, la semana y el mes siguiente: coinciden al minuto impreso con los calendarios publicados por Diyanet, Islamiska Förbundet, los ministerios de Marruecos y Argelia y Kemenag, calculados en el teléfono; MUIS, JAKIM y Türkiye Takvimi tal como se publican; AlAdhan en el resto. Se comparten como imagen o PDF
 - El adhan de cada oración, con diecisiete grabaciones o la tuya propia, un aviso previo y una posposición que solo ofrece lo que permite el tiempo de la oración, hasta una última oportunidad antes de que termine
 - Una alerta de oración a pantalla completa sobre la pantalla de bloqueo, como un despertador, con Detener, Posponer y Registrar oración
 - Silencia el teléfono durante la oración y deja que el sonido vuelva solo — No molestar desde el adhan o unos minutos antes, con su propia duración para el yumu'a
@@ -196,15 +196,15 @@ TUYO
 - Android, iPhone, iPad y Mac, en 13 idiomas, con árabe y urdu totalmente de derecha a izquierda
 - Claro, oscuro y negro puro, seis temas de color, tu propio color de acento y Material You, o Cielo, que pinta toda la app a partir del cielo sobre la cuenta atrás y cambia con la hora, en colores realistas o vibrantes
 
-La red solo se usa cuando tú lo eliges: un proveedor de horarios (AlAdhan, Türkiye Takvimi o las tablas nacionales de Suecia, Marruecos, Argelia, Singapur, Malasia e Indonesia), la búsqueda de lugares con OpenStreetMap Nominatim y la descarga de páginas del Corán, traducciones, tafsir y audio de recitación. Tus coordenadas se quedan en tu dispositivo.
+Por la red: para Suecia, los lugares de Diyanet, Marruecos, Argelia e Indonesia los horarios se calculan en el teléfono, sin ninguna petición; en otros lugares AlAdhan recibe tus coordenadas y la fecha. Con la ubicación automática se pregunta a OpenStreetMap el nombre de tu ciudad, con la posición redondeada a un kilómetro aproximadamente. La app lee pequeños archivos de actualización del GitHub del proyecto y descarga páginas del Corán, traducciones, tafsir y recitaciones cuando lo pides. Nada va al desarrollador.
+
+Mihrab es independiente y no está afiliado a ninguna de las autoridades cuyos calendarios publicados reproduce; no habla en su nombre.
 
 Mihrab es de código abierto con licencia AGPL-3.0-or-later."
 "fr-FR","French","Mihrab : compagnon du musulman","Heures de prière, adhan, Coran, douas et qibla dans une app sereine et privée.","Mihrab est un compagnon serein pour la journée d'un musulman : les prières, le Coran et le rappel d'Allah entre les deux, dans une seule app privée.
 
-Maintenez n'importe quel mot du mushaf et entendez ce seul mot récité. Suivez le mot récité qui s'allume sur la page. Voyez le tajwid en couleur, en Hafs et en Warsh. Gardez votre journal et vos réglages à jour entre vos propres appareils, sans compte et sans serveur. Et chaque ligne du code est open source.
-
 PRIER
-- Les heures de prière du jour, de la semaine et du mois à venir — calculées sur votre téléphone, fournies par un service ou tirées des tables nationales publiées pour la Suède, le Maroc, l'Algérie, Singapour, la Malaisie, l'Indonésie et la Diyanet (8 291 lieux) — à partager en image ou en PDF
+- Les heures du jour, de la semaine et du mois à venir — conformes à la minute imprimée aux horaires publiés par Diyanet, Islamiska Förbundet, les ministères du Maroc et de l’Algérie et Kemenag, calculées sur le téléphone ; MUIS, JAKIM et Türkiye Takvimi tels que publiés ; AlAdhan ailleurs — à partager en image ou en PDF
 - L'adhan de chaque prière, avec dix-sept enregistrements ou le vôtre, un rappel avant et un report qui ne propose que ce que le temps de la prière permet encore, jusqu'à une dernière chance avant sa fin
 - Une alerte de prière plein écran par-dessus l'écran verrouillé, comme un réveil, avec Arrêter, Répéter et Consigner la prière
 - Le téléphone en silence pour la prière elle-même, et le son qui revient tout seul — Ne pas déranger dès l'adhan ou quelques minutes avant, avec sa propre durée pour le joumou'a
@@ -236,15 +236,15 @@ SE SOUVENIR
 - Android, iPhone, iPad et Mac, en 13 langues, dont l'arabe et l'ourdou entièrement de droite à gauche
 - Clair, sombre et noir pur, six thèmes de couleur, votre couleur d'accent et Material You – ou Ciel, qui peint toute l'app d'après le ciel au-dessus du compte à rebours et change avec l'heure (réaliste ou vif)
 
-Le réseau n'est utilisé que lorsque vous le choisissez : un service d'heures de prière (AlAdhan, Türkiye Takvimi ou les tables nationales de la Suède, du Maroc, de l'Algérie, de Singapour, de la Malaisie et de l'Indonésie), la recherche de lieux via OpenStreetMap Nominatim, et le téléchargement des pages du Coran, des traductions, des tafsirs et des récitations. Vos coordonnées restent sur votre appareil.
+Sur le réseau : pour la Suède, les lieux de Diyanet, le Maroc, l’Algérie et l’Indonésie, les heures sont calculées sur le téléphone, sans requête ; ailleurs, AlAdhan reçoit vos coordonnées et la date. Avec la position automatique, le nom de votre ville est demandé à OpenStreetMap, la position arrondie à environ un kilomètre. L’application lit de petits fichiers de mise à jour sur le GitHub du projet et télécharge pages du Coran, traductions, tafsirs et récitations à votre demande. Rien ne va au développeur.
+
+Mihrab est indépendant : il n’est affilié à aucune des autorités dont il reproduit les horaires publiés et ne parle pas en leur nom.
 
 Mihrab est open source sous licence AGPL-3.0-or-later."
 "hi-IN","Hindi","मिहराब: मुसलमान का साथी","नमाज़ का समय, अज़ान, क़ुरआन, दुआ और क़िबला — एक शांत, निजी ऐप में।","मिहराब एक मुसलमान के दिन का शांत साथी है: नमाज़ें, क़ुरआन और उनके बीच का ज़िक्र — एक ही निजी ऐप में।
 
-मुसहफ़ में किसी भी शब्द को दबाए रखें और सिर्फ़ उसी शब्द की तिलावत सुनें। पढ़ा जा रहा शब्द पन्ने पर चमकता है, ताकि आप साथ-साथ चल सकें। तजवीद को रंगों में देखें, हफ़्स और वर्श दोनों में। अपनी डायरी और सेटिंग्स को अपने ही डिवाइसों के बीच एक जैसा रखें — बिना अकाउंट और बिना सर्वर के। और इसकी हर पंक्ति ओपन सोर्स है।
-
 नमाज़
-- आज, इस हफ़्ते और आने वाले महीने के नमाज़ के समय — फ़ोन पर गणना, किसी प्रदाता से, या स्वीडन, मोरक्को, अल्जीरिया, सिंगापुर, मलेशिया और इंडोनेशिया की प्रकाशित राष्ट्रीय तालिकाओं से, या तुर्की और दुनिया की 8,291 जगहों के लिए दियानत की तालिकाओं से — तस्वीर या PDF के रूप में साझा करें
+- आज, इस हफ़्ते और अगले महीने का नमाज़ का समय — दियानत, इस्लामिस्का फ़ोरबुंदेत, मोरक्को और अल्जीरिया के मंत्रालयों और केमेनाग की प्रकाशित समय-सारणी से छपे मिनट तक मेल खाता, फ़ोन पर गणना; MUIS, JAKIM और Türkiye Takvimi जैसे प्रकाशित; बाकी जगह AlAdhan — चित्र या PDF के रूप में साझा करें
 - हर नमाज़ के लिए अज़ान: सत्रह रिकॉर्डिंग या आपकी अपनी, पहले से याद दिलाना और ऐसा स्नूज़ जो उतना ही देता है जितना नमाज़ का वक़्त बाक़ी हो, वक़्त ख़त्म होने से पहले आख़िरी मौक़े तक
 - लॉक स्क्रीन पर अलार्म घड़ी जैसी पूर्ण-स्क्रीन नमाज़ चेतावनी, रोकें, स्नूज़ और नमाज़ दर्ज करें के साथ
 - नमाज़ के दौरान फ़ोन को ख़ामोश करें, और फिर आवाज़ अपने आप लौट आए — अज़ान से या कुछ मिनट पहले से «परेशान न करें», जुमा के लिए अलग अवधि
@@ -276,15 +276,15 @@ Mihrab est open source sous licence AGPL-3.0-or-later."
 - Android, iPhone, iPad और Mac पर, 13 भाषाओं में, अरबी और उर्दू पूरी तरह दाएँ से बाएँ
 - लाइट, डार्क और गहरी काली थीम, छह रंग-थीम, आपका अपना एक्सेंट रंग और Material You — या आकाश, जो काउंटडाउन के ऊपर के आकाश से पूरे ऐप को रंगता है और समय के साथ बदलता है, यथार्थ या चटकीले रंगों में
 
-नेटवर्क का इस्तेमाल सिर्फ़ तब होता है जब आप चुनते हैं: नमाज़ के समय का प्रदाता (AlAdhan, Türkiye Takvimi, या स्वीडन, मोरक्को, अल्जीरिया, सिंगापुर, मलेशिया और इंडोनेशिया की राष्ट्रीय तालिकाएँ), OpenStreetMap Nominatim से जगह की खोज, और क़ुरआन के पन्ने, अनुवाद, तफ़सीर और तिलावत का ऑडियो डाउनलोड करना। आपके निर्देशांक आपके डिवाइस पर ही रहते हैं।
+नेटवर्क पर: स्वीडन, दियानत की जगहों, मोरक्को, अल्जीरिया और इंडोनेशिया के समय फ़ोन पर ही गणना होते हैं, बिना किसी अनुरोध के; बाकी जगह AlAdhan को आपके निर्देशांक और तारीख़ मिलती है। स्वचालित स्थान में आपके शहर का नाम OpenStreetMap से पूछा जाता है, स्थिति लगभग एक किलोमीटर तक गोल करके। ऐप प्रोजेक्ट के GitHub से छोटी अपडेट फ़ाइलें पढ़ता है, और आपके माँगने पर क़ुरआन के पन्ने, अनुवाद, तफ़्सीर और तिलावत डाउनलोड करता है। डेवलपर के पास कुछ नहीं जाता।
+
+मिहराब स्वतंत्र है; जिन संस्थाओं की प्रकाशित समय-सारणी से यह मेल खाता है, उनमें से किसी से इसका कोई संबंध नहीं है और यह उनकी ओर से नहीं बोलता।
 
 मिहराब AGPL-3.0-or-later के तहत ओपन सोर्स है।"
-"id","Indonesian","Mihrab: Pendamping Muslim","Jadwal sholat, adzan, Al-Quran, doa & kiblat dalam satu aplikasi yang privat.","Mihrab adalah pendamping yang tenang bagi hari seorang Muslim: sholat, Al-Quran, dan dzikir di antaranya, dalam satu aplikasi yang menjaga privasi.
-
-Tahan kata apa pun di mushaf dan dengarkan kata itu dibacakan. Ikuti kata yang sedang dibaca saat menyala di halaman. Lihat tajwid berwarna, pada Hafs dan Warsy. Jaga catatan dan pengaturan tetap selaras di antara perangkat Anda sendiri, tanpa akun dan tanpa server. Dan setiap barisnya bersumber terbuka.
+"id","Indonesian","Mihrab: Pendamping Muslim","Jadwal sholat sesuai jadwal Kemenag sampai ke menitnya. Al-Quran, doa, kiblat.","Mihrab adalah pendamping yang tenang bagi hari seorang Muslim: sholat, Al-Quran, dan dzikir di antaranya, dalam satu aplikasi yang menjaga privasi.
 
 SHOLAT
-- Jadwal sholat hari ini, sepekan, dan sebulan ke depan — dihitung di ponsel, dari penyedia, atau dari tabel nasional resmi Swedia, Maroko, Aljazair, Singapura, Malaysia, dan Indonesia, atau Diyanet untuk 8.291 tempat di Turki dan dunia — dapat dibagikan sebagai gambar atau PDF
+- Jadwal hari ini, minggu ini, dan bulan depan — sesuai sampai ke menit yang tercetak dengan jadwal terbitan Diyanet, Islamiska Förbundet, kementerian Maroko dan Aljazair, serta Kemenag, dihitung di ponsel; MUIS, JAKIM, dan Türkiye Takvimi sebagaimana diterbitkan; AlAdhan di tempat lain — bisa dibagikan sebagai gambar atau PDF
 - Adzan untuk setiap waktu sholat, dengan tujuh belas rekaman atau rekaman Anda sendiri, pengingat sebelumnya, dan tunda yang hanya menawarkan sisa waktu sholat, hingga kesempatan terakhir sebelum waktunya habis
 - Pengingat sholat layar penuh di atas layar kunci, seperti jam alarm, dengan Hentikan, Tunda, dan Catat sholat
 - Senyapkan ponsel selama sholat, lalu suaranya kembali dengan sendirinya — Jangan Ganggu sejak adzan atau beberapa menit sebelumnya, dengan durasi tersendiri untuk Jumat
@@ -316,15 +316,15 @@ MILIK ANDA
 - Android, iPhone, iPad, dan Mac, dalam 13 bahasa, dengan bahasa Arab dan Urdu sepenuhnya dari kanan ke kiri
 - Tema terang, gelap, dan hitam pekat, enam tema warna, warna aksen pilihan Anda, dan Material You — atau Langit, yang mewarnai seluruh aplikasi dari langit di atas hitung mundur dan berubah seiring jam, dalam warna realistis atau cerah
 
-Jaringan hanya digunakan saat Anda memilihnya: penyedia jadwal sholat (AlAdhan, Türkiye Takvimi, atau tabel nasional Swedia, Maroko, Aljazair, Singapura, Malaysia, dan Indonesia), pencarian tempat melalui OpenStreetMap Nominatim, serta pengunduhan halaman Al-Quran, terjemahan, tafsir, dan audio tilawah. Koordinat Anda tetap di perangkat Anda.
+Lewat jaringan: untuk Swedia, tempat-tempat Diyanet, Maroko, Aljazair, dan Indonesia, jadwal dihitung di ponsel tanpa permintaan apa pun; di tempat lain AlAdhan menerima koordinat dan tanggal. Dengan lokasi otomatis, nama kota Anda ditanyakan ke OpenStreetMap, dengan posisi dibulatkan sekitar satu kilometer. Aplikasi membaca file pembaruan kecil dari GitHub proyek, dan mengunduh halaman Al-Quran, terjemahan, tafsir, dan tilawah saat Anda minta. Tidak ada yang dikirim ke pengembang.
+
+Mihrab independen dan tidak berafiliasi dengan otoritas mana pun yang jadwal terbitannya dicocokkan, serta tidak berbicara atas nama mereka.
 
 Mihrab bersumber terbuka dengan lisensi AGPL-3.0-or-later."
 "ru-RU","Russian","Mihrab: Спутник мусульманина","Время намазов, азан, Коран, дуа и кибла в одном тихом и приватном приложении.","Mihrab — спокойный спутник мусульманина на весь день: намазы, Коран и поминание Аллаха между ними, в одном приложении, которое бережёт вашу приватность.
 
-Удерживайте любое слово в мусхафе — и услышите, как читается именно это слово. Следите за читаемым словом, которое подсвечивается на странице. Смотрите таджвид в цвете — в мусхафах Хафса и Варша. Журнал и настройки синхронизируются между вашими собственными устройствами без аккаунта и без сервера. И весь код приложения открыт.
-
 НАМАЗ
-- Время намазов на сегодня, на неделю и на месяц вперёд — рассчитанное на телефоне, полученное от поставщика или из опубликованных национальных таблиц Швеции, Марокко, Алжира, Сингапура, Малайзии и Индонезии или таблиц Диянета для 8291 места в Турции и мире; можно поделиться картинкой или PDF
+- Время намазов на сегодня, неделю и месяц вперёд — до напечатанной минуты совпадает с опубликованными расписаниями Диянета, Islamiska Förbundet, министерств Марокко и Алжира и Kemenag и рассчитывается на телефоне; MUIS, JAKIM и Türkiye Takvimi — как опубликованы; в остальных местах AlAdhan. Можно поделиться картинкой или PDF
 - Азан для каждого намаза: семнадцать записей или ваша собственная, напоминание заранее и повтор позже — лишь настолько, насколько позволяет время намаза, вплоть до последней возможности перед его концом
 - Полноэкранное напоминание о намазе поверх экрана блокировки, как будильник, с кнопками «Стоп», «Отложить» и «Отметить намаз»
 - Беззвучный режим на время самого намаза, который выключается сам — режим «Не беспокоить» с азана или за несколько минут до него, с отдельной длительностью для джума
@@ -356,15 +356,15 @@ Mihrab bersumber terbuka dengan lisensi AGPL-3.0-or-later."
 - Android, iPhone, iPad и Mac, 13 языков, арабский и урду полностью справа налево
 - Светлая, тёмная и чёрная темы, шесть цветовых тем, ваш цвет акцента и Material You — или «Небо», которое красит всё приложение по небу над обратным отсчётом и меняется с часом, в реалистичных или ярких цветах
 
-Сеть используется только тогда, когда вы этого хотите: поставщик времени намазов (AlAdhan, Türkiye Takvimi или национальные таблицы Швеции, Марокко, Алжира, Сингапура, Малайзии и Индонезии), поиск мест через OpenStreetMap Nominatim и загрузка страниц Корана, переводов, тафсиров и аудиозаписей чтения. Ваши координаты остаются на вашем устройстве.
+Через сеть: для Швеции, мест Диянета, Марокко, Алжира и Индонезии время рассчитывается на телефоне, без запросов; в остальных местах AlAdhan получает ваши координаты и дату. При автоматическом определении места название города запрашивается у OpenStreetMap, позиция округляется примерно до километра. Приложение читает небольшие файлы обновлений с GitHub проекта и по вашему запросу загружает страницы Корана, переводы, тафсиры и чтения. Разработчику не уходит ничего.
+
+Mihrab независим и не связан ни с одним из ведомств, чьи опубликованные расписания он воспроизводит, и не говорит от их имени.
 
 Mihrab — приложение с открытым исходным кодом под лицензией AGPL-3.0-or-later."
-"sv-SE","Swedish","Mihrab: Muslimens följeslagare","Bönetider, böneutrop, Koranen, duor och qibla i en lugn och privat app.","Mihrab är en lugn följeslagare genom muslimens dag: bönerna, Koranen och åminnelsen däremellan, i en och samma privata app.
-
-Håll fingret på ett ord i mushafen och hör just det ordet läsas. Följ det reciterade ordet när det lyser upp på sidan. Se tajwid i färg, för Hafs och för Warsh. Håll din loggbok och dina inställningar i takt mellan dina egna enheter, utan konto och utan server. Och varenda rad kod är öppen.
+"sv-SE","Swedish","Mihrab: Muslimens följeslagare","Bönetider på minuten enligt Islamiska Förbundets tidtabell. Koran, duor, qibla.","Mihrab är en lugn följeslagare genom muslimens dag: bönerna, Koranen och åminnelsen däremellan, i en och samma privata app.
 
 BE
-- Bönetider för idag, veckan och månaden framåt — uträknade på telefonen, från en källa på nätet eller ur de publicerade nationella tabellerna för Sverige, Marocko, Algeriet, Singapore, Malaysia och Indonesien, eller Diyanets för 8 291 orter i Turkiet och världen — kan delas som bild eller PDF
+- Bönetider för i dag, veckan och månaden framåt — på den tryckta minuten enligt de publicerade tidtabellerna från Diyanet, Islamiska Förbundet, Marockos och Algeriets ministerier och Kemenag, uträknade på telefonen; MUIS, JAKIM och Türkiye Takvimi som de publiceras; AlAdhan på andra platser — att dela som bild eller PDF
 - Böneutrop för varje bön, med sjutton adhan-inspelningar eller en egen, påminnelse före bönen och snooze som bara erbjuder vad bönetiden räcker till, ända till en sista chans innan den går ut
 - Ett böneutrop som tar hela skärmen över låsskärmen, som en väckarklocka, med Stoppa, Snooza och Logga bön
 - Tysta telefonen under själva bönen och låt ljudet komma tillbaka av sig självt — Stör ej från utropet eller några minuter före, med en egen längd för fredagsbönen
@@ -396,15 +396,15 @@ DITT EGET
 - Android, iPhone, iPad och Mac, på 13 språk, med arabiska och urdu helt från höger till vänster
 - Ljust, mörkt och helsvart, sex färgteman, din egen accentfärg och Material You – eller Himmel, som målar hela appen från himlen ovanför nedräkningen och skiftar med timmen — i realistiska eller livfulla färger
 
-Nätet används bara när du väljer det: en källa för bönetider (AlAdhan, Türkiye Takvimi eller de nationella tabellerna för Sverige, Marocko, Algeriet, Singapore, Malaysia och Indonesien), platssökning via OpenStreetMap Nominatim, och nedladdning av Koranens sidor, översättningar, tafsir och recitationsljud. Dina koordinater stannar på din enhet.
+Över nätet: för Sverige, Diyanets orter, Marocko, Algeriet och Indonesien räknas tiderna ut på telefonen, utan någon förfrågan; på andra platser får AlAdhan dina koordinater och datumet. Med automatisk plats frågar appen OpenStreetMap om ortens namn, med positionen avrundad till ungefär en kilometer. Appen läser små uppdateringsfiler från projektets GitHub och laddar ned Koranens sidor, översättningar, tafsir och recitation när du ber om det. Inget skickas till utvecklaren.
+
+Mihrab är oberoende och inte knutet till någon av de myndigheter vars publicerade tidtabeller appen stämmer med, och talar inte för dem.
 
 Mihrab är öppen källkod under AGPL-3.0-or-later."
-"tr-TR","Turkish","Mihrab: Müslümanın Yoldaşı","Namaz vakitleri, ezan, Kuran, dualar ve kıble; sakin ve gizliliğe saygılı.","Mihrab, bir Müslümanın gününe eşlik eden sakin bir yoldaştır: namazlar, Kuran ve aralarındaki zikir, gizliliğinize saygılı tek bir uygulamada.
-
-Mushaftaki herhangi bir kelimeye basılı tutun ve yalnızca o kelimenin okunuşunu dinleyin. Okunan kelimeyi sayfada parlarken takip edin. Tecvidi renkli görün; Hafs ve Verş rivayetinde. Günlüğünüzü ve ayarlarınızı kendi cihazlarınız arasında eşit tutun; hesap yok, sunucu yok. Ve her satırı açık kaynaktır.
+"tr-TR","Turkish","Mihrab: Müslümanın Yoldaşı","Diyanet'in yayımladığı vakitlerle dakikası dakikasına namaz vakitleri ve Kuran.","Mihrab, bir Müslümanın gününe eşlik eden sakin bir yoldaştır: namazlar, Kuran ve aralarındaki zikir, gizliliğinize saygılı tek bir uygulamada.
 
 NAMAZ
-- Bugünün, haftanın ve önümüzdeki ayın namaz vakitleri — telefonunuzda hesaplanır, bir sağlayıcıdan alınır ya da İsveç, Fas, Cezayir, Singapur, Malezya ve Endonezya'nın yayımlanmış resmî tablolarından ya da Türkiye’de ve dünyada 8.291 yer için Diyanet’in takviminden gelir — görsel veya PDF olarak paylaşılabilir
+- Bugünün, haftanın ve önümüzdeki ayın vakitleri — Diyanet, Islamiska Förbundet, Fas ve Cezayir bakanlıkları ve Kemenag’ın yayımladığı takvimlerle basılı dakikasına kadar eşleşir, telefonda hesaplanır; MUIS, JAKIM ve Türkiye Takvimi yayımlandığı gibi; diğer yerlerde AlAdhan — görsel ya da PDF olarak paylaşılabilir
 - Her vakit için ezan: on yedi kayıt ya da kendi kaydınız, vakit öncesi hatırlatma ve yalnızca vaktin yettiği kadar sunulan erteleme, vakit çıkmadan önceki son fırsata kadar
 - Kilit ekranının üzerinde, çalar saat gibi tam ekran namaz uyarısı: Durdur, Ertele ve Namazı kaydet
 - Namaz süresince telefonu sessize alın; ses sonra kendiliğinden geri gelsin — ezandan ya da birkaç dakika önceden Rahatsız Etmeyin, cuma için ayrı süreyle
@@ -436,15 +436,15 @@ SİZİN
 - Android, iPhone, iPad ve Mac'te, Arapça ve Urduca tamamen sağdan sola olmak üzere 13 dilde
 - Açık, koyu ve saf siyah temalar, altı renk teması, kendi vurgu renginiz ve Material You – ya da uygulamanın tamamını geri sayımın üzerindeki gökyüzünden boyayan ve saatle değişen Gökyüzü; gerçekçi ya da canlı renklerle
 
-Ağ yalnızca siz seçtiğinizde kullanılır: bir vakit sağlayıcısı (AlAdhan, Türkiye Takvimi ya da İsveç, Fas, Cezayir, Singapur, Malezya ve Endonezya'nın resmî tabloları), OpenStreetMap Nominatim ile yer arama ve Kuran sayfaları, mealler, tefsirler ile tilavet seslerinin indirilmesi. Koordinatlarınız cihazınızda kalır.
+Ağ üzerinden: İsveç, Diyanet’in yerleri, Fas, Cezayir ve Endonezya için vakitler telefonda hesaplanır, hiçbir istek gönderilmez; diğer yerlerde AlAdhan koordinatlarınızı ve tarihi alır. Otomatik konumda şehrinizin adı OpenStreetMap’e sorulur; konum yaklaşık bir kilometreye yuvarlanır. Uygulama projenin GitHub’ından küçük güncelleme dosyaları okur, istediğinizde Kuran sayfalarını, mealleri, tefsirleri ve tilavetleri indirir. Geliştiriciye hiçbir şey gitmez.
+
+Mihrab bağımsızdır; yayımlanmış takvimleriyle eşleştiği kurumların hiçbiriyle bağlantısı yoktur ve onlar adına konuşmaz.
 
 Mihrab, AGPL-3.0-or-later lisansıyla açık kaynaktır."
 "ur","Urdu","محراب: مسلمان کا رفیق","نماز کے اوقات، اذان، قرآن، دعائیں اور قبلہ — ایک پُرسکون، نجی ایپ میں۔","محراب ایک مسلمان کے دن کا پُرسکون رفیق ہے: نمازیں، قرآن اور ان کے درمیان کا ذکر — ایک ہی نجی ایپ میں۔
 
-مصحف میں کسی بھی لفظ کو دبائے رکھیں اور صرف اسی لفظ کی تلاوت سنیں۔ پڑھا جانے والا لفظ صفحے پر روشن ہوتا ہے، تاکہ آپ ساتھ ساتھ چل سکیں۔ تجوید کو رنگوں میں دیکھیں، حفص اور ورش دونوں میں۔ اپنی ڈائری اور ترتیبات کو اپنے ہی آلات کے درمیان ہم آہنگ رکھیں — بغیر اکاؤنٹ اور بغیر سرور کے۔ اور اس کی ہر سطر اوپن سورس ہے۔
-
 نماز
-- آج، اس ہفتے اور آنے والے مہینے کے نماز کے اوقات — فون پر حساب، کسی فراہم کنندہ سے، یا سویڈن، مراکش، الجزائر، سنگاپور، ملائیشیا اور انڈونیشیا کے شائع شدہ قومی جدولوں سے، یا ترکی اور دنیا بھر کے 8,291 مقامات کے لیے دیانت کے جدولوں سے — تصویر یا PDF کے طور پر شیئر کریں
+- آج، اس ہفتے اور اگلے مہینے کے نماز کے اوقات — دیانت، اسلامسکا فوربوندیت، مراکش اور الجزائر کی وزارتوں اور کیمیناگ کے شائع شدہ اوقات سے چھپے ہوئے منٹ تک مطابق، فون پر حساب؛ MUIS، JAKIM اور Türkiye Takvimi جیسے شائع ہوئے؛ باقی جگہ AlAdhan — تصویر یا PDF کی صورت میں شیئر کریں
 - ہر نماز کے لیے اذان: سترہ ریکارڈنگز یا آپ کی اپنی، پہلے سے یاد دہانی اور ایسا اسنوز جو صرف نماز کے باقی وقت جتنا ملے، وقت ختم ہونے سے پہلے آخری موقع تک
 - لاک اسکرین پر الارم گھڑی کی طرح پوری اسکرین کا نماز الرٹ، روکیں، اسنوز اور نماز درج کریں کے ساتھ
 - نماز کے دوران فون کو خاموش کریں، پھر آواز خود ہی لوٹ آئے — اذان سے یا چند منٹ پہلے سے «ڈسٹرب نہ کریں»، جمعہ کے لیے الگ دورانیہ
@@ -476,15 +476,15 @@ Mihrab, AGPL-3.0-or-later lisansıyla açık kaynaktır."
 - اینڈرائیڈ، آئی فون، آئی پیڈ اور میک پر، 13 زبانوں میں، عربی اور اردو مکمل طور پر دائیں سے بائیں
 - ہلکی، گہری اور خالص سیاہ تھیمز، چھ رنگین تھیمز، آپ کا اپنا نمایاں رنگ اور Material You — یا آسمان، جو الٹی گنتی کے اوپر والے آسمان سے پوری ایپ کو رنگتا ہے اور وقت کے ساتھ بدلتا ہے، حقیقی یا شوخ رنگوں میں
 
-نیٹ ورک صرف تب استعمال ہوتا ہے جب آپ چاہیں: نماز کے اوقات کا فراہم کنندہ (AlAdhan، Türkiye Takvimi، یا سویڈن، مراکش، الجزائر، سنگاپور، ملائیشیا اور انڈونیشیا کے قومی جدول)، OpenStreetMap Nominatim کے ذریعے جگہ کی تلاش، اور قرآن کے صفحات، تراجم، تفاسیر اور تلاوت کی آڈیو ڈاؤن لوڈ کرنا۔ آپ کے نقاط آپ کے آلے پر ہی رہتے ہیں۔
+نیٹ ورک پر: سویڈن، دیانت کے مقامات، مراکش، الجزائر اور انڈونیشیا کے اوقات فون پر حساب ہوتے ہیں، بغیر کسی درخواست کے؛ باقی جگہوں پر AlAdhan کو آپ کے کوآرڈینیٹس اور تاریخ ملتی ہے۔ خودکار مقام کے ساتھ آپ کے شہر کا نام OpenStreetMap سے پوچھا جاتا ہے، مقام تقریباً ایک کلومیٹر تک گول کر کے۔ ایپ پروجیکٹ کے GitHub سے چھوٹی اپڈیٹ فائلیں پڑھتی ہے، اور آپ کے کہنے پر قرآن کے صفحات، تراجم، تفاسیر اور تلاوت ڈاؤن لوڈ کرتی ہے۔ ڈویلپر کو کچھ نہیں جاتا۔
+
+محراب آزاد ہے؛ جن اداروں کے شائع شدہ اوقات سے یہ مطابقت رکھتی ہے، ان میں سے کسی سے اس کا کوئی تعلق نہیں اور یہ ان کی طرف سے بات نہیں کرتی۔
 
 محراب AGPL-3.0-or-later کے تحت اوپن سورس ہے۔"
 "zh-CN","Chinese (Simplified)","Mihrab：穆斯林的日常伴侣","礼拜时间、宣礼、古兰经、祈祷词与朝向，尽在一款安静、私密的应用。","Mihrab 是穆斯林一天中安静的伴侣：礼拜、古兰经，以及其间的记主赞念，尽在一款注重隐私的应用中。
 
-长按经文中的任意一个词，即可单独听到这个词的诵读。诵读时，被读到的词会在页面上亮起，方便跟随。以彩色查看泰吉威德（诵读规则），支持哈夫斯与沃尔什传述。在你自己的设备之间同步日志与设置，无需账户，也不经过服务器。而且每一行代码都是开源的。
-
 礼拜
-- 今天、本周及未来一个月的礼拜时间——可在手机上计算、来自服务提供方，或取自瑞典、摩洛哥、阿尔及利亚、新加坡、马来西亚与印度尼西亚官方公布的国家时间表，或 Diyanet 为土耳其及世界各地 8,291 处公布的时间表——可分享为图片或 PDF
+- 今天、本周和未来一个月的礼拜时间——与 Diyanet、Islamiska Förbundet、摩洛哥和阿尔及利亚宗教部以及 Kemenag 公布的时间表精确到印刷的分钟，在手机上计算；MUIS、JAKIM 和 Türkiye Takvimi 按公布原样；其他地方使用 AlAdhan——可分享为图片或 PDF
 - 每次礼拜的宣礼：十七种录音或你自己的录音，礼拜前提醒，以及只在礼拜时间仍容许时提供的稍后提醒，直到时间结束前的最后机会
 - 锁屏之上的全屏礼拜提醒，如同闹钟，可停止、稍后提醒或记录礼拜
 - 礼拜期间让手机静音，之后自动恢复——从宣礼或提前几分钟开启勿扰模式，主麻礼拜可单独设定时长
@@ -516,6 +516,8 @@ Mihrab, AGPL-3.0-or-later lisansıyla açık kaynaktır."
 - Android、iPhone、iPad 与 Mac，13 种语言，阿拉伯语与乌尔都语完整从右至左显示
 - 浅色、深色与纯黑主题，六种配色主题，自选强调色，以及 Material You——或“天空”，以倒计时上方的天空为整个应用上色，并随时刻变化，可选写实或鲜明配色
 
-只有在你选择时才会使用网络：礼拜时间服务（AlAdhan、Türkiye Takvimi，或瑞典、摩洛哥、阿尔及利亚、新加坡、马来西亚与印度尼西亚的国家时间表）、通过 OpenStreetMap Nominatim 搜索地点，以及下载古兰经页面、译本、经注与诵读音频。你的坐标只保存在你的设备上。
+网络方面：瑞典、Diyanet 所列地点、摩洛哥、阿尔及利亚和印度尼西亚的时间在手机上计算，不发出任何请求；其他地方由 AlAdhan 接收你的坐标和日期。使用自动定位时，会向 OpenStreetMap 查询所在城镇的名称，位置约取整到一公里。应用会从项目的 GitHub 读取小型更新文件，并在你需要时下载古兰经页面、译本、经注与诵读。没有任何内容发给开发者。
+
+Mihrab 是独立的，与其所匹配公布时间表的任何机构均无隶属关系，也不代表它们发言。
 
 Mihrab 以 AGPL-3.0-or-later 许可开源。"

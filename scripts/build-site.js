@@ -43,6 +43,7 @@
 const fs = require('fs');
 const path = require('path');
 const { shippedVersion } = require('./sync-version');
+const { fillPage, figTokens } = require('./copy/site');
 
 const ROOT = path.join(__dirname, '..');
 const DOCS = path.join(ROOT, 'docs');
@@ -239,6 +240,43 @@ function patchBlock(text, name, body) {
   return text.replace(re, `$1${body}\n$2`);
 }
 
+/**
+ * A country's own section on its language's page, after the Swedish one on
+ * the English page: what Mihrab gives there, matched to the authority people
+ * there pray by, with the figures from the certification record. Drafts are
+ * marked for review by a native speaker (`review: "native"` in strings.json)
+ * until someone who reads the language has signed them off.
+ */
+function country(c, code) {
+  // **bold** and [text](https://…) — all the markup a drafted section needs
+  const body = s =>
+    figTokens(esc(s))
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\[([^\]]+)\]\((https:\/\/[^)\s]+|#[\w-]+)\)/g, '<a href="$2">$1</a>');
+  return `<section class="sweden" id="${c.id}"${c.lang ? ` lang="${c.lang}"` : ''}${c.review ? ` data-review="${c.review}"` : ''}>
+${c.review ? `<!-- DRAFT: needs review by a native ${code} speaker before it is relied on -->\n` : ''}  <div class="wrap">
+    <p class="eyebrow">${esc(c.eyebrow)}</p>
+    <h2>${esc(c.h2)}</h2>
+    <p class="lede">${body(c.lede)}</p>
+    <div class="cols">
+${c.cards
+  .map(
+    k => `      <article class="card">
+        <h3>${esc(k.h3)}</h3>
+        <ul>
+${k.items.map(i => `          <li>${body(i)}</li>`).join('\n')}
+        </ul>
+      </article>`,
+  )
+  .join('\n')}
+    </div>
+    <p class="note">${body(c.note)}</p>
+  </div>
+</section>
+
+`;
+}
+
 function ld(obj) {
   return JSON.stringify(obj, null, 2);
 }
@@ -419,7 +457,7 @@ ${t.features.cards
   </div>
 </section>
 
-<section class="privacy">
+${t.country ? country(t.country, code) : ''}<section class="privacy">
   <div class="wrap">
     <p class="eyebrow">${esc(t.privacy.eyebrow)}</p>
     <h2>${esc(t.privacy.h2)}</h2>
@@ -521,13 +559,13 @@ function build() {
       text = patchBlock(text, 'hreflang', hreflang(langs));
       text = patchBlock(text, 'langpicker', picker(langs, code));
       text = patchBlock(text, 'gallery', gallery(code, l));
-      files.set(file, text);
+      files.set(file, fillPage(text, code));
       continue;
     }
     if (!l.h1) throw new Error(`${code}: no strings, and no hand-written page`);
     files.set(
       path.join(DOCS, code, 'index.html'),
-      renderPage(code, langs, version),
+      fillPage(renderPage(code, langs, version), code),
     );
   }
   files.set(path.join(DOCS, 'sitemap.xml'), sitemap(langs));

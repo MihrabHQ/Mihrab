@@ -1,0 +1,30 @@
+{
+  "android": {
+    "en-US": {
+      "title": "Mihrab: The Muslim Companion",
+      "short_description": "Prayer times matching Diyanet, Kemenag & more to the minute. Quran, dua, qibla.",
+      "full_description": "@full.en.txt"
+    },
+    "tr-TR": {
+      "short_description": "Diyanet'in yayımladığı vakitlerle dakikası dakikasına namaz vakitleri ve Kuran.",
+      "_review": "native"
+    },
+    "id": {
+      "short_description": "Jadwal sholat sesuai jadwal Kemenag sampai ke menitnya. Al-Quran, doa, kiblat.",
+      "_review": "native"
+    },
+    "sv-SE": {
+      "short_description": "Bönetider på minuten enligt Islamiska Förbundets tidtabell. Koran, duor, qibla.",
+      "_review": "native"
+    }
+  },
+  "ios": {
+    "en-US": {
+      "name": "Mihrab: The Muslim Companion",
+      "subtitle": "Prayer Times, Quran & Qibla",
+      "keywords": "salah,namaz,adhan,azan,timetable,dua,dhikr,tasbih,mushaf,tajweed,islam,ramadan,hijri,widget,mosque",
+      "promotional_text": "Prayer times that match the published timetables of Diyanet, Kemenag, Islamiska Förbundet, Habous and Algeria’s ministry to the minute: {{total.off}} of {{total.timesCompact}} off.",
+      "description": "@full.en.txt"
+    }
+  }
+}

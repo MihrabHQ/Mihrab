@@ -8,6 +8,7 @@ By taking part you agree to uphold our [Code of Conduct](CODE_OF_CONDUCT.md).
 
 Read these in order. Later items assume earlier.
 
+0. **[AGENTS.md](AGENTS.md)** — the short list of what must not be forgotten, for people and AI agents alike: what comes first, the hard rules, and the checks to run before you are done.
 1. **[ARCHITECTURE.md](ARCHITECTURE.md)** — the technical reference: architecture, stack, source layout, native modules, and the patterns that keep prayer data correct. Read it first.
 2. **[docs/design/principles.md](docs/design/principles.md)** — the five design principles. Every visual decision routes through these.
 3. **[docs/DISTRIBUTION.md](docs/DISTRIBUTION.md)** — how releases reach the App Store, Play Store, F-Droid, GitHub Releases (the APK source Obtainium and OpenAPK pull from), and Homebrew (macOS). Skip if you're not touching the release pipeline.

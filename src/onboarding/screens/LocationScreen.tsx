@@ -100,7 +100,7 @@ export function LocationScreen({
         title={t('onboarding.location.title', 'Where are you?')}
         body={t(
           'onboarding.location.body',
-          'Prayer times depend on where you stand. Your coordinates are encrypted on this device and never leave it.',
+          'Prayer times depend on where you stand. Your coordinates are encrypted on this device, and go only to a service that needs them to answer — never to us.',
         )}
       />
 

@@ -32,6 +32,26 @@
 
 </div>
 
+<!-- accuracy:start -->
+<div align="center">
+
+<a href="https://github.com/MihrabHQ/mihrab-methods"><img src="branding/badges/certification.svg" alt="certified: 0 of 71,896,761 times off the printed minute"></a>
+
+Prayer times computed with **[mihrab-methods](https://github.com/MihrabHQ/mihrab-methods)**, the authorities’ own methods checked against every time they have published.
+
+</div>
+
+| Matches the published timetable of | Times checked | Off the printed minute |
+|---|---:|---:|
+| Islamiska Förbundet (Sweden), and Diyanet’s tables for Sweden | 1,453,434 | **0** |
+| Diyanet, Türkiye and worldwide | 69,999,603 | **0** |
+| Morocco’s Ministry of Habous and Islamic Affairs | 75,768 | **0** |
+| Algeria’s Ministry of Religious Affairs and Wakfs | 101,184 | **0** |
+| Indonesia’s Kemenag | 266,772 | **0** |
+
+<sub>Last checked 18 October 2026. Generated from mihrab-methods’ <code>certification.json</code> by <code>scripts/build-copy.js</code>. Mihrab is independent and not affiliated with any of these authorities.</sub>
+<!-- accuracy:end -->
+
 ---
 
 ## Screenshots
@@ -63,7 +83,7 @@
 - **Adhan & reminders** — 17 built-in adhan recordings (or import your own), a pre-prayer reminder window, and exact-alarm scheduling so the adhan lands on time even under aggressive battery managers. Each prayer decides how it speaks — adhan, a plain alert, or silent — and can be changed for just the next one from Today. On Android the adhan can play as an alarm, so it is heard with the phone on silent or vibrate.
 - **Snooze that knows when the prayer ends** — Snooze from the notification or the full-screen alert: 10 minutes at a tap, or 5, 15, 30 or 60. Only lengths that still leave at least 15 minutes of the prayer are offered; when none does, the button becomes "Last chance to pray …", which comes back 15 or 5 minutes before the time runs out. Fajr ends at sunrise, Isha at the next Fajr.
 - **A full-screen prayer alert** — Like an alarm clock, over the lock screen: the prayer, the next one under it, Stop, Snooze and Log prayer. On Android it is its own screen, painted in that prayer's sky; on iOS 26 and later it rings as an AlarmKit alarm, through silent mode and Focus. Offered in the first-run walkthrough, off until you say so.
-- **Sources, including national ones** — AlAdhan, on-device calculation (Adhan JS), or a national authority. **Sweden** (Islamiska Förbundet) is calculated on the phone, offline: the International Prayer Times Congress method as Diyanet computes the Swedish tables Islamiska Förbundet publishes, at the point each of its 108 cities is computed at — on the printed minute for every time of Diyanet's and Islamiska Förbundet's timetables over 2024–2027 ([source: mihrab-methods](https://github.com/MihrabHQ/mihrab-methods)). **Diyanet** is calculated the same way for 8,291 of the places it lists — every district of Türkiye and Northern Cyprus and 7,252 places in 197 other countries — on the printed minute for every time of its tables over 2024–2027 (70 million times); further from any of them, its method is calculated for your own spot. Automatic picks it in Türkiye and Northern Cyprus, and wherever it lists a place near you and your country has no source of its own (unless you have chosen a calculation method yourself). **Morocco** (the Ministry of Habous and Islamic Affairs), **Algeria** (the Ministry of Religious Affairs and Wakfs, 68 cities), **Indonesia** (Kemenag, 517 regencies and cities), **Singapore** (MUIS), **Malaysia** (JAKIM's e-Solat, all 59 zones) and **Türkiye Takvimi** (namazvakti.com, cities worldwide) serve their published tables taken minute for minute. Every one of those tables comes from this repo, never from the authority directly — refreshed by workflows here, Morocco daily, the others weekly and more often when a new year's table is due — and is matched to your nearest listed city; behind it, the authority's own free API where it has one, then the authority's own method computed on the phone, checked to the minute against its table every week ([where each comes from](docs/prayer-times-sources.md)). "Automatic" picks the right one for where you are, and a source pinned for one country quietly gives way to AlAdhan outside it.
+- **Times that match your authority's timetable** — **Sweden** (Islamiska Förbundet), **Diyanet** (Türkiye and its places worldwide), **Morocco** (the Ministry of Habous and Islamic Affairs), **Algeria** (the Ministry of Religious Affairs and Wakfs) and **Indonesia** (Kemenag) are calculated on the phone with the authority's own method from [mihrab-methods](https://github.com/MihrabHQ/mihrab-methods), on the printed minute for every time they were checked against (the table at the top). **Singapore** (MUIS), **Malaysia** (JAKIM) and **Türkiye Takvimi** (namazvakti.com) are their published tables, taken minute for minute from this repo for your nearest listed city, with the authority's own service as a backup. Everywhere else: AlAdhan, or calculation on the device (Adhan JS). "Automatic" picks the right one for where you are, and a source pinned for one country quietly gives way to AlAdhan outside it ([where each comes from](docs/prayer-times-sources.md)).
 - **Says when it is standing in** — If the table you chose has nothing for today, the phone calculates the day with that authority's own method and says so, on the source row and under the month. Türkiye Takvimi warns when no listed city is near enough.
 - **24 calculation methods, or your own angles** — The 17 AlAdhan methods plus Dubai, JAKIM, Kemenag, Tunisia, Portugal, Jordan and Sweden (the Istanbul congress method Diyanet computes Islamiska Förbundet's tables by, within a minute by the method alone and on the printed minute with its yearly correction list — [mihrab-methods](https://github.com/MihrabHQ/mihrab-methods)), each tuned to what that authority publishes and checked against it every week; hill towns are computed at their height, and Umm al-Qura's Isha moves to two hours in Ramadan as it does in Makkah. Or set the Fajr and Isha angles yourself.
 - **High latitudes** — Where the summer sun never sinks far enough for Fajr and Isha, choose the rule: the angle-based share of the night (the default), the middle of the night, or a seventh of it. Polar days and nights get times rather than blanks.
@@ -112,7 +132,7 @@
 - **Sync between your own devices** — Pair by scanning a QR code (or copying it), and your journal, streaks, fasts, notes and settings stay in step. No account, no server of ours: the devices write **sealed** files into a folder you already keep in sync — Syncthing, Nextcloud, whatever you use — and each device holds a key that never leaves it, so what passes through that folder is unreadable to anything but the devices you paired. Choose how often it runs: on open, every 15 minutes, hourly, daily, or never.
 - **Backup and restore** — Export everything as a file you keep, and import it back, on any platform.
 - **Your data survives reinstalls** — Settings, journal, bookmarks and khatmah ride Android Auto Backup and device-to-device transfer; large re-downloadable content stays out of your backup quota.
-- **Privacy by design** — No ads, no analytics, no tracking, no account. Coordinates and prayer history are encrypted on-device; nothing is shipped off your phone that you did not ask to send.
+- **Privacy by design** — No ads, no analytics, no tracking, no account, and nothing sent to the developer. Location settings and sensitive records are encrypted on the device. Coordinates go only where an answer needs them — to AlAdhan where it is the source, and, rounded to about a kilometre, to OpenStreetMap to name your town — as the [privacy policy](PRIVACY_POLICY.md) lists in full.
 
 ### The app itself
 

@@ -1,0 +1,46 @@
+Prayer times that match the published timetable to the printed minute: Diyanet’s in Türkiye and worldwide, Islamiska Förbundet’s in Sweden, and those of Morocco’s Ministry of Habous, Algeria’s Ministry of Religious Affairs and Indonesia’s Kemenag.
+Each authority’s own method is calculated on your phone and checked, day by day, against its published timetables: {{total.off}} of {{total.timesCompact}} times off the printed minute, last checked {{total.checkedAtLong}}.
+Singapore (MUIS), Malaysia (JAKIM) and Türkiye Takvimi are their published tables, used as printed. Everywhere else, times come from AlAdhan or a calculation method you choose, with per-prayer offsets to match your mosque.
+
+Around the prayers, Mihrab is a calm companion for a Muslim’s day: the Quran, and the remembrance in between, with no ads and no account.
+
+PRAY
+- Today, the week and the month ahead — shareable as an image or a PDF
+- The adhan for each prayer, from built-in recordings or your own, a reminder before it, and a snooze that offers only what the prayer’s time still allows
+[android]- A full-screen prayer alert over the lock screen, like an alarm clock, with Stop, Snooze and Log prayer
+[android]- Silence the phone for the prayer itself and let it come back on its own, with its own length for Jumu'ah
+[android]- A pinned countdown to the next prayer on the lock screen and in the notification shade
+[ios]- A prayer alert that rings like an alarm clock, through silent mode and Focus (iOS 26 and later)
+[ios]- A Live Activity counting down to the next prayer, on the Lock Screen and in the Dynamic Island
+- Hanafi or standard Asr, and a minute offset for each prayer
+- Qibla compass with signal strength and a cross-check against the sun
+- Log each prayer with one tap; the journal keeps the record, the streak and the graph
+[android]- Home-screen widgets for the prayer times, today's log, the Hijri date, tasbih and reading
+[ios]- Home Screen widgets for the prayer times, today's log, the Hijri date, tasbih and reading
+
+READ AND LISTEN
+- The Madinah mushaf, drawn as text from the King Fahd Complex's page fonts and sharp at any size — and Warsh, Qalun and Shu'bah beside it
+- Tajweed colours, every rule explained — on Hafs and on Warsh
+- The word reader: hold a word to hear it read on its own
+- A choice of reciters, and for those with word timings, the recited word lit on the page
+- Tilawah: surah into surah with the screen off, with a sleep timer and a speed control
+- Translations and classical tafsir, kept for offline reading
+- Memorisation tools, bookmarks, and khatmah plans that follow the page you are on
+
+REMEMBER
+- Duas from Hisn al-Muslim, with transliteration and translation
+- A tasbih counter for the dhikr after prayer and beyond
+- A fasting log for Ramadan and the Sunnah fasts, with reminders
+- The Hijri calendar with Ramadan, Eid and Jumu'ah
+
+YOURS
+- No ads, no analytics, no trackers, no account
+- Sync between your own devices with no account and no server of ours: sealed files in a folder you already keep in sync
+- Backup and restore to a file you keep
+[android]- Android, iPhone, iPad and Mac, with Arabic and Urdu fully right-to-left
+[ios]- iPhone, iPad and Mac, with Arabic and Urdu fully right-to-left
+
+WHAT GOES OVER THE NETWORK
+Where your times come from decides what is sent. For Sweden, Diyanet’s places, Morocco, Algeria and Indonesia the times are calculated on the phone and no prayer-time request is made. Elsewhere, AlAdhan (api.aladhan.com) receives your coordinates and the date. Malaysia’s and Singapore’s tables come from Mihrab’s GitHub repository by city, with the authority’s own service as a backup; Türkiye Takvimi by a map tile around you, and namazvakti.com only a city’s number. With automatic location, your city’s name is looked up from your coordinates through OpenStreetMap Nominatim; place search sends what you type. The app checks Mihrab’s GitHub repositories for correction-list and Hijri-date updates, and downloads Quran pages, translations, tafsir and recitation when you ask. Nothing is sent to the developer.
+
+Mihrab is independent. It is not affiliated with or endorsed by Diyanet, Islamiska Förbundet, the Moroccan or Algerian ministries, Kemenag, MUIS, JAKIM or Türkiye Takvimi: it matches their published timetables and does not speak for them. Open source under AGPL-3.0-or-later.

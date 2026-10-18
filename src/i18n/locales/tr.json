@@ -1631,7 +1631,7 @@
     },
     "location": {
       "title": "Neredesiniz?",
-      "body": "Namaz vakitleri bulunduğunuz yere bağlıdır. Koordinatlarınız bu cihazda şifrelenir ve cihazdan asla çıkmaz.",
+      "body": "Namaz vakitleri bulunduğunuz yere bağlıdır. Koordinatlarınız bu cihazda şifrelenir ve yalnızca cevap vermek için onlara ihtiyaç duyan bir hizmete gider — bize asla.",
       "ready": "Bugün {{city}}"
     },
     "salamA11y": "Es-selâmü aleyküm ve rahmetullâhi teâlâ ve berekâtüh",

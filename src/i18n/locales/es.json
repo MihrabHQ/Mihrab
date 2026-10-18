@@ -1632,7 +1632,7 @@
     },
     "location": {
       "title": "¿Dónde estás?",
-      "body": "Los tiempos de oración dependen de dónde estés. Tus coordenadas se cifran en este dispositivo y nunca salen de él.",
+      "body": "Los tiempos de oración dependen de dónde estés. Tus coordenadas se cifran en este dispositivo y solo van a un servicio que las necesita para responder, nunca a nosotros.",
       "ready": "Hoy en {{city}}"
     },
     "salamA11y": "As-salāmu ʿalaykum wa raḥmatu llāhi taʿālā wa barakātuh",

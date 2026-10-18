@@ -450,3 +450,19 @@ footer .colophon {
 [dir="rtl"] .group li { padding: 0 20px 0 0; }
 [dir="rtl"] .group li::before { left: auto; right: 0; }
 [dir="rtl"] .hero-art { transform: scaleX(-1); }
+
+/* ---- accuracy: the certification table, generated from mihrab-methods' record ---- */
+.accuracy-section { background: var(--surface); }
+.table-scroll { overflow-x: auto; margin: 26px 0 8px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); }
+table.accuracy { width: 100%; border-collapse: collapse; font-size: 15px; font-variant-numeric: tabular-nums; }
+table.accuracy caption { position: sticky; left: 0; text-align: start; padding: 14px 16px 6px; color: var(--ink-soft); font-size: 14px; }
+table.accuracy th, table.accuracy td { padding: 9px 14px; text-align: start; border-top: 1px solid var(--line); vertical-align: top; }
+table.accuracy thead th { font-size: 13px; font-weight: 600; color: var(--ink-soft); border-top: 0; }
+table.accuracy td:nth-child(n+3), table.accuracy thead th:nth-child(n+3) { text-align: end; white-space: nowrap; }
+table.accuracy td:last-child, table.accuracy thead th:last-child { text-align: start; }
+table.accuracy tr.cont td, table.accuracy tr.cont th { border-top-style: dashed; }
+table.accuracy tbody th { font-weight: 600; white-space: nowrap; }
+table.accuracy tfoot td { font-weight: 600; }
+.accuracy-section .cols { margin-top: 28px; }
+.developers { background: var(--surface-2); }
+.developers .cmd code { font-size: 15px; }

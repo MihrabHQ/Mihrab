@@ -1632,7 +1632,7 @@
     },
     "location": {
       "title": "Où êtes-vous ?",
-      "body": "Les heures de prière dépendent de l’endroit où vous êtes. Vos coordonnées sont chiffrées sur cet appareil et ne le quittent jamais.",
+      "body": "Les heures de prière dépendent de l’endroit où vous êtes. Vos coordonnées sont chiffrées sur cet appareil et ne vont qu’à un service qui en a besoin pour répondre — jamais à nous.",
       "ready": "Aujourd’hui à {{city}}"
     },
     "salamA11y": "As-salāmu ʿalaykum wa raḥmatu llāhi taʿālā wa barakātuh",

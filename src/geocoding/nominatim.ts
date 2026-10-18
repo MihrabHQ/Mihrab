@@ -233,15 +233,28 @@ export function cleanLocalityName(raw: string): string {
   return name.replace(/[\s,;·]+$/, '').trim() || raw.trim();
 }
 
-/** Reverse geocode coordinates to a locality. */
+/**
+ * How precisely a fix is sent to be named: two decimals, about a kilometre.
+ *
+ * The lookup only has to answer "which town", and it runs on its own with
+ * automatic location — nobody asked to send their position. So it is sent
+ * no finer than a town needs: a grid of about 1.1 km, a neighbourhood, never
+ * the doorstep the GPS fix can point at. The fix itself is not changed; the
+ * prayer times are computed for it on the phone or by the provider.
+ */
+export const REVERSE_LOOKUP_DECIMALS = 2;
+export const coarseForLookup = (degrees: number): string =>
+  degrees.toFixed(REVERSE_LOOKUP_DECIMALS);
+
+/** Reverse geocode coordinates to a locality (sent coarse — `coarseForLookup`). */
 export async function reverseLocality(
   latitude: number,
   longitude: number,
 ): Promise<ReverseLocality> {
   const url = `https://nominatim.openstreetmap.org/reverse?lat=${encodeURIComponent(
-    String(latitude),
+    coarseForLookup(latitude),
   )}&lon=${encodeURIComponent(
-    String(longitude),
+    coarseForLookup(longitude),
   )}&format=json&addressdetails=1&accept-language=${encodeURIComponent(
     localityLanguages(),
   )}`;

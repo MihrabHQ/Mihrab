@@ -100,7 +100,7 @@
       "name": "İnternetsiz çalışır mı?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Evet. Konum belirlendikten sonra vakitler cihazda hesaplanır ve bildirimler yerel olarak planlanır."
+        "text": "Evet. İsveç, Diyanet, Fas, Cezayir ve Endonezya vakitleri telefonda hesaplanır; AlAdhan ile önümüzdeki yıl Wi‑Fi’da indirildikten sonra saklanır. Bildirimler yerel olarak planlanır."
       }
     },
     {
@@ -347,7 +347,7 @@
     <div class="cols">
       <article class="card">
         <h3>Kıl</h3>
-        <p>Sıradaki namaza geri sayımla namaz vakitleri, her namaz için ezan, kıble pusulası, ana ekran widget'ları — ve her namaz tek dokunuşla kaydedilir. Çalar saat gibi tam ekran bir namaz uyarısı, her namaz için ezan, uyarı ya da sessiz seçimi ve Android'de namazın kendisi sırasında sessize alınan telefon. Erteleme yalnızca vaktin yettiği kadar sunulur; vakit çıkmadan önce bir “son fırsat” kalır. Vakitler AlAdhan, cihazda hesaplama ya da İsveç, Diyanet (Türkiye’de ve dünyada 8.291 yer), Fas, Cezayir, Singapur, Malezya, Endonezya ve Türkiye Takvimi’nin yayımlanmış takvimlerinden.</p>
+        <p>Sıradaki namaza geri sayımla namaz vakitleri, her namaz için ezan, kıble pusulası, ana ekran widget'ları — ve her namaz tek dokunuşla kaydedilir. Çalar saat gibi tam ekran bir namaz uyarısı, her namaz için ezan, uyarı ya da sessiz seçimi ve Android'de namazın kendisi sırasında sessize alınan telefon. Erteleme yalnızca vaktin yettiği kadar sunulur; vakit çıkmadan önce bir “son fırsat” kalır. Vakitler Diyanet, İsveç, Fas ve Cezayir bakanlıkları ve Kemenag’ın yayımladığı takvimlerle basılı dakikasına kadar eşleşir ve telefonda hesaplanır; MUIS, JAKIM ve Türkiye Takvimi yayımlandığı gibi; diğer yerlerde AlAdhan.</p>
       </article>
       <article class="card">
         <h3>Oku ve dinle</h3>
@@ -365,10 +365,31 @@
   </div>
 </section>
 
+<section class="sweden" id="turkiye" data-review="native">
+<!-- DRAFT: needs review by a native tr speaker before it is relied on -->
+  <div class="wrap">
+    <p class="eyebrow">Türkiye’de namaz vakitleri</p>
+    <h2>Diyanet’in takvimiyle, dakikası dakikasına</h2>
+    <p class="lede">Çoğu namaz vakti uygulaması genel bir yöntemle hesaplar ve caminizin takip ettiği takvimden bir iki dakika sapar. Mihrab, Türkiye’de <strong>Diyanet’in yayımladığı vakitlerle</strong> eşleşir: Diyanet’in kendi hesaplama yöntemi telefonda uygulanır ve yayımlanan takvimlerle gün gün karşılaştırılır — <!--fig:diyanet.years-->2024–2027<!--/fig--> için kontrol edilen <!--fig:diyanet.timesCompact-->69,9 milyon<!--/fig--> vaktin <!--fig:diyanet.off-->0<!--/fig--> tanesi basılı dakikadan farklı.</p>
+    <div class="cols">
+      <article class="card">
+        <h3>Nasıl çalışır</h3>
+        <ul>
+          <li>Türkiye’de <strong>Otomatik</strong> kaynak Diyanet’i seçer; ayarlardan elle de seçebilirsiniz.</li>
+          <li>Vakitler size en yakın yer için telefonda hesaplanır: Türkiye’nin ve Kuzey Kıbrıs’ın ilçeleri ve yurt dışında Diyanet’in listelediği yerlerle birlikte <!--fig:diyanet.places-->8.132<!--/fig--> yer.</li>
+          <li>Vakitler için internet bağlantısı gerekmez; hiçbir vakit isteği gönderilmez.</li>
+          <li>Caminiz kendi vakitlerini kullanıyorsa her namaz için dakika ayarı yapabilirsiniz. Türkiye Takvimi de, yayımlandığı hâliyle, kaynak olarak seçilebilir.</li>
+        </ul>
+      </article>
+    </div>
+    <p class="note">Mihrab bağımsızdır; Diyanet İşleri Başkanlığı ile bağlantısı yoktur ve onun adına konuşmaz. Yöntem ve doğrulaması açık kaynaktır: <a href="https://github.com/MihrabHQ/mihrab-methods">mihrab-methods</a>.</p>
+  </div>
+</section>
+
 <section class="privacy">
   <div class="wrap">
     <p class="eyebrow">Gizlilik</p>
-    <h2>Telefonunuzdan istemediğiniz hiçbir şey çıkmaz</h2>
+    <h2>Hesap yok, takip yok — ve her istek yazılı</h2>
     <p class="lede">Günde beş kez nerede olduğunuz, bir namaz uygulamasının dokunduğu en hassas şeydir. Bu kodda hesap, analitik panel, reklam ağı ve çökme raporlama yoktur.</p>
     <div class="cols">
       <article class="card">
@@ -376,8 +397,8 @@
         <p>Ayarlar, kayıtlı yerler (şifreli), namaz günlüğünüz ve oruç kaydınız. Bildirimler yerel olarak planlanır.</p>
       </article>
       <article class="card">
-        <h3>Siz seçtiğinizde ağa çıkar</h3>
-        <p>Seçtiğiniz kaynaktan vakitler, yer araması ve mushaf sayfaları, mealler ve tilavet indirmeleri.</p>
+        <h3>Ağa çıkanlar</h3>
+        <p>Namaz vakitleri: İsveç, Diyanet’in yerleri, Fas, Cezayir ve Endonezya için telefonda hesaplanır; diğer yerlerde AlAdhan koordinatlarınızı alır. Otomatik konumda şehrinizin adı OpenStreetMap’e sorulur; konumunuz yaklaşık bir kilometreye yuvarlanır. Projenin GitHub’ından küçük güncelleme dosyaları ve istediğiniz indirmeler. Geliştiriciye hiçbir şey gitmez.</p>
       </article>
       <article class="card">
         <h3>Hiç yok</h3>
@@ -402,7 +423,7 @@
       </article>
       <article class="card">
         <h3>İnternetsiz çalışır mı?</h3>
-        <p>Evet. Konum belirlendikten sonra vakitler cihazda hesaplanır ve bildirimler yerel olarak planlanır.</p>
+        <p>Evet. İsveç, Diyanet, Fas, Cezayir ve Endonezya vakitleri telefonda hesaplanır; AlAdhan ile önümüzdeki yıl Wi‑Fi’da indirildikten sonra saklanır. Bildirimler yerel olarak planlanır.</p>
       </article>
       <article class="card">
         <h3>Hangi cihazlarda çalışır?</h3>

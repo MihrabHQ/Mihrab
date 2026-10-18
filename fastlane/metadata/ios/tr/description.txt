@@ -1,9 +1,7 @@
 Mihrab, bir Müslümanın gününe eşlik eden sakin bir yoldaştır: namazlar, Kuran ve aralarındaki zikir, gizliliğinize saygılı tek bir uygulamada.
 
-Mushaftaki herhangi bir kelimeye basılı tutun ve yalnızca o kelimenin okunuşunu dinleyin. Okunan kelimeyi sayfada parlarken takip edin. Tecvidi renkli görün; Hafs ve Verş rivayetinde. Günlüğünüzü ve ayarlarınızı kendi cihazlarınız arasında eşit tutun; hesap yok, sunucu yok. Ve her satırı açık kaynaktır.
-
 NAMAZ
-- Bugünün, haftanın ve önümüzdeki ayın namaz vakitleri — telefonunuzda hesaplanır, bir sağlayıcıdan alınır ya da İsveç, Fas, Cezayir, Singapur, Malezya ve Endonezya'nın yayımlanmış resmî tablolarından ya da Türkiye’de ve dünyada 8.291 yer için Diyanet’in takviminden gelir — görsel veya PDF olarak paylaşılabilir
+- Bugünün, haftanın ve önümüzdeki ayın vakitleri — Diyanet, Islamiska Förbundet, Fas ve Cezayir bakanlıkları ve Kemenag’ın yayımladığı takvimlerle basılı dakikasına kadar eşleşir, telefonda hesaplanır; MUIS, JAKIM ve Türkiye Takvimi yayımlandığı gibi; diğer yerlerde AlAdhan — görsel ya da PDF olarak paylaşılabilir
 - Her vakit için ezan: on yedi kayıt ya da kendi kaydınız, vakit öncesi hatırlatma ve yalnızca vaktin yettiği kadar sunulan erteleme, vakit çıkmadan önceki son fırsata kadar
 - Çalar saat gibi çalan namaz uyarısı, sessiz modda ve Odak açıkken bile (iOS 26 ve sonrası)
 - Kilit Ekranı'nda ve Dynamic Island'da bir sonraki namaza geri sayan Canlı Etkinlik
@@ -34,6 +32,8 @@ SİZİN
 - iPhone, iPad ve Mac'te, Arapça ve Urduca tamamen sağdan sola olmak üzere 13 dilde
 - Açık, koyu ve saf siyah temalar, altı renk teması, kendi vurgu renginiz ve Liquid Glass – ya da uygulamanın tamamını geri sayımın üzerindeki gökyüzünden boyayan ve saatle değişen Gökyüzü; gerçekçi ya da canlı renklerle
 
-Ağ yalnızca siz seçtiğinizde kullanılır: bir vakit sağlayıcısı (AlAdhan, Türkiye Takvimi ya da İsveç, Fas, Cezayir, Singapur, Malezya ve Endonezya'nın resmî tabloları), OpenStreetMap Nominatim ile yer arama ve Kuran sayfaları, mealler, tefsirler ile tilavet seslerinin indirilmesi. Koordinatlarınız cihazınızda kalır.
+Ağ üzerinden: İsveç, Diyanet’in yerleri, Fas, Cezayir ve Endonezya için vakitler telefonda hesaplanır, hiçbir istek gönderilmez; diğer yerlerde AlAdhan koordinatlarınızı ve tarihi alır. Otomatik konumda şehrinizin adı OpenStreetMap’e sorulur; konum yaklaşık bir kilometreye yuvarlanır. Uygulama projenin GitHub’ından küçük güncelleme dosyaları okur, istediğinizde Kuran sayfalarını, mealleri, tefsirleri ve tilavetleri indirir. Geliştiriciye hiçbir şey gitmez.
+
+Mihrab bağımsızdır; yayımlanmış takvimleriyle eşleştiği kurumların hiçbiriyle bağlantısı yoktur ve onlar adına konuşmaz.
 
 Mihrab, AGPL-3.0-or-later lisansıyla açık kaynaktır.

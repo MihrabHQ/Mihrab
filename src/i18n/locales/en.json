@@ -1631,7 +1631,7 @@
     },
     "location": {
       "title": "Where are you?",
-      "body": "Prayer times depend on where you stand. Your coordinates are encrypted on this device and never leave it.",
+      "body": "Prayer times depend on where you stand. Your coordinates are encrypted on this device, and go only to a service that needs them to answer — never to us.",
       "ready": "Today in {{city}}"
     },
     "salamA11y": "As-salāmu ʿalaykum wa raḥmatu llāhi taʿālā wa barakātuh",
