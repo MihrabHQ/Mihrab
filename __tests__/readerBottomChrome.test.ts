@@ -88,8 +88,8 @@ describe('the mini player is reserved once, by the layout', () => {
    */
   it('leaves the khatmah pill to the page that draws it', () => {
     const reader = read('src/quran/MushafPhoneReader.tsx');
-    expect(reader).toContain(
-      'geometry.viewportH - (finish ? FOOTER_RESERVE - FOOTER_GAP : 0)',
+    expect(reader).toMatch(
+      /geometry\.viewportH -\s*\(finish\s*\?\s*FOOTER_RESERVE - \(isFullscreen \? FOOTER_GAP : PAGE_FOOTER_GAP\)\s*:\s*0\)/,
     );
     // …and that page's footer comes without the medallion.
     expect(reader).toContain('showPageNumber={false}');
@@ -153,6 +153,31 @@ describe('the Android navigation bar takes the page colour', () => {
     );
     expect(read('src/AppNavigationRoot.tsx')).toContain(
       'setNavigationBarStyle(barIsDark)',
+    );
+  });
+});
+
+describe('fullscreen keeps the page fit it had', () => {
+  const { readFileSync } = require('fs') as typeof import('fs');
+  const { join } = require('path') as typeof import('path');
+  const reader = readFileSync(
+    join(__dirname, '..', 'src/quran/MushafPhoneReader.tsx'),
+    'utf8',
+  );
+
+  it('pulls the page to its ink only out of fullscreen', () => {
+    expect(reader).toContain('tight={!geometry.scrolling && !isFullscreen}');
+  });
+
+  it('keeps the fourteen-point gap below the page in fullscreen', () => {
+    const {
+      FOOTER_GAP,
+      PAGE_FOOTER_GAP,
+    } = require('../src/quran/phonePageGeometry');
+    expect(FOOTER_GAP).toBe(14);
+    expect(PAGE_FOOTER_GAP).toBeLessThan(FOOTER_GAP);
+    expect(reader).toMatch(
+      /footerGap: isFullscreen \? FOOTER_GAP : PAGE_FOOTER_GAP/,
     );
   });
 });

@@ -98,6 +98,7 @@ import { toneIsDark, type MushafTone } from './mushafTone';
 import { useScrubberChrome } from './useScrubberChrome';
 import {
   FOOTER_GAP,
+  PAGE_FOOTER_GAP,
   FOOTER_RESERVE,
   HEADER_RESERVE,
   PAGE_TOP_GAP,
@@ -265,7 +266,10 @@ const PhonePageItem = React.memo(function PhonePageItem({
         riwayah,
         textWidth: geometry.textWidth,
         viewportHeight:
-          geometry.viewportH - (finish ? FOOTER_RESERVE - FOOTER_GAP : 0),
+          geometry.viewportH -
+          (finish
+            ? FOOTER_RESERVE - (isFullscreen ? FOOTER_GAP : PAGE_FOOTER_GAP)
+            : 0),
         scrolling: geometry.scrolling,
       })
     : 0;
@@ -394,7 +398,9 @@ const PhonePageItem = React.memo(function PhonePageItem({
               page={page}
               width={geometry.textWidth}
               height={pageBoxH}
-              tight={!geometry.scrolling}
+              // Out of fullscreen only: that is where the blank above and
+              // below the page was. Fullscreen keeps the fit it had.
+              tight={!geometry.scrolling && !isFullscreen}
               riwayah={riwayah}
               tone={tone}
               accentColor={accent}
@@ -600,6 +606,7 @@ export const MushafPhoneReader = React.memo(function MushafPhoneReader(
       sideInset,
       navPad,
       headerReserve: isFullscreen ? HEADER_RESERVE : PAGE_TOP_GAP,
+      footerGap: isFullscreen ? FOOTER_GAP : PAGE_FOOTER_GAP,
       listH,
     }),
   );

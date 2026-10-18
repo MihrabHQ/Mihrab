@@ -106,11 +106,19 @@ export const FOOTER_RESERVE = 42;
  * and the band of nothing became no band at all, which reads as the text
  * running UNDER the card. A page wants to end, not stop.
  *
- * Eight, down from fourteen: the page keeps its own reserve below its
- * last line's ink (`fitLinesWithInk`), so the band of nothing was this
- * AND that, and the two together read as wasted.
+ * This is fullscreen's, unchanged; out of fullscreen the page keeps
+ * `PAGE_FOOTER_GAP`.
  */
-export const FOOTER_GAP = 8;
+export const FOOTER_GAP = 14;
+
+/**
+ * What stays below the last line out of fullscreen. Smaller than
+ * fullscreen's: there the page places its last line's ink a hair above
+ * the page bar itself (`fitLinesWithInk`'s tight fit), so the band of
+ * nothing was this AND that, and the two together read as wasted.
+ * Fullscreen keeps its own fit and gap — nothing there was asked to move.
+ */
+export const PAGE_FOOTER_GAP = 8;
 
 /** How long the inputs have to stay still before a geometry is published. */
 export const GEOMETRY_QUIET_MS = 100;
@@ -149,6 +157,11 @@ export type PhonePageInputs = {
    */
   headerReserve?: number;
   /**
+   * What stays below the page — `FOOTER_GAP` in fullscreen, where the
+   * default is, `PAGE_FOOTER_GAP` out of it.
+   */
+  footerGap?: number;
+  /**
    * The measured pager viewport, or 0 while it has not been measured.
    *
    * THE MINI PLAYER IS NOT SUBTRACTED FROM THIS, and an earlier version
@@ -183,7 +196,9 @@ export function phonePageGeometry(
   // hundred and three others. Reserving for chrome that is not there is
   // the same bug as not reserving for chrome that is.
   const chromeH =
-    input.navPad + (input.headerReserve ?? HEADER_RESERVE) + FOOTER_GAP;
+    input.navPad +
+    (input.headerReserve ?? HEADER_RESERVE) +
+    (input.footerGap ?? FOOTER_GAP);
   const textWidth = scrolling
     ? Math.min(pageWidth - H_PADDING * 2, input.height * LANDSCAPE_ZOOM)
     : pageWidth - H_PADDING * 2;
