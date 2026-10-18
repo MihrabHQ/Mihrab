@@ -228,7 +228,14 @@ export function AyahActionSheet({
    * where the muṣḥaf has it; a remembered tajwīd tab in a recitation
    * without it shows nothing.
    */
-  const tajweedOffered = riwayahHasTajweed(state.prefs.riwayah);
+  // THE MUṢḤAF ON SCREEN, NOT THE PREFERENCE. A stored riwayah this device
+  // cannot draw (its text not downloaded, or removed in Manage downloads)
+  // is read as Ḥafṣ by the reader — `resolveRiwayah` — and the sheet must
+  // read it the same way: judged by the raw preference it set a Ḥafṣ āyah
+  // in plain Unicode under tajwīd-coloured page fonts, and its Tajweed
+  // tab looked for Warsh's rules and found none.
+  const shownRiwayah = resolveRiwayah(state.prefs.riwayah);
+  const tajweedOffered = riwayahHasTajweed(shownRiwayah);
   const panel =
     state.prefs.ayahSheetPanel === 'tajweed' && !tajweedOffered
       ? 'none'
@@ -700,14 +707,14 @@ export function AyahActionSheet({
               The Tajweed tab draws its own tinted copy only when this one
               is plain — the colours off — so a coloured āyah is never
               shown twice. With the tab open a tapped word is read out. */}
-          {arabic && riwayahById(state.prefs.riwayah).render !== 'unicode' ? (
+          {arabic && riwayahById(shownRiwayah).render !== 'unicode' ? (
             <View style={styles.arabicGlyphs}>
               <TajweedAyahGlyphs
                 surah={surah}
                 ayah={ayah}
                 fontSize={AYAH_GLYPH_SIZE}
                 color={String(palette.text)}
-                glyphs={tajweedColoursShown(state.prefs.riwayah, state.prefs.tajweedColours) ? 'tajweed' : 'v2'}
+                glyphs={tajweedColoursShown(shownRiwayah, state.prefs.tajweedColours) ? 'tajweed' : 'v2'}
                 onWordPress={
                   panel === 'tajweed'
                     ? w => {
@@ -718,7 +725,7 @@ export function AyahActionSheet({
               />
             </View>
           ) : arabic &&
-            state.prefs.riwayah === 'warsh' &&
+            shownRiwayah === 'warsh' &&
             state.prefs.tajweedColours ? (
             <WarshTajweedAyah
               surah={surah}

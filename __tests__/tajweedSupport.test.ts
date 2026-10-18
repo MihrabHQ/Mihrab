@@ -73,8 +73,8 @@ describe('a switch turned on elsewhere', () => {
     expect(tajweedColoursShown('warsh', true, false)).toBe(true);
   });
   it('is what everything that colours a page asks', () => {
-    expect(read('src/quran/mushaf/AyahActionSheet.tsx')).toMatch(/glyphs=\{tajweedColoursShown\(state\.prefs\.riwayah, state\.prefs\.tajweedColours\) \? 'tajweed' : 'v2'\}/);
-    expect(read('src/quran/tajweed/TajweedAyahSection.tsx')).toMatch(/const coloursOn = tajweedColoursShown\(prefs\.riwayah, prefs\.tajweedColours\);/);
+    expect(read('src/quran/mushaf/AyahActionSheet.tsx')).toMatch(/glyphs=\{tajweedColoursShown\(shownRiwayah, state\.prefs\.tajweedColours\) \? 'tajweed' : 'v2'\}/);
+    expect(read('src/quran/tajweed/TajweedAyahSection.tsx')).toMatch(/const coloursOn = tajweedColoursShown\(riwayah, prefs\.tajweedColours\);/);
     expect(read('src/screens/QuranScreen.tsx')).toMatch(/tajweedForWarm = tajweedColoursShown\(/);
     expect(read('src/screens/home/QuranCard.tsx')).toMatch(/const tajweed = tajweedColoursShown\(riwayah, quran\.prefs\.tajweedColours\);/);
     for (const f of ['src/quran/tajweed/TajweedGuideScreen.tsx', 'src/screens/settings/pages/TajweedSettingsScreen.tsx'])
