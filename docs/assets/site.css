@@ -84,8 +84,7 @@ code {
   width: auto; height: auto; margin: 0; padding: 12px 18px;
   overflow: visible; clip-path: none;
 }
-section { padding: 72px 0; border-top: 1px solid var(--line); }
-section:first-of-type { border-top: 0; }
+section { padding: 72px 0; }
 .eyebrow {
   font-size: 13px; font-weight: 650; letter-spacing: .1em; text-transform: uppercase;
   color: var(--ink-soft); margin: 0 0 10px;
@@ -327,7 +326,7 @@ h2 { font-size: clamp(26px, 4vw, 34px); }
 .card strong { color: var(--ink); font-weight: 600; }
 /* ---- footer ---- */
 footer {
-  border-top: 1px solid var(--line); background: var(--surface-2);
+  background: var(--surface-2);
   padding: 46px 0 56px; font-size: 15px; color: var(--ink-soft);
 }
 footer h2 { font-size: 17px; color: var(--ink); margin-bottom: 12px; }
