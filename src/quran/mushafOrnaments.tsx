@@ -54,8 +54,12 @@ function diamondPath(cx: number, cy: number, r: number): string {
  * its height. Exported because the name that sits inside has to be sized from
  * what is left over — see `surahBandFieldHeight`.
  */
-/** The surah name's line box, in em of its size — see `SurahBandRow`. */
-const BAND_NAME_LINE_EM = 2.2;
+/**
+ * The surah name's line box, in em of its size — see `SurahBandRow`. Taller
+ * than Amiri's own box (2.45 em), so the leading is positive and both
+ * platforms split it evenly: iOS takes a deficit off one side only.
+ */
+const BAND_NAME_LINE_EM = 2.6;
 
 const BAND_STROKE = 0.028;
 const BAND_COURSE = 0.12;
@@ -298,6 +302,42 @@ export type SurahBandRowProps = {
 };
 
 /**
+ * The surah name's ink, per surah: [bottom, top] in ems from the baseline,
+ * measured over "سورة …" in Amiri Quran
+ * (`scripts/mushaf/measure_surah_name_ink.py`).
+ */
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const SURAH_NAME_INK = require('./data/surahNameInk.json') as Array<[number, number]>;
+
+/** Amiri Quran's vertical metrics, ems: what a line centres. */
+const AMIRI_ASCENT_EM = 1.815;
+const AMIRI_DESCENT_EM = 0.634;
+/** The tallest name's ink, ems (al-Anʿām: the ع's tail to the hamza over its alif). */
+const BAND_NAME_TALLEST_EM = 1.52;
+/** How much of the field's height the tallest name's ink may take. */
+const BAND_NAME_FILL = 0.92;
+
+/**
+ * How far to lift a surah's name, in ems of its size, so that its ink —
+ * not the font's metric box — sits in the middle of the band.
+ *
+ * A line centres the font's box, whose middle is (ascent − descent)/2 =
+ * 0.59 em above the baseline: Amiri's ascent is tall, for the marks it
+ * stacks. A name's ink sits far lower — "سورة نوح" runs from 0.53 em
+ * below the baseline to 0.61 above — so centred by its metrics every name
+ * sat about half an em low, and a name with a tail under the line (the ح
+ * of نوح, the ج of الجن) ran it into the band's lower course. Positive is
+ * up. Zero for a surah with no measurement.
+ */
+export function surahNameLift(surah: number): number {
+  const ink = SURAH_NAME_INK[surah - 1];
+  if (!ink) return 0;
+  const boxMiddle = (AMIRI_ASCENT_EM - AMIRI_DESCENT_EM) / 2;
+  const inkMiddle = (ink[0] + ink[1]) / 2;
+  return boxMiddle - inkMiddle;
+}
+
+/**
  * A surah's opening: the band, across the whole measure, with the name in it.
  *
  * The name is sized from the clear space INSIDE both rules, never from the
@@ -315,8 +355,12 @@ export function SurahBandRow({
 }: SurahBandRowProps) {
   const bandHeight = rowHeight * bandScale;
   const fieldHeight = surahBandFieldHeight(bandHeight);
-  const nameSize = Math.min(fontSize * nameScale, fieldHeight * 0.62);
+  const nameSize = Math.min(
+    fontSize * nameScale,
+    (fieldHeight * BAND_NAME_FILL) / BAND_NAME_TALLEST_EM,
+  );
   const name = findSurah(surah)?.arabic ?? '';
+  const lift = surahNameLift(surah) * nameSize;
   return (
     <View style={[rowStyles.row, { height: rowHeight }]}>
       <View style={{ width, height: bandHeight }}>
@@ -337,19 +381,19 @@ export function SurahBandRow({
               fontSize: nameSize,
               color: colors.heading,
               /**
-               * The line is taller than the field ON PURPOSE. The field's
-               * height was the line height, so the glyph box would sit
-               * centred in it — and on Android a line height shorter than
-               * the font's own box takes the difference out of the ascent
-               * AND the descent, then clips the text view to what is left:
-               * the tails of ق and ن in the surah's name were cut flat
-               * along the band's inner rule. Twice the size is room for the
-               * deepest tail and the tallest alif both; the extra leading
-               * is split evenly, so the name is still centred on the field,
-               * and what overhangs is drawn over the band's course, which
-               * draws nothing there.
+               * The line is taller than the field ON PURPOSE. A line
+               * height shorter than the font's own box is taken out of the
+               * ascent AND the descent on Android, which then clips the
+               * text view to what is left: the tails of ق and ن were cut
+               * flat along the band's inner rule. Room for the deepest
+               * tail and the tallest alif both; what overhangs the field
+               * is drawn over the band's course, which is clear there.
                */
               lineHeight: Math.ceil(nameSize * BAND_NAME_LINE_EM),
+              // Both platforms centre the font's METRIC box in the line;
+              // this moves the name so its INK is centred instead — see
+              // `surahNameLift`.
+              transform: [{ translateY: -lift }],
               includeFontPadding: false,
             }}
           >
