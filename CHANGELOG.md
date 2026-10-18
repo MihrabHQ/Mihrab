@@ -4,6 +4,12 @@ All notable changes to this project are documented here. The format is inspired 
 
 ## [Unreleased]
 
+### Changed
+- **The town lookup sends a town's precision, not a doorstep's.** With automatic location the app asks OpenStreetMap which town you are in, and it now sends your position rounded to about a kilometre; the prayer times still use the exact position. The privacy policy, the site, the onboarding text and the store listings now list every request the app makes — including AlAdhan receiving your coordinates where it is the source, and the update files read from GitHub — instead of saying coordinates never leave the phone.
+
+### Fixed
+- **The ayah sheet shows the muṣḥaf you are reading.** With a riwayah chosen whose text is not on the phone, the reader shows Ḥafṣ, but the ayah sheet set the ayah in plain text and its Tajweed tab found no rules. It now follows the muṣḥaf on screen, as do the tajwīd guide and settings.
+
 ### Added
 - **Play this ayah, and Play on repeat.** The ayah sheet's Play section has three ways to hear the ayah: Play from here, Play this ayah (once), and Play on repeat — the ayah over and over until stopped, the lock screen and the screen going off included; the mini-player shows ↻ ∞ while it loops, and anything else played, or stop, ends it. "Repeat this ayah" was the memorisation drill in disguise: it played the ayah the number of times the repeat setting said, which with the setting at 1 was once.
 - **Hide, next to Cancel, on the download strip.** A long download (the mushaf's pages, a whole reciter) no longer has to sit across the top of every Quran screen until it is done: Hide puts the strip away for the rest of the run; the download goes on, the notification and the settings rows still count it, and the next download brings the strip back.

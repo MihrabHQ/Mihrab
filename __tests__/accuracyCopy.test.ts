@@ -147,3 +147,10 @@ describe('the privacy claims match what the code sends', () => {
     expect(read('android/app/src/main/AndroidManifest.xml')).toMatch(/android:allowBackup="true"/);
   });
 });
+
+describe('the copy machinery stays in one piece', () => {
+  it('figures.js is the generated copy of mihrab-methods’ figures.mjs, not a hand edit', () => {
+    const text = readFileSync(path.join(ROOT, 'scripts/copy/figures.js'), 'utf-8');
+    expect(text.startsWith("/*\n * GENERATED from mihrab-methods' scripts/figures.mjs")).toBe(true);
+  });
+});

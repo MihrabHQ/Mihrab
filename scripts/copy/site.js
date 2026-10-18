@@ -5,7 +5,7 @@
  * nothing here runs in a browser.
  *
  * The figures come from data/methods/certification.json, mihrab-methods'
- * record (scripts/copy/sync-certification.js copies it in). A figure the
+ * record (scripts/copy/sync-certification.js copies it in, with figures.js). A figure the
  * record lacks fails the build.
  */
 const fs = require('fs');

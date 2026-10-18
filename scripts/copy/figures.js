@@ -1,8 +1,7 @@
 /*
- * A CommonJS copy of mihrab-methods' scripts/figures.mjs, for this
- * repository's site and store generators. Keep the two in step: the figures
- * the app's copy quotes must be computed exactly as the library's README
- * computes them (scripts/copy/README.md).
+ * GENERATED from mihrab-methods' scripts/figures.mjs by
+ * scripts/copy/sync-certification.js — do not edit here; change it there
+ * and sync, so the app quotes figures exactly as the library computes them.
  */
 /**
  * Every figure the project quotes, read from certification.json and nowhere
@@ -235,4 +234,4 @@ function badgeSvg(cert) {
 `;
 }
 
-module.exports = { badgeSvg, AUTHORITY_ORDER, AUTHORITY_NAMES, authorityFigures, figures, int, compact, pct, monthYear, longDate, span, namedFigures, fillFigures, fillBlock };
+module.exports = { AUTHORITY_ORDER, AUTHORITY_NAMES, authorityFigures, figures, int, compact, pct, monthYear, longDate, span, namedFigures, fillFigures, fillBlock, badgeSvg };

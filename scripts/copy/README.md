@@ -6,7 +6,7 @@ record, `data/methods/certification.json`. Nothing is typed by hand.
 
 | Script | Writes |
 |---|---|
-| `node scripts/copy/sync-certification.js <path or URL>` | `data/methods/certification.json`, from mihrab-methods |
+| `node scripts/copy/sync-certification.js <mihrab-methods checkout or raw URL>` | `data/methods/certification.json` and `scripts/copy/figures.js`, from mihrab-methods |
 | `node scripts/build-site.js` | every page under `docs/`: the figures, the accuracy table, the FAQ's JSON-LD, the country sections |
 | `node scripts/build-copy.js` | `fastlane/metadata/**` from `scripts/copy/store/`, the README's accuracy block, `branding/badges/certification.svg` |
 
@@ -21,8 +21,8 @@ the build.
 - In `scripts/site/strings.json` (the generated pages): `{fig:KEY}`.
 - In the store templates (`scripts/copy/store/`): `{{KEY}}`.
 
-The keys are listed by `namedFigures` in `figures.js` (a CommonJS copy of
-mihrab-methods' `scripts/figures.mjs` — keep the two in step): `total.times`,
+The keys are listed by `namedFigures` in `figures.js` (generated from
+mihrab-methods' `scripts/figures.mjs` by the sync — never edit it here): `total.times`,
 `total.timesCompact`, `total.off`, `total.checkedAtLong`, and per authority
 `<id>.places`, `.times`, `.off`, `.alonePct`, `.corrections`, `.span`,
 `.years`, `.toMonthYear`, … A key the record does not have is an error: add

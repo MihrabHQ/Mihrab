@@ -82,7 +82,8 @@ yarn-error.log
 !.yarn/sdks
 !.yarn/versions
 tmp/
-CLAUDE.md
+# The maintainer's own notes, kept local; the shared guide is AGENTS.md (.claude/CLAUDE.md points at it)
+/CLAUDE.md
 
 # Quran corpus — raw Tanzil downloads are reproducible. Per-surah
 # files under data/surahs/ are committed; only the source/ inputs
