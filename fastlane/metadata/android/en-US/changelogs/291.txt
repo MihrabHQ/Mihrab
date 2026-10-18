@@ -1,0 +1,7 @@
+• Morocco: right times on phones with outdated time-zone data (#82).
+• Warsh and Qālūn: the reciter reads the ayah that is lit (#83).
+• Reading ahead no longer moves your khatmah (#84).
+• Recitation runs on from ayah to ayah without the pauses.
+• Ayah sheet: play once or on repeat; the range ends at your ayah.
+• Mushaf: surah names centred, less empty space, short screens scroll, landscape opens fullscreen.
+• Many prayer-time fixes across zones and devices.

@@ -1,0 +1,8 @@
+• Marocko (#82): på en telefon vars tidszonsdata fortfarande har Marocko på GMT+1 får en klocka som ställts tillbaka för hand nu ministeriets tider, och Idag berättar hur en automatisk klocka blir rätt (ställ tidszonen på GMT för hand). Nedräkningen, widgeten och aviseringarna stämmer överens igen.
+• Warsh och Qālūn (#83): recitatören läser den ayah som lyser. Inspelningarna följer Ḥafṣ räkning; varje ayah spelas nu från de filer den reciteras i.
+• Khatmah (#84): en sura som läses i förväg från registret flyttar inte längre din khatmah.
+• Reciteringen går vidare från ayah till ayah utan tystnaden mellan filerna, och pausen mellan upprepningar fortsätter med skärmen släckt.
+• Ayah-bladet: Spela upp härifrån, Spela denna ayah och Spela på repeat (tills den stoppas). Intervallspelaren ligger under hastigheten, slutar vid den ayah du öppnade och har sina upprepningar under sig.
+• Mushaf: surahnamnen centrerade i sitt band; mindre tomrum ovanför och under sidan; en skärm som är för kort för sidan skrollar den i stället för att trycka ihop raderna; en telefon på sidan öppnar i helskärm; Dölj bredvid Avbryt vid en nedladdning.
+• Bönetider: många rättelser som hittats genom att kontrollera varje källa i varje tidszon — dagar nära midnatt och över datumlinjen, imsak natten klockan ställs om, gränsorter, Cypern, Automatisk utan uppkoppling, aviseringar som skrivs om efter en uppdatering med mera.
+• Spegeln av namazvakti.com fortsätter förbi städer som sajten saknar tabell för.

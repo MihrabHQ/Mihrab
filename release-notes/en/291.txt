@@ -1,0 +1,8 @@
+• Morocco (#82): on a phone whose time-zone data still puts Morocco at GMT+1, a clock set back by hand now gets the ministry's times, and Today says how to put an automatic clock right (set the time zone to GMT by hand). The countdown, the widget and the alerts agree again.
+• Warsh and Qālūn (#83): the reciter reads the ayah that is lit. The recordings follow the Ḥafṣ count; each ayah now plays from the files it is recited in.
+• Khatmah (#84): a surah read ahead from the index no longer moves your khatmah.
+• Recitation runs on from ayah to ayah without the silence between the files, and the pause between repeats keeps playing with the screen off.
+• Ayah sheet: Play from here, Play this ayah, and Play on repeat (until stopped). The range player sits under the speed, ends at the ayah you opened, and has its repeats under it.
+• Mushaf: surah names centred in their band; less empty space above and below the page; a screen too short for the page scrolls it instead of squeezing the lines; a phone on its side opens fullscreen; Hide beside Cancel on a download.
+• Prayer times: many fixes found by checking every source in every time zone — days near midnight and across the date line, Imsak on the night the clocks change, border towns, Cyprus, offline Automatic, alerts rewritten after an update, and more.
+• The namazvakti.com mirror carries on past the cities the site has no table for.
