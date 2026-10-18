@@ -105,6 +105,31 @@ By default `~/Desktop/Simulator Screenshot - <device> - <date>.png`. If your des
 
 ---
 
+## Wrong times corrected in place (2026-10-18) — READ BEFORE A RETAKE
+
+Morocco moved to permanent GMT (UTC+0) on 20 September 2026 (tzdata 2026c).
+The `Mihrab_API_37` emulator image carries older zone data, so every
+Casablanca capture taken on it after that date shows the status-bar clock and
+every prayer time **one hour late** (Maghrib 18:59 on 17 October, not 17:59).
+The iPhone/iPad sets, shot with current zone data, were right — except their
+month panels, and the Android tablet's, which were captured with an older
+correction list and drift from Habous's table after ~13 October (sunrise 3–4
+min, some prayers a minute).
+
+These were corrected in place, digit by digit, from each capture's own
+glyphs (the app's font where a digit was missing), keeping the scenario:
+the Today shots, the month view and the shareable sheet, the Log, the Play
+home panels (phone and tablet), the feature-graphic source, both fans, the
+three store month panels, and `ios-widgets` (Stockholm on 3 September,
+which still showed the old Sweden calculation: Fajr 03:03 for the certified
+03:33). Every figure now matches mihrab-methods' certified times; the night
+marks are what the current app computes (`injectNightTimes`). The bottom row
+of the tablet month panel, half under the screen edge, was left as it was.
+
+**Before the next Android retake:** give the emulator current zone data, or
+set its zone to a fixed UTC+0 one, and check one time against
+`mihrab-methods` (`timesFor`) before shooting the rest.
+
 ## The Realistic-sky retake (2026-10-16)
 
 Realistic became the Sky theme's default colouring, and the hero took the
