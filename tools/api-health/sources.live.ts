@@ -1,7 +1,9 @@
 /**
  * Live check of every source the app reads, through the app's own code.
  *   npx jest -c tools/api-health/jest.live.config.js
- * Not part of the unit suite (it needs the network).
+ * Not part of the unit suite (it needs the network). Runs every day, with
+ * the files installed apps download, in the maintainer's private monitoring
+ * repository, whose status board raises a failure.
  */
 jest.unmock('adhan');
 

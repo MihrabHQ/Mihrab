@@ -12,24 +12,31 @@ method standing in past their window; this checks that method.
 
 `verify.ts` takes the tables, computes each place's days with
 the method the phone uses for that authority, and compares them minute
-by minute. It writes:
+by minute. It writes (untracked):
 
 - `data/prayer-times/verification/summary.md` — every authority, one
   section each: the share of times within tolerance, the distribution of
   differences per prayer, the rows furthest off;
 - `data/prayer-times/verification/<id>.json` — the same as data;
 - `data/prayer-times/verification/<id>.md` — that authority's section
-  alone, which the workflow posts as the issue body.
+  alone, which the daily run posts as the issue body.
 
 ```sh
 npx tsx tools/verify-methods/verify.ts            # all
 npx tsx tools/verify-methods/verify.ts muis jakim # some
 ```
 
-Exit 4 means an authority that is meant to match does not; the workflow
-(`.github/workflows/verify-methods.yml`, Tuesdays after the tables are
-rebuilt, Singapore and Malaysia) then opens or updates `Verification: <authority>` with the
-section, and closes it again once the two agree.
+Exit 4 means an authority that is meant to match does not.
+
+It runs every day, outside this repository, in the maintainer's private
+monitoring repository, which holds the other authorities' tables: there
+`MIHRAB_TABLES` points at them, so the run checks all six — Sweden,
+Morocco, Algeria, Indonesia, and Singapore and Malaysia from this repo's
+`data/prayer-times/` — against the app's code on `main`. That run keeps
+the reports, opens or updates a `Verification: <authority>` issue while an
+authority disagrees, closes it once the two agree again, and puts any
+failure on its status board. Run it here to see a report locally; the
+files it writes are not committed.
 
 ## Reading a report
 
