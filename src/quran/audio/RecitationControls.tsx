@@ -230,50 +230,12 @@ export function RecitationControls({
         void setPlaybackRate(v);
       }, v => `${v}×`)}
 
-      {/* Memorization */}
-      <SectionHead label={t('quran.memorization', 'Memorization')} tight />
-      {stepper(
-        t('quran.repeatEachAyah', 'Repeat each ayah'),
-        prefs.repeat.eachAyah,
-        v => setQuranPrefs({ repeat: { ...prefs.repeat, eachAyah: v } }),
-      )}
-      {stepper(
-        t('quran.repeatRange', 'Repeat the range'),
-        prefs.repeat.range,
-        v => setQuranPrefs({ repeat: { ...prefs.repeat, range: v } }),
-      )}
-      <View style={styles.row}>
-        <Text style={[styles.rowLabel, { color: palette.text }]}>
-          {t('quran.pauseBetween', 'Pause between repeats')}
-        </Text>
-      </View>
-      {chipRow(PAUSE_FACTORS, prefs.repeat.pauseFactor, v =>
-        setQuranPrefs({ repeat: { ...prefs.repeat, pauseFactor: v } }),
-        v => (v === 0 ? t('quran.none', 'None') : `${v}×`),
-      )}
-
-      {showHideForReview ? (
-        <>
-          <View style={styles.row}>
-            <Text style={[styles.rowLabel, { color: palette.text }]}>
-              {t('quran.hideForReview', 'Hide while reviewing')}
-            </Text>
-          </View>
-          {chipRow(
-            ['none', 'arabic', 'translation'] as const,
-            prefs.hideMode,
-            v => setQuranPrefs({ hideMode: v }),
-            v =>
-              v === 'none'
-                ? t('quran.none', 'None')
-                : v === 'arabic'
-                  ? t('quran.hideArabic', 'Arabic')
-                  : t('quran.hideTranslation', 'Translation'),
-          )}
-        </>
-      ) : null}
-
-      {/* Range player */}
+      {/* Range player, right under the speed: the range and how it repeats
+          are one decision — what to hear and how many times — so the
+          repeats sit under the range they apply to, the range's own
+          count first and each ayah's under it. The memorisation header
+          that used to stand between them separated a control from what
+          it controls. */}
       <SectionHead
         tight
         label={t('quran.playRangeTitle', {
@@ -318,6 +280,47 @@ export function RecitationControls({
           />
         </View>
       </View>
+
+      {stepper(
+        t('quran.repeatRange', 'Repeat the range'),
+        prefs.repeat.range,
+        v => setQuranPrefs({ repeat: { ...prefs.repeat, range: v } }),
+      )}
+      {stepper(
+        t('quran.repeatEachAyah', 'Repeat each ayah'),
+        prefs.repeat.eachAyah,
+        v => setQuranPrefs({ repeat: { ...prefs.repeat, eachAyah: v } }),
+      )}
+      <View style={styles.row}>
+        <Text style={[styles.rowLabel, { color: palette.text }]}>
+          {t('quran.pauseBetween', 'Pause between repeats')}
+        </Text>
+      </View>
+      {chipRow(PAUSE_FACTORS, prefs.repeat.pauseFactor, v =>
+        setQuranPrefs({ repeat: { ...prefs.repeat, pauseFactor: v } }),
+        v => (v === 0 ? t('quran.none', 'None') : `${v}×`),
+      )}
+
+      {showHideForReview ? (
+        <>
+          <View style={styles.row}>
+            <Text style={[styles.rowLabel, { color: palette.text }]}>
+              {t('quran.hideForReview', 'Hide while reviewing')}
+            </Text>
+          </View>
+          {chipRow(
+            ['none', 'arabic', 'translation'] as const,
+            prefs.hideMode,
+            v => setQuranPrefs({ hideMode: v }),
+            v =>
+              v === 'none'
+                ? t('quran.none', 'None')
+                : v === 'arabic'
+                  ? t('quran.hideArabic', 'Arabic')
+                  : t('quran.hideTranslation', 'Translation'),
+          )}
+        </>
+      ) : null}
 
       {/* Reciter — last in the section: chosen once and rarely changed,
           where speed and repetition are touched on every session. A
