@@ -466,3 +466,51 @@ table.accuracy tfoot td { font-weight: 600; }
 .accuracy-section .cols { margin-top: 28px; }
 .developers { background: var(--surface-2); }
 .developers .cmd code { font-size: 15px; }
+
+/* ---- the day, as you scroll ----
+ * The page's ground passes through the prayer day under the app's Realistic
+ * sky: Fajr at the top, then sunrise, Dhuhr, Asr, Maghrib, and Isha at the
+ * foot. Each stop is the sky's own pair from src/theme/skyMoods.ts (the upper
+ * sky over the horizon's glow), dimmed far down into the page's paper so the
+ * text keeps its contrast.
+ *
+ * No script: a CSS scroll-driven animation on a fixed layer behind the page.
+ * Where the browser has no scroll timelines the page stays as it was. */
+@supports (animation-timeline: scroll()) {
+  @property --sky-a { syntax: '<color>'; inherits: true; initial-value: transparent; }
+  @property --sky-b { syntax: '<color>'; inherits: true; initial-value: transparent; }
+  :root { --sky-base: var(--paper); --sky-amt: 17%; }
+  @media (prefers-color-scheme: dark) { :root { --sky-amt: 24%; } }
+  html {
+    animation: prayer-day linear both;
+    animation-timeline: scroll(root block);
+  }
+  body { background: transparent; }
+  body::before {
+    content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background: linear-gradient(180deg, var(--sky-a) 0%, var(--sky-b) 100%);
+  }
+  /* The bands let the sky through; the cards keep their own surface. */
+  .install, .shots, .accuracy-section, .features, .privacy, .faq, .support, .developers { background: transparent; }
+  .sweden, footer { background: color-mix(in oklab, var(--surface-2) 45%, transparent); }
+  @keyframes prayer-day {
+    /* Fajr — dawn: indigo, the first rose at the horizon */
+    0%   { --sky-a: color-mix(in oklab, #244091 var(--sky-amt), var(--sky-base));
+           --sky-b: color-mix(in oklab, #BE5D78 var(--sky-amt), var(--sky-base)); }
+    /* Sunrise — morning */
+    20%  { --sky-a: color-mix(in oklab, #77A6E7 var(--sky-amt), var(--sky-base));
+           --sky-b: color-mix(in oklab, #FED29C var(--sky-amt), var(--sky-base)); }
+    /* Dhuhr — midday */
+    40%  { --sky-a: color-mix(in oklab, #378BE5 var(--sky-amt), var(--sky-base));
+           --sky-b: color-mix(in oklab, #9DCEFC var(--sky-amt), var(--sky-base)); }
+    /* Asr — the late afternoon */
+    60%  { --sky-a: color-mix(in oklab, #5D8FDB var(--sky-amt), var(--sky-base));
+           --sky-b: color-mix(in oklab, #E9DCC0 var(--sky-amt), var(--sky-base)); }
+    /* Maghrib — sunset */
+    80%  { --sky-a: color-mix(in oklab, #2D2E7D var(--sky-amt), var(--sky-base));
+           --sky-b: color-mix(in oklab, #CD4E54 var(--sky-amt), var(--sky-base)); }
+    /* Isha — night */
+    100% { --sky-a: color-mix(in oklab, #17245C var(--sky-amt), var(--sky-base));
+           --sky-b: color-mix(in oklab, #253486 var(--sky-amt), var(--sky-base)); }
+  }
+}
