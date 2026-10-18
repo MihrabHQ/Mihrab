@@ -1,0 +1,131 @@
+{
+  "sweden": {
+    "certified": true,
+    "checkedAt": "2026-10-18",
+    "places": 108,
+    "checks": [
+      {
+        "tables": "Sweden — Islamiska Förbundet’s tables",
+        "places": 107,
+        "times": 59640,
+        "off": 0,
+        "offWithoutCorrections": 20,
+        "from": "2026-10-11",
+        "to": "2027-11-19",
+        "setAside": {
+          "misplaced": [],
+          "sourceFaults": 33395,
+          "copiedRows": 646
+        }
+      },
+      {
+        "tables": "Sweden — Diyanet’s own tables",
+        "places": 159,
+        "times": 1393794,
+        "off": 0,
+        "offWithoutCorrections": 259,
+        "from": "2024-01-01",
+        "to": "2027-12-31"
+      }
+    ],
+    "corrections": {
+      "from": "2024-01-01",
+      "to": "2027-12-31",
+      "entries": 270,
+      "sha256": "173d7145b5ec917882f8ac9890dd1fa5f3143bd714eb540482861bf8a6bac660"
+    },
+    "revision": 1
+  },
+  "diyanet": {
+    "certified": true,
+    "checkedAt": "2026-10-18",
+    "places": 8132,
+    "checks": [
+      {
+        "tables": "Diyanet — its tables worldwide",
+        "places": 8132,
+        "times": 69999603,
+        "off": 0,
+        "offWithoutCorrections": 9129,
+        "from": "2024-01-01",
+        "to": "2027-12-31"
+      }
+    ],
+    "corrections": {
+      "from": "2024-01-01",
+      "to": "2027-12-31",
+      "entries": 9118,
+      "sha256": "47997767e178ce48babd80f0e4a53460c5d379eb098bff1e7ebbba1e6afdf605"
+    },
+    "revision": 1
+  },
+  "morocco": {
+    "certified": true,
+    "checkedAt": "2026-10-18",
+    "places": 164,
+    "checks": [
+      {
+        "tables": "Morocco — Habous",
+        "places": 164,
+        "times": 75768,
+        "off": 0,
+        "offWithoutCorrections": 665,
+        "from": "2026-08-27",
+        "to": "2026-11-11"
+      }
+    ],
+    "corrections": {
+      "from": "2026-08-27",
+      "to": "2026-11-11",
+      "entries": 665,
+      "sha256": "26ccb0979ee3e632c5acd736fdba3f8272530b48577cb1c0f2897d061e695bd0"
+    },
+    "revision": 1
+  },
+  "algeria": {
+    "certified": true,
+    "checkedAt": "2026-10-18",
+    "places": 68,
+    "checks": [
+      {
+        "tables": "Algeria — Ministry of Religious Affairs",
+        "places": 68,
+        "times": 101184,
+        "off": 0,
+        "offWithoutCorrections": 642,
+        "from": "2026-10-01",
+        "to": "2027-06-05"
+      }
+    ],
+    "corrections": {
+      "from": "2026-10-01",
+      "to": "2027-06-05",
+      "entries": 642,
+      "sha256": "f8d227cdd88aabe5bcd1775ec0324abfdae07a8a3986fdd19816337c2d4ab3ca"
+    },
+    "revision": 1
+  },
+  "indonesia": {
+    "certified": true,
+    "checkedAt": "2026-10-18",
+    "places": 517,
+    "checks": [
+      {
+        "tables": "Indonesia — Kemenag",
+        "places": 517,
+        "times": 266772,
+        "off": 0,
+        "offWithoutCorrections": 84,
+        "from": "2026-10-07",
+        "to": "2026-12-31"
+      }
+    ],
+    "corrections": {
+      "from": "2026-10-07",
+      "to": "2026-12-31",
+      "entries": 84,
+      "sha256": "7c7d3b09a5b01a4d77c605ad8a37fbdac4fd3ef65df483332d75c67891b2359e"
+    },
+    "revision": 1
+  }
+}
