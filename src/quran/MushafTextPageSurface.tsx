@@ -791,6 +791,50 @@ export function mushafPageColumnHeight({
 }
 
 /**
+ * WHEN A PORTRAIT PAGE SCROLLS INSTEAD OF SHRINKING.
+ *
+ * A portrait page is fitted to the screen: its type is set by the WIDTH,
+ * and the fifteen lines are spread over whatever height there is. A tall
+ * screen spreads them apart, which is what the print does. A short one —
+ * a small phone, the player up, a split screen — pulls them together, and
+ * past the print's own pitch the marks of one line run into the next and
+ * the outermost ones are cut (on the Unicode pages the type itself
+ * shrinks instead). There is no size of "smaller" that stays a muṣḥaf.
+ *
+ * So the page has a floor: the height it takes at its readable size, with
+ * the print's line pitch and room for its outermost ink — exactly the
+ * column the landscape reading zoom gives it (`mushafPageColumnHeight`,
+ * scrolling). A viewport shorter than that does not squeeze the page: the
+ * page keeps that height and its column scrolls, as it does on its side,
+ * with the header, the page bar, the player and the download strip
+ * outside the column. Still the book's page — the same fifteen lines,
+ * broken where the print breaks them — only not all on screen at once.
+ */
+export function portraitPageScrolls({
+  page,
+  riwayah = DEFAULT_RIWAYAH,
+  textWidth,
+  viewportHeight,
+}: {
+  page: number;
+  riwayah?: RiwayahId;
+  textWidth: number;
+  viewportHeight: number;
+}): boolean {
+  if (!(textWidth > 0) || !(viewportHeight > 0)) return false;
+  const natural = mushafPageColumnHeight({
+    page,
+    riwayah,
+    textWidth,
+    viewportHeight: 0,
+    scrolling: true,
+  });
+  // Half a point of slack: a page that fits to within a rounding error is a
+  // page that fits.
+  return natural > viewportHeight + 0.5;
+}
+
+/**
  * Where the lines actually land in a column of this height.
  *
  * The follow-scroll used to work this out from `pageBlockEm` alone, which

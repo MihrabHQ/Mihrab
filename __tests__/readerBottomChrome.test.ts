@@ -114,7 +114,7 @@ describe('the mini player is reserved once, by the layout', () => {
   // medallion off the bottom of a page with nothing to scroll.
   it('pads the column only where the column scrolls', () => {
     expect(read('src/quran/MushafPhoneReader.tsx')).toContain(
-      'geometry.scrolling ? styles.columnContent : undefined',
+      'scrolls ? styles.columnContent : undefined',
     );
   });
 });
@@ -166,7 +166,7 @@ describe('fullscreen keeps the page fit it had', () => {
   );
 
   it('pulls the page to its ink only out of fullscreen', () => {
-    expect(reader).toContain('tight={!geometry.scrolling && !isFullscreen}');
+    expect(reader).toContain('tight={!scrolls && !isFullscreen}');
   });
 
   it('keeps the fourteen-point gap below the page in fullscreen', () => {

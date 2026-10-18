@@ -60,6 +60,7 @@ import { VEIL_SETTLE_MS } from './fullscreenVeil';
 import { useRotationFade } from './rotationFade';
 import MushafTextPageSurface, {
   mushafPageColumnHeight,
+  portraitPageScrolls,
 } from './MushafTextPageSurface';
 import type { AyahRef } from './MushafTextPage';
 import {
@@ -260,24 +261,42 @@ const PhonePageItem = React.memo(function PhonePageItem({
    * it overflow would make that page scroll in portrait, where a page is
    * supposed to be a page.
    */
+  const columnViewportH = geometry
+    ? geometry.viewportH -
+      (finish
+        ? FOOTER_RESERVE - (isFullscreen ? FOOTER_GAP : PAGE_FOOTER_GAP)
+        : 0)
+    : 0;
+  /**
+   * Does this page's column scroll? Always on its side (the reading zoom);
+   * upright, only when the screen is too short for the page at its
+   * readable size — rather than squeezing its lines until they collide
+   * or are cut, it keeps them and scrolls. See `portraitPageScrolls`.
+   */
+  const scrolls = geometry
+    ? geometry.scrolling ||
+      portraitPageScrolls({
+        page,
+        riwayah,
+        textWidth: geometry.textWidth,
+        viewportHeight: columnViewportH,
+      })
+    : false;
   const pageBoxH = geometry
     ? mushafPageColumnHeight({
         page,
         riwayah,
         textWidth: geometry.textWidth,
-        viewportHeight:
-          geometry.viewportH -
-          (finish
-            ? FOOTER_RESERVE - (isFullscreen ? FOOTER_GAP : PAGE_FOOTER_GAP)
-            : 0),
-        scrolling: geometry.scrolling,
+        viewportHeight: columnViewportH,
+        scrolling: scrolls,
       })
     : 0;
 
   /**
    * The scrolling column follows the recitation — see `mushafFollowScroll`
-   * for why the unit is the line and not the word. Portrait never scrolls,
-   * so there is nothing to follow there; a page that is not the one being
+   * for why the unit is the line and not the word. A portrait page that
+   * fits has nothing to follow; one too tall for the screen scrolls and
+   * follows like landscape (`scrolls`). A page that is not the one being
    * recited is handed `playing: null` and never runs this.
    */
   const columnRef = useRef<ScrollViewInstance>(null);
@@ -295,7 +314,7 @@ const PhonePageItem = React.memo(function PhonePageItem({
      reacting to it here is what sent the page back to the start of an
      āyah before on to the next. */
   useEffect(() => {
-    if (!geometry?.scrolling || wordLine < 0) return;
+    if (!geometry || !scrolls || wordLine < 0) return;
     const lineHeight = mushafLineHeight(page, geometry.textWidth);
     if (lineHeight == null) return;
     columnRef.current?.scrollTo({
@@ -306,12 +325,12 @@ const PhonePageItem = React.memo(function PhonePageItem({
       ),
       animated: true,
     });
-  }, [page, geometry, pageBoxH, wordLine]);
+  }, [page, geometry, scrolls, pageBoxH, wordLine]);
 
   /* No word timing: follow the āyah's first line. Deferred, and dropped
      the moment a word arrives, so a word-timed reciter never sees it. */
   useEffect(() => {
-    if (!geometry?.scrolling || !playingAyah || wordLine >= 0) return;
+    if (!geometry || !scrolls || !playingAyah || wordLine >= 0) return;
     const box = ayahLineBox(page, geometry.textWidth, playingSurah, playingAyah);
     if (!box) return;
     const t = setTimeout(() => {
@@ -321,7 +340,7 @@ const PhonePageItem = React.memo(function PhonePageItem({
       });
     }, 700);
     return () => clearTimeout(t);
-  }, [page, geometry, playingSurah, playingAyah, pageBoxH, wordLine]);
+  }, [page, geometry, scrolls, playingSurah, playingAyah, pageBoxH, wordLine]);
 
   return (
     <View style={[styles.item, { width: pageWidth, backgroundColor: pageBg }]}>
@@ -385,7 +404,7 @@ const PhonePageItem = React.memo(function PhonePageItem({
           ref={columnRef}
           style={styles.column}
           contentContainerStyle={
-            geometry.scrolling ? styles.columnContent : undefined
+            scrolls ? styles.columnContent : undefined
           }
           showsVerticalScrollIndicator={false}
           nestedScrollEnabled>
@@ -400,7 +419,7 @@ const PhonePageItem = React.memo(function PhonePageItem({
               height={pageBoxH}
               // Out of fullscreen only: that is where the blank above and
               // below the page was. Fullscreen keeps the fit it had.
-              tight={!geometry.scrolling && !isFullscreen}
+              tight={!scrolls && !isFullscreen}
               riwayah={riwayah}
               tone={tone}
               accentColor={accent}
@@ -1140,7 +1159,7 @@ const styles = StyleSheet.create({
   item: { height: '100%' },
   column: { flex: 1 },
   /**
-   * Landscape only. The fitted portrait column is exactly the viewport,
+   * A scrolling column only. The fitted portrait column is exactly the viewport,
    * and padding it pushed the medallion off the bottom of a page that had
    * nothing to scroll.
    */

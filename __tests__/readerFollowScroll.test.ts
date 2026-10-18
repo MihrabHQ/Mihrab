@@ -43,10 +43,11 @@ describe('where a following column scrolls to', () => {
 describe('the reader follows only where a column scrolls', () => {
   const reader = read('src/quran/MushafPhoneReader.tsx');
 
-  it('does nothing in portrait, and nothing on a silent page', () => {
-    expect(reader).toContain('if (!geometry?.scrolling || wordLine < 0) return;');
+  it('does nothing on a page that fits, and nothing on a silent page', () => {
+    // `scrolls`: landscape, or a portrait page too tall for the screen.
+    expect(reader).toContain('if (!geometry || !scrolls || wordLine < 0) return;');
     expect(reader).toContain(
-      'if (!geometry?.scrolling || !playingAyah || wordLine >= 0) return;',
+      'if (!geometry || !scrolls || !playingAyah || wordLine >= 0) return;',
     );
     expect(reader).toContain('ayahLineBox(page, geometry.textWidth');
   });
