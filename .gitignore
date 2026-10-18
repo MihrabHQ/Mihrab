@@ -152,3 +152,7 @@ tools/startup-trace/out/
 
 # The reference tables the computed methods are checked against (MIHRAB_TABLES; a link to them)
 /.tables
+
+# Written by tools/verify-methods when run; the daily run keeps them in the
+# maintainer's private monitoring repository.
+/data/prayer-times/verification/
