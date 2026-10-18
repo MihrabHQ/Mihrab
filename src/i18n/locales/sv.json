@@ -1631,7 +1631,7 @@
     },
     "location": {
       "title": "Var befinner du dig?",
-      "body": "Bönetiderna beror på var du står. Dina koordinater krypteras på den här enheten och lämnar den aldrig.",
+      "body": "Bönetiderna beror på var du står. Dina koordinater krypteras på den här enheten och går bara till en tjänst som behöver dem för att svara — aldrig till oss.",
       "ready": "Idag i {{city}}"
     },
     "salamA11y": "As-salāmu ʿalaykum wa raḥmatu llāhi taʿālā wa barakātuh",

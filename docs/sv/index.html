@@ -118,7 +118,7 @@
       "name": "Fungerar bönetiderna utan internet?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Ja. Tiderna sparas på telefonen när de hämtats, och notiserna schemaläggs lokalt — dagen fungerar med nätet avstängt. Väljer du Sverige (Islamiska Förbundet) eller beräkning på enheten behövs ingen uppkoppling alls."
+        "text": "Ja. Sveriges, Diyanets, Marockos, Algeriets och Indonesiens tider räknas ut på telefonen, och med AlAdhan sparar appen året framåt när det hämtats över wifi; notiserna schemaläggs lokalt, så dagen fungerar med nätet avstängt. Väljer du Sverige (Islamiska Förbundet) eller beräkning på enheten behövs ingen uppkoppling alls för tiderna."
       }
     },
     {
@@ -407,9 +407,8 @@
       </article>
     </div>
     <p class="note">Inget hämtas för Sverige: metoden och dess kontroll mot tidtabellerna finns
-      öppet i <a href="https://github.com/MihrabHQ/mihrab-methods">mihrab-methods</a>. Marockanska tider från Habous-ministeriet
-      hämtas som en färdig fil från projektets eget arkiv — den frågar efter en ort, inte efter
-      dig.</p>
+      öppet i <a href="https://github.com/MihrabHQ/mihrab-methods">mihrab-methods</a>. Marockos, Algeriets och Indonesiens tider räknas
+      ut på samma sätt, på telefonen.</p>
   </div>
 </section>
 
@@ -550,8 +549,8 @@
           Android kan telefonen gå in i Stör ej kring de böner du väljer — från utropet eller några
           minuter före — och slå av det själv efteråt, med en egen längd för fredagsbönen; larm och det
           du redan släpper igenom hörs ändå. Förutom Islamiska Förbundet finns Diyanet, uträknat på minuten för <!--fig:diyanet.places-->8 132<!--/fig--> orter i Turkiet och
-          världen, tabellerna från Marocko,
-          Algeriet, Singapore, Malaysia, Indonesien och Türkiye Takvimi, 23 beräkningsmetoder eller
+          världen, Marocko, Algeriet och Indonesien på samma sätt, de publicerade tabellerna för
+          Singapore, Malaysia och Türkiye Takvimi, de vanliga beräkningsmetoderna eller
           egna vinklar, och ett val för de ljusa sommarnätterna. Välj din madhhab, påminnelser för al-Kahf,
           al-Mulk och morgon- och kvällsadhkar, och appen öppnar på den Idag-skärm du lämnade.</p>
       </article>
@@ -604,7 +603,7 @@
       </article>
       <article class="card">
         <h3>Fungerar bönetiderna utan internet?</h3>
-        <p>Ja. Tiderna sparas på telefonen när de hämtats, och notiserna schemaläggs lokalt — dagen fungerar med nätet avstängt. Väljer du Sverige (Islamiska Förbundet) eller beräkning på enheten behövs ingen uppkoppling alls.</p>
+        <p>Ja. Sveriges, Diyanets, Marockos, Algeriets och Indonesiens tider räknas ut på telefonen, och med AlAdhan sparar appen året framåt när det hämtats över wifi; notiserna schemaläggs lokalt, så dagen fungerar med nätet avstängt. Väljer du Sverige (Islamiska Förbundet) eller beräkning på enheten behövs ingen uppkoppling alls för tiderna.</p>
       </article>
       <article class="card">
         <h3>Kan jag få adhan-påminnelser?</h3>
@@ -625,31 +624,42 @@
 <section class="privacy" id="integritet">
   <div class="wrap">
     <p class="eyebrow">Integritet</p>
-    <h2>Ingenting lämnar telefonen som du inte bett om</h2>
+    <h2>Inget konto, ingen spårning — och varje anrop nedskrivet</h2>
     <p class="lede">Var du befinner dig, fem gånger om dagen, är det känsligaste en bönetidsapp rör.
       Därför finns det inget konto att skapa, ingen analyspanel, inget annonsnätverk och ingen
-      kraschrapportering i den här koden — och när platsen är satt kan tiderna räknas ut helt på
-      din enhet.</p>
+      kraschrapportering i den här koden — inget som kan knyta en plats till en profil. Det som
+      går över nätet står här, hämtat ur koden, och inget av det går till utvecklaren.</p>
     <div class="cols">
       <article class="card">
         <h3>Stannar på enheten</h3>
         <ul>
           <li>Språk, utseende, vald källa, beräkningsval och notisinställningar.</li>
-          <li>Sparade koordinater och ortnamn, <strong>krypterade</strong> via iOS Keychain och
-            Android EncryptedSharedPreferences.</li>
+          <li>Platsinställningar och sparade platser, <strong>krypterade</strong> via iOS Keychain och
+            Android EncryptedSharedPreferences. Orterna appen har placerat dig i, som håller tiderna
+            stadiga medan du rör dig inom en ort, ligger i appens vanliga lagring.</li>
           <li>Böndagbok och fastelogg — det finns ingen central databas som håller dem.</li>
         </ul>
       </article>
       <article class="card">
-        <h3>Går över nätet, när du väljer det</h3>
+        <h3>Går över nätet</h3>
         <ul>
-          <li>Tider från källan du valt. De nationella tabellerna (Marocko, Algeriet, Singapore,
-            Malaysia, Indonesien) är färdiga filer från projektets eget arkiv: de frågar efter en
-            ort, inte efter dig. Sveriges tider räknas ut på telefonen och hämtar ingenting. Med Türkiye Takvimi väljer telefonen själv närmaste listade
-            stad och hämtar den stadens år från namazvakti.com — stadens nummer, inte dina
-            koordinater.</li>
-          <li>Ortsökning via OpenStreetMap Nominatim, på deras villkor.</li>
-          <li>Nedladdning av mushaf-sidor, översättningar, tafsir och recitation.</li>
+          <li><strong>Bönetider.</strong> För Sverige, Diyanets orter, Marocko, Algeriet och
+            Indonesien räknas de ut på telefonen, och ingen förfrågan om bönetider görs. På andra
+            platser — standard utanför dem, om du inte väljer beräkning på enheten — får
+            <strong>AlAdhan</strong> dina koordinater och datumen för att kunna svara. Singapores och
+            Malaysias tabeller hämtas per ort från projektets eget arkiv, med myndighetens egen tjänst
+            som reserv; Türkiye Takvimi via en kartruta runt dig, och namazvakti.com får bara en
+            stads nummer.</li>
+          <li><strong>Ortens namn.</strong> Med automatisk plats frågar appen
+            <strong>OpenStreetMap Nominatim</strong> vilken ort du är i, med din position avrundad
+            till ungefär en kilometer. Ortsökning skickar det du skriver (till Nominatim, eller
+            Photon när den är upptagen).</li>
+          <li><strong>Uppdateringar av beräkningarna.</strong> Vid start och med några timmars
+            mellanrum läser appen två små filer från projektets GitHub-arkiv: nyare
+            korrigeringslistor och aviserade rättelser av hijri-datumet. Inget om dig finns i
+            förfrågan.</li>
+          <li><strong>Nedladdningar du ber om</strong> — mushaf-sidor, översättningar, tafsir och
+            recitation.</li>
         </ul>
       </article>
       <article class="card">
@@ -657,7 +667,9 @@
         <ul>
           <li>Ingen reklam, inga spårare, ingen analys-SDK, ingen kraschrapportering.</li>
           <li>Inget konto, ingen inloggning, ingen profil.</li>
-          <li>Inget Android-bygge innehåller Google Play Services, inte heller det i Play Store.</li>
+          <li>Inget Android-bygge innehåller Google Play Services, inte heller det i Play Store. På
+            Android kan appens inställningar och dagbok följa med i Androids egen säkerhetskopia och
+            flytt mellan enheter, när du har dem påslagna.</li>
         </ul>
       </article>
       <article class="card span">

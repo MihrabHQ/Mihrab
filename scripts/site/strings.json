@@ -246,7 +246,7 @@
       "cards": [
         {
           "h3": "صلِّ",
-          "p": "مواقيت الصلاة وعدّ تنازلي للصلاة القادمة، والأذان لكل صلاة، وبوصلة القبلة، وأدوات على الشاشة الرئيسية، وتسجيل كل صلاة بضغطة واحدة. تنبيه صلاة بملء الشاشة كالمنبّه، ولكل صلاة أن تختار الأذان أو تنبيهًا أو الصمت، وعلى أندرويد يهدأ الهاتف أثناء الصلاة نفسها. والغفوة لا تُعرض إلا بقدر ما بقي من وقت الصلاة، حتى «الفرصة الأخيرة» قبل خروجه. والمواقيت من AlAdhan أو محسوبة على الجهاز، أو من الجداول المنشورة في السويد، وجداول ديانت لـ8291 موضعًا في تركيا والعالم، والمغرب والجزائر وسنغافورة وماليزيا وإندونيسيا وتقويم Türkiye Takvimi."
+          "p": "مواقيت الصلاة وعدّ تنازلي للصلاة القادمة، والأذان لكل صلاة، وبوصلة القبلة، وأدوات على الشاشة الرئيسية، وتسجيل كل صلاة بضغطة واحدة. تنبيه صلاة بملء الشاشة كالمنبّه، ولكل صلاة أن تختار الأذان أو تنبيهًا أو الصمت، وعلى أندرويد يهدأ الهاتف أثناء الصلاة نفسها. والغفوة لا تُعرض إلا بقدر ما بقي من وقت الصلاة، حتى «الفرصة الأخيرة» قبل خروجه. والمواقيت مطابقة حتى الدقيقة المطبوعة لجداول ديانت ورابطة الإسلام في السويد ووزارتي المغرب والجزائر وKemenag، محسوبة على الهاتف؛ وجداول MUIS وJAKIM وTürkiye Takvimi كما نُشرت؛ وAlAdhan في غيرها."
         },
         {
           "h3": "اقرأ واستمع",
@@ -264,7 +264,7 @@
     },
     "privacy": {
       "eyebrow": "الخصوصية",
-      "h2": "لا يغادر هاتفك شيء لم تطلب إرساله",
+      "h2": "لا حساب ولا تتبّع، وكل طلب مكتوب",
       "lede": "مكانك، خمس مرات في اليوم، هو أكثر ما يمسّه تطبيق صلاة حساسية. لذلك لا يوجد في هذه الشيفرة حساب ولا تحليلات ولا شبكة إعلانات ولا تقارير أعطال.",
       "cards": [
         {
@@ -272,8 +272,8 @@
           "p": "الإعدادات، والمواقع المحفوظة (مشفّرة)، ومفكرة الصلاة وسجلّ الصيام. والتنبيهات تُجدوَل محلياً."
         },
         {
-          "h3": "يمرّ عبر الشبكة حين تختار ذلك",
-          "p": "الأوقات من المصدر الذي تختاره، والبحث عن الأماكن، وتنزيل صفحات المصحف والترجمات والتلاوات."
+          "h3": "ما يمرّ عبر الشبكة",
+          "p": "مواقيت الصلاة: تُحسب على الهاتف للسويد وأماكن ديانت والمغرب والجزائر وإندونيسيا؛ وفي غيرها تتلقى AlAdhan إحداثياتك. ومع الموقع التلقائي يُسأل OpenStreetMap عن اسم مدينتك، بموقع مقرَّب إلى نحو كيلومتر. وملفات تحديث صغيرة من GitHub المشروع، والتنزيلات التي تطلبها. لا يصل شيء إلى المطوّر."
         },
         {
           "h3": "غير موجود إطلاقاً",
@@ -295,7 +295,7 @@
         },
         {
           "q": "هل يعمل دون إنترنت؟",
-          "a": "نعم. بعد تحديد الموقع تُحسب الأوقات على الجهاز وتُجدوَل التنبيهات محلياً، فيعمل اليوم والشبكة مغلقة."
+          "a": "نعم. مواقيت السويد وديانت والمغرب والجزائر وإندونيسيا تُحسب على الهاتف، ومع AlAdhan يحتفظ التطبيق بالسنة القادمة بعد جلبها عبر Wi‑Fi. والإشعارات مجدولة محليًا."
         },
         {
           "q": "ما الأجهزة المدعومة؟",
@@ -484,7 +484,7 @@
       "cards": [
         {
           "h3": "Kıl",
-          "p": "Sıradaki namaza geri sayımla namaz vakitleri, her namaz için ezan, kıble pusulası, ana ekran widget'ları — ve her namaz tek dokunuşla kaydedilir. Çalar saat gibi tam ekran bir namaz uyarısı, her namaz için ezan, uyarı ya da sessiz seçimi ve Android'de namazın kendisi sırasında sessize alınan telefon. Erteleme yalnızca vaktin yettiği kadar sunulur; vakit çıkmadan önce bir “son fırsat” kalır. Vakitler AlAdhan, cihazda hesaplama ya da İsveç, Diyanet (Türkiye’de ve dünyada 8.291 yer), Fas, Cezayir, Singapur, Malezya, Endonezya ve Türkiye Takvimi’nin yayımlanmış takvimlerinden."
+          "p": "Sıradaki namaza geri sayımla namaz vakitleri, her namaz için ezan, kıble pusulası, ana ekran widget'ları — ve her namaz tek dokunuşla kaydedilir. Çalar saat gibi tam ekran bir namaz uyarısı, her namaz için ezan, uyarı ya da sessiz seçimi ve Android'de namazın kendisi sırasında sessize alınan telefon. Erteleme yalnızca vaktin yettiği kadar sunulur; vakit çıkmadan önce bir “son fırsat” kalır. Vakitler Diyanet, İsveç, Fas ve Cezayir bakanlıkları ve Kemenag’ın yayımladığı takvimlerle basılı dakikasına kadar eşleşir ve telefonda hesaplanır; MUIS, JAKIM ve Türkiye Takvimi yayımlandığı gibi; diğer yerlerde AlAdhan."
         },
         {
           "h3": "Oku ve dinle",
@@ -502,7 +502,7 @@
     },
     "privacy": {
       "eyebrow": "Gizlilik",
-      "h2": "Telefonunuzdan istemediğiniz hiçbir şey çıkmaz",
+      "h2": "Hesap yok, takip yok — ve her istek yazılı",
       "lede": "Günde beş kez nerede olduğunuz, bir namaz uygulamasının dokunduğu en hassas şeydir. Bu kodda hesap, analitik panel, reklam ağı ve çökme raporlama yoktur.",
       "cards": [
         {
@@ -510,8 +510,8 @@
           "p": "Ayarlar, kayıtlı yerler (şifreli), namaz günlüğünüz ve oruç kaydınız. Bildirimler yerel olarak planlanır."
         },
         {
-          "h3": "Siz seçtiğinizde ağa çıkar",
-          "p": "Seçtiğiniz kaynaktan vakitler, yer araması ve mushaf sayfaları, mealler ve tilavet indirmeleri."
+          "h3": "Ağa çıkanlar",
+          "p": "Namaz vakitleri: İsveç, Diyanet’in yerleri, Fas, Cezayir ve Endonezya için telefonda hesaplanır; diğer yerlerde AlAdhan koordinatlarınızı alır. Otomatik konumda şehrinizin adı OpenStreetMap’e sorulur; konumunuz yaklaşık bir kilometreye yuvarlanır. Projenin GitHub’ından küçük güncelleme dosyaları ve istediğiniz indirmeler. Geliştiriciye hiçbir şey gitmez."
         },
         {
           "h3": "Hiç yok",
@@ -533,7 +533,7 @@
         },
         {
           "q": "İnternetsiz çalışır mı?",
-          "a": "Evet. Konum belirlendikten sonra vakitler cihazda hesaplanır ve bildirimler yerel olarak planlanır."
+          "a": "Evet. İsveç, Diyanet, Fas, Cezayir ve Endonezya vakitleri telefonda hesaplanır; AlAdhan ile önümüzdeki yıl Wi‑Fi’da indirildikten sonra saklanır. Bildirimler yerel olarak planlanır."
         },
         {
           "q": "Hangi cihazlarda çalışır?",
@@ -715,7 +715,7 @@
       "cards": [
         {
           "h3": "نماز",
-          "p": "اگلی نماز کی الٹی گنتی کے ساتھ نماز کے اوقات، ہر نماز کی اذان، قبلہ کمپاس، ہوم اسکرین وجٹس — اور ہر نماز ایک ٹیپ میں درج۔ الارم گھڑی کی طرح پوری اسکرین کا نماز الرٹ، ہر نماز کے لیے اذان، الرٹ یا خاموشی کا انتخاب، اور اینڈرائیڈ پر خود نماز کے دوران خاموش فون۔ اسنوز صرف اتنا ملتا ہے جتنا نماز کا وقت باقی ہو، وقت ختم ہونے سے پہلے ایک «آخری موقع» تک۔ اوقات AlAdhan، فون پر حساب، یا سویڈن، دیانت (ترکی اور دنیا بھر میں 8,291 مقامات)، مراکش، الجزائر، سنگاپور، ملائیشیا، انڈونیشیا اور Türkiye Takvimi کے شائع شدہ جدولوں سے۔"
+          "p": "اگلی نماز کی الٹی گنتی کے ساتھ نماز کے اوقات، ہر نماز کی اذان، قبلہ کمپاس، ہوم اسکرین وجٹس — اور ہر نماز ایک ٹیپ میں درج۔ الارم گھڑی کی طرح پوری اسکرین کا نماز الرٹ، ہر نماز کے لیے اذان، الرٹ یا خاموشی کا انتخاب، اور اینڈرائیڈ پر خود نماز کے دوران خاموش فون۔ اسنوز صرف اتنا ملتا ہے جتنا نماز کا وقت باقی ہو، وقت ختم ہونے سے پہلے ایک «آخری موقع» تک۔ اوقات دیانت، اسلامسکا فوربوندیت، مراکش اور الجزائر کی وزارتوں اور Kemenag کے شائع شدہ اوقات سے چھپے ہوئے منٹ تک مطابق، فون پر حساب؛ MUIS، JAKIM اور Türkiye Takvimi جیسے شائع ہوئے؛ باقی جگہ AlAdhan۔"
         },
         {
           "h3": "پڑھیں اور سنیں",
@@ -733,7 +733,7 @@
     },
     "privacy": {
       "eyebrow": "رازداری",
-      "h2": "آپ کے فون سے وہ کچھ نہیں جاتا جو آپ نے نہ بھیجا ہو",
+      "h2": "نہ اکاؤنٹ، نہ ٹریکنگ — اور ہر درخواست لکھی ہوئی",
       "lede": "دن میں پانچ بار آپ کہاں ہیں — یہی سب سے حساس چیز ہے جسے نماز کی ایپ چھوتی ہے۔ اس کوڈ میں نہ اکاؤنٹ ہے، نہ اینالٹکس، نہ اشتہاری نیٹ ورک، نہ کریش رپورٹنگ۔",
       "cards": [
         {
@@ -741,8 +741,8 @@
           "p": "ترتیبات، محفوظ مقامات (مرموز)، آپ کی نماز کی ڈائری اور روزے کا ریکارڈ۔ اطلاعات مقامی طور پر شیڈول ہوتی ہیں۔"
         },
         {
-          "h3": "جب آپ چاہیں، نیٹ ورک پر جاتا ہے",
-          "p": "آپ کے منتخب کردہ ذریعے سے اوقات، مقام کی تلاش، اور مصحف کے صفحات، تراجم اور تلاوت کی ڈاؤن لوڈنگ۔"
+          "h3": "نیٹ ورک پر کیا جاتا ہے",
+          "p": "نماز کے اوقات: سویڈن، دیانت کے مقامات، مراکش، الجزائر اور انڈونیشیا کے لیے فون پر حساب ہوتے ہیں؛ باقی جگہوں پر AlAdhan کو آپ کے کوآرڈینیٹس ملتے ہیں۔ خودکار مقام کے ساتھ آپ کے شہر کا نام OpenStreetMap سے پوچھا جاتا ہے، آپ کا مقام تقریباً ایک کلومیٹر تک گول کر کے۔ پروجیکٹ کے GitHub سے چھوٹی اپڈیٹ فائلیں، اور وہ ڈاؤن لوڈ جو آپ مانگیں۔ ڈویلپر کو کچھ نہیں جاتا۔"
         },
         {
           "h3": "سرے سے موجود ہی نہیں",
@@ -764,7 +764,7 @@
         },
         {
           "q": "کیا یہ آف لائن کام کرتی ہے؟",
-          "a": "جی ہاں۔ مقام مقرر ہونے کے بعد اوقات آلے پر شمار ہوتے ہیں اور اطلاعات مقامی طور پر شیڈول ہوتی ہیں۔"
+          "a": "جی ہاں۔ سویڈن، دیانت، مراکش، الجزائر اور انڈونیشیا کے اوقات فون پر حساب ہوتے ہیں؛ AlAdhan کے ساتھ اگلا سال Wi‑Fi پر لینے کے بعد محفوظ رہتا ہے۔ اطلاعات مقامی طور پر طے ہوتی ہیں۔"
         },
         {
           "q": "کن آلات پر چلتی ہے؟",
@@ -927,7 +927,7 @@
       "cards": [
         {
           "h3": "Sholat",
-          "p": "Jadwal sholat dengan hitung mundur ke sholat berikutnya, adzan untuk setiap waktu, kompas kiblat, widget layar utama — dan setiap sholat dicatat dengan satu ketukan. Pengingat sholat layar penuh seperti jam alarm, pilihan adzan, nada, atau senyap untuk tiap sholat, dan di Android ponsel hening selama sholat itu sendiri. Tunda hanya ditawarkan selama waktu sholat masih cukup, hingga “kesempatan terakhir” sebelum waktunya habis. Jadwal dari AlAdhan, perhitungan di ponsel, atau tabel resmi Swedia, Diyanet (8.291 tempat di Turki dan dunia), Maroko, Aljazair, Singapura, Malaysia (JAKIM), Indonesia (Kemenag) dan Türkiye Takvimi."
+          "p": "Jadwal sholat dengan hitung mundur ke sholat berikutnya, adzan untuk setiap waktu, kompas kiblat, widget layar utama — dan setiap sholat dicatat dengan satu ketukan. Pengingat sholat layar penuh seperti jam alarm, pilihan adzan, nada, atau senyap untuk tiap sholat, dan di Android ponsel hening selama sholat itu sendiri. Tunda hanya ditawarkan selama waktu sholat masih cukup, hingga “kesempatan terakhir” sebelum waktunya habis. Jadwal sesuai sampai ke menit yang tercetak dengan jadwal terbitan Diyanet, Swedia, kementerian Maroko dan Aljazair, serta Kemenag, dihitung di ponsel; MUIS, JAKIM, dan Türkiye Takvimi sebagaimana diterbitkan; AlAdhan di tempat lain."
         },
         {
           "h3": "Baca dan dengarkan",
@@ -945,7 +945,7 @@
     },
     "privacy": {
       "eyebrow": "Privasi",
-      "h2": "Tidak ada yang meninggalkan ponsel Anda tanpa Anda minta",
+      "h2": "Tanpa akun, tanpa pelacakan — dan setiap permintaan tercatat",
       "lede": "Di mana Anda berada, lima kali sehari, adalah hal paling sensitif yang disentuh aplikasi sholat. Dalam kode ini tidak ada akun, panel analitik, jaringan iklan, maupun pelaporan kerusakan.",
       "cards": [
         {
@@ -953,8 +953,8 @@
           "p": "Pengaturan, lokasi tersimpan (terenkripsi), jurnal sholat, dan catatan puasa Anda. Notifikasi dijadwalkan secara lokal."
         },
         {
-          "h3": "Melalui jaringan, saat Anda memilihnya",
-          "p": "Waktu dari sumber yang Anda pilih, pencarian tempat, serta unduhan halaman mushaf, terjemahan, dan murottal."
+          "h3": "Yang lewat jaringan",
+          "p": "Jadwal sholat: dihitung di ponsel untuk Swedia, tempat-tempat Diyanet, Maroko, Aljazair, dan Indonesia; di tempat lain AlAdhan menerima koordinat Anda. Dengan lokasi otomatis, nama kota Anda ditanyakan ke OpenStreetMap, dengan posisi dibulatkan sekitar satu kilometer. File pembaruan kecil dari GitHub proyek, dan unduhan yang Anda minta. Tidak ada yang dikirim ke pengembang."
         },
         {
           "h3": "Sama sekali tidak ada",
@@ -976,7 +976,7 @@
         },
         {
           "q": "Apakah bisa dipakai offline?",
-          "a": "Bisa. Setelah lokasi diatur, waktunya dihitung di perangkat dan notifikasi dijadwalkan secara lokal."
+          "a": "Ya. Jadwal Swedia, Diyanet, Maroko, Aljazair, dan Indonesia dihitung di ponsel; dengan AlAdhan, setahun ke depan disimpan setelah diambil lewat Wi‑Fi. Notifikasi dijadwalkan di perangkat."
         },
         {
           "q": "Perangkat apa saja yang didukung?",
@@ -1158,7 +1158,7 @@
       "cards": [
         {
           "h3": "Beten",
-          "p": "Gebetszeiten mit Countdown zum nächsten Gebet, Adhan für jedes Gebet, Qibla-Kompass und Homescreen-Widgets – und jedes Gebet mit einem Tippen eingetragen. Ein Vollbild-Gebetsalarm wie ein Wecker, je Gebet Adhan, Hinweiston oder Stille, und unter Android ein Telefon, das während des Gebets selbst still ist. Schlummern nur so lange, wie die Gebetszeit noch reicht, bis zur letzten Gelegenheit vor ihrem Ende. Zeiten von AlAdhan, auf dem Gerät berechnet oder aus den veröffentlichten Tabellen Schwedens, der Diyanet (8.291 Orte in der Türkei und weltweit), Marokkos, Algeriens, Singapurs, Malaysias, Indonesiens und der Türkiye Takvimi."
+          "p": "Gebetszeiten mit Countdown zum nächsten Gebet, Adhan für jedes Gebet, Qibla-Kompass und Homescreen-Widgets – und jedes Gebet mit einem Tippen eingetragen. Ein Vollbild-Gebetsalarm wie ein Wecker, je Gebet Adhan, Hinweiston oder Stille, und unter Android ein Telefon, das während des Gebets selbst still ist. Schlummern nur so lange, wie die Gebetszeit noch reicht, bis zur letzten Gelegenheit vor ihrem Ende. Zeiten auf die gedruckte Minute gleich mit den veröffentlichten Zeitplänen der Diyanet, Schwedens, der Ministerien Marokkos und Algeriens und von Kemenag, auf dem Telefon berechnet; MUIS, JAKIM und Türkiye Takvimi wie veröffentlicht; anderswo AlAdhan."
         },
         {
           "h3": "Lesen und hören",
@@ -1176,7 +1176,7 @@
     },
     "privacy": {
       "eyebrow": "Privatsphäre",
-      "h2": "Nichts verlässt Ihr Telefon, worum Sie nicht gebeten haben",
+      "h2": "Kein Konto, kein Tracking — und jede Anfrage aufgeschrieben",
       "lede": "Wo Sie sind, fünfmal am Tag, ist das Sensibelste, was eine Gebets-App berührt. In diesem Code gibt es kein Konto, kein Analytik-Panel, kein Werbenetzwerk und keine Absturzberichte.",
       "cards": [
         {
@@ -1184,8 +1184,8 @@
           "p": "Einstellungen, gespeicherte Orte (verschlüsselt), Ihr Gebetstagebuch und Ihr Fastenprotokoll. Benachrichtigungen werden lokal geplant."
         },
         {
-          "h3": "Geht ins Netz, wenn Sie es wählen",
-          "p": "Zeiten von der Quelle Ihrer Wahl, die Ortssuche sowie Downloads von Mushaf-Seiten, Übersetzungen und Rezitationen."
+          "h3": "Was ins Netz geht",
+          "p": "Gebetszeiten: für Schweden, Diyanets Orte, Marokko, Algerien und Indonesien auf dem Telefon berechnet; anderswo erhält AlAdhan Ihre Koordinaten. Mit automatischem Standort wird OpenStreetMap nach dem Namen Ihres Ortes gefragt, mit Ihrer Position auf etwa einen Kilometer gerundet. Kleine Update-Dateien vom GitHub des Projekts und die Downloads, die Sie anstoßen. Nichts geht an den Entwickler."
         },
         {
           "h3": "Gar nicht vorhanden",
@@ -1207,7 +1207,7 @@
         },
         {
           "q": "Funktioniert sie offline?",
-          "a": "Ja. Ist der Standort gesetzt, werden die Zeiten auf dem Gerät berechnet und Benachrichtigungen lokal geplant."
+          "a": "Ja. Die Zeiten für Schweden, Diyanet, Marokko, Algerien und Indonesien werden auf dem Telefon berechnet; mit AlAdhan wird das kommende Jahr nach dem Abruf über WLAN gespeichert. Benachrichtigungen werden lokal geplant."
         },
         {
           "q": "Welche Geräte werden unterstützt?",
@@ -1370,7 +1370,7 @@
       "cards": [
         {
           "h3": "Prier",
-          "p": "Heures de prière et compte à rebours jusqu'à la prochaine, adhan pour chaque prière, boussole de la qibla, widgets pour l'écran d'accueil — et chaque prière consignée d'un seul geste. Une alerte de prière plein écran comme un réveil, pour chaque prière l'adhan, un signal ou le silence, et sur Android un téléphone qui se tait pendant la prière elle-même. La répétition ne propose que ce que le temps restant permet, jusqu’à une « dernière chance » avant la fin de la prière. Horaires d’AlAdhan, calculés sur l’appareil, ou tirés des tables officielles de Suède, de la Diyanet (8 291 lieux en Turquie et dans le monde), du Maroc, d’Algérie, de Singapour, de Malaisie, d’Indonésie et de Türkiye Takvimi."
+          "p": "Heures de prière et compte à rebours jusqu'à la prochaine, adhan pour chaque prière, boussole de la qibla, widgets pour l'écran d'accueil — et chaque prière consignée d'un seul geste. Une alerte de prière plein écran comme un réveil, pour chaque prière l'adhan, un signal ou le silence, et sur Android un téléphone qui se tait pendant la prière elle-même. La répétition ne propose que ce que le temps restant permet, jusqu’à une « dernière chance » avant la fin de la prière. Des horaires conformes à la minute imprimée à ceux publiés par Diyanet, la Suède, les ministères du Maroc et de l’Algérie et Kemenag, calculés sur le téléphone ; MUIS, JAKIM et Türkiye Takvimi tels que publiés ; AlAdhan ailleurs."
         },
         {
           "h3": "Lire et écouter",
@@ -1388,7 +1388,7 @@
     },
     "privacy": {
       "eyebrow": "Vie privée",
-      "h2": "Rien ne quitte votre téléphone sans que vous l'ayez demandé",
+      "h2": "Pas de compte, pas de pistage — et chaque requête écrite noir sur blanc",
       "lede": "Où vous êtes, cinq fois par jour, est la donnée la plus sensible que touche une application de prière. Ce code ne contient ni compte, ni panneau d'analytique, ni régie publicitaire, ni rapport de plantage.",
       "cards": [
         {
@@ -1396,8 +1396,8 @@
           "p": "Réglages, lieux enregistrés (chiffrés), votre journal de prière et votre journal de jeûne. Les notifications sont programmées localement."
         },
         {
-          "h3": "Passe par le réseau, quand vous le choisissez",
-          "p": "Les horaires de la source que vous choisissez, la recherche de lieu, et le téléchargement des pages du mushaf, des traductions et des récitations."
+          "h3": "Ce qui passe par le réseau",
+          "p": "Heures de prière : calculées sur le téléphone pour la Suède, les lieux de Diyanet, le Maroc, l’Algérie et l’Indonésie ; ailleurs, AlAdhan reçoit vos coordonnées. Avec la position automatique, le nom de votre ville est demandé à OpenStreetMap, avec votre position arrondie à environ un kilomètre. De petits fichiers de mise à jour depuis le GitHub du projet, et les téléchargements que vous demandez. Rien ne va au développeur."
         },
         {
           "h3": "Absent, tout simplement",
@@ -1419,7 +1419,7 @@
         },
         {
           "q": "Fonctionne-t-elle hors ligne ?",
-          "a": "Oui. Une fois la position définie, les horaires sont calculés sur l'appareil et les notifications programmées localement."
+          "a": "Oui. Les heures de la Suède, de Diyanet, du Maroc, de l’Algérie et de l’Indonésie sont calculées sur le téléphone ; avec AlAdhan, l’année à venir est gardée une fois récupérée en Wi‑Fi. Les notifications sont programmées localement."
         },
         {
           "q": "Quels appareils sont pris en charge ?",
@@ -1608,7 +1608,7 @@
       "cards": [
         {
           "h3": "Rezar",
-          "p": "Horarios de oración con cuenta atrás hasta la siguiente, adhan para cada oración, brújula de la alquibla, widgets para la pantalla de inicio — y cada oración registrada con un toque. Una alerta de oración a pantalla completa como un despertador, para cada oración adhan, aviso o silencio, y en Android un teléfono que calla durante la propia oración. La posposición solo ofrece lo que permite el tiempo que queda, hasta una «última oportunidad» antes de que termine la oración. Horarios de AlAdhan, calculados en el teléfono o de las tablas oficiales de Suecia, la Diyanet (8.291 lugares en Turquía y el mundo), Marruecos, Argelia, Singapur, Malasia, Indonesia y Türkiye Takvimi."
+          "p": "Horarios de oración con cuenta atrás hasta la siguiente, adhan para cada oración, brújula de la alquibla, widgets para la pantalla de inicio — y cada oración registrada con un toque. Una alerta de oración a pantalla completa como un despertador, para cada oración adhan, aviso o silencio, y en Android un teléfono que calla durante la propia oración. La posposición solo ofrece lo que permite el tiempo que queda, hasta una «última oportunidad» antes de que termine la oración. Horarios que coinciden al minuto impreso con los publicados por Diyanet, Suecia, los ministerios de Marruecos y Argelia y Kemenag, calculados en el teléfono; MUIS, JAKIM y Türkiye Takvimi tal como se publican; AlAdhan en el resto."
         },
         {
           "h3": "Leer y escuchar",
@@ -1626,7 +1626,7 @@
     },
     "privacy": {
       "eyebrow": "Privacidad",
-      "h2": "Nada sale de tu teléfono que no hayas pedido enviar",
+      "h2": "Sin cuenta, sin rastreo — y cada petición por escrito",
       "lede": "Dónde estás, cinco veces al día, es lo más sensible que toca una aplicación de oración. En este código no hay cuenta, ni panel de analítica, ni red publicitaria, ni informes de fallos.",
       "cards": [
         {
@@ -1634,8 +1634,8 @@
           "p": "Ajustes, lugares guardados (cifrados), tu diario de oración y tu registro de ayuno. Las notificaciones se programan localmente."
         },
         {
-          "h3": "Sale a la red cuando tú lo eliges",
-          "p": "Los horarios de la fuente que elijas, la búsqueda de lugares y las descargas de páginas del mushaf, traducciones y recitaciones."
+          "h3": "Lo que pasa por la red",
+          "p": "Horarios de oración: se calculan en el teléfono para Suecia, los lugares de Diyanet, Marruecos, Argelia e Indonesia; en otros lugares AlAdhan recibe tus coordenadas. Con la ubicación automática se pregunta a OpenStreetMap el nombre de tu ciudad, con tu posición redondeada a un kilómetro aproximadamente. Pequeños archivos de actualización del GitHub del proyecto y las descargas que pidas. Nada va al desarrollador."
         },
         {
           "h3": "Sencillamente no está",
@@ -1657,7 +1657,7 @@
         },
         {
           "q": "¿Funciona sin conexión?",
-          "a": "Sí. Fijada la ubicación, los horarios se calculan en el dispositivo y las notificaciones se programan localmente."
+          "a": "Sí. Los horarios de Suecia, Diyanet, Marruecos, Argelia e Indonesia se calculan en el teléfono; con AlAdhan se guarda el año siguiente una vez descargado por Wi‑Fi. Las notificaciones se programan en el dispositivo."
         },
         {
           "q": "¿Qué dispositivos admite?",
@@ -1820,7 +1820,7 @@
       "cards": [
         {
           "h3": "Молитесь",
-          "p": "Время намаза с обратным отсчётом до следующего, азан для каждого намаза, компас киблы, виджеты — и каждый намаз отмечается одним касанием. Полноэкранное напоминание о молитве, как будильник, для каждого намаза азан, сигнал или тишина, а на Android телефон молчит во время самой молитвы. Отложить можно лишь настолько, насколько позволяет оставшееся время намаза, — вплоть до «последней возможности» перед его концом. Время от AlAdhan, расчёт на телефоне или официальные таблицы Швеции, Диянета (8291 место в Турции и по всему миру), Марокко, Алжира, Сингапура, Малайзии, Индонезии и Türkiye Takvimi."
+          "p": "Время намаза с обратным отсчётом до следующего, азан для каждого намаза, компас киблы, виджеты — и каждый намаз отмечается одним касанием. Полноэкранное напоминание о молитве, как будильник, для каждого намаза азан, сигнал или тишина, а на Android телефон молчит во время самой молитвы. Отложить можно лишь настолько, насколько позволяет оставшееся время намаза, — вплоть до «последней возможности» перед его концом. Время до напечатанной минуты совпадает с опубликованными расписаниями Диянета, Швеции, министерств Марокко и Алжира и Kemenag и рассчитывается на телефоне; MUIS, JAKIM и Türkiye Takvimi — как опубликованы; в остальных местах AlAdhan."
         },
         {
           "h3": "Читайте и слушайте",
@@ -1838,7 +1838,7 @@
     },
     "privacy": {
       "eyebrow": "Приватность",
-      "h2": "С телефона не уходит ничего, о чём вы не просили",
+      "h2": "Без аккаунта, без слежки — и каждый запрос записан",
       "lede": "Где вы находитесь пять раз в день — самое чувствительное, чего касается приложение для намаза. В этом коде нет ни аккаунта, ни аналитики, ни рекламной сети, ни отчётов о сбоях.",
       "cards": [
         {
@@ -1846,8 +1846,8 @@
           "p": "Настройки, сохранённые места (в зашифрованном виде), дневник намазов и журнал поста. Уведомления планируются локально."
         },
         {
-          "h3": "Уходит в сеть, когда вы этого хотите",
-          "p": "Время из выбранного вами источника, поиск места и загрузка страниц мусхафа, переводов и чтений."
+          "h3": "Что уходит в сеть",
+          "p": "Время молитв: для Швеции, мест Диянета, Марокко, Алжира и Индонезии рассчитывается на телефоне; в других местах AlAdhan получает ваши координаты. При автоматическом определении места название вашего города запрашивается у OpenStreetMap, а позиция округляется примерно до километра. Небольшие файлы обновлений с GitHub проекта и загрузки, которые вы запросили. Разработчику не уходит ничего."
         },
         {
           "h3": "Отсутствует полностью",
@@ -1869,7 +1869,7 @@
         },
         {
           "q": "Работает ли без интернета?",
-          "a": "Да. После указания местоположения время рассчитывается на устройстве, а уведомления планируются локально."
+          "a": "Да. Время для Швеции, Диянета, Марокко, Алжира и Индонезии рассчитывается на телефоне; с AlAdhan год вперёд сохраняется после загрузки по Wi‑Fi. Уведомления планируются на устройстве."
         },
         {
           "q": "Какие устройства поддерживаются?",
@@ -2032,7 +2032,7 @@
       "cards": [
         {
           "h3": "নামাজ",
-          "p": "পরের নামাজের কাউন্টডাউনসহ নামাজের সময়, প্রতি ওয়াক্তের আজান, কিবলা কম্পাস, হোম স্ক্রিন উইজেট — আর এক ছোঁয়ায় প্রতিটি নামাজ লিখে রাখা। অ্যালার্ম ঘড়ির মতো পূর্ণ-পর্দা নামাজের সতর্কবার্তা, প্রতি ওয়াক্তে আজান, সংকেত বা নীরবতার পছন্দ, আর অ্যান্ড্রয়েডে নামাজের সময়টুকু ফোন চুপ। স্নুজ শুধু ততটুকুই দেওয়া হয় যতটুকু ওয়াক্ত বাকি আছে, ওয়াক্ত শেষ হওয়ার আগে একটি «শেষ সুযোগ» পর্যন্ত। সময় আসে AlAdhan, ফোনে হিসাব, অথবা সুইডেন, দিয়ানেত (তুরস্ক ও বিশ্বজুড়ে ৮,২৯১টি স্থান), মরক্কো, আলজেরিয়া, সিঙ্গাপুর, মালয়েশিয়া, ইন্দোনেশিয়া ও Türkiye Takvimi-র প্রকাশিত সময়সূচি থেকে।"
+          "p": "পরের নামাজের কাউন্টডাউনসহ নামাজের সময়, প্রতি ওয়াক্তের আজান, কিবলা কম্পাস, হোম স্ক্রিন উইজেট — আর এক ছোঁয়ায় প্রতিটি নামাজ লিখে রাখা। অ্যালার্ম ঘড়ির মতো পূর্ণ-পর্দা নামাজের সতর্কবার্তা, প্রতি ওয়াক্তে আজান, সংকেত বা নীরবতার পছন্দ, আর অ্যান্ড্রয়েডে নামাজের সময়টুকু ফোন চুপ। স্নুজ শুধু ততটুকুই দেওয়া হয় যতটুকু ওয়াক্ত বাকি আছে, ওয়াক্ত শেষ হওয়ার আগে একটি «শেষ সুযোগ» পর্যন্ত। সময় দিয়ানেত, ইসলামিস্কা ফোরবুন্দেত, মরক্কো ও আলজেরিয়ার মন্ত্রণালয় এবং Kemenag-এর প্রকাশিত সময়সূচির সঙ্গে ছাপা মিনিট পর্যন্ত মেলে, ফোনেই হিসাব; MUIS, JAKIM ও Türkiye Takvimi যেমন প্রকাশিত; অন্যত্র AlAdhan।"
         },
         {
           "h3": "পড়ুন ও শুনুন",
@@ -2050,7 +2050,7 @@
     },
     "privacy": {
       "eyebrow": "গোপনীয়তা",
-      "h2": "আপনার না চাওয়া কিছুই ফোন ছেড়ে যায় না",
+      "h2": "কোনো অ্যাকাউন্ট নেই, ট্র্যাকিং নেই — আর প্রতিটি অনুরোধ লেখা আছে",
       "lede": "দিনে পাঁচবার আপনি কোথায় আছেন — নামাজের অ্যাপ যা স্পর্শ করে তার মধ্যে এটিই সবচেয়ে সংবেদনশীল। এই কোডে অ্যাকাউন্ট নেই, অ্যানালিটিক্স নেই, বিজ্ঞাপন নেটওয়ার্ক নেই, ক্র্যাশ রিপোর্টও নেই।",
       "cards": [
         {
@@ -2058,8 +2058,8 @@
           "p": "সেটিংস, সংরক্ষিত স্থান (এনক্রিপ্ট করা), আপনার নামাজের ডায়েরি ও রোজার হিসাব। নোটিফিকেশন স্থানীয়ভাবে নির্ধারিত হয়।"
         },
         {
-          "h3": "আপনি চাইলে নেটওয়ার্কে যায়",
-          "p": "আপনার বাছাই করা উৎস থেকে সময়, স্থান অনুসন্ধান, এবং মুসহাফের পৃষ্ঠা, অনুবাদ ও তিলাওয়াত ডাউনলোড।"
+          "h3": "নেটওয়ার্কে যা যায়",
+          "p": "নামাজের সময়: সুইডেন, দিয়ানেতের স্থান, মরক্কো, আলজেরিয়া ও ইন্দোনেশিয়ার জন্য ফোনেই হিসাব হয়; অন্যত্র AlAdhan আপনার স্থানাঙ্ক পায়। স্বয়ংক্রিয় অবস্থানে আপনার শহরের নাম OpenStreetMap-এর কাছে জানতে চাওয়া হয়, অবস্থান প্রায় এক কিলোমিটারে গোল করে। প্রকল্পের GitHub থেকে ছোট আপডেট ফাইল, আর আপনি যা ডাউনলোড করতে চান। ডেভেলপারের কাছে কিছুই যায় না।"
         },
         {
           "h3": "একেবারেই নেই",
@@ -2081,7 +2081,7 @@
         },
         {
           "q": "এটি কি অফলাইনে কাজ করে?",
-          "a": "হ্যাঁ। অবস্থান ঠিক করার পর সময় ডিভাইসেই হিসাব হয় এবং নোটিফিকেশন স্থানীয়ভাবে নির্ধারিত হয়।"
+          "a": "হ্যাঁ। সুইডেন, দিয়ানেত, মরক্কো, আলজেরিয়া ও ইন্দোনেশিয়ার সময় ফোনেই হিসাব হয়; AlAdhan-এর ক্ষেত্রে Wi‑Fi-তে আনার পর সামনের বছর রাখা থাকে। বিজ্ঞপ্তি ডিভাইসেই নির্ধারিত হয়।"
         },
         {
           "q": "কোন ডিভাইসে চলে?",
@@ -2244,7 +2244,7 @@
       "cards": [
         {
           "h3": "नमाज़",
-          "p": "अगली नमाज़ की उलटी गिनती के साथ नमाज़ के समय, हर नमाज़ की अज़ान, क़िबला कम्पास, होम स्क्रीन विजेट — और हर नमाज़ एक टैप में दर्ज। अलार्म घड़ी जैसी पूर्ण-स्क्रीन नमाज़ चेतावनी, हर नमाज़ के लिए अज़ान, सूचना या मौन का चुनाव, और एंड्रॉइड पर नमाज़ के दौरान चुप फ़ोन। स्नूज़ उतना ही मिलता है जितना नमाज़ का वक़्त बाक़ी हो, वक़्त ख़त्म होने से पहले एक «आख़िरी मौक़ा» तक। समय AlAdhan, फ़ोन पर गणना, या स्वीडन, दियानत (तुर्की और दुनिया भर में 8,291 जगहें), मोरक्को, अल्जीरिया, सिंगापुर, मलेशिया, इंडोनेशिया और Türkiye Takvimi की प्रकाशित तालिकाओं से।"
+          "p": "अगली नमाज़ की उलटी गिनती के साथ नमाज़ के समय, हर नमाज़ की अज़ान, क़िबला कम्पास, होम स्क्रीन विजेट — और हर नमाज़ एक टैप में दर्ज। अलार्म घड़ी जैसी पूर्ण-स्क्रीन नमाज़ चेतावनी, हर नमाज़ के लिए अज़ान, सूचना या मौन का चुनाव, और एंड्रॉइड पर नमाज़ के दौरान चुप फ़ोन। स्नूज़ उतना ही मिलता है जितना नमाज़ का वक़्त बाक़ी हो, वक़्त ख़त्म होने से पहले एक «आख़िरी मौक़ा» तक। समय दियानत, इस्लामिस्का फ़ोरबुंदेत, मोरक्को और अल्जीरिया के मंत्रालयों और Kemenag की प्रकाशित समय-सारणी से छपे मिनट तक मेल खाता है, फ़ोन पर गणना; MUIS, JAKIM और Türkiye Takvimi जैसे प्रकाशित; बाकी जगह AlAdhan।"
         },
         {
           "h3": "पढ़ें और सुनें",
@@ -2262,7 +2262,7 @@
     },
     "privacy": {
       "eyebrow": "निजता",
-      "h2": "आपके फ़ोन से वह कुछ नहीं जाता जो आपने भेजने को न कहा हो",
+      "h2": "न खाता, न ट्रैकिंग — और हर अनुरोध लिखा हुआ",
       "lede": "दिन में पाँच बार आप कहाँ हैं — नमाज़ का ऐप जिस चीज़ को छूता है, उनमें यही सबसे संवेदनशील है। इस कोड में न खाता है, न एनालिटिक्स, न विज्ञापन नेटवर्क, न क्रैश रिपोर्टिंग।",
       "cards": [
         {
@@ -2270,8 +2270,8 @@
           "p": "सेटिंग्स, सहेजी गई जगहें (एन्क्रिप्टेड), आपकी नमाज़ की डायरी और रोज़े का हिसाब। सूचनाएँ स्थानीय रूप से तय होती हैं।"
         },
         {
-          "h3": "जब आप चाहें, नेटवर्क पर जाता है",
-          "p": "आपके चुने स्रोत से समय, जगह की खोज, और मुसहफ़ के पन्ने, अनुवाद व तिलावत का डाउनलोड।"
+          "h3": "नेटवर्क पर क्या जाता है",
+          "p": "नमाज़ का समय: स्वीडन, दियानत की जगहों, मोरक्को, अल्जीरिया और इंडोनेशिया के लिए फ़ोन पर ही गणना होती है; बाकी जगहों पर AlAdhan को आपके निर्देशांक मिलते हैं। स्वचालित स्थान में आपके शहर का नाम OpenStreetMap से पूछा जाता है, आपकी स्थिति लगभग एक किलोमीटर तक गोल करके। प्रोजेक्ट के GitHub से छोटी अपडेट फ़ाइलें, और वे डाउनलोड जो आप माँगें। डेवलपर के पास कुछ नहीं जाता।"
         },
         {
           "h3": "है ही नहीं",
@@ -2293,7 +2293,7 @@
         },
         {
           "q": "क्या यह ऑफ़लाइन चलता है?",
-          "a": "हाँ। जगह तय होने के बाद समय उपकरण पर ही निकाला जाता है और सूचनाएँ स्थानीय रूप से तय होती हैं।"
+          "a": "हाँ। स्वीडन, दियानत, मोरक्को, अल्जीरिया और इंडोनेशिया के समय फ़ोन पर गणना होते हैं; AlAdhan के साथ Wi‑Fi पर लाने के बाद अगला साल सहेजा रहता है। सूचनाएँ डिवाइस पर ही तय होती हैं।"
         },
         {
           "q": "किन उपकरणों पर चलता है?",
@@ -2456,7 +2456,7 @@
       "cards": [
         {
           "h3": "礼拜",
-          "p": "礼拜时间与到下一次礼拜的倒计时、每番礼拜的宣礼、朝向罗盘、主屏小组件——每次礼拜一触即可记录。全屏礼拜提醒如同闹钟；每番礼拜可选宣礼、提示音或静音；在 Android 上，手机在礼拜期间保持安静。稍后提醒只提供礼拜时间还容许的时长，直到时间结束前的「最后机会」。时间来自 AlAdhan、本机计算，或瑞典、土耳其宗教事务局 Diyanet（土耳其及世界各地 8,291 处）、摩洛哥、阿尔及利亚、新加坡、马来西亚、印度尼西亚与 Türkiye Takvimi 公布的时间表。"
+          "p": "礼拜时间与到下一次礼拜的倒计时、每番礼拜的宣礼、朝向罗盘、主屏小组件——每次礼拜一触即可记录。全屏礼拜提醒如同闹钟；每番礼拜可选宣礼、提示音或静音；在 Android 上，手机在礼拜期间保持安静。稍后提醒只提供礼拜时间还容许的时长，直到时间结束前的「最后机会」。时间与 Diyanet、瑞典、摩洛哥和阿尔及利亚宗教部以及 Kemenag 公布的时间表精确到印刷的分钟，在手机上计算；MUIS、JAKIM 和 Türkiye Takvimi 按公布原样；其他地方使用 AlAdhan。"
         },
         {
           "h3": "诵读与聆听",
@@ -2474,7 +2474,7 @@
     },
     "privacy": {
       "eyebrow": "隐私",
-      "h2": "未经你要求，没有任何东西离开手机",
+      "h2": "无账户、无追踪——每个请求都写明",
       "lede": "一天五次你身在何处，是礼拜应用所触及的最敏感的信息。这份代码里没有账号、没有分析面板、没有广告网络，也没有崩溃上报。",
       "cards": [
         {
@@ -2482,8 +2482,8 @@
           "p": "设置、已保存的地点（加密存储）、你的礼拜日志与封斋记录。通知在本地排程。"
         },
         {
-          "h3": "你选择时才走网络",
-          "p": "来自你所选来源的时间、地点搜索，以及经文页面、译文与诵读音频的下载。"
+          "h3": "哪些内容经过网络",
+          "p": "礼拜时间：瑞典、Diyanet 所列地点、摩洛哥、阿尔及利亚和印度尼西亚在手机上计算；其他地方由 AlAdhan 接收你的坐标。使用自动定位时，会向 OpenStreetMap 查询你所在城镇的名称，位置约取整到一公里。另有来自项目 GitHub 的小型更新文件，以及你要求的下载。没有任何内容发给开发者。"
         },
         {
           "h3": "根本不存在",
@@ -2505,7 +2505,7 @@
         },
         {
           "q": "离线能用吗？",
-          "a": "能。设定位置后，时间在设备上推算，通知也在本地排程。"
+          "a": "可以。瑞典、Diyanet、摩洛哥、阿尔及利亚和印度尼西亚的时间在手机上计算；使用 AlAdhan 时，通过 Wi‑Fi 获取后会保存未来一年。通知在设备上本地安排。"
         },
         {
           "q": "支持哪些设备？",

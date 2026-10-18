@@ -1631,7 +1631,7 @@
     },
     "location": {
       "title": "Wo bist du?",
-      "body": "Die Gebetszeiten hängen davon ab, wo du stehst. Deine Koordinaten werden auf diesem Gerät verschlüsselt und verlassen es nie.",
+      "body": "Die Gebetszeiten hängen davon ab, wo du stehst. Deine Koordinaten werden auf diesem Gerät verschlüsselt und gehen nur an einen Dienst, der sie für die Antwort braucht — nie an uns.",
       "ready": "Heute in {{city}}"
     },
     "salamA11y": "As-salāmu ʿalaykum wa raḥmatu llāhi taʿālā wa barakātuh",

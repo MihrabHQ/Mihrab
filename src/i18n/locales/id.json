@@ -1631,7 +1631,7 @@
     },
     "location": {
       "title": "Di mana Anda berada?",
-      "body": "Waktu salat bergantung pada lokasi Anda. Koordinat Anda dienkripsi di perangkat ini dan tidak pernah meninggalkannya.",
+      "body": "Waktu salat bergantung pada lokasi Anda. Koordinat Anda dienkripsi di perangkat ini dan hanya dikirim ke layanan yang memerlukannya untuk menjawab — tidak pernah ke kami.",
       "ready": "Hari ini di {{city}}"
     },
     "salamA11y": "Assalāmu ʿalaikum warahmatullāhi taʿālā wabarakātuh",

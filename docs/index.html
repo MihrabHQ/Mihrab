@@ -159,7 +159,7 @@
       "name": "Does Mihrab track my location or sell my data?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "No, and there is nothing in the app that could. No analytics SDK, no ad network, no crash reporter and no account — so there is no profile for a location to be attached to. Coordinates are stored encrypted on the device; the only time they leave it is the request to the prayer-time provider you chose, which needs a place and a date to answer. Pick on-device calculation and even that request stops."
+        "text": "No, and there is nothing in the app that could. No analytics SDK, no ad network, no crash reporter and no account — so there is no profile for a location to be attached to. Coordinates leave the phone in two requests, neither to the developer: to AlAdhan, where it is the source of your times (not for Sweden, Diyanet’s places, Morocco, Algeria or Indonesia, which are calculated on the phone), and, with automatic location, to OpenStreetMap to name your town, rounded to about a kilometre. Choose calculation on the device and enter your town by hand, and neither request is made."
       }
     },
     {
@@ -167,7 +167,7 @@
       "name": "Does Mihrab work offline?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Once a location is set, prayer times are calculated on the device and notifications are scheduled locally, so the day works with the network switched off. Downloads you ask for — mushaf pages, recitation, tafsir — are the only things that need it."
+        "text": "Yes. Sweden’s, Diyanet’s, Morocco’s, Algeria’s and Indonesia’s times are calculated on the phone, and with AlAdhan the app keeps the year ahead once it has fetched it on Wi-Fi, so the day works with the network switched off; notifications are scheduled locally. Downloads you ask for — mushaf pages, recitation, tafsir — need a connection."
       }
     }
   ]
@@ -683,18 +683,20 @@
 <section class="privacy" id="privacy">
   <div class="wrap">
     <p class="eyebrow">Private by design</p>
-    <h2>Nothing leaves your phone that you didn’t ask to send</h2>
+    <h2>No account, no tracking, and every request written down</h2>
     <p class="lede">Where you are, five times a day, is the most sensitive thing a prayer app ever
-      touches. So there is no account to make, this codebase carries no analytics panel, no ad
-      network and no crash-reporting service, and once a location is set, prayer times can be
-      calculated entirely on your device — the app works with the network switched off.</p>
+      touches. So there is no account to make, and this codebase carries no analytics, no ad network
+      and no crash-reporting service — nothing that could put a location in a profile. What does go
+      over the network is listed here, from the code, and none of it goes to the developer.</p>
     <div class="cols">
       <article class="card">
         <h3>Stays on the device</h3>
         <ul>
           <li>Language, appearance, chosen provider, calculation options and notification settings.</li>
-          <li>Saved coordinates and place names, <strong>encrypted at rest</strong> through the iOS
-            Keychain and Android EncryptedSharedPreferences.</li>
+          <li>Your location settings and saved places, <strong>encrypted at rest</strong> through the
+            iOS Keychain and Android EncryptedSharedPreferences. The towns the app has placed you in,
+            which keep the times steady while you move about a town, are kept in its ordinary
+            storage.</li>
           <li>Your prayer journal and fasting log — there is no central database to hold them.</li>
           <li>Notifications are scheduled locally; what you log is never sent anywhere as an event
             stream.</li>
@@ -704,20 +706,27 @@
         </ul>
       </article>
       <article class="card">
-        <h3>Goes over the network, when you choose it</h3>
+        <h3>Goes over the network</h3>
         <ul>
-          <li>Prayer times from AlAdhan, when it is the source, which receives the
-            coordinates and dates it needs to answer. The national tables (Morocco, Algeria, Singapore,
-            Malaysia, Indonesia) are prepared files fetched from this project’s own repository: they
-            are asked for a city, not for you. Sweden’s times are calculated on the phone and fetch
-            nothing. With Türkiye Takvimi, the phone picks
-            the nearest listed city itself and asks namazvakti.com for that city’s year — the city’s
-            number, not your coordinates.</li>
-          <li>Place search through <strong>OpenStreetMap Nominatim</strong>: your search text goes to
-            them under their terms.</li>
-          <li>Downloads of mushaf pages, translations, tafsir and recitation audio.</li>
+          <li><strong>Prayer times.</strong> For Sweden, Diyanet’s places, Morocco, Algeria and
+            Indonesia they are calculated on the phone, and no prayer-time request is made. Elsewhere —
+            the default outside those places, unless you pick calculation on the device —
+            <strong>AlAdhan</strong> receives your coordinates and the dates it needs to answer.
+            Singapore’s and Malaysia’s tables are fetched from this project’s repository by city, with
+            the authority’s own service as a backup; Türkiye Takvimi by a map tile around you, and
+            namazvakti.com only a city’s number.</li>
+          <li><strong>Your town’s name.</strong> With automatic location, the app asks
+            <strong>OpenStreetMap Nominatim</strong> which town you are in, sending your position
+            rounded to about a kilometre. Place search sends what you type (to Nominatim, or Photon
+            when it is busy).</li>
+          <li><strong>Updates to the calculations.</strong> At start and every few hours, the app reads
+            two small files from this project’s GitHub repositories: newer correction lists for the
+            calculated methods, and announced Hijri-date corrections. Nothing about you is in the
+            request.</li>
+          <li><strong>Downloads you ask for</strong> — mushaf pages, translations, tafsir and
+            recitation audio.</li>
           <li>Those services can see ordinary technical data — IP address, time, requested URL — under
-            their own policies. Skip the features and the requests never happen.</li>
+            their own policies.</li>
         </ul>
       </article>
       <article class="card">
@@ -725,10 +734,11 @@
         <ul>
           <li>No ads, no trackers, no analytics SDK, no crash reporter.</li>
           <li>No account, no sign-in, no profile.</li>
-          <li>On Android, <code>allowBackup</code> is off in the manifest, and no build carries Google
-            Play Services, the Play Store one included.</li>
+          <li>No build carries Google Play Services, the Play Store one included. On Android the
+            app’s settings and journal can travel in Android’s own backup and device-to-device
+            transfer, when you have those on.</li>
           <li>This page is hand-written HTML and one stylesheet, served from this domain: no
-            JavaScript, no webfonts, no third-party requests. Its two <code>&lt;script&gt;</code>
+            JavaScript, no webfonts, no third-party requests. Its <code>&lt;script&gt;</code>
             tags are inert JSON describing the app and these questions to search engines — nothing
             in them runs.</li>
         </ul>
@@ -831,15 +841,18 @@
         <h3>Does Mihrab track my location or sell my data?</h3>
         <p>No, and there is nothing in the app that could. No analytics SDK, no ad network, no crash
           reporter and no account — so there is no profile for a location to be attached to.
-          Coordinates are stored encrypted on the device; the only time they leave it is the request
-          to the prayer-time provider you chose, which needs a place and a date to answer. Pick
-          on-device calculation and even that request stops.</p>
+          Coordinates leave the phone in two requests, neither to the developer: to AlAdhan, where it
+          is the source of your times (not for Sweden, Diyanet’s places, Morocco, Algeria or
+          Indonesia, which are calculated on the phone), and, with automatic location, to
+          OpenStreetMap to name your town, rounded to about a kilometre. Choose calculation on the
+          device and enter your town by hand, and neither request is made.</p>
       </article>
       <article class="card">
         <h3>Does Mihrab work offline?</h3>
-        <p>Once a location is set, prayer times are calculated on the device and notifications are
-          scheduled locally, so the day works with the network switched off. Downloads you ask for —
-          mushaf pages, recitation, tafsir — are the only things that need it.</p>
+        <p>Yes. Sweden’s, Diyanet’s, Morocco’s, Algeria’s and Indonesia’s times are calculated on the
+          phone, and with AlAdhan the app keeps the year ahead once it has fetched it on Wi-Fi, so the day
+          works with the network switched off; notifications are scheduled locally. Downloads you ask
+          for — mushaf pages, recitation, tafsir — need a connection.</p>
       </article>
     </div>
   </div>

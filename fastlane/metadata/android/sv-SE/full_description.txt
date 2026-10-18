@@ -1,9 +1,7 @@
 Mihrab är en lugn följeslagare genom muslimens dag: bönerna, Koranen och åminnelsen däremellan, i en och samma privata app.
 
-Håll fingret på ett ord i mushafen och hör just det ordet läsas. Följ det reciterade ordet när det lyser upp på sidan. Se tajwid i färg, för Hafs och för Warsh. Håll din loggbok och dina inställningar i takt mellan dina egna enheter, utan konto och utan server. Och varenda rad kod är öppen.
-
 BE
-- Bönetider för idag, veckan och månaden framåt — uträknade på telefonen, från en källa på nätet eller ur de publicerade nationella tabellerna för Sverige, Marocko, Algeriet, Singapore, Malaysia och Indonesien, eller Diyanets för 8 291 orter i Turkiet och världen — kan delas som bild eller PDF
+- Bönetider för i dag, veckan och månaden framåt — på den tryckta minuten enligt de publicerade tidtabellerna från Diyanet, Islamiska Förbundet, Marockos och Algeriets ministerier och Kemenag, uträknade på telefonen; MUIS, JAKIM och Türkiye Takvimi som de publiceras; AlAdhan på andra platser — att dela som bild eller PDF
 - Böneutrop för varje bön, med sjutton adhan-inspelningar eller en egen, påminnelse före bönen och snooze som bara erbjuder vad bönetiden räcker till, ända till en sista chans innan den går ut
 - Ett böneutrop som tar hela skärmen över låsskärmen, som en väckarklocka, med Stoppa, Snooza och Logga bön
 - Tysta telefonen under själva bönen och låt ljudet komma tillbaka av sig självt — Stör ej från utropet eller några minuter före, med en egen längd för fredagsbönen
@@ -35,6 +33,8 @@ DITT EGET
 - Android, iPhone, iPad och Mac, på 13 språk, med arabiska och urdu helt från höger till vänster
 - Ljust, mörkt och helsvart, sex färgteman, din egen accentfärg och Material You – eller Himmel, som målar hela appen från himlen ovanför nedräkningen och skiftar med timmen — i realistiska eller livfulla färger
 
-Nätet används bara när du väljer det: en källa för bönetider (AlAdhan, Türkiye Takvimi eller de nationella tabellerna för Sverige, Marocko, Algeriet, Singapore, Malaysia och Indonesien), platssökning via OpenStreetMap Nominatim, och nedladdning av Koranens sidor, översättningar, tafsir och recitationsljud. Dina koordinater stannar på din enhet.
+Över nätet: för Sverige, Diyanets orter, Marocko, Algeriet och Indonesien räknas tiderna ut på telefonen, utan någon förfrågan; på andra platser får AlAdhan dina koordinater och datumet. Med automatisk plats frågar appen OpenStreetMap om ortens namn, med positionen avrundad till ungefär en kilometer. Appen läser små uppdateringsfiler från projektets GitHub och laddar ned Koranens sidor, översättningar, tafsir och recitation när du ber om det. Inget skickas till utvecklaren.
+
+Mihrab är oberoende och inte knutet till någon av de myndigheter vars publicerade tidtabeller appen stämmer med, och talar inte för dem.
 
 Mihrab är öppen källkod under AGPL-3.0-or-later.

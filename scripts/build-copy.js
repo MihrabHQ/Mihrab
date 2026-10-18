@@ -134,9 +134,27 @@ function readmeBlock(cert) {
   ].join('\n');
 }
 
+/** Every locale's files, generated or not, held to the same limits. */
+function checkAllLimits(out, problems) {
+  for (const [platform, limits] of Object.entries(LIMITS)) {
+    const dir = path.join(META, platform);
+    for (const locale of fs.readdirSync(dir)) {
+      for (const [field, limit] of Object.entries(limits)) {
+        const file = path.join(dir, locale, `${field}.txt`);
+        const text = out.get(file) ?? (fs.existsSync(file) ? fs.readFileSync(file, 'utf-8') : null);
+        if (text !== null && length(text.trim()) > limit) {
+          const msg = `${platform}/${locale}/${field}: ${length(text.trim())} characters, the limit is ${limit}`;
+          if (!problems.includes(msg)) problems.push(msg);
+        }
+      }
+    }
+  }
+}
+
 function build() {
   const cert = certification();
   const { out, problems } = storeFiles(cert);
+  checkAllLimits(out, problems);
   const readme = path.join(ROOT, 'README.md');
   const text = fs.readFileSync(readme, 'utf-8');
   const re = /(<!-- accuracy:start -->\n)[\s\S]*?(<!-- accuracy:end -->)/;

@@ -1,9 +1,7 @@
 Mihrab est un compagnon serein pour la journée d'un musulman : les prières, le Coran et le rappel d'Allah entre les deux, dans une seule app privée.
 
-Maintenez n'importe quel mot du mushaf et entendez ce seul mot récité. Suivez le mot récité qui s'allume sur la page. Voyez le tajwid en couleur, en Hafs et en Warsh. Gardez votre journal et vos réglages à jour entre vos propres appareils, sans compte et sans serveur. Et chaque ligne du code est open source.
-
 PRIER
-- Les heures de prière du jour, de la semaine et du mois à venir — calculées sur votre téléphone, fournies par un service ou tirées des tables nationales publiées pour la Suède, le Maroc, l'Algérie, Singapour, la Malaisie, l'Indonésie et la Diyanet (8 291 lieux) — à partager en image ou en PDF
+- Les heures du jour, de la semaine et du mois à venir — conformes à la minute imprimée aux horaires publiés par Diyanet, Islamiska Förbundet, les ministères du Maroc et de l’Algérie et Kemenag, calculées sur le téléphone ; MUIS, JAKIM et Türkiye Takvimi tels que publiés ; AlAdhan ailleurs — à partager en image ou en PDF
 - L'adhan de chaque prière, avec dix-sept enregistrements ou le vôtre, un rappel avant et un report qui ne propose que ce que le temps de la prière permet encore, jusqu'à une dernière chance avant sa fin
 - Une alerte de prière qui sonne comme un réveil, même en mode silencieux et avec Concentration (iOS 26 et ultérieur)
 - Une Activité en direct qui décompte jusqu'à la prochaine prière, sur l'écran verrouillé et dans la Dynamic Island
@@ -34,6 +32,8 @@ SE SOUVENIR
 - iPhone, iPad et Mac, en 13 langues, dont l'arabe et l'ourdou entièrement de droite à gauche
 - Clair, sombre et noir pur, six thèmes de couleur, votre couleur d'accent et Liquid Glass – ou Ciel, qui peint toute l'app d'après le ciel au-dessus du compte à rebours et change avec l'heure (réaliste ou vif)
 
-Le réseau n'est utilisé que lorsque vous le choisissez : un service d'heures de prière (AlAdhan, Türkiye Takvimi ou les tables nationales de la Suède, du Maroc, de l'Algérie, de Singapour, de la Malaisie et de l'Indonésie), la recherche de lieux via OpenStreetMap Nominatim, et le téléchargement des pages du Coran, des traductions, des tafsirs et des récitations. Vos coordonnées restent sur votre appareil.
+Sur le réseau : pour la Suède, les lieux de Diyanet, le Maroc, l’Algérie et l’Indonésie, les heures sont calculées sur le téléphone, sans requête ; ailleurs, AlAdhan reçoit vos coordonnées et la date. Avec la position automatique, le nom de votre ville est demandé à OpenStreetMap, la position arrondie à environ un kilomètre. L’application lit de petits fichiers de mise à jour sur le GitHub du projet et télécharge pages du Coran, traductions, tafsirs et récitations à votre demande. Rien ne va au développeur.
+
+Mihrab est indépendant : il n’est affilié à aucune des autorités dont il reproduit les horaires publiés et ne parle pas en leur nom.
 
 Mihrab est open source sous licence AGPL-3.0-or-later.

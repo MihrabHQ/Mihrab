@@ -1,9 +1,7 @@
 Mihrab adalah pendamping yang tenang bagi hari seorang Muslim: sholat, Al-Quran, dan dzikir di antaranya, dalam satu aplikasi yang menjaga privasi.
 
-Tahan kata apa pun di mushaf dan dengarkan kata itu dibacakan. Ikuti kata yang sedang dibaca saat menyala di halaman. Lihat tajwid berwarna, pada Hafs dan Warsy. Jaga catatan dan pengaturan tetap selaras di antara perangkat Anda sendiri, tanpa akun dan tanpa server. Dan setiap barisnya bersumber terbuka.
-
 SHOLAT
-- Jadwal sholat hari ini, sepekan, dan sebulan ke depan — dihitung di ponsel, dari penyedia, atau dari tabel nasional resmi Swedia, Maroko, Aljazair, Singapura, Malaysia, dan Indonesia, atau Diyanet untuk 8.291 tempat di Turki dan dunia — dapat dibagikan sebagai gambar atau PDF
+- Jadwal hari ini, minggu ini, dan bulan depan — sesuai sampai ke menit yang tercetak dengan jadwal terbitan Diyanet, Islamiska Förbundet, kementerian Maroko dan Aljazair, serta Kemenag, dihitung di ponsel; MUIS, JAKIM, dan Türkiye Takvimi sebagaimana diterbitkan; AlAdhan di tempat lain — bisa dibagikan sebagai gambar atau PDF
 - Adzan untuk setiap waktu sholat, dengan tujuh belas rekaman atau rekaman Anda sendiri, pengingat sebelumnya, dan tunda yang hanya menawarkan sisa waktu sholat, hingga kesempatan terakhir sebelum waktunya habis
 - Pengingat sholat layar penuh di atas layar kunci, seperti jam alarm, dengan Hentikan, Tunda, dan Catat sholat
 - Senyapkan ponsel selama sholat, lalu suaranya kembali dengan sendirinya — Jangan Ganggu sejak adzan atau beberapa menit sebelumnya, dengan durasi tersendiri untuk Jumat
@@ -35,6 +33,8 @@ MILIK ANDA
 - Android, iPhone, iPad, dan Mac, dalam 13 bahasa, dengan bahasa Arab dan Urdu sepenuhnya dari kanan ke kiri
 - Tema terang, gelap, dan hitam pekat, enam tema warna, warna aksen pilihan Anda, dan Material You — atau Langit, yang mewarnai seluruh aplikasi dari langit di atas hitung mundur dan berubah seiring jam, dalam warna realistis atau cerah
 
-Jaringan hanya digunakan saat Anda memilihnya: penyedia jadwal sholat (AlAdhan, Türkiye Takvimi, atau tabel nasional Swedia, Maroko, Aljazair, Singapura, Malaysia, dan Indonesia), pencarian tempat melalui OpenStreetMap Nominatim, serta pengunduhan halaman Al-Quran, terjemahan, tafsir, dan audio tilawah. Koordinat Anda tetap di perangkat Anda.
+Lewat jaringan: untuk Swedia, tempat-tempat Diyanet, Maroko, Aljazair, dan Indonesia, jadwal dihitung di ponsel tanpa permintaan apa pun; di tempat lain AlAdhan menerima koordinat dan tanggal. Dengan lokasi otomatis, nama kota Anda ditanyakan ke OpenStreetMap, dengan posisi dibulatkan sekitar satu kilometer. Aplikasi membaca file pembaruan kecil dari GitHub proyek, dan mengunduh halaman Al-Quran, terjemahan, tafsir, dan tilawah saat Anda minta. Tidak ada yang dikirim ke pengembang.
+
+Mihrab independen dan tidak berafiliasi dengan otoritas mana pun yang jadwal terbitannya dicocokkan, serta tidak berbicara atas nama mereka.
 
 Mihrab bersumber terbuka dengan lisensi AGPL-3.0-or-later.

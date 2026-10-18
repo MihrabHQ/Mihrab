@@ -118,3 +118,32 @@ describe('the wording', () => {
     }
   });
 });
+
+describe('the privacy claims match what the code sends', () => {
+  const read = (rel: string) => readFileSync(path.join(ROOT, rel), 'utf-8');
+
+  it('nothing says coordinates never leave the phone: AlAdhan and the town lookup receive them', () => {
+    const claims = [/coordinates (stay|never leave)/i, /Nothing leaves your phone/i, /never leave it/i, /allowBackup` is set to \*\*false/];
+    const files = [
+      'docs/index.html',
+      'PRIVACY_POLICY.md',
+      'README.md',
+      'src/i18n/locales/en.json',
+      'fastlane/metadata/android/en-US/full_description.txt',
+      'fastlane/metadata/ios/en-US/description.txt',
+    ];
+    for (const rel of files) for (const re of claims) expect({ rel, claim: re.test(read(rel)) }).toEqual({ rel, claim: false });
+  });
+
+  it('the policy names what goes out: AlAdhan, the rounded town lookup, the update files, Android backup', () => {
+    const policy = read('PRIVACY_POLICY.md');
+    expect(policy).toMatch(/api\.aladhan\.com/);
+    expect(policy).toMatch(/rounded to two decimal places/);
+    expect(policy).toMatch(/MihrabHQ\/mihrab-methods/);
+    expect(policy).toMatch(/Android's own backup/);
+  });
+
+  it('Android backup is on, as the policy now says', () => {
+    expect(read('android/app/src/main/AndroidManifest.xml')).toMatch(/android:allowBackup="true"/);
+  });
+});
