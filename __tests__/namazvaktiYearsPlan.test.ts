@@ -10,6 +10,7 @@
 import fs from 'fs';
 import path from 'path';
 import {
+  isUnservableAnswer,
   missingFromRelease,
   planQueue,
   targetYears,
@@ -142,5 +143,37 @@ describe('the release against its index', () => {
     expect(wf).toMatch(/years\.ts verify/);
     // A failed upload no longer ends the loop before the rest and the index.
     expect(wf).toMatch(/up "\$f"\) \|\| \{/);
+  });
+});
+
+describe('a city the site has no table for', () => {
+  // What namazvakti.com answered for Salelologa (81957) on 18 October 2026:
+  // the city's header, and a row that says the date did not come out.
+  const xml =
+    '<?xml version="1.0" encoding="utf-8"?>\n' +
+    '<cityinfo ID="81957" countryID="215" cityNameTR="Salelologa" cityNameEN="Salelologa">\n' +
+    '  <prayertimes dayofyear="0" day="31" month="12">4:33\t4:46\t6:00\tHaydaaa tarih tutmadi, gun = 31 ay = 12\n' +
+    '</prayertimes></cityinfo>';
+
+  it('is told apart from a site that is down', () => {
+    const { parseNamazvaktiXml } = require('../src/providers/namazvaktiParser');
+    let message = '';
+    try {
+      parseNamazvaktiXml(xml, 2026, new Date().toISOString());
+    } catch (e) {
+      message = (e as Error).message;
+    }
+    expect(message).toMatch(/only 0 days in the file/);
+    expect(isUnservableAnswer(xml, message)).toBe(true);
+  });
+
+  it('is not an error page, a timeout or any other failure', () => {
+    expect(
+      isUnservableAnswer(
+        '<html>502</html>',
+        'namazvakti: only 0 days in the file',
+      ),
+    ).toBe(false);
+    expect(isUnservableAnswer(xml, 'HTTP 503')).toBe(false);
   });
 });

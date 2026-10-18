@@ -111,7 +111,15 @@ jobs:
             tag="data-namazvakti-${year}"
             dir="work/${year}"
             if [ ! -s "$dir/changed.txt" ]; then
-              echo "${year}: no files changed."
+              # The index can change on its own: the cities the site has no
+              # table for (years.ts, `isUnservableAnswer`) are recorded in it,
+              # and a run that read only those still has to keep the record.
+              if [ -e "$dir/index-changed" ] && gh release view "$tag" >/dev/null 2>&1; then
+                (cd "$dir" && up index.json) || echo "  index.json: not uploaded"
+                echo "${year}: no files changed; index updated."
+              else
+                echo "${year}: no files changed."
+              fi
               continue
             fi
             if ! gh release view "$tag" >/dev/null 2>&1; then

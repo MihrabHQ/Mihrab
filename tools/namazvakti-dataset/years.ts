@@ -102,6 +102,24 @@ async function fetchXml(url: string, delayMs: number): Promise<string | null> {
   return null;
 }
 
+/**
+ * THE SITE ANSWERS, BUT HAS NO TABLE FOR THE CITY.
+ *
+ * Some cities the index lists come back as a file with the city's header
+ * and no year in it: `<prayertimes>` rows that say "Haydaaa tarih
+ * tutmadi" ("the date did not come out") instead of times — the Samoan
+ * places on the date line on 18 October 2026, fifty of them in a row at
+ * the head of the queue. That is the site's fault for that one city, not
+ * the site being down, and counting it as a failed request is what
+ * stopped the whole run ("more than half failing") and failed the job.
+ * So such a city is UNSERVABLE: noted in the year's index with the date,
+ * not counted against the run, and asked again only once it is due for a
+ * refresh like any city read that day.
+ */
+export function isUnservableAnswer(xml: string, error: string): boolean {
+  return /<cityinfo\b/.test(xml) && /only \d+ days in the file/.test(error);
+}
+
 export function readBucket(file: string): PackedBucket | null {
   try {
     return JSON.parse(zlib.gunzipSync(fs.readFileSync(file)).toString('utf8')) as PackedBucket;
@@ -204,7 +222,9 @@ function readLines(file: string): string[] | null {
   }
 }
 
-function readIndex(file: string): { buckets?: Record<string, number> } | null {
+function readIndex(
+  file: string,
+): { buckets?: Record<string, number>; unservable?: Record<string, string> } | null {
   try {
     return JSON.parse(fs.readFileSync(file, 'utf8'));
   } catch {
@@ -219,6 +239,10 @@ type YearState = {
   changed: Set<string>;
   lost: Set<string>;
   undownloaded: Set<string>;
+  /** City id → the day the site last answered it with no table. */
+  unservable: Map<string, string>;
+  /** The unservable record changed this run: the index has to be uploaded. */
+  indexChanged: boolean;
 };
 
 function loadYear(root: string, year: number, cities: readonly { id: number }[]): YearState {
@@ -243,7 +267,8 @@ function loadYear(root: string, year: number, cities: readonly { id: number }[])
   }
   if (undownloaded.size) console.warn(`${year}: ${undownloaded.size} release files not on disk — left alone: ${[...undownloaded].join(' ')}`);
   if (lost.size) console.warn(`${year}: ${lost.size} files the index counts are not in the release — read again first: ${[...lost].join(' ')}`);
-  return { year, dir, files, changed: new Set(), lost, undownloaded };
+  const unservable = new Map(Object.entries(readIndex(path.join(dir, 'index.json'))?.unservable ?? {}));
+  return { year, dir, files, changed: new Set(), lost, undownloaded, unservable, indexChanged: false };
 }
 
 export async function main(): Promise<number> {
@@ -261,8 +286,12 @@ export async function main(): Promise<number> {
   const cities = [...readCities().values()].filter(c => Number.isFinite(c.lat) && Number.isFinite(c.lon) && c.table !== false);
   const state = new Map(targets.map(y => [y, loadYear(root, y, cities)] as const));
   const readAt = (year: number, id: number) => {
-    const p = state.get(year)?.files.get(namazvaktiBucketAsset(id))?.cities[String(id)];
-    return p ? Date.parse(`${p.f}T00:00:00Z`) : -Infinity;
+    const y = state.get(year);
+    const p = y?.files.get(namazvaktiBucketAsset(id))?.cities[String(id)];
+    if (p) return Date.parse(`${p.f}T00:00:00Z`);
+    // Unservable: read, as far as planning goes, on the day it was found so.
+    const u = y?.unservable.get(String(id));
+    return u ? Date.parse(`${u}T00:00:00Z`) : -Infinity;
   };
   const plan = (ys: readonly number[], done: ReadonlySet<number>) =>
     planQueue({
@@ -283,10 +312,14 @@ export async function main(): Promise<number> {
   let latestAnswered = 0;
   let requests = 0;
   let failures = 0;
+  let unservable = 0;
   for (let i = 0; i < queue.length; i++) {
     const { id, year: planned } = queue[i];
     if (requests >= maxRequests || Date.now() - started >= maxWallMs) break;
-    if (requests >= 50 && failures / requests > 0.5) {
+    // Answered requests are what the site's health is judged on: a city it
+    // has no table for is answered (see `isUnservableAnswer`).
+    const judged = requests - unservable;
+    if (judged >= 50 && failures / judged > 0.5) {
       console.error('More than half the requests failing — stopping.');
       break;
     }
@@ -307,6 +340,7 @@ export async function main(): Promise<number> {
       if (target.undownloaded.has(name)) continue;
       target.files.get(name)!.cities[String(id)] = packYear(parsed);
       target.changed.add(name);
+      if (target.unservable.delete(String(id))) target.indexChanged = true;
       if (targets.length > 1 && planned === latest) {
         askedForLatest++;
         if (parsed.year === latest) latestAnswered++;
@@ -316,8 +350,19 @@ export async function main(): Promise<number> {
         }
       }
     } catch (e) {
+      const message = (e as Error).message;
+      if (isUnservableAnswer(xml, message)) {
+        unservable++;
+        const y = state.get(planned)!;
+        if (y.unservable.get(String(id)) !== today) {
+          y.unservable.set(String(id), today);
+          y.indexChanged = true;
+        }
+        console.warn(`  – city ${id}: the site has no table for it (${message})`);
+        continue;
+      }
       failures++;
-      console.warn(`  ✗ city ${id}: ${(e as Error).message}`);
+      console.warn(`  ✗ city ${id}: ${message}`);
     }
     if (requests % 1000 === 0) console.log(`  ${requests} read, ${failures} failed`);
   }
@@ -337,17 +382,36 @@ export async function main(): Promise<number> {
     const held = Object.values(buckets).reduce((a, b) => a + b, 0);
     // `files` is the files that hold cities — what the release should have —
     // and `buckets` names them, for the next run and the workflow's check.
-    const index = { v: 1, year: s.year, builtAt: new Date().toISOString(), cities: cities.length, held, complete: held >= cities.length, files: Object.keys(buckets).length, buckets };
+    const unservableNow = Object.fromEntries([...s.unservable].sort(([a], [b]) => Number(a) - Number(b)));
+    const index = {
+      v: 1,
+      year: s.year,
+      builtAt: new Date().toISOString(),
+      cities: cities.length,
+      held,
+      // Complete when every city is held or known to have no table.
+      complete: held + s.unservable.size >= cities.length,
+      files: Object.keys(buckets).length,
+      buckets,
+      unservable: unservableNow,
+    };
     fs.writeFileSync(path.join(s.dir, 'index.json'), `${JSON.stringify(index)}\n`);
     fs.writeFileSync(path.join(s.dir, 'changed.txt'), [...s.changed].join('\n') + (s.changed.size ? '\n' : ''));
+    // No file changed but the unservable record did: the index alone is
+    // uploaded (the workflow reads this), or tomorrow's run asks again.
+    const flag = path.join(s.dir, 'index-changed');
+    if (s.indexChanged) fs.writeFileSync(flag, '1\n');
+    else fs.rmSync(flag, { force: true });
     console.log(`${s.year}: ${s.changed.size} files changed; ${held}/${cities.length} cities held in ${index.files} files (${today})`);
     emitOutput(`held_${s.year}`, String(held));
     changedFiles += s.changed.size;
   }
-  console.log(`read ${requests} (${failures} failed)`);
+  console.log(`read ${requests} (${failures} failed, ${unservable} with no table on the site)`);
   emitOutput('cities', String(cities.length));
   emitOutput('changed', String(changedFiles));
-  return failures > 0 && failures === requests ? 1 : 0;
+  // Failed only when every answered request failed: a run that met nothing
+  // but cities the site has no table for has still done its job.
+  return failures > 0 && failures === requests - unservable ? 1 : 0;
 }
 
 /** `years.ts verify <dir>`: the files that year's index counts and its release lacks, one a line. */
