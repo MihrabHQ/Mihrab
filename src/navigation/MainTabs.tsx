@@ -154,8 +154,8 @@ export function MainTabs() {
               page's own colour is invisible until something scrolls up
               into it — and then it is the thing that keeps the page's text
               off the clock. Today is not here: its sky runs under the
-              status bar on purpose and it covers the strip itself, with
-              the sky's own colour (`HomeStatusBand`). */}
+              status bar on purpose, and nothing covers it there
+              (`HomeStatusBand` only sets the glyphs' ink). */}
           {route.name !== 'TodayTab' ? <StatusBarBand color={palette.bg} /> : null}
           {/* Under the bar, over the page: the fade that keeps the two from
               colliding. Same `slide` as the bar, so it leaves with it. */}

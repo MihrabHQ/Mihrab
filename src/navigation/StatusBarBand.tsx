@@ -25,9 +25,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
  * without a frame of the wrong colour on any of them.
  *
  * Today is the exception and does not use this: its sky runs up under the
- * status bar on purpose, so the strip there has to stay clear at rest and
- * take the SKY's colour once the page moves — `HomeStatusBand`, which is
- * that same idea with a gradient to match.
+ * status bar on purpose and nothing is drawn over it there
+ * (`HomeStatusBand` only sets the glyphs' ink).
  *
  * The pushed subpages do not use it either: they carry a real header,
  * which is the surface that covers the strip there.
