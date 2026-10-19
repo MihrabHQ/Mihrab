@@ -50,6 +50,12 @@ jobs:
             echo 'The figures are current.' | tee -a "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
+          # A correction-list renewal (mihrab-methods-data's renew-corrections)
+          # brings the same figures in its own pull request.
+          if [ -n "$(gh pr list --head corrections-renewal --state open --json number -q '.[0].number')" ]; then
+            echo 'The figures come with the open corrections-renewal pull request.' | tee -a "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
           branch=accuracy-figures
           checked=$(node -e "const c=require('./data/methods/certification.json');const d=Object.values(c).map(e=>e.checkedAt||'').sort().pop();console.log((d||'').slice(0,10))")
           git config user.name 'mihrab-dataset-bot'
