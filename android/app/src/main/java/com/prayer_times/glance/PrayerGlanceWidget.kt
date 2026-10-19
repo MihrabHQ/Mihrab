@@ -383,7 +383,18 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
           val sample = context.getString(R.string.widget_countdown_format, "23:59:59")
           fitTextSp(context, sample, width - taken, level, COUNTDOWN_MIN_SP, medium = true)
         }
-        Countdown(at, m.now, sp, d.muted, GlanceModifier.padding(start = 8.dp))
+        // Level with the time: an embedded RemoteViews is placed at the top
+        // of the row whatever its alignment, so it sat above the time. Padded
+        // down by the difference, its foot is the row's, as the time's is.
+        val rowDp = maxOf(
+          textLineDp(context, nameSp, medium = true),
+          if (m.nextTime.isEmpty()) 0f else textLineDp(context, timeSp, medium = false),
+        )
+        // Less a twentieth of its size: the Chronometer draws its line that
+        // much lower in its view than a Glance Text does (measured on a
+        // Pixel 10 Pro, 5px at 22sp), and the eye reads the baselines.
+        val drop = (rowDp - textLineDp(context, sp, medium = true) - COUNTDOWN_LIFT * sp).coerceAtLeast(0f)
+        Countdown(at, m.now, sp, d.muted, GlanceModifier.padding(start = 8.dp, top = drop.dp))
       }
     }
   }
@@ -699,6 +710,8 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     private const val COUNTDOWN_MIN_SP = 10f
     /** Measured and drawn text differ by a pixel or two: kept spare. */
     private const val ROW_SLACK_DP = 4f
+    /** How much higher than its line the countdown is set, per sp (NextBlock). */
+    private const val COUNTDOWN_LIFT = 0.06f
   }
 }
 
