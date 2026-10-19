@@ -32,7 +32,10 @@ describe('JAKIM’s zone times', () => {
         });
       }
     }
-    expect(total).toBeGreaterThan(30000);
+    // The table is a rolling window: the national-tables job drops days that
+    // have passed and e-Solat publishes a year at a time, so it shrinks toward
+    // each year's end. At least one day of every zone, whatever is held.
+    expect(total).toBeGreaterThanOrEqual(59 * 6);
     expect(same / total).toBeGreaterThan(0.94);
     // Gunung Kinabalu's Maghrib is printed eight or nine minutes late on 31
     // days (tools/verify-methods/accepted.json); everything else within one.
