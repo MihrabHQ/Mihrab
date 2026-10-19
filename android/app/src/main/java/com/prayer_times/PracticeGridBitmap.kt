@@ -87,8 +87,13 @@ object PracticeGridBitmap {
    * they shrink with it and stay legible. The squares now read as a graph
    * rather than as buttons, and the same card carries a couple of columns
    * more history for it.
+   *
+   * 15, down from 20, with the gap 5 down from 7 (2.32): once the card's
+   * real width was measured, a day came out about 21dp at a larger display
+   * size and the graph took over the card. At 15 it is a texture of days
+   * under the times again, with more history on the same card.
    */
-  private const val TARGET_CELL_DP = 20f
+  private const val TARGET_CELL_DP = 15f
 
   /** Everything the grid needs to be drawn into a particular box. */
   data class Layout(
@@ -525,7 +530,7 @@ object PracticeGridBitmap {
    * the same two points between them read as a solid slab with grout lines
    * scratched into it. The gap has to grow with what it separates.
    */
-  private const val GAP_DP = 7f
+  private const val GAP_DP = 5f
 
   /**
    * The sunnah line: four straight sides, clockwise from the top-left,

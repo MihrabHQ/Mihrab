@@ -68,6 +68,7 @@ import MushafTextPageSurface, {
 import { ActiveWordProbe } from '../../quran/audio/ActiveWordProbe';
 import { ayahLineIndex } from '../../quran/mushafFollowScroll';
 import { ayahCountForRiwayah, findPageForAyah } from '../../quran/pages';
+import { hydrateRiwayahData, useRiwayahAvailability } from '../../quran/riwayahData';
 import { resolveRiwayah } from '../../quran/riwayat';
 import { riwayahAyahOf } from '../../quran/riwayahAudio';
 import { SURAHS, type SurahIndex } from '../../quran/quran';
@@ -776,17 +777,25 @@ export function TilawahScreen() {
    */
   const showPage = quran.prefs.tilawahShowPage;
   const [pageWidth, setPageWidth] = useState(0);
+  // The RESOLVED riwayah, never the stored one. A preference can name a
+  // muṣḥaf this device does not carry — set on another device, or its
+  // dataset removed — and `resolveRiwayah` answers Ḥafṣ for it, as it
+  // does for the counts above and in the reader. This card asked for the
+  // stored id, and drew a Warsh page from a table that was not there: no
+  // text, no error, a blank card under "p. 499". The dataset is read from
+  // disk by whichever Quran screen asks first, so ask here too, and
+  // re-render when it arrives so the resolution can change its mind.
+  useEffect(() => {
+    void hydrateRiwayahData();
+  }, []);
+  useRiwayahAvailability();
   const [pageUnavailable, setPageUnavailable] = useState(false);
   const playingPage = useMemo(
     () =>
       status.active
-        ? findPageForAyah(
-            status.active.surah,
-            status.active.ayah,
-            quran.prefs.riwayah,
-          )
+        ? findPageForAyah(status.active.surah, status.active.ayah, riwayah)
         : null,
-    [status.active, quran.prefs.riwayah],
+    [status.active, riwayah],
   );
   // A new page deserves a fresh chance: "unavailable" is about one page's
   // font, not about the feature.
@@ -838,13 +847,13 @@ export function TilawahScreen() {
       playingPage && pageWidth > 0
         ? mushafPageColumnHeight({
             page: playingPage,
-            riwayah: quran.prefs.riwayah,
+            riwayah,
             textWidth: pageWidth,
             viewportHeight: 1,
             scrolling: true,
           })
         : PAGE_VIEWPORT_FALLBACK,
-    [playingPage, pageWidth, quran.prefs.riwayah],
+    [playingPage, pageWidth, riwayah],
   );
   const lineGeometry = useMemo(
     () =>
@@ -1321,7 +1330,7 @@ export function TilawahScreen() {
                 page={playingPage}
                 width={pageWidth}
                 height={pageColumnH}
-                riwayah={quran.prefs.riwayah}
+                riwayah={riwayah}
                 // The APP's tone, not the mushaf's — see the note above.
                 tone={palette.isDark ? 'night' : 'paper'}
                 accentColor={String(palette.accentSolid)}

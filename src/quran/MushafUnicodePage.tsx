@@ -70,7 +70,7 @@ import {
   easternNumerals,
   pageMetaIn,
 } from './pages';
-import { loadRiwayahText } from './riwayahData';
+import { loadRiwayahText, useRiwayahAvailability } from './riwayahData';
 import { printedPageFor, type AllocatedLine } from './mushafPrintedLines';
 import {
   NO_AYAH_END_INK,
@@ -728,9 +728,15 @@ function MushafUnicodePage({
   onAyahLongPress,
   tight = false,
 }: MushafUnicodePageProps) {
+  // The dataset can arrive AFTER the page has mounted — Tilawah's preview
+  // opens on a page before the table is read from disk — and the blocks
+  // are memoised, so without this the page stayed empty until its number
+  // changed. The version is a dependency and nothing else.
+  const dataVersion = useRiwayahAvailability();
   const blocks = useMemo(
     () => unicodePageBlocks(page, riwayah),
-    [page, riwayah],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [page, riwayah, dataVersion],
   );
   const extent = useMemo(() => pageExtent(blocks), [blocks]);
   const fontFamily = riwayahFontFamily(riwayahById(riwayah));
@@ -755,7 +761,8 @@ function MushafUnicodePage({
     const table = loadRiwayahText(riwayah);
     if (!table) return null;
     return printedPageFor(riwayah, page, (s, a) => table[`${s}:${a}`] ?? null);
-  }, [page, riwayah]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, riwayah, dataVersion]);
 
   // A page is fitted to a box, so the box is part of its identity. Rounded
   // to whole dp: the measured viewport is a float, and a sub-pixel wobble

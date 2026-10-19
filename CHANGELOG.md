@@ -8,6 +8,7 @@ All notable changes to this project are documented here. The format is inspired 
 - **The town lookup sends a town's precision, not a doorstep's.** With automatic location the app asks OpenStreetMap which town you are in, and it now sends your position rounded to about a kilometre; the prayer times still use the exact position. The privacy policy, the site, the onboarding text and the store listings now list every request the app makes — including AlAdhan receiving your coordinates where it is the source, and the update files read from GitHub — instead of saying coordinates never leave the phone.
 
 ### Fixed
+- **Tilawah's page card shows the muṣḥaf you are reading.** With a riwayah chosen whose text is not on the phone (Warsh set on another device, say), the reader shows Ḥafṣ but the card under the player drew the absent muṣḥaf: no text, no message, a blank card under "p. 499". It now follows the muṣḥaf the reader would show, and a riwayah on the phone is read in when the card is opened first, before the reader has been.
 - **The ayah sheet shows the muṣḥaf you are reading.** With a riwayah chosen whose text is not on the phone, the reader shows Ḥafṣ, but the ayah sheet set the ayah in plain text and its Tajweed tab found no rules. It now follows the muṣḥaf on screen, as do the tajwīd guide and settings.
 
 ### Added

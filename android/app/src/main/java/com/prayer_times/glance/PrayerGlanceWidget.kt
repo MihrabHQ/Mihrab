@@ -107,10 +107,16 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
       GlancePayload.live(context, now)?.let { p -> Schedule.of(p, now)?.let { model(context, p, it, now, display) } }
     }
     val colors = result.getOrNull()?.colors ?: Colors.of(context)
-    // The layouts' root padding: 10dp on the compact line, 14 elsewhere, and
-    // 6 above and below a strip shorter than its roomy budget.
-    val side = if (design == Design.SMALL) 10 else 14
-    val ends = if (design == Design.STRIP && size.heightDp in 1 until STRIP_ROOMY_CONTENT_DP) 6 else side
+    // The root padding: at the sides, `sideDp` (the strip's is narrow, so its
+    // six times get the card's width rather than sitting cramped between wide
+    // margins); above and below, 10 on the compact line, 14 elsewhere, and 6
+    // on a strip shorter than its roomy budget.
+    val side = sideDp(design)
+    val ends = when {
+      design == Design.STRIP && size.heightDp in 1 until STRIP_ROOMY_CONTENT_DP -> 6
+      design == Design.SMALL -> 10
+      else -> 14
+    }
     // Today, for all three: they show today's times (#27, #31).
     MihrabCard(
       colors.background,
@@ -154,6 +160,26 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
       size.widthDp in 1 until STRIP_MIN_WIDTH_DP && h >= ROWS_MIN_HEIGHT_DP -> Design.LIST
       else -> Design.STRIP
     }
+  }
+
+  private fun sideDp(d: Design) = when (d) {
+    Design.SMALL -> 10
+    Design.STRIP -> STRIP_SIDE_DP
+    Design.LIST -> 14
+  }
+
+  /**
+   * What the card takes from the launcher's width before the content gets
+   * any: its inset from the host (widget_card_inset) and the content's side
+   * padding, both sides. Every width the layouts fit text to is the
+   * launcher's minus this. A constant that undercounted it by 20dp fitted
+   * the times and the countdown to room the card did not have: on a larger
+   * display size the countdown was cut off and the times crowded together.
+   */
+  private fun insetDp(context: Context, size: CardSize): Int {
+    val res = context.resources
+    val card = res.getDimension(R.dimen.widget_card_inset) / res.displayMetrics.density
+    return Math.round(2 * (card + sideDp(designFor(size))))
   }
 
   private fun model(
@@ -336,7 +362,7 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
   @Composable
   private fun NextBlock(context: Context, m: Model, size: CardSize, top: Int, nameSp: Float = NEXT_NAME_SP) {
     val d = m.display
-    val width = if (size.widthDp > 0) (size.widthDp - STRIP_CONTENT_INSET_DP).toFloat() else 0f
+    val width = if (size.widthDp > 0) (size.widthDp - insetDp(context, size)).toFloat() else 0f
     val half = width / 2f
     val timeBase = NEXT_TIME_SP * nameSp / NEXT_NAME_SP
     val timeSp = scaledTimeSp(context, listOf(m.nextTime), timeBase, d.timeScale, half, medium = false)
@@ -347,13 +373,28 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
       if (m.nextTime.isNotEmpty()) Label(m.nextTime, timeSp, m.colors.accent, modifier = GlanceModifier.padding(start = 8.dp))
       Spacer(GlanceModifier.defaultWeight())
       if (at != null) {
-        val sp = if (width <= 0f) COUNTDOWN_ROW_SP else {
+        // At the time's size, so the two sit level, unless the row has not
+        // the room: then down to what fits, measured on the longest it can
+        // read and in the Chronometer's own face (medium).
+        val level = if (m.nextTime.isEmpty()) nameSp else timeSp
+        val sp = if (width <= 0f) minOf(level, COUNTDOWN_ROW_SP) else {
           val taken = textWidthDp(context, m.nextName, nameSp, medium = true) +
-            (if (m.nextTime.isEmpty()) 0f else textWidthDp(context, m.nextTime, timeSp, medium = false) + 8f) + 8f
+            (if (m.nextTime.isEmpty()) 0f else textWidthDp(context, m.nextTime, timeSp, medium = false) + 8f) + 8f + ROW_SLACK_DP
           val sample = context.getString(R.string.widget_countdown_format, "23:59:59")
-          fitTextSp(context, sample, width - taken, nameSp, COUNTDOWN_ROW_SP, medium = false)
+          fitTextSp(context, sample, width - taken, level, COUNTDOWN_MIN_SP, medium = true)
         }
-        Countdown(at, m.now, sp, d.muted, GlanceModifier.padding(start = 8.dp))
+        // Level with the time: an embedded RemoteViews is placed at the top
+        // of the row whatever its alignment, so it sat above the time. Padded
+        // down by the difference, its foot is the row's, as the time's is.
+        val rowDp = maxOf(
+          textLineDp(context, nameSp, medium = true),
+          if (m.nextTime.isEmpty()) 0f else textLineDp(context, timeSp, medium = false),
+        )
+        // Less a twentieth of its size: the Chronometer draws its line that
+        // much lower in its view than a Glance Text does (measured on a
+        // Pixel 10 Pro, 5px at 22sp), and the eye reads the baselines.
+        val drop = (rowDp - textLineDp(context, sp, medium = true) - COUNTDOWN_LIFT * sp).coerceAtLeast(0f)
+        Countdown(at, m.now, sp, d.muted, GlanceModifier.padding(start = 8.dp, top = drop.dp))
       }
     }
   }
@@ -366,7 +407,7 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
    * NEXT_NAME_MAX_SP.
    */
   private fun nextNameSp(context: Context, m: Model, size: CardSize, segmentDp: Float): Float {
-    val width = if (size.widthDp > 0) (size.widthDp - STRIP_CONTENT_INSET_DP).toFloat() else 0f
+    val width = if (size.widthDp > 0) (size.widthDp - insetDp(context, size)).toFloat() else 0f
     // Not the whole of the room: a headline that fills its box edge to
     // edge reads as shouting, and the table's own times sit in theirs
     // with air above and below.
@@ -374,7 +415,7 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     var sp = (NEXT_NAME_SP * room / textLineDp(context, NEXT_NAME_SP, medium = true)).coerceIn(NEXT_NAME_SP, NEXT_NAME_MAX_SP)
     if (width <= 0f) return sp
     val countdown = if (m.display.showCountdown && m.nextAt != null)
-      textWidthDp(context, context.getString(R.string.widget_countdown_format, "23:59:59"), COUNTDOWN_ROW_SP, medium = false) + 8f
+      textWidthDp(context, context.getString(R.string.widget_countdown_format, "23:59:59"), COUNTDOWN_ROW_SP, medium = true) + 8f + ROW_SLACK_DP
     else 0f
     while (sp > NEXT_NAME_SP) {
       val timeSp = NEXT_TIME_SP * sp / NEXT_NAME_SP * m.display.timeScale
@@ -405,7 +446,7 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     val practice = m.practice?.takeIf { h >= GRID_MIN_HEIGHT_DP }
     val showFoot = practice != null && h >= PRACTICE_MIN_HEIGHT_DP
     val columns = m.rows.take(STRIP_COLUMNS)
-    val columnDp = (size.widthDp - STRIP_CONTENT_INSET_DP).toFloat() / columns.size.coerceAtLeast(1) - TIME_GUTTER_DP
+    val columnDp = (size.widthDp - insetDp(context, size)).toFloat() / columns.size.coerceAtLeast(1) - TIME_GUTTER_DP
     val baseSp = fitTimesSp(context, columns.map { it.minutes }, m.clock, columnDp, TIME_MAX_SP, TIME_MIN_SP)
     val timeSp = scaledClockSp(context, columns.map { it.minutes }, m.clock, baseSp, d.timeScale, if (size.widthDp > 0) columnDp else 0f)
 
@@ -485,7 +526,7 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
       practice?.let { pr ->
         Rule(d.ruleStrong, top = 8, bottom = 8)
         val box = size.heightDp - STRIP_CHROME_DP - (if (showFoot) STRIP_FOOT_DP else 0)
-        PracticeImage(context, pr.block, size.widthDp - STRIP_CONTENT_INSET_DP, box, MAX_GRID_DAYS, m.colors.accent,
+        PracticeImage(context, pr.block, size.widthDp - insetDp(context, size), box, MAX_GRID_DAYS, m.colors.accent,
           GlanceModifier.fillMaxWidth().defaultWeight())
         if (showFoot) Foot(pr, top = 7, d)
       }
@@ -561,13 +602,13 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
       context,
       shown.map { it.minutes },
       m.clock,
-      (size.widthDp - STRIP_CONTENT_INSET_DP).toFloat() / shown.size.coerceAtLeast(1) - TIME_GUTTER_DP,
+      (size.widthDp - insetDp(context, size)).toFloat() / shown.size.coerceAtLeast(1) - TIME_GUTTER_DP,
       TIME_MAX_SP,
       TIME_MIN_SP,
     )
     // A row's time has about half the row; that, not the strip's column, is
     // what a larger size has to fit.
-    val half = if (size.widthDp > 0) (size.widthDp - STRIP_CONTENT_INSET_DP - 14) / 2f else 0f
+    val half = if (size.widthDp > 0) (size.widthDp - insetDp(context, size) - 14) / 2f else 0f
     val timeSp = scaledClockSp(context, shown.map { it.minutes }, m.clock, baseSp, d.timeScale, half)
     Column(modifier = GlanceModifier.fillMaxSize()) {
       Header(m.location, m.hijri, d)
@@ -611,7 +652,7 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
           PracticeImage(
             context,
             pr.block,
-            (size.widthDp - STRIP_CONTENT_INSET_DP) / 2,
+            (size.widthDp - insetDp(context, size)) / 2,
             ((h - STRIP_CHROME_DP) * 2) / 3,
             MAX_GRID_DAYS / 2,
             m.colors.accent,
@@ -642,7 +683,8 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     private const val STRIP_SLACK_CAP_DP = 64
     private const val STRIP_CHROME_DP = 184
     private const val STRIP_FOOT_DP = 19
-    private const val STRIP_CONTENT_INSET_DP = 20
+    /** The strip's side padding (sideDp). */
+    private const val STRIP_SIDE_DP = 8
     private const val GRID_MIN_HEIGHT_DP = 211
     private const val PRACTICE_MIN_HEIGHT_DP = 375
     private const val MAX_GRID_DAYS = 210
@@ -652,7 +694,7 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     private const val LIST_SLOTS = 9
     private const val TIME_MAX_SP = 17f
     private const val TIME_MIN_SP = 10f
-    private const val TIME_GUTTER_DP = 4f
+    private const val TIME_GUTTER_DP = 6f
     private const val SMALL_TIME_SP = 36f
     /** The list's next-prayer time, as the layout drew it. */
     private const val NEXT_TIME_SP = 19f
@@ -664,6 +706,12 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     private const val NEXT_NAME_FILL = 0.7f
     /** The countdown at the end of the next prayer's row, at the smallest. */
     private const val COUNTDOWN_ROW_SP = 15f
+    /** …and the least it may shrink to on a row with no room left. */
+    private const val COUNTDOWN_MIN_SP = 10f
+    /** Measured and drawn text differ by a pixel or two: kept spare. */
+    private const val ROW_SLACK_DP = 4f
+    /** How much higher than its line the countdown is set, per sp (NextBlock). */
+    private const val COUNTDOWN_LIFT = 0.06f
   }
 }
 
