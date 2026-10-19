@@ -35,7 +35,7 @@
 <!-- accuracy:start -->
 <div align="center">
 
-<a href="https://github.com/MihrabHQ/mihrab-methods"><img src="branding/badges/certification.svg" alt="certified: 0 of 71,896,761 times off the printed minute"></a>
+<a href="https://github.com/MihrabHQ/mihrab-methods"><img src="branding/badges/certification.svg" alt="certified: 0 of 71,896,965 times off the printed minute"></a>
 
 Prayer times computed with **[mihrab-methods](https://github.com/MihrabHQ/mihrab-methods)**, the authorities’ own methods checked against every time they have published.
 
@@ -43,13 +43,13 @@ Prayer times computed with **[mihrab-methods](https://github.com/MihrabHQ/mihrab
 
 | Matches the published timetable of | Times checked | Off the printed minute |
 |---|---:|---:|
-| Islamiska Förbundet (Sweden), and Diyanet’s tables for Sweden | 1,453,434 | **0** |
+| Islamiska Förbundet (Sweden), and Diyanet’s tables for Sweden | 1,453,638 | **0** |
 | Diyanet, Türkiye and worldwide | 69,999,603 | **0** |
 | Morocco’s Ministry of Habous and Islamic Affairs | 75,768 | **0** |
 | Algeria’s Ministry of Religious Affairs and Wakfs | 101,184 | **0** |
 | Indonesia’s Kemenag | 266,772 | **0** |
 
-<sub>Last checked 18 October 2026. Generated from mihrab-methods’ <code>certification.json</code> by <code>scripts/build-copy.js</code>. Mihrab is independent and not affiliated with any of these authorities.</sub>
+<sub>Last checked 19 October 2026. Generated from mihrab-methods’ <code>certification.json</code> by <code>scripts/build-copy.js</code>. Mihrab is independent and not affiliated with any of these authorities.</sub>
 <!-- accuracy:end -->
 
 ---
