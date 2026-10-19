@@ -318,7 +318,10 @@ describe('Malaysia is checked against JAKIM, not against AlAdhan', () => {
         });
       }
     });
-    expect(total).toBeGreaterThan(20000);
+    // The table is a rolling window: the national-tables job drops days that
+    // have passed and e-Solat publishes a year at a time, so it shrinks toward
+    // each year's end. At least one day of every zone, whatever is held.
+    expect(total).toBeGreaterThanOrEqual(59 * 6);
     expect(close / total).toBeGreaterThan(0.88);
   });
 });
