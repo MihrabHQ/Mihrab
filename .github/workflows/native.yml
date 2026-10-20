@@ -24,7 +24,7 @@ concurrency:
 jobs:
   android:
     name: Android
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     timeout-minutes: 75
     steps:
       - uses: actions/checkout@v5
@@ -53,7 +53,7 @@ jobs:
 
   apple:
     name: ${{ matrix.name }}
-    runs-on: macos-latest
+    runs-on: blacksmith-6vcpu-macos-15
     timeout-minutes: 120
     strategy:
       fail-fast: false

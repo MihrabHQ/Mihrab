@@ -12,7 +12,7 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
       - uses: actions/checkout@v5
 
@@ -49,7 +49,7 @@ jobs:
   # depends on Foundation and org.json only. Swift runs on macOS so it gets
   # Apple's Foundation, the one the widgets link, rather than Linux's.
   contract-swift:
-    runs-on: macos-latest
+    runs-on: blacksmith-6vcpu-macos-15
     steps:
       - uses: actions/checkout@v5
 
@@ -57,7 +57,7 @@ jobs:
         run: scripts/contract-test-native.sh swift
 
   contract-kotlin:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
       - uses: actions/checkout@v5
 
