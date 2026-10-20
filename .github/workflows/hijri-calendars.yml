@@ -23,6 +23,7 @@ concurrency:
 permissions:
   contents: write
   pull-requests: write
+  issues: write
 
 jobs:
   build:
@@ -72,10 +73,19 @@ jobs:
           git add src/hijri/data/monthStarts.json
           git commit -m "Hijri calendars: rebuild $(date -u +%Y-%m-%d)"
           git push --force origin "$branch"
+          title="Hijri calendars: rebuild $(date -u +%Y-%m)"
           if gh pr view "$branch" >/dev/null 2>&1; then
             gh pr edit "$branch" --body-file body.md
-          else
-            gh pr create --base main --head "$branch" \
-              --title "Hijri calendars: rebuild $(date -u +%Y-%m)" \
-              --body-file body.md
+          elif ! gh pr create --base main --head "$branch" --title "$title" --body-file body.md; then
+            # This repository does not let workflows open pull requests
+            # (Settings → Actions → "Allow GitHub Actions to create and approve
+            # pull requests"). The branch is pushed; an issue links to it.
+            url="https://github.com/${GITHUB_REPOSITORY}/compare/main...${branch}?expand=1"
+            { echo "The branch \`$branch\` is ready; open the pull request: $url"; echo; cat body.md; } > issue.md
+            num=$(gh issue list --state open --search "in:title \"Hijri calendars:\"" --json number -q '.[0].number')
+            if [ -n "$num" ]; then
+              gh issue edit "$num" --title "$title" --body-file issue.md
+            else
+              gh issue create --title "$title" --body-file issue.md
+            fi
           fi
