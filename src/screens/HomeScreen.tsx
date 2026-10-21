@@ -96,7 +96,8 @@ import { HOME_SCREEN_PADDING } from './home/tokens';
 import { useTabBarInset } from '../navigation/tabBarInset';
 import { useTabBarScroll } from '../navigation/tabBarVisibility';
 import { HomeStatusBand } from './home/HomeStatusBand';
-import { useVerticalBarInsets } from '../native/VerticalBar';
+import { setVerticalBarActions, useVerticalBar, useVerticalBarInsets } from '../native/VerticalBar';
+import { QiblaChip } from './home/QiblaChip';
 import { rescheduleEndOfDayLogReminders } from '../notifications/endOfDayLog';
 import { windowEdges } from '../notifications/snoozeWindow';
 import {
@@ -1547,6 +1548,40 @@ export function HomeScreen() {
     settings.manualLatitude,
     settings.manualLongitude,
   ]);
+
+  /**
+   * iPhone Duo: the location and the Qibla stand in the vertical bar's
+   * column, under the clock, while Today is the page on show — handed to
+   * the tab bar, which owns the column (VerticalTabBar). The hero shows no
+   * top row then (TodayCard).
+   */
+  const vbar = useVerticalBar();
+  const columnInk = useMemo(
+    () => ({ text: String(palette.mutedSolid), muted: String(palette.mutedSolid) }),
+    [palette.mutedSolid],
+  );
+  useFocusEffect(
+    useCallback(() => {
+      if (!vbar) return undefined;
+      setVerticalBarActions(
+        <>
+          <LocationChip
+            compactHeader
+            column
+            ink={columnInk}
+            onAddLocation={() =>
+              navigation.navigate('SettingsLocation', {
+                highlight: 'savedLocations',
+                activateOnAdd: true,
+              })
+            }
+          />
+          <QiblaChip bearing={qiblaBearing} onPress={handleOpenQibla} ink={columnInk} column />
+        </>,
+      );
+      return () => setVerticalBarActions(null);
+    }, [vbar, columnInk, navigation, qiblaBearing, handleOpenQibla]),
+  );
   const handleOpenQuran = useCallback(
     // The Quran is a TAB now, not a pushed page — jump to it rather than
     // stacking a second copy on top of Today (design review 2e).
@@ -1756,9 +1791,10 @@ export function HomeScreen() {
             bannerAbove={hasBanner}
             renderLocation={
               fullBleed
-                ? ink => (
+                ? (ink, column) => (
                     <LocationChip
                       compactHeader
+                      column={column}
                       ink={ink}
                       onAddLocation={() =>
                         navigation.navigate('SettingsLocation', {

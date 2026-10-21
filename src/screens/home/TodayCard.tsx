@@ -247,7 +247,7 @@ export type TodayCardProps = {
    */
   roomy?: boolean;
   /** The location chip for the hero's top row, drawn in the sky's ink. */
-  renderLocation?: (ink: SkyInkColors) => ReactNode;
+  renderLocation?: (ink: SkyInkColors, column?: boolean) => ReactNode;
 };
 
 /**
@@ -278,7 +278,7 @@ const HeroTopRow = memo(function HeroTopRow({
   ink,
   onLayout,
 }: {
-  topRow: { renderLocation?: (ink: SkyInkColors) => ReactNode; renderQibla?: (ink: SkyInkColors) => ReactNode };
+  topRow: { renderLocation?: (ink: SkyInkColors, column?: boolean) => ReactNode; renderQibla?: (ink: SkyInkColors, column?: boolean) => ReactNode };
   ink: SkyInkColors;
   onLayout?: (e: LayoutChangeEvent) => void;
 }) {
@@ -372,10 +372,10 @@ const HeroToday = memo(function HeroToday({
   bleed?: { horizontal: number; top: number; bottom: number };
   /** The top row: location chip leading, Qibla chip trailing. */
   topRow?: {
-    renderLocation?: (ink: SkyInkColors) => ReactNode;
+    renderLocation?: (ink: SkyInkColors, column?: boolean) => ReactNode;
     /** A render function, not a node: it takes the sky's ink like the
         location beside it — see QiblaChip's `ink`. */
-    renderQibla?: (ink: SkyInkColors) => ReactNode;
+    renderQibla?: (ink: SkyInkColors, column?: boolean) => ReactNode;
     /** Above the countdown, on the sky: the way into Help Mihrab. */
     renderHelp?: (ink: SkyInkColors) => ReactNode;
   };
@@ -414,6 +414,9 @@ const HeroToday = memo(function HeroToday({
   onInterval?: (fromAt: number, targetAt: number) => void;
   onLayout?: (e: LayoutChangeEvent) => void;
 }) {
+  // iPhone Duo: the location and the Qibla stand in the vertical bar's
+  // column instead (HomeScreen hands them to the tab bar there).
+  const vbar = useVerticalBar();
   const { t } = useTranslation();
   const clock = useClockFormatter();
   // Focus AND foreground. `useIsFocused()` on its own kept this ticking once
@@ -916,7 +919,7 @@ const HeroToday = memo(function HeroToday({
           animated
         />
       ) : null}
-      {topRow ? (
+      {topRow && fill && vbar ? null : topRow ? (
         <HeroTopRow topRow={topRow} ink={inkTop} onLayout={fill ? onTopRowLayout : undefined} />
       ) : null}
       {/* The room the sky's bodies move in. */}
@@ -1657,9 +1660,9 @@ function TodayCardImpl({
     ? Math.round(Math.min(Math.max(windowHeight * 0.34, 300), 460))
     : undefined;
   const Outer = fullBleed ? View : GlassSurface;
-  const renderQibla = (ink: SkyInkColors) =>
+  const renderQibla = (ink: SkyInkColors, column?: boolean) =>
     fullBleed && qiblaBearing != null ? (
-      <QiblaChip bearing={qiblaBearing} onPress={onOpenQibla} ink={ink} />
+      <QiblaChip bearing={qiblaBearing} onPress={onOpenQibla} ink={ink} column={column} />
     ) : null;
   const renderHelp = (ink: SkyInkColors) =>
     onHelpMihrab ? <HelpMihrabChip ink={ink} onPress={onHelpMihrab} /> : null;

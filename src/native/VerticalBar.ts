@@ -18,7 +18,7 @@
  * (`reservedRegionsOfKind: occlusionRegionKind`). Everywhere else — Android,
  * older iOS, an SDK without the API — there is no bar and nothing changes.
  */
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { AppState, Dimensions, NativeModules, Platform } from 'react-native';
 
 export type VerticalBar = {
@@ -102,4 +102,29 @@ export function useVerticalBarInsets(): { paddingLeft?: number; paddingRight?: n
   const bar = useVerticalBar();
   if (!bar) return null;
   return bar.side === 'right' ? { paddingRight: bar.width } : { paddingLeft: bar.width };
+}
+
+/**
+ * A page's own buttons in the column, above the tabs — Today's location and
+ * Qibla. Drawn by the tab bar (VerticalTabBar), which owns the column; the
+ * page hands them over while it is the one on show, and takes them back.
+ */
+let actions: ReactNode = null;
+const actionListeners = new Set<(n: ReactNode) => void>();
+
+export function setVerticalBarActions(node: ReactNode): void {
+  actions = node;
+  actionListeners.forEach(l => l(node));
+}
+
+export function useVerticalBarActions(): ReactNode {
+  const [node, setNode] = useState<ReactNode>(actions);
+  useEffect(() => {
+    actionListeners.add(setNode);
+    setNode(actions);
+    return () => {
+      actionListeners.delete(setNode);
+    };
+  }, []);
+  return node;
 }

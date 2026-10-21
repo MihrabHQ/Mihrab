@@ -66,6 +66,12 @@ type Props = {
    */
   compactHeader?: boolean;
   /**
+   * iPhone Duo: the pin alone, standing in the vertical bar's column under
+   * the clock — the column is too narrow for the city's name, which stays
+   * the button's accessibility hint and is in the sheet it opens.
+   */
+  column?: boolean;
+  /**
    * Colours for the compact chip when it sits on the hero's sky rather
    * than on the theme's surface: the sky's own ink (skyModel.ts), so the
    * pin and the name read on a night sky in a light app and vice versa.
@@ -79,7 +85,7 @@ type Props = {
   onAddLocation?: () => void;
 };
 
-function LocationChipImpl({ compactHeader = false, ink, onAddLocation }: Props) {
+function LocationChipImpl({ compactHeader = false, column = false, ink, onAddLocation }: Props) {
   const { t } = useTranslation();
   const { palette } = useAppPalette();
   const { slice: settings, update: updateSettings } = useLocationSettings();
@@ -204,7 +210,9 @@ function LocationChipImpl({ compactHeader = false, ink, onAddLocation }: Props) 
                 hovered && { opacity: 0.92 },
               ]
         }>
-        {compactHeader ? (
+        {column ? (
+          <PinIcon color={ink ? ink.text : palette.accentSolid} size={22} />
+        ) : compactHeader ? (
           // Pin glyph + the active location's name. The label is
           // truncated to a single line with ellipsis so a long preset
           // name (e.g. "Stockholm, Sweden") doesn't push the Settings

@@ -104,7 +104,8 @@ export function RootNavigator() {
    */
   const edgeToEdge = { backgroundColor: theme.colors.background, paddingBottom: 0 };
   // iPhone Duo: pushed pages and onboarding keep clear of the vertical bar's
-  // column; the tabs ("Home") lay out around it themselves (MainTabs).
+  // column; the tabs ("Home") and the muṣḥaf reader lay out around it
+  // themselves (MainTabs, MushafPhoneReader).
   const columnPad = useVerticalBarInsets();
   return (
     <Stack.Navigator
@@ -117,7 +118,10 @@ export function RootNavigator() {
         <View
           style={[
             SCREEN,
-            columnPad && route.name !== 'Home'
+            // The muṣḥaf reader keeps clear of it itself: its page stays
+            // centred, with the larger side inset on both sides, and its
+            // colour runs under the column (MushafPhoneReader `sideInset`).
+            columnPad && route.name !== 'Home' && route.name !== 'QuranSurah'
               ? [columnPad, { backgroundColor: theme.colors.background }]
               : null,
           ]}>

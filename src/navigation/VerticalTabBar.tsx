@@ -19,10 +19,12 @@ import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAppPalette } from '../hooks/useAppPalette';
 import { SPACING } from '../theme/tokens';
-import type { VerticalBar } from '../native/VerticalBar';
+import { useVerticalBarActions, type VerticalBar } from '../native/VerticalBar';
 import { useTabBarHidden } from './tabBarVisibility';
 
 const BUTTON = 44;
+/** A page's own buttons' share of the column, under the clock (Today: location, Qibla). */
+const COLUMN_ACTIONS = 96;
 
 export function VerticalTabBar({
   bar,
@@ -33,6 +35,7 @@ export function VerticalTabBar({
   const { palette } = useAppPalette();
   const insets = useSafeAreaInsets();
   const hidden = useTabBarHidden();
+  const actions = useVerticalBarActions();
   if (hidden) return null;
   return (
     <View
@@ -48,6 +51,10 @@ export function VerticalTabBar({
           bottom: Math.max(insets.bottom, SPACING.md),
         },
       ]}>
+      {/* The page's own buttons (Today's location and Qibla), in a band
+          kept on every tab so the tabs below do not move between pages. */}
+      <View style={styles.actions}>{actions}</View>
+      <View style={styles.tabs}>
         {state.routes.map((route, index) => {
           const { options } = descriptors[route.key];
           const focused = state.index === index;
@@ -73,12 +80,15 @@ export function VerticalTabBar({
             </Pressable>
           );
         })}
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  column: { position: 'absolute', alignItems: 'center', justifyContent: 'space-evenly' },
+  column: { position: 'absolute', alignItems: 'center' },
+  actions: { height: COLUMN_ACTIONS, alignItems: 'center', justifyContent: 'flex-start', gap: SPACING.md },
+  tabs: { flex: 1, alignItems: 'center', justifyContent: 'space-evenly' },
   button: { width: BUTTON, height: BUTTON, alignItems: 'center', justifyContent: 'center' },
   pressed: { opacity: 0.55 },
 });
