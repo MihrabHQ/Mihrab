@@ -18,6 +18,7 @@ import { locationSourceLine } from '../../settings/locationSourceLine';
 import { MY_LOCATION_KEY } from '../../settings/locationProviders';
 import { cardEdgeStyle } from '../../theme/chrome';
 import { RADIUS, SPACING } from '../../theme/tokens';
+import { COLUMN_CHIP_W } from './QiblaChip';
 import { TYPE, typeStyle } from '../../theme/typography';
 
 /**
@@ -193,7 +194,14 @@ function LocationChipImpl({ compactHeader = false, column = false, ink, onAddLoc
         onPress={onPressChip}
         hitSlop={compactHeader ? 10 : undefined}
         style={({ pressed, hovered }: { pressed: boolean; hovered?: boolean }) =>
-          compactHeader
+          column
+            ? [
+                styles.columnChip,
+                { backgroundColor: palette.card, borderColor: palette.border },
+                pressed && { opacity: 0.6 },
+                hovered && { opacity: 0.85 },
+              ]
+            : compactHeader
             ? [
                 styles.headerPin,
                 pressed && { opacity: 0.6 },
@@ -407,6 +415,15 @@ const styles = StyleSheet.create({
   // sitting in the same icon-row context as HeaderToolbarIcons. The
   // maxWidth keeps a long preset name from pushing the Settings gear
   // off the right edge on the smallest supported iPhones (~375 pt).
+  // A chip in a vertical bar's column, matching the Qibla chip under it.
+  columnChip: {
+    width: COLUMN_CHIP_W,
+    height: COLUMN_CHIP_W,
+    borderRadius: RADIUS.full,
+    borderWidth: StyleSheet.hairlineWidth,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   headerPin: {
     paddingHorizontal: SPACING.sm,
     paddingVertical: SPACING.xs,

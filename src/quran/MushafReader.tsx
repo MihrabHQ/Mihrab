@@ -66,6 +66,8 @@ import { type MushafReaderProps } from './mushafReaderCore';
 import { useKeyPaging, type PageTurner } from './useKeyPaging';
 import { RADIUS, SPACING } from '../theme/tokens';
 import { TYPE } from '../theme/typography';
+import { useVerticalBar } from '../native/VerticalBar';
+import { VERTICAL_BAR_TITLE_H } from './phonePageGeometry';
 
 type Props = Omit<MushafReaderProps, 'keyTurn'>;
 
@@ -96,6 +98,7 @@ export function MushafReader(props: Props) {
    * the answer (the safe-area top can read 0 there, with the bar hidden).
    */
   const cutout = useDisplayCutout();
+  const vbar = useVerticalBar();
   const stripTop = props.isFullscreen
     ? Platform.OS !== 'ios'
       ? Math.max(cutout.top, insets.top)
@@ -299,9 +302,28 @@ export function MushafReader(props: Props) {
   // UNDER it, with the percentage behind the blur and Cancel behind the
   // header's chips. In fullscreen there is no header and the status bar is
   // hidden, so it clears the cutout instead.
+  //
+  // Beside an iPhone's vertical bar there is no navigation header: the
+  // screen draws a one-line title over the page instead (MushafSurahScreen).
+  // The strip goes UNDER that title and stops at the bar — at the top of
+  // the window it ran behind the title and on under the column.
+  const besideBar =
+    vbar != null && DEVICE_CLASS === 'phone' && !props.isFullscreen;
   const strip =
     stripShowsRun(run) ? (
-      <QuranDownloadStripView run={run} top={stripTop} />
+      besideBar && vbar ? (
+        <View
+          style={[
+            { marginTop: insets.top + VERTICAL_BAR_TITLE_H },
+            vbar.side === 'right' // rtl-safe: the vertical bar is on a physical side
+              ? { marginRight: vbar.width } // rtl-safe: the vertical bar is on a physical side
+              : { marginLeft: vbar.width }, // rtl-safe: the vertical bar is on a physical side
+          ]}>
+          <QuranDownloadStripView run={run} top={0} />
+        </View>
+      ) : (
+        <QuranDownloadStripView run={run} top={stripTop} />
+      )
     ) : null;
 
   // ── The route ───────────────────────────────────────────────────────

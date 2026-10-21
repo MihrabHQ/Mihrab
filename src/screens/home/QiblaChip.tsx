@@ -118,9 +118,12 @@ function QiblaChipImpl({ bearing, onPress, ink, column = false }: QiblaChipProps
 
   // On the sky the chip is its content and nothing else; on a surface it
   // needs the card and the hairline to separate it from what is behind.
-  const skin = ink
-    ? { backgroundColor: 'transparent', borderColor: 'transparent' }
-    : { backgroundColor: palette.card, borderColor: palette.border };
+  // In a vertical bar's column it is a chip again: a glyph alone there
+  // read as a stray mark rather than a button.
+  const skin =
+    ink && !column
+      ? { backgroundColor: 'transparent', borderColor: 'transparent' }
+      : { backgroundColor: palette.card, borderColor: palette.border };
 
   if (!onPress) {
     return (
@@ -164,6 +167,9 @@ export function QiblaChipCorner(props: QiblaChipProps) {
 
 export const QiblaChip = memo(QiblaChipImpl);
 
+/** The width of a chip in a vertical bar's column — the location chip's too. */
+export const COLUMN_CHIP_W = 44;
+
 const styles = StyleSheet.create({
   corner: {
     position: 'absolute',
@@ -173,7 +179,14 @@ const styles = StyleSheet.create({
     end: SPACING.sm,
     zIndex: 1,
   },
-  chipColumn: { flexDirection: 'column', gap: 2, paddingHorizontal: 0 },
+  chipColumn: {
+    flexDirection: 'column',
+    gap: 2,
+    width: COLUMN_CHIP_W,
+    paddingHorizontal: 0,
+    paddingVertical: SPACING.sm,
+    borderRadius: RADIUS.full,
+  },
   chip: {
     flexDirection: 'row',
     alignItems: 'center',

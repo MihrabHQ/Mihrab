@@ -24,7 +24,8 @@ import { useTabBarHidden } from './tabBarVisibility';
 
 const BUTTON = 44;
 /** A page's own buttons' share of the column, under the clock (Today: location, Qibla). */
-const COLUMN_ACTIONS = 96;
+// Room for the location chip over the Qibla chip (compass and degrees).
+const COLUMN_ACTIONS = 112;
 
 export function VerticalTabBar({
   bar,
@@ -53,7 +54,7 @@ export function VerticalTabBar({
       ]}>
       {/* The page's own buttons (Today's location and Qibla), in a band
           kept on every tab so the tabs below do not move between pages. */}
-      <View style={styles.actions}>{actions}</View>
+      <VerticalBarActionsBand actions={actions} />
       <View style={styles.tabs}>
         {state.routes.map((route, index) => {
           const { options } = descriptors[route.key];
@@ -83,6 +84,15 @@ export function VerticalTabBar({
       </View>
     </View>
   );
+}
+
+/**
+ * The page's buttons at the top of the column. Also drawn, still, into the
+ * posed hero of the kept launch picture (TodayCard), whose sky runs under
+ * the column — so the picture has them where the live screen will.
+ */
+export function VerticalBarActionsBand({ actions }: { actions: React.ReactNode }) {
+  return <View style={styles.actions}>{actions}</View>;
 }
 
 const styles = StyleSheet.create({

@@ -1696,10 +1696,12 @@ export function HomeScreen() {
         // dead air at the foot of the page, which on iPad was most of
         // the reason the dashboard overflowed and had to scroll at all.
         { paddingBottom: SPACING.xl + tabBarInset },
-        // iPhone Duo: clear of the home indicator (no bar along the
-        // bottom then). The column is kept clear inside: TodayCard pads
-        // the hero's content and the table, and the sky runs under it.
-        vbarPad && { paddingBottom: SPACING.xl + insets.bottom },
+        // Beside a vertical bar: only clear of the home indicator (no bar
+        // along the bottom then). The column is kept clear inside:
+        // TodayCard pads the hero's content and the table, and the sky
+        // runs under it. Anything more was a band of nothing under the
+        // last card — the hero grows into that room instead.
+        vbarPad && { paddingBottom: Math.max(insets.bottom, SPACING.md) },
         // Fill the viewport on the dashboard: when the two columns are
         // shorter than the window, center them vertically instead of
         // leaving the bottom half of a Mac/iPad window empty (§B1).
