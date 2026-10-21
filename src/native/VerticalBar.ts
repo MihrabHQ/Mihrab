@@ -20,6 +20,7 @@
  */
 import { useEffect, useState, type ReactNode } from 'react';
 import { AppState, Dimensions, NativeModules, Platform } from 'react-native';
+import { isMacCatalyst } from '../responsive/breakpoints';
 
 export type VerticalBar = {
   /** The physical edge the column is on. */
@@ -36,8 +37,15 @@ type Reading = {
   regions?: { x: number; y: number; width: number; height: number }[];
 };
 
+/**
+ * iPhone only. Android has no such bar, and the iPad and the Mac are kept
+ * exactly as they were: with no module the bar is null everywhere, and every
+ * vertical-bar layout in the app is keyed on it (AGENTS.md §8).
+ */
 const Native: { read?: () => Promise<Reading> } | undefined =
-  Platform.OS === 'ios' ? NativeModules.MihrabVerticalBar : undefined;
+  Platform.OS === 'ios' && !Platform.isPad && !isMacCatalyst
+    ? NativeModules.MihrabVerticalBar
+    : undefined;
 
 /** From the native reading: a bar, or null when there is none (or it is not on a side). */
 export function verticalBarFrom(r: Reading | null | undefined, windowWidth: number): VerticalBar | null {

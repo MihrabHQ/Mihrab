@@ -22,6 +22,7 @@ import type { MonthDayEntry } from '../../prayer/loadMonthPrayerTimes';
 import { useClockFormatter } from '../../hooks/useClockFormatter';
 import { SPACING } from '../../theme/tokens';
 import { TYPE, typeStyle } from '../../theme/typography';
+import { useVerticalBar } from '../../native/VerticalBar';
 
 /**
  * Row + column-header presentational components for MonthTimesScreen —
@@ -81,13 +82,16 @@ function MonthColumnHeaderImpl({
   colHeaders,
   dayLabel,
 }: ColumnHeaderProps) {
+  const vbar = useVerticalBar();
+  const oneLine = vbar ? ONE_LINE : null;
+  const gap = vbar ? styles.cellGap : null;
   return (
     <View
       style={[
         styles.colHeader,
         { backgroundColor: palette.card, borderBottomColor: palette.accent },
       ]}>
-      <Text {...ONE_LINE} style={[styles.colHeaderDay, { color: palette.muted }]}>
+      <Text {...oneLine} style={[styles.colHeaderDay, { color: palette.muted }]}>
         {dayLabel}
       </Text>
       {DISPLAY_ORDER.map((key, idx) => {
@@ -95,9 +99,10 @@ function MonthColumnHeaderImpl({
         return (
           <Text
             key={key}
-            {...ONE_LINE}
+            {...oneLine}
             style={[
               salah ? styles.colHeaderTime : styles.colHeaderTimeQuiet,
+              gap,
               { color: salah ? palette.accent : palette.muted },
             ]}>
             {colHeaders[idx]}
@@ -127,6 +132,9 @@ function MonthRowImpl({
   showDaruri = false,
 }: RowProps) {
   const clock = useClockFormatter();
+  const vbar = useVerticalBar();
+  const oneLine = vbar ? ONE_LINE : null;
+  const gap = vbar ? styles.cellGap : null;
   const d = item.date;
   const isToday = isCurrentMonth && d.getDate() === todayDay;
   const isFriday = d.getDay() === 5;
@@ -147,7 +155,7 @@ function MonthRowImpl({
         />
       )}
       <Text
-        {...ONE_LINE}
+        {...oneLine}
         style={[
           styles.cellDay,
           {
@@ -169,9 +177,10 @@ function MonthRowImpl({
         const daruriRaw = daruriKey ? item.timings[daruriKey] : undefined;
         const cell = (
           <Text
-            {...ONE_LINE}
+            {...oneLine}
             style={[
               salah ? styles.cellTimeSalah : styles.cellTime,
+              gap,
               {
                 color: isToday
                   ? palette.accent
@@ -210,10 +219,10 @@ function MonthRowImpl({
 export const MonthRow = memo(MonthRowImpl);
 
 /**
- * A time is one line, always. Where the table is narrower than its ten
- * columns want — beside an iPhone's vertical bar, or with a large text
- * size — "04:54" broke into "04:5" over "4", and today's bold row stood
- * taller than the rest. The text shrinks to fit its column instead.
+ * Beside an iPhone's vertical bar a time is one line, always. The table is
+ * narrower there than its ten columns want, and "04:54" broke into "04:5"
+ * over "4", with today's bold row standing taller than the rest. The text
+ * shrinks to fit its column instead. Everywhere else the table is as it was.
  */
 const ONE_LINE = {
   numberOfLines: 1,
@@ -222,6 +231,9 @@ const ONE_LINE = {
 } as const;
 
 const styles = StyleSheet.create({
+  // A gap the text keeps when it shrinks to fit: without it the narrow
+  // table ran its times together (12:3814:56). Beside a vertical bar only.
+  cellGap: { paddingHorizontal: 2 },
   colHeader: {
     flexDirection: 'row',
     paddingHorizontal: SPACING.md,
@@ -237,7 +249,6 @@ const styles = StyleSheet.create({
   colHeaderTime: {
     ...typeStyle('caption'),
     flex: COL_TIME,
-    paddingHorizontal: 2,
     fontWeight: '800',
     textTransform: 'uppercase',
     textAlign: 'center',
@@ -245,7 +256,6 @@ const styles = StyleSheet.create({
   colHeaderTimeQuiet: {
     ...typeStyle('caption'),
     flex: COL_TIME,
-    paddingHorizontal: 2,
     fontWeight: '500',
     textTransform: 'uppercase',
     textAlign: 'center',
@@ -274,16 +284,12 @@ const styles = StyleSheet.create({
   cellTime: {
     ...typeStyle('caption'),
     flex: COL_TIME,
-    // A gap the text keeps when it shrinks to fit: without it the
-    // narrow table ran its times together (12:3814:56).
-    paddingHorizontal: 2,
     textAlign: 'center',
     opacity: 0.75,
   },
   cellTimeSalah: {
     ...typeStyle('caption'),
     flex: COL_TIME,
-    paddingHorizontal: 2,
     textAlign: 'center',
   },
   // Inside a stacked cell the flex belongs to the wrapper, not the text.

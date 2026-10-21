@@ -121,13 +121,7 @@ final class LaunchSnapshotStore {
     format.scale = window.screen.scale
     format.opaque = true
     let heroPath = heroFile.map { $0.hasPrefix("file://") ? String($0.dropFirst(7)) : $0 }
-    // view-shot writes the twin at the screen's scale, in pixels, and a PNG
-    // read from a path is a 1x image: drawn as it came, a 3x phone got the
-    // hero three times its size — the launch opened on a zoomed-in
-    // countdown and then cut to the real one. Read at the screen's scale.
-    let hero = heroPath.flatMap { UIImage(contentsOfFile: $0) }.flatMap { img in
-      img.cgImage.map { UIImage(cgImage: $0, scale: format.scale, orientation: .up) } ?? img
-    }
+    let hero = heroPath.flatMap { UIImage(contentsOfFile: $0) }
     let image = UIGraphicsImageRenderer(bounds: bounds, format: format).image { _ in
       window.drawHierarchy(in: bounds, afterScreenUpdates: false)
       hero?.draw(at: CGPoint(x: heroX, y: heroY))
