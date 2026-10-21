@@ -77,13 +77,31 @@ export function VerticalTabBar({
               onLongPress={onLongPress}
               hitSlop={4}
               style={({ pressed }) => [styles.button, pressed && styles.pressed]}>
-              {options.tabBarIcon?.({ focused, color, size: 24 })}
+              <TabIcon render={options.tabBarIcon} focused={focused} color={color} />
             </Pressable>
           );
         })}
       </View>
     </View>
   );
+}
+
+/**
+ * A tab's icon, as a component of its own. `tabBarIcon` is a render
+ * function, and some icons call hooks: called inline, those hooks were the
+ * bar's, and the bar returns early while a pushed page hides it — "Rendered
+ * fewer hooks than expected", and the app closed on opening a dua category.
+ */
+function TabIcon({
+  render,
+  focused,
+  color,
+}: {
+  render: BottomTabBarProps['descriptors'][string]['options']['tabBarIcon'];
+  focused: boolean;
+  color: string;
+}) {
+  return <>{render?.({ focused, color, size: 24 }) ?? null}</>;
 }
 
 /**

@@ -2,9 +2,10 @@
 """iPhone Duo screenshots, plus the wide header and search-results art.
 
 App Store Connect's iPhone Duo slot takes 2007 x 2853 (portrait). Its
-panels are built the way the iPad ones are — same captions, same frame —
-from the iPad raw shots, because a Duo screen is nearly the iPad's shape
-(0.70 against 0.75).
+panels are framed the way the iPad ones are, with the iPhone set's
+captions, from the Duo's own raw shots in branding/store/duo/ — taken on
+the iPhone Duo simulator (iOS 27.1), the tabs in the vertical bar, one for
+each of the iPhone's screens.
 
   python3 branding/tools/build_duo.py
 
@@ -28,13 +29,13 @@ DUO = (2007, 2853)
 WIDE = (3840, 1646)
 SEARCH = (3840, 2560)  # 3:2, one of the three sizes Apple lists
 
-SRC = os.path.join(ROOT, "branding/store/ipad-13")
+SRC = os.path.join(ROOT, "branding/store/duo")
 OUT_DUO = os.path.join(ROOT, "branding/store-duo")
 OUT_WIDE = os.path.join(ROOT, "branding/store-wide")
 
 
 def duo():
-    os.makedirs(OUT_DUO, exist_ok=True)
+    build_store.empty(OUT_DUO, (".png",))
     names = sorted(f for f in os.listdir(SRC) if f.endswith(".png"))
     keys = [os.path.splitext(n)[0].split("_", 1)[1] for n in names]
     caps = [build_store.caption(k, False) for k in keys]
@@ -49,7 +50,7 @@ def duo():
             sub,
             screen_radius_frac=0.030,
             device_w_frac=0.74,
-            device_top_frac=0.355,
+            device_top_frac=0.40,
             hl_size=hl,
         )
 
