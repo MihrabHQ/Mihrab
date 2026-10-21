@@ -96,6 +96,7 @@ import { HOME_SCREEN_PADDING } from './home/tokens';
 import { useTabBarInset } from '../navigation/tabBarInset';
 import { useTabBarScroll } from '../navigation/tabBarVisibility';
 import { HomeStatusBand } from './home/HomeStatusBand';
+import { useVerticalBarInsets } from '../native/VerticalBar';
 import { rescheduleEndOfDayLogReminders } from '../notifications/endOfDayLog';
 import { windowEdges } from '../notifications/snoozeWindow';
 import {
@@ -463,6 +464,7 @@ export function HomeScreen() {
   // Focus-scoped (not mount-scoped) so the Settings "Show the app tour"
   // replay — which clears the flag and pops back here — re-triggers it.
   const tabBarInset = useTabBarInset();
+  const vbarPad = useVerticalBarInsets();
   // The bar gets out of the way while reading — see tabBarVisibility.ts.
   const tabBarScroll = useTabBarScroll();
   /**
@@ -1659,6 +1661,10 @@ export function HomeScreen() {
         // dead air at the foot of the page, which on iPad was most of
         // the reason the dashboard overflowed and had to scroll at all.
         { paddingBottom: SPACING.xl + tabBarInset },
+        // iPhone Duo: clear of the home indicator (no bar along the
+        // bottom then). The column is kept clear inside: TodayCard pads
+        // the hero's content and the table, and the sky runs under it.
+        vbarPad && { paddingBottom: SPACING.xl + insets.bottom },
         // Fill the viewport on the dashboard: when the two columns are
         // shorter than the window, center them vertically instead of
         // leaving the bottom half of a Mac/iPad window empty (§B1).
@@ -1840,7 +1846,7 @@ export function HomeScreen() {
         return (
           <>
             <View style={isRoomy ? undefined : styles.fillColumn}>{dayTable}</View>
-            <View style={styles.belowHero}>
+            <View style={[styles.belowHero, vbarPad]}>
               {quranShortcut}
               {ramadanCard}
             </View>

@@ -114,6 +114,7 @@ import { skyMoodFor, type SkyVariant } from '../../theme/skyMoods';
 import { setHeroSkyBand } from './heroSkyBand';
 import { publishSkyTheme, skyDayKey } from '../../theme/skyTheme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useVerticalBar } from '../../native/VerticalBar';
 import { QiblaChip } from './QiblaChip';
 import { HelpMihrabChip } from './HelpMihrabChip';
 import { PrayerRow } from './PrayerRow';
@@ -1578,6 +1579,24 @@ function TodayCardImpl({
 
   const insets = useSafeAreaInsets();
   /**
+   * iPhone Duo: the card runs the full width so its sky reaches under the
+   * vertical bar's column — the one thing allowed there — while the hero's
+   * content (the chips, the countdown) and the table keep clear of it.
+   */
+  const vbar = useVerticalBar();
+  const columnPad =
+    fullBleed && !roomy && vbar
+      ? vbar.side === 'right'
+        ? { paddingRight: vbar.width }
+        : { paddingLeft: vbar.width }
+      : null;
+  const heroColumnPad =
+    fullBleed && !roomy && vbar
+      ? vbar.side === 'right'
+        ? { paddingRight: SPACING.xl + vbar.width }
+        : { paddingLeft: SPACING.xl + vbar.width }
+      : null;
+  /**
    * Dense rows when the page would not otherwise hold the day: a short
    * phone (under 720dp of window), or a table past six rows — the extra
    * times, the Mālikī boundaries. The design's whole point is the day on
@@ -1774,6 +1793,7 @@ function TodayCardImpl({
       <View
         style={[
           styles.heroWrap,
+          heroColumnPad,
           { paddingTop: heroTop },
           fullBleed && !roomy && styles.heroWrapBleed,
           roomy && [styles.heroWrapRoomy, { height: roomyHeroHeight }],
@@ -1889,7 +1909,7 @@ function TodayCardImpl({
         )}
       </View>
 
-      <View style={fullBleed ? styles.tableBleed : null}>
+      <View style={[fullBleed ? styles.tableBleed : null, columnPad]}>
         {/* THE DAY LINE, where the week strip was. The strip put seven
             chips where the eye lands under the hero and answered "which
             day am I looking at" with a highlighted 9 — and could not look

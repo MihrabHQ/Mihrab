@@ -1,5 +1,6 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Easing, type LayoutChangeEvent, StyleSheet, View } from 'react-native';
+import { Animated, Easing, I18nManager, type LayoutChangeEvent, StyleSheet, View } from 'react-native';
+import { useVerticalBar } from '../../native/VerticalBar';
 import { useReduceMotion } from '../../hooks/useReduceMotion';
 import Svg, {
   Circle,
@@ -188,6 +189,13 @@ function HeroSkyImpl({
       ? null
       : { hex: body.light, halo: body.halo * (body.kind === 'sun' ? body.alpha : 1) };
   const drawStars = stars > 0 && !cramped;
+  // iPhone Duo: the sky — and only the sky — runs on under the vertical
+  // bar's column, which the page keeps clear of (src/native/VerticalBar.ts).
+  // Only where it already bleeds to the screen's edges (the phone's hero).
+  const vbar = useVerticalBar();
+  const endSide = I18nManager.isRTL ? 'left' : 'right';
+  const extraEnd = bleed && vbar && vbar.side === endSide ? vbar.width : 0;
+  const extraStart = bleed && vbar && vbar.side !== endSide ? vbar.width : 0;
 
   return (
     <View
@@ -198,8 +206,8 @@ function HeroSkyImpl({
         bleed && {
           top: -bleed.top,
           bottom: -bleed.bottom,
-          start: -bleed.horizontal,
-          end: -bleed.horizontal,
+          start: -bleed.horizontal - extraStart,
+          end: -bleed.horizontal - extraEnd,
         },
       ]}>
       {running ? (

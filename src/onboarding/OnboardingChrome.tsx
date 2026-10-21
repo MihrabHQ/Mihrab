@@ -21,6 +21,7 @@ import {
   type ScrollViewInstance,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useVerticalBar } from '../native/VerticalBar';
 import { useTranslation } from 'react-i18next';
 import { useAppPalette } from '../hooks/useAppPalette';
 import { useKeyboardAwareScroll } from '../hooks/useKeyboardAwareScroll';
@@ -145,8 +146,22 @@ export function OnboardingFrame({
   const { palette } = useAppPalette();
   const insets = useSafeAreaInsets();
   const kb = useKeyboardAwareScroll<ScrollViewInstance>();
+  // iPhone Duo: the page is already clear of the vertical bar's column
+  // (RootNavigator); the top row — the language chip, Skip — moves into the
+  // column, under the clock, where the system puts an app's own bar items.
+  const vbar = useVerticalBar();
   return (
     <View style={[styles.root, { backgroundColor: palette.bg }]}>
+      {topRow && vbar ? (
+        <View
+          style={[
+            styles.columnRow,
+            vbar.side === 'right' ? { right: -vbar.width } : { left: -vbar.width },
+            { top: vbar.occludedTo + SPACING.sm, width: vbar.width },
+          ]}>
+          {topRow}
+        </View>
+      ) : null}
       <View style={{ height: insets.top }} />
       {progress ? (
         <ProgressRule now={progress.now} total={progress.total} />
@@ -169,7 +184,7 @@ export function OnboardingFrame({
           kb.contentPadding,
         ]}
         keyboardShouldPersistTaps="handled">
-        {topRow ? (
+        {topRow && !vbar ? (
           // Outside the centred column: the language chip and the Skip
           // control belong to the top edge of the screen whatever the
           // body does with the space below them.
@@ -311,6 +326,7 @@ const styles = StyleSheet.create({
   // The body takes the leftover height and sits in the middle of it; the
   // top row above it keeps its own place at the top.
   bodyCentered: { flex: 1, justifyContent: 'center' },
+  columnRow: { position: 'absolute', alignItems: 'center', zIndex: 2 },
   topRow: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
