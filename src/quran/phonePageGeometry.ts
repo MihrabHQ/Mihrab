@@ -172,6 +172,12 @@ export type PhonePageInputs = {
    * a void between the page medallion and the player card.
    */
   listH: number;
+  /**
+   * Upright, but the page should take the full width and scroll rather
+   * than be fitted to the height — set beside an iPhone's vertical bar,
+   * where a height-fitted page leaves a band of nothing either side.
+   */
+  fillWidth?: boolean;
 };
 
 /** One pager item = the list viewport, in the window less the cutout. */
@@ -188,7 +194,7 @@ export function phonePageGeometry(
   input: PhonePageInputs,
 ): PhonePageGeometry | null {
   if (!(input.listH > 0)) return null;
-  const scrolling = input.width > input.height;
+  const scrolling = input.width > input.height || input.fillWidth === true;
   const pageWidth = phonePageWidth(input.width, input.sideInset);
   // No footer to reserve for. The one page that still draws one — the
   // end of a khatmah portion — takes its own difference out of its own
