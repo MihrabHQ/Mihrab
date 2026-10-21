@@ -187,10 +187,19 @@ describe('the muṣḥaf header', () => {
     expect(source.slice(guard, icon)).toContain('onPress={onToggleMode}');
   });
 
-  it('has only the one', () => {
-    // Two would mean a second, unguarded entry point into a reader that
-    // is supposed to be off.
-    expect(source.match(/<TranslationIcon/g)).toHaveLength(1);
+  it('has no unguarded one', () => {
+    // An unguarded switch would be a second entry point into a reader that
+    // is supposed to be off. There are two places it is drawn — the header,
+    // and the vertical bar's column on an iPhone that has one — and each
+    // sits behind the same guard.
+    const at = [...source.matchAll(/<TranslationIcon/g)].map(m => m.index ?? 0);
+    expect(at.length).toBeGreaterThan(0);
+    for (const i of at) {
+      const guard = source.lastIndexOf('{onToggleMode ? (', i);
+      expect(guard).toBeGreaterThan(-1);
+      expect(source.slice(guard, i)).toContain('onPress={onToggleMode}');
+      expect(i - guard).toBeLessThan(800);
+    }
   });
 });
 

@@ -60,7 +60,6 @@ import { HeaderPlaybackBar } from '../quran/audio/HeaderPlaybackBar';
 import { useVerticalBar } from '../native/VerticalBar';
 import { VerticalTabBar } from './VerticalTabBar';
 import { BottomTabBar } from '@react-navigation/bottom-tabs';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MihrabHeaderTitle } from './MihrabHeaderTitle';
 import { isMacCatalyst, HOME_DASHBOARD_MIN_WIDTH } from '../responsive/breakpoints';
 import {
@@ -127,11 +126,10 @@ export function MainTabs() {
    * indicator rather than at a bar. See src/native/VerticalBar.ts.
    */
   const vbar = useVerticalBar();
-  const insets = useSafeAreaInsets();
   const columnPad = vbar
     ? vbar.side === 'right'
-      ? { paddingRight: vbar.width }
-      : { paddingLeft: vbar.width }
+      ? { paddingRight: vbar.width } // rtl-safe: the vertical bar is on a physical side
+      : { paddingLeft: vbar.width } // rtl-safe: the vertical bar is on a physical side
     : null;
 
   return (
@@ -163,7 +161,7 @@ export function MainTabs() {
           style={[
             SCREEN,
             vbar && route.name !== 'TodayTab'
-              ? [columnPad, { paddingBottom: insets.bottom, backgroundColor: palette.bg }]
+              ? [columnPad, { backgroundColor: palette.bg }]
               : null,
           ]}>
           {/* The bar is the page's own colour, and — since no tab draws a

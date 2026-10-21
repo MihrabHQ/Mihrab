@@ -87,7 +87,7 @@ function MonthColumnHeaderImpl({
         styles.colHeader,
         { backgroundColor: palette.card, borderBottomColor: palette.accent },
       ]}>
-      <Text style={[styles.colHeaderDay, { color: palette.muted }]}>
+      <Text {...ONE_LINE} style={[styles.colHeaderDay, { color: palette.muted }]}>
         {dayLabel}
       </Text>
       {DISPLAY_ORDER.map((key, idx) => {
@@ -95,6 +95,7 @@ function MonthColumnHeaderImpl({
         return (
           <Text
             key={key}
+            {...ONE_LINE}
             style={[
               salah ? styles.colHeaderTime : styles.colHeaderTimeQuiet,
               { color: salah ? palette.accent : palette.muted },
@@ -146,6 +147,7 @@ function MonthRowImpl({
         />
       )}
       <Text
+        {...ONE_LINE}
         style={[
           styles.cellDay,
           {
@@ -167,6 +169,7 @@ function MonthRowImpl({
         const daruriRaw = daruriKey ? item.timings[daruriKey] : undefined;
         const cell = (
           <Text
+            {...ONE_LINE}
             style={[
               salah ? styles.cellTimeSalah : styles.cellTime,
               {
@@ -206,6 +209,18 @@ function MonthRowImpl({
 
 export const MonthRow = memo(MonthRowImpl);
 
+/**
+ * A time is one line, always. Where the table is narrower than its ten
+ * columns want — beside an iPhone's vertical bar, or with a large text
+ * size — "04:54" broke into "04:5" over "4", and today's bold row stood
+ * taller than the rest. The text shrinks to fit its column instead.
+ */
+const ONE_LINE = {
+  numberOfLines: 1,
+  adjustsFontSizeToFit: true,
+  minimumFontScale: 0.7,
+} as const;
+
 const styles = StyleSheet.create({
   colHeader: {
     flexDirection: 'row',
@@ -222,6 +237,7 @@ const styles = StyleSheet.create({
   colHeaderTime: {
     ...typeStyle('caption'),
     flex: COL_TIME,
+    paddingHorizontal: 2,
     fontWeight: '800',
     textTransform: 'uppercase',
     textAlign: 'center',
@@ -229,6 +245,7 @@ const styles = StyleSheet.create({
   colHeaderTimeQuiet: {
     ...typeStyle('caption'),
     flex: COL_TIME,
+    paddingHorizontal: 2,
     fontWeight: '500',
     textTransform: 'uppercase',
     textAlign: 'center',
@@ -257,12 +274,16 @@ const styles = StyleSheet.create({
   cellTime: {
     ...typeStyle('caption'),
     flex: COL_TIME,
+    // A gap the text keeps when it shrinks to fit: without it the
+    // narrow table ran its times together (12:3814:56).
+    paddingHorizontal: 2,
     textAlign: 'center',
     opacity: 0.75,
   },
   cellTimeSalah: {
     ...typeStyle('caption'),
     flex: COL_TIME,
+    paddingHorizontal: 2,
     textAlign: 'center',
   },
   // Inside a stacked cell the flex belongs to the wrapper, not the text.

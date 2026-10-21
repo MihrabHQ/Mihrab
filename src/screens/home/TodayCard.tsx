@@ -1590,14 +1590,14 @@ function TodayCardImpl({
   const columnPad =
     fullBleed && !roomy && vbar
       ? vbar.side === 'right'
-        ? { paddingRight: vbar.width }
-        : { paddingLeft: vbar.width }
+        ? { paddingRight: vbar.width } // rtl-safe: the vertical bar is on a physical side
+        : { paddingLeft: vbar.width } // rtl-safe: the vertical bar is on a physical side
       : null;
   const heroColumnPad =
     fullBleed && !roomy && vbar
       ? vbar.side === 'right'
-        ? { paddingRight: SPACING.xl + vbar.width }
-        : { paddingLeft: SPACING.xl + vbar.width }
+        ? { paddingRight: SPACING.xl + vbar.width } // rtl-safe: the vertical bar is on a physical side
+        : { paddingLeft: SPACING.xl + vbar.width } // rtl-safe: the vertical bar is on a physical side
       : null;
   /**
    * Dense rows when the page would not otherwise hold the day: a short

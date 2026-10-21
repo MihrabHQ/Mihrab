@@ -97,11 +97,11 @@ export function useVerticalBar(): VerticalBar | null {
   return bar;
 }
 
-/** Padding that keeps a page clear of the column: `{ paddingRight: w }`, `{ paddingLeft: w }`, or nothing. */
-export function useVerticalBarInsets(): { paddingLeft?: number; paddingRight?: number } | null {
+/** Padding that keeps a page clear of the column: `{ paddingRight: w }`, `{ paddingLeft: w }`, or nothing. — rtl-safe: the bar is on a physical side */
+export function useVerticalBarInsets(): { paddingLeft?: number; paddingRight?: number } | null { // rtl-safe: the vertical bar is on a physical side
   const bar = useVerticalBar();
   if (!bar) return null;
-  return bar.side === 'right' ? { paddingRight: bar.width } : { paddingLeft: bar.width };
+  return bar.side === 'right' ? { paddingRight: bar.width } : { paddingLeft: bar.width }; // rtl-safe: the vertical bar is on a physical side
 }
 
 /**
