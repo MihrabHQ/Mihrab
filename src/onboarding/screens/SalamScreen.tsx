@@ -32,6 +32,7 @@ import { FONTS, TYPE, typeStyle } from '../../theme/typography';
 import type { AppLanguage } from '../../settings/types';
 import { MihrabLogoIcon, TranslationIcon } from '../../theme/icons';
 import { OnboardingFrame, PrimaryAction } from '../OnboardingChrome';
+import { useVerticalBar } from '../../native/VerticalBar';
 
 /**
  * The Arabic salām — task #89, and no longer animated.
@@ -121,6 +122,7 @@ const salamStyles = StyleSheet.create({
 export function SalamScreen({ onAdvance }: { onAdvance: () => void }) {
   const { t, i18n } = useTranslation();
   const { palette } = useAppPalette();
+  const vbar = useVerticalBar();
   const { settings, updateSettings } = usePrayerSettings();
   const [picker, setPicker] = useState(false);
 
@@ -153,6 +155,7 @@ export function SalamScreen({ onAdvance }: { onAdvance: () => void }) {
           onPress={() => setPicker(true)}
           style={({ pressed }) => [
             styles.chip,
+            vbar && styles.chipRound,
             {
               borderColor: palette.border,
               backgroundColor: palette.card,
@@ -161,11 +164,15 @@ export function SalamScreen({ onAdvance }: { onAdvance: () => void }) {
             pressed && { opacity: 0.6 },
           ]}>
           {/* The glyph is what makes the pill read as a control rather
-              than as a label that happens to say "English". */}
-          <TranslationIcon size={14} color={palette.mutedSolid} />
-          <Text style={[typeStyle('footnote'), { color: palette.muted }]}>
-            {current}
-          </Text>
+              than as a label that happens to say "English". In the
+              vertical bar's column (iPhone Duo) the glyph is the whole
+              control: the column is too narrow for the name. */}
+          <TranslationIcon size={vbar ? 18 : 14} color={palette.mutedSolid} />
+          {vbar ? null : (
+            <Text style={[typeStyle('footnote'), { color: palette.muted }]}>
+              {current}
+            </Text>
+          )}
         </Pressable>
       }
       footer={
@@ -223,6 +230,8 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.xs,
     paddingHorizontal: SPACING.md,
   },
+  // In the vertical bar's column: a round button around the glyph.
+  chipRound: { width: 40, height: 40, paddingHorizontal: 0, paddingVertical: 0, justifyContent: 'center' },
   mark: { alignItems: 'center', marginBottom: SPACING.lg },
   // The one big gap on the screen, and the only thing separating the
   // greeting from the introduction.

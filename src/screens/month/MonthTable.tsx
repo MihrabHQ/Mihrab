@@ -22,6 +22,7 @@ import type { MonthDayEntry } from '../../prayer/loadMonthPrayerTimes';
 import { useClockFormatter } from '../../hooks/useClockFormatter';
 import { SPACING } from '../../theme/tokens';
 import { TYPE, typeStyle } from '../../theme/typography';
+import { useVerticalBar } from '../../native/VerticalBar';
 
 /**
  * Row + column-header presentational components for MonthTimesScreen —
@@ -81,13 +82,16 @@ function MonthColumnHeaderImpl({
   colHeaders,
   dayLabel,
 }: ColumnHeaderProps) {
+  const vbar = useVerticalBar();
+  const oneLine = vbar ? ONE_LINE : null;
+  const gap = vbar ? styles.cellGap : null;
   return (
     <View
       style={[
         styles.colHeader,
         { backgroundColor: palette.card, borderBottomColor: palette.accent },
       ]}>
-      <Text style={[styles.colHeaderDay, { color: palette.muted }]}>
+      <Text {...oneLine} style={[styles.colHeaderDay, { color: palette.muted }]}>
         {dayLabel}
       </Text>
       {DISPLAY_ORDER.map((key, idx) => {
@@ -95,8 +99,10 @@ function MonthColumnHeaderImpl({
         return (
           <Text
             key={key}
+            {...oneLine}
             style={[
               salah ? styles.colHeaderTime : styles.colHeaderTimeQuiet,
+              gap,
               { color: salah ? palette.accent : palette.muted },
             ]}>
             {colHeaders[idx]}
@@ -126,6 +132,9 @@ function MonthRowImpl({
   showDaruri = false,
 }: RowProps) {
   const clock = useClockFormatter();
+  const vbar = useVerticalBar();
+  const oneLine = vbar ? ONE_LINE : null;
+  const gap = vbar ? styles.cellGap : null;
   const d = item.date;
   const isToday = isCurrentMonth && d.getDate() === todayDay;
   const isFriday = d.getDay() === 5;
@@ -146,6 +155,7 @@ function MonthRowImpl({
         />
       )}
       <Text
+        {...oneLine}
         style={[
           styles.cellDay,
           {
@@ -167,8 +177,10 @@ function MonthRowImpl({
         const daruriRaw = daruriKey ? item.timings[daruriKey] : undefined;
         const cell = (
           <Text
+            {...oneLine}
             style={[
               salah ? styles.cellTimeSalah : styles.cellTime,
+              gap,
               {
                 color: isToday
                   ? palette.accent
@@ -206,7 +218,22 @@ function MonthRowImpl({
 
 export const MonthRow = memo(MonthRowImpl);
 
+/**
+ * Beside an iPhone's vertical bar a time is one line, always. The table is
+ * narrower there than its ten columns want, and "04:54" broke into "04:5"
+ * over "4", with today's bold row standing taller than the rest. The text
+ * shrinks to fit its column instead. Everywhere else the table is as it was.
+ */
+const ONE_LINE = {
+  numberOfLines: 1,
+  adjustsFontSizeToFit: true,
+  minimumFontScale: 0.7,
+} as const;
+
 const styles = StyleSheet.create({
+  // A gap the text keeps when it shrinks to fit: without it the narrow
+  // table ran its times together (12:3814:56). Beside a vertical bar only.
+  cellGap: { paddingHorizontal: 2 },
   colHeader: {
     flexDirection: 'row',
     paddingHorizontal: SPACING.md,

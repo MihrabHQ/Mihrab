@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { Platform, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MainTabs } from './MainTabs';
+import { useVerticalBarInsets } from '../native/VerticalBar';
 import { HeaderPlaybackBar } from '../quran/audio/HeaderPlaybackBar';
 import { usePrayerSettings } from '../context/PrayerSettingsContext';
 import { CompassScreen } from '../screens/CompassScreen';
@@ -102,6 +103,10 @@ export function RootNavigator() {
    * muṣḥaf reader and onboarding, which lay out against it.
    */
   const edgeToEdge = { backgroundColor: theme.colors.background, paddingBottom: 0 };
+  // iPhone Duo: pushed pages and onboarding keep clear of the vertical bar's
+  // column; the tabs ("Home") and the muṣḥaf reader lay out around it
+  // themselves (MainTabs, MushafPhoneReader).
+  const columnPad = useVerticalBarInsets();
   return (
     <Stack.Navigator
       /**
@@ -109,8 +114,17 @@ export function RootNavigator() {
        * settings pages, downloads, the month table. Tilawah and the reader
        * are excluded by the bar itself, which knows the route it is on.
        */
-      screenLayout={({ children }) => (
-        <View style={SCREEN}>
+      screenLayout={({ route, children }) => (
+        <View
+          style={[
+            SCREEN,
+            // The muṣḥaf reader keeps clear of it itself: its page stays
+            // centred, with the larger side inset on both sides, and its
+            // colour runs under the column (MushafPhoneReader `sideInset`).
+            columnPad && route.name !== 'Home' && route.name !== 'QuranSurah'
+              ? [columnPad, { backgroundColor: theme.colors.background }]
+              : null,
+          ]}>
           {/* `theme.colors.background` is exactly what `headerStyle` below
               is given, so the bar and the header are one surface. */}
           <HeaderPlaybackBar

@@ -57,6 +57,9 @@ import { LogScreen } from '../screens/LogScreen';
 import { SettingsScreen } from '../screens/SettingsScreen';
 import { HomeHeaderControls } from './HomeHeaderControls';
 import { HeaderPlaybackBar } from '../quran/audio/HeaderPlaybackBar';
+import { useVerticalBar } from '../native/VerticalBar';
+import { VerticalTabBar } from './VerticalTabBar';
+import { BottomTabBar } from '@react-navigation/bottom-tabs';
 import { MihrabHeaderTitle } from './MihrabHeaderTitle';
 import { isMacCatalyst, HOME_DASHBOARD_MIN_WIDTH } from '../responsive/breakpoints';
 import {
@@ -115,9 +118,25 @@ export function MainTabs() {
     }).start();
   }, [hidden, reduceMotion, slide]);
   const hideBy = TAB_BAR_HEIGHT + barBottom + 16;
+  /**
+   * A phone with a vertical bar (iPhone Duo): the tabs go IN the column the
+   * status bar moved to, and every page but Today keeps clear of it — Today
+   * clears it itself, because its sky is the one thing allowed under it.
+   * There is no bar along the bottom then, so the pages end at the home
+   * indicator rather than at a bar. See src/native/VerticalBar.ts.
+   */
+  const vbar = useVerticalBar();
+  const columnPad = vbar
+    ? vbar.side === 'right'
+      ? { paddingRight: vbar.width } // rtl-safe: the vertical bar is on a physical side
+      : { paddingLeft: vbar.width } // rtl-safe: the vertical bar is on a physical side
+    : null;
 
   return (
     <Tab.Navigator
+      tabBar={props =>
+        vbar ? <VerticalTabBar {...props} bar={vbar} /> : <BottomTabBar {...props} />
+      }
       /**
        * ARRIVING SOMEWHERE ALWAYS SHOWS THE BAR.
        *
@@ -138,7 +157,13 @@ export function MainTabs() {
        * decides for itself whether it has anything to say.
        */
       screenLayout={({ route, children }) => (
-        <View style={SCREEN}>
+        <View
+          style={[
+            SCREEN,
+            vbar && route.name !== 'TodayTab'
+              ? [columnPad, { backgroundColor: palette.bg }]
+              : null,
+          ]}>
           {/* The bar is the page's own colour, and — since no tab draws a
               title bar any more — it is the first thing under the status
               bar and clears it itself (`headerless`). The one tab with a
@@ -159,7 +184,7 @@ export function MainTabs() {
           {route.name !== 'TodayTab' ? <StatusBarBand color={palette.bg} /> : null}
           {/* Under the bar, over the page: the fade that keeps the two from
               colliding. Same `slide` as the bar, so it leaves with it. */}
-          <TabBarScrim bg={palette.bg} slide={slide} />
+          {vbar ? null : <TabBarScrim bg={palette.bg} slide={slide} />}
         </View>
       )}
       screenOptions={({ route }) => ({

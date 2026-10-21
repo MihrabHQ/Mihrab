@@ -18,6 +18,7 @@ import { locationSourceLine } from '../../settings/locationSourceLine';
 import { MY_LOCATION_KEY } from '../../settings/locationProviders';
 import { cardEdgeStyle } from '../../theme/chrome';
 import { RADIUS, SPACING } from '../../theme/tokens';
+import { COLUMN_CHIP_W } from './QiblaChip';
 import { TYPE, typeStyle } from '../../theme/typography';
 
 /**
@@ -66,6 +67,12 @@ type Props = {
    */
   compactHeader?: boolean;
   /**
+   * iPhone Duo: the pin alone, standing in the vertical bar's column under
+   * the clock — the column is too narrow for the city's name, which stays
+   * the button's accessibility hint and is in the sheet it opens.
+   */
+  column?: boolean;
+  /**
    * Colours for the compact chip when it sits on the hero's sky rather
    * than on the theme's surface: the sky's own ink (skyModel.ts), so the
    * pin and the name read on a night sky in a light app and vice versa.
@@ -79,7 +86,7 @@ type Props = {
   onAddLocation?: () => void;
 };
 
-function LocationChipImpl({ compactHeader = false, ink, onAddLocation }: Props) {
+function LocationChipImpl({ compactHeader = false, column = false, ink, onAddLocation }: Props) {
   const { t } = useTranslation();
   const { palette } = useAppPalette();
   const { slice: settings, update: updateSettings } = useLocationSettings();
@@ -187,7 +194,14 @@ function LocationChipImpl({ compactHeader = false, ink, onAddLocation }: Props) 
         onPress={onPressChip}
         hitSlop={compactHeader ? 10 : undefined}
         style={({ pressed, hovered }: { pressed: boolean; hovered?: boolean }) =>
-          compactHeader
+          column
+            ? [
+                styles.columnChip,
+                { backgroundColor: palette.card, borderColor: palette.border },
+                pressed && { opacity: 0.6 },
+                hovered && { opacity: 0.85 },
+              ]
+            : compactHeader
             ? [
                 styles.headerPin,
                 pressed && { opacity: 0.6 },
@@ -204,7 +218,9 @@ function LocationChipImpl({ compactHeader = false, ink, onAddLocation }: Props) 
                 hovered && { opacity: 0.92 },
               ]
         }>
-        {compactHeader ? (
+        {column ? (
+          <PinIcon color={ink ? ink.text : palette.accentSolid} size={22} />
+        ) : compactHeader ? (
           // Pin glyph + the active location's name. The label is
           // truncated to a single line with ellipsis so a long preset
           // name (e.g. "Stockholm, Sweden") doesn't push the Settings
@@ -399,6 +415,15 @@ const styles = StyleSheet.create({
   // sitting in the same icon-row context as HeaderToolbarIcons. The
   // maxWidth keeps a long preset name from pushing the Settings gear
   // off the right edge on the smallest supported iPhones (~375 pt).
+  // A chip in a vertical bar's column, matching the Qibla chip under it.
+  columnChip: {
+    width: COLUMN_CHIP_W,
+    height: COLUMN_CHIP_W,
+    borderRadius: RADIUS.full,
+    borderWidth: StyleSheet.hairlineWidth,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   headerPin: {
     paddingHorizontal: SPACING.sm,
     paddingVertical: SPACING.xs,

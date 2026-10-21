@@ -110,6 +110,7 @@ import { RowAction, SectionHead } from '../../components/controls';
 import { ChoiceSheet } from '../../components/ui/ChoiceSheet';
 import { MODAL_ORIENTATIONS } from '../../components/modalOrientations';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useVerticalBar } from '../../native/VerticalBar';
 import { RADIUS, SPACING } from '../../theme/tokens';
 import { tajweedColoursShown } from '../tajweed/tajweedSupport';
 
@@ -203,6 +204,10 @@ export function AyahActionSheet({
   const insets = useSafeAreaInsets();
   // The larger of the two, on both — see the sheet's note.
   const sideInset = Math.max(insets.left, insets.right);
+  // Beside an iPhone's vertical bar the sheet clears the bar on its side
+  // only: centred on the window, it lost the bar's width on BOTH sides
+  // and the āyah sat in a narrow column for no reason.
+  const vbar = useVerticalBar();
   const { settings, updateSettings } = usePrayerSettings();
   const edition = useActiveEdition();
   const state = useQuranState();
@@ -624,8 +629,19 @@ export function AyahActionSheet({
              * a cutout on one side looks like a mistake rather than a
              * clearance.
              */
-            paddingStart: SHEET_H_PADDING + sideInset,
-            paddingEnd: SHEET_H_PADDING + sideInset,
+            ...(vbar
+              ? {
+                  paddingLeft: // rtl-safe: the vertical bar is on a physical side
+                    SHEET_H_PADDING +
+                    (vbar.side === 'left' ? vbar.width : insets.left),
+                  paddingRight: // rtl-safe: the vertical bar is on a physical side
+                    SHEET_H_PADDING +
+                    (vbar.side === 'right' ? vbar.width : insets.right),
+                }
+              : {
+                  paddingStart: SHEET_H_PADDING + sideInset,
+                  paddingEnd: SHEET_H_PADDING + sideInset,
+                }),
           },
         ]}
       >

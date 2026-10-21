@@ -114,6 +114,7 @@ import { skyMoodFor, type SkyVariant } from '../../theme/skyMoods';
 import { setHeroSkyBand } from './heroSkyBand';
 import { publishSkyTheme, skyDayKey } from '../../theme/skyTheme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useVerticalBarActions, useVerticalBar } from '../../native/VerticalBar';
 import { QiblaChip } from './QiblaChip';
 import { HelpMihrabChip } from './HelpMihrabChip';
 import { PrayerRow } from './PrayerRow';
@@ -127,6 +128,7 @@ import { QiblaChipCorner } from './QiblaChip';
 import { HOME_SCREEN_PADDING, HOME_TABLE_RADIUS } from './tokens';
 import { RADIUS, SPACING } from '../../theme/tokens';
 import { TYPE } from '../../theme/typography';
+import { VerticalBarActionsBand } from '../../navigation/VerticalTabBar';
 
 /**
  * The day bar's step arrow: a stroked chevron, drawn rather than typed.
@@ -246,7 +248,7 @@ export type TodayCardProps = {
    */
   roomy?: boolean;
   /** The location chip for the hero's top row, drawn in the sky's ink. */
-  renderLocation?: (ink: SkyInkColors) => ReactNode;
+  renderLocation?: (ink: SkyInkColors, column?: boolean) => ReactNode;
 };
 
 /**
@@ -277,7 +279,7 @@ const HeroTopRow = memo(function HeroTopRow({
   ink,
   onLayout,
 }: {
-  topRow: { renderLocation?: (ink: SkyInkColors) => ReactNode; renderQibla?: (ink: SkyInkColors) => ReactNode };
+  topRow: { renderLocation?: (ink: SkyInkColors, column?: boolean) => ReactNode; renderQibla?: (ink: SkyInkColors, column?: boolean) => ReactNode };
   ink: SkyInkColors;
   onLayout?: (e: LayoutChangeEvent) => void;
 }) {
@@ -371,10 +373,10 @@ const HeroToday = memo(function HeroToday({
   bleed?: { horizontal: number; top: number; bottom: number };
   /** The top row: location chip leading, Qibla chip trailing. */
   topRow?: {
-    renderLocation?: (ink: SkyInkColors) => ReactNode;
+    renderLocation?: (ink: SkyInkColors, column?: boolean) => ReactNode;
     /** A render function, not a node: it takes the sky's ink like the
         location beside it — see QiblaChip's `ink`. */
-    renderQibla?: (ink: SkyInkColors) => ReactNode;
+    renderQibla?: (ink: SkyInkColors, column?: boolean) => ReactNode;
     /** Above the countdown, on the sky: the way into Help Mihrab. */
     renderHelp?: (ink: SkyInkColors) => ReactNode;
   };
@@ -413,6 +415,9 @@ const HeroToday = memo(function HeroToday({
   onInterval?: (fromAt: number, targetAt: number) => void;
   onLayout?: (e: LayoutChangeEvent) => void;
 }) {
+  // iPhone Duo: the location and the Qibla stand in the vertical bar's
+  // column instead (HomeScreen hands them to the tab bar there).
+  const vbar = useVerticalBar();
   const { t } = useTranslation();
   const clock = useClockFormatter();
   // Focus AND foreground. `useIsFocused()` on its own kept this ticking once
@@ -915,7 +920,7 @@ const HeroToday = memo(function HeroToday({
           animated
         />
       ) : null}
-      {topRow ? (
+      {topRow && fill && vbar ? null : topRow ? (
         <HeroTopRow topRow={topRow} ink={inkTop} onLayout={fill ? onTopRowLayout : undefined} />
       ) : null}
       {/* The room the sky's bodies move in. */}
@@ -1578,6 +1583,24 @@ function TodayCardImpl({
 
   const insets = useSafeAreaInsets();
   /**
+   * iPhone Duo: the card runs the full width so its sky reaches under the
+   * vertical bar's column — the one thing allowed there — while the hero's
+   * content (the chips, the countdown) and the table keep clear of it.
+   */
+  const vbar = useVerticalBar();
+  const columnPad =
+    fullBleed && !roomy && vbar
+      ? vbar.side === 'right'
+        ? { paddingRight: vbar.width } // rtl-safe: the vertical bar is on a physical side
+        : { paddingLeft: vbar.width } // rtl-safe: the vertical bar is on a physical side
+      : null;
+  const heroColumnPad =
+    fullBleed && !roomy && vbar
+      ? vbar.side === 'right'
+        ? { paddingRight: SPACING.xl + vbar.width } // rtl-safe: the vertical bar is on a physical side
+        : { paddingLeft: SPACING.xl + vbar.width } // rtl-safe: the vertical bar is on a physical side
+      : null;
+  /**
    * Dense rows when the page would not otherwise hold the day: a short
    * phone (under 720dp of window), or a table past six rows — the extra
    * times, the Mālikī boundaries. The design's whole point is the day on
@@ -1634,13 +1657,17 @@ function TodayCardImpl({
    * the floor is the countdown block plus a strip of sky, and the ceiling
    * stops a 13-inch iPad from turning the hero back into the page.
    */
+  // The column's share of the posed twin's box, by physical side.
+  const columnActions = useVerticalBarActions();
+  const twinBarLeft = columnPad && vbar && vbar.side === 'left' ? vbar.width : 0;
+  const twinBarRight = columnPad && vbar && vbar.side === 'right' ? vbar.width : 0;
   const roomyHeroHeight = roomy
     ? Math.round(Math.min(Math.max(windowHeight * 0.34, 300), 460))
     : undefined;
   const Outer = fullBleed ? View : GlassSurface;
-  const renderQibla = (ink: SkyInkColors) =>
+  const renderQibla = (ink: SkyInkColors, column?: boolean) =>
     fullBleed && qiblaBearing != null ? (
-      <QiblaChip bearing={qiblaBearing} onPress={onOpenQibla} ink={ink} />
+      <QiblaChip bearing={qiblaBearing} onPress={onOpenQibla} ink={ink} column={column} />
     ) : null;
   const renderHelp = (ink: SkyInkColors) =>
     onHelpMihrab ? <HelpMihrabChip ink={ink} onPress={onHelpMihrab} /> : null;
@@ -1774,6 +1801,7 @@ function TodayCardImpl({
       <View
         style={[
           styles.heroWrap,
+          heroColumnPad,
           { paddingTop: heroTop },
           fullBleed && !roomy && styles.heroWrapBleed,
           roomy && [styles.heroWrapRoomy, { height: roomyHeroHeight }],
@@ -1803,18 +1831,35 @@ function TodayCardImpl({
             pointerEvents="none"
             importantForAccessibility="no-hide-descendants"
             accessibilityElementsHidden
+            // Beside a vertical bar the sky also runs on under the column
+            // (HeroSky), so the box takes that in too — cut at the hero's
+            // edge, the picture showed the column's strip of sky as it was
+            // when kept, beside the posed one.
             style={{
               position: 'absolute',
-              left: heroBox.x - SPACING.xl,
+              left: heroBox.x - SPACING.xl - twinBarLeft,
               top: heroBox.y - heroTop,
-              width: heroBox.w + SPACING.xl * 2,
+              width: heroBox.w + SPACING.xl * 2 + twinBarLeft + twinBarRight,
               height: heroBox.h + heroTop + SPACING.lg,
             }}>
+            {vbar && (twinBarLeft || twinBarRight) ? (
+              <View
+                style={[
+                  styles.twinColumn,
+                  twinBarRight ? { right: 0 } : { left: 0 }, // rtl-safe: the vertical bar is on a physical side
+                  {
+                    width: vbar.width,
+                    top: vbar.occludedTo + SPACING.md - (heroBox.y - heroTop),
+                  },
+                ]}>
+                <VerticalBarActionsBand actions={columnActions} />
+              </View>
+            ) : null}
             <View
               collapsable={false}
               style={{
                 position: 'absolute',
-                left: SPACING.xl,
+                left: SPACING.xl + twinBarLeft,
                 top: heroTop,
                 width: heroBox.w,
                 height: heroBox.h,
@@ -1889,7 +1934,7 @@ function TodayCardImpl({
         )}
       </View>
 
-      <View style={fullBleed ? styles.tableBleed : null}>
+      <View style={[fullBleed ? styles.tableBleed : null, columnPad]}>
         {/* THE DAY LINE, where the week strip was. The strip put seven
             chips where the eye lands under the hero and answered "which
             day am I looking at" with a highlighted 9 — and could not look
@@ -2096,6 +2141,8 @@ function TodayCardImpl({
 export const TodayCard = memo(TodayCardImpl);
 
 const styles = StyleSheet.create({
+  // Over the twin's sky, which runs on under the column.
+  twinColumn: { position: 'absolute', alignItems: 'center', zIndex: 1 },
   card: { overflow: 'hidden' },
   // Full-bleed: no radius — the sky meets the day bar as one plane, not
   // a card foot over the page. Grow to fill the page; never shrink under

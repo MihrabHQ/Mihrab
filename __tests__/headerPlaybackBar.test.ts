@@ -28,7 +28,7 @@ describe('where the bar is wired in', () => {
   it('wraps every tab and every pushed screen', () => {
     expect(TABS).toMatch(/screenLayout=\{\(\{ route, children \}\) =>/);
     expect(TABS).toMatch(/<HeaderPlaybackBar\s+surface=/);
-    expect(ROOT).toMatch(/screenLayout=\{\(\{ children \}\) =>/);
+    expect(ROOT).toMatch(/screenLayout=\{\(\{ route, children \}\) =>/);
     expect(ROOT).toMatch(/<HeaderPlaybackBar\s+surface=/);
     expect(ROOT).toMatch(/underTransparentHeader/);
   });

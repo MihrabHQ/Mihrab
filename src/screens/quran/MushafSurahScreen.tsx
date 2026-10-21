@@ -69,6 +69,9 @@ import { PageProgressMark, usePageProgress } from '../../quran/PageProgressMark'
 import { RiwayahPicker } from '../../quran/RiwayahPicker';
 import { RADIUS, SPACING } from '../../theme/tokens';
 import { isRtlLanguage } from '../../i18n/layoutDirection';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useVerticalBar } from '../../native/VerticalBar';
+import { VERTICAL_BAR_TITLE_H } from '../../quran/phonePageGeometry';
 
 const isIOS = Platform.OS === 'ios';
 
@@ -112,6 +115,7 @@ export function MushafSurahScreen({
   // the theme, which is the one place the two agree by construction).
   const tone = mushafTone(quran.prefs, palette.isDark);
   const ground = usePageGround(tone);
+  const columnInk = toneIsDark(tone) ? '#f2f2f2' : '#1a1a1a'; // tokens-ok-line: the header's page ink
 
   // Incrementing signal → the reader opens its unified sheet scrolled to
   // the recitation section (the header "Audio" button).
@@ -138,6 +142,15 @@ export function MushafSurahScreen({
   const switchRiwayah = useSwitchRiwayah();
 
   const [isFullscreen, setIsFullscreen] = useState(false);
+  /**
+   * BESIDE AN iPHONE'S VERTICAL BAR the header's controls go into the
+   * bar's column — back at the top, then recitation and the page tone —
+   * and the navigation bar gives way to a one-line title, so the page
+   * starts higher. Phone reader only; fullscreen is unchanged.
+   */
+  const vbar = useVerticalBar();
+  const insets = useSafeAreaInsets();
+  const columnChrome = vbar != null && DEVICE_CLASS === 'phone' && !isFullscreen;
   /**
    * Every way in and out of fullscreen goes through the veil — see
    * `fullscreenVeil.ts` for why the change is hidden behind a fade.
@@ -515,7 +528,8 @@ export function MushafSurahScreen({
       </Pressable>
     ) : null;
     navigation.setOptions({
-      headerShown: true,
+      // Beside a vertical bar the screen draws its own title and column.
+      headerShown: !columnChrome,
       gestureEnabled,
       // The mushaf rotates with the device whether or not the chrome is
       // hidden — the phone reader has a landscape layout of its own (a 1.6×
@@ -720,6 +734,7 @@ export function MushafSurahScreen({
     toggleFullscreen,
     // The window's size, so a resize re-issues the header rather than
     // leaving UIKit holding a subview RN laid out for a different width.
+    columnChrome,
     headerW,
     headerH,
   ]);
@@ -765,6 +780,79 @@ export function MushafSurahScreen({
         onTitleChange={handleReaderTitleChange}
         onPageChange={handleReaderPageChange}
       />
+      {columnChrome && vbar && quranHydrated ? (
+        <>
+          <View
+            pointerEvents="none"
+            style={[
+              columnStyles.title,
+              {
+                top: insets.top,
+                left: vbar.side === 'left' ? vbar.width : 0,
+                right: vbar.side === 'right' ? vbar.width : 0,
+              },
+            ]}>
+            {sessionColor ? <SessionDot color={sessionColor} size={8} /> : null}
+            {pageProgress ? (
+              <PageProgressMark
+                state={pageProgress}
+                page={markPage}
+                riwayah={riwayah}
+                size={9}
+              />
+            ) : null}
+            <Text
+              numberOfLines={1}
+              style={{
+                color: columnInk,
+                fontSize: TYPE.headline.fontSize,
+                fontWeight: '600',
+                writingDirection: isArabic ? 'rtl' : 'ltr',
+              }}>
+              {readerTitle || surahName(surah)}
+            </Text>
+          </View>
+          <View
+            style={[
+              columnStyles.column,
+              {
+                width: vbar.width,
+                top: vbar.occludedTo + SPACING.md,
+              },
+              vbar.side === 'right' ? { right: 0 } : { left: 0 },
+            ]}>
+            {navigation.canGoBack() ? (
+              <TabBackButton
+                onPress={() => navigation.goBack()}
+                inNativeHeader
+                color={columnInk}
+              />
+            ) : null}
+            <View style={columnStyles.group}>
+              {onToggleMode ? (
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={t(
+                    'quran.switchToTranslation',
+                    'Switch to translation view',
+                  )}
+                  onPress={onToggleMode}
+                  hitSlop={10}>
+                  <TranslationIcon color={columnInk} size={22} />
+                </Pressable>
+              ) : null}
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={t('quran.playbackSettings', 'Recitation')}
+                onPress={() => setAudioSheetSignal(s => s + 1)}
+                hitSlop={10}>
+                <TilawahIcon color={columnInk} size={22} />
+              </Pressable>
+              <MushafToneHeaderButton color={columnInk} size={18} />
+            </View>
+          </View>
+        </>
+      ) : null}
       {riwayahSheet}
     </>
   );
@@ -776,6 +864,24 @@ export function MushafSurahScreen({
  * items — so the pill lands at the page's leading edge (measured on the Mac).
  */
 const RIWAYAH_PAST_INDEX = desktopSize(50);
+
+const columnStyles = StyleSheet.create({
+  title: {
+    position: 'absolute',
+    height: VERTICAL_BAR_TITLE_H,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    paddingHorizontal: SPACING.md,
+  },
+  column: {
+    position: 'absolute',
+    alignItems: 'center',
+    gap: SPACING.xl,
+  },
+  group: { alignItems: 'center', gap: SPACING.xl },
+});
 
 const headerSide = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: desktopSize(10) },

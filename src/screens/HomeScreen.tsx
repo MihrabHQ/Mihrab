@@ -96,6 +96,8 @@ import { HOME_SCREEN_PADDING } from './home/tokens';
 import { useTabBarInset } from '../navigation/tabBarInset';
 import { useTabBarScroll } from '../navigation/tabBarVisibility';
 import { HomeStatusBand } from './home/HomeStatusBand';
+import { setVerticalBarActions, useVerticalBar, useVerticalBarInsets } from '../native/VerticalBar';
+import { QiblaChip } from './home/QiblaChip';
 import { rescheduleEndOfDayLogReminders } from '../notifications/endOfDayLog';
 import { windowEdges } from '../notifications/snoozeWindow';
 import {
@@ -463,6 +465,7 @@ export function HomeScreen() {
   // Focus-scoped (not mount-scoped) so the Settings "Show the app tour"
   // replay — which clears the flag and pops back here — re-triggers it.
   const tabBarInset = useTabBarInset();
+  const vbarPad = useVerticalBarInsets();
   // The bar gets out of the way while reading — see tabBarVisibility.ts.
   const tabBarScroll = useTabBarScroll();
   /**
@@ -1545,6 +1548,40 @@ export function HomeScreen() {
     settings.manualLatitude,
     settings.manualLongitude,
   ]);
+
+  /**
+   * iPhone Duo: the location and the Qibla stand in the vertical bar's
+   * column, under the clock, while Today is the page on show — handed to
+   * the tab bar, which owns the column (VerticalTabBar). The hero shows no
+   * top row then (TodayCard).
+   */
+  const vbar = useVerticalBar();
+  const columnInk = useMemo(
+    () => ({ text: String(palette.mutedSolid), muted: String(palette.mutedSolid) }),
+    [palette.mutedSolid],
+  );
+  useFocusEffect(
+    useCallback(() => {
+      if (!vbar) return undefined;
+      setVerticalBarActions(
+        <>
+          <LocationChip
+            compactHeader
+            column
+            ink={columnInk}
+            onAddLocation={() =>
+              navigation.navigate('SettingsLocation', {
+                highlight: 'savedLocations',
+                activateOnAdd: true,
+              })
+            }
+          />
+          <QiblaChip bearing={qiblaBearing} onPress={handleOpenQibla} ink={columnInk} column />
+        </>,
+      );
+      return () => setVerticalBarActions(null);
+    }, [vbar, columnInk, navigation, qiblaBearing, handleOpenQibla]),
+  );
   const handleOpenQuran = useCallback(
     // The Quran is a TAB now, not a pushed page — jump to it rather than
     // stacking a second copy on top of Today (design review 2e).
@@ -1659,6 +1696,12 @@ export function HomeScreen() {
         // dead air at the foot of the page, which on iPad was most of
         // the reason the dashboard overflowed and had to scroll at all.
         { paddingBottom: SPACING.xl + tabBarInset },
+        // Beside a vertical bar: only clear of the home indicator (no bar
+        // along the bottom then). The column is kept clear inside:
+        // TodayCard pads the hero's content and the table, and the sky
+        // runs under it. Anything more was a band of nothing under the
+        // last card — the hero grows into that room instead.
+        vbarPad && { paddingBottom: Math.max(insets.bottom, SPACING.md) },
         // Fill the viewport on the dashboard: when the two columns are
         // shorter than the window, center them vertically instead of
         // leaving the bottom half of a Mac/iPad window empty (§B1).
@@ -1750,9 +1793,10 @@ export function HomeScreen() {
             bannerAbove={hasBanner}
             renderLocation={
               fullBleed
-                ? ink => (
+                ? (ink, column) => (
                     <LocationChip
                       compactHeader
+                      column={column}
                       ink={ink}
                       onAddLocation={() =>
                         navigation.navigate('SettingsLocation', {
@@ -1840,7 +1884,7 @@ export function HomeScreen() {
         return (
           <>
             <View style={isRoomy ? undefined : styles.fillColumn}>{dayTable}</View>
-            <View style={styles.belowHero}>
+            <View style={[styles.belowHero, vbarPad]}>
               {quranShortcut}
               {ramadanCard}
             </View>

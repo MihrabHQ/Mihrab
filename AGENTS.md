@@ -133,3 +133,34 @@ weaken the test.
   mihrab-methods. A failing or stalled job opens an assigned issue there.
 - A new scheduled workflow here must be added to that board: say so in the
   PR, for the maintainer to do.
+
+## 8. The iPhone vertical bar (iPhone Duo, iOS 27.1)
+
+Some iPhones keep a system bar down one side of the screen. Everything the app
+does about it hangs off one value, `useVerticalBar()` (`src/native/VerticalBar.ts`):
+the bar's side, width and where the clock above it ends — and **null on every
+other device**: Android, the iPad and the Mac never read it, and an iPhone
+without the bar reads null. So:
+
+- **Duo-only means behind the bar.** A change for the bar is written as
+  `vbar ? <new> : <exactly what was there>`. Never retune a shared value
+  (a padding, a font size, a column width) for the Duo; branch on the bar.
+  `__tests__/verticalBarIsDuoOnly.test.ts` holds the device gate and the
+  null-bar results of the shared helpers.
+- **New screens are covered by default.** The navigators pad every tab and
+  every pushed screen clear of the bar (`MainTabs`, `RootNavigator`
+  `screenLayout`); only Today and the muṣḥaf opt out and handle it
+  themselves. A new screen needs nothing unless it draws edge to edge, or
+  positions things absolutely against the window's sides.
+- **Edge to edge, take the bar's side only.** `Math.max(insets.left,
+  insets.right)` on both sides (keeping a page centred past a cutout) costs
+  the bar's width twice beside it — use `useVerticalBarInsets()` or the bar's
+  side. The bar is on a physical side: mark `paddingLeft`/`Right` and
+  `left`/`right` with `// rtl-safe: the vertical bar is on a physical side`.
+- **Buttons go in the column, not over it.** Tabs: `VerticalTabBar`. A page's
+  own buttons: `setVerticalBarActions` (Today's location and Qibla). A pushed
+  screen with a header of its own draws its column itself (the muṣḥaf).
+- **Check it on the Duo.** Any change to Today, the tab bar, the reader, its
+  sheets, the month table or the walkthrough is looked at on the iPhone Duo
+  simulator (iOS 27.1) as well, and the PR says so — or says it was not.
+

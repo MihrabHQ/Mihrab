@@ -105,6 +105,7 @@ import {
   PAGE_TOP_GAP,
   phoneGeometryFits,
   geometryKey,
+  VERTICAL_BAR_TITLE_H,
   phonePageGeometry,
   phonePageWidth,
   useSettledGeometry,
@@ -112,6 +113,7 @@ import {
 } from './phonePageGeometry';
 import { SPACING } from '../theme/tokens';
 import { classifyTopCutout, useDisplayCutout } from '../native/DisplayCutout';
+import { useVerticalBar } from '../native/VerticalBar';
 
 /** Index per page: the FlatList index IS the page, less one. */
 const pageIndex = (page: number) => page - 1;
@@ -492,7 +494,13 @@ export const MushafPhoneReader = React.memo(function MushafPhoneReader(
   const { isFullscreen, onToggleFullscreen, veil } = props;
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
-  const headerHeight = useHeaderHeight();
+  const vbar = useVerticalBar();
+  const navHeaderHeight = useHeaderHeight();
+  // Beside a vertical bar the native header is hidden and the screen draws
+  // a one-line title instead (MushafSurahScreen), so that is what to clear.
+  const headerHeight = vbar
+    ? insets.top + VERTICAL_BAR_TITLE_H
+    : navHeaderHeight;
   const { width, height } = useWindowSize();
   const core = useMushafReaderCore(props);
   const {
@@ -526,7 +534,24 @@ export const MushafPhoneReader = React.memo(function MushafPhoneReader(
    * the navigator's theme-coloured content view is what left a strip of app
    * background beside the page.
    */
-  const sideInset = Math.max(insets.left, insets.right);
+  /**
+   * Beside an iPhone's vertical bar the page does NOT stay centred: it
+   * runs from the far edge to the bar and scrolls, like the landscape
+   * reading zoom. Reserving the bar on both sides left a strip of nothing
+   * as wide as the bar on the other side, and fitted the page to the
+   * height — small text in a tall, narrow box.
+   */
+  const padLeft = vbar
+    ? vbar.side === 'left'
+      ? Math.max(vbar.width, insets.left)
+      : insets.left
+    : Math.max(insets.left, insets.right);
+  const padRight = vbar
+    ? vbar.side === 'right'
+      ? Math.max(vbar.width, insets.right)
+      : insets.right
+    : Math.max(insets.left, insets.right);
+  const sideInset = (padLeft + padRight) / 2;
   /**
    * One pager item = the list viewport. Everything that pages by a frame —
    * `getItemLayout`, the momentum-end index, the page column — measures in
@@ -638,6 +663,7 @@ export const MushafPhoneReader = React.memo(function MushafPhoneReader(
       headerReserve: isFullscreen ? HEADER_RESERVE : PAGE_TOP_GAP,
       footerGap: isFullscreen ? FOOTER_GAP : PAGE_FOOTER_GAP,
       listH,
+      fillWidth: vbar != null,
     }),
   );
   /**
@@ -919,11 +945,15 @@ export const MushafPhoneReader = React.memo(function MushafPhoneReader(
           // navigator's header holds that room, and in fullscreen the page
           // header row is drawn across the band either side of the cutout —
           // see `islandPad`.
-          // Cutout on both sides (symmetric — see `sideInset`) and the
+          // Cutout on both sides (symmetric, or only the vertical bar's
+          // side beside one — see `padLeft`/`padRight`) and the
           // system navigation bar below. The container is the page colour,
           // so this clears the obstruction without opening a seam.
-          paddingHorizontal: sideInset,
-          paddingBottom: insets.bottom,
+          paddingLeft: padLeft, // rtl-safe: the vertical bar is on a physical side
+          paddingRight: padRight, // rtl-safe: the vertical bar is on a physical side
+          // Not beside a vertical bar: the column takes the bottom corner,
+          // and the inset there left a band of nothing under the scrubber.
+          paddingBottom: vbar ? 0 : insets.bottom,
         },
       ]}>
       {/* The status bar's glyphs follow the PAGE, like the header's title:

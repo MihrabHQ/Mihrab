@@ -120,6 +120,13 @@ export const FOOTER_GAP = 14;
  */
 export const PAGE_FOOTER_GAP = 8;
 
+/**
+ * The title row above the page beside an iPhone's vertical bar. The
+ * header's controls moved into the bar's column, so what is left at the
+ * top is the surah name — one line, not a navigation bar.
+ */
+export const VERTICAL_BAR_TITLE_H = 30;
+
 /** How long the inputs have to stay still before a geometry is published. */
 export const GEOMETRY_QUIET_MS = 100;
 
@@ -172,6 +179,12 @@ export type PhonePageInputs = {
    * a void between the page medallion and the player card.
    */
   listH: number;
+  /**
+   * Upright, but the page should take the full width and scroll rather
+   * than be fitted to the height — set beside an iPhone's vertical bar,
+   * where a height-fitted page leaves a band of nothing either side.
+   */
+  fillWidth?: boolean;
 };
 
 /** One pager item = the list viewport, in the window less the cutout. */
@@ -188,7 +201,7 @@ export function phonePageGeometry(
   input: PhonePageInputs,
 ): PhonePageGeometry | null {
   if (!(input.listH > 0)) return null;
-  const scrolling = input.width > input.height;
+  const scrolling = input.width > input.height || input.fillWidth === true;
   const pageWidth = phonePageWidth(input.width, input.sideInset);
   // No footer to reserve for. The one page that still draws one — the
   // end of a khatmah portion — takes its own difference out of its own
