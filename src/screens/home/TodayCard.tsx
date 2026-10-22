@@ -253,6 +253,13 @@ export type TodayCardProps = {
    * lies on the flat one (HomeScreen). Absent, the hero sizes itself.
    */
   heroHeight?: number;
+  /**
+   * A wide Android screen (a foldable open): the card runs the screen's
+   * full width so the sky reaches both edges, and the hero's content and
+   * the table keep to the phone's measure in the middle — this much in
+   * from each side. Zero everywhere else.
+   */
+  sideInset?: number;
   /** The location chip for the hero's top row, drawn in the sky's ink. */
   renderLocation?: (ink: SkyInkColors, column?: boolean) => ReactNode;
 };
@@ -1045,6 +1052,7 @@ function TodayCardImpl({
   bannerAbove = false,
   roomy = false,
   heroHeight,
+  sideInset = 0,
   renderLocation,
   skyTimings,
   latitude,
@@ -1595,18 +1603,25 @@ function TodayCardImpl({
    * content (the chips, the countdown) and the table keep clear of it.
    */
   const vbar = useVerticalBar();
+  const wideInset = fullBleed && !roomy && !vbar ? Math.max(0, sideInset) : 0;
   const columnPad =
     fullBleed && !roomy && vbar
       ? vbar.side === 'right'
         ? { paddingRight: vbar.width } // rtl-safe: the vertical bar is on a physical side
         : { paddingLeft: vbar.width } // rtl-safe: the vertical bar is on a physical side
-      : null;
+      : wideInset > 0
+        ? { paddingHorizontal: wideInset }
+        : null;
   const heroColumnPad =
     fullBleed && !roomy && vbar
       ? vbar.side === 'right'
         ? { paddingRight: SPACING.xl + vbar.width } // rtl-safe: the vertical bar is on a physical side
         : { paddingLeft: SPACING.xl + vbar.width } // rtl-safe: the vertical bar is on a physical side
-      : null;
+      : wideInset > 0
+        ? { paddingHorizontal: SPACING.xl + wideInset }
+        : null;
+  // How far the sky reaches past the hero's box, each side.
+  const skySide = SPACING.xl + wideInset;
   /**
    * Dense rows when the page would not otherwise hold the day: a short
    * phone (under 720dp of window), or a table past six rows — the extra
@@ -1849,9 +1864,9 @@ function TodayCardImpl({
             // when kept, beside the posed one.
             style={{
               position: 'absolute',
-              left: heroBox.x - SPACING.xl - twinBarLeft,
+              left: heroBox.x - skySide - twinBarLeft,
               top: heroBox.y - heroTop,
-              width: heroBox.w + SPACING.xl * 2 + twinBarLeft + twinBarRight,
+              width: heroBox.w + skySide * 2 + twinBarLeft + twinBarRight,
               height: heroBox.h + heroTop + SPACING.lg,
             }}>
             {vbar && (twinBarLeft || twinBarRight) ? (
@@ -1871,7 +1886,7 @@ function TodayCardImpl({
               collapsable={false}
               style={{
                 position: 'absolute',
-                left: SPACING.xl + twinBarLeft,
+                left: skySide + twinBarLeft,
                 top: heroTop,
                 width: heroBox.w,
                 height: heroBox.h,
@@ -1887,7 +1902,7 @@ function TodayCardImpl({
               tomorrowFajr={skyTomorrowFajr}
               dayClock={dayClock}
               expanded={expanded}
-              bleed={{ horizontal: SPACING.xl, top: heroTop, bottom: SPACING.lg }}
+              bleed={{ horizontal: skySide, top: heroTop, bottom: SPACING.lg }}
               statusBarInset={underStatusBar ? insets.top : 0}
               fill={fullBleed}
               topRow={fullBleed ? { renderLocation, renderQibla } : undefined}
@@ -1915,7 +1930,7 @@ function TodayCardImpl({
             tomorrowFajr={skyTomorrowFajr}
             dayClock={dayClock}
             expanded={expanded}
-            bleed={{ horizontal: SPACING.xl, top: heroTop, bottom: SPACING.lg }}
+            bleed={{ horizontal: skySide, top: heroTop, bottom: SPACING.lg }}
             statusBarInset={underStatusBar ? insets.top : 0}
             fill={fullBleed}
             topRow={fullBleed ? { renderLocation, renderQibla, renderHelp } : undefined}

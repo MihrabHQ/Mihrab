@@ -84,6 +84,7 @@ import { CenteredColumn } from '../responsive/CenteredColumn';
 import {
   isMacCatalyst,
   BREAKPOINT_REGULAR,
+  MAX_CONTENT_WIDTH,
   HOME_DASHBOARD_MIN_WIDTH,
   HOME_ROOMY_MIN_HEIGHT,
 } from '../responsive/breakpoints';
@@ -295,6 +296,24 @@ export function HomeScreen() {
     !isMacCatalyst &&
     screenWidth >= BREAKPOINT_REGULAR &&
     screenHeight >= HOME_ROOMY_MIN_HEIGHT;
+  /**
+   * A foldable open (Android, both sides 600dp or more, not tall enough
+   * to be roomy): the page's column stops at the phone's measure, and the
+   * hero — the page's own top, edge to edge on a phone — was cut off at
+   * it, a sky with a strip of page down either side. The column runs the
+   * full width now; the sky goes to the edges, and the hero's content,
+   * the table and the cards under it keep to the measure in the middle.
+   * Held as a book the page is laid out by its two halves instead.
+   */
+  const wideInset =
+    Platform.OS === 'android' &&
+    !isDashboard &&
+    !isRoomy &&
+    !book &&
+    Math.min(screenWidth, screenHeight) >= 600 &&
+    screenWidth > MAX_CONTENT_WIDTH
+      ? Math.round((screenWidth - MAX_CONTENT_WIDTH) / 2)
+      : 0;
   // Adapt to the window instead of a fixed cap: up to 1360pt of content
   // on big Mac windows, with the main column taking a proportional share
   // (clamped so the day table keeps a comfortable measure).
@@ -1747,7 +1766,7 @@ export function HomeScreen() {
           own gap: SPACING.md stopped separating them (2.7.36 regression — the
           carousel dots overlapped the day table and the Quran button). */}
       <CenteredColumn
-        maxWidth={isDashboard ? dashCap : book ? screenWidth : undefined}
+        maxWidth={isDashboard ? dashCap : book || wideInset > 0 ? screenWidth : undefined}
         style={[
           styles.homeColumn,
           !isDashboard && !isMacCatalyst && !isRoomy && styles.fillColumn,
@@ -1767,7 +1786,14 @@ export function HomeScreen() {
           page's own ink, because with a banner up there the sky is no
           longer what the clock sits on (see `bannerAbove` below). */}
       {/* Held as a book, the notices keep to the day's page too. */}
-      <View style={book ? { width: Math.max(0, book.left - HOME_SCREEN_PADDING * 2) } : undefined}>
+      <View
+        style={
+          book
+            ? { width: Math.max(0, book.left - HOME_SCREEN_PADDING * 2) }
+            : wideInset > 0
+              ? { paddingHorizontal: wideInset }
+              : undefined
+        }>
         <PermissionBanners
           usingLocalFallback={state.usingLocalFallback ?? false}
           exactAlarmDenied={exactAlarmDenied}
@@ -1823,6 +1849,7 @@ export function HomeScreen() {
             fullBleed={fullBleed}
             roomy={isRoomy}
             heroHeight={tabletopHeroHeight}
+            sideInset={wideInset}
             // The hero is under the status bar only when nothing is above
             // it. A permission banner takes that place, and takes the
             // inset and the bar's ink with it.
@@ -1945,7 +1972,7 @@ export function HomeScreen() {
               style={isRoomy ? undefined : styles.fillColumn}>
               {dayTable}
             </View>
-            <View style={[styles.belowHero, vbarPad]}>
+            <View style={[styles.belowHero, vbarPad, wideInset > 0 && { marginHorizontal: wideInset }]}>
               {quranShortcut}
               {ramadanCard}
             </View>

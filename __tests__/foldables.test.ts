@@ -117,3 +117,15 @@ describe('tabletop', () => {
     expect(tasbih).toMatch(/styles\.pad/);
   });
 });
+
+describe('the open foldable', () => {
+  it("runs Today's sky to both edges and keeps the content to the measure", () => {
+    const home = read('src/screens/HomeScreen.tsx');
+    expect(home).toMatch(/Platform\.OS === 'android' &&[\s\S]{0,120}!book &&/);
+    expect(home).toMatch(/Math\.round\(\(screenWidth - MAX_CONTENT_WIDTH\) \/ 2\)/);
+    expect(home).toMatch(/sideInset=\{wideInset\}/);
+    const card = read('src/screens/home/TodayCard.tsx');
+    expect(card).toMatch(/const skySide = SPACING\.xl \+ wideInset;/);
+    expect(card).toMatch(/bleed=\{\{ horizontal: skySide/);
+  });
+});
