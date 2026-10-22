@@ -35,6 +35,7 @@ import { useSystemNavigationReserve } from '../navigation/tabBarInset';
 import { cardEdgeStyle, rowDividerStyle } from '../theme/chrome';
 import { RADIUS, SPACING } from '../theme/tokens';
 import { TYPE } from '../theme/typography';
+import { useSheetPadding } from '../responsive/sheetSides';
 
 type Palette = {
   card: ColorValue;
@@ -78,6 +79,7 @@ function ProviderPickerModalImpl({
   palette,
 }: Props) {
   const { t } = useTranslation();
+  const sheetPad = useSheetPadding();
   const navigationReserve = useSystemNavigationReserve();
   /**
    * WHAT THIS LIST USED TO NOT SAY.
@@ -283,7 +285,7 @@ function ProviderPickerModalImpl({
       transparent
       onRequestClose={onClose}
     >
-      <View style={styles.modalRoot}>
+      <View style={[styles.modalRoot, sheetPad]}>
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={t('common.back')}

@@ -28,6 +28,7 @@ import {
 } from './riwayat';
 import { MODAL_ORIENTATIONS } from '../components/modalOrientations';
 import { RADIUS, SPACING } from '../theme/tokens';
+import { useBookPaneInset } from '../native/FoldPosture';
 
 export function RiwayahPicker({
   visible,
@@ -45,6 +46,7 @@ export function RiwayahPicker({
 }) {
   const { t } = useTranslation();
   const { palette } = useAppPalette();
+  const bookInset = useBookPaneInset(SPACING.xl);
 
   // Not `visible={false}` on a mounted <Modal>: the picker is rendered
   // beside the reader for the whole life of the screen, and on Mac
@@ -64,7 +66,7 @@ export function RiwayahPicker({
       supportedOrientations={MODAL_ORIENTATIONS}
       animationType="fade"
       onRequestClose={onClose}>
-      <Pressable style={styles.scrim} onPress={onClose}>
+      <Pressable style={[styles.scrim, bookInset]} onPress={onClose}>
         <Pressable
           // Swallows the tap so choosing inside the card does not also
           // dismiss it through the scrim underneath.

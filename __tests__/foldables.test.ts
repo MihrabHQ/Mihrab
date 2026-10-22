@@ -71,3 +71,49 @@ describe('bottom sheets on a wide Android screen', () => {
     expect(sheetSides({ android: true, width: 852, rtl: true, book })).toEqual({ left: 427, right: 0 });
   });
 });
+
+describe('every sheet and dialog keeps off the crease', () => {
+  it('pads each settings sheet to the sheet edges', () => {
+    const dirs = ['src/screens/settings', 'src/components'];
+    const users = dirs.flatMap(d =>
+      fs
+        .readdirSync(path.join(__dirname, '..', d))
+        .filter(f => f.endsWith('.tsx'))
+        .map(f => `${d}/${f}`)
+        .filter(f => /modalStyles\.root/.test(read(f))),
+    );
+    expect(users.length).toBeGreaterThanOrEqual(10);
+    for (const f of users) {
+      expect([f, /modalStyles\.root, sheetPad/.test(read(f))]).toEqual([f, true]);
+    }
+    expect(read('src/components/ProviderPickerModal.tsx')).toMatch(/styles\.modalRoot, sheetPad/);
+  });
+
+  it('moves the centred dialogs onto one page', () => {
+    for (const f of [
+      'src/components/ConfirmModal.tsx',
+      'src/screens/home/LogPassedPrayerSheet.tsx',
+      'src/quran/mushaf/ShareAyahModal.tsx',
+      'src/quran/RiwayahPicker.tsx',
+    ]) {
+      expect([f, /useBookPaneInset\(/.test(read(f))]).toEqual([f, true]);
+    }
+    for (const f of [
+      'src/screens/home/LocationChip.tsx',
+      'src/quran/KhatmahPacingSheet.tsx',
+      'src/screens/QuranScreen.tsx',
+      'src/screens/quran/KhatmahScreen.tsx',
+      'src/screens/quran/KhatmahCard.tsx',
+    ]) {
+      expect([f, /useSheetSides\(\)/.test(read(f))]).toEqual([f, true]);
+    }
+  });
+});
+
+describe('tabletop', () => {
+  it('stands the tasbih count up and lays the tap pad on the table', () => {
+    const tasbih = read('src/screens/TasbihScreen.tsx');
+    expect(tasbih).toMatch(/posture\?\.kind === 'tabletop'/);
+    expect(tasbih).toMatch(/styles\.pad/);
+  });
+});

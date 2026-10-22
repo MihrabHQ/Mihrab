@@ -28,6 +28,7 @@ import { cardEdgeStyle } from '../../theme/chrome';
 import type { PassedPrayerAnswer } from '../../journal/quickLog';
 import { LAYOUT, RADIUS, SPACING } from '../../theme/tokens';
 import { TYPE, typeStyle } from '../../theme/typography';
+import { useBookPaneInset } from '../../native/FoldPosture';
 
 type Props = {
   /**
@@ -49,6 +50,7 @@ type Props = {
 function LogPassedPrayerSheetImpl({ question, onAnswer, onCancel }: Props) {
   const { t } = useTranslation();
   const { palette } = useAppPalette();
+  const bookInset = useBookPaneInset(SPACING.xxl);
 
   return (
     <Modal
@@ -62,7 +64,7 @@ function LogPassedPrayerSheetImpl({ question, onAnswer, onCancel }: Props) {
           would read the whole card as one label. */}
       <Pressable
         accessible={false}
-        style={[styles.scrim, { backgroundColor: palette.overlay }]}
+        style={[styles.scrim, bookInset, { backgroundColor: palette.overlay }]}
         onPress={onCancel}>
         <Pressable
           accessible={false}

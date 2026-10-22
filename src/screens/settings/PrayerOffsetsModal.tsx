@@ -26,6 +26,7 @@ import { RADIUS, SPACING } from '../../theme/tokens';
 import { typeStyle } from '../../theme/typography';
 import { useSystemNavigationReserve } from '../../navigation/tabBarInset';
 import { modalStyles } from './modalStyles';
+import { useSheetPadding } from '../../responsive/sheetSides';
 
 /**
  * Per-prayer offsets modal — task #22.
@@ -65,6 +66,7 @@ export const PrayerOffsetsModal = memo(function PrayerOffsetsModal({
   onClose,
 }: Props) {
   const { t } = useTranslation();
+  const sheetPad = useSheetPadding();
   const navigationReserve = useSystemNavigationReserve();
 
   const setOffset = useCallback(
@@ -90,7 +92,7 @@ export const PrayerOffsetsModal = memo(function PrayerOffsetsModal({
       transparent
       onRequestClose={onClose}
     >
-      <View style={modalStyles.root}>
+      <View style={[modalStyles.root, sheetPad]}>
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={t('common.back')}

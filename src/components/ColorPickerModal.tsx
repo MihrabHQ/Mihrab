@@ -106,6 +106,7 @@ import {
   normaliseHex,
   type Hsv,
 } from '../settings/accentColors';
+import { useSheetPadding } from '../responsive/sheetSides';
 
 /** Shown in the empty hex field — an example colour CODE, not chrome. */
 const EXAMPLE_HEX = '#22C55E'; // tokens-ok-line: example text, not a painted colour
@@ -145,6 +146,7 @@ export function ColorPickerModal({
   onClose,
 }: Props) {
   const { t } = useTranslation();
+  const sheetPad = useSheetPadding();
   const navigationReserve = useSystemNavigationReserve();
   /**
    * A React Native Modal on Android is a Dialog with its own window, and
@@ -383,7 +385,7 @@ export function ColorPickerModal({
       animationType="slide"
       transparent
       onRequestClose={onClose}>
-      <View style={[modalStyles.root, { paddingBottom: keyboardInset }]}>
+      <View style={[modalStyles.root, sheetPad, { paddingBottom: keyboardInset }]}>
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={t('common.close', 'Close')}

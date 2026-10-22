@@ -52,3 +52,14 @@ export function useSheetSides(): SheetSides {
     book: posture?.kind === 'book' ? posture.hinge : null,
   });
 }
+
+/**
+ * The same edges as padding, for the settings sheets that lay out as a
+ * column (`modalStyles.root`): the dimmed backdrop still covers the whole
+ * window — it is absolutely filled — while the sheet keeps to the middle,
+ * or to one page of the book.
+ */
+export function useSheetPadding(): { paddingLeft: number; paddingRight: number } { // rtl-safe: physical edges
+  const { left, right } = useSheetSides(); // rtl-safe: physical edges
+  return { paddingLeft: left, paddingRight: right }; // rtl-safe: physical edges
+}

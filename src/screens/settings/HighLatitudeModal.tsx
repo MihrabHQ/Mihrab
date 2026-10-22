@@ -9,6 +9,7 @@ import type { AppPalette } from '../../theme/appPalette';
 import { HIGH_LATITUDE_RULES, type HighLatitudeRuleId } from '../../prayer/calculationPreferences';
 import { useSystemNavigationReserve } from '../../navigation/tabBarInset';
 import { modalStyles } from './modalStyles';
+import { useSheetPadding } from '../../responsive/sheetSides';
 
 type Props = {
   visible: boolean;
@@ -27,10 +28,11 @@ export const HighLatitudeModal = memo(function HighLatitudeModal({
   onClose,
 }: Props) {
   const { t } = useTranslation();
+  const sheetPad = useSheetPadding();
   const navigationReserve = useSystemNavigationReserve();
   return (
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
-      <View style={modalStyles.root}>
+      <View style={[modalStyles.root, sheetPad]}>
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={t('common.back')}

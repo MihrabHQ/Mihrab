@@ -96,6 +96,7 @@ import { KhatmahEntry } from './quran/KhatmahEntry';
 import { useTabBarScroll } from '../navigation/tabBarVisibility';
 import { RADIUS, SPACING } from '../theme/tokens';
 import { tajweedColoursShown } from '../quran/tajweed/tajweedSupport';
+import { useSheetSides } from '../responsive/sheetSides';
 
 type Tab = 'surah' | 'juz' | 'bookmarks';
 const TABS: Tab[] = ['surah', 'juz', 'bookmarks'];
@@ -163,6 +164,7 @@ export function QuranScreen() {
   const listCap = quranWide ? styles.listWide : null;
   const { t, i18n } = useTranslation();
   const { palette, isDark } = useAppPalette();
+  const sheetEdges = useSheetSides();
   // Two dialogs on this screen open with an autoFocus field in them.
   const keyboardInset = useKeyboardInset();
   const navigation =
@@ -392,6 +394,29 @@ export function QuranScreen() {
     }
     return rows;
   }, []);
+
+  /**
+   * The Juz tab answers the search field too.
+   *
+   * It ignored it: "Kahf" typed on the Juz tab left all thirty parts
+   * standing under "0 ayah matches", which reads as "no part holds
+   * al-Kahf". A part is kept when its number is the query, or when any
+   * of its pages carries a surah the name filter kept.
+   */
+  const shownJuz: JuzRow[] = useMemo(() => {
+    const q = query.trim();
+    if (!q) return juzRows;
+    const wanted = new Set(filteredSurahs.map(s => s.number));
+    return juzRows.filter(row => {
+      if (String(row.juz) === q) return true;
+      return MUSHAF_PAGES.some(p => {
+        if (p.juz !== row.juz) return false;
+        const last = p.end == null ? 114 : p.end.ayah === 1 ? p.end.surah - 1 : p.end.surah;
+        for (let s = p.start.surah; s <= last; s++) if (wanted.has(s)) return true;
+        return false;
+      });
+    });
+  }, [query, filteredSurahs, juzRows]);
 
   // ── Header (cards + tabs + search) ──────────────────────────────────
   // The two doors, from the selector Home's card uses (#41). Subscribed
@@ -1382,7 +1407,7 @@ export function QuranScreen() {
           {...tabBarScroll}
           onScroll={onListScroll.juz}
           scrollEventThrottle={16}
-          data={juzRows}
+          data={shownJuz}
           keyExtractor={j => String(j.juz)}
           contentContainerStyle={contentStyle}
           contentInsetAdjustmentBehavior="never"
@@ -1554,6 +1579,8 @@ export function QuranScreen() {
             keyboardInset > 0
               ? { bottom: keyboardInset + SPACING.xl }
               : styles.menuCardResting,
+            // Wide or held as a book: the card keeps to the sheet's edges.
+            { left: 24 + sheetEdges.left, right: 24 + sheetEdges.right }, // rtl-safe: physical edges
           ]}>
           <Text style={[styles.menuTitle, { color: palette.text }]}>
             {t('quran.jumpToPage', 'Go to page')}

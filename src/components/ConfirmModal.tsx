@@ -5,6 +5,7 @@ import { cardEdgeStyle } from '../theme/chrome';
 import { RADIUS, SPACING } from '../theme/tokens';
 import { TYPE } from '../theme/typography';
 import { readableOn } from '../theme/appPalette';
+import { useBookPaneInset } from '../native/FoldPosture';
 
 /**
  * ConfirmModal — a themed two-button confirmation dialog.
@@ -51,6 +52,7 @@ export function ConfirmModal({
   onCancel,
 }: ConfirmModalProps) {
   const { palette } = useAppPalette();
+  const bookInset = useBookPaneInset(SPACING.xxl);
   const confirmBg = destructive ? palette.danger : palette.accent;
   /**
    * The label's colour is decided BY the button's colour, not assumed.
@@ -84,7 +86,7 @@ export function ConfirmModal({
       */}
       <Pressable
         accessible={false}
-        style={[styles.scrim, { backgroundColor: palette.overlay }]}
+        style={[styles.scrim, bookInset, { backgroundColor: palette.overlay }]}
         onPress={onCancel}
       >
         {/* Inner press is swallowed so taps on the sheet don't dismiss. */}

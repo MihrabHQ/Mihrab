@@ -8,6 +8,7 @@ import { cardEdgeStyle, rowDividerStyle } from '../../theme/chrome';
 import type { AppPalette } from '../../theme/appPalette';
 import { useSystemNavigationReserve } from '../../navigation/tabBarInset';
 import { modalStyles } from './modalStyles';
+import { useSheetPadding } from '../../responsive/sheetSides';
 
 /**
  * "For how long?" — a sheet of durations in minutes.
@@ -38,6 +39,7 @@ function MinutesPickerModalImpl<T extends number>({
   onClose,
 }: Props<T>) {
   const { t } = useTranslation();
+  const sheetPad = useSheetPadding();
   const navigationReserve = useSystemNavigationReserve();
   return (
     <Modal
@@ -46,7 +48,7 @@ function MinutesPickerModalImpl<T extends number>({
       transparent
       onRequestClose={onClose}
     >
-      <View style={modalStyles.root}>
+      <View style={[modalStyles.root, sheetPad]}>
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={t('common.back')}

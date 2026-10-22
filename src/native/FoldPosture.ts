@@ -14,7 +14,7 @@
  * layout is what it always was. iOS has no module and never has one.
  */
 import { useEffect, useState } from 'react';
-import { NativeEventEmitter, NativeModules, Platform } from 'react-native';
+import { NativeEventEmitter, NativeModules, Platform, useWindowDimensions } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { isRtlLanguage } from '../i18n/layoutDirection';
 
@@ -97,6 +97,24 @@ export function useBookPanePadding(
   const posture = useFoldPosture();
   const rtl = useAppRtl();
   return bookPanePadding(posture, windowWidth, rtl);
+}
+
+/**
+ * Book posture: a centred dialog's padding, moved onto one page. `base` is
+ * the padding the dialog already keeps from the window's edges; the side
+ * toward the crease adds the other page to it. Null in every other
+ * posture, so callers keep their own padding untouched.
+ */
+export function useBookPaneInset(
+  base: number,
+): { paddingLeft: number; paddingRight: number } | null { // rtl-safe: the hinge is on a physical side
+  const { width } = useWindowDimensions();
+  const pad = useBookPanePadding(width);
+  if (!pad) return null;
+  return {
+    paddingLeft: base + (pad.paddingLeft ?? 0), // rtl-safe: the hinge is on a physical side
+    paddingRight: base + (pad.paddingRight ?? 0), // rtl-safe: the hinge is on a physical side
+  };
 }
 
 /**
