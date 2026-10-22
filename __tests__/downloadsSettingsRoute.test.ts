@@ -91,9 +91,25 @@ describe('a link that launches the app has Settings under its page', () => {
     });
   });
 
-  it('leaves every other link alone', () => {
-    const read2 = { routes: [{ name: 'QuranSurah' }] };
-    expect(withSettingsUnder(read2)).toBe(read2);
+  it('puts the Quran tab under a lone reader, so it has a way back', () => {
+    expect(withSettingsUnder({ routes: [{ name: 'QuranSurah' }] })).toEqual({
+      index: 1,
+      routes: [
+        { name: 'Home', state: { index: 0, routes: [{ name: 'QuranTab' }] } },
+        { name: 'QuranSurah' },
+      ],
+    });
+    expect(withSettingsUnder({ routes: [{ name: 'MonthTimes' }] })?.routes[0]).toEqual({
+      name: 'Home',
+      state: { index: 0, routes: [{ name: 'TodayTab' }] },
+    });
+  });
+
+  it('leaves the tabs, the walkthrough and a stack it already has alone', () => {
+    const tab = { routes: [{ name: 'Home' }] };
+    expect(withSettingsUnder(tab)).toBe(tab);
+    const onboarding = { routes: [{ name: 'Onboarding' }] };
+    expect(withSettingsUnder(onboarding)).toBe(onboarding);
     const two = { routes: [{ name: 'Home' }, { name: 'SettingsDownloads' }] };
     expect(withSettingsUnder(two)).toBe(two);
   });

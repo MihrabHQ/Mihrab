@@ -78,19 +78,45 @@ function positiveInt(value: string): number | undefined {
  * back returns them there; a two-route state would instead be turned into
  * a RESET by React Navigation, throwing away whatever they had open.
  */
+/**
+ * …and every other page opened by a link has its tab under it.
+ *
+ * The same stack of one, met in the muṣḥaf: the khatmah reminder or a
+ * widget tapped with the app closed opened the reader with nothing under
+ * it, so its header had no back arrow at all (the arrow is drawn only
+ * when there is somewhere to go back to) and Android's back closed the
+ * app. A reader belongs to the Qur'an tab, the day's pages to Today, and
+ * pairing and backups to Settings, where they are reached by hand.
+ */
+const TAB_UNDER: Readonly<Record<string, string>> = {
+  QuranSurah: 'QuranTab',
+  QuranListen: 'QuranTab',
+  Khatmah: 'QuranTab',
+  QuranTajweed: 'QuranTab',
+  MonthTimes: 'TodayTab',
+  ShareMonth: 'TodayTab',
+  Compass: 'TodayTab',
+  Fasting: 'LogTab',
+  Sync: 'SettingsTab',
+  Backup: 'SettingsTab',
+};
+
+export function tabUnder(name: string): string | null {
+  if (name.startsWith('Settings')) return 'SettingsTab';
+  return TAB_UNDER[name] ?? null;
+}
+
 export function withSettingsUnder<S extends { routes: Array<{ name: string }> }>(
   state: S | undefined,
 ): S | undefined {
   if (!state || state.routes.length !== 1) return state;
   const only = state.routes[0];
-  if (!only.name.startsWith('Settings')) return state;
+  const tab = tabUnder(only.name);
+  if (!tab) return state;
   return {
     ...state,
     index: 1,
-    routes: [
-      { name: 'Home', state: { index: 0, routes: [{ name: 'SettingsTab' }] } },
-      only,
-    ],
+    routes: [{ name: 'Home', state: { index: 0, routes: [{ name: tab }] } }, only],
   } as unknown as S;
 }
 
