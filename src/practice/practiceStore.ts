@@ -296,7 +296,8 @@ export function usePracticeToday(): PracticeToday {
 
   const d = data ?? EMPTY;
   const today = dayKey();
-  const fast = d.fasts.find(f => f.date === today) ?? null;
+  // Not a tombstone: a fast taken off today is carried for sync, not kept.
+  const fast = d.fasts.find(f => f.date === today && f.cleared !== true) ?? null;
   return {
     hydrated: data != null,
     // Tombstones are not logged prayers — see `JournalStatus`. Counting one

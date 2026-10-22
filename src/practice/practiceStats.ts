@@ -119,7 +119,9 @@ export function computePracticeStats(input: {
     streak: input.streak,
     bestStreak: input.bestStreak,
     sunnahRate: sunnahRateFor(input.sunnah, now),
-    fastsThisMonth: input.fasts.filter(f => f.completed && ym(f.date) === month)
+    fastsThisMonth: input.fasts.filter(
+      f => f.completed && f.cleared !== true && ym(f.date) === month,
+    )
       .length,
     owed: owedPrayers(input.entries),
   };
