@@ -24,6 +24,7 @@ import { TYPE, arabicTextStyle } from '../../theme/typography';
 import { findSurah } from '../quran';
 import { MODAL_ORIENTATIONS } from '../../components/modalOrientations';
 import { RADIUS, SPACING } from '../../theme/tokens';
+import { useBookPaneInset } from '../../native/FoldPosture';
 
 type Props = {
   visible: boolean;
@@ -47,6 +48,7 @@ export function ShareAyahModal({
 }: Props) {
   const { t } = useTranslation();
   const { palette } = useAppPalette();
+  const bookInset = useBookPaneInset(SPACING.xl);
   const cardRef = useRef<ComponentRef<typeof View>>(null);
   const [busy, setBusy] = useState(false);
   const meta = findSurah(surah);
@@ -82,7 +84,7 @@ export function ShareAyahModal({
       supportedOrientations={MODAL_ORIENTATIONS}
       animationType="fade"
       onRequestClose={onClose}>
-      <View style={[styles.backdrop, { backgroundColor: palette.overlay }]}>
+      <View style={[styles.backdrop, bookInset, { backgroundColor: palette.overlay }]}>
         <View
           ref={cardRef}
           collapsable={false}

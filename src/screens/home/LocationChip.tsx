@@ -4,6 +4,7 @@
 import { memo, useCallback, useMemo, useState } from 'react';
 import {
   Modal,
+  Platform,
   Pressable,
   StyleSheet,
   Text,
@@ -19,7 +20,10 @@ import { MY_LOCATION_KEY } from '../../settings/locationProviders';
 import { cardEdgeStyle } from '../../theme/chrome';
 import { RADIUS, SPACING } from '../../theme/tokens';
 import { COLUMN_CHIP_W } from './QiblaChip';
+import { useWindowSize } from '../../responsive/windowSize';
+import { useBookPanePadding } from '../../native/FoldPosture';
 import { TYPE, typeStyle } from '../../theme/typography';
+import { useSheetSides } from '../../responsive/sheetSides';
 
 /**
  * Compact map-pin icon for the header-mounted LocationChip variant.
@@ -89,6 +93,19 @@ type Props = {
 function LocationChipImpl({ compactHeader = false, column = false, ink, onAddLocation }: Props) {
   const { t } = useTranslation();
   const { palette } = useAppPalette();
+  /**
+   * A wide Android window (a foldable open, a tablet) lets the place name
+   * have the room it is next to: at 210 "Mendocino County" was cut to
+   * "Mendocino County Au…" on an 850 dp screen with half of it empty.
+   * Half the pane the hero sits in, never more than 360. Phones and every
+   * iOS device keep 210.
+   */
+  const { width: winW } = useWindowSize();
+  const sides = useSheetSides();
+  const bookPad = useBookPanePadding(winW);
+  const paneW = winW - (bookPad?.paddingLeft ?? 0) - (bookPad?.paddingRight ?? 0); // rtl-safe: sums both sides
+  const pinMaxWidth =
+    Platform.OS === 'android' && paneW >= 600 ? Math.min(360, Math.round(paneW / 2)) : undefined;
   const { slice: settings, update: updateSettings } = useLocationSettings();
   const [open, setOpen] = useState(false);
 
@@ -204,6 +221,7 @@ function LocationChipImpl({ compactHeader = false, column = false, ink, onAddLoc
             : compactHeader
             ? [
                 styles.headerPin,
+                pinMaxWidth != null && { maxWidth: pinMaxWidth },
                 pressed && { opacity: 0.6 },
                 hovered && { opacity: 0.85 },
               ]
@@ -282,7 +300,11 @@ function LocationChipImpl({ compactHeader = false, column = false, ink, onAddLoc
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={t('home.switchLocation')}
-          style={[styles.backdrop, { backgroundColor: palette.overlay }]}
+          style={[
+            styles.backdrop,
+            { paddingLeft: SPACING.md + sides.left, paddingRight: SPACING.md + sides.right }, // rtl-safe: physical edges
+            { backgroundColor: palette.overlay },
+          ]}
           onPress={onClose}>
           <Pressable
             // Inner Pressable swallows backdrop taps so the sheet stays open

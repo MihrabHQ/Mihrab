@@ -33,7 +33,7 @@ describe('the muṣḥaf header', () => {
     expect(right.indexOf('<TilawahIcon')).toBeLessThan(right.indexOf('<MushafToneHeaderButton color={ink}'));
     // The phone's fullscreen is in its page bar; the spread reader, which
     // has none, has it here, last.
-    expect(right).toMatch(/DEVICE_CLASS !== 'phone' \? \(\s*<MushafFullscreenHeaderButton color=\{ink\}[^>]*onPress=\{toggleFullscreen\}/);
+    expect(right).toMatch(/deviceClass !== 'phone' \? \(\s*<MushafFullscreenHeaderButton color=\{ink\}[^>]*onPress=\{toggleFullscreen\}/);
     expect(right.indexOf('<MushafToneHeaderButton color={ink}')).toBeLessThan(right.indexOf('<MushafFullscreenHeaderButton'));
   });
 

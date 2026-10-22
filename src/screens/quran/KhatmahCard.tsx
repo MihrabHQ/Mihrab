@@ -59,11 +59,13 @@ import { formatDayWhen, khatmahDayWhen } from '../../quran/khatmahDayWhen';
 import { cardEdgeStyle } from '../../theme/chrome';
 import { TYPE } from '../../theme/typography';
 import { RADIUS, SPACING } from '../../theme/tokens';
+import { useSheetSides } from '../../responsive/sheetSides';
 
 export function KhatmahCard() {
   const insets = useSafeAreaInsets();
   const { t, i18n } = useTranslation();
   const { palette } = useAppPalette();
+  const sheetEdges = useSheetSides();
   const quran = useQuranState();
   const [khatmahMenuVisible, setKhatmahMenuVisible] = useState(false);
   /** The pacing sheet, re-pacing the live plan (`mode: 'change'`). */
@@ -412,6 +414,8 @@ export function KhatmahCard() {
             {
               paddingTop: insets.top + SPACING.lg,
               paddingBottom: insets.bottom + SPACING.lg,
+              paddingLeft: 24 + sheetEdges.left, // rtl-safe: physical edges
+              paddingRight: 24 + sheetEdges.right, // rtl-safe: physical edges
             },
           ]}>
         <View style={[styles.menuCardCentred, { backgroundColor: palette.card }]}>

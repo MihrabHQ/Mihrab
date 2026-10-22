@@ -19,6 +19,7 @@ import {
   Text,
   View,
   type ScrollViewInstance,
+  Platform,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useVerticalBar } from '../native/VerticalBar';
@@ -29,6 +30,8 @@ import { CenteredColumn } from '../responsive/CenteredColumn';
 import { isReduceMotion } from '../theme/motion';
 import { RADIUS, SPACING } from '../theme/tokens';
 import { typeStyle } from '../theme/typography';
+import { useBookPanePadding } from '../native/FoldPosture';
+import { useWindowSize } from '../responsive/windowSize';
 
 /** The reading measure for a linear flow — narrower than a settings page. */
 export const ONBOARDING_COLUMN = 560;
@@ -150,8 +153,19 @@ export function OnboardingFrame({
   // (RootNavigator); the top row — the language chip, Skip — moves into the
   // column, under the clock, where the system puts an app's own bar items.
   const vbar = useVerticalBar();
+  /**
+   * A tall, wide Android window — a foldable unfolded, a tablet held
+   * upright: every step centres its block in the page. Top-aligned, the
+   * location and alerts steps sat in the top third of a near-square screen
+   * with the rest of it empty. A phone keeps the rule above; iOS is as it
+   * was. And held as a book, the steps keep to one page, off the crease.
+   */
+  const { width: winW, height: winH } = useWindowSize();
+  const tall = Platform.OS === 'android' && winW >= 600 && winH >= 700;
+  const centred = center || tall;
+  const bookPad = useBookPanePadding(winW);
   return (
-    <View style={[styles.root, { backgroundColor: palette.bg }]}>
+    <View style={[styles.root, { backgroundColor: palette.bg }, bookPad]}>
       {topRow && vbar ? (
         <View
           style={[
@@ -180,7 +194,7 @@ export function OnboardingFrame({
           // taller than the screen — a long translation at large text
           // sizes, the shelf on a small phone — and only centres in the
           // slack when there is slack.
-          center ? styles.contentCentered : null,
+          centred ? styles.contentCentered : null,
           kb.contentPadding,
         ]}
         keyboardShouldPersistTaps="handled">
@@ -194,7 +208,7 @@ export function OnboardingFrame({
         ) : null}
         <CenteredColumn
           maxWidth={ONBOARDING_COLUMN}
-          style={center ? styles.bodyCentered : undefined}>
+          style={centred ? styles.bodyCentered : undefined}>
           {children}
         </CenteredColumn>
       </ScrollView>

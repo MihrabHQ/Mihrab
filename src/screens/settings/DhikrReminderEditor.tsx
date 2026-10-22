@@ -24,6 +24,7 @@ import { sharedSettingsStyles as s } from './sharedStyles';
 import { TimeOfDayPicker } from './TimePickerSheet';
 import { RADIUS, SPACING } from '../../theme/tokens';
 import { TYPE } from '../../theme/typography';
+import { useSheetPadding } from '../../responsive/sheetSides';
 
 /** What the editor hands back — everything but the id. */
 export type DhikrDraft = Omit<DhikrReminder, 'id'>;
@@ -87,6 +88,7 @@ export function DhikrReminderEditor({
   onClose: () => void;
 }) {
   const { t } = useTranslation();
+  const sheetPad = useSheetPadding();
   const { palette } = useAppPalette();
   // The title and body fields sit at the foot of this sheet, and a Modal
   // on Android does not resize for the keyboard. See useKeyboardInset.
@@ -114,7 +116,7 @@ export function DhikrReminderEditor({
       animationType="slide"
       transparent
       onRequestClose={onClose}>
-      <View style={[modalStyles.root, { paddingBottom: keyboardInset }]}>
+      <View style={[modalStyles.root, sheetPad, { paddingBottom: keyboardInset }]}>
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={t('common.close', 'Close')}

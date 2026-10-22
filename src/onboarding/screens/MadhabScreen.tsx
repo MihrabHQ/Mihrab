@@ -41,6 +41,8 @@ import { RADIUS, SPACING } from '../../theme/tokens';
 import { typeStyle } from '../../theme/typography';
 import { tabularNumeralStyle } from '../../theme/textScale';
 import { previewAsrByMadhab, previewCoords } from '../previewTimes';
+import { effectiveProviderFor, useSourceDay } from '../sourceDay';
+import { providerHidesHanafiAsr } from '../../settings/providerUi';
 import {
   OnboardingFrame,
   OnboardingHeading,
@@ -62,7 +64,7 @@ export function MadhabScreen({
   const [unsure, setUnsure] = useState(false);
 
   const coords = useMemo(() => previewCoords(settings), [settings]);
-  const asrBy = useMemo(
+  const previewAsr = useMemo(
     () =>
       coords
         ? previewAsrByMadhab(coords, {
@@ -71,6 +73,38 @@ export function MadhabScreen({
         : null,
     [coords, settings.calculationMethod],
   );
+  // The source's own ʿaṣr under each reckoning, once it has answered — the
+  // same minute Today will show (`sourceDay.ts`). Two asks, four rows: only
+  // the Ḥanafī shadow differs. Until then, and if the source cannot answer,
+  // the on-device preview stands.
+  const majorityDay = useSourceDay(settings, asrSchoolFor('shafii'));
+  const hanafiDay = useSourceDay(settings, asrSchoolFor('hanafi'));
+  /**
+   * Islamiska Förbundet, Habous, the Algerian ministry, MUIS and JAKIM
+   * publish ONE ʿaṣr, and the app serves it as printed whatever the school
+   * (`providerHidesHanafiAsr`). The rows then say so: every school shows the
+   * printed time, and the note under them is the one Settings shows for
+   * those sources — not a Ḥanafī time Today will never show.
+   */
+  const oneAsr = (() => {
+    const provider = effectiveProviderFor(settings);
+    return provider != null && providerHidesHanafiAsr(provider);
+  })();
+  const asrBy = useMemo(() => {
+    if (!previewAsr) return null;
+    if (oneAsr && majorityDay?.Asr) {
+      const printed = majorityDay.Asr;
+      return { hanafi: printed, maliki: printed, shafii: printed, hanbali: printed };
+    }
+    const majority = majorityDay?.Asr;
+    const hanafi = hanafiDay?.Asr;
+    return {
+      hanafi: hanafi ?? previewAsr.hanafi,
+      maliki: majority ?? previewAsr.maliki,
+      shafii: majority ?? previewAsr.shafii,
+      hanbali: majority ?? previewAsr.hanbali,
+    };
+  }, [previewAsr, majorityDay, hanafiDay, oneAsr]);
 
   /**
    * WHY THE TIME IS ON EVERY ROW, AND NOT ON A LINE OF ITS OWN.
@@ -253,10 +287,12 @@ export function MadhabScreen({
           three rows showing the same time reads as a bug rather than as
           the fact it is. */}
       <Text style={[typeStyle('footnote'), styles.note, { color: palette.muted }]}>
-        {t(
-          'onboarding.madhab.note',
-          'Only the Hanafi reckoning moves \u02bfa\u1e63r \u2014 the other schools share the majority time.',
-        )}
+        {oneAsr
+          ? t('settings.hanafiAsrPublished')
+          : t(
+              'onboarding.madhab.note',
+              'Only the Hanafi reckoning moves \u02bfa\u1e63r \u2014 the other schools share the majority time.',
+            )}
       </Text>
 
       {chosen === 'maliki' ? (

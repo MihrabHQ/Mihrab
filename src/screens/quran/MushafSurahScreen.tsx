@@ -37,7 +37,7 @@ import {
 import { TabBackButton } from '../../navigation/TabBackButton';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import { isMacCatalyst } from '../../responsive/breakpoints';
-import { DEVICE_CLASS } from '../../responsive/deviceClass';
+import { useDeviceClass } from '../../responsive/deviceClass';
 import { useLandscapeFullscreen } from '../../quran/landscapeFullscreen';
 import type { SurahIndex } from '../../quran/quran';
 import { MushafReader } from '../../quran/MushafReader';
@@ -149,8 +149,10 @@ export function MushafSurahScreen({
    * starts higher. Phone reader only; fullscreen is unchanged.
    */
   const vbar = useVerticalBar();
+  // Follows the screen: a foldable is a phone folded and large unfolded.
+  const deviceClass = useDeviceClass();
   const insets = useSafeAreaInsets();
-  const columnChrome = vbar != null && DEVICE_CLASS === 'phone' && !isFullscreen;
+  const columnChrome = vbar != null && deviceClass === 'phone' && !isFullscreen;
   /**
    * Every way in and out of fullscreen goes through the veil — see
    * `fullscreenVeil.ts` for why the change is hidden behind a fade.
@@ -235,7 +237,7 @@ export function MushafSurahScreen({
 
   // On its side, a phone reads fullscreen — see `landscapeFullscreen.ts`.
   useLandscapeFullscreen(
-    DEVICE_CLASS === 'phone' && win.width > win.height,
+    deviceClass === 'phone' && win.width > win.height,
     isFullscreen,
     requestFullscreen,
   );
@@ -305,7 +307,7 @@ export function MushafSurahScreen({
      * `direction: 'rtl'`, so the sign is chosen here — in Arabic the
      * sidebar is on the trailing edge and the page centre moves left.
      */
-    const sidebarUp = sidebarShown(headerW);
+    const sidebarUp = sidebarShown(headerW, deviceClass);
     const isRtl = isRtlLanguage(i18n.language);
     const titleShift = sidebarUp ? (isRtl ? -1 : 1) * (SIDEBAR_WIDTH / 2) : 0;
     const headerTitleRow = {
@@ -693,14 +695,14 @@ export function MushafSurahScreen({
               held upright has no page bar to carry it, and the Mac's
               sidebar comes and goes with the window. The phone's lock
               sits in its bar, under the thumb. */}
-          {DEVICE_CLASS !== 'phone' ? (
+          {deviceClass !== 'phone' ? (
             <MushafLockHeaderButton color={ink} size={desktopSize(18)} />
           ) : null}
           <MushafToneHeaderButton color={ink} size={desktopSize(18)} />
           {/* Fullscreen, on the spread reader: the phone's sits in its
               page bar, and the iPad and the Mac had no button for it at
               all — only the page's margins and header strip. */}
-          {DEVICE_CLASS !== 'phone' ? (
+          {deviceClass !== 'phone' ? (
             <MushafFullscreenHeaderButton color={ink} size={desktopSize(18)} onPress={toggleFullscreen} />
           ) : null}
         </View>
@@ -735,6 +737,7 @@ export function MushafSurahScreen({
     // The window's size, so a resize re-issues the header rather than
     // leaving UIKit holding a subview RN laid out for a different width.
     columnChrome,
+    deviceClass,
     headerW,
     headerH,
   ]);

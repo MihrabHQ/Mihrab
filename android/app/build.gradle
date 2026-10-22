@@ -408,4 +408,7 @@ dependencies {
     // and the build stops on duplicates. The 2.8 ktx is the empty shell
     // that lines them up.
     implementation("androidx.work:work-runtime-ktx:2.8.1")
+    // The hinge of a foldable and how far it is folded (FoldPostureModule).
+    implementation("androidx.window:window:1.3.0")
+    implementation("androidx.window:window-java:1.3.0")
 }

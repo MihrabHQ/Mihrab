@@ -10,6 +10,7 @@ import { PRE_PRAYER_REMINDER_OPTIONS } from '../../settings/prePrayerReminder';
 import type { PrePrayerReminderMinutes } from '../../settings/prePrayerReminder';
 import { useSystemNavigationReserve } from '../../navigation/tabBarInset';
 import { modalStyles } from './modalStyles';
+import { useSheetPadding } from '../../responsive/sheetSides';
 
 type Props = {
   visible: boolean;
@@ -38,6 +39,7 @@ export const PreReminderModal = memo(function PreReminderModal({
   offLabel,
 }: Props) {
   const { t } = useTranslation();
+  const sheetPad = useSheetPadding();
   const sheetTitle = title ?? t('settings.prePrayerReminderModalTitle');
   const navigationReserve = useSystemNavigationReserve();
   return (
@@ -47,7 +49,7 @@ export const PreReminderModal = memo(function PreReminderModal({
       transparent
       onRequestClose={onClose}
     >
-      <View style={modalStyles.root}>
+      <View style={[modalStyles.root, sheetPad]}>
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={t('common.back')}

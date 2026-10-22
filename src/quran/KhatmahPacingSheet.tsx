@@ -42,6 +42,7 @@ import { useAppPalette } from '../hooks/useAppPalette';
 import { SegmentedControl } from '../components/ui';
 import { TYPE } from '../theme/typography';
 import { RADIUS, SPACING } from '../theme/tokens';
+import { useSheetSides } from '../responsive/sheetSides';
 
 const DAY = 24 * 60 * 60 * 1000;
 
@@ -127,6 +128,7 @@ export function KhatmahPacingSheet({
   initialKind,
 }: PacingSheetProps) {
   const { palette } = useAppPalette();
+  const sides = useSheetSides();
   const { t, i18n } = useTranslation();
   const now = Date.now();
   /**
@@ -234,7 +236,12 @@ export function KhatmahPacingSheet({
         accessibilityLabel={t('common.close', 'Close')}
         onPress={onClose}
       />
-      <View style={[styles.card, { backgroundColor: palette.card }]}>
+      <View
+        style={[
+          styles.card,
+          { left: SPACING.lg + sides.left, right: SPACING.lg + sides.right }, // rtl-safe: physical edges
+          { backgroundColor: palette.card },
+        ]}>
         <Text style={[styles.title, { color: palette.text }]}>
           {t('quran.khatmahPacingTitle', 'How it is paced')}
         </Text>

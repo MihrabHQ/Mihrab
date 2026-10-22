@@ -464,7 +464,7 @@ export const MushafSpreadReader = React.memo(function MushafSpreadReader(
     lock: core.quran.prefs.touchLock,
     freeze: core.quran.prefs.touchLockFreeze,
     paging: core.quran.prefs.volumeKeyPaging,
-    available: volumeKeysAvailable,
+    available: volumeKeysAvailable(),
   });
   const locked = lock.locked;
   const wordsLive = lock.wordsLive;

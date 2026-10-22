@@ -37,7 +37,7 @@ import { claimReadingSession } from './readingSession';
 import { activeKhatmah } from './quranCardState';
 import { Chip } from '../components/controls';
 import { desktopSize } from '../responsive/desktop';
-import { DEVICE_CLASS } from '../responsive/deviceClass';
+import { currentDeviceClass, type DeviceClass } from '../responsive/deviceClass';
 import { usePagingKeySuspension } from './useKeyPaging';
 import { RADIUS, SPACING } from '../theme/tokens';
 
@@ -81,8 +81,11 @@ export function sidebarFits(contentWidth: number): boolean {
  * a hundred-odd points right of the page it named, in landscape, on
  * every phone wider than the threshold.
  */
-export function sidebarShown(contentWidth: number): boolean {
-  return DEVICE_CLASS !== 'phone' && sidebarFits(contentWidth);
+export function sidebarShown(
+  contentWidth: number,
+  deviceClass: DeviceClass = currentDeviceClass(),
+): boolean {
+  return deviceClass !== 'phone' && sidebarFits(contentWidth);
 }
 
 type Tab = 'surah' | 'juz' | 'marks';

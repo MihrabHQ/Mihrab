@@ -10,6 +10,7 @@ import type { AppLanguage } from '../../settings/types';
 import { APP_LANGUAGES } from '../../i18n/languages';
 import { useSystemNavigationReserve } from '../../navigation/tabBarInset';
 import { modalStyles } from './modalStyles';
+import { useSheetPadding } from '../../responsive/sheetSides';
 
 /** Shared with the share sheet's own picker — see `i18n/languages`. */
 const LANGUAGES = APP_LANGUAGES;
@@ -30,6 +31,7 @@ export const LanguageModal = memo(function LanguageModal({
   onClose,
 }: Props) {
   const { t } = useTranslation();
+  const sheetPad = useSheetPadding();
   const navigationReserve = useSystemNavigationReserve();
   return (
     <Modal
@@ -38,7 +40,7 @@ export const LanguageModal = memo(function LanguageModal({
       transparent
       onRequestClose={onClose}
     >
-      <View style={modalStyles.root}>
+      <View style={[modalStyles.root, sheetPad]}>
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={t('common.back')}

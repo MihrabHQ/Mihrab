@@ -18,6 +18,7 @@ import {
   stopAdhanPreview,
 } from '../../notifications/prayerNotifications';
 import { modalStyles } from './modalStyles';
+import { useSheetPadding } from '../../responsive/sheetSides';
 
 type Props = {
   visible: boolean;
@@ -49,6 +50,7 @@ export const SoundPickerModal = memo(function SoundPickerModal({
   onRemoveCustom,
 }: Props) {
   const { t } = useTranslation();
+  const sheetPad = useSheetPadding();
   const navigationReserve = useSystemNavigationReserve();
 
   // A build without the native module cannot import anything, so the row is
@@ -70,7 +72,7 @@ export const SoundPickerModal = memo(function SoundPickerModal({
       transparent
       onRequestClose={handleClose}
     >
-      <View style={modalStyles.root}>
+      <View style={[modalStyles.root, sheetPad]}>
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={t('common.back')}

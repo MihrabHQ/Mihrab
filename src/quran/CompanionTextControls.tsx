@@ -33,6 +33,7 @@ import { TAFSIR_EDITIONS, resolveTafsirEdition } from './tafsir';
 import { MODAL_ORIENTATIONS } from '../components/modalOrientations';
 import { RADIUS, SPACING } from '../theme/tokens';
 import { TYPE } from '../theme/typography';
+import { useSheetSides } from '../responsive/sheetSides';
 
 export type CompanionMode = 'translation' | 'tafsir';
 
@@ -267,6 +268,7 @@ export function CompanionTextSheet({
 }) {
   const { t } = useTranslation();
   const { palette } = useAppPalette();
+  const sides = useSheetSides();
   return (
     <Modal
       visible={visible}
@@ -281,7 +283,7 @@ export function CompanionTextSheet({
         accessibilityLabel={t('common.close', 'Close')}
         onPress={onClose}
       />
-      <View style={[styles.sheet, { backgroundColor: palette.card }]}>
+      <View style={[styles.sheet, sides, { backgroundColor: palette.card }]}>
         <Text style={[styles.title, { color: palette.text }]}>
           {t('quran.companionTitle', 'Under each verse')}
         </Text>

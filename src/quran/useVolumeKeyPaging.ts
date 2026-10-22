@@ -87,7 +87,7 @@ export function useVolumeKeyPaging(
   const focused = useIsFocused();
   const on = volumeKeysShouldTurnPages({
     enabled,
-    available: volumeKeysAvailable,
+    available: volumeKeysAvailable(),
     focused,
     sheetOpen,
     jumpOpen,

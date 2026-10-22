@@ -11,6 +11,7 @@ import { useSystemNavigationReserve } from '../../navigation/tabBarInset';
 import { modalStyles } from './modalStyles';
 import { sharedSettingsStyles as s } from './sharedStyles';
 import { SPACING } from '../../theme/tokens';
+import { useSheetPadding } from '../../responsive/sheetSides';
 
 type Props = {
   visible: boolean;
@@ -44,6 +45,7 @@ export const MadhabModal = memo(function MadhabModal({
   onClose,
 }: Props) {
   const { t } = useTranslation();
+  const sheetPad = useSheetPadding();
   const navigationReserve = useSystemNavigationReserve();
   return (
     <Modal
@@ -52,7 +54,7 @@ export const MadhabModal = memo(function MadhabModal({
       transparent
       onRequestClose={onClose}
     >
-      <View style={modalStyles.root}>
+      <View style={[modalStyles.root, sheetPad]}>
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={t('common.back')}

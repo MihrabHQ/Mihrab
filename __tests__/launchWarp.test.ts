@@ -216,9 +216,12 @@ describe('wiring', () => {
     // cut the sky's bleed off and the kept picture framed a posed Fajr in
     // the live sky's edges — a square, under the Sky theme.
     expect(card).toMatch(
-      /ref=\{poseRef\}[\s\S]*?left: heroBox\.x - SPACING\.xl - twinBarLeft,\s*top: heroBox\.y - heroTop,\s*width: heroBox\.w \+ SPACING\.xl \* 2 \+ twinBarLeft \+ twinBarRight,\s*height: heroBox\.h \+ heroTop \+ SPACING\.lg,/,
+      /ref=\{poseRef\}[\s\S]*?left: heroBox\.x - skySide - twinBarLeft,\s*top: heroBox\.y - heroTop,\s*width: heroBox\.w \+ skySide \* 2 \+ twinBarLeft \+ twinBarRight,\s*height: heroBox\.h \+ heroTop \+ SPACING\.lg,/,
     );
-    expect(card).toMatch(/left: SPACING\.xl \+ twinBarLeft,\s*top: heroTop,\s*width: heroBox\.w,\s*height: heroBox\.h,/);
+    expect(card).toMatch(/left: skySide \+ twinBarLeft,\s*top: heroTop,\s*width: heroBox\.w,\s*height: heroBox\.h,/);
+    // The sky's reach past the hero: the phone's own, plus a wide
+    // screen's side inset (zero everywhere but an open foldable).
+    expect(card).toMatch(/const skySide = SPACING\.xl \+ wideInset;/);
     // Beside an iPhone's vertical bar the sky runs on under the column, and
     // the box takes that side in; nothing anywhere else.
     expect(card).toMatch(/const twinBarLeft = columnPad && vbar && vbar\.side === 'left' \? vbar\.width : 0;/);

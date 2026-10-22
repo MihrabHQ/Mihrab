@@ -36,10 +36,12 @@ import { useTabBarInset } from '../../navigation/tabBarInset';
 import { cardEdgeStyle } from '../../theme/chrome';
 import { TYPE } from '../../theme/typography';
 import { RADIUS, SPACING } from '../../theme/tokens';
+import { useSheetSides } from '../../responsive/sheetSides';
 
 export function KhatmahScreen() {
   const { t } = useTranslation();
   const { palette } = useAppPalette();
+  const sheetEdges = useSheetSides();
   const keyboardInset = useKeyboardInset();
   const quran = useQuranState();
   const wide = useBreakpoint() !== 'compact';
@@ -235,6 +237,8 @@ export function KhatmahScreen() {
             keyboardInset > 0
               ? { bottom: keyboardInset + SPACING.xl }
               : styles.menuCardResting,
+            // Wide or held as a book: the card keeps to the sheet's edges.
+            { left: 24 + sheetEdges.left, right: 24 + sheetEdges.right }, // rtl-safe: physical edges
           ]}>
           <Text style={[styles.menuTitle, { color: palette.text }]}>
             {t('quran.khatmahSetUpTitle', 'Start a khatmah')}

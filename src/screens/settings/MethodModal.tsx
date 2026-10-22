@@ -9,6 +9,7 @@ import type { AppPalette } from '../../theme/appPalette';
 import { CALCULATION_METHODS } from '../../settings/methods';
 import { useSystemNavigationReserve } from '../../navigation/tabBarInset';
 import { modalStyles } from './modalStyles';
+import { useSheetPadding } from '../../responsive/sheetSides';
 
 type Props = {
   visible: boolean;
@@ -26,6 +27,7 @@ export const MethodModal = memo(function MethodModal({
   onClose,
 }: Props) {
   const { t } = useTranslation();
+  const sheetPad = useSheetPadding();
   const navigationReserve = useSystemNavigationReserve();
   return (
     <Modal
@@ -34,7 +36,7 @@ export const MethodModal = memo(function MethodModal({
       transparent
       onRequestClose={onClose}
     >
-      <View style={modalStyles.root}>
+      <View style={[modalStyles.root, sheetPad]}>
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={t('common.back')}
