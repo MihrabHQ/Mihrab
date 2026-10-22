@@ -22,9 +22,13 @@ unsure whether a change touches 1 or 2, assume it does.
 
 ## 2. Hard rules
 
-- **Branch and pull request.** Never push to `main` directly. Merge only with
-  every CI job green (test, Android, iOS simulator, Mac Catalyst) and the
-  maintainer's go-ahead.
+- **Straight to `main`.** Commit and push to `main`; no pull request, unless
+  there is a reason to hold the change back (it waits on the maintainer's
+  decision, a release is being cut, it comes from outside) — then a branch and
+  a PR. Before pushing, the checks pass locally (`tsc`, the full `jest`, and a
+  native build where native code changed); after it, watch CI on `main`
+  (test, Android, iOS simulator, Mac Catalyst) and fix or revert a red job at
+  once.
 - **Commits are authored by the maintainer alone.** No `Co-Authored-By`, no
   session links, no "Generated with …" lines — in commits or in PR bodies.
 - **Never** run `git checkout -- .` or `git stash` on a working tree that is
@@ -97,12 +101,12 @@ npm run preflight        # tsc, the site and copy checks, the whole jest suite
 
 Then:
 
-- [ ] The PR says what changed for the user, what was **not** verified, and
-      anything the maintainer must decide.
+- [ ] The report (and the PR, when there is one) says what changed for the
+      user, what was **not** verified, and anything the maintainer must decide.
 - [ ] A user-visible change has a line in `CHANGELOG.md` under Unreleased.
 - [ ] Text in a language you do not read natively is marked for native
       review (in the PR, and `data-review="native"` on a page).
-- [ ] CI is green on every job before merge.
+- [ ] CI is green on every job on `main` after the push (before merge, for a PR).
 
 If a check fails for a reason outside your change (a flaky native build, a
 missing patch in `node_modules`), say so plainly in the PR; do not skip it or
