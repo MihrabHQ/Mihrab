@@ -198,7 +198,9 @@ const SpreadColumn = React.memo(function SpreadColumn({
           show={chrome}
           // The badge on the page that carries the name (the label side),
           // in fullscreen only — out of it the sidebar's lock button is up.
-          lock={isFullscreen && (chrome === 'both' || chrome === 'label') ? lock : null}
+          // The facing page ('none') takes it too, unseen, so both header
+          // rows stand the badge's height and the pages stay level.
+          lock={isFullscreen && chrome !== 'pill' ? lock : null}
         />
       </Pressable>
       <View style={[styles.pageBox, pad]}>
