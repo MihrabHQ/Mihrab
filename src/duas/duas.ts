@@ -1350,6 +1350,34 @@ export const DUAS: ReadonlyArray<Dua> = [
     source: 'Practice of Ibn ʿUmar — Musannaf Ibn Abi Shaybah 5638',
   },
   {
+    // The full form recited before the Eid prayer: the takbir, then the
+    // additions al-Shafiʿi called good, then the salawat as it is commonly
+    // closed. Text as given by Dar al-Iftaʾ al-Misriyyah (fatwa 15014).
+    id: 'eid_takbir_full',
+    category: 'eid',
+    titleEn: 'Eid takbir (full)',
+    arabic:
+      'ٱللَّٰهُ أَكْبَرُ، ٱللَّٰهُ أَكْبَرُ، ٱللَّٰهُ أَكْبَرُ، لَا إِلَٰهَ إِلَّا ٱللَّٰهُ، وَٱللَّٰهُ أَكْبَرُ، ٱللَّٰهُ أَكْبَرُ، وَلِلَّٰهِ ٱلْحَمْدُ. ' +
+      'ٱللَّٰهُ أَكْبَرُ كَبِيرًا، وَٱلْحَمْدُ لِلَّٰهِ كَثِيرًا، وَسُبْحَانَ ٱللَّٰهِ بُكْرَةً وَأَصِيلًا. ' +
+      'لَا إِلَٰهَ إِلَّا ٱللَّٰهُ وَحْدَهُ، صَدَقَ وَعْدَهُ، وَنَصَرَ عَبْدَهُ، وَأَعَزَّ جُنْدَهُ، وَهَزَمَ ٱلْأَحْزَابَ وَحْدَهُ. ' +
+      'لَا إِلَٰهَ إِلَّا ٱللَّٰهُ، وَلَا نَعْبُدُ إِلَّا إِيَّاهُ، مُخْلِصِينَ لَهُ ٱلدِّينَ وَلَوْ كَرِهَ ٱلْكَافِرُونَ. ' +
+      'ٱللَّٰهُمَّ صَلِّ عَلَىٰ سَيِّدِنَا مُحَمَّدٍ، وَعَلَىٰ آلِ سَيِّدِنَا مُحَمَّدٍ، وَعَلَىٰ أَصْحَابِ سَيِّدِنَا مُحَمَّدٍ، وَعَلَىٰ أَنْصَارِ سَيِّدِنَا مُحَمَّدٍ، وَعَلَىٰ أَزْوَاجِ سَيِّدِنَا مُحَمَّدٍ، وَعَلَىٰ ذُرِّيَّةِ سَيِّدِنَا مُحَمَّدٍ، وَسَلِّمْ تَسْلِيمًا كَثِيرًا',
+    transliteration:
+      'Allāhu akbar, Allāhu akbar, Allāhu akbar, lā ilāha illā-llāh, wallāhu akbar, Allāhu akbar, wa lillāhil-ḥamd. ' +
+      'Allāhu akbaru kabīrā, wal-ḥamdu lillāhi kathīrā, wa subḥāna-llāhi bukratan wa aṣīlā. ' +
+      'Lā ilāha illā-llāhu waḥdah, ṣadaqa waʿdah, wa naṣara ʿabdah, wa aʿazza jundah, wa hazamal-aḥzāba waḥdah. ' +
+      'Lā ilāha illā-llāh, wa lā naʿbudu illā iyyāh, mukhliṣīna lahud-dīna wa law karihal-kāfirūn. ' +
+      'Allāhumma ṣalli ʿalā sayyidinā Muḥammad, wa ʿalā āli sayyidinā Muḥammad, wa ʿalā aṣḥābi sayyidinā Muḥammad, wa ʿalā anṣāri sayyidinā Muḥammad, wa ʿalā azwāji sayyidinā Muḥammad, wa ʿalā dhurriyyati sayyidinā Muḥammad, wa sallim taslīman kathīrā.',
+    translation:
+      'Allah is greatest, Allah is greatest, Allah is greatest. There is no god but Allah. Allah is greatest, Allah is greatest, and to Allah belongs all praise. ' +
+      'Allah is greatest, most great; much praise be to Allah; and glory be to Allah, morning and evening. ' +
+      'There is no god but Allah alone. He fulfilled His promise, gave victory to His servant, honoured His army, and alone defeated the confederates. ' +
+      'There is no god but Allah, and we worship none but Him, devoting the religion to Him alone, even if the disbelievers dislike it. ' +
+      'O Allah, send blessings upon our master Muhammad, and upon the family of our master Muhammad, his Companions, his Helpers, his wives and his descendants, and grant them abundant peace.',
+    source:
+      'al-Shafiʿi, al-Umm 1/276; al-Mahalli on Minhaj al-Talibin 1/385 — the closing salawat as commonly recited (Dar al-Iftaʾ al-Misriyyah, fatwa 15014)',
+  },
+  {
     id: 'eid_taqabbal',
     category: 'eid',
     titleEn: 'Eid greeting',

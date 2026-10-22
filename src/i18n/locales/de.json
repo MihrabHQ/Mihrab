@@ -1034,6 +1034,9 @@
     "eid_takbir": {
       "title": "Takbîr zum Eid"
     },
+    "eid_takbir_full": {
+      "title": "Takbîr zum Eid (vollständig)"
+    },
     "eid_taqabbal": {
       "title": "Eid-Grußformel"
     },

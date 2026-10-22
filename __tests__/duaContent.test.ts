@@ -92,3 +92,15 @@ describe('the lavatory and garment categories — #34', () => {
     }
   });
 });
+
+describe('the Eid takbir comes in both forms', () => {
+  it('keeps the short one and adds the full one, sourced and titled everywhere', () => {
+    const ids = duasByCategory('eid').map(d => d.id);
+    expect(ids.slice(0, 2)).toEqual(['eid_takbir', 'eid_takbir_full']);
+    const full = DUAS.find(d => d.id === 'eid_takbir_full')!;
+    expect(full.arabic).toContain('ٱللَّٰهُ أَكْبَرُ كَبِيرًا');
+    expect(full.arabic).toContain('وَهَزَمَ ٱلْأَحْزَابَ وَحْدَهُ');
+    expect(full.source).toMatch(/al-Umm/);
+    for (const l of LOCALES) expect(localeFile(l).duas.eid_takbir_full?.title).toBeTruthy();
+  });
+});

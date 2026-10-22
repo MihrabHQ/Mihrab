@@ -1035,6 +1035,9 @@
     "eid_takbir": {
       "title": "Takbir del Eid"
     },
+    "eid_takbir_full": {
+      "title": "Takbir del Eid (completo)"
+    },
     "eid_taqabbal": {
       "title": "Saludo de Eid"
     },

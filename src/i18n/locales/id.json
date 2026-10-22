@@ -1034,6 +1034,9 @@
     "eid_takbir": {
       "title": "Takbir Idul"
     },
+    "eid_takbir_full": {
+      "title": "Takbir Idul (lengkap)"
+    },
     "eid_taqabbal": {
       "title": "Ucapan selamat Idul"
     },

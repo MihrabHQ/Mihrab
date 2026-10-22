@@ -1035,6 +1035,9 @@
     "eid_takbir": {
       "title": "Takbîr de l’Aïd"
     },
+    "eid_takbir_full": {
+      "title": "Takbîr de l’Aïd (complet)"
+    },
     "eid_taqabbal": {
       "title": "Vœux de l’Aïd"
     },

@@ -1034,6 +1034,9 @@
     "eid_takbir": {
       "title": "Bayram tekbiri"
     },
+    "eid_takbir_full": {
+      "title": "Bayram tekbiri (tam)"
+    },
     "eid_taqabbal": {
       "title": "Bayram tebriği"
     },
