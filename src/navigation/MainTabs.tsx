@@ -71,6 +71,7 @@ import {
   TabTasbihIcon,
 } from './tabIcons';
 import type { MainTabParamList } from './types';
+import { useBookPanePadding } from '../native/FoldPosture';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
@@ -126,6 +127,9 @@ export function MainTabs() {
    * indicator rather than at a bar. See src/native/VerticalBar.ts.
    */
   const vbar = useVerticalBar();
+  // A foldable half open as a book: every tab but Today keeps to one page
+  // of it, off the crease (`FoldPosture.ts`). Today lays out across both.
+  const bookPad = useBookPanePadding(useWindowSize().width);
   const columnPad = vbar
     ? vbar.side === 'right'
       ? { paddingRight: vbar.width } // rtl-safe: the vertical bar is on a physical side
@@ -162,6 +166,9 @@ export function MainTabs() {
             SCREEN,
             vbar && route.name !== 'TodayTab'
               ? [columnPad, { backgroundColor: palette.bg }]
+              : null,
+            bookPad && route.name !== 'TodayTab'
+              ? [bookPad, { backgroundColor: palette.bg }]
               : null,
           ]}>
           {/* The bar is the page's own colour, and — since no tab draws a

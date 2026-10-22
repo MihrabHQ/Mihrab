@@ -113,6 +113,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useVerticalBar } from '../../native/VerticalBar';
 import { RADIUS, SPACING } from '../../theme/tokens';
 import { tajweedColoursShown } from '../tajweed/tajweedSupport';
+import { useSheetSides } from '../../responsive/sheetSides';
 
 /** The sheet's own padding, before the safe-area insets are added to it. */
 const SHEET_H_PADDING = 18;
@@ -199,6 +200,7 @@ export function AyahActionSheet({
 }: Props) {
   const { t } = useTranslation();
   const { palette } = useAppPalette();
+  const sides = useSheetSides();
   const readingText = useReadingText();
   const keyboardInset = useKeyboardInset();
   const insets = useSafeAreaInsets();
@@ -608,6 +610,9 @@ export function AyahActionSheet({
       <View
         style={[
           styles.sheet,
+          // On a wide Android screen, a phone's width in the middle — or one
+          // page of a foldable held as a book (`sheetSides.ts`).
+          sides,
           // A Modal on Android does not resize for the keyboard, and the
           // recitation controls inside this sheet carry a field. See
           // useKeyboardInset.

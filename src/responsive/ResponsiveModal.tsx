@@ -22,6 +22,7 @@ import { useWindowSize } from './windowSize';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAppPalette } from '../hooks/useAppPalette';
 import { useBreakpoint } from './breakpoints';
+import { useBookPanePadding } from '../native/FoldPosture';
 import { RADIUS, SPACING } from '../theme/tokens';
 
 type Props = {
@@ -61,6 +62,10 @@ export function ResponsiveModal({
   const insets = useSafeAreaInsets();
   const { height } = useWindowSize();
   const wide = useBreakpoint() !== 'compact';
+  // Half open as a book (a foldable), the card keeps to one page rather
+  // than sitting centred on the crease. Null everywhere else.
+  const { width: windowWidth } = useWindowSize();
+  const bookPad = useBookPanePadding(windowWidth);
 
   return (
     <Modal
@@ -73,6 +78,7 @@ export function ResponsiveModal({
           styles.backdrop,
           { backgroundColor: palette.overlay },
           wide ? styles.center : styles.bottom,
+          bookPad,
         ]}>
         {/*
           THE DISMISS TARGET SITS BEHIND THE CARD, NOT AROUND IT.

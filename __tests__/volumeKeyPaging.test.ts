@@ -80,7 +80,7 @@ describe('the setting', () => {
 
   it('is offered only where it can work', () => {
     const card = read('src/screens/settings/QuranCard.tsx');
-    expect(card).toMatch(/volumeKeysAvailable\s*\?/);
+    expect(card).toMatch(/volumeKeysAvailable\(\)\s*\?/);
   });
 
   it('offers the direction only with the buttons on (#72)', () => {

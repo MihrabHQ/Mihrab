@@ -25,6 +25,8 @@ import { FastingScreen } from '../screens/FastingScreen';
 import { SETTINGS_STACK_PAGES } from '../screens/settings/subpages';
 import type { RootStackParamList } from './types';
 import { desktopSize, IS_MAC_CATALYST } from '../responsive/desktop';
+import { useBookPanePadding } from '../native/FoldPosture';
+import { useWindowSize } from '../responsive/windowSize';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -107,6 +109,9 @@ export function RootNavigator() {
   // column; the tabs ("Home") and the muṣḥaf reader lay out around it
   // themselves (MainTabs, MushafPhoneReader).
   const columnPad = useVerticalBarInsets();
+  // A foldable half open as a book: pushed pages keep to one page of it,
+  // off the crease (`FoldPosture.ts`). The muṣḥaf lays out across both.
+  const bookPad = useBookPanePadding(useWindowSize().width);
   return (
     <Stack.Navigator
       /**
@@ -123,6 +128,9 @@ export function RootNavigator() {
             // colour runs under the column (MushafPhoneReader `sideInset`).
             columnPad && route.name !== 'Home' && route.name !== 'QuranSurah'
               ? [columnPad, { backgroundColor: theme.colors.background }]
+              : null,
+            bookPad && route.name !== 'Home' && route.name !== 'QuranSurah'
+              ? [bookPad, { backgroundColor: theme.colors.background }]
               : null,
           ]}>
           {/* `theme.colors.background` is exactly what `headerStyle` below
@@ -163,7 +171,10 @@ export function RootNavigator() {
          * (see MainTabs), where the title sits beside a large-title layout
          * that is a different shape altogether.
          */
-        headerTitleAlign: 'center',
+        // Held as a book, a centred title sits on the crease: in a left-to-
+        // right language it moves left, over the page the content keeps to.
+        // (The header offers no right alignment for the other direction.)
+        headerTitleAlign: bookPad?.paddingRight != null ? 'left' : 'center', // rtl-safe: the book's first page is on the left
         /**
          * The chevron alone, never the previous screen's title. Pushed from
          * the tabs, that title is the root route's name — "Home" — which

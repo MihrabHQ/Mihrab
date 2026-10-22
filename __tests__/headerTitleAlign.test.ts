@@ -24,8 +24,10 @@ describe('the pushed subpages', () => {
   it('centre their titles on both platforms', () => {
     // In the stack's screenOptions, so a new subpage inherits it rather
     // than needing anyone to remember.
+    // Centred — except on a foldable held as a book in a left-to-right
+    // language, where the centre is the crease (`FoldPosture.ts`).
     expect(ROOT).toMatch(
-      /screenOptions=\{(?:\{|\(\{ navigation \}\) => \(\{)[\s\S]*?headerTitleAlign: 'center'/,
+      /screenOptions=\{(?:\{|\(\{ navigation \}\) => \(\{)[\s\S]*?headerTitleAlign: (?:bookPad\?\.paddingRight != null \? 'left' : )?'center'/,
     );
   });
 

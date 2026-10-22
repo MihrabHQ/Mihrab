@@ -327,7 +327,7 @@ function QuranCardImpl() {
           buttons cannot be taken from the system, or are the wrong gesture
           for a tablet held like a book, and a switch that did nothing
           would only be a thing to wonder about (#68). */}
-      {volumeKeysAvailable ? (
+      {volumeKeysAvailable() ? (
         <SettingsGroup
           title={t('quran.volumeKeysTitle', 'Page turning')}
           footer={t('quran.volumeKeysHelp', {
@@ -371,7 +371,7 @@ function QuranCardImpl() {
             defaultValue:
               'A locked page does not turn or scroll away under your hand, and a tap does not hide or show the controls. A tap on a word still opens its ayah. Press and hold the page for the controls, and hold the lock in the corner of the page to unlock.',
           }) +
-          (volumeKeysAvailable
+          (volumeKeysAvailable()
             ? ' ' +
               t(
                 'quran.touchLockHelpButtons',

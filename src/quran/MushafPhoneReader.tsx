@@ -16,7 +16,7 @@
  *
  * The FlatList keeps its index across rotation; `getItemLayout` recomputes
  * from the new width. No zoom clamps, no windowed strip, no image-cache
- * math — this component is only ever mounted on a phone (DEVICE_CLASS,
+ * math — this component is only ever mounted on a phone screen (useDeviceClass,
  * answered once at module scope) in text mode.
  *
  * ── WHAT A PAGE IS ALLOWED TO RE-RENDER FOR ───────────────────────────
@@ -319,14 +319,20 @@ const PhonePageItem = React.memo(function PhonePageItem({
     if (!geometry || !scrolls || wordLine < 0) return;
     const lineHeight = mushafLineHeight(page, geometry.textWidth);
     if (lineHeight == null) return;
-    columnRef.current?.scrollTo({
-      y: windowOffset(
-        { y: wordLine * lineHeight, lineHeight },
-        geometry.viewportH,
-        pageBoxH,
-      ),
-      animated: true,
-    });
+    // A frame later: a new geometry re-creates the column (its key), and a
+    // scroll sent in that same commit reached the column being torn down —
+    // on a foldable, every fold mid-recitation.
+    const frame = requestAnimationFrame(() =>
+      columnRef.current?.scrollTo({
+        y: windowOffset(
+          { y: wordLine * lineHeight, lineHeight },
+          geometry.viewportH,
+          pageBoxH,
+        ),
+        animated: true,
+      }),
+    );
+    return () => cancelAnimationFrame(frame);
   }, [page, geometry, scrolls, pageBoxH, wordLine]);
 
   /* No word timing: follow the āyah's first line. Deferred, and dropped
@@ -761,7 +767,7 @@ export const MushafPhoneReader = React.memo(function MushafPhoneReader(
     lock: core.quran.prefs.touchLock,
     freeze: core.quran.prefs.touchLockFreeze,
     paging: core.quran.prefs.volumeKeyPaging,
-    available: volumeKeysAvailable,
+    available: volumeKeysAvailable(),
   });
   const locked = lock.locked;
   const wordsLive = lock.wordsLive;

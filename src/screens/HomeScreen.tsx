@@ -115,6 +115,8 @@ import {
   pendingChangelog,
 } from '../polish/ChangelogSheet';
 import { SPACING } from '../theme/tokens';
+import { useFoldPosture } from '../native/FoldPosture';
+import type { HostInstance } from 'react-native';
 
 
 /** The calculation note last dismissed on Today (`state:to`). */
@@ -255,6 +257,34 @@ export function HomeScreen() {
   // under ~440pt and the tools grid crams — the centered single column
   // reads far better in that band (Mac audit 2026-07-16, plan v2 §B4).
   const isDashboard = screenWidth >= HOME_DASHBOARD_MIN_WIDTH;
+  /**
+   * A FOLDABLE HALF OPEN.
+   *
+   * As a book (the hinge down the screen), the single column sat on the
+   * crease — prayer names on one page, their times on the other. Today
+   * becomes two pages instead: the day on one, the Quran shortcut and the
+   * day's summary on the other, the gutter on the hinge.
+   *
+   * In tabletop (the hinge across), the hero fills the upright half down
+   * to the hinge and the day's rows lie on the flat half, where a thumb
+   * reaches them.
+   *
+   * Android only, and only half open; flat or folded, nothing changes.
+   */
+  const posture = useFoldPosture();
+  const book = posture?.kind === 'book' ? posture.hinge : null;
+  const tabletop = posture?.kind === 'tabletop' ? posture.hinge : null;
+  const [tableTop, setTableTop] = useState<number | null>(null);
+  const tableWrapRef = useRef<HostInstance>(null);
+  const measureTable = useCallback(() => {
+    tableWrapRef.current?.measureInWindow((_x: number, y: number) => {
+      if (Number.isFinite(y)) setTableTop(prev => (prev === y ? prev : y));
+    });
+  }, []);
+  const tabletopHeroHeight =
+    tabletop && tableTop != null
+      ? Math.max(260, tabletop.top - tableTop - SPACING.md)
+      : undefined;
   /**
    * A tablet held upright: wide enough to be one, tall enough that the
    * day does not fill the page. The hero stops growing and the column
@@ -1689,6 +1719,8 @@ export function HomeScreen() {
         // Roomy: the content is a block in the middle of the page rather
         // than a page-height column.
         isRoomy && styles.scrollContentRoomy,
+        // Tabletop: from the top, so the hero's foot can be placed on the hinge.
+        tabletop && styles.scrollContentTop,
         // Breathing room under the last card — and NOTHING for the tab
         // bar or the safe area. The bar is in flow, so the scroll view
         // already ends above it, and the bar's own bottom margin already
@@ -1715,7 +1747,7 @@ export function HomeScreen() {
           own gap: SPACING.md stopped separating them (2.7.36 regression — the
           carousel dots overlapped the day table and the Quran button). */}
       <CenteredColumn
-        maxWidth={isDashboard ? dashCap : undefined}
+        maxWidth={isDashboard ? dashCap : book ? screenWidth : undefined}
         style={[
           styles.homeColumn,
           !isDashboard && !isMacCatalyst && !isRoomy && styles.fillColumn,
@@ -1734,26 +1766,29 @@ export function HomeScreen() {
           bar's height as padding and the bar's glyphs go back to the
           page's own ink, because with a banner up there the sky is no
           longer what the clock sits on (see `bannerAbove` below). */}
-      <PermissionBanners
-        usingLocalFallback={state.usingLocalFallback ?? false}
-        exactAlarmDenied={exactAlarmDenied}
-        notifPermDenied={notifPermDenied}
-        onRetryFetch={retry}
-        timezoneShift={timezoneShift}
-        methodNote={methodNote}
-        onDismissMethodNote={dismissMethodNote}
-        zoneNote={zoneNote}
-        onDismissZoneNote={dismissZoneNote}
-        onDismissTimezoneShift={() => {
-          // Both halves: the module stops offering it to the next load,
-          // and this screen stops drawing it now.
-          clearTimezoneShiftNotice();
-          setTzNoticeDismissedAt(timezoneShift?.at ?? Date.now());
-        }}
-        topInset={
-          !isDashboard && !isMacCatalyst && !isRoomy && hasBanner ? insets.top : 0
-        }
-      />
+      {/* Held as a book, the notices keep to the day's page too. */}
+      <View style={book ? { width: Math.max(0, book.left - HOME_SCREEN_PADDING * 2) } : undefined}>
+        <PermissionBanners
+          usingLocalFallback={state.usingLocalFallback ?? false}
+          exactAlarmDenied={exactAlarmDenied}
+          notifPermDenied={notifPermDenied}
+          onRetryFetch={retry}
+          timezoneShift={timezoneShift}
+          methodNote={methodNote}
+          onDismissMethodNote={dismissMethodNote}
+          zoneNote={zoneNote}
+          onDismissZoneNote={dismissZoneNote}
+          onDismissTimezoneShift={() => {
+            // Both halves: the module stops offering it to the next load,
+            // and this screen stops drawing it now.
+            clearTimezoneShiftNotice();
+            setTzNoticeDismissedAt(timezoneShift?.at ?? Date.now());
+          }}
+          topInset={
+            !isDashboard && !isMacCatalyst && !isRoomy && hasBanner ? insets.top : 0
+          }
+        />
+      </View>
 
 
       {(() => {
@@ -1787,6 +1822,7 @@ export function HomeScreen() {
             expanded={isDashboard}
             fullBleed={fullBleed}
             roomy={isRoomy}
+            heroHeight={tabletopHeroHeight}
             // The hero is under the status bar only when nothing is above
             // it. A permission banner takes that place, and takes the
             // inset and the bar's ink with it.
@@ -1881,9 +1917,34 @@ export function HomeScreen() {
          * Ramadan countdown stays in its season. The dashboard has the
          * room and keeps its side column.
          */
+        if (book) {
+          // Two pages of a book: the gutter is the hinge, plus the screen's
+          // own gutter either side of it. `row` mirrors in right-to-left
+          // languages, and the hinge is in the middle, so the day lands on
+          // the first page either way.
+          const pad = HOME_SCREEN_PADDING;
+          return (
+            <View style={[styles.bookRow, { gap: book.right - book.left + pad * 2 }]}>
+              <View style={{ width: Math.max(0, book.left - pad * 2), gap: SPACING.md }}>
+                {dayTable}
+              </View>
+              <View style={styles.dashSide}>
+                {quranShortcut}
+                {toolsGrid}
+                {practiceCard}
+                {ramadanCard}
+              </View>
+            </View>
+          );
+        }
         return (
           <>
-            <View style={isRoomy ? undefined : styles.fillColumn}>{dayTable}</View>
+            <View
+              ref={tableWrapRef}
+              onLayout={tabletop ? measureTable : undefined}
+              style={isRoomy ? undefined : styles.fillColumn}>
+              {dayTable}
+            </View>
             <View style={[styles.belowHero, vbarPad]}>
               {quranShortcut}
               {ramadanCard}
@@ -1940,6 +2001,12 @@ const styles = StyleSheet.create({
     alignItems: 'stretch',
     gap: SPACING.xl,
   },
+  // A foldable held as a book — see `book` above.
+  bookRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  scrollContentTop: { justifyContent: 'flex-start' },
   dashSide: {
     flex: 1,
     gap: SPACING.md,

@@ -60,6 +60,7 @@ import {
 } from '../quranDownloadManager';
 import { RADIUS, SPACING } from '../../theme/tokens';
 import { TYPE } from '../../theme/typography';
+import { useSheetSides } from '../../responsive/sheetSides';
 
 /** "1.2 GB", "812 MB" — the same shape the downloads screen prints. */
 function formatBytes(bytes: number): string {
@@ -96,6 +97,7 @@ type Props = {
 export function ReciterPickerSheet({ visible, onClose }: Props) {
   const { t } = useTranslation();
   const { palette } = useAppPalette();
+  const sides = useSheetSides();
   // The filter field is in this sheet, and a Modal on Android does
   // not resize for the keyboard. `bottom` rather than padding: this
   // sheet is absolutely positioned, so lifting it IS moving `bottom`.
@@ -394,6 +396,7 @@ export function ReciterPickerSheet({ visible, onClose }: Props) {
       <View
         style={[
           styles.sheet,
+          sides,
           { backgroundColor: palette.card, bottom: keyboardInset },
         ]}
       >

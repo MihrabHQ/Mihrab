@@ -12,7 +12,7 @@
  * `volumeKeysAvailable` is false and every call is a no-op.
  */
 import { NativeEventEmitter, NativeModules, Platform } from 'react-native';
-import { DEVICE_CLASS } from '../responsive/deviceClass';
+import { currentDeviceClass } from '../responsive/deviceClass';
 
 type NativeVolumeKeys = {
   setCaptured(on: boolean): void;
@@ -26,13 +26,18 @@ const Native =
     : null;
 
 /** Whether this device can turn pages with the volume buttons at all. */
-export const volumeKeysAvailable: boolean =
-  Native != null && DEVICE_CLASS === 'phone';
+/**
+ * Asked at the moment, not answered at import: a foldable is a phone on its
+ * cover screen and a tablet unfolded (see `deviceClass.ts`).
+ */
+export function volumeKeysAvailable(): boolean {
+  return Native != null && currentDeviceClass() === 'phone';
+}
 
 export type VolumeKeyDirection = 'up' | 'down';
 
 export function setVolumeKeysCaptured(on: boolean): void {
-  if (!volumeKeysAvailable) return;
+  if (!volumeKeysAvailable()) return;
   try {
     Native?.setCaptured(on);
   } catch {
@@ -44,7 +49,7 @@ export function setVolumeKeysCaptured(on: boolean): void {
 export function onVolumeKey(
   listener: (direction: VolumeKeyDirection) => void,
 ): () => void {
-  if (!volumeKeysAvailable || !Native) return () => undefined;
+  if (!volumeKeysAvailable() || !Native) return () => undefined;
   const emitter = new NativeEventEmitter(Native as never);
   const sub = emitter.addListener(
     'VolumeKey',

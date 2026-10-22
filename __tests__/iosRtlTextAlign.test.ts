@@ -34,7 +34,7 @@ describe('iOS text alignment in a mirrored layout', () => {
 describe('the Quran pager on first open', () => {
   it('tells the cards where it starts', () => {
     expect(read('src/screens/QuranScreen.tsx')).toMatch(
-      /pagerRef\.current\?\.scrollTo\(\{ x, y: 0, animated: false \}\);[\s\S]{0,700}scrollX\.setValue\(x\);/,
+      /pagerRef\.current\?\.scrollTo\(\{ x, y: 0, animated: false \}\)[;,]?[\s\S]{0,700}scrollX\.setValue\(x\);/,
     );
   });
 });

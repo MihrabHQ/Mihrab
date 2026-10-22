@@ -39,6 +39,7 @@ class MainApplication : Application(), ReactApplication {
           add(ScanQrPackage())
           add(CompassPackage())
           add(DisplayCutoutPackage())
+          add(FoldPosturePackage())
           add(RotationCoverPackage())
           add(VolumeKeysPackage())
           add(LaunchSnapshotPackage())

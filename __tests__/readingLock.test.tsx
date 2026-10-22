@@ -185,7 +185,7 @@ describe('the readers', () => {
       /<MushafLockButton[\s\S]{0,400}onLock=\{\(\) => setLock\(true\)\}[\s\S]{0,100}onUnlock=\{\(\) => setLock\(false\)\}/,
     );
     expect(read('src/screens/quran/MushafSurahScreen.tsx')).toMatch(
-      /\{DEVICE_CLASS !== 'phone' \? \(\s*<MushafLockHeaderButton/,
+      /\{deviceClass !== 'phone' \? \(\s*<MushafLockHeaderButton/,
     );
   });
 

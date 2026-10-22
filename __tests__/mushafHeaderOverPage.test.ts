@@ -35,7 +35,7 @@ describe('one rule for whether the sidebar is up', () => {
     // The old inline arithmetic is gone from both callers.
     expect(reader).not.toMatch(/SIDEBAR_WIDTH\s*\+\s*620/);
     const screen = read('src/screens/quran/MushafSurahScreen.tsx');
-    expect(screen).toContain('sidebarShown(headerW)');
+    expect(screen).toContain('sidebarShown(headerW, deviceClass)');
     expect(screen).not.toMatch(/sidebarFits\(headerW\)/);
     expect(screen).not.toMatch(/SIDEBAR_WIDTH\s*\+\s*620/);
   });
@@ -48,7 +48,7 @@ describe('one rule for whether the sidebar is up', () => {
    */
   it('is never up on a phone, however wide the window turns', () => {
     jest.isolateModules(() => {
-      jest.doMock('../src/responsive/deviceClass', () => ({ DEVICE_CLASS: 'phone' }));
+      jest.doMock('../src/responsive/deviceClass', () => ({ currentDeviceClass: () => 'phone' }));
       const phone = require('../src/quran/MushafIndexSidebar') as typeof import('../src/quran/MushafIndexSidebar');
       const wide = phone.SIDEBAR_WIDTH + phone.SIDEBAR_MIN_READER + 200;
       expect(phone.sidebarFits(wide)).toBe(true); // room, yes …

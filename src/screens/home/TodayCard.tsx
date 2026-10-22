@@ -247,6 +247,12 @@ export type TodayCardProps = {
    * bar, and the column centres itself in the page instead.
    */
   roomy?: boolean;
+  /**
+   * The hero's height, given — a foldable standing in tabletop posture,
+   * where the hero fills the upright half down to the hinge and the table
+   * lies on the flat one (HomeScreen). Absent, the hero sizes itself.
+   */
+  heroHeight?: number;
   /** The location chip for the hero's top row, drawn in the sky's ink. */
   renderLocation?: (ink: SkyInkColors, column?: boolean) => ReactNode;
 };
@@ -1038,6 +1044,7 @@ function TodayCardImpl({
   fullBleed = false,
   bannerAbove = false,
   roomy = false,
+  heroHeight,
   renderLocation,
   skyTimings,
   latitude,
@@ -1662,7 +1669,9 @@ function TodayCardImpl({
   const twinBarLeft = columnPad && vbar && vbar.side === 'left' ? vbar.width : 0;
   const twinBarRight = columnPad && vbar && vbar.side === 'right' ? vbar.width : 0;
   const roomyHeroHeight = roomy
-    ? Math.round(Math.min(Math.max(windowHeight * 0.34, 300), 460))
+    ? heroHeight != null
+      ? Math.round(heroHeight)
+      : Math.round(Math.min(Math.max(windowHeight * 0.34, 300), 460))
     : undefined;
   const Outer = fullBleed ? View : GlassSurface;
   const renderQibla = (ink: SkyInkColors, column?: boolean) =>
@@ -1804,6 +1813,9 @@ function TodayCardImpl({
           heroColumnPad,
           { paddingTop: heroTop },
           fullBleed && !roomy && styles.heroWrapBleed,
+          // Tabletop (a foldable half open, flat on a table): the hero
+          // stands to the hinge, not to the page's slack — see `heroHeight`.
+          fullBleed && !roomy && heroHeight != null && { flexGrow: 0, height: Math.round(heroHeight) },
           roomy && [styles.heroWrapRoomy, { height: roomyHeroHeight }],
           // Full-bleed, the sky IS the wrap's ground — a tint under it
           // would show as a band wherever the two disagreed by a pixel.

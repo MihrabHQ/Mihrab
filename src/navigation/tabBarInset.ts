@@ -297,6 +297,6 @@ export function useTabBarInset(): number {
  * Kept as a switch rather than deleted: the scrim, the hide-on-scroll and
  * the per-screen inset all key off it, and all of them stand down cleanly
  * when it is false. The pill's own rule was
- * `!IS_MAC_CATALYST && DEVICE_CLASS === 'phone'`.
+ * `!IS_MAC_CATALYST && currentDeviceClass() === 'phone'`.
  */
 export const FLOATS_OVER_CONTENT: boolean = false;

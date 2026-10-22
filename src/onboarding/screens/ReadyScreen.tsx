@@ -47,6 +47,7 @@ import { typeStyle } from '../../theme/typography';
 import { tabularNumeralStyle } from '../../theme/textScale';
 import type { RootStackParamList } from '../../navigation/types';
 import { previewCoords, previewDay, PREVIEW_ROWS } from '../previewTimes';
+import { useSourceDay } from '../sourceDay';
 import { OnboardingFrame, OnboardingHeading, PrimaryAction } from '../OnboardingChrome';
 
 export function ReadyScreen({
@@ -64,7 +65,7 @@ export function ReadyScreen({
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const coords = useMemo(() => previewCoords(settings), [settings]);
-  const day = useMemo(
+  const preview = useMemo(
     () =>
       coords
         ? previewDay(coords, {
@@ -74,6 +75,12 @@ export function ReadyScreen({
         : null,
     [coords, settings.calculationMethod, settings.school],
   );
+  // The card says "Today in <city>", so it shows Today's times: the
+  // source's, once it has answered (`sourceDay.ts`). The on-device preview
+  // is only what fills the moment before — a table source can be a minute
+  // off it, and this list was a minute off Today.
+  const source = useSourceDay(settings);
+  const day = source ?? preview;
 
   /**
    * Which of the five rows is next — today's, or none.

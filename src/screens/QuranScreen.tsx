@@ -552,7 +552,14 @@ export function QuranScreen() {
   useEffect(() => {
     if (pageW > 0) {
       const x = order.indexOf(tabRef.current) * pageW;
-      pagerRef.current?.scrollTo({ x, y: 0, animated: false });
+      // A frame later, not in the commit that changed the width. A
+      // foldable's fold re-creates the pager's native view, and a scroll
+      // command issued in the same commit reached the view being torn down
+      // ("Caught exception executing ViewCommand … scrollTo"); by the next
+      // frame the ref is the one on screen.
+      const frame = requestAnimationFrame(() =>
+        pagerRef.current?.scrollTo({ x, y: 0, animated: false }),
+      );
       // And the value the cards are drawn from. A ScrollView placed by its
       // `contentOffset` (or a scrollTo that moves nothing) sends no scroll
       // event on iOS, so `scrollX` stayed at 0 — which is the FIRST slot.
@@ -560,7 +567,9 @@ export function QuranScreen() {
       // it was drawn as a card mid-swipe, shrunk and dimmed with its corners
       // on, until a touch scrolled it and the event arrived.
       scrollX.setValue(x);
+      return () => cancelAnimationFrame(frame);
     }
+    return undefined;
   }, [order, pageW, scrollX]);
   const onPagerSettled = useCallback(
     (x: number) => {

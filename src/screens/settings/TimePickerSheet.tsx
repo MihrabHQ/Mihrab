@@ -13,6 +13,7 @@ import { useAppPalette } from '../../hooks/useAppPalette';
 import { useClockFormatter } from '../../hooks/useClockFormatter';
 import { RADIUS, SPACING } from '../../theme/tokens';
 import { TYPE } from '../../theme/typography';
+import { useSheetSides } from '../../responsive/sheetSides';
 
 /**
  * The controls themselves, without a sheet around them — an hour
@@ -113,6 +114,7 @@ export function TimePickerSheet({
 }) {
   const { t } = useTranslation();
   const { palette } = useAppPalette();
+  const sides = useSheetSides();
   return (
     <Modal
       visible={visible}
@@ -124,7 +126,7 @@ export function TimePickerSheet({
         accessibilityLabel={t('common.close', 'Close')}
         onPress={onClose}
       />
-      <View style={[styles.sheet, { backgroundColor: palette.card }]}>
+      <View style={[styles.sheet, sides, { backgroundColor: palette.card }]}>
         <Text style={[styles.title, { color: palette.text }]}>
           {t('settings.ayahOfDayTime', 'Notification time')}
         </Text>

@@ -16,7 +16,7 @@
  *   • the gate — nothing opens until the muṣḥaf is on the device, and the
  *     Ḥafṣ fonts are ~180 MB, which is far too much to fetch unasked;
  *   • the route — phones get `MushafPhoneReader`, everything larger gets
- *     `MushafSpreadReader`, decided once from `DEVICE_CLASS`.
+ *     `MushafSpreadReader`, by the screen the app is on (`useDeviceClass`).
  *
  * The keyboard is bound here too, once, because the arrows belong to the
  * Quran reader as a whole and the two readers are how it draws itself on a
@@ -58,7 +58,7 @@ import {
 } from './QuranDownloadStrip';
 import { WordReaderNotice } from './WordReaderNotice';
 import { QuranFeaturesOfferSheet, useQuranFeaturesOffer } from './QuranFeaturesOffer';
-import { DEVICE_CLASS } from '../responsive/deviceClass';
+import { useDeviceClass } from '../responsive/deviceClass';
 import { MushafPhoneReader } from './MushafPhoneReader';
 import { MushafSpreadReader } from './MushafSpreadReader';
 import { useQuranState } from './quranState';
@@ -87,6 +87,35 @@ export function MushafReader(props: Props) {
    * The gate below still cares only about `fonts`.
    */
   const run = useQuranDownloadRun();
+  /**
+   * Phone reader or spread — and on a foldable, both in one sitting.
+   *
+   * The class follows the screen (`deviceClass.ts`), so folding or
+   * unfolding swaps one reader for the other. The new one has to open on
+   * the page the old one was showing, not on the page the screen was
+   * opened at: the readers report every page they settle on, and the last
+   * report is what the next reader opens with.
+   */
+  const deviceClass = useDeviceClass();
+  const lastPageRef = useRef<number | undefined>(undefined);
+  const { onPageChange: reportPage } = props;
+  const onReaderPage = useCallback(
+    (page: number) => {
+      lastPageRef.current = page;
+      reportPage?.(page);
+    },
+    [reportPage],
+  );
+  const [openAt, setOpenAt] = useState(props.initialPage);
+  const openedClass = useRef(deviceClass);
+  useEffect(() => {
+    if (openedClass.current === deviceClass) return;
+    openedClass.current = deviceClass;
+    setOpenAt(lastPageRef.current ?? props.initialPage);
+    // Only on a change of reader: the route's page is where the screen
+    // OPENED, and it must not pull the reader back on every render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [deviceClass]);
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
   /**
@@ -308,7 +337,7 @@ export function MushafReader(props: Props) {
   // The strip goes UNDER that title and stops at the bar — at the top of
   // the window it ran behind the title and on under the column.
   const besideBar =
-    vbar != null && DEVICE_CLASS === 'phone' && !props.isFullscreen;
+    vbar != null && deviceClass === 'phone' && !props.isFullscreen;
   const strip =
     stripShowsRun(run) ? (
       besideBar && vbar ? (
@@ -327,21 +356,21 @@ export function MushafReader(props: Props) {
     ) : null;
 
   // ── The route ───────────────────────────────────────────────────────
-  // Answered once, at module scope: a phone cannot become an iPad
-  // mid-session, only its window can change size, and each reader handles
-  // its own window from here.
+  // Phone or large, by the screen the app is on — see `deviceClass` above.
   const readerProps: MushafReaderProps = {
     ...props,
+    initialPage: openAt,
+    onPageChange: onReaderPage,
     keyTurn: keyTurnRef,
     // The strip has already padded past iOS's floating header; the reader
     // must not pad past it a second time.
     chromeCleared: strip != null,
   };
   const reader =
-    DEVICE_CLASS === 'phone' ? (
-      <MushafPhoneReader {...readerProps} />
+    deviceClass === 'phone' ? (
+      <MushafPhoneReader key="phone" {...readerProps} />
     ) : (
-      <MushafSpreadReader {...readerProps} />
+      <MushafSpreadReader key="spread" {...readerProps} />
     );
   // The word reader's one line, over whichever reader this is — absent
   // until there is something to say, so it costs the page nothing.
