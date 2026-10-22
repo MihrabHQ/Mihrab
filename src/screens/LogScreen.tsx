@@ -117,6 +117,7 @@ import { loggedPrayersOn } from '../journal/loggedPrayers';
 import {
   coerceFastEntries,
   findFastEntry,
+  liveFasts,
   isRecommendedVoluntaryFastDay,
   ramadanDayNumber,
   upsertFastEntry,
@@ -668,7 +669,7 @@ export function LogScreen() {
       if (!isLogged(e)) continue;
       if (earliest === null || e.date < earliest) earliest = e.date;
     }
-    for (const f of fasts) {
+    for (const f of liveFasts(fasts)) {
       if (earliest === null || f.date < earliest) earliest = f.date;
     }
     return earliest;
@@ -706,7 +707,10 @@ export function LogScreen() {
   const showMore = useCallback(() => setExtraWeeks(w => w + 26), []);
 
   const heatmapRows = useMemo(() => {
-    const fasted = new Set(fasts.filter(f => f.completed).map(f => f.date));
+    // `liveFasts`: a day unmarked is kept as a tombstone (for sync), still
+    // `completed` from when it was a fast — counting it drew a fasted ring
+    // on a day the reader had taken it off, and nothing could remove it.
+    const fasted = new Set(liveFasts(fasts).filter(f => f.completed).map(f => f.date));
     return buildHeatmap(
       scoreByDay(entries),
       fasted,

@@ -118,7 +118,12 @@ export function upsertFastEntry(
     ];
   }
   const next = [...entries];
-  next[idx] = { ...next[idx], ...patch, loggedAt: now };
+  // Logging a day that was deleted brings it back: the tombstone's
+  // `cleared` must not ride along, or the write lands on a row every
+  // reader skips — "Mark as fasted" on a day once unmarked did nothing.
+  const kept: FastEntry = { ...next[idx] };
+  delete kept.cleared;
+  next[idx] = { ...kept, ...patch, loggedAt: now };
   return next;
 }
 
