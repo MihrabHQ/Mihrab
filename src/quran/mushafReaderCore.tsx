@@ -967,13 +967,32 @@ export function MushafPageHeader({
         </Text>
         </View>
       ) : null}
+      {/* ── 'none' KEEPS THE ROW'S HEIGHT, NOT JUST ITS PADDING ──────
+          An empty row is its padding alone, and the label's line is what
+          made the other one taller: in a spread the page under the label
+          sat a line lower than its facing page, the frames visibly out of
+          step across the gutter. The same line, unseen, makes the two
+          rows one height at any text size. */}
+      {show === 'none' ? (
+        <Text
+          accessibilityElementsHidden
+          importantForAccessibility="no-hide-descendants"
+          style={[styles.pageHeaderText, styles.pageHeaderGhost]}>
+          {' '}
+        </Text>
+      ) : null}
       {exitBtn}
       {/* No exit cluster to ride in (the spread's band has no ✕): the
-          badge stands on its own at the row's other end. */}
+          badge stands on its own at the row's other end. On the page that
+          draws nothing it is there unseen, for its height — see above. */}
       {lock && !exitBtn ? (
-        <View style={styles.exitLock}>
+        <View
+          style={[styles.exitLock, show === 'none' && styles.pageHeaderGhost]}
+          pointerEvents={show === 'none' ? 'none' : 'auto'}
+          accessibilityElementsHidden={show === 'none'}
+          importantForAccessibility={show === 'none' ? 'no-hide-descendants' : 'auto'}>
           <ReadingLockBadge
-            testID="mushaf-lock-badge"
+            testID={show === 'none' ? undefined : 'mushaf-lock-badge'}
             ink={ornament}
             ground={lock.ground}
             onUnlock={lock.onUnlock}
@@ -1498,6 +1517,7 @@ const styles = StyleSheet.create({
   // Physical, not logical: the reader's pager is pinned `direction: 'ltr'`
   // (see `listWrap`), which is what lets `labelSide` mean left and right.
   pageHeaderLabelRowFlip: { flexDirection: 'row-reverse' },
+  pageHeaderGhost: { opacity: 0 },
   pageHeaderText: {
     fontSize: TYPE.footnote.fontSize,
     fontWeight: '600',
