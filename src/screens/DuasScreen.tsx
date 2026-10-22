@@ -31,6 +31,7 @@ import {
   BackToTopButton,
   Group,
   Row,
+  SegmentedControl,
   TextSizeStepper,
   useBackToTop,
 } from '../components/ui';
@@ -54,6 +55,42 @@ import {
 } from '../navigation/tabBarVisibility';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RADIUS, SPACING } from '../theme/tokens';
+import { findSurah, loadSurah } from '../quran/quran';
+
+/** A surah of the three Quls as the card shows it, read from the muṣḥaf. */
+type SurahBody = { basmalah: string | null; arabic: string; translation: string };
+
+const ARABIC_DIGITS = '٠١٢٣٤٥٦٧٨٩';
+const arabicNumber = (n: number) =>
+  String(n).replace(/\d/g, d => ARABIC_DIGITS[Number(d)]);
+
+/**
+ * The bundled text, laid out for reading aloud: the basmalah on a line of
+ * its own (the files carry it at the front of ayah 1, as four words), then
+ * the ayahs, each closed by its number. The meaning numbers its ayahs the
+ * same way.
+ */
+export function surahBody(
+  surah: number,
+  arabic: ReadonlyArray<string>,
+  translation: ReadonlyArray<string>,
+): SurahBody | null {
+  if (arabic.length === 0) return null;
+  const ayahs = [...arabic];
+  let basmalah: string | null = null;
+  if (surah !== 1 && surah !== 9) {
+    const words = ayahs[0].split(' ');
+    if (words.length > 4) {
+      basmalah = words.slice(0, 4).join(' ');
+      ayahs[0] = words.slice(4).join(' ');
+    }
+  }
+  return {
+    basmalah,
+    arabic: ayahs.map((a, i) => `${a} \uFD3F${arabicNumber(i + 1)}\uFD3E`).join(' '),
+    translation: translation.map((tr, i) => `(${i + 1}) ${tr}`).join(' '),
+  };
+}
 
 /**
  * Dua library screen — task #26.
@@ -243,6 +280,34 @@ export function DuasScreen({ route, navigation }: DuasScreenProps = {}) {
    * forever, and it is one tap away.
    */
   const [openParts, setOpenParts] = useState<Record<string, boolean>>({});
+  /**
+   * A DUA OF WHOLE SURAHS IS READ ONE SURAH AT A TIME.
+   *
+   * The three Quls were one card with their three opening lines run
+   * together — the start of each surah and none of the rest, so a reader
+   * reciting them had to go and find them in the muṣḥaf. Each is a
+   * segment now, with its whole text, and the counter counts that surah
+   * (or the set, where the set is what is repeated).
+   */
+  const [partSel, setPartSel] = useState<Record<string, number>>({});
+  const [surahText, setSurahText] = useState<Record<number, SurahBody>>({});
+  useEffect(() => {
+    if (selected === null) return;
+    const wanted = new Set<number>();
+    for (const d of duasByCategory(selected)) {
+      for (const part of d.parts ?? []) wanted.add(part.surah);
+    }
+    let live = true;
+    for (const n of wanted) {
+      void loadSurah(n).then(loaded => {
+        const body = loaded ? surahBody(n, loaded.arabic, loaded.translation) : null;
+        if (live && body) setSurahText(prev => (prev[n] ? prev : { ...prev, [n]: body }));
+      });
+    }
+    return () => {
+      live = false;
+    };
+  }, [selected]);
   const togglePart = useCallback((key: string) => {
     setOpenParts(prev => ({ ...prev, [key]: !prev[key] }));
   }, []);
@@ -464,7 +529,33 @@ export function DuasScreen({ route, navigation }: DuasScreenProps = {}) {
                   </Group>
                 </View>
               ))
-            : duasByCategory(selected).map(dua => (
+            : duasByCategory(selected).map(dua => {
+                const partIndex = partSel[dua.id] ?? 0;
+                const part = dua.parts?.[partIndex];
+                const body = part ? surahText[part.surah] : undefined;
+                // Until the muṣḥaf's text is read in: the surah's opening.
+                const arabicShown = part
+                  ? body?.arabic ?? dua.arabic.split(' · ')[partIndex] ?? dua.arabic
+                  : dua.arabic;
+                const translitShown = part ? part.transliteration : dua.transliteration;
+                const countKey =
+                  part && dua.countEach ? `${dua.id}|${part.surah}` : dua.id;
+                const countNow = counts[countKey] ?? 0;
+                const target = dua.repeat ?? 0;
+                const onCount = () => {
+                  onIncrement(countKey, target);
+                  // A surah counted out hands on to the next.
+                  if (
+                    part &&
+                    dua.countEach &&
+                    dua.parts &&
+                    countNow + 1 === target &&
+                    partIndex + 1 < dua.parts.length
+                  ) {
+                    setPartSel(prev => ({ ...prev, [dua.id]: partIndex + 1 }));
+                  }
+                };
+                return (
                 <View
                   key={dua.id}
                   style={[
@@ -506,11 +597,61 @@ export function DuasScreen({ route, navigation }: DuasScreenProps = {}) {
                       <ShareIcon size={18} color={palette.muted} />
                     </Pressable>
                   </View>
+                  {dua.parts ? (
+                    <>
+                      {/* What the set is: an instruction, not a meaning —
+                          the meaning is each surah's own, under it. */}
+                      {showTranslation ? (
+                        <Text
+                          style={[
+                            styles.partNote,
+                            latin.style,
+                            { color: palette.muted },
+                          ]}
+                        >
+                          {latin.open}
+                          {t(`duas.${dua.id}.translation`, {
+                            defaultValue: dua.translation,
+                          })}
+                          {latin.close}
+                        </Text>
+                      ) : null}
+                      <SegmentedControl
+                        accessibilityLabel={t(`duas.${dua.id}.title`, {
+                          defaultValue: dua.titleEn,
+                        })}
+                        segments={dua.parts.map((part, i) => {
+                          const name = findSurah(part.surah)?.romanized ?? String(part.surah);
+                          const done =
+                            dua.countEach &&
+                            (counts[`${dua.id}|${part.surah}`] ?? 0) >= (dua.repeat ?? 0) &&
+                            (dua.repeat ?? 0) > 0;
+                          return {
+                            key: String(i),
+                            label: done ? `${name} ✓` : name,
+                            accessibilityLabel: name,
+                          };
+                        })}
+                        value={String(partSel[dua.id] ?? 0)}
+                        onChange={k =>
+                          setPartSel(prev => ({ ...prev, [dua.id]: Number(k) }))
+                        }
+                      />
+                    </>
+                  ) : null}
+                  {part && body?.basmalah ? (
+                    <Text
+                      style={[styles.arabic, styles.basmalah, { color: palette.text }]}
+                      accessibilityLabel={body.basmalah}
+                    >
+                      {body.basmalah}
+                    </Text>
+                  ) : null}
                   <Text
                     style={[styles.arabic, { color: palette.text }]}
-                    accessibilityLabel={dua.arabic}
+                    accessibilityLabel={arabicShown}
                   >
-                    {dua.arabic}
+                    {arabicShown}
                   </Text>
                   {/* The two aids, behind their own names.
 
@@ -579,10 +720,10 @@ export function DuasScreen({ route, navigation }: DuasScreenProps = {}) {
                         latin.style,
                         { color: palette.muted },
                       ]}
-                      accessibilityLabel={dua.transliteration}
+                      accessibilityLabel={translitShown}
                     >
                       {latin.open}
-                      {dua.transliteration}
+                      {translitShown}
                       {latin.close}
                     </Text>
                   ) : null}
@@ -602,9 +743,11 @@ export function DuasScreen({ route, navigation }: DuasScreenProps = {}) {
                     teach `latin` above that they exist. Hidden entirely
                     when the app language is Arabic. */}
                       {latin.open}
-                      {t(`duas.${dua.id}.translation`, {
-                        defaultValue: dua.translation,
-                      })}
+                      {part
+                        ? body?.translation ?? ''
+                        : t(`duas.${dua.id}.translation`, {
+                            defaultValue: dua.translation,
+                          })}
                       {latin.close}
                     </Text>
                   ) : null}
@@ -621,21 +764,21 @@ export function DuasScreen({ route, navigation }: DuasScreenProps = {}) {
                           'Tap to count',
                         )}
                         accessibilityValue={{
-                          now: counts[dua.id] ?? 0,
+                          now: countNow,
                           min: 0,
                           max: dua.repeat,
-                          text: `${counts[dua.id] ?? 0} / ${dua.repeat}`,
+                          text: `${countNow} / ${dua.repeat}`,
                         }}
-                        onPress={() => onIncrement(dua.id, dua.repeat ?? 0)}
+                        onPress={onCount}
                         style={[
                           styles.counterBtn,
                           {
                             backgroundColor:
-                              (counts[dua.id] ?? 0) >= (dua.repeat ?? 0)
+                              countNow >= target
                                 ? palette.accentBg
                                 : palette.bg,
                             borderColor:
-                              (counts[dua.id] ?? 0) >= (dua.repeat ?? 0)
+                              countNow >= target
                                 ? palette.accent
                                 : palette.border,
                           },
@@ -648,7 +791,7 @@ export function DuasScreen({ route, navigation }: DuasScreenProps = {}) {
                             { color: palette.text },
                           ]}
                         >
-                          {counts[dua.id] ?? 0}
+                          {countNow}
                         </Text>
                         <Text
                           style={[
@@ -662,7 +805,7 @@ export function DuasScreen({ route, navigation }: DuasScreenProps = {}) {
                       <Pressable
                         accessibilityRole="button"
                         accessibilityLabel={t('tasbih.reset', 'Reset')}
-                        onPress={() => onResetCount(dua.id)}
+                        onPress={() => onResetCount(countKey)}
                         hitSlop={8}
                         style={styles.counterReset}
                       >
@@ -694,7 +837,8 @@ export function DuasScreen({ route, navigation }: DuasScreenProps = {}) {
                     </Text>
                   </View>
                 </View>
-              ))}
+                );
+              })}
         </CenteredColumn>
       </ScrollView>
       {selected !== null ? (
@@ -855,6 +999,9 @@ const styles = StyleSheet.create({
   aidChipText: { fontSize: TYPE.label.fontSize, fontWeight: '700' },
   translit: { fontSize: TYPE.callout.fontSize, fontStyle: 'italic' },
   translation: { fontSize: TYPE.callout.fontSize, lineHeight: 22 },
+  partNote: { fontSize: TYPE.footnote.fontSize, lineHeight: 18 },
+  // The basmalah opens the surah on a line of its own, centred.
+  basmalah: { textAlign: 'center' },
   metaRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',

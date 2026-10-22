@@ -51,7 +51,51 @@ export type Dua = {
   source: string;
   /** Times to recite (for after-prayer / morning-evening adhkar). */
   repeat?: number;
+  /**
+   * Whole surahs recited as one dhikr — the three Quls. Each is a segment
+   * of its own on the card, its full text read from the app's bundled
+   * Qur'an (never typed here), so `arabic` above keeps only the openings
+   * that name them: what the share sheet sends, and what the card shows
+   * until the text is read in.
+   */
+  parts?: ReadonlyArray<DuaSurahPart>;
+  /**
+   * `repeat` counts each part, not the set: "three times each". Without
+   * it the set is what is counted (the bedtime Muʿawwidhāt, recited
+   * together and then wiped over the body, three times).
+   */
+  countEach?: boolean;
 };
+
+/** One surah of a dua made of whole surahs. */
+export type DuaSurahPart = {
+  surah: number;
+  /** Latin pronunciation of the whole surah, basmalah first. */
+  transliteration: string;
+};
+
+/**
+ * Al-Ikhlāṣ, al-Falaq and an-Nās, in the order they are recited. The
+ * Arabic and the meaning come from the bundled muṣḥaf and its Sahih
+ * International translation; only the pronunciation lives here.
+ */
+const THREE_QULS: ReadonlyArray<DuaSurahPart> = [
+  {
+    surah: 112,
+    transliteration:
+      'Bismi-llāhi-r-raḥmāni-r-raḥīm. Qul huwa-llāhu aḥad. Allāhu-ṣ-ṣamad. Lam yalid wa lam yūlad. Wa lam yakun lahū kufuwan aḥad.',
+  },
+  {
+    surah: 113,
+    transliteration:
+      'Bismi-llāhi-r-raḥmāni-r-raḥīm. Qul aʿūdhu bi-rabbi-l-falaq. Min sharri mā khalaq. Wa min sharri ghāsiqin idhā waqab. Wa min sharri-n-naffāthāti fi-l-ʿuqad. Wa min sharri ḥāsidin idhā ḥasad.',
+  },
+  {
+    surah: 114,
+    transliteration:
+      'Bismi-llāhi-r-raḥmāni-r-raḥīm. Qul aʿūdhu bi-rabbi-n-nās. Maliki-n-nās. Ilāhi-n-nās. Min sharri-l-waswāsi-l-khannās. Alladhī yuwaswisu fī ṣudūri-n-nās. Mina-l-jinnati wa-n-nās.',
+  },
+];
 
 export const DUAS: ReadonlyArray<Dua> = [
   // — Morning adhkar — order, repeat counts, and content match the
@@ -81,6 +125,8 @@ export const DUAS: ReadonlyArray<Dua> = [
       'Recite Surah al-Ikhlas, al-Falaq, and an-Nas, three times each.',
     source: 'Jami at-Tirmidhi',
     repeat: 3,
+    parts: THREE_QULS,
+    countEach: true,
   },
   {
     id: 'morning_03_fitra_islam',
@@ -344,6 +390,8 @@ export const DUAS: ReadonlyArray<Dua> = [
       'Recite Surah al-Ikhlas, al-Falaq, and an-Nas, three times each.',
     source: 'Jami at-Tirmidhī',
     repeat: 3,
+    parts: THREE_QULS,
+    countEach: true,
   },
   {
     id: 'evening_03_fitra_islam',
@@ -627,6 +675,8 @@ export const DUAS: ReadonlyArray<Dua> = [
       'Recite the three Quls after every prescribed prayer (three times after Fajr and Maghrib).',
     source: 'Sunan Abī Dāwūd 1523, Jāmiʿ at-Tirmidhī 2903',
     repeat: 1,
+    parts: THREE_QULS,
+    countEach: true,
   },
   {
     id: 'afterPrayer_ayat_kursi',
@@ -797,6 +847,7 @@ export const DUAS: ReadonlyArray<Dua> = [
       'When the Prophet ﷺ went to bed he would blow into his hands while reciting the Muʿawwidhāt and Surah al-Ikhlas, then wipe over his face and as much of his body as his hands could reach.',
     source: 'Sahih al-Bukhari 5017, Sahih Muslim 2192',
     repeat: 3,
+    parts: THREE_QULS,
   },
   {
     id: 'sleep_ayat_kursi',
