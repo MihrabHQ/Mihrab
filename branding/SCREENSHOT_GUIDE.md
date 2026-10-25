@@ -105,6 +105,44 @@ By default `~/Desktop/Simulator Screenshot - <device> - <date>.png`. If your des
 
 ---
 
+## The home retake after the countdown change (2026-10-25)
+
+The countdown's seconds now sit on the hours' and minutes' line, and the
+next prayer's time stands at the far end of it, over that prayer's name.
+Every capture showing Today was taken again, each at the same date,
+second, theme and logged prayers as the one it replaces, so the panels
+change in that and nothing else:
+
+- Android, on a new `Mihrab_Shots_37` (API 37 google_apis, pixel_7,
+  rooted) with the release build: `store/play/01_home`, the four other
+  fan hours, `store/feature/home-sky-night` (also `and-home-night`),
+  `and-home`, `and-home-dark`, `and-home-maliki`, and
+  `store/play-tablet/01_home` (`wm size 2560x1600`, `wm density 320`).
+  The zone was **Africa/Abidjan** — a fixed UTC+0 that reads Casablanca's
+  times on old zone data — and the times were checked against the old
+  panels before shooting. The khatmah was written into `RKStorage` for
+  each date (started the day before, page 25 read to, so the card says
+  "day 2 of 30 · 15 pages left today · page 26").
+- iPhone 6.9″, iPad 13″ and the iPhone Duo, on the simulators that took
+  the originals (their Keychains still hold the logged prayers). The
+  simulator clock is the Mac's, so the app was run at the scene's time
+  with a small interposer that shifts `CLOCK_REALTIME` for the one app:
+  `SIMCTL_CHILD_DYLD_INSERT_LIBRARIES=<simtime.dylib>`
+  `SIMCTL_CHILD_MIHRAB_TIME_OFFSET=<seconds>`. Keep the dylib OUTSIDE
+  ~/Documents — a sandboxed folder makes dyld wait on a privacy prompt
+  nobody sees, and the app stays black.
+- The simulator build must be signed (`CODE_SIGN_IDENTITY=-
+  CODE_SIGNING_ALLOWED=YES`): an unsigned one has no Keychain, the
+  journal never loads, and every circle reads "has not come yet".
+- The iPad status bar's date ("Tue Oct 13") cannot be set (`--time`
+  with a date shows the weekday of the wrong year), so the original
+  capture's status bar was laid over the new one.
+- The Duo is captured with `idb screenshot` (the cover display);
+  `simctl io screenshot` returns the black inner display.
+
+Each frame was picked from a burst around the target second so the
+countdown's seconds match the original panel's.
+
 ## Wrong times corrected in place (2026-10-18) — READ BEFORE A RETAKE
 
 Morocco moved to permanent GMT (UTC+0) on 20 September 2026 (tzdata 2026c).
