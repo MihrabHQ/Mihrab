@@ -17,6 +17,7 @@ export const MIRROR_TAGS = {
   tafsir: 'data-tafsir-v1',
   wordMeanings: 'data-wordmeanings-v1',
   riwayah: 'data-riwayah-v1',
+  indopak: 'data-indopak-v1',
 } as const;
 
 export function mirrorUrl(tag: string, asset: string): string {

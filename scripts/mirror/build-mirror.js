@@ -11,6 +11,7 @@
  *   data-tafsir-v1         <edition>__<surah>.json     (spa5k/tafsir_api, MIT)
  *   data-wordmeanings-v1   <surah>.json                (QuranEnc arabic_seraj)
  *   data-riwayah-v1        <id>.json                   (Quranpedia / KFGQPC)
+ *   data-indopak-v1        text, font and both licences (DigitalKhatt, pinned commit)
  */
 const fs = require('fs');
 const path = require('path');
@@ -24,6 +25,17 @@ const editions = [
 ].map(m => m[1]);
 
 const RIWAYAH = { warsh: 4, qalun: 7, shubah: 9 };
+
+// DigitalKhatt IndoPak: text (MIT) and font (OFL), pinned to one commit so
+// the release and the fallback are the same bytes. Both licence texts ride
+// along, as MIT and OFL ask of anyone redistributing the files.
+const INDOPAK_COMMIT = '78372d7a1e211bbab677cc0304384f278f508657';
+const INDOPAK_RAW = `https://raw.githubusercontent.com/DigitalKhatt/digitalkhatt-js/${INDOPAK_COMMIT}`;
+const INDOPAK_FILES = {
+  'quran_text_indopak_15.ts': 'apps/site-angular/src/app/services/quran_text_indopak_15.ts',
+  'DigitalKhattIndoPak.ttf': 'apps/site-angular/src/assets/fonts/coretext/DigitalKhattIndoPak.ttf',
+  'LICENSE-DigitalKhatt-MIT.txt': 'LICENSE',
+};
 
 async function get(url, tries = 4) {
   let last;
@@ -103,5 +115,16 @@ function put(tag, name, buf) {
     put('data-riwayah-v1', `${id}.json`, buf);
   }
   report.riwayah = Object.keys(RIWAYAH);
+
+  for (const [name, repoPath] of Object.entries(INDOPAK_FILES)) {
+    const buf = await get(`${INDOPAK_RAW}/${repoPath}`);
+    if (!buf) throw new Error('indopak 404 ' + name);
+    if (name.endsWith('.ts') && !/[\u0600-\u06FF]/.test(buf.toString('utf8'))) throw new Error('indopak text is not Arabic');
+    if (name.endsWith('.ttf') && buf.readUInt32BE(0) !== 0x00010000) throw new Error('indopak font is not a TrueType file');
+    put('data-indopak-v1', name, buf);
+  }
+  // The repo ships no OFL file; the font's own notice plus the OFL 1.1 text.
+  put('data-indopak-v1', 'OFL-DigitalKhattIndoPak.txt', fs.readFileSync(path.join(__dirname, 'OFL-DigitalKhattIndoPak.txt')));
+  report.indopak = { commit: INDOPAK_COMMIT, files: Object.keys(INDOPAK_FILES).length + 1 };
   console.log(JSON.stringify(report));
 })().catch(e => { console.error(e); process.exit(1); });
