@@ -88,13 +88,15 @@ describe('convertIndopak', () => {
       [1, 2, 4, 1, `${END}١ۙ`],
       [1, 3, 1, 0],
     ]);
-    // Printed 6, the bidi-override case, sits inside Ḥafṣ 1:7.
+    // Printed 6, the bidi-override case, sits inside Ḥafṣ 1:7 — and is the
+    // digit with the DISPUTED end sign after it, as the font composes it,
+    // not a medallion.
     expect(page[6]).toEqual([
-      [1, 7, 3, 1, `${END}٦࣢ۙ`],
+      [1, 7, 3, 1, '٦\u08E2ۙ'],
       [1, 7, 1, 0],
     ]);
     expect(page[7]).toEqual([[1, 7, 4, 1, `${END}٧ࣖ`]]);
-    expect(printedNumber([1, 7, 3, 1, `${END}٦࣢ۙ`])).toBe(6);
+    expect(printedNumber([1, 7, 3, 1, '٦\u08E2ۙ'])).toBe(6);
     expect(printedNumber([1, 1, 4, 1, END])).toBeNull();
     expect(printedNumber([2, 3, 2, 1])).toBe(3);
   });
@@ -119,16 +121,23 @@ describe('convertIndopak', () => {
     expect(rows![1].ayahs).toEqual([
       { surah: 1, ayah: 1, text: basmalah, ends: true, mark: END },
     ]);
-    const line7 = pages[0][6].replace('\u202E', ' ').split(' ');
+    // The line's words, without the out-of-order ayah end glued to the third.
+    const line7 = pages[0][6].replace(/\u202E[\u0660-\u0669]+\u08E2\S*/, '').split(' ');
     expect(rows![6].ayahs.map(a => a.text)).toEqual([
       line7.slice(0, 3).join(' '),
       line7[line7.length - 1],
     ]);
     expect(rows![6].ayahs[0].ends).toBe(true);
     expect(rows![7].ayahs[0]).toMatchObject({ surah: 1, ayah: 7, ends: true });
-    // The last row before the end of the page is not a closing row —
-    // al-Baqarah carries on — but page 610's last row is.
-    expect(rows![7].closes).toBeUndefined();
+    // Al-Fātiḥah ends at the foot of page 1 and the next page opens on a
+    // band, so its last row closes the surah like any other.
+    expect(rows![7].closes).toBe(true);
+    // A page whose next page does NOT open on a band (here the fixture's
+    // third page with its band and basmalah cut off) keeps its last row
+    // a full line: the surah carries on.
+    const carriesOn = { pages: [lines.pages[0], lines.pages[1], lines.pages[2].slice(2), lines.pages[2]] };
+    const page2 = exactPageFor(carriesOn, 2, (s, a) => text.get(`${s}:${a}`) ?? null)!;
+    expect(page2[page2.length - 1].closes).toBeUndefined();
     const lastRows = exactPageFor(lines, 3, (s, a) => text.get(`${s}:${a}`) ?? null)!;
     expect(lastRows[lastRows.length - 1].closes).toBe(true);
     expect(lastRows[4].closes).toBe(true); // al-Falaq's last line, before an-Nās's band

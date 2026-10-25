@@ -22,7 +22,7 @@
  */
 import { ayahCount } from './ayahIndex';
 import { loadRiwayahPages } from './riwayahData';
-import { DEFAULT_RIWAYAH, type RiwayahId } from './riwayat';
+import { DEFAULT_RIWAYAH, readingOf as readingOfRiwayah, type RiwayahId } from './riwayat';
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const data = require('./data/pages.json') as {
@@ -162,6 +162,49 @@ export function juzForPageIn(
   riwayah: RiwayahId = DEFAULT_RIWAYAH,
 ): number {
   return pageMetaIn(page, riwayah)?.juz ?? 1;
+}
+
+/**
+ * The page a reader should OPEN at, from what a caller knows.
+ *
+ * ── WHY THE PAGE NUMBER ALONE CANNOT BE TRUSTED ───────────────────────
+ *
+ * Callers hand the reader a page they computed or stored: a bookmark's
+ * page, the reading marker's, the khatmah's next portion, a notification
+ * link, a juz row. None of them says WHICH muṣḥaf that page counts in,
+ * and the Madinah 604 and the IndoPak 610 put the same ayah on different
+ * pages — Yā-Sīn opens on 440 in one and 440 is the end of Fāṭir in the
+ * other. Opened as given, the reader shows a page the reader did not ask
+ * for, and in scripture "nearly the right page" is the wrong page.
+ *
+ * The AYAH is the coordinate every print of a reading agrees on. So for
+ * a print of Ḥafṣ (the Madinah pages and IndoPak share Ḥafṣ's ayah keys)
+ * an ayah, when the caller has one, decides the page in the print on
+ * screen. A page without an ayah is kept only if it holds part of the
+ * surah the route names; otherwise the surah's first page is opened —
+ * the one place the route unambiguously means.
+ *
+ * Other readings (Warsh, Qālūn) number their ayahs differently and keep
+ * the behaviour they had: the page as given.
+ */
+export function resolveOpenPage(
+  riwayah: RiwayahId,
+  surah: number,
+  ayah?: number,
+  page?: number,
+): number | undefined {
+  const sameKeys = riwayah === DEFAULT_RIWAYAH || readingOfRiwayah(riwayah) === 'hafs';
+  if (!sameKeys) return page;
+  if (ayah != null && ayah >= 1 && ayah <= ayahCount(surah)) {
+    return findPageForAyah(surah, ayah, riwayah);
+  }
+  if (page == null) return undefined;
+  const meta = pageMetaIn(page, riwayah);
+  const holdsSurah =
+    meta != null &&
+    compare(meta.start, { surah, ayah: ayahCount(surah) }) <= 0 &&
+    (meta.end == null || compare(meta.end, { surah, ayah: 1 }) > 0);
+  return holdsSurah ? page : findPageForAyah(surah, 1, riwayah);
 }
 
 function compare(

@@ -76,12 +76,24 @@ jest.mock('../src/screens/quran/TranslationSurahScreen', () => ({
 }));
 jest.mock('../src/quran/riwayahData', () => ({
   hydrateRiwayahData: jest.fn(async () => {}),
+  riwayahDataHydrated: () => true,
+  useRiwayahAvailability: () => 0,
+  loadRiwayahPages: () => null,
+  loadedRiwayahFontFamily: () => null,
 }));
 jest.mock('../src/navigation/useAndroidSubScreenBack', () => ({
   useAndroidSubScreenBack: () => {},
 }));
 
 import { QuranSurahScreen } from '../src/screens/QuranSurahScreen';
+import { hydrateQuranState } from '../src/quran/quranState';
+
+// The muṣḥaf waits for the stored preferences before it chooses a page
+// (`QuranSurahScreen`, "the muṣḥaf is known…"); read them first, as the
+// app has by the time anyone opens a surah.
+beforeAll(async () => {
+  await hydrateQuranState();
+});
 import { activeReaderMode } from '../src/quran/readerMode';
 import { loadSettings } from '../src/settings/storage';
 import { DEFAULT_SETTINGS } from '../src/settings/types';

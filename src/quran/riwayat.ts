@@ -192,9 +192,13 @@ export const RIWAYAT: readonly RiwayahDefinition[] = [
     arabic: 'حفص · ہندی',
     render: 'unicode-lines',
     printed: {
-      // Provisional, until measured on a device in the print check —
-      // see `PRINTED_TYPICAL_LINE_EM` in `MushafUnicodePage` for how.
-      typicalLineEm: 19.0,
+      // Fitted, not chosen: every line of the book shaped in its own
+      // face (tools: shape_lines.py), and the share of full lines that
+      // reach the measure inside the word-gap band is flat-topped at
+      // 18.0–18.5 — 77–78%, with the squeeze at the first percentile
+      // 0.91 and the stretch at the 95th 1.06. The same figure Amiri
+      // wanted on the Warsh print, by coincidence rather than design.
+      typicalLineEm: 18.2,
       lineHeightEm: 2.05,
     },
     source: {

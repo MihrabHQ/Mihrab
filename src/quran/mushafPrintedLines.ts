@@ -99,11 +99,20 @@ export function exactPageFor(
     }
     out.push({ ayahs, empty: false, share: 1 });
   }
-  // A row before a band, a basmalah or the end of the book closes a surah.
+  // A row before a band, a basmalah or the end of the book closes a surah —
+  // and so does a page's LAST row when the next page opens on a band:
+  // eight surahs end at the foot of a page in this print (al-Ikhlāṣ on
+  // 609 among them), and those lines are short in the print like any
+  // other closing line. Measured on the whole book on a device: without
+  // this they were stretched to the scale ceiling before being centred.
+  const nextPageOpensSurah = table.pages[page]?.[0]?.[0] === 'h';
   for (let i = 0; i < out.length; i++) {
     if (out[i].empty) continue;
     const next = out[i + 1];
-    if (!next ? page === table.pages.length : next.empty) out[i].closes = true;
+    const last = !next;
+    if (last ? page === table.pages.length || nextPageOpensSurah : next.empty) {
+      out[i].closes = true;
+    }
   }
   return out;
 }

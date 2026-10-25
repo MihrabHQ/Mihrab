@@ -172,6 +172,22 @@ export function ayahMark(
   return { text: ayahMarkText(ayah), fontFamily: FONTS.arabicQuran };
 }
 
+/**
+ * A printed ayah-end mark, ready to draw in the page's own face.
+ *
+ * The disputed end (al-Fātiḥah's printed 6 in IndoPak) is a digit with the
+ * U+08E2 sign after it, and the font sets the sign over the digit only
+ * when the pair is shaped right to left. Arabic-Indic digits are a
+ * left-to-right run in the bidi algorithm, so on a device the pair came
+ * out reversed — the sign over the end of the word, the digit beside it.
+ * An RLO … PDF pair around it is the publisher's own answer (the file has
+ * the RLO) and makes the run right to left; both are default-ignorable
+ * and draw nothing. The ordinary medallion, U+06DD first, needs neither.
+ */
+export function printedMarkText(mark: string): string {
+  return /^[\u0660-\u0669]/.test(mark) ? `\u202E${mark}\u202C` : mark;
+}
+
 /** Surah-band and basmalah rows, in units of a text line. */
 const BAND_ROWS = 1.75;
 const BASMALAH_ROWS = 1.3;
@@ -1544,7 +1560,7 @@ function PrintedPageBody({
                     // the shaper keeps it in one run — see `ayahMarkText`.
                     <Text style={{ color: token.ink ?? colors.accent }}>
                       {NBSP}
-                      {token.markText}
+                      {printedMarkText(token.markText)}
                     </Text>
                   ) : token.mark != null ? (
                     <Text

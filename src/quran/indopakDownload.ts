@@ -23,7 +23,14 @@
 import ReactNativeBlobUtil from 'react-native-blob-util';
 import { isValidFontFile } from '../native/MushafFont';
 import { CONTENT_DEADLINES, fetchContentOnce, withDownloadDeadline } from './contentNetwork';
-import { INDOPAK_COMMIT, INDOPAK_FONT, INDOPAK_TEXT, indopakUrls, type IndopakFile } from './indopakSource';
+import {
+  INDOPAK_COMMIT,
+  INDOPAK_FONT,
+  INDOPAK_FORMAT,
+  INDOPAK_TEXT,
+  indopakUrls,
+  type IndopakFile,
+} from './indopakSource';
 import { verifyIndopakFile } from './indopakImport';
 import { mkdirDeep } from './mushafDownload';
 import { MUSHAF_PAGES, MUSHAF_SURAHS } from './pages';
@@ -248,6 +255,7 @@ export async function installIndopak(
         commit: INDOPAK_COMMIT,
         sha256: { [INDOPAK_TEXT.name]: INDOPAK_TEXT.sha256, [INDOPAK_FONT.name]: INDOPAK_FONT.sha256 },
         font: INDOPAK_FONT.name,
+        format: INDOPAK_FORMAT,
       });
       return { ok: true, provenance };
     } catch (e) {

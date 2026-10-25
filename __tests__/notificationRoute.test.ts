@@ -98,7 +98,9 @@ describe('the khatmah reminder opens where the plan is NOW', () => {
     mockLastReadMode = 'mushaf';
     expect(
       await notificationRoute({ data: { route: ROUTE_KHATMAH } } as never),
-    ).toBe('mihrab://read/3?initialPage=42&sessionKhatmah=1');
+    // The ayah rides with the page: in another print of Ḥafṣ (IndoPak) the
+    // reader opens where the ayah is, not at the Madinah page number.
+    ).toBe('mihrab://read/3?initialPage=42&scrollToAyah=7&sessionKhatmah=1');
   });
 
   it('and says the visit is the plan’s, as the home card does', async () => {
@@ -122,18 +124,17 @@ describe('the khatmah reminder opens where the plan is NOW', () => {
     expect(url).not.toContain('sessionKhatmah');
   });
 
-  it('never carries both a page and an ayah', async () => {
-    // The surah screen picks its reader from which of the two it is
-    // given, so a link with both has not decided what it is asking for.
+  it('always carries the ayah, and a page only for the muṣḥaf', async () => {
+    // The surah screen picks its reader from the settings, not the link.
+    // The ayah is what every reader agrees on; the page is a Madinah page
+    // and is a hint the muṣḥaf checks against the ayah (`resolveOpenPage`).
     for (const mode of ['mushaf', 'withTranslation']) {
       mockLastReadMode = mode;
       const url = await notificationRoute({
         data: { route: ROUTE_KHATMAH },
       } as never);
-      expect(
-        Number(url?.includes('initialPage=')) +
-          Number(url?.includes('scrollToAyah=')),
-      ).toBe(1);
+      expect(url).toContain('scrollToAyah=');
+      expect(url?.includes('initialPage=')).toBe(mode === 'mushaf');
     }
   });
 

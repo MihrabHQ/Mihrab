@@ -59,6 +59,10 @@ jest.mock('../src/screens/quran/TranslationSurahScreen', () => ({
 }));
 jest.mock('../src/quran/riwayahData', () => ({
   hydrateRiwayahData: jest.fn(async () => {}),
+  riwayahDataHydrated: () => true,
+  useRiwayahAvailability: () => 0,
+  loadRiwayahPages: () => null,
+  loadedRiwayahFontFamily: () => null,
 }));
 
 // Wants a real navigator above it; the back gesture is not what is under

@@ -86,6 +86,8 @@ export type RiwayahProvenance = {
   sha256?: Record<string, string>;
   /** The font file stored beside the text, by name, where there is one. */
   font?: string;
+  /** The importer's table format, where the copy was converted on the phone. */
+  format?: number;
 };
 
 async function readJson<T>(path: string): Promise<T | null> {
@@ -258,6 +260,7 @@ export type RiwayahExtras = {
   sha256?: Record<string, string>;
   /** A font file ALREADY in the riwayah's folder, by name. */
   font?: string;
+  format?: number;
 };
 
 /**

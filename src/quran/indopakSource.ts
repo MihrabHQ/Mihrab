@@ -49,6 +49,23 @@ export const INDOPAK_FONT: IndopakFile = {
   sha256: '0e435ecd7e271ed5b2cf6b36ad60f945606d2c4649bc3f13048a75bfd6b40959',
 };
 
+/**
+ * The version of the tables the importer writes from these files.
+ *
+ * The phone converts the file once, at install, and keeps the result; a
+ * fix to the conversion does not reach a copy already converted. So the
+ * version is recorded with the copy, and one written by an older importer
+ * is treated as absent — the Download button comes back and the next
+ * download writes it again. Bump it with any change to what
+ * `indopakImport` produces.
+ *
+ *   1  first build
+ *   2  (a wrong attempt at the next line; never released)
+ *   3  al-Fātiḥah's printed 6 as the font composes it: the digit, then the
+ *      disputed end sign — not a medallion
+ */
+export const INDOPAK_FORMAT = 3;
+
 /** What the reader is told the download weighs. */
 export const INDOPAK_DOWNLOAD_BYTES = INDOPAK_TEXT.bytes + INDOPAK_FONT.bytes;
 

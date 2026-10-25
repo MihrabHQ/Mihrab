@@ -15,7 +15,7 @@
  * muṣḥaf concern was a branch inside something the translation reader also
  * ran, and each platform edge case landed here as another one.
  */
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { beginReadingSession, endReadingSession } from '../quran/readingSession';
 import { useRoute } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
@@ -29,8 +29,14 @@ import {
   type BackAnswer,
 } from '../navigation/backIntercept';
 import { findSurah } from '../quran/quran';
-import { hydrateRiwayahData } from '../quran/riwayahData';
-import { hydrateQuranState } from '../quran/quranState';
+import {
+  hydrateRiwayahData,
+  riwayahDataHydrated,
+  useRiwayahAvailability,
+} from '../quran/riwayahData';
+import { hydrateQuranState, useQuranHydrated, useQuranState } from '../quran/quranState';
+import { coerceRiwayahId, DEFAULT_RIWAYAH, resolveRiwayah } from '../quran/riwayat';
+import { resolveOpenPage } from '../quran/pages';
 import { activeReaderMode } from '../quran/readerMode';
 import { playFromAyah as startReciting } from '../quran/audio/playback';
 import { usePrayerSettings } from '../context/PrayerSettingsContext';
@@ -167,6 +173,43 @@ export function QuranSurahScreen() {
     });
   }, [isMushaf, updateSettings]);
 
+  /**
+   * THE MUṢḤAF IS KNOWN BEFORE THE FIRST PAGE IS CHOSEN.
+   *
+   * On a cold start the preferences and the downloaded muṣḥafs are read
+   * from disk, and until they are, `resolveRiwayah` answers Ḥafṣ. The
+   * reader used to open in that moment: it chose its page in the Madinah
+   * 604, drew it, then learned the reader was in IndoPak and converted —
+   * by the page's FIRST ayah, so a bookmark at the foot of a page opened
+   * a page early, and a link's page was read in the wrong book. For a
+   * reader whose muṣḥaf is not the built-in one, nothing is drawn until
+   * both are read; it is a few milliseconds of an empty screen against a
+   * page of the wrong muṣḥaf.
+   */
+  const quran = useQuranState();
+  const quranReady = useQuranHydrated();
+  useRiwayahAvailability();
+  const storedRiwayah = coerceRiwayahId(quran.prefs.riwayah);
+  const waitingForMushaf =
+    isMushaf && (!quranReady || (storedRiwayah !== DEFAULT_RIWAYAH && !riwayahDataHydrated()));
+  const riwayah = resolveRiwayah(quran.prefs.riwayah);
+
+  /**
+   * The page to open at, in the muṣḥaf on screen — see `resolveOpenPage`.
+   * Chosen once the muṣḥaf is known, and only then: the reader takes its
+   * opening page at mount and never again.
+   */
+  const openPage = useMemo(
+    () =>
+      waitingForMushaf ? undefined : resolveOpenPage(riwayah, surahNumber, scrollToAyah, initialPage),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [waitingForMushaf, surahNumber, scrollToAyah, initialPage],
+  );
+
+  if (waitingForMushaf) {
+    return <View style={[styles.empty, { backgroundColor: palette.bg }]} />;
+  }
+
   if (!surah) {
     return (
       <View style={[styles.empty, { backgroundColor: palette.bg }]}>
@@ -179,7 +222,7 @@ export function QuranSurahScreen() {
     <MushafSurahScreen
       surah={surah}
       surahNumber={surahNumber}
-      initialPage={initialPage}
+      initialPage={openPage}
       // Undefined, not a no-op: the muṣḥaf header draws the control only
       // when there is somewhere for it to go.
       onToggleMode={verseByVerse ? toggleMode : undefined}

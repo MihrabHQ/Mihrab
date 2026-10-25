@@ -25,7 +25,6 @@ import {
 import { useKeyboardInset } from '../../hooks/useKeyboardInset';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import { KhatmahPacingSheet, type PacingKind } from '../../quran/KhatmahPacingSheet';
-import { MUSHAF_TOTAL_PAGES } from '../../quran/mushafImages';
 import { totalPagesForRiwayah } from '../../quran/pages';
 import { useQuranState } from '../../quran/quranState';
 import { activeKhatmah } from '../../quran/khatmahProgress';
@@ -191,7 +190,8 @@ export function KhatmahScreen() {
         mode="start"
         initialKind={pacingSheet.kind}
         current={null}
-        unreadPages={MUSHAF_TOTAL_PAGES}
+        // The muṣḥaf the plan will be read in — 610 for IndoPak.
+        unreadPages={totalPagesForRiwayah(quran.prefs.riwayah)}
         onClose={() => setPacingSheet(null)}
         onChoose={choice => {
           setPacingSheet(null);

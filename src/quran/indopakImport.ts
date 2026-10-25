@@ -41,8 +41,23 @@ import {
 import type { MushafPageRange, SurahMeta } from './pages';
 
 const END_OF_AYAH = '\u06DD';
-/** The one place the file writes a bidi override where a medallion goes. */
-const BIDI_OVERRIDE = '\u202E';
+/**
+ * The one ayah end the file glues to its word behind a bidi override.
+ *
+ * Al-Fātiḥah's printed 6 ("anʿamta ʿalayhim") is an ayah end in the
+ * IndoPak count and not in the Kufan one, and the print marks it not with
+ * a medallion but with the DISPUTED end-of-ayah sign, U+08E2, over a
+ * small digit. In this font that symbol is the digit FOLLOWED by the sign
+ * — the sign's anchor sits it over the digit — which is how the file has
+ * it, after an RLO (U+202E) that only steers the publisher's renderer.
+ * The override is dropped and a space put in its place, so the symbol is
+ * a token of its own like every other ayah end: digit, sign, and the stop
+ * sign the print hangs on it. Measured against the font with HarfBuzz;
+ * a medallion here (the first build) said "ayah end" where the print says
+ * "disputed", and the sign before the digit (the second) is not a form
+ * the font composes.
+ */
+const DISPUTED_BEHIND_OVERRIDE = /\u202E([\u0660-\u0669]+\u08E2)/;
 
 export class IndopakFileError extends Error {}
 
@@ -139,8 +154,11 @@ export function foldIndopakSpelling(text: string): string {
 const HEADER = /^\u0633\u064F\u0648\u0631\u064E\u0629\u064F /;
 /** A basmalah band: the basmalah closed by a bare medallion. */
 const BASMALAH = /^\u0628\u0650\u0633\u0652\u0645\u0650 .* \u06DD$/;
-/** A medallion, its number, and whatever stop sign the print hangs on it. */
-const MARK = /^\u06DD([\u0660-\u0669]+)([^\s]*)$/;
+/**
+ * An ayah end: the medallion and its number, or the disputed sign after
+ * its number (see above); and whatever stop sign the print hangs on it.
+ */
+const MARK = /^(?:\u06DD([\u0660-\u0669]+)|([\u0660-\u0669]+)\u08E2)([^\s]*)$/;
 
 /**
  * Where the print's ayah numbers differ from the Ḥafṣ keys.
@@ -223,12 +241,15 @@ export function convertIndopak(
         throw new IndopakFileError(`page ${number} line ${li + 1}: text before the first surah`);
       }
       const runs: ExactLineRun[] = [];
-      const tokens = line.replace(BIDI_OVERRIDE, ` ${END_OF_AYAH}`).split(' ').filter(Boolean);
+      const tokens = line
+        .replace(DISPUTED_BEHIND_OVERRIDE, ' $1')
+        .split(' ')
+        .filter(Boolean);
       for (const token of tokens) {
         const m = MARK.exec(token);
         if (m) {
           const n = Number(
-            [...m[1]].map(d => d.charCodeAt(0) - 0x0660).join(''),
+            [...(m[1] ?? m[2])].map(d => d.charCodeAt(0) - 0x0660).join(''),
           );
           printed += 1;
           if (n !== printed) {

@@ -46,11 +46,10 @@ import { SegmentedControl } from '../components/ui';
 import { useBreakpoint } from '../responsive/breakpoints';
 import { useAndroidSubScreenBack } from '../navigation/useAndroidSubScreenBack';
 import type { RootStackParamList } from '../navigation/types';
-import { findPageForAyah, MUSHAF_PAGES } from '../quran/pages';
-import { hydrateRiwayahData } from '../quran/riwayahData';
+import { findPageForAyah, pagesForRiwayah, totalPagesForRiwayah } from '../quran/pages';
+import { hydrateRiwayahData, useRiwayahAvailability } from '../quran/riwayahData';
 import { warmMushafLayout } from '../quran/mushafLayout';
-import { RIWAYAT } from '../quran/riwayat';
-import { MUSHAF_TOTAL_PAGES } from '../quran/mushafImages';
+import { RIWAYAT, resolveRiwayah } from '../quran/riwayat';
 import { findSurah, loadSurah, SURAHS, type SurahIndex } from '../quran/quran';
 import { getAyahTranslation } from '../quran/translations';
 import { useActiveEdition } from '../quran/useActiveEdition';
@@ -187,6 +186,14 @@ export function QuranScreen() {
   const kb = useKeyboardAwareScroll<FlatList>(listRef);
   const isArabic = i18n.language === 'ar';
   const quran = useQuranState();
+  /**
+   * The muṣḥaf the lists count pages in — the one the reader will open.
+   * Every page number on this screen (a surah's, a juz's, the go-to-page
+   * box) is a page of THAT print, so a juz row says where the juz starts
+   * in the book the reader actually reads, and tapping it opens there.
+   */
+  useRiwayahAvailability();
+  const listRiwayah = resolveRiwayah(quran.prefs.riwayah);
   // What is playing is no longer this screen's business: the bar under
   // the title names it and opens both the player and the reader, on
   // every screen. The card that used to do that here sat forty points
@@ -361,8 +368,8 @@ export function QuranScreen() {
   const goToPage = (text: string) => {
     const n = Number(text.trim());
     if (!Number.isFinite(n)) return;
-    const page = Math.max(1, Math.min(MUSHAF_TOTAL_PAGES, Math.round(n)));
-    const surah = MUSHAF_PAGES.find(p => p.page === page)?.start.surah ?? 1;
+    const page = Math.max(1, Math.min(totalPagesForRiwayah(listRiwayah), Math.round(n)));
+    const surah = pagesForRiwayah(listRiwayah).find(p => p.page === page)?.start.surah ?? 1;
     setPageJumpVisible(false);
     openSurah(surah, undefined, page);
   };
@@ -384,7 +391,7 @@ export function QuranScreen() {
   const juzRows: JuzRow[] = useMemo(() => {
     const rows: JuzRow[] = [];
     for (let j = 1; j <= 30; j++) {
-      const firstPage = MUSHAF_PAGES.find(p => p.juz === j);
+      const firstPage = pagesForRiwayah(listRiwayah).find(p => p.juz === j);
       if (!firstPage) continue;
       rows.push({
         juz: j,
@@ -393,7 +400,7 @@ export function QuranScreen() {
       });
     }
     return rows;
-  }, []);
+  }, [listRiwayah]);
 
   /**
    * The Juz tab answers the search field too.
@@ -409,14 +416,14 @@ export function QuranScreen() {
     const wanted = new Set(filteredSurahs.map(s => s.number));
     return juzRows.filter(row => {
       if (String(row.juz) === q) return true;
-      return MUSHAF_PAGES.some(p => {
+      return pagesForRiwayah(listRiwayah).some(p => {
         if (p.juz !== row.juz) return false;
         const last = p.end == null ? 114 : p.end.ayah === 1 ? p.end.surah - 1 : p.end.surah;
         for (let s = p.start.surah; s <= last; s++) if (wanted.has(s)) return true;
         return false;
       });
     });
-  }, [query, filteredSurahs, juzRows]);
+  }, [query, filteredSurahs, juzRows, listRiwayah]);
 
   // ── Header (cards + tabs + search) ──────────────────────────────────
   // The two doors, from the selector Home's card uses (#41). Subscribed
@@ -725,7 +732,7 @@ export function QuranScreen() {
               openSurah(
                 votdRef.surah,
                 votdRef.ayah,
-                findPageForAyah(votdRef.surah, votdRef.ayah),
+                findPageForAyah(votdRef.surah, votdRef.ayah, listRiwayah),
               )
             }>
           {/* Row 1: the ayah. Row 2: translation or tafsir. */}
@@ -1037,7 +1044,7 @@ export function QuranScreen() {
     item: SurahIndex;
     index: number;
   }) => {
-    const startPage = findPageForAyah(item.number, 1);
+    const startPage = findPageForAyah(item.number, 1, listRiwayah);
     return (
       <Pressable
         // One row is every row: the three lines below are clamped, so the
@@ -1592,7 +1599,7 @@ export function QuranScreen() {
             autoFocus
             maxLength={3}
             accessibilityLabel={t('quran.jumpToPage', 'Go to page')}
-            placeholder="1–604"
+            placeholder={`1–${totalPagesForRiwayah(listRiwayah)}`}
             placeholderTextColor={String(palette.muted)}
             style={[
               styles.customDaysInput,

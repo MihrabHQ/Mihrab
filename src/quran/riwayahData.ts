@@ -39,6 +39,7 @@ import {
   type RiwayahProvenance,
 } from './riwayahStore';
 import { DEFAULT_RIWAYAH, RIWAYAT, type RiwayahId } from './riwayat';
+import { INDOPAK_FORMAT } from './indopakSource';
 
 /** One riwayah's pagination: the same shape `pages.json` has for Hafs. */
 export type RiwayahPageTable = {
@@ -131,6 +132,10 @@ export function hydrateRiwayahData(): Promise<void> {
       // `writeRiwayahDataset`. Treat it as absent rather than draw a
       // muṣḥaf nobody can account for.
       if (!provenance) continue;
+      // A copy converted by an older importer is not this importer's
+      // muṣḥaf: treated as absent, so it is offered for download again
+      // rather than drawn from tables a fix has since corrected.
+      if (requiredFormat(id) != null && provenance.format !== requiredFormat(id)) continue;
       // A muṣḥaf whose face arrives with it is not drawable without the
       // face: register it before the riwayah is announced, so there is no
       // moment where the pages exist and the font does not.
@@ -150,6 +155,11 @@ export function hydrateRiwayahData(): Promise<void> {
     publish();
   })();
   return hydrating;
+}
+
+/** The table format a muṣḥaf converted on the phone must carry, if any. */
+function requiredFormat(id: RiwayahId): number | null {
+  return RIWAYAT.find(r => r.id === id)?.render === 'unicode-lines' ? INDOPAK_FORMAT : null;
 }
 
 /** The registered family of a downloaded muṣḥaf font, or null until it is. */

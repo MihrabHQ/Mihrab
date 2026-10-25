@@ -108,7 +108,10 @@ export async function notificationRoute(
         // The page the surah BEGINS on — most surahs start partway down
         // one, so this is a lookup rather than a page whose start names
         // the surah.
-        return readUrl(surah, `initialPage=${findPageForAyah(surah, 1)}`);
+        // The ayah rides along: the page is a Madinah page, and in another
+        // print of Ḥafṣ (IndoPak) the reader opens where the AYAH is —
+        // `resolveOpenPage`.
+        return readUrl(surah, `initialPage=${findPageForAyah(surah, 1)}&scrollToAyah=1`);
       }
     } catch {
       // Fall through to the ayah form, which needs nothing loaded.
@@ -174,7 +177,8 @@ export async function notificationRoute(
       // when the home card is tapped. Same offer, same behaviour.
       return readUrl(
         target.surah,
-        `${mushaf ? `initialPage=${target.page}` : `scrollToAyah=${target.ayah}`}&sessionKhatmah=1`,
+        // The ayah with the page, for the same reason as the surah link.
+        `${mushaf ? `initialPage=${target.page}&scrollToAyah=${target.ayah}` : `scrollToAyah=${target.ayah}`}&sessionKhatmah=1`,
       );
     } catch {
       return `${MIHRAB_SCHEME}quran`;

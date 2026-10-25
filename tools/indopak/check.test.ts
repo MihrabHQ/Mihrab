@@ -26,6 +26,7 @@ import {
 import { MIN_CORPUS_MEAN } from '../../src/quran/hafsAlignment';
 import { skeleton, textAgreement, startsWithBasmalah, stripBasmalah } from '../../src/quran/juzCheck';
 import { MUSHAF_PAGES, MUSHAF_SURAHS } from '../../src/quran/pages';
+import { exactPageFor } from '../../src/quran/mushafPrintedLines';
 import { bundledSurahArabic, warmSurahCache, releaseSurahCache } from '../../src/quran/quran';
 
 const file = process.env.INDOPAK_FILE;
@@ -77,6 +78,41 @@ maybe('the IndoPak file, whole', () => {
     expect(result.checked.mean).toBeGreaterThanOrEqual(MIN_CORPUS_MEAN);
     expect(result.dataset.pages.length).toBe(610);
     expect(result.dataset.lines?.pages.length).toBe(610);
+
+    // ── Every line of the book comes back out of the tables ──────────
+    //
+    // The stored form is the ayah text plus, per line, how many of each
+    // ayah's words sit there and the printed medallion. Set back into
+    // lines from those two files, every one of the 8,800 lines must be
+    // the file's line, character for character (the file's one bidi
+    // override reads as a space and a medallion, as the importer takes
+    // it). This is the proof that nothing a reader sees is estimated.
+    const pagesOfFile = parseIndopakFile(source);
+    const text = result.dataset.text;
+    let compared = 0;
+    pagesOfFile.forEach((page, pi) => {
+      const rows = exactPageFor(result.dataset.lines!, pi + 1, (su, a) => text[`${su}:${a}`] ?? null);
+      expect(rows).not.toBeNull();
+      expect(rows!.length).toBe(page.length);
+      page.forEach((line, li) => {
+        const row = rows![li];
+        // The one out-of-order ayah end, in logical order — see the importer.
+        const expected = line.replace(/\u202E([\u0660-\u0669]+\u08E2)/, ' $1');
+        let rebuilt: string;
+        if (row.band != null) rebuilt = line; // the header, drawn as a band
+        else if (row.basmalah) rebuilt = `${row.basmalah} \u06DD`;
+        else {
+          rebuilt = row.ayahs
+            .map(a => [a.text, a.ends ? a.mark ?? '' : ''].filter(Boolean).join(' '))
+            .join(' ');
+        }
+        if (rebuilt !== expected) {
+          throw new Error(`page ${pi + 1} line ${li + 1}:\n  file  ${expected}\n  table ${rebuilt}`);
+        }
+        compared += 1;
+      });
+    });
+    expect(compared).toBe(pagesOfFile.reduce((n, p) => n + p.length, 0));
 
     // The report: the agreement per ayah, worst first, and what the file
     // would score as written, for the record.
