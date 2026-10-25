@@ -800,6 +800,19 @@ export function MushafSurahScreen({
               />
             ) : null}
             <View style={columnStyles.group}>
+              {/* The reading tradition, as the header carries it beside the
+                  back arrow — without it a reader beside the bar had no way
+                  to the other muṣḥafs from the page. */}
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={t('quran.riwayahPickerOpen', {
+                  defaultValue: 'Reading tradition: {{name}}. Tap to change.',
+                  name: t(riwayahById(riwayah).nameKey, riwayahById(riwayah).arabic),
+                })}
+                onPress={() => setRiwayahPickerVisible(true)}
+                hitSlop={10}>
+                <RiwayahIcon color={columnInk} size={22} />
+              </Pressable>
               {onToggleMode ? (
                 <Pressable
                   accessibilityRole="button"

@@ -48,6 +48,7 @@ import { tabularNumeralStyle } from '../theme/textScale';
 import type { ResetPlan, ResetScope } from '../journal/resetLog';
 import { RADIUS, SPACING } from '../theme/tokens';
 import { TYPE } from '../theme/typography';
+import { useVerticalBarInsets } from '../native/VerticalBar';
 
 const SCOPE_LABEL: Record<ResetScope, { key: string; fallback: string }> = {
   day: { key: 'log.resetScopeDay', fallback: 'This day' },
@@ -73,6 +74,8 @@ export function ResetScopePicker({
 }) {
   const { t } = useTranslation();
   const { palette } = useAppPalette();
+  // Beside an iPhone's vertical bar the card stops at the bar (iPhone Duo).
+  const barPad = useVerticalBarInsets();
 
   return (
     <Modal
@@ -82,7 +85,7 @@ export function ResetScopePicker({
       statusBarTranslucent
       onRequestClose={onCancel}
     >
-      <View style={[styles.scrim, { backgroundColor: palette.overlay }]}>
+      <View style={[styles.scrim, { backgroundColor: palette.overlay }, barPad]}>
         {/*
           THE DISMISS TARGET SITS BEHIND THE CARD, NOT AROUND IT — see the
           long note in responsive/ResponsiveModal.tsx. A Pressable wrapped

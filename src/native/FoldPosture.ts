@@ -17,6 +17,7 @@ import { useEffect, useState } from 'react';
 import { NativeEventEmitter, NativeModules, Platform, useWindowDimensions } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { isRtlLanguage } from '../i18n/layoutDirection';
+import { useVerticalBar } from './VerticalBar';
 
 export type Hinge = { left: number; top: number; right: number; bottom: number };
 
@@ -104,12 +105,23 @@ export function useBookPanePadding(
  * the padding the dialog already keeps from the window's edges; the side
  * toward the crease adds the other page to it. Null in every other
  * posture, so callers keep their own padding untouched.
+ *
+ * Beside an iPhone's vertical bar (iPhone Duo) the bar's side adds the bar
+ * instead: the dialog centres in the screen the app has, and its card no
+ * longer runs in under the system's clock and column.
  */
 export function useBookPaneInset(
   base: number,
 ): { paddingLeft: number; paddingRight: number } | null { // rtl-safe: the hinge is on a physical side
   const { width } = useWindowDimensions();
   const pad = useBookPanePadding(width);
+  const bar = useVerticalBar();
+  if (bar) {
+    return {
+      paddingLeft: base + (bar.side === 'left' ? bar.width : 0), // rtl-safe: the vertical bar is on a physical side
+      paddingRight: base + (bar.side === 'right' ? bar.width : 0), // rtl-safe: the vertical bar is on a physical side
+    };
+  }
   if (!pad) return null;
   return {
     paddingLeft: base + (pad.paddingLeft ?? 0), // rtl-safe: the hinge is on a physical side

@@ -114,6 +114,7 @@ import { useVerticalBar } from '../../native/VerticalBar';
 import { RADIUS, SPACING } from '../../theme/tokens';
 import { tajweedColoursShown } from '../tajweed/tajweedSupport';
 import { useSheetSides } from '../../responsive/sheetSides';
+import { drawableText } from '../maddaWajibFallback';
 
 /** The sheet's own padding, before the safe-area insets are added to it. */
 const SHEET_H_PADDING = 18;
@@ -635,14 +636,14 @@ export function AyahActionSheet({
              * a cutout on one side looks like a mistake rather than a
              * clearance.
              */
+            // Beside a vertical bar the sheet already stops at the bar
+            // (`sides` above), so that side keeps only the sheet's margin.
             ...(vbar
               ? {
                   paddingLeft: // rtl-safe: the vertical bar is on a physical side
-                    SHEET_H_PADDING +
-                    (vbar.side === 'left' ? vbar.width : insets.left),
+                    SHEET_H_PADDING + (vbar.side === 'left' ? 0 : insets.left),
                   paddingRight: // rtl-safe: the vertical bar is on a physical side
-                    SHEET_H_PADDING +
-                    (vbar.side === 'right' ? vbar.width : insets.right),
+                    SHEET_H_PADDING + (vbar.side === 'right' ? 0 : insets.right),
                 }
               : {
                   paddingStart: SHEET_H_PADDING + sideInset,
@@ -763,7 +764,8 @@ export function AyahActionSheet({
                 // A muṣḥaf's own face, where the text needs it (IndoPak).
                 ownFont ? { fontFamily: ownFont } : null,
               ]}>
-              {arabic}
+              {/* Drawn, not the text itself: copy and share keep it as written. */}
+              {drawableText(arabic)}
             </Text>
           ) : null}
           {/* Translation (v2.14.5) — a section like the tafsir below it,

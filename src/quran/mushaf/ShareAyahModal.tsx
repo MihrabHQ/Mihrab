@@ -25,6 +25,7 @@ import { findSurah } from '../quran';
 import { MODAL_ORIENTATIONS } from '../../components/modalOrientations';
 import { RADIUS, SPACING } from '../../theme/tokens';
 import { useBookPaneInset } from '../../native/FoldPosture';
+import { drawableText } from '../maddaWajibFallback';
 
 type Props = {
   visible: boolean;
@@ -94,7 +95,8 @@ export function ShareAyahModal({
           style={styles.card}>
           <Text style={styles.ornamentTop}>﴾ ﴿</Text>
           <Text style={[styles.arabic, arabicFontFamily ? { fontFamily: arabicFontFamily } : null]}>
-            {arabic}
+            {/* The card is a picture of the text — see `maddaWajibFallback`. */}
+            {drawableText(arabic)}
           </Text>
           {translation ? (
             <Text style={styles.translation}>{translation}</Text>

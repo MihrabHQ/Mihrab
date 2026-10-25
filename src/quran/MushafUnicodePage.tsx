@@ -85,6 +85,7 @@ import {
   type RiwayahId,
 } from './riwayat';
 import { BasmalahRow, SurahBandRow } from './mushafOrnaments';
+import { drawableWord } from './maddaWajibFallback';
 import type { AyahRef } from './MushafTextPage';
 
 /**
@@ -173,19 +174,31 @@ export function ayahMark(
 }
 
 /**
- * A printed ayah-end mark, ready to draw in the page's own face.
+ * A printed ayah-end mark, ready to draw in the page's own face — every one
+ * of them shaped right to left.
  *
- * The disputed end (al-Fātiḥah's printed 6 in IndoPak) is a digit with the
- * U+08E2 sign after it, and the font sets the sign over the digit only
- * when the pair is shaped right to left. Arabic-Indic digits are a
- * left-to-right run in the bidi algorithm, so on a device the pair came
- * out reversed — the sign over the end of the word, the digit beside it.
- * An RLO … PDF pair around it is the publisher's own answer (the file has
- * the RLO) and makes the run right to left; both are default-ignorable
- * and draw nothing. The ordinary medallion, U+06DD first, needs neither.
+ * The face builds its marks in GSUB: U+06DD and the digits after it become
+ * one numbered medallion, a stop sign or rukūʿ ʿayn after the digits is set
+ * on it, and the disputed end (al-Fātiḥah's printed 6) is a digit with the
+ * U+08E2 sign over it. It builds them when the run is shaped right to left.
+ * But U+06DD and the Arabic-Indic digits are Arabic Numbers in the bidi
+ * algorithm, a run the platform lays out — and shapes — LEFT to right.
+ *
+ * Newer shapers build the medallion either way. HarfBuzz 2.3 and 2.6, the
+ * ones Android 10, 11 and 12 ship, do not once a sign follows the number:
+ * shaped left to right they leave a bare medallion, the digits beside it and
+ * the sign floating, which is what an Android 12 phone drew at al-Baqarah 7
+ * and 8. Over the 1,137 distinct marks of the IndoPak book, 871 came out
+ * that way left to right, and none right to left (`tools/indopak`'s
+ * research, 25 Oct 2026: every mark shaped with HarfBuzz 2.3, 2.6, 3.1 and
+ * 10.2 in both directions). CoreText draws all 1,137 the same either way.
+ *
+ * So every mark goes in an RLO … PDF pair: the run is right to left on every
+ * platform, as the publisher's own file already writes the disputed end.
+ * Both controls are default-ignorable and draw nothing.
  */
 export function printedMarkText(mark: string): string {
-  return /^[\u0660-\u0669]/.test(mark) ? `\u202E${mark}\u202C` : mark;
+  return /^[\u06DD\u0660-\u0669]/.test(mark) ? `\u202E${mark}\u202C` : mark;
 }
 
 /** Surah-band and basmalah rows, in units of a text line. */
@@ -1551,7 +1564,9 @@ function PrintedPageBody({
                   {token.tajweed ? (
                     <WordRuns word={token.tajweed} darkPage={darkPage} />
                   ) : (
-                    token.text
+                    // The madda wājib, on text engines older than it — see
+                    // `maddaWajibFallback.ts`. The text itself is untouched.
+                    drawableWord(token.text)
                   )}
                   {token.markText != null ? (
                     // The print's medallion, in the page's own face: the

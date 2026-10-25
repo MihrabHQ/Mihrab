@@ -44,4 +44,14 @@ describe('the muṣḥaf header', () => {
   it("draws the arrow only when there is somewhere to go back to, in the page's ink", () => {
     expect(src).toMatch(/navigation\.canGoBack\(\) \? \(\s*<TabBackButton[\s\S]{0,120}color=\{ink\}/);
   });
+
+  it('carries the riwayah into the vertical bar’s column too, first after the arrow', () => {
+    // Beside an iPhone's vertical bar there is no header: the screen draws
+    // its own column, and the button was left out of it.
+    const column = src.slice(src.indexOf('columnStyles.column,'), src.indexOf('{riwayahSheet}'));
+    expect(column).toContain('<RiwayahIcon color={columnInk}');
+    expect(column).toContain('onPress={() => setRiwayahPickerVisible(true)}');
+    expect(column.indexOf('<TabBackButton')).toBeLessThan(column.indexOf('<RiwayahIcon'));
+    expect(column.indexOf('<RiwayahIcon')).toBeLessThan(column.indexOf('<TilawahIcon'));
+  });
 });

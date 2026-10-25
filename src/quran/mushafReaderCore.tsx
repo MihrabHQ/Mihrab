@@ -89,6 +89,7 @@ import {
 } from './khatmahDayWhen';
 import { RADIUS, SPACING } from '../theme/tokens';
 import { TYPE } from '../theme/typography';
+import { useVerticalBarInsets } from '../native/VerticalBar';
 
 /** The props contract every mushaf reader implements (see MushafReader). */
 export type MushafReaderProps = {
@@ -1359,6 +1360,9 @@ export function MushafJumpModal({
   const { t } = useTranslation();
   const { palette } = useAppPalette();
   const keyboardInset = useKeyboardInset();
+  // Beside an iPhone's vertical bar the card centres in the app's screen,
+  // not under the system's column (iPhone Duo).
+  const barPad = useVerticalBarInsets();
   const [text, setText] = useState('');
   useEffect(() => {
     if (!visible) setText('');
@@ -1376,6 +1380,7 @@ export function MushafJumpModal({
         // The field in this card is the whole point of it, and a Modal on
         // Android does not resize for the keyboard. See useKeyboardInset.
         keyboardInset > 0 ? { paddingBottom: keyboardInset } : null,
+        barPad,
       ]}>
       <View style={[styles.jumpCard, { backgroundColor: palette.card }]}>
         <Text style={[styles.jumpTitle, { color: palette.text }]}>

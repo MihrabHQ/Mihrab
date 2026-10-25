@@ -24,6 +24,7 @@ import { useAppPalette } from '../hooks/useAppPalette';
 import { useBreakpoint } from './breakpoints';
 import { useBookPanePadding } from '../native/FoldPosture';
 import { RADIUS, SPACING } from '../theme/tokens';
+import { useVerticalBarInsets } from '../native/VerticalBar';
 
 type Props = {
   visible: boolean;
@@ -66,6 +67,9 @@ export function ResponsiveModal({
   // than sitting centred on the crease. Null everywhere else.
   const { width: windowWidth } = useWindowSize();
   const bookPad = useBookPanePadding(windowWidth);
+  // Beside an iPhone's vertical bar the card stops at the bar; the dimmed
+  // backdrop still covers the window, padding only moves what is on it.
+  const barPad = useVerticalBarInsets();
 
   return (
     <Modal
@@ -79,6 +83,7 @@ export function ResponsiveModal({
           { backgroundColor: palette.overlay },
           wide ? styles.center : styles.bottom,
           bookPad,
+          barPad,
         ]}>
         {/*
           THE DISMISS TARGET SITS BEHIND THE CARD, NOT AROUND IT.

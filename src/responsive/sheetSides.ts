@@ -9,12 +9,17 @@
  * width in the middle, and half open as a book it keeps to one page
  * (`FoldPosture.ts`) rather than lying across the crease.
  *
- * iOS is left exactly as it was: the iPad and the Mac have their own
- * layouts for these, and nothing here reaches them.
+ * iOS is left as it was, with one exception: an iPhone with a vertical bar
+ * (iPhone Duo, iOS 27.1). There every sheet, dialog and picker stops at
+ * the bar, as the pages do — the bar is the system's, and a card that ran
+ * under it lost its edge to the clock. The dimmed backdrop still covers the
+ * whole window; only what is on it keeps clear. The iPad, the Mac and every
+ * other iPhone read no bar and get nothing.
  */
 import { Platform } from 'react-native';
 import { useAppRtl, useFoldPosture } from '../native/FoldPosture';
 import { useWindowSize } from './windowSize';
+import { useVerticalBar } from '../native/VerticalBar';
 
 /** Wider than this, an Android sheet stops growing. */
 export const SHEET_WIDE_FROM = 700;
@@ -28,8 +33,14 @@ export function sheetSides(input: {
   width: number;
   rtl: boolean;
   book: { left: number; right: number } | null; // rtl-safe: the hinge's physical edges
+  /** An iPhone's vertical bar: the side it is on and its width, or none. */
+  bar?: { side: 'left' | 'right'; width: number } | null; // rtl-safe: the vertical bar is on a physical side
 }): SheetSides {
-  const { android, width, rtl, book } = input;
+  const { android, width, rtl, book, bar } = input;
+  if (bar && bar.width > 0) {
+    // rtl-safe: the vertical bar is on a physical side
+    return bar.side === 'left' ? { left: bar.width, right: 0 } : { left: 0, right: bar.width };
+  }
   if (!android || !(width > 0)) return { left: 0, right: 0 }; // rtl-safe: physical edges
   if (book) {
     return rtl
@@ -45,11 +56,13 @@ export function useSheetSides(): SheetSides {
   const { width } = useWindowSize();
   const posture = useFoldPosture();
   const rtl = useAppRtl();
+  const vbar = useVerticalBar();
   return sheetSides({
     android: Platform.OS === 'android',
     width,
     rtl,
     book: posture?.kind === 'book' ? posture.hinge : null,
+    bar: vbar ? { side: vbar.side, width: vbar.width } : null,
   });
 }
 

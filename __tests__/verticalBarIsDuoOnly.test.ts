@@ -9,6 +9,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { verticalBarFrom } from '../src/native/VerticalBar';
 import { phonePageGeometry } from '../src/quran/phonePageGeometry';
+import { sheetSides } from '../src/responsive/sheetSides';
 
 const ROOT = path.join(__dirname, '..');
 const read = (p: string) => fs.readFileSync(path.join(ROOT, p), 'utf8');
@@ -71,6 +72,8 @@ describe('the vertical bar is the iPhone Duo’s alone', () => {
       .map(f => f.split(path.sep).join('/'))
       .sort();
     expect(users).toEqual([
+      'src/components/ResetScopePicker.tsx',
+      'src/native/FoldPosture.ts',
       'src/navigation/MainTabs.tsx',
       'src/navigation/RootNavigator.tsx',
       'src/navigation/VerticalTabBar.tsx',
@@ -79,11 +82,47 @@ describe('the vertical bar is the iPhone Duo’s alone', () => {
       'src/quran/MushafPhoneReader.tsx',
       'src/quran/MushafReader.tsx',
       'src/quran/mushaf/AyahActionSheet.tsx',
+      'src/quran/mushafReaderCore.tsx',
+      'src/responsive/ResponsiveModal.tsx',
+      'src/responsive/sheetSides.ts',
       'src/screens/HomeScreen.tsx',
       'src/screens/home/HeroSky.tsx',
       'src/screens/home/TodayCard.tsx',
       'src/screens/month/MonthTable.tsx',
       'src/screens/quran/MushafSurahScreen.tsx',
     ]);
+  });
+
+  it('keeps every sheet and dialog clear of the bar, and nothing else moves', () => {
+    const base = { android: false, width: 430, rtl: false, book: null };
+    // No bar: iOS sheets run edge to edge, as they always have.
+    expect(sheetSides(base)).toEqual({ left: 0, right: 0 });
+    expect(sheetSides({ ...base, bar: null })).toEqual({ left: 0, right: 0 });
+    // A bar on the right takes its width off that side only.
+    expect(sheetSides({ ...base, bar: { side: 'right', width: 74 } })).toEqual({ left: 0, right: 74 });
+    expect(sheetSides({ ...base, bar: { side: 'left', width: 74 } })).toEqual({ left: 74, right: 0 });
+    // Android's wide-window rule is untouched.
+    expect(sheetSides({ android: true, width: 900, rtl: false, book: null })).toEqual({ left: 130, right: 130 });
+  });
+
+  it('gives the centred dialogs the bar too', () => {
+    // RiwayahPicker, ConfirmModal, ShareAyahModal and LogPassedPrayerSheet
+    // pad their scrim with this; beside the bar it must add the bar.
+    const fold = read('src/native/FoldPosture.ts');
+    expect(fold).toMatch(/const bar = useVerticalBar\(\);\s*if \(bar\) \{/);
+    // The other Modal hosts carry the bar's padding on their dimmed root.
+    expect(read('src/responsive/ResponsiveModal.tsx')).toContain('barPad,');
+    expect(read('src/components/ResetScopePicker.tsx')).toContain('barPad]}');
+    expect(read('src/quran/mushafReaderCore.tsx')).toContain('barPad,');
+  });
+
+  it('leaves no Modal in the app without a way clear of the bar', () => {
+    // Every file that presents a <Modal> applies one of the helpers that
+    // know the bar. A new dialog has to pick one, or it runs in under it.
+    const known = /useSheetSides|useSheetPadding|useBookPaneInset|useVerticalBarInsets|ResponsiveModal|<ReciterPickerSheet/;
+    const hosts = sourceFiles('src')
+      .filter(f => /<Modal[\s>]/.test(read(f).replace(/\/\/.*$/gm, '').replace(/\/\*[\s\S]*?\*\//g, '')))
+      .filter(f => !known.test(read(f)));
+    expect(hosts).toEqual([]);
   });
 });

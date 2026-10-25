@@ -27,6 +27,7 @@ import { MIN_CORPUS_MEAN } from '../../src/quran/hafsAlignment';
 import { skeleton, textAgreement, startsWithBasmalah, stripBasmalah } from '../../src/quran/juzCheck';
 import { MUSHAF_PAGES, MUSHAF_SURAHS } from '../../src/quran/pages';
 import { exactPageFor } from '../../src/quran/mushafPrintedLines';
+import { maddaWajibFallback } from '../../src/quran/maddaWajibFallback';
 import { bundledSurahArabic, warmSurahCache, releaseSurahCache } from '../../src/quran/quran';
 
 const file = process.env.INDOPAK_FILE;
@@ -113,6 +114,20 @@ maybe('the IndoPak file, whole', () => {
       });
     });
     expect(compared).toBe(pagesOfFile.reduce((n, p) => n + p.length, 0));
+
+    // ── The madda wājib on engines without Unicode 14 ────────────────
+    //
+    // Shaped with every HarfBuzz Android has shipped (see
+    // `maddaWajibFallback.ts`), the engines that predate U+089C break 79
+    // distinct words in 353 places, and draw every other word as Android
+    // 16 does. The rule must pick exactly those: one word fewer is a word
+    // left broken on an Android 12 phone, one more is a madd wājib drawn
+    // in the ordinary shape for nothing.
+    const words = Object.values(text).flatMap(t => t.split(/\s+/).filter(Boolean));
+    const fallback = words.filter(w => maddaWajibFallback(w) !== w);
+    expect(words.filter(w => w.includes('࢜')).length).toBe(2082);
+    expect(fallback.length).toBe(353);
+    expect(new Set(fallback).size).toBe(79);
 
     // The report: the agreement per ayah, worst first, and what the file
     // would score as written, for the record.
