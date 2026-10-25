@@ -25,6 +25,7 @@ import {
 import { useNavigation, usePreventRemove } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import Svg, { Path, Rect } from 'react-native-svg';
+import { ToneIcon } from './ToneIcons';
 import { ReadingLockBadge, useHoldToUnlock } from './ReadingLockBadge';
 import { useKeepAwake } from './keepAwakeLock';
 import type { FullscreenVeil } from './fullscreenVeil';
@@ -1011,34 +1012,14 @@ export function MushafPageHeader({
           hitSlop={8}
           onPress={() => setQuranPrefs(prefsForTone(nextChoice))}
           style={[styles.nightPill, { borderColor: ornament }]}>
+          <ToneIcon tone={nextChoice} color={String(ornament)} size={14} />
           <Text style={[styles.nightPillText, { color: ornament }]}>
-            {
-              // U+FE0E variation selectors force the monochrome text
-              // glyphs — Android otherwise renders the sun as a colored
-              // emoji, which shouts against the quiet page.
-              `${toneGlyph(nextChoice)} ${toneShortName(t, nextChoice)}`
-            }
+            {toneShortName(t, nextChoice)}
           </Text>
         </Pressable>
       ) : null}
     </View>
   );
-}
-
-/**
- * The glyph for the tone a tap goes TO — monochrome, see the pill.
- *
- * AUTO IS A LETTER, not a fourth disc. It was `◑︎`, a half circle filled
- * on the other side from sepia's `◐︎` — a distinction of a few pixels at
- * this size, and in the page bar, where the button carries the glyph
- * ALONE with no word beside it, the two steps of the cycle were not
- * telling apart. "A" says which one it is at a glance and cannot be
- * mistaken for a phase of anything: the sun, the moon and the half-lit
- * disc stay the three tones, and the letter is the one step that is not a
- * tone at all but a rule — follow the app.
- */
-export function toneGlyph(next: MushafToneChoice): string {
-  return next === 'sepia' ? '◐︎' : next === 'night' ? '☾︎' : next === 'auto' ? 'A' : '☀︎';
 }
 
 type Translate = (key: string, fallback: string) => string;
@@ -1277,16 +1258,10 @@ export function MushafToneHeaderButton({
       hitSlop={10}
       onPress={() => setQuranPrefs(prefsForTone(next))}
       style={styles.toneHeaderBtn}>
-      <Text
-        style={[
-          styles.toneGlyph,
-          // The letter needs the weight the symbols have by their own
-          // drawing, or "A" reads as text dropped into a row of icons.
-          next === 'auto' && styles.toneGlyphLetter,
-          { color, fontSize: size, lineHeight: Math.round(size * 1.25) },
-        ]}>
-        {toneGlyph(next)}
-      </Text>
+      {/* One drawing per stop of the cycle — `ToneIcons`. A hair larger
+          than the glyph size it replaces, so a stroke icon sits level
+          with the headphones beside it. */}
+      <ToneIcon tone={next} color={String(color)} size={Math.round(size * 1.2)} />
     </Pressable>
   );
 }
@@ -1525,6 +1500,9 @@ const styles = StyleSheet.create({
     fontVariant: ['tabular-nums'],
   },
   nightPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.xs,
     borderWidth: StyleSheet.hairlineWidth,
     borderRadius: RADIUS.md,
     paddingHorizontal: SPACING.md,
@@ -1540,8 +1518,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  toneGlyph: { fontSize: TYPE.body.fontSize, lineHeight: 20 },
-  toneGlyphLetter: { fontWeight: '700' },
   toneHeaderBtn: { paddingHorizontal: SPACING.xs },
   // The frame glyph is drawn lighter than the sun and moon are; the bold
   // weight brings it level with them, as it had in the header.

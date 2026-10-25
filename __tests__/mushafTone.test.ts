@@ -14,7 +14,7 @@ import {
   toneIsDark,
 } from '../src/quran/mushafTone';
 import { coerceQuranState, DEFAULT_QURAN_STATE } from '../src/quran/quranState';
-import { toneGlyph } from '../src/quran/mushafReaderCore';
+import { toneIconName } from '../src/quran/ToneIcons';
 
 describe('resolving the tone', () => {
   it('night wins whatever the paper tone says', () => {
@@ -114,37 +114,35 @@ describe('the grounds', () => {
 });
 
 /**
- * The tone control's glyph.
+ * The tone control's icon.
  *
- * In the page bar the button carries the glyph ALONE — no word beside it —
- * so every step of the cycle has to be told apart by its drawing. Auto was
- * `◑︎` against sepia's `◐︎`: the same disc, filled on the other side, a few
- * pixels apart at 17pt. It is a letter now, which is also the honest
- * distinction — the other three are tones, and auto is a rule.
+ * In the page bar the button carries the icon ALONE — no word beside it —
+ * so every step of the cycle has to be told apart by its drawing: a sun,
+ * a sun on the horizon, a crescent, a half-lit disc (`ToneIcons`).
  */
-describe('the glyph the tone control shows', () => {
-  it('gives auto a letter, and keeps a tone for each tone', () => {
-    expect(toneGlyph('auto')).toBe('A');
-    expect(toneGlyph('paper')).toBe('☀︎');
-    expect(toneGlyph('sepia')).toBe('◐︎');
-    expect(toneGlyph('night')).toBe('☾︎');
+describe('the icon the tone control shows', () => {
+  it('draws each stop of the cycle as what it is', () => {
+    expect(toneIconName('auto')).toBe('auto');
+    expect(toneIconName('paper')).toBe('sun');
+    expect(toneIconName('sepia')).toBe('sunset');
+    expect(toneIconName('night')).toBe('moon');
   });
 
-  it('never repeats a glyph across the cycle', () => {
-    const glyphs = ['paper', 'sepia', 'night', 'auto'].map(c =>
-      toneGlyph(c as Parameters<typeof toneGlyph>[0]),
+  it('never repeats a drawing across the cycle', () => {
+    const icons = ['paper', 'sepia', 'night', 'auto'].map(c =>
+      toneIconName(c as Parameters<typeof toneIconName>[0]),
     );
-    expect(new Set(glyphs).size).toBe(glyphs.length);
+    expect(new Set(icons).size).toBe(icons.length);
   });
 
-  it('walks paper → sepia → night → auto → paper, and the glyph follows', () => {
-    let choice: Parameters<typeof toneGlyph>[0] = 'paper';
+  it('walks paper → sepia → night → auto → paper, and the icon follows', () => {
+    let choice: Parameters<typeof toneIconName>[0] = 'paper';
     const seen: string[] = [];
     for (let i = 0; i < 4; i++) {
-      seen.push(toneGlyph(choice));
+      seen.push(toneIconName(choice));
       choice = nextMushafTone(choice);
     }
-    expect(seen).toEqual(['☀︎', '◐︎', '☾︎', 'A']);
+    expect(seen).toEqual(['sun', 'sunset', 'moon', 'auto']);
     // Back where it started, so the letter is one stop of a ring and not
     // a dead end.
     expect(choice).toBe('paper');
