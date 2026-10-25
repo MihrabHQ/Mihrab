@@ -145,6 +145,9 @@ const CHEVRON_SIZE = 20;
 /** The countdown's halo under the Sky theme by night — its blur, and the room its text is given for it. */
 const GLOW_RADIUS = 14;
 
+/** A system face's ascender, in ems — only until the real one is measured. */
+const HERO_ASCENT_EM = 0.93;
+
 /** How long the day line carries an answer to a tap it could not record. */
 const HINT_MS = 2600;
 function Chevron({ back, color }: { back: boolean; color: string }) {
@@ -431,7 +434,8 @@ const HeroToday = memo(function HeroToday({
   // iPhone Duo: the location and the Qibla stand in the vertical bar's
   // column instead (HomeScreen hands them to the tab bar there).
   const vbar = useVerticalBar();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const rtl = isRtlLanguage(i18n.language);
   const clock = useClockFormatter();
   // Focus AND foreground. `useIsFocused()` on its own kept this ticking once
   // a second in the user's pocket: backgrounding the app from the Today tab
@@ -866,6 +870,43 @@ const HeroToday = memo(function HeroToday({
       margin: -GLOW_RADIUS,
     };
   }, [heroVariant, moreContrast, frame.passage, frame.t]);
+  // The halo on the figures' span; the room it needs is on the line's view.
+  const glowSpan = useMemo(
+    () =>
+      glow
+        ? {
+            textShadowColor: glow.textShadowColor,
+            textShadowRadius: glow.textShadowRadius,
+            textShadowOffset: glow.textShadowOffset,
+          }
+        : null,
+    [glow],
+  );
+  /**
+   * The baselines of the countdown and of the time, from the text engine.
+   *
+   * Each is the first line's top plus its ascender, inside its own view;
+   * both views start at the row's top, so the difference is how far the
+   * time has to come down to stand on the countdown's baseline. Until both
+   * have been laid out once, the ascender is estimated from the sizes.
+   */
+  const [countdownBase, setCountdownBase] = useState<number | null>(null);
+  const [atBase, setAtBase] = useState<number | null>(null);
+  const onCountdownLine = useCallback((e: { nativeEvent: { lines: Array<{ y: number; ascender: number }> } }) => {
+    const l = e.nativeEvent.lines[0];
+    if (l) setCountdownBase(prev => (prev != null && Math.abs(prev - (l.y + l.ascender)) < 0.5 ? prev : l.y + l.ascender));
+  }, []);
+  const onAtLine = useCallback((e: { nativeEvent: { lines: Array<{ y: number; ascender: number }> } }) => {
+    const l = e.nativeEvent.lines[0];
+    if (l) setAtBase(prev => (prev != null && Math.abs(prev - (l.y + l.ascender)) < 0.5 ? prev : l.y + l.ascender));
+  }, []);
+  const bigSize = expanded ? styles.heroCountdownExpanded.fontSize : styles.heroCountdown.fontSize;
+  const atShift = Math.max(
+    0,
+    countdownBase != null && atBase != null
+      ? countdownBase - atBase
+      : HERO_ASCENT_EM * (bigSize - styles.heroAt.fontSize),
+  );
   const inkTop = useMemo(() => skyInkAt(frame, yEyebrow), [frame, yEyebrow]);
   const ink = useMemo(() => skyInkAt(frame, yCountdown), [frame, yCountdown]);
   const inkFoot = useMemo(() => skyInkAt(frame, yFoot), [frame, yFoot]);
@@ -942,58 +983,63 @@ const HeroToday = memo(function HeroToday({
       {/* "Fajr in" leading, and on the trailing end of the same line —
           the side with nothing on it — the heart that opens Help Mihrab. */}
       <HeroEyebrow label={eyebrowLabel} ink={inkTop} renderHelp={topRow?.renderHelp} />
-      {/* Hours, minutes and seconds as pieces, so the row's direction puts
-          them in reading order — hours first from the right in Arabic, from
-          the left in English (#71). One string kept them left to right
-          inside a right-to-left row, with the seconds on the wrong side. */}
+      {/*
+        THE COUNTDOWN IS ONE LINE OF TEXT, AND THE TIME IS AT THE OTHER END.
+
+        Hours, minutes and seconds used to be three Text views in a row
+        aligned on 'baseline' — which the layout engine does not honour for
+        text here, so the small seconds sat high beside the big figures on
+        both platforms. As spans of ONE Text the text engine itself sets
+        them on one baseline, which is the only alignment that cannot drift.
+        The order is still the language's (#71): the paragraph runs right to
+        left in Arabic, so hours come first from the right, as the pieces
+        did in a right-to-left row.
+
+        The time the countdown reaches stands at the far end, over the name
+        of that prayer at the rail's end, on the countdown's baseline —
+        measured from both lines (see `onCountdownLine`), because no style
+        can say "this baseline" across two views.
+      */}
       <View style={styles.heroCountdownRow}>
-        <View style={[styles.heroMain, expanded && styles.heroMainExpanded]}>
-          {pieces.hours ? (
-            <Text
-              style={[
-                styles.heroCountdown,
-                expanded && styles.heroCountdownExpanded,
-                tabularNumeralStyle,
-                { color: ink.text },
-                glow,
-              ]}
-              numberOfLines={1}
-              maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}
-              accessibilityLanguage={unitLang}>
-              {pieces.hours}
-            </Text>
-          ) : null}
+        <Text
+          style={[
+            styles.heroCountdownLine,
+            tabularNumeralStyle,
+            { writingDirection: rtl ? 'rtl' : 'ltr' },
+            glow ? { padding: glow.padding, margin: glow.margin } : null,
+          ]}
+          numberOfLines={1}
+          maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}
+          accessibilityLanguage={unitLang}
+          onTextLayout={onCountdownLine}>
           <Text
             style={[
               styles.heroCountdown,
               expanded && styles.heroCountdownExpanded,
-              tabularNumeralStyle,
               { color: ink.text },
-              glow,
-            ]}
-            numberOfLines={1}
-            maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}
-            accessibilityLanguage={unitLang}>
-            {pieces.minutes}
+              glowSpan,
+            ]}>
+            {pieces.hours ? `${pieces.hours} ${pieces.minutes}` : pieces.minutes}
           </Text>
-        </View>
+          <Text
+            style={[
+              styles.heroSeconds,
+              expanded && styles.heroSecondsExpanded,
+              { color: ink.muted },
+            ]}>
+            {` ${pieces.seconds}`}
+          </Text>
+        </Text>
         <Text
           style={[
-            styles.heroSeconds,
-            expanded && styles.heroSecondsExpanded,
+            styles.heroAt,
             tabularNumeralStyle,
-            { color: ink.muted },
+            { color: ink.muted, marginTop: atShift },
           ]}
           numberOfLines={1}
           maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}
-          accessibilityLanguage={unitLang}>
-          {pieces.seconds}
-        </Text>
-        <Text
-          style={[styles.heroAt, tabularNumeralStyle, { color: ink.muted }]}
-          numberOfLines={1}
-          maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}
-          accessibilityLanguage="en-US">
+          accessibilityLanguage="en-US"
+          onTextLayout={onAtLine}>
           {targetClock}
         </Text>
       </View>
@@ -2285,20 +2331,19 @@ const styles = StyleSheet.create({
   heroEyebrowText: { flex: 1 },
   heroCountdownRow: {
     flexDirection: 'row',
-    alignItems: 'baseline',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
     gap: SPACING.sm,
     marginTop: 2,
   },
-  // The space a "5h 25m" string had between its hours and its minutes, at
-  // the countdown's size.
-  heroMain: { flexDirection: 'row', alignItems: 'baseline', gap: 13 }, // tokens-ok-line: a word space at 54
-  heroMainExpanded: { gap: 19 }, // tokens-ok-line: a word space at 78
+  // Shrinks before the time does; one line, never wrapped.
+  heroCountdownLine: { flexShrink: 1 },
   // The question the app is opened to answer, at the size that says so.
   heroCountdown: { fontSize: 54, fontWeight: '700' }, // tokens-ok-line: display or Arabic scale, sized by hand
   heroCountdownExpanded: { fontSize: 78 }, // tokens-ok-line: display or Arabic scale, sized by hand
   // Two thirds of the "at" line's weight and a third of the countdown's
   // size: present, readable, and never the thing the eye lands on first.
-  heroSeconds: { fontSize: TYPE.title2.fontSize, fontWeight: '600', marginStart: -3 },
+  heroSeconds: { fontSize: TYPE.title2.fontSize, fontWeight: '600' },
   heroSecondsExpanded: { fontSize: 28 }, // tokens-ok-line: display or Arabic scale, sized by hand
   heroAt: { fontSize: TYPE.title3.fontSize, fontWeight: '600' },
   railWrap: { marginTop: SPACING.md },

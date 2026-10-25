@@ -131,12 +131,13 @@ function shownSeconds(tree: ReactTestRenderer): number {
     .findAllByType(Text)
     .map(n => n.props.children)
     .map(c => (Array.isArray(c) ? c.join('') : c));
-  const piece = (re: RegExp) => {
-    const hit = texts.find(c => typeof c === 'string' && re.test(c)) as string | undefined;
-    return hit ? parseInt(hit, 10) : 0;
-  };
-  // The hero draws hours, minutes and seconds as pieces (#71).
-  return (piece(/^\d+h$/) * 60 + piece(/^\d+m$/)) * 60 + piece(/^\d\ds$/);
+  // One line of spans: "3h 25m" (or "25m") and " 07s".
+  const strings = texts.filter((c): c is string => typeof c === 'string');
+  const figures = strings.find(c => /^(\d+h )?\d+m$/.test(c));
+  const secs = strings.find(c => /^ \d\ds$/.test(c));
+  const h = figures?.match(/^(\d+)h /)?.[1];
+  const m = figures?.match(/(\d+)m$/)?.[1];
+  return ((h ? parseInt(h, 10) : 0) * 60 + (m ? parseInt(m, 10) : 0)) * 60 + (secs ? parseInt(secs, 10) : 0);
 }
 
 /** The rail's fill, 0…1, as drawn (the only width written to 2 decimals). */
