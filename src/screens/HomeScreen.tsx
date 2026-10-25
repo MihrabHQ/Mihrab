@@ -76,7 +76,7 @@ import { LocationChip } from './home/LocationChip';
 import { useHijriCalendarVersion } from '../hijri/useHijriCalendarVersion';
 import { formatHijriLabel } from '../hijri/formatHijriLabel';
 import { QuranCard } from './home/QuranCard';
-import { PermissionBanners } from './home/PermissionBanners';
+import { PermissionBanners, permissionBannersShown } from './home/PermissionBanners';
 import { PracticeCard } from './home/PracticeCard';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { TodaySummary } from './home/TodaySummary';
@@ -1785,36 +1785,48 @@ export function HomeScreen() {
           bar's height as padding and the bar's glyphs go back to the
           page's own ink, because with a banner up there the sky is no
           longer what the clock sits on (see `bannerAbove` below). */}
-      {/* Held as a book, the notices keep to the day's page too. */}
-      <View
-        style={
-          book
-            ? { width: Math.max(0, book.left - HOME_SCREEN_PADDING * 2) }
-            : wideInset > 0
-              ? { paddingHorizontal: wideInset }
-              : undefined
-        }>
-        <PermissionBanners
-          usingLocalFallback={state.usingLocalFallback ?? false}
-          exactAlarmDenied={exactAlarmDenied}
-          notifPermDenied={notifPermDenied}
-          onRetryFetch={retry}
-          timezoneShift={timezoneShift}
-          methodNote={methodNote}
-          onDismissMethodNote={dismissMethodNote}
-          zoneNote={zoneNote}
-          onDismissZoneNote={dismissZoneNote}
-          onDismissTimezoneShift={() => {
-            // Both halves: the module stops offering it to the next load,
-            // and this screen stops drawing it now.
-            clearTimezoneShiftNotice();
-            setTzNoticeDismissedAt(timezoneShift?.at ?? Date.now());
-          }}
-          topInset={
-            !isDashboard && !isMacCatalyst && !isRoomy && hasBanner ? insets.top : 0
-          }
-        />
-      </View>
+      {/* Held as a book, the notices keep to the day's page too. Mounted
+          only when a notice is drawn: the column has a gap, and an empty
+          wrapper above the hero still took it — a strip of page colour
+          across the top of the screen, above the sky. */}
+      {permissionBannersShown({
+        usingLocalFallback: state.usingLocalFallback ?? false,
+        exactAlarmDenied,
+        notifPermDenied,
+        timezoneShift,
+        methodNote,
+        zoneNote,
+      }) ? (
+        <View
+          style={
+            book
+              ? { width: Math.max(0, book.left - HOME_SCREEN_PADDING * 2) }
+              : wideInset > 0
+                ? { paddingHorizontal: wideInset }
+                : undefined
+          }>
+          <PermissionBanners
+            usingLocalFallback={state.usingLocalFallback ?? false}
+            exactAlarmDenied={exactAlarmDenied}
+            notifPermDenied={notifPermDenied}
+            onRetryFetch={retry}
+            timezoneShift={timezoneShift}
+            methodNote={methodNote}
+            onDismissMethodNote={dismissMethodNote}
+            zoneNote={zoneNote}
+            onDismissZoneNote={dismissZoneNote}
+            onDismissTimezoneShift={() => {
+              // Both halves: the module stops offering it to the next load,
+              // and this screen stops drawing it now.
+              clearTimezoneShiftNotice();
+              setTzNoticeDismissedAt(timezoneShift?.at ?? Date.now());
+            }}
+            topInset={
+              !isDashboard && !isMacCatalyst && !isRoomy && hasBanner ? insets.top : 0
+            }
+          />
+        </View>
+      ) : null}
 
 
       {(() => {

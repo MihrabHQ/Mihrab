@@ -65,6 +65,30 @@ type PermissionBannersProps = {
   topInset?: number;
 };
 
+/**
+ * Whether any notice is drawn at all. The Home page asks it too: the
+ * notices' wrapper is a child of a column with a gap, and a wrapper left
+ * mounted with nothing in it still took the gap — a band of page colour
+ * across the top of the screen, above the sky.
+ */
+export function permissionBannersShown(p: {
+  usingLocalFallback?: boolean;
+  exactAlarmDenied?: boolean;
+  notifPermDenied?: boolean;
+  timezoneShift?: unknown;
+  methodNote?: unknown;
+  zoneNote?: unknown;
+}): boolean {
+  return Boolean(
+    p.usingLocalFallback ||
+      p.exactAlarmDenied ||
+      p.notifPermDenied ||
+      p.timezoneShift ||
+      p.methodNote ||
+      p.zoneNote,
+  );
+}
+
 function PermissionBannersImpl({
   usingLocalFallback,
   exactAlarmDenied,
@@ -82,12 +106,14 @@ function PermissionBannersImpl({
   const { palette } = useAppPalette();
 
   if (
-    !usingLocalFallback &&
-    !exactAlarmDenied &&
-    !notifPermDenied &&
-    !timezoneShift &&
-    !methodNote &&
-    !zoneNote
+    !permissionBannersShown({
+      usingLocalFallback,
+      exactAlarmDenied,
+      notifPermDenied,
+      timezoneShift,
+      methodNote,
+      zoneNote,
+    })
   ) {
     return null;
   }

@@ -116,3 +116,13 @@ describe('the tabs that are not Today', () => {
     expect(tabs).not.toMatch(/<HomeStatusBand/);
   });
 });
+
+describe('nothing stands between the screen’s top and the sky', () => {
+  it('mounts the notices only when one is drawn — an empty one still took the column’s gap', () => {
+    const home = read('src/screens/HomeScreen.tsx');
+    expect(home).toMatch(/\{permissionBannersShown\(\{[\s\S]{0,260}\}\) \? \(\s*<View/);
+    // The banners decide by the same rule, so the two cannot disagree.
+    expect(read('src/screens/home/PermissionBanners.tsx')).toMatch(/!permissionBannersShown\(\{/);
+  });
+});
+
