@@ -97,7 +97,7 @@ export async function collectWidgetExtras(input: {
     try {
       const riwayah = riwayahById(resolveRiwayah(quran.prefs.riwayah));
       mushafDownloaded =
-        riwayah.render === 'unicode' ||
+        riwayah.render !== 'glyph' ||
         (await fontStoreStats()).pages >= MUSHAF_TOTAL_PAGES;
     } catch {
       /* treat as absent — the translation reader always works */

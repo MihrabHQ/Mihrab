@@ -146,6 +146,8 @@ export const CONTENT_DEADLINES = {
   tafsirSurahSmall: 12_000,
   /** A riwayah dataset from a link someone pasted; up to 48 MB. */
   riwayah: 30_000,
+  /** One of the IndoPak files — the text at 1.5 MB, the font at 650 KB. */
+  indopakFile: 90_000,
 } as const;
 
 export type ContentDeadline = keyof typeof CONTENT_DEADLINES;

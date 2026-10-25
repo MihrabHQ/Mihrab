@@ -31,7 +31,8 @@
  */
 import { FONTS } from '../theme/typography';
 import type { RiwayahPageTable } from './riwayahData';
-import { loadRiwayahPages } from './riwayahData';
+import { loadRiwayahPages, loadedRiwayahFontFamily } from './riwayahData';
+import { INDOPAK_TEXT, indopakUrls } from './indopakSource';
 
 /**
  * Where a riwayah's muṣḥaf can be obtained, and by whom it is published.
@@ -60,13 +61,46 @@ export type RiwayahSource = {
   credits: string;
 };
 
-export type RiwayahId = 'hafs' | 'warsh' | 'qalun' | 'shubah';
+/**
+ * A row of the table: a muṣḥaf the app can draw.
+ *
+ * ── A RIWAYAH IS A READING; A ROW IS A PRINT ──────────────────────────
+ *
+ * The id names what the reader picks, and until IndoPak every pick was a
+ * different READING — Warsh's text is not Ḥafṣ's. IndoPak is not: it is
+ * the Ḥafṣ reading set in the Indo-Pakistani script on the Taj Company's
+ * 610 pages. The same ayahs, the same recitations, the same tajwīd; a
+ * different book. So every row now says which reading it carries
+ * (`reading`) beside which print it is, and code that cares about the
+ * TEXT — audio, tajwīd, translations — asks the reading, while code that
+ * cares about the PAGE asks the id.
+ */
+export type RiwayahId = 'hafs' | 'warsh' | 'qalun' | 'shubah' | 'indopak';
+
+/** The transmissions whose text differs; what audio and tajwīd ask. */
+export type Reading = 'hafs' | 'warsh' | 'qalun' | 'shubah';
 
 /** The one every install has, and the one every default points at. */
 export const DEFAULT_RIWAYAH: RiwayahId = 'hafs';
 
+/**
+ * How the type of a printed (`unicode-lines`) page is sized — see
+ * `MushafUnicodePage`, where the Warsh figures were measured.
+ */
+export type PrintedTypeMetrics = {
+  /**
+   * The width of a typical full line in ems of its own type size; the
+   * horizontal half of the size decision. Fitted on a device, never chosen.
+   */
+  typicalLineEm: number;
+  /** Row height as a multiple of the type size: the leading the marks need. */
+  lineHeightEm: number;
+};
+
 export type RiwayahDefinition = {
   id: RiwayahId;
+  /** Which reading's text this is — `hafs` for IndoPak. */
+  reading: Reading;
   /** i18n key for the display name. */
   nameKey: string;
   /** Arabic name — what the toggle actually shows. */
@@ -80,9 +114,16 @@ export type RiwayahDefinition = {
    *
    * `unicode` is ordinary text in one bundled font. Exact text and exact
    * page boundaries; the LINES fall where the platform puts them, because
-   * no open Warsh dataset carries line assignments. See the plan.
+   * no open Warsh dataset carries line assignments — or, where a line
+   * table exists (`mushafPrintedLines`), ayahs split by ratio. See the plan.
+   *
+   * `unicode-lines` is Unicode text whose dataset says which words are on
+   * which line: the print's own lines, exactly, in a font that arrives
+   * with the text. IndoPak.
    */
-  render: 'glyph' | 'unicode';
+  render: 'glyph' | 'unicode' | 'unicode-lines';
+  /** Type metrics for a `unicode-lines` print; absent means Warsh's. */
+  printed?: PrintedTypeMetrics;
   /** Where a `unicode` riwayah's data comes from; Hafs is in the build. */
   source?: RiwayahSource;
   /** Font family for `unicode` riwayat; the glyph pipeline picks its own. */
@@ -104,6 +145,16 @@ export type RiwayahDefinition = {
    * correctly, so the text is right even before its own face arrives.
    */
   fontBundled?: boolean;
+  /**
+   * The font arrives WITH the dataset and is registered from the device.
+   *
+   * A row with this set never draws in the fallback face: the text leans
+   * on marks the fallback cannot shape, and a line measured in the wrong
+   * face is the fault that cost the Ḥafṣ pages the last word of page 49.
+   * `riwayahFontFamily` answers null until the file is registered, and
+   * the page waits.
+   */
+  fontDownloaded?: boolean;
 };
 
 /**
@@ -115,12 +166,48 @@ export type RiwayahDefinition = {
 export const RIWAYAT: readonly RiwayahDefinition[] = [
   {
     id: 'hafs',
+    reading: 'hafs',
     nameKey: 'quran.riwayahHafs',
     arabic: 'حفص',
     render: 'glyph',
   },
   {
+    /**
+     * IndoPak — Ḥafṣ again, as the subcontinent prints it.
+     *
+     * The 15-line Taj Company layout, 610 pages, in the Indo-Pakistani
+     * naskh with its own stop signs and its own hamza and madd spellings.
+     * Text and font come from DigitalKhatt (MIT and OFL), pinned in
+     * `indopakSource.ts`, via this repository's mirror first; the font
+     * is registered from the device once downloaded, so until then this
+     * row is drawable but not drawn (`riwayahFontFamily`).
+     *
+     * It sits second because it is the first thing a reader from
+     * Pakistan, India or Bangladesh looks for, and because the list is
+     * grouped by reading: the two Ḥafṣ prints, then the other readings.
+     */
+    id: 'indopak',
+    reading: 'hafs',
+    nameKey: 'quran.riwayahIndopak',
+    arabic: 'حفص · ہندی',
+    render: 'unicode-lines',
+    printed: {
+      // Provisional, until measured on a device in the print check —
+      // see `PRINTED_TYPICAL_LINE_EM` in `MushafUnicodePage` for how.
+      typicalLineEm: 19.0,
+      lineHeightEm: 2.05,
+    },
+    source: {
+      publisher: 'DigitalKhatt',
+      page: 'https://github.com/DigitalKhatt/digitalkhatt-js',
+      direct: indopakUrls(INDOPAK_TEXT)[1],
+      credits: 'DigitalKhatt contributors; font © Amine Anane and Tarteel Inc.',
+    },
+    fontDownloaded: true,
+  },
+  {
     id: 'warsh',
+    reading: 'warsh',
     nameKey: 'quran.riwayahWarsh',
     arabic: 'ورش',
     render: 'unicode',
@@ -161,6 +248,7 @@ export const RIWAYAT: readonly RiwayahDefinition[] = [
      * (`mushafPrintedLines`), and the two cannot drift apart.
      */
     id: 'qalun',
+    reading: 'qalun',
     nameKey: 'quran.riwayahQalun',
     arabic: 'قالون',
     render: 'unicode',
@@ -184,6 +272,7 @@ export const RIWAYAT: readonly RiwayahDefinition[] = [
      * units lower, so it carries its own line table.
      */
     id: 'shubah',
+    reading: 'shubah',
     nameKey: 'quran.riwayahShubah',
     arabic: 'شعبة',
     render: 'unicode',
@@ -202,15 +291,45 @@ export function riwayahById(id: RiwayahId): RiwayahDefinition {
   return RIWAYAT.find(r => r.id === id) ?? RIWAYAT[0];
 }
 
-/** The face to draw a `unicode` riwayah in — see `fontBundled`. */
-export function riwayahFontFamily(def: RiwayahDefinition): string {
+/**
+ * The face to draw a `unicode` riwayah in — see `fontBundled`.
+ *
+ * Null for a `fontDownloaded` row whose font is not registered yet: the
+ * page waits rather than draw in a face that cannot shape the text.
+ */
+export function riwayahFontFamily(def: RiwayahDefinition): string | null {
+  if (def.fontDownloaded) return loadedRiwayahFontFamily(def.id);
   return def.fontBundled && def.fontFamily ? def.fontFamily : FONTS.arabicQuran;
 }
 
-/** Does this build actually carry this riwayah's pages? */
+/**
+ * The face an ayah's text must be shown in OUTSIDE the page — the sheet,
+ * the share card — or null for the app's own Qur'anic face.
+ *
+ * Only a muṣḥaf whose font came with it answers: its text leans on marks
+ * the bundled face cannot shape, so showing it in Amiri draws boxes.
+ */
+export function riwayahTextFontFamily(id: RiwayahId): string | null {
+  const def = riwayahById(id);
+  return def.fontDownloaded ? loadedRiwayahFontFamily(id) : null;
+}
+
+/** Which reading's text a row carries: what audio and tajwīd ask. */
+export function readingOf(id: RiwayahId): Reading {
+  return riwayahById(id).reading;
+}
+
+/** Is this the bundled glyph muṣḥaf — the one with page fonts of its own? */
+export function isGlyphRiwayah(id: RiwayahId): boolean {
+  return riwayahById(id).render === 'glyph';
+}
+
+/** Does this build actually carry this riwayah's pages (and its font)? */
 export function riwayahAvailable(id: RiwayahId): boolean {
   if (id === DEFAULT_RIWAYAH) return true;
-  return loadRiwayahPages(id) !== null;
+  if (loadRiwayahPages(id) === null) return false;
+  const def = riwayahById(id);
+  return def.fontDownloaded ? loadedRiwayahFontFamily(id) !== null : true;
 }
 
 /** The riwayat this build can actually offer, in display order. */

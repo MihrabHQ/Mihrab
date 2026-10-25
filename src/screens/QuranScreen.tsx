@@ -199,7 +199,7 @@ export function QuranScreen() {
    * there before they have it. It disappears only in a build that knows
    * one recitation, which is a build with nothing to link to.
    */
-  const riwayahOffered = RIWAYAT.some(r => r.render === 'unicode' && r.source);
+  const riwayahOffered = RIWAYAT.some(r => r.render !== 'glyph' && r.source);
   const edition = useActiveEdition();
 
   useEffect(() => {

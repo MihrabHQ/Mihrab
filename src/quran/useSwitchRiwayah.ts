@@ -26,10 +26,26 @@ export function useSwitchRiwayah(): (id: RiwayahId) => void {
   const { t } = useTranslation();
   const quran = useQuranState();
   const seen = quran.prefs.riwayahNoticeSeen;
+  const indopakSeen = quran.prefs.indopakNoticeSeen;
   return useCallback(
     (id: RiwayahId) => {
       const target = riwayahById(id);
       setQuranPrefs({ riwayah: target.id });
+      if (target.render === 'unicode-lines') {
+        // Its lines ARE the print's, so the reflow notice would be a lie
+        // here; what a reader needs to hear once is that the page count
+        // changed and their place did not.
+        if (indopakSeen) return;
+        setQuranPrefs({ indopakNoticeSeen: true });
+        Alert.alert(
+          t('quran.indopakNoticeTitle', 'A different book, the same place'),
+          t(
+            'quran.indopakNoticeBody',
+            'Pages follow the IndoPak print: 610 of them, line for line. Your bookmarks, your khatmah and your last-read place are kept by ayah, so they carry over.',
+          ),
+        );
+        return;
+      }
       if (target.render !== 'unicode' || seen) return;
       // The flag is written BEFORE the alert, not after it: an alert is
       // not a promise that anybody read it, and one that could fire twice
@@ -44,6 +60,6 @@ export function useSwitchRiwayah(): (id: RiwayahId) => void {
         ),
       );
     },
-    [seen, t],
+    [seen, indopakSeen, t],
   );
 }

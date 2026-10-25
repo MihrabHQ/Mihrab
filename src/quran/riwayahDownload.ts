@@ -35,7 +35,8 @@ import { installRiwayahDataset } from './riwayahData';
 import { verifyRiwayahDataset } from './riwayahImport';
 import { warmSurahCache, releaseSurahCache } from './quran';
 import type { RiwayahProvenance } from './riwayahStore';
-import type { RiwayahId } from './riwayat';
+import { riwayahById, type RiwayahId } from './riwayat';
+import { installIndopak } from './indopakDownload';
 
 /**
  * The largest file worth reading into memory to check.
@@ -188,17 +189,25 @@ export function downloadRiwayah(
 ): MushafDownloadHandle {
   const controller = new AbortController();
   const promise = (async (): Promise<DownloadOutcome> => {
-    onProgress?.({ done: 0, total: 1, failed: 0 });
-    const result = source.url
-      ? await installRiwayahFromUrl(id, source.url, controller.signal)
-      : source.direct
-        ? await installRiwayahMirrored(id, source.direct, controller.signal)
-        : fail('quran.riwayahUnreachable', 'Could not reach that link. Check the address and your connection.');
+    // IndoPak is two pinned files rather than one export, and its own
+    // module fetches them (`indopakDownload`); progress counts the files.
+    const twoFiles = riwayahById(id).render === 'unicode-lines';
+    const total = twoFiles ? 2 : 1;
+    onProgress?.({ done: 0, total, failed: 0 });
+    const result = twoFiles
+      ? await installIndopak(controller.signal, step => {
+          if (step === 'font') onProgress?.({ done: 1, total, failed: 0 });
+        })
+      : source.url
+        ? await installRiwayahFromUrl(id, source.url, controller.signal)
+        : source.direct
+          ? await installRiwayahMirrored(id, source.direct, controller.signal)
+          : fail('quran.riwayahUnreachable', 'Could not reach that link. Check the address and your connection.');
     if (result.ok) {
-      onProgress?.({ done: 1, total: 1, failed: 0 });
+      onProgress?.({ done: total, total, failed: 0 });
       return { complete: true, interrupted: false };
     }
-    onProgress?.({ done: 0, total: 1, failed: 1 });
+    onProgress?.({ done: 0, total, failed: 1 });
     if (controller.signal.aborted) return { complete: false, interrupted: false };
     return {
       complete: false,

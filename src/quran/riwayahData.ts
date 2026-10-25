@@ -25,13 +25,17 @@
  * find out; nothing polls.
  */
 import { useSyncExternalStore } from 'react';
+import { registerNamedFont } from '../native/MushafFont';
 import type { MushafPageRange, SurahMeta } from './pages';
-import type { RiwayahDataset } from './riwayahImport';
+import type { ExactLinesTable, RiwayahDataset } from './riwayahImport';
 import {
   eraseRiwayahDataset,
   readRiwayahDataset,
+  readRiwayahLines,
   readRiwayahProvenance,
+  riwayahFontPath,
   writeRiwayahDataset,
+  type RiwayahExtras,
   type RiwayahProvenance,
 } from './riwayahStore';
 import { DEFAULT_RIWAYAH, RIWAYAT, type RiwayahId } from './riwayat';
@@ -57,6 +61,42 @@ export type RiwayahTextTable = Record<string, string>;
 const pageCache = new Map<RiwayahId, RiwayahPageTable>();
 const textCache = new Map<RiwayahId, RiwayahTextTable>();
 const provenanceCache = new Map<RiwayahId, RiwayahProvenance>();
+/**
+ * The family a downloaded font was registered under — what `fontFamily`
+ * must be given. Absent until registration has succeeded, and the page
+ * waits on it (`riwayahFontFamily`).
+ */
+const fontCache = new Map<RiwayahId, string>();
+/** The print's line table, read on first use — see `readRiwayahLines`. */
+const linesCache = new Map<RiwayahId, ExactLinesTable | null>();
+const linesLoading = new Map<RiwayahId, Promise<void>>();
+
+/** The family name a downloaded muṣḥaf font is registered under. */
+export function riwayahFontFamilyName(id: RiwayahId): string {
+  return `MihrabRiwayah_${id}`;
+}
+
+/**
+ * Register a muṣḥaf's own font from the store and remember the family.
+ *
+ * Idempotent: a second call for the same id returns the family already
+ * known. Null when there is no module (tests, old builds) or the file is
+ * refused, in which case the riwayah stays unavailable — see
+ * `riwayahAvailable`, which asks for the font as well as the pages.
+ */
+async function registerRiwayahFont(
+  id: RiwayahId,
+  fileName: string,
+): Promise<string | null> {
+  const known = fontCache.get(id);
+  if (known) return known;
+  const family = await registerNamedFont(
+    riwayahFontFamilyName(id),
+    riwayahFontPath(id, fileName),
+  );
+  if (family) fontCache.set(id, family);
+  return family;
+}
 
 let hydrated = false;
 let hydrating: Promise<void> | null = null;
@@ -72,7 +112,7 @@ function publish(): void {
 
 /** The riwayat that could be stored — Hafs is drawn from the bundle. */
 function storable(): RiwayahId[] {
-  return RIWAYAT.filter(r => r.render === 'unicode').map(r => r.id);
+  return RIWAYAT.filter(r => r.render !== 'glyph').map(r => r.id);
 }
 
 /**
@@ -91,6 +131,13 @@ export function hydrateRiwayahData(): Promise<void> {
       // `writeRiwayahDataset`. Treat it as absent rather than draw a
       // muṣḥaf nobody can account for.
       if (!provenance) continue;
+      // A muṣḥaf whose face arrives with it is not drawable without the
+      // face: register it before the riwayah is announced, so there is no
+      // moment where the pages exist and the font does not.
+      if (provenance.font) {
+        const family = await registerRiwayahFont(id, provenance.font);
+        if (!family) continue;
+      }
       pageCache.set(id, {
         pages: dataset.pages,
         surahs: dataset.surahs,
@@ -103,6 +150,41 @@ export function hydrateRiwayahData(): Promise<void> {
     publish();
   })();
   return hydrating;
+}
+
+/** The registered family of a downloaded muṣḥaf font, or null until it is. */
+export function loadedRiwayahFontFamily(id: RiwayahId): string | null {
+  return fontCache.get(id) ?? null;
+}
+
+/**
+ * The print's own line table, or null while it is still being read or
+ * the muṣḥaf has none.
+ *
+ * Synchronous, like every other lookup here, because the page asks from
+ * inside a render; the first ask starts the read and the table arrives
+ * by `useRiwayahAvailability`, which bumps when it lands. Until then a
+ * page is reflowed rather than blank.
+ */
+export function loadRiwayahLines(id: RiwayahId): ExactLinesTable | null {
+  if (linesCache.has(id)) return linesCache.get(id) ?? null;
+  if (!linesLoading.has(id) && provenanceCache.has(id)) {
+    linesLoading.set(
+      id,
+      readRiwayahLines(id)
+        .then(table => {
+          linesCache.set(id, table);
+          publish();
+        })
+        .catch(() => {
+          linesCache.set(id, null);
+        })
+        .finally(() => {
+          linesLoading.delete(id);
+        }),
+    );
+  }
+  return null;
 }
 
 /** Has the store been read yet? Screens use it to avoid flashing "none". */
@@ -162,14 +244,24 @@ export async function installRiwayahDataset(
   id: RiwayahId,
   dataset: RiwayahDataset,
   from: string,
+  extras: RiwayahExtras = {},
 ): Promise<RiwayahProvenance> {
-  const provenance = await writeRiwayahDataset(id, dataset, from);
+  // The font first: a muṣḥaf whose face the platform refuses is not
+  // installed, and the caller hears why before anything is written.
+  if (extras.font) {
+    fontCache.delete(id);
+    const family = await registerRiwayahFont(id, extras.font);
+    if (!family) throw new Error(`the font ${extras.font} could not be registered`);
+  }
+  const provenance = await writeRiwayahDataset(id, dataset, from, extras);
   pageCache.set(id, {
     pages: dataset.pages,
     surahs: dataset.surahs,
     ayahCounts: dataset.ayahCounts,
   });
   textCache.set(id, dataset.text);
+  if (dataset.lines) linesCache.set(id, dataset.lines);
+  else linesCache.delete(id);
   provenanceCache.set(id, provenance);
   publish();
   return provenance;
@@ -180,6 +272,8 @@ export async function uninstallRiwayah(id: RiwayahId): Promise<void> {
   await eraseRiwayahDataset(id);
   pageCache.delete(id);
   textCache.delete(id);
+  linesCache.delete(id);
+  fontCache.delete(id);
   provenanceCache.delete(id);
   publish();
 }
@@ -207,6 +301,9 @@ export function _resetRiwayahDataCacheForTests(): void {
   pageCache.clear();
   textCache.clear();
   provenanceCache.clear();
+  fontCache.clear();
+  linesCache.clear();
+  linesLoading.clear();
   hydrated = false;
   hydrating = null;
   version = 0;
@@ -216,6 +313,8 @@ export function _resetRiwayahDataCacheForTests(): void {
 export function _setRiwayahDataForTests(
   id: RiwayahId,
   dataset: RiwayahDataset,
+  /** The family a downloaded font would have been registered as. */
+  fontFamily?: string,
 ): void {
   pageCache.set(id, {
     pages: dataset.pages,
@@ -223,6 +322,8 @@ export function _setRiwayahDataForTests(
     ayahCounts: dataset.ayahCounts,
   });
   textCache.set(id, dataset.text);
+  if (dataset.lines) linesCache.set(id, dataset.lines);
+  if (fontFamily) fontCache.set(id, fontFamily);
   provenanceCache.set(id, {
     from: 'test',
     at: new Date(0).toISOString(),

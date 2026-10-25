@@ -178,6 +178,30 @@ export function unpinPageFont(page: number): void {
   }
 }
 
+/**
+ * Register a font OUTSIDE the slot pool, under a name of its own.
+ *
+ * For a face that belongs to a whole muṣḥaf rather than to a page — the
+ * IndoPak font — and so is never recycled. Resolves to the family the
+ * platform will actually draw with: on Android that is the name asked
+ * for, on iOS it is whatever the font file calls itself, so a caller
+ * must draw with the answer and not with `family`. Null when the module
+ * is absent or the file is refused.
+ */
+export async function registerNamedFont(
+  family: string,
+  path: string,
+): Promise<string | null> {
+  if (!native) return null;
+  try {
+    const registered = await native.registerFont(family, path);
+    return registered || family;
+  } catch (e) {
+    console.warn('mushafFont: could not register', family, e);
+    return null;
+  }
+}
+
 /** Does the platform consider this file a usable font? (download validation) */
 export async function isValidFontFile(path: string): Promise<boolean> {
   if (!native) return false;

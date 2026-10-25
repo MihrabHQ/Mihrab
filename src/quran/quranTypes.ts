@@ -350,6 +350,12 @@ export type QuranPrefs = {
    */
   riwayahNoticeSeen: boolean;
   /**
+   * The IndoPak notice — 610 pages, your place carried over by ayah —
+   * said once on the first switch to it, as `riwayahNoticeSeen` is for
+   * the reflowed muṣḥafs. Its own flag: the two say different things.
+   */
+  indopakNoticeSeen: boolean;
+  /**
    * WHAT A NEW BOOKMARK DOES — follow the reading, or stay put (additive).
    *
    * Two jobs wear one badge. A star already says "this ayah matters to

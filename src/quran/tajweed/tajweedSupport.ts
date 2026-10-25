@@ -37,7 +37,7 @@ export function tajweedUnavailable(
   drawn: boolean = COLOUR_FONTS_DRAWN,
 ): 'riwayah' | 'device' | null {
   if (!riwayahHasTajweed(riwayah)) return 'riwayah';
-  if (riwayahById(riwayah).render === 'unicode') return null;
+  if (riwayahById(riwayah).render !== 'glyph') return null;
   return drawn ? null : 'device';
 }
 

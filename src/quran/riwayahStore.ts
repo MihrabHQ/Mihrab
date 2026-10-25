@@ -29,7 +29,7 @@
  */
 import ReactNativeBlobUtil from 'react-native-blob-util';
 import { mkdirDeep } from './mushafDownload';
-import type { RiwayahDataset } from './riwayahImport';
+import type { ExactLinesTable, RiwayahDataset } from './riwayahImport';
 import type { RiwayahId } from './riwayat';
 
 /**
@@ -54,6 +54,21 @@ export function riwayahDir(id: RiwayahId): string {
   return `${riwayahStoreDir()}/${id}`;
 }
 
+/**
+ * The two files a muṣḥaf may carry beside its pages and text.
+ *
+ * `lines.json` is the print's own line table (IndoPak); the font is the
+ * face the text must be drawn in, downloaded with it and registered from
+ * here (`riwayahData.ts`). Neither exists for the Quranpedia muṣḥafs.
+ */
+export function riwayahLinesPath(id: RiwayahId): string {
+  return `${riwayahDir(id)}/lines.json`;
+}
+
+export function riwayahFontPath(id: RiwayahId, fileName: string): string {
+  return `${riwayahDir(id)}/${fileName}`;
+}
+
 /** How a muṣḥaf on this device got here. */
 export type RiwayahProvenance = {
   /** Where the reader took it from — a URL, or a description of a file. */
@@ -65,6 +80,12 @@ export type RiwayahProvenance = {
   pages: number;
   /** Bytes on disk, for the screen that offers to remove it. */
   bytes: number;
+  /** The publisher's commit the files were pinned to, where there is one. */
+  commit?: string;
+  /** SHA-256 of each downloaded file, by name, as checked at install. */
+  sha256?: Record<string, string>;
+  /** The font file stored beside the text, by name, where there is one. */
+  font?: string;
 };
 
 async function readJson<T>(path: string): Promise<T | null> {
@@ -106,6 +127,23 @@ export async function readRiwayahDataset(
     ayahCounts: pages.ayahCounts ?? countsFromText(text),
     text,
   };
+}
+
+/**
+ * The print's line table, read on its own.
+ *
+ * Apart from the dataset because it is only needed once the muṣḥaf is on
+ * screen, and `hydrateRiwayahData` reads every installed muṣḥaf at start;
+ * a reader with IndoPak installed and Madani open should not pay for it.
+ * Null when the muṣḥaf has none, or the file cannot be read — in which
+ * case the page is reflowed, which is honest rather than blank.
+ */
+export async function readRiwayahLines(
+  id: RiwayahId,
+): Promise<ExactLinesTable | null> {
+  const table = await readJson<ExactLinesTable>(riwayahLinesPath(id));
+  if (!table || !Array.isArray(table.pages) || table.pages.length === 0) return null;
+  return table;
 }
 
 /**
@@ -162,8 +200,13 @@ export function utf8Length(s: string): number {
   return bytes;
 }
 
-/** The three files a muṣḥaf is stored in. */
-const RIWAYAH_FILES = ['pages.json', 'text.json', 'source.json'];
+/** The files a muṣḥaf is stored in; the last two only where it has them. */
+const RIWAYAH_FILES = ['pages.json', 'text.json', 'source.json', 'lines.json'];
+
+/** Every file of a muṣḥaf, the font included when the provenance names one. */
+function filesOf(provenance: RiwayahProvenance | null): string[] {
+  return provenance?.font ? [...RIWAYAH_FILES, provenance.font] : RIWAYAH_FILES;
+}
 
 /**
  * What this muṣḥaf actually occupies, asked of the filesystem.
@@ -177,10 +220,13 @@ const RIWAYAH_FILES = ['pages.json', 'text.json', 'source.json'];
  * `stat` reports the file's own length, not its allocation, so it does
  * not vary with the block size the way the original comment here feared.
  */
-async function bytesOnDisk(id: RiwayahId): Promise<number | null> {
+async function bytesOnDisk(
+  id: RiwayahId,
+  provenance: RiwayahProvenance | null,
+): Promise<number | null> {
   const dir = riwayahDir(id);
   let total = 0;
-  for (const name of RIWAYAH_FILES) {
+  for (const name of filesOf(provenance)) {
     try {
       const stat = await ReactNativeBlobUtil.fs.stat(`${dir}/${name}`);
       const size = Number(stat?.size);
@@ -199,9 +245,20 @@ export async function readRiwayahProvenance(
     `${riwayahDir(id)}/source.json`,
   );
   if (!stored) return null;
-  const measured = await bytesOnDisk(id);
+  const measured = await bytesOnDisk(id, stored);
   return measured != null ? { ...stored, bytes: measured } : stored;
 }
+
+/**
+ * What a dataset carries beyond its pages and text, recorded in the
+ * provenance so the store knows which files are its own.
+ */
+export type RiwayahExtras = {
+  commit?: string;
+  sha256?: Record<string, string>;
+  /** A font file ALREADY in the riwayah's folder, by name. */
+  font?: string;
+};
 
 /**
  * Write a verified dataset, then its provenance.
@@ -215,12 +272,14 @@ export async function writeRiwayahDataset(
   id: RiwayahId,
   dataset: RiwayahDataset,
   from: string,
+  extras: RiwayahExtras = {},
 ): Promise<RiwayahProvenance> {
   const dir = riwayahDir(id);
   await mkdirDeep(dir);
   const pagesBlob = JSON.stringify({
     pages: dataset.pages,
     surahs: dataset.surahs,
+    ayahCounts: dataset.ayahCounts,
   });
   const textBlob = JSON.stringify(dataset.text);
   await ReactNativeBlobUtil.fs.writeFile(
@@ -229,6 +288,21 @@ export async function writeRiwayahDataset(
     'utf8',
   );
   await ReactNativeBlobUtil.fs.writeFile(`${dir}/text.json`, textBlob, 'utf8');
+  let linesBytes = 0;
+  if (dataset.lines) {
+    const linesBlob = JSON.stringify(dataset.lines);
+    await ReactNativeBlobUtil.fs.writeFile(riwayahLinesPath(id), linesBlob, 'utf8');
+    linesBytes = utf8Length(linesBlob);
+  }
+  let fontBytes = 0;
+  if (extras.font) {
+    try {
+      const stat = await ReactNativeBlobUtil.fs.stat(riwayahFontPath(id, extras.font));
+      fontBytes = Number(stat?.size) || 0;
+    } catch {
+      // Sized by the stat below on the platforms that can; nothing lost.
+    }
+  }
   const provenance: RiwayahProvenance = {
     from,
     at: new Date().toISOString(),
@@ -238,7 +312,8 @@ export async function writeRiwayahDataset(
     // read back from `source.json` on a platform where the stat above
     // cannot answer; where it can, the stat wins, because it is the only
     // one that also fixes a muṣḥaf installed before this was right.
-    bytes: utf8Length(pagesBlob) + utf8Length(textBlob),
+    bytes: utf8Length(pagesBlob) + utf8Length(textBlob) + linesBytes + fontBytes,
+    ...extras,
   };
   await ReactNativeBlobUtil.fs.writeFile(
     `${dir}/source.json`,
@@ -251,7 +326,11 @@ export async function writeRiwayahDataset(
 /** Remove a riwayah's muṣḥaf from this device, provenance and all. */
 export async function eraseRiwayahDataset(id: RiwayahId): Promise<void> {
   const dir = riwayahDir(id);
-  for (const name of ['source.json', 'text.json', 'pages.json']) {
+  // The provenance names the font, so it is read before it is removed —
+  // and removed FIRST, so an interrupted erase reads as absent.
+  const provenance = await readJson<RiwayahProvenance>(`${dir}/source.json`);
+  const names = ['source.json', ...filesOf(provenance).filter(n => n !== 'source.json')];
+  for (const name of names) {
     try {
       await ReactNativeBlobUtil.fs.unlink(`${dir}/${name}`);
     } catch {

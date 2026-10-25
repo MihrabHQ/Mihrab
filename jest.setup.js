@@ -276,6 +276,15 @@ jest.mock('react-native-blob-util', () => {
       files.delete(from);
     }),
     mkdir: jest.fn(async () => {}),
+    // The real thing hashes the bytes on disk; here the in-memory file is
+    // the disk. Strings are hashed as UTF-8, which is how they are written.
+    hash: jest.fn(async (path, algorithm) => {
+      if (!files.has(path)) throw new Error('ENOENT');
+      return require('crypto')
+        .createHash(String(algorithm).replace('-', ''))
+        .update(files.get(path), 'utf8')
+        .digest('hex');
+    }),
   };
   return {
     __esModule: true,

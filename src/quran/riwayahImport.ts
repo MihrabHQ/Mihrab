@@ -55,9 +55,19 @@ import { checkAgainstHafs, type AlignedVerse } from './hafsAlignment';
 import type { MushafPageRange, SurahMeta } from './pages';
 
 /** One verse as QUL publishes it — the fields we need, all optional. */
-type SourceVerse = {
+export type SourceVerse = {
   verse_key?: string;
   text?: string;
+  /**
+   * The text to JUDGE, where it differs from the text to store.
+   *
+   * IndoPak spells seated hamzas, the name of Allah and the dagger alif
+   * its own way, and `skeleton()` folds the forms Warsh and Ḥafṣ differ
+   * in, not those. The IndoPak importer folds them itself and hands the
+   * folded text here, so the shared check reads it right while the page
+   * still carries the print's own spelling. Absent, `text` is judged.
+   */
+  check?: string;
   page_number?: number;
   juz_number?: number;
   /**
@@ -85,7 +95,37 @@ export type RiwayahDataset = {
   ayahCounts: number[];
   /** Ayah text keyed `"surah:ayah"`, in this riwayah's own numbering. */
   text: Record<string, string>;
+  /**
+   * The print's own lines, for a dataset that states them (IndoPak).
+   *
+   * Absent for the Quranpedia muṣḥafs, whose lines come from the bundled
+   * ratio tables (`mushafPrintedLines`) or are reflowed.
+   */
+  lines?: ExactLinesTable;
 };
+
+/**
+ * One run of one ayah on one line: how many of its words, and whether
+ * the ayah's medallion sits at the end of the run. A run of zero words
+ * with `ends` set is a medallion alone. The fifth element, when present,
+ * is the medallion exactly as the print sets it — U+06DD, the digits, and
+ * the stop sign or rukūʿ mark the print hangs on it — for a face that
+ * draws its own medallions; absent, the app's medallion with the ayah's
+ * number is drawn.
+ */
+export type ExactLineRun = [
+  surah: number,
+  ayah: number,
+  words: number,
+  ends: 0 | 1,
+  mark?: string,
+];
+
+/** A line of the print: a surah header, a basmalah, or runs of words. */
+export type ExactLine = ['h', number] | ['b', string] | ExactLineRun[];
+
+/** Every page's lines, in order. */
+export type ExactLinesTable = { pages: ExactLine[][] };
 
 export type RiwayahVerifyResult =
   | {
@@ -273,7 +313,7 @@ export function verifyRiwayahDataset(
       const v = at(s, a);
       const hafs = v.number_in_hafs;
       if (!hafs || hafs.length === 0) continue;
-      aligned.push({ surah: s, ayah: a, text: v.text!, hafs });
+      aligned.push({ surah: s, ayah: a, text: v.check ?? v.text!, hafs });
     }
   }
   const total = counts.reduce((n, c) => n + c, 0);

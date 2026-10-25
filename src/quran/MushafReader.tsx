@@ -142,7 +142,7 @@ export function MushafReader(props: Props) {
    * rather than being asked for 180 MB it would never use.
    */
   const riwayah = resolveRiwayah(quran.prefs.riwayah);
-  const bundledRiwayah = riwayahById(riwayah).render === 'unicode';
+  const bundledRiwayah = riwayahById(riwayah).render !== 'glyph';
 
   // ── The gate ────────────────────────────────────────────────────────
   // Opens on what this process already knows: a bundled riwayah needs

@@ -79,7 +79,7 @@ export function useQuranFeaturesOffer(ready: boolean): {
       .then(seen => {
         if (!live || seen) return;
         const offer = offerableQuranFeatures({
-          hafs: riwayahById(resolveRiwayah(prefs.riwayah)).render !== 'unicode',
+          hafs: riwayahById(resolveRiwayah(prefs.riwayah)).render === 'glyph',
           warsh: resolveRiwayah(prefs.riwayah) === 'warsh',
           tajweedColours: prefs.tajweedColours,
           wordReader: prefs.wordReader,

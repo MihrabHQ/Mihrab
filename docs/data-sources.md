@@ -28,7 +28,13 @@ What ships today:
   `src/quran/data/`), the Warsh riwāyah (`data-riwayah-v1`), tajweed
   rules for both (below), and the calligraphic sūrah names
   (`SurahNames.ttf`). `docs/mushaf-fidelity-rules.md` is the rendering
-  contract.
+  contract. The IndoPak 15-line print is DigitalKhatt's text (MIT) and
+  font (OFL), pinned to one commit in `src/quran/indopakSource.ts` and
+  mirrored as `data-indopak-v1` with both licence texts; the phone turns
+  the file into the app's own page, line and ayah tables
+  (`src/quran/indopakImport.ts`) and runs it through the same verifier
+  as every riwāyah. `tools/indopak/check.test.ts` runs the whole file
+  before a pin moves and writes `reports/indopak-<commit>.md`.
 - **Fonts** — Amiri, Amiri Quran, the medallion font built from Amiri's
   outlines, and the sūrah-name font are bundled on both platforms
   (`android/app/src/main/assets/fonts/README.md`,

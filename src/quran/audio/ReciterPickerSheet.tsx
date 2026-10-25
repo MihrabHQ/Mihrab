@@ -41,7 +41,7 @@ import { useKeyboardInset } from '../../hooks/useKeyboardInset';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import { setQuranPrefs, useQuranState } from '../quranState';
 import { reciterRiwayah, searchReciters, type Reciter } from './reciters';
-import { riwayahById, resolveRiwayah } from '../riwayat';
+import { readingOf, riwayahById, resolveRiwayah } from '../riwayat';
 import { MODAL_ORIENTATIONS } from '../../components/modalOrientations';
 import {
   deleteReciterAudio,
@@ -144,7 +144,8 @@ export function ReciterPickerSheet({ visible, onClose }: Props) {
    * is hidden either way: the rest of the list follows, in the alphabet
    * it has always been in.
    */
-  const readerRiwayah = resolveRiwayah(prefs.riwayah);
+  // The READING, not the print: an IndoPak reader hears the Ḥafṣ voices.
+  const readerRiwayah = readingOf(resolveRiwayah(prefs.riwayah));
   const data = useMemo(
     () => searchReciters(query, undefined, readerRiwayah),
     [query, readerRiwayah],

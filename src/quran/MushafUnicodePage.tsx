@@ -78,7 +78,12 @@ import {
   type AyahEndInk,
   type AyahTint,
 } from './ayahMarks';
-import { riwayahById, riwayahFontFamily, type RiwayahId } from './riwayat';
+import {
+  riwayahById,
+  riwayahFontFamily,
+  type PrintedTypeMetrics,
+  type RiwayahId,
+} from './riwayat';
 import { BasmalahRow, SurahBandRow } from './mushafOrnaments';
 import type { AyahRef } from './MushafTextPage';
 
@@ -123,7 +128,9 @@ const NBSP = '\u00A0';
  * medallion. `riwayahUnicodePage.test.ts` holds that.
  */
 export function ayahMarkText(ayah: number): string {
-  return `${NBSP}${END_OF_AYAH}${easternNumerals(ayah)}`;
+  // 0 is a medallion with no number in it — the IndoPak print's basmalah
+  // of al-Fātiḥah, which it sets unnumbered.
+  return `${NBSP}${END_OF_AYAH}${ayah > 0 ? easternNumerals(ayah) : ''}`;
 }
 
 /**
@@ -239,6 +246,16 @@ const MAX_PRINTED_SCALE = 1.25;
 /** Below this a page is unreadable and should scroll instead. */
 const MIN_PRINTED_SIZE = 9;
 
+/** Rows on a full page of the printed muṣḥafs; fewer means a framed plate. */
+const PRINTED_ROWS_PER_PAGE = 15;
+
+/**
+ * How much wider than its widest line a plate's measure is set: the
+ * nominal word gaps the measurement took out, and a little air so the
+ * widest line is not drawn hard against the frame.
+ */
+const PLATE_LINE_SLACK = 1.12;
+
 /** What one line's justification comes to, in ems of the type size. */
 export type FittedLine = {
   /** The word gap to set this line's spaces at. */
@@ -277,6 +294,14 @@ export function fitPrintedLine(
   natural: number,
   gaps: number,
   rowEm: number,
+  /**
+   * A line the print leaves short — the one that closes a surah in an
+   * edition whose tables say so. Its gaps open as any line's do, but the
+   * letters are never stretched to reach the margin: a two-word line
+   * drawn a quarter wider reads as a mistake, and centred it reads as
+   * what it is. Squeezing a long line still happens.
+   */
+  closes = false,
 ): FittedLine {
   if (natural <= 0) {
     return { spaceEm: WORD_SPACE_EM, scaleX: 1, drawnEm: 0 };
@@ -284,12 +309,14 @@ export function fitPrintedLine(
   const spaceEm =
     gaps > 0
       ? Math.min(
-          WORD_SPACE_MAX_EM,
+          // A closing line keeps the nominal gap and is centred; it is
+          // only ever squeezed, never opened up, to meet the margin.
+          closes ? WORD_SPACE_EM : WORD_SPACE_MAX_EM,
           Math.max(WORD_SPACE_MIN_EM, (rowEm - natural) / gaps),
         )
       : WORD_SPACE_EM;
   const justifiedEm = natural + spaceEm * gaps;
-  const scaleX = Math.min(MAX_PRINTED_SCALE, rowEm / justifiedEm);
+  const scaleX = Math.min(closes ? 1 : MAX_PRINTED_SCALE, rowEm / justifiedEm);
   return { spaceEm, scaleX, drawnEm: justifiedEm * scaleX };
 }
 
@@ -739,7 +766,15 @@ function MushafUnicodePage({
     [page, riwayah, dataVersion],
   );
   const extent = useMemo(() => pageExtent(blocks), [blocks]);
-  const fontFamily = riwayahFontFamily(riwayahById(riwayah));
+  const definition = riwayahById(riwayah);
+  // Null while a downloaded face is not yet registered: the page waits
+  // (below), because the fallback face cannot shape this text and a line
+  // measured in it would justify the wrong line.
+  const fontFamily = riwayahFontFamily(definition);
+  const metrics = definition.printed ?? {
+    typicalLineEm: PRINTED_TYPICAL_LINE_EM,
+    lineHeightEm: PRINTED_LINE_HEIGHT_EM,
+  };
   const pageSurahs = useMemo(() => {
     const out: number[] = [];
     for (const b of blocks) {
@@ -844,7 +879,7 @@ function MushafUnicodePage({
             : null
       : NO_AYAH_TINT;
 
-  if (blocks.length === 0) return null;
+  if (blocks.length === 0 || fontFamily == null) return null;
 
   if (printed) {
     return (
@@ -854,6 +889,7 @@ function MushafUnicodePage({
         width={width}
         height={height}
         fontFamily={fontFamily}
+        metrics={metrics}
         colors={colors}
         tint={tintOf}
         endInk={endInk}
@@ -1044,13 +1080,14 @@ export function fitPrintedRows(
   height: number,
   count: number,
   edge: PrintedEdgeInk | null,
+  lineHeightEm: number = PRINTED_LINE_HEIGHT_EM,
 ): {
   rowHeight: number;
   margin: number;
   shiftTop: number;
   shiftBottom: number;
 } {
-  const cap = fontSize * PRINTED_LINE_HEIGHT_EM * MAX_PRINTED_LEADING;
+  const cap = fontSize * lineHeightEm * MAX_PRINTED_LEADING;
   const loose = (rowHeight: number) => ({
     rowHeight,
     margin: Math.max(0, (height - rowHeight * count) / 2),
@@ -1103,6 +1140,7 @@ function PrintedPageBody({
   width,
   height,
   fontFamily,
+  metrics = { typicalLineEm: PRINTED_TYPICAL_LINE_EM, lineHeightEm: PRINTED_LINE_HEIGHT_EM },
   colors,
   tint,
   endInk = NO_AYAH_END_INK,
@@ -1118,6 +1156,8 @@ function PrintedPageBody({
   width: number;
   height: number;
   fontFamily: string;
+  /** The edition's type metrics — see `PrintedTypeMetrics`. */
+  metrics?: PrintedTypeMetrics;
   colors: MushafUnicodePageProps['colors'];
   tint: AyahTint;
   endInk?: AyahEndInk;
@@ -1241,14 +1281,26 @@ function PrintedPageBody({
    * lines opens — so the cap can be a little looser, and full screen on a
    * phone wants about 1.23 of it.
    */
+  /**
+   * The framed plates are set larger than the book.
+   *
+   * Pages 1 and 2 carry eight short lines inside a frame, and every print
+   * sets them in bigger type than the fifteen-line pages that follow. The
+   * book's typical line is the wrong measure for them: at that size their
+   * lines reach a third of the way across and the gaps do the rest, which
+   * is what the IndoPak plates looked like. So a page with fewer rows than
+   * the book's standard is sized from its OWN widest line once that has
+   * been measured — with a hair of room — and from the book's line until
+   * then. The Ḥafṣ plates are enlarged by the same reasoning.
+   */
+  const plate = rows.length < PRINTED_ROWS_PER_PAGE;
+  const widestEm = plate && ems ? Math.max(0, ...ems) : 0;
+  const lineEm = widestEm > 0 ? widestEm * PLATE_LINE_SLACK : metrics.typicalLineEm;
   const fontSize = Math.max(
     MIN_PRINTED_SIZE,
-    Math.min(
-      height / rows.length / PRINTED_LINE_HEIGHT_EM,
-      measure / PRINTED_TYPICAL_LINE_EM,
-    ),
+    Math.min(height / rows.length / metrics.lineHeightEm, measure / lineEm),
   );
-  const fit = fitPrintedRows(fontSize, height, rows.length, edge);
+  const fit = fitPrintedRows(fontSize, height, rows.length, edge, metrics.lineHeightEm);
   const { rowHeight, margin } = fit;
 
   const onLineLayout = React.useCallback(
@@ -1302,7 +1354,31 @@ function PrintedPageBody({
       <View style={{ marginTop: -fit.shiftTop, marginBottom: -fit.shiftBottom }}>
       {rows.map((row, index) => {
         if (row.empty) {
-          const ornament = ornaments[index];
+          // The print's own basmalah, in the page's own face: centred,
+          // never justified, as every edition sets it.
+          if (row.basmalah) {
+            return (
+              <View key={`m${index}`} style={{ height: rowHeight, width, justifyContent: 'center' }}>
+                <Text
+                  allowFontScaling={false}
+                  style={[
+                    styles.body,
+                    {
+                      fontFamily,
+                      fontSize,
+                      lineHeight: rowHeight,
+                      color: colors.text,
+                      textAlign: 'center',
+                    },
+                  ]}
+                >
+                  {row.basmalah}
+                </Text>
+              </View>
+            );
+          }
+          const ornament =
+            row.band != null ? { kind: 'band' as const, surah: row.band } : ornaments[index];
           if (ornament?.kind === 'band') {
             return (
               <SurahBandRow
@@ -1333,6 +1409,8 @@ function PrintedPageBody({
           text: string;
           ref: AyahRef;
           mark: number | null;
+          /** The print's own medallion text, drawn in the page's face. */
+          markText: string | null;
           /** The background this ayah is marked with, or null. */
           lit: string | null;
           /** The medallion's ink when a reading marker sits here, or null. */
@@ -1341,7 +1419,9 @@ function PrintedPageBody({
           tajweed: WarshTajweedWord | null;
         }> = [];
         for (const part of row.ayahs) {
-          const words = part.text.split(/\s+/).filter(Boolean);
+          // A run of no words is a medallion alone — an ayah that ended
+          // exactly at the line before — and still draws its mark.
+          const words = part.text ? part.text.split(/\s+/).filter(Boolean) : [''];
           const lit = tint(part.surah, part.ayah);
           const ink = part.ends ? endInk(part.surah, part.ayah) : null;
           const k = `${part.surah}:${part.ayah}`;
@@ -1349,12 +1429,13 @@ function PrintedPageBody({
           const first = wordStart.get(k);
           words.forEach((word, wi) => {
             const n = seen.get(k) ?? 0;
-            seen.set(k, n + 1);
-            const w = coloured && first != null ? coloured[first + n] : undefined;
+            if (word) seen.set(k, n + 1);
+            const w = word && coloured && first != null ? coloured[first + n] : undefined;
             tokens.push({
               text: word,
               ref: { surah: part.surah, ayah: part.ayah },
               mark: part.ends && wi === words.length - 1 ? part.ayah : null,
+              markText: part.ends && wi === words.length - 1 ? (part.mark ?? null) : null,
               lit,
               ink,
               tajweed: w && w.text === word ? w : null,
@@ -1380,6 +1461,7 @@ function PrintedPageBody({
           natural,
           gaps,
           rowEm,
+          row.closes === true,
         );
 
         /**
@@ -1455,7 +1537,16 @@ function PrintedPageBody({
                   ) : (
                     token.text
                   )}
-                  {token.mark != null ? (
+                  {token.markText != null ? (
+                    // The print's medallion, in the page's own face: the
+                    // face carries the number and the stop sign on it,
+                    // which the app's medallion cannot. Colour only, so
+                    // the shaper keeps it in one run — see `ayahMarkText`.
+                    <Text style={{ color: token.ink ?? colors.accent }}>
+                      {NBSP}
+                      {token.markText}
+                    </Text>
+                  ) : token.mark != null ? (
                     <Text
                       style={{
                         color: token.ink ?? colors.accent,

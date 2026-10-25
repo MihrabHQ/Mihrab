@@ -50,7 +50,7 @@ export function TajweedSettingsScreen() {
   const { prefs } = useQuranState();
   // The riwayah the muṣḥaf draws — Ḥafṣ where the stored one is not on this device (`resolveRiwayah`).
   const riwayah = resolveRiwayah(prefs.riwayah);
-  const hafs = riwayahById(riwayah).render !== 'unicode';
+  const hafs = riwayahById(riwayah).render === 'glyph';
   // Ḥafṣ draws the colours from its tajwīd fonts, Warsh from its own
   // spans over the text; Qālūn and Shuʿbah have neither yet.
   const unavailable = tajweedUnavailable(riwayah);

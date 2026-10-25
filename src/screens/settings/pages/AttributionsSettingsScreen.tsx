@@ -78,6 +78,13 @@ export function AttributionsSettingsScreen() {
       sub: 'quranpedia/quran-svg ayah polygons · CC0',
       url: 'https://github.com/quranpedia/quran-svg',
     },
+    {
+      label: t('attributions.indopakText', {
+        defaultValue: 'IndoPak 15-line text (downloaded, not bundled)',
+      }),
+      sub: 'DigitalKhatt/digitalkhatt-js · MIT · © 2020–present DigitalKhatt contributors',
+      url: 'https://github.com/DigitalKhatt/digitalkhatt-js',
+    },
   ];
 
   const recitation: Credit[] = [
@@ -144,6 +151,13 @@ export function AttributionsSettingsScreen() {
       }),
       sub: 'aliftype/amiri · SIL OFL 1.1',
       url: 'https://github.com/aliftype/amiri',
+    },
+    {
+      label: t('attributions.indopakFont', {
+        defaultValue: 'DigitalKhatt IndoPak font (downloaded, not bundled)',
+      }),
+      sub: 'SIL OFL 1.1 · © 2024 Amine Anane, © 2024 Tarteel Inc.',
+      url: 'https://github.com/DigitalKhatt/digitalkhatt-js',
     },
     {
       label: t('attributions.tajweedFonts', {

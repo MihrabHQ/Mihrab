@@ -32,6 +32,8 @@ type Props = {
   surah: number;
   ayah: number;
   arabic: string;
+  /** The muṣḥaf's own face for the text, where it needs one (IndoPak). */
+  arabicFontFamily?: string | null;
   translation: string;
 };
 
@@ -44,6 +46,7 @@ export function ShareAyahModal({
   surah,
   ayah,
   arabic,
+  arabicFontFamily,
   translation,
 }: Props) {
   const { t } = useTranslation();
@@ -90,7 +93,9 @@ export function ShareAyahModal({
           collapsable={false}
           style={styles.card}>
           <Text style={styles.ornamentTop}>﴾ ﴿</Text>
-          <Text style={styles.arabic}>{arabic}</Text>
+          <Text style={[styles.arabic, arabicFontFamily ? { fontFamily: arabicFontFamily } : null]}>
+            {arabic}
+          </Text>
           {translation ? (
             <Text style={styles.translation}>{translation}</Text>
           ) : null}

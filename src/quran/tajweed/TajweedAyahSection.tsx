@@ -16,7 +16,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import type { RootStackParamList } from '../../navigation/types';
-import { TYPE, arabicTextStyle } from '../../theme/typography';
+import { FONTS, TYPE, arabicTextStyle } from '../../theme/typography';
 import { SPACING } from '../../theme/tokens';
 import { useReadingText } from '../../hooks/useReadingText';
 import { hold, release } from '../audio/wordReader';
@@ -77,7 +77,7 @@ export function TajweedAyahSection({
   }, [open, surah, ayah, riwayah]);
 
   const coloursOn = tajweedColoursShown(riwayah, prefs.tajweedColours);
-  const hafs = riwayahById(riwayah).render !== 'unicode';
+  const hafs = riwayahById(riwayah).render === 'glyph';
   const warsh = riwayah === 'warsh';
   // The page's own words, for the chips — by position, as the rules count.
   const glyphs = useMemo(() => (open ? ayahGlyphWords(surah, ayah) : []), [open, surah, ayah]);
@@ -228,7 +228,7 @@ function WarshTajweedBody({
   const readingText = useReadingText();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [words, setWords] = useState<WarshTajweedWord[] | null | undefined>(undefined);
-  const fontFamily = riwayahFontFamily(riwayahById('warsh'));
+  const fontFamily = riwayahFontFamily(riwayahById('warsh')) ?? FONTS.arabicQuran;
 
   useEffect(() => {
     let alive = true;
@@ -364,7 +364,7 @@ export function WarshTajweedAyah({
 }) {
   const { palette, isDark } = useAppPalette();
   const [words, setWords] = useState<WarshTajweedWord[] | null>(null);
-  const fontFamily = riwayahFontFamily(riwayahById('warsh'));
+  const fontFamily = riwayahFontFamily(riwayahById('warsh')) ?? FONTS.arabicQuran;
 
   useEffect(() => {
     let alive = true;

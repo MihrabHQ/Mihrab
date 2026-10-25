@@ -63,6 +63,9 @@ import {
   RIWAYAT,
   type RiwayahDefinition,
 } from './riwayat';
+import { INDOPAK_DOWNLOAD_BYTES } from './indopakSource';
+import { useIndopakSwitch } from './useIndopakSwitch';
+import { formatBytes } from './downloadsUi';
 import { RADIUS, SPACING } from '../theme/tokens';
 import { TYPE } from '../theme/typography';
 
@@ -82,7 +85,7 @@ export function RiwayahDownloadSection({
   // Re-render when a muṣḥaf is added or removed anywhere in the app.
   useRiwayahAvailability();
 
-  const offered = RIWAYAT.filter(r => r.render === 'unicode' && r.source);
+  const offered = RIWAYAT.filter(r => r.render !== 'glyph' && r.source);
   if (offered.length === 0) return null;
 
   return (
@@ -174,7 +177,15 @@ function RiwayahCard({
   /** Whether the reader has asked for the by-hand way in. */
   const [manual, setManual] = useState(false);
 
-  const direct = riwayah.source?.direct;
+  /**
+   * A muṣḥaf of pinned files (IndoPak) is fetched by its own module from
+   * two fixed addresses: there is no export to paste a link to and no
+   * file to pick, so the by-hand way in is not offered for it — and its
+   * download can be switched off from the repository (`indopakSwitch`).
+   */
+  const pinned = riwayah.render === 'unicode-lines';
+  const offered = useIndopakSwitch(pinned);
+  const direct = pinned ? (offered ? riwayah.source?.direct : undefined) : riwayah.source?.direct;
 
   const installed = riwayahProvenance(riwayah.id);
   const name = t(riwayah.nameKey, riwayah.arabic);
@@ -319,6 +330,20 @@ function RiwayahCard({
               credits: riwayah.source?.credits ?? '',
             })}
           </Text>
+          {pinned ? (
+            <Text style={[styles.sub, { color: palette.muted }]}>
+              {offered
+                ? t('downloads.riwayahPinnedSize', {
+                    defaultValue:
+                      'The 15-line print, page for page and line for line, with its own font · {{size}}. MIT and OFL licensed.',
+                    size: formatBytes(INDOPAK_DOWNLOAD_BYTES),
+                  })
+                : t(
+                    'downloads.riwayahSwitchedOff',
+                    'This download is paused for now. Anyone who already has it keeps it.',
+                  )}
+            </Text>
+          ) : null}
         </View>
         {direct ? (
           <Pressable
@@ -378,7 +403,7 @@ function RiwayahCard({
             if (page) void Linking.openURL(page);
           }}
         />
-        {direct && !manual ? (
+        {direct && !manual && !pinned ? (
           <TextAction
             label={t('downloads.riwayahAddAFile', 'Add a file I already have')}
             color={palette.muted}
@@ -387,7 +412,7 @@ function RiwayahCard({
         ) : null}
       </View>
 
-      {!direct || manual ? (
+      {(!direct || manual) && !pinned ? (
         <>
           <Text style={[styles.help, { color: palette.muted }]}>
             {t(

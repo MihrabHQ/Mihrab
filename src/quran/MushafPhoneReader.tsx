@@ -838,7 +838,7 @@ export const MushafPhoneReader = React.memo(function MushafPhoneReader(
   // per turn, rather than as a per-page prop that changed on two pages
   // every turn and re-rendered both. A bundled riwayah has no page fonts.
   useEffect(() => {
-    if (riwayahById(riwayah).render === 'unicode') return;
+    if (riwayahById(riwayah).render !== 'glyph') return;
     warmAround(currentPage, WARM_RADIUS, fontSet);
   }, [currentPage, riwayah, fontSet]);
 

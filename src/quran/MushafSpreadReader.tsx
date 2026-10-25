@@ -433,7 +433,7 @@ export const MushafSpreadReader = React.memo(function MushafSpreadReader(
   // The neighbours' fonts, registered ahead of the turn — from here, once
   // per turn, rather than as a per-page prop. A bundled riwayah has none.
   useEffect(() => {
-    if (riwayahById(riwayah).render === 'unicode') return;
+    if (riwayahById(riwayah).render !== 'glyph') return;
     warmAround(currentPage, WARM_RADIUS, fontSet);
   }, [currentPage, riwayah, fontSet]);
 

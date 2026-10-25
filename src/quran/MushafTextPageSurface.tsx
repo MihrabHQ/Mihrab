@@ -722,7 +722,7 @@ function MushafTextPageSurface(props: MushafTextPageSurfaceProps) {
   // Two components rather than one with a branch inside it: they do not use
   // the same hooks, and a glyph surface that kept calling `useMushafPageFont`
   // for a Warsh page would queue a 310 KB download per page nobody will draw.
-  return riwayahById(riwayah).render === 'unicode' ? (
+  return riwayahById(riwayah).render !== 'glyph' ? (
     <UnicodePageSurface {...props} riwayah={riwayah} />
   ) : (
     <GlyphPageSurface {...props} />
@@ -766,7 +766,7 @@ export function mushafPageColumnHeight({
   // is measured in already excludes it — nothing to reserve here.
   if (!scrolling) return Math.max(120, viewportHeight);
   // Height follows the text: the column scrolls whatever overflows.
-  if (riwayahById(riwayah).render === 'unicode') {
+  if (riwayahById(riwayah).render !== 'glyph') {
     return Math.max(viewportHeight, textWidth * PRINT_BLOCK_ASPECT);
   }
   const layout = getPageLayout(page);

@@ -647,7 +647,7 @@ export function warmMushafLayout(riwayah?: RiwayahId, tajweed = false): void {
   // A bundled riwayah draws from its own line data, not this file; a Warsh
   // reader warming the Ḥafṣ layout would be paying for a muṣḥaf they are
   // not in.
-  if (riwayah && riwayahById(riwayah).render === 'unicode') return;
+  if (riwayah && riwayahById(riwayah).render !== 'glyph') return;
   // The set the reader will draw in (its tajwīd preference): the tajwīd
   // reader decodes from the 1441H file, and warming V2 for them would leave
   // that 1.4 MB parse on the JS thread at their first page.

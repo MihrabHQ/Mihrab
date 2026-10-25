@@ -4,6 +4,9 @@ All notable changes to this project are documented here. The format is inspired 
 
 ## [Unreleased]
 
+### Added
+- **The IndoPak muṣḥaf** (#109). Settings → Quran → Reading traditions, and the pill in the reader, offer a second way to read Ḥafṣ: the 15-line IndoPak print, 610 pages, line for line as the Taj Company sets it, in the Indo-Pakistani script with its own stop signs and rukūʿ marks. It is downloaded once (about 2.2 MB: the text and its font, from DigitalKhatt under the MIT and OFL licences, fetched from Mihrab's own copy first), checked against the Ḥafṣ text the app carries at every one of the 6,236 ayahs before a word of it is drawn, and can be removed again from Downloads. Recitations, translations, tafsir, bookmarks, the khatmah and your last-read place carry over by ayah; the page bar, the scrubber, the index and the khatmah's "of 610" follow the print. Word-by-word highlighting and tajweed colours stay with the Madani pages for now.
+
 ### Changed
 - **The town lookup sends a town's precision, not a doorstep's.** With automatic location the app asks OpenStreetMap which town you are in, and it now sends your position rounded to about a kilometre; the prayer times still use the exact position. The privacy policy, the site, the onboarding text and the store listings now list every request the app makes — including AlAdhan receiving your coordinates where it is the source, and the update files read from GitHub — instead of saying coordinates never leave the phone.
 

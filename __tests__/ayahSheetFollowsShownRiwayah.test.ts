@@ -45,7 +45,7 @@ describe('the surfaces decide by the riwayah on screen, never the raw preference
     const sheet = src('quran/mushaf/AyahActionSheet.tsx');
     expect(sheet).toMatch(/const shownRiwayah = resolveRiwayah\(state\.prefs\.riwayah\)/);
     expect(sheet).toMatch(/riwayahHasTajweed\(shownRiwayah\)/);
-    expect(sheet).toMatch(/riwayahById\(shownRiwayah\)\.render !== 'unicode'/);
+    expect(sheet).toMatch(/riwayahById\(shownRiwayah\)\.render === 'glyph'/);
     expect(sheet).toMatch(/tajweedColoursShown\(shownRiwayah, state\.prefs\.tajweedColours\)/);
     expect(sheet).not.toMatch(/riwayahById\(state\.prefs\.riwayah\)/);
     expect(sheet).not.toMatch(/riwayahHasTajweed\(state\.prefs\.riwayah\)/);

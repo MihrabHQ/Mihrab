@@ -87,7 +87,7 @@ async function onSwitchedOn(): Promise<void> {
   // 170 MB of colours this Android would draw in one colour: not fetched.
   if (!COLOUR_FONTS_DRAWN) return;
   const { prefs } = getQuranState();
-  const hafs = riwayahById(resolveRiwayah(prefs.riwayah)).render !== 'unicode';
+  const hafs = riwayahById(resolveRiwayah(prefs.riwayah)).render === 'glyph';
   const appDark = Appearance.getColorScheme() === 'dark';
   const inUse = tajweedFontSet(toneIsDark(mushafTone(prefs, appDark)));
   const sets = await tajweedSetsToFetch({

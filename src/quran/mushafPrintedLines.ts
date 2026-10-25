@@ -42,6 +42,71 @@
  * it out would mean a second download to make the first one legible.
  */
 import type { RiwayahId } from './riwayat';
+import { loadRiwayahLines } from './riwayahData';
+import type { ExactLinesTable } from './riwayahImport';
+
+/**
+ * The rows of a page from a table that states them word for word.
+ *
+ * Nothing is estimated: each run says how many of its ayah's words sit
+ * on this line, in order, and the words are taken from the ayah text in
+ * that order. An ayah's runs are walked across the page's lines top to
+ * bottom, which is the only order the print has; no ayah is set across a
+ * page turn in the IndoPak print (checked on the whole file), so every
+ * ayah on a page begins on it. Null when the page is not in the table or
+ * an ayah's text is missing, and the page is reflowed instead.
+ */
+export function exactPageFor(
+  table: ExactLinesTable,
+  page: number,
+  textOf: (surah: number, ayah: number) => string | null,
+): AllocatedLine[] | null {
+  const lines = table.pages[page - 1];
+  if (!lines) return null;
+  const taken = new Map<string, number>();
+  const wordsOf = new Map<string, string[]>();
+  const out: AllocatedLine[] = [];
+  for (const line of lines) {
+    if (line[0] === 'h') {
+      out.push({ ayahs: [], empty: true, share: 1, band: line[1] });
+      continue;
+    }
+    if (line[0] === 'b') {
+      out.push({ ayahs: [], empty: true, share: 1, basmalah: line[1] });
+      continue;
+    }
+    const ayahs: AllocatedAyah[] = [];
+    for (const [surah, ayah, count, ends, mark] of line) {
+      const key = `${surah}:${ayah}`;
+      let words = wordsOf.get(key);
+      if (!words) {
+        const text = textOf(surah, ayah);
+        if (text == null) return null;
+        words = text.split(/\s+/).filter(Boolean);
+        wordsOf.set(key, words);
+      }
+      const from = taken.get(key) ?? 0;
+      const piece = words.slice(from, from + count);
+      if (piece.length !== count) return null;
+      taken.set(key, from + count);
+      ayahs.push({
+        surah,
+        ayah,
+        text: piece.join(' '),
+        ends: ends === 1,
+        ...(mark ? { mark } : {}),
+      });
+    }
+    out.push({ ayahs, empty: false, share: 1 });
+  }
+  // A row before a band, a basmalah or the end of the book closes a surah.
+  for (let i = 0; i < out.length; i++) {
+    if (out[i].empty) continue;
+    const next = out[i + 1];
+    if (!next ? page === table.pages.length : next.empty) out[i].closes = true;
+  }
+  return out;
+}
 
 type PrintedTable = {
   /**
@@ -215,12 +280,37 @@ export type AllocatedAyah = {
   text: string;
   /** True on the line where the ayah ends, which is where its number goes. */
   ends: boolean;
+  /**
+   * The medallion exactly as the print sets it — U+06DD, digits and the
+   * stop sign on it — for a face that draws its own (IndoPak); drawn in
+   * the page's font where present, in place of the app's medallion.
+   */
+  mark?: string;
 };
 
 export type AllocatedLine = {
   ayahs: AllocatedAyah[];
   /** A row of the print with no ayah on it: a band, or a basmalah. */
   empty: boolean;
+  /**
+   * The surah whose title band this `empty` row is, when the table says
+   * so outright; the ratio tables leave it to be inferred from the rows
+   * below, which cannot see a band on a page's last line.
+   */
+  band?: number;
+  /**
+   * The basmalah as the print itself sets it, for an `empty` row that is
+   * one: drawn centred in the page's own face rather than as the shared
+   * ornament, so the page stays in one script.
+   */
+  basmalah?: string;
+  /**
+   * The row ends a surah or the book: the print leaves it as wide as its
+   * words and no wider, so it is centred rather than stretched to the
+   * measure. Set from the exact tables, which know; the ratio tables say
+   * the same thing through `share`.
+   */
+  closes?: boolean;
   /**
    * How much of the measure this row fills, 0..1 — almost always 1.
    *
@@ -268,6 +358,10 @@ export function printedPageFor(
   page: number,
   textOf: (surah: number, ayah: number) => string | null,
 ): AllocatedLine[] | null {
+  // A muṣḥaf whose dataset states its own lines (IndoPak) needs no
+  // splitting: its rows are read off the table as they are.
+  const exact = loadRiwayahLines(riwayah);
+  if (exact) return exactPageFor(exact, page, textOf);
   const rows = printedLinesFor(riwayah, page);
   if (!rows) return null;
   return allocate(

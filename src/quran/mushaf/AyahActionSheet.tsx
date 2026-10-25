@@ -31,7 +31,7 @@ import { READING_BASE } from '../../theme/readingText';
 import { useReadingText } from '../../hooks/useReadingText';
 import { TextSizeStepper } from '../../components/ui';
 import { findSurah, loadSurah } from '../quran';
-import { resolveRiwayah, riwayahById } from '../riwayat';
+import { resolveRiwayah, riwayahById, riwayahTextFontFamily } from '../riwayat';
 import { riwayahAyahText } from '../riwayahData';
 import { getAyahTranslation, QURAN_TRANSLATIONS } from '../translations';
 import { useActiveEdition } from '../useActiveEdition';
@@ -243,6 +243,7 @@ export function AyahActionSheet({
   // tab looked for Warsh's rules and found none.
   const shownRiwayah = resolveRiwayah(state.prefs.riwayah);
   const tajweedOffered = riwayahHasTajweed(shownRiwayah);
+  const ownFont = riwayahTextFontFamily(shownRiwayah);
   const panel =
     state.prefs.ayahSheetPanel === 'tajweed' && !tajweedOffered
       ? 'none'
@@ -728,7 +729,7 @@ export function AyahActionSheet({
               The Tajweed tab draws its own tinted copy only when this one
               is plain — the colours off — so a coloured āyah is never
               shown twice. With the tab open a tapped word is read out. */}
-          {arabic && riwayahById(shownRiwayah).render !== 'unicode' ? (
+          {arabic && riwayahById(shownRiwayah).render === 'glyph' ? (
             <View style={styles.arabicGlyphs}>
               <TajweedAyahGlyphs
                 surah={surah}
@@ -755,7 +756,13 @@ export function AyahActionSheet({
               style={styles.arabic}
             />
           ) : arabic ? (
-            <Text style={[styles.arabic, { color: palette.text }]}>
+            <Text
+              style={[
+                styles.arabic,
+                { color: palette.text },
+                // A muṣḥaf's own face, where the text needs it (IndoPak).
+                ownFont ? { fontFamily: ownFont } : null,
+              ]}>
               {arabic}
             </Text>
           ) : null}
@@ -1485,6 +1492,7 @@ export function AyahActionSheet({
         surah={surah}
         ayah={ayah}
         arabic={arabic}
+        arabicFontFamily={ownFont}
         translation={translation}
       />
     </Modal>

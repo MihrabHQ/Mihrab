@@ -155,6 +155,7 @@ export const DEFAULT_QURAN_STATE: QuranState = {
     mushafToneAuto: true,
     riwayah: DEFAULT_RIWAYAH,
     riwayahNoticeSeen: false,
+    indopakNoticeSeen: false,
     bookmarkFollowDefault: 'follow',
     keepAwake: true,
     readerKeepAwake: true,

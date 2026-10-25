@@ -29,13 +29,15 @@ const RIWAYAH = { warsh: 4, qalun: 7, shubah: 9 };
 // DigitalKhatt IndoPak: text (MIT) and font (OFL), pinned to one commit so
 // the release and the fallback are the same bytes. Both licence texts ride
 // along, as MIT and OFL ask of anyone redistributing the files.
-const INDOPAK_COMMIT = '78372d7a1e211bbab677cc0304384f278f508657';
+// Read from `src/quran/indopakSource.ts`, the one place the pin lives.
+const indopakSrc = fs.readFileSync(path.join(root, 'src/quran/indopakSource.ts'), 'utf8');
+const INDOPAK_COMMIT = /INDOPAK_COMMIT = '([0-9a-f]{40})'/.exec(indopakSrc)[1];
 const INDOPAK_RAW = `https://raw.githubusercontent.com/DigitalKhatt/digitalkhatt-js/${INDOPAK_COMMIT}`;
-const INDOPAK_FILES = {
-  'quran_text_indopak_15.ts': 'apps/site-angular/src/app/services/quran_text_indopak_15.ts',
-  'DigitalKhattIndoPak.ttf': 'apps/site-angular/src/assets/fonts/coretext/DigitalKhattIndoPak.ttf',
-  'LICENSE-DigitalKhatt-MIT.txt': 'LICENSE',
-};
+const INDOPAK_FILES = Object.fromEntries([
+  ...[...indopakSrc.matchAll(/name: '([^']+)',\s*repoPath: '([^']+)'/g)].map(m => [m[1], m[2]]),
+  ['LICENSE-DigitalKhatt-MIT.txt', 'LICENSE'],
+]);
+if (Object.keys(INDOPAK_FILES).length !== 3) throw new Error('indopakSource.ts: expected two files');
 
 async function get(url, tries = 4) {
   let last;
