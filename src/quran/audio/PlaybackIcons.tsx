@@ -110,6 +110,39 @@ export function ReaderIcon({
   );
 }
 
+/**
+ * An open muṣḥaf on its rehal — the reading tradition.
+ *
+ * The header's control for WHICH muṣḥaf is open: the book stand is what
+ * a Qur'an is read from, and the pages above it say it is a Qur'an. It
+ * replaced a pill that named the riwayah in Arabic, which read as a
+ * title and was shown only once a second muṣḥaf was on the device; the
+ * icon is always there, and tapping it lists the muṣḥafs, installed or
+ * not.
+ */
+export function RiwayahIcon({ color, size = 18 }: { color: string; size?: number }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      {/* The pages, open. */}
+      <Path
+        d="M12 6.2C10.8 5.1 9.3 4.5 7.2 4.5H4v9.3h3.2c2.1 0 3.6.6 4.8 1.7 1.2-1.1 2.7-1.7 4.8-1.7H20V4.5h-3.2c-2.1 0-3.6.6-4.8 1.7Z"
+        stroke={color}
+        strokeWidth={1.9}
+        strokeLinejoin="round"
+      />
+      <Path d="M12 6.2v9.3" stroke={color} strokeWidth={1.9} strokeLinecap="round" />
+      {/* The rehal under them. */}
+      <Path
+        d="M5 20.5 12 15.5l7 5"
+        stroke={color}
+        strokeWidth={1.9}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>
+  );
+}
+
 /** Two arrows crossing: a surah at random, then another. */
 export function ShuffleIcon({ color, size = 18 }: { color: string; size?: number }) {
   return (

@@ -25,7 +25,7 @@ import {
 } from 'react-native';
 import { useWindowSize } from '../../responsive/windowSize';
 import { useTranslation } from 'react-i18next';
-import { TilawahIcon } from '../../quran/audio/PlaybackIcons';
+import { RiwayahIcon, TilawahIcon } from '../../quran/audio/PlaybackIcons';
 import { TranslationIcon } from '../../theme/icons';
 import { desktopSize } from '../../responsive/desktop';
 import {
@@ -42,17 +42,12 @@ import { useLandscapeFullscreen } from '../../quran/landscapeFullscreen';
 import type { SurahIndex } from '../../quran/quran';
 import { MushafReader } from '../../quran/MushafReader';
 import { SIDEBAR_WIDTH, sidebarShown } from '../../quran/MushafIndexSidebar';
-import {
-  resolveRiwayah,
-  riwayahById,
-  riwayahChoiceExists,
-} from '../../quran/riwayat';
+import { resolveRiwayah, riwayahById } from '../../quran/riwayat';
 import { useRiwayahAvailability } from '../../quran/riwayahData';
 import { surahName } from '../../quran/surahName';
 import { useFullscreenVeil } from '../../quran/fullscreenVeil';
 import { useSwitchRiwayah } from '../../quran/useSwitchRiwayah';
-import Svg, { Path } from 'react-native-svg';
-import { mushafTone, toneIsDark, TONE_CHROME } from '../../quran/mushafTone';
+import { mushafTone, toneIsDark } from '../../quran/mushafTone';
 import { usePageGround } from '../../quran/useScrubberChrome';
 import {
   useQuranState,
@@ -63,11 +58,11 @@ import {
   usePublishBackAnswer,
   type BackInterceptRef,
 } from '../../navigation/backIntercept';
-import { TYPE, arabicTextStyle } from '../../theme/typography';
+import { TYPE } from '../../theme/typography';
 import { SessionDot, useSessionColor } from '../../quran/SessionDot';
 import { PageProgressMark, usePageProgress } from '../../quran/PageProgressMark';
 import { RiwayahPicker } from '../../quran/RiwayahPicker';
-import { RADIUS, SPACING } from '../../theme/tokens';
+import { SPACING } from '../../theme/tokens';
 import { isRtlLanguage } from '../../i18n/layoutDirection';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useVerticalBar } from '../../native/VerticalBar';
@@ -139,7 +134,7 @@ export function MushafSurahScreen({
 
   // Shared with Settings → Qur'an, which can switch muṣḥaf too — the
   // one-time reflow notice belongs to the ACT, not to this screen.
-  const switchRiwayah = useSwitchRiwayah();
+  const { switchRiwayah, notice: riwayahNotice } = useSwitchRiwayah();
 
   const [isFullscreen, setIsFullscreen] = useState(false);
   /**
@@ -479,10 +474,16 @@ export function MushafSurahScreen({
         color={ink}
       />
     ) : null;
-    // The riwayah's pill — only in the muṣḥaf, because the translation
+    // The riwayah's button — only in the muṣḥaf, because the translation
     // reader draws its Arabic from the ayah database, which is Hafs. A
     // control that appeared to change the script there would be lying.
-    const riwayahChip = riwayahChoiceExists() ? (
+    //
+    // ALWAYS THERE, as the controls on the right are. It used to be a pill
+    // naming the muṣḥaf, shown only once a second one was installed — so a
+    // reader who had never heard of the others had no way to find them
+    // from the page. The picker it opens lists every muṣḥaf, the absent
+    // ones with "tap to add", which is the whole of the discovery.
+    const riwayahChip = (
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={t('quran.riwayahPickerOpen', {
@@ -490,45 +491,12 @@ export function MushafSurahScreen({
           name: t(riwayahById(riwayah).nameKey, riwayahById(riwayah).arabic),
         })}
         onPress={() => setRiwayahPickerVisible(true)}
-        hitSlop={8}
-        // A PILL, in the page's own chrome: the name was a bare
-        // word with a caret after it, floating in the bar beside
-        // the back arrow, and read as a title rather than a
-        // control. On the tone's control surface, with the
-        // chevron drawn rather than typed, it is a button.
-        style={({ pressed }) => [
-          riwayahPill.pill,
-          { backgroundColor: TONE_CHROME[tone].control },
-          pressed && riwayahPill.pressed,
-        ]}>
-        {/* The muṣḥaf you are IN, with the chevron that says there
-            are others — see `RiwayahPicker` for why this stopped
-            naming the next one instead. */}
-        <Text
-          style={{
-            ...arabicTextStyle('body'),
-            color: ink,
-            fontSize: desktopSize(15),
-            // The Arabic style's line height is a reading line's;
-            // a pill is as tall as its glyphs.
-            lineHeight: desktopSize(22),
-            includeFontPadding: false,
-            fontWeight: '700',
-          }}>
-          {riwayahById(riwayah).arabic}
-        </Text>
-        <Svg width={desktopSize(12)} height={desktopSize(12)} viewBox="0 0 12 12">
-          <Path
-            d="M2.5 4.5 6 8l3.5-3.5"
-            stroke={ink}
-            strokeWidth={1.8}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            fill="none"
-          />
-        </Svg>
+        hitSlop={10}
+        style={({ pressed }) => [{ paddingHorizontal: SPACING.xs }, pressed && riwayahPill.pressed]}>
+        {/* The same size and ink as the controls across the bar. */}
+        <RiwayahIcon color={ink} size={desktopSize(22)} />
       </Pressable>
-    ) : null;
+    );
     navigation.setOptions({
       // Beside a vertical bar the screen draws its own title and column.
       headerShown: !columnChrome,
@@ -857,6 +825,7 @@ export function MushafSurahScreen({
         </>
       ) : null}
       {riwayahSheet}
+      {riwayahNotice}
     </>
   );
 }
@@ -892,17 +861,5 @@ const headerSide = StyleSheet.create({
 });
 
 const riwayahPill = StyleSheet.create({
-  pill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    // The header's side row stretches its children to its own height;
-    // a pill is as tall as its text.
-    alignSelf: 'center',
-    gap: SPACING.xs,
-    paddingStart: SPACING.sm + 2,
-    paddingEnd: SPACING.sm,
-    paddingVertical: SPACING.xs,
-    borderRadius: RADIUS.full,
-  },
   pressed: { opacity: 0.6 },
 });

@@ -17,7 +17,11 @@ describe('the muṣḥaf header', () => {
   it('puts the riwayah beside the back arrow, and over the page while the index is up', () => {
     // The two controls are made once and placed by the header's two forms.
     expect(src).toMatch(/const backButton = navigation\.canGoBack\(\) \? \(\s*<TabBackButton/);
-    expect(src).toContain('const riwayahChip = riwayahChoiceExists() ? (');
+    // Always there, not only once a second muṣḥaf is installed: the picker
+    // it opens is how a reader learns there are others.
+    expect(src).toContain('const riwayahChip = (');
+    expect(src).not.toContain('riwayahChoiceExists');
+    expect(src).toMatch(/<RiwayahIcon color=\{ink\} size=\{desktopSize\(22\)\}/);
     expect(left).toMatch(/\{backButton\}\s*\{riwayahChip\}/);
     // With the index up (Mac, iPad), the pill stands at the page's leading
     // edge: the arrow, a fixed space the index's width, then the pill.

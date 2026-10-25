@@ -93,7 +93,7 @@ function QuranCardImpl() {
     void hydrateRiwayahData();
   }, []);
   const riwayah = resolveRiwayah(quran.prefs.riwayah);
-  const switchRiwayah = useSwitchRiwayah();
+  const { switchRiwayah, notice: riwayahNotice } = useSwitchRiwayah();
   const onDevice = availableRiwayat().length;
 
   /**
@@ -424,6 +424,7 @@ function QuranCardImpl() {
           navigation.navigate('SettingsDownloads');
         }}
       />
+      {riwayahNotice}
       <CompanionTextSheet
         visible={sheetVisible}
         onClose={() => setSheetVisible(false)}

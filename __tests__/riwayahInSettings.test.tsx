@@ -18,7 +18,7 @@ import { join } from 'path';
 const read = (...p: string[]) => readFileSync(join(__dirname, '..', ...p), 'utf8');
 const card = read('src', 'screens', 'settings', 'QuranCard.tsx');
 const reader = read('src', 'screens', 'quran', 'MushafSurahScreen.tsx');
-const shared = read('src', 'quran', 'useSwitchRiwayah.ts');
+const shared = read('src', 'quran', 'useSwitchRiwayah.tsx');
 const en = JSON.parse(read('src', 'i18n', 'locales', 'en.json'));
 
 describe('the settings rows', () => {
@@ -57,15 +57,21 @@ describe('the switch itself is shared, not copied', () => {
   it('lives in one module, with the notice inside it', () => {
     expect(shared).toContain('riwayahNoticeSeen');
     expect(shared).toContain('quran.riwayahReflowTitle');
-    // Written before the alert: an alert is not proof anybody read it.
+    // Written before the dialog: a dialog is not proof anybody read it.
     expect(shared).toMatch(
-      /setQuranPrefs\(\{ riwayahNoticeSeen: true \}\);[\s\S]{0,120}Alert\.alert/,
+      /setQuranPrefs\(\{ riwayahNoticeSeen: true \}\);[\s\S]{0,120}setShown\(/,
     );
+    // The app's own dialog, never the platform's grey box.
+    expect(shared).not.toContain('Alert.alert');
+    expect(shared).toContain('<ConfirmModal');
   });
 
   it('and both entry points call it', () => {
     expect(card).toContain('useSwitchRiwayah()');
     expect(reader).toContain('useSwitchRiwayah()');
+    // And both mount the notice it hands back, beside their picker.
+    expect(card).toContain('{riwayahNotice}');
+    expect(reader).toContain('{riwayahNotice}');
     // The reader's own copy is gone — two copies is how the notice ends
     // up firing in the reader about a muṣḥaf chosen in Settings a week
     // earlier.
