@@ -70,8 +70,9 @@ the two tracks are defined:
 calls `themedSkyFrame(frame, mood)` for every look — Sky (both tracks) and
 System/Light/Dark alike (the latter take Realistic's moods with the page as
 the foot). `skyModel.ts`'s own `KEYS` (the "real" two-stop sky) and `GLOW`
-are computed and then overwritten: dead code since the Sky theme shipped,
-kept only for `luminance`, `skyColorAt` and `skyInkAt`. The hero's ink is
+are computed and then overwritten on Today; their one remaining reader is
+the full-screen alarm's sky when the Sky theme is off
+(`fullScreenAlarmSky`), which draws two colours nobody sees in the app. The hero's ink is
 pure white or pure black by the painted sky's luminance under each line
 (`INK_SWITCH_LUMINANCE` 0.18), which is sound and stays.
 
@@ -166,9 +167,12 @@ moods' accents sit at 6–13:1, the light ones at 5.4–7.6:1. Any change below
 must keep `expectLegible` green at every 2 % of every passage, in both
 tracks — the test is the contract.
 
-**F9 — Dead colour.** `KEYS` and `GLOW` in `skyModel.ts` (120 lines of
-hand-picked sky) are never painted. Either they go, or Realistic is rebuilt
-on top of a physical model and they go anyway.
+**F9 — Two skies, one of them orphaned.** `KEYS` and `GLOW` in
+`skyModel.ts` (120 lines of hand-picked sky) are painted only by the
+full-screen alarm under the non-Sky themes, so the alert that wakes the
+phone wears a sky the app itself never shows. With Realistic rebuilt as the
+physical sky (§3.1), the alarm takes that at the prayer's hour in every
+theme and `KEYS`/`GLOW` go.
 
 **F10 — The hero's small lights are right.** `bodyLight` per mood, the halo
 ×1.35 under the theme, the stars' glow per mood, the countdown's glow in the
@@ -381,7 +385,7 @@ teal, the five night anchors for Vibrant. This also finishes the hero's
 the same number drives both. Fixes F3.
 
 **Wave 4 — past the hero (≈1.5 days).** The sky band on the other tabs, the
-status-bar ink there, the sweep across all six tabs in both tracks; the
+status-bar ink there, the sweep across all six tabs in both tracks; the full-screen alarm's non-Sky sky moved onto Realistic and the
 `KEYS`/`GLOW` removal from `skyModel.ts` (F9); `docs/design/sky-palette.md`
 and `ARCHITECTURE.md` §6 brought up to date; the site's and README's Sky
 pictures retaken (the screenshot guide's procedure).
