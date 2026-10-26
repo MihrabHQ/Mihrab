@@ -1302,3 +1302,19 @@ tripped "more than half failing" and failed the job, so a source's
 "nothing to serve" has to be told apart from a source that is failing —
 the same lesson the Habous job learnt on 25 October (a site that has
 changed is not a site that is down).
+
+## 2.33.0 (292) — 2026-10-26
+
+Took 2 aborted attempt(s) before it ran clean:
+
+  - 1 missing release notes: en-US/changelogs/292.txt
+  - 1 the last release left its lesson unwritten — fill in that '**Lesson:**' line in docs/release-log.md, commit it, and rerun
+
+Changed the release cycle itself:
+
+  - `.github/workflows/accuracy-figures.yml`
+  - `.github/workflows/hijri-calendars.yml`
+  - `.github/workflows/verify-methods.yml`
+  - `scripts/release.sh`
+
+**Lesson:** _(unfilled)_
