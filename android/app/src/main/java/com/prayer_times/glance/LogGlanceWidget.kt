@@ -348,8 +348,13 @@ internal class LogGlanceWidget(
     private const val LOG_TIGHT_CONTENT_DP = 134
     private const val LOG_BARE_CONTENT_DP = 112
     private const val LOG_SLACK_CAP_DP = 56
-    /** The 4×2's chrome over the graph: the ends, the chips, the footer row, two rules. */
-    private const val LOG_CHROME_DP = 112
+    /**
+     * The 4×2's chrome over the graph: the ends, the chips and their
+     * padding, the footer row, two rules. Measured on a Pixel 10 Pro: a box
+     * reckoned too tall draws a strip the image then has to shrink, and a
+     * shrunk strip is a strip that stops short of the card's edges.
+     */
+    private const val LOG_CHROME_DP = 140
     private const val CARD_PADDING_DP = 20
     private const val MAX_GRID_DAYS = 210
   }
