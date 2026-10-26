@@ -344,21 +344,31 @@ object PracticeGridBitmap {
     val rows = STRIP_ROWS
     val marginDp = 2f * ringWidthOf(MAX_CELL_DP)
     val usableH = (boxH - marginDp).coerceAtLeast(rows * 3f)
-    // The tallest a row may be: a sixth of the box.
-    val cellFromH = ((usableH - (rows - 1) * GAP_DP) / rows).coerceIn(MIN_CELL_DP, MAX_CELL_DP)
+    // The tallest a row may be: a sixth of the box. A box too short for
+    // six rows of the smallest cell gives up its gaps first, down to a
+    // point, and only then its cell — THE STRIP IS NEVER TALLER THAN ITS
+    // BOX. Taller, and the image shrinks the whole strip to fit the
+    // height, and a shrunk strip stops short of the card's edges.
+    var gapDp = GAP_DP
+    var cellFromH = (usableH - (rows - 1) * gapDp) / rows
+    if (cellFromH < MIN_CELL_DP) {
+      gapDp = ((usableH - rows * MIN_CELL_DP) / (rows - 1)).coerceIn(MIN_GAP_DP, GAP_DP)
+      cellFromH = (usableH - (rows - 1) * gapDp) / rows
+    }
+    cellFromH = cellFromH.coerceIn(3f, MAX_CELL_DP)
     // A week's breath is one more gap per seven columns, on average.
-    val breath = GAP_DP / 7f
+    val breath = gapDp / 7f
     // THE WIDTH DECIDES THE DAYS: as many columns of that row's height as
     // fit across, so the cells come out square and the strip fills the box
     // on both axes — a card gives the graph a box, and the graph takes it.
-    val columns = Math.round((boxW + GAP_DP) / (cellFromH + GAP_DP + breath))
+    val columns = Math.round((boxW + gapDp) / (cellFromH + gapDp + breath))
       .coerceAtLeast(7)
       .coerceAtMost(maxDays.coerceAtLeast(7))
     val breaths = columns / 7
     // The cell is then exactly what the width divides into, so the strip
     // lands on the card's edges; its height is the box's sixth, or a
     // little over square when the box is taller than that.
-    val cellW = ((boxW - (columns - 1) * GAP_DP - breaths * GAP_DP) / columns).coerceAtLeast(3f)
+    val cellW = ((boxW - (columns - 1) * gapDp - breaths * gapDp) / columns).coerceAtLeast(3f)
     val cellH = minOf(cellFromH, cellW * MAX_ROW_RATIO).coerceAtLeast(3f)
     val cellWDp = cellW
     val cellHDp = cellH
@@ -374,8 +384,8 @@ object PracticeGridBitmap {
     // on top of that, and the failure is the whole widget refusing to draw
     // rather than a warning — so the only thing that pulls the scale down
     // is the area budget, and it pulls it down by as little as it must.
-    val gridW = columns * cellWDp + (columns - 1) * GAP_DP
-    val gridH = rows * cellHDp + (rows - 1) * GAP_DP
+    val gridW = columns * cellWDp + (columns - 1) * gapDp
+    val gridH = rows * cellHDp + (rows - 1) * gapDp
     var scale = density
     val area = gridW * gridH * scale * scale
     if (area > MAX_BITMAP_PX) {
@@ -386,12 +396,15 @@ object PracticeGridBitmap {
       columns = columns,
       cellWPx = Math.round(cellWDp * scale).coerceAtLeast(3),
       cellHPx = Math.round(cellHDp * scale).coerceAtLeast(3),
-      gapPx = Math.round(GAP_DP * scale).coerceAtLeast(1),
+      gapPx = Math.round(gapDp * scale).coerceAtLeast(1),
     )
   }
 
   /** The smallest cell that still reads as one on a home screen. */
   private const val MIN_CELL_DP = 7f
+
+  /** The gap a short box may close the cells up to: still a line between days. */
+  private const val MIN_GAP_DP = 1.5f
 
   /**
    * A ceiling on the cell, in dp, and it is deliberately generous.

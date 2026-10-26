@@ -222,7 +222,12 @@ internal class LogGlanceWidget(
     // An unmeasured card (0) is the roomy one and draws no graph.
     val tight = h in 1 until LOG_ROOMY_CONTENT_DP
     val bare = h in 1 until LOG_TIGHT_CONTENT_DP
-    val graphHeight = tall && h > 0
+    // The chrome over the graph is the card's own: its inset and padding,
+    // the chip row, the footer, the rules — 8dp of padding, 8dp of chip and
+    // a 15dp rule less once the card is tight. What is left is the graph's.
+    val chrome = if (tight) LOG_CHROME_TIGHT_DP else LOG_CHROME_ROOMY_DP
+    val graphBox = h - chrome
+    val graphHeight = tall && graphBox >= GRID_MIN_BOX_DP
     // Null when there is no block or no room for it: one value, no `!!`.
     val practice = m.practice?.takeIf { graphHeight }
     val showGrid = practice != null
@@ -270,7 +275,8 @@ internal class LogGlanceWidget(
         // The card's chrome off the height, the padding off the width; the
         // grid gets the rest — PrayerWidgetLogProvider.bindGrid's box.
         val density = context.resources.displayMetrics.density
-        val grid = PracticeGridBitmap.layoutFor(size.widthDp - CARD_PADDING_DP, h - LOG_CHROME_DP, density, MAX_GRID_DAYS)
+        val boxW = size.widthDp - 2 * (CARD_INSET_DP + paddingFor(size))
+        val grid = PracticeGridBitmap.layoutFor(boxW, graphBox, density, MAX_GRID_DAYS)
         Image(
           provider = ImageProvider(
             practiceGrid(pr, grid.rows, grid.columns, grid.cellWPx, grid.cellHPx, grid.gapPx, m.colors.accent),
@@ -349,13 +355,20 @@ internal class LogGlanceWidget(
     private const val LOG_BARE_CONTENT_DP = 112
     private const val LOG_SLACK_CAP_DP = 56
     /**
-     * The 4×2's chrome over the graph: the ends, the chips and their
-     * padding, the footer row, two rules. Measured on a Pixel 10 Pro: a box
-     * reckoned too tall draws a strip the image then has to shrink, and a
-     * shrunk strip is a strip that stops short of the card's edges.
+     * The 4×2's chrome over the graph: the inset and padding, the chips and
+     * their padding, the footer row, two rules. Measured, not summed: on a
+     * 201dp card the strip the image drew was 41dp tall, so the chrome is
+     * 160dp; the tight card has 8dp less padding, 8dp less chip and no
+     * 15dp rule. A couple of dp over the measure:
+     * a box reckoned too tall draws a strip the image then has to shrink,
+     * and a shrunk strip is a strip that stops short of the card's edges;
+     * a box a few dp short leaves that much air, which nobody sees.
      */
-    private const val LOG_CHROME_DP = 140
-    private const val CARD_PADDING_DP = 20
+    private const val LOG_CHROME_ROOMY_DP = 162
+    private const val LOG_CHROME_TIGHT_DP = 131
+    /** Under this much room the graph is left out rather than squashed. */
+    private const val GRID_MIN_BOX_DP = 36
+    private const val CARD_INSET_DP = 6
     private const val MAX_GRID_DAYS = 210
   }
 }
