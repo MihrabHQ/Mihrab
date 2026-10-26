@@ -455,16 +455,11 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     val baseSp = fitTimesSp(context, columns.map { it.minutes }, m.clock, columnDp, TIME_MAX_SP, TIME_MIN_SP)
     val timeSp = scaledClockSp(context, columns.map { it.minutes }, m.clock, baseSp, d.timeScale, if (size.widthDp > 0) columnDp else 0f)
 
-    // The tall card (4×2) is the times and the graph and nothing else: no
-    // header over the times, no next-prayer row under them — the lit
-    // column says which is next, the 4×1 has the countdown — so the times
-    // sit at the top and the graph takes the rest of the card.
-    val bare = entry == Entry.TALL
     Column(modifier = GlanceModifier.fillMaxSize()) {
-      if (!oneRow && !bare) Header(m.header, m.hijri, d)
+      if (!oneRow) Header(m.header, m.hijri, d)
       if (d.showTable) {
         Row(
-          modifier = GlanceModifier.fillMaxWidth().padding(top = (if (bare) 0 else 8 + slack).dp, bottom = slack.dp),
+          modifier = GlanceModifier.fillMaxWidth().padding(top = (8 + slack).dp, bottom = slack.dp),
           verticalAlignment = Alignment.CenterVertically,
         ) {
           for (r in columns) {
@@ -510,13 +505,8 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
           Column(modifier = GlanceModifier.fillMaxWidth()) { NextBlock(context, m, size, top = 0, nameSp = nameSp) }
         }
       }
-      // The tall card (4×2) gives the next-prayer row's height to the graph:
-      // the highlighted column already says which prayer is next, the
-      // countdown lives on the 4×1, and a 4×2 has room for the times and a
-      // readable strip, not for both and a line between them.
-      val nextRow = !bare
-      if (!tight && nextRow) Rule(d.rule, top = 6, bottom = 8)
-      if (nextRow) Row(modifier = GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+      if (!tight) Rule(d.rule, top = 6, bottom = 8)
+      Row(modifier = GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         // The next-prayer line is the NextBlock's when the table is hidden.
         if (d.showTable) {
           if (m.nextName.isNotEmpty()) Label(m.nextName, 11f, d.text)
@@ -539,9 +529,10 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
         }
       }
       practice?.let { pr ->
+        Rule(d.ruleStrong, top = 8, bottom = 8)
         val box = size.heightDp - STRIP_TALL_CHROME_DP - (if (showFoot) STRIP_FOOT_DP else 0)
         PracticeImage(context, pr.block, size.widthDp - insetDp(context, size), box, MAX_GRID_DAYS, m.colors.accent,
-          GlanceModifier.fillMaxWidth().defaultWeight().padding(top = 10.dp))
+          GlanceModifier.fillMaxWidth().defaultWeight())
         if (showFoot) Foot(pr, top = 7, d)
       }
     }
@@ -696,8 +687,8 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     private const val STRIP_BARE_CONTENT_DP = 96
     private const val STRIP_SLACK_CAP_DP = 64
     private const val STRIP_CHROME_DP = 184
-    /** The tall card's chrome over the graph: the ends, the times row, the gap under it. */
-    private const val STRIP_TALL_CHROME_DP = 92
+    /** The tall card's chrome over the graph: the ends, the header, the times, the next-prayer row, the rules. */
+    private const val STRIP_TALL_CHROME_DP = 150
     private const val STRIP_FOOT_DP = 19
     /** The strip's side padding (sideDp). */
     private const val STRIP_SIDE_DP = 8

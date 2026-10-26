@@ -189,7 +189,7 @@
     <string name="widget_preview_tap_to_log">সময়মতো আসর লগ করতে \u2713-এ ট্যাপ করুন</string>
     <string name="widget_preview_practice_second">দিনের ধারাবাহিকতা \u00b7 সেরা 31 \u00b7 আজ 5-এর মধ্যে 2</string>
     <string name="widget_name_tall">Mihrab \u00b7 নামাযের সময় (উঁচু)</string>
-    <string name="widget_description_tall">আজকের ছয়টি সময় ও আমলের গ্রাফ। 4×2।</string>
+    <string name="widget_description_tall">আজকের ছয়টি সময়, শহর, হিজরি তারিখ ও আমলের গ্রাফসহ। 4×2।</string>
     <string name="widget_name_log_tall">Mihrab \u00b7 আজকের লগ (উঁচু)</string>
     <string name="widget_description_log_tall">সময়মতো লগ করতে একটি নামাজে ট্যাপ করুন, পরেরটির কাউন্টডাউন ও আমলের গ্রাফসহ। 4×2।</string>
 </resources>

@@ -237,7 +237,7 @@
          provider at one size, so a widget that means something different at
          one row and at three needs two entries to say so. -->
     <string name="widget_name_tall">Mihrab \u00b7 Prayer times (tall)</string>
-    <string name="widget_description_tall">Today\'s six times and the practice graph. 4×2.</string>
+    <string name="widget_description_tall">Today\'s six times with the city, the Hijri date and the practice graph. 4×2.</string>
     <string name="widget_name_log_tall">Mihrab \u00b7 Log today (tall)</string>
     <string name="widget_description_log_tall">Tap a prayer to log it on time, with the countdown to the next and the practice graph. 4×2.</string>
 </resources>
