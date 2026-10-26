@@ -440,6 +440,8 @@ export type SkyInkColors = {
   muted: string;
   track: string;
   fill: string;
+  /** The soft ring round the rail's head: the fill, mostly sky. */
+  ring: string;
 };
 
 /** The sky's colour at a fraction of the card's height. */
@@ -508,12 +510,14 @@ export function skyInkAt(frame: Pick<SkyFrame, 'top' | 'bottom' | 'mid' | 'midAt
         muted: 'rgba(255,255,255,0.78)',
         track: 'rgba(255,255,255,0.24)',
         fill: '#FFFFFF',
+        ring: 'rgba(255,255,255,0.22)',
       }
     : {
         text: '#000000',
         muted: 'rgba(0,0,0,0.66)',
         track: 'rgba(0,0,0,0.16)',
         fill: '#000000',
+        ring: 'rgba(0,0,0,0.14)',
       };
 }
 

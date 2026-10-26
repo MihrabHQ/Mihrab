@@ -25,6 +25,7 @@ import React, { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, 
 import {
   Animated,
   FlatList,
+  Platform,
   Pressable,
   StatusBar,
   StyleSheet,
@@ -128,7 +129,7 @@ import { clearNativeAlertOverride } from '../../native/MihrabLiveActivity';
 import { ymdLocal } from '../../notifications/scheduling';
 import { QiblaChipCorner } from './QiblaChip';
 import { HOME_SCREEN_PADDING, HOME_TABLE_RADIUS } from './tokens';
-import { RADIUS, SPACING } from '../../theme/tokens';
+import { SPACING } from '../../theme/tokens';
 import { TYPE } from '../../theme/typography';
 import { VerticalBarActionsBand } from '../../navigation/VerticalTabBar';
 
@@ -146,6 +147,10 @@ import { VerticalBarActionsBand } from '../../navigation/VerticalTabBar';
 const CHEVRON_SIZE = 20;
 /** The countdown's halo under the Sky theme by night — its blur, and the room its text is given for it. */
 const GLOW_RADIUS = 14;
+/** The rail's thread, its head, and the soft ring round the head (dp). */
+const RAIL_LINE = 2;
+const RAIL_HEAD = 9;
+const RAIL_RING = 19;
 
 /** A system face's ascender, in ems — only until the real one is measured. */
 const HERO_ASCENT_EM = 0.93;
@@ -1130,8 +1135,10 @@ const HeroToday = memo(function HeroToday({
                   // the track every second for nothing (2.33).
                   width: `${(Math.round(railPct * 400) / 4).toFixed(2)}%`,
                 },
-              ]}
-            />
+              ]}>
+              <View style={[styles.railRing, { backgroundColor: inkFoot.ring }]} />
+              <View style={[styles.railHead, { backgroundColor: inkFoot.fill }]} />
+            </View>
           </View>
           <View style={styles.railLabels}>
             <Text
@@ -2395,7 +2402,7 @@ const styles = StyleSheet.create({
   // §2.1, the `label` token).
   heroEyebrow: {
     fontSize: TYPE.footnote.fontSize,
-    fontWeight: '600',
+    fontWeight: '500',
   },
   heroEyebrowRow: {
     flexDirection: 'row',
@@ -2412,23 +2419,66 @@ const styles = StyleSheet.create({
   },
   // Shrinks before the time does; one line, never wrapped.
   heroCountdownLine: { flexShrink: 1 },
-  // The question the app is opened to answer, at the size that says so.
-  heroCountdown: { fontSize: 54, fontWeight: '700' }, // tokens-ok-line: display or Arabic scale, sized by hand
-  heroCountdownExpanded: { fontSize: 78 }, // tokens-ok-line: display or Arabic scale, sized by hand
-  // Two thirds of the "at" line's weight and a third of the countdown's
-  // size: present, readable, and never the thing the eye lands on first.
-  heroSeconds: { fontSize: TYPE.title2.fontSize, fontWeight: '600' },
-  heroSecondsExpanded: { fontSize: 28 }, // tokens-ok-line: display or Arabic scale, sized by hand
-  heroAt: { fontSize: TYPE.title3.fontSize, fontWeight: '600' },
+  // The question the app is opened to answer, at the size that says so —
+  // and in the light weight, as a clock on a lock screen is: the figures
+  // are large enough to carry a thin stroke, the size does the work and
+  // the weight gets out of its way, and the sky shows between the strokes.
+  // Bold at this size was a headline; light is a time. Tracked tight, as
+  // light figures want to be. Android's default face carries no Light
+  // below API 28, so the family is named there.
+  heroCountdown: {
+    fontSize: 60, // tokens-ok-line: display or Arabic scale, sized by hand
+    fontWeight: '300',
+    letterSpacing: -1.5,
+    ...Platform.select({ android: { fontFamily: 'sans-serif-light' }, default: {} }),
+  },
+  heroCountdownExpanded: { fontSize: 84, letterSpacing: -2.5 }, // tokens-ok-line: display or Arabic scale, sized by hand
+  // Lighter than the figures and a third of their size, in the muted ink:
+  // present, readable, and never the thing the eye lands on first.
+  heroSeconds: {
+    fontSize: 24, // tokens-ok-line: display or Arabic scale, sized by hand
+    fontWeight: '300',
+    letterSpacing: 0,
+    ...Platform.select({ android: { fontFamily: 'sans-serif-light' }, default: {} }),
+  },
+  heroSecondsExpanded: { fontSize: 30 }, // tokens-ok-line: display or Arabic scale, sized by hand
+  heroAt: { fontSize: TYPE.title3.fontSize, fontWeight: '400' },
+  /**
+   * The rail: a hairline of the interval with a lit head where now is.
+   *
+   * It was a 5 dp bar, a progress bar from a settings page, drawn under
+   * the one line of the app that is meant to be quiet. A thread does the
+   * same job at a third of the ink, and the head — a dot on the thread
+   * with a soft ring of the same ink — is what the eye reads the progress
+   * from, the way a slider's thumb is read; the fill behind it is a trace.
+   * The ring is a view, not a shadow: a shadow is drawn differently on
+   * every platform and clipped by some.
+   */
   railWrap: { marginTop: SPACING.md },
-  railTrack: { height: 5, borderRadius: RADIUS.xs, overflow: 'hidden' },
-  railFill: { height: '100%', borderRadius: RADIUS.xs },
+  railTrack: { height: RAIL_LINE, borderRadius: RAIL_LINE / 2 },
+  railFill: { height: '100%', borderRadius: RAIL_LINE / 2 },
+  railHead: {
+    position: 'absolute',
+    end: -RAIL_HEAD / 2,
+    top: (RAIL_LINE - RAIL_HEAD) / 2,
+    width: RAIL_HEAD,
+    height: RAIL_HEAD,
+    borderRadius: RAIL_HEAD / 2,
+  },
+  railRing: {
+    position: 'absolute',
+    end: -RAIL_RING / 2,
+    top: (RAIL_LINE - RAIL_RING) / 2,
+    width: RAIL_RING,
+    height: RAIL_RING,
+    borderRadius: RAIL_RING / 2,
+  },
   railLabels: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: SPACING.sm,
+    marginTop: SPACING.sm + 2,
   },
-  railLabel: { fontSize: TYPE.label.fontSize, fontWeight: '600' },
+  railLabel: { fontSize: TYPE.label.fontSize, fontWeight: '500' },
   monthRow: {
     flexDirection: 'row',
     alignItems: 'center',
