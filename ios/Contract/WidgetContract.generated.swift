@@ -486,6 +486,10 @@ enum WidgetContract {
     var f: Bool
     /// Sunnah units kept.
     var s: Int
+    /// The five prayers, Fajr to Isha, one letter each: o on time, l late, m
+    /// missed, q made up, '-' nothing. Empty on a payload written before the
+    /// widgets drew the record by prayer.
+    var p: String
 
     init(
       d: String,
@@ -493,7 +497,8 @@ enum WidgetContract {
       l: Int = 0,
       m: Bool = false,
       f: Bool = false,
-      s: Int = 0
+      s: Int = 0,
+      p: String = ""
     ) {
       self.d = d
       self.kw = kw
@@ -501,6 +506,7 @@ enum WidgetContract {
       self.m = m
       self.f = f
       self.s = s
+      self.p = p
     }
 
     enum CodingKeys: String, CodingKey {
@@ -510,6 +516,7 @@ enum WidgetContract {
       case m
       case f
       case s
+      case p
     }
 
     init(from decoder: Decoder) throws {
@@ -520,6 +527,7 @@ enum WidgetContract {
       m = c.wcValue(Bool.self, .m) ?? false
       f = c.wcValue(Bool.self, .f) ?? false
       s = c.wcInt(.s).flatMap(wcInt32) ?? 0
+      p = c.wcValue(String.self, .p) ?? ""
     }
   }
 

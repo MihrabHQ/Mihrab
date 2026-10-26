@@ -159,6 +159,7 @@ enum WidgetPayloadV1 {
           if d.m { o["m"] = true }
           if d.f { o["f"] = true }
           if d.s != 0 { o["s"] = d.s }
+          if !d.p.isEmpty { o["p"] = d.p }
           return o
         },
       ]

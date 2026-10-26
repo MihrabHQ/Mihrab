@@ -214,6 +214,12 @@ export type WidgetContractPracticeDay = {
   f?: boolean;
   /** Sunnah units kept. */
   s?: number;
+  /**
+   * The five prayers, Fajr to Isha, one letter each: o on time, l late, m
+   * missed, q made up, '-' nothing. Empty on a payload written before the
+   * widgets drew the record by prayer.
+   */
+  p?: string;
 };
 
 /** The Continue Reading widget. */
@@ -603,6 +609,7 @@ export function readWidgetContractPracticeDay(
     m: wcBool(input.m) ?? false,
     f: wcBool(input.f) ?? false,
     s: wcInt(input.s) ?? 0,
+    p: wcString(input.p) ?? '',
   };
   return out;
 }

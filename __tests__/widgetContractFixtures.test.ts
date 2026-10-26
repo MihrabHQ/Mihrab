@@ -63,7 +63,7 @@ describe('the widget contract fixtures', () => {
     expect(p.hijri).toBeUndefined();
     expect(p.today).toBeUndefined();
     expect(p.practice.days).toEqual([
-      { d: '2026-09-28', kw: 0, l: 0, m: false, f: false, s: 0 },
+      { d: '2026-09-28', kw: 0, l: 0, m: false, f: false, s: 0, p: '' },
     ]);
   });
 

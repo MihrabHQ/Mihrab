@@ -122,6 +122,13 @@ export type WidgetPracticeDay = {
   m?: true;
   /** A completed fast. */
   f?: true;
+  /**
+   * The five prayers' own statuses, Fajr to Isha, one letter each — `o` on
+   * time, `l` late, `m` missed, `q` made up, `-` nothing. What the widgets
+   * draw since the graph became a row a prayer; the sums above stay for
+   * widget binaries older than this payload.
+   */
+  p?: string;
   /** Sunnah units kept, 0..SUNNAH_TOTAL. */
   s?: number;
 };
@@ -339,6 +346,14 @@ function noonOf(d: Date): Date {
   return new Date(d.getFullYear(), d.getMonth(), d.getDate(), 12, 0, 0, 0);
 }
 
+/** The letter a status is sent as — see `WidgetPracticeDay.p`. */
+const STATUS_LETTER: Record<LoggedStatus, string> = {
+  'on-time': 'o',
+  late: 'l',
+  missed: 'm',
+  qadha: 'q',
+};
+
 export function buildPracticeBlock(input: {
   journal: JournalEntry[];
   fasts: FastEntry[];
@@ -366,6 +381,7 @@ export function buildPracticeBlock(input: {
   const weighted = new Map<string, number>();
   const logged = new Map<string, number>();
   const missed = new Set<string>();
+  const letters = new Map<string, string[]>();
   let since: string | null = null;
   for (const e of input.journal) {
     // Tombstones are not entries — a day whose prayers were all cleared has
@@ -378,6 +394,12 @@ export function buildPracticeBlock(input: {
       (weighted.get(e.date) ?? 0) + (STATUS_WEIGHT[e.status as LoggedStatus] ?? 0),
     );
     logged.set(e.date, (logged.get(e.date) ?? 0) + 1);
+    const slot = WIDGET_LOGGABLE.indexOf(e.prayer);
+    if (slot >= 0) {
+      const row = letters.get(e.date) ?? Array(WIDGET_LOGGABLE.length).fill('-');
+      row[slot] = STATUS_LETTER[e.status as LoggedStatus] ?? '-';
+      letters.set(e.date, row);
+    }
     if (e.status === 'on-time' || e.status === 'late') {
       kept.set(e.date, (kept.get(e.date) ?? 0) + 1);
     } else if (e.status === 'missed') {
@@ -400,6 +422,7 @@ export function buildPracticeBlock(input: {
     const s = sunnahCount(dayAt(input.sunnah, key));
     const m = missed.has(key);
     const f = fasted.has(key);
+    const p = letters.get(key)?.join('');
     // `l > 0` rather than `k > 0`: a day of nothing but qadha scored zero on
     // the old count and was dropped from the payload entirely, so making up
     // yesterday's prayers made the square disappear instead of filling it.
@@ -412,6 +435,7 @@ export function buildPracticeBlock(input: {
         ...(m ? { m: true as const } : {}),
         ...(f ? { f: true as const } : {}),
         ...(s > 0 ? { s } : {}),
+        ...(p ? { p } : {}),
       });
     }
     cursor.setDate(cursor.getDate() + 1);

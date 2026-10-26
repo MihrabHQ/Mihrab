@@ -253,6 +253,7 @@ object WidgetPayloadV1 {
     if (d.m) o.put("m", true)
     if (d.f) o.put("f", true)
     if (d.s != 0) o.put("s", d.s)
+    if (d.p.isNotEmpty()) o.put("p", d.p)
     return o
   }
 

@@ -48,17 +48,23 @@ import org.json.JSONObject
  * to an eighth of a cell, so the graph fills the box instead of floating
  * in a band of empty card at each end.
  *
- * FOUR CHANNELS, the same four the Log screen uses: fill depth for the
- * prayers, an outer amber ring for a completed fast, an inset gold line for
- * how much sunnah the day held, and a grey corner dot for a day inside the
- * record that was never filled in. Anything the app draws in a fifth
- * channel — the qiyam mark, the selection — is left out: a home screen has
- * no legend and no tap, and a mark nobody can decode is noise.
+ * A ROW A PRAYER, A COLUMN A DAY — the shape the Log screen's graph took
+ * (src/practice/PracticeStrip.tsx), drawn here the same way. The run of
+ * days above is how the widget used to read; it summed a day into one
+ * depth of colour, and the number hid the one thing a prayer log is kept
+ * for: which prayer. Six rows now — Fajr to Isha, and the fast — and every
+ * cell one fact: filled for on time, faint for late, hollow for a make-up,
+ * red for missed, the palest ink for nothing inside the record, nothing at
+ * all before it or after today. The sunnah, the qiyam and the unaccounted
+ * mark stay in the app: a home screen has no legend, and a cell that says
+ * one thing can be small.
  *
- * The ramp is the same one SwiftUI's PracticeGrid uses:
- * `alpha = 0.42 + 0.58 * (kept / 5)` on the accent, so one prayer is faintly
- * there rather than invisible and five is solid. A missed day is the danger
- * colour at low alpha — a different KIND of day, not a fainter good one.
+ * Drawn in INK — white, every widget card being dark — not the accent: the
+ * app's record is one colour at every hour under the Sky themes, and so is
+ * this. The accent means one thing here, a fast, and the danger red one
+ * thing, a missed prayer. A payload written before the field existed (no
+ * `p`) draws each day as one column of the old summary, so an unreloaded
+ * widget still says something true.
  */
 object PracticeGridBitmap {
 
@@ -72,6 +78,12 @@ object PracticeGridBitmap {
    * for a grid with more rows than the payload has days to fill.
    */
   const val MAX_ROWS = 12
+
+  /** The strip's rows: the five prayers, then the fast. */
+  const val STRIP_ROWS = 6
+
+  /** The cells' ink. Every widget card is dark. */
+  private const val INK = 0xFFFFFFFF.toInt()
 
   /**
    * The cell size the rows are counted against, in dp.
@@ -93,7 +105,7 @@ object PracticeGridBitmap {
    * size and the graph took over the card. At 15 it is a texture of days
    * under the times again, with more history on the same card.
    */
-  private const val TARGET_CELL_DP = 15f
+  private const val TARGET_CELL_DP = 10f
 
   /** Everything the grid needs to be drawn into a particular box. */
   data class Layout(
@@ -109,31 +121,8 @@ object PracticeGridBitmap {
 
   private const val OWED_COLOR = "#F87171"
 
-  /** The muted grey, for days that have not happened yet. */
-  private const val FUTURE_COLOR = "#9AA0A6"
-
   /** The five salāh — what a complete day accounts for. */
   private const val SALAH_PER_DAY = 5
-
-  /**
-   * The fasting ring and the sunnah line, in the app's own two colours.
-   *
-   * Separated by LIGHTNESS rather than hue, because they are neighbours on
-   * the wheel and sit inside each other on a square smaller than a grain of
-   * rice — see sunnahTheme.ts, which is where these values come from. The
-   * dark variants, because every widget card is dark.
-   */
-  private const val FAST_RING_COLOR = "#FBBF24"
-  private const val SUNNAH_GOLD = "#E8CE7A"
-
-  /**
-   * Everything a complete day of sunnah holds — the five prayers' sunnah
-   * plus Witr, which is 6. It is `SUNNAH_TOTAL` in src/journal/sunnah.ts;
-   * the payload sends the raw count and the denominator has to live
-   * somewhere, so it lives here with this note. A day that somehow reports
-   * more is clamped rather than drawn as more than a full ring.
-   */
-  private const val SUNNAH_TOTAL = 6
 
   /**
    * A RemoteViews carrying bitmaps has to cross a Binder transaction, and
@@ -222,10 +211,21 @@ object PracticeGridBitmap {
     @Suppress("NAME_SHADOWING") val cellHPx = cellHPx.coerceIn(3, MAX_CELL_PX)
     @Suppress("NAME_SHADOWING") val gapPx = gapPx.coerceIn(1, 24)
     @Suppress("NAME_SHADOWING") val columns = columns.coerceAtLeast(1)
-    @Suppress("NAME_SHADOWING") val rows = rows.coerceIn(1, MAX_ROWS)
+    // The strip has its rows: the caller's count is what it was drawn for
+    // before the graph was by prayer, and is kept so nothing has to change
+    // its call.
+    @Suppress("UNUSED_VARIABLE", "NAME_SHADOWING") val rows = STRIP_ROWS
     val ringUnit = minOf(cellWPx, cellHPx)
     val pad = padFor(ringUnit)
-    val width = columns * cellWPx + (columns - 1) * gapPx + 2 * pad
+    // A wider gap after each Sunday, so the weeks read as weeks: the
+    // columns are counted back from today, so which columns end a week
+    // depends on what day today is.
+    val firstDay = (now.clone() as Calendar).apply { add(Calendar.DAY_OF_YEAR, -(columns - 1)) }
+    val weekEnds = IntArray(columns) { i ->
+      val d = (firstDay.clone() as Calendar).apply { add(Calendar.DAY_OF_YEAR, i) }
+      if (d.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY && i < columns - 1) gapPx else 0
+    }
+    val width = columns * cellWPx + (columns - 1) * gapPx + weekEnds.sum() + 2 * pad
     val height = rows * cellHPx + (rows - 1) * gapPx + 2 * pad
     val bmp = Bitmap.createBitmap(
       width.coerceAtLeast(1),
@@ -238,107 +238,76 @@ object PracticeGridBitmap {
 
     val byDate = indexByDate(days)
     val todayKey = keyOf(now)
-    // Today is the LAST cell, so the run starts however many days back that
-    // makes it. Nothing after today is drawn at all: a home screen has room
-    // for the days that happened, and a tail of empty squares reads as days
-    // already lost rather than days not yet arrived.
+    // Today is the LAST column, so the run starts however many days back
+    // that makes it. Nothing after today is drawn at all.
     val cursor = (now.clone() as Calendar).apply {
       set(Calendar.HOUR_OF_DAY, 12)
       set(Calendar.MINUTE, 0)
       set(Calendar.SECOND, 0)
       set(Calendar.MILLISECOND, 0)
-      add(Calendar.DAY_OF_YEAR, -(rows * columns - 1))
+      add(Calendar.DAY_OF_YEAR, -(columns - 1))
     }
+    val lineW = (ringUnit * 0.14f).coerceAtLeast(1f)
 
-    // COLUMN-MAJOR, and deliberately: the Log screen's heatmap runs the days
-    // down each column, one column to a week, newest week at the right. At
-    // seven rows this grid IS that heatmap; at any other row count it is
-    // still the same reading direction, so the widget and the screen it
-    // summarises never disagree about which square is which day.
+    var x = pad.toFloat()
     for (col in 0 until columns) {
+      val key = keyOf(cursor)
+      val left = x
+      x += cellWPx + gapPx + weekEnds[col]
+      val day = byDate[key]
+      val inRecord = since != null && key >= since
+      val letters = day?.optString("p", "")?.takeIf { it.length == SALAH_PER_DAY }
+      // Today's column, lit: a strip whose last cells are empty says
+      // nothing about where now is without it.
+      if (key == todayKey) {
+        paint.style = Paint.Style.FILL
+        paint.color = withAlpha(INK, 0.10f)
+        canvas.drawRoundRect(
+          RectF(left - gapPx / 2f, 0f, left + cellWPx + gapPx / 2f, height.toFloat()),
+          radius,
+          radius,
+          paint,
+        )
+      }
       for (row in 0 until rows) {
-        val key = keyOf(cursor)
-        val left = (pad + col * (cellWPx + gapPx)).toFloat()
         val top = (pad + row * (cellHPx + gapPx)).toFloat()
         val rect = RectF(left, top, left + cellWPx, top + cellHPx)
-        // A date key is YYYY-MM-DD, so string order IS date order.
-        val future = key > todayKey
-        if (!future) {
-          val day = byDate[key]
-          paint.style = Paint.Style.FILL
-          paint.color = colorFor(day, accent)
-          canvas.drawRoundRect(rect, radius, radius, paint)
-          // The hairline the app gives an empty square, for the same reason
-          // it gives it one: an empty cell cannot carry enough contrast to
-          // be seen at a lightness that still reads as empty, so the ring
-          // carries it instead. Without this the last few days of a partly
-          // logged week are indistinguishable from the card behind them.
-          if (day == null || (weightOf(day) <= 0 && loggedOf(day) <= 0)) {
-            paint.style = Paint.Style.STROKE
-            paint.strokeWidth = (ringUnit * 0.09f).coerceAtLeast(1f)
-            paint.color = withAlpha(accent, 0.22f)
+        paint.style = Paint.Style.FILL
+        if (row == STRIP_ROWS - 1) {
+          // The fast, in the accent — the one colour the strip spends.
+          if (day != null && day.optBoolean("f", false)) {
+            paint.color = accent
+            canvas.drawRoundRect(rect, radius, radius, paint)
+          } else if (inRecord || day != null) {
+            paint.color = withAlpha(INK, 0.07f)
             canvas.drawRoundRect(rect, radius, radius, paint)
           }
-          // The fast, as the outer ring — the same channel the Log screen
-          // gives it, so a Ramadan reads as the same band of outlined
-          // squares in both places.
-          if (day != null && day.optBoolean("f", false)) {
-            paint.style = Paint.Style.STROKE
-            paint.strokeWidth = (ringUnit * 0.12f).coerceAtLeast(1f)
-            paint.color = Color.parseColor(FAST_RING_COLOR)
-            val half = paint.strokeWidth / 2f
-            canvas.drawRoundRect(
-              RectF(
-                rect.left + half,
-                rect.top + half,
-                rect.right - half,
-                rect.bottom - half,
-              ),
-              radius,
-              radius,
-              paint,
-            )
+        } else if (letters != null) {
+          when (letters[row]) {
+            'o' -> { paint.color = withAlpha(INK, 0.85f); canvas.drawRoundRect(rect, radius, radius, paint) }
+            'l' -> { paint.color = withAlpha(INK, 0.38f); canvas.drawRoundRect(rect, radius, radius, paint) }
+            'm' -> { paint.color = withAlpha(Color.parseColor(OWED_COLOR), 0.85f); canvas.drawRoundRect(rect, radius, radius, paint) }
+            'q' -> {
+              paint.style = Paint.Style.STROKE
+              paint.strokeWidth = lineW
+              paint.color = withAlpha(INK, 0.85f)
+              val h = lineW / 2f
+              canvas.drawRoundRect(RectF(rect.left + h, rect.top + h, rect.right - h, rect.bottom - h), radius, radius, paint)
+              paint.style = Paint.Style.FILL
+            }
+            else -> { paint.color = withAlpha(INK, 0.07f); canvas.drawRoundRect(rect, radius, radius, paint) }
           }
-          // The sunnah, as a line travelling round INSIDE the fast ring —
-          // again the app's own channel. How far round it has gone is the
-          // quantity, which reads at a glance in a way that six shades of
-          // one colour never did.
-          val sunnah = (day?.optInt("s", 0) ?: 0).coerceIn(0, SUNNAH_TOTAL)
-          if (sunnah > 0) {
-            drawSunnah(canvas, rect, sunnah / SUNNAH_TOTAL.toFloat(), ringUnit, paint)
-          }
-          // The unaccounted mark: a day inside the record that never got
-          // all five filled in. FILLED here where the app draws it hollow —
-          // a 1px ring inside a 7px cell is mush on a home screen, and
-          // being visible is the entire point of carrying the mark into the
-          // widget. Grey, and in the corner, so it cannot be read as part
-          // of the green ramp.
-          if (since != null && key >= since && key < todayKey &&
-            (day == null || loggedOf(day) < SALAH_PER_DAY)
-          ) {
-            paint.style = Paint.Style.FILL
-            paint.color = withAlpha(Color.parseColor(FUTURE_COLOR), 0.85f)
-            val r = (ringUnit * 0.16f).coerceAtLeast(1.2f)
-            canvas.drawCircle(rect.left + r + 1f, rect.top + r + 1f, r, paint)
-          }
+        } else if (day != null) {
+          // An older payload: the day's summary, the same in every prayer's
+          // cell, so the column still says how the day went.
+          paint.color = colorFor(day, INK)
+          canvas.drawRoundRect(rect, radius, radius, paint)
+        } else if (inRecord) {
+          paint.color = withAlpha(INK, 0.07f)
+          canvas.drawRoundRect(rect, radius, radius, paint)
         }
-        // Today gets a ring, as it does on the Log screen. A grid whose most
-        // recent squares are empty gives no clue where "now" is without it.
-        if (key == todayKey) {
-          paint.style = Paint.Style.STROKE
-          paint.strokeWidth = ringWidth(ringUnit)
-          paint.color = withAlpha(accent, 0.85f)
-          val inset = paint.strokeWidth / 2f
-          canvas.drawRoundRect(
-            RectF(rect.left - inset, rect.top - inset, rect.right + inset, rect.bottom + inset),
-            radius,
-            radius,
-            paint,
-          )
-        }
-        paint.style = Paint.Style.FILL
-        cursor.add(Calendar.DAY_OF_YEAR, 1)
       }
+      cursor.add(Calendar.DAY_OF_YEAR, 1)
     }
     return bmp
   }
@@ -425,22 +394,15 @@ object PracticeGridBitmap {
     // out taller than the box that asked for it.
     val marginDp = 2f * ringWidthOf(cellDp)
     val usableH = (boxH - marginDp).coerceAtLeast(cellDp)
-    // The row count is counted against the SHORTEST a row may be drawn, so
-    // a row is only added when there is honestly room for one; and it is
-    // the nearest count rather than the largest, so the rows that are drawn
-    // are the ones nearest the size the width chose.
-    val minRowH = cellDp * MIN_ROW_RATIO
-    val roomFor = ((usableH + GAP_DP) / (minRowH + GAP_DP)).toInt()
-    val rows = Math.round((usableH + GAP_DP) / (cellDp + GAP_DP))
-      .coerceAtMost(roomFor)
-      .coerceIn(1, MAX_ROWS)
-      .coerceAtMost((maxDays / columns).coerceAtLeast(1))
-    // What a row would have to be for the rows to fill the box exactly.
-    // Capped and never raised: a shorter row than this is a grid that fits
-    // with room to spare, a taller one is a grid hanging out of its box.
+    // THE ROWS ARE THE STRIP'S — five prayers and the fast — whatever the
+    // box: a strip with Isha cut off is not a shorter strip, it is a wrong
+    // one. The height decides how tall a row is drawn, within the bounds
+    // that keep a cell reading as a cell, and the width decides the days.
+    val rows = STRIP_ROWS
     val exactH = (usableH - (rows - 1) * GAP_DP) / rows
-    val cellHDp = exactH.coerceAtMost(cellDp * MAX_ROW_RATIO).coerceAtLeast(3f)
+    val cellHDp = exactH.coerceIn(cellDp * MIN_ROW_RATIO, cellDp * MAX_ROW_RATIO).coerceAtLeast(3f)
     val cellWDp = cellDp
+    @Suppress("UNUSED_VARIABLE") val unusedDays = maxDays
 
     // Only the RATIOS above matter for how the grid LOOKS, because it is
     // scaled into the box either way. What the scale below decides is how
@@ -530,54 +492,7 @@ object PracticeGridBitmap {
    * the same two points between them read as a solid slab with grout lines
    * scratched into it. The gap has to grow with what it separates.
    */
-  private const val GAP_DP = 5f
-
-  /**
-   * The sunnah line: four straight sides, clockwise from the top-left,
-   * drawn as far round as the day got.
-   *
-   * Straight sides rather than an arc for the same reason the in-app graph
-   * uses them — the shape is read as "how far round", and four `drawLine`
-   * calls cost nothing on a bitmap that holds a hundred and forty squares.
-   */
-  private fun drawSunnah(
-    canvas: Canvas,
-    rect: RectF,
-    fraction: Float,
-    cellPx: Int,
-    paint: Paint,
-  ) {
-    val inset = (cellPx * 0.22f).coerceAtLeast(1.5f)
-    val l = rect.left + inset
-    val t = rect.top + inset
-    val r = rect.right - inset
-    val b = rect.bottom - inset
-    val w = r - l
-    val h = b - t
-    if (w <= 0f || h <= 0f) return
-    paint.style = Paint.Style.STROKE
-    paint.strokeWidth = (cellPx * 0.09f).coerceAtLeast(1f)
-    paint.color = Color.parseColor(SUNNAH_GOLD)
-    // Round the PERIMETER, not four equal sides: the cell is a rectangle
-    // now, and splitting the fraction evenly would have the line finish a
-    // short side early and crawl along a long one.
-    var left = fraction.coerceIn(0f, 1f) * (2f * w + 2f * h)
-    if (left <= 0f) return
-    var d = minOf(left, w)
-    canvas.drawLine(l, t, l + d, t, paint)
-    left -= d
-    if (left <= 0f) return
-    d = minOf(left, h)
-    canvas.drawLine(r, t, r, t + d, paint)
-    left -= d
-    if (left <= 0f) return
-    d = minOf(left, w)
-    canvas.drawLine(r, b, r - d, b, paint)
-    left -= d
-    if (left <= 0f) return
-    d = minOf(left, h)
-    canvas.drawLine(l, b, l, b - d, paint)
-  }
+  private const val GAP_DP = 3f
 
   /**
    * `days` keyed by its own date stamp.

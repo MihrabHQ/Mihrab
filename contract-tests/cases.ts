@@ -97,8 +97,8 @@ const FULL_PAYLOAD = {
     sunnahRate: 0.25,
     fastsThisMonth: 1,
     days: [
-      { d: '2026-09-27', kw: 470, l: 5, m: false, f: false, s: 4 },
-      { d: '2026-09-28', kw: 200, l: 2, m: true, f: true, s: 0 },
+      { d: '2026-09-27', kw: 470, l: 5, m: false, f: false, s: 4, p: 'oooll' },
+      { d: '2026-09-28', kw: 200, l: 2, m: true, f: true, s: 0, p: 'om---' },
     ],
     since: '2025-01-03',
   },

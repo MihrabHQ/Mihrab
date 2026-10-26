@@ -576,6 +576,9 @@ struct WidgetPayload: Codable {
     let f: Bool?
     /// Sunnah units kept.
     let s: Int?
+    /// The five prayers Fajr to Isha, a letter each: o on time, l late,
+    /// m missed, q made up, - nothing. Absent on older payloads.
+    let p: String?
   }
 
   struct Today: Codable {
@@ -1791,8 +1794,8 @@ struct PrayerWidgetEntryView: View {
           PracticeGrid(
             days: pr.days,
             since: pr.since,
-            weeks: 10,
-            cell: 6,
+            dayCount: 16,
+            cell: 7,
             spacing: 2,
             accent: resolvedWidgetHighlightColor()
           )

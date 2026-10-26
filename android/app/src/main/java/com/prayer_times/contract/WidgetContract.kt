@@ -521,6 +521,12 @@ object WidgetContract {
     val f: Boolean = false,
     /** Sunnah units kept. */
     val s: Int = 0,
+    /**
+     * The five prayers, Fajr to Isha, one letter each: o on time, l late, m
+     * missed, q made up, '-' nothing. Empty on a payload written before the
+     * widgets drew the record by prayer.
+     */
+    val p: String = "",
   ) {
     fun toJson(): JSONObject = JSONObject().apply {
       put("d", d)
@@ -529,6 +535,7 @@ object WidgetContract {
       put("m", m)
       put("f", f)
       put("s", s)
+      put("p", p)
     }
 
     companion object {
@@ -541,6 +548,7 @@ object WidgetContract {
           m = o.wcBool("m") ?: false,
           f = o.wcBool("f") ?: false,
           s = o.wcRaw("s").wcAsInt() ?: 0,
+          p = o.wcString("p") ?: "",
         )
       }
 

@@ -279,6 +279,11 @@ module.exports = {
         ],
         ['f', t.bool({ default: false }), 'A completed fast.'],
         ['s', t.int({ default: 0 }), 'Sunnah units kept.'],
+        [
+          'p',
+          t.string({ default: '' }),
+          "The five prayers, Fajr to Isha, one letter each: o on time, l late, m missed, q made up, '-' nothing. Empty on a payload written before the widgets drew the record by prayer.",
+        ],
       ],
     },
     {

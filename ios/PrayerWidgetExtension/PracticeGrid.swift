@@ -1,207 +1,122 @@
-// The practice grid, as a widget can draw it.
+// The practice record, as a widget can draw it: a row a prayer, a column a day.
 //
-// The in-app heatmap encodes six things on an 18pt square — fill depth,
-// fasting, sunnah, missed, qiyam, selection — which needed a two-row legend
-// to read. The widget carries FOUR: fill depth for the prayers, an outer
-// amber ring for a completed fast, an inset gold line for how much sunnah
-// the day held, and a grey corner dot for a day inside the record that was
-// never filled in. The qiyam mark and the selection are left behind — a
-// home screen has no legend and no tap, and a mark nobody can decode is
-// noise.
+// The shape the Log screen's graph took (src/practice/PracticeStrip.tsx),
+// drawn here the same way. The grid this replaced summed a day into one
+// depth of colour, and the number hid the one thing a prayer log is kept
+// for: which prayer. Six rows — Fajr to Isha, and the fast — and every cell
+// one fact: filled for on time, faint for late, hollow for a make-up, red
+// for missed, the palest ink for nothing inside the record, nothing at all
+// before it or after today. The sunnah, the qiyam and the unaccounted mark
+// stay in the app: a home screen has no legend, and a cell that says one
+// thing can be small.
 //
-// The ramp is the app's own — alpha = 0.42 + 0.58 × (kept/5) on the accent
-// — so the widget and the Log screen describe the same week the same way.
-// A widget that used its own scale would quietly disagree with the app.
+// Drawn in INK — white, every widget card being dark — not the accent: the
+// app's record is one colour at every hour under the Sky themes, and so is
+// this. The accent means one thing here, a fast, and the danger red one
+// thing, a missed prayer. A payload written before `p` existed draws each
+// day as one column of the old summary, so an unreloaded widget still says
+// something true.
 
 import SwiftUI
 import WidgetKit
 
 struct PracticeGrid: View {
   let days: [WidgetPayload.PracticeDay]
-  /// The first day the user ever logged a prayer, or nil.
-  ///
-  /// From it onwards a day that does not account for all five carries the
-  /// unaccounted dot. Before it, nothing: there was no record yet, and a
-  /// grid that opened with years of marks would be reproaching someone for
-  /// the time before they installed the app.
+  /// The first day the user ever logged a prayer, or nil. From it onwards an
+  /// empty cell is the palest ink — a day inside the record; before it,
+  /// nothing: there was no record yet.
   var since: String?
-  /// Weeks to draw, newest last.
-  let weeks: Int
+  /// Days to draw, newest last.
+  let dayCount: Int
   let cell: CGFloat
   let spacing: CGFloat
   let accent: Color
 
-  /// Danger red for a day still carrying an unmade-up prayer. Deliberately
-  /// not the accent at low alpha: "owed" is a different KIND of day, not a
-  /// weaker version of a kept one, and encoding it as less-of-the-same is
-  /// how the in-app version became unreadable.
+  /// Danger red for a missed prayer. Not the accent at low alpha: missed is
+  /// a different KIND of cell, not a weaker version of a kept one.
   private let owedColor = Color(red: 248 / 255, green: 113 / 255, blue: 113 / 255)
-
-  /// The five salāh — what a complete day accounts for.
+  private let ink = Color.white
   private let salahPerDay = 5
-
-  /// The fasting ring and the sunnah line, in the app's own two colours —
-  /// separated by lightness rather than hue, because they are neighbours on
-  /// the wheel and sit inside each other on a square smaller than a grain
-  /// of rice. See sunnahTheme.ts; these are the dark variants, because
-  /// every widget card is dark.
-  private let fastRing = Color(red: 251 / 255, green: 191 / 255, blue: 36 / 255)
-  private let sunnahGold = Color(red: 232 / 255, green: 206 / 255, blue: 122 / 255)
-
-  /// Everything a complete day of sunnah holds — the five prayers' sunnah
-  /// plus Witr. `SUNNAH_TOTAL` in src/journal/sunnah.ts; the payload sends
-  /// the raw count, so the denominator has to live somewhere.
-  private let sunnahTotal = 7
 
   var body: some View {
     let byDate = Dictionary(days.map { ($0.d, $0) }, uniquingKeysWith: { a, _ in a })
-    let columns = buildColumns()
+    let keys = dayKeys()
+    let today = todayKey
+    let radius = cell * 0.3
 
     HStack(spacing: spacing) {
-      ForEach(Array(columns.enumerated()), id: \.offset) { _, week in
+      ForEach(Array(keys.enumerated()), id: \.offset) { _, key in
+        let day = byDate[key]
+        let inRecord = since.map { key >= $0 } ?? false
+        let letters = day?.p.flatMap { $0.count == salahPerDay ? Array($0) : nil }
         VStack(spacing: spacing) {
-          ForEach(Array(week.enumerated()), id: \.offset) { _, key in
-            let day = key.flatMap { byDate[$0] }
-            RoundedRectangle(cornerRadius: cell * 0.28, style: .continuous)
-              .fill(key == nil ? Color.clear : color(for: day))
-              .overlay {
-                // The hairline the Log screen gives an empty square. An empty
-                // cell cannot carry enough contrast at a lightness that still
-                // reads as empty, so the ring carries it — without it the
-                // untouched end of the current week is invisible.
-                if key != nil, weight(of: day) <= 0, logged(of: day) <= 0 {
-                  RoundedRectangle(cornerRadius: cell * 0.28, style: .continuous)
-                    .strokeBorder(accent.opacity(0.22), lineWidth: max(1, cell * 0.09))
-                }
-              }
-              .overlay {
-                // The fast, as the outer ring — the same channel the Log
-                // screen gives it, so a Ramadan reads as the same band of
-                // outlined squares in both places.
-                if key != nil, day?.f == true {
-                  RoundedRectangle(cornerRadius: cell * 0.28, style: .continuous)
-                    .strokeBorder(fastRing, lineWidth: max(1, cell * 0.12))
-                }
-              }
-              .overlay {
-                // The sunnah, as a line travelling round INSIDE the fast
-                // ring. How far round it has gone is the quantity, which
-                // reads at a glance in a way six shades of one colour did
-                // not.
-                let kept = min(max(day?.s ?? 0, 0), sunnahTotal)
-                if key != nil, kept > 0 {
-                  RoundedRectangle(cornerRadius: cell * 0.18, style: .continuous)
-                    .trim(from: 0, to: CGFloat(kept) / CGFloat(sunnahTotal))
-                    .stroke(sunnahGold, lineWidth: max(1, cell * 0.09))
-                    .padding(cell * 0.22)
-                }
-              }
-              .overlay(alignment: .topLeading) {
-                // The unaccounted mark: a day inside the record that never
-                // got all five filled in. FILLED here where the app draws
-                // it hollow — a one-point ring inside a six-point cell is
-                // mush on a home screen, and being visible is the whole
-                // reason the mark is carried into the widget. Grey and in
-                // the corner, so it cannot be read as part of the ramp.
-                if let key, let since, key >= since, key != todayKey,
-                   logged(of: day) < salahPerDay {
-                  Circle()
-                    .fill(Color.secondary.opacity(0.85))
-                    .frame(width: max(2.4, cell * 0.32), height: max(2.4, cell * 0.32))
-                    .padding(1)
-                }
-              }
-              .overlay {
-                // Today, ringed, as the app rings it. A grid whose last
-                // squares are empty says nothing about where now is.
-                if let key, key == todayKey {
-                  RoundedRectangle(cornerRadius: cell * 0.28, style: .continuous)
-                    .strokeBorder(accent.opacity(0.85), lineWidth: max(1.5, cell * 0.14))
-                }
-              }
+          ForEach(0..<salahPerDay, id: \.self) { row in
+            prayerCell(letters: letters, row: row, day: day, inRecord: inRecord, radius: radius)
               .frame(width: cell, height: cell)
           }
+          // The fast, in the accent — the one colour the strip spends.
+          RoundedRectangle(cornerRadius: radius, style: .continuous)
+            .fill(day?.f == true ? accent : (inRecord || day != nil ? ink.opacity(0.07) : Color.clear))
+            .frame(width: cell, height: cell)
         }
+        .padding(.horizontal, spacing / 2)
+        .background {
+          // Today's column, lit: a strip whose last cells are empty says
+          // nothing about where now is without it.
+          if key == today {
+            RoundedRectangle(cornerRadius: radius, style: .continuous)
+              .fill(ink.opacity(0.10))
+          }
+        }
+        .padding(.horizontal, -spacing / 2)
       }
     }
   }
 
-  /// Weeks as columns, each column a MONDAY-first run of seven day keys.
-  ///
-  /// Monday rather than the locale's own first weekday, and rather than the
-  /// Sunday this used to hard-code: the in-app heatmap starts its weeks on
-  /// Monday deliberately, so the two sunnah fast days land in the first and
-  /// fourth rows instead of straddling a column boundary. A widget whose
-  /// columns are offset by a day or two from the Log screen's draws the same
-  /// record as a different shape, which is the one thing this grid must not
-  /// do.
-  ///
-  /// `nil` marks a day past today — the current week is usually partial,
-  /// and drawing its remaining days as "nothing recorded" would claim the
-  /// user has already missed days that have not happened yet.
-  private func buildColumns() -> [[String?]] {
-    // Gregorian: the practice days are keyed by Gregorian dates.
-    var cal = WallClock.localCalendar
-    cal.firstWeekday = 2
-    let today = Date()
-    guard let thisWeekStart = cal.dateInterval(of: .weekOfYear, for: today)?.start
-    else { return [] }
-
-    var out: [[String?]] = []
-    for w in stride(from: weeks - 1, through: 0, by: -1) {
-      guard let weekStart = cal.date(byAdding: .day, value: -7 * w, to: thisWeekStart)
-      else { continue }
-      var column: [String?] = []
-      for d in 0..<7 {
-        guard let date = cal.date(byAdding: .day, value: d, to: weekStart) else {
-          column.append(nil)
-          continue
-        }
-        column.append(cal.startOfDay(for: date) > cal.startOfDay(for: today) ? nil : key(date, cal))
+  @ViewBuilder
+  private func prayerCell(letters: [Character]?, row: Int, day: WidgetPayload.PracticeDay?, inRecord: Bool, radius: CGFloat) -> some View {
+    let shape = RoundedRectangle(cornerRadius: radius, style: .continuous)
+    if let letters {
+      switch letters[row] {
+      case "o": shape.fill(ink.opacity(0.85))
+      case "l": shape.fill(ink.opacity(0.38))
+      case "m": shape.fill(owedColor.opacity(0.85))
+      case "q": shape.strokeBorder(ink.opacity(0.85), lineWidth: max(1, cell * 0.14))
+      default: shape.fill(ink.opacity(0.07))
       }
-      out.append(column)
+    } else if let day {
+      // An older payload: the day's summary in every prayer's cell, so
+      // the column still says how the day went.
+      shape.fill(summary(for: day))
+    } else if inRecord {
+      shape.fill(ink.opacity(0.07))
+    } else {
+      shape.fill(Color.clear)
+    }
+  }
+
+  /// The day keys drawn, oldest first and today last — nothing after it.
+  private func dayKeys() -> [String] {
+    let cal = WallClock.localCalendar
+    let today = Date()
+    var out: [String] = []
+    for back in stride(from: dayCount - 1, through: 0, by: -1) {
+      guard let date = cal.date(byAdding: .day, value: -back, to: today) else { continue }
+      out.append(WallClock.dateKey(date, calendar: cal))
     }
     return out
-  }
-
-  private func key(_ date: Date, _ cal: Calendar) -> String {
-    WallClock.dateKey(date, calendar: cal)
   }
 
   /// Today's key, in the same shape the payload uses.
   private var todayKey: String { WallClock.dateKey(Date()) }
 
-  /// The Log screen's `fillFor`, with the names changed.
-  ///
-  /// ORDER MATTERS, and it used to be wrong here: `m` was tested first, so a
-  /// day of four prayers on time and one marked missed — the ordinary shape
-  /// of a day still in progress — drew red on the home screen and strong
-  /// green in the app. The app treats `missed` as a MARK on a day, not as
-  /// the day's colour; red is what a day looks like when something was
-  /// recorded and none of it was kept.
-  private func color(for day: WidgetPayload.PracticeDay?) -> Color {
-    guard let day else { return accent.opacity(0.10) }
-    let w = weight(of: day)
-    if w > 0 { return accent.opacity(0.42 + 0.58 * (Double(w) / 500.0)) }
-    if logged(of: day) > 0 { return owedColor.opacity(0.30) }
-    return accent.opacity(0.10)
-  }
-
-  /// The day's weighted score, 0…500, as the Log screen computes it: on-time
-  /// 100, late 70, qadha 45, missed 0. `k` is the older count and only a
-  /// fallback — it credits a late prayer in full and a made-up one not at
-  /// all, which is why it stopped being what the fill is drawn from.
-  private func weight(of day: WidgetPayload.PracticeDay?) -> Int {
-    guard let day else { return 0 }
-    if let kw = day.kw { return min(max(kw, 0), 500) }
-    return min(max(day.k, 0), 5) * 100
-  }
-
-  /// Entries recorded that day, whatever they say. Absent on old payloads,
-  /// where the missed flag was the only sign anything had been recorded.
-  private func logged(of day: WidgetPayload.PracticeDay?) -> Int {
-    guard let day else { return 0 }
-    if let l = day.l { return max(l, 0) }
-    return day.m == true ? 1 : 0
+  /// The old ramp, for a payload that carries no `p`: the Log screen's
+  /// `fillFor` of that time, in ink.
+  private func summary(for day: WidgetPayload.PracticeDay) -> Color {
+    let w = min(max(day.kw ?? (min(max(day.k, 0), 5) * 100), 0), 500)
+    if w > 0 { return ink.opacity(0.22 + 0.63 * (Double(w) / 500.0)) }
+    let logged = day.l ?? (day.m == true ? 1 : 0)
+    if logged > 0 { return owedColor.opacity(0.30) }
+    return ink.opacity(0.07)
   }
 }

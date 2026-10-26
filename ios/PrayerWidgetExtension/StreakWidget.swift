@@ -187,7 +187,7 @@ struct StreakEntryView: View {
           PracticeGrid(
             days: pr.days,
             since: pr.since,
-            weeks: 10,
+            dayCount: 14,
             cell: 8,
             spacing: 2,
             accent: resolvedWidgetHighlightColor()
