@@ -1,0 +1,10 @@
+• IndoPak-mushafen (#109): ett andra sätt att läsa Ḥafṣ — IndoPak-trycket med 15 rader, 610 sidor, rad för rad som Taj Company sätter det, med sina egna pausmärken och rukūʿ-tecken. Lägg till det under Inställningar → Koranen → Lästraditioner, eller med knappen i läsaren (omkring 2,2 MB, kan tas bort under Nedladdningar). Varje sida har jämförts med trycket, och varje ord med textmotorerna i Android 7 och senare och i iOS; på Android 10–12 kringgås två fel i systemets textmotor. Recitationer, översättningar, bokmärken, khatmah och var du är följer med per ayah.
+• Knappen för lästradition finns alltid i mushafens sidhuvud, bredvid tillbakapilen, så att traditionerna som inte finns på telefonen kan hittas från sidan.
+• Knappen för sidans ton har en bild per ton: en sol, en sol vid horisonten för sepia, en månskära för natt och en halvt upplyst skiva för att följa appen.
+• Den fullständiga eid-takbiren, bredvid den korta, med sina källor.
+• Vikbara telefoner som hålls halvöppna: Idag blir två sidor, och skärmar, blad och dialoger håller sig till en sida i stället för att ligga över vikningen. Koranläsaren följer vikningen åt båda hållen.
+• iPhone med sidofält (iOS 27.1): flikarna flyttar in i fältet, med Idags plats- och qiblaknappar och läsarens knappar; sidor, blad, väljare och meddelanden slutar vid fältet.
+• Idag: nedräkningen står på en rad, med nästa bönetid längst bort på raden; himlen når åter upp till skärmens överkant.
+• De tre Qul läses en sura i taget, var och en hel, med basmala, uttal och betydelse.
+• Ortsuppslaget skickar din position avrundad till omkring en kilometer; bönetiderna använder fortfarande den exakta.
+• Rättelser: en fasta som tas bort från en dag förblir borttagen; uppslagets två sidor står i jämnhöjd; juz-fliken svarar på sökfältet; mushafen som öppnas från en påminnelse eller en widget har en väg tillbaka; introduktionen visar samma tider som Idag; iPhone öppnar inte längre på en uppförstorad nedräkning; ayah-bladet och Tilawahs sidkort visar mushafen du läser.

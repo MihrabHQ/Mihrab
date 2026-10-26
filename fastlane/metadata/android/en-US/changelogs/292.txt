@@ -1,0 +1,7 @@
+• New: the IndoPak muṣḥaf — the 15-line Taj print, 610 pages, a 2 MB download (#109).
+• The reading-tradition button is always in the muṣḥaf's header.
+• The full Eid takbir.
+• Foldables and iPhones with a side bar: two-page layouts, tabs in the bar, the reader follows the fold.
+• Today: the countdown on one line, the sky to the top of the screen.
+• The three Quls, one surah at a time.
+• Fixes: a fast taken off stays off, level spreads, Juz search, a way back from reminders.

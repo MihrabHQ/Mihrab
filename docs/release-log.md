@@ -1294,4 +1294,11 @@ Changed the release cycle itself:
 
   - `.github/workflows/namazvakti-years.yml`
 
-**Lesson:** _(unfilled)_
+**Lesson:** the abort was a dirty tree again — the release notes were
+written and not committed before starting; commit them first, every time.
+The cycle change was the namazvakti.com yearly mirror: cities the site
+answers with a header and no table (the Samoan places on the date line)
+tripped "more than half failing" and failed the job, so a source's
+"nothing to serve" has to be told apart from a source that is failing —
+the same lesson the Habous job learnt on 25 October (a site that has
+changed is not a site that is down).

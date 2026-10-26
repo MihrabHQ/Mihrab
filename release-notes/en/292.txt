@@ -1,0 +1,10 @@
+• The IndoPak muṣḥaf (#109): a second way to read Ḥafṣ — the 15-line IndoPak print, 610 pages, line for line as the Taj Company sets it, with its own stop signs and rukūʿ marks. Add it under Settings → Quran → Reading traditions, or from the button in the reader (about 2.2 MB, removable under Downloads). Every page was checked against the print, and every word against the text engines of Android 7 onwards and iOS; on Android 10–12 two faults of the system's text engine are worked around. Recitations, translations, bookmarks, the khatmah and your place carry over by ayah.
+• The reading-tradition button is always in the muṣḥaf's header, beside the back arrow, so the traditions not yet on the phone can be found from the page.
+• The page-tone button has a drawing per tone: a sun, a sun on the horizon for sepia, a crescent for night, a half-lit disc for following the app.
+• The full Eid takbir, beside the short one, with its sources.
+• Foldables held half open: Today becomes two pages, and screens, sheets and dialogs keep to one page instead of lying across the crease. The Quran reader follows the fold both ways.
+• iPhones with a vertical bar (iOS 27.1): the tabs move into the bar, with Today's location and Qibla buttons and the reader's buttons; pages, sheets, pickers and notices stop at it.
+• Today: the countdown stands on one line, with the next prayer's time at its far end; the sky reaches the top of the screen again.
+• The three Quls are read one surah at a time, each whole, with its basmalah, pronunciation and meaning.
+• The town lookup sends your position rounded to about a kilometre; the prayer times still use the exact one.
+• Fixes: a fast taken off a day stays off; the two pages of a spread stand level; the Juz tab answers the search field; the muṣḥaf opened from a reminder or widget has a way back; onboarding shows the times Today shows; the iPhone launch no longer opens on a zoomed-in countdown; the ayah sheet and Tilawah's page card show the muṣḥaf you are reading.
