@@ -689,11 +689,13 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     private const val STRIP_CHROME_DP = 184
     /**
      * The tall card's chrome over the graph: the ends, the header, the
-     * times, the next-prayer row, the rules. Measured on a 201dp card: the
-     * strip the image drew was 44dp tall. A couple of dp over the measure,
-     * since a box reckoned too tall shrinks the strip short of the edges.
+     * times, the next-prayer row, the rules. Measured on a Pixel 10 Pro's
+     * 223dp card: a 64dp box came out 91% of its width, so the room was
+     * about 58dp and the chrome about 165. A little over the measure,
+     * since a box reckoned too tall shrinks the strip short of the edges
+     * and a box a little short leaves air nobody sees.
      */
-    private const val STRIP_TALL_CHROME_DP = 159
+    private const val STRIP_TALL_CHROME_DP = 167
     private const val STRIP_FOOT_DP = 19
     /** The strip's side padding (sideDp). */
     private const val STRIP_SIDE_DP = 8
