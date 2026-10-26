@@ -15,11 +15,11 @@
     <string name="widget_description">Les heures du jour sur une ligne, prochaine prière en surbrillance</string>
     <string name="widget_description_small">Seulement la prochaine prière et son heure. 2×1.</string>
     <string name="widget_description_medium">Les six heures en colonnes sur une large ligne, prochaine prière en surbrillance. 4×2, redimensionnable.</string>
-    <string name="widget_description_prayer_times">Les six heures du jour sur une ligne, avec la ville et la date hégirienne. 4×2.</string>
+    <string name="widget_description_prayer_times">Les six heures du jour sur une ligne, avec la ville et la date hégirienne. 4×1.</string>
     <string name="widget_description_large_retired">L\'ancien widget des heures de prière. Il affiche désormais le même modèle que l\'actuel ; inutile d\'en placer un nouveau.</string>
     <string name="widget_description_large">Les six heures en liste à côté de la prochaine prière. 4×3 — réduisez sous trois lignes pour obtenir la bande à une ligne.</string>
     <string name="widget_name_log">Mihrab · Journal du jour</string>
-    <string name="widget_description_log">Touchez une prière pour la consigner à l\'heure, avec le compte à rebours jusqu\'à la suivante. 4×2.</string>
+    <string name="widget_description_log">Touchez une prière pour la consigner à l\'heure, avec le compte à rebours jusqu\'à la suivante. 4×1.</string>
     <string name="widget_log_today">Aujourd\'hui</string>
     <!-- "2 of 5" — logged out of loggable. -->
     <string name="widget_log_count">%1$d sur %2$d</string>
@@ -216,7 +216,7 @@
     <string name="widget_preview_tap_to_log">Touchez \u2713 pour noter Asr à l\'heure</string>
     <string name="widget_preview_practice_second">jours de série \u00b7 Meilleure 31 \u00b7 2 sur 5 aujourd\'hui</string>
     <string name="widget_name_tall">Mihrab \u00b7 Heures de prière (haut)</string>
-    <string name="widget_description_tall">Les six heures du jour avec la ville, la date hégirienne et le graphique de pratique. 4×3.</string>
+    <string name="widget_description_tall">Les six heures du jour et le graphique de pratique. 4×2.</string>
     <string name="widget_name_log_tall">Mihrab \u00b7 Journal du jour (haut)</string>
-    <string name="widget_description_log_tall">Touchez une prière pour la consigner à l\'heure, avec le compte à rebours jusqu\'à la suivante et le graphique de pratique. 4×3.</string>
+    <string name="widget_description_log_tall">Touchez une prière pour la consigner à l\'heure, avec le compte à rebours jusqu\'à la suivante et le graphique de pratique. 4×2.</string>
 </resources>

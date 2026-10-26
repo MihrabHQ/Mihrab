@@ -10,7 +10,7 @@
     android:description="@string/widget_description_prayer_times"
     android:initialLayout="@layout/glance_default_loading_layout"
     android:minWidth="250dp"
-    android:minHeight="110dp"
+    android:minHeight="40dp"
     android:previewImage="@mipmap/ic_launcher"
     android:previewLayout="@layout/prayer_widget_strip_preview"
     android:resizeMode="none"
@@ -18,4 +18,4 @@
     android:updatePeriodMillis="1800000"
     android:widgetCategory="home_screen"
     android:targetCellWidth="4"
-    android:targetCellHeight="2" />
+    android:targetCellHeight="1" />

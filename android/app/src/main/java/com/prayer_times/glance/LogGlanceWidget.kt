@@ -348,7 +348,8 @@ internal class LogGlanceWidget(
     private const val LOG_TIGHT_CONTENT_DP = 134
     private const val LOG_BARE_CONTENT_DP = 112
     private const val LOG_SLACK_CAP_DP = 56
-    private const val LOG_CHROME_DP = 165
+    /** The 4×2's chrome over the graph: the ends, the chips, the footer row, two rules. */
+    private const val LOG_CHROME_DP = 112
     private const val CARD_PADDING_DP = 20
     private const val MAX_GRID_DAYS = 210
   }
