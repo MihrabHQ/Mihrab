@@ -18,7 +18,7 @@
  * second door is a second row in the same card and not a second card.
  */
 import { memo, useCallback, useEffect } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { afterInteractions } from '../../utils/afterInteractions';
 import { GlassSurface } from '../../components/GlassSurface';
 import { useAppPalette } from '../../hooks/useAppPalette';
@@ -30,7 +30,7 @@ import { useIslamicDay } from '../../hijri/useIslamicDay';
 import { selectQuranCardState } from '../../quran/quranCardState';
 import { ResumeDoors } from '../../quran/ResumeDoors';
 import type { KhatmahTarget } from '../../quran/khatmahTarget';
-import { HOME_TABLE_RADIUS } from './tokens';
+import { HOME_SCREEN_PADDING, HOME_TABLE_RADIUS } from './tokens';
 import { tajweedColoursShown } from '../../quran/tajweed/tajweedSupport';
 
 type Props = {
@@ -46,9 +46,18 @@ type Props = {
   ) => void;
   /** Opens the Quran home (surah list, khatmah controls). */
   onOpenQuran: () => void;
+  /**
+   * No card: the door sits on the page under the table's last hairline,
+   * edge to edge like the rows, in their grammar — the phone's full-bleed
+   * page (docs/home-layout-plan.md §5.6). The dashboard and the book keep
+   * the card, where the page is a page of cards.
+   */
+  bare?: boolean;
+  /** One line per door — the compact page (homeBudget.ts). */
+  dense?: boolean;
 };
 
-function QuranCardImpl({ onOpenAt, onOpenQuran }: Props) {
+function QuranCardImpl({ onOpenAt, onOpenQuran, bare = false, dense = false }: Props) {
   const { palette } = useAppPalette();
   const quran = useQuranState();
   // The day's portion is keyed on the Islamic day, so the card has to
@@ -89,21 +98,32 @@ function QuranCardImpl({ onOpenAt, onOpenQuran }: Props) {
     [onOpenAt],
   );
 
+  const doors = (
+    <ResumeDoors
+      state={card}
+      onOpenKhatmah={openKhatmah}
+      onOpenReading={openReading}
+      onOpenBookmark={openBookmark}
+      onOpenQuran={onOpenQuran}
+      showStart
+      layout="columns"
+      dense={dense}
+    />
+  );
+  if (bare) {
+    return (
+      <View style={[styles.bare, { borderTopColor: palette.border ?? palette.muted }]}>
+        {doors}
+      </View>
+    );
+  }
   return (
     <GlassSurface
       style={[
         styles.card,
         { borderRadius: HOME_TABLE_RADIUS, ...cardEdgeStyle(palette) },
       ]}>
-      <ResumeDoors
-        state={card}
-        onOpenKhatmah={openKhatmah}
-        onOpenReading={openReading}
-        onOpenBookmark={openBookmark}
-        onOpenQuran={onOpenQuran}
-        showStart
-        layout="columns"
-      />
+      {doors}
     </GlassSurface>
   );
 }
@@ -112,4 +132,10 @@ export const QuranCard = memo(QuranCardImpl);
 
 const styles = StyleSheet.create({
   card: { overflow: 'hidden' },
+  // Out to the page's edges, past the column's padding, with the table's
+  // own hairline over it: a row of the page, not a card on it.
+  bare: {
+    marginHorizontal: -HOME_SCREEN_PADDING,
+    borderTopWidth: StyleSheet.hairlineWidth,
+  },
 });

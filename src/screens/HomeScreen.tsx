@@ -65,7 +65,8 @@ import {
   readZone,
 } from '../utils/prayerTimes';
 import { filterOptionalTimes } from '../utils/nightTimes';
-import type { TimingsMap } from '../types/prayer';
+import { DISPLAY_ORDER, type TimingsMap } from '../types/prayer';
+import { currentFontScale, pickHomeTier, type HomeTier } from './home/homeBudget';
 import { injectDaruriTimes } from '../prayer/daruriTimes';
 import { useClockFormatter } from '../hooks/useClockFormatter';
 import { qiblaBearingFrom } from '../utils/qibla';
@@ -1663,6 +1664,14 @@ export function HomeScreen() {
   );
 
 
+  // The page's own height — the root view, which ends where the tab bar
+  // begins — for the budget that picks the page's size (homeBudget.ts).
+  const [viewport, setViewport] = useState(0);
+  const onRootLayout = useCallback((e: LayoutChangeEvent) => {
+    const h = Math.round(e.nativeEvent.layout.height);
+    setViewport(prev => (prev === h ? prev : h));
+  }, []);
+
   // ── Phase routing: any non-ready phase short-circuits here. ───────────────
   const nonReadyEl = useNonReadyPhaseElement({
     hydrated,
@@ -1675,9 +1684,29 @@ export function HomeScreen() {
 
   // ── Ready layout ──────────────────────────────────────────────────────────
   const carouselResetKey = `${state.latitude}-${state.longitude}`;
+  /**
+   * The page's size: roomy, comfortable or compact, for every segment at
+   * once — docs/home-layout-plan.md §4. Only the phone's full-bleed page
+   * is budgeted; the dashboard, the book and a roomy tablet have room by
+   * definition. Until the root has been measured the page is comfortable,
+   * which is what it was before there was a budget.
+   */
+  const todayMap: TimingsMap = view.table.week[0] ?? ({} as TimingsMap);
+  const budgeted = !isDashboard && !isMacCatalyst && !isRoomy && !book && !tabletop && viewport > 0;
+  const tier: HomeTier = budgeted
+    ? pickHomeTier({
+        viewport,
+        topInset: hasBanner ? 0 : insets.top,
+        fontScale: currentFontScale(),
+        rows: DISPLAY_ORDER.filter(key => todayMap[key]).length,
+        sublineRows: DISPLAY_ORDER.filter(key => todayMap[`${key}Daruri` as keyof TimingsMap]).length,
+        // A banner's height is its own; this is a notice's usual size.
+        extra: hasBanner ? 72 : 0,
+      })
+    : 'comfortable';
 
   return (
-    <View style={styles.homeRoot}>
+    <View style={styles.homeRoot} onLayout={onRootLayout}>
       {/* Mac Catalyst: the app's top bar — wordmark leading, location chip
           trailing — ABOVE the scroll view, not inside it.
 
@@ -1860,6 +1889,7 @@ export function HomeScreen() {
             expanded={isDashboard}
             fullBleed={fullBleed}
             roomy={isRoomy}
+            tier={tier}
             heroHeight={tabletopHeroHeight}
             sideInset={wideInset}
             // The hero is under the status bar only when nothing is above
@@ -1893,7 +1923,14 @@ export function HomeScreen() {
           />
         );
         const quranShortcut = (
-          <QuranCard onOpenAt={handleOpenQuranAt} onOpenQuran={handleOpenQuran} />
+          <QuranCard
+            onOpenAt={handleOpenQuranAt}
+            onOpenQuran={handleOpenQuran}
+            // The phone's door sits on the page under the table, in the
+            // rows' own grammar; the dashboard and the book keep the card.
+            bare={fullBleed}
+            dense={tier === 'compact'}
+          />
         );
         const toolsGrid = <TodaySummary onOpenLog={handleOpenLog} />;
         const practiceCard = settings.showPracticeOnHome ? (
@@ -1984,7 +2021,13 @@ export function HomeScreen() {
               style={isRoomy ? undefined : styles.fillColumn}>
               {dayTable}
             </View>
-            <View style={[styles.belowHero, vbarPad, wideInset > 0 && { marginHorizontal: wideInset }]}>
+            <View
+              style={[
+                styles.belowHero,
+                tier === 'compact' && styles.belowHeroCompact,
+                vbarPad,
+                wideInset > 0 && { marginHorizontal: wideInset },
+              ]}>
               {quranShortcut}
               {ramadanCard}
             </View>
@@ -2086,6 +2129,7 @@ const styles = StyleSheet.create({
   // Grow, never shrink under the content — see TodayCard's `cardBleed`.
   fillColumn: { flexGrow: 1, flexShrink: 0, flexBasis: 'auto' },
   belowHero: { paddingHorizontal: HOME_SCREEN_PADDING, gap: SPACING.md },
+  belowHeroCompact: { marginTop: -SPACING.xs, gap: SPACING.sm },
   // Dashboard: let the content grow to the viewport and center it
   // vertically when shorter (§B1 — kills the dead bottom half).
   scrollContentDash: {

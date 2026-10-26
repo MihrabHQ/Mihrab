@@ -26,6 +26,7 @@ import {
   type SkyPassage,
 } from '../src/screens/home/skyModel';
 import { MOON, SKY_CRAMPED_BELOW, skyScene, STAR_FIELD_BOTTOM, STAR_FIELD_TOP, SUN_R } from '../src/screens/home/HeroSky';
+import { HERO_SCENE_MIN } from '../src/screens/home/homeBudget';
 import { filterOptionalTimes } from '../src/utils/nightTimes';
 import type { TimingsMap } from '../src/types/prayer';
 
@@ -357,7 +358,11 @@ describe('the open sky, on every phone and every table', () => {
 
   it('the hero reserves a moon’s worth of sky, and the threshold sits under it', () => {
     const card = read('src/screens/home/TodayCard.tsx');
-    expect(card).toMatch(/heroScene: \{[^}]*minHeight: 64/);
+    // The floor is the tier's (homeBudget.ts): 64 on a comfortable page,
+    // and never under what HeroSky calls cramped on the compact one.
+    expect(card).toMatch(/minHeight: HERO_SCENE_MIN\[tier\]/);
+    expect(HERO_SCENE_MIN.comfortable).toBe(64);
+    expect(HERO_SCENE_MIN.compact).toBeGreaterThan(SKY_CRAMPED_BELOW);
     expect(SKY_CRAMPED_BELOW).toBeLessThan(64);
     // A 64dp band at the smallest phone with the largest block still holds a moon.
     const scene = skyScene({ height: 64 + 116 + 216, sceneTop: 116, sceneBottom: 216 });
@@ -437,13 +442,16 @@ describe('the hero grows but never shrinks under its text', () => {
 describe('the rows adapt to the phone and to the table', () => {
   const card = read('src/screens/home/TodayCard.tsx');
   const row = read('src/screens/home/PrayerRow.tsx');
-  it('go dense on a short window or past six rows, on the phone only', () => {
-    expect(card).toMatch(/DENSE_BELOW_HEIGHT = 720/);
-    expect(card).toMatch(/DENSE_ABOVE_ROWS = 6/);
-    expect(card).toMatch(/const dense = fullBleed && \(shortScreen \|\| rows\.length \+ \(withDaruri \? 2 : 0\) > DENSE_ABOVE_ROWS\);/);
-    expect(card).toMatch(/dense=\{dense\}/);
-    expect(row).toMatch(/dense && styles\.rowDense/);
-    expect(row).toMatch(/rowDense: \{ paddingVertical: SPACING\.sm \}/);
+  it('take the page’s tier from the budget, on the phone only', () => {
+    // The two thresholds that used to decide `dense` are gone; the budget
+    // (homeBudget.ts) picks one tier for the whole page.
+    expect(card).not.toMatch(/DENSE_BELOW_HEIGHT|DENSE_ABOVE_ROWS/);
+    expect(card).toMatch(/tier=\{fullBleed \? tier : 'comfortable'\}/);
+    expect(row).toMatch(/tier === 'compact' && styles\.rowCompact/);
+    expect(row).toMatch(/tier === 'roomy' && styles\.rowRoomy/);
+    expect(row).toMatch(/rowCompact: \{ paddingVertical: ROW_PAD\.compact \}/);
+    // Compact keeps the Mālikī line on the current row alone.
+    expect(row).toMatch(/daruriAt && \(tier !== 'compact' \|\| isNext\)/);
   });
 
   it('the rail reads an Isha past midnight as tomorrow’s, like the sky does', () => {

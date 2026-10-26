@@ -130,6 +130,15 @@ import { ymdLocal } from '../../notifications/scheduling';
 import { QiblaChipCorner } from './QiblaChip';
 import { HOME_SCREEN_PADDING, HOME_TABLE_RADIUS } from './tokens';
 import { SPACING } from '../../theme/tokens';
+import {
+  currentFontScale,
+  HELP_CHIP_MAX_FONT_SCALE,
+  HERO_COUNTDOWN_SIZE,
+  HERO_FOOT_PAD,
+  HERO_SCENE_MIN,
+  HERO_SECONDS_SIZE,
+  type HomeTier,
+} from './homeBudget';
 import { TYPE } from '../../theme/typography';
 import { VerticalBarActionsBand } from '../../navigation/VerticalTabBar';
 
@@ -172,10 +181,25 @@ function Chevron({ back, color }: { back: boolean; color: string }) {
   );
 }
 
-/** Below this window height the rows go dense — see `renderDay`. */
-export const DENSE_BELOW_HEIGHT = 720;
-/** Past this many rows a day the rows go dense. */
-export const DENSE_ABOVE_ROWS = 6;
+
+/**
+ * The month's glyph: a calendar's leaf — two rings, a frame, a rule — in
+ * the chevrons' stroke, so the three controls on the bar read as one set.
+ */
+function MonthGlyph({ color }: { color: string }) {
+  return (
+    <Svg width={20} height={20} viewBox="0 0 20 20" accessibilityElementsHidden importantForAccessibility="no">
+      <Path
+        d="M4 5.5h12a1.5 1.5 0 0 1 1.5 1.5v8A1.5 1.5 0 0 1 16 16.5H4A1.5 1.5 0 0 1 2.5 15V7A1.5 1.5 0 0 1 4 5.5zM2.5 9.5h15M7 3.5v3.5M13 3.5v3.5"
+        stroke={color}
+        strokeWidth={1.6}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+      />
+    </Svg>
+  );
+}
 
 export type TodayCardProps = {
   /** Today first, then the next six days. */
@@ -257,6 +281,12 @@ export type TodayCardProps = {
    * bar, and the column centres itself in the page instead.
    */
   roomy?: boolean;
+  /**
+   * The page's size — roomy, comfortable or compact — picked by the
+   * budget (homeBudget.ts) for every segment at once. Comfortable where
+   * nobody budgets (the dashboard, the book, a roomy tablet).
+   */
+  tier?: HomeTier;
   /**
    * The hero's height, given — a foldable standing in tabletop posture,
    * where the hero fills the upright half down to the hinge and the table
@@ -380,6 +410,7 @@ const HeroToday = memo(function HeroToday({
   longitude,
   tomorrowFajr,
   expanded,
+  tier = 'comfortable',
   bleed,
   topRow,
   ownsStatusBar = false,
@@ -458,6 +489,8 @@ const HeroToday = memo(function HeroToday({
    * chip or the countdown.
    */
   fill?: boolean;
+  /** The page's size (homeBudget.ts): the scene's floor and the figures' size. */
+  tier?: HomeTier;
   /**
    * Posed: the hero as it was at this instant, and not a moment later —
    * no ticking, no launch run. The twin the kept launch picture is drawn
@@ -964,7 +997,7 @@ const HeroToday = memo(function HeroToday({
     const l = e.nativeEvent.lines[0];
     if (l) setAtBase(prev => (prev != null && Math.abs(prev - (l.y + l.ascender)) < 0.5 ? prev : l.y + l.ascender));
   }, []);
-  const bigSize = expanded ? styles.heroCountdownExpanded.fontSize : styles.heroCountdown.fontSize;
+  const bigSize = expanded ? styles.heroCountdownExpanded.fontSize : HERO_COUNTDOWN_SIZE[tier];
   const atShift = Math.max(
     0,
     countdownBase != null && atBase != null
@@ -1047,7 +1080,7 @@ const HeroToday = memo(function HeroToday({
         <HeroTopRow topRow={topRow} ink={inkTop} onLayout={fill ? onTopRowLayout : undefined} />
       ) : null}
       {/* The room the sky's bodies move in. */}
-      {fill ? <View style={styles.heroScene} /> : null}
+      {fill ? <View style={[styles.heroScene, { minHeight: HERO_SCENE_MIN[tier] }]} /> : null}
       <View onLayout={fill ? onBlockLayout : undefined}>
       {/* "Fajr in" leading, and on the trailing end of the same line —
           the side with nothing on it — the heart that opens Help Mihrab. */}
@@ -1091,6 +1124,7 @@ const HeroToday = memo(function HeroToday({
           <Text
             style={[
               styles.heroCountdown,
+              { fontSize: HERO_COUNTDOWN_SIZE[tier] },
               expanded && styles.heroCountdownExpanded,
               { color: ink.text },
               glowSpan,
@@ -1100,6 +1134,7 @@ const HeroToday = memo(function HeroToday({
           <Text
             style={[
               styles.heroSeconds,
+              { fontSize: HERO_SECONDS_SIZE[tier] },
               expanded && styles.heroSecondsExpanded,
               { color: ink.muted },
             ]}>
@@ -1178,6 +1213,7 @@ function TodayCardImpl({
   fullBleed = false,
   bannerAbove = false,
   roomy = false,
+  tier = 'comfortable',
   heroHeight,
   sideInset = 0,
   renderLocation,
@@ -1749,14 +1785,7 @@ function TodayCardImpl({
         : null;
   // How far the sky reaches past the hero's box, each side.
   const skySide = SPACING.xl + wideInset;
-  /**
-   * Dense rows when the page would not otherwise hold the day: a short
-   * phone (under 720dp of window), or a table past six rows — the extra
-   * times, the Mālikī boundaries. The design's whole point is the day on
-   * one screen; 4dp less air per row is the cheapest way to keep it.
-   */
   const windowHeight = useWindowSize().height;
-  const shortScreen = windowHeight > 0 && windowHeight < DENSE_BELOW_HEIGHT;
   // Full-bleed: the hero's top padding clears the status bar; the sky
   // bleeds up under it. The card chrome — radius, edge, glass — is gone:
   // the hero is a panel of the page, and the rows sit on the page.
@@ -1816,12 +1845,17 @@ function TodayCardImpl({
       : Math.round(Math.min(Math.max(windowHeight * 0.34, 300), 460))
     : undefined;
   const Outer = fullBleed ? View : GlassSurface;
+  const compact = fullBleed && tier === 'compact';
   const renderQibla = (ink: SkyInkColors, column?: boolean) =>
     fullBleed && qiblaBearing != null ? (
       <QiblaChip bearing={qiblaBearing} onPress={onOpenQibla} ink={ink} column={column} />
     ) : null;
+  // Not at a large text size: the heart's line would open across the
+  // eyebrow's words. Help Mihrab is still in Settings → About.
   const renderHelp = (ink: SkyInkColors) =>
-    onHelpMihrab ? <HelpMihrabChip ink={ink} onPress={onHelpMihrab} /> : null;
+    onHelpMihrab && currentFontScale() < HELP_CHIP_MAX_FONT_SCALE ? (
+      <HelpMihrabChip ink={ink} onPress={onHelpMihrab} />
+    ) : null;
 
   /**
    * One day's table. Today's rows carry the live things — the next-prayer
@@ -1842,9 +1876,6 @@ function TodayCardImpl({
     const rows = DISPLAY_ORDER.filter(key => dayTimings[key]);
     const overrideKey = overrideKeyFor(offset, dayTimings, rows);
     const timeSample = timeSampleFor(dayTimings, rows);
-    // A Mālikī boundary is a second line on the row, so a table carrying
-    // them weighs two rows more than its count says.
-    const withDaruri = rows.some(key => dayTimings[`${key}Daruri`]);
     const daruriRows: Record<
       string,
       { phase: 'first' | 'second'; at: string; approx: boolean } | null
@@ -1867,7 +1898,6 @@ function TodayCardImpl({
             approx: DARURI_CONFIDENCE[daruriKey] === 'modelled',
           };
     }
-    const dense = fullBleed && (shortScreen || rows.length + (withDaruri ? 2 : 0) > DENSE_ABOVE_ROWS);
     return rows.map((key, rowIndex) => (
       <PrayerRow
         key={key}
@@ -1932,7 +1962,7 @@ function TodayCardImpl({
             : undefined
         }
         hasCheckColumn={loggable}
-        dense={dense}
+        tier={fullBleed ? tier : 'comfortable'}
       />
     ));
   };
@@ -1952,6 +1982,7 @@ function TodayCardImpl({
       <View
         style={[
           styles.heroWrap,
+          { paddingBottom: HERO_FOOT_PAD[fullBleed ? tier : 'comfortable'] },
           heroColumnPad,
           { paddingTop: heroTop },
           fullBleed && !roomy && styles.heroWrapBleed,
@@ -2029,7 +2060,8 @@ function TodayCardImpl({
               tomorrowFajr={skyTomorrowFajr}
               dayClock={dayClock}
               expanded={expanded}
-              bleed={{ horizontal: skySide, top: heroTop, bottom: SPACING.lg }}
+              tier={fullBleed ? tier : 'comfortable'}
+              bleed={{ horizontal: skySide, top: heroTop, bottom: HERO_FOOT_PAD[fullBleed ? tier : 'comfortable'] }}
               statusBarInset={underStatusBar ? insets.top : 0}
               fill={fullBleed}
               topRow={fullBleed ? { renderLocation, renderQibla } : undefined}
@@ -2057,7 +2089,8 @@ function TodayCardImpl({
             tomorrowFajr={skyTomorrowFajr}
             dayClock={dayClock}
             expanded={expanded}
-            bleed={{ horizontal: skySide, top: heroTop, bottom: SPACING.lg }}
+            tier={fullBleed ? tier : 'comfortable'}
+            bleed={{ horizontal: skySide, top: heroTop, bottom: HERO_FOOT_PAD[fullBleed ? tier : 'comfortable'] }}
             statusBarInset={underStatusBar ? insets.top : 0}
             fill={fullBleed}
             topRow={fullBleed ? { renderLocation, renderQibla, renderHelp } : undefined}
@@ -2107,7 +2140,7 @@ function TodayCardImpl({
             is in a box — the chevrons are ink with a hit slop, and "back
             to today" is a word in the accent rather than a tinted pill,
             because every other control on this page reads that way. */}
-        <View style={[styles.dayBar, { backgroundColor: palette.bg }]}>
+        <View style={[styles.dayBar, compact && styles.dayBarCompact, { backgroundColor: palette.bg }]}>
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={t('log.previousDay', 'Previous day')}
@@ -2170,6 +2203,7 @@ function TodayCardImpl({
             <Text
               style={[
                 styles.dayHijri,
+                compact && styles.dayHijriCompact,
                 { color: hint ? palette.accent : palette.muted },
               ]}
               numberOfLines={1}
@@ -2198,6 +2232,23 @@ function TodayCardImpl({
             ]}>
             <Chevron back={rtl} color={String(palette.muted)} />
           </Pressable>
+          {/* THE MONTH, as a glyph at the bar's trailing end. It was a row
+              of its own under the table — "Prayer times for the whole
+              month →", 42 dp for one line of text, 330 dp away from the
+              bar that already holds the calendar's other controls. The
+              bar is where the days are stepped; the month is the same
+              thing, further. Its own hit slop, the chevrons' size. */}
+          {onOpenMonth ? (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('home.monthTimesLink')}
+              accessibilityHint={t('a11y.openMonth')}
+              onPress={onOpenMonth}
+              hitSlop={14}
+              style={({ pressed }) => [styles.dayStep, pressed && styles.dayStepPressed]}>
+              <MonthGlyph color={String(palette.muted)} />
+            </Pressable>
+          ) : null}
         </View>
 
         <View onLayout={onTableLayout}>
@@ -2266,27 +2317,6 @@ function TodayCardImpl({
           onCancel={dismissQuestion}
         />
 
-        {onOpenMonth ? (
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={t('home.monthTimesLink')}
-            accessibilityHint={t('a11y.openMonth')}
-            onPress={onOpenMonth}
-            style={[
-              styles.monthRow,
-              { borderTopColor: palette.border ?? palette.muted },
-            ]}>
-            <Text
-              style={[styles.monthLabel, { color: palette.accent }]}
-              numberOfLines={1}
-              maxFontSizeMultiplier={TITLE_BAND_MAX_FONT_SCALE}>
-              {t('home.monthTimesLink')}
-            </Text>
-            <Text style={[styles.monthChevron, { color: palette.accent }]}>
-              {rtl ? '←' : '→'}
-            </Text>
-          </Pressable>
-        ) : null}
       </View>
     </Outer>
   );
@@ -2307,7 +2337,7 @@ const styles = StyleSheet.create({
   cardBleed: { overflow: 'hidden', flexGrow: 1, flexShrink: 0, flexBasis: 'auto' },
   // Roomy: natural height, and the page centres it — see `roomy`.
   cardRoomy: { overflow: 'hidden' },
-  heroWrap: { paddingHorizontal: SPACING.xl, paddingBottom: SPACING.lg },
+  heroWrap: { paddingHorizontal: SPACING.xl },
   heroWrapBleed: {
     flexGrow: 1,
     flexShrink: 0,
@@ -2340,6 +2370,11 @@ const styles = StyleSheet.create({
     paddingTop: SPACING.md,
     paddingBottom: SPACING.sm,
   },
+  /** The same two lines with less air round them: the compact page
+   *  (homeBudget.ts). One line was tried and cut the Hijri date short on
+   *  a narrow phone; the date is why the bar is there. */
+  dayBarCompact: { paddingTop: SPACING.sm, paddingBottom: SPACING.xs },
+  dayHijriCompact: { marginTop: 0 },
   /** Ink with a hit slop, not a button with a fill. */
   // The day pager scrolls left to right in every language — see `pagerPosition`.
   pager: { direction: 'ltr' },
@@ -2395,7 +2430,7 @@ const styles = StyleSheet.create({
    *  table needs the room (the sky then hides its bodies, see HeroSky). */
   // Never below a moon's worth of sky: the table may push the page into
   // a scroll, but it may not take the night out of the hero.
-  heroScene: { flexGrow: 1, flexShrink: 1, flexBasis: 0, minHeight: 64 },
+  heroScene: { flexGrow: 1, flexShrink: 1, flexBasis: 0 },
   // Sentence case, quiet: the countdown is the thing the eye lands on and
   // the eyebrow only names what it counts to. It was an uppercase,
   // letterspaced overline — the 2016 idiom (docs/design/redesign-plan.md
@@ -2426,8 +2461,8 @@ const styles = StyleSheet.create({
   // Bold at this size was a headline; light is a time. Tracked tight, as
   // light figures want to be. Android's default face carries no Light
   // below API 28, so the family is named there.
+  // The size is the tier's (HERO_COUNTDOWN_SIZE); this is the face.
   heroCountdown: {
-    fontSize: 60, // tokens-ok-line: display or Arabic scale, sized by hand
     fontWeight: '300',
     letterSpacing: -1.5,
     ...Platform.select({ android: { fontFamily: 'sans-serif-light' }, default: {} }),
@@ -2436,7 +2471,6 @@ const styles = StyleSheet.create({
   // Lighter than the figures and a third of their size, in the muted ink:
   // present, readable, and never the thing the eye lands on first.
   heroSeconds: {
-    fontSize: 24, // tokens-ok-line: display or Arabic scale, sized by hand
     fontWeight: '300',
     letterSpacing: 0,
     ...Platform.select({ android: { fontFamily: 'sans-serif-light' }, default: {} }),
@@ -2479,14 +2513,4 @@ const styles = StyleSheet.create({
     marginTop: SPACING.sm + 2,
   },
   railLabel: { fontSize: TYPE.label.fontSize, fontWeight: '500' },
-  monthRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: SPACING.xl,
-    paddingVertical: SPACING.md,
-    borderTopWidth: StyleSheet.hairlineWidth,
-  },
-  monthLabel: { fontSize: TYPE.footnote.fontSize, fontWeight: '600' },
-  monthChevron: { fontSize: TYPE.callout.fontSize },
 });

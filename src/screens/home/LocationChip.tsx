@@ -22,6 +22,7 @@ import { RADIUS, SPACING } from '../../theme/tokens';
 import { COLUMN_CHIP_W } from './QiblaChip';
 import { useWindowSize } from '../../responsive/windowSize';
 import { useBookPanePadding } from '../../native/FoldPosture';
+import { TABULAR_MAX_FONT_SCALE } from '../../theme/textScale';
 import { TYPE, typeStyle } from '../../theme/typography';
 import { useSheetSides } from '../../responsive/sheetSides';
 
@@ -254,6 +255,9 @@ function LocationChipImpl({ compactHeader = false, column = false, ink, onAddLoc
             <Text
               numberOfLines={1}
               ellipsizeMode="tail"
+              // The hero's row: capped where the countdown is, so the
+              // city is not pushed off the row by its own badge.
+              maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}
               style={[styles.headerPinLabel, { color: ink ? ink.text : palette.text }]}>
               {chipLabel}
               {isAuto ? (

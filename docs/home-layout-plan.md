@@ -246,3 +246,41 @@ What does not change: the hero's sky and its animation, the day pager,
 the rows' tap targets (44 dp minimum in every tier), the status band,
 accessibility labels, and anything on the dashboard, book or tabletop
 layouts.
+
+## 7. What landed (26 October 2026)
+
+- **`homeBudget.ts`** — the three tiers, their constants, `homeSegmentHeights`
+  and `pickHomeTier`; `homeBudget.test.ts` pins the constants to the styles
+  and the picks to the phones in §2. HomeScreen measures its root view
+  (the page above the tab bar) and picks the tier; `tier` goes to
+  TodayCard → HeroToday and PrayerRow, and to the Quran card as `dense`.
+  `DENSE_BELOW_HEIGHT` / `DENSE_ABOVE_ROWS` are gone.
+- **The hero** has its compact form: scene floor 44 (over HeroSky's
+  cramped line, so the sun and the moon are drawn on every tier), figures
+  52 pt, seconds 22, foot padding 12.
+- **The rows**: padding 8 / 12 / 14 by tier; in compact the Mālikī line
+  stays on the current row alone. The current row's mark is the edge bar
+  and the accent on its name and time, no fill. The bells on the standing
+  setting sit back (opacity .55).
+- **The day bar** keeps its two lines in every tier (one line was tried
+  and cut the Hijri date on a 375-wide phone; the date is the bar's point)
+  and loses 10 dp of air in compact. **The month link is a calendar glyph
+  on the bar's trailing end**, in every tier; the 42 dp row is gone.
+- **The Help pill is a heart** in the sky's muted ink with no ring or
+  wash; it is not drawn at a text size of 1.3× or more.
+- **The Quran card is bare on the phone**: edge to edge under the table's
+  hairline, with ResumeDoors' own dense line in compact. The dashboard and
+  the book keep the card.
+- **Text size**: the hero's top row (city, Qibla) is capped at 1.3× like
+  the countdown; the tab bar shows glyphs alone, a quarter larger, from
+  1.5× (`TAB_LABELS_UNTIL_FONT_SCALE`).
+- **Bigger phones**: roomy is chosen only when the sky has 160 dp over
+  the comfortable sum to grow into (`TIER_SLACK.roomy`), and then the
+  rows take 14 dp of padding; the sky takes the rest, as before.
+
+Not done, deliberately: the whole-row scroll rule (§4.3) — with the
+compact tier the pages that still scroll are the SE class at large text,
+and a rule that pads the page to a whole row costs air on every other one;
+revisit if it is reported. The Ramadan card in season is not in the
+budget's sum (it would need the card's own logic duplicated); in Ramadan
+a page on the edge of a tier may scroll by the card's height.

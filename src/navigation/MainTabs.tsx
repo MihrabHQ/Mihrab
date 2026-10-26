@@ -27,7 +27,7 @@
  */
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useTranslation } from 'react-i18next';
-import { Animated, Platform, StyleSheet, View } from 'react-native';
+import { Animated, Platform, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { useWindowSize } from '../responsive/windowSize';
 import type { ViewStyle } from 'react-native';
 import { useEffect, useRef } from 'react';
@@ -78,6 +78,9 @@ const Tab = createBottomTabNavigator<MainTabParamList>();
 /** The wrapper the playback bar and the screen share. */
 const SCREEN = { flex: 1 } as const;
 
+/** From this text size on, the bar is glyphs alone. */
+export const TAB_LABELS_UNTIL_FONT_SCALE = 1.5;
+
 export function MainTabs() {
   const { t } = useTranslation();
   const { palette } = useAppPalette();
@@ -91,6 +94,14 @@ export function MainTabs() {
   const barBottom = useTabBarBottom();
   /** What the display's rounded bottom corners eat — #42. */
   const cornerInset = useTabBarCornerInset();
+  /**
+   * At a large text size the labels go and the glyphs grow. Six labels
+   * in a bar six slots wide stop fitting around 1.5×: "Setti…" and
+   * "Tod…" said less than no label, and a glyph a quarter larger says
+   * what the word did (docs/home-layout-plan.md §4.4). Read from the
+   * window, which re-renders the bar when the size is changed.
+   */
+  const bigText = useWindowDimensions().fontScale >= TAB_LABELS_UNTIL_FONT_SCALE;
 
   /**
    * Out of the way while reading, back on the way up.
@@ -367,6 +378,8 @@ export function MainTabs() {
         // Catalyst scales the whole canvas down for the Mac, so a label
         // designed at 10.5 lands near 8 — see responsive/desktop.ts.
         tabBarLabelStyle: { fontSize: desktopSize(10.5), fontWeight: '600' },
+        tabBarShowLabel: !bigText,
+        tabBarIconStyle: bigText ? styles.bigGlyph : undefined,
         // The bar is the app's own chrome; on iOS the blur belongs to the
         // system, so leave the default there.
         tabBarHideOnKeyboard: Platform.OS === 'android',
@@ -480,3 +493,8 @@ export function MainTabs() {
     </Tab.Navigator>
   );
 }
+
+const styles = StyleSheet.create({
+  // A glyph a quarter larger, in the room the label gave up.
+  bigGlyph: { transform: [{ scale: 1.25 }] },
+});

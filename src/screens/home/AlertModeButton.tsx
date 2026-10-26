@@ -152,7 +152,10 @@ function AlertModeButtonImpl({
           and the glyph already says it — a struck bell is silence, the
           bell is an alert, the mosque is the adhan. The word stays in
           the accessibility label, where it is read rather than looked at. */}
-      <View style={styles.glyph}>
+      {/* Quieter still on the standing setting: six bells down a page
+          are a column of glyphs, and the one that is set differently, or
+          struck, is the one that should be seen. */}
+      <View style={[styles.glyph, !emphasised && mode !== 'silent' && styles.quiet]}>
         {mode === 'adhan' ? (
           <AdhanGlyph color={tint} />
         ) : (
@@ -174,4 +177,5 @@ const styles = StyleSheet.create({
   },
   pressed: { opacity: 0.55 },
   glyph: { height: SIZE, justifyContent: 'center' },
+  quiet: { opacity: 0.55 },
 });

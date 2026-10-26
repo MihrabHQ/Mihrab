@@ -7,7 +7,7 @@ import {
   tabularNumeralStyle,
 } from '../../theme/textScale';
 import { useClockFormatter } from '../../hooks/useClockFormatter';
-import { HOME_ROW_PADDING_V } from './tokens';
+import { ROW_PAD, type HomeTier } from './homeBudget';
 import { AlertModeButton } from './AlertModeButton';
 import { AlertOverrideChip } from './AlertOverrideChip';
 import { LogCheck, LOG_CHECK_SIZE } from './LogCheck';
@@ -150,12 +150,12 @@ type PrayerRowProps = {
    */
   hasCheckColumn?: boolean;
   /**
-   * Tighter vertical padding — for a short phone, or a table with the
-   * extra times and the Mālikī boundaries all on, where nine rows at the
-   * full height would push the page into a scroll the design exists to
-   * avoid. Same type, same columns; only the air between rows goes.
+   * The page's size (homeBudget.ts). Roomy rows breathe a little more;
+   * compact rows lose the air between them and keep the Mālikī line on
+   * the current row alone — the one the eye is on — where the others'
+   * is the same words five times. Same type, same columns, every tier.
    */
-  dense?: boolean;
+  tier?: HomeTier;
 };
 
 function PrayerRowImpl({
@@ -178,7 +178,7 @@ function PrayerRowImpl({
   log,
   onToggleLog,
   hasCheckColumn = false,
-  dense = false,
+  tier = 'comfortable',
 }: PrayerRowProps) {
   const { t } = useTranslation();
   const { palette } = useAppPalette();
@@ -206,9 +206,13 @@ function PrayerRowImpl({
       {...interactive}
       style={[
         styles.row,
-        dense && styles.rowDense,
-        isNext && { backgroundColor: palette.accentBg },
+        tier === 'compact' && styles.rowCompact,
+        tier === 'roomy' && styles.rowRoomy,
       ]}>
+      {/* The current prayer's mark: the bar at the row's start, and the
+          accent on its name and time. It had a tinted fill across the
+          whole row as well — the one block in a table that is otherwise
+          hairlines and type, and the bar already says "now". */}
       {isNext && (
         <View
           style={[styles.activeBar, { backgroundColor: palette.accent }]}
@@ -243,7 +247,7 @@ function PrayerRowImpl({
           style={[
             styles.name,
             {
-              color: isSecondary && !isNext ? palette.muted : palette.text,
+              color: isNext ? palette.accent : isSecondary ? palette.muted : palette.text,
               fontStyle: isSecondary ? 'italic' : 'normal',
               fontWeight: isNext ? '600' : '500',
             },
@@ -255,7 +259,7 @@ function PrayerRowImpl({
             the one thing on this screen that is scanned rather than read,
             and a second number in it would cost more than this line is
             worth. */}
-        {daruriAt ? (
+        {daruriAt && (tier !== 'compact' || isNext) ? (
           <Text
             style={[styles.daruri, { color: palette.muted }]}
             numberOfLines={1}
@@ -394,11 +398,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: HOME_ROW_PADDING_V,
+    paddingVertical: ROW_PAD.comfortable,
     paddingHorizontal: SPACING.xl,
     position: 'relative',
   },
-  rowDense: { paddingVertical: SPACING.sm },
+  rowCompact: { paddingVertical: ROW_PAD.compact },
+  rowRoomy: { paddingVertical: ROW_PAD.roomy },
   // Inset to the same edge as the text above it, on both sides.
   divider: {
     position: 'absolute',

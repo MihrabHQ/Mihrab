@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { CompassIcon } from '../../components/HeaderToolbarIcons';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import { RADIUS, SPACING } from '../../theme/tokens';
+import { TABULAR_MAX_FONT_SCALE } from '../../theme/textScale';
 import { typeStyle } from '../../theme/typography';
 
 /**
@@ -73,6 +74,7 @@ function QiblaChipImpl({ bearing, onPress, ink, column = false }: QiblaChipProps
       <Text
         style={[typeStyle('caption'), styles.degrees, { color: ink ? ink.muted : palette.accent }]}
         numberOfLines={1}
+        maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}
         accessibilityLanguage="en-US">
         {`${degrees}°`}
       </Text>
@@ -97,7 +99,8 @@ function QiblaChipImpl({ bearing, onPress, ink, column = false }: QiblaChipProps
           styles.label,
           { color: ink ? ink.text : palette.accent },
         ]}
-        numberOfLines={1}>
+        numberOfLines={1}
+        maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}>
         {t('nav.compass', 'Qibla')}
       </Text>
       <Text
@@ -107,6 +110,7 @@ function QiblaChipImpl({ bearing, onPress, ink, column = false }: QiblaChipProps
           { color: ink ? ink.muted : palette.accent },
         ]}
         numberOfLines={1}
+        maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}
         // A degree run is Latin left-to-right whatever the app language;
         // without this it collapses in Arabic, the same way the countdown
         // does.

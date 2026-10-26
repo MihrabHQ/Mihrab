@@ -238,7 +238,10 @@ describe('the edges', () => {
     expect(row).not.toMatch(/paddingStart: SPACING\.xl/);
     expect(row).toMatch(/divider: \{[\s\S]*?start: SPACING\.xl,\s*end: SPACING\.xl,/);
     expect(card).toMatch(/tableBleed: \{\},/);
-    expect(card).toMatch(/dayBar: \{[\s\S]*?paddingHorizontal: SPACING\.xl,/);
-    expect(card).toMatch(/monthRow: \{[\s\S]*?paddingHorizontal: SPACING\.xl,/);
+    // The bar's chevrons carry SPACING.xs of their own, so lg + xs = xl.
+    expect(card).toMatch(/dayBar: \{[\s\S]*?paddingHorizontal: SPACING\.lg,/);
+    // The month is a glyph on the day bar now, not a row under the table.
+    expect(card).not.toMatch(/monthRow:/);
+    expect(card).toMatch(/<MonthGlyph color=\{String\(palette\.muted\)\} \/>/);
   });
 });

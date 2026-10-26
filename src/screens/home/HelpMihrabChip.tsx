@@ -11,10 +11,12 @@
  * prayer time is what the page opens for, and it gets the first look.
  * Fifteen seconds later it folds back into the circle (`SHOWN_FOR_MS`).
  *
- * Drawn in the sky's own ink (`skyModel`), like the location and Qibla
- * chips in the row above it, with no card of its own: a hairline ring
- * and a faint wash of the same ink, so it reads as part of the sky at
- * dawn and at midnight alike.
+ * Drawn in the sky's own muted ink (`skyModel`), like the location and
+ * Qibla chips in the row above it, and with nothing round it: no ring,
+ * no wash. It had a hairline ring and a wash of the ink, which made it a
+ * pill — bordered, filled, in the line the eye lands on before the
+ * countdown, on the one page meant to be calm. The heart alone is the
+ * door, and the line that opens from it is only words.
  *
  * Reduce Motion: it is simply open, no growing, and simply closes.
  */
@@ -40,14 +42,6 @@ const EXPAND_MS = 450;
  * find it again, and the hero is the countdown's.
  */
 export const SHOWN_FOR_MS = 15000;
-
-/** `#RRGGBB` at an opacity; anything else is passed back as it is. */
-function withAlpha(color: string, alpha: number): string {
-  const m = /^#([0-9a-f]{6})$/i.exec(color);
-  if (!m) return color;
-  const n = parseInt(m[1], 16);
-  return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${alpha})`;
-}
 
 function Heart({ color }: { color: string }) {
   return (
@@ -161,20 +155,16 @@ function HelpMihrabChipImpl({
         <Animated.View
           style={[
             styles.pill,
-            {
-              width,
-              borderColor: withAlpha(ink.text, 0.35),
-              backgroundColor: withAlpha(ink.text, 0.08),
-            },
+            { width },
           ]}>
           <View style={styles.icon}>
-            <Heart color={ink.text} />
+            <Heart color={ink.muted} />
           </View>
           <Animated.Text
             style={[
               typeStyle('caption'),
               styles.label,
-              { color: ink.text, opacity: lineOpacity },
+              { color: ink.muted, opacity: lineOpacity },
             ]}
             numberOfLines={1}>
             {label}
@@ -195,8 +185,6 @@ const styles = StyleSheet.create({
   // toward the leading side.
   pill: {
     height: SIZE,
-    borderRadius: SIZE / 2,
-    borderWidth: StyleSheet.hairlineWidth * 2,
     flexDirection: 'row-reverse',
     alignItems: 'center',
     overflow: 'hidden',
@@ -204,7 +192,7 @@ const styles = StyleSheet.create({
   // The circle's own square, so the heart stays centred in it while the
   // line opens beside it.
   icon: {
-    width: SIZE - StyleSheet.hairlineWidth * 4,
+    width: SIZE,
     height: SIZE,
     alignItems: 'center',
     justifyContent: 'center',
