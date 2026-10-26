@@ -1788,7 +1788,9 @@ export function HomeScreen() {
       {/* Held as a book, the notices keep to the day's page too. Mounted
           only when a notice is drawn: the column has a gap, and an empty
           wrapper above the hero still took it — a strip of page colour
-          across the top of the screen, above the sky. */}
+          across the top of the screen, above the sky. Beside the Duo's
+          vertical bar they keep clear of it, as the rest of the page does:
+          a notice running under the bar lost its Dismiss to it. */}
       {permissionBannersShown({
         usingLocalFallback: state.usingLocalFallback ?? false,
         exactAlarmDenied,
@@ -1801,9 +1803,7 @@ export function HomeScreen() {
           style={
             book
               ? { width: Math.max(0, book.left - HOME_SCREEN_PADDING * 2) }
-              : wideInset > 0
-                ? { paddingHorizontal: wideInset }
-                : undefined
+              : [wideInset > 0 ? { paddingHorizontal: wideInset } : undefined, vbarPad]
           }>
           <PermissionBanners
             usingLocalFallback={state.usingLocalFallback ?? false}

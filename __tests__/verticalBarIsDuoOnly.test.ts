@@ -116,6 +116,13 @@ describe('the vertical bar is the iPhone Duo’s alone', () => {
     expect(read('src/quran/mushafReaderCore.tsx')).toContain('barPad,');
   });
 
+  it('keeps the Today notices clear of the bar', () => {
+    // The clocks-changed notice ran under the bar, its Dismiss with it.
+    const home = read('src/screens/HomeScreen.tsx');
+    const notices = home.slice(home.indexOf('permissionBannersShown({'), home.indexOf('<PermissionBanners'));
+    expect(notices).toContain('vbarPad]');
+  });
+
   it('leaves no Modal in the app without a way clear of the bar', () => {
     // Every file that presents a <Modal> applies one of the helpers that
     // know the bar. A new dialog has to pick one, or it runs in under it.
