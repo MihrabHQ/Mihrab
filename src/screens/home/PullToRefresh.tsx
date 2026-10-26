@@ -394,7 +394,7 @@ const styles = StyleSheet.create({
     paddingBottom: SPACING.sm,
     paddingHorizontal: SPACING.lg,
   },
-  label: { fontSize: TYPE.footnote.fontSize, fontWeight: '600' },
+  label: { fontSize: TYPE.footnote.fontSize, fontWeight: '500' },
   track: {
     width: 140,
     height: 3,

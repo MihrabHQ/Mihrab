@@ -653,7 +653,7 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.md,
     alignItems: 'center',
   },
-  primaryLabel: { fontSize: TYPE.body.fontSize, fontWeight: '700' },
+  primaryLabel: { fontSize: TYPE.body.fontSize, fontWeight: '600' },
   secondary: { paddingVertical: SPACING.sm, alignItems: 'center' },
   secondaryLabel: { fontSize: TYPE.body.fontSize },
 });

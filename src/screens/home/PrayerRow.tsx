@@ -249,7 +249,7 @@ function PrayerRowImpl({
             {
               color: isNext ? palette.accent : isSecondary ? palette.muted : palette.text,
               fontStyle: isSecondary ? 'italic' : 'normal',
-              fontWeight: isNext ? '600' : '500',
+              fontWeight: isNext ? '500' : '500',
             },
           ]}
           maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}>
@@ -372,7 +372,7 @@ function PrayerRowImpl({
                   : isSecondary
                     ? palette.muted
                     : palette.text,
-                fontWeight: isNext ? '700' : '500',
+                fontWeight: isNext ? '600' : '500',
               },
             ]}
             numberOfLines={1}
@@ -449,7 +449,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   timeCol: { justifyContent: 'center' },
-  timeSample: { opacity: 0, fontWeight: '700' },
+  timeSample: { opacity: 0, fontWeight: '600' },
   // Width without height: see the own-time sizer above.
   timeOwnWidth: { height: 0, overflow: 'hidden' },
   // Laid over the sample, flush with the trailing edge — `end`, so it is

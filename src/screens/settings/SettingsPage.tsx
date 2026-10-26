@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
   title: {
     flexShrink: 1,
     fontSize: TYPE.title2.fontSize,
-    fontWeight: '700',
+    fontWeight: '600',
     textAlign: 'center',
   },
   barSide: {

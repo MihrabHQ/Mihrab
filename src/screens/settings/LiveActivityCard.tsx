@@ -364,7 +364,7 @@ const styles = StyleSheet.create({
     gap: SPACING.sm,
   },
   optionDisabled: { opacity: 0.45 },
-  optionLabel: { fontSize: TYPE.footnote.fontSize, fontWeight: '600' },
+  optionLabel: { fontSize: TYPE.footnote.fontSize, fontWeight: '500' },
   legacyWrap: { marginTop: SPACING.md },
   legacyHelp: { fontSize: TYPE.footnote.fontSize, marginTop: SPACING.sm },
   // The miniature card. Its smallest type is deliberately below the app's
@@ -392,10 +392,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: 4,
   },
-  pvTitle: { fontSize: TYPE.label.fontSize, fontWeight: '700' },
+  pvTitle: { fontSize: TYPE.label.fontSize, fontWeight: '600' },
   pvBig: {
     fontSize: TYPE.title2.fontSize,
-    fontWeight: '700',
+    fontWeight: '600',
     fontVariant: ['tabular-nums'],
     lineHeight: 24,
   },
@@ -404,7 +404,7 @@ const styles = StyleSheet.create({
   pvMetric: { gap: 1, flex: 1, minWidth: 0 },
   pvMetricValue: {
     fontSize: TYPE.footnote.fontSize,
-    fontWeight: '700',
+    fontWeight: '600',
     fontVariant: ['tabular-nums'],
   },
   pvMetricDivider: { width: StyleSheet.hairlineWidth, alignSelf: 'stretch', opacity: 0.5 },

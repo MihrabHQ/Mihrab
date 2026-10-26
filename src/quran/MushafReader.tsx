@@ -409,7 +409,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.xxl,
     gap: SPACING.lg,
   },
-  gateTitle: { fontSize: TYPE.title2.fontSize, fontWeight: '700', textAlign: 'center' },
+  gateTitle: { fontSize: TYPE.title2.fontSize, fontWeight: '600', textAlign: 'center' },
   gateBody: { fontSize: TYPE.callout.fontSize, lineHeight: 22, textAlign: 'center' },
   cta: {
     marginTop: SPACING.sm,
@@ -417,6 +417,6 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.md,
     borderRadius: RADIUS.md,
   },
-  ctaLabel: { fontSize: TYPE.body.fontSize, fontWeight: '700' },
+  ctaLabel: { fontSize: TYPE.body.fontSize, fontWeight: '600' },
   withStrip: { flex: 1 },
 });

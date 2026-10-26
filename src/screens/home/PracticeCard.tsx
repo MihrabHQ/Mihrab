@@ -158,10 +158,10 @@ const styles = StyleSheet.create({
     paddingTop: SPACING.md,
     marginTop: SPACING.md,
   },
-  openLabel: { fontSize: TYPE.footnote.fontSize, fontWeight: '600' },
+  openLabel: { fontSize: TYPE.footnote.fontSize, fontWeight: '500' },
   title: {
     fontSize: TYPE.label.fontSize,
-    fontWeight: '600',
+    fontWeight: '500',
     marginBottom: SPACING.md,
   },
 });

@@ -20,7 +20,7 @@ export const modalStyles = StyleSheet.create({
   },
   title: {
     fontSize: TYPE.title3.fontSize,
-    fontWeight: '700',
+    fontWeight: '600',
     paddingHorizontal: SPACING.lg,
     paddingBottom: SPACING.sm,
   },

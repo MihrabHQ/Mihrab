@@ -499,7 +499,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  pillLabel: { fontWeight: '600', fontSize: TYPE.footnote.fontSize },
+  pillLabel: { fontWeight: '500', fontSize: TYPE.footnote.fontSize },
   links: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -515,7 +515,7 @@ const styles = StyleSheet.create({
     minHeight: 44,
     marginBottom: SPACING.xs,
   },
-  secondaryLabel: { fontWeight: '600', fontSize: TYPE.callout.fontSize },
+  secondaryLabel: { fontWeight: '500', fontSize: TYPE.callout.fontSize },
   orLine: { marginTop: SPACING.md },
   help: { fontSize: TYPE.footnote.fontSize, lineHeight: 18, marginBottom: SPACING.sm },
   input: {
@@ -525,6 +525,6 @@ const styles = StyleSheet.create({
     fontSize: TYPE.callout.fontSize,
   },
   errorBox: { marginTop: SPACING.md },
-  error: { fontSize: TYPE.footnote.fontSize, fontWeight: '600', lineHeight: 18 },
+  error: { fontSize: TYPE.footnote.fontSize, fontWeight: '500', lineHeight: 18 },
   detail: { fontSize: TYPE.caption.fontSize, marginTop: SPACING.xs, lineHeight: 15 },
 });

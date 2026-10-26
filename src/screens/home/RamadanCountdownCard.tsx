@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: TYPE.label.fontSize,
-    fontWeight: '600',
+    fontWeight: '500',
   },
   row: {
     flexDirection: 'row',
@@ -159,8 +159,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: SPACING.sm,
   },
-  name: { fontSize: 26, fontWeight: '700', flex: 1 }, // tokens-ok-line: display or Arabic scale, sized by hand
-  time: { fontSize: TYPE.title2.fontSize, fontWeight: '700' },
+  name: { fontSize: 26, fontWeight: '600', flex: 1 }, // tokens-ok-line: display or Arabic scale, sized by hand
+  time: { fontSize: TYPE.title2.fontSize, fontWeight: '600' },
   countdownRow: { marginTop: SPACING.md, flexDirection: 'row' },
   pill: {
     paddingHorizontal: SPACING.md,

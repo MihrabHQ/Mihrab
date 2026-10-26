@@ -108,5 +108,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   arrowDisabled: { opacity: 0.3 },
-  arrowGlyph: { fontSize: 28, lineHeight: 32, fontWeight: '600' }, // tokens-ok-line: display or Arabic scale, sized by hand
+  arrowGlyph: { fontSize: 28, lineHeight: 32, fontWeight: '500' }, // tokens-ok-line: display or Arabic scale, sized by hand
 });

@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
   label: { fontSize: TYPE.footnote.fontSize, fontWeight: '500' },
   value: {
     fontSize: TYPE.footnote.fontSize,
-    fontWeight: '700',
+    fontWeight: '600',
     fontVariant: ['tabular-nums'],
   },
 });

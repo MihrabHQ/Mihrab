@@ -158,5 +158,5 @@ const styles = StyleSheet.create({
   glyph: { marginEnd: SPACING.xs, height: SIZE, justifyContent: 'center' },
   // Shrinks rather than pushing the row wider when a locale needs a whole
   // clause for "just this once".
-  label: { fontSize: TYPE.caption.fontSize, fontWeight: '600', flexShrink: 1 },
+  label: { fontSize: TYPE.caption.fontSize, fontWeight: '500', flexShrink: 1 },
 });

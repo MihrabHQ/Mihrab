@@ -361,9 +361,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
     alignItems: 'center',
   },
-  headerText: { fontSize: 10, fontWeight: '800', textAlign: 'center' },
-  headerTextQuiet: { fontSize: 9, fontWeight: '600', textAlign: 'center' },
+  headerText: { fontSize: 10, fontWeight: '600', textAlign: 'center' },
+  headerTextQuiet: { fontSize: 9, fontWeight: '500', textAlign: 'center' },
   cellText: { fontSize: 9.5, textAlign: 'center' },
-  cellTextSalah: { fontSize: 11, fontWeight: '600', textAlign: 'center' },
-  boldText: { fontWeight: '800' },
+  cellTextSalah: { fontSize: 11, fontWeight: '500', textAlign: 'center' },
+  boldText: { fontWeight: '600' },
 });

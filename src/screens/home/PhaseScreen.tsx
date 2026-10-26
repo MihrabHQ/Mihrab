@@ -105,11 +105,11 @@ const styles = StyleSheet.create({
   centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   errorScreen: { padding: SPACING.xl },
   loadingHint: { marginTop: SPACING.md, fontSize: TYPE.callout.fontSize, textAlign: 'center' },
-  title: { fontSize: TYPE.title2.fontSize, fontWeight: '600', marginBottom: SPACING.sm },
+  title: { fontSize: TYPE.title2.fontSize, fontWeight: '500', marginBottom: SPACING.sm },
   body: { fontSize: TYPE.callout.fontSize, lineHeight: 22, marginBottom: SPACING.xl },
   bodyCenter: { textAlign: 'center' },
   button: { paddingHorizontal: SPACING.xl, paddingVertical: SPACING.md, borderRadius: RADIUS.md },
-  buttonLabel: { fontSize: TYPE.body.fontSize, fontWeight: '600' },
+  buttonLabel: { fontSize: TYPE.body.fontSize, fontWeight: '500' },
   skeletonScreen: { flex: 1, padding: SPACING.lg, gap: SPACING.md },
   skelRow: {
     flexDirection: 'row',

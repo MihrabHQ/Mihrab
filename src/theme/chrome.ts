@@ -1,6 +1,5 @@
 import { StyleSheet, type ColorValue, type ViewStyle } from 'react-native';
 import type { AppPalette } from './appPalette';
-import { CARD_SHADOW } from './tokens';
 
 /**
  * A surface the page is allowed to show through — the material the floating
@@ -37,24 +36,20 @@ type ChromePalette = Pick<
   Partial<Pick<AppPalette, 'isDark'>>;
 
 /**
- * Card / boxed regions: hairline border, or none when using flat dynamic
- * chrome. In the standard LIGHT theme the border is paired with a soft
- * warm shadow (look-and-feel upgrade): cards read as gently lifted paper
- * instead of flat outlined boxes. Dark themes keep the border-only look —
- * shadows disappear against ink backgrounds, surface lift does the work.
+ * Card / boxed regions: a hairline, or nothing under flat dynamic chrome.
+ *
+ * The light theme used to pair a 1 px border with a soft shadow, so cards
+ * read as lifted paper. Lifted paper is a surface with an edge and a
+ * shadow and a fill — three things saying "card" — on pages that are
+ * mostly cards. A hairline says it once; the surface's own tint does the
+ * rest, in both polarities. `CARD_SHADOW` stays for the one thing that is
+ * meant to float (the tab bar's pill, where it is on).
  */
 export function cardEdgeStyle(palette: ChromePalette): ViewStyle {
   if (palette.flatChrome) {
     return { borderWidth: 0, borderColor: 'transparent' };
   }
-  if (palette.isDark === false) {
-    return {
-      borderWidth: 1,
-      borderColor: palette.border,
-      ...CARD_SHADOW,
-    };
-  }
-  return { borderWidth: 1, borderColor: palette.border };
+  return { borderWidth: StyleSheet.hairlineWidth, borderColor: palette.border };
 }
 
 /** Segmented control cells: outline, or fill-only when flat. */

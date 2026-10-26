@@ -265,14 +265,14 @@ const styles = StyleSheet.create({
   },
   appliedCheck: {
     fontSize: TYPE.title3.fontSize,
-    fontWeight: '700',
+    fontWeight: '600',
   },
   appliedTextWrap: {
     flex: 1,
   },
   appliedTitle: {
     fontSize: TYPE.callout.fontSize,
-    fontWeight: '600',
+    fontWeight: '500',
   },
   appliedSubtitle: {
     fontSize: TYPE.footnote.fontSize,

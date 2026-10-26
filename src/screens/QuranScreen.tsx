@@ -960,7 +960,7 @@ export function QuranScreen() {
               style={{
                 color: palette.accentSolid,
                 fontSize: TYPE.label.fontSize,
-                fontWeight: '700',
+                fontWeight: '600',
               }}>
               {t('downloads.riwayat', 'Reading traditions')} ›
             </Text>
@@ -978,7 +978,7 @@ export function QuranScreen() {
             style={{
               color: palette.accentSolid,
               fontSize: TYPE.label.fontSize,
-              fontWeight: '700',
+              fontWeight: '600',
             }}>
             {t('tajweed.title', 'Tajweed colours')} ›
           </Text>
@@ -989,7 +989,7 @@ export function QuranScreen() {
           onPress={() => navigation.navigate('SettingsDownloads')}
           style={styles.downloadsLink}>
           <Text
-            style={{ color: palette.muted, fontSize: TYPE.label.fontSize, fontWeight: '600' }}>
+            style={{ color: palette.muted, fontSize: TYPE.label.fontSize, fontWeight: '500' }}>
             {t('downloads.title', 'Manage downloads')} ›
           </Text>
         </Pressable>
@@ -1613,7 +1613,7 @@ export function QuranScreen() {
               accessibilityLabel={t('common.cancel', 'Cancel')}
               onPress={() => setPageJumpVisible(false)}
               style={styles.menuCancel}>
-              <Text style={{ color: palette.muted, fontWeight: '600' }}>
+              <Text style={{ color: palette.muted, fontWeight: '500' }}>
                 {t('common.cancel', 'Cancel')}
               </Text>
             </Pressable>
@@ -1622,7 +1622,7 @@ export function QuranScreen() {
               accessibilityLabel={t('quran.jumpToPage', 'Go to page')}
               onPress={() => goToPage(pageJumpText)}
               style={styles.menuCancel}>
-              <Text style={{ color: palette.accentSolid, fontWeight: '700' }}>
+              <Text style={{ color: palette.accentSolid, fontWeight: '600' }}>
                 {t('quran.goCta', 'Go')}
               </Text>
             </Pressable>
@@ -1692,7 +1692,7 @@ const styles = StyleSheet.create({
   doorsCard: { borderRadius: RADIUS.md, overflow: 'hidden' },
   khatmahCard: { padding: SPACING.lg, borderRadius: RADIUS.md, gap: SPACING.sm },
   khatmahTop: { flexDirection: 'row', justifyContent: 'space-between' },
-  khatmahTitle: { fontSize: TYPE.callout.fontSize, fontWeight: '700' },
+  khatmahTitle: { fontSize: TYPE.callout.fontSize, fontWeight: '600' },
   khatmahMeta: { fontSize: TYPE.label.fontSize, fontVariant: ['tabular-nums'] },
   // A row, because a track carries TWO fills: the reading itself, and
   // the gold that is reading done past the day's portion.
@@ -1712,14 +1712,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  khatmahMoreGlyph: { fontSize: TYPE.title3.fontSize, fontWeight: '700', lineHeight: 20 },
+  khatmahMoreGlyph: { fontSize: TYPE.title3.fontSize, fontWeight: '600', lineHeight: 20 },
   khatmahDayRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     marginTop: 2,
   },
-  khatmahDayLabel: { fontSize: TYPE.footnote.fontSize, fontWeight: '700' },
+  khatmahDayLabel: { fontSize: TYPE.footnote.fontSize, fontWeight: '600' },
   // Five chips — three durations, a date, custom — and a phone's card is
   // not five chips wide: "Custom…" ran off the right edge of the card
   // (reported 2026-09-25). They wrap onto a second line instead.
@@ -1733,7 +1733,7 @@ const styles = StyleSheet.create({
   votdCard: { padding: SPACING.md, borderRadius: RADIUS.md, gap: SPACING.sm },
   votdLabel: {
     fontSize: TYPE.label.fontSize,
-    fontWeight: '600',
+    fontWeight: '500',
   },
   votdArabic: {
     fontSize: TYPE.title3.fontSize,
@@ -1743,11 +1743,11 @@ const styles = StyleSheet.create({
     ...arabicTextStyle('quran'),
   },
   votdTranslation: { fontSize: TYPE.footnote.fontSize, lineHeight: 19 },
-  votdShowMore: { fontSize: TYPE.label.fontSize, fontWeight: '700', marginTop: SPACING.xs },
-  votdRef: { fontSize: TYPE.label.fontSize, fontWeight: '700' },
+  votdShowMore: { fontSize: TYPE.label.fontSize, fontWeight: '600', marginTop: SPACING.xs },
+  votdRef: { fontSize: TYPE.label.fontSize, fontWeight: '600' },
   /** The reference and the chevron travel together on the trailing edge. */
   votdHeaderEnd: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm },
-  votdChevron: { fontSize: TYPE.callout.fontSize, fontWeight: '700' },
+  votdChevron: { fontSize: TYPE.callout.fontSize, fontWeight: '600' },
   companionCard: {
     padding: SPACING.lg,
     borderRadius: RADIUS.md,
@@ -1755,7 +1755,7 @@ const styles = StyleSheet.create({
   companionCardRow: {
     marginTop: SPACING.sm,
   },
-  votdEdition: { fontSize: TYPE.caption.fontSize, fontWeight: '600', flexShrink: 1 },
+  votdEdition: { fontSize: TYPE.caption.fontSize, fontWeight: '500', flexShrink: 1 },
   votdCompanionBar: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -1800,7 +1800,7 @@ const styles = StyleSheet.create({
   },
   customFieldLabel: {
     fontSize: TYPE.label.fontSize,
-    fontWeight: '600',
+    fontWeight: '500',
     marginTop: SPACING.md,
   },
   customDaysRow: {
@@ -1823,14 +1823,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  pageJumpGlyph: { fontSize: TYPE.title2.fontSize, fontWeight: '700' },
+  pageJumpGlyph: { fontSize: TYPE.title2.fontSize, fontWeight: '600' },
   /** The three tabs, then the two glyphs that open a field. */
   tabsRow: { flexDirection: 'row', alignItems: 'stretch', gap: SPACING.sm },
   tabsGrow: { flex: 1 },
   resultsWrap: { gap: SPACING.sm },
-  resultsLabel: { fontSize: TYPE.label.fontSize, fontWeight: '600', marginTop: 2 },
+  resultsLabel: { fontSize: TYPE.label.fontSize, fontWeight: '500', marginTop: 2 },
   resultRow: { padding: SPACING.md, borderRadius: RADIUS.md, gap: SPACING.xs },
-  resultRef: { fontSize: TYPE.label.fontSize, fontWeight: '700' },
+  resultRef: { fontSize: TYPE.label.fontSize, fontWeight: '600' },
   resultArabic: {
     fontSize: TYPE.body.fontSize,
     lineHeight: 36,
@@ -1862,9 +1862,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  numberText: { fontSize: TYPE.callout.fontSize, fontWeight: '700', fontVariant: ['tabular-nums'] },
+  numberText: { fontSize: TYPE.callout.fontSize, fontWeight: '600', fontVariant: ['tabular-nums'] },
   rowText: { flex: 1 },
-  romanized: { fontSize: TYPE.body.fontSize, fontWeight: '600' },
+  romanized: { fontSize: TYPE.body.fontSize, fontWeight: '500' },
   english: { fontSize: TYPE.label.fontSize, marginTop: 2 },
   pageHint: { fontSize: TYPE.caption.fontSize, marginTop: 2, fontVariant: ['tabular-nums'] },
   /**
@@ -1936,17 +1936,17 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.xs,
   },
   starDisabled: { opacity: 0.4 },
-  starGlyph: { fontSize: TYPE.callout.fontSize, fontWeight: '700' },
+  starGlyph: { fontSize: TYPE.callout.fontSize, fontWeight: '600' },
   bookmarksHelp: { fontSize: TYPE.caption.fontSize, lineHeight: 17, paddingHorizontal: SPACING.xs },
   followSwitch: { marginStart: SPACING.xs },
   followControl: { alignItems: 'center' },
   followLabel: {
     fontSize: TYPE.caption.fontSize,
-    fontWeight: '600',
+    fontWeight: '500',
     letterSpacing: 0.3,
     marginBottom: 1,
   },
-  deleteGlyph: { fontSize: TYPE.callout.fontSize, fontWeight: '700' },
+  deleteGlyph: { fontSize: TYPE.callout.fontSize, fontWeight: '600' },
   khatmahActions: { flexDirection: 'row', gap: SPACING.sm, marginTop: SPACING.xs },
   khatmahBtn: {
     flex: 1,
@@ -1956,7 +1956,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  khatmahBtnLabel: { fontWeight: '700', fontSize: TYPE.footnote.fontSize },
+  khatmahBtnLabel: { fontWeight: '600', fontSize: TYPE.footnote.fontSize },
   menuBackdrop: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
   menuCard: {
     position: 'absolute',
@@ -1991,7 +1991,7 @@ const styles = StyleSheet.create({
   // Shrinks to its rows, and scrolls only when they outgrow the screen.
   menuRows: { flexGrow: 0, flexShrink: 1 },
   menuRowsContent: { gap: SPACING.md },
-  menuTitle: { fontSize: TYPE.title3.fontSize, fontWeight: '700', marginBottom: SPACING.xs },
+  menuTitle: { fontSize: TYPE.title3.fontSize, fontWeight: '600', marginBottom: SPACING.xs },
   menuRow: {
     borderWidth: StyleSheet.hairlineWidth,
     borderRadius: RADIUS.md,
@@ -2007,13 +2007,13 @@ const styles = StyleSheet.create({
     gap: SPACING.sm,
     marginTop: SPACING.md,
   },
-  oftenLabel: { fontSize: TYPE.label.fontSize, fontWeight: '700' },
+  oftenLabel: { fontSize: TYPE.label.fontSize, fontWeight: '600' },
   oftenChip: {
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.sm,
     borderRadius: RADIUS.full,
   },
-  oftenChipText: { fontSize: TYPE.footnote.fontSize, fontWeight: '600' },
+  oftenChipText: { fontSize: TYPE.footnote.fontSize, fontWeight: '500' },
   /** Tilāwah leads as a chip; the two plain links trail behind it. */
   downloadsRow: {
     flexDirection: 'row',
@@ -2024,7 +2024,7 @@ const styles = StyleSheet.create({
   },
   starredHeading: {
     fontSize: TYPE.label.fontSize,
-    fontWeight: '600',
+    fontWeight: '500',
     marginTop: SPACING.sm,
   },
 });

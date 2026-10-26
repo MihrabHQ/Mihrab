@@ -148,5 +148,5 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 8,
   },
-  segmentText: { fontSize: TYPE.footnote.fontSize, fontWeight: '600' },
+  segmentText: { fontSize: TYPE.footnote.fontSize, fontWeight: '500' },
 });

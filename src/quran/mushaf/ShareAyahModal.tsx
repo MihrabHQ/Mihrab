@@ -110,7 +110,7 @@ export function ShareAyahModal({
             accessibilityLabel={t('common.cancel', 'Cancel')}
             onPress={onClose}
             style={[styles.btn, { backgroundColor: palette.card }]}>
-            <Text style={{ color: palette.text, fontWeight: '600' }}>
+            <Text style={{ color: palette.text, fontWeight: '500' }}>
               {t('common.cancel', 'Cancel')}
             </Text>
           </Pressable>
@@ -122,7 +122,7 @@ export function ShareAyahModal({
             {busy ? (
               <ActivityIndicator color="#fff" size="small" />
             ) : (
-              <Text style={{ color: '#fff', fontWeight: '700' }}>
+              <Text style={{ color: '#fff', fontWeight: '600' }}>
                 {t('common.share', 'Share')}
               </Text>
             )}
@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
   reference: {
     color: CARD_ORNAMENT,
     fontSize: TYPE.footnote.fontSize,
-    fontWeight: '700',
+    fontWeight: '600',
     letterSpacing: 0.6,
     marginTop: SPACING.xs,
   },

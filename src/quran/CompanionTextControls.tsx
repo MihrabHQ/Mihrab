@@ -154,7 +154,7 @@ export function CompanionTextControls({
               <Text
                 style={{
                   color: selected ? palette.accentSolid : palette.muted,
-                  fontWeight: '700',
+                  fontWeight: '600',
                   fontSize: TYPE.footnote.fontSize,
                 }}>
                 {label}
@@ -195,7 +195,7 @@ export function CompanionTextControls({
                   style={[
                     styles.rowLabel,
                     { color: palette.text },
-                    selected && { fontWeight: '700' },
+                    selected && { fontWeight: '600' },
                   ]}>
                   {ed.label}
                 </Text>
@@ -240,7 +240,7 @@ export function CompanionTextControls({
                     styles.rowLabel,
                     { color: palette.text },
                     ed.rtl && styles.rtl,
-                    selected && { fontWeight: '700' },
+                    selected && { fontWeight: '600' },
                   ]}>
                   {ed.label}
                 </Text>
@@ -320,13 +320,13 @@ const styles = StyleSheet.create({
   },
   sectionHeader: {
     fontSize: TYPE.label.fontSize,
-    fontWeight: '600',
+    fontWeight: '500',
     marginTop: SPACING.lg,
     marginBottom: 2,
   },
   langHeader: {
     fontSize: TYPE.caption.fontSize,
-    fontWeight: '600',
+    fontWeight: '500',
     marginTop: SPACING.sm,
   },
   row: {
@@ -338,7 +338,7 @@ const styles = StyleSheet.create({
   },
   rowLabel: { fontSize: TYPE.body.fontSize, flexShrink: 1, paddingEnd: SPACING.md },
   rtl: { writingDirection: 'rtl', textAlign: 'right' },
-  check: { fontSize: TYPE.title3.fontSize, fontWeight: '700' },
+  check: { fontSize: TYPE.title3.fontSize, fontWeight: '600' },
   backdrop: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
   sheet: {
     position: 'absolute',
@@ -352,7 +352,7 @@ const styles = StyleSheet.create({
     paddingTop: SPACING.lg,
     paddingBottom: SPACING.xxl,
   },
-  title: { fontSize: TYPE.title3.fontSize, fontWeight: '700', marginBottom: SPACING.md },
+  title: { fontSize: TYPE.title3.fontSize, fontWeight: '600', marginBottom: SPACING.md },
   list: { flexGrow: 0 },
   doneBtn: {
     marginTop: SPACING.lg,
@@ -360,5 +360,5 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.md,
     alignItems: 'center',
   },
-  doneLabel: { fontSize: TYPE.callout.fontSize, fontWeight: '700' },
+  doneLabel: { fontSize: TYPE.callout.fontSize, fontWeight: '600' },
 });

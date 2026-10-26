@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  label: { fontWeight: '600', paddingStart: 12 },
+  label: { fontWeight: '500', paddingStart: 12 },
   // Laid out for its width and never seen. A box far wider than any
   // label, so the text sizes to itself rather than to the closed circle.
   measure: {

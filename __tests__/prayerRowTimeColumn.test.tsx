@@ -150,8 +150,8 @@ describe('the time column is the card’s width, not the row’s', () => {
     const real = texts(tree).find(
       n => flat(n.props.style).position === 'absolute',
     );
-    expect(flat(sample!.props.style).fontWeight).toBe('700');
-    expect(flat(real!.props.style).fontWeight).toBe('700');
+    expect(flat(sample!.props.style).fontWeight).toBe('600');
+    expect(flat(real!.props.style).fontWeight).toBe('600');
   });
 
   it('keeps the sample away from a screen reader', () => {

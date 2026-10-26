@@ -307,7 +307,7 @@ const styles = StyleSheet.create({
     minWidth: 44,
     alignItems: 'center',
   },
-  chipLabel: { fontSize: desktopSize(13), fontWeight: '600' },
+  chipLabel: { fontSize: desktopSize(13), fontWeight: '500' },
   action: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -324,9 +324,9 @@ const styles = StyleSheet.create({
     gap: SPACING.xs,
   },
   grow: { flex: 1 },
-  actionGlyph: { fontSize: desktopSize(13), fontWeight: '700' },
+  actionGlyph: { fontSize: desktopSize(13), fontWeight: '600' },
   actionGlyphCompact: { fontSize: desktopSize(11) },
-  actionLabel: { fontSize: desktopSize(13.5), fontWeight: '700' },
+  actionLabel: { fontSize: desktopSize(13.5), fontWeight: '600' },
   actionLabelCompact: { fontSize: desktopSize(12.5) },
   segments: {
     flexDirection: 'row',
@@ -340,7 +340,7 @@ const styles = StyleSheet.create({
     paddingVertical: desktopSize(6),
     borderRadius: RADIUS.md - 2,
   },
-  segmentLabel: { fontSize: desktopSize(12.5), fontWeight: '600' },
+  segmentLabel: { fontSize: desktopSize(12.5), fontWeight: '500' },
   stepper: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -354,13 +354,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   stepperBtnCompact: { width: 28, height: 28 },
-  stepperGlyph: { fontSize: TYPE.title3.fontSize, fontWeight: '700' },
+  stepperGlyph: { fontSize: TYPE.title3.fontSize, fontWeight: '600' },
   stepperGlyphCompact: { fontSize: TYPE.callout.fontSize },
   stepperValue: {
     minWidth: 38,
     textAlign: 'center',
     fontSize: TYPE.callout.fontSize,
-    fontWeight: '700',
+    fontWeight: '600',
     fontVariant: ['tabular-nums'],
   },
   stepperValueCompact: { minWidth: 30, fontSize: TYPE.footnote.fontSize },
@@ -376,6 +376,6 @@ const styles = StyleSheet.create({
   sectionHeadTight: { marginTop: SPACING.md, paddingTop: SPACING.md, marginBottom: SPACING.xs },
   sectionLabel: {
     fontSize: TYPE.label.fontSize,
-    fontWeight: '600',
+    fontWeight: '500',
   },
 });

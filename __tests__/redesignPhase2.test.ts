@@ -44,7 +44,7 @@ describe('uppercase overlines', () => {
 
 describe('the label token', () => {
   it('exists, in sentence case, without tracking', () => {
-    expect(TYPE.label).toMatchObject({ fontSize: 12, fontWeight: '600' });
+    expect(TYPE.label).toMatchObject({ fontSize: 12, fontWeight: '500' });
     expect(TYPE.label.letterSpacing).toBeUndefined();
   });
 

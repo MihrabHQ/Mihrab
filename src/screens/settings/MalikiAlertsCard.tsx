@@ -199,6 +199,6 @@ const styles = StyleSheet.create({
     minHeight: 36,
     justifyContent: 'center',
   },
-  chipLabel: { fontSize: TYPE.footnote.fontSize, fontWeight: '600' },
+  chipLabel: { fontSize: TYPE.footnote.fontSize, fontWeight: '500' },
   leadRow: { marginTop: SPACING.xs },
 });

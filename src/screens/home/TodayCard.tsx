@@ -2394,10 +2394,10 @@ const styles = StyleSheet.create({
   },
   dayFaceLine: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm },
   todayDot: { width: 5, height: 5, borderRadius: 2.5 },
-  dayWeekday: { fontSize: TYPE.callout.fontSize, fontWeight: '600' },
+  dayWeekday: { fontSize: TYPE.callout.fontSize, fontWeight: '500' },
   dayDate: { fontWeight: '400' },
   dayHijri: { fontSize: TYPE.caption.fontSize, marginTop: 2 },
-  dayBack: { fontWeight: '700' },
+  dayBack: { fontWeight: '600' },
   heroTopRow: {
     flexDirection: 'row',
     alignItems: 'center',

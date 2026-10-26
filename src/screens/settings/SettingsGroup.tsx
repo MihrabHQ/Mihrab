@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
   group: { marginBottom: SPACING.xl },
   groupTitle: {
     fontSize: TYPE.label.fontSize,
-    fontWeight: '600',
+    fontWeight: '500',
     marginBottom: SPACING.sm,
     marginStart: SPACING.xs,
   },
@@ -285,7 +285,7 @@ const styles = StyleSheet.create({
   title: { fontSize: TYPE.body.fontSize, fontWeight: '500' },
   value: { fontSize: TYPE.callout.fontSize, marginTop: 2 },
   help: { fontSize: TYPE.footnote.fontSize, lineHeight: 18, marginTop: SPACING.xs },
-  chevron: { fontSize: TYPE.title2.fontSize, fontWeight: '600' },
+  chevron: { fontSize: TYPE.title2.fontSize, fontWeight: '500' },
   pressed: { opacity: 0.6 },
   disabled: { opacity: 0.5 },
 });

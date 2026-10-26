@@ -377,7 +377,7 @@ export function FastingScreen() {
                       tabularNumeralStyle,
                       {
                         color: entry?.completed ? palette.bg : palette.text,
-                        fontWeight: isToday ? '700' : '500',
+                        fontWeight: isToday ? '600' : '500',
                       },
                     ]}
                     maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}>
@@ -582,7 +582,7 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.md,
   },
   reminderTextCol: { flex: 1, gap: SPACING.xs },
-  reminderTitle: { fontSize: TYPE.callout.fontSize, fontWeight: '600' },
+  reminderTitle: { fontSize: TYPE.callout.fontSize, fontWeight: '500' },
   reminderBody: { fontSize: TYPE.label.fontSize, lineHeight: 18 },
   ramadanCountdown: {
     alignItems: 'center',
@@ -593,6 +593,6 @@ const styles = StyleSheet.create({
   sectionTitle: {
     marginTop: SPACING.sm,
   },
-  upcomingDays: { fontSize: TYPE.callout.fontSize, fontWeight: '700' },
+  upcomingDays: { fontSize: TYPE.callout.fontSize, fontWeight: '600' },
   emptyHint: { fontSize: TYPE.footnote.fontSize, textAlign: 'center', marginTop: SPACING.xs, marginBottom: SPACING.sm },
 });

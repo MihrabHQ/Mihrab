@@ -1407,7 +1407,7 @@ export function MushafJumpModal({
             accessibilityLabel={t('common.cancel', 'Cancel')}
             onPress={onClose}
             style={styles.jumpBtn}>
-            <Text style={{ color: palette.muted, fontWeight: '600' }}>
+            <Text style={{ color: palette.muted, fontWeight: '500' }}>
               {t('common.cancel', 'Cancel')}
             </Text>
           </Pressable>
@@ -1416,7 +1416,7 @@ export function MushafJumpModal({
             accessibilityLabel={t('quran.go', 'Go')}
             onPress={submit}
             style={styles.jumpBtn}>
-            <Text style={{ color: palette.accentSolid, fontWeight: '700' }}>
+            <Text style={{ color: palette.accentSolid, fontWeight: '600' }}>
               {t('quran.go', 'Go')}
             </Text>
           </Pressable>
@@ -1456,7 +1456,7 @@ const styles = StyleSheet.create({
   exitGlyph: {
     fontSize: TYPE.body.fontSize,
     lineHeight: 20,
-    fontWeight: '700',
+    fontWeight: '600',
     includeFontPadding: false,
   },
   exitCluster: { flexDirection: 'row', alignItems: 'center', flexShrink: 0 },
@@ -1476,7 +1476,7 @@ const styles = StyleSheet.create({
   exitPage: {
     fontSize: TYPE.footnote.fontSize,
     lineHeight: 20,
-    fontWeight: '700',
+    fontWeight: '600',
     letterSpacing: 0.4,
     fontVariant: ['tabular-nums'],
     includeFontPadding: false,
@@ -1500,7 +1500,7 @@ const styles = StyleSheet.create({
   pageHeaderGhost: { opacity: 0 },
   pageHeaderText: {
     fontSize: TYPE.footnote.fontSize,
-    fontWeight: '600',
+    fontWeight: '500',
     letterSpacing: 0.4,
     fontVariant: ['tabular-nums'],
   },
@@ -1513,7 +1513,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.xs,
   },
-  nightPillText: { fontSize: TYPE.label.fontSize, fontWeight: '600', letterSpacing: 0.3 },
+  nightPillText: { fontSize: TYPE.label.fontSize, fontWeight: '500', letterSpacing: 0.3 },
   // The same box as the rail's jump button, so the bar reads as one row of
   // controls rather than a rail with things stuck to it.
   toneBtn: {
@@ -1526,7 +1526,7 @@ const styles = StyleSheet.create({
   toneHeaderBtn: { paddingHorizontal: SPACING.xs },
   // The frame glyph is drawn lighter than the sun and moon are; the bold
   // weight brings it level with them, as it had in the header.
-  fullscreenGlyph: { fontSize: TYPE.body.fontSize, lineHeight: 20, fontWeight: '700' },
+  fullscreenGlyph: { fontSize: TYPE.body.fontSize, lineHeight: 20, fontWeight: '600' },
   pageFooter: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -1541,7 +1541,7 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderRadius: RADIUS.xl,
   },
-  finishPillLabel: { fontSize: TYPE.label.fontSize, fontWeight: '700' },
+  finishPillLabel: { fontSize: TYPE.label.fontSize, fontWeight: '600' },
   pageNumberFrame: {
     minWidth: 38,
     paddingHorizontal: SPACING.md,
@@ -1552,7 +1552,7 @@ const styles = StyleSheet.create({
   },
   pageNumber: {
     fontSize: TYPE.footnote.fontSize,
-    fontWeight: '700',
+    fontWeight: '600',
     fontVariant: ['tabular-nums'],
   },
   jumpBackdrop: {
@@ -1566,7 +1566,7 @@ const styles = StyleSheet.create({
     padding: SPACING.lg,
     gap: SPACING.md,
   },
-  jumpTitle: { fontSize: TYPE.body.fontSize, fontWeight: '700' },
+  jumpTitle: { fontSize: TYPE.body.fontSize, fontWeight: '600' },
   jumpInput: {
     borderWidth: 1,
     borderRadius: RADIUS.md,

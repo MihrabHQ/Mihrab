@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
   },
   left: { flex: 1, gap: 1 },
   right: { width: 176, alignItems: 'center', gap: 5 },
-  appName: { color: '#ffffff', fontSize: 26, fontWeight: '800' },
+  appName: { color: '#ffffff', fontSize: 26, fontWeight: '600' },
   tagline: { color: '#bbf7d0', fontSize: 11 },
   rule: {
     height: 1,
@@ -129,8 +129,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#3f8a5f',
     marginVertical: 8,
   },
-  forPlace: { color: '#ffffff', fontSize: 15, fontWeight: '700' },
-  islamicMonth: { color: '#ffffff', fontSize: 19, fontWeight: '800', marginTop: 2 },
+  forPlace: { color: '#ffffff', fontSize: 15, fontWeight: '600' },
+  islamicMonth: { color: '#ffffff', fontSize: 19, fontWeight: '600', marginTop: 2 },
   gregorianMonth: { color: '#dcfce7', fontSize: 13 },
   method: { color: '#a7d7bb', fontSize: 10, marginTop: 6 },
   // Big enough to survive being photographed off a wall, which is how a

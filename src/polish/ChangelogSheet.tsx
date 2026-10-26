@@ -674,7 +674,7 @@ const styles = StyleSheet.create({
   pillText: {
     fontSize: TYPE.caption.fontSize,
     lineHeight: TYPE.caption.lineHeight,
-    fontWeight: '700',
+    fontWeight: '600',
   },
   body: { gap: SPACING.sm },
   list: { gap: SPACING.sm },
@@ -688,11 +688,11 @@ const styles = StyleSheet.create({
   },
   itemText: { flex: 1 },
   languageNote: { gap: SPACING.sm },
-  languageName: { fontWeight: '700' },
+  languageName: { fontWeight: '600' },
   groups: { gap: SPACING.sm },
   group: { gap: SPACING.sm },
-  groupLabel: { fontWeight: '600' },
-  bold: { fontWeight: '700' },
+  groupLabel: { fontWeight: '500' },
+  bold: { fontWeight: '600' },
   rule: { height: StyleSheet.hairlineWidth },
   footer: {
     paddingHorizontal: SPACING.lg,

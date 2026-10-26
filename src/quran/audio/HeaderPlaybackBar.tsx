@@ -322,7 +322,7 @@ const styles = StyleSheet.create({
   },
   pressed: { opacity: 0.55 },
   namePress: { flex: 1, marginEnd: SPACING.sm },
-  name: { fontSize: TYPE.footnote.fontSize, fontWeight: '700', fontVariant: ['tabular-nums'] },
+  name: { fontSize: TYPE.footnote.fontSize, fontWeight: '600', fontVariant: ['tabular-nums'] },
   track: { height: 2, width: '100%' },
   fill: { height: '100%' },
 });

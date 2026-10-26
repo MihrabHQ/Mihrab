@@ -202,12 +202,12 @@ const styles = StyleSheet.create({
   },
   pressed: { opacity: 0.75 },
   label: {
-    fontWeight: '700',
+    fontWeight: '600',
     letterSpacing: 0.2,
   },
   /** The bearing, a shade lighter than the word so the word leads. */
   degrees: {
-    fontWeight: '600',
+    fontWeight: '500',
     letterSpacing: 0.2,
     opacity: 0.85,
   },

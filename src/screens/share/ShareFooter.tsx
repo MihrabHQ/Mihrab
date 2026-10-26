@@ -64,8 +64,8 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   left: { flex: 1, gap: 1 },
-  pitch: { color: '#166534', fontSize: 10, fontWeight: '700' },
+  pitch: { color: '#166534', fontSize: 10, fontWeight: '600' },
   source: { color: '#4b5563', fontSize: 9 },
   note: { color: '#6b7280', fontSize: 9 },
-  site: { color: '#166534', fontSize: 9, fontWeight: '700' },
+  site: { color: '#166534', fontSize: 9, fontWeight: '600' },
 });

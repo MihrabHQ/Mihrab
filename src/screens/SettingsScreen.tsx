@@ -102,11 +102,10 @@ export function SettingsScreen() {
                   style={[styles.rowLine, { backgroundColor: palette.border }]}
                 />
               ) : null}
-              <View
-                style={[
-                  styles.iconWell,
-                  { backgroundColor: palette.accentBg },
-                ]}>
+              {/* The glyph alone, in the accent: it sat in a tinted
+                  square, which made a row of eight coloured tiles down a
+                  page that is an index. */}
+              <View style={styles.iconWell}>
                 <page.Icon color={palette.accentSolid} />
               </View>
               <View style={styles.rowText}>
@@ -159,6 +158,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   rowText: { flex: 1, gap: 2 },
-  title: { fontSize: TYPE.body.fontSize, fontWeight: '600' },
+  title: { fontSize: TYPE.body.fontSize, fontWeight: '500' },
   blurb: { fontSize: TYPE.label.fontSize },
 });

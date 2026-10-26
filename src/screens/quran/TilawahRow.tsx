@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   text: { flex: 1, minWidth: 0 },
-  title: { fontSize: TYPE.callout.fontSize, fontWeight: '700' },
+  title: { fontSize: TYPE.callout.fontSize, fontWeight: '600' },
   sub: { fontSize: TYPE.footnote.fontSize, marginTop: 1 },
   play: {
     width: 40,

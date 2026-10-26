@@ -386,11 +386,11 @@ const styles = StyleSheet.create({
   head: { alignItems: 'center', gap: SPACING.sm },
   position: {
     fontSize: TYPE.label.fontSize,
-    fontWeight: '600',
+    fontWeight: '500',
   },
   arabic: {
     fontSize: 30, // tokens-ok-line: display or Arabic scale, sized by hand
-    fontWeight: '600',
+    fontWeight: '500',
     textAlign: 'center',
     writingDirection: 'rtl',
   },
@@ -401,9 +401,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: SPACING.lg,
   },
-  count: { fontWeight: '700' },
+  // Light, like the hero's countdown: the ring is the emphasis, the
+  // figure only has to be read.
+  count: { fontWeight: '300', letterSpacing: -1 },
   targetText: { fontSize: TYPE.body.fontSize, fontWeight: '500', marginTop: 2 },
-  hint: { fontSize: TYPE.label.fontSize, fontWeight: '600', letterSpacing: 0.3 },
+  hint: { fontSize: TYPE.label.fontSize, fontWeight: '500', letterSpacing: 0.3 },
   peek: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -414,11 +416,11 @@ const styles = StyleSheet.create({
   },
   peekLabel: {
     fontSize: TYPE.label.fontSize,
-    fontWeight: '600',
+    fontWeight: '500',
   },
   peekBody: { flex: 1, minWidth: 0, alignItems: 'flex-end' },
-  peekMeta: { fontSize: TYPE.label.fontSize, fontWeight: '600' },
-  peekArabic: { fontSize: TYPE.title3.fontSize, fontWeight: '600', writingDirection: 'rtl' },
+  peekMeta: { fontSize: TYPE.label.fontSize, fontWeight: '500' },
+  peekArabic: { fontSize: TYPE.title3.fontSize, fontWeight: '500', writingDirection: 'rtl' },
   navRow: {
     flexDirection: 'row',
     gap: SPACING.md,
@@ -438,7 +440,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  navLabel: { fontSize: TYPE.callout.fontSize, fontWeight: '700' },
+  navLabel: { fontSize: TYPE.callout.fontSize, fontWeight: '600' },
   resetLink: { paddingHorizontal: SPACING.sm, paddingVertical: SPACING.md },
-  resetLabel: { fontSize: TYPE.footnote.fontSize, fontWeight: '600' },
+  resetLabel: { fontSize: TYPE.footnote.fontSize, fontWeight: '500' },
 });

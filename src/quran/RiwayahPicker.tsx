@@ -155,7 +155,7 @@ export function RiwayahPicker({
             accessibilityRole="button"
             onPress={onClose}
             style={styles.cancel}>
-            <Text style={{ color: palette.accentSolid, fontWeight: '700' }}>
+            <Text style={{ color: palette.accentSolid, fontWeight: '600' }}>
               {t('common.cancel', 'Cancel')}
             </Text>
           </Pressable>
@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
     padding: SPACING.xl,
   },
   card: { width: '100%', maxWidth: 360, borderRadius: RADIUS.lg, padding: SPACING.lg, gap: SPACING.sm },
-  title: { fontSize: TYPE.body.fontSize, fontWeight: '700', marginBottom: SPACING.xs },
+  title: { fontSize: TYPE.body.fontSize, fontWeight: '600', marginBottom: SPACING.xs },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -185,10 +185,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   rowText: { flex: 1 },
-  name: { fontSize: TYPE.callout.fontSize, fontWeight: '600' },
+  name: { fontSize: TYPE.callout.fontSize, fontWeight: '500' },
   note: { fontSize: TYPE.label.fontSize, marginTop: 2 },
-  arabic: { ...arabicTextStyle('body'), fontSize: TYPE.title3.fontSize, fontWeight: '700' },
+  arabic: { ...arabicTextStyle('body'), fontSize: TYPE.title3.fontSize, fontWeight: '600' },
   tick: { width: 16, alignItems: 'center' },
-  tickMark: { fontSize: TYPE.callout.fontSize, fontWeight: '700' },
+  tickMark: { fontSize: TYPE.callout.fontSize, fontWeight: '600' },
   cancel: { alignSelf: 'center', paddingVertical: SPACING.md, paddingHorizontal: SPACING.lg },
 });

@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
   pad: { padding: SPACING.xl },
   title: {
     fontSize: TYPE.title2.fontSize,
-    fontWeight: '600',
+    fontWeight: '500',
     marginBottom: SPACING.sm,
     textAlign: 'center',
   },

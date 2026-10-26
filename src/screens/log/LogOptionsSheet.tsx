@@ -208,7 +208,7 @@ export function LogOptionsButton({ onPress }: { onPress: () => void }) {
 const styles = StyleSheet.create({
   sheet: { gap: SPACING.md },
   legend: { gap: SPACING.sm, paddingHorizontal: SPACING.xs },
-  legendTitle: { fontWeight: '600' },
+  legendTitle: { fontWeight: '500' },
   close: {
     alignSelf: 'stretch',
     alignItems: 'center',
@@ -224,5 +224,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   pressed: { opacity: 0.6 },
-  moreGlyph: { fontSize: TYPE.title3.fontSize, fontWeight: '700', lineHeight: 22 },
+  moreGlyph: { fontSize: TYPE.title3.fontSize, fontWeight: '600', lineHeight: 22 },
 });

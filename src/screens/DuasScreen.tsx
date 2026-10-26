@@ -872,7 +872,7 @@ const styles = StyleSheet.create({
   section: { gap: SPACING.sm },
   sectionTitle: {
     fontSize: TYPE.label.fontSize,
-    fontWeight: '600',
+    fontWeight: '500',
     paddingHorizontal: SPACING.xs,
   },
   categoryChevron: {
@@ -900,7 +900,7 @@ const styles = StyleSheet.create({
   },
   tabLabel: {
     fontSize: TYPE.callout.fontSize,
-    fontWeight: '600',
+    fontWeight: '500',
     lineHeight: 18,
     includeFontPadding: false,
   },
@@ -919,7 +919,7 @@ const styles = StyleSheet.create({
     // of them off the bar.
     flexShrink: 1,
     fontSize: TYPE.title2.fontSize,
-    fontWeight: '700',
+    fontWeight: '600',
     textAlign: 'center',
   },
   /**
@@ -957,7 +957,7 @@ const styles = StyleSheet.create({
   title: {
     flexShrink: 1,
     fontSize: TYPE.title3.fontSize,
-    fontWeight: '600',
+    fontWeight: '500',
   },
   // Pushed to the trailing edge, and `marginStart: 'auto'` rather than a
   // Spacer so a long title shrinks past it instead of pushing it off the
@@ -996,7 +996,7 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.xs,
     borderRadius: RADIUS.full,
   },
-  aidChipText: { fontSize: TYPE.label.fontSize, fontWeight: '700' },
+  aidChipText: { fontSize: TYPE.label.fontSize, fontWeight: '600' },
   translit: { fontSize: TYPE.callout.fontSize, fontStyle: 'italic' },
   translation: { fontSize: TYPE.callout.fontSize, lineHeight: 22 },
   partNote: { fontSize: TYPE.footnote.fontSize, lineHeight: 18 },
@@ -1028,11 +1028,11 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.md,
     borderWidth: 1.5,
   },
-  counterValue: { fontSize: 28, fontWeight: '700' }, // tokens-ok-line: display or Arabic scale, sized by hand
+  counterValue: { fontSize: 28, fontWeight: '600' }, // tokens-ok-line: display or Arabic scale, sized by hand
   counterTarget: { fontSize: TYPE.body.fontSize, fontWeight: '500' },
   counterReset: {
     paddingVertical: SPACING.md,
     paddingHorizontal: SPACING.md,
   },
-  counterResetLabel: { fontSize: TYPE.footnote.fontSize, fontWeight: '600' },
+  counterResetLabel: { fontSize: TYPE.footnote.fontSize, fontWeight: '500' },
 });

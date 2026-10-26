@@ -67,6 +67,6 @@ export const Tile = memo(TileImpl);
 const styles = StyleSheet.create({
   tile: { flex: 1, minWidth: 0 },
   value: { fontVariant: ['tabular-nums'] },
-  unit: { fontWeight: '600' },
+  unit: { fontWeight: '500' },
   caption: { marginTop: 2 },
 });

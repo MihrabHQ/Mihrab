@@ -344,7 +344,7 @@ export function RecitationControls({
           style={{
             color: palette.accentSolid,
             fontSize: TYPE.footnote.fontSize,
-            fontWeight: '700',
+            fontWeight: '600',
           }}>
           {t('quran.changeReciter', 'Change')}
         </Text>
@@ -431,7 +431,7 @@ export function RecitationControls({
 const styles = StyleSheet.create({
   section: {
     fontSize: TYPE.label.fontSize,
-    fontWeight: '600',
+    fontWeight: '500',
     marginTop: SPACING.lg,
     marginBottom: SPACING.sm,
   },
@@ -443,7 +443,7 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.md,
     gap: SPACING.sm,
   },
-  reciterName: { fontSize: TYPE.footnote.fontSize, fontWeight: '600' },
+  reciterName: { fontSize: TYPE.footnote.fontSize, fontWeight: '500' },
   reciterArabic: { fontSize: TYPE.label.fontSize, marginTop: 1 },
   dlRow: {
     marginTop: SPACING.sm,
@@ -458,7 +458,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginTop: SPACING.sm,
   },
-  rowLabel: { fontSize: TYPE.footnote.fontSize, fontWeight: '600', flex: 1 },
+  rowLabel: { fontSize: TYPE.footnote.fontSize, fontWeight: '500', flex: 1 },
   stepper: { flexDirection: 'row', alignItems: 'center', gap: SPACING.md },
   stepBtn: {
     width: 32,
@@ -468,10 +468,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  stepGlyph: { fontSize: TYPE.title3.fontSize, fontWeight: '700' },
+  stepGlyph: { fontSize: TYPE.title3.fontSize, fontWeight: '600' },
   stepValue: {
     fontSize: TYPE.callout.fontSize,
-    fontWeight: '700',
+    fontWeight: '600',
     minWidth: 34,
     textAlign: 'center',
     fontVariant: ['tabular-nums'],

@@ -325,7 +325,7 @@ export function KhatmahPacingSheet({
             accessibilityLabel={t('common.cancel', 'Cancel')}
             onPress={onClose}
             style={styles.action}>
-            <Text style={{ color: palette.muted, fontWeight: '600' }}>
+            <Text style={{ color: palette.muted, fontWeight: '500' }}>
               {t('common.cancel', 'Cancel')}
             </Text>
           </Pressable>
@@ -346,7 +346,7 @@ export function KhatmahPacingSheet({
               )
             }
             style={styles.action}>
-            <Text style={{ color: palette.accentSolid, fontWeight: '700' }}>
+            <Text style={{ color: palette.accentSolid, fontWeight: '600' }}>
               {mode === 'start'
                 ? t('quran.khatmahStartCta', 'Start')
                 : kind === 'date'
@@ -370,11 +370,11 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.lg,
     padding: SPACING.lg,
   },
-  title: { fontSize: TYPE.callout.fontSize, fontWeight: '700' },
+  title: { fontSize: TYPE.callout.fontSize, fontWeight: '600' },
   segment: { marginTop: SPACING.sm },
   date: {
     fontSize: TYPE.title3.fontSize,
-    fontWeight: '700',
+    fontWeight: '600',
     marginTop: SPACING.sm,
   },
   meta: { fontSize: TYPE.footnote.fontSize, marginTop: 2 },
@@ -390,7 +390,7 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.sm,
     alignItems: 'center',
   },
-  stepLabel: { fontSize: TYPE.footnote.fontSize, fontWeight: '600' },
+  stepLabel: { fontSize: TYPE.footnote.fontSize, fontWeight: '500' },
   presets: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -403,7 +403,7 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.xs,
     paddingHorizontal: SPACING.md,
   },
-  presetLabel: { fontSize: TYPE.footnote.fontSize, fontWeight: '600' },
+  presetLabel: { fontSize: TYPE.footnote.fontSize, fontWeight: '500' },
   actions: {
     flexDirection: 'row',
     justifyContent: 'flex-end',

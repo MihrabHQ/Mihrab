@@ -348,7 +348,7 @@ const styles = StyleSheet.create({
     minHeight: 32,
   },
   heading: { gap: SPACING.sm, marginBottom: SPACING.md },
-  title: { textAlign: 'center', fontWeight: '700' },
+  title: { textAlign: 'center', fontWeight: '600' },
   body: { textAlign: 'center' },
   footer: {
     paddingHorizontal: SPACING.lg,

@@ -621,7 +621,7 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   pad: { padding: 24 },
-  title: { fontSize: 20, fontWeight: '600', marginBottom: 8, textAlign: 'center' },
+  title: { fontSize: 20, fontWeight: '500', marginBottom: 8, textAlign: 'center' },
   body: { fontSize: 15, lineHeight: 22, textAlign: 'center' },
   err: { fontSize: 16, textAlign: 'center' },
   scrollContent: {
@@ -666,7 +666,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   langLabel: { fontSize: 13 },
-  langValue: { fontSize: 14, fontWeight: '700' },
+  langValue: { fontSize: 14, fontWeight: '600' },
   exportRow: { flexDirection: 'row', gap: 10 },
   exportBtn: {
     flex: 1,
@@ -683,5 +683,5 @@ const styles = StyleSheet.create({
   progressText: { fontSize: 13, textAlign: 'center' },
   progressTrack: { height: 4, borderRadius: 2, overflow: 'hidden' },
   progressFill: { height: 4, borderRadius: 2 },
-  exportBtnText: { color: '#ffffff', fontSize: 15, fontWeight: '600' },
+  exportBtnText: { color: '#ffffff', fontSize: 15, fontWeight: '500' },
 });
