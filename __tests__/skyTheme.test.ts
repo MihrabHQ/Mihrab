@@ -576,7 +576,9 @@ describe('Realistic', () => {
       for (let sun = 0; sun <= 60; sun += 1) {
         for (const daylight of [0.2, 0.5, 0.8]) {
           const m = skyMoodOf('day', daylight, { sun, daylight }, variant);
-          expect(hexToOklch(m.heroMid).C).toBeGreaterThanOrEqual(0.05);
+          // The horizon may pass through white between a warm haze and a
+          // blue one — a light haze, never a grey smudge.
+          expect(hexToOklch(m.heroMid).L).toBeGreaterThanOrEqual(0.78);
           expect(hexToOklch(m.heroTop).C).toBeGreaterThanOrEqual(0.075);
           expect(hexToOklch(m.accent).C).toBeGreaterThanOrEqual(0.085);
           // Never by way of green.

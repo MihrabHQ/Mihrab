@@ -374,7 +374,7 @@ function renderPage(code, langs, version) {
 <meta name="description" content="${esc(t.description)}">
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#1F5F4A" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0E1815" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#0F162F" media="(prefers-color-scheme: dark)">
 <link rel="canonical" href="${ORIGIN}${t.path}">
 <!-- hreflang:start -->
 ${hreflang(langs)}

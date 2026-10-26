@@ -754,6 +754,9 @@ const physicalLight = (side: 'morning' | 'afternoon'): StationAt[] => {
     st(4, pm ? 'golden' : 'morning', [0.66, 0.12, 247], [0.86, 0.09, 66], [0.97, 0.026, 68], { h: 52, C: 0.12 }, [0.88, 0.13, 72]),
     // A low sun: the blue paling, a warm haze on the horizon.
     st(9, pm ? 'golden' : 'morning', [0.68, 0.12, 249], [0.89, 0.065, 78], [0.97, 0.022, 76], { h: 62, C: 0.11 }, [0.92, 0.11, 82]),
+    // The haze clearing: a blue-white horizon, through which the warm
+    // haze and the clear blue meet in white rather than in grey.
+    st(13, pm ? 'golden' : 'morning', [0.67, 0.13, 250], [0.92, 0.03, 232], [0.97, 0.018, 160], { h: 250, C: 0.11 }, [0.94, 0.09, 86]),
     // A working day: clear blue — which a Stockholm October noon (20°) reaches and its December noon (7°) does not.
     st(20, 'midday', [0.65, 0.15, 252], [0.87, 0.07, 247], [0.97, 0.02, 250], { h: 252, C: 0.12 }, [0.95, 0.08, 90]),
     // A high sun: the azure straight up.
@@ -863,8 +866,12 @@ export const SKY_MOODS_BY_VARIANT: Record<SkyVariant, Record<SkyMoodName, SkyMoo
 
 // ── The moment, mixed ──────────────────────────────────────────────────
 
-/** The colours that carry the hour: hue round the wheel, chroma kept. */
-const ROUND: ReadonlySet<keyof SkyMood> = new Set(['heroTop', 'heroMid', 'bodyLight', 'accent']);
+/**
+ * The colours that carry the hour: hue round the wheel, chroma kept. Not
+ * the horizon's stop: a warm haze and a blue-white one meet in white, as
+ * a real horizon does, and carried round the wheel they met in pink.
+ */
+const ROUND: ReadonlySet<keyof SkyMood> = new Set(['heroTop', 'bodyLight', 'accent']);
 
 const MIXED: (keyof SkyMood)[] = [
   'heroTop',

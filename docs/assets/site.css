@@ -20,24 +20,30 @@
   --accent: #1F5F4A;
   --accent-ink: #EEE4D4;
   --frame: #E8E0D2;
-  --shadow: 0 1px 2px rgba(18,58,45,.06), 0 12px 32px -12px rgba(18,58,45,.18);
+  --shadow: 0 1px 2px rgba(24,36,70,.06), 0 12px 32px -12px rgba(24,36,70,.18);
+  /* Cards are a pane of the day's sky rather than a block of white: the
+     section's tint shows through them, faintly. */
+  --card: rgba(255, 255, 255, .72);
   --radius: 14px;
   --measure: 68ch;
   --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
   --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
 }
 @media (prefers-color-scheme: dark) {
+  /* The dark page is the app's night: the navy its Sky theme settles into
+     after Isha, not a darkened copy of the green paper. */
   :root {
-    --paper: #0E1815;
-    --surface: #16241F;
-    --surface-2: #1B2C25;
+    --paper: #0F162F;
+    --surface: #1A223A;
+    --surface-2: #202840;
     --ink: #EDE6DA;
-    --ink-soft: #A9BAB1;
-    --line: #26372F;
-    --accent: #7FD3B4;
+    --ink-soft: #AEB8CC;
+    --line: #283047;
+    --accent: #9DB7E6;
     --accent-ink: #EEE4D4;
-    --frame: #22332C;
+    --frame: #2B3350;
     --shadow: 0 1px 2px rgba(0,0,0,.4), 0 12px 32px -14px rgba(0,0,0,.7);
+    --card: rgba(255, 255, 255, .055);
   }
 }
 * { box-sizing: border-box; }
@@ -98,16 +104,18 @@ h2 { font-size: clamp(26px, 4vw, 34px); }
      nothing for it, and it cut the open language menu off at the bottom
      edge of the hero. */
   position: relative; border-top: 0;
-  /* The last of the night before Fajr, in the app's Realistic sky
-     (skyModel / skyMoods: nightLate, dawn, dawnBright): deep indigo
-     overhead, the first rose of dawn low down, and under the text the sky
-     thins away into the page's own sky, where the scrolling day begins. */
+  /* Fajr, in the app's Realistic sky (src/theme/skyMoods.ts, the dawn
+     station: the sun 12° under the horizon): night still overhead, the
+     first rose along the horizon, and under the text the sky thins away
+     into the page's own day, which begins at sunrise just below. The colour
+     under the fade is the first section's, so the seam is not a seam. */
   --hero-fade: 150px;
   background:
-    radial-gradient(120% 30% at 50% calc(100% - var(--hero-fade)), rgba(232, 140, 121, .30), transparent 58%),
+    radial-gradient(120% 30% at 50% calc(100% - var(--hero-fade)), rgba(223, 136, 143, .34), transparent 58%),
     linear-gradient(180deg,
-      #0A123E 0%, #0E1750 34%, #243B85 64%, #5A4482 calc(100% - var(--hero-fade) - 20px),
-      #8C5A82 calc(100% - var(--hero-fade) + 30px), transparent 100%);
+      #070F33 0%, #0F265F 36%, #3A3270 66%, #6A3B73 calc(100% - var(--hero-fade) - 20px),
+      #834071 calc(100% - var(--hero-fade) + 30px), transparent 100%)
+    var(--sky-sunrise);
   color: var(--cream); padding: 0 0 var(--hero-fade);
 }
 .hero .wrap { position: relative; z-index: 2; padding-top: 84px; padding-bottom: 88px; }
@@ -153,7 +161,6 @@ h2 { font-size: clamp(26px, 4vw, 34px); }
 }
 .trust svg { flex: none; opacity: .85; }
 /* ---- install ---- */
-.install { background: var(--surface); }
 /* Store badges. The four files are cropped to their ink, so a single height
    makes them genuinely the same size. Shipped uncropped they are not: Apple's
    is drawn tight to its box, while the Google Play, GitHub and Obtainium files
@@ -178,10 +185,7 @@ h2 { font-size: clamp(26px, 4vw, 34px); }
   display: block; height: 68px; width: auto;
 }
 .badges a:hover { transform: translateY(-1px); opacity: .88; }
-.badges a:focus-visible { outline: 2px solid var(--emerald); outline-offset: 4px; }
-@media (prefers-color-scheme: dark) {
-  .badges a:focus-visible { outline-color: var(--accent); }
-}
+.badges a:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
 @media (max-width: 420px) {
   .badges { justify-content: center; }
   .badges img { height: 60px; }
@@ -198,10 +202,9 @@ h2 { font-size: clamp(26px, 4vw, 34px); }
 .channel {
   display: flex; gap: 14px; align-items: flex-start;
   border: 1px solid var(--line); border-radius: var(--radius);
-  background: var(--paper); padding: 16px 18px; min-height: 100%;
+  background: var(--card); padding: 16px 18px; min-height: 100%;
 }
-.channel .glyph { flex: none; margin-top: 2px; color: var(--emerald); }
-@media (prefers-color-scheme: dark) { .channel .glyph { color: var(--accent); } }
+.channel .glyph { flex: none; margin-top: 2px; color: var(--accent); }
 .channel b { display: block; font-weight: 650; font-size: 16px; letter-spacing: -0.01em; }
 .channel span { display: block; font-size: 14.5px; color: var(--ink-soft); margin-top: 3px; }
 .channel a { font-weight: 600; }
@@ -215,20 +218,18 @@ h2 { font-size: clamp(26px, 4vw, 34px); }
 .platform {
   flex: 1 1 560px;
   border: 1px solid var(--line); border-radius: var(--radius);
-  background: var(--paper); padding: 22px 24px 24px; box-shadow: var(--shadow);
+  background: var(--card); padding: 22px 24px 24px; box-shadow: var(--shadow);
 }
 .platform:first-child { flex: 0 1 330px; }
 .platform > h3 {
   font-size: 19px; display: flex; align-items: center; gap: 10px; margin: 0 0 16px;
 }
-.platform > h3 .glyph { color: var(--emerald); flex: none; }
-@media (prefers-color-scheme: dark) { .platform > h3 .glyph { color: var(--accent); } }
+.platform > h3 .glyph { color: var(--accent); flex: none; }
 .platform .badges { margin: 0; align-items: flex-start; gap: 14px 12px; }
 .platform .badges img { height: 44px; }
 .platform .note { margin: 14px 0 0; }
-.platform .flag { margin: 14px 0 0; font-size: 14px; font-weight: 600; line-height: 1.45; color: var(--emerald); }
+.platform .flag { margin: 14px 0 0; font-size: 14px; font-weight: 600; line-height: 1.45; color: var(--accent); }
 .platform .flag a { font-weight: 500; color: var(--ink-soft); margin-inline-start: 4px; }
-@media (prefers-color-scheme: dark) { .platform .flag { color: var(--accent); } }
 .platform .note code { font-size: 11.5px; white-space: nowrap; display: inline-block; margin-top: 4px; }
 @media (max-width: 600px) {
   .platform, .platform:first-child { flex: 1 1 100%; }
@@ -261,7 +262,7 @@ h2 { font-size: clamp(26px, 4vw, 34px); }
 .review {
   margin: 0; width: 330px; display: flex; flex-direction: column; gap: 10px;
   border: 1px solid var(--line); border-radius: var(--radius);
-  background: var(--surface); padding: 20px 22px 18px; box-shadow: var(--shadow);
+  background: var(--card); padding: 20px 22px 18px; box-shadow: var(--shadow);
 }
 .review .stars { margin: 0; display: flex; gap: 3px; color: #C9962B; }
 .review .stars svg { width: 15px; height: 15px; }
@@ -296,26 +297,23 @@ h2 { font-size: clamp(26px, 4vw, 34px); }
 }
 .group {
   border: 1px solid var(--line); border-radius: var(--radius);
-  background: var(--surface); padding: 24px 24px 26px; box-shadow: var(--shadow);
+  background: var(--card); padding: 24px 24px 26px; box-shadow: var(--shadow);
 }
 .group h3 {
   font-size: 19px; display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
 }
-.group h3 .glyph { color: var(--emerald); flex: none; }
-@media (prefers-color-scheme: dark) { .group h3 .glyph { color: var(--accent); } }
+.group h3 .glyph { color: var(--accent); flex: none; }
 .group ul { margin: 0; padding: 0; list-style: none; }
 .group li { position: relative; padding: 0 0 0 20px; margin-bottom: 12px; font-size: 15.5px; }
 .group li:last-child { margin-bottom: 0; }
 .group li::before {
   content: ""; position: absolute; left: 0; top: .58em; width: 7px; height: 7px;
-  background: var(--emerald); opacity: .55;
+  background: var(--accent); opacity: .65;
   clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
 }
-@media (prefers-color-scheme: dark) { .group li::before { background: var(--accent); opacity: .7; } }
 .group li b { font-weight: 650; }
 .group li span { color: var(--ink-soft); }
 /* ---- screenshots ---- */
-.sweden { background: var(--surface-2); }
 .sweden .cols {
   /* Two columns, not three: the section is one wide explanation and two
      questions, and two questions across three columns leaves a hole. */
@@ -330,7 +328,6 @@ h2 { font-size: clamp(26px, 4vw, 34px); }
   .card.span ul { columns: 2; column-gap: 40px; }
   .card.span li { break-inside: avoid; }
 }
-.shots { background: var(--paper); }
 .gallery {
   margin: 32px 0 0; padding: 0; list-style: none;
   display: grid; gap: 26px 20px; grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -374,7 +371,7 @@ h2 { font-size: clamp(26px, 4vw, 34px); }
 }
 .card {
   border: 1px solid var(--line); border-radius: var(--radius);
-  background: var(--surface); padding: 22px 24px;
+  background: var(--card); padding: 22px 24px;
 }
 .card h3 { font-size: 17px; margin-bottom: 10px; }
 .card p, .card li { font-size: 15.5px; color: var(--ink-soft); }
@@ -388,8 +385,7 @@ h2 { font-size: clamp(26px, 4vw, 34px); }
 .card strong { color: var(--ink); font-weight: 600; }
 /* ---- footer ---- */
 footer {
-  background: var(--surface-2);
-  padding: 46px 0 56px; font-size: 15px; color: var(--ink-soft);
+  padding: 46px 0 56px; font-size: 15px;
 }
 footer h2 { font-size: 17px; color: var(--ink); margin-bottom: 12px; }
 footer p { max-width: var(--measure); }
@@ -442,7 +438,6 @@ footer .colophon {
 @media print { .hero { background: none; color: #000; } .hero-art { display: none; } }
 
 /* ---- the Swedish page's list of towns ---- */
-.towns { background: var(--surface); }
 .townlist {
   margin: 26px 0 0; padding: 0; list-style: none;
   columns: 6 140px; column-gap: 26px;
@@ -513,8 +508,7 @@ footer .colophon {
 [dir="rtl"] .hero-art { transform: scaleX(-1); }
 
 /* ---- accuracy: the certification table, generated from mihrab-methods' record ---- */
-.accuracy-section { background: var(--surface); }
-.table-scroll { overflow-x: auto; margin: 26px 0 8px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); }
+.table-scroll { overflow-x: auto; margin: 26px 0 8px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--card); }
 table.accuracy { width: 100%; border-collapse: collapse; font-size: 15px; font-variant-numeric: tabular-nums; }
 table.accuracy caption { position: sticky; left: 0; text-align: start; padding: 14px 16px 6px; color: var(--ink-soft); font-size: 14px; }
 table.accuracy th, table.accuracy td { padding: 9px 14px; text-align: start; border-top: 1px solid var(--line); vertical-align: top; }
@@ -525,64 +519,92 @@ table.accuracy tr.cont td, table.accuracy tr.cont th { border-top-style: dashed;
 table.accuracy tbody th { font-weight: 600; white-space: nowrap; }
 table.accuracy tfoot td { font-weight: 600; }
 .accuracy-section .cols { margin-top: 28px; }
-.developers { background: var(--surface-2); }
 .developers .cmd code { font-size: 15px; }
 
-/* ---- the day, as you scroll ----
- * The page's ground passes through the prayer day under the app's Realistic
- * sky: Fajr at the top, then sunrise, Dhuhr, Asr, Maghrib, and Isha at the
- * foot. Each stop is the sky's own pair from src/theme/skyMoods.ts (the upper
- * sky over the horizon's glow), dimmed far down into the page's paper so the
- * text keeps its contrast.
+/* ---- the day, down the page ----
  *
- * No script: a CSS scroll-driven animation on a fixed layer behind the page.
- * Where the browser has no scroll timelines the page stays as it was. */
-@supports (animation-timeline: scroll()) {
-  @property --sky-a { syntax: '<color>'; inherits: true; initial-value: transparent; }
-  @property --sky-b { syntax: '<color>'; inherits: true; initial-value: transparent; }
-  :root { --sky-base: var(--paper); --sky-amt: 17%; }
-  @media (prefers-color-scheme: dark) { :root { --sky-amt: 24%; } }
-  html {
-    animation: prayer-day linear both;
-    animation-timeline: scroll(root block);
+ * The page's ground passes through the prayer day under the app's Realistic
+ * sky: the hero is Fajr, the first section sunrise, then morning, noon and
+ * the afternoon, the golden hour, the afterglow and dusk, and the footer is
+ * the night. Every stop is a station of src/theme/skyMoods.ts — the colour
+ * of the sky at the horizon (by day) or its upper sky (by night), mixed far
+ * down into the page's paper in OKLab so the text keeps its contrast; the
+ * accent of each section is the app's accent for that hour.
+ *
+ * The hours are pinned to the sections, not to the scroll position. A
+ * document gradient or a scroll-driven animation puts noon at 40 % of the
+ * page, which is a different section on every page and every screen (the
+ * English page is 31 000 px tall on a phone and 18 000 on a laptop); a
+ * section is the same section everywhere. Each one is a gradient from its
+ * hour to the next's, so the day moves inside the sections and never
+ * jumps at their edges. The hours are assigned by position in the page,
+ * because the language pages order their sections differently; whatever
+ * the order, the last three sections are always the golden hour, the
+ * afterglow and dusk, so every page ends at the night footer the same way.
+ *
+ * No script, no new CSS: plain hex stops in a linear-gradient, which every
+ * browser since 2012 draws. The mixing was done once, offline. */
+:root {
+  --sky-sunrise:   #FCECDD;
+  --sky-morning:   #F7F3EC;
+  --sky-midday:    #E8F0F5;
+  --sky-afternoon: #EEF4F3;
+  --sky-golden:    #FDE8D9;
+  --sky-afterglow: #F5D6CD;
+  --sky-dusk:      #DECBD3;
+  --accent-warm:   #9D4E19;  /* sunrise, the golden hour */
+  --accent-day:    #2C66AE;  /* the blue of the day */
+  --accent-ember:  #9A3F2E;  /* the afterglow */
+  --accent-dusk:   #6D3A6A;  /* dusk */
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --sky-sunrise:   #323F58;
+    --sky-morning:   #293B5B;
+    --sky-midday:    #1E355D;
+    --sky-afternoon: #263B5D;
+    --sky-golden:    #323C56;
+    --sky-afterglow: #2B2944;
+    --sky-dusk:      #1B1C3C;
+    --accent-warm:   #E8A779;
+    --accent-day:    #9DB7E6;
+    --accent-ember:  #E48969;
+    --accent-dusk:   #CF8CB8;
   }
-  body { background: transparent; }
-  body::before {
-    content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
-    background: linear-gradient(180deg, var(--sky-a) 0%, var(--sky-b) 100%);
-  }
-  /* The bands let the sky through; the cards keep their own surface. */
-  .install, .shots, .accuracy-section, .features, .sweden, .privacy, .faq, .support, .developers, footer, .towns { background: transparent; }
-  /* One card for the whole page, a pane of the sky rather than a block of
-     the old green paper: white glass by day, night glass in the dark. */
-  :root { --card: rgba(255, 255, 255, .80); }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --card: rgba(13, 17, 33, .58);
-      --line: rgba(255, 255, 255, .10);
-      --frame: rgba(255, 255, 255, .12);
-      --surface-2: rgba(255, 255, 255, .06);
-    }
-  }
-  .card, .platform, .channel, .review, .group, .table-scroll { background: var(--card); }
-  @keyframes prayer-day {
-    /* Fajr — dawn: indigo, the first rose at the horizon */
-    0%   { --sky-a: color-mix(in oklab, #244091 var(--sky-amt), var(--sky-base));
-           --sky-b: color-mix(in oklab, #BE5D78 var(--sky-amt), var(--sky-base)); }
-    /* Sunrise — morning */
-    20%  { --sky-a: color-mix(in oklab, #77A6E7 var(--sky-amt), var(--sky-base));
-           --sky-b: color-mix(in oklab, #FED29C var(--sky-amt), var(--sky-base)); }
-    /* Dhuhr — midday */
-    40%  { --sky-a: color-mix(in oklab, #378BE5 var(--sky-amt), var(--sky-base));
-           --sky-b: color-mix(in oklab, #9DCEFC var(--sky-amt), var(--sky-base)); }
-    /* Asr — the late afternoon */
-    60%  { --sky-a: color-mix(in oklab, #5D8FDB var(--sky-amt), var(--sky-base));
-           --sky-b: color-mix(in oklab, #E9DCC0 var(--sky-amt), var(--sky-base)); }
-    /* Maghrib — sunset */
-    80%  { --sky-a: color-mix(in oklab, #2D2E7D var(--sky-amt), var(--sky-base));
-           --sky-b: color-mix(in oklab, #CD4E54 var(--sky-amt), var(--sky-base)); }
-    /* Isha — night */
-    100% { --sky-a: color-mix(in oklab, #17245C var(--sky-amt), var(--sky-base));
-           --sky-b: color-mix(in oklab, #253486 var(--sky-amt), var(--sky-base)); }
-  }
+}
+main > section {
+  background: linear-gradient(180deg, var(--sky-from), var(--sky-to));
+}
+main > section:nth-of-type(1) { --sky-from: var(--sky-sunrise);   --sky-to: var(--sky-morning);   --accent: var(--accent-warm); }
+main > section:nth-of-type(2) { --sky-from: var(--sky-morning);   --sky-to: var(--sky-morning);   --accent: var(--accent-day); }
+main > section:nth-of-type(3) { --sky-from: var(--sky-morning);   --sky-to: var(--sky-midday);    --accent: var(--accent-day); }
+main > section:nth-of-type(4) { --sky-from: var(--sky-midday);    --sky-to: var(--sky-midday);    --accent: var(--accent-day); }
+main > section:nth-of-type(5) { --sky-from: var(--sky-midday);    --sky-to: var(--sky-afternoon); --accent: var(--accent-day); }
+main > section:nth-of-type(n+6) { --sky-from: var(--sky-afternoon); --sky-to: var(--sky-afternoon); --accent: var(--accent-day); }
+main > section:nth-last-of-type(3) { --sky-to: var(--sky-golden); }
+main > section:nth-last-of-type(2) { --sky-from: var(--sky-golden);    --sky-to: var(--sky-afterglow); --accent: var(--accent-warm); }
+main > section:last-of-type       { --sky-from: var(--sky-afterglow); --sky-to: var(--sky-dusk);      --accent: var(--accent-ember); }
+/* A page of only one or two sections has nowhere to put a whole day. */
+main > section:first-of-type:nth-last-of-type(2) { --sky-from: var(--sky-sunrise); --sky-to: var(--sky-golden); --accent: var(--accent-warm); }
+main > section:first-of-type:last-of-type { --sky-from: var(--sky-sunrise); --sky-to: var(--sky-dusk); --accent: var(--accent-warm); }
+/* The night. The same in both schemes: the footer is where the dark page
+   and the light page meet. */
+footer {
+  --accent: #B9C9F0; --ink: #EDE6DA; --ink-soft: #B5BDD3; --line: rgba(255, 255, 255, .14);
+  background: linear-gradient(180deg, #2A2F6B 0%, #18255C 38%, #0A1136 100%);
+  color: var(--ink-soft);
+}
+@media (prefers-color-scheme: dark) {
+  /* The dark page is already in the dusk, so the night only deepens. */
+  footer { background: linear-gradient(180deg, var(--sky-dusk) 0%, #0E152F 45%, #060B22 100%); }
+}
+footer code { background: rgba(255, 255, 255, .08); border-color: rgba(255, 255, 255, .16); }
+/* Asked for more contrast: the plain paper, and opaque cards. */
+@media (prefers-contrast: more) {
+  main > section { background: var(--paper); }
+  :root { --card: var(--surface); }
+}
+@media print {
+  main > section { background: none; }
+  footer { background: none; color: #000; --ink: #000; --ink-soft: #333; --accent: #000; }
 }
