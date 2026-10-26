@@ -34,6 +34,7 @@ jest.mock('../src/hooks/useAppPalette', () => ({
       muted: '#6B7280',
       controlBg: '#F3EFE7',
       text: '#111111',
+      textSolid: '#111111',
       danger: '#B91C1C',
     },
   }),

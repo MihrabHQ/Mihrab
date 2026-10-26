@@ -1965,7 +1965,11 @@
     "resetRangeAll": "整个记录",
     "options": "选项",
     "setUpSync": "设置同步",
-    "legendTitle": "图表说明"
+    "legendTitle": "图表说明",
+    "fastRow": "斋戒",
+    "sunnahRow": "圣行",
+    "graphByDay": "按天显示图表",
+    "graphByDayHelp": "每天一格——一季度一目了然。关闭后，图表为每次礼拜显示一行。"
   },
   "endOfDay": {
     "title": "记录今天的拜功吗？",

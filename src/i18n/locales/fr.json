@@ -1966,7 +1966,11 @@
     "resetRangeAll": "tout le journal",
     "options": "Options",
     "setUpSync": "Configurer la synchronisation",
-    "legendTitle": "Ce que montre le graphique"
+    "legendTitle": "Ce que montre le graphique",
+    "fastRow": "Jeûne",
+    "sunnahRow": "Sunna",
+    "graphByDay": "Graphique par jour",
+    "graphByDayHelp": "Un carré par jour — le trimestre d’un coup d’œil. Désactivé, le graphique affiche une ligne par prière."
   },
   "endOfDay": {
     "title": "Consigner les prières du jour ?",

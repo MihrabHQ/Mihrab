@@ -1969,7 +1969,11 @@
     "resetRangeAll": "السجل كله",
     "options": "خيارات",
     "setUpSync": "إعداد المزامنة",
-    "legendTitle": "ما يعرضه الرسم"
+    "legendTitle": "ما يعرضه الرسم",
+    "fastRow": "صيام",
+    "sunnahRow": "السنن",
+    "graphByDay": "الرسم حسب اليوم",
+    "graphByDayHelp": "مربع واحد لكل يوم — الربع في لمحة. عند الإيقاف يعرض الرسم صفًا لكل صلاة."
   },
   "endOfDay": {
     "title": "تسجيل صلوات اليوم؟",

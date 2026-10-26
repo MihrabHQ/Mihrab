@@ -1965,7 +1965,11 @@
     "resetRangeAll": "hela loggen",
     "options": "Alternativ",
     "setUpSync": "Ställ in synk",
-    "legendTitle": "Vad grafen visar"
+    "legendTitle": "Vad grafen visar",
+    "fastRow": "Fasta",
+    "sunnahRow": "Sunna",
+    "graphByDay": "Graf per dag",
+    "graphByDayHelp": "En ruta per dag — kvartalet i ett ögonkast. Av visar grafen en rad per bön."
   },
   "endOfDay": {
     "title": "Logga dagens böner?",

@@ -1965,7 +1965,11 @@
     "resetRangeAll": "das ganze Protokoll",
     "options": "Optionen",
     "setUpSync": "Synchronisierung einrichten",
-    "legendTitle": "Was die Grafik zeigt"
+    "legendTitle": "Was die Grafik zeigt",
+    "fastRow": "Fasten",
+    "sunnahRow": "Sunna",
+    "graphByDay": "Grafik nach Tag",
+    "graphByDayHelp": "Ein Quadrat pro Tag — das Quartal auf einen Blick. Aus zeigt die Grafik eine Zeile je Gebet."
   },
   "endOfDay": {
     "title": "Heutige Gebete eintragen?",

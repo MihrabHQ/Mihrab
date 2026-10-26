@@ -1966,7 +1966,11 @@
     "resetRangeAll": "todo el registro",
     "options": "Opciones",
     "setUpSync": "Configurar la sincronización",
-    "legendTitle": "Qué muestra el gráfico"
+    "legendTitle": "Qué muestra el gráfico",
+    "fastRow": "Ayuno",
+    "sunnahRow": "Sunna",
+    "graphByDay": "Gráfico por día",
+    "graphByDayHelp": "Un cuadro por día: el trimestre de un vistazo. Apagado, el gráfico muestra una fila por oración."
   },
   "endOfDay": {
     "title": "¿Registrar las oraciones de hoy?",

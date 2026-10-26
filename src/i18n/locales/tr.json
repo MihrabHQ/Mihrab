@@ -1965,7 +1965,11 @@
     "resetRangeAll": "kaydın tamamı",
     "options": "Seçenekler",
     "setUpSync": "Eşitlemeyi ayarla",
-    "legendTitle": "Grafik neyi gösterir"
+    "legendTitle": "Grafik neyi gösterir",
+    "fastRow": "Oruç",
+    "sunnahRow": "Sünnet",
+    "graphByDay": "Güne göre grafik",
+    "graphByDayHelp": "Günde bir kare — çeyrek yıl tek bakışta. Kapalıyken her namaz için bir satır gösterilir."
   },
   "endOfDay": {
     "title": "Bugünün namazları kaydedilsin mi?",

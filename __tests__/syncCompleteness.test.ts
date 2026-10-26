@@ -74,6 +74,7 @@ const TRAVELS = new Set([
  * thing; "too large" means it is content, not record, and re-downloadable.
  */
 const STAYS: Record<string, string> = {
+  'log.graph': 'a view, not a record — which of the two graphs the Log draws on THIS phone',
   'mihrab.listenProgress.v1':
     'device-local — where a listen on THIS phone stopped; the reading marker is what travels',
   'prayer_times_cache.v2': 'derived — recomputed from coordinates and method',

@@ -1965,7 +1965,11 @@
     "resetRangeAll": "seluruh catatan",
     "options": "Opsi",
     "setUpSync": "Siapkan sinkronisasi",
-    "legendTitle": "Arti grafik"
+    "legendTitle": "Arti grafik",
+    "fastRow": "Puasa",
+    "sunnahRow": "Sunah",
+    "graphByDay": "Grafik per hari",
+    "graphByDayHelp": "Satu kotak per hari — satu kuartal sekali lihat. Jika mati, grafik menampilkan satu baris per salat."
   },
   "endOfDay": {
     "title": "Catat salat hari ini?",

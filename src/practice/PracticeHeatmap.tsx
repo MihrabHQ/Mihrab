@@ -117,8 +117,7 @@ const SQUARE_BORDER = 2;
  * no tint this pale clears the 2:1 contrast floor against a white card, and
  * a grid whose empty cells vanish in sunlight is a grid with no shape.
  */
-const EMPTY_TINT = 0.1;
-const EMPTY_RING_TINT = 0.22;
+const EMPTY_TINT = 0.06;
 
 /**
  * The sunnah line: same idea as the fasting ring, one step inside it.
@@ -242,7 +241,6 @@ const MARKS_BORDERED = markStyles(SQUARE_BORDER);
  * without this the dot would sit half a point deeper on exactly the days it
  * appears on most.
  */
-const MARKS_EMPTY_EDGE = markStyles(StyleSheet.hairlineWidth);
 
 /**
  * One drawn side of that line: `i` is 0…3 clockwise from the top-left, `len`
@@ -488,9 +486,10 @@ function PracticeHeatmapImpl({
 }: Props) {
   const { t, i18n } = useTranslation();
   const { palette } = useAppPalette();
-  const ring = palette.textSolid;
+  // The record is drawn in ink (see fillFor); the accent is the fast's.
+  const ring = palette.accentSolid;
   const gold = sunnahMark(palette);
-  const accent = palette.accentSolid;
+  const accent = String(palette.textSolid);
 
 
   /**
@@ -528,9 +527,17 @@ function PracticeHeatmapImpl({
    * still reads as empty, so it takes a hairline ring instead — secondary
    * encoding, which is also what makes the grid survive a bright screen.
    */
+  /**
+   * THE RECORD IS DRAWN IN INK. The ramp used to be the accent at five
+   * alphas, and under the Sky themes the accent is the hour's light — the
+   * same year was a brown graph at Fajr and a blue one at noon. A record
+   * is about the past, so it takes the ink the text is, the same in every
+   * theme and every hour. The empty day is the palest ink with no edge:
+   * the grid's shape comes from the days that have something in them.
+   */
   const fillFor = (day: HeatmapDay) => {
     if (day.future) return 'transparent';
-    if (day.kept > 0) return withAlpha(accent, 0.42 + 0.58 * (day.kept / 5));
+    if (day.kept > 0) return withAlpha(accent, 0.22 + 0.63 * (day.kept / 5));
     if (day.logged > 0) return withAlpha(String(palette.danger), 0.3);
     return withAlpha(accent, EMPTY_TINT);
   };
@@ -904,19 +911,7 @@ function PracticeHeatmapImpl({
                       !emphasise.has(day.key) &&
                       !day.future &&
                       !selected;
-                    const bare =
-                      !day.future &&
-                      day.logged === 0 &&
-                      day.kept === 0 &&
-                      day.missed === 0 &&
-                      day.sunnah === 0 &&
-                      !day.fasted &&
-                      !day.qiyam;
-                    const marks = border
-                      ? MARKS_BORDERED
-                      : bare
-                        ? MARKS_EMPTY_EDGE
-                        : MARKS_PLAIN;
+                    const marks = border ? MARKS_BORDERED : MARKS_PLAIN;
                     return (
                       <Pressable
                         key={day.key}
@@ -966,12 +961,6 @@ function PracticeHeatmapImpl({
                           // against, so a day with any mark on it must not
                           // gain one here. (The geometry tests caught this.)
                           muted && styles.squareMuted,
-                          bare
-                            ? [
-                                styles.emptyEdge,
-                                { borderColor: withAlpha(accent, EMPTY_RING_TINT) },
-                              ]
-                            : null,
                           // Selection lifts the square AND outlines it in
                           // the text colour. The lift alone was invisible on
                           // an empty day, which is most of them and exactly
@@ -1109,9 +1098,10 @@ function PracticeHeatmapImpl({
 export function HeatmapLegend() {
   const { t } = useTranslation();
   const { palette } = useAppPalette();
-  const ring = palette.textSolid;
+  // The record is drawn in ink (see fillFor); the accent is the fast's.
+  const ring = palette.accentSolid;
   const gold = sunnahMark(palette);
-  const accent = palette.accentSolid;
+  const accent = String(palette.textSolid);
   const legend = [0, 1, 3, 5];
   return (
     <View style={styles.legendWrap}>
@@ -1276,7 +1266,6 @@ const styles = StyleSheet.create({
   week: { flexDirection: 'row', gap: GAP },
   square: { width: SQUARE, height: SQUARE, borderRadius: RADIUS.xs },
   /** See EMPTY_TINT — applied only to a day with nothing drawn on it. */
-  emptyEdge: { borderWidth: StyleSheet.hairlineWidth },
   /**
    * The de-emphasised state, while the grid is showing only owed days.
    *
