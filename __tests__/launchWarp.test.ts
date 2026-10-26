@@ -366,3 +366,80 @@ describe('when the run begins', () => {
     jest.useRealTimers();
   });
 });
+
+describe('the return run (2.33)', () => {
+  const HOUR_ = 3600_000;
+  it('runs from the numbers the hero was left at, once the sky has taken the value', () => {
+    jest.useFakeTimers();
+    const w = require('../src/boot/launchWarp');
+    const left = { remaining: 7200, pct: 0.25, at: 1_000 * HOUR_, targetAt: 1_002 * HOUR_ };
+    expect(w.startResumeRun(left)).toBe(true);
+    // Decided and waiting: progress is the start at e 0, nothing begun.
+    expect(w.warpProgress(Date.now())).toEqual({ start: left, e: 0 });
+    expect(w.launchRunDurationMs()).toBeNull();
+    // Not a second one over it.
+    expect(w.startResumeRun(left)).toBe(false);
+    w.markLaunchRunReady();
+    expect(w.launchRunDurationMs()).not.toBeNull();
+    jest.clearAllTimers();
+    jest.useRealTimers();
+  });
+
+  it('begins anyway when the sky never answers, after WARP_READY_MAX_MS', () => {
+    jest.useFakeTimers();
+    const w = require('../src/boot/launchWarp');
+    w.startResumeRun({ remaining: 60, pct: null, at: 1_000 * HOUR_, targetAt: 1_001 * HOUR_ });
+    jest.advanceTimersByTime(w.WARP_READY_MAX_MS - 10);
+    expect(w.launchRunDurationMs()).toBeNull();
+    jest.advanceTimersByTime(20);
+    expect(w.launchRunDurationMs()).not.toBeNull();
+    jest.clearAllTimers();
+    jest.useRealTimers();
+  });
+
+  it('is not started by a launch that already has its run', () => {
+    jest.useFakeTimers();
+    const w = require('../src/boot/launchWarp');
+    const at = 1_000 * HOUR_;
+    mockState.value = `${at},${at + 2 * HOUR_},${at},1`;
+    const React = require('react');
+    const { act, create } = require('react-test-renderer');
+    const Probe = () => {
+      w.useLaunchWarp(false, true);
+      return null;
+    };
+    act(() => {
+      create(React.createElement(Probe));
+    });
+    expect(w.startResumeRun({ remaining: 1, pct: 0, at, targetAt: at + HOUR_ })).toBe(false);
+    jest.clearAllTimers();
+    jest.useRealTimers();
+  });
+});
+
+describe('what waits for a run (2.33)', () => {
+  it('resolves after two frames when there is no run, and at the end of one when there is', async () => {
+    jest.useFakeTimers();
+    const w = require('../src/boot/launchWarp');
+    let done = false;
+    void w.afterRun().then(() => {
+      done = true;
+    });
+    await Promise.resolve();
+    expect(done).toBe(false);
+    await jest.advanceTimersByTimeAsync(100);
+    expect(done).toBe(true);
+    // A return run under way: waited out.
+    w.startResumeRun({ remaining: 60, pct: null, at: 1_000 * 3600_000, targetAt: 1_001 * 3600_000 });
+    done = false;
+    void w.afterRun().then(() => {
+      done = true;
+    });
+    await jest.advanceTimersByTimeAsync(100);
+    expect(done).toBe(false);
+    w.markLaunchRunReady();
+    await jest.advanceTimersByTimeAsync(w.WARP_MAX_MS + w.WARP_STALL_MAX_MS + 100);
+    expect(done).toBe(true);
+    jest.useRealTimers();
+  });
+});

@@ -69,6 +69,7 @@ import { setTodaysMaghrib } from '../hijri/islamicDay';
 import { filterOptionalTimes, injectNightTimes } from '../utils/nightTimes';
 import { collectWidgetExtras } from './collectWidgetExtras';
 import { syncPrayerWidget } from './syncPrayerWidget';
+import { afterRun } from '../boot/launchWarp';
 
 /** Why a republish was asked for. Kept for the warn line and for tests. */
 export type RepublishReason =
@@ -396,7 +397,8 @@ export function startWidgetPayloadSync(): () => void {
   // Coming back to the app is the moment the queues drain and the day may
   // have rolled. Immediate rather than coalesced: nothing is bursting here.
   const appState = AppState.addEventListener('change', state => {
-    if (state === 'active') void republishWidgetPayload('foreground');
+    // After the hero's return run (src/boot/launchWarp.ts, `afterRun`).
+    if (state === 'active') void afterRun().then(() => republishWidgetPayload('foreground'));
   });
 
   void republishWidgetPayload('launch');

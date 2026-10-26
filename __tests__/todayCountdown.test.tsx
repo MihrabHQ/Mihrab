@@ -223,3 +223,92 @@ describe('aiming the countdown', () => {
     expect(chosenEyebrow(tree)).toBeNull();
   });
 });
+
+describe('coming back to the hero (2.33)', () => {
+  const w = require('../src/boot/launchWarp') as typeof import('../src/boot/launchWarp');
+  beforeAll(() => {
+    jest.useFakeTimers();
+    jest.setSystemTime(AT_ONE);
+  });
+  afterAll(() => jest.useRealTimers());
+  beforeEach(() => {
+    mockFocused.value = true;
+    w._resetLaunchWarpForTests();
+  });
+
+  /** The hours-and-minutes span of the countdown, as text. */
+  const countdown = (tree: ReactTestRenderer) =>
+    tree.root
+      .findAllByType(Text)
+      .map(n => n.props.children)
+      .find(c => typeof c === 'string' && /^\d+ \d+$|^\d+$/.test(c)) as string | undefined;
+
+  const settle = (tree: ReactTestRenderer) => {
+    // The launch's own run (no picture here: from the interval's start)
+    // runs out: the fade's cap, the sky's, the run, the stall allowance.
+    act(() => {
+      jest.advanceTimersByTime(w.WARP_HIDE_WAIT_MAX_MS + w.WARP_READY_MAX_MS + w.WARP_MAX_MS + w.WARP_STALL_MAX_MS + 100);
+    });
+    act(() => {
+      tree.update(card());
+    });
+  };
+  const card = () => (
+    <TodayCard
+      week={[TIMINGS, TIMINGS]}
+      nextInfo={{ name: 'Asr', at: new Date(2026, 7, 23, 15, 0, 0) }}
+      resetKey="test"
+      getDayLabel={() => 'Today'}
+      getDayDate={() => '23 August'}
+      getWeekday={() => 'Sunday'}
+    />
+  );
+
+  it('runs to now from the numbers it was left at, after a while away', () => {
+    const tree = renderCard();
+    settle(tree);
+    expect(w.warpProgress()).toBeNull();
+    const before = countdown(tree);
+    // Away on another tab for a minute: the clock stops.
+    act(() => {
+      mockFocused.value = false;
+      tree.update(card());
+    });
+    act(() => {
+      jest.advanceTimersByTime(60_000);
+    });
+    // Back: a run is decided from what was shown, and until it begins the
+    // hero still shows those numbers rather than jumping.
+    act(() => {
+      mockFocused.value = true;
+      tree.update(card());
+    });
+    const progress = w.warpProgress();
+    expect(progress).not.toBeNull();
+    expect(progress?.e).toBe(0);
+    // From the numbers shown when it was left (a few seconds past one),
+    // not from now: a minute less.
+    const start = progress?.start;
+    expect(start?.remaining).toBeGreaterThan(2 * 3600 - 10);
+    expect(start?.remaining).toBeLessThan(2 * 3600);
+    expect(Date.now() - (start?.at ?? 0)).toBeGreaterThanOrEqual(60_000);
+    expect(countdown(tree)).toBe(before);
+  });
+
+  it('simply picks up after a few seconds away', () => {
+    const tree = renderCard();
+    settle(tree);
+    act(() => {
+      mockFocused.value = false;
+      tree.update(card());
+    });
+    act(() => {
+      jest.advanceTimersByTime(w.RESUME_RUN_MIN_MS - 2000);
+    });
+    act(() => {
+      mockFocused.value = true;
+      tree.update(card());
+    });
+    expect(w.warpProgress()).toBeNull();
+  });
+});

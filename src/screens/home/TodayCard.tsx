@@ -46,6 +46,8 @@ import {
   launchRunDurationMs,
   type WarpStart,
   markLaunchRunReady,
+  RESUME_RUN_MIN_MS,
+  startResumeRun,
   useLaunchRunActive,
   useLaunchWarp,
   warpPct,
@@ -486,10 +488,30 @@ const HeroToday = memo(function HeroToday({
   const frozenNow = useMemo(() => (frozenAt != null ? new Date(frozenAt) : null), [frozenAt]);
   const now = frozenNow ?? liveNow;
 
+  /**
+   * What the hero last showed — the numbers on screen, warped or live —
+   * so a return after time away can run from them (launchWarp.ts,
+   * `startResumeRun`). Written on every render, read on the return.
+   */
+  const shown = useRef<WarpStart | null>(null);
+  // Read on the return, through a ref: a change of the setting must not
+  // tear the clock down and set it up again.
+  const resumeWanted = useRef(false);
+  resumeWanted.current = launchRunWanted && !reduceMotion && !posed;
   useEffect(() => {
     if (!active || posed) return undefined;
-    // Immediately, not on the first interval: coming back from the background
-    // the displayed countdown is as stale as the time spent away.
+    // Coming back after time away — from the background, from another
+    // tab, from a screen over this one — the displayed countdown is as
+    // stale as the time spent away. After a while away it RUNS to now
+    // from what it showed, as a launch runs from the prayer; after a few
+    // seconds it simply picks up. Either way the clock is set now, not on
+    // the first interval.
+    const resumeFrom = (nowMs: number) => {
+      const left = shown.current;
+      if (!resumeWanted.current || !left || nowMs - left.at < RESUME_RUN_MIN_MS) return;
+      startResumeRun(left);
+    };
+    resumeFrom(Date.now());
     setNow(new Date());
     // Then on the clock's own seconds, so the countdown turns when the
     // status bar's clock does — and a picture of it taken at any instant
@@ -502,7 +524,10 @@ const HeroToday = memo(function HeroToday({
         // A tick far from a second after the last is the clock jumping
         // (set by hand, corrected): the day may be another, and the
         // watchdog that decides it looks now rather than in half a minute.
+        // A long one — the clock set forward, the JS thread held for a
+        // while with the screen in front — is a return like any other.
         noteClockTick(t);
+        resumeFrom(t);
         setNow(new Date(t));
       }, 1000);
     }, 1000 - (Date.now() % 1000));
@@ -524,6 +549,7 @@ const HeroToday = memo(function HeroToday({
   useEffect(() => {
     if (chosen && remainingSeconds <= 0) onExpire();
   }, [chosen, remainingSeconds, onExpire]);
+
 
   /**
    * The rail measures the CURRENT interval — from the prayer that has most
@@ -728,10 +754,8 @@ const HeroToday = memo(function HeroToday({
     }),
     [t],
   );
-  const pieces = countdownPieces(
-    warp ? warpRemaining(warp, remainingSeconds, warpE) : remainingSeconds,
-    units,
-  );
+  const shownRemaining = warp ? warpRemaining(warp, remainingSeconds, warpE) : remainingSeconds;
+  const pieces = countdownPieces(shownRemaining, units);
   // Latin units are a clock run, read left to right whatever the app's
   // language; a language's own letters ("س") are read in its direction.
   const unitLang = /^[a-z]*$/i.test(units.hour) ? 'en-US' : undefined;
@@ -971,6 +995,10 @@ const HeroToday = memo(function HeroToday({
     onInterval?.(railFromAt, target.at.getTime());
   }, [posed, target.at, railFromAt, onInterval]);
   const railPct = rail ? (warp ? warpPct(warp, rail.pct, warpE) : rail.pct) : 0;
+  // The numbers on screen this render, for a return run to start from.
+  if (!posed) {
+    shown.current = { remaining: shownRemaining, pct: rail ? railPct : null, at: now.getTime(), targetAt: target.at.getTime() };
+  }
 
   return (
     <View

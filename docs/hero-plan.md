@@ -389,3 +389,48 @@ Stockholm, Casablanca and Jakarta).
   re-renders once a second (the countdown text, the rail), `HeroSky` once a
   minute, the moods and the ink are memoised. Nothing suggested it matters;
   O3 is the only per-tick saving found.
+
+## 7. The run itself, and when it runs (second pass, 2026-10-26 evening)
+
+Asked next: optimise the run, look at its triggers, add the missing ones.
+
+**What the run does, and where it was measured.** A 60 fps read of a
+cold-start recording on the Pixel: the picture fades in over 23 frames, the
+posed hero stands ~12 frames, one tick, then the run — 35 frames, two single
+dropped frames, every other frame changed. Healthy. The launch run is sound.
+
+**The missing trigger: coming back.** The hero's clock stops while it is
+not active (`useIsActive`): in the background, on another tab, under a
+pushed screen. It came back by jumping — a recording of a return from the
+Qur'an tab after 56 s showed "8h 34m 00s" one frame and "8h 33m 04s" the
+next; after an hour away it is an hour's jump of the countdown, the rail
+and the sky, which is exactly the thing the launch run was built to avoid,
+on the other way back into the hero. *Done:* `startResumeRun` in
+`launchWarp.ts`, started from `HeroToday`'s clock effect on activation (and
+from a tick that finds the clock jumped) when `RESUME_RUN_MIN_MS` (15 s) or
+more has passed; it runs from the numbers the hero last showed (`shown`),
+or from the new interval's start across a prayer (the existing `ownStart`
+rule), by the same machinery — stall-tolerant timing, the native sky, the
+twin held off. Under 15 s it picks up: a twitch of seconds is motion for
+its own sake. Recorded after: the return from the tab counts 8h 34m 00s
+down to 8h 33m 04s over ~650 ms with one value a frame; the return from the
+background the same, from "8h 32m 44s".
+
+**What the return run showed, and the fix.** The background return's run
+drew pairs of identical frames through its first half: the app's own
+foreground listeners (the day's resync, the widget republish, the
+auto-sync) fire on the same 'active' event and take the JS thread. A
+launch's side work already waits for the launch run (`firstPaint.ts`); the
+return's now waits too (`afterRun()`, which looks two frames after the
+event for a run to wait out). Every run prints a `[run]` line — kind,
+frames, stalls, longest stall, length — so this stays measurable.
+
+**Looked at and left.** The easing (one ease-out cubic), the duration
+(350–900 ms by the log of the seconds), the rail in quarter-percents, the
+sky's native animation continued from the run's own ease, the eyebrow and
+the time live from the first frame: all as designed. Driving the rail from
+the native value (a `scaleX` on the measured track) would take the rail
+off the JS frame but leave the countdown's text on it, which is the frame's
+cost; not worth its complexity. A return under Reduce Motion, or with the
+launch animation off, stays a jump by the same rule as the launch.
+

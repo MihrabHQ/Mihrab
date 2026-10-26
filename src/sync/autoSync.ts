@@ -33,6 +33,7 @@
 import { AppState, type AppStateStatus } from 'react-native';
 import { ensureSyncFolder, runSyncNow, type SyncRunResult } from './runSync';
 import { getSyncSettings, syncFrequencyGapMs } from './syncSettings';
+import { afterRun } from '../boot/launchWarp';
 
 /** Below the rate anyone's record changes, above the rate `active` fires. */
 export const AUTO_SYNC_MIN_GAP_MS = 2 * 60 * 1000;
@@ -126,7 +127,8 @@ export function startAutoSync(): () => void {
   const subscription = AppState.addEventListener(
     'change',
     (state: AppStateStatus) => {
-      if (state === 'active') void maybeAutoSync({ trigger: 'open' });
+      // After the hero's return run (src/boot/launchWarp.ts, `afterRun`).
+      if (state === 'active') void afterRun().then(() => maybeAutoSync({ trigger: 'open' }));
     },
   );
   // Backgrounded timers are throttled on one platform and not the other,

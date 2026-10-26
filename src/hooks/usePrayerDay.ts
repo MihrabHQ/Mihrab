@@ -182,6 +182,7 @@ export type PrayerDayState =
 import { coordsChangedSignificantly } from '../utils/coords';
 import { applyOffsets, type PrayerOffsetMinutes } from '../settings/prayerOffsets';
 import { injectNightTimes } from '../utils/nightTimes';
+import { afterRun } from '../boot/launchWarp';
 
 /**
  * Apply per-prayer offsets uniformly across a week of timings — task #22 +
@@ -1196,7 +1197,9 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
       );
       if (!shouldResync(RESYNC_KEY, fingerprint)) return;
       markResynced(RESYNC_KEY, fingerprint);
-      requestAndLoad(true);
+      // After the hero's return run, which draws on the same frames this
+      // would take (src/boot/launchWarp.ts, `afterRun`).
+      void afterRun().then(() => requestAndLoad(true));
     });
 
     return () => {

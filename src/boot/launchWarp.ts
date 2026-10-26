@@ -185,6 +185,13 @@ type Run = {
   delayOver: boolean;
   /** The sky's native layers have taken a value (markLaunchRunReady). */
   ready: boolean;
+  /** Which return this is, for the `[run]` line. */
+  kind: 'launch' | 'return';
+  /** Frames drawn, stalls met and the longest, for the `[run]` line. */
+  frames: number;
+  stalls: number;
+  longestStall: number;
+  decidedAt: number;
 };
 /**
  * ── THE RUN WAITS FOR ITS SKY ────────────────────────────────────────
@@ -236,7 +243,20 @@ const onBegin = new Set<() => void>();
 let onEnd: (() => void) | null = null;
 
 function endRun(): void {
+  const r = run;
   run = null;
+  if (r) {
+    // One line a run, as `[boot]` is one a launch: how many frames it
+    // drew, how often the JS thread held it up and for how long at most,
+    // and how long it was from being decided to being over. Read from
+    // logcat on a release build; nothing leaves the phone.
+    // eslint-disable-next-line no-console
+    console.log(
+      `[run] ${r.kind} frames=${r.frames} stalls=${r.stalls} longest=${Math.round(r.longestStall)} duration=${r.duration} total=${Math.round(Date.now() - r.decidedAt)}`,
+    );
+  }
+  for (const fn of afterRunWaiters) fn();
+  afterRunWaiters.clear();
   holdLaunchSnapshot(HOLD, false);
   onEnd?.();
   onEnd = null;
@@ -261,7 +281,21 @@ function decide(reduceMotion: boolean, ownAt: number | null | undefined): void {
     run = null;
     return;
   }
-  const r: Run = { start, at, begun: false, t0: null, duration: 0, lastSeen: null, delayOver: false, ready: false };
+  const r: Run = {
+    start,
+    at,
+    begun: false,
+    t0: null,
+    duration: 0,
+    lastSeen: null,
+    delayOver: false,
+    ready: false,
+    kind: 'launch',
+    frames: 0,
+    stalls: 0,
+    longestStall: 0,
+    decidedAt: Date.now(),
+  };
   run = r;
   // A hero mid-run is not a screen to keep for the next launch.
   holdLaunchSnapshot(HOLD, true);
@@ -295,6 +329,77 @@ function decide(reduceMotion: boolean, ownAt: number | null | undefined): void {
     arm();
   };
   off = onHideRequested(once);
+}
+
+/**
+ * ── THE RETURN RUN ───────────────────────────────────────────────────
+ *
+ * A launch is not the only way to come back to the hero. The app is
+ * brought back from the background, the Today tab is tapped after a
+ * chapter in the Qur'an, Settings is closed — and the hero, whose clock
+ * stops while it is out of sight (`useIsActive`), came back by JUMPING
+ * from the numbers it was left at to now: "Asr in 2h 14m" to "Asr in
+ * 1h 51m" in one frame, the rail a step along, the sky another hour
+ * (2.33). The same return through a cold start is the launch run, from
+ * the prayer. So a return after RESUME_RUN_MIN_MS away is a run too, by
+ * the same machinery, from the numbers the hero was left at — the
+ * picture in the reader's memory — to now; across a prayer, from the new
+ * interval's start, as a launch does (TodayCard, `ownStart`). Under that
+ * many seconds away the countdown simply picks up: a twitch of a few
+ * seconds would be motion for its own sake. No picture, no fade: it
+ * begins once the sky's layers have taken the value, as a launch's does.
+ * Never over a run already under way.
+ */
+export const RESUME_RUN_MIN_MS = 15_000;
+export function startResumeRun(start: WarpStart): boolean {
+  if (run) return false;
+  const r: Run = {
+    start,
+    at: start.at,
+    begun: false,
+    t0: null,
+    duration: 0,
+    lastSeen: null,
+    delayOver: true,
+    ready: false,
+    kind: 'return',
+    frames: 0,
+    stalls: 0,
+    longestStall: 0,
+    decidedAt: Date.now(),
+  };
+  run = r;
+  holdLaunchSnapshot(HOLD, true);
+  setTimeout(() => begin(r), WARP_READY_MAX_MS);
+  return true;
+}
+
+/**
+ * ── WHAT WAITS FOR THE RUN ───────────────────────────────────────────
+ *
+ * A launch's side work waits for the launch run (firstPaint.ts). A
+ * return's did not: the app's foreground listeners — the day's resync,
+ * the widget's republish, the auto-sync — all fire on the same 'active'
+ * event the hero returns on, and the return run then drew every other
+ * frame (a Pixel 10 Pro, 2.33: pairs of identical frames through its
+ * first half). They wait here now. The run is decided by the hero's
+ * effect a frame or two after the event, so the wait looks after two
+ * frames before deciding there is nothing to wait for; a run in progress
+ * is waited out, however it ends.
+ */
+const afterRunWaiters = new Set<() => void>();
+export function afterRun(): Promise<void> {
+  return new Promise<void>(resolve => {
+    const look = () => {
+      if (run) afterRunWaiters.add(resolve);
+      else resolve();
+    };
+    if (typeof requestAnimationFrame === 'function') {
+      requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(look, 0)));
+    } else {
+      setTimeout(look, 2 * FRAME_MS);
+    }
+  });
 }
 
 /** The run's first frame may be drawn: the fade is over and the sky is live. */
@@ -336,7 +441,11 @@ export function warpProgress(now: number = Date.now()): { start: WarpStart | nul
   if (r.t0 == null) r.t0 = now;
   else if (r.lastSeen != null) {
     const gap = now - r.lastSeen;
-    if (gap > STALL_MS) r.t0 += gap - FRAME_MS;
+    if (gap > STALL_MS) {
+      r.t0 += gap - FRAME_MS;
+      r.stalls += 1;
+      if (gap > r.longestStall) r.longestStall = gap;
+    }
   }
   r.lastSeen = now;
   const k = (now - r.t0) / r.duration;
@@ -371,6 +480,7 @@ export function useLaunchWarp(
     if (!live) return undefined;
     let frame: number | null = null;
     const loop = () => {
+      if (run) run.frames += 1;
       bump();
       frame = warpProgress() != null ? requestAnimationFrame(loop) : null;
     };
