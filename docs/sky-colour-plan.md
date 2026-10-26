@@ -63,8 +63,8 @@ the two tracks are defined:
 - **The accent gets a rule per track** (§4), because today it has none:
   Vibrant's night accent is the sky's complement, its midday the sky's own
   hue; Realistic's are both analogous and, in the seams, nearly neutral.
-- **The hour reaches past the hero** (§5): the other tabs carry a breath of
-  the sky where chrome is allowed to move, and nothing where reading is.
+- **The hour reaches past the hero** (§5) only through the accent: the
+  sky itself stays on Today (a breath of it on the other tabs was tried).
 
 ---
 
@@ -318,7 +318,11 @@ Principle 5 of the design ("felt, not announced") and the rule in
 `sky-palette.md` §2 (chrome may move, reading and data may not) decide the
 scope:
 
-- **A breath of sky at the top of every tab.** The hero's gradient is one
+- **A breath of sky at the top of every tab** — shipped, then taken out: on
+  the device the strip read as the same blue at sunrise and at noon (the
+  upper sky, not the horizon, is what a sliver that short shows), and it
+  was one more thing on pages that are not the hero. The other tabs open
+  on their flat page. The proposal, for the record: the hero's gradient is one
   view on one screen; the other five tabs open on a flat page. Proposal: the
   top 72 dp of each tab's page (under the status bar, behind the title row)
   takes the sky's top-to-foot gradient at a quarter of the hero's height,
@@ -438,9 +442,9 @@ tint proposed in §3.1 (C 0.02–0.03) or must stay the near-neutral it is.
   same elements as the phase); the moon drawn where it is in every dark
   passage while it is up, fading in over its first degrees; the stars
   thinned under a bright moon; `moonlit` on both tracks' dark moods.
-- **Wave 4 — past the hero.** `StatusBarBand` draws the mood's sky under
-  the status bar of the five other tabs under the Sky theme, ending where
-  the page's content begins; `KEYS`/`GLOW` are gone from `skyModel.ts` and
+- **Wave 4 — past the hero.** `StatusBarBand` drew the mood's sky under
+  the status bar of the five other tabs for a release and is the page's
+  colour again (§5); `KEYS`/`GLOW` are gone from `skyModel.ts` and
   the frame's own sky is Realistic's, which the full-screen alarm wears
   under the other themes.
 - **Changed from the plan:** the pre-dawn teal was kept to a hint in the
