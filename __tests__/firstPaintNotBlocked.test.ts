@@ -138,6 +138,22 @@ describe('the second pass, on the device clock', () => {
     expect(HOOK).not.toContain('await getCacheStatus(');
   });
 
+  it('publishes the screen before the cache status is collected (2.33)', () => {
+    // The status is one boolean — start a background fill or not — and
+    // for a calculated place it is the first read of the cache blob, which
+    // waits for the correction lists: 170–430 ms on a Pixel 10 Pro with
+    // the week already in hand. It is collected after `setState` now.
+    const published = HOOK.indexOf("phase: 'ready',\n          latitude,");
+    const collected = HOOK.indexOf('const needsCacheFill = await statusPromise;');
+    expect(published).toBeGreaterThan(-1);
+    expect(collected).toBeGreaterThan(published);
+    // And the fill still starts from it, with the indicator on and off.
+    const after = HOOK.slice(collected);
+    expect(after).toContain('backgroundRefreshing: true');
+    expect(after).toContain('await refreshPrayerDataCache(');
+    expect(after).toContain('backgroundRefreshing: false');
+  });
+
   it('does not reload a city it already has on screen', () => {
     // The launch load came from saved coordinates and set no city id, so
     // `loadedCityIdRef.current !== summary.cityId` was `null !== id`:

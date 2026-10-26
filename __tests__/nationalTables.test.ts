@@ -51,6 +51,24 @@ const read = (f: string) => fs.readFileSync(path.join(FIX, f), 'utf8');
 const mockFetch = fetchWithRetry as jest.Mock;
 
 const SG = { latitude: 1.3521, longitude: 103.8198 };
+/**
+ * A day the bundled seeds hold, read from the seed rather than written
+ * here: the mirror job trims the seeds to a window that moves with the
+ * calendar (the first day in them was 2026-10-19 on 26 Oct 2026), so a
+ * date written into the test went stale and the day fell through to the
+ * calculation. The first day MUIS and JAKIM both carry.
+ */
+const SEED = (() => {
+  const city = (country: string) =>
+    JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'data', 'prayer-times', country, 'v1', 'cities', '1.json'), 'utf8')) as {
+      days: Record<string, string[]>;
+    };
+  const sg = city('singapore');
+  const my = city('malaysia');
+  const ymd = Object.keys(sg.days).filter(d => my.days[d]).sort()[0];
+  const [y, m, d] = ymd.split('-').map(Number);
+  return { ymd, date: new Date(y, m - 1, d), sg: sg.days[ymd] };
+})();
 const KL = { latitude: 3.139, longitude: 101.6869 };
 const KK = { latitude: 5.9804, longitude: 116.0735 };
 const JAKARTA = { latitude: -6.2088, longitude: 106.8456 };
@@ -244,17 +262,18 @@ describe('on the phone', () => {
     const sg = await fetchPrayerTimesUnified({
       provider: 'muis',
       ...SG,
-      date: new Date(2026, 9, 14),
+      date: SEED.date,
       calculationMethod: 'auto',
       school: 0,
     });
     expect(sg.source).toBe('seed');
-    expect(sg.timings.Fajr).toBe('05:31');
-    expect(sg.timings.Maghrib).toBe('18:54');
+    // The seed's tuple: imsak, fajr, sunrise, dhuhr, asr, maghrib, isha.
+    expect(sg.timings.Fajr).toBe(SEED.sg[1]);
+    expect(sg.timings.Maghrib).toBe(SEED.sg[5]);
     const kl = await fetchPrayerTimesUnified({
       provider: 'jakim',
       ...KL,
-      date: new Date(2026, 9, 14),
+      date: SEED.date,
       calculationMethod: 'auto',
       school: 0,
     });
@@ -276,7 +295,7 @@ describe('on the phone', () => {
       fetchPrayerTimesUnified({
         provider,
         ...where,
-        date: new Date(2026, 9, 14),
+        date: SEED.date,
         calculationMethod: 'auto',
         school,
       });
@@ -314,7 +333,7 @@ describe('on the phone', () => {
       provider: 'muis',
       latitude: 51.5,
       longitude: -0.1,
-      date: new Date(2026, 9, 14),
+      date: SEED.date,
       calculationMethod: 'auto',
       school: 0,
     });
@@ -361,7 +380,7 @@ describe('on the phone', () => {
   });
 
   it('takes a newer file from the server and remembers it', async () => {
-    const day = '2026-10-14';
+    const day = SEED.ymd;
     const file = JSON.stringify({
       id: 1,
       city: 'Singapore',
@@ -386,13 +405,13 @@ describe('on the phone', () => {
     });
     const first = await muisTable.getTimes({
       ...SG,
-      date: new Date(2026, 9, 14),
+      date: SEED.date,
     });
     expect(first.source).toBe('seed');
     await new Promise(r => setTimeout(r, 20));
     const second = await muisTable.getTimes({
       ...SG,
-      date: new Date(2026, 9, 14),
+      date: SEED.date,
     });
     expect(second.source).toBe('cdn');
     expect(second.timings.Fajr).toBe('05:10');

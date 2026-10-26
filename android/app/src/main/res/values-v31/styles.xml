@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Android 12's system splash, between the launcher and the kept launch
+  picture (LaunchSnapshot.kt): a flash of Material's default surface, dark
+  grey, for about 150 ms before a night sky or a light page. It is the
+  page's own colour now — src/theme/appPalette.ts, `bg`, light here and
+  dark in values-night-v31 — so the launch is one surface becoming the
+  app, not a grey card in between.
+-->
+<resources>
+    <style name="AppTheme" parent="Theme.Material3.DynamicColors.DayNight.NoActionBar">
+        <item name="android:editTextBackground">@drawable/rn_edit_text_material</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowSplashScreenBackground">#FAF7F2</item>
+    </style>
+</resources>

@@ -4,6 +4,7 @@ import { useVerticalBar } from '../../native/VerticalBar';
 import { useReduceMotion } from '../../hooks/useReduceMotion';
 import Svg, {
   Circle,
+  ClipPath,
   Defs,
   G,
   LinearGradient,
@@ -12,7 +13,7 @@ import Svg, {
   Rect,
   Stop,
 } from 'react-native-svg';
-import type { SkyFrame } from './skyModel';
+import { skyColorAt, SUN_HORIZON_Y, type SkyFrame } from './skyModel';
 import { SUN_GLOW_PEAK } from './skyLight';
 
 /**
@@ -71,8 +72,12 @@ export function skyScene({
   banded: boolean;
   room: number;
   cramped: boolean;
+  /** The band's top: the foot of the chips' row, dp from the sky's top. */
+  top: number;
   /** dp from the sky's top for a model fraction. */
   y: (fraction: number) => number;
+  /** dp from the sky's top for a star's card fraction — see `STAR_FIELD`. */
+  starY: (fraction: number) => number;
 } {
   const banded = sceneTop > 0 || sceneBottom > 0;
   const room = height - sceneTop - sceneBottom;
@@ -89,11 +94,20 @@ export function skyScene({
   const margin = MOON / 2;
   const inner = Math.max(0, room - 2 * margin);
   const spread = (fraction: number) => Math.max(0, Math.min(1, (fraction - 0.08) / 0.22));
+  // The stars are written on the card, 6–44 % of it (`STAR_FIELD`), and
+  // keep that spread over the whole band — no moon's margin, a star has
+  // no size to clear — rather than the bodies' 8–30 %. Through the
+  // bodies' mapping a third of the field clamped to the band's floor and
+  // two stars to its ceiling: two straight rows of dots, at the moon's
+  // height and under the chips (2.33).
+  const starSpread = (fraction: number) => Math.max(0, Math.min(1, (fraction - STAR_FIELD_TOP) / (STAR_FIELD_BOTTOM - STAR_FIELD_TOP)));
   return {
     banded,
     room,
     cramped,
+    top: sceneTop,
     y: (fraction: number) => sceneTop + margin + spread(fraction) * inner,
+    starY: (fraction: number) => sceneTop + starSpread(fraction) * Math.max(0, room),
   };
 }
 
@@ -118,6 +132,7 @@ function HeroSkyImpl({
   frame,
   run,
   denseStars = false,
+  still = false,
   bleed,
   sceneTop = 0,
   sceneBottom = 0,
@@ -125,6 +140,12 @@ function HeroSkyImpl({
   frame: SkyFrame;
   /** While a launch run draws: the sky as native layers, not `frame`. */
   run?: SkyRun;
+  /**
+   * A sky nobody watches — the posed twin's, drawn only to be captured
+   * (boot/poseHero.ts): no twinkle, no native loops breathing all night
+   * for a hero under the real one.
+   */
+  still?: boolean;
   /** The fuller field of stars (the Sky theme's night). */
   denseStars?: boolean;
   /**
@@ -179,15 +200,43 @@ function HeroSkyImpl({
 
   const bodyXY = body.kind === 'none' || cramped ? null : { x: body.x, y: body.y };
   /**
+   * ── THE HORIZON ──────────────────────────────────────────────────────
+   * The line the sun rises over and sets under: where the model puts a
+   * body "at the horizon" (SUN_HORIZON_Y), plus a sun's radius, so a sun
+   * with nothing under it stands ON the line. A sun partly `below` is
+   * drawn that much lower and clipped at the line — the disc comes up out
+   * of the horizon at sunrise and goes down into it at Maghrib, rather
+   * than standing whole on it for the length of the twilight (2.33).
+   * Only once the sky has a height: before layout nothing is clipped.
+   */
+  const yDp = (fraction: number) => (scene.banded && scene.room > 0 ? scene.y(fraction) : fraction * height);
+  const horizon = height > 0 ? yDp(SUN_HORIZON_Y) + SUN_R * sunScaleAt(SUN_HORIZON_Y) : null;
+  const sunR = body.kind === 'sun' ? SUN_R * sunScaleAt(body.y) : 0;
+  const sunCy: number | `${number}%` =
+    body.kind === 'sun' ? (horizon != null ? yDp(body.y) + 2 * body.below * sunR : sceneY(body.y)) : 0;
+  const sunClipped = body.kind === 'sun' && body.below > 0 && horizon != null;
+  /**
    * The light this body gives off — its colour where the reader is
    * standing, and how hard it glows. The sun's is worked out from its
    * real altitude and so changes all day; the moon's from how much of it
    * is lit. See skyLight.ts. `glow` is the stars' colour and only theirs.
+   * A body fading in or out takes its halo with it.
    */
-  const light =
-    body.kind === 'none'
-      ? null
-      : { hex: body.light, halo: body.halo * (body.kind === 'sun' ? body.alpha : 1) };
+  const light = body.kind === 'none' ? null : { hex: body.light, halo: body.halo * body.alpha };
+  /**
+   * ── NOTHING SHINES UNDER THE STATUS BAR ──────────────────────────────
+   * The halo reaches 38 % of the sky, and a body at the top of its band
+   * — a full moon at the night's middle, the noon sun — put it under the
+   * clock and the battery, and under the Qibla chip: a torch on the
+   * status bar rather than a glow in the sky. The sky's own gradient is
+   * painted back over the halo from the top edge down to the band's top,
+   * fading in from solid to nothing, in the colours the gradient has
+   * there — so the sky looks exactly as it did and the halo alone is held
+   * back from the chrome. The status bar's ink, read from the gradient,
+   * then matches what is under it too.
+   */
+  const topFade =
+    scene.top > 0 && height > 0 ? { to: skyColorAt(frame, Math.min(1, scene.top / height)), h: scene.top } : null;
   const drawStars = stars > 0 && !cramped;
   // iPhone Duo: the sky — and only the sky — runs on under the vertical
   // bar's column, which the page keeps clear of (src/native/VerticalBar.ts).
@@ -235,7 +284,24 @@ function HeroSkyImpl({
                 ]
               : [<Stop key="t" offset="0" stopColor={top} />, <Stop key="b" offset="1" stopColor={bottom} />])}
           </LinearGradient>
-          {bodyXY && light ? (
+          {bodyXY && light && size.width > 0 && height > 0 ? (
+            // ── A CIRCLE, IN DP ────────────────────────────────────────
+            // In the box's own units (below, before the sky has a size)
+            // a radius is a fraction of the width one way and of the
+            // height the other, so the halo was a circle only on a square
+            // sky: an ellipse on a tall iPad, a Duo page, a short band.
+            // In user space it is a circle of the same area — the radius
+            // is the percentage of the sides' geometric mean (2.33).
+            <RadialGradient
+              id="glow"
+              gradientUnits="userSpaceOnUse"
+              cx={bodyXY.x * size.width}
+              cy={body.kind === 'sun' ? sunCy : yDp(bodyXY.y)}
+              r={((HALO_MIN_R + (HALO_MAX_R - HALO_MIN_R) * Math.sqrt(light.halo / SUN_GLOW_PEAK)) / 100) * Math.sqrt(size.width * height)}>
+              <Stop offset="0" stopColor={light.hex} stopOpacity={light.halo} />
+              <Stop offset="1" stopColor={light.hex} stopOpacity={0} />
+            </RadialGradient>
+          ) : bodyXY && light ? (
             <RadialGradient
               id="glow"
               cx={`${bodyXY.x * 100}%`}
@@ -246,7 +312,7 @@ function HeroSkyImpl({
               // eighty skies below the card, and the phone's sun shone
               // only for the launch run's native layers, which place it
               // in dp. The tablet, unbanded, always had its percentage.
-              cy={glowCy(sceneY(bodyXY.y), height)}
+              cy={glowCy(body.kind === 'sun' ? sunCy : sceneY(bodyXY.y), height)}
               // The halo grows with the light, not just brightens: a new
               // moon has almost none, a full one a soft ring, the noon
               // sun a wide wash. A fixed radius at varying opacity reads
@@ -263,32 +329,40 @@ function HeroSkyImpl({
               <Stop offset="1" stopColor={light.hex} stopOpacity={0} />
             </RadialGradient>
           ) : null}
+          {topFade ? (
+            <LinearGradient id="topfade" x1="0" y1="0" x2="0" y2="1">
+              <Stop offset="0" stopColor={top} stopOpacity={1} />
+              <Stop offset="1" stopColor={topFade.to} stopOpacity={0} />
+            </LinearGradient>
+          ) : null}
+          {sunClipped ? (
+            <ClipPath id="horizon">
+              <Rect x="0" y="0" width="100%" height={horizon ?? 0} />
+            </ClipPath>
+          ) : null}
         </Defs>
         <Rect x="0" y="0" width="100%" height="100%" fill="url(#sky)" />
         {bodyXY ? <Rect x="0" y="0" width="100%" height="100%" fill="url(#glow)" /> : null}
+        {bodyXY && topFade ? <Rect x="0" y="0" width="100%" height={topFade.h} fill="url(#topfade)" /> : null}
         {drawStars ? <Stars scene={scene} glow={glow} stars={stars} dense={denseStars} /> : null}
         {body.kind === 'sun' && !cramped ? (
           <Circle
             cx={`${body.x * 100}%`}
-            cy={sceneY(body.y)}
-            r={SUN_R * sunScaleAt(body.y)}
+            cy={sunCy}
+            r={sunR}
             fill={body.light}
             fillOpacity={body.alpha}
+            clipPath={sunClipped ? 'url(#horizon)' : undefined}
           />
         ) : null}
       </Svg>
       )}
-      {!running && drawStars && denseStars ? (
+      {!running && !still && drawStars && denseStars ? (
         <Twinkle scene={scene} glow={glow} stars={stars} width={size.width} height={size.height} />
       ) : null}
       {!running && body.kind === 'moon' && !cramped ? (
-        <View style={[styles.moon, { start: `${body.x * 100}%`, top: sceneY(body.y) }]}>
-          <Moon
-            illuminated={body.illuminated}
-            tilt={body.tilt}
-            lit={body.light}
-            shadow={top}
-          />
+        <View style={[styles.moon, { start: `${body.x * 100}%`, top: sceneY(body.y), opacity: body.alpha }]}>
+          <Moon illuminated={body.illuminated} tilt={body.tilt} lit={body.light} />
         </View>
       ) : null}
     </View>
@@ -368,15 +442,17 @@ function SkyRunLayersImpl({
         ? progress.interpolate({ inputRange: [0, 1], outputRange: [values[0], values[0]] })
         : progress.interpolate({ inputRange: es, outputRange: values, extrapolate: 'clamp' });
     /** Where a body is at each keyframe — held where it is not there. */
+    /** The sun's centre, dp: that much of a radius under the horizon when it is `below` it. */
+    const sunY = (b: Extract<SkyFrame['body'], { kind: 'sun' }>) => yPx(b.y) + 2 * b.below * SUN_R * sunScaleAt(b.y);
     const positions = (kind: 'sun' | 'moon') => {
-      const raw = frames.map(f => (f.body.kind === kind ? { x: f.body.x * width, y: yPx(f.body.y) } : null));
+      const raw = frames.map(f => (f.body.kind === kind ? { x: f.body.x * width, y: f.body.kind === 'sun' ? sunY(f.body) : yPx(f.body.y) } : null));
       const first = raw.find(p => p != null);
       if (!first) return null;
       let last = first;
       return raw.map(p => (last = p ?? last));
     };
     const body = frames.map(f => (f.body.kind === 'none' || scene.cramped ? null : f.body));
-    const bodyPos = frames.map(f => (f.body.kind === 'none' ? null : { x: f.body.x * width, y: yPx(f.body.y) }));
+    const bodyPos = frames.map(f => (f.body.kind === 'none' ? null : { x: f.body.x * width, y: f.body.kind === 'sun' ? sunY(f.body) : yPx(f.body.y) }));
     const anyBody = body.some(b => b != null);
     let held = bodyPos.find(p => p != null) ?? { x: 0, y: 0 };
     const bodyXs = bodyPos.map(p => (held = p ?? held).x);
@@ -390,14 +466,27 @@ function SkyRunLayersImpl({
       body.map(b => (b ? (HALO_MIN_R + (HALO_MAX_R - HALO_MIN_R) * Math.sqrt(b.halo / SUN_GLOW_PEAK)) / HALO_MAX_R : 0.01)),
     );
     const haloPeak = body.reduce<(typeof body)[number]>((m, b) => (b && (!m || b.halo > m.halo) ? b : m), null);
-    const haloOpacity = through(body.map(b => (b ? b.halo : 0)));
+    const haloOpacity = through(body.map(b => (b ? b.halo * b.alpha : 0)));
     const starsPeak = frames.reduce((m, f) => (f.stars > m.stars ? f : m), frames[0]);
     const starsOpacity = through(frames.map(f => (scene.cramped ? 0 : f.stars)));
     const moonFrame = frames.find(f => f.body.kind === 'moon');
-    const moonOpacity = through(frames.map(f => (f.body.kind === 'moon' && !scene.cramped ? 1 : 0)));
+    const moonOpacity = through(frames.map(f => (f.body.kind === 'moon' && !scene.cramped ? f.body.alpha : 0)));
     const moonPos = positions('moon');
+    // The horizon the suns are clipped at, and the fade over the status
+    // bar — the same two things the live sky draws, see HeroSkyImpl.
+    const horizon = yPx(SUN_HORIZON_Y) + SUN_R * sunScaleAt(SUN_HORIZON_Y);
+    const topFadeH = scene.top > 0 && height > 0 ? scene.top : 0;
     return {
-      gradients: frames.map((f, i) => ({ top: f.top, mid: f.mid, midAt: f.midAt, bottom: f.bottom, opacity: layerOpacity(i, 1) })),
+      gradients: frames.map((f, i) => ({
+        top: f.top,
+        mid: f.mid,
+        midAt: f.midAt,
+        bottom: f.bottom,
+        fadeTo: topFadeH > 0 ? skyColorAt(f, Math.min(1, topFadeH / height)) : null,
+        opacity: layerOpacity(i, 1),
+      })),
+      horizon,
+      topFadeH,
       halo: haloPeak ? { light: haloPeak.light, opacity: haloOpacity } : null,
       haloScaleUp: Animated.multiply(haloScale, LAYER_DOWNSCALE),
       suns: body.map((b, i) => (b && b.kind === 'sun' ? { light: b.light, opacity: layerOpacity(i, b.alpha) } : null)),
@@ -413,7 +502,6 @@ function SkyRunLayersImpl({
               illuminated: moonFrame.body.illuminated,
               tilt: moonFrame.body.tilt,
               lit: moonFrame.body.light,
-              shadow: moonFrame.top,
               opacity: moonOpacity,
               tx: through(moonPos.map(p => p.x)),
               ty: through(moonPos.map(p => p.y)),
@@ -469,7 +557,7 @@ function SkyRunLayersImpl({
           }}>
           <Svg width={lw} height={lh}>
             <Defs>
-              <RadialGradient id="halorun" cx="50%" cy="50%" r={`${HALO_MAX_R}%`}>
+              <RadialGradient id="halorun" gradientUnits="userSpaceOnUse" cx={lw / 2} cy={lh / 2} r={(HALO_MAX_R / 100) * Math.sqrt(lw * lh)}>
                 <Stop offset="0" stopColor={built.halo.light} stopOpacity={1} />
                 <Stop offset="1" stopColor={built.halo.light} stopOpacity={0} />
               </RadialGradient>
@@ -478,6 +566,23 @@ function SkyRunLayersImpl({
           </Svg>
         </Animated.View>
       ) : null}
+      {built.anyBody && built.halo && built.topFadeH > 0
+        ? built.gradients.map((g, i) =>
+            g.fadeTo ? (
+              <Animated.View key={`f${i}`} style={{ position: 'absolute', left: 0, top: 0, width, height: built.topFadeH, opacity: g.opacity }}>
+                <Svg width={width} height={built.topFadeH}>
+                  <Defs>
+                    <LinearGradient id={`topfaderun${i}`} x1="0" y1="0" x2="0" y2="1">
+                      <Stop offset="0" stopColor={g.top} stopOpacity={1} />
+                      <Stop offset="1" stopColor={g.fadeTo} stopOpacity={0} />
+                    </LinearGradient>
+                  </Defs>
+                  <Rect x="0" y="0" width="100%" height="100%" fill={`url(#topfaderun${i})`} />
+                </Svg>
+              </Animated.View>
+            ) : null,
+          )
+        : null}
       {built.stars ? (
         <Animated.View style={[StyleSheet.absoluteFill, { opacity: built.stars.opacity }]}>
           <Svg width={width} height={height}>
@@ -485,8 +590,10 @@ function SkyRunLayersImpl({
           </Svg>
         </Animated.View>
       ) : null}
-      {built.anyBody
-        ? built.suns.map((s, i) =>
+      {built.anyBody ? (
+        // Clipped at the horizon: a sun under it is not drawn.
+        <View style={{ position: 'absolute', left: 0, top: 0, width, height: Math.max(0, built.horizon), overflow: 'hidden' }} pointerEvents="none">
+          {built.suns.map((s, i) =>
             s ? (
               <Animated.View
                 key={`s${i}`}
@@ -503,8 +610,9 @@ function SkyRunLayersImpl({
                 }}
               />
             ) : null,
-          )
-        : null}
+          )}
+        </View>
+      ) : null}
       {built.moon ? (
         <Animated.View
           style={[
@@ -521,7 +629,7 @@ function SkyRunLayersImpl({
               ],
             },
           ]}>
-          <Moon illuminated={built.moon.illuminated} tilt={built.moon.tilt} lit={built.moon.lit} shadow={built.moon.shadow} />
+          <Moon illuminated={built.moon.illuminated} tilt={built.moon.tilt} lit={built.moon.lit} />
         </Animated.View>
       ) : null}
     </>
@@ -532,6 +640,11 @@ const SkyRunLayers = memo(SkyRunLayersImpl);
 
 function sceneYOf(scene: Scene, fraction: number): number | `${number}%` {
   return scene.banded && scene.room > 0 ? scene.y(fraction) : `${fraction * 100}%`;
+}
+
+/** A star's height: its own spread over the band (`skyScene.starY`), or its card fraction. */
+function starYOf(scene: Scene, fraction: number): number | `${number}%` {
+  return scene.banded && scene.room > 0 ? scene.starY(fraction) : `${fraction * 100}%`;
 }
 
 /**
@@ -547,6 +660,9 @@ export function glowCy(y: number | `${number}%`, height: number): `${number}%` {
 // A fixed, sparse field in the top strip: the same stars every night, so
 // the card does not twinkle from one render to the next, and none of
 // them behind the countdown.
+/** The field's reach on the card, as fractions — what `skyScene.starY` spreads over the band. */
+export const STAR_FIELD_TOP = 0.04;
+export const STAR_FIELD_BOTTOM = 0.46;
 const STAR_FIELD: ReadonlyArray<readonly [number, number, number, number?]> = [
   [6, 30, 1.2],
   [16, 12, 0.9],
@@ -599,7 +715,7 @@ const Stars = memo(function Stars({
   return (
     <>
       {field.map(([x, y, r, a], i) => (
-        <Circle key={i} cx={`${x}%`} cy={sceneYOf(scene, y / 100)} r={r} fill={glow} fillOpacity={(a ?? 0.85) * stars} />
+        <Circle key={i} cx={`${x}%`} cy={starYOf(scene, y / 100)} r={r} fill={glow} fillOpacity={(a ?? 0.85) * stars} />
       ))}
     </>
   );
@@ -652,7 +768,7 @@ function TwinkleImpl({
     <>
       {TWINKLERS.map((tw, i) => {
         const [x, y, r] = STAR_FIELD_DENSE[tw.star];
-        const yPx = scene.banded && scene.room > 0 ? scene.y(y / 100) : (y / 100) * height;
+        const yPx = scene.banded && scene.room > 0 ? scene.starY(y / 100) : (y / 100) * height;
         const size = (r + 0.8) * 2;
         return (
           <Animated.View
@@ -685,34 +801,36 @@ const Twinkle = memo(TwinkleImpl);
  * is what it physically is, and a southern reader's moon is a northern
  * one turned over.
  *
- * The lit disc is drawn whole and the shadow laid over it in the sky's
- * own top colour, so the dark part of the moon is sky, as it is.
+ * Only the lit part is drawn. The dark part of the moon is sky, as it is
+ * — and it is whatever sky is behind the moon: the gradient at the moon's
+ * own height, with the moon's own halo on it. It used to be a disc drawn
+ * whole with the shadow laid over it in the sky's TOP colour; the moon
+ * is never at the top (`skyScene` keeps it in the band below the chips,
+ * where the gradient has lightened and the halo lightens it more), so on
+ * every night but the full moon's the dark limb was a black hole in the
+ * sky with a sliver of light on it (2.33).
  */
 const Moon = memo(function Moon({
   illuminated,
   tilt,
   lit,
-  shadow,
 }: {
   illuminated: number;
   tilt: number;
   lit: string;
-  shadow: string;
 }) {
   const r = 9;
   const c = MOON / 2;
-  const shadowPath = useMemo(() => moonShadowPath(illuminated, c, c, r), [illuminated, c]);
+  const litPath = useMemo(() => moonLitPath(illuminated, c, c, r), [illuminated, c]);
   return (
     <Svg width={MOON} height={MOON} viewBox={`0 0 ${MOON} ${MOON}`}>
       <G rotation={tilt} origin={`${c}, ${c}`}>
-        <Circle
-          cx={c}
-          cy={c}
-          r={r}
-          fill={lit}
-          fillOpacity={illuminated <= NEW_MOON_BELOW ? 0.18 : 1}
-        />
-        {shadowPath ? <Path d={shadowPath} fill={shadow} /> : null}
+        {litPath ? (
+          <Path d={litPath} fill={lit} />
+        ) : (
+          // The whole disc: full, or a new moon's ghost.
+          <Circle cx={c} cy={c} r={r} fill={lit} fillOpacity={illuminated <= NEW_MOON_BELOW ? 0.18 : 1} />
+        )}
       </G>
     </Svg>
   );
@@ -763,6 +881,32 @@ export function moonShadowPath(
     `M ${cx} ${cy - r}`,
     // Down the dark limb, which is the left one.
     `A ${r} ${r} 0 0 0 ${cx} ${cy + r}`,
+    `A ${rx} ${r} 0 0 ${termSweep} ${cx} ${cy - r}`,
+    'Z',
+  ].join(' ');
+}
+
+/**
+ * The lit part of the same disc: the complement of `moonShadowPath` — the
+ * lit limb's semicircle (the right one) closed by the same terminator,
+ * traversed the same way so the two paths share one curve exactly. Null
+ * when the whole disc is drawn instead: full (no terminator) or new (the
+ * ghost).
+ */
+export function moonLitPath(
+  illuminated: number,
+  cx: number,
+  cy: number,
+  r: number,
+): string | null {
+  const k = Math.max(0, Math.min(1, illuminated));
+  if (k >= FULL_MOON_ABOVE || k <= NEW_MOON_BELOW) return null;
+  const rx = Math.round(Math.abs(1 - 2 * k) * r * 1000) / 1000;
+  const termSweep = k < 0.5 ? 0 : 1;
+  return [
+    `M ${cx} ${cy - r}`,
+    // Down the lit limb, which is the right one.
+    `A ${r} ${r} 0 0 1 ${cx} ${cy + r}`,
     `A ${rx} ${r} 0 0 ${termSweep} ${cx} ${cy - r}`,
     'Z',
   ].join(' ');

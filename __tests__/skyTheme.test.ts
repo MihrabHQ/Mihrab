@@ -120,7 +120,7 @@ describe('the moods', () => {
       }
     }
     // The sun and the moon and the stars take the hour's light.
-    const real = { passage: 'day', t: 0.5, top: '#000000', bottom: '#000000', glow: '#ffffff', stars: 0, body: { kind: 'sun', x: 0.5, y: 0.1, alpha: 1, light: '#FFFFFF', halo: 0.2 } } as const;
+    const real = { passage: 'day', t: 0.5, top: '#000000', bottom: '#000000', glow: '#ffffff', stars: 0, body: { kind: 'sun', x: 0.5, y: 0.1, alpha: 1, below: 0, light: '#FFFFFF', halo: 0.2 } } as const;
     const themed = themedSkyFrame(real, SKY_MOODS.midday);
     expect(themed.body.kind === 'sun' && themed.body.light).toBe(SKY_MOODS.midday.bodyLight);
     expect(themed.body.kind === 'sun' && themed.body.halo).toBeGreaterThan(0.2);
@@ -364,10 +364,11 @@ describe('the sky\'s small life', () => {
     expect(sunScaleAt(0.26)).toBeCloseTo(1 + SUN_HORIZON_GROWTH, 5);
     expect(sunScaleAt(0.17)).toBeCloseTo(1 + SUN_HORIZON_GROWTH / 2, 5);
     const sky = read('src/screens/home/HeroSky.tsx');
-    expect(sky).toMatch(/r=\{SUN_R \* sunScaleAt\(body\.y\)\}/);
+    expect(sky).toMatch(/const sunR = body\.kind === 'sun' \? SUN_R \* sunScaleAt\(body\.y\) : 0;/);
+    expect(sky).toMatch(/r=\{sunR\}/);
     expect(sky).toMatch(/sunScale: through\(body\.map\(b => \(b && b\.kind === 'sun' \? sunScaleAt\(b\.y\) : 1\)\)\)/);
     expect(sky).toMatch(/\{ scale: built\.sunScale \}/);
-    expect(sky).toMatch(/\{!running && drawStars && denseStars \? \(\s*<Twinkle/);
+    expect(sky).toMatch(/\{!running && !still && drawStars && denseStars \? \(\s*<Twinkle/);
     expect(sky).toMatch(/if \(reduceMotion\) return undefined;/);
     expect(sky).toMatch(/easing: Easing\.inOut\(Easing\.sin\), useNativeDriver: true/);
   });

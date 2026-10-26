@@ -76,6 +76,7 @@
     "quranShortcut": "Koran öffnen",
     "dayStrip": "Tag wählen",
     "nextPrayerIn": "{{prayer}} in",
+    "chosenTarget": "gewählt",
     "countdownUnitHour": "h",
     "countdownUnitMinute": "m",
     "countdownUnitSecond": "s",

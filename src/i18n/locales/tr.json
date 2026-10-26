@@ -76,6 +76,7 @@
     "quranShortcut": "Kur'an'ı aç",
     "dayStrip": "Bir gün seçin",
     "nextPrayerIn": "{{prayer}} kaldı",
+    "chosenTarget": "seçildi",
     "countdownUnitHour": "h",
     "countdownUnitMinute": "m",
     "countdownUnitSecond": "s",

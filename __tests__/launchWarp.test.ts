@@ -314,3 +314,55 @@ describe('wiring', () => {
     expect(chip).toMatch(/holdLaunchSnapshot\('help-chip', value > 0\.001\)/);
   });
 });
+
+describe('when the run begins', () => {
+  /** A hero that decides its run on mount, and nothing else. */
+  const mountHero = (w: typeof import('../src/boot/launchWarp')) => {
+    const React = require('react');
+    const { act, create } = require('react-test-renderer');
+    const Probe = () => {
+      w.useLaunchWarp(false, true);
+      return null;
+    };
+    act(() => {
+      create(React.createElement(Probe));
+    });
+  };
+
+  it('waits for the fade to be asked, then WARP_AFTER_HIDE_MS — not the hero\'s mount (2.33)', () => {
+    jest.useFakeTimers();
+    const m = require('../src/native/LaunchSnapshot');
+    const w = require('../src/boot/launchWarp');
+    const at = 1_000 * HOUR;
+    mockState.value = `${at},${at + 2 * HOUR},${at},1`;
+    // The hero mounts and decides its run; the first paint — and the ask
+    // for the fade — is 300 ms off.
+    mountHero(w);
+    w.markLaunchRunReady();
+    jest.advanceTimersByTime(w.WARP_AFTER_HIDE_MS + 100);
+    // Timed from the mount it would have begun by now, under the picture.
+    expect(w.launchRunDurationMs()).toBeNull();
+    m.hideLaunchSnapshot();
+    jest.advanceTimersByTime(w.WARP_AFTER_HIDE_MS - 10);
+    expect(w.launchRunDurationMs()).toBeNull();
+    jest.advanceTimersByTime(20);
+    expect(w.launchRunDurationMs()).not.toBeNull();
+    jest.clearAllTimers();
+    jest.useRealTimers();
+  });
+
+  it('begins anyway when the fade is never asked for', () => {
+    jest.useFakeTimers();
+    const w = require('../src/boot/launchWarp');
+    const at = 1_000 * HOUR;
+    mockState.value = `${at},${at + 2 * HOUR},${at},1`;
+    mountHero(w);
+    w.markLaunchRunReady();
+    jest.advanceTimersByTime(w.WARP_HIDE_WAIT_MAX_MS + w.WARP_AFTER_HIDE_MS - 10);
+    expect(w.launchRunDurationMs()).toBeNull();
+    jest.advanceTimersByTime(20);
+    expect(w.launchRunDurationMs()).not.toBeNull();
+    jest.clearAllTimers();
+    jest.useRealTimers();
+  });
+});

@@ -37,9 +37,17 @@ let reported = false;
 
 /** Note a step of the launch. Only the first mark of each label counts. */
 export function bootMark(label: string): void {
-  if (reported || seen.has(label)) return;
+  if (seen.has(label)) return;
   seen.add(label);
-  marks.push({ label, ms: Math.round(now() - start) });
+  const ms = Math.round(now() - start);
+  // A step after the first paint — the launch run's — is printed on its
+  // own, on the same clock, so it lines up with the line already printed.
+  if (reported) {
+    // eslint-disable-next-line no-console
+    console.log(`[boot] ${label}=${ms}`);
+    return;
+  }
+  marks.push({ label, ms });
 }
 
 /** Milliseconds since the bundle started running. */

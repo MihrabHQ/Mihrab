@@ -36,9 +36,11 @@ import {
   heroStateShown,
   hideRequestedAt,
   holdLaunchSnapshot,
+  onHideRequested,
   newLaunchSnapshotWindow,
 } from '../native/LaunchSnapshot';
 import { holdSideWorkUntil, newFirstPaintWindow } from './firstPaint';
+import { bootMark } from './bootTimeline';
 
 /**
  * From JS asking native to hide the picture to the fade having finished:
@@ -47,6 +49,23 @@ import { holdSideWorkUntil, newFirstPaintWindow } from './firstPaint';
  * at the picture's numbers for all of it, so it is as short as it can be.
  */
 export const WARP_AFTER_HIDE_MS = 320;
+/**
+ * ── TIMED FROM THE FADE'S ASK ────────────────────────────────────────
+ *
+ * The run is WARP_AFTER_HIDE_MS after the fade is asked for. The hero
+ * decides its run in its first render, and the ask is HomeScreen's
+ * layout effect of the same commit — a few milliseconds later — so a
+ * run timed from the render was timed from the ask, near enough, as
+ * long as that order held. It is not left to the order any more: the
+ * run waits for the ask itself (`onHideRequested`, at once when it has
+ * been made) and begins WARP_AFTER_HIDE_MS after it, so the fade ends on
+ * the posed hero and the hero then sets off, whatever commits the
+ * screen. Measured on a Pixel 10 Pro, 2.33: `commit=237 … run=613`, the
+ * ask at the commit. A window that never asks (one that never commits a
+ * screen worth fading into) is capped at WARP_HIDE_WAIT_MAX_MS from the
+ * hero's mount, so a run is never left waiting for a fade that never comes.
+ */
+export const WARP_HIDE_WAIT_MAX_MS = 1500;
 /** The longest a gap of hours is allowed to take to run through. */
 export const WARP_MAX_MS = 900;
 const MINUTE = 60_000;
@@ -253,19 +272,36 @@ function decide(reduceMotion: boolean, ownAt: number | null | undefined): void {
       onEnd = resolve;
     }),
   );
-  setTimeout(() => {
-    // A window that closed while its run waited for the fade.
-    if (run !== r) return;
-    r.delayOver = true;
-    if (r.ready) begin(r);
-    else setTimeout(() => begin(r), WARP_READY_MAX_MS);
-  }, warpDelayMs());
+  const arm = () =>
+    setTimeout(() => {
+      // A window that closed while its run waited for the fade.
+      if (run !== r) return;
+      r.delayOver = true;
+      if (r.ready) begin(r);
+      else setTimeout(() => begin(r), WARP_READY_MAX_MS);
+    }, warpDelayMs());
+  if (hideRequestedAt() != null) {
+    arm();
+    return;
+  }
+  let armed = false;
+  let off: () => void = () => {};
+  const cap = setTimeout(() => once(), WARP_HIDE_WAIT_MAX_MS);
+  const once = () => {
+    if (armed || run !== r) return;
+    armed = true;
+    clearTimeout(cap);
+    off();
+    arm();
+  };
+  off = onHideRequested(once);
 }
 
 /** The run's first frame may be drawn: the fade is over and the sky is live. */
 function begin(r: Run): void {
   if (run !== r || r.begun) return;
   r.begun = true;
+  bootMark('run');
   r.duration = warpDurationMs(Math.abs(Date.now() - r.at));
   onBegin.forEach(fn => fn());
   setTimeout(() => {
@@ -284,6 +320,7 @@ export function markLaunchRunReady(): void {
   const r = run;
   if (!r || r.ready) return;
   r.ready = true;
+  bootMark('sky-ready');
   if (r.delayOver) begin(r);
 }
 

@@ -132,17 +132,35 @@ export function methodCurrencyReady(): Promise<void> {
 }
 
 async function hydrate(): Promise<void> {
-  // And how far the phone's clock was from the server's (`clockSkew.ts`):
-  // Morocco's times are written by it.
-  await hydrateClockSkew();
+  // ONE round trip for everything, and the clock skew's read alongside it.
+  // Every read of the prayer cache waits for this (`prayerStorage.ts`,
+  // `awaitMethodCurrency`), so it is on a cold start's critical path: as
+  // one read per key, in turn, it was 175 ms of the launch on a Pixel 10
+  // Pro — each AsyncStorage round trip is a bridge call behind the boot's
+  // own work — and the week's times sat ready for all of it (2.33).
+  const keys = [STATE_KEY, ...CORRECTION_AUTHORITIES.map(LIST_KEY)];
+  let rows: ReadonlyArray<readonly [string, string | null]> = [];
   try {
-    const raw = await AsyncStorage.getItem(STATE_KEY);
+    // And how far the phone's clock was from the server's (`clockSkew.ts`):
+    // Morocco's times are written by it.
+    [rows] = await Promise.all([
+      typeof AsyncStorage.multiGet === 'function'
+        ? AsyncStorage.multiGet(keys)
+        : Promise.all(keys.map(async k => [k, await AsyncStorage.getItem(k)] as const)),
+      hydrateClockSkew(),
+    ]);
+  } catch {
+    /* the bundled lists stand */
+  }
+  const read = new Map(rows.map(([k, v]) => [k, v]));
+  try {
+    const raw = read.get(STATE_KEY);
     remote = (raw && parseRemote(JSON.parse(raw))) || {};
     for (const a of CORRECTION_AUTHORITIES) {
       // Each on its own: a copy that cannot be read is that authority's
       // bundled list, not every later authority's too.
       try {
-        const stored = await AsyncStorage.getItem(LIST_KEY(a));
+        const stored = read.get(LIST_KEY(a));
         if (!stored) continue;
         const { revision, list } = JSON.parse(stored) as {
           revision?: number;

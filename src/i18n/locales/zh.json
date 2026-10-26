@@ -76,6 +76,7 @@
     "quranShortcut": "打开古兰经",
     "dayStrip": "选择日期",
     "nextPrayerIn": "距{{prayer}}还有",
+    "chosenTarget": "已选",
     "countdownUnitHour": "h",
     "countdownUnitMinute": "m",
     "countdownUnitSecond": "s",

@@ -117,3 +117,26 @@ describe('a newer list for this build’s method', () => {
     expect(mockFetch).toHaveBeenCalledTimes(1);
   });
 });
+
+describe('the read at start', () => {
+  it('is one round trip for the certification and every list (2.33)', async () => {
+    // Every read of the prayer cache waits for this read, so it is on the
+    // cold start's critical path; one getItem per key, in turn, was 175 ms
+    // on a Pixel 10 Pro. multiGet is one bridge call.
+    await AsyncStorage.setItem('methods.corrections.v1.morocco', JSON.stringify({ revision: 2, list: newer }));
+    const multi = jest.spyOn(AsyncStorage, 'multiGet');
+    const single = jest.spyOn(AsyncStorage, 'getItem');
+    await loadCachedMethodCurrency();
+    // (The mock's getItem is itself a multiGet of one key, so count the
+    // calls that carry the certification: exactly one, with every list.)
+    const ours = multi.mock.calls.filter(c => (c[0] as string[]).includes('methods.certification.v1'));
+    expect(ours.length).toBeGreaterThanOrEqual(1);
+    for (const c of ours) {
+      expect(c[0]).toEqual(expect.arrayContaining(['methods.certification.v1', 'methods.corrections.v1.morocco']));
+    }
+    expect(single.mock.calls.map(c => c[0])).not.toContain('methods.certification.v1');
+    expect(single.mock.calls.map(c => c[0])).not.toContain('methods.corrections.v1.morocco');
+    multi.mockRestore();
+    single.mockRestore();
+  });
+});

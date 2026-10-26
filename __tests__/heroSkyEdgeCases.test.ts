@@ -25,7 +25,7 @@ import {
   skyMoment,
   type SkyPassage,
 } from '../src/screens/home/skyModel';
-import { MOON, SKY_CRAMPED_BELOW, skyScene, SUN_R } from '../src/screens/home/HeroSky';
+import { MOON, SKY_CRAMPED_BELOW, skyScene, STAR_FIELD_BOTTOM, STAR_FIELD_TOP, SUN_R } from '../src/screens/home/HeroSky';
 import { filterOptionalTimes } from '../src/utils/nightTimes';
 import type { TimingsMap } from '../src/types/prayer';
 
@@ -241,10 +241,21 @@ describe.each(DAYS)('$name', ({ t: day, tomorrowFajr }) => {
         expect(frame.body.tilt).toBeGreaterThanOrEqual(0);
         expect(frame.body.tilt).toBeLessThan(360);
       }
-      // The night has a moon; the day has a sun; the dusk has neither.
+      // The night has a moon; the day has a sun; the dusk has the sun
+      // going under, then nothing, then the moon coming in with the
+      // stars (2.33) — and whatever it has is whole: a sun carries how
+      // far it is under, a moon how far in it is.
       if (x.passage === 'night') expect(frame.body.kind).toBe('moon');
       if (x.passage === 'day') expect(frame.body.kind).toBe('sun');
-      if (x.passage === 'dusk') expect(frame.body.kind).toBe('none');
+      if (x.passage === 'dusk') expect(['sun', 'none', 'moon']).toContain(frame.body.kind);
+      if (frame.body.kind === 'sun') {
+        expect(frame.body.below).toBeGreaterThanOrEqual(0);
+        expect(frame.body.below).toBeLessThanOrEqual(1);
+      }
+      if (frame.body.kind === 'moon') {
+        expect(frame.body.alpha).toBeGreaterThan(0);
+        expect(frame.body.alpha).toBeLessThanOrEqual(1);
+      }
     }
   });
 
@@ -326,12 +337,19 @@ describe('the open sky, on every phone and every table', () => {
             expect(y - SUN_R).toBeGreaterThanOrEqual(sceneTop);
             expect(y + SUN_R).toBeLessThanOrEqual(height - sceneBottom + 0.001);
           }
-          // And the stars (drawn at 8%–40% of a short card).
-          for (const f of [0.08, 0.12, 0.14, 0.26, 0.3, 0.34, 0.4]) {
-            const y = scene.y(f);
+          // And the stars, on their own spread: inside the band, in the
+          // field's order, and using the whole of it — never two rows of
+          // dots at the band's edges (the bodies' clamp did that, 2.33).
+          const field = [0.06, 0.08, 0.12, 0.14, 0.26, 0.3, 0.34, 0.4, 0.44];
+          const ys = field.map(f => scene.starY(f));
+          for (const y of ys) {
             expect(y).toBeGreaterThanOrEqual(sceneTop);
-            expect(y).toBeLessThanOrEqual(height - sceneBottom);
+            expect(y).toBeLessThanOrEqual(height - sceneBottom + 0.001);
           }
+          for (let i = 1; i < ys.length; i += 1) expect(ys[i]).toBeGreaterThan(ys[i - 1]);
+          expect(ys[ys.length - 1] - ys[0]).toBeGreaterThanOrEqual(0.8 * scene.room);
+          expect(scene.starY(STAR_FIELD_TOP)).toBeCloseTo(sceneTop, 5);
+          expect(scene.starY(STAR_FIELD_BOTTOM)).toBeCloseTo(height - sceneBottom, 5);
         }
       }
     }

@@ -134,12 +134,27 @@ function renderCard(): ReactTestRenderer {
 
 /** The eyebrow carries the name the hero is counting to. */
 function heroPrayer(tree: ReactTestRenderer): string {
+  // The label alone, or — aimed by a tap — the label and the word after it.
   const line = tree.root
     .findAllByType(Text)
-    .map(n => n.props.children)
+    .map(n => (Array.isArray(n.props.children) ? n.props.children[0] : n.props.children))
     .find(c => typeof c === 'string' && c.startsWith('home.nextPrayerIn:'));
   const parts = String(line).split(',');
   return parts[parts.length - 1];
+}
+
+/** The eyebrow's own control while the hero is aimed: the word, and the tap that hands back. */
+function chosenEyebrow(tree: ReactTestRenderer) {
+  // By props, not by type: the Pressable is a forwardRef (see `rowFor`).
+  const p = tree.root.findAll(
+    n => n.props.accessibilityLabel === 'a11y.countdownHere' && typeof n.props.onPress === 'function',
+  )[0];
+  if (!p) return null;
+  const word = p
+    .findAllByType(Text)
+    .flatMap(n => (Array.isArray(n.props.children) ? n.props.children : [n.props.children]))
+    .find(c => typeof c === 'string' && c.includes('home.chosenTarget'));
+  return { press: () => p.props.onPress(), word };
 }
 
 /**
@@ -190,5 +205,21 @@ describe('aiming the countdown', () => {
     });
     expect(heroPrayer(tree)).toBe('prayer.Asr');
     expect(rowFor(tree, 'Isha')?.isChosen).toBe(false);
+  });
+
+  it('says so in the eyebrow while aimed, and a tap there hands the hero back (2.33)', () => {
+    const tree = renderCard();
+    expect(chosenEyebrow(tree)).toBeNull();
+    act(() => {
+      rowFor(tree, 'Isha')?.onSelect?.();
+    });
+    const aimed = chosenEyebrow(tree);
+    expect(aimed?.word).toBe(' · home.chosenTarget');
+    act(() => {
+      aimed?.press();
+    });
+    expect(heroPrayer(tree)).toBe('prayer.Asr');
+    expect(rowFor(tree, 'Isha')?.isChosen).toBe(false);
+    expect(chosenEyebrow(tree)).toBeNull();
   });
 });

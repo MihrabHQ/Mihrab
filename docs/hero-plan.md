@@ -4,6 +4,11 @@ Written 2026-10-26, against v2.33.0 (292), at Hassan's request: *"Analyze the
 hero, its behaviour, how it is supposed to behave, then its code; look for
 bugs, missing optimization, look and feel improvements, and build a plan."*
 
+> **Status (2026-10-26, evening):** all three waves are implemented and on
+> the phone (built from this tree, installed over the existing app), with
+> the corrections noted under each item where the fix taught something the
+> analysis had wrong. What remains open is in §6.
+
 Everything below was checked on the Pixel 10 Pro (Android 17, 2.33.0 from
 Obtainium, no reinstall) and on the `Mihrab_Shots_37` emulator (API 37,
 1080×2400, 2.33.0 from `android/app/build/outputs/apk/github/release`),
@@ -90,7 +95,9 @@ dark limb as it does in the sky. *Verify:* a unit test that `moonLitPath`
 and `moonShadowPath` together cover the disc (sample points inside the
 circle: exactly one of the two contains each), the emulator crescent at
 `2026-11-14 20:00` and a gibbous at `2026-11-20 20:00` with a pixel read
-beside and inside the dark limb (same colour within a few units).
+beside and inside the dark limb (same colour within a few units). *Done:*
+`moonLitPath`, the complement test, and the 14 Nov crescent on the emulator
+is a crescent in the sky.
 
 **B2 — The stars stand in two straight lines. Confirmed.**
 `Stars` places each star with `sceneYOf(scene, y / 100)`, the same mapping as
@@ -110,6 +117,8 @@ extend `heroSkyEdgeCases` ("the stars keep their order and spread": for every
 band the mapped y values are strictly increasing in the field's y, and the
 span used is at least 80 % of the band), a screenshot at 03:00 and 17:30
 with no two stars within 3 px of the same row unless the field says so.
+*Done:* `skyScene.starY`, the order-and-spread test; the 03:00 sky on the
+emulator is a field.
 
 **B3 — The sun is up before it rises. Confirmed on screen, a model choice in
 code.** At 06:40, four minutes before sunrise, the sun is a whole yellow disc
@@ -125,7 +134,9 @@ there) mapped so that the disc is half-hidden at sunrise/sunset and gone by
 run layers need the same clip (`SkyRunLayers`). *Verify:* sweep 06:30, 06:40,
 06:45, 06:50, 07:00 and 16:05–16:30 on the emulator; a test that
 `skyFrame` reports `body.below` (the fraction hidden) rising to 1 as the sun
-goes under.
+goes under. *Done:* `below` on the sun, a clip at the horizon in the live
+sky and a clipped view in the run layers; 06:40 is a half sun coming up,
+16:25 a sun going down behind the Help chip.
 
 **Looked at and found sound.** `sceneTop` (`statusBarInset + topRowH +
 SPACING.md`) is the top row's foot — the row's own bottom margin lies inside
@@ -164,6 +175,16 @@ generation guard on that continuation. *Verify:* `[boot]` on the phone three
 cold starts before and after (`adb logcat -c; am start; grep '\[boot\]'`),
 expecting `commit` under ~250 ms for Stockholm; the cache-fill tests still
 pass; the fill still starts (log line or test with a mocked `getCacheStatus`).
+*Done, with a finding on the way:* the marks put inside `loadV2` showed the
+430 ms was not the blob at all — `v2=149 … v2-lists=324 v2-swept=338
+v2-read=341 v2-parsed=343`: 175 ms waiting for the correction lists' read
+(`methodCurrency.hydrate`: one `AsyncStorage.getItem` per key, in turn, plus
+the clock skew's), 14 ms of sweep, 5 ms of read and parse. Two changes: the
+lists are read with one `multiGet` alongside the skew (8–13 ms now), and the
+status is collected after the state is published (`fillLater`). Three cold
+starts after: `commit=237/246/252 paint=423/467/422 run=613/662/607`,
+against `commit=365–399 paint=544–557 run=701–759` before — about 140 ms
+earlier on the commit, 100 ms on the paint and the run.
 
 **O2 — The run begins ~300 ms after the fade ends. Measured, cause to
 verify.** In the recording the picture's fade was asked at +785 ms after
@@ -179,6 +200,17 @@ three launches. If `sky-ready` is the late one, mount the run layers earlier
 or start the run on the fade's clock when the layers are within a frame.
 *Verify:* the two marks, and the recording again: the run's first frame
 within 350 ms of `hide asked`.
+*Done — and the diagnosis was wrong.* With the marks in place, `sky-ready`
+comes 30–100 ms after the commit and `run` 320 ms after the fade's ask,
+which is HomeScreen's layout effect of the commit, not a step after the
+paint (the logcat line for the ask is written when native gets to it, which
+in the busy first second is 100+ ms later). Six launches ran on time; the
+400 ms the recording showed was a JS stall on the first launch of the day,
+which the frames-drawn timing then absorbed as designed. Kept: the two
+marks (printed after the `[boot]` line as `[boot] run=…`), and the run now
+waits for the ask itself rather than assuming it follows the hero's render
+(`onHideRequested`, capped at `WARP_HIDE_WAIT_MAX_MS`) — the same timing
+on every launch seen, made explicit and tested.
 
 **O3 — The rail is laid out again every second. Minor.** `rail` (TodayCard
 ~505) recomputes `from`/`span` from twenty `eventAt` calls each tick and the
@@ -189,14 +221,17 @@ from them; round the width to the device pixel (`PixelRatio`) so unchanged
 widths are the same string and skip layout. The launch run's unrounded slide
 is kept by rounding to pixels, not percents. *Verify:* a test that the rail's
 width string is unchanged between two ticks a second apart mid-interval;
-`todayCountdown.test.tsx` still passes.
+`todayCountdown.test.tsx` still passes. *Done:* the width is rounded to a
+quarter of a percent (a pixel of a 400 dp track); the memo split was not
+worth its complexity once the layout was gone.
 
 **O4 — `Twinkle` runs three native loops all night, also under the kept
 picture and for the posed twin. Minor.** The twin (`frozenAt` set) mounts its
 own `HeroSky`, and with it a second `Twinkle` and a second set of star
 circles, for a hero nobody sees. *Fix:* pass `still` to the twin's sky: no
 `Twinkle`, no halo animation. *Verify:* count `Animated.loop` starts in a
-render test of `TodayCard` with an interval (expect 3, not 6).
+render test of `TodayCard` with an interval (expect 3, not 6). *Done:*
+`HeroSky still` on the twin; the source assertion in `skyTheme.test.ts`.
 
 **O5 — The halo's gradient is in bounding-box units. To verify on a tablet.**
 `RadialGradient r="…%"` with the default `objectBoundingBox` scales with the
@@ -206,7 +241,10 @@ is square. On the Pixel the sky is near enough (luminance right vs down at
 sky, or a Duo page, it is an ellipse. *Fix:* `gradientUnits="userSpaceOnUse"`
 with `r` in dp of the shorter side (`glowCy` already converts dp to the box;
 it can go). *Verify:* `heroSky.test.ts` source assertion updated; iPad
-simulator screenshot at 03:00, the halo measured along two axes.
+simulator screenshot at 03:00, the halo measured along two axes. *Done* in
+the live sky and the run layers (`userSpaceOnUse`, radius as a percentage of
+the sides' geometric mean, so the area is unchanged on the phone); the iPad
+screenshot is still to take.
 
 ### Look and feel
 
@@ -227,7 +265,8 @@ through dusk and out through dawn with the stars, so there is no instant a
 body pops. The picture option is an afternoon's work; the truth option a
 day's, plus a test against USNO/JPL rise–set times for three cities. Either
 removes the pop; only the first makes the crescent's evening-only appearance
-right, which a reader who watches the sky will notice.
+right, which a reader who watches the sky will notice. *Done, the picture
+option:* `alpha` on the moon, following the stars through dawn and dusk.
 
 **L2 — The full moon's halo at 03:00 reaches under the status bar and the
 Qibla chip.** `HALO_MAX_R` 38 % of the sky, centred on a body in the band —
@@ -236,14 +275,18 @@ than a glow when the moon is at the band's ceiling. *Proposal:* cap the halo's
 centre-to-edge reach at the band (fade the gradient to 0 by the sky's top
 edge: an extra stop at the fraction where the top row sits) — the ink switch
 for the status bar then also stops flickering between the halo and the sky.
-The run layers' halo gets the same stop.
+The run layers' halo gets the same stop. *Done* as a fade painted back in
+the gradient's own colours from the top edge to the band's top (`topFade`),
+in the live sky and per gradient layer of the run.
 
 **L3 — The band is a sliver on a long table.** With "first time until"
 lines on every row the band on the Pixel is ~62 dp; the moon sits on the
 countdown's shoulder and the stars (B2) crowd the same rows. `SKY_CRAMPED_BELOW`
 hides the bodies only below ~40 dp. *Proposal:* once B2 spreads the stars,
 revisit the threshold against the dense table: a body wants ~90 dp; under
-that draw the moon at half size rather than none.
+that draw the moon at half size rather than none. *Not done:* with B2 in,
+the band on the phone reads fine at 62 dp; a half-size moon would be 13 dp
+across. Left as it is.
 
 **L4 — Aim: nothing says the hero is aimed.** After a tap on Isha at 09:00
 the eyebrow reads "Isha in", the rail "Sunrise → Isha", the row carries a
@@ -252,14 +295,17 @@ reader who forgot the tap sees the app counting to the wrong prayer. *Proposal:*
 a one-word trailer in the eyebrow ("Isha in · chosen" / the row's marker in
 the eyebrow's colour) and a tap on the eyebrow to clear it, matching the
 row's own toggle. Strings in 13 locales. *Verify:* `todayCountdown` test for
-the eyebrow with `chosen`.
+the eyebrow with `chosen`. *Done:* "Isha in · chosen", a tap on the line hands
+back, `home.chosenTarget` in 13 locales, the eyebrow test.
 
 **L5 — The system splash flashes dark between the launcher and the picture.**
 Frames 1.25–1.45 s of the recording: a dark-grey splash with the icon, ~150 ms,
 then the kept night sky. `AppTheme` leaves `windowSplashScreenBackground` to
 Material's default. *Proposal:* set it to the page colour per `values` /
 `values-night`, and `windowSplashScreenAnimationDuration` 0 — the picture is
-the splash. iOS has the same question in `LaunchScreen.storyboard`.
+the splash. iOS has the same question in `LaunchScreen.storyboard`. *Done*
+for Android (`values-v31`, `values-night-v31`); iOS's launch screen already
+follows `systemBackgroundColor`, so nothing to do there.
 
 ## 4. The plan
 
@@ -324,7 +370,19 @@ Stockholm, Casablanca and Jakarta).
 
 ## 6. What was not done here
 
-- No code was changed; this is the plan.
+- Open after the implementation: the iPad and Duo screenshots for O5; the
+  Arabic, Reduce Motion and large-font passes on the phone; a day's sweep
+  on the iOS simulator (the clip and the fade are the same SVG, but iOS
+  draws it with its own renderer). L3 is left as it is (see above).
+- The "truth" option for the moon (its real altitude and azimuth) is still
+  Hassan's call.
+- Two suites unrelated to the hero were red on the Mac before this work:
+  `nationalTables` and `providerMatrix` pinned days (2026-10-14, 10-17)
+  that this morning's table refresh moved out of the bundled seeds
+  (the seeds now start 2026-10-19). `nationalTables` reads its day from the
+  seed now; the matrix's golden instants for the two MUIS places were
+  regenerated under TZ=UTC. The mirror job trimming the seeds past a pinned
+  day will do this again unless the harness's dates move with the seed.
 - Arabic/RTL, Reduce Motion, font scaling and the tablet were not exercised
   in this pass; they are in §5 for each wave.
 - The JS cost of the one-second tick was read, not profiled: `HeroToday`

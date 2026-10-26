@@ -76,6 +76,7 @@
     "quranShortcut": "Öppna Koranen",
     "dayStrip": "Välj en dag",
     "nextPrayerIn": "{{prayer}} om",
+    "chosenTarget": "vald",
     "countdownUnitHour": "h",
     "countdownUnitMinute": "m",
     "countdownUnitSecond": "s",

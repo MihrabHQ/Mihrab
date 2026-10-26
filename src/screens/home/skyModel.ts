@@ -244,6 +244,15 @@ export type SkyBody =
       x: number;
       y: number;
       alpha: number;
+      /**
+       * How much of the disc is under the horizon, 0–1: 0 the whole disc
+       * above it (the day), 0.5 cut in half (sunrise, Maghrib), 1 gone
+       * under (twilight). The disc is drawn that far below the horizon
+       * line and clipped at it — see HeroSky — so the sun RISES and SETS
+       * rather than standing whole on the line through the whole of dawn
+       * and the whole of the sunset (2.33).
+       */
+      below: number;
       /** Its colour where the reader is standing, after the air. */
       light: string;
       /** How hard it glows, 0–1 — see skyLight's SUN_GLOW_PEAK. */
@@ -253,6 +262,13 @@ export type SkyBody =
       kind: 'moon';
       x: number;
       y: number;
+      /**
+       * 1 through the night; fading out with the stars through the dawn
+       * and in with them through the dusk, so no instant has a moon that
+       * simply appears or vanishes (2.33). Its place in those is the
+       * night's own end: the setting point at dawn, the rising point at dusk.
+       */
+      alpha: number;
       light: string;
       halo: number;
     } & MoonView);
@@ -287,6 +303,16 @@ const X_SET = 0.88;
  */
 const Y_LOW = 0.26;
 const Y_HIGH = 0.08;
+/** The horizon the sun rises over: where its centre is drawn at sunrise and Maghrib. */
+export const SUN_HORIZON_Y = Y_LOW;
+/**
+ * How much of the day the sun takes to clear the horizon after sunrise,
+ * and to reach it before Maghrib: 2 % of a 12-hour day is a quarter of an
+ * hour — a few minutes longer than the real four, so the rise is seen.
+ */
+export const SUN_RISE_SPAN = 0.02;
+/** Where the moon waits before it rises and after it has set: the night's ends. */
+const MOON_REST_Y = 0.22;
 
 /** Between 0 and 1. */
 const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
@@ -356,59 +382,64 @@ export function skyFrame(
   const sunLight = { light: tintedBy(SUN_SURFACE, altitude), halo: sunGlow(altitude) };
   let stars = 0;
   let body: SkyBody = { kind: 'none' };
+  // Moonlight is sunlight off a grey rock, and the rock is the same colour
+  // all night; what changes is how much of it is lit.
+  const moonAt = (mx: number, my: number, alpha: number): SkyBody => {
+    const moon = moonView(now, where?.latitude, where?.longitude);
+    return { kind: 'moon', x: mx, y: my, alpha, ...moon, light: MOON_SURFACE, halo: moonGlow(moon.illuminated) };
+  };
+  const daylight = clamp01(moment.daylight ?? 0);
   switch (passage) {
     case 'night': {
       stars = 1;
-      const moon = moonView(now, where?.latitude, where?.longitude);
-      body = {
-        kind: 'moon',
-        x,
-        y: 0.22 - Math.sin(t * Math.PI) * 0.1,
-        ...moon,
-        // Moonlight is sunlight off a grey rock, and the rock is the same
-        // colour all night; what changes is how much of it is lit.
-        light: MOON_SURFACE,
-        halo: moonGlow(moon.illuminated),
-      };
+      body = moonAt(x, MOON_REST_Y - Math.sin(t * Math.PI) * 0.1, 1);
       break;
     }
     case 'dawn': {
-      // Stars fade as the sky lightens; the sun breaks the strip's floor at
-      // t ≈ 0.6 and stands on the horizon line, at the point it rises
-      // from, by sunrise. Only the coming-up is the dawn's: the place is
-      // the arc's start, which is where the day then carries it on from.
+      // Stars fade as the sky lightens, and the moon — at its setting
+      // point — with them. The sun comes up under the horizon at t ≈ 0.6
+      // and is cut in half by it at sunrise, at the point the day's arc
+      // then carries it on from. Only the coming-up is the dawn's.
       stars = Math.max(0, 1 - t / 0.5);
       const rise = Math.max(0, (t - 0.6) / 0.4);
       body =
         rise > 0
-          ? {
-              kind: 'sun',
-              x: sun.x,
-              y: sun.y + (1 - rise) * 0.02,
-              alpha: Math.min(1, rise * 1.5),
-              ...sunLight,
-            }
-          : { kind: 'none' };
+          ? { kind: 'sun', x: sun.x, y: sun.y, alpha: 1, below: 1 - rise / 2, ...sunLight }
+          : stars > 0
+            ? moonAt(X_SET, MOON_REST_Y, stars)
+            : { kind: 'none' };
       break;
     }
     case 'day':
-      body = { kind: 'sun', x: sun.x, y: sun.y, alpha: 1, ...sunLight };
+      // Clearing the horizon through the first minutes after sunrise.
+      body = { kind: 'sun', x: sun.x, y: sun.y, alpha: 1, below: Math.max(0, 0.5 - daylight / (2 * SUN_RISE_SPAN)), ...sunLight };
       break;
     case 'sunset': {
-      // The same arc, still coming down — the passage's own progress does
-      // nothing here but take the sun out as Maghrib arrives.
+      // The same arc, still coming down — and into the horizon through the
+      // last minutes before Maghrib, half under it as Maghrib arrives.
       body = {
         kind: 'sun',
         x: sun.x,
         y: sun.y,
-        alpha: t < 0.9 ? 1 : Math.max(0, Math.round((1 - (t - 0.9) / 0.1) * 1000) / 1000),
+        alpha: 1,
+        below: Math.max(0, 0.5 - (1 - daylight) / (2 * SUN_RISE_SPAN)),
         ...sunLight,
       };
       break;
     }
-    case 'dusk':
+    case 'dusk': {
+      // The sun goes the rest of the way under through the first part of
+      // the dusk; then the stars come out, and the moon with them, at its
+      // rising point.
       stars = Math.max(0, (t - 0.4) / 0.6);
+      body =
+        t < 0.3
+          ? { kind: 'sun', x: sun.x, y: sun.y, alpha: 1, below: 0.5 + t / 0.6, ...sunLight }
+          : stars > 0
+            ? moonAt(X_RISE, MOON_REST_Y, stars)
+            : { kind: 'none' };
       break;
+    }
   }
   return { passage, t, top, bottom, glow: GLOW[passage], stars, body };
 }

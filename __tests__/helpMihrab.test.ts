@@ -106,10 +106,13 @@ describe('the page', () => {
     const card = read('src/screens/home/TodayCard.tsx');
     // The eyebrow row is its own memoised component (HeroEyebrow): the
     // label first, the heart after it — the trailing end.
-    const row = card.slice(card.indexOf('<View style={styles.heroEyebrowRow}>'));
+    // The label (and the "chosen" word after it, when the hero is aimed —
+    // 2.33) is built first and placed first; the heart after it.
+    const row = card.slice(card.indexOf('const HeroEyebrow = memo('));
     expect(row.indexOf('{label}')).toBeGreaterThan(0);
-    expect(row.indexOf('{renderHelp?.(ink)}')).toBeGreaterThan(row.indexOf('{label}'));
-    expect(card).toMatch(/<HeroEyebrow label=\{eyebrowLabel\} ink=\{inkTop\} renderHelp=\{topRow\?\.renderHelp\} \/>/);
+    expect(row.indexOf('<View style={styles.heroEyebrowRow}>')).toBeGreaterThan(row.indexOf('{label}'));
+    expect(row.indexOf('{renderHelp?.(ink)}')).toBeGreaterThan(row.indexOf('<View style={styles.heroEyebrowRow}>'));
+    expect(card).toMatch(/<HeroEyebrow\s+label=\{eyebrowLabel\}[\s\S]*?ink=\{inkTop\}\s+renderHelp=\{topRow\?\.renderHelp\}\s*\/>/);
     expect(card).toMatch(/t\('home\.nextPrayerIn', \{/);
     expect(read('src/screens/HomeScreen.tsx')).toMatch(/navigate\('SettingsHelpMihrab'\)/);
   });

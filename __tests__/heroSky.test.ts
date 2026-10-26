@@ -16,7 +16,7 @@ import {
   skyMoment,
   type SkyPassage,
 } from '../src/screens/home/skyModel';
-import { glowCy, moonShadowPath, skyScene } from '../src/screens/home/HeroSky';
+import { glowCy, moonLitPath, moonShadowPath, skyScene } from '../src/screens/home/HeroSky';
 import { moonIllumination, moonPhaseFraction } from '../src/screens/home/moon';
 
 const read = (p: string) => readFileSync(join(__dirname, '..', p), 'utf8');
@@ -163,7 +163,20 @@ describe('the moon', () => {
       expect(late.body.x).toBeGreaterThan(early.body.x);
       expect(early.body.y).toBeLessThanOrEqual(0.32);
     }
-    expect(skyFrame({ passage: 'dawn', t: 0, daylight: -1 }, at(12)).body.kind).toBe('none');
+    // Through the dawn it fades out with the stars at its setting point;
+    // through the dusk it comes in with them at its rising point. No
+    // instant has a moon that simply appears or vanishes (2.33).
+    const dawn0 = skyFrame({ passage: 'dawn', t: 0, daylight: -1 }, at(12)).body;
+    expect(dawn0.kind).toBe('moon');
+    expect(dawn0.kind === 'moon' && dawn0.alpha).toBe(1);
+    expect(dawn0.kind === 'moon' && dawn0.x).toBe(0.88);
+    const dawn25 = skyFrame({ passage: 'dawn', t: 0.25, daylight: -0.5 }, at(12)).body;
+    expect(dawn25.kind === 'moon' && dawn25.alpha).toBeCloseTo(0.5, 5);
+    expect(skyFrame({ passage: 'dawn', t: 0.55, daylight: -0.1 }, at(12)).body.kind).toBe('none');
+    const dusk7 = skyFrame({ passage: 'dusk', t: 0.7, daylight: 1.5 }, at(12)).body;
+    expect(dusk7.kind === 'moon' && dusk7.alpha).toBeCloseTo(0.5, 5);
+    expect(dusk7.kind === 'moon' && dusk7.x).toBe(0.12);
+    expect(skyFrame({ passage: 'dusk', t: 0.35, daylight: 1.2 }, at(12)).body.kind).toBe('none');
   });
 
   it('carries the reader\'s coordinates through to the tilt', () => {
@@ -194,6 +207,27 @@ describe('the moon', () => {
     // A crescent's terminator bows into the lit side, a gibbous' away.
     expect(moonShadowPath(0.2, 10, 10, 8)).toMatch(/A 4\.8 8 0 0 0 10 2/);
     expect(moonShadowPath(0.8, 10, 10, 8)).toMatch(/A 4\.8 8 0 0 1 10 2/);
+  });
+
+  it('draws only the lit part, and it is the exact complement of the shadow', () => {
+    // Full and new: the whole disc is drawn by the caller, no path.
+    expect(moonLitPath(1, 10, 10, 8)).toBeNull();
+    expect(moonLitPath(0, 10, 10, 8)).toBeNull();
+    for (const k of [0.05, 0.2, 0.5, 0.8, 0.97]) {
+      const lit = moonLitPath(k, 10, 10, 8) ?? '';
+      const shadow = moonShadowPath(k, 10, 10, 8) ?? '';
+      // The lit limb is the right one (sweep 1), the dark one the left.
+      expect(lit).toContain('A 8 8 0 0 1 10 18');
+      expect(shadow).toContain('A 8 8 0 0 0 10 18');
+      // The same terminator, walked the same way, so the two meet with no
+      // sliver of sky and no overlap — the dark limb is sky, not a fill.
+      const term = /A [\d.]+ 8 0 0 [01] 10 2/;
+      expect(lit.match(term)?.[0]).toBe(shadow.match(term)?.[0]);
+    }
+    // The rendering has no shadow fill left: the sky shows through.
+    const src = read('src/screens/home/HeroSky.tsx');
+    expect(src).not.toMatch(/shadow=\{/);
+    expect(src).toMatch(/moonLitPath\(illuminated/);
   });
 
   it('goes on lighting up all the way to full, with no steps', () => {
@@ -231,14 +265,42 @@ describe('the moon', () => {
 describe('the sun', () => {
   const f = (p: SkyPassage, t: number) => skyFrame({ passage: p, t, daylight: t }, at(12));
   it('rises late in the dawn, climbs to its height about the middle of the day, and has set by Maghrib', () => {
-    expect(f('dawn', 0.3).body.kind).toBe('none');
+    expect(f('dawn', 0.3).body.kind).toBe('moon');
     expect(f('dawn', 0.95).body.kind).toBe('sun');
     const noon = f('day', 0.5).body;
     const morning = f('day', 0.1).body;
     if (noon.kind === 'sun' && morning.kind === 'sun') expect(noon.y).toBeLessThan(morning.y);
+    // Half under the horizon as Maghrib arrives, the rest of the way under
+    // through the first part of the dusk, then the moon (2.33).
     const set = f('sunset', 1).body;
-    expect(set.kind === 'sun' ? set.alpha : 0).toBe(0);
-    expect(f('dusk', 0.5).body.kind).toBe('none');
+    expect(set.kind === 'sun' ? set.below : 0).toBeCloseTo(0.5, 5);
+    const dusk1 = f('dusk', 0.1).body;
+    expect(dusk1.kind === 'sun' ? dusk1.below : 0).toBeCloseTo(0.5 + 0.1 / 0.6, 5);
+    expect(f('dusk', 0.5).body.kind).toBe('moon');
+  });
+
+  it('rises out of the horizon and sets into it, rather than standing whole on it (2.33)', () => {
+    // Dawn: under the horizon at t 0.6, half out by sunrise.
+    const below = (p: SkyPassage, t: number) => {
+      const b = f(p, t).body;
+      return b.kind === 'sun' ? b.below : NaN;
+    };
+    expect(below('dawn', 0.61)).toBeCloseTo(1 - 0.01 / 0.4 / 2, 3);
+    expect(below('dawn', 1)).toBeCloseTo(0.5, 5);
+    // Day: clear of it within SUN_RISE_SPAN of the day, then on the arc.
+    expect(below('day', 0.01)).toBeCloseTo(0.25, 5);
+    expect(below('day', 0.3)).toBe(0);
+    // Sunset: into it within SUN_RISE_SPAN of Maghrib.
+    expect(below('sunset', 0.9)).toBe(0);
+    expect(below('sunset', 0.99)).toBeCloseTo(0.25, 5);
+    // Monotonic: coming up, then going down, never back.
+    let last = 1;
+    for (let t = 0.6; t <= 1; t += 0.02) {
+      const b = f('dawn', t).body;
+      if (b.kind !== 'sun') continue;
+      expect(b.below).toBeLessThanOrEqual(last + 1e-9);
+      last = b.below;
+    }
   });
 
   it('keeps every body in the top strip, clear of the countdown', () => {
@@ -286,6 +348,11 @@ describe("the sun's glow", () => {
 
   it('never hands the gradient a raw scene position', () => {
     expect(read('src/screens/home/HeroSky.tsx')).not.toMatch(/cy=\{sceneY\(bodyXY\.y\)\}/);
-    expect(read('src/screens/home/HeroSky.tsx')).toMatch(/cy=\{glowCy\(sceneY\(bodyXY\.y\), height\)\}/);
+    const sky = read('src/screens/home/HeroSky.tsx');
+    expect(sky).toMatch(/cy=\{glowCy\(body\.kind === 'sun' \? sunCy : sceneY\(bodyXY\.y\), height\)\}/);
+    // And once the sky has a size, a circle in dp — the same area on
+    // every aspect, never an ellipse on a tall sky (2.33).
+    expect(sky).toMatch(/gradientUnits="userSpaceOnUse"\s+cx=\{bodyXY\.x \* size\.width\}/);
+    expect(sky).toMatch(/id="halorun" gradientUnits="userSpaceOnUse"/);
   });
 });

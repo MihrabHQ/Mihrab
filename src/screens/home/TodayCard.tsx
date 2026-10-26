@@ -307,23 +307,53 @@ const HeroTopRow = memo(function HeroTopRow({
   );
 });
 
+/**
+ * "Fajr in" — and, when the hero has been aimed at a row by a tap, a
+ * word after it saying so, and a tap on the line to hand the hero back.
+ * Without the word the aimed hero looked exactly like the ordinary one,
+ * and a reader who had forgotten the tap saw the app counting down to
+ * the wrong prayer (2.33). The row's own marker says the same thing; the
+ * eyebrow is where the eye reads what is being counted.
+ */
 const HeroEyebrow = memo(function HeroEyebrow({
   label,
+  chosen,
+  chosenA11y,
+  onClear,
   ink,
   renderHelp,
 }: {
   label: string;
+  /** The word after the label while the hero is aimed by a tap, else null. */
+  chosen?: string | null;
+  chosenA11y?: string;
+  onClear?: () => void;
   ink: SkyInkColors;
   renderHelp?: (ink: SkyInkColors) => ReactNode;
 }) {
+  const text = (
+    <Text
+      style={[styles.heroEyebrow, chosen ? null : styles.heroEyebrowText, { color: ink.muted }]}
+      numberOfLines={1}
+      maxFontSizeMultiplier={TITLE_BAND_MAX_FONT_SCALE}>
+      {label}
+      {chosen ? <Text style={{ color: ink.text }}>{` · ${chosen}`}</Text> : null}
+    </Text>
+  );
   return (
     <View style={styles.heroEyebrowRow}>
-      <Text
-        style={[styles.heroEyebrow, styles.heroEyebrowText, { color: ink.muted }]}
-        numberOfLines={1}
-        maxFontSizeMultiplier={TITLE_BAND_MAX_FONT_SCALE}>
-        {label}
-      </Text>
+      {chosen ? (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={chosenA11y}
+          onPress={onClear}
+          hitSlop={8}
+          style={({ pressed }) => [styles.heroEyebrowText, pressed && styles.dayStepPressed]}>
+          {text}
+        </Pressable>
+      ) : (
+        text
+      )}
       {renderHelp?.(ink)}
     </View>
   );
@@ -952,6 +982,7 @@ const HeroToday = memo(function HeroToday({
         frame={frame}
         run={skyRun ?? undefined}
         denseStars
+        still={posed}
         sceneTop={sceneTop}
         sceneBottom={sceneBottom}
         bleed={
@@ -982,7 +1013,14 @@ const HeroToday = memo(function HeroToday({
       <View onLayout={fill ? onBlockLayout : undefined}>
       {/* "Fajr in" leading, and on the trailing end of the same line —
           the side with nothing on it — the heart that opens Help Mihrab. */}
-      <HeroEyebrow label={eyebrowLabel} ink={inkTop} renderHelp={topRow?.renderHelp} />
+      <HeroEyebrow
+        label={eyebrowLabel}
+        chosen={chosen ? t('home.chosenTarget', 'chosen') : null}
+        chosenA11y={t('a11y.countdownHere')}
+        onClear={onExpire}
+        ink={inkTop}
+        renderHelp={topRow?.renderHelp}
+      />
       {/*
         THE COUNTDOWN IS ONE LINE OF TEXT, AND THE TIME IS AT THE OTHER END.
 
@@ -1051,10 +1089,13 @@ const HeroToday = memo(function HeroToday({
                 styles.railFill,
                 {
                   backgroundColor: inkFoot.fill,
-                  // Unrounded: on a launch the rail slides from where the
+                  // In quarter-percents — a pixel of a 400dp track — not
+                  // whole ones: on a launch the rail slides from where the
                   // kept picture left it (launchWarp), and whole percents
-                  // would step.
-                  width: `${(railPct * 100).toFixed(2)}%`,
+                  // would step. Not finer either: a width that changes
+                  // every second by a hundredth of a pixel is a layout of
+                  // the track every second for nothing (2.33).
+                  width: `${(Math.round(railPct * 400) / 4).toFixed(2)}%`,
                 },
               ]}
             />

@@ -519,12 +519,6 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
           clock,
         );
 
-        // Whether the local cache needs a background fill — asked above, in
-        // parallel with the week, collected here so it is in the same
-        // update as the times.
-        const needsCacheFill = await statusPromise;
-        bootMark('status');
-
         if (gen !== loadGenerationRef.current) return;
 
         // ── WHAT THE SCREEN IS WAITING FOR, AND WHAT IT IS NOT ──────────
@@ -535,6 +529,17 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
         // behind — and neither is on this screen: `widgetWeek` is built
         // for the home-screen widget's payload, and `past` is only
         // reached by swiping the day carousel backwards.
+        //
+        // A third was still there in 2.33: `getCacheStatus`, asked in
+        // parallel with the week and AWAITED before the state, for one
+        // boolean — whether to start a background fill. For a place whose
+        // times are calculated on the phone the week never touches the
+        // cache blob, so that status was the first thing to, and it waits
+        // for the correction lists' read before it reads anything: on a
+        // Pixel 10 Pro the week was in hand at 180 ms and the screen was
+        // published at 350–600 ms, the whole of the difference spent on
+        // a bar nobody sees until later. It is awaited AFTER the state now
+        // (`fillLater`), and the launch run with it begins that much sooner.
         //
         // Measured on an emulator, cold start, warm cache: 915 ms from
         // launch to the first real content, of which 209 ms — 23% of the
@@ -653,7 +658,9 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
           // than `week`, and the longer one replaces this a moment later.
           widgetWeek: offsettedWeek,
           past: offsettedPast,
-          backgroundRefreshing: needsCacheFill,
+          // Not known yet — see `fillLater`, which turns this on when the
+          // cache status says a fill is wanted and off again when it is done.
+          backgroundRefreshing: false,
           fromAuto,
           // Only where this load is the one that noticed. A later refresh
           // of the same times is not news, and `pendingTimezoneShift`
@@ -668,10 +675,18 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
         // the frames between the first commit and the first paint.
         void afterFirstPaint().then(widgetWindowLater);
 
-        if (needsCacheFill) {
-          // Fill up to 12 months ahead in the background; clear the indicator
-          // when done regardless of success or failure.
-          refreshPrayerDataCache(
+        // Whether the local cache needs a background fill — asked above, in
+        // parallel with the week, collected here, after the screen has
+        // what it needs. Fill up to 12 months ahead in the background;
+        // clear the indicator when done regardless of success or failure.
+        const fillLater = async () => {
+          const needsCacheFill = await statusPromise;
+          bootMark('status');
+          if (!needsCacheFill || gen !== loadGenerationRef.current) return;
+          setState(prev =>
+            prev.phase === 'ready' ? { ...prev, backgroundRefreshing: true } : prev,
+          );
+          await refreshPrayerDataCache(
             {
               provider,
               latitude,
@@ -690,7 +705,8 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
                   : prev,
               );
             });
-        }
+        };
+        void fillLater();
       } catch (e) {
         if (gen !== loadGenerationRef.current) return;
 

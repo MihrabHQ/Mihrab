@@ -20,7 +20,14 @@ const mockReduce = { value: false };
 jest.mock('../src/native/LaunchSnapshot', () => ({
   ...jest.requireActual('../src/native/LaunchSnapshot'),
   heroStateShown: () => mockShown.value,
+  // The fade is asked for the moment the hero is up, in this simulation:
+  // the run then begins WARP_AFTER_HIDE_MS later, as it does when the
+  // first paint is immediate.
   hideRequestedAt: () => null,
+  onHideRequested: (fn: () => void) => {
+    fn();
+    return () => {};
+  },
   holdLaunchSnapshot: jest.fn(),
   setLaunchHeroState: jest.fn(),
 }));

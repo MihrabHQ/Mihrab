@@ -221,6 +221,21 @@ export function hideRequestedAt(): number | null {
   return hideAt;
 }
 
+/**
+ * Told when this window first asks for the fade — the hero's launch run
+ * times itself from that ask (src/boot/launchWarp.ts). At once, if it has
+ * already been asked.
+ */
+const hideListeners = new Set<() => void>();
+export function onHideRequested(fn: () => void): () => void {
+  if (hideAt != null) {
+    fn();
+    return () => {};
+  }
+  hideListeners.add(fn);
+  return () => hideListeners.delete(fn);
+}
+
 export type ShownHeroState = { at: number; targetAt: number; fromAt: number; posed: boolean };
 let shown: ShownHeroState | null | undefined;
 
@@ -297,7 +312,12 @@ export function hideLaunchSnapshot(): void {
   if (!native) return;
   const now = Date.now();
   if (hideAt != null && now - hideAt > HIDE_REPEAT_MS) return;
-  if (hideAt == null) hideAt = now;
+  if (hideAt == null) {
+    hideAt = now;
+    const told = [...hideListeners];
+    hideListeners.clear();
+    told.forEach(fn => fn());
+  }
   try {
     native.hide();
   } catch {
@@ -314,6 +334,7 @@ export function hideLaunchSnapshot(): void {
  */
 export function newLaunchSnapshotWindow(): void {
   hideAt = null;
+  hideListeners.clear();
   shown = undefined;
   screenWorthy = false;
   holds.clear();

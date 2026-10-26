@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { bootMark } from '../boot/bootTimeline';
 import { asksAladhan, fetchAladhanMonth, fetchPrayerTimesUnified } from '../providers/fetchPrayerTimes';
 import { getIslamiskaForbundetDatasetTimes } from '../providers/islamiskaForbundetDataset';
 import { getHabousDatasetTimes } from '../providers/habousDataset';
@@ -579,12 +580,18 @@ async function awaitMethodCurrency(): Promise<boolean> {
 }
 
 async function loadV2(): Promise<V2Shape> {
-  await sweepOnce(await awaitMethodCurrency());
+  bootMark('v2');
+  const listsRead = await awaitMethodCurrency();
+  bootMark('v2-lists');
+  await sweepOnce(listsRead);
+  bootMark('v2-swept');
   // Try the v2 shape first.
   try {
     const raw = await readRawV2();
+    bootMark('v2-read');
     if (raw) {
       const parsed = JSON.parse(raw) as V2Shape;
+      bootMark('v2-parsed');
       if (parsed && typeof parsed === 'object' && parsed.caches) {
         return parsed;
       }
