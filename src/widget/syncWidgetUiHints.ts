@@ -205,7 +205,7 @@ export function useSyncWidgetUiHints(): void {
   // own settings again — when the theme is off.
   const skyOn = settings.appearance === 'sky';
   const sky = useSkyTheme(skyOn);
-  const skyColors = skyOn ? widgetSkyColors(skyMoodFor(sky.passage, sky.t, PALETTE_STEPS)) : null;
+  const skyColors = skyOn ? widgetSkyColors(skyMoodFor(sky.passage, sky.t, PALETTE_STEPS, undefined, sky.light)) : null;
   const skyBg = skyColors?.bg ?? null;
   const skyAccent = skyColors?.accent ?? null;
   useEffect(() => {

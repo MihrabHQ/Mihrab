@@ -341,3 +341,43 @@ export function moonView(
     tilt: placed ? moonBrightLimbTilt(date, latitude, longitude) : 0,
   };
 }
+
+export type SkyPosition = {
+  /** Degrees above the horizon; negative under it. */
+  altitude: number;
+  /** Degrees clockwise from north: east 90, south 180, west 270. */
+  azimuth: number;
+};
+
+/** Equatorial to the reader's horizon, from the local sidereal time. */
+function toHorizon({ ra, dec }: Equatorial, lst: number, latitude: number): SkyPosition {
+  const H = norm360(lst - ra) * RAD;
+  const lat = latitude * RAD;
+  const d = dec * RAD;
+  const sinAlt = Math.sin(lat) * Math.sin(d) + Math.cos(lat) * Math.cos(d) * Math.cos(H);
+  const alt = Math.asin(sinAlt);
+  const y = -Math.sin(H) * Math.cos(d);
+  const x = Math.sin(d) * Math.cos(lat) - Math.cos(d) * Math.sin(lat) * Math.cos(H);
+  return { altitude: alt / RAD, azimuth: norm360(Math.atan2(y, x) / RAD) };
+}
+
+/**
+ * Where the moon is in the reader's sky — how high, and which way —
+ * from the same longitude and latitude the phase and the tilt come
+ * from, geocentric (the parallax, up to a degree at the horizon, is
+ * inside the drawing's own tolerance). Good to about a degree; a
+ * moonrise a few minutes off is nothing to a sky drawn 22 points wide.
+ */
+export function moonPosition(date: Date, latitude: number, longitude: number): SkyPosition {
+  const d = epochDays(date);
+  const s = sun(d);
+  const m = toEquatorial(moon(d, s), obliquity(d));
+  return toHorizon(m, localSiderealTime(date, s, longitude), latitude);
+}
+
+/** Where the sun is in the reader's sky, the same way. */
+export function sunPosition(date: Date, latitude: number, longitude: number): SkyPosition {
+  const d = epochDays(date);
+  const s = sun(d);
+  return toHorizon(toEquatorial(s, obliquity(d)), localSiderealTime(date, s, longitude), latitude);
+}

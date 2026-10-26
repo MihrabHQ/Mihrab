@@ -665,7 +665,7 @@ const HeroToday = memo(function HeroToday({
   const [lowMidAt, setLowMidAt] = useState(SKY_FADE_LOW_MID_AT);
   const paint = useCallback(
     (f: SkyFrame): SkyFrame => {
-      const mood = skyMoodFor(f.passage, f.t, undefined, heroVariant);
+      const mood = skyMoodFor(f.passage, f.t, undefined, heroVariant, f.light);
       if (skyTheme) return themedSkyFrame(f, mood);
       return themedSkyFrame(
         f,
@@ -867,10 +867,15 @@ const HeroToday = memo(function HeroToday({
     // With the day's times, so the next launch can work the sky out for
     // its own clock before the hero has drawn (theme/skyTheme.ts).
     publishSkyTheme(
-      { top: liveSky.top, bottom: liveSky.bottom, passage: liveSky.passage, t: liveSky.t },
-      { day: skyDayKey(new Date(liveMinuteKey * 60_000)), times: skyToday ?? today, tomorrowFajr },
+      { top: liveSky.top, bottom: liveSky.bottom, passage: liveSky.passage, t: liveSky.t, light: liveSky.light },
+      {
+        day: skyDayKey(new Date(liveMinuteKey * 60_000)),
+        times: skyToday ?? today,
+        tomorrowFajr,
+        where: typeof latitude === 'number' && typeof longitude === 'number' ? { latitude, longitude } : undefined,
+      },
     );
-  }, [posed, liveSky.top, liveSky.bottom, liveSky.passage, liveSky.t, liveMinuteKey, skyToday, today, tomorrowFajr]);
+  }, [posed, liveSky.top, liveSky.bottom, liveSky.passage, liveSky.t, liveSky.light, liveMinuteKey, skyToday, today, tomorrowFajr, latitude, longitude]);
 
   // Memoised on the sky's step and the measured heights: the top row and
   // the eyebrow below are memoised on their ink, and the launch run
@@ -893,7 +898,7 @@ const HeroToday = memo(function HeroToday({
    * repaints — a still of the screen as it is, faded over both commits —
    * and the store's own ask a moment later finds one up and does nothing.
    */
-  const moodDark = skyTheme ? skyMoodFor(frame.passage, frame.t, undefined, heroVariant).isDark : null;
+  const moodDark = skyTheme ? skyMoodFor(frame.passage, frame.t, undefined, heroVariant, frame.light).isDark : null;
   const lastMoodDark = useRef<boolean | null>(null);
   // Not during a launch run: the run's sky crosses the switch in its own
   // native layers, and the page already wears the hour the run is heading
@@ -909,7 +914,7 @@ const HeroToday = memo(function HeroToday({
     // The digits' halo on a night sky, in every look now that every look
     // has the Sky theme's hero.
     if (moreContrast) return null;
-    const mood = skyMoodFor(frame.passage, frame.t, undefined, heroVariant);
+    const mood = skyMoodFor(frame.passage, frame.t, undefined, heroVariant, frame.light);
     if (!mood.isDark) return null;
     return {
       textShadowColor: `${mood.accent}73`,
@@ -923,7 +928,7 @@ const HeroToday = memo(function HeroToday({
       padding: GLOW_RADIUS,
       margin: -GLOW_RADIUS,
     };
-  }, [heroVariant, moreContrast, frame.passage, frame.t]);
+  }, [heroVariant, moreContrast, frame.passage, frame.t, frame.light]);
   // The halo on the figures' span; the room it needs is on the line's view.
   const glowSpan = useMemo(
     () =>

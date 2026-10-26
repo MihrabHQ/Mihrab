@@ -44,7 +44,8 @@
  */
 import { combineLocalDateAndTime } from '../../utils/prayerTimes';
 import type { TimingsMap } from '../../types/prayer';
-import { moonView, sunAltitude, type MoonView } from './moon';
+import { moonPosition, moonView, sunAltitude, type MoonView } from './moon';
+import { nominalSkyLight, skyMoodFor, type SkyLight } from '../../theme/skyMoods';
 import {
   moonGlow,
   MOON_SURFACE,
@@ -56,58 +57,17 @@ import {
 
 export type SkyPassage = 'night' | 'dawn' | 'day' | 'sunset' | 'dusk';
 
-/** A colour pair at a moment of a passage. */
-type Key = { t: number; top: string; bottom: string };
-
-const NIGHT_TOP = '#0B1230';
-const NIGHT_BOTTOM = '#1E2B5A';
-
-const KEYS: Record<SkyPassage, Key[]> = {
-  night: [
-    { t: 0, top: NIGHT_TOP, bottom: NIGHT_BOTTOM },
-    { t: 1, top: NIGHT_TOP, bottom: NIGHT_BOTTOM },
-  ],
-  dawn: [
-    { t: 0, top: '#0E1745', bottom: '#3B3163' },
-    { t: 0.45, top: '#2F4A8F', bottom: '#B85E7C' },
-    { t: 0.78, top: '#5A7FC8', bottom: '#F5924F' },
-    { t: 1, top: '#7FA6DC', bottom: '#FBC48A' },
-  ],
-  day: [
-    { t: 0, top: '#6F9BD8', bottom: '#FBD7A8' },
-    { t: 0.5, top: '#3F8FE0', bottom: '#D6ECFF' },
-    { t: 1, top: '#5F9EDC', bottom: '#F3DFAE' },
-  ],
-  sunset: [
-    { t: 0, top: '#5F9EDC', bottom: '#F3DFAE' },
-    { t: 0.5, top: '#6C7BC2', bottom: '#F7A45A' },
-    { t: 0.85, top: '#4B4A93', bottom: '#F0653A' },
-    { t: 1, top: '#2E3272', bottom: '#D25A55' },
-  ],
-  dusk: [
-    { t: 0, top: '#2E3272', bottom: '#D25A55' },
-    { t: 0.4, top: '#1C2260', bottom: '#8A4B72' },
-    { t: 1, top: NIGHT_TOP, bottom: NIGHT_BOTTOM },
-  ],
-};
-
 /**
- * The glow the STARS take, per passage — and only the stars.
+ * ── THE SKY'S OWN COLOURS ARE REALISTIC'S ─────────────────────────────
  *
- * The sun and the moon used to take it too, which is why the sun was one
- * colour for the whole of the morning and changed by jumping at a prayer
- * time. They carry their own light now, computed from where they
- * actually are; see skyLight.ts. A star is a point of white a couple of
- * pixels across and has no such story.
+ * The gradient used to be a set of hand-picked keyframes per passage
+ * here, painted by nobody once the Sky theme shipped (every look takes a
+ * mood's three stops, `themedSkyFrame`) except the full-screen alarm
+ * under the other themes. The frame's own `top`, `bottom` and `glow` are
+ * now Realistic's — the sky as it is, derived from the sun and the moon
+ * (theme/skyMoods.ts) — so there is one real sky, and the alarm that
+ * wakes the phone wears the sky the app does (2.33).
  */
-const GLOW: Record<SkyPassage, string> = {
-  night: '#E6E9FF',
-  dawn: '#FFD9A0',
-  day: '#FFF3C4',
-  sunset: '#FFC27A',
-  dusk: '#F2B3A0',
-};
-
 // ── Colour arithmetic ───────────────────────────────────────────────────
 
 function hexToRgb(hex: string): [number, number, number] {
@@ -131,20 +91,6 @@ export function luminance(hex: string): number {
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
-function keyed(keys: Key[], t: number): { top: string; bottom: string } {
-  const k = Math.max(0, Math.min(1, t));
-  for (let i = 1; i < keys.length; i++) {
-    if (k <= keys[i].t) {
-      const a = keys[i - 1];
-      const b = keys[i];
-      const span = b.t - a.t || 1;
-      const u = (k - a.t) / span;
-      return { top: mixHex(a.top, b.top, u), bottom: mixHex(a.bottom, b.bottom, u) };
-    }
-  }
-  const last = keys[keys.length - 1];
-  return { top: last.top, bottom: last.bottom };
-}
 
 // ── Where in the day ────────────────────────────────────────────────────
 
@@ -276,6 +222,13 @@ export type SkyBody =
 export type SkyFrame = {
   passage: SkyPassage;
   t: number;
+  /**
+   * Where the sun and the moon are, which the Sky theme's colours are a
+   * function of (theme/skyMoods.ts): the sun's altitude, the day's
+   * progress, the moon's phase and height. From the reader's coordinates
+   * when there are any; the average day's otherwise.
+   */
+  light: SkyLight;
   top: string;
   bottom: string;
   /** A third colour, at `midAt` of the height, when the sky has one (the Sky theme's hero). */
@@ -351,12 +304,10 @@ function sunAt(daylight: number | null): { x: number; y: number } {
  */
 /**
  * Without coordinates there is no real altitude to light the sun by, and
- * this stands in: the arc's own progress, read as a day that peaks a
- * little over halfway up. Wrong for a polar winter and roughly right for
- * everywhere most people are, which is the best a sky can do before it
- * has been told where it is.
+ * the average day's stands in (theme/skyMoods.ts, `nominalSkyLight`):
+ * wrong for a polar winter and roughly right for everywhere most people
+ * are, which is the best a sky can do before it has been told where it is.
  */
-const ASSUMED_NOON_ALTITUDE = 55;
 
 export function skyFrame(
   moment: SkyMoment,
@@ -364,7 +315,6 @@ export function skyFrame(
   where?: { latitude?: number | null; longitude?: number | null },
 ): SkyFrame {
   const { passage, t } = moment;
-  const { top, bottom } = keyed(KEYS[passage], t);
   // The moon crosses the night, which is one passage, so its own progress
   // is the whole of its journey.
   const x = X_RISE + t * (X_SET - X_RISE);
@@ -378,21 +328,60 @@ export function skyFrame(
   const altitude =
     typeof where?.latitude === 'number' && typeof where?.longitude === 'number'
       ? sunAltitude(now, where.latitude, where.longitude)
-      : ASSUMED_NOON_ALTITUDE * Math.sin(Math.PI * clamp01(moment.daylight ?? 0));
+      : nominalSkyLight(passage, t).sun;
   const sunLight = { light: tintedBy(SUN_SURFACE, altitude), halo: sunGlow(altitude) };
   let stars = 0;
   let body: SkyBody = { kind: 'none' };
+  const placed = typeof where?.latitude === 'number' && typeof where?.longitude === 'number';
+  const moon = moonView(now, where?.latitude, where?.longitude);
+  /**
+   * ── THE MOON WHERE IT IS ─────────────────────────────────────────────
+   * With coordinates the moon is drawn where it stands: its height from
+   * its altitude (the horizon at the band's floor, 60° and above at the
+   * top), its place across the card from its azimuth — east at the left
+   * and west at the right for a reader facing south, the other way round
+   * south of the equator — and only while it is up. A crescent that in
+   * fact sets two hours after the sun then sets two hours after the sun,
+   * and a full moon rises at dusk and crosses the whole night, which is
+   * what the reader's own moon does (2.33). Without coordinates the moon
+   * takes the night's own track, as it always did.
+   */
+  const position = placed ? moonPosition(now, where.latitude as number, where.longitude as number) : null;
+  const light: SkyLight = {
+    sun: altitude,
+    daylight: moment.daylight,
+    moon: { illumination: moon.illuminated, altitude: position ? position.altitude : null },
+  };
   // Moonlight is sunlight off a grey rock, and the rock is the same colour
   // all night; what changes is how much of it is lit.
-  const moonAt = (mx: number, my: number, alpha: number): SkyBody => {
-    const moon = moonView(now, where?.latitude, where?.longitude);
-    return { kind: 'moon', x: mx, y: my, alpha, ...moon, light: MOON_SURFACE, halo: moonGlow(moon.illuminated) };
+  const moonAt = (mx: number, my: number, alpha: number): SkyBody => ({
+    kind: 'moon',
+    x: mx,
+    y: my,
+    alpha,
+    ...moon,
+    light: MOON_SURFACE,
+    halo: moonGlow(moon.illuminated),
+  });
+  /** The real moon, if it is up and the sky is dark enough to show it; else what the track says. */
+  const realMoon = (fallback: () => SkyBody, visibility: number): SkyBody => {
+    if (!position) return fallback();
+    if (position.altitude <= 0 || visibility <= 0) return { kind: 'none' };
+    const south = (where?.latitude ?? 0) >= 0;
+    const across = clamp01((position.azimuth - 90) / 180);
+    const mx = X_RISE + (south ? across : 1 - across) * (X_SET - X_RISE);
+    const my = Y_LOW - clamp01(position.altitude / 60) * (Y_LOW - Y_HIGH);
+    // Coming up over the horizon: in through its first degrees.
+    return moonAt(mx, my, Math.min(visibility, clamp01(position.altitude / 4)));
   };
+  const depth = Math.max(0, -altitude);
+  // How dark the sky is for the moon to show: through the civil twilight.
+  const dusky = placed ? clamp01(depth / 6) : 0;
   const daylight = clamp01(moment.daylight ?? 0);
   switch (passage) {
     case 'night': {
       stars = 1;
-      body = moonAt(x, MOON_REST_Y - Math.sin(t * Math.PI) * 0.1, 1);
+      body = realMoon(() => moonAt(x, MOON_REST_Y - Math.sin(t * Math.PI) * 0.1, 1), 1);
       break;
     }
     case 'dawn': {
@@ -405,9 +394,7 @@ export function skyFrame(
       body =
         rise > 0
           ? { kind: 'sun', x: sun.x, y: sun.y, alpha: 1, below: 1 - rise / 2, ...sunLight }
-          : stars > 0
-            ? moonAt(X_SET, MOON_REST_Y, stars)
-            : { kind: 'none' };
+          : realMoon(() => (stars > 0 ? moonAt(X_SET, MOON_REST_Y, stars) : { kind: 'none' }), Math.max(stars, dusky));
       break;
     }
     case 'day':
@@ -435,13 +422,15 @@ export function skyFrame(
       body =
         t < 0.3
           ? { kind: 'sun', x: sun.x, y: sun.y, alpha: 1, below: 0.5 + t / 0.6, ...sunLight }
-          : stars > 0
-            ? moonAt(X_RISE, MOON_REST_Y, stars)
-            : { kind: 'none' };
+          : realMoon(() => (stars > 0 ? moonAt(X_RISE, MOON_REST_Y, stars) : { kind: 'none' }), Math.max(stars, dusky));
       break;
     }
   }
-  return { passage, t, top, bottom, glow: GLOW[passage], stars, body };
+  // Under a bright moon the stars go: fewer and fainter, as they do.
+  const moonUp = position ? (position.altitude > 0 ? 1 : 0) : 0.5;
+  stars *= 1 - 0.45 * moon.illuminated * moonUp;
+  const real = skyMoodFor(passage, t, undefined, 'realistic', light);
+  return { passage, t, light, top: real.heroTop, bottom: real.heroFoot, glow: real.starGlow, stars, body };
 }
 
 // ── The ink ─────────────────────────────────────────────────────────────

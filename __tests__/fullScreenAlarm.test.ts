@@ -234,7 +234,7 @@ describe('alarm screen sky', () => {
       const expected: Record<string, [string, number]> = {
         Fajr: ['dawn', 1],
         Dhuhr: ['day', 0.55],
-        Asr: ['sunset', 0.45],
+        Asr: ['sunset', 0.8],
         Maghrib: ['dusk', 0],
         Isha: ['night', 0],
       };

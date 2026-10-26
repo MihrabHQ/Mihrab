@@ -26,8 +26,18 @@
  */
 import { useSyncExternalStore } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { skyMoment, type SkyPassage } from '../screens/home/skyModel';
-import { DEFAULT_SKY_VARIANT, isSkyVariant, PALETTE_STEPS, setActiveSkyVariant, skyMoodFor, type SkyMood, type SkyVariant } from './skyMoods';
+import { skyFrame, skyMoment, type SkyPassage } from '../screens/home/skyModel';
+import {
+  DEFAULT_SKY_VARIANT,
+  isSkyVariant,
+  nominalSkyLight,
+  PALETTE_STEPS,
+  setActiveSkyVariant,
+  skyMoodFor,
+  type SkyLight,
+  type SkyMood,
+  type SkyVariant,
+} from './skyMoods';
 import { crossfadeScreen } from '../native/LaunchSnapshot';
 
 export type SkyThemeColors = {
@@ -38,6 +48,12 @@ export type SkyThemeColors = {
   /** Which passage of the day the sky is in, and how far through it (0–1). */
   passage: SkyPassage;
   t: number;
+  /**
+   * Where the sun and the moon are (theme/skyMoods.ts, `SkyLight`), which
+   * the colours are keyed to. Absent on a sky published before the hero
+   * knew where the reader was: the average day's sun stands in.
+   */
+  light?: SkyLight;
 };
 
 /**
@@ -51,6 +67,8 @@ export type SkyThemeDay = {
   day: string;
   times: Record<string, string | undefined>;
   tomorrowFajr?: string;
+  /** The reader's coordinates, so the launch can place the sun and the moon too. */
+  where?: { latitude: number; longitude: number };
 };
 
 /** The local date, yyyy-mm-dd. */
@@ -120,8 +138,8 @@ function valid(v: unknown): v is SkyThemeColors {
  */
 function same(a: SkyThemeColors, b: SkyThemeColors): boolean {
   if (a.passage !== b.passage) return false;
-  const ma = skyMoodFor(a.passage, a.t, PALETTE_STEPS);
-  const mb = skyMoodFor(b.passage, b.t, PALETTE_STEPS);
+  const ma = skyMoodFor(a.passage, a.t, PALETTE_STEPS, undefined, a.light);
+  const mb = skyMoodFor(b.passage, b.t, PALETTE_STEPS, undefined, b.light);
   return (Object.keys(ma) as (keyof SkyMood)[]).every(k => ma[k] === mb[k]);
 }
 
@@ -134,7 +152,14 @@ function persist(): void {
 /** The hero says what its sky is. Idempotent for the same two colours. */
 export function publishSkyTheme(next: SkyThemeColors, day?: SkyThemeDay): void {
   if (!valid(next)) return;
-  if (day && (currentDay?.day !== day.day || currentDay.tomorrowFajr !== day.tomorrowFajr || currentDay.times !== day.times)) {
+  if (
+    day &&
+    (currentDay?.day !== day.day ||
+      currentDay.tomorrowFajr !== day.tomorrowFajr ||
+      currentDay.times !== day.times ||
+      currentDay.where?.latitude !== day.where?.latitude ||
+      currentDay.where?.longitude !== day.where?.longitude)
+  ) {
     currentDay = day;
     if (same(current, next)) persist();
   }
@@ -149,8 +174,9 @@ export function publishSkyTheme(next: SkyThemeColors, day?: SkyThemeDay): void {
   const flips =
     published &&
     listeners.size > 0 &&
-    skyMoodFor(current.passage, current.t).isDark !== skyMoodFor(next.passage, next.t).isDark;
-  current = { top: next.top, bottom: next.bottom, passage: next.passage, t: next.t };
+    skyMoodFor(current.passage, current.t, undefined, undefined, current.light).isDark !==
+      skyMoodFor(next.passage, next.t, undefined, undefined, next.light).isDark;
+  current = { top: next.top, bottom: next.bottom, passage: next.passage, t: next.t, light: next.light };
   published = true;
   if (flips) crossfadeScreen();
   emit();
@@ -184,6 +210,11 @@ function validDay(v: unknown): v is SkyThemeDay {
   const d = v as SkyThemeDay;
   return typeof d.day === 'string' && typeof d.times === 'object' && d.times != null;
 }
+function validLight(v: unknown): v is SkyLight {
+  if (typeof v !== 'object' || v == null) return false;
+  const l = v as SkyLight;
+  return typeof l.sun === 'number' && Number.isFinite(l.sun) && (l.daylight == null || typeof l.daylight === 'number');
+}
 
 /**
  * The last sky from disk, taken only if the hero has not published one
@@ -208,14 +239,24 @@ export function restoreSkyTheme(now: () => Date = () => new Date()): Promise<voi
       }
       const parsed: unknown = JSON.parse(raw);
       if (!valid(parsed) || published) return;
-      let next: SkyThemeColors = { top: parsed.top, bottom: parsed.bottom, passage: parsed.passage, t: parsed.t };
+      const keptLight = (parsed as { light?: unknown }).light;
+      let next: SkyThemeColors = {
+        top: parsed.top,
+        bottom: parsed.bottom,
+        passage: parsed.passage,
+        t: parsed.t,
+        light: validLight(keptLight) ? keptLight : undefined,
+      };
       const day = (parsed as { day?: unknown }).day;
       if (validDay(day)) {
         const at = now();
         if (day.day === skyDayKey(at)) {
           try {
             const m = skyMoment(day.times as Record<string, string>, at, day.tomorrowFajr);
-            next = { ...next, passage: m.passage, t: m.t };
+            // The sun and the moon for the launch's own clock, where the
+            // reader was; the average day's where that is not known.
+            const light = day.where ? skyFrame(m, at, day.where).light : nominalSkyLight(m.passage, m.t);
+            next = { ...next, passage: m.passage, t: m.t, light };
           } catch {
             // The remembered sky as it was, then.
           }

@@ -8,6 +8,10 @@ way possible, making every moment of the day have a unique and great
 feeling each time it is opened… the colour of the UI is very important but
 so is the accent colours of the texts."*
 
+> **Status (2026-10-26, late evening):** implemented, all four waves —
+> §7 says what landed against each; the sweeps after are beside the ones
+> before on the Mac (`/tmp/sw-real2`, `/tmp/sw-vib2`).
+
 This is the analysis and the plan. Nothing in the app was changed for it.
 The evidence is on the Mac: `/tmp/colour-audit.txt` (every token of both
 tracks at every eighth of every passage: contrast ratios, OKLCH, the hero's
@@ -411,3 +415,37 @@ tint proposed in §3.1 (C 0.02–0.03) or must stay the near-neutral it is.
   hours; the full-screen alert's `PRAYER_MOOD` per prayer.
 - The contrast floors on a real display: Increased Contrast on, the
   countdown's glow off, every accent text read on the page and the card.
+
+## 9. What landed (2026-10-26, late evening)
+
+- **Wave 1 — the sun decides.** `SkyLight` (altitude, the day's progress,
+  the moon) on every frame and in the published theme; the stations of
+  both tracks on the sun's scale (`skyMoodOf`); the light page from
+  sunrise to Maghrib, the dark from Maghrib to sunrise — the crossfade at
+  Maghrib; Vibrant's `zenith`, `zenithHigh` and `afterglow` stations; the
+  morning and afternoon limbs blended around solar noon; a white night
+  held in the twilight's colours. The full-screen alert's Asr sits at a
+  low sun now (sunset 0.8), since the middle of the passage is a blue
+  noon on the new scale.
+- **Wave 2 — the seams and the accent.** `mixHexRound` (hue round the
+  wheel away from green, chroma kept) for the stops, the body and the
+  accent; Vibrant's two "late" mids re-picked with chroma; Realistic's
+  accent derived from the hour's light at the lightness that clears AA.
+  The floors are now walked at every altitude 0–90°, every depth 0–60°,
+  every moon, in both tracks, and the seams are tested for chroma and
+  for never passing through green.
+- **Wave 3 — the night.** `moonPosition`/`sunPosition` (`moon.ts`, from the
+  same elements as the phase); the moon drawn where it is in every dark
+  passage while it is up, fading in over its first degrees; the stars
+  thinned under a bright moon; `moonlit` on both tracks' dark moods.
+- **Wave 4 — past the hero.** `StatusBarBand` draws the mood's sky under
+  the status bar of the five other tabs under the Sky theme, ending where
+  the page's content begins; `KEYS`/`GLOW` are gone from `skyModel.ts` and
+  the frame's own sky is Realistic's, which the full-screen alarm wears
+  under the other themes.
+- **Changed from the plan:** the pre-dawn teal was kept to a hint in the
+  last night station's horizon (a hue of 258 against the night's 270);
+  the day's stations sit lower than the plan's table (clear blue from 20°
+  up, the haze under 9°) after the first Stockholm sweep showed an October
+  noon at 20° still in the morning's haze.
+

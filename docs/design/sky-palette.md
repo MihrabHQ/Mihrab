@@ -14,6 +14,11 @@ to the light and dark colors of the UI as the day changes."*
 > following the PAGE's mode), is in `ARCHITECTURE.md` §6 "The Sky theme";
 > the pictures are on the site and in the README. This document stays as
 > the reasoning.
+>
+> **Status (2026-10-26):** the colours are keyed to the sun now, not to
+> the passage's progress — altitude by day, depth by night, the moon —
+> and Realistic is derived from a physical sky rather than picked. The
+> analysis and the reasoning are in `docs/sky-colour-plan.md`.
 
 Companion reading: `docs/design/principles.md` (principle 5 is literally
 "time-of-day awareness — felt, not announced"), `docs/design/redesign-plan.md`

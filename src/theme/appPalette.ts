@@ -736,7 +736,7 @@ export function buildAppPalette(
  * asked for dark gives the night; a dark one asked for light, the midday.
  */
 export function skyPalette(sky: SkyThemeColors, pureBlackDark: boolean, wantDark?: boolean): AppPalette {
-  let mood = skyMoodFor(sky.passage, sky.t, PALETTE_STEPS);
+  let mood = skyMoodFor(sky.passage, sky.t, PALETTE_STEPS, undefined, sky.light);
   if (wantDark != null && mood.isDark !== wantDark) {
     const moods = SKY_MOODS_BY_VARIANT[activeSkyVariant()];
     mood = wantDark ? moods.night : moods.midday;

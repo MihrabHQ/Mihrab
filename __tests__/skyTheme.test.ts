@@ -31,7 +31,18 @@ import { resolveAppPalette, resolveThemePaletteForMode, skyPalette } from '../sr
 import { contrastRatio } from '../src/theme/themeMap';
 import { hexToOklch } from '../src/theme/oklch';
 // eslint-disable-next-line import/first
-import { activeSkyVariant, PALETTE_STEPS, REALISTIC_SKY_MOODS, SKY_MOODS, skyMoodAt, skyMoodFor, widgetSkyColors, type SkyMood } from '../src/theme/skyMoods';
+import {
+  activeSkyVariant,
+  nominalSkyLight,
+  PALETTE_STEPS,
+  REALISTIC_SKY_MOODS,
+  SKY_MOODS,
+  skyMoodAt,
+  skyMoodFor,
+  skyMoodOf,
+  widgetSkyColors,
+  type SkyMood,
+} from '../src/theme/skyMoods';
 // eslint-disable-next-line import/first
 import { SKY_THEME_MID_AT, skyColorAt, themedSkyFrame, type SkyPassage } from '../src/screens/home/skyModel';
 // eslint-disable-next-line import/first
@@ -109,18 +120,26 @@ describe('the moods', () => {
   });
 
   it('moves a little every step of every passage — no two moments the same sky', () => {
+    // The sun's own scale, unquantised (`skyMoodOf`): the palette the app
+    // wears is this in steps (`skyMoodFor`, PALETTE_STEPS), on purpose.
     const passages: SkyPassage[] = ['night', 'dawn', 'day', 'sunset', 'dusk'];
     for (const passage of passages) {
-      let prev = skyMoodFor(passage, 0);
-      for (let t = 0.02; t <= 1.0001; t += 0.02) {
-        const mood = skyMoodFor(passage, t);
+      // Within three steps: at the top of the sun's arc its altitude
+      // changes by a tenth of a degree a step, under a hex's resolution.
+      let prev = skyMoodOf(passage, 0, nominalSkyLight(passage, 0), 'vibrant');
+      let still = 0;
+      for (let t = 0.06; t <= 1.0001; t += 0.06) {
+        const mood = skyMoodOf(passage, t, nominalSkyLight(passage, t), 'vibrant');
         const moved = (['heroTop', 'heroMid', 'bg', 'bodyLight'] as const).some(k => mood[k] !== prev[k]);
-        expect(moved).toBe(true);
+        if (!moved) still += 1;
         prev = mood;
       }
+      // At most the one step over the top of the arc, where the nominal
+      // sun's altitude is the same to a tenth of a degree either side.
+      expect(still).toBeLessThanOrEqual(1);
     }
     // The sun and the moon and the stars take the hour's light.
-    const real = { passage: 'day', t: 0.5, top: '#000000', bottom: '#000000', glow: '#ffffff', stars: 0, body: { kind: 'sun', x: 0.5, y: 0.1, alpha: 1, below: 0, light: '#FFFFFF', halo: 0.2 } } as const;
+    const real = { passage: 'day', t: 0.5, light: { sun: 48, daylight: 0.34 }, top: '#000000', bottom: '#000000', glow: '#ffffff', stars: 0, body: { kind: 'sun', x: 0.5, y: 0.1, alpha: 1, below: 0, light: '#FFFFFF', halo: 0.2 } } as const;
     const themed = themedSkyFrame(real, SKY_MOODS.midday);
     expect(themed.body.kind === 'sun' && themed.body.light).toBe(SKY_MOODS.midday.bodyLight);
     expect(themed.body.kind === 'sun' && themed.body.halo).toBeGreaterThan(0.2);
@@ -137,25 +156,65 @@ describe('the moods', () => {
         const mood = skyMoodFor(passage, t, PALETTE_STEPS);
         expect(hexToOklch(mood.heroTop).C).toBeGreaterThanOrEqual(0.075);
         expect(hexToOklch(mood.accent).C).toBeGreaterThanOrEqual(0.13);
-        expect(hexToOklch(mood.bodyLight).C).toBeGreaterThanOrEqual(0.08);
+        // The sun's own light goes white-gold at the top of its arc.
+        expect(hexToOklch(mood.bodyLight).C).toBeGreaterThanOrEqual(0.05);
       }
     }
     // Morning to midday goes by way of lilac, not green.
-    const lilac = hexToOklch(skyMoodFor('day', 0.15).heroTop).h;
+    const lilac = hexToOklch(skyMoodFor('day', 0.15, undefined, 'vibrant', { sun: 10, daylight: 0.1 }).heroTop).h;
     expect(lilac).toBeGreaterThan(280);
     expect(lilac).toBeLessThan(330);
   });
 
-  it('is the night at night, the dawn before sunrise, the midday after, gold and then the evening before Maghrib, the night again after Isha', () => {
+  it('is the night at night, the dawn before sunrise, the midday after, gold before Maghrib, the evening after it, the night again after Isha', () => {
     expect(skyMoodFor('night', 0.3).name).toBe('night');
     expect(skyMoodFor('dawn', 0.9).name).toBe('dawn');
     expect(skyMoodFor('day', 0.5).name).toBe('midday');
-    expect(skyMoodFor('sunset', 0.49).isDark).toBe(false);
-    expect(skyMoodFor('sunset', 0.5).name).toBe('sunset');
+    // The golden hour is LIGHT, to the last minute before Maghrib (2.33):
+    // the evening used to switch on halfway from Asr, with the sun high.
+    expect(skyMoodFor('sunset', 0.5).isDark).toBe(false);
+    expect(skyMoodFor('sunset', 0.98).isDark).toBe(false);
+    expect(skyMoodFor('sunset', 0.98).name).toBe('golden');
+    // Maghrib is the switch to dark: the afterglow, then the deep, then the night.
+    expect(skyMoodFor('dusk', 0).isDark).toBe(true);
+    expect(skyMoodFor('dusk', 0).name).toBe('sunset');
     expect(skyMoodFor('dusk', 1).name).toBe('night');
     // Sunrise is the switch: the dawn's dark into the morning's light.
     expect(skyMoodFor('dawn', 1).isDark).toBe(true);
     expect(skyMoodFor('day', 0).isDark).toBe(false);
+  });
+
+  it('is keyed to the sun: a low noon stays golden, a high one goes to the zenith (2.33)', () => {
+    // Tromsø in December: the sun never clears the horizon by much.
+    const low = skyMoodFor('day', 0.5, undefined, 'vibrant', { sun: 3, daylight: 0.5 });
+    expect(['morning', 'golden']).toContain(low.name);
+    expect(hexToOklch(low.heroMid).h).toBeLessThan(120); // warm
+    // Makkah at noon.
+    const high = skyMoodFor('day', 0.5, undefined, 'vibrant', { sun: 80, daylight: 0.5 });
+    expect(high.name).toBe('midday');
+    expect(hexToOklch(high.heroTop).L).toBeLessThan(hexToOklch(skyMoodFor('day', 0.5, undefined, 'vibrant', { sun: 25, daylight: 0.5 }).heroTop).L);
+    // The same altitude in the morning and the afternoon is nearly the
+    // same sky; the two differ by a little warmth, not by a mood.
+    const am = skyMoodFor('day', 0.2, undefined, 'vibrant', { sun: 15, daylight: 0.2 });
+    const pm = skyMoodFor('sunset', 0.5, undefined, 'vibrant', { sun: 15, daylight: 0.8 });
+    expect(am.isDark).toBe(pm.isDark);
+    // A white night: the sun never deeper than civil twilight, the night
+    // never reaches the deep night's own colours.
+    const white = skyMoodFor('night', 0.5, undefined, 'realistic', { sun: -5, daylight: 1.5 });
+    const deep = skyMoodFor('night', 0.5, undefined, 'realistic', { sun: -40, daylight: 1.5 });
+    expect(hexToOklch(white.heroMid).L).toBeGreaterThan(hexToOklch(deep.heroMid).L + 0.1);
+    expect(white.isDark).toBe(true);
+  });
+
+  it('lifts a moonlit night and leaves a moonless one deep (2.33)', () => {
+    const base = { sun: -40, daylight: 1.5 };
+    const dark = skyMoodFor('night', 0.5, undefined, 'realistic', { ...base, moon: { illumination: 0, altitude: 30 } });
+    const lit = skyMoodFor('night', 0.5, undefined, 'realistic', { ...base, moon: { illumination: 1, altitude: 30 } });
+    const set = skyMoodFor('night', 0.5, undefined, 'realistic', { ...base, moon: { illumination: 1, altitude: -10 } });
+    expect(hexToOklch(lit.bg).L).toBeGreaterThan(hexToOklch(dark.bg).L + 0.02);
+    expect(set.bg).toBe(dark.bg);
+    expectLegible(lit);
+    expectLegible(skyMoodFor('night', 0.5, undefined, 'vibrant', { ...base, moon: { illumination: 1, altitude: 30 } }));
   });
 });
 
@@ -187,7 +246,7 @@ describe('the palette', () => {
     expect(at(SKIES.day, 'dark').isDark).toBe(false);
     expect(at(SKIES.night, 'light').isDark).toBe(true);
     // System colours and the colour theme have nothing to say under it.
-    expect(at(SKIES.day, 'light').accentSolid.toLowerCase()).toBe(SKY_MOODS.midday.accent.toLowerCase());
+    expect(at(SKIES.day, 'light').accentSolid.toLowerCase()).toBe(skyMoodFor('day', SKIES.day.t, PALETTE_STEPS).accent.toLowerCase());
     // The mushaf's chrome asks for a polarity: a light mood asked for dark
     // gives the night; a dark one asked for light gives the midday.
     const forDark = resolveThemePaletteForMode(
@@ -222,8 +281,10 @@ describe('the store', () => {
     publishSkyTheme({ ...SKIES.day, t: 0.5 });
     publishSkyTheme({ ...SKIES.golden });
     expect(fade).toHaveBeenCalledTimes(1);
-    // Halfway to Maghrib: light to dark.
-    publishSkyTheme({ ...SKIES.sunset, t: 0.5 });
+    // The golden hour is still light; Maghrib is light to dark.
+    publishSkyTheme({ ...SKIES.sunset, t: 0.9 });
+    expect(fade).toHaveBeenCalledTimes(1);
+    publishSkyTheme({ ...SKIES.sunset, passage: 'dusk', t: 0.0 });
     expect(fade).toHaveBeenCalledTimes(2);
     // Nobody looking (the theme is off): no fade for a flip.
     off();
@@ -309,7 +370,7 @@ describe('the store', () => {
 
 describe('the hero under the theme', () => {
   it('wears the hour\'s gradient, three stops, the foot on the page', () => {
-    const real = { passage: 'night', t: 0.5, top: '#0B1230', bottom: '#1E2B5A', glow: '#fff', stars: 1, body: { kind: 'none' } } as const;
+    const real = { passage: 'night', t: 0.5, light: { sun: -38, daylight: 1.6 }, top: '#0B1230', bottom: '#1E2B5A', glow: '#fff', stars: 1, body: { kind: 'none' } } as const;
     const themed = themedSkyFrame(real, SKY_MOODS.night);
     expect(themed.top).toBe(SKY_MOODS.night.heroTop);
     expect(themed.mid).toBe(SKY_MOODS.night.heroMid);
@@ -449,7 +510,7 @@ describe('access and polish', () => {
 describe('wiring', () => {
   it('the hero publishes the live sky, the palettes read it, the card offers it', () => {
     const card = read('src/screens/home/TodayCard.tsx');
-    expect(card).toMatch(/publishSkyTheme\(\s*\{ top: liveSky\.top, bottom: liveSky\.bottom, passage: liveSky\.passage, t: liveSky\.t \},\s*\{ day: skyDayKey\(new Date\(liveMinuteKey \* 60_000\)\), times: skyToday \?\? today, tomorrowFajr \},\s*\)/);
+    expect(card).toMatch(/publishSkyTheme\(\s*\{ top: liveSky\.top, bottom: liveSky\.bottom, passage: liveSky\.passage, t: liveSky\.t, light: liveSky\.light \},\s*\{\s*day: skyDayKey\(new Date\(liveMinuteKey \* 60_000\)\),\s*times: skyToday \?\? today,\s*tomorrowFajr,\s*where:/);
     // The hour decides light or dark: the hooks take it off the palette.
     expect(read('src/hooks/useAppPalette.ts')).toMatch(/isDark: palette\.isDark/);
     expect(read('src/AppNavigationRoot.tsx')).toMatch(/const isDark = palette\.isDark;/);
@@ -477,18 +538,59 @@ describe('Realistic', () => {
 
   it('reads all the way through every mix, turns dark and light at the same moments as Vibrant, and moves every step', () => {
     for (const passage of passages) {
-      let prev = skyMoodFor(passage, 0, undefined, 'realistic');
+      let prev = skyMoodOf(passage, 0, nominalSkyLight(passage, 0), 'realistic');
       for (let t = 0; t <= 1.0001; t += 0.02) {
-        const mood = skyMoodFor(passage, t, undefined, 'realistic');
+        const mood = skyMoodOf(passage, t, nominalSkyLight(passage, t), 'realistic');
         expectLegible(mood);
         const { from, to } = skyMoodAt(passage, t, 'realistic');
         expect(from.isDark).toBe(to.isDark);
         expect(mood.isDark).toBe(skyMoodFor(passage, t, undefined, 'vibrant').isDark);
-        expect(mood.name).toBe(skyMoodFor(passage, t, undefined, 'vibrant').name);
-        if (t > 0) {
-          expect((['heroTop', 'heroMid', 'bg', 'bodyLight'] as const).some(k => mood[k] !== prev[k])).toBe(true);
-        }
+      }
+      for (let t = 0.06; t <= 1.0001; t += 0.06) {
+        const mood = skyMoodOf(passage, t, nominalSkyLight(passage, t), 'realistic');
+        expect((['heroTop', 'heroMid', 'bg', 'bodyLight'] as const).some(k => mood[k] !== prev[k])).toBe(true);
         prev = mood;
+      }
+    }
+  });
+
+  it('reads at every altitude of the sun, every depth of the night and every moon — the floors are a property of the rules (2.33)', () => {
+    for (const variant of ['realistic', 'vibrant'] as const) {
+      for (let sun = 0; sun <= 90; sun += 3) {
+        for (const daylight of [0.1, 0.3, 0.5, 0.7, 0.9]) {
+          expectLegible(skyMoodOf('day', daylight, { sun, daylight }, variant));
+        }
+      }
+      for (let depth = 0; depth <= 60; depth += 2) {
+        for (const t of [0, 0.25, 0.5, 0.75, 1]) {
+          for (const illumination of [0, 0.5, 1]) {
+            expectLegible(skyMoodOf('night', t, { sun: -depth, daylight: 1.5, moon: { illumination, altitude: 20 } }, variant));
+          }
+        }
+      }
+    }
+  });
+
+  it('keeps its colour through the seams — no grey mid, no slate accent, in either track (2.33)', () => {
+    for (const variant of ['realistic', 'vibrant'] as const) {
+      for (let sun = 0; sun <= 60; sun += 1) {
+        for (const daylight of [0.2, 0.5, 0.8]) {
+          const m = skyMoodOf('day', daylight, { sun, daylight }, variant);
+          expect(hexToOklch(m.heroMid).C).toBeGreaterThanOrEqual(0.05);
+          expect(hexToOklch(m.heroTop).C).toBeGreaterThanOrEqual(0.075);
+          expect(hexToOklch(m.accent).C).toBeGreaterThanOrEqual(0.085);
+          // Never by way of green.
+          const h = hexToOklch(m.accent).h;
+          expect(h > 100 && h < 170).toBe(false);
+        }
+      }
+      for (let depth = 0; depth <= 30; depth += 1) {
+        for (const t of [0, 0.5, 1]) {
+          const m = skyMoodOf('night', t, { sun: -depth, daylight: 1.5 }, variant);
+          expect(hexToOklch(m.accent).C).toBeGreaterThanOrEqual(0.07);
+          const h = hexToOklch(m.accent).h;
+          expect(h > 100 && h < 170).toBe(false);
+        }
       }
     }
   });
@@ -498,8 +600,9 @@ describe('Realistic', () => {
       for (let t = 0; t <= 1.0001; t += 0.05) {
         const r = skyMoodFor(passage, t, undefined, 'realistic');
         const v = skyMoodFor(passage, t, undefined, 'vibrant');
-        expect(hexToOklch(r.bg).C).toBeLessThanOrEqual(0.05);
-        expect(hexToOklch(r.bg).C).toBeLessThanOrEqual(hexToOklch(v.bg).C + 0.005);
+        // A paper lit by the sky: tinted, never painted (2.33 gave it a
+        // little more than the near-neutral it had).
+        expect(hexToOklch(r.bg).C).toBeLessThanOrEqual(0.055);
         expect(hexToOklch(r.accent).C).toBeLessThanOrEqual(hexToOklch(v.accent).C + 0.01);
       }
     }

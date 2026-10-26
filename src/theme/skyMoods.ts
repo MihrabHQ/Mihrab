@@ -1,30 +1,51 @@
 /**
- * THE SKY THEME'S COLOURS — one palette for each time of the day.
+ * THE SKY THEME'S COLOURS — one palette for each moment of the sun.
  *
- * Not the sky's own colours, read off the hero: those are a clock, drawn
- * to look like the sky. These are what the app wears at that hour, drawn
- * to feel like it — a night that is a deep indigo void with a glowing
- * cyan on it, not a grey; a dawn of violet with coral and sunshine; a
- * morning of warm cream; a midday of ice with an azure; a late afternoon
- * of gold; an evening of electric purple and magenta. Representative,
- * not realistic. Each is a complete palette, every token tuned for its
- * ground (text and muted ink clear AA on the page, the card and a
- * control; the accent clears AA on the page and the card, since it is
- * used as text; `__tests__/skyTheme.test.ts` pins it), and the day moves
- * from one to the next by mixing them in OKLab — except where the
- * ground turns from dark to light or back, which is a switch at a
- * moment of the day (sunrise; the middle of the sunset), because a mix
- * of a dark page and a light one is a grey page with unreadable ink.
+ * Two tracks, picked under Appearance → Sky:
  *
- * Two variants, picked under Appearance → Sky: these, Vibrant, and
- * Realistic — the sky as it looks (the hero's own colours, skyModel.ts:
- * a navy night, a dawn of slate blue with a rose horizon, a clear blue
- * day, an orange horizon under a blue evening) over a page that is
- * nearly neutral, tinted only toward the hour, and calmer accents. Same
- * hours, same anchors, same switches between dark and light, same floors.
+ *   Vibrant — representative, not realistic: a night that is a deep indigo
+ *   void with a glowing cyan on it, a dawn of violet with coral, a morning
+ *   of warm cream, a midday of ice with an azure, a golden hour of gold,
+ *   an evening of electric purple and magenta. Six moods, picked by hand,
+ *   with stations between them.
+ *
+ *   Realistic — the sky as it is, DERIVED: the colour of the sky overhead
+ *   and at the horizon for the sun's altitude, the twilight's depth and
+ *   the moon's phase and height, and a page that is a paper lit by that
+ *   sky. Nothing in it is picked for an hour; a Tromsø December and a
+ *   Jakarta noon paint their own days.
+ *
+ * ── KEYED TO THE SUN, NOT TO THE PASSAGE ─────────────────────────────
+ *
+ * The colours used to be a function of how far through the prayer
+ * passage the clock was (`t`): the same "midday" at a Stockholm December
+ * noon (the sun 7° up) and a Makkah one (80°), and the evening switched
+ * on halfway from Asr to Maghrib — at three in the afternoon in October,
+ * two hours before a June sunset — with the sun drawn high and yellow
+ * over a dark page (2.33). Now the moment is a point on the SUN'S day
+ * (`SkyLight`): by day its altitude, and whether it is rising or
+ * falling; by night its depth under the horizon, and whether the night
+ * is coming or going; through the deep of the night, how far through it;
+ * and the moon. Each track is a set of STATIONS on that scale, and the
+ * moment is mixed between the stations it lies between — in OKLab, with
+ * the chroma of the colours that carry the hour held (`mixHexVivid`),
+ * and the hues of the accent and the sky's stops carried round the wheel
+ * away from green, the way a sky's own mixes go.
+ *
+ * The page turns dark at Maghrib and light at sunrise — the two moments
+ * the app's own day is cut at and the two a person expects the room to
+ * change — never in between: a mix of a dark page and a light one is a
+ * grey page with unreadable ink, so a change of polarity is a switch
+ * (crossfaded by the screen, skyTheme.ts). Light while the sun is up,
+ * dark while it is under, the golden hour light at both ends.
+ *
+ * Every station of both tracks clears the floors the test walks
+ * (`__tests__/skyTheme.test.ts`): text and muted ink AA on the page, the
+ * card and a control; the accent AA on the page, the card, a control and
+ * its own highlight, since it is read as text on all of them.
  */
 import type { SkyPassage } from '../screens/home/skyModel';
-import { hexToOklch, lchToAb, oklabToHex, oklchToHex } from './oklch';
+import { hexToOklch, lchToAb, oklabToHex, oklchToHex, type Oklch } from './oklch';
 
 export type SkyMoodName = 'night' | 'dawn' | 'morning' | 'midday' | 'golden' | 'sunset';
 
@@ -49,6 +70,62 @@ export function activeSkyVariant(): SkyVariant {
 }
 export function setActiveSkyVariant(v: SkyVariant): void {
   activeVariant = isSkyVariant(v) ? v : DEFAULT_SKY_VARIANT;
+}
+
+/**
+ * ── THE SUN'S DAY ────────────────────────────────────────────────────
+ *
+ * Where the sun is, which is what the colours are a function of. The
+ * hero computes it from the reader's coordinates (skyModel.ts, `skyFrame`
+ * carries it); callers with none — the full-screen alert's per-prayer
+ * moods, a widget before the hero has drawn — take `nominalSkyLight`,
+ * the sun of an average day for the passage and its progress.
+ */
+export type SkyLight = {
+  /** The sun's altitude above the horizon, degrees; negative under it. */
+  sun: number;
+  /**
+   * Sunrise 0 → Maghrib 1 — the app's day — which says whether the sun is
+   * rising or falling; past 1 or under 0 at night. Null when the day's
+   * times cannot say (the passage's own progress decides then).
+   */
+  daylight: number | null;
+  /** The moon: how much of it is lit, and how high it is (null: unknown). */
+  moon?: { illumination: number; altitude: number | null };
+};
+
+/** Where the sun's altitude peaks on the average day this stands in for. */
+const NOMINAL_NOON_ALTITUDE = 55;
+/** The civil, nautical and astronomical twilights end this far under. */
+export const TWILIGHT_CIVIL = 6;
+export const TWILIGHT_NAUTICAL = 12;
+export const TWILIGHT_ASTRONOMICAL = 18;
+
+/**
+ * The sun of an average day, from the passage and how far through it:
+ * day and sunset by the arc's own sine, dawn and dusk sinking through
+ * the three twilights, the night under all of them.
+ */
+export function nominalSkyLight(passage: SkyPassage, t: number): SkyLight {
+  const k = Math.max(0, Math.min(1, t));
+  switch (passage) {
+    case 'day': {
+      // Sunrise → Asr is about two thirds of the sun's day.
+      const daylight = k * 0.68;
+      return { sun: NOMINAL_NOON_ALTITUDE * Math.sin(Math.PI * daylight), daylight };
+    }
+    case 'sunset': {
+      const daylight = 0.68 + k * 0.32;
+      return { sun: NOMINAL_NOON_ALTITUDE * Math.sin(Math.PI * daylight), daylight };
+    }
+    case 'dusk':
+      return { sun: -k * TWILIGHT_ASTRONOMICAL, daylight: 1 + k * 0.1 };
+    case 'dawn':
+      return { sun: -(1 - k) * TWILIGHT_ASTRONOMICAL, daylight: -0.1 + k * 0.1 };
+    case 'night':
+    default:
+      return { sun: -(TWILIGHT_ASTRONOMICAL + 20 * Math.sin(Math.PI * k)), daylight: 1.1 + k };
+  }
 }
 
 export type SkyMood = {
@@ -96,7 +173,7 @@ export type SkyMood = {
  * where the accent is light and the tint can be deep; a tenth on a light
  * one, where the accent is deep and the row must stay nearly white for
  * the accent to read on it (the time is written on it in the accent).
- * Derived, not picked, so every anchor's highlight sits in its own
+ * Derived, not picked, so every station's highlight sits in its own
  * composition and clears AA for the accent and the ink on it.
  */
 const HIGHLIGHT_DARK = 0.2;
@@ -266,179 +343,13 @@ const moodsOf = (raw: Record<SkyMoodName, Omit<SkyMood, 'accentBg'>>): Record<Sk
 export const SKY_MOODS: Record<SkyMoodName, SkyMood> = moodsOf(RAW_MOODS);
 
 /**
- * REALISTIC — the sky as it looks. The hero takes the real sky's colours
- * (the default theme's, skyModel.ts) at each hour; the page under it is
- * nearly neutral — a paper warmed or cooled toward the hour by a few
- * degrees, never painted in it; the cards are white by day and a step
- * above the page by night; the accent is the hour's light, taken down to
- * what a sky shows: moonlight blue, a dawn peach, terracotta, a clear
- * blue, amber, the afterglow's orange. The same tokens, the same floors.
- */
-const REALISTIC_RAW: Record<SkyMoodName, Omit<SkyMood, 'accentBg'>> = {
-  /** Night: navy, a moonlit blue on it. */
-  night: {
-    name: 'night',
-    isDark: true,
-    heroTop: '#060B24',
-    heroMid: '#17245C',
-    heroFoot: '#0D1428',
-    bodyLight: '#E4EAF4',
-    starGlow: '#D6E0F2',
-    bg: '#0D1428',
-    card: '#182036',
-    controlBg: '#1F2942',
-    border: '#2E3A57',
-    text: '#E8ECF4',
-    muted: '#A3AEC4',
-    accent: '#9DB8E8',
-    onAccent: '#0B1224',
-    accentSurface: '#111930',
-    accentSurfaceStrong: '#1B2440',
-    accentHairline: '#3E5180',
-    danger: '#F28B8B',
-    overlay: 'rgba(5,8,18,0.7)',
-  },
-  /** Dawn: slate blue, the horizon going rose, a peach for the hand. */
-  dawn: {
-    name: 'dawn',
-    isDark: true,
-    heroTop: '#0E1750',
-    heroMid: '#634481',
-    heroFoot: '#131A33',
-    bodyLight: '#F4C99A',
-    starGlow: '#DCDDF0',
-    bg: '#131A33',
-    card: '#1E2643',
-    controlBg: '#262F50',
-    border: '#384266',
-    text: '#F1EEF2',
-    muted: '#B4B4CA',
-    accent: '#E9A88A',
-    onAccent: '#24130B',
-    accentSurface: '#172040',
-    accentSurfaceStrong: '#222B4C',
-    accentHairline: '#6A5878',
-    danger: '#F28B8B',
-    overlay: 'rgba(8,10,26,0.7)',
-  },
-  /** Early morning: a pale blue over the warm haze, a paper page, terracotta. */
-  morning: {
-    name: 'morning',
-    isDark: false,
-    heroTop: '#77A6E7',
-    heroMid: '#FED29C',
-    heroFoot: '#F7F4EF',
-    bodyLight: '#FFD98F',
-    starGlow: '#FFFFFF',
-    bg: '#F7F4EF',
-    card: '#FFFFFF',
-    controlBg: '#ECE8E1',
-    border: '#DCD5CA',
-    text: '#1D2430',
-    muted: '#555E6C',
-    accent: '#9B4A24',
-    onAccent: '#FFFFFF',
-    accentSurface: '#F2EEE8',
-    accentSurfaceStrong: '#EDE7DF',
-    accentHairline: '#D8B399',
-    danger: '#B42318',
-    overlay: 'rgba(29,36,48,0.45)',
-  },
-  /** Midday: a clear blue sky, a cool page, a blue for the hand. */
-  midday: {
-    name: 'midday',
-    isDark: false,
-    heroTop: '#378BE5',
-    heroMid: '#9DCEFC',
-    heroFoot: '#F1F5F9',
-    bodyLight: '#FFF4D2',
-    starGlow: '#FFFFFF',
-    bg: '#F1F5F9',
-    card: '#FFFFFF',
-    controlBg: '#E2E9F1',
-    border: '#CBD7E3',
-    text: '#13202F',
-    muted: '#4C5B6C',
-    accent: '#285C91',
-    onAccent: '#FFFFFF',
-    accentSurface: '#E9EFF5',
-    accentSurfaceStrong: '#E0E8F1',
-    accentHairline: '#98B5D3',
-    danger: '#B42318',
-    overlay: 'rgba(19,32,47,0.45)',
-  },
-  /** Late afternoon: the blue fading over a warm horizon, amber. */
-  golden: {
-    name: 'golden',
-    isDark: false,
-    heroTop: '#688AD7',
-    heroMid: '#FFB769',
-    heroFoot: '#F9F2E8',
-    bodyLight: '#FFBE6A',
-    starGlow: '#FFFFFF',
-    bg: '#F9F2E8',
-    card: '#FFFDF9',
-    controlBg: '#F0E5D6',
-    border: '#E3D2BC',
-    text: '#2A2018',
-    muted: '#66574A',
-    accent: '#9A4F14',
-    onAccent: '#FFFFFF',
-    accentSurface: '#F5EBDF',
-    accentSurfaceStrong: '#F0E4D5',
-    accentHairline: '#DDB084',
-    danger: '#B42318',
-    overlay: 'rgba(42,32,24,0.45)',
-  },
-  /** Sunset & evening: a blue evening over the red horizon, the afterglow's orange. */
-  sunset: {
-    name: 'sunset',
-    isDark: true,
-    heroTop: '#2D2E7D',
-    heroMid: '#CD4E54',
-    heroFoot: '#171A30',
-    bodyLight: '#F29A66',
-    starGlow: '#EEDCD6',
-    bg: '#171A30',
-    card: '#222540',
-    controlBg: '#2A2E4C',
-    border: '#3C3F62',
-    text: '#F3EEEC',
-    muted: '#BCB6C0',
-    accent: '#EE9F72',
-    onAccent: '#26120A',
-    accentSurface: '#1C1F38',
-    accentSurfaceStrong: '#272A46',
-    accentHairline: '#74566A',
-    danger: '#F4847E',
-    overlay: 'rgba(10,10,22,0.7)',
-  },
-};
-
-/** Realistic's moods. */
-export const REALISTIC_SKY_MOODS: Record<SkyMoodName, SkyMood> = moodsOf(REALISTIC_RAW);
-
-/** Each variant's six moods. */
-export const SKY_MOODS_BY_VARIANT: Record<SkyVariant, Record<SkyMoodName, SkyMood>> = {
-  vibrant: SKY_MOODS,
-  realistic: REALISTIC_SKY_MOODS,
-};
-
-/**
- * ── THE DAY, ANCHOR BY ANCHOR ────────────────────────────────────────
+ * ── VIBRANT'S STATIONS ───────────────────────────────────────────────
  *
- * Six moods would leave the app the same for hours — the whole night one
- * indigo, three quarters of the day one ice. So between the moods are
- * more anchors, each a variation on its mood (its ground a shade deeper
- * or lighter, its glow drifting), and every passage of the day is a
- * sequence of them mixed continuously: the night goes from a blue early
- * night after Isha through its deepest at midnight to a violet before
- * Fajr; the day from the morning's cream through the midday's ice to a
- * warmer, higher afternoon; the evening deepens after the sun has gone.
- * The colours move a little every minute, and no two minutes of the day
- * are quite the same sky. A variation keeps its mood's name, its ink and
- * its accent — it is the same hour, drifting — so the contrast floors
- * the test walks hold along the whole way.
+ * Six moods would leave the app the same for hours, so between them are
+ * more stations, each a variation on its mood (its ground a shade deeper
+ * or lighter, its glow drifting). A variation keeps its mood's name, its
+ * ink and its accent — it is the same hour, drifting — so the contrast
+ * floors the test walks hold along the whole way.
  */
 const vary = (base: SkyMood, over: Partial<SkyMood>): SkyMood => withHighlight({ ...base, ...over });
 const M = SKY_MOODS;
@@ -483,7 +394,9 @@ const ANCHORS = {
    */
   morningLate: vary(M.morning, {
     heroTop: '#B49BD6',
-    heroMid: '#DCD6EC',
+    // A lilac with its colour kept (C 0.07), not the grey-lilac (#DCD6EC,
+    // C 0.03) that made the mid-morning the washed hour of the day (2.33).
+    heroMid: '#DECEFF',
     heroFoot: '#F5F2F9',
     bg: '#F5F2F9',
     card: '#FDFCFF',
@@ -510,7 +423,8 @@ const ANCHORS = {
   /** Towards Asr's end: the blue going mauve before the gold comes in. */
   afternoonLate: vary(M.midday, {
     heroTop: '#B394C6',
-    heroMid: '#E4D8EA',
+    // A mauve with its colour kept, as above.
+    heroMid: '#E0C4F6',
     heroFoot: '#F7F2F4',
     bg: '#F7F2F4',
     card: '#FFFCFD',
@@ -537,143 +451,51 @@ const ANCHORS = {
     accentSurface: '#250B33',
     bodyLight: '#E990A3',
   }),
-};
-
-/**
- * Realistic's anchors: the same hours, drifting the way the real sky does —
- * the night bluest after Isha and before Fajr, the dawn's horizon going
- * from rose to salmon, the morning's haze clearing into the blue, the
- * afternoon's blue paling over a warm horizon before the gold, the
- * evening deepening to indigo. Between the morning's terracotta and the
- * midday's blue, and the afternoon's blue and the gold, the hand passes
- * through a muted plum, the way the sky's own mixes do.
- */
-const R = REALISTIC_SKY_MOODS;
-const REALISTIC_ANCHORS: typeof ANCHORS = {
-  nightEarly: vary(R.night, {
-    heroTop: '#0A1335',
-    heroMid: '#253486',
-    heroFoot: '#0F172E',
-    bg: '#0F172E',
-    card: '#1A2339',
-    controlBg: '#212C46',
-    accentSurface: '#131B33',
-    bodyLight: '#D8E2F8',
+  /**
+   * The high sun (2.33): the midday's ice deepened to the azure a sky has
+   * straight overhead when the sun is high — which a Stockholm winter never
+   * reaches and a Makkah noon always does. The ice is the station at a
+   * middling sun; this is above it.
+   */
+  zenith: vary(M.midday, {
+    heroTop: '#2279DC',
+    heroMid: '#97C9FD',
+    heroFoot: '#E0F1FF',
+    bg: '#E0F1FF',
+    controlBg: '#D0E7FF',
+    border: '#AFD3F7',
+    accent: '#0554AF',
+    accentSurface: '#D9ECFF',
+    accentSurfaceStrong: '#CFE6FF',
+    bodyLight: '#FFF8C8',
   }),
-  midnight: R.night,
-  nightLate: vary(R.night, {
-    heroTop: '#0A123E',
-    heroMid: '#2D358D',
-    heroFoot: '#0F162D',
-    bg: '#0F162D',
-    card: '#1A2239',
-    accentSurface: '#131A33',
-    bodyLight: '#ECE8F6',
+  /** Higher still: the deep azure of a tropical noon. */
+  zenithHigh: vary(M.midday, {
+    heroTop: '#1A6ED4',
+    heroMid: '#8BC1FC',
+    heroFoot: '#DDEFFF',
+    bg: '#DDEFFF',
+    controlBg: '#CCE4FF',
+    border: '#A9CFF6',
+    accent: '#0450A8',
+    accentSurface: '#D6EAFF',
+    accentSurfaceStrong: '#CBE3FF',
+    bodyLight: '#FFFBD6',
   }),
-  dawn: R.dawn,
-  dawnBright: vary(R.dawn, {
-    heroTop: '#244091',
-    heroMid: '#BE5D78',
-    bodyLight: '#FAD39C',
-  }),
-  morning: R.morning,
-  morningLate: vary(R.morning, {
-    heroTop: '#619DE6',
-    heroMid: '#DAE4EF',
-    heroFoot: '#F4F6F8',
-    bg: '#F4F6F8',
-    card: '#FFFFFF',
-    controlBg: '#E7EBF0',
-    border: '#D3DAE2',
-    text: '#1A2531',
-    muted: '#52606E',
-    accent: '#5B5C86',
-    accentSurface: '#EDF0F3',
-    accentSurfaceStrong: '#E6EAEF',
-    accentHairline: '#B3BDD0',
-    bodyLight: '#FFE6A8',
-    overlay: 'rgba(26,37,49,0.45)',
-  }),
-  midday: R.midday,
-  afternoon: vary(R.midday, {
-    heroTop: '#4A9AE8',
-    heroMid: '#B4D7F7',
-    heroFoot: '#F2F5F8',
-    bg: '#F2F5F8',
-    bodyLight: '#FFEFC2',
-  }),
-  afternoonLate: vary(R.midday, {
-    heroTop: '#5D8FDB',
-    heroMid: '#E9DCC0',
-    heroFoot: '#F6F4F0',
-    bg: '#F6F4F0',
-    card: '#FFFEFC',
-    controlBg: '#ECE8E2',
-    border: '#DCD6CD',
-    text: '#1F2430',
-    muted: '#575C68',
-    accent: '#6A5070',
-    accentSurface: '#F1EEEA',
-    accentSurfaceStrong: '#ECE8E3',
-    accentHairline: '#C2B4AE',
-    bodyLight: '#FFDC94',
-    overlay: 'rgba(31,36,48,0.45)',
-  }),
-  golden: R.golden,
-  sunset: R.sunset,
-  sunsetDeep: vary(R.sunset, {
-    heroTop: '#1D1F6C',
-    heroMid: '#8E4777',
-    heroFoot: '#141830',
-    bg: '#141830',
-    card: '#1F2340',
-    accentSurface: '#191C36',
-    bodyLight: '#E48E78',
+  /**
+   * The first minutes after Maghrib (2.33): the evening's dark ground, the
+   * horizon still an ember — the sun has just gone under and the afterglow
+   * is at its hottest. Then the sunset's magenta, then the deep.
+   */
+  afterglow: vary(M.sunset, {
+    heroTop: '#301C64',
+    heroMid: '#D25030',
+    bodyLight: '#F7A45A',
   }),
 };
 
-type Segment = { from: number; to: number; a: SkyMood; b: SkyMood };
-/** Each passage as segments of its progress, each a mix of two anchors. */
-const timelineOf = (A: typeof ANCHORS): Record<SkyPassage, Segment[]> => ({
-  night: [
-    { from: 0, to: 0.5, a: A.nightEarly, b: A.midnight },
-    { from: 0.5, to: 1, a: A.midnight, b: A.nightLate },
-  ],
-  dawn: [
-    { from: 0, to: 0.35, a: A.nightLate, b: A.dawn },
-    { from: 0.35, to: 1, a: A.dawn, b: A.dawnBright },
-  ],
-  // Sunrise is the switch to light.
-  day: [
-    { from: 0, to: 0.15, a: A.morning, b: A.morningLate },
-    { from: 0.15, to: 0.3, a: A.morningLate, b: A.midday },
-    { from: 0.3, to: 1, a: A.midday, b: A.afternoon },
-  ],
-  // Halfway to Maghrib the evening switches on.
-  sunset: [
-    { from: 0, to: 0.25, a: A.afternoon, b: A.afternoonLate },
-    { from: 0.25, to: 0.5, a: A.afternoonLate, b: A.golden },
-    { from: 0.5, to: 1, a: A.sunset, b: A.sunsetDeep },
-  ],
-  dusk: [{ from: 0, to: 1, a: A.sunsetDeep, b: A.nightEarly }],
-});
-const TIMELINES: Record<SkyVariant, Record<SkyPassage, Segment[]>> = {
-  vibrant: timelineOf(ANCHORS),
-  realistic: timelineOf(REALISTIC_ANCHORS),
-};
 
-/** Which two anchors this moment of the sky is between, and how far. */
-export function skyMoodAt(
-  passage: SkyPassage,
-  t: number,
-  variant: SkyVariant = activeVariant,
-): { from: SkyMood; to: SkyMood; u: number } {
-  const k = Math.max(0, Math.min(1, t));
-  const segments = TIMELINES[isSkyVariant(variant) ? variant : DEFAULT_SKY_VARIANT][passage];
-  const seg = segments.find(s => k < s.to) ?? segments[segments.length - 1];
-  const span = seg.to - seg.from || 1;
-  return { from: seg.a, to: seg.b, u: Math.max(0, Math.min(1, (k - seg.from) / span)) };
-}
+// ── Colour arithmetic ──────────────────────────────────────────────────
 
 /** Two hexes mixed in OKLab — hue and lightness both travel straight. */
 export function mixHexOklab(a: string, b: string, u: number): string {
@@ -702,7 +524,347 @@ export function mixHexVivid(a: string, b: string, u: number): string {
   return oklchToHex({ ...mixed, C: Ca + (Cb - Ca) * u });
 }
 
-const VIVID: ReadonlySet<keyof SkyMood> = new Set(['heroTop', 'heroMid', 'bodyLight', 'accent']);
+/**
+ * The hue's way round between two hues: the short way, unless the short
+ * way crosses the greens — a sky goes from its evening ember to its night
+ * blue by magenta and violet, and from a morning's ochre to the midday's
+ * blue by rose and lilac, never by green — in which case the long way.
+ * The ends' own hue when either has none (a grey has no direction).
+ */
+const GREEN_FROM = 95;
+const GREEN_TO = 175;
+function hueWay(ha: number, hb: number): number {
+  let delta = ((hb - ha + 540) % 360) - 180; // the short way, −180…180
+  const crossesGreen = (from: number, d: number): boolean => {
+    const steps = 12;
+    for (let i = 1; i < steps; i += 1) {
+      const h = (((from + (d * i) / steps) % 360) + 360) % 360;
+      if (h > GREEN_FROM && h < GREEN_TO) return true;
+    }
+    return false;
+  };
+  if (Math.abs(delta) > 40 && crossesGreen(ha, delta)) delta = delta > 0 ? delta - 360 : delta + 360;
+  return delta;
+}
+
+/**
+ * The mix for the colours that carry the hour — the sky's stops, the
+ * body's light, the accent: lightness and chroma straight, the hue round
+ * the wheel by `hueWay`, so a cyan night and a coral dawn meet in violet
+ * and not in green, and nothing goes grey on the way.
+ */
+export function mixHexRound(a: string, b: string, u: number): string {
+  if (u <= 0) return a;
+  if (u >= 1) return b;
+  const A = hexToOklch(a);
+  const B = hexToOklch(b);
+  const C = A.C + (B.C - A.C) * u;
+  // A near-grey end has no hue of its own: take the other's.
+  const ha = A.C < 0.015 ? B.h : A.h;
+  const hb = B.C < 0.015 ? A.h : B.h;
+  const h = (((ha + hueWay(ha, hb) * u) % 360) + 360) % 360;
+  return oklchToHex({ L: A.L + (B.L - A.L) * u, C, h });
+}
+
+const lch = (L: number, C: number, h: number): string => oklchToHex({ L, C, h });
+const shift = (hex: string, d: Partial<Oklch>): string => {
+  const c = hexToOklch(hex);
+  return oklchToHex({ L: c.L + (d.L ?? 0), C: Math.max(0, c.C + (d.C ?? 0)), h: c.h + (d.h ?? 0) });
+};
+
+/** WCAG contrast of two hexes. */
+function luminanceOf(hex: string): number {
+  const c = hex.replace('#', '');
+  const lin = (v: number) => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4);
+  const [r, g, b] = [0, 2, 4].map(i => lin(parseInt(c.slice(i, i + 2), 16) / 255));
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+export function contrastOf(a: string, b: string): number {
+  const la = luminanceOf(a);
+  const lb = luminanceOf(b);
+  return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
+}
+
+// ── REALISTIC — the sky, derived ───────────────────────────────────────
+
+/**
+ * A station of the real sky, in OKLCH: the sky overhead and at the
+ * horizon, the page's tint, the accent's hue and chroma, the light the
+ * sun or the moon gives. Everything else — the page's ladder, the ink,
+ * the accent's lightness, the highlight and the surfaces — is derived
+ * from these by the rules below, the same at every station, so the
+ * contrast floors are a property of the rules and the test still walks
+ * every moment.
+ */
+type Lch = readonly [number, number, number];
+type PhysicalSpec = {
+  name: SkyMoodName;
+  isDark: boolean;
+  top: Lch;
+  mid: Lch;
+  /** The paper's tint: the horizon's hue, at a few hundredths of chroma. */
+  page: Lch;
+  accent: { h: number; C: number };
+  body: Lch;
+  star: Lch;
+};
+
+/** The floor every reading of the accent clears, with a hair to spare. */
+const ACCENT_FLOOR = 4.6;
+
+/**
+ * The paper and the room, lit by the sky — a light page at L 0.97 with the
+ * horizon's tint on it, white cards, the ink near-black warmed toward the
+ * sky; a dark room two steps up from the sky's own top tone, the ink
+ * near-white cooled toward it. The accent is the hour's light at the
+ * lightness that just clears the floor on the page, the card, a control
+ * and its own highlight — found, not picked.
+ */
+function physical(s: PhysicalSpec): SkyMood {
+  const [tL, tC, th] = s.top;
+  const [mL, mC, mh] = s.mid;
+  const [pL, pC, ph] = s.page;
+  const heroTop = lch(tL, tC, th);
+  const heroMid = lch(mL, mC, mh);
+  if (!s.isDark) {
+    const bg = lch(pL, pC, ph);
+    const card = '#FFFFFF';
+    const controlBg = lch(pL - 0.045, Math.min(pC, 0.02), ph);
+    const border = lch(pL - 0.11, Math.min(pC + 0.005, 0.03), ph);
+    const text = lch(0.25, 0.02, th);
+    const muted = lch(0.47, 0.03, th);
+    let L = 0.56;
+    let accent = lch(L, s.accent.C, s.accent.h);
+    let accentBg = mixHexOklab(bg, accent, HIGHLIGHT_LIGHT);
+    for (let i = 0; i < 40; i += 1) {
+      accent = lch(L, s.accent.C, s.accent.h);
+      accentBg = mixHexOklab(bg, accent, HIGHLIGHT_LIGHT);
+      if ([bg, card, controlBg, accentBg].every(g => contrastOf(accent, g) >= ACCENT_FLOOR)) break;
+      L -= 0.01;
+    }
+    return {
+      name: s.name,
+      isDark: false,
+      heroTop,
+      heroMid,
+      heroFoot: bg,
+      bodyLight: lch(...s.body),
+      starGlow: lch(...s.star),
+      bg,
+      card,
+      controlBg,
+      border,
+      text,
+      muted,
+      accent,
+      accentBg,
+      onAccent: contrastOf('#FFFFFF', accent) >= 4.5 ? '#FFFFFF' : '#1A1814',
+      accentSurface: mixHexOklab(bg, accent, 0.05),
+      accentSurfaceStrong: mixHexOklab(bg, accent, 0.1),
+      accentHairline: mixHexOklab(bg, accent, 0.5),
+      danger: '#B42318',
+      overlay: 'rgba(29,36,48,0.45)',
+    };
+  }
+  const bg = lch(0.21, Math.min(0.05, tC * 0.6 + 0.02), th);
+  const card = lch(0.27, Math.min(0.055, tC * 0.6 + 0.025), th);
+  const controlBg = lch(0.31, Math.min(0.06, tC * 0.6 + 0.03), th);
+  const border = lch(0.38, Math.min(0.06, tC * 0.6 + 0.03), th);
+  const text = lch(0.94, 0.012, th);
+  const muted = lch(0.77, 0.035, th);
+  let L = 0.72;
+  let accent = lch(L, s.accent.C, s.accent.h);
+  let accentBg = mixHexOklab(bg, accent, HIGHLIGHT_DARK);
+  for (let i = 0; i < 30; i += 1) {
+    accent = lch(L, s.accent.C, s.accent.h);
+    accentBg = mixHexOklab(bg, accent, HIGHLIGHT_DARK);
+    if ([bg, card, controlBg, accentBg].every(g => contrastOf(accent, g) >= ACCENT_FLOOR)) break;
+    L += 0.01;
+  }
+  const onAccentDark = lch(0.2, 0.03, s.accent.h);
+  return {
+    name: s.name,
+    isDark: true,
+    heroTop,
+    heroMid,
+    heroFoot: bg,
+    bodyLight: lch(...s.body),
+    starGlow: lch(...s.star),
+    bg,
+    card,
+    controlBg,
+    border,
+    text,
+    muted,
+    accent,
+    accentBg,
+    onAccent: contrastOf(onAccentDark, accent) >= 4.5 ? onAccentDark : '#FFFFFF',
+    accentSurface: mixHexOklab(bg, accent, 0.06),
+    accentSurfaceStrong: mixHexOklab(bg, accent, 0.12),
+    accentHairline: mixHexOklab(bg, accent, 0.45),
+    danger: '#F28B8B',
+    overlay: 'rgba(5,8,18,0.7)',
+  };
+}
+
+/** A station at a point on the sun's scale (altitude by day, depth by night, progress through the deep night). */
+type StationAt = { at: number; mood: SkyMood };
+/** A track: its stations on each limb of the sun's day. */
+type Track = {
+  light: { morning: StationAt[]; afternoon: StationAt[] };
+  dark: { evening: StationAt[]; morning: StationAt[] };
+  night: StationAt[];
+};
+
+const WHITE: Lch = [1, 0, 0];
+const MOON_LIGHT: Lch = [0.93, 0.02, 262];
+const STAR_NIGHT: Lch = [0.9, 0.03, 262];
+
+/**
+ * The real sky's stations, by the sun's altitude by day — the colour
+ * overhead going from the pale blue of a low sun through a clear blue to
+ * the deep azure straight up at a high one, the horizon from the golden
+ * hour's amber through the warm haze of a low sun to blue-white — and by
+ * its depth under the horizon at twilight: the afterglow's ember going
+ * rose, then violet, then the night. The morning is clearer and cooler
+ * than the afternoon at the same altitude, the dawn colder than the dusk
+ * at the same depth.
+ */
+const physicalLight = (side: 'morning' | 'afternoon'): StationAt[] => {
+  const pm = side === 'afternoon';
+  const warm = pm ? 1 : 0;
+  const st = (at: number, name: SkyMoodName, top: Lch, mid: Lch, page: Lch, accent: { h: number; C: number }, body: Lch): StationAt => ({
+    at,
+    mood: withHighlight(
+      physical({
+        name,
+        isDark: false,
+        top: [top[0], top[1], top[2] - 2 * warm],
+        mid: [mid[0] + (pm ? -0.01 : 0.01), mid[1] + (pm ? 0.01 : -0.005), mid[2] - 8 * warm],
+        page,
+        accent,
+        body,
+        star: WHITE,
+      }),
+    ),
+  });
+  return [
+    // The golden hour: blue over gold, amber at the horizon.
+    st(0, pm ? 'golden' : 'morning', [0.62, 0.11, 245], [0.80, 0.13, 52], [0.97, 0.028, 62], { h: 42, C: 0.13 }, [0.84, 0.15, 60]),
+    st(4, pm ? 'golden' : 'morning', [0.66, 0.12, 247], [0.86, 0.09, 66], [0.97, 0.026, 68], { h: 52, C: 0.12 }, [0.88, 0.13, 72]),
+    // A low sun: the blue paling, a warm haze on the horizon.
+    st(9, pm ? 'golden' : 'morning', [0.68, 0.12, 249], [0.89, 0.065, 78], [0.97, 0.022, 76], { h: 62, C: 0.11 }, [0.92, 0.11, 82]),
+    // A working day: clear blue — which a Stockholm October noon (20°) reaches and its December noon (7°) does not.
+    st(20, 'midday', [0.65, 0.15, 252], [0.87, 0.07, 247], [0.97, 0.02, 250], { h: 252, C: 0.12 }, [0.95, 0.08, 90]),
+    // A high sun: the azure straight up.
+    st(40, 'midday', [0.60, 0.17, 255], [0.85, 0.08, 250], [0.97, 0.022, 250], { h: 255, C: 0.13 }, [0.97, 0.06, 95]),
+    st(70, 'midday', [0.56, 0.18, 258], [0.83, 0.09, 251], [0.97, 0.024, 251], { h: 258, C: 0.13 }, [0.98, 0.05, 98]),
+  ];
+};
+const physicalDark = (side: 'evening' | 'morning'): StationAt[] => {
+  const dawn = side === 'morning';
+  const st = (at: number, name: SkyMoodName, top: Lch, mid: Lch, accent: { h: number; C: number }, body: Lch): StationAt => ({
+    at,
+    mood: withHighlight(
+      physical({
+        name,
+        isDark: true,
+        top: [top[0], top[1], top[2] + (dawn ? -3 : 0)],
+        // The dawn's rose has more blue in it than the dusk's; the dusk's ember more orange.
+        mid: [mid[0], mid[1] - (dawn ? 0.01 : 0), mid[2] - (dawn ? 12 : 0)],
+        page: [0.21, 0.04, top[2]],
+        accent,
+        body,
+        star: STAR_NIGHT,
+      }),
+    ),
+  });
+  return [
+    // The sun just under: the afterglow's ember under a deepening blue.
+    st(0, dawn ? 'dawn' : 'sunset', [0.42, 0.12, 262], [0.66, 0.16, 36], { h: dawn ? 46 : 44, C: 0.12 }, [0.80, 0.14, 55]),
+    st(3, dawn ? 'dawn' : 'sunset', [0.36, 0.12, 265], [0.58, 0.14, 20], { h: dawn ? 38 : 36, C: 0.12 }, [0.78, 0.13, 45]),
+    // Civil twilight over: rose.
+    st(6, dawn ? 'dawn' : 'sunset', [0.30, 0.11, 267], [0.49, 0.13, 356], { h: dawn ? 30 : 20, C: 0.11 }, [0.82, 0.08, 60]),
+    // Nautical: violet.
+    st(12, dawn ? 'dawn' : 'sunset', [0.24, 0.09, 269], [0.39, 0.11, 312], { h: 300, C: 0.09 }, MOON_LIGHT),
+    // Astronomical: the night.
+    st(18, 'night', [0.20, 0.07, 270], [0.36, 0.13, 272], { h: 262, C: 0.085 }, MOON_LIGHT),
+  ];
+};
+const physicalNight: StationAt[] = [
+  { at: 0, mood: withHighlight(physical({ name: 'night', isDark: true, top: [0.20, 0.07, 270], mid: [0.36, 0.13, 272], page: [0.21, 0.04, 270], accent: { h: 262, C: 0.085 }, body: MOON_LIGHT, star: STAR_NIGHT })) },
+  { at: 0.5, mood: withHighlight(physical({ name: 'night', isDark: true, top: [0.16, 0.05, 270], mid: [0.29, 0.10, 269], page: [0.21, 0.04, 270], accent: { h: 262, C: 0.08 }, body: MOON_LIGHT, star: STAR_NIGHT })) },
+  // Before the dawn: the sky cooling, a hint of the first light at the horizon.
+  { at: 1, mood: withHighlight(physical({ name: 'night', isDark: true, top: [0.19, 0.07, 268], mid: [0.36, 0.12, 258], page: [0.21, 0.04, 269], accent: { h: 262, C: 0.085 }, body: MOON_LIGHT, star: STAR_NIGHT })) },
+];
+
+const REALISTIC_TRACK: Track = {
+  light: { morning: physicalLight('morning'), afternoon: physicalLight('afternoon') },
+  dark: { evening: physicalDark('evening'), morning: physicalDark('morning') },
+  night: physicalNight,
+};
+
+/** Realistic's six named moods: the stations that stand for them (the strip, the mushaf's chrome). */
+export const REALISTIC_SKY_MOODS: Record<SkyMoodName, SkyMood> = {
+  night: REALISTIC_TRACK.night[1].mood,
+  dawn: REALISTIC_TRACK.dark.morning[2].mood,
+  morning: REALISTIC_TRACK.light.morning[1].mood,
+  midday: REALISTIC_TRACK.light.morning[4].mood,
+  golden: REALISTIC_TRACK.light.afternoon[0].mood,
+  sunset: REALISTIC_TRACK.dark.evening[1].mood,
+};
+
+/** Vibrant's stations on the same scale. */
+const VIBRANT_TRACK: Track = {
+  light: {
+    morning: [
+      { at: 0, mood: ANCHORS.morning },
+      { at: 7, mood: ANCHORS.morningLate },
+      { at: 18, mood: ANCHORS.midday },
+      { at: 40, mood: ANCHORS.zenith },
+      { at: 70, mood: ANCHORS.zenithHigh },
+    ],
+    afternoon: [
+      { at: 0, mood: ANCHORS.golden },
+      { at: 7, mood: ANCHORS.afternoonLate },
+      { at: 18, mood: ANCHORS.afternoon },
+      { at: 40, mood: ANCHORS.zenith },
+      { at: 70, mood: ANCHORS.zenithHigh },
+    ],
+  },
+  dark: {
+    evening: [
+      { at: 0, mood: ANCHORS.afterglow },
+      { at: 6, mood: ANCHORS.sunset },
+      { at: 12, mood: ANCHORS.sunsetDeep },
+      { at: 18, mood: ANCHORS.nightEarly },
+    ],
+    morning: [
+      { at: 0, mood: ANCHORS.dawnBright },
+      { at: 6, mood: ANCHORS.dawn },
+      { at: 18, mood: ANCHORS.nightLate },
+    ],
+  },
+  night: [
+    { at: 0, mood: ANCHORS.nightEarly },
+    { at: 0.5, mood: ANCHORS.midnight },
+    { at: 1, mood: ANCHORS.nightLate },
+  ],
+};
+
+const TRACKS: Record<SkyVariant, Track> = { vibrant: VIBRANT_TRACK, realistic: REALISTIC_TRACK };
+
+/** Each variant's six moods. */
+export const SKY_MOODS_BY_VARIANT: Record<SkyVariant, Record<SkyMoodName, SkyMood>> = {
+  vibrant: SKY_MOODS,
+  realistic: REALISTIC_SKY_MOODS,
+};
+
+
+// ── The moment, mixed ──────────────────────────────────────────────────
+
+/** The colours that carry the hour: hue round the wheel, chroma kept. */
+const ROUND: ReadonlySet<keyof SkyMood> = new Set(['heroTop', 'heroMid', 'bodyLight', 'accent']);
 
 const MIXED: (keyof SkyMood)[] = [
   'heroTop',
@@ -725,38 +887,181 @@ const MIXED: (keyof SkyMood)[] = [
   'danger',
 ];
 
-/**
- * The mood of this moment, mixed; the overlay and the polarity are the
- * nearer anchor's. `steps`: the mix in that many steps rather than
- * continuous — the app's palette moves in steps (PALETTE_STEPS), since a
- * change of palette re-renders every screen, while the hero's own sky,
- * which is one view, moves every minute.
- */
-export const PALETTE_STEPS = 16;
-/**
- * Remembered by moment: a mood is twenty colours mixed in OKLab, and the
- * hero asks for the same one on every render — every second, and every
- * frame of a launch run — while the palette, the widgets and the reader
- * ask for the same quantised one. The sky moves in minutes, so a few
- * hundred moments cover a day.
- */
-const MOOD_CACHE = new Map<string, SkyMood>();
-const MOOD_CACHE_MAX = 512;
-export function skyMoodFor(passage: SkyPassage, t: number, steps?: number, variant: SkyVariant = activeVariant): SkyMood {
-  const at = skyMoodAt(passage, t, variant);
-  const { from, to } = at;
-  const u = steps ? Math.round(at.u * steps) / steps : at.u;
-  if (u <= 0 || from === to) return from;
-  if (u >= 1) return to;
-  const key = `${variant}|${from.name}|${from.heroTop}|${to.heroTop}|${u.toFixed(4)}`;
-  const hit = MOOD_CACHE.get(key);
-  if (hit) return hit;
-  const near = u < 0.5 ? from : to;
+/** Two moods mixed; the overlay, the name and the polarity are the nearer's. */
+export function mixMoods(a: SkyMood, b: SkyMood, u: number): SkyMood {
+  if (u <= 0 || a === b) return a;
+  if (u >= 1) return b;
+  const near = u < 0.5 ? a : b;
   const out: SkyMood = { ...near };
   for (const k of MIXED) {
-    const mix = VIVID.has(k) ? mixHexVivid : mixHexOklab;
-    (out as unknown as Record<string, string>)[k] = mix(from[k] as string, to[k] as string, u);
+    const mix = ROUND.has(k) ? mixHexRound : mixHexOklab;
+    (out as unknown as Record<string, string>)[k] = mix(a[k] as string, b[k] as string, u);
   }
+  return out;
+}
+
+const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
+const smooth = (v: number) => {
+  const k = clamp01(v);
+  return k * k * (3 - 2 * k);
+};
+
+/** Which two stations `at` lies between on a limb, and how far. */
+function between(stations: StationAt[], at: number): { from: SkyMood; to: SkyMood; u: number } {
+  const first = stations[0];
+  const last = stations[stations.length - 1];
+  if (at <= first.at) return { from: first.mood, to: first.mood, u: 0 };
+  if (at >= last.at) return { from: last.mood, to: last.mood, u: 0 };
+  for (let i = 1; i < stations.length; i += 1) {
+    if (at <= stations[i].at) {
+      const a = stations[i - 1];
+      const b = stations[i];
+      return { from: a.mood, to: b.mood, u: (at - a.at) / (b.at - a.at || 1) };
+    }
+  }
+  return { from: last.mood, to: last.mood, u: 0 };
+}
+const along = (stations: StationAt[], at: number): SkyMood => {
+  const { from, to, u } = between(stations, at);
+  return mixMoods(from, to, u);
+};
+
+/**
+ * ── THE MOON ON THE NIGHT ────────────────────────────────────────────
+ *
+ * A moonlit night is a lighter room than a moonless one: the ground, the
+ * cards and the sky's own top come up a little, the accent goes toward
+ * silver — by how much of the moon is lit and whether it is up (half
+ * weight when nobody knows). The floors hold: the ground comes up by
+ * less than a step of its own ladder. The stars go the other way; the
+ * hero draws that from the same number (skyModel.ts).
+ */
+export const MOONLIGHT_LIFT = 0.035;
+export function moonlight(moon: SkyLight['moon']): number {
+  if (!moon) return 0;
+  const up = moon.altitude == null ? 0.5 : moon.altitude > 0 ? 1 : 0;
+  return clamp01(moon.illumination) * up;
+}
+function moonlit(mood: SkyMood, f: number): SkyMood {
+  if (!mood.isDark || f <= 0) return mood;
+  const lift = MOONLIGHT_LIFT * f;
+  const a = hexToOklch(mood.accent);
+  return withHighlight({
+    ...mood,
+    heroTop: shift(mood.heroTop, { L: lift, C: 0.01 * f }),
+    heroMid: shift(mood.heroMid, { L: lift * 0.8 }),
+    heroFoot: shift(mood.heroFoot, { L: lift }),
+    bg: shift(mood.bg, { L: lift }),
+    card: shift(mood.card, { L: lift }),
+    controlBg: shift(mood.controlBg, { L: lift }),
+    border: shift(mood.border, { L: lift }),
+    accentSurface: shift(mood.accentSurface, { L: lift }),
+    accentSurfaceStrong: shift(mood.accentSurfaceStrong, { L: lift }),
+    accent: oklchToHex({ L: Math.min(0.92, a.L + 0.03 * f), C: a.C * (1 - 0.3 * f), h: a.h }),
+  });
+}
+
+/**
+ * ── THE MOMENT ON THE SUN'S SCALE ────────────────────────────────────
+ *
+ * By day (the day and sunset passages): the sun's altitude picks the
+ * station on the morning limb and on the afternoon one, and the two are
+ * blended by how far through the day it is, around solar noon — so a
+ * noon that never gets the sun above 10° is a blend of the morning's and
+ * the afternoon's low-sun stations, not a jump between them.
+ *
+ * By night (dusk, night, dawn): the sun's depth under the horizon picks
+ * the station on the evening limb and on the morning one, blended by how
+ * far through the night it is; past the astronomical twilight the deep
+ * night's own arc (early, midnight, late) takes over, blended in over
+ * the next few degrees so a night that reaches it does not step into it.
+ * A summer night that never gets there — Stockholm in June, where the
+ * sun stays within civil twilight all night — spends the night in the
+ * afterglow's and the dawn's colours, which is what a white night is.
+ *
+ * The polarity is the PASSAGE's: light for day and sunset (sunrise to
+ * Maghrib), dark for dusk, night and dawn. An altitude the wrong side of
+ * zero for its passage (a method's Maghrib a minute off the geometric
+ * one, refraction) is clamped, never switched.
+ */
+export function skyMoodOf(passage: SkyPassage, t: number, light: SkyLight, variant: SkyVariant = activeVariant): SkyMood {
+  const track = TRACKS[isSkyVariant(variant) ? variant : DEFAULT_SKY_VARIANT];
+  const k = clamp01(t);
+  if (passage === 'day' || passage === 'sunset') {
+    const alt = Math.max(0, light.sun);
+    const daylight = light.daylight ?? (passage === 'day' ? k * 0.68 : 0.68 + k * 0.32);
+    const side = smooth((daylight - 0.42) / 0.16);
+    const am = along(track.light.morning, alt);
+    const pm = along(track.light.afternoon, alt);
+    return mixMoods(am, pm, side);
+  }
+  const depth = Math.max(0, -light.sun);
+  // Evening until the night's middle, then the morning's limb.
+  const nightT = passage === 'dusk' ? 0 : passage === 'dawn' ? 1 : k;
+  const side = smooth((nightT - 0.4) / 0.2);
+  const twilight = mixMoods(along(track.dark.evening, depth), along(track.dark.morning, depth), side);
+  const deep = clamp01((depth - TWILIGHT_ASTRONOMICAL) / 4);
+  const mood = deep <= 0 ? twilight : mixMoods(twilight, along(track.night, nightT), deep);
+  return moonlit(mood, moonlight(light.moon));
+}
+
+/**
+ * Which two stations this moment is between on its primary limb, and how
+ * far — for the tests that walk the day, and for anything that wants to
+ * know what the hour is heading for.
+ */
+export function skyMoodAt(
+  passage: SkyPassage,
+  t: number,
+  variant: SkyVariant = activeVariant,
+  light: SkyLight = nominalSkyLight(passage, t),
+): { from: SkyMood; to: SkyMood; u: number } {
+  const track = TRACKS[isSkyVariant(variant) ? variant : DEFAULT_SKY_VARIANT];
+  const k = clamp01(t);
+  if (passage === 'day' || passage === 'sunset') {
+    const daylight = light.daylight ?? (passage === 'day' ? k * 0.68 : 0.68 + k * 0.32);
+    return between(daylight < 0.5 ? track.light.morning : track.light.afternoon, Math.max(0, light.sun));
+  }
+  const depth = Math.max(0, -light.sun);
+  if (depth >= TWILIGHT_ASTRONOMICAL + 4) return between(track.night, passage === 'dusk' ? 0 : passage === 'dawn' ? 1 : k);
+  const evening = passage === 'dusk' || (passage === 'night' && k < 0.5);
+  return between(evening ? track.dark.evening : track.dark.morning, depth);
+}
+
+/**
+ * The mood of this moment, mixed. `steps`: the moment quantised, so the
+ * app's palette moves in steps — a change of palette re-renders every
+ * screen — while the hero's own sky, which is one view, moves every
+ * minute. The hero asks for the same moment on every render — every
+ * second, every frame of a run — so the answer is remembered by moment.
+ */
+export const PALETTE_STEPS = 16;
+const MOOD_CACHE = new Map<string, SkyMood>();
+const MOOD_CACHE_MAX = 512;
+export function skyMoodFor(
+  passage: SkyPassage,
+  t: number,
+  steps?: number,
+  variant: SkyVariant = activeVariant,
+  light: SkyLight = nominalSkyLight(passage, t),
+): SkyMood {
+  const v = isSkyVariant(variant) ? variant : DEFAULT_SKY_VARIANT;
+  // Quantised: the sun to a degree (a quarter, for the hero), the day's
+  // and the night's progress to a step, the moon to an eighth.
+  const q = steps ? 1 : 4;
+  const sun = Math.round(light.sun * q) / q;
+  const prog = steps ? Math.round(clamp01(t) * steps) / steps : Math.round(clamp01(t) * 240) / 240;
+  const daylight = light.daylight == null ? null : Math.round(light.daylight * 64) / 64;
+  const moonF = Math.round(moonlight(light.moon) * 8) / 8;
+  const key = `${v}|${passage}|${prog}|${sun}|${daylight}|${moonF}`;
+  const hit = MOOD_CACHE.get(key);
+  if (hit) return hit;
+  const out = skyMoodOf(
+    passage,
+    prog,
+    { sun, daylight, moon: moonF > 0 ? { illumination: moonF, altitude: 1 } : undefined },
+    v,
+  );
   if (MOOD_CACHE.size >= MOOD_CACHE_MAX) MOOD_CACHE.clear();
   MOOD_CACHE.set(key, out);
   return out;

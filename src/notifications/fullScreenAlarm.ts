@@ -79,7 +79,9 @@ const PRAYER_SKY: Record<string, { passage: SkyPassage; t: number }> = {
 const PRAYER_MOOD: Record<string, { passage: SkyPassage; t: number }> = {
   Fajr: { passage: 'dawn', t: 1 },
   Dhuhr: { passage: 'day', t: 0.55 },
-  Asr: { passage: 'sunset', t: 0.45 },
+  // Late in the afternoon: the sun low, the horizon going warm (2.33 —
+  // keyed to the sun, the middle of the Asr passage was still a blue noon).
+  Asr: { passage: 'sunset', t: 0.8 },
   Maghrib: { passage: 'dusk', t: 0 },
   Isha: { passage: 'night', t: 0 },
 };

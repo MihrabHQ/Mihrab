@@ -68,36 +68,38 @@ describe('where in the day', () => {
 });
 
 describe('the colours', () => {
-  it('meet at the seams: each passage ends where the next begins', () => {
-    const f = (p: SkyPassage, t: number) => skyFrame({ passage: p, t, daylight: t }, at(12));
+  it('meet at the seams: each passage ends where the next begins — except at Maghrib, where the page turns', () => {
+    // The sun's day runs on through the seams (sunrise 0 → Maghrib 1).
+    const f = (p: SkyPassage, t: number, daylight: number) => skyFrame({ passage: p, t, daylight }, at(12));
     const same = (a: ReturnType<typeof f>, b: ReturnType<typeof f>) => {
       expect(a.top).toBe(b.top);
       expect(a.bottom).toBe(b.bottom);
     };
-    same(f('day', 1), f('sunset', 0));
-    same(f('sunset', 1), f('dusk', 0));
-    same(f('dusk', 1), f('night', 0));
-    same(f('night', 1), f('night', 0));
+    same(f('day', 1, 0.68), f('sunset', 0, 0.68));
+    same(f('dusk', 1, 1.1), f('night', 0, 1.1));
+    // Maghrib: the light golden hour into the dark afterglow — a switch, crossfaded by the screen.
+    expect(f('sunset', 1, 1).bottom).not.toBe(f('dusk', 0, 1).bottom);
+    expect(luminance(f('sunset', 1, 1).bottom)).toBeGreaterThan(luminance(f('dusk', 0, 1).bottom));
   });
 
   it('go dark → saturated → light through dawn, and light → saturated → dark through sunset', () => {
+    // The top of the sky: the foot is the page now (light by day, dark by night).
     const b = (p: SkyPassage, t: number) =>
-      luminance(skyFrame({ passage: p, t, daylight: t }, at(12)).bottom);
+      luminance(skyFrame({ passage: p, t, daylight: t }, at(12)).top);
     expect(b('dawn', 0)).toBeLessThan(b('dawn', 0.5));
     expect(b('dawn', 0.5)).toBeLessThan(b('dawn', 1));
-    expect(b('sunset', 0)).toBeGreaterThan(b('sunset', 0.85));
-    expect(b('sunset', 0.85)).toBeGreaterThan(b('dusk', 1));
-    // Saturation peaks mid-passage: the dawn's horizon at 0.78 is more
-    // saturated (further from grey) than at either end.
+    // Through the dusk the sky goes down into the night.
+    expect(b('dusk', 0)).toBeGreaterThan(b('dusk', 0.5));
+    expect(b('dusk', 0.5)).toBeGreaterThan(b('dusk', 1));
+    // Saturation peaks at the horizon in the twilight: the dawn's sky at
+    // 0.78 is more saturated (further from grey) than in the deep night.
     const sat = (hex: string) => {
       const c = hex.replace('#', '');
       const v = [0, 2, 4].map(i => parseInt(c.slice(i, i + 2), 16));
       return Math.max(...v) - Math.min(...v);
     };
-    const dawnBottom = (t: number) =>
-      sat(skyFrame({ passage: 'dawn', t, daylight: t - 1 }, at(12)).bottom);
-    expect(dawnBottom(0.78)).toBeGreaterThan(dawnBottom(0));
-    expect(dawnBottom(0.78)).toBeGreaterThan(dawnBottom(1));
+    const dawnTop = (t: number) => sat(skyFrame({ passage: 'dawn', t, daylight: t - 1 }, at(12)).top);
+    expect(dawnTop(0.78)).toBeGreaterThan(sat(skyFrame({ passage: 'night', t: 0.5, daylight: 1.5 }, at(12)).top));
   });
 
   it('mix and sample sanely', () => {
@@ -318,13 +320,37 @@ describe('the sun', () => {
     }
   });
 
-  it('brings the stars out through dusk and puts them away through dawn', () => {
+  it('brings the stars out through dusk and puts them away through dawn — fewer under a bright moon (2.33)', () => {
+    // Without coordinates the moon's height is unknown (half weight), so
+    // a full night's stars are a little under the whole field.
+    const full = f('night', 0.5).light.moon?.illumination ?? 0;
+    const under = 1 - 0.45 * full * 0.5;
     expect(f('dusk', 0.2).stars).toBe(0);
-    expect(f('dusk', 1).stars).toBe(1);
-    expect(f('night', 0.5).stars).toBe(1);
-    expect(f('dawn', 0.25).stars).toBeCloseTo(0.5, 5);
+    expect(f('dusk', 1).stars).toBeCloseTo(under, 5);
+    expect(f('night', 0.5).stars).toBeCloseTo(under, 5);
+    expect(f('dawn', 0.25).stars).toBeCloseTo(0.5 * under, 5);
     expect(f('dawn', 0.6).stars).toBe(0);
     expect(f('day', 0.5).stars).toBe(0);
+  });
+
+  it('draws the moon where it is when it knows where the reader is, and only while it is up (2.33)', () => {
+    // London, the full moon of 25 Jan 2024: up all night, high in the south near midnight.
+    const where = { latitude: 51.5, longitude: -0.1 };
+    const night = { passage: 'night' as const, t: 0.5, daylight: 1.5 };
+    const atMidnight = skyFrame(night, new Date(Date.UTC(2024, 0, 25, 23, 50)), where);
+    expect(atMidnight.body.kind).toBe('moon');
+    if (atMidnight.body.kind === 'moon') {
+      expect(atMidnight.body.x).toBeGreaterThan(0.3);
+      expect(atMidnight.body.x).toBeLessThan(0.7);
+      expect(atMidnight.body.y).toBeLessThan(0.14); // high
+      expect(atMidnight.body.alpha).toBe(1);
+    }
+    // The same night, hours before it rose (it rose ~16:07 UTC): no moon.
+    expect(skyFrame({ passage: 'night', t: 0.1, daylight: 1.2 }, new Date(Date.UTC(2024, 0, 25, 12, 0)), where).body.kind).toBe('none');
+    // The light carried for the theme: the sun under, the moon lit and up.
+    expect(atMidnight.light.sun).toBeLessThan(-18);
+    expect(atMidnight.light.moon?.illumination ?? 0).toBeGreaterThan(0.98);
+    expect(atMidnight.light.moon?.altitude ?? 0).toBeGreaterThan(50);
   });
 });
 

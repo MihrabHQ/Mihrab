@@ -223,3 +223,31 @@ describe('what the hero asks for', () => {
     expect(moonView(utc(2024, 0, 18, 3, 52), 59.33, undefined).tilt).toBe(0);
   });
 });
+
+describe('where the moon is (2.33)', () => {
+  const { moonPosition, sunAltitude, sunPosition } = jest.requireActual('../src/screens/home/moon');
+  it('stands with the sun at new moon and opposite it at full', () => {
+    // New moon 2024-01-11 11:57 UTC: the moon is where the sun is.
+    const newMoon = new Date(Date.UTC(2024, 0, 11, 11, 57));
+    const m = moonPosition(newMoon, 51.5, -0.1);
+    // Within the moon's own latitude off the ecliptic (up to 5°): no eclipse that month.
+    expect(Math.abs(m.altitude - sunAltitude(newMoon, 51.5, -0.1))).toBeLessThan(6);
+    // Full moon 2024-01-25 17:54 UTC, London just before midnight: high in the south.
+    const full = new Date(Date.UTC(2024, 0, 25, 23, 50));
+    const f = moonPosition(full, 51.5, -0.1);
+    expect(f.altitude).toBeGreaterThan(50);
+    expect(Math.abs(f.azimuth - 180)).toBeLessThan(25);
+    // And it rose that afternoon in the east-north-east, about 16:07 UTC.
+    const rise = moonPosition(new Date(Date.UTC(2024, 0, 25, 16, 7)), 51.5, -0.1);
+    expect(Math.abs(rise.altitude)).toBeLessThan(2.5);
+    expect(rise.azimuth).toBeGreaterThan(45);
+    expect(rise.azimuth).toBeLessThan(80);
+  });
+  it('agrees with the sun\'s own altitude', () => {
+    const at = new Date(Date.UTC(2026, 9, 26, 10, 0));
+    expect(Math.abs(sunPosition(at, 59.33, 18.07).altitude - sunAltitude(at, 59.33, 18.07))).toBeLessThan(1e-6);
+    // Mid-morning in Stockholm: the sun is in the south-east.
+    expect(sunPosition(at, 59.33, 18.07).azimuth).toBeGreaterThan(120);
+    expect(sunPosition(at, 59.33, 18.07).azimuth).toBeLessThan(180);
+  });
+});
