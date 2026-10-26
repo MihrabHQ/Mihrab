@@ -346,7 +346,7 @@ const styles = StyleSheet.create({
   },
   customLabel: {
     fontSize: TYPE.label.fontSize,
-    fontWeight: '600',
+    fontWeight: '500',
   },
   // The Classic column is taller than a swatch (it carries a caption), so
   // it pins to the row's top edge: circle tops line up, the caption hangs.

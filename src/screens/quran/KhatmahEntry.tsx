@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.md,
     paddingHorizontal: SPACING.md,
   },
-  buttonLabel: { flex: 1, minWidth: 0, fontSize: TYPE.callout.fontSize, fontWeight: '600' },
+  buttonLabel: { flex: 1, minWidth: 0, fontSize: TYPE.callout.fontSize, fontWeight: '500' },
   mark: {
     width: 36,
     height: 36,

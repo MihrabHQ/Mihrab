@@ -583,7 +583,7 @@ const styles = StyleSheet.create({
   },
   rowName: {
     fontSize: TYPE.body.fontSize,
-    fontWeight: '500',
+    fontWeight: '400',
   },
   rowSub: {
     fontSize: TYPE.label.fontSize,
@@ -599,7 +599,7 @@ const styles = StyleSheet.create({
   },
   actionLabel: {
     fontSize: TYPE.callout.fontSize,
-    fontWeight: '500',
+    fontWeight: '400',
   },
   addBtn: {
     marginTop: SPACING.md,
@@ -610,7 +610,7 @@ const styles = StyleSheet.create({
   },
   addBtnLabel: {
     fontSize: TYPE.callout.fontSize,
-    fontWeight: '500',
+    fontWeight: '400',
   },
   addColumn: {
     marginTop: SPACING.md,
@@ -644,6 +644,6 @@ const styles = StyleSheet.create({
   },
   addSaveLabel: {
     fontSize: TYPE.callout.fontSize,
-    fontWeight: '600',
+    fontWeight: '500',
   },
 });

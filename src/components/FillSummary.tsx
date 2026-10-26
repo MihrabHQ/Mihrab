@@ -144,14 +144,14 @@ const styles = StyleSheet.create({
   },
   figure: { flex: 1, alignItems: 'center', gap: 2 },
   rule: { width: StyleSheet.hairlineWidth, alignSelf: 'stretch' },
-  number: { fontSize: 26, fontWeight: '600' }, // tokens-ok-line: display or Arabic scale, sized by hand
+  number: { fontSize: 26, fontWeight: '500' }, // tokens-ok-line: display or Arabic scale, sized by hand
   caption: {
     fontSize: TYPE.label.fontSize,
-    fontWeight: '500',
+    fontWeight: '400',
   },
   range: {
     fontSize: TYPE.callout.fontSize,
-    fontWeight: '500',
+    fontWeight: '400',
     textAlign: 'center',
     marginTop: SPACING.md,
   },

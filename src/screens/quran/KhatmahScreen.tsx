@@ -138,7 +138,7 @@ export function KhatmahScreen() {
                   })}
                   onPress={() => startKhatmah(days)}
                   style={[styles.chip, { borderColor: palette.border }]}>
-                  <Text style={{ color: palette.accentSolid, fontWeight: '500', fontSize: TYPE.footnote.fontSize }}>
+                  <Text style={{ color: palette.accentSolid, fontWeight: '400', fontSize: TYPE.footnote.fontSize }}>
                     {t('quran.khatmahDays', {
                       defaultValue: '{{count}} days',
                       count: days,
@@ -154,7 +154,7 @@ export function KhatmahScreen() {
                 accessibilityLabel={t('quran.khatmahByDateTitle', 'Finish by a date')}
                 onPress={() => setPacingSheet({ kind: 'date' })}
                 style={[styles.chip, { borderColor: palette.border }]}>
-                <Text style={{ color: palette.accentSolid, fontWeight: '500', fontSize: TYPE.footnote.fontSize }}>
+                <Text style={{ color: palette.accentSolid, fontWeight: '400', fontSize: TYPE.footnote.fontSize }}>
                   {t('quran.khatmahByDateChip', 'By a date…')}
                 </Text>
               </Pressable>
@@ -167,7 +167,7 @@ export function KhatmahScreen() {
                   setCustomDaysVisible(true);
                 }}
                 style={[styles.chip, { borderColor: palette.border }]}>
-                <Text style={{ color: palette.accentSolid, fontWeight: '500', fontSize: TYPE.footnote.fontSize }}>
+                <Text style={{ color: palette.accentSolid, fontWeight: '400', fontSize: TYPE.footnote.fontSize }}>
                   {t('quran.khatmahCustom', 'Custom…')}
                 </Text>
               </Pressable>
@@ -295,7 +295,7 @@ export function KhatmahScreen() {
               accessibilityLabel={t('common.cancel', 'Cancel')}
               onPress={() => setCustomDaysVisible(false)}
               style={styles.menuCancel}>
-              <Text style={{ color: palette.muted, fontWeight: '500' }}>
+              <Text style={{ color: palette.muted, fontWeight: '400' }}>
                 {t('common.cancel', 'Cancel')}
               </Text>
             </Pressable>
@@ -304,7 +304,7 @@ export function KhatmahScreen() {
               accessibilityLabel={t('quran.khatmahStartCta', 'Start')}
               onPress={startCustomKhatmah}
               style={styles.menuCancel}>
-              <Text style={{ color: palette.accentSolid, fontWeight: '600' }}>
+              <Text style={{ color: palette.accentSolid, fontWeight: '500' }}>
                 {t('quran.khatmahStartCta', 'Start')}
               </Text>
             </Pressable>
@@ -321,7 +321,7 @@ const styles = StyleSheet.create({
   intro: { fontSize: TYPE.body.fontSize, lineHeight: 22 },
   help: { fontSize: TYPE.caption.fontSize, lineHeight: 17, paddingHorizontal: SPACING.xs },
   khatmahCard: { padding: SPACING.lg, borderRadius: RADIUS.md, gap: SPACING.sm },
-  khatmahTitle: { fontSize: TYPE.callout.fontSize, fontWeight: '600' },
+  khatmahTitle: { fontSize: TYPE.callout.fontSize, fontWeight: '500' },
   khatmahChips: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.sm },
   chip: {
     paddingHorizontal: SPACING.md,
@@ -340,7 +340,7 @@ const styles = StyleSheet.create({
   },
   customFieldLabel: {
     fontSize: TYPE.label.fontSize,
-    fontWeight: '500',
+    fontWeight: '400',
     marginTop: SPACING.md,
   },
   customDaysRow: {
@@ -360,6 +360,6 @@ const styles = StyleSheet.create({
     gap: SPACING.md,
   },
   menuCardResting: { top: '25%' },
-  menuTitle: { fontSize: TYPE.title3.fontSize, fontWeight: '600', marginBottom: SPACING.xs },
+  menuTitle: { fontSize: TYPE.title3.fontSize, fontWeight: '500', marginBottom: SPACING.xs },
   menuCancel: { alignItems: 'center', paddingVertical: SPACING.sm },
 });

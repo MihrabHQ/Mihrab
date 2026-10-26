@@ -158,6 +158,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   rowText: { flex: 1, gap: 2 },
-  title: { fontSize: TYPE.body.fontSize, fontWeight: '500' },
+  title: { fontSize: TYPE.body.fontSize, fontWeight: '400' },
   blurb: { fontSize: TYPE.label.fontSize },
 });

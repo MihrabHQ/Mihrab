@@ -24,7 +24,7 @@ export function MihrabHeaderTitle() {
         style={{
           color: colors.text,
           fontSize: desktopSize(isIOS ? 17 : 20),
-          fontWeight: isIOS ? '500' : '600',
+          fontWeight: isIOS ? '400' : '500',
           letterSpacing: isIOS ? -0.3 : 0,
         }}>
         Mihrab

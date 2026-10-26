@@ -341,7 +341,7 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: TYPE.title3.fontSize,
-    fontWeight: '600',
+    fontWeight: '500',
     paddingHorizontal: SPACING.lg,
     paddingBottom: SPACING.sm,
   },
@@ -353,7 +353,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: TYPE.label.fontSize,
-    fontWeight: '500',
+    fontWeight: '400',
   },
   footerWrap: {
     paddingHorizontal: SPACING.lg,
@@ -383,7 +383,7 @@ const styles = StyleSheet.create({
   },
   rowTitle: {
     fontSize: TYPE.body.fontSize,
-    fontWeight: '500',
+    fontWeight: '400',
   },
   badge: {
     paddingHorizontal: SPACING.sm,
@@ -392,7 +392,7 @@ const styles = StyleSheet.create({
   },
   badgeLabel: {
     fontSize: TYPE.caption.fontSize,
-    fontWeight: '600',
+    fontWeight: '500',
   },
   rowWarn: {
     fontSize: TYPE.footnote.fontSize,

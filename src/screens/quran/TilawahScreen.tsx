@@ -1465,14 +1465,14 @@ const styles = StyleSheet.create({
     gap: SPACING.sm,
   },
   nowHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  nowLabel: { fontSize: TYPE.label.fontSize, fontWeight: '500', flexShrink: 1 },
+  nowLabel: { fontSize: TYPE.label.fontSize, fontWeight: '400', flexShrink: 1 },
   nowNames: {
     flexDirection: 'row',
     alignItems: 'baseline',
     justifyContent: 'space-between',
     gap: SPACING.md,
   },
-  nowSurah: { fontSize: TYPE.title1.fontSize, fontWeight: '600', flexShrink: 1 },
+  nowSurah: { fontSize: TYPE.title1.fontSize, fontWeight: '500', flexShrink: 1 },
   // The name as the muṣḥaf writes it — see surahHeaderGlyph.ts.
   nowArabic: {
     flexShrink: 0,
@@ -1480,8 +1480,8 @@ const styles = StyleSheet.create({
   },
   // A line, not a card: the tertiary style for "a choice you can change".
   reciterLine: { flexDirection: 'row', alignItems: 'center', gap: SPACING.xs, alignSelf: 'flex-start' },
-  reciterName: { fontSize: TYPE.footnote.fontSize, fontWeight: '500' },
-  reciterChevron: { fontSize: TYPE.body.fontSize, fontWeight: '500' },
+  reciterName: { fontSize: TYPE.footnote.fontSize, fontWeight: '400' },
+  reciterChevron: { fontSize: TYPE.body.fontSize, fontWeight: '400' },
 
   // A thin track needs a tall touch target; the bar is 4pt, the finger is not.
   // Left to right in every language, like the transport under it: the
@@ -1500,7 +1500,7 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.sm,
     marginStart: -6,
   },
-  scrubCaption: { fontSize: TYPE.label.fontSize, fontWeight: '500', flexShrink: 1 },
+  scrubCaption: { fontSize: TYPE.label.fontSize, fontWeight: '400', flexShrink: 1 },
   scrubTimes: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -1518,7 +1518,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  dismissGlyph: { fontSize: TYPE.footnote.fontSize, fontWeight: '600' },
+  dismissGlyph: { fontSize: TYPE.footnote.fontSize, fontWeight: '500' },
   transport: {
     // Not mirrored in Arabic or Urdu. Media transport keeps its
     // left-to-right order on both platforms (Material and the HIG agree):
@@ -1553,7 +1553,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.md,
     borderRadius: RADIUS.full,
   },
-  optionChipText: { fontSize: TYPE.footnote.fontSize, fontWeight: '500' },
+  optionChipText: { fontSize: TYPE.footnote.fontSize, fontWeight: '400' },
   playBtn: {
     width: 64,
     height: 64,
@@ -1575,12 +1575,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  pageOpen: { fontSize: TYPE.footnote.fontSize, fontWeight: '600' },
+  pageOpen: { fontSize: TYPE.footnote.fontSize, fontWeight: '500' },
   mirrored: { transform: [{ scaleX: -1 }] },
   bar: { width: 5, borderRadius: 1.5 },
 
 
-  cardTitle: { fontSize: TYPE.body.fontSize, fontWeight: '600' },
+  cardTitle: { fontSize: TYPE.body.fontSize, fontWeight: '500' },
   cardBody: { fontSize: TYPE.footnote.fontSize, lineHeight: 19 },
   hint: { fontSize: TYPE.label.fontSize, marginTop: SPACING.sm },
   progressTrack: {
@@ -1598,11 +1598,11 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     marginTop: SPACING.md,
   },
-  actionText: { fontSize: TYPE.callout.fontSize, fontWeight: '500' },
+  actionText: { fontSize: TYPE.callout.fontSize, fontWeight: '400' },
 
   listLabel: {
     fontSize: TYPE.caption.fontSize,
-    fontWeight: '600',
+    fontWeight: '500',
     letterSpacing: 0.6,
     marginTop: SPACING.sm,
   },
@@ -1626,12 +1626,12 @@ const styles = StyleSheet.create({
   },
   surahNumber: {
     fontSize: TYPE.footnote.fontSize,
-    fontWeight: '600',
+    fontWeight: '500',
     minWidth: 28,
     fontVariant: ['tabular-nums'],
   },
   surahNames: { flex: 1 },
-  surahRoman: { fontSize: TYPE.callout.fontSize, fontWeight: '500' },
+  surahRoman: { fontSize: TYPE.callout.fontSize, fontWeight: '400' },
   surahMeta: { fontSize: TYPE.label.fontSize, marginTop: 1 },
   surahArabic: {
     flexShrink: 0,

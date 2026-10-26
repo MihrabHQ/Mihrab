@@ -197,6 +197,6 @@ const styles = StyleSheet.create({
     minHeight: 36,
     justifyContent: 'center',
   },
-  pillLabel: { ...typeStyle('footnote'), fontWeight: '500' },
+  pillLabel: { ...typeStyle('footnote'), fontWeight: '400' },
   err: { ...typeStyle('footnote'), marginTop: SPACING.xs + 2, textAlign: 'center' },
 });

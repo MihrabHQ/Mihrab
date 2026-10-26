@@ -226,7 +226,7 @@ const styles = StyleSheet.create({
   },
   widgetOpacityValue: {
     fontSize: TYPE.title3.fontSize,
-    fontWeight: '500',
+    fontWeight: '400',
     minWidth: 52,
     textAlign: 'center',
   },

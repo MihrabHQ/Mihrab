@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: TYPE.title3.fontSize,
-    fontWeight: '600',
+    fontWeight: '500',
     marginBottom: SPACING.sm,
   },
   message: {
@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
   },
   cancelLabel: {
     fontSize: TYPE.callout.fontSize,
-    fontWeight: '500',
+    fontWeight: '400',
   },
   confirmBtn: {
     paddingHorizontal: SPACING.xl,
@@ -204,6 +204,6 @@ const styles = StyleSheet.create({
   },
   confirmLabel: {
     fontSize: TYPE.callout.fontSize,
-    fontWeight: '600',
+    fontWeight: '500',
   },
 });

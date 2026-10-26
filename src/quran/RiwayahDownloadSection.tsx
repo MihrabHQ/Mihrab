@@ -486,7 +486,7 @@ const styles = StyleSheet.create({
   // A riwayah not yet on the device: a row of the group, padded like one,
   // with no surface of its own — the group is the card.
   block: { paddingHorizontal: SPACING.lg, paddingVertical: SPACING.lg },
-  title: { fontSize: TYPE.body.fontSize, fontWeight: '500' },
+  title: { fontSize: TYPE.body.fontSize, fontWeight: '400' },
   sub: { fontSize: TYPE.footnote.fontSize, marginTop: SPACING.xs, lineHeight: 18 },
   headRow: { flexDirection: 'row', alignItems: 'center', gap: SPACING.md },
   grow: { flex: 1 },
@@ -499,7 +499,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  pillLabel: { fontWeight: '500', fontSize: TYPE.footnote.fontSize },
+  pillLabel: { fontWeight: '400', fontSize: TYPE.footnote.fontSize },
   links: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -515,7 +515,7 @@ const styles = StyleSheet.create({
     minHeight: 44,
     marginBottom: SPACING.xs,
   },
-  secondaryLabel: { fontWeight: '500', fontSize: TYPE.callout.fontSize },
+  secondaryLabel: { fontWeight: '400', fontSize: TYPE.callout.fontSize },
   orLine: { marginTop: SPACING.md },
   help: { fontSize: TYPE.footnote.fontSize, lineHeight: 18, marginBottom: SPACING.sm },
   input: {
@@ -525,6 +525,6 @@ const styles = StyleSheet.create({
     fontSize: TYPE.callout.fontSize,
   },
   errorBox: { marginTop: SPACING.md },
-  error: { fontSize: TYPE.footnote.fontSize, fontWeight: '500', lineHeight: 18 },
+  error: { fontSize: TYPE.footnote.fontSize, fontWeight: '400', lineHeight: 18 },
   detail: { fontSize: TYPE.caption.fontSize, marginTop: SPACING.xs, lineHeight: 15 },
 });

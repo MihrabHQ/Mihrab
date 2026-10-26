@@ -449,7 +449,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: TYPE.title3.fontSize,
-    fontWeight: '600',
+    fontWeight: '500',
     marginBottom: SPACING.md,
   },
   search: {
@@ -470,7 +470,7 @@ const styles = StyleSheet.create({
     gap: SPACING.sm,
     marginVertical: 1,
   },
-  name: { fontSize: TYPE.callout.fontSize, fontWeight: '500' },
+  name: { fontSize: TYPE.callout.fontSize, fontWeight: '400' },
   subRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -488,8 +488,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  icon: { fontSize: TYPE.callout.fontSize, fontWeight: '600' },
-  confirmText: { fontSize: TYPE.label.fontSize, fontWeight: '600' },
+  icon: { fontSize: TYPE.callout.fontSize, fontWeight: '500' },
+  confirmText: { fontSize: TYPE.label.fontSize, fontWeight: '500' },
   // The trash: a handle, a lid, and a tapered body. 16×16 all told, which
   // is the optical weight of the ↓ and the ✕ it stands beside.
   trash: { width: 16, alignItems: 'center' },
@@ -519,6 +519,6 @@ const styles = StyleSheet.create({
   },
   badgeText: {
     fontSize: TYPE.caption.fontSize,
-    fontWeight: '500',
+    fontWeight: '400',
   },
 });

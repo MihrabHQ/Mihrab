@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
   swatchRow: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.md, marginTop: SPACING.md },
   swatch: { width: 40, height: 40, borderRadius: RADIUS.xl },
   customSwatch: { alignItems: 'center', justifyContent: 'center' },
-  customGlyph: { fontSize: TYPE.body.fontSize, fontWeight: '600' },
+  customGlyph: { fontSize: TYPE.body.fontSize, fontWeight: '500' },
   customRow: { marginTop: SPACING.md },
   hexInput: {
     borderWidth: 1,

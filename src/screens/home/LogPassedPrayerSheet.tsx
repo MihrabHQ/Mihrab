@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
     paddingBottom: SPACING.md,
     gap: 2,
   },
-  title: { fontSize: TYPE.title3.fontSize, fontWeight: '600' },
+  title: { fontSize: TYPE.title3.fontSize, fontWeight: '500' },
   message: { marginTop: SPACING.xs },
   row: {
     paddingHorizontal: LAYOUT.gutter,

@@ -68,10 +68,10 @@ const styles = StyleSheet.create({
     gap: SPACING.xs,
     marginTop: SPACING.xs,
   },
-  label: { fontSize: TYPE.footnote.fontSize, fontWeight: '500' },
+  label: { fontSize: TYPE.footnote.fontSize, fontWeight: '400' },
   value: {
     fontSize: TYPE.footnote.fontSize,
-    fontWeight: '600',
+    fontWeight: '500',
     fontVariant: ['tabular-nums'],
   },
 });

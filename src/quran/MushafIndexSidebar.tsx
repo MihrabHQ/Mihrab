@@ -441,13 +441,13 @@ const styles = StyleSheet.create({
   rowNumber: {
     width: desktopSize(24),
     fontSize: desktopSize(12),
-    fontWeight: '600',
+    fontWeight: '500',
     fontVariant: ['tabular-nums'],
   },
   rowBody: { flex: 1, minWidth: 0 },
   followControl: { alignItems: 'center' },
-  followLabel: { fontSize: desktopSize(10), fontWeight: '500', marginBottom: 1 },
-  rowTitle: { fontSize: desktopSize(14), fontWeight: '500' },
+  followLabel: { fontSize: desktopSize(10), fontWeight: '400', marginBottom: 1 },
+  rowTitle: { fontSize: desktopSize(14), fontWeight: '400' },
   rowMeta: { fontSize: desktopSize(11), marginTop: 1 },
   rowArabic: { fontSize: desktopSize(15), ...arabicTextStyle('body') },
   empty: { fontSize: desktopSize(13), padding: SPACING.lg, textAlign: 'center' },
@@ -459,9 +459,9 @@ const styles = StyleSheet.create({
   },
   khatmahLabel: {
     fontSize: TYPE.label.fontSize,
-    fontWeight: '500',
+    fontWeight: '400',
   },
-  khatmahMeta: { fontSize: TYPE.footnote.fontSize, fontWeight: '500' },
+  khatmahMeta: { fontSize: TYPE.footnote.fontSize, fontWeight: '400' },
   track: { height: 4, borderRadius: 2, overflow: 'hidden', marginTop: SPACING.xs },
   fill: { height: '100%', borderRadius: 2 },
 });

@@ -227,6 +227,6 @@ const styles = StyleSheet.create({
   },
   versionLink: {
     fontSize: TYPE.label.fontSize,
-    fontWeight: '500',
+    fontWeight: '400',
   },
 });

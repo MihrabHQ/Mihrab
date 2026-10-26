@@ -265,5 +265,5 @@ const styles = StyleSheet.create({
     gap: SPACING.sm,
   },
   text: { flex: 1, fontSize: TYPE.footnote.fontSize, lineHeight: 18 },
-  action: { fontSize: TYPE.footnote.fontSize, fontWeight: '500' },
+  action: { fontSize: TYPE.footnote.fontSize, fontWeight: '400' },
 });

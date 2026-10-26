@@ -48,13 +48,13 @@ const styles = StyleSheet.create({
   value: {
     fontSize: TYPE.display.fontSize,
     lineHeight: TYPE.display.lineHeight,
-    fontWeight: '500',
+    fontWeight: '400',
     letterSpacing: -0.6,
     textAlign: 'center',
   },
   label: {
     fontSize: TYPE.footnote.fontSize,
-    fontWeight: '500',
+    fontWeight: '400',
     textAlign: 'center',
     marginTop: -2,
   },

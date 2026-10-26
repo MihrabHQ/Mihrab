@@ -1543,7 +1543,7 @@ const styles = StyleSheet.create({
   },
   reference: {
     fontSize: TYPE.footnote.fontSize,
-    fontWeight: '600',
+    fontWeight: '500',
     letterSpacing: 0.3,
   },
   body: { flexGrow: 0 },
@@ -1577,7 +1577,7 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.sm,
     borderRadius: RADIUS.md - 3,
   },
-  panelTabLabel: { fontSize: TYPE.footnote.fontSize, fontWeight: '600' },
+  panelTabLabel: { fontSize: TYPE.footnote.fontSize, fontWeight: '500' },
   tafsirBlock: { marginTop: SPACING.md, gap: SPACING.sm },
   tafsirChips: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.sm },
   tafsirChip: {
@@ -1598,7 +1598,7 @@ const styles = StyleSheet.create({
   },
   chipLabel: {
     fontSize: TYPE.label.fontSize,
-    fontWeight: '500',
+    fontWeight: '400',
     flexShrink: 0,
   },
   /**
@@ -1617,7 +1617,7 @@ const styles = StyleSheet.create({
   tafsirMeta: { fontSize: TYPE.footnote.fontSize, fontStyle: 'italic' },
   wordMeanings: { marginTop: SPACING.sm, gap: SPACING.xs },
   wordMeaningsHeader: { alignSelf: 'flex-start' },
-  wordMeaningWord: { fontWeight: '600' },
+  wordMeaningWord: { fontWeight: '500' },
   tafsirText: { fontSize: TYPE.callout.fontSize, lineHeight: 22 },
   // The more/less link keeps the leading edge; the share control is
   // pushed to the trailing one with `marginStart: 'auto'` on the control
@@ -1639,7 +1639,7 @@ const styles = StyleSheet.create({
   hidePanel: { alignSelf: 'center', paddingVertical: SPACING.xs },
   moreLink: {
     fontSize: TYPE.label.fontSize,
-    fontWeight: '600',
+    fontWeight: '500',
     marginTop: SPACING.xs,
   },
   bookmarkBlock: {
@@ -1656,7 +1656,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: SPACING.sm,
   },
-  bookmarkTitle: { fontSize: TYPE.label.fontSize, fontWeight: '600' },
+  bookmarkTitle: { fontSize: TYPE.label.fontSize, fontWeight: '500' },
   bookmarkStatus: { fontSize: TYPE.caption.fontSize, flexShrink: 1 },
   swatchRow: { flexDirection: 'row', justifyContent: 'space-between' },
   swatchSlot: { alignItems: 'center', gap: 2, minWidth: 48 },
@@ -1687,10 +1687,10 @@ const styles = StyleSheet.create({
   swatchTick: {
     color: '#fff', // tokens-ok-line: ink on the bookmark's own colour
     fontSize: TYPE.label.fontSize,
-    fontWeight: '600',
+    fontWeight: '500',
     includeFontPadding: false,
   },
-  swatchCaption: { fontSize: TYPE.caption.fontSize, fontWeight: '500' },
+  swatchCaption: { fontSize: TYPE.caption.fontSize, fontWeight: '400' },
   bookmarkHint: { fontSize: TYPE.caption.fontSize },
   followLine: {
     flexDirection: 'row',
@@ -1709,7 +1709,7 @@ const styles = StyleSheet.create({
   followTick: {
     color: '#fff', // tokens-ok-line: ink on the bookmark's own colour
     fontSize: TYPE.label.fontSize,
-    fontWeight: '600',
+    fontWeight: '500',
     includeFontPadding: false,
   },
   followLineLabel: { fontSize: TYPE.footnote.fontSize, flexShrink: 1 },
@@ -1734,7 +1734,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  pinLabel: { fontSize: TYPE.footnote.fontSize, fontWeight: '500', flex: 1 },
+  pinLabel: { fontSize: TYPE.footnote.fontSize, fontWeight: '400', flex: 1 },
   pinAction: {
     minWidth: 56,
     paddingVertical: SPACING.xs,
@@ -1742,7 +1742,7 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.full,
     alignItems: 'center',
   },
-  pinActionText: { fontSize: TYPE.footnote.fontSize, fontWeight: '600' },
+  pinActionText: { fontSize: TYPE.footnote.fontSize, fontWeight: '500' },
   // The emerald button takes the row's full width; repeat and share share
   // the line below it, so the ranking is visible before it is read.
   // Play and repeat side by side, equal halves.

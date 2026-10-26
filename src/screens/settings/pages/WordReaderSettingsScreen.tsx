@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     gap: SPACING.sm,
   },
   names: { flex: 1, gap: 2 },
-  name: { fontSize: TYPE.body.fontSize, fontWeight: '500' },
+  name: { fontSize: TYPE.body.fontSize, fontWeight: '400' },
   arabic: { ...arabicTextStyle('body'), fontSize: TYPE.callout.fontSize },
-  tick: { fontSize: TYPE.body.fontSize, fontWeight: '600' },
+  tick: { fontSize: TYPE.body.fontSize, fontWeight: '500' },
 });

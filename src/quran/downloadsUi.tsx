@@ -265,7 +265,7 @@ const styles = StyleSheet.create({
     alignItems: 'baseline',
     gap: SPACING.md,
   },
-  rowTitle: { fontSize: TYPE.body.fontSize, fontWeight: '500', flex: 1 },
+  rowTitle: { fontSize: TYPE.body.fontSize, fontWeight: '400', flex: 1 },
   rowBytes: { fontSize: TYPE.callout.fontSize, fontVariant: ['tabular-nums'] },
   rowSub: { fontSize: TYPE.footnote.fontSize, lineHeight: 18 },
   actions: {
@@ -276,7 +276,7 @@ const styles = StyleSheet.create({
     rowGap: SPACING.xs,
   },
   textAction: { paddingVertical: 2 },
-  textActionLabel: { fontSize: TYPE.callout.fontSize, fontWeight: '500' },
+  textActionLabel: { fontSize: TYPE.callout.fontSize, fontWeight: '400' },
   track: {
     height: 4,
     borderRadius: RADIUS.full,
@@ -285,7 +285,7 @@ const styles = StyleSheet.create({
   },
   fill: { height: 4, borderRadius: RADIUS.full },
   storage: { paddingHorizontal: SPACING.lg, paddingVertical: SPACING.lg, gap: SPACING.md },
-  storageHeadline: { fontSize: TYPE.title3.fontSize, fontWeight: '500' },
+  storageHeadline: { fontSize: TYPE.title3.fontSize, fontWeight: '400' },
   bar: {
     height: 10,
     borderRadius: RADIUS.full,
@@ -299,5 +299,5 @@ const styles = StyleSheet.create({
   legendItem: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm },
   dot: { width: 10, height: 10, borderRadius: 5 },
   legendLabel: { flex: 1, fontSize: TYPE.footnote.fontSize },
-  legendValue: { fontSize: TYPE.footnote.fontSize, fontWeight: '500', fontVariant: ['tabular-nums'] },
+  legendValue: { fontSize: TYPE.footnote.fontSize, fontWeight: '400', fontVariant: ['tabular-nums'] },
 });

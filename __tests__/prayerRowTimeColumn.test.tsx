@@ -150,8 +150,10 @@ describe('the time column is the card’s width, not the row’s', () => {
     const real = texts(tree).find(
       n => flat(n.props.style).position === 'absolute',
     );
-    expect(flat(sample!.props.style).fontWeight).toBe('600');
-    expect(flat(real!.props.style).fontWeight).toBe('600');
+    // One weight in the column, so the sample and the time can never
+    // disagree about a digit's width: the accent marks the current time.
+    expect(flat(sample!.props.style).fontWeight).toBeUndefined();
+    expect(flat(real!.props.style).fontWeight).toBeUndefined();
   });
 
   it('keeps the sample away from a screen reader', () => {

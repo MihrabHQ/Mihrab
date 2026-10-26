@@ -197,5 +197,5 @@ export function TajweedSettingsScreen() {
 }
 
 const styles = StyleSheet.create({
-  tick: { fontSize: TYPE.body.fontSize, fontWeight: '600' },
+  tick: { fontSize: TYPE.body.fontSize, fontWeight: '500' },
 });

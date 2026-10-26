@@ -164,7 +164,7 @@ function MonthRowImpl({
               : isFriday
                 ? palette.text
                 : palette.muted,
-            fontWeight: isFriday || isToday ? '600' : '400',
+            fontWeight: isFriday || isToday ? '500' : '400',
           },
         ]}>
         {dayLabel}
@@ -188,7 +188,7 @@ function MonthRowImpl({
                     ? palette.text
                     : palette.muted,
                 fontStyle: salah ? 'normal' : 'italic',
-                fontWeight: isToday ? '600' : salah ? '500' : '400',
+                fontWeight: isToday ? '500' : salah ? '400' : '400',
               },
               // The stacked cells lay the two lines out themselves.
               showDaruri && styles.cellStacked,
@@ -243,20 +243,20 @@ const styles = StyleSheet.create({
   colHeaderDay: {
     ...typeStyle('caption'),
     flex: COL_DAY,
-    fontWeight: '600',
+    fontWeight: '500',
     textTransform: 'uppercase',
   },
   colHeaderTime: {
     ...typeStyle('caption'),
     flex: COL_TIME,
-    fontWeight: '600',
+    fontWeight: '500',
     textTransform: 'uppercase',
     textAlign: 'center',
   },
   colHeaderTimeQuiet: {
     ...typeStyle('caption'),
     flex: COL_TIME,
-    fontWeight: '500',
+    fontWeight: '400',
     textTransform: 'uppercase',
     textAlign: 'center',
     opacity: 0.85,

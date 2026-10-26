@@ -168,8 +168,8 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     paddingHorizontal: SPACING.md,
   },
-  continueText: { flexShrink: 1, fontSize: TYPE.callout.fontSize, fontWeight: '600' },
-  continueAyah: { fontSize: TYPE.callout.fontSize, fontWeight: '500', opacity: 0.85 },
+  continueText: { flexShrink: 1, fontSize: TYPE.callout.fontSize, fontWeight: '500' },
+  continueAyah: { fontSize: TYPE.callout.fontSize, fontWeight: '400', opacity: 0.85 },
   shuffleBtn: {
     width: 44,
     height: 44,
@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
     height: 44,
     borderRadius: 22,
   },
-  shuffleText: { fontSize: TYPE.callout.fontSize, fontWeight: '500' },
+  shuffleText: { fontSize: TYPE.callout.fontSize, fontWeight: '400' },
   suggestHead: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
     marginTop: SPACING.xs,
     paddingHorizontal: SPACING.xs,
   },
-  suggestLabel: { fontSize: TYPE.footnote.fontSize, fontWeight: '500' },
+  suggestLabel: { fontSize: TYPE.footnote.fontSize, fontWeight: '400' },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.sm },
   // Two to a row; an odd last one takes the row.
   tile: {
@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.sm + 2,
     gap: 2,
   },
-  tileTitle: { fontSize: TYPE.footnote.fontSize, fontWeight: '600' },
+  tileTitle: { fontSize: TYPE.footnote.fontSize, fontWeight: '500' },
   tileReason: { fontSize: 12, lineHeight: 16 },
   pressed: { opacity: 0.6 },
 });

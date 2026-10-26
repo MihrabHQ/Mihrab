@@ -384,7 +384,7 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.xs,
   },
   pad: { padding: SPACING.xl },
-  title: { fontSize: TYPE.title2.fontSize, fontWeight: '500', marginBottom: SPACING.sm, textAlign: 'center' },
+  title: { fontSize: TYPE.title2.fontSize, fontWeight: '400', marginBottom: SPACING.sm, textAlign: 'center' },
   body: { fontSize: TYPE.callout.fontSize, lineHeight: 22, textAlign: 'center' },
   empty: { textAlign: 'center', marginTop: SPACING.xl, paddingHorizontal: SPACING.xl },
 });

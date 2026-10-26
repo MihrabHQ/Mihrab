@@ -143,5 +143,5 @@ export function PageProgressMark({
 const styles = StyleSheet.create({
   slot: { alignItems: 'center', justifyContent: 'center' },
   ring: { borderWidth: 1.5 },
-  check: { fontWeight: '600', includeFontPadding: false },
+  check: { fontWeight: '500', includeFontPadding: false },
 });

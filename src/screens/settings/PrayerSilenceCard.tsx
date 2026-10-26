@@ -314,7 +314,7 @@ const styles = StyleSheet.create({
     minHeight: 36,
     justifyContent: 'center',
   },
-  chipLabel: { fontSize: TYPE.footnote.fontSize, fontWeight: '500' },
+  chipLabel: { fontSize: TYPE.footnote.fontSize, fontWeight: '400' },
   pickRow: { marginTop: SPACING.xs },
   access: {
     borderWidth: 1,

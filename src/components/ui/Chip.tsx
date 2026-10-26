@@ -114,9 +114,9 @@ const styles = StyleSheet.create({
   },
   grow: { flex: 1 },
   compact: { minHeight: 28, paddingVertical: SPACING.xs, paddingHorizontal: SPACING.sm },
-  labelCompact: { fontWeight: '500' },
+  labelCompact: { fontWeight: '400' },
   inner: { alignItems: 'center' },
-  above: { fontWeight: '500', marginBottom: 1 },
+  above: { fontWeight: '400', marginBottom: 1 },
   label: { textAlign: 'center' },
   disabled: { opacity: 0.4 },
 });

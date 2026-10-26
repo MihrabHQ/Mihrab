@@ -326,7 +326,7 @@ const styles = StyleSheet.create({
   },
   headline: {
     fontSize: 24, // tokens-ok-line: hero one-off; will move to TYPE.title1 in #36 sweep
-    fontWeight: '600',
+    fontWeight: '500',
   },
   sub: {
     fontSize: 15, // tokens-ok-line: TYPE.callout target
@@ -348,7 +348,7 @@ const styles = StyleSheet.create({
   },
   primaryBtnLabel: {
     fontSize: 17, // tokens-ok-line: TYPE.headline target
-    fontWeight: '500',
+    fontWeight: '400',
   },
   secondaryBtn: {
     paddingVertical: 14, // tokens-ok-line: matches primaryBtn baseline
@@ -359,7 +359,7 @@ const styles = StyleSheet.create({
   },
   secondaryLabel: {
     fontSize: 17, // tokens-ok-line: TYPE.headline target
-    fontWeight: '500',
+    fontWeight: '400',
   },
   err: {
     fontSize: 14, // tokens-ok-line: TYPE.footnote target
@@ -367,7 +367,7 @@ const styles = StyleSheet.create({
   },
   back: {
     fontSize: 17, // tokens-ok-line: TYPE.headline target
-    fontWeight: '500',
+    fontWeight: '400',
     marginBottom: SPACING.sm,
   },
   advLabel: {

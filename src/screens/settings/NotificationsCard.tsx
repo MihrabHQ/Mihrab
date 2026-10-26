@@ -220,7 +220,7 @@ function NotificationsCardImpl({
 }
 
 const styles = StyleSheet.create({
-  change: { fontSize: TYPE.callout.fontSize, fontWeight: '500' },
+  change: { fontSize: TYPE.callout.fontSize, fontWeight: '400' },
 });
 
 export const NotificationsCard = memo(NotificationsCardImpl);

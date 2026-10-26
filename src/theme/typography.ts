@@ -41,10 +41,10 @@ export const TYPE: Record<
   // Light, as the hero's countdown is: a figure this size carries a thin
   // stroke, and the weight gets out of the number's way.
   display: { fontSize: 56, lineHeight: 60, fontWeight: '300', letterSpacing: -1.2, tabular: true },
-  title1: { fontSize: 28, lineHeight: 34, fontWeight: '500', letterSpacing: -0.3 },
-  title2: { fontSize: 22, lineHeight: 28, fontWeight: '500' },
-  title3: { fontSize: 18, lineHeight: 24, fontWeight: '500' },
-  headline: { fontSize: 16, lineHeight: 22, fontWeight: '500' },
+  title1: { fontSize: 28, lineHeight: 34, fontWeight: '300', letterSpacing: -0.5 },
+  title2: { fontSize: 22, lineHeight: 28, fontWeight: '400' },
+  title3: { fontSize: 18, lineHeight: 24, fontWeight: '400' },
+  headline: { fontSize: 16, lineHeight: 22, fontWeight: '400' },
   body: { fontSize: 16, lineHeight: 22, fontWeight: '400' },
   /** @deprecated 15 is the size that puts 14/15/16 on one screen — use `body` or `footnote`. */
   callout: { fontSize: 15, lineHeight: 20, fontWeight: '400' },
@@ -56,7 +56,7 @@ export const TYPE: Record<
    * case, `palette.muted`, no tracking. A label names the group under it
    * and then gets out of the way; the overline shouted it.
    */
-  label: { fontSize: 12, lineHeight: 16, fontWeight: '500' },
+  label: { fontSize: 12, lineHeight: 16, fontWeight: '400' },
 };
 
 /** Returns a flat style object for a type token, with tabular numerals

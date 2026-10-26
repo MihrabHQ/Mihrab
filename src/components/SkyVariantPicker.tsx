@@ -37,7 +37,7 @@ export function SkyVariantPicker({ value, onChange, accent, text, muted, testID 
               style={[
                 typeStyle('footnote'),
                 styles.label,
-                { color: selected ? text : muted, fontWeight: selected ? '500' : '400' },
+                { color: selected ? text : muted, fontWeight: selected ? '400' : '400' },
               ]}>
               {o.label}
             </Text>

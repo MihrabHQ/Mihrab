@@ -386,15 +386,15 @@ const styles = StyleSheet.create({
   head: { alignItems: 'center', gap: SPACING.sm },
   position: {
     fontSize: TYPE.label.fontSize,
-    fontWeight: '500',
+    fontWeight: '400',
   },
   arabic: {
     fontSize: 30, // tokens-ok-line: display or Arabic scale, sized by hand
-    fontWeight: '500',
+    fontWeight: '400',
     textAlign: 'center',
     writingDirection: 'rtl',
   },
-  subtitle: { fontSize: TYPE.callout.fontSize, fontWeight: '500', textAlign: 'center' },
+  subtitle: { fontSize: TYPE.callout.fontSize, fontWeight: '400', textAlign: 'center' },
   tapTarget: {
     flex: 1,
     alignItems: 'center',
@@ -404,8 +404,8 @@ const styles = StyleSheet.create({
   // Light, like the hero's countdown: the ring is the emphasis, the
   // figure only has to be read.
   count: { fontWeight: '300', letterSpacing: -1 },
-  targetText: { fontSize: TYPE.body.fontSize, fontWeight: '500', marginTop: 2 },
-  hint: { fontSize: TYPE.label.fontSize, fontWeight: '500', letterSpacing: 0.3 },
+  targetText: { fontSize: TYPE.body.fontSize, fontWeight: '400', marginTop: 2 },
+  hint: { fontSize: TYPE.label.fontSize, fontWeight: '400', letterSpacing: 0.3 },
   peek: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -416,11 +416,11 @@ const styles = StyleSheet.create({
   },
   peekLabel: {
     fontSize: TYPE.label.fontSize,
-    fontWeight: '500',
+    fontWeight: '400',
   },
   peekBody: { flex: 1, minWidth: 0, alignItems: 'flex-end' },
-  peekMeta: { fontSize: TYPE.label.fontSize, fontWeight: '500' },
-  peekArabic: { fontSize: TYPE.title3.fontSize, fontWeight: '500', writingDirection: 'rtl' },
+  peekMeta: { fontSize: TYPE.label.fontSize, fontWeight: '400' },
+  peekArabic: { fontSize: TYPE.title3.fontSize, fontWeight: '400', writingDirection: 'rtl' },
   navRow: {
     flexDirection: 'row',
     gap: SPACING.md,
@@ -440,7 +440,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  navLabel: { fontSize: TYPE.callout.fontSize, fontWeight: '600' },
+  navLabel: { fontSize: TYPE.callout.fontSize, fontWeight: '500' },
   resetLink: { paddingHorizontal: SPACING.sm, paddingVertical: SPACING.md },
-  resetLabel: { fontSize: TYPE.footnote.fontSize, fontWeight: '500' },
+  resetLabel: { fontSize: TYPE.footnote.fontSize, fontWeight: '400' },
 });

@@ -115,5 +115,5 @@ const styles = StyleSheet.create({
   dead: { opacity: 0.4 },
   pips: { flexDirection: 'row', gap: SPACING.xs },
   pip: { width: 7, height: 7, borderRadius: RADIUS.full, borderWidth: 1.5 },
-  label: { fontSize: TYPE.caption.fontSize, fontWeight: '600', letterSpacing: 0.3 },
+  label: { fontSize: TYPE.caption.fontSize, fontWeight: '500', letterSpacing: 0.3 },
 });

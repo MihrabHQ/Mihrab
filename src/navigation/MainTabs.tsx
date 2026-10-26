@@ -377,7 +377,7 @@ export function MainTabs() {
             },
         // Catalyst scales the whole canvas down for the Mac, so a label
         // designed at 10.5 lands near 8 — see responsive/desktop.ts.
-        tabBarLabelStyle: { fontSize: desktopSize(10.5), fontWeight: '500' },
+        tabBarLabelStyle: { fontSize: desktopSize(10.5), fontWeight: '400' },
         tabBarShowLabel: !bigText,
         tabBarIconStyle: bigText ? styles.bigGlyph : undefined,
         // The bar is the app's own chrome; on iOS the blur belongs to the

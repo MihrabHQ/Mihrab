@@ -113,12 +113,12 @@ const styles = StyleSheet.create({
   },
   kicker: {
     fontSize: TYPE.label.fontSize,
-    fontWeight: '500',
+    fontWeight: '400',
     marginBottom: 2,
   },
   title: {
     fontSize: TYPE.body.fontSize,
-    fontWeight: '500',
+    fontWeight: '400',
   },
   sub: {
     fontSize: TYPE.label.fontSize,
@@ -126,6 +126,6 @@ const styles = StyleSheet.create({
   },
   chevron: {
     fontSize: TYPE.title3.fontSize,
-    fontWeight: '500',
+    fontWeight: '400',
   },
 });

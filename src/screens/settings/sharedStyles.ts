@@ -12,7 +12,7 @@ import { TYPE } from '../../theme/typography';
 export const sharedSettingsStyles = StyleSheet.create({
   sectionTitle: {
     fontSize: TYPE.footnote.fontSize,
-    fontWeight: '500',
+    fontWeight: '400',
     marginBottom: SPACING.sm,
     marginTop: SPACING.sm,
   },
@@ -40,7 +40,7 @@ export const sharedSettingsStyles = StyleSheet.create({
   },
   valueText: {
     fontSize: TYPE.body.fontSize,
-    fontWeight: '500',
+    fontWeight: '400',
   },
   help: {
     fontSize: TYPE.footnote.fontSize,
@@ -69,7 +69,7 @@ export const sharedSettingsStyles = StyleSheet.create({
   },
   segmentLabel: {
     fontSize: TYPE.body.fontSize,
-    fontWeight: '500',
+    fontWeight: '400',
   },
   input: {
     borderWidth: 1,

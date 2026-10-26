@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  infoGlyph: { fontSize: TYPE.caption.fontSize, fontWeight: '600', lineHeight: 13 },
+  infoGlyph: { fontSize: TYPE.caption.fontSize, fontWeight: '500', lineHeight: 13 },
   helpRow: { flexDirection: 'row', alignItems: 'flex-start', gap: SPACING.xs },
   helpClamped: { flex: 1 },
 });

@@ -467,7 +467,7 @@ const styles = StyleSheet.create({
   },
   headerPinLabel: {
     fontSize: TYPE.callout.fontSize,
-    fontWeight: '500',
+    fontWeight: '400',
     flexShrink: 1,
   },
   chipLabelRow: {
@@ -481,7 +481,7 @@ const styles = StyleSheet.create({
   // instead (seen clipped on iOS where the name filled the whole chip).
   autoBadge: {
     fontSize: TYPE.label.fontSize,
-    fontWeight: '500',
+    fontWeight: '400',
     paddingHorizontal: SPACING.xs,
     paddingVertical: 1,
     borderRadius: RADIUS.sm,
@@ -497,7 +497,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.md,
     alignSelf: 'flex-start',
   },
-  chipText: { fontWeight: '500', flexShrink: 1 },
+  chipText: { fontWeight: '400', flexShrink: 1 },
   backdrop: {
     flex: 1,
     justifyContent: 'flex-end',
@@ -523,6 +523,6 @@ const styles = StyleSheet.create({
     borderTopWidth: StyleSheet.hairlineWidth,
   },
   addLabel: {
-    fontWeight: '500',
+    fontWeight: '400',
   },
 });

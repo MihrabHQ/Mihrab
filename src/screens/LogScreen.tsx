@@ -1732,7 +1732,7 @@ const styles = StyleSheet.create({
     marginTop: SPACING.sm,
     gap: SPACING.sm,
   },
-  owedHint: { fontSize: TYPE.caption.fontSize, fontWeight: '600' },
+  owedHint: { fontSize: TYPE.caption.fontSize, fontWeight: '500' },
   owedChips: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.sm, alignItems: 'center' },
   owedChip: {
     paddingHorizontal: SPACING.sm,
@@ -1740,7 +1740,7 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.full,
     borderWidth: StyleSheet.hairlineWidth,
   },
-  owedChipText: { fontSize: TYPE.label.fontSize, fontWeight: '500' },
+  owedChipText: { fontSize: TYPE.label.fontSize, fontWeight: '400' },
   owedMore: { fontSize: TYPE.caption.fontSize, alignSelf: 'center' },
   todayHeader: {
     // Inside the day card, so it carries the card's own side padding.
@@ -1750,7 +1750,7 @@ const styles = StyleSheet.create({
   /** Tighter than the settings rows: five of these and the day must fit. */
   prayerRow: { paddingVertical: LOG_ROW_PAD },
   prayerHead: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm },
-  prayerName: { fontSize: TYPE.callout.fontSize, fontWeight: '500' },
+  prayerName: { fontSize: TYPE.callout.fontSize, fontWeight: '400' },
   prayerTime: { fontSize: TYPE.footnote.fontSize },
   /** Pushes the sunnah chip and the note toggle to the end of the header. */
   headSpacer: { flex: 1 },
@@ -1782,13 +1782,13 @@ const styles = StyleSheet.create({
     fontSize: TYPE.callout.fontSize,
   },
   saveNoteBtn: { paddingHorizontal: SPACING.md, paddingVertical: SPACING.sm, borderRadius: RADIUS.md },
-  saveNoteLabel: { fontSize: TYPE.footnote.fontSize, fontWeight: '600' },
+  saveNoteLabel: { fontSize: TYPE.footnote.fontSize, fontWeight: '500' },
   fastRow: { flexDirection: 'row', alignItems: 'center', gap: SPACING.md },
   fastSection: { paddingVertical: SPACING.sm },
-  fastState: { fontSize: TYPE.callout.fontSize, fontWeight: '500' },
+  fastState: { fontSize: TYPE.callout.fontSize, fontWeight: '400' },
   fastMeta: { fontSize: TYPE.footnote.fontSize, marginTop: 2 },
   fastCta: { paddingHorizontal: SPACING.lg, paddingVertical: SPACING.sm, borderRadius: RADIUS.md },
-  fastCtaLabel: { fontSize: TYPE.footnote.fontSize, fontWeight: '600' },
+  fastCtaLabel: { fontSize: TYPE.footnote.fontSize, fontWeight: '500' },
   /** The swipeable day page: one card surface holding the whole day. */
   dayPanel: { borderRadius: RADIUS.xl, overflow: 'hidden', paddingBottom: SPACING.xs },
   /** Sections inside that card carry the padding the old separate cards

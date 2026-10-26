@@ -265,7 +265,7 @@ export function TranslationSurahScreen({
                   style={{
                     color: String(palette.text),
                     fontSize: TYPE.headline.fontSize,
-                    fontWeight: '500',
+                    fontWeight: '400',
                     writingDirection: isArabic ? 'rtl' : 'ltr',
                   }}>
                   {surahName(surah)}
@@ -989,7 +989,7 @@ function TafsirRowText({
             style={{
               color: palette.accentSolid,
               fontSize: TYPE.label.fontSize,
-              fontWeight: '600',
+              fontWeight: '500',
               marginTop: SPACING.xs,
             }}>
             {expanded
@@ -1026,7 +1026,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.xs,
   },
   surahArabic: { fontSize: 32, lineHeight: 62, ...arabicTextStyle('body') }, // tokens-ok-line: display or Arabic scale, sized by hand
-  surahRomanized: { fontSize: TYPE.title3.fontSize, fontWeight: '600' },
+  surahRomanized: { fontSize: TYPE.title3.fontSize, fontWeight: '500' },
   surahMeta: { fontSize: TYPE.label.fontSize },
   editionRow: {
     flexDirection: 'row',
@@ -1044,9 +1044,9 @@ const styles = StyleSheet.create({
   editionHint: {
     fontSize: TYPE.label.fontSize,
     flexShrink: 0,
-    fontWeight: '500',
+    fontWeight: '400',
   },
-  hideHint: { fontSize: TYPE.label.fontSize, fontWeight: '500', textAlign: 'center', marginTop: SPACING.sm },
+  hideHint: { fontSize: TYPE.label.fontSize, fontWeight: '400', textAlign: 'center', marginTop: SPACING.sm },
   ayahCard: { padding: SPACING.lg, borderRadius: RADIUS.md, gap: SPACING.md, marginTop: SPACING.md },
   ayahMetaRow: {
     flexDirection: 'row',
@@ -1065,8 +1065,8 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
   },
   markerDot: { width: 6, height: 6, borderRadius: RADIUS.full },
-  markerLabel: { fontSize: TYPE.label.fontSize, fontWeight: '600' },
-  ayahNumber: { fontSize: TYPE.footnote.fontSize, fontWeight: '600', fontVariant: ['tabular-nums'] },
+  markerLabel: { fontSize: TYPE.label.fontSize, fontWeight: '500' },
+  ayahNumber: { fontSize: TYPE.footnote.fontSize, fontWeight: '500', fontVariant: ['tabular-nums'] },
   ayahArabic: {
     fontSize: TYPE.title2.fontSize,
     // Amiri Quran carries tall stacked diacritics — ~2.2× line height
@@ -1085,7 +1085,7 @@ const styles = StyleSheet.create({
   },
   skeleton: { height: 14, borderRadius: RADIUS.sm, opacity: 0.5, marginTop: SPACING.xs },
   comingSoon: { padding: SPACING.xl, borderRadius: RADIUS.md, alignItems: 'center', gap: SPACING.sm, marginTop: SPACING.md },
-  comingSoonText: { fontSize: TYPE.callout.fontSize, textAlign: 'center', fontWeight: '500' },
+  comingSoonText: { fontSize: TYPE.callout.fontSize, textAlign: 'center', fontWeight: '400' },
 });
 
 

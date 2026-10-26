@@ -544,7 +544,7 @@ export function MushafSurahScreen({
                   style={{
                     color: ink,
                     fontSize: TYPE.headline.fontSize,
-                    fontWeight: '500',
+                    fontWeight: '400',
                     writingDirection: isArabic ? 'rtl' : 'ltr',
                   }}>
                   {readerTitle || surahName(surah)}
@@ -777,7 +777,7 @@ export function MushafSurahScreen({
               style={{
                 color: columnInk,
                 fontSize: TYPE.headline.fontSize,
-                fontWeight: '500',
+                fontWeight: '400',
                 writingDirection: isArabic ? 'rtl' : 'ltr',
               }}>
               {readerTitle || surahName(surah)}

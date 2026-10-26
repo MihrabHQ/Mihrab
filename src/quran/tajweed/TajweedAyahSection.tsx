@@ -407,7 +407,7 @@ const styles = StyleSheet.create({
   meta: { fontSize: TYPE.footnote.fontSize },
   rule: { marginTop: SPACING.xs, gap: 4 },
   ruleHead: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm },
-  ruleName: { fontSize: TYPE.callout.fontSize, fontWeight: '600' },
+  ruleName: { fontSize: TYPE.callout.fontSize, fontWeight: '500' },
   ruleHelp: { fontSize: TYPE.footnote.fontSize, lineHeight: 18 },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 2 },
   chip: {
@@ -419,5 +419,5 @@ const styles = StyleSheet.create({
   chipText: { ...arabicTextStyle('quran'), fontSize: TYPE.title3.fontSize, lineHeight: 40 },
   pressed: { opacity: 0.6 },
   links: { marginTop: SPACING.sm, gap: SPACING.sm },
-  link: { fontSize: TYPE.label.fontSize, fontWeight: '600' },
+  link: { fontSize: TYPE.label.fontSize, fontWeight: '500' },
 });

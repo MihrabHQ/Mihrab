@@ -1248,7 +1248,7 @@ const styles = StyleSheet.create({
   grid: { flexDirection: 'row', gap: SPACING.sm },
   labels: { gap: GAP },
   labelCell: { height: SQUARE, justifyContent: 'center' },
-  labelText: { fontSize: TYPE.caption.fontSize, fontWeight: '500' },
+  labelText: { fontSize: TYPE.caption.fontSize, fontWeight: '400' },
   monthSpacer: { height: MONTH_ROW },
   // `gap` deliberately absent: each cell is exactly one column wide, so the
   // strip and the grid below it stay in step by construction.
@@ -1256,7 +1256,7 @@ const styles = StyleSheet.create({
   monthCell: { width: COL, justifyContent: 'flex-end' },
   // Wider than the column it sits in, so a three-letter month name is not
   // clipped to one. Overflow is harmless: the next label is a month away.
-  monthText: { fontSize: TYPE.caption.fontSize, fontWeight: '500', width: COL * 3 },
+  monthText: { fontSize: TYPE.caption.fontSize, fontWeight: '400', width: COL * 3 },
   // `paddingEnd`, not `paddingRight`: in Arabic and Urdu the grid runs the
   // other way and the breathing room has to follow it (the repo's RTL audit
   // catches exactly this).
@@ -1325,6 +1325,6 @@ const styles = StyleSheet.create({
     borderRadius: 2.5,
     borderWidth: 1.2,
   },
-  legendText: { fontSize: TYPE.caption.fontSize, fontWeight: '500' },
+  legendText: { fontSize: TYPE.caption.fontSize, fontWeight: '400' },
   caption: { fontSize: TYPE.label.fontSize, lineHeight: 17, marginTop: SPACING.sm },
 });

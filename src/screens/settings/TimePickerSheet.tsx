@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
     paddingTop: SPACING.lg,
     paddingBottom: SPACING.xxl,
   },
-  title: { fontSize: TYPE.title3.fontSize, fontWeight: '600', marginBottom: SPACING.lg },
+  title: { fontSize: TYPE.title3.fontSize, fontWeight: '500', marginBottom: SPACING.lg },
   hourRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -178,10 +178,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  stepGlyph: { fontSize: TYPE.title2.fontSize, fontWeight: '600' },
+  stepGlyph: { fontSize: TYPE.title2.fontSize, fontWeight: '500' },
   timeValue: {
     fontSize: 30, // tokens-ok-line: display or Arabic scale, sized by hand
-    fontWeight: '600',
+    fontWeight: '500',
     fontVariant: ['tabular-nums'],
     minWidth: 110,
     textAlign: 'center',
@@ -198,12 +198,12 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.lg,
     borderWidth: 1,
   },
-  chipLabel: { fontWeight: '500', fontSize: TYPE.footnote.fontSize, fontVariant: ['tabular-nums'] },
+  chipLabel: { fontWeight: '400', fontSize: TYPE.footnote.fontSize, fontVariant: ['tabular-nums'] },
   doneBtn: {
     marginTop: SPACING.lg,
     paddingVertical: SPACING.md,
     borderRadius: RADIUS.md,
     alignItems: 'center',
   },
-  doneLabel: { fontSize: TYPE.callout.fontSize, fontWeight: '600' },
+  doneLabel: { fontSize: TYPE.callout.fontSize, fontWeight: '500' },
 });

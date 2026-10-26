@@ -120,13 +120,13 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.sm,
     margin: SPACING.md,
   },
-  bannerText: { fontSize: TYPE.footnote.fontSize, fontWeight: '500', lineHeight: 18 },
+  bannerText: { fontSize: TYPE.footnote.fontSize, fontWeight: '400', lineHeight: 18 },
   label: { fontSize: TYPE.footnote.fontSize, marginBottom: SPACING.xs },
   help: { fontSize: TYPE.footnote.fontSize, lineHeight: 18, marginTop: SPACING.md },
   swatchRow: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.md, marginTop: SPACING.md },
   swatch: { width: 40, height: 40, borderRadius: RADIUS.xl },
   customSwatch: { alignItems: 'center', justifyContent: 'center' },
-  customGlyph: { fontSize: TYPE.body.fontSize, fontWeight: '600' },
+  customGlyph: { fontSize: TYPE.body.fontSize, fontWeight: '500' },
   customRow: { marginTop: SPACING.md },
   hexInput: {
     borderWidth: 1,
@@ -152,5 +152,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   stepGlyph: { fontSize: TYPE.title2.fontSize },
-  stepValue: { fontSize: TYPE.title3.fontSize, fontWeight: '500', minWidth: 52, textAlign: 'center' },
+  stepValue: { fontSize: TYPE.title3.fontSize, fontWeight: '400', minWidth: 52, textAlign: 'center' },
 });

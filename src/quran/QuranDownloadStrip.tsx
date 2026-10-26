@@ -325,7 +325,7 @@ const styles = StyleSheet.create({
     fontVariant: ['tabular-nums'],
     flexShrink: 1,
   },
-  stripCancel: { fontSize: TYPE.label.fontSize, fontWeight: '600' },
+  stripCancel: { fontSize: TYPE.label.fontSize, fontWeight: '500' },
   stripActions: { flexDirection: 'row', alignItems: 'center', gap: SPACING.md },
   stripTrack: { height: 3, overflow: 'hidden' },
   stripFill: { height: '100%' },

@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
   glyph: {
     fontSize: 20, // tokens-ok-line: a glyph sized to the pill, not to the type scale
     lineHeight: 22, // tokens-ok-line: a glyph sized to the pill, not to the type scale
-    fontWeight: '500',
+    fontWeight: '400',
     // Android reserves vertical room for ascenders the sign does not use,
     // which lands the − above the middle of the pill.
     includeFontPadding: false,
@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
   },
   labelGlyph: {
     fontSize: TYPE.footnote.fontSize,
-    fontWeight: '600',
+    fontWeight: '500',
     includeFontPadding: false,
   },
 });

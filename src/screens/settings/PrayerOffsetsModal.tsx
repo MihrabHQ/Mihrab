@@ -261,7 +261,7 @@ const styles = StyleSheet.create({
   },
   stepBtnLabel: {
     ...typeStyle('title3'),
-    fontWeight: '600',
+    fontWeight: '500',
   },
   value: {
     ...typeStyle('headline'),
@@ -272,5 +272,5 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.md + 2, // tokens-ok-line: 14px tap baseline
     alignItems: 'center',
   },
-  resetLabel: { ...typeStyle('callout'), fontWeight: '500' },
+  resetLabel: { ...typeStyle('callout'), fontWeight: '400' },
 });

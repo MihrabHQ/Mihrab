@@ -2394,10 +2394,10 @@ const styles = StyleSheet.create({
   },
   dayFaceLine: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm },
   todayDot: { width: 5, height: 5, borderRadius: 2.5 },
-  dayWeekday: { fontSize: TYPE.callout.fontSize, fontWeight: '500' },
+  dayWeekday: { fontSize: TYPE.callout.fontSize, fontWeight: '400' },
   dayDate: { fontWeight: '400' },
   dayHijri: { fontSize: TYPE.caption.fontSize, marginTop: 2 },
-  dayBack: { fontWeight: '600' },
+  dayBack: { fontWeight: '500' },
   heroTopRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -2437,7 +2437,7 @@ const styles = StyleSheet.create({
   // §2.1, the `label` token).
   heroEyebrow: {
     fontSize: TYPE.footnote.fontSize,
-    fontWeight: '500',
+    fontWeight: '400',
   },
   heroEyebrowRow: {
     flexDirection: 'row',
@@ -2512,5 +2512,5 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginTop: SPACING.sm + 2,
   },
-  railLabel: { fontSize: TYPE.label.fontSize, fontWeight: '500' },
+  railLabel: { fontSize: TYPE.label.fontSize, fontWeight: '400' },
 });

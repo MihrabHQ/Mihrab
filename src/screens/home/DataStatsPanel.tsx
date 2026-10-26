@@ -422,7 +422,7 @@ const styles = StyleSheet.create({
   chevron: {
     fontSize: TYPE.callout.fontSize,
     lineHeight: 18,
-    fontWeight: '600',
+    fontWeight: '500',
     marginStart: SPACING.sm,
     includeFontPadding: false,
   },
@@ -440,7 +440,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: TYPE.label.fontSize,
-    fontWeight: '500',
+    fontWeight: '400',
   },
   statusPill: {
     flexDirection: 'row',
@@ -448,7 +448,7 @@ const styles = StyleSheet.create({
     gap: SPACING.sm,
   },
   dot: { width: 7, height: 7, borderRadius: RADIUS.xs },
-  statusText: { fontSize: TYPE.label.fontSize, fontWeight: '600' },
+  statusText: { fontSize: TYPE.label.fontSize, fontWeight: '500' },
   sourceRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -456,14 +456,14 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.xs,
     gap: SPACING.md,
   },
-  sourceLabel: { fontSize: TYPE.callout.fontSize, fontWeight: '500' },
+  sourceLabel: { fontSize: TYPE.callout.fontSize, fontWeight: '400' },
   sourcePill: {
     borderRadius: RADIUS.full,
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.xs,
     flexShrink: 1,
   },
-  sourceValue: { fontSize: TYPE.footnote.fontSize, fontWeight: '600' },
+  sourceValue: { fontSize: TYPE.footnote.fontSize, fontWeight: '500' },
   serverHead: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -473,11 +473,11 @@ const styles = StyleSheet.create({
   },
   serverName: {
     fontSize: TYPE.label.fontSize,
-    fontWeight: '500',
+    fontWeight: '400',
     flexShrink: 1,
   },
   activeTag: { borderRadius: RADIUS.full, paddingHorizontal: SPACING.sm, paddingVertical: 2 },
-  activeTagText: { fontSize: TYPE.caption.fontSize, fontWeight: '600' },
+  activeTagText: { fontSize: TYPE.caption.fontSize, fontWeight: '500' },
   groupGap: {
     marginTop: SPACING.md,
     marginBottom: 2,
@@ -495,7 +495,7 @@ const styles = StyleSheet.create({
   rowLabel: { fontSize: TYPE.footnote.fontSize, flexShrink: 0 },
   rowValue: {
     fontSize: TYPE.footnote.fontSize,
-    fontWeight: '500',
+    fontWeight: '400',
     flexShrink: 1,
     textAlign: 'right',
   },

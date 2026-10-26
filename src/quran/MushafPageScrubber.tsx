@@ -520,7 +520,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 2,
   },
-  bubbleSurah: { fontSize: TYPE.callout.fontSize, fontWeight: '600', textAlign: 'center' },
+  bubbleSurah: { fontSize: TYPE.callout.fontSize, fontWeight: '500', textAlign: 'center' },
   bubbleWhere: {
     fontSize: TYPE.label.fontSize,
     fontVariant: ['tabular-nums'],
@@ -534,14 +534,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  jumpGlyph: { fontSize: TYPE.title3.fontSize, fontWeight: '600', lineHeight: 20 },
+  jumpGlyph: { fontSize: TYPE.title3.fontSize, fontWeight: '500', lineHeight: 20 },
   readoutBox: { minWidth: 76, alignItems: 'flex-end' },
   // Two short lines instead of one wide one, so the rail keeps its length
   // now that the tone button shares the row.
   readoutBoxTight: { minWidth: 56 },
   readoutToday: {
     fontSize: TYPE.caption.fontSize,
-    fontWeight: '600',
+    fontWeight: '500',
     fontVariant: ['tabular-nums'],
     textAlign: 'right',
     marginTop: 1,
@@ -554,7 +554,7 @@ const styles = StyleSheet.create({
   },
   readout: {
     fontSize: TYPE.label.fontSize,
-    fontWeight: '500',
+    fontWeight: '400',
     fontVariant: ['tabular-nums'],
     textAlign: 'right',
   },

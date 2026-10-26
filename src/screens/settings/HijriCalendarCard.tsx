@@ -150,8 +150,8 @@ const styles = StyleSheet.create({
   },
   pressed: { opacity: 0.7 },
   optionHead: { flexDirection: 'row', alignItems: 'center' },
-  optionTitle: { flex: 1, fontSize: TYPE.body.fontSize, fontWeight: '500' },
-  check: { fontSize: TYPE.body.fontSize, fontWeight: '600', marginStart: SPACING.sm },
+  optionTitle: { flex: 1, fontSize: TYPE.body.fontSize, fontWeight: '400' },
+  check: { fontSize: TYPE.body.fontSize, fontWeight: '500', marginStart: SPACING.sm },
   optionDesc: { fontSize: TYPE.footnote.fontSize, lineHeight: 18, marginTop: SPACING.xs },
   label: { fontSize: TYPE.footnote.fontSize, marginBottom: SPACING.xs },
   stepRow: {
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
   stepGlyph: { fontSize: TYPE.title2.fontSize },
   stepValue: {
     fontSize: TYPE.body.fontSize,
-    fontWeight: '500',
+    fontWeight: '400',
     minWidth: 120,
     textAlign: 'center',
   },

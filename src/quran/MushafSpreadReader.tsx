@@ -861,5 +861,5 @@ const styles = StyleSheet.create({
   },
   chevronLeft: { left: 8 },
   chevronRight: { right: 8 },
-  chevronGlyph: { fontSize: 30, fontWeight: '500', lineHeight: 34 }, // tokens-ok-line: display or Arabic scale, sized by hand
+  chevronGlyph: { fontSize: 30, fontWeight: '400', lineHeight: 34 }, // tokens-ok-line: display or Arabic scale, sized by hand
 });

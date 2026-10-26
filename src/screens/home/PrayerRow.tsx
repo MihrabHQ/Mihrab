@@ -249,7 +249,6 @@ function PrayerRowImpl({
             {
               color: isNext ? palette.accent : isSecondary ? palette.muted : palette.text,
               fontStyle: isSecondary ? 'italic' : 'normal',
-              fontWeight: isNext ? '500' : '500',
             },
           ]}
           maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}>
@@ -372,7 +371,6 @@ function PrayerRowImpl({
                   : isSecondary
                     ? palette.muted
                     : palette.text,
-                fontWeight: isNext ? '600' : '500',
               },
             ]}
             numberOfLines={1}
@@ -449,7 +447,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   timeCol: { justifyContent: 'center' },
-  timeSample: { opacity: 0, fontWeight: '600' },
+  // The column's one weight: the accent alone marks the current time.
+  timeSample: { opacity: 0 },
   // Width without height: see the own-time sizer above.
   timeOwnWidth: { height: 0, overflow: 'hidden' },
   // Laid over the sample, flush with the trailing edge — `end`, so it is

@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
   group: { marginBottom: SPACING.xl },
   groupTitle: {
     fontSize: TYPE.label.fontSize,
-    fontWeight: '500',
+    fontWeight: '400',
     marginBottom: SPACING.sm,
     marginStart: SPACING.xs,
   },
@@ -282,10 +282,10 @@ const styles = StyleSheet.create({
   block: { paddingHorizontal: SPACING.lg, paddingVertical: SPACING.lg },
   copy: { flex: 1 },
   icon: { width: 28, alignItems: 'center' },
-  title: { fontSize: TYPE.body.fontSize, fontWeight: '500' },
+  title: { fontSize: TYPE.body.fontSize, fontWeight: '400' },
   value: { fontSize: TYPE.callout.fontSize, marginTop: 2 },
   help: { fontSize: TYPE.footnote.fontSize, lineHeight: 18, marginTop: SPACING.xs },
-  chevron: { fontSize: TYPE.title2.fontSize, fontWeight: '500' },
+  chevron: { fontSize: TYPE.title2.fontSize, fontWeight: '400' },
   pressed: { opacity: 0.6 },
   disabled: { opacity: 0.5 },
 });

@@ -364,7 +364,7 @@ const styles = StyleSheet.create({
     gap: SPACING.sm,
   },
   optionDisabled: { opacity: 0.45 },
-  optionLabel: { fontSize: TYPE.footnote.fontSize, fontWeight: '500' },
+  optionLabel: { fontSize: TYPE.footnote.fontSize, fontWeight: '400' },
   legacyWrap: { marginTop: SPACING.md },
   legacyHelp: { fontSize: TYPE.footnote.fontSize, marginTop: SPACING.sm },
   // The miniature card. Its smallest type is deliberately below the app's
@@ -383,7 +383,7 @@ const styles = StyleSheet.create({
   },
   pvHeader: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   pvAppIcon: { width: 8, height: 8, borderRadius: 2 },
-  pvHeaderText: { fontSize: 8, fontWeight: '500', flexShrink: 1, minWidth: 0 },
+  pvHeaderText: { fontSize: 8, fontWeight: '400', flexShrink: 1, minWidth: 0 },
   // The chronometer keeps its digits; the app-name text is what gives way.
   pvChrono: { marginStart: 'auto', fontVariant: ['tabular-nums'], flexShrink: 0 },
   pvRow: {
@@ -392,19 +392,19 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: 4,
   },
-  pvTitle: { fontSize: TYPE.label.fontSize, fontWeight: '600' },
+  pvTitle: { fontSize: TYPE.label.fontSize, fontWeight: '500' },
   pvBig: {
     fontSize: TYPE.title2.fontSize,
-    fontWeight: '600',
+    fontWeight: '500',
     fontVariant: ['tabular-nums'],
     lineHeight: 24,
   },
-  pvSmall: { fontSize: 9, fontWeight: '500' },
+  pvSmall: { fontSize: 9, fontWeight: '400' },
   pvMetrics: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm, marginTop: 2 },
   pvMetric: { gap: 1, flex: 1, minWidth: 0 },
   pvMetricValue: {
     fontSize: TYPE.footnote.fontSize,
-    fontWeight: '600',
+    fontWeight: '500',
     fontVariant: ['tabular-nums'],
   },
   pvMetricDivider: { width: StyleSheet.hairlineWidth, alignSelf: 'stretch', opacity: 0.5 },

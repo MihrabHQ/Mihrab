@@ -106,7 +106,7 @@ const salamStyles = StyleSheet.create({
     lineHeight: 58,
     textAlign: 'center',
     writingDirection: 'rtl',
-    fontWeight: '500',
+    fontWeight: '400',
     letterSpacing: 0,
     paddingHorizontal: SPACING.sm,
   },

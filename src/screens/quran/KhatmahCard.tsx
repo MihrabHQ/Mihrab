@@ -255,7 +255,7 @@ export function KhatmahCard() {
                       onPress={() =>
                         setPacingSheet({ kind: 'date' })
                       }
-                      style={{ color: palette.accentSolid, fontWeight: '500' }}>
+                      style={{ color: palette.accentSolid, fontWeight: '400' }}>
                       {t('quran.khatmahMoveDate', 'Move the date?')}
                     </Text>
                   </>
@@ -498,7 +498,7 @@ export function KhatmahCard() {
               <Text
                 style={{
                   color: destructive ? palette.danger : palette.text,
-                  fontWeight: '500',
+                  fontWeight: '400',
                   fontSize: TYPE.callout.fontSize,
                 }}>
                 {label}
@@ -514,7 +514,7 @@ export function KhatmahCard() {
             accessibilityLabel={t('common.cancel', 'Cancel')}
             onPress={() => setKhatmahMenuVisible(false)}
             style={styles.menuCancel}>
-            <Text style={{ color: palette.accentSolid, fontWeight: '600' }}>
+            <Text style={{ color: palette.accentSolid, fontWeight: '500' }}>
               {t('common.cancel', 'Cancel')}
             </Text>
           </Pressable>
@@ -558,7 +558,7 @@ export function KhatmahCard() {
 const styles = StyleSheet.create({
   khatmahCard: { padding: SPACING.lg, borderRadius: RADIUS.md, gap: SPACING.sm },
   khatmahTop: { flexDirection: 'row', justifyContent: 'space-between' },
-  khatmahTitle: { fontSize: TYPE.callout.fontSize, fontWeight: '600' },
+  khatmahTitle: { fontSize: TYPE.callout.fontSize, fontWeight: '500' },
   khatmahMeta: { fontSize: TYPE.label.fontSize, fontVariant: ['tabular-nums'] },
   khatmahTrack: {
     flexDirection: 'row',
@@ -576,14 +576,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  khatmahMoreGlyph: { fontSize: TYPE.title3.fontSize, fontWeight: '600', lineHeight: 20 },
+  khatmahMoreGlyph: { fontSize: TYPE.title3.fontSize, fontWeight: '500', lineHeight: 20 },
   khatmahDayRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     marginTop: 2,
   },
-  khatmahDayLabel: { fontSize: TYPE.footnote.fontSize, fontWeight: '600' },
+  khatmahDayLabel: { fontSize: TYPE.footnote.fontSize, fontWeight: '500' },
   khatmahActions: { flexDirection: 'row', gap: SPACING.sm, marginTop: SPACING.xs },
   khatmahBtn: {
     flex: 1,
@@ -593,7 +593,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  khatmahBtnLabel: { fontWeight: '600', fontSize: TYPE.footnote.fontSize },
+  khatmahBtnLabel: { fontWeight: '500', fontSize: TYPE.footnote.fontSize },
   menuBackdrop: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
   menuCentre: {
     ...StyleSheet.absoluteFill,
@@ -609,7 +609,7 @@ const styles = StyleSheet.create({
   },
   menuRows: { flexGrow: 0, flexShrink: 1 },
   menuRowsContent: { gap: SPACING.md },
-  menuTitle: { fontSize: TYPE.title3.fontSize, fontWeight: '600', marginBottom: SPACING.xs },
+  menuTitle: { fontSize: TYPE.title3.fontSize, fontWeight: '500', marginBottom: SPACING.xs },
   menuRow: {
     borderWidth: StyleSheet.hairlineWidth,
     borderRadius: RADIUS.md,

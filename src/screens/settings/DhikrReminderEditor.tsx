@@ -366,7 +366,7 @@ const styles = StyleSheet.create({
   sheet: { maxHeight: '88%' },
   section: {
     fontSize: TYPE.label.fontSize,
-    fontWeight: '500',
+    fontWeight: '400',
     paddingHorizontal: SPACING.lg,
     paddingTop: SPACING.lg,
     paddingBottom: SPACING.sm,
@@ -395,11 +395,11 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.lg,
     borderWidth: 1,
   },
-  dayLabel: { fontWeight: '500', fontSize: TYPE.footnote.fontSize },
+  dayLabel: { fontWeight: '400', fontSize: TYPE.footnote.fontSize },
   soundHelp: { paddingHorizontal: SPACING.lg, paddingTop: SPACING.sm },
   actions: { padding: SPACING.lg, gap: SPACING.md },
   primaryBtn: { paddingVertical: SPACING.md, borderRadius: RADIUS.md, alignItems: 'center' },
-  primaryLabel: { fontSize: TYPE.callout.fontSize, fontWeight: '600' },
+  primaryLabel: { fontSize: TYPE.callout.fontSize, fontWeight: '500' },
   deleteBtn: { paddingVertical: SPACING.md, alignItems: 'center' },
-  deleteLabel: { fontSize: TYPE.callout.fontSize, fontWeight: '500' },
+  deleteLabel: { fontSize: TYPE.callout.fontSize, fontWeight: '400' },
 });

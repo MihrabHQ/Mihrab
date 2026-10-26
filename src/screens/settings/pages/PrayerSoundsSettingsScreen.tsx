@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.md,
     gap: SPACING.sm,
   },
-  name: { fontSize: TYPE.body.fontSize, fontWeight: '500' },
+  name: { fontSize: TYPE.body.fontSize, fontWeight: '400' },
   segments: { flexDirection: 'row', borderRadius: 10, padding: 3 },
   segment: {
     flex: 1,
@@ -148,5 +148,5 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 8,
   },
-  segmentText: { fontSize: TYPE.footnote.fontSize, fontWeight: '500' },
+  segmentText: { fontSize: TYPE.footnote.fontSize, fontWeight: '400' },
 });

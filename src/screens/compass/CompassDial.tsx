@@ -131,7 +131,7 @@ function CompassDialImpl({ mode, needleDeg, signalStrength = -1 }: CompassDialPr
                 y={p.y + 3.5}
                 fill={quiet}
                 fontSize={10}
-                fontWeight="500"
+                fontWeight="400"
                 textAnchor="middle">
                 {deg}
               </SvgText>
@@ -148,7 +148,7 @@ function CompassDialImpl({ mode, needleDeg, signalStrength = -1 }: CompassDialPr
                 y={p.y + 5}
                 fill={deg === 0 ? ink : quiet}
                 fontSize={deg === 0 ? 15 : 13}
-                fontWeight={deg === 0 ? '600' : '500'}
+                fontWeight={deg === 0 ? '500' : '400'}
                 textAnchor="middle">
                 {label}
               </SvgText>

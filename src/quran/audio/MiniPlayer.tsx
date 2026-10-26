@@ -314,7 +314,7 @@ const styles = StyleSheet.create({
   },
   stateChipLabel: {
     fontSize: TYPE.caption.fontSize,
-    fontWeight: '600',
+    fontWeight: '500',
     fontVariant: ['tabular-nums'],
   },
   stopBtn: {
@@ -325,8 +325,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginStart: SPACING.sm,
   },
-  title: { fontSize: TYPE.callout.fontSize, fontWeight: '600', fontVariant: ['tabular-nums'] },
-  sub: { fontSize: TYPE.caption.fontSize, fontWeight: '500' },
+  title: { fontSize: TYPE.callout.fontSize, fontWeight: '500', fontVariant: ['tabular-nums'] },
+  sub: { fontSize: TYPE.caption.fontSize, fontWeight: '400' },
   sideBtn: { paddingHorizontal: SPACING.sm, paddingVertical: SPACING.sm },
   transport: {
     flexDirection: 'row',
@@ -335,8 +335,8 @@ const styles = StyleSheet.create({
     direction: 'ltr',
     flexShrink: 0,
   },
-  sideGlyph: { fontSize: TYPE.title3.fontSize, fontWeight: '600' },
-  closeGlyph: { fontSize: TYPE.callout.fontSize, fontWeight: '600' },
+  sideGlyph: { fontSize: TYPE.title3.fontSize, fontWeight: '500' },
+  closeGlyph: { fontSize: TYPE.callout.fontSize, fontWeight: '500' },
   playBtn: {
     // A squircle at the sheet's radius family, not the reader's only
     // perfectly round control.
@@ -349,7 +349,7 @@ const styles = StyleSheet.create({
   },
   playGlyph: {
     fontSize: TYPE.callout.fontSize,
-    fontWeight: '600',
+    fontWeight: '500',
     letterSpacing: 1,
   },
 });

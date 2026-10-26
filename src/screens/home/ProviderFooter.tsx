@@ -115,13 +115,13 @@ const styles = StyleSheet.create({
     gap: SPACING.sm,
   },
   body: { flex: 1, gap: 2 },
-  kicker: { fontSize: TYPE.caption.fontSize, fontWeight: '500', letterSpacing: 0.5 },
-  label: { fontSize: TYPE.callout.fontSize, fontWeight: '500' },
+  kicker: { fontSize: TYPE.caption.fontSize, fontWeight: '400', letterSpacing: 0.5 },
+  label: { fontSize: TYPE.callout.fontSize, fontWeight: '400' },
   sub: { fontSize: TYPE.label.fontSize },
   right: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: SPACING.sm,
   },
-  chevron: { fontSize: TYPE.title3.fontSize, fontWeight: '500' },
+  chevron: { fontSize: TYPE.title3.fontSize, fontWeight: '400' },
 });

@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
     marginTop: SPACING.sm,
     flexWrap: 'wrap',
   },
-  title: { fontSize: TYPE.body.fontSize, fontWeight: '600', textAlign: 'center' },
+  title: { fontSize: TYPE.body.fontSize, fontWeight: '500', textAlign: 'center' },
   body: { fontSize: TYPE.callout.fontSize, lineHeight: 20, textAlign: 'center' },
-  link: { textAlign: 'center', fontSize: TYPE.callout.fontSize, fontWeight: '600' },
+  link: { textAlign: 'center', fontSize: TYPE.callout.fontSize, fontWeight: '500' },
 });
