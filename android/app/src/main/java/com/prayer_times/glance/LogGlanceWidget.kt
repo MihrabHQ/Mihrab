@@ -48,7 +48,14 @@ import com.prayer_times.contract.WidgetContract
  * never "HH:mm" — and the payload's stamped `due` only stands in when the
  * block is not about today or a time does not occur.
  */
-internal class LogGlanceWidget : MihrabGlanceWidget("log") {
+internal class LogGlanceWidget(
+  /**
+   * The 4×4 (PrayerWidgetLogLargeProvider) draws the practice graph under
+   * today's row; the 4×2 never does. The widgets are fixed sizes now, so
+   * which card has the graph is the entry's to say, not the height's.
+   */
+  private val tall: Boolean = false,
+) : MihrabGlanceWidget("log") {
 
   private class Chip(
     val key: String,
@@ -215,7 +222,7 @@ internal class LogGlanceWidget : MihrabGlanceWidget("log") {
     // An unmeasured card (0) is the roomy one and draws no graph.
     val tight = h in 1 until LOG_ROOMY_CONTENT_DP
     val bare = h in 1 until LOG_TIGHT_CONTENT_DP
-    val graphHeight = h >= GRID_MIN_HEIGHT_DP
+    val graphHeight = tall && h > 0
     // Null when there is no block or no room for it: one value, no `!!`.
     val practice = m.practice?.takeIf { graphHeight }
     val showGrid = practice != null

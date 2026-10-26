@@ -12,13 +12,13 @@
          vanishes. See prayer_widget_large_info.xml. -->
     <string name="widget_name_large">Mihrab · Prayer times (old)</string>
     <string name="widget_description">Today\'s times in one row, next prayer highlighted</string>
-    <string name="widget_description_small">Just the next prayer and its time. 2×1, resizable.</string>
+    <string name="widget_description_small">Just the next prayer and its time. 2×1.</string>
     <string name="widget_description_medium">All six times as columns across one wide row, next prayer highlighted. 4×2, resizable.</string>
-    <string name="widget_description_prayer_times">Today\'s six times in one row. Make it taller for the city and the Hijri date, taller again for the practice graph. 4×1 to 4×4.</string>
+    <string name="widget_description_prayer_times">Today\'s six times in one row, with the city and the Hijri date. 4×2.</string>
     <string name="widget_description_large_retired">The earlier prayer-times widget. It now draws the same design as the current one; there is no reason to place a new one.</string>
     <string name="widget_description_large">All six times as a list beside the next prayer. 4×3 — shrink it below three rows and it becomes the one-row strip.</string>
     <string name="widget_name_log">Mihrab · Log today</string>
-    <string name="widget_description_log">Tap a prayer to log it on time, with the countdown to the next. Make it taller for the practice graph. 4×1 to 4×4.</string>
+    <string name="widget_description_log">Tap a prayer to log it on time, with the countdown to the next. 4×2.</string>
     <string name="widget_log_today">Today</string>
     <!-- "2 of 5" — logged out of loggable. -->
     <string name="widget_log_count">%1$d of %2$d</string>
@@ -63,7 +63,7 @@
 
     <!-- ── Streak &amp; Practice ────────────────────────────────────────── -->
     <string name="widget_name_streak">Mihrab · Streak</string>
-    <string name="widget_description_streak">Your on-time streak and the last weeks of the practice graph. 2×2 to 4×2.</string>
+    <string name="widget_description_streak">Your on-time streak and the last weeks of the practice graph. 4×2.</string>
     <string name="widget_streak_title">STREAK</string>
     <string name="widget_streak_best">Best %1$d</string>
     <string name="widget_streak_logged">%1$d of 5 today</string>
@@ -237,7 +237,7 @@
          provider at one size, so a widget that means something different at
          one row and at three needs two entries to say so. -->
     <string name="widget_name_tall">Mihrab \u00b7 Prayer times (tall)</string>
-    <string name="widget_description_tall">The same six times with the city, the Hijri date and the practice graph. 4\u00d72 \u2014 shrink it and it becomes the one-row strip.</string>
+    <string name="widget_description_tall">Today\'s six times with the city, the Hijri date and the practice graph. 4×3.</string>
     <string name="widget_name_log_tall">Mihrab \u00b7 Log today (tall)</string>
-    <string name="widget_description_log_tall">Tap a prayer to log it on time, with the countdown to the next and the practice graph. 4\u00d72 \u2014 shrink it and it becomes the one-row card.</string>
+    <string name="widget_description_log_tall">Tap a prayer to log it on time, with the countdown to the next and the practice graph. 4×3.</string>
 </resources>

@@ -1794,8 +1794,8 @@ struct PrayerWidgetEntryView: View {
           PracticeGrid(
             days: pr.days,
             since: pr.since,
-            dayCount: 16,
-            cell: 7,
+            dayCount: 21,
+            cell: 8,
             spacing: 2,
             accent: resolvedWidgetHighlightColor()
           )

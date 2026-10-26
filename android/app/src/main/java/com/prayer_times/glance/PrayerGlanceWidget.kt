@@ -58,8 +58,14 @@ import com.prayer_times.contract.WidgetPayloadV1
  */
 internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget("prayer") {
 
-  /** Which picker entry this instance was placed from — its intent. */
-  enum class Entry { SMALL, STRIP }
+  /**
+   * Which picker entry this instance was placed from — its intent. The
+   * widgets are fixed sizes now (no resizing): the strip is the 4×2 that
+   * shows the times, the tall one the 4×4 that shows the times and the
+   * practice graph. Which draws the graph is the entry's to say, not the
+   * height's: a card sized so the graph does not fit cannot be made.
+   */
+  enum class Entry { SMALL, STRIP, TALL }
 
   private enum class Design { SMALL, STRIP, LIST }
 
@@ -438,12 +444,11 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     val tight = h in 1 until STRIP_ROOMY_CONTENT_DP
     val budget = if (oneRow) STRIP_BARE_CONTENT_DP else if (tight) STRIP_TIGHT_CONTENT_DP else STRIP_ROOMY_CONTENT_DP
     // The same with the table hidden: its segment is the table's, as tall.
-    val slack = if (h <= 0 || h >= GRID_MIN_HEIGHT_DP) 0
+    val slack = if (h <= 0 || entry == Entry.TALL) 0
     else ((h - budget) / 2).coerceIn(0, STRIP_SLACK_CAP_DP)
-    // An unmeasured card draws no graph: on a short card the graph would
-    // take the prayer times' room.
-    // Null when there is no block or no room for it: one value, no `!!`.
-    val practice = m.practice?.takeIf { h >= GRID_MIN_HEIGHT_DP }
+    // The graph is the tall entry's, and only when the card has been
+    // measured (an unmeasured card has no box to draw it into).
+    val practice = m.practice?.takeIf { entry == Entry.TALL && h > 0 }
     val showFoot = practice != null && h >= PRACTICE_MIN_HEIGHT_DP
     val columns = m.rows.take(STRIP_COLUMNS)
     val columnDp = (size.widthDp - insetDp(context, size)).toFloat() / columns.size.coerceAtLeast(1) - TIME_GUTTER_DP
@@ -594,7 +599,7 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
   private fun ListCard(context: Context, m: Model, size: CardSize) {
     val d = m.display
     val h = size.heightDp
-    val practice = m.practice?.takeIf { h >= GRID_MIN_HEIGHT_DP }
+    val practice = m.practice?.takeIf { entry == Entry.TALL && h > 0 }
     val showFoot = practice != null && h >= PRACTICE_MIN_HEIGHT_DP
     val shown = m.rows.take(LIST_SLOTS)
     // The provider sizes every layout's times by the same measure.

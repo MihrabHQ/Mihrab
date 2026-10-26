@@ -13,13 +13,9 @@
     android:minHeight="40dp"
     android:previewImage="@mipmap/ic_launcher"
     android:previewLayout="@layout/prayer_widget_small_preview"
-    android:resizeMode="horizontal|vertical"
+    android:resizeMode="none"
     android:widgetFeatures="reconfigurable"
-    android:minResizeWidth="110dp"
-    android:minResizeHeight="40dp"
     android:updatePeriodMillis="1800000"
     android:widgetCategory="home_screen"
     android:targetCellWidth="2"
-    android:targetCellHeight="1"
-    android:maxResizeWidth="300dp"
-    android:maxResizeHeight="160dp" />
+    android:targetCellHeight="1" />

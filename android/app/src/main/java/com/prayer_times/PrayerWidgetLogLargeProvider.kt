@@ -1,5 +1,8 @@
 package com.prayer_times
 
+import androidx.glance.appwidget.GlanceAppWidget
+import com.prayer_times.glance.LogGlanceWidget
+
 /**
  * Log Today, placed three rows tall.
  *
@@ -11,4 +14,7 @@ package com.prayer_times
  *
  * See glance_log_tall_info.xml.
  */
-class PrayerWidgetLogLargeProvider : PrayerWidgetLogProvider()
+class PrayerWidgetLogLargeProvider : PrayerWidgetLogProvider() {
+  /** The 4×4: today's row and the practice graph. */
+  override val glanceAppWidget: GlanceAppWidget = LogGlanceWidget(tall = true)
+}

@@ -5,13 +5,13 @@
     <string name="widget_name_medium">Mihrab · Gebetszeiten</string>
     <string name="widget_name_large">Mihrab · Gebetszeiten (alt)</string>
     <string name="widget_description">Die heutigen Zeiten in einer Zeile, nächstes Gebet hervorgehoben</string>
-    <string name="widget_description_small">Nur das nächste Gebet und seine Zeit. 2×1, skalierbar.</string>
+    <string name="widget_description_small">Nur das nächste Gebet und seine Zeit. 2×1.</string>
     <string name="widget_description_medium">Alle sechs Zeiten als Spalten in einer breiten Zeile, nächstes Gebet hervorgehoben. 4×2, skalierbar.</string>
-    <string name="widget_description_prayer_times">Die sechs heutigen Zeiten in einer Zeile. Höher für Stadt und Hijri-Datum, noch höher für das Praxisdiagramm. 4×1 bis 4×4.</string>
+    <string name="widget_description_prayer_times">Die sechs Zeiten des Tages in einer Reihe, mit Stadt und Hidschri-Datum. 4×2.</string>
     <string name="widget_description_large_retired">Das frühere Gebetszeiten-Widget. Es zeigt jetzt dasselbe Design wie das aktuelle; es gibt keinen Grund, ein neues zu platzieren.</string>
     <string name="widget_description_large">Alle sechs Zeiten als Liste neben dem nächsten Gebet. 4×3 — unter drei Zeilen wird daraus der einzeilige Streifen.</string>
     <string name="widget_name_log">Mihrab · Heute eintragen</string>
-    <string name="widget_description_log">Gebet antippen, um es pünktlich einzutragen, mit Countdown zum nächsten. Höher für das Praxisdiagramm. 4×1 bis 4×4.</string>
+    <string name="widget_description_log">Tippe auf ein Gebet, um es pünktlich einzutragen, mit Countdown zum nächsten. 4×2.</string>
     <string name="widget_log_today">Heute</string>
     <string name="widget_log_count">%1$d von %2$d</string>
     <string name="widget_log_waiting">%1$s noch nicht eingetragen</string>
@@ -54,7 +54,7 @@
 
     <!-- ── Streak &amp; Practice ────────────────────────────────────────── -->
     <string name="widget_name_streak">Mihrab · Serie</string>
-    <string name="widget_description_streak">Deine pünktliche Serie und die letzten Wochen des Praxisdiagramms. 2×2 bis 4×2.</string>
+    <string name="widget_description_streak">Deine Pünktlichkeitsserie und die letzten Wochen der Praxisgrafik. 4×2.</string>
     <string name="widget_streak_title">SERIE</string>
     <string name="widget_streak_best">Beste %1$d</string>
     <string name="widget_streak_logged">%1$d von 5 heute</string>
@@ -194,7 +194,7 @@
     <string name="widget_preview_tap_to_log">\u2713 tippen, um Asr pünktlich einzutragen</string>
     <string name="widget_preview_practice_second">Tage-Serie \u00b7 Beste 31 \u00b7 2 von 5 heute</string>
     <string name="widget_name_tall">Mihrab \u00b7 Gebetszeiten (hoch)</string>
-    <string name="widget_description_tall">Die gleichen sechs Zeiten mit Stadt, Hijri-Datum und dem Praxisdiagramm. 4\u00d72 \u2014 verkleinern, und daraus wird der einzeilige Streifen.</string>
+    <string name="widget_description_tall">Die sechs Zeiten des Tages mit Stadt, Hidschri-Datum und der Praxisgrafik. 4×3.</string>
     <string name="widget_name_log_tall">Mihrab \u00b7 Heute eintragen (hoch)</string>
-    <string name="widget_description_log_tall">Gebet antippen, um es pünktlich einzutragen, mit Countdown zum nächsten und dem Praxisdiagramm. 4\u00d72 \u2014 verkleinern, und daraus wird die einzeilige Karte.</string>
+    <string name="widget_description_log_tall">Tippe auf ein Gebet, um es pünktlich einzutragen, mit Countdown zum nächsten und der Praxisgrafik. 4×3.</string>
 </resources>

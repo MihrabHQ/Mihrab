@@ -5,13 +5,13 @@
     <string name="widget_name_medium">Mihrab · Bönetider</string>
     <string name="widget_name_large">Mihrab · Bönetider (gammal)</string>
     <string name="widget_description">Dagens tider på en rad, nästa bön markerad</string>
-    <string name="widget_description_small">Bara nästa bön och dess tid. 2×1, storleken kan ändras.</string>
+    <string name="widget_description_small">Bara nästa bön och dess tid. 2×1.</string>
     <string name="widget_description_medium">Alla sex tider som kolumner i en bred rad, nästa bön markerad. 4×2, storleken kan ändras.</string>
-    <string name="widget_description_prayer_times">Dagens sex tider på en rad. Gör den högre för stad och hijridatum, högre igen för aktivitetsgrafen. 4×1 till 4×4.</string>
+    <string name="widget_description_prayer_times">Dagens sex tider på en rad, med stad och hijridatum. 4×2.</string>
     <string name="widget_description_large_retired">Den tidigare widgeten för bönetider. Den visar nu samma design som den aktuella; det finns ingen anledning att lägga till en ny.</string>
     <string name="widget_description_large">Alla sex tider som en lista bredvid nästa bön. 4×3 — krymp den under tre rader så blir den enradsremsan.</string>
     <string name="widget_name_log">Mihrab · Logga idag</string>
-    <string name="widget_description_log">Tryck på en bön för att logga den i tid, med nedräkning till nästa. Gör den högre för aktivitetsgrafen. 4×1 till 4×4.</string>
+    <string name="widget_description_log">Tryck på en bön för att logga den i tid, med nedräkning till nästa. 4×2.</string>
     <string name="widget_log_today">Idag</string>
     <string name="widget_log_count">%1$d av %2$d</string>
     <string name="widget_log_waiting">%1$s inte loggad än</string>
@@ -54,7 +54,7 @@
 
     <!-- ── Streak &amp; Practice ────────────────────────────────────────── -->
     <string name="widget_name_streak">Mihrab · Räcka</string>
-    <string name="widget_description_streak">Din räcka i tid och de senaste veckorna i aktivitetsgrafen. 2×2 till 4×2.</string>
+    <string name="widget_description_streak">Din räcka i tid och de senaste veckorna i aktivitetsgrafen. 4×2.</string>
     <string name="widget_streak_title">RÄCKA</string>
     <string name="widget_streak_best">Bäst %1$d</string>
     <string name="widget_streak_logged">%1$d av 5 idag</string>
@@ -204,7 +204,7 @@
     <string name="widget_preview_tap_to_log">Tryck \u2713 för att logga Asr i tid</string>
     <string name="widget_preview_practice_second">dagars räcka \u00b7 Bäst 31 \u00b7 2 av 5 idag</string>
     <string name="widget_name_tall">Mihrab \u00b7 Bönetider (hög)</string>
-    <string name="widget_description_tall">Samma sex tider med stad, hijridatum och aktivitetsgrafen. 4\u00d72 \u2014 krymp den så blir den enradsremsan.</string>
+    <string name="widget_description_tall">Dagens sex tider med stad, hijridatum och aktivitetsgrafen. 4×3.</string>
     <string name="widget_name_log_tall">Mihrab \u00b7 Logga idag (hög)</string>
-    <string name="widget_description_log_tall">Tryck på en bön för att logga den i tid, med nedräkning till nästa och aktivitetsgrafen. 4\u00d72 \u2014 krymp den så blir den enradskortet.</string>
+    <string name="widget_description_log_tall">Tryck på en bön för att logga den i tid, med nedräkning till nästa och aktivitetsgrafen. 4×3.</string>
 </resources>

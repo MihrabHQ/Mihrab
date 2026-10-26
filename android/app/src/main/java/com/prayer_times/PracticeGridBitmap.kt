@@ -54,8 +54,8 @@ import org.json.JSONObject
  * depth of colour, and the number hid the one thing a prayer log is kept
  * for: which prayer. Six rows now — Fajr to Isha, and the fast — and every
  * cell one fact: filled for on time, faint for late, hollow for a make-up,
- * red for missed, the palest ink for nothing inside the record, nothing at
- * all before it or after today. The sunnah, the qiyam and the unaccounted
+ * red for missed, the palest ink for nothing (before the record too: a
+ * strip whose first weeks are holes reads as misplaced), nothing after today. The sunnah, the qiyam and the unaccounted
  * mark stay in the app: a home screen has no legend, and a cell that says
  * one thing can be small.
  *
@@ -84,28 +84,6 @@ object PracticeGridBitmap {
 
   /** The cells' ink. Every widget card is dark. */
   private const val INK = 0xFFFFFFFF.toInt()
-
-  /**
-   * The cell size the rows are counted against, in dp.
-   *
-   * Not a minimum and not a maximum — the cell ends up whatever the box
-   * divides into. It is the size at which a day is comfortably readable on
-   * a home screen, and so the size that decides whether a given height has
-   * room for another row of them, and how many days fit across.
-   *
-   * 20, down from 26. At 26 a day came out around 24dp on a four-wide
-   * card, which is bigger than a day needs to be to carry a fill, a ring
-   * and a corner dot — the marks are drawn as fractions of the cell, so
-   * they shrink with it and stay legible. The squares now read as a graph
-   * rather than as buttons, and the same card carries a couple of columns
-   * more history for it.
-   *
-   * 15, down from 20, with the gap 5 down from 7 (2.32): once the card's
-   * real width was measured, a day came out about 21dp at a larger display
-   * size and the graph took over the card. At 15 it is a texture of days
-   * under the times again, with more history on the same card.
-   */
-  private const val TARGET_CELL_DP = 10f
 
   /** Everything the grid needs to be drawn into a particular box. */
   data class Layout(
@@ -255,7 +233,11 @@ object PracticeGridBitmap {
       val left = x
       x += cellWPx + gapPx + weekEnds[col]
       val day = byDate[key]
-      val inRecord = since != null && key >= since
+      // Every column is a day. The days before the record used to be left
+      // blank, and a strip whose first weeks are holes reads as a strip
+      // drawn in the wrong place; the faint cell says "a day, nothing in
+      // it", which is true of them too. (`since` decides nothing here any
+      // more — the unaccounted mark stayed in the app.)
       val letters = day?.optString("p", "")?.takeIf { it.length == SALAH_PER_DAY }
       // Today's column, lit: a strip whose last cells are empty says
       // nothing about where now is without it.
@@ -278,7 +260,7 @@ object PracticeGridBitmap {
           if (day != null && day.optBoolean("f", false)) {
             paint.color = accent
             canvas.drawRoundRect(rect, radius, radius, paint)
-          } else if (inRecord || day != null) {
+          } else {
             paint.color = withAlpha(INK, 0.07f)
             canvas.drawRoundRect(rect, radius, radius, paint)
           }
@@ -302,7 +284,7 @@ object PracticeGridBitmap {
           // cell, so the column still says how the day went.
           paint.color = colorFor(day, INK)
           canvas.drawRoundRect(rect, radius, radius, paint)
-        } else if (inRecord) {
+        } else {
           paint.color = withAlpha(INK, 0.07f)
           canvas.drawRoundRect(rect, radius, radius, paint)
         }
@@ -350,59 +332,36 @@ object PracticeGridBitmap {
     maxDays: Int,
   ): Layout {
     val boxW = boxWidthDp.toFloat().coerceAtLeast(40f)
-    // The height is an estimate: the launcher reports the host view and the
-    // card subtracts the chrome it believes it draws. It decides the row
-    // count and nothing else — see below.
-    val boxH = boxHeightDp.toFloat().coerceAtLeast(14f)
+    val boxH = boxHeightDp.toFloat().coerceAtLeast(30f)
 
-    // THE WIDTH DECIDES THE CELL, because the width is the number the caller
-    // actually knows: it is the card's own width less its padding, and no
-    // estimate of anything comes into it. So the columns are however many
-    // readable cells fit across it, and the cell is then the width divided
-    // exactly among them — which is what makes the grid land flush on both
-    // edges, every time, rather than when an estimate happens to be right.
-    val columns = Math.round((boxW + GAP_DP) / (TARGET_CELL_DP + GAP_DP))
-      .coerceAtLeast(MIN_COLUMNS)
-    // SQUARE, near enough. The cell was allowed to take the box's
-    // proportions for a while, and a day drawn half again as wide as it is
-    // tall does not read as a day; it reads as a bar in a chart of
-    // something else. This is the day's WIDTH, and its height is this
-    // within an eighth — see MAX_ROW_RATIO, and the rows below.
-    val cellDp = ((boxW - (columns - 1) * GAP_DP) / columns).coerceIn(3f, MAX_CELL_DP)
-
-    // ROWS FROM WHAT IS LEFT — AND THEN THE LAST FEW DP GIVEN BACK TO THEM.
-    //
-    // Counting the rows, rather than shrinking the cell, is what makes a
-    // resize change how many days the graph shows instead of how big a day
-    // is drawn: the width decides the cell, and the height only ever adds
-    // or removes a whole row of it. What that costs is quantising. A box is
-    // never a whole number of rows tall, so up to one row's worth of it
-    // went unspent, and `fitCenter` put half of that above the grid and
-    // half below — on a card whose height landed badly, a band of empty
-    // card at both ends. Reported as "too much void space above and under".
-    //
-    // So the leftover is handed back to the rows themselves. The count is
-    // the nearest whole number of rows the box holds, and a row is then
-    // drawn exactly as tall as the box divides into. Bounded, because a day
-    // drawn half again as tall as it is wide stops reading as a day: inside
-    // a few percent it is still the same square, and what survives the
-    // bound is a few dp of card rather than a few tens.
-    //
-    // The WIDTH still decides the cell, so the grid still lands flush on
-    // both edges; and the height still cannot be the axis that binds,
-    // because the row height is derived FROM the box — the grid cannot come
-    // out taller than the box that asked for it.
-    val marginDp = 2f * ringWidthOf(cellDp)
-    val usableH = (boxH - marginDp).coerceAtLeast(cellDp)
-    // THE ROWS ARE THE STRIP'S — five prayers and the fast — whatever the
-    // box: a strip with Isha cut off is not a shorter strip, it is a wrong
-    // one. The height decides how tall a row is drawn, within the bounds
-    // that keep a cell reading as a cell, and the width decides the days.
+    // THE HEIGHT DECIDES THE CELL. The strip has six rows whatever the box,
+    // so a row is a sixth of the height the card gives it, within the
+    // bounds that keep a cell a cell — and THE WIDTH DECIDES THE DAYS: as
+    // many as that cell fits across, with a week's breath after each
+    // Sunday. The cell is then widened by the few dp the last column does
+    // not divide into, so the strip lands on the card's edges, and the
+    // bitmap's shape is the box's: drawn to fit it, it fills it.
     val rows = STRIP_ROWS
-    val exactH = (usableH - (rows - 1) * GAP_DP) / rows
-    val cellHDp = exactH.coerceIn(cellDp * MIN_ROW_RATIO, cellDp * MAX_ROW_RATIO).coerceAtLeast(3f)
-    val cellWDp = cellDp
-    @Suppress("UNUSED_VARIABLE") val unusedDays = maxDays
+    val marginDp = 2f * ringWidthOf(MAX_CELL_DP)
+    val usableH = (boxH - marginDp).coerceAtLeast(rows * 3f)
+    // The tallest a row may be: a sixth of the box.
+    val cellFromH = ((usableH - (rows - 1) * GAP_DP) / rows).coerceIn(MIN_CELL_DP, MAX_CELL_DP)
+    // A week's breath is one more gap per seven columns, on average.
+    val breath = GAP_DP / 7f
+    // THE WIDTH DECIDES THE DAYS: as many columns of that row's height as
+    // fit across, so the cells come out square and the strip fills the box
+    // on both axes — a card gives the graph a box, and the graph takes it.
+    val columns = Math.round((boxW + GAP_DP) / (cellFromH + GAP_DP + breath))
+      .coerceAtLeast(7)
+      .coerceAtMost(maxDays.coerceAtLeast(7))
+    val breaths = columns / 7
+    // The cell is then exactly what the width divides into, so the strip
+    // lands on the card's edges; its height is the box's sixth, or a
+    // little over square when the box is taller than that.
+    val cellW = ((boxW - (columns - 1) * GAP_DP - breaths * GAP_DP) / columns).coerceAtLeast(3f)
+    val cellH = minOf(cellFromH, cellW * MAX_ROW_RATIO).coerceAtLeast(3f)
+    val cellWDp = cellW
+    val cellHDp = cellH
 
     // Only the RATIOS above matter for how the grid LOOKS, because it is
     // scaled into the box either way. What the scale below decides is how
@@ -431,8 +390,8 @@ object PracticeGridBitmap {
     )
   }
 
-  /** Never fewer than a fortnight's worth of columns, however small the box. */
-  private const val MIN_COLUMNS = 5
+  /** The smallest cell that still reads as one on a home screen. */
+  private const val MIN_CELL_DP = 7f
 
   /**
    * A ceiling on the cell, in dp, and it is deliberately generous.
@@ -446,7 +405,7 @@ object PracticeGridBitmap {
    * and fewer of them; how many days to show is a decision the person
    * makes by resizing the widget, which is the control they already have.
    */
-  private const val MAX_CELL_DP = 40f
+  private const val MAX_CELL_DP = 24f
 
   /**
    * How far off square a day may be drawn, to spend what quantising left.
@@ -464,13 +423,6 @@ object PracticeGridBitmap {
    * starts reading the shape instead of the mark on it.
    */
   private const val MAX_ROW_RATIO = 1.12f
-
-  /**
-   * And the same bound the other way, which is what the row COUNT is
-   * measured against: a row is added only when the box has room for one at
-   * this height, so the rows never come out shorter than this.
-   */
-  private const val MIN_ROW_RATIO = 0.88f
 
   /**
    * The most pixels the bitmap may hold, and it is a Binder budget.

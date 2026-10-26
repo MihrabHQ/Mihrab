@@ -66,11 +66,13 @@ internal class StreakGlanceWidget : MihrabGlanceWidget("streak") {
     val roomForOwed = measured && size.heightDp >= requiredHeightDp(context, showTitle, 2)
     val roomForFasts = measured && size.heightDp >= requiredHeightDp(context, showTitle, 3)
 
-    // Sixteen columns at 4x2, eight at 2x2 — the provider's numbers.
-    val columns = if (size.widthDp >= 220) 16 else 8
+    // The graph takes the trailing half of the card, and all of its
+    // height: the strip's rows are drawn as tall as the card lets them be,
+    // and as many days as that fits (PracticeGridBitmap.layoutFor).
     val density = context.resources.displayMetrics.density
-    val cell = (7 * density).toInt().coerceAtLeast(3)
-    val gap = (2 * density).toInt().coerceAtLeast(1)
+    val boxW = ((size.widthDp - 28) * 0.55f).toInt().coerceAtLeast(60)
+    val boxH = (size.heightDp - 28).coerceAtLeast(40)
+    val grid = PracticeGridBitmap.layoutFor(boxW, boxH, density, pr.days.size.coerceAtLeast(7))
 
     val owed = pr.owed
     val fasts = pr.fastsThisMonth
@@ -83,7 +85,7 @@ internal class StreakGlanceWidget : MihrabGlanceWidget("streak") {
       pr,
       owed = if (inlineOwed) owed else 0,
       fasts = if (inlineFasts) fasts else 0,
-      widthPx = summaryWidthPx(context, size.widthDp, columns, cell, gap),
+      widthPx = summaryWidthPx(context, size.widthDp, boxW),
     )
 
     Row(modifier = GlanceModifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {
@@ -120,7 +122,7 @@ internal class StreakGlanceWidget : MihrabGlanceWidget("streak") {
       // Natural size, shrunk only when the card is too short: the image is
       // as wide as the bitmap, so Fit can scale it down and never up.
       Image(
-        provider = ImageProvider(practiceGrid(pr, PracticeGridBitmap.MAX_ROWS, columns, cell, cell, gap, accent)),
+        provider = ImageProvider(practiceGrid(pr, grid.rows, grid.columns, grid.cellWPx, grid.cellHPx, grid.gapPx, accent)),
         contentDescription = context.getString(R.string.widget_streak_grid_description),
         modifier = GlanceModifier.fillMaxHeight().padding(start = 8.dp),
         contentScale = ContentScale.Fit,
@@ -182,11 +184,10 @@ internal class StreakGlanceWidget : MihrabGlanceWidget("streak") {
   }
 
   /** The card less its padding, the graph and the gap before it. */
-  private fun summaryWidthPx(context: Context, widthDp: Int, columns: Int, cell: Int, gap: Int): Float {
+  private fun summaryWidthPx(context: Context, widthDp: Int, gridDp: Int): Float {
     if (widthDp <= 0) return 0f
     val density = context.resources.displayMetrics.density
-    val gridPx = columns * cell + (columns - 1) * gap
-    return widthDp * density - 28 * density - gridPx
+    return (widthDp - 28 - gridDp - 8) * density
   }
 
   /** PrayerWidgetStreakProvider.requiredHeightDp — the same arithmetic. */

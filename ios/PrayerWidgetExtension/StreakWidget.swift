@@ -188,7 +188,7 @@ struct StreakEntryView: View {
             days: pr.days,
             since: pr.since,
             dayCount: 14,
-            cell: 8,
+            cell: 9,
             spacing: 2,
             accent: resolvedWidgetHighlightColor()
           )

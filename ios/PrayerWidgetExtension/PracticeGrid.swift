@@ -5,8 +5,8 @@
 // depth of colour, and the number hid the one thing a prayer log is kept
 // for: which prayer. Six rows — Fajr to Isha, and the fast — and every cell
 // one fact: filled for on time, faint for late, hollow for a make-up, red
-// for missed, the palest ink for nothing inside the record, nothing at all
-// before it or after today. The sunnah, the qiyam and the unaccounted mark
+// for missed, the palest ink for nothing (before the record too: a strip
+// whose first weeks are holes reads as misplaced), nothing after today. The sunnah, the qiyam and the unaccounted mark
 // stay in the app: a home screen has no legend, and a cell that says one
 // thing can be small.
 //
@@ -22,9 +22,8 @@ import WidgetKit
 
 struct PracticeGrid: View {
   let days: [WidgetPayload.PracticeDay]
-  /// The first day the user ever logged a prayer, or nil. From it onwards an
-  /// empty cell is the palest ink — a day inside the record; before it,
-  /// nothing: there was no record yet.
+  /// The first day the user ever logged a prayer, or nil. Carried by the
+  /// callers; the strip draws every day the same way (see `inRecord`).
   var since: String?
   /// Days to draw, newest last.
   let dayCount: Int
@@ -47,7 +46,9 @@ struct PracticeGrid: View {
     HStack(spacing: spacing) {
       ForEach(Array(keys.enumerated()), id: \.offset) { _, key in
         let day = byDate[key]
-        let inRecord = since.map { key >= $0 } ?? false
+        // Every column is a day: before the record it is the faint cell, not
+        // a hole — a strip whose first weeks are holes reads as misplaced.
+        let inRecord = true
         let letters = day?.p.flatMap { $0.count == salahPerDay ? Array($0) : nil }
         VStack(spacing: spacing) {
           ForEach(0..<salahPerDay, id: \.self) { row in

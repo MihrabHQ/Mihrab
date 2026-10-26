@@ -5,13 +5,13 @@
     <string name="widget_name_medium">محراب · أوقات الصلاة</string>
     <string name="widget_name_large">محراب · أوقات الصلاة (القديم)</string>
     <string name="widget_description">أوقات اليوم في صف واحد، الصلاة التالية مميزة</string>
-    <string name="widget_description_small">الصلاة التالية ووقتها فقط. 2×1، قابل لتغيير الحجم.</string>
+    <string name="widget_description_small">الصلاة التالية ووقتها فقط. 2×1.</string>
     <string name="widget_description_medium">الأوقات الستة جميعها كأعمدة في صف عريض واحد، مع تمييز الصلاة التالية. 4×2، قابل لتغيير الحجم.</string>
-    <string name="widget_description_prayer_times">أوقات اليوم الستة في صف واحد. كبّره ليظهر المدينة والتاريخ الهجري، وكبّره أكثر ليظهر الرسم البياني للالتزام. 4×1 إلى 4×4.</string>
+    <string name="widget_description_prayer_times">أوقات اليوم الستة في صف واحد، مع المدينة والتاريخ الهجري. 4×2.</string>
     <string name="widget_description_large_retired">ودجة أوقات الصلاة السابقة. أصبحت الآن تعرض نفس تصميم الودجة الحالية؛ فلا داعٍ لإضافة واحدة جديدة.</string>
     <string name="widget_description_large">الأوقات الستة جميعها كقائمة إلى جانب الصلاة التالية. 4×3 — قلّصها إلى أقل من ثلاثة صفوف لتصبح الشريط ذا الصف الواحد.</string>
     <string name="widget_name_log">محراب · سجل اليوم</string>
-    <string name="widget_description_log">اضغط على صلاة لتسجيلها في وقتها، مع العد التنازلي للصلاة التالية. كبّره ليظهر الرسم البياني للالتزام. 4×1 إلى 4×4.</string>
+    <string name="widget_description_log">اضغط على صلاة لتسجيلها في وقتها، مع العد التنازلي للصلاة التالية. 4×2.</string>
     <string name="widget_log_today">اليوم</string>
     <string name="widget_log_count">%1$d من %2$d</string>
     <string name="widget_log_waiting">لم يُسجَّل %1$s بعد</string>
@@ -53,7 +53,7 @@
     <string name="live_activity_countdown_active">العد التنازلي للصلاة نشط</string>
 
     <string name="widget_name_streak">محراب · التتابع</string>
-    <string name="widget_description_streak">تتابعك في الالتزام بالوقت، والأسابيع الأخيرة من الرسم البياني للالتزام. 2×2 إلى 4×2.</string>
+    <string name="widget_description_streak">تتابعك في الالتزام بالوقت، والأسابيع الأخيرة من الرسم البياني للالتزام. 4×2.</string>
     <string name="widget_streak_title">التتابع</string>
     <string name="widget_streak_best">الأفضل %1$d</string>
     <string name="widget_streak_logged">%1$d من 5 اليوم</string>
@@ -229,7 +229,7 @@
     <string name="widget_preview_tap_to_log">اضغط \u2713 لتسجيل العصر في وقتها</string>
     <string name="widget_preview_practice_second">يومًا متتاليًا \u00b7 الأفضل 31 \u00b7 2 من 5 اليوم</string>
     <string name="widget_name_tall">محراب \u00b7 أوقات الصلاة (الطويل)</string>
-    <string name="widget_description_tall">الأوقات الستة نفسها مع المدينة والتاريخ الهجري والرسم البياني للالتزام. 4\u00d72 \u2014 قلّصها لتصبح الشريط ذا الصف الواحد.</string>
+    <string name="widget_description_tall">أوقات اليوم الستة مع المدينة والتاريخ الهجري والرسم البياني للالتزام. 4×3.</string>
     <string name="widget_name_log_tall">محراب \u00b7 سجل اليوم (الطويل)</string>
-    <string name="widget_description_log_tall">اضغط على صلاة لتسجيلها في وقتها، مع العد التنازلي للصلاة التالية والرسم البياني للالتزام. 4\u00d72 \u2014 قلّصها لتصبح البطاقة ذات الصف الواحد.</string>
+    <string name="widget_description_log_tall">اضغط على صلاة لتسجيلها في وقتها، مع العد التنازلي للصلاة التالية والرسم البياني للالتزام. 4×3.</string>
 </resources>

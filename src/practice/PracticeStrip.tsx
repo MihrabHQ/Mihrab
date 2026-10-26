@@ -11,8 +11,9 @@
  *
  * Every cell is one fact, so a cell is a small rounded square and nothing
  * else: filled for on time, faint for late, hollow for a make-up, danger
- * for missed, the paper for nothing. No rings, no corner dots, no edges on
- * empty days — the record's shape comes from the days that have something
+ * for missed, the palest ink for nothing — before the record too, since a
+ * strip whose first weeks are holes reads as misplaced. No rings, no corner
+ * dots, no edges on empty days — the record's shape comes from the days that have something
  * in them, and a bright screen is answered by the ink's own contrast.
  */
 import { memo, useMemo } from 'react';
@@ -80,7 +81,7 @@ function PracticeStripImpl({ days, selectedKey, emphasise, onSelectDay, onReachO
 
   /** The fill of a prayer's cell. */
   const prayerCell = (status: StripStatus, day: StripDay) => {
-    if (day.future || day.beforeRecord) return styles.cellNone;
+    if (day.future) return styles.cellNone;
     switch (status) {
       case 'on-time':
         return { backgroundColor: withAlpha(ink, 0.85) };
@@ -172,14 +173,14 @@ function PracticeStripImpl({ days, selectedKey, emphasise, onSelectDay, onReachO
                 <View
                   style={[
                     styles.cell,
-                    day.future || day.beforeRecord
+                    day.future
                       ? styles.cellNone
                       : day.fasted
                         ? { backgroundColor: accent }
                         : faint,
                   ]}
                 />
-                <View style={[styles.cell, day.future || day.beforeRecord ? styles.cellNone : faint]}>
+                <View style={[styles.cell, day.future ? styles.cellNone : faint]}>
                   {!day.future && day.sunnah > 0 ? (
                     <View
                       style={[
