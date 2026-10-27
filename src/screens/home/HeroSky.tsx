@@ -142,8 +142,9 @@ function HeroSkyImpl({
   run?: SkyRun;
   /**
    * A sky nobody watches — the posed twin's, drawn only to be captured
-   * (boot/poseHero.ts): no twinkle, no native loops breathing all night
-   * for a hero under the real one.
+   * (boot/poseHero.ts) — or one that has been watched long enough
+   * (hooks/useLively): no twinkle, no native loops breathing all night
+   * for a hero under the real one, or for a page standing still.
    */
   still?: boolean;
   /** The fuller field of stars (the Sky theme's night). */
@@ -263,6 +264,18 @@ function HeroSkyImpl({
         <SkyRunLayers run={run} width={Math.ceil(size.width)} height={Math.ceil(size.height)} scene={scene} denseStars={denseStars} />
       ) : null}
       {running ? null : (
+      // ── DRAWN ONCE, THEN KEPT AS A TEXTURE ─────────────────────────────
+      // The sky is two full-screen gradients and a few hundred stars, and
+      // Android's renderer re-executed every one of them on every frame
+      // in which anything over the sky moved — the three twinkling stars
+      // by night, Minimal's breathing rail head — because a path drawn on
+      // the GPU is tessellated on the render thread each time it is drawn.
+      // Measured: the render thread at half a core, all night, on a Pixel
+      // 10 Pro and on the emulator alike, for a hero that was standing
+      // still. As a hardware layer the sky is rasterised when it changes
+      // (once a minute) and composited as one texture the rest of the
+      // time. Measured after: the render thread idle.
+      <View style={StyleSheet.absoluteFill} renderToHardwareTextureAndroid>
       <Svg
         // ROUNDED UP, NOT AS MEASURED. A layout width is a fraction of a
         // dp — a 1280px screen at 3x measures 426.667 — and the surface
@@ -356,6 +369,7 @@ function HeroSkyImpl({
           />
         ) : null}
       </Svg>
+      </View>
       )}
       {!running && !still && drawStars && denseStars ? (
         <Twinkle scene={scene} glow={glow} stars={stars} width={size.width} height={size.height} />

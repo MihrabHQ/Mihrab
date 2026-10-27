@@ -43,6 +43,7 @@ import Svg, { Path } from 'react-native-svg';
 import { MinimalGlyph } from './MinimalGlyph';
 import { useTranslation } from 'react-i18next';
 import { useIsActive } from '../../hooks/useIsActive';
+import { useLively } from '../../hooks/useLively';
 import { useReduceMotion } from '../../hooks/useReduceMotion';
 import { useIncreasedContrast } from '../../hooks/useIncreasedContrast';
 import {
@@ -586,8 +587,12 @@ const HeroToday = memo(function HeroToday({
   const posed = frozenAt != null;
   // Minimal: the rail head's breath. Only while looked at (focus AND
   // foreground, the countdown's own gate), never under Reduce Motion,
-  // never in the posed twin. One native loop; nothing on the JS thread.
-  const breathing = minimal && active && !reduceMotion && !posed;
+  // never in the posed twin. One native loop; nothing on the JS thread —
+  // and only for a while after the page comes in front (useLively): a
+  // loop that never ends keeps the renderer drawing every frame for as
+  // long as the page is up.
+  const lively = useLively(active && !posed);
+  const breathing = minimal && lively && !reduceMotion && !posed;
   const breath = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     if (!breathing) return undefined;
@@ -1208,7 +1213,10 @@ const HeroToday = memo(function HeroToday({
         frame={frame}
         run={skyRun ?? undefined}
         denseStars
-        still={posed}
+        // Still once the arrival has passed (useLively) as well as posed:
+        // the stars twinkle for a while after the page comes in front,
+        // then the sky stands.
+        still={posed || !lively}
         sceneTop={sceneTop}
         sceneBottom={sceneBottom}
         bleed={

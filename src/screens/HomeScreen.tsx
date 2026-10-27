@@ -151,6 +151,8 @@ const ZONE_NOTE_DISMISSED_KEY = 'home.zoneNote.dismissed.v1';
  * coord persistence, locale-aware day labels) is unchanged behavior — same
  * effects, same call shapes, just lifted out of the rendering hot path.
  */
+/** How long after a prayer's instant the hero moves on to the next (the watchdog's flip). */
+const FLIP_AFTER_MS = 300;
 /** Gate keys — see src/utils/resyncGate.ts. */
 const NOTIF_RESYNC_KEY = 'home.prayerNotifications';
 const EOD_RESYNC_KEY = 'home.endOfDayReminders';
@@ -826,6 +828,18 @@ export function HomeScreen() {
   // the next prayer has actually changed. Crucially, this effect does NOT
   // schedule any per-tick state update — `now` lives inside TodayCard's hero.
   useEffect(() => {
+    // The prayer's own instant, as well as the half-minute: the watchdog
+    // alone left the countdown at "0m 00s" for up to thirty seconds after
+    // the adhan before the hero moved on to the next prayer. Armed from
+    // each tick for the prayer it found, a breath after it.
+    let flip: ReturnType<typeof setTimeout> | null = null;
+    function armFlip(next: { at: Date } | null) {
+      if (flip) clearTimeout(flip);
+      flip = null;
+      if (!next || !homeActive) return;
+      const delay = next.at.getTime() - Date.now() + FLIP_AFTER_MS;
+      if (delay > 0 && delay < 0x7fffffff) flip = setTimeout(tick, delay);
+    }
     function tick() {
       if (state.phase !== 'ready') return;
       const current = new Date();
@@ -857,6 +871,7 @@ export function HomeScreen() {
         }
         return next;
       });
+      armFlip(next);
     }
     // Immediately, so nextInfo is ready on the first render after a fetch —
     // and so that returning from the background catches up in one step
@@ -877,6 +892,7 @@ export function HomeScreen() {
     return () => {
       clearInterval(id);
       off();
+      if (flip) clearTimeout(flip);
     };
   }, [state, retry, view, homeActive]);
 
