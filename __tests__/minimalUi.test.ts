@@ -75,17 +75,31 @@ describe('the swipe', () => {
     // container's ground.
     expect(tabs).toContain('<MinimalScreens enabled={minimal}>');
     const screens = read('src/navigation/MinimalScreens.tsx');
-    expect(screens).toContain('<ScreenContext.Provider value={PlainScreen as never}>');
+    // The provider is always there — the library's own screen on the
+    // full page — so the navigator keeps its place in the tree across
+    // the turn of the switch.
+    expect(screens).toContain('<ScreenContext.Provider value={(enabled ? PlainScreen : InnerScreen) as never}>');
+    expect(screens).not.toContain('if (!enabled) return <>{children}</>;');
+    // A page not on show is drawn, a width aside, but not read.
+    expect(screens).toContain("importantForAccessibility={inactive ? 'no-hide-descendants' : 'auto'}");
     expect(screens).toContain('level: { zIndex: 0 }');
     // Each page as many widths aside as it is tabs from the position…
-    expect(swipe).toContain('Animated.subtract(myIndex, pagerPosition(width, edges))');
+    expect(swipe).toContain('Animated.subtract(myIndex, pagerPosition(width, count))');
     expect(swipe).toContain('I18nManager.isRTL ? -width : width,');
-    // …which is the settled tab, the drag as a fraction, and the hold.
+    // …which is the settled tab, the drag as a fraction, and the hold —
+    // summed, and only then given a little past either end of the row.
+    // Shaped on the drag by the current tab's neighbours, it was rebuilt
+    // the moment a turn was navigated, with the finger's translation
+    // still in the drag: a turn onto an end tab recoiled a quarter of a
+    // width before sliding on. The sum is the same number for every
+    // reader whichever tab is current, and nothing is rebuilt on a turn.
+    expect(pager).toContain('const summed = Animated.add(Animated.add(pagerBase, pagerDragInTabs(width)), pagerHold);');
     expect(pager).toMatch(
-      /Animated\.add\(\s*Animated\.add\(pagerBase, Animated\.divide\(pagerShapedDrag\(w, edges\), I18nManager\.isRTL \? w : -w\)\),\s*pagerHold,\s*\)/,
+      /inputRange: \[-1, 0, last, last \+ 1\],\s*outputRange: \[-EDGE_GIVE, 0, last, last \+ EDGE_GIVE\],\s*extrapolate: 'clamp',/,
     );
-    // The drag is shaped natively too: a page at most, a fraction past the row's end.
-    expect(pager).toContain("outputRange: [onLeft ? -w : -w * EDGE_GIVE, 0, onRight ? w : w * EDGE_GIVE],");
+    expect(pager).not.toContain('pagerEdges');
+    expect(swipe).toContain('[myIndex, count, width],');
+    expect(bar).toContain('[width, state.routes.length],');
     // On a turn the settled tab slides while the drag runs back: no jump.
     expect(swipe).toContain('settlePagerBase(i + step);\n      navigation.navigate(next.name as never);\n      settlePagerDrag(done);');
     expect(pager).toMatch(/duration: PAGER_TRANSITION_MS,\s*easing: pagerEasing,\s*useNativeDriver: true,\s*\}\)\.start\(\(\) => onDone/);
@@ -99,7 +113,7 @@ describe('the swipe', () => {
 
   it('keeps only the pages in reach laid out, and mounts the rest as the warm-up comes to them', () => {
     // The page on show alone until its first paint and launch run are over.
-    expect(swipe).toContain('const inReach = engaged || distance <= (settled ? 1 : 0);');
+    expect(swipe).toContain('const inReach = reachAll || distance <= (settled ? 1 : 0);');
     expect(swipe).toMatch(/void afterRun\(\)\.then\(\(\) => \{\s*if \(cancelled\) return;\s*setSettled\(true\);\s*startPagerWarmup\(\);/);
     expect(read('src/navigation/minimalPager.ts')).toContain('let warmth = 0;');
     expect(swipe).toContain('inReach ? null : styles.away');
@@ -134,7 +148,7 @@ describe('the swipe', () => {
     expect(bar).toContain('const target = Math.round(slotAt(e.x));');
     expect(bar).toContain('if (I18nManager.isRTL) fromLeft = count - 1 - fromLeft;');
     // The dots and the pages read one position, so the strip follows the finger with them.
-    expect(bar).toContain('() => pagerPosition(width, pagerEdges(state.index, state.routes.length)),');
+    expect(bar).toContain('() => pagerPosition(width, state.routes.length),');
     expect(bar).toContain('settlePagerBase(target);');
   });
 
@@ -191,10 +205,12 @@ describe('the minimal Today', () => {
     expect(minimalSheet).toContain('if (e.translationY > DISMISS_DISTANCE || e.velocityY > DISMISS_VELOCITY)');
     // One gesture for the sheet's life, not one a render (it renders every second).
     expect(minimalSheet).toMatch(/const pull = useMemo\(\s*\(\) =>\s*Gesture\.Pan\(\)/);
-    expect(minimalSheet).toContain('[drag, progress],');
+    expect(minimalSheet).toContain('[drag, progress, springDragBack],');
     // The page: scaled back by the same value, driven early by a drag up
     // on it, and spared under Reduce Motion.
-    expect(card).toContain('const recess = minimal ? { transform: pageRecess(sheetProgress, reduceMotion) } : null;');
+    expect(card).toMatch(
+      /const recess = useMemo\(\s*\(\) => \(minimal \? \{ transform: pageRecess\(sheetProgress, reduceMotion\) \} : null\),\s*\[minimal, sheetProgress, reduceMotion\],\s*\);/,
+    );
     expect(card).toContain('sheetProgress.setValue(Math.min(SWIPE_UP_PULL, Math.max(0, -e.translationY / SWIPE_UP_REACH)));');
     expect(card).toContain('progress={sheetProgress}');
     // The FOREGROUND recedes, not the page: the sky stays out to every edge.
@@ -249,5 +265,72 @@ describe('the Log, in both modes', () => {
   it('says the way back to today once the day is another', () => {
     const log = read('src/screens/LogScreen.tsx');
     expect(log).toMatch(/\{isToday \? null : \(\s*<Pressable[\s\S]*?onPress=\{\(\) => setSelected\(today\)\}[\s\S]*?\{t\('log\.backToToday'\)\}/);
+  });
+});
+
+describe('one answer to "is Minimal on"', () => {
+  // Every reader used to ask the raw setting with its own exceptions —
+  // the navigator not beside a vertical bar, Today not on the Mac, the
+  // inset and the Quran's and the Log's paging with none — and beside
+  // the bar they disagreed: dots' worth of foot kept clear of dots that
+  // were never drawn, lists that gave up their paging to a swipe that
+  // was off, Today the hero alone under the column's tabs.
+  it('is asked for AND offered on this device, and every reader asks the one hook', () => {
+    expect(read('src/settings/useMinimalOffered.ts')).toContain('return MINIMAL_OFFERED && !vbar;');
+    expect(read('src/settings/minimalLook.ts')).toContain('export const MINIMAL_OFFERED = !isMacCatalyst;');
+    expect(inset).toMatch(
+      /export function useMinimalUi\(\): boolean \{\s*const offered = useMinimalOffered\(\);\s*const asked = useAppearanceSettings\(\)\.slice\.minimalUi;\s*return offered && asked;\s*\}/,
+    );
+    expect(tabs).toContain('const minimal = useMinimalUi();');
+    expect(tabs).not.toContain('useMinimalUi() && !vbar');
+    expect(home).toContain('const minimalUi = useMinimalUi();');
+    expect(home).toContain('const minimal = minimalUi && !isDashboard && !isRoomy && !book;');
+    expect(read('src/screens/QuranScreen.tsx')).toContain('const minimal = useMinimalUi();');
+    expect(read('src/screens/LogScreen.tsx')).toMatch(
+      /const minimalUi = useMinimalUi\(\);\s*const minimalRef = useRef\(minimalUi\);\s*minimalRef\.current = minimalUi;/,
+    );
+    // Nothing else reads the raw setting to decide a face.
+    for (const f of ['src/screens/HomeScreen.tsx', 'src/screens/QuranScreen.tsx', 'src/screens/LogScreen.tsx', 'src/navigation/MainTabs.tsx']) {
+      const code = read(f).replace(/\/\*[\s\S]*?\*\/|\/\/[^\n]*/g, '');
+      expect(code).not.toMatch(/(settings|slice)\.minimalUi/);
+    }
+  });
+
+  it('offers the day bar’s shortcut only where Minimal is', () => {
+    expect(card).toContain('const minimalOffered = useMinimalOffered();');
+    expect(card).toContain('{settings.showDataStats && minimalOffered && !settings.useSystemDynamicTheme ? (');
+    expect(card).toContain(') : settings.showDataStats && minimalOffered && !settings.useSystemDynamicTheme ? (');
+  });
+
+  it('settles the colour rules the same way', () => {
+    // A `minimalUi` read where Minimal is not offered changes no theme.
+    expect(read('src/settings/minimalLook.ts')).toContain(
+      'if (!minimalOn(settings) || (!settings.tintedSurfaces && !settings.useSystemDynamicTheme)) return settings;',
+    );
+    expect(read('src/settings/minimalLook.ts')).toContain('if (!MINIMAL_OFFERED || prev.minimalUi || !next.minimalUi) return next;');
+  });
+});
+
+describe('the minimal sheet in a right-to-left language', () => {
+  it('points its chevrons the way the day goes, as the full page does', () => {
+    const sheet = read('src/screens/home/TodayTimesSheet.tsx');
+    expect(sheet).toContain("import { isRtlLanguage } from '../../i18n/layoutDirection';");
+    expect(sheet).toContain('const rtl = isRtlLanguage(i18n.language);');
+    // The day before: on the right in RTL, its chevron pointing right.
+    expect(sheet).toMatch(/accessibilityLabel=\{t\('log\.previousDay'[\s\S]*?<Chevron color=\{muted\} back=\{!rtl\} \/>/);
+    expect(sheet).toMatch(/accessibilityLabel=\{t\('log\.nextDay'[\s\S]*?<Chevron color=\{muted\} back=\{rtl\} \/>/);
+    // The full page's, which these mirror.
+    expect(card).toContain('<Chevron back={!rtl} color={String(palette.muted)} />');
+    expect(card).toContain('<Chevron back={rtl} color={String(palette.muted)} />');
+  });
+});
+
+describe('an aim and the minimal face', () => {
+  it('lets a chosen countdown go when Minimal comes on: the page cannot say it, nor undo it', () => {
+    expect(card).toMatch(/useEffect\(\(\) => \{\s*if \(minimal\) \{\s*setChosenKey\(null\);\s*\} else \{\s*setTimesOpen\(false\);\s*sheetProgress\.stopAnimation\(\);\s*sheetProgress\.setValue\(0\);\s*\}\s*\}, \[minimal, sheetProgress\]\);/);
+    // Minimal draws no eyebrow (where "· chosen" and its tap live) and its
+    // sheet's rows log rather than aim.
+    expect(card).toMatch(/\{minimal \? null : \(\s*<HeroEyebrow/);
+    expect(card).not.toMatch(/onToggle: \(\) => aimAt/);
   });
 });

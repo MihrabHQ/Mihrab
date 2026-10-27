@@ -2,7 +2,7 @@
 // hover-ok: list-row / settings-row / sheet pressables. Hover-state
 // treatment would visually noise these dense surfaces; the touch
 // feedback (pressed opacity / ripple) is the right affordance here.
-import { memo, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import {
   Alert,
   BackHandler,
@@ -22,7 +22,8 @@ import { AccentShelf } from '../../components/AccentShelf';
 import { ConfirmModal } from '../../components/ConfirmModal';
 import { restartApp as nativeRestartApp } from '../../native/SystemTheme';
 import { saveSettings } from '../../settings/storage';
-import { enteringMinimal, minimalLook } from '../../settings/minimalLook';
+import { enteringMinimal, minimalLook, minimalOn } from '../../settings/minimalLook';
+import { useMinimalOffered } from '../../settings/useMinimalOffered';
 import { useClockFormatter } from '../../hooks/useClockFormatter';
 import type { ClockFormat } from '../../utils/clockFormat';
 import { SkyVariantPicker } from '../../components/SkyVariantPicker';
@@ -59,6 +60,23 @@ function AppearanceCardImpl() {
   const { settings: fullSettings } = usePrayerSettings();
   const { palette, isDark } = useAppPalette();
   const clock = useClockFormatter();
+  // Minimal is offered on the phone and the iPad, not on the Mac nor
+  // beside an iPhone's vertical bar (useMinimalOffered); and where it is
+  // not, a `minimalUi` carried over reads as off — for the switch and
+  // for what the colour controls below say about it alike. The raw
+  // setting read here hid the colour theme and disabled the system's
+  // colours "because Minimal keeps the classic colours" on a Mac that
+  // was not wearing Minimal at all.
+  const minimalOffered = useMinimalOffered();
+  const minimalActive = minimalOffered && minimalOn(settings);
+  // A Minimal carried over to where it is not offered (a backup restored
+  // onto an iPhone with the vertical bar) is let go here, where the
+  // reader would look for its switch and find none: the colour rules
+  // (minimalLook.ts) cannot see the bar, and would otherwise keep the
+  // colour theme off for a face the phone never wears.
+  useEffect(() => {
+    if (!minimalOffered && settings.minimalUi) updateSettings({ minimalUi: false });
+  }, [minimalOffered, settings.minimalUi, updateSettings]);
   // Pending value for the "restart required" themed confirm modal. Null
   // ⇒ hidden; true/false ⇒ the dynamic-colours value the user is trying
   // to switch to, awaiting confirmation.
@@ -181,7 +199,7 @@ function AppearanceCardImpl() {
             (light stays classic). Custom colours are an accent only, since
             free-form washes are barred from the surfaces. Hidden under
             system colours, which own the palette. */}
-        {!dynamicColorsActive && !skyActive && !settings.minimalUi && (
+        {!dynamicColorsActive && !skyActive && !minimalActive && (
           <SettingsBlock>
             <Text style={[s.label, { color: palette.muted }]}>
               {t('settings.colourTheme', 'Colour theme')}
@@ -216,7 +234,7 @@ function AppearanceCardImpl() {
                 : t('settings.systemDynamicColors')
             }
             help={
-              settings.minimalUi
+              minimalActive
                 ? t('settings.minimalClassicOnly')
                 : verdantActive
                 ? t(
@@ -236,7 +254,7 @@ function AppearanceCardImpl() {
             // from — "dark, in my wallpaper's colours" is a reasonable ask
             // and used to be unsayable. Verdant still owns the palette
             // when it is on, because two colour sources cannot both win.
-            disabled={verdantActive || settings.minimalUi}
+            disabled={verdantActive || minimalActive}
             // Material You / iOS dynamic colors are resolved at view-attach
             // time, so flipping them mid-session leaves stale tints on
             // already-mounted surfaces (#110). Defer the actual change to a
@@ -273,17 +291,19 @@ function AppearanceCardImpl() {
             Today keeps the sky, the countdown, the rail and a line of
             where and when, and puts the day's times behind a tap; the
             other tabs keep the one thing each is for. */}
-        <SettingsToggleRow
-          title={t('settings.minimalUi')}
-          help={t('settings.minimalUiHelp')}
-          value={settings.minimalUi}
-          onValueChange={v => {
-            // Under system colours, Minimal takes them off — a restart, as
-            // switching them off is; otherwise at once.
-            if (v && dynamicColorsActive) setPendingMinimal(true);
-            else updateSettings({ minimalUi: v });
-          }}
-        />
+        {minimalOffered ? (
+          <SettingsToggleRow
+            title={t('settings.minimalUi')}
+            help={t('settings.minimalUiHelp')}
+            value={minimalActive}
+            onValueChange={v => {
+              // Under system colours, Minimal takes them off — a restart, as
+              // switching them off is; otherwise at once.
+              if (v && dynamicColorsActive) setPendingMinimal(true);
+              else updateSettings({ minimalUi: v });
+            }}
+          />
+        ) : null}
       </SettingsGroup>
 
       {/* Time format — issue #18.

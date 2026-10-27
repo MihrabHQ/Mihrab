@@ -90,6 +90,7 @@ describe('the vertical bar is the iPhone Duo’s alone', () => {
       'src/screens/home/TodayCard.tsx',
       'src/screens/month/MonthTable.tsx',
       'src/screens/quran/MushafSurahScreen.tsx',
+      'src/settings/useMinimalOffered.ts',
     ]);
   });
 

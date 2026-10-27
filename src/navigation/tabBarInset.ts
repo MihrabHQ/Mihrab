@@ -23,6 +23,7 @@ import {
 } from '../native/SystemTheme';
 import { desktopSize } from '../responsive/desktop';
 import { useAppearanceSettings } from '../context/PrayerSettingsContext';
+import { useMinimalOffered } from '../settings/useMinimalOffered';
 
 /** The pill's own height. */
 export const TAB_BAR_HEIGHT = desktopSize(60);
@@ -279,13 +280,23 @@ export function useTabBarInset(): number {
 }
 
 /**
- * Minimal (settings.minimalUi), as the bar and the pages read it. Here
- * rather than in the navigator so a page's inset and the bar it clears
- * cannot disagree. Beside a vertical bar the tabs are the column's and
- * the dots are not drawn — `MainTabs` adds that condition itself.
+ * Minimal (settings.minimalUi), as the bar and the pages read it: asked
+ * for, AND offered on this screen of this device (useMinimalOffered —
+ * not on the Mac, not beside an iPhone's vertical bar, where the tabs
+ * are the bar's column and the dots are not drawn). Here rather than in
+ * the navigator so a page's inset and the bar it clears cannot disagree
+ * — and the ONE answer for every reader: the navigator, Today, the
+ * Quran's and the Log's own sideways paging, the inset. Each used to ask
+ * the raw setting with its own exceptions, and beside the vertical bar
+ * they disagreed: the pages kept a row of dots' worth of foot clear of
+ * dots that were never drawn, the Quran's lists and the Log's days gave
+ * up their sideways paging to a swipe that was off, and Today stood
+ * alone as the hero while the tabs were the column's.
  */
 export function useMinimalUi(): boolean {
-  return useAppearanceSettings().slice.minimalUi;
+  const offered = useMinimalOffered();
+  const asked = useAppearanceSettings().slice.minimalUi;
+  return offered && asked;
 }
 
 /**

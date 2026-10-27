@@ -41,7 +41,6 @@ import { useReduceMotion } from '../hooks/useReduceMotion';
 import { useKeyboardInset } from '../hooks/useKeyboardInset';
 import { useKeyboardAwareScroll } from '../hooks/useKeyboardAwareScroll';
 import { useAppPalette } from '../hooks/useAppPalette';
-import { useAppearanceSettings } from '../context/PrayerSettingsContext';
 import type { AppPalette } from '../theme/appPalette';
 import { SegmentedControl } from '../components/ui';
 import { useBreakpoint } from '../responsive/breakpoints';
@@ -83,7 +82,7 @@ import {
   SURAH_ROW_DIRECTION,
   surahNameSize,
 } from '../quran/surahHeaderGlyph';
-import { useTabBarInset } from '../navigation/tabBarInset';
+import { useMinimalUi, useTabBarInset } from '../navigation/tabBarInset';
 import { useTabPageTop } from '../navigation/useTabPageTop';
 import {
   QuranDownloadStripView,
@@ -167,8 +166,9 @@ export function QuranScreen() {
   const sheetEdges = useSheetSides();
   // Under Minimal (settings.minimalUi) a sideways drag turns the TAB
   // (MinimalSwipe), so the three lists do not page by it; their selector
-  // still does.
-  const minimal = useAppearanceSettings().slice.minimalUi;
+  // still does. As the navigator reads it (tabBarInset.ts): where the
+  // swipe is off — the Mac, beside a vertical bar — the lists keep theirs.
+  const minimal = useMinimalUi();
   // Two dialogs on this screen open with an autoFocus field in them.
   const keyboardInset = useKeyboardInset();
   const navigation =

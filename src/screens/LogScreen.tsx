@@ -130,7 +130,7 @@ import {
 import { cardEdgeStyle, inputChromeStyle } from '../theme/chrome';
 import { tabularNumeralStyle } from '../theme/textScale';
 import { useClockFormatter } from '../hooks/useClockFormatter';
-import { useTabBarInset } from '../navigation/tabBarInset';
+import { useMinimalUi, useTabBarInset } from '../navigation/tabBarInset';
 import { useTabPageTop } from '../navigation/useTabPageTop';
 import { useTabBarScroll } from '../navigation/tabBarVisibility';
 import { RADIUS, SPACING } from '../theme/tokens';
@@ -352,8 +352,11 @@ export function LogScreen() {
     [panX, stepDay],
   );
 
-  const minimalRef = useRef(settings.minimalUi);
-  minimalRef.current = settings.minimalUi;
+  // As the navigator reads it (tabBarInset.ts): where the swipe is off
+  // — the Mac, beside a vertical bar — the days keep their own.
+  const minimalUi = useMinimalUi();
+  const minimalRef = useRef(minimalUi);
+  minimalRef.current = minimalUi;
   const panResponder = useMemo(
     () =>
       PanResponder.create({

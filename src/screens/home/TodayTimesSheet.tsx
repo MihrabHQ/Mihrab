@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import type { LoggedStatus } from '../../journal/journal';
 import type { QuickLogPhase } from '../../journal/quickLog';
 import { useAppPalette } from '../../hooks/useAppPalette';
+import { isRtlLanguage } from '../../i18n/layoutDirection';
 import { MinimalSheet } from './MinimalSheet';
 import type { Animated } from 'react-native';
 import { SPACING } from '../../theme/tokens';
@@ -50,6 +51,7 @@ function TodayTimesSheetImpl({
   onClose,
   title,
   subtitle,
+  hint,
   rows,
   isToday,
   onPrev,
@@ -68,6 +70,13 @@ function TodayTimesSheetImpl({
   /** The day, in words, and under it the other calendar's date. */
   title: string;
   subtitle?: string;
+  /**
+   * For a moment after a tap on a check that could not be recorded, why
+   * — in the subtitle's place, as the full page's day bar says it. The
+   * full page is the only place it was said; under Minimal a tap on a
+   * prayer whose time has not come did nothing and said nothing.
+   */
+  hint?: string | null;
   rows: TimesSheetRow[];
   isToday: boolean;
   onPrev?: () => void;
@@ -81,9 +90,14 @@ function TodayTimesSheetImpl({
   /** Whose times: the source, or the method the reader chose. */
   source?: string;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { palette } = useAppPalette();
   const muted = String(palette.muted);
+  // The chevrons point the way the day goes, as the full page's do: in a
+  // right-to-left language the day before is on the right, and its
+  // chevron points right. The glyph is a drawn path, not a character, so
+  // the layout's mirroring does not turn it.
+  const rtl = isRtlLanguage(i18n.language);
   return (
     <MinimalSheet visible={visible} onClose={onClose} progress={progress} closeLabel={t('common.close', 'Close')}>
       <View style={styles.sheet}>
@@ -98,12 +112,15 @@ function TodayTimesSheetImpl({
             disabled={!onPrev}
             hitSlop={10}
             style={({ pressed }) => [styles.step, pressed && styles.pressed, !onPrev && styles.stepOff]}>
-            <Chevron color={muted} back />
+            <Chevron color={muted} back={!rtl} />
           </Pressable>
           {onToggleMinimal ? (
             <Pressable
               accessibilityRole="button"
-              accessibilityLabel={t('settings.minimalUi', 'Minimal')}
+              // The door out of Minimal — named by where it goes, not by
+              // the glyph: "Minimal" on the one control that turns it off.
+              accessibilityLabel={t('onboarding.personalise.layoutFull', 'Full')}
+              accessibilityHint={t('settings.minimalUiHelp')}
               onPress={() => {
                 onClose();
                 onToggleMinimal();
@@ -118,17 +135,28 @@ function TodayTimesSheetImpl({
             <View style={styles.step} importantForAccessibility="no-hide-descendants" accessibilityElementsHidden />
           ) : null}
           <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={isToday ? title : `${title}. ${t('home.backToToday', 'Back to today')}`}
+            // Today's date is a heading, as the full page's is; another
+            // day's is the way back. The hint is said with it: the line it
+            // stands on is inside this element, and would go unread.
+            accessibilityRole={isToday ? 'header' : 'button'}
+            accessibilityLabel={[
+              title,
+              hint ?? subtitle,
+              isToday ? null : t('home.backToToday', 'Back to today'),
+            ]
+              .filter(Boolean)
+              .join('. ')}
             onPress={isToday ? undefined : onBackToToday}
-            disabled={isToday}
             style={styles.day}>
             <Text style={[typeStyle('title3'), styles.title, { color: palette.text }]} numberOfLines={1}>
               {title}
             </Text>
-            {subtitle ? (
-              <Text style={[styles.subtitle, { color: palette.muted }]} numberOfLines={1}>
-                {subtitle}
+            {hint || subtitle ? (
+              <Text
+                style={[styles.subtitle, { color: hint ? palette.accent : palette.muted }]}
+                numberOfLines={1}
+                accessibilityLiveRegion={hint ? 'polite' : 'none'}>
+                {hint ?? subtitle}
               </Text>
             ) : null}
           </Pressable>
@@ -155,7 +183,7 @@ function TodayTimesSheetImpl({
             disabled={!onNext}
             hitSlop={10}
             style={({ pressed }) => [styles.step, pressed && styles.pressed, !onNext && styles.stepOff]}>
-            <Chevron color={muted} />
+            <Chevron color={muted} back={rtl} />
           </Pressable>
         </View>
         {/* Off today, the way back — a line, as the full page's day bar has. */}

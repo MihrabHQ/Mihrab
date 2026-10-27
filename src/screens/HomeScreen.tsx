@@ -99,7 +99,7 @@ import { MihrabHeaderTitle } from '../navigation/MihrabHeaderTitle';
 import { RamadanCountdownCard } from './home/RamadanCountdownCard';
 import { useNonReadyPhaseElement } from './home/usePhaseRouting';
 import { HOME_SCREEN_PADDING } from './home/tokens';
-import { useTabBarInset } from '../navigation/tabBarInset';
+import { useMinimalUi, useTabBarInset } from '../navigation/tabBarInset';
 import { useTabBarScroll } from '../navigation/tabBarVisibility';
 import { HomeStatusBand } from './home/HomeStatusBand';
 import { setVerticalBarActions, useVerticalBar, useVerticalBarInsets } from '../native/VerticalBar';
@@ -521,6 +521,8 @@ export function HomeScreen() {
   // Focus-scoped (not mount-scoped) so the Settings "Show the app tour"
   // replay — which clears the flag and pops back here — re-triggers it.
   const tabBarInset = useTabBarInset();
+  // Minimal, as the navigator reads it (one answer: tabBarInset.ts).
+  const minimalUi = useMinimalUi();
   const vbarPad = useVerticalBarInsets();
   // The bar gets out of the way while reading — see tabBarVisibility.ts.
   const tabBarScroll = useTabBarScroll();
@@ -1720,9 +1722,12 @@ export function HomeScreen() {
    * where, which day and whose times. The day bar, the rows, the Quran
    * door and the chips stand down; a tap anywhere on the page opens the
    * day's times as a sheet. Only the phone's full-bleed page: the
-   * dashboard, the book and a roomy tablet have room, and keep it.
+   * dashboard, the book and a roomy tablet have room, and keep it — and
+   * only where the navigator is Minimal too (`useMinimalUi`: not on the
+   * Mac, not beside an iPhone's vertical bar), so the page and its tabs
+   * never wear different faces.
    */
-  const minimal = settings.minimalUi && !isDashboard && !isMacCatalyst && !isRoomy && !book;
+  const minimal = minimalUi && !isDashboard && !isRoomy && !book;
   // Short strings a render; not memoised, this far past the page's early
   // returns. The footer is where and which day — two facts, not three:
   // whose times is a fact about the times, and goes with them in the

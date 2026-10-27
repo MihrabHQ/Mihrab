@@ -45,6 +45,7 @@ import { useTranslation } from 'react-i18next';
 import { useIsActive } from '../../hooks/useIsActive';
 import { useLively } from '../../hooks/useLively';
 import { useReduceMotion } from '../../hooks/useReduceMotion';
+import { useMinimalOffered } from '../../settings/useMinimalOffered';
 import { useIncreasedContrast } from '../../hooks/useIncreasedContrast';
 import {
   easeOutCubic,
@@ -1402,7 +1403,12 @@ const HeroToday = memo(function HeroToday({
         <Text
           style={[styles.heroCaption, tabularNumeralStyle, { color: ink.muted }]}
           numberOfLines={1}
-          maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}>
+          maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}
+          // The page's one tap, said once, here: the hero round it is not
+          // an element of its own (TodayCardImpl, `HeroWrap`), so the
+          // figures over this line and the footer under it are read.
+          accessibilityRole="button"
+          accessibilityHint={t('a11y.openTodayTimes', 'Opens today’s prayer times')}>
           {`${targetLabel} · ${targetClock}`}
         </Text>
       ) : null}
@@ -1562,6 +1568,9 @@ function TodayCardImpl({
   const { palette } = useAppPalette();
   const clock = useClockFormatter();
   const { settings, updateSettings } = usePrayerSettings();
+  // The day bar's shortcut into Minimal: not on the Mac, nor beside an
+  // iPhone's vertical bar, where Minimal stands down (useMinimalOffered).
+  const minimalOffered = useMinimalOffered();
   /**
    * The prayer the user aimed the countdown at, or null for "whatever is
    * next".
@@ -1585,6 +1594,25 @@ function TodayCardImpl({
   // so a drag up on the page can start the retreat before the sheet is
   // there (MinimalSheet).
   const sheetProgress = useRef(new Animated.Value(0)).current;
+  // The turn of the face.
+  // An aim outlives the face it was taken on: the full page's rows aim
+  // the countdown (`aimAt`), and the eyebrow says "· chosen" with a tap to
+  // let it go. Minimal has neither — its sheet's rows log, they do not
+  // aim — so an aim taken on the full page and carried into Minimal
+  // would count to a prayer the page never says it chose, with no way
+  // back but waiting for it. The turn to Minimal lets the aim go.
+  // The other way, the sheet goes with the face it belongs to, and the
+  // rise it owns is put back at rest: left at 1 (Minimal turned off from
+  // the sheet's own door), the next Minimal page came up receded.
+  useEffect(() => {
+    if (minimal) {
+      setChosenKey(null);
+    } else {
+      setTimesOpen(false);
+      sheetProgress.stopAnimation();
+      sheetProgress.setValue(0);
+    }
+  }, [minimal, sheetProgress]);
   const lastSheetRows = useRef<TimesSheetRow[]>([]);
   const reduceMotion = useReduceMotion();
 
@@ -2217,8 +2245,10 @@ function TodayCardImpl({
           if (reduceMotion) return;
           sheetProgress.setValue(Math.min(SWIPE_UP_PULL, Math.max(0, -e.translationY / SWIPE_UP_REACH)));
         })
-        .onEnd(e => {
-          if (e.translationY < -30 || e.velocityY < -400) {
+        .onEnd((e, success) => {
+          // A release opens; a drag taken from the finger (another
+          // handler, the system) only puts the page back.
+          if (success && (e.translationY < -30 || e.velocityY < -400)) {
             onOpenTimes();
           } else {
             Animated.spring(sheetProgress, {
@@ -2232,8 +2262,13 @@ function TodayCardImpl({
         }),
     [minimal, onOpenTimes, reduceMotion, sheetProgress],
   );
-  // Minimal: the hero's foreground recedes under the sheet — see MinimalSheet.
-  const recess = minimal ? { transform: pageRecess(sheetProgress, reduceMotion) } : null;
+  // Minimal: the hero's foreground recedes under the sheet — see
+  // MinimalSheet. Built once: the card renders every second with the
+  // countdown, and each build is a new native node on the rise.
+  const recess = useMemo(
+    () => (minimal ? { transform: pageRecess(sheetProgress, reduceMotion) } : null),
+    [minimal, sheetProgress, reduceMotion],
+  );
   // Minimal: the hero's wrap is the tap that opens the day's times.
   // (A View takes every prop the Pressable is given here but the press,
   // and that one is only given when it IS a Pressable.)
@@ -2416,9 +2451,14 @@ function TodayCardImpl({
         {...(minimal
           ? {
               onPress: onOpenTimes,
-              accessibilityRole: 'button' as const,
-              accessibilityLabel: t('home.minimalTimesTitle', 'Today’s times'),
-              accessibilityHint: t('a11y.openTodayTimes', 'Opens today’s prayer times'),
+              // Not an element of its own: a Pressable is one to the
+              // screen reader unless told otherwise, and as one it swallowed
+              // the page — the figures, the prayer's line, the footer and
+              // the heart inside it were one "button" that said none of
+              // them. Its children are read instead; the prayer's line
+              // carries the tap's name (HeroToday), and a double tap on any
+              // of them lands here all the same.
+              accessible: false,
             }
           : {})}
         style={[
@@ -2611,10 +2651,15 @@ function TodayCardImpl({
             <Chevron back={!rtl} color={String(palette.muted)} />
           </Pressable>
 
-          {settings.showDataStats ? (
+          {/* Not under the system's colours either: Minimal takes them
+              off, which Settings only does with a restart (#110) — a
+              shortcut that did it in place left the mounted surfaces in
+              the colours the setting no longer said. */}
+          {settings.showDataStats && minimalOffered && !settings.useSystemDynamicTheme ? (
             <Pressable
-              accessibilityRole="button"
+              accessibilityRole="switch"
               accessibilityLabel={t('settings.minimalUi', 'Minimal')}
+              accessibilityState={{ checked: settings.minimalUi }}
               onPress={() => updateSettings({ minimalUi: !settings.minimalUi })}
               hitSlop={14}
               style={({ pressed }) => [styles.dayStep, pressed && styles.dayStepPressed]}>
@@ -2700,7 +2745,7 @@ function TodayCardImpl({
               style={({ pressed }) => [styles.dayStep, pressed && styles.dayStepPressed]}>
               <MonthGlyph color={String(palette.muted)} />
             </Pressable>
-          ) : settings.showDataStats ? (
+          ) : settings.showDataStats && minimalOffered && !settings.useSystemDynamicTheme ? (
             <DayBarSlot />
           ) : null}
           <Pressable
@@ -2801,6 +2846,7 @@ function TodayCardImpl({
           onClose={onCloseTimes}
           title={`${getDayLabel(sheetOffset)} · ${getDayDate(sheetOffset)}`}
           subtitle={getHijriDate ? getHijriDate(sheetOffset) : undefined}
+          hint={hint}
           rows={sheetRowsShown}
           isToday={sheetOffset === 0}
           onPrev={dayAt(sheetOffset - 1) ? () => setSheetOffset(o => o - 1) : undefined}

@@ -31,11 +31,12 @@ describe('Minimal wears the classic colours', () => {
     );
     expect(read('src/settings/storage.ts')).toContain('return noteSecureRead(minimalLook(merged), secureFailed);');
     const card = read('src/screens/settings/AppearanceCard.tsx');
-    expect(card).toContain('{!dynamicColorsActive && !skyActive && !settings.minimalUi && (');
-    expect(card).toContain('disabled={verdantActive || settings.minimalUi}');
+    expect(card).toContain('{!dynamicColorsActive && !skyActive && !minimalActive && (');
+    expect(card).toContain('disabled={verdantActive || minimalActive}');
+    expect(card).toContain('const minimalActive = minimalOffered && minimalOn(settings);');
     expect(card).toContain('if (v && dynamicColorsActive) setPendingMinimal(true);');
     expect(read('src/onboarding/screens/PersonaliseScreen.tsx')).toContain(
-      '{dynamicColours || skyActive || settings.minimalUi ? null : (',
+      '{dynamicColours || skyActive || minimalActive ? null : (',
     );
   });
 
@@ -51,5 +52,20 @@ describe('Minimal wears the classic colours', () => {
     expect(enteringMinimal(on, on)).toBe(on);
     // Turning it off changes nothing.
     expect(enteringMinimal(on, { ...on, minimalUi: false })).toEqual({ ...on, minimalUi: false });
+  });
+});
+
+describe('Minimal is not offered on the Mac', () => {
+  it('reads as off there, for the app and the colour rules alike', () => {
+    jest.resetModules();
+    jest.doMock('../src/responsive/breakpoints', () => ({ isMacCatalyst: true }));
+    const m = require('../src/settings/minimalLook');
+    expect(m.MINIMAL_OFFERED).toBe(false);
+    expect(m.minimalOn({ minimalUi: true })).toBe(false);
+    const s = { minimalUi: true, tintedSurfaces: true, useSystemDynamicTheme: false, appearance: 'light', skyVariant: 'realistic' };
+    // A colour theme stays a colour theme; turning it on changes no theme.
+    expect(m.minimalLook(s)).toBe(s);
+    expect(m.enteringMinimal({ minimalUi: false }, s)).toBe(s);
+    jest.dontMock('../src/responsive/breakpoints');
   });
 });

@@ -1,3 +1,20 @@
+import { isMacCatalyst } from '../responsive/breakpoints';
+
+/**
+ * Where Minimal is offered: the phone and the iPad, not the Mac. A Mac
+ * window is a desktop's, with a pointer and a keyboard, any size the
+ * reader drags it to — the dots, the swipe between pages and the sheet
+ * pulled up from the foot are a phone's hand. On the Mac the switch is not
+ * shown, and a `minimalUi` carried over (a backup, an old build) is read
+ * as off — by the app and by the colour rules below alike.
+ */
+export const MINIMAL_OFFERED = !isMacCatalyst;
+
+/** Whether Minimal is on here: asked for, and offered on this device. */
+export function minimalOn(settings: { minimalUi: boolean }): boolean {
+  return MINIMAL_OFFERED && settings.minimalUi;
+}
+
 /**
  * Minimal wears the Sky theme's colours or the classic ones.
  *
@@ -15,7 +32,7 @@
 export function minimalLook<T extends { minimalUi: boolean; tintedSurfaces: boolean; useSystemDynamicTheme: boolean }>(
   settings: T,
 ): T {
-  if (!settings.minimalUi || (!settings.tintedSurfaces && !settings.useSystemDynamicTheme)) return settings;
+  if (!minimalOn(settings) || (!settings.tintedSurfaces && !settings.useSystemDynamicTheme)) return settings;
   return { ...settings, tintedSurfaces: false, useSystemDynamicTheme: false };
 }
 
@@ -29,6 +46,6 @@ export function enteringMinimal<T extends { minimalUi: boolean; appearance: stri
   prev: { minimalUi: boolean },
   next: T,
 ): T {
-  if (prev.minimalUi || !next.minimalUi) return next;
+  if (!MINIMAL_OFFERED || prev.minimalUi || !next.minimalUi) return next;
   return { ...next, appearance: 'sky', skyVariant: 'vibrant' };
 }

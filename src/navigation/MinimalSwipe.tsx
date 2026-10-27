@@ -11,8 +11,8 @@ import { hapticScrubTick } from '../polish/haptics';
 import { useAfterFirstPaint } from '../boot/firstPaint';
 import { afterRun } from '../boot/launchWarp';
 import {
+  finishPagerBase,
   pagerDragRaw,
-  pagerEdges,
   pagerPosition,
   setPagerEngaged,
   settlePagerBase,
@@ -20,7 +20,7 @@ import {
   springPagerDrag,
   startPagerWarmup,
   usePagerBlockers,
-  usePagerEngaged,
+  usePagerReachAll,
   usePagerWarmth,
 } from './minimalPager';
 
@@ -71,7 +71,12 @@ export function MinimalSwipe({
   // every tab change: a handler rebuilt mid-drag is a drag cut short.
   const live = useRef({ routes, index, width });
   live.current = { routes, index, width };
-  const busy = useRef(false);
+  // A turn under way: the settle after a lift, which a new finger may
+  // take over (below). The number tells a settle's callback whether it
+  // is still the current turn.
+  const turn = useRef(0);
+  const settling = useRef(false);
+  const fingerDown = useRef(false);
   // The graphs that scroll sideways themselves: the swipe waits for them.
   const blockers = usePagerBlockers();
 
@@ -84,11 +89,25 @@ export function MinimalSwipe({
     () => (e: HandlerStateChangeEvent<PanGestureHandlerEventPayload>) => {
       const { state, oldState, translationX, velocityX } = e.nativeEvent;
       if (state === State.ACTIVE) {
-        if (!busy.current) setPagerEngaged(true);
+        fingerDown.current = true;
+        // A finger down on a row still settling after the last turn
+        // takes the row from there: the settle is finished where it
+        // was going, and this finger's drag is read like any other. It
+        // used to be ignored until the settle had landed — its moves
+        // still went into the drag natively, fighting the settle, its
+        // lift was dropped, and the settle's end zeroed the drag under
+        // the finger: a jump, and a flick that did not turn.
+        if (settling.current) {
+          turn.current += 1;
+          settling.current = false;
+          pagerDragRaw.stopAnimation();
+          finishPagerBase();
+        }
+        setPagerEngaged(true);
         return;
       }
       if (oldState !== State.ACTIVE) return;
-      if (busy.current) return;
+      fingerDown.current = false;
       if (state !== State.END) {
         // Cancelled or failed under the finger: back where it was.
         springPagerDrag(() => setPagerEngaged(false));
@@ -101,13 +120,19 @@ export function MinimalSwipe({
       let step = translationX < 0 ? 1 : -1;
       if (I18nManager.isRTL) step = -step;
       const next = far && sameWay ? rs[i + step] : undefined;
-      busy.current = true;
+      settling.current = true;
+      const mine = ++turn.current;
       const done = () => {
+        // Taken over by a new finger: that turn's own end will tidy up.
+        if (turn.current !== mine) {
+          setPagerEngaged(false);
+          return;
+        }
         // Belt and braces: a move the handler delivered after the lift
         // would leave the drag where that move put it, under a page that
         // had already settled. Zero is where a lifted finger leaves it.
-        pagerDragRaw.setValue(0);
-        busy.current = false;
+        if (!fingerDown.current) pagerDragRaw.setValue(0);
+        settling.current = false;
         setPagerEngaged(false);
       };
       if (!next) {
@@ -129,30 +154,32 @@ export function MinimalSwipe({
   // This page's place on the strip: as many page-widths aside as it is
   // tabs from the position — the one number the dots read too, so the
   // pages and the dots can never disagree, and a page two tabs away is
-  // two pages away, under a finger and through a turn alike.
-  const edges = pagerEdges(index, routes.length);
+  // two pages away, under a finger and through a turn alike. Not
+  // rebuilt on a turn: the position is the same node whichever tab is
+  // current (minimalPager.ts).
+  const count = routes.length;
   const offset = useMemo(
     () =>
       Animated.multiply(
-        Animated.subtract(myIndex, pagerPosition(width, edges)),
+        Animated.subtract(myIndex, pagerPosition(width, count)),
         I18nManager.isRTL ? -width : width,
       ),
-    // The edges are two booleans of the index: the index is the key.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [myIndex, index, routes.length, width],
+    [myIndex, count, width],
   );
 
   // In reach: the page on show, its neighbours, and every page while a
-  // turn is under way (a hold on the dots can slide to any of them).
+  // hold on the dots or a slide across the row could reveal any of them
+  // (`usePagerReachAll`) — not on a swipe, which reveals a neighbour at
+  // most, and used to lay out four far pages on its first move.
   // Not the neighbours before the first paint: the launch's first frame
   // is Today's alone, and its run — the countdown counting to now — must
   // not share the JS thread with the Quran page mounting beside it
   // (measured: the run drew five frames where it draws eighty).
-  const engaged = usePagerEngaged();
+  const reachAll = usePagerReachAll();
   const painted = useAfterFirstPaint();
   const [settled, setSettled] = useState(false);
   const distance = Math.abs(myIndex - index);
-  const inReach = engaged || distance <= (settled ? 1 : 0);
+  const inReach = reachAll || distance <= (settled ? 1 : 0);
   // Mounted once in reach, or once the warm-up has come this far — and
   // then kept, so a page keeps its scroll and its state across turns.
   const warmth = usePagerWarmth();

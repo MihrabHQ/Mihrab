@@ -44,6 +44,8 @@ import {
   usePrayerSettings,
 } from '../../context/PrayerSettingsContext';
 import { useClockFormatter } from '../../hooks/useClockFormatter';
+import { minimalOn } from '../../settings/minimalLook';
+import { useMinimalOffered } from '../../settings/useMinimalOffered';
 import {
   SettingsBlock,
   SettingsGroup,
@@ -76,6 +78,14 @@ export function PersonaliseScreen({
   const { t } = useTranslation();
   const { palette } = useAppPalette();
   const { settings, updateSettings } = usePrayerSettings();
+  // Minimal is offered on the phone and the iPad, not on the Mac nor
+  // beside an iPhone's vertical bar (useMinimalOffered) — and not while
+  // the system's colours are on: Minimal takes them off, which Settings
+  // only does with a restart (#110), and the walkthrough has none to
+  // offer. Where it is not offered, a `minimalUi` carried over reads as
+  // off, for the colour theme's shelf as for the layout.
+  const minimalOffered = useMinimalOffered();
+  const minimalActive = minimalOffered && minimalOn(settings);
   const clock = useClockFormatter();
 
   const coords = useMemo(() => previewCoords(settings), [settings]);
@@ -255,7 +265,7 @@ export function PersonaliseScreen({
           ) : null}
         </SettingsBlock>
         {/* Minimal wears the classic colours (settings/minimalLook.ts). */}
-        {dynamicColours || skyActive || settings.minimalUi ? null : (
+        {dynamicColours || skyActive || minimalActive ? null : (
           <SettingsBlock>
             <Text
               style={[typeStyle('label'), styles.label, { color: palette.muted }]}>
@@ -287,26 +297,28 @@ export function PersonaliseScreen({
         )}
         {/* Today's two faces, shown: the full page, chosen until changed,
             and Minimal (Settings → Appearance → Minimal). */}
-        <SettingsBlock>
-          <Text style={[typeStyle('label'), styles.label, { color: palette.muted }]}>
-            {t('onboarding.personalise.layout', 'Layout')}
-          </Text>
-          <LayoutPicker
-            testID="personalise-layout"
-            value={settings.minimalUi ? 'minimal' : 'full'}
-            onChange={v => updateSettings({ minimalUi: v === 'minimal' })}
-            skyTop={skyActive ? sky.top : String(palette.accentBg)}
-            skyFoot={skyActive ? sky.bottom : String(palette.bg)}
-            page={String(palette.bg)}
-            text={String(palette.text)}
-            muted={String(palette.muted)}
-            accent={String(palette.accent)}
-            border={String(palette.border)}
-          />
-          <Text style={[s.help, { color: palette.muted, marginTop: SPACING.sm }]}>
-            {t('settings.minimalUiHelp')}
-          </Text>
-        </SettingsBlock>
+        {minimalOffered && !settings.useSystemDynamicTheme ? (
+          <SettingsBlock>
+            <Text style={[typeStyle('label'), styles.label, { color: palette.muted }]}>
+              {t('onboarding.personalise.layout', 'Layout')}
+            </Text>
+            <LayoutPicker
+              testID="personalise-layout"
+              value={minimalActive ? 'minimal' : 'full'}
+              onChange={v => updateSettings({ minimalUi: v === 'minimal' })}
+              skyTop={skyActive ? sky.top : String(palette.accentBg)}
+              skyFoot={skyActive ? sky.bottom : String(palette.bg)}
+              page={String(palette.bg)}
+              text={String(palette.text)}
+              muted={String(palette.muted)}
+              accent={String(palette.accent)}
+              border={String(palette.border)}
+            />
+            <Text style={[s.help, { color: palette.muted, marginTop: SPACING.sm }]}>
+              {t('settings.minimalUiHelp')}
+            </Text>
+          </SettingsBlock>
+        ) : null}
       </SettingsGroup>
 
     </OnboardingFrame>
