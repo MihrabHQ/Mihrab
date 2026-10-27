@@ -24,6 +24,7 @@
 import React, { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import {
   Animated,
+  Easing,
   FlatList,
   Platform,
   Pressable,
@@ -547,6 +548,23 @@ const HeroToday = memo(function HeroToday({
   const active = useIsActive();
   const reduceMotion = useReduceMotion();
   const posed = frozenAt != null;
+  // Minimal: the rail head's breath. Only while looked at (focus AND
+  // foreground, the countdown's own gate), never under Reduce Motion,
+  // never in the posed twin. One native loop; nothing on the JS thread.
+  const breathing = minimal && active && !reduceMotion && !posed;
+  const breath = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    if (!breathing) return undefined;
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(breath, { toValue: 1, duration: 2600, easing: Easing.out(Easing.quad), useNativeDriver: true }),
+        Animated.timing(breath, { toValue: 0, duration: 0, useNativeDriver: true }),
+        Animated.delay(1800),
+      ]),
+    );
+    loop.start();
+    return () => loop.stop();
+  }, [breathing, breath]);
   const [liveNow, setNow] = useState(() => new Date());
   // THE POSE FOLLOWS THE INTERVAL. The twin is mounted once and stays up
   // all day, and `frozenAt` moves on at every prayer; read into state once
@@ -1236,6 +1254,22 @@ const HeroToday = memo(function HeroToday({
                 },
               ]}>
               <View style={[styles.railRing, { backgroundColor: inkFoot.ring }]} />
+              {/* Minimal: the head breathes — a ring that swells and
+                  fades every few seconds, the one moving thing on a
+                  still page, saying the count is live. */}
+              {breathing ? (
+                <Animated.View
+                  pointerEvents="none"
+                  style={[
+                    styles.railBreath,
+                    {
+                      backgroundColor: inkFoot.fill,
+                      opacity: breath.interpolate({ inputRange: [0, 0.15, 1], outputRange: [0, 0.4, 0] }),
+                      transform: [{ scale: breath.interpolate({ inputRange: [0, 1], outputRange: [1, 4.5] }) }],
+                    },
+                  ]}
+                />
+              ) : null}
               <View style={[styles.railHead, { backgroundColor: inkFoot.fill }]} />
             </View>
           </View>
@@ -2689,6 +2723,15 @@ const styles = StyleSheet.create({
   railTrack: { height: RAIL_LINE, borderRadius: RAIL_LINE / 2 },
   railFill: { height: '100%', borderRadius: RAIL_LINE / 2 },
   railHead: {
+    position: 'absolute',
+    end: -RAIL_HEAD / 2,
+    top: (RAIL_LINE - RAIL_HEAD) / 2,
+    width: RAIL_HEAD,
+    height: RAIL_HEAD,
+    borderRadius: RAIL_HEAD / 2,
+  },
+  // The breath: the head's own size, swelling past the ring and fading.
+  railBreath: {
     position: 'absolute',
     end: -RAIL_HEAD / 2,
     top: (RAIL_LINE - RAIL_HEAD) / 2,
