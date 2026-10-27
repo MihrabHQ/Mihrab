@@ -1,25 +1,19 @@
 /**
- * The practice graph fills the card it is drawn on, and reads in order.
+ * The practice strip fills the card it is drawn on, and reads in order.
  *
- * Reported with a screenshot: on a 4x4 the graph stopped about eighty
- * pixels short of the right-hand edge that the divider, the date and the
- * "0 of 5 logged" line all reach — which reads as a graph being clipped,
- * not as a graph that chose to be narrower.
+ * The strip has six rows whatever the box — the five prayers and the
+ * fast — so the HEIGHT decides the cell (a sixth of the box, within the
+ * bounds that keep a cell a cell) and the WIDTH decides the days: as many
+ * columns as that cell fits across, with a week's breath after each
+ * Sunday, the cell then widened by the few dp the last column does not
+ * divide into so the strip lands on the card's edges.
  *
- * The cause was an estimate. The column count came from a cell size
- * derived from the box's HEIGHT — a number the caller can only guess at,
- * since it is the launcher's report for the host view less whatever chrome
- * the card thinks it draws — and the cell was then drawn at a different
- * size again. Two shapes with no reason to agree, and when they disagreed
- * `fitStart` scaled the bitmap to whichever axis bound first and left the
- * remainder against one edge.
- *
- * It is answered from the WIDTH now, which the caller does know: the
- * columns are however many readable cells fit across it and the cell is
- * that width divided exactly among them. The height only decides how many
- * rows there is room for, rounded down, because a row too few is a band of
- * empty card and a row too many is the whole graph shrunk away from its
- * edge.
+ * Two failures this guards. A strip drawn for a box WIDER than it has
+ * stops short of the right-hand edge; one drawn TALLER than its box is
+ * shrunk whole by the image and stops short of both edges — which is what
+ * the Log card did while six rows of the smallest cell were taller than
+ * the room the card had. A short box now closes the gaps before it
+ * shrinks the cells, and the strip is never taller than its box.
  */
 import { readFileSync } from 'fs';
 import path from 'path';
@@ -44,73 +38,57 @@ const layoutXml = (name: string) =>
   );
 
 const numberOf = (name: string) => {
-  const m = new RegExp(`${name} = ([0-9_.]+)f?`).exec(GRID);
+  const m = new RegExp(`val ${name} = ([0-9_.]+)f?`).exec(GRID);
   if (!m) throw new Error(`${name} is gone from PracticeGridBitmap.kt`);
   return Number(m[1].replace(/_/g, ''));
 };
 
 const GAP_DP = numberOf('GAP_DP');
-const TARGET_CELL_DP = numberOf('TARGET_CELL_DP');
-const MAX_ROWS = numberOf('MAX_ROWS');
-const MIN_COLUMNS = numberOf('MIN_COLUMNS');
+const MIN_GAP_DP = numberOf('MIN_GAP_DP');
+const MIN_CELL_DP = numberOf('MIN_CELL_DP');
 const MAX_CELL_DP = numberOf('MAX_CELL_DP');
-const MIN_ROW_RATIO = numberOf('MIN_ROW_RATIO');
 const MAX_ROW_RATIO = numberOf('MAX_ROW_RATIO');
-
 const RING_RATIO = numberOf('RING_RATIO');
+const ROWS = numberOf('STRIP_ROWS');
 
+const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 /** The margin the bitmap keeps for the rings that overhang a cell. */
-const marginOf = (cell: number) => 2 * Math.max(1.5, cell * RING_RATIO);
+const MARGIN = 2 * Math.max(1.5, MAX_CELL_DP * RING_RATIO);
 
-/**
- * A mirror of `layoutFor`'s geometry, built from the Kotlin's own numbers.
- *
- * `cell` is the day's WIDTH, which the box's width decides on its own;
- * `cellH` is its height, which is the width within MAX_ROW_RATIO and is
- * what spends the dp the row count could not.
- */
-function layoutFor(boxW: number, boxH: number, maxDays: number) {
-  const columns = Math.max(
-    MIN_COLUMNS,
-    Math.round((boxW + GAP_DP) / (TARGET_CELL_DP + GAP_DP)),
-  );
-  const cell = Math.min(
-    MAX_CELL_DP,
-    Math.max(3, (boxW - (columns - 1) * GAP_DP) / columns),
-  );
-  const usableH = Math.max(cell, boxH - marginOf(cell));
-  const roomFor = Math.floor((usableH + GAP_DP) / (cell * MIN_ROW_RATIO + GAP_DP));
-  const wanted = Math.min(
-    Math.round((usableH + GAP_DP) / (cell + GAP_DP)),
-    roomFor,
-  );
-  const rows = Math.min(
-    Math.max(1, wanted),
-    MAX_ROWS,
-    Math.max(1, Math.floor(maxDays / columns)),
-  );
-  const exactH = (usableH - (rows - 1) * GAP_DP) / rows;
-  const cellH = Math.max(3, Math.min(exactH, cell * MAX_ROW_RATIO));
-  // `wanted` is what the HEIGHT asked for; when `rows` is less than it, the
-  // day cap is what settled the count and the leftover is a design choice,
-  // not a quantising error.
-  return { rows, columns, cell, cellH, wanted, usableH };
+/** A mirror of `layoutFor`'s geometry, built from the Kotlin's own numbers. */
+function layoutFor(boxWIn: number, boxHIn: number, maxDays: number) {
+  const boxW = Math.max(40, boxWIn);
+  const boxH = Math.max(30, boxHIn);
+  const usableH = Math.max(ROWS * 3, boxH - MARGIN);
+  let gap = GAP_DP;
+  let cellFromH = (usableH - (ROWS - 1) * gap) / ROWS;
+  if (cellFromH < MIN_CELL_DP) {
+    gap = clamp((usableH - ROWS * MIN_CELL_DP) / (ROWS - 1), MIN_GAP_DP, GAP_DP);
+    cellFromH = (usableH - (ROWS - 1) * gap) / ROWS;
+  }
+  cellFromH = clamp(cellFromH, 3, MAX_CELL_DP);
+  const breath = gap / 7;
+  const columns = clamp(Math.round((boxW + gap) / (cellFromH + gap + breath)), 7, Math.max(7, maxDays));
+  const breaths = Math.floor(columns / 7);
+  const cell = Math.max(3, (boxW - (columns - 1) * gap - breaths * gap) / columns);
+  const cellH = Math.max(3, Math.min(cellFromH, cell * MAX_ROW_RATIO));
+  return { rows: ROWS, columns, cell, cellH, gap, breaths, usableH };
 }
 
-const gridW = (l: { columns: number; cell: number }) =>
-  l.columns * l.cell + (l.columns - 1) * GAP_DP;
-const gridH = (l: { rows: number; cellH: number }) =>
-  l.rows * l.cellH + (l.rows - 1) * GAP_DP;
+const gridW = (l: ReturnType<typeof layoutFor>) =>
+  l.columns * l.cell + (l.columns - 1) * l.gap + l.breaths * l.gap;
+const gridH = (l: ReturnType<typeof layoutFor>) => l.rows * l.cellH + (l.rows - 1) * l.gap;
 
 /** Grid boxes measured off real cards, in dp. */
 const BOXES: Array<[string, number, number]> = [
-  ['the 4x4 that was reported', 318, 127],
-  ['a taller card', 318, 200],
-  ['a 4x2, where the graph now appears at all', 318, 40],
+  ['the Pixel 10 Pro’s 4×2 Log card', 355, 61],
+  ['the Pixel 10 Pro’s 4×2 prayer card', 359, 56],
+  ['an emulator’s shorter 4×2', 341, 39],
+  ['a tall box', 318, 200],
   ['the narrow column beside the streak number', 150, 90],
 ];
 
-describe('the graph spans its box, whatever the height turns out to be', () => {
+describe('the strip spans its box, whatever the height turns out to be', () => {
   it.each(BOXES)('%s reaches both edges', (_label, boxW, boxH) => {
     const l = layoutFor(boxW, boxH, 210);
     // Within a rounding error of the box's own width — no remainder can
@@ -119,148 +97,79 @@ describe('the graph spans its box, whatever the height turns out to be', () => {
   });
 
   it.each(BOXES)('%s is never taller than its box', (_label, boxW, boxH) => {
-    // Taller than the box is the failure that shrinks the whole graph and
-    // stands it away from the right-hand edge. Shorter is a band of card.
+    // Taller than the box is the failure that shrinks the whole strip and
+    // stands it away from both edges. Shorter is a little air.
     const l = layoutFor(boxW, boxH, 210);
-    expect(gridH(l) + marginOf(l.cell)).toBeLessThanOrEqual(boxH);
+    expect(gridH(l) + MARGIN).toBeLessThanOrEqual(boxH + 0.01);
   });
 
-  it('drops a row rather than shrinking when the card gets shorter', () => {
-    const tall = layoutFor(318, 127, 210);
-    const short = layoutFor(318, 60, 210);
-    expect(short.rows).toBeLessThan(tall.rows);
-    // The cell is the same WIDTH: a shorter card shows fewer days, not
-    // smaller ones. That is the difference between a shorter widget and a
-    // smaller one. Only the height gives, and only by an eighth.
-    expect(short.cell).toBeCloseTo(tall.cell, 5);
-  });
-
-  it('never lets the height be the axis that binds, at ANY height', () => {
-    // The one that matters, and the one four hand-picked boxes kept
-    // missing. `fitStart` scales by whichever axis binds first: while the
-    // bitmap is no taller than its box the WIDTH binds, the scale is the
-    // same at every height, and the cell is the size the width chose. Let
-    // the grid come out half a cell too tall — which round-to-nearest did,
-    // for a third of all heights — and the height binds instead, so
-    // dragging the card shorter shrinks every square on it instead of
-    // dropping a row. Rounding down is what makes a resize a row count.
-    // From one row's worth of box upward. Below that the grid still returns
-    // a single row rather than none — a graph that is drawn at all has at
-    // least one row in it — and it is the providers' `GRID_MIN_HEIGHT_DP`
-    // that keeps a box this short from ever being handed over.
-    const oneRow = (() => {
-      const { cell } = layoutFor(318, 400, 210);
-      return Math.ceil(cell + marginOf(cell));
-    })();
+  it('is never taller than its box, at ANY height a card can hand over', () => {
     const over: Array<{ boxH: number; by: number }> = [];
-    for (let boxH = oneRow; boxH <= 400; boxH += 1) {
-      const l = layoutFor(318, boxH, 210);
-      const tall = gridH(l) + marginOf(l.cell);
-      if (tall > boxH) over.push({ boxH, by: Math.round(tall - boxH) });
+    for (let boxH = 36; boxH <= 400; boxH += 1) {
+      const l = layoutFor(341, boxH, 210);
+      const tall = gridH(l) + MARGIN;
+      if (tall > boxH + 0.01) over.push({ boxH, by: Math.round(tall - boxH) });
     }
     expect(over).toEqual([]);
   });
 
-  it('is monotonic: taller card, never fewer rows', () => {
-    // A dial, not a lottery. Every extra dp either buys a row or buys
-    // nothing; none of them may cost one.
-    let last = 0;
-    for (let boxH = 20; boxH <= 400; boxH += 1) {
-      const { rows } = layoutFor(318, boxH, 210);
-      expect(rows).toBeGreaterThanOrEqual(last);
-      last = rows;
-    }
+  it('always draws six rows: the five prayers and the fast', () => {
+    expect(GRID).toContain('const val STRIP_ROWS = 6');
+    expect(GRID).toContain('val rows = STRIP_ROWS');
+    expect(ROWS).toBe(6);
   });
 
-  it('goes all the way down to one row, and keeps the cell', () => {
-    // "It should be able to go from one row up to however many it can fit."
-    // The floor is one row of full-size squares, not a smaller graph and
-    // not an empty band where the graph was.
-    const one = layoutFor(318, 34, 210);
-    const many = layoutFor(318, 400, 210);
-    expect(one.rows).toBe(1);
-    expect(many.rows).toBeGreaterThan(6);
-    expect(one.cell).toBeCloseTo(many.cell, 5);
-    expect(one.columns).toBe(many.columns);
+  it('closes the gaps before it shrinks the cells on a short box', () => {
+    const roomy = layoutFor(341, 120, 210);
+    const short = layoutFor(341, 39, 210);
+    expect(roomy.gap).toBe(GAP_DP);
+    expect(short.gap).toBeLessThan(GAP_DP);
+    expect(short.gap).toBeGreaterThanOrEqual(MIN_GAP_DP);
+    // …and the cell only once the gaps are at their floor.
+    const floor = layoutFor(341, 30, 210);
+    expect(floor.gap).toBe(MIN_GAP_DP);
+    expect(floor.cellH).toBeLessThan(MIN_CELL_DP);
+  });
+
+  it('shows more days on a wider box, and bigger ones on a taller box', () => {
+    expect(layoutFor(400, 61, 210).columns).toBeGreaterThan(layoutFor(300, 61, 210).columns);
+    expect(layoutFor(341, 120, 210).cellH).toBeGreaterThan(layoutFor(341, 61, 210).cellH);
+    expect(layoutFor(341, 120, 210).columns).toBeLessThan(layoutFor(341, 61, 210).columns);
   });
 
   it('keeps a day within an eighth of square', () => {
-    // A day drawn half again as wide as it is tall does not read as a day.
-    // The height is allowed to differ from the width — that is what spends
-    // the leftover — but only by the bound the Kotlin states, and the
-    // WIDTH is still the number the box's width decides on its own.
-    expect(GRID).toContain('val cellWDp = cellDp');
-    expect(GRID).toContain('val cellHDp = exactH.coerceAtMost(cellDp * MAX_ROW_RATIO)');
+    // A day drawn half again as tall as it is wide does not read as a day.
+    expect(GRID).toContain('val cellH = minOf(cellFromH, cellW * MAX_ROW_RATIO).coerceAtLeast(3f)');
     expect(MAX_ROW_RATIO).toBeLessThanOrEqual(1.15);
-    expect(MIN_ROW_RATIO).toBeGreaterThanOrEqual(0.85);
     for (const [, boxW] of BOXES) {
-      for (let boxH = 30; boxH <= 400; boxH += 1) {
+      for (let boxH = 36; boxH <= 400; boxH += 1) {
         const l = layoutFor(boxW, boxH, 210);
-        expect(l.cellH / l.cell).toBeGreaterThanOrEqual(MIN_ROW_RATIO - 0.001);
         expect(l.cellH / l.cell).toBeLessThanOrEqual(MAX_ROW_RATIO + 0.001);
       }
     }
   });
 
-  /**
-   * Reported as "the graph in the widget is better but has too much void
-   * space above and under".
-   *
-   * The rows were whole squares and the box is never a whole number of
-   * them, so up to a row's worth of the box — 27dp on a four-wide card —
-   * went unspent, and `fitCenter` split it into a band above the grid and
-   * a band below. Averaged over the heights a launcher actually hands out
-   * it was 13dp of empty card per graph. The rows take it now.
-   */
-  it('spends the box on the graph instead of on a band at each end', () => {
-    const leftovers: number[] = [];
-    let worst = 0;
-    for (const [, boxW] of BOXES) {
-      for (let boxH = 40; boxH <= 400; boxH += 1) {
-        const l = layoutFor(boxW, boxH, 210);
-        // Only where the HEIGHT settled the row count. Past that it is
-        // MAX_ROWS or the payload's own history that stops the graph
-        // growing, and the card keeping the rest is the intended answer.
-        if (l.rows < l.wanted || l.rows < 2) continue;
-        const left = l.usableH - gridH(l);
-        leftovers.push(left);
-        worst = Math.max(worst, left);
-      }
-    }
-    const mean = leftovers.reduce((a, b) => a + b, 0) / leftovers.length;
-    // Under a dp on average — invisible on a card, where it used to be a
-    // sixth of the graph's own height.
-    expect(mean).toBeLessThan(2);
-    // A two-row box is the one shape that can still keep a band: there is
-    // no third row that fits, however far it is squeezed, so what is left
-    // over is the difference between two rows and three. Half a cell.
-    expect(worst).toBeLessThan(TARGET_CELL_DP * 0.8);
-  });
-
   it('never asks for more history than the payload carries', () => {
     for (const [, w, h] of BOXES) {
-      const l = layoutFor(w, h, 210);
-      expect(l.rows * l.columns).toBeLessThanOrEqual(210);
+      expect(layoutFor(w, h, 210).columns).toBeLessThanOrEqual(210);
     }
+    expect(layoutFor(4000, 61, 210).columns).toBe(210);
   });
 });
 
 describe('the run of days reads in order, and ends today', () => {
-  it('fills a column at a time, top to bottom', () => {
-    // Column-major, because the Log screen's heatmap is: days run down a
-    // column, a column is a week, the newest week is on the right. It was
-    // row-major for a while — the days were the same days in the same
-    // order, but laid along rows, and reading the widget after reading the
-    // Log screen meant re-learning which square was which. Two pictures of
-    // one record should not need two reading directions.
-    expect(GRID).toMatch(
-      /for \(col in 0 until columns\) \{\s*\n\s*for \(row in 0 until rows\)/,
-    );
+  it('is a column a day, the prayers down it, the newest day on the right', () => {
+    expect(GRID).toMatch(/for \(col in 0 until columns\) \{[\s\S]{0,1200}for \(row in 0 until rows\)/);
   });
 
-  it('starts as far back as it has to for today to be the last cell', () => {
-    expect(GRID).toContain('add(Calendar.DAY_OF_YEAR, -(rows * columns - 1))');
+  it('starts as far back as it has to for today to be the last column', () => {
+    expect(GRID).toContain('add(Calendar.DAY_OF_YEAR, -(columns - 1))');
     expect(GRID).toContain('cursor.add(Calendar.DAY_OF_YEAR, 1)');
+  });
+
+  it('breathes after each Sunday, so the weeks read as weeks', () => {
+    expect(GRID).toContain('if (d.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY && i < columns - 1) gapPx else 0');
+    expect(GRID).toContain('+ weekEnds.sum() + 2 * pad');
   });
 });
 
@@ -271,13 +180,11 @@ describe('an edge cell is a whole cell', () => {
     // bitmap whose first cell started at x=0.
     expect(GRID).toContain('val pad = padFor(ringUnit)');
     expect(GRID).toContain('+ 2 * pad');
-    expect(GRID).toContain('val left = (pad + col * (cellWPx + gapPx)).toFloat()');
     expect(GRID).toContain('val top = (pad + row * (cellHPx + gapPx)).toFloat()');
   });
 
   it('sizes that margin by the widest stroke it draws', () => {
     expect(GRID).toMatch(/padFor\(cellPx: Int\): Int =\s*Math\.ceil\(ringWidth\(cellPx\)/);
-    expect(GRID).toContain('paint.strokeWidth = ringWidth(ringUnit)');
   });
 
   it('draws at the device’s own resolution unless the budget says no', () => {

@@ -105,8 +105,11 @@ describe('the constants are the styles’', () => {
 
   it('the hero’s scene, figures and foot', () => {
     expect(card).toMatch(/minHeight: HERO_SCENE_MIN\[tier\]/);
-    expect(card).toMatch(/\{ fontSize: HERO_COUNTDOWN_SIZE\[tier\] \}/);
-    expect(card).toMatch(/\{ fontSize: HERO_SECONDS_SIZE\[tier\] \}/);
+    // The tier's size, unless Minimal has the page (settings.minimalUi).
+    expect(card).toMatch(/minimal \? MINIMAL_COUNTDOWN_SIZE : HERO_COUNTDOWN_SIZE\[tier\]/);
+    expect(card).toMatch(/minimal \? MINIMAL_SECONDS_SIZE : HERO_SECONDS_SIZE\[tier\]/);
+    expect(card).toMatch(/\{ fontSize: countdownSize \}/);
+    expect(card).toMatch(/\{ fontSize: secondsSize \}/);
     expect(card).toMatch(/paddingBottom: HERO_FOOT_PAD\[fullBleed \? tier : 'comfortable'\]/);
     expect(HERO_FOOT_PAD.comfortable).toBe(SPACING.lg);
     // The styles carry no size of their own any more.

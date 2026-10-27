@@ -40,6 +40,10 @@ import {
 } from '../providers/locationClock';
 import { refreshStoredPrayerData } from '../prayer/refreshStoredData';
 import { getEffectiveDataProvider } from '../settings/effectiveProvider';
+import { getMethodLabel } from '../settings/methods';
+import { getProviderLabel } from '../settings/providersCatalog';
+import { providerHidesCalculationMethod } from '../settings/providerUi';
+import { TodayTimesSheet } from './home/TodayTimesSheet';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useMethodCurrency } from '../hooks/useMethodCurrency';
 import { methodCurrencyNote } from '../prayer/methodCurrencyNote';
@@ -582,6 +586,10 @@ export function HomeScreen() {
    * to decide how much of it to mark new.
    */
   const [changelogSince, setChangelogSince] = useState<string | null>(null);
+  // Minimal (settings.minimalUi): the day's times, behind a tap on the hero.
+  const [timesOpen, setTimesOpen] = useState(false);
+  const openTimes = useCallback(() => setTimesOpen(true), []);
+  const closeTimes = useCallback(() => setTimesOpen(false), []);
   // The what's-new sheet and the features offer never share a launch.
   const changelogShown = useRef(false);
   if (changelogSince !== null) changelogShown.current = true;
@@ -1692,6 +1700,30 @@ export function HomeScreen() {
    * which is what it was before there was a budget.
    */
   const todayMap: TimingsMap = view.table.week[0] ?? ({} as TimingsMap);
+  /**
+   * MINIMAL — ONE THING ON THE PAGE (settings.minimalUi).
+   *
+   * The phone's page is the hero alone: the sky, the countdown, the next
+   * prayer's name and time, the rail, and one line at the foot saying
+   * where, which day and whose times. The day bar, the rows, the Quran
+   * door and the chips stand down; a tap anywhere on the page opens the
+   * day's times as a sheet. Only the phone's full-bleed page: the
+   * dashboard, the book and a roomy tablet have room, and keep it.
+   */
+  const minimal = settings.minimalUi && !isDashboard && !isMacCatalyst && !isRoomy && !book;
+  // Three short strings a render; not memoised, this far past the page's
+  // early returns.
+  let minimalFooter: string | undefined;
+  if (minimal) {
+    const provider = refreshParams?.provider;
+    // Whose times: the method when the reader chose one, else the source.
+    const source = provider
+      ? providerHidesCalculationMethod(provider) || settings.calculationMethod === 'auto'
+        ? getProviderLabel(provider)
+        : getMethodLabel(settings.calculationMethod)
+      : '';
+    minimalFooter = [locationLabel, getHijriDate(0), source].filter(Boolean).join(' · ');
+  }
   const budgeted = !isDashboard && !isMacCatalyst && !isRoomy && !book && !tabletop && viewport > 0;
   const tier: HomeTier = budgeted
     ? pickHomeTier({
@@ -1886,6 +1918,9 @@ export function HomeScreen() {
             qiblaBearing={qiblaBearing}
             onOpenQibla={handleOpenQibla}
             onHelpMihrab={settings.showHelpMihrabOnHome ? handleOpenHelpMihrab : undefined}
+            minimal={minimal}
+            footer={minimalFooter}
+            onOpenTimes={openTimes}
             expanded={isDashboard}
             fullBleed={fullBleed}
             roomy={isRoomy}
@@ -2028,8 +2063,10 @@ export function HomeScreen() {
                 vbarPad,
                 wideInset > 0 && { marginHorizontal: wideInset },
               ]}>
-              {quranShortcut}
-              {ramadanCard}
+              {/* Minimal: the page is the hero; the Quran door is on its
+                  own tab, and Ramadan's countdown waits for the full page. */}
+              {minimal ? null : quranShortcut}
+              {minimal ? null : ramadanCard}
             </View>
           </>
         );
@@ -2053,6 +2090,24 @@ export function HomeScreen() {
           !changelogShown.current
         }
       />
+      {minimal ? (
+        <TodayTimesSheet
+          visible={timesOpen}
+          onClose={closeTimes}
+          timings={todayMap}
+          next={nextInfo?.name}
+          title={`${getDayLabel(0)} · ${getDayDate(0)}`}
+          qibla={qiblaBearing != null ? { bearing: qiblaBearing, onPress: handleOpenQibla } : undefined}
+          place={
+            locationLabel
+              ? {
+                  label: locationLabel,
+                  onPress: () => navigation.navigate('SettingsLocation', { highlight: 'savedLocations' }),
+                }
+              : undefined
+          }
+        />
+      ) : null}
       <ChangelogSheet
         visible={changelogSince !== null}
         since={changelogSince}

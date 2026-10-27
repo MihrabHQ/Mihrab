@@ -302,6 +302,14 @@ export type TodayCardProps = {
   sideInset?: number;
   /** The location chip for the hero's top row, drawn in the sky's ink. */
   renderLocation?: (ink: SkyInkColors, column?: boolean) => ReactNode;
+  /**
+   * Minimal (settings.minimalUi), on the phone: the hero is the whole
+   * card — no chips, no day bar, no rows, no month link — and a tap on it
+   * opens the day's times (`onOpenTimes`). `footer` is its last line.
+   */
+  minimal?: boolean;
+  footer?: string;
+  onOpenTimes?: () => void;
 };
 
 /**
@@ -396,6 +404,12 @@ const HeroEyebrow = memo(function HeroEyebrow({
   );
 });
 /** How many times the hero's ink is re-read from the sky over a launch run (see HeroToday). */
+/**
+ * Minimal's figures (settings.minimalUi): larger than any tier's, since
+ * nothing shares the page with them — and still light, still one line.
+ */
+const MINIMAL_COUNTDOWN_SIZE = 76; // tokens-ok-line: display scale, sized by hand
+const MINIMAL_SECONDS_SIZE = 28; // tokens-ok-line: display scale, sized by hand
 export const SKY_RUN_STEPS = 30;
 /** The most keyframes the run's native sky is built from (HeroSky, `SkyRunLayers`). */
 export const SKY_RUN_KEYFRAMES_MAX = 9;
@@ -423,9 +437,21 @@ const HeroToday = memo(function HeroToday({
   skyTheme = false,
   skyVariant = 'realistic',
   dayClock,
+  minimal = false,
+  footer,
 }: {
   /** The clock `today` is written on (`TodayCardProps.dayClock`). */
   dayClock?: string;
+  /**
+   * Minimal (settings.minimalUi): the hero is the whole page. No top row
+   * and no eyebrow; the countdown stands in the middle of the sky with
+   * the prayer's name and time under it, the rail under that, and the
+   * footer line at the foot. Nothing on it takes a tap of its own — the
+   * card around it opens the day's times.
+   */
+  minimal?: boolean;
+  /** Minimal: the line at the foot — where, which day, whose times. */
+  footer?: string;
   /** What the countdown is aimed at: the next prayer, or the user's pick. */
   target: { name: string; at: Date };
   /** True when the user aimed it rather than it simply being next. */
@@ -997,7 +1023,10 @@ const HeroToday = memo(function HeroToday({
     const l = e.nativeEvent.lines[0];
     if (l) setAtBase(prev => (prev != null && Math.abs(prev - (l.y + l.ascender)) < 0.5 ? prev : l.y + l.ascender));
   }, []);
-  const bigSize = expanded ? styles.heroCountdownExpanded.fontSize : HERO_COUNTDOWN_SIZE[tier];
+  // Minimal: the figures are the page, and sized as the page's one thing.
+  const countdownSize = minimal ? MINIMAL_COUNTDOWN_SIZE : HERO_COUNTDOWN_SIZE[tier];
+  const secondsSize = minimal ? MINIMAL_SECONDS_SIZE : HERO_SECONDS_SIZE[tier];
+  const bigSize = expanded ? styles.heroCountdownExpanded.fontSize : countdownSize;
   const atShift = Math.max(
     0,
     countdownBase != null && atBase != null
@@ -1083,15 +1112,18 @@ const HeroToday = memo(function HeroToday({
       {fill ? <View style={[styles.heroScene, { minHeight: HERO_SCENE_MIN[tier] }]} /> : null}
       <View onLayout={fill ? onBlockLayout : undefined}>
       {/* "Fajr in" leading, and on the trailing end of the same line —
-          the side with nothing on it — the heart that opens Help Mihrab. */}
-      <HeroEyebrow
-        label={eyebrowLabel}
-        chosen={chosen ? t('home.chosenTarget', 'chosen') : null}
-        chosenA11y={t('a11y.countdownHere')}
-        onClear={onExpire}
-        ink={inkTop}
-        renderHelp={topRow?.renderHelp}
-      />
+          the side with nothing on it — the heart that opens Help Mihrab.
+          Minimal says it under the figures instead. */}
+      {minimal ? null : (
+        <HeroEyebrow
+          label={eyebrowLabel}
+          chosen={chosen ? t('home.chosenTarget', 'chosen') : null}
+          chosenA11y={t('a11y.countdownHere')}
+          onClear={onExpire}
+          ink={inkTop}
+          renderHelp={topRow?.renderHelp}
+        />
+      )}
       {/*
         THE COUNTDOWN IS ONE LINE OF TEXT, AND THE TIME IS AT THE OTHER END.
 
@@ -1109,10 +1141,11 @@ const HeroToday = memo(function HeroToday({
         measured from both lines (see `onCountdownLine`), because no style
         can say "this baseline" across two views.
       */}
-      <View style={styles.heroCountdownRow}>
+      <View style={[styles.heroCountdownRow, minimal && styles.heroCountdownRowMinimal]}>
         <Text
           style={[
             styles.heroCountdownLine,
+            minimal && styles.heroCountdownLineMinimal,
             tabularNumeralStyle,
             { writingDirection: rtl ? 'rtl' : 'ltr' },
             glow ? { padding: glow.padding, margin: glow.margin } : null,
@@ -1124,7 +1157,7 @@ const HeroToday = memo(function HeroToday({
           <Text
             style={[
               styles.heroCountdown,
-              { fontSize: HERO_COUNTDOWN_SIZE[tier] },
+              { fontSize: countdownSize },
               expanded && styles.heroCountdownExpanded,
               { color: ink.text },
               glowSpan,
@@ -1134,26 +1167,38 @@ const HeroToday = memo(function HeroToday({
           <Text
             style={[
               styles.heroSeconds,
-              { fontSize: HERO_SECONDS_SIZE[tier] },
+              { fontSize: secondsSize },
               expanded && styles.heroSecondsExpanded,
               { color: ink.muted },
             ]}>
             {` ${pieces.seconds}`}
           </Text>
         </Text>
-        <Text
-          style={[
-            styles.heroAt,
-            tabularNumeralStyle,
-            { color: ink.muted, marginTop: atShift },
-          ]}
-          numberOfLines={1}
-          maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}
-          accessibilityLanguage="en-US"
-          onTextLayout={onAtLine}>
-          {targetClock}
-        </Text>
+        {minimal ? null : (
+          <Text
+            style={[
+              styles.heroAt,
+              tabularNumeralStyle,
+              { color: ink.muted, marginTop: atShift },
+            ]}
+            numberOfLines={1}
+            maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}
+            accessibilityLanguage="en-US"
+            onTextLayout={onAtLine}>
+            {targetClock}
+          </Text>
+        )}
       </View>
+      {/* Minimal: the prayer's name and its time, one quiet line under the
+          figures — what the eyebrow and the time at the far end said. */}
+      {minimal ? (
+        <Text
+          style={[styles.heroCaption, tabularNumeralStyle, { color: ink.muted }]}
+          numberOfLines={1}
+          maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}>
+          {`${targetLabel} · ${targetClock}`}
+        </Text>
+      ) : null}
       {rail ? (
         <View style={styles.railWrap}>
           <View style={[styles.railTrack, { backgroundColor: inkFoot.track }]}>
@@ -1192,6 +1237,17 @@ const HeroToday = memo(function HeroToday({
         </View>
       ) : null}
       </View>
+      {/* Minimal: as much sky under the block as over it, so the figures
+          stand in the middle of the page — and the footer at its foot. */}
+      {minimal && fill ? <View style={styles.heroScene} /> : null}
+      {minimal && footer ? (
+        <Text
+          style={[styles.heroFooter, tabularNumeralStyle, { color: inkFoot.muted }]}
+          numberOfLines={1}
+          maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}>
+          {footer}
+        </Text>
+      ) : null}
     </View>
   );
 });
@@ -1221,7 +1277,13 @@ function TodayCardImpl({
   latitude,
   longitude,
   dayClock,
+  minimal: minimalWanted = false,
+  footer,
+  onOpenTimes,
 }: TodayCardProps) {
+  // Only the phone's full-bleed page has a minimal face; the dashboard
+  // and the book keep their cards.
+  const minimal = minimalWanted && fullBleed && !roomy;
   const { t, i18n } = useTranslation();
   const { palette } = useAppPalette();
   const clock = useClockFormatter();
@@ -1845,6 +1907,10 @@ function TodayCardImpl({
       : Math.round(Math.min(Math.max(windowHeight * 0.34, 300), 460))
     : undefined;
   const Outer = fullBleed ? View : GlassSurface;
+  // Minimal: the hero's wrap is the tap that opens the day's times.
+  // (A View takes every prop the Pressable is given here but the press,
+  // and that one is only given when it IS a Pressable.)
+  const HeroWrap = (minimal && onOpenTimes ? Pressable : View) as typeof Pressable;
   const compact = fullBleed && tier === 'compact';
   const renderQibla = (ink: SkyInkColors, column?: boolean) =>
     fullBleed && qiblaBearing != null ? (
@@ -1979,7 +2045,17 @@ function TodayCardImpl({
       {/* Full-bleed, the hero GROWS: the card fills the page and the hero
           takes whatever the table leaves, so the sky ends at the tab bar
           and the page has no band of nothing under the rows. */}
-      <View
+      <HeroWrap
+        // Minimal: the whole hero is the way to the day's times. One
+        // target, the size of the page, with nothing inside it to compete.
+        {...(minimal && onOpenTimes
+          ? {
+              onPress: onOpenTimes,
+              accessibilityRole: 'button' as const,
+              accessibilityLabel: t('home.minimalTimesTitle', 'Today’s times'),
+              accessibilityHint: t('a11y.openTodayTimes', 'Opens today’s prayer times'),
+            }
+          : {})}
         style={[
           styles.heroWrap,
           { paddingBottom: HERO_FOOT_PAD[fullBleed ? tier : 'comfortable'] },
@@ -2064,7 +2140,9 @@ function TodayCardImpl({
               bleed={{ horizontal: skySide, top: heroTop, bottom: HERO_FOOT_PAD[fullBleed ? tier : 'comfortable'] }}
               statusBarInset={underStatusBar ? insets.top : 0}
               fill={fullBleed}
-              topRow={fullBleed ? { renderLocation, renderQibla } : undefined}
+              topRow={fullBleed && !minimal ? { renderLocation, renderQibla } : undefined}
+              minimal={minimal}
+              footer={footer}
               frozenAt={interval.fromAt}
               skyTheme={settings.appearance === 'sky'}
               skyVariant={settings.skyVariant}
@@ -2093,7 +2171,9 @@ function TodayCardImpl({
             bleed={{ horizontal: skySide, top: heroTop, bottom: HERO_FOOT_PAD[fullBleed ? tier : 'comfortable'] }}
             statusBarInset={underStatusBar ? insets.top : 0}
             fill={fullBleed}
-            topRow={fullBleed ? { renderLocation, renderQibla, renderHelp } : undefined}
+            topRow={fullBleed && !minimal ? { renderLocation, renderQibla, renderHelp } : undefined}
+            minimal={minimal}
+            footer={footer}
             // Not on a roomy page: the hero is not under the status bar
             // there, so the bar takes the page's ink like every other tab.
             ownsStatusBar={underStatusBar}
@@ -2119,8 +2199,11 @@ function TodayCardImpl({
             onPress={onOpenQibla}
           />
         )}
-      </View>
+      </HeroWrap>
 
+      {/* Minimal: no table — the day's times are a tap away (HomeScreen's
+          sheet), and the hero has the page. */}
+      {minimal ? null : (
       <View style={[fullBleed ? styles.tableBleed : null, columnPad]}>
         {/* THE DAY LINE, where the week strip was. The strip put seven
             chips where the eye lands under the hero and answered "which
@@ -2318,6 +2401,7 @@ function TodayCardImpl({
         />
 
       </View>
+      )}
     </Outer>
   );
 }
@@ -2513,4 +2597,21 @@ const styles = StyleSheet.create({
     marginTop: SPACING.sm + 2,
   },
   railLabel: { fontSize: TYPE.label.fontSize, fontWeight: '400' },
+  // Minimal: the figures in the middle of the line, the name and time
+  // under them in the muted ink, and the footer a label at the foot —
+  // every line centred, nothing at the edges, the way a clock face is.
+  heroCountdownRowMinimal: { justifyContent: 'center' },
+  heroCountdownLineMinimal: { textAlign: 'center' },
+  heroCaption: {
+    textAlign: 'center',
+    fontSize: TYPE.body.fontSize,
+    fontWeight: '400',
+    marginTop: SPACING.xs,
+  },
+  heroFooter: {
+    textAlign: 'center',
+    fontSize: TYPE.label.fontSize,
+    fontWeight: '400',
+    marginTop: SPACING.md,
+  },
 });

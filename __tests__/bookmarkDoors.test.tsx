@@ -282,7 +282,7 @@ describe('the verse of the day', () => {
     expect(coerceQuranState({ prefs: { verseOfDay: true } }).prefs.verseOfDay).toBe(true);
     expect(coerceQuranState({ prefs: { verseOfDay: 'yes' } }).prefs.verseOfDay).toBe(false);
     const screen = src('src/screens/QuranScreen.tsx');
-    expect(screen).toContain('{votdOn && votdArabic ? (');
+    expect(screen).toContain('{votdOn && votdArabic && !minimal ? (');
     expect(screen.match(/if \(!votdOn\) return;/g)).toHaveLength(2);
     expect(screen).toContain("if (!votdOn || votdMode !== 'tafsir') return;");
     const settings = src('src/screens/settings/QuranCard.tsx');

@@ -6,13 +6,13 @@
 "widget_name_medium" = "Mihrab · Waktu salat";
 "widget_name_large" = "Mihrab · Waktu salat (lama)";
 "widget_description" = "Waktu hari ini dalam satu baris, salat berikutnya disorot";
-"widget_description_small" = "Hanya salat berikutnya dan waktunya. 2×1, dapat diubah ukuran.";
+"widget_description_small" = "Hanya salat berikutnya dan waktunya. 2×1.";
 "widget_description_medium" = "Keenam waktu sebagai kolom dalam satu baris lebar, salat berikutnya disorot. 4×2, dapat diubah ukuran.";
-"widget_description_prayer_times" = "Keenam waktu salat hari ini dalam satu baris. Perbesar tingginya untuk menampilkan kota dan tanggal Hijriah, perbesar lagi untuk grafik praktik. 4×1 hingga 4×4.";
+"widget_description_prayer_times" = "Enam waktu hari ini dalam satu baris, dengan kota dan tanggal Hijriah. 4×1.";
 "widget_description_large_retired" = "Widget waktu salat versi sebelumnya. Kini tampilannya sama dengan yang saat ini; tidak ada alasan untuk memasang yang baru.";
 "widget_description_large" = "Keenam waktu sebagai daftar di samping salat berikutnya. 4×3 — perkecil di bawah tiga baris dan akan menjadi strip satu baris.";
 "widget_name_log" = "Mihrab · Catat hari ini";
-"widget_description_log" = "Ketuk salat untuk mencatatnya tepat waktu, lengkap dengan hitungan mundur ke salat berikutnya. Perbesar tingginya untuk grafik praktik. 4×1 hingga 4×4.";
+"widget_description_log" = "Ketuk salat untuk mencatatnya tepat waktu, dengan hitung mundur ke berikutnya. 4×1.";
 "widget_log_today" = "Hari ini";
 "widget_log_count" = "%1$d dari %2$d";
 "widget_log_waiting" = "%1$@ belum dicatat";
@@ -22,7 +22,7 @@
 "widget_placeholder_day" = "Buka Mihrab untuk memuat waktu salat";
 "widget_error" = "Tidak dapat memuat data widget";
 "widget_name_streak" = "Mihrab · Rentetan";
-"widget_description_streak" = "Rentetan salat tepat waktu Anda dan beberapa minggu terakhir grafik praktik. 2×2 hingga 4×2.";
+"widget_description_streak" = "Rentetan tepat waktu Anda dan minggu-minggu terakhir grafik amalan. 4×2.";
 "widget_streak_title" = "RENTETAN";
 "widget_streak_best" = "Terbaik %1$d";
 "widget_streak_logged" = "%1$d dari 5 hari ini";
@@ -111,6 +111,6 @@
 "widget_preview_tap_to_log" = "Ketuk ✓ untuk mencatat Asr tepat waktu";
 "widget_preview_practice_second" = "hari beruntun · Terbaik 31 · 2 dari 5 hari ini";
 "widget_name_tall" = "Mihrab · Waktu salat (tinggi)";
-"widget_description_tall" = "Keenam waktu yang sama dengan kota, tanggal Hijriah, dan grafik praktik. 4×2 — perkecil dan akan menjadi strip satu baris.";
+"widget_description_tall" = "Enam waktu hari ini dengan kota, tanggal Hijriah, dan grafik amalan. 4×2.";
 "widget_name_log_tall" = "Mihrab · Catat hari ini (tinggi)";
-"widget_description_log_tall" = "Ketuk salat untuk mencatatnya tepat waktu, lengkap dengan hitungan mundur ke salat berikutnya dan grafik praktik. 4×2 — perkecil dan akan menjadi kartu satu baris.";
+"widget_description_log_tall" = "Ketuk salat untuk mencatatnya tepat waktu, dengan hitung mundur ke berikutnya dan grafik amalan. 4×2.";

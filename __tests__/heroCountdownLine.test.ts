@@ -10,10 +10,9 @@ import { readFileSync } from 'fs';
 import path from 'path';
 
 const src = readFileSync(path.join(__dirname, '..', 'src', 'screens', 'home', 'TodayCard.tsx'), 'utf8');
-const row = src.slice(
-  src.indexOf('<View style={styles.heroCountdownRow}>'),
-  src.indexOf('{rail ? (', src.indexOf('<View style={styles.heroCountdownRow}>')),
-);
+// The row's opening: centred under Minimal (settings.minimalUi), else as it was.
+const ROW_OPEN = '<View style={[styles.heroCountdownRow, minimal && styles.heroCountdownRowMinimal]}>';
+const row = src.slice(src.indexOf(ROW_OPEN), src.indexOf('{rail ? (', src.indexOf(ROW_OPEN)));
 
 describe('the hero countdown', () => {
   it('sets hours, minutes and seconds as spans of one Text', () => {

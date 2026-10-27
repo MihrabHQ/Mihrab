@@ -6,13 +6,13 @@
 "widget_name_medium" = "Mihrab · Gebetszeiten";
 "widget_name_large" = "Mihrab · Gebetszeiten (alt)";
 "widget_description" = "Die heutigen Zeiten in einer Zeile, nächstes Gebet hervorgehoben";
-"widget_description_small" = "Nur das nächste Gebet und seine Zeit. 2×1, skalierbar.";
+"widget_description_small" = "Nur das nächste Gebet und seine Zeit. 2×1.";
 "widget_description_medium" = "Alle sechs Zeiten als Spalten in einer breiten Zeile, nächstes Gebet hervorgehoben. 4×2, skalierbar.";
-"widget_description_prayer_times" = "Die sechs heutigen Zeiten in einer Zeile. Höher für Stadt und Hijri-Datum, noch höher für das Praxisdiagramm. 4×1 bis 4×4.";
+"widget_description_prayer_times" = "Die sechs Zeiten des Tages in einer Reihe, mit Stadt und Hidschri-Datum. 4×1.";
 "widget_description_large_retired" = "Das frühere Gebetszeiten-Widget. Es zeigt jetzt dasselbe Design wie das aktuelle; es gibt keinen Grund, ein neues zu platzieren.";
 "widget_description_large" = "Alle sechs Zeiten als Liste neben dem nächsten Gebet. 4×3 — unter drei Zeilen wird daraus der einzeilige Streifen.";
 "widget_name_log" = "Mihrab · Heute eintragen";
-"widget_description_log" = "Gebet antippen, um es pünktlich einzutragen, mit Countdown zum nächsten. Höher für das Praxisdiagramm. 4×1 bis 4×4.";
+"widget_description_log" = "Tippe auf ein Gebet, um es pünktlich einzutragen, mit Countdown zum nächsten. 4×1.";
 "widget_log_today" = "Heute";
 "widget_log_count" = "%1$d von %2$d";
 "widget_log_waiting" = "%1$@ noch nicht eingetragen";
@@ -22,7 +22,7 @@
 "widget_placeholder_day" = "Mihrab öffnen, um Zeiten zu laden";
 "widget_error" = "Widget-Daten konnten nicht geladen werden";
 "widget_name_streak" = "Mihrab · Serie";
-"widget_description_streak" = "Deine pünktliche Serie und die letzten Wochen des Praxisdiagramms. 2×2 bis 4×2.";
+"widget_description_streak" = "Deine Pünktlichkeitsserie und die letzten Wochen der Praxisgrafik. 4×2.";
 "widget_streak_title" = "SERIE";
 "widget_streak_best" = "Beste %1$d";
 "widget_streak_logged" = "%1$d von 5 heute";
@@ -111,6 +111,6 @@
 "widget_preview_tap_to_log" = "✓ tippen, um Asr pünktlich einzutragen";
 "widget_preview_practice_second" = "Tage-Serie · Beste 31 · 2 von 5 heute";
 "widget_name_tall" = "Mihrab · Gebetszeiten (hoch)";
-"widget_description_tall" = "Die gleichen sechs Zeiten mit Stadt, Hijri-Datum und dem Praxisdiagramm. 4×2 — verkleinern, und daraus wird der einzeilige Streifen.";
+"widget_description_tall" = "Die sechs Zeiten des Tages mit Stadt, Hidschri-Datum und der Praxisgrafik. 4×2.";
 "widget_name_log_tall" = "Mihrab · Heute eintragen (hoch)";
-"widget_description_log_tall" = "Gebet antippen, um es pünktlich einzutragen, mit Countdown zum nächsten und dem Praxisdiagramm. 4×2 — verkleinern, und daraus wird die einzeilige Karte.";
+"widget_description_log_tall" = "Tippe auf ein Gebet, um es pünktlich einzutragen, mit Countdown zum nächsten und der Praxisgrafik. 4×2.";

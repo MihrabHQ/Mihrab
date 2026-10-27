@@ -1219,6 +1219,10 @@ export function LogScreen() {
         {/* On the page, not in a card: four numbers and a graph need no box
             to say what they are, and the box was the outer of three nested
             containers (redesign-plan P3). */}
+        {/* Minimal (settings.minimalUi): the day's card alone — logging is
+            what the tab is for. The graph and the figures stay on the
+            widgets, and on the full page a switch away. */}
+        {settings.minimalUi ? null : (
         <View style={styles.graphBlock}>
           {/* The caption this replaces read "5-day streak (best 12) · 0-day
               sunnah · 1 fasts" — three statistics in prose under a chart,
@@ -1321,6 +1325,7 @@ export function LogScreen() {
             </View>
           ) : null}
         </View>
+        )}
         {/* ── The day, as one card you can throw sideways ───────────────
             One surface, not a stack of loose cards: the whole thing is a
             single day, it moves as a single thing, and it should look like

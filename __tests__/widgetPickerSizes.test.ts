@@ -57,13 +57,12 @@ describe('what each entry places', () => {
     expect(tall).toBeGreaterThan(short);
   });
 
-  it('every entry stays resizable to where the graph lives', () => {
-    // 4×2 is the default, not a ceiling: a drag to three rows brings the
-    // practice graph, and maxResizeHeight has to allow it.
-    for (const f of ['glance_prayer_tall_info', 'glance_log_tall_info']) {
-      const info = xml('xml', f);
-      expect(info).toMatch(/android:resizeMode="horizontal\|vertical"/);
-      expect(Number(/android:maxResizeHeight="(\d+)dp"/.exec(info)?.[1])).toBeGreaterThanOrEqual(321);
+  it('no entry resizes: each is one size, and the size shows its elements', () => {
+    // Fixed, so a widget can never be dragged to a size that cannot show
+    // what it holds: the small one is 4×1 and the tall one 4×2, and the
+    // graph is the tall one's.
+    for (const f of ['glance_prayer_info', 'glance_prayer_tall_info', 'glance_log_info', 'glance_log_tall_info']) {
+      expect(xml('xml', f)).toMatch(/android:resizeMode="none"/);
     }
   });
 });
@@ -105,8 +104,8 @@ describe('the picker descriptions match the placement', () => {
       expect(line).toBeDefined();
       // × is ×. A description still reading 4×3 is a translation that
       // was left behind, which is the usual way this kind of change rots.
-      expect(line).toContain('4\\u00d72');
-      expect(line).not.toContain('4\\u00d73');
+      expect(line).toMatch(/4(\\u00d7|×)2/);
+      expect(line).not.toMatch(/4(\\u00d7|×)3/);
     }
   });
 });

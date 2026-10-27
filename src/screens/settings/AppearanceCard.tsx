@@ -266,6 +266,17 @@ function AppearanceCardImpl() {
             onValueChange={v => updateSettings({ launchAnimation: v })}
           />
         ) : null}
+
+        {/* Minimal — one thing per screen (settings/types.ts `minimalUi`).
+            Today keeps the sky, the countdown, the rail and a line of
+            where and when, and puts the day's times behind a tap; the
+            other tabs keep the one thing each is for. */}
+        <SettingsToggleRow
+          title={t('settings.minimalUi')}
+          help={t('settings.minimalUiHelp')}
+          value={settings.minimalUi}
+          onValueChange={v => updateSettings({ minimalUi: v })}
+        />
       </SettingsGroup>
 
       {/* Time format — issue #18.

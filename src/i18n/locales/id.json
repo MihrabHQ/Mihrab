@@ -24,7 +24,8 @@
     "openCompass": "Buka kompas kiblat",
     "openTimesSource": "Ubah sumber waktu sholat",
     "countdownTo": "Hitung mundur ke salat ini",
-    "countdownHere": "Hitung mundur tertuju ke salat ini. Ketuk untuk kembali ke yang berikutnya."
+    "countdownHere": "Hitung mundur tertuju ke salat ini. Ketuk untuk kembali ke yang berikutnya.",
+    "openTodayTimes": "Membuka waktu salat hari ini"
   },
   "common": {
     "change": "Mengubah",
@@ -111,7 +112,8 @@
     "pullToRefresh": "Tarik ke bawah untuk menyegarkan",
     "pullRelease": "Lepaskan untuk menyegarkan",
     "pullRefreshing": "Memperbarui waktu salat Anda…",
-    "helpMihrabChip": "Bantu Mihrab berkembang"
+    "helpMihrabChip": "Bantu Mihrab berkembang",
+    "minimalTimesTitle": "Waktu hari ini"
   },
   "errors": {
     "locationNeededTitle": "Lokasi diperlukan",
@@ -494,7 +496,9 @@
       "seventh_of_night": "Sepertujuh malam",
       "seventh_of_nightHelp": "Isya setelah sepertujuh pertama malam, Subuh pada sepertujuh terakhir."
     },
-    "providerTableFallback": "{{picked}} tidak punya jadwal terbitan untuk hari ini, jadi metodenya sendiri dihitung di ponsel sampai tabelnya mencakup hari ini lagi."
+    "providerTableFallback": "{{picked}} tidak punya jadwal terbitan untuk hari ini, jadi metodenya sendiri dihitung di ponsel sampai tabelnya mencakup hari ini lagi.",
+    "minimalUi": "Minimal",
+    "minimalUiHelp": "Satu hal per layar. Hari Ini menyimpan hitung mundur; ketuk untuk melihat waktu hari ini. Tab lain menyimpan fungsi masing-masing."
   },
   "locationSetup": {
     "headline": "Tetapkan lokasi Anda",

@@ -24,7 +24,8 @@
     "openCompass": "Brújula Qibla abierta",
     "openTimesSource": "Cambiar fuente de tiempos de oración",
     "countdownTo": "Contar atrás hasta esta oración",
-    "countdownHere": "La cuenta atrás apunta a esta oración. Toca para volver a la siguiente."
+    "countdownHere": "La cuenta atrás apunta a esta oración. Toca para volver a la siguiente.",
+    "openTodayTimes": "Abre los horarios de oración de hoy"
   },
   "common": {
     "change": "Cambiar",
@@ -111,7 +112,8 @@
     "pullToRefresh": "Desliza hacia abajo para actualizar",
     "pullRelease": "Suelta para actualizar",
     "pullRefreshing": "Actualizando tus horarios de oración…",
-    "helpMihrabChip": "Ayuda a crecer a Mihrab"
+    "helpMihrabChip": "Ayuda a crecer a Mihrab",
+    "minimalTimesTitle": "Horarios de hoy"
   },
   "errors": {
     "locationNeededTitle": "Ubicación necesaria",
@@ -495,7 +497,9 @@
       "seventh_of_night": "Séptimo de la noche",
       "seventh_of_nightHelp": "Isha tras el primer séptimo de la noche, Fajr en el último."
     },
-    "providerTableFallback": "{{picked}} no tiene horarios publicados para hoy, así que su propio método se calcula en el teléfono hasta que la tabla vuelva a cubrirlo."
+    "providerTableFallback": "{{picked}} no tiene horarios publicados para hoy, así que su propio método se calcula en el teléfono hasta que la tabla vuelva a cubrirlo.",
+    "minimalUi": "Mínimo",
+    "minimalUiHelp": "Una cosa por pantalla. Hoy conserva la cuenta atrás; tócala para ver los horarios del día. Las demás pestañas conservan lo suyo."
   },
   "locationSetup": {
     "headline": "Establece tu ubicación",

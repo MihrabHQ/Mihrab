@@ -24,7 +24,8 @@
     "openCompass": "Kıble pusulasını aç",
     "openTimesSource": "Namaz vakitleri kaynağını değiştir",
     "countdownTo": "Bu namaza geri sayım yap",
-    "countdownHere": "Geri sayım bu namaza ayarlı. Sonrakine dönmek için dokunun."
+    "countdownHere": "Geri sayım bu namaza ayarlı. Sonrakine dönmek için dokunun.",
+    "openTodayTimes": "Bugünün namaz vakitlerini açar"
   },
   "common": {
     "change": "Değiştirmek",
@@ -111,7 +112,8 @@
     "pullToRefresh": "Yenilemek için aşağı çekin",
     "pullRelease": "Yenilemek için bırakın",
     "pullRefreshing": "Namaz vakitleriniz yenileniyor…",
-    "helpMihrabChip": "Mihrab'ın büyümesine yardım et"
+    "helpMihrabChip": "Mihrab'ın büyümesine yardım et",
+    "minimalTimesTitle": "Bugünün vakitleri"
   },
   "errors": {
     "locationNeededTitle": "Konum gerekli",
@@ -494,7 +496,9 @@
       "seventh_of_night": "Gecenin yedide biri",
       "seventh_of_nightHelp": "Yatsı gecenin ilk yedide birinden sonra, imsak son yedide birinde."
     },
-    "providerTableFallback": "{{picked}} için bugün yayımlanmış vakit yok; cetvel bugünü yeniden kapsayana kadar kendi yöntemi telefonda hesaplanır."
+    "providerTableFallback": "{{picked}} için bugün yayımlanmış vakit yok; cetvel bugünü yeniden kapsayana kadar kendi yöntemi telefonda hesaplanır.",
+    "minimalUi": "Sade",
+    "minimalUiHelp": "Her ekranda tek bir şey. Bugün geri sayımı tutar; günün vakitleri için dokunun. Diğer sekmeler ne için varsa onu tutar."
   },
   "locationSetup": {
     "headline": "Konumunuzu ayarlayın",

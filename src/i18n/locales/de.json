@@ -24,7 +24,8 @@
     "openCompass": "Öffnen Sie den Qibla-Kompass",
     "openTimesSource": "Ändern Sie die Quelle der Gebetszeiten",
     "countdownTo": "Countdown auf dieses Gebet stellen",
-    "countdownHere": "Der Countdown steht auf diesem Gebet. Tippen, um zum nächsten zurückzukehren."
+    "countdownHere": "Der Countdown steht auf diesem Gebet. Tippen, um zum nächsten zurückzukehren.",
+    "openTodayTimes": "Öffnet die heutigen Gebetszeiten"
   },
   "common": {
     "change": "Ändern",
@@ -111,7 +112,8 @@
     "pullToRefresh": "Zum Aktualisieren nach unten ziehen",
     "pullRelease": "Zum Aktualisieren loslassen",
     "pullRefreshing": "Gebetszeiten werden aktualisiert…",
-    "helpMihrabChip": "Hilf Mihrab zu wachsen"
+    "helpMihrabChip": "Hilf Mihrab zu wachsen",
+    "minimalTimesTitle": "Heutige Zeiten"
   },
   "errors": {
     "locationNeededTitle": "Standort erforderlich",
@@ -494,7 +496,9 @@
       "seventh_of_night": "Siebtel der Nacht",
       "seventh_of_nightHelp": "Ischa nach dem ersten Siebtel der Nacht, Fadschr beim letzten."
     },
-    "providerTableFallback": "{{picked}} hat für heute keine veröffentlichten Zeiten, daher wird seine eigene Methode auf dem Telefon berechnet, bis die Tabelle den Tag wieder abdeckt."
+    "providerTableFallback": "{{picked}} hat für heute keine veröffentlichten Zeiten, daher wird seine eigene Methode auf dem Telefon berechnet, bis die Tabelle den Tag wieder abdeckt.",
+    "minimalUi": "Minimal",
+    "minimalUiHelp": "Eine Sache pro Bildschirm. Heute behält den Countdown; antippen zeigt die Zeiten des Tages. Die anderen Tabs behalten, wofür sie da sind."
   },
   "locationSetup": {
     "headline": "Legen Sie Ihren Standort fest",

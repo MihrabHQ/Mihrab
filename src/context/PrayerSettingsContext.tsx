@@ -74,6 +74,8 @@ export type AppearanceSlice = Pick<
   | 'showPracticeOnHome'
   // The launch run, rendered by AppearanceCard too.
   | 'launchAnimation'
+  // Minimal — one thing per screen; AppearanceCard's switch.
+  | 'minimalUi'
 >;
 
 export type LocationSlice = Pick<
@@ -275,6 +277,7 @@ export function PrayerSettingsProvider({
       savedAccentColors: settings.savedAccentColors,
       showPracticeOnHome: settings.showPracticeOnHome,
       launchAnimation: settings.launchAnimation,
+      minimalUi: settings.minimalUi,
     }),
     [
       settings.appearance,
@@ -289,6 +292,7 @@ export function PrayerSettingsProvider({
       settings.savedAccentColors,
       settings.showPracticeOnHome,
       settings.launchAnimation,
+      settings.minimalUi,
     ],
   );
 

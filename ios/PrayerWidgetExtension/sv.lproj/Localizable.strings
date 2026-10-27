@@ -6,13 +6,13 @@
 "widget_name_medium" = "Mihrab · Bönetider";
 "widget_name_large" = "Mihrab · Bönetider (gammal)";
 "widget_description" = "Dagens tider på en rad, nästa bön markerad";
-"widget_description_small" = "Bara nästa bön och dess tid. 2×1, storleken kan ändras.";
+"widget_description_small" = "Bara nästa bön och dess tid. 2×1.";
 "widget_description_medium" = "Alla sex tider som kolumner i en bred rad, nästa bön markerad. 4×2, storleken kan ändras.";
-"widget_description_prayer_times" = "Dagens sex tider på en rad. Gör den högre för stad och hijridatum, högre igen för aktivitetsgrafen. 4×1 till 4×4.";
+"widget_description_prayer_times" = "Dagens sex tider på en rad, med stad och hijridatum. 4×1.";
 "widget_description_large_retired" = "Den tidigare widgeten för bönetider. Den visar nu samma design som den aktuella; det finns ingen anledning att lägga till en ny.";
 "widget_description_large" = "Alla sex tider som en lista bredvid nästa bön. 4×3 — krymp den under tre rader så blir den enradsremsan.";
 "widget_name_log" = "Mihrab · Logga idag";
-"widget_description_log" = "Tryck på en bön för att logga den i tid, med nedräkning till nästa. Gör den högre för aktivitetsgrafen. 4×1 till 4×4.";
+"widget_description_log" = "Tryck på en bön för att logga den i tid, med nedräkning till nästa. 4×1.";
 "widget_log_today" = "Idag";
 "widget_log_count" = "%1$d av %2$d";
 "widget_log_waiting" = "%1$@ inte loggad än";
@@ -22,7 +22,7 @@
 "widget_placeholder_day" = "Öppna Mihrab för att ladda tider";
 "widget_error" = "Kunde inte ladda widgetdata";
 "widget_name_streak" = "Mihrab · Räcka";
-"widget_description_streak" = "Din räcka i tid och de senaste veckorna i aktivitetsgrafen. 2×2 till 4×2.";
+"widget_description_streak" = "Din räcka i tid och de senaste veckorna i aktivitetsgrafen. 4×2.";
 "widget_streak_title" = "RÄCKA";
 "widget_streak_best" = "Bäst %1$d";
 "widget_streak_logged" = "%1$d av 5 idag";
@@ -111,6 +111,6 @@
 "widget_preview_tap_to_log" = "Tryck ✓ för att logga Asr i tid";
 "widget_preview_practice_second" = "dagars räcka · Bäst 31 · 2 av 5 idag";
 "widget_name_tall" = "Mihrab · Bönetider (hög)";
-"widget_description_tall" = "Samma sex tider med stad, hijridatum och aktivitetsgrafen. 4×2 — krymp den så blir den enradsremsan.";
+"widget_description_tall" = "Dagens sex tider med stad, hijridatum och aktivitetsgrafen. 4×2.";
 "widget_name_log_tall" = "Mihrab · Logga idag (hög)";
-"widget_description_log_tall" = "Tryck på en bön för att logga den i tid, med nedräkning till nästa och aktivitetsgrafen. 4×2 — krymp den så blir den enradskortet.";
+"widget_description_log_tall" = "Tryck på en bön för att logga den i tid, med nedräkning till nästa och aktivitetsgrafen. 4×2.";

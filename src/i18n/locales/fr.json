@@ -24,7 +24,8 @@
     "openCompass": "Boussole Qibla ouverte",
     "openTimesSource": "Changer la source des heures de prière",
     "countdownTo": "Compter jusqu’à cette prière",
-    "countdownHere": "Le compte à rebours vise cette prière. Touchez pour revenir à la suivante."
+    "countdownHere": "Le compte à rebours vise cette prière. Touchez pour revenir à la suivante.",
+    "openTodayTimes": "Ouvre les horaires de prière du jour"
   },
   "common": {
     "change": "Changement",
@@ -111,7 +112,8 @@
     "pullToRefresh": "Tirez vers le bas pour actualiser",
     "pullRelease": "Relâchez pour actualiser",
     "pullRefreshing": "Actualisation de vos heures de prière…",
-    "helpMihrabChip": "Aidez Mihrab à grandir"
+    "helpMihrabChip": "Aidez Mihrab à grandir",
+    "minimalTimesTitle": "Horaires du jour"
   },
   "errors": {
     "locationNeededTitle": "Emplacement nécessaire",
@@ -495,7 +497,9 @@
       "seventh_of_night": "Septième de la nuit",
       "seventh_of_nightHelp": "L’Icha après le premier septième de la nuit, le Fajr au dernier."
     },
-    "providerTableFallback": "{{picked}} n’a pas d’horaires publiés pour aujourd’hui : sa propre méthode est calculée sur le téléphone jusqu’à ce que la table couvre à nouveau ce jour."
+    "providerTableFallback": "{{picked}} n’a pas d’horaires publiés pour aujourd’hui : sa propre méthode est calculée sur le téléphone jusqu’à ce que la table couvre à nouveau ce jour.",
+    "minimalUi": "Minimal",
+    "minimalUiHelp": "Une chose par écran. Aujourd’hui garde le compte à rebours ; touchez-le pour les horaires du jour. Les autres onglets gardent ce pour quoi ils sont faits."
   },
   "locationSetup": {
     "headline": "Définissez votre emplacement",

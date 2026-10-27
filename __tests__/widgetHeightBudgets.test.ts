@@ -124,46 +124,29 @@ describe('a variant is filled against the budget that chose it', () => {
 /**
  * The graph's two numbers describe the SAME card, or the graph is wrong.
  *
- * `GRID_MIN_HEIGHT_DP` is the height at which the graph first appears and
- * `*_CHROME_DP` is what everything else on the card costs, so the first has
- * to be the second plus a row of squares. Drift between them shows up as one
- * of the two failures reported here: quote the chrome too high and a card
- * with a row of space going spare draws nothing; quote it too low and the
- * grid asks for a box taller than it has, which `fitCenter` answers by
- * scaling every square down instead of dropping a row.
- *
- * The Log card's chrome is measured WITHOUT its date-and-count line, because
- * that line is hidden at exactly `GRID_MIN_HEIGHT_DP` — it is what pays for
- * the first row.
+ * `*_CHROME_DP` is what everything else on the 4×2 card costs, and the box
+ * the strip is drawn for is the card's height less that. Quote the chrome
+ * too low and the strip asks for a box taller than it has, which Fit
+ * answers by shrinking the whole strip short of the card's edges — the
+ * Log card's bug on a Pixel 10 Pro. Quote it too high and a few dp of
+ * card go spare, which nobody sees. So the figures are MEASURED, a little
+ * over the measure, and the Log card's tight variant — 8dp less padding,
+ * 8dp less chip, no 15dp rule — has its own.
  */
-describe('the graph appears exactly when a row of it fits', () => {
-  const gridNum = (file: string, name: string) => {
-    const m = new RegExp(`val ${name} = (\\d+)`).exec(file);
-    if (!m) throw new Error(`${name} is gone`);
-    return Number(m[1]);
-  };
-  const gridSrc = src('PracticeGridBitmap');
-  const f = (name: string) =>
-    Number(new RegExp(`${name} = ([0-9.]+)f?`).exec(gridSrc)![1]);
-  /** One row of squares, plus the gap and ring margin that come with it. */
-  const oneRow = f('TARGET_CELL_DP') + f('GAP_DP');
-
-  it.each([
-    ['the strip', strip, 'STRIP_CHROME_DP'],
-    ['the log card', log, 'LOG_CHROME_DP'],
-  ])('%s turns the graph on within a row of its own chrome', (_l, file, chrome) => {
-    const gate = gridNum(file, 'GRID_MIN_HEIGHT_DP');
-    const over = gate - gridNum(file, chrome);
-    // At least a row — below that the graph appears with nowhere to draw —
-    // and no more than two, which is a row of card going spare.
-    expect(over).toBeGreaterThanOrEqual(oneRow * 0.9);
-    expect(over).toBeLessThan(oneRow * 2);
+describe('the graph is drawn for the room the card leaves it', () => {
+  it('the log card chooses its chrome by its padding, and gates on the box', () => {
+    expect(log).toContain('val chrome = if (tight) LOG_CHROME_TIGHT_DP else LOG_CHROME_ROOMY_DP');
+    expect(log).toContain('val graphBox = h - chrome');
+    expect(log).toContain('val graphHeight = tall && graphBox >= GRID_MIN_BOX_DP');
+    // Roomy pays 8dp of padding, 8dp of chip and a 15dp rule the tight
+    // card does without.
+    expect(constOf(log, 'LOG_CHROME_ROOMY_DP') - constOf(log, 'LOG_CHROME_TIGHT_DP')).toBe(31);
+    // Six rows of the smallest cell and the gaps between them, closed up.
+    expect(constOf(log, 'GRID_MIN_BOX_DP')).toBeGreaterThanOrEqual(36);
   });
 
   it('drops the log card’s date line when the graph takes its place', () => {
-    // Both facts on that line are said again once the graph is drawn, and
-    // the 22dp it costs is most of a row of history.
-    expect(log).toContain('val graphHeight = h >= GRID_MIN_HEIGHT_DP');
+    // Both facts on that line are said again once the graph is drawn.
     expect(log).toMatch(/if \(!bare && !graphHeight\) \{\s*\n\s*Row\([^\n]*\n\s*Label\(m\.title/);
   });
 });
@@ -171,30 +154,14 @@ describe('the graph appears exactly when a row of it fits', () => {
 /**
  * The box the graph is TOLD it has is the box the card HANDS it.
  *
- * Reported as "the graph in the widget is better but has too much void space
- * above and under", with a screenshot of a 4x4: a six-row graph floating in
- * the middle of the card with a band of nothing at each end.
- *
- * The rows and the cell come out of a box the provider works out by
- * subtracting what it believes the rest of the card costs. The strip did not
- * subtract — it took the remainder and multiplied it by two thirds, standing
- * in for "the times row takes the other third". No layout ever behaved that
- * way: the graph's ImageView is the ONLY weighted child of the content
- * column, so the times row takes its own height and the ImageView is handed
- * everything that is left. Measured on a 432dp host: the ImageView got 233dp
- * and the arithmetic asked for 178, so a graph built for two thirds of its
- * box was centred in it and the missing third became the void, split above
- * and below by `fitCenter`.
- *
- * The arithmetic is now a subtraction of named, measured constants, and the
- * layout fact it rests on is pinned below — because a weighted sibling added
- * to either column would break the arithmetic silently, and the only symptom
- * would be a graph that had shrunk.
+ * The strip's graph is the one weighted child of its column, so it gets
+ * whatever the rest of the card leaves — and the bitmap has to be drawn
+ * for exactly that, from the card's inner width and a subtraction of
+ * named, measured constants. A weighted sibling added to either column
+ * would break the arithmetic silently; the only symptom would be a graph
+ * that had shrunk.
  */
 describe('the graph is sized for the space it is actually given', () => {
-  // The layout-XML walk that pinned "the graph's ImageView is the only weighted
-  // child" went with prayer_widget_{strip,log}.xml; the Glance equivalent is
-  // that the graph is the one defaultWeight() child after its rule.
   it('the strip gives the whole remainder to the graph alone', () => {
     const at = strip.indexOf('practice?.let { pr ->\n        Rule(');
     expect(at).toBeGreaterThan(-1);
@@ -211,33 +178,28 @@ describe('the graph is sized for the space it is actually given', () => {
     expect(block).toContain('GlanceModifier.fillMaxWidth().defaultWeight()');
   });
 
-  it('the strip subtracts what the card costs instead of taking a fraction', () => {
-    // The strip's own branch: a subtraction of named constants, no fraction.
+  it('both subtract what the card costs instead of taking a fraction', () => {
     expect(strip).toContain(
-      'val box = size.heightDp - STRIP_CHROME_DP - (if (showFoot) STRIP_FOOT_DP else 0)',
+      'val box = size.heightDp - STRIP_TALL_CHROME_DP - (if (showFoot) STRIP_FOOT_DP else 0)',
     );
-    // The tall card's stays a share: its graph sits in a wrap_content row, so
-    // the bitmap sets the row's height, and asking for too much pushes the
-    // footer off the card rather than shrinking the squares.
-    expect(strip).toContain('((h - STRIP_CHROME_DP) * 2) / 3');
-  });
-
-  it('the log card subtracts its own, and neither scales the answer', () => {
-    expect(log).toContain('h - LOG_CHROME_DP,');
+    expect(strip).toContain('size.widthDp - insetDp(context, size), box,');
+    expect(log).toContain('val boxW = size.widthDp - 2 * (CARD_INSET_DP + paddingFor(size))');
+    expect(log).toContain('PracticeGridBitmap.layoutFor(boxW, graphBox, density, MAX_GRID_DAYS)');
+    // (The list card's graph — beside the streak number, in a wrap_content
+    // row — keeps its share: `((h - STRIP_CHROME_DP) * 2) / 3`.)
   });
 
   /**
    * Both numbers are measurements of the same two cards, taken the same way,
-   * so they cannot drift far apart: the Log card carries one fewer band
-   * above its graph than the strip does, and no month footer under it.
+   * so they cannot drift far apart.
    */
   it('the two chromes stay within a band of each other', () => {
-    const stripChrome = constOf(strip, 'STRIP_CHROME_DP');
-    const logChrome = constOf(log, 'LOG_CHROME_DP');
-    expect(Math.abs(stripChrome - logChrome)).toBeLessThan(40);
-    // And both are big enough to be a real card's chrome rather than a
+    const stripChrome = constOf(strip, 'STRIP_TALL_CHROME_DP');
+    const logChrome = constOf(log, 'LOG_CHROME_ROOMY_DP');
+    expect(Math.abs(stripChrome - logChrome)).toBeLessThan(20);
+    // And both are big enough to be a real 4×2's chrome rather than a
     // guess left over from a smaller layout.
-    expect(stripChrome).toBeGreaterThan(160);
-    expect(logChrome).toBeGreaterThan(160);
+    expect(stripChrome).toBeGreaterThan(150);
+    expect(logChrome).toBeGreaterThan(150);
   });
 });

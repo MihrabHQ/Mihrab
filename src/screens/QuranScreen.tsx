@@ -41,6 +41,7 @@ import { useReduceMotion } from '../hooks/useReduceMotion';
 import { useKeyboardInset } from '../hooks/useKeyboardInset';
 import { useKeyboardAwareScroll } from '../hooks/useKeyboardAwareScroll';
 import { useAppPalette } from '../hooks/useAppPalette';
+import { useAppearanceSettings } from '../context/PrayerSettingsContext';
 import type { AppPalette } from '../theme/appPalette';
 import { SegmentedControl } from '../components/ui';
 import { useBreakpoint } from '../responsive/breakpoints';
@@ -164,6 +165,10 @@ export function QuranScreen() {
   const { t, i18n } = useTranslation();
   const { palette, isDark } = useAppPalette();
   const sheetEdges = useSheetSides();
+  // Minimal (settings.minimalUi): the list and the doors back into the
+  // book — not the verse of the day, the often-read row, the sync hint,
+  // nor the khatmah's invitation (a khatmah under way keeps its row).
+  const minimal = useAppearanceSettings().slice.minimalUi;
   // Two dialogs on this screen open with an autoFocus field in them.
   const keyboardInset = useKeyboardInset();
   const navigation =
@@ -678,12 +683,12 @@ export function QuranScreen() {
       {/* Said where it lands: this card is the user's place in the mushaf,
           and the whole point of sync is that the place follows them. Shows
           only until sync works or they wave it away — see SyncHint. */}
-      <SyncHint place="quran" />
+      {minimal ? null : <SyncHint place="quran" />}
 
       {/* The khatmah's row, or — with no plan — the two buttons that lead
           to a khatmah and to Tilāwah. The card itself is its own page now;
           see `KhatmahEntry`. */}
-      <KhatmahEntry />
+      {minimal && !plan ? null : <KhatmahEntry />}
 
       {/* Tilāwah, as a row under the khatmah — what is playing (or would
           play), play/pause, next surah; the row opens the player. Only
@@ -700,7 +705,7 @@ export function QuranScreen() {
           is one whose top you stop reading. Collapsed, the row still
           carries the reference, which is the part that makes anyone want
           to open it. */}
-      {votdOn && votdArabic ? (
+      {votdOn && votdArabic && !minimal ? (
         <View
           style={[
             styles.votdCard,
@@ -903,7 +908,7 @@ export function QuranScreen() {
           while nothing is being searched: they are a shortcut past the
           list, so above a list that is already narrowed they would be in
           the way. */}
-      {pageTab === 'surah' && !query.trim() && results == null ? (
+      {pageTab === 'surah' && !minimal && !query.trim() && results == null ? (
         <View style={styles.oftenRow}>
           <Text style={[styles.oftenLabel, { color: palette.muted }]}>
             {t('quran.oftenRead', { defaultValue: 'Often read' })}

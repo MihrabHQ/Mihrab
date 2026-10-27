@@ -6,13 +6,13 @@
 "widget_name_medium" = "Mihrab · Heures de prière";
 "widget_name_large" = "Mihrab · Heures de prière (ancien)";
 "widget_description" = "Les heures du jour sur une ligne, prochaine prière en surbrillance";
-"widget_description_small" = "Juste la prochaine prière et son heure. 2×1, redimensionnable.";
+"widget_description_small" = "Seulement la prochaine prière et son heure. 2×1.";
 "widget_description_medium" = "Les six heures en colonnes sur une large ligne, prochaine prière en surbrillance. 4×2, redimensionnable.";
-"widget_description_prayer_times" = "Les six heures du jour sur une ligne. Agrandissez pour la ville et la date hégirienne, encore plus pour le graphique de pratique. 4×1 à 4×4.";
+"widget_description_prayer_times" = "Les six heures du jour sur une ligne, avec la ville et la date hégirienne. 4×1.";
 "widget_description_large_retired" = "L'ancien widget des heures de prière. Il affiche désormais le même modèle que l'actuel ; inutile d'en placer un nouveau.";
 "widget_description_large" = "Les six heures en liste à côté de la prochaine prière. 4×3 — réduisez sous trois lignes pour obtenir la bande à une ligne.";
 "widget_name_log" = "Mihrab · Journal du jour";
-"widget_description_log" = "Touchez une prière pour la noter à l'heure, avec le compte à rebours de la suivante. Agrandissez pour le graphique de pratique. 4×1 à 4×4.";
+"widget_description_log" = "Touchez une prière pour la consigner à l'heure, avec le compte à rebours jusqu'à la suivante. 4×1.";
 "widget_log_today" = "Aujourd'hui";
 "widget_log_count" = "%1$d sur %2$d";
 "widget_log_waiting" = "%1$@ pas encore noté";
@@ -22,7 +22,7 @@
 "widget_placeholder_day" = "Ouvrez Mihrab pour charger les heures";
 "widget_error" = "Impossible de charger les données du widget";
 "widget_name_streak" = "Mihrab · Série";
-"widget_description_streak" = "Votre série de prières à l'heure et les dernières semaines du graphique de pratique. 2×2 à 4×2.";
+"widget_description_streak" = "Votre série à l'heure et les dernières semaines du graphique de pratique. 4×2.";
 "widget_streak_title" = "SÉRIE";
 "widget_streak_best" = "Meilleure %1$d";
 "widget_streak_logged" = "%1$d sur 5 aujourd'hui";
@@ -111,6 +111,6 @@
 "widget_preview_tap_to_log" = "Touchez ✓ pour noter Asr à l'heure";
 "widget_preview_practice_second" = "jours de série · Meilleure 31 · 2 sur 5 aujourd'hui";
 "widget_name_tall" = "Mihrab · Heures de prière (haut)";
-"widget_description_tall" = "Les mêmes six heures avec la ville, la date hégirienne et le graphique de pratique. 4×2 — réduisez-le, et il devient la bande à une ligne.";
+"widget_description_tall" = "Les six heures du jour avec la ville, la date hégirienne et le graphique de pratique. 4×2.";
 "widget_name_log_tall" = "Mihrab · Journal du jour (haut)";
-"widget_description_log_tall" = "Touchez une prière pour la noter à l'heure, avec le compte à rebours de la suivante et le graphique de pratique. 4×2 — réduisez-le, et il devient la carte à une ligne.";
+"widget_description_log_tall" = "Touchez une prière pour la consigner à l'heure, avec le compte à rebours jusqu'à la suivante et le graphique de pratique. 4×2.";

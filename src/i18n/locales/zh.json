@@ -24,7 +24,8 @@
     "openCompass": "打开朝拜指南针",
     "openTimesSource": "更改祈祷时间来源",
     "countdownTo": "倒计时改为这次礼拜",
-    "countdownHere": "倒计时正指向这次礼拜。点按可回到下一次。"
+    "countdownHere": "倒计时正指向这次礼拜。点按可回到下一次。",
+    "openTodayTimes": "打开今日礼拜时间"
   },
   "common": {
     "change": "改变",
@@ -111,7 +112,8 @@
     "pullToRefresh": "下拉刷新",
     "pullRelease": "松开刷新",
     "pullRefreshing": "正在刷新您的礼拜时间…",
-    "helpMihrabChip": "帮助 Mihrab 成长"
+    "helpMihrabChip": "帮助 Mihrab 成长",
+    "minimalTimesTitle": "今日礼拜时间"
   },
   "errors": {
     "locationNeededTitle": "需要位置",
@@ -494,7 +496,9 @@
       "seventh_of_night": "夜之七分之一",
       "seventh_of_nightHelp": "宵礼在夜的第一个七分之一之后，晨礼在最后一个七分之一。"
     },
-    "providerTableFallback": "{{picked}} 没有今天的已发布时间，因此在时间表再次覆盖今天之前，改在手机上按其自身方法计算。"
+    "providerTableFallback": "{{picked}} 没有今天的已发布时间，因此在时间表再次覆盖今天之前，改在手机上按其自身方法计算。",
+    "minimalUi": "极简",
+    "minimalUiHelp": "每个页面只留一样。「今天」保留倒计时，点一下查看当天礼拜时间。其他标签页只保留各自的主要功能。"
   },
   "locationSetup": {
     "headline": "设置您的位置",

@@ -6,13 +6,13 @@
 "widget_name_medium" = "Mihrab · Namaz vakitleri";
 "widget_name_large" = "Mihrab · Namaz vakitleri (eski)";
 "widget_description" = "Bugünün vakitleri tek satırda, sıradaki namaz vurgulanır";
-"widget_description_small" = "Sadece sıradaki namaz ve vakti. 2×1, yeniden boyutlandırılabilir.";
+"widget_description_small" = "Yalnızca sonraki namaz ve vakti. 2×1.";
 "widget_description_medium" = "Altı vaktin tümü geniş tek satırda sütunlar halinde, sıradaki namaz vurgulanır. 4×2, yeniden boyutlandırılabilir.";
-"widget_description_prayer_times" = "Bugünün altı vakti tek satırda. Şehir ve hicri tarih için yükseltin, ibadet grafiği için tekrar yükseltin. 4×1 ile 4×4 arası.";
+"widget_description_prayer_times" = "Bugünün altı vakti tek satırda, şehir ve hicri tarihle. 4×1.";
 "widget_description_large_retired" = "Önceki namaz vakitleri widget'ı. Artık güncel widget'la aynı tasarımı kullanıyor; yenisini eklemenin bir anlamı yok.";
 "widget_description_large" = "Altı vaktin tümü sıradaki namazın yanında liste halinde. 4×3 — üç satırın altına küçültüldüğünde tek satırlık şeride dönüşür.";
 "widget_name_log" = "Mihrab · Bugünü kaydet";
-"widget_description_log" = "Bir namazı vaktinde kıldığınızı kaydetmek için dokunun, sıradakine geri sayımla birlikte. İbadet grafiği için yükseltin. 4×1 ile 4×4 arası.";
+"widget_description_log" = "Vaktinde kaydetmek için bir namaza dokunun, sonrakine geri sayımla. 4×1.";
 "widget_log_today" = "Bugün";
 "widget_log_count" = "%2$d üzerinden %1$d";
 "widget_log_waiting" = "%1$@ henüz kaydedilmedi";
@@ -22,7 +22,7 @@
 "widget_placeholder_day" = "Vakitleri yüklemek için Mihrab'ı açın";
 "widget_error" = "Widget verileri yüklenemedi";
 "widget_name_streak" = "Mihrab · Seri";
-"widget_description_streak" = "Vaktinde kılma seriniz ve ibadet grafiğinin son haftaları. 2×2 ile 4×2 arası.";
+"widget_description_streak" = "Vaktinde kılma seriniz ve ibadet grafiğinin son haftaları. 4×2.";
 "widget_streak_title" = "SERİ";
 "widget_streak_best" = "En iyi %1$d";
 "widget_streak_logged" = "Bugün 5 üzerinden %1$d";
@@ -111,6 +111,6 @@
 "widget_preview_tap_to_log" = "Asr namazını vaktinde kaydetmek için ✓'a dokunun";
 "widget_preview_practice_second" = "gün serisi · En iyi 31 · Bugün 5 üzerinden 2";
 "widget_name_tall" = "Mihrab · Namaz vakitleri (yüksek)";
-"widget_description_tall" = "Aynı altı vakit; şehir, hicri tarih ve ibadet grafiğiyle birlikte. 4×2 — küçültün, tek satırlık şeride dönüşür.";
+"widget_description_tall" = "Bugünün altı vakti; şehir, hicri tarih ve ibadet grafiğiyle. 4×2.";
 "widget_name_log_tall" = "Mihrab · Bugünü kaydet (yüksek)";
-"widget_description_log_tall" = "Bir namazı vaktinde kıldığınızı kaydetmek için dokunun, sıradakine geri sayım ve ibadet grafiğiyle birlikte. 4×2 — küçültün, tek satırlık karta dönüşür.";
+"widget_description_log_tall" = "Vaktinde kaydetmek için bir namaza dokunun, sonrakine geri sayım ve ibadet grafiğiyle. 4×2.";

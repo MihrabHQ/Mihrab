@@ -24,7 +24,8 @@
     "openCompass": "Open Qibla compass",
     "openTimesSource": "Change prayer times source",
     "countdownTo": "Count down to this prayer",
-    "countdownHere": "The countdown is set to this prayer. Tap to go back to the next one."
+    "countdownHere": "The countdown is set to this prayer. Tap to go back to the next one.",
+    "openTodayTimes": "Opens today’s prayer times"
   },
   "common": {
     "change": "Change",
@@ -111,7 +112,8 @@
     "pullToRefresh": "Pull down to refresh",
     "pullRelease": "Release to refresh",
     "pullRefreshing": "Refreshing your times…",
-    "helpMihrabChip": "Help Mihrab grow"
+    "helpMihrabChip": "Help Mihrab grow",
+    "minimalTimesTitle": "Today’s times"
   },
   "errors": {
     "locationNeededTitle": "Location needed",
@@ -494,7 +496,9 @@
       "seventh_of_night": "Seventh of the night",
       "seventh_of_nightHelp": "Isha after the first seventh of the night, Fajr at the last seventh."
     },
-    "providerTableFallback": "{{picked}} has no published times for today, so its own method is calculated on the phone until the table covers it again."
+    "providerTableFallback": "{{picked}} has no published times for today, so its own method is calculated on the phone until the table covers it again.",
+    "minimalUi": "Minimal",
+    "minimalUiHelp": "One thing per screen. Today keeps the countdown; tap it for the day’s times. The other tabs keep what each is for."
   },
   "locationSetup": {
     "headline": "Set your location",

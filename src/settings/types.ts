@@ -443,6 +443,14 @@ export type PrayerAppSettings = {
    */
   launchAnimation: boolean;
   /**
+   * Minimal — one thing per screen. Today is the sky, the countdown, the
+   * next prayer's name and time, the rail and a line of where and when;
+   * the day's times are a tap away in a sheet. The other tabs keep the
+   * one thing each is for and stand down their chrome. Off by default:
+   * the full page is the page people know.
+   */
+  minimalUi: boolean;
+  /**
    * App accent color id — task #127. Drives the in-app accent and (when
    * `useSystemDynamicTheme` is off) also the widget highlight via the
    * sync logic in `syncWidgetUiHints.ts`. When `useSystemDynamicTheme`
@@ -791,6 +799,7 @@ export const DEFAULT_SETTINGS: PrayerAppSettings = {
   endOfDayLogReminderEnabled: false,
   logLateByClock: false,
   launchAnimation: true,
+  minimalUi: false,
   // App accent defaults to brand green (matches the historical hardcoded
   // accent so users on existing installs see no visual diff after the
   // upgrade).
