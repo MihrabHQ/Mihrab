@@ -207,7 +207,7 @@ describe('wiring', () => {
 
   it('draws the countdown, the rail and the sky from the run', () => {
     expect(card).toMatch(/warp \? warpRemaining\(warp, remainingSeconds, warpE\) : remainingSeconds/);
-    expect(card).toMatch(/warp \? warpPct\(warp, rail\.pct, warpE\) : rail\.pct/);
+    expect(card).toMatch(/warp \? warpPct\(warp, liveRailPct, warpE\) : liveRailPct/);
     expect(card).toMatch(/warp \? warpSkyAt\(warp, now\.getTime\(\), skyE\) : now\.getTime\(\)/);
   });
 

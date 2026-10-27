@@ -1330,6 +1330,10 @@ export function MushafPageFooter({
             defaultValue: "Finish day {{day}}'s reading ({{when}})",
           })}
           onPress={finish.onPress}
+          // It answers on a locked page too (#113), so a touch on it is
+          // not a touch the lock refused: kept from the page's own
+          // handler, which would say "the page is locked" as it worked.
+          onTouchStart={e => e.stopPropagation()}
           style={[styles.finishPill, { borderColor: KHATMAH_COLOR }]}>
           <Text style={[styles.finishPillLabel, { color: KHATMAH_COLOR }]}>
             {t('quran.finishDayShort', {

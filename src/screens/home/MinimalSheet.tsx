@@ -28,6 +28,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import { useReduceMotion } from '../../hooks/useReduceMotion';
 import { RADIUS, SPACING } from '../../theme/tokens';
+import { useSheetPadding } from '../../responsive/sheetSides';
 
 /** How far the page eases back under the sheet. */
 export const MINIMAL_SHEET_PAGE_SCALE = 0.94;
@@ -75,6 +76,9 @@ export function MinimalSheet({
   const insets = useSafeAreaInsets();
   const reduceMotion = useReduceMotion();
   const { height: windowHeight } = useWindowDimensions();
+  // Beside an iPhone's vertical bar, or on one pane of a book-folded
+  // phone, the sheet keeps to its side; the veil still covers the window.
+  const barPad = useSheetPadding();
   // The modal stays up through the close so the sheet can go down.
   const [mounted, setMounted] = useState(visible);
   const [sheetHeight, setSheetHeight] = useState(0);
@@ -163,7 +167,7 @@ export function MinimalSheet({
     <Modal visible transparent animationType="none" statusBarTranslucent onShow={rise} onRequestClose={onClose}>
       {/* Its own gesture root: on Android a modal is a window of its own,
           and the handlers in it need one. */}
-      <GestureHandlerRootView style={styles.fill}>
+      <GestureHandlerRootView style={[styles.fill, barPad]}>
         {/* The veil: a shadow the sheet casts up the page — light over the
             sky, deep at the sheet's edge. */}
         <Animated.View style={[StyleSheet.absoluteFill, { opacity: veil }]} pointerEvents="none">

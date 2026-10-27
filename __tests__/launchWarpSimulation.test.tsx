@@ -132,19 +132,42 @@ function renderCard(now: Date, key = 'k'): ReactTestRenderer {
   return tree;
 }
 
-/** The hero's countdown, in seconds, as drawn. */
-function shownSeconds(tree: ReactTestRenderer): number {
-  const texts = tree.root
+/** A Text's words, its nested spans' with them (the units are spans of their own). */
+function flatten(c: unknown): string {
+  if (c == null || typeof c === 'boolean') return '';
+  if (typeof c === 'string' || typeof c === 'number') return String(c);
+  if (Array.isArray(c)) return c.map(flatten).join('');
+  const el = c as { props?: { children?: unknown } };
+  return el.props ? flatten(el.props.children) : '';
+}
+
+/**
+ * The hero's countdown, in seconds, as drawn — and whether the seconds
+ * were drawn: on the full page they appear only inside the last hour, and
+ * above it the line says hours and minutes, so it is read to the minute.
+ */
+function shownCountdown(tree: ReactTestRenderer): { value: number; exact: boolean } {
+  const line = tree.root
     .findAllByType(Text)
-    .map(n => n.props.children)
-    .map(c => (Array.isArray(c) ? c.join('') : c));
-  // One line of spans: "3h 25m" (or "25m") and " 07s".
-  const strings = texts.filter((c): c is string => typeof c === 'string');
-  const figures = strings.find(c => /^(\d+h )?\d+m$/.test(c));
-  const secs = strings.find(c => /^ \d\ds$/.test(c));
-  const h = figures?.match(/^(\d+)h /)?.[1];
-  const m = figures?.match(/(\d+)m$/)?.[1];
-  return ((h ? parseInt(h, 10) : 0) * 60 + (m ? parseInt(m, 10) : 0)) * 60 + (secs ? parseInt(secs, 10) : 0);
+    .map(n => flatten(n.props.children))
+    .find(c => /^(\d+h )?\d+m( \d\ds)?$/.test(c));
+  const h = line?.match(/^(\d+)h /)?.[1];
+  const m = line?.match(/(\d+)m/)?.[1];
+  const secs = line?.match(/ (\d\d)s$/)?.[1];
+  return {
+    value: ((h ? parseInt(h, 10) : 0) * 60 + (m ? parseInt(m, 10) : 0)) * 60 + (secs ? parseInt(secs, 10) : 0),
+    exact: secs != null,
+  };
+}
+
+/** The countdown's value as drawn, whatever its precision. */
+function shownSeconds(tree: ReactTestRenderer): number {
+  return shownCountdown(tree).value;
+}
+
+/** A count in seconds, as the line would draw it: to the minute when the seconds are not shown. */
+function asDrawn(seconds: number, exact: boolean): number {
+  return exact ? seconds : Math.floor(seconds / 60) * 60;
 }
 
 /** The rail's fill, 0…1, as drawn (the only width written to 2 decimals). */
@@ -182,14 +205,18 @@ function simulate(pictureAt: Date, now: Date, posed = false) {
   mockShown.value = { at: pictureAt.getTime(), targetAt: h.target.getTime(), fromAt: h.from.getTime(), posed };
   jest.setSystemTime(now);
   const tree = renderCard(now);
-  const seconds: number[] = [shownSeconds(tree)];
+  const first = shownCountdown(tree);
+  const seconds: number[] = [first.value];
+  const exact: boolean[] = [first.exact];
   const rails: (number | null)[] = [shownRail(tree)];
   const total = WARP_AFTER_HIDE_MS + WARP_MAX_MS + 200;
   for (let t = 0; t < total; t += frame) {
     act(() => {
       jest.advanceTimersByTime(frame);
     });
-    seconds.push(shownSeconds(tree));
+    const c = shownCountdown(tree);
+    seconds.push(c.value);
+    exact.push(c.exact);
     rails.push(shownRail(tree));
   }
   const lh = heroAt(new Date(Date.now()));
@@ -209,21 +236,28 @@ function simulate(pictureAt: Date, now: Date, posed = false) {
   const span = h.target.getTime() - h.from.getTime();
   const cachedRail = stale || posed ? 0 : (pictureAt.getTime() - h.from.getTime()) / span;
   const liveRail = (Date.now() - lh.from.getTime()) / (lh.target.getTime() - lh.from.getTime());
-  return { tree, seconds, rails, cached, live, cachedRail, liveRail };
+  return { tree, seconds, exact, rails, cached, live, cachedRail, liveRail };
 }
 
 function expectRun(r: ReturnType<typeof simulate>) {
-  // Starts on the picture's number — or the fade would show a jump.
-  expect(r.seconds[0]).toBe(r.cached);
+  // Starts on the picture's number, as the line draws it — or the fade
+  // would show a jump.
+  expect(r.seconds[0]).toBe(asDrawn(r.cached, r.exact[0]));
   // Moves only towards the live one, through many values, not in a step.
   const dir = Math.sign(r.live - r.cached);
   for (let i = 1; i < r.seconds.length; i++) {
-    // The live clock ticks a second during the run: allow it.
-    expect((r.seconds[i] - r.seconds[i - 1]) * dir).toBeGreaterThanOrEqual(-1);
+    // The live clock ticks during the run: allow a second, or the minute
+    // it turns over when the line is read to the minute.
+    const tick = r.exact[i] && r.exact[i - 1] ? 1 : 60;
+    expect((r.seconds[i] - r.seconds[i - 1]) * dir).toBeGreaterThanOrEqual(-tick);
   }
-  expect(new Set(r.seconds).size).toBeGreaterThan(8);
-  // Ends on the live number, within the second it ticked meanwhile.
-  expect(Math.abs(r.seconds[r.seconds.length - 1] - r.live)).toBeLessThanOrEqual(2);
+  // Many values, not a step: as many as the distance allows at the
+  // precision drawn (a run of seven minutes read to the minute has eight).
+  const steps = r.exact.every(Boolean) ? 8 : Math.min(8, Math.floor(Math.abs(r.live - r.cached) / 60) - 1);
+  expect(new Set(r.seconds).size).toBeGreaterThan(steps);
+  // Ends on the live number, within what it ticked meanwhile.
+  const lastExact = r.exact[r.exact.length - 1];
+  expect(Math.abs(r.seconds[r.seconds.length - 1] - asDrawn(r.live, lastExact))).toBeLessThanOrEqual(lastExact ? 2 : 60);
   // The rail too, from the picture's fill to the live one, only towards it.
   expect(r.rails[0]).toBeCloseTo(r.cachedRail, 2);
   const lastRail = r.rails[r.rails.length - 1] as number;
@@ -300,11 +334,16 @@ describe('the hero runs from the kept picture to now', () => {
 
   it('keeps ticking as usual once there', () => {
     const r = simulate(day(D, '13:00'), day(D, '13:07'));
+    // Hours away, the line is read to the minute: a minute on, it is a
+    // minute less.
     const before = shownSeconds(r.tree);
-    act(() => {
-      jest.advanceTimersByTime(1000);
-    });
-    expect(shownSeconds(r.tree)).toBe(before - 1);
+    // A minute of ticks, one at a time, as the clock delivers them.
+    for (let i = 0; i < 61; i++) {
+      act(() => {
+        jest.advanceTimersByTime(1000);
+      });
+    }
+    expect(shownSeconds(r.tree)).toBe(before - 60);
   });
 
   it('carries on, not over, when the hero is mounted again mid-run', () => {
@@ -442,7 +481,8 @@ describe('the hero runs from the kept picture to now', () => {
     jest.setSystemTime(now);
     const tree = renderCard(now);
     const h = heroAt(now);
-    expect(shownSeconds(tree)).toBe(Math.floor((h.target.getTime() - h.from.getTime()) / 1000));
+    const start = shownCountdown(tree);
+    expect(start.value).toBe(asDrawn(Math.floor((h.target.getTime() - h.from.getTime()) / 1000), start.exact));
     const seen = new Set<number>();
     for (let t = 0; t < WARP_AFTER_HIDE_MS + WARP_MAX_MS + 200; t += frame) {
       act(() => {
@@ -450,7 +490,11 @@ describe('the hero runs from the kept picture to now', () => {
       });
       seen.add(shownSeconds(tree));
     }
-    expect(seen.size).toBeGreaterThan(8);
-    expect(Math.abs(shownSeconds(tree) - Math.floor((h.target.getTime() - Date.now()) / 1000))).toBeLessThanOrEqual(2);
+    // Seven minutes run, read to the minute: every one of them passed through.
+    expect(seen.size).toBeGreaterThan(6);
+    const end = shownCountdown(tree);
+    expect(Math.abs(end.value - asDrawn(Math.floor((h.target.getTime() - Date.now()) / 1000), end.exact))).toBeLessThanOrEqual(
+      end.exact ? 2 : 60,
+    );
   });
 });

@@ -478,7 +478,13 @@ const PhonePageItem = React.memo(function PhonePageItem({
               finish={{
                 day: finish.day,
                 when: finish.when,
-                onPress: locked ? () => undefined : finishKhatmahPortion,
+                // Not behind the lock (#113): a reader turning pages with
+                // the volume buttons reaches the end of the day's portion
+                // still locked, and this is the one thing to do there.
+                // The lock is against a hand that brushes the page, and a
+                // brush does not land on a pill at the foot of the last
+                // page of the portion.
+                onPress: finishKhatmahPortion,
               }}
             />
           ) : null}

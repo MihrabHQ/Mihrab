@@ -248,7 +248,8 @@ const SpreadColumn = React.memo(function SpreadColumn({
             ? {
                 day: finish.day,
                 when: finish.when,
-                onPress: locked ? () => undefined : finishKhatmahPortion,
+                // Not behind the lock (#113) — see MushafPhoneReader.
+                onPress: finishKhatmahPortion,
               }
             : null
         }

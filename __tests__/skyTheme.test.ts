@@ -391,7 +391,9 @@ describe('the hero under the theme', () => {
     expect(card).toMatch(/\{ \.\.\.mood, heroFoot: pageBg \},\s*mood\.isDark === pageDark \? SKY_THEME_MID_AT : lowMidAt/);
     expect(card).toMatch(/\[skyTheme, heroVariant, pageBg, pageDark, lowMidAt\]/);
     expect(card).toMatch(/return paint\(skyFrame\(skyMoment\(day, at, tomorrowFajr\)/);
-    expect(card).toMatch(/textShadowColor: `\$\{mood\.accent\}73`/);
+    expect(card).toMatch(/textShadowColor: `\$\{mood\.accent\}\$\{alpha\}`/);
+    // The ordinary halo's strength; it brightens only in the last minutes.
+    expect(card).toContain('const GLOW_ALPHA = 0x73;');
     expect(card).toMatch(/if \(!mood\.isDark\) return null;/);
     expect(card).toMatch(/\n\s+denseStars\n/);
     const sky = read('src/screens/home/HeroSky.tsx');
