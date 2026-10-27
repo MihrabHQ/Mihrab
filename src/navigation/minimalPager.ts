@@ -19,6 +19,15 @@ import { Animated, Easing } from 'react-native';
 
 export const pagerDrag = new Animated.Value(0);
 export const pagerEngaged = new Animated.Value(0);
+/**
+ * A finger held on the dots and slid along them (MinimalTabBar): how
+ * many tabs from the current one it is, as a fraction. The dots follow
+ * it exactly; the page leans the way the finger is going — this much
+ * of its width a tab away, twice that at the far end of the row — rather
+ * than being carried off the screen (MinimalSwipe).
+ */
+export const pagerHold = new Animated.Value(0);
+export const HOLD_PAGE_LEAN = 0.3;
 
 /** The navigator's slide, and the drag's run back to zero with it. */
 export const PAGER_TRANSITION_MS = 280;
@@ -55,6 +64,16 @@ export function springPagerDrag(onDone?: () => void): void {
     stiffness: 260,
     damping: 28,
     mass: 1,
+    useNativeDriver: true,
+  }).start(() => onDone?.());
+}
+
+/** The hold's run back to zero, as the navigator slides the pages. */
+export function settlePagerHold(onDone?: () => void): void {
+  Animated.timing(pagerHold, {
+    toValue: 0,
+    duration: PAGER_TRANSITION_MS,
+    easing: pagerEasing,
     useNativeDriver: true,
   }).start(() => onDone?.());
 }

@@ -1,12 +1,22 @@
 import { useEffect, useMemo, useRef } from 'react';
-import { Animated, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { Animated, I18nManager, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { hapticScrubStart, hapticScrubTick } from '../polish/haptics';
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useAppPalette } from '../hooks/useAppPalette';
 import { MINIMAL_TAB_BAR_HEIGHT, useTabBarBottom } from './tabBarInset';
 import { useTabBarHidden } from './tabBarVisibility';
 import { scrimColor } from './TabBarScrim';
-import { PAGER_TRANSITION_MS, pagerDrag, pagerEasing, pagerEngaged, setPagerEngaged } from './minimalPager';
+import {
+  PAGER_TRANSITION_MS,
+  pagerDrag,
+  pagerEasing,
+  pagerEngaged,
+  pagerHold,
+  setPagerEngaged,
+  settlePagerHold,
+} from './minimalPager';
 
 /**
  * The tab bar under Minimal (settings.minimalUi): a row of dots, one a
@@ -20,7 +30,14 @@ import { PAGER_TRANSITION_MS, pagerDrag, pagerEasing, pagerEngaged, setPagerEnga
  * dot — each dot shows its tab's icon instead, the current one a little
  * larger, and the lit one moves with the page: half way across, the two
  * icons are half lit each. As the turn settles the icons go back to
- * dots. No labels: six words along the foot were the one line of chrome
+ * dots.
+ *
+ * A finger HELD on a dot and slid along the row does the same by hand:
+ * the icons come up, the lit one follows the finger from dot to dot and
+ * the page leans the way it is going, and the tab under the finger when
+ * it lifts is the one opened — the full bar's hold-and-slide, on dots.
+ *
+ * No labels: six words along the foot were the one line of chrome
  * Minimal still had, and a dot says "there are six pages and this is the
  * second" with none of them. Each dot still answers to a screen reader
  * with the tab's name.
@@ -51,8 +68,55 @@ export function MinimalTabBar({ state, descriptors, navigation }: BottomTabBarPr
     }).start();
   }, [base, state.index]);
   const position = useMemo(
-    () => Animated.add(base, Animated.divide(pagerDrag, -Math.max(1, width))),
+    () => Animated.add(Animated.add(base, Animated.divide(pagerDrag, -Math.max(1, width))), pagerHold),
     [base, width],
+  );
+  // The hold-and-slide. Read in the gesture's callbacks without
+  // rebuilding the gesture on every tab change.
+  const live = useRef({ index: state.index, count: state.routes.length, width });
+  live.current = { index: state.index, count: state.routes.length, width };
+  const lastSlot = useRef(state.index);
+  const slotAt = (x: number) => {
+    const { count, width: w } = live.current;
+    const start = (w - count * HIT) / 2;
+    let fromLeft = (x - start) / HIT - 0.5;
+    if (I18nManager.isRTL) fromLeft = count - 1 - fromLeft;
+    return Math.max(0, Math.min(count - 1, fromLeft));
+  };
+  const hold = useMemo(
+    () =>
+      Gesture.Pan()
+        .activateAfterLongPress(160)
+        .runOnJS(true)
+        .onStart(e => {
+          setPagerEngaged(true);
+          hapticScrubStart();
+          lastSlot.current = Math.round(slotAt(e.x));
+          pagerHold.setValue(slotAt(e.x) - live.current.index);
+        })
+        .onUpdate(e => {
+          const pos = slotAt(e.x);
+          const slot = Math.round(pos);
+          if (slot !== lastSlot.current) {
+            lastSlot.current = slot;
+            hapticScrubTick(false);
+          }
+          pagerHold.setValue(pos - live.current.index);
+        })
+        .onEnd(e => {
+          const target = Math.round(slotAt(e.x));
+          const route = state.routes[target];
+          if (route && target !== live.current.index) {
+            const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
+            if (!event.defaultPrevented) navigation.navigate(route.name, route.params);
+          }
+          settlePagerHold(() => setPagerEngaged(false));
+        })
+        .onFinalize((_e, success) => {
+          if (!success) settlePagerHold(() => setPagerEngaged(false));
+        }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [navigation, state.routes],
   );
   const dotsOpacity = useMemo(
     () => pagerEngaged.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }),
@@ -84,6 +148,8 @@ export function MinimalTabBar({ state, descriptors, navigation }: BottomTabBarPr
           </Svg>
         </View>
       ) : null}
+      <GestureDetector gesture={hold}>
+      <View style={styles.row} collapsable={false}>
       {state.routes.map((route, index) => {
         const focused = state.index === index;
         const { options } = descriptors[route.key];
@@ -145,6 +211,8 @@ export function MinimalTabBar({ state, descriptors, navigation }: BottomTabBarPr
           </Pressable>
         );
       })}
+      </View>
+      </GestureDetector>
     </View>
   );
 }
@@ -160,6 +228,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   fade: { position: 'absolute', left: 0, right: 0, bottom: 0 },
+  // The dots' row, the width of the window, so a held finger's place in it
+  // is its place along the window (`slotAt`).
+  row: { flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
   // A dot is six points; the thing under the thumb is forty-four.
   hit: { width: HIT, height: MINIMAL_TAB_BAR_HEIGHT, alignItems: 'center', justifyContent: 'center' },
   dot: { width: DOT, height: DOT, borderRadius: DOT / 2 },

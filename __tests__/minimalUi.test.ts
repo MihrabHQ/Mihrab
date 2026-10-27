@@ -51,7 +51,7 @@ describe('the swipe', () => {
     expect(swipe).toContain('.activeOffsetX([-10, 10])');
     expect(swipe).toContain('.failOffsetY([-12, 12])');
     expect(swipe).toContain('if (I18nManager.isRTL) step = -step;');
-    expect(swipe).toContain('transform: [{ translateX: pagerDrag }]');
+    expect(swipe).toContain('transform: [{ translateX: offset }]');
   });
 
   it('turns the page as a pager does: the pages slide, and the drag runs back under them', () => {
@@ -61,6 +61,16 @@ describe('the swipe', () => {
     expect(tabs).toContain('config: { duration: PAGER_TRANSITION_MS, easing: pagerEasing }');
     expect(pager).toMatch(/duration: PAGER_TRANSITION_MS,\s*easing: pagerEasing,\s*useNativeDriver: true,\s*\}\)\.start\(\(\) => onDone/);
     expect(swipe).toContain('navigation.navigate(next.name as never);\n          settlePagerDrag(done);');
+  });
+
+  it('turns by a finger held on the dots and slid along them', () => {
+    expect(bar).toContain('.activateAfterLongPress(160)');
+    expect(bar).toContain('pagerHold.setValue(pos - live.current.index);');
+    expect(bar).toContain('const target = Math.round(slotAt(e.x));');
+    expect(bar).toContain('if (I18nManager.isRTL) fromLeft = count - 1 - fromLeft;');
+    // The dots follow the finger exactly; the page leans, and stays on screen.
+    expect(bar).toContain('Animated.add(Animated.add(base, Animated.divide(pagerDrag, -Math.max(1, width))), pagerHold)');
+    expect(swipe).toContain('outputRange: [2 * lean, lean, 0, -lean, -2 * lean],');
   });
 
   it('shows the icons while a page turns, the current one larger, and dots at rest', () => {
