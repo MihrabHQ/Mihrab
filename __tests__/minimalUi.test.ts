@@ -150,6 +150,12 @@ describe('the minimal Today', () => {
     expect(home).toContain('footInset={tabBarInset}');
   });
 
+  it('stands no page aside on the full page', () => {
+    // The dots, which settle the position, are not mounted there: a page
+    // placed by it would stand a width aside — a blank tab.
+    expect(swipe).toContain('if (!enabled) return <View style={styles.fill}>{children}</View>;');
+  });
+
   it('keeps the other tabs as they are', () => {
     for (const f of ['src/screens/TasbihScreen.tsx', 'src/screens/DuasScreen.tsx']) {
       expect(read(f)).not.toContain('minimalUi');

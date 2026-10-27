@@ -1,5 +1,5 @@
 import { useMemo, useRef, type ReactNode } from 'react';
-import { Animated, I18nManager, StyleSheet, useWindowDimensions } from 'react-native';
+import { Animated, I18nManager, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { useNavigation, useNavigationState } from '@react-navigation/native';
 import { hapticScrubTick } from '../polish/haptics';
@@ -125,6 +125,10 @@ export function MinimalSwipe({
       ),
     [myIndex, width],
   );
+  // The full page: no strip, no offset — the navigator places the one
+  // page on show, and a page stood a width aside here would be a blank
+  // tab. (The dots, which settle the position, are not even mounted.)
+  if (!enabled) return <View style={styles.fill}>{children}</View>;
   return (
     <GestureDetector gesture={gesture}>
       {/* One native view for the detector, and the page's offset on it. */}
