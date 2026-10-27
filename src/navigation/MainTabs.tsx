@@ -145,8 +145,9 @@ export function MainTabs() {
    */
   const vbar = useVerticalBar();
   // Minimal (settings.minimalUi): dots for a bar, and a swipe across a
-  // page turns to the next. Not beside a vertical bar, which has the tabs.
-  const minimal = useMinimalUi() && !vbar;
+  // page turns to the next. Not beside a vertical bar, which has the
+  // tabs, nor on the Mac — `useMinimalUi` says so, for every reader.
+  const minimal = useMinimalUi();
   const hydrated = useSettingsHydrated();
   // A foldable half open as a book: every tab but Today keeps to one page
   // of it, off the crease (`FoldPosture.ts`). Today lays out across both.

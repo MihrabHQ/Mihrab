@@ -23,7 +23,6 @@
  * plan, and this screen is not for plans.
  */
 // tokens-ok: the owed band is the danger colour as a tint; the palette has no danger tint
-import { minimalOn } from '../settings/minimalLook';
 import { Chip, Stepper } from '../components/ui';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
@@ -125,7 +124,7 @@ import {
 import { cardEdgeStyle, inputChromeStyle } from '../theme/chrome';
 import { tabularNumeralStyle } from '../theme/textScale';
 import { useClockFormatter } from '../hooks/useClockFormatter';
-import { useTabBarInset } from '../navigation/tabBarInset';
+import { useMinimalUi, useTabBarInset } from '../navigation/tabBarInset';
 import { useTabPageTop } from '../navigation/useTabPageTop';
 import { useTabBarScroll } from '../navigation/tabBarVisibility';
 import { RADIUS, SPACING } from '../theme/tokens';
@@ -346,8 +345,11 @@ export function LogScreen() {
     [panX, stepDay],
   );
 
-  const minimalRef = useRef(minimalOn(settings));
-  minimalRef.current = minimalOn(settings);
+  // As the navigator reads it (tabBarInset.ts): where the swipe is off
+  // — the Mac, beside a vertical bar — the days keep their own.
+  const minimalUi = useMinimalUi();
+  const minimalRef = useRef(minimalUi);
+  minimalRef.current = minimalUi;
   const panResponder = useMemo(
     () =>
       PanResponder.create({

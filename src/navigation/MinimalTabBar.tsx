@@ -9,8 +9,9 @@ import { useTabBarHidden } from './tabBarVisibility';
 import { scrimColor } from './TabBarScrim';
 import {
   PAGER_TRANSITION_MS,
-  pagerEdges,
+  engagePagerFor,
   pagerEngaged,
+  pagerHeldByFinger,
   pagerHold,
   pagerPosition,
   setPagerEngaged,
@@ -75,19 +76,27 @@ export function MinimalTabBar({ state, descriptors, navigation }: BottomTabBarPr
       return;
     }
     settlePagerBase(state.index);
+    // A change no finger made — a tap on a dot, a door on Today into
+    // the Log, a notification, the back button: the icons show for the
+    // slide and every page is in reach for it, so the page left and the
+    // ones between stay drawn as the row slides by. A finger's turn (a
+    // swipe, the hold) already holds the engagement itself.
+    if (!pagerHeldByFinger()) engagePagerFor(PAGER_TRANSITION_MS + 60);
   }, [state.index]);
-  // Built for the tab the pages are on (which neighbours exist), as the
-  // pages build theirs: the same shaped drag, so the dots and the pages
-  // never disagree.
+  // The one position the pages read too (minimalPager.ts): built for
+  // the row, not for the tab, so a turn rebuilds nothing.
   const position = useMemo(
-    () => pagerPosition(width, pagerEdges(state.index, state.routes.length)),
-    [width, state.index, state.routes.length],
+    () => pagerPosition(width, state.routes.length),
+    [width, state.routes.length],
   );
   // The hold-and-slide. Read in the gesture's callbacks without
   // rebuilding the gesture on every tab change.
   const live = useRef({ index: state.index, count: state.routes.length, width });
   live.current = { index: state.index, count: state.routes.length, width };
   const lastSlot = useRef(state.index);
+  // Whether this hold ever began: a tap on a dot is a pan that fails
+  // before its long press, and still finalizes — with nothing to let go.
+  const holding = useRef(false);
   const slotAt = (x: number) => {
     const { count, width: w } = live.current;
     const start = (w - count * HIT) / 2;
@@ -101,6 +110,8 @@ export function MinimalTabBar({ state, descriptors, navigation }: BottomTabBarPr
         .activateAfterLongPress(160)
         .runOnJS(true)
         .onStart(e => {
+          holding.current = true;
+          // With reach: a hold can slide to any tab, so every page is laid out.
           setPagerEngaged(true, true);
           lastSlot.current = Math.round(slotAt(e.x));
           pagerHold.setValue(slotAt(e.x) - live.current.index);
@@ -112,20 +123,24 @@ export function MinimalTabBar({ state, descriptors, navigation }: BottomTabBarPr
           if (slot !== lastSlot.current) lastSlot.current = slot;
           pagerHold.setValue(pos - live.current.index);
         })
-        .onEnd(e => {
+        .onEnd((e, success) => {
+          if (!success) return; // onFinalize lets go.
           const target = Math.round(slotAt(e.x));
           const route = state.routes[target];
           if (route && target !== live.current.index) {
             const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
             if (!event.defaultPrevented) {
-              // The navigator once the page is there (settlePagerBase).
-              settlePagerBase(target, true, () => navigation.navigate(route.name, route.params));
+              settlePagerBase(target);
+              navigation.navigate(route.name, route.params);
             }
           }
-          settlePagerHold(() => setPagerEngaged(false));
+          holding.current = false;
+          settlePagerHold(() => setPagerEngaged(false, true));
         })
         .onFinalize((_e, success) => {
-          if (!success) settlePagerHold(() => setPagerEngaged(false));
+          if (success || !holding.current) return;
+          holding.current = false;
+          settlePagerHold(() => setPagerEngaged(false, true));
         }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [navigation, state.routes],
@@ -207,10 +222,10 @@ export function MinimalTabBar({ state, descriptors, navigation }: BottomTabBarPr
             onPress={() => {
               const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
               if (focused || event.defaultPrevented) return;
-              // The icons show for the slide, as under a finger.
-              setPagerEngaged(true, true);
-              setTimeout(() => setPagerEngaged(false), PAGER_TRANSITION_MS + 60);
-              settlePagerBase(index, true, () => navigation.navigate(route.name, route.params));
+              // The icons show for the slide, as under a finger — from
+              // the effect above, as the tab changes.
+              settlePagerBase(index);
+              navigation.navigate(route.name, route.params);
             }}
             style={styles.hit}>
             <Animated.View

@@ -63,6 +63,20 @@ function AppearanceCardImpl() {
   const { settings: fullSettings } = usePrayerSettings();
   const { palette, isDark } = useAppPalette();
   const clock = useClockFormatter();
+  // Minimal is offered on the phone and the iPad, not on the Mac nor
+  // beside an iPhone's vertical bar (useMinimalOffered); and where it is
+  // not, a `minimalUi` carried over reads as off — for the switch and
+  // for what the colour controls below say about it alike. The raw
+  // setting read here hid the colour theme and disabled the system's
+  // colours "because Minimal keeps the classic colours" on a Mac that
+  // was not wearing Minimal at all.
+  const minimalOffered = useMinimalOffered();
+  const minimalActive = minimalOffered && minimalOn(settings);
+  // A Minimal carried over to where it is not offered is NOT turned off
+  // here: the setting travels between devices (sync, a backup), and the
+  // Mac or an iPhone beside its vertical bar opening Appearance would
+  // take Minimal from the phone that wears it. It reads as off here
+  // (`minimalActive`), and stays the other device's choice.
   // Pending value for the "restart required" themed confirm modal. Null
   // ⇒ hidden; true/false ⇒ the dynamic-colours value the user is trying
   // to switch to, awaiting confirmation.
@@ -134,9 +148,6 @@ function AppearanceCardImpl() {
   // Duo that was a noon blue under a night page) — for the layout pictures.
   const sky = useSkyTheme(skyActive);
   const previewSky = skyActive ? skyMoodFor(sky.passage, sky.t, PALETTE_STEPS, undefined, sky.light) : null;
-  // Not on the Mac, and not beside an iPhone's vertical bar.
-  const minimalOffered = useMinimalOffered();
-
   return (
     <>
       <SettingsGroup
@@ -228,7 +239,7 @@ function AppearanceCardImpl() {
             (light stays classic). Custom colours are an accent only, since
             free-form washes are barred from the surfaces. Hidden under
             system colours, which own the palette. */}
-        {!dynamicColorsActive && !skyActive && !minimalOn(settings) && (
+        {!dynamicColorsActive && !skyActive && !minimalActive && (
           <SettingsBlock>
             <Text style={[s.label, { color: palette.muted }]}>
               {t('settings.colourTheme', 'Colour theme')}
@@ -263,7 +274,7 @@ function AppearanceCardImpl() {
                 : t('settings.systemDynamicColors')
             }
             help={
-              minimalOn(settings)
+              minimalActive
                 ? t('settings.minimalClassicOnly')
                 : verdantActive
                 ? t(
@@ -283,7 +294,7 @@ function AppearanceCardImpl() {
             // from — "dark, in my wallpaper's colours" is a reasonable ask
             // and used to be unsayable. Verdant still owns the palette
             // when it is on, because two colour sources cannot both win.
-            disabled={verdantActive || minimalOn(settings)}
+            disabled={verdantActive || minimalActive}
             // Material You / iOS dynamic colors are resolved at view-attach
             // time, so flipping them mid-session leaves stale tints on
             // already-mounted surfaces (#110). Defer the actual change to a

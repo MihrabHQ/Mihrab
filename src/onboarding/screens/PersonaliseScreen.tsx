@@ -79,6 +79,14 @@ export function PersonaliseScreen({
   const { t } = useTranslation();
   const { palette } = useAppPalette();
   const { settings, updateSettings } = usePrayerSettings();
+  // Minimal is offered on the phone and the iPad, not on the Mac nor
+  // beside an iPhone's vertical bar (useMinimalOffered) — and not while
+  // the system's colours are on: Minimal takes them off, which Settings
+  // only does with a restart (#110), and the walkthrough has none to
+  // offer. Where it is not offered, a `minimalUi` carried over reads as
+  // off, for the colour theme's shelf as for the layout.
+  const minimalOffered = useMinimalOffered();
+  const minimalActive = minimalOffered && minimalOn(settings);
   const clock = useClockFormatter();
 
   const coords = useMemo(() => previewCoords(settings), [settings]);
@@ -118,9 +126,6 @@ export function PersonaliseScreen({
   // pictures — see the same note in AppearanceCard.
   const sky = useSkyTheme(skyActive);
   const previewSky = skyActive ? skyMoodFor(sky.passage, sky.t, PALETTE_STEPS, undefined, sky.light) : null;
-  // Not on the Mac, nor beside an iPhone's vertical bar.
-  const minimalOffered = useMinimalOffered();
-
   return (
     <OnboardingFrame
       progress={progress}
@@ -263,7 +268,7 @@ export function PersonaliseScreen({
           ) : null}
         </SettingsBlock>
         {/* Minimal wears the classic colours (settings/minimalLook.ts). */}
-        {dynamicColours || skyActive || minimalOn(settings) ? null : (
+        {dynamicColours || skyActive || minimalActive ? null : (
           <SettingsBlock>
             <Text
               style={[typeStyle('label'), styles.label, { color: palette.muted }]}>
@@ -295,14 +300,14 @@ export function PersonaliseScreen({
         )}
         {/* Today's two faces, shown: the full page, chosen until changed,
             and Minimal (Settings → Appearance → Minimal). */}
-        {minimalOffered ? (
+        {minimalOffered && !settings.useSystemDynamicTheme ? (
           <SettingsBlock>
             <Text style={[typeStyle('label'), styles.label, { color: palette.muted }]}>
               {t('onboarding.personalise.layout', 'Layout')}
             </Text>
             <LayoutPicker
               testID="personalise-layout"
-              value={settings.minimalUi ? 'minimal' : 'full'}
+              value={minimalActive ? 'minimal' : 'full'}
               onChange={v => updateSettings({ minimalUi: v === 'minimal' })}
               skyTop={previewSky ? previewSky.heroTop : String(palette.accentBg)}
               skyFoot={previewSky ? previewSky.heroMid : String(palette.bg)}

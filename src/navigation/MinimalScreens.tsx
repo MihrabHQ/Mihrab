@@ -1,6 +1,6 @@
 import { forwardRef, type ReactNode } from 'react';
 import { StyleSheet, View, type HostInstance } from 'react-native';
-import { ScreenContext, type ScreenProps } from 'react-native-screens';
+import { InnerScreen, ScreenContext, type ScreenProps } from 'react-native-screens';
 
 /**
  * Minimal's pages are all on the strip, drawn (settings.minimalUi).
@@ -18,6 +18,15 @@ import { ScreenContext, type ScreenProps } from 'react-native-screens';
  * navigator still says which page takes touches (`pointerEvents`) and
  * which is on top (`zIndex`); only the hiding is set aside. Round the
  * tab navigator alone: the stack's own screens keep their native ones.
+ *
+ * The provider is always there, with the library's own screen as its
+ * value on the full page, so the navigator stands at the same place in
+ * the tree whichever face is on: left out when Minimal was off, the
+ * turn of the switch moved the navigator under a new parent, and React
+ * is free to build a moved subtree again from nothing — every tab's
+ * state with it. (Checked on the simulator: the tab survived either
+ * way, the navigator keeping its state in its parent's; this makes
+ * that not depend on it.)
  */
 const PlainScreen = forwardRef<HostInstance, ScreenProps>(function PlainScreen(
   { style, children, ...rest },
@@ -25,11 +34,17 @@ const PlainScreen = forwardRef<HostInstance, ScreenProps>(function PlainScreen(
 ) {
   // The screen's own props (activityState, freezeOnBlur, the sheet
   // options…) mean nothing to a View and are left out of it.
-  const { pointerEvents, testID, collapsable } = rest as {
+  const { pointerEvents, testID, collapsable, activityState } = rest as {
     pointerEvents?: 'box-none' | 'none' | 'box-only' | 'auto';
     testID?: string;
     collapsable?: boolean;
+    activityState?: 0 | 1 | 2;
   };
+  // A page not on show is drawn, a width aside, but is not read: the
+  // library's screen hides an inactive page from the screen reader with
+  // the rest of it, and a plain view would let a reader swipe on from
+  // Today's last line into the Quran's list beside it.
+  const inactive = activityState === 0;
   // Not the navigator's `zIndex: -1` for a page not on show: on Android a
   // negative one draws the page behind its container's ground, and the
   // page beside the one on show was a page's width of nothing. The pages
@@ -41,15 +56,18 @@ const PlainScreen = forwardRef<HostInstance, ScreenProps>(function PlainScreen(
       style={[style, styles.level]}
       pointerEvents={pointerEvents}
       testID={testID}
-      collapsable={collapsable}>
+      collapsable={collapsable}
+      accessibilityElementsHidden={inactive}
+      importantForAccessibility={inactive ? 'no-hide-descendants' : 'auto'}>
       {children as ReactNode}
     </View>
   );
 });
 
 export function MinimalScreens({ enabled, children }: { enabled: boolean; children: ReactNode }) {
-  if (!enabled) return <>{children}</>;
-  return <ScreenContext.Provider value={PlainScreen as never}>{children}</ScreenContext.Provider>;
+  return (
+    <ScreenContext.Provider value={(enabled ? PlainScreen : InnerScreen) as never}>{children}</ScreenContext.Provider>
+  );
 }
 
 const styles = StyleSheet.create({ level: { zIndex: 0 } });

@@ -125,6 +125,19 @@ export function MinimalSheet({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible, progress, rise]);
 
+  // Gone without its close — Minimal turned off from the sheet's own
+  // door, with the sheet up: the owner unmounts this at once, and the
+  // close that would have run the value back never runs. Left at 1, the
+  // next Minimal page came up receded under a sheet that was not there.
+  // The value is the owner's; this hands it back at rest.
+  useEffect(
+    () => () => {
+      progress.stopAnimation();
+      progress.setValue(0);
+    },
+    [progress],
+  );
+
   const onLayout = useCallback((e: { nativeEvent: { layout: { height: number } } }) => {
     setSheetHeight(Math.round(e.nativeEvent.layout.height));
   }, []);
@@ -140,6 +153,11 @@ export function MinimalSheet({
   heightRef.current = sheetHeight;
   const onCloseRef = useRef(onClose);
   onCloseRef.current = onClose;
+  const reduceMotionRef = useRef(reduceMotion);
+  reduceMotionRef.current = reduceMotion;
+  const springDragBack = useCallback(() => {
+    Animated.spring(drag, { toValue: 0, damping: 24, stiffness: 320, mass: 1, useNativeDriver: true }).start();
+  }, [drag]);
   const pull = useMemo(
     () =>
       Gesture.Pan()
@@ -149,8 +167,22 @@ export function MinimalSheet({
         .onUpdate(e => {
           drag.setValue(Math.max(0, e.translationY));
         })
-        .onEnd(e => {
+        .onEnd((e, success) => {
+          // Taken from the finger (another handler, the system): not a
+          // release, so not a dismissal however far it had got.
+          if (!success) {
+            springDragBack();
+            return;
+          }
           if (e.translationY > DISMISS_DISTANCE || e.velocityY > DISMISS_VELOCITY) {
+            // Under Reduce Motion the sheet does not slide — its drag is
+            // its only motion, and its close is a fade. Left where the
+            // finger let it go, it fades from there; put back, it leapt
+            // up to fade. The drag is reset on the next open.
+            if (reduceMotionRef.current) {
+              onCloseRef.current();
+              return;
+            }
             // Hand the rest of the way to the close: the sheet is already
             // part way down, so the close starts from there.
             const h = heightRef.current || UNMEASURED;
@@ -158,10 +190,10 @@ export function MinimalSheet({
             drag.setValue(0);
             onCloseRef.current();
           } else {
-            Animated.spring(drag, { toValue: 0, damping: 24, stiffness: 320, mass: 1, useNativeDriver: true }).start();
+            springDragBack();
           }
         }),
-    [drag, progress],
+    [drag, progress, springDragBack],
   );
 
   // Built when the sheet's height changes, not every second: each new node

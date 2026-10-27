@@ -31,11 +31,12 @@ describe('Minimal wears the classic colours', () => {
     );
     expect(read('src/settings/storage.ts')).toContain('return noteSecureRead(minimalLook(merged), secureFailed);');
     const card = read('src/screens/settings/AppearanceCard.tsx');
-    expect(card).toContain('{!dynamicColorsActive && !skyActive && !minimalOn(settings) && (');
-    expect(card).toContain('disabled={verdantActive || minimalOn(settings)}');
+    expect(card).toContain('{!dynamicColorsActive && !skyActive && !minimalActive && (');
+    expect(card).toContain('disabled={verdantActive || minimalActive}');
+    expect(card).toContain('const minimalActive = minimalOffered && minimalOn(settings);');
     expect(card).toContain('if (on && dynamicColorsActive) setPendingMinimal(true);');
     expect(read('src/onboarding/screens/PersonaliseScreen.tsx')).toContain(
-      '{dynamicColours || skyActive || minimalOn(settings) ? null : (',
+      '{dynamicColours || skyActive || minimalActive ? null : (',
     );
   });
 
@@ -69,16 +70,18 @@ describe('Minimal is not offered on the Mac', () => {
   });
 
   it('hides the switch and the walkthrough choice there, and every reader asks the one rule', () => {
-    expect(read('src/navigation/tabBarInset.ts')).toContain('return minimalOn(useAppearanceSettings().slice);');
+    expect(read('src/navigation/tabBarInset.ts')).toMatch(/const offered = useMinimalOffered\(\);\s*const asked = useAppearanceSettings\(\)\.slice\.minimalUi;\s*return offered && asked;/);
     // Settings offers the walkthrough's two pictures, not a switch.
     const card = read('src/screens/settings/AppearanceCard.tsx');
     expect(card).toMatch(/\{minimalOffered \? \(\s*<SettingsBlock>[\s\S]{0,200}onboarding\.personalise\.layout[\s\S]{0,100}<LayoutPicker\s*testID="appearance-layout"/);
     expect(card).not.toMatch(/<SettingsToggleRow\s*title=\{t\('settings\.minimalUi'\)\}/);
-    expect(read('src/onboarding/screens/PersonaliseScreen.tsx')).toMatch(/\{minimalOffered \? \(\s*<SettingsBlock>[\s\S]{0,200}onboarding\.personalise\.layout/);
-    expect(read('src/screens/home/TodayCard.tsx')).toContain("{settings.showDataStats && minimalOffered ? (");
+    expect(read('src/onboarding/screens/PersonaliseScreen.tsx')).toMatch(/\{minimalOffered && !settings\.useSystemDynamicTheme \? \(\s*<SettingsBlock>[\s\S]{0,200}onboarding\.personalise\.layout/);
+    expect(read('src/screens/home/TodayCard.tsx')).toContain("{settings.showDataStats && minimalOffered && !settings.useSystemDynamicTheme ? (");
     // Nor beside an iPhone's vertical bar, where Minimal stands down.
     expect(read('src/settings/useMinimalOffered.ts')).toContain('return MINIMAL_OFFERED && !vbar;');
-    expect(read('src/screens/HomeScreen.tsx')).toContain('const minimal = minimalOn(settings) && !isDashboard && !isRoomy && !book;');
+    expect(read('src/screens/HomeScreen.tsx')).toContain('const minimal = minimalUi && !isDashboard && !isRoomy && !book;');
+    // Never turned off for another device's sake: the setting travels.
+    expect(card).not.toContain('updateSettings({ minimalUi: false })');
     expect(read('src/screens/QuranScreen.tsx')).toContain('const minimal = useMinimalUi();');
   });
 });

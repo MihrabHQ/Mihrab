@@ -166,7 +166,8 @@ export function QuranScreen() {
   const sheetEdges = useSheetSides();
   // Under Minimal (settings.minimalUi) a sideways drag turns the TAB
   // (MinimalSwipe), so the three lists do not page by it; their selector
-  // still does.
+  // still does. As the navigator reads it (tabBarInset.ts): where the
+  // swipe is off — the Mac, beside a vertical bar — the lists keep theirs.
   const minimal = useMinimalUi();
   // Two dialogs on this screen open with an autoFocus field in them.
   const keyboardInset = useKeyboardInset();
