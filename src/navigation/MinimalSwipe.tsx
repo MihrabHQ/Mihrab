@@ -3,7 +3,7 @@ import { Animated, I18nManager, StyleSheet, useWindowDimensions } from 'react-na
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { useNavigation, useNavigationState } from '@react-navigation/native';
 import { hapticTick } from '../polish/haptics';
-import { HOLD_PAGE_LEAN, pagerDrag, pagerHold, setPagerEngaged, settlePagerDrag, springPagerDrag } from './minimalPager';
+import { pagerDrag, pagerHold, setPagerEngaged, settlePagerDrag, springPagerDrag } from './minimalPager';
 
 /**
  * Under Minimal (settings.minimalUi) the tabs are pages: the page moves
@@ -85,24 +85,13 @@ export function MinimalSwipe({ enabled, children }: { enabled: boolean; children
         }),
     [enabled, navigation],
   );
-  // The page's offset: the finger's drag, or the lean of a finger held
-  // on the dots — never further than a page away.
-  const offset = useMemo(() => {
-    const lean = width * HOLD_PAGE_LEAN;
-    // A tab away leans the page by `HOLD_PAGE_LEAN` of its width; the far
-    // end of the row, twice that — never off the screen, so the page the
-    // finger left is still there behind the dots it is choosing from.
-    const held = pagerHold.interpolate({
-      inputRange: [-5, -1, 0, 1, 5],
-      outputRange: [2 * lean, lean, 0, -lean, -2 * lean],
-      extrapolate: 'clamp',
-    });
-    return Animated.add(pagerDrag, held).interpolate({
-      inputRange: [-width, width],
-      outputRange: [-width, width],
-      extrapolate: 'clamp',
-    });
-  }, [width]);
+  // The page's offset: the finger's drag, or — a finger held on the dots
+  // — a page's width for every tab it has slid: the whole strip of pages
+  // moves under it, the way the finger on the page moves it.
+  const offset = useMemo(
+    () => Animated.add(pagerDrag, Animated.multiply(pagerHold, I18nManager.isRTL ? width : -width)),
+    [width],
+  );
   return (
     <GestureDetector gesture={gesture}>
       {/* One native view for the detector, and the page's offset on it. */}

@@ -57,7 +57,18 @@ describe('the swipe', () => {
   it('turns the page as a pager does: the pages slide, and the drag runs back under them', () => {
     const pager = read('src/navigation/minimalPager.ts');
     expect(tabs).toContain('sceneStyleInterpolator:');
-    expect(tabs).toMatch(/outputRange: I18nManager\.isRTL\s*\? \[windowWidth, 0, -windowWidth\]\s*: \[-windowWidth, 0, windowWidth\]/);
+    // Every tab's page stays drawn, as many page-widths aside as it is tabs
+    // from the one on show: a strip of pages, like the mushaf's.
+    expect(tabs).toContain('detachInactiveScreens={!minimal}');
+    // …and drawn: react-native-screens hides a page not on show, so the
+    // tab navigator's screens are plain views under Minimal.
+    expect(tabs).toContain('<MinimalScreens enabled={minimal}>');
+    const screens = read('src/navigation/MinimalScreens.tsx');
+    expect(screens).toContain('<ScreenContext.Provider value={PlainScreen as never}>');
+    expect(screens).toContain('level: { zIndex: 0 }');
+    expect(tabs).toContain('lazy: false,');
+    expect(tabs).toContain('const away = Math.max(1, Math.abs(myIndex - tabState.index)) * windowWidth;');
+    expect(tabs).toContain('outputRange: I18nManager.isRTL ? [away, 0, -away] : [-away, 0, away],');
     expect(tabs).toContain('config: { duration: PAGER_TRANSITION_MS, easing: pagerEasing }');
     expect(pager).toMatch(/duration: PAGER_TRANSITION_MS,\s*easing: pagerEasing,\s*useNativeDriver: true,\s*\}\)\.start\(\(\) => onDone/);
     expect(swipe).toContain('navigation.navigate(next.name as never);\n          settlePagerDrag(done);');
@@ -68,9 +79,9 @@ describe('the swipe', () => {
     expect(bar).toContain('pagerHold.setValue(pos - live.current.index);');
     expect(bar).toContain('const target = Math.round(slotAt(e.x));');
     expect(bar).toContain('if (I18nManager.isRTL) fromLeft = count - 1 - fromLeft;');
-    // The dots follow the finger exactly; the page leans, and stays on screen.
+    // The dots follow the finger exactly, and so does the strip of pages.
     expect(bar).toContain('Animated.add(Animated.add(base, Animated.divide(pagerDrag, -Math.max(1, width))), pagerHold)');
-    expect(swipe).toContain('outputRange: [2 * lean, lean, 0, -lean, -2 * lean],');
+    expect(swipe).toContain('Animated.add(pagerDrag, Animated.multiply(pagerHold, I18nManager.isRTL ? width : -width))');
   });
 
   it('shows the icons while a page turns, the current one larger, and dots at rest', () => {

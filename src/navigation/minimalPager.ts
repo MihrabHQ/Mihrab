@@ -22,12 +22,10 @@ export const pagerEngaged = new Animated.Value(0);
 /**
  * A finger held on the dots and slid along them (MinimalTabBar): how
  * many tabs from the current one it is, as a fraction. The dots follow
- * it exactly; the page leans the way the finger is going — this much
- * of its width a tab away, twice that at the far end of the row — rather
- * than being carried off the screen (MinimalSwipe).
+ * it exactly, and so do the pages: a page's width for every tab, the
+ * strip of them sliding under the finger (MinimalSwipe).
  */
 export const pagerHold = new Animated.Value(0);
-export const HOLD_PAGE_LEAN = 0.3;
 
 /** The navigator's slide, and the drag's run back to zero with it. */
 export const PAGER_TRANSITION_MS = 280;

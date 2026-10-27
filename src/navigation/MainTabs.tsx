@@ -75,6 +75,7 @@ import { useBookPanePadding } from '../native/FoldPosture';
 import { useMinimalUi } from './tabBarInset';
 import { MinimalTabBar } from './MinimalTabBar';
 import { MinimalSwipe } from './MinimalSwipe';
+import { MinimalScreens } from './MinimalScreens';
 import { PAGER_TRANSITION_MS, pagerEasing } from './minimalPager';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
@@ -156,7 +157,10 @@ export function MainTabs() {
     : null;
 
   return (
+    <MinimalScreens enabled={minimal}>
     <Tab.Navigator
+      // Minimal: the pages beside the one on show stay drawn, a page away.
+      detachInactiveScreens={!minimal}
       tabBar={props =>
         vbar ? (
           <VerticalTabBar {...props} bar={vbar} />
@@ -219,7 +223,7 @@ export function MainTabs() {
           {vbar ? null : <TabBarScrim bg={palette.bg} slide={slide} />}
         </View>
       )}
-      screenOptions={({ route }) => ({
+      screenOptions={({ route, navigation }) => ({
         /**
          * Minimal: the pages slide a page's width, the way a pager's do —
          * the old one out, the new one in from the side the finger (or
@@ -228,26 +232,37 @@ export function MainTabs() {
          * page is on the left.
          */
         ...(minimal
-          ? {
-              transitionSpec: {
-                animation: 'timing' as const,
-                config: { duration: PAGER_TRANSITION_MS, easing: pagerEasing },
-              },
-              sceneStyleInterpolator: ({ current }: { current: { progress: Animated.AnimatedInterpolation<number> } }) => ({
-                sceneStyle: {
-                  transform: [
-                    {
-                      translateX: current.progress.interpolate({
-                        inputRange: [-1, 0, 1],
-                        outputRange: I18nManager.isRTL
-                          ? [windowWidth, 0, -windowWidth]
-                          : [-windowWidth, 0, windowWidth],
-                      }),
-                    },
-                  ],
+          ? (() => {
+              // Every tab's page is kept drawn (`detachInactiveScreens`
+              // off, `lazy` off) and stood where it is in the row: as many
+              // page-widths to the side as it is tabs from the one on
+              // show — a strip of pages, like the mushaf's, which the
+              // finger slides along (MinimalSwipe). The navigator's own
+              // progress is ±1 for every tab not on show; the distance
+              // tells the neighbours from the rest.
+              const tabState = navigation.getState();
+              const myIndex = tabState.routes.findIndex(r => r.key === route.key);
+              const away = Math.max(1, Math.abs(myIndex - tabState.index)) * windowWidth;
+              return {
+                lazy: false,
+                transitionSpec: {
+                  animation: 'timing' as const,
+                  config: { duration: PAGER_TRANSITION_MS, easing: pagerEasing },
                 },
-              }),
-            }
+                sceneStyleInterpolator: ({ current }: { current: { progress: Animated.AnimatedInterpolation<number> } }) => ({
+                  sceneStyle: {
+                    transform: [
+                      {
+                        translateX: current.progress.interpolate({
+                          inputRange: [-1, 0, 1],
+                          outputRange: I18nManager.isRTL ? [away, 0, -away] : [-away, 0, away],
+                        }),
+                      },
+                    ],
+                  },
+                }),
+              };
+            })()
           : null),
         /**
          * The button, ours: no ripple — the icon draws the press, centred
@@ -534,6 +549,7 @@ export function MainTabs() {
         }}
       />
     </Tab.Navigator>
+    </MinimalScreens>
   );
 }
 
