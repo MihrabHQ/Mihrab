@@ -223,6 +223,13 @@ const warmthListeners = new Set<() => void>();
 function warmStep(): void {
   warming = null;
   if (warmth >= WARM_MAX) return;
+  // Never under a finger: a step mounts a whole page (the Log's graph,
+  // Settings) on the JS thread the swipe needs. While a turn is under
+  // way the step waits and looks again.
+  if (engagedNow) {
+    warming = setTimeout(warmStep, WARM_STEP_MS);
+    return;
+  }
   warmth += 1;
   warmthListeners.forEach(l => l());
   warming = setTimeout(warmStep, WARM_STEP_MS);

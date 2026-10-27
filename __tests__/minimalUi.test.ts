@@ -181,6 +181,13 @@ describe('the minimal Today', () => {
     expect(minimalSheet).toContain('if (reduceMotion) return [];');
   });
 
+  it('builds the sheet’s rows only while it is open, and keeps the last ones as it closes', () => {
+    expect(card).toContain('const liveSheetRows = minimal && timesOpen ? sheetRows(sheetOffset) : null;');
+    expect(card).toContain('const sheetRowsShown = liveSheetRows ?? lastSheetRows.current;');
+    expect(card).toContain('rows={sheetRowsShown}');
+    expect(card).not.toContain('rows={sheetRows(sheetOffset)}');
+  });
+
   it('turns the sheet to other days, opens the month, and logs from it', () => {
     const sheet = read('src/screens/home/TodayTimesSheet.tsx');
     // The full page's day bar in small: a chevron each way, the calendar.

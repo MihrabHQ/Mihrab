@@ -1548,6 +1548,7 @@ function TodayCardImpl({
   // so a drag up on the page can start the retreat before the sheet is
   // there (MinimalSheet).
   const sheetProgress = useRef(new Animated.Value(0)).current;
+  const lastSheetRows = useRef<TimesSheetRow[]>([]);
   const reduceMotion = useReduceMotion();
 
   /**
@@ -2351,6 +2352,14 @@ function TodayCardImpl({
     }));
   };
 
+  // The sheet's rows only while it is open: they were rebuilt every second
+  // with the countdown — five log phases worked out for a sheet nobody
+  // could see. Closed, it keeps the last rows it showed, so the sheet
+  // still has them as it slides away.
+  const liveSheetRows = minimal && timesOpen ? sheetRows(sheetOffset) : null;
+  if (liveSheetRows) lastSheetRows.current = liveSheetRows;
+  const sheetRowsShown = liveSheetRows ?? lastSheetRows.current;
+
   return (
     <Outer
       style={
@@ -2746,7 +2755,7 @@ function TodayCardImpl({
           onClose={onCloseTimes}
           title={`${getDayLabel(sheetOffset)} · ${getDayDate(sheetOffset)}`}
           subtitle={getHijriDate ? getHijriDate(sheetOffset) : undefined}
-          rows={sheetRows(sheetOffset)}
+          rows={sheetRowsShown}
           isToday={sheetOffset === 0}
           onPrev={dayAt(sheetOffset - 1) ? () => setSheetOffset(o => o - 1) : undefined}
           onNext={dayAt(sheetOffset + 1) ? () => setSheetOffset(o => o + 1) : undefined}
