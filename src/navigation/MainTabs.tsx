@@ -205,11 +205,17 @@ export function MainTabs() {
               bar and clears it itself (`headerless`). The one tab with a
               header left is Today on the wide dashboard, where the bar
               hangs under that header instead. */}
+          {/* Everything that is the page's — the playback bar at its head,
+              the strip behind the status bar at its foot of the stack —
+              rides inside the swipe's wrapper, so under Minimal it stands
+              aside with its page: every tab is drawn then, and a band
+              left outside would lie over the page on show. */}
+          <MinimalSwipe enabled={minimal} routeKey={route.key}>
           <HeaderPlaybackBar
             surface={palette.bg}
             headerless={!(route.name === 'TodayTab' && todayHeader)}
           />
-          <MinimalSwipe enabled={minimal} routeKey={route.key}>{children}</MinimalSwipe>
+          {children}
           {/* Over the page, at the other end: the strip behind the status
               bar. Every tab pads its content clear of it, so a band of the
               page's own colour is invisible until something scrolls up
@@ -220,6 +226,7 @@ export function MainTabs() {
           {route.name !== 'TodayTab' ? <StatusBarBand color={palette.bg} /> : null}
           {/* Under the bar, over the page: the fade that keeps the two from
               colliding. Same `slide` as the bar, so it leaves with it. */}
+          </MinimalSwipe>
           {vbar ? null : <TabBarScrim bg={palette.bg} slide={slide} />}
         </View>
       )}

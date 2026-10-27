@@ -45,7 +45,9 @@ describe('the dots', () => {
 
 describe('the swipe', () => {
   it('wraps every tab’s page, follows the finger early, and lets a list scroll', () => {
-    expect(tabs).toContain('<MinimalSwipe enabled={minimal} routeKey={route.key}>{children}</MinimalSwipe>');
+    expect(tabs).toContain('<MinimalSwipe enabled={minimal} routeKey={route.key}>');
+    // The playback bar and the status-bar band ride inside it, with the page.
+    expect(tabs).toMatch(/<MinimalSwipe[^>]*>\s*<HeaderPlaybackBar[\s\S]*?\{children\}[\s\S]*?<StatusBarBand[\s\S]*?<\/MinimalSwipe>/);
     // Early, so a row under the finger lets go of its press; a drag down
     // a list fails first.
     expect(swipe).toContain('.activeOffsetX([-10, 10])');
