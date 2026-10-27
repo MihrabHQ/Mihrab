@@ -490,10 +490,28 @@ def align_surah(hearer, reciter_id, table, bounds, surah):
         if A[i] <= A[i - 1] + 0.2:
             status[i] = "flag"
     final = [A[i] if status[i] == "ok" else P[i] for i in range(n + 1)]
-    for i in range(1, n + 1):
-        if final[i] <= final[i - 1]:
-            final[i] = P[i]
-            status[i] = "flag"
+    # Out of order once mixed with the pauses: BOTH sides go back to the
+    # pauses and are flagged — either may be the wrong one. Al-Sharh 5–6
+    # are the same words twice; the alignment put the end of 5 at the end
+    # of 6, five seconds late, and 6 alone falling back left 5 wrong.
+    changed = True
+    while changed:
+        changed = False
+        for i in range(1, n + 1):
+            if final[i] <= final[i - 1]:
+                for k in (i - 1, i):
+                    if final[k] != P[k] or status[k] != "flag":
+                        final[k] = P[k]
+                        status[k] = "flag"
+                        changed = True
+    # Two ayahs that are the same words: the alignment cannot tell which
+    # is which, so the boundaries around them are never "confirmed".
+    for i in range(n - 1):
+        if words[i] == words[i + 1]:
+            for k in (i, i + 1, i + 2):
+                if status[k] == "ok" and abs(final[k] - P[k]) > TOLERANCE_S:
+                    final[k] = P[k]
+                    status[k] = "flag"
     return {
         "surah": surah,
         "dur": dur,
