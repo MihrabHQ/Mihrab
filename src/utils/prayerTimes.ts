@@ -467,14 +467,27 @@ export type CountdownUnits = { hour: string; minute: string; second: string };
 export function countdownPieces(
   totalSeconds: number,
   units: CountdownUnits,
-): { hours: string | null; minutes: string; seconds: string } {
+): {
+  hours: string | null;
+  minutes: string;
+  seconds: string;
+  /** The same three as bare figures, for a line that sets the units apart. */
+  h: number;
+  m: number;
+  /** Two digits, as the clock keeps them. */
+  s: string;
+} {
   const safe = Math.max(0, Math.floor(totalSeconds));
   const h = Math.floor(safe / 3600);
   const m = Math.floor((safe % 3600) / 60);
+  const s = String(safe % 60).padStart(2, '0');
   return {
     hours: h > 0 ? `${h}${units.hour}` : null,
     minutes: `${m}${units.minute}`,
-    seconds: `${String(safe % 60).padStart(2, '0')}${units.second}`,
+    seconds: `${s}${units.second}`,
+    h,
+    m,
+    s,
   };
 }
 

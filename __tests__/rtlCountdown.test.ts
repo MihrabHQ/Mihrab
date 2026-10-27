@@ -11,21 +11,21 @@ const read = (p: string) => fs.readFileSync(path.join(__dirname, '..', p), 'utf-
 describe('the countdown as pieces', () => {
   it("gives hours, minutes and seconds apart, in the language's units", () => {
     const ar = { hour: 'س', minute: 'د', second: 'ث' };
-    expect(countdownPieces(3 * 3600 + 43 * 60 + 41, ar)).toEqual({
+    expect(countdownPieces(3 * 3600 + 43 * 60 + 41, ar)).toMatchObject({
       hours: '3س',
       minutes: '43د',
       seconds: '41ث',
     });
     const en = { hour: 'h', minute: 'm', second: 's' };
-    expect(countdownPieces(47 * 60 + 7, en)).toEqual({ hours: null, minutes: '47m', seconds: '07s' });
-    expect(countdownPieces(-5, en)).toEqual({ hours: null, minutes: '0m', seconds: '00s' });
+    expect(countdownPieces(47 * 60 + 7, en)).toMatchObject({ hours: null, minutes: '47m', seconds: '07s', h: 0, m: 47, s: '07' });
+    expect(countdownPieces(-5, en)).toMatchObject({ hours: null, minutes: '0m', seconds: '00s', h: 0, m: 0, s: '00' });
   });
 
   it('is drawn as separate texts, so the row orders them in reading order', () => {
     const card = read('src/screens/home/TodayCard.tsx');
-    expect(card).toContain('{pieces.hours}');
-    expect(card).toContain('{pieces.minutes}');
-    expect(card).toContain('{pieces.seconds}');
+    expect(card).toContain('{pieces.h}');
+    expect(card).toContain('{pieces.m}');
+    expect(card).toContain('{pieces.s}');
     expect(card).not.toContain('{parts.main}');
   });
 

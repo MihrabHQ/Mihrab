@@ -113,6 +113,7 @@ import {
   SKY_FADE_LOW_MID_AT,
   SKY_THEME_MID_AT,
   skyFrame,
+  mixHex,
   skyInkAt,
   skyMoment,
   themedSkyFrame,
@@ -162,10 +163,25 @@ import { VerticalBarActionsBand } from '../../navigation/VerticalTabBar';
 const CHEVRON_SIZE = 20;
 /** The countdown's halo under the Sky theme by night — its blur, and the room its text is given for it. */
 const GLOW_RADIUS = 14;
+/** The halo's strength (0–255): the ordinary one, and the one it reaches at the prayer's time. */
+const GLOW_ALPHA = 0x73;
+const GLOW_ALPHA_NEAR = 0xb4;
+/** The halo starts to brighten this far from the prayer: the last five minutes. */
+const GLOW_NEAR_SECONDS = 5 * 60;
+/** Minimal: the seconds appear this close to the prayer — the last five minutes. */
+const MINIMAL_SECONDS_UNDER = 5 * 60;
+/** Minimal: how far the figures go from the ink toward the hour's accent. */
+const MINIMAL_DIGIT_TINT = 0.45;
+/** The unit letters' size in the figures' em, and the seconds' unit in theirs. */
+const UNIT_EM = 0.4;
+const SECONDS_UNIT_EM = 0.7;
 /** The rail's thread, its head, and the soft ring round the head (dp). */
 const RAIL_LINE = 2;
 const RAIL_HEAD = 9;
 const RAIL_RING = 19;
+/** Minimal: the day rail's marks — one a prayer — and the target's, a step larger (dp). */
+const RAIL_TICK = 4;
+const RAIL_TICK_TARGET = 6;
 
 /** A system face's ascender, in ems — only until the real one is measured. */
 const HERO_ASCENT_EM = 0.93;
@@ -704,6 +720,31 @@ const HeroToday = memo(function HeroToday({
     );
     return { from, pct };
   }, [today, now, target.at, dayClock]);
+  /**
+   * Minimal's rail is the DAY, not the interval: Fajr to the next Fajr,
+   * with a mark at each prayer along it and the head where now is. The
+   * interval rail needed its two labels to say what it ran between; a
+   * day with its prayers marked on it is read without any — the head
+   * stands between the marks it has passed and the ones to come, and the
+   * caption under the figures names the next. The target's mark is a
+   * step larger. A day is taken as 24 hours from the last Fajr, which is
+   * within a minute or two of the next one and invisible at this size.
+   */
+  const dayRail = useMemo(() => {
+    if (!minimal || !today.Fajr) return null;
+    const DAY = 86_400_000;
+    const instant = (key: string): number => eventAt(key, today, now, dayClock).getTime();
+    let start = instant('Fajr');
+    if (start > now.getTime()) start -= DAY;
+    const end = start + DAY;
+    const within = (at: number): number => (at < start ? at + DAY : at > end ? at - DAY : at);
+    const marks = (['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'] as const)
+      .filter(key => today[key])
+      .map(key => ({ key, at: key === 'Fajr' ? 0 : (within(instant(key)) - start) / DAY }))
+      .concat([{ key: 'Fajr', at: 1 }]);
+    const pct = Math.max(0, Math.min(1, (now.getTime() - start) / DAY));
+    return { marks, pct };
+  }, [minimal, today, now, dayClock]);
 
   /**
    * A cold start that opened on the kept picture of this screen draws the
@@ -1020,14 +1061,22 @@ const HeroToday = memo(function HeroToday({
   }
   lastMoodDark.current = moodDark;
   const moreContrast = useIncreasedContrast();
+  // The last minutes: the halo brightens slowly as the prayer comes, in
+  // tenths, so the approach is felt before it is read — and settles when
+  // the time arrives. Zero until the final minutes, so nothing re-renders
+  // on an ordinary tick.
+  const near = shownRemaining < GLOW_NEAR_SECONDS ? Math.round((1 - shownRemaining / GLOW_NEAR_SECONDS) * 10) / 10 : 0;
   const glow = useMemo(() => {
     // The digits' halo on a night sky, in every look now that every look
     // has the Sky theme's hero.
     if (moreContrast) return null;
     const mood = skyMoodFor(frame.passage, frame.t, undefined, heroVariant, frame.light);
     if (!mood.isDark) return null;
+    const alpha = Math.round(GLOW_ALPHA + (GLOW_ALPHA_NEAR - GLOW_ALPHA) * near)
+      .toString(16)
+      .padStart(2, '0');
     return {
-      textShadowColor: `${mood.accent}73`,
+      textShadowColor: `${mood.accent}${alpha}`,
       textShadowRadius: GLOW_RADIUS,
       textShadowOffset: { width: 0, height: 0 },
       // UIKit draws a text view's shadow inside the view's own frame, so a
@@ -1038,7 +1087,7 @@ const HeroToday = memo(function HeroToday({
       padding: GLOW_RADIUS,
       margin: -GLOW_RADIUS,
     };
-  }, [heroVariant, moreContrast, frame.passage, frame.t, frame.light]);
+  }, [heroVariant, moreContrast, frame.passage, frame.t, frame.light, near]);
   // The halo on the figures' span; the room it needs is on the line's view.
   const glowSpan = useMemo(
     () =>
@@ -1073,6 +1122,10 @@ const HeroToday = memo(function HeroToday({
   const countdownSize = minimal ? MINIMAL_COUNTDOWN_SIZE : HERO_COUNTDOWN_SIZE[tier];
   const secondsSize = minimal ? MINIMAL_SECONDS_SIZE : HERO_SECONDS_SIZE[tier];
   const bigSize = expanded ? styles.heroCountdownExpanded.fontSize : countdownSize;
+  // Precision follows the distance (see the line below): the seconds are
+  // kept inside the last hour on the full page, and under Minimal only
+  // inside the last minutes, where the page quickens as the prayer comes.
+  const showSeconds = minimal ? shownRemaining < MINIMAL_SECONDS_UNDER : pieces.h === 0;
   const atShift = Math.max(
     0,
     countdownBase != null && atBase != null
@@ -1082,6 +1135,30 @@ const HeroToday = memo(function HeroToday({
   const inkTop = useMemo(() => skyInkAt(frame, yEyebrow), [frame, yEyebrow]);
   const ink = useMemo(() => skyInkAt(frame, yCountdown), [frame, yCountdown]);
   const inkFoot = useMemo(() => skyInkAt(frame, yFoot), [frame, yFoot]);
+  // The units: under half the figures' size, the muted ink, plain weight,
+  // untracked — small caps beside the digits, on their baseline.
+  const unitStyle = useMemo(
+    () => [styles.heroUnit, { fontSize: Math.round(bigSize * UNIT_EM), color: ink.muted }],
+    [bigSize, ink.muted],
+  );
+  const secondsUnitStyle = useMemo(
+    () => [styles.heroUnit, { fontSize: Math.round(secondsSize * SECONDS_UNIT_EM), color: ink.muted }],
+    [secondsSize, ink.muted],
+  );
+  /**
+   * Minimal: the figures take a little of the hour's own light. The sky
+   * already derives an accent for the hour — coral at dawn, moonlight
+   * blue by night, terracotta under a low sun — and the digits, the one
+   * thing on the page, are tinted part way from the ink toward it: still
+   * the ink's contrast against the sky, but the number belongs to that
+   * sky and no other. The full page keeps the plain ink, and so does
+   * Minimal when more contrast is asked for.
+   */
+  const digitInk = useMemo(() => {
+    if (!minimal || moreContrast) return ink.text;
+    const mood = skyMoodFor(frame.passage, frame.t, undefined, heroVariant, frame.light);
+    return mixHex(ink.text, mood.accent, MINIMAL_DIGIT_TINT);
+  }, [minimal, moreContrast, ink.text, frame.passage, frame.t, frame.light, heroVariant]);
   const eyebrowLabel = useMemo(
     () =>
       t('home.nextPrayerIn', {
@@ -1112,7 +1189,9 @@ const HeroToday = memo(function HeroToday({
     setLaunchHeroState(target.at.getTime(), railFromAt);
     onInterval?.(railFromAt, target.at.getTime());
   }, [posed, target.at, railFromAt, onInterval]);
-  const railPct = rail ? (warp ? warpPct(warp, rail.pct, warpE) : rail.pct) : 0;
+  // Minimal reads the day rail's fraction; the full page the interval's.
+  const liveRailPct = dayRail ? dayRail.pct : rail ? rail.pct : null;
+  const railPct = liveRailPct != null ? (warp ? warpPct(warp, liveRailPct, warpE) : liveRailPct) : 0;
   // The numbers on screen this render, for a return run to start from.
   if (!posed) {
     shown.current = { remaining: shownRemaining, pct: rail ? railPct : null, at: now.getTime(), targetAt: target.at.getTime() };
@@ -1215,26 +1294,48 @@ const HeroToday = memo(function HeroToday({
           maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}
           accessibilityLanguage={unitLang}
           onTextLayout={onCountdownLine}>
+          {/* THE FIGURES CARRY THE LINE; THE UNITS ONLY CONFIRM. The unit
+              letters used to be set in the digits' own size and ink, and
+              "5h 49m" read as five marks of equal weight. Each unit is now
+              a span of its own — under half the size, in the muted ink, on
+              the same baseline — so the eye reads "5 49" and the letters
+              only say which is which, as a clock's small caps do. */}
           <Text
             style={[
               styles.heroCountdown,
               { fontSize: countdownSize },
               minimal && styles.heroCountdownMinimal,
               expanded && styles.heroCountdownExpanded,
-              { color: ink.text },
+              { color: digitInk },
               glowSpan,
             ]}>
-            {pieces.hours ? `${pieces.hours} ${pieces.minutes}` : pieces.minutes}
+            {pieces.hours ? (
+              <>
+                {pieces.h}
+                <Text style={unitStyle}>{units.hour}</Text>
+                {' '}
+              </>
+            ) : null}
+            {pieces.m}
+            <Text style={unitStyle}>{units.minute}</Text>
           </Text>
-          <Text
-            style={[
-              styles.heroSeconds,
-              { fontSize: secondsSize },
-              expanded && styles.heroSecondsExpanded,
-              { color: ink.muted },
-            ]}>
-            {` ${pieces.seconds}`}
-          </Text>
+          {/* The seconds come and go with the distance: on the full page
+              inside the last hour, under Minimal inside the last minutes
+              (`showSeconds`) — three units ticking at once never looked
+              still, and a second only means something close in. */}
+          {showSeconds ? (
+            <Text
+              style={[
+                styles.heroSeconds,
+                { fontSize: secondsSize },
+                expanded && styles.heroSecondsExpanded,
+                { color: ink.muted },
+              ]}>
+              {' '}
+              {pieces.s}
+              <Text style={secondsUnitStyle}>{units.second}</Text>
+            </Text>
+          ) : null}
         </Text>
         {minimal ? null : (
           <Text
@@ -1261,9 +1362,38 @@ const HeroToday = memo(function HeroToday({
           {`${targetLabel} · ${targetClock}`}
         </Text>
       ) : null}
-      {rail ? (
+      {rail || dayRail ? (
         <View style={styles.railWrap}>
           <View style={[styles.railTrack, { backgroundColor: inkFoot.track }]}>
+            {/* Minimal: the day's prayers, marked along the rail — the
+                passed ones in the fill's ink, the ones to come fainter,
+                the target's a step larger. Under the fill and the head. */}
+            {dayRail
+              ? dayRail.marks.map((mark, i) => {
+                  // Fajr stands at both ends; the one ahead is the target's.
+                  const isTarget = mark.key === target.name && (mark.key !== 'Fajr' || mark.at === 1);
+                  const size = isTarget ? RAIL_TICK_TARGET : RAIL_TICK;
+                  const passed = mark.at <= railPct;
+                  return (
+                    <View
+                      key={`${mark.key}-${i}`}
+                      style={[
+                        styles.railTick,
+                        {
+                          width: size,
+                          height: size,
+                          borderRadius: size / 2,
+                          top: (RAIL_LINE - size) / 2,
+                          marginStart: -size / 2,
+                          start: `${(mark.at * 100).toFixed(2)}%`,
+                          backgroundColor: passed || isTarget ? inkFoot.fill : inkFoot.muted,
+                          opacity: passed || isTarget ? 1 : 0.5,
+                        },
+                      ]}
+                    />
+                  );
+                })
+              : null}
             <View
               style={[
                 styles.railFill,
@@ -1298,6 +1428,8 @@ const HeroToday = memo(function HeroToday({
               <View style={[styles.railHead, { backgroundColor: inkFoot.fill }]} />
             </View>
           </View>
+          {/* Minimal's day rail needs no labels: its marks say the day. */}
+          {dayRail ? null : (
           <View style={styles.railLabels}>
             <Text
               style={[styles.railLabel, tabularNumeralStyle, { color: inkFoot.muted }]}
@@ -1312,6 +1444,7 @@ const HeroToday = memo(function HeroToday({
               {targetLabel}
             </Text>
           </View>
+          )}
         </View>
       ) : null}
       </View>
@@ -2784,6 +2917,13 @@ const styles = StyleSheet.create({
     ...Platform.select({ android: { fontFamily: 'sans-serif-light' }, default: {} }),
   },
   heroSecondsExpanded: { fontSize: 30 }, // tokens-ok-line: display or Arabic scale, sized by hand
+  // The unit letters: plain weight and untracked, the small caps beside
+  // the figures (sized from them: UNIT_EM, SECONDS_UNIT_EM).
+  heroUnit: {
+    fontWeight: '400',
+    letterSpacing: 0,
+    ...Platform.select({ android: { fontFamily: 'sans-serif' }, default: {} }),
+  },
   heroAt: { fontSize: TYPE.title3.fontSize, fontWeight: '400' },
   /**
    * The rail: a hairline of the interval with a lit head where now is.
@@ -2824,6 +2964,8 @@ const styles = StyleSheet.create({
     height: RAIL_RING,
     borderRadius: RAIL_RING / 2,
   },
+  // Minimal: a prayer's mark on the day rail, placed by its fraction of the day.
+  railTick: { position: 'absolute' },
   railLabels: {
     flexDirection: 'row',
     justifyContent: 'space-between',

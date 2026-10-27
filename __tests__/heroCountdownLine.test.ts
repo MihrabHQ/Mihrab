@@ -19,10 +19,22 @@ describe('the hero countdown', () => {
     const outer = row.indexOf('onTextLayout={onCountdownLine}');
     expect(outer).toBeGreaterThan(-1);
     // The figures and the seconds are nested inside it, before it closes.
-    const close = row.indexOf('</Text>\n        </Text>');
-    expect(row.indexOf('pieces.minutes')).toBeGreaterThan(outer);
-    expect(row.indexOf('pieces.seconds')).toBeGreaterThan(outer);
-    expect(row.indexOf('pieces.seconds')).toBeLessThan(close);
+    const close = row.indexOf(') : null}\n        </Text>');
+    expect(close).toBeGreaterThan(-1);
+    expect(row.indexOf('{pieces.m}')).toBeGreaterThan(outer);
+    expect(row.indexOf('{pieces.s}')).toBeGreaterThan(outer);
+    expect(row.indexOf('{pieces.s}')).toBeLessThan(close);
+  });
+
+  it('sets the units apart from the figures, and shows the seconds only close in', () => {
+    // Each unit a span of its own: smaller, the muted ink, on the baseline.
+    expect(row).toContain('<Text style={unitStyle}>{units.hour}</Text>');
+    expect(row).toContain('<Text style={unitStyle}>{units.minute}</Text>');
+    expect(row).toContain('<Text style={secondsUnitStyle}>{units.second}</Text>');
+    expect(src).toContain('const UNIT_EM = 0.4;');
+    // The seconds: the last hour on the full page, the last minutes under Minimal.
+    expect(src).toContain('const showSeconds = minimal ? shownRemaining < MINIMAL_SECONDS_UNDER : pieces.h === 0;');
+    expect(row).toContain('{showSeconds ? (');
   });
 
   it('reads in the language’s direction, hours first (#71)', () => {
@@ -31,7 +43,7 @@ describe('the hero countdown', () => {
 
   it('puts the time at the far end, brought down onto the countdown’s baseline', () => {
     expect(src).toMatch(/heroCountdownRow: \{[^}]*justifyContent: 'space-between'/);
-    expect(row.indexOf('{targetClock}')).toBeGreaterThan(row.indexOf('pieces.seconds'));
+    expect(row.indexOf('{targetClock}')).toBeGreaterThan(row.indexOf('{pieces.s}'));
     expect(row).toContain('marginTop: atShift');
     expect(src).toContain('countdownBase - atBase');
   });
