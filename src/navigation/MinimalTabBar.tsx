@@ -59,10 +59,23 @@ export function MinimalTabBar({ state, descriptors, navigation }: BottomTabBarPr
    * the finger has it — so under a finger it runs ahead to the next tab,
    * and on a release that turns the two parts cross over without a jump.
    */
+  // Set before anything below is drawn, not in an effect: the dots and the
+  // pages build their native nodes from the value as it stands when they
+  // attach, and the children attach before this bar's effects run. Turned
+  // on from Settings, the dots were built from the 0 the value starts at
+  // and stayed on Today's dot over the Settings page.
+  const placed = useRef(false);
+  if (!placed.current) {
+    placed.current = true;
+    settlePagerBase(state.index, false);
+  }
   const first = useRef(true);
   useEffect(() => {
-    settlePagerBase(state.index, !first.current);
-    first.current = false;
+    if (first.current) {
+      first.current = false;
+      return;
+    }
+    settlePagerBase(state.index);
   }, [state.index]);
   // Built for the tab the pages are on (which neighbours exist), as the
   // pages build theirs: the same shaped drag, so the dots and the pages

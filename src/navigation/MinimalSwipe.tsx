@@ -187,11 +187,18 @@ export function MinimalSwipe({
       waitFor={blockers as never}
       onGestureEvent={onGestureEvent}
       onHandlerStateChange={onHandlerStateChange}>
-      {/* One native view for the handler, and the page's offset on it. */}
-      <Animated.View
-        style={[styles.fill, inReach ? null : styles.away, { transform: [{ translateX: offset }] }]}
-        collapsable={false}>
-        {mounted ? children : null}
+      {/* One native view for the handler, and the page's offset on it.
+          It stays mounted whatever the reach: under Fabric a view out of
+          the tree (display: none) is taken down natively, and on iOS the
+          handler is bound to the view it was attached to, so a page
+          brought back into reach came up on a recycled view with another
+          page's swipe on it — the swipe on Today turned the Settings
+          page, or nothing, and a flick across Today opened its times.
+          What leaves the tree out of reach is the page inside. */}
+      <Animated.View style={[styles.fill, { transform: [{ translateX: offset }] }]} collapsable={false}>
+        <View style={[styles.fill, inReach ? null : styles.away]} collapsable={false}>
+          {mounted ? children : null}
+        </View>
       </Animated.View>
     </PanGestureHandler>
   );

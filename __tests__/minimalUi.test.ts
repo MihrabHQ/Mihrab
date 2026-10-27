@@ -111,6 +111,23 @@ describe('the swipe', () => {
     expect(pager).toContain('const WARM_MAX = 5;');
   });
 
+  it("never takes the swipe's own view out of the tree, so iOS keeps each page's swipe on its page", () => {
+    // The handler's view always carries the offset and never `away`; the
+    // page inside it is what leaves the tree out of reach.
+    expect(swipe).toContain(
+      '<Animated.View style={[styles.fill, { transform: [{ translateX: offset }] }]} collapsable={false}>',
+    );
+    expect(swipe).toMatch(
+      /<Animated\.View style=\{\[styles\.fill, \{ transform[^\n]*\n\s*<View style=\{\[styles\.fill, inReach \? null : styles\.away\]\} collapsable=\{false\}>/,
+    );
+  });
+
+  it('places the pages on the tab on show before the dots and pages attach', () => {
+    // Turned on from Settings, the dots were built from 0 and lit Today's.
+    expect(bar).toMatch(/if \(!placed\.current\) \{\s*placed\.current = true;\s*settlePagerBase\(state\.index, false\);\s*\}/);
+    expect(bar).not.toContain('settlePagerBase(state.index, !first.current);');
+  });
+
   it('turns by a finger held on the dots and slid along them', () => {
     expect(bar).toContain('.activateAfterLongPress(160)');
     expect(bar).toContain('pagerHold.setValue(pos - live.current.index);');
