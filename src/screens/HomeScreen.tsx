@@ -40,6 +40,7 @@ import {
 } from '../providers/locationClock';
 import { refreshStoredPrayerData } from '../prayer/refreshStoredData';
 import { getEffectiveDataProvider } from '../settings/effectiveProvider';
+import { cityOf } from '../settings/cityName';
 import { getMethodLabel } from '../settings/methods';
 import { getProviderLabel } from '../settings/providersCatalog';
 import { providerHidesCalculationMethod } from '../settings/providerUi';
@@ -1722,7 +1723,8 @@ export function HomeScreen() {
         ? getProviderLabel(provider)
         : getMethodLabel(settings.calculationMethod)
       : '';
-    minimalFooter = [locationLabel, getHijriDate(0), source].filter(Boolean).join(' · ');
+    // The city alone: a saved place carries its region and country too.
+    minimalFooter = [cityOf(locationLabel), getHijriDate(0), source].filter(Boolean).join(' · ');
   }
   const budgeted = !isDashboard && !isMacCatalyst && !isRoomy && !book && !tabletop && viewport > 0;
   const tier: HomeTier = budgeted
@@ -2107,7 +2109,7 @@ export function HomeScreen() {
           place={
             locationLabel
               ? {
-                  label: locationLabel,
+                  label: cityOf(locationLabel),
                   onPress: () => navigation.navigate('SettingsLocation', { highlight: 'savedLocations' }),
                 }
               : undefined
