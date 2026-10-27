@@ -62,7 +62,7 @@ describe('the swipe', () => {
 describe('the minimal Today', () => {
   it('opens the day’s times on a tap or a drag up, and keeps the heart', () => {
     expect(card).toContain('.enabled(minimal && !!onOpenTimes)');
-    expect(card).toContain('.activeOffsetY(-24)');
+    expect(card).toContain('.activeOffsetY(-14)');
     expect(card).toContain('onPress: onOpenTimes,');
     expect(card).toContain("topRow={fullBleed ? (minimal ? { renderHelp } : { renderLocation, renderQibla, renderHelp }) : undefined}");
     expect(home).toContain('<TodayTimesSheet');

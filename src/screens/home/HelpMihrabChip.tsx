@@ -121,12 +121,15 @@ function HelpMihrabChipImpl({
     inputRange: [0, 1],
     outputRange: [SIZE, SIZE + lineW + LINE_PAD],
   });
-  // The words arrive once there is room for them, not squeezed in early.
-  const lineOpacity = open.interpolate({
-    inputRange: [0.55, 1],
-    outputRange: [0, 1],
-    extrapolate: 'clamp',
-  });
+  // THE WORDS ARE CLIPPED, NOT FADED. The line is set at its measured
+  // width beside the heart and the pill's edge moves across it: opening,
+  // the words come out from the heart; closing, they go back into it,
+  // the last of them under the heart. They were faded in over the last
+  // half of the opening and out over the first half of the closing —
+  // and since the pill has no ground of its own, a fade is all that was
+  // ever seen: the words simply went, and the edge then moved over
+  // nothing. A fixed width keeps the text from ellipsising as the pill
+  // narrows (a shrinking Text would set "Help Mih…" rather than be cut).
 
   return (
     <View style={styles.wrap}>
@@ -160,15 +163,16 @@ function HelpMihrabChipImpl({
           <View style={styles.icon}>
             <Heart color={ink.muted} />
           </View>
-          <Animated.Text
+          <Text
             style={[
               typeStyle('caption'),
               styles.label,
-              { color: ink.muted, opacity: lineOpacity },
+              styles.line,
+              { color: ink.muted, width: lineW + LINE_PAD },
             ]}
             numberOfLines={1}>
             {label}
-          </Animated.Text>
+          </Text>
         </Animated.View>
       </Pressable>
     </View>
@@ -198,6 +202,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   label: { fontWeight: '400', paddingStart: 12 },
+  // Its measured width, never squeezed: the pill's edge cuts it instead.
+  line: { flexShrink: 0 },
   // Laid out for its width and never seen. A box far wider than any
   // label, so the text sizes to itself rather than to the closed circle.
   measure: {

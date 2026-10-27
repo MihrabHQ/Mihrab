@@ -1253,6 +1253,15 @@ const HeroToday = memo(function HeroToday({
       {/* Minimal: as much sky under the block as over it, so the figures
           stand in the middle of the page — and the footer at its foot. */}
       {minimal && fill ? <View style={styles.heroScene} /> : null}
+      {/* The way to the day's times, said once: a chevron over the footer,
+          the shape of the drag up (or the tap) that opens them. */}
+      {minimal && fill ? (
+        <View style={styles.heroHandle} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+          <Svg width={18} height={10} viewBox="0 0 18 10">
+            <Path d="M2 8.5 9 1.5l7 7" stroke={inkFoot.muted} strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" fill="none" />
+          </Svg>
+        </View>
+      ) : null}
       {minimal && footer ? (
         <Text
           style={[styles.heroFooter, tabularNumeralStyle, { color: inkFoot.muted }]}
@@ -1931,11 +1940,11 @@ function TodayCardImpl({
     () =>
       Gesture.Pan()
         .enabled(minimal && !!onOpenTimes)
-        .activeOffsetY(-24)
-        .failOffsetX([-16, 16])
+        .activeOffsetY(-14)
+        .failOffsetX([-18, 18])
         .runOnJS(true)
         .onEnd(e => {
-          if (e.translationY < -40 || e.velocityY < -500) onOpenTimes?.();
+          if (e.translationY < -30 || e.velocityY < -400) onOpenTimes?.();
         }),
     [minimal, onOpenTimes],
   );
@@ -2642,10 +2651,11 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     marginTop: SPACING.xs,
   },
+  heroHandle: { alignItems: 'center', opacity: 0.8 },
   heroFooter: {
     textAlign: 'center',
     fontSize: TYPE.label.fontSize,
     fontWeight: '400',
-    marginTop: SPACING.md,
+    marginTop: SPACING.sm,
   },
 });

@@ -1791,6 +1791,10 @@ export function HomeScreen() {
         else tabBarScroll.onScroll?.(e);
       }}
       scrollEventThrottle={16}
+      // Minimal: the page fits, and a drag up on it opens the day's times
+      // (TodayCard's pan) — a scroll view that still took the drag would
+      // have it. The pull to refresh is its own handler, and keeps working.
+      scrollEnabled={!minimal}
       style={[styles.scroll, { backgroundColor: palette.bg }]}
       contentContainerStyle={[
         styles.scrollContent,
