@@ -498,7 +498,9 @@
     },
     "providerTableFallback": "{{picked}} tidak punya jadwal terbitan untuk hari ini, jadi metodenya sendiri dihitung di ponsel sampai tabelnya mencakup hari ini lagi.",
     "minimalUi": "Minimal",
-    "minimalUiHelp": "Satu hal per layar. Hari Ini menyimpan hitung mundur; ketuk untuk melihat waktu hari ini. Tab lain menyimpan fungsi masing-masing."
+    "minimalUiHelp": "Satu hal per layar. Hari Ini menyimpan hitung mundur; ketuk untuk melihat waktu hari ini. Tab lain menyimpan fungsi masing-masing.",
+    "minimalClassicOnly": "Minimal tetap memakai warna klasik. Matikan untuk memilih tema warna atau warna sistem.",
+    "minimalRestartBody": "Minimal aktif dengan tema Langit, jadi warna sistem akan dimatikan. Aplikasi perlu dimulai ulang agar setiap layar menerapkan perubahan. Mulai ulang sekarang?"
   },
   "locationSetup": {
     "headline": "Tetapkan lokasi Anda",
@@ -1677,6 +1679,8 @@
       "groupTimes": "Waktu",
       "groupDaily": "Harian",
       "groupLook": "Tampilan",
+      "layout": "Tata letak",
+      "layoutFull": "Lengkap",
       "adhkar": "Zikir pagi dan petang",
       "theme": "Tema",
       "accent": "Aksen",

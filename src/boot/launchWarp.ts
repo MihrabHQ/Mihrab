@@ -32,6 +32,7 @@
  * own moment, as before.
  */
 import { useEffect, useReducer } from 'react';
+import { Platform } from 'react-native';
 import {
   heroStateShown,
   hideRequestedAt,
@@ -44,11 +45,17 @@ import { bootMark } from './bootTimeline';
 
 /**
  * From JS asking native to hide the picture to the fade having finished:
- * native waits MOUNT_GRACE_MS (80) and fades for FADE_MS (220); a frame
- * more so the run starts on the live screen alone. The hero stands still
- * at the picture's numbers for all of it, so it is as short as it can be.
+ * native waits its mount grace and fades for 220 ms; a frame more so the
+ * run starts on the live screen alone. The hero stands still at the
+ * picture's numbers for all of it, so it is as short as it can be.
+ *
+ * The grace is 80 ms on Android (LaunchSnapshot.kt, measured on a Pixel
+ * 10 Pro) and 40 ms on iOS (MihrabLaunchSnapshot.swift): Fabric on iOS
+ * mounts a commit on the main thread within the frame it is handed over,
+ * and a launch recorded at 60 fps on the iPhone 17 Pro simulator showed
+ * the live screen drawn under the picture well inside 40 ms of the ask.
  */
-export const WARP_AFTER_HIDE_MS = 320;
+export const WARP_AFTER_HIDE_MS = Platform.OS === 'ios' ? 280 : 320;
 /**
  * ── TIMED FROM THE FADE'S ASK ────────────────────────────────────────
  *

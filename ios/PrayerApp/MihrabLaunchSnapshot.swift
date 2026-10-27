@@ -25,6 +25,16 @@ import UIKit
  after a few seconds whatever JS does.
 
  Not on the Mac: a window there is any size the person last dragged it to.
+
+ WITHOUT A PICTURE — the first launch of a new build, after a change of
+ look, a picture too old — the launch screen itself stays up instead: the
+ window is covered in the launch screen's colour from its first frame until
+ Today commits, and fades into it as the picture would. A cold start used
+ to show the launch screen, then a blank window while React Native
+ started, then the settings' wait, then the skeleton, then Today; now it is
+ the launch screen and then Today. Only once Today has been reached in an
+ earlier run (`coverWanted`, set by `setEligible`): the first run is the
+ walkthrough, which no Today commit would ever uncover.
  */
 final class LaunchSnapshotStore {
   static let shared = LaunchSnapshotStore()
@@ -32,13 +42,18 @@ final class LaunchSnapshotStore {
   private static let maxAge: TimeInterval = 30 * 24 * 60 * 60
   private static let decodeWait: TimeInterval = 0.6
   private static let safetyHide: TimeInterval = 5
-  private static let mountGrace: TimeInterval = 0.08
+  private static let coverMax: TimeInterval = 2
+  /// From JS's commit of the live screen to the fade. Fabric mounts a
+  /// commit on the main thread within the frame it is handed over, so two
+  /// frames and a half of margin (src/boot/launchWarp.ts, WARP_AFTER_HIDE_MS,
+  /// follows this and the fade).
+  private static let mountGrace: TimeInterval = 0.04
   private static let fade: TimeInterval = 0.22
   private static let prefix = "mihrab.launchSnapshot."
 
   /** Main thread only. */
   var eligible = false
-  private var overlay: UIImageView?
+  private var overlay: UIView?
   private(set) var shownState = ""
   private var heroTarget: Int64 = 0
   private var heroFrom: Int64 = 0
@@ -117,6 +132,9 @@ final class LaunchSnapshotStore {
     guard eligible || fromJs, overlay == nil, let window, let scene = window.windowScene else { return }
     let bounds = window.bounds
     guard bounds.width > 0, bounds.height > 0 else { return }
+    // Kept means Today, settled, was on screen (JS keeps its own posed
+    // copy without ever marking the screen eligible).
+    noteTodayReached()
     let format = UIGraphicsImageRendererFormat()
     format.scale = window.screen.scale
     format.opaque = true
@@ -205,6 +223,35 @@ final class LaunchSnapshotStore {
   /// Whether a window has connected in this process; the picture is for the first.
   private var windowSeen = false
 
+  /** Today has been on screen, settled: a launch from here on opens on it. */
+  func noteTodayReached() {
+    if !defaults.bool(forKey: Self.prefix + "coverWanted") {
+      defaults.set(true, forKey: Self.prefix + "coverWanted")
+    }
+  }
+
+  /** The launch screen's own colour (LaunchScreen.storyboard), light or dark. */
+  static let launchColor = UIColor(named: "LaunchBackground") ?? .systemBackground
+
+  /**
+   No picture to show: the launch screen's colour over the window instead,
+   from its first frame until Today commits (see the header).
+   */
+  private func cover(_ window: UIWindow) {
+    guard defaults.bool(forKey: Self.prefix + "coverWanted") else { return }
+    let view = UIView(frame: window.bounds)
+    view.backgroundColor = Self.launchColor
+    view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+    view.isUserInteractionEnabled = true
+    view.accessibilityElementsHidden = true
+    window.addSubview(view)
+    overlay = view
+    NSLog("[MihrabSnapshot] covering the launch")
+    // Shorter than the picture's: a launch still waiting for its location
+    // after this long is better shown waiting (the skeleton) than blank.
+    DispatchQueue.main.asyncAfter(deadline: .now() + Self.coverMax) { self.hide() }
+  }
+
   /** In scene(_:willConnectTo:), after React Native has its root: lay the picture on top. */
   func show(in window: UIWindow, options: UIScene.ConnectionOptions) {
     // Each window's own: JS starts over for every window (App.tsx), and a
@@ -221,17 +268,29 @@ final class LaunchSnapshotStore {
       c.url.scheme == "mihrab" && c.url.host == "today" && c.url.path.isEmpty && c.url.query == nil
     }
     guard todayOnly, options.notificationResponse == nil,
-          options.shortcutItem == nil, options.userActivities.isEmpty,
-          let meta = load(), stillCurrent(meta), let scene = window.windowScene else { return }
+          options.shortcutItem == nil, options.userActivities.isEmpty else { return }
+    #if targetEnvironment(macCatalyst)
+    return
+    #else
+    guard let meta = load(), stillCurrent(meta), let scene = window.windowScene else {
+      cover(window)
+      return
+    }
     let size = window.bounds.size
     guard abs(Double(size.width) - meta.width) < 0.5, abs(Double(size.height) - meta.height) < 0.5,
           abs(Double(window.screen.scale) - meta.scale) < 0.01,
           meta.style < 0 || scene.traitCollection.userInterfaceStyle.rawValue == meta.style,
           scene.traitCollection.preferredContentSizeCategory.rawValue == meta.textSize,
-          Self.systemLook == meta.system else { return }
+          Self.systemLook == meta.system else {
+      cover(window)
+      return
+    }
     var image: UIImage?
     if let pending {
-      guard pending.wait(timeout: .now() + Self.decodeWait) == .success else { return }
+      guard pending.wait(timeout: .now() + Self.decodeWait) == .success else {
+        cover(window)
+        return
+      }
       lock.lock()
       image = decoded
       decoded = nil
@@ -241,7 +300,10 @@ final class LaunchSnapshotStore {
       // a few dozen milliseconds here against a blank first frame.
       image = UIImage(contentsOfFile: dir.appendingPathComponent(meta.file).path)?.preparingForDisplay()
     }
-    guard let image else { return }
+    guard let image else {
+      cover(window)
+      return
+    }
     let view = UIImageView(frame: window.bounds)
     view.image = image
     view.contentMode = .scaleToFill
@@ -254,6 +316,7 @@ final class LaunchSnapshotStore {
     NSLog("[MihrabSnapshot] showing the kept screen")
     shownState = "\(meta.at),\(meta.heroTarget),\(meta.heroFrom),\(meta.heroPosed ? 1 : 0)"
     DispatchQueue.main.asyncAfter(deadline: .now() + Self.safetyHide) { self.hide() }
+    #endif
   }
 
   /**
@@ -269,7 +332,7 @@ final class LaunchSnapshotStore {
     still.accessibilityElementsHidden = true
     window.addSubview(still)
     crossfadeView = still
-    DispatchQueue.main.asyncAfter(deadline: .now() + 2 * Self.mountGrace) {
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.16) { // a whole screen re-renders: more than a launch's grace
       UIView.animate(withDuration: durationMs / 1000, delay: 0, options: [.curveEaseOut], animations: {
         still.alpha = 0
       }, completion: { _ in
@@ -289,7 +352,7 @@ final class LaunchSnapshotStore {
         view.alpha = 0
       }, completion: { _ in
         view.removeFromSuperview()
-        view.image = nil
+        (view as? UIImageView)?.image = nil
       })
     }
   }
@@ -353,7 +416,10 @@ final class MihrabLaunchSnapshot: NSObject {
   @objc static func requiresMainQueueSetup() -> Bool { false }
 
   @objc func setEligible(_ value: Bool) {
-    DispatchQueue.main.async { LaunchSnapshotStore.shared.eligible = value }
+    DispatchQueue.main.async {
+      LaunchSnapshotStore.shared.eligible = value
+      if value { LaunchSnapshotStore.shared.noteTodayReached() }
+    }
   }
 
   @objc func setLookKey(_ key: String, nightMatters: Bool) {

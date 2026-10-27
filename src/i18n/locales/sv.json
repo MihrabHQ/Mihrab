@@ -498,7 +498,9 @@
     },
     "providerTableFallback": "{{picked}} har inga publicerade tider för i dag, så dess egen metod räknas ut i telefonen tills tabellen täcker dagen igen.",
     "minimalUi": "Minimal",
-    "minimalUiHelp": "En sak per skärm. Idag behåller nedräkningen; tryck på den för dagens tider. De andra flikarna behåller det var och en är till för."
+    "minimalUiHelp": "En sak per skärm. Idag behåller nedräkningen; tryck på den för dagens tider. De andra flikarna behåller det var och en är till för.",
+    "minimalClassicOnly": "Minimal behåller de klassiska färgerna. Stäng av det för att välja ett färgtema eller systemfärger.",
+    "minimalRestartBody": "Minimal startar i Himmel-temat, så systemfärgerna stängs av. Appen behöver startas om så att varje skärm får ändringen. Starta om nu?"
   },
   "locationSetup": {
     "headline": "Ange din plats",
@@ -1677,6 +1679,8 @@
       "groupTimes": "Tider",
       "groupDaily": "Dagligt",
       "groupLook": "Utseende",
+      "layout": "Layout",
+      "layoutFull": "Fullständig",
       "adhkar": "Morgonens och kvällens adhkār",
       "theme": "Tema",
       "accent": "Accentfärg",

@@ -498,7 +498,9 @@
     },
     "providerTableFallback": "{{picked}} için bugün yayımlanmış vakit yok; cetvel bugünü yeniden kapsayana kadar kendi yöntemi telefonda hesaplanır.",
     "minimalUi": "Sade",
-    "minimalUiHelp": "Her ekranda tek bir şey. Bugün geri sayımı tutar; günün vakitleri için dokunun. Diğer sekmeler ne için varsa onu tutar."
+    "minimalUiHelp": "Her ekranda tek bir şey. Bugün geri sayımı tutar; günün vakitleri için dokunun. Diğer sekmeler ne için varsa onu tutar.",
+    "minimalClassicOnly": "Minimal klasik renkleri korur. Bir renk teması veya sistem renkleri seçmek için kapatın.",
+    "minimalRestartBody": "Minimal Gökyüzü temasıyla açılır, bu yüzden sistem renkleri kapatılacak. Değişikliğin her ekrana yansıması için uygulamanın yeniden başlaması gerekir. Şimdi yeniden başlatılsın mı?"
   },
   "locationSetup": {
     "headline": "Konumunuzu ayarlayın",
@@ -1677,6 +1679,8 @@
       "groupTimes": "Vakitler",
       "groupDaily": "Günlük",
       "groupLook": "Görünüm",
+      "layout": "Düzen",
+      "layoutFull": "Tam",
       "adhkar": "Sabah ve akşam zikirleri",
       "theme": "Tema",
       "accent": "Vurgu",

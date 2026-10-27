@@ -114,6 +114,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     // The last Today screen over the window, as its first frame, until the
     // live one has committed under it — MihrabLaunchSnapshot.swift.
     LaunchSnapshotStore.shared.show(in: window, options: connectionOptions)
+    // Between the launch screen and React Native's first frame the window
+    // showed the root view's own ground — the system's white or black, not
+    // the launch screen's colour. The same colour as the launch screen now,
+    // so nothing changes until the app has something to show.
+    window.backgroundColor = LaunchSnapshotStore.launchColor
+    window.rootViewController?.view.backgroundColor = LaunchSnapshotStore.launchColor
   }
 
   /// Hand `mihrab://…` to React Native's Linking module, which turns it into

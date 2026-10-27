@@ -498,7 +498,9 @@
     },
     "providerTableFallback": "{{picked}} has no published times for today, so its own method is calculated on the phone until the table covers it again.",
     "minimalUi": "Minimal",
-    "minimalUiHelp": "One thing per screen. Today keeps the countdown; tap it for the day’s times. The other tabs keep what each is for."
+    "minimalUiHelp": "One thing per screen. Today keeps the countdown; tap it for the day’s times. The other tabs keep what each is for.",
+    "minimalClassicOnly": "Minimal keeps the classic colours. Turn it off to choose a colour theme or system colours.",
+    "minimalRestartBody": "Minimal comes on in the Sky theme, so system colours will be turned off. The app needs to restart so every screen picks up the change. Restart now?"
   },
   "locationSetup": {
     "headline": "Set your location",
@@ -1677,6 +1679,8 @@
       "groupTimes": "Times",
       "groupDaily": "Daily",
       "groupLook": "Look",
+      "layout": "Layout",
+      "layoutFull": "Full",
       "adhkar": "Morning & evening adhkār",
       "theme": "Theme",
       "accent": "Accent",

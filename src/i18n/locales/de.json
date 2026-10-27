@@ -498,7 +498,9 @@
     },
     "providerTableFallback": "{{picked}} hat für heute keine veröffentlichten Zeiten, daher wird seine eigene Methode auf dem Telefon berechnet, bis die Tabelle den Tag wieder abdeckt.",
     "minimalUi": "Minimal",
-    "minimalUiHelp": "Eine Sache pro Bildschirm. Heute behält den Countdown; antippen zeigt die Zeiten des Tages. Die anderen Tabs behalten, wofür sie da sind."
+    "minimalUiHelp": "Eine Sache pro Bildschirm. Heute behält den Countdown; antippen zeigt die Zeiten des Tages. Die anderen Tabs behalten, wofür sie da sind.",
+    "minimalClassicOnly": "Minimal behält die klassischen Farben. Schalte es aus, um ein Farbthema oder Systemfarben zu wählen.",
+    "minimalRestartBody": "Minimal startet im Himmel-Design, daher werden die Systemfarben ausgeschaltet. Die App muss neu starten, damit jeder Bildschirm die Änderung übernimmt. Jetzt neu starten?"
   },
   "locationSetup": {
     "headline": "Legen Sie Ihren Standort fest",
@@ -1677,6 +1679,8 @@
       "groupTimes": "Zeiten",
       "groupDaily": "Täglich",
       "groupLook": "Aussehen",
+      "layout": "Layout",
+      "layoutFull": "Vollständig",
       "adhkar": "Morgen- und Abend-Adhkār",
       "theme": "Design",
       "accent": "Akzent",

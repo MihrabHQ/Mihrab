@@ -13,6 +13,7 @@ import { setFullScreenAlarmSkyTheme } from '../notifications/fullScreenAlarm';
 import { restoreSkyTheme, setSkyVariant } from '../theme/skyTheme';
 import { loadSettings, saveSettings } from '../settings/storage';
 import { applyLocationProviders } from '../settings/locationProviders';
+import { enteringMinimal, minimalLook } from '../settings/minimalLook';
 import { bootMark } from '../boot/bootTimeline';
 import { setHijriCalendar } from '../hijri/calendar';
 import {
@@ -244,7 +245,9 @@ export function PrayerSettingsProvider({
       // Each location keeps its own prayer-time source (`locationProviders.ts`):
       // a change of location brings its choice in, a change of source stays
       // with the location it was made for.
-      const next = applyLocationProviders(prev, patch);
+      // Minimal comes on in the Vibrant sky, and never wears a colour
+      // theme or the system's colours (settings/minimalLook.ts).
+      const next = minimalLook(enteringMinimal(prev, applyLocationProviders(prev, patch)));
       // The last GPS fix (`lastFetched*`, `autoLocationLabel`) survives a
       // mode switch on purpose. It used to be wiped here so automatic
       // never briefly showed a saved city's times — but the only reason it

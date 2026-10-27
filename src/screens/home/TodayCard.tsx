@@ -206,6 +206,19 @@ function Chevron({ back, color }: { back: boolean; color: string }) {
 
 
 /**
+ * A door's room on the day bar with no door in it: the glyphs' 20 dp in
+ * the steps' padding. It stands opposite a lone door (the calendar, or
+ * the switch to Minimal) so the day between them sits in the middle.
+ */
+function DayBarSlot() {
+  return (
+    <View style={styles.dayStep} importantForAccessibility="no-hide-descendants" accessibilityElementsHidden>
+      <View style={styles.dayStepGlyph} />
+    </View>
+  );
+}
+
+/**
  * The month's glyph: a calendar's leaf — two rings, a frame, a rule — in
  * the chevrons' stroke, so the three controls on the bar read as one set.
  */
@@ -1140,6 +1153,29 @@ const HeroToday = memo(function HeroToday({
   const inkTop = useMemo(() => skyInkAt(frame, yEyebrow), [frame, yEyebrow]);
   const ink = useMemo(() => skyInkAt(frame, yCountdown), [frame, yCountdown]);
   const inkFoot = useMemo(() => skyInkAt(frame, yFoot), [frame, yFoot]);
+  /**
+   * Minimal stacks the countdown, its line and the rail in the middle of
+   * the page, and the rail took the foot's ink while the figures over it
+   * took the middle's: on an evening sky, where the glow's band lies
+   * between them, white figures stood over a black rail. One stack, one
+   * ink — the figures'. The full page keeps the rail at the foot, in the
+   * foot's.
+   */
+  const railInk = minimal ? ink : inkFoot;
+  /**
+   * Minimal's footer is at the page's foot, far under the block's, and it
+   * was inked for the block's foot: dark words on the night band under an
+   * evening sky. Its own ink, at where it is.
+   */
+  const [footerAt, setFooterAt] = useState<number | null>(null);
+  const onFooterLayout = useCallback((e: LayoutChangeEvent) => {
+    const { y, height } = e.nativeEvent.layout;
+    const mid = Math.round(y + height / 2);
+    setFooterAt(prev => (prev === mid ? prev : mid));
+  }, []);
+  const yFooter =
+    minimal && footerAt != null && skyH > 0 ? Math.min(1, (bleedTop + footerAt) / skyH) : yFoot;
+  const inkFooter = useMemo(() => skyInkAt(frame, yFooter), [frame, yFooter]);
   // The units: under half the figures' size, the muted ink, plain weight,
   // untracked — small caps beside the digits, on their baseline.
   const unitStyle = useMemo(
@@ -1372,7 +1408,7 @@ const HeroToday = memo(function HeroToday({
       ) : null}
       {rail || dayRail ? (
         <View style={styles.railWrap}>
-          <View style={[styles.railTrack, { backgroundColor: inkFoot.track }]}>
+          <View style={[styles.railTrack, { backgroundColor: railInk.track }]}>
             {/* Minimal: the day's prayers, marked along the rail — the
                 passed ones in the fill's ink, the ones to come fainter,
                 the target's a step larger. Under the fill and the head. */}
@@ -1394,7 +1430,7 @@ const HeroToday = memo(function HeroToday({
                           top: (RAIL_LINE - size) / 2,
                           marginStart: -size / 2,
                           start: `${(mark.at * 100).toFixed(2)}%`,
-                          backgroundColor: passed || isTarget ? inkFoot.fill : inkFoot.muted,
+                          backgroundColor: passed || isTarget ? railInk.fill : railInk.muted,
                           opacity: passed || isTarget ? 1 : 0.5,
                         },
                       ]}
@@ -1406,7 +1442,7 @@ const HeroToday = memo(function HeroToday({
               style={[
                 styles.railFill,
                 {
-                  backgroundColor: inkFoot.fill,
+                  backgroundColor: railInk.fill,
                   // In quarter-percents — a pixel of a 400dp track — not
                   // whole ones: on a launch the rail slides from where the
                   // kept picture left it (launchWarp), and whole percents
@@ -1416,7 +1452,7 @@ const HeroToday = memo(function HeroToday({
                   width: `${(Math.round(railPct * 400) / 4).toFixed(2)}%`,
                 },
               ]}>
-              <View style={[styles.railRing, { backgroundColor: inkFoot.ring }]} />
+              <View style={[styles.railRing, { backgroundColor: railInk.ring }]} />
               {/* Minimal: the head breathes — a ring that swells and
                   fades every few seconds, the one moving thing on a
                   still page, saying the count is live. */}
@@ -1426,27 +1462,27 @@ const HeroToday = memo(function HeroToday({
                   style={[
                     styles.railBreath,
                     {
-                      backgroundColor: inkFoot.fill,
+                      backgroundColor: railInk.fill,
                       opacity: breath.interpolate({ inputRange: [0, 0.15, 1], outputRange: [0, 0.4, 0] }),
                       transform: [{ scale: breath.interpolate({ inputRange: [0, 1], outputRange: [1, 4.5] }) }],
                     },
                   ]}
                 />
               ) : null}
-              <View style={[styles.railHead, { backgroundColor: inkFoot.fill }]} />
+              <View style={[styles.railHead, { backgroundColor: railInk.fill }]} />
             </View>
           </View>
           {/* Minimal's day rail needs no labels: its marks say the day. */}
           {dayRail ? null : (
           <View style={styles.railLabels}>
             <Text
-              style={[styles.railLabel, tabularNumeralStyle, { color: inkFoot.muted }]}
+              style={[styles.railLabel, tabularNumeralStyle, { color: railInk.muted }]}
               numberOfLines={1}
               maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}>
               {railFromLabel}
             </Text>
             <Text
-              style={[styles.railLabel, tabularNumeralStyle, { color: inkFoot.muted }]}
+              style={[styles.railLabel, tabularNumeralStyle, { color: railInk.muted }]}
               numberOfLines={1}
               maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}>
               {targetLabel}
@@ -1464,13 +1500,14 @@ const HeroToday = memo(function HeroToday({
       {minimal && fill ? (
         <View style={styles.heroHandle} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
           <Svg width={14} height={8} viewBox="0 0 18 10">
-            <Path d="M2 8.5 9 1.5l7 7" stroke={inkFoot.muted} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" fill="none" />
+            <Path d="M2 8.5 9 1.5l7 7" stroke={inkFooter.muted} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" fill="none" />
           </Svg>
         </View>
       ) : null}
       {minimal && footer ? (
         <Text
-          style={[styles.heroFooter, tabularNumeralStyle, { color: inkFoot.muted }]}
+          onLayout={onFooterLayout}
+          style={[styles.heroFooter, tabularNumeralStyle, { color: inkFooter.muted }]}
           numberOfLines={1}
           maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}>
           {footer}
@@ -2583,6 +2620,10 @@ function TodayCardImpl({
               style={({ pressed }) => [styles.dayStep, pressed && styles.dayStepPressed]}>
               <MinimalGlyph color={String(palette.muted)} />
             </Pressable>
+          ) : onOpenMonth ? (
+            // An empty slot the calendar's size, so the day stands in the
+            // middle of the bar whichever doors are offered.
+            <DayBarSlot />
           ) : null}
           <Pressable
             accessibilityRole={onToday ? 'header' : 'button'}
@@ -2623,6 +2664,9 @@ function TodayCardImpl({
                   {getDayDate(selected)}
                 </Text>
               </Text>
+              {/* The dot's twin, unseen, on the other side: the words are
+                  centred on the bar, not the words and the dot. */}
+              {onToday ? <View style={styles.todayDot} /> : null}
             </View>
             {/* One line, two things it may say: the day's Hijri date, or
                 — for a moment after a tap that could not be recorded —
@@ -2656,6 +2700,8 @@ function TodayCardImpl({
               style={({ pressed }) => [styles.dayStep, pressed && styles.dayStepPressed]}>
               <MonthGlyph color={String(palette.muted)} />
             </Pressable>
+          ) : settings.showDataStats ? (
+            <DayBarSlot />
           ) : null}
           <Pressable
             accessibilityRole="button"
@@ -2830,6 +2876,8 @@ const styles = StyleSheet.create({
   pageLtr: { direction: 'ltr' },
   pageRtl: { direction: 'rtl' },
   dayStep: { padding: SPACING.xs, alignItems: 'center', justifyContent: 'center' },
+  /** The glyphs' box, for the empty slot that balances the bar. */
+  dayStepGlyph: { width: 20, height: 20 },
   /** At either end of the record there is nowhere to step. */
   dayStepOff: { opacity: 0.25 },
   dayStepPressed: { opacity: 0.55 },

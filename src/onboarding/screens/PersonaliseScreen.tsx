@@ -53,6 +53,8 @@ import { sharedSettingsStyles as s } from '../../screens/settings/sharedStyles';
 import { SegmentedControl } from '../../components/ui';
 import { AccentShelf } from '../../components/AccentShelf';
 import { SkyVariantPicker } from '../../components/SkyVariantPicker';
+import { LayoutPicker } from '../../components/LayoutPicker';
+import { useSkyTheme } from '../../theme/skyTheme';
 import type { AppearancePreference } from '../../settings/types';
 import { SPACING } from '../../theme/tokens';
 import { typeStyle } from '../../theme/typography';
@@ -109,6 +111,7 @@ export function PersonaliseScreen({
   // follows. It is offered here as a picture of its six moods, with a
   // line of what it does; the picture is the control.
   const skyActive = settings.appearance === 'sky';
+  const sky = useSkyTheme(skyActive);
 
   return (
     <OnboardingFrame
@@ -251,7 +254,8 @@ export function PersonaliseScreen({
             </>
           ) : null}
         </SettingsBlock>
-        {dynamicColours || skyActive ? null : (
+        {/* Minimal wears the classic colours (settings/minimalLook.ts). */}
+        {dynamicColours || skyActive || settings.minimalUi ? null : (
           <SettingsBlock>
             <Text
               style={[typeStyle('label'), styles.label, { color: palette.muted }]}>
@@ -281,6 +285,28 @@ export function PersonaliseScreen({
             </Text>
           </SettingsBlock>
         )}
+        {/* Today's two faces, shown: the full page, chosen until changed,
+            and Minimal (Settings → Appearance → Minimal). */}
+        <SettingsBlock>
+          <Text style={[typeStyle('label'), styles.label, { color: palette.muted }]}>
+            {t('onboarding.personalise.layout', 'Layout')}
+          </Text>
+          <LayoutPicker
+            testID="personalise-layout"
+            value={settings.minimalUi ? 'minimal' : 'full'}
+            onChange={v => updateSettings({ minimalUi: v === 'minimal' })}
+            skyTop={skyActive ? sky.top : String(palette.accentBg)}
+            skyFoot={skyActive ? sky.bottom : String(palette.bg)}
+            page={String(palette.bg)}
+            text={String(palette.text)}
+            muted={String(palette.muted)}
+            accent={String(palette.accent)}
+            border={String(palette.border)}
+          />
+          <Text style={[s.help, { color: palette.muted, marginTop: SPACING.sm }]}>
+            {t('settings.minimalUiHelp')}
+          </Text>
+        </SettingsBlock>
       </SettingsGroup>
 
     </OnboardingFrame>

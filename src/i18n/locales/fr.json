@@ -499,7 +499,9 @@
     },
     "providerTableFallback": "{{picked}} n’a pas d’horaires publiés pour aujourd’hui : sa propre méthode est calculée sur le téléphone jusqu’à ce que la table couvre à nouveau ce jour.",
     "minimalUi": "Minimal",
-    "minimalUiHelp": "Une chose par écran. Aujourd’hui garde le compte à rebours ; touchez-le pour les horaires du jour. Les autres onglets gardent ce pour quoi ils sont faits."
+    "minimalUiHelp": "Une chose par écran. Aujourd’hui garde le compte à rebours ; touchez-le pour les horaires du jour. Les autres onglets gardent ce pour quoi ils sont faits.",
+    "minimalClassicOnly": "Minimal garde les couleurs classiques. Désactivez-le pour choisir un thème de couleur ou les couleurs du système.",
+    "minimalRestartBody": "Minimal s’active avec le thème Ciel : les couleurs du système seront donc désactivées. L’app doit redémarrer pour que chaque écran prenne en compte le changement. Redémarrer maintenant ?"
   },
   "locationSetup": {
     "headline": "Définissez votre emplacement",
@@ -1678,6 +1680,8 @@
       "groupTimes": "Horaires",
       "groupDaily": "Quotidien",
       "groupLook": "Apparence",
+      "layout": "Disposition",
+      "layoutFull": "Complet",
       "adhkar": "Adhkār du matin et du soir",
       "theme": "Thème",
       "accent": "Accent",

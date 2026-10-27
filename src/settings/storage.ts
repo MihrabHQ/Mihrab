@@ -1,3 +1,4 @@
+import { minimalLook } from './minimalLook';
 import { DEFAULT_SKY_VARIANT, isSkyVariant } from '../theme/skyMoods';
 import { MADHABS, madhabMatches, type Madhab } from '../prayer/madhab';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -789,7 +790,8 @@ async function loadSettingsUncached(): Promise<PrayerAppSettings> {
   // `undefined` — and anything that is not a hex is dropped rather than
   // guessed at, because there is no honest correction for "blue".
   merged.savedAccentColors = coerceSavedAccents(merged.savedAccentColors);
-  return noteSecureRead(merged, secureFailed);
+  // Minimal wears the classic colours (minimalLook.ts).
+  return noteSecureRead(minimalLook(merged), secureFailed);
 }
 
 /**

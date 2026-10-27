@@ -194,11 +194,20 @@ export function lookKeyOf(settings: object): string {
 export function setLaunchSnapshotLook(key: string, nightMatters: boolean): void {
   const full = `${key}|${nightMatters ? 'n' : '-'}`;
   if (!native || full === lastLook) return;
+  const changed = lastLook !== null;
   lastLook = full;
   try {
     native.setLookKey(key, nightMatters);
   } catch {
     // As above.
+  }
+  // A new look is a new screen: the posed picture on disk was kept under
+  // the old one and will not be shown again, so the next settled Today is
+  // kept anew. It used to wait for the next prayer — every launch until
+  // then, after any change in Settings, opened without a picture.
+  if (changed && posedKept) {
+    posedKept = false;
+    pushEligible();
   }
 }
 

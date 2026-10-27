@@ -12,6 +12,11 @@ import { TABULAR_MAX_FONT_SCALE, tabularNumeralStyle } from '../../theme/textSca
 import { TYPE, typeStyle } from '../../theme/typography';
 import { LogCheck, LOG_CHECK_SIZE } from './LogCheck';
 import { MinimalGlyph } from './MinimalGlyph';
+import { MapPinIcon } from '../../theme/icons';
+import { CompassIcon } from '../../components/HeaderToolbarIcons';
+
+/** The doors' glyphs: a step under the type's cap, as the Qibla chip's small one. */
+const DOOR_ICON = 15;
 
 /** One row of the sheet: a time, and the check beside it when it can be logged. */
 export type TimesSheetRow = {
@@ -107,6 +112,10 @@ function TodayTimesSheetImpl({
               style={({ pressed }) => [styles.step, pressed && styles.pressed]}>
               <MinimalGlyph color={muted} />
             </Pressable>
+          ) : onMonth ? (
+            // An empty slot the calendar's size, so the day stands in the
+            // middle of the bar whichever doors are offered.
+            <View style={styles.step} importantForAccessibility="no-hide-descendants" accessibilityElementsHidden />
           ) : null}
           <Pressable
             accessibilityRole="button"
@@ -136,6 +145,8 @@ function TodayTimesSheetImpl({
               style={({ pressed }) => [styles.step, pressed && styles.pressed]}>
               <MonthGlyph color={muted} />
             </Pressable>
+          ) : onToggleMinimal ? (
+            <View style={styles.step} importantForAccessibility="no-hide-descendants" accessibilityElementsHidden />
           ) : null}
           <Pressable
             accessibilityRole="button"
@@ -211,8 +222,10 @@ function TodayTimesSheetImpl({
                   place.onPress?.();
                 }}
                 disabled={!place.onPress}
-                hitSlop={8}>
-                <Text style={[styles.door, { color: palette.muted }]} numberOfLines={1}>
+                hitSlop={8}
+                style={({ pressed }) => [styles.doorPill, { borderColor: palette.border }, pressed && styles.pressed]}>
+                <MapPinIcon size={DOOR_ICON} color={muted} />
+                <Text style={[styles.door, { color: palette.text }]} numberOfLines={1}>
                   {place.label}
                 </Text>
               </Pressable>
@@ -226,9 +239,11 @@ function TodayTimesSheetImpl({
                   qibla.onPress?.();
                 }}
                 disabled={!qibla.onPress}
-                hitSlop={8}>
+                hitSlop={8}
+                style={({ pressed }) => [styles.doorPill, { borderColor: palette.border }, pressed && styles.pressed]}>
+                <CompassIcon size={DOOR_ICON} color={muted} />
                 <Text
-                  style={[styles.door, tabularNumeralStyle, { color: palette.muted }]}
+                  style={[styles.door, tabularNumeralStyle, { color: palette.text }]}
                   numberOfLines={1}>
                   {`${t('nav.compass', 'Qibla')} · ${Math.round(qibla.bearing)}°`}
                 </Text>
@@ -303,6 +318,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: SPACING.md,
     marginTop: SPACING.xs,
+  },
+  /**
+   * The place and the Qibla as doors, not captions: a hairline pill with
+   * its glyph, quieter than Close's filled one — the sheet's own way out
+   * stays the one solid thing at its foot.
+   */
+  doorPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.xs,
+    flexShrink: 1,
+    minHeight: 36,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.xs,
+    borderRadius: 999,
+    borderWidth: 1,
   },
   door: { fontSize: TYPE.footnote.fontSize, fontWeight: '400', flexShrink: 1 },
   source: { fontSize: TYPE.label.fontSize, fontWeight: '400', textAlign: 'center', marginTop: SPACING.xs, opacity: 0.8 },

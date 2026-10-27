@@ -481,7 +481,7 @@ describe('access and polish', () => {
     expect(picker).toMatch(/variant=\{o\.key\}/);
     expect(personalise).toMatch(/\{t\('settings\.themeSkyHelp'\)\}/);
     expect(personalise).not.toMatch(/onboarding\.personalise\.skyOffer/);
-    expect(personalise).toMatch(/\{dynamicColours \|\| skyActive \? null : \(/);
+    expect(personalise).toMatch(/\{dynamicColours \|\| skyActive \|\| settings\.minimalUi \? null : \(/);
     const strip = read('src/components/SkyMoodStrip.tsx');
     for (const name of ['night', 'dawn', 'morning', 'midday', 'golden', 'sunset']) expect(strip).toContain(`'${name}'`);
     expect(strip).toMatch(/accessibilityState=\{\{ selected \}\}/);

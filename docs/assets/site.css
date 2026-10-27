@@ -17,7 +17,15 @@
   --ink: #14231D;
   --ink-soft: #4A5C54;
   --line: #E3DACB;
-  --accent: #1F5F4A;
+  /* One accent down the whole page: the deep blue of the app's day sky.
+     It used to change with each section's hour — an orange under the
+     sunrise, a red in the afterglow — and the links, the icons and the
+     install section's recommendation came out in a different colour at
+     every scroll, the orange reading as a warning. The hours stay in the
+     grounds (below); the ink that means "this is a link" is one colour.
+     4.8:1 or better on every ground of the day, the dusk's included. */
+  --accent: #2D5596;
+  --accent-wash: rgba(45, 85, 150, .08);
   --accent-ink: #EEE4D4;
   --frame: #E8E0D2;
   --shadow: 0 1px 2px rgba(24,36,70,.06), 0 12px 32px -12px rgba(24,36,70,.18);
@@ -40,6 +48,7 @@
     --ink-soft: #AEB8CC;
     --line: #283047;
     --accent: #9DB7E6;
+    --accent-wash: rgba(157, 183, 230, .12);
     --accent-ink: #EEE4D4;
     --frame: #2B3350;
     --shadow: 0 1px 2px rgba(0,0,0,.4), 0 12px 32px -14px rgba(0,0,0,.7);
@@ -228,8 +237,8 @@ h2 { font-size: clamp(26px, 4vw, 34px); }
 .platform .badges { margin: 0; align-items: flex-start; gap: 14px 12px; }
 .platform .badges img { height: 44px; }
 .platform .note { margin: 14px 0 0; }
-.platform .flag { margin: 14px 0 0; font-size: 14px; font-weight: 600; line-height: 1.45; color: var(--accent); }
-.platform .flag a { font-weight: 500; color: var(--ink-soft); margin-inline-start: 4px; }
+.platform .flag { margin: 14px 0 0; font-size: 14px; font-weight: 600; line-height: 1.45; color: var(--ink); }
+.platform .flag a { font-weight: 500; color: var(--accent); margin-inline-start: 4px; }
 .platform .note code { font-size: 11.5px; white-space: nowrap; display: inline-block; margin-top: 4px; }
 @media (max-width: 600px) {
   .platform, .platform:first-child { flex: 1 1 100%; }
@@ -488,8 +497,8 @@ footer .colophon {
   display: block; padding: 7px 11px; border-radius: 7px;
   color: var(--ink-soft); text-decoration: none; white-space: nowrap;
 }
-.langpicker a:hover { background: rgba(31, 95, 74, .08); color: var(--ink); }
-.langpicker a[aria-current] { color: var(--emerald); font-weight: 650; }
+.langpicker a:hover { background: var(--accent-wash); color: var(--ink); }
+.langpicker a[aria-current] { color: var(--accent); font-weight: 650; }
 @media (max-width: 620px) {
   /* The globe alone. A wordmark and a full label do not share a phone. */
   .langpicker .lang-label { display: none; }
@@ -528,8 +537,8 @@ table.accuracy tfoot td { font-weight: 600; }
  * the afternoon, the golden hour, the afterglow and dusk, and the footer is
  * the night. Every stop is a station of src/theme/skyMoods.ts — the colour
  * of the sky at the horizon (by day) or its upper sky (by night), mixed far
- * down into the page's paper in OKLab so the text keeps its contrast; the
- * accent of each section is the app's accent for that hour.
+ * down into the page's paper in OKLab so the text keeps its contrast. The
+ * accent does not follow the hour: it is the page's one blue (:root).
  *
  * The hours are pinned to the sections, not to the scroll position. A
  * document gradient or a scroll-driven animation puts noon at 40 % of the
@@ -552,10 +561,6 @@ table.accuracy tfoot td { font-weight: 600; }
   --sky-golden:    #FDE8D9;
   --sky-afterglow: #F5D6CD;
   --sky-dusk:      #DECBD3;
-  --accent-warm:   #9D4E19;  /* sunrise, the golden hour */
-  --accent-day:    #2C66AE;  /* the blue of the day */
-  --accent-ember:  #9A3F2E;  /* the afterglow */
-  --accent-dusk:   #6D3A6A;  /* dusk */
 }
 @media (prefers-color-scheme: dark) {
   :root {
@@ -566,27 +571,23 @@ table.accuracy tfoot td { font-weight: 600; }
     --sky-golden:    #323C56;
     --sky-afterglow: #2B2944;
     --sky-dusk:      #1B1C3C;
-    --accent-warm:   #E8A779;
-    --accent-day:    #9DB7E6;
-    --accent-ember:  #E48969;
-    --accent-dusk:   #CF8CB8;
   }
 }
 main > section {
   background: linear-gradient(180deg, var(--sky-from), var(--sky-to));
 }
-main > section:nth-of-type(1) { --sky-from: var(--sky-sunrise);   --sky-to: var(--sky-morning);   --accent: var(--accent-warm); }
-main > section:nth-of-type(2) { --sky-from: var(--sky-morning);   --sky-to: var(--sky-morning);   --accent: var(--accent-day); }
-main > section:nth-of-type(3) { --sky-from: var(--sky-morning);   --sky-to: var(--sky-midday);    --accent: var(--accent-day); }
-main > section:nth-of-type(4) { --sky-from: var(--sky-midday);    --sky-to: var(--sky-midday);    --accent: var(--accent-day); }
-main > section:nth-of-type(5) { --sky-from: var(--sky-midday);    --sky-to: var(--sky-afternoon); --accent: var(--accent-day); }
-main > section:nth-of-type(n+6) { --sky-from: var(--sky-afternoon); --sky-to: var(--sky-afternoon); --accent: var(--accent-day); }
+main > section:nth-of-type(1) { --sky-from: var(--sky-sunrise);   --sky-to: var(--sky-morning); }
+main > section:nth-of-type(2) { --sky-from: var(--sky-morning);   --sky-to: var(--sky-morning); }
+main > section:nth-of-type(3) { --sky-from: var(--sky-morning);   --sky-to: var(--sky-midday); }
+main > section:nth-of-type(4) { --sky-from: var(--sky-midday);    --sky-to: var(--sky-midday); }
+main > section:nth-of-type(5) { --sky-from: var(--sky-midday);    --sky-to: var(--sky-afternoon); }
+main > section:nth-of-type(n+6) { --sky-from: var(--sky-afternoon); --sky-to: var(--sky-afternoon); }
 main > section:nth-last-of-type(3) { --sky-to: var(--sky-golden); }
-main > section:nth-last-of-type(2) { --sky-from: var(--sky-golden);    --sky-to: var(--sky-afterglow); --accent: var(--accent-warm); }
-main > section:last-of-type       { --sky-from: var(--sky-afterglow); --sky-to: var(--sky-dusk);      --accent: var(--accent-ember); }
+main > section:nth-last-of-type(2) { --sky-from: var(--sky-golden);    --sky-to: var(--sky-afterglow); }
+main > section:last-of-type       { --sky-from: var(--sky-afterglow); --sky-to: var(--sky-dusk); }
 /* A page of only one or two sections has nowhere to put a whole day. */
-main > section:first-of-type:nth-last-of-type(2) { --sky-from: var(--sky-sunrise); --sky-to: var(--sky-golden); --accent: var(--accent-warm); }
-main > section:first-of-type:last-of-type { --sky-from: var(--sky-sunrise); --sky-to: var(--sky-dusk); --accent: var(--accent-warm); }
+main > section:first-of-type:nth-last-of-type(2) { --sky-from: var(--sky-sunrise); --sky-to: var(--sky-golden); }
+main > section:first-of-type:last-of-type { --sky-from: var(--sky-sunrise); --sky-to: var(--sky-dusk); }
 /* The night. The same in both schemes: the footer is where the dark page
    and the light page meet. */
 footer {

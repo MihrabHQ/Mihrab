@@ -22,6 +22,7 @@ import { AccentShelf } from '../../components/AccentShelf';
 import { ConfirmModal } from '../../components/ConfirmModal';
 import { restartApp as nativeRestartApp } from '../../native/SystemTheme';
 import { saveSettings } from '../../settings/storage';
+import { enteringMinimal, minimalLook } from '../../settings/minimalLook';
 import { useClockFormatter } from '../../hooks/useClockFormatter';
 import type { ClockFormat } from '../../utils/clockFormat';
 import { SkyVariantPicker } from '../../components/SkyVariantPicker';
@@ -62,6 +63,8 @@ function AppearanceCardImpl() {
   // ⇒ hidden; true/false ⇒ the dynamic-colours value the user is trying
   // to switch to, awaiting confirmation.
   const [pendingDynamic, setPendingDynamic] = useState<boolean | null>(null);
+  // Minimal asked for while system colours are on: they go, with a restart.
+  const [pendingMinimal, setPendingMinimal] = useState(false);
 
   // Persist the toggled value to disk, then restart so PlatformColor /
   // dynamic refs re-resolve. Persist DIRECTLY (not via the async
@@ -69,22 +72,19 @@ function AppearanceCardImpl() {
   // in-flight write, leaving the next launch reading the old value (#114).
   // Turning system colours ON clears Verdant — the two themes cannot share
   // a palette.
-  const applyDynamicAndRestart = (v: boolean) => {
+  // Turning Minimal on under system colours takes them off (Minimal wears
+  // the classic colours, settings/minimalLook.ts) — the same restart.
+  const applyDynamicAndRestart = (v: boolean) =>
+    applyAndRestart({ useSystemDynamicTheme: v, ...(v ? { tintedSurfaces: false } : {}) });
+  const applyAndRestart = (patch: Partial<typeof fullSettings>) => {
     void (async () => {
-      const next = {
-        ...fullSettings,
-        useSystemDynamicTheme: v,
-        ...(v ? { tintedSurfaces: false } : {}),
-      };
+      const next = minimalLook(enteringMinimal(fullSettings, { ...fullSettings, ...patch }));
       try {
         await saveSettings(next);
       } catch (e) {
         console.warn('Failed to persist toggle before restart:', e);
       }
-      updateSettings({
-        useSystemDynamicTheme: v,
-        ...(v ? { tintedSurfaces: false } : {}),
-      });
+      updateSettings(patch);
       const tryReload = () => {
         try {
           const dev = (
@@ -181,7 +181,7 @@ function AppearanceCardImpl() {
             (light stays classic). Custom colours are an accent only, since
             free-form washes are barred from the surfaces. Hidden under
             system colours, which own the palette. */}
-        {!dynamicColorsActive && !skyActive && (
+        {!dynamicColorsActive && !skyActive && !settings.minimalUi && (
           <SettingsBlock>
             <Text style={[s.label, { color: palette.muted }]}>
               {t('settings.colourTheme', 'Colour theme')}
@@ -216,7 +216,9 @@ function AppearanceCardImpl() {
                 : t('settings.systemDynamicColors')
             }
             help={
-              verdantActive
+              settings.minimalUi
+                ? t('settings.minimalClassicOnly')
+                : verdantActive
                 ? t(
                     'settings.verdantThemeSystemDisabled',
                     'A colour theme is active — choose Classic to use system colours.',
@@ -234,7 +236,7 @@ function AppearanceCardImpl() {
             // from — "dark, in my wallpaper's colours" is a reasonable ask
             // and used to be unsayable. Verdant still owns the palette
             // when it is on, because two colour sources cannot both win.
-            disabled={verdantActive}
+            disabled={verdantActive || settings.minimalUi}
             // Material You / iOS dynamic colors are resolved at view-attach
             // time, so flipping them mid-session leaves stale tints on
             // already-mounted surfaces (#110). Defer the actual change to a
@@ -275,7 +277,12 @@ function AppearanceCardImpl() {
           title={t('settings.minimalUi')}
           help={t('settings.minimalUiHelp')}
           value={settings.minimalUi}
-          onValueChange={v => updateSettings({ minimalUi: v })}
+          onValueChange={v => {
+            // Under system colours, Minimal takes them off — a restart, as
+            // switching them off is; otherwise at once.
+            if (v && dynamicColorsActive) setPendingMinimal(true);
+            else updateSettings({ minimalUi: v });
+          }}
         />
       </SettingsGroup>
 
@@ -326,6 +333,18 @@ function AppearanceCardImpl() {
           const v = pendingDynamic;
           setPendingDynamic(null);
           if (v !== null) applyDynamicAndRestart(v);
+        }}
+      />
+      <ConfirmModal
+        visible={pendingMinimal}
+        title={t('settings.themeRestartTitle', 'Restart required')}
+        message={t('settings.minimalRestartBody')}
+        confirmLabel={t('settings.themeRestartConfirm', 'Restart')}
+        cancelLabel={t('common.cancel', 'Cancel')}
+        onCancel={() => setPendingMinimal(false)}
+        onConfirm={() => {
+          setPendingMinimal(false);
+          applyAndRestart({ minimalUi: true, useSystemDynamicTheme: false, tintedSurfaces: false });
         }}
       />
     </>

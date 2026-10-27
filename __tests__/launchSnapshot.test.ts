@@ -104,6 +104,34 @@ describe('the iOS side', () => {
     }
   });
 
+  it('without a picture, holds the launch screen until Today commits — once Today has been reached', () => {
+    // Every guard that used to give up on a picture now covers instead.
+    expect(SWIFT.match(/cover\(window\)\s*return/g)?.length).toBe(4);
+    expect(SWIFT).toMatch(/private func cover\(_ window: UIWindow\) \{\s*guard defaults\.bool\(forKey: Self\.prefix \+ "coverWanted"\) else \{ return \}/);
+    expect(SWIFT).toMatch(/view\.backgroundColor = Self\.launchColor/);
+    expect(SWIFT).toMatch(/asyncAfter\(deadline: \.now\(\) \+ Self\.coverMax\) \{ self\.hide\(\) \}/);
+    expect(SWIFT).toContain('private static let coverMax: TimeInterval = 2');
+    // Set by a settled Today, marked eligible or kept by JS.
+    expect(SWIFT).toMatch(/if value \{ LaunchSnapshotStore\.shared\.noteTodayReached\(\) \}/);
+    expect(SWIFT).toMatch(/guard bounds\.width > 0, bounds\.height > 0 else \{ return \}[\s\S]{0,200}noteTodayReached\(\)/);
+    // A link, a notification or a shortcut opens something else: no cover.
+    expect(SWIFT).toMatch(/options\.userActivities\.isEmpty else \{ return \}/);
+  });
+
+  it('launches in the page\'s colour, not the React Native template', () => {
+    const board = read('ios/PrayerApp/LaunchScreen.storyboard');
+    expect(board).not.toContain('Powered by React Native');
+    expect(board).not.toContain('<label');
+    expect(board).toContain('<color key="backgroundColor" name="LaunchBackground"/>');
+    const color = JSON.parse(read('ios/PrayerApp/Images.xcassets/LaunchBackground.colorset/Contents.json'));
+    const hex = (c: { color: { components: Record<string, string> } }) =>
+      ['red', 'green', 'blue'].map(k => c.color.components[k].slice(2)).join('');
+    // The classic page's paper and its dark (theme/appPalette.ts).
+    expect(hex(color.colors[0])).toBe('FAF7F2');
+    expect(hex(color.colors[1])).toBe('141210');
+    expect(DELEGATE).toMatch(/window\.rootViewController\?\.view\.backgroundColor = LaunchSnapshotStore\.launchColor/);
+  });
+
   it('exposes the same module to JS as Android does', () => {
     for (const m of ['setEligible', 'setLookKey', 'hide)', 'captureNow', 'setHeroState', 'getShownState']) {
       expect(BRIDGE).toContain(m);
@@ -148,6 +176,30 @@ describe('the JS side', () => {
     m.newLaunchSnapshotWindow();
     m.hideLaunchSnapshot();
     expect(hide).toHaveBeenCalledTimes(3);
+    jest.useRealTimers();
+    jest.dontMock('react-native');
+  });
+
+  it('keeps Today anew after a change of look, without waiting for the next prayer', () => {
+    jest.resetModules();
+    jest.useFakeTimers();
+    const captureNow = jest.fn();
+    jest.doMock('react-native', () => ({
+      Platform: { OS: 'android' },
+      NativeModules: {
+        MihrabLaunchSnapshot: { hide: jest.fn(), setEligible: jest.fn(), setLookKey: jest.fn(), captureNow },
+      },
+    }));
+    const m = require('../src/native/LaunchSnapshot');
+    m.setLaunchSnapshotLook('a', false);
+    m._setPosedKeptForTests(true);
+    m.setLaunchSnapshotEligible(true);
+    jest.advanceTimersByTime(m.KEEP_AFTER_MS + 10);
+    // A posed picture of this look is on disk: nothing to keep.
+    expect(captureNow).not.toHaveBeenCalled();
+    m.setLaunchSnapshotLook('b', false);
+    jest.advanceTimersByTime(m.KEEP_AFTER_MS + 10);
+    expect(captureNow).toHaveBeenCalledTimes(1);
     jest.useRealTimers();
     jest.dontMock('react-native');
   });

@@ -499,7 +499,9 @@
     },
     "providerTableFallback": "{{picked}} no tiene horarios publicados para hoy, así que su propio método se calcula en el teléfono hasta que la tabla vuelva a cubrirlo.",
     "minimalUi": "Mínimo",
-    "minimalUiHelp": "Una cosa por pantalla. Hoy conserva la cuenta atrás; tócala para ver los horarios del día. Las demás pestañas conservan lo suyo."
+    "minimalUiHelp": "Una cosa por pantalla. Hoy conserva la cuenta atrás; tócala para ver los horarios del día. Las demás pestañas conservan lo suyo.",
+    "minimalClassicOnly": "Minimal mantiene los colores clásicos. Desactívalo para elegir un tema de color o los colores del sistema.",
+    "minimalRestartBody": "Minimal se activa con el tema Cielo, así que los colores del sistema se desactivarán. La app necesita reiniciarse para que cada pantalla aplique el cambio. ¿Reiniciar ahora?"
   },
   "locationSetup": {
     "headline": "Establece tu ubicación",
@@ -1678,6 +1680,8 @@
       "groupTimes": "Tiempos",
       "groupDaily": "Diario",
       "groupLook": "Aspecto",
+      "layout": "Diseño",
+      "layoutFull": "Completo",
       "adhkar": "Adhkār de la mañana y la tarde",
       "theme": "Tema",
       "accent": "Acento",
