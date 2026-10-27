@@ -27,7 +27,7 @@
  */
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useTranslation } from 'react-i18next';
-import { Animated, Platform, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { Animated, I18nManager, Platform, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { useWindowSize } from '../responsive/windowSize';
 import type { ViewStyle } from 'react-native';
 import { useEffect, useRef } from 'react';
@@ -75,6 +75,7 @@ import { useBookPanePadding } from '../native/FoldPosture';
 import { useMinimalUi } from './tabBarInset';
 import { MinimalTabBar } from './MinimalTabBar';
 import { MinimalSwipe } from './MinimalSwipe';
+import { PAGER_TRANSITION_MS, pagerEasing } from './minimalPager';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
@@ -91,7 +92,8 @@ export function MainTabs() {
   useEffect(() => {
     setHoverTint(palette.textSolid);
   }, [palette.textSolid]);
-  const isDashboardWidth = useWindowSize().width >= HOME_DASHBOARD_MIN_WIDTH;
+  const windowWidth = useWindowSize().width;
+  const isDashboardWidth = windowWidth >= HOME_DASHBOARD_MIN_WIDTH;
   // Today's header survives only on the wide dashboard; see its options.
   const todayHeader = !isMacCatalyst && isDashboardWidth;
   const barBottom = useTabBarBottom();
@@ -218,6 +220,35 @@ export function MainTabs() {
         </View>
       )}
       screenOptions={({ route }) => ({
+        /**
+         * Minimal: the pages slide a page's width, the way a pager's do —
+         * the old one out, the new one in from the side the finger (or
+         * the dot) asked for — over the time the drag runs back under
+         * them (minimalPager.ts). In a right-to-left language the next
+         * page is on the left.
+         */
+        ...(minimal
+          ? {
+              transitionSpec: {
+                animation: 'timing' as const,
+                config: { duration: PAGER_TRANSITION_MS, easing: pagerEasing },
+              },
+              sceneStyleInterpolator: ({ current }: { current: { progress: Animated.AnimatedInterpolation<number> } }) => ({
+                sceneStyle: {
+                  transform: [
+                    {
+                      translateX: current.progress.interpolate({
+                        inputRange: [-1, 0, 1],
+                        outputRange: I18nManager.isRTL
+                          ? [windowWidth, 0, -windowWidth]
+                          : [-windowWidth, 0, windowWidth],
+                      }),
+                    },
+                  ],
+                },
+              }),
+            }
+          : null),
         /**
          * The button, ours: no ripple — the icon draws the press, centred
          * on the glyph (`tabIcons`) — and a hold-and-slide along the bar

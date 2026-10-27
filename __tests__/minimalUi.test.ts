@@ -33,7 +33,8 @@ describe('the dots', () => {
     expect(bar).toContain('accessibilityRole="tab"');
     expect(bar).toContain('accessibilityState={{ selected: focused }}');
     expect(bar).toContain("navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true })");
-    expect(bar).toContain('if (!focused && !event.defaultPrevented) navigation.navigate(route.name, route.params)');
+    expect(bar).toContain('if (focused || event.defaultPrevented) return;');
+    expect(bar).toContain('navigation.navigate(route.name, route.params);');
   });
 
   it('fade the page under them everywhere but on the sky', () => {
@@ -43,11 +44,30 @@ describe('the dots', () => {
 });
 
 describe('the swipe', () => {
-  it('wraps every tab’s page and turns only on a clearly sideways drag', () => {
+  it('wraps every tab’s page, follows the finger early, and lets a list scroll', () => {
     expect(tabs).toContain('<MinimalSwipe enabled={minimal}>{children}</MinimalSwipe>');
-    expect(swipe).toContain('.activeOffsetX([-28, 28])');
-    expect(swipe).toContain('.failOffsetY([-20, 20])');
+    // Early, so a row under the finger lets go of its press; a drag down
+    // a list fails first.
+    expect(swipe).toContain('.activeOffsetX([-10, 10])');
+    expect(swipe).toContain('.failOffsetY([-12, 12])');
     expect(swipe).toContain('if (I18nManager.isRTL) step = -step;');
+    expect(swipe).toContain('transform: [{ translateX: pagerDrag }]');
+  });
+
+  it('turns the page as a pager does: the pages slide, and the drag runs back under them', () => {
+    const pager = read('src/navigation/minimalPager.ts');
+    expect(tabs).toContain('sceneStyleInterpolator:');
+    expect(tabs).toMatch(/outputRange: I18nManager\.isRTL\s*\? \[windowWidth, 0, -windowWidth\]\s*: \[-windowWidth, 0, windowWidth\]/);
+    expect(tabs).toContain('config: { duration: PAGER_TRANSITION_MS, easing: pagerEasing }');
+    expect(pager).toMatch(/duration: PAGER_TRANSITION_MS,\s*easing: pagerEasing,\s*useNativeDriver: true,\s*\}\)\.start\(\(\) => onDone/);
+    expect(swipe).toContain('navigation.navigate(next.name as never);\n          settlePagerDrag(done);');
+  });
+
+  it('shows the icons while a page turns, the current one larger, and dots at rest', () => {
+    expect(bar).toContain('Animated.add(base, Animated.divide(pagerDrag, -Math.max(1, width)))');
+    expect(bar).toContain("outputRange: [0.85, 1.25]");
+    expect(bar).toMatch(/pagerEngaged\.interpolate\(\{ inputRange: \[0, 1\], outputRange: \[1, 0\] \}\)/);
+    expect(bar).toContain('{Icon({ color: String(palette.textSolid), size: ICON, focused })}');
   });
 
   it('is the only sideways gesture under Minimal', () => {

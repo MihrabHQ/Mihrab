@@ -1,60 +1,97 @@
-import { useMemo, type ReactNode } from 'react';
-import { I18nManager, StyleSheet, View } from 'react-native';
+import { useMemo, useRef, type ReactNode } from 'react';
+import { Animated, I18nManager, StyleSheet, useWindowDimensions } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { useNavigation, useNavigationState } from '@react-navigation/native';
 import { hapticTick } from '../polish/haptics';
+import { pagerDrag, setPagerEngaged, settlePagerDrag, springPagerDrag } from './minimalPager';
 
 /**
- * Under Minimal (settings.minimalUi) the tabs are pages: a swipe across
- * one turns to the next, the way the dots at the foot say it will
- * (`MinimalTabBar`). Wrapped round every tab's screen by the navigator.
+ * Under Minimal (settings.minimalUi) the tabs are pages: the page moves
+ * with the finger, and a drag far or fast enough turns to the next one,
+ * the way the dots at the foot say it will (`MinimalTabBar`). Wrapped
+ * round every tab's screen by the navigator.
  *
- * Only a clearly sideways drag — the pan has to move 28pt across before
- * it moves 20pt down — so a list's own scroll is never taken, and the
- * pages that used to turn sideways themselves (the Quran's three lists,
- * the Log's days) stand that down under Minimal rather than fight it.
- * Mirrored in a right-to-left language: the next page is on the left.
+ * The page follows the finger from the first few points across — early,
+ * so a row under the finger lets go of its press as soon as the drag is
+ * plainly sideways rather than holding it lit to the end — and a drag
+ * that is plainly down a list fails first and goes on as the list's
+ * scroll. The pages that used to turn sideways themselves (the Quran's
+ * three lists, the Log's days) stand that down under Minimal rather than
+ * fight it. At either end of the row the page gives a little and comes
+ * back. Mirrored in a right-to-left language: the next page is on the
+ * left.
  */
-const TURN_DISTANCE = 56;
-const TURN_VELOCITY = 500;
+const TURN_FRACTION = 0.3;
+const TURN_VELOCITY = 600;
+/** How much of the finger the page follows past the last tab. */
+const EDGE_GIVE = 0.22;
 
 export function MinimalSwipe({ enabled, children }: { enabled: boolean; children: ReactNode }) {
   const navigation = useNavigation();
   const routes = useNavigationState(s => s.routes);
   const index = useNavigationState(s => s.index);
+  const { width } = useWindowDimensions();
+  // Read in the gesture's callbacks without rebuilding the gesture on
+  // every tab change: a gesture rebuilt mid-drag is a drag cut short.
+  const live = useRef({ routes, index, width });
+  live.current = { routes, index, width };
+  const busy = useRef(false);
+
   const gesture = useMemo(
     () =>
       Gesture.Pan()
         .enabled(enabled)
-        .activeOffsetX([-28, 28])
-        .failOffsetY([-20, 20])
+        .activeOffsetX([-10, 10])
+        .failOffsetY([-12, 12])
         .runOnJS(true)
-        .onEnd(e => {
-          const far = Math.abs(e.translationX) >= TURN_DISTANCE || Math.abs(e.velocityX) >= TURN_VELOCITY;
-          if (!far) return;
-          // A drag to the left reveals the page on the right.
+        .onStart(() => {
+          if (busy.current) return;
+          setPagerEngaged(true);
+        })
+        .onUpdate(e => {
+          if (busy.current) return;
+          const { routes: rs, index: i, width: w } = live.current;
           let step = e.translationX < 0 ? 1 : -1;
           if (I18nManager.isRTL) step = -step;
-          const next = routes[index + step];
-          if (!next) return;
+          const give = rs[i + step] ? 1 : EDGE_GIVE;
+          pagerDrag.setValue(Math.max(-w, Math.min(w, e.translationX * give)));
+        })
+        .onEnd(e => {
+          if (busy.current) return;
+          const { routes: rs, index: i, width: w } = live.current;
+          const far = Math.abs(e.translationX) >= w * TURN_FRACTION || Math.abs(e.velocityX) >= TURN_VELOCITY;
+          // A flick back the way the page came is not a turn.
+          const sameWay = e.velocityX === 0 || Math.sign(e.velocityX) === Math.sign(e.translationX);
+          let step = e.translationX < 0 ? 1 : -1;
+          if (I18nManager.isRTL) step = -step;
+          const next = far && sameWay ? rs[i + step] : undefined;
+          busy.current = true;
+          const done = () => {
+            busy.current = false;
+            setPagerEngaged(false);
+          };
+          if (!next) {
+            springPagerDrag(done);
+            return;
+          }
           void hapticTick();
+          // The navigator slides both pages a page's width; the drag runs
+          // back to zero under them over the same time (minimalPager.ts).
           navigation.navigate(next.name as never);
+          settlePagerDrag(done);
+        })
+        .onFinalize((_e, success) => {
+          if (!success && !busy.current) springPagerDrag(() => setPagerEngaged(false));
         }),
-    [enabled, routes, index, navigation],
+    [enabled, navigation],
   );
   return (
     <GestureDetector gesture={gesture}>
-      {/* A plain view: the detector needs one native child to attach to. */}
-      <GestureHost>{children}</GestureHost>
+      {/* One native view for the detector, and the page's offset on it. */}
+      <Animated.View style={[styles.fill, { transform: [{ translateX: pagerDrag }] }]} collapsable={false}>
+        {children}
+      </Animated.View>
     </GestureDetector>
-  );
-}
-
-function GestureHost({ children }: { children: ReactNode }) {
-  return (
-    <View style={styles.fill} collapsable={false}>
-      {children}
-    </View>
   );
 }
 
