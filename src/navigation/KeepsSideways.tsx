@@ -1,5 +1,5 @@
-import { useMemo, type ReactNode } from 'react';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { useRef, type ReactNode } from 'react';
+import { NativeViewGestureHandler } from 'react-native-gesture-handler';
 import { usePagerBlocker } from './minimalPager';
 
 /**
@@ -11,10 +11,11 @@ import { usePagerBlocker } from './minimalPager';
  * full page, where the swipe is off. One native child: the scroll view.
  */
 export function KeepsSideways({ children }: { children: ReactNode }) {
-  const gesture = useMemo(
-    () => Gesture.Native().disallowInterruption(true).shouldCancelWhenOutside(false),
-    [],
+  const ref = useRef(null);
+  usePagerBlocker(ref);
+  return (
+    <NativeViewGestureHandler ref={ref} disallowInterruption shouldCancelWhenOutside={false}>
+      {children}
+    </NativeViewGestureHandler>
   );
-  usePagerBlocker(gesture);
-  return <GestureDetector gesture={gesture}>{children}</GestureDetector>;
 }

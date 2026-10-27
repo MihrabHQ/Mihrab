@@ -50,8 +50,12 @@ describe('the swipe', () => {
     expect(tabs).toMatch(/<MinimalSwipe[^>]*>\s*<HeaderPlaybackBar[\s\S]*?\{children\}[\s\S]*?<StatusBarBand[\s\S]*?<\/MinimalSwipe>/);
     // Early, so a row under the finger lets go of its press; a drag down
     // a list fails first.
-    expect(swipe).toContain('.activeOffsetX([-10, 10])');
-    expect(swipe).toContain('.failOffsetY([-12, 12])');
+    expect(swipe).toContain('activeOffsetX={[-10, 10]}');
+    expect(swipe).toContain('failOffsetY={[-12, 12]}');
+    // The finger into the drag with no JS in between; JS hears the lift.
+    expect(swipe).toContain("Animated.event([{ nativeEvent: { translationX: pagerDragRaw } }], { useNativeDriver: true })");
+    expect(swipe).toContain('onGestureEvent={onGestureEvent}');
+    expect(swipe).toContain('if (oldState !== State.ACTIVE) return;');
     expect(swipe).toContain('if (I18nManager.isRTL) step = -step;');
     expect(swipe).toContain('transform: [{ translateX: offset }]');
   });
@@ -74,15 +78,28 @@ describe('the swipe', () => {
     expect(screens).toContain('<ScreenContext.Provider value={PlainScreen as never}>');
     expect(screens).toContain('level: { zIndex: 0 }');
     // Each page as many widths aside as it is tabs from the position…
-    expect(swipe).toContain('Animated.subtract(myIndex, pagerPosition(width))');
+    expect(swipe).toContain('Animated.subtract(myIndex, pagerPosition(width, edges))');
     expect(swipe).toContain('I18nManager.isRTL ? -width : width,');
     // …which is the settled tab, the drag as a fraction, and the hold.
-    expect(pager).toContain(
-      'Animated.add(Animated.add(pagerBase, Animated.divide(pagerDrag, I18nManager.isRTL ? w : -w)), pagerHold)',
+    expect(pager).toMatch(
+      /Animated\.add\(\s*Animated\.add\(pagerBase, Animated\.divide\(pagerShapedDrag\(w, edges\), I18nManager\.isRTL \? w : -w\)\),\s*pagerHold,\s*\)/,
     );
+    // The drag is shaped natively too: a page at most, a fraction past the row's end.
+    expect(pager).toContain("outputRange: [onLeft ? -w : -w * EDGE_GIVE, 0, onRight ? w : w * EDGE_GIVE],");
     // On a turn the settled tab slides while the drag runs back: no jump.
-    expect(swipe).toContain('settlePagerBase(i + step);\n          navigation.navigate(next.name as never);\n          settlePagerDrag(done);');
+    expect(swipe).toContain('settlePagerBase(i + step);\n      navigation.navigate(next.name as never);\n      settlePagerDrag(done);');
     expect(pager).toMatch(/duration: PAGER_TRANSITION_MS,\s*easing: pagerEasing,\s*useNativeDriver: true,\s*\}\)\.start\(\(\) => onDone/);
+  });
+
+  it('keeps only the pages in reach laid out, and mounts the rest as the warm-up comes to them', () => {
+    expect(swipe).toContain('const inReach = engaged || distance <= 1;');
+    expect(swipe).toContain('inReach ? null : styles.away');
+    expect(swipe).toContain("away: { display: 'none' },");
+    expect(swipe).toContain('{mounted ? children : null}');
+    expect(swipe).toContain('if (enabled && !mounted && (inReach || distance <= warmth)) setMounted(true);');
+    const pager = read('src/navigation/minimalPager.ts');
+    expect(pager).toContain('const WARM_AFTER_MS = 2500;');
+    expect(pager).toContain('const WARM_MAX = 5;');
   });
 
   it('turns by a finger held on the dots and slid along them', () => {
@@ -91,7 +108,7 @@ describe('the swipe', () => {
     expect(bar).toContain('const target = Math.round(slotAt(e.x));');
     expect(bar).toContain('if (I18nManager.isRTL) fromLeft = count - 1 - fromLeft;');
     // The dots and the pages read one position, so the strip follows the finger with them.
-    expect(bar).toContain('const position = useMemo(() => pagerPosition(width), [width]);');
+    expect(bar).toContain('() => pagerPosition(width, pagerEdges(state.index, state.routes.length)),');
     expect(bar).toContain('settlePagerBase(target);');
   });
 
@@ -103,9 +120,9 @@ describe('the swipe', () => {
 
   it('lets the Log’s graphs keep their sideways scroll', () => {
     const keeps = read('src/navigation/KeepsSideways.tsx');
-    expect(keeps).toContain('Gesture.Native().disallowInterruption(true).shouldCancelWhenOutside(false)');
-    expect(keeps).toContain('usePagerBlocker(gesture);');
-    expect(swipe).toContain('.requireExternalGestureToFail(...blockers)');
+    expect(keeps).toContain('<NativeViewGestureHandler ref={ref} disallowInterruption shouldCancelWhenOutside={false}>');
+    expect(keeps).toContain('usePagerBlocker(ref);');
+    expect(swipe).toContain('waitFor={blockers as never}');
     expect(read('src/practice/PracticeStrip.tsx')).toContain('<KeepsSideways>');
     expect(read('src/practice/PracticeHeatmap.tsx')).toContain('<KeepsSideways>');
   });

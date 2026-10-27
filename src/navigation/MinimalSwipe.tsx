@@ -1,16 +1,25 @@
-import { useMemo, useRef, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Animated, I18nManager, StyleSheet, View, useWindowDimensions } from 'react-native';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import {
+  PanGestureHandler,
+  State,
+  type HandlerStateChangeEvent,
+  type PanGestureHandlerEventPayload,
+} from 'react-native-gesture-handler';
 import { useNavigation, useNavigationState } from '@react-navigation/native';
 import { hapticScrubTick } from '../polish/haptics';
 import {
-  pagerDrag,
+  pagerDragRaw,
+  pagerEdges,
   pagerPosition,
   setPagerEngaged,
   settlePagerBase,
   settlePagerDrag,
   springPagerDrag,
+  startPagerWarmup,
   usePagerBlockers,
+  usePagerEngaged,
+  usePagerWarmth,
 } from './minimalPager';
 
 /**
@@ -19,8 +28,11 @@ import {
  * the way the dots at the foot say it will (`MinimalTabBar`). Wrapped
  * round every tab's screen by the navigator.
  *
- * The page follows the finger from the first few points across — early,
- * so a row under the finger lets go of its press as soon as the drag is
+ * The finger drives the pages NATIVELY: the handler writes the drag
+ * straight into `pagerDragRaw` on every move (`Animated.event`), and the
+ * JS thread is told only when the finger lifts, to decide the turn. The
+ * page follows the finger from the first few points across — early, so
+ * a row under the finger lets go of its press as soon as the drag is
  * plainly sideways rather than holding it lit to the end — and a drag
  * that is plainly down a list fails first and goes on as the list's
  * scroll. The pages that used to turn sideways themselves (the Quran's
@@ -28,11 +40,15 @@ import {
  * fight it. At either end of the row the page gives a little and comes
  * back. Mirrored in a right-to-left language: the next page is on the
  * left.
+ *
+ * And only the pages a finger could reveal are in the tree: the one on
+ * show and its neighbours, the rest kept mounted but out of layout and
+ * drawing (`display: none`) until a hold on the dots could slide to
+ * them — and a page far from the first one is not even mounted until
+ * the warm-up reaches it (minimalPager.ts, `pagerWarmth`).
  */
 const TURN_FRACTION = 0.3;
 const TURN_VELOCITY = 600;
-/** How much of the finger the page follows past the last tab. */
-const EDGE_GIVE = 0.22;
 
 export function MinimalSwipe({
   enabled,
@@ -49,96 +65,121 @@ export function MinimalSwipe({
   const index = useNavigationState(s => s.index);
   const myIndex = routes.findIndex(r => r.key === routeKey);
   const { width } = useWindowDimensions();
-  // Read in the gesture's callbacks without rebuilding the gesture on
-  // every tab change: a gesture rebuilt mid-drag is a drag cut short.
+  // Read in the gesture's callbacks without rebuilding the handler on
+  // every tab change: a handler rebuilt mid-drag is a drag cut short.
   const live = useRef({ routes, index, width });
   live.current = { routes, index, width };
   const busy = useRef(false);
   // The graphs that scroll sideways themselves: the swipe waits for them.
   const blockers = usePagerBlockers();
 
-  const gesture = useMemo(
-    () =>
-      Gesture.Pan()
-        .enabled(enabled)
-        .requireExternalGestureToFail(...blockers)
-        .activeOffsetX([-10, 10])
-        .failOffsetY([-12, 12])
-        .runOnJS(true)
-        .onStart(() => {
-          if (busy.current) return;
-          setPagerEngaged(true);
-        })
-        .onUpdate(e => {
-          if (busy.current) return;
-          const { routes: rs, index: i, width: w } = live.current;
-          let step = e.translationX < 0 ? 1 : -1;
-          if (I18nManager.isRTL) step = -step;
-          const give = rs[i + step] ? 1 : EDGE_GIVE;
-          pagerDrag.setValue(Math.max(-w, Math.min(w, e.translationX * give)));
-        })
-        .onEnd(e => {
-          if (busy.current) return;
-          const { routes: rs, index: i, width: w } = live.current;
-          const far = Math.abs(e.translationX) >= w * TURN_FRACTION || Math.abs(e.velocityX) >= TURN_VELOCITY;
-          // A flick back the way the page came is not a turn.
-          const sameWay = e.velocityX === 0 || Math.sign(e.velocityX) === Math.sign(e.translationX);
-          let step = e.translationX < 0 ? 1 : -1;
-          if (I18nManager.isRTL) step = -step;
-          const next = far && sameWay ? rs[i + step] : undefined;
-          busy.current = true;
-          const done = () => {
-            busy.current = false;
-            setPagerEngaged(false);
-          };
-          if (!next) {
-            springPagerDrag(done);
-            return;
-          }
-          // A faint tick, not a knock: a page turning is not a count.
-          hapticScrubTick(true);
-          // The settled tab slides to the next while the drag runs back to
-          // zero: the position, and so every page, carries on from where
-          // the finger left it (minimalPager.ts).
-          settlePagerBase(i + step);
-          navigation.navigate(next.name as never);
-          settlePagerDrag(done);
-        })
-        .onFinalize((_e, success) => {
-          if (!success && !busy.current) springPagerDrag(() => setPagerEngaged(false));
-        }),
-    [enabled, navigation, blockers],
+  // The finger, into the drag, with no JS in between.
+  const onGestureEvent = useMemo(
+    () => Animated.event([{ nativeEvent: { translationX: pagerDragRaw } }], { useNativeDriver: true }),
+    [],
   );
+  const onHandlerStateChange = useMemo(
+    () => (e: HandlerStateChangeEvent<PanGestureHandlerEventPayload>) => {
+      const { state, oldState, translationX, velocityX } = e.nativeEvent;
+      if (state === State.ACTIVE) {
+        if (!busy.current) setPagerEngaged(true);
+        return;
+      }
+      if (oldState !== State.ACTIVE) return;
+      if (busy.current) return;
+      if (state !== State.END) {
+        // Cancelled or failed under the finger: back where it was.
+        springPagerDrag(() => setPagerEngaged(false));
+        return;
+      }
+      const { routes: rs, index: i, width: w } = live.current;
+      const far = Math.abs(translationX) >= w * TURN_FRACTION || Math.abs(velocityX) >= TURN_VELOCITY;
+      // A flick back the way the page came is not a turn.
+      const sameWay = velocityX === 0 || Math.sign(velocityX) === Math.sign(translationX);
+      let step = translationX < 0 ? 1 : -1;
+      if (I18nManager.isRTL) step = -step;
+      const next = far && sameWay ? rs[i + step] : undefined;
+      busy.current = true;
+      const done = () => {
+        // Belt and braces: a move the handler delivered after the lift
+        // would leave the drag where that move put it, under a page that
+        // had already settled. Zero is where a lifted finger leaves it.
+        pagerDragRaw.setValue(0);
+        busy.current = false;
+        setPagerEngaged(false);
+      };
+      if (!next) {
+        springPagerDrag(done);
+        return;
+      }
+      // A faint tick, not a knock: a page turning is not a count.
+      hapticScrubTick(true);
+      // The settled tab slides to the next while the drag runs back to
+      // zero: the position, and so every page, carries on from where
+      // the finger left it (minimalPager.ts).
+      settlePagerBase(i + step);
+      navigation.navigate(next.name as never);
+      settlePagerDrag(done);
+    },
+    [navigation],
+  );
+
   // This page's place on the strip: as many page-widths aside as it is
   // tabs from the position — the one number the dots read too, so the
   // pages and the dots can never disagree, and a page two tabs away is
   // two pages away, under a finger and through a turn alike.
-  // This page's place on the strip: as many page-widths aside as it is
-  // tabs from the position — the one number the dots read too, so the
-  // pages and the dots can never disagree, and a page two tabs away is
-  // two pages away, under a finger and through a turn alike.
+  const edges = pagerEdges(index, routes.length);
   const offset = useMemo(
     () =>
       Animated.multiply(
-        Animated.subtract(myIndex, pagerPosition(width)),
+        Animated.subtract(myIndex, pagerPosition(width, edges)),
         I18nManager.isRTL ? -width : width,
       ),
-    [myIndex, width],
+    // The edges are two booleans of the index: the index is the key.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [myIndex, index, routes.length, width],
   );
+
+  // In reach: the page on show, its neighbours, and every page while a
+  // turn is under way (a hold on the dots can slide to any of them).
+  const engaged = usePagerEngaged();
+  const distance = Math.abs(myIndex - index);
+  const inReach = engaged || distance <= 1;
+  // Mounted once in reach, or once the warm-up has come this far — and
+  // then kept, so a page keeps its scroll and its state across turns.
+  const warmth = usePagerWarmth();
+  const [mounted, setMounted] = useState(enabled && (inReach || distance <= warmth));
+  useEffect(() => {
+    if (enabled && !mounted && (inReach || distance <= warmth)) setMounted(true);
+  }, [enabled, mounted, inReach, distance, warmth]);
+  useEffect(() => {
+    if (enabled) startPagerWarmup();
+  }, [enabled]);
+
   // The full page: no strip, no offset — the navigator places the one
   // page on show, and a page stood a width aside here would be a blank
   // tab. (The dots, which settle the position, are not even mounted.)
   if (!enabled) return <View style={styles.fill}>{children}</View>;
   return (
-    <GestureDetector gesture={gesture}>
-      {/* One native view for the detector, and the page's offset on it. */}
+    <PanGestureHandler
+      enabled={enabled}
+      activeOffsetX={[-10, 10]}
+      failOffsetY={[-12, 12]}
+      waitFor={blockers as never}
+      onGestureEvent={onGestureEvent}
+      onHandlerStateChange={onHandlerStateChange}>
+      {/* One native view for the handler, and the page's offset on it. */}
       <Animated.View
-        style={[styles.fill, { transform: [{ translateX: offset }] }]}
+        style={[styles.fill, inReach ? null : styles.away, { transform: [{ translateX: offset }] }]}
         collapsable={false}>
-        {children}
+        {mounted ? children : null}
       </Animated.View>
-    </GestureDetector>
+    </PanGestureHandler>
   );
 }
 
-const styles = StyleSheet.create({ fill: { flex: 1 } });
+const styles = StyleSheet.create({
+  fill: { flex: 1 },
+  // Out of reach: mounted, but neither laid out nor drawn.
+  away: { display: 'none' },
+});

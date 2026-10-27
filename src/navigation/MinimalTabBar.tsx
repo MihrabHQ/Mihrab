@@ -10,6 +10,7 @@ import { useTabBarHidden } from './tabBarVisibility';
 import { scrimColor } from './TabBarScrim';
 import {
   PAGER_TRANSITION_MS,
+  pagerEdges,
   pagerEngaged,
   pagerHold,
   pagerPosition,
@@ -63,7 +64,13 @@ export function MinimalTabBar({ state, descriptors, navigation }: BottomTabBarPr
     settlePagerBase(state.index, !first.current);
     first.current = false;
   }, [state.index]);
-  const position = useMemo(() => pagerPosition(width), [width]);
+  // Built for the tab the pages are on (which neighbours exist), as the
+  // pages build theirs: the same shaped drag, so the dots and the pages
+  // never disagree.
+  const position = useMemo(
+    () => pagerPosition(width, pagerEdges(state.index, state.routes.length)),
+    [width, state.index, state.routes.length],
+  );
   // The hold-and-slide. Read in the gesture's callbacks without
   // rebuilding the gesture on every tab change.
   const live = useRef({ index: state.index, count: state.routes.length, width });
