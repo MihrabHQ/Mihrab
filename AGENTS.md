@@ -180,10 +180,13 @@ another. Read "A SWIPE'S TURN" in `minimalPager.ts` before touching it.
   change renders, runs the new page's focus effects and moves the reach —
   UI-thread layout in the frames the slide is drawn in, felt as the page
   slowing mid-swipe.
-- **The page coming in takes touches** (`MinimalScreens`: `box-none`, not
-  the navigator's `pointerEvents`), and the turn, the settle and the finger
-  live in `minimalPager.ts`, not in one page's refs — or a second swipe
-  straight after the first is lost.
+- **A second swipe straight after the first is the page on show's**:
+  its handler is on a view that is the whole screen and does not move
+  (the page moves inside it), the turn stays held through a takeover, and
+  the turn, the settle and the finger live in `minimalPager.ts`, not in
+  one page's refs. Never give the scenes touches the navigator took away
+  (`MinimalScreens` keeps its `pointerEvents`): each scene is the whole
+  screen, and one that takes touches lies over every page before it.
 - **Direction is the app's** (`useLayoutRtl`), never `I18nManager.isRTL`.
 
 `__tests__/minimalPagerTurn.test.ts` holds these. A change to the pager is

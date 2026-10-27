@@ -34,7 +34,8 @@ const PlainScreen = forwardRef<HostInstance, ScreenProps>(function PlainScreen(
 ) {
   // The screen's own props (activityState, freezeOnBlur, the sheet
   // options…) mean nothing to a View and are left out of it.
-  const { testID, collapsable, activityState } = rest as {
+  const { pointerEvents, testID, collapsable, activityState } = rest as {
+    pointerEvents?: 'box-none' | 'none' | 'box-only' | 'auto';
     testID?: string;
     collapsable?: boolean;
     activityState?: 0 | 1 | 2;
@@ -53,14 +54,11 @@ const PlainScreen = forwardRef<HostInstance, ScreenProps>(function PlainScreen(
     <View
       ref={ref}
       style={[style, styles.level]}
-      // Not the navigator's `pointerEvents` ('none' for a page not on
-      // show): a swipe's turn reaches the navigator only once its slide
-      // has landed (minimalPager.ts, "A SWIPE'S TURN"), and a second swipe
-      // straight after the first comes down on the page coming in, which
-      // the navigator still calls not on show — it was lost. The pages
-      // never overlap and stand a width aside, so only those in view can
-      // be touched at all.
-      pointerEvents="box-none"
+      // The navigator's: a page not on show takes no touches. Each scene
+      // is the whole screen and only the page INSIDE it stands aside, so
+      // a scene that took touches lay over every page before it — the
+      // Tasbih page did not answer a tap, the Duas scene above it took it.
+      pointerEvents={pointerEvents}
       testID={testID}
       collapsable={collapsable}
       accessibilityElementsHidden={inactive}

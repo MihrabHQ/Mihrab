@@ -60,9 +60,10 @@ describe('what keeps it from coming back', () => {
     // The only navigate in the swipe is the held turn's.
     expect(swipe.match(/navigation\.navigate\(/g)).toHaveLength(1);
     expect(swipe).toContain('holdPendingTurn(i + step, () => navigation.navigate(next.name as never));');
-    // …told when the slide lands, or when a new finger takes the row over.
+    // …told when the slide lands — a takeover keeps it held, so the page
+    // on show (whose handler has the finger) stays on show until then.
     expect(swipe).toMatch(/if \(isCurrentPagerTurn\(mine\)\) \{[\s\S]{0,300}flushPendingTurn\(\);/);
-    expect(swipe).toMatch(/finishPagerBase\(\);\s*flushPendingTurn\(\);/);
+    expect(swipe.match(/flushPendingTurn\(\);/g)).toHaveLength(1);
   });
 
   it('keeps the turn on the row, not in one page', () => {
@@ -72,8 +73,16 @@ describe('what keeps it from coming back', () => {
     expect(swipe).toContain('const i = pagerRowIndex(live.current.index);');
   });
 
-  it('lets the page coming in take a finger', () => {
-    expect(screens).toContain('pointerEvents="box-none"');
-    expect(screens).not.toMatch(/pointerEvents=\{pointerEvents\}/);
+  it('keeps a second swipe on the page on show, wherever the finger lands', () => {
+    // The handler's view is the whole screen and is not moved; the page
+    // moves inside it.
+    expect(swipe).toMatch(/<View style=\{styles\.fill\} collapsable=\{false\}>\s*<Animated\.View style=\{\[styles\.fill, \{ transform: \[\{ translateX: offset \}\] \}\]\}/);
+  });
+
+  it('keeps every page but the one on show from touches', () => {
+    // A scene is the whole screen; one that took touches lay over every
+    // page before it (the Tasbih page took no taps).
+    expect(screens).toContain('pointerEvents={pointerEvents}');
+    expect(screens).not.toContain('pointerEvents="box-none"');
   });
 });

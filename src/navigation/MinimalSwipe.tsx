@@ -103,17 +103,16 @@ export function MinimalSwipe({
         wantPagerReachNow();
         // A finger down on a row still settling after the last turn
         // takes the row from there: the settle is finished where it was
-        // going, the navigator hears of that turn now (before this
-        // finger moves the row, not under its slide), and this finger's
-        // drag is read like any other. The finger may be on either page
-        // in view — the turn is the row's, not this page's
+        // going and this finger's drag is read from there. The turn it
+        // interrupts stays held — the navigator hears of the two at once,
+        // where this one lands — so the page on show, whose handler has
+        // this finger, stays the page on show until then
         // (minimalPager.ts, "A SWIPE'S TURN").
         if (pagerSettling()) {
           nextPagerTurn();
           setPagerSettling(false);
           pagerDragRaw.stopAnimation();
           finishPagerBase();
-          flushPendingTurn();
         }
         setPagerEngaged(true);
         return;
@@ -246,15 +245,23 @@ export function MinimalSwipe({
   return (
     <PanGestureHandler
       enabled={enabled}
-      // The page starts moving after 6dp sideways — 10 felt like the page
-      // resisting the finger before it gave. Still a sideways intent:
-      // 12dp up or down first and it is the page's own scroll.
-      activeOffsetX={[-6, 6]}
+      // The page starts moving after 8dp sideways — 10 felt like the page
+      // resisting the finger before it gave, and 6 took the Tasbih's taps
+      // (a thumb tapping quickly rolls a little; a pan that starts cancels
+      // the press). 12dp up or down first and it is the page's own scroll.
+      activeOffsetX={[-8, 8]}
       failOffsetY={[-12, 12]}
       waitFor={blockers as never}
       onGestureEvent={onGestureEvent}
       onHandlerStateChange={onHandlerStateChange}>
-      {/* One native view for the handler, and the page's offset on it.
+      {/* One native view for the handler — the whole screen, NOT moved
+          with the page — and inside it the page on its offset. Not moved,
+          so a finger anywhere on the screen during a turn is this page's
+          while it is the one on show: the turn is told to the navigator
+          only when it lands (minimalPager.ts, "A SWIPE'S TURN"), and a
+          second swipe straight after the first comes down over the page
+          coming in, which the navigator still keeps from touches. On the
+          moved view, that finger reached nothing and the swipe was lost.
           It stays mounted whatever the reach: under Fabric a view out of
           the tree (display: none) is taken down natively, and on iOS the
           handler is bound to the view it was attached to, so a page
@@ -262,11 +269,13 @@ export function MinimalSwipe({
           page's swipe on it — the swipe on Today turned the Settings
           page, or nothing, and a flick across Today opened its times.
           What leaves the tree out of reach is the page inside. */}
-      <Animated.View style={[styles.fill, { transform: [{ translateX: offset }] }]} collapsable={false}>
-        <View style={[styles.fill, inReach ? null : styles.away]} collapsable={false}>
-          {mounted ? children : null}
-        </View>
-      </Animated.View>
+      <View style={styles.fill} collapsable={false}>
+        <Animated.View style={[styles.fill, { transform: [{ translateX: offset }] }]} collapsable={false}>
+          <View style={[styles.fill, inReach ? null : styles.away]} collapsable={false}>
+            {mounted ? children : null}
+          </View>
+        </Animated.View>
+      </View>
     </PanGestureHandler>
   );
 }

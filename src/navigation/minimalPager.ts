@@ -135,12 +135,15 @@ export const pagerEasing = Easing.out(Easing.cubic);
  * Telling it late has one consequence, and it is why the immediate
  * navigate kept coming back: the navigator gives the page not on show
  * `pointerEvents: 'none'`, so a second swipe straight after the first
- * landed on a page that could not be touched, and was lost. Minimal's
- * screens therefore take touches whatever the navigator says
- * (MinimalScreens.tsx) — the pages never overlap and stand a width
- * aside, so only the ones in view can be touched at all — and the turn,
- * the settle and the finger are kept HERE, for every page, not in one
- * page's refs: the finger may come down on the page coming in.
+ * landed on a page that could not be touched, and was lost. So the swipe's
+ * handler is on a view that is the whole screen and does NOT move with
+ * the page (MinimalSwipe): a finger anywhere during a turn is the page on
+ * show's, and a takeover keeps the turn held, so that page stays on show
+ * until the second turn lands. (Giving the scenes touches instead does
+ * not work: each scene is the whole screen — only the page inside it
+ * moves — and one that takes touches lies over every page before it.)
+ * The turn, the settle and the finger are kept HERE, not in one page's
+ * refs.
  *
  * __tests__/minimalPagerTurn.test.ts holds all of this. Do not "simplify"
  * it back to `navigation.navigate` at the release.

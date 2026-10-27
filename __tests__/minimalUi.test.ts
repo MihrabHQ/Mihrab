@@ -50,7 +50,7 @@ describe('the swipe', () => {
     expect(tabs).toMatch(/<MinimalSwipe[^>]*>\s*<HeaderPlaybackBar[\s\S]*?\{children\}[\s\S]*?<StatusBarBand[\s\S]*?<\/MinimalSwipe>/);
     // Early, so a row under the finger lets go of its press; a drag down
     // a list fails first.
-    expect(swipe).toContain('activeOffsetX={[-6, 6]}');
+    expect(swipe).toContain('activeOffsetX={[-8, 8]}');
     expect(swipe).toContain('failOffsetY={[-12, 12]}');
     // The finger into the drag with no JS in between; JS hears the lift.
     expect(swipe).toContain("Animated.event([{ nativeEvent: { translationX: pagerDragRaw } }], { useNativeDriver: true })");
