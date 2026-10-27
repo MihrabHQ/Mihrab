@@ -9,6 +9,7 @@
  * what stops the sound) by the time this runs.
  */
 import { EventType, type Notification } from '@notifee/react-native';
+import { applyReaderLanguage } from '../i18n/readerLanguage';
 import { snoozePrayerNotification } from './notificationActions';
 import { SNOOZE_DEFAULT_MIN, SNOOZE_MAX_MIN } from './prayerAlertActions';
 import { LAST_CHANCE_MINUTES } from './snoozeWindow';
@@ -41,6 +42,8 @@ export async function prayerAlarmActionTask(
   raw: PrayerAlarmTaskData,
 ): Promise<void> {
   try {
+    // Before the snooze writes its copy and its choices (readerLanguage.ts).
+    await applyReaderLanguage();
     const notification = notificationFromTask(raw);
     if (raw.action === 'snooze') {
       const asked = Number(raw.minutes);

@@ -126,6 +126,29 @@ export function MinimalTabBar({ state, descriptors, navigation }: BottomTabBarPr
     [],
   );
 
+  // Each dot's animated nodes, built with the position rather than on
+  // every render of the bar: each new node is a detach and re-attach of
+  // the native animation graph, and the bar renders at the start of every
+  // turn, as the slide begins.
+  const routeCount = state.routes.length;
+  const dotNodes = useMemo(
+    () =>
+      Array.from({ length: routeCount }, (_, index) => {
+        // How much this tab is the current one: 1 on it, 0 a tab away.
+        const near = position.interpolate({
+          inputRange: [index - 1, index, index + 1],
+          outputRange: [0, 1, 0],
+          extrapolate: 'clamp',
+        });
+        return {
+          dotOpacity: Animated.multiply(dotsOpacity, near.interpolate({ inputRange: [0, 1], outputRange: [0.28, 0.9] })),
+          iconOpacity: Animated.multiply(pagerEngaged, near.interpolate({ inputRange: [0, 1], outputRange: [0.45, 1] })),
+          iconScale: near.interpolate({ inputRange: [0, 1], outputRange: [0.85, 1.25] }),
+        };
+      }),
+    [position, routeCount, dotsOpacity],
+  );
+
   if (hidden) return null;
   // Under every page but Today a fade of the page's colour, so a list
   // scrolling under the dots does not run through them. Today's sky is
@@ -162,12 +185,7 @@ export function MinimalTabBar({ state, descriptors, navigation }: BottomTabBarPr
           typeof options.tabBarLabel === 'string'
             ? options.tabBarLabel
             : options.title ?? route.name;
-        // How much this tab is the current one: 1 on it, 0 a tab away.
-        const near = position.interpolate({
-          inputRange: [index - 1, index, index + 1],
-          outputRange: [0, 1, 0],
-          extrapolate: 'clamp',
-        });
+        const nodes = dotNodes[index];
         const Icon = options.tabBarIcon;
         return (
           <Pressable
@@ -192,10 +210,7 @@ export function MinimalTabBar({ state, descriptors, navigation }: BottomTabBarPr
                 styles.dot,
                 {
                   backgroundColor: palette.textSolid,
-                  opacity: Animated.multiply(
-                    dotsOpacity,
-                    near.interpolate({ inputRange: [0, 1], outputRange: [0.28, 0.9] }),
-                  ),
+                  opacity: nodes.dotOpacity,
                 },
               ]}
             />
@@ -204,11 +219,8 @@ export function MinimalTabBar({ state, descriptors, navigation }: BottomTabBarPr
                 style={[
                   styles.icon,
                   {
-                    opacity: Animated.multiply(
-                      pagerEngaged,
-                      near.interpolate({ inputRange: [0, 1], outputRange: [0.45, 1] }),
-                    ),
-                    transform: [{ scale: near.interpolate({ inputRange: [0, 1], outputRange: [0.85, 1.25] }) }],
+                    opacity: nodes.iconOpacity,
+                    transform: [{ scale: nodes.iconScale }],
                   },
                 ]}>
                 {Icon({ color: String(palette.textSolid), size: ICON, focused })}

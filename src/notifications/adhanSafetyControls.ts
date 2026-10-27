@@ -27,6 +27,7 @@ import { JOURNAL_LOG_ACTION_ID, handlePrayerLogEvent } from './prayerLogAction';
 import { syncWidgetLogQueue } from '../widget/syncWidgetLogQueue';
 import { syncWidgetTasbihQueue } from '../widget/syncWidgetTasbihQueue';
 import { republishWidgetPayload } from '../widget/republishWidgetPayload';
+import { applyReaderLanguage } from '../i18n/readerLanguage';
 
 // Re-exported for back-compat with existing importers.
 export { ADHAN_CONTROLS_CATEGORY_ID, ADHAN_ACTION_STOP, ADHAN_ACTION_DISABLE };
@@ -216,6 +217,11 @@ export function registerAdhanSafetyControls() {
     // Republish afterwards: the drains change what the widgets should say,
     // and out here there is no screen mounted to notice.
     void republishWidgetPayload('queue-drain');
+    // The press is read in the reader's language: a snooze choice is
+    // known by its label, and this process may not have spoken it yet
+    // (readerLanguage.ts). The republish above sets it too, but is not
+    // awaited, and the label was read before it got there.
+    await applyReaderLanguage().catch(() => undefined);
     if (await handleJournalActions(event)) return;
     await handleAdhanAction(event, false);
   });

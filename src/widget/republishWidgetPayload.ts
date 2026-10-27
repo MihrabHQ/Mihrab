@@ -37,7 +37,7 @@ import { setActiveClockFormat } from '../utils/activeClock';
 import { setFullScreenAlarmSkyTheme } from '../notifications/fullScreenAlarm';
 import { refreshSystemIs24Hour } from '../native/SystemClock';
 import i18n from '../i18n';
-import { applyMadhabNaming } from '../prayer/madhab';
+import { applyReaderLanguage } from '../i18n/readerLanguage';
 import { subscribePractice } from '../practice/practiceStore';
 import { subscribeQuranState } from '../quran/quranState';
 import { subscribeTasbihState } from '../tasbih/tasbihStore';
@@ -251,10 +251,7 @@ export async function republishWidgetPayload(
     // in English. In the running app this is a no-op: the provider has
     // already set both. The madhab's name for dawn rides on the language
     // (see prayer/madhab.ts), silently and idempotently.
-    if (settings.language && i18n.language !== settings.language) {
-      await i18n.changeLanguage(settings.language);
-    }
-    applyMadhabNaming(i18n, settings.madhab, settings.language);
+    await applyReaderLanguage(settings);
 
     const params: DayWindowParams = {
       provider: getEffectiveDataProvider(

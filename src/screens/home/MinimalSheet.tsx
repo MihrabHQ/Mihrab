@@ -20,7 +20,7 @@
  * Under Reduce Motion nothing scales or slides: the veil and the sheet
  * fade.
  */
-import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Animated, Easing, Modal, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { linearDown } from './skyPaint';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -130,38 +130,55 @@ export function MinimalSheet({
   }, []);
 
   // A drag down on the sheet: it follows, and past the threshold goes.
-  const pull = Gesture.Pan()
-    .activeOffsetY(12)
-    .failOffsetX([-16, 16])
-    .runOnJS(true)
-    .onUpdate(e => {
-      drag.setValue(Math.max(0, e.translationY));
-    })
-    .onEnd(e => {
-      if (e.translationY > DISMISS_DISTANCE || e.velocityY > DISMISS_VELOCITY) {
-        // Hand the rest of the way to the close: the sheet is already
-        // part way down, so the close starts from there.
-        const h = sheetHeight || UNMEASURED;
-        progress.setValue(Math.max(0, 1 - e.translationY / h));
-        drag.setValue(0);
-        onClose();
-      } else {
-        Animated.spring(drag, { toValue: 0, damping: 24, stiffness: 320, mass: 1, useNativeDriver: true }).start();
-      }
-    });
+  //
+  // ONE GESTURE FOR THE SHEET'S LIFE. It was built anew on every render,
+  // and the sheet renders every second with the countdown under it: the
+  // handler was reconfigured each second, and a slow drag down the sheet
+  // could be cut off part way. Built once; what changes (the sheet's
+  // height, the close) is read through refs at the moment it is needed.
+  const heightRef = useRef(sheetHeight);
+  heightRef.current = sheetHeight;
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+  const pull = useMemo(
+    () =>
+      Gesture.Pan()
+        .activeOffsetY(12)
+        .failOffsetX([-16, 16])
+        .runOnJS(true)
+        .onUpdate(e => {
+          drag.setValue(Math.max(0, e.translationY));
+        })
+        .onEnd(e => {
+          if (e.translationY > DISMISS_DISTANCE || e.velocityY > DISMISS_VELOCITY) {
+            // Hand the rest of the way to the close: the sheet is already
+            // part way down, so the close starts from there.
+            const h = heightRef.current || UNMEASURED;
+            progress.setValue(Math.max(0, 1 - e.translationY / h));
+            drag.setValue(0);
+            onCloseRef.current();
+          } else {
+            Animated.spring(drag, { toValue: 0, damping: 24, stiffness: 320, mass: 1, useNativeDriver: true }).start();
+          }
+        }),
+    [drag, progress],
+  );
+
+  // Built when the sheet's height changes, not every second: each new node
+  // is a detach and re-attach of the native animation graph.
+  const { lift, veil, fade } = useMemo(() => {
+    const climb = reduceMotion
+      ? 0
+      : progress.interpolate({
+          inputRange: [0, 1],
+          outputRange: [sheetHeight || UNMEASURED, 0],
+          extrapolate: 'clamp',
+        });
+    const v = progress.interpolate({ inputRange: [0, 1], outputRange: [0, 1], extrapolate: 'clamp' });
+    return { lift: reduceMotion ? drag : Animated.add(climb, drag), veil: v, fade: reduceMotion ? v : 1 };
+  }, [progress, drag, sheetHeight, reduceMotion]);
 
   if (!mounted) return null;
-
-  const climb = reduceMotion
-    ? 0
-    : progress.interpolate({
-        inputRange: [0, 1],
-        outputRange: [sheetHeight || UNMEASURED, 0],
-        extrapolate: 'clamp',
-      });
-  const lift = reduceMotion ? drag : Animated.add(climb, drag);
-  const veil = progress.interpolate({ inputRange: [0, 1], outputRange: [0, 1], extrapolate: 'clamp' });
-  const fade = reduceMotion ? veil : 1;
 
   return (
     <Modal visible transparent animationType="none" statusBarTranslucent onShow={rise} onRequestClose={onClose}>

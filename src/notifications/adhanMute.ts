@@ -56,6 +56,7 @@ import notifee, { AndroidImportance, AndroidStyle } from '@notifee/react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { isNonPrayerEvent } from '../types/prayer';
 import i18n from '../i18n';
+import { applyReaderLanguage } from '../i18n/readerLanguage';
 import { loadSettings } from '../settings/storage';
 import { setActiveClockFormat, activeClock } from '../utils/activeClock';
 import {
@@ -392,6 +393,9 @@ export async function adhanMuteToggleTask(
     const epoch = Number(data.epoch);
     const name = String(data.name ?? '');
     if (!Number.isFinite(epoch) || epoch <= 0 || !name) return;
+    // A process with no screen: the reminder it rebuilds is in the
+    // reader's language, with the Mālikī name for dawn (readerLanguage.ts).
+    await applyReaderLanguage();
     const mode = modeFromTaskData(data, name);
 
     const raw = JSON.stringify({

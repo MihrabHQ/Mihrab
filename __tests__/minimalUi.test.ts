@@ -123,6 +123,8 @@ describe('the swipe', () => {
 
   it('shows the icons while a page turns, the current one larger, and dots at rest', () => {
     expect(bar).toContain("outputRange: [0.85, 1.25]");
+    // Built with the position, not on every render of the bar.
+    expect(bar).toContain('[position, routeCount, dotsOpacity],');
     expect(bar).toMatch(/pagerEngaged\.interpolate\(\{ inputRange: \[0, 1\], outputRange: \[1, 0\] \}\)/);
     expect(bar).toContain('{Icon({ color: String(palette.textSolid), size: ICON, focused })}');
   });
@@ -170,6 +172,9 @@ describe('the minimal Today', () => {
     expect(minimalSheet).toMatch(/const VEIL_TOP = 0\.\d+;\nconst VEIL_FOOT = 0\.\d+;/);
     // A drag down on the sheet follows the finger and lets go past a threshold.
     expect(minimalSheet).toContain('if (e.translationY > DISMISS_DISTANCE || e.velocityY > DISMISS_VELOCITY)');
+    // One gesture for the sheet's life, not one a render (it renders every second).
+    expect(minimalSheet).toMatch(/const pull = useMemo\(\s*\(\) =>\s*Gesture\.Pan\(\)/);
+    expect(minimalSheet).toContain('[drag, progress],');
     // The page: scaled back by the same value, driven early by a drag up
     // on it, and spared under Reduce Motion.
     expect(card).toContain('const recess = minimal ? { transform: pageRecess(sheetProgress, reduceMotion) } : null;');
