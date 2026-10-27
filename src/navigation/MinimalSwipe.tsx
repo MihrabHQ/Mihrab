@@ -11,9 +11,18 @@ import { useNavigation, useNavigationState } from '@react-navigation/native';
 import { useAfterFirstPaint } from '../boot/firstPaint';
 import { afterRun } from '../boot/launchWarp';
 import {
-  expectPagerTurn,
+  PAGER_TRANSITION_MS,
   finishPagerBase,
+  flushPendingTurn,
+  holdPendingTurn,
+  isCurrentPagerTurn,
+  nextPagerTurn,
   pagerDragRaw,
+  pagerFingerOnRow,
+  pagerRowIndex,
+  pagerSettling,
+  setFingerOnRow,
+  setPagerSettling,
   pagerPosition,
   setPagerEngaged,
   settlePagerBase,
@@ -23,7 +32,9 @@ import {
   usePagerBlockers,
   usePagerEngaged,
   usePagerReachAll,
+  usePagerReachNow,
   usePagerWarmth,
+  wantPagerReachNow,
 } from './minimalPager';
 
 /**
@@ -69,20 +80,12 @@ export function MinimalSwipe({
   const index = useNavigationState(s => s.index);
   const myIndex = routes.findIndex(r => r.key === routeKey);
   const { width } = useWindowDimensions();
-  // The app's direction, not the device's (minimalPager.ts).
-  const rtl = useLayoutRtl();
   // Read in the gesture's callbacks without rebuilding the handler on
   // every tab change: a handler rebuilt mid-drag is a drag cut short.
+  // The app's direction, not the device's (minimalPager.ts).
+  const rtl = useLayoutRtl();
   const live = useRef({ routes, index, width, rtl });
   live.current = { routes, index, width, rtl };
-  // The turn the slide is carrying, told to the navigator once it lands.
-  const pendingTurn = useRef<{ name: string; index: number } | null>(null);
-  // A turn under way: the settle after a lift, which a new finger may
-  // take over (below). The number tells a settle's callback whether it
-  // is still the current turn.
-  const turn = useRef(0);
-  const settling = useRef(false);
-  const fingerDown = useRef(false);
   // The graphs that scroll sideways themselves: the swipe waits for them.
   const blockers = usePagerBlockers();
 
@@ -91,67 +94,63 @@ export function MinimalSwipe({
     () => Animated.event([{ nativeEvent: { translationX: pagerDragRaw } }], { useNativeDriver: true }),
     [],
   );
-  const onHandlerStateChange = useMemo(() => {
-    // The navigator hears of a swipe's turn when the slide has landed, or
-    // when a finger takes the row over before then (expectPagerTurn).
-    const flushTurn = () => {
-      const p = pendingTurn.current;
-      if (!p) return;
-      pendingTurn.current = null;
-      expectPagerTurn(p.index);
-      live.current = { ...live.current, index: p.index };
-      navigation.navigate(p.name as never);
-    };
-    return (e: HandlerStateChangeEvent<PanGestureHandlerEventPayload>) => {
+  const onHandlerStateChange = useMemo(
+    () => (e: HandlerStateChangeEvent<PanGestureHandlerEventPayload>) => {
       const { state, oldState, translationX, velocityX } = e.nativeEvent;
       if (state === State.ACTIVE) {
-        fingerDown.current = true;
+        setFingerOnRow(true);
+        // A swipe straight after a turn: the new tab's neighbours, now.
+        wantPagerReachNow();
         // A finger down on a row still settling after the last turn
-        // takes the row from there: the settle is finished where it
-        // was going, and this finger's drag is read like any other. It
-        // used to be ignored until the settle had landed — its moves
-        // still went into the drag natively, fighting the settle, its
-        // lift was dropped, and the settle's end zeroed the drag under
-        // the finger: a jump, and a flick that did not turn.
-        if (settling.current) {
-          turn.current += 1;
-          settling.current = false;
+        // takes the row from there: the settle is finished where it was
+        // going, the navigator hears of that turn now (before this
+        // finger moves the row, not under its slide), and this finger's
+        // drag is read like any other. The finger may be on either page
+        // in view — the turn is the row's, not this page's
+        // (minimalPager.ts, "A SWIPE'S TURN").
+        if (pagerSettling()) {
+          nextPagerTurn();
+          setPagerSettling(false);
           pagerDragRaw.stopAnimation();
           finishPagerBase();
-          flushTurn();
+          flushPendingTurn();
         }
         setPagerEngaged(true);
         return;
       }
       if (oldState !== State.ACTIVE) return;
-      fingerDown.current = false;
+      setFingerOnRow(false);
+      const mine = nextPagerTurn();
+      setPagerSettling(true);
+      const done = () => {
+        if (isCurrentPagerTurn(mine)) {
+          // Landed: now the navigator hears of the turn — on a still
+          // page, where its render and the new page's focus cost nothing
+          // anyone can see.
+          flushPendingTurn();
+          // Belt and braces: a move the handler delivered after the lift
+          // would leave the drag where that move put it, under a page
+          // that had already settled. Zero is where a lifted finger
+          // leaves it.
+          if (!pagerFingerOnRow()) pagerDragRaw.setValue(0);
+          setPagerSettling(false);
+        }
+        setPagerEngaged(false);
+      };
       if (state !== State.END) {
         // Cancelled or failed under the finger: back where it was.
-        springPagerDrag(() => setPagerEngaged(false));
+        springPagerDrag(done);
         return;
       }
-      const { routes: rs, index: i, width: w } = live.current;
+      const { routes: rs, width: w } = live.current;
+      // From the tab the row is on — a turn not yet told counts as made.
+      const i = pagerRowIndex(live.current.index);
       const far = Math.abs(translationX) >= w * TURN_FRACTION || Math.abs(velocityX) >= TURN_VELOCITY;
       // A flick back the way the page came is not a turn.
       const sameWay = velocityX === 0 || Math.sign(velocityX) === Math.sign(translationX);
       let step = translationX < 0 ? 1 : -1;
       if (live.current.rtl) step = -step;
       const next = far && sameWay ? rs[i + step] : undefined;
-      settling.current = true;
-      const mine = ++turn.current;
-      const done = () => {
-        // Taken over by a new finger: that turn's own end will tidy up.
-        if (turn.current !== mine) {
-          setPagerEngaged(false);
-          return;
-        }
-        // Belt and braces: a move the handler delivered after the lift
-        // would leave the drag where that move put it, under a page that
-        // had already settled. Zero is where a lifted finger leaves it.
-        if (!fingerDown.current) pagerDragRaw.setValue(0);
-        settling.current = false;
-        setPagerEngaged(false);
-      };
       if (!next) {
         springPagerDrag(done);
         return;
@@ -159,18 +158,15 @@ export function MinimalSwipe({
       // No haptic: a page turning is not a count, and a tick on every
       // turn was one more thing than the page itself.
       // The settled tab slides to the next while the drag runs back to
-      // zero: the position, and so every page, carries on from where
-      // the finger left it (minimalPager.ts). The navigator is told once
-      // it has landed (`expectPagerTurn`): nothing is laid out or rendered
-      // under the slide, so it runs through in one movement.
+      // zero: the position, and so every page, carries on from where the
+      // finger left it (minimalPager.ts). The navigator is NOT told here
+      // but when the slide lands (`done`): see "A SWIPE'S TURN" there.
       settlePagerBase(i + step);
-      pendingTurn.current = { name: next.name, index: i + step };
-      settlePagerDrag(() => {
-        if (turn.current === mine) flushTurn();
-        done();
-      });
-    };
-  }, [navigation]);
+      holdPendingTurn(i + step, () => navigation.navigate(next.name as never));
+      settlePagerDrag(done);
+    },
+    [navigation],
+  );
 
   // This page's place on the strip: as many page-widths aside as it is
   // tabs from the position — the one number the dots read too, so the
@@ -200,8 +196,27 @@ export function MinimalSwipe({
   const reachAll = usePagerReachAll();
   const painted = useAfterFirstPaint();
   const [settled, setSettled] = useState(false);
-  const distance = Math.abs(myIndex - index);
-  const inReach = reachAll || distance <= (settled || engaged ? 1 : 0);
+  // The tab the reach is measured from: the tab on show, a slide behind.
+  // The navigator hears of a swipe's turn as the finger lifts — it has to,
+  // so the next swipe lands on the page that is coming in — but laying
+  // out the page two along at that moment (`display: 'none'` to drawn)
+  // is UI-thread work in the frames the slide is drawn in, and the page
+  // slowed mid-run and caught up. So the reach moves once the slide has
+  // landed. A finger down before then brings in the new tab's neighbours
+  // at once (`wantPagerReachNow`): a second swipe never reveals a blank
+  // page — that one lays out as the finger starts, not under a slide.
+  const [reachIndex, setReachIndex] = useState(index);
+  const reachNow = usePagerReachNow();
+  useEffect(() => {
+    if (reachIndex === index) return undefined;
+    const t = setTimeout(() => setReachIndex(index), PAGER_TRANSITION_MS + 80);
+    return () => clearTimeout(t);
+  }, [index, reachIndex]);
+  useEffect(() => {
+    if (reachNow > 0) setReachIndex(live.current.index);
+  }, [reachNow]);
+  const distance = Math.abs(myIndex - reachIndex);
+  const inReach = reachAll || myIndex === index || distance <= (settled || engaged ? 1 : 0);
   // Mounted once in reach, or once the warm-up has come this far — and
   // then kept, so a page keeps its scroll and its state across turns.
   const warmth = usePagerWarmth();
@@ -231,7 +246,10 @@ export function MinimalSwipe({
   return (
     <PanGestureHandler
       enabled={enabled}
-      activeOffsetX={[-10, 10]}
+      // The page starts moving after 6dp sideways — 10 felt like the page
+      // resisting the finger before it gave. Still a sideways intent:
+      // 12dp up or down first and it is the page's own scroll.
+      activeOffsetX={[-6, 6]}
       failOffsetY={[-12, 12]}
       waitFor={blockers as never}
       onGestureEvent={onGestureEvent}

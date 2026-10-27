@@ -118,26 +118,131 @@ export function settlePagerBase(index: number, animated = true): void {
 export const PAGER_TRANSITION_MS = 280;
 export const pagerEasing = Easing.out(Easing.cubic);
 
-/**
- * A swipe's turn, told to the navigator only once the slide has landed
- * (MinimalSwipe). A tab change lays out the page two along (it comes into
- * reach) and renders the navigator — work the UI thread does in the same
- * frames the slide is drawn in, and the page slowed in the middle of its
- * run and then caught up. Landed, the change costs a still page nothing.
- * The bar's tab-change effect asks whether a change was this one, so it
- * does not take it for a jump nobody's finger made.
+/*
+ * ── A SWIPE'S TURN IS TOLD TO THE NAVIGATOR WHEN IT HAS LANDED ─────────
+ *
+ * This has regressed three times, so it is spelled out. A tab change
+ * renders the navigator, runs the focus effects of the page coming in
+ * (and their state updates), and moves the reach — React commits that
+ * Fabric lays out on the UI thread, in the very frames the slide is drawn
+ * in. The slide is native and does not wait for JS, but it does wait for
+ * the UI thread: the page slowed in the middle of its run and caught up
+ * ("resistance mid-swipe"). So a swipe's release holds the turn
+ * (`holdPendingTurn`) and the navigator hears of it when the slide has
+ * landed (`flushPendingTurn`) — or when another finger comes down first,
+ * which takes the row over from wherever the turn was going.
+ *
+ * Telling it late has one consequence, and it is why the immediate
+ * navigate kept coming back: the navigator gives the page not on show
+ * `pointerEvents: 'none'`, so a second swipe straight after the first
+ * landed on a page that could not be touched, and was lost. Minimal's
+ * screens therefore take touches whatever the navigator says
+ * (MinimalScreens.tsx) — the pages never overlap and stand a width
+ * aside, so only the ones in view can be touched at all — and the turn,
+ * the settle and the finger are kept HERE, for every page, not in one
+ * page's refs: the finger may come down on the page coming in.
+ *
+ * __tests__/minimalPagerTurn.test.ts holds all of this. Do not "simplify"
+ * it back to `navigation.navigate` at the release.
  */
-let expectedTurn: number | null = null;
+type HeldTurn = { index: number; go: () => void };
+let heldTurn: HeldTurn | null = null;
+/** Where the last flushed turn went, until the navigator's state says so. */
+let landedIndex: number | null = null;
+/** The tab change a flushed turn made — not "a jump nobody's finger made". */
+let expectedIndex: number | null = null;
+let turnId = 0;
+let settlingNow = false;
+let fingerOnRow = false;
 
-export function expectPagerTurn(index: number): void {
-  expectedTurn = index;
+/** A swipe's turn, held until its slide lands. */
+export function holdPendingTurn(index: number, go: () => void): void {
+  heldTurn = { index, go };
 }
 
-/** Whether the tab change to `index` is the swipe's own; asked once. */
-export function takeExpectedTurn(index: number): boolean {
-  const hit = expectedTurn === index;
-  expectedTurn = null;
-  return hit;
+/** Tell the navigator of the held turn, if there is one. */
+export function flushPendingTurn(): void {
+  const t = heldTurn;
+  if (!t) return;
+  heldTurn = null;
+  landedIndex = t.index;
+  expectedIndex = t.index;
+  t.go();
+}
+
+/** The tab the row is on: a held or just-flushed turn counts as made. */
+export function pagerRowIndex(navigatorIndex: number): number {
+  if (heldTurn) return heldTurn.index;
+  if (landedIndex != null) return landedIndex;
+  return navigatorIndex;
+}
+
+/** The bar's tab-change effect: the navigator has caught up. */
+export function notePagerIndex(index: number): boolean {
+  landedIndex = null;
+  const swiped = expectedIndex === index;
+  expectedIndex = null;
+  return swiped;
+}
+
+/** A new turn; its callbacks check they are still the current one. */
+export function nextPagerTurn(): number {
+  turnId += 1;
+  return turnId;
+}
+
+export function isCurrentPagerTurn(id: number): boolean {
+  return id === turnId;
+}
+
+export function setPagerSettling(on: boolean): void {
+  settlingNow = on;
+}
+
+export function pagerSettling(): boolean {
+  return settlingNow;
+}
+
+export function setFingerOnRow(on: boolean): void {
+  fingerOnRow = on;
+}
+
+export function pagerFingerOnRow(): boolean {
+  return fingerOnRow;
+}
+
+/** Test seam. */
+export function _resetPagerTurnForTests(): void {
+  heldTurn = null;
+  landedIndex = null;
+  expectedIndex = null;
+  turnId = 0;
+  settlingNow = false;
+  fingerOnRow = false;
+}
+
+/**
+ * The pages' reach follows the tab a slide behind (MinimalSwipe), so a
+ * turn lays nothing out under its own slide. A finger coming down before
+ * it has caught up asks for it now: the page beside the new tab has to be
+ * there for that finger's swipe.
+ */
+let reachNowTick = 0;
+const reachNowListeners = new Set<() => void>();
+
+export function wantPagerReachNow(): void {
+  reachNowTick += 1;
+  reachNowListeners.forEach(l => l());
+}
+
+export function usePagerReachNow(): number {
+  return useSyncExternalStore(
+    listener => {
+      reachNowListeners.add(listener);
+      return () => reachNowListeners.delete(listener);
+    },
+    () => reachNowTick,
+  );
 }
 
 /** How long the dots' icons stay up after a turn settles. */

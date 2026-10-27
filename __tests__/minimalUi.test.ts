@@ -50,7 +50,7 @@ describe('the swipe', () => {
     expect(tabs).toMatch(/<MinimalSwipe[^>]*>\s*<HeaderPlaybackBar[\s\S]*?\{children\}[\s\S]*?<StatusBarBand[\s\S]*?<\/MinimalSwipe>/);
     // Early, so a row under the finger lets go of its press; a drag down
     // a list fails first.
-    expect(swipe).toContain('activeOffsetX={[-10, 10]}');
+    expect(swipe).toContain('activeOffsetX={[-6, 6]}');
     expect(swipe).toContain('failOffsetY={[-12, 12]}');
     // The finger into the drag with no JS in between; JS hears the lift.
     expect(swipe).toContain("Animated.event([{ nativeEvent: { translationX: pagerDragRaw } }], { useNativeDriver: true })");
@@ -103,14 +103,14 @@ describe('the swipe', () => {
     expect(swipe).toContain('[myIndex, count, width, rtl],');
     expect(bar).toContain('[width, state.routes.length, rtl],');
     // On a turn the settled tab slides while the drag runs back: no jump.
-    // The navigator is told at once: the position is one node whichever
-    // tab is current, so the tab changing rebuilds nothing under the slide.
-    // The navigator hears of the turn once the slide has landed: a tab
-    // change mid-slide lays out a page and renders, and the slide stalled.
-    expect(swipe).toMatch(/settlePagerBase\(i \+ step\);\s*pendingTurn\.current = \{ name: next\.name, index: i \+ step \};\s*settlePagerDrag\(\(\) => \{\s*if \(turn\.current === mine\) flushTurn\(\);\s*done\(\);/);
-    // A finger taking the row over mid-slide tells it at once.
-    expect(swipe).toMatch(/finishPagerBase\(\);\s*flushTurn\(\);/);
-    expect(read('src/navigation/MinimalTabBar.tsx')).toContain('const swiped = takeExpectedTurn(state.index);');
+    // The navigator is told when the slide lands (minimalPagerTurn.test.ts
+    // holds why, and what keeps the second swipe): the position is one node
+    // whichever tab is current, and the reach follows a slide behind.
+    expect(swipe).toMatch(/settlePagerBase\(i \+ step\);\s*holdPendingTurn\(i \+ step, \(\) => navigation\.navigate\(next\.name as never\)\);\s*settlePagerDrag\(done\);/);
+    expect(swipe).toContain('const t = setTimeout(() => setReachIndex(index), PAGER_TRANSITION_MS + 80);');
+    expect(swipe).toContain('const distance = Math.abs(myIndex - reachIndex);');
+    // A finger down before the reach has caught up brings it in at once.
+    expect(swipe).toMatch(/setFingerOnRow\(true\);[\s\S]{0,120}wantPagerReachNow\(\);/);
     expect(pager).toMatch(/duration: PAGER_TRANSITION_MS,\s*easing: pagerEasing,\s*useNativeDriver: true,\s*\}\)\.start\(\(\) => onDone/);
   });
 
@@ -124,7 +124,7 @@ describe('the swipe', () => {
     // The page on show alone until its first paint and launch run are over.
     // A swipe brings in only the neighbours; a turn from the dots, every page
     // — laying out all of them as a finger starts to swipe stalled the swipe.
-    expect(swipe).toContain('const inReach = reachAll || distance <= (settled || engaged ? 1 : 0);');
+    expect(swipe).toContain('const inReach = reachAll || myIndex === index || distance <= (settled || engaged ? 1 : 0);');
     // The hold asks for every page; a tap on a dot gets them from the bar's
     // tab-change effect (`engagePagerFor`).
     expect(read('src/navigation/MinimalTabBar.tsx').match(/setPagerEngaged\(true, true\)/g)).toHaveLength(1);

@@ -62,6 +62,7 @@ LEAD_S = 0.2  # a boundary sits this far before the next ayah's first sound
 #              (CTC hears a sound a frame or two after it begins)
 TAIL_S = 0.35  # after the last ayah's last sound
 TOLERANCE_S = 0.35  # alignment and pause agree within this
+BETWEEN_SLACK_S = 0.1  # a pause this close outside the aligned gap still counts as in it
 MIN_CONFIDENCE = -3.0  # mean per-letter log-probability below this: not aligned at all
 #   (forced alignment of elongated tajwīd letters sits around −1 to −2 when right)
 
@@ -426,6 +427,15 @@ def align_surah(hearer, reciter_id, table, bounds, surah):
             # unless mp3quran's own time agrees; otherwise the judge decides.
             sure = abs(a - P[i]) <= TOLERANCE_S or same_gap(db, a, P[i]) or (
                 quiet_at(db, a) and i < len(M) and abs(a - M[i]) <= TOLERANCE_S)
+            if not sure and quiet_at(db, P[i]) and \
+                    join[i][0] - BETWEEN_SLACK_S <= P[i] <= join[i][1] + BETWEEN_SLACK_S:
+                # The pause sits between the aligned end of one ayah's words
+                # and the aligned start of the next: nothing of either is on
+                # the wrong side of it. A reciter who breathes audibly before
+                # an ayah (Al-Dosari, a second and more) leaves the two a
+                # breath apart, never in "the same silence", and the pause —
+                # the earlier, in real quiet — is the one that loses nothing.
+                a, sure = P[i], True
         if i == 0 and not (sure and abs(a - P[0]) <= TOLERANCE_S):
             # The opening — taʿawwudh, basmalah — is not in the ayah text, and
             # the alignment can take its last word for the first ayah's. The

@@ -18,7 +18,7 @@ import {
   setPagerEngaged,
   settlePagerBase,
   settlePagerHold,
-  takeExpectedTurn,
+  notePagerIndex,
 } from './minimalPager';
 
 /**
@@ -83,8 +83,9 @@ export function MinimalTabBar({ state, descriptors, navigation }: BottomTabBarPr
     // slide and every page is in reach for it, so the page left and the
     // ones between stay drawn as the row slides by. A finger's turn (a
     // swipe, the hold) already holds the engagement itself.
-    // A swipe's own turn, told to the navigator as it landed, is not one.
-    const swiped = takeExpectedTurn(state.index);
+    // A swipe's turn, told as its slide landed, is not one: every page
+    // laid out for it then would be work for nothing.
+    const swiped = notePagerIndex(state.index);
     if (!swiped && !pagerHeldByFinger()) engagePagerFor(PAGER_TRANSITION_MS + 60);
   }, [state.index]);
   // The app's direction, not the device's (minimalPager.ts): the dots run
