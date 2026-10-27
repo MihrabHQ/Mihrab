@@ -39,6 +39,7 @@ import {
 } from 'react-native';
 import { useWindowSize } from '../../responsive/windowSize';
 import Svg, { Path } from 'react-native-svg';
+import { MinimalGlyph } from './MinimalGlyph';
 import { useTranslation } from 'react-i18next';
 import { useIsActive } from '../../hooks/useIsActive';
 import { useReduceMotion } from '../../hooks/useReduceMotion';
@@ -2347,6 +2348,11 @@ function TodayCardImpl({
             to today" is a word in the accent rather than a tinted pill,
             because every other control on this page reads that way. */}
         <View style={[styles.dayBar, compact && styles.dayBarCompact, { backgroundColor: palette.bg }]}>
+          {/* The chevrons at the edges, where a thumb finds them; beside the
+              day, its doors: the month's calendar on the trailing side and
+              — with the data statistics on, a diagnostic setting — the way
+              into Minimal on the leading one, a quick switch for someone
+              working on the two faces, not a control everyone needs. */}
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={t('log.previousDay', 'Previous day')}
@@ -2362,6 +2368,16 @@ function TodayCardImpl({
             <Chevron back={!rtl} color={String(palette.muted)} />
           </Pressable>
 
+          {settings.showDataStats ? (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('settings.minimalUi', 'Minimal')}
+              onPress={() => updateSettings({ minimalUi: !settings.minimalUi })}
+              hitSlop={14}
+              style={({ pressed }) => [styles.dayStep, pressed && styles.dayStepPressed]}>
+              <MinimalGlyph color={String(palette.muted)} />
+            </Pressable>
+          ) : null}
           <Pressable
             accessibilityRole={onToday ? 'header' : 'button'}
             accessibilityLabel={
@@ -2424,6 +2440,17 @@ function TodayCardImpl({
             </Text>
           </Pressable>
 
+          {onOpenMonth ? (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('home.monthTimesLink')}
+              accessibilityHint={t('a11y.openMonth')}
+              onPress={onOpenMonth}
+              hitSlop={14}
+              style={({ pressed }) => [styles.dayStep, pressed && styles.dayStepPressed]}>
+              <MonthGlyph color={String(palette.muted)} />
+            </Pressable>
+          ) : null}
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={t('log.nextDay', 'Next day')}
@@ -2444,17 +2471,6 @@ function TodayCardImpl({
               bar that already holds the calendar's other controls. The
               bar is where the days are stepped; the month is the same
               thing, further. Its own hit slop, the chevrons' size. */}
-          {onOpenMonth ? (
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={t('home.monthTimesLink')}
-              accessibilityHint={t('a11y.openMonth')}
-              onPress={onOpenMonth}
-              hitSlop={14}
-              style={({ pressed }) => [styles.dayStep, pressed && styles.dayStepPressed]}>
-              <MonthGlyph color={String(palette.muted)} />
-            </Pressable>
-          ) : null}
         </View>
 
         <View onLayout={onTableLayout}>
@@ -2538,6 +2554,7 @@ function TodayCardImpl({
           onNext={dayAt(sheetOffset + 1) ? () => setSheetOffset(o => o + 1) : undefined}
           onBackToToday={() => setSheetOffset(0)}
           onMonth={onOpenMonth}
+          onToggleMinimal={settings.showDataStats ? () => updateSettings({ minimalUi: false }) : undefined}
           qibla={qiblaBearing != null ? { bearing: qiblaBearing, onPress: onOpenQibla } : undefined}
           place={placeLabel ? { label: placeLabel, onPress: onOpenPlace } : undefined}
           source={timesSource}

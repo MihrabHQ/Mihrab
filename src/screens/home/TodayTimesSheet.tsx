@@ -10,6 +10,7 @@ import { SPACING } from '../../theme/tokens';
 import { TABULAR_MAX_FONT_SCALE, tabularNumeralStyle } from '../../theme/textScale';
 import { TYPE, typeStyle } from '../../theme/typography';
 import { LogCheck, LOG_CHECK_SIZE } from './LogCheck';
+import { MinimalGlyph } from './MinimalGlyph';
 
 /** One row of the sheet: a time, and the check beside it when it can be logged. */
 export type TimesSheetRow = {
@@ -48,6 +49,7 @@ function TodayTimesSheetImpl({
   onNext,
   onBackToToday,
   onMonth,
+  onToggleMinimal,
   qibla,
   place,
   source,
@@ -63,6 +65,8 @@ function TodayTimesSheetImpl({
   onNext?: () => void;
   onBackToToday: () => void;
   onMonth?: () => void;
+  /** With the data statistics on: the way back to the full page, opposite the calendar. */
+  onToggleMinimal?: () => void;
   qibla?: { bearing: number; onPress?: () => void };
   place?: { label: string; onPress?: () => void };
   /** Whose times: the source, or the method the reader chose. */
@@ -74,8 +78,9 @@ function TodayTimesSheetImpl({
   return (
     <ResponsiveModal visible={visible} onClose={onClose} closeLabel={t('common.close', 'Close')}>
       <View style={styles.sheet}>
-        {/* The day bar: a chevron each way, the day between them, and the
-            month's calendar at the trailing end. */}
+        {/* The day bar, as the full page's: the chevrons at the edges, and
+            beside the day its doors — the month's calendar trailing, and
+            the way back to the full page leading when it is offered. */}
         <View style={styles.dayBar}>
           <Pressable
             accessibilityRole="button"
@@ -86,6 +91,19 @@ function TodayTimesSheetImpl({
             style={({ pressed }) => [styles.step, pressed && styles.pressed, !onPrev && styles.stepOff]}>
             <Chevron color={muted} back />
           </Pressable>
+          {onToggleMinimal ? (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('settings.minimalUi', 'Minimal')}
+              onPress={() => {
+                onClose();
+                onToggleMinimal();
+              }}
+              hitSlop={10}
+              style={({ pressed }) => [styles.step, pressed && styles.pressed]}>
+              <MinimalGlyph color={muted} />
+            </Pressable>
+          ) : null}
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={isToday ? title : `${title}. ${t('home.backToToday', 'Back to today')}`}
@@ -101,15 +119,6 @@ function TodayTimesSheetImpl({
               </Text>
             ) : null}
           </Pressable>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={t('log.nextDay', 'Next day')}
-            onPress={onNext}
-            disabled={!onNext}
-            hitSlop={10}
-            style={({ pressed }) => [styles.step, pressed && styles.pressed, !onNext && styles.stepOff]}>
-            <Chevron color={muted} />
-          </Pressable>
           {onMonth ? (
             <Pressable
               accessibilityRole="button"
@@ -124,6 +133,15 @@ function TodayTimesSheetImpl({
               <MonthGlyph color={muted} />
             </Pressable>
           ) : null}
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t('log.nextDay', 'Next day')}
+            onPress={onNext}
+            disabled={!onNext}
+            hitSlop={10}
+            style={({ pressed }) => [styles.step, pressed && styles.pressed, !onNext && styles.stepOff]}>
+            <Chevron color={muted} />
+          </Pressable>
         </View>
         {/* Off today, the way back — a line, as the full page's day bar has. */}
         {isToday ? null : (

@@ -92,7 +92,7 @@ export function MinimalTabBar({ state, descriptors, navigation }: BottomTabBarPr
           const slot = Math.round(pos);
           if (slot !== lastSlot.current) {
             lastSlot.current = slot;
-            hapticScrubTick(false);
+            hapticScrubTick(true);
           }
           pagerHold.setValue(pos - live.current.index);
         })

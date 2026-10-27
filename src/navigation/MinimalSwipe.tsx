@@ -2,7 +2,7 @@ import { useMemo, useRef, type ReactNode } from 'react';
 import { Animated, I18nManager, StyleSheet, useWindowDimensions } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { useNavigation, useNavigationState } from '@react-navigation/native';
-import { hapticTick } from '../polish/haptics';
+import { hapticScrubTick } from '../polish/haptics';
 import {
   pagerDrag,
   pagerPosition,
@@ -95,7 +95,8 @@ export function MinimalSwipe({
             springPagerDrag(done);
             return;
           }
-          void hapticTick();
+          // A faint tick, not a knock: a page turning is not a count.
+          hapticScrubTick(true);
           // The settled tab slides to the next while the drag runs back to
           // zero: the position, and so every page, carries on from where
           // the finger left it (minimalPager.ts).
