@@ -22,7 +22,7 @@ jest.mock('react-native-gesture-handler', () => {
       'onFail', 'onCancel', 'onTouchesDown', 'onTouchesMove', 'onTouchesUp',
       'minDistance', 'maxDuration', 'numberOfTaps', 'direction',
       'simultaneousWithExternalGesture', 'requireExternalGestureToFail',
-      'blocksExternalGesture', 'withRef', 'enabled', 'shouldCancelWhenOutside',
+      'blocksExternalGesture', 'withRef', 'enabled', 'shouldCancelWhenOutside', 'disallowInterruption', 'activateAfterLongPress',
       'hitSlop', 'activeCursor', 'mouseButton', 'runOnJS', 'config',
       'activeOffsetX', 'activeOffsetY', 'failOffsetX', 'failOffsetY',
       'minPointers', 'maxPointers', 'minVelocity', 'averageTouches',

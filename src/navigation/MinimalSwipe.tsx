@@ -3,7 +3,15 @@ import { Animated, I18nManager, StyleSheet, useWindowDimensions } from 'react-na
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { useNavigation, useNavigationState } from '@react-navigation/native';
 import { hapticTick } from '../polish/haptics';
-import { pagerDrag, pagerPosition, setPagerEngaged, settlePagerBase, settlePagerDrag, springPagerDrag } from './minimalPager';
+import {
+  pagerDrag,
+  pagerPosition,
+  setPagerEngaged,
+  settlePagerBase,
+  settlePagerDrag,
+  springPagerDrag,
+  usePagerBlockers,
+} from './minimalPager';
 
 /**
  * Under Minimal (settings.minimalUi) the tabs are pages: the page moves
@@ -46,11 +54,14 @@ export function MinimalSwipe({
   const live = useRef({ routes, index, width });
   live.current = { routes, index, width };
   const busy = useRef(false);
+  // The graphs that scroll sideways themselves: the swipe waits for them.
+  const blockers = usePagerBlockers();
 
   const gesture = useMemo(
     () =>
       Gesture.Pan()
         .enabled(enabled)
+        .requireExternalGestureToFail(...blockers)
         .activeOffsetX([-10, 10])
         .failOffsetY([-12, 12])
         .runOnJS(true)
@@ -95,7 +106,7 @@ export function MinimalSwipe({
         .onFinalize((_e, success) => {
           if (!success && !busy.current) springPagerDrag(() => setPagerEngaged(false));
         }),
-    [enabled, navigation],
+    [enabled, navigation, blockers],
   );
   // This page's place on the strip: as many page-widths aside as it is
   // tabs from the position — the one number the dots read too, so the

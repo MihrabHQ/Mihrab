@@ -15,6 +15,6 @@ describe('the city alone, out of a place’s full name', () => {
   it('is what the minimal Today says', () => {
     const home = require('fs').readFileSync(require('path').join(__dirname, '..', 'src', 'screens', 'HomeScreen.tsx'), 'utf8');
     expect(home).toContain("[cityOf(locationLabel), getHijriDate(0), source]");
-    expect(home).toContain('label: cityOf(locationLabel),');
+    expect(home).toContain('placeLabel={minimal && locationLabel ? cityOf(locationLabel) : undefined}');
   });
 });

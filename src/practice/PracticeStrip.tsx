@@ -20,6 +20,7 @@ import { memo, useMemo } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useAppPalette } from '../hooks/useAppPalette';
+import { KeepsSideways } from '../navigation/KeepsSideways';
 import { useLayoutRtl } from '../i18n/useLayoutRtl';
 import { TABULAR_MAX_FONT_SCALE } from '../theme/textScale';
 import { SPACING } from '../theme/tokens';
@@ -114,6 +115,7 @@ function PracticeStripImpl({ days, selectedKey, emphasise, onSelectDay, onReachO
           </View>
         ))}
       </View>
+      <KeepsSideways>
       <ScrollView
         ref={scroll.scrollRef}
         horizontal
@@ -198,6 +200,7 @@ function PracticeStripImpl({ days, selectedKey, emphasise, onSelectDay, onReachO
           })}
         </View>
       </ScrollView>
+      </KeepsSideways>
     </View>
   );
 }

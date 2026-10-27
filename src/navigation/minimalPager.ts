@@ -15,7 +15,9 @@
  * or the slide after a tap on a dot — and 0 at rest. The dots show the
  * tabs' icons while it is 1 and go back to dots as it settles.
  */
+import { useEffect, useSyncExternalStore } from 'react';
 import { Animated, Easing, I18nManager } from 'react-native';
+import type { GestureType } from 'react-native-gesture-handler';
 
 export const pagerDrag = new Animated.Value(0);
 export const pagerEngaged = new Animated.Value(0);
@@ -112,4 +114,38 @@ export function settlePagerHold(onDone?: () => void): void {
     easing: pagerEasing,
     useNativeDriver: true,
   }).start(() => onDone?.());
+}
+
+/**
+ * Things on a page that scroll SIDEWAYS themselves and keep the right to —
+ * the Log's graphs, which run back through the months. The page's own
+ * swipe (MinimalSwipe) waits for each of these to decline a touch before
+ * it takes one, so a drag across the graph scrolls the graph and a drag
+ * across the rest of the page turns it. Registered by the graphs
+ * themselves (`usePagerBlocker`), read by the swipe (`usePagerBlockers`).
+ */
+
+let blockers: GestureType[] = [];
+const blockerListeners = new Set<() => void>();
+const noteBlockers = () => blockerListeners.forEach(l => l());
+
+export function usePagerBlocker(gesture: GestureType): void {
+  useEffect(() => {
+    blockers = [...blockers, gesture];
+    noteBlockers();
+    return () => {
+      blockers = blockers.filter(g => g !== gesture);
+      noteBlockers();
+    };
+  }, [gesture]);
+}
+
+export function usePagerBlockers(): GestureType[] {
+  return useSyncExternalStore(
+    listener => {
+      blockerListeners.add(listener);
+      return () => blockerListeners.delete(listener);
+    },
+    () => blockers,
+  );
 }

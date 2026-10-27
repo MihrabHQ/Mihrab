@@ -1363,6 +1363,21 @@ export function LogScreen() {
               titleAccessibilityLabel={t('log.backToToday')}
               trailing={<LogOptionsButton onPress={() => setOptionsOpen(true)} />}
             />
+            {/* Off today — by the chevrons, a swipe, or a tap on the graph —
+                the way back, said: the title was the way back already, and
+                nothing said so. A line under the stepper, in the accent. */}
+            {isToday ? null : (
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={t('log.backToToday')}
+                onPress={() => setSelected(today)}
+                hitSlop={6}
+                style={({ pressed }) => [styles.backToToday, pressed && styles.backToTodayPressed]}>
+                <Text style={[styles.backToTodayText, { color: palette.accentSolid }]}>
+                  {t('log.backToToday')}
+                </Text>
+              </Pressable>
+            )}
           </View>
 
           <View style={styles.panelSection}>
@@ -1793,6 +1808,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.sm,
     paddingTop: SPACING.xs,
   },
+  backToToday: { alignSelf: 'center', paddingVertical: SPACING.xs, paddingHorizontal: SPACING.sm },
+  backToTodayPressed: { opacity: 0.6 },
+  backToTodayText: { fontSize: TYPE.footnote.fontSize, fontWeight: '500' },
   /** Tighter than the settings rows: five of these and the day must fit. */
   prayerRow: { paddingVertical: LOG_ROW_PAD },
   prayerHead: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm },

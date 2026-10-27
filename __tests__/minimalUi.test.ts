@@ -99,6 +99,15 @@ describe('the swipe', () => {
     expect(bar).toContain('{Icon({ color: String(palette.textSolid), size: ICON, focused })}');
   });
 
+  it('lets the Log’s graphs keep their sideways scroll', () => {
+    const keeps = read('src/navigation/KeepsSideways.tsx');
+    expect(keeps).toContain('Gesture.Native().disallowInterruption(true).shouldCancelWhenOutside(false)');
+    expect(keeps).toContain('usePagerBlocker(gesture);');
+    expect(swipe).toContain('.requireExternalGestureToFail(...blockers)');
+    expect(read('src/practice/PracticeStrip.tsx')).toContain('<KeepsSideways>');
+    expect(read('src/practice/PracticeHeatmap.tsx')).toContain('<KeepsSideways>');
+  });
+
   it('is the only sideways gesture under Minimal', () => {
     // The Quran's three lists and the Log's days used to page sideways.
     expect(read('src/screens/QuranScreen.tsx')).toContain('scrollEnabled={!searching && !minimal}');
@@ -110,11 +119,28 @@ describe('the swipe', () => {
 
 describe('the minimal Today', () => {
   it('opens the day’s times on a tap or a drag up, and keeps the heart', () => {
-    expect(card).toContain('.enabled(minimal && !!onOpenTimes)');
+    expect(card).toContain('.enabled(minimal)');
     expect(card).toContain('.activeOffsetY(-14)');
     expect(card).toContain('onPress: onOpenTimes,');
     expect(card).toContain("topRow={fullBleed ? (minimal ? { renderHelp } : { renderLocation, renderQibla, renderHelp }) : undefined}");
-    expect(home).toContain('<TodayTimesSheet');
+    expect(card).toContain('<TodayTimesSheet');
+  });
+
+  it('turns the sheet to other days, opens the month, and logs from it', () => {
+    const sheet = read('src/screens/home/TodayTimesSheet.tsx');
+    // The full page's day bar in small: a chevron each way, the calendar.
+    expect(card).toContain('onPrev={dayAt(sheetOffset - 1) ? () => setSheetOffset(o => o - 1) : undefined}');
+    expect(card).toContain('onNext={dayAt(sheetOffset + 1) ? () => setSheetOffset(o => o + 1) : undefined}');
+    expect(card).toContain('onMonth={onOpenMonth}');
+    expect(sheet).toContain('<MonthGlyph color={muted} />');
+    expect(sheet).toContain("t('home.backToToday', 'Back to today')");
+    // The check beside each salāh, on today and the days behind, from the
+    // same record and the same toggle as the rows.
+    expect(card).toContain('const loggable = offset <= 0;');
+    expect(card).toContain('onToggle: () => void toggleLog(key, dayTimings, offset),');
+    expect(sheet).toContain('<LogCheck');
+    // …and the question a passed prayer asks is rendered whatever the page.
+    expect(card).toMatch(/\)\}\n\s*\{\/\* The question a tap on a passed prayer opens/);
   });
 
   it('runs its sky on under the dots', () => {
@@ -126,5 +152,12 @@ describe('the minimal Today', () => {
     for (const f of ['src/screens/TasbihScreen.tsx', 'src/screens/DuasScreen.tsx']) {
       expect(read(f)).not.toContain('minimalUi');
     }
+  });
+});
+
+describe('the Log, in both modes', () => {
+  it('says the way back to today once the day is another', () => {
+    const log = read('src/screens/LogScreen.tsx');
+    expect(log).toMatch(/\{isToday \? null : \(\s*<Pressable[\s\S]*?onPress=\{\(\) => setSelected\(today\)\}[\s\S]*?\{t\('log\.backToToday'\)\}/);
   });
 });

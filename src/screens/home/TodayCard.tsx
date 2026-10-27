@@ -102,6 +102,7 @@ import type { JournalPrayer } from '../../journal/journal';
 import { pagerPosition } from './pagerPosition';
 import { LogPassedPrayerSheet } from './LogPassedPrayerSheet';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { TodayTimesSheet, type TimesSheetRow } from './TodayTimesSheet';
 import { HeroSky, type SkyRun } from './HeroSky';
 import {
   HERO_Y,
@@ -310,9 +311,11 @@ export type TodayCardProps = {
    */
   minimal?: boolean;
   footer?: string;
-  onOpenTimes?: () => void;
   /** Minimal: the tab bar's inset, which the sky runs on under. */
   footInset?: number;
+  /** Minimal: the place, named in the times sheet, and where a tap on it goes. */
+  placeLabel?: string;
+  onOpenPlace?: () => void;
 };
 
 /**
@@ -1301,8 +1304,9 @@ function TodayCardImpl({
   dayClock,
   minimal: minimalWanted = false,
   footer,
-  onOpenTimes,
   footInset = 0,
+  placeLabel,
+  onOpenPlace,
 }: TodayCardProps) {
   // Only the phone's full-bleed page has a minimal face; the dashboard
   // and the book keep their cards.
@@ -1321,6 +1325,15 @@ function TodayCardImpl({
    */
   const [chosenKey, setChosenKey] = useState<string | null>(null);
   const rtl = isRtlLanguage(i18n.language);
+  // Minimal: the day's times, in a sheet, on the day it is turned to —
+  // today when opened, a day behind or ahead by its chevrons.
+  const [timesOpen, setTimesOpen] = useState(false);
+  const [sheetOffset, setSheetOffset] = useState(0);
+  const onOpenTimes = useCallback(() => {
+    setSheetOffset(0);
+    setTimesOpen(true);
+  }, []);
+  const onCloseTimes = useCallback(() => setTimesOpen(false), []);
 
   /**
    * The pages, in the order they are swiped: the past, oldest first, then
@@ -1939,19 +1952,19 @@ function TodayCardImpl({
   const swipeUp = useMemo(
     () =>
       Gesture.Pan()
-        .enabled(minimal && !!onOpenTimes)
+        .enabled(minimal)
         .activeOffsetY(-14)
         .failOffsetX([-18, 18])
         .runOnJS(true)
         .onEnd(e => {
-          if (e.translationY < -30 || e.velocityY < -400) onOpenTimes?.();
+          if (e.translationY < -30 || e.velocityY < -400) onOpenTimes();
         }),
     [minimal, onOpenTimes],
   );
   // Minimal: the hero's wrap is the tap that opens the day's times.
   // (A View takes every prop the Pressable is given here but the press,
   // and that one is only given when it IS a Pressable.)
-  const HeroWrap = (minimal && onOpenTimes ? Pressable : View) as typeof Pressable;
+  const HeroWrap = (minimal ? Pressable : View) as typeof Pressable;
   const compact = fullBleed && tier === 'compact';
   const renderQibla = (ink: SkyInkColors, column?: boolean) =>
     fullBleed && qiblaBearing != null ? (
@@ -2074,6 +2087,35 @@ function TodayCardImpl({
     ));
   };
 
+  /**
+   * The minimal sheet's rows for a day: the same record `renderDay` draws,
+   * with the check beside each salāh on today and the days behind, so a
+   * tap on it logs as a tap on the row would — and asks the same question
+   * about a prayer that has passed (`toggleLog`).
+   */
+  const sheetRows = (offset: number): TimesSheetRow[] => {
+    const dayTimings = dayAt(offset) ?? {};
+    const loggable = offset <= 0;
+    const day = addDays(startOfLocalDay(logNow), offset);
+    const nextDay = dayAt(offset + 1);
+    return DISPLAY_ORDER.filter(key => dayTimings[key]).map(key => ({
+      key,
+      name: t(`prayer.${key}`),
+      time: clock(dayTimings[key] as string),
+      secondary: (OPTIONAL_TIME_KEYS as readonly string[]).includes(key),
+      lit: offset === 0 && target?.name === key,
+      log:
+        loggable && isSalah(key)
+          ? {
+              status: quickLog.statusOf(key, day),
+              phase: quickLogPhase(key, dayTimings, logNow, nextDay, day, dayClock),
+              ready: quickLog.hydrated,
+              onToggle: () => void toggleLog(key, dayTimings, offset),
+            }
+          : undefined,
+    }));
+  };
+
   return (
     <Outer
       style={
@@ -2090,7 +2132,7 @@ function TodayCardImpl({
       <HeroWrap
         // Minimal: the whole hero is the way to the day's times. One
         // target, the size of the page, with nothing inside it to compete.
-        {...(minimal && onOpenTimes
+        {...(minimal
           ? {
               onPress: onOpenTimes,
               accessibilityRole: 'button' as const,
@@ -2428,23 +2470,40 @@ function TodayCardImpl({
             renderDay(selected)
           )}
         </View>
-        <LogPassedPrayerSheet
-          question={
-            question
-              ? {
-                  prayer: t(`prayer.${question.prayer}`),
-                  day: `${getDayLabel(question.offset)} · ${getDayDate(question.offset)}`,
-                  answers: question.answers,
-                  secondOpen: question.secondOpen,
-                }
-              : null
-          }
-          onAnswer={answerPassed}
-          onCancel={dismissQuestion}
-        />
-
       </View>
       )}
+      {/* The question a tap on a passed prayer opens — from the rows, or
+          from the minimal sheet's checks. */}
+      <LogPassedPrayerSheet
+        question={
+          question
+            ? {
+                prayer: t(`prayer.${question.prayer}`),
+                day: `${getDayLabel(question.offset)} · ${getDayDate(question.offset)}`,
+                answers: question.answers,
+                secondOpen: question.secondOpen,
+              }
+            : null
+        }
+        onAnswer={answerPassed}
+        onCancel={dismissQuestion}
+      />
+      {minimal ? (
+        <TodayTimesSheet
+          visible={timesOpen}
+          onClose={onCloseTimes}
+          title={`${getDayLabel(sheetOffset)} · ${getDayDate(sheetOffset)}`}
+          subtitle={getHijriDate ? getHijriDate(sheetOffset) : undefined}
+          rows={sheetRows(sheetOffset)}
+          isToday={sheetOffset === 0}
+          onPrev={dayAt(sheetOffset - 1) ? () => setSheetOffset(o => o - 1) : undefined}
+          onNext={dayAt(sheetOffset + 1) ? () => setSheetOffset(o => o + 1) : undefined}
+          onBackToToday={() => setSheetOffset(0)}
+          onMonth={onOpenMonth}
+          qibla={qiblaBearing != null ? { bearing: qiblaBearing, onPress: onOpenQibla } : undefined}
+          place={placeLabel ? { label: placeLabel, onPress: onOpenPlace } : undefined}
+        />
+      ) : null}
     </Outer>
   );
 }

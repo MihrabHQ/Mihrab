@@ -42,6 +42,7 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useAppPalette } from '../hooks/useAppPalette';
+import { KeepsSideways } from '../navigation/KeepsSideways';
 import { useLayoutRtl } from '../i18n/useLayoutRtl';
 import { TABULAR_MAX_FONT_SCALE } from '../theme/textScale';
 import type { DayScore } from '../journal/journal';
@@ -774,6 +775,7 @@ function PracticeHeatmapImpl({
             </View>
           ))}
         </View>
+        <KeepsSideways>
         <ScrollView
           ref={scrollRef}
           horizontal
@@ -1065,6 +1067,7 @@ function PracticeHeatmapImpl({
             </View>
           </View>
         </ScrollView>
+        </KeepsSideways>
       </View>
 
       {compact ? null : <HeatmapLegend />}

@@ -44,7 +44,6 @@ import { cityOf } from '../settings/cityName';
 import { getMethodLabel } from '../settings/methods';
 import { getProviderLabel } from '../settings/providersCatalog';
 import { providerHidesCalculationMethod } from '../settings/providerUi';
-import { TodayTimesSheet } from './home/TodayTimesSheet';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useMethodCurrency } from '../hooks/useMethodCurrency';
 import { methodCurrencyNote } from '../prayer/methodCurrencyNote';
@@ -587,10 +586,6 @@ export function HomeScreen() {
    * to decide how much of it to mark new.
    */
   const [changelogSince, setChangelogSince] = useState<string | null>(null);
-  // Minimal (settings.minimalUi): the day's times, behind a tap on the hero.
-  const [timesOpen, setTimesOpen] = useState(false);
-  const openTimes = useCallback(() => setTimesOpen(true), []);
-  const closeTimes = useCallback(() => setTimesOpen(false), []);
   // The what's-new sheet and the features offer never share a launch.
   const changelogShown = useRef(false);
   if (changelogSince !== null) changelogShown.current = true;
@@ -1927,8 +1922,9 @@ export function HomeScreen() {
             onHelpMihrab={settings.showHelpMihrabOnHome ? handleOpenHelpMihrab : undefined}
             minimal={minimal}
             footer={minimalFooter}
-            onOpenTimes={openTimes}
             footInset={tabBarInset}
+            placeLabel={minimal && locationLabel ? cityOf(locationLabel) : undefined}
+            onOpenPlace={() => navigation.navigate('SettingsLocation', { highlight: 'savedLocations' })}
             expanded={isDashboard}
             fullBleed={fullBleed}
             roomy={isRoomy}
@@ -2098,24 +2094,6 @@ export function HomeScreen() {
           !changelogShown.current
         }
       />
-      {minimal ? (
-        <TodayTimesSheet
-          visible={timesOpen}
-          onClose={closeTimes}
-          timings={todayMap}
-          next={nextInfo?.name}
-          title={`${getDayLabel(0)} · ${getDayDate(0)}`}
-          qibla={qiblaBearing != null ? { bearing: qiblaBearing, onPress: handleOpenQibla } : undefined}
-          place={
-            locationLabel
-              ? {
-                  label: cityOf(locationLabel),
-                  onPress: () => navigation.navigate('SettingsLocation', { highlight: 'savedLocations' }),
-                }
-              : undefined
-          }
-        />
-      ) : null}
       <ChangelogSheet
         visible={changelogSince !== null}
         since={changelogSince}
