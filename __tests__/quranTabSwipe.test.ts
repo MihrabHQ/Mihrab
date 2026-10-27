@@ -39,7 +39,8 @@ describe('the pager', () => {
   });
 
   it('locks while searching, with one search field', () => {
-    expect(screen).toContain('scrollEnabled={!searching}');
+    // …and under Minimal, where a sideways drag turns the tab (MinimalSwipe).
+    expect(screen).toContain('scrollEnabled={!searching && !minimal}');
     expect(screen).toContain('const listHeader = inFront || !searching ? headerFor(pageTab) : undefined;');
   });
 

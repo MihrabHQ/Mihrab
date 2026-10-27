@@ -22,9 +22,13 @@ import {
   isButtonNavigation,
 } from '../native/SystemTheme';
 import { desktopSize } from '../responsive/desktop';
+import { useAppearanceSettings } from '../context/PrayerSettingsContext';
 
 /** The pill's own height. */
 export const TAB_BAR_HEIGHT = desktopSize(60);
+
+/** Minimal's row of dots (MinimalTabBar), above the system's bottom inset. */
+export const MINIMAL_TAB_BAR_HEIGHT = 28;
 
 /** Side inset, and therefore the width the pill is short of the window. */
 export const TAB_BAR_SIDE_INSET = 14;
@@ -268,7 +272,20 @@ export function useTabBarCornerInset(): number {
  */
 export function useTabBarInset(): number {
   const bottom = useTabBarBottom();
+  // Minimal's dots are laid over the page (MinimalTabBar), so every page
+  // keeps that much clear at its foot, as it would under a floating bar.
+  if (useMinimalUi()) return MINIMAL_TAB_BAR_HEIGHT + bottom;
   return FLOATS_OVER_CONTENT ? TAB_BAR_HEIGHT + bottom : 0;
+}
+
+/**
+ * Minimal (settings.minimalUi), as the bar and the pages read it. Here
+ * rather than in the navigator so a page's inset and the bar it clears
+ * cannot disagree. Beside a vertical bar the tabs are the column's and
+ * the dots are not drawn — `MainTabs` adds that condition itself.
+ */
+export function useMinimalUi(): boolean {
+  return useAppearanceSettings().slice.minimalUi;
 }
 
 /**

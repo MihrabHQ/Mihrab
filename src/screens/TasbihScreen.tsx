@@ -12,7 +12,6 @@ import {
 import { useWindowSize } from '../responsive/windowSize';
 import { useTranslation } from 'react-i18next';
 import { useAppPalette } from '../hooks/useAppPalette';
-import { useAppearanceSettings } from '../context/PrayerSettingsContext';
 import { useBreakpoint } from '../responsive/breakpoints';
 import { useAndroidSubScreenBack } from '../navigation/useAndroidSubScreenBack';
 import {
@@ -74,9 +73,6 @@ export function TasbihScreen() {
   // Arabic directly. Hide it when the app language is Arabic.
   const showPronunciation = i18n.language !== 'ar';
   const { palette } = useAppPalette();
-  // Minimal (settings.minimalUi): the count and the dhikr it counts, and
-  // the way to the next one — not which set this is, nor what follows.
-  const minimal = useAppearanceSettings().slice.minimalUi;
   const { width, height } = useWindowSize();
   useAndroidSubScreenBack();
   // No manual header offset (v2.8.5) — see the note in DuasScreen. Tasbih
@@ -169,14 +165,12 @@ export function TasbihScreen() {
 
   const head = (
     <View style={[styles.head, capStyle]}>
-      {minimal ? null : (
-        <Text style={[styles.position, { color: palette.muted }]}>
-          {t('tasbih.setPosition', {
-            index: index + 1,
-            total: TASBIH_PRESETS.length,
-          })}
-        </Text>
-      )}
+      <Text style={[styles.position, { color: palette.muted }]}>
+        {t('tasbih.setPosition', {
+          index: index + 1,
+          total: TASBIH_PRESETS.length,
+        })}
+      </Text>
       {preset.arabic ? (
         <Text
           style={[styles.arabic, { color: palette.text }]}
@@ -345,7 +339,7 @@ export function TasbihScreen() {
               styles.table,
               { paddingTop: Math.max(0, tabletop.bottom - tabletop.top) },
             ]}>
-            {minimal ? null : peek}
+            {peek}
             <Pressable
               accessibilityRole="button"
               accessibilityLabel={t('tasbih.increment')}
@@ -365,7 +359,7 @@ export function TasbihScreen() {
         <>
           {head}
           {ring}
-          {minimal ? null : peek}
+          {peek}
           {navRow}
         </>
       )}

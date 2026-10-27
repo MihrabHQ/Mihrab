@@ -72,6 +72,9 @@ import {
 } from './tabIcons';
 import type { MainTabParamList } from './types';
 import { useBookPanePadding } from '../native/FoldPosture';
+import { useMinimalUi } from './tabBarInset';
+import { MinimalTabBar } from './MinimalTabBar';
+import { MinimalSwipe } from './MinimalSwipe';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
@@ -138,6 +141,9 @@ export function MainTabs() {
    * indicator rather than at a bar. See src/native/VerticalBar.ts.
    */
   const vbar = useVerticalBar();
+  // Minimal (settings.minimalUi): dots for a bar, and a swipe across a
+  // page turns to the next. Not beside a vertical bar, which has the tabs.
+  const minimal = useMinimalUi() && !vbar;
   // A foldable half open as a book: every tab but Today keeps to one page
   // of it, off the crease (`FoldPosture.ts`). Today lays out across both.
   const bookPad = useBookPanePadding(useWindowSize().width);
@@ -150,7 +156,13 @@ export function MainTabs() {
   return (
     <Tab.Navigator
       tabBar={props =>
-        vbar ? <VerticalTabBar {...props} bar={vbar} /> : <BottomTabBar {...props} />
+        vbar ? (
+          <VerticalTabBar {...props} bar={vbar} />
+        ) : minimal ? (
+          <MinimalTabBar {...props} />
+        ) : (
+          <BottomTabBar {...props} />
+        )
       }
       /**
        * ARRIVING SOMEWHERE ALWAYS SHOWS THE BAR.
@@ -191,7 +203,7 @@ export function MainTabs() {
             surface={palette.bg}
             headerless={!(route.name === 'TodayTab' && todayHeader)}
           />
-          {children}
+          <MinimalSwipe enabled={minimal}>{children}</MinimalSwipe>
           {/* Over the page, at the other end: the strip behind the status
               bar. Every tab pads its content clear of it, so a band of the
               page's own colour is invisible until something scrolls up

@@ -66,7 +66,7 @@ describe('the Quran tab', () => {
     expect(start).toContain("t('quran.khatmahCustom'");
     expect(read('src/screens/quran/KhatmahEntry.tsx')).toContain('return <KhatmahCard />;');
     expect(src).not.toContain("t('quran.companionTitle'");
-    expect(src).toContain('{votdOn && votdArabic && !minimal ? (');
+    expect(src).toContain('{votdOn && votdArabic ? (');
     expect(src).toContain('{plan ? <TilawahRow /> : null}');
   });
 

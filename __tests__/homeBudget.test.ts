@@ -110,7 +110,10 @@ describe('the constants are the styles’', () => {
     expect(card).toMatch(/minimal \? MINIMAL_SECONDS_SIZE : HERO_SECONDS_SIZE\[tier\]/);
     expect(card).toMatch(/\{ fontSize: countdownSize \}/);
     expect(card).toMatch(/\{ fontSize: secondsSize \}/);
-    expect(card).toMatch(/paddingBottom: HERO_FOOT_PAD\[fullBleed \? tier : 'comfortable'\]/);
+    // The tier's foot — and under Minimal the tab bar's inset on top of it,
+    // so the sky runs on under the dots.
+    expect(card).toMatch(/const footPad = HERO_FOOT_PAD\[fullBleed \? tier : 'comfortable'\] \+ \(minimal \? footInset : 0\)/);
+    expect(card).toMatch(/\{ paddingBottom: footPad \}/);
     expect(HERO_FOOT_PAD.comfortable).toBe(SPACING.lg);
     // The styles carry no size of their own any more.
     expect(card).not.toMatch(/heroCountdown: \{[^}]*fontSize/);

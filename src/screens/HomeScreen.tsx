@@ -1807,7 +1807,8 @@ export function HomeScreen() {
         // spends `insets.bottom`. Adding it here as well cost ~54pt of
         // dead air at the foot of the page, which on iPad was most of
         // the reason the dashboard overflowed and had to scroll at all.
-        { paddingBottom: SPACING.xl + tabBarInset },
+        // Minimal: nothing under the hero — its sky runs on under the dots.
+        { paddingBottom: minimal ? 0 : SPACING.xl + tabBarInset },
         // Beside a vertical bar: only clear of the home indicator (no bar
         // along the bottom then). The column is kept clear inside:
         // TodayCard pads the hero's content and the table, and the sky
@@ -1921,6 +1922,7 @@ export function HomeScreen() {
             minimal={minimal}
             footer={minimalFooter}
             onOpenTimes={openTimes}
+            footInset={tabBarInset}
             expanded={isDashboard}
             fullBleed={fullBleed}
             roomy={isRoomy}

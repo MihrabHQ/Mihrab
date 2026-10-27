@@ -101,6 +101,7 @@ import {
 import type { JournalPrayer } from '../../journal/journal';
 import { pagerPosition } from './pagerPosition';
 import { LogPassedPrayerSheet } from './LogPassedPrayerSheet';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { HeroSky, type SkyRun } from './HeroSky';
 import {
   HERO_Y,
@@ -310,6 +311,8 @@ export type TodayCardProps = {
   minimal?: boolean;
   footer?: string;
   onOpenTimes?: () => void;
+  /** Minimal: the tab bar's inset, which the sky runs on under. */
+  footInset?: number;
 };
 
 /**
@@ -1105,7 +1108,17 @@ const HeroToday = memo(function HeroToday({
           animated
         />
       ) : null}
-      {topRow && fill && vbar ? null : topRow ? (
+      {minimal ? (
+        // Minimal keeps the heart alone, at the trailing end of the top
+        // row where the Qibla chip stood — the way into Help Mihrab, and
+        // (as on the full page) the place to put it away.
+        topRow?.renderHelp ? (
+          <View style={styles.heroTopRow} onLayout={fill ? onTopRowLayout : undefined}>
+            <View style={styles.heroTopLeading} />
+            {topRow.renderHelp(inkTop)}
+          </View>
+        ) : null
+      ) : topRow && fill && vbar ? null : topRow ? (
         <HeroTopRow topRow={topRow} ink={inkTop} onLayout={fill ? onTopRowLayout : undefined} />
       ) : null}
       {/* The room the sky's bodies move in. */}
@@ -1280,6 +1293,7 @@ function TodayCardImpl({
   minimal: minimalWanted = false,
   footer,
   onOpenTimes,
+  footInset = 0,
 }: TodayCardProps) {
   // Only the phone's full-bleed page has a minimal face; the dashboard
   // and the book keep their cards.
@@ -1907,6 +1921,24 @@ function TodayCardImpl({
       : Math.round(Math.min(Math.max(windowHeight * 0.34, 300), 460))
     : undefined;
   const Outer = fullBleed ? View : GlassSurface;
+  // Minimal: the sky runs on under the dots at the page's foot, so the
+  // hero's foot takes the bar's inset as well as its own padding.
+  const footPad = HERO_FOOT_PAD[fullBleed ? tier : 'comfortable'] + (minimal ? footInset : 0);
+  // Minimal: a drag up on the hero opens the day's times too — only a
+  // clearly upward one, so a sideways drag is still the tabs' and a drag
+  // down the page's (the pull to refresh).
+  const swipeUp = useMemo(
+    () =>
+      Gesture.Pan()
+        .enabled(minimal && !!onOpenTimes)
+        .activeOffsetY(-24)
+        .failOffsetX([-16, 16])
+        .runOnJS(true)
+        .onEnd(e => {
+          if (e.translationY < -40 || e.velocityY < -500) onOpenTimes?.();
+        }),
+    [minimal, onOpenTimes],
+  );
   // Minimal: the hero's wrap is the tap that opens the day's times.
   // (A View takes every prop the Pressable is given here but the press,
   // and that one is only given when it IS a Pressable.)
@@ -2045,6 +2077,7 @@ function TodayCardImpl({
       {/* Full-bleed, the hero GROWS: the card fills the page and the hero
           takes whatever the table leaves, so the sky ends at the tab bar
           and the page has no band of nothing under the rows. */}
+      <GestureDetector gesture={swipeUp}>
       <HeroWrap
         // Minimal: the whole hero is the way to the day's times. One
         // target, the size of the page, with nothing inside it to compete.
@@ -2058,7 +2091,7 @@ function TodayCardImpl({
           : {})}
         style={[
           styles.heroWrap,
-          { paddingBottom: HERO_FOOT_PAD[fullBleed ? tier : 'comfortable'] },
+          { paddingBottom: footPad },
           heroColumnPad,
           { paddingTop: heroTop },
           fullBleed && !roomy && styles.heroWrapBleed,
@@ -2137,10 +2170,10 @@ function TodayCardImpl({
               dayClock={dayClock}
               expanded={expanded}
               tier={fullBleed ? tier : 'comfortable'}
-              bleed={{ horizontal: skySide, top: heroTop, bottom: HERO_FOOT_PAD[fullBleed ? tier : 'comfortable'] }}
+              bleed={{ horizontal: skySide, top: heroTop, bottom: footPad }}
               statusBarInset={underStatusBar ? insets.top : 0}
               fill={fullBleed}
-              topRow={fullBleed && !minimal ? { renderLocation, renderQibla } : undefined}
+              topRow={fullBleed ? (minimal ? { renderHelp } : { renderLocation, renderQibla }) : undefined}
               minimal={minimal}
               footer={footer}
               frozenAt={interval.fromAt}
@@ -2168,10 +2201,10 @@ function TodayCardImpl({
             dayClock={dayClock}
             expanded={expanded}
             tier={fullBleed ? tier : 'comfortable'}
-            bleed={{ horizontal: skySide, top: heroTop, bottom: HERO_FOOT_PAD[fullBleed ? tier : 'comfortable'] }}
+            bleed={{ horizontal: skySide, top: heroTop, bottom: footPad }}
             statusBarInset={underStatusBar ? insets.top : 0}
             fill={fullBleed}
-            topRow={fullBleed && !minimal ? { renderLocation, renderQibla, renderHelp } : undefined}
+            topRow={fullBleed ? (minimal ? { renderHelp } : { renderLocation, renderQibla, renderHelp }) : undefined}
             minimal={minimal}
             footer={footer}
             // Not on a roomy page: the hero is not under the status bar
@@ -2200,6 +2233,7 @@ function TodayCardImpl({
           />
         )}
       </HeroWrap>
+      </GestureDetector>
 
       {/* Minimal: no table — the day's times are a tap away (HomeScreen's
           sheet), and the hero has the page. */}
