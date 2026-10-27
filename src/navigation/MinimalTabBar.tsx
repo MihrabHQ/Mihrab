@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react';
-import { Animated, I18nManager, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { Animated, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { useLayoutRtl } from '../i18n/useLayoutRtl';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { linearDown, withAlpha } from '../screens/home/skyPaint';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
@@ -17,6 +18,7 @@ import {
   setPagerEngaged,
   settlePagerBase,
   settlePagerHold,
+  takeExpectedTurn,
 } from './minimalPager';
 
 /**
@@ -81,18 +83,23 @@ export function MinimalTabBar({ state, descriptors, navigation }: BottomTabBarPr
     // slide and every page is in reach for it, so the page left and the
     // ones between stay drawn as the row slides by. A finger's turn (a
     // swipe, the hold) already holds the engagement itself.
-    if (!pagerHeldByFinger()) engagePagerFor(PAGER_TRANSITION_MS + 60);
+    // A swipe's own turn, told to the navigator as it landed, is not one.
+    const swiped = takeExpectedTurn(state.index);
+    if (!swiped && !pagerHeldByFinger()) engagePagerFor(PAGER_TRANSITION_MS + 60);
   }, [state.index]);
+  // The app's direction, not the device's (minimalPager.ts): the dots run
+  // right to left under an Arabic app on an English phone too.
+  const rtl = useLayoutRtl();
   // The one position the pages read too (minimalPager.ts): built for
   // the row, not for the tab, so a turn rebuilds nothing.
   const position = useMemo(
-    () => pagerPosition(width, state.routes.length),
-    [width, state.routes.length],
+    () => pagerPosition(width, state.routes.length, rtl),
+    [width, state.routes.length, rtl],
   );
   // The hold-and-slide. Read in the gesture's callbacks without
   // rebuilding the gesture on every tab change.
-  const live = useRef({ index: state.index, count: state.routes.length, width });
-  live.current = { index: state.index, count: state.routes.length, width };
+  const live = useRef({ index: state.index, count: state.routes.length, width, rtl });
+  live.current = { index: state.index, count: state.routes.length, width, rtl };
   const lastSlot = useRef(state.index);
   // Whether this hold ever began: a tap on a dot is a pan that fails
   // before its long press, and still finalizes — with nothing to let go.
@@ -101,7 +108,7 @@ export function MinimalTabBar({ state, descriptors, navigation }: BottomTabBarPr
     const { count, width: w } = live.current;
     const start = (w - count * HIT) / 2;
     let fromLeft = (x - start) / HIT - 0.5;
-    if (I18nManager.isRTL) fromLeft = count - 1 - fromLeft;
+    if (live.current.rtl) fromLeft = count - 1 - fromLeft;
     return Math.max(0, Math.min(count - 1, fromLeft));
   };
   const hold = useMemo(

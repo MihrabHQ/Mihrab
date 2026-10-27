@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { Animated, I18nManager, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { Animated, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { useLayoutRtl } from '../i18n/useLayoutRtl';
 import {
   PanGestureHandler,
   State,
@@ -10,6 +11,7 @@ import { useNavigation, useNavigationState } from '@react-navigation/native';
 import { useAfterFirstPaint } from '../boot/firstPaint';
 import { afterRun } from '../boot/launchWarp';
 import {
+  expectPagerTurn,
   finishPagerBase,
   pagerDragRaw,
   pagerPosition,
@@ -67,10 +69,14 @@ export function MinimalSwipe({
   const index = useNavigationState(s => s.index);
   const myIndex = routes.findIndex(r => r.key === routeKey);
   const { width } = useWindowDimensions();
+  // The app's direction, not the device's (minimalPager.ts).
+  const rtl = useLayoutRtl();
   // Read in the gesture's callbacks without rebuilding the handler on
   // every tab change: a handler rebuilt mid-drag is a drag cut short.
-  const live = useRef({ routes, index, width });
-  live.current = { routes, index, width };
+  const live = useRef({ routes, index, width, rtl });
+  live.current = { routes, index, width, rtl };
+  // The turn the slide is carrying, told to the navigator once it lands.
+  const pendingTurn = useRef<{ name: string; index: number } | null>(null);
   // A turn under way: the settle after a lift, which a new finger may
   // take over (below). The number tells a settle's callback whether it
   // is still the current turn.
@@ -85,8 +91,18 @@ export function MinimalSwipe({
     () => Animated.event([{ nativeEvent: { translationX: pagerDragRaw } }], { useNativeDriver: true }),
     [],
   );
-  const onHandlerStateChange = useMemo(
-    () => (e: HandlerStateChangeEvent<PanGestureHandlerEventPayload>) => {
+  const onHandlerStateChange = useMemo(() => {
+    // The navigator hears of a swipe's turn when the slide has landed, or
+    // when a finger takes the row over before then (expectPagerTurn).
+    const flushTurn = () => {
+      const p = pendingTurn.current;
+      if (!p) return;
+      pendingTurn.current = null;
+      expectPagerTurn(p.index);
+      live.current = { ...live.current, index: p.index };
+      navigation.navigate(p.name as never);
+    };
+    return (e: HandlerStateChangeEvent<PanGestureHandlerEventPayload>) => {
       const { state, oldState, translationX, velocityX } = e.nativeEvent;
       if (state === State.ACTIVE) {
         fingerDown.current = true;
@@ -102,6 +118,7 @@ export function MinimalSwipe({
           settling.current = false;
           pagerDragRaw.stopAnimation();
           finishPagerBase();
+          flushTurn();
         }
         setPagerEngaged(true);
         return;
@@ -118,7 +135,7 @@ export function MinimalSwipe({
       // A flick back the way the page came is not a turn.
       const sameWay = velocityX === 0 || Math.sign(velocityX) === Math.sign(translationX);
       let step = translationX < 0 ? 1 : -1;
-      if (I18nManager.isRTL) step = -step;
+      if (live.current.rtl) step = -step;
       const next = far && sameWay ? rs[i + step] : undefined;
       settling.current = true;
       const mine = ++turn.current;
@@ -143,15 +160,17 @@ export function MinimalSwipe({
       // turn was one more thing than the page itself.
       // The settled tab slides to the next while the drag runs back to
       // zero: the position, and so every page, carries on from where
-      // the finger left it (minimalPager.ts). The position is one node
-      // whichever tab is current, so telling the navigator now rebuilds
-      // nothing under the slide.
+      // the finger left it (minimalPager.ts). The navigator is told once
+      // it has landed (`expectPagerTurn`): nothing is laid out or rendered
+      // under the slide, so it runs through in one movement.
       settlePagerBase(i + step);
-      navigation.navigate(next.name as never);
-      settlePagerDrag(done);
-    },
-    [navigation],
-  );
+      pendingTurn.current = { name: next.name, index: i + step };
+      settlePagerDrag(() => {
+        if (turn.current === mine) flushTurn();
+        done();
+      });
+    };
+  }, [navigation]);
 
   // This page's place on the strip: as many page-widths aside as it is
   // tabs from the position — the one number the dots read too, so the
@@ -163,10 +182,10 @@ export function MinimalSwipe({
   const offset = useMemo(
     () =>
       Animated.multiply(
-        Animated.subtract(myIndex, pagerPosition(width, count)),
-        I18nManager.isRTL ? -width : width,
+        Animated.subtract(myIndex, pagerPosition(width, count, rtl)),
+        rtl ? -width : width,
       ),
-    [myIndex, count, width],
+    [myIndex, count, width, rtl],
   );
 
   // In reach: the page on show, its neighbours, and every page while a

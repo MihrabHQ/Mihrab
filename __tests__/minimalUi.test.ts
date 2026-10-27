@@ -56,7 +56,9 @@ describe('the swipe', () => {
     expect(swipe).toContain("Animated.event([{ nativeEvent: { translationX: pagerDragRaw } }], { useNativeDriver: true })");
     expect(swipe).toContain('onGestureEvent={onGestureEvent}');
     expect(swipe).toContain('if (oldState !== State.ACTIVE) return;');
-    expect(swipe).toContain('if (I18nManager.isRTL) step = -step;');
+    // The app's direction (useLayoutRtl), not the device's I18nManager.
+    expect(swipe).toContain('if (live.current.rtl) step = -step;');
+    expect(swipe).not.toContain('I18nManager');
     expect(swipe).toContain('transform: [{ translateX: offset }]');
   });
 
@@ -84,8 +86,8 @@ describe('the swipe', () => {
     expect(screens).toContain("importantForAccessibility={inactive ? 'no-hide-descendants' : 'auto'}");
     expect(screens).toContain('level: { zIndex: 0 }');
     // Each page as many widths aside as it is tabs from the position…
-    expect(swipe).toContain('Animated.subtract(myIndex, pagerPosition(width, count))');
-    expect(swipe).toContain('I18nManager.isRTL ? -width : width,');
+    expect(swipe).toContain('Animated.subtract(myIndex, pagerPosition(width, count, rtl))');
+    expect(swipe).toContain('rtl ? -width : width,');
     // …which is the settled tab, the drag as a fraction, and the hold —
     // summed, and only then given a little past either end of the row.
     // Shaped on the drag by the current tab's neighbours, it was rebuilt
@@ -93,17 +95,22 @@ describe('the swipe', () => {
     // still in the drag: a turn onto an end tab recoiled a quarter of a
     // width before sliding on. The sum is the same number for every
     // reader whichever tab is current, and nothing is rebuilt on a turn.
-    expect(pager).toContain('const summed = Animated.add(Animated.add(pagerBase, pagerDragInTabs(width)), pagerHold);');
+    expect(pager).toContain('const summed = Animated.add(Animated.add(pagerBase, pagerDragInTabs(width, rtl)), pagerHold);');
     expect(pager).toMatch(
       /inputRange: \[-1, 0, last, last \+ 1\],\s*outputRange: \[-EDGE_GIVE, 0, last, last \+ EDGE_GIVE\],\s*extrapolate: 'clamp',/,
     );
     expect(pager).not.toContain('pagerEdges');
-    expect(swipe).toContain('[myIndex, count, width],');
-    expect(bar).toContain('[width, state.routes.length],');
+    expect(swipe).toContain('[myIndex, count, width, rtl],');
+    expect(bar).toContain('[width, state.routes.length, rtl],');
     // On a turn the settled tab slides while the drag runs back: no jump.
     // The navigator is told at once: the position is one node whichever
     // tab is current, so the tab changing rebuilds nothing under the slide.
-    expect(swipe).toMatch(/settlePagerBase\(i \+ step\);\s*navigation\.navigate\(next\.name as never\);\s*settlePagerDrag\(done\);/);
+    // The navigator hears of the turn once the slide has landed: a tab
+    // change mid-slide lays out a page and renders, and the slide stalled.
+    expect(swipe).toMatch(/settlePagerBase\(i \+ step\);\s*pendingTurn\.current = \{ name: next\.name, index: i \+ step \};\s*settlePagerDrag\(\(\) => \{\s*if \(turn\.current === mine\) flushTurn\(\);\s*done\(\);/);
+    // A finger taking the row over mid-slide tells it at once.
+    expect(swipe).toMatch(/finishPagerBase\(\);\s*flushTurn\(\);/);
+    expect(read('src/navigation/MinimalTabBar.tsx')).toContain('const swiped = takeExpectedTurn(state.index);');
     expect(pager).toMatch(/duration: PAGER_TRANSITION_MS,\s*easing: pagerEasing,\s*useNativeDriver: true,\s*\}\)\.start\(\(\) => onDone/);
   });
 
@@ -121,7 +128,7 @@ describe('the swipe', () => {
     // The hold asks for every page; a tap on a dot gets them from the bar's
     // tab-change effect (`engagePagerFor`).
     expect(read('src/navigation/MinimalTabBar.tsx').match(/setPagerEngaged\(true, true\)/g)).toHaveLength(1);
-    expect(read('src/navigation/MinimalTabBar.tsx')).toContain('if (!pagerHeldByFinger()) engagePagerFor(PAGER_TRANSITION_MS + 60);');
+    expect(read('src/navigation/MinimalTabBar.tsx')).toContain('if (!swiped && !pagerHeldByFinger()) engagePagerFor(PAGER_TRANSITION_MS + 60);');
     expect(swipe).toMatch(/void afterRun\(\)\.then\(\(\) => \{\s*if \(cancelled\) return;\s*setSettled\(true\);\s*startPagerWarmup\(\);/);
     expect(read('src/navigation/minimalPager.ts')).toContain('let warmth = 0;');
     expect(swipe).toContain('inReach ? null : styles.away');
@@ -154,9 +161,9 @@ describe('the swipe', () => {
     expect(bar).toContain('.activateAfterLongPress(160)');
     expect(bar).toContain('pagerHold.setValue(pos - live.current.index);');
     expect(bar).toContain('const target = Math.round(slotAt(e.x));');
-    expect(bar).toContain('if (I18nManager.isRTL) fromLeft = count - 1 - fromLeft;');
+    expect(bar).toContain('if (live.current.rtl) fromLeft = count - 1 - fromLeft;');
     // The dots and the pages read one position, so the strip follows the finger with them.
-    expect(bar).toContain('() => pagerPosition(width, state.routes.length),');
+    expect(bar).toContain('() => pagerPosition(width, state.routes.length, rtl),');
     expect(bar).toContain('settlePagerBase(target);');
   });
 

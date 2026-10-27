@@ -43,7 +43,7 @@
  * neighbour, does not lay out four far pages on its first move.
  */
 import { useEffect, useSyncExternalStore, type RefObject } from 'react';
-import { Animated, Easing, I18nManager } from 'react-native';
+import { Animated, Easing } from 'react-native';
 
 export const pagerDragRaw = new Animated.Value(0);
 export const pagerEngaged = new Animated.Value(0);
@@ -59,10 +59,16 @@ export const EDGE_GIVE = 0.22;
  * The drag as a fraction of a page, a page at most. A drag to the left
  * reveals the page on the right — the next tab in LTR, the one before in
  * RTL — so in LTR a drag left is a step forward and in RTL a step back.
+ *
+ * `rtl` is the APP's direction (useLayoutRtl), not `I18nManager.isRTL`:
+ * the app mirrors itself with a Yoga direction and leaves I18nManager
+ * reading the device's language, so with the app in Arabic on an English
+ * phone the dots ran right to left while a swipe turned the pages the
+ * left-to-right way — the wrong way under the finger.
  */
-function pagerDragInTabs(width: number): Animated.AnimatedInterpolation<number> {
+function pagerDragInTabs(width: number, rtl: boolean): Animated.AnimatedInterpolation<number> {
   const w = Math.max(1, width);
-  const step = I18nManager.isRTL ? -1 : 1;
+  const step = rtl ? -1 : 1;
   return pagerDragRaw.interpolate({
     inputRange: [-w, 0, w],
     outputRange: [step, 0, -step],
@@ -76,9 +82,9 @@ function pagerDragInTabs(width: number): Animated.AnimatedInterpolation<number> 
  * the row of `count` tabs only a fraction of the finger (EDGE_GIVE).
  * The same number for every reader, whichever tab is current.
  */
-export function pagerPosition(width: number, count: number): Animated.AnimatedInterpolation<number> {
+export function pagerPosition(width: number, count: number, rtl = false): Animated.AnimatedInterpolation<number> {
   const last = Math.max(1, count - 1);
-  const summed = Animated.add(Animated.add(pagerBase, pagerDragInTabs(width)), pagerHold);
+  const summed = Animated.add(Animated.add(pagerBase, pagerDragInTabs(width, rtl)), pagerHold);
   return summed.interpolate({
     inputRange: [-1, 0, last, last + 1],
     outputRange: [-EDGE_GIVE, 0, last, last + EDGE_GIVE],
@@ -111,6 +117,28 @@ export function settlePagerBase(index: number, animated = true): void {
 /** The navigator's slide, and the drag's run back to zero with it. */
 export const PAGER_TRANSITION_MS = 280;
 export const pagerEasing = Easing.out(Easing.cubic);
+
+/**
+ * A swipe's turn, told to the navigator only once the slide has landed
+ * (MinimalSwipe). A tab change lays out the page two along (it comes into
+ * reach) and renders the navigator — work the UI thread does in the same
+ * frames the slide is drawn in, and the page slowed in the middle of its
+ * run and then caught up. Landed, the change costs a still page nothing.
+ * The bar's tab-change effect asks whether a change was this one, so it
+ * does not take it for a jump nobody's finger made.
+ */
+let expectedTurn: number | null = null;
+
+export function expectPagerTurn(index: number): void {
+  expectedTurn = index;
+}
+
+/** Whether the tab change to `index` is the swipe's own; asked once. */
+export function takeExpectedTurn(index: number): boolean {
+  const hit = expectedTurn === index;
+  expectedTurn = null;
+  return hit;
+}
 
 /** How long the dots' icons stay up after a turn settles. */
 export const ICONS_LINGER_MS = 1000;

@@ -27,11 +27,11 @@ const COUNT = 6;
 const valueOf = (node: Animated.AnimatedInterpolation<number>): number =>
   (node as unknown as { __getValue: () => number }).__getValue();
 
-function place(base: number, dragPx: number, hold = 0): number {
+function place(base: number, dragPx: number, hold = 0, rtl = false): number {
   pagerBase.setValue(base);
   pagerDragRaw.setValue(dragPx);
   pagerHold.setValue(hold);
-  return valueOf(pagerPosition(W, COUNT));
+  return valueOf(pagerPosition(W, COUNT, rtl));
 }
 
 describe('the position', () => {
@@ -70,9 +70,15 @@ describe('the position', () => {
   });
 
   it('is mirrored in a right-to-left language: the next page is on the left', () => {
-    I18nManager.isRTL = true;
-    expect(place(2, -0.35 * W)).toBeCloseTo(1.65);
-    expect(place(2, 0.35 * W)).toBeCloseTo(2.35);
+    expect(place(2, -0.35 * W, 0, true)).toBeCloseTo(1.65);
+    expect(place(2, 0.35 * W, 0, true)).toBeCloseTo(2.35);
+  });
+
+  it('follows the app’s direction, not the device’s', () => {
+    // An Arabic app on an English phone: I18nManager says left to right,
+    // the page is mirrored, and the swipe must be too.
+    I18nManager.isRTL = false;
+    expect(place(2, 0.35 * W, 0, true)).toBeCloseTo(2.35);
   });
 
   it('can be finished where it was going, for a finger that comes down mid-slide', () => {
