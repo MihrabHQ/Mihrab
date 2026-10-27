@@ -27,7 +27,7 @@
  */
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useTranslation } from 'react-i18next';
-import { Animated, I18nManager, Platform, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { Animated, Platform, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { useWindowSize } from '../responsive/windowSize';
 import type { ViewStyle } from 'react-native';
 import { useEffect, useRef } from 'react';
@@ -209,7 +209,7 @@ export function MainTabs() {
             surface={palette.bg}
             headerless={!(route.name === 'TodayTab' && todayHeader)}
           />
-          <MinimalSwipe enabled={minimal}>{children}</MinimalSwipe>
+          <MinimalSwipe enabled={minimal} routeKey={route.key}>{children}</MinimalSwipe>
           {/* Over the page, at the other end: the strip behind the status
               bar. Every tab pads its content clear of it, so a band of the
               page's own colour is invisible until something scrolls up
@@ -223,7 +223,7 @@ export function MainTabs() {
           {vbar ? null : <TabBarScrim bg={palette.bg} slide={slide} />}
         </View>
       )}
-      screenOptions={({ route, navigation }) => ({
+      screenOptions={({ route }) => ({
         /**
          * Minimal: the pages slide a page's width, the way a pager's do —
          * the old one out, the new one in from the side the finger (or
@@ -232,37 +232,30 @@ export function MainTabs() {
          * page is on the left.
          */
         ...(minimal
-          ? (() => {
-              // Every tab's page is kept drawn (`detachInactiveScreens`
-              // off, `lazy` off) and stood where it is in the row: as many
-              // page-widths to the side as it is tabs from the one on
-              // show — a strip of pages, like the mushaf's, which the
-              // finger slides along (MinimalSwipe). The navigator's own
-              // progress is ±1 for every tab not on show; the distance
-              // tells the neighbours from the rest.
-              const tabState = navigation.getState();
-              const myIndex = tabState.routes.findIndex(r => r.key === route.key);
-              const away = Math.max(1, Math.abs(myIndex - tabState.index)) * windowWidth;
-              return {
-                lazy: false,
-                transitionSpec: {
-                  animation: 'timing' as const,
-                  config: { duration: PAGER_TRANSITION_MS, easing: pagerEasing },
-                },
-                sceneStyleInterpolator: ({ current }: { current: { progress: Animated.AnimatedInterpolation<number> } }) => ({
-                  sceneStyle: {
-                    transform: [
-                      {
-                        translateX: current.progress.interpolate({
-                          inputRange: [-1, 0, 1],
-                          outputRange: I18nManager.isRTL ? [away, 0, -away] : [-away, 0, away],
-                        }),
-                      },
-                    ],
-                  },
-                }),
-              };
-            })()
+          ? {
+              // Every tab's page is kept mounted and drawn (`lazy` off,
+              // `detachInactiveScreens` off, MinimalScreens), and stood on
+              // the strip by its own wrapper (MinimalSwipe): as many
+              // page-widths aside as it is tabs from where the pages are.
+              // The navigator moves nothing itself.
+              lazy: false,
+              // Every tab's scene view stays where the navigator put it —
+              // over the ones before it — and the page inside it is what
+              // moves aside; so the scene must not be painted, or the last
+              // tab's paper would lie over every page. The pages paint
+              // their own ground.
+              sceneStyle: { backgroundColor: 'transparent' },
+              // No scene interpolator: the navigator's own progress draws
+              // nothing. The spec is still named, and over the pager's
+              // own time: a navigator with no transition at all stands a
+              // page not on show down the frame it is left, and the page
+              // the finger is still sliding went with it.
+              transitionSpec: {
+                animation: 'timing' as const,
+                config: { duration: PAGER_TRANSITION_MS, easing: pagerEasing },
+              },
+              sceneStyleInterpolator: () => ({ sceneStyle: {} }),
+            }
           : null),
         /**
          * The button, ours: no ripple — the icon draws the press, centred

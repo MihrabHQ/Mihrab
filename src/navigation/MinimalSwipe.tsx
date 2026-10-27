@@ -3,7 +3,7 @@ import { Animated, I18nManager, StyleSheet, useWindowDimensions } from 'react-na
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { useNavigation, useNavigationState } from '@react-navigation/native';
 import { hapticTick } from '../polish/haptics';
-import { pagerDrag, pagerHold, setPagerEngaged, settlePagerDrag, springPagerDrag } from './minimalPager';
+import { pagerDrag, pagerPosition, setPagerEngaged, settlePagerBase, settlePagerDrag, springPagerDrag } from './minimalPager';
 
 /**
  * Under Minimal (settings.minimalUi) the tabs are pages: the page moves
@@ -26,10 +26,20 @@ const TURN_VELOCITY = 600;
 /** How much of the finger the page follows past the last tab. */
 const EDGE_GIVE = 0.22;
 
-export function MinimalSwipe({ enabled, children }: { enabled: boolean; children: ReactNode }) {
+export function MinimalSwipe({
+  enabled,
+  routeKey,
+  children,
+}: {
+  enabled: boolean;
+  /** The tab this wraps — its place on the strip is its place in the row. */
+  routeKey: string;
+  children: ReactNode;
+}) {
   const navigation = useNavigation();
   const routes = useNavigationState(s => s.routes);
   const index = useNavigationState(s => s.index);
+  const myIndex = routes.findIndex(r => r.key === routeKey);
   const { width } = useWindowDimensions();
   // Read in the gesture's callbacks without rebuilding the gesture on
   // every tab change: a gesture rebuilt mid-drag is a drag cut short.
@@ -75,8 +85,10 @@ export function MinimalSwipe({ enabled, children }: { enabled: boolean; children
             return;
           }
           void hapticTick();
-          // The navigator slides both pages a page's width; the drag runs
-          // back to zero under them over the same time (minimalPager.ts).
+          // The settled tab slides to the next while the drag runs back to
+          // zero: the position, and so every page, carries on from where
+          // the finger left it (minimalPager.ts).
+          settlePagerBase(i + step);
           navigation.navigate(next.name as never);
           settlePagerDrag(done);
         })
@@ -85,17 +97,28 @@ export function MinimalSwipe({ enabled, children }: { enabled: boolean; children
         }),
     [enabled, navigation],
   );
-  // The page's offset: the finger's drag, or — a finger held on the dots
-  // — a page's width for every tab it has slid: the whole strip of pages
-  // moves under it, the way the finger on the page moves it.
+  // This page's place on the strip: as many page-widths aside as it is
+  // tabs from the position — the one number the dots read too, so the
+  // pages and the dots can never disagree, and a page two tabs away is
+  // two pages away, under a finger and through a turn alike.
+  // This page's place on the strip: as many page-widths aside as it is
+  // tabs from the position — the one number the dots read too, so the
+  // pages and the dots can never disagree, and a page two tabs away is
+  // two pages away, under a finger and through a turn alike.
   const offset = useMemo(
-    () => Animated.add(pagerDrag, Animated.multiply(pagerHold, I18nManager.isRTL ? width : -width)),
-    [width],
+    () =>
+      Animated.multiply(
+        Animated.subtract(myIndex, pagerPosition(width)),
+        I18nManager.isRTL ? -width : width,
+      ),
+    [myIndex, width],
   );
   return (
     <GestureDetector gesture={gesture}>
       {/* One native view for the detector, and the page's offset on it. */}
-      <Animated.View style={[styles.fill, { transform: [{ translateX: offset }] }]} collapsable={false}>
+      <Animated.View
+        style={[styles.fill, { transform: [{ translateX: offset }] }]}
+        collapsable={false}>
         {children}
       </Animated.View>
     </GestureDetector>

@@ -45,7 +45,7 @@ describe('the dots', () => {
 
 describe('the swipe', () => {
   it('wraps every tab’s page, follows the finger early, and lets a list scroll', () => {
-    expect(tabs).toContain('<MinimalSwipe enabled={minimal}>{children}</MinimalSwipe>');
+    expect(tabs).toContain('<MinimalSwipe enabled={minimal} routeKey={route.key}>{children}</MinimalSwipe>');
     // Early, so a row under the finger lets go of its press; a drag down
     // a list fails first.
     expect(swipe).toContain('.activeOffsetX([-10, 10])');
@@ -54,24 +54,33 @@ describe('the swipe', () => {
     expect(swipe).toContain('transform: [{ translateX: offset }]');
   });
 
-  it('turns the page as a pager does: the pages slide, and the drag runs back under them', () => {
+  it('stands the pages side by side, placed by the one position the dots read', () => {
     const pager = read('src/navigation/minimalPager.ts');
-    expect(tabs).toContain('sceneStyleInterpolator:');
-    // Every tab's page stays drawn, as many page-widths aside as it is tabs
-    // from the one on show: a strip of pages, like the mushaf's.
+    // The navigator moves nothing; every page is kept and drawn.
+    // The scene stays where the navigator stacks it and must not be
+    // painted, or the last tab's paper would lie over every page.
+    expect(tabs).toContain("sceneStyle: { backgroundColor: 'transparent' },");
+    expect(tabs).toContain('sceneStyleInterpolator: () => ({ sceneStyle: {} }),');
+    expect(tabs).toContain('lazy: false,');
     expect(tabs).toContain('detachInactiveScreens={!minimal}');
     // …and drawn: react-native-screens hides a page not on show, so the
-    // tab navigator's screens are plain views under Minimal.
+    // tab navigator's screens are plain views under Minimal — and not at
+    // the navigator's zIndex -1, which on Android drew them behind the
+    // container's ground.
     expect(tabs).toContain('<MinimalScreens enabled={minimal}>');
     const screens = read('src/navigation/MinimalScreens.tsx');
     expect(screens).toContain('<ScreenContext.Provider value={PlainScreen as never}>');
     expect(screens).toContain('level: { zIndex: 0 }');
-    expect(tabs).toContain('lazy: false,');
-    expect(tabs).toContain('const away = Math.max(1, Math.abs(myIndex - tabState.index)) * windowWidth;');
-    expect(tabs).toContain('outputRange: I18nManager.isRTL ? [away, 0, -away] : [-away, 0, away],');
-    expect(tabs).toContain('config: { duration: PAGER_TRANSITION_MS, easing: pagerEasing }');
+    // Each page as many widths aside as it is tabs from the position…
+    expect(swipe).toContain('Animated.subtract(myIndex, pagerPosition(width))');
+    expect(swipe).toContain('I18nManager.isRTL ? -width : width,');
+    // …which is the settled tab, the drag as a fraction, and the hold.
+    expect(pager).toContain(
+      'Animated.add(Animated.add(pagerBase, Animated.divide(pagerDrag, I18nManager.isRTL ? w : -w)), pagerHold)',
+    );
+    // On a turn the settled tab slides while the drag runs back: no jump.
+    expect(swipe).toContain('settlePagerBase(i + step);\n          navigation.navigate(next.name as never);\n          settlePagerDrag(done);');
     expect(pager).toMatch(/duration: PAGER_TRANSITION_MS,\s*easing: pagerEasing,\s*useNativeDriver: true,\s*\}\)\.start\(\(\) => onDone/);
-    expect(swipe).toContain('navigation.navigate(next.name as never);\n          settlePagerDrag(done);');
   });
 
   it('turns by a finger held on the dots and slid along them', () => {
@@ -79,13 +88,12 @@ describe('the swipe', () => {
     expect(bar).toContain('pagerHold.setValue(pos - live.current.index);');
     expect(bar).toContain('const target = Math.round(slotAt(e.x));');
     expect(bar).toContain('if (I18nManager.isRTL) fromLeft = count - 1 - fromLeft;');
-    // The dots follow the finger exactly, and so does the strip of pages.
-    expect(bar).toContain('Animated.add(Animated.add(base, Animated.divide(pagerDrag, -Math.max(1, width))), pagerHold)');
-    expect(swipe).toContain('Animated.add(pagerDrag, Animated.multiply(pagerHold, I18nManager.isRTL ? width : -width))');
+    // The dots and the pages read one position, so the strip follows the finger with them.
+    expect(bar).toContain('const position = useMemo(() => pagerPosition(width), [width]);');
+    expect(bar).toContain('settlePagerBase(target);');
   });
 
   it('shows the icons while a page turns, the current one larger, and dots at rest', () => {
-    expect(bar).toContain('Animated.add(base, Animated.divide(pagerDrag, -Math.max(1, width)))');
     expect(bar).toContain("outputRange: [0.85, 1.25]");
     expect(bar).toMatch(/pagerEngaged\.interpolate\(\{ inputRange: \[0, 1\], outputRange: \[1, 0\] \}\)/);
     expect(bar).toContain('{Icon({ color: String(palette.textSolid), size: ICON, focused })}');

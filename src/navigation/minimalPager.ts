@@ -15,10 +15,47 @@
  * or the slide after a tap on a dot — and 0 at rest. The dots show the
  * tabs' icons while it is 1 and go back to dots as it settles.
  */
-import { Animated, Easing } from 'react-native';
+import { Animated, Easing, I18nManager } from 'react-native';
 
 export const pagerDrag = new Animated.Value(0);
 export const pagerEngaged = new Animated.Value(0);
+/**
+ * The tab the pages are settled on, as a number that slides: on a turn
+ * it runs from the old tab to the new over the turn's time while the
+ * drag runs back to zero, so the position below never jumps.
+ */
+export const pagerBase = new Animated.Value(0);
+let baseTarget: number | null = null;
+let baseAnim: Animated.CompositeAnimation | null = null;
+
+/** Where the pages are, in tabs: the settled tab, the finger's drag as a fraction of the page, the hold. */
+export function pagerPosition(width: number): Animated.AnimatedAddition {
+  const w = Math.max(1, width);
+  // A drag to the left reveals the page on the right — in LTR the next
+  // tab; in RTL the one before.
+  return Animated.add(Animated.add(pagerBase, Animated.divide(pagerDrag, I18nManager.isRTL ? w : -w)), pagerHold);
+}
+
+/** Slide the settled tab to `index` — at once when nothing is drawn yet. */
+export function settlePagerBase(index: number, animated = true): void {
+  if (baseTarget === index && baseAnim) return;
+  baseAnim?.stop();
+  baseTarget = index;
+  if (!animated) {
+    baseAnim = null;
+    pagerBase.setValue(index);
+    return;
+  }
+  baseAnim = Animated.timing(pagerBase, {
+    toValue: index,
+    duration: PAGER_TRANSITION_MS,
+    easing: pagerEasing,
+    useNativeDriver: true,
+  });
+  baseAnim.start(() => {
+    baseAnim = null;
+  });
+}
 /**
  * A finger held on the dots and slid along them (MinimalTabBar): how
  * many tabs from the current one it is, as a fraction. The dots follow
@@ -26,6 +63,7 @@ export const pagerEngaged = new Animated.Value(0);
  * strip of them sliding under the finger (MinimalSwipe).
  */
 export const pagerHold = new Animated.Value(0);
+
 
 /** The navigator's slide, and the drag's run back to zero with it. */
 export const PAGER_TRANSITION_MS = 280;

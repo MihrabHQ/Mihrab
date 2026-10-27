@@ -10,11 +10,11 @@ import { useTabBarHidden } from './tabBarVisibility';
 import { scrimColor } from './TabBarScrim';
 import {
   PAGER_TRANSITION_MS,
-  pagerDrag,
-  pagerEasing,
   pagerEngaged,
   pagerHold,
+  pagerPosition,
   setPagerEngaged,
+  settlePagerBase,
   settlePagerHold,
 } from './minimalPager';
 
@@ -58,19 +58,12 @@ export function MinimalTabBar({ state, descriptors, navigation }: BottomTabBarPr
    * the finger has it — so under a finger it runs ahead to the next tab,
    * and on a release that turns the two parts cross over without a jump.
    */
-  const base = useRef(new Animated.Value(state.index)).current;
+  const first = useRef(true);
   useEffect(() => {
-    Animated.timing(base, {
-      toValue: state.index,
-      duration: PAGER_TRANSITION_MS,
-      easing: pagerEasing,
-      useNativeDriver: true,
-    }).start();
-  }, [base, state.index]);
-  const position = useMemo(
-    () => Animated.add(Animated.add(base, Animated.divide(pagerDrag, -Math.max(1, width))), pagerHold),
-    [base, width],
-  );
+    settlePagerBase(state.index, !first.current);
+    first.current = false;
+  }, [state.index]);
+  const position = useMemo(() => pagerPosition(width), [width]);
   // The hold-and-slide. Read in the gesture's callbacks without
   // rebuilding the gesture on every tab change.
   const live = useRef({ index: state.index, count: state.routes.length, width });
@@ -108,7 +101,10 @@ export function MinimalTabBar({ state, descriptors, navigation }: BottomTabBarPr
           const route = state.routes[target];
           if (route && target !== live.current.index) {
             const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
-            if (!event.defaultPrevented) navigation.navigate(route.name, route.params);
+            if (!event.defaultPrevented) {
+              settlePagerBase(target);
+              navigation.navigate(route.name, route.params);
+            }
           }
           settlePagerHold(() => setPagerEngaged(false));
         })
@@ -178,6 +174,7 @@ export function MinimalTabBar({ state, descriptors, navigation }: BottomTabBarPr
               // The icons show for the slide, as under a finger.
               setPagerEngaged(true);
               setTimeout(() => setPagerEngaged(false), PAGER_TRANSITION_MS + 60);
+              settlePagerBase(index);
               navigation.navigate(route.name, route.params);
             }}
             style={styles.hit}>
