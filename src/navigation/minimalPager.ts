@@ -209,13 +209,14 @@ export function usePagerBlockers(): BlockerRef[] {
  * within reach: the neighbours of the tab on show at once (a swipe shows
  * them), and the rest one at a time in the seconds after the first page
  * is up, so a hold on the dots finds them ready. `pagerWarmth` is how
- * many tabs from the current one a page may mount: 1 at boot, up a step
- * every WARM_STEP_MS after WARM_AFTER_MS.
+ * many tabs from the current one a page may mount: 1 once the first page
+ * has painted and its launch run is over (the page on show alone before
+ * that), up a step every WARM_STEP_MS after WARM_AFTER_MS from then.
  */
 const WARM_AFTER_MS = 2500;
 const WARM_STEP_MS = 600;
 const WARM_MAX = 5;
-let warmth = 1;
+let warmth = 0;
 let warming: ReturnType<typeof setTimeout> | null = null;
 const warmthListeners = new Set<() => void>();
 
@@ -247,5 +248,5 @@ export function usePagerWarmth(): number {
 export function _resetPagerWarmthForTests(): void {
   if (warming) clearTimeout(warming);
   warming = null;
-  warmth = 1;
+  warmth = 0;
 }

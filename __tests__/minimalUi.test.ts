@@ -91,8 +91,17 @@ describe('the swipe', () => {
     expect(pager).toMatch(/duration: PAGER_TRANSITION_MS,\s*easing: pagerEasing,\s*useNativeDriver: true,\s*\}\)\.start\(\(\) => onDone/);
   });
 
+  it('is built once the settings are read, in the shape chosen, not rebuilt from the full page', () => {
+    expect(tabs).toContain('const hydrated = useSettingsHydrated();');
+    expect(tabs).toContain("if (!hydrated) return <View style={[styles.unhydrated, { backgroundColor: palette.bg }]} />;");
+    expect(read('src/navigation/tabBarInset.ts')).toContain('return useAppearanceSettings().hydrated;');
+  });
+
   it('keeps only the pages in reach laid out, and mounts the rest as the warm-up comes to them', () => {
-    expect(swipe).toContain('const inReach = engaged || distance <= 1;');
+    // The page on show alone until its first paint and launch run are over.
+    expect(swipe).toContain('const inReach = engaged || distance <= (settled ? 1 : 0);');
+    expect(swipe).toMatch(/void afterRun\(\)\.then\(\(\) => \{\s*if \(cancelled\) return;\s*setSettled\(true\);\s*startPagerWarmup\(\);/);
+    expect(read('src/navigation/minimalPager.ts')).toContain('let warmth = 0;');
     expect(swipe).toContain('inReach ? null : styles.away');
     expect(swipe).toContain("away: { display: 'none' },");
     expect(swipe).toContain('{mounted ? children : null}');

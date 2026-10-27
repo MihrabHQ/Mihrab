@@ -8,6 +8,8 @@ import {
 } from 'react-native-gesture-handler';
 import { useNavigation, useNavigationState } from '@react-navigation/native';
 import { hapticScrubTick } from '../polish/haptics';
+import { useAfterFirstPaint } from '../boot/firstPaint';
+import { afterRun } from '../boot/launchWarp';
 import {
   pagerDragRaw,
   pagerEdges,
@@ -142,9 +144,15 @@ export function MinimalSwipe({
 
   // In reach: the page on show, its neighbours, and every page while a
   // turn is under way (a hold on the dots can slide to any of them).
+  // Not the neighbours before the first paint: the launch's first frame
+  // is Today's alone, and its run — the countdown counting to now — must
+  // not share the JS thread with the Quran page mounting beside it
+  // (measured: the run drew five frames where it draws eighty).
   const engaged = usePagerEngaged();
+  const painted = useAfterFirstPaint();
+  const [settled, setSettled] = useState(false);
   const distance = Math.abs(myIndex - index);
-  const inReach = engaged || distance <= 1;
+  const inReach = engaged || distance <= (settled ? 1 : 0);
   // Mounted once in reach, or once the warm-up has come this far — and
   // then kept, so a page keeps its scroll and its state across turns.
   const warmth = usePagerWarmth();
@@ -152,9 +160,20 @@ export function MinimalSwipe({
   useEffect(() => {
     if (enabled && !mounted && (inReach || distance <= warmth)) setMounted(true);
   }, [enabled, mounted, inReach, distance, warmth]);
+  // The warm-up waits for the launch run as the app's other foreground
+  // work does (launchWarp.ts, `afterRun`), then counts from there.
   useEffect(() => {
-    if (enabled) startPagerWarmup();
-  }, [enabled]);
+    if (!enabled || !painted) return undefined;
+    let cancelled = false;
+    void afterRun().then(() => {
+      if (cancelled) return;
+      setSettled(true);
+      startPagerWarmup();
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [enabled, painted]);
 
   // The full page: no strip, no offset — the navigator places the one
   // page on show, and a page stood a width aside here would be a blank

@@ -289,6 +289,19 @@ export function useMinimalUi(): boolean {
 }
 
 /**
+ * Whether the settings have been read yet — and so whether `useMinimalUi`
+ * is the person's answer or the default. The tab navigator waits for it:
+ * built before the settings arrived, it came up as the full page (the
+ * default) with its labelled bar and the loading skeleton, and then,
+ * when Minimal turned out to be on, tore every page down and built them
+ * again as the strip — a blank window and a skeleton in the wrong bar
+ * before Today, on every launch under Minimal.
+ */
+export function useSettingsHydrated(): boolean {
+  return useAppearanceSettings().hydrated;
+}
+
+/**
  * Does this device get the rounded, inset PILL, or the plain full-width
  * bar?
  *

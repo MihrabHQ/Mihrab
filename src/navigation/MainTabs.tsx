@@ -72,7 +72,7 @@ import {
 } from './tabIcons';
 import type { MainTabParamList } from './types';
 import { useBookPanePadding } from '../native/FoldPosture';
-import { useMinimalUi } from './tabBarInset';
+import { useMinimalUi, useSettingsHydrated } from './tabBarInset';
 import { MinimalTabBar } from './MinimalTabBar';
 import { MinimalSwipe } from './MinimalSwipe';
 import { MinimalScreens } from './MinimalScreens';
@@ -147,6 +147,7 @@ export function MainTabs() {
   // Minimal (settings.minimalUi): dots for a bar, and a swipe across a
   // page turns to the next. Not beside a vertical bar, which has the tabs.
   const minimal = useMinimalUi() && !vbar;
+  const hydrated = useSettingsHydrated();
   // A foldable half open as a book: every tab but Today keeps to one page
   // of it, off the crease (`FoldPosture.ts`). Today lays out across both.
   const bookPad = useBookPanePadding(useWindowSize().width);
@@ -156,6 +157,11 @@ export function MainTabs() {
       : { paddingLeft: vbar.width } // rtl-safe: the vertical bar is on a physical side
     : null;
 
+  // Not before the settings are read: the navigator is built once, in
+  // the shape the person chose (useSettingsHydrated). The kept launch
+  // picture covers this moment on Android; elsewhere it is the page's
+  // own colour for the few hundred milliseconds the settings take.
+  if (!hydrated) return <View style={[styles.unhydrated, { backgroundColor: palette.bg }]} />;
   return (
     <MinimalScreens enabled={minimal}>
     <Tab.Navigator
@@ -556,4 +562,6 @@ export function MainTabs() {
 const styles = StyleSheet.create({
   // A glyph a quarter larger, in the room the label gave up.
   bigGlyph: { transform: [{ scale: 1.25 }] },
+  // The window before the settings are read: the page's colour, nothing on it.
+  unhydrated: { flex: 1 },
 });
