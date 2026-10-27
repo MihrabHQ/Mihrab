@@ -29,18 +29,14 @@ describe('TabBarScrim', () => {
       r = create(<TabBarScrim bg="#FAF7F2" slide={slide} />);
     });
     expect(r.root.findByProps({ testID: 'tab-bar-scrim' })).toBeTruthy();
-    const tree = JSON.stringify(r.toJSON());
-    // react-native-svg compiles the stops to [offset, argb, …]. Both ends
-    // of the fade are the page's own colour: alpha 0 at the top, opaque at
-    // the bottom.
-    const m = /"gradient":\[([^\]]+)\]/.exec(tree);
-    expect(m).not.toBeNull();
-    const stops = m![1].split(',').map(Number);
-    const rgb = 0xfaf7f2;
-    expect(stops[0]).toBe(0);
-    expect(stops[1] >>> 0).toBe(rgb); // alpha 0
-    expect(stops[stops.length - 2]).toBe(1);
-    expect(stops[stops.length - 1] >>> 0).toBe((0xff000000 | rgb) >>> 0);
+    // A native gradient (no SVG bitmap): both ends of the fade are the
+    // page's own colour, transparent at the top and opaque at the foot.
+    const style = r.root.findByProps({ testID: 'tab-bar-scrim' }).props.style;
+    const flat = Object.assign({}, ...[style].flat(Infinity).filter(Boolean));
+    const bg = String(flat.backgroundImage);
+    expect(bg.startsWith('linear-gradient(to bottom, ')).toBe(true);
+    expect(bg).toContain('rgba(250, 247, 242, 0) 0%');
+    expect(bg).toMatch(/#FAF7F2 100%\)$/);
   });
 
   it('draws nothing it cannot colour — a PlatformColor has no channels', () => {

@@ -375,10 +375,14 @@ describe("the sun's glow", () => {
   it('never hands the gradient a raw scene position', () => {
     expect(read('src/screens/home/HeroSky.tsx')).not.toMatch(/cy=\{sceneY\(bodyXY\.y\)\}/);
     const sky = read('src/screens/home/HeroSky.tsx');
-    expect(sky).toMatch(/cy=\{glowCy\(body\.kind === 'sun' \? sunCy : sceneY\(bodyXY\.y\), height\)\}/);
+    // In dp, measured: the glow is placed only once the sky has a size.
+    expect(sky).toMatch(/const cy = body\.kind === 'sun' && typeof sunCy === 'number' \? sunCy : yDp\(bodyXY\.y\);/);
     // And once the sky has a size, a circle in dp — the same area on
     // every aspect, never an ellipse on a tall sky (2.33).
-    expect(sky).toMatch(/gradientUnits="userSpaceOnUse"\s+cx=\{bodyXY\.x \* size\.width\}/);
-    expect(sky).toMatch(/id="halorun" gradientUnits="userSpaceOnUse"/);
+    // A `circle` radial gradient placed in px (skyPaint.radialGlow), and
+    // the run's halo a circle in a square view.
+    expect(sky).toMatch(/const cx = bodyXY\.x \* size\.width;/);
+    expect(sky).toMatch(/left: cx - r,\s*top: cy - r,\s*width: r \* 2,\s*height: r \* 2,/);
+    expect(sky).toMatch(/width: haloR \* 2,\s*height: haloR \* 2,/);
   });
 });

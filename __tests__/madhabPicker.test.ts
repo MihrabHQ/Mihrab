@@ -10,7 +10,7 @@
  * EXISTING INSTALL MOVES. A school is a thing you go and pick; until you
  * do, the settings you had are the settings you have, to the minute.
  */
-import i18n from '../src/i18n';
+import i18n, { ensureLanguage } from '../src/i18n';
 import {
   applyMadhabNaming,
   asrSchoolFor,
@@ -85,6 +85,8 @@ describe('the farḍ at dawn is Ṣubḥ under Mālikī', () => {
 
   it('renames it in every one of the thirteen languages', () => {
     for (const l of LOCALES) {
+      // Only the app's language is kept in memory; the rest load on demand.
+      ensureLanguage(l);
       const subh = i18n.getResource(l, 'translation', 'prayer.Subh');
       expect(typeof subh).toBe('string');
       expect(subh.length).toBeGreaterThan(0);

@@ -40,6 +40,7 @@
  * describe.
  */
 import type i18nType from 'i18next';
+import { ensureLanguage } from '../i18n';
 
 export type Madhab = 'hanafi' | 'maliki' | 'shafii' | 'hanbali';
 
@@ -110,6 +111,10 @@ export function applyMadhabNaming(
 ): void {
   const lng = language || 'en';
   const ns = 'translation';
+  // Loaded first: only the app's language is kept in memory
+  // (i18n/index.ts), and a rename written before its bundle arrives would
+  // be lost when it did.
+  ensureLanguage(lng, i18n);
   const subh = madhab === 'maliki';
   for (const [key, fallbackKey] of [
     ['prayer.Fajr', 'prayer.Subh'],

@@ -22,7 +22,7 @@
  */
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { Animated, Easing, Modal, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
-import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
+import { linearDown } from './skyPaint';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAppPalette } from '../../hooks/useAppPalette';
@@ -171,16 +171,20 @@ export function MinimalSheet({
         {/* The veil: a shadow the sheet casts up the page — light over the
             sky, deep at the sheet's edge. */}
         <Animated.View style={[StyleSheet.absoluteFill, { opacity: veil }]} pointerEvents="none">
-          <Svg width="100%" height="100%" preserveAspectRatio="none" viewBox="0 0 1 1">
-            <Defs>
-              <LinearGradient id="minimalVeil" x1="0" y1="0" x2="0" y2="1">
-                <Stop offset="0" stopColor="#000" stopOpacity={VEIL_TOP} />
-                <Stop offset="0.55" stopColor="#000" stopOpacity={(VEIL_TOP + VEIL_FOOT) / 2} />
-                <Stop offset="1" stopColor="#000" stopOpacity={VEIL_FOOT} />
-              </LinearGradient>
-            </Defs>
-            <Rect x="0" y="0" width="1" height="1" fill="url(#minimalVeil)" />
-          </Svg>
+          {/* A native gradient, not an <Svg>: on Android an <Svg> is a
+              bitmap the size of the screen while the sheet is up. */}
+          <View
+            style={[
+              StyleSheet.absoluteFill,
+              {
+                backgroundImage: linearDown([
+                  [`rgba(0, 0, 0, ${VEIL_TOP})`, 0],
+                  [`rgba(0, 0, 0, ${(VEIL_TOP + VEIL_FOOT) / 2})`, 0.55],
+                  [`rgba(0, 0, 0, ${VEIL_FOOT})`, 1],
+                ]),
+              },
+            ]}
+          />
         </Animated.View>
         <Pressable accessibilityLabel={closeLabel} onPress={onClose} style={StyleSheet.absoluteFill} />
         <GestureDetector gesture={pull}>

@@ -156,7 +156,8 @@ describe('the minimal Today', () => {
     expect(minimalSheet).toContain('Animated.spring(progress, { toValue: 1, ...MINIMAL_SHEET_OPEN, useNativeDriver: true })');
     // The veil is a gradient — light over the sky, deep by the sheet —
     // not one flat plane of black.
-    expect(minimalSheet).toContain('<LinearGradient id="minimalVeil"');
+    expect(minimalSheet).toContain('[`rgba(0, 0, 0, ${VEIL_TOP})`, 0],');
+    expect(minimalSheet).toContain('[`rgba(0, 0, 0, ${VEIL_FOOT})`, 1],');
     expect(minimalSheet).toMatch(/const VEIL_TOP = 0\.\d+;\nconst VEIL_FOOT = 0\.\d+;/);
     // A drag down on the sheet follows the finger and lets go past a threshold.
     expect(minimalSheet).toContain('if (e.translationY > DISMISS_DISTANCE || e.velocityY > DISMISS_VELOCITY)');

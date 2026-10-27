@@ -1,5 +1,5 @@
 import { Animated, StyleSheet, type ColorValue } from 'react-native';
-import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
+import { linearDown, withAlpha } from '../screens/home/skyPaint';
 import {
   FLOATS_OVER_CONTENT,
   TAB_BAR_HEIGHT,
@@ -64,19 +64,15 @@ export function TabBarScrim({
             inputRange: [0, 1],
             outputRange: [1, 0],
           }),
+          // A native gradient: an <Svg> here was a bitmap the bar's size.
+          backgroundImage: linearDown([
+            [withAlpha(color, 0), 0],
+            [withAlpha(color, 0.9), 0.5],
+            [color, 1],
+          ]),
         },
-      ]}>
-      <Svg width="100%" height="100%" preserveAspectRatio="none">
-        <Defs>
-          <LinearGradient id="tabBarScrim" x1="0" y1="0" x2="0" y2="1">
-            <Stop offset="0" stopColor={color} stopOpacity={0} />
-            <Stop offset="0.5" stopColor={color} stopOpacity={0.9} />
-            <Stop offset="1" stopColor={color} stopOpacity={1} />
-          </LinearGradient>
-        </Defs>
-        <Rect x="0" y="0" width="100%" height="100%" fill="url(#tabBarScrim)" />
-      </Svg>
-    </Animated.View>
+      ]}
+    />
   );
 }
 

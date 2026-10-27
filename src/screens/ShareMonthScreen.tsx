@@ -39,6 +39,7 @@ import type { AppLanguage } from '../settings/types';
 import { isRtlLanguage } from '../i18n/layoutDirection';
 import { useLayoutRtl } from '../i18n/useLayoutRtl';
 import { languageLabel } from '../i18n/languages';
+import { ensureLanguage } from '../i18n';
 import { injectNightTimes } from '../utils/nightTimes';
 import { sheetPlaceName } from '../share/sheetPlaceName';
 import { pngToPdfA4Async, fromBase64, toBase64 } from '../share/pngToPdf';
@@ -124,7 +125,11 @@ export function ShareMonthScreen({ route, navigation, embedded }: Props & { navi
   const [langPickerOpen, setLangPickerOpen] = useState(false);
 
   /** The sheet's own translator, fixed to `sheetLang`. */
-  const st = useMemo(() => i18n.getFixedT(sheetLang), [i18n, sheetLang]);
+  // Loaded first: only the app's own language is kept in memory (i18n/index.ts).
+  const st = useMemo(() => {
+    ensureLanguage(sheetLang);
+    return i18n.getFixedT(sheetLang);
+  }, [i18n, sheetLang]);
 
   /** Which way the tree around the sheet runs. */
   const appRtl = useLayoutRtl();

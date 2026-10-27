@@ -398,8 +398,8 @@ describe('the hero under the theme', () => {
     expect(card).toMatch(/\n\s+denseStars\n/);
     const sky = read('src/screens/home/HeroSky.tsx');
     expect(sky).toMatch(/const field = dense \? STAR_FIELD_DENSE : STAR_FIELD;/);
-    expect(sky).toMatch(/<Stop key="m" offset=\{frame\.midAt\} stopColor=\{frame\.mid\} \/>/);
-    expect(sky).toMatch(/<Stop key="m" offset=\{g\.midAt\} stopColor=\{g\.mid\} \/>/);
+    expect(sky).toMatch(/\[\[top, 0\], \[frame\.mid, frame\.midAt\], \[bottom, 1\]\]/);
+    expect(sky).toMatch(/\[\[g\.top, 0\], \[g\.mid, g\.midAt\], \[g\.bottom, 1\]\]/);
   });
 });
 
@@ -428,7 +428,7 @@ describe('the sky\'s small life', () => {
     expect(sunScaleAt(0.17)).toBeCloseTo(1 + SUN_HORIZON_GROWTH / 2, 5);
     const sky = read('src/screens/home/HeroSky.tsx');
     expect(sky).toMatch(/const sunR = body\.kind === 'sun' \? SUN_R \* sunScaleAt\(body\.y\) : 0;/);
-    expect(sky).toMatch(/r=\{sunR\}/);
+    expect(sky).toMatch(/width: sunR \* 2,\s*height: sunR \* 2,\s*borderRadius: sunR,/);
     expect(sky).toMatch(/sunScale: through\(body\.map\(b => \(b && b\.kind === 'sun' \? sunScaleAt\(b\.y\) : 1\)\)\)/);
     expect(sky).toMatch(/\{ scale: built\.sunScale \}/);
     expect(sky).toMatch(/\{!running && !still && drawStars && denseStars \? \(\s*<Twinkle/);

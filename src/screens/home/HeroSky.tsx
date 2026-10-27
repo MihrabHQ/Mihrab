@@ -2,17 +2,8 @@ import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Easing, I18nManager, type LayoutChangeEvent, StyleSheet, View } from 'react-native';
 import { useVerticalBar } from '../../native/VerticalBar';
 import { useReduceMotion } from '../../hooks/useReduceMotion';
-import Svg, {
-  Circle,
-  ClipPath,
-  Defs,
-  G,
-  LinearGradient,
-  Path,
-  RadialGradient,
-  Rect,
-  Stop,
-} from 'react-native-svg';
+import Svg, { Circle, G, Path } from 'react-native-svg';
+import { linearDown, radialGlow, withAlpha } from './skyPaint';
 import { skyColorAt, SUN_HORIZON_Y, type SkyFrame } from './skyModel';
 import { SUN_GLOW_PEAK } from './skyLight';
 
@@ -264,112 +255,98 @@ function HeroSkyImpl({
         <SkyRunLayers run={run} width={Math.ceil(size.width)} height={Math.ceil(size.height)} scene={scene} denseStars={denseStars} />
       ) : null}
       {running ? null : (
-      // ── DRAWN ONCE, THEN KEPT AS A TEXTURE ─────────────────────────────
-      // The sky is two full-screen gradients and a few hundred stars, and
-      // Android's renderer re-executed every one of them on every frame
-      // in which anything over the sky moved — the three twinkling stars
-      // by night, Minimal's breathing rail head — because a path drawn on
-      // the GPU is tessellated on the render thread each time it is drawn.
-      // Measured: the render thread at half a core, all night, on a Pixel
-      // 10 Pro and on the emulator alike, for a hero that was standing
-      // still. As a hardware layer the sky is rasterised when it changes
-      // (once a minute) and composited as one texture the rest of the
-      // time. Measured after: the render thread idle.
-      <View style={StyleSheet.absoluteFill} renderToHardwareTextureAndroid>
-      <Svg
-        // ROUNDED UP, NOT AS MEASURED. A layout width is a fraction of a
-        // dp — a 1280px screen at 3x measures 426.667 — and the surface
-        // is laid out on whole dp, so the sky was painted 426dp wide and
-        // the last TWO device pixels of the screen stayed the page's
-        // colour: a dark hairline down the right edge of the hero,
-        // measured on a Pixel 10 Pro. A whole dp over is at most a pixel
-        // of overdraw, and the wrap clips it (heroWrapBleed, overflow
-        // hidden), so the sky reaches the edge on any density.
-        width={size.width > 0 ? Math.ceil(size.width) : '100%'}
-        height={size.height > 0 ? Math.ceil(size.height) : '100%'}>
-        <Defs>
-          <LinearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
-            {(frame.mid && frame.midAt != null
-              ? [
-                  <Stop key="t" offset="0" stopColor={top} />,
-                  <Stop key="m" offset={frame.midAt} stopColor={frame.mid} />,
-                  <Stop key="b" offset="1" stopColor={bottom} />,
-                ]
-              : [<Stop key="t" offset="0" stopColor={top} />, <Stop key="b" offset="1" stopColor={bottom} />])}
-          </LinearGradient>
-          {bodyXY && light && size.width > 0 && height > 0 ? (
-            // ── A CIRCLE, IN DP ────────────────────────────────────────
-            // In the box's own units (below, before the sky has a size)
-            // a radius is a fraction of the width one way and of the
-            // height the other, so the halo was a circle only on a square
-            // sky: an ellipse on a tall iPad, a Duo page, a short band.
-            // In user space it is a circle of the same area — the radius
-            // is the percentage of the sides' geometric mean (2.33).
-            <RadialGradient
-              id="glow"
-              gradientUnits="userSpaceOnUse"
-              cx={bodyXY.x * size.width}
-              cy={body.kind === 'sun' ? sunCy : yDp(bodyXY.y)}
-              r={((HALO_MIN_R + (HALO_MAX_R - HALO_MIN_R) * Math.sqrt(light.halo / SUN_GLOW_PEAK)) / 100) * Math.sqrt(size.width * height)}>
-              <Stop offset="0" stopColor={light.hex} stopOpacity={light.halo} />
-              <Stop offset="1" stopColor={light.hex} stopOpacity={0} />
-            </RadialGradient>
-          ) : bodyXY && light ? (
-            <RadialGradient
-              id="glow"
-              cx={`${bodyXY.x * 100}%`}
-              // A PERCENTAGE, always. The gradient is in the box's own
-              // units (objectBoundingBox, the default), where a bare
-              // number is a fraction of the height: the dp a banded sky
-              // gives (`sceneY` on the phone) put the halo's centre some
-              // eighty skies below the card, and the phone's sun shone
-              // only for the launch run's native layers, which place it
-              // in dp. The tablet, unbanded, always had its percentage.
-              cy={glowCy(body.kind === 'sun' ? sunCy : sceneY(bodyXY.y), height)}
-              // The halo grows with the light, not just brightens: a new
-              // moon has almost none, a full one a soft ring, the noon
-              // sun a wide wash. A fixed radius at varying opacity reads
-              // as the same lamp turned down.
-              //
-              // By the SQUARE ROOT of the strength, because brightness
-              // falls off with the square of the distance: halve the
-              // light and the point at which it fades into the sky comes
-              // in by about a third, not by half. Taken linearly the
-              // setting sun lost its glow altogether, which is backwards
-              // — low sun, thick air, and the light spreads WIDER.
-              r={`${HALO_MIN_R + (HALO_MAX_R - HALO_MIN_R) * Math.sqrt(light.halo / SUN_GLOW_PEAK)}%`}>
-              <Stop offset="0" stopColor={light.hex} stopOpacity={light.halo} />
-              <Stop offset="1" stopColor={light.hex} stopOpacity={0} />
-            </RadialGradient>
-          ) : null}
-          {topFade ? (
-            <LinearGradient id="topfade" x1="0" y1="0" x2="0" y2="1">
-              <Stop offset="0" stopColor={top} stopOpacity={1} />
-              <Stop offset="1" stopColor={topFade.to} stopOpacity={0} />
-            </LinearGradient>
-          ) : null}
-          {sunClipped ? (
-            <ClipPath id="horizon">
-              <Rect x="0" y="0" width="100%" height={horizon ?? 0} />
-            </ClipPath>
-          ) : null}
-        </Defs>
-        <Rect x="0" y="0" width="100%" height="100%" fill="url(#sky)" />
-        {bodyXY ? <Rect x="0" y="0" width="100%" height="100%" fill="url(#glow)" /> : null}
-        {bodyXY && topFade ? <Rect x="0" y="0" width="100%" height={topFade.h} fill="url(#topfade)" /> : null}
-        {drawStars ? <Stars scene={scene} glow={glow} stars={stars} dense={denseStars} /> : null}
-        {body.kind === 'sun' && !cramped ? (
-          <Circle
-            cx={`${body.x * 100}%`}
-            cy={sunCy}
-            r={sunR}
-            fill={body.light}
-            fillOpacity={body.alpha}
-            clipPath={sunClipped ? 'url(#horizon)' : undefined}
+        // ── VIEWS, NOT A BITMAP ──────────────────────────────────────────
+        // The sky was one <Svg>, and react-native-svg on Android paints
+        // every <Svg> into an ARGB bitmap the size of the view and keeps
+        // it: 14.6 MB for a full-screen sky on a 1280×2856 phone, held for
+        // as long as Today is mounted, for two gradients and a few dots.
+        // The gradients are now the views' own backgrounds, which React
+        // Native draws with a shader and no bitmap (skyPaint.ts); the
+        // stars and the sun are plain round views. Nothing here holds a
+        // picture of itself.
+        <View style={StyleSheet.absoluteFill} pointerEvents="none">
+          <View
+            style={[
+              StyleSheet.absoluteFill,
+              {
+                backgroundImage: linearDown(
+                  frame.mid && frame.midAt != null
+                    ? [[top, 0], [frame.mid, frame.midAt], [bottom, 1]]
+                    : [[top, 0], [bottom, 1]],
+                ),
+              },
+            ]}
           />
-        ) : null}
-      </Svg>
-      </View>
+          {bodyXY && light && size.width > 0 && height > 0
+            ? (() => {
+                // A circle in dp, wherever the sky's sides are: the radius
+                // is the percentage of the sides' geometric mean (2.33). A
+                // square view the glow's size, centred on the body — the
+                // one radial form React Native reads right (skyPaint.ts).
+                const r =
+                  ((HALO_MIN_R + (HALO_MAX_R - HALO_MIN_R) * Math.sqrt(light.halo / SUN_GLOW_PEAK)) / 100) *
+                  Math.sqrt(size.width * height);
+                const cx = bodyXY.x * size.width;
+                const cy = body.kind === 'sun' && typeof sunCy === 'number' ? sunCy : yDp(bodyXY.y);
+                return (
+                  <View
+                    style={{
+                      position: 'absolute',
+                      left: cx - r,
+                      top: cy - r,
+                      width: r * 2,
+                      height: r * 2,
+                      backgroundImage: radialGlow(light.hex, Math.min(1, light.halo)),
+                    }}
+                  />
+                );
+              })()
+            : null}
+          {bodyXY && topFade ? (
+            <View
+              style={{
+                position: 'absolute',
+                left: 0,
+                right: 0,
+                top: 0,
+                height: topFade.h,
+                backgroundImage: linearDown([
+                  [top, 0],
+                  [withAlpha(topFade.to, 0), 1],
+                ]),
+              }}
+            />
+          ) : null}
+          {drawStars && size.width > 0 && height > 0 ? (
+            <StarField scene={scene} glow={glow} stars={stars} dense={denseStars} width={size.width} height={height} />
+          ) : null}
+          {body.kind === 'sun' && !cramped && typeof sunCy === 'number' && size.width > 0 ? (
+            // Clipped at the horizon when it is going under it.
+            <View
+              pointerEvents="none"
+              style={{
+                position: 'absolute',
+                left: 0,
+                right: 0,
+                top: 0,
+                height: sunClipped && horizon != null ? Math.max(0, horizon) : '100%',
+                overflow: 'hidden',
+              }}>
+              <View
+                style={{
+                  position: 'absolute',
+                  left: body.x * size.width - sunR,
+                  top: sunCy - sunR,
+                  width: sunR * 2,
+                  height: sunR * 2,
+                  borderRadius: sunR,
+                  backgroundColor: body.light,
+                  opacity: body.alpha,
+                }}
+              />
+            </View>
+          ) : null}
+        </View>
       )}
       {!running && !still && drawStars && denseStars ? (
         <Twinkle scene={scene} glow={glow} stars={stars} width={size.width} height={size.height} />
@@ -417,7 +394,6 @@ type Scene = ReturnType<typeof skyScene>;
  * view; the moon its own small SVG.
  */
 const EPS = 1e-3;
-const LAYER_DOWNSCALE = 4;
 
 function SkyRunLayersImpl({
   run,
@@ -502,7 +478,6 @@ function SkyRunLayersImpl({
       horizon,
       topFadeH,
       halo: haloPeak ? { light: haloPeak.light, opacity: haloOpacity } : null,
-      haloScaleUp: Animated.multiply(haloScale, LAYER_DOWNSCALE),
       suns: body.map((b, i) => (b && b.kind === 'sun' ? { light: b.light, opacity: layerOpacity(i, b.alpha) } : null)),
       sunScale: through(body.map(b => (b && b.kind === 'sun' ? sunScaleAt(b.y) : 1))),
       anyBody,
@@ -524,84 +499,70 @@ function SkyRunLayersImpl({
     };
   }, [frames, progress, K, width, height, scene]);
 
-  // The small canvas the gradient and the halo are drawn on, scaled up
-  // about its centre to cover the sky.
-  const lw = Math.ceil(width / LAYER_DOWNSCALE);
-  const lh = Math.ceil(height / LAYER_DOWNSCALE);
-  const small = { width: lw, height: lh } as const;
+  // The halo's own square: twice the widest it ever reaches, centred on
+  // the body and scaled down to the keyframe's reach.
+  const haloR = (HALO_MAX_R / 100) * Math.sqrt(width * height);
 
   return (
     <>
       {built.gradients.map((g, i) => (
+        // Native gradients (skyPaint.ts): a keyframe is a view with a
+        // background, at the sky's own size, and no bitmap behind it.
         <Animated.View
           key={`g${i}`}
           style={{
             position: 'absolute',
-            left: (width - lw) / 2,
-            top: (height - lh) / 2,
-            ...small,
+            left: 0,
+            top: 0,
+            width,
+            height,
             opacity: g.opacity,
-            transform: [{ scale: LAYER_DOWNSCALE }],
-          }}>
-          <Svg width={lw} height={lh}>
-            <Defs>
-              <LinearGradient id={`skyrun${i}`} x1="0" y1="0" x2="0" y2="1">
-                {(g.mid && g.midAt != null
-                  ? [
-                      <Stop key="t" offset="0" stopColor={g.top} />,
-                      <Stop key="m" offset={g.midAt} stopColor={g.mid} />,
-                      <Stop key="b" offset="1" stopColor={g.bottom} />,
-                    ]
-                  : [<Stop key="t" offset="0" stopColor={g.top} />, <Stop key="b" offset="1" stopColor={g.bottom} />])}
-              </LinearGradient>
-            </Defs>
-            <Rect x="0" y="0" width="100%" height="100%" fill={`url(#skyrun${i})`} />
-          </Svg>
-        </Animated.View>
+            backgroundImage: linearDown(
+              g.mid && g.midAt != null
+                ? [[g.top, 0], [g.mid, g.midAt], [g.bottom, 1]]
+                : [[g.top, 0], [g.bottom, 1]],
+            ),
+          }}
+        />
       ))}
       {built.anyBody && built.halo ? (
         <Animated.View
           style={{
             position: 'absolute',
-            left: -lw / 2,
-            top: -lh / 2,
-            ...small,
+            left: -haloR,
+            top: -haloR,
+            width: haloR * 2,
+            height: haloR * 2,
             opacity: built.halo.opacity,
-            transform: [{ translateX: built.bodyTx }, { translateY: built.bodyTy }, { scale: built.haloScaleUp }],
-          }}>
-          <Svg width={lw} height={lh}>
-            <Defs>
-              <RadialGradient id="halorun" gradientUnits="userSpaceOnUse" cx={lw / 2} cy={lh / 2} r={(HALO_MAX_R / 100) * Math.sqrt(lw * lh)}>
-                <Stop offset="0" stopColor={built.halo.light} stopOpacity={1} />
-                <Stop offset="1" stopColor={built.halo.light} stopOpacity={0} />
-              </RadialGradient>
-            </Defs>
-            <Rect x="0" y="0" width="100%" height="100%" fill="url(#halorun)" />
-          </Svg>
-        </Animated.View>
+            backgroundImage: radialGlow(built.halo.light, 1),
+            transform: [{ translateX: built.bodyTx }, { translateY: built.bodyTy }, { scale: built.haloScale }],
+          }}
+        />
       ) : null}
       {built.anyBody && built.halo && built.topFadeH > 0
         ? built.gradients.map((g, i) =>
             g.fadeTo ? (
-              <Animated.View key={`f${i}`} style={{ position: 'absolute', left: 0, top: 0, width, height: built.topFadeH, opacity: g.opacity }}>
-                <Svg width={width} height={built.topFadeH}>
-                  <Defs>
-                    <LinearGradient id={`topfaderun${i}`} x1="0" y1="0" x2="0" y2="1">
-                      <Stop offset="0" stopColor={g.top} stopOpacity={1} />
-                      <Stop offset="1" stopColor={g.fadeTo} stopOpacity={0} />
-                    </LinearGradient>
-                  </Defs>
-                  <Rect x="0" y="0" width="100%" height="100%" fill={`url(#topfaderun${i})`} />
-                </Svg>
-              </Animated.View>
+              <Animated.View
+                key={`f${i}`}
+                style={{
+                  position: 'absolute',
+                  left: 0,
+                  top: 0,
+                  width,
+                  height: built.topFadeH,
+                  opacity: g.opacity,
+                  backgroundImage: linearDown([
+                    [g.top, 0],
+                    [withAlpha(g.fadeTo, 0), 1],
+                  ]),
+                }}
+              />
             ) : null,
           )
         : null}
       {built.stars ? (
-        <Animated.View style={[StyleSheet.absoluteFill, { opacity: built.stars.opacity }]}>
-          <Svg width={width} height={height}>
-            <Stars scene={scene} glow={built.stars.glow} stars={1} dense={denseStars} />
-          </Svg>
+        <Animated.View style={[StyleSheet.absoluteFill, { opacity: built.stars.opacity }]} pointerEvents="none">
+          <StarField scene={scene} glow={built.stars.glow} stars={1} dense={denseStars} width={width} height={height} />
         </Animated.View>
       ) : null}
       {built.anyBody ? (
@@ -656,10 +617,6 @@ function sceneYOf(scene: Scene, fraction: number): number | `${number}%` {
   return scene.banded && scene.room > 0 ? scene.y(fraction) : `${fraction * 100}%`;
 }
 
-/** A star's height: its own spread over the band (`skyScene.starY`), or its card fraction. */
-function starYOf(scene: Scene, fraction: number): number | `${number}%` {
-  return scene.banded && scene.room > 0 ? scene.starY(fraction) : `${fraction * 100}%`;
-}
 
 /**
  * A body's height for the glow's radial gradient, which is in
@@ -714,23 +671,43 @@ const STAR_FIELD_DENSE: ReadonlyArray<readonly [number, number, number, number?]
  * out of the sky's every redraw — a launch run redraws the sky dozens of
  * times in a second, and these were a third of each redraw's work.
  */
-const Stars = memo(function Stars({
+const StarField = memo(function StarField({
   scene,
   glow,
   stars,
   dense = false,
+  width,
+  height,
 }: {
   scene: Scene;
   glow: string;
   stars: number;
   dense?: boolean;
+  width: number;
+  height: number;
 }) {
   const field = dense ? STAR_FIELD_DENSE : STAR_FIELD;
   return (
     <>
-      {field.map(([x, y, r, a], i) => (
-        <Circle key={i} cx={`${x}%`} cy={starYOf(scene, y / 100)} r={r} fill={glow} fillOpacity={(a ?? 0.85) * stars} />
-      ))}
+      {field.map(([x, y, r, a], i) => {
+        const cx = (x / 100) * width;
+        const cy = scene.banded && scene.room > 0 ? scene.starY(y / 100) : (y / 100) * height;
+        return (
+          <View
+            key={i}
+            style={{
+              position: 'absolute',
+              left: cx - r,
+              top: cy - r,
+              width: r * 2,
+              height: r * 2,
+              borderRadius: r,
+              backgroundColor: glow,
+              opacity: (a ?? 0.85) * stars,
+            }}
+          />
+        );
+      })}
     </>
   );
 });

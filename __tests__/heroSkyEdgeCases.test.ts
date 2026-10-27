@@ -371,17 +371,16 @@ describe('the open sky, on every phone and every table', () => {
     expect(scene.y(0.12) - MOON / 2).toBeGreaterThanOrEqual(116);
   });
 
-  it('measures before it is banded, and draws the SVG a whole dp over its measured size', () => {
+  it('measures before it is banded, and paints the gradient over its own whole box', () => {
     const sky = read('src/screens/home/HeroSky.tsx');
     // Not gated on the band: the size is what keeps the gradient on the hero.
     expect(sky).toMatch(/onLayout=\{onLayout\}/);
-    // ROUNDED UP. A layout width is a fraction of a dp — 1280px at 3x
-    // measures 426.667 — and the surface is laid out on whole dp, so the
-    // sky was painted 426dp wide and the last two device pixels of the
-    // screen stayed the page's colour: a hairline down the hero's right
-    // edge, measured on a Pixel 10 Pro. The wrap clips the overdraw.
-    expect(sky).toMatch(/width=\{size\.width > 0 \? Math\.ceil\(size\.width\) : '100%'\}/);
-    expect(sky).toMatch(/height=\{size\.height > 0 \? Math\.ceil\(size\.height\) : '100%'\}/);
+    // The hairline down the hero's right edge (a Pixel 10 Pro, 2.33) was
+    // an SVG canvas sized in fractional dp and painted a dp short. The
+    // gradient is now the background of a view that fills the sky's own
+    // box, which the platform lays out to the pixel: no canvas to fall
+    // short of it.
+    expect(sky).toMatch(/StyleSheet\.absoluteFill,\s*\{\s*backgroundImage: linearDown\(/);
     // And the clip that makes the overdraw safe.
     expect(read('src/screens/home/TodayCard.tsx')).toMatch(
       /heroWrapBleed: \{[^}]*overflow: 'hidden'/s,

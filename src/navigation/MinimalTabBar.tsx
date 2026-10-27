@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import { Animated, I18nManager, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { hapticScrubStart, hapticScrubTick } from '../polish/haptics';
-import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
+import { linearDown, withAlpha } from '../screens/home/skyPaint';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useAppPalette } from '../hooks/useAppPalette';
 import { MINIMAL_TAB_BAR_HEIGHT, useTabBarBottom } from './tabBarInset';
@@ -138,18 +138,20 @@ export function MinimalTabBar({ state, descriptors, navigation }: BottomTabBarPr
       style={[styles.bar, { height: MINIMAL_TAB_BAR_HEIGHT + bottom, paddingBottom: bottom }]}
       accessibilityRole="tablist">
       {fade ? (
-        <View pointerEvents="none" style={[styles.fade, { height: MINIMAL_TAB_BAR_HEIGHT + bottom + FADE_REACH }]}>
-          <Svg width="100%" height="100%" preserveAspectRatio="none">
-            <Defs>
-              <LinearGradient id="minimalTabFade" x1="0" y1="0" x2="0" y2="1">
-                <Stop offset="0" stopColor={fade} stopOpacity={0} />
-                <Stop offset="0.6" stopColor={fade} stopOpacity={0.92} />
-                <Stop offset="1" stopColor={fade} stopOpacity={1} />
-              </LinearGradient>
-            </Defs>
-            <Rect x="0" y="0" width="100%" height="100%" fill="url(#minimalTabFade)" />
-          </Svg>
-        </View>
+        <View
+          pointerEvents="none"
+          style={[
+            styles.fade,
+            {
+              height: MINIMAL_TAB_BAR_HEIGHT + bottom + FADE_REACH,
+              backgroundImage: linearDown([
+                [withAlpha(fade, 0), 0],
+                [withAlpha(fade, 0.92), 0.6],
+                [fade, 1],
+              ]),
+            },
+          ]}
+        />
       ) : null}
       <GestureDetector gesture={hold}>
       <View style={styles.row} collapsable={false}>

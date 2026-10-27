@@ -286,11 +286,12 @@ describe('wiring', () => {
     expect(sky).toMatch(/<SkyRunLayers run=\{run\}/);
     expect(sky).toMatch(/const SkyRunLayers = memo\(SkyRunLayersImpl\);/);
     // Every layer is an interpolation of the one value; a layer is dropped
-    // once the next is in; the gradients and the halo are drawn small.
+    // once the next is in; the gradients and the halo are native
+    // backgrounds, with no bitmap behind them (skyPaint.ts).
     expect(sky).toMatch(/outputRange: \[0, peak, peak, 0\]/);
-    expect(sky).toMatch(/const LAYER_DOWNSCALE = 4;/);
-    expect(sky).toMatch(/transform: \[\{ scale: LAYER_DOWNSCALE \}\]/);
-    expect(sky).toMatch(/haloScaleUp: Animated\.multiply\(haloScale, LAYER_DOWNSCALE\)/);
+    expect(sky).toMatch(/backgroundImage: linearDown\(\s*g\.mid && g\.midAt != null/);
+    expect(sky).toMatch(/backgroundImage: radialGlow\(built\.halo\.light, 1\)/);
+    expect(sky).toMatch(/transform: \[\{ translateX: built\.bodyTx \}, \{ translateY: built\.bodyTy \}, \{ scale: built\.haloScale \}\]/);
   });
 
   it('re-reads the ink in steps over the run, and mounts the twin only after it', () => {
@@ -300,7 +301,7 @@ describe('wiring', () => {
     expect(card).toMatch(/const twinMayMount = useAfterFirstPaint\(\);/);
     expect(card).toMatch(/!fullBleedRunHeld && twinMayMount && runWanted/);
     const sky = read('src/screens/home/HeroSky.tsx');
-    expect(sky).toMatch(/const Stars = memo\(/);
+    expect(sky).toMatch(/const StarField = memo\(/);
     expect(sky).toMatch(/const Moon = memo\(/);
     expect(sky).toMatch(/useMemo\(\(\) => skyScene\(/);
   });

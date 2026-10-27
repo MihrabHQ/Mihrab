@@ -12,7 +12,10 @@ import com.facebook.react.ReactNativeApplicationEntryPoint.loadReactNative
 import com.facebook.react.ReactPackage
 import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
 import com.facebook.react.common.assets.ReactFontManager
+import com.facebook.react.modules.network.OkHttpClientProvider
 import com.google.android.material.color.DynamicColors
+import java.util.concurrent.TimeUnit
+import okhttp3.OkHttpClient
 
 class MainApplication : Application(), ReactApplication {
 
@@ -52,6 +55,23 @@ class MainApplication : Application(), ReactApplication {
     val appStart = SystemClock.uptimeMillis()
     // First: the kept screen decodes while everything below runs.
     LaunchSnapshot.preload(this)
+    // ── NO WEBVIEW IN THIS PROCESS ─────────────────────────────────────
+    // React Native's HTTP client keeps cookies through android.webkit's
+    // CookieManager, and the first fetch of the day (the times, an update
+    // file, the town lookup) loaded the whole Chromium WebView into the
+    // app's process to hold them — some twenty megabytes of library and
+    // relro for cookies nothing here sends. NoCookieJar keeps none and
+    // ignores the WebView-backed jar the networking module hands it, so
+    // the WebView is never asked for — and it is still the container
+    // Fresco insists on (a plain NO_COOKIES jar crashed the launch).
+    OkHttpClientProvider.setOkHttpClientFactory {
+      OkHttpClient.Builder()
+        .connectTimeout(0, TimeUnit.MILLISECONDS)
+        .readTimeout(0, TimeUnit.MILLISECONDS)
+        .writeTimeout(0, TimeUnit.MILLISECONDS)
+        .cookieJar(NoCookieJar())
+        .build()
+    }
     DynamicColors.applyToActivitiesIfAvailable(this)
     registerBundledFonts()
     loadReactNative(this)
