@@ -132,6 +132,10 @@ function practiceDayV2(
     ...(d.m ? { m: true } : {}),
     ...(d.f ? { f: true } : {}),
     ...(d.s ? { s: d.s } : {}),
+    // The prayers by letter. Dropped here once, and the widget's strip fell
+    // back to the day's summary in every row — a prayer marked missed
+    // coloured nothing red while the Log screen showed the mark.
+    ...(d.p ? { p: d.p } : {}),
   };
 }
 
@@ -467,6 +471,7 @@ export function widgetPayloadV1FromV2(
         ...(d.m ? { m: true as const } : {}),
         ...(d.f ? { f: true as const } : {}),
         ...(d.s ? { s: d.s } : {}),
+        ...(d.p ? { p: d.p } : {}),
       })),
       ...(p.since ? { since: p.since } : {}),
     };
