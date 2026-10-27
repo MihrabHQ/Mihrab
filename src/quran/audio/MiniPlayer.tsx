@@ -24,6 +24,7 @@ import { cardEdgeStyle } from '../../theme/chrome';
 import { findSurah } from '../quran';
 import { findReciter } from './reciters';
 import { ReciterPickerSheet } from './ReciterPickerSheet';
+import { WholeSurahNotice } from './WholeSurahNotice';
 import { useQuranState } from '../quranState';
 import {
   pausePlayback,
@@ -53,7 +54,8 @@ export function MiniPlayer({
 } = {}) {
   const { t } = useTranslation();
   const { palette } = useAppPalette();
-  const { active, playing, loading, reciterId, gap, looping } = usePlaybackStatus();
+  const { active, playing, loading, reciterId, gap, looping, needsDownload } =
+    usePlaybackStatus();
   const { prefs } = useQuranState();
   // Only while someone is looking — see the hook. Listening from the
   // reader with the screen off used to keep this polling for the whole
@@ -121,6 +123,16 @@ export function MiniPlayer({
           that fails and a player that stops, and the reader is left
           guessing between a bad connection and a bad download. The app
           knows which, and knows the ayah. It says so. */}
+      {/* A whole-surah recitation that is not on the device: no stream to
+          fall back on, so the card says what it needs and offers it. Play
+          on this card asks again (resumePlayback). */}
+      {needsDownload ? (
+        <WholeSurahNotice
+          reciterId={needsDownload.reciterId}
+          missingSurah={needsDownload.surah}
+          reason={needsDownload.reason}
+        />
+      ) : null}
       {gap ? (
         <Text style={[styles.gap, { color: palette.danger }]}>
           {t('quran.audioGap', {

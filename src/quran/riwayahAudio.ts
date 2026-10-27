@@ -123,7 +123,10 @@ export function riwayahAyahOf(
 ): number {
   if (!COUNT[riwayah]) return hafsAyah;
   let found = 0;
-  for (let a = 1; a <= hafsAyah + 2; a++) {
+  // A riwayah's count can run ahead of Ḥafṣ by more than two: al-Wāqiʿah
+  // is 99 Madani ayahs to 96. The walk stops at the first ayah past this
+  // one anyway; the bound is only there so it cannot run for ever.
+  for (let a = 1; a <= hafsAyah + 12; a++) {
     const [first, last] = hafsSpan(riwayah, surah, a);
     if (first > hafsAyah) break;
     if (last >= hafsAyah) {

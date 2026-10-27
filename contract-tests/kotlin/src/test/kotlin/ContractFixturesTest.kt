@@ -124,6 +124,21 @@ class ContractFixturesTest {
   }
 
   @Test
+  fun endsTheCountUpWhereTheAppDoes() {
+    val failures = mutableListOf<String>()
+    val cases = section("since")
+    for (c in cases) {
+      val prayerAt = c.getInt("prayerAt")
+      val nextAt = intOrNull(c, "nextAt")
+      val window = c.getInt("window")
+      val want = intOrNull(c, "end")
+      val have = WidgetPayloadV1.sinceAdhanEnd(prayerAt, nextAt, window)
+      if (want != have) failures += "since $prayerAt → $nextAt, $window: want $want, have $have"
+    }
+    report(failures, cases.size)
+  }
+
+  @Test
   fun readsTheV1Clock() {
     val failures = mutableListOf<String>()
     val cases = section("hhmm")

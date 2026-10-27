@@ -48,6 +48,7 @@ import com.prayer_times.WidgetPayloadSource
 import com.prayer_times.contract.NightMarks
 import com.prayer_times.contract.WallClock
 import com.prayer_times.contract.WidgetContract
+import com.prayer_times.contract.WidgetPayloadV1
 
 /*
  * What every Glance widget shares: the payload as the contract's typed model,
@@ -242,6 +243,14 @@ internal class Schedule(
    */
   val shown: WidgetContract.Day,
   val next: Event?,
+  /**
+   * The last of the five to have come in — what a card counts up from for a
+   * while (#111). Never Sunrise or a night mark. Last night's ʿIshāʾ in the
+   * small hours; null on a later day.
+   */
+  val came: Event? = null,
+  /** Minutes after the drawn day's midnight; -1 when it is a later day. */
+  val nowMinutes: Int = -1,
 ) {
   companion object {
     fun of(p: WidgetContract.Payload, now: Now): Schedule? {
@@ -278,7 +287,13 @@ internal class Schedule(
       // at midnight, not at Isha, and "next" says what tomorrow brings. With
       // no entry for today, the day the adapter would show.
       val table = if (today.dateKey == now.dateKey) today else shown
-      return Schedule(table, shown, next)
+      val came = if (nowMinutes < 0) null else {
+        val before = yesterday?.takeUnless { it.estimated }?.let { eventsOf(it, -WallClock.MINUTES_PER_DAY) }.orEmpty()
+        (before + eventsOf(today, 0))
+          .filter { it.row.key in WidgetPayloadV1.SINCE_ADHAN_KEYS && it.at <= nowMinutes }
+          .maxByOrNull { it.at }
+      }
+      return Schedule(table, shown, next, came, nowMinutes)
     }
 
     /** Every time on a day, placed `offset` minutes from the drawn day's midnight. */
@@ -563,6 +578,26 @@ internal inline fun <T> guarded(what: String, build: () -> T): Result<T> =
     Log.e(PrayerWidgetProvider.WIDGET_LOG_TAG, "$what glance widget failed", e)
     Result.failure(e)
   }
+
+/**
+ * The same clock counting UP from a prayer that has come in — "12:34 since
+ * Dhuhr" (#111). `format` is the whole line with the clock's `%1$s` left
+ * in (the prayer's name already written into it). The alarm at the end of
+ * the window redraws the card back to its countdown.
+ */
+@Composable
+internal fun CountUp(sinceEpochMs: Long, format: String, now: Now, sp: Float, color: Int, modifier: GlanceModifier = GlanceModifier) {
+  val context = localizedContext()
+  val elapsed = now.epochMs - sinceEpochMs
+  if (elapsed < 0) return
+  val views = RemoteViews(context.packageName, R.layout.glance_countdown).apply {
+    setChronometerCountDown(R.id.glance_countdown, false)
+    setChronometer(R.id.glance_countdown, SystemClock.elapsedRealtime() - elapsed, format, true)
+    setTextColor(R.id.glance_countdown, color)
+    setTextViewTextSize(R.id.glance_countdown, TypedValue.COMPLEX_UNIT_SP, sp)
+  }
+  AndroidRemoteViews(views, modifier)
+}
 
 /**
  * A system-ticked countdown, which Glance has no composable for.

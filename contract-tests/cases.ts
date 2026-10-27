@@ -30,6 +30,7 @@ import {
   type EpochOf,
 } from '../src/liveActivity/liveActivityV2';
 import {
+  sinceAdhanEnd,
   widgetPayloadV1FromV2,
   type WidgetNow,
 } from '../src/widget/widgetPayloadV2';
@@ -163,6 +164,7 @@ const FULL_PAYLOAD = {
     todayTotal: 45,
     todayRounds: 1,
   },
+  sinceAdhanMinutes: 20,
 };
 
 type DecodeCase = { name: string; type: string; input: string };
@@ -558,6 +560,23 @@ process.stdout.write(JSON.stringify(jobs.map(j => {
 })));
 `;
 
+/**
+ * Issue #111: until when a card counts up from a prayer — `sinceAdhanEnd`.
+ * The window, the halfway cut-off (odd gaps round down), off, and a next
+ * time that is not after the prayer.
+ */
+const SINCE_CASES: { prayerAt: number; nextAt: number | null; window: number }[] = [
+  { prayerAt: 780, nextAt: 990, window: 20 },
+  { prayerAt: 780, nextAt: 990, window: 30 },
+  { prayerAt: 1140, nextAt: 1165, window: 20 },
+  { prayerAt: 1140, nextAt: 1161, window: 30 },
+  { prayerAt: 1290, nextAt: 1291, window: 10 },
+  { prayerAt: 300, nextAt: 380, window: 0 },
+  { prayerAt: 300, nextAt: 300, window: 20 },
+  { prayerAt: 300, nextAt: null, window: 20 },
+  { prayerAt: -60, nextAt: 270, window: 30 },
+];
+
 type ZoneJob =
   | { kind: 'epoch'; dateKey: string; minutes: number }
   | { kind: 'offset'; dateKey: string }
@@ -726,6 +745,10 @@ export async function buildFixtures() {
     about:
       'GENERATED from contract-tests/cases.ts by `npm run contract-fixtures` — do not edit. The answers the app gives; Swift and Kotlin must give the same.',
     adapt: await adaptCases(),
+    since: SINCE_CASES.map(c => ({
+      ...c,
+      end: sinceAdhanEnd(c.prayerAt, c.nextAt, c.window),
+    })),
     liveActivity: await liveActivityCases(),
     decode: DECODE_CASES.map(c => ({
       ...c,

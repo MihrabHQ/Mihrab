@@ -96,7 +96,6 @@
         android:exported="true"
         android:label="@string/widget_name_medium">
         <intent-filter>
-          <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
           <!-- USER_PRESENT is declared HERE ONLY. Every widget receiver used to
                carry it, and each one forwarded the unlock to the same
                PrayerWidgetProvider.requestUpdate — so one unlock ran the
@@ -108,13 +107,30 @@
           <action android:name="android.intent.action.BOOT_COMPLETED" />
           <action android:name="com.prayer_times.ACTION_PRAYER_TIME_ELAPSED" />
         </intent-filter>
+      </receiver>
+
+      <!-- Prayer times, 4×1. The fixed-size cards live under new names
+           (FixedSizeWidgets.kt): the components a 2.33 card was placed from
+           are no longer widget providers, so those cards are dropped rather
+           than kept at a size that can no longer be changed.
+           .PrayerWidgetProvider above stays as a plain receiver: unlock,
+           boot and the prayer-boundary alarm all still land on it. -->
+      <receiver
+        android:name=".TimesWidgetReceiver"
+        android:exported="true"
+        android:label="@string/widget_name_medium">
+        <intent-filter>
+          <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+          <action android:name="android.intent.action.BOOT_COMPLETED" />
+          <action android:name="com.prayer_times.ACTION_PRAYER_TIME_ELAPSED" />
+        </intent-filter>
         <meta-data
           android:name="android.appwidget.provider"
           android:resource="@xml/glance_prayer_info" />
       </receiver>
 
       <receiver
-        android:name=".PrayerWidgetSmallProvider"
+        android:name=".NextPrayerWidgetReceiver"
         android:exported="true"
         android:label="@string/widget_name_small">
         <intent-filter>
@@ -128,7 +144,7 @@
       </receiver>
 
       <receiver
-        android:name=".PrayerWidgetLargeProvider"
+        android:name=".TimesTallWidgetReceiver"
         android:exported="true"
         android:label="@string/widget_name_tall">
         <intent-filter>
@@ -145,7 +161,7 @@
            handled by Glance itself; this receiver takes the ordinary update
            broadcasts. -->
       <receiver
-        android:name=".PrayerWidgetLogProvider"
+        android:name=".LogWidgetReceiver"
         android:exported="true"
         android:label="@string/widget_name_log">
         <intent-filter>
@@ -162,7 +178,7 @@
         second widget: see glance_log_tall_info.xml.
       -->
       <receiver
-        android:name=".PrayerWidgetLogLargeProvider"
+        android:name=".LogTallWidgetReceiver"
         android:exported="true"
         android:label="@string/widget_name_log_tall">
         <intent-filter>
@@ -181,7 +197,7 @@
         prayer table on their home screen to get it.
       -->
       <receiver
-        android:name=".PrayerWidgetStreakProvider"
+        android:name=".StreakWidgetReceiver"
         android:exported="true"
         android:label="@string/widget_name_streak">
         <intent-filter>

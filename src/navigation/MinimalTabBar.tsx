@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { Animated, I18nManager, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import { hapticScrubStart, hapticScrubTick } from '../polish/haptics';
 import { linearDown, withAlpha } from '../screens/home/skyPaint';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useAppPalette } from '../hooks/useAppPalette';
@@ -102,18 +101,15 @@ export function MinimalTabBar({ state, descriptors, navigation }: BottomTabBarPr
         .activateAfterLongPress(160)
         .runOnJS(true)
         .onStart(e => {
-          setPagerEngaged(true);
-          hapticScrubStart();
+          setPagerEngaged(true, true);
           lastSlot.current = Math.round(slotAt(e.x));
           pagerHold.setValue(slotAt(e.x) - live.current.index);
         })
         .onUpdate(e => {
           const pos = slotAt(e.x);
           const slot = Math.round(pos);
-          if (slot !== lastSlot.current) {
-            lastSlot.current = slot;
-            hapticScrubTick(true);
-          }
+          // No haptic as the finger crosses a dot: the icon lighting is the mark.
+          if (slot !== lastSlot.current) lastSlot.current = slot;
           pagerHold.setValue(pos - live.current.index);
         })
         .onEnd(e => {
@@ -122,8 +118,8 @@ export function MinimalTabBar({ state, descriptors, navigation }: BottomTabBarPr
           if (route && target !== live.current.index) {
             const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
             if (!event.defaultPrevented) {
-              settlePagerBase(target);
-              navigation.navigate(route.name, route.params);
+              // The navigator once the page is there (settlePagerBase).
+              settlePagerBase(target, true, () => navigation.navigate(route.name, route.params));
             }
           }
           settlePagerHold(() => setPagerEngaged(false));
@@ -212,10 +208,9 @@ export function MinimalTabBar({ state, descriptors, navigation }: BottomTabBarPr
               const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
               if (focused || event.defaultPrevented) return;
               // The icons show for the slide, as under a finger.
-              setPagerEngaged(true);
+              setPagerEngaged(true, true);
               setTimeout(() => setPagerEngaged(false), PAGER_TRANSITION_MS + 60);
-              settlePagerBase(index);
-              navigation.navigate(route.name, route.params);
+              settlePagerBase(index, true, () => navigation.navigate(route.name, route.params));
             }}
             style={styles.hit}>
             <Animated.View

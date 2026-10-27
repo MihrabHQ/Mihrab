@@ -61,6 +61,7 @@
 "widget_preview_tasbih_of" = "33 میں سے";
 "widget_preview_tasbih_today" = "آج 231 · 2 چکر";
 "widget_countdown_format" = "%1$@ میں";
+"widget_since_adhan_format" = "%2$@ کو %1$@ ہوئے";
 "widget_logged_line" = "آج %2$d میں سے %1$d درج";
 "widget_name_hijri" = "Mihrab · ہجری تاریخ";
 "widget_description_hijri" = "آج کی ہجری تاریخ، اور اگلا مہینہ کتنی دور ہے۔ 2×1، سائز تبدیل کرنے کے قابل۔";

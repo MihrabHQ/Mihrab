@@ -211,8 +211,11 @@ function TodayTimesSheetImpl({
             {`${t('provider.timesSource')} · ${source}`}
           </Text>
         ) : null}
-        {qibla || place ? (
-          <View style={styles.doors}>
+        {/* The foot, one row: the place at the start, the Qibla at the
+            end. No Close button — the sheet goes by a swipe down, a tap
+            on the sky above it, or Back. */}
+        <View style={styles.foot}>
+          <View style={[styles.footSide, styles.footStart]}>
             {place ? (
               <Pressable
                 accessibilityRole="button"
@@ -230,6 +233,8 @@ function TodayTimesSheetImpl({
                 </Text>
               </Pressable>
             ) : null}
+          </View>
+          <View style={[styles.footSide, styles.footEnd]}>
             {qibla ? (
               <Pressable
                 accessibilityRole="button"
@@ -250,16 +255,7 @@ function TodayTimesSheetImpl({
               </Pressable>
             ) : null}
           </View>
-        ) : null}
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={t('common.close', 'Close')}
-          onPress={onClose}
-          style={[styles.close, { backgroundColor: palette.accentBg }]}>
-          <Text style={[typeStyle('headline'), { color: palette.accentSolid }]}>
-            {t('common.close', 'Close')}
-          </Text>
-        </Pressable>
+        </View>
       </View>
     </MinimalSheet>
   );
@@ -312,17 +308,18 @@ const styles = StyleSheet.create({
   time: { fontSize: TYPE.body.fontSize, fontWeight: '400' },
   // The next prayer: the same face, a step heavier — the row's emphasis.
   lit: { fontWeight: '500' },
-  doors: {
+  foot: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    gap: SPACING.md,
+    gap: SPACING.sm,
     marginTop: SPACING.xs,
   },
+  footSide: { flex: 1, flexDirection: 'row', minWidth: 0 },
+  footStart: { justifyContent: 'flex-start' },
+  footEnd: { justifyContent: 'flex-end' },
   /**
    * The place and the Qibla as doors, not captions: a hairline pill with
-   * its glyph, quieter than Close's filled one — the sheet's own way out
-   * stays the one solid thing at its foot.
+   * its glyph.
    */
   doorPill: {
     flexDirection: 'row',
@@ -337,11 +334,4 @@ const styles = StyleSheet.create({
   },
   door: { fontSize: TYPE.footnote.fontSize, fontWeight: '400', flexShrink: 1 },
   source: { fontSize: TYPE.label.fontSize, fontWeight: '400', textAlign: 'center', marginTop: SPACING.xs, opacity: 0.8 },
-  close: {
-    alignSelf: 'center',
-    paddingHorizontal: SPACING.lg,
-    paddingVertical: SPACING.sm,
-    borderRadius: 999,
-    marginTop: SPACING.xs,
-  },
 });

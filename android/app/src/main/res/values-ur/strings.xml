@@ -131,6 +131,7 @@
     <string name="widget_preview_tasbih_of">33 میں سے</string>
     <string name="widget_preview_tasbih_today">آج 231 · 2 چکر</string>
     <string name="widget_countdown_format">%1$s میں</string>
+    <string name="widget_since_adhan_format">%2$s کو %1$s ہوئے</string>
     <string name="widget_logged_line">آج %2$d میں سے %1$d درج</string>
     <string name="widget_name_hijri">Mihrab · ہجری تاریخ</string>
     <string name="widget_description_hijri">آج کی ہجری تاریخ، اور اگلا مہینہ کتنی دور ہے۔ 2×1، سائز تبدیل کرنے کے قابل۔</string>

@@ -68,7 +68,9 @@ describe('the strip, which used to disappear with the download', () => {
 
 describe('manage downloads, where the tap now lands', () => {
   it('says what is actually there for a part-downloaded reciter', () => {
-    expect(downloads).toMatch(/whole[\s\S]{0,200}downloadProgressAyahs/);
+    expect(downloads).toMatch(/whole[\s\S]{0,500}downloadProgressAyahs/);
+    // A whole-surah recitation counts its surah files instead (#110).
+    expect(downloads).toMatch(/wholeSurah[\s\S]{0,200}downloadProgressSurahs/);
   });
 
   it('and offers to continue it', () => {

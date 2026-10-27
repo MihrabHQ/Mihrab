@@ -86,7 +86,7 @@ describe('the two places stay apart', () => {
       /if \(ref && listening\)\s*recordListened\(\{ \.\.\.ref, riwayah: queueRiwayah \}, status\.reciterId\)/,
     );
     expect(pb).toMatch(
-      /recordListened\(\{ \.\.\.start, riwayah: queueRiwayah \}, prefs\.reciterId\)/,
+      /recordListened\(\{ \.\.\.start, riwayah: queueRiwayah \}, (prefs\.)?reciterId\)/,
     );
   });
 

@@ -27,7 +27,6 @@ import { runSyncNow, syncIsReady } from '../../sync/runSync';
 import { RADIUS, SPACING } from '../../theme/tokens';
 import { TYPE, typeStyle } from '../../theme/typography';
 import { useSyncDialog } from '../sync/useSyncDialog';
-import { HeatmapLegend } from '../../practice/PracticeHeatmap';
 import { StripLegend } from '../../practice/PracticeStrip';
 
 export function LogOptionsSheet({
@@ -40,8 +39,6 @@ export function LogOptionsSheet({
   onReset,
   reminderOn,
   onReminderChange,
-  byDay,
-  onByDayChange,
 }: {
   visible: boolean;
   onClose: () => void;
@@ -53,9 +50,6 @@ export function LogOptionsSheet({
   onReset: () => void;
   reminderOn: boolean;
   onReminderChange: (on: boolean) => void;
-  /** The graph as one square a day (the grid) rather than a row a prayer. */
-  byDay: boolean;
-  onByDayChange: (on: boolean) => void;
 }) {
   const { t } = useTranslation();
   const { palette } = useAppPalette();
@@ -136,18 +130,6 @@ export function LogOptionsSheet({
           </Group>
           <Group>
             <Row
-              title={t('log.graphByDay', 'Graph by day')}
-              subtitle={t('log.graphByDayHelp', 'One square a day — the quarter at a glance. Off, the graph is a row for each prayer.')}
-              trailing={
-                <Switch
-                  value={byDay}
-                  trackColor={{ true: palette.accentSolid, false: String(palette.border) }}
-                  thumbColor="#ffffff" // tokens-ok-line: a Switch thumb stays light in both states so it reads against an accent track
-                  onValueChange={onByDayChange}
-                />
-              }
-            />
-            <Row
               title={t('settings.endOfDayLog')}
               subtitle={t('settings.endOfDayLogHelp')}
               trailing={
@@ -185,7 +167,7 @@ export function LogOptionsSheet({
             <Text style={[typeStyle('footnote'), styles.legendTitle, { color: palette.muted }]}>
               {t('log.legendTitle', 'What the graph shows')}
             </Text>
-            {byDay ? <HeatmapLegend /> : <StripLegend />}
+            <StripLegend />
           </View>
           <Pressable
             accessibilityRole="button"

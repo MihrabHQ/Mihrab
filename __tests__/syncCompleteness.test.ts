@@ -74,6 +74,8 @@ const TRAVELS = new Set([
  * thing; "too large" means it is content, not record, and re-downloadable.
  */
 const STAYS: Record<string, string> = {
+  'mihrab.voiceHint.dismissed':
+    'a hint put away on THIS phone — "keep this voice" for a reading; a new phone may as well be told once',
   'log.graph': 'a view, not a record — which of the two graphs the Log draws on THIS phone',
   'mihrab.listenProgress.v1':
     'device-local — where a listen on THIS phone stopped; the reading marker is what travels',

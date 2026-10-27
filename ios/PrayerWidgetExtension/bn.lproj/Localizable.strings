@@ -61,6 +61,7 @@
 "widget_preview_tasbih_of" = "33-এর মধ্যে";
 "widget_preview_tasbih_today" = "আজ 231 · 2 রাউন্ড";
 "widget_countdown_format" = "%1$@ পরে";
+"widget_since_adhan_format" = "%2$@ থেকে %1$@";
 "widget_logged_line" = "আজ %2$d-এর মধ্যে %1$d লগ করা হয়েছে";
 "widget_name_hijri" = "Mihrab · হিজরি তারিখ";
 "widget_description_hijri" = "আজকের হিজরি তারিখ, এবং পরবর্তী মাস কত দূরে। 2×1, আকার পরিবর্তনযোগ্য।";

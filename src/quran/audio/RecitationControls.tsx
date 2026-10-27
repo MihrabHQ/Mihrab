@@ -13,7 +13,9 @@ import { findSurah } from '../quran';
 import { ayahCountForRiwayah } from '../pages';
 import { resolveRiwayah } from '../riwayat';
 import { surahName } from '../surahName';
-import { findReciter } from './reciters';
+import { findReciter, isWholeSurah } from './reciters';
+import { WholeSurahSurahRow } from './WholeSurahNotice';
+import { ReadingVoiceHint } from './ReadingVoiceHint';
 import { ReciterPickerSheet } from './ReciterPickerSheet';
 import {
   deleteSurahAudio,
@@ -353,72 +355,86 @@ export function RecitationControls({
       {/* Offline download for this surah. The size is stated up front: the
           decision to spend 12 MB of cellular data depends on the number the
           row used to withhold. */}
-      <View style={styles.dlWrap}>
-        <RowAction
-          compact
-          grow
-          label={
-            downloading
-              ? t('quran.downloadingAudio', {
-                  defaultValue: 'Downloading… {{done}}/{{total}}',
-                  done: dlProgress.done,
-                  total: dlProgress.total,
-                })
-              : busyElsewhere
-                ? // One pipe, one disk, one foreground service — see
-                  // quranDownloadManager. Said rather than silently
-                  // ignored, because a dead button is the worse answer.
-                  t(
-                    'quran.listenDownloadBusy',
-                    'Something else is downloading. One at a time, so neither is halved.',
-                  )
-                : complete
-                  ? t('quran.surahAudioDownloaded', 'Audio downloaded for offline use')
-                  : partial
-                    ? // The state this row could not say. #30.
-                      t('quran.surahAudioPartialShort', {
-                        defaultValue: '{{have}}/{{total}} ayahs · Download the rest',
-                        have: status?.have ?? 0,
-                        total: status?.total ?? 0,
-                      })
-                    : t('quran.downloadSurahAudioSized', {
-                        defaultValue: 'Download this surah · {{size}}',
-                        size: estimatedSize,
-                      })
-          }
-          onPress={startDownload}
-          disabled={complete || downloading || busyElsewhere || status == null}
-          accessibilityLabel={t('quran.downloadSurahAudio', {
-            defaultValue: 'Download audio for {{surah}}',
-            surah: surahLabel,
-          })}
+      {/* The page in one reading and the voice in another (ReadingVoiceHint). */}
+      <ReadingVoiceHint />
+
+      {/* A whole-surah recitation's surah is one file: the same row, its
+          size exact, with its own note and a way to report a boundary. */}
+      {isWholeSurah(findReciter(prefs.reciterId)) ? (
+        <WholeSurahSurahRow
+          reciterId={prefs.reciterId}
+          surah={surahNumber}
+          ayah={ayah ?? null}
+          riwayah={resolveRiwayah(prefs.riwayah)}
         />
-        {/* Stopping it is a thing a person does, and until the manager
-            owned this download there was nowhere to do it: closing the
-            sheet was the cancel, and it was not announced as one. */}
-        {downloading ? (
+      ) : (
+        <View style={styles.dlWrap}>
           <RowAction
             compact
-            label={t('common.cancel', 'Cancel')}
-            onPress={() => cancelQuranDownload()}
-            accessibilityLabel={t('common.cancel', 'Cancel')}
-          />
-        ) : null}
-        {/* Clearable per surah, not only per reciter — #30 asked for it,
-            and a reader who has finished with al-Baqarah should not have
-            to delete a whole reciter to get 40 MB back. */}
-        {!downloading && (status?.have ?? 0) > 0 ? (
-          <RowAction
-            compact
-            label={t('common.delete', 'Delete')}
-            onPress={removeDownload}
-            accessibilityLabel={t('quran.deleteSurahAudioFor', {
-              defaultValue: 'Delete downloaded audio for {{surah}}',
+            grow
+            label={
+              downloading
+                ? t('quran.downloadingAudio', {
+                    defaultValue: 'Downloading… {{done}}/{{total}}',
+                    done: dlProgress.done,
+                    total: dlProgress.total,
+                  })
+                : busyElsewhere
+                  ? // One pipe, one disk, one foreground service — see
+                    // quranDownloadManager. Said rather than silently
+                    // ignored, because a dead button is the worse answer.
+                    t(
+                      'quran.listenDownloadBusy',
+                      'Something else is downloading. One at a time, so neither is halved.',
+                    )
+                  : complete
+                    ? t('quran.surahAudioDownloaded', 'Audio downloaded for offline use')
+                    : partial
+                      ? // The state this row could not say. #30.
+                        t('quran.surahAudioPartialShort', {
+                          defaultValue: '{{have}}/{{total}} ayahs · Download the rest',
+                          have: status?.have ?? 0,
+                          total: status?.total ?? 0,
+                        })
+                      : t('quran.downloadSurahAudioSized', {
+                          defaultValue: 'Download this surah · {{size}}',
+                          size: estimatedSize,
+                        })
+            }
+            onPress={startDownload}
+            disabled={complete || downloading || busyElsewhere || status == null}
+            accessibilityLabel={t('quran.downloadSurahAudio', {
+              defaultValue: 'Download audio for {{surah}}',
               surah: surahLabel,
             })}
           />
-        ) : null}
-      </View>
+          {/* Stopping it is a thing a person does, and until the manager
+              owned this download there was nowhere to do it: closing the
+              sheet was the cancel, and it was not announced as one. */}
+          {downloading ? (
+            <RowAction
+              compact
+              label={t('common.cancel', 'Cancel')}
+              onPress={() => cancelQuranDownload()}
+              accessibilityLabel={t('common.cancel', 'Cancel')}
+            />
+          ) : null}
+          {/* Clearable per surah, not only per reciter — #30 asked for it,
+              and a reader who has finished with al-Baqarah should not have
+              to delete a whole reciter to get 40 MB back. */}
+          {!downloading && (status?.have ?? 0) > 0 ? (
+            <RowAction
+              compact
+              label={t('common.delete', 'Delete')}
+              onPress={removeDownload}
+              accessibilityLabel={t('quran.deleteSurahAudioFor', {
+                defaultValue: 'Delete downloaded audio for {{surah}}',
+                surah: surahLabel,
+              })}
+            />
+          ) : null}
+        </View>
+      )}
 
       <ReciterPickerSheet
         visible={reciterPickerVisible}

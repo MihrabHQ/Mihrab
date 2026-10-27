@@ -38,6 +38,7 @@
  */
 
 import type { RiwayahId } from '../riwayat';
+import { hasSurahTable } from './surahRecitation';
 
 export type Reciter = {
   /** Stable id used in settings + file paths. */
@@ -76,6 +77,22 @@ export type Reciter = {
    * (recitationEdges.ts) is used wherever there is one.
    */
   secondsPerWord?: number;
+  /**
+   * A WHOLE-SURAH recitation: one file per surah, from mp3quran.net, cut
+   * into ayahs by the boundaries in `data/surahRecitations/<id>.json`
+   * (surahRecitation.ts). Absent for every EveryAyah reciter, whose files
+   * are one per ayah already.
+   *
+   * These are played only from a full download — the whole recitation on
+   * the device — and the app says so, and says that its ayah tracking is a
+   * best attempt rather than a guarantee: see `isWholeSurah`.
+   */
+  surahFiles?: {
+    /** The folder the surah files are in, ending in `/`. */
+    server: string;
+    /** mp3quran's id for this recording, whose ayah timings these are. */
+    moshaf: number;
+  };
 };
 
 /** A murattal pace, for a reciter that does not give its own. */
@@ -120,6 +137,180 @@ export const WARSH_RECITERS: ReadonlyArray<Reciter> = [
     riwayah: 'warsh',
     aliases: ['jazairi', 'jazaeri', 'aljazaery', 'yasin', 'yassine'],
   },
+];
+
+/**
+ * Whole-surah recitations — issue #110, and the readings that had no voice.
+ *
+ * mp3quran.net publishes these as one file per surah, with the time every
+ * ayah starts and ends inside it. Each was checked against its own audio
+ * before it went in (October 2026): every surah present, the ayah count
+ * the reading's own (the Madani count for Warsh and Qālūn), the starts in
+ * the pauses before their ayahs on eight sample surahs, and a constant
+ * bitrate, so a jump to an ayah lands where it should. Seven recordings
+ * offered by the same source failed that and are not here, and five more
+ * that passed were left out as the least listened to and the most work to
+ * place ayah by ayah (docs/data-sources.md).
+ *
+ * The publisher's boundaries are then moved onto the pause nearest each
+ * of them by `tools/surah-audio/align.py`, which decodes every surah to
+ * find them. That is the best the recording allows and no more: where a
+ * reciter runs one ayah into the next without a breath there is nothing
+ * to find, and the boundary is the publisher's. So the app labels these
+ * as best-effort for ayah tracking, and plays them from a full download
+ * only — the file has to be on the device to be cut at all reliably.
+ *
+ * The site's terms (its privacy policy's "Copyrights" section) allow any
+ * developer to copy its material. Credited in RECITATION_ATTRIBUTION.
+ */
+const MQ = 'https://cdn.mp3quran.net/audio/';
+
+export const SURAH_FILE_RECITERS: ReadonlyArray<Reciter> = [
+  {
+    id: 'husary-warsh',
+    name: 'Mahmoud Khalil Al-Husary (Warsh)',
+    arabicName: 'محمود خليل الحصري',
+    folder: 'mp3quran/husary-warsh',
+    hasTimings: false,
+    riwayah: 'warsh',
+    aliases: ['hosary', 'husari', 'hussary', 'hussari', 'alhusary'],
+    surahFiles: { server: `${MQ}mahmoud-husary/r3/`, moshaf: 120 },
+  },
+  {
+    id: 'warsh-koshi',
+    name: 'Al-Oyoun Al-Koshi',
+    arabicName: 'العيون الكوشي',
+    folder: 'mp3quran/warsh-koshi',
+    hasTimings: false,
+    riwayah: 'warsh',
+    aliases: ['kouchi', 'kushi', 'laayoun', 'ayoun', 'oyoon', 'alkoshi'],
+    surahFiles: { server: `${MQ}laayoun-kouchi/r1/`, moshaf: 16 },
+  },
+  {
+    id: 'husary-qalun',
+    name: 'Mahmoud Khalil Al-Husary (Qalun)',
+    arabicName: 'محمود خليل الحصري',
+    folder: 'mp3quran/husary-qalun',
+    hasTimings: false,
+    riwayah: 'qalun',
+    aliases: ['hosary', 'husari', 'hussary', 'hussari', 'alhusary', 'qaloon'],
+    surahFiles: { server: `${MQ}mahmoud-husary/r5/`, moshaf: 270 },
+  },
+  {
+    id: 'qalun-hudhaify',
+    name: 'Ali Al-Hudhaify (Qalun)',
+    arabicName: 'علي بن عبدالرحمن الحذيفي',
+    folder: 'mp3quran/qalun-hudhaify',
+    hasTimings: false,
+    riwayah: 'qalun',
+    aliases: ['huthaifi', 'hudhaifi', 'huzaifi', 'qaloon'],
+    surahFiles: { server: `${MQ}ali-hudhaifi/r2/`, moshaf: 75 },
+  },
+  {
+    id: 'shubah-hudhaify',
+    name: "Ali Al-Hudhaify (Shu'bah)",
+    arabicName: 'علي بن عبدالرحمن الحذيفي',
+    folder: 'mp3quran/shubah-hudhaify',
+    hasTimings: false,
+    riwayah: 'shubah',
+    aliases: ['huthaifi', 'hudhaifi', 'huzaifi', 'shuba', 'shouba'],
+    surahFiles: { server: `${MQ}ali-hudhaifi/r3/`, moshaf: 305 },
+  },
+  {
+    id: 'zahrani',
+    name: 'Abdulaziz Az-Zahrani',
+    arabicName: 'عبدالعزيز الزهراني',
+    folder: 'mp3quran/zahrani',
+    hasTimings: false,
+    aliases: ['zahrany', 'alzahrani', 'abdulaziz'],
+    surahFiles: { server: `${MQ}abdulaziz-zahrani/r1/`, moshaf: 56 },
+  },
+  {
+    id: 'maasaraawi',
+    name: 'Ahmad Issa Al-Maasaraawi',
+    arabicName: 'أحمد عيسى المعصراوي',
+    folder: 'mp3quran/maasaraawi',
+    hasTimings: false,
+    aliases: ['masarawi', 'maasarawi', 'masrawi', 'issa'],
+    surahFiles: { server: `${MQ}ahmad-masarawi/r1/`, moshaf: 289 },
+  },
+
+
+  {
+    id: 'balilah',
+    name: 'Bandar Balilah',
+    arabicName: 'بندر بليلة',
+    folder: 'mp3quran/balilah',
+    hasTimings: false,
+    aliases: ['baleela', 'balila', 'baleelah', 'bandar'],
+    surahFiles: { server: `${MQ}bandar-baleela/r1/`, moshaf: 217 },
+  },
+  {
+    id: 'dosari-hafs',
+    name: 'Ibrahim Al-Dosari (Hafs)',
+    arabicName: 'إبراهيم الدوسري',
+    folder: 'mp3quran/dosari-hafs',
+    hasTimings: false,
+    aliases: ['dosary', 'dossari', 'aldosari', 'ibrahim'],
+    surahFiles: { server: `${MQ}ibrahim-dosari/r2/`, moshaf: 232 },
+  },
+  {
+    id: 'salah-hashim',
+    name: 'Salah Al-Hashim',
+    arabicName: 'صلاح الهاشم',
+    folder: 'mp3quran/salah-hashim',
+    hasTimings: false,
+    aliases: ['hashem', 'alhashim', 'salah'],
+    surahFiles: { server: `${MQ}salah-hashim/r1/`, moshaf: 44 },
+  },
+  {
+    id: 'tunaiji',
+    name: 'Khalifa Al-Tunaiji',
+    arabicName: 'خليفة الطنيجي',
+    folder: 'mp3quran/tunaiji',
+    hasTimings: false,
+    aliases: ['tunaiji', 'tonaiji', 'tunaiji', 'khalifah'],
+    surahFiles: { server: `${MQ}khalifa-tunaiji/r1/`, moshaf: 24 },
+  },
+
+  {
+    id: 'salemi',
+    name: 'Mansour Al-Salemi',
+    arabicName: 'منصور السالمي',
+    folder: 'mp3quran/salemi',
+    hasTimings: false,
+    aliases: ['salimi', 'mansur', 'mansoor'],
+    surahFiles: { server: `${MQ}mansour-salimi/r1/`, moshaf: 245 },
+  },
+
+  {
+    id: 'buaijan',
+    name: "Abdullah Al-Bu'ayjan",
+    arabicName: 'عبدالله البعيجان',
+    folder: 'mp3quran/buaijan',
+    hasTimings: false,
+    aliases: ['buajan', 'buayjan', 'bueijan', 'albuajan'],
+    surahFiles: { server: `${MQ}abdullah-buaijan/r1/`, moshaf: 58 },
+  },
+  {
+    id: 'dukhain',
+    name: 'Haitham Al-Dukhain',
+    arabicName: 'هيثم الدخين',
+    folder: 'mp3quran/dukhain',
+    hasTimings: false,
+    aliases: ['dukheen', 'dokhain', 'haytham'],
+    surahFiles: { server: `${MQ}haitham-dukhain/r1/`, moshaf: 273 },
+  },
+  {
+    id: 'wadee-yamani',
+    name: "Wadee' Al-Yamani",
+    arabicName: 'وديع اليمني',
+    folder: 'mp3quran/wadee-yamani',
+    hasTimings: false,
+    aliases: ['wadeea', 'wadi', 'yemeni', 'yamani'],
+    surahFiles: { server: `${MQ}wadee-yamani/r1/`, moshaf: 219 },
+  },
+
 ];
 
 export const RECITERS: ReadonlyArray<Reciter> = [
@@ -491,6 +682,7 @@ export const RECITERS: ReadonlyArray<Reciter> = [
     aliases: ['suwaisy', 'sowesy', 'hajjaj', 'hajaj'],
   },
   ...WARSH_RECITERS,
+  ...SURAH_FILE_RECITERS,
 ] as const;
 
 /**
@@ -533,7 +725,7 @@ export function reciterRiwayah(r: Reciter): RiwayahId {
  * still sees both Warsh voices at the end of the list.
  */
 export function sortedReciters(
-  list: ReadonlyArray<Reciter> = RECITERS,
+  list: ReadonlyArray<Reciter> = playableReciters(),
   prefer?: RiwayahId,
 ): Reciter[] {
   const rank = (r: Reciter) => (prefer && reciterRiwayah(r) === prefer ? 0 : 1);
@@ -551,7 +743,7 @@ export function sortedReciters(
  */
 export function searchReciters(
   query: string,
-  list: ReadonlyArray<Reciter> = RECITERS,
+  list: ReadonlyArray<Reciter> = playableReciters(),
   prefer?: RiwayahId,
 ): Reciter[] {
   const q = foldForSearch(query);
@@ -566,9 +758,31 @@ export function searchReciters(
 
 export const DEFAULT_RECITER_ID = 'husary';
 
+/**
+ * Whether a reciter can be played at all.
+ *
+ * Every EveryAyah voice can. A whole-surah recitation can only with its
+ * boundaries in the app and whole (surahRecitation.ts): without them there
+ * is nowhere to cut the surah, and a voice that cannot play is not offered.
+ */
+export function isPlayable(reciter: Reciter): boolean {
+  return !isWholeSurah(reciter) || hasSurahTable(reciter.id);
+}
+
+/** The reciters the picker offers: every one that can be played. */
+export function playableReciters(): Reciter[] {
+  return RECITERS.filter(isPlayable);
+}
+
+/**
+ * A reciter by id — and, for an id that is unknown or cannot be played,
+ * the default one, so a choice the app can no longer honour falls back to
+ * a voice rather than to silence.
+ */
 export function findReciter(id: string): Reciter {
+  const found = RECITERS.find(r => r.id === id);
+  if (found && isPlayable(found)) return found;
   return (
-    RECITERS.find(r => r.id === id) ??
     RECITERS.find(r => r.id === DEFAULT_RECITER_ID) ??
     RECITERS[0]
   );
@@ -589,6 +803,20 @@ export function ayahAudioUrl(
   )}.mp3`;
 }
 
+/**
+ * A whole-surah recitation (`surahFiles`): played from a full download,
+ * cut into ayahs by boundaries that are a best attempt — see
+ * SURAH_FILE_RECITERS.
+ */
+export function isWholeSurah(reciter: Reciter): boolean {
+  return reciter.surahFiles != null;
+}
+
+/** The one file a whole-surah recitation keeps a surah in. */
+export function surahAudioUrl(reciter: Reciter, surah: number): string {
+  return `${reciter.surahFiles?.server ?? ''}${pad3(surah)}.mp3`;
+}
+
 /** Local filename for one ayah's MP3 (relative to the reciter dir). */
 export function ayahAudioFileName(surah: number, ayah: number): string {
   return `${pad3(surah)}${pad3(ayah)}.mp3`;
@@ -600,6 +828,8 @@ export function reciterTimingsUrl(reciter: Reciter): string {
 }
 
 export const RECITATION_ATTRIBUTION =
-  'Recitation audio (44 reciters, two of them Warsh) courtesy of ' +
-  'EveryAyah.com. Word timings derived from the quran-align project ' +
-  '(Colin Fair), CC BY 4.0.';
+  'Recitation audio courtesy of EveryAyah.com (44 reciters, two of them ' +
+  'Warsh) and mp3quran.net (15 whole-surah recitations, among them Warsh, ' +
+  'Qalun and Shu\u2019bah). Word timings derived from the quran-align ' +
+  'project (Colin Fair), CC BY 4.0. Ayah timings for the mp3quran.net ' +
+  'recitations from mp3quran.net, aligned to the audio by Mihrab.';

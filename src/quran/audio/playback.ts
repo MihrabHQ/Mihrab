@@ -14,6 +14,7 @@
  * The player is set up lazily on first play — never at app startup.
  */
 import { useSyncExternalStore } from 'react';
+import { Platform } from 'react-native';
 import TrackPlayer, {
   RepeatMode,
   AppKilledPlaybackBehavior,
@@ -31,7 +32,16 @@ import { DEFAULT_RIWAYAH, resolveRiwayah, type RiwayahId } from '../riwayat';
 import { filesOf } from '../riwayahAudio';
 import { trimFor } from './recitationEdges';
 import * as seams from './seams';
-import { ayahAudioUrl, findReciter, type Reciter } from './reciters';
+import {
+  ayahAudioUrl,
+  findReciter,
+  isWholeSurah,
+  reciterRiwayah,
+  surahAudioUrl,
+  type Reciter,
+} from './reciters';
+import { ayahClip, surahFileSeconds } from './surahRecitation';
+import { recordedAyahs } from './recordedAyahs';
 import {
   isRestTrack,
   restAsset,
@@ -39,7 +49,14 @@ import {
   restTrackId,
   spokenSeconds,
 } from './rest';
-import { localAudioPathIfAny, prefetchAyahAudio } from './audioStore';
+import {
+  checkRemoteSurah,
+  keepSurahQuietly,
+  localAudioPathIfAny,
+  localSurahFileIfAny,
+  prefetchAyahAudio,
+  surahChangedAtSource,
+} from './audioStore';
 import { setNowPlayingState } from '../../native/NowPlayingState';
 import { noteListenPaused, recordListened } from './listenProgress';
 import { onAudioRouteLost } from '../../native/AudioRoute';
@@ -83,6 +100,30 @@ export type PlaybackStatus = {
    * off all leave it looping — a timer here would not survive them.
    */
   looping?: boolean;
+  /**
+   * Playback did not start because the reciter is a whole-surah
+   * recitation (SURAH_FILE_RECITERS) and this surah of it is not on the
+   * device. Those are played from a full download only, so there is no
+   * stream to fall back on: the card says so and offers the download.
+   * `active` holds the ayah that was asked for, not playing, so the card
+   * is there to say it; `resumePlayback` asks again.
+   */
+  needsDownload?: {
+    reciterId: string;
+    surah: number;
+    /**
+     * `missing`: not on the device (or not at the size it was measured
+     * at, which is the same thing). `changed`: the source now serves a
+     * different file, which no download will fix (audioStore).
+     */
+    reason: 'missing' | 'changed';
+  } | null;
+  /**
+   * Where the current track sits in its file, when it is an ayah cut from a
+   * whole-surah recording: progress and scrubbing are then the AYAH's, not
+   * the surah file's (useProgressWhileActive, seekTo).
+   */
+  clip?: { start: number; end: number } | null;
 };
 
 const IDLE: PlaybackStatus = {
@@ -93,6 +134,8 @@ const IDLE: PlaybackStatus = {
   gap: null,
   resting: false,
   looping: false,
+  needsDownload: null,
+  clip: null,
 };
 
 let status: PlaybackStatus = IDLE;
@@ -253,7 +296,11 @@ async function ensureSetup(): Promise<void> {
       const resting = isRestTrack(e.track);
       const ref = e.track && !resting ? parseTrackId(String(e.track.id)) : null;
       if (resting) setStatus({ resting: true });
-      else setStatus({ active: ref, resting: false });
+      else setStatus({ active: ref, resting: false, clip: clipOf(e.track) });
+      if (ref && !resting) {
+        lastActiveId = String(e.track!.id);
+        void checkClipFile(e.track, ref);
+      }
       // The join: skip this file's leading silence and aim at its last
       // sound (seams.ts; natively on Android). A rest has neither.
       void seams.onTrackChanged(e);
@@ -298,11 +345,20 @@ async function ensureSetup(): Promise<void> {
         loading: e.state === State.Loading || e.state === State.Buffering,
       });
       if (e.state === State.Stopped || e.state === State.None) {
-        setStatus({ active: null, playing: false, loading: false });
+        setStatus({ active: null, playing: false, loading: false, clip: null });
+        void stoppedAtMissingSurah();
       }
     });
     TrackPlayer.addEventListener(Event.PlaybackQueueEnded, () => {
-      setStatus({ active: null, playing: false, loading: false });
+      setStatus({ active: null, playing: false, loading: false, clip: null });
+      void stoppedAtMissingSurah();
+    });
+    // The second net under a clip's end. The seam watcher ends each clip
+    // (natively on Android, seams.ts elsewhere); if it was late — a timer
+    // held back, a service restarted — the player is already into the
+    // next ayah's audio, and this moves it on within a second.
+    TrackPlayer.addEventListener(Event.PlaybackProgressUpdated, e => {
+      void catchClipOverrun(e.position);
     });
 
     /**
@@ -318,19 +374,8 @@ async function ensureSetup(): Promise<void> {
     TrackPlayer.addEventListener(Event.PlaybackError, () => {
       const ref = getPlaybackStatus().active;
       if (!ref) return;
-      // The FILE that failed, which is not the ayah's number in a riwayah
-      // that counts differently (riwayahAudio.ts). A rest is a file in the
-      // app itself, never a gap in a download.
       void TrackPlayer.getActiveTrack()
-        .then(track =>
-          isRestTrack(track)
-            ? 'bundled'
-            : localAudioPathIfAny(
-                getPlaybackStatus().reciterId,
-                ref.surah,
-                fileAyahOf(track) ?? ref.ayah,
-              ),
-        )
+        .then(track => localFileOf(track, ref))
         .then(local => {
           if (!local) setStatus({ gap: ref, playing: false, loading: false });
         })
@@ -338,6 +383,26 @@ async function ensureSetup(): Promise<void> {
     });
   })();
   return setupPromise;
+}
+
+/**
+ * The local file a failed track was playing, if it is on the device.
+ *
+ * The FILE, which is not the ayah's number in a riwayah that counts
+ * differently (riwayahAudio.ts) — and for a whole-surah recitation is the
+ * surah's one file. A rest is a file in the app itself, never a gap in a
+ * download.
+ */
+function localFileOf(
+  track: Track | null | undefined,
+  ref: AyahRef,
+): Promise<string | null> | string {
+  if (isRestTrack(track)) return 'bundled';
+  const reciterId = getPlaybackStatus().reciterId;
+  if (isWholeSurah(findReciter(reciterId))) {
+    return localSurahFileIfAny(reciterId, ref.surah);
+  }
+  return localAudioPathIfAny(reciterId, ref.surah, fileAyahOf(track) ?? ref.ayah);
 }
 
 // ── Gapless prefetch (v2.7.28) ───────────────────────────────────────
@@ -407,6 +472,10 @@ async function snapshotQueue(): Promise<QueueSnapshot | null> {
 }
 
 async function prefetchUpcoming({ queue, idx }: QueueSnapshot): Promise<void> {
+  if (isWholeSurah(findReciter(status.reciterId))) {
+    void keepUpcomingSurahs({ queue, idx });
+    return;
+  }
   try {
     const reciterId = status.reciterId;
     // The next few FILES: a drill's rests between them are in the app
@@ -437,6 +506,40 @@ async function prefetchUpcoming({ queue, idx }: QueueSnapshot): Promise<void> {
     }
   } catch {
     /* best effort */
+  }
+}
+
+/**
+ * The whole-surah counterpart of the prefetch above: the surah of the next
+ * few clips being streamed is saved to the device (audioStore
+ * `keepSurahQuietly`, short surahs only), and those queue entries are
+ * swapped to the local file — far enough ahead that the player is not
+ * already loading them, exactly as the ayah prefetch swaps its own.
+ */
+async function keepUpcomingSurahs({ queue, idx }: QueueSnapshot): Promise<void> {
+  try {
+    const reciterId = status.reciterId;
+    const surahs = new Set<number>();
+    for (let i = idx; i < queue.length && i <= idx + PREFETCH_AHEAD; i++) {
+      const tr = queue[i];
+      if (!tr || isRestTrack(tr) || typeof tr.url !== 'string' || !tr.url.startsWith('http')) continue;
+      const ref = parseTrackId(String(tr.id));
+      if (ref) surahs.add(ref.surah);
+    }
+    for (const surah of surahs) {
+      void keepSurahQuietly(reciterId, surah).then(async path => {
+        if (!path || status.reciterId !== reciterId) return;
+        const snap = await snapshotQueue();
+        if (!snap) return;
+        for (let i = snap.idx + 2; i < snap.queue.length && i <= snap.idx + 2 + PREFETCH_AHEAD; i++) {
+          const tr = snap.queue[i];
+          const ref = parseTrackId(String(tr?.id ?? ''));
+          if (ref?.surah === surah) await swapToLocal(i, String(tr.id), path);
+        }
+      });
+    }
+  } catch {
+    /* best effort: the stream keeps playing */
   }
 }
 
@@ -578,6 +681,9 @@ async function buildTracks(
   restFactor = 0,
 ): Promise<Track[]> {
   const reciter = findReciter(reciterId);
+  if (isWholeSurah(reciter)) {
+    return buildClipTracks(refs, reciter, indexOffset, previous, repeating, restFactor);
+  }
   const riwayah = queueRiwayah;
   // An ayah is one recording in Ḥafṣ and one, two, three — or, for the
   // second half of a split, none of its own — in a riwayah that counts
@@ -682,6 +788,387 @@ async function buildTracks(
     }
   });
   return tracks;
+}
+
+// ── Whole-surah recitations: an ayah is a clip of its surah's file ───
+//
+// SURAH_FILE_RECITERS keep a surah in one file; `surahRecitation.ts` knows
+// where each ayah starts and ends in it. A track per ayah, pointing at the
+// file with `trimStart` (where it starts) and `clipEnd` (where it ends) —
+// honoured natively on Android and by `seams.ts` elsewhere — keeps every
+// queue mechanic as it is: the highlight, the repeats, the drill's rests,
+// "play on repeat", the listening window, skipping by ayah.
+//
+// Played from the device only: a surah whose file is not downloaded is
+// not queued (see `firstMissingSurah` and `needsDownload`).
+
+/**
+ * Where a whole-surah recitation's surah plays from: its file on the
+ * device at its exact size, or — online, and only when the server says
+ * the file is exactly that size — streamed (audioStore `checkRemoteSurah`).
+ * Null when neither: changed at the source, or not here and not reachable.
+ */
+async function surahSource(
+  reciterId: string,
+  surah: number,
+): Promise<{ url: string } | { blocked: 'missing' | 'changed' }> {
+  if (offLength.has(`${reciterId}:${surah}`) || (await surahChangedAtSource(reciterId, surah))) {
+    return { blocked: 'changed' };
+  }
+  const local = await localSurahFileIfAny(reciterId, surah);
+  if (local) return { url: `file://${local}` };
+  const remote = await checkRemoteSurah(reciterId, surah);
+  if (remote === 'ok') return { url: surahAudioUrl(findReciter(reciterId), surah) };
+  return { blocked: remote === 'changed' ? 'changed' : 'missing' };
+}
+
+/**
+ * The first surah of `refs` that cannot be played — from the device, or
+ * streamed — and why, or null. `changed`: the recording at the source is
+ * not the one measured; no download fixes that. `missing`: not on the
+ * device, and the server could not be reached to stream it.
+ */
+async function firstMissingSurah(
+  reciterId: string,
+  refs: readonly AyahRef[],
+): Promise<{ surah: number; reason: 'missing' | 'changed' } | null> {
+  if (!isWholeSurah(findReciter(reciterId))) return null;
+  const seen = new Set<number>();
+  for (const r of refs) {
+    if (seen.has(r.surah)) continue;
+    seen.add(r.surah);
+    const source = await surahSource(reciterId, r.surah);
+    if ('blocked' in source) return { surah: r.surah, reason: source.blocked };
+  }
+  return null;
+}
+
+async function buildClipTracks(
+  refs: AyahRef[],
+  reciter: Reciter,
+  indexOffset: number,
+  previous: AyahRef | null,
+  repeating: boolean,
+  restFactor: number,
+): Promise<Track[]> {
+  const reader = queueRiwayah;
+  const recording = reciterRiwayah(reciter);
+  lastBuildStop = null;
+  const sources = new Map<number, string | null>();
+  const tracks: Track[] = [];
+  let before = previous;
+  for (let n = 0; n < refs.length; n++) {
+    const r = refs[n];
+    if (!sources.has(r.surah)) {
+      const source = await surahSource(reciter.id, r.surah);
+      sources.set(r.surah, 'url' in source ? source.url : null);
+    }
+    const path = sources.get(r.surah);
+    // A listening window that walks into a surah that cannot be played —
+    // not here and not reachable, or changed at its source — ends there,
+    // and says so when the player reaches it (`listenStopsAt`); the start
+    // of playback checks before it gets this far.
+    if (!path) {
+      lastBuildStop = {
+        surah: r.surah,
+        afterId: tracks.length ? String(tracks[tracks.length - 1].id) : null,
+      };
+      break;
+    }
+    const afterPrevious =
+      !repeating &&
+      before != null &&
+      before.surah === r.surah &&
+      before.ayah === r.ayah - 1;
+    before = r;
+    const span = recordedAyahs(reader, recording, r.surah, r.ayah, afterPrevious);
+    if (!span) continue;
+    // The surah's opening — taʿawwudh, basmalah — is part of hearing it
+    // begin, not of an ayah drilled on its own.
+    const opening = span[0] === 1 && !repeating;
+    const a = ayahClip(reciter.id, r.surah, span[0], opening);
+    const b = ayahClip(reciter.id, r.surah, span[1]);
+    if (!a || !b) continue;
+    const meta = findSurah(r.surah);
+    const track: Track = {
+      id: trackId(r.surah, r.ayah, indexOffset + tracks.length),
+      url: path,
+      ...(a.start > 0 ? { trimStart: a.start } : {}),
+      clipEnd: b.end,
+      title: meta
+        ? `${meta.romanized} · ${r.ayah} / ${ayahsIn(r.surah, reader)}`
+        : `${r.surah}:${r.ayah}`,
+      artist: reciter.name,
+      album: meta?.romanized ?? undefined,
+      artwork: ARTWORK,
+    };
+    tracks.push(track);
+    if (restFactor > 0 && n + 1 < refs.length) {
+      const spoken = Math.max(0, b.end - ayahClip(reciter.id, r.surah, span[0])!.start);
+      for (const ms of restPieces(spoken * restFactor)) {
+        tracks.push({
+          id: restTrackId(r.surah, r.ayah, indexOffset + tracks.length),
+          url: restAsset(ms) as unknown as string,
+          title: track.title,
+          artist: track.artist,
+          album: track.album,
+          artwork: ARTWORK,
+        });
+      }
+    }
+  }
+  return tracks;
+}
+
+/**
+ * Stop before starting, when a whole-surah recitation is not on the
+ * device for these ayahs. Records what was asked for, so `resumePlayback`
+ * can ask again once it is.
+ */
+let blockedStart: (() => Promise<void>) | null = null;
+
+async function blockedByDownload(
+  reciterId: string,
+  refs: readonly AyahRef[],
+  retry: () => Promise<void>,
+): Promise<boolean> {
+  const missing = await firstMissingSurah(reciterId, refs);
+  if (missing == null) {
+    blockedStart = null;
+    return false;
+  }
+  showBlocked(reciterId, refs[0] ?? null, missing, retry);
+  // Whatever was playing stops: the reader asked for this, not that.
+  endListening();
+  await TrackPlayer.reset().catch(() => undefined);
+  return true;
+}
+
+/** Say that playback cannot go on here, and how Play asks again. */
+function showBlocked(
+  reciterId: string,
+  at: AyahRef | null,
+  missing: { surah: number; reason: 'missing' | 'changed' },
+  retry: () => Promise<void>,
+): void {
+  blockedStart = retry;
+  setStatus({
+    active: at,
+    playing: false,
+    loading: false,
+    resting: false,
+    looping: false,
+    gap: null,
+    clip: null,
+    needsDownload: { reciterId, surah: missing.surah, reason: missing.reason },
+  });
+}
+
+/**
+ * Where a track begins: its `trimStart`, or 0.
+ *
+ * Passed to every skip, so a clip of a surah file starts at its ayah and
+ * not at the top of the file with a seek after it (see MusicService.jumpTo
+ * in the track-player patch; on iOS the track's own initial time).
+ */
+function startOf(track: Track | null | undefined): number {
+  const v = (track as { trimStart?: unknown } | null | undefined)?.trimStart;
+  return typeof v === 'number' && v > 0 ? v : 0;
+}
+
+/** Where a clip of a surah file ends, or null for any other track. */
+function clipEndOf(track: Track | null | undefined): number | null {
+  const v = (track as { clipEnd?: unknown } | null | undefined)?.clipEnd;
+  return typeof v === 'number' && v > 0 ? v : null;
+}
+
+/** The clip a track is, for `PlaybackStatus.clip`. */
+function clipOf(track: Track | null | undefined): { start: number; end: number } | null {
+  const end = clipEndOf(track);
+  return end == null ? null : { start: startOf(track), end };
+}
+
+/**
+ * ── A FILE THAT RUNS A DIFFERENT LENGTH ───────────────────────────────
+ *
+ * The size check (audioStore) is what stands between a reader and an ayah
+ * cut in the wrong place. This is the check behind it: once a surah's file
+ * is playing, the player knows its length, and the table knows the length
+ * the boundaries were measured on. More than two seconds apart, and the
+ * file is not that recording whatever its size says — so the surah stops,
+ * says it cannot be played in this voice, and is not offered again this
+ * session. Logged, so a report can say which.
+ */
+const offLength = new Set<string>();
+const LENGTH_SLACK_S = 2;
+
+async function checkClipFile(track: Track | null | undefined, ref: AyahRef): Promise<void> {
+  if (clipEndOf(track) == null) return;
+  const reciterId = status.reciterId;
+  const measured = surahFileSeconds(reciterId, ref.surah);
+  if (measured == null || offLength.has(`${reciterId}:${ref.surah}`)) return;
+  // The length is known once the file has loaded; a few looks, then none.
+  for (let i = 0; i < 6; i++) {
+    const { duration } = await TrackPlayer.getProgress().catch(() => ({ duration: 0 }));
+    if (duration > 0) {
+      if (Math.abs(duration - measured) > LENGTH_SLACK_S) {
+        console.warn(
+          `[surahRecitation] ${reciterId} ${ref.surah}: file runs ${duration}s, measured ${measured}s`,
+        );
+        offLength.add(`${reciterId}:${ref.surah}`);
+        const retry = () => playRangeFrom(ref);
+        endListening();
+        await TrackPlayer.reset().catch(() => undefined);
+        showBlocked(reciterId, ref, { surah: ref.surah, reason: 'changed' }, retry);
+      }
+      return;
+    }
+    await new Promise<void>(r => setTimeout(r, 500));
+  }
+}
+
+/** Play on from an ayah to the end of its surah — a retry's shape. */
+function playRangeFrom(ref: AyahRef): Promise<void> {
+  return playRange(ref, { surah: ref.surah, ayah: ayahsIn(ref.surah) }, { useRepeats: false });
+}
+
+/**
+ * Past a clip's end by more than the seam watcher should ever allow: move
+ * on now. On iOS the watcher is `seams.ts`, asked to look again; on
+ * Android it is native, and a whole second past means it did not fire, so
+ * the step is taken from here.
+ */
+let overrunBusy = false;
+async function catchClipOverrun(position: number): Promise<void> {
+  const clip = status.clip;
+  if (!clip || overrunBusy || !status.playing) return;
+  const late = position - clip.end;
+  if (late <= 0.3) return;
+  overrunBusy = true;
+  try {
+    if (Platform.OS !== 'android') {
+      await seams.watchSeam();
+      return;
+    }
+    if (late < 1) return;
+    const snap = await snapshotQueue();
+    if (!snap) return;
+    const next = snap.queue[snap.idx + 1];
+    if (next) await skipToEntry(snap.idx + 1, next);
+    else await TrackPlayer.stop();
+  } catch {
+    /* the next progress event looks again */
+  } finally {
+    overrunBusy = false;
+  }
+}
+
+/**
+ * ── LISTENING INTO A SURAH THAT IS NOT HERE ───────────────────────────
+ *
+ * A whole-surah recitation part-downloaded — a run interrupted, a surah
+ * changed at its source — has holes, and a continuous listen walks into
+ * them. The queue ends at the last ayah before the hole
+ * (`buildClipTracks`), and when the player gets there this says so, in
+ * the same words a start would have used, with the download; Play goes on
+ * from that surah once it is here.
+ */
+let listenStopsAt: { surah: number; afterId: string | null } | null = null;
+/** Where the last `buildClipTracks` stopped short, and after which track. */
+let lastBuildStop: { surah: number; afterId: string | null } | null = null;
+/** The last ayah track the player made current. */
+let lastActiveId: string | null = null;
+
+/**
+ * Arm the stop once the tracks are really in the player, never before: a
+ * reset raises a "stopped" of its own, and it can land after the new queue.
+ * `fallbackAfter` is the queue's last track when this build added none.
+ */
+function armListenStop(fallbackAfter: string | null): void {
+  const stop = lastBuildStop;
+  lastBuildStop = null;
+  if (!stop || !listening) return;
+  listenStopsAt = { surah: stop.surah, afterId: stop.afterId ?? fallbackAfter };
+  // Nothing past the hole is queued: the listen ends there.
+  listenCursor = null;
+}
+
+async function stoppedAtMissingSurah(): Promise<void> {
+  const stop = listenStopsAt;
+  // Only the stop that comes from playing up to the hole: the track that
+  // finished is the last one before it.
+  if (stop == null || stop.afterId == null || stop.afterId !== lastActiveId) return;
+  const surah = stop.surah;
+  listenStopsAt = null;
+  const reciterId = status.reciterId;
+  const at = { surah, ayah: 1 };
+  const missing = await firstMissingSurah(reciterId, [at]);
+  if (!missing) return;
+  endListening();
+  showBlocked(reciterId, at, missing, () => listenFrom(surah, 1));
+}
+
+/**
+ * A scrub on the lock screen, the notification or a watch.
+ *
+ * The system's bar is the FILE's, and for a whole-surah recitation the
+ * file is the surah: a drag lands anywhere in it. Inside the ayah being
+ * played, that is where it plays from. In another ayah that is queued, the
+ * player goes to that ayah, there, so the highlight follows. Anywhere else
+ * — before the range, past it — it stays in this ayah, at the nearer end.
+ */
+export async function seekInRecitation(position: number): Promise<void> {
+  await ensureSetup();
+  const snap = await snapshotQueue();
+  const track = snap?.queue[snap.idx];
+  const end = clipEndOf(track);
+  if (!snap || !track || end == null) {
+    await TrackPlayer.seekTo(Math.max(0, position));
+    return;
+  }
+  const start = startOf(track);
+  if (position >= start && position < end) {
+    await TrackPlayer.seekTo(position);
+    return;
+  }
+  const holds = (t: Track) =>
+    !isRestTrack(t) &&
+    t.url === track.url &&
+    position >= startOf(t) &&
+    position < (clipEndOf(t) ?? -1);
+  // The nearest such ayah to here: a drill holds the same one many times.
+  let found = -1;
+  for (let d = 1; d < snap.queue.length && found < 0; d++) {
+    if (snap.idx + d < snap.queue.length && holds(snap.queue[snap.idx + d])) found = snap.idx + d;
+    else if (snap.idx - d >= 0 && holds(snap.queue[snap.idx - d])) found = snap.idx - d;
+  }
+  if (found >= 0) {
+    await TrackPlayer.skip(found, position);
+    return;
+  }
+  await TrackPlayer.seekTo(Math.min(Math.max(position, start), end - 0.05));
+}
+
+/**
+ * Skip to a queue entry: a clip at its own start (MusicService.jumpTo in
+ * the track-player patch; the clip's initial time on iOS), every other
+ * track exactly as the player always skipped — no position passed, so the
+ * proven path for a file per ayah is the one it runs.
+ */
+function skipToEntry(i: number, track: Track | null | undefined): Promise<void> {
+  return clipEndOf(track) != null
+    ? TrackPlayer.skip(i, startOf(track))
+    : TrackPlayer.skip(i);
+}
+
+/** Load `tracks` and land on the first at its own start, ready to play. */
+async function addAtStart(tracks: Track[]): Promise<void> {
+  await TrackPlayer.add(tracks);
+  // Only a clip needs landing: a file of its own starts where it starts.
+  const first = startOf(tracks[0]);
+  if (clipEndOf(tracks[0]) != null && first > 0) {
+    await TrackPlayer.skip(0, first).catch(() => undefined);
+  }
 }
 
 /** The silent pieces to rest for after an ayah heard in `files`. */
@@ -829,6 +1316,7 @@ async function reshapeListenTail(): Promise<void> {
     );
     listenIndex += tracks.length;
     await TrackPlayer.add(tracks);
+    armListenStop(String(queue[cut - 1]?.id ?? '') || null);
   } catch {
     // Best effort: the queue that was there keeps playing, and the next
     // top-up steps with the new flag.
@@ -871,6 +1359,7 @@ export function listenWindow(
 }
 
 function endListening(): void {
+  listenStopsAt = null;
   listening = false;
   listenCursor = null;
   listenIndex = 0;
@@ -904,6 +1393,7 @@ async function extendListening({ queue, idx }: QueueSnapshot): Promise<void> {
     );
     listenIndex += tracks.length;
     await TrackPlayer.add(tracks);
+    armListenStop(String(queue[queue.length - 1]?.id ?? '') || null);
   } catch {
     // A top-up that fails leaves what is queued playing. The next track
     // change tries again.
@@ -948,12 +1438,21 @@ export async function playAyahOnRepeat(surah: number, ayah: number): Promise<voi
   await ensureSetup();
   endListening();
   const prefs = getQuranState().prefs;
+  // A choice that can no longer be played answers with the default voice.
+  const reciterId = findReciter(prefs.reciterId).id;
   queueRiwayah = resolveRiwayah(prefs.riwayah);
-  setStatus({ reciterId: prefs.reciterId, loading: true, gap: null });
+  setStatus({ reciterId, loading: true, gap: null, needsDownload: null });
   const ref = { surah, ayah };
-  const tracks = await buildTracks(expandRange(ref, ref), prefs.reciterId, 0);
+  if (
+    await blockedByDownload(reciterId, [ref], () =>
+      playAyahOnRepeat(surah, ayah),
+    )
+  ) {
+    return;
+  }
+  const tracks = await buildTracks(expandRange(ref, ref), reciterId, 0);
   await TrackPlayer.reset();
-  await TrackPlayer.add(tracks);
+  await addAtStart(tracks);
   await TrackPlayer.setRate(prefs.playbackRate);
   await setLoop(true);
   await TrackPlayer.play();
@@ -964,16 +1463,27 @@ export async function playAyahOnRepeat(surah: number, ayah: number): Promise<voi
 export async function playRange(
   from: AyahRef,
   to: AyahRef,
-  opts: { useRepeats?: boolean } = {},
+  opts: {
+    useRepeats?: boolean;
+    /** A voice other than the chosen one, without choosing it (a preview). */
+    reciterId?: string;
+  } = {},
 ): Promise<void> {
   await ensureSetup();
   // A deliberate range replaces a continuous listen. The two cannot both
   // be true of one queue, and the one the user just asked for wins.
   endListening();
   const prefs = getQuranState().prefs;
+  // A choice that can no longer be played answers with the default voice.
+  const reciterId = findReciter(opts.reciterId ?? prefs.reciterId).id;
   queueRiwayah = resolveRiwayah(prefs.riwayah);
-  setStatus({ reciterId: prefs.reciterId, loading: true, gap: null });
+  setStatus({ reciterId, loading: true, gap: null, needsDownload: null });
   let refs = expandRange(from, to);
+  if (
+    await blockedByDownload(reciterId, refs, () => playRange(from, to, opts))
+  ) {
+    return;
+  }
   let repeating = false;
   let restFactor = 0;
   if (opts.useRepeats !== false) {
@@ -985,7 +1495,7 @@ export async function playRange(
   }
   const tracks = await buildTracks(
     refs,
-    prefs.reciterId,
+    reciterId,
     0,
     null,
     repeating,
@@ -993,10 +1503,35 @@ export async function playRange(
   );
   await TrackPlayer.reset();
   await setLoop(false);
-  await TrackPlayer.add(tracks);
+  await addAtStart(tracks);
   await TrackPlayer.setRate(prefs.playbackRate);
   await TrackPlayer.play();
   setStatus({ active: from, playing: true, resting: false });
+}
+
+/**
+ * Hear a voice before choosing it: al-Fātiḥah, from the reciter picker.
+ * The same for every reciter — streamed or from the device, a whole-surah
+ * recitation checked exactly as any of its surahs would be — and the
+ * chosen reciter is left as it was.
+ */
+export async function previewReciter(reciterId: string): Promise<void> {
+  const reading = resolveRiwayah(getQuranState().prefs.riwayah);
+  await playRange(
+    { surah: 1, ayah: 1 },
+    { surah: 1, ayah: ayahsIn(1, reading) },
+    { useRepeats: false, reciterId },
+  );
+}
+
+/** Whether this voice's preview is what is playing (or loading). */
+export function isPreviewing(st: PlaybackStatus, reciterId: string): boolean {
+  return (
+    st.reciterId === reciterId &&
+    st.active?.surah === 1 &&
+    (st.playing || st.loading) &&
+    getQuranState().prefs.reciterId !== reciterId
+  );
 }
 
 export async function pausePlayback(): Promise<void> {
@@ -1005,6 +1540,13 @@ export async function pausePlayback(): Promise<void> {
 }
 
 export async function resumePlayback(): Promise<void> {
+  // Play pressed on a card that is waiting for a download: ask again for
+  // what was asked for, which plays if the download has come in since and
+  // says so again if it has not.
+  if (status.needsDownload && blockedStart) {
+    await blockedStart();
+    return;
+  }
   await ensureSetup();
   await TrackPlayer.play();
 }
@@ -1028,18 +1570,27 @@ export async function listenFrom(
   if (!findSurah(surah)) return;
   await ensureSetup();
   const prefs = getQuranState().prefs;
+  // A choice that can no longer be played answers with the default voice.
+  const reciterId = findReciter(prefs.reciterId).id;
   queueRiwayah = resolveRiwayah(prefs.riwayah);
-  setStatus({ reciterId: prefs.reciterId, loading: true, gap: null });
+  // A new listen: whatever the last one stopped short of is not this one's.
+  listenStopsAt = null;
+  setStatus({ reciterId, loading: true, gap: null, needsDownload: null });
   const start = { surah, ayah: Math.max(1, Math.min(ayahsIn(surah), ayah)) };
+  if (
+    await blockedByDownload(reciterId, [start], () => listenFrom(surah, ayah))
+  ) {
+    return;
+  }
   // The preference is the record; the screen pushes it on mount, but a
   // listen started from the notification or a widget may never have had
   // the screen open. Read it here so the first window is already shaped.
   shuffle = prefs.shuffleSurahs;
   const { refs, cursor } = listenWindow(start, LISTEN_WINDOW, nextListenRef);
-  const tracks = await buildTracks(refs, prefs.reciterId, 0);
+  const tracks = await buildTracks(refs, reciterId, 0);
   await TrackPlayer.reset();
   await setLoop(false);
-  await TrackPlayer.add(tracks);
+  await addAtStart(tracks);
   await TrackPlayer.setRate(prefs.playbackRate);
   await TrackPlayer.play();
   // Armed only once the queue is really in the player: an `extendListening`
@@ -1048,7 +1599,8 @@ export async function listenFrom(
   listening = true;
   listenCursor = cursor;
   listenIndex = tracks.length;
-  recordListened({ ...start, riwayah: queueRiwayah }, prefs.reciterId);
+  armListenStop(null);
+  recordListened({ ...start, riwayah: queueRiwayah }, reciterId);
   setStatus({ active: start, playing: true, resting: false });
 }
 
@@ -1097,16 +1649,26 @@ export async function listenPreviousSurah(): Promise<void> {
 
 export async function stopPlayback(): Promise<void> {
   endListening();
+  blockedStart = null;
+  if (status.needsDownload) setStatus({ active: null, needsDownload: null });
   if (!setupPromise) return; // never started — nothing to stop
   await TrackPlayer.reset();
   await setLoop(false);
   setStatus({ active: null, playing: false, loading: false });
 }
 
-/** Move within the ayah being recited. */
+/**
+ * Move within the ayah being recited. For an ayah cut from a surah file,
+ * `seconds` is into the AYAH — what the progress bar showed
+ * (useProgressWhileActive) — and stays inside it.
+ */
 export async function seekTo(seconds: number): Promise<void> {
   await ensureSetup();
-  await TrackPlayer.seekTo(Math.max(0, seconds));
+  const clip = status.clip;
+  const to = clip
+    ? Math.min(clip.end - 0.05, clip.start + Math.max(0, seconds))
+    : Math.max(0, seconds);
+  await TrackPlayer.seekTo(to);
   void seams.watchSeam();
 }
 
@@ -1155,7 +1717,7 @@ export async function skipToNextAyah(): Promise<void> {
     i++;
   }
   if (i >= queue.length) return; // end of queue
-  await TrackPlayer.skip(i).catch(() => undefined);
+  await skipToEntry(i, queue[i]).catch(() => undefined);
 }
 
 export async function skipToPreviousAyah(): Promise<void> {
@@ -1169,7 +1731,8 @@ export async function skipToPreviousAyah(): Promise<void> {
   let j = here - 1;
   while (j >= 0 && isRestTrack(queue[j])) j--;
   if (j < 0) return;
-  await TrackPlayer.skip(stepStart(queue, j)).catch(() => undefined);
+  const to = stepStart(queue, j);
+  await skipToEntry(to, queue[to]).catch(() => undefined);
 }
 
 export async function setPlaybackRate(rate: number): Promise<void> {

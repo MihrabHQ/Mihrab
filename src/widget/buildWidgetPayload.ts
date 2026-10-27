@@ -198,6 +198,11 @@ export type WidgetPrayerPayload = {
   hijriDays?: (WidgetHijriBlock & { dateKey: string })[];
   /** The dhikr counter, for the interactive Tasbih widget. */
   tasbih?: WidgetTasbihBlock;
+  /**
+   * Issue #111: minutes the prayer card counts up from a prayer that has
+   * just come in (0 or absent: off). See the contract's `sinceAdhanMinutes`.
+   */
+  sinceAdhanMinutes?: number;
 };
 
 /** Seasonal flags consumed by the iOS widget extension to tint the

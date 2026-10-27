@@ -83,8 +83,8 @@ describe('android decides dueness at draw time', () => {
     expect(provider).toMatch(/ACTION_PRAYER_TIME_ELAPSED -> requestUpdate\(context\)/);
     expect(logReceiver).toMatch(/PrayerWidgetProvider\.ACTION_PRAYER_TIME_ELAPSED ->\s*PrayerWidgetProvider\.requestUpdate\(context\)/);
     // The Log card is in the one redraw fan-out, both placements of it.
-    expect(glanceWidgets).toContain('PrayerWidgetLogProvider::class.java');
-    expect(glanceWidgets).toContain('PrayerWidgetLogLargeProvider::class.java');
+    expect(glanceWidgets).toContain('LogWidgetReceiver::class.java');
+    expect(glanceWidgets).toContain('LogTallWidgetReceiver::class.java');
     expect(provider).toMatch(/fun armWidgetAlarms/);
   });
 });

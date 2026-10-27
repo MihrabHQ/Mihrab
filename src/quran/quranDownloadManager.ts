@@ -57,8 +57,10 @@ import {
   totalAyahCount,
   downloadReciterAudio,
   estimatedReciterBytes,
+  AUDIO_MB,
 } from './audio/audioStore';
-import { findReciter } from './audio/reciters';
+import { findReciter, isWholeSurah } from './audio/reciters';
+import { expectedSurahBytes } from './audio/surahRecitation';
 import { downloadWordMeanings, WORD_MEANINGS_SURAHS } from './wordMeanings';
 import {
   downloadTafsirEdition,
@@ -240,9 +242,14 @@ export function jobSurahName(surah: number): string {
 
 /** How many ayahs a surah job will fetch, known before the first one lands. */
 function surahJobTotal(job: {
+  reciterId: string;
   surah: number;
   refs?: ReadonlyArray<unknown>;
 }): number {
+  // A whole-surah recitation's surah is one file, counted in megabytes.
+  if (isWholeSurah(findReciter(job.reciterId))) {
+    return Math.max(1, Math.round((expectedSurahBytes(job.reciterId, job.surah) ?? 0) / AUDIO_MB));
+  }
   if (job.refs) return job.refs.length;
   return findSurah(job.surah)?.ayahCount ?? 0;
 }
@@ -261,7 +268,9 @@ function notificationText(job: QuranDownloadJob) {
     return {
       label: i18n.t('quran.downloadingSurah', { surah, name }),
       body: (done: number, total: number) =>
-        i18n.t('quran.downloadProgressAyahs', { done, total }),
+        isWholeSurah(findReciter(job.reciterId))
+          ? i18n.t('quran.downloadProgressMegabytes', { done, total })
+          : i18n.t('quran.downloadProgressAyahs', { done, total }),
       doneTitle: i18n.t('quran.surahDownloadDoneTitle', { surah }),
       doneBody: i18n.t('quran.surahDownloadDoneBody', { surah, name }),
       incompleteTitle: i18n.t('quran.audioDownloadIncompleteTitle'),
@@ -269,11 +278,18 @@ function notificationText(job: QuranDownloadJob) {
         i18n.t('quran.audioDownloadIncompleteBody', { count: failed }),
       stoppedTitle: i18n.t('quran.downloadStoppedTitle'),
       stoppedBody: (done: number, total: number) =>
-        i18n.t('quran.downloadStoppedBodyAyahs', { done, total }),
+        isWholeSurah(findReciter(job.reciterId))
+          ? i18n.t('quran.downloadStoppedBodyMegabytes', { done, total })
+          : i18n.t('quran.downloadStoppedBodyAyahs', { done, total }),
     };
   }
   if (job.kind === 'audio') {
     const name = reciterLabel(job.reciterId);
+    // A whole-surah recitation counts megabytes (audioStore's surah queue).
+    const counted = (done: number, total: number) =>
+      isWholeSurah(findReciter(job.reciterId))
+        ? i18n.t('quran.downloadProgressMegabytes', { done, total })
+        : i18n.t('quran.downloadProgressAyahs', { done, total });
     return {
       // `downloadingReciter`, not `downloadingAudio`. The latter already
       // existed for the per-surah download inside the ayah sheet
@@ -281,8 +297,7 @@ function notificationText(job: QuranDownloadJob) {
       // key silently overrode it — JSON keeps the last one, so that sheet
       // had started announcing a reciter's name where a count belonged.
       label: i18n.t('quran.downloadingReciter', { name }),
-      body: (done: number, total: number) =>
-        i18n.t('quran.downloadProgressAyahs', { done, total }),
+      body: counted,
       doneTitle: i18n.t('quran.audioDownloadDoneTitle', { name }),
       doneBody: i18n.t('quran.audioDownloadDoneBody', { name }),
       incompleteTitle: i18n.t('quran.audioDownloadIncompleteTitle'),
@@ -290,7 +305,9 @@ function notificationText(job: QuranDownloadJob) {
         i18n.t('quran.audioDownloadIncompleteBody', { count: failed }),
       stoppedTitle: i18n.t('quran.downloadStoppedTitle'),
       stoppedBody: (done: number, total: number) =>
-        i18n.t('quran.downloadStoppedBodyAyahs', { done, total }),
+        isWholeSurah(findReciter(job.reciterId))
+          ? i18n.t('quran.downloadStoppedBodyMegabytes', { done, total })
+          : i18n.t('quran.downloadStoppedBodyAyahs', { done, total }),
     };
   }
   if (job.kind === 'tafsir') {
@@ -472,7 +489,14 @@ async function bytesStillNeeded(job: QuranDownloadJob): Promise<number> {
 function initialProgress(job: QuranDownloadJob): MushafDownloadProgress {
   // A bar that starts at "0 of 0" and jumps to "1 of 6236" reads as a
   // stall. `fonts` learns its own total from the first callback.
-  if (job.kind === 'audio') return { done: 0, total: totalAyahCount(), failed: 0 };
+  if (job.kind === 'audio') {
+    // A whole-surah recitation counts megabytes: 114 files of up to two
+    // hundred megabytes each would hold the bar at 0% through al-Baqarah.
+    const total = isWholeSurah(findReciter(job.reciterId))
+      ? Math.max(1, Math.round(estimatedReciterBytes(job.reciterId) / AUDIO_MB))
+      : totalAyahCount();
+    return { done: 0, total, failed: 0 };
+  }
   if (job.kind === 'surah') return { done: 0, total: surahJobTotal(job), failed: 0 };
   if (job.kind === 'wordMeanings') return { done: 0, total: WORD_MEANINGS_SURAHS, failed: 0 };
   if (job.kind === 'tafsir') return { done: 0, total: TAFSIR_SURAHS, failed: 0 };
@@ -748,7 +772,9 @@ function finishRun(run: Run, outcome: DownloadOutcome): void {
   const { done, total } = state.progress;
   const text = notificationText(job);
   const error = run.noSpace ?? outcome.error;
-  const noSpace = run.noSpace != null;
+  // A download can find the space gone itself, file by file (a whole-surah
+  // recitation checks before each of its large files).
+  const noSpace = run.noSpace != null || error?.key === 'quran.downloadNoSpaceBody';
   const complete = outcome.complete && !run.stalled && !noSpace;
   const interrupted =
     (outcome.interrupted || run.stalled) && !cancelledByUser && !noSpace;
@@ -794,7 +820,11 @@ function finishRun(run: Run, outcome: DownloadOutcome): void {
       : text.incompleteTitle,
     incompleteBody: noSpace
       ? i18n.t('quran.downloadNoSpaceBody', error?.params)
-      : text.incompleteBody(failed),
+      : // A reciter's run that can say WHICH files failed says so (a
+        // whole-surah recitation names its surahs).
+        job.kind === 'audio' && error
+        ? i18n.t(error.key, { defaultValue: error.fallback, ...error.params })
+        : text.incompleteBody(failed),
     stoppedTitle: text.stoppedTitle,
     stoppedBody: text.stoppedBody(done, total),
     route: ROUTE_QURAN_DOWNLOADS,

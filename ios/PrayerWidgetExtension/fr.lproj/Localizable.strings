@@ -61,6 +61,7 @@
 "widget_preview_tasbih_of" = "sur 33";
 "widget_preview_tasbih_today" = "Aujourd'hui 231 · 2 tours";
 "widget_countdown_format" = "dans %1$@";
+"widget_since_adhan_format" = "%2$@ il y a %1$@";
 "widget_logged_line" = "%1$d sur %2$d noté aujourd'hui";
 "widget_name_hijri" = "Mihrab · Date hégirienne";
 "widget_description_hijri" = "La date hégirienne du jour, et la distance jusqu'au mois prochain. 2×1, redimensionnable.";

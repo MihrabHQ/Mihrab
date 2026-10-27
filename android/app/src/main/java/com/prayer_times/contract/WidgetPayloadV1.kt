@@ -89,6 +89,23 @@ object WidgetPayloadV1 {
     return best
   }
 
+  /** The five, the only times a card counts up from (#111). */
+  val SINCE_ADHAN_KEYS = setOf("Fajr", "Dhuhr", "Asr", "Maghrib", "Isha")
+
+  /**
+   * Until when a prayer card counts up from a prayer that came in at
+   * [prayerAt] — issue #111. Minutes on one scale (the drawn day's).
+   *
+   * [window] minutes after it, or halfway to [nextAt] (the next time on the
+   * card) if that is sooner, so the countdown to a prayer that is close is
+   * never hidden. Null when off, or when nothing follows. `sinceAdhanEnd` in
+   * widgetPayloadV2.ts, held to the same answers by the `since` fixtures.
+   */
+  fun sinceAdhanEnd(prayerAt: Int, nextAt: Int?, window: Int): Int? {
+    if (window <= 0 || nextAt == null || nextAt <= prayerAt) return null
+    return prayerAt + minOf(window, Math.floorDiv(nextAt - prayerAt, 2))
+  }
+
   /**
    * A drawn row's minutes after its day's midnight — what every renderer
    * places a time by (docs/rewrite-plan.md, step 1.7). The adapter writes
@@ -133,6 +150,7 @@ object WidgetPayloadV1 {
     }
     if (p.locationName.isNotEmpty()) out.put("locationName", p.locationName)
     if (p.language.isNotEmpty()) out.put("language", p.language)
+    if (p.sinceAdhanMinutes > 0) out.put("sinceAdhanMinutes", p.sinceAdhanMinutes)
     p.seasonal?.let { s ->
       out.put(
         "seasonal",

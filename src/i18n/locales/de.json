@@ -431,6 +431,7 @@
     "sectionAppearanceBlurb": "Thema, Akzent, Zeitformat, Sprache",
     "sectionWidgets": "Widgets",
     "sectionWidgetsBlurb": "Hintergrund, Hervorhebung und das Gebetszeiten-Widget",
+    "sectionWidgetsBlurbIos": "Zeit seit dem Adhan auf den Gebetszeiten-Widgets",
     "widgetsAllTitle": "Alle Widgets",
     "sectionQuran": "Koran",
     "sectionQuranBlurb": "Lesen, Übersetzung, Tafsir",
@@ -498,9 +499,13 @@
     },
     "providerTableFallback": "{{picked}} hat für heute keine veröffentlichten Zeiten, daher wird seine eigene Methode auf dem Telefon berechnet, bis die Tabelle den Tag wieder abdeckt.",
     "minimalUi": "Minimal",
-    "minimalUiHelp": "Eine Sache pro Bildschirm. Heute behält den Countdown; antippen zeigt die Zeiten des Tages. Die anderen Tabs behalten, wofür sie da sind.",
+    "minimalUiHelp": "Eine Sache pro Bildschirm. Heute behält den Countdown; nach oben wischen zeigt die Zeiten des Tages. Die anderen Tabs behalten, wofür sie da sind.",
     "minimalClassicOnly": "Minimal behält die klassischen Farben. Schalte es aus, um ein Farbthema oder Systemfarben zu wählen.",
-    "minimalRestartBody": "Minimal startet im Himmel-Design, daher werden die Systemfarben ausgeschaltet. Die App muss neu starten, damit jeder Bildschirm die Änderung übernimmt. Jetzt neu starten?"
+    "minimalRestartBody": "Minimal startet im Himmel-Design, daher werden die Systemfarben ausgeschaltet. Die App muss neu starten, damit jeder Bildschirm die Änderung übernimmt. Jetzt neu starten?",
+    "widgetSinceAdhanTitle": "Zeit seit dem Adhan",
+    "widgetSinceAdhanHelp": "So lange nach Beginn jedes Gebets zeigen die Gebetszeiten-Widgets, wie lange das her ist, und zählen dann wieder bis zum nächsten Gebet herunter. Ist das nächste Gebet nah, kommt der Countdown früher zurück.",
+    "widgetSinceAdhanOff": "Aus",
+    "widgetSinceAdhanMinutes": "{{minutes}} Min."
   },
   "locationSetup": {
     "headline": "Legen Sie Ihren Standort fest",
@@ -1554,7 +1559,28 @@
     "riwayahFailedBody": "Öffne die Downloads, um den Grund zu sehen und es erneut zu versuchen.",
     "riwayahStoppedBody": "Nichts ist verloren. Tippe für einen neuen Versuch, oder es versucht es im WLAN von selbst erneut.",
     "downloadNoSpaceTitle": "Nicht genug Speicherplatz",
-    "downloadNoSpaceBody": "Dieser Download braucht {{size}} mehr freien Speicher. Gib etwas frei und versuche es erneut."
+    "downloadNoSpaceBody": "Dieser Download braucht {{size}} mehr freien Speicher. Gib etwas frei und versuche es erneut.",
+    "downloadProgressMegabytes": "{{done}} von {{total}} MB",
+    "downloadStoppedBodyMegabytes": "{{done}} von {{total}} MB behalten. Tippen, um fortzufahren, oder es geht im WLAN von selbst weiter.",
+    "listenDownloadRunningMegabytes": "Wird geladen · {{done}} von {{total}} MB",
+    "listenDownloadPartialSurahs": "{{done}} von {{total}} Suren hier · {{size}}",
+    "wholeSurahBadge": "Versverfolgung nach bestem Bemühen",
+    "wholeSurahIntro": "{{name}} spielt nur aus einem vollständigen Download — die ganze Rezitation, {{size}}.",
+    "wholeSurahDownloaded": "{{name}} ist geladen — die ganze Rezitation, auf diesem Gerät.",
+    "wholeSurahTracking": "Es ist eine Aufnahme pro Sure, so genau in Verse geteilt, wie die Aufnahme es zulässt: Die Versverfolgung ist ein bestmöglicher Versuch, und einige Verse können einen Moment zu früh oder zu spät beginnen oder enden.",
+    "wholeSurahDownload": "{{name}} laden · {{size}}",
+    "wholeSurahResume": "Den Rest laden · insgesamt {{size}}",
+    "wholeSurahDownloading": "Wird geladen · {{pct}} %",
+    "wholeSurahChanged": "{{surah}} kann in dieser Stimme nicht abgespielt werden: Die Aufnahme hat sich an der Quelle geändert, seit Mihrab gemessen hat, wo ihre Verse liegen. Der Rest von {{name}} spielt wie bisher.",
+    "wholeSurahIncompleteBody": "{{count}} Suren wurden nicht geladen: {{names}}. „Fortsetzen“ holt genau diese.",
+    "wholeSurahUnreachable": "{{surah}} ist in dieser Stimme nicht auf diesem Gerät und kann gerade nicht gestreamt werden — keine Verbindung zur Quelle. Lade sie herunter, um sie offline zu haben.",
+    "downloadingAudioMegabytes": "Wird geladen… {{done}}/{{total}} MB",
+    "wholeSurahTrackingShort": "Eine Aufnahme pro Sure, so genau in Verse geteilt, wie sie es zulässt: Die Versverfolgung ist ein bestmöglicher Versuch.",
+    "reportAyahBoundary": "Ein Vers beginnt oder endet an der falschen Stelle? Melden",
+    "previewReciter": "{{name}} anhören",
+    "stopPreview": "Hörprobe beenden",
+    "voiceHint": "Der Mushaf ist {{page}}; {{name}} rezitiert {{voice}}. In {{page}} hören:",
+    "voiceHintDismiss": "Diese Stimme behalten"
   },
   "reading": {
     "textSize": "Schriftgröße",
@@ -1795,10 +1821,11 @@
     "quranGeometry": "Ayah-Positionsdaten (quran.com / Quran-for-Android-Projekt)",
     "tajweedRules": "Tadschwid-Regeln jedes Wortes",
     "tajweedFonts": "Seitenschriften mit Tadschwid-Farben (geladen, nicht gebündelt)",
-    "recitation": "Rezitationsaudio (42 Rezitatoren): EveryAyah.com · Wort-Timings: quran-align (CC BY 4.0)",
+    "recitation": "Rezitationsaudio (44 Rezitatoren): EveryAyah.com · Wort-Timings: quran-align (CC BY 4.0)",
     "tafsir": "Tafsir-Texte: Ibn Kathir, Maarif-ul-Quran, al-Muyassar",
     "wordMeanings": "Arabische Bedeutungen schwieriger Wörter",
-    "surahHeaderFont": "Kalligrafie der Surenüberschriften"
+    "surahHeaderFont": "Kalligrafie der Surenüberschriften",
+    "recitationWholeSurah": "Rezitationen ganzer Suren (15): mp3quran.net · Verszeiten von Mihrab an den Ton angeglichen"
   },
   "liveActivity": {
     "title": "Nächstes Gebet",
@@ -1975,9 +2002,7 @@
     "setUpSync": "Synchronisierung einrichten",
     "legendTitle": "Was die Grafik zeigt",
     "fastRow": "Fasten",
-    "sunnahRow": "Sunna",
-    "graphByDay": "Grafik nach Tag",
-    "graphByDayHelp": "Ein Quadrat pro Tag — das Quartal auf einen Blick. Aus zeigt die Grafik eine Zeile je Gebet."
+    "sunnahRow": "Sunna"
   },
   "endOfDay": {
     "title": "Heutige Gebete eintragen?",

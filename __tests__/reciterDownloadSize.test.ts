@@ -16,7 +16,8 @@ import {
   estimatedReciterBytes,
   reciterBitrateKbps,
 } from '../src/quran/audio/audioStore';
-import { RECITERS, findReciter } from '../src/quran/audio/reciters';
+import { RECITERS, findReciter, isWholeSurah } from '../src/quran/audio/reciters';
+import { surahRecitationBytes } from '../src/quran/audio/surahRecitation';
 
 const MB = 1024 * 1024;
 
@@ -25,9 +26,18 @@ describe('the bitrate, read off the folder', () => {
     // The parser is only worth having if it works on all 42. A folder that
     // stopped following the convention would silently fall back to 64 and
     // quote the wrong size at someone about to spend a gigabyte.
-    for (const r of RECITERS) {
+    for (const r of RECITERS.filter(x => !isWholeSurah(x))) {
       expect(/_(\d+)kbps$/.test(r.folder)).toBe(true);
       expect(reciterBitrateKbps(r)).toBe(Number(/_(\d+)kbps$/.exec(r.folder)![1]));
+    }
+  });
+
+  it('quotes a whole-surah recitation to the byte, not from a bitrate', () => {
+    // Measured when its boundaries were (tools/surah-audio/align.py): the
+    // folder name carries no bitrate, and none is needed.
+    for (const r of RECITERS.filter(isWholeSurah)) {
+      expect(estimatedReciterBytes(r.id)).toBe(surahRecitationBytes(r.id));
+      expect(estimatedReciterBytes(r.id)).toBeGreaterThan(500 * MB);
     }
   });
 

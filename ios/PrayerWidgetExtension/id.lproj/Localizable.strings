@@ -61,6 +61,7 @@
 "widget_preview_tasbih_of" = "dari 33";
 "widget_preview_tasbih_today" = "Hari ini 231 · 2 putaran";
 "widget_countdown_format" = "dalam %1$@";
+"widget_since_adhan_format" = "%2$@, %1$@ lalu";
 "widget_logged_line" = "%1$d dari %2$d tercatat hari ini";
 "widget_name_hijri" = "Mihrab · Tanggal Hijriah";
 "widget_description_hijri" = "Tanggal Hijriah hari ini, dan berapa lama lagi menuju bulan berikutnya. 2×1, dapat diubah ukuran.";

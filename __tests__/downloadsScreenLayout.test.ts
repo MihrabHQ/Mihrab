@@ -41,7 +41,7 @@ describe('a downloaded item', () => {
   });
 
   it('shows how far a part-way reciter has got', () => {
-    expect(screen).toContain('progress={whole ? undefined : files / totalAyahCount()}');
+    expect(screen).toContain('progress={whole ? undefined : files / fileTotal}');
     expect(ui).toMatch(/width: `\$\{Math\.round\(pct \* 100\)\}%`/);
   });
 });
@@ -59,6 +59,6 @@ describe('a reciter downloading right now', () => {
     expect(screen).toMatch(/done: files,/);
     // Its own Continue button is not offered while it is the one running.
     expect(screen).toMatch(/whole \|\| live\s*\? undefined/);
-    expect(screen).toMatch(/progress=\{whole \? undefined : files \/ totalAyahCount\(\)\}/);
+    expect(screen).toMatch(/progress=\{whole \? undefined : files \/ fileTotal\}/);
   });
 });

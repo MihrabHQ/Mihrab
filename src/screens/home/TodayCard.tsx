@@ -21,6 +21,7 @@
  * Both gestures drive one selection: tap a chip, or swipe the card body the
  * way the carousel used to work.
  */
+import { useMinimalOffered } from '../../settings/useMinimalOffered';
 import React, { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import {
   Animated,
@@ -1496,7 +1497,7 @@ const HeroToday = memo(function HeroToday({
           stand in the middle of the page — and the footer at its foot. */}
       {minimal && fill ? <View style={[styles.heroScene, styles.heroSceneBelow]} /> : null}
       {/* The way to the day's times, said once: a chevron over the footer,
-          the shape of the drag up (or the tap) that opens them. */}
+          the shape of the drag up that opens them. */}
       {minimal && fill ? (
         <View style={styles.heroHandle} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
           <Svg width={14} height={8} viewBox="0 0 18 10">
@@ -1562,6 +1563,9 @@ function TodayCardImpl({
   const { palette } = useAppPalette();
   const clock = useClockFormatter();
   const { settings, updateSettings } = usePrayerSettings();
+  // The day bar's shortcut into Minimal: not on the Mac, nor beside an
+  // iPhone's vertical bar, where Minimal stands down (useMinimalOffered).
+  const minimalOffered = useMinimalOffered();
   /**
    * The prayer the user aimed the countdown at, or null for "whatever is
    * next".
@@ -2234,10 +2238,11 @@ function TodayCardImpl({
   );
   // Minimal: the hero's foreground recedes under the sheet — see MinimalSheet.
   const recess = minimal ? { transform: pageRecess(sheetProgress, reduceMotion) } : null;
-  // Minimal: the hero's wrap is the tap that opens the day's times.
-  // (A View takes every prop the Pressable is given here but the press,
-  // and that one is only given when it IS a Pressable.)
-  const HeroWrap = (minimal ? Pressable : View) as typeof Pressable;
+  // Minimal: the drag up opens the day's times, and only the drag — a tap
+  // on the page opened them too, and a page that opens a sheet wherever it
+  // is touched is a page that cannot be touched. A screen reader, which
+  // has no drag up, still opens them by activating the page.
+  const HeroWrap = View;
   const compact = fullBleed && tier === 'compact';
   const renderQibla = (ink: SkyInkColors, column?: boolean) =>
     fullBleed && qiblaBearing != null ? (
@@ -2411,11 +2416,15 @@ function TodayCardImpl({
           and the page has no band of nothing under the rows. */}
       <GestureDetector gesture={swipeUp}>
       <HeroWrap
-        // Minimal: the whole hero is the way to the day's times. One
-        // target, the size of the page, with nothing inside it to compete.
+        // Minimal: the whole hero is the way to the day's times — by the
+        // drag up above, and for a screen reader by activating it.
         {...(minimal
           ? {
-              onPress: onOpenTimes,
+              accessible: true,
+              accessibilityActions: [{ name: 'activate' as const }],
+              onAccessibilityAction: (e: { nativeEvent: { actionName: string } }) => {
+                if (e.nativeEvent.actionName === 'activate') onOpenTimes();
+              },
               accessibilityRole: 'button' as const,
               accessibilityLabel: t('home.minimalTimesTitle', 'Today’s times'),
               accessibilityHint: t('a11y.openTodayTimes', 'Opens today’s prayer times'),
@@ -2568,7 +2577,7 @@ function TodayCardImpl({
       </HeroWrap>
       </GestureDetector>
 
-      {/* Minimal: no table — the day's times are a tap away (HomeScreen's
+      {/* Minimal: no table — the day’s times are a drag up away (HomeScreen's
           sheet), and the hero has the page. */}
       {minimal ? null : (
       <View style={[fullBleed ? styles.tableBleed : null, columnPad]}>
@@ -2611,7 +2620,7 @@ function TodayCardImpl({
             <Chevron back={!rtl} color={String(palette.muted)} />
           </Pressable>
 
-          {settings.showDataStats ? (
+          {settings.showDataStats && minimalOffered ? (
             <Pressable
               accessibilityRole="button"
               accessibilityLabel={t('settings.minimalUi', 'Minimal')}
@@ -2700,7 +2709,7 @@ function TodayCardImpl({
               style={({ pressed }) => [styles.dayStep, pressed && styles.dayStepPressed]}>
               <MonthGlyph color={String(palette.muted)} />
             </Pressable>
-          ) : settings.showDataStats ? (
+          ) : settings.showDataStats && minimalOffered ? (
             <DayBarSlot />
           ) : null}
           <Pressable

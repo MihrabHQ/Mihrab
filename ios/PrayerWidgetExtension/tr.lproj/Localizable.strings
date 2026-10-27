@@ -61,6 +61,7 @@
 "widget_preview_tasbih_of" = "33 üzerinden";
 "widget_preview_tasbih_today" = "Bugün 231 · 2 tur";
 "widget_countdown_format" = "%1$@ kaldı";
+"widget_since_adhan_format" = "%2$@, %1$@ önce";
 "widget_logged_line" = "Bugün %2$d üzerinden %1$d kaydedildi";
 "widget_name_hijri" = "Mihrab · Hicri tarih";
 "widget_description_hijri" = "Bugünün hicri tarihi ve sıradaki aya ne kadar kaldığı. 2×1, yeniden boyutlandırılabilir.";

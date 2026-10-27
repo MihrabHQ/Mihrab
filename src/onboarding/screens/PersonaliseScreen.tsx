@@ -36,6 +36,9 @@
  * One tap, top-trailing, no confirmation. A shelf that asks "are you sure
  * you want to skip?" is a question.
  */
+import { minimalOn } from '../../settings/minimalLook';
+import { useMinimalOffered } from '../../settings/useMinimalOffered';
+import { PALETTE_STEPS, skyMoodFor } from '../../theme/skyMoods';
 import { useMemo } from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -111,7 +114,12 @@ export function PersonaliseScreen({
   // follows. It is offered here as a picture of its six moods, with a
   // line of what it does; the picture is the control.
   const skyActive = settings.appearance === 'sky';
+  // The hour's sky as Today paints it (the mood's stops), for the layout
+  // pictures — see the same note in AppearanceCard.
   const sky = useSkyTheme(skyActive);
+  const previewSky = skyActive ? skyMoodFor(sky.passage, sky.t, PALETTE_STEPS, undefined, sky.light) : null;
+  // Not on the Mac, nor beside an iPhone's vertical bar.
+  const minimalOffered = useMinimalOffered();
 
   return (
     <OnboardingFrame
@@ -255,7 +263,7 @@ export function PersonaliseScreen({
           ) : null}
         </SettingsBlock>
         {/* Minimal wears the classic colours (settings/minimalLook.ts). */}
-        {dynamicColours || skyActive || settings.minimalUi ? null : (
+        {dynamicColours || skyActive || minimalOn(settings) ? null : (
           <SettingsBlock>
             <Text
               style={[typeStyle('label'), styles.label, { color: palette.muted }]}>
@@ -287,26 +295,28 @@ export function PersonaliseScreen({
         )}
         {/* Today's two faces, shown: the full page, chosen until changed,
             and Minimal (Settings → Appearance → Minimal). */}
-        <SettingsBlock>
-          <Text style={[typeStyle('label'), styles.label, { color: palette.muted }]}>
-            {t('onboarding.personalise.layout', 'Layout')}
-          </Text>
-          <LayoutPicker
-            testID="personalise-layout"
-            value={settings.minimalUi ? 'minimal' : 'full'}
-            onChange={v => updateSettings({ minimalUi: v === 'minimal' })}
-            skyTop={skyActive ? sky.top : String(palette.accentBg)}
-            skyFoot={skyActive ? sky.bottom : String(palette.bg)}
-            page={String(palette.bg)}
-            text={String(palette.text)}
-            muted={String(palette.muted)}
-            accent={String(palette.accent)}
-            border={String(palette.border)}
-          />
-          <Text style={[s.help, { color: palette.muted, marginTop: SPACING.sm }]}>
-            {t('settings.minimalUiHelp')}
-          </Text>
-        </SettingsBlock>
+        {minimalOffered ? (
+          <SettingsBlock>
+            <Text style={[typeStyle('label'), styles.label, { color: palette.muted }]}>
+              {t('onboarding.personalise.layout', 'Layout')}
+            </Text>
+            <LayoutPicker
+              testID="personalise-layout"
+              value={settings.minimalUi ? 'minimal' : 'full'}
+              onChange={v => updateSettings({ minimalUi: v === 'minimal' })}
+              skyTop={previewSky ? previewSky.heroTop : String(palette.accentBg)}
+              skyFoot={previewSky ? previewSky.heroMid : String(palette.bg)}
+              page={String(palette.bg)}
+              text={String(palette.text)}
+              muted={String(palette.muted)}
+              accent={String(palette.accent)}
+              border={String(palette.border)}
+            />
+            <Text style={[s.help, { color: palette.muted, marginTop: SPACING.sm }]}>
+              {t('settings.minimalUiHelp')}
+            </Text>
+          </SettingsBlock>
+        ) : null}
       </SettingsGroup>
 
     </OnboardingFrame>

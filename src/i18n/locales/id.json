@@ -431,6 +431,7 @@
     "sectionAppearanceBlurb": "Tema, warna, format waktu, bahasa",
     "sectionWidgets": "Widget",
     "sectionWidgetsBlurb": "Latar, sorotan, dan widget waktu salat",
+    "sectionWidgetsBlurbIos": "Waktu sejak azan di widget waktu salat",
     "widgetsAllTitle": "Semua widget",
     "sectionQuran": "Al-Qur'an",
     "sectionQuranBlurb": "Bacaan, terjemahan, tafsir",
@@ -498,9 +499,13 @@
     },
     "providerTableFallback": "{{picked}} tidak punya jadwal terbitan untuk hari ini, jadi metodenya sendiri dihitung di ponsel sampai tabelnya mencakup hari ini lagi.",
     "minimalUi": "Minimal",
-    "minimalUiHelp": "Satu hal per layar. Hari Ini menyimpan hitung mundur; ketuk untuk melihat waktu hari ini. Tab lain menyimpan fungsi masing-masing.",
+    "minimalUiHelp": "Satu hal per layar. Hari Ini menyimpan hitung mundur; geser ke atas untuk melihat waktu hari ini. Tab lain menyimpan fungsi masing-masing.",
     "minimalClassicOnly": "Minimal tetap memakai warna klasik. Matikan untuk memilih tema warna atau warna sistem.",
-    "minimalRestartBody": "Minimal aktif dengan tema Langit, jadi warna sistem akan dimatikan. Aplikasi perlu dimulai ulang agar setiap layar menerapkan perubahan. Mulai ulang sekarang?"
+    "minimalRestartBody": "Minimal aktif dengan tema Langit, jadi warna sistem akan dimatikan. Aplikasi perlu dimulai ulang agar setiap layar menerapkan perubahan. Mulai ulang sekarang?",
+    "widgetSinceAdhanTitle": "Waktu sejak azan",
+    "widgetSinceAdhanHelp": "Selama waktu ini setelah setiap salat masuk, widget waktu salat menunjukkan sudah berapa lama sejak masuk, lalu kembali menghitung mundur ke salat berikutnya. Jika salat berikutnya sudah dekat, hitung mundur kembali lebih cepat.",
+    "widgetSinceAdhanOff": "Mati",
+    "widgetSinceAdhanMinutes": "{{minutes}} mnt"
   },
   "locationSetup": {
     "headline": "Tetapkan lokasi Anda",
@@ -1554,7 +1559,28 @@
     "riwayahFailedBody": "Buka Unduhan untuk melihat alasannya dan coba lagi.",
     "riwayahStoppedBody": "Tidak ada yang hilang. Ketuk untuk mencoba lagi, atau akan dicoba ulang otomatis lewat Wi-Fi.",
     "downloadNoSpaceTitle": "Ruang tidak cukup",
-    "downloadNoSpaceBody": "Unduhan ini butuh ruang kosong {{size}} lagi. Kosongkan sebagian lalu coba lagi."
+    "downloadNoSpaceBody": "Unduhan ini butuh ruang kosong {{size}} lagi. Kosongkan sebagian lalu coba lagi.",
+    "downloadProgressMegabytes": "{{done}} dari {{total}} MB",
+    "downloadStoppedBodyMegabytes": "{{done}} dari {{total}} MB tersimpan. Ketuk untuk melanjutkan, atau akan lanjut sendiri saat Wi-Fi.",
+    "listenDownloadRunningMegabytes": "Mengunduh · {{done}} dari {{total}} MB",
+    "listenDownloadPartialSurahs": "{{done}} dari {{total}} surah di sini · {{size}}",
+    "wholeSurahBadge": "pelacakan ayat sebisanya",
+    "wholeSurahIntro": "{{name}} hanya diputar dari unduhan lengkap — seluruh tilawah, {{size}}.",
+    "wholeSurahDownloaded": "{{name}} sudah diunduh — seluruh tilawah, di perangkat ini.",
+    "wholeSurahTracking": "Ini satu rekaman per surah, dipotong menjadi ayat sedekat yang dimungkinkan rekamannya: pelacakan ayat adalah upaya terbaik, dan beberapa ayat bisa mulai atau berakhir sedikit lebih awal atau lambat.",
+    "wholeSurahDownload": "Unduh {{name}} · {{size}}",
+    "wholeSurahResume": "Unduh sisanya · total {{size}}",
+    "wholeSurahDownloading": "Mengunduh · {{pct}}%",
+    "wholeSurahChanged": "{{surah}} tidak bisa diputar dengan suara ini: rekamannya berubah di sumbernya sejak Mihrab mengukur letak ayat-ayatnya. Sisa {{name}} diputar seperti biasa.",
+    "wholeSurahIncompleteBody": "{{count}} surah tidak terunduh: {{names}}. \"Lanjutkan\" hanya mengambil yang ini.",
+    "wholeSurahUnreachable": "{{surah}} dengan suara ini tidak ada di perangkat ini dan tidak bisa di-streaming sekarang — tidak ada koneksi ke sumbernya. Unduh agar tersedia offline.",
+    "downloadingAudioMegabytes": "Mengunduh… {{done}}/{{total}} MB",
+    "wholeSurahTrackingShort": "Satu rekaman per surah, dipotong menjadi ayat sedekat yang dimungkinkan: pelacakan ayat adalah upaya terbaik.",
+    "reportAyahBoundary": "Ada ayat yang mulai atau berakhir di tempat yang salah? Laporkan",
+    "previewReciter": "Dengarkan {{name}}",
+    "stopPreview": "Hentikan contoh",
+    "voiceHint": "Mushafnya {{page}}; {{name}} membaca {{voice}}. Dengarkan dalam {{page}}:",
+    "voiceHintDismiss": "Tetap pakai suara ini"
   },
   "reading": {
     "textSize": "Ukuran teks",
@@ -1795,10 +1821,11 @@
     "quranGeometry": "Data posisi ayat (quran.com / proyek Quran for Android)",
     "tajweedRules": "Hukum tajwid setiap kata",
     "tajweedFonts": "Font halaman warna tajwid (diunduh, tidak dibundel)",
-    "recitation": "Audio tilawah (42 qari): EveryAyah.com · pewaktuan kata: quran-align (CC BY 4.0)",
+    "recitation": "Audio tilawah (44 qari): EveryAyah.com · pewaktuan kata: quran-align (CC BY 4.0)",
     "tafsir": "Teks tafsir: Ibnu Katsir, Maarif-ul-Quran, al-Muyassar",
     "wordMeanings": "Arti kata-kata sulit dalam bahasa Arab",
-    "surahHeaderFont": "Kaligrafi kepala surah"
+    "surahHeaderFont": "Kaligrafi kepala surah",
+    "recitationWholeSurah": "Tilawah surah utuh (15): mp3quran.net · waktu ayat diselaraskan dengan audio oleh Mihrab"
   },
   "liveActivity": {
     "title": "Salat berikutnya",
@@ -1975,9 +2002,7 @@
     "setUpSync": "Siapkan sinkronisasi",
     "legendTitle": "Arti grafik",
     "fastRow": "Puasa",
-    "sunnahRow": "Sunah",
-    "graphByDay": "Grafik per hari",
-    "graphByDayHelp": "Satu kotak per hari — satu kuartal sekali lihat. Jika mati, grafik menampilkan satu baris per salat."
+    "sunnahRow": "Sunah"
   },
   "endOfDay": {
     "title": "Catat salat hari ini?",

@@ -23,6 +23,7 @@
  * plan, and this screen is not for plans.
  */
 // tokens-ok: the owed band is the danger colour as a tint; the palette has no danger tint
+import { minimalOn } from '../settings/minimalLook';
 import { Chip, Stepper } from '../components/ui';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
@@ -69,14 +70,9 @@ import {
   primePractice,
   usePracticeHistory,
 } from '../practice/practiceStore';
-import {
-  buildHeatmap,
-  PracticeHeatmap,
-  weeksToCover,
-} from '../practice/PracticeHeatmap';
+import { weeksToCover } from '../practice/historyWeeks';
 import { buildStrip } from '../practice/stripRecord';
 import { PracticeStrip } from '../practice/PracticeStrip';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { formatHijriLabel } from '../hijri/formatHijriLabel';
 import { computePracticeStats, owedDays } from '../practice/practiceStats';
 import { getCachedPrayerTimes } from '../prayer/prayerStorage';
@@ -92,7 +88,6 @@ import {
   clearEntry,
   clearRange,
   isLogged,
-  scoreByDay,
   setEntryNote,
   upsertEntry,
   type JournalEntry,
@@ -144,7 +139,6 @@ const LOG_ROW_PAD = 6;
 /** Under this window height the graph gives up height — see `shortScreen`. */
 const LOG_DENSE_BELOW_HEIGHT = 760;
 /** Where the graph choice is kept — 'prayer' (the strip) or 'day' (the grid). */
-const GRAPH_KEY = 'log.graph';
 /** The heatmap's scale on such a phone. */
 const HEATMAP_SHORT_SCALE = 0.8;
 
@@ -352,8 +346,8 @@ export function LogScreen() {
     [panX, stepDay],
   );
 
-  const minimalRef = useRef(settings.minimalUi);
-  minimalRef.current = settings.minimalUi;
+  const minimalRef = useRef(minimalOn(settings));
+  minimalRef.current = minimalOn(settings);
   const panResponder = useMemo(
     () =>
       PanResponder.create({
@@ -710,62 +704,15 @@ export function LogScreen() {
    * graph that stopped at the first entry left the open day off its own
    * chart), and whatever they have asked for by dragging the grid back.
    */
-  /**
-   * Which record is drawn: by prayer (the strip — one row a prayer, one
-   * column a day) or by day (the grid, one square a day). The strip is the
-   * default; the grid is the quarter at a glance, behind the ⋯. Kept on
-   * the device, not in settings: it is a view, not a preference that syncs.
-   */
-  const [byDay, setByDay] = useState(false);
-  useEffect(() => {
-    AsyncStorage.getItem(GRAPH_KEY)
-      .then(v => {
-        if (v === 'day') setByDay(true);
-      })
-      .catch(() => undefined);
-  }, []);
-  const setGraphByDay = useCallback((v: boolean) => {
-    setByDay(v);
-    AsyncStorage.setItem(GRAPH_KEY, v ? 'day' : 'prayer').catch(() => undefined);
-  }, []);
   const [extraWeeks, setExtraWeeks] = useState(0);
   const spanWeeks =
     Math.max(weeksToCover(earliestLogged), weeksToCover(selected)) + extraWeeks;
   const showMore = useCallback(() => setExtraWeeks(w => w + 26), []);
 
   const stripDays = useMemo(() => {
-    if (byDay) return [];
     const fasted = new Set(liveFasts(fasts).filter(f => f.completed).map(f => f.date));
     return buildStrip(entries, fasted, new Date(), spanWeeks, sunnah, firstPrayerLogged);
-  }, [byDay, entries, fasts, sunnah, spanWeeks, firstPrayerLogged]);
-
-  const heatmapRows = useMemo(() => {
-    if (!byDay) return [];
-    // `liveFasts`: a day unmarked is kept as a tombstone (for sync), still
-    // `completed` from when it was a fast — counting it drew a fasted ring
-    // on a day the reader had taken it off, and nothing could remove it.
-    const fasted = new Set(liveFasts(fasts).filter(f => f.completed).map(f => f.date));
-    return buildHeatmap(
-      scoreByDay(entries),
-      fasted,
-      new Date(),
-      spanWeeks,
-      sunnah,
-      firstPrayerLogged,
-    );
-  }, [byDay, entries, fasts, sunnah, spanWeeks, firstPrayerLogged]);
-
-  const weekdayLabels = useMemo(() => {
-    // Monday-first initials in the app language.
-    const monday = new Date(2024, 0, 1); // a Monday
-    return Array.from({ length: 7 }, (_, i) => {
-      const d = new Date(monday);
-      d.setDate(monday.getDate() + i);
-      return d
-        .toLocaleDateString(i18n.language, { weekday: 'narrow' })
-        .slice(0, 2);
-    });
-  }, [i18n.language]);
+  }, [entries, fasts, sunnah, spanWeeks, firstPrayerLogged]);
 
   const streak = computeCurrentStreak(entries);
   const longestStreak = computeLongestStreak(entries);
@@ -1251,28 +1198,13 @@ export function LogScreen() {
                   }
                 : null
             }>
-          {byDay ? (
-            <PracticeHeatmap
-              // The key to the squares is behind the ⋯ (LogOptionsSheet):
-              // two lines under a graph read every day, on a page that has
-              // to hold the day's card without scrolling.
-              compact
-              rows={heatmapRows}
-              weekdayLabels={weekdayLabels}
-              selectedKey={selected}
-              emphasise={showOwed ? owedDaySet : undefined}
-              onSelectDay={onSelectDayFromGrid}
-              onReachOldest={showMore}
-            />
-          ) : (
-            <PracticeStrip
-              days={stripDays}
-              selectedKey={selected}
-              emphasise={showOwed ? owedDaySet : undefined}
-              onSelectDay={onSelectDayFromGrid}
-              onReachOldest={showMore}
-            />
-          )}
+          <PracticeStrip
+            days={stripDays}
+            selectedKey={selected}
+            emphasise={showOwed ? owedDaySet : undefined}
+            onSelectDay={onSelectDayFromGrid}
+            onReachOldest={showMore}
+          />
           </View>
           {showOwed ? (
             <View
@@ -1665,8 +1597,6 @@ export function LogScreen() {
           onReset={() => setResetOpen(true)}
           reminderOn={settings.endOfDayLogReminderEnabled}
           onReminderChange={v => updateSettings({ endOfDayLogReminderEnabled: v })}
-          byDay={byDay}
-          onByDayChange={setGraphByDay}
         />
 
         {/* Themed, in-app, and the same dialog the theme-restart prompt

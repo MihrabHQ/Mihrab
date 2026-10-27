@@ -20,8 +20,8 @@
 import { AndroidCategory } from '@notifee/react-native';
 import i18n from '../i18n';
 import { LAST_CHANCE_MINUTES, hasSnooze, minutesUntil, type SnoozeMenu } from './snoozeWindow';
-import { skyFrame, skyInkAt, type SkyPassage } from '../screens/home/skyModel';
-import { setActiveSkyVariant, skyMoodFor, type SkyVariant } from '../theme/skyMoods';
+import { type SkyPassage } from '../screens/home/skyModel';
+import { activeSkyVariant, setActiveSkyVariant, skyMoodFor, type SkyVariant } from '../theme/skyMoods';
 
 /** The native activity Notifee launches; resolved by class name. */
 export const PRAYER_ALARM_ACTIVITY = 'com.prayer_times.PrayerAlarmActivity';
@@ -52,20 +52,6 @@ export function snoozeChipLabel(minutes: number): string {
 export const FULL_SCREEN_DATA_FLAG = 'fullScreen';
 
 const RTL_LANGUAGES = ['ar', 'ur', 'he', 'fa'];
-
-/**
- * Which passage of the Today hero's sky each prayer begins, and how far into
- * it. The alarm rings AT the prayer, so this is the sky the hero is showing
- * the moment it fires. Dhuhr starts nothing of its own — it sits in the
- * middle of the day passage.
- */
-const PRAYER_SKY: Record<string, { passage: SkyPassage; t: number }> = {
-  Fajr: { passage: 'dawn', t: 0 },
-  Dhuhr: { passage: 'day', t: 0.55 },
-  Asr: { passage: 'sunset', t: 0 },
-  Maghrib: { passage: 'dusk', t: 0 },
-  Isha: { passage: 'night', t: 0 },
-};
 
 /**
  * The mood each prayer's alert wears under the Sky theme. Not the hero's
@@ -107,32 +93,27 @@ export function fullScreenAlarmSkyTheme(): boolean {
 /**
  * The sky the alarm screen paints for a prayer, and the ink on it.
  *
- * Under the Sky theme it is the hour's mood (theme/skyMoods.ts) — the same
- * three-stop sky the hero shows at that moment, the mood's own text colour
- * and its accent for the Stop button — so the alert that wakes the phone
- * is the app it opens into. Otherwise the hero's real sky, two colours, in
- * cream or black.
+ * Always one of the Sky theme's moods (theme/skyMoods.ts): the three-stop
+ * sky the hero shows at that prayer, the mood's own text colour and its
+ * accent for the Stop button. Under the Sky theme, in the colours the app
+ * wears (Vibrant or Realistic), so the alert that wakes the phone is the
+ * app it opens into; under any other theme, in Realistic's — the sky as it
+ * looks. It used to fall back to the hero's plain two-colour sky in cream
+ * or black there, a look the app no longer has anywhere else.
  */
 export function fullScreenAlarmSky(prayer: string): Record<string, string> {
-  const at = PRAYER_SKY[prayer];
+  const at = PRAYER_MOOD[prayer];
   if (!at) return {};
-  if (skyThemeOn) {
-    const mood = skyMoodFor(PRAYER_MOOD[prayer].passage, PRAYER_MOOD[prayer].t);
-    return {
-      fsSkyTop: mood.heroTop,
-      fsSkyMid: mood.heroMid,
-      fsSkyBottom: mood.heroFoot,
-      fsInk: mood.isDark ? 'light' : 'dark',
-      fsText: mood.text,
-      fsAccent: mood.accent,
-      fsOnAccent: mood.onAccent,
-    };
-  }
-  const frame = skyFrame({ ...at, daylight: null }, new Date());
+  const variant: SkyVariant = skyThemeOn ? activeSkyVariant() : 'realistic';
+  const mood = skyMoodFor(at.passage, at.t, undefined, variant);
   return {
-    fsSkyTop: frame.top,
-    fsSkyBottom: frame.bottom,
-    fsInk: skyInkAt(frame, 0.5).text === '#FFFFFF' ? 'light' : 'dark',
+    fsSkyTop: mood.heroTop,
+    fsSkyMid: mood.heroMid,
+    fsSkyBottom: mood.heroFoot,
+    fsInk: mood.isDark ? 'light' : 'dark',
+    fsText: mood.text,
+    fsAccent: mood.accent,
+    fsOnAccent: mood.onAccent,
   };
 }
 

@@ -78,7 +78,9 @@ describe('no Quran content source may reach the network without a deadline', () 
       let match: RegExpExecArray | null;
       while ((match = pattern.exec(code)) !== null) {
         const before = code.slice(Math.max(0, match.index - 300), match.index);
-        if (!before.includes('withDownloadDeadline(')) {
+        // Or, for a file too big for a fixed deadline (a whole surah's
+        // recitation), a deadline on silence: withStallDeadline.
+        if (!before.includes('withDownloadDeadline(') && !before.includes('withStallDeadline(')) {
           offenders.push(`${file}@${match.index}`);
         }
       }

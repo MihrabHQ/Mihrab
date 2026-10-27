@@ -305,12 +305,12 @@ open class PrayerWidgetProvider : GlanceAppWidgetReceiver() {
      * drawing fan-out further down.
      */
     private val ALL_WIDGET_CLASSES = arrayOf(
-      PrayerWidgetProvider::class.java,
-      PrayerWidgetSmallProvider::class.java,
-      PrayerWidgetLargeProvider::class.java,
-      PrayerWidgetLogProvider::class.java,
-      PrayerWidgetLogLargeProvider::class.java,
-      PrayerWidgetStreakProvider::class.java,
+      TimesWidgetReceiver::class.java,
+      NextPrayerWidgetReceiver::class.java,
+      TimesTallWidgetReceiver::class.java,
+      LogWidgetReceiver::class.java,
+      LogTallWidgetReceiver::class.java,
+      StreakWidgetReceiver::class.java,
       PrayerWidgetReadingProvider::class.java,
       PrayerWidgetHijriProvider::class.java,
       PrayerWidgetTasbihProvider::class.java,
@@ -450,16 +450,36 @@ open class PrayerWidgetProvider : GlanceAppWidgetReceiver() {
       val todayKey = todayDateKey()
       val tomorrow = dayAfter(o, todayKey)
       val yesterday = dayBefore(o, todayKey)
+      val todayDay = selectTodayDay(o)
+      val todayAll = boundaryMinutes(todayDay, o)
+      val tomorrowAll = tomorrow?.let { boundaryMinutes(it, o) }.orEmpty()
+      val yesterdayAll = yesterday?.let { boundaryMinutes(it, o) }.orEmpty()
+      // The ends of the count-ups after each prayer (#111) are boundaries
+      // too: there the card goes back to counting down. Each measured
+      // against what follows it, the next day's times included.
+      val window = o.optInt("sinceAdhanMinutes", 0)
+      fun ends(day: JSONObject?, own: List<Int>, after: List<Int>) =
+        WidgetInstants.sinceEnds(prayerMinutes(day, o), own + after.map { it + WallClock.MINUTES_PER_DAY }, window)
       return WidgetInstants.next(
         nowMs = System.currentTimeMillis(),
         dayKey = todayKey,
-        dayMinutes = boundaryMinutes(selectTodayDay(o), o),
+        dayMinutes = todayAll + ends(todayDay, todayAll, tomorrowAll),
         nextDayKey = tomorrow?.optString("dateKey"),
-        nextDayMinutes = tomorrow?.let { boundaryMinutes(it, o) }.orEmpty(),
+        nextDayMinutes = tomorrowAll + ends(tomorrow, tomorrowAll, emptyList()),
         // Last night's ʿIshāʾ past midnight (1442 on its day) is still ahead.
         prevDayKey = yesterday?.optString("dateKey"),
-        prevDayMinutes = yesterday?.let { boundaryMinutes(it, o) }.orEmpty(),
+        prevDayMinutes = yesterdayAll + ends(yesterday, yesterdayAll, todayAll),
       )?.epochMs
+    }
+
+    /** A day's five alone — what a count-up starts from (#111). */
+    private fun prayerMinutes(day: JSONObject?, root: JSONObject): List<Int> {
+      val rows = day?.optJSONArray("rows") ?: root.optJSONArray("rows") ?: return emptyList()
+      return (0 until rows.length()).mapNotNull { i ->
+        rows.optJSONObject(i)
+          ?.takeIf { it.optString("key") in WidgetPayloadV1.SINCE_ADHAN_KEYS }
+          ?.let { WidgetPayloadV1.minutesOf(it) }
+      }
     }
 
     /**

@@ -61,6 +61,7 @@
 "widget_preview_tasbih_of" = "من 33";
 "widget_preview_tasbih_today" = "اليوم 231 · جولتان";
 "widget_countdown_format" = "بعد %1$@";
+"widget_since_adhan_format" = "%2$@ منذ %1$@";
 "widget_logged_line" = "%1$d من %2$d مسجلة اليوم";
 "widget_name_hijri" = "محراب · التاريخ الهجري";
 "widget_description_hijri" = "التاريخ الهجري لليوم، والمدة المتبقية حتى الشهر القادم. 2×1، قابل لتغيير الحجم.";

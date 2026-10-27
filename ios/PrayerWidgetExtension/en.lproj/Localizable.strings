@@ -61,6 +61,7 @@
 "widget_preview_tasbih_of" = "of 33";
 "widget_preview_tasbih_today" = "Today 231 · 2 rounds";
 "widget_countdown_format" = "in %1$@";
+"widget_since_adhan_format" = "%1$@ since %2$@";
 "widget_logged_line" = "%1$d of %2$d logged today";
 "widget_name_hijri" = "Mihrab · Hijri date";
 "widget_description_hijri" = "Today's Hijri date, and how far off the next month is. 2×1, resizable.";

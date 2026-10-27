@@ -1,7 +1,7 @@
 /**
  * Four numbers above the graph — the part you read rather than decode.
  *
- * WHY IT LIVES HERE AND NOT IN THE HEATMAP. `PracticeHeatmap` renders twice:
+ * WHY IT LIVES HERE AND NOT IN THE GRAPH. `PracticeStrip` renders twice:
  * on the Log, and on Home through `PracticeCard`, where the card deliberately
  * has no legend, no caption and no day selection. Putting the row inside the
  * component would put it on Home too, and Home already answers a different

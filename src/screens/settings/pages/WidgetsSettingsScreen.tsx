@@ -1,5 +1,5 @@
 /**
- * Settings → Widgets (Android).
+ * Settings → Widgets.
  *
  * A page of its own again. It had one once, and lost it when #127 left it a
  * single slider — a destination, an icon and a tap for one control. It has
@@ -10,6 +10,11 @@
  *   • Prayer times widget (`PrayerWidgetCard`): text colour, what is shown
  *     and the size of the times, which ONLY the prayer-times widgets read.
  *
+ *   • Time since the adhan (`WidgetSinceAdhanCard`, #111): what the
+ *     prayer-times widgets count after a prayer comes in — the one widget
+ *     setting iOS has too, so the page is on both platforms now and the
+ *     two Android cards draw nothing on iOS.
+ *
  * On Appearance they were the bottom of a long page about the app's own
  * look; here they are the page, and the line between them is the point.
  * The same options are on each widget's own settings screen (touch and
@@ -18,12 +23,14 @@
 import { PrayerWidgetCard } from '../PrayerWidgetCard';
 import { SettingsPage } from '../SettingsPage';
 import { WidgetCard } from '../WidgetCard';
+import { WidgetSinceAdhanCard } from '../WidgetSinceAdhanCard';
 
 export function WidgetsSettingsScreen() {
   return (
     <SettingsPage>
       <WidgetCard />
       <PrayerWidgetCard />
+      <WidgetSinceAdhanCard />
     </SettingsPage>
   );
 }

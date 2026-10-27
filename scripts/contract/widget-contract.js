@@ -106,6 +106,11 @@ module.exports = {
           t.ref('Tasbih'),
           'The dhikr counter, for the Tasbih widget.',
         ],
+        [
+          'sinceAdhanMinutes',
+          t.int({ default: 0 }),
+          "Issue #111: for this many minutes after one of the five prayers comes in, the prayer card counts UP from it (\"12:34 since Dhuhr\") instead of down to what is next; 0 is off. Never after Sunrise or a night mark. The window ends early, halfway to the next time on the card, so the countdown to a prayer that is close is never hidden. The rule is `sinceAdhanEnd` in each platform's WidgetPayloadV1, held to the same answers by the contract fixtures (`since`).",
+        ],
       ],
     },
     {

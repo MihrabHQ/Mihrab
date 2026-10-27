@@ -432,6 +432,7 @@
     "sectionAppearanceBlurb": "Thème, couleur, format de l'heure, langue",
     "sectionWidgets": "Widgets",
     "sectionWidgetsBlurb": "Fond, couleur de mise en avant et widget des horaires",
+    "sectionWidgetsBlurbIos": "Temps depuis l’adhan sur les widgets des horaires",
     "widgetsAllTitle": "Tous les widgets",
     "sectionQuran": "Coran",
     "sectionQuranBlurb": "Lecture, traduction, tafsir",
@@ -499,9 +500,13 @@
     },
     "providerTableFallback": "{{picked}} n’a pas d’horaires publiés pour aujourd’hui : sa propre méthode est calculée sur le téléphone jusqu’à ce que la table couvre à nouveau ce jour.",
     "minimalUi": "Minimal",
-    "minimalUiHelp": "Une chose par écran. Aujourd’hui garde le compte à rebours ; touchez-le pour les horaires du jour. Les autres onglets gardent ce pour quoi ils sont faits.",
+    "minimalUiHelp": "Une chose par écran. Aujourd’hui garde le compte à rebours ; balayez vers le haut pour les horaires du jour. Les autres onglets gardent ce pour quoi ils sont faits.",
     "minimalClassicOnly": "Minimal garde les couleurs classiques. Désactivez-le pour choisir un thème de couleur ou les couleurs du système.",
-    "minimalRestartBody": "Minimal s’active avec le thème Ciel : les couleurs du système seront donc désactivées. L’app doit redémarrer pour que chaque écran prenne en compte le changement. Redémarrer maintenant ?"
+    "minimalRestartBody": "Minimal s’active avec le thème Ciel : les couleurs du système seront donc désactivées. L’app doit redémarrer pour que chaque écran prenne en compte le changement. Redémarrer maintenant ?",
+    "widgetSinceAdhanTitle": "Temps depuis l’adhan",
+    "widgetSinceAdhanHelp": "Pendant cette durée après l’entrée de chaque prière, les widgets des horaires indiquent depuis combien de temps elle est entrée, puis reviennent au compte à rebours jusqu’à la prière suivante. Si la prochaine prière est proche, le compte à rebours revient plus tôt.",
+    "widgetSinceAdhanOff": "Désactivé",
+    "widgetSinceAdhanMinutes": "{{minutes}} min"
   },
   "locationSetup": {
     "headline": "Définissez votre emplacement",
@@ -1252,7 +1257,7 @@
     "tafsirUnavailable": "Tafsir indisponible — connectez-vous une fois à Internet pour le télécharger.",
     "hardWords": "Mots difficiles (en arabe)",
     "downloadingWordMeanings": "Téléchargement des sens arabes des mots",
-    "downloadProgressSurahs": "{{done}} sourates sur {{total}}",
+    "downloadProgressSurahs": "{{done}} sur {{total}} sourates",
     "wordMeaningsDoneTitle": "Les sens des mots sont prêts",
     "wordMeaningsDoneBody": "Les sens arabes des mots difficiles sont sur cet appareil.",
     "wordMeaningsIncompleteBody": "Il manque encore {{count}} sourates. Relancez pour reprendre là où ça s'est arrêté.",
@@ -1555,7 +1560,28 @@
     "riwayahFailedBody": "Ouvrez Téléchargements pour voir pourquoi et réessayer.",
     "riwayahStoppedBody": "Rien n’est perdu. Touchez pour réessayer, ou il réessaiera tout seul en Wi-Fi.",
     "downloadNoSpaceTitle": "Espace insuffisant",
-    "downloadNoSpaceBody": "Ce téléchargement nécessite {{size}} d’espace libre en plus. Libérez-en et réessayez."
+    "downloadNoSpaceBody": "Ce téléchargement nécessite {{size}} d’espace libre en plus. Libérez-en et réessayez.",
+    "downloadProgressMegabytes": "{{done}} sur {{total}} Mo",
+    "downloadStoppedBodyMegabytes": "{{done}} sur {{total}} Mo conservés. Touchez pour continuer, ou le téléchargement reprendra seul en Wi-Fi.",
+    "listenDownloadRunningMegabytes": "Téléchargement · {{done}} sur {{total}} Mo",
+    "listenDownloadPartialSurahs": "{{done}} sur {{total}} sourates ici · {{size}}",
+    "wholeSurahBadge": "suivi des versets approximatif",
+    "wholeSurahIntro": "{{name}} ne se lit que depuis un téléchargement complet — la récitation entière, {{size}}.",
+    "wholeSurahDownloaded": "{{name}} est téléchargé — la récitation entière, sur cet appareil.",
+    "wholeSurahTracking": "C’est un enregistrement par sourate, découpé en versets aussi fidèlement que l’enregistrement le permet : le suivi des versets est une meilleure tentative, et quelques versets peuvent commencer ou finir un instant trop tôt ou trop tard.",
+    "wholeSurahDownload": "Télécharger {{name}} · {{size}}",
+    "wholeSurahResume": "Télécharger le reste · {{size}} au total",
+    "wholeSurahDownloading": "Téléchargement · {{pct}} %",
+    "wholeSurahChanged": "{{surah}} ne peut pas être lue dans cette voix : l’enregistrement a changé à sa source depuis que Mihrab a mesuré où tombent ses versets. Le reste de {{name}} se lit comme avant.",
+    "wholeSurahIncompleteBody": "{{count}} sourates n’ont pas été téléchargées : {{names}}. « Continuer » ne récupère que celles-ci.",
+    "wholeSurahUnreachable": "{{surah}} dans cette voix n’est pas sur cet appareil et ne peut pas être diffusée pour l’instant — pas de connexion à sa source. Téléchargez-la pour l’avoir hors ligne.",
+    "downloadingAudioMegabytes": "Téléchargement… {{done}}/{{total}} Mo",
+    "wholeSurahTrackingShort": "Un enregistrement par sourate, découpé en versets aussi fidèlement qu’il le permet : le suivi des versets est une meilleure tentative.",
+    "reportAyahBoundary": "Un verset commence ou finit au mauvais endroit ? Signalez-le",
+    "previewReciter": "Écouter {{name}}",
+    "stopPreview": "Arrêter l’extrait",
+    "voiceHint": "Le mushaf est en {{page}} ; {{name}} récite en {{voice}}. L’écouter en {{page}} :",
+    "voiceHintDismiss": "Garder cette voix"
   },
   "reading": {
     "textSize": "Taille du texte",
@@ -1796,10 +1822,11 @@
     "quranGeometry": "Données de position des versets (quran.com / projet Quran for Android)",
     "tajweedRules": "Règles de tajwid de chaque mot",
     "tajweedFonts": "Polices de page aux couleurs du tajwid (téléchargées, non incluses)",
-    "recitation": "Audio de récitation (42 récitateurs) : EveryAyah.com · synchronisation des mots : quran-align (CC BY 4.0)",
+    "recitation": "Audio de récitation (44 récitateurs) : EveryAyah.com · synchronisation des mots : quran-align (CC BY 4.0)",
     "tafsir": "Textes de tafsir : Ibn Kathir, Maarif-ul-Quran, al-Muyassar",
     "wordMeanings": "Sens arabes des mots difficiles",
-    "surahHeaderFont": "Calligraphie des en-têtes de sourates"
+    "surahHeaderFont": "Calligraphie des en-têtes de sourates",
+    "recitationWholeSurah": "Récitations de sourates entières (15) : mp3quran.net · minutage des versets aligné sur l’audio par Mihrab"
   },
   "liveActivity": {
     "title": "Prochaine prière",
@@ -1976,9 +2003,7 @@
     "setUpSync": "Configurer la synchronisation",
     "legendTitle": "Ce que montre le graphique",
     "fastRow": "Jeûne",
-    "sunnahRow": "Sunna",
-    "graphByDay": "Graphique par jour",
-    "graphByDayHelp": "Un carré par jour — le trimestre d’un coup d’œil. Désactivé, le graphique affiche une ligne par prière."
+    "sunnahRow": "Sunna"
   },
   "endOfDay": {
     "title": "Consigner les prières du jour ?",

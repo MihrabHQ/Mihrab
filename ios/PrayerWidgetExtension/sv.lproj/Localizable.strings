@@ -61,6 +61,7 @@
 "widget_preview_tasbih_of" = "av 33";
 "widget_preview_tasbih_today" = "Idag 231 · 2 varv";
 "widget_countdown_format" = "om %1$@";
+"widget_since_adhan_format" = "%1$@ sedan %2$@";
 "widget_logged_line" = "%1$d av %2$d loggade idag";
 "widget_name_hijri" = "Mihrab · Hijridatum";
 "widget_description_hijri" = "Dagens hijridatum, och hur långt bort nästa månad är. 2×1, storleken kan ändras.";

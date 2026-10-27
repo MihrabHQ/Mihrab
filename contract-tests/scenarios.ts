@@ -181,6 +181,8 @@ type Spec = {
   extras?: WidgetExtras;
   seasonal?: WidgetPrayerPayload['seasonal'];
   location?: string;
+  /** Settings → Widgets, issue #111. */
+  since?: number;
 };
 
 const SPECS: Spec[] = [
@@ -200,6 +202,7 @@ const SPECS: Spec[] = [
     extras: EXTRAS,
     seasonal: { jumuah: true, ramadan: false, eid: null },
     location: 'Malmö',
+    since: 20,
   },
   {
     name: 'on the minute of a prayer',
@@ -345,6 +348,7 @@ export async function widgetScenarios(): Promise<WidgetScenario[]> {
         s.yesterday,
       );
       const clock = contractClock(activeClock().hour12, i18n.language);
+      if (s.since) v1.sinceAdhanMinutes = s.since;
       const v2 = widgetPayloadV2FromV1(v1, { clock, now });
       out.push({
         name: s.name,

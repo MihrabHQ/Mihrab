@@ -16,6 +16,7 @@ import {
   fetchContentOnce,
   GIVE_UP_AFTER_CONSECUTIVE_FAILURES,
   withDownloadDeadline,
+  withStallDeadline,
   type DownloadOutcome,
 } from '../contentNetwork';
 import { mkdirDeep } from '../mushafDownload';
@@ -24,9 +25,14 @@ import {
   ayahAudioFileName,
   ayahAudioUrl,
   findReciter,
+  isWholeSurah,
+  RECITERS,
   reciterTimingsUrl,
+  surahAudioUrl,
   type Reciter,
 } from './reciters';
+import { expectedSurahBytes, surahRecitationBytes } from './surahRecitation';
+import { freeDiskBytes, SPACE_MARGIN_BYTES, sizeLabel } from '../downloadSpace';
 
 function audioDir(reciterId: string): string {
   return `${ReactNativeBlobUtil.fs.dirs.DocumentDir}/quran/audio/${reciterId}`;
@@ -46,6 +52,228 @@ export function ayahAudioFilePath(
   ayah: number,
 ): string {
   return `${audioDir(reciterId)}/${ayahAudioFileName(surah, ayah)}`;
+}
+
+/**
+ * A whole-surah recitation keeps each surah in one file, `SSS.mp3` — never
+ * to be mistaken for an ayah's `SSSAAA.mp3` (`parseAyahFileName`).
+ */
+export function surahAudioFilePath(reciterId: string, surah: number): string {
+  return `${audioDir(reciterId)}/${String(surah).padStart(3, '0')}.mp3`;
+}
+
+/** `007.mp3` back into a surah, or null. */
+export function parseSurahFileName(name: string): number | null {
+  const m = /^(\d{3})\.mp3$/.exec(name);
+  if (!m) return null;
+  const surah = Number(m[1]);
+  return surah >= 1 && surah <= 114 ? surah : null;
+}
+
+/**
+ * Is this the file the boundaries were measured on? Exactly its size, or
+ * not used at all — see surahRecitation.ts, "the sizes are the safety".
+ */
+async function surahFileExact(
+  reciterId: string,
+  surah: number,
+  path: string,
+): Promise<boolean> {
+  const want = expectedSurahBytes(reciterId, surah);
+  if (want == null) return false;
+  try {
+    if (!(await ReactNativeBlobUtil.fs.exists(path))) return false;
+    const stat = await ReactNativeBlobUtil.fs.stat(path);
+    return Number(stat.size) === want;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * A whole-surah recitation's file for this surah — only when it is on
+ * disk at exactly the size it was measured at. A file cut short, damaged,
+ * or of another recording reads as not downloaded, so the reader is
+ * offered the download again rather than an ayah cut in the wrong place.
+ */
+export async function localSurahFileIfAny(
+  reciterId: string,
+  surah: number,
+): Promise<string | null> {
+  const path = surahAudioFilePath(reciterId, surah);
+  return (await surahFileExact(reciterId, surah, path)) ? path : null;
+}
+
+/**
+ * ── A SURAH CHANGED AT ITS SOURCE ─────────────────────────────────────
+ *
+ * Downloaded twice and the wrong size both times: the server is serving a
+ * different file from the one the boundaries were measured on. Fetching it
+ * a third time on every Continue would never help, and playing it would
+ * cut it in the wrong places. So it is marked — a small file beside where
+ * the audio would be — and that one surah says it cannot be played in this
+ * voice until the app's boundaries are measured again. The rest of the
+ * recitation plays as before. Deleting the reciter clears the mark, and a
+ * later download that does come in at the right size clears it too.
+ */
+function changedMarkPath(reciterId: string, surah: number): string {
+  return `${surahAudioFilePath(reciterId, surah)}.changed`;
+}
+
+/** Whether this surah of a whole-surah recitation changed at its source. */
+export async function surahChangedAtSource(
+  reciterId: string,
+  surah: number,
+): Promise<boolean> {
+  try {
+    return await ReactNativeBlobUtil.fs.exists(changedMarkPath(reciterId, surah));
+  } catch {
+    return false;
+  }
+}
+
+/** The surahs of a whole-surah recitation marked as changed at the source. */
+export async function surahsChangedAtSource(reciterId: string): Promise<number[]> {
+  try {
+    const dir = audioDir(reciterId);
+    if (!(await ReactNativeBlobUtil.fs.exists(dir))) return [];
+    const names = await ReactNativeBlobUtil.fs.ls(dir);
+    return names
+      .map(n => /^(\d{3})\.mp3\.changed$/.exec(n))
+      .filter((m): m is RegExpExecArray => m != null)
+      .map(m => Number(m[1]))
+      .sort((a, b) => a - b);
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * One surah of a whole-surah recitation, as the ayah sheet shows it: on
+ * the device at its exact size, changed at the source (nothing will fetch
+ * it), or neither — downloadable, and streamable while online.
+ */
+export type SurahFileState = 'here' | 'changed' | 'absent';
+
+export async function surahFileState(
+  reciterId: string,
+  surah: number,
+): Promise<SurahFileState> {
+  if (await surahChangedAtSource(reciterId, surah)) return 'changed';
+  return (await localSurahFileIfAny(reciterId, surah)) ? 'here' : 'absent';
+}
+
+/** Delete one surah of a whole-surah recitation. Returns whether it was there. */
+export async function deleteSurahFile(reciterId: string, surah: number): Promise<boolean> {
+  const path = surahAudioFilePath(reciterId, surah);
+  try {
+    const there = await ReactNativeBlobUtil.fs.exists(path);
+    if (there) await ReactNativeBlobUtil.fs.unlink(path);
+    return there;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * ── STREAMING, WITHOUT GIVING UP THE SAFETY ───────────────────────────
+ *
+ * The rule is "only the recording the boundaries were measured on", and
+ * that needs the file's SIZE, not the file. Before a surah is streamed the
+ * server is asked how big it is — a request for headers, a few hundred
+ * bytes — and only an exact match is streamed. The answer is kept for the
+ * session, so a listen across a surah asks once.
+ *
+ *   ok          the server has the recording: stream it
+ *   changed     it serves something else: not played (and not marked on
+ *               disk — two downloads at the wrong size do that)
+ *   unreachable no answer: offline, or the server down; not played, and
+ *               asked again next time
+ */
+export type RemoteSurahCheck = 'ok' | 'changed' | 'unreachable';
+
+const remoteChecks = new Map<string, Promise<RemoteSurahCheck>>();
+
+export function checkRemoteSurah(
+  reciterId: string,
+  surah: number,
+): Promise<RemoteSurahCheck> {
+  const key = `${reciterId}:${surah}`;
+  const known = remoteChecks.get(key);
+  if (known) return known;
+  const run = (async (): Promise<RemoteSurahCheck> => {
+    const want = expectedSurahBytes(reciterId, surah);
+    if (want == null) return 'changed';
+    try {
+      const res = await fetchContentOnce(
+        surahAudioUrl(findReciter(reciterId), surah),
+        { method: 'HEAD' },
+        CONTENT_DEADLINES.surahCheck,
+      );
+      if (!res.ok) return 'unreachable';
+      const size = Number(res.headers.get('content-length'));
+      if (!Number.isFinite(size) || size <= 0) return 'unreachable';
+      return size === want ? 'ok' : 'changed';
+    } catch {
+      return 'unreachable';
+    }
+  })();
+  remoteChecks.set(key, run);
+  // Only a definite answer is worth keeping: unreachable is asked again.
+  void run.then(r => {
+    if (r === 'unreachable') remoteChecks.delete(key);
+  });
+  return run;
+}
+
+/** For tests: forget what the servers said. */
+export function _resetRemoteSurahChecksForTests(): void {
+  remoteChecks.clear();
+}
+
+/**
+ * ── KEEPING WHAT IS LISTENED TO ───────────────────────────────────────
+ *
+ * The EveryAyah voices save the next few ayahs to disk as they play, and a
+ * long listen ends up entirely local. A whole-surah recitation does the
+ * same for the surah it is playing: fetched quietly in the background,
+ * checked at its exact size, and from then on played from the device —
+ * offline, next time, without asking.
+ *
+ * Only surahs up to QUIET_SURAH_LIMIT. Saving the short ones is cheap and
+ * they are the ones people return to; saving al-Baqarah because one ayah
+ * of it was played would spend two hundred megabytes nobody asked for.
+ * The long ones stream, and are a tap away in the ayah sheet.
+ */
+export const QUIET_SURAH_LIMIT = 30 * 1024 * 1024;
+
+const quietFetches = new Map<string, Promise<string | null>>();
+
+export function keepSurahQuietly(reciterId: string, surah: number): Promise<string | null> {
+  const key = `${reciterId}:${surah}`;
+  const running = quietFetches.get(key);
+  if (running) return running;
+  const run = (async (): Promise<string | null> => {
+    const want = expectedSurahBytes(reciterId, surah);
+    if (want == null || want > QUIET_SURAH_LIMIT) return null;
+    const here = await localSurahFileIfAny(reciterId, surah);
+    if (here) return here;
+    if (await surahChangedAtSource(reciterId, surah)) return null;
+    // Room for it, with the margin every download leaves the system.
+    const free = await freeDiskBytes();
+    if (free != null && free < want + SPACE_MARGIN_BYTES) return null;
+    const path = surahAudioFilePath(reciterId, surah);
+    try {
+      await mkdirDeep(audioDir(reciterId));
+      await fetchSurahFile(findReciter(reciterId), surah, path, () => undefined, () => false);
+      return (await localSurahFileIfAny(reciterId, surah)) ?? null;
+    } catch {
+      return null;
+    }
+  })();
+  quietFetches.set(key, run);
+  void run.finally(() => quietFetches.delete(key));
+  return run;
 }
 
 async function fileValid(path: string, minBytes = 1000): Promise<boolean> {
@@ -154,6 +382,25 @@ export function looksLikeMp3(head: readonly number[]): boolean {
 /* eslint-enable no-bitwise */
 
 /**
+ * The first four bytes of a file — without reading the rest of it.
+ *
+ * An ayah is tens of kilobytes and reading it whole cost nothing. A
+ * whole-surah file is up to two hundred megabytes, and reading that into
+ * a base64 string to look at four bytes of it is how a phone runs out of
+ * memory. `slice` copies the four bytes to a file of their own.
+ */
+async function headBytes(path: string): Promise<number[]> {
+  const head = `${path}.head`;
+  try {
+    await ReactNativeBlobUtil.fs.slice(path, head, 0, 4);
+    const b64 = await ReactNativeBlobUtil.fs.readFile(head, 'base64');
+    return base64Prefix(String(b64), 4);
+  } finally {
+    await ReactNativeBlobUtil.fs.unlink(head).catch(() => undefined);
+  }
+}
+
+/**
  * Throw — and delete — if what landed at `path` is not audio.
  *
  * Deleting is the point. A file left behind is a file the next status
@@ -162,8 +409,7 @@ export function looksLikeMp3(head: readonly number[]): boolean {
 async function verifyAudioFile(path: string, what: string): Promise<void> {
   let head: number[] = [];
   try {
-    const b64 = await ReactNativeBlobUtil.fs.readFile(path, 'base64');
-    head = base64Prefix(String(b64), 4);
+    head = await headBytes(path);
   } catch {
     // Unreadable is its own failure; fall through to the throw below.
   }
@@ -442,12 +688,20 @@ function runAyahQueue(
   };
 }
 
-/** Download one surah's ayah files for a reciter (skips valid files). */
+/**
+ * Download one surah for a reciter: its ayah files (skipping valid ones),
+ * or for a whole-surah recitation its one file — checked against its
+ * exact size like every file of the full download, and counted in
+ * megabytes the same way.
+ */
 export function downloadSurahAudio(
   reciterId: string,
   surah: number,
   onProgress?: (p: AudioDownloadProgress) => void,
 ): AudioDownloadHandle {
+  if (isWholeSurahId(reciterId)) {
+    return runSurahFileQueue(reciterId, onProgress, [surah]);
+  }
   const meta = SURAHS.find(s => s.number === surah);
   if (!meta) {
     return {
@@ -605,7 +859,285 @@ export function downloadReciterAudio(
   reciterId: string,
   onProgress?: (p: AudioDownloadProgress) => void,
 ): AudioDownloadHandle {
+  if (isWholeSurah(findReciter(reciterId))) {
+    return runSurahFileQueue(reciterId, onProgress);
+  }
   return runAyahQueue(reciterId, allAyahRefs(), onProgress);
+}
+
+// ── Whole-surah recitations ──────────────────────────────────────────
+//
+// One file per surah (SURAH_FILE_RECITERS), played from the device only:
+// the download is the whole recitation, 114 files and one to three and a
+// half gigabytes, and it goes through the same manager, notification and
+// space check as any reciter. What differs is the size of a file — up to
+// two hundred megabytes for al-Baqarah — which changes three things:
+//
+//   • progress is counted in MEGABYTES, not files: a bar that sits at 0%
+//     for the minute al-Baqarah takes reads as a stall;
+//   • the deadline is on SILENCE, not on the whole file: no fixed time is
+//     right for both an-Nās and al-Baqarah, and a file still arriving is
+//     not a file to give up on;
+//   • there is no in-memory fallback transport: a file this size cannot
+//     be held as a base64 string on a phone.
+
+/** One megabyte, as the download counts it — the same MB every size label prints. */
+export const AUDIO_MB = 1024 * 1024;
+const MB = AUDIO_MB;
+/** Give up on a file when nothing at all has arrived for this long. */
+const SURAH_STALL_MS = 60_000;
+/** Fewer workers than for ayahs: these are big, and the pipe is one pipe. */
+const SURAH_WORKERS = 2;
+
+/** A surah the server now serves at another size twice running. */
+class SurahChangedAtSource extends Error {
+  constructor(readonly surah: number) {
+    super(`surah ${surah}: changed at the source`);
+  }
+}
+
+/** The surahs the last run of each reciter could not fetch, for its notice. */
+const lastFailedSurahs = new Map<string, number[]>();
+
+/** Which surahs the last whole-surah download of this reciter left behind. */
+export function failedSurahsOf(reciterId: string): number[] {
+  return lastFailedSurahs.get(reciterId) ?? [];
+}
+
+/** One surah's file on disk, or a throw. Up to 3 attempts. */
+async function fetchSurahFile(
+  reciter: Reciter,
+  surah: number,
+  path: string,
+  onBytes: (received: number) => void,
+  isCancelled: () => boolean,
+): Promise<void> {
+  const url = surahAudioUrl(reciter, surah);
+  let lastError: unknown = null;
+  let wrongSize = 0;
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    const tmp = `${path}.part`;
+    let watchdog: ReturnType<typeof setInterval> | null = null;
+    try {
+      if (attempt > 1) audioStats.retries += 1;
+      onBytes(0);
+      // A deadline on silence, not on the whole file: see withStallDeadline.
+      const guard = withStallDeadline(
+        ReactNativeBlobUtil.config({ path: tmp, overwrite: true }).fetch('GET', url),
+        SURAH_STALL_MS,
+        `surah ${surah}`,
+      );
+      guard.task.progress({ interval: 500 }, received => {
+        guard.alive();
+        onBytes(Number(received) || 0);
+      });
+      // A person cancelling the download ends the file in flight too.
+      watchdog = setInterval(() => {
+        if (isCancelled()) guard.cancel();
+      }, 1000);
+      const res = await guard.result;
+      const stat = await ReactNativeBlobUtil.fs.stat(tmp).catch(() => null);
+      if (res.info().status !== 200 || !stat || Number(stat.size) <= MIN_AUDIO_BYTES) {
+        throw new Error(`surah ${surah}: HTTP ${res.info().status}`);
+      }
+      // The size first, the bytes second: a file of any other size is not
+      // the recording the boundaries fit (surahRecitation.ts).
+      const want = expectedSurahBytes(reciter.id, surah);
+      if (want != null && Number(stat.size) !== want) {
+        wrongSize += 1;
+        throw new Error(`surah ${surah}: ${stat.size} bytes, expected ${want}`);
+      }
+      await ReactNativeBlobUtil.fs.unlink(path).catch(() => undefined);
+      await ReactNativeBlobUtil.fs.mv(tmp, path);
+      await verifyAudioFile(path, `surah ${surah}`);
+      await ReactNativeBlobUtil.fs.unlink(changedMarkPath(reciter.id, surah)).catch(() => undefined);
+      return;
+    } catch (e) {
+      lastError = e;
+      await ReactNativeBlobUtil.fs.unlink(tmp).catch(() => undefined);
+      if (isCancelled()) break;
+      // Twice the wrong size is the source, not the connection: mark it
+      // and stop asking (see "a surah changed at its source").
+      if (wrongSize >= 2) {
+        await ReactNativeBlobUtil.fs
+          .writeFile(changedMarkPath(reciter.id, surah), String(lastError), 'utf8')
+          .catch(() => undefined);
+        throw new SurahChangedAtSource(surah);
+      }
+      if (attempt < 3) await new Promise<void>(r => setTimeout(r, 1000 * attempt));
+    } finally {
+      if (watchdog != null) clearInterval(watchdog);
+    }
+  }
+  audioStats.failures += 1;
+  throw lastError instanceof Error ? lastError : new Error(String(lastError));
+}
+
+/**
+ * What a run killed half-way leaves behind: `.part` files never finished,
+ * `.head` files from the four-byte check. Swept at the start of a run, so
+ * a cancelled download does not keep a few hundred megabytes nobody can see.
+ */
+async function clearLeftovers(reciterId: string): Promise<void> {
+  try {
+    const dir = audioDir(reciterId);
+    const names = await ReactNativeBlobUtil.fs.ls(dir);
+    for (const n of names) {
+      if (n.endsWith('.part') || n.endsWith('.head')) {
+        await ReactNativeBlobUtil.fs.unlink(`${dir}/${n}`).catch(() => undefined);
+      }
+    }
+  } catch {
+    /* nothing there is nothing to clear */
+  }
+}
+
+/**
+ * The whole recitation, file by file. The same resume story as the ayah
+ * queue: a file on disk and big enough to be real is skipped.
+ */
+function runSurahFileQueue(
+  reciterId: string,
+  onProgress?: (p: AudioDownloadProgress) => void,
+  /** Which surahs: the whole recitation when absent, or one (the ayah sheet). */
+  only?: readonly number[],
+): AudioDownloadHandle {
+  const reciter = findReciter(reciterId);
+  const pending = only ? [...only] : Array.from({ length: 114 }, (_, i) => i + 1);
+  const totalBytes = only
+    ? only.reduce((a, s) => a + (expectedSurahBytes(reciterId, s) ?? 0), 0)
+    : surahRecitationBytes(reciterId) ?? estimatedReciterBytes(reciterId);
+  const total = Math.max(1, Math.round(totalBytes / MB));
+  let cancelled = false;
+  let interrupted = false;
+  let failed = 0;
+  let inARow = 0;
+  /** Bytes of the files finished, and of each file still arriving. */
+  let settledBytes = 0;
+  const arriving = new Map<number, number>();
+
+  const report = () => {
+    let bytes = settledBytes;
+    for (const b of arriving.values()) bytes += b;
+    onProgress?.({ done: Math.min(total, Math.floor(bytes / MB)), total, failed });
+  };
+
+  const failedSurahs: number[] = [];
+  let noSpace: number | null = null;
+
+  const run = async (): Promise<DownloadOutcome> => {
+    await mkdirDeep(audioDir(reciterId));
+    await clearLeftovers(reciterId);
+    // Surahs already marked as changed at the source are not fetched again
+    // on every Continue: they would only come in at the wrong size again.
+    const changed = new Set(await surahsChangedAtSource(reciterId));
+    lastFailedSurahs.set(reciterId, []);
+    const worker = async (): Promise<void> => {
+      while (!cancelled && !interrupted && noSpace == null) {
+        const surah = pending.shift();
+        if (surah == null) return;
+        if (changed.has(surah)) {
+          report();
+          continue;
+        }
+        const path = surahAudioFilePath(reciterId, surah);
+        try {
+          if (!(await surahFileExact(reciterId, surah, path))) {
+            // Room for this file before it starts, not a write that fails
+            // half-way through two hundred megabytes. The margin is the
+            // same one the run's own check keeps for the system.
+            const want = expectedSurahBytes(reciterId, surah) ?? 0;
+            const free = await freeDiskBytes();
+            if (free != null && free < want + SPACE_MARGIN_BYTES) {
+              noSpace = want + SPACE_MARGIN_BYTES - free;
+              pending.unshift(surah);
+              return;
+            }
+            await fetchSurahFile(
+              reciter,
+              surah,
+              path,
+              b => {
+                arriving.set(surah, b);
+                report();
+              },
+              () => cancelled,
+            );
+          }
+          settledBytes += expectedSurahBytes(reciterId, surah) ?? 0;
+          inARow = 0;
+        } catch (e) {
+          if (cancelled) return;
+          failed += 1;
+          failedSurahs.push(surah);
+          // A source that changed is not the connection going.
+          if (!(e instanceof SurahChangedAtSource)) {
+            inARow += 1;
+            if (inARow >= GIVE_UP_AFTER_CONSECUTIVE_FAILURES) interrupted = true;
+          }
+        } finally {
+          arriving.delete(surah);
+          report();
+        }
+      }
+    };
+    await Promise.all(Array.from({ length: SURAH_WORKERS }, () => worker()));
+    lastFailedSurahs.set(reciterId, [...failedSurahs].sort((a, b) => a - b));
+    if (noSpace != null && !cancelled) {
+      return {
+        complete: false,
+        interrupted: false,
+        error: {
+          key: 'quran.downloadNoSpaceBody',
+          fallback: 'This download needs {{size}} more free space. Free some up and try again.',
+          params: { size: sizeLabel(noSpace) },
+        },
+      };
+    }
+    const names = failedSurahs
+      .sort((a, b) => a - b)
+      .map(n => SURAHS.find(x => x.number === n)?.romanized ?? String(n));
+    return {
+      complete: !cancelled && !interrupted && failed === 0,
+      interrupted: interrupted && !cancelled,
+      // Which ones, by name: "3 failed" is a number to wonder about, and
+      // Continue fetches exactly these.
+      ...(names.length > 0 && !interrupted
+        ? {
+            error: {
+              key: 'quran.wholeSurahIncompleteBody',
+              fallback: '{{count}} surahs did not download: {{names}}. Continue fetches just these.',
+              params: { count: names.length, names: names.join(', ') },
+            },
+          }
+        : {}),
+    };
+  };
+
+  return {
+    promise: run(),
+    cancel: () => {
+      cancelled = true;
+    },
+  };
+}
+
+/**
+ * What a reciter's download counts and is complete at: 6,236 ayah files,
+ * or 114 surah files for a whole-surah recitation.
+ */
+export function reciterFileTotal(reciterId: string): number {
+  return isWholeSurahId(reciterId) ? 114 : totalAyahCount();
+}
+
+/**
+ * Whether this id names a whole-surah recitation — read off the catalogue
+ * itself, not through `findReciter`, which answers with the default voice
+ * for one that cannot be played: its files on disk are still its own.
+ */
+function isWholeSurahId(reciterId: string): boolean {
+  const r = RECITERS.find(x => x.id === reciterId);
+  return r != null && isWholeSurah(r);
 }
 
 /**
@@ -668,6 +1200,10 @@ const RECITATION_HOURS = 24;
 
 /** About how many bytes a reciter's whole Quran will take. */
 export function estimatedReciterBytes(reciterId: string): number {
+  // A whole-surah recitation's size is known to the byte: it was measured
+  // when its boundaries were (tools/surah-audio/align.py).
+  const exact = surahRecitationBytes(reciterId);
+  if (exact != null) return exact;
   const kbps = reciterBitrateKbps(findReciter(reciterId));
   return Math.round((RECITATION_HOURS * 3600 * kbps * 1000) / 8);
 }
@@ -699,17 +1235,32 @@ export async function reciterAudioStats(
     const entries = await ReactNativeBlobUtil.fs.lstat(dir).catch(() => []);
     let files = 0;
     let bytes = 0;
+    const wholeSurah = isWholeSurahId(reciterId);
+    let changed = 0;
     for (const entry of entries) {
       const name = String(entry.filename ?? '');
-      if (!name.endsWith('.mp3')) continue;
       const size = Number(entry.size) || 0;
+      if (wholeSurah) {
+        // A surah file counts only at its exact size; a changed-at-source
+        // mark counts as settled, because no download will bring it.
+        if (name.endsWith('.mp3.changed')) {
+          changed += 1;
+          continue;
+        }
+        const surah = parseSurahFileName(name);
+        if (surah == null) continue;
+        bytes += size;
+        if (size === expectedSurahBytes(reciterId, surah)) files += 1;
+        continue;
+      }
+      if (!name.endsWith('.mp3')) continue;
       // Same floor the downloader validates against, so "on disk" means
       // the same thing to both.
       if (size <= 1000) continue;
       files += 1;
       bytes += size;
     }
-    return { files, bytes, complete: files >= totalAyahCount() };
+    return { files, bytes, complete: files + changed >= reciterFileTotal(reciterId) };
   } catch {
     return empty;
   }

@@ -54,11 +54,17 @@ describe('android tells every widget kind, exactly once', () => {
   const hook = readFileSync(path.join(KT, 'GlanceWidgetHook.kt'), 'utf8');
   const fanout = readFileSync(path.join(KT, 'glance', 'GlanceWidgets.kt'), 'utf8');
 
-  // Every receiver class this app ships, from the files themselves so a new
-  // kind that is added and not listed below fails here.
-  const KINDS = readdirSync(KT)
-    .filter(f => /^PrayerWidget\w*Provider\.kt$/.test(f))
-    .map(f => f.replace(/\.kt$/, ''));
+  // Every widget provider this app ships, from the manifest itself — the
+  // receivers that carry android.appwidget.provider — so a new kind that is
+  // added and not listed below fails here.
+  const manifest = readFileSync(path.join(ANDROID, 'AndroidManifest.xml'), 'utf8');
+  const KINDS = [...manifest.matchAll(/<receiver\s+android:name="\.(\w+)"[\s\S]*?<\/receiver>/g)]
+    .filter(m => m[0].includes('android.appwidget.provider'))
+    .map(m => m[1]);
+  const sourceOf = (kind: string) => {
+    const own = path.join(KT, `${kind}.kt`);
+    return readFileSync(existsSync(own) ? own : path.join(KT, 'FixedSizeWidgets.kt'), 'utf8');
+  };
 
   const receiversBlock = fanout.slice(
     fanout.indexOf('val receivers'),
@@ -89,9 +95,9 @@ describe('android tells every widget kind, exactly once', () => {
     const body = provider.slice(provider.indexOf('fun requestUpdate('), provider.indexOf('/** One widget'));
     expect(body.match(/GlanceWidgetHook\.requestUpdate/g) ?? []).toHaveLength(1);
     expect(hook).toMatch(/fun requestUpdate\(context: Context\) = GlanceWidgets\.requestUpdate\(context\)/);
-    for (const kind of KINDS.filter(k => k !== 'PrayerWidgetProvider')) {
-      const src = readFileSync(path.join(KT, `${kind}.kt`), 'utf8');
-      expect(src).toMatch(/fun requestUpdate\(context: Context\) = GlanceWidgetHook\.requestUpdate\(context\)|class \w+ : PrayerWidget\w*Provider\(\)/);
+    for (const kind of KINDS) {
+      const src = sourceOf(kind);
+      expect(src).toMatch(new RegExp(`fun requestUpdate\\(context: Context\\) = GlanceWidgetHook\\.requestUpdate\\(context\\)|class ${kind} : PrayerWidget\\w*Provider\\(\\)`));
     }
   });
 
@@ -120,7 +126,26 @@ describe('android tells every widget kind, exactly once', () => {
     // Hijri, Log, Log tall, Reading, Streak, Tasbih.
     expect(manual.length).toBeGreaterThanOrEqual(6);
     expect(fanout).toContain('for (cls in receivers)');
-    expect(receiversBlock).toContain('PrayerWidgetLogLargeProvider::class.java');
+    expect(receiversBlock).toContain('LogTallWidgetReceiver::class.java');
+  });
+
+  it('the widgets that became fixed sizes moved to new names, so cards stretched under 2.33 are dropped', () => {
+    // A launcher keeps an old card's size, and with resizing off it could
+    // never be put right. The old components must not be providers any more.
+    for (const old of ['PrayerWidgetProvider', 'PrayerWidgetSmallProvider', 'PrayerWidgetLargeProvider',
+      'PrayerWidgetLogProvider', 'PrayerWidgetLogLargeProvider', 'PrayerWidgetStreakProvider']) {
+      expect(KINDS).not.toContain(old);
+    }
+    for (const kind of ['TimesWidgetReceiver', 'NextPrayerWidgetReceiver', 'TimesTallWidgetReceiver',
+      'LogWidgetReceiver', 'LogTallWidgetReceiver', 'StreakWidgetReceiver']) {
+      expect(KINDS).toContain(kind);
+    }
+    // The old name stays a plain receiver: unlock, boot and the alarm.
+    const plain = manifest.slice(manifest.indexOf('android:name=".PrayerWidgetProvider"'));
+    const block = plain.slice(0, plain.indexOf('</receiver>'));
+    expect(block).toContain('com.prayer_times.ACTION_PRAYER_TIME_ELAPSED');
+    expect(block).toContain('android.intent.action.USER_PRESENT');
+    expect(block).not.toContain('android.appwidget.provider');
   });
 
   it('a payload past its window is not drawn as today (payloadHasExpired, and Glance\'s live())', () => {

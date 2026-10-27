@@ -7,7 +7,6 @@ import {
   type PanGestureHandlerEventPayload,
 } from 'react-native-gesture-handler';
 import { useNavigation, useNavigationState } from '@react-navigation/native';
-import { hapticScrubTick } from '../polish/haptics';
 import { useAfterFirstPaint } from '../boot/firstPaint';
 import { afterRun } from '../boot/launchWarp';
 import {
@@ -21,6 +20,7 @@ import {
   startPagerWarmup,
   usePagerBlockers,
   usePagerEngaged,
+  usePagerReachAll,
   usePagerWarmth,
 } from './minimalPager';
 
@@ -114,14 +114,18 @@ export function MinimalSwipe({
         springPagerDrag(done);
         return;
       }
-      // A faint tick, not a knock: a page turning is not a count.
-      hapticScrubTick(true);
+      // No haptic: a page turning is not a count, and a tick on every
+      // turn was one more thing than the page itself.
       // The settled tab slides to the next while the drag runs back to
       // zero: the position, and so every page, carries on from where
-      // the finger left it (minimalPager.ts).
+      // the finger left it (minimalPager.ts). The navigator is told once
+      // the page is there, so nothing is rebuilt or rendered under the
+      // slide — it runs through in one movement.
       settlePagerBase(i + step);
-      navigation.navigate(next.name as never);
-      settlePagerDrag(done);
+      settlePagerDrag(() => {
+        navigation.navigate(next.name as never);
+        done();
+      });
     },
     [navigation],
   );
@@ -143,16 +147,18 @@ export function MinimalSwipe({
   );
 
   // In reach: the page on show, its neighbours, and every page while a
-  // turn is under way (a hold on the dots can slide to any of them).
+  // turn from the dots is under way (a hold on them can slide to any). A
+  // swipe needs only the neighbours, which are in reach already.
   // Not the neighbours before the first paint: the launch's first frame
   // is Today's alone, and its run — the countdown counting to now — must
   // not share the JS thread with the Quran page mounting beside it
   // (measured: the run drew five frames where it draws eighty).
   const engaged = usePagerEngaged();
+  const reachAll = usePagerReachAll();
   const painted = useAfterFirstPaint();
   const [settled, setSettled] = useState(false);
   const distance = Math.abs(myIndex - index);
-  const inReach = engaged || distance <= (settled ? 1 : 0);
+  const inReach = reachAll || distance <= (settled || engaged ? 1 : 0);
   // Mounted once in reach, or once the warm-up has come this far — and
   // then kept, so a page keeps its scroll and its state across turns.
   const warmth = usePagerWarmth();

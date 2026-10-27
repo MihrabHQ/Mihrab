@@ -4,11 +4,13 @@ import React, {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import { applyMadhabNaming } from '../prayer/madhab';
 import i18n from '../i18n';
 import { setActiveClockFormat } from '../utils/activeClock';
+import { setWidgetSinceAdhanMinutes } from '../widget/sinceAdhanSetting';
 import { setFullScreenAlarmSkyTheme } from '../notifications/fullScreenAlarm';
 import { restoreSkyTheme, setSkyVariant } from '../theme/skyTheme';
 import { loadSettings, saveSettings } from '../settings/storage';
@@ -145,6 +147,7 @@ export type WidgetSlice = Pick<
   | 'androidWidgetShowCountdown'
   | 'androidWidgetShowTable'
   | 'androidWidgetTimeScale'
+  | 'widgetSinceAdhanMinutes'
 >;
 
 export type LiveActivitySlice = Pick<
@@ -231,6 +234,25 @@ export function PrayerSettingsProvider({
   useEffect(() => {
     setActiveClockFormat(settings.clockFormat);
   }, [settings.clockFormat]);
+
+  // Issue #111: the widgets' "time since the adhan" travels in their
+  // payload, so a change has to reach them now, not at the next prayer.
+  // Mirrored for the payload builder like the clock above; the first
+  // hydrated value is the launch republish's, so only a change republishes.
+  const sinceAdhanSeen = useRef<number | null>(null);
+  useEffect(() => {
+    setWidgetSinceAdhanMinutes(settings.widgetSinceAdhanMinutes);
+    if (!hydrated) return;
+    const before = sinceAdhanSeen.current;
+    sinceAdhanSeen.current = settings.widgetSinceAdhanMinutes;
+    if (before != null && before !== settings.widgetSinceAdhanMinutes) {
+      // Required here, not imported: the provider is on the launch path and
+      // the payload builder need not be.
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const { republishWidgetPayload } = require('../widget/republishWidgetPayload') as typeof import('../widget/republishWidgetPayload');
+      void republishWidgetPayload('settings');
+    }
+  }, [hydrated, settings.widgetSinceAdhanMinutes]);
 
   // The full-screen alert paints itself in the Sky theme's mood when the
   // app wears it; the scheduler runs outside React, so the answer is
@@ -422,6 +444,7 @@ export function PrayerSettingsProvider({
       androidWidgetShowCountdown: settings.androidWidgetShowCountdown,
       androidWidgetShowTable: settings.androidWidgetShowTable,
       androidWidgetTimeScale: settings.androidWidgetTimeScale,
+      widgetSinceAdhanMinutes: settings.widgetSinceAdhanMinutes,
     }),
     [
       settings.androidWidgetBackgroundOpacity,
@@ -432,6 +455,7 @@ export function PrayerSettingsProvider({
       settings.androidWidgetShowCountdown,
       settings.androidWidgetShowTable,
       settings.androidWidgetTimeScale,
+      settings.widgetSinceAdhanMinutes,
     ],
   );
 

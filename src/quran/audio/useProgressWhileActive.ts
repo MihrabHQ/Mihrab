@@ -18,13 +18,38 @@
  */
 import { useProgress } from 'react-native-track-player';
 import { useIsActive } from '../../hooks/useIsActive';
+import { usePlaybackStatus } from './playback';
 
 /** Once an hour is "never" for a UI, and still a valid timer. */
 export const IDLE_POLL_MS = 60 * 60 * 1000;
+
+/**
+ * For an ayah cut from a whole-surah recording, the AYAH's progress: the
+ * player's position is in the surah's file, and a bar across al-Baqarah's
+ * three and a half hours would not move while an ayah is recited. Every
+ * other track is its own file and passes through as it is. `seekTo` in
+ * playback takes seconds on the same terms.
+ */
+export function clipProgress<P extends { position: number; duration: number; buffered: number }>(
+  progress: P,
+  clip: { start: number; end: number } | null | undefined,
+): P {
+  if (!clip) return progress;
+  const length = Math.max(0.01, clip.end - clip.start);
+  const into = (t: number) => Math.min(length, Math.max(0, t - clip.start));
+  return {
+    ...progress,
+    position: into(progress.position),
+    duration: length,
+    buffered: into(progress.buffered),
+  };
+}
 
 export function useProgressWhileActive(
   ms: number,
 ): ReturnType<typeof useProgress> {
   const active = useIsActive();
-  return useProgress(active ? ms : IDLE_POLL_MS);
+  const progress = useProgress(active ? ms : IDLE_POLL_MS);
+  const { clip } = usePlaybackStatus();
+  return clipProgress(progress, clip);
 }

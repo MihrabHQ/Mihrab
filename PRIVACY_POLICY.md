@@ -1,6 +1,6 @@
 # Privacy Policy — Mihrab: The Muslim Companion
 
-**Effective:** 2026-10-18
+**Effective:** 2026-10-27
 **Language:** English first, Swedish (Svenska) below.
 
 ## About this policy
@@ -52,7 +52,7 @@ When you use these features, your device contacts the service directly. The serv
 - **Prayer times.** Sweden's (Islamiska Förbundet's), Diyanet's, Morocco's, Algeria's and Indonesia's times are calculated on your device and contact no prayer-time service. **Aladhan** (`api.aladhan.com`) is the source elsewhere unless you choose on-device calculation; it is sent your coordinates, the date and the calculation settings. Singapore's and Malaysia's tables come from Mihrab's own open datasets on GitHub (`raw.githubusercontent.com/MihrabHQ/Mihrab`), asked for by city; only when a day is missing there is the authority's own service asked (`www.e-solat.gov.my`, by zone code; `api-open.data.gov.sg`, with nothing about you). For Türkiye Takvimi the city nearest you is looked up on your device from a map tile covering about 500 km, fetched from GitHub; its year comes from a GitHub release of the Mihrab repository, or, if missing there, from `www.namazvakti.com` by the city's id, never your coordinates.
 - **Calculation and calendar updates:** at start and every few hours the app reads `certification.json` and correction lists from `raw.githubusercontent.com/MihrabHQ/mihrab-methods`, and announced Hijri-date corrections from `raw.githubusercontent.com/MihrabHQ/Mihrab`. Sent: nothing beyond the request itself.
 - **Place search and naming your town:** OpenStreetMap Nominatim (`nominatim.openstreetmap.org`), and Photon (`photon.komoot.io`) for search when Nominatim is busy. Sent: your search text; or, with device location, your coordinates rounded to two decimal places (about a kilometre), automatically when you have moved about a kilometre.
-- **Quran content, on request:** (the Quran text and translations are bundled in the app) tafsir (via `cdn.jsdelivr.net`), Arabic meanings of harder words (QuranEnc, `quranenc.com`), recitation audio (`everyayah.com`), additional riwayat and mushaf data (Quranpedia, `api.quranpedia.net`) and mushaf fonts (GitHub releases of the Mihrab repository). Sent: the file or chapter being requested.
+- **Quran content, on request:** (the Quran text and translations are bundled in the app) tafsir (via `cdn.jsdelivr.net`), Arabic meanings of harder words (QuranEnc, `quranenc.com`), recitation audio (`everyayah.com`, and `cdn.mp3quran.net` for the whole-surah recitations), additional riwayat and mushaf data (Quranpedia, `api.quranpedia.net`) and mushaf fonts (GitHub releases of the Mihrab repository). Sent: the file or chapter being requested.
 - **Opening links:** If you tap a link (GitHub, the website, the store pages), it opens in your browser or the store app, under that site's policy.
 
 The app contains **no** advertising SDKs, analytics SDKs, tracking, crash-reporting services or data brokers, and it does not track you across apps or websites. Because the developer collects no data, there is nothing to share or sell.
@@ -77,7 +77,7 @@ If the app's data handling changes, this policy and its effective date will be u
 
 # Integritetspolicy — Mihrab: The Muslim Companion
 
-**Gäller från:** 2026-10-18
+**Gäller från:** 2026-10-27
 
 ## Om policyn
 
@@ -128,7 +128,7 @@ När du använder dessa funktioner kontaktar din enhet tjänsten direkt. Tjänst
 - **Bönetider.** Sveriges (Islamiska Förbundets), Diyanets, Marockos, Algeriets och Indonesiens tider räknas ut på enheten och kontaktar ingen bönetidstjänst. **Aladhan** (`api.aladhan.com`) är källan på andra platser om du inte väljer beräkning på enheten; den får dina koordinater, datumet och beräkningsinställningarna. Singapores och Malaysias tabeller kommer från Mihrabs egna öppna dataset på GitHub (`raw.githubusercontent.com/MihrabHQ/Mihrab`), per ort; bara när en dag saknas där frågas myndighetens egen tjänst (`www.e-solat.gov.my`, med zonkod; `api-open.data.gov.sg`, utan något om dig). För Türkiye Takvimi slås närmaste stad upp på enheten i en kartruta på cirka 50 mil som hämtas från GitHub; året hämtas från en GitHub-release i Mihrab-repot, eller, om det saknas där, från `www.namazvakti.com` med stadens id, aldrig dina koordinater.
 - **Uppdateringar av beräkningar och kalender:** vid start och med några timmars mellanrum läser appen `certification.json` och korrigeringslistor från `raw.githubusercontent.com/MihrabHQ/mihrab-methods`, och aviserade rättelser av hijri-datumet från `raw.githubusercontent.com/MihrabHQ/Mihrab`. Skickas: inget utöver själva förfrågan.
 - **Platssökning och ortens namn:** OpenStreetMap Nominatim (`nominatim.openstreetmap.org`), och Photon (`photon.komoot.io`) för sökning när Nominatim är upptagen. Skickas: din söktext; eller, med enhetsplats, dina koordinater avrundade till två decimaler (ungefär en kilometer), automatiskt när du har flyttat dig ungefär en kilometer.
-- **Koraninnehåll, på begäran:** (Korantexten och översättningarna följer med appen) tafsir (via `cdn.jsdelivr.net`), arabiska betydelser av svårare ord (QuranEnc, `quranenc.com`), recitationsljud (`everyayah.com`), ytterligare riwayat- och mushaf-data (Quranpedia, `api.quranpedia.net`) och mushaf-typsnitt (GitHub-releaser för Mihrab-repot). Skickas: den fil eller sura som begärs.
+- **Koraninnehåll, på begäran:** (Korantexten och översättningarna följer med appen) tafsir (via `cdn.jsdelivr.net`), arabiska betydelser av svårare ord (QuranEnc, `quranenc.com`), recitationsljud (`everyayah.com`, och `cdn.mp3quran.net` för recitationerna av hela suror), ytterligare riwayat- och mushaf-data (Quranpedia, `api.quranpedia.net`) och mushaf-typsnitt (GitHub-releaser för Mihrab-repot). Skickas: den fil eller sura som begärs.
 - **Öppna länkar:** Om du trycker på en länk (GitHub, webbplatsen, butikssidorna) öppnas den i webbläsaren eller butiksappen, enligt den webbplatsens policy.
 
 Appen innehåller **inga** reklam-SDK:er, analys-SDK:er, spårning, kraschrapporteringstjänster eller datamäklare, och den spårar dig inte över appar eller webbplatser. Eftersom utvecklaren inte samlar in några uppgifter finns inget att dela eller sälja.

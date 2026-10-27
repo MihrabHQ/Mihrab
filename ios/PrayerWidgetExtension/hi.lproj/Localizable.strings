@@ -61,6 +61,7 @@
 "widget_preview_tasbih_of" = "33 में से";
 "widget_preview_tasbih_today" = "आज 231 · 2 चक्र";
 "widget_countdown_format" = "%1$@ में";
+"widget_since_adhan_format" = "%2$@ को %1$@ हुए";
 "widget_logged_line" = "आज %2$d में से %1$d दर्ज";
 "widget_name_hijri" = "Mihrab · हिजरी तारीख़";
 "widget_description_hijri" = "आज की हिजरी तारीख़, और अगला महीना कितनी दूर है। 2×1, आकार बदलने योग्य।";

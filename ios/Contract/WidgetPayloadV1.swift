@@ -96,6 +96,22 @@ enum WidgetPayloadV1 {
     return best
   }
 
+  /// The five, the only times a card counts up from (#111).
+  static let sinceAdhanKeys: Set<String> = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"]
+
+  /// Until when a prayer card counts up from a prayer that came in at
+  /// `prayerAt` — issue #111. Minutes on one scale.
+  ///
+  /// `window` minutes after it, or halfway to `nextAt` (the next time on the
+  /// card) if that is sooner, so the countdown to a prayer that is close is
+  /// never hidden. Nil when off, or when nothing follows. `sinceAdhanEnd` in
+  /// widgetPayloadV2.ts, held to the same answers by the `since` fixtures.
+  static func sinceAdhanEnd(prayerAt: Int, nextAt: Int?, window: Int) -> Int? {
+    guard window > 0, let nextAt, nextAt > prayerAt else { return nil }
+    let half = Int((Double(nextAt - prayerAt) / 2).rounded(.down))
+    return prayerAt + min(window, half)
+  }
+
   /// The v1 payload as a JSON object, or nil when there are no days to draw from.
   static func object(from p: WidgetContract.Payload, todayKey: String, nowMinutes: Int) -> [String: Any]? {
     let days = p.days
@@ -115,6 +131,7 @@ enum WidgetPayloadV1 {
     }
     if !p.locationName.isEmpty { out["locationName"] = p.locationName }
     if !p.language.isEmpty { out["language"] = p.language }
+    if p.sinceAdhanMinutes > 0 { out["sinceAdhanMinutes"] = p.sinceAdhanMinutes }
     if let s = p.seasonal {
       out["seasonal"] = [
         "jumuah": s.jumuah,

@@ -431,6 +431,7 @@
     "sectionAppearanceBlurb": "主题、强调色、时间格式、语言",
     "sectionWidgets": "小组件",
     "sectionWidgetsBlurb": "背景、强调色和礼拜时间小组件",
+    "sectionWidgetsBlurbIos": "礼拜时间小组件上的宣礼后时间",
     "widgetsAllTitle": "所有小组件",
     "sectionQuran": "《古兰经》",
     "sectionQuranBlurb": "阅读、译文、经注",
@@ -498,9 +499,13 @@
     },
     "providerTableFallback": "{{picked}} 没有今天的已发布时间，因此在时间表再次覆盖今天之前，改在手机上按其自身方法计算。",
     "minimalUi": "极简",
-    "minimalUiHelp": "每个页面只留一样。「今天」保留倒计时，点一下查看当天礼拜时间。其他标签页只保留各自的主要功能。",
+    "minimalUiHelp": "每个页面只留一样。「今天」保留倒计时，向上滑动查看当天礼拜时间。其他标签页只保留各自的主要功能。",
     "minimalClassicOnly": "极简模式保留经典配色。关闭它即可选择颜色主题或系统颜色。",
-    "minimalRestartBody": "极简模式会以天空主题开启，因此将关闭系统颜色。应用需要重新启动，才能让每个页面应用此更改。现在重新启动？"
+    "minimalRestartBody": "极简模式会以天空主题开启，因此将关闭系统颜色。应用需要重新启动，才能让每个页面应用此更改。现在重新启动？",
+    "widgetSinceAdhanTitle": "宣礼后的时间",
+    "widgetSinceAdhanHelp": "每次礼拜时间到后的这段时间内，礼拜时间小组件会显示已过去多久，然后恢复为下一次礼拜的倒计时。如果下一次礼拜临近，倒计时会更早恢复。",
+    "widgetSinceAdhanOff": "关闭",
+    "widgetSinceAdhanMinutes": "{{minutes}} 分钟"
   },
   "locationSetup": {
     "headline": "设置您的位置",
@@ -1554,7 +1559,28 @@
     "riwayahFailedBody": "打开“下载”查看原因并重试。",
     "riwayahStoppedBody": "没有任何丢失。点按重试，或在连接 Wi-Fi 时自动重试。",
     "downloadNoSpaceTitle": "空间不足",
-    "downloadNoSpaceBody": "此下载还需要 {{size}} 可用空间。请释放一些空间后重试。"
+    "downloadNoSpaceBody": "此下载还需要 {{size}} 可用空间。请释放一些空间后重试。",
+    "downloadProgressMegabytes": "{{done}} / {{total}} MB",
+    "downloadStoppedBodyMegabytes": "已保留 {{done}} / {{total}} MB。点按继续，或在连接 Wi-Fi 时自动继续。",
+    "listenDownloadRunningMegabytes": "正在下载 · {{done}} / {{total}} MB",
+    "listenDownloadPartialSurahs": "此处已有 {{done}} / {{total}} 章 · {{size}}",
+    "wholeSurahBadge": "经文跟踪尽力而为",
+    "wholeSurahIntro": "{{name}} 仅能从完整下载播放——整部诵读，{{size}}。",
+    "wholeSurahDownloaded": "{{name}} 已下载——整部诵读都在本设备上。",
+    "wholeSurahTracking": "每章一段录音，按录音所能允许的精度切分为经文：经文跟踪为尽力而为，少数经文的开始或结束可能略有偏差。",
+    "wholeSurahDownload": "下载 {{name}} · {{size}}",
+    "wholeSurahResume": "下载其余部分 · 共 {{size}}",
+    "wholeSurahDownloading": "正在下载 · {{pct}}%",
+    "wholeSurahChanged": "无法用此声音播放 {{surah}}：自 Mihrab 测定其经文位置以来，来源处的录音已更改。{{name}} 的其余部分照常播放。",
+    "wholeSurahIncompleteBody": "{{count}} 章未能下载：{{names}}。“继续”只会获取这些。",
+    "wholeSurahUnreachable": "此声音的 {{surah}} 不在本设备上，目前也无法流式播放——无法连接到其来源。下载后即可离线收听。",
+    "downloadingAudioMegabytes": "正在下载… {{done}}/{{total}} MB",
+    "wholeSurahTrackingShort": "每章一段录音，尽可能精确地切分为经文：经文跟踪为尽力而为。",
+    "reportAyahBoundary": "有经文的开始或结束位置不对？报告问题",
+    "previewReciter": "试听 {{name}}",
+    "stopPreview": "停止试听",
+    "voiceHint": "穆斯哈夫为 {{page}}；{{name}} 以 {{voice}} 诵读。以 {{page}} 收听：",
+    "voiceHintDismiss": "保留此声音"
   },
   "reading": {
     "textSize": "文字大小",
@@ -1795,10 +1821,11 @@
     "quranGeometry": "经文位置数据（quran.com / Quran for Android 项目）",
     "tajweedRules": "每个词的诵读规则",
     "tajweedFonts": "诵读规则颜色页面字体（下载，非内置）",
-    "recitation": "诵读音频（42位诵读者）：EveryAyah.com · 逐词时间：quran-align（CC BY 4.0）",
+    "recitation": "诵读音频（44位诵读者）：EveryAyah.com · 逐词时间：quran-align（CC BY 4.0）",
     "tafsir": "经注文本：伊本·凯西尔、Maarif-ul-Quran、简明经注",
     "wordMeanings": "较难词语的阿拉伯语释义",
-    "surahHeaderFont": "章名书法"
+    "surahHeaderFont": "章名书法",
+    "recitationWholeSurah": "整章诵读（15 位）：mp3quran.net · 经文时间由 Mihrab 与音频对齐"
   },
   "liveActivity": {
     "title": "下一次礼拜",
@@ -1975,9 +2002,7 @@
     "setUpSync": "设置同步",
     "legendTitle": "图表说明",
     "fastRow": "斋戒",
-    "sunnahRow": "圣行",
-    "graphByDay": "按天显示图表",
-    "graphByDayHelp": "每天一格——一季度一目了然。关闭后，图表为每次礼拜显示一行。"
+    "sunnahRow": "圣行"
   },
   "endOfDay": {
     "title": "记录今天的拜功吗？",

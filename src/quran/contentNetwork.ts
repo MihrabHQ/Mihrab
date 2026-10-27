@@ -114,6 +114,12 @@ export const CONTENT_DEADLINES = {
    * a prefetch still in flight when the ayah arrives has already lost.
    */
   ayahPrefetch: 30_000,
+  /**
+   * Asking a whole-surah recitation's server how big a surah's file is,
+   * before streaming it (audioStore `checkRemoteSurah`) — a few hundred
+   * bytes of headers.
+   */
+  surahCheck: 15_000,
   /** A reciter's word-timing JSON — ~1.4 MB. */
   timings: 60_000,
   /** One page font — ~300 KB. */
@@ -210,4 +216,53 @@ export async function withDownloadDeadline<T>(
   } finally {
     if (watchdog != null) clearTimeout(watchdog);
   }
+}
+
+/**
+ * A deadline on SILENCE, for a download too big for a fixed one.
+ *
+ * `withDownloadDeadline` gives a transfer a fixed time, which is right for
+ * an ayah or a font and wrong for a whole surah's recitation: al-Baqarah is
+ * two hundred megabytes, and no single number is both long enough for it
+ * on a slow connection and short enough to notice that an-Nās has stalled.
+ * So this one gives up when NOTHING has arrived for `stallMs`: `alive()`
+ * is called from the transfer's progress callback, and every call buys
+ * another `stallMs`. `cancel()` ends it from outside — a person cancelling
+ * the download.
+ */
+export function withStallDeadline<P extends CancellableTask<unknown>>(
+  task: P,
+  stallMs: number,
+  label: string,
+): { result: Promise<Awaited<P>>; task: P; alive: () => void; cancel: () => void } {
+  let lastSign = Date.now();
+  let stop: ((e: Error) => void) | null = null;
+  let timer: ReturnType<typeof setInterval> | null = null;
+  const abort = (e: Error) => {
+    try {
+      task.cancel?.(() => undefined);
+    } catch {
+      // Settled already; the rejection below is the answer either way.
+    }
+    stop?.(e);
+  };
+  const stalled = new Promise<never>((_, reject) => {
+    stop = reject;
+    timer = setInterval(() => {
+      if (Date.now() - lastSign > stallMs) {
+        abort(new Error(`${label}: nothing arrived for ${stallMs}ms`));
+      }
+    }, Math.min(2000, stallMs));
+  });
+  const result = (Promise.race([task, stalled]) as Promise<Awaited<P>>).finally(() => {
+    if (timer != null) clearInterval(timer);
+  });
+  return {
+    result,
+    task,
+    alive: () => {
+      lastSign = Date.now();
+    },
+    cancel: () => abort(new Error(`${label}: cancelled`)),
+  };
 }

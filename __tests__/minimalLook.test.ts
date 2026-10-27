@@ -31,11 +31,11 @@ describe('Minimal wears the classic colours', () => {
     );
     expect(read('src/settings/storage.ts')).toContain('return noteSecureRead(minimalLook(merged), secureFailed);');
     const card = read('src/screens/settings/AppearanceCard.tsx');
-    expect(card).toContain('{!dynamicColorsActive && !skyActive && !settings.minimalUi && (');
-    expect(card).toContain('disabled={verdantActive || settings.minimalUi}');
-    expect(card).toContain('if (v && dynamicColorsActive) setPendingMinimal(true);');
+    expect(card).toContain('{!dynamicColorsActive && !skyActive && !minimalOn(settings) && (');
+    expect(card).toContain('disabled={verdantActive || minimalOn(settings)}');
+    expect(card).toContain('if (on && dynamicColorsActive) setPendingMinimal(true);');
     expect(read('src/onboarding/screens/PersonaliseScreen.tsx')).toContain(
-      '{dynamicColours || skyActive || settings.minimalUi ? null : (',
+      '{dynamicColours || skyActive || minimalOn(settings) ? null : (',
     );
   });
 
@@ -51,5 +51,34 @@ describe('Minimal wears the classic colours', () => {
     expect(enteringMinimal(on, on)).toBe(on);
     // Turning it off changes nothing.
     expect(enteringMinimal(on, { ...on, minimalUi: false })).toEqual({ ...on, minimalUi: false });
+  });
+});
+
+describe('Minimal is not offered on the Mac', () => {
+  it('reads as off there, for the app and the colour rules alike', () => {
+    jest.resetModules();
+    jest.doMock('../src/responsive/breakpoints', () => ({ isMacCatalyst: true }));
+    const m = require('../src/settings/minimalLook');
+    expect(m.MINIMAL_OFFERED).toBe(false);
+    expect(m.minimalOn({ minimalUi: true })).toBe(false);
+    const s = { minimalUi: true, tintedSurfaces: true, useSystemDynamicTheme: false, appearance: 'light', skyVariant: 'realistic' };
+    // A colour theme stays a colour theme; turning it on changes no theme.
+    expect(m.minimalLook(s)).toBe(s);
+    expect(m.enteringMinimal({ minimalUi: false }, s)).toBe(s);
+    jest.dontMock('../src/responsive/breakpoints');
+  });
+
+  it('hides the switch and the walkthrough choice there, and every reader asks the one rule', () => {
+    expect(read('src/navigation/tabBarInset.ts')).toContain('return minimalOn(useAppearanceSettings().slice);');
+    // Settings offers the walkthrough's two pictures, not a switch.
+    const card = read('src/screens/settings/AppearanceCard.tsx');
+    expect(card).toMatch(/\{minimalOffered \? \(\s*<SettingsBlock>[\s\S]{0,200}onboarding\.personalise\.layout[\s\S]{0,100}<LayoutPicker\s*testID="appearance-layout"/);
+    expect(card).not.toMatch(/<SettingsToggleRow\s*title=\{t\('settings\.minimalUi'\)\}/);
+    expect(read('src/onboarding/screens/PersonaliseScreen.tsx')).toMatch(/\{minimalOffered \? \(\s*<SettingsBlock>[\s\S]{0,200}onboarding\.personalise\.layout/);
+    expect(read('src/screens/home/TodayCard.tsx')).toContain("{settings.showDataStats && minimalOffered ? (");
+    // Nor beside an iPhone's vertical bar, where Minimal stands down.
+    expect(read('src/settings/useMinimalOffered.ts')).toContain('return MINIMAL_OFFERED && !vbar;');
+    expect(read('src/screens/HomeScreen.tsx')).toContain('const minimal = minimalOn(settings) && !isDashboard && !isRoomy && !book;');
+    expect(read('src/screens/QuranScreen.tsx')).toContain('const minimal = useMinimalUi();');
   });
 });

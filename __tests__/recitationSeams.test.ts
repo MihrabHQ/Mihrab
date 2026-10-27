@@ -144,7 +144,10 @@ describe('keeping the join (iOS and the Mac)', () => {
     });
     jest.advanceTimersByTime(1000);
     await flush();
+    // A file of its own moves on exactly as it always did (a clip of a
+    // surah file is the one that skips to a position: wholeSurahRecitation).
     expect(tp.skipToNext).toHaveBeenCalledTimes(1);
+    expect(tp.skip).not.toHaveBeenCalled();
   });
 
   it('lets the last ayah of the queue end as recorded', async () => {
@@ -159,6 +162,7 @@ describe('keeping the join (iOS and the Mac)', () => {
     });
     await seams.watchSeam();
     expect(tp.skipToNext).not.toHaveBeenCalled();
+    expect(tp.stop).not.toHaveBeenCalled();
   });
 
   it('leaves a drill’s rest alone: it plays to its end', async () => {

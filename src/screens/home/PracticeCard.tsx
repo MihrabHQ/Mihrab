@@ -1,5 +1,7 @@
 /**
- * The practice graph, on Home, behind a switch.
+ * The practice graph, on Home, behind a switch — the Log's own: a row a
+ * prayer, a column a day (PracticeStrip). It was the grid of one square a
+ * day until that graph went from the Log; one record, drawn one way.
  *
  * Home answers "when do I pray next"; the graph answers "how have I been
  * doing", and those are different questions on different clocks — which is
@@ -28,19 +30,16 @@ import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import { cardEdgeStyle } from '../../theme/chrome';
-import { scoreByDay } from '../../journal/journal';
 import { usePracticeHistory } from '../../practice/practiceStore';
-import {
-  buildHeatmap,
-  PracticeHeatmap,
-  weeksToCover,
-} from '../../practice/PracticeHeatmap';
+import { weeksToCover } from '../../practice/historyWeeks';
+import { buildStrip } from '../../practice/stripRecord';
+import { PracticeStrip } from '../../practice/PracticeStrip';
 import { HOME_TABLE_RADIUS } from './tokens';
 import { SPACING } from '../../theme/tokens';
 import { TYPE } from '../../theme/typography';
 
 function PracticeCardImpl() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { palette } = useAppPalette();
   const navigation = useNavigation();
   const { journal, fasts, sunnah } = usePracticeHistory();
@@ -82,10 +81,10 @@ function PracticeCardImpl() {
   const [extraWeeks, setExtraWeeks] = useState(0);
   const showMore = useCallback(() => setExtraWeeks(w => w + 26), []);
 
-  const rows = useMemo(
+  const days = useMemo(
     () =>
-      buildHeatmap(
-        scoreByDay(journal),
+      buildStrip(
+        journal,
         // Cleared rows are deletions on their way to the other devices.
         new Set(fasts.filter(f => f.completed && f.cleared !== true).map(f => f.date)),
         new Date(),
@@ -95,17 +94,6 @@ function PracticeCardImpl() {
       ),
     [journal, fasts, sunnah, earliest, extraWeeks, firstPrayerLogged],
   );
-
-  const weekdayLabels = useMemo(() => {
-    const monday = new Date(2024, 0, 1); // a Monday
-    return Array.from({ length: 7 }, (_, i) => {
-      const d = new Date(monday);
-      d.setDate(monday.getDate() + i);
-      return d
-        .toLocaleDateString(i18n.language, { weekday: 'narrow' })
-        .slice(0, 2);
-    });
-  }, [i18n.language]);
 
   return (
     <View
@@ -121,12 +109,7 @@ function PracticeCardImpl() {
       <Text style={[styles.title, { color: palette.muted }]}>
         {t('log.practiceTitle')}
       </Text>
-      <PracticeHeatmap
-        rows={rows}
-        weekdayLabels={weekdayLabels}
-        onReachOldest={showMore}
-        compact
-      />
+      <PracticeStrip days={days} onReachOldest={showMore} />
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={t('log.openLogFromHome', 'Open the Log')}

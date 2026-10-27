@@ -1,3 +1,4 @@
+import { minimalOn } from '../settings/minimalLook';
 import {
   useFocusEffect,
   useNavigation,
@@ -1722,7 +1723,7 @@ export function HomeScreen() {
    * day's times as a sheet. Only the phone's full-bleed page: the
    * dashboard, the book and a roomy tablet have room, and keep it.
    */
-  const minimal = settings.minimalUi && !isDashboard && !isMacCatalyst && !isRoomy && !book;
+  const minimal = minimalOn(settings) && !isDashboard && !isRoomy && !book;
   // Short strings a render; not memoised, this far past the page's early
   // returns. The footer is where and which day — two facts, not three:
   // whose times is a fact about the times, and goes with them in the

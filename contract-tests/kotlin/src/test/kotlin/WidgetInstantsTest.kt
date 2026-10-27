@@ -156,6 +156,21 @@ class WidgetHelpersTest {
   }
 
   @Test
+  fun wakesTheCardWhereEachCountUpEnds() {
+    // #111. Fajr 04:50, Sunrise 06:30, Dhuhr 12:20, Asr 15:50, Maghrib 18:35,
+    // ʿIshāʾ 20:15; tomorrow's Fajr 04:48. The five each end 20 minutes on;
+    // Sunrise starts none.
+    fun minutes(h: Int, m: Int) = h * 60 + m
+    val day = listOf(minutes(4, 50), minutes(6, 30), minutes(12, 20), minutes(15, 50), minutes(18, 35), minutes(20, 15))
+    val five = day.filterIndexed { i, _ -> i != 1 }
+    val all = day + listOf(minutes(4, 48) + WallClock.MINUTES_PER_DAY)
+    assertEquals(five.map { it + 20 }, WidgetInstants.sinceEnds(five, all, 20))
+    // A short evening: Maghrib 18:35, ʿIshāʾ 19:05 — halfway, at 18:50.
+    assertEquals(listOf(minutes(18, 50)), WidgetInstants.sinceEnds(listOf(minutes(18, 35)), listOf(minutes(18, 35), minutes(19, 5)), 30))
+    assertEquals(emptyList<Int>(), WidgetInstants.sinceEnds(five, all, 0))
+  }
+
+  @Test
   fun aPracticeDayLeavesItsZerosOut() {
     // PracticeGridBitmap tells "no `l`" from "`l` is 0".
     val empty = WidgetPayloadV1.practiceDayJson(WidgetContract.PracticeDay(d = "2026-06-10"))

@@ -432,6 +432,7 @@
     "sectionAppearanceBlurb": "Tema, color, formato de hora, idioma",
     "sectionWidgets": "Widgets",
     "sectionWidgetsBlurb": "Fondo, resaltado y el widget de horarios",
+    "sectionWidgetsBlurbIos": "Tiempo desde el adhan en los widgets de horarios",
     "widgetsAllTitle": "Todos los widgets",
     "sectionQuran": "Corán",
     "sectionQuranBlurb": "Lectura, traducción, tafsir",
@@ -499,9 +500,13 @@
     },
     "providerTableFallback": "{{picked}} no tiene horarios publicados para hoy, así que su propio método se calcula en el teléfono hasta que la tabla vuelva a cubrirlo.",
     "minimalUi": "Mínimo",
-    "minimalUiHelp": "Una cosa por pantalla. Hoy conserva la cuenta atrás; tócala para ver los horarios del día. Las demás pestañas conservan lo suyo.",
+    "minimalUiHelp": "Una cosa por pantalla. Hoy conserva la cuenta atrás; desliza hacia arriba para ver los horarios del día. Las demás pestañas conservan lo suyo.",
     "minimalClassicOnly": "Minimal mantiene los colores clásicos. Desactívalo para elegir un tema de color o los colores del sistema.",
-    "minimalRestartBody": "Minimal se activa con el tema Cielo, así que los colores del sistema se desactivarán. La app necesita reiniciarse para que cada pantalla aplique el cambio. ¿Reiniciar ahora?"
+    "minimalRestartBody": "Minimal se activa con el tema Cielo, así que los colores del sistema se desactivarán. La app necesita reiniciarse para que cada pantalla aplique el cambio. ¿Reiniciar ahora?",
+    "widgetSinceAdhanTitle": "Tiempo desde el adhan",
+    "widgetSinceAdhanHelp": "Durante este tiempo después de que entre cada oración, los widgets de horarios muestran cuánto hace que entró y luego vuelven a la cuenta atrás hasta la siguiente. Si la siguiente oración está cerca, la cuenta atrás vuelve antes.",
+    "widgetSinceAdhanOff": "Desactivado",
+    "widgetSinceAdhanMinutes": "{{minutes}} min"
   },
   "locationSetup": {
     "headline": "Establece tu ubicación",
@@ -1555,7 +1560,28 @@
     "riwayahFailedBody": "Abre Descargas para ver el motivo y volver a intentarlo.",
     "riwayahStoppedBody": "No se ha perdido nada. Toca para reintentar, o se reintentará solo con Wi-Fi.",
     "downloadNoSpaceTitle": "No hay espacio suficiente",
-    "downloadNoSpaceBody": "Esta descarga necesita {{size}} más de espacio libre. Libera algo y vuelve a intentarlo."
+    "downloadNoSpaceBody": "Esta descarga necesita {{size}} más de espacio libre. Libera algo y vuelve a intentarlo.",
+    "downloadProgressMegabytes": "{{done}} de {{total}} MB",
+    "downloadStoppedBodyMegabytes": "Se conservan {{done}} de {{total}} MB. Toca para continuar, o se reanudará solo con Wi-Fi.",
+    "listenDownloadRunningMegabytes": "Descargando · {{done}} de {{total}} MB",
+    "listenDownloadPartialSurahs": "{{done}} de {{total}} suras aquí · {{size}}",
+    "wholeSurahBadge": "seguimiento de aleyas aproximado",
+    "wholeSurahIntro": "{{name}} solo se reproduce desde una descarga completa: la recitación entera, {{size}}.",
+    "wholeSurahDownloaded": "{{name}} está descargado: la recitación entera, en este dispositivo.",
+    "wholeSurahTracking": "Es una grabación por sura, dividida en aleyas tan fielmente como la grabación lo permite: el seguimiento de aleyas es un mejor intento, y algunas aleyas pueden empezar o terminar un instante antes o después.",
+    "wholeSurahDownload": "Descargar {{name}} · {{size}}",
+    "wholeSurahResume": "Descargar el resto · {{size}} en total",
+    "wholeSurahDownloading": "Descargando · {{pct}} %",
+    "wholeSurahChanged": "{{surah}} no se puede reproducir con esta voz: la grabación ha cambiado en su origen desde que Mihrab midió dónde caen sus aleyas. El resto de {{name}} se reproduce como antes.",
+    "wholeSurahIncompleteBody": "No se descargaron {{count}} suras: {{names}}. «Continuar» descarga solo esas.",
+    "wholeSurahUnreachable": "{{surah}} con esta voz no está en este dispositivo y ahora no se puede reproducir en streaming: no hay conexión con su origen. Descárgala para tenerla sin conexión.",
+    "downloadingAudioMegabytes": "Descargando… {{done}}/{{total}} MB",
+    "wholeSurahTrackingShort": "Una grabación por sura, dividida en aleyas tan fielmente como lo permite: el seguimiento de aleyas es un mejor intento.",
+    "reportAyahBoundary": "¿Una aleya empieza o termina en el lugar equivocado? Infórmalo",
+    "previewReciter": "Escuchar a {{name}}",
+    "stopPreview": "Detener la muestra",
+    "voiceHint": "El mushaf es {{page}}; {{name}} recita en {{voice}}. Escúchalo en {{page}}:",
+    "voiceHintDismiss": "Mantener esta voz"
   },
   "reading": {
     "textSize": "Tamaño del texto",
@@ -1796,10 +1822,11 @@
     "quranGeometry": "Datos de posición de aleyas (quran.com / proyecto Quran for Android)",
     "tajweedRules": "Reglas de tayuid de cada palabra",
     "tajweedFonts": "Fuentes de página con colores del tayuid (descargadas, no incluidas)",
-    "recitation": "Audio de recitación (42 recitadores): EveryAyah.com · tiempos de palabras: quran-align (CC BY 4.0)",
+    "recitation": "Audio de recitación (44 recitadores): EveryAyah.com · tiempos de palabras: quran-align (CC BY 4.0)",
     "tafsir": "Textos de tafsir: Ibn Kathir, Maarif-ul-Quran, al-Muyassar",
     "wordMeanings": "Significados en árabe de palabras difíciles",
-    "surahHeaderFont": "Caligrafía de encabezados de sura"
+    "surahHeaderFont": "Caligrafía de encabezados de sura",
+    "recitationWholeSurah": "Recitaciones de suras completas (15): mp3quran.net · tiempos de aleyas ajustados al audio por Mihrab"
   },
   "liveActivity": {
     "title": "Próxima oración",
@@ -1976,9 +2003,7 @@
     "setUpSync": "Configurar la sincronización",
     "legendTitle": "Qué muestra el gráfico",
     "fastRow": "Ayuno",
-    "sunnahRow": "Sunna",
-    "graphByDay": "Gráfico por día",
-    "graphByDayHelp": "Un cuadro por día: el trimestre de un vistazo. Apagado, el gráfico muestra una fila por oración."
+    "sunnahRow": "Sunna"
   },
   "endOfDay": {
     "title": "¿Registrar las oraciones de hoy?",

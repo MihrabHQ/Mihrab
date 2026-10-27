@@ -286,9 +286,9 @@ class PrayerWidgetConfigureActivity : AppCompatActivity() {
 
     /** The cards PrayerGlanceWidget draws: Next prayer, Prayer times, tall. */
     private val PRAYER_TIMES_PROVIDERS = setOf(
-      PrayerWidgetProvider::class.java.name,
-      PrayerWidgetSmallProvider::class.java.name,
-      PrayerWidgetLargeProvider::class.java.name,
+      TimesWidgetReceiver::class.java.name,
+      NextPrayerWidgetReceiver::class.java.name,
+      TimesTallWidgetReceiver::class.java.name,
     )
 
     /** The app's swatches (settings/WidgetCard.tsx), in its order. */

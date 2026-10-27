@@ -431,6 +431,7 @@
     "sectionAppearanceBlurb": "Tema, vurgu rengi, saat biçimi, dil",
     "sectionWidgets": "Widget’lar",
     "sectionWidgetsBlurb": "Arka plan, vurgu ve namaz vakitleri widget’ı",
+    "sectionWidgetsBlurbIos": "Namaz vakti widget'larında ezandan bu yana geçen süre",
     "widgetsAllTitle": "Tüm widget’lar",
     "sectionQuran": "Kur'an",
     "sectionQuranBlurb": "Okuma, meal, tefsir",
@@ -498,9 +499,13 @@
     },
     "providerTableFallback": "{{picked}} için bugün yayımlanmış vakit yok; cetvel bugünü yeniden kapsayana kadar kendi yöntemi telefonda hesaplanır.",
     "minimalUi": "Sade",
-    "minimalUiHelp": "Her ekranda tek bir şey. Bugün geri sayımı tutar; günün vakitleri için dokunun. Diğer sekmeler ne için varsa onu tutar.",
+    "minimalUiHelp": "Her ekranda tek bir şey. Bugün geri sayımı tutar; günün vakitleri için yukarı kaydırın. Diğer sekmeler ne için varsa onu tutar.",
     "minimalClassicOnly": "Minimal klasik renkleri korur. Bir renk teması veya sistem renkleri seçmek için kapatın.",
-    "minimalRestartBody": "Minimal Gökyüzü temasıyla açılır, bu yüzden sistem renkleri kapatılacak. Değişikliğin her ekrana yansıması için uygulamanın yeniden başlaması gerekir. Şimdi yeniden başlatılsın mı?"
+    "minimalRestartBody": "Minimal Gökyüzü temasıyla açılır, bu yüzden sistem renkleri kapatılacak. Değişikliğin her ekrana yansıması için uygulamanın yeniden başlaması gerekir. Şimdi yeniden başlatılsın mı?",
+    "widgetSinceAdhanTitle": "Ezandan bu yana geçen süre",
+    "widgetSinceAdhanHelp": "Her namaz vakti girdikten sonra bu süre boyunca namaz vakti widget'ları vaktin ne kadar önce girdiğini gösterir, ardından bir sonraki namaza geri sayıma döner. Sonraki namaz yakınsa geri sayım daha erken döner.",
+    "widgetSinceAdhanOff": "Kapalı",
+    "widgetSinceAdhanMinutes": "{{minutes}} dk"
   },
   "locationSetup": {
     "headline": "Konumunuzu ayarlayın",
@@ -1554,7 +1559,28 @@
     "riwayahFailedBody": "Nedenini görmek ve yeniden denemek için İndirilenler’i açın.",
     "riwayahStoppedBody": "Hiçbir şey kaybolmadı. Yeniden denemek için dokunun ya da Wi-Fi’da kendiliğinden yeniden dener.",
     "downloadNoSpaceTitle": "Yeterli alan yok",
-    "downloadNoSpaceBody": "Bu indirme {{size}} daha boş alan gerektiriyor. Biraz yer açıp yeniden deneyin."
+    "downloadNoSpaceBody": "Bu indirme {{size}} daha boş alan gerektiriyor. Biraz yer açıp yeniden deneyin.",
+    "downloadProgressMegabytes": "{{total}} MB’ın {{done}} MB’ı",
+    "downloadStoppedBodyMegabytes": "{{total}} MB’ın {{done}} MB’ı saklandı. Devam etmek için dokunun ya da Wi-Fi’da kendiliğinden sürer.",
+    "listenDownloadRunningMegabytes": "İndiriliyor · {{total}} MB’ın {{done}} MB’ı",
+    "listenDownloadPartialSurahs": "{{total}} sureden {{done}} burada · {{size}}",
+    "wholeSurahBadge": "ayet takibi elden geldiğince",
+    "wholeSurahIntro": "{{name}} yalnızca tam indirmeden çalar — tilavetin tamamı, {{size}}.",
+    "wholeSurahDownloaded": "{{name}} indirildi — tilavetin tamamı bu cihazda.",
+    "wholeSurahTracking": "Her sure için tek bir kayıttır ve kaydın izin verdiği kadar yakından ayetlere bölünmüştür: ayet takibi en iyi denemedir ve birkaç ayet biraz erken ya da geç başlayıp bitebilir.",
+    "wholeSurahDownload": "{{name}} indir · {{size}}",
+    "wholeSurahResume": "Kalanı indir · toplam {{size}}",
+    "wholeSurahDownloading": "İndiriliyor · %{{pct}}",
+    "wholeSurahChanged": "{{surah}} bu sesle çalınamaz: Mihrab ayetlerin yerini ölçtükten sonra kayıt kaynağında değişti. {{name}} tilavetinin geri kalanı eskisi gibi çalar.",
+    "wholeSurahIncompleteBody": "{{count}} sure indirilmedi: {{names}}. \"Devam\" yalnızca bunları getirir.",
+    "wholeSurahUnreachable": "Bu seste {{surah}} bu cihazda yok ve şu an akışla da çalınamıyor — kaynağına bağlantı yok. Çevrimdışı için indirin.",
+    "downloadingAudioMegabytes": "İndiriliyor… {{done}}/{{total}} MB",
+    "wholeSurahTrackingShort": "Her sure için tek kayıt, izin verdiği kadar yakından ayetlere bölünmüş: ayet takibi en iyi denemedir.",
+    "reportAyahBoundary": "Bir ayet yanlış yerde mi başlıyor ya da bitiyor? Bildirin",
+    "previewReciter": "{{name}} dinle",
+    "stopPreview": "Önizlemeyi durdur",
+    "voiceHint": "Mushaf {{page}}; {{name}} {{voice}} okuyor. {{page}} dinleyin:",
+    "voiceHintDismiss": "Bu sesi koru"
   },
   "reading": {
     "textSize": "Metin boyutu",
@@ -1795,10 +1821,11 @@
     "quranGeometry": "Ayet konum verileri (quran.com / Quran for Android projesi)",
     "tajweedRules": "Her kelimenin tecvid kuralları",
     "tajweedFonts": "Tecvid renkli sayfa yazı tipleri (indirilir, pakete dahil değil)",
-    "recitation": "Tilavet sesi (42 kâri): EveryAyah.com · kelime zamanlaması: quran-align (CC BY 4.0)",
+    "recitation": "Tilavet sesi (44 kâri): EveryAyah.com · kelime zamanlaması: quran-align (CC BY 4.0)",
     "tafsir": "Tefsir metinleri: İbn Kesir, Maarif-ul-Kuran, el-Müyesser",
     "wordMeanings": "Zor kelimelerin Arapça anlamları",
-    "surahHeaderFont": "Sure başlığı hattı"
+    "surahHeaderFont": "Sure başlığı hattı",
+    "recitationWholeSurah": "Tam sure tilavetleri (15): mp3quran.net · ayet zamanlamaları Mihrab tarafından sese hizalandı"
   },
   "liveActivity": {
     "title": "Sıradaki namaz",
@@ -1975,9 +2002,7 @@
     "setUpSync": "Eşitlemeyi ayarla",
     "legendTitle": "Grafik neyi gösterir",
     "fastRow": "Oruç",
-    "sunnahRow": "Sünnet",
-    "graphByDay": "Güne göre grafik",
-    "graphByDayHelp": "Günde bir kare — çeyrek yıl tek bakışta. Kapalıyken her namaz için bir satır gösterilir."
+    "sunnahRow": "Sünnet"
   },
   "endOfDay": {
     "title": "Bugünün namazları kaydedilsin mi?",

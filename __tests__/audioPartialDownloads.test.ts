@@ -253,13 +253,17 @@ describe('why playback stopped', () => {
     const handler = PLAYBACK.slice(
       PLAYBACK.indexOf('addEventListener(Event.PlaybackError'),
     ).slice(0, 700);
-    expect(handler).toMatch(/localAudioPathIfAny\(/);
+    expect(handler).toMatch(/localFileOf\(track, ref\)/);
     expect(handler).toMatch(/if \(!local\) setStatus\(\{ gap: ref/);
+    // Which file: the ayah's own, or a whole-surah recitation's surah file.
+    const lookup = PLAYBACK.slice(PLAYBACK.indexOf('function localFileOf(')).slice(0, 700);
+    expect(lookup).toMatch(/localAudioPathIfAny\(/);
+    expect(lookup).toMatch(/localSurahFileIfAny\(/);
   });
 
   it('clears itself the moment playback starts again', () => {
     // The message must never outlive the condition it describes.
-    const starts = PLAYBACK.match(/setStatus\(\{ reciterId: prefs\.reciterId, loading: true[^}]*\}\)/g) ?? [];
+    const starts = PLAYBACK.match(/setStatus\(\{ reciterId(: prefs\.reciterId)?, loading: true[^}]*\}\)/g) ?? [];
     expect(starts.length).toBeGreaterThan(0);
     for (const start of starts) expect(start).toMatch(/gap: null/);
   });

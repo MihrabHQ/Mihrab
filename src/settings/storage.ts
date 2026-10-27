@@ -49,6 +49,7 @@ import {
   WIDGET_TIME_SCALE_MAX,
   WIDGET_TIME_SCALE_MIN,
   WIDGET_TIME_SCALE_STEP,
+  WIDGET_SINCE_ADHAN_CHOICES,
   type AppLanguage,
   type PrayerAppSettings,
   type WidgetHighlightId,
@@ -173,6 +174,14 @@ function renameProvider(value: unknown, from: string, to: string): unknown {
         : v;
   }
   return out;
+}
+
+/** One of the offered choices, else off: a hand-edited 45 is not a choice. */
+export function coerceWidgetSinceAdhan(value: unknown): number {
+  return typeof value === 'number' &&
+    (WIDGET_SINCE_ADHAN_CHOICES as readonly number[]).includes(value)
+    ? value
+    : 0;
 }
 
 export function coerceWidgetTimeScale(value: unknown): number {
@@ -700,6 +709,9 @@ async function loadSettingsUncached(): Promise<PrayerAppSettings> {
   merged.androidWidgetShowTable = parsed.androidWidgetShowTable !== false;
   merged.androidWidgetTimeScale = coerceWidgetTimeScale(
     parsed.androidWidgetTimeScale,
+  );
+  merged.widgetSinceAdhanMinutes = coerceWidgetSinceAdhan(
+    parsed.widgetSinceAdhanMinutes,
   );
   merged.clockFormat = coerceClockFormat(parsed.clockFormat);
   // Snapped, not merged: a value between rungs — an older ladder, a

@@ -293,6 +293,14 @@ export type PrayerAppSettings = {
    *  (`WIDGET_TIME_SCALE_MIN`–`WIDGET_TIME_SCALE_MAX`). */
   androidWidgetTimeScale: number;
   /**
+   * Issue #111, both platforms: for this many minutes after one of the
+   * five prayers comes in, the prayer-times widgets count up from it
+   * ("12:34 since Dhuhr") instead of down to what is next. 0 is off, the
+   * default — the widgets as they always were. One of
+   * `WIDGET_SINCE_ADHAN_CHOICES`.
+   */
+  widgetSinceAdhanMinutes: number;
+  /**
    * User's saved location presets — task #18. Always-present (never
    * undefined); empty array means no presets saved yet.
    */
@@ -775,6 +783,7 @@ export const DEFAULT_SETTINGS: PrayerAppSettings = {
   androidWidgetShowCountdown: true,
   androidWidgetShowTable: true,
   androidWidgetTimeScale: 100,
+  widgetSinceAdhanMinutes: 0,
   locationPresets: [],
   prayerOffsets: {},
   onboardingComplete: false,
@@ -863,6 +872,9 @@ export const DEFAULT_SETTINGS: PrayerAppSettings = {
 };
 
 /** The widget's prayer-time size, in percent: within reason, in 10% steps. */
+/** Settings → Widgets, issue #111: off, or minutes after the adhan. */
+export const WIDGET_SINCE_ADHAN_CHOICES = [0, 10, 20, 30] as const;
+
 export const WIDGET_TIME_SCALE_MIN = 80;
 export const WIDGET_TIME_SCALE_MAX = 150;
 export const WIDGET_TIME_SCALE_STEP = 10;

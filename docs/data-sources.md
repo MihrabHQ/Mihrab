@@ -519,6 +519,84 @@ same ceiling thirty-three of the Ḥafṣ recordings already sit at.
 
 ---
 
+## Whole-surah recitations (mp3quran.net) — issue #110
+
+Fifteen recordings in one file per surah, among them the first Qālūn
+and Shuʿbah voices in the app and Mahmoud Khalil Al-Husary in Warsh
+(issue #110). The app cuts each surah into ayahs with boundaries bundled
+under `src/quran/data/surahRecitations/`, plays them from a full download
+only, and labels their ayah tracking a best attempt.
+
+### Where the bytes come from
+
+`https://cdn.mp3quran.net/audio/<reciter>/<rN>/SSS.mp3`, one per surah,
+with the ayah start and end times mp3quran.net publishes for the same
+recording (`/api/v3/ayat_timing?surah=S&read=<moshaf>`). The site's privacy
+policy carries its only terms, in a "Copyrights" section: all rights are
+available to everyone, and any visitor or developer may copy its material.
+Credited in Settings → Attributions.
+
+### How a recording was chosen
+
+Only recordings with published ayah timings are usable at all. Of those,
+each candidate was checked (October 2026) before going in:
+
+* every surah's file present and every surah's timings present;
+* the timings in the reading's own count (Madani for Warsh and Qālūn,
+  6,214; Kufan otherwise, 6,236), in order, ending inside their files;
+* a constant bitrate, so a jump to an ayah lands where it should;
+* on eight sample surahs (1, 67, 78, 97, 103, 108, 112, 114 — the short
+  ones, where a clipped syllable matters most), each ayah start measured
+  against the pauses in the decoded audio.
+
+Passed and shipped: Husary (Warsh, Qālūn), Al-Koshi (Warsh), Al-Hudhaify
+(Qālūn, Shuʿbah), Az-Zahrani, Al-Maasaraawi, Balilah, Al-Dosari (Ḥafṣ),
+Al-Hashim, Al-Tunaiji, Al-Salemi, Al-Buʿayjan, Al-Dukhain, Al-Yamani.
+
+Passed and left out: Hasan Saleh, Abdullah Al-Mousa, Ahmad Al-Nufais, Majed
+Al-Zamil and Abdulmohsin Al-Harthy — the five with the most ayahs the
+pause alignment could not place (86 to 372 each), and among the least
+listened to of the twenty. Placing every ayah of a recitation by aligning
+it against the text (below) is a long job per reciter, and these were not
+worth it.
+
+Left out: Mohammad Saayed (Warsh — timings numbered by the Ḥafṣ count,
+starts mostly wrong, five surahs' timings past their files), Omar
+Al-Qazabri (Warsh), Ad-Dokali Mohammad Al-ʿAlim (Qālūn), Mustafa Ismail,
+Abdullah Khayyat and Raad Al-Kurdi (starts off by more than a second too
+often; Al-Kurdi's al-Muʾminūn and ar-Raḥmān timings run ~50 s past their
+files), and Khalid Al-Jileel, whose eight sample surahs were clean but whose
+Āl ʿImrān timings end 12 s past its 3,723-second file — the whole-book check
+in `align.py` caught it. Borderline and not taken: Idrees Abkr (Yā-Sīn's timings run 69 s
+past its file), Maher Al-Muaiqly's mujawwad, Al-Obaikan, Al-Thubaiti,
+As-Sayegh. Duplicates, measured not guessed: "Al-Qaria Yassen" is the
+EveryAyah Yassin Al-Jazaery already here (the same recording, ayah by
+ayah), and "Ahmad Nauina" is Ahmed Neana.
+
+### The boundaries
+
+`tools/surah-audio/align.py` decodes every surah of every recording and
+moves each published boundary onto the pause nearest it, within 0.75 s,
+judging "quiet" against the passage around it. A boundary with no pause in
+reach — a reciter who runs one ayah into the next — keeps the published
+place, and the tool counts them; so does a boundary whose move would cross
+its neighbour (short ayahs: "Ḥā Mīm", ar-Raḥmān's refrain). Any surah
+failing the count, order or length checks keeps the whole recording out.
+
+Each table also carries every surah file's exact size (`z`;
+`tools/surah-audio/sizes.py` added them to the first tables from the
+server's own Content-Length, and checked they sum to the size measured
+when the audio was decoded). The app uses a surah file only at that size,
+and marks a surah the server keeps serving at another as changed at its
+source: the boundaries are the recording's, byte for byte.
+
+Streaming keeps that rule: before a surah is streamed, the server is asked
+for the file's size (a HEAD request), and only an exact match is played.
+Short surahs (up to 30 MB) are saved to the device as they are listened to,
+checked the same way. A listener who hears an ayah start or end in the
+wrong place can report it from the ayah sheet: a GitHub issue with the
+recording, the ayah and its current boundaries, for a corrected table.
+
 ## The Clear Quran (Dr. Mustafa Khattab) — issue #46, BLOCKED 2026-09-13
 
 Requested alongside the Warsh work. **It is not shippable today**, and the

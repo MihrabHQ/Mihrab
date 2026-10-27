@@ -151,6 +151,7 @@
     <!-- The Chronometer's format. "%1$s" is the ticking duration; the word
          around it is what stops "2:58:00" being read as a clock time. -->
     <string name="widget_countdown_format">dans %1$s</string>
+    <string name="widget_since_adhan_format">%2$s il y a %1$s</string>
     <!-- The plan's 4x3 mock carries this under the location. -->
     <string name="widget_logged_line">%1$d sur %2$d noté aujourd\'hui</string>
     <!-- ── Hijri Date ────────────────────────────────────────────────── -->

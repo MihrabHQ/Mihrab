@@ -14,7 +14,7 @@ import com.prayer_times.glance.LogGlanceWidget
  *
  * See glance_log_tall_info.xml.
  */
-class PrayerWidgetLogLargeProvider : PrayerWidgetLogProvider() {
+open class PrayerWidgetLogLargeProvider : PrayerWidgetLogProvider() {
   /** The 4×4: today's row and the practice graph. */
   override val glanceAppWidget: GlanceAppWidget = LogGlanceWidget(tall = true)
 }

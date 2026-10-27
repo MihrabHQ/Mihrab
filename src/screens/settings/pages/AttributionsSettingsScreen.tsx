@@ -91,10 +91,18 @@ export function AttributionsSettingsScreen() {
     {
       label: t('attributions.recitation', {
         defaultValue:
-          'Recitation audio (42 reciters): EveryAyah.com · word timings: quran-align (CC BY 4.0)',
+          'Recitation audio (44 reciters): EveryAyah.com · word timings: quran-align (CC BY 4.0)',
       }),
       sub: 'everyayah.com · cpfair/quran-align',
       url: 'https://everyayah.com/',
+    },
+    {
+      label: t('attributions.recitationWholeSurah', {
+        defaultValue:
+          'Whole-surah recitations (15): mp3quran.net · ayah timings aligned to the audio by Mihrab',
+      }),
+      sub: 'mp3quran.net',
+      url: 'https://mp3quran.net/',
     },
   ];
 

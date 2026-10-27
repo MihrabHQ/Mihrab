@@ -127,6 +127,7 @@
     <string name="widget_preview_tasbih_of">dari 33</string>
     <string name="widget_preview_tasbih_today">Hari ini 231 · 2 putaran</string>
     <string name="widget_countdown_format">dalam %1$s</string>
+    <string name="widget_since_adhan_format">%2$s, %1$s lalu</string>
     <string name="widget_logged_line">%1$d dari %2$d tercatat hari ini</string>
     <!-- ── Tanggal Hijriah ──────────────────────────────────────────── -->
     <string name="widget_name_hijri">Mihrab · Tanggal Hijriah</string>

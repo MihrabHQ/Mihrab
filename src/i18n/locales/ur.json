@@ -431,6 +431,7 @@
     "sectionAppearanceBlurb": "تھیم، رنگ، وقت کی شکل، زبان",
     "sectionWidgets": "ویجیٹس",
     "sectionWidgetsBlurb": "پس منظر، نمایاں رنگ اور نماز کے اوقات کا ویجیٹ",
+    "sectionWidgetsBlurbIos": "نماز کے اوقات کے ویجیٹ پر اذان کے بعد کا وقت",
     "widgetsAllTitle": "تمام ویجیٹس",
     "sectionQuran": "قرآن",
     "sectionQuranBlurb": "قراءت، ترجمہ، تفسیر",
@@ -498,9 +499,13 @@
     },
     "providerTableFallback": "{{picked}} کے پاس آج کے شائع شدہ اوقات نہیں ہیں، اس لیے جب تک جدول دوبارہ اس دن کا احاطہ نہ کرے، اس کا اپنا طریقہ فون پر حساب ہوتا ہے۔",
     "minimalUi": "کم سے کم",
-    "minimalUiHelp": "ہر اسکرین پر ایک چیز۔ آج میں الٹی گنتی رہتی ہے؛ دن کے اوقات کے لیے اس پر ٹیپ کریں۔ باقی ٹیبز اپنا اپنا کام رکھتے ہیں۔",
+    "minimalUiHelp": "ہر اسکرین پر ایک چیز۔ آج میں الٹی گنتی رہتی ہے؛ دن کے اوقات کے لیے اوپر سوائپ کریں۔ باقی ٹیبز اپنا اپنا کام رکھتے ہیں۔",
     "minimalClassicOnly": "منیمل کلاسک رنگ برقرار رکھتا ہے۔ رنگ تھیم یا سسٹم کے رنگ منتخب کرنے کے لیے اسے بند کریں۔",
-    "minimalRestartBody": "منیمل آسمان تھیم میں شروع ہوتا ہے، اس لیے سسٹم کے رنگ بند ہو جائیں گے۔ ہر اسکرین پر تبدیلی کے لیے ایپ کو دوبارہ شروع کرنا ہوگا۔ ابھی دوبارہ شروع کریں؟"
+    "minimalRestartBody": "منیمل آسمان تھیم میں شروع ہوتا ہے، اس لیے سسٹم کے رنگ بند ہو جائیں گے۔ ہر اسکرین پر تبدیلی کے لیے ایپ کو دوبارہ شروع کرنا ہوگا۔ ابھی دوبارہ شروع کریں؟",
+    "widgetSinceAdhanTitle": "اذان کے بعد کا وقت",
+    "widgetSinceAdhanHelp": "ہر نماز کا وقت شروع ہونے کے بعد اتنی دیر تک نماز کے اوقات کے ویجیٹ دکھاتے ہیں کہ وقت شروع ہوئے کتنی دیر ہوئی، پھر اگلی نماز کی الٹی گنتی پر واپس آ جاتے ہیں۔ اگر اگلی نماز قریب ہو تو الٹی گنتی پہلے واپس آ جاتی ہے۔",
+    "widgetSinceAdhanOff": "بند",
+    "widgetSinceAdhanMinutes": "{{minutes}} منٹ"
   },
   "locationSetup": {
     "headline": "اپنا مقام متعین کریں۔",
@@ -1251,7 +1256,7 @@
     "tafsirUnavailable": "تفسیر دستیاب نہیں — ڈاؤن لوڈ کے لیے ایک بار انٹرنیٹ سے جڑیں۔",
     "hardWords": "مشکل الفاظ (عربی میں)",
     "downloadingWordMeanings": "عربی الفاظ کے معنی ڈاؤن لوڈ ہو رہے ہیں",
-    "downloadProgressSurahs": "{{total}} میں سے {{done}} سورتیں",
+    "downloadProgressSurahs": "{{total}} سورتوں میں سے {{done}}",
     "wordMeaningsDoneTitle": "الفاظ کے معنی تیار ہیں",
     "wordMeaningsDoneBody": "مشکل الفاظ کے عربی معنی اس ڈیوائس پر موجود ہیں۔",
     "wordMeaningsIncompleteBody": "{{count}} سورتیں ابھی باقی ہیں۔ جہاں رکا تھا وہیں سے جاری رکھنے کے لیے دوبارہ شروع کریں۔",
@@ -1554,7 +1559,28 @@
     "riwayahFailedBody": "وجہ دیکھنے اور دوبارہ کوشش کرنے کے لیے ڈاؤن لوڈز کھولیں۔",
     "riwayahStoppedBody": "کچھ ضائع نہیں ہوا۔ دوبارہ کوشش کے لیے ٹیپ کریں، یا Wi-Fi پر یہ خود دوبارہ کوشش کرے گا۔",
     "downloadNoSpaceTitle": "کافی جگہ نہیں ہے",
-    "downloadNoSpaceBody": "اس ڈاؤن لوڈ کو مزید {{size}} خالی جگہ چاہیے۔ کچھ جگہ خالی کر کے دوبارہ کوشش کریں۔"
+    "downloadNoSpaceBody": "اس ڈاؤن لوڈ کو مزید {{size}} خالی جگہ چاہیے۔ کچھ جگہ خالی کر کے دوبارہ کوشش کریں۔",
+    "downloadProgressMegabytes": "{{total}} MB میں سے {{done}} MB",
+    "downloadStoppedBodyMegabytes": "{{total}} MB میں سے {{done}} MB محفوظ ہیں۔ جاری رکھنے کے لیے ٹیپ کریں، یا یہ Wi-Fi پر خود ہی دوبارہ شروع ہو جائے گا۔",
+    "listenDownloadRunningMegabytes": "ڈاؤن لوڈ ہو رہا ہے · {{total}} MB میں سے {{done}} MB",
+    "listenDownloadPartialSurahs": "{{total}} سورتوں میں سے {{done}} یہاں · {{size}}",
+    "wholeSurahBadge": "آیات کی پیروی حتی الامکان",
+    "wholeSurahIntro": "{{name}} صرف مکمل ڈاؤن لوڈ سے چلتی ہے — پوری تلاوت، {{size}}۔",
+    "wholeSurahDownloaded": "{{name}} ڈاؤن لوڈ ہو چکی ہے — پوری تلاوت، اس آلے پر۔",
+    "wholeSurahTracking": "یہ ہر سورت کی ایک ریکارڈنگ ہے، جسے ریکارڈنگ جتنا ممکن بنائے اتنی درستی سے آیات میں تقسیم کیا گیا ہے: آیات کی پیروی بہترین کوشش ہے، اور کچھ آیات ذرا پہلے یا بعد میں شروع یا ختم ہو سکتی ہیں۔",
+    "wholeSurahDownload": "{{name}} ڈاؤن لوڈ کریں · {{size}}",
+    "wholeSurahResume": "باقی ڈاؤن لوڈ کریں · کل {{size}}",
+    "wholeSurahDownloading": "ڈاؤن لوڈ ہو رہا ہے · {{pct}}%",
+    "wholeSurahChanged": "اس آواز میں {{surah}} نہیں چل سکتی: محراب کے آیات کی جگہ ناپنے کے بعد سے ماخذ پر ریکارڈنگ بدل گئی ہے۔ {{name}} کی باقی تلاوت پہلے کی طرح چلتی ہے۔",
+    "wholeSurahIncompleteBody": "{{count}} سورتیں ڈاؤن لوڈ نہیں ہوئیں: {{names}}۔ \"جاری رکھیں\" صرف یہی لائے گا۔",
+    "wholeSurahUnreachable": "اس آواز میں {{surah}} اس آلے پر موجود نہیں، اور ابھی اسٹریم بھی نہیں ہو سکتی — اس کے ماخذ سے رابطہ نہیں۔ آف لائن رکھنے کے لیے ڈاؤن لوڈ کریں۔",
+    "downloadingAudioMegabytes": "ڈاؤن لوڈ ہو رہا ہے… {{done}}/{{total}} MB",
+    "wholeSurahTrackingShort": "ہر سورت کی ایک ریکارڈنگ، جتنی درستی سے ممکن ہو آیات میں تقسیم: آیات کی پیروی بہترین کوشش ہے۔",
+    "reportAyahBoundary": "کوئی آیت غلط جگہ شروع یا ختم ہوتی ہے؟ اطلاع دیں",
+    "previewReciter": "{{name}} کو سنیں",
+    "stopPreview": "نمونہ روکیں",
+    "voiceHint": "مصحف {{page}} میں ہے؛ {{name}} {{voice}} میں تلاوت کرتے ہیں۔ {{page}} میں سنیں:",
+    "voiceHintDismiss": "یہی آواز رکھیں"
   },
   "reading": {
     "textSize": "متن کا سائز",
@@ -1795,10 +1821,11 @@
     "quranGeometry": "آیات کی پوزیشن کا ڈیٹا (quran.com / Quran for Android پروجیکٹ)",
     "tajweedRules": "ہر لفظ کے تجوید کے قواعد",
     "tajweedFonts": "تجوید کے رنگوں والے صفحاتی فونٹس (ڈاؤن لوڈ، ساتھ شامل نہیں)",
-    "recitation": "تلاوت کی آڈیو (42 قاری): EveryAyah.com · الفاظ کی ٹائمنگ: quran-align (CC BY 4.0)",
+    "recitation": "تلاوت کی آڈیو (44 قاری): EveryAyah.com · الفاظ کی ٹائمنگ: quran-align (CC BY 4.0)",
     "tafsir": "تفسیری متون: ابن کثیر، معارف القرآن، المیسر",
     "wordMeanings": "مشکل الفاظ کے عربی معنی",
-    "surahHeaderFont": "سورت کے عنوان کی خطاطی"
+    "surahHeaderFont": "سورت کے عنوان کی خطاطی",
+    "recitationWholeSurah": "مکمل سورتوں کی تلاوتیں (15): mp3quran.net · آیات کے اوقات محراب نے آواز سے ملائے"
   },
   "liveActivity": {
     "title": "اگلی نماز",
@@ -1975,9 +2002,7 @@
     "setUpSync": "سنک سیٹ اپ کریں",
     "legendTitle": "گراف کیا دکھاتا ہے",
     "fastRow": "روزہ",
-    "sunnahRow": "سنت",
-    "graphByDay": "دن کے لحاظ سے گراف",
-    "graphByDayHelp": "ہر دن ایک خانہ — پوری سہ ماہی ایک نظر میں۔ بند ہونے پر ہر نماز کے لیے ایک قطار دکھائی جاتی ہے۔"
+    "sunnahRow": "سنت"
   },
   "endOfDay": {
     "title": "آج کی نمازیں درج کریں؟",

@@ -420,9 +420,9 @@ describe('the hero grows but never shrinks under its text', () => {
     expect(log).toMatch(/HEATMAP_SHORT_SCALE = 0\.8/);
     expect(log).toMatch(/compact=\{shortScreen\}/);
     expect(log).toMatch(/marginVertical: -\(heatmapH \* \(1 - HEATMAP_SHORT_SCALE\)\) \/ 2/);
-    // The legend left the page for the ⋯; the heatmap is drawn compact.
-    expect(log).toMatch(/<PracticeHeatmap[\s\S]{0,400}compact\s*\n/);
-    expect(read('src/screens/log/LogOptionsSheet.tsx')).toContain('<HeatmapLegend />');
+    // The legend left the page for the ⋯; the graph is the strip alone.
+    expect(log).not.toMatch(/PracticeHeatmap/);
+    expect(read('src/screens/log/LogOptionsSheet.tsx')).toContain('<StripLegend />');
   });
 
   it('the sky is the wrap’s only ground on the phone', () => {

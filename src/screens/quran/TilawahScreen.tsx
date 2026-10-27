@@ -90,6 +90,8 @@ import {
 } from '../../quran/audio/playback';
 import { findReciter } from '../../quran/audio/reciters';
 import { ReciterPickerSheet } from '../../quran/audio/ReciterPickerSheet';
+import { WholeSurahNotice } from '../../quran/audio/WholeSurahNotice';
+import { ReadingVoiceHint } from '../../quran/audio/ReadingVoiceHint';
 import {
 } from '../../quran/audio/audioStore';
 import { setQuranPrefs, useQuranState } from '../../quran/quranState';
@@ -1104,6 +1106,9 @@ export function TilawahScreen() {
           </Text>
           <Text style={[styles.reciterChevron, { color: palette.accentSolid }]}>›</Text>
         </Pressable>
+        {/* The page in one reading and the voice in another: the page's
+            voices, a tap away (ReadingVoiceHint). */}
+        <ReadingVoiceHint />
 
         {/* LOCKED WHILE THE CHOICE IS OPEN. With nothing playing, or a
             listen gone stale, the panel under the card asks what to do —
@@ -1223,6 +1228,17 @@ export function TilawahScreen() {
               <Text style={[styles.ayahStepGlyph, { color: palette.muted }]}>›</Text>
             </Pressable>
           </View>
+
+          {/* A whole-surah recitation that is not on the device does not
+              play: there is no stream to fall back on. Said here, under
+              the play button that just did nothing, with the download. */}
+          {status.needsDownload ? (
+            <WholeSurahNotice
+              reciterId={status.needsDownload.reciterId}
+              missingSurah={status.needsDownload.surah}
+          reason={status.needsDownload.reason}
+            />
+          ) : null}
 
           {/* EVERYTHING ELSE, ON ONE QUIET LINE.
 

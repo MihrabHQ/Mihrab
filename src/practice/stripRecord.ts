@@ -2,7 +2,7 @@
  * The record by prayer: one column a day, one row a prayer (the data;
  * PracticeStrip.tsx draws it).
  *
- * The heatmap (PracticeHeatmap) sums a day into one number — five prayers
+ * The day grid (PracticeHeatmap, since removed) summed a day into one number — five prayers
  * weighted into a depth of green — and that number throws away the fact a
  * prayer log is kept for: WHICH prayer. Nobody misses "1.3 of 5"; they miss
  * Fajr, on weekdays, for a month, and a depth-of-green cannot show it. So

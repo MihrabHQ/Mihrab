@@ -11,7 +11,7 @@
  * silent tracks in the queue now (rest.ts), and the player never stops.
  */
 import TrackPlayer, { Event } from 'react-native-track-player';
-import { listenNextSurah, listenPreviousSurah } from './playback';
+import { listenNextSurah, listenPreviousSurah, seekInRecitation } from './playback';
 
 export async function PlaybackService(): Promise<void> {
   TrackPlayer.addEventListener(Event.RemotePlay, () => {
@@ -50,8 +50,10 @@ export async function PlaybackService(): Promise<void> {
   TrackPlayer.addEventListener(Event.RemoteStop, () => {
     void TrackPlayer.reset();
   });
+  // The system's bar is the FILE's: for a whole-surah recitation, the
+  // surah. `seekInRecitation` turns a drag into the ayah it lands in.
   TrackPlayer.addEventListener(Event.RemoteSeek, e => {
-    void TrackPlayer.seekTo(e.position);
+    void seekInRecitation(e.position).catch(() => undefined);
   });
   TrackPlayer.addEventListener(Event.RemoteDuck, e => {
     // autoHandleInterruptions covers most cases; this is the fallback.

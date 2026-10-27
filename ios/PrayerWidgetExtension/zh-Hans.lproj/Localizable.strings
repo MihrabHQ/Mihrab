@@ -61,6 +61,7 @@
 "widget_preview_tasbih_of" = "共 33 次";
 "widget_preview_tasbih_today" = "今日 231 · 2 轮";
 "widget_countdown_format" = "还有 %1$@";
+"widget_since_adhan_format" = "%2$@已过 %1$@";
 "widget_logged_line" = "今日已记录 %1$d/%2$d";
 "widget_name_hijri" = "Mihrab · 希吉来历";
 "widget_description_hijri" = "显示今日希吉来历日期，以及距离下月还有多久。2×1，可调整大小。";

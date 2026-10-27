@@ -431,6 +431,7 @@
     "sectionAppearanceBlurb": "Theme, accent, time format, language",
     "sectionWidgets": "Widgets",
     "sectionWidgetsBlurb": "Background, highlight, and the prayer times widget",
+    "sectionWidgetsBlurbIos": "Time since the adhan on the prayer times widgets",
     "widgetsAllTitle": "All widgets",
     "sectionQuran": "Quran",
     "sectionQuranBlurb": "Reading, translation, tafsir",
@@ -498,9 +499,13 @@
     },
     "providerTableFallback": "{{picked}} has no published times for today, so its own method is calculated on the phone until the table covers it again.",
     "minimalUi": "Minimal",
-    "minimalUiHelp": "One thing per screen. Today keeps the countdown; tap it for the day’s times. The other tabs keep what each is for.",
+    "minimalUiHelp": "One thing per screen. Today keeps the countdown; swipe up for the day’s times. The other tabs keep what each is for.",
     "minimalClassicOnly": "Minimal keeps the classic colours. Turn it off to choose a colour theme or system colours.",
-    "minimalRestartBody": "Minimal comes on in the Sky theme, so system colours will be turned off. The app needs to restart so every screen picks up the change. Restart now?"
+    "minimalRestartBody": "Minimal comes on in the Sky theme, so system colours will be turned off. The app needs to restart so every screen picks up the change. Restart now?",
+    "widgetSinceAdhanTitle": "Time since the adhan",
+    "widgetSinceAdhanHelp": "For this long after each prayer comes in, the prayer times widgets show how long ago it was, then go back to counting down to the next prayer. If the next prayer is close, the countdown comes back sooner.",
+    "widgetSinceAdhanOff": "Off",
+    "widgetSinceAdhanMinutes": "{{minutes}} min"
   },
   "locationSetup": {
     "headline": "Set your location",
@@ -1554,7 +1559,28 @@
     "riwayahFailedBody": "Open Downloads to see why and try again.",
     "riwayahStoppedBody": "Nothing was lost. Tap to try again, or it retries by itself on Wi-Fi.",
     "downloadNoSpaceTitle": "Not enough space",
-    "downloadNoSpaceBody": "This download needs {{size}} more free space. Free some up and try again."
+    "downloadNoSpaceBody": "This download needs {{size}} more free space. Free some up and try again.",
+    "downloadProgressMegabytes": "{{done}} of {{total}} MB",
+    "downloadStoppedBodyMegabytes": "{{done}} of {{total}} MB kept. Tap to continue, or it resumes by itself on Wi-Fi.",
+    "listenDownloadRunningMegabytes": "Downloading · {{done}} of {{total}} MB",
+    "listenDownloadPartialSurahs": "{{done}} of {{total}} surahs here · {{size}}",
+    "wholeSurahBadge": "best-effort ayah tracking",
+    "wholeSurahIntro": "{{name}} plays from a full download only — the whole recitation, {{size}}.",
+    "wholeSurahDownloaded": "{{name}} is downloaded — the whole recitation, on this device.",
+    "wholeSurahTracking": "It is one recording per surah, cut into ayahs as closely as the recording allows: the ayah tracking is a best attempt, and a few ayahs may start or end a moment off.",
+    "wholeSurahDownload": "Download {{name}} · {{size}}",
+    "wholeSurahResume": "Download the rest · {{size}} in all",
+    "wholeSurahDownloading": "Downloading · {{pct}}%",
+    "wholeSurahChanged": "{{surah}} cannot be played in this voice: the recording at its source has changed since Mihrab measured where its ayahs fall. The rest of {{name}} plays as before.",
+    "wholeSurahIncompleteBody": "{{count}} surahs did not download: {{names}}. Continue fetches just these.",
+    "wholeSurahUnreachable": "{{surah}} in this voice is not on this device, and it cannot be streamed right now — there is no connection to its source. Download it to have it offline.",
+    "downloadingAudioMegabytes": "Downloading… {{done}}/{{total}} MB",
+    "wholeSurahTrackingShort": "One recording per surah, cut into ayahs as closely as it allows: ayah tracking is a best attempt.",
+    "reportAyahBoundary": "An ayah starts or ends in the wrong place? Report it",
+    "previewReciter": "Hear {{name}}",
+    "stopPreview": "Stop the preview",
+    "voiceHint": "The muṣḥaf is {{page}}; {{name}} recites {{voice}}. Hear it in {{page}}:",
+    "voiceHintDismiss": "Keep this voice"
   },
   "reading": {
     "textSize": "Text size",
@@ -1795,10 +1821,11 @@
     "quranGeometry": "Ayah position data (quran.com / Quran for Android project)",
     "tajweedRules": "Tajweed rules of each word",
     "tajweedFonts": "Tajweed colour page fonts (downloaded, not bundled)",
-    "recitation": "Recitation audio (42 reciters): EveryAyah.com · word timings: quran-align (CC BY 4.0)",
+    "recitation": "Recitation audio (44 reciters): EveryAyah.com · word timings: quran-align (CC BY 4.0)",
     "tafsir": "Tafsir texts: Ibn Kathir, Maarif-ul-Quran, al-Muyassar",
     "wordMeanings": "Arabic meanings of harder words",
-    "surahHeaderFont": "Surah-header calligraphy"
+    "surahHeaderFont": "Surah-header calligraphy",
+    "recitationWholeSurah": "Whole-surah recitations (15): mp3quran.net · ayah timings aligned to the audio by Mihrab"
   },
   "liveActivity": {
     "title": "Next prayer",
@@ -1975,9 +2002,7 @@
     "setUpSync": "Set up sync",
     "legendTitle": "What the graph shows",
     "fastRow": "Fast",
-    "sunnahRow": "Sunnah",
-    "graphByDay": "Graph by day",
-    "graphByDayHelp": "One square a day — the quarter at a glance. Off, the graph is a row for each prayer."
+    "sunnahRow": "Sunnah"
   },
   "endOfDay": {
     "title": "Log today’s prayers?",

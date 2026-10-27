@@ -40,14 +40,26 @@ import { useTranslation } from 'react-i18next';
 import { useKeyboardInset } from '../../hooks/useKeyboardInset';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import { setQuranPrefs, useQuranState } from '../quranState';
-import { reciterRiwayah, searchReciters, type Reciter } from './reciters';
+import {
+  isPreviewing,
+  previewReciter,
+  stopPlayback,
+  usePlaybackStatus,
+} from './playback';
+import { isExactRecitation } from './surahRecitation';
+import {
+  isWholeSurah,
+  reciterRiwayah,
+  searchReciters,
+  type Reciter,
+} from './reciters';
 import { readingOf, riwayahById, resolveRiwayah } from '../riwayat';
 import { MODAL_ORIENTATIONS } from '../../components/modalOrientations';
 import {
   deleteReciterAudio,
   downloadedReciters,
   estimatedReciterBytes,
-  totalAyahCount,
+  reciterFileTotal,
   type ReciterAudioStats,
 } from './audioStore';
 import {
@@ -103,6 +115,7 @@ export function ReciterPickerSheet({ visible, onClose }: Props) {
   // sheet is absolutely positioned, so lifting it IS moving `bottom`.
   const keyboardInset = useKeyboardInset();
   const { prefs } = useQuranState();
+  const playback = usePlaybackStatus();
   const [query, setQuery] = useState('');
   const [onDisk, setOnDisk] = useState<Record<string, ReciterAudioStats>>({});
   const [download, setDownload] =
@@ -159,26 +172,41 @@ export function ReciterPickerSheet({ visible, onClose }: Props) {
     const stats = onDisk[item.id];
     const asking = confirming === item.id;
 
+    const wholeSurah = isWholeSurah(item);
     /** What this row says about its own audio, under the Arabic name. */
     const offline = running
-      ? t('quran.listenDownloadRunning', {
-          defaultValue: 'Downloading · {{done}} of {{total}}',
-          done: download.progress.done,
-          total: download.progress.total,
-        })
+      ? wholeSurah
+        ? t('quran.listenDownloadRunningMegabytes', {
+            defaultValue: 'Downloading · {{done}} of {{total}} MB',
+            done: download.progress.done,
+            total: download.progress.total,
+          })
+        : t('quran.listenDownloadRunning', {
+            defaultValue: 'Downloading · {{done}} of {{total}}',
+            done: download.progress.done,
+            total: download.progress.total,
+          })
       : stats?.complete
       ? t('quran.listenDownloadComplete', {
           defaultValue: 'Complete · {{size}}',
           size: formatBytes(stats.bytes),
         })
       : stats
-      ? t('quran.listenDownloadPartial', {
-          defaultValue: '{{done}} of {{total}} ayahs here · {{size}}',
-          done: stats.files,
-          total: totalAyahCount(),
-          size: formatBytes(stats.bytes),
-        })
+      ? wholeSurah
+        ? t('quran.listenDownloadPartialSurahs', {
+            defaultValue: '{{done}} of {{total}} surahs here · {{size}}',
+            done: stats.files,
+            total: reciterFileTotal(item.id),
+            size: formatBytes(stats.bytes),
+          })
+        : t('quran.listenDownloadPartial', {
+            defaultValue: '{{done}} of {{total}} ayahs here · {{size}}',
+            done: stats.files,
+            total: reciterFileTotal(item.id),
+            size: formatBytes(stats.bytes),
+          })
       : null;
+    const previewing = isPreviewing(playback, item.id);
 
     return (
       <Pressable
@@ -241,6 +269,17 @@ export function ReciterPickerSheet({ visible, onClose }: Props) {
                 </Text>
               </View>
             ) : null}
+            {/* The other end of the same scale: a whole-surah recording
+                cut into ayahs by boundaries that are a best attempt
+                (SURAH_FILE_RECITERS). Said on the row, before it is
+                chosen, not discovered at an ayah that starts late. */}
+            {wholeSurah && !isExactRecitation(item.id) ? (
+              <View style={[styles.badge, { borderColor: palette.border }]}>
+                <Text style={[styles.badgeText, { color: palette.muted }]}>
+                  {t('quran.wholeSurahBadge', 'best-effort ayah tracking')}
+                </Text>
+              </View>
+            ) : null}
           </View>
           {offline ? (
             <Text style={[styles.offline, { color: palette.muted }]}>
@@ -248,6 +287,22 @@ export function ReciterPickerSheet({ visible, onClose }: Props) {
             </Text>
           ) : null}
         </View>
+        {/* Hear it before choosing it: al-Fātiḥah, the same for every voice. */}
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={
+            previewing
+              ? t('quran.stopPreview', 'Stop the preview')
+              : t('quran.previewReciter', { defaultValue: 'Hear {{name}}', name: item.name })
+          }
+          hitSlop={8}
+          onPress={() => void (previewing ? stopPlayback() : previewReciter(item.id))}
+          style={[styles.iconBtn, { borderColor: palette.border, marginEnd: SPACING.xs }]}
+        >
+          <Text style={[styles.icon, { color: palette.accentSolid }]}>
+            {previewing ? '■' : '▶'}
+          </Text>
+        </Pressable>
         {selected ? (
           <Text
             style={{
@@ -473,6 +528,9 @@ const styles = StyleSheet.create({
   name: { fontSize: TYPE.callout.fontSize, fontWeight: '400' },
   subRow: {
     flexDirection: 'row',
+    // A long Arabic name, a reading and a tracking badge do not fit one
+    // line on a phone; they wrap rather than run under the buttons.
+    flexWrap: 'wrap',
     alignItems: 'center',
     gap: SPACING.sm,
     marginTop: 2,

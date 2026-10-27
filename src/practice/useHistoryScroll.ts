@@ -1,7 +1,7 @@
 /**
  * A horizontal record that opens on today and reaches back on request.
  *
- * The scrolling rules PracticeHeatmap learned the hard way, as a hook, so
+ * The scrolling rules the old day grid (PracticeHeatmap) learned the hard way, as a hook, so
  * the strip (PracticeStrip) scrolls exactly as the grid does:
  *
  * - it opens parked on today, and keeps re-asserting that until a finger

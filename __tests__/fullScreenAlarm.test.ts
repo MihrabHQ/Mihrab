@@ -228,8 +228,22 @@ describe('alarm screen sky', () => {
     // install's default is Sky (2.31).
     setFullScreenAlarmSkyTheme(false);
     expect(fullScreenAlarmSkyTheme()).toBe(false);
-    expect(fullScreenAlarmData('Fajr').fsSkyMid).toBeUndefined();
-    setFullScreenAlarmSkyTheme(true);
+    // Under any other theme: the same moods, in Realistic's colours,
+    // whatever the Sky theme's colours were last set to.
+    setFullScreenAlarmSkyTheme(false, 'vibrant');
+    for (const [prayer, passage, t] of [['Fajr', 'dawn', 1], ['Isha', 'night', 0]] as const) {
+      const real = skyMoodFor(passage, t, undefined, 'realistic');
+      const d = fullScreenAlarmData(prayer);
+      expect(d.fsSkyTop).toBe(real.heroTop);
+      expect(d.fsSkyMid).toBe(real.heroMid);
+      expect(d.fsSkyBottom).toBe(real.heroFoot);
+      expect(d.fsText).toBe(real.text);
+      expect(d.fsAccent).toBe(real.accent);
+    }
+    // Under the Sky theme: in the colours it wears.
+    setFullScreenAlarmSkyTheme(true, 'vibrant');
+    expect(fullScreenAlarmData('Fajr').fsSkyMid).toBe(skyMoodFor('dawn', 1, undefined, 'vibrant').heroMid);
+    setFullScreenAlarmSkyTheme(true, 'realistic');
     try {
       const expected: Record<string, [string, number]> = {
         Fajr: ['dawn', 1],

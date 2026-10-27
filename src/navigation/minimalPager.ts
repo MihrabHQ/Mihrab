@@ -76,14 +76,22 @@ export function pagerEdges(index: number, count: number): PagerEdges {
   return { prev: index > 0, next: index < count - 1 };
 }
 
-/** Slide the settled tab to `index` — at once when nothing is drawn yet. */
-export function settlePagerBase(index: number, animated = true): void {
+/**
+ * Slide the settled tab to `index` — at once when nothing is drawn yet.
+ *
+ * `onDone` runs once it is there. A turn tells the navigator then, not as
+ * it starts: the tab changing rebuilds every page's offset and the dots'
+ * position as new native nodes, and the navigator renders, which mid-slide
+ * was a step in the page's run — it slowed, then went on.
+ */
+export function settlePagerBase(index: number, animated = true, onDone?: () => void): void {
   if (baseTarget === index && baseAnim) return;
   baseAnim?.stop();
   baseTarget = index;
   if (!animated) {
     baseAnim = null;
     pagerBase.setValue(index);
+    onDone?.();
     return;
   }
   baseAnim = Animated.timing(pagerBase, {
@@ -92,8 +100,10 @@ export function settlePagerBase(index: number, animated = true): void {
     easing: pagerEasing,
     useNativeDriver: true,
   });
-  baseAnim.start(() => {
-    baseAnim = null;
+  const anim = baseAnim;
+  anim.start(() => {
+    if (baseAnim === anim) baseAnim = null;
+    onDone?.();
   });
 }
 
@@ -101,24 +111,54 @@ export function settlePagerBase(index: number, animated = true): void {
 export const PAGER_TRANSITION_MS = 280;
 export const pagerEasing = Easing.out(Easing.cubic);
 
+/** How long the dots' icons stay up after a turn settles. */
+export const ICONS_LINGER_MS = 1000;
+
 let engagedAnim: Animated.CompositeAnimation | null = null;
 let engagedNow = false;
+let reachAllNow = false;
 const engagedListeners = new Set<() => void>();
 
-/** Icons for dots while a turn is under way; dots again as it settles. */
-export function setPagerEngaged(on: boolean): void {
-  if (engagedNow !== on) {
+/**
+ * Icons for dots while a turn is under way; dots again as it settles.
+ *
+ * `reachAll`: every page is brought into reach for the turn, not only the
+ * neighbours — for the dots, whose hold can slide to any tab and whose tap
+ * slides across the ones between. A swipe turns one page, so it brings in
+ * none: its neighbours are in reach already, and laying out every page at
+ * the moment the finger starts to move was a stall in the middle of the
+ * swipe.
+ */
+export function setPagerEngaged(on: boolean, reachAll = false): void {
+  const all = on && reachAll;
+  if (engagedNow !== on || reachAllNow !== all) {
     engagedNow = on;
+    reachAllNow = all;
     engagedListeners.forEach(l => l());
   }
   engagedAnim?.stop();
   engagedAnim = Animated.timing(pagerEngaged, {
     toValue: on ? 1 : 0,
     duration: on ? 140 : 260,
+    // The icons stay a moment after the page settles, long enough to read
+    // which tab it landed on, before they go back to dots. Only the look
+    // waits: the pages are told at once (`engagedNow` above).
+    delay: on ? 0 : ICONS_LINGER_MS,
     easing: pagerEasing,
     useNativeDriver: true,
   });
   engagedAnim.start();
+}
+
+/** Whether a turn from the dots is under way: every page could be revealed. */
+export function usePagerReachAll(): boolean {
+  return useSyncExternalStore(
+    listener => {
+      engagedListeners.add(listener);
+      return () => engagedListeners.delete(listener);
+    },
+    () => reachAllNow,
+  );
 }
 
 /** Whether a turn is under way, for the pages: true while a finger could reveal any of them. */

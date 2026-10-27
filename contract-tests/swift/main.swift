@@ -107,6 +107,17 @@ for c in section("adapt") {
   check(want == got, "adapt — \(name)\n    want \(want)\n    have \(got)")
 }
 
+// ── Issue #111: until when a card counts up from a prayer ─────────────────
+
+for c in section("since") {
+  let prayerAt = optionalInt(c["prayerAt"]) ?? 0
+  let nextAt = optionalInt(c["nextAt"])
+  let window = optionalInt(c["window"]) ?? 0
+  let want = optionalInt(c["end"])
+  let have = WidgetPayloadV1.sinceAdhanEnd(prayerAt: prayerAt, nextAt: nextAt, window: window)
+  check(want == have, "since \(prayerAt) → \(String(describing: nextAt)), \(window): want \(String(describing: want)), have \(String(describing: have))")
+}
+
 // ── The shared Live Activity payload → the ActivityKit content ───────────
 
 for c in section("liveActivity") {

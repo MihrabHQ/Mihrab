@@ -79,6 +79,13 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     val fasts: String?,
   )
 
+  /**
+   * Counting up from a prayer that has just come in (#111): its instant,
+   * the Chronometer's line with the prayer named in it, and the longest that
+   * line can read, for sizing.
+   */
+  private class Since(val atMs: Long, val format: String, val sample: String)
+
   private class Model(
     val colors: Colors,
     val clock: WidgetContract.Clock,
@@ -95,6 +102,7 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     val practice: Practice?,
     val now: Now,
     val display: PrayerWidgetDisplay,
+    val since: Since?,
   )
 
   @Composable
@@ -230,7 +238,41 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
       practice = p.practice?.let { pr -> extra("practice") { practice(context, pr) } },
       now = now,
       display = display,
+      since = extra("since") { sinceOf(context, p, s, now) },
     )
+  }
+
+  /**
+   * Whether the card counts up from the prayer that came in last (#111):
+   * for `sinceAdhanMinutes` after it, or until halfway to what is next if
+   * that is sooner (`WidgetPayloadV1.sinceAdhanEnd`, the app's own rule).
+   * The alarm at the end of the window (PrayerWidgetProvider) redraws it.
+   */
+  private fun sinceOf(context: Context, p: WidgetContract.Payload, s: Schedule, now: Now): Since? {
+    val came = s.came ?: return null
+    val next = s.next ?: return null
+    val end = WidgetPayloadV1.sinceAdhanEnd(came.at, next.at, p.sinceAdhanMinutes) ?: return null
+    if (s.nowMinutes >= end) return null
+    val at = came.epochMs() ?: return null
+    if (at > now.epochMs) return null
+    val format = context.getString(R.string.widget_since_adhan_format, "%1\$s", came.label())
+    val sample = context.getString(R.string.widget_since_adhan_format, "59:59", came.label())
+    return Since(at, format, sample)
+  }
+
+  /** What the counter can read at its longest: the countdown's, or the count-up's. */
+  private fun counterSample(context: Context, m: Model): String =
+    m.since?.sample ?: context.getString(R.string.widget_countdown_format, "23:59:59")
+
+  /**
+   * The counter: up from the prayer that has just come in, while it is in
+   * its window, else down to the next time. Nothing when there is neither.
+   */
+  @Composable
+  private fun Counter(m: Model, sp: Float, color: Int, modifier: GlanceModifier = GlanceModifier) {
+    val since = m.since
+    if (since != null) CountUp(since.atMs, since.format, m.now, sp, color, modifier)
+    else m.nextAt?.let { Countdown(it, m.now, sp, color, modifier) }
   }
 
   /**
@@ -305,7 +347,7 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
         if (m.nextTime.isNotEmpty()) Label(m.nextTime, timeSp, m.colors.accent)
       }
       Column(modifier = GlanceModifier.defaultWeight(), horizontalAlignment = Alignment.End) {
-        if (d.showCountdown) m.nextAt?.let { Countdown(it, m.now, 13f, d.muted) }
+        if (d.showCountdown) Counter(m, 13f, d.muted)
         if (m.location.isNotEmpty()) {
           Label(m.location, 11f, d.muted, maxLines = 2, align = TextAlign.End, modifier = GlanceModifier.padding(top = 2.dp))
         }
@@ -372,13 +414,13 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     val half = width / 2f
     val timeBase = NEXT_TIME_SP * nameSp / NEXT_NAME_SP
     val timeSp = scaledTimeSp(context, listOf(m.nextTime), timeBase, d.timeScale, half, medium = false)
-    val at = m.nextAt.takeIf { d.showCountdown }
+    val counting = d.showCountdown && (m.since != null || m.nextAt != null)
     Label(context.getString(R.string.widget_next_label), 9f, d.muted, medium = true, modifier = GlanceModifier.padding(top = top.dp))
     Row(modifier = GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom) {
       if (m.nextName.isNotEmpty()) Label(m.nextName, nameSp, d.text, medium = true)
       if (m.nextTime.isNotEmpty()) Label(m.nextTime, timeSp, m.colors.accent, modifier = GlanceModifier.padding(start = 8.dp))
       Spacer(GlanceModifier.defaultWeight())
-      if (at != null) {
+      if (counting) {
         // At the time's size, so the two sit level, unless the row has not
         // the room: then down to what fits, measured on the longest it can
         // read and in the Chronometer's own face (medium).
@@ -386,8 +428,7 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
         val sp = if (width <= 0f) minOf(level, COUNTDOWN_ROW_SP) else {
           val taken = textWidthDp(context, m.nextName, nameSp, medium = true) +
             (if (m.nextTime.isEmpty()) 0f else textWidthDp(context, m.nextTime, timeSp, medium = false) + 8f) + 8f + ROW_SLACK_DP
-          val sample = context.getString(R.string.widget_countdown_format, "23:59:59")
-          fitTextSp(context, sample, width - taken, level, COUNTDOWN_MIN_SP, medium = true)
+          fitTextSp(context, counterSample(context, m), width - taken, level, COUNTDOWN_MIN_SP, medium = true)
         }
         // Level with the time: an embedded RemoteViews is placed at the top
         // of the row whatever its alignment, so it sat above the time. Padded
@@ -400,7 +441,7 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
         // much lower in its view than a Glance Text does (measured on a
         // Pixel 10 Pro, 5px at 22sp), and the eye reads the baselines.
         val drop = (rowDp - textLineDp(context, sp, medium = true) - COUNTDOWN_LIFT * sp).coerceAtLeast(0f)
-        Countdown(at, m.now, sp, d.muted, GlanceModifier.padding(start = 8.dp, top = drop.dp))
+        Counter(m, sp, d.muted, GlanceModifier.padding(start = 8.dp, top = drop.dp))
       }
     }
   }
@@ -420,8 +461,8 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     val room = (segmentDp - textLineDp(context, 9f, medium = true)) * NEXT_NAME_FILL
     var sp = (NEXT_NAME_SP * room / textLineDp(context, NEXT_NAME_SP, medium = true)).coerceIn(NEXT_NAME_SP, NEXT_NAME_MAX_SP)
     if (width <= 0f) return sp
-    val countdown = if (m.display.showCountdown && m.nextAt != null)
-      textWidthDp(context, context.getString(R.string.widget_countdown_format, "23:59:59"), COUNTDOWN_ROW_SP, medium = true) + 8f + ROW_SLACK_DP
+    val countdown = if (m.display.showCountdown && (m.since != null || m.nextAt != null))
+      textWidthDp(context, counterSample(context, m), COUNTDOWN_ROW_SP, medium = true) + 8f + ROW_SLACK_DP
     else 0f
     while (sp > NEXT_NAME_SP) {
       val timeSp = NEXT_TIME_SP * sp / NEXT_NAME_SP * m.display.timeScale
@@ -510,7 +551,7 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
         // The next-prayer line is the NextBlock's when the table is hidden.
         if (d.showTable) {
           if (m.nextName.isNotEmpty()) Label(m.nextName, 11f, d.text)
-          if (d.showCountdown) m.nextAt?.let { Countdown(it, m.now, 11f, d.muted, GlanceModifier.padding(start = 4.dp)) }
+          if (d.showCountdown) Counter(m, 11f, d.muted, GlanceModifier.padding(start = 4.dp))
         }
         Spacer(GlanceModifier.defaultWeight())
         if (practice != null) {

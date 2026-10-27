@@ -137,16 +137,17 @@ const ALL_SUBPAGES: readonly SettingsSubpage[] = [
   },
   {
     /**
-     * Android only: the widgets with settings are Android's. Its own row
-     * because "widget" is the word someone hunting for these scans the
-     * index for, and the prayer-times widget's options are a page's worth.
+     * Its own row because "widget" is the word someone hunting for these
+     * scans the index for, and the prayer-times widget's options are a
+     * page's worth. Android only until #111 gave iOS's widgets a setting
+     * of their own (time since the adhan).
      */
     route: 'SettingsWidgets',
     titleKey: 'settings.sectionWidgets',
-    blurbKey: 'settings.sectionWidgetsBlurb',
+    // iOS has only the one setting: say that, not Android's list.
+    blurbKey: Platform.OS === 'ios' ? 'settings.sectionWidgetsBlurbIos' : 'settings.sectionWidgetsBlurb',
     Icon: WidgetsIcon,
     component: WidgetsSettingsScreen,
-    platforms: ['android'],
   },
   {
     route: 'SettingsQuran',

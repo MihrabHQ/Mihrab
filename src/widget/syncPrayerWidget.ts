@@ -10,6 +10,7 @@ import type { WidgetExtras } from './widgetBlocks';
 import { widgetPayloadV2FromV1 } from './widgetPayloadV2';
 import { contractClock } from './wallClock';
 import { activeClock } from '../utils/activeClock';
+import { widgetSinceAdhanMinutes } from './sinceAdhanSetting';
 import i18n from '../i18n';
 
 /**
@@ -58,6 +59,7 @@ export async function syncPrayerWidget(
       const v2 = widgetPayloadV2FromV1(payload, {
         clock: contractClock(activeClock().hour12, i18n.language),
         now,
+        sinceAdhanMinutes: widgetSinceAdhanMinutes(),
       });
       // v2 ALONE (step 1.7): the empty v1 tells the native side to drop the
       // v1 key, so nothing is left for a renderer to parse a time out of.

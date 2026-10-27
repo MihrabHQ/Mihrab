@@ -431,6 +431,7 @@
     "sectionAppearanceBlurb": "थीम, रंग, समय प्रारूप, भाषा",
     "sectionWidgets": "विजेट",
     "sectionWidgetsBlurb": "पृष्ठभूमि, हाइलाइट और नमाज़ समय विजेट",
+    "sectionWidgetsBlurbIos": "नमाज़ के समय वाले विजेट पर अज़ान के बाद का समय",
     "widgetsAllTitle": "सभी विजेट",
     "sectionQuran": "क़ुरआन",
     "sectionQuranBlurb": "पठन, अनुवाद, तफ़सीर",
@@ -498,9 +499,13 @@
     },
     "providerTableFallback": "{{picked}} के पास आज के प्रकाशित समय नहीं हैं, इसलिए जब तक तालिका फिर से इस दिन को कवर न करे, उसकी अपनी पद्धति फ़ोन पर गिनी जाती है।",
     "minimalUi": "न्यूनतम",
-    "minimalUiHelp": "हर स्क्रीन पर एक ही चीज़। आज में काउंटडाउन रहता है; दिन के समय देखने के लिए उस पर टैप करें। बाकी टैब अपना-अपना काम रखते हैं।",
+    "minimalUiHelp": "हर स्क्रीन पर एक ही चीज़। आज में काउंटडाउन रहता है; दिन के समय देखने के लिए ऊपर स्वाइप करें। बाकी टैब अपना-अपना काम रखते हैं।",
     "minimalClassicOnly": "मिनिमल क्लासिक रंग रखता है। रंग थीम या सिस्टम रंग चुनने के लिए इसे बंद करें।",
-    "minimalRestartBody": "मिनिमल आकाश थीम में शुरू होता है, इसलिए सिस्टम रंग बंद हो जाएँगे। हर स्क्रीन पर बदलाव लाने के लिए ऐप को फिर से शुरू करना होगा। अभी फिर से शुरू करें?"
+    "minimalRestartBody": "मिनिमल आकाश थीम में शुरू होता है, इसलिए सिस्टम रंग बंद हो जाएँगे। हर स्क्रीन पर बदलाव लाने के लिए ऐप को फिर से शुरू करना होगा। अभी फिर से शुरू करें?",
+    "widgetSinceAdhanTitle": "अज़ान के बाद का समय",
+    "widgetSinceAdhanHelp": "हर नमाज़ का वक़्त शुरू होने के बाद इतनी देर तक नमाज़ के समय वाले विजेट दिखाते हैं कि वक़्त शुरू हुए कितनी देर हुई, फिर अगली नमाज़ की उलटी गिनती पर लौट आते हैं। अगर अगली नमाज़ पास हो तो उलटी गिनती पहले लौट आती है।",
+    "widgetSinceAdhanOff": "बंद",
+    "widgetSinceAdhanMinutes": "{{minutes}} मिनट"
   },
   "locationSetup": {
     "headline": "अपना स्थान निर्धारित करें",
@@ -1251,7 +1256,7 @@
     "tafsirUnavailable": "तफ़सीर उपलब्ध नहीं — डाउनलोड करने के लिए एक बार इंटरनेट से जुड़ें।",
     "hardWords": "कठिन शब्द (अरबी में)",
     "downloadingWordMeanings": "अरबी शब्दार्थ डाउनलोड हो रहे हैं",
-    "downloadProgressSurahs": "{{total}} में से {{done}} सूरह",
+    "downloadProgressSurahs": "{{total}} सूरहों में से {{done}}",
     "wordMeaningsDoneTitle": "शब्दार्थ तैयार हैं",
     "wordMeaningsDoneBody": "कठिन शब्दों के अरबी अर्थ इस डिवाइस पर हैं।",
     "wordMeaningsIncompleteBody": "{{count}} सूरह अभी बाकी हैं। जहाँ रुका था वहीं से जारी रखने के लिए फिर शुरू करें।",
@@ -1554,7 +1559,28 @@
     "riwayahFailedBody": "कारण देखने और फिर से कोशिश करने के लिए डाउनलोड खोलें।",
     "riwayahStoppedBody": "कुछ भी खोया नहीं। फिर से कोशिश करने के लिए टैप करें, या Wi-Fi पर यह अपने आप फिर कोशिश करेगा।",
     "downloadNoSpaceTitle": "पर्याप्त जगह नहीं है",
-    "downloadNoSpaceBody": "इस डाउनलोड के लिए {{size}} और खाली जगह चाहिए। कुछ जगह खाली करके फिर कोशिश करें।"
+    "downloadNoSpaceBody": "इस डाउनलोड के लिए {{size}} और खाली जगह चाहिए। कुछ जगह खाली करके फिर कोशिश करें।",
+    "downloadProgressMegabytes": "{{total}} MB में से {{done}} MB",
+    "downloadStoppedBodyMegabytes": "{{total}} MB में से {{done}} MB रखे गए। जारी रखने के लिए टैप करें, या यह Wi-Fi पर अपने आप फिर शुरू होगा।",
+    "listenDownloadRunningMegabytes": "डाउनलोड हो रहा है · {{total}} MB में से {{done}} MB",
+    "listenDownloadPartialSurahs": "{{total}} सूरहों में से {{done}} यहाँ · {{size}}",
+    "wholeSurahBadge": "आयत ट्रैकिंग यथासंभव",
+    "wholeSurahIntro": "{{name}} केवल पूरे डाउनलोड से चलता है — पूरी तिलावत, {{size}}।",
+    "wholeSurahDownloaded": "{{name}} डाउनलोड हो गया है — पूरी तिलावत, इस डिवाइस पर।",
+    "wholeSurahTracking": "यह हर सूरह की एक रिकॉर्डिंग है, जिसे रिकॉर्डिंग जितना संभव होने दे उतनी सटीकता से आयतों में बाँटा गया है: आयत ट्रैकिंग सबसे अच्छा प्रयास है, और कुछ आयतें ज़रा पहले या बाद में शुरू या ख़त्म हो सकती हैं।",
+    "wholeSurahDownload": "{{name}} डाउनलोड करें · {{size}}",
+    "wholeSurahResume": "बाकी डाउनलोड करें · कुल {{size}}",
+    "wholeSurahDownloading": "डाउनलोड हो रहा है · {{pct}}%",
+    "wholeSurahChanged": "इस आवाज़ में {{surah}} नहीं चल सकती: Mihrab के आयतों की जगह मापने के बाद स्रोत पर रिकॉर्डिंग बदल गई है। {{name}} का बाकी हिस्सा पहले जैसा चलता है।",
+    "wholeSurahIncompleteBody": "{{count}} सूरह डाउनलोड नहीं हुईं: {{names}}। \"जारी रखें\" केवल इन्हें लाएगा।",
+    "wholeSurahUnreachable": "इस आवाज़ में {{surah}} इस डिवाइस पर नहीं है, और अभी स्ट्रीम भी नहीं हो सकती — इसके स्रोत से कनेक्शन नहीं है। ऑफ़लाइन रखने के लिए डाउनलोड करें।",
+    "downloadingAudioMegabytes": "डाउनलोड हो रहा है… {{done}}/{{total}} MB",
+    "wholeSurahTrackingShort": "हर सूरह की एक रिकॉर्डिंग, जितना संभव हो उतनी सटीकता से आयतों में बाँटी गई: आयत ट्रैकिंग सबसे अच्छा प्रयास है।",
+    "reportAyahBoundary": "कोई आयत ग़लत जगह शुरू या ख़त्म होती है? रिपोर्ट करें",
+    "previewReciter": "{{name}} को सुनें",
+    "stopPreview": "नमूना रोकें",
+    "voiceHint": "मुसहफ़ {{page}} में है; {{name}} {{voice}} में तिलावत करते हैं। {{page}} में सुनें:",
+    "voiceHintDismiss": "यही आवाज़ रखें"
   },
   "reading": {
     "textSize": "पाठ का आकार",
@@ -1795,10 +1821,11 @@
     "quranGeometry": "आयत स्थिति डेटा (quran.com / Quran for Android प्रोजेक्ट)",
     "tajweedRules": "हर शब्द के तजवीद नियम",
     "tajweedFonts": "तजवीद रंगों वाले पन्ना-फ़ॉन्ट (डाउनलोड, बंडल नहीं)",
-    "recitation": "तिलावत ऑडियो (42 क़ारी): EveryAyah.com · शब्द समय: quran-align (CC BY 4.0)",
+    "recitation": "तिलावत ऑडियो (44 क़ारी): EveryAyah.com · शब्द समय: quran-align (CC BY 4.0)",
     "tafsir": "तफ़सीर: इब्न कसीर, मआरिफ़-उल-क़ुरआन, अल-मुयस्सर",
     "wordMeanings": "कठिन शब्दों के अरबी अर्थ",
-    "surahHeaderFont": "सूरह शीर्षक कैलिग्राफी"
+    "surahHeaderFont": "सूरह शीर्षक कैलिग्राफी",
+    "recitationWholeSurah": "पूरी सूरह की तिलावतें (15): mp3quran.net · आयतों का समय Mihrab ने ऑडियो से मिलाया"
   },
   "liveActivity": {
     "title": "अगली नमाज़",
@@ -1975,9 +2002,7 @@
     "setUpSync": "सिंक सेट अप करें",
     "legendTitle": "ग्राफ़ क्या दिखाता है",
     "fastRow": "रोज़ा",
-    "sunnahRow": "सुन्नत",
-    "graphByDay": "दिन के अनुसार ग्राफ़",
-    "graphByDayHelp": "हर दिन एक वर्ग — पूरी तिमाही एक नज़र में। बंद होने पर हर नमाज़ के लिए एक पंक्ति दिखती है।"
+    "sunnahRow": "सुन्नत"
   },
   "endOfDay": {
     "title": "आज की नमाज़ें दर्ज करें?",

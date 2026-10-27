@@ -478,6 +478,9 @@ struct WidgetPayload: Codable {
   /// own and never goes stale ~24h after the app was last opened. Optional:
   /// when absent the provider falls back to the legacy single-day timeline.
   let days: [Day]?
+  /// Issue #111: minutes the card counts up from a prayer that has just come
+  /// in (nil or 0: off). The contract's `sinceAdhanMinutes`.
+  var sinceAdhanMinutes: Int? = nil
   struct Row: Codable {
     let key: String
     /// 24-hour `HH:mm`, read (through `at`) only when `minutes` is absent —
@@ -725,6 +728,7 @@ extension WidgetPayload {
     case nextKey, nextPrayerName, nextPrayerTime, nextPrayerDisplay, locationName
     case seasonal, days
     case practice, today, reading, hijri, tasbih
+    case sinceAdhanMinutes
   }
 
   init(from decoder: Decoder) throws {
@@ -757,6 +761,7 @@ extension WidgetPayload {
     reading = (try? c.decodeIfPresent(Reading.self, forKey: .reading)) ?? nil
     hijri = (try? c.decodeIfPresent(Hijri.self, forKey: .hijri)) ?? nil
     tasbih = (try? c.decodeIfPresent(Tasbih.self, forKey: .tasbih)) ?? nil
+    sinceAdhanMinutes = (try? c.decodeIfPresent(Int.self, forKey: .sinceAdhanMinutes)) ?? nil
   }
 }
 
@@ -998,11 +1003,28 @@ struct Provider: TimelineProvider {
       )
     }
 
+    // Issue #111: after each of the five, for `sinceAdhanMinutes` or until
+    // halfway to the next time on the card, the card counts up from it. The
+    // rule is the app's (`WidgetPayloadV1.sinceAdhanEnd`); each window's end
+    // is a boundary below, where the card goes back to counting down.
+    var spans: [SinceAdhan] = []
+    let window = payload.sinceAdhanMinutes ?? 0
+    if window > 0 {
+      for (i, p) in prayers.enumerated() where WidgetPayloadV1.sinceAdhanKeys.contains(p.key) {
+        guard let n = prayers[(i + 1)...].first(where: { $0.date > p.date }) else { continue }
+        let gap = Int((n.date.timeIntervalSince(p.date) / 60).rounded(.down))
+        guard let end = WidgetPayloadV1.sinceAdhanEnd(prayerAt: 0, nextAt: gap, window: window) else { continue }
+        spans.append(SinceAdhan(name: p.name, start: p.date, end: p.date.addingTimeInterval(Double(end) * 60)))
+      }
+    }
+    func since(at t: Date) -> SinceAdhan? { spans.last { $0.start <= t && t < $0.end } }
+
     // Entry boundaries: now, the start of each future day (so the rows roll at
     // midnight), and each future prayer time (so the highlight advances).
     var boundarySet: Set<Date> = [now]
     for info in dayInfos where info.date > now { boundarySet.insert(info.date) }
     for p in prayers where p.date > now { boundarySet.insert(p.date) }
+    for s in spans where s.end > now { boundarySet.insert(s.end) }
     var boundaries = boundarySet.sorted()
 
     // ── THE ARCHIVE HAS A SIZE CAP, AND THIS IS WHERE IT WAS BLOWN ─────
@@ -1058,7 +1080,8 @@ struct Provider: TimelineProvider {
         payload: perDayPayload(info, np, isToday: info.day.dateKey == todayInfo.day.dateKey),
         dynamicNextKey: np?.key,
         dynamicNextName: np?.name,
-        dynamicNextTime: np?.display
+        dynamicNextTime: np?.display,
+        since: since(at: b)
       ))
     }
 
@@ -1118,6 +1141,15 @@ struct Entry: TimelineEntry {
   let dynamicNextKey: String?
   let dynamicNextName: String?
   let dynamicNextTime: String?
+  /// Inside a count-up from a prayer that has just come in (#111).
+  var since: SinceAdhan? = nil
+}
+
+/// A prayer that has just come in, and until when the card counts up from it.
+struct SinceAdhan {
+  let name: String
+  let start: Date
+  let end: Date
 }
 
 // There is no refresh button on iOS or the Mac, and that is deliberate: a
@@ -1206,10 +1238,16 @@ struct CountdownLabel: View {
   /// up orphaned in a corner with its number nowhere near it. Aligning the
   /// text inside its own box is what actually moves the glyphs.
   var trailing: Bool = false
+  /// Counting up from a prayer that has just come in (#111): "12 min since
+  /// Dhuhr", ticked by the system like the countdown. The entry at the end
+  /// of its window draws the countdown again.
+  var since: SinceAdhan? = nil
 
   var body: some View {
     Group {
-      if let target, target > Date() {
+      if let since {
+        sinceText(since)
+      } else if let target, target > Date() {
         Text(target, style: .relative)
       } else if let fallback, !fallback.isEmpty {
         Text(fallback)
@@ -1222,6 +1260,17 @@ struct CountdownLabel: View {
     .minimumScaleFactor(0.5)
     .multilineTextAlignment(trailing ? .trailing : .leading)
     .frame(alignment: trailing ? .trailing : .leading)
+  }
+
+  /// The localized line around a ticking time: `%1$@` is the time, `%2$@`
+  /// the prayer, in whichever order the language puts them.
+  private func sinceText(_ since: SinceAdhan) -> Text {
+    let format = widgetString("widget_since_adhan_format")
+      .replacingOccurrences(of: "%2$@", with: since.name)
+    let parts = format.components(separatedBy: "%1$@")
+    let before = parts.first ?? ""
+    let after = parts.count > 1 ? parts[1...].joined() : ""
+    return Text(verbatim: before) + Text(since.start, style: .relative) + Text(verbatim: after)
   }
 }
 
@@ -1336,10 +1385,12 @@ struct PrayerWidgetEntryView: View {
 
         // Full width, so the countdown never has to be abbreviated.
         VStack(alignment: .leading, spacing: 0) {
-          widgetText("widget_in_label")
-            .font(.system(size: 11))
-            .foregroundStyle(widgetMuted)
-          CountdownLabel(target: interval?.end, fallback: time)
+          if entry.since == nil {
+            widgetText("widget_in_label")
+              .font(.system(size: 11))
+              .foregroundStyle(widgetMuted)
+          }
+          CountdownLabel(target: interval?.end, fallback: time, since: entry.since)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
       }
@@ -1408,7 +1459,8 @@ struct PrayerWidgetEntryView: View {
           // away it is, which is the question being asked.
           CountdownLabel(
             target: PrayerInterval.around(entry.date, rows: p.rows, calendar: .current)?.end,
-            fallback: nil
+            fallback: nil,
+            since: entry.since
           )
           .padding(.top, 1)
 
@@ -1666,13 +1718,16 @@ struct PrayerWidgetEntryView: View {
             }
             Spacer(minLength: 8)
             VStack(alignment: .trailing, spacing: 0) {
-              widgetText("widget_in_label")
-                .font(.system(size: 11))
-                .foregroundStyle(widgetMuted)
+              if entry.since == nil {
+                widgetText("widget_in_label")
+                  .font(.system(size: 11))
+                  .foregroundStyle(widgetMuted)
+              }
               CountdownLabel(
                 target: PrayerInterval.around(entry.date, rows: p.rows, calendar: .current)?.end,
                 fallback: nil,
-                trailing: true
+                trailing: true,
+                since: entry.since
               )
             }
           }
@@ -1763,60 +1818,40 @@ struct PrayerWidgetEntryView: View {
   /// next, and whether this week has held. It is the same widget kind with
   /// one more section, not a tenth entry in the picker.
   ///
+  /// The graph alone, across the card's whole width: as many days as fit,
+  /// today at the right. The streak and its best ("12 day streak · Best 31")
+  /// stood at its left and took half the width the record could use; the
+  /// Streak widget and the Log say those.
+  ///
   /// Drawn only when the app has actually sent a `practice` block. An absent
   /// block is not a zero streak: those look identical on a home screen and
   /// mean opposite things.
   @ViewBuilder
   private var practiceStrip: some View {
     if let pr = entry.payload?.practice {
+      let cell: CGFloat = 8
+      let spacing: CGFloat = 2
       VStack(spacing: 6) {
         Rectangle()
           .fill(Color.white.opacity(0.12))
           .frame(height: 1)
 
-        HStack(alignment: .bottom, spacing: 10) {
-          VStack(alignment: .leading, spacing: 1) {
-            HStack(alignment: .firstTextBaseline, spacing: 5) {
-              Text(verbatim: "\(pr.streak)")
-                .font(.system(size: 24, weight: .bold))
-                .foregroundStyle(widgetText)
-              Text(widgetString("widget_streak_day_label", pr.streak))
-                .font(.system(size: 11))
-                .foregroundStyle(widgetMuted)
-            }
-            Text(verbatim: practiceFooter(pr))
-              .font(.system(size: 10))
-              .foregroundStyle(widgetMuted)
-              .lineLimit(1)
-              .minimumScaleFactor(0.8)
-          }
-          Spacer(minLength: 4)
+        GeometryReader { g in
           PracticeGrid(
             days: pr.days,
             since: pr.since,
-            dayCount: 21,
-            cell: 8,
-            spacing: 2,
+            // A column is a cell and a gap; as many as the width holds.
+            dayCount: max(7, Int((g.size.width + spacing) / (cell + spacing))),
+            cell: cell,
+            spacing: spacing,
             accent: resolvedWidgetHighlightColor()
           )
+          .frame(maxWidth: .infinity, alignment: .trailing)
         }
+        // Six rows — the five and the fast — and the gaps between them.
+        .frame(height: cell * 6 + spacing * 5)
       }
     }
-  }
-
-  /// "Best 31 · 2 of 5 logged", dropping the parts there is nothing to say
-  /// about — a best of 0 is not a personal best worth printing.
-  ///
-  /// `owed` is the whole journal's unmade-up prayers, not today's, while the
-  /// segment beside it counts today — so "2 owed" next to "2 of 5 logged"
-  /// reads as two owed TODAY, which it is not. The Log screen calls the same
-  /// number a thing you tap a day to make up, so the widget says that too.
-  private func practiceFooter(_ pr: WidgetPayload.Practice) -> String {
-    var parts: [String] = []
-    if pr.bestStreak > 0 { parts.append(widgetString("widget_streak_best", pr.bestStreak)) }
-    parts.append(widgetString("widget_streak_logged", pr.loggedToday))
-    if pr.owed > 0 { parts.append(widgetString("widget_streak_make_up", pr.owed)) }
-    return parts.joined(separator: " · ")
   }
 
   var body: some View {

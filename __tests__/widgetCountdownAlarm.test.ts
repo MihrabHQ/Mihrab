@@ -43,7 +43,7 @@ describe('the next boundary is found even when today has none left', () => {
     expect(provider).toMatch(/val tomorrow = dayAfter\(o, todayKey\)/);
     expect(provider).toMatch(/private fun dayAfter\(o: JSONObject, key: String\): JSONObject\?/);
     expect(provider).toMatch(
-      /private fun nextBoundaryMillis[\s\S]*?WidgetInstants\.next\([\s\S]*?nextDayMinutes = tomorrow\?\.let \{ boundaryMinutes\(it, o\) \}/,
+      /private fun nextBoundaryMillis[\s\S]*?val tomorrowAll = tomorrow\?\.let \{ boundaryMinutes\(it, o\) \}[\s\S]*?WidgetInstants\.next\([\s\S]*?nextDayMinutes = tomorrowAll \+/,
     );
     expect(instants).toMatch(/nextDayMinutes\.minOrNull\(\)/);
   });
@@ -113,15 +113,15 @@ describe('when it fires, every widget is redrawn', () => {
   });
 
   it.each([
-    'PrayerWidgetLogProvider',
-    'PrayerWidgetLogLargeProvider',
-    'PrayerWidgetStreakProvider',
+    'LogWidgetReceiver',
+    'LogTallWidgetReceiver',
+    'StreakWidgetReceiver',
     'PrayerWidgetReadingProvider',
     'PrayerWidgetHijriProvider',
     'PrayerWidgetTasbihProvider',
-    'PrayerWidgetProvider',
-    'PrayerWidgetSmallProvider',
-    'PrayerWidgetLargeProvider',
+    'TimesWidgetReceiver',
+    'NextPrayerWidgetReceiver',
+    'TimesTallWidgetReceiver',
   ])('%s is redrawn from the one entry point', kind => {
     const occurrences = glanceWidgets.match(new RegExp(`\\b${kind}::class\\.java`, 'g')) ?? [];
     expect(occurrences).toHaveLength(1);

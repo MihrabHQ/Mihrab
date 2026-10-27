@@ -23,6 +23,7 @@ import {
 } from '../native/SystemTheme';
 import { desktopSize } from '../responsive/desktop';
 import { useAppearanceSettings } from '../context/PrayerSettingsContext';
+import { minimalOn } from '../settings/minimalLook';
 
 /** The pill's own height. */
 export const TAB_BAR_HEIGHT = desktopSize(60);
@@ -285,7 +286,8 @@ export function useTabBarInset(): number {
  * the dots are not drawn — `MainTabs` adds that condition itself.
  */
 export function useMinimalUi(): boolean {
-  return useAppearanceSettings().slice.minimalUi;
+  // Not on the Mac (settings/minimalLook.ts, MINIMAL_OFFERED).
+  return minimalOn(useAppearanceSettings().slice);
 }
 
 /**

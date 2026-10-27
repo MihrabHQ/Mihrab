@@ -34,6 +34,7 @@
  */
 import { AppState } from 'react-native';
 import { setActiveClockFormat } from '../utils/activeClock';
+import { setWidgetSinceAdhanMinutes } from './sinceAdhanSetting';
 import { setFullScreenAlarmSkyTheme } from '../notifications/fullScreenAlarm';
 import { refreshSystemIs24Hour } from '../native/SystemClock';
 import i18n from '../i18n';
@@ -79,6 +80,8 @@ export type RepublishReason =
   | 'reading'
   | 'tasbih'
   | 'language'
+  /** A setting the payload carries changed — Settings → Widgets (#111). */
+  | 'settings'
   | 'queue-drain'
   /** The refresh glyph on a home-screen widget — see `widgetRefreshTask`. */
   | 'widget-refresh';
@@ -241,6 +244,7 @@ export async function republishWidgetPayload(
     // watched it flip to "17:31" until the app was next opened. Same
     // situation, and same fix, as `language` further down.
     setActiveClockFormat(settings.clockFormat);
+    setWidgetSinceAdhanMinutes(settings.widgetSinceAdhanMinutes);
     setFullScreenAlarmSkyTheme(settings.appearance === 'sky', settings.skyVariant);
     await refreshSystemIs24Hour();
     // And the language, for the same reason: every string in the payload —

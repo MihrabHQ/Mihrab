@@ -136,6 +136,16 @@ object WidgetContract {
     val hijriDays: List<Hijri> = emptyList(),
     /** The dhikr counter, for the Tasbih widget. */
     val tasbih: Tasbih? = null,
+    /**
+     * Issue #111: for this many minutes after one of the five prayers comes
+     * in, the prayer card counts UP from it ("12:34 since Dhuhr") instead of
+     * down to what is next; 0 is off. Never after Sunrise or a night mark.
+     * The window ends early, halfway to the next time on the card, so the
+     * countdown to a prayer that is close is never hidden. The rule is
+     * `sinceAdhanEnd` in each platform's WidgetPayloadV1, held to the same
+     * answers by the contract fixtures (`since`).
+     */
+    val sinceAdhanMinutes: Int = 0,
   ) {
     fun toJson(): JSONObject = JSONObject().apply {
       put("schemaVersion", schemaVersion)
@@ -150,6 +160,7 @@ object WidgetContract {
       hijri?.let { put("hijri", it.toJson()) }
       put("hijriDays", JSONArray().apply { hijriDays.forEach { put(it.toJson()) } })
       tasbih?.let { put("tasbih", it.toJson()) }
+      put("sinceAdhanMinutes", sinceAdhanMinutes)
     }
 
     companion object {
@@ -168,6 +179,7 @@ object WidgetContract {
           hijri = Hijri.fromJson(o.wcRaw("hijri") as? JSONObject),
           hijriDays = o.wcList("hijriDays") { Hijri.fromJson(it as? JSONObject) } ?: emptyList(),
           tasbih = Tasbih.fromJson(o.wcRaw("tasbih") as? JSONObject),
+          sinceAdhanMinutes = o.wcRaw("sinceAdhanMinutes").wcAsInt() ?: 0,
         )
       }
 

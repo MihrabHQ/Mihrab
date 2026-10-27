@@ -15,8 +15,8 @@
  * years ago and started logging prayers last week must not find the two
  * years in between marked.
  */
-import { buildHeatmap, type HeatmapDay } from '../src/practice/PracticeHeatmap';
-import { scoreByDay, type JournalEntry } from '../src/journal/journal';
+import { buildStrip, type StripDay } from '../src/practice/stripRecord';
+import { type JournalEntry } from '../src/journal/journal';
 import { buildPracticeBlock } from '../src/widget/widgetBlocks';
 
 const NOW = new Date(2026, 7, 23, 13, 0, 0); // Sunday 23 August 2026
@@ -35,12 +35,12 @@ function fullDay(date: string): JournalEntry[] {
   return ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'].map(p => entry(date, p));
 }
 
-function dayFor(rows: HeatmapDay[][], key: string): HeatmapDay | undefined {
-  return rows.flat().find(d => d.key === key);
+function dayFor(days: StripDay[], key: string): StripDay | undefined {
+  return days.find(d => d.key === key);
 }
 
 function heatmap(entries: JournalEntry[], since: string | null) {
-  return buildHeatmap(scoreByDay(entries), new Set(), NOW, 4, {}, since);
+  return buildStrip(entries, new Set(), NOW, 4, {}, since);
 }
 
 describe('the unaccounted mark', () => {
@@ -85,7 +85,7 @@ describe('the unaccounted mark', () => {
 
   it('marks nothing at all when the journal is empty', () => {
     const rows = heatmap([], null);
-    expect(rows.flat().some(d => d.unaccounted)).toBe(false);
+    expect(rows.some(d => d.unaccounted)).toBe(false);
   });
 });
 

@@ -23,7 +23,7 @@ import android.content.Intent
  * block. An absent block is not a zero streak: on a home screen those look
  * identical and mean opposite things.
  */
-class PrayerWidgetStreakProvider : GlanceAppWidgetReceiver() {
+open class PrayerWidgetStreakProvider : GlanceAppWidgetReceiver() {
 
   /** The card this component draws. Placed widgets kept this class name across
    *  the move to Glance, so they draw with Glance after an update. */

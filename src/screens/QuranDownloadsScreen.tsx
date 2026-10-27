@@ -49,7 +49,7 @@ import {
 import { MUSHAF_TOTAL_PAGES } from '../quran/mushafImages';
 import {
   deleteReciterAudio,
-  totalAyahCount,
+  reciterFileTotal,
 } from '../quran/audio/audioStore';
 import {
   cancelQuranDownload,
@@ -60,7 +60,7 @@ import {
   subscribeQuranDownload,
   type QuranDownloadState,
 } from '../quran/quranDownloadManager';
-import { findReciter } from '../quran/audio/reciters';
+import { findReciter, isWholeSurah } from '../quran/audio/reciters';
 import {
   deleteTafsirEdition,
   findTafsirEdition,
@@ -339,12 +339,17 @@ export function QuranDownloadsContent() {
     // counts the ones already on disk as it passes them, so its count is
     // the floor of what is there; the inventory's own count wins until the
     // run overtakes it. The size is re-read when the run ends.
+    // A whole-surah recitation counts surah files on disk and megabytes
+    // while it runs (audioStore), so its row keeps to the files it has and
+    // leaves the running count to the Downloading row above.
+    const wholeSurah = isWholeSurah(findReciter(a.reciterId));
+    const fileTotal = reciterFileTotal(a.reciterId);
     const live =
-      running?.kind === 'audio' && running.reciterId === a.reciterId
+      !wholeSurah && running?.kind === 'audio' && running.reciterId === a.reciterId
         ? download.progress
         : null;
     const files = live ? Math.max(a.files, live.done) : a.files;
-    const whole = files >= totalAyahCount();
+    const whole = files >= fileTotal;
     const name = findReciter(a.reciterId).name;
     items.push(
       <DownloadRow
@@ -356,14 +361,20 @@ export function QuranDownloadsContent() {
         sub={
           whole
             ? t('downloads.audioSub', 'Recitation audio')
+            : wholeSurah
+            ? t('quran.downloadProgressSurahs', {
+                defaultValue: '{{done}} of {{total}} surahs',
+                done: files,
+                total: fileTotal,
+              })
             : t('quran.downloadProgressAyahs', {
                 defaultValue: '{{done}} of {{total}} ayahs',
                 done: files,
-                total: totalAyahCount(),
+                total: fileTotal,
               })
         }
         bytes={a.bytes}
-        progress={whole ? undefined : files / totalAyahCount()}
+        progress={whole ? undefined : files / fileTotal}
         actions={itemActions(
           name,
           () => confirmDelete(name, () => deleteReciterAudio(a.reciterId)),

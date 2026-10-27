@@ -41,13 +41,22 @@ describe('reciter catalog', () => {
   it('knows which reading each recitation is', () => {
     // Absent means Ḥafṣ — saying so forty-two times would say nothing.
     const warsh = RECITERS.filter(r => reciterRiwayah(r) === 'warsh');
-    expect(warsh).toHaveLength(2);
     expect(warsh.map(r => r.id).sort()).toEqual([
+      'husary-warsh',
       'warsh-dosari',
       'warsh-jazaery',
+      'warsh-koshi',
+    ]);
+    // Qālūn and Shuʿbah have voices too, all whole-surah recitations (#110).
+    expect(RECITERS.filter(r => reciterRiwayah(r) === 'qalun').map(r => r.id).sort()).toEqual([
+      'husary-qalun',
+      'qalun-hudhaify',
+    ]);
+    expect(RECITERS.filter(r => reciterRiwayah(r) === 'shubah').map(r => r.id)).toEqual([
+      'shubah-hudhaify',
     ]);
     for (const r of RECITERS) {
-      expect(['hafs', 'warsh']).toContain(reciterRiwayah(r));
+      expect(['hafs', 'warsh', 'qalun', 'shubah']).toContain(reciterRiwayah(r));
     }
   });
 
@@ -64,11 +73,12 @@ describe('reciter catalog', () => {
   it('puts the reader’s own reading first, and hides nothing', () => {
     const forWarsh = sortedReciters(RECITERS, 'warsh');
     expect(forWarsh).toHaveLength(RECITERS.length);
-    expect(forWarsh.slice(0, 2).every(r => reciterRiwayah(r) === 'warsh')).toBe(
-      true,
-    );
+    const warshCount = RECITERS.filter(r => reciterRiwayah(r) === 'warsh').length;
+    expect(
+      forWarsh.slice(0, warshCount).every(r => reciterRiwayah(r) === 'warsh'),
+    ).toBe(true);
     // Within a group, the alphabet it has always been in.
-    const hafs = forWarsh.slice(2).map(r => r.name);
+    const hafs = forWarsh.slice(warshCount).map(r => r.name);
     expect(hafs).toEqual([...hafs].sort((a, b) => a.localeCompare(b, 'en', { sensitivity: 'base' })));
     // And with no preference, the plain alphabet across everybody.
     const plain = sortedReciters(RECITERS).map(r => r.name);
@@ -137,7 +147,7 @@ describe('searchReciters', () => {
     // through the id, which is the word a reader looking for a Warsh
     // voice actually types.
     const hits = searchReciters('warsh').map(r => r.id);
-    expect(hits).toEqual(['warsh-dosari', 'warsh-jazaery']);
+    expect(hits).toEqual(['warsh-koshi', 'warsh-dosari', 'husary-warsh', 'warsh-jazaery']);
   });
 
   it('still returns nothing for a query that matches nobody', () => {

@@ -2,7 +2,9 @@
  * The joins between ayahs, kept from JS where the player cannot keep them.
  *
  * A track may carry `trimStart` / `trimEnd` — seconds of silence to skip at
- * each end of its file (recitationEdges.ts).
+ * each end of its file (recitationEdges.ts) — or `trimStart` / `clipEnd`,
+ * where an ayah cut out of a whole-surah file starts and ends in it
+ * (surahRecitation.ts).
  *
  * On Android the player's own service does this, natively
  * (patches/react-native-track-player: MusicService `watchSeam`): JS timers
@@ -25,7 +27,11 @@
  * for the length of the surah.
  */
 import { Platform } from 'react-native';
-import TrackPlayer, { State, type Track } from 'react-native-track-player';
+import TrackPlayer, {
+  RepeatMode,
+  State,
+  type Track,
+} from 'react-native-track-player';
 
 const IN_JS = Platform.OS !== 'android';
 
@@ -47,6 +53,23 @@ function clearSeam(): void {
   seamTimer = null;
 }
 
+/**
+ * The queue has run out of clips — ayahs cut from a surah file, which end
+ * inside it. Letting the player run on would play the rest of the surah
+ * after the range that was asked for. On repeat it goes round again from
+ * the first clip; otherwise it stops, as a queue of whole files does.
+ */
+async function endOfClips(): Promise<void> {
+  const mode = await TrackPlayer.getRepeatMode();
+  if (mode === RepeatMode.Queue) {
+    const first = await TrackPlayer.getTrack(0);
+    await TrackPlayer.skip(0, seconds(first, 'trimStart') ?? 0);
+    await TrackPlayer.play();
+    return;
+  }
+  await TrackPlayer.stop();
+}
+
 /** Aim the timer at the current track's last sound. */
 export async function watchSeam(): Promise<void> {
   if (!IN_JS) return;
@@ -61,21 +84,41 @@ export async function watchSeam(): Promise<void> {
     ]);
     if (mine !== generation || !track || playback.state !== State.Playing)
       return;
+    // `clipEnd`: where an ayah cut from a surah file ends, in seconds from
+    // the file's start (surahRecitation.ts). `trimEnd`: silence to skip at
+    // the end of an ayah's own file, in seconds before its end.
+    const clipEnd = seconds(track, 'clipEnd');
     const trimEnd = seconds(track, 'trimEnd');
-    if (trimEnd == null) return;
-    if (!(progress.duration > 0)) {
-      // Not loaded far enough to know its length yet.
-      seamTimer = setTimeout(() => void watchSeam(), 250);
-      return;
+    if (clipEnd == null && trimEnd == null) return;
+    let left: number;
+    if (clipEnd != null) {
+      left = clipEnd - progress.position;
+    } else {
+      if (!(progress.duration > 0)) {
+        // Not loaded far enough to know its length yet.
+        seamTimer = setTimeout(() => void watchSeam(), 250);
+        return;
+      }
+      if (trimEnd! >= progress.duration) return;
+      left = progress.duration - trimEnd! - progress.position;
     }
-    if (trimEnd >= progress.duration) return;
-    const left = progress.duration - trimEnd - progress.position;
     if (left <= 0.02) {
       const index = await TrackPlayer.getActiveTrackIndex();
       if (mine !== generation || index == null) return;
-      // The last ayah of the queue ends as recorded.
-      if (!(await TrackPlayer.getTrack(index + 1))) return;
-      await TrackPlayer.skipToNext();
+      const next = await TrackPlayer.getTrack(index + 1);
+      if (next) {
+        if (clipEnd == null) {
+          // A file of its own: the join exactly as it always was.
+          await TrackPlayer.skipToNext();
+        } else {
+          // A clip: the next one at its own start, mid-file.
+          await TrackPlayer.skip(index + 1, seconds(next, 'trimStart') ?? 0);
+        }
+        return;
+      }
+      // The last ayah of a queue of files ends as recorded; the last clip
+      // does not run on into the rest of its file.
+      if (clipEnd != null) await endOfClips();
       return;
     }
     const ms = (left / Math.max(0.25, rate || 1)) * 1000;

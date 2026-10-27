@@ -75,4 +75,19 @@ object WidgetInstants {
         }
     return wrapped?.takeIf { it.epochMs > nowMs }
   }
+
+  /**
+   * When each count-up on a day ends (#111) — boundaries the card also has
+   * to be woken at, or it would go on counting up from Dhuhr until the
+   * next prayer. One per prayer in [prayers], by `WidgetPayloadV1.sinceAdhanEnd`
+   * against the first of [all] after it; [all] may carry the next day's
+   * times past 1440 so ʿIshāʾ's window ends where the card's does. Empty
+   * when [window] is 0.
+   */
+  fun sinceEnds(prayers: Collection<Int>, all: Collection<Int>, window: Int): List<Int> {
+    if (window <= 0) return emptyList()
+    return prayers.mapNotNull { p ->
+      WidgetPayloadV1.sinceAdhanEnd(p, all.filter { it > p }.minOrNull(), window)
+    }
+  }
 }

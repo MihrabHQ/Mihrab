@@ -18,7 +18,7 @@ describe('the setting', () => {
   it('is off by default and rides the appearance slice', () => {
     expect(read('src/settings/types.ts')).toMatch(/minimalUi: false,/);
     expect(read('src/context/PrayerSettingsContext.tsx')).toContain("| 'minimalUi'");
-    expect(read('src/screens/settings/AppearanceCard.tsx')).toContain('updateSettings({ minimalUi: v })');
+    expect(read('src/screens/settings/AppearanceCard.tsx')).toContain('updateSettings({ minimalUi: on })');
   });
 });
 
@@ -34,7 +34,7 @@ describe('the dots', () => {
     expect(bar).toContain('accessibilityState={{ selected: focused }}');
     expect(bar).toContain("navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true })");
     expect(bar).toContain('if (focused || event.defaultPrevented) return;');
-    expect(bar).toContain('navigation.navigate(route.name, route.params);');
+    expect(bar).toContain('settlePagerBase(index, true, () => navigation.navigate(route.name, route.params));');
   });
 
   it('fade the page under them everywhere but on the sky', () => {
@@ -87,7 +87,9 @@ describe('the swipe', () => {
     // The drag is shaped natively too: a page at most, a fraction past the row's end.
     expect(pager).toContain("outputRange: [onLeft ? -w : -w * EDGE_GIVE, 0, onRight ? w : w * EDGE_GIVE],");
     // On a turn the settled tab slides while the drag runs back: no jump.
-    expect(swipe).toContain('settlePagerBase(i + step);\n      navigation.navigate(next.name as never);\n      settlePagerDrag(done);');
+    // And the navigator is told once the page is there: a tab change
+    // rebuilds the offsets and renders, a step in the middle of the slide.
+    expect(swipe).toMatch(/settlePagerBase\(i \+ step\);\s*settlePagerDrag\(\(\) => \{\s*navigation\.navigate\(next\.name as never\);\s*done\(\);/);
     expect(pager).toMatch(/duration: PAGER_TRANSITION_MS,\s*easing: pagerEasing,\s*useNativeDriver: true,\s*\}\)\.start\(\(\) => onDone/);
   });
 
@@ -99,7 +101,10 @@ describe('the swipe', () => {
 
   it('keeps only the pages in reach laid out, and mounts the rest as the warm-up comes to them', () => {
     // The page on show alone until its first paint and launch run are over.
-    expect(swipe).toContain('const inReach = engaged || distance <= (settled ? 1 : 0);');
+    // A swipe brings in only the neighbours; a turn from the dots, every page
+    // — laying out all of them as a finger starts to swipe stalled the swipe.
+    expect(swipe).toContain('const inReach = reachAll || distance <= (settled || engaged ? 1 : 0);');
+    expect(read('src/navigation/MinimalTabBar.tsx').match(/setPagerEngaged\(true, true\)/g)).toHaveLength(2);
     expect(swipe).toMatch(/void afterRun\(\)\.then\(\(\) => \{\s*if \(cancelled\) return;\s*setSettled\(true\);\s*startPagerWarmup\(\);/);
     expect(read('src/navigation/minimalPager.ts')).toContain('let warmth = 0;');
     expect(swipe).toContain('inReach ? null : styles.away');
@@ -135,7 +140,7 @@ describe('the swipe', () => {
     expect(bar).toContain('if (I18nManager.isRTL) fromLeft = count - 1 - fromLeft;');
     // The dots and the pages read one position, so the strip follows the finger with them.
     expect(bar).toContain('() => pagerPosition(width, pagerEdges(state.index, state.routes.length)),');
-    expect(bar).toContain('settlePagerBase(target);');
+    expect(bar).toContain('settlePagerBase(target, true, () => navigation.navigate(route.name, route.params));');
   });
 
   it('shows the icons while a page turns, the current one larger, and dots at rest', () => {
@@ -152,7 +157,6 @@ describe('the swipe', () => {
     expect(keeps).toContain('usePagerBlocker(ref);');
     expect(swipe).toContain('waitFor={blockers as never}');
     expect(read('src/practice/PracticeStrip.tsx')).toContain('<KeepsSideways>');
-    expect(read('src/practice/PracticeHeatmap.tsx')).toContain('<KeepsSideways>');
   });
 
   it('is the only sideways gesture under Minimal', () => {
@@ -165,10 +169,13 @@ describe('the swipe', () => {
 });
 
 describe('the minimal Today', () => {
-  it('opens the day’s times on a tap or a drag up, and keeps the heart', () => {
+  it('opens the day’s times on a drag up — not a tap — and keeps the heart', () => {
     expect(card).toContain('.enabled(minimal)');
     expect(card).toContain('.activeOffsetY(-14)');
-    expect(card).toContain('onPress: onOpenTimes,');
+    // A tap on the page opens nothing; a screen reader activates it instead.
+    expect(card).not.toContain('onPress: onOpenTimes,');
+    expect(card).toContain('const HeroWrap = View;');
+    expect(card).toContain("if (e.nativeEvent.actionName === 'activate') onOpenTimes();");
     expect(card).toContain("topRow={fullBleed ? (minimal ? { renderHelp } : { renderLocation, renderQibla, renderHelp }) : undefined}");
     expect(card).toContain('<TodayTimesSheet');
   });

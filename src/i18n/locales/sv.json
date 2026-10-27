@@ -431,6 +431,7 @@
     "sectionAppearanceBlurb": "Tema, accentfärg, tidsformat, språk",
     "sectionWidgets": "Widgetar",
     "sectionWidgetsBlurb": "Bakgrund, markering och bönetidswidgeten",
+    "sectionWidgetsBlurbIos": "Tid sedan adhan på bönetidswidgetarna",
     "widgetsAllTitle": "Alla widgetar",
     "sectionQuran": "Koranen",
     "sectionQuranBlurb": "Läsning, översättning, tafsir",
@@ -498,9 +499,13 @@
     },
     "providerTableFallback": "{{picked}} har inga publicerade tider för i dag, så dess egen metod räknas ut i telefonen tills tabellen täcker dagen igen.",
     "minimalUi": "Minimal",
-    "minimalUiHelp": "En sak per skärm. Idag behåller nedräkningen; tryck på den för dagens tider. De andra flikarna behåller det var och en är till för.",
+    "minimalUiHelp": "En sak per skärm. Idag behåller nedräkningen; svep uppåt för dagens tider. De andra flikarna behåller det var och en är till för.",
     "minimalClassicOnly": "Minimal behåller de klassiska färgerna. Stäng av det för att välja ett färgtema eller systemfärger.",
-    "minimalRestartBody": "Minimal startar i Himmel-temat, så systemfärgerna stängs av. Appen behöver startas om så att varje skärm får ändringen. Starta om nu?"
+    "minimalRestartBody": "Minimal startar i Himmel-temat, så systemfärgerna stängs av. Appen behöver startas om så att varje skärm får ändringen. Starta om nu?",
+    "widgetSinceAdhanTitle": "Tid sedan adhan",
+    "widgetSinceAdhanHelp": "Så länge efter att varje bön har inträtt visar bönetidswidgetarna hur länge sedan det var, och räknar sedan ner till nästa bön igen. Om nästa bön är nära kommer nedräkningen tillbaka tidigare.",
+    "widgetSinceAdhanOff": "Av",
+    "widgetSinceAdhanMinutes": "{{minutes}} min"
   },
   "locationSetup": {
     "headline": "Ange din plats",
@@ -1554,7 +1559,28 @@
     "riwayahFailedBody": "Öppna Nedladdningar för att se varför och försöka igen.",
     "riwayahStoppedBody": "Inget gick förlorat. Tryck för att försöka igen, eller så försöker den själv på wifi.",
     "downloadNoSpaceTitle": "Inte tillräckligt med utrymme",
-    "downloadNoSpaceBody": "Nedladdningen behöver {{size}} mer ledigt utrymme. Frigör lite och försök igen."
+    "downloadNoSpaceBody": "Nedladdningen behöver {{size}} mer ledigt utrymme. Frigör lite och försök igen.",
+    "downloadProgressMegabytes": "{{done}} av {{total}} MB",
+    "downloadStoppedBodyMegabytes": "{{done}} av {{total}} MB är kvar. Tryck för att fortsätta, annars återupptas den av sig själv på Wi-Fi.",
+    "listenDownloadRunningMegabytes": "Laddar ner · {{done}} av {{total}} MB",
+    "listenDownloadPartialSurahs": "{{done}} av {{total}} suror finns här · {{size}}",
+    "wholeSurahBadge": "versföljning så gott det går",
+    "wholeSurahIntro": "{{name}} spelas bara från en fullständig nedladdning — hela recitationen, {{size}}.",
+    "wholeSurahDownloaded": "{{name}} är nedladdad — hela recitationen, på den här enheten.",
+    "wholeSurahTracking": "Det är en inspelning per sura, uppdelad i verser så nära som inspelningen tillåter: versföljningen är ett bästa försök, och några verser kan börja eller sluta ett ögonblick fel.",
+    "wholeSurahDownload": "Ladda ner {{name}} · {{size}}",
+    "wholeSurahResume": "Ladda ner resten · {{size}} totalt",
+    "wholeSurahDownloading": "Laddar ner · {{pct}} %",
+    "wholeSurahChanged": "{{surah}} kan inte spelas med den här rösten: inspelningen har ändrats hos källan sedan Mihrab mätte var dess verser ligger. Resten av {{name}} spelas som förut.",
+    "wholeSurahIncompleteBody": "{{count}} suror laddades inte ner: {{names}}. ”Fortsätt” hämtar just dem.",
+    "wholeSurahUnreachable": "{{surah}} med den här rösten finns inte på enheten och kan inte strömmas just nu — ingen anslutning till källan. Ladda ner den för att ha den offline.",
+    "downloadingAudioMegabytes": "Laddar ner… {{done}}/{{total}} MB",
+    "wholeSurahTrackingShort": "En inspelning per sura, uppdelad i verser så nära som den tillåter: versföljningen är ett bästa försök.",
+    "reportAyahBoundary": "Börjar eller slutar en vers på fel ställe? Rapportera det",
+    "previewReciter": "Lyssna på {{name}}",
+    "stopPreview": "Stoppa provlyssningen",
+    "voiceHint": "Mushafen är {{page}}; {{name}} reciterar {{voice}}. Lyssna i {{page}}:",
+    "voiceHintDismiss": "Behåll den här rösten"
   },
   "reading": {
     "textSize": "Textstorlek",
@@ -1795,10 +1821,11 @@
     "quranGeometry": "Data för ayah-positioner (quran.com / projektet Quran for Android)",
     "tajweedRules": "Tajwidregler för varje ord",
     "tajweedFonts": "Sidtypsnitt med tajwidfärger (nedladdade, inte medföljande)",
-    "recitation": "Recitationsljud (42 recitatörer): EveryAyah.com · ordtiming: quran-align (CC BY 4.0)",
+    "recitation": "Recitationsljud (44 recitatörer): EveryAyah.com · ordtiming: quran-align (CC BY 4.0)",
     "tafsir": "Tafsir-texter: Ibn Kathir, Maarif-ul-Quran, al-Muyassar",
     "wordMeanings": "Arabiska betydelser av svårare ord",
-    "surahHeaderFont": "Kalligrafi för surarubriker"
+    "surahHeaderFont": "Kalligrafi för surarubriker",
+    "recitationWholeSurah": "Recitationer av hela suror (15): mp3quran.net · verstider anpassade till ljudet av Mihrab"
   },
   "liveActivity": {
     "title": "Nästa bön",
@@ -1975,9 +2002,7 @@
     "setUpSync": "Ställ in synk",
     "legendTitle": "Vad grafen visar",
     "fastRow": "Fasta",
-    "sunnahRow": "Sunna",
-    "graphByDay": "Graf per dag",
-    "graphByDayHelp": "En ruta per dag — kvartalet i ett ögonkast. Av visar grafen en rad per bön."
+    "sunnahRow": "Sunna"
   },
   "endOfDay": {
     "title": "Logga dagens böner?",

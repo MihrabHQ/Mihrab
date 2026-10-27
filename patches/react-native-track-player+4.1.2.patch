@@ -1,5 +1,5 @@
 diff --git a/node_modules/react-native-track-player/android/src/main/java/com/doublesymmetry/trackplayer/module/MusicModule.kt b/node_modules/react-native-track-player/android/src/main/java/com/doublesymmetry/trackplayer/module/MusicModule.kt
-index b2409a0..b1b87db 100644
+index b2409a0..6fc8a8c 100644
 --- a/node_modules/react-native-track-player/android/src/main/java/com/doublesymmetry/trackplayer/module/MusicModule.kt
 +++ b/node_modules/react-native-track-player/android/src/main/java/com/doublesymmetry/trackplayer/module/MusicModule.kt
 @@ -35,6 +35,17 @@ class MusicModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaM
@@ -126,7 +126,7 @@ index b2409a0..b1b87db 100644
  
          if (musicService.tracks.isEmpty())
              callback.reject("no_current_item", "There is no current item in the player")
-@@ -375,16 +386,16 @@ class MusicModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaM
+@@ -375,29 +386,30 @@ class MusicModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaM
      }
  
      @ReactMethod
@@ -142,12 +142,21 @@ index b2409a0..b1b87db 100644
      @ReactMethod
 -    fun skip(index: Int, initialTime: Float, callback: Promise) = scope.launch {
 -        if (verifyServiceBoundOrReject(callback)) return@launch
+-
+-        musicService.skip(index)
 +    fun skip(index: Int, initialTime: Float, callback: Promise) = launchInScope {
 +        if (verifyServiceBoundOrReject(callback)) return@launchInScope
  
-         musicService.skip(index)
+-        if (initialTime >= 0) {
+-            musicService.seekTo(initialTime)
++        // At the position, not at 0 and then a seek: see MusicService.jumpTo.
++        if (initialTime > 0) musicService.skipTo(index, initialTime)
++        else {
++            musicService.skip(index)
++            if (initialTime >= 0) musicService.seekTo(initialTime)
+         }
  
-@@ -396,8 +407,8 @@ class MusicModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaM
+         callback.resolve(null)
      }
  
      @ReactMethod
@@ -158,7 +167,7 @@ index b2409a0..b1b87db 100644
  
          musicService.skipToNext()
  
-@@ -409,8 +420,8 @@ class MusicModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaM
+@@ -409,8 +421,8 @@ class MusicModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaM
      }
  
      @ReactMethod
@@ -169,7 +178,7 @@ index b2409a0..b1b87db 100644
  
          musicService.skipToPrevious()
  
-@@ -422,8 +433,8 @@ class MusicModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaM
+@@ -422,8 +434,8 @@ class MusicModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaM
      }
  
      @ReactMethod
@@ -180,7 +189,7 @@ index b2409a0..b1b87db 100644
  
          musicService.stop()
          delay(300) // Allow playback to stop
-@@ -433,134 +444,135 @@ class MusicModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaM
+@@ -433,134 +445,135 @@ class MusicModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaM
      }
  
      @ReactMethod
@@ -351,7 +360,7 @@ index b2409a0..b1b87db 100644
  
          try {
              musicService.clear()
-@@ -572,48 +584,46 @@ class MusicModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaM
+@@ -572,48 +585,46 @@ class MusicModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaM
      }
  
      @ReactMethod
@@ -415,7 +424,7 @@ index b2409a0..b1b87db 100644
          var bundle = Bundle()
          bundle.putDouble("duration", musicService.getDurationInSeconds());
          bundle.putDouble("position", musicService.getPositionInSeconds());
-@@ -622,8 +632,8 @@ class MusicModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaM
+@@ -622,8 +633,8 @@ class MusicModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaM
      }
  
      @ReactMethod
@@ -427,10 +436,10 @@ index b2409a0..b1b87db 100644
      }
  }
 diff --git a/node_modules/react-native-track-player/android/src/main/java/com/doublesymmetry/trackplayer/service/MusicService.kt b/node_modules/react-native-track-player/android/src/main/java/com/doublesymmetry/trackplayer/service/MusicService.kt
-index 0000000..0000000 100644
+index afa6b0f..89529f6 100644
 --- a/node_modules/react-native-track-player/android/src/main/java/com/doublesymmetry/trackplayer/service/MusicService.kt
 +++ b/node_modules/react-native-track-player/android/src/main/java/com/doublesymmetry/trackplayer/service/MusicService.kt
-@@ -47,6 +47,59 @@
+@@ -47,6 +47,137 @@ class MusicService : HeadlessJsTaskService() {
      private val scope = MainScope()
      private var progressUpdateJob: Job? = null
  
@@ -451,31 +460,109 @@ index 0000000..0000000 100644
 +        if (index == null || !::player.isInitialized) null
 +        else (player.items.getOrNull(index) as? TrackAudioItem)?.track?.originalItem
 +
++    /**
++     * KotlinAudio's ExoPlayer, which it keeps behind a protected getter.
++     *
++     * Needed for one thing it does not expose: moving to an item AT a
++     * position. `jumpToItem` starts the item at 0 and a seek follows, which
++     * for an ayah cut out of a surah file (`clipEnd`, below) is a split
++     * second of the surah's opening heard before every ayah. `seekTo(index,
++     * ms)` and `prepare()` is exactly what `jumpToItem` does, with the
++     * position given.
++     */
++    private fun exo(): com.google.android.exoplayer2.ExoPlayer? = try {
++        val m = com.doublesymmetry.kotlinaudio.players.BaseAudioPlayer::class.java
++            .getDeclaredMethod("getExoPlayer")
++        m.isAccessible = true
++        m.invoke(player) as? com.google.android.exoplayer2.ExoPlayer
++    } catch (t: Throwable) {
++        null
++    }
++
++    /** Go to item [index] at [ms] — at its own start, never the file's. */
++    private fun jumpTo(index: Int, ms: Long) {
++        val e = exo()
++        if (e == null || ms <= 0L) {
++            player.jumpToItem(index)
++            if (ms > 0L) player.seek(ms, TimeUnit.MILLISECONDS)
++            return
++        }
++        e.seekTo(index, ms)
++        e.prepare()
++    }
++
++    private fun startOf(index: Int): Long =
++        ((extrasAt(index).seconds("trimStart") ?: 0.0) * 1000).toLong()
++
++    /**
++     * The queue has run out of clips: loop it, or stop.
++     *
++     * A clip ends inside its file — an ayah cut from a surah — so letting
++     * the player run on would play the rest of the surah after the range
++     * the reader asked for. With the queue on repeat ("play on repeat")
++     * it goes round again from its first clip; otherwise it stops, which
++     * is what the end of a queue of whole files does by itself.
++     */
++    private fun endOfClips() {
++        if (player.playerOptions.repeatMode == com.doublesymmetry.kotlinaudio.models.RepeatMode.ALL) {
++            jumpTo(0, startOf(0))
++        } else {
++            player.stop()
++        }
++    }
++
 +    private fun watchSeam() {
 +        seamJob?.cancel()
 +        seamJob = null
 +        if (!::player.isInitialized || !player.isPlaying) return
 +        val index = player.currentIndex
-+        val trimEnd = extrasAt(index).seconds("trimEnd") ?: return
++        val extras = extrasAt(index)
++        // `clipEnd`: where an ayah cut from a surah file ends, in seconds
++        // from the file's start. `trimEnd`: silence to skip at the end of
++        // an ayah's own file, in seconds before its end.
++        val clipEnd = extras.seconds("clipEnd")
++        val trimEnd = extras.seconds("trimEnd")
++        if (clipEnd == null && trimEnd == null) return
 +        seamJob = scope.launch {
 +            while (isActive) {
 +                if (player.currentIndex != index) return@launch
-+                val duration = player.duration / 1000.0
-+                if (duration <= 0.0) {
-+                    delay(200)
-+                    continue
++                val position = player.position / 1000.0
++                val left = if (clipEnd != null) {
++                    clipEnd - position
++                } else {
++                    val duration = player.duration / 1000.0
++                    if (duration <= 0.0) {
++                        delay(200)
++                        continue
++                    }
++                    if (trimEnd!! >= duration) return@launch
++                    duration - trimEnd - position
 +                }
-+                if (trimEnd >= duration) return@launch
-+                val left = duration - trimEnd - player.position / 1000.0
 +                if (left <= 0.02) {
-+                    // The last ayah of the queue ends as recorded.
-+                    if (player.nextItem != null) player.next()
++                    if (clipEnd == null) {
++                        // A file of its own: the join as it always was.
++                        // The last ayah of the queue ends as recorded.
++                        if (player.nextItem != null) player.next()
++                    } else if (player.nextItem != null) {
++                        // A clip: the next one at its own start.
++                        jumpTo(index!! + 1, startOf(index + 1))
++                    } else {
++                        // The last clip does not run on into its file.
++                        endOfClips()
++                    }
 +                    return@launch
 +                }
 +                val speed = player.playbackSpeed.toDouble().coerceAtLeast(0.25)
 +                delay(((left / speed) * 1000).toLong().coerceIn(15L, 1000L))
 +            }
 +        }
++    }
++
++    /** Skip to [index] at [seconds] into it (`TrackPlayer.skip(i, t)`). */
++    @MainThread
++    fun skipTo(index: Int, seconds: Float) {
++        jumpTo(index, (seconds * 1000).toLong())
++        watchSeam()
 +    }
 +
 +    private fun onSeamTransition() {
@@ -490,7 +577,7 @@ index 0000000..0000000 100644
      /**
       * Use [appKilledPlaybackBehavior] instead.
       */
-@@ -368,11 +421,13 @@
+@@ -368,11 +499,13 @@ class MusicService : HeadlessJsTaskService() {
      @MainThread
      fun seekTo(seconds: Float) {
          player.seek((seconds * 1000).toLong(), TimeUnit.MILLISECONDS)
@@ -504,7 +591,7 @@ index 0000000..0000000 100644
      }
  
      @MainThread
-@@ -389,6 +444,7 @@
+@@ -389,6 +522,7 @@ class MusicService : HeadlessJsTaskService() {
      @MainThread
      fun setRate(value: Float) {
          player.playbackSpeed = value
@@ -512,7 +599,7 @@ index 0000000..0000000 100644
      }
  
      @MainThread
-@@ -605,6 +661,10 @@
+@@ -605,6 +739,10 @@ class MusicService : HeadlessJsTaskService() {
          scope.launch {
              event.stateChange.collect {
                  emit(MusicEvents.PLAYBACK_STATE, getPlayerStateBundle(it))
@@ -523,7 +610,7 @@ index 0000000..0000000 100644
  
                  if (it == AudioPlayerState.ENDED && player.nextItem == null) {
                      emitQueueEndedEvent()
-@@ -621,6 +681,7 @@
+@@ -621,6 +759,7 @@ class MusicService : HeadlessJsTaskService() {
                          (it?.oldPosition ?: 0).toSeconds()
                      )
                  }
@@ -531,11 +618,10 @@ index 0000000..0000000 100644
              }
          }
  
-@@ -738,10 +799,29 @@
-         }
+@@ -739,9 +878,28 @@ class MusicService : HeadlessJsTaskService() {
          return bundle
      }
-+
+ 
 +    /**
 +     * Bridgeless-safe ReactContext lookup. On the New Architecture,
 +     * ReactApplication.getReactNativeHost() throws ("You should not use
@@ -554,7 +640,7 @@ index 0000000..0000000 100644
 +                app.reactNativeHost.reactInstanceManager.currentReactContext
 +            }
 +        }
- 
++
      @MainThread
      private fun emit(event: String, data: Bundle? = null) {
 -        reactNativeHost.reactInstanceManager.currentReactContext
@@ -562,7 +648,7 @@ index 0000000..0000000 100644
              ?.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
              ?.emit(event, data?.let { Arguments.fromBundle(it) })
      }
-@@ -751,7 +831,7 @@
+@@ -751,7 +909,7 @@ class MusicService : HeadlessJsTaskService() {
          val payload = Arguments.createArray()
          data.forEach { payload.pushMap(Arguments.fromBundle(it)) }
  
@@ -571,7 +657,7 @@ index 0000000..0000000 100644
              ?.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
              ?.emit(event, payload)
      }
-@@ -804,6 +884,7 @@
+@@ -804,6 +962,7 @@ class MusicService : HeadlessJsTaskService() {
          }
  
          progressUpdateJob?.cancel()
@@ -579,3 +665,65 @@ index 0000000..0000000 100644
      }
  
      @MainThread
+diff --git a/node_modules/react-native-track-player/ios/RNTrackPlayer/Models/Track.swift b/node_modules/react-native-track-player/ios/RNTrackPlayer/Models/Track.swift
+index 0c4cc61..6f6e8c4 100644
+--- a/node_modules/react-native-track-player/ios/RNTrackPlayer/Models/Track.swift
++++ b/node_modules/react-native-track-player/ios/RNTrackPlayer/Models/Track.swift
+@@ -139,3 +139,26 @@ class Track: AudioItem, TimePitching, AssetOptionsProviding {
+     }
+ 
+ }
++
++// MARK: - Mihrab: an ayah cut from a whole-surah file
++
++/// A track that is a CLIP of a longer file (`clipEnd`): an ayah cut from a
++/// whole-surah recording. It starts at its `trimStart` as it loads —
++/// SwiftAudioEx applies an initial time before a sound is played, where a
++/// seek from JS after the track change lets a moment of the surah's opening
++/// through first.
++///
++/// Its own class, so every other track loads exactly as it always has:
++/// conforming `Track` itself would have every track seek to 0 on load.
++class ClipTrack: Track, InitialTiming {
++    func getInitialTime() -> TimeInterval {
++        if let n = toObject()["trimStart"] as? NSNumber { return n.doubleValue }
++        return 0
++    }
++
++    /// A clip when the dictionary says where it ends; a plain track otherwise.
++    static func make(dictionary: [String: Any]) -> Track? {
++        if dictionary["clipEnd"] != nil { return ClipTrack(dictionary: dictionary) }
++        return Track(dictionary: dictionary)
++    }
++}
+diff --git a/node_modules/react-native-track-player/ios/RNTrackPlayer/RNTrackPlayer.swift b/node_modules/react-native-track-player/ios/RNTrackPlayer/RNTrackPlayer.swift
+index 3be1342..59a26cc 100644
+--- a/node_modules/react-native-track-player/ios/RNTrackPlayer/RNTrackPlayer.swift
++++ b/node_modules/react-native-track-player/ios/RNTrackPlayer/RNTrackPlayer.swift
+@@ -374,7 +374,7 @@ public class RNTrackPlayer: RCTEventEmitter, AudioSessionControllerDelegate {
+ 
+         var tracks = [Track]()
+         for trackDict in trackDicts {
+-            guard let track = Track(dictionary: trackDict) else {
++            guard let track = ClipTrack.make(dictionary: trackDict) else {
+                 reject("invalid_track_object", "Track is missing a required key", nil)
+                 return
+             }
+@@ -397,7 +397,7 @@ public class RNTrackPlayer: RCTEventEmitter, AudioSessionControllerDelegate {
+     ) {
+         if (rejectWhenNotInitialized(reject: reject)) { return }
+ 
+-        guard let track = Track(dictionary: trackDict) else {
++        guard let track = ClipTrack.make(dictionary: trackDict) else {
+             reject("invalid_track_object", "Track is missing a required key", nil)
+             return
+         }
+@@ -658,7 +658,7 @@ public class RNTrackPlayer: RCTEventEmitter, AudioSessionControllerDelegate {
+ 
+         var tracks = [Track]()
+         for trackDict in trackDicts {
+-            guard let track = Track(dictionary: trackDict) else {
++            guard let track = ClipTrack.make(dictionary: trackDict) else {
+                 reject("invalid_track_object", "Track is missing a required key", nil)
+                 return
+             }

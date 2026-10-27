@@ -144,12 +144,38 @@ export type WidgetPayloadV2Options = {
   clock: WidgetContractClock;
   /** When the v1 payload was built; dates the estimated day. */
   now: Date;
+  /** Settings → Widgets, issue #111. 0 or absent: off. */
+  sinceAdhanMinutes?: number;
 };
+
+/** The five, the only times a card counts up from (#111). */
+export const SINCE_ADHAN_KEYS: readonly string[] = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
+
+/**
+ * Until when a prayer card counts up from a prayer that came in at
+ * `prayerAt` — issue #111. Minutes on one scale (the drawn day's).
+ *
+ * `window` minutes after it, or halfway to `nextAt` (the next time on the
+ * card) if that is sooner: between Maghrib and ʿIshāʾ on a short evening, or
+ * a summer night far north, the countdown to a prayer that is close is the
+ * thing to show. Null when off, or when nothing honest follows.
+ *
+ * The same rule natively — `sinceAdhanEnd` in WidgetPayloadV1.kt and
+ * WidgetPayloadV1.swift — held to these answers by the `since` fixtures.
+ */
+export function sinceAdhanEnd(
+  prayerAt: number,
+  nextAt: number | null,
+  window: number,
+): number | null {
+  if (!(window > 0) || nextAt == null || nextAt <= prayerAt) return null;
+  return prayerAt + Math.min(window, Math.floor((nextAt - prayerAt) / 2));
+}
 
 /** Payload v2 from the v1 payload, for the same moment. */
 export function widgetPayloadV2FromV1(
   v1: WidgetPrayerPayload,
-  { clock, now }: WidgetPayloadV2Options,
+  { clock, now, sinceAdhanMinutes }: WidgetPayloadV2Options,
 ): WidgetContractPayload {
   const v1Days: WidgetDay[] = v1.days ?? [];
   const days = v1Days.map(d =>
@@ -215,6 +241,8 @@ export function widgetPayloadV2FromV1(
   if (v1.hijri) out.hijri = { ...v1.hijri };
   if (v1.hijriDays?.length) out.hijriDays = v1.hijriDays.map(h => ({ ...h }));
   if (v1.tasbih) out.tasbih = { ...v1.tasbih };
+  const since = sinceAdhanMinutes ?? v1.sinceAdhanMinutes ?? 0;
+  if (since > 0) out.sinceAdhanMinutes = since;
   return out;
 }
 
@@ -414,6 +442,7 @@ export function widgetPayloadV1FromV2(
       : {}),
     ...(v2.locationName ? { locationName: v2.locationName } : {}),
     ...(v2.language ? { language: v2.language } : {}),
+    ...(v2.sinceAdhanMinutes ? { sinceAdhanMinutes: v2.sinceAdhanMinutes } : {}),
     ...(v2.seasonal
       ? {
           seasonal: {

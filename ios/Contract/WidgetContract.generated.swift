@@ -81,6 +81,14 @@ enum WidgetContract {
     var hijriDays: [Hijri]
     /// The dhikr counter, for the Tasbih widget.
     var tasbih: Tasbih?
+    /// Issue #111: for this many minutes after one of the five prayers comes
+    /// in, the prayer card counts UP from it ("12:34 since Dhuhr") instead of
+    /// down to what is next; 0 is off. Never after Sunrise or a night mark.
+    /// The window ends early, halfway to the next time on the card, so the
+    /// countdown to a prayer that is close is never hidden. The rule is
+    /// `sinceAdhanEnd` in each platform's WidgetPayloadV1, held to the same
+    /// answers by the contract fixtures (`since`).
+    var sinceAdhanMinutes: Int
 
     init(
       schemaVersion: Int,
@@ -94,7 +102,8 @@ enum WidgetContract {
       reading: Reading? = nil,
       hijri: Hijri? = nil,
       hijriDays: [Hijri] = [],
-      tasbih: Tasbih? = nil
+      tasbih: Tasbih? = nil,
+      sinceAdhanMinutes: Int = 0
     ) {
       self.schemaVersion = schemaVersion
       self.language = language
@@ -108,6 +117,7 @@ enum WidgetContract {
       self.hijri = hijri
       self.hijriDays = hijriDays
       self.tasbih = tasbih
+      self.sinceAdhanMinutes = sinceAdhanMinutes
     }
 
     enum CodingKeys: String, CodingKey {
@@ -123,6 +133,7 @@ enum WidgetContract {
       case hijri
       case hijriDays
       case tasbih
+      case sinceAdhanMinutes
     }
 
     init(from decoder: Decoder) throws {
@@ -139,6 +150,7 @@ enum WidgetContract {
       hijri = c.wcValue(Hijri.self, .hijri)
       hijriDays = c.wcList(Hijri.self, .hijriDays) ?? []
       tasbih = c.wcValue(Tasbih.self, .tasbih)
+      sinceAdhanMinutes = c.wcInt(.sinceAdhanMinutes).flatMap(wcInt32) ?? 0
     }
   }
 
