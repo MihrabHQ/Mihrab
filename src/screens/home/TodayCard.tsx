@@ -33,6 +33,7 @@ import {
   Text,
   View,
   type LayoutChangeEvent,
+  type ViewStyle,
   type NativeScrollEvent,
   type NativeSyntheticEvent,
   type HostInstance,
@@ -105,6 +106,7 @@ import { pagerPosition } from './pagerPosition';
 import { LogPassedPrayerSheet } from './LogPassedPrayerSheet';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { TodayTimesSheet, type TimesSheetRow } from './TodayTimesSheet';
+import { pageRecess } from './MinimalSheet';
 import { HeroSky, type SkyRun } from './HeroSky';
 import {
   HERO_Y,
@@ -419,6 +421,14 @@ const HeroEyebrow = memo(function HeroEyebrow({
  * nothing shares the page with them — and still light, still one line.
  */
 const MINIMAL_COUNTDOWN_SIZE = 76; // tokens-ok-line: display scale, sized by hand
+/**
+ * Minimal: how far a drag up on the page takes the sheet's rise before
+ * the finger lets go — a third at most, over about a hand's height of
+ * drag — so the page is seen to answer the finger, and the sheet's own
+ * spring still has most of the way to come.
+ */
+const SWIPE_UP_PULL = 0.35;
+const SWIPE_UP_REACH = 260;
 const MINIMAL_SECONDS_SIZE = 28; // tokens-ok-line: display scale, sized by hand
 export const SKY_RUN_STEPS = 30;
 /** The most keyframes the run's native sky is built from (HeroSky, `SkyRunLayers`). */
@@ -448,6 +458,7 @@ const HeroToday = memo(function HeroToday({
   skyVariant = 'realistic',
   dayClock,
   minimal = false,
+  recess,
   footer,
 }: {
   /** The clock `today` is written on (`TodayCardProps.dayClock`). */
@@ -460,6 +471,14 @@ const HeroToday = memo(function HeroToday({
    * card around it opens the day's times.
    */
   minimal?: boolean;
+  /**
+   * Minimal: the transform the hero's FOREGROUND takes as the day's
+   * times come up — the figures, the rail and the footer ease back under
+   * the sheet while the sky stays where it is, out to every edge. (The
+   * whole page scaled once, and the sky's bleed showed its edges and a
+   * cut along the top.) See MinimalSheet.
+   */
+  recess?: Animated.WithAnimatedValue<ViewStyle> | null;
   /** Minimal: the line at the foot — where, which day, whose times. */
   footer?: string;
   /** What the countdown is aimed at: the next prayer, or the user's pick. */
@@ -1099,6 +1118,7 @@ const HeroToday = memo(function HeroToday({
     shown.current = { remaining: shownRemaining, pct: rail ? railPct : null, at: now.getTime(), targetAt: target.at.getTime() };
   }
 
+  const Fore = (minimal ? Animated.View : Unwrapped) as typeof Animated.View;
   return (
     <View
       style={[styles.hero, expanded && styles.heroExpanded, fill && styles.heroFill]}
@@ -1132,6 +1152,10 @@ const HeroToday = memo(function HeroToday({
           animated
         />
       ) : null}
+      {/* Minimal: the foreground is one view over the sky, so it can
+          ease back under the sheet as one thing — see `recess`. The
+          column it keeps is the hero's own, so nothing moves at rest. */}
+      <Fore style={minimal ? [styles.heroFore, recess] : undefined}>
       {minimal ? (
         // Minimal keeps the heart alone, at the trailing end of the top
         // row where the Qibla chip stood — the way into Help Mihrab, and
@@ -1311,9 +1335,15 @@ const HeroToday = memo(function HeroToday({
           {footer}
         </Text>
       ) : null}
+      </Fore>
     </View>
   );
 });
+
+/** The hero's foreground wrapper when there is none: its children, as they were. */
+function Unwrapped({ children }: { children?: ReactNode; style?: unknown }) {
+  return <>{children}</>;
+}
 
 function TodayCardImpl({
   week,
@@ -1373,6 +1403,11 @@ function TodayCardImpl({
     setTimesOpen(true);
   }, []);
   const onCloseTimes = useCallback(() => setTimesOpen(false), []);
+  // The sheet's rise, 0..1, owned here so the page recedes with it — and
+  // so a drag up on the page can start the retreat before the sheet is
+  // there (MinimalSheet).
+  const sheetProgress = useRef(new Animated.Value(0)).current;
+  const reduceMotion = useReduceMotion();
 
   /**
    * The pages, in the order they are swiped: the past, oldest first, then
@@ -1988,6 +2023,10 @@ function TodayCardImpl({
   // Minimal: a drag up on the hero opens the day's times too — only a
   // clearly upward one, so a sideways drag is still the tabs' and a drag
   // down the page's (the pull to refresh).
+  // The page answers the finger before the sheet is there: it eases back
+  // a little as the drag rises (a third of the way at most), and the
+  // sheet's own rise carries on from wherever the finger let go — or the
+  // page springs back if it let go short.
   const swipeUp = useMemo(
     () =>
       Gesture.Pan()
@@ -1995,11 +2034,27 @@ function TodayCardImpl({
         .activeOffsetY(-14)
         .failOffsetX([-18, 18])
         .runOnJS(true)
+        .onUpdate(e => {
+          if (reduceMotion) return;
+          sheetProgress.setValue(Math.min(SWIPE_UP_PULL, Math.max(0, -e.translationY / SWIPE_UP_REACH)));
+        })
         .onEnd(e => {
-          if (e.translationY < -30 || e.velocityY < -400) onOpenTimes();
+          if (e.translationY < -30 || e.velocityY < -400) {
+            onOpenTimes();
+          } else {
+            Animated.spring(sheetProgress, {
+              toValue: 0,
+              damping: 24,
+              stiffness: 320,
+              mass: 1,
+              useNativeDriver: true,
+            }).start();
+          }
         }),
-    [minimal, onOpenTimes],
+    [minimal, onOpenTimes, reduceMotion, sheetProgress],
   );
+  // Minimal: the hero's foreground recedes under the sheet — see MinimalSheet.
+  const recess = minimal ? { transform: pageRecess(sheetProgress, reduceMotion) } : null;
   // Minimal: the hero's wrap is the tap that opens the day's times.
   // (A View takes every prop the Pressable is given here but the press,
   // and that one is only given when it IS a Pressable.)
@@ -2296,6 +2351,7 @@ function TodayCardImpl({
             fill={fullBleed}
             topRow={fullBleed ? (minimal ? { renderHelp } : { renderLocation, renderQibla, renderHelp }) : undefined}
             minimal={minimal}
+            recess={recess}
             footer={footer}
             // Not on a roomy page: the hero is not under the status bar
             // there, so the bar takes the page's ink like every other tab.
@@ -2545,6 +2601,7 @@ function TodayCardImpl({
       {minimal ? (
         <TodayTimesSheet
           visible={timesOpen}
+          progress={sheetProgress}
           onClose={onCloseTimes}
           title={`${getDayLabel(sheetOffset)} · ${getDayDate(sheetOffset)}`}
           subtitle={getHijriDate ? getHijriDate(sheetOffset) : undefined}
@@ -2668,6 +2725,9 @@ const styles = StyleSheet.create({
   hero: {},
   heroExpanded: { paddingVertical: SPACING.md },
   heroFill: { flexGrow: 1, flexShrink: 0, flexBasis: 'auto' },
+  // Minimal: the foreground fills the hero as the hero fills the page,
+  // so the spacers inside it share the height as before.
+  heroFore: { flexGrow: 1, flexShrink: 0, flexBasis: 'auto' },
   /** Grows; the sun and moon cross it — and gives way first when the
    *  table needs the room (the sky then hides its bodies, see HeroSky). */
   // Never below a moon's worth of sky: the table may push the page into

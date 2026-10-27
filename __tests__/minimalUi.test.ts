@@ -128,6 +128,32 @@ describe('the minimal Today', () => {
     expect(card).toContain('<TodayTimesSheet');
   });
 
+  it('brings the sheet up on its own spring, and the page recedes under a veil that spares the sky', () => {
+    const sheet = read('src/screens/home/TodayTimesSheet.tsx');
+    const minimalSheet = read('src/screens/home/MinimalSheet.tsx');
+    // Drawn by hand, not the platform's slide: one value drives the
+    // sheet's rise and the page's retreat.
+    expect(sheet).toContain('<MinimalSheet visible={visible} onClose={onClose} progress={progress}');
+    expect(minimalSheet).toContain('animationType="none"');
+    expect(minimalSheet).toContain('onShow={rise}');
+    expect(minimalSheet).toContain('Animated.spring(progress, { toValue: 1, ...MINIMAL_SHEET_OPEN, useNativeDriver: true })');
+    // The veil is a gradient — light over the sky, deep by the sheet —
+    // not one flat plane of black.
+    expect(minimalSheet).toContain('<LinearGradient id="minimalVeil"');
+    expect(minimalSheet).toMatch(/const VEIL_TOP = 0\.\d+;\nconst VEIL_FOOT = 0\.\d+;/);
+    // A drag down on the sheet follows the finger and lets go past a threshold.
+    expect(minimalSheet).toContain('if (e.translationY > DISMISS_DISTANCE || e.velocityY > DISMISS_VELOCITY)');
+    // The page: scaled back by the same value, driven early by a drag up
+    // on it, and spared under Reduce Motion.
+    expect(card).toContain('const recess = minimal ? { transform: pageRecess(sheetProgress, reduceMotion) } : null;');
+    expect(card).toContain('sheetProgress.setValue(Math.min(SWIPE_UP_PULL, Math.max(0, -e.translationY / SWIPE_UP_REACH)));');
+    expect(card).toContain('progress={sheetProgress}');
+    // The FOREGROUND recedes, not the page: the sky stays out to every edge.
+    expect(card).toContain('recess={recess}');
+    expect(card).toContain('<Fore style={minimal ? [styles.heroFore, recess] : undefined}>');
+    expect(minimalSheet).toContain('if (reduceMotion) return [];');
+  });
+
   it('turns the sheet to other days, opens the month, and logs from it', () => {
     const sheet = read('src/screens/home/TodayTimesSheet.tsx');
     // The full page's day bar in small: a chevron each way, the calendar.

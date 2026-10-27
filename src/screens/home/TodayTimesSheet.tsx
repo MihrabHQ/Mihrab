@@ -5,7 +5,8 @@ import { useTranslation } from 'react-i18next';
 import type { LoggedStatus } from '../../journal/journal';
 import type { QuickLogPhase } from '../../journal/quickLog';
 import { useAppPalette } from '../../hooks/useAppPalette';
-import { ResponsiveModal } from '../../responsive/ResponsiveModal';
+import { MinimalSheet } from './MinimalSheet';
+import type { Animated } from 'react-native';
 import { SPACING } from '../../theme/tokens';
 import { TABULAR_MAX_FONT_SCALE, tabularNumeralStyle } from '../../theme/textScale';
 import { TYPE, typeStyle } from '../../theme/typography';
@@ -40,6 +41,7 @@ export type TimesSheetRow = {
  */
 function TodayTimesSheetImpl({
   visible,
+  progress,
   onClose,
   title,
   subtitle,
@@ -55,6 +57,8 @@ function TodayTimesSheetImpl({
   source,
 }: {
   visible: boolean;
+  /** The sheet's rise, 0..1 — the page's, so it recedes as the sheet comes up. */
+  progress: Animated.Value;
   onClose: () => void;
   /** The day, in words, and under it the other calendar's date. */
   title: string;
@@ -76,7 +80,7 @@ function TodayTimesSheetImpl({
   const { palette } = useAppPalette();
   const muted = String(palette.muted);
   return (
-    <ResponsiveModal visible={visible} onClose={onClose} closeLabel={t('common.close', 'Close')}>
+    <MinimalSheet visible={visible} onClose={onClose} progress={progress} closeLabel={t('common.close', 'Close')}>
       <View style={styles.sheet}>
         {/* The day bar, as the full page's: the chevrons at the edges, and
             beside the day its doors — the month's calendar trailing, and
@@ -242,7 +246,7 @@ function TodayTimesSheetImpl({
           </Text>
         </Pressable>
       </View>
-    </ResponsiveModal>
+    </MinimalSheet>
   );
 }
 
