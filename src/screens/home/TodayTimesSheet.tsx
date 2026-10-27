@@ -50,6 +50,7 @@ function TodayTimesSheetImpl({
   onMonth,
   qibla,
   place,
+  source,
 }: {
   visible: boolean;
   onClose: () => void;
@@ -64,6 +65,8 @@ function TodayTimesSheetImpl({
   onMonth?: () => void;
   qibla?: { bearing: number; onPress?: () => void };
   place?: { label: string; onPress?: () => void };
+  /** Whose times: the source, or the method the reader chose. */
+  source?: string;
 }) {
   const { t } = useTranslation();
   const { palette } = useAppPalette();
@@ -170,6 +173,11 @@ function TodayTimesSheetImpl({
             );
           })}
         </View>
+        {source ? (
+          <Text style={[styles.source, { color: palette.muted }]} numberOfLines={1}>
+            {`${t('provider.timesSource')} · ${source}`}
+          </Text>
+        ) : null}
         {qibla || place ? (
           <View style={styles.doors}>
             {place ? (
@@ -275,6 +283,7 @@ const styles = StyleSheet.create({
     marginTop: SPACING.xs,
   },
   door: { fontSize: TYPE.footnote.fontSize, fontWeight: '400', flexShrink: 1 },
+  source: { fontSize: TYPE.label.fontSize, fontWeight: '400', textAlign: 'center', marginTop: SPACING.xs, opacity: 0.8 },
   close: {
     alignSelf: 'center',
     paddingHorizontal: SPACING.lg,

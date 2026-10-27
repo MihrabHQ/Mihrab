@@ -316,6 +316,8 @@ export type TodayCardProps = {
   /** Minimal: the place, named in the times sheet, and where a tap on it goes. */
   placeLabel?: string;
   onOpenPlace?: () => void;
+  /** Minimal: whose times these are, said once under the sheet's rows. */
+  timesSource?: string;
 };
 
 /**
@@ -1125,7 +1127,7 @@ const HeroToday = memo(function HeroToday({
         <HeroTopRow topRow={topRow} ink={inkTop} onLayout={fill ? onTopRowLayout : undefined} />
       ) : null}
       {/* The room the sky's bodies move in. */}
-      {fill ? <View style={[styles.heroScene, { minHeight: HERO_SCENE_MIN[tier] }]} /> : null}
+      {fill ? <View style={[styles.heroScene, minimal && styles.heroSceneAbove, { minHeight: HERO_SCENE_MIN[tier] }]} /> : null}
       <View onLayout={fill ? onBlockLayout : undefined}>
       {/* "Fajr in" leading, and on the trailing end of the same line —
           the side with nothing on it — the heart that opens Help Mihrab.
@@ -1174,6 +1176,7 @@ const HeroToday = memo(function HeroToday({
             style={[
               styles.heroCountdown,
               { fontSize: countdownSize },
+              minimal && styles.heroCountdownMinimal,
               expanded && styles.heroCountdownExpanded,
               { color: ink.text },
               glowSpan,
@@ -1255,13 +1258,13 @@ const HeroToday = memo(function HeroToday({
       </View>
       {/* Minimal: as much sky under the block as over it, so the figures
           stand in the middle of the page — and the footer at its foot. */}
-      {minimal && fill ? <View style={styles.heroScene} /> : null}
+      {minimal && fill ? <View style={[styles.heroScene, styles.heroSceneBelow]} /> : null}
       {/* The way to the day's times, said once: a chevron over the footer,
           the shape of the drag up (or the tap) that opens them. */}
       {minimal && fill ? (
         <View style={styles.heroHandle} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-          <Svg width={18} height={10} viewBox="0 0 18 10">
-            <Path d="M2 8.5 9 1.5l7 7" stroke={inkFoot.muted} strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" fill="none" />
+          <Svg width={14} height={8} viewBox="0 0 18 10">
+            <Path d="M2 8.5 9 1.5l7 7" stroke={inkFoot.muted} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" fill="none" />
           </Svg>
         </View>
       ) : null}
@@ -1307,6 +1310,7 @@ function TodayCardImpl({
   footInset = 0,
   placeLabel,
   onOpenPlace,
+  timesSource,
 }: TodayCardProps) {
   // Only the phone's full-bleed page has a minimal face; the dashboard
   // and the book keep their cards.
@@ -2502,6 +2506,7 @@ function TodayCardImpl({
           onMonth={onOpenMonth}
           qibla={qiblaBearing != null ? { bearing: qiblaBearing, onPress: onOpenQibla } : undefined}
           place={placeLabel ? { label: placeLabel, onPress: onOpenPlace } : undefined}
+          source={timesSource}
         />
       ) : null}
     </Outer>
@@ -2617,6 +2622,12 @@ const styles = StyleSheet.create({
   // Never below a moon's worth of sky: the table may push the page into
   // a scroll, but it may not take the night out of the hero.
   heroScene: { flexGrow: 1, flexShrink: 1, flexBasis: 0 },
+  // Minimal: the figures stand at the OPTICAL centre, a little above the
+  // geometric one — the eye reads a thing dead-centre as sitting low, as
+  // every typesetter who has centred a title on a page knows. Nine parts
+  // of sky above the block, eleven below.
+  heroSceneAbove: { flexGrow: 9 },
+  heroSceneBelow: { flexGrow: 11 },
   // Sentence case, quiet: the countdown is the thing the eye lands on and
   // the eyebrow only names what it counts to. It was an uppercase,
   // letterspaced overline — the 2016 idiom (docs/design/redesign-plan.md
@@ -2703,18 +2714,23 @@ const styles = StyleSheet.create({
   // under them in the muted ink, and the footer a label at the foot —
   // every line centred, nothing at the edges, the way a clock face is.
   heroCountdownRowMinimal: { justifyContent: 'center' },
+  // Larger figures want tighter tracking still: light strokes set loose
+  // read as separate marks rather than one number.
   heroCountdownLineMinimal: { textAlign: 'center' },
+  heroCountdownMinimal: { letterSpacing: -2.2 },
   heroCaption: {
     textAlign: 'center',
     fontSize: TYPE.body.fontSize,
     fontWeight: '400',
-    marginTop: SPACING.xs,
+    marginTop: SPACING.sm,
+    letterSpacing: 0.2,
   },
-  heroHandle: { alignItems: 'center', opacity: 0.8 },
+  heroHandle: { alignItems: 'center', opacity: 0.5 },
   heroFooter: {
     textAlign: 'center',
     fontSize: TYPE.label.fontSize,
     fontWeight: '400',
-    marginTop: SPACING.sm,
+    marginTop: SPACING.xs,
+    letterSpacing: 0.3,
   },
 });

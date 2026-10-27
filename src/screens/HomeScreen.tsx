@@ -1707,19 +1707,22 @@ export function HomeScreen() {
    * dashboard, the book and a roomy tablet have room, and keep it.
    */
   const minimal = settings.minimalUi && !isDashboard && !isMacCatalyst && !isRoomy && !book;
-  // Three short strings a render; not memoised, this far past the page's
-  // early returns.
+  // Short strings a render; not memoised, this far past the page's early
+  // returns. The footer is where and which day — two facts, not three:
+  // whose times is a fact about the times, and goes with them in the
+  // sheet, where "Sweden" beside a city read as an address.
   let minimalFooter: string | undefined;
+  let minimalSource: string | undefined;
   if (minimal) {
     const provider = refreshParams?.provider;
     // Whose times: the method when the reader chose one, else the source.
-    const source = provider
+    minimalSource = provider
       ? providerHidesCalculationMethod(provider) || settings.calculationMethod === 'auto'
         ? getProviderLabel(provider)
         : getMethodLabel(settings.calculationMethod)
-      : '';
+      : undefined;
     // The city alone: a saved place carries its region and country too.
-    minimalFooter = [cityOf(locationLabel), getHijriDate(0), source].filter(Boolean).join(' · ');
+    minimalFooter = [cityOf(locationLabel), getHijriDate(0)].filter(Boolean).join(' · ');
   }
   const budgeted = !isDashboard && !isMacCatalyst && !isRoomy && !book && !tabletop && viewport > 0;
   const tier: HomeTier = budgeted
@@ -1924,6 +1927,7 @@ export function HomeScreen() {
             footer={minimalFooter}
             footInset={tabBarInset}
             placeLabel={minimal && locationLabel ? cityOf(locationLabel) : undefined}
+            timesSource={minimalSource}
             onOpenPlace={() => navigation.navigate('SettingsLocation', { highlight: 'savedLocations' })}
             expanded={isDashboard}
             fullBleed={fullBleed}
