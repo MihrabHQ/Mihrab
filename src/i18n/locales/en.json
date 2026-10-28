@@ -1572,6 +1572,7 @@
     "wholeSurahResume": "Download the rest · {{size}} in all",
     "wholeSurahDownloading": "Downloading · {{pct}}%",
     "wholeSurahChanged": "{{surah}} cannot be played in this voice: the recording at its source has changed since Mihrab measured where its ayahs fall. The rest of {{name}} plays as before.",
+    "wholeSurahIncomplete": "{{surah}} cannot be played in this voice: the recording at its source is incomplete — it ends partway through the surah. The rest of {{name}} plays as before.",
     "wholeSurahIncompleteBody": "{{count}} surahs did not download: {{names}}. Continue fetches just these.",
     "wholeSurahUnreachable": "{{surah}} in this voice is not on this device, and it cannot be streamed right now — there is no connection to its source. Download it to have it offline.",
     "downloadingAudioMegabytes": "Downloading… {{done}}/{{total}} MB",

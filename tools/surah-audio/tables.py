@@ -43,6 +43,9 @@ def main():
     ap.add_argument("reciter")
     ap.add_argument("--from", dest="src", default="/tmp/align-out")
     ap.add_argument("--check", action="store_true")
+    ap.add_argument("--exclude", default=None,
+                    help="surahs the recording does not hold whole (e.g. 20): never played in this voice; "
+                         "written as `x`, and left out of the exactness count. Omit to keep the table's own.")
     a = ap.parse_args()
 
     path = os.path.join(TABLES, f"{a.reciter}.json")
@@ -77,15 +80,30 @@ def main():
         total += n + 1
     assert at == len(flat)
 
+    excluded = sorted({int(x) for x in a.exclude.split(",") if x}) if a.exclude is not None else table.get("x", [])
+    # A surah the recording does not hold is never played: its boundaries
+    # stay as they are, unconfirmed, and are not counted either way.
+    skipped = 0
+    at = 0
+    for s, n in enumerate(table["n"], start=1):
+        if s in excluded:
+            skipped += sum(out_c[at: at + n + 1])
+            confirmed -= sum(out_c[at: at + n + 1])
+            total -= n + 1
+        at += n + 1
     print(json.dumps({"reciter": a.reciter, "surahs_aligned": done, "moved_over_50ms": moved,
-                      "confirmed": confirmed, "total": total,
+                      "confirmed": confirmed, "total": total, "excluded": excluded,
                       "exact": confirmed == total}))
     if a.check:
         return
     table["v"] = 3
     table["b"] = pack24(out_b)
     table["c"] = pack_bits(out_c)
-    keys = ["v", "id", "src", "bytes", "n", "b", "d", "z", "c"]
+    if excluded:
+        table["x"] = excluded
+    else:
+        table.pop("x", None)
+    keys = ["v", "id", "src", "bytes", "n", "b", "d", "z", "c", "x"]
     ordered = {k: table[k] for k in keys if k in table}
     ordered.update({k: v for k, v in table.items() if k not in ordered})
     with open(path, "w") as f:

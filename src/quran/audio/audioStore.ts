@@ -31,7 +31,12 @@ import {
   surahAudioUrl,
   type Reciter,
 } from './reciters';
-import { expectedSurahBytes, surahRecitationBytes } from './surahRecitation';
+import {
+  excludedSurahs,
+  expectedSurahBytes,
+  surahExcluded,
+  surahRecitationBytes,
+} from './surahRecitation';
 import { freeDiskBytes, SPACE_MARGIN_BYTES, sizeLabel } from '../downloadSpace';
 
 function audioDir(reciterId: string): string {
@@ -125,6 +130,9 @@ export async function surahChangedAtSource(
   reciterId: string,
   surah: number,
 ): Promise<boolean> {
+  // A surah the recording does not hold whole (the table's `x`) is blocked
+  // the same way, for good: nothing fetches, streams or plays it.
+  if (surahExcluded(reciterId, surah)) return true;
   try {
     return await ReactNativeBlobUtil.fs.exists(changedMarkPath(reciterId, surah));
   } catch {
@@ -134,18 +142,19 @@ export async function surahChangedAtSource(
 
 /** The surahs of a whole-surah recitation marked as changed at the source. */
 export async function surahsChangedAtSource(reciterId: string): Promise<number[]> {
+  const out = new Set(excludedSurahs(reciterId));
   try {
     const dir = audioDir(reciterId);
-    if (!(await ReactNativeBlobUtil.fs.exists(dir))) return [];
-    const names = await ReactNativeBlobUtil.fs.ls(dir);
-    return names
-      .map(n => /^(\d{3})\.mp3\.changed$/.exec(n))
-      .filter((m): m is RegExpExecArray => m != null)
-      .map(m => Number(m[1]))
-      .sort((a, b) => a - b);
+    if (await ReactNativeBlobUtil.fs.exists(dir)) {
+      for (const n of await ReactNativeBlobUtil.fs.ls(dir)) {
+        const m = /^(\d{3})\.mp3\.changed$/.exec(n);
+        if (m) out.add(Number(m[1]));
+      }
+    }
   } catch {
-    return [];
+    // the marks could not be read: the excluded surahs still stand
   }
+  return [...out].sort((a, b) => a - b);
 }
 
 /**
@@ -1236,7 +1245,10 @@ export async function reciterAudioStats(
     let files = 0;
     let bytes = 0;
     const wholeSurah = isWholeSurahId(reciterId);
-    let changed = 0;
+    // A surah the recording does not hold is settled from the start: no
+    // download will bring it, and none is asked for.
+    const excluded = new Set(wholeSurah ? excludedSurahs(reciterId) : []);
+    let changed = excluded.size;
     for (const entry of entries) {
       const name = String(entry.filename ?? '');
       const size = Number(entry.size) || 0;
@@ -1244,11 +1256,11 @@ export async function reciterAudioStats(
         // A surah file counts only at its exact size; a changed-at-source
         // mark counts as settled, because no download will bring it.
         if (name.endsWith('.mp3.changed')) {
-          changed += 1;
+          if (!excluded.has(parseSurahFileName(name.slice(0, -'.changed'.length)) ?? 0)) changed += 1;
           continue;
         }
         const surah = parseSurahFileName(name);
-        if (surah == null) continue;
+        if (surah == null || excluded.has(surah)) continue;
         bytes += size;
         if (size === expectedSurahBytes(reciterId, surah)) files += 1;
         continue;

@@ -175,6 +175,28 @@ describe('the download', () => {
   });
 });
 
+describe('a surah the recording does not hold (the table’s `x`)', () => {
+  jest.setTimeout(30_000);
+  beforeEach(() => _setSurahTableForTests(ID, { ...table(), x: [2] }));
+
+  it('is blocked for good, like one changed at its source', async () => {
+    expect(await surahChangedAtSource(ID, 2)).toBe(true);
+    expect(await surahChangedAtSource(ID, 3)).toBe(false);
+    expect(await surahFileState(ID, 2)).toBe('changed');
+    expect(await keepSurahQuietly(ID, 2)).toBeNull();
+  });
+
+  it('is not fetched by the download, which is complete without it', async () => {
+    const outcome = await downloadReciterAudio(ID).promise;
+    expect(outcome.complete).toBe(true);
+    expect(await localSurahFileIfAny(ID, 2)).toBeNull();
+    expect(await localSurahFileIfAny(ID, 3)).not.toBeNull();
+    const stats = await reciterAudioStats(ID);
+    expect(stats.complete).toBe(true);
+    expect(stats.files).toBe(113);
+  });
+});
+
 describe('a reciter whose boundaries cannot be used', () => {
   it('is not offered, and a choice of it falls back to the default voice', () => {
     expect(isPlayable(findReciter(ID))).toBe(true);

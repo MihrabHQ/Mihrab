@@ -25,6 +25,12 @@
  *      text alignment, the pause in the audio and a check of the words
  *      either side all agree (tools/surah-audio/textalign.py)
  *
+ *   x  (v3, optional) surahs NOT in this recitation: the source's file is
+ *      incomplete (Al-Buʿayjan's Ṭā-Hā stops partway through ayah 133),
+ *      so the surah is never played, downloaded or streamed in this voice
+ *      — the ayah sheet says why — and the rest of the recitation is
+ *      judged without it
+ *
  * v2 tables have no `c` and every boundary counts as a best attempt.
  *
  * ── THE SIZES ARE THE SAFETY ──────────────────────────────────────────
@@ -45,6 +51,7 @@ type Table = {
   z: string;
   bytes: number;
   c?: string;
+  x?: number[];
 };
 
 /* eslint-disable @typescript-eslint/no-require-imports */
@@ -122,6 +129,8 @@ type Decoded = {
   bytes: number;
   /** Per surah, per boundary: confirmed (v3), or null for a v2 table. */
   confirmed: boolean[][] | null;
+  /** Surahs the recording does not hold whole (`x`), never played. */
+  excluded: number[];
 };
 
 const decoded = new Map<string, Decoded | null>();
@@ -174,8 +183,20 @@ function tableOf(reciterId: string): Decoded | null {
       }
       /* eslint-enable no-bitwise */
       const confirmedAddsUp = table.v !== 3 || confirmed != null;
-      if (at === flat.length && lengths.length === 114 && sizesAddUp && inOrder && confirmedAddsUp) {
-        out = { bounds, lengths, sizes, bytes: table.bytes, confirmed };
+      const excluded = table.x ?? [];
+      const excludedSane =
+        Array.isArray(excluded) &&
+        excluded.every(x => Number.isInteger(x) && x >= 1 && x <= 114) &&
+        excluded.length < 114;
+      if (
+        at === flat.length &&
+        lengths.length === 114 &&
+        sizesAddUp &&
+        inOrder &&
+        confirmedAddsUp &&
+        excludedSane
+      ) {
+        out = { bounds, lengths, sizes, bytes: table.bytes, confirmed, excluded };
       }
     }
   } catch {
@@ -218,9 +239,25 @@ export function clipAyahCount(reciterId: string, surah: number): number | null {
   return bounds ? bounds.length - 1 : null;
 }
 
-/** The whole recitation's size on disk, exactly, or null. */
+/** The whole recitation's size on disk, exactly, or null — without the surahs it does not hold. */
 export function surahRecitationBytes(reciterId: string): number | null {
-  return tableOf(reciterId)?.bytes ?? null;
+  const table = tableOf(reciterId);
+  if (!table) return null;
+  return table.excluded.reduce((a, s) => a - table.sizes[s - 1], table.bytes);
+}
+
+/**
+ * Whether this surah is NOT in the recording whole (the table's `x`): the
+ * source's file ends early, so it is never played, fetched or streamed in
+ * this voice, and the rest of the recitation is judged without it.
+ */
+export function surahExcluded(reciterId: string, surah: number): boolean {
+  return tableOf(reciterId)?.excluded.includes(surah) ?? false;
+}
+
+/** The surahs a whole-surah recitation does not hold, ascending. */
+export function excludedSurahs(reciterId: string): number[] {
+  return [...(tableOf(reciterId)?.excluded ?? [])].sort((a, b) => a - b);
 }
 
 /** A surah file's exact size — the only size it is used at — or null. */
@@ -254,8 +291,14 @@ export function ayahAt(reciterId: string, surah: number, seconds: number): numbe
  * per ayah, and the app treats it so: no "best-effort" label, no report.
  */
 export function isExactRecitation(reciterId: string): boolean {
-  const confirmed = tableOf(reciterId)?.confirmed;
-  return confirmed != null && confirmed.every(row => row.every(Boolean));
+  const table = tableOf(reciterId);
+  const confirmed = table?.confirmed;
+  // A surah the recording does not hold is never played, so it does not
+  // count against the rest.
+  return (
+    confirmed != null &&
+    confirmed.every((row, i) => table!.excluded.includes(i + 1) || row.every(Boolean))
+  );
 }
 
 /**
@@ -265,8 +308,9 @@ export function isExactRecitation(reciterId: string): boolean {
  * surah: the caveat and the report are shown only where they apply.
  */
 export function isExactSurah(reciterId: string, surah: number): boolean {
-  const row = tableOf(reciterId)?.confirmed?.[surah - 1];
-  return row != null && row.every(Boolean);
+  const table = tableOf(reciterId);
+  const row = table?.confirmed?.[surah - 1];
+  return row != null && !table!.excluded.includes(surah) && row.every(Boolean);
 }
 
 /** How many of a recitation's boundaries are confirmed, of how many. */
@@ -275,10 +319,11 @@ export function confirmedBoundaries(reciterId: string): { confirmed: number; tot
   if (!table) return null;
   let total = 0;
   let confirmed = 0;
-  for (const row of table.confirmed ?? table.bounds.map(b => b.map(() => false))) {
+  (table.confirmed ?? table.bounds.map(b => b.map(() => false))).forEach((row, i) => {
+    if (table.excluded.includes(i + 1)) return;
     total += row.length;
     confirmed += row.filter(Boolean).length;
-  }
+  });
   return { confirmed, total };
 }
 

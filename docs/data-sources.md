@@ -525,10 +525,11 @@ Fifteen recordings in one file per surah, among them the first Qālūn
 and Shuʿbah voices in the app and Mahmoud Khalil Al-Husary in Warsh
 (issue #110). The app cuts each surah into ayahs with boundaries bundled
 under `src/quran/data/surahRecitations/` and plays them from a full download
-only. Every boundary of fourteen of them was confirmed from the words (below),
-and the app cuts those as exactly as a file per ayah; the one surah it could
-not confirm — Al-Buʿayjan's Ṭā-Hā, whose recording ends partway through ayah
-133 — alone keeps the "best attempt" note and the report.
+only. Every boundary was confirmed from the words (below), and the app cuts
+them as exactly as a file per ayah. The one surah that could not be —
+Al-Buʿayjan's Ṭā-Hā, whose recording ends partway through ayah 133 — is left
+out of that voice altogether (the table's `x`): never played, streamed or
+downloaded in it, and the ayah sheet says the recording is incomplete.
 
 ### Where the bytes come from
 
@@ -613,7 +614,8 @@ could not settle again between the confirmed boundaries either side, and
 published start far out, had put some in the wrong silence); `realign.py
 --suspect` takes those again. `picks.json` holds the two dozen decided by
 reading the transcripts. `tables.py` folds the results into the bundled
-tables (v3: a `c` bitset, one bit per boundary, confirmed or not).
+tables (v3: a `c` bitset, one bit per boundary, confirmed or not; `x`, the
+surahs the recording does not hold, written with `--exclude`).
 
 Found and put right on the way: Al-Dukhain's Ghāfir, whose published timings
 stop ~450 s short of the recording's end; Al-Buʿayjan's Quraysh, timed ~20 s
@@ -621,7 +623,7 @@ out; surahs opening with disjoint letters started after the letters instead
 of before them; a basmalah spelt with a shaddah (at-Tīn, al-Qadr) not
 stripped from ayah 1; joins a reciter goes back over and recites again (the
 boundary falls where the ayah is first recited). Al-Buʿayjan's Ṭā-Hā file ends
-partway through 20:133, so 134 and 135 are not in it at all.
+partway through 20:133, so 134 and 135 are not in it at all — hence `x`.
 
 Streaming keeps that rule: before a surah is streamed, the server is asked
 for the file's size (a HEAD request), and only an exact match is played.

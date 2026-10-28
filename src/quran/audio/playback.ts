@@ -345,7 +345,14 @@ async function ensureSetup(): Promise<void> {
         loading: e.state === State.Loading || e.state === State.Buffering,
       });
       if (e.state === State.Stopped || e.state === State.None) {
-        setStatus({ active: null, playing: false, loading: false, clip: null });
+        // A card saying why a surah cannot be played stays: the stop that
+        // came with it (the queue reset under it, delivered late) is not
+        // the reader closing it.
+        if (getPlaybackStatus().needsDownload) {
+          setStatus({ playing: false, loading: false, clip: null });
+        } else {
+          setStatus({ active: null, playing: false, loading: false, clip: null });
+        }
         void stoppedAtMissingSurah();
       }
     });
@@ -937,10 +944,11 @@ async function blockedByDownload(
     blockedStart = null;
     return false;
   }
-  showBlocked(reciterId, refs[0] ?? null, missing, retry);
-  // Whatever was playing stops: the reader asked for this, not that.
+  // Whatever was playing stops: the reader asked for this, not that. Before
+  // the card is shown — the player's own "stopped" would clear it.
   endListening();
   await TrackPlayer.reset().catch(() => undefined);
+  showBlocked(reciterId, refs[0] ?? null, missing, retry);
   return true;
 }
 

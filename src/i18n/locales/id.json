@@ -1572,6 +1572,7 @@
     "wholeSurahResume": "Unduh sisanya · total {{size}}",
     "wholeSurahDownloading": "Mengunduh · {{pct}}%",
     "wholeSurahChanged": "{{surah}} tidak bisa diputar dengan suara ini: rekamannya berubah di sumbernya sejak Mihrab mengukur letak ayat-ayatnya. Sisa {{name}} diputar seperti biasa.",
+    "wholeSurahIncomplete": "{{surah}} tidak bisa diputar dengan suara ini: rekaman di sumbernya tidak lengkap — berhenti di tengah surah. Sisa {{name}} diputar seperti biasa.",
     "wholeSurahIncompleteBody": "{{count}} surah tidak terunduh: {{names}}. \"Lanjutkan\" hanya mengambil yang ini.",
     "wholeSurahUnreachable": "{{surah}} dengan suara ini tidak ada di perangkat ini dan tidak bisa di-streaming sekarang — tidak ada koneksi ke sumbernya. Unduh agar tersedia offline.",
     "downloadingAudioMegabytes": "Mengunduh… {{done}}/{{total}} MB",

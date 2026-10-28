@@ -1573,6 +1573,7 @@
     "wholeSurahResume": "Descargar el resto · {{size}} en total",
     "wholeSurahDownloading": "Descargando · {{pct}} %",
     "wholeSurahChanged": "{{surah}} no se puede reproducir con esta voz: la grabación ha cambiado en su origen desde que Mihrab midió dónde caen sus aleyas. El resto de {{name}} se reproduce como antes.",
+    "wholeSurahIncomplete": "{{surah}} no se puede reproducir con esta voz: la grabación en su origen está incompleta; se corta a mitad de la sura. El resto de {{name}} se reproduce como antes.",
     "wholeSurahIncompleteBody": "No se descargaron {{count}} suras: {{names}}. «Continuar» descarga solo esas.",
     "wholeSurahUnreachable": "{{surah}} con esta voz no está en este dispositivo y ahora no se puede reproducir en streaming: no hay conexión con su origen. Descárgala para tenerla sin conexión.",
     "downloadingAudioMegabytes": "Descargando… {{done}}/{{total}} MB",

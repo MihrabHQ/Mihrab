@@ -14,9 +14,12 @@ import {
   ayahClip,
   clipAyahCount,
   confirmedBoundaries,
+  excludedSurahs,
+  expectedSurahBytes,
   hasSurahTable,
   isExactRecitation,
   isExactSurah,
+  surahExcluded,
   surahFileSeconds,
   surahRecitationBytes,
 } from '../src/quran/audio/surahRecitation';
@@ -263,6 +266,30 @@ describe('reading a table', () => {
     expect(ayahBoundaryReportUrl('zahrani', 2, 255, 'hafs')).toBeNull();
   });
 
+  it('leaves a surah the recording does not hold out of everything but its boundaries', () => {
+    _setSurahTableForTests('zahrani', { ...confirmedTable(KUFAN, [42]), x: [2] });
+    // Exact without it, and the sheet says so of that surah alone.
+    expect(isExactRecitation('zahrani')).toBe(true);
+    expect(isExactSurah('zahrani', 2)).toBe(false);
+    expect(surahExcluded('zahrani', 2)).toBe(true);
+    expect(excludedSurahs('zahrani')).toEqual([2]);
+    expect(surahRecitationBytes('zahrani')).toBe(
+      KUFAN.reduce((a, _n, i) => a + 1_000_000 + i, 0) - (1_000_000 + 1),
+    );
+    // Still readable: the table's boundaries for it are the shipped ones.
+    expect(ayahClip('zahrani', 2, 3)).toEqual({ start: 2030, end: 2040 });
+    // No report for a surah that is never played.
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { ayahBoundaryReportUrl } = require('../src/quran/audio/ayahBoundaryReport');
+    expect(ayahBoundaryReportUrl('zahrani', 2, 3, 'hafs')).toBeNull();
+    // (That it is never fetched, streamed or counted: wholeSurahSafety.)
+  });
+
+  it('refuses a table whose excluded surahs are not surahs', () => {
+    _setSurahTableForTests('zahrani', { ...confirmedTable(KUFAN), x: [0, 115] });
+    expect(hasSurahTable('zahrani')).toBe(false);
+  });
+
   it('keeps the report for the one surah that is still a best attempt', () => {
     _setSurahTableForTests('zahrani', confirmedTable(KUFAN, [42]));
     // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -275,23 +302,28 @@ describe('reading a table', () => {
 describe('the bundled tables, as shipped', () => {
   afterEach(() => _resetSurahTablesForTests());
 
-  it('are v3, every boundary confirmed — but Al-Buʿayjan’s Ṭā-Hā, whose recording ends early', () => {
+  /** The table's own `bytes`: the sum of every surah file, held or not. */
+  function uint32Sum(id: string): number {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    return (require(`../src/quran/data/surahRecitations/${id}.json`) as { bytes: number }).bytes;
+  }
+
+  it('are v3, every boundary confirmed — Al-Buʿayjan without Ṭā-Hā, which his recording does not hold', () => {
     for (const r of SURAH_FILE_RECITERS) {
       const { confirmed, total } = confirmedBoundaries(r.id)!;
-      if (r.id === 'buaijan') {
-        // The file stops partway through 20:133: that ayah's end and the
-        // two after it cannot be placed, and only Ṭā-Hā says so.
-        expect(total - confirmed).toBe(3);
-        expect(isExactRecitation(r.id)).toBe(false);
-        expect(isExactSurah(r.id, 20)).toBe(false);
-        for (let s = 1; s <= 114; s++) {
-          if (s !== 20) expect(isExactSurah(r.id, s)).toBe(true);
-        }
-      } else {
-        expect(confirmed).toBe(total);
-        expect(isExactRecitation(r.id)).toBe(true);
-      }
+      expect(confirmed).toBe(total);
+      expect(isExactRecitation(r.id)).toBe(true);
+      // The file stops partway through 20:133: the surah is excluded from
+      // the voice altogether, and is the only one anywhere.
+      expect(excludedSurahs(r.id)).toEqual(r.id === 'buaijan' ? [20] : []);
     }
+    expect(surahExcluded('buaijan', 20)).toBe(true);
+    expect(isExactSurah('buaijan', 20)).toBe(false);
+    expect(isExactSurah('buaijan', 19)).toBe(true);
+    // Its download is the recitation without that file.
+    expect(surahRecitationBytes('buaijan')).toBe(
+      uint32Sum('buaijan') - expectedSurahBytes('buaijan', 20)!,
+    );
   });
 
   it('start every surah after its opening, and inside its file', () => {
@@ -441,6 +473,16 @@ describe('playing a whole-surah recitation', () => {
     await playRange({ surah: 36, ayah: 1 }, { surah: 36, ayah: 5 });
     expect(tp.add).not.toHaveBeenCalled();
     expect(getPlaybackStatus().needsDownload).toEqual({ reciterId: 'zahrani', surah: 36, reason: 'changed' });
+    // The player's own stop, from the queue reset under the card and
+    // delivered after it, does not take the card away: the reader would be
+    // left with nothing playing and no word why.
+    listener('playback-state')({ state: 'none' });
+    expect(getPlaybackStatus().active).toEqual({ surah: 36, ayah: 1 });
+    expect(getPlaybackStatus().needsDownload?.surah).toBe(36);
+    // Closing it does.
+    await stopPlayback();
+    expect(getPlaybackStatus().active).toBeNull();
+    expect(getPlaybackStatus().needsDownload).toBeNull();
   });
 
   it('ends a listen at a surah not on the device, and says so when it gets there', async () => {

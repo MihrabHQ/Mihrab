@@ -16,7 +16,7 @@ import { MIHRAB_REPO } from '../../config/links';
 import { getInstalledAppVersionLabel } from '../../appVersion';
 import { findSurah } from '../quran';
 import { RECITERS, reciterRiwayah } from './reciters';
-import { ayahClip, isExactSurah } from './surahRecitation';
+import { ayahClip, isExactSurah, surahExcluded } from './surahRecitation';
 import { recordedAyahs } from './recordedAyahs';
 import type { RiwayahId } from '../riwayat';
 
@@ -44,7 +44,10 @@ export function ayahBoundaryReportUrl(
 ): string | null {
   const reciter = RECITERS.find(r => r.id === reciterId);
   // An exact surah is cut like a file per ayah: nothing of ours to be wrong.
-  if (!reciter?.surahFiles || isExactSurah(reciterId, surah)) return null;
+  // Nor a surah the recording does not hold: it is never played to be wrong.
+  if (!reciter?.surahFiles || isExactSurah(reciterId, surah) || surahExcluded(reciterId, surah)) {
+    return null;
+  }
   const span = recordedAyahs(readerRiwayah, reciterRiwayah(reciter), surah, readerAyah, false);
   const ayah = span?.[0] ?? readerAyah;
   const first = ayahClip(reciterId, surah, ayah);

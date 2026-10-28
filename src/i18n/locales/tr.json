@@ -1572,6 +1572,7 @@
     "wholeSurahResume": "Kalanı indir · toplam {{size}}",
     "wholeSurahDownloading": "İndiriliyor · %{{pct}}",
     "wholeSurahChanged": "{{surah}} bu sesle çalınamaz: Mihrab ayetlerin yerini ölçtükten sonra kayıt kaynağında değişti. {{name}} tilavetinin geri kalanı eskisi gibi çalar.",
+    "wholeSurahIncomplete": "{{surah}} bu sesle çalınamaz: kaynaktaki kayıt eksik — surenin ortasında bitiyor. {{name}} tilavetinin geri kalanı eskisi gibi çalar.",
     "wholeSurahIncompleteBody": "{{count}} sure indirilmedi: {{names}}. \"Devam\" yalnızca bunları getirir.",
     "wholeSurahUnreachable": "Bu seste {{surah}} bu cihazda yok ve şu an akışla da çalınamıyor — kaynağına bağlantı yok. Çevrimdışı için indirin.",
     "downloadingAudioMegabytes": "İndiriliyor… {{done}}/{{total}} MB",

@@ -1573,6 +1573,7 @@
     "wholeSurahResume": "Télécharger le reste · {{size}} au total",
     "wholeSurahDownloading": "Téléchargement · {{pct}} %",
     "wholeSurahChanged": "{{surah}} ne peut pas être lue dans cette voix : l’enregistrement a changé à sa source depuis que Mihrab a mesuré où tombent ses versets. Le reste de {{name}} se lit comme avant.",
+    "wholeSurahIncomplete": "{{surah}} ne peut pas être lue dans cette voix : l’enregistrement à sa source est incomplet, il s’arrête au milieu de la sourate. Le reste de {{name}} se lit comme avant.",
     "wholeSurahIncompleteBody": "{{count}} sourates n’ont pas été téléchargées : {{names}}. « Continuer » ne récupère que celles-ci.",
     "wholeSurahUnreachable": "{{surah}} dans cette voix n’est pas sur cet appareil et ne peut pas être diffusée pour l’instant — pas de connexion à sa source. Téléchargez-la pour l’avoir hors ligne.",
     "downloadingAudioMegabytes": "Téléchargement… {{done}}/{{total}} Mo",

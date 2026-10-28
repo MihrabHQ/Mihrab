@@ -1572,6 +1572,7 @@
     "wholeSurahResume": "Ladda ner resten · {{size}} totalt",
     "wholeSurahDownloading": "Laddar ner · {{pct}} %",
     "wholeSurahChanged": "{{surah}} kan inte spelas med den här rösten: inspelningen har ändrats hos källan sedan Mihrab mätte var dess verser ligger. Resten av {{name}} spelas som förut.",
+    "wholeSurahIncomplete": "{{surah}} kan inte spelas med den här rösten: inspelningen hos källan är ofullständig – den slutar mitt i suran. Resten av {{name}} spelas som förut.",
     "wholeSurahIncompleteBody": "{{count}} suror laddades inte ner: {{names}}. ”Fortsätt” hämtar just dem.",
     "wholeSurahUnreachable": "{{surah}} med den här rösten finns inte på enheten och kan inte strömmas just nu — ingen anslutning till källan. Ladda ner den för att ha den offline.",
     "downloadingAudioMegabytes": "Laddar ner… {{done}}/{{total}} MB",

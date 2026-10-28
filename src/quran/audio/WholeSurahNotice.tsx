@@ -27,7 +27,12 @@ import {
   type SurahFileState,
 } from './audioStore';
 import { findReciter } from './reciters';
-import { expectedSurahBytes, isExactRecitation, isExactSurah } from './surahRecitation';
+import {
+  expectedSurahBytes,
+  isExactRecitation,
+  isExactSurah,
+  surahExcluded,
+} from './surahRecitation';
 import { ayahBoundaryReportUrl } from './ayahBoundaryReport';
 import type { RiwayahId } from '../riwayat';
 import {
@@ -38,6 +43,33 @@ import {
   subscribeQuranDownload,
   type QuranDownloadState,
 } from '../quranDownloadManager';
+
+/**
+ * Why a surah cannot be played in this voice: the recording the app
+ * measured is not the one its source serves now, or — the table's `x` —
+ * the source's file never held the whole surah.
+ */
+function blockedSurahText(
+  t: (key: string, opts: Record<string, unknown>) => string,
+  reciterId: string,
+  surah: number,
+  name: string,
+): string {
+  const label = findSurah(surah)?.romanized ?? String(surah);
+  return surahExcluded(reciterId, surah)
+    ? t('quran.wholeSurahIncomplete', {
+        defaultValue:
+          '{{surah}} cannot be played in this voice: the recording at its source is incomplete — it ends partway through the surah. The rest of {{name}} plays as before.',
+        surah: label,
+        name,
+      })
+    : t('quran.wholeSurahChanged', {
+        defaultValue:
+          '{{surah}} cannot be played in this voice: the recording at its source has changed since Mihrab measured where its ayahs fall. The rest of {{name}} plays as before.',
+        surah: label,
+        name,
+      });
+}
 
 /** "1.2 GB", "812 MB" — the picker's shape. */
 function formatBytes(bytes: number): string {
@@ -89,12 +121,7 @@ export function WholeSurahNotice({
 
   const changedLead =
     missingSurah != null && reason === 'changed'
-      ? t('quran.wholeSurahChanged', {
-          defaultValue:
-            '{{surah}} cannot be played in this voice: the recording at its source has changed since Mihrab measured where its ayahs fall. The rest of {{name}} plays as before.',
-          surah: findSurah(missingSurah)?.romanized ?? missingSurah,
-          name: reciter.name,
-        })
+      ? blockedSurahText(t, reciterId, missingSurah, reciter.name)
       : null;
   const lead =
     changedLead ??
@@ -260,12 +287,7 @@ export function WholeSurahSurahRow({
     <View style={styles.wrap}>
       {state === 'changed' ? (
         <Text style={[styles.lead, { color: palette.text }]}>
-          {t('quran.wholeSurahChanged', {
-            defaultValue:
-              '{{surah}} cannot be played in this voice: the recording at its source has changed since Mihrab measured where its ayahs fall. The rest of {{name}} plays as before.',
-            surah: surahLabel,
-            name: findReciter(reciterId).name,
-          })}
+          {blockedSurahText(t, reciterId, surah, findReciter(reciterId).name)}
         </Text>
       ) : (
         <View style={styles.actions}>
@@ -302,8 +324,9 @@ export function WholeSurahSurahRow({
         </View>
       )}
       {/* A surah whose every boundary was confirmed is cut as exactly as a
-          file per ayah: neither the caveat nor the report applies to it. */}
-      {isExactSurah(reciterId, surah) ? null : (
+          file per ayah: neither the caveat nor the report applies to it —
+          nor to one that is not played in this voice at all. */}
+      {isExactSurah(reciterId, surah) || surahExcluded(reciterId, surah) ? null : (
         <Text style={[styles.note, { color: palette.muted }]}>
           {t(
             'quran.wholeSurahTrackingShort',

@@ -1572,6 +1572,7 @@
     "wholeSurahResume": "下载其余部分 · 共 {{size}}",
     "wholeSurahDownloading": "正在下载 · {{pct}}%",
     "wholeSurahChanged": "无法用此声音播放 {{surah}}：自 Mihrab 测定其经文位置以来，来源处的录音已更改。{{name}} 的其余部分照常播放。",
+    "wholeSurahIncomplete": "无法用此声音播放 {{surah}}：来源处的录音不完整，在该章中途结束。{{name}} 的其余部分照常播放。",
     "wholeSurahIncompleteBody": "{{count}} 章未能下载：{{names}}。“继续”只会获取这些。",
     "wholeSurahUnreachable": "此声音的 {{surah}} 不在本设备上，目前也无法流式播放——无法连接到其来源。下载后即可离线收听。",
     "downloadingAudioMegabytes": "正在下载… {{done}}/{{total}} MB",

@@ -1572,6 +1572,7 @@
     "wholeSurahResume": "Den Rest laden · insgesamt {{size}}",
     "wholeSurahDownloading": "Wird geladen · {{pct}} %",
     "wholeSurahChanged": "{{surah}} kann in dieser Stimme nicht abgespielt werden: Die Aufnahme hat sich an der Quelle geändert, seit Mihrab gemessen hat, wo ihre Verse liegen. Der Rest von {{name}} spielt wie bisher.",
+    "wholeSurahIncomplete": "{{surah}} kann in dieser Stimme nicht abgespielt werden: Die Aufnahme an der Quelle ist unvollständig – sie bricht mitten in der Sure ab. Der Rest von {{name}} spielt wie bisher.",
     "wholeSurahIncompleteBody": "{{count}} Suren wurden nicht geladen: {{names}}. „Fortsetzen“ holt genau diese.",
     "wholeSurahUnreachable": "{{surah}} ist in dieser Stimme nicht auf diesem Gerät und kann gerade nicht gestreamt werden — keine Verbindung zur Quelle. Lade sie herunter, um sie offline zu haben.",
     "downloadingAudioMegabytes": "Wird geladen… {{done}}/{{total}} MB",
