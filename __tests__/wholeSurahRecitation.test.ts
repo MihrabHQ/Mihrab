@@ -16,6 +16,8 @@ import {
   confirmedBoundaries,
   hasSurahTable,
   isExactRecitation,
+  isExactSurah,
+  surahFileSeconds,
   surahRecitationBytes,
 } from '../src/quran/audio/surahRecitation';
 import {
@@ -229,6 +231,11 @@ describe('reading a table', () => {
   it('is not exact while one boundary is still a best attempt', () => {
     _setSurahTableForTests('zahrani', confirmedTable(KUFAN, [42]));
     expect(isExactRecitation('zahrani')).toBe(false);
+    // Boundary 42 is in al-Baqarah (al-Fātiḥah holds the first 8): that
+    // surah alone is the best attempt; every other surah is exact.
+    expect(isExactSurah('zahrani', 2)).toBe(false);
+    expect(isExactSurah('zahrani', 1)).toBe(true);
+    expect(isExactSurah('zahrani', 114)).toBe(true);
     const total = KUFAN.reduce((a, n) => a + n + 1, 0);
     expect(confirmedBoundaries('zahrani')).toEqual({ confirmed: total - 1, total });
     // Still playable: an unconfirmed boundary is the shipped one.
@@ -254,6 +261,57 @@ describe('reading a table', () => {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { ayahBoundaryReportUrl } = require('../src/quran/audio/ayahBoundaryReport');
     expect(ayahBoundaryReportUrl('zahrani', 2, 255, 'hafs')).toBeNull();
+  });
+
+  it('keeps the report for the one surah that is still a best attempt', () => {
+    _setSurahTableForTests('zahrani', confirmedTable(KUFAN, [42]));
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { ayahBoundaryReportUrl } = require('../src/quran/audio/ayahBoundaryReport');
+    expect(ayahBoundaryReportUrl('zahrani', 2, 255, 'hafs')).not.toBeNull();
+    expect(ayahBoundaryReportUrl('zahrani', 3, 1, 'hafs')).toBeNull();
+  });
+});
+
+describe('the bundled tables, as shipped', () => {
+  afterEach(() => _resetSurahTablesForTests());
+
+  it('are v3, every boundary confirmed — but Al-Buʿayjan’s Ṭā-Hā, whose recording ends early', () => {
+    for (const r of SURAH_FILE_RECITERS) {
+      const { confirmed, total } = confirmedBoundaries(r.id)!;
+      if (r.id === 'buaijan') {
+        // The file stops partway through 20:133: that ayah's end and the
+        // two after it cannot be placed, and only Ṭā-Hā says so.
+        expect(total - confirmed).toBe(3);
+        expect(isExactRecitation(r.id)).toBe(false);
+        expect(isExactSurah(r.id, 20)).toBe(false);
+        for (let s = 1; s <= 114; s++) {
+          if (s !== 20) expect(isExactSurah(r.id, s)).toBe(true);
+        }
+      } else {
+        expect(confirmed).toBe(total);
+        expect(isExactRecitation(r.id)).toBe(true);
+      }
+    }
+  });
+
+  it('start every surah after its opening, and inside its file', () => {
+    // Three recordings open straight on the first ayah, no basmalah before
+    // it (heard): Balilah's Ghāfir, Wadee' Al-Yamani's ad-Dukhān and al-Ḥadīd.
+    const noOpening = new Set(['balilah:40', 'wadee-yamani:44', 'wadee-yamani:57']);
+    for (const r of SURAH_FILE_RECITERS) {
+      for (let s = 1; s <= 114; s++) {
+        const first = ayahClip(r.id, s, 1)!;
+        const n = clipAyahCount(r.id, s)!;
+        const last = ayahClip(r.id, s, n)!;
+        // Al-Fātiḥah's basmalah is its first ayah; at-Tawbah has none; every
+        // other surah opens with a basmalah the reader is not played in the
+        // ayah — so its first ayah cannot start at the file's first instant.
+        if (s !== 1 && s !== 9 && !noOpening.has(`${r.id}:${s}`)) {
+          expect(first.start).toBeGreaterThan(1);
+        }
+        expect(last.end).toBeLessThanOrEqual(surahFileSeconds(r.id, s)! + 0.5);
+      }
+    }
   });
 });
 

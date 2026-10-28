@@ -243,6 +243,8 @@ def side_scores(row, texts):
             # letters said by name are heard as anything at all.
             t = row["cands"][k]
             sb = 1.0 if t < 1.0 else max(fit_tail(b, c[-K:]) for b in befores for c in OPENINGS)
+            if t < 1.0 and any(fit_head(a, c[:K]) >= 0.8 for a in afters for c in OPENINGS):
+                sb = 0.0  # the file starts on the opening, not the ayah
         out[k] = (round(sa, 3), round(sb, 3))
     return out
 
@@ -277,6 +279,13 @@ def decide(row, texts):
         # Of the places heard right, the last: after the opening's quiet,
         # after the end's last word.
         pool = [k for k in good if quiet[k]] or [k for k in good if total[k] >= CLEAR]
+        if i == n and "aligned" in cands and "aligned" not in pool and sides["aligned"][0] >= 0.99 \
+                and any(0 <= cands["aligned"] - cands[k] <= 1.0 for k in good):
+            # The alignment's end is the last sound plus a tail: never
+            # earlier than that — a pause inside the last word's madd,
+            # heard right before it, would clip it. (Its own "before"
+            # hears more of the madd, and matches a little worse.)
+            pool.append("aligned")
         if not pool:
             return None, "heard right only where it is not quiet"
         last = max(pool, key=lambda k: cands[k])
@@ -530,11 +539,10 @@ def apply(rid, src, to, write=True):
         picks = {}
         for r in rows:
             k, why = decide(r, texts)
-            if k is None:
-                if f"{s}:{r['i']}" in manual:
-                    picks[r["i"]] = manual[f"{s}:{r['i']}"]
-                else:
-                    undecided.append((s, r["i"], why))
+            if f"{s}:{r['i']}" in manual:  # read by a person: over any rule
+                picks[r["i"]] = manual[f"{s}:{r['i']}"]
+            elif k is None:
+                undecided.append((s, r["i"], why))
             else:
                 picks[r["i"]] = round(r["cands"][k], 2)
         b, st, dropped = fold(res, picks)

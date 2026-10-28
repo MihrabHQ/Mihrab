@@ -258,6 +258,17 @@ export function isExactRecitation(reciterId: string): boolean {
   return confirmed != null && confirmed.every(row => row.every(Boolean));
 }
 
+/**
+ * Whether every boundary of ONE surah in this recitation was confirmed.
+ * A recitation with a single unplaceable surah (a recording that ends
+ * early) is exact everywhere else, and the ayah sheet says so surah by
+ * surah: the caveat and the report are shown only where they apply.
+ */
+export function isExactSurah(reciterId: string, surah: number): boolean {
+  const row = tableOf(reciterId)?.confirmed?.[surah - 1];
+  return row != null && row.every(Boolean);
+}
+
 /** How many of a recitation's boundaries are confirmed, of how many. */
 export function confirmedBoundaries(reciterId: string): { confirmed: number; total: number } | null {
   const table = tableOf(reciterId);

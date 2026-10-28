@@ -27,7 +27,7 @@ import {
   type SurahFileState,
 } from './audioStore';
 import { findReciter } from './reciters';
-import { expectedSurahBytes, isExactRecitation } from './surahRecitation';
+import { expectedSurahBytes, isExactRecitation, isExactSurah } from './surahRecitation';
 import { ayahBoundaryReportUrl } from './ayahBoundaryReport';
 import type { RiwayahId } from '../riwayat';
 import {
@@ -301,9 +301,9 @@ export function WholeSurahSurahRow({
           ) : null}
         </View>
       )}
-      {/* A recitation whose every boundary was confirmed is cut as exactly
-          as a file per ayah: neither the caveat nor the report applies. */}
-      {isExactRecitation(reciterId) ? null : (
+      {/* A surah whose every boundary was confirmed is cut as exactly as a
+          file per ayah: neither the caveat nor the report applies to it. */}
+      {isExactSurah(reciterId, surah) ? null : (
         <Text style={[styles.note, { color: palette.muted }]}>
           {t(
             'quran.wholeSurahTrackingShort',

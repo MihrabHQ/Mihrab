@@ -524,8 +524,11 @@ same ceiling thirty-three of the Ḥafṣ recordings already sit at.
 Fifteen recordings in one file per surah, among them the first Qālūn
 and Shuʿbah voices in the app and Mahmoud Khalil Al-Husary in Warsh
 (issue #110). The app cuts each surah into ayahs with boundaries bundled
-under `src/quran/data/surahRecitations/`, plays them from a full download
-only, and labels their ayah tracking a best attempt.
+under `src/quran/data/surahRecitations/` and plays them from a full download
+only. Every boundary of fourteen of them was confirmed from the words (below),
+and the app cuts those as exactly as a file per ayah; the one surah it could
+not confirm — Al-Buʿayjan's Ṭā-Hā, whose recording ends partway through ayah
+133 — alone keeps the "best attempt" note and the report.
 
 ### Where the bytes come from
 
@@ -590,12 +593,43 @@ when the audio was decoded). The app uses a surah file only at that size,
 and marks a surah the server keeps serving at another as changed at its
 source: the boundaries are the recording's, byte for byte.
 
+### From the pauses to the words
+
+`align.py`'s pauses were a first cut, and could not place a boundary where a
+reciter runs one ayah into the next, or where the published time was far out.
+`textalign.py` aligns each surah's text to its audio instead (a wav2vec2 model
+fine-tuned on recitation, CTC forced alignment) and takes a boundary where one
+ayah's last word ends and the next one's first begins; each is CONFIRMED only
+when the alignment and the pause agree, or the words either side check out.
+What it flagged (753 boundaries, about 0.8%) `resolve.py` heard again with a
+second, independent model (`tarteel-ai/whisper-base-ar-quran`), transcribing
+the seconds after and before every candidate — the alignment's, the pause's,
+mp3quran's, and every other quiet stretch between the neighbouring
+boundaries; a candidate stands when the next ayah's first words follow it
+and the previous ayah's last words precede it. `realign.py` aligns what that
+could not settle again between the confirmed boundaries either side, and
+`verify.py` hears every surah's first and last boundary, confirmed or not
+(an opening of disjoint letters — الٓمٓ, حمٓ — drawn out for seconds, or a
+published start far out, had put some in the wrong silence); `realign.py
+--suspect` takes those again. `picks.json` holds the two dozen decided by
+reading the transcripts. `tables.py` folds the results into the bundled
+tables (v3: a `c` bitset, one bit per boundary, confirmed or not).
+
+Found and put right on the way: Al-Dukhain's Ghāfir, whose published timings
+stop ~450 s short of the recording's end; Al-Buʿayjan's Quraysh, timed ~20 s
+out; surahs opening with disjoint letters started after the letters instead
+of before them; a basmalah spelt with a shaddah (at-Tīn, al-Qadr) not
+stripped from ayah 1; joins a reciter goes back over and recites again (the
+boundary falls where the ayah is first recited). Al-Buʿayjan's Ṭā-Hā file ends
+partway through 20:133, so 134 and 135 are not in it at all.
+
 Streaming keeps that rule: before a surah is streamed, the server is asked
 for the file's size (a HEAD request), and only an exact match is played.
 Short surahs (up to 30 MB) are saved to the device as they are listened to,
 checked the same way. A listener who hears an ayah start or end in the
-wrong place can report it from the ayah sheet: a GitHub issue with the
-recording, the ayah and its current boundaries, for a corrected table.
+wrong place can report it from the ayah sheet (shown only for a surah with
+an unconfirmed boundary): a GitHub issue with the recording, the ayah and its
+current boundaries, for a corrected table.
 
 ## The Clear Quran (Dr. Mustafa Khattab) — issue #46, BLOCKED 2026-09-13
 
