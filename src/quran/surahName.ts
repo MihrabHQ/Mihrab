@@ -11,6 +11,7 @@
  * Arabic surah names, and that is the form printed in their mushafs too.
  */
 import i18n from '../i18n';
+import { SURAHS } from './quran';
 
 const ARABIC_SCRIPT_LANGUAGES = ['ar', 'ur', 'fa', 'ps', 'sd', 'ckb'];
 
@@ -19,12 +20,23 @@ export function usesArabicScript(language?: string): boolean {
   return ARABIC_SCRIPT_LANGUAGES.includes(lang);
 }
 
-/** Name for a `MUSHAF_SURAHS` entry (`pages.ts` shape). */
+/**
+ * Name for a `MUSHAF_SURAHS` entry (`pages.ts` shape).
+ *
+ * The romanized name is the app's own (`SURAHS`), not the page table's:
+ * the table spells 64 of the 114 its own way ("Aal-i-Imraan", "Yaseen",
+ * "An-Naas"), so the reader's header, the scrubber and the widget said
+ * one name and the index, the ayah sheet and the listening page another —
+ * and the header changed its spelling the moment a page turned. The
+ * table's own name is the fallback for a number it does not know.
+ */
 export function mushafSurahName(
-  meta: { name: string; englishName: string },
+  meta: { number?: number; name: string; englishName: string },
   language?: string,
 ): string {
-  return usesArabicScript(language) ? meta.name : meta.englishName;
+  if (usesArabicScript(language)) return meta.name;
+  const own = meta.number == null ? undefined : SURAHS[meta.number - 1];
+  return own && own.number === meta.number ? own.romanized : meta.englishName;
 }
 
 /** Name for a `SURAHS` entry (`quran.ts` shape). */

@@ -28,6 +28,17 @@ import { useEffect, useState } from 'react';
 import { AppState, type AppStateStatus } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 
+/**
+ * Navigation focus on its own: whether this screen is the one the
+ * navigator shows. NOT for a timer (see above) — for what belongs to the
+ * screen and should go when another is in front of it, and come back with
+ * the app put away: Minimal's times sheet, a Modal of its own window that
+ * otherwise stayed up over the page it opened and the tab turned to.
+ */
+export function useIsOnScreen(): boolean {
+  return useIsFocused();
+}
+
 /** True only while the app is foregrounded AND this screen is focused. */
 export function useIsActive(): boolean {
   const focused = useIsFocused();

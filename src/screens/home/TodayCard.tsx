@@ -43,7 +43,7 @@ import { useWindowSize } from '../../responsive/windowSize';
 import Svg, { Path } from 'react-native-svg';
 import { MinimalGlyph } from './MinimalGlyph';
 import { useTranslation } from 'react-i18next';
-import { useIsActive } from '../../hooks/useIsActive';
+import { useIsActive, useIsOnScreen } from '../../hooks/useIsActive';
 import { useLively } from '../../hooks/useLively';
 import { useReduceMotion } from '../../hooks/useReduceMotion';
 import { useIncreasedContrast } from '../../hooks/useIncreasedContrast';
@@ -1629,6 +1629,16 @@ function TodayCardImpl({
       sheetProgress.setValue(0);
     }
   }, [minimal, sheetProgress]);
+  // The sheet goes with Today. It is a Modal — on Android a window of its
+  // own, over everything — so it stayed up over the Month page and the
+  // Qibla its own buttons open, and over whichever tab a swipe or a dot
+  // turned to from under it, taking the taps meant for that page. Focus
+  // alone, not the foreground: the app put away and brought back keeps
+  // the sheet it had.
+  const todayFocused = useIsOnScreen();
+  useEffect(() => {
+    if (!todayFocused) setTimesOpen(false);
+  }, [todayFocused]);
   const lastSheetRows = useRef<TimesSheetRow[]>([]);
   const reduceMotion = useReduceMotion();
 

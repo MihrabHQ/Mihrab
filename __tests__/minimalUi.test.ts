@@ -262,6 +262,15 @@ describe('the minimal Today', () => {
     expect(card).toMatch(/\)\}\n\s*\{\/\* The question a tap on a passed prayer opens/);
   });
 
+  it('takes the sheet down when Today is no longer the page in front', () => {
+    // A Modal is a window of its own on Android: the sheet stayed up over
+    // the Month page and the Qibla its own buttons open, and over the tab
+    // a swipe turned to under it, and took that page's taps. Focus, not
+    // the foreground — the app put away keeps the sheet it had.
+    expect(card).toContain('const todayFocused = useIsOnScreen();');
+    expect(card).toMatch(/useEffect\(\(\) => \{\s*if \(!todayFocused\) setTimesOpen\(false\);\s*\}, \[todayFocused\]\);/);
+  });
+
   it('runs its sky on under the dots', () => {
     expect(home).toContain('{ paddingBottom: minimal ? 0 : SPACING.xl + tabBarInset }');
     expect(home).toContain('footInset={tabBarInset}');
