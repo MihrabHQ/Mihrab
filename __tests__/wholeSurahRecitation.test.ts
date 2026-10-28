@@ -524,11 +524,32 @@ describe('playing a whole-surah recitation', () => {
     // Measured: 5000 + 10·(n+2) seconds. Playing: a minute short.
     const measured = 5000 + 10 * (KUFAN[4] + 2);
     tp.getProgress.mockResolvedValue({ position: 5020, duration: measured - 60, buffered: 0 });
+    tp.getActiveTrack.mockResolvedValue(queued()[0]);
     listener('playback-active-track-changed')({ track: queued()[0] });
     await tick();
     await tick();
     expect(getPlaybackStatus().needsDownload).toEqual({ reciterId: 'zahrani', surah: 5, reason: 'changed' });
     tp.getProgress.mockResolvedValue({ position: 0, duration: 0, buffered: 0 });
+    tp.getActiveTrack.mockResolvedValue(null);
+  });
+
+  it('does not judge a surah by the next file’s length when the player has moved on', async () => {
+    setQuranPrefs({ reciterId: 'zahrani', riwayah: 'hafs', repeat: { eachAyah: 1, range: 1, pauseFactor: 0 } });
+    // 112:4, the last clip of its file, then 113:1 — another file.
+    await playRange({ surah: 112, ayah: 4 }, { surah: 113, ayah: 1 });
+    const [last, next] = queued();
+    // The length the player reports is already the NEXT file's (a minute
+    // longer than 112's measured), and the active track has moved on.
+    tp.getProgress.mockResolvedValue({ position: 0, duration: 113_000 + 10 * (KUFAN[112] + 2), buffered: 0 });
+    tp.getActiveTrack.mockResolvedValue(next);
+    listener('playback-active-track-changed')({ track: last });
+    listener('playback-active-track-changed')({ track: next });
+    await tick();
+    await tick();
+    expect(getPlaybackStatus().needsDownload).toBeNull();
+    expect(getPlaybackStatus().active).toEqual({ surah: 113, ayah: 1 });
+    tp.getProgress.mockResolvedValue({ position: 0, duration: 0, buffered: 0 });
+    tp.getActiveTrack.mockResolvedValue(null);
   });
 });
 

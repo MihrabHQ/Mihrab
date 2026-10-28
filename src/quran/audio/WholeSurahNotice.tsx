@@ -14,6 +14,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useAppPalette } from '../../hooks/useAppPalette';
+// The Downloads page's shape — a short surah is a few hundred KB, not "0 MB".
+import { formatBytes } from '../downloadsUi';
 import { RowAction } from '../../components/controls';
 import { SPACING } from '../../theme/tokens';
 import { TYPE } from '../../theme/typography';
@@ -69,14 +71,6 @@ function blockedSurahText(
         surah: label,
         name,
       });
-}
-
-/** "1.2 GB", "812 MB" — the picker's shape. */
-function formatBytes(bytes: number): string {
-  if (bytes <= 0) return '0 MB';
-  const mb = bytes / (1024 * 1024);
-  if (mb >= 1024) return `${(mb / 1024).toFixed(1)} GB`;
-  return `${Math.round(mb)} MB`;
 }
 
 export function WholeSurahNotice({

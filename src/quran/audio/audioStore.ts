@@ -887,8 +887,11 @@ export function downloadReciterAudio(
 //   • the deadline is on SILENCE, not on the whole file: no fixed time is
 //     right for both an-Nās and al-Baqarah, and a file still arriving is
 //     not a file to give up on;
-//   • there is no in-memory fallback transport: a file this size cannot
-//     be held as a base64 string on a phone.
+//   • the in-memory fallback transport is for the small files only: a
+//     file of two hundred megabytes cannot be held as a base64 string on
+//     a phone, but a short surah can, and on a network where the streaming
+//     transport never works (the emulator's NAT, some proxies) it is the
+//     difference between juz ʿamma on the device and nothing.
 
 /** One megabyte, as the download counts it — the same MB every size label prints. */
 export const AUDIO_MB = 1024 * 1024;
@@ -897,6 +900,8 @@ const MB = AUDIO_MB;
 const SURAH_STALL_MS = 60_000;
 /** Fewer workers than for ayahs: these are big, and the pipe is one pipe. */
 const SURAH_WORKERS = 2;
+/** A surah file up to this size may come through RN's own fetch, held in memory once. */
+const SURAH_FALLBACK_BYTES = 12 * MB;
 
 /** A surah the server now serves at another size twice running. */
 class SurahChangedAtSource extends Error {
@@ -963,6 +968,9 @@ async function fetchSurahFile(
       return;
     } catch (e) {
       lastError = e;
+      // Said in the log: a surah that never arrives is otherwise silent
+      // where the notification cannot be shown.
+      console.warn(`[audioStore] ${reciter.id} surah ${surah}, attempt ${attempt}: ${String(e)}`);
       await ReactNativeBlobUtil.fs.unlink(tmp).catch(() => undefined);
       if (isCancelled()) break;
       // Twice the wrong size is the source, not the connection: mark it
@@ -978,8 +986,56 @@ async function fetchSurahFile(
       if (watchdog != null) clearInterval(watchdog);
     }
   }
+  // The streaming transport failed three times and the file is small
+  // enough to hold: once through RN's own networking, the way an ayah
+  // file comes when the streaming transport cannot work on this network.
+  const want = expectedSurahBytes(reciter.id, surah);
+  if (!isCancelled() && wrongSize === 0 && want != null && want <= SURAH_FALLBACK_BYTES) {
+    try {
+      await fetchSurahViaRNFetch(url, path, want, onBytes);
+      await ReactNativeBlobUtil.fs.unlink(changedMarkPath(reciter.id, surah)).catch(() => undefined);
+      return;
+    } catch (e) {
+      lastError = e;
+      console.warn(`[audioStore] ${reciter.id} surah ${surah}, RN fetch: ${String(e)}`);
+    }
+  }
   audioStats.failures += 1;
   throw lastError instanceof Error ? lastError : new Error(String(lastError));
+}
+
+/** A small surah file through RN's own networking stack, checked to the byte like any other. */
+async function fetchSurahViaRNFetch(
+  url: string,
+  dest: string,
+  want: number,
+  onBytes: (received: number) => void,
+): Promise<void> {
+  onBytes(0);
+  const response = await fetchContentOnce(url, undefined, SURAH_STALL_MS);
+  if (!response.ok) throw new Error(`surah: HTTP ${response.status}`);
+  const blob = await response.blob();
+  const base64 = await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('surah: read failed'));
+    reader.onloadend = () => {
+      const result = String(reader.result ?? '');
+      resolve(result.slice(result.indexOf(',') + 1));
+    };
+    reader.readAsDataURL(blob);
+  });
+  const tmp = `${dest}.part`;
+  await ReactNativeBlobUtil.fs.unlink(tmp).catch(() => undefined);
+  await ReactNativeBlobUtil.fs.writeFile(tmp, base64, 'base64');
+  const stat = await ReactNativeBlobUtil.fs.stat(tmp).catch(() => null);
+  if (!stat || Number(stat.size) !== want) {
+    await ReactNativeBlobUtil.fs.unlink(tmp).catch(() => undefined);
+    throw new Error(`surah: ${stat?.size ?? 0} bytes, expected ${want}`);
+  }
+  await ReactNativeBlobUtil.fs.unlink(dest).catch(() => undefined);
+  await ReactNativeBlobUtil.fs.mv(tmp, dest);
+  await verifyAudioFile(dest, 'surah');
+  onBytes(want);
 }
 
 /**

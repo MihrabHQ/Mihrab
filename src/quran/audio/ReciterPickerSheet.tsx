@@ -73,14 +73,8 @@ import {
 import { RADIUS, SPACING } from '../../theme/tokens';
 import { TYPE } from '../../theme/typography';
 import { useSheetSides } from '../../responsive/sheetSides';
-
-/** "1.2 GB", "812 MB" — the same shape the downloads screen prints. */
-function formatBytes(bytes: number): string {
-  if (bytes <= 0) return '0 MB';
-  const mb = bytes / (1024 * 1024);
-  if (mb >= 1024) return `${(mb / 1024).toFixed(1)} GB`;
-  return `${Math.round(mb)} MB`;
-}
+// The Downloads page's own shape, so a few hundred KB on disk is not "0 MB".
+import { formatBytes } from '../downloadsUi';
 
 /**
  * A trash can, drawn.

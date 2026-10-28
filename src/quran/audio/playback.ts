@@ -235,6 +235,9 @@ async function applyPlayerOptions(): Promise<void> {
 /** Whether the command centre has been bound against a real track. */
 let optionsBound = false;
 
+/** ExoPlayer's cache for streamed audio, in bytes (Android only). */
+const STREAM_CACHE_BYTES = 256 * 1024 * 1024;
+
 let setupPromise: Promise<void> | null = null;
 
 async function ensureSetup(): Promise<void> {
@@ -266,6 +269,18 @@ async function ensureSetup(): Promise<void> {
         iosCategory: IOSCategory.Playback,
         iosCategoryMode: IOSCategoryMode.SpokenAudio,
         ...({ iosCategoryPolicy: 'longFormAudio' } as object),
+        /**
+         * Android: a disk cache under ExoPlayer's network source. A
+         * whole-surah recitation streamed is one file queued as many
+         * clips, each a media item of its own, and ExoPlayer fetches each
+         * item's bytes afresh — so every ayah began with a second or two
+         * of buffering, though the previous clip had already pulled the
+         * next minute of the same file. With the cache, those bytes are
+         * on disk and the next clip starts from them. Bytes, not the
+         * kilobytes the library's type says: MusicService hands the number
+         * to the evictor as it is.
+         */
+        maxCacheSize: STREAM_CACHE_BYTES,
       });
     } catch (e) {
       // "player has already been initialized" — benign on fast reloads.
@@ -1016,8 +1031,15 @@ async function checkClipFile(track: Track | null | undefined, ref: AyahRef): Pro
   const measured = surahFileSeconds(reciterId, ref.surah);
   if (measured == null || offLength.has(`${reciterId}:${ref.surah}`)) return;
   // The length is known once the file has loaded; a few looks, then none.
+  const id = String(track!.id);
   for (let i = 0; i < 6; i++) {
     const { duration } = await TrackPlayer.getProgress().catch(() => ({ duration: 0 }));
+    // The length the player reports is the ACTIVE track's. A short last
+    // ayah can end, and the next surah's file load, inside these looks —
+    // then the duration is the next file's, and this surah would be
+    // declared changed on another file's length. Only this track's counts.
+    const now = await TrackPlayer.getActiveTrack().catch(() => null);
+    if (now == null || String(now.id) !== id || lastActiveId !== id) return;
     if (duration > 0) {
       if (Math.abs(duration - measured) > LENGTH_SLACK_S) {
         console.warn(
