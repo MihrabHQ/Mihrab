@@ -887,11 +887,12 @@ export function downloadReciterAudio(
 //   • the deadline is on SILENCE, not on the whole file: no fixed time is
 //     right for both an-Nās and al-Baqarah, and a file still arriving is
 //     not a file to give up on;
-//   • the in-memory fallback transport is for the small files only: a
-//     file of two hundred megabytes cannot be held as a base64 string on
-//     a phone, but a short surah can, and on a network where the streaming
-//     transport never works (the emulator's NAT, some proxies) it is the
-//     difference between juz ʿamma on the device and nothing.
+//   • the fallback transport takes the file in PIECES: a file of two
+//     hundred megabytes cannot be held as a base64 string on a phone, so
+//     on a network where the streaming transport never works (the
+//     emulator's NAT, some proxies) RN's own fetch asks for eight
+//     megabytes at a time with a Range header and appends each to the file
+//     on disk — any surah, at the cost of a little speed.
 
 /** One megabyte, as the download counts it — the same MB every size label prints. */
 export const AUDIO_MB = 1024 * 1024;
@@ -900,7 +901,17 @@ const MB = AUDIO_MB;
 const SURAH_STALL_MS = 60_000;
 /** Fewer workers than for ayahs: these are big, and the pipe is one pipe. */
 const SURAH_WORKERS = 2;
-/** A surah file up to this size may come through RN's own fetch, held in memory once. */
+/**
+ * How much of a surah file RN's own fetch holds in memory at once: the
+ * fallback transport asks for the file in pieces of this size (a Range
+ * request each, appended to the file on disk), so al-Baqarah's two hundred
+ * megabytes cost the heap eight at a time. A server that ignores ranges
+ * answers the first piece with the whole file (200, not 206): that is
+ * taken only up to `SURAH_FALLBACK_BYTES`, which is what one base64 string
+ * of it can be on a phone.
+ */
+const SURAH_PIECE_BYTES = 8 * MB;
+/** A whole surah file RN's own fetch may hold in memory once, when the server will not send pieces. */
 const SURAH_FALLBACK_BYTES = 12 * MB;
 
 /** A surah the server now serves at another size twice running. */
@@ -929,9 +940,13 @@ async function fetchSurahFile(
   const url = surahAudioUrl(reciter, surah);
   let lastError: unknown = null;
   let wrongSize = 0;
-  for (let attempt = 1; attempt <= 3; attempt++) {
+  // Condemned for the run (see `streamingAudioWorks`): straight to the
+  // fallback, rather than three doomed requests and their backoff for
+  // each of the hundred surahs still to come.
+  for (let attempt = 1; attempt <= 3 && streamingAudioWorks; attempt++) {
     const tmp = `${path}.part`;
     let watchdog: ReturnType<typeof setInterval> | null = null;
+    let got = 0;
     try {
       if (attempt > 1) audioStats.retries += 1;
       onBytes(0);
@@ -943,7 +958,8 @@ async function fetchSurahFile(
       );
       guard.task.progress({ interval: 500 }, received => {
         guard.alive();
-        onBytes(Number(received) || 0);
+        got = Number(received) || 0;
+        onBytes(got);
       });
       // A person cancelling the download ends the file in flight too.
       watchdog = setInterval(() => {
@@ -970,9 +986,20 @@ async function fetchSurahFile(
       lastError = e;
       // Said in the log: a surah that never arrives is otherwise silent
       // where the notification cannot be shown.
-      console.warn(`[audioStore] ${reciter.id} surah ${surah}, attempt ${attempt}: ${String(e)}`);
+      console.warn(`[audioStore] ${reciter.id} surah ${surah}, attempt ${attempt} (${got} bytes in): ${String(e)}`);
       await ReactNativeBlobUtil.fs.unlink(tmp).catch(() => undefined);
       if (isCancelled()) break;
+      // The streaming transport failed — not the server (a status), not
+      // the file (its size): condemned for the run, the way an ayah's
+      // download condemns it, and this file goes to the fallback now. A
+      // network where it cannot work kills every request the same way,
+      // after a few kilobytes or none (the emulator's NAT: 8 KB, then
+      // "Download interrupted"), so how much arrived says nothing.
+      if (wrongSize === 0 && streamingAudioWorks && !/HTTP \d/.test(String(e))) {
+        streamingAudioWorks = false;
+        console.warn('[audioStore] streaming transport failed; the rest of this run comes through RN fetch');
+        break;
+      }
       // Twice the wrong size is the source, not the connection: mark it
       // and stop asking (see "a surah changed at its source").
       if (wrongSize >= 2) {
@@ -986,13 +1013,14 @@ async function fetchSurahFile(
       if (watchdog != null) clearInterval(watchdog);
     }
   }
-  // The streaming transport failed three times and the file is small
-  // enough to hold: once through RN's own networking, the way an ayah
-  // file comes when the streaming transport cannot work on this network.
+  // The streaming transport failed three times: once through RN's own
+  // networking, in pieces, the way an ayah file comes when the streaming
+  // transport cannot work on this network. Only for a file whose size is
+  // known — the pieces are cut to it, and so is the check at the end.
   const want = expectedSurahBytes(reciter.id, surah);
-  if (!isCancelled() && wrongSize === 0 && want != null && want <= SURAH_FALLBACK_BYTES) {
+  if (!isCancelled() && wrongSize === 0 && want != null) {
     try {
-      await fetchSurahViaRNFetch(url, path, want, onBytes);
+      await fetchSurahViaRNFetch(url, path, want, onBytes, isCancelled);
       await ReactNativeBlobUtil.fs.unlink(changedMarkPath(reciter.id, surah)).catch(() => undefined);
       return;
     } catch (e) {
@@ -1004,18 +1032,10 @@ async function fetchSurahFile(
   throw lastError instanceof Error ? lastError : new Error(String(lastError));
 }
 
-/** A small surah file through RN's own networking stack, checked to the byte like any other. */
-async function fetchSurahViaRNFetch(
-  url: string,
-  dest: string,
-  want: number,
-  onBytes: (received: number) => void,
-): Promise<void> {
-  onBytes(0);
-  const response = await fetchContentOnce(url, undefined, SURAH_STALL_MS);
-  if (!response.ok) throw new Error(`surah: HTTP ${response.status}`);
+/** A response body as base64, the way RN hands bytes to the filesystem. */
+async function bodyAsBase64(response: Response): Promise<string> {
   const blob = await response.blob();
-  const base64 = await new Promise<string>((resolve, reject) => {
+  return new Promise<string>((resolve, reject) => {
     const reader = new FileReader();
     reader.onerror = () => reject(new Error('surah: read failed'));
     reader.onloadend = () => {
@@ -1024,18 +1044,64 @@ async function fetchSurahViaRNFetch(
     };
     reader.readAsDataURL(blob);
   });
+}
+
+/**
+ * A surah file through RN's own networking stack, in pieces of
+ * `SURAH_PIECE_BYTES` (a Range request each, appended to the file as it
+ * comes), checked to the byte like any other. Any size: the file is never
+ * in memory whole. A server that answers the first range with the whole
+ * file (200) is taken at its word only for a file small enough to hold.
+ */
+async function fetchSurahViaRNFetch(
+  url: string,
+  dest: string,
+  want: number,
+  onBytes: (received: number) => void,
+  isCancelled: () => boolean,
+): Promise<void> {
   const tmp = `${dest}.part`;
   await ReactNativeBlobUtil.fs.unlink(tmp).catch(() => undefined);
-  await ReactNativeBlobUtil.fs.writeFile(tmp, base64, 'base64');
-  const stat = await ReactNativeBlobUtil.fs.stat(tmp).catch(() => null);
-  if (!stat || Number(stat.size) !== want) {
+  onBytes(0);
+  let have = 0;
+  try {
+    while (have < want) {
+      if (isCancelled()) throw new Error('surah: cancelled');
+      const end = Math.min(want, have + SURAH_PIECE_BYTES) - 1;
+      const response = await fetchContentOnce(
+        url,
+        { headers: { Range: `bytes=${have}-${end}` } },
+        SURAH_STALL_MS,
+      );
+      let expect = end - have + 1;
+      if (response.status === 200 && have === 0) {
+        // Ranges ignored: this is the whole file, or nothing.
+        if (want > SURAH_FALLBACK_BYTES) throw new Error('surah: no ranges, too big to hold');
+        expect = want;
+      } else if (response.status !== 206) {
+        throw new Error(`surah: HTTP ${response.status}`);
+      }
+      const base64 = await bodyAsBase64(response);
+      if (have === 0) await ReactNativeBlobUtil.fs.writeFile(tmp, base64, 'base64');
+      else await ReactNativeBlobUtil.fs.appendFile(tmp, base64, 'base64');
+      const stat = await ReactNativeBlobUtil.fs.stat(tmp).catch(() => null);
+      const size = Number(stat?.size ?? 0);
+      if (size !== have + expect) {
+        throw new Error(`surah: ${size} bytes after a piece, expected ${have + expect}`);
+      }
+      have = size;
+      onBytes(have);
+    }
+    if (have !== want) throw new Error(`surah: ${have} bytes, expected ${want}`);
+  } catch (e) {
+    // Nothing half-arrived stays: a cancelled al-Baqarah is a hundred
+    // megabytes nobody can see until the next run sweeps it.
     await ReactNativeBlobUtil.fs.unlink(tmp).catch(() => undefined);
-    throw new Error(`surah: ${stat?.size ?? 0} bytes, expected ${want}`);
+    throw e;
   }
   await ReactNativeBlobUtil.fs.unlink(dest).catch(() => undefined);
   await ReactNativeBlobUtil.fs.mv(tmp, dest);
   await verifyAudioFile(dest, 'surah');
-  onBytes(want);
 }
 
 /**
@@ -1091,6 +1157,8 @@ function runSurahFileQueue(
   let noSpace: number | null = null;
 
   const run = async (): Promise<DownloadOutcome> => {
+    // A new run is new evidence about the transport (`streamingAudioWorks`).
+    streamingAudioWorks = true;
     await mkdirDeep(audioDir(reciterId));
     await clearLeftovers(reciterId);
     // Surahs already marked as changed at the source are not fetched again

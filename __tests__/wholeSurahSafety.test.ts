@@ -11,6 +11,7 @@
  */
 import ReactNativeBlobUtil from 'react-native-blob-util';
 import {
+  _resetAudioTransportForTests,
   _resetRemoteSurahChecksForTests,
   checkRemoteSurah,
   deleteSurahFile,
@@ -83,6 +84,7 @@ let free: number;
 
 beforeEach(() => {
   files.clear();
+  _resetAudioTransportForTests();
   _resetSurahTablesForTests();
   _setSurahTableForTests(ID, table());
   serve = sizeOf;
@@ -261,6 +263,122 @@ describe('streaming, checked first', () => {
     expect(await checkRemoteSurah(ID, 2)).toBe('ok');
     served = 1;
     expect(await checkRemoteSurah(ID, 2)).toBe('ok'); // kept for the session
+  });
+});
+
+describe('when the streaming transport cannot work on this network', () => {
+  jest.setTimeout(30_000);
+  const realFetch = global.fetch;
+  const realReader = (global as { FileReader?: unknown }).FileReader;
+  let ranges: string[];
+  let answer: (surah: number) => number; // the status the server answers a range with
+  const PIECE = 8 * 1024 * 1024;
+
+  beforeEach(() => {
+    ranges = [];
+    answer = () => 206;
+    // Every streaming request dies the way the emulator's NAT and some
+    // proxies kill them: at once, with nothing written.
+    blob.config.mockImplementation(() => ({
+      fetch: () => {
+        const p = Promise.reject(new Error('Download interrupted.')) as Promise<unknown> & {
+          progress: () => unknown;
+          cancel: () => void;
+        };
+        p.progress = () => p;
+        p.cancel = () => undefined;
+        return p;
+      },
+    }));
+    // RN's own fetch answers ranges — the bytes asked for, and no more.
+    global.fetch = jest.fn(async (url: unknown, init?: { headers?: Record<string, string> }) => {
+      const surah = Number(/(\d{3})\.mp3$/.exec(String(url))![1]);
+      const size = serve(surah);
+      const range = init?.headers?.Range ?? '';
+      ranges.push(range);
+      const m = /bytes=(\d+)-(\d+)/.exec(range);
+      const status = answer(surah);
+      const [from, to] = status === 206 && m ? [Number(m[1]), Math.min(Number(m[2]), size - 1)] : [0, size - 1];
+      const body = audio(size).slice(from, to + 1);
+      return { ok: true, status, blob: async () => ({ b64: body }) } as unknown as Response;
+    }) as unknown as typeof fetch;
+    (global as { FileReader?: unknown }).FileReader = class {
+      onloadend: (() => void) | null = null;
+      onerror: (() => void) | null = null;
+      result: string | null = null;
+      readAsDataURL(b: { b64: string }) {
+        this.result = `data:audio/mpeg;base64,${b.b64}`;
+        this.onloadend?.();
+      }
+    };
+  });
+  afterAll(() => {
+    global.fetch = realFetch;
+    (global as { FileReader?: unknown }).FileReader = realReader;
+  });
+
+  it('brings a surah of any size through RN’s fetch, in pieces, to the byte', async () => {
+    // Al-Baqarah at 20 MB: three pieces, the last one short.
+    const big = 20 * 1024 * 1024 + 5;
+    const t = table();
+    const sizes = Array.from({ length: 114 }, (_, i) => (i === 1 ? big : sizeOf(i + 1)));
+    _setSurahTableForTests(ID, { ...t, z: pack(sizes, 4), bytes: sizes.reduce((a, b) => a + b, 0) });
+    serve = s => (s === 2 ? big : sizeOf(s));
+    blob.config.mockClear();
+    const outcome = await downloadSurahAudio(ID, 2).promise;
+    expect(outcome.complete).toBe(true);
+    // One streaming request condemned the transport for the run: not
+    // three of them and their backoff.
+    expect(blob.config).toHaveBeenCalledTimes(1);
+    expect(ranges).toEqual([
+      `bytes=0-${PIECE - 1}`,
+      `bytes=${PIECE}-${2 * PIECE - 1}`,
+      `bytes=${2 * PIECE}-${big - 1}`,
+    ]);
+    expect(await surahFileState(ID, 2)).toBe('here');
+    expect(files.get(surahAudioFilePath(ID, 2))).toHaveLength(big);
+    expect([...files.keys()].some(k => k.endsWith('.part'))).toBe(false);
+  });
+
+  it('takes a whole file from a server that ignores ranges only when it can hold it', async () => {
+    answer = () => 200;
+    expect((await downloadSurahAudio(ID, 112).promise).complete).toBe(true);
+    expect(await surahFileState(ID, 112)).toBe('here');
+    // Al-Baqarah whole, in memory, is not an option: the surah is left.
+    const big = 20 * 1024 * 1024;
+    const t = table();
+    const sizes = Array.from({ length: 114 }, (_, i) => (i === 1 ? big : sizeOf(i + 1)));
+    _setSurahTableForTests(ID, { ...t, z: pack(sizes, 4), bytes: sizes.reduce((a, b) => a + b, 0) });
+    serve = s => (s === 2 ? big : sizeOf(s));
+    const outcome = await downloadSurahAudio(ID, 2).promise;
+    expect(outcome.complete).toBe(false);
+    expect(await surahFileState(ID, 2)).toBe('absent');
+    expect(ranges.filter(r => r.startsWith('bytes=0-'))).toHaveLength(2);
+  });
+
+  it('leaves nothing on disk when cancelled between pieces', async () => {
+    const big = 20 * 1024 * 1024;
+    const t = table();
+    const sizes = Array.from({ length: 114 }, (_, i) => (i === 1 ? big : sizeOf(i + 1)));
+    _setSurahTableForTests(ID, { ...t, z: pack(sizes, 4), bytes: sizes.reduce((a, b) => a + b, 0) });
+    serve = s => (s === 2 ? big : sizeOf(s));
+    const handle = downloadSurahAudio(ID, 2, p => {
+      // The first piece is in: the reader taps Cancel.
+      if (p.done >= 8) handle.cancel();
+    });
+    const outcome = await handle.promise;
+    expect(outcome.complete).toBe(false);
+    expect(ranges.length).toBeLessThan(3);
+    expect([...files.keys()].some(k => k.endsWith('.part'))).toBe(false);
+    expect(await surahFileState(ID, 2)).toBe('absent');
+  });
+
+  it('keeps nothing of a piece that came short', async () => {
+    serve = s => (s === 18 ? sizeOf(18) - 7 : sizeOf(s)); // the server has a shorter file
+    const outcome = await downloadSurahAudio(ID, 18).promise;
+    expect(outcome.complete).toBe(false);
+    expect(await surahFileState(ID, 18)).toBe('absent');
+    expect([...files.keys()].some(k => k.endsWith('.part'))).toBe(false);
   });
 });
 

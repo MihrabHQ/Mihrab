@@ -181,6 +181,47 @@ describe('the bundled boundaries', () => {
   );
 });
 
+describe('the counts mapped onto each other, every surah', () => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { recordedAyahs } = require('../src/quran/audio/recordedAyahs');
+  const pairs: Array<[string, string]> = [
+    ['hafs', 'warsh'],
+    ['hafs', 'qalun'],
+    ['warsh', 'hafs'],
+    ['qalun', 'hafs'],
+    ['shubah', 'warsh'],
+    ['warsh', 'shubah'],
+  ];
+  it.each(pairs)('a listen on a %s page in a %s voice hears every recorded ayah once, in order', (reader, recording) => {
+    for (let s = 1; s <= 114; s++) {
+      const readerN = countFor(reader, s);
+      const recordedN = countFor(recording, s);
+      let next = 1;
+      for (let a = 1; a <= readerN; a++) {
+        const span = recordedAyahs(reader, recording, s, a, a > 1);
+        if (!span) continue; // already heard with the ayah before
+        const [first, last] = span;
+        expect(first).toBe(next);
+        expect(last).toBeGreaterThanOrEqual(first);
+        next = last + 1;
+      }
+      expect(next - 1).toBe(recordedN);
+    }
+  });
+
+  it.each(pairs)('an ayah on its own (%s page, %s voice) is inside the recording', (reader, recording) => {
+    for (let s = 1; s <= 114; s++) {
+      const recordedN = countFor(recording, s);
+      for (let a = 1; a <= countFor(reader, s); a++) {
+        const span = recordedAyahs(reader, recording, s, a, false)!;
+        expect(span[0]).toBeGreaterThanOrEqual(1);
+        expect(span[1]).toBeLessThanOrEqual(recordedN);
+        expect(span[1]).toBeGreaterThanOrEqual(span[0]);
+      }
+    }
+  });
+});
+
 describe('the Madani count, through the map', () => {
   it('reaches the end of al-Wāqiʿah, three ayahs past Ḥafṣ', () => {
     // riwayahAyahOf used to look at most two ayahs ahead, and al-Wāqiʿah
@@ -485,6 +526,26 @@ describe('playing a whole-surah recitation', () => {
     expect(getPlaybackStatus().needsDownload).toBeNull();
   });
 
+  it('stays playing through the buffering at a join; a pause or a stop ends it', () => {
+    const state = listener('playback-state');
+    state({ state: 'playing' });
+    expect(getPlaybackStatus().playing).toBe(true);
+    // Every clip is its own player item, and each join buffers for a
+    // moment: the ayah stays lit through it.
+    state({ state: 'buffering' });
+    expect(getPlaybackStatus()).toMatchObject({ playing: true, loading: true });
+    state({ state: 'playing' });
+    expect(getPlaybackStatus()).toMatchObject({ playing: true, loading: false });
+    state({ state: 'paused' });
+    expect(getPlaybackStatus().playing).toBe(false);
+    // Loading after a pause is not playing yet.
+    state({ state: 'loading' });
+    expect(getPlaybackStatus()).toMatchObject({ playing: false, loading: true });
+    state({ state: 'playing' });
+    state({ state: 'stopped' });
+    expect(getPlaybackStatus()).toMatchObject({ playing: false, loading: false });
+  });
+
   it('ends a listen at a surah not on the device, and says so when it gets there', async () => {
     local.mockImplementation(async (_id: string, surah: number) => (surah === 114 ? null : `/docs/${surah}.mp3`));
     setQuranPrefs({ reciterId: 'zahrani', riwayah: 'hafs' });
@@ -500,10 +561,15 @@ describe('playing a whole-surah recitation', () => {
     expect(getPlaybackStatus().needsDownload ?? null).toBeNull();
     // The last ayah before the hole plays out: now it is said.
     emit({ track: q[q.length - 1] });
+    tp.reset.mockClear();
     ended({});
+    await tick();
     await tick();
     expect(getPlaybackStatus().needsDownload).toEqual({ reciterId: 'zahrani', surah: 114, reason: 'missing' });
     expect(getPlaybackStatus().active).toEqual({ surah: 114, ayah: 1 });
+    // The player let go of the last file, so the card's progress is not
+    // that file's last seconds.
+    expect(tp.reset).toHaveBeenCalled();
   });
 
   it('keeps the current clip in the status, for the ayah’s own progress', async () => {

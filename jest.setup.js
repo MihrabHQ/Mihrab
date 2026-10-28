@@ -268,6 +268,9 @@ jest.mock('react-native-blob-util', () => {
     writeFile: jest.fn(async (path, data) => {
       files.set(path, String(data));
     }),
+    appendFile: jest.fn(async (path, data) => {
+      files.set(path, (files.get(path) ?? '') + String(data));
+    }),
     unlink: jest.fn(async path => {
       files.delete(path);
     }),

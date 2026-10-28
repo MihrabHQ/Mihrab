@@ -355,9 +355,16 @@ async function ensureSetup(): Promise<void> {
         if (e.state === State.Paused) noteListenPaused(true);
         else if (e.state === State.Playing) noteListenPaused(false);
       }
+      // A rebuffer in the middle of playing is still playing: the ayah
+      // stays lit and the card keeps its pause button. Whole-surah clips
+      // (and a drill's rests) are each their own player item, and every
+      // join between them buffers for a moment, so without this the
+      // highlight blinked off at every ayah and a listen-stop was recorded
+      // at each. Only a pause, a stop or the end takes `playing` down.
+      const buffering = e.state === State.Loading || e.state === State.Buffering;
       setStatus({
-        playing: e.state === State.Playing,
-        loading: e.state === State.Loading || e.state === State.Buffering,
+        playing: e.state === State.Playing || (buffering && status.playing),
+        loading: buffering,
       });
       if (e.state === State.Stopped || e.state === State.None) {
         // A card saying why a surah cannot be played stays: the stop that
@@ -1135,6 +1142,10 @@ async function stoppedAtMissingSurah(): Promise<void> {
   const missing = await firstMissingSurah(reciterId, [at]);
   if (!missing) return;
   endListening();
+  // The player is still sitting at the end of the last file: without this
+  // the card for the next surah showed that file's last seconds as its
+  // progress ("0:20 / 0:20" under "Ayah 1 of 5").
+  await TrackPlayer.reset().catch(() => undefined);
   showBlocked(reciterId, at, missing, () => listenFrom(surah, 1));
 }
 
