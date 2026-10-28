@@ -20,6 +20,21 @@ TABLES = os.path.join(HERE, "..", "..", "src", "quran", "data", "surahRecitation
 PAD = 4.0
 
 
+def cut(src, dest, tries=3):
+    """Audio only: some files carry cover art ffmpeg can't decode, and the
+    CDN drops the odd request, so a failed cut is tried again."""
+    import textalign
+    # lame chokes on a few frames of some files; copying the stream instead
+    # cuts on frame edges, a few ms out, which is fine for listening.
+    for codec in (["-c:a", "libmp3lame", "-q:a", "5"], ["-c:a", "copy"]):
+        for n in range(tries):
+            r = subprocess.run(["ffmpeg", "-loglevel", "error", "-y", "-user_agent", textalign.UA, *src,
+                                "-map", "0:a:0", "-vn", *codec, dest])
+            if r.returncode == 0:
+                return
+    raise SystemExit(f"could not cut {dest}")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("reciter")
@@ -47,9 +62,7 @@ def main():
             lo = max(0.0, min(cands.values()) - PAD)
             hi = min(res["dur"], max(cands.values()) + PAD)
             name = f"{s:03d}-{i:03d}.mp3"
-            subprocess.run(["ffmpeg", "-loglevel", "error", "-y", "-user_agent", textalign.UA, "-ss", f"{lo:.2f}", "-to", f"{hi:.2f}",
-                            "-i", f"{server}{s:03d}.mp3", "-c:a", "libmp3lame", "-q:a", "5",
-                            os.path.join(out, name)], check=True)
+            cut(["-ss", f"{lo:.2f}", "-to", f"{hi:.2f}", "-i", f"{server}{s:03d}.mp3"], os.path.join(out, name))
             j = (res.get("judged") or [None] * (i + 1))[i] or {}
             rows.append("\t".join([name, str(s), str(i)] +
                                   [f"{cands[k] - lo:.2f}" if k in cands else "" for k in ("aligned", "pause", "published")] +
