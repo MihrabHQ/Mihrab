@@ -43,7 +43,6 @@ const PAIRS: ReadonlyArray<readonly [string, string]> = [
   ['09_widgets.png', 'shot-widgets-android.png'],
   // The fans (branding/tools/fan.py): five screens in one picture.
   ['10_alerts.png', 'shot-alerts.png'],
-  ['11_sky.png', 'shot-sky.png'],
   ['12_themes.png', 'shot-themes.png'],
   ['13_minimal.png', 'shot-minimal.png'],
 ];

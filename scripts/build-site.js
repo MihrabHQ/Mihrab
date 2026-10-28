@@ -150,7 +150,6 @@ const SHOTS = [
 const FANS = [
   { id: 'themes', v: '?v=2026-10-28' },
   { id: 'minimal', v: '?v=2026-10-28' },
-  { id: 'sky', v: '?v=2026-10-25' },
   { id: 'alerts', v: '?v=2026-10-18' },
 ];
 

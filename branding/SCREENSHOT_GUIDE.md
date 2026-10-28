@@ -345,9 +345,9 @@ Two pictures on the site and in the README are not single captures but
 five phone captures fanned into one — a hand of cards, the middle one in
 front, every screen's top in view, on a transparent ground:
 
-- `docs/assets/img/shot-sky.png` / `branding/readme/11_sky.png` — Today
-  under the Sky theme at five hours: dawn, morning, midday (front), the
-  golden hour, dusk.
+- `shot-sky.png` / `11_sky.png` (Today under the Sky theme at five hours)
+  was removed on 2026-10-28 as out of date; the themes and Minimal fans
+  (`shot-themes.png`, `shot-minimal.png`) show the Sky theme now.
 - `docs/assets/img/shot-alerts.png` / `branding/readme/10_alerts.png` —
   the Android full-screen alert for the five prayers under the Sky theme:
   Fajr, Dhuhr, Asr (front), Maghrib, Isha.

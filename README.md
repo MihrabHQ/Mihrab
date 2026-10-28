@@ -70,9 +70,6 @@ Prayer times computed with **[mihrab-methods](https://github.com/MihrabHQ/mihrab
 <img src="branding/readme/13_minimal.png" width="98%" alt="Five Minimal mode screens fanned out: the countdown alone on Light, Dark, the Sky theme's Realistic colours in front, its Vibrant colours, and the same sky at night with the moon">
 <br><sub>Minimal mode — the next prayer and nothing more. Swipe up for the day's times.</sub>
 
-<img src="branding/readme/11_sky.png" width="98%" alt="Five home screens fanned out — the Sky theme in its Realistic colours at dawn, morning, midday, the golden hour and dusk, the whole app recoloured by the hour">
-<br><sub>The Sky theme — the app painted from the sky over the countdown, changing through the day. Realistic colours by default, Vibrant a tap away.</sub>
-
 <img src="branding/readme/10_alerts.png" width="98%" alt="Five full-screen prayer alerts fanned out, each in its hour’s colours under the Sky theme — Fajr’s dawn, Dhuhr’s blue, Asr’s amber, Maghrib’s sunset, Isha’s night — with Stop, Snooze and Log prayer">
 <br><sub>Full-screen prayer alerts on Android, under the Sky theme — each in its hour.</sub>
 
