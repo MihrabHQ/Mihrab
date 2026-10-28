@@ -269,13 +269,17 @@ export function MinimalSwipe({
           page's swipe on it — the swipe on Today turned the Settings
           page, or nothing, and a flick across Today opened its times.
           What leaves the tree out of reach is the page inside. */}
-      <View style={styles.fill} collapsable={false}>
+      {/* An Animated.View, though nothing on it moves: the handler hands
+          its child `onGestureEvent`, and the drag's is a native
+          Animated.event — a plain View is given the event object as a
+          listener, and the first swipe crashed the app. */}
+      <Animated.View style={styles.fill} collapsable={false}>
         <Animated.View style={[styles.fill, { transform: [{ translateX: offset }] }]} collapsable={false}>
           <View style={[styles.fill, inReach ? null : styles.away]} collapsable={false}>
             {mounted ? children : null}
           </View>
         </Animated.View>
-      </View>
+      </Animated.View>
     </PanGestureHandler>
   );
 }

@@ -76,7 +76,17 @@ describe('what keeps it from coming back', () => {
   it('keeps a second swipe on the page on show, wherever the finger lands', () => {
     // The handler's view is the whole screen and is not moved; the page
     // moves inside it.
-    expect(swipe).toMatch(/<View style=\{styles\.fill\} collapsable=\{false\}>\s*<Animated\.View style=\{\[styles\.fill, \{ transform: \[\{ translateX: offset \}\] \}\]\}/);
+    expect(swipe).toMatch(/<Animated\.View style=\{styles\.fill\} collapsable=\{false\}>\s*<Animated\.View style=\{\[styles\.fill, \{ transform: \[\{ translateX: offset \}\] \}\]\}/);
+  });
+
+  it('gives the drag’s native event to an Animated view, never a plain one', () => {
+    // PanGestureHandler hands `onGestureEvent` to its direct child. A plain
+    // View takes a native Animated.event as a listener object, and the
+    // first swipe threw "Expected onGestureHandlerEvent listener to be a
+    // function" and took the app down.
+    const handler = swipe.slice(swipe.indexOf('<PanGestureHandler'));
+    const firstChild = handler.slice(handler.indexOf('>', handler.indexOf('onHandlerStateChange')) + 1).replace(/\{\/\*[\s\S]*?\*\/\}/g, '').trimStart();
+    expect(firstChild.startsWith('<Animated.View')).toBe(true);
   });
 
   it('keeps every page but the one on show from touches', () => {
