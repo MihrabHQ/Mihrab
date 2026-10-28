@@ -82,7 +82,7 @@
           "cap": "Widgets and the Live Activity"
         },
         "widgets-android": {
-          "alt": "An Android home screen with Mihrab widgets: today’s six times, a row to log each prayer with one tap, and the next prayer with its countdown.",
+          "alt": "An Android home screen with Mihrab widgets: today’s six times, a row to log each prayer with one tap, the next prayer with its countdown, the Hijri date, and the khatmah’s portion for today.",
           "cap": "Android widgets — the day’s times, and logging from the home screen"
         }
       },
@@ -201,7 +201,7 @@
           "cap": "Widgetar och den levande nedräkningen"
         },
         "widgets-android": {
-          "alt": "En Android-hemskärm med Mihrabs widgetar: dagens sex tider, en rad för att logga varje bön med ett tryck, och nästa bön med sin nedräkning.",
+          "alt": "En Android-hemskärm med Mihrabs widgetar: dagens sex tider, en rad för att logga varje bön med ett tryck, nästa bön med sin nedräkning, hijri-datumet och dagens del av khatmah.",
           "cap": "Android-widgetar — dagens tider, och loggning från hemskärmen"
         }
       },
@@ -429,7 +429,7 @@
           "cap": "الأدوات والنشاط الحيّ"
         },
         "widgets-android": {
-          "alt": "شاشة أندرويد الرئيسية بأدوات محراب: مواقيت اليوم الستة، وصفّ لتسجيل كل صلاة بلمسة، والصلاة القادمة مع عدّها التنازلي.",
+          "alt": "شاشة أندرويد الرئيسية بأدوات محراب: مواقيت اليوم الستة، وصفّ لتسجيل كل صلاة بلمسة، والصلاة القادمة مع عدّها التنازلي، والتاريخ الهجري، ووِرد الختمة لهذا اليوم.",
           "cap": "أدوات أندرويد — مواقيت اليوم، والتسجيل من الشاشة الرئيسية"
         }
       },
@@ -677,7 +677,7 @@
           "cap": "Widget’lar ve canlı etkinlik"
         },
         "widgets-android": {
-          "alt": "Mihrab widget’larıyla bir Android ana ekranı: günün altı vakti, her namazı tek dokunuşla kaydetmek için bir satır ve geri sayımıyla sıradaki namaz.",
+          "alt": "Mihrab widget’larıyla bir Android ana ekranı: günün altı vakti, her namazı tek dokunuşla kaydetmek için bir satır, geri sayımıyla sıradaki namaz, hicri tarih ve hatmin bugünkü payı.",
           "cap": "Android widget’ları — günün vakitleri ve ana ekrandan kayıt"
         }
       },
@@ -918,7 +918,7 @@
           "cap": "ویجٹ اور لائیو ایکٹیویٹی"
         },
         "widgets-android": {
-          "alt": "محراب ویجٹس کے ساتھ اینڈرائیڈ ہوم اسکرین: آج کے چھ اوقات، ہر نماز کو ایک لمس سے درج کرنے کی سطر، اور اگلی نماز اپنی الٹی گنتی کے ساتھ۔",
+          "alt": "محراب ویجٹس کے ساتھ اینڈرائیڈ ہوم اسکرین: آج کے چھ اوقات، ہر نماز کو ایک لمس سے درج کرنے کی سطر، اگلی نماز اپنی الٹی گنتی کے ساتھ، ہجری تاریخ، اور ختم کا آج کا حصہ۔",
           "cap": "اینڈرائیڈ ویجٹ — آج کے اوقات، اور ہوم اسکرین سے اندراج"
         }
       },
@@ -1140,7 +1140,7 @@
           "cap": "Widget dan Live Activity"
         },
         "widgets-android": {
-          "alt": "Layar utama Android dengan widget Mihrab: enam waktu hari ini, baris untuk mencatat setiap salat dengan satu ketukan, dan salat berikutnya dengan hitung mundurnya.",
+          "alt": "Layar utama Android dengan widget Mihrab: enam waktu hari ini, baris untuk mencatat setiap salat dengan satu ketukan, salat berikutnya dengan hitung mundurnya, tanggal Hijriah, dan bagian khatam untuk hari ini.",
           "cap": "Widget Android — waktu hari ini, dan mencatat dari layar utama"
         }
       },
@@ -1381,7 +1381,7 @@
           "cap": "Widgets und die Live-Aktivität"
         },
         "widgets-android": {
-          "alt": "Ein Android-Startbildschirm mit Mihrab-Widgets: die sechs Zeiten des Tages, eine Zeile zum Eintragen jedes Gebets mit einem Tippen und das nächste Gebet mit Countdown.",
+          "alt": "Ein Android-Startbildschirm mit Mihrab-Widgets: die sechs Zeiten des Tages, eine Zeile zum Eintragen jedes Gebets mit einem Tippen, das nächste Gebet mit Countdown, das Hidschri-Datum und der heutige Abschnitt der Khatma.",
           "cap": "Android-Widgets — die Zeiten des Tages und Eintragen vom Startbildschirm"
         }
       },
@@ -1603,7 +1603,7 @@
           "cap": "Widgets et activité en direct"
         },
         "widgets-android": {
-          "alt": "Un écran d’accueil Android avec les widgets Mihrab : les six heures du jour, une ligne pour noter chaque prière d’un toucher, et la prochaine prière avec son compte à rebours.",
+          "alt": "Un écran d’accueil Android avec les widgets Mihrab : les six heures du jour, une ligne pour noter chaque prière d’un toucher, la prochaine prière avec son compte à rebours, la date de l’hégire et la portion du jour de la khatma.",
           "cap": "Widgets Android — les heures du jour, et noter depuis l’accueil"
         }
       },
@@ -1851,7 +1851,7 @@
           "cap": "Widgets y actividad en directo"
         },
         "widgets-android": {
-          "alt": "Una pantalla de inicio de Android con widgets de Mihrab: las seis horas del día, una fila para registrar cada oración con un toque y la próxima oración con su cuenta atrás.",
+          "alt": "Una pantalla de inicio de Android con widgets de Mihrab: las seis horas del día, una fila para registrar cada oración con un toque, la próxima oración con su cuenta atrás, la fecha de la hégira y la porción de hoy de la jatma.",
           "cap": "Widgets de Android — las horas del día y registrar desde el inicio"
         }
       },
@@ -2073,7 +2073,7 @@
           "cap": "Виджеты и живой отсчёт"
         },
         "widgets-android": {
-          "alt": "Главный экран Android с виджетами Mihrab: шесть времён дня, строка, чтобы отметить каждый намаз одним касанием, и следующий намаз с обратным отсчётом.",
+          "alt": "Главный экран Android с виджетами Mihrab: шесть времён дня, строка, чтобы отметить каждый намаз одним касанием, следующий намаз с обратным отсчётом, дата по хиджре и сегодняшняя часть хатма.",
           "cap": "Виджеты Android — время дня и отметка с главного экрана"
         }
       },
@@ -2295,7 +2295,7 @@
           "cap": "উইজেট আর লাইভ অ্যাক্টিভিটি"
         },
         "widgets-android": {
-          "alt": "মিহরাব উইজেটসহ অ্যান্ড্রয়েড হোম স্ক্রিন: আজকের ছয়টি সময়, এক ছোঁয়ায় প্রতিটি নামাজ রেকর্ড করার সারি, আর কাউন্টডাউনসহ পরের নামাজ।",
+          "alt": "মিহরাব উইজেটসহ অ্যান্ড্রয়েড হোম স্ক্রিন: আজকের ছয়টি সময়, এক ছোঁয়ায় প্রতিটি নামাজ রেকর্ড করার সারি, কাউন্টডাউনসহ পরের নামাজ, হিজরি তারিখ, আর খতমের আজকের অংশ।",
           "cap": "অ্যান্ড্রয়েড উইজেট — দিনের সময়, আর হোম স্ক্রিন থেকে রেকর্ড"
         }
       },
@@ -2517,7 +2517,7 @@
           "cap": "विजेट और लाइव गतिविधि"
         },
         "widgets-android": {
-          "alt": "मिहराब विजेट वाली एंड्रॉइड होम स्क्रीन: आज के छह समय, हर नमाज़ को एक टैप से दर्ज करने की पंक्ति, और उलटी गिनती के साथ अगली नमाज़।",
+          "alt": "मिहराब विजेट वाली एंड्रॉइड होम स्क्रीन: आज के छह समय, हर नमाज़ को एक टैप से दर्ज करने की पंक्ति, उलटी गिनती के साथ अगली नमाज़, हिजरी तारीख़, और ख़त्म का आज का हिस्सा।",
           "cap": "एंड्रॉइड विजेट — दिन के समय, और होम स्क्रीन से दर्ज करना"
         }
       },
@@ -2739,7 +2739,7 @@
           "cap": "小组件与实时活动"
         },
         "widgets-android": {
-          "alt": "带有 Mihrab 小组件的安卓主屏：今日六个时间、一键记录每次礼拜的一行，以及带倒计时的下一次礼拜。",
+          "alt": "带有 Mihrab 小组件的安卓主屏：今日六个时间、一键记录每次礼拜的一行、带倒计时的下一次礼拜、伊斯兰历日期，以及今日的通读进度。",
           "cap": "安卓小组件 —— 当日时间，在主屏上记录"
         }
       },

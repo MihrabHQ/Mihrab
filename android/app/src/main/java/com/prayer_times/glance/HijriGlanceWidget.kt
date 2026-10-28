@@ -65,7 +65,7 @@ internal class HijriGlanceWidget : MihrabGlanceWidget("hijri") {
     // A size of 0 is a launcher that has not measured: the full card.
     val short = size.heightDp in 1 until SHORT_HEIGHT_DP
     val narrow = size.widthDp in 1 until NARROW_WIDTH_DP
-    val showNext = h.nextMonthName.isNotEmpty() && !short && !narrow
+    var showNext = h.nextMonthName.isNotEmpty() && !short && !narrow
 
     // "7 Rabi I" and "1448" on separate lines: the day is the number people
     // came for. The year is a label, not a quantity — no grouping, ever.
@@ -84,12 +84,21 @@ internal class HijriGlanceWidget : MihrabGlanceWidget("hijri") {
     val dateSp = if (size.widthDp <= 0) {
       DATE_SP
     } else {
-      val column = if (showNext) {
+      val room = size.widthDp - 32f - 6f
+      var column = if (showNext) {
         maxOf(textWidthDp(context, nextLabel, 10f, medium = true), textWidthDp(context, nextValue, 12f, medium = false))
       } else {
         0f
       }
-      fitTextSp(context, dayMonth, size.widthDp - 32f - 6f - column, DATE_MAX_SP, DATE_MIN_SP, medium = true)
+      // The date is what the card is for. When even its smallest size does
+      // not fit beside the next-month column ("18 Jumada I" beside "Jumada
+      // II · 13d" on a 2×1), the column goes rather than the date being cut
+      // to "18 Juma…".
+      if (showNext && textWidthDp(context, dayMonth, DATE_MIN_SP, medium = true) > room - column) {
+        showNext = false
+        column = 0f
+      }
+      fitTextSp(context, dayMonth, room - column, DATE_MAX_SP, DATE_MIN_SP, medium = true)
     }
 
     Row(modifier = GlanceModifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {

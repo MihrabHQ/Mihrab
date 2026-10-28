@@ -142,6 +142,20 @@ Wednesday 28 October (the tablet panels Thursday 29th):
   filled again on each. The muṣḥaf, the tajweed colour pages and Al-Mulk
   in Abdul Basit were downloaded in the app on the iPhone first.
 
+### The Android widgets figure (same day)
+
+`and-widgets` (→ `shot-widgets-android`, `readme/09_widgets`) was retaken on
+Thursday 29 October at 09:41, Fajr logged: Prayer times, Log today, Next
+prayer, Hijri date and Continue reading on the Pixel launcher. Widgets are
+added from the long-press menu → Widgets → search "Mihrab" → drag a preview
+onto the page; each one opens its settings screen — scroll to the bottom
+and Save, or the launcher drops the widget. The sheet animates slowly on
+this AVD: wait about eight seconds after opening it before tapping.
+
+`ios-widgets` is still the real-device capture: WidgetKit in the iOS 27
+simulator only ever shows the placeholder (re-signing the extension with
+its App Group entitlement did not change that).
+
 ## The home retake after the countdown change (2026-10-25)
 
 The countdown's seconds now sit on the hours' and minutes' line, and the
