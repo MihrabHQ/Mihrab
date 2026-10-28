@@ -1,0 +1,13 @@
+{
+  "_": "Boundaries the listener could not settle, decided by reading every candidate's transcripts either side (resolve.py rows): reciter -> 'surah:boundary' -> seconds. resolve.py --apply takes these over its own undecided rows. Where the recording holds a long silence between two ayahs, the boundary goes just before the next ayah's first word.",
+  "balilah": {"29:69": 1306.48, "41:1": 8.86, "101:3": 16.04},
+  "dosari-hafs": {"2:0": 17.06},
+  "dukhain": {"44:34": 282.96},
+  "husary-qalun": {"39:23": 838.68},
+  "husary-warsh": {"14:53": 1779.66, "18:30": 1039.86},
+  "maasaraawi": {"69:1": 9.14},
+  "wadee-yamani": {"41:1": 7.62, "80:1": 9.04},
+  "warsh-koshi": {"6:94": 1810.12, "20:36": 248.54},
+  "zahrani": {"3:138": 3424.32, "12:96": 2311.64, "23:102": 1335.7, "27:89": 1951.18, "27:90": 1980.5,
+              "58:7": 313.24, "69:17": 192.92, "82:11": 70.8}
+}

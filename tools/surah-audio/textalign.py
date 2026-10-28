@@ -91,7 +91,9 @@ def ayah_texts(reading, surah):
         # ayah, it pulls the ayah's start back into the opening.
         if surah not in (1, 9):
             words = ayahs[0].split()
-            if len(words) > 4 and words[0].startswith("بِسْمِ"):
+            # Compared bare: at-Tīn and al-Qadr spell it بِّسْمِ, with a shaddah.
+            bare = "".join(c for c in words[0] if not unicodedata.combining(c)) if words else ""
+            if len(words) > 4 and bare == "بسم":
                 ayahs[0] = " ".join(words[4:])
         return ayahs
     path = os.path.join(TEXTS, f"m{QURANPEDIA[reading]}.json")
