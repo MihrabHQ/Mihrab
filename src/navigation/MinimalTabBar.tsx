@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, type ReactNode } from 'react';
 import { Animated, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { useLayoutRtl } from '../i18n/useLayoutRtl';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -49,6 +49,27 @@ const DOT = 6;
 const ICON = 16;
 const HIT = 44;
 const FADE_REACH = 20;
+
+/**
+ * A tab's icon, drawn as a component of its own.
+ *
+ * The icons call hooks (`useTabHoverTint`). Called as a plain function
+ * inside the bar, those hooks were the BAR's — and when a pushed screen
+ * hides the bar it returns before the dots, so the bar rendered six fewer
+ * hooks than the time before and React threw ("Rendered fewer hooks than
+ * expected"): the app closed on opening a dua.
+ */
+function TabIcon({
+  render,
+  ...props
+}: {
+  render: (p: { color: string; size: number; focused: boolean }) => ReactNode;
+  color: string;
+  size: number;
+  focused: boolean;
+}) {
+  return <>{render(props)}</>;
+}
 
 export function MinimalTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const { palette } = useAppPalette();
@@ -254,7 +275,7 @@ export function MinimalTabBar({ state, descriptors, navigation }: BottomTabBarPr
                     transform: [{ scale: nodes.iconScale }],
                   },
                 ]}>
-                {Icon({ color: String(palette.textSolid), size: ICON, focused })}
+                <TabIcon render={Icon} color={String(palette.textSolid)} size={ICON} focused={focused} />
               </Animated.View>
             ) : null}
           </Pressable>

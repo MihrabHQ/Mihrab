@@ -172,7 +172,9 @@ describe('the swipe', () => {
     // Built with the position, not on every render of the bar.
     expect(bar).toContain('[position, routeCount, dotsOpacity],');
     expect(bar).toMatch(/pagerEngaged\.interpolate\(\{ inputRange: \[0, 1\], outputRange: \[1, 0\] \}\)/);
-    expect(bar).toContain('{Icon({ color: String(palette.textSolid), size: ICON, focused })}');
+    // A component of its own, so the icon's hooks are not the bar's
+    // (minimalTabBarHidden.test.tsx).
+    expect(bar).toContain('<TabIcon render={Icon} color={String(palette.textSolid)} size={ICON} focused={focused} />');
   });
 
   it('lets the Log’s graphs keep their sideways scroll', () => {
