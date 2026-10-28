@@ -117,7 +117,7 @@ function badgeList(names, imgBase, indent = '      ', flags = {}) {
  * bytes moved under an unchanged URL, and the widget shots have now been
  * retaken twice on 2026-09-06.
  */
-const SHOT_V = '?v=2026-10-25';
+const SHOT_V = '?v=2026-10-28';
 const SHOTS = [
   'home',
   'home-maliki',
@@ -148,6 +148,8 @@ const SHOTS = [
  * (branding/tools/fan.py builds them from the single shots).
  */
 const FANS = [
+  { id: 'themes', v: '?v=2026-10-28' },
+  { id: 'minimal', v: '?v=2026-10-28' },
   { id: 'sky', v: '?v=2026-10-25' },
   { id: 'alerts', v: '?v=2026-10-18' },
 ];

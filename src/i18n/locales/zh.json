@@ -2179,7 +2179,8 @@
     "errorFolderTitle": "这个文件夹不行"
   },
   "stats": {
-    "daysUnit": " 天",
+    "daysUnit_one": " 天",
+    "daysUnit_other": " 天",
     "streakLabel": "准时连续",
     "best": "最佳 {{best}}",
     "sunnahLabel": "已做圣行",

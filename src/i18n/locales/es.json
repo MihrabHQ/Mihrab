@@ -2180,7 +2180,8 @@
     "errorFolderTitle": "Esa carpeta no funcionó"
   },
   "stats": {
-    "daysUnit": " días",
+    "daysUnit_one": " día",
+    "daysUnit_other": " días",
     "streakLabel": "Racha a tiempo",
     "best": "mejor {{best}}",
     "sunnahLabel": "Sunnah rezada",

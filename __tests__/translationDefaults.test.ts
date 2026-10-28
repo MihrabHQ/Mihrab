@@ -19,13 +19,19 @@ const EN = JSON.parse(
   fs.readFileSync(path.join(SRC, 'i18n', 'locales', 'en.json'), 'utf-8'),
 ) as Record<string, unknown>;
 
-function hasKey(dotted: string): boolean {
+function hasExactKey(dotted: string): boolean {
   let cur: unknown = EN;
   for (const part of dotted.split('.')) {
     if (typeof cur !== 'object' || cur === null || !(part in cur)) return false;
     cur = (cur as Record<string, unknown>)[part];
   }
   return true;
+}
+
+// A key called with a count may exist only as its plural forms
+// (`stats.daysUnit_one`, `stats.daysUnit_other`): i18next picks the form.
+function hasKey(dotted: string): boolean {
+  return hasExactKey(dotted) || hasExactKey(`${dotted}_other`);
 }
 
 function walk(dir: string, out: string[] = []): string[] {

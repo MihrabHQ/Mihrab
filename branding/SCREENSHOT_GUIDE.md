@@ -105,6 +105,43 @@ By default `~/Desktop/Simulator Screenshot - <device> - <date>.png`. If your des
 
 ---
 
+## The full retake with Minimal and the theme fans (2026-10-28)
+
+Every store set, the site gallery, the README grid, the hero and the
+feature graphic were taken again from this build, Casablanca on automatic,
+Wednesday 28 October (the tablet panels Thursday 29th):
+
+- **Store order.** Apple (iPhone 6.9″, nine panels): home, **minimal**,
+  mushaf, tilawah, ayah, duas, tasbih, journal, month. Play phone (eight,
+  Play's cap): home, **minimal**, mushaf, tilawah, ayah, duas, journal,
+  qibla — tasbih made room. The iPad (eight) and the Android tablet (six)
+  have no Minimal panel: on a wide screen Minimal keeps the full page, so
+  the panel would repeat the first. The caption is `"minimal"` in
+  `CAPTIONS`.
+- **Two new fans** (`fan.py`, raw captures in `branding/fans/`), all at
+  17:35, eleven minutes before Maghrib: `shot-themes.png` /
+  `readme/12_themes.png` — Light, Dark, Sky Realistic (front), Sky
+  Vibrant, Dark with the green colour theme; `shot-minimal.png` /
+  `readme/13_minimal.png` — Minimal in Light, Dark, Sky Realistic (front),
+  Sky Vibrant, and Sky at night (21:41, the one deliberate exception).
+  Strings are `shots.fans.themes` / `shots.fans.minimal` in all 13
+  languages.
+- **Android** on `Mihrab_Shots_37`, its state set by patching `RKStorage`
+  (the scripts were throwaway: force-stop, copy the db out as root, merge
+  JSON into `catalystLocalStorage`, copy back, `chown`/`restorecon`). The
+  clock is `date MMDDhhmm2026.00` with zone Africa/Abidjan, the demo status
+  bar re-entered after every relaunch (and the notification shade cleared
+  with "Clear all" — a stray notification icon otherwise sits by the
+  clock). Automatic location only lands after a pull-to-refresh of Today
+  with the test providers set. The practice graph: Log ⋯ → "Fill the past
+  three months".
+- **Apple** on the existing simulators with `simtime.dylib` built
+  outside `~/Documents`. The iPhone was onboarded fresh (Allow
+  notifications), then its app container was `rsync`ed to the iPad and the
+  Duo — the Keychain (the prayer log) does not travel, so the log was
+  filled again on each. The muṣḥaf, the tajweed colour pages and Al-Mulk
+  in Abdul Basit were downloaded in the app on the iPhone first.
+
 ## The home retake after the countdown change (2026-10-25)
 
 The countdown's seconds now sit on the hours' and minutes' line, and the

@@ -2179,7 +2179,8 @@
     "errorFolderTitle": "Dieser Ordner hat nicht funktioniert"
   },
   "stats": {
-    "daysUnit": " Tage",
+    "daysUnit_one": " Tag",
+    "daysUnit_other": " Tage",
     "streakLabel": "Serie pünktlich",
     "best": "Rekord {{best}}",
     "sunnahLabel": "Sunnah erfüllt",

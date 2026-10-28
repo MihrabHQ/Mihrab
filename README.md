@@ -64,6 +64,12 @@ Prayer times computed with **[mihrab-methods](https://github.com/MihrabHQ/mihrab
 
 <img src="branding/readme/07_tilawah.png" width="32%" alt="Tilawah — Al-Mulk playing, with the reciter, the transport, speed, sleep timer and shuffle, and a live mushaf page with the recited word lit">&nbsp;<img src="branding/readme/08_fasting.png" width="32%" alt="Fasting — today's fast, the Ramadan and voluntary counts, and the coming Sunnah days">&nbsp;<img src="branding/readme/09_widgets.png" width="32%" alt="Android home-screen widgets — today’s six times, a row to log each prayer with one tap, and the next prayer with its countdown">
 
+<img src="branding/readme/12_themes.png" width="98%" alt="Five home screens fanned out at the same minute before Maghrib, one per look: Light, Dark, the Sky theme in its Realistic colours in front, Sky in its Vibrant colours, and Dark with the green colour theme">
+<br><sub>One app, five looks — Light, Dark, Sky (Realistic and Vibrant) and the green colour theme.</sub>
+
+<img src="branding/readme/13_minimal.png" width="98%" alt="Five Minimal mode screens fanned out: the countdown alone on Light, Dark, the Sky theme's Realistic colours in front, its Vibrant colours, and the same sky at night with the moon">
+<br><sub>Minimal mode — the next prayer and nothing more. Swipe up for the day's times.</sub>
+
 <img src="branding/readme/11_sky.png" width="98%" alt="Five home screens fanned out — the Sky theme in its Realistic colours at dawn, morning, midday, the golden hour and dusk, the whole app recoloured by the hour">
 <br><sub>The Sky theme — the app painted from the sky over the countdown, changing through the day. Realistic colours by default, Vibrant a tap away.</sub>
 

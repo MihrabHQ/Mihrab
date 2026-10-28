@@ -117,8 +117,9 @@ function Door({
       onPress={onPress}
       style={({ pressed }: { pressed: boolean }) => [
         styles.door,
-        dense && styles.doorDense,
         column && styles.column,
+        // After the column's own spacing: a dense door keeps its icon's gap.
+        dense && styles.doorDense,
         divided && !column && [styles.divided, { borderTopColor: rule }],
         divided && column && [styles.dividedColumn, { borderStartColor: rule }],
         pressed && { opacity: 0.75 },
@@ -199,6 +200,7 @@ function DenseLine({
   page,
   pageColor,
   titleColor,
+  half = false,
 }: {
   icon: React.ReactNode;
   title: string;
@@ -207,6 +209,13 @@ function DenseLine({
   page: number;
   pageColor: string;
   titleColor?: string;
+  /**
+   * Half the width, beside another door (Today on a short screen, the
+   * Duo's cover). The line keeps its title and its page; what it is about
+   * goes, since half a row cannot hold all three and the reference ran
+   * into the page number.
+   */
+  half?: boolean;
 }) {
   const { t } = useTranslation();
   const { palette } = useAppPalette();
@@ -219,12 +228,14 @@ function DenseLine({
           numberOfLines={1}>
           {title}
         </Text>
-        <Text
-          style={[styles.denseName, { color: palette.muted }]}
-          numberOfLines={1}>
-          {name}
-        </Text>
-        {reference ? (
+        {half ? null : (
+          <Text
+            style={[styles.denseName, { color: palette.muted }]}
+            numberOfLines={1}>
+            {name}
+          </Text>
+        )}
+        {reference && !half ? (
           <Text
             style={[styles.denseRef, { color: palette.muted }]}
             maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}>
@@ -298,8 +309,11 @@ function KhatmahDoor({
         });
   if (dense) {
     return (
-      <View>
-        <Door label={title} onPress={onPress} divided={divided} dense>
+      // Beside the reading door the wrapper is the column, so it takes its
+      // half: a wrapper sized to its content gave the line inside nothing,
+      // and the door read as an icon and a page number.
+      <View style={column ? styles.columnWrap : undefined}>
+        <Door label={title} onPress={onPress} divided={divided} column={column} dense>
           <DenseLine
             icon={<QuranBookIcon color={palette.accentSolid} size={16} />}
             title={title}
@@ -308,6 +322,7 @@ function KhatmahDoor({
             name={left}
             page={khatmah.target.page}
             pageColor={String(palette.accent)}
+            half={column}
           />
         </Door>
         {khatmah.gap && !onlyGaps ? (
@@ -383,6 +398,7 @@ function ReadingDoor({
         label={`${title} · ${name} ${marker.surah}:${marker.ayah}`}
         onPress={onPress}
         divided={divided}
+        column={column}
         dense>
         <DenseLine
           icon={<QuranBookIcon color={READING_COLOR} size={16} />}
@@ -391,6 +407,7 @@ function ReadingDoor({
           reference={` · ${marker.surah}:${marker.ayah}`}
           page={marker.page}
           pageColor={READING_COLOR}
+          half={column}
         />
       </Door>
     );
@@ -467,6 +484,7 @@ function BookmarkDoor({
         label={`${title} · ${name} ${bookmark.surah}:${bookmark.ayah}`}
         onPress={onPress}
         divided={divided}
+        column={column}
         dense>
         <DenseLine
           icon={<QuranBookIcon color={color} size={16} />}
@@ -475,6 +493,7 @@ function BookmarkDoor({
           reference={` · ${bookmark.surah}:${bookmark.ayah}`}
           page={bookmark.page}
           pageColor={color}
+          half={column}
         />
       </Door>
     );
@@ -623,7 +642,18 @@ function ResumeDoorsImpl({
       ))}
     </>
   );
-  return column ? <View style={styles.columns}>{doors}</View> : doors;
+  // Keyed on the density: the page turns dense and back as the room under
+  // the table comes and goes (a player opening and closing over Today),
+  // and a row laid out for one shape and updated in place into the other
+  // kept the khatmah's door at its dense width — a dot beside a full-width
+  // "Continue reading". Built fresh, each shape lays out from nothing.
+  return column ? (
+    <View key={dense ? 'dense' : 'full'} style={styles.columns}>
+      {doors}
+    </View>
+  ) : (
+    doors
+  );
 }
 
 export const ResumeDoors = memo(ResumeDoorsImpl);
@@ -638,13 +668,14 @@ const styles = StyleSheet.create({
   },
   doorDense: { paddingVertical: SPACING.sm + 2, gap: SPACING.sm },
   denseBody: { flex: 1, minWidth: 0, flexDirection: 'row', alignItems: 'baseline' },
-  denseTitle: { fontSize: TYPE.footnote.fontSize, fontWeight: '400' },
+  denseTitle: { fontSize: TYPE.footnote.fontSize, fontWeight: '400', flexShrink: 1 },
   denseName: { fontSize: TYPE.caption.fontSize, flexShrink: 1, marginStart: SPACING.sm },
   denseRef: { fontSize: TYPE.caption.fontSize },
   denseGap: { paddingHorizontal: SPACING.lg, paddingBottom: SPACING.sm, marginTop: -SPACING.xs },
   divided: { borderTopWidth: StyleSheet.hairlineWidth },
   columns: { flexDirection: 'row', alignItems: 'stretch' },
   column: { flex: 1, minWidth: 0, gap: 0, paddingHorizontal: SPACING.md },
+  columnWrap: { flex: 1, minWidth: 0 },
   dividedColumn: { borderStartWidth: StyleSheet.hairlineWidth },
   dot: { width: 8, height: 8, borderRadius: RADIUS.full, marginEnd: SPACING.xs },
   body: { flex: 1, minWidth: 0 },

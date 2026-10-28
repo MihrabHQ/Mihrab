@@ -60,7 +60,7 @@ function PracticeStatsRowImpl({
     <View style={styles.row}>
       <Tile
         value={String(stats.streak)}
-        unit={t('stats.daysUnit', ' days')}
+        unit={t('stats.daysUnit', ' days', { count: stats.streak })}
         label={t('stats.streakLabel', 'On-time streak')}
         caption={
           !compact && stats.bestStreak > 0
@@ -76,7 +76,7 @@ function PracticeStatsRowImpl({
       />
       <Tile
         value={String(stats.fastsThisMonth)}
-        unit={t('stats.daysUnit', ' days')}
+        unit={t('stats.daysUnit', ' days', { count: stats.fastsThisMonth })}
         label={t('stats.fastedLabel', 'Fasted')}
         caption={compact ? undefined : t('stats.thisMonth', 'this month')}
       />

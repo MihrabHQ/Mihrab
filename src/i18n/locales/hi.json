@@ -2179,7 +2179,8 @@
     "errorFolderTitle": "वह फ़ोल्डर काम नहीं आया"
   },
   "stats": {
-    "daysUnit": " दिन",
+    "daysUnit_one": " दिन",
+    "daysUnit_other": " दिन",
     "streakLabel": "समय पर लगातार",
     "best": "सर्वश्रेष्ठ {{best}}",
     "sunnahLabel": "सुन्नत अदा",

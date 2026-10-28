@@ -2179,7 +2179,8 @@
     "errorFolderTitle": "Den mappen fungerade inte"
   },
   "stats": {
-    "daysUnit": " dagar",
+    "daysUnit_one": " dag",
+    "daysUnit_other": " dagar",
     "streakLabel": "Svit i tid",
     "best": "bäst {{best}}",
     "sunnahLabel": "Sunnah utförd",

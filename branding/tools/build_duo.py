@@ -61,7 +61,7 @@ def wide():
     compose_wide.feature_graphic(
         os.path.join(OUT_WIDE, "header-3840x1646.png"), home, W=WIDE[0], H=WIDE[1], SS=2
     )
-    shots = [os.path.join(ROOT, "branding/store/ios-6.9", f) for f in ("01_home.png", "02_mushaf.png", "05_duas.png")]
+    shots = [os.path.join(ROOT, "branding/store/ios-6.9", f) for f in ("01_home.png", "03_mushaf.png", "06_duas.png")]
     compose_wide.hero(
         os.path.join(OUT_WIDE, "search-results-3840x2560.png"), *shots, W=SEARCH[0], H=SEARCH[1], xs=(0.50, 0.64, 0.78), ts=0.72, dh_frac=0.74
     )

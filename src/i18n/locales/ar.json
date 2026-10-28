@@ -2183,7 +2183,12 @@
     "errorFolderTitle": "هذا المجلد لم ينجح"
   },
   "stats": {
-    "daysUnit": " يوم",
+    "daysUnit_zero": " يوم",
+    "daysUnit_one": " يوم",
+    "daysUnit_two": " يوم",
+    "daysUnit_few": " أيام",
+    "daysUnit_many": " يومًا",
+    "daysUnit_other": " يوم",
     "streakLabel": "تتابع في الوقت",
     "best": "الأفضل {{best}}",
     "sunnahLabel": "السنن المؤداة",

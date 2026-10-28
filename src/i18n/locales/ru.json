@@ -2258,7 +2258,10 @@
     "errorFolderTitle": "Эта папка не подошла"
   },
   "stats": {
-    "daysUnit": " дн.",
+    "daysUnit_one": " дн.",
+    "daysUnit_few": " дн.",
+    "daysUnit_many": " дн.",
+    "daysUnit_other": " дн.",
     "streakLabel": "Подряд вовремя",
     "best": "рекорд {{best}}",
     "sunnahLabel": "Сунна совершена",

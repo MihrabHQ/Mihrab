@@ -46,6 +46,10 @@ CAPTIONS = {
         "For every prayer,\\nand everything between",
         "Prayer times, the Quran, dua and dhikr in one calm app",
     ),
+    "minimal": (
+        "The next prayer,\\nand nothing more",
+        "Minimal mode: one calm screen; swipe up for the day's times",
+    ),
     "mushaf": (
         "The Madinah mushaf,\\nin tajweed colour",
         "The recited word lights up; hold any word to hear it",

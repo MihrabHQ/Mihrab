@@ -2179,7 +2179,8 @@
     "errorFolderTitle": "That folder didn’t work"
   },
   "stats": {
-    "daysUnit": " days",
+    "daysUnit_one": " day",
+    "daysUnit_other": " days",
     "streakLabel": "On-time streak",
     "best": "best {{best}}",
     "sunnahLabel": "Sunnah kept",

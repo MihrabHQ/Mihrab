@@ -2179,7 +2179,8 @@
     "errorFolderTitle": "Folder itu tidak berhasil"
   },
   "stats": {
-    "daysUnit": " hari",
+    "daysUnit_one": " hari",
+    "daysUnit_other": " hari",
     "streakLabel": "Rentetan tepat waktu",
     "best": "terbaik {{best}}",
     "sunnahLabel": "Sunah ditunaikan",

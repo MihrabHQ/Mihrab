@@ -2179,7 +2179,8 @@
     "errorFolderTitle": "وہ فولڈر کام نہیں آیا"
   },
   "stats": {
-    "daysUnit": " دن",
+    "daysUnit_one": " دن",
+    "daysUnit_other": " دن",
     "streakLabel": "وقت پر تسلسل",
     "best": "بہترین {{best}}",
     "sunnahLabel": "سنت ادا",
