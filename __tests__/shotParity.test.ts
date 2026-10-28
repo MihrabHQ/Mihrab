@@ -72,14 +72,13 @@ describe('the README gallery and the site gallery are the same pictures', () => 
 
 describe('the alt text names widgets the shot contains', () => {
   /*
-   * The Android widget shot carries the prayer-times widget above the
-   * "Log today" widget. Its alt text said "above the khatmah widget" — a
-   * different widget entirely, in all thirteen languages, which is what a
-   * screen reader was told the picture showed.
-   *
-   * A test cannot look at the picture, but it can hold the one word that
-   * was wrong: the site's Android widget alt must not name the khatmah,
-   * whose widget is not in that shot.
+   * The Android widget shot has said one thing and shown another before:
+   * its alt text once named a khatmah widget the picture did not carry.
+   * Since the 2026-10-29 retake the shot DOES carry it — Continue reading,
+   * with today's khatmah portion — beside the times, the log, the next
+   * prayer and the Hijri date. A test cannot look at the picture, but it
+   * can hold every language to naming the two widgets that came in with
+   * that retake, so the alt text cannot fall behind it again.
    */
   const strings = JSON.parse(
     readFileSync(path.join(ROOT, 'scripts', 'site', 'strings.json'), 'utf-8'),
@@ -88,11 +87,12 @@ describe('the alt text names widgets the shot contains', () => {
     { shots: { items: Record<string, { alt: string; cap: string }> } }
   >;
 
-  const KHATMAH = /khatmah|khatma|hatim|jatma|ختم|خَتْم|хатм|खत्म|ख़त्म|খতম|诵读全本/i;
+  const KHATMAH = /khatmah|khatma|khatam|hatm|jatma|ختم|ختمة|хатм|खत्म|ख़त्म|খতম|通读/i;
+  const HIJRI = /hijri|hijriah|hicri|hégire|hégira|hidschri|хиджр|هجري|ہجری|হিজরি|हिजरी|伊斯兰历/i;
 
-  it.each(Object.keys(strings))('%s does not put the khatmah in it', code => {
-    expect(strings[code].shots.items['widgets-android'].alt).not.toMatch(
-      KHATMAH,
-    );
+  it.each(Object.keys(strings))('%s names the khatmah and the Hijri date', code => {
+    const alt = strings[code].shots.items['widgets-android'].alt;
+    expect(alt).toMatch(KHATMAH);
+    expect(alt).toMatch(HIJRI);
   });
 });
