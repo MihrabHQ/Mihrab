@@ -2,6 +2,7 @@ Mihrab es un compañero sereno para el día de un musulmán: las oraciones, el C
 
 REZAR
 - Horarios de hoy, la semana y el mes siguiente: coinciden al minuto impreso con los calendarios publicados por Diyanet, Islamiska Förbundet, los ministerios de Marruecos y Argelia y Kemenag, calculados en el teléfono; MUIS, JAKIM y Türkiye Takvimi tal como se publican; AlAdhan en el resto. Se comparten como imagen o PDF
+- Modo Mínimo: solo el cielo y la cuenta atrás, y los horarios del día a un deslizamiento
 - El adhan de cada oración, con diecisiete grabaciones o la tuya propia, un aviso previo y una posposición que solo ofrece lo que permite el tiempo de la oración, hasta una última oportunidad antes de que termine
 - Una alerta de oración a pantalla completa sobre la pantalla de bloqueo, como un despertador, con Detener, Posponer y Registrar oración
 - Silencia el teléfono durante la oración y deja que el sonido vuelva solo — No molestar desde el adhan o unos minutos antes, con su propia duración para el yumu'a
@@ -11,13 +12,14 @@ REZAR
 - Widgets de la pantalla de inicio: horarios en tres tamaños, el registro de hoy, fecha de la Hégira, racha, tasbih y lectura
 
 LEER Y ESCUCHAR
-- El mushaf de Medina, trazado como texto con las fuentes de página del Complejo Rey Fahd y nítido a cualquier tamaño, junto con Warsh, Qalun y Shu'bah
+- El mushaf de Medina, trazado como texto con las fuentes de página del Complejo Rey Fahd, junto con Warsh, Qalun y Shu'bah
+- La impresión IndoPak de 15 líneas, una segunda forma de leer Hafs
 - Colores de tajwid, con cada regla explicada, en Hafs y en Warsh
 - El lector de palabras: mantén pulsada una palabra para oírla sola
-- 44 recitadores y, en los que tienen tiempos por palabra, la palabra recitada iluminada en la página
-- Tilawa: sura tras sura con la pantalla apagada, con temporizador y control de velocidad; recuerda dónde te quedaste y sugiere lo que la sunna recomienda a esa hora: al-Kahf el viernes, al-Mulk por la noche
+- 59 recitadores y, en los que tienen tiempos por palabra, la palabra recitada iluminada en la página
+- Tilawa: sura tras sura con la pantalla apagada, con temporizador; recuerda dónde te quedaste y sugiere lo que la sunna recomienda a esa hora: al-Kahf el viernes, al-Mulk por la noche
 - 14 traducciones y tafsir clásico, disponibles sin conexión
-- Herramientas de memorización, marcadores y planes de jatma que siguen la página en la que estás
+- Herramientas de memorización, marcadores y planes de jatma
 
 RECORDAR
 - Más de 100 duas del Hisn al-Muslim, con transliteración y traducción

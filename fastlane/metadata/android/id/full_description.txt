@@ -2,6 +2,7 @@ Mihrab adalah pendamping yang tenang bagi hari seorang Muslim: sholat, Al-Quran,
 
 SHOLAT
 - Jadwal hari ini, minggu ini, dan bulan depan — sesuai sampai ke menit yang tercetak dengan jadwal terbitan Diyanet, Islamiska Förbundet, kementerian Maroko dan Aljazair, serta Kemenag, dihitung di ponsel; MUIS, JAKIM, dan Türkiye Takvimi sebagaimana diterbitkan; AlAdhan di tempat lain — bisa dibagikan sebagai gambar atau PDF
+- Mode Minimal: hanya langit dan hitung mundur di Hari Ini, waktu hari itu cukup digeser ke atas
 - Adzan untuk setiap waktu sholat, dengan tujuh belas rekaman atau rekaman Anda sendiri, pengingat sebelumnya, dan tunda yang hanya menawarkan sisa waktu sholat, hingga kesempatan terakhir sebelum waktunya habis
 - Pengingat sholat layar penuh di atas layar kunci, seperti jam alarm, dengan Hentikan, Tunda, dan Catat sholat
 - Senyapkan ponsel selama sholat, lalu suaranya kembali dengan sendirinya — Jangan Ganggu sejak adzan atau beberapa menit sebelumnya, dengan durasi tersendiri untuk Jumat
@@ -12,9 +13,10 @@ SHOLAT
 
 MEMBACA DAN MENDENGAR
 - Mushaf Madinah, disusun sebagai teks dari fon halaman Kompleks Raja Fahd dan tajam di ukuran apa pun — beserta Warsy, Qalun, dan Syu'bah
+- Mushaf IndoPak 15 baris, cara kedua membaca Hafs
 - Warna tajwid, setiap hukum dijelaskan — pada Hafs dan Warsy
 - Pembaca kata: tahan satu kata untuk mendengarnya dibaca sendiri
-- 44 qari, dan pada qari yang memiliki penanda waktu per kata, kata yang dibaca menyala di halaman
+- 59 qari, dan pada qari yang memiliki penanda waktu per kata, kata yang dibaca menyala di halaman
 - Tilawah: surah demi surah dengan layar mati, dengan pengatur waktu tidur dan kendali kecepatan; mengingat posisi Anda dan menyarankan bacaan yang dianjurkan sunnah pada jam itu — Al-Kahf di hari Jumat, Al-Mulk di malam hari
 - 14 terjemahan dan tafsir klasik, bisa dibaca tanpa internet
 - Alat bantu hafalan, penanda, dan rencana khatam yang mengikuti halaman yang sedang Anda baca
