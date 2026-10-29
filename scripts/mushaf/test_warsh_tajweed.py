@@ -208,6 +208,52 @@ def main() -> int:
     # the same muttaṣil as جَآءَ written with alif + maddah.
     case("mottasel-precomposed", "جآءنا", "آ", has=["madda_obligatory_mottasel"], surah=67)
 
+    # Issue #64 · 46:21 · ikhfāʾ and iqlāb colour the nūn or tanwīn (or the
+    # mīm of ikhfāʾ shafawī) alone. The letter after it was coloured too, so
+    # كُنتَ after إِن came out coloured from end to end.
+    case("ikhfa-nun-only", "كنت", "ك", lacks=["ikhafa"], surah=46)
+    case("ikhfa-nun-only-2", "كنت", "ت", lacks=["ikhafa"], surah=46)
+    case("ikhfa-nun-only-3", "كنت", "ن", has=["ikhafa"], surah=46)
+    spill = 0
+    for s_ in data()["surahs"]:
+        A = s_["ayahs"]
+        for i, a in enumerate(A):
+            for w in analyse_ayah(a["text"], A[i + 1]["text"] if i + 1 < len(A) else None, A[i - 1]["text"] if i > 0 else None):
+                for rule, start, end in w.spans:
+                    if rule not in ("ikhafa", "iqlab", "ikhafa_shafawi"):
+                        continue
+                    # The nūn or mīm itself, or the letter whose tanwīn it is:
+                    # on the alif after it (نَاراٗ), or turned to a small mīm
+                    # for iqlāb (مُحِيطُۢ).
+                    inside = [x for x in w.letters if start <= x.start < end]
+                    if not any(x.base in "نم" or x.tanween is not None or "ۢ" in x.marks for x in inside):
+                        spill += 1
+    RESULTS.append(spill == 0)
+    print(f"{'ok  ' if spill == 0 else 'FAIL'} ikhfa-on-the-nun  {spill} ikhfāʾ/iqlāb spans on a letter that is not the nūn, mīm or tanwīn")
+
+    # Issue #64 · 92:15 · an āyah ending written for the join (the alif
+    # dropped before the next āyah's hamzat al-waṣl) is read at the stop,
+    # where the alif comes back with taqlīl: the rhyme-ends of Ṭāhā, al-Najm,
+    # al-Nāziʿāt, al-Aʿlā and al-Layl.
+    case("stop-taqleel-92", "الاشقي", "ق", has=["taqleel"], surah=92)
+    case("stop-taqleel-79", "طوى", "و", has=["taqleel"], surah=79)
+    case("stop-taqleel-raa", "الكبرى", "ر", has=["taqleel"], lacks=["tafkheem", "raa_tarqeeq"], surah=20)
+    RHYME_SURAHS = {20, 53, 70, 75, 79, 80, 87, 91, 92, 93, 96}
+    ends = []
+    for si, s_ in enumerate(data()["surahs"], start=1):
+        A = s_["ayahs"]
+        for i, a in enumerate(A):
+            last = a["text"].split()
+            last = [x for x in last if x.strip("".join(NOISE))][-1]
+            core = "".join(c for c in last if c not in NOISE)
+            if core[-2:] in ("َى", "َي"):
+                w = analyse_ayah(a["text"], A[i + 1]["text"] if i + 1 < len(A) else None)[-1]
+                rules = {r for r, _, _ in w.spans}
+                ends.append((si, i + 1, si in RHYME_SURAHS and {"taqleel", "madda_normal"} <= rules))
+    ok = len(ends) == 11 and all(x[2] for x in ends)
+    RESULTS.append(ok)
+    print(f"{'ok  ' if ok else 'FAIL'} stop-taqleel-all  {sum(x[2] for x in ends)} of {len(ends)} bare rhyme-ends read with taqlīl at the stop (expected 11)")
+
     bad = RESULTS.count(False)
     print(f"\n{len(RESULTS) - bad} passed, {bad} failed")
     return 1 if bad else 0

@@ -289,9 +289,9 @@ def rule_word(w: Word, prev_word: Word | None, next_word: Word | None, first_in_
         )
         if L.base == "ن" and (L.bare or nun_into_yw) and not L.shadda and not tanween_on_alef and not L.has(LOW_DOT):
             if nxt is not None and L.has(SMALL_MEEM) and nxt.base == "ب":
-                w.mark("iqlab", L, nxt)  # يُنۢبِتُ, أَنۢبِيَآءَ — iqlāb inside the word
+                w.mark("iqlab", L)  # يُنۢبِتُ, أَنۢبِيَآءَ — iqlāb inside the word
             elif nxt is not None:
-                w.mark("ikhafa", L, nxt)  # أُنزِلَ — inside the word it is always ikhfāʾ
+                w.mark("ikhafa", L)  # أُنزِلَ — inside the word it is always ikhfāʾ
             elif nxt_first is not None:
                 _nun_or_tanween_across(w, L, next_word, nxt_first)
         elif L.tanween in OPEN_TANWEEN and nxt_first is not None:
@@ -304,13 +304,11 @@ def rule_word(w: Word, prev_word: Word | None, next_word: Word | None, first_in_
                 _nun_or_tanween_across(w, L, next_word, nxt_first, tail)
         elif L.has(SMALL_MEEM) and nxt is None and nxt_first is not None and nxt_first.base == "ب":
             w.mark("iqlab", L)
-            next_word.mark("iqlab", nxt_first)
 
         # ── Mīm sākinah ───────────────────────────────────────────────
         if L.base == "م" and L.bare and not L.shadda and nxt is None and nxt_first is not None:
             if nxt_first.base == "ب":
                 w.mark("ikhafa_shafawi", L)
-                next_word.mark("ikhafa_shafawi", nxt_first)
             elif nxt_first.base == "م" and nxt_first.shadda:
                 w.mark("idgham_shafawi", L)
                 next_word.mark("idgham_shafawi", nxt_first)
@@ -367,14 +365,22 @@ def rule_word(w: Word, prev_word: Word | None, next_word: Word | None, first_in_
 
 
 def _nun_or_tanween_across(w: Word, L: Letter, next_word: Word, nf: Letter, tail: Letter | None = None) -> None:
+    # IKHFĀʾ AND IQLĀB COLOUR THE NŪN OR TANWĪN ALONE (issue #64, 46:21).
+    # The letter after it used to be coloured too, as the quran.com Ḥafṣ
+    # markup does — and with it the next word's first letter, vowels and
+    # all, so a short word like كُنتَ after إِن came out coloured from end to
+    # end, with nothing to say where the rule is. The ghunnah of ikhfāʾ and
+    # the mīm of iqlāb are the nūn's own sound, and that is where a printed
+    # tajwīd muṣḥaf puts the colour. Idghām keeps the letter it merges into:
+    # the doubled letter is where the ghunnah, or the merged sound, is heard.
     if (nf.shadda and nf.base in GHUNNAH_IDGHAM) or nf.base in ("و", "ي"):
         w.mark("idgham_ghunnah", L, tail); next_word.mark("idgham_ghunnah", nf)
     elif nf.shadda and nf.base in NO_GHUNNAH_IDGHAM:
         w.mark("idgham_wo_ghunnah", L, tail); next_word.mark("idgham_wo_ghunnah", nf)
     elif nf.base == "ب":
-        w.mark("iqlab", L, tail); next_word.mark("iqlab", nf)
+        w.mark("iqlab", L, tail)
     else:
-        w.mark("ikhafa", L, tail); next_word.mark("ikhafa", nf)
+        w.mark("ikhafa", L, tail)
 
 
 def _madd(w: Word, k: int, L: Letter, prev: Letter | None, nxt: Letter | None, next_word: Word | None, nf: Letter | None) -> None:
@@ -543,6 +549,7 @@ def analyse_ayah(text: str, next_text: str | None = None, prev_text: str | None 
     before = tokenize(split_words(prev_text)[-1]) if prev_text and split_words(prev_text) else None
     if words:
         words[-1].last = True
+        _alif_back_at_stop(words[-1])
     for i, w in enumerate(words):
         prev_w = words[i - 1] if i > 0 else before
         next_w = words[i + 1] if i + 1 < len(words) else after
@@ -551,6 +558,33 @@ def analyse_ayah(text: str, next_text: str | None = None, prev_text: str | None 
     for w in words:
         w.spans = sorted(set(w.spans), key=lambda s: (s[1], s[2], s[0]))
     return words
+
+
+def _alif_back_at_stop(w: Word) -> None:
+    """
+    An āyah ending written for the join, read as the stop (issue #64, 92:15).
+
+    Eleven āyāt end in an alif maqṣūra the text writes bare — fatḥa, then a
+    plain ى or ي, no small alif and no taqlīl dot: اَ۬لَاشْقَي at 92:15 and
+    92:17, طُوَى at 79:16, اِ۬لْعُلَى at 20:3. Every one is followed by a
+    hamzat al-waṣl (the next āyah's, or at 20:134 al-Anbiyāʾ's اقترب), so
+    the print writes the word as it sounds when joined on, the alif dropped
+    before the sākin. But this script reads the end of an āyah as the stop,
+    and stopping there the alif comes back — and these are rhyme-ends of
+    Ṭāhā, al-Najm, al-Nāziʿāt, al-Aʿlā and al-Layl, where Warsh reads the
+    alif with taqlīl and nothing else. So the letter before it is read
+    as if it carried the dot and the ى the small alif, exactly as the
+    neighbouring endings are written (وَتَوَلّ۪ىٰ at 92:16); the offsets are
+    the word's own, so nothing moves.
+    """
+    Ls = w.letters
+    if len(Ls) < 2:
+        return
+    last, before = Ls[-1], Ls[-2]
+    if last.base in "ىي" and last.marks == "" and before.vowel == FATHA and not before.has(LOW_DOT):
+        before.marks += LOW_DOT
+        last.base = "ى"
+        last.marks += SUP_ALEF
 
 
 def analyse_surah(ayahs: list[str]) -> list[list[Word]]:
