@@ -1,1 +1,1 @@
-bön,salah,namaz,adhan,azan,böneutrop,dua,dhikr,tasbih,mushaf,tajwid,islam,ramadan,hijri,widget
+qibla,salah,namaz,adhan,azan,böneutrop,dua,dhikr,tasbih,mushaf,indopak,tajwid,islam,ramadan,hijri

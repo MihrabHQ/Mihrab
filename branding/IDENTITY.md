@@ -188,7 +188,7 @@ Store subtitle and keywords, and the first line of every description,
 where they are still indexed:
 
 - short description: *prayer times · adhan · Quran · dua · qibla*
-- App Store subtitle: *Prayer Times, Quran & Qibla*
+- App Store subtitle: *Prayer Times to the Minute* (Quran and qibla move to the keywords)
 
 Watch Play Console → Grow → Store performance → Search for a few weeks
 after a title change. If search installs fall in one language, that

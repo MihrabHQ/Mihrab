@@ -1,1 +1,1 @@
-salah,namaz,adhan,azan,timetable,dua,dhikr,tasbih,mushaf,tajweed,islam,ramadan,hijri,widget,mosque
+quran,qibla,salah,namaz,adhan,azan,dua,dhikr,tasbih,mushaf,indopak,tajweed,islam,ramadan,hijri

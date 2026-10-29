@@ -1,1 +1,1 @@
-अज़ान,दुआ,इस्लाम,मस्जिद,namaz,azan,salah,quran,qibla,dua
+quran,qibla,namaz,azan,salah,dua,अज़ान,मस्जिद,indopak
