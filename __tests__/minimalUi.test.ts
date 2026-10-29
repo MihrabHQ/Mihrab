@@ -262,6 +262,23 @@ describe('the minimal Today', () => {
     expect(card).toMatch(/\)\}\n\s*\{\/\* The question a tap on a passed prayer opens/);
   });
 
+  it('swipes the sheet’s days as the full page’s table is swiped', () => {
+    const sheet = read('src/screens/home/TodayTimesSheet.tsx');
+    // Every day the card has, built only while the sheet is open.
+    expect(card).toContain('minimal && timesOpen\n      ? pages.map((_, index) => {');
+    expect(card).toContain('days={sheetDaysShown}');
+    expect(card).toContain('onTurn={setSheetOffset}');
+    // A paged list, laid out like the full page's (pagerPosition), whose
+    // settle turns the day bar and which follows a chevron.
+    expect(sheet).toContain('<DayPager days={days} offset={offset} onTurn={onTurn} rtl={rtl} />');
+    expect(sheet).toContain('pagingEnabled');
+    expect(sheet).toContain('onMomentumScrollEnd={onSettled}');
+    expect(sheet).toContain("import { pagerPosition } from './pagerPosition';");
+    expect(sheet).toContain('listRef.current?.scrollToIndex({ index: positionOf(offset), animated: true });');
+    // The sheet's drag down gives a horizontal move up to the pager.
+    expect(read('src/screens/home/MinimalSheet.tsx')).toContain('.failOffsetX([-16, 16])');
+  });
+
   it('takes the sheet down when Today is no longer the page in front', () => {
     // A Modal is a window of its own on Android: the sheet stayed up over
     // the Month page and the Qibla its own buttons open, and over the tab

@@ -1,5 +1,19 @@
-import { memo } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
+// The gesture handler's list, not React Native's: the sheet sits in a
+// gesture handler's detector (MinimalSheet's drag down), and inside one a
+// plain scroll view had its touch cancelled part way — the page stopped
+// between two days and did not snap. This one is a native handler of its
+// own that the drag, failing on a sideways move, hands the finger to.
+import { FlatList } from 'react-native-gesture-handler';
+import {
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+  type LayoutChangeEvent,
+  type NativeScrollEvent,
+  type NativeSyntheticEvent,
+} from 'react-native';
 import Svg, { Path, Rect } from 'react-native-svg';
 import { useTranslation } from 'react-i18next';
 import type { LoggedStatus } from '../../journal/journal';
@@ -15,6 +29,7 @@ import { LogCheck, LOG_CHECK_SIZE } from './LogCheck';
 import { MinimalGlyph } from './MinimalGlyph';
 import { MapPinIcon } from '../../theme/icons';
 import { CompassIcon } from '../../components/HeaderToolbarIcons';
+import { pagerPosition } from './pagerPosition';
 
 /** The doors' glyphs: a step under the type's cap, as the Qibla chip's small one. */
 const DOOR_ICON = 15;
@@ -35,6 +50,9 @@ export type TimesSheetRow = {
   };
 };
 
+/** One day of the sheet's pager: its offset from today, and its rows. */
+export type TimesSheetDay = { offset: number; rows: TimesSheetRow[] };
+
 /**
  * The day's times, one tap away — the minimal Today's table
  * (settings.minimalUi). The page keeps the countdown and nothing else;
@@ -53,6 +71,9 @@ function TodayTimesSheetImpl({
   subtitle,
   hint,
   rows,
+  days,
+  offset = 0,
+  onTurn,
   isToday,
   onPrev,
   onNext,
@@ -78,6 +99,16 @@ function TodayTimesSheetImpl({
    */
   hint?: string | null;
   rows: TimesSheetRow[];
+  /**
+   * Every day the card has, in order — the full page's pages. Given with
+   * `onTurn`, the rows are a pager the reader swipes, as the full page's
+   * table is; without, the one day's `rows` are drawn on their own.
+   */
+  days?: TimesSheetDay[];
+  /** The day on show, as an offset from today. */
+  offset?: number;
+  /** A swipe settled on another day. */
+  onTurn?: (offset: number) => void;
   isToday: boolean;
   onPrev?: () => void;
   onNext?: () => void;
@@ -198,41 +229,11 @@ function TodayTimesSheetImpl({
             </Text>
           </Pressable>
         )}
-        <View style={styles.rows}>
-          {rows.map(row => {
-            const ink = row.secondary && !row.lit ? palette.muted : palette.text;
-            return (
-              <View key={row.key} style={styles.row}>
-                {/* The check, or its room: the names line up whether or not
-                    a row can be logged (Sunrise cannot). */}
-                <View style={styles.check}>
-                  {row.log ? (
-                    <LogCheck
-                      status={row.log.status}
-                      phase={row.log.phase}
-                      ready={row.log.ready}
-                      palette={palette}
-                      prayerLabel={row.name}
-                      onPress={row.log.onToggle}
-                    />
-                  ) : null}
-                </View>
-                <Text
-                  style={[styles.name, { color: ink }, row.lit && styles.lit, row.secondary && styles.secondary]}
-                  numberOfLines={1}>
-                  {row.name}
-                </Text>
-                <Text
-                  style={[styles.time, tabularNumeralStyle, { color: ink }, row.lit && styles.lit]}
-                  numberOfLines={1}
-                  maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}
-                  accessibilityLanguage="en-US">
-                  {row.time}
-                </Text>
-              </View>
-            );
-          })}
-        </View>
+        {days && onTurn && days.length > 1 ? (
+          <DayPager days={days} offset={offset} onTurn={onTurn} rtl={rtl} />
+        ) : (
+          <DayRows rows={rows} />
+        )}
         {source ? (
           <Text style={[styles.source, { color: palette.muted }]} numberOfLines={1}>
             {`${t('provider.timesSource')} · ${source}`}
@@ -288,6 +289,151 @@ function TodayTimesSheetImpl({
   );
 }
 
+/** One day's rows: the check, the name, the time. */
+function DayRows({ rows }: { rows: TimesSheetRow[] }) {
+  const { palette } = useAppPalette();
+  return (
+    <View style={styles.rows}>
+      {rows.map(row => {
+        const ink = row.secondary && !row.lit ? palette.muted : palette.text;
+        return (
+          <View key={row.key} style={styles.row}>
+            {/* The check, or its room: the names line up whether or not
+                a row can be logged (Sunrise cannot). */}
+            <View style={styles.check}>
+              {row.log ? (
+                <LogCheck
+                  status={row.log.status}
+                  phase={row.log.phase}
+                  ready={row.log.ready}
+                  palette={palette}
+                  prayerLabel={row.name}
+                  onPress={row.log.onToggle}
+                />
+              ) : null}
+            </View>
+            <Text
+              style={[styles.name, { color: ink }, row.lit && styles.lit, row.secondary && styles.secondary]}
+              numberOfLines={1}>
+              {row.name}
+            </Text>
+            <Text
+              style={[styles.time, tabularNumeralStyle, { color: ink }, row.lit && styles.lit]}
+              numberOfLines={1}
+              maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}
+              accessibilityLanguage="en-US">
+              {row.time}
+            </Text>
+          </View>
+        );
+      })}
+    </View>
+  );
+}
+
+/**
+ * ── THE DAYS, SWIPED ───────────────────────────────────────────────────
+ *
+ * The full page's table is a pager: a swipe across the rows turns the day,
+ * and the chevrons only say where the swipe would go. The sheet had the
+ * chevrons alone, so under Minimal another day was a tap at a time on a
+ * 36-point target. Here the rows are the same pager — one day a page, laid
+ * left to right in every language with the pages stored backwards in a
+ * right-to-left one (`pagerPosition`, the full page's reason) — and the day
+ * bar follows the swipe: a settle reports the day (`onTurn`), and a day
+ * chosen elsewhere (a chevron, "Back to today") scrolls the pager to it.
+ *
+ * The sheet's drag down fails on a horizontal move (MinimalSheet's
+ * `failOffsetX`), so the two gestures do not fight over a finger.
+ */
+function DayPager({
+  days,
+  offset,
+  onTurn,
+  rtl,
+}: {
+  days: TimesSheetDay[];
+  offset: number;
+  onTurn: (offset: number) => void;
+  rtl: boolean;
+}) {
+  const [width, setWidth] = useState(0);
+  const listRef = useRef<FlatList<TimesSheetDay>>(null);
+  const count = days.length;
+  const data = rtl ? days.slice().reverse() : days;
+  const positionOf = useCallback(
+    (o: number) => {
+      const i = days.findIndex(d => d.offset === o);
+      return pagerPosition(i < 0 ? 0 : i, count, rtl);
+    },
+    [days, count, rtl],
+  );
+  // The width exactly as laid out — not rounded. The page snaps to the
+  // list's own width, and a page a fraction narrower drifted from it by that
+  // fraction a day: two weeks along, the rows sat several points off their
+  // page and the check column was cut.
+  const onLayout = useCallback((e: LayoutChangeEvent) => {
+    const w = e.nativeEvent.layout.width;
+    setWidth(prev => (Math.abs(prev - w) < 0.01 ? prev : w));
+  }, []);
+  // The day the pager is on, as it last settled or was sent: a day chosen
+  // by a swipe needs no scroll back to itself.
+  const shown = useRef(offset);
+  useEffect(() => {
+    if (width <= 0 || shown.current === offset) return;
+    shown.current = offset;
+    listRef.current?.scrollToIndex({ index: positionOf(offset), animated: true });
+  }, [offset, width, positionOf]);
+  const onSettled = useCallback(
+    (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+      if (width <= 0) return;
+      const position = Math.round(e.nativeEvent.contentOffset.x / width);
+      const day = days[pagerPosition(Math.max(0, Math.min(count - 1, position)), count, rtl)];
+      if (!day) return;
+      shown.current = day.offset;
+      if (day.offset !== offset) onTurn(day.offset);
+    },
+    [width, days, count, rtl, offset, onTurn],
+  );
+  const layout = useCallback(
+    (_: unknown, index: number) => ({ length: width, offset: width * index, index }),
+    [width],
+  );
+  // Out to the sheet's edges, each page padded back in: a scroll view clips
+  // what it holds, and the checks' rings reach past the rows' start — inset,
+  // they were cut in half. The swipe takes the sheet's whole width with it.
+  return (
+    <View onLayout={onLayout} style={styles.pager}>
+      {width > 0 ? (
+        <FlatList
+          ref={listRef}
+          horizontal
+          pagingEnabled
+          showsHorizontalScrollIndicator={false}
+          bounces={false}
+          data={data}
+          keyExtractor={d => String(d.offset)}
+          initialNumToRender={count}
+          initialScrollIndex={positionOf(offset)}
+          getItemLayout={layout}
+          onMomentumScrollEnd={onSettled}
+          nestedScrollEnabled
+          renderItem={({ item }) => (
+            <View style={[styles.page, { width }]}>
+              <DayRows rows={item.rows} />
+            </View>
+          )}
+        />
+      ) : (
+        // Before the width is known: the day on show, on its own.
+        <View style={styles.page}>
+          <DayRows rows={days.find(d => d.offset === offset)?.rows ?? []} />
+        </View>
+      )}
+    </View>
+  );
+}
+
 /** The day bar's chevron, the full page's. */
 function Chevron({ color, back = false }: { color: string; back?: boolean }) {
   return (
@@ -328,6 +474,9 @@ const styles = StyleSheet.create({
   backToToday: { alignSelf: 'center', paddingVertical: SPACING.xs, paddingHorizontal: SPACING.sm },
   backToTodayText: { fontSize: TYPE.footnote.fontSize, fontWeight: '500' },
   rows: { gap: SPACING.xs, marginTop: SPACING.xs },
+  // The sheet's card padding (MinimalSheet, SPACING.lg), undone and redone.
+  pager: { marginHorizontal: -SPACING.lg },
+  page: { paddingHorizontal: SPACING.lg },
   row: { flexDirection: 'row', alignItems: 'center', paddingVertical: SPACING.xs, gap: SPACING.sm },
   check: { width: LOG_CHECK_SIZE, height: LOG_CHECK_SIZE, alignItems: 'center', justifyContent: 'center' },
   name: { flex: 1, fontSize: TYPE.body.fontSize, fontWeight: '400' },

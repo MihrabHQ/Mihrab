@@ -107,7 +107,7 @@ import type { JournalPrayer } from '../../journal/journal';
 import { pagerPosition } from './pagerPosition';
 import { LogPassedPrayerSheet } from './LogPassedPrayerSheet';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import { TodayTimesSheet, type TimesSheetRow } from './TodayTimesSheet';
+import { TodayTimesSheet, type TimesSheetDay, type TimesSheetRow } from './TodayTimesSheet';
 import { pageRecess } from './MinimalSheet';
 import { HeroSky, type SkyRun } from './HeroSky';
 import {
@@ -1640,6 +1640,7 @@ function TodayCardImpl({
     if (!todayFocused) setTimesOpen(false);
   }, [todayFocused]);
   const lastSheetRows = useRef<TimesSheetRow[]>([]);
+  const lastSheetDays = useRef<TimesSheetDay[]>([]);
   const reduceMotion = useReduceMotion();
 
   /**
@@ -2458,6 +2459,17 @@ function TodayCardImpl({
   const liveSheetRows = minimal && timesOpen ? sheetRows(sheetOffset) : null;
   if (liveSheetRows) lastSheetRows.current = liveSheetRows;
   const sheetRowsShown = liveSheetRows ?? lastSheetRows.current;
+  // …and every day's, for the sheet's pager: the full page's pages, swiped
+  // the same way. Built on the same terms — only while the sheet is open.
+  const liveSheetDays =
+    minimal && timesOpen
+      ? pages.map((_, index) => {
+          const offset = index - todayIndex;
+          return { offset, rows: offset === sheetOffset && liveSheetRows ? liveSheetRows : sheetRows(offset) };
+        })
+      : null;
+  if (liveSheetDays) lastSheetDays.current = liveSheetDays;
+  const sheetDaysShown = liveSheetDays ?? lastSheetDays.current;
 
   return (
     <Outer
@@ -2873,6 +2885,9 @@ function TodayCardImpl({
           subtitle={getHijriDate ? getHijriDate(sheetOffset) : undefined}
           hint={hint}
           rows={sheetRowsShown}
+          days={sheetDaysShown}
+          offset={sheetOffset}
+          onTurn={setSheetOffset}
           isToday={sheetOffset === 0}
           onPrev={dayAt(sheetOffset - 1) ? () => setSheetOffset(o => o - 1) : undefined}
           onNext={dayAt(sheetOffset + 1) ? () => setSheetOffset(o => o + 1) : undefined}
