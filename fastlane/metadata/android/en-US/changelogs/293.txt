@@ -1,0 +1,6 @@
+• New: Minimal — only the sky and the countdown on Today, the day's times a swipe up, the tabs a row of dots.
+• 15 whole-surah recitations, now with Qālūn and Shuʿbah voices; hear a voice before choosing it.
+• The Sky theme follows the sun and the moon.
+• The Log's graph and the widgets show each prayer: a row a prayer, a column a day.
+• Widgets can count up from the adhan. On Android they are fixed sizes now: add them again after updating.
+• Today fits your phone.
