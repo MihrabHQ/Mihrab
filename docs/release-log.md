@@ -1325,3 +1325,14 @@ figures now update themselves and stand aside for an open correction-list
 renewal, the Hijri job falls back to an issue when a workflow may not open
 a pull request, and the methods check and live-source monitoring moved out
 of this repo.
+
+## 2.34.0 (293) — 2026-10-29
+
+Took 4 aborted attempt(s) before it ran clean:
+
+  - 1 CI on main last concluded 'failure' on "Store copy: Minimal and IndoPak in every translation, 59 reciters" — fix it before releasing on top of it: https://github.com/MihrabHQ/Mihrab/actions/runs/40839962324
+  - 1 missing in-app release notes: release-notes/en/293.txt
+  - 1 the last release left its lesson unwritten — fill in that '**Lesson:**' line in docs/release-log.md, commit it, and rerun
+  - 1 working tree has tracked changes — commit or stash them first
+
+**Lesson:** _(unfilled)_
