@@ -1317,4 +1317,11 @@ Changed the release cycle itself:
   - `.github/workflows/verify-methods.yml`
   - `scripts/release.sh`
 
-**Lesson:** _(unfilled)_
+**Lesson:** both aborts were preparation, not the release: the Play
+notes for the new versionCode were not written, and the previous lesson
+was still open — write the notes and the last lesson and commit them before
+starting. The cycle changes were the dataset jobs settling: the accuracy
+figures now update themselves and stand aside for an open correction-list
+renewal, the Hijri job falls back to an issue when a workflow may not open
+a pull request, and the methods check and live-source monitoring moved out
+of this repo.
