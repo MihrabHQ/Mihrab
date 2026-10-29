@@ -2,6 +2,7 @@ Mihrab ist ein ruhiger Begleiter für den Tag eines Muslims: die Gebete, der Kor
 
 BETEN
 - Gebetszeiten für heute, die Woche und den kommenden Monat – auf die gedruckte Minute gleich mit den veröffentlichten Zeitplänen der Diyanet, von Islamiska Förbundet, der Ministerien Marokkos und Algeriens und von Kemenag, auf dem Telefon berechnet; MUIS, JAKIM und Türkiye Takvimi wie veröffentlicht; anderswo AlAdhan – als Bild oder PDF teilbar
+- Minimalmodus: auf „Heute“ nur der Himmel und der Countdown, die Zeiten des Tages ein Wischen entfernt
 - Der Adhan zu jedem Gebet, mit siebzehn Aufnahmen oder deiner eigenen, einer Erinnerung davor und Schlummern, das nur anbietet, was die Gebetszeit noch hergibt – bis zur letzten Gelegenheit vor ihrem Ende
 - Ein Gebetsalarm, der wie ein Wecker klingelt, auch im Stummmodus und mit Fokus (ab iOS 26)
 - Eine Live-Aktivität, die bis zum nächsten Gebet herunterzählt, auf dem Sperrbildschirm und in der Dynamic Island
@@ -11,9 +12,10 @@ BETEN
 
 LESEN UND HÖREN
 - Der Madinah-Mushaf, als Text aus den Seitenschriften des König-Fahd-Komplexes gesetzt und in jeder Größe scharf – dazu Warsch, Qalun und Schu'ba
+- Der 15-zeilige IndoPak-Druck als zweite Art, Hafs zu lesen
 - Tadschwid-Farben, jede Regel erklärt – in Hafs und in Warsch
 - Der Wortleser: ein Wort gedrückt halten und es allein vorgelesen hören
-- 44 Rezitatoren, und bei denen mit Wort-Zeitmarken leuchtet das rezitierte Wort auf der Seite
+- 59 Rezitatoren, und bei denen mit Wort-Zeitmarken leuchtet das rezitierte Wort auf der Seite
 - Tilawa: Sure für Sure bei ausgeschaltetem Bildschirm, mit Schlaftimer und Geschwindigkeitsregler; sie merkt sich, wo du warst, und schlägt vor, was die Sunna zu dieser Stunde empfiehlt – al-Kahf am Freitag, al-Mulk in der Nacht
 - 14 Übersetzungen und klassischer Tafsir, auch offline lesbar
 - Hilfen zum Auswendiglernen, Lesezeichen und Khatma-Pläne, die der aufgeschlagenen Seite folgen

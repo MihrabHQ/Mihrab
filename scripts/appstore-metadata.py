@@ -62,6 +62,9 @@ LOCALES = {
     "tr": "tr-TR", "ru": "ru-RU", "zh-Hans": "zh-CN", "hi": "hi-IN",
     "bn": "bn-BD", "ur": "ur",
 }
+# App Store Connect names a few languages by language and region where the
+# app and its files use the language alone: Bangla is bn-BD, Urdu ur-PK.
+ASC_LOCALE = {"bn": "bn-BD", "ur": "ur-PK"}
 PRIMARY_CATEGORY = "LIFESTYLE"
 SECONDARY_CATEGORY = "REFERENCE"
 MARKETING_URL = "https://mihrab.elghamri.se/"
@@ -106,7 +109,9 @@ def whats_new(locale: str) -> str | None:
     for d in (LOCALES[locale], "en-US"):
         f = ANDROID / d / "changelogs" / f"{version_code()}.txt"
         if f.exists():
-            return f.read_text(encoding="utf-8").strip()
+            # Apple refuses the ayn and hamza half-rings (ʿ ʾ) in What's New;
+            # the plain apostrophe reads the same.
+            return f.read_text(encoding="utf-8").strip().replace("ʿ", "'").replace("ʾ", "'")
     return None
 
 
@@ -184,9 +189,10 @@ def main(argv: list[str]) -> None:
           if wn:
               want_ver["whatsNew"] = wn
 
+          asc_loc = ASC_LOCALE.get(loc, loc)
           for kind, have, want, parent in (
-              ("appInfoLocalizations", info_locs.get(loc), want_info, ("appInfo", "appInfos", info["id"])),
-              ("appStoreVersionLocalizations", ver_locs.get(loc), want_ver,
+              ("appInfoLocalizations", info_locs.get(asc_loc), want_info, ("appInfo", "appInfos", info["id"])),
+              ("appStoreVersionLocalizations", ver_locs.get(asc_loc), want_ver,
                ("appStoreVersion", "appStoreVersions", ver["id"])),
           ):
               if kind != phase:
@@ -196,7 +202,7 @@ def main(argv: list[str]) -> None:
                   if not dry:
                       send("POST", f"/v1/{kind}", {"data": {
                           "type": kind,
-                          "attributes": dict(want, locale=loc),
+                          "attributes": dict(want, locale=asc_loc),
                           "relationships": {parent[0]: {"data": {"type": parent[1], "id": parent[2]}}},
                       }})
                   continue

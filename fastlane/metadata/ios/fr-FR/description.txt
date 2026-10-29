@@ -2,6 +2,7 @@ Mihrab est un compagnon serein pour la journée d'un musulman : les prières, le
 
 PRIER
 - Les heures du jour, de la semaine et du mois à venir — conformes à la minute imprimée aux horaires publiés par Diyanet, Islamiska Förbundet, les ministères du Maroc et de l’Algérie et Kemenag, calculées sur le téléphone ; MUIS, JAKIM et Türkiye Takvimi tels que publiés ; AlAdhan ailleurs — à partager en image ou en PDF
+- Mode Minimal : sur « Aujourd’hui », seulement le ciel et le compte à rebours, les horaires du jour à un balayage
 - L'adhan de chaque prière, avec dix-sept enregistrements ou le vôtre, un rappel avant et un report qui ne propose que ce que le temps de la prière permet encore, jusqu'à une dernière chance avant sa fin
 - Une alerte de prière qui sonne comme un réveil, même en mode silencieux et avec Concentration (iOS 26 et ultérieur)
 - Une Activité en direct qui décompte jusqu'à la prochaine prière, sur l'écran verrouillé et dans la Dynamic Island
@@ -11,9 +12,10 @@ PRIER
 
 LIRE ET ÉCOUTER
 - Le mushaf de Médine, composé en texte à partir des polices de page du Complexe du Roi Fahd et net à toute taille — avec Warsh, Qalun et Shu'bah
+- L’impression IndoPak de 15 lignes, une seconde façon de lire Hafs
 - Les couleurs du tajwid, chaque règle expliquée — en Hafs et en Warsh
 - Le lecteur de mots : maintenez un mot pour l'entendre seul
-- 44 récitateurs et, pour ceux qui ont des repères par mot, le mot récité éclairé sur la page
+- 59 récitateurs et, pour ceux qui ont des repères par mot, le mot récité éclairé sur la page
 - Tilawa : sourate après sourate écran éteint, avec minuterie de sommeil et réglage de la vitesse ; elle garde votre place et propose ce que la sunna recommande à cette heure : al-Kahf le vendredi, al-Mulk la nuit
 - 14 traductions et des tafsirs classiques, lisibles hors ligne
 - Des outils de mémorisation, des signets et des plans de khatma qui suivent la page où vous êtes

@@ -2,6 +2,7 @@ Mihrab, bir Müslümanın gününe eşlik eden sakin bir yoldaştır: namazlar, 
 
 NAMAZ
 - Bugünün, haftanın ve önümüzdeki ayın vakitleri — Diyanet, Islamiska Förbundet, Fas ve Cezayir bakanlıkları ve Kemenag’ın yayımladığı takvimlerle basılı dakikasına kadar eşleşir, telefonda hesaplanır; MUIS, JAKIM ve Türkiye Takvimi yayımlandığı gibi; diğer yerlerde AlAdhan — görsel ya da PDF olarak paylaşılabilir
+- Sade mod: Bugün’de yalnızca gökyüzü ve geri sayım; günün vakitleri bir kaydırma uzağında
 - Her vakit için ezan: on yedi kayıt ya da kendi kaydınız, vakit öncesi hatırlatma ve yalnızca vaktin yettiği kadar sunulan erteleme, vakit çıkmadan önceki son fırsata kadar
 - Çalar saat gibi çalan namaz uyarısı, sessiz modda ve Odak açıkken bile (iOS 26 ve sonrası)
 - Kilit Ekranı'nda ve Dynamic Island'da bir sonraki namaza geri sayan Canlı Etkinlik
@@ -11,9 +12,10 @@ NAMAZ
 
 OKU VE DİNLE
 - Kral Fahd Kompleksi'nin sayfa yazı tipleriyle metin olarak çizilen ve her boyutta net kalan Medine mushafı — yanında Verş, Kalun ve Şu'be
+- 15 satırlık IndoPak baskısı, Hafs’ı okumanın ikinci bir yolu
 - Tecvid renkleri, her kural açıklamalı — Hafs ve Verş rivayetinde
 - Kelime okuyucu: bir kelimeye basılı tutun, tek başına okunsun
-- 44 kâri; kelime zamanlaması olanlarda okunan kelime sayfada yanar
+- 59 kâri; kelime zamanlaması olanlarda okunan kelime sayfada yanar
 - Tilavet: ekran kapalıyken sure sure dinleme, uyku zamanlayıcısı ve hız ayarıyla; kaldığınız yeri hatırlar ve o saatte sünnetin tavsiye ettiğini önerir: cuma günü Kehf, gece Mülk
 - 14 meal ve klasik tefsirler, çevrimdışı da okunabilir
 - Ezber araçları, yer imleri ve açık olduğunuz sayfayı izleyen hatim planları
