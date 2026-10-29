@@ -9,19 +9,20 @@ PRAY
 - The adhan for each prayer, from built-in recordings or your own, a reminder before it, and a snooze that offers only what the prayer’s time still allows
 - A prayer alert that rings like an alarm clock, through silent mode and Focus (iOS 26 and later)
 - A Live Activity counting down to the next prayer, on the Lock Screen and in the Dynamic Island
+- Minimal: only the sky and the countdown on Today, and the day's times a swipe away
 - Hanafi or standard Asr, and a minute offset for each prayer
 - Qibla compass with signal strength and a cross-check against the sun
 - Log each prayer with one tap; the journal keeps the record, the streak and the graph
 - Home Screen widgets for the prayer times, today's log, the Hijri date, tasbih and reading
 
 READ AND LISTEN
-- The Madinah mushaf, drawn as text from the King Fahd Complex's page fonts and sharp at any size — and Warsh, Qalun and Shu'bah beside it
+- The Madinah mushaf, drawn as text from the King Fahd Complex's page fonts and sharp at any size — Warsh, Qalun, Shu'bah and the 15-line IndoPak print beside it
 - Tajweed colours, every rule explained — on Hafs and on Warsh
 - The word reader: hold a word to hear it read on its own
 - A choice of reciters, and for those with word timings, the recited word lit on the page
-- Tilawah: surah into surah with the screen off, with a sleep timer and a speed control
+- Tilawah: surah into surah with the screen off, with a sleep timer
 - Translations and classical tafsir, kept for offline reading
-- Memorisation tools, bookmarks, and khatmah plans that follow the page you are on
+- Memorisation tools, bookmarks and khatmah plans
 
 REMEMBER
 - Duas from Hisn al-Muslim, with transliteration and translation

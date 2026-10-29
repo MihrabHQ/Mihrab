@@ -266,11 +266,11 @@
       "cards": [
         {
           "h3": "صلِّ",
-          "p": "مواقيت الصلاة وعدّ تنازلي للصلاة القادمة، والأذان لكل صلاة، وبوصلة القبلة، وأدوات على الشاشة الرئيسية، وتسجيل كل صلاة بضغطة واحدة. تنبيه صلاة بملء الشاشة كالمنبّه، ولكل صلاة أن تختار الأذان أو تنبيهًا أو الصمت، وعلى أندرويد يهدأ الهاتف أثناء الصلاة نفسها. والغفوة لا تُعرض إلا بقدر ما بقي من وقت الصلاة، حتى «الفرصة الأخيرة» قبل خروجه. والمواقيت مطابقة حتى الدقيقة المطبوعة لجداول ديانت ورابطة الإسلام في السويد ووزارتي المغرب والجزائر وKemenag، محسوبة على الهاتف؛ وجداول MUIS وJAKIM وTürkiye Takvimi كما نُشرت؛ وAlAdhan في غيرها."
+          "p": "مواقيت الصلاة وعدّ تنازلي للصلاة القادمة، والأذان لكل صلاة، وبوصلة القبلة، وأدوات على الشاشة الرئيسية، وتسجيل كل صلاة بضغطة واحدة. تنبيه صلاة بملء الشاشة كالمنبّه، ولكل صلاة أن تختار الأذان أو تنبيهًا أو الصمت، وعلى أندرويد يهدأ الهاتف أثناء الصلاة نفسها. والغفوة لا تُعرض إلا بقدر ما بقي من وقت الصلاة، حتى «الفرصة الأخيرة» قبل خروجه. والمواقيت مطابقة حتى الدقيقة المطبوعة لجداول ديانت ورابطة الإسلام في السويد ووزارتي المغرب والجزائر وKemenag، محسوبة على الهاتف؛ وجداول MUIS وJAKIM وTürkiye Takvimi كما نُشرت؛ وAlAdhan في غيرها. وفي الوضع المبسّط لا يبقى في «اليوم» إلا السماء والعدّ التنازلي؛ اسحب لأعلى لمواقيت اليوم، وتنقّل بينها من يوم إلى يوم بالسحب كما في الصفحة الكاملة."
         },
         {
           "h3": "اقرأ واستمع",
-          "p": "المصحف المدني كاملاً بأربع روايات، مع ألوان التجويد لحفص وورش، وقارئ الكلمات: اضغط مطوّلًا على كلمة فتسمعها وحدها. و59 قارئًا (منهم بروايات ورش وقالون وشعبة)، والتلاوة سورة بعد سورة والشاشة مطفأة، والتفسير والترجمات وخطة الختمة. والتلاوة تحفظ موضعها، وتقترح ما تستحبّه السنّة في كل ساعة."
+          "p": "المصحف المدني كاملاً بأربع روايات، مع ألوان التجويد لحفص وورش، وقارئ الكلمات: اضغط مطوّلًا على كلمة فتسمعها وحدها. و59 قارئًا (منهم بروايات ورش وقالون وشعبة)، والتلاوة سورة بعد سورة والشاشة مطفأة، والتفسير والترجمات وخطة الختمة. والتلاوة تحفظ موضعها، وتقترح ما تستحبّه السنّة في كل ساعة. ومصحف IndoPak ذو الخمسة عشر سطرًا طريقةً ثانية لقراءة رواية حفص."
         },
         {
           "h3": "اذكر",
@@ -514,11 +514,11 @@
       "cards": [
         {
           "h3": "Kıl",
-          "p": "Sıradaki namaza geri sayımla namaz vakitleri, her namaz için ezan, kıble pusulası, ana ekran widget'ları — ve her namaz tek dokunuşla kaydedilir. Çalar saat gibi tam ekran bir namaz uyarısı, her namaz için ezan, uyarı ya da sessiz seçimi ve Android'de namazın kendisi sırasında sessize alınan telefon. Erteleme yalnızca vaktin yettiği kadar sunulur; vakit çıkmadan önce bir “son fırsat” kalır. Vakitler Diyanet, İsveç, Fas ve Cezayir bakanlıkları ve Kemenag’ın yayımladığı takvimlerle basılı dakikasına kadar eşleşir ve telefonda hesaplanır; MUIS, JAKIM ve Türkiye Takvimi yayımlandığı gibi; diğer yerlerde AlAdhan."
+          "p": "Sıradaki namaza geri sayımla namaz vakitleri, her namaz için ezan, kıble pusulası, ana ekran widget'ları — ve her namaz tek dokunuşla kaydedilir. Çalar saat gibi tam ekran bir namaz uyarısı, her namaz için ezan, uyarı ya da sessiz seçimi ve Android'de namazın kendisi sırasında sessize alınan telefon. Erteleme yalnızca vaktin yettiği kadar sunulur; vakit çıkmadan önce bir “son fırsat” kalır. Vakitler Diyanet, İsveç, Fas ve Cezayir bakanlıkları ve Kemenag’ın yayımladığı takvimlerle basılı dakikasına kadar eşleşir ve telefonda hesaplanır; MUIS, JAKIM ve Türkiye Takvimi yayımlandığı gibi; diğer yerlerde AlAdhan. Sade modda Bugün’de yalnızca gökyüzü ve geri sayım kalır; günün vakitleri için yukarı kaydırın ve tam sayfadaki gibi günden güne kaydırarak geçin."
         },
         {
           "h3": "Oku ve dinle",
-          "p": "Dört rivayetiyle tam Medine mushafı; Hafs ve Verş için renkli tecvid ve bir kelime okuyucu: bir kelimeye basılı tutun, yalnızca o kelime okunsun. 59 kari (Verş, Kālûn ve Şu'be rivayetleri dahil), ekran kapalıyken sure sure tilavet, tefsir, mealler ve hatim planı. Tilavet kaldığınız yeri hatırlar ve o saatte sünnetin tavsiye ettiğini önerir."
+          "p": "Dört rivayetiyle tam Medine mushafı; Hafs ve Verş için renkli tecvid ve bir kelime okuyucu: bir kelimeye basılı tutun, yalnızca o kelime okunsun. 59 kari (Verş, Kālûn ve Şu'be rivayetleri dahil), ekran kapalıyken sure sure tilavet, tefsir, mealler ve hatim planı. Tilavet kaldığınız yeri hatırlar ve o saatte sünnetin tavsiye ettiğini önerir. 15 satırlık IndoPak baskısı da Hafs’ı okumanın ikinci bir yolu."
         },
         {
           "h3": "Zikret",
@@ -755,11 +755,11 @@
       "cards": [
         {
           "h3": "نماز",
-          "p": "اگلی نماز کی الٹی گنتی کے ساتھ نماز کے اوقات، ہر نماز کی اذان، قبلہ کمپاس، ہوم اسکرین وجٹس — اور ہر نماز ایک ٹیپ میں درج۔ الارم گھڑی کی طرح پوری اسکرین کا نماز الرٹ، ہر نماز کے لیے اذان، الرٹ یا خاموشی کا انتخاب، اور اینڈرائیڈ پر خود نماز کے دوران خاموش فون۔ اسنوز صرف اتنا ملتا ہے جتنا نماز کا وقت باقی ہو، وقت ختم ہونے سے پہلے ایک «آخری موقع» تک۔ اوقات دیانت، اسلامسکا فوربوندیت، مراکش اور الجزائر کی وزارتوں اور Kemenag کے شائع شدہ اوقات سے چھپے ہوئے منٹ تک مطابق، فون پر حساب؛ MUIS، JAKIM اور Türkiye Takvimi جیسے شائع ہوئے؛ باقی جگہ AlAdhan۔"
+          "p": "اگلی نماز کی الٹی گنتی کے ساتھ نماز کے اوقات، ہر نماز کی اذان، قبلہ کمپاس، ہوم اسکرین وجٹس — اور ہر نماز ایک ٹیپ میں درج۔ الارم گھڑی کی طرح پوری اسکرین کا نماز الرٹ، ہر نماز کے لیے اذان، الرٹ یا خاموشی کا انتخاب، اور اینڈرائیڈ پر خود نماز کے دوران خاموش فون۔ اسنوز صرف اتنا ملتا ہے جتنا نماز کا وقت باقی ہو، وقت ختم ہونے سے پہلے ایک «آخری موقع» تک۔ اوقات دیانت، اسلامسکا فوربوندیت، مراکش اور الجزائر کی وزارتوں اور Kemenag کے شائع شدہ اوقات سے چھپے ہوئے منٹ تک مطابق، فون پر حساب؛ MUIS، JAKIM اور Türkiye Takvimi جیسے شائع ہوئے؛ باقی جگہ AlAdhan۔ مختصر موڈ میں آج کے صفحے پر صرف آسمان اور الٹی گنتی رہ جاتی ہے؛ دن کے اوقات کے لیے اوپر سوائپ کریں، اور پورے صفحے کی طرح دن بدن سوائپ کریں۔"
         },
         {
           "h3": "پڑھیں اور سنیں",
-          "p": "چار روایتوں میں مکمل مدنی مصحف، حفص اور ورش کے لیے رنگین تجوید، اور لفظ خواں: کسی لفظ کو دبائے رکھیں، وہی ایک لفظ پڑھ کر سنایا جائے گا۔ 59 قاری (ورش، قالون اور شعبہ کی روایات سمیت)، اسکرین بند ہونے پر سورت کے بعد سورت تلاوت، تفسیر، تراجم اور ختم کا منصوبہ۔ تلاوت آپ کی جگہ یاد رکھتی ہے اور بتاتی ہے کہ اس وقت سنت کیا پڑھنے کی ترغیب دیتی ہے۔"
+          "p": "چار روایتوں میں مکمل مدنی مصحف، حفص اور ورش کے لیے رنگین تجوید، اور لفظ خواں: کسی لفظ کو دبائے رکھیں، وہی ایک لفظ پڑھ کر سنایا جائے گا۔ 59 قاری (ورش، قالون اور شعبہ کی روایات سمیت)، اسکرین بند ہونے پر سورت کے بعد سورت تلاوت، تفسیر، تراجم اور ختم کا منصوبہ۔ تلاوت آپ کی جگہ یاد رکھتی ہے اور بتاتی ہے کہ اس وقت سنت کیا پڑھنے کی ترغیب دیتی ہے۔ اور پندرہ سطری IndoPak مصحف، حفص پڑھنے کا دوسرا طریقہ۔"
         },
         {
           "h3": "ذکر",
@@ -977,11 +977,11 @@
       "cards": [
         {
           "h3": "Sholat",
-          "p": "Jadwal sholat dengan hitung mundur ke sholat berikutnya, adzan untuk setiap waktu, kompas kiblat, widget layar utama — dan setiap sholat dicatat dengan satu ketukan. Pengingat sholat layar penuh seperti jam alarm, pilihan adzan, nada, atau senyap untuk tiap sholat, dan di Android ponsel hening selama sholat itu sendiri. Tunda hanya ditawarkan selama waktu sholat masih cukup, hingga “kesempatan terakhir” sebelum waktunya habis. Jadwal sesuai sampai ke menit yang tercetak dengan jadwal terbitan Diyanet, Swedia, kementerian Maroko dan Aljazair, serta Kemenag, dihitung di ponsel; MUIS, JAKIM, dan Türkiye Takvimi sebagaimana diterbitkan; AlAdhan di tempat lain."
+          "p": "Jadwal sholat dengan hitung mundur ke sholat berikutnya, adzan untuk setiap waktu, kompas kiblat, widget layar utama — dan setiap sholat dicatat dengan satu ketukan. Pengingat sholat layar penuh seperti jam alarm, pilihan adzan, nada, atau senyap untuk tiap sholat, dan di Android ponsel hening selama sholat itu sendiri. Tunda hanya ditawarkan selama waktu sholat masih cukup, hingga “kesempatan terakhir” sebelum waktunya habis. Jadwal sesuai sampai ke menit yang tercetak dengan jadwal terbitan Diyanet, Swedia, kementerian Maroko dan Aljazair, serta Kemenag, dihitung di ponsel; MUIS, JAKIM, dan Türkiye Takvimi sebagaimana diterbitkan; AlAdhan di tempat lain. Mode Minimal hanya menyisakan langit dan hitung mundur di Hari Ini; geser ke atas untuk waktu hari itu, lalu geser dari hari ke hari seperti di halaman penuh."
         },
         {
           "h3": "Baca dan dengarkan",
-          "p": "Mushaf Madinah lengkap dalam empat riwayat, dengan warna tajwid untuk Hafs dan Warsh serta pembaca kata: tahan sebuah kata dan hanya kata itu yang dibacakan. 59 qari (termasuk riwayat Warsh, Qalun, dan Syu'bah), tilawah surah demi surah dengan layar mati, tafsir, terjemahan, dan rencana khatam. Tilawah mengingat posisi Anda dan menyarankan bacaan yang dianjurkan sunnah pada jam itu."
+          "p": "Mushaf Madinah lengkap dalam empat riwayat, dengan warna tajwid untuk Hafs dan Warsh serta pembaca kata: tahan sebuah kata dan hanya kata itu yang dibacakan. 59 qari (termasuk riwayat Warsh, Qalun, dan Syu'bah), tilawah surah demi surah dengan layar mati, tafsir, terjemahan, dan rencana khatam. Tilawah mengingat posisi Anda dan menyarankan bacaan yang dianjurkan sunnah pada jam itu. Mushaf IndoPak 15 baris juga tersedia sebagai cara kedua membaca Hafs."
         },
         {
           "h3": "Berzikir",
@@ -1218,11 +1218,11 @@
       "cards": [
         {
           "h3": "Beten",
-          "p": "Gebetszeiten mit Countdown zum nächsten Gebet, Adhan für jedes Gebet, Qibla-Kompass und Homescreen-Widgets – und jedes Gebet mit einem Tippen eingetragen. Ein Vollbild-Gebetsalarm wie ein Wecker, je Gebet Adhan, Hinweiston oder Stille, und unter Android ein Telefon, das während des Gebets selbst still ist. Schlummern nur so lange, wie die Gebetszeit noch reicht, bis zur letzten Gelegenheit vor ihrem Ende. Zeiten auf die gedruckte Minute gleich mit den veröffentlichten Zeitplänen der Diyanet, Schwedens, der Ministerien Marokkos und Algeriens und von Kemenag, auf dem Telefon berechnet; MUIS, JAKIM und Türkiye Takvimi wie veröffentlicht; anderswo AlAdhan."
+          "p": "Gebetszeiten mit Countdown zum nächsten Gebet, Adhan für jedes Gebet, Qibla-Kompass und Homescreen-Widgets – und jedes Gebet mit einem Tippen eingetragen. Ein Vollbild-Gebetsalarm wie ein Wecker, je Gebet Adhan, Hinweiston oder Stille, und unter Android ein Telefon, das während des Gebets selbst still ist. Schlummern nur so lange, wie die Gebetszeit noch reicht, bis zur letzten Gelegenheit vor ihrem Ende. Zeiten auf die gedruckte Minute gleich mit den veröffentlichten Zeitplänen der Diyanet, Schwedens, der Ministerien Marokkos und Algeriens und von Kemenag, auf dem Telefon berechnet; MUIS, JAKIM und Türkiye Takvimi wie veröffentlicht; anderswo AlAdhan. Der Minimalmodus lässt auf „Heute“ nur den Himmel und den Countdown; nach oben wischen für die Zeiten des Tages, die sich wie auf der vollen Seite von Tag zu Tag wischen lassen."
         },
         {
           "h3": "Lesen und hören",
-          "p": "Der vollständige Medina-Mushaf in vier Riwayat, mit Tajwid-Farben für Hafs und Warsh und einem Wortvorleser: ein Wort gedrückt halten, und genau dieses Wort wird vorgelesen. 59 Rezitatoren (auch in Warsh, Qalun und Schu'ba), Tilawa Sure für Sure bei ausgeschaltetem Bildschirm, Tafsir, Übersetzungen und ein Khatma-Plan. Die Tilawa merkt sich, wo Sie waren, und schlägt vor, was die Sunna zu dieser Stunde empfiehlt."
+          "p": "Der vollständige Medina-Mushaf in vier Riwayat, mit Tajwid-Farben für Hafs und Warsh und einem Wortvorleser: ein Wort gedrückt halten, und genau dieses Wort wird vorgelesen. 59 Rezitatoren (auch in Warsh, Qalun und Schu'ba), Tilawa Sure für Sure bei ausgeschaltetem Bildschirm, Tafsir, Übersetzungen und ein Khatma-Plan. Die Tilawa merkt sich, wo Sie waren, und schlägt vor, was die Sunna zu dieser Stunde empfiehlt. Dazu der 15-zeilige IndoPak-Druck als zweite Art, Hafs zu lesen."
         },
         {
           "h3": "Gedenken",
@@ -1440,11 +1440,11 @@
       "cards": [
         {
           "h3": "Prier",
-          "p": "Heures de prière et compte à rebours jusqu'à la prochaine, adhan pour chaque prière, boussole de la qibla, widgets pour l'écran d'accueil — et chaque prière consignée d'un seul geste. Une alerte de prière plein écran comme un réveil, pour chaque prière l'adhan, un signal ou le silence, et sur Android un téléphone qui se tait pendant la prière elle-même. La répétition ne propose que ce que le temps restant permet, jusqu’à une « dernière chance » avant la fin de la prière. Des horaires conformes à la minute imprimée à ceux publiés par Diyanet, la Suède, les ministères du Maroc et de l’Algérie et Kemenag, calculés sur le téléphone ; MUIS, JAKIM et Türkiye Takvimi tels que publiés ; AlAdhan ailleurs."
+          "p": "Heures de prière et compte à rebours jusqu'à la prochaine, adhan pour chaque prière, boussole de la qibla, widgets pour l'écran d'accueil — et chaque prière consignée d'un seul geste. Une alerte de prière plein écran comme un réveil, pour chaque prière l'adhan, un signal ou le silence, et sur Android un téléphone qui se tait pendant la prière elle-même. La répétition ne propose que ce que le temps restant permet, jusqu’à une « dernière chance » avant la fin de la prière. Des horaires conformes à la minute imprimée à ceux publiés par Diyanet, la Suède, les ministères du Maroc et de l’Algérie et Kemenag, calculés sur le téléphone ; MUIS, JAKIM et Türkiye Takvimi tels que publiés ; AlAdhan ailleurs. Le mode Minimal ne laisse sur « Aujourd’hui » que le ciel et le compte à rebours ; balayez vers le haut pour les horaires du jour, qui se balaient d’un jour à l’autre comme sur la page complète."
         },
         {
           "h3": "Lire et écouter",
-          "p": "Le mushaf de Médine complet en quatre riwayat, avec les couleurs du tajwid pour Hafs et Warsh et un lecteur de mots : maintenez un mot et c'est ce mot seul qui est lu. 59 récitateurs (y compris en Warsh, Qaloun et Chou'ba), la Tilawa sourate après sourate écran éteint, tafsir, traductions et plan de khatma. La Tilawa garde votre place et propose ce que la sunna recommande à cette heure."
+          "p": "Le mushaf de Médine complet en quatre riwayat, avec les couleurs du tajwid pour Hafs et Warsh et un lecteur de mots : maintenez un mot et c'est ce mot seul qui est lu. 59 récitateurs (y compris en Warsh, Qaloun et Chou'ba), la Tilawa sourate après sourate écran éteint, tafsir, traductions et plan de khatma. La Tilawa garde votre place et propose ce que la sunna recommande à cette heure. Et l’impression IndoPak de 15 lignes, une seconde façon de lire Hafs."
         },
         {
           "h3": "Se souvenir",
@@ -1688,11 +1688,11 @@
       "cards": [
         {
           "h3": "Rezar",
-          "p": "Horarios de oración con cuenta atrás hasta la siguiente, adhan para cada oración, brújula de la alquibla, widgets para la pantalla de inicio — y cada oración registrada con un toque. Una alerta de oración a pantalla completa como un despertador, para cada oración adhan, aviso o silencio, y en Android un teléfono que calla durante la propia oración. La posposición solo ofrece lo que permite el tiempo que queda, hasta una «última oportunidad» antes de que termine la oración. Horarios que coinciden al minuto impreso con los publicados por Diyanet, Suecia, los ministerios de Marruecos y Argelia y Kemenag, calculados en el teléfono; MUIS, JAKIM y Türkiye Takvimi tal como se publican; AlAdhan en el resto."
+          "p": "Horarios de oración con cuenta atrás hasta la siguiente, adhan para cada oración, brújula de la alquibla, widgets para la pantalla de inicio — y cada oración registrada con un toque. Una alerta de oración a pantalla completa como un despertador, para cada oración adhan, aviso o silencio, y en Android un teléfono que calla durante la propia oración. La posposición solo ofrece lo que permite el tiempo que queda, hasta una «última oportunidad» antes de que termine la oración. Horarios que coinciden al minuto impreso con los publicados por Diyanet, Suecia, los ministerios de Marruecos y Argelia y Kemenag, calculados en el teléfono; MUIS, JAKIM y Türkiye Takvimi tal como se publican; AlAdhan en el resto. El modo Mínimo deja en «Hoy» solo el cielo y la cuenta atrás; desliza hacia arriba para ver los horarios del día, que se deslizan de un día a otro como en la página completa."
         },
         {
           "h3": "Leer y escuchar",
-          "p": "El mushaf de Medina completo en cuatro riwayat, con colores de tajwid para Hafs y Warsh y un lector de palabras: mantén pulsada una palabra y se lee esa palabra sola. 59 recitadores (también en Warsh, Qalun y Shu'ba), Tilawa sura tras sura con la pantalla apagada, tafsir, traducciones y un plan de jatma. La Tilawa recuerda dónde lo dejaste y sugiere lo que la sunna recomienda a esa hora."
+          "p": "El mushaf de Medina completo en cuatro riwayat, con colores de tajwid para Hafs y Warsh y un lector de palabras: mantén pulsada una palabra y se lee esa palabra sola. 59 recitadores (también en Warsh, Qalun y Shu'ba), Tilawa sura tras sura con la pantalla apagada, tafsir, traducciones y un plan de jatma. La Tilawa recuerda dónde lo dejaste y sugiere lo que la sunna recomienda a esa hora. Y la impresión IndoPak de 15 líneas, una segunda forma de leer Hafs."
         },
         {
           "h3": "Recordar",
@@ -1910,11 +1910,11 @@
       "cards": [
         {
           "h3": "Молитесь",
-          "p": "Время намаза с обратным отсчётом до следующего, азан для каждого намаза, компас киблы, виджеты — и каждый намаз отмечается одним касанием. Полноэкранное напоминание о молитве, как будильник, для каждого намаза азан, сигнал или тишина, а на Android телефон молчит во время самой молитвы. Отложить можно лишь настолько, насколько позволяет оставшееся время намаза, — вплоть до «последней возможности» перед его концом. Время до напечатанной минуты совпадает с опубликованными расписаниями Диянета, Швеции, министерств Марокко и Алжира и Kemenag и рассчитывается на телефоне; MUIS, JAKIM и Türkiye Takvimi — как опубликованы; в остальных местах AlAdhan."
+          "p": "Время намаза с обратным отсчётом до следующего, азан для каждого намаза, компас киблы, виджеты — и каждый намаз отмечается одним касанием. Полноэкранное напоминание о молитве, как будильник, для каждого намаза азан, сигнал или тишина, а на Android телефон молчит во время самой молитвы. Отложить можно лишь настолько, насколько позволяет оставшееся время намаза, — вплоть до «последней возможности» перед его концом. Время до напечатанной минуты совпадает с опубликованными расписаниями Диянета, Швеции, министерств Марокко и Алжира и Kemenag и рассчитывается на телефоне; MUIS, JAKIM и Türkiye Takvimi — как опубликованы; в остальных местах AlAdhan. В минимальном режиме на экране «Сегодня» остаются только небо и обратный отсчёт; смахните вверх, чтобы увидеть время на день, и листайте дни, как на полной странице."
         },
         {
           "h3": "Читайте и слушайте",
-          "p": "Полный мединский мусхаф в четырёх риваятах, с цветным таджвидом для Хафса и Варша и озвучкой слов: удерживайте слово — и прозвучит именно оно. 59 чтецов (в том числе в риваятах Варш, Калун и Шуба), тилява сура за сурой с выключенным экраном, тафсир, переводы и план хатма. Тилява помнит, где вы остановились, и предлагает то, что сунна советует читать в этот час."
+          "p": "Полный мединский мусхаф в четырёх риваятах, с цветным таджвидом для Хафса и Варша и озвучкой слов: удерживайте слово — и прозвучит именно оно. 59 чтецов (в том числе в риваятах Варш, Калун и Шуба), тилява сура за сурой с выключенным экраном, тафсир, переводы и план хатма. Тилява помнит, где вы остановились, и предлагает то, что сунна советует читать в этот час. А также 15-строчный мусхаф IndoPak — второй способ читать Хафс."
         },
         {
           "h3": "Поминайте",
@@ -2132,11 +2132,11 @@
       "cards": [
         {
           "h3": "নামাজ",
-          "p": "পরের নামাজের কাউন্টডাউনসহ নামাজের সময়, প্রতি ওয়াক্তের আজান, কিবলা কম্পাস, হোম স্ক্রিন উইজেট — আর এক ছোঁয়ায় প্রতিটি নামাজ লিখে রাখা। অ্যালার্ম ঘড়ির মতো পূর্ণ-পর্দা নামাজের সতর্কবার্তা, প্রতি ওয়াক্তে আজান, সংকেত বা নীরবতার পছন্দ, আর অ্যান্ড্রয়েডে নামাজের সময়টুকু ফোন চুপ। স্নুজ শুধু ততটুকুই দেওয়া হয় যতটুকু ওয়াক্ত বাকি আছে, ওয়াক্ত শেষ হওয়ার আগে একটি «শেষ সুযোগ» পর্যন্ত। সময় দিয়ানেত, ইসলামিস্কা ফোরবুন্দেত, মরক্কো ও আলজেরিয়ার মন্ত্রণালয় এবং Kemenag-এর প্রকাশিত সময়সূচির সঙ্গে ছাপা মিনিট পর্যন্ত মেলে, ফোনেই হিসাব; MUIS, JAKIM ও Türkiye Takvimi যেমন প্রকাশিত; অন্যত্র AlAdhan।"
+          "p": "পরের নামাজের কাউন্টডাউনসহ নামাজের সময়, প্রতি ওয়াক্তের আজান, কিবলা কম্পাস, হোম স্ক্রিন উইজেট — আর এক ছোঁয়ায় প্রতিটি নামাজ লিখে রাখা। অ্যালার্ম ঘড়ির মতো পূর্ণ-পর্দা নামাজের সতর্কবার্তা, প্রতি ওয়াক্তে আজান, সংকেত বা নীরবতার পছন্দ, আর অ্যান্ড্রয়েডে নামাজের সময়টুকু ফোন চুপ। স্নুজ শুধু ততটুকুই দেওয়া হয় যতটুকু ওয়াক্ত বাকি আছে, ওয়াক্ত শেষ হওয়ার আগে একটি «শেষ সুযোগ» পর্যন্ত। সময় দিয়ানেত, ইসলামিস্কা ফোরবুন্দেত, মরক্কো ও আলজেরিয়ার মন্ত্রণালয় এবং Kemenag-এর প্রকাশিত সময়সূচির সঙ্গে ছাপা মিনিট পর্যন্ত মেলে, ফোনেই হিসাব; MUIS, JAKIM ও Türkiye Takvimi যেমন প্রকাশিত; অন্যত্র AlAdhan। মিনিমাল মোডে আজকের পাতায় থাকে শুধু আকাশ আর কাউন্টডাউন; দিনের সময়ের জন্য উপরে সোয়াইপ করুন, আর পূর্ণ পাতার মতোই দিন থেকে দিনে সোয়াইপ করুন।"
         },
         {
           "h3": "পড়ুন ও শুনুন",
-          "p": "চার রিওয়ায়াতে পূর্ণ মদিনা মুসহাফ, হাফস ও ওয়ারশের জন্য রঙিন তাজবিদ, আর শব্দ-পাঠক: একটি শব্দ চেপে ধরুন, শুধু সেই শব্দটিই পড়ে শোনানো হবে। ৫৯ জন কারি (ওয়ারশ, কালুন ও শু'বা রিওয়ায়াতসহ), স্ক্রিন বন্ধ রেখে সূরার পর সূরা তিলাওয়াত, তাফসির, অনুবাদ ও খতম পরিকল্পনা। তিলাওয়াত আপনার জায়গা মনে রাখে এবং সেই সময়ে সুন্নাহ যা পড়তে উৎসাহ দেয় তা প্রস্তাব করে।"
+          "p": "চার রিওয়ায়াতে পূর্ণ মদিনা মুসহাফ, হাফস ও ওয়ারশের জন্য রঙিন তাজবিদ, আর শব্দ-পাঠক: একটি শব্দ চেপে ধরুন, শুধু সেই শব্দটিই পড়ে শোনানো হবে। ৫৯ জন কারি (ওয়ারশ, কালুন ও শু'বা রিওয়ায়াতসহ), স্ক্রিন বন্ধ রেখে সূরার পর সূরা তিলাওয়াত, তাফসির, অনুবাদ ও খতম পরিকল্পনা। তিলাওয়াত আপনার জায়গা মনে রাখে এবং সেই সময়ে সুন্নাহ যা পড়তে উৎসাহ দেয় তা প্রস্তাব করে। আর ১৫ লাইনের IndoPak মুসহাফ, হাফস পড়ার দ্বিতীয় উপায়।"
         },
         {
           "h3": "জিকির",
@@ -2354,11 +2354,11 @@
       "cards": [
         {
           "h3": "नमाज़",
-          "p": "अगली नमाज़ की उलटी गिनती के साथ नमाज़ के समय, हर नमाज़ की अज़ान, क़िबला कम्पास, होम स्क्रीन विजेट — और हर नमाज़ एक टैप में दर्ज। अलार्म घड़ी जैसी पूर्ण-स्क्रीन नमाज़ चेतावनी, हर नमाज़ के लिए अज़ान, सूचना या मौन का चुनाव, और एंड्रॉइड पर नमाज़ के दौरान चुप फ़ोन। स्नूज़ उतना ही मिलता है जितना नमाज़ का वक़्त बाक़ी हो, वक़्त ख़त्म होने से पहले एक «आख़िरी मौक़ा» तक। समय दियानत, इस्लामिस्का फ़ोरबुंदेत, मोरक्को और अल्जीरिया के मंत्रालयों और Kemenag की प्रकाशित समय-सारणी से छपे मिनट तक मेल खाता है, फ़ोन पर गणना; MUIS, JAKIM और Türkiye Takvimi जैसे प्रकाशित; बाकी जगह AlAdhan।"
+          "p": "अगली नमाज़ की उलटी गिनती के साथ नमाज़ के समय, हर नमाज़ की अज़ान, क़िबला कम्पास, होम स्क्रीन विजेट — और हर नमाज़ एक टैप में दर्ज। अलार्म घड़ी जैसी पूर्ण-स्क्रीन नमाज़ चेतावनी, हर नमाज़ के लिए अज़ान, सूचना या मौन का चुनाव, और एंड्रॉइड पर नमाज़ के दौरान चुप फ़ोन। स्नूज़ उतना ही मिलता है जितना नमाज़ का वक़्त बाक़ी हो, वक़्त ख़त्म होने से पहले एक «आख़िरी मौक़ा» तक। समय दियानत, इस्लामिस्का फ़ोरबुंदेत, मोरक्को और अल्जीरिया के मंत्रालयों और Kemenag की प्रकाशित समय-सारणी से छपे मिनट तक मेल खाता है, फ़ोन पर गणना; MUIS, JAKIM और Türkiye Takvimi जैसे प्रकाशित; बाकी जगह AlAdhan। मिनिमल मोड में आज के पन्ने पर सिर्फ़ आसमान और उलटी गिनती रहती है; दिन के समय के लिए ऊपर स्वाइप करें, और पूरे पन्ने की तरह दिन-ब-दिन स्वाइप करें।"
         },
         {
           "h3": "पढ़ें और सुनें",
-          "p": "चार रिवायतों में पूरा मदीना मुसहफ़, हफ़्स और वर्श के लिए रंगीन तजवीद, और शब्द-पाठक: किसी शब्द को दबाए रखें, वही एक शब्द पढ़कर सुनाया जाएगा। 59 क़ारी (वर्श, क़ालून और शुअबा रिवायतों सहित), स्क्रीन बंद रहते सूरह-दर-सूरह तिलावत, तफ़सीर, अनुवाद और ख़त्म की योजना। तिलावत आपकी जगह याद रखती है और बताती है कि उस वक़्त सुन्नत क्या पढ़ने की सलाह देती है।"
+          "p": "चार रिवायतों में पूरा मदीना मुसहफ़, हफ़्स और वर्श के लिए रंगीन तजवीद, और शब्द-पाठक: किसी शब्द को दबाए रखें, वही एक शब्द पढ़कर सुनाया जाएगा। 59 क़ारी (वर्श, क़ालून और शुअबा रिवायतों सहित), स्क्रीन बंद रहते सूरह-दर-सूरह तिलावत, तफ़सीर, अनुवाद और ख़त्म की योजना। तिलावत आपकी जगह याद रखती है और बताती है कि उस वक़्त सुन्नत क्या पढ़ने की सलाह देती है। और 15 पंक्तियों वाला IndoPak मुसहफ़, हफ़्स पढ़ने का दूसरा तरीक़ा।"
         },
         {
           "h3": "ज़िक्र",
@@ -2576,11 +2576,11 @@
       "cards": [
         {
           "h3": "礼拜",
-          "p": "礼拜时间与到下一次礼拜的倒计时、每番礼拜的宣礼、朝向罗盘、主屏小组件——每次礼拜一触即可记录。全屏礼拜提醒如同闹钟；每番礼拜可选宣礼、提示音或静音；在 Android 上，手机在礼拜期间保持安静。稍后提醒只提供礼拜时间还容许的时长，直到时间结束前的「最后机会」。时间与 Diyanet、瑞典、摩洛哥和阿尔及利亚宗教部以及 Kemenag 公布的时间表精确到印刷的分钟，在手机上计算；MUIS、JAKIM 和 Türkiye Takvimi 按公布原样；其他地方使用 AlAdhan。"
+          "p": "礼拜时间与到下一次礼拜的倒计时、每番礼拜的宣礼、朝向罗盘、主屏小组件——每次礼拜一触即可记录。全屏礼拜提醒如同闹钟；每番礼拜可选宣礼、提示音或静音；在 Android 上，手机在礼拜期间保持安静。稍后提醒只提供礼拜时间还容许的时长，直到时间结束前的「最后机会」。时间与 Diyanet、瑞典、摩洛哥和阿尔及利亚宗教部以及 Kemenag 公布的时间表精确到印刷的分钟，在手机上计算；MUIS、JAKIM 和 Türkiye Takvimi 按公布原样；其他地方使用 AlAdhan。极简模式下，「今天」只留下天空和倒计时；向上滑动查看当天时间，并像完整页面一样左右滑动切换日期。"
         },
         {
           "h3": "诵读与聆听",
-          "p": "四种传述的完整麦地那穆斯哈夫，哈夫斯与沃尔什均有泰吉威德着色，还有逐词朗读：长按一个词，就只朗读这个词。59 位诵读者（包括沃尔什、卡伦和舒尔巴传述），熄屏时逐章连续诵读，经注、译本与通读计划。诵读会记住你的进度，并按时辰推荐圣行所提倡的章节。"
+          "p": "四种传述的完整麦地那穆斯哈夫，哈夫斯与沃尔什均有泰吉威德着色，还有逐词朗读：长按一个词，就只朗读这个词。59 位诵读者（包括沃尔什、卡伦和舒尔巴传述），熄屏时逐章连续诵读，经注、译本与通读计划。诵读会记住你的进度，并按时辰推荐圣行所提倡的章节。另有 15 行的 IndoPak 印本，作为诵读哈夫斯传述的第二种方式。"
         },
         {
           "h3": "记念",
