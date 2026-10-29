@@ -1,0 +1,9 @@
+• Minimal (Settings → Appearance): Today is the sky and the countdown, with the day's times a tap or a swipe up away, where a swipe sideways turns the days. The tab bar is a row of dots and the pages turn under the finger, like the muṣḥaf's. The full page is one choice away.
+• Fifteen whole-surah recitations from mp3quran.net, among them Mahmoud Khalil Al-Husary in Warsh and in Qālūn, and Ali Al-Hudhaify in Qālūn and in Shuʿbah. Every ayah boundary was found from the words and checked by a second model; they stream, download and highlight like every other voice.
+• Hear a voice before choosing it: every row in the reciter picker plays al-Fātiḥah in that voice.
+• The Sky theme follows the sun, not the clock: a low winter sun keeps its gold all day, the page turns dark at Maghrib, and by night the moon is drawn where it stands and lightens the page as it fills.
+• The Log's graph shows which prayer: a row a prayer and the fast, a column a day, on the Log, on Home and on the widgets.
+• Widgets can count up from the adhan for 10, 20 or 30 minutes (Settings → Widgets).
+• Android: the prayer times, log and streak widgets are fixed sizes now, so ones placed before this version are removed on update — add them again from the widget picker.
+• Today fits the phone it is on, at any text size, and has less on it; the countdown's figures carry the line, with the seconds only in the last hour.
+• Fixes: the day's reading can be finished on a locked page (#113); the app holds less of the phone's memory.

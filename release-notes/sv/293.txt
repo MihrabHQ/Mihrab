@@ -1,0 +1,9 @@
+• Minimalt (Inställningar → Utseende): Idag är himlen och nedräkningen, och dagens tider ett tryck eller ett svep upp bort, där ett svep i sidled bläddrar mellan dagarna. Flikraden är en rad prickar och sidorna vänds under fingret, som mushafens. Hela sidan är ett val bort.
+• Femton recitationer av hela suror från mp3quran.net, bland dem Mahmoud Khalil Al-Husary i Warsh och i Qālūn, och Ali Al-Hudhaify i Qālūn och i Shuʿbah. Varje ayah-gräns har hittats utifrån orden och kontrollerats av en andra modell; de strömmas, laddas ned och markeras som alla andra röster.
+• Lyssna på en röst innan du väljer den: varje rad i recitatörsväljaren spelar al-Fātiḥah med den rösten.
+• Himmel-temat följer solen, inte klockan: en låg vintersol behåller sitt guld hela dagen, sidan blir mörk vid maghrib, och på natten ritas månen där den står och ljusar upp sidan när den växer.
+• Loggens graf visar vilken bön: en rad per bön och fastan, en kolumn per dag, i Loggen, på Hem och i widgetarna.
+• Widgetarna kan räkna upp från böneutropet i 10, 20 eller 30 minuter (Inställningar → Widgetar).
+• Android: widgetarna för bönetider, logg och svit har fasta storlekar nu, så de som lades till före den här versionen tas bort vid uppdateringen — lägg till dem igen från widgetväljaren.
+• Idag får plats på telefonen den visas på, med vilken textstorlek som helst, och har mindre på sig; nedräkningens siffror bär raden, med sekunderna bara den sista timmen.
+• Rättelser: dagens läsning kan avslutas på en låst sida (#113); appen tar mindre av telefonens minne.
