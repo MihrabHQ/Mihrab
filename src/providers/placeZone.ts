@@ -47,6 +47,7 @@ import {
   MOROCCO_CLOCK,
   SWEDEN_CLOCK,
   type PlaceClock,
+  withZoneRule,
 } from './locationClock';
 import { JAKIM_CLOCK, kemenagTable, MUIS_CLOCK } from './nationalTables';
 
@@ -203,12 +204,15 @@ export function placeZoneFor(
     date.getDate(),
     12,
   );
-  const known =
+  const named0 =
     (hints.zone ? { zone: hints.zone } : undefined) ??
     (named.has(keyOf(latitude, longitude))
       ? { zone: named.get(keyOf(latitude, longitude)) as string }
       : undefined) ??
     countryClock(latitude, longitude);
+  // A zone that keeps one offset all year now is written on it, whatever
+  // the phone's zone data says (#117).
+  const known = named0 && withZoneRule(named0);
   if (known) {
     // The phone's own zone: `clockFor` decides (Morocco's hand-set clocks).
     if (known.zone === here) return known;

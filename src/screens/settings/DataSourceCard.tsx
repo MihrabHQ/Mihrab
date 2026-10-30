@@ -16,10 +16,7 @@ import { useNamazvaktiCoverage } from '../../hooks/useNamazvaktiCoverage';
 import { useTableFallback } from '../../hooks/useTableFallback';
 import { useMethodCurrency } from '../../hooks/useMethodCurrency';
 import { methodCurrencyNote } from '../../prayer/methodCurrencyNote';
-import {
-  MOROCCO_CLOCK,
-  phoneClockRunsOnStaleZone,
-} from '../../providers/locationClock';
+import { zoneDataNotice } from '../../prayer/zoneDataNotice';
 import { refreshStoredPrayerData } from '../../prayer/refreshStoredData';
 
 type DataSourceCardProps = {
@@ -99,9 +96,10 @@ function DataSourceCardImpl({ onOpenProviderPicker }: DataSourceCardProps) {
     !overridden && currency
       ? methodCurrencyNote(t, currency, i18n.language)
       : null;
-  // A phone in Morocco whose zone data still runs it at GMT+1 (#82): its
-  // owner should know, since every app's times are affected.
-  const zoneDataStale = phoneClockRunsOnStaleZone(MOROCCO_CLOCK);
+  // A phone in Morocco whose zone data still runs it at GMT+1 (#82), or in
+  // a zone that keeps one offset all year now (#117): its owner should
+  // know, since every app's times are affected.
+  const zoneDataStale = zoneDataNotice(t, 'settings');
   const tableFallback =
     useTableFallback(
       effectiveProvider,
@@ -194,7 +192,7 @@ function DataSourceCardImpl({ onOpenProviderPicker }: DataSourceCardProps) {
             : currencyNote
             ? currencyNote
             : zoneDataStale
-            ? t('settings.zoneDataStale')
+            ? zoneDataStale
             : settings.dataProviderAuto
             ? t('settings.providerAutoHelp')
             : overridden

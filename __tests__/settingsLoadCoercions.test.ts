@@ -122,13 +122,13 @@ describe('prayerOffsets', () => {
       prayerOffsets: {
         Fajr: 2,
         Maghrib: -5,
-        Isha: 90,
+        Isha: 300,
         Asr: 'x',
         Dhuhr: null,
         Bogus: 3,
       },
     });
-    expect(s.prayerOffsets).toEqual({ Fajr: 2, Maghrib: -5, Isha: 30 });
+    expect(s.prayerOffsets).toEqual({ Fajr: 2, Maghrib: -5, Isha: 120 });
   });
 
   test('absent offsets load as none', async () => {

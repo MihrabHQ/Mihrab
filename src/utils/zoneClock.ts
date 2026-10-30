@@ -64,11 +64,14 @@ export const GMT_ZONES: ReadonlySet<string> = new Set([
  */
 export function fixedOffsetMinutes(zone: string): number | null {
   if (GMT_ZONES.has(zone)) return 0;
-  const m = /^Etc\/GMT([+-])(\d{1,2})$/.exec(zone);
+  // `Etc/GMT-3:30` is this app's own spelling for a fixed offset off the
+  // hour (Iran's, `FIXED_ZONES` in locationClock.ts): no zone database has
+  // it, so it is only ever read here, by arithmetic.
+  const m = /^Etc\/GMT([+-])(\d{1,2})(?::(30|45))?$/.exec(zone);
   if (!m) return null;
   const hours = parseInt(m[2], 10);
   if (hours > 14) return null;
-  return (m[1] === '+' ? -1 : 1) * hours * 60;
+  return (m[1] === '+' ? -1 : 1) * (hours * 60 + (m[3] ? parseInt(m[3], 10) : 0));
 }
 
 /** One formatter per zone and shape: building them is the slow part on Hermes. */

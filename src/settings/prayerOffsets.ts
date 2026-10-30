@@ -23,9 +23,11 @@ export type PrayerOffsetMinutes = {
   Imsak?: number;
 };
 
-/** Maximum absolute offset per prayer (minutes). Wider than this is almost
- *  certainly a config error — clamp defensively. */
-export const MAX_OFFSET_MAGNITUDE = 30;
+/** Maximum absolute offset per prayer (minutes). Two hours: wide enough
+ *  for a mosque an hour or more off any method, and for a phone whose clock
+ *  is an hour out (#117); wider than this is almost certainly a config
+ *  error — clamp defensively. */
+export const MAX_OFFSET_MAGNITUDE = 120;
 
 export function clampOffset(value: unknown): number {
   if (typeof value !== 'number' || !Number.isFinite(value)) return 0;

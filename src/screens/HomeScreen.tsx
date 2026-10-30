@@ -33,11 +33,7 @@ import {
 import { onClockJump } from '../utils/clockJumps';
 import { usePrayerDay } from '../hooks/usePrayerDay';
 import { clearTimezoneShiftNotice } from '../prayer/timezoneShift';
-import {
-  MOROCCO_CLOCK,
-  phoneClockRunsOnStaleZone,
-  zoneDataLagMinutes,
-} from '../providers/locationClock';
+import { zoneDataNotice, zoneDataNoticeKey } from '../prayer/zoneDataNotice';
 import { refreshStoredPrayerData } from '../prayer/refreshStoredData';
 import { getEffectiveDataProvider } from '../settings/effectiveProvider';
 import { cityOf } from '../settings/cityName';
@@ -482,15 +478,14 @@ export function HomeScreen() {
   }, [currencyKey]);
   /**
    * A phone in Morocco whose zone data still runs it at GMT+1, on network
-   * time (#82): its clock, and the times here written on it, read an hour
+   * time (#82) — or in a zone that keeps one offset all year now, on data
+   * that still moves the clock (#117): its clock, and the times here written on it, read an hour
    * ahead of the ministry's. The settings card says so too, but that is
    * not where a reader who sees 06:09 for the mosque's 05:09 looks. Said
    * once, with the one thing that puts it right on a phone that will get
    * no zone-data update — the reporter's own finding.
    */
-  const zoneKey = phoneClockRunsOnStaleZone(MOROCCO_CLOCK)
-    ? `${MOROCCO_CLOCK.zone}:${zoneDataLagMinutes(MOROCCO_CLOCK)}`
-    : null;
+  const zoneKey = zoneDataNoticeKey();
   const [zoneDismissed, setZoneDismissed] = useState<string | null | undefined>(undefined);
   useEffect(() => {
     AsyncStorage.getItem(ZONE_NOTE_DISMISSED_KEY)
@@ -499,7 +494,7 @@ export function HomeScreen() {
   }, []);
   const zoneNote =
     zoneKey && zoneDismissed !== undefined && zoneKey !== zoneDismissed
-      ? t('home.zoneDataStaleNotice')
+      ? zoneDataNotice(t, 'home')
       : null;
   const dismissZoneNote = useCallback(() => {
     if (!zoneKey) return;

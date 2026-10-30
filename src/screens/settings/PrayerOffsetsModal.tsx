@@ -1,7 +1,7 @@
 // hover-ok: list-row / settings-row / sheet pressables. Hover-state
 // treatment would visually noise these dense surfaces; the touch
 // feedback (pressed opacity / ripple) is the right affordance here.
-import { memo, useCallback } from 'react';
+import { memo, useCallback, useEffect, useRef } from 'react';
 import {
   Modal,
   Pressable,
@@ -32,9 +32,11 @@ import { useSheetPadding } from '../../responsive/sheetSides';
  * Per-prayer offsets modal — task #22.
  *
  * Lets the user adjust each daily prayer by ±N minutes (clamped to
- * MAX_OFFSET_MAGNITUDE = 30 by `prayerOffsets.ts`). The control is a
+ * MAX_OFFSET_MAGNITUDE = 120 by `prayerOffsets.ts`). The control is a
  * stepper to keep accessibility predictable on every locale (no slider
- * RTL gotchas, no hidden gestures).
+ * RTL gotchas): a tap moves a minute, and holding a button keeps going —
+ * a minute a step, then five — so an hour is a few seconds' hold, not
+ * sixty taps (#117).
  *
  * The data layer (`applyOffsets`) is already consumed by the prayer-times
  * fetch pipeline before caching/widget push, so picking values here
@@ -69,16 +71,22 @@ export const PrayerOffsetsModal = memo(function PrayerOffsetsModal({
   const sheetPad = useSheetPadding();
   const navigationReserve = useSystemNavigationReserve();
 
+  // The offsets as last changed here: a held button steps faster than the
+  // parent re-renders, and each step must build on the one before.
+  const latest = useRef(current);
+  latest.current = current;
   const setOffset = useCallback(
     (key: keyof PrayerOffsetMinutes, delta: number) => {
-      const prev = current[key] ?? 0;
+      const prev = latest.current[key] ?? 0;
       const next = clampOffset(prev + delta);
-      const merged: PrayerOffsetMinutes = { ...current };
+      if (next === prev) return;
+      const merged: PrayerOffsetMinutes = { ...latest.current };
       if (next === 0) delete merged[key];
       else merged[key] = next;
+      latest.current = merged;
       onChange(merged);
     },
-    [current, onChange],
+    [onChange],
   );
 
   const reset = useCallback(() => {
@@ -137,7 +145,7 @@ export const PrayerOffsetsModal = memo(function PrayerOffsetsModal({
                       a11y={t('settings.prayerOffsetsDecrease', {
                         prayer: t(`prayer.${prayer}`),
                       })}
-                      onPress={() => setOffset(prayer, -1)}
+                      onStep={big => setOffset(prayer, big ? -5 : -1)}
                       palette={palette}
                       disabled={value <= -MAX_OFFSET_MAGNITUDE}
                     />
@@ -156,7 +164,7 @@ export const PrayerOffsetsModal = memo(function PrayerOffsetsModal({
                       a11y={t('settings.prayerOffsetsIncrease', {
                         prayer: t(`prayer.${prayer}`),
                       })}
-                      onPress={() => setOffset(prayer, 1)}
+                      onStep={big => setOffset(prayer, big ? 5 : 1)}
                       palette={palette}
                       disabled={value >= MAX_OFFSET_MAGNITUDE}
                     />
@@ -191,24 +199,52 @@ export const PrayerOffsetsModal = memo(function PrayerOffsetsModal({
   );
 });
 
+/** How long a hold waits before it repeats, how fast it repeats, and after how many steps they grow to five minutes. */
+const HOLD_DELAY_MS = 400;
+const HOLD_EVERY_MS = 90;
+const HOLD_BIG_AFTER = 10;
+
 function StepperButton({
   label,
   a11y,
-  onPress,
+  onStep,
   palette,
   disabled,
 }: {
   label: string;
   a11y: string;
-  onPress: () => void;
+  /** One step: a minute, or (`big`, well into a hold) five. */
+  onStep: (big: boolean) => void;
   palette: AppPalette;
   disabled?: boolean;
 }) {
+  const timer = useRef<ReturnType<typeof setInterval> | null>(null);
+  const step = useRef(onStep);
+  step.current = onStep;
+  const stop = useCallback(() => {
+    if (timer.current) clearInterval(timer.current);
+    timer.current = null;
+  }, []);
+  useEffect(() => stop, [stop]);
+  useEffect(() => {
+    if (disabled) stop();
+  }, [disabled, stop]);
+  const hold = useCallback(() => {
+    stop();
+    let n = 0;
+    timer.current = setInterval(() => {
+      n += 1;
+      step.current(n > HOLD_BIG_AFTER);
+    }, HOLD_EVERY_MS);
+  }, [stop]);
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={a11y}
-      onPress={onPress}
+      onPress={() => onStep(false)}
+      onLongPress={hold}
+      delayLongPress={HOLD_DELAY_MS}
+      onPressOut={stop}
       disabled={disabled}
       hitSlop={8}
       style={({

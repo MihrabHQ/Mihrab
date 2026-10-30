@@ -36,6 +36,14 @@ export type PlaceClock = {
    * whose zone data gives another offset there has data from before it.
    */
   rule?: { probe: string; offsetMinutes: number };
+  /**
+   * A zone that keeps one offset all year now (`FIXED_ZONES`): its offset
+   * from UTC, minutes east. A phone whose zone data gives another offset
+   * now has data from before the change — checked at the moment asked, so
+   * a phone that is wrong only in winter (Jordan's, #117) is read as right
+   * in summer, when it is.
+   */
+  fixedOffsetMinutes?: number;
 };
 
 /** "HH:MM" of an instant on a zone's clock; the phone's on any failure. */
@@ -116,11 +124,22 @@ export function placeCivilDay(
 const staleMemo = new Map<string, number | null>();
 /**
  * How far the phone's zone data is off the zone's current rule, in minutes
- * (60 for a phone that still runs Morocco at GMT+1), or 0 when it is current
- * or the place has no rule to check. Read once per zone per run.
+ * (60 for a phone that still runs Morocco at GMT+1, −60 for one that puts
+ * Jordan back to GMT+2 in winter), or 0 when it is current or the place has
+ * no rule to check. Read once per zone per run (per hour, for a fixed zone).
  */
 export function zoneDataLagMinutes(clock: PlaceClock | undefined): number {
-  if (!clock?.rule) return 0;
+  if (!clock) return 0;
+  if (clock.fixedOffsetMinutes != null) {
+    const hour = Math.floor(Date.now() / 3_600_000);
+    const key = `${clock.zone}#${hour}`;
+    if (!staleMemo.has(key)) {
+      const off = zoneOffsetMinutes(clock.zone, new Date(hour * 3_600_000));
+      staleMemo.set(key, off == null ? null : off - clock.fixedOffsetMinutes);
+    }
+    return staleMemo.get(key) ?? 0;
+  }
+  if (!clock.rule) return 0;
   const key = `${clock.zone}@${clock.rule.probe}`;
   if (!staleMemo.has(key)) {
     const off = zoneOffsetMinutes(clock.zone, new Date(clock.rule.probe));
@@ -223,6 +242,81 @@ export const MOROCCO_CLOCK: PlaceClock = {
   rule: { probe: '2026-12-01T12:00:00Z', offsetMinutes: 0 },
 };
 export const ALGERIA_CLOCK: PlaceClock = { zone: 'Africa/Algiers' };
+
+/**
+ * ZONES THAT STOPPED CHANGING THEIR CLOCKS (#117).
+ *
+ * Each of these keeps one offset all year now — summer time dropped
+ * (Jordan and Syria kept theirs, on UTC+3, in October 2022; Türkiye in
+ * 2016; Iran dropped it in 2022; Mexico in 2022; Paraguay kept its summer
+ * time in 2024; Samoa in 2021; Azerbaijan in 2016), or the offset moved
+ * (Kazakhstan to UTC+5 in 2024; Sudan and South Sudan to UTC+2). A phone
+ * whose zone data is older still changes the clock, and the times computed
+ * here, written on the phone's clock, change with it: Dhuhr in Amman at
+ * 11:20 on the day the phone went back, for 12:20.
+ *
+ * The phone's data cannot be put right from here, but it can be told
+ * apart: its offset now is not the zone's. Then the times are written on
+ * the zone's real clock, as Morocco's are (#82): where the phone's clock
+ * was set back by hand to the clocks on the wall they read right on it,
+ * and where it was not, Today says why the phone's clock is an hour out
+ * and how to put it right. A phone with current data is not touched.
+ *
+ * Offsets in minutes east; each checked against the zone data of the day
+ * for every month of two years (`__tests__/fixedZones.test.ts`).
+ */
+export const FIXED_ZONES: Readonly<Record<string, { offsetMinutes: number; since: number }>> = {
+  'Asia/Amman': { offsetMinutes: 180, since: 2022 },
+  'Asia/Damascus': { offsetMinutes: 180, since: 2022 },
+  'Asia/Tehran': { offsetMinutes: 210, since: 2022 },
+  'Europe/Istanbul': { offsetMinutes: 180, since: 2016 },
+  'Asia/Baku': { offsetMinutes: 240, since: 2016 },
+  'Asia/Almaty': { offsetMinutes: 300, since: 2024 },
+  'Asia/Qostanay': { offsetMinutes: 300, since: 2024 },
+  'Africa/Khartoum': { offsetMinutes: 120, since: 2017 },
+  'Africa/Juba': { offsetMinutes: 120, since: 2021 },
+  'America/Mexico_City': { offsetMinutes: -360, since: 2022 },
+  'America/Monterrey': { offsetMinutes: -360, since: 2022 },
+  'America/Merida': { offsetMinutes: -360, since: 2022 },
+  'America/Asuncion': { offsetMinutes: -180, since: 2024 },
+  'Pacific/Apia': { offsetMinutes: 780, since: 2021 },
+};
+
+/** A fixed offset as a zone `fixedOffsetMinutes` reads: `Etc/GMT-3`, `Etc/GMT-3:30` (POSIX sign). */
+export function fixedZoneName(offsetMinutes: number): string {
+  if (offsetMinutes === 0) return 'Etc/GMT';
+  const a = Math.abs(offsetMinutes);
+  const mins = a % 60;
+  return `Etc/GMT${offsetMinutes > 0 ? '-' : '+'}${Math.floor(a / 60)}${mins ? `:${mins}` : ''}`;
+}
+
+/**
+ * A place's clock with what the app knows of its zone's latest change: a
+ * zone of `FIXED_ZONES` is written on its fixed offset where the phone is
+ * elsewhere (`away`), and checked against the phone's zone data. Other
+ * clocks unchanged.
+ */
+export function withZoneRule(clock: PlaceClock): PlaceClock {
+  const fixed = FIXED_ZONES[clock.zone];
+  if (!fixed || clock.rule || clock.fixedOffsetMinutes != null) return clock;
+  return {
+    ...clock,
+    away: clock.away ?? fixedZoneName(fixed.offsetMinutes),
+    fixedOffsetMinutes: fixed.offsetMinutes,
+  };
+}
+
+/**
+ * The clock of the zone the phone is in, where the app knows that zone's
+ * latest change (Morocco's, and `FIXED_ZONES`) — what Today and the
+ * settings check the phone's zone data against. Undefined elsewhere.
+ */
+export function deviceZoneClock(): PlaceClock | undefined {
+  const here = deviceZone();
+  if (!here) return undefined;
+  if (here === MOROCCO_CLOCK.zone) return MOROCCO_CLOCK;
+  return FIXED_ZONES[here] ? withZoneRule({ zone: here }) : undefined;
+}
 export const SWEDEN_CLOCK: PlaceClock = { zone: 'Europe/Stockholm' };
 
 /** Indonesia prints each regency in its own zone; the province (`nameEn`'s parenthesis) says which. */

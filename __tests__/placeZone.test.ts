@@ -192,7 +192,9 @@ describe('Istanbul from namazvakti.com on a phone on UTC', () => {
       calculationMethod: 13,
       school: 0,
     });
-    expect(r.clock).toBe('Europe/Istanbul');
+    // Türkiye keeps UTC+3 all year (#117): written on that fixed offset,
+    // which a phone with zone data from before 2016 cannot get wrong.
+    expect(r.clock).toBe('Etc/GMT-3');
     for (const key of ['Fajr', 'Dhuhr', 'Maghrib', 'Isha']) {
       const at = eventAt(key, r.timings, day, r.clock);
       // The printed strings, unchanged, three hours ahead of UTC.
