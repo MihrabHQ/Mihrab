@@ -1,21 +1,21 @@
 {
   "sweden": {
     "certified": true,
-    "checkedAt": "2026-10-19",
+    "checkedAt": "2026-10-30",
     "places": 108,
     "checks": [
       {
         "tables": "Sweden — Islamiska Förbundet’s tables",
         "places": 107,
-        "times": 59844,
+        "times": 60354,
         "off": 0,
         "offWithoutCorrections": 20,
         "from": "2026-10-11",
-        "to": "2027-11-23",
+        "to": "2027-11-30",
         "setAside": {
           "misplaced": [],
-          "sourceFaults": 33789,
-          "copiedRows": 654
+          "sourceFaults": 34453,
+          "copiedRows": 668
         }
       },
       {
@@ -38,7 +38,7 @@
   },
   "diyanet": {
     "certified": true,
-    "checkedAt": "2026-10-19",
+    "checkedAt": "2026-10-30",
     "places": 8132,
     "checks": [
       {
@@ -61,7 +61,7 @@
   },
   "morocco": {
     "certified": true,
-    "checkedAt": "2026-10-19",
+    "checkedAt": "2026-10-30",
     "places": 164,
     "checks": [
       {
@@ -84,7 +84,7 @@
   },
   "algeria": {
     "certified": true,
-    "checkedAt": "2026-10-19",
+    "checkedAt": "2026-10-30",
     "places": 68,
     "checks": [
       {
@@ -107,7 +107,7 @@
   },
   "indonesia": {
     "certified": true,
-    "checkedAt": "2026-10-19",
+    "checkedAt": "2026-10-30",
     "places": 517,
     "checks": [
       {
