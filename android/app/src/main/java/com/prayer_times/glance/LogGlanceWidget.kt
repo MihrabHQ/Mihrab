@@ -50,9 +50,10 @@ import com.prayer_times.contract.WidgetContract
  */
 internal class LogGlanceWidget(
   /**
-   * The 4×4 (PrayerWidgetLogLargeProvider) draws the practice graph under
-   * today's row; the 4×2 never does. The widgets are fixed sizes now, so
-   * which card has the graph is the entry's to say, not the height's.
+   * The 4×2 (PrayerWidgetLogLargeProvider) draws the practice graph under
+   * today's row; the 4×1 never does. The widgets keep the height they are
+   * placed at (they stretch sideways only, #115), so which card has the
+   * graph is the entry's to say, not the height's.
    */
   private val tall: Boolean = false,
 ) : MihrabGlanceWidget("log") {

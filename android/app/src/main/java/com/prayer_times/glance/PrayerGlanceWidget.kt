@@ -60,10 +60,13 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
 
   /**
    * Which picker entry this instance was placed from — its intent. The
-   * widgets are fixed sizes now (no resizing): the strip is the 4×2 that
-   * shows the times, the tall one the 4×4 that shows the times and the
+   * widgets keep the height they are placed at: the strip is the 4×1 that
+   * shows the times, the tall one the 4×2 that shows the times and the
    * practice graph. Which draws the graph is the entry's to say, not the
-   * height's: a card sized so the graph does not fit cannot be made.
+   * height's: a card sized so the graph does not fit cannot be made. They
+   * stretch sideways only (#115) — from their own width up, so a five-column
+   * home screen can fill its row; every layout here fits its text to the
+   * width it is given.
    */
   enum class Entry { SMALL, STRIP, TALL }
 
@@ -170,7 +173,7 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     val h = size.heightDp
     if (h <= 0) return Design.STRIP
     return when {
-      h < STRIP_MIN_HEIGHT_DP -> Design.SMALL
+      h < STRIP_TIMES_MIN_HEIGHT_DP -> Design.SMALL
       size.widthDp in 1 until STRIP_MIN_WIDTH_DP && h >= ROWS_MIN_HEIGHT_DP -> Design.LIST
       else -> Design.STRIP
     }
@@ -482,6 +485,12 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     val h = size.heightDp
     // An unmeasured card (0) keeps the header and the roomy padding.
     val oneRow = h in 1 until STRIP_TIGHT_CONTENT_DP
+    // A row shorter than the strip's own minimum — a dense home screen,
+    // five by seven (#115): the six times and nothing under them. The next
+    // prayer is still the highlighted column; its line and the logged count
+    // are what the row has no room for. Below this the card is the next
+    // prayer alone.
+    val timesOnly = h in 1 until STRIP_MIN_HEIGHT_DP
     val tight = h in 1 until STRIP_ROOMY_CONTENT_DP
     val budget = if (oneRow) STRIP_BARE_CONTENT_DP else if (tight) STRIP_TIGHT_CONTENT_DP else STRIP_ROOMY_CONTENT_DP
     // The same with the table hidden: its segment is the table's, as tall.
@@ -500,7 +509,7 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
       if (!oneRow) Header(m.header, m.hijri, d)
       if (d.showTable) {
         Row(
-          modifier = GlanceModifier.fillMaxWidth().padding(top = (8 + slack).dp, bottom = slack.dp),
+          modifier = GlanceModifier.fillMaxWidth().padding(top = (if (timesOnly) 0 else 8 + slack).dp, bottom = slack.dp),
           verticalAlignment = Alignment.CenterVertically,
         ) {
           for (r in columns) {
@@ -547,7 +556,7 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
         }
       }
       if (!tight) Rule(d.rule, top = 6, bottom = 8)
-      Row(modifier = GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+      if (!timesOnly || !d.showTable) Row(modifier = GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         // The next-prayer line is the NextBlock's when the table is hidden.
         if (d.showTable) {
           if (m.nextName.isNotEmpty()) Label(m.nextName, 11f, d.text)
@@ -722,6 +731,12 @@ internal class PrayerGlanceWidget(private val entry: Entry) : MihrabGlanceWidget
     /** PrayerWidgetProvider's thresholds and budgets, unchanged — see the notes there. */
     private const val ROWS_MIN_HEIGHT_DP = 165
     private const val STRIP_MIN_HEIGHT_DP = 92
+    /**
+     * The shortest row that still takes the six times, alone (#115): the
+     * times' two lines and the card's ends. A five-by-seven home screen's
+     * row is under the strip's 92 and over this.
+     */
+    private const val STRIP_TIMES_MIN_HEIGHT_DP = 66
     private const val STRIP_MIN_WIDTH_DP = 200
     private const val STRIP_ROOMY_CONTENT_DP = 150
     private const val STRIP_TIGHT_CONTENT_DP = 124

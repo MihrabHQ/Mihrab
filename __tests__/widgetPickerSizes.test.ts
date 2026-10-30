@@ -57,12 +57,19 @@ describe('what each entry places', () => {
     expect(tall).toBeGreaterThan(short);
   });
 
-  it('no entry resizes: each is one size, and the size shows its elements', () => {
-    // Fixed, so a widget can never be dragged to a size that cannot show
-    // what it holds: the small one is 4×1 and the tall one 4×2, and the
-    // graph is the tall one's.
-    for (const f of ['glance_prayer_info', 'glance_prayer_tall_info', 'glance_log_info', 'glance_log_tall_info']) {
-      expect(xml('xml', f)).toMatch(/android:resizeMode="none"/);
+  it('entries stretch sideways only, never below their own width (#115)', () => {
+    // The height stays where the widget was placed, so the small one stays
+    // 4×1 and the tall one 4×2 and the graph stays the tall one's; the width
+    // can grow to fill a five-column row, and never shrinks below what the
+    // layout needs.
+    const files = ['glance_prayer_info', 'glance_prayer_tall_info', 'glance_prayer_small_info',
+      'glance_log_info', 'glance_log_tall_info', 'glance_streak_info'];
+    for (const f of files) {
+      const s = xml('xml', f);
+      expect(s).toMatch(/android:resizeMode="horizontal"/);
+      const min = s.match(/android:minWidth="(\d+)dp"/)![1];
+      expect(s).toMatch(new RegExp(`android:minResizeWidth="${min}dp"`));
+      expect(s).not.toMatch(/minResizeHeight|maxResizeHeight/);
     }
   });
 });
