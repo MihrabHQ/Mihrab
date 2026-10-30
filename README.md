@@ -252,6 +252,15 @@ Religious content is sourced and attributed (also listed in-app under Settings �
 distribute a modified version, or run one as a network service, you must
 publish your source under the same terms.
 
+**Why AGPL** (#116). It keeps Mihrab and every version of it free for
+everyone: no one can take the work and close it off, which is what a
+waqf-style licence sets out to protect. Mihrab has no clause limiting who may
+use it or for what: a restriction like that would make it non-free, so
+F-Droid and most Linux distributions could no longer carry it, and the
+licences of what it bundles (SIL OFL for the fonts, MPL-2.0 for the
+prayer-time methods, MIT for other parts) allow no added restrictions, which
+the AGPL itself forbids too.
+
 The **name "Mihrab" and the app icon are not covered by the licence** —
 no free-software licence grants trademark rights. Builds of this project
 carry the name freely, whoever distributes them — build and packaging
