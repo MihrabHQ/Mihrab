@@ -104,6 +104,35 @@ def version_code() -> str:
     return re.search(r"versionCode\s+(\d+)", gradle).group(1)
 
 
+# Another platform named, in the languages the notes are written in. App
+# Review rejected 2.34.0 (293) under guideline 2.3.10 for "On Android they
+# are fixed sizes now" in What's New: the notes are the Android changelog,
+# so a sentence about Android alone has to come out here.
+OTHER_PLATFORM = re.compile(
+    r"android|google play|f-droid|play store|أندرويد|اندرويد|اندروئیڈ|"
+    r"অ্যান্ড্রয়েড|एंड्रॉइड|андроид|安卓",
+    re.I,
+)
+SENTENCE_END = re.compile(r"(?<=[.!?。۔])\s+")
+
+
+def for_the_app_store(notes: str) -> str:
+    """The notes without a sentence (or a line, if that was all of it) that names another platform."""
+    lines = []
+    for line in notes.splitlines():
+        bullet = re.match(r"^\s*[•\-*]\s*", line)
+        head = bullet.group(0) if bullet else ""
+        kept = [x for x in SENTENCE_END.split(line[len(head):]) if not OTHER_PLATFORM.search(x)]
+        if any(x.strip() for x in kept):
+            lines.append(head + " ".join(x for x in kept if x.strip()))
+        elif not line.strip():
+            lines.append(line)
+    out = "\n".join(lines).strip()
+    if OTHER_PLATFORM.search(out):
+        sys.exit(f"What's New still names another platform:\n{out}")
+    return out
+
+
 def whats_new(locale: str) -> str | None:
     """This build's notes in the locale's language, or in English."""
     for d in (LOCALES[locale], "en-US"):
@@ -111,7 +140,8 @@ def whats_new(locale: str) -> str | None:
         if f.exists():
             # Apple refuses the ayn and hamza half-rings (ʿ ʾ) in What's New;
             # the plain apostrophe reads the same.
-            return f.read_text(encoding="utf-8").strip().replace("ʿ", "'").replace("ʾ", "'")
+            notes = f.read_text(encoding="utf-8").strip().replace("ʿ", "'").replace("ʾ", "'")
+            return for_the_app_store(notes)
     return None
 
 
