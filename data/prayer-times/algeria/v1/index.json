@@ -1,11 +1,11 @@
 {
   "version": 1,
-  "builtAt": "2026-10-15T18:49:36.124Z",
+  "builtAt": "2026-11-01T10:27:17.648Z",
   "timezone": "Africa/Algiers",
   "serverStatus": "ok",
-  "firstDate": "2026-10-01",
-  "lastDate": "2027-01-31",
-  "minCoverageDays": 109,
+  "firstDate": "2026-11-01",
+  "lastDate": "2027-02-28",
+  "minCoverageDays": 120,
   "deadCities": [],
   "cities": [
     {
