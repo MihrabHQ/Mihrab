@@ -1,7 +1,7 @@
 {
   "sweden": {
     "certified": true,
-    "checkedAt": "2026-10-30",
+    "checkedAt": "2026-11-01",
     "places": 108,
     "checks": [
       {
@@ -38,7 +38,7 @@
   },
   "diyanet": {
     "certified": true,
-    "checkedAt": "2026-10-30",
+    "checkedAt": "2026-11-01",
     "places": 8132,
     "checks": [
       {
@@ -61,30 +61,30 @@
   },
   "morocco": {
     "certified": true,
-    "checkedAt": "2026-10-31",
+    "checkedAt": "2026-11-01",
     "places": 164,
     "checks": [
       {
         "tables": "Morocco — Habous",
         "places": 164,
-        "times": 75768,
+        "times": 94350,
         "off": 0,
-        "offWithoutCorrections": 665,
+        "offWithoutCorrections": 1820,
         "from": "2026-08-27",
-        "to": "2026-11-11"
+        "to": "2026-11-30"
       }
     ],
     "corrections": {
       "from": "2026-08-27",
-      "to": "2026-11-11",
-      "entries": 665,
-      "sha256": "26ccb0979ee3e632c5acd736fdba3f8272530b48577cb1c0f2897d061e695bd0"
+      "to": "2026-11-30",
+      "entries": 1820,
+      "sha256": "d365849ef9c392b6782ad8821fac2872fad08cc542e16f040c025b2edb21db1a"
     },
     "revision": 1
   },
   "algeria": {
     "certified": true,
-    "checkedAt": "2026-10-30",
+    "checkedAt": "2026-11-01",
     "places": 68,
     "checks": [
       {
@@ -107,7 +107,7 @@
   },
   "indonesia": {
     "certified": true,
-    "checkedAt": "2026-10-30",
+    "checkedAt": "2026-11-01",
     "places": 517,
     "checks": [
       {
