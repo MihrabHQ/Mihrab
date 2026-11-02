@@ -163,6 +163,19 @@ internal fun dir(a: TextAlign): TextAlign =
     else -> a
   }
 
+/**
+ * A line laid out in Mihrab's direction inside a text view that the
+ * launcher sets to its own (#118): the text in a directional isolate, so
+ * "5 / 20" or "176 pages behind" reads as it does in the app and not with
+ * its parts swapped round. Unchanged where the two directions agree.
+ */
+@Composable
+internal fun isolated(text: String): String {
+  val d = LocalDirection.current
+  if (!d.mirrored || text.isEmpty()) return text
+  return (if (d.rtl) "\u2067" else "\u2066") + text + "\u2069"
+}
+
 /** Space on the side a line starts from, in Mihrab's language (left or right, not the launcher's start). */
 @Composable
 internal fun GlanceModifier.padStart(d: Dp): GlanceModifier =
@@ -550,6 +563,28 @@ internal fun textLineDp(context: Context, sp: Float, medium: Boolean): Float {
   return (fm.bottom - fm.top) / metrics.density
 }
 
+/**
+ * How tall a line of `text` is drawn, in dp — as a TextView lays it out,
+ * fallback fonts included. `textLineDp` is the widgets' own face, Latin;
+ * Arabic, Bengali or Hindi text falls back to a font whose line is taller,
+ * and a TextView grows to hold it (#118: the Log card's names in Arabic
+ * pushed its times off a short card that holds them in English).
+ */
+internal fun textHeightDp(context: Context, text: String, sp: Float, medium: Boolean): Float {
+  if (text.isEmpty()) return textLineDp(context, sp, medium)
+  val metrics = context.resources.displayMetrics
+  val paint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
+    typeface = Typeface.create(if (medium) "sans-serif-medium" else "sans-serif", Typeface.NORMAL)
+    textSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, metrics)
+  }
+  val layout = android.text.StaticLayout.Builder.obtain(text, 0, text.length, paint, 100_000)
+    .setIncludePad(true)
+    .setMaxLines(1)
+    .apply { if (android.os.Build.VERSION.SDK_INT >= 28) setUseLineSpacingFromFallbacks(true) }
+    .build()
+  return maxOf(layout.height / metrics.density, textLineDp(context, sp, medium))
+}
+
 internal fun textWidthDp(context: Context, text: String, sp: Float, medium: Boolean): Float {
   val metrics = context.resources.displayMetrics
   val paint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -598,7 +633,7 @@ internal fun Label(
   align: TextAlign? = null,
 ) {
   Text(
-    text = text,
+    text = isolated(text),
     modifier = modifier,
     style = TextStyle(
       color = provider(color),
@@ -699,9 +734,11 @@ internal fun CountUp(sinceEpochMs: Long, format: String, now: Now, sp: Float, co
   // At the end of the frame Glance stretches around it, where the row is
   // mirrored, so it stays beside what it counts down to (#118).
   val layout = if (LocalDirection.current.mirrored) R.layout.glance_countdown_end else R.layout.glance_countdown
+  val dirIso = LocalDirection.current
+  fun iso(f: String) = if (!dirIso.mirrored) f else (if (dirIso.rtl) "\u2067" else "\u2066") + f + "\u2069"
   val views = RemoteViews(context.packageName, layout).apply {
     setChronometerCountDown(R.id.glance_countdown, false)
-    setChronometer(R.id.glance_countdown, SystemClock.elapsedRealtime() - elapsed, format, true)
+    setChronometer(R.id.glance_countdown, SystemClock.elapsedRealtime() - elapsed, iso(format), true)
     setTextColor(R.id.glance_countdown, color)
     setTextViewTextSize(R.id.glance_countdown, TypedValue.COMPLEX_UNIT_SP, sp)
   }
@@ -723,12 +760,14 @@ internal fun Countdown(targetEpochMs: Long, now: Now, sp: Float, color: Int, mod
   // At the end of the frame Glance stretches around it, where the row is
   // mirrored, so it stays beside what it counts down to (#118).
   val layout = if (LocalDirection.current.mirrored) R.layout.glance_countdown_end else R.layout.glance_countdown
+  val dirIso = LocalDirection.current
+  fun iso(f: String) = if (!dirIso.mirrored) f else (if (dirIso.rtl) "\u2067" else "\u2066") + f + "\u2069"
   val views = RemoteViews(context.packageName, layout).apply {
     setChronometerCountDown(R.id.glance_countdown, true)
     setChronometer(
       R.id.glance_countdown,
       SystemClock.elapsedRealtime() + left,
-      context.getString(R.string.widget_countdown_format),
+      iso(context.getString(R.string.widget_countdown_format)),
       true,
     )
     setTextColor(R.id.glance_countdown, color)

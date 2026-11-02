@@ -235,7 +235,11 @@ internal class LogGlanceWidget(
     // Each variant is filled against the budget that chose it.
     val budget = if (bare) LOG_BARE_CONTENT_DP else if (tight) LOG_TIGHT_CONTENT_DP else LOG_ROOMY_CONTENT_DP
     val slack = if (h <= 0 || graphHeight) 0 else ((h - budget) / 2).coerceIn(0, LOG_SLACK_CAP_DP)
-    val chipHeight = if (tight) 30 else 38
+    // The budgets are reckoned in the widgets' Latin face. A chip's name in
+    // a script whose lines are taller (Arabic) takes the difference out of
+    // the chip, not off the bottom of the card (#118).
+    val nameSurplus = m.chips.maxOfOrNull { textHeightDp(context, it.name, 11f, medium = false) - textLineDp(context, 11f, medium = false) } ?: 0f
+    val chipHeight = ((if (tight) 30 else 38) - (if (h > 0) Math.ceil(nameSurplus.toDouble()).toInt() else 0)).coerceAtLeast(CHIP_MIN_HEIGHT_DP)
 
     DirColumn(
       modifier = GlanceModifier.fillMaxSize(),
@@ -348,6 +352,8 @@ internal class LogGlanceWidget(
 
   companion object {
     private const val CHIPS = 5
+    /** The shortest a chip gets to make room for a taller script's names. */
+    private const val CHIP_MIN_HEIGHT_DP = 22
 
     /** PrayerWidgetLogProvider's budgets, unchanged (see the notes there). */
     private const val GRID_MIN_HEIGHT_DP = 190

@@ -9,7 +9,7 @@ import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.action.Action
 import androidx.glance.action.clickable
-import androidx.glance.appwidget.LinearProgressIndicator
+import androidx.glance.layout.ContentScale
 import androidx.glance.background
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Box
@@ -169,12 +169,7 @@ internal class ReadingGlanceWidget : MihrabGlanceWidget("reading") {
         )
         if (tall) {
           Spacer(GlanceModifier.height(10.dp))
-          LinearProgressIndicator(
-            progress = bar / 100f,
-            modifier = GlanceModifier.fillMaxWidth().height(4.dp),
-            color = provider(accent),
-            backgroundColor = provider(PROGRESS_TRACK),
-          )
+          ProgressBar(bar / 100f, accent, LocalDirection.current.rtl)
           Label(
             context.getString(R.string.widget_reading_progress, r.pagesRead, totalPages, pct),
             11f,
@@ -237,6 +232,29 @@ internal class ReadingGlanceWidget : MihrabGlanceWidget("reading") {
     }
   }
 
+  /**
+   * The share of the muṣḥaf read, as a bar that fills from where a line
+   * starts in Mihrab's language (#118). Glance's LinearProgressIndicator is
+   * a ProgressBar that fills from the left in every direction, and from the
+   * launcher's side at that; this is the same 4dp bar drawn as an image,
+   * stretched to the width — square ends, so stretching changes nothing.
+   */
+  @Composable
+  private fun ProgressBar(fraction: Float, accent: Int, rtl: Boolean) {
+    val bitmap = android.graphics.Bitmap.createBitmap(PROGRESS_BITMAP_W, 1, android.graphics.Bitmap.Config.ARGB_8888)
+    val filled = Math.round(fraction.coerceIn(0f, 1f) * PROGRESS_BITMAP_W)
+    for (x in 0 until PROGRESS_BITMAP_W) {
+      val inFill = if (rtl) x >= PROGRESS_BITMAP_W - filled else x < filled
+      bitmap.setPixel(x, 0, if (inFill) accent else PROGRESS_TRACK)
+    }
+    Image(
+      provider = ImageProvider(bitmap),
+      contentDescription = null,
+      modifier = GlanceModifier.fillMaxWidth().height(4.dp),
+      contentScale = ContentScale.FillBounds,
+    )
+  }
+
   @Composable
   private fun SideColumn(title: String, value: String, valueSp: Float, note: String?, noteColor: Int) {
     DirColumn(
@@ -296,5 +314,7 @@ internal class ReadingGlanceWidget : MihrabGlanceWidget("reading") {
 
     /** The bar's track: the rule colour the cards already use. */
     private const val PROGRESS_TRACK = 0x33FFFFFF
+    /** The bar's resolution: a thousandth of the muṣḥaf is under a pixel at any card width. */
+    private const val PROGRESS_BITMAP_W = 1000
   }
 }
