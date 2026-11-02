@@ -23,7 +23,7 @@
  * it is in hand for the first render; the key is the caller's, so this
  * module knows nothing of the page.
  */
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { launchRead, launchWrite } from '../../boot/launchReads';
 
 export type TodayLayout = {
   /** The hero box (fill), its top row, and its countdown block. */
@@ -65,7 +65,7 @@ function clean(v: unknown): TodayLayout | null {
 /** Read the kept sizes once; later calls return the same promise. */
 export function primeTodayLayout(): Promise<void> {
   if (primed) return primed;
-  primed = AsyncStorage.getItem(STORAGE_KEY)
+  primed = launchRead(STORAGE_KEY)
     .then(raw => {
       if (!raw) return;
       const parsed: unknown = JSON.parse(raw);
@@ -100,7 +100,7 @@ function persist(): void {
     const kept = keys.slice(Math.max(0, keys.length - KEEP));
     const out: Record<string, TodayLayout> = {};
     for (const k of kept) out[k] = memory[k];
-    AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(out)).catch(() => {});
+    launchWrite(STORAGE_KEY, JSON.stringify(out)).catch(() => {});
   }, 1500);
 }
 

@@ -91,6 +91,20 @@
       android:supportsRtl="true"
       android:enableOnBackInvokedCallback="false"
       tools:replace="android:enableOnBackInvokedCallback">
+      <!-- WorkManager starts on demand, from MainApplication's configuration,
+           not from androidx.startup at every process start — see
+           MainApplication (Configuration.Provider). -->
+      <provider
+        android:name="androidx.startup.InitializationProvider"
+        android:authorities="${applicationId}.androidx-startup"
+        android:exported="false"
+        tools:node="merge">
+        <meta-data
+          android:name="androidx.work.WorkManagerInitializer"
+          android:value="androidx.startup"
+          tools:node="remove" />
+      </provider>
+
       <receiver
         android:name=".PrayerWidgetProvider"
         android:exported="true"

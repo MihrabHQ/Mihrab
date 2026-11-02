@@ -24,7 +24,7 @@
  *   no Google Play Services, no proprietary code. F-Droid build keeps working.
  */
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { launchRead, launchWrite } from '../boot/launchReads';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { coerceLocationPresets } from './locationPresets';
 import type { LocationPreset } from './types';
@@ -78,7 +78,7 @@ export const SECURE_FIELD_NAMES: ReadonlyArray<keyof SecureSettings> = [
 
 async function readFallback(): Promise<SecureSettings | null> {
   try {
-    const raw = await AsyncStorage.getItem(SECURE_FALLBACK_KEY);
+    const raw = await launchRead(SECURE_FALLBACK_KEY);
     if (!raw) return null;
     return sanitize(JSON.parse(raw) as Partial<SecureSettings>);
   } catch {
@@ -88,10 +88,7 @@ async function readFallback(): Promise<SecureSettings | null> {
 
 async function writeFallback(s: SecureSettings): Promise<void> {
   try {
-    await AsyncStorage.setItem(
-      SECURE_FALLBACK_KEY,
-      JSON.stringify(sanitize(s)),
-    );
+    await launchWrite(SECURE_FALLBACK_KEY, JSON.stringify(sanitize(s)));
   } catch (e) {
     // Even AsyncStorage is failing. Last-resort log; nothing else we can do.
     console.warn('secureStorage.writeFallback failed:', e);
@@ -100,7 +97,7 @@ async function writeFallback(s: SecureSettings): Promise<void> {
 
 async function clearFallback(): Promise<void> {
   try {
-    await AsyncStorage.removeItem(SECURE_FALLBACK_KEY);
+    await launchWrite(SECURE_FALLBACK_KEY, null);
   } catch {
     // ignore
   }

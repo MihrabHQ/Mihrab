@@ -14,6 +14,7 @@ import { setWidgetSinceAdhanMinutes } from '../widget/sinceAdhanSetting';
 import { setFullScreenAlarmSkyTheme } from '../notifications/fullScreenAlarm';
 import { restoreSkyTheme, setSkyVariant } from '../theme/skyTheme';
 import { primeTimezoneShift } from '../prayer/timezoneShift';
+import { primeLaunchReads } from '../boot/launchReads';
 import { primeTodayLayout } from '../screens/home/todayLayoutMemory';
 import { loadSettings, saveSettings } from '../settings/storage';
 import { applyLocationProviders } from '../settings/locationProviders';
@@ -204,6 +205,8 @@ export function PrayerSettingsProvider({
     // hour's — one render of every screen, not two (theme/skyTheme.ts).
     // And the clocks' record (prayer/timezoneShift.ts): asked for now, so
     // the first load's check does not queue behind the cache's reads.
+    // The launch's five small records, from the fast store (boot/launchReads.ts).
+    primeLaunchReads();
     primeTimezoneShift();
     // And Today's settled sizes (screens/home/todayLayoutMemory.ts), so the
     // first frame is laid out as the last launch's last was.

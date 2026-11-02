@@ -25,7 +25,6 @@
  * for any change of the sky.
  */
 import { useSyncExternalStore } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { skyFrame, skyMoment, type SkyPassage } from '../screens/home/skyModel';
 import {
   DEFAULT_SKY_VARIANT,
@@ -39,6 +38,7 @@ import {
   type SkyVariant,
 } from './skyMoods';
 import { crossfadeScreen } from '../native/LaunchSnapshot';
+import { launchRead, launchWrite } from '../boot/launchReads';
 
 export type SkyThemeColors = {
   /** The gradient's top colour, #RRGGBB. */
@@ -155,7 +155,7 @@ function same(a: SkyThemeColors, b: SkyThemeColors): boolean {
 }
 
 function persist(): void {
-  AsyncStorage.setItem(STORAGE_KEY, JSON.stringify({ ...current, day: currentDay ?? undefined })).catch(() => {
+  launchWrite(STORAGE_KEY, JSON.stringify({ ...current, day: currentDay ?? undefined })).catch(() => {
     // Best effort: the next launch opens in the default night instead.
   });
 }
@@ -248,7 +248,7 @@ function validLight(v: unknown): v is SkyLight {
 let restored: Promise<void> | null = null;
 export function restoreSkyTheme(now: () => Date = () => new Date()): Promise<void> {
   if (restored) return restored;
-  restored = AsyncStorage.getItem(STORAGE_KEY)
+  restored = launchRead(STORAGE_KEY)
     .then(raw => {
       if (published) return;
       if (!raw) {

@@ -17,6 +17,7 @@
  * never saw.
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { launchWrite } from '../boot/launchReads';
 import {
   durableEncryptedGet,
   durableEncryptedSet,
@@ -145,9 +146,7 @@ export async function writeData(
   }
   // The Quran store is written below, through the store, not here.
   if (touched.settings) {
-    jobs.push(
-      AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(next.settings)),
-    );
+    jobs.push(launchWrite(SETTINGS_KEY, JSON.stringify(next.settings)));
   }
   if (touched.location) {
     jobs.push(durableEncryptedSet(LOCATION_KEY, JSON.stringify(next.location)));

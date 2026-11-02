@@ -43,7 +43,7 @@
  * wrong and every app on it is wrong together; there is nothing here to
  * detect and nothing to fix.
  */
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { launchRead, launchWrite } from '../boot/launchReads';
 import type { PrayerDataProviderId } from '../settings/types';
 import { deviceUtcOffsetMinutes } from '../utils/utcOffset';
 import { deviceZone } from '../utils/zoneClock';
@@ -169,7 +169,7 @@ async function lastKnown(): Promise<Known | null> {
   if (!reading) {
     reading = (async () => {
       try {
-        const raw = await AsyncStorage.getItem(KEY);
+        const raw = await launchRead(KEY);
         if (raw == null) return null;
         const parsed = JSON.parse(raw);
         const minutes = Number(parsed?.minutes);
@@ -202,10 +202,7 @@ async function remember(
   const record: Known = { minutes, zone, at, forecast: forecastFrom(at) };
   known = record;
   try {
-    await AsyncStorage.setItem(
-      KEY,
-      JSON.stringify({ ...record, at: now.toISOString() }),
-    );
+    await launchWrite(KEY, JSON.stringify({ ...record, at: now.toISOString() }));
   } catch {
     // Then it is re-detected next launch, which costs one extra refresh
     // and is the safe direction to fail in.

@@ -69,6 +69,19 @@ jest.mock('@react-native-community/geolocation', () => ({
   },
 }));
 
+// react-native-mmkv is a native module (boot/launchReads.ts keeps the launch's
+// first reads in it). Under Jest it is absent, so the store refuses to open
+// and every launch read falls through to AsyncStorage's mock below — the
+// behaviour the storage tests were written against. launchReads.test.ts
+// mocks an in-memory store of its own to exercise the fast path.
+jest.mock('react-native-mmkv', () => ({
+  MMKV: class {
+    constructor() {
+      throw new Error('react-native-mmkv is not available under Jest');
+    }
+  },
+}));
+
 jest.mock('@react-native-async-storage/async-storage', () =>
   require('@react-native-async-storage/async-storage/jest/async-storage-mock'),
 );

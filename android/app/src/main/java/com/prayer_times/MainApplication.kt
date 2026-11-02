@@ -17,7 +17,21 @@ import com.google.android.material.color.DynamicColors
 import java.util.concurrent.TimeUnit
 import okhttp3.OkHttpClient
 
-class MainApplication : Application(), ReactApplication {
+/**
+ * `Configuration.Provider`: WorkManager starts when first asked for, not
+ * at process start. Notifee (its scheduled alerts) and Glance (its widget
+ * updates) bring WorkManager, whose androidx.startup initializer ran in
+ * every process of this app before `Application.onCreate` — a widget
+ * refresh's, an alarm's, a launch's — some tens of milliseconds of
+ * database and scheduler setup ahead of anything the person was waiting
+ * for. The initializer is removed in the manifest; the first
+ * `WorkManager.getInstance` builds it from this configuration instead,
+ * which is the default one (2.35).
+ */
+class MainApplication : Application(), ReactApplication, androidx.work.Configuration.Provider {
+  override fun getWorkManagerConfiguration(): androidx.work.Configuration =
+    androidx.work.Configuration.Builder().build()
+
 
   override val reactHost: ReactHost by lazy {
     getDefaultReactHost(

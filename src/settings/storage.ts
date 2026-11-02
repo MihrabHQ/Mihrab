@@ -2,6 +2,7 @@ import { minimalLook } from './minimalLook';
 import { DEFAULT_SKY_VARIANT, isSkyVariant } from '../theme/skyMoods';
 import { MADHABS, madhabMatches, type Madhab } from '../prayer/madhab';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { launchRead, launchWrite, launchClear } from '../boot/launchReads';
 import { resolveDeviceLanguage } from '../i18n/deviceLanguage';
 import { coerceNotificationSoundId } from '../notifications/notificationSounds';
 import { coerceSavedAccents } from './accentColors';
@@ -313,7 +314,7 @@ function asRecord(v: unknown): Record<string, unknown> | null {
 
 async function readPlaintextOnDisk(): Promise<Record<string, unknown> | null> {
   try {
-    const raw = await AsyncStorage.getItem(KEY);
+    const raw = await launchRead(KEY);
     if (!raw) return {};
     return asRecord(JSON.parse(raw)) ?? {};
   } catch {
@@ -439,7 +440,7 @@ async function loadSettingsUncached(): Promise<PrayerAppSettings> {
   let plaintextRaw: string | null = null;
   let secure: SecureSettings = {};
   const [plainResult, secureResult] = await Promise.allSettled([
-    AsyncStorage.getItem(KEY),
+    launchRead(KEY),
     readSecureSettings(),
   ]);
   if (secureResult.status === 'fulfilled') {
@@ -508,7 +509,7 @@ async function loadSettingsUncached(): Promise<PrayerAppSettings> {
     try {
       await saveSecureSettings(migrated);
       const stripped = stripSecureFields(parsed);
-      await AsyncStorage.setItem(KEY, JSON.stringify(stripped));
+      await launchWrite(KEY, JSON.stringify(stripped));
       secure = migrated;
       parsed = stripped as Partial<PrayerAppSettings> & Record<string, unknown>;
     } catch (e) {
@@ -881,7 +882,7 @@ async function performSave(settings: PrayerAppSettings): Promise<void> {
     await saveSecureFallback(plan.secure);
   }
   if (plan.plaintext) {
-    await AsyncStorage.setItem(KEY, JSON.stringify(plan.plaintext));
+    await launchWrite(KEY, JSON.stringify(plan.plaintext));
   }
 }
 
@@ -945,6 +946,7 @@ export async function resetAppData(): Promise<void> {
   // Nothing left to protect: the reset is the one write meant to erase it.
   unreadLocation = null;
   unreadPlaintext = null;
+  launchClear();
   try {
     await AsyncStorage.multiRemove(asyncKeys);
   } catch (e) {
