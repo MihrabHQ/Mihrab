@@ -218,14 +218,14 @@ struct ReadingEntryView: View {
               Link(destination: play) {
                 Image(systemName: "play.fill")
                   .font(.system(size: 12, weight: .bold))
-                  .foregroundStyle(resolvedWidgetHighlightColor())
+                  .foregroundStyle(resolvedWidgetHighlightColor(at: entry.date))
                   .frame(width: 32, height: 32)
                   .background(
-                    Circle().fill(resolvedWidgetHighlightColor().opacity(0.18))
+                    Circle().fill(resolvedWidgetHighlightColor(at: entry.date).opacity(0.18))
                   )
                   .overlay(
                     Circle().stroke(
-                      resolvedWidgetHighlightColor().opacity(0.45),
+                      resolvedWidgetHighlightColor(at: entry.date).opacity(0.45),
                       lineWidth: 1
                     )
                   )
@@ -281,7 +281,7 @@ struct ReadingEntryView: View {
             ForEach(Array(planStatusLines(k).enumerated()), id: \.offset) { _, line in
               Text(verbatim: line)
                 .font(.system(size: 11, weight: .medium))
-                .foregroundStyle(k.behindBy > 0 ? behindColor : resolvedWidgetHighlightColor())
+                .foregroundStyle(k.behindBy > 0 ? behindColor : resolvedWidgetHighlightColor(at: entry.date))
                 .lineLimit(1)
                 .minimumScaleFactor(0.75)
             }
@@ -359,7 +359,7 @@ struct ReadingEntryView: View {
       }
       Text(verbatim: planStatus(k))
         .font(.system(size: 10, weight: .medium))
-        .foregroundStyle(k.behindBy > 0 ? behindColor : resolvedWidgetHighlightColor())
+        .foregroundStyle(k.behindBy > 0 ? behindColor : resolvedWidgetHighlightColor(at: entry.date))
         .lineLimit(1)
         .minimumScaleFactor(0.75)
     } else {
@@ -402,7 +402,7 @@ struct ReadingEntryView: View {
         Capsule()
           .fill(widgetMuted.opacity(0.25))
         Capsule()
-          .fill(resolvedWidgetHighlightColor())
+          .fill(resolvedWidgetHighlightColor(at: entry.date))
           .frame(width: geo.size.width * shown)
       }
     }
@@ -508,7 +508,7 @@ struct ReadingWidget: Widget {
   var body: some WidgetConfiguration {
     StaticConfiguration(kind: "MihrabReading", provider: ReadingProvider()) { entry in
       ReadingEntryView(entry: entry)
-        .modifier(WidgetBackgroundCompatModifier())
+        .modifier(WidgetBackgroundCompatModifier(date: entry.date))
         // The app has its own language setting; this is what makes the
         // labels below follow it rather than the phone. See mihrabLocale().
         .environment(\.locale, mihrabLocale())

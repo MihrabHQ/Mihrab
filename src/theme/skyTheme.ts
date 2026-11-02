@@ -199,6 +199,16 @@ export function getSkyTheme(): SkyThemeColors {
 }
 
 /**
+ * The day the sky was published from — its times and where the reader
+ * is — for what wants the sky at other hours than this one: the widgets'
+ * day ahead (widget/widgetSkySchedule.ts). Null before the hero has
+ * published a day and nothing was kept.
+ */
+export function getSkyThemeDay(): SkyThemeDay | null {
+  return currentDay;
+}
+
+/**
  * Which colours the theme wears — Vibrant or Realistic (skyMoods.ts) —
  * from the settings. The sky itself is unchanged, but every reader's
  * palette is not: the snapshot is renewed so they re-render with it.

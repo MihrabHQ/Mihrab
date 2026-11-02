@@ -223,7 +223,7 @@ struct HijriEntryView: View {
           .lineLimit(1)
         Text(nextMonthPhrase(h.nextMonthInDays))
           .font(.system(size: 13, weight: .semibold))
-          .foregroundStyle(resolvedWidgetHighlightColor())
+          .foregroundStyle(resolvedWidgetHighlightColor(at: entry.date))
           .lineLimit(1)
           .minimumScaleFactor(0.7)
       }
@@ -251,7 +251,7 @@ struct HijriDateWidget: Widget {
   var body: some WidgetConfiguration {
     StaticConfiguration(kind: "MihrabHijriDate", provider: HijriProvider()) { entry in
       HijriEntryView(entry: entry)
-        .modifier(WidgetBackgroundCompatModifier())
+        .modifier(WidgetBackgroundCompatModifier(date: entry.date))
         // The app has its own language setting; this is what makes the
         // labels below follow it rather than the phone. See mihrabLocale().
         .environment(\.locale, mihrabLocale())

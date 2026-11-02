@@ -208,6 +208,28 @@ RCT_EXPORT_METHOD(setIosWidgetHighlightAppearance:(NSString *)highlightId
   resolve(nil);
 }
 
+/**
+ * The Sky theme's day on the widgets: `[[minuteOfDay, "#bg", "#accent"], …]`
+ * from JS's `widgetSkySchedule` (src/widget/widgetSkySchedule.ts), which
+ * the extension reads for each timeline entry's own minute (WidgetSky in
+ * PrayerWidgetExtension.swift). Nil or empty clears it: the theme is off.
+ */
+RCT_EXPORT_METHOD(setWidgetSkySchedule:(NSString *)json
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
+  NSUserDefaults *group = MihrabAppGroupDefaults();
+  NSUserDefaults *target = group != nil ? group : [NSUserDefaults standardUserDefaults];
+  if (json != nil && json.length > 0) {
+    [target setObject:json forKey:@"widget_sky_schedule"];
+  } else {
+    [target removeObjectForKey:@"widget_sky_schedule"];
+  }
+  [target synchronize];
+  [WidgetTimelineReloader reloadAllTimelinesIfAvailable];
+  resolve(nil);
+}
+
 @end
 
 /**

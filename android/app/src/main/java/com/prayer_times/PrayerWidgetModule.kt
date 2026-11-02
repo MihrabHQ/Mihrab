@@ -260,6 +260,28 @@ class PrayerWidgetModule(private val reactContext: ReactApplicationContext) :
   }
 
   /**
+   * The Sky theme's whole day on the widgets: `[[minuteOfDay, "#bg",
+   * "#accent"], …]`, from JS's `widgetSkySchedule`, which every widget
+   * reads for the minute it is drawn at (WidgetSkySchedule.kt) — so a card
+   * drawn at Isha wears the night whether or not the app has been open
+   * since the afternoon. Null clears it: the theme is off.
+   */
+  @ReactMethod
+  fun setWidgetSkySchedule(json: String?, promise: Promise) {
+    try {
+      reactContext
+        .getSharedPreferences(PrayerWidgetProvider.PREFS_NAME, Context.MODE_PRIVATE)
+        .edit()
+        .putString(PrayerWidgetProvider.PREFS_WIDGET_SKY_SCHEDULE, json?.trim() ?: "")
+        .apply()
+      PrayerWidgetProvider.requestUpdate(reactContext)
+      promise.resolve(null)
+    } catch (e: Exception) {
+      promise.reject("E_WIDGET_SKY", e.message, e)
+    }
+  }
+
+  /**
    * The prayer-times widget's display options as stored — they can be
    * changed from the widget's own settings screen, so the app reads them
    * back. Null until either side has written them.

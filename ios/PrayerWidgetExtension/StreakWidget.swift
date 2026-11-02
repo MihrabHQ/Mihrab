@@ -190,7 +190,7 @@ struct StreakEntryView: View {
             dayCount: 14,
             cell: 9,
             spacing: 2,
-            accent: resolvedWidgetHighlightColor()
+            accent: resolvedWidgetHighlightColor(at: entry.date)
           )
         }
       }
@@ -265,7 +265,7 @@ struct StreakWidget: Widget {
   var body: some WidgetConfiguration {
     StaticConfiguration(kind: "MihrabStreak", provider: StreakProvider()) { entry in
       StreakEntryView(entry: entry)
-        .modifier(WidgetBackgroundCompatModifier())
+        .modifier(WidgetBackgroundCompatModifier(date: entry.date))
         // The app has its own language setting; this is what makes the
         // labels below follow it rather than the phone. See mihrabLocale().
         .environment(\.locale, mihrabLocale())

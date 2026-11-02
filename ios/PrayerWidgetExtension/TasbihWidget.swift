@@ -342,13 +342,13 @@ struct TasbihEntryView: View {
           .minimumScaleFactor(0.5)
         Text(verbatim: target > 0 ? widgetString("widget_tasbih_of", target) : "")
           .font(.system(size: 13, weight: .medium))
-          .foregroundStyle(complete ? resolvedWidgetHighlightColor() : widgetMuted)
+          .foregroundStyle(complete ? resolvedWidgetHighlightColor(at: entry.date) : widgetMuted)
           .lineLimit(1)
       }
       if complete {
         Text(unbounded ? "widget_tasbih_keep_going" : "widget_tasbih_complete")
           .font(.system(size: 10, weight: .medium))
-          .foregroundStyle(resolvedWidgetHighlightColor())
+          .foregroundStyle(resolvedWidgetHighlightColor(at: entry.date))
           .lineLimit(1)
           .minimumScaleFactor(0.8)
       }
@@ -362,7 +362,7 @@ struct TasbihEntryView: View {
       HStack(spacing: 3) {
         ForEach(0..<max(1, t.total), id: \.self) { i in
           Circle()
-            .fill(i == entry.index ? resolvedWidgetHighlightColor() : widgetMuted.opacity(0.35))
+            .fill(i == entry.index ? resolvedWidgetHighlightColor(at: entry.date) : widgetMuted.opacity(0.35))
             .frame(width: 4, height: 4)
         }
       }
@@ -411,21 +411,21 @@ struct TasbihEntryView: View {
       .font(.system(size: prominent ? 20 : 12, weight: .semibold))
       .foregroundStyle(
         !enabled ? widgetMuted.opacity(0.5)
-          : prominent ? resolvedWidgetHighlightColor() : widgetText
+          : prominent ? resolvedWidgetHighlightColor(at: entry.date) : widgetText
       )
       .frame(maxWidth: .infinity)
       .padding(.vertical, prominent ? 12 : 7)
       .background(
         RoundedRectangle(cornerRadius: 10, style: .continuous)
           .fill(prominent
-                ? resolvedWidgetHighlightColor().opacity(enabled ? 0.18 : 0.07)
+                ? resolvedWidgetHighlightColor(at: entry.date).opacity(enabled ? 0.18 : 0.07)
                 : widgetMuted.opacity(0.16))
       )
       .overlay(
         RoundedRectangle(cornerRadius: 10, style: .continuous)
           .strokeBorder(
             prominent
-              ? resolvedWidgetHighlightColor().opacity(enabled ? 0.45 : 0.18)
+              ? resolvedWidgetHighlightColor(at: entry.date).opacity(enabled ? 0.45 : 0.18)
               : widgetMuted.opacity(0.3),
             lineWidth: 1
           )
@@ -447,7 +447,7 @@ struct TasbihWidget: Widget {
   var body: some WidgetConfiguration {
     StaticConfiguration(kind: "MihrabTasbih", provider: TasbihProvider()) { entry in
       TasbihEntryView(entry: entry)
-        .modifier(WidgetBackgroundCompatModifier())
+        .modifier(WidgetBackgroundCompatModifier(date: entry.date))
         // The app has its own language setting; this is what makes the
         // labels below follow it rather than the phone. See mihrabLocale().
         .environment(\.locale, mihrabLocale())

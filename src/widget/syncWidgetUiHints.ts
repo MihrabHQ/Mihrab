@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Platform, AppState } from 'react-native';
+import { afterInteractions } from '../utils/afterInteractions';
 import { usePrayerSettings } from '../context/PrayerSettingsContext';
 import type { PrayerAppSettings, WidgetHighlightId } from '../settings/types';
 import { getPrayerWidgetModule } from '../native/PrayerWidget';
 import { coerceWidgetTimeScale } from '../settings/storage';
-import { useSkyTheme } from '../theme/skyTheme';
+import { getSkyThemeDay, useSkyTheme } from '../theme/skyTheme';
 import { PALETTE_STEPS, skyMoodFor, widgetSkyColors } from '../theme/skyMoods';
+import { widgetSkySchedule } from './widgetSkySchedule';
 
 // 'dynamic' is gone (2026-08-27), so a native side still reporting it is
 // not adopted back into settings.
@@ -213,4 +215,37 @@ export function useSyncWidgetUiHints(): void {
     const mod = getPrayerWidgetModule();
     void mod?.setAndroidWidgetSky?.(skyBg, skyAccent)?.catch(() => {});
   }, [hydrated, nativeSynced, skyBg, skyAccent]);
+
+  // And the whole day ahead (widget/widgetSkySchedule.ts), so a widget
+  // drawn at Isha or at an unlock in the small hours wears that hour's
+  // sky, not the one the app was last open in. Written once per day, per
+  // place and per variant — the sky store's day changes at midnight and
+  // when the reader moves — and cleared when the theme is turned off.
+  const day = skyOn ? getSkyThemeDay() : null;
+  const dayKey = day
+    ? `${day.day}|${JSON.stringify(day.times)}|${day.tomorrowFajr ?? ''}|${day.where?.latitude ?? ''},${day.where?.longitude ?? ''}|${settings.skyVariant}`
+    : null;
+  useEffect(() => {
+    if (!hydrated || !nativeSynced) return;
+    const mod = getPrayerWidgetModule();
+    if (!mod?.setWidgetSkySchedule) return;
+    if (!day || !dayKey) {
+      void mod.setWidgetSkySchedule(null).catch(() => {});
+      return;
+    }
+    // Seven hundred samples of the sky: after the frame, not in it.
+    let cancelled = false;
+    const handle = afterInteractions(() => {
+      if (cancelled) return;
+      const schedule = widgetSkySchedule(day, settings.skyVariant);
+      void mod.setWidgetSkySchedule?.(schedule.length ? JSON.stringify(schedule) : null).catch(() => {});
+    });
+    return () => {
+      cancelled = true;
+      handle.cancel();
+    };
+    // `day` is read through `dayKey`: the store hands out the same object
+    // until the day, the place or the times change, and the key says so.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hydrated, nativeSynced, dayKey]);
 }

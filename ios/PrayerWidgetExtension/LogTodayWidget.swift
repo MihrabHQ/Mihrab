@@ -441,7 +441,7 @@ struct LogTodayEntryView: View {
 
   private func glyphColor(_ state: CellState) -> Color {
     switch state {
-    case .done: return resolvedWidgetHighlightColor()
+    case .done: return resolvedWidgetHighlightColor(at: entry.date)
     case .due: return widgetText
     case .missed: return dangerColor
     case .waiting: return widgetMuted.opacity(0.6)
@@ -450,7 +450,7 @@ struct LogTodayEntryView: View {
 
   private func background(_ state: CellState) -> Color {
     switch state {
-    case .done: return resolvedWidgetHighlightColor().opacity(0.18)
+    case .done: return resolvedWidgetHighlightColor(at: entry.date).opacity(0.18)
     case .due: return widgetMuted.opacity(0.16)
     case .missed: return dangerColor.opacity(0.14)
     case .waiting: return .clear
@@ -459,7 +459,7 @@ struct LogTodayEntryView: View {
 
   private func border(_ state: CellState) -> Color {
     switch state {
-    case .done: return resolvedWidgetHighlightColor().opacity(0.45)
+    case .done: return resolvedWidgetHighlightColor(at: entry.date).opacity(0.45)
     case .due: return widgetMuted.opacity(0.35)
     case .missed: return dangerColor.opacity(0.4)
     case .waiting: return widgetMuted.opacity(0.18)
@@ -487,7 +487,7 @@ struct LogTodayWidget: Widget {
   var body: some WidgetConfiguration {
     StaticConfiguration(kind: "MihrabLogToday", provider: LogTodayProvider()) { entry in
       LogTodayEntryView(entry: entry)
-        .modifier(WidgetBackgroundCompatModifier())
+        .modifier(WidgetBackgroundCompatModifier(date: entry.date))
         // The app has its own language setting; this is what makes the
         // labels below follow it rather than the phone. See mihrabLocale().
         .environment(\.locale, mihrabLocale())

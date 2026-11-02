@@ -35,6 +35,14 @@ export interface PrayerWidgetInterface {
    */
   setAndroidWidgetSky?(bgHex: string | null, accentHex: string | null): Promise<void>;
   /**
+   * The Sky theme's whole day on the widgets, Android and iOS: the JSON
+   * of `widgetSkySchedule` (widget/widgetSkySchedule.ts) — from which
+   * minute of the local day the card and the accent are which colour —
+   * read natively each time a widget is drawn, or null when the theme is
+   * off. Absent on a binary older than the one that added it.
+   */
+  setWidgetSkySchedule?(json: string | null): Promise<void>;
+  /**
    * The prayer-times widget's own display options: text colour, which parts
    * are shown, and the size of the times in percent. Absent on a binary
    * older than the one that added it.

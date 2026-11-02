@@ -140,8 +140,14 @@ private fun readWidgetStyle(prefs: SharedPreferences): WidgetStyle {
   // resolves to green like any other unknown id.
   val tinted =
     prefs.getBoolean(PrayerWidgetProvider.PREFS_WIDGET_TINTED, false)
-  val skyBg = prefs.getString(PrayerWidgetProvider.PREFS_WIDGET_SKY_BG, "") ?: ""
-  val skyAccent = prefs.getString(PrayerWidgetProvider.PREFS_WIDGET_SKY_ACCENT, "") ?: ""
+  // The Sky theme: the hour's own colours from the day JS wrote ahead
+  // (WidgetSkySchedule), and failing that the colours of the hour the app
+  // was last open in. Both empty: the theme is off.
+  val sky = WidgetSkySchedule.colorsNow(
+    prefs.getString(PrayerWidgetProvider.PREFS_WIDGET_SKY_SCHEDULE, "") ?: "",
+  )
+  val skyBg = sky?.first ?: prefs.getString(PrayerWidgetProvider.PREFS_WIDGET_SKY_BG, "") ?: ""
+  val skyAccent = sky?.second ?: prefs.getString(PrayerWidgetProvider.PREFS_WIDGET_SKY_ACCENT, "") ?: ""
   return WidgetStyle(
     opacity.coerceIn(0, 100),
     hid.ifEmpty { "green" },
@@ -199,6 +205,8 @@ open class PrayerWidgetProvider : GlanceAppWidgetReceiver() {
     const val PREFS_WIDGET_TINTED = "widget_tinted_surfaces"
     const val PREFS_WIDGET_SKY_BG = "widget_sky_bg"
     const val PREFS_WIDGET_SKY_ACCENT = "widget_sky_accent"
+    /** The Sky theme's day ahead, as JSON segments (WidgetSkySchedule). */
+    const val PREFS_WIDGET_SKY_SCHEDULE = "widget_sky_schedule"
     /**
      * The language tag Mihrab itself is running in, copied out of the payload
      * when JS saves it. See `localized`.

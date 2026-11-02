@@ -314,7 +314,69 @@ private func presetHighlightColor(_ id: String) -> Color {
   }
 }
 
-func resolvedWidgetHighlightColor() -> Color {
+private let kSkyScheduleKey = "widget_sky_schedule"
+
+/// The app's Sky theme on the widgets, when it is on.
+///
+/// JS writes the whole day ahead (`widgetSkySchedule`,
+/// src/widget/widgetSkySchedule.ts): `[[minuteOfDay, "#RRGGBB" card,
+/// "#RRGGBB" accent], …]`, in order from the day's first minute. A
+/// timeline entry takes the segment in force at its own minute — the
+/// night's ink at Isha, the dawn's at Fajr — so the card is the hour's
+/// whether or not the app has been open since. One day stands for the
+/// days after it: the times move a few minutes a day, which the sky
+/// cannot show, and the next open of the app writes the day it is on.
+enum WidgetSky {
+  struct Segment { let minute: Int; let bg: Color; let accent: Color }
+  private static var cachedJSON: String?
+  private static var cached: [Segment] = []
+
+  private static func parse(_ json: String) -> [Segment] {
+    guard let data = json.data(using: .utf8),
+          let arr = try? JSONSerialization.jsonObject(with: data) as? [[Any]] else { return [] }
+    var out: [Segment] = []
+    for seg in arr {
+      guard seg.count >= 3,
+            let minute = seg[0] as? Int, minute >= 0,
+            let bgHex = seg[1] as? String, let bg = Color(hexRGB: bgHex),
+            let accentHex = seg[2] as? String, let accent = Color(hexRGB: accentHex) else { continue }
+      out.append(Segment(minute: minute, bg: bg, accent: accent))
+    }
+    return out
+  }
+
+  /// The day's segments, or none: the theme is off, or nothing was written.
+  static func schedule() -> [Segment] {
+    let json = UserDefaults(suiteName: kSuite)?.string(forKey: kSkyScheduleKey) ?? ""
+    if json.isEmpty { return [] }
+    if json != cachedJSON {
+      cached = parse(json)
+      cachedJSON = json
+    }
+    return cached
+  }
+
+  /// The card and the accent at `date`'s minute of the local day; before the
+  /// first segment's minute the day's last holds, as the night does across
+  /// midnight. Nil when the theme is off.
+  static func colors(at date: Date) -> (bg: Color, accent: Color)? {
+    let s = schedule()
+    guard !s.isEmpty else { return nil }
+    let cal = WallClock.localCalendar
+    let minute = cal.component(.hour, from: date) * 60 + cal.component(.minute, from: date)
+    var hit = s[s.count - 1]
+    for seg in s {
+      if seg.minute <= minute { hit = seg } else { break }
+    }
+    return (hit.bg, hit.accent)
+  }
+}
+
+/// The accent, for the moment `at` — a timeline entry's own date, since
+/// WidgetKit draws every entry when the timeline is handed over, not when
+/// the entry comes up; `Date()` for a view with no entry in reach.
+func resolvedWidgetHighlightColor(at date: Date = Date()) -> Color {
+  if let sky = WidgetSky.colors(at: date) { return sky.accent }
   let def = UserDefaults(suiteName: kSuite)
   if def?.bool(forKey: kHighlightDynamicKey) == true { return Color.accentColor }
   let id = def?.string(forKey: kHighlightIdKey) ?? "green"
@@ -361,7 +423,9 @@ private func resolvedHighlightRGB() -> (Double, Double, Double) {
 /// tinted chrome. The card carries light text, so the wash is modest and the
 /// card stays dark enough to hold it. Called at render time, so a change to
 /// the setting takes effect on the next timeline reload.
-func resolvedWidgetBackground() -> Color {
+func resolvedWidgetBackground(at date: Date = Date()) -> Color {
+  // The Sky theme: the hour's own card, at the card's usual opacity.
+  if let sky = WidgetSky.colors(at: date) { return sky.bg.opacity(0.88) }
   let def = UserDefaults(suiteName: kSuite)
   guard def?.bool(forKey: kWidgetTintedKey) == true else { return widgetBg }
   let (hr, hg, hb) = resolvedHighlightRGB()
@@ -1308,7 +1372,7 @@ struct PrayerWidgetEntryView: View {
   /// `secondary` is the treatment for a row that belongs on the card but is
   /// not a salāh — Sunrise, Islamic Midnight, the Last Third.
   private func rowColor(highlight: Bool, secondary: Bool) -> Color {
-    if highlight { return resolvedWidgetHighlightColor() }
+    if highlight { return resolvedWidgetHighlightColor(at: entry.date) }
     return secondary ? widgetMuted : widgetText
   }
 
@@ -1369,14 +1433,14 @@ struct PrayerWidgetEntryView: View {
             if let time, !time.isEmpty {
               Text(time)
                 .font(.system(size: 22, weight: .regular))
-                .foregroundStyle(resolvedWidgetHighlightColor())
+                .foregroundStyle(resolvedWidgetHighlightColor(at: entry.date))
                 .lineLimit(1)
                 .minimumScaleFactor(0.6)
             }
           }
           Spacer(minLength: 0)
           if let interval {
-            IntervalRing(interval: interval, tint: resolvedWidgetHighlightColor())
+            IntervalRing(interval: interval, tint: resolvedWidgetHighlightColor(at: entry.date))
               .frame(width: 38, height: 38)
           }
         }
@@ -1449,7 +1513,7 @@ struct PrayerWidgetEntryView: View {
           if let time = entry.dynamicNextTime ?? p.nextPrayerText, !time.isEmpty {
             Text(time)
               .font(.system(size: 34, weight: .light))
-              .foregroundStyle(resolvedWidgetHighlightColor())
+              .foregroundStyle(resolvedWidgetHighlightColor(at: entry.date))
               .lineLimit(1)
               .minimumScaleFactor(0.7)
           }
@@ -1508,12 +1572,12 @@ struct PrayerWidgetEntryView: View {
               // Highlight background
               if highlight {
                 RoundedRectangle(cornerRadius: 6, style: .continuous)
-                  .fill(resolvedWidgetHighlightColor().opacity(0.15))
+                  .fill(resolvedWidgetHighlightColor(at: entry.date).opacity(0.15))
               }
               // Left accent bar for highlighted row
               if highlight {
                 Rectangle()
-                  .fill(resolvedWidgetHighlightColor())
+                  .fill(resolvedWidgetHighlightColor(at: entry.date))
                   .frame(width: 3)
                   .cornerRadius(1.5)
               }
@@ -1712,7 +1776,7 @@ struct PrayerWidgetEntryView: View {
             if let time, !time.isEmpty {
               Text(time)
                 .font(.system(size: 20, weight: .regular))
-                .foregroundStyle(resolvedWidgetHighlightColor())
+                .foregroundStyle(resolvedWidgetHighlightColor(at: entry.date))
                 .lineLimit(1)
                 .padding(.bottom, 2)
             }
@@ -1783,9 +1847,9 @@ struct PrayerWidgetEntryView: View {
     ZStack(alignment: .leading) {
       if highlight {
         RoundedRectangle(cornerRadius: 7, style: .continuous)
-          .fill(resolvedWidgetHighlightColor().opacity(0.15))
+          .fill(resolvedWidgetHighlightColor(at: entry.date).opacity(0.15))
         Rectangle()
-          .fill(resolvedWidgetHighlightColor())
+          .fill(resolvedWidgetHighlightColor(at: entry.date))
           .frame(width: 3)
           .cornerRadius(1.5)
       }
@@ -1844,7 +1908,7 @@ struct PrayerWidgetEntryView: View {
             dayCount: max(7, Int((g.size.width + spacing) / (cell + spacing))),
             cell: cell,
             spacing: spacing,
-            accent: resolvedWidgetHighlightColor()
+            accent: resolvedWidgetHighlightColor(at: entry.date)
           )
           .frame(maxWidth: .infinity, alignment: .trailing)
         }
@@ -1886,12 +1950,14 @@ struct PrayerWidgetEntryView: View {
 }
 
 struct WidgetBackgroundCompatModifier: ViewModifier {
+  /// The entry's own date, for the Sky theme's card at that hour.
+  var date: Date = Date()
   @ViewBuilder
   func body(content: Content) -> some View {
     if #available(iOSApplicationExtension 17.0, *) {
-      content.containerBackground(for: .widget) { resolvedWidgetBackground() }
+      content.containerBackground(for: .widget) { resolvedWidgetBackground(at: date) }
     } else {
-      content.background(resolvedWidgetBackground())
+      content.background(resolvedWidgetBackground(at: date))
     }
   }
 }
@@ -1905,7 +1971,7 @@ struct PrayerTimesHomeWidget: Widget {
   var body: some WidgetConfiguration {
     StaticConfiguration(kind: "PrayerTimesWidget", provider: Provider()) { entry in
       PrayerWidgetEntryView(entry: entry)
-        .modifier(WidgetBackgroundCompatModifier())
+        .modifier(WidgetBackgroundCompatModifier(date: entry.date))
         // The app has its own language setting; this is what makes the
         // labels below follow it rather than the phone. See mihrabLocale().
         .environment(\.locale, mihrabLocale())
