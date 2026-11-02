@@ -1,3 +1,37 @@
+diff --git a/node_modules/react-native/Libraries/ReactNative/UIManager.js b/node_modules/react-native/Libraries/ReactNative/UIManager.js
+index a97c6a7..ca77cb1 100644
+--- a/node_modules/react-native/Libraries/ReactNative/UIManager.js
++++ b/node_modules/react-native/Libraries/ReactNative/UIManager.js
+@@ -23,9 +23,14 @@ const UIManagerImpl: UIManagerJSInterface =
+     ? require('./BridgelessUIManager').default
+     : require('./PaperUIManager').default;
+ 
+-// $FlowFixMe[cannot-spread-interface]
++// MIHRAB PATCH — copy the implementation's properties without reading
++// them. On Android in the new architecture, BridgelessUIManager defines one
++// lazy property per native view manager whose getter asks the native side
++// for that manager's constants; a spread reads every one of them at
++// launch — every view manager's constants, 33 ms on a Pixel 10 Pro before
++// the first frame (tools/startup-trace), for a table nothing reads. The
++// getters are carried over as getters, so each still answers when asked.
+ const UIManager: UIManagerJSInterface = {
+-  ...UIManagerImpl,
+   /**
+    * Determines the location on screen, width, and height of the given view and
+    * returns the values via an async callback. If successful, the callback will
+@@ -242,5 +247,12 @@ const UIManager: UIManagerJSInterface = {
+     }
+   },
+ };
++for (const key of Object.keys(UIManagerImpl)) {
++  if (Object.prototype.hasOwnProperty.call(UIManager, key)) continue;
++  const descriptor = Object.getOwnPropertyDescriptor(UIManagerImpl, key);
++  if (descriptor) {
++    Object.defineProperty(UIManager, key, {...descriptor, configurable: true});
++  }
++}
+ 
+ export default UIManager;
 diff --git a/node_modules/react-native/Libraries/Text/Text.js b/node_modules/react-native/Libraries/Text/Text.js
 index 902fcab..146b70b 100644
 --- a/node_modules/react-native/Libraries/Text/Text.js

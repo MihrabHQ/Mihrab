@@ -22,7 +22,7 @@ describe('Sweden correction list', () => {
       for (const e of entries) {
         const m = re.exec(e);
         expect(m).not.toBeNull();
-        expect(m![1] >= swedenCorrectionsCoverage.from && m![1] <= swedenCorrectionsCoverage.to).toBe(true);
+        expect(m![1] >= swedenCorrectionsCoverage().from && m![1] <= swedenCorrectionsCoverage().to).toBe(true);
         n++;
       }
     }

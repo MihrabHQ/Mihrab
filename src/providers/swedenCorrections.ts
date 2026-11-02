@@ -12,11 +12,6 @@
  * certified for the same method can replace one at run time
  * (`methodCurrency.ts`).
  */
-import swedenList from './data/swedenCorrections.json';
-import diyanetList from './data/diyanetCorrections.json';
-import moroccoList from './data/moroccoCorrections.json';
-import algeriaList from './data/algeriaCorrections.json';
-import indonesiaList from './data/indonesiaCorrections.json';
 
 type Key = 'fajr' | 'sunrise' | 'dhuhr' | 'asr' | 'maghrib' | 'isha';
 export type Corrections = { from: string; to: string; points: Record<string, string[]> };
@@ -25,14 +20,20 @@ export const CORRECTION_AUTHORITIES: readonly CorrectionAuthority[] = ['sweden',
 
 type Index = Map<string, Map<string, Partial<Record<Key, number>>>>;
 
-const BUNDLED: Record<CorrectionAuthority, Corrections> = {
-  sweden: swedenList as Corrections,
-  diyanet: diyanetList as Corrections,
-  morocco: moroccoList as Corrections,
-  algeria: algeriaList as Corrections,
-  indonesia: indonesiaList as Corrections,
+// The bundled lists are read when an authority is first asked about, not
+// when this module loads: it loads at launch, on the way to the first
+// times, and Diyanet's list alone was 5 ms of the start for a reader its
+// places never cover (tools/startup-trace).
+const BUNDLED: Record<CorrectionAuthority, () => Corrections> = {
+  sweden: () => require('./data/swedenCorrections.json') as Corrections,
+  diyanet: () => require('./data/diyanetCorrections.json') as Corrections,
+  morocco: () => require('./data/moroccoCorrections.json') as Corrections,
+  algeria: () => require('./data/algeriaCorrections.json') as Corrections,
+  indonesia: () => require('./data/indonesiaCorrections.json') as Corrections,
 };
-const inForce: Record<CorrectionAuthority, Corrections> = { ...BUNDLED };
+const inForce: Partial<Record<CorrectionAuthority, Corrections>> = {};
+const listInForce = (authority: CorrectionAuthority): Corrections =>
+  (inForce[authority] ??= BUNDLED[authority]());
 const indexes: Partial<Record<CorrectionAuthority, Index>> = {};
 
 function build(from: Corrections): Index {
@@ -60,7 +61,7 @@ export function correctionFor(
   month: number,
   day: number,
 ): Partial<Record<Key, number>> | undefined {
-  const index = (indexes[authority] ??= build(inForce[authority]));
+  const index = (indexes[authority] ??= build(listInForce(authority)));
   return index.get(`${lat.toFixed(3)},${lon.toFixed(3)}`)?.get(dateKeyOf(year, month, day));
 }
 
@@ -71,7 +72,7 @@ export function summarize(list: Corrections): CorrectionsSummary {
 }
 /** The list in force for an authority. */
 export function correctionsInForce(authority: CorrectionAuthority): CorrectionsSummary {
-  return summarize(inForce[authority]);
+  return summarize(listInForce(authority));
 }
 /** A short key for the list in force, for what is stored under it. */
 export function correctionsKey(authority: CorrectionAuthority): string {
@@ -100,7 +101,7 @@ export function setCorrections(authority: CorrectionAuthority, list: Corrections
 /** Tests: back to the bundled lists. */
 export function _resetCorrectionsForTests(): void {
   for (const a of CORRECTION_AUTHORITIES) {
-    inForce[a] = BUNDLED[a];
+    delete inForce[a];
     delete indexes[a];
   }
 }
@@ -112,5 +113,8 @@ export const moroccoCorrection = (lat: number, lon: number, y: number, m: number
 export const algeriaCorrection = (lat: number, lon: number, y: number, m: number, d: number) => correctionFor('algeria', lat, lon, y, m, d);
 export const indonesiaCorrection = (lat: number, lon: number, y: number, m: number, d: number) => correctionFor('indonesia', lat, lon, y, m, d);
 
-/** The dates Sweden's list covers. */
-export const swedenCorrectionsCoverage = { from: BUNDLED.sweden.from, to: BUNDLED.sweden.to };
+/** The dates Sweden's bundled list covers. */
+export const swedenCorrectionsCoverage = (): { from: string; to: string } => {
+  const l = BUNDLED.sweden();
+  return { from: l.from, to: l.to };
+};
