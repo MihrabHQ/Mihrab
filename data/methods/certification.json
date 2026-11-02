@@ -113,18 +113,18 @@
       {
         "tables": "Indonesia — Kemenag",
         "places": 517,
-        "times": 266772,
+        "times": 362934,
         "off": 0,
-        "offWithoutCorrections": 84,
+        "offWithoutCorrections": 405,
         "from": "2026-10-07",
-        "to": "2026-12-31"
+        "to": "2027-01-31"
       }
     ],
     "corrections": {
       "from": "2026-10-07",
-      "to": "2026-12-31",
-      "entries": 84,
-      "sha256": "7c7d3b09a5b01a4d77c605ad8a37fbdac4fd3ef65df483332d75c67891b2359e"
+      "to": "2027-01-31",
+      "entries": 405,
+      "sha256": "5d9dc4703832e0ae850aff0af79a6d2436e013f5e1e2203ace41c6e05b36978d"
     },
     "revision": 1
   }
