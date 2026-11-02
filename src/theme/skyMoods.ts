@@ -1054,8 +1054,13 @@ export function skyMoodFor(
 ): SkyMood {
   const v = isSkyVariant(variant) ? variant : DEFAULT_SKY_VARIANT;
   // Quantised: the sun to a degree (a quarter, for the hero), the day's
-  // and the night's progress to a step, the moon to an eighth.
-  const q = steps ? 1 : 4;
+  // and the night's progress to a step, the moon to an eighth. High in
+  // the day, where the stations stand twenty and thirty degrees apart, and
+  // deep in the night, where nothing hangs on the sun at all, the palette
+  // moves in two-degree steps: a step that no one can see, and half as
+  // many whole-app re-renders through a Makkah afternoon.
+  const far = Math.abs(light.sun) > 20;
+  const q = steps ? (far ? 0.5 : 1) : 4;
   const sun = Math.round(light.sun * q) / q;
   const prog = steps ? Math.round(clamp01(t) * steps) / steps : Math.round(clamp01(t) * 240) / 240;
   const daylight = light.daylight == null ? null : Math.round(light.daylight * 64) / 64;

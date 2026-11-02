@@ -328,10 +328,17 @@ describe('the store', () => {
     expect(getSkyTheme().passage).toBe('day');
     expect(getSkyTheme().t).toBeGreaterThan(0.4);
     expect(getSkyTheme().t).toBeLessThan(0.5);
-    // Another day: the times are not this day's; the remembered sky stands.
+    // Another day: a recent day's times still put the launch in its hour
+    // (they move minutes a day, which the sky cannot show) — three days
+    // on, at noon, the day and not the dawn the app was left in.
     _resetSkyThemeForTests();
-    await restoreSkyTheme(() => new Date(2026, 9, 14, 10, 50));
-    expect(getSkyTheme().passage).toBe('dawn');
+    await restoreSkyTheme(() => new Date(2026, 9, 16, 10, 50));
+    expect(getSkyTheme().passage).toBe('day');
+    // A season on, the kept times are nobody's: the nominal day's hour.
+    _resetSkyThemeForTests();
+    await restoreSkyTheme(() => new Date(2027, 2, 13, 10, 50));
+    expect(getSkyTheme().passage).toBe('day');
+    expect(getSkyTheme().light).toBeUndefined();
     // The hero's own publish of the same hour then changes nothing.
     const off = useSkyThemeSubscribe();
     _resetSkyThemeForTests();

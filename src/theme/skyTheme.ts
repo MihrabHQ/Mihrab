@@ -106,6 +106,17 @@ export function nominalSkyTheme(now: Date): SkyThemeColors {
 const PASSAGES: ReadonlySet<string> = new Set(['night', 'dawn', 'day', 'sunset', 'dusk']);
 
 const STORAGE_KEY = '@mihrab/skyTheme/v1';
+/** How old a kept day's times may be and still place a launch in its passage. */
+const STALE_DAY_LIMIT = 60;
+/** Whole days between two yyyy-mm-dd keys; a large number for one that does not parse. */
+function daysApart(a: string, b: string): number {
+  const ms = (k: string) => {
+    const [y, m, d] = k.split('-').map(Number);
+    return Number.isFinite(y) && Number.isFinite(m) && Number.isFinite(d) ? Date.UTC(y, m - 1, d) : NaN;
+  };
+  const diff = Math.abs(ms(a) - ms(b)) / 86_400_000;
+  return Number.isFinite(diff) ? diff : Number.POSITIVE_INFINITY;
+}
 const HEX = /^#[0-9a-fA-F]{6}$/;
 
 let current: SkyThemeColors = DEFAULT_SKY_THEME;
@@ -250,7 +261,15 @@ export function restoreSkyTheme(now: () => Date = () => new Date()): Promise<voi
       const day = (parsed as { day?: unknown }).day;
       if (validDay(day)) {
         const at = now();
-        if (day.day === skyDayKey(at)) {
+        // Today's times, or a recent day's: a launch three days after the
+        // app was last open at nine in the evening opened in that night at
+        // noon, then turned to the day once the hero had drawn (a whole
+        // second render of every screen, with the polarity's crossfade).
+        // Prayer times move a few minutes a day, which the sky cannot show;
+        // a day's old times put the launch in the right passage, and the
+        // sun and the moon are worked out for now in any case. Past a
+        // season they are left alone: the nominal day is nearer then.
+        if (daysApart(day.day, skyDayKey(at)) <= STALE_DAY_LIMIT) {
           try {
             const m = skyMoment(day.times as Record<string, string>, at, day.tomorrowFajr);
             // The sun and the moon for the launch's own clock, where the
@@ -260,6 +279,8 @@ export function restoreSkyTheme(now: () => Date = () => new Date()): Promise<voi
           } catch {
             // The remembered sky as it was, then.
           }
+        } else {
+          next = { ...next, ...nominalSkyTheme(at), light: undefined };
         }
         currentDay = day;
       }
