@@ -245,7 +245,7 @@ export async function republishWidgetPayload(
     // situation, and same fix, as `language` further down.
     setActiveClockFormat(settings.clockFormat);
     setWidgetSinceAdhanMinutes(settings.widgetSinceAdhanMinutes);
-    setFullScreenAlarmSkyTheme(settings.appearance === 'sky', settings.skyVariant);
+    setFullScreenAlarmSkyTheme(settings.appearance === 'sky', settings.skyVariant, resolveCoordsFromSettings(settings));
     await refreshSystemIs24Hour();
     // And the language, for the same reason: every string in the payload —
     // the prayer names, the day labels, the clock's AM/PM words, the

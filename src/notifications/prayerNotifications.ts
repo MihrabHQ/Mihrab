@@ -988,7 +988,7 @@ async function syncPrayerNotificationsNow(params: {
           // iOS caps the notification sound itself at 30s.
           adhanSound: eventSound.id,
           ...(fullScreen
-            ? fullScreenAlarmData(e.name, nextLine, snoozeOptions, endsAt)
+            ? fullScreenAlarmData(e.name, nextLine, snoozeOptions, endsAt, e.at)
             : {}),
         },
         ios: {

@@ -21,7 +21,15 @@ import { AndroidCategory } from '@notifee/react-native';
 import i18n from '../i18n';
 import { LAST_CHANCE_MINUTES, hasSnooze, minutesUntil, type SnoozeMenu } from './snoozeWindow';
 import { type SkyPassage } from '../screens/home/skyModel';
-import { activeSkyVariant, setActiveSkyVariant, skyMoodFor, type SkyVariant } from '../theme/skyMoods';
+import { sunAltitude } from '../screens/home/moon';
+import {
+  activeSkyVariant,
+  nominalSkyLight,
+  setActiveSkyVariant,
+  skyMoodFor,
+  type SkyLight,
+  type SkyVariant,
+} from '../theme/skyMoods';
 
 /** The native activity Notifee launches; resolved by class name. */
 export const PRAYER_ALARM_ACTIVITY = 'com.prayer_times.PrayerAlarmActivity';
@@ -81,13 +89,53 @@ const PRAYER_MOOD: Record<string, { passage: SkyPassage; t: number }> = {
  * settings themselves.
  */
 let skyThemeOn = false;
-/** `variant`: which of the Sky theme's colours (Vibrant or Realistic) it wears. */
-export function setFullScreenAlarmSkyTheme(on: boolean, variant?: SkyVariant): void {
+/** Where the reader is, for the real sun over the alert; null until known. */
+let skyWhere: { latitude: number; longitude: number } | null = null;
+/**
+ * `variant`: which of the Sky theme's colours (Vibrant or Realistic) it
+ * wears. `where`: the reader's coordinates (`resolveCoordsFromSettings`),
+ * so the alert's sun is theirs — see `fullScreenAlarmSky`; left as it was
+ * when not given.
+ */
+export function setFullScreenAlarmSkyTheme(
+  on: boolean,
+  variant?: SkyVariant,
+  where?: { latitude: number; longitude: number } | null,
+): void {
   skyThemeOn = on;
   if (variant) setActiveSkyVariant(variant);
+  if (where !== undefined) {
+    skyWhere =
+      where && Number.isFinite(where.latitude) && Number.isFinite(where.longitude) && !(where.latitude === 0 && where.longitude === 0)
+        ? { latitude: where.latitude, longitude: where.longitude }
+        : null;
+  }
 }
 export function fullScreenAlarmSkyTheme(): boolean {
   return skyThemeOn;
+}
+
+/**
+ * The sun over the alert: the reader's own, at the prayer's moment, for
+ * the two prayers the sun is up for. Dhuhr's mood was the average day's
+ * noon everywhere — fifty-five degrees of sun — so a Stockholm December
+ * noon, the sun seven degrees up and amber, rang in Makkah's blue, and a
+ * Tromsø noon with no sun at all rang in a blue sky too; Asr's the same
+ * one late sun whether it stood thirty degrees up in Makkah or three in
+ * Stockholm. With the coordinates and the moment known, the sun's real
+ * height is used, and the mood's own day-progress kept, so the morning
+ * or afternoon limb is still the prayer's. The twilight prayers keep
+ * their posed depth: at the instant Fajr rings the real sun is the
+ * night's, and the alert deliberately wears the dawn's last colour, as
+ * Maghrib wears the dusk's first and Isha the night's (PRAYER_MOOD).
+ */
+function fullScreenAlarmLight(prayer: string, when?: Date | number | null): SkyLight | undefined {
+  const at = PRAYER_MOOD[prayer];
+  if (!at || (prayer !== 'Dhuhr' && prayer !== 'Asr') || !skyWhere || when == null) return undefined;
+  const date = when instanceof Date ? when : new Date(when);
+  if (!Number.isFinite(date.getTime())) return undefined;
+  const nominal = nominalSkyLight(at.passage, at.t);
+  return { ...nominal, sun: sunAltitude(date, skyWhere.latitude, skyWhere.longitude) };
 }
 
 /**
@@ -101,11 +149,11 @@ export function fullScreenAlarmSkyTheme(): boolean {
  * looks. It used to fall back to the hero's plain two-colour sky in cream
  * or black there, a look the app no longer has anywhere else.
  */
-export function fullScreenAlarmSky(prayer: string): Record<string, string> {
+export function fullScreenAlarmSky(prayer: string, when?: Date | number | null): Record<string, string> {
   const at = PRAYER_MOOD[prayer];
   if (!at) return {};
   const variant: SkyVariant = skyThemeOn ? activeSkyVariant() : 'realistic';
-  const mood = skyMoodFor(at.passage, at.t, undefined, variant);
+  const mood = skyMoodFor(at.passage, at.t, undefined, variant, fullScreenAlarmLight(prayer, when));
   return {
     fsSkyTop: mood.heroTop,
     fsSkyMid: mood.heroMid,
@@ -141,6 +189,8 @@ export function fullScreenAlarmData(
    * keys above are what it draws FIRST; these are what it re-decides with.
    */
   deadlineMs?: number | null,
+  /** When the prayer comes in (or the re-fire rings), for the sun over the alert. */
+  when?: Date | number | null,
 ): Record<string, string> {
   const lang = (i18n.language || 'en').split('-')[0];
   // The big button is ten minutes while ten minutes fit; then five; then,
@@ -212,7 +262,7 @@ export function fullScreenAlarmData(
         }
       : {}),
     fsRtl: RTL_LANGUAGES.includes(lang) ? '1' : '0',
-    ...fullScreenAlarmSky(prayer),
+    ...fullScreenAlarmSky(prayer, when),
   };
   if (nextLine) out.fsNext = nextLine;
   if (prayer) {

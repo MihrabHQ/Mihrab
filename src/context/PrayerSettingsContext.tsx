@@ -16,6 +16,7 @@ import { restoreSkyTheme, setSkyVariant } from '../theme/skyTheme';
 import { loadSettings, saveSettings } from '../settings/storage';
 import { applyLocationProviders } from '../settings/locationProviders';
 import { enteringMinimal, minimalLook } from '../settings/minimalLook';
+import { resolveCoordsFromSettings } from '../settings/effectiveProvider';
 import { bootMark } from '../boot/bootTimeline';
 import { setHijriCalendar } from '../hijri/calendar';
 import {
@@ -259,8 +260,16 @@ export function PrayerSettingsProvider({
   // mirrored for it the same way the clock format is.
   useEffect(() => {
     setSkyVariant(settings.skyVariant);
-    setFullScreenAlarmSkyTheme(settings.appearance === 'sky', settings.skyVariant);
-  }, [settings.appearance, settings.skyVariant]);
+    setFullScreenAlarmSkyTheme(settings.appearance === 'sky', settings.skyVariant, resolveCoordsFromSettings(settings));
+  }, [
+    settings.appearance,
+    settings.skyVariant,
+    settings.locationMode,
+    settings.manualLatitude,
+    settings.manualLongitude,
+    settings.lastFetchedLatitude,
+    settings.lastFetchedLongitude,
+  ]);
 
   const updateSettings = useCallback((patch: Partial<PrayerAppSettings>) => {
     setSettings(prev => {

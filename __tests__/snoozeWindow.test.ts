@@ -210,7 +210,7 @@ describe('the alarm screen keeps deciding while it is open', () => {
   it('the scheduler and the re-fire both pass the deadline', () => {
     const a = fs.readFileSync(path.join(__dirname, '../src/notifications/prayerNotifications.ts'), 'utf8');
     const b = fs.readFileSync(path.join(__dirname, '../src/notifications/notificationActions.ts'), 'utf8');
-    expect(a).toMatch(/fullScreenAlarmData\(e\.name, nextLine, snoozeOptions, endsAt\)/);
-    expect(b).toMatch(/fullScreenAlarmData\(prayer, data\.fsNext \?\? '', menu, deadline\)/);
+    expect(a).toMatch(/fullScreenAlarmData\(e\.name, nextLine, snoozeOptions, endsAt, e\.at\)/);
+    expect(b).toMatch(/fullScreenAlarmData\(prayer, data\.fsNext \?\? '', menu, deadline, at\)/);
   });
 });

@@ -58,6 +58,7 @@ import { isNonPrayerEvent } from '../types/prayer';
 import i18n from '../i18n';
 import { applyReaderLanguage } from '../i18n/readerLanguage';
 import { loadSettings } from '../settings/storage';
+import { resolveCoordsFromSettings } from '../settings/effectiveProvider';
 import { setActiveClockFormat, activeClock } from '../utils/activeClock';
 import {
   buildTimestampTrigger,
@@ -335,7 +336,7 @@ async function syncPreReminder(
     // The non-React edge, same as the widget's headless republish: the
     // provider that normally mirrors this preference never mounts here.
     setActiveClockFormat(settings.clockFormat);
-    setFullScreenAlarmSkyTheme(settings.appearance === 'sky', settings.skyVariant);
+    setFullScreenAlarmSkyTheme(settings.appearance === 'sky', settings.skyVariant, resolveCoordsFromSettings(settings));
     const minutes = clampPrePrayerReminderMinutes(
       settings.prePrayerReminderMinutes,
     );
@@ -491,7 +492,7 @@ export async function adhanMuteToggleTask(
           // What the alarm screen's Log button and the shade's need.
           prayer: name,
           targetDate: ymdLocal(new Date(epoch)),
-          ...(fullScreen ? fullScreenAlarmData(name) : {}),
+          ...(fullScreen ? fullScreenAlarmData(name, '', undefined, undefined, epoch) : {}),
         },
         android: {
           channelId,

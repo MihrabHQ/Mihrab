@@ -290,10 +290,57 @@ describe('alarm screen sky', () => {
     // Mirrored from the settings wherever the alert is built without React.
     const read = (p: string) => fs.readFileSync(path.join(__dirname, '..', p), 'utf-8');
     // …with the Sky theme's colours (Vibrant or Realistic) beside it.
+    // …and where the reader is, for the real sun over Dhuhr and Asr.
     for (const p of ['src/context/PrayerSettingsContext.tsx', 'src/notifications/adhanMute.ts', 'src/widget/republishWidgetPayload.ts']) {
-      expect(read(p)).toMatch(/setFullScreenAlarmSkyTheme\(settings\.appearance === 'sky', settings\.skyVariant\)/);
+      expect(read(p)).toMatch(/setFullScreenAlarmSkyTheme\(settings\.appearance === 'sky', settings\.skyVariant, resolveCoordsFromSettings\(settings\)\)/);
     }
-    expect(read('src/notifications/notificationActions.ts')).toMatch(/await loadSettings\(\)\s*\.then\(s => \(\{ on: s\.appearance === 'sky', variant: s\.skyVariant \}\)\)[\s\S]{0,120}setFullScreenAlarmSkyTheme\(theme\.on, theme\.variant\)/);
+    expect(read('src/notifications/notificationActions.ts')).toMatch(/await loadSettings\(\)\s*\.then\(s => \(\{ on: s\.appearance === 'sky', variant: s\.skyVariant, where: resolveCoordsFromSettings\(s\) \}\)\)[\s\S]{0,120}setFullScreenAlarmSkyTheme\(theme\.on, theme\.variant, theme\.where\)/);
+    // Every builder passes the moment: the scheduler the prayer's, the
+    // snooze the re-fire's, the mute toggle the event's.
+    expect(read('src/notifications/prayerNotifications.ts')).toMatch(/fullScreenAlarmData\(e\.name, nextLine, snoozeOptions, endsAt, e\.at\)/);
+    expect(read('src/notifications/notificationActions.ts')).toMatch(/fullScreenAlarmData\(prayer, data\.fsNext \?\? '', menu, deadline, at\)/);
+    expect(read('src/notifications/adhanMute.ts')).toMatch(/fullScreenAlarmData\(name, '', undefined, undefined, epoch\)/);
+  });
+
+  it('puts the reader\'s own sun over Dhuhr and Asr, and the posed one over the twilight prayers', () => {
+    const { setFullScreenAlarmSkyTheme, fullScreenAlarmSky } = require('../src/notifications/fullScreenAlarm');
+    const { skyMoodFor, nominalSkyLight } = require('../src/theme/skyMoods');
+    const { sunAltitude } = require('../src/screens/home/moon');
+    try {
+      // A Stockholm December noon: the sun seven degrees up. Without the
+      // place, or the moment, the average day's noon as before.
+      const noon = new Date(2026, 11, 15, 11, 45);
+      setFullScreenAlarmSkyTheme(true, 'realistic');
+      const posed = skyMoodFor('day', 0.55, undefined, 'realistic');
+      expect(fullScreenAlarmSky('Dhuhr').fsSkyMid).toBe(posed.heroMid);
+      expect(fullScreenAlarmSky('Dhuhr', noon).fsSkyMid).toBe(posed.heroMid);
+      setFullScreenAlarmSkyTheme(true, 'realistic', { latitude: 59.33, longitude: 18.07 });
+      expect(fullScreenAlarmSky('Dhuhr').fsSkyMid).toBe(posed.heroMid);
+      const sun = sunAltitude(noon, 59.33, 18.07);
+      expect(sun).toBeGreaterThan(5);
+      expect(sun).toBeLessThan(9);
+      const low = skyMoodFor('day', 0.55, undefined, 'realistic', { ...nominalSkyLight('day', 0.55), sun });
+      const d = fullScreenAlarmSky('Dhuhr', noon);
+      expect(d.fsSkyMid).toBe(low.heroMid);
+      expect(d.fsSkyMid).not.toBe(posed.heroMid);
+      // Makkah's noon, seventy degrees up, is another sky again.
+      setFullScreenAlarmSkyTheme(true, 'realistic', { latitude: 21.42, longitude: 39.83 });
+      const makkah = fullScreenAlarmSky('Dhuhr', new Date(Date.UTC(2026, 5, 15, 9, 20)));
+      expect(makkah.fsSkyMid).not.toBe(d.fsSkyMid);
+      // Asr too; Fajr, Maghrib and Isha keep the moods they are known by.
+      setFullScreenAlarmSkyTheme(true, 'realistic', { latitude: 59.33, longitude: 18.07 });
+      expect(fullScreenAlarmSky('Asr', new Date(2026, 11, 15, 13, 10)).fsSkyMid).not.toBe(
+        skyMoodFor('sunset', 0.8, undefined, 'realistic').heroMid,
+      );
+      for (const [p, passage, t] of [['Fajr', 'dawn', 1], ['Maghrib', 'dusk', 0], ['Isha', 'night', 0]] as const) {
+        expect(fullScreenAlarmSky(p, noon).fsSkyMid).toBe(skyMoodFor(passage, t, undefined, 'realistic').heroMid);
+      }
+      // A place at 0,0 or unreadable is no place.
+      setFullScreenAlarmSkyTheme(true, 'realistic', { latitude: 0, longitude: 0 });
+      expect(fullScreenAlarmSky('Dhuhr', noon).fsSkyMid).toBe(posed.heroMid);
+    } finally {
+      setFullScreenAlarmSkyTheme(false, undefined, null);
+    }
   });
 });
 

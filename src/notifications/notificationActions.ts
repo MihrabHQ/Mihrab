@@ -13,6 +13,7 @@
 import notifee, { AndroidStyle, type Notification } from '@notifee/react-native';
 import i18n from '../i18n';
 import { loadSettings } from '../settings/storage';
+import { resolveCoordsFromSettings } from '../settings/effectiveProvider';
 import { ADHAN_CONTROLS_CATEGORY_ID } from './adhanActionIds';
 import { SNOOZE_PRESETS, prayerAlertActions } from './prayerAlertActions';
 import { resolveSnooze, snoozeMenu, type SnoozeMenu } from './snoozeWindow';
@@ -174,9 +175,9 @@ export async function snoozePrayerNotification(
   // first one had.
   if (fullScreen) {
     const theme = await loadSettings()
-      .then(s => ({ on: s.appearance === 'sky', variant: s.skyVariant }))
-      .catch(() => ({ on: false, variant: undefined }));
-    setFullScreenAlarmSkyTheme(theme.on, theme.variant);
+      .then(s => ({ on: s.appearance === 'sky', variant: s.skyVariant, where: resolveCoordsFromSettings(s) }))
+      .catch(() => ({ on: false, variant: undefined, where: undefined }));
+    setFullScreenAlarmSkyTheme(theme.on, theme.variant, theme.where);
   }
   // The prayer name travels in the payload; without it there is nothing to
   // log, so the re-fire falls back to a snooze-only button.
@@ -193,7 +194,7 @@ export async function snoozePrayerNotification(
     // older build carries the menu IT was drawn with (no hour, labels from
     // before), and copying that forward would keep the old buttons alive for
     // as long as the person goes on snoozing it.
-    ...(fullScreen ? fullScreenAlarmData(prayer, data.fsNext ?? '', menu, deadline) : {}),
+    ...(fullScreen ? fullScreenAlarmData(prayer, data.fsNext ?? '', menu, deadline, at) : {}),
     ...(data.kind === 'prayer_time' ? { snoozed: '1' } : {}),
     ...(target.lastChance ? { lastChance: '1' } : {}),
   };
