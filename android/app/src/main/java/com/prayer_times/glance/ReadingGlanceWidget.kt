@@ -69,6 +69,41 @@ internal class ReadingGlanceWidget : MihrabGlanceWidget("reading") {
     }
   }
 
+  private class Fit(val surahSp: Float, val gapAbove: Int, val gapBelow: Int)
+
+  /**
+   * The three lines of the left column — the khatmah's day, the surah, the
+   * page — on a card one row high. Their sizes were set in the widgets'
+   * Latin face, and Arabic, Urdu or Bengali text falls back to a font whose
+   * line is half as tall again, so in Arabic the page line ran off the
+   * bottom of a 4×1 card. Measured in the text's own script
+   * (`textHeightDp`), the overflow is taken from the gaps between the
+   * lines first, then from the surah's size (to 16sp), never from the
+   * page line. Nothing is touched where the card is taller and the lines
+   * have room (`more`: the progress bar or the last-read line is shown).
+   */
+  private fun fitLines(
+    context: Context,
+    heightDp: Int,
+    head: String,
+    surah: String,
+    surahSp: Float,
+    position: String,
+    positionSp: Float,
+    more: Boolean,
+  ): Fit {
+    val roomy = Fit(surahSp, 6, 3)
+    if (more || heightDp <= 0) return roomy
+    val avail = heightDp - 2 * CARD_INSET_DP - 2 * CARD_PADDING_DP
+    val fixed = textHeightDp(context, head, 11f, medium = true) + textHeightDp(context, position, positionSp, medium = false)
+    fun need(sp: Float, a: Int, b: Int) = fixed + textHeightDp(context, surah, sp, medium = true) + a + b
+    if (need(surahSp, 6, 3) <= avail) return roomy
+    if (need(surahSp, 2, 0) <= avail) return Fit(surahSp, 2, 0)
+    var sp = surahSp
+    while (sp > SURAH_MIN_SP && need(sp, 2, 0) > avail) sp -= 1f
+    return Fit(sp.coerceAtLeast(SURAH_MIN_SP), 2, 0)
+  }
+
   private fun tierFor(heightDp: Int): Tier = when {
     heightDp <= 0 -> Tier.NORMAL
     heightDp < COMPACT_MAX_HEIGHT_DP -> Tier.COMPACT
@@ -145,28 +180,20 @@ internal class ReadingGlanceWidget : MihrabGlanceWidget("reading") {
       else if (tier == Tier.GENEROUS) lastReadTail(context, r, nowMs)
       else null
 
+    val head =
+      if (khatmah != null) context.getString(R.string.widget_reading_khatmah_day, khatmah.day, khatmah.targetDays)
+      else context.getString(R.string.widget_reading_continue)
+    val position = context.getString(R.string.widget_reading_position, r.page, r.juz)
+    val fit = fitLines(context, size.heightDp, head, r.surahName, surahSp(tier), position, positionSp(tier), tall || tail != null)
+
     DirRow(modifier = GlanceModifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {
       cell { DirColumn(
         modifier = GlanceModifier.defaultWeight().fillMaxHeight(),
         verticalAlignment = Alignment.CenterVertically,
       ) {
-        Label(
-          if (khatmah != null) {
-            context.getString(R.string.widget_reading_khatmah_day, khatmah.day, khatmah.targetDays)
-          } else {
-            context.getString(R.string.widget_reading_continue)
-          },
-          11f,
-          Palette.MUTED,
-          medium = true,
-        )
-        Label(r.surahName, surahSp(tier), Palette.TEXT, medium = true, modifier = GlanceModifier.padding(top = 6.dp))
-        Label(
-          context.getString(R.string.widget_reading_position, r.page, r.juz),
-          positionSp(tier),
-          Palette.MUTED,
-          modifier = GlanceModifier.padding(top = 3.dp),
-        )
+        Label(head, 11f, Palette.MUTED, medium = true)
+        Label(r.surahName, fit.surahSp, Palette.TEXT, medium = true, modifier = GlanceModifier.padding(top = fit.gapAbove.dp))
+        Label(position, positionSp(tier), Palette.MUTED, modifier = GlanceModifier.padding(top = fit.gapBelow.dp))
         if (tall) {
           Spacer(GlanceModifier.height(10.dp))
           ProgressBar(bar / 100f, accent, LocalDirection.current.rtl)
@@ -313,6 +340,10 @@ internal class ReadingGlanceWidget : MihrabGlanceWidget("reading") {
     /** The PrayerWidgetReadingProvider thresholds, unchanged. */
     private const val SIDE_COLUMN_MIN_WIDTH_DP = 200
     private const val PROGRESS_MIN_HEIGHT_DP = 170
+    /** `widget_card_inset` and MihrabCard's padding, each side. */
+    private const val CARD_INSET_DP = 6
+    private const val CARD_PADDING_DP = 10
+    private const val SURAH_MIN_SP = 16f
     private const val COMPACT_MAX_HEIGHT_DP = 130
     private const val GENEROUS_MIN_HEIGHT_DP = 240
 
