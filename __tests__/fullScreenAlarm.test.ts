@@ -291,9 +291,10 @@ describe('alarm screen sky', () => {
     const read = (p: string) => fs.readFileSync(path.join(__dirname, '..', p), 'utf-8');
     // …with the Sky theme's colours (Vibrant or Realistic) beside it.
     // …and where the reader is, for the real sun over Dhuhr and Asr.
-    for (const p of ['src/context/PrayerSettingsContext.tsx', 'src/notifications/adhanMute.ts', 'src/widget/republishWidgetPayload.ts']) {
+    for (const p of ['src/notifications/adhanMute.ts', 'src/widget/republishWidgetPayload.ts']) {
       expect(read(p)).toMatch(/setFullScreenAlarmSkyTheme\(settings\.appearance === 'sky', settings\.skyVariant, resolveCoordsFromSettings\(settings\)\)/);
     }
+    expect(read('src/context/PrayerSettingsContext.tsx')).toMatch(/const alarmWhere = resolveCoordsFromSettings\(settings\);[\s\S]{0,600}setFullScreenAlarmSkyTheme\(\s*settings\.appearance === 'sky',\s*settings\.skyVariant,/);
     expect(read('src/notifications/notificationActions.ts')).toMatch(/await loadSettings\(\)\s*\.then\(s => \(\{ on: s\.appearance === 'sky', variant: s\.skyVariant, where: resolveCoordsFromSettings\(s\) \}\)\)[\s\S]{0,120}setFullScreenAlarmSkyTheme\(theme\.on, theme\.variant, theme\.where\)/);
     // Every builder passes the moment: the scheduler the prayer's, the
     // snooze the re-fire's, the mute toggle the event's.

@@ -678,7 +678,7 @@ describe('Realistic', () => {
     setSkyVariant('realistic');
     expect(getSkyTheme()).not.toBe(before);
     const ctx = read('src/context/PrayerSettingsContext.tsx');
-    expect(ctx.indexOf('setSkyVariant(settings.skyVariant)')).toBeLessThan(ctx.indexOf("setFullScreenAlarmSkyTheme(settings.appearance === 'sky', settings.skyVariant, resolveCoordsFromSettings(settings))"));
+    expect(ctx.indexOf('setSkyVariant(settings.skyVariant)')).toBeLessThan(ctx.indexOf("setFullScreenAlarmSkyTheme(\n      settings.appearance === 'sky',"));
   });
 
   it('is picked under Sky in Appearance, kept in the settings, mirrored for the alert, in every language', () => {
@@ -689,7 +689,7 @@ describe('Realistic', () => {
     expect(read('src/settings/storage.ts')).toMatch(/if \(!isSkyVariant\(merged\.skyVariant\)\)/);
     const ctx = read('src/context/PrayerSettingsContext.tsx');
     expect(ctx).toMatch(/setSkyVariant\(loaded\.skyVariant\);\s*setSettings\(loaded\)/);
-    expect(ctx).toMatch(/setFullScreenAlarmSkyTheme\(settings\.appearance === 'sky', settings\.skyVariant, resolveCoordsFromSettings\(settings\)\)/);
+    expect(ctx).toMatch(/setFullScreenAlarmSkyTheme\(\s*settings\.appearance === 'sky',\s*settings\.skyVariant,/);
     for (const p of ['src/widget/republishWidgetPayload.ts', 'src/notifications/adhanMute.ts']) {
       expect(read(p)).toMatch(/setFullScreenAlarmSkyTheme\(settings\.appearance === 'sky', settings\.skyVariant, resolveCoordsFromSettings\(settings\)\)/);
     }

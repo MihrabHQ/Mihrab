@@ -508,7 +508,7 @@ export function HomeScreen() {
     timezoneShift != null ||
     methodNote != null ||
     zoneNote != null;
-  const [nextInfo, setNextInfo] = useState<{ name: string; at: Date } | null>(
+  const [nextInfoState, setNextInfo] = useState<{ name: string; at: Date } | null>(
     null,
   );
 
@@ -724,6 +724,27 @@ export function HomeScreen() {
   ]);
 
   /**
+   * The next prayer for the first render that has the times, worked out
+   * in the render itself. The watchdog below used to be its only source,
+   * and an effect runs after the commit: the launch's first frame had the
+   * table and no hero (`target` null in TodayCard), the hero came on the
+   * frame after and pushed the table down — the page settling into place
+   * in front of the reader (2.35; a Pixel 10 Pro, two frames of it on an
+   * emulator). Here it is on the first frame; from then on the watchdog's
+   * answer, which keeps this very object while it is the same prayer.
+   */
+  const firstNext = useMemo(
+    () =>
+      state.phase === 'ready' && view
+        ? getNextPrayerDisplay(view.table.today, view.table.tomorrow, new Date(), state.clock, view.table.past[0])
+        : null,
+    [state, view],
+  );
+  const firstNextRef = useRef(firstNext);
+  firstNextRef.current = firstNext;
+  const nextInfo = nextInfoState ?? firstNext;
+
+  /**
    * The same days on the PHONE's clock, for everything that writes them out
    * of the app or reads them as instants without being told a clock — the
    * alert schedule and its reminders, the quiet windows, the widget, the
@@ -860,11 +881,15 @@ export function HomeScreen() {
           )
         : null;
       setNextInfo(prev => {
+        // The one already on screen — the watchdog's last, or the first
+        // render's own (`nextInfo` below) — when it is the same prayer at
+        // the same instant, so nothing downstream sees a new object.
+        const shown = prev ?? firstNextRef.current;
         if (
-          prev?.name === next?.name &&
-          prev?.at.getTime() === next?.at.getTime()
+          shown?.name === next?.name &&
+          shown?.at.getTime() === next?.at.getTime()
         ) {
-          return prev;
+          return shown;
         }
         return next;
       });

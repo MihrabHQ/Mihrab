@@ -13,6 +13,7 @@ import { setActiveClockFormat } from '../utils/activeClock';
 import { setWidgetSinceAdhanMinutes } from '../widget/sinceAdhanSetting';
 import { setFullScreenAlarmSkyTheme } from '../notifications/fullScreenAlarm';
 import { restoreSkyTheme, setSkyVariant } from '../theme/skyTheme';
+import { primeTimezoneShift } from '../prayer/timezoneShift';
 import { loadSettings, saveSettings } from '../settings/storage';
 import { applyLocationProviders } from '../settings/locationProviders';
 import { enteringMinimal, minimalLook } from '../settings/minimalLook';
@@ -200,6 +201,9 @@ export function PrayerSettingsProvider({
     // The Sky theme's remembered sky alongside: the first hydrated render
     // is then painted in the hour's colours, not the night's and then the
     // hour's — one render of every screen, not two (theme/skyTheme.ts).
+    // And the clocks' record (prayer/timezoneShift.ts): asked for now, so
+    // the first load's check does not queue behind the cache's reads.
+    primeTimezoneShift();
     Promise.all([loadSettings(), restoreSkyTheme()])
       .then(([loaded]) => {
         // The Sky theme's colours before the first painted render.
@@ -258,18 +262,17 @@ export function PrayerSettingsProvider({
   // The full-screen alert paints itself in the Sky theme's mood when the
   // app wears it; the scheduler runs outside React, so the answer is
   // mirrored for it the same way the clock format is.
+  const alarmWhere = resolveCoordsFromSettings(settings);
+  const alarmLat = alarmWhere?.latitude;
+  const alarmLon = alarmWhere?.longitude;
   useEffect(() => {
     setSkyVariant(settings.skyVariant);
-    setFullScreenAlarmSkyTheme(settings.appearance === 'sky', settings.skyVariant, resolveCoordsFromSettings(settings));
-  }, [
-    settings.appearance,
-    settings.skyVariant,
-    settings.locationMode,
-    settings.manualLatitude,
-    settings.manualLongitude,
-    settings.lastFetchedLatitude,
-    settings.lastFetchedLongitude,
-  ]);
+    setFullScreenAlarmSkyTheme(
+      settings.appearance === 'sky',
+      settings.skyVariant,
+      alarmLat != null && alarmLon != null ? { latitude: alarmLat, longitude: alarmLon } : null,
+    );
+  }, [settings.appearance, settings.skyVariant, alarmLat, alarmLon]);
 
   const updateSettings = useCallback((patch: Partial<PrayerAppSettings>) => {
     setSettings(prev => {

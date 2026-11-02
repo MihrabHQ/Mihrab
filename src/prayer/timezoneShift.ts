@@ -151,6 +151,19 @@ function foreseen(k: Known, now: number): number | null {
 let known: Known | null = null;
 let reading: Promise<Known | null> | null = null;
 
+/**
+ * Start the one read early. AsyncStorage answers in the order it is
+ * asked, and the first load of a launch asks for this record right after
+ * the stored-times cache has queued its own reads — a sweep of the whole
+ * cache, several hundred kilobytes — so the first paint, which waits on
+ * this check, waited 430 ms behind them on a Pixel 10 Pro (2.35: `load`
+ * at 197 ms, `tz` at 639). Asked for with the settings, before the cache
+ * is touched, it is answered by the time the load wants it.
+ */
+export function primeTimezoneShift(): void {
+  void lastKnown().catch(() => null);
+}
+
 async function lastKnown(): Promise<Known | null> {
   if (known !== null) return known;
   if (!reading) {
@@ -246,7 +259,9 @@ export async function noticeTimezoneShift(
       !from.forecast ||
       from.at == null ||
       now.getTime() - from.at > REFRESH_AFTER_MS;
-    if (stale) await remember(to, zone, now);
+    // Not awaited: the record is already current in memory (`known`), and
+    // the write would queue the launch's first paint behind the cache's.
+    if (stale) void remember(to, zone, now);
     return null;
   }
   if (

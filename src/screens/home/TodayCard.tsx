@@ -2823,6 +2823,13 @@ function TodayCardImpl({
               // time of the night is tomorrow. Read once, at mount, which
               // is the only time this prop is.
               initialScrollIndex={pagePosition(todayIndex + landedAtMount)}
+              // And the scroll view OPENS there. `initialScrollIndex` alone
+              // mounts the pages after a spacer the width of the days
+              // before today and only then scrolls to them, so the pager's
+              // first frames — six of them on a Pixel (2.35) — were the
+              // spacer: a table that blanked out for a fifth of a second as
+              // the plain day under it was swapped for the pager.
+              contentOffset={{ x: pagePosition(todayIndex + landedAtMount) * pageWidth, y: 0 }}
               // Left to right whatever the language: see `pagerPosition`.
               style={styles.pager}
               data={rtl ? pagesReversed : pages}
