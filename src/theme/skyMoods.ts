@@ -817,22 +817,31 @@ export const REALISTIC_SKY_MOODS: Record<SkyMoodName, SkyMood> = {
   sunset: REALISTIC_TRACK.dark.evening[1].mood,
 };
 
-/** Vibrant's stations on the same scale. */
+/**
+ * Vibrant's stations on the same scale. The lilac and the mauve — the
+ * haze between the horizon's coral and the blue — stood at 7°, the ice at
+ * 18°: a quarter of an hour after sunrise in Makkah, but in a Stockholm
+ * December, where the sun never passes 7°, the whole of the day, noon
+ * included, in a lilac the real sky is never (2.35). They stand at 3° now,
+ * the ice at 9°, and the zenith's azures a little lower with them, so a
+ * low winter sun has the day's blue by mid-morning and the haze is what
+ * it was meant to be: the first minutes.
+ */
 const VIBRANT_TRACK: Track = {
   light: {
     morning: [
       { at: 0, mood: ANCHORS.morning },
-      { at: 7, mood: ANCHORS.morningLate },
-      { at: 18, mood: ANCHORS.midday },
-      { at: 40, mood: ANCHORS.zenith },
-      { at: 70, mood: ANCHORS.zenithHigh },
+      { at: 3, mood: ANCHORS.morningLate },
+      { at: 9, mood: ANCHORS.midday },
+      { at: 30, mood: ANCHORS.zenith },
+      { at: 60, mood: ANCHORS.zenithHigh },
     ],
     afternoon: [
       { at: 0, mood: ANCHORS.golden },
-      { at: 7, mood: ANCHORS.afternoonLate },
-      { at: 18, mood: ANCHORS.afternoon },
-      { at: 40, mood: ANCHORS.zenith },
-      { at: 70, mood: ANCHORS.zenithHigh },
+      { at: 3, mood: ANCHORS.afternoonLate },
+      { at: 9, mood: ANCHORS.afternoon },
+      { at: 30, mood: ANCHORS.zenith },
+      { at: 60, mood: ANCHORS.zenithHigh },
     ],
   },
   dark: {

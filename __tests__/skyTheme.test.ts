@@ -160,10 +160,13 @@ describe('the moods', () => {
         expect(hexToOklch(mood.bodyLight).C).toBeGreaterThanOrEqual(0.05);
       }
     }
-    // Morning to midday goes by way of lilac, not green.
-    const lilac = hexToOklch(skyMoodFor('day', 0.15, undefined, 'vibrant', { sun: 10, daylight: 0.1 }).heroTop).h;
+    // Morning to midday goes by way of lilac, not green — and the lilac is
+    // the first minutes, at 3° (2.35; it stood at 7°, a Stockholm December's
+    // whole day), the ice by 9°.
+    const lilac = hexToOklch(skyMoodFor('day', 0.15, undefined, 'vibrant', { sun: 4, daylight: 0.1 }).heroTop).h;
     expect(lilac).toBeGreaterThan(280);
     expect(lilac).toBeLessThan(330);
+    expect(hexToOklch(skyMoodFor('day', 0.15, undefined, 'vibrant', { sun: 9, daylight: 0.1 }).heroTop).h).toBeLessThan(260);
   });
 
   it('is the night at night, the dawn before sunrise, the midday after, gold before Maghrib, the evening after it, the night again after Isha', () => {
@@ -185,10 +188,16 @@ describe('the moods', () => {
   });
 
   it('is keyed to the sun: a low noon stays golden, a high one goes to the zenith (2.33)', () => {
-    // Tromsø in December: the sun never clears the horizon by much.
-    const low = skyMoodFor('day', 0.5, undefined, 'vibrant', { sun: 3, daylight: 0.5 });
+    // Kiruna in late November: the sun barely clears the horizon at noon.
+    const low = skyMoodFor('day', 0.5, undefined, 'vibrant', { sun: 1.2, daylight: 0.5 });
     expect(['morning', 'golden']).toContain(low.name);
     expect(hexToOklch(low.heroMid).h).toBeLessThan(120); // warm
+    // Stockholm at the solstice, the sun seven degrees up at noon: the
+    // day's blue, a little lavender still in it, not the lilac all day.
+    const winter = skyMoodFor('day', 0.5, undefined, 'vibrant', { sun: 7, daylight: 0.5 });
+    expect(winter.name).toBe('midday');
+    expect(hexToOklch(winter.heroTop).h).toBeGreaterThan(240);
+    expect(hexToOklch(winter.heroTop).h).toBeLessThan(290);
     // Makkah at noon.
     const high = skyMoodFor('day', 0.5, undefined, 'vibrant', { sun: 80, daylight: 0.5 });
     expect(high.name).toBe('midday');
