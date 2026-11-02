@@ -63,6 +63,25 @@
             android:maxLines="1" />
     </LinearLayout>
 
+    <!-- The play disc, between the two columns as the placed card draws it
+         (ReadingGlanceWidget): the preview left it out, so the picker showed
+         a card with no button on it. -->
+    <FrameLayout
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/widget_play_button">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_widget_play"
+            android:tint="#6BC98A"
+            android:contentDescription="@null" />
+    </FrameLayout>
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="match_parent"

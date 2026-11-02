@@ -143,3 +143,16 @@ describe('the mock data in a preview holds together', () => {
     }
   });
 });
+
+describe('the reading card’s preview', () => {
+  it('shows the play disc the placed card has', () => {
+    const fs = require('fs');
+    const path = require('path');
+    const xml = fs.readFileSync(
+      path.join(__dirname, '../android/app/src/main/res/layout/prayer_widget_reading_preview.xml'),
+      'utf8',
+    );
+    expect(xml).toContain('@drawable/widget_play_button');
+    expect(xml).toContain('@drawable/ic_widget_play');
+  });
+});
