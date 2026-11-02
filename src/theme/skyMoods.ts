@@ -750,13 +750,20 @@ const physicalLight = (side: 'morning' | 'afternoon'): StationAt[] => {
   });
   return [
     // The golden hour: blue over gold, amber at the horizon.
-    st(0, pm ? 'golden' : 'morning', [0.62, 0.11, 245], [0.80, 0.13, 52], [0.97, 0.028, 62], { h: 42, C: 0.13 }, [0.84, 0.15, 60]),
-    st(4, pm ? 'golden' : 'morning', [0.66, 0.12, 247], [0.86, 0.09, 66], [0.97, 0.026, 68], { h: 52, C: 0.12 }, [0.88, 0.13, 72]),
+    // The warm accents lean to the red of the light rather than its
+    // yellow (2.35): an amber held to 4.6:1 on white is a brown, and the
+    // ochre the 9° station had (#925512) read as mud beside the blue; a
+    // terracotta at the same contrast still reads as a colour.
+    st(0, pm ? 'golden' : 'morning', [0.62, 0.11, 245], [0.80, 0.13, 52], [0.97, 0.028, 62], { h: 38, C: 0.145 }, [0.84, 0.15, 60]),
+    st(4, pm ? 'golden' : 'morning', [0.66, 0.12, 247], [0.86, 0.09, 66], [0.97, 0.026, 68], { h: 43, C: 0.14 }, [0.88, 0.13, 72]),
     // A low sun: the blue paling, a warm haze on the horizon.
-    st(9, pm ? 'golden' : 'morning', [0.68, 0.12, 249], [0.89, 0.065, 78], [0.97, 0.022, 76], { h: 62, C: 0.11 }, [0.92, 0.11, 82]),
+    st(9, pm ? 'golden' : 'morning', [0.68, 0.12, 249], [0.89, 0.065, 78], [0.97, 0.022, 76], { h: 48, C: 0.135 }, [0.92, 0.11, 82]),
     // The haze clearing: a blue-white horizon, through which the warm
-    // haze and the clear blue meet in white rather than in grey.
-    st(13, pm ? 'golden' : 'morning', [0.67, 0.13, 250], [0.92, 0.03, 232], [0.97, 0.018, 160], { h: 250, C: 0.11 }, [0.94, 0.09, 86]),
+    // haze and the clear blue meet in white rather than in grey. The
+    // paper's tint is the horizon's, blue-white too: it stood at a hue
+    // of 160, and the page went through a mint between the cream and
+    // the blue (2.35).
+    st(13, pm ? 'golden' : 'morning', [0.67, 0.13, 250], [0.92, 0.03, 232], [0.97, 0.016, 232], { h: 250, C: 0.11 }, [0.94, 0.09, 86]),
     // A working day: clear blue — which a Stockholm October noon (20°) reaches and its December noon (7°) does not.
     st(20, 'midday', [0.65, 0.15, 252], [0.87, 0.07, 247], [0.97, 0.02, 250], { h: 252, C: 0.12 }, [0.95, 0.08, 90]),
     // A high sun: the azure straight up.
