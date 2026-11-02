@@ -220,7 +220,11 @@ export async function fakeFetch(url: string) {
   }
   const nt = /(singapore|malaysia)\/v1\/(.*)$/.exec(u.pathname);
   if (nt) {
-    const f = path.join(ROOT, 'data/prayer-times', nt[1], 'v1', nt[2]);
+    // A pinned copy, not the repository's live tables: those roll forward
+    // every week and drop the days behind them, and a matrix date that falls
+    // out of the window would then be answered by the method instead (MUIS,
+    // 2 November 2026: 25 October's Fajr a minute off the printed one).
+    const f = path.join(ROOT, '__tests__/fixtures/nationalTables', nt[1], 'v1', nt[2]);
     return fs.existsSync(f)
       ? response(200, fs.readFileSync(f, 'utf8'))
       : response(404, 'Not Found');

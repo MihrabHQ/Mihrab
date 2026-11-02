@@ -37,6 +37,19 @@ jest.mock('../src/utils/fetchWithRetry', () => ({
   ),
 }));
 
+// Singapore's and Malaysia's tables as they stood when the golden instants
+// were written, the bundled seeds and the downloaded files alike
+// (fixtures/nationalTables; the harness serves the files): the app's own roll
+// forward every week and drop the days behind them, and a matrix date that
+// falls out of the window is answered by the method instead — a minute off
+// the printed Fajr on 25 October, from 2 November 2026 on.
+jest.mock('../src/providers/data/muisSeed.json', () =>
+  require('./fixtures/nationalTables/muisSeed.json'),
+);
+jest.mock('../src/providers/data/jakimSeed.json', () =>
+  require('./fixtures/nationalTables/jakimSeed.json'),
+);
+
 // Fitting a namazvakti.com city's own point from its year takes seconds per
 // city (`fitNamazvaktiPoint`, held in namazvakti.test.ts); here the method is
 // computed at the listed point, which the offline tolerance allows for.
