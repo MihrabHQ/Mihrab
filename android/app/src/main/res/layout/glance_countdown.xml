@@ -4,6 +4,11 @@
   Chronometer, so it is embedded with AndroidRemoteViews; the colour, size
   and base are set on it per card (Countdown in GlanceSupport.kt).
 
+  glance_countdown_end.xml is the same at the end of its frame: Glance
+  stretches the frame an embedded view sits in across the room its row
+  leaves, so where a card reads the other way from the launcher (#118) the
+  countdown is pushed to the end that is next to the prayer's name.
+
   No includeFontPadding=false: Glance's Text keeps its font padding, so a
   countdown without it sat a few pixels above the prayer name beside it
   and the two lines were not level.

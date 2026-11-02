@@ -6,7 +6,7 @@ import android.content.Intent
 import android.util.Log
 
 /**
- * The device's zone or clock changed: redraw every widget, now.
+ * The device's zone, clock or language changed: redraw every widget, now.
  *
  * Two things hang on it. The cards place every time by the device's clock,
  * so a card drawn before the change states times for a clock the phone no
@@ -27,6 +27,9 @@ class WidgetClockChangeReceiver : BroadcastReceiver() {
   override fun onReceive(context: Context, intent: Intent) {
     when (intent.action) {
       Intent.ACTION_TIMEZONE_CHANGED, Intent.ACTION_TIME_CHANGED -> Unit
+      // The phone's language moved the launcher's direction, which every
+      // Glance card lays its rows out against (#118, GlanceSupport "Direction").
+      Intent.ACTION_LOCALE_CHANGED -> Unit
       else -> return
     }
     // Adapt again, and check the offset again, even if the minute reads the same.

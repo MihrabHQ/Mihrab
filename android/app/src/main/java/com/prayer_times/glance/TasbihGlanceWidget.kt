@@ -118,20 +118,20 @@ internal class TasbihGlanceWidget : MihrabGlanceWidget("tasbih") {
     // Below 110dp the "today" line goes, so the count, target and dots keep
     // their room. 0 is unmeasured: the full card.
     val short = size.heightDp in 1 until SHORT_HEIGHT_DP
-    Row(modifier = GlanceModifier.fillMaxSize()) {
-      Column(
+    DirRow(modifier = GlanceModifier.fillMaxSize()) {
+      cell { DirColumn(
         modifier = GlanceModifier.defaultWeight().fillMaxHeight(),
         verticalAlignment = Alignment.CenterVertically,
       ) {
         Label(m.label, 12f, Palette.MUTED, medium = true)
-        Row(verticalAlignment = Alignment.Bottom) {
-          Label(m.count.toString(), 34f, Palette.TEXT, medium = true)
-          if (m.target > 0) {
+        DirRow(verticalAlignment = Alignment.Bottom) {
+          cell { Label(m.count.toString(), 34f, Palette.TEXT, medium = true) }
+          if (m.target > 0) cell {
             Label(
               context.getString(R.string.widget_tasbih_of, m.target),
               12f,
               if (m.complete) m.colors.accent else Palette.MUTED,
-              modifier = GlanceModifier.padding(start = 5.dp),
+              modifier = GlanceModifier.padStart(5.dp),
             )
           }
         }
@@ -139,10 +139,10 @@ internal class TasbihGlanceWidget : MihrabGlanceWidget("tasbih") {
         // Each dot in a box that carries the 4dp gap, rather than a spacer
         // between them: six dots and five spacers would pass Glance's limit
         // of ten children to a Row.
-        Row(modifier = GlanceModifier.padding(top = 5.dp)) {
-          for (i in 0 until minOf(m.total, DOTS)) {
-            Box(modifier = GlanceModifier.padding(end = if (i < minOf(m.total, DOTS) - 1) 4.dp else 0.dp)) {
-              Box(
+        DirRow(modifier = GlanceModifier.padding(top = 5.dp)) {
+          for (i in 0 until minOf(m.total, DOTS)) cell {
+            DirBox(modifier = GlanceModifier.padEnd(if (i < minOf(m.total, DOTS) - 1) 4.dp else 0.dp)) {
+              DirBox(
                 modifier = GlanceModifier
                   .size(6.dp)
                   .background(
@@ -154,15 +154,15 @@ internal class TasbihGlanceWidget : MihrabGlanceWidget("tasbih") {
             }
           }
         }
-      }
-      Column(modifier = GlanceModifier.width(140.dp).fillMaxHeight().padding(start = 8.dp)) {
+      } }
+      cell { DirColumn(modifier = GlanceModifier.width(140.dp).fillMaxHeight().padStart(8.dp)) {
         val inc = GlanceModifier
           .defaultWeight()
           .fillMaxWidth()
           .background(
             ImageProvider(if (m.incEnabled) R.drawable.widget_tasbih_primary else R.drawable.widget_tasbih_disabled),
           )
-        Box(
+        DirBox(
           modifier = if (m.incEnabled) inc.clickable(tap(WidgetTasbihQueue.ACTION_INC)) else inc,
           contentAlignment = Alignment.Center,
         ) {
@@ -174,26 +174,30 @@ internal class TasbihGlanceWidget : MihrabGlanceWidget("tasbih") {
           )
         }
         Spacer(GlanceModifier.height(6.dp))
-        Row(modifier = GlanceModifier.defaultWeight().fillMaxWidth()) {
-          SecondaryButton(
-            context.getString(R.string.widget_tasbih_reset),
-            WidgetTasbihQueue.ACTION_RESET,
-            GlanceModifier.defaultWeight(),
-          )
-          Spacer(GlanceModifier.width(6.dp))
-          SecondaryButton(
-            context.getString(R.string.widget_tasbih_next),
-            WidgetTasbihQueue.ACTION_NEXT,
-            GlanceModifier.defaultWeight(),
-          )
+        DirRow(modifier = GlanceModifier.defaultWeight().fillMaxWidth()) {
+          cell {
+            SecondaryButton(
+              context.getString(R.string.widget_tasbih_reset),
+              WidgetTasbihQueue.ACTION_RESET,
+              GlanceModifier.defaultWeight(),
+            )
+          }
+          cell { Spacer(GlanceModifier.width(6.dp)) }
+          cell {
+            SecondaryButton(
+              context.getString(R.string.widget_tasbih_next),
+              WidgetTasbihQueue.ACTION_NEXT,
+              GlanceModifier.defaultWeight(),
+            )
+          }
         }
-      }
+      } }
     }
   }
 
   @Composable
   private fun SecondaryButton(text: String, action: String, modifier: GlanceModifier) {
-    Box(
+    DirBox(
       modifier = modifier
         .fillMaxHeight()
         .background(ImageProvider(R.drawable.widget_tasbih_secondary))

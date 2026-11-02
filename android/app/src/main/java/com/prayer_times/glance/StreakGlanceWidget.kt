@@ -88,20 +88,22 @@ internal class StreakGlanceWidget : MihrabGlanceWidget("streak") {
       widthPx = summaryWidthPx(context, size.widthDp, boxW),
     )
 
-    Row(modifier = GlanceModifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {
-      Column(
+    DirRow(modifier = GlanceModifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {
+      cell { DirColumn(
         modifier = GlanceModifier.defaultWeight().fillMaxHeight(),
         verticalAlignment = Alignment.CenterVertically,
       ) {
         if (showTitle) Label(context.getString(R.string.widget_streak_title), 10f, Palette.MUTED, medium = true)
-        Row(modifier = GlanceModifier.padding(top = 2.dp), verticalAlignment = Alignment.Bottom) {
-          Label(pr.streak.toString(), 30f, accent, medium = true)
-          Label(
-            context.resources.getQuantityString(R.plurals.widget_streak_days, pr.streak, pr.streak),
-            12f,
-            Palette.MUTED,
-            modifier = GlanceModifier.padding(start = 4.dp),
-          )
+        DirRow(modifier = GlanceModifier.padding(top = 2.dp), verticalAlignment = Alignment.Bottom) {
+          cell { Label(pr.streak.toString(), 30f, accent, medium = true) }
+          cell {
+            Label(
+              context.resources.getQuantityString(R.plurals.widget_streak_days, pr.streak, pr.streak),
+              12f,
+              Palette.MUTED,
+              modifier = GlanceModifier.padStart(4.dp),
+            )
+          }
         }
         SummaryLine(summary)
         if (owed > 0 && roomForOwed) {
@@ -118,15 +120,17 @@ internal class StreakGlanceWidget : MihrabGlanceWidget("streak") {
             Palette.MUTED,
           )
         }
-      }
+      } }
       // Natural size, shrunk only when the card is too short: the image is
       // as wide as the bitmap, so Fit can scale it down and never up.
-      Image(
-        provider = ImageProvider(practiceGrid(pr, grid.rows, grid.columns, grid.cellWPx, grid.cellHPx, grid.gapPx, accent)),
-        contentDescription = context.getString(R.string.widget_streak_grid_description),
-        modifier = GlanceModifier.fillMaxHeight().padding(start = 8.dp),
-        contentScale = ContentScale.Fit,
-      )
+      cell {
+        Image(
+          provider = ImageProvider(practiceGrid(pr, grid.rows, grid.columns, grid.cellWPx, grid.cellHPx, grid.gapPx, accent, mirror = LocalDirection.current.rtl)),
+          contentDescription = context.getString(R.string.widget_streak_grid_description),
+          modifier = GlanceModifier.fillMaxHeight().padStart(8.dp),
+          contentScale = ContentScale.Fit,
+        )
+      }
     }
   }
 
@@ -141,9 +145,9 @@ internal class StreakGlanceWidget : MihrabGlanceWidget("streak") {
     }
     // Glance text has no spans, so the red part is its own Text. The rest
     // follows it on the same line.
-    Row(modifier = GlanceModifier.padding(top = 1.dp)) {
-      Label(s.owedPart, 11f, Palette.DANGER)
-      if (s.rest.isNotEmpty()) Label(SEPARATOR + s.rest, 11f, Palette.MUTED, modifier = GlanceModifier.defaultWeight())
+    DirRow(modifier = GlanceModifier.padding(top = 1.dp)) {
+      cell { Label(s.owedPart, 11f, Palette.DANGER) }
+      if (s.rest.isNotEmpty()) cell { Label(SEPARATOR + s.rest, 11f, Palette.MUTED, modifier = GlanceModifier.defaultWeight()) }
     }
   }
 
@@ -220,8 +224,13 @@ internal fun practiceGrid(
   cellHPx: Int,
   gapPx: Int,
   accent: Int,
+  /** Today on the left, the days running back to the right — the Log's graph in a right-to-left language (#118). */
+  mirror: Boolean = false,
 ): Bitmap {
   val days = org.json.JSONArray()
   for (d in pr.days) days.put(WidgetPayloadV1.practiceDayJson(d))
-  return PracticeGridBitmap.render(days, rows, columns, cellWPx, cellHPx, gapPx, accent, pr.since?.ifEmpty { null })
+  val grid = PracticeGridBitmap.render(days, rows, columns, cellWPx, cellHPx, gapPx, accent, pr.since?.ifEmpty { null })
+  if (!mirror) return grid
+  val flip = android.graphics.Matrix().apply { preScale(-1f, 1f) }
+  return Bitmap.createBitmap(grid, 0, 0, grid.width, grid.height, flip, false)
 }

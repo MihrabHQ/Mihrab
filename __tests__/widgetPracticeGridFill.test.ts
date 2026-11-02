@@ -274,7 +274,7 @@ describe('the streak sits on the line with what is next', () => {
     expect(at).toBeGreaterThan(-1);
     return file.slice(at, at + 1400);
   };
-  const STRIP_ROW = 'if (m.nextName.isNotEmpty()) Label(m.nextName, 11f';
+  const STRIP_ROW = 'if (m.nextName.isNotEmpty()) cell { Label(m.nextName, 11f';
   const LOG_ROW = 'm.next?.let { (name, at) ->';
 
   it.each([

@@ -147,7 +147,7 @@ describe('the graph is drawn for the room the card leaves it', () => {
 
   it('drops the log card’s date line when the graph takes its place', () => {
     // Both facts on that line are said again once the graph is drawn.
-    expect(log).toMatch(/if \(!bare && !graphHeight\) \{\s*\n\s*Row\([^\n]*\n\s*Label\(m\.title/);
+    expect(log).toMatch(/if \(!bare && !graphHeight\) \{\s*\n\s*DirRow\([^\n]*\n\s*cell \{ Label\(m\.title/);
   });
 });
 

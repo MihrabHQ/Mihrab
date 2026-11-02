@@ -237,38 +237,38 @@ internal class LogGlanceWidget(
     val slack = if (h <= 0 || graphHeight) 0 else ((h - budget) / 2).coerceIn(0, LOG_SLACK_CAP_DP)
     val chipHeight = if (tight) 30 else 38
 
-    Column(
+    DirColumn(
       modifier = GlanceModifier.fillMaxSize(),
       verticalAlignment = Alignment.CenterVertically,
     ) {
       // The date-and-count line goes when the graph arrives: the band under
       // the chips says "0 of 5 today" by then.
       if (!bare && !graphHeight) {
-        Row(modifier = GlanceModifier.fillMaxWidth()) {
-          Label(m.title, 11f, Palette.MUTED, medium = true, modifier = GlanceModifier.defaultWeight())
-          Label(m.count, 11f, Palette.MUTED, medium = true)
+        DirRow(modifier = GlanceModifier.fillMaxWidth()) {
+          cell { Label(m.title, 11f, Palette.MUTED, medium = true, modifier = GlanceModifier.defaultWeight()) }
+          cell { Label(m.count, 11f, Palette.MUTED, medium = true) }
         }
       }
-      Row(
+      DirRow(
         modifier = GlanceModifier.fillMaxWidth().padding(top = (6 + slack).dp, bottom = slack.dp),
         verticalAlignment = Alignment.CenterVertically,
       ) {
-        for ((i, chip) in m.chips.withIndex()) {
+        for ((i, chip) in m.chips.withIndex()) cell {
           ChipCell(chip, i, chipHeight, m, GlanceModifier.defaultWeight())
         }
       }
       // The rule above the footer is what a one-row card does without.
       if (!tight) Rule(Palette.RULE, top = 6, bottom = 8)
-      Row(modifier = GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        if (!showGrid) Label(m.footLeft, 11f, Palette.MUTED, modifier = GlanceModifier.defaultWeight())
+      DirRow(modifier = GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        if (!showGrid) cell { Label(m.footLeft, 11f, Palette.MUTED, modifier = GlanceModifier.defaultWeight()) }
         m.next?.let { (name, at) ->
-          Label(name, 11f, Palette.MUTED)
-          Countdown(at, m.now, 11f, Palette.MUTED, modifier = GlanceModifier.padding(start = 4.dp))
+          cell { Label(name, 11f, Palette.MUTED) }
+          cell { Countdown(at, m.now, 11f, Palette.MUTED, modifier = GlanceModifier.padStart(4.dp)) }
         }
-        Spacer(GlanceModifier.defaultWeight())
+        cell { Spacer(GlanceModifier.defaultWeight()) }
         practice?.let { pr ->
-          Label(pr.streak.toString(), 11f, Palette.TEXT, medium = true, modifier = GlanceModifier.padding(start = 10.dp))
-          Label(practiceLine(context, pr), 11f, Palette.MUTED, modifier = GlanceModifier.padding(start = 5.dp))
+          cell { Label(pr.streak.toString(), 11f, Palette.TEXT, medium = true, modifier = GlanceModifier.padStart(10.dp)) }
+          cell { Label(practiceLine(context, pr), 11f, Palette.MUTED, modifier = GlanceModifier.padStart(5.dp)) }
         }
       }
       practice?.let { pr ->
@@ -280,7 +280,7 @@ internal class LogGlanceWidget(
         val grid = PracticeGridBitmap.layoutFor(boxW, graphBox, density, MAX_GRID_DAYS)
         Image(
           provider = ImageProvider(
-            practiceGrid(pr, grid.rows, grid.columns, grid.cellWPx, grid.cellHPx, grid.gapPx, m.colors.accent),
+            practiceGrid(pr, grid.rows, grid.columns, grid.cellWPx, grid.cellHPx, grid.gapPx, m.colors.accent, mirror = LocalDirection.current.rtl),
           ),
           contentDescription = context.getString(R.string.widget_streak_grid_description),
           modifier = GlanceModifier.fillMaxWidth().defaultWeight(),
@@ -306,7 +306,7 @@ internal class LogGlanceWidget(
     // Only a chip that can legitimately change takes a tap; the rest fall
     // through to the card's own "open the Log".
     val cell = modifier.padding(horizontal = 2.dp)
-    Column(
+    DirColumn(
       modifier = if (chip.due || chip.queued) cell.clickable(tap(chip.key, index)) else cell,
       horizontalAlignment = Alignment.CenterHorizontally,
       verticalAlignment = Alignment.CenterVertically,
@@ -318,7 +318,7 @@ internal class LogGlanceWidget(
         chip.due -> Triple(R.drawable.widget_log_chip_due, "✓", m.colors.accent)
         else -> Triple(R.drawable.widget_log_chip_idle, "·", Palette.MUTED)
       }
-      Box(
+      DirBox(
         modifier = GlanceModifier
           .size(52.dp, chipHeight.dp)
           .background(

@@ -4,6 +4,7 @@ import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.key
 import androidx.glance.GlanceId
 import androidx.glance.appwidget.GlanceAppWidget
@@ -43,7 +44,11 @@ internal abstract class MihrabGlanceWidget(private val what: String) :
         // The user's text colour, read from disk with everything else the
         // card is drawn from.
         Palette.sync(context)
-        Content()
+        // Which way the card reads: Mihrab's language's, whatever the
+        // launcher's is (#118; GlanceSupport, "Direction").
+        CompositionLocalProvider(LocalDirection provides WidgetDirection.of(context)) {
+          Content()
+        }
       }
     }
   }

@@ -114,6 +114,7 @@ describe('the text colour is common to every widget', () => {
   it('is what every Glance widget draws its text in', () => {
     expect(SUPPORT).toMatch(/val TEXT: Int get\(\) = style\.text/);
     expect(SUPPORT).toMatch(/val MUTED: Int get\(\) = style\.muted/);
-    expect(BASE).toMatch(/Palette\.sync\(context\)\s*Content\(\)/);
+    // Content composed right after, inside the card's reading direction (#118).
+    expect(BASE).toMatch(/Palette\.sync\(context\)[\s\S]{0,400}?CompositionLocalProvider\(LocalDirection provides WidgetDirection\.of\(context\)\) \{\s*Content\(\)/);
   });
 });

@@ -363,14 +363,17 @@
 
       <!-- A zone or clock change redraws every widget, which is also when
            WidgetPayloadSource checks today's times against the offset they
-           were built under and asks the app to rebuild them. Both actions
-           are exempt from the implicit-broadcast limits. -->
+           were built under and asks the app to rebuild them. So does a new
+           phone language: the cards are laid out against the launcher's
+           direction, which follows it (#118). All three actions are exempt
+           from the implicit-broadcast limits. -->
       <receiver
         android:name=".WidgetClockChangeReceiver"
         android:exported="false">
         <intent-filter>
           <action android:name="android.intent.action.TIMEZONE_CHANGED" />
           <action android:name="android.intent.action.TIME_SET" />
+          <action android:name="android.intent.action.LOCALE_CHANGED" />
         </intent-filter>
       </receiver>
 

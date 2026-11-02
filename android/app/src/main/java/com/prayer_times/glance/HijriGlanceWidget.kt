@@ -101,13 +101,15 @@ internal class HijriGlanceWidget : MihrabGlanceWidget("hijri") {
       fitTextSp(context, dayMonth, room - column, DATE_MAX_SP, DATE_MIN_SP, medium = true)
     }
 
-    Row(modifier = GlanceModifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {
-      Column(modifier = GlanceModifier.defaultWeight().padding(end = 6.dp)) {
-        Label(dayMonth, dateSp, accent, medium = true)
-        if (!short) Label(h.year.toString(), 13f, Palette.MUTED)
+    DirRow(modifier = GlanceModifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {
+      cell {
+        DirColumn(modifier = GlanceModifier.defaultWeight().padEnd(6.dp)) {
+          Label(dayMonth, dateSp, accent, medium = true)
+          if (!short) Label(h.year.toString(), 13f, Palette.MUTED)
+        }
       }
-      if (showNext) {
-        Column(horizontalAlignment = Alignment.End) {
+      if (showNext) cell {
+        DirColumn(horizontalAlignment = Alignment.End) {
           Label(nextLabel, 10f, Palette.MUTED, medium = true, align = TextAlign.End)
           Label(nextValue, 12f, Palette.MUTED, maxLines = 2, align = TextAlign.End)
         }

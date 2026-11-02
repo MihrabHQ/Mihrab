@@ -43,7 +43,8 @@ describe('a control does not decide how tall the text is', () => {
     // ...and it is a child of the root Row, not of the text Column: the
     // Column that holds the position line is closed before the disc opens.
     const between = GLANCE.slice(position, disc);
-    expect(between).toMatch(/\n      \}\n/);
+    // (each closed as its own cell of the row: `} }`, #118's DirRow)
+    expect(between).toMatch(/\n      \} \}\n/);
   });
 
   it('lets the surah name have the column to itself', () => {

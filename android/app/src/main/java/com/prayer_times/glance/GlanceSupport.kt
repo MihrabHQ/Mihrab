@@ -9,11 +9,13 @@ import android.net.Uri
 import android.os.SystemClock
 import android.text.TextDirectionHeuristics
 import android.text.TextPaint
+import android.text.TextUtils
 import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import android.widget.RemoteViews
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.ui.graphics.Color
@@ -30,7 +32,11 @@ import androidx.glance.appwidget.action.actionStartActivity
 import androidx.glance.background
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Box
+import androidx.glance.layout.Column
+import androidx.glance.layout.ColumnScope
 import androidx.glance.layout.Row
+import androidx.glance.layout.RowScope
+import androidx.glance.layout.absolutePadding
 import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.fillMaxWidth
 import androidx.glance.layout.height
@@ -67,6 +73,105 @@ import com.prayer_times.contract.WidgetPayloadV1
  */
 
 internal const val TAG = "MihrabGlance"
+
+// ── Direction ────────────────────────────────────────────────────────────
+
+/**
+ * WHICH WAY A CARD READS (#118).
+ *
+ * In Mihrab's language, not the phone's. A launcher lays a widget out in its
+ * own direction, and Glance pins every Row, Column and Box it inflates to
+ * `layoutDirection="locale"` — the launcher's locale — so neither a frame
+ * around the card nor anything else can turn it: with Mihrab in Arabic on an
+ * English phone, Fajr stood on the left and Isha on the right. So the cards
+ * say it themselves. `rtl`: Mihrab's language reads right to left.
+ * `mirrored`: the launcher reads the other way, so a row's cells go in
+ * reverse and start and end swap (`DirRow`, `dir`, `padStart`).
+ */
+internal data class WidgetDirection(val rtl: Boolean, val mirrored: Boolean) {
+  companion object {
+    fun of(context: Context): WidgetDirection {
+      val rtl = PrayerWidgetProvider.localized(context).resources.configuration.layoutDirection == View.LAYOUT_DIRECTION_RTL
+      val phone = Resources.getSystem().configuration.locales
+      val hostRtl = !phone.isEmpty && TextUtils.getLayoutDirectionFromLocale(phone[0]) == View.LAYOUT_DIRECTION_RTL
+      return WidgetDirection(rtl, rtl != hostRtl)
+    }
+  }
+}
+
+internal val LocalDirection = compositionLocalOf { WidgetDirection(rtl = false, mirrored = false) }
+
+/** A row's cells, in reading order: `cell { … }` for each. */
+internal class RowCells {
+  internal val cells = ArrayList<@Composable RowScope.() -> Unit>()
+  fun cell(content: @Composable RowScope.() -> Unit) {
+    cells += content
+  }
+}
+
+/** A Row in Mihrab's reading order: its cells reversed where the launcher reads the other way. */
+@Composable
+internal fun DirRow(
+  modifier: GlanceModifier = GlanceModifier,
+  horizontalAlignment: Alignment.Horizontal = Alignment.Start,
+  verticalAlignment: Alignment.Vertical = Alignment.Top,
+  build: RowCells.() -> Unit,
+) {
+  val cells = RowCells().apply(build).cells
+  val mirrored = LocalDirection.current.mirrored
+  Row(modifier = modifier, horizontalAlignment = dir(horizontalAlignment), verticalAlignment = verticalAlignment) {
+    for (c in if (mirrored) cells.asReversed() else cells) c()
+  }
+}
+
+/** A Column whose cells sit at the start of Mihrab's lines, not the launcher's. */
+@Composable
+internal fun DirColumn(
+  modifier: GlanceModifier = GlanceModifier,
+  verticalAlignment: Alignment.Vertical = Alignment.Top,
+  horizontalAlignment: Alignment.Horizontal = Alignment.Start,
+  content: @Composable ColumnScope.() -> Unit,
+) = Column(modifier = modifier, verticalAlignment = verticalAlignment, horizontalAlignment = dir(horizontalAlignment), content = content)
+
+/** A Box whose content sits by Mihrab's reading order. */
+@Composable
+internal fun DirBox(
+  modifier: GlanceModifier = GlanceModifier,
+  contentAlignment: Alignment = Alignment.TopStart,
+  content: @Composable () -> Unit,
+) = Box(modifier = modifier, contentAlignment = dir(contentAlignment), content = content)
+
+/** Start and end in Mihrab's reading order. */
+@Composable
+internal fun dir(a: Alignment.Horizontal): Alignment.Horizontal =
+  if (!LocalDirection.current.mirrored) a
+  else when (a) {
+    Alignment.Start -> Alignment.End
+    Alignment.End -> Alignment.Start
+    else -> a
+  }
+
+@Composable
+internal fun dir(a: Alignment): Alignment = Alignment(dir(a.horizontal), a.vertical)
+
+@Composable
+internal fun dir(a: TextAlign): TextAlign =
+  if (!LocalDirection.current.mirrored) a
+  else when (a) {
+    TextAlign.Start -> TextAlign.End
+    TextAlign.End -> TextAlign.Start
+    else -> a
+  }
+
+/** Space on the side a line starts from, in Mihrab's language (left or right, not the launcher's start). */
+@Composable
+internal fun GlanceModifier.padStart(d: Dp): GlanceModifier =
+  if (LocalDirection.current.rtl) absolutePadding(right = d) else absolutePadding(left = d)
+
+/** Space on the side a line ends at, in Mihrab's language. */
+@Composable
+internal fun GlanceModifier.padEnd(d: Dp): GlanceModifier =
+  if (LocalDirection.current.rtl) absolutePadding(left = d) else absolutePadding(right = d)
 
 /**
  * The colours the widgets draw in, in one place. The text colours follow the
@@ -499,7 +604,8 @@ internal fun Label(
       color = provider(color),
       fontSize = sp.sp,
       fontWeight = if (medium) FontWeight.Medium else FontWeight.Normal,
-      textAlign = align,
+      // In Mihrab's reading order: a line starts on the right in Arabic on an English phone too (#118).
+      textAlign = dir(align ?: TextAlign.Start),
     ),
     maxLines = maxLines,
   )
@@ -525,10 +631,10 @@ internal fun MihrabCard(
 ) {
   val context = LocalContext.current
   val card = RemoteViews(context.packageName, R.layout.glance_card).also { WidgetCard.paint(it, background) }
-  Box(modifier = GlanceModifier.fillMaxSize().padding(R.dimen.widget_card_inset)) {
+  DirBox(modifier = GlanceModifier.fillMaxSize().padding(R.dimen.widget_card_inset)) {
     AndroidRemoteViews(card, GlanceModifier.fillMaxSize())
     val inner = GlanceModifier.fillMaxSize().padding(horizontal = contentPadding, vertical = verticalPadding)
-    Box(modifier = if (onClick != null) inner.clickable(onClick) else inner) {
+    DirBox(modifier = if (onClick != null) inner.clickable(onClick) else inner) {
       content()
     }
   }
@@ -541,15 +647,15 @@ internal fun MihrabCard(
  */
 @Composable
 internal fun Rule(color: Int, top: Int, bottom: Int) {
-  Box(modifier = GlanceModifier.fillMaxWidth().padding(top = top.dp, bottom = bottom.dp)) {
-    Box(modifier = GlanceModifier.fillMaxWidth().height(1.dp).background(provider(color))) {}
+  DirBox(modifier = GlanceModifier.fillMaxWidth().padding(top = top.dp, bottom = bottom.dp)) {
+    DirBox(modifier = GlanceModifier.fillMaxWidth().height(1.dp).background(provider(color))) {}
   }
 }
 
 /** The one-line message a card shows in place of its content. */
 @Composable
 internal fun Placeholder(text: String, sp: Float = 12f, color: Int = Palette.MUTED) {
-  Box(modifier = GlanceModifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+  DirBox(modifier = GlanceModifier.fillMaxSize(), contentAlignment = Alignment.Center) {
     Label(text, sp, color, maxLines = 3, align = TextAlign.Center)
   }
 }
@@ -590,7 +696,10 @@ internal fun CountUp(sinceEpochMs: Long, format: String, now: Now, sp: Float, co
   val context = localizedContext()
   val elapsed = now.epochMs - sinceEpochMs
   if (elapsed < 0) return
-  val views = RemoteViews(context.packageName, R.layout.glance_countdown).apply {
+  // At the end of the frame Glance stretches around it, where the row is
+  // mirrored, so it stays beside what it counts down to (#118).
+  val layout = if (LocalDirection.current.mirrored) R.layout.glance_countdown_end else R.layout.glance_countdown
+  val views = RemoteViews(context.packageName, layout).apply {
     setChronometerCountDown(R.id.glance_countdown, false)
     setChronometer(R.id.glance_countdown, SystemClock.elapsedRealtime() - elapsed, format, true)
     setTextColor(R.id.glance_countdown, color)
@@ -611,7 +720,10 @@ internal fun Countdown(targetEpochMs: Long, now: Now, sp: Float, color: Int, mod
   val context = localizedContext()
   val left = targetEpochMs - now.epochMs
   if (left < 0) return
-  val views = RemoteViews(context.packageName, R.layout.glance_countdown).apply {
+  // At the end of the frame Glance stretches around it, where the row is
+  // mirrored, so it stays beside what it counts down to (#118).
+  val layout = if (LocalDirection.current.mirrored) R.layout.glance_countdown_end else R.layout.glance_countdown
+  val views = RemoteViews(context.packageName, layout).apply {
     setChronometerCountDown(R.id.glance_countdown, true)
     setChronometer(
       R.id.glance_countdown,

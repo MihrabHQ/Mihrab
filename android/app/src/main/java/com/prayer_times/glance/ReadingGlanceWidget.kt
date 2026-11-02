@@ -83,8 +83,8 @@ internal class ReadingGlanceWidget : MihrabGlanceWidget("reading") {
   /** Never opened the Qurʾān: an invitation, and no play disc — nothing to resume. */
   @Composable
   private fun Invitation(context: Context, r: WidgetContract.Reading, tier: Tier) {
-    Row(modifier = GlanceModifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {
-      Column(
+    DirRow(modifier = GlanceModifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {
+      cell { DirColumn(
         modifier = GlanceModifier.defaultWeight().fillMaxHeight(),
         verticalAlignment = Alignment.CenterVertically,
       ) {
@@ -114,14 +114,16 @@ internal class ReadingGlanceWidget : MihrabGlanceWidget("reading") {
             modifier = GlanceModifier.padding(top = 5.dp),
           )
         }
+      } }
+      cell {
+        SideColumn(
+          title = context.getString(R.string.widget_reading_start_side_title),
+          value = "604",
+          valueSp = sideValueSp(tier),
+          note = if (tier == Tier.COMPACT) null else context.getString(R.string.widget_reading_start_side_note),
+          noteColor = Palette.MUTED,
+        )
       }
-      SideColumn(
-        title = context.getString(R.string.widget_reading_start_side_title),
-        value = "604",
-        valueSp = sideValueSp(tier),
-        note = if (tier == Tier.COMPACT) null else context.getString(R.string.widget_reading_start_side_note),
-        noteColor = Palette.MUTED,
-      )
     }
   }
 
@@ -143,8 +145,8 @@ internal class ReadingGlanceWidget : MihrabGlanceWidget("reading") {
       else if (tier == Tier.GENEROUS) lastReadTail(context, r, nowMs)
       else null
 
-    Row(modifier = GlanceModifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {
-      Column(
+    DirRow(modifier = GlanceModifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {
+      cell { DirColumn(
         modifier = GlanceModifier.defaultWeight().fillMaxHeight(),
         verticalAlignment = Alignment.CenterVertically,
       ) {
@@ -181,12 +183,12 @@ internal class ReadingGlanceWidget : MihrabGlanceWidget("reading") {
           )
         }
         if (tail != null) Label(tail, 11f, Palette.MUTED, modifier = GlanceModifier.padding(top = 5.dp))
-      }
+      } }
 
       // The one control on the card, in the card's accent.
-      Box(
+      cell { DirBox(
         modifier = GlanceModifier
-          .padding(start = 8.dp)
+          .padStart(8.dp)
           .size(36.dp)
           .background(ImageProvider(R.drawable.widget_play_button))
           .clickable(readingAction(context, r, play = true)),
@@ -198,11 +200,11 @@ internal class ReadingGlanceWidget : MihrabGlanceWidget("reading") {
           modifier = GlanceModifier.size(20.dp),
           colorFilter = ColorFilter.tint(provider(accent)),
         )
-      }
+      } }
 
       // At 2x2 the side column goes first: the left column alone still
       // answers "where was I".
-      if (size.widthDp !in 1 until SIDE_COLUMN_MIN_WIDTH_DP) {
+      if (size.widthDp !in 1 until SIDE_COLUMN_MIN_WIDTH_DP) cell {
         if (khatmah != null) {
           val behind = khatmah.behindBy
           val left = (khatmah.pagesToday - khatmah.doneToday).coerceAtLeast(0)
@@ -237,8 +239,8 @@ internal class ReadingGlanceWidget : MihrabGlanceWidget("reading") {
 
   @Composable
   private fun SideColumn(title: String, value: String, valueSp: Float, note: String?, noteColor: Int) {
-    Column(
-      modifier = GlanceModifier.fillMaxHeight().padding(start = 10.dp),
+    DirColumn(
+      modifier = GlanceModifier.fillMaxHeight().padStart(10.dp),
       verticalAlignment = Alignment.CenterVertically,
     ) {
       Label(title, 11f, Palette.MUTED, medium = true)
