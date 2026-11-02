@@ -84,6 +84,8 @@ const STAYS: Record<string, string> = {
     "derived — this phone's prayer windows and a copy of a setting, rewritten by Today (#74)",
   '@mihrab/skyTheme/v1':
     'derived — the last sky the hero drew, kept for the moment before it draws again; the next phone draws its own',
+  '@mihrab/todayLayout/v1':
+    "derived — the sizes Today settled on for this phone's window and text size; the next phone measures its own",
   prayer_times_cache: 'derived — the legacy cache, migrated then deleted',
   'mihrab.alertsWrittenForVersion':
     'describes this INSTALL — the build whose first start wrote the prayer alerts ' +

@@ -357,7 +357,7 @@ describe('the store', () => {
     expect(getSkyTheme()).toBe(before);
     off();
     // Awaited with the settings, so the first render wears it.
-    expect(read('src/context/PrayerSettingsContext.tsx')).toMatch(/Promise\.all\(\[loadSettings\(\), restoreSkyTheme\(\)\]\)/);
+    expect(read('src/context/PrayerSettingsContext.tsx')).toMatch(/Promise\.all\(\[loadSettings\(\), restoreSkyTheme\(\), primeTodayLayout\(\)\]\)/);
   });
 
   it('opens a first launch in the hour\'s sky, not the night, before there are any times', async () => {

@@ -14,6 +14,7 @@ import { setWidgetSinceAdhanMinutes } from '../widget/sinceAdhanSetting';
 import { setFullScreenAlarmSkyTheme } from '../notifications/fullScreenAlarm';
 import { restoreSkyTheme, setSkyVariant } from '../theme/skyTheme';
 import { primeTimezoneShift } from '../prayer/timezoneShift';
+import { primeTodayLayout } from '../screens/home/todayLayoutMemory';
 import { loadSettings, saveSettings } from '../settings/storage';
 import { applyLocationProviders } from '../settings/locationProviders';
 import { enteringMinimal, minimalLook } from '../settings/minimalLook';
@@ -204,7 +205,9 @@ export function PrayerSettingsProvider({
     // And the clocks' record (prayer/timezoneShift.ts): asked for now, so
     // the first load's check does not queue behind the cache's reads.
     primeTimezoneShift();
-    Promise.all([loadSettings(), restoreSkyTheme()])
+    // And Today's settled sizes (screens/home/todayLayoutMemory.ts), so the
+    // first frame is laid out as the last launch's last was.
+    Promise.all([loadSettings(), restoreSkyTheme(), primeTodayLayout()])
       .then(([loaded]) => {
         // The Sky theme's colours before the first painted render.
         setSkyVariant(loaded.skyVariant);

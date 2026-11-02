@@ -40,6 +40,7 @@ import {
   type HostInstance,
 } from 'react-native';
 import { useWindowSize } from '../../responsive/windowSize';
+import { rememberedTodayLayout, rememberTodayLayout } from './todayLayoutMemory';
 import Svg, { Path } from 'react-native-svg';
 import { MinimalGlyph } from './MinimalGlyph';
 import { useTranslation } from 'react-i18next';
@@ -492,12 +493,20 @@ const HeroToday = memo(function HeroToday({
   recess,
   footer,
   onOpenTimes,
+  layoutKey,
 }: {
   /**
    * Minimal: open the day's times — for a screen reader, from the prayer's
    * line. A finger opens them by the drag up on the page (TodayCardImpl).
    */
   onOpenTimes?: () => void;
+  /**
+   * What the hero's measured sizes depend on (TodayCardImpl, `layoutKey`):
+   * with it the sizes kept under that key from the last launch stand in
+   * until this one's measure, so the first frame is already the settled
+   * one (todayLayoutMemory.ts). Absent on the dashboard's card.
+   */
+  layoutKey?: string;
   /** The clock `today` is written on (`TodayCardProps.dayClock`). */
   dayClock?: string;
   /**
@@ -979,9 +988,16 @@ const HeroToday = memo(function HeroToday({
    * the first layout — and in the card, which does not grow — the fixed
    * fractions the design was drawn at stand in.
    */
-  const [heroH, setHeroH] = useState(0);
-  const [topRowH, setTopRowH] = useState(0);
-  const [block, setBlock] = useState<{ y: number; h: number } | null>(null);
+  // From the last launch's settled sizes, where they are kept for this
+  // key; measured afresh, and kept again, below.
+  const kept = fill && layoutKey ? rememberedTodayLayout(layoutKey) : null;
+  const [heroH, setHeroH] = useState(kept?.heroH ?? 0);
+  const [topRowH, setTopRowH] = useState(kept?.topRowH ?? 0);
+  const [block, setBlock] = useState<{ y: number; h: number } | null>(kept?.block ?? null);
+  useEffect(() => {
+    if (!fill || !layoutKey || heroH <= 0 || block == null) return;
+    rememberTodayLayout(layoutKey, { heroH, topRowH, block });
+  }, [fill, layoutKey, heroH, topRowH, block]);
   const onHeroLayout = useCallback(
     (e: LayoutChangeEvent) => {
       setHeroH(Math.round(e.nativeEvent.layout.height));
@@ -994,7 +1010,8 @@ const HeroToday = memo(function HeroToday({
   }, []);
   const onBlockLayout = useCallback((e: LayoutChangeEvent) => {
     const { y, height } = e.nativeEvent.layout;
-    setBlock({ y: Math.round(y), h: Math.round(height) });
+    const next = { y: Math.round(y), h: Math.round(height) };
+    setBlock(prev => (prev && prev.y === next.y && prev.h === next.h ? prev : next));
   }, []);
   // The hero's box excludes the bleed, so a fraction of the SKY (which is
   // the box plus the bleed) is offset by the bleed's top.
@@ -1597,6 +1614,34 @@ function TodayCardImpl({
    */
   const [chosenKey, setChosenKey] = useState<string | null>(null);
   const rtl = isRtlLanguage(i18n.language);
+  /**
+   * What the page's measured sizes depend on, as one key for the sizes
+   * kept from launch to launch (todayLayoutMemory.ts): the layout, the
+   * window and its insets, the system text size, the language (an Arabic
+   * line is taller than a Latin one), and the rows the day has. A launch
+   * whose key matches the last opens on the sizes it settled on; one that
+   * does not measures afresh.
+   */
+  const layoutWindow = useWindowSize();
+  const layoutInsets = useSafeAreaInsets();
+  const layoutToday: TimingsMap = week[0] ?? ({} as TimingsMap);
+  const layoutRows = DISPLAY_ORDER.filter(key => layoutToday[key]);
+  const layoutDaruri = DISPLAY_ORDER.filter(key => layoutToday[`${key}Daruri` as keyof TimingsMap]);
+  const layoutKey = fullBleed
+    ? [
+        minimal ? 'minimal' : 'full',
+        roomy ? 'roomy' : tier,
+        expanded ? 'x' : '',
+        `${Math.round(layoutWindow.width)}x${Math.round(layoutWindow.height)}`,
+        `${Math.round(layoutInsets.top)}/${Math.round(layoutInsets.bottom)}`,
+        currentFontScale().toFixed(2),
+        i18n.language,
+        bannerAbove ? 'b' : '',
+        `${sideInset}/${footInset}`,
+        layoutRows.join(','),
+        layoutDaruri.join(','),
+      ].join('|')
+    : undefined;
   // Minimal: the day's times, in a sheet, on the day it is turned to —
   // today when opened, a day behind or ahead by its chevrons.
   const [timesOpen, setTimesOpen] = useState(false);
@@ -1770,6 +1815,34 @@ function TodayCardImpl({
     const w = Math.round(e.nativeEvent.layout.width);
     setPageWidth(prev => (prev === w ? prev : w));
   }, []);
+  /**
+   * ── THE PAGER IS AS TALL AS THE DAY ON SHOW ──────────────────────────
+   *
+   * A horizontal list is as tall as its tallest page, and the pages are
+   * not all one height: a row with a line under it — an alert overridden
+   * "just this once", a Mālikī second time — is a line taller, and that
+   * line can be on any day of the two weeks. So the whole table, today's
+   * included, took the tallest day's height, and the hero above it (which
+   * fills what the table leaves) gave up that line; and since the lines
+   * come with what loads after the first frame (the journal, the
+   * override), the table grew and the hero shrank half a second into
+   * every launch — the page settling in front of the reader, 19dp on a
+   * Pixel 10 Pro (2.35). Each page reports its height, and the list is
+   * held to the height of the page on show; a taller day gets its height
+   * as it is turned to.
+   */
+  const [pageHeights, setPageHeights] = useState<Record<number, number>>(() => {
+    const kept = layoutKey ? rememberedTodayLayout(layoutKey)?.table : undefined;
+    return kept ? { [landedAtMount]: kept } : {};
+  });
+  const onPageLayout = useCallback((offset: number, e: LayoutChangeEvent) => {
+    const h = Math.round(e.nativeEvent.layout.height);
+    setPageHeights(prev => (prev[offset] === h ? prev : { ...prev, [offset]: h }));
+  }, []);
+  const landedHeight = pageHeights[landedAtMount];
+  useEffect(() => {
+    if (layoutKey && landedHeight) rememberTodayLayout(layoutKey, { table: landedHeight });
+  }, [layoutKey, landedHeight]);
   const pagerRef = useRef<FlatList<TimingsMap>>(null);
   /** Where a page sits along the scroll axis — see `pagerPosition`. */
   const pagePosition = useCallback(
@@ -2607,6 +2680,7 @@ function TodayCardImpl({
             longitude={longitude}
             tomorrowFajr={skyTomorrowFajr}
             dayClock={dayClock}
+            layoutKey={layoutKey}
             expanded={expanded}
             tier={fullBleed ? tier : 'comfortable'}
             bleed={{ horizontal: skySide, top: heroTop, bottom: footPad }}
@@ -2831,7 +2905,8 @@ function TodayCardImpl({
               // the plain day under it was swapped for the pager.
               contentOffset={{ x: pagePosition(todayIndex + landedAtMount) * pageWidth, y: 0 }}
               // Left to right whatever the language: see `pagerPosition`.
-              style={styles.pager}
+              style={[styles.pager, pageHeights[selected] != null && { height: pageHeights[selected] }]}
+              contentContainerStyle={styles.pagerContent}
               data={rtl ? pagesReversed : pages}
               keyExtractor={(_, position) =>
                 String(pagePosition(position) - todayIndex)
@@ -2847,15 +2922,19 @@ function TodayCardImpl({
               // Nested in the page's vertical scroll: this one owns only
               // clearly horizontal drags.
               nestedScrollEnabled
-              renderItem={({ index }) => (
-                <View
-                  style={[
-                    { width: pageWidth },
-                    rtl ? styles.pageRtl : styles.pageLtr,
-                  ]}>
-                  {renderDay(pagePosition(index) - todayIndex)}
-                </View>
-              )}
+              renderItem={({ index }) => {
+                const offset = pagePosition(index) - todayIndex;
+                return (
+                  <View
+                    onLayout={e => onPageLayout(offset, e)}
+                    style={[
+                      { width: pageWidth },
+                      rtl ? styles.pageRtl : styles.pageLtr,
+                    ]}>
+                    {renderDay(offset)}
+                  </View>
+                );
+              }}
             />
           ) : (
             // Before the page has been measured (the first frame, and a
@@ -2966,6 +3045,9 @@ const styles = StyleSheet.create({
   /** Ink with a hit slop, not a button with a fill. */
   // The day pager scrolls left to right in every language — see `pagerPosition`.
   pager: { direction: 'ltr' },
+  // Each page its own height, not stretched to the list's: a day held
+  // to today's height is cut at its foot, not squashed, until it is on show.
+  pagerContent: { alignItems: 'flex-start' },
   pageLtr: { direction: 'ltr' },
   pageRtl: { direction: 'rtl' },
   dayStep: { padding: SPACING.xs, alignItems: 'center', justifyContent: 'center' },
