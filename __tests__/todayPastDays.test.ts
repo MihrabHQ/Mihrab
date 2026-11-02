@@ -122,7 +122,7 @@ describe('the pages', () => {
     expect(card).toMatch(/const todayIndex = pastDays\.length;/);
     // Today, until today is spent, and then tomorrow — see
     // `dayRollsOverAfterLastTime.test.tsx` for the rule itself.
-    expect(card).toMatch(/initialScrollIndex=\{pagePosition\(todayIndex \+ landedAtMount\)\}/);
+    expect(card).toMatch(/initialScrollIndex=\{pagePosition\(todayIndex \+ selected\)\}/);
     expect(card).toMatch(/const offset = pagePosition\(index\) - todayIndex;[\s\S]{0,400}renderDay\(offset\)/);
     // And the list is as tall as the page on show, not the tallest day.
     expect(card).toMatch(/pageHeights\[selected\] != null && \{ height: pageHeights\[selected\] \}/);

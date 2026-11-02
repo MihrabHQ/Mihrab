@@ -29,8 +29,13 @@ import type { SkyThemeDay } from '../theme/skyTheme';
 /** From this minute of the local day (0–1439), this card and this accent, #RRGGBB. */
 export type WidgetSkySegment = [minuteOfDay: number, bg: string, accent: string];
 
-/** Every how many minutes the sky is sampled. */
-export const WIDGET_SKY_STEP_MINUTES = 2;
+/**
+ * Every how many minutes the sky is sampled. Five: a widget is drawn at
+ * the prayer boundaries, midnight and unlocks, so a palette change placed
+ * to the nearest five minutes is never seen late, and the day costs 288
+ * suns, moons and moods rather than 720 (a third of the JS time).
+ */
+export const WIDGET_SKY_STEP_MINUTES = 5;
 
 /**
  * The day's segments, first at minute 0, in order; empty when the day's

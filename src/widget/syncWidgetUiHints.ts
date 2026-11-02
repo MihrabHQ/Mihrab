@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Platform, AppState } from 'react-native';
-import { afterInteractions } from '../utils/afterInteractions';
+import { afterFirstPaint } from '../boot/firstPaint';
 import { usePrayerSettings } from '../context/PrayerSettingsContext';
 import type { PrayerAppSettings, WidgetHighlightId } from '../settings/types';
 import { getPrayerWidgetModule } from '../native/PrayerWidget';
@@ -233,16 +233,18 @@ export function useSyncWidgetUiHints(): void {
       void mod.setWidgetSkySchedule(null).catch(() => {});
       return;
     }
-    // Seven hundred samples of the sky: after the frame, not in it.
+    // Three hundred samples of the sky, each a sun, a moon and a mood: a
+    // hundred milliseconds of the JS thread, which is the launch run's
+    // (boot/firstPaint.ts) — so after the first paint and the run, with
+    // the rest of the launch's side work, not under its frames.
     let cancelled = false;
-    const handle = afterInteractions(() => {
+    void afterFirstPaint().then(() => {
       if (cancelled) return;
       const schedule = widgetSkySchedule(day, settings.skyVariant);
       void mod.setWidgetSkySchedule?.(schedule.length ? JSON.stringify(schedule) : null).catch(() => {});
     });
     return () => {
       cancelled = true;
-      handle.cancel();
     };
     // `day` is read through `dayKey`: the store hands out the same object
     // until the day, the place or the times change, and the key says so.

@@ -2297,6 +2297,14 @@ function TodayCardImpl({
   // the pose, and a twin is a second hero to lay out and draw on every tick.
   const fullBleedRunHeld = useLaunchRunActive();
   const twinMayMount = useAfterFirstPaint();
+  /**
+   * The day pager too: its two weeks of pages — eighty-odd rows — were
+   * mounted the frame after the first paint, under the launch run, and
+   * were the run's one stall (65 ms on a Pixel 10 Pro, 2.35). The plain
+   * day stands in, the same height to the pixel, until the run is over;
+   * a return (no run) mounts it at once, as before.
+   */
+  const pagerMayMount = twinMayMount;
   const runWanted = settings.launchAnimation;
   useEffect(() => setLaunchRunWanted(runWanted), [runWanted]);
   const twinUp = !!(
@@ -2882,7 +2890,7 @@ function TodayCardImpl({
         </View>
 
         <View onLayout={onTableLayout}>
-          {pageWidth > 0 ? (
+          {pageWidth > 0 && pagerMayMount ? (
             <FlatList
               ref={pagerRef}
               horizontal
@@ -2893,17 +2901,18 @@ function TodayCardImpl({
               // never lands on a blank page mid-render — and open on
               // today, which is not the first of them any more.
               initialNumToRender={pages.length}
-              // …and on the day the card LANDS on, which after the last
-              // time of the night is tomorrow. Read once, at mount, which
-              // is the only time this prop is.
-              initialScrollIndex={pagePosition(todayIndex + landedAtMount)}
+              // …and on the day the card is on — the day it landed on
+              // (after the last time of the night, tomorrow), or the one a
+              // chevron turned to before the pager was mounted. Read once,
+              // at mount, which is the only time this prop is.
+              initialScrollIndex={pagePosition(todayIndex + selected)}
               // And the scroll view OPENS there. `initialScrollIndex` alone
               // mounts the pages after a spacer the width of the days
               // before today and only then scrolls to them, so the pager's
               // first frames — six of them on a Pixel (2.35) — were the
               // spacer: a table that blanked out for a fifth of a second as
               // the plain day under it was swapped for the pager.
-              contentOffset={{ x: pagePosition(todayIndex + landedAtMount) * pageWidth, y: 0 }}
+              contentOffset={{ x: pagePosition(todayIndex + selected) * pageWidth, y: 0 }}
               // Left to right whatever the language: see `pagerPosition`.
               style={[styles.pager, pageHeights[selected] != null && { height: pageHeights[selected] }]}
               contentContainerStyle={styles.pagerContent}

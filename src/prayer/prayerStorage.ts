@@ -386,6 +386,14 @@ function pickStalestCacheKey(v2: V2Shape, exclude: string): string | null {
  * caller can ever be handed a blob older than a write that preceded it.
  */
 let rawV2Inflight: Promise<string | null> | null = null;
+/**
+ * The blob the launch sweep read, for the one load that follows it: the
+ * sweep read and parsed the whole cache, and `loadV2` then read it again
+ * — two trips through the storage bridge for the same bytes, the second
+ * queued behind the first launch's other reads (2.35). Handed over once,
+ * and dropped by any write in between, as `rawV2Inflight` is.
+ */
+let sweptRaw: string | null | undefined;
 
 function readRawV2(): Promise<string | null> {
   if (rawV2Inflight) return rawV2Inflight;
@@ -473,6 +481,7 @@ function sweepOnce(listsRead: boolean): Promise<void> {
 export function _resetCacheSweepForTests(): void {
   slotSweep = null;
   retiredSweep = null;
+  sweptRaw = undefined;
 }
 
 async function sweepSlots(): Promise<void> {
@@ -480,6 +489,7 @@ async function sweepSlots(): Promise<void> {
     try {
       const raw = await readRawV2();
       const parsed = raw ? (JSON.parse(raw) as V2Shape) : null;
+      let handed: string | null = raw;
       if (parsed && typeof parsed === 'object' && parsed.caches && typeof parsed.caches === 'object') {
         const caches: Record<string, CacheEntry> = {};
         let dropped = 0;
@@ -487,8 +497,13 @@ async function sweepSlots(): Promise<void> {
           if (isCurrentSlot(k, entry)) caches[k] = entry;
           else dropped += 1;
         }
-        if (dropped > 0) await saveV2Once({ ...parsed, caches });
+        if (dropped > 0) {
+          const json = JSON.stringify({ ...parsed, caches });
+          const saved = await saveV2Once({ ...parsed, caches }, json);
+          handed = saved.ok ? json : null;
+        }
       }
+      sweptRaw = handed;
     } catch {
       /* the cache stands as it is; the next launch tries again */
     }
@@ -587,7 +602,9 @@ async function loadV2(): Promise<V2Shape> {
   bootMark('v2-swept');
   // Try the v2 shape first.
   try {
-    const raw = await readRawV2();
+    // What the sweep just read, the once; every later load reads afresh.
+    const raw = sweptRaw !== undefined ? sweptRaw : await readRawV2();
+    sweptRaw = undefined;
     bootMark('v2-read');
     if (raw) {
       const parsed = JSON.parse(raw) as V2Shape;
@@ -615,6 +632,7 @@ async function loadV2(): Promise<V2Shape> {
         // Best-effort: write the new shape and drop the legacy key.
         try {
           rawV2Inflight = null;
+          sweptRaw = undefined;
           await AsyncStorage.setItem(STORAGE_KEY_V2, JSON.stringify(v2));
           await AsyncStorage.removeItem(STORAGE_KEY_LEGACY);
         } catch {
@@ -634,6 +652,7 @@ async function saveV2Once(v2: V2Shape, json: string = JSON.stringify(v2)): Promi
   // A read that is still in flight would answer with the blob from before
   // this write; nobody who asks from here on may be handed it.
   rawV2Inflight = null;
+  sweptRaw = undefined;
   try {
     await AsyncStorage.setItem(STORAGE_KEY_V2, json);
     return { ok: true };
@@ -734,6 +753,7 @@ export async function getStoredPrayerData(): Promise<StoredPrayerData | null> {
 
 export async function clearStoredPrayerData(): Promise<void> {
   rawV2Inflight = null;
+  sweptRaw = undefined;
   try {
     await AsyncStorage.removeItem(STORAGE_KEY_V2);
     // Legacy too, in case migration hadn'\''t run yet.
