@@ -180,21 +180,25 @@ internal class ReadingGlanceWidget : MihrabGlanceWidget("reading") {
         if (tail != null) Label(tail, 11f, Palette.MUTED, modifier = GlanceModifier.padding(top = 5.dp))
       } }
 
-      // The one control on the card, in the card's accent.
-      cell { DirBox(
-        modifier = GlanceModifier
-          .padStart(8.dp)
-          .size(36.dp)
-          .background(ImageProvider(R.drawable.widget_play_button))
-          .clickable(readingAction(context, r, play = true)),
-        contentAlignment = Alignment.Center,
-      ) {
-        Image(
-          provider = ImageProvider(R.drawable.ic_widget_play),
-          contentDescription = context.getString(R.string.widget_reading_play),
-          modifier = GlanceModifier.size(20.dp),
-          colorFilter = ColorFilter.tint(provider(accent)),
-        )
+      // The one control on the card, in the card's accent. The space before
+      // it is an outer box's: Glance draws a background under a view's own
+      // padding but centres the content inside it, so with the padding on
+      // the disc itself the triangle sat 4dp toward the disc's far edge.
+      cell { DirBox(modifier = GlanceModifier.padStart(8.dp)) {
+        DirBox(
+          modifier = GlanceModifier
+            .size(36.dp)
+            .background(ImageProvider(R.drawable.widget_play_button))
+            .clickable(readingAction(context, r, play = true)),
+          contentAlignment = Alignment.Center,
+        ) {
+          Image(
+            provider = ImageProvider(R.drawable.ic_widget_play),
+            contentDescription = context.getString(R.string.widget_reading_play),
+            modifier = GlanceModifier.size(20.dp),
+            colorFilter = ColorFilter.tint(provider(accent)),
+          )
+        }
       } }
 
       // At 2x2 the side column goes first: the left column alone still
