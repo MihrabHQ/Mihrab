@@ -35,7 +35,7 @@
 <!-- accuracy:start -->
 <div align="center">
 
-<a href="https://github.com/MihrabHQ/mihrab-methods"><img src="branding/badges/certification.svg" alt="certified: 0 of 71,916,057 times off the printed minute"></a>
+<a href="https://github.com/MihrabHQ/mihrab-methods"><img src="branding/badges/certification.svg" alt="certified: 0 of 71,917,047 times off the printed minute"></a>
 
 Prayer times computed with **[mihrab-methods](https://github.com/MihrabHQ/mihrab-methods)**, the authorities’ own methods checked against every time they have published.
 
@@ -43,7 +43,7 @@ Prayer times computed with **[mihrab-methods](https://github.com/MihrabHQ/mihrab
 
 | Matches the published timetable of | Times checked | Off the printed minute |
 |---|---:|---:|
-| Islamiska Förbundet (Sweden), and Diyanet’s tables for Sweden | 1,454,148 | **0** |
+| Islamiska Förbundet (Sweden), and Diyanet’s tables for Sweden | 1,455,138 | **0** |
 | Diyanet, Türkiye and worldwide | 69,999,603 | **0** |
 | Morocco’s Ministry of Habous and Islamic Affairs | 94,350 | **0** |
 | Algeria’s Ministry of Religious Affairs and Wakfs | 101,184 | **0** |
