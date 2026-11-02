@@ -378,10 +378,28 @@ export function skyFrame(
   // How dark the sky is for the moon to show: through the civil twilight.
   const dusky = placed ? clamp01(depth / 6) : 0;
   const daylight = clamp01(moment.daylight ?? 0);
+  /**
+   * The polar day: where the sun really is, it may be under the horizon
+   * through the whole of the "day" (Tromsø in December, three degrees
+   * under at noon), and the arc it is drawn on cannot know. So by the
+   * real sun it is drawn that much under the horizon — half at the
+   * apparent horizon (refraction lifts the disc its own width, the 0.83°
+   * every sunrise is figured at), out of sight a degree and a half
+   * further — and the day's own rise and set, which are drawn by the
+   * clock, take whichever is lower. Nothing where there are no
+   * coordinates: the average day's sun is up by day.
+   */
+  const under = placed && altitude + 0.83 < 0 ? clamp01(0.5 - (altitude + 0.83) / 1.6) : 0;
+  // How dark the sky is for stars: none through a sun above the horizon
+  // or within the civil twilight under it (the midnight sun's "night");
+  // the ordinary night is far past that depth and untouched.
+  const starry = placed ? clamp01((depth - 2) / 4) : 1;
   switch (passage) {
     case 'night': {
       stars = 1;
-      body = realMoon(() => moonAt(x, MOON_REST_Y - Math.sin(t * Math.PI) * 0.1, 1), 1);
+      // The real moon only while the sky is dark enough for it: through a
+      // night the sun stays up (the midnight sun) it is not.
+      body = realMoon(() => moonAt(x, MOON_REST_Y - Math.sin(t * Math.PI) * 0.1, 1), placed ? dusky : 1);
       break;
     }
     case 'dawn': {
@@ -393,13 +411,13 @@ export function skyFrame(
       const rise = Math.max(0, (t - 0.6) / 0.4);
       body =
         rise > 0
-          ? { kind: 'sun', x: sun.x, y: sun.y, alpha: 1, below: 1 - rise / 2, ...sunLight }
-          : realMoon(() => (stars > 0 ? moonAt(X_SET, MOON_REST_Y, stars) : { kind: 'none' }), Math.max(stars, dusky));
+          ? { kind: 'sun', x: sun.x, y: sun.y, alpha: 1, below: Math.max(under, 1 - rise / 2), ...sunLight }
+          : realMoon(() => (stars > 0 ? moonAt(X_SET, MOON_REST_Y, stars) : { kind: 'none' }), Math.max(stars * starry, dusky));
       break;
     }
     case 'day':
       // Clearing the horizon through the first minutes after sunrise.
-      body = { kind: 'sun', x: sun.x, y: sun.y, alpha: 1, below: Math.max(0, 0.5 - daylight / (2 * SUN_RISE_SPAN)), ...sunLight };
+      body = { kind: 'sun', x: sun.x, y: sun.y, alpha: 1, below: Math.max(under, 0.5 - daylight / (2 * SUN_RISE_SPAN)), ...sunLight };
       break;
     case 'sunset': {
       // The same arc, still coming down — and into the horizon through the
@@ -409,7 +427,7 @@ export function skyFrame(
         x: sun.x,
         y: sun.y,
         alpha: 1,
-        below: Math.max(0, 0.5 - (1 - daylight) / (2 * SUN_RISE_SPAN)),
+        below: Math.max(under, 0.5 - (1 - daylight) / (2 * SUN_RISE_SPAN)),
         ...sunLight,
       };
       break;
@@ -421,14 +439,16 @@ export function skyFrame(
       stars = Math.max(0, (t - 0.4) / 0.6);
       body =
         t < 0.3
-          ? { kind: 'sun', x: sun.x, y: sun.y, alpha: 1, below: 0.5 + t / 0.6, ...sunLight }
-          : realMoon(() => (stars > 0 ? moonAt(X_RISE, MOON_REST_Y, stars) : { kind: 'none' }), Math.max(stars, dusky));
+          ? { kind: 'sun', x: sun.x, y: sun.y, alpha: 1, below: Math.max(under, 0.5 + t / 0.6), ...sunLight }
+          : realMoon(() => (stars > 0 ? moonAt(X_RISE, MOON_REST_Y, stars) : { kind: 'none' }), Math.max(stars * starry, dusky));
       break;
     }
   }
   // Under a bright moon the stars go: fewer and fainter, as they do.
   const moonUp = position ? (position.altitude > 0 ? 1 : 0) : 0.5;
   stars *= 1 - 0.45 * moon.illuminated * moonUp;
+  // And under a sun that never sets (the same latitudes, in June), none.
+  stars *= starry;
   const real = skyMoodFor(passage, t, undefined, 'realistic', light);
   return { passage, t, light, top: real.heroTop, bottom: real.heroFoot, glow: real.starGlow, stars, body };
 }

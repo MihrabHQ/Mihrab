@@ -987,24 +987,45 @@ function moonlit(mood: SkyMood, f: number): SkyMood {
  * afterglow's and the dawn's colours, which is what a white night is.
  *
  * The polarity is the PASSAGE's: light for day and sunset (sunrise to
- * Maghrib), dark for dusk, night and dawn. An altitude the wrong side of
- * zero for its passage (a method's Maghrib a minute off the geometric
- * one, refraction) is clamped, never switched.
+ * Maghrib), dark for dusk, night and dawn. An altitude a little the wrong
+ * side of zero for its passage (a method's Maghrib a minute off the
+ * geometric one, refraction) is clamped, never switched — except past
+ * POLAR_UNDER, where it is not a minute's disagreement but the polar
+ * day: a Tromsø December, whose "day" from the tables' sunrise to their
+ * Maghrib the sun spends three degrees under the horizon, wore the
+ * sunrise's light page and blue top for those hours; it wears the
+ * twilight's colours at its depth now, the morning's limb before solar
+ * noon and the evening's after, as the sky outside does. And the other
+ * way, a June night the sun never sets through wears the day's.
  */
+/** How far under (or over) the horizon the sun must be, in its passage's "wrong" half, to be the polar day or night rather than refraction's margin. */
+export const POLAR_UNDER = 1.5;
 export function skyMoodOf(passage: SkyPassage, t: number, light: SkyLight, variant: SkyVariant = activeVariant): SkyMood {
   const track = TRACKS[isSkyVariant(variant) ? variant : DEFAULT_SKY_VARIANT];
   const k = clamp01(t);
-  if (passage === 'day' || passage === 'sunset') {
+  const lightPassage = passage === 'day' || passage === 'sunset';
+  const daylight = light.daylight ?? (passage === 'day' ? k * 0.68 : passage === 'sunset' ? 0.68 + k * 0.32 : null);
+  const lit = lightPassage ? light.sun >= -POLAR_UNDER : light.sun > POLAR_UNDER;
+  if (lit) {
     const alt = Math.max(0, light.sun);
-    const daylight = light.daylight ?? (passage === 'day' ? k * 0.68 : 0.68 + k * 0.32);
-    const side = smooth((daylight - 0.42) / 0.16);
+    // Morning or afternoon limb: by the day's progress; for a night the
+    // sun stays up through, its evening is the afternoon's and its
+    // morning the morning's.
+    const side = lightPassage
+      ? smooth(((daylight ?? 0) - 0.42) / 0.16)
+      : passage === 'dusk'
+        ? 1
+        : passage === 'dawn'
+          ? 0
+          : 1 - smooth((k - 0.4) / 0.2);
     const am = along(track.light.morning, alt);
     const pm = along(track.light.afternoon, alt);
     return mixMoods(am, pm, side);
   }
   const depth = Math.max(0, -light.sun);
-  // Evening until the night's middle, then the morning's limb.
-  const nightT = passage === 'dusk' ? 0 : passage === 'dawn' ? 1 : k;
+  // Evening until the night's middle, then the morning's limb; for a day
+  // the sun stays under through, the morning's until solar noon.
+  const nightT = passage === 'dusk' ? 0 : passage === 'dawn' ? 1 : lightPassage ? clamp01(1 - (daylight ?? 0.5)) : k;
   const side = smooth((nightT - 0.4) / 0.2);
   const twilight = mixMoods(along(track.dark.evening, depth), along(track.dark.morning, depth), side);
   const deep = clamp01((depth - TWILIGHT_ASTRONOMICAL) / 4);
