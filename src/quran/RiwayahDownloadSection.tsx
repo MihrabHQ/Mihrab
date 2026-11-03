@@ -33,7 +33,7 @@
  *
  * The file never travels through anything of ours either way.
  */
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { startQuranDownload } from './quranDownloadManager';
 import { useQuranDownloadRun } from './QuranDownloadStrip';
 import { DownloadRow, ProgressTrack, TextAction } from './downloadsUi';
@@ -163,8 +163,15 @@ function RiwayahCard({
       ? run.last
       : null;
   const busy = reading || mine;
+  // Once per finished run, not once per render: keyed on `onChanged` too,
+  // a parent that passed a fresh function each render (Downloads did) was
+  // told again on every render its own re-read caused — the page re-read
+  // the disk in a loop, its storage bar flickering with "Loading…". A run
+  // that finished before this card mounted is not news to it either.
+  const told = useRef(last);
   useEffect(() => {
-    if (!last?.complete) return;
+    if (!last?.complete || told.current === last) return;
+    told.current = last;
     setUrl('');
     onChanged?.();
   }, [last, onChanged]);

@@ -118,8 +118,10 @@ export function QuranDownloadsContent() {
   const [device, setDevice] = useState<DeviceStorage | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Only the first read says "Loading…". A re-read (a run ended, something
+  // was deleted) keeps the figures it is about to correct on screen: the
+  // bar swapping to a word and back for each one read as a flicker.
   const refresh = useCallback(async () => {
-    setLoading(true);
     try {
       // The riwayah store is read from disk once per process; this screen
       // is often the first thing to need it, and it is what makes the
@@ -186,6 +188,8 @@ export function QuranDownloadsContent() {
   useEffect(() => {
     void refresh();
   }, [refresh]);
+  /** One function for the page's life — see RiwayahCard's `told`. */
+  const onRiwayahChanged = useCallback(() => void refresh(), [refresh]);
 
   /**
    * What is downloading right now.
@@ -519,7 +523,7 @@ export function QuranDownloadsContent() {
         )}
       </SettingsGroup>
 
-      <RiwayahDownloadSection onChanged={() => void refresh()} />
+      <RiwayahDownloadSection onChanged={onRiwayahChanged} />
 
       <ConfirmModal
         visible={pendingDelete != null}
