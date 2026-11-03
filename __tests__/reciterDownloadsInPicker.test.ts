@@ -124,7 +124,7 @@ describe('the card is gone and the controls are on the rows', () => {
     expect(picker).toContain('startQuranDownload');
     expect(picker).toContain('cancelQuranDownload');
     expect(picker).toContain('deleteReciterAudio');
-    const running = picker.indexOf('{running ? (');
+    const running = picker.indexOf('{IS_WEB_DEMO ? null : running ? (');
     const stats = picker.indexOf(') : stats ? (', running);
     const download = picker.indexOf(') : (', stats);
     expect(running).toBeGreaterThan(0);

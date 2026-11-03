@@ -56,7 +56,7 @@ import { useVerticalBar } from '../native/VerticalBar';
 import { VerticalTabBar } from './VerticalTabBar';
 import { BottomTabBar } from '@react-navigation/bottom-tabs';
 import { MihrabHeaderTitle } from './MihrabHeaderTitle';
-import { isDesktop, HOME_DASHBOARD_MIN_WIDTH } from '../responsive/breakpoints';
+import { desktopLayout, HOME_DASHBOARD_MIN_WIDTH } from '../responsive/breakpoints';
 import {
   TabBookIcon,
   TabDuasIcon,
@@ -91,7 +91,7 @@ export function MainTabs() {
   const windowWidth = useWindowSize().width;
   const isDashboardWidth = windowWidth >= HOME_DASHBOARD_MIN_WIDTH;
   // Today's header survives only on the wide dashboard; see its options.
-  const todayHeader = !isDesktop && isDashboardWidth;
+  const todayHeader = !desktopLayout && isDashboardWidth;
   const barBottom = useTabBarBottom();
   /** What the display's rounded bottom corners eat — #42. */
   const cornerInset = useTabBarCornerInset();
@@ -503,7 +503,7 @@ export function MainTabs() {
            * row of content — same line, opposite ends, entirely below the
            * drag region. See HomeScreen's `macHeaderRow`.
            */
-          ...(isDesktop
+          ...(desktopLayout
             ? {}
             : { headerRight: () => <HomeHeaderControls /> }),
         }}

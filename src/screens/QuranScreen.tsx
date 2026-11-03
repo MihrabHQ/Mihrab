@@ -96,6 +96,7 @@ import { useTabBarScroll } from '../navigation/tabBarVisibility';
 import { RADIUS, SPACING } from '../theme/tokens';
 import { tajweedColoursShown } from '../quran/tajweed/tajweedSupport';
 import { useSheetSides } from '../responsive/sheetSides';
+import { IS_WEB_DEMO } from '../config/webDemo';
 
 type Tab = 'surah' | 'juz' | 'bookmarks';
 const TABS: Tab[] = ['surah', 'juz', 'bookmarks'];
@@ -952,7 +953,7 @@ export function QuranScreen() {
       <View style={styles.downloadsRow}>
         {/* Sync, once it is set up — it used to sit in the title bar. */}
         <SyncHeaderButton />
-        {riwayahOffered ? (
+        {riwayahOffered && !IS_WEB_DEMO ? (
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={t(
@@ -988,16 +989,18 @@ export function QuranScreen() {
             {t('tajweed.title', 'Tajweed colours')} ›
           </Text>
         </Pressable>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={t('downloads.title', 'Manage downloads')}
-          onPress={() => navigation.navigate('SettingsDownloads')}
-          style={styles.downloadsLink}>
-          <Text
-            style={{ color: palette.muted, fontSize: TYPE.label.fontSize, fontWeight: '400' }}>
-            {t('downloads.title', 'Manage downloads')} ›
-          </Text>
-        </Pressable>
+        {IS_WEB_DEMO ? null : (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t('downloads.title', 'Manage downloads')}
+            onPress={() => navigation.navigate('SettingsDownloads')}
+            style={styles.downloadsLink}>
+            <Text
+              style={{ color: palette.muted, fontSize: TYPE.label.fontSize, fontWeight: '400' }}>
+              {t('downloads.title', 'Manage downloads')} ›
+            </Text>
+          </Pressable>
+        )}
       </View>
 
       {/* Full-text results */}

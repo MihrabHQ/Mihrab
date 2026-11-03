@@ -85,6 +85,7 @@ import { TodaySummary } from './home/TodaySummary';
 import { CenteredColumn } from '../responsive/CenteredColumn';
 import {
   isDesktop,
+  desktopLayout,
   isMacCatalyst,
   BREAKPOINT_REGULAR,
   MAX_CONTENT_WIDTH,
@@ -298,7 +299,7 @@ export function HomeScreen() {
    */
   const isRoomy =
     !isDashboard &&
-    !isDesktop &&
+    !desktopLayout &&
     screenWidth >= BREAKPOINT_REGULAR &&
     screenHeight >= HOME_ROOMY_MIN_HEIGHT;
   /**
@@ -1784,7 +1785,7 @@ export function HomeScreen() {
     // The city alone: a saved place carries its region and country too.
     minimalFooter = [cityOf(locationLabel), getHijriDate(0)].filter(Boolean).join(' · ');
   }
-  const budgeted = !isDashboard && !isDesktop && !isRoomy && !book && !tabletop && viewport > 0;
+  const budgeted = !isDashboard && !desktopLayout && !isRoomy && !book && !tabletop && viewport > 0;
   const tier: HomeTier = budgeted
     ? pickHomeTier({
         viewport,
@@ -1820,7 +1821,7 @@ export function HomeScreen() {
           Above the ScrollView it is chrome: pinned to the top, spanning the
           window rather than the card column, and unaffected by any zoom —
           held clear of the window's own title bar by `macTopBarInset`. */}
-      {isDesktop ? (
+      {desktopLayout ? (
         <>
           <View style={[styles.macTopBar, { paddingTop: macTopBarInset }]}>
             <MihrabHeaderTitle />
@@ -1836,7 +1837,7 @@ export function HomeScreen() {
     <PullToRefreshFrame
       store={pull}
       enabled={pullEnabled}
-      top={!isDashboard && !isDesktop ? insets.top : 0}>
+      top={!isDashboard && !desktopLayout ? insets.top : 0}>
     <ScrollView
       ref={scrollRef}
       // The phone tracks the offset for the status band; everywhere else
@@ -1847,7 +1848,7 @@ export function HomeScreen() {
       onScroll={e => {
         noteScrollTop(e.nativeEvent.contentOffset.y);
         pull.onScroll(e);
-        if (!isDashboard && !isDesktop) onScroll(e);
+        if (!isDashboard && !desktopLayout) onScroll(e);
         else tabBarScroll.onScroll?.(e);
       }}
       scrollEventThrottle={16}
@@ -1859,7 +1860,7 @@ export function HomeScreen() {
       contentContainerStyle={[
         styles.scrollContent,
         // The phone's hero runs edge to edge; the rows pad themselves.
-        !isDashboard && !isDesktop && styles.scrollContentBleed,
+        !isDashboard && !desktopLayout && styles.scrollContentBleed,
         // Roomy: the content is a block in the middle of the page rather
         // than a page-height column.
         isRoomy && styles.scrollContentRoomy,
@@ -1895,7 +1896,7 @@ export function HomeScreen() {
         maxWidth={isDashboard ? dashCap : book || wideInset > 0 ? screenWidth : undefined}
         style={[
           styles.homeColumn,
-          !isDashboard && !isDesktop && !isRoomy && styles.fillColumn,
+          !isDashboard && !desktopLayout && !isRoomy && styles.fillColumn,
         ]}
         // Both wrappers: on a wide-but-not-dashboard window (a tablet held
         // upright) the column is capped and gets an inner View, and the
@@ -1903,7 +1904,7 @@ export function HomeScreen() {
         // which is exactly what a roomy page must NOT do.
         innerStyle={[
           styles.homeColumn,
-          !isDashboard && !isDesktop && !isRoomy && styles.fillColumn,
+          !isDashboard && !desktopLayout && !isRoomy && styles.fillColumn,
         ]}>
       {/* A banner is the FIRST thing on the page, and on a phone the page
           runs to the top edge — so without this the notice was drawn
@@ -1948,7 +1949,7 @@ export function HomeScreen() {
               setTzNoticeDismissedAt(timezoneShift?.at ?? Date.now());
             }}
             topInset={
-              !isDashboard && !isDesktop && !isRoomy && hasBanner ? insets.top : 0
+              !isDashboard && !desktopLayout && !isRoomy && hasBanner ? insets.top : 0
             }
           />
         </View>
@@ -1962,7 +1963,7 @@ export function HomeScreen() {
         // Phones: the hero runs to the top of the screen under the status
         // bar and carries the location chip; the tab's header is hidden.
         // The dashboard (iPad/Mac) keeps its card and its header.
-        const fullBleed = !isDashboard && !isDesktop;
+        const fullBleed = !isDashboard && !desktopLayout;
         const dayTable = (
           <TodayCard
             week={view.table.week}
@@ -2167,7 +2168,7 @@ export function HomeScreen() {
     </PullToRefreshFrame>
     {/* Over the page, and only on the phone's full-bleed hero: the
         dashboard's card does not run under the status bar. */}
-    {!isDashboard && !isDesktop && !hasBanner ? (
+    {!isDashboard && !desktopLayout && !hasBanner ? (
       <HomeStatusBand
         scrollY={scrollY}
         insetTop={insets.top}

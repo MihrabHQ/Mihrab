@@ -20,11 +20,13 @@
  */
 import { isDesktop } from '../responsive/breakpoints';
 import {
+  getPathFromState as defaultGetPathFromState,
   getStateFromPath as defaultGetStateFromPath,
   type LinkingOptions,
 } from '@react-navigation/native';
+import { WEB_BASE_PATH } from '../config/webDemo';
 import notifee, { EventType } from '@notifee/react-native';
-import { Linking } from 'react-native';
+import { Linking, Platform } from 'react-native';
 
 import { notificationRoute } from '../notifications/notificationRoute';
 import type { RootStackParamList } from './types';
@@ -123,9 +125,29 @@ export function withSettingsUnder<S extends { routes: Array<{ name: string }> }>
 /** Set while the launch link has not yet been turned into a state. */
 let launchLinkPending = false;
 
+/**
+ * The website's demo is served under a path of its own (`WEB_BASE_PATH`),
+ * and on the web the address bar IS the link: without this the app read
+ * `/mihrab-demo/` as a route it did not know, and wrote `/quran` over it —
+ * a reload then asked the server for a page that is not there. Empty, and
+ * so a no-op, in every app build.
+ */
+function withoutBase(path: string): string {
+  if (!WEB_BASE_PATH || !path.startsWith(WEB_BASE_PATH)) return path;
+  const rest = path.slice(WEB_BASE_PATH.length);
+  return rest.startsWith('/') ? rest : `/${rest}`;
+}
+
 export const linking: LinkingOptions<RootStackParamList> = {
   prefixes: [MIHRAB_SCHEME],
-  getStateFromPath(path, options) {
+  ...(WEB_BASE_PATH
+    ? {
+        getPathFromState: (state, options) =>
+          `${WEB_BASE_PATH}${defaultGetPathFromState(state, options)}`,
+      }
+    : null),
+  getStateFromPath(rawPath, options) {
+    const path = withoutBase(rawPath);
     const state = defaultGetStateFromPath(path, options);
     if (!launchLinkPending) return state;
     launchLinkPending = false;
@@ -154,6 +176,12 @@ export const linking: LinkingOptions<RootStackParamList> = {
     };
   },
   config: {
+    /**
+     * In a browser a page can be reloaded or opened at /read/2 directly; with
+     * nothing under the reader it would have no way back. Native deep links
+     * keep their own stack.
+     */
+    ...(Platform.OS === 'web' ? { initialRouteName: 'Home' as const } : {}),
     screens: {
       Home: {
         screens: {

@@ -75,6 +75,7 @@ import { TYPE } from '../../theme/typography';
 import { useSheetSides } from '../../responsive/sheetSides';
 // The Downloads page's own shape, so a few hundred KB on disk is not "0 MB".
 import { formatBytes } from '../downloadsUi';
+import { IS_WEB_DEMO } from '../../config/webDemo';
 
 /**
  * A trash can, drawn.
@@ -319,7 +320,7 @@ export function ReciterPickerSheet({ visible, onClose }: Props) {
             A complete one still has one, because there is nothing left to
             fetch, and a row that has never been touched still has one,
             because there is nothing to delete. */}
-        {running ? (
+        {IS_WEB_DEMO ? null : running ? (
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={t('common.cancel', 'Cancel')}

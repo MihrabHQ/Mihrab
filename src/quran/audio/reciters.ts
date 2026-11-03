@@ -39,6 +39,7 @@
 
 import type { RiwayahId } from '../riwayat';
 import { hasSurahTable } from './surahRecitation';
+import { IS_WEB_DEMO, WEB_DEMO_RECITER_ID } from '../../config/webDemo';
 
 export type Reciter = {
   /** Stable id used in settings + file paths. */
@@ -313,7 +314,7 @@ export const SURAH_FILE_RECITERS: ReadonlyArray<Reciter> = [
 
 ];
 
-export const RECITERS: ReadonlyArray<Reciter> = [
+const ALL_RECITERS: ReadonlyArray<Reciter> = [
   {
     id: 'husary',
     name: 'Mahmoud Khalil Al-Husary',
@@ -684,6 +685,15 @@ export const RECITERS: ReadonlyArray<Reciter> = [
   ...WARSH_RECITERS,
   ...SURAH_FILE_RECITERS,
 ] as const;
+
+/**
+ * Every reciter the app offers. The website's demo offers one: it carries
+ * the word timings of a single reciter, and a list of fifty that mostly
+ * could not highlight a word would be a poor picture of the reader.
+ */
+export const RECITERS: ReadonlyArray<Reciter> = IS_WEB_DEMO
+  ? ALL_RECITERS.filter(r => r.id === WEB_DEMO_RECITER_ID)
+  : ALL_RECITERS;
 
 /**
  * Fold a name or query down to what a search should actually compare.

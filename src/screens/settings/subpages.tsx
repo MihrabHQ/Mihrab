@@ -19,6 +19,7 @@ import {
   QuranIcon,
   WidgetsIcon,
 } from './SettingsSectionIcons';
+import { IS_WEB_DEMO } from '../../config/webDemo';
 
 export type SettingsSubpageRoute = Extract<
   keyof RootStackParamList,
@@ -196,7 +197,10 @@ const ALL_SUBPAGES: readonly SettingsSubpage[] = [
 
 export const SETTINGS_SUBPAGES: readonly SettingsSubpage[] =
   ALL_SUBPAGES.filter(
-    page => !page.platforms || page.platforms.includes(Platform.OS),
+    page =>
+      (!page.platforms || page.platforms.includes(Platform.OS)) &&
+      // The website's demo carries everything; there is nothing to manage.
+      !(IS_WEB_DEMO && page.route === 'SettingsDownloads'),
   );
 
 /** Every section, whatever the platform — for tests that check the set. */

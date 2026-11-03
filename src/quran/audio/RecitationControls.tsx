@@ -35,6 +35,7 @@ import { setQuranPrefs, useQuranState } from '../quranState';
 import { RowAction, SectionHead, Segments, Stepper } from '../../components/controls';
 import { RADIUS, SPACING } from '../../theme/tokens';
 import { TYPE } from '../../theme/typography';
+import { IS_WEB_DEMO } from '../../config/webDemo';
 
 type Props = {
   /** Surah context for the range player + offline download. */
@@ -367,7 +368,7 @@ export function RecitationControls({
           ayah={ayah ?? null}
           riwayah={resolveRiwayah(prefs.riwayah)}
         />
-      ) : (
+      ) : IS_WEB_DEMO ? null : (
         <View style={styles.dlWrap}>
           <RowAction
             compact

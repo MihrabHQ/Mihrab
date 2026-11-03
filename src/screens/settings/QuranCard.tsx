@@ -37,6 +37,7 @@ import {
   SettingsLinkRow,
   SettingsToggleRow,
 } from './SettingsGroup';
+import { IS_WEB_DEMO } from '../../config/webDemo';
 
 /**
  * Quran preferences — the app-wide companion-text choice (v2.7.40), and
@@ -131,6 +132,7 @@ function QuranCardImpl() {
           value={t(riwayahById(riwayah).nameKey, riwayahById(riwayah).arabic)}
           onPress={() => setRiwayahVisible(true)}
         />
+        {IS_WEB_DEMO ? null : (
         <SettingsLinkRow
           testID="settings-riwayah-manage"
           title={t('quran.riwayahManage', 'Add or remove traditions')}
@@ -140,6 +142,7 @@ function QuranCardImpl() {
           })}
           onPress={() => navigation.navigate('SettingsDownloads')}
         />
+        )}
       </SettingsGroup>
       <SettingsGroup
         title={t('quran.companionTitle', 'Under each verse')}

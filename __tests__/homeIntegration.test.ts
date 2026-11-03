@@ -127,7 +127,7 @@ describe('HomeScreen integration (tasks #45–#47)', () => {
       path.join(__dirname, '..', 'src', 'navigation', 'MainTabs.tsx'),
       'utf-8',
     );
-    expect(TABS).toMatch(/const todayHeader = !isDesktop && isDashboardWidth;/);
+    expect(TABS).toMatch(/const todayHeader = !desktopLayout && isDashboardWidth;/);
     expect(TABS).toMatch(/headerShown:\s*todayHeader/);
 
     const wordmark = HOME.indexOf('<MihrabHeaderTitle');
