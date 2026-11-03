@@ -198,6 +198,11 @@ Remove it, with its settings:
 curl -fsSL https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/install-linux.sh | sh -s uninstall
 ```
 
+Both commands run a script from this repository, which you can read first:
+[`desktop/scripts/install-windows.cmd`](desktop/scripts/install-windows.cmd) and
+[`desktop/scripts/install-linux.sh`](desktop/scripts/install-linux.sh). Each one installs,
+and with `uninstall` removes; the Desktop workflow runs both on every build.
+
 ---
 
 ## Build
