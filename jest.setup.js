@@ -554,3 +554,55 @@ beforeEach(() => {
     // A suite that mocks the module away has nothing to reset.
   }
 });
+
+// ── NO TIMER OUTLIVES ITS FILE ─────────────────────────────────────────
+//
+// A timer a suite's modules start and nothing stops — the first paint's
+// fallback (src/boot/firstPaint.ts, armed by anything that waits for the
+// paint: the stored correction lists' check, the cache status, the sync
+// round), the animation frames behind it — fires after Jest has torn the
+// file's environment down, and that is a failed run however green every
+// test was: "Cannot log after tests are done", "accessed after it has been
+// torn down", and the run's exit code 1. Every real timer a file starts is
+// noted here and the ones still pending when the file ends are cleared.
+// Fake timers replace these functions for as long as a test asks; that is
+// Jest's own bookkeeping, and untouched.
+{
+  const pendingTimeouts = new Set();
+  const pendingIntervals = new Set();
+  const realSetTimeout = global.setTimeout;
+  const realClearTimeout = global.clearTimeout;
+  const realSetInterval = global.setInterval;
+  const realClearInterval = global.clearInterval;
+  global.setTimeout = function (fn, ms, ...args) {
+    const id = realSetTimeout(
+      (...a) => {
+        pendingTimeouts.delete(id);
+        return typeof fn === 'function' ? fn(...a) : undefined;
+      },
+      ms,
+      ...args,
+    );
+    pendingTimeouts.add(id);
+    return id;
+  };
+  global.clearTimeout = function (id) {
+    pendingTimeouts.delete(id);
+    return realClearTimeout(id);
+  };
+  global.setInterval = function (fn, ms, ...args) {
+    const id = realSetInterval(fn, ms, ...args);
+    pendingIntervals.add(id);
+    return id;
+  };
+  global.clearInterval = function (id) {
+    pendingIntervals.delete(id);
+    return realClearInterval(id);
+  };
+  afterAll(() => {
+    for (const id of pendingTimeouts) realClearTimeout(id);
+    for (const id of pendingIntervals) realClearInterval(id);
+    pendingTimeouts.clear();
+    pendingIntervals.clear();
+  });
+}

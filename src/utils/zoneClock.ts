@@ -4,7 +4,6 @@
  * clock) and the readers (`utils/prayerTimes.ts`, which turn a written time
  * back into an instant) need. A leaf, so neither has to import the other.
  */
-import { nativeTimeZone } from '../native/SystemClock';
 
 /**
  * The zone as last resolved, and the device offset it was resolved under.
@@ -13,6 +12,16 @@ import { nativeTimeZone } from '../native/SystemClock';
  */
 let zoneCache: { zone: string | undefined; offset: number } | null = null;
 let askedNative = false;
+/**
+ * The zone the native side named at launch (`SystemClock.timeZone`), handed
+ * in by the app's entry (index.js) rather than imported: this module is a
+ * leaf the Node tools run too (tools/compat-feed), where there is no
+ * React Native to import.
+ */
+let launchZone: string | null = null;
+export function setLaunchZone(zone: string | null): void {
+  launchZone = zone && zone.length > 0 ? zone : null;
+}
 
 /**
  * The phone's own zone (IANA), or undefined where Intl cannot say.
@@ -33,7 +42,7 @@ export function deviceZone(): string | undefined {
   // the offset moved, a foreground invalidated the cache — asks Intl.
   if (zoneCache === null && !askedNative) {
     askedNative = true;
-    zone = nativeTimeZone() ?? undefined;
+    zone = launchZone ?? undefined;
   }
   if (zone === undefined) {
     try {

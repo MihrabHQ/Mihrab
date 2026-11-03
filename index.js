@@ -8,6 +8,11 @@ import { bootMark } from './src/boot/bootTimeline';
 // is given the app's own Roboto, so a phone's theme font cannot reach the
 // UI (issue #16). A no-op elsewhere.
 import './src/theme/androidUiFont';
+// The device's zone from the native constant, before anything asks Intl
+// for it (src/utils/zoneClock.ts): the first resolvedOptions() is a
+// formatter built on the JS thread at the first times.
+import { nativeTimeZone } from './src/native/SystemClock';
+import { setLaunchZone } from './src/utils/zoneClock';
 import 'react-native-gesture-handler';
 import { enableFreeze } from 'react-native-screens';
 import { AppRegistry } from 'react-native';
@@ -23,6 +28,10 @@ import './src/sync/recordChanged';
 // Side effect: the phone's zone is asked again on every return to the
 // foreground. See src/utils/deviceZoneAppState.ts.
 import './src/utils/deviceZoneAppState';
+
+// Imports are evaluated first whatever their order; this runs before any
+// of them is asked for a time (the first is the settings' load).
+setLaunchZone(nativeTimeZone());
 
 // The React Native module name MUST match what the native side requests
 // in `getMainComponentName()` (Android: MainActivity.kt) and the iOS
