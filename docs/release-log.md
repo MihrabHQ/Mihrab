@@ -1340,3 +1340,9 @@ the notes for the new code, the last lesson, a clean tree — plus one the
 gate was right to stop: main was red. Before starting: CI green on the
 commit being released, the notes and the last lesson committed, and any
 probe files stashed, not just unstaged.
+
+## 2.35.0 (294) — 2026-11-03
+
+Ran clean on the first attempt.
+
+**Lesson:** none needed — clean run, no change to the cycle.
