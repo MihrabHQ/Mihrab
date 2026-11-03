@@ -235,49 +235,53 @@ and `js0` itself ~60 ms after the activity rather than ~100, so the live
 screen is on the glass at ~465 ms from the process's birth, from ~635.
 (`settings` did not move: it is the Keychain read, §4.9.)
 
-### 4.9 Left
+### 4.9 The second pass (later the same night), and what is left
 
-- **The render, `ready-cache` → `commit`, ~70 ms**, is now the largest
-  piece: React's work on the ready tree (`completeRoot`, `createNode`,
-  text measurement). The text plan stands as written below.
-- **`commit` → `raf`, ~45 ms**: the remainder is React's own passive
-  effects and the UI-thread handoff; nothing of ours over 2 ms is left
-  in it.
-- **`skyMoods` at load, 3–4 ms** (the OKLCH conversions): lazy per
-  variant; the classic themes would never pay it.
-- **The bundled Diyanet list at launch, 3 ms**: `adopt` summarises the
-  bundled list to compare a stored one against it; a generated summary
-  file would spare the require.
-- **`releaseNotes.generated.ts`, 2 ms**, evaluated at the first render
-  to decide whether the changelog sheet is due; the latest version alone
-  would do.
-- **The Keychain read, 35–45 ms**, still the head of `settings` (item 6
-  below).
-- **Text measurement** (item 3 below).
+The five items this section listed are done or closed:
 
-The plan as first written, for the items still open:
+- **`skyMoods` at load**: each variant's moods, anchors and stations are
+  built at the variant's first use (`skyMoodsOf`, `trackOf`); a classic
+  theme never pays, a Sky theme pays for its own variant only.
+- **The bundled Diyanet list at launch**: the bundled lists' summaries are
+  written at build time (`scripts/build-corrections-summaries.js`,
+  pinned to the lists by a test) and the launch compares against those.
+- **`releaseNotes.generated.ts` at the first render**: `changelog()`
+  requires the table at its first call; the sheet reads it once visible,
+  and the launch's "anything new?" never reaches it on an ordinary day.
+- **The Keychain read** is not the head of `settings` after all: the
+  profile shows the JS thread busy for 60 of that window's ~68 ms (the
+  root render, the module graph, the native modules' constants) while the
+  read runs on the native modules thread beside it. Taking it off the
+  path would buy under 10 ms. Closed.
+- **The screens, lazily.** Every screen but Home was a `component` prop
+  on a navigator rendered from the first frame, and a `component` prop
+  reads the import: the compass, the surah list, the backup page, the
+  sync page and eighteen settings pages — their whole module graphs —
+  loaded at every launch. They are `getComponent` now, required at the
+  first open. Module top-level code before the paint 74 → 59 ms.
+- **The day bar's words** are kept across launches
+  (`screens/home/dayWordsMemory.ts`, the fast store): the first formatter
+  of the process was still 8 ms in the render after ICU's warm-up; a
+  launch on a day already seen builds none before the first frame.
+- **The muṣḥaf layout warm-up** (8 ms of bytecode) ran in the first
+  paint's own frame, where the run begins; it waits for the run.
 
-3. **Text measurement in the commit.** Count the `Text` nodes in the ready
-   tree (a `console.count` in a dev build is enough; I expect 60–90: the
-   rows alone are 6 × (name, time, two chips)). Each is a JNI measurement.
-   Moves: the rows' chips rendered only when they apply (most launches
-   have none), `allowFontScaling`-safe fixed heights for the rows so Yoga
-   measures fewer nodes (the layout memory already knows the row height),
-   and `numberOfLines={1}` on every single-line label (it is a cheaper
-   measure path). Expected: 10–20 ms off `commit`.
-6. **The Keychain read, 35–45 ms, on the critical path.** `settings` waits
-   for `readSecureSettings` because the location is in it and the times
-   need the location. Two options: (a) keep the *cached day's times* in
-   the fast store too (they are already in the stored-times cache,
-   AsyncStorage) so the hero can draw from them before the location is
-   known, and reconcile when it is; (b) keep a non-secret hash of the
-   location (the cache key) in the fast store so the cache can be read
-   before the Keychain answers. (b) is smaller; both change what the
-   first render trusts, so this is last and only with the numbers
-   showing the Keychain still at the head of the queue — they do.
+**The render** (`ready-cache` → `commit`, ~60 ms now) is what is left,
+and it is proportional to the first frame's tree: ~17 ms is Fabric's
+commit (Yoga, with a text measurement per `Text`), ~9 ms the shadow
+nodes' creation, the rest React's reconciliation of the components,
+spread so thin that no component is over 2 ms. The one move that would
+cut it is a smaller first commit — the hero and a blank table of the
+remembered height, the rows a frame later — which brings the first paint
+~25 ms sooner but the complete screen no sooner, and on a launch with no
+kept picture would show the rows arriving, which is the settling the
+layout memory exists to end. Not taken; the kept picture already covers
+the frame it would win.
 
-If the text and the Keychain land, the live screen is under ~400 ms from
-the process's birth, and §3 stays on the shelf.
+Where it stands (cold start, median of five, after `js0`): `settings`
+~70, `home` ~97, `commit` ~220, `raf` ~255, `paint` ~265; `js0` ~50 ms
+after the activity. The live Today on the glass ~450 ms from the
+process's birth. §3 stays on the shelf.
 
 ## 5. Not doing
 

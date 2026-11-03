@@ -66,16 +66,21 @@ describe('a Card inside a Card warns, once, by name', () => {
 describe('every tab screen reserves the floating bar', () => {
   // The six tab roots, as registered in MainTabs.
   const tabs = read('src/navigation/MainTabs.tsx');
-  const components = [...tabs.matchAll(/component=\{(\w+)\}/g)].map(m => m[1]);
+  // Home by `component`, the rest by `getComponent` (required at the
+  // first open — docs/first-frame-plan.md).
+  const components = [
+    ...[...tabs.matchAll(/component=\{(\w+)\}/g)].map(m => m[1]),
+    ...[...tabs.matchAll(/getComponent=\{\(\) => \(require\('\.\.\/screens\/(\w+)'\)/g)].map(m => m[1]),
+  ];
 
   it('registers six tabs', () => {
     expect(components).toHaveLength(6);
   });
 
   it.each(components)('%s calls useTabBarInset', name => {
-    const importLine = new RegExp(`import \\{ ${name} \\} from '([^']+)'`).exec(
-      tabs,
-    );
+    const importLine =
+      new RegExp(`import \\{ ${name} \\} from '([^']+)'`).exec(tabs) ??
+      new RegExp(`require\\('([^']+\\/${name})'\\)`).exec(tabs);
     expect(importLine).not.toBeNull();
     const file = join('src/navigation', importLine![1] + '.tsx');
     const src = read(file);

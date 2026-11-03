@@ -125,6 +125,8 @@ describe('the launch reads go through the fast store', () => {
     expect(read('src/theme/skyTheme.ts')).toMatch(/launchWrite\(STORAGE_KEY,/);
     expect(read('src/screens/home/todayLayoutMemory.ts')).toMatch(/primed = launchRead\(STORAGE_KEY\)/);
     expect(read('src/screens/home/todayLayoutMemory.ts')).toMatch(/launchWrite\(STORAGE_KEY,/);
+    expect(read('src/screens/home/dayWordsMemory.ts')).toMatch(/primed = launchRead\(STORAGE_KEY\)/);
+    expect(read('src/screens/home/dayWordsMemory.ts')).toMatch(/launchWrite\(STORAGE_KEY,/);
     expect(read('src/prayer/timezoneShift.ts')).toMatch(/launchRead\(KEY\)/);
     expect(read('src/prayer/timezoneShift.ts')).toMatch(/launchWrite\(KEY,/);
     expect(read('src/sync/snapshotStore.ts')).toMatch(/launchWrite\(SETTINGS_KEY,/);
@@ -132,6 +134,7 @@ describe('the launch reads go through the fast store', () => {
       'src/settings/secureStorage.ts',
       'src/theme/skyTheme.ts',
       'src/screens/home/todayLayoutMemory.ts',
+      'src/screens/home/dayWordsMemory.ts',
       'src/prayer/timezoneShift.ts',
     ]) {
       expect(read(f)).not.toMatch(/AsyncStorage\.(set|get|remove)Item/);
@@ -143,6 +146,7 @@ describe('the launch reads go through the fast store', () => {
     expect(read('src/settings/secureStorage.ts')).toContain(`'${LAUNCH_KEYS.secureFallback}'`);
     expect(read('src/theme/skyTheme.ts')).toContain(`'${LAUNCH_KEYS.sky}'`);
     expect(read('src/screens/home/todayLayoutMemory.ts')).toContain(`'${LAUNCH_KEYS.layout}'`);
+    expect(read('src/screens/home/dayWordsMemory.ts')).toContain(`'${LAUNCH_KEYS.words}'`);
     expect(read('src/prayer/timezoneShift.ts')).toContain(`'${LAUNCH_KEYS.clocks}'`);
     expect(read('src/sync/snapshotStore.ts')).toContain(`'${LAUNCH_KEYS.settings}'`);
   });

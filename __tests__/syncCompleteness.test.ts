@@ -86,6 +86,8 @@ const STAYS: Record<string, string> = {
     'derived — the last sky the hero drew, kept for the moment before it draws again; the next phone draws its own',
   '@mihrab/todayLayout/v1':
     "derived — the sizes Today settled on for this phone's window and text size; the next phone measures its own",
+  '@mihrab/dayWords/v1':
+    "derived — the day bar's weekday and date in the reader's language, as the formatter gave them; the next phone formats its own",
   prayer_times_cache: 'derived — the legacy cache, migrated then deleted',
   'mihrab.alertsWrittenForVersion':
     'describes this INSTALL — the build whose first start wrote the prayer alerts ' +

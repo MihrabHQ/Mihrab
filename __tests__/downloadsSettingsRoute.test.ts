@@ -46,7 +46,7 @@ describe('the old route is gone everywhere', () => {
     // Top level: declared outside every `children: [...]` block.
     const topLevel = subpages.replace(/children: \[[\s\S]*?\n {4}\],/g, '');
     expect(topLevel).toMatch(/route: 'SettingsDownloads'/);
-    expect(subpages).toMatch(/component: DownloadsSettingsScreen/);
+    expect(subpages).toMatch(/getComponent: \(\) => \(require\('\.\/pages\/DownloadsSettingsScreen'\)/);
     expect(read('src/navigation/types.ts')).toMatch(/\bSettingsDownloads: undefined/);
   });
 });

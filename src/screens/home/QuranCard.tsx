@@ -19,7 +19,7 @@
  */
 import { memo, useCallback, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { afterInteractions } from '../../utils/afterInteractions';
+import { afterFirstPaint } from '../../boot/firstPaint';
 import { GlassSurface } from '../../components/GlassSurface';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import { cardEdgeStyle } from '../../theme/chrome';
@@ -72,12 +72,18 @@ function QuranCardImpl({ onOpenAt, onOpenQuran, bare = false, dense = false }: P
     quran.lastRead?.mode === 'mushaf' || card.khatmah != null || card.homeBookmark != null;
   const riwayah = quran.prefs.riwayah;
   const tajweed = tajweedColoursShown(riwayah, quran.prefs.tajweedColours);
+  // After the first paint and the launch run (boot/firstPaint.ts): the
+  // layout is 8 ms of bytecode to run, and it ran in the frame of the
+  // first paint, where the run begins.
   useEffect(() => {
     if (!readsMushaf) return;
-    const task = afterInteractions(() =>
-      warmMushafLayout(riwayah, tajweed),
-    );
-    return () => task.cancel();
+    let cancelled = false;
+    void afterFirstPaint().then(() => {
+      if (!cancelled) warmMushafLayout(riwayah, tajweed);
+    });
+    return () => {
+      cancelled = true;
+    };
   }, [readsMushaf, riwayah, tajweed]);
 
   // The khatmah is a muṣḥaf page: the reader lands on it whichever reader

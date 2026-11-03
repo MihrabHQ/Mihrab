@@ -19,22 +19,6 @@ import {
   QuranIcon,
   WidgetsIcon,
 } from './SettingsSectionIcons';
-import { AboutSettingsScreen } from './pages/AboutSettingsScreen';
-import { AppearanceSettingsScreen } from './pages/AppearanceSettingsScreen';
-import { AttributionsSettingsScreen } from './pages/AttributionsSettingsScreen';
-import { DailyRemindersSettingsScreen } from './pages/DailyRemindersSettingsScreen';
-import { DownloadsSettingsScreen } from './pages/DownloadsSettingsScreen';
-import { HelpMihrabSettingsScreen } from './pages/HelpMihrabSettingsScreen';
-import { DhikrRemindersSettingsScreen } from './pages/DhikrRemindersSettingsScreen';
-import { ExtraTimesSettingsScreen } from './pages/ExtraTimesSettingsScreen';
-import { LocationSettingsScreen } from './pages/LocationSettingsScreen';
-import { NotificationSettingsScreen } from './pages/NotificationSettingsScreen';
-import { PrayerSoundsSettingsScreen } from './pages/PrayerSoundsSettingsScreen';
-import { PrayerTimesSettingsScreen } from './pages/PrayerTimesSettingsScreen';
-import { QuranSettingsScreen } from './pages/QuranSettingsScreen';
-import { WordReaderSettingsScreen } from './pages/WordReaderSettingsScreen';
-import { TajweedSettingsScreen } from './pages/TajweedSettingsScreen';
-import { WidgetsSettingsScreen } from './pages/WidgetsSettingsScreen';
 
 export type SettingsSubpageRoute = Extract<
   keyof RootStackParamList,
@@ -56,7 +40,8 @@ export type SettingsNestedPage = {
   route: SettingsSubpageRoute;
   titleKey: string;
   blurbKey: string;
-  component: ComponentType<Record<string, never>>;
+  /** The page, required when first opened — see RegisteredSettingsPage. */
+  getComponent: () => ComponentType<Record<string, never>>;
 };
 
 export type SettingsSubpage = {
@@ -66,7 +51,7 @@ export type SettingsSubpage = {
   /** i18n key for the one line under it on the index. */
   blurbKey: string;
   Icon: ComponentType<{ size?: number; color: ColorValue }>;
-  component: ComponentType<Record<string, never>>;
+  getComponent: () => ComponentType<Record<string, never>>;
   /**
    * Platforms this section has anything to say on. Absent = all of them.
    *
@@ -86,38 +71,38 @@ const ALL_SUBPAGES: readonly SettingsSubpage[] = [
     titleKey: 'settings.sectionPrayerTimes',
     blurbKey: 'settings.sectionPrayerTimesBlurb',
     Icon: PrayerTimesIcon,
-    component: PrayerTimesSettingsScreen,
+    getComponent: () => (require('./pages/PrayerTimesSettingsScreen') as typeof import('./pages/PrayerTimesSettingsScreen')).PrayerTimesSettingsScreen,
   },
   {
     route: 'SettingsNotifications',
     titleKey: 'settings.sectionNotifications',
     blurbKey: 'settings.sectionNotificationsBlurb',
     Icon: NotificationsIcon,
-    component: NotificationSettingsScreen,
+    getComponent: () => (require('./pages/NotificationSettingsScreen') as typeof import('./pages/NotificationSettingsScreen')).NotificationSettingsScreen,
     children: [
       {
         route: 'SettingsPrayerSounds',
         titleKey: 'settings.prayerSounds',
         blurbKey: 'settings.prayerSoundsBlurb',
-        component: PrayerSoundsSettingsScreen,
+        getComponent: () => (require('./pages/PrayerSoundsSettingsScreen') as typeof import('./pages/PrayerSoundsSettingsScreen')).PrayerSoundsSettingsScreen,
       },
       {
         route: 'SettingsExtraTimes',
         titleKey: 'settings.additionalTimes',
         blurbKey: 'settings.additionalTimesBlurb',
-        component: ExtraTimesSettingsScreen,
+        getComponent: () => (require('./pages/ExtraTimesSettingsScreen') as typeof import('./pages/ExtraTimesSettingsScreen')).ExtraTimesSettingsScreen,
       },
       {
         route: 'SettingsDailyReminders',
         titleKey: 'settings.dailyReminders',
         blurbKey: 'settings.dailyRemindersBlurb',
-        component: DailyRemindersSettingsScreen,
+        getComponent: () => (require('./pages/DailyRemindersSettingsScreen') as typeof import('./pages/DailyRemindersSettingsScreen')).DailyRemindersSettingsScreen,
       },
       {
         route: 'SettingsDhikrReminders',
         titleKey: 'dhikr.remindersTitle',
         blurbKey: 'dhikr.remindersBlurb',
-        component: DhikrRemindersSettingsScreen,
+        getComponent: () => (require('./pages/DhikrRemindersSettingsScreen') as typeof import('./pages/DhikrRemindersSettingsScreen')).DhikrRemindersSettingsScreen,
       },
     ],
   },
@@ -126,14 +111,14 @@ const ALL_SUBPAGES: readonly SettingsSubpage[] = [
     titleKey: 'settings.sectionLocation',
     blurbKey: 'settings.sectionLocationBlurb',
     Icon: LocationIcon,
-    component: LocationSettingsScreen,
+    getComponent: () => (require('./pages/LocationSettingsScreen') as typeof import('./pages/LocationSettingsScreen')).LocationSettingsScreen,
   },
   {
     route: 'SettingsAppearance',
     titleKey: 'settings.sectionAppearance',
     blurbKey: 'settings.sectionAppearanceBlurb',
     Icon: AppearanceIcon,
-    component: AppearanceSettingsScreen,
+    getComponent: () => (require('./pages/AppearanceSettingsScreen') as typeof import('./pages/AppearanceSettingsScreen')).AppearanceSettingsScreen,
   },
   {
     /**
@@ -147,26 +132,26 @@ const ALL_SUBPAGES: readonly SettingsSubpage[] = [
     // iOS has only the one setting: say that, not Android's list.
     blurbKey: Platform.OS === 'ios' ? 'settings.sectionWidgetsBlurbIos' : 'settings.sectionWidgetsBlurb',
     Icon: WidgetsIcon,
-    component: WidgetsSettingsScreen,
+    getComponent: () => (require('./pages/WidgetsSettingsScreen') as typeof import('./pages/WidgetsSettingsScreen')).WidgetsSettingsScreen,
   },
   {
     route: 'SettingsQuran',
     titleKey: 'settings.sectionQuran',
     blurbKey: 'settings.sectionQuranBlurb',
     Icon: QuranIcon,
-    component: QuranSettingsScreen,
+    getComponent: () => (require('./pages/QuranSettingsScreen') as typeof import('./pages/QuranSettingsScreen')).QuranSettingsScreen,
     children: [
       {
         route: 'SettingsWordReader',
         titleKey: 'quran.wordReaderTitle',
         blurbKey: 'quran.wordReaderBlurb',
-        component: WordReaderSettingsScreen,
+        getComponent: () => (require('./pages/WordReaderSettingsScreen') as typeof import('./pages/WordReaderSettingsScreen')).WordReaderSettingsScreen,
       },
       {
         route: 'SettingsTajweed',
         titleKey: 'tajweed.title',
         blurbKey: 'tajweed.settingsBlurb',
-        component: TajweedSettingsScreen,
+        getComponent: () => (require('./pages/TajweedSettingsScreen') as typeof import('./pages/TajweedSettingsScreen')).TajweedSettingsScreen,
       },
     ],
   },
@@ -182,26 +167,26 @@ const ALL_SUBPAGES: readonly SettingsSubpage[] = [
     titleKey: 'settings.sectionDownloads',
     blurbKey: 'settings.sectionDownloadsBlurb',
     Icon: DownloadsIcon,
-    component: DownloadsSettingsScreen,
+    getComponent: () => (require('./pages/DownloadsSettingsScreen') as typeof import('./pages/DownloadsSettingsScreen')).DownloadsSettingsScreen,
   },
   {
     route: 'SettingsAbout',
     titleKey: 'settings.sectionAbout',
     blurbKey: 'settings.sectionAboutBlurb',
     Icon: AboutIcon,
-    component: AboutSettingsScreen,
+    getComponent: () => (require('./pages/AboutSettingsScreen') as typeof import('./pages/AboutSettingsScreen')).AboutSettingsScreen,
     children: [
       {
         route: 'SettingsHelpMihrab',
         titleKey: 'settings.helpMihrab',
         blurbKey: 'settings.helpMihrabBlurb',
-        component: HelpMihrabSettingsScreen,
+        getComponent: () => (require('./pages/HelpMihrabSettingsScreen') as typeof import('./pages/HelpMihrabSettingsScreen')).HelpMihrabSettingsScreen,
       },
       {
         route: 'SettingsAttributions',
         titleKey: 'settings.attributions',
         blurbKey: 'settings.attributionsBlurb',
-        component: AttributionsSettingsScreen,
+        getComponent: () => (require('./pages/AttributionsSettingsScreen') as typeof import('./pages/AttributionsSettingsScreen')).AttributionsSettingsScreen,
       },
     ],
   },
@@ -227,7 +212,12 @@ export const ALL_SETTINGS_SUBPAGES = ALL_SUBPAGES;
 export type RegisteredSettingsPage = {
   route: SettingsSubpageRoute;
   titleKey: string;
-  component: ComponentType<Record<string, never>>;
+  /**
+   * The page's component, required at the first open: the stack lists
+   * every page from the first render, and a `component` would have loaded
+   * all eighteen pages' modules at every launch (docs/first-frame-plan.md).
+   */
+  getComponent: () => ComponentType<Record<string, never>>;
   backTitleKey: string;
 };
 
@@ -236,13 +226,13 @@ export const SETTINGS_STACK_PAGES: readonly RegisteredSettingsPage[] =
     {
       route: page.route,
       titleKey: page.titleKey,
-      component: page.component,
+      getComponent: page.getComponent,
       backTitleKey: 'nav.settings',
     },
     ...(page.children ?? []).map(child => ({
       route: child.route,
       titleKey: child.titleKey,
-      component: child.component,
+      getComponent: child.getComponent,
       backTitleKey: page.titleKey,
     })),
   ]);

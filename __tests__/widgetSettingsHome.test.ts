@@ -31,7 +31,7 @@ describe('the widgets have a page of their own', () => {
   it('is on the index and on the stack, on both platforms since #111', () => {
     // iOS's widgets have one setting of their own (time since the adhan);
     // the two Android cards draw nothing there.
-    expect(SUBPAGES).toMatch(/route: 'SettingsWidgets',[\s\S]{0,400}component: WidgetsSettingsScreen,\s*\}/);
+    expect(SUBPAGES).toMatch(/route: 'SettingsWidgets',[\s\S]{0,500}\.WidgetsSettingsScreen,\s*\}/);
     expect(SUBPAGES).toMatch(/Platform\.OS === 'ios' \? 'settings\.sectionWidgetsBlurbIos'/);
     expect(TYPES).toMatch(/\bSettingsWidgets: undefined/);
   });

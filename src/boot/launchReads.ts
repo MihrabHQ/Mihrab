@@ -1,10 +1,11 @@
 /**
  * ── THE LAUNCH'S FIRST READS, FROM A STORE THAT ANSWERS AT ONCE ──────
  *
- * A cold start reads five small records before it can draw: the
+ * A cold start reads six small records before it can draw: the
  * settings and their plaintext fallback (settings/storage.ts), the kept
  * sky (theme/skyTheme.ts), Today's settled sizes
- * (screens/home/todayLayoutMemory.ts) and the clocks' record
+ * (screens/home/todayLayoutMemory.ts), the day bar's words
+ * (screens/home/dayWordsMemory.ts) and the clocks' record
  * (prayer/timezoneShift.ts). They lived in AsyncStorage, which is a
  * SQLite database behind a bridge that answers one request at a time:
  * the first of them came at 45 ms, the last at 105, and the first frame
@@ -33,6 +34,7 @@ export const LAUNCH_KEYS = {
   sky: '@mihrab/skyTheme/v1',
   layout: '@mihrab/todayLayout/v1',
   clocks: 'mihrab.prayer.utcOffset.v1',
+  words: '@mihrab/dayWords/v1',
 } as const;
 const KEYS: ReadonlySet<string> = new Set(Object.values(LAUNCH_KEYS));
 

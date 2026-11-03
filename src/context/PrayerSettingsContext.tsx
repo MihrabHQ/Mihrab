@@ -16,6 +16,7 @@ import { restoreSkyTheme, setSkyVariant } from '../theme/skyTheme';
 import { primeTimezoneShift } from '../prayer/timezoneShift';
 import { primeLaunchReads } from '../boot/launchReads';
 import { primeTodayLayout } from '../screens/home/todayLayoutMemory';
+import { primeDayWords } from '../screens/home/dayWordsMemory';
 import { loadSettings, saveSettings } from '../settings/storage';
 import { applyLocationProviders } from '../settings/locationProviders';
 import { enteringMinimal, minimalLook } from '../settings/minimalLook';
@@ -210,7 +211,7 @@ export function PrayerSettingsProvider({
     primeTimezoneShift();
     // And Today's settled sizes (screens/home/todayLayoutMemory.ts), so the
     // first frame is laid out as the last launch's last was.
-    Promise.all([loadSettings(), restoreSkyTheme(), primeTodayLayout()])
+    Promise.all([loadSettings(), restoreSkyTheme(), primeTodayLayout(), primeDayWords()])
       .then(([loaded]) => {
         // The Sky theme's colours before the first painted render.
         setSkyVariant(loaded.skyVariant);

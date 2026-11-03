@@ -50,11 +50,6 @@ import { TabBarButton } from './TabBarButton';
 import { setHoverTint } from './tabBarPress';
 import { showTabBar, useTabBarHidden } from './tabBarVisibility';
 import { HomeScreen } from '../screens/HomeScreen';
-import { QuranScreen } from '../screens/QuranScreen';
-import { TasbihScreen } from '../screens/TasbihScreen';
-import { DuasScreen } from '../screens/DuasScreen';
-import { LogScreen } from '../screens/LogScreen';
-import { SettingsScreen } from '../screens/SettingsScreen';
 import { HomeHeaderControls } from './HomeHeaderControls';
 import { HeaderPlaybackBar } from '../quran/audio/HeaderPlaybackBar';
 import { useVerticalBar } from '../native/VerticalBar';
@@ -504,7 +499,7 @@ export function MainTabs() {
       />
       <Tab.Screen
         name="QuranTab"
-        component={QuranScreen}
+        getComponent={() => (require('../screens/QuranScreen') as typeof import('../screens/QuranScreen')).QuranScreen}
         options={{
           title: t('nav.quran'),
           tabBarIcon: TabBookIcon,
@@ -521,7 +516,7 @@ export function MainTabs() {
       />
       <Tab.Screen
         name="TasbihTab"
-        component={TasbihScreen}
+        getComponent={() => (require('../screens/TasbihScreen') as typeof import('../screens/TasbihScreen')).TasbihScreen}
         options={{
           title: t('nav.tasbih'),
           tabBarIcon: TabTasbihIcon,
@@ -530,7 +525,7 @@ export function MainTabs() {
       />
       <Tab.Screen
         name="DuasTab"
-        component={DuasScreen}
+        getComponent={() => (require('../screens/DuasScreen') as typeof import('../screens/DuasScreen')).DuasScreen}
         options={{
           title: t('nav.duas'),
           tabBarIcon: TabDuasIcon,
@@ -539,7 +534,7 @@ export function MainTabs() {
       />
       <Tab.Screen
         name="LogTab"
-        component={LogScreen}
+        getComponent={() => (require('../screens/LogScreen') as typeof import('../screens/LogScreen')).LogScreen}
         options={{
           title: t('log.title', 'Log'),
           tabBarIcon: TabLogIcon,
@@ -548,7 +543,7 @@ export function MainTabs() {
       />
       <Tab.Screen
         name="SettingsTab"
-        component={SettingsScreen}
+        getComponent={() => (require('../screens/SettingsScreen') as typeof import('../screens/SettingsScreen')).SettingsScreen}
         options={{
           title: t('nav.settings'),
           tabBarIcon: TabSettingsIcon,

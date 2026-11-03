@@ -6,22 +6,16 @@ import { useTranslation } from 'react-i18next';
 import { Platform, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MainTabs } from './MainTabs';
+// Every screen but the tabs is `getComponent`, required at its first
+// open: a `component` prop reads the import, and the stack is rendered
+// from the first frame, so every screen's module graph — the compass, the
+// surah list, the backup page — loaded at every launch for a screen
+// nobody had opened (docs/first-frame-plan.md).
 import { useVerticalBarInsets } from '../native/VerticalBar';
 import { HeaderPlaybackBar } from '../quran/audio/HeaderPlaybackBar';
 import { usePrayerSettings } from '../context/PrayerSettingsContext';
-import { CompassScreen } from '../screens/CompassScreen';
 import { isMacCatalyst } from '../responsive/breakpoints';
-import { MonthTimesScreen } from '../screens/MonthTimesScreen';
-import { OnboardingScreen } from '../screens/OnboardingScreen';
-import { QuranSurahScreen } from '../screens/QuranSurahScreen';
-import { TajweedGuideScreen } from '../quran/tajweed/TajweedGuideScreen';
-import { TilawahScreen } from '../screens/quran/TilawahScreen';
-import { KhatmahScreen } from '../screens/quran/KhatmahScreen';
 import { trailingBackOptions } from './trailingBackOptions';
-import { ShareMonthScreen } from '../screens/ShareMonthScreen';
-import { BackupScreen } from '../screens/BackupScreen';
-import { SyncScreen } from '../screens/SyncScreen';
-import { FastingScreen } from '../screens/FastingScreen';
 import { SETTINGS_STACK_PAGES } from '../screens/settings/subpages';
 import type { RootStackParamList } from './types';
 import { desktopSize, IS_MAC_CATALYST } from '../responsive/desktop';
@@ -238,12 +232,12 @@ export function RootNavigator() {
           gap below the title bar (#91). */}
       <Stack.Screen
         name="MonthTimes"
-        component={MonthTimesScreen}
+        getComponent={() => (require('../screens/MonthTimesScreen') as typeof import('../screens/MonthTimesScreen')).MonthTimesScreen}
         options={{ title: t('nav.month'), headerLargeTitle: false, contentStyle: edgeToEdge }}
       />
       <Stack.Screen
         name="ShareMonth"
-        component={ShareMonthScreen}
+        getComponent={() => (require('../screens/ShareMonthScreen') as typeof import('../screens/ShareMonthScreen')).ShareMonthScreen}
         options={{ title: t('nav.shareMonth'), headerLargeTitle: false, contentStyle: edgeToEdge }}
       />
       {/* Not on a Mac. There is no magnetometer in one, so the dial has
@@ -258,13 +252,13 @@ export function RootNavigator() {
       {isMacCatalyst ? null : (
         <Stack.Screen
           name="Compass"
-          component={CompassScreen}
+          getComponent={() => (require('../screens/CompassScreen') as typeof import('../screens/CompassScreen')).CompassScreen}
           options={{ title: t('nav.compass'), headerLargeTitle: false, contentStyle: edgeToEdge }}
         />
       )}
       <Stack.Screen
         name="QuranSurah"
-        component={QuranSurahScreen}
+        getComponent={() => (require('../screens/QuranSurahScreen') as typeof import('../screens/QuranSurahScreen')).QuranSurahScreen}
         options={{
           title: '',
           headerLargeTitle: false,
@@ -277,7 +271,7 @@ export function RootNavigator() {
       />
       <Stack.Screen
         name="QuranListen"
-        component={TilawahScreen}
+        getComponent={() => (require('../screens/quran/TilawahScreen') as typeof import('../screens/quran/TilawahScreen')).TilawahScreen}
         options={() => ({
           title: t('quran.listenTitle', 'Tilawah'),
           headerLargeTitle: false,
@@ -290,7 +284,7 @@ export function RootNavigator() {
       />
       <Stack.Screen
         name="Khatmah"
-        component={KhatmahScreen}
+        getComponent={() => (require('../screens/quran/KhatmahScreen') as typeof import('../screens/quran/KhatmahScreen')).KhatmahScreen}
         options={() => ({
           title: t('quran.khatmah', 'Khatmah'),
           headerLargeTitle: false,
@@ -301,7 +295,7 @@ export function RootNavigator() {
       />
       <Stack.Screen
         name="QuranTajweed"
-        component={TajweedGuideScreen}
+        getComponent={() => (require('../quran/tajweed/TajweedGuideScreen') as typeof import('../quran/tajweed/TajweedGuideScreen')).TajweedGuideScreen}
         options={() => ({
           title: t('tajweed.guideTitle', 'Reading the colours'),
           headerLargeTitle: false,
@@ -325,7 +319,7 @@ export function RootNavigator() {
           not have a half-built Home peeking over its shoulder. */}
       <Stack.Screen
         name="Onboarding"
-        component={OnboardingScreen}
+        getComponent={() => (require('../screens/OnboardingScreen') as typeof import('../screens/OnboardingScreen')).OnboardingScreen}
         options={{
           title: '',
           headerShown: false,
@@ -336,7 +330,7 @@ export function RootNavigator() {
       />
       <Stack.Screen
         name="Backup"
-        component={BackupScreen}
+        getComponent={() => (require('../screens/BackupScreen') as typeof import('../screens/BackupScreen')).BackupScreen}
         options={{ title: t('nav.backup'), headerLargeTitle: false, contentStyle: edgeToEdge }}
       />
       {/* Pairing lives next to Backup because it is the same question asked
@@ -345,7 +339,7 @@ export function RootNavigator() {
           the paired list is something people come back to. */}
       <Stack.Screen
         name="Sync"
-        component={SyncScreen}
+        getComponent={() => (require('../screens/SyncScreen') as typeof import('../screens/SyncScreen')).SyncScreen}
         options={{ title: t('nav.sync'), headerLargeTitle: false, contentStyle: edgeToEdge }}
       />
       {/* The sunnah calendar, the day-before reminder and the full history —
@@ -353,7 +347,7 @@ export function RootNavigator() {
           than owning a destination of its own. */}
       <Stack.Screen
         name="Fasting"
-        component={FastingScreen}
+        getComponent={() => (require('../screens/FastingScreen') as typeof import('../screens/FastingScreen')).FastingScreen}
         options={{ title: t('nav.fasting'), headerLargeTitle: false, contentStyle: edgeToEdge }}
       />
 
@@ -374,7 +368,7 @@ export function RootNavigator() {
         <Stack.Screen
           key={page.route}
           name={page.route}
-          component={page.component}
+          getComponent={page.getComponent}
           options={{
             title: t(page.titleKey),
             headerShown: false,

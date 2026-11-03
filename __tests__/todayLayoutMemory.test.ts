@@ -51,7 +51,7 @@ describe('the page\'s settled sizes', () => {
     const fs = require('fs');
     const path = require('path');
     const read = (p: string) => fs.readFileSync(path.join(__dirname, '..', p), 'utf-8');
-    expect(read('src/context/PrayerSettingsContext.tsx')).toMatch(/Promise\.all\(\[loadSettings\(\), restoreSkyTheme\(\), primeTodayLayout\(\)\]\)/);
+    expect(read('src/context/PrayerSettingsContext.tsx')).toMatch(/Promise\.all\(\[loadSettings\(\), restoreSkyTheme\(\), primeTodayLayout\(\), primeDayWords\(\)\]\)/);
     const card = read('src/screens/home/TodayCard.tsx');
     for (const part of ["minimal ? 'minimal' : 'full'", 'currentFontScale().toFixed(2)', 'i18n.language', 'layoutRows.join', 'layoutInsets.top']) {
       expect(card).toContain(part);
