@@ -161,7 +161,7 @@ jobs:
           cat deb.log | tail -20
           [ "$code" = 124 ] || { echo "the installed app exited ($code) instead of running"; exit 1; }
           sh scripts/install-linux.sh uninstall
-          if dpkg -s mihrab >/dev/null 2>&1; then echo "the package is still installed"; exit 1; fi
+          if dpkg -s mihrab >/dev/null 2>&1; then echo "the package is still registered"; dpkg -s mihrab | head -3; exit 1; fi
           MIHRAB_FORMAT=appimage sh scripts/install-linux.sh
           test -x "$HOME/.local/share/mihrab/mihrab"
           test -f "$HOME/.local/share/applications/mihrab.desktop"

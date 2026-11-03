@@ -59,8 +59,9 @@ uses_apt() {
 if [ "${1:-}" = uninstall ]; then
   say "Removing Mihrab…"
   stop
+  # Purged, not just removed: nothing of the package stays registered.
   if dpkg -s "$PKG" >/dev/null 2>&1; then
-    $SUDO apt-get remove -y "$PKG" >/dev/null
+    $SUDO apt-get purge -y "$PKG" >/dev/null
   fi
   rm -rf "$APP" "$BIN" "$ENTRY" "$ICON" "$CONF/autostart/mihrab.desktop" "$CONF/Mihrab"
   say "Mihrab is removed, with its settings."
