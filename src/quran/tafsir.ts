@@ -15,6 +15,7 @@
 import ReactNativeBlobUtil from 'react-native-blob-util';
 import { fetchWithRetry } from '../utils/fetchWithRetry';
 import { fetchMirrored, mirrorUrl, MIRROR_TAGS } from '../config/mirrors';
+import { IS_WEB_DEMO } from '../config/webDemo';
 import {
   CONTENT_DEADLINES,
   GIVE_UP_AFTER_CONSECUTIVE_FAILURES,
@@ -305,6 +306,9 @@ async function mirrorSurah(
   edition: string,
   surah: number,
 ): Promise<TafsirSurahFile | null> {
+  // A browser can't read a release download (no CORS header): the demo
+  // goes to the original host instead of failing loudly first.
+  if (IS_WEB_DEMO) return null;
   const key = `${edition}:${surah}`;
   const pending = mirrorInFlight.get(key);
   if (pending) return pending;
