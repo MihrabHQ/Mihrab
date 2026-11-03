@@ -56,7 +56,7 @@ import { useVerticalBar } from '../native/VerticalBar';
 import { VerticalTabBar } from './VerticalTabBar';
 import { BottomTabBar } from '@react-navigation/bottom-tabs';
 import { MihrabHeaderTitle } from './MihrabHeaderTitle';
-import { isMacCatalyst, HOME_DASHBOARD_MIN_WIDTH } from '../responsive/breakpoints';
+import { isDesktop, HOME_DASHBOARD_MIN_WIDTH } from '../responsive/breakpoints';
 import {
   TabBookIcon,
   TabDuasIcon,
@@ -91,7 +91,7 @@ export function MainTabs() {
   const windowWidth = useWindowSize().width;
   const isDashboardWidth = windowWidth >= HOME_DASHBOARD_MIN_WIDTH;
   // Today's header survives only on the wide dashboard; see its options.
-  const todayHeader = !isMacCatalyst && isDashboardWidth;
+  const todayHeader = !isDesktop && isDashboardWidth;
   const barBottom = useTabBarBottom();
   /** What the display's rounded bottom corners eat — #42. */
   const cornerInset = useTabBarCornerInset();
@@ -427,7 +427,10 @@ export function MainTabs() {
               // A Mac window has no such inset, and Catalyst scales the
               // canvas down, so there the default bar is genuinely too
               // short to read and takes the taller one.
-              ...(IS_MAC_CATALYST
+              // The Windows/Linux app too: left at the navigator's 49 the
+              // bar had room for the icon and not the label under it, and
+              // every label lost its descenders ("Todav", "Settinas").
+              ...(IS_MAC_CATALYST || Platform.OS === 'web'
                 ? {
                     height: TAB_BAR_HEIGHT,
                     paddingTop: desktopSize(6),
@@ -437,7 +440,15 @@ export function MainTabs() {
             },
         // Catalyst scales the whole canvas down for the Mac, so a label
         // designed at 10.5 lands near 8 — see responsive/desktop.ts.
-        tabBarLabelStyle: { fontSize: desktopSize(10.5), fontWeight: '400' },
+        tabBarLabelStyle: {
+          fontSize: desktopSize(10.5),
+          fontWeight: '400',
+          // On the web a label is a flex child that may shrink, and with the
+          // icon and the item's own padding it was shrunk to 9px of a 13px
+          // line — clipped through its descenders. It keeps its line here,
+          // and a tight one, which the bar's padding has room for.
+          ...(Platform.OS === 'web' ? { flexShrink: 0, lineHeight: 12 } : null),
+        },
         tabBarShowLabel: !bigText,
         tabBarIconStyle: bigText ? styles.bigGlyph : undefined,
         // The bar is the app's own chrome; on iOS the blur belongs to the
@@ -492,7 +503,7 @@ export function MainTabs() {
            * row of content — same line, opposite ends, entirely below the
            * drag region. See HomeScreen's `macHeaderRow`.
            */
-          ...(isMacCatalyst
+          ...(isDesktop
             ? {}
             : { headerRight: () => <HomeHeaderControls /> }),
         }}

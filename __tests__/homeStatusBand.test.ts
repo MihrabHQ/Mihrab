@@ -45,7 +45,7 @@ describe('the band is wired to the page', () => {
   it('only the phone renders it — the dashboard has no strip to cover', () => {
     // …and not while a permission banner is what sits under the clock.
     expect(home).toMatch(
-      /!isDashboard && !isMacCatalyst && !hasBanner \? \(\s*<HomeStatusBand/,
+      /!isDashboard && !isDesktop && !hasBanner \? \(\s*<HomeStatusBand/,
     );
     expect(home).toMatch(/insetTop=\{insets\.top\}/);
   });

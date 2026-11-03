@@ -298,7 +298,7 @@ export function HomeScreen() {
    */
   const isRoomy =
     !isDashboard &&
-    !isMacCatalyst &&
+    !isDesktop &&
     screenWidth >= BREAKPOINT_REGULAR &&
     screenHeight >= HOME_ROOMY_MIN_HEIGHT;
   /**
@@ -310,14 +310,12 @@ export function HomeScreen() {
    * the table and the cards under it keep to the measure in the middle.
    * Held as a book the page is laid out by its two halves instead.
    */
-  // The same on the web (the Windows/Linux app): a window between the
-  // phone's measure and the dashboard is this page too.
   const wideInset =
-    (Platform.OS === 'android' || Platform.OS === 'web') &&
+    Platform.OS === 'android' &&
     !isDashboard &&
     !isRoomy &&
     !book &&
-    (Platform.OS === 'web' || Math.min(screenWidth, screenHeight) >= 600) &&
+    Math.min(screenWidth, screenHeight) >= 600 &&
     screenWidth > MAX_CONTENT_WIDTH
       ? Math.round((screenWidth - MAX_CONTENT_WIDTH) / 2)
       : 0;
@@ -358,7 +356,11 @@ export function HomeScreen() {
    * AppKit points over Catalyst's 0.77 canvas scale ≈ 36.
    */
   const insets = useSafeAreaInsets();
-  const macTopBarInset = isMacCatalyst ? Math.max(insets.top, 36) + 6 : 0;
+  const macTopBarInset = isMacCatalyst
+    ? Math.max(insets.top, 36) + 6
+    : Platform.OS === 'web'
+      ? 10
+      : 0;
   /**
    * The scaled dashboard's real height, so the row above it survives.
    *
@@ -1782,7 +1784,7 @@ export function HomeScreen() {
     // The city alone: a saved place carries its region and country too.
     minimalFooter = [cityOf(locationLabel), getHijriDate(0)].filter(Boolean).join(' · ');
   }
-  const budgeted = !isDashboard && !isMacCatalyst && !isRoomy && !book && !tabletop && viewport > 0;
+  const budgeted = !isDashboard && !isDesktop && !isRoomy && !book && !tabletop && viewport > 0;
   const tier: HomeTier = budgeted
     ? pickHomeTier({
         viewport,
@@ -1818,7 +1820,7 @@ export function HomeScreen() {
           Above the ScrollView it is chrome: pinned to the top, spanning the
           window rather than the card column, and unaffected by any zoom —
           held clear of the window's own title bar by `macTopBarInset`. */}
-      {isMacCatalyst ? (
+      {isDesktop ? (
         <>
           <View style={[styles.macTopBar, { paddingTop: macTopBarInset }]}>
             <MihrabHeaderTitle />
@@ -1834,7 +1836,7 @@ export function HomeScreen() {
     <PullToRefreshFrame
       store={pull}
       enabled={pullEnabled}
-      top={!isDashboard && !isMacCatalyst ? insets.top : 0}>
+      top={!isDashboard && !isDesktop ? insets.top : 0}>
     <ScrollView
       ref={scrollRef}
       // The phone tracks the offset for the status band; everywhere else
@@ -1845,7 +1847,7 @@ export function HomeScreen() {
       onScroll={e => {
         noteScrollTop(e.nativeEvent.contentOffset.y);
         pull.onScroll(e);
-        if (!isDashboard && !isMacCatalyst) onScroll(e);
+        if (!isDashboard && !isDesktop) onScroll(e);
         else tabBarScroll.onScroll?.(e);
       }}
       scrollEventThrottle={16}
@@ -1857,7 +1859,7 @@ export function HomeScreen() {
       contentContainerStyle={[
         styles.scrollContent,
         // The phone's hero runs edge to edge; the rows pad themselves.
-        !isDashboard && !isMacCatalyst && styles.scrollContentBleed,
+        !isDashboard && !isDesktop && styles.scrollContentBleed,
         // Roomy: the content is a block in the middle of the page rather
         // than a page-height column.
         isRoomy && styles.scrollContentRoomy,
@@ -1893,7 +1895,7 @@ export function HomeScreen() {
         maxWidth={isDashboard ? dashCap : book || wideInset > 0 ? screenWidth : undefined}
         style={[
           styles.homeColumn,
-          !isDashboard && !isMacCatalyst && !isRoomy && styles.fillColumn,
+          !isDashboard && !isDesktop && !isRoomy && styles.fillColumn,
         ]}
         // Both wrappers: on a wide-but-not-dashboard window (a tablet held
         // upright) the column is capped and gets an inner View, and the
@@ -1901,7 +1903,7 @@ export function HomeScreen() {
         // which is exactly what a roomy page must NOT do.
         innerStyle={[
           styles.homeColumn,
-          !isDashboard && !isMacCatalyst && !isRoomy && styles.fillColumn,
+          !isDashboard && !isDesktop && !isRoomy && styles.fillColumn,
         ]}>
       {/* A banner is the FIRST thing on the page, and on a phone the page
           runs to the top edge — so without this the notice was drawn
@@ -1946,7 +1948,7 @@ export function HomeScreen() {
               setTzNoticeDismissedAt(timezoneShift?.at ?? Date.now());
             }}
             topInset={
-              !isDashboard && !isMacCatalyst && !isRoomy && hasBanner ? insets.top : 0
+              !isDashboard && !isDesktop && !isRoomy && hasBanner ? insets.top : 0
             }
           />
         </View>
@@ -1960,7 +1962,7 @@ export function HomeScreen() {
         // Phones: the hero runs to the top of the screen under the status
         // bar and carries the location chip; the tab's header is hidden.
         // The dashboard (iPad/Mac) keeps its card and its header.
-        const fullBleed = !isDashboard && !isMacCatalyst;
+        const fullBleed = !isDashboard && !isDesktop;
         const dayTable = (
           <TodayCard
             week={view.table.week}
@@ -2165,7 +2167,7 @@ export function HomeScreen() {
     </PullToRefreshFrame>
     {/* Over the page, and only on the phone's full-bleed hero: the
         dashboard's card does not run under the status bar. */}
-    {!isDashboard && !isMacCatalyst && !hasBanner ? (
+    {!isDashboard && !isDesktop && !hasBanner ? (
       <HomeStatusBand
         scrollY={scrollY}
         insetTop={insets.top}

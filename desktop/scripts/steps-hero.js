@@ -35,10 +35,9 @@ module.exports = async ({ page, app, shot, log }) => {
     log(`${w}px`, JSON.stringify(r));
     await shot(`99-hero-${w}`);
     if (!r.sky) errors.push(`${w}px: no sky under the countdown`);
-    // 820 × 1000 is tall enough to be "roomy": the hero is a rounded card
-    // then, as on a tablet held upright.
-    else if (w < 800 && (r.sky[0] > 0 || r.sky[1] < r.innerWidth)) errors.push(`${w}px: sky ${r.sky} short of the window 0..${r.innerWidth}`);
-    else if (w === 820) { if (Math.abs(r.sky[0] - (r.innerWidth - r.sky[1])) > 2) errors.push(`${w}px: the hero card ${r.sky} is off centre`); }
+    // Below the dashboard the desktop takes the Mac's page: the hero is a
+    // rounded card in the middle of the window, not the phone's sky.
+    else if (w < 1180) { if (Math.abs(r.sky[0] - (r.innerWidth - r.sky[1])) > 2 || r.sky[0] < 8) errors.push(`${w}px: the hero card ${r.sky} is not a centred card in 0..${r.innerWidth}`); }
     else if (r.hero && (r.sky[0] > r.hero[0] + 1 || r.sky[1] < r.hero[1] - 1)) errors.push(`${w}px: sky ${r.sky} inside the hero ${r.hero}`);
   }
   await cdp.send('Emulation.clearDeviceMetricsOverride');

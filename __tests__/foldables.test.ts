@@ -121,10 +121,7 @@ describe('tabletop', () => {
 describe('the open foldable', () => {
   it("runs Today's sky to both edges and keeps the content to the measure", () => {
     const home = read('src/screens/HomeScreen.tsx');
-    // Android's foldables, and the Windows/Linux app's windows of that width.
-    expect(home).toMatch(
-      /\(Platform\.OS === 'android' \|\| Platform\.OS === 'web'\) &&[\s\S]{0,120}!book &&/,
-    );
+    expect(home).toMatch(/Platform\.OS === 'android' &&[\s\S]{0,120}!book &&/);
     expect(home).toMatch(/Math\.round\(\(screenWidth - MAX_CONTENT_WIDTH\) \/ 2\)/);
     expect(home).toMatch(/sideInset=\{wideInset\}/);
     const card = read('src/screens/home/TodayCard.tsx');

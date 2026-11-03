@@ -409,7 +409,7 @@ describe('the hero grows but never shrinks under its text', () => {
     // A tablet held upright is the opposite case and is excluded here:
     // there the slack is most of the screen, and growing into it is the
     // bug rather than the fix (see `isRoomy`, and todayPastDays.test).
-    const grows = home.match(/!isDashboard && !isMacCatalyst && !isRoomy && styles\.fillColumn/g);
+    const grows = home.match(/!isDashboard && !isDesktop && !isRoomy && styles\.fillColumn/g);
     expect(grows).toHaveLength(2);
     expect(home).toMatch(/const isRoomy =/);
   });

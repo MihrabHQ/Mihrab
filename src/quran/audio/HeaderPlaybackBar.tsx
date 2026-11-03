@@ -132,7 +132,7 @@ export function HeaderPlaybackBar({
   const focused = useIsActive();
   const { active } = usePlaybackStatus();
   if (!active || !focused || OWN_PLAYER.has(route.name)) return null;
-  if (!inline && IS_MAC_CATALYST && route.name === 'TodayTab') return null;
+  if (!inline && (IS_MAC_CATALYST || Platform.OS === 'web') && route.name === 'TodayTab') return null;
   return <LiveBar {...props} headerless={!inline && headerless} />;
 }
 
