@@ -18,7 +18,7 @@
 import { existsSync, readFileSync } from 'fs';
 import {
   BASE_LANGUAGE,
-  CHANGELOG,
+  changelog,
   compareVersions,
   lastSeenFrom,
   LEGACY_BASELINE_VERSION,
@@ -28,6 +28,7 @@ import {
 } from '../src/polish/releaseNotes';
 const { generate, OUT } = require('../scripts/build-release-notes.js');
 
+const CHANGELOG = changelog();
 const NEWEST = CHANGELOG[0];
 const OLDEST = CHANGELOG[CHANGELOG.length - 1];
 

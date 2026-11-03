@@ -64,7 +64,7 @@ import { usePrayerSettingsOrDefaults } from '../context/PrayerSettingsContext';
 import { copyToClipboard } from '../sync/clipboard';
 import { CheckIcon, CopyIcon } from '../theme/icons';
 import {
-  CHANGELOG,
+  changelog,
   compareVersions,
   lastSeenFrom,
   noteFor,
@@ -530,13 +530,15 @@ export function ChangelogSheet({ visible, onClose, since = null }: Props) {
    * of the tag: a build made the day notes for the next release were
    * written would otherwise announce a version that is not on the phone.
    */
+  // Only once the sheet is up: it is mounted on Today from the first
+  // render, and the table is read when there is something to show.
   const releases = useMemo(
-    () => CHANGELOG.filter(r => compareVersions(r.version, installed) <= 0),
-    [installed],
+    () => (visible ? changelog().filter(r => compareVersions(r.version, installed) <= 0) : []),
+    [visible, installed],
   );
   const unseen = useMemo(
-    () => (since ? unseenVersionSet(since, installed) : new Set<string>()),
-    [since, installed],
+    () => (visible && since ? unseenVersionSet(since, installed) : new Set<string>()),
+    [visible, since, installed],
   );
 
   const finish = useCallback(() => {

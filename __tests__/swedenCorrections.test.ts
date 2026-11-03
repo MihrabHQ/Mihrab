@@ -9,7 +9,7 @@ import list from '../src/providers/data/swedenCorrections.json';
 import { computeLocalAdhanInstants } from '../src/providers/localAdhan';
 import { SWEDEN_METHOD_ID } from '../src/providers/swedenMethodId';
 import { congressTimes } from '../src/providers/congressMethod';
-import { swedenCorrection, swedenCorrectionsCoverage } from '../src/providers/swedenCorrections';
+import { correctionsInForce, summarize, swedenCorrection, swedenCorrectionsCoverage } from '../src/providers/swedenCorrections';
 
 const KEYS = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'] as const;
 const points = (list as { points: Record<string, string[]> }).points;
@@ -46,5 +46,18 @@ describe('Sweden correction list', () => {
 
   it('leaves a point that is not on the list alone', () => {
     expect(swedenCorrection(59.3333, 18.0333, 2026, 9, 15)).toBeUndefined();
+  });
+});
+
+describe('the bundled summaries', () => {
+  // scripts/build-corrections-summaries.js writes them; a list changed
+  // without them is caught here. `npm run build-corrections-summaries`.
+  it('match the bundled lists', () => {
+    const summaries = require('../src/providers/data/correctionsSummaries.json');
+    for (const a of ['sweden', 'diyanet', 'morocco', 'algeria', 'indonesia'] as const) {
+      const bundled = require(`../src/providers/data/${a}Corrections.json`);
+      expect(summaries[a]).toEqual(summarize(bundled));
+      expect(correctionsInForce(a)).toEqual(summaries[a]);
+    }
   });
 });

@@ -339,8 +339,18 @@ const moodsOf = (raw: Record<SkyMoodName, Omit<SkyMood, 'accentBg'>>): Record<Sk
   sunset: withHighlight(raw.sunset),
 });
 
+/**
+ * ── EACH VARIANT'S COLOURS, WHEN FIRST ASKED FOR ─────────────────────
+ *
+ * Every mood, anchor and station below is a set of OKLCH conversions, and
+ * both variants' used to be converted when this module loaded — which is
+ * every launch, under the first frame (`theme/appPalette.ts` imports it),
+ * 4 ms on a Pixel 10 Pro for a reader who sees one variant, or neither
+ * under a classic theme. Each variant is built at its first use and kept.
+ */
+let vibrantMoods: Record<SkyMoodName, SkyMood> | null = null;
 /** Vibrant's moods (the theme as it first shipped). */
-export const SKY_MOODS: Record<SkyMoodName, SkyMood> = moodsOf(RAW_MOODS);
+const vibrantMoodsOf = (): Record<SkyMoodName, SkyMood> => (vibrantMoods ??= moodsOf(RAW_MOODS));
 
 /**
  * ── VIBRANT'S STATIONS ───────────────────────────────────────────────
@@ -352,8 +362,11 @@ export const SKY_MOODS: Record<SkyMoodName, SkyMood> = moodsOf(RAW_MOODS);
  * floors the test walks hold along the whole way.
  */
 const vary = (base: SkyMood, over: Partial<SkyMood>): SkyMood => withHighlight({ ...base, ...over });
-const M = SKY_MOODS;
-const ANCHORS = {
+let anchors: ReturnType<typeof buildAnchors> | null = null;
+const anchorsOf = () => (anchors ??= buildAnchors());
+function buildAnchors() {
+  const M = vibrantMoodsOf();
+  return {
   /** After Isha: the night still blue from the day it came out of. */
   nightEarly: vary(M.night, {
     heroTop: '#0E0A26',
@@ -492,7 +505,8 @@ const ANCHORS = {
     heroMid: '#D25030',
     bodyLight: '#F7A45A',
   }),
-};
+  };
+}
 
 
 // ── Colour arithmetic ──────────────────────────────────────────────────
@@ -801,27 +815,34 @@ const physicalDark = (side: 'evening' | 'morning'): StationAt[] => {
     st(18, 'night', [0.20, 0.07, 270], [0.36, 0.13, 272], { h: 262, C: 0.085 }, MOON_LIGHT),
   ];
 };
-const physicalNight: StationAt[] = [
+const physicalNight = (): StationAt[] => [
   { at: 0, mood: withHighlight(physical({ name: 'night', isDark: true, top: [0.20, 0.07, 270], mid: [0.36, 0.13, 272], page: [0.21, 0.04, 270], accent: { h: 262, C: 0.085 }, body: MOON_LIGHT, star: STAR_NIGHT })) },
   { at: 0.5, mood: withHighlight(physical({ name: 'night', isDark: true, top: [0.16, 0.05, 270], mid: [0.29, 0.10, 269], page: [0.21, 0.04, 270], accent: { h: 262, C: 0.08 }, body: MOON_LIGHT, star: STAR_NIGHT })) },
   // Before the dawn: the sky cooling, a hint of the first light at the horizon.
   { at: 1, mood: withHighlight(physical({ name: 'night', isDark: true, top: [0.19, 0.07, 268], mid: [0.36, 0.12, 258], page: [0.21, 0.04, 269], accent: { h: 262, C: 0.085 }, body: MOON_LIGHT, star: STAR_NIGHT })) },
 ];
 
-const REALISTIC_TRACK: Track = {
-  light: { morning: physicalLight('morning'), afternoon: physicalLight('afternoon') },
-  dark: { evening: physicalDark('evening'), morning: physicalDark('morning') },
-  night: physicalNight,
-};
+let realisticTrack: Track | null = null;
+const realisticTrackOf = (): Track =>
+  (realisticTrack ??= {
+    light: { morning: physicalLight('morning'), afternoon: physicalLight('afternoon') },
+    dark: { evening: physicalDark('evening'), morning: physicalDark('morning') },
+    night: physicalNight(),
+  });
 
 /** Realistic's six named moods: the stations that stand for them (the strip, the mushaf's chrome). */
-export const REALISTIC_SKY_MOODS: Record<SkyMoodName, SkyMood> = {
-  night: REALISTIC_TRACK.night[1].mood,
-  dawn: REALISTIC_TRACK.dark.morning[2].mood,
-  morning: REALISTIC_TRACK.light.morning[1].mood,
-  midday: REALISTIC_TRACK.light.morning[4].mood,
-  golden: REALISTIC_TRACK.light.afternoon[0].mood,
-  sunset: REALISTIC_TRACK.dark.evening[1].mood,
+let realisticMoods: Record<SkyMoodName, SkyMood> | null = null;
+const realisticMoodsOf = (): Record<SkyMoodName, SkyMood> => {
+  if (realisticMoods) return realisticMoods;
+  const track = realisticTrackOf();
+  return (realisticMoods = {
+    night: track.night[1].mood,
+    dawn: track.dark.morning[2].mood,
+    morning: track.light.morning[1].mood,
+    midday: track.light.morning[4].mood,
+    golden: track.light.afternoon[0].mood,
+    sunset: track.dark.evening[1].mood,
+  });
 };
 
 /**
@@ -834,7 +855,11 @@ export const REALISTIC_SKY_MOODS: Record<SkyMoodName, SkyMood> = {
  * low winter sun has the day's blue by mid-morning and the haze is what
  * it was meant to be: the first minutes.
  */
-const VIBRANT_TRACK: Track = {
+let vibrantTrack: Track | null = null;
+const vibrantTrackOf = (): Track => (vibrantTrack ??= buildVibrantTrack());
+function buildVibrantTrack(): Track {
+  const ANCHORS = anchorsOf();
+  return {
   light: {
     morning: [
       { at: 0, mood: ANCHORS.morning },
@@ -869,15 +894,15 @@ const VIBRANT_TRACK: Track = {
     { at: 0.5, mood: ANCHORS.midnight },
     { at: 1, mood: ANCHORS.nightLate },
   ],
-};
+  };
+}
 
-const TRACKS: Record<SkyVariant, Track> = { vibrant: VIBRANT_TRACK, realistic: REALISTIC_TRACK };
+const trackOf = (variant: SkyVariant): Track => (variant === 'vibrant' ? vibrantTrackOf() : realisticTrackOf());
 
-/** Each variant's six moods. */
-export const SKY_MOODS_BY_VARIANT: Record<SkyVariant, Record<SkyMoodName, SkyMood>> = {
-  vibrant: SKY_MOODS,
-  realistic: REALISTIC_SKY_MOODS,
-};
+/** A variant's six moods. */
+export function skyMoodsOf(variant: SkyVariant): Record<SkyMoodName, SkyMood> {
+  return variant === 'vibrant' ? vibrantMoodsOf() : realisticMoodsOf();
+}
 
 
 // ── The moment, mixed ──────────────────────────────────────────────────
@@ -1017,7 +1042,7 @@ function moonlit(mood: SkyMood, f: number): SkyMood {
 /** How far under (or over) the horizon the sun must be, in its passage's "wrong" half, to be the polar day or night rather than refraction's margin. */
 export const POLAR_UNDER = 1.5;
 export function skyMoodOf(passage: SkyPassage, t: number, light: SkyLight, variant: SkyVariant = activeVariant): SkyMood {
-  const track = TRACKS[isSkyVariant(variant) ? variant : DEFAULT_SKY_VARIANT];
+  const track = trackOf(isSkyVariant(variant) ? variant : DEFAULT_SKY_VARIANT);
   const k = clamp01(t);
   const lightPassage = passage === 'day' || passage === 'sunset';
   const daylight = light.daylight ?? (passage === 'day' ? k * 0.68 : passage === 'sunset' ? 0.68 + k * 0.32 : null);
@@ -1060,7 +1085,7 @@ export function skyMoodAt(
   variant: SkyVariant = activeVariant,
   light: SkyLight = nominalSkyLight(passage, t),
 ): { from: SkyMood; to: SkyMood; u: number } {
-  const track = TRACKS[isSkyVariant(variant) ? variant : DEFAULT_SKY_VARIANT];
+  const track = trackOf(isSkyVariant(variant) ? variant : DEFAULT_SKY_VARIANT);
   const k = clamp01(t);
   if (passage === 'day' || passage === 'sunset') {
     const daylight = light.daylight ?? (passage === 'day' ? k * 0.68 : 0.68 + k * 0.32);

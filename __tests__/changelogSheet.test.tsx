@@ -91,7 +91,8 @@ const { ChangelogSheet } = require('../src/polish/ChangelogSheet');
 // component stopped setting it, and `undefined` matches every Text that
 // sets no alignment at all — which is how this read as passing once.
 const { ALIGN_TO_OWN_SIDE } = require('../src/i18n/foreignText');
-const { CHANGELOG, STATS_LANGUAGES } = require('../src/polish/releaseNotes');
+const { changelog, STATS_LANGUAGES } = require('../src/polish/releaseNotes');
+const CHANGELOG = changelog();
 
 type Node = { props: Record<string, unknown>; children?: unknown };
 

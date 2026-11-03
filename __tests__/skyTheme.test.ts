@@ -35,14 +35,15 @@ import {
   activeSkyVariant,
   nominalSkyLight,
   PALETTE_STEPS,
-  REALISTIC_SKY_MOODS,
-  SKY_MOODS,
   skyMoodAt,
+  skyMoodsOf,
   skyMoodFor,
   skyMoodOf,
   widgetSkyColors,
   type SkyMood,
 } from '../src/theme/skyMoods';
+const SKY_MOODS = skyMoodsOf('vibrant');
+const REALISTIC_SKY_MOODS = skyMoodsOf('realistic');
 // eslint-disable-next-line import/first
 import { SKY_THEME_MID_AT, skyColorAt, themedSkyFrame, type SkyPassage } from '../src/screens/home/skyModel';
 // eslint-disable-next-line import/first

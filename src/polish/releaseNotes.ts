@@ -28,12 +28,22 @@
  *  4. **The whole history is always there**, under whatever is new, and
  *     from Settings when nothing is new at all.
  */
-import { RELEASE_NOTES, type ReleaseNote } from './releaseNotes.generated';
+import type { ReleaseNote } from './releaseNotes.generated';
 
 export type { ReleaseNote };
 
-/** Every release with notes, newest first. Already sorted by the generator. */
-export const CHANGELOG: readonly ReleaseNote[] = RELEASE_NOTES;
+/**
+ * Every release with notes, newest first. Already sorted by the generator.
+ *
+ * A function, not a constant: the table is 230 KB of bytecode to run,
+ * and as a constant it ran whenever this module loaded — which the sheet
+ * on Today did at the first render, for a list it shows only when there
+ * is something new. Required at the first call; the module cache answers
+ * every call after.
+ */
+export function changelog(): readonly ReleaseNote[] {
+  return (require('./releaseNotes.generated') as { RELEASE_NOTES: readonly ReleaseNote[] }).RELEASE_NOTES;
+}
 
 /** The language every note exists in, and the fallback for the other ten. */
 export const BASE_LANGUAGE = 'en';
@@ -112,7 +122,7 @@ export function unseenReleases(
 ): ReleaseNote[] {
   if (!from) return [];
   if (compareVersions(from, to) >= 0) return [];
-  return CHANGELOG.filter(
+  return changelog().filter(
     r => compareVersions(r.version, from) > 0 && compareVersions(r.version, to) <= 0,
   );
 }

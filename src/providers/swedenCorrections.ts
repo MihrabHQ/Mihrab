@@ -78,7 +78,11 @@ export function summarize(list: Corrections): CorrectionsSummary {
  */
 const summaries: Partial<Record<CorrectionAuthority, CorrectionsSummary>> = {};
 export function correctionsInForce(authority: CorrectionAuthority): CorrectionsSummary {
-  return (summaries[authority] ??= summarize(listInForce(authority)));
+  return (summaries[authority] ??= inForce[authority]
+    ? summarize(inForce[authority])
+    : // The bundled list's, written at build time (scripts/build-corrections-summaries.js),
+      // so the comparison at launch does not run the list itself.
+      (require('./data/correctionsSummaries.json') as Record<CorrectionAuthority, CorrectionsSummary>)[authority]);
 }
 /** A short key for the list in force, for what is stored under it. */
 export function correctionsKey(authority: CorrectionAuthority): string {

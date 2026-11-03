@@ -16,7 +16,8 @@ import {
   parseSpans,
   platformOf,
 } from '../src/polish/notesMarkup';
-import { CHANGELOG } from '../src/polish/releaseNotes';
+import { changelog } from '../src/polish/releaseNotes';
+const CHANGELOG = changelog();
 
 describe('blocks', () => {
   it('reads a bullet list as one block, not one block per bullet', () => {

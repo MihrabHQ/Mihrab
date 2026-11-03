@@ -14,7 +14,7 @@
 import { memo } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { RADIUS, SPACING } from '../theme/tokens';
-import { DEFAULT_SKY_VARIANT, SKY_MOODS_BY_VARIANT, type SkyMood, type SkyVariant } from '../theme/skyMoods';
+import { DEFAULT_SKY_VARIANT, skyMoodsOf, type SkyMood, type SkyVariant } from '../theme/skyMoods';
 import { linearDown, radialGlow } from '../screens/home/skyPaint';
 
 const ORDER: ReadonlyArray<SkyMood['name']> = ['night', 'dawn', 'morning', 'midday', 'golden', 'sunset'];
@@ -133,7 +133,7 @@ function Tile({ mood }: { mood: SkyMood }) {
 }
 
 function SkyMoodStripImpl({ selected, accent, accessibilityLabel, onPress, testID, variant = DEFAULT_SKY_VARIANT }: Props) {
-  const moods = SKY_MOODS_BY_VARIANT[variant];
+  const moods = skyMoodsOf(variant);
   if (!onPress) {
     return (
       <View
