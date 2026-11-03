@@ -42,6 +42,8 @@ const BUNDLE = path.join(DESKTOP, 'build', 'bundle');
 const DOCS = path.join(profile, 'Documents');
 const FILES = path.join(out, 'files');
 const MIRROR = 'https://github.com/MihrabHQ/Mihrab/releases/download/data-wordmeanings-v1';
+// A fixed stamp, so rebuilding the site does not rewrite 114 unchanged files.
+const WORD_MEANINGS_STAMP = '2026-01-01T00:00:00.000Z';
 
 /** What the profile must hold, and how many files at least. */
 const PRELOADED = [
@@ -90,7 +92,7 @@ async function wordMeanings(dest) {
         const text = String(r.translation ?? '').trim();
         if (text) glosses[String(r.aya)] = text;
       }
-      await fsp.writeFile(path.join(dest, `${surah}.json`), JSON.stringify({ v: 1, fetchedAt: new Date().toISOString(), glosses }));
+      await fsp.writeFile(path.join(dest, `${surah}.json`), JSON.stringify({ v: 1, fetchedAt: WORD_MEANINGS_STAMP, glosses }));
     }
   };
   await Promise.all([worker(), worker(), worker(), worker()]);
