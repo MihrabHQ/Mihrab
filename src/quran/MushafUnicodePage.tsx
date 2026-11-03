@@ -285,6 +285,26 @@ const PRINTED_ROWS_PER_PAGE = 15;
  */
 const PLATE_LINE_SLACK = 1.12;
 
+/**
+ * The open dammatan, where the face draws it — the web only.
+ *
+ * The KFGQPC texts (Warsh, Qālūn, Shuʿbah) write the open dammatan as
+ * U+065E, the code their own faces put it at, 1,815 times in Warsh alone.
+ * Amiri Quran, which draws those texts here, has the mark at its standard
+ * place, U+08F1, and nothing at U+065E. A phone finds U+065E in a system
+ * face; a desktop browser often finds nothing and draws a box after the
+ * word. So the web hands the face the mark at the code it has. Only what is
+ * drawn: the stored, copied and shared text keeps U+065E.
+ */
+export function openDammatanForFace(
+  word: string,
+  fontFamily: string,
+  os: string = Platform.OS,
+): string {
+  if (os !== 'web' || fontFamily !== FONTS.arabicQuran) return word;
+  return word.includes('\u065E') ? word.replace(/\u065E/g, '\u08F1') : word;
+}
+
 /** What one line's justification comes to, in ems of the type size. */
 export type FittedLine = {
   /** The word gap to set this line's spaces at. */
@@ -1521,31 +1541,45 @@ function PrintedPageBody({
 
         return (
           <View key={`l${index}`} style={{ height: rowHeight, width }}>
+            {/* Far wider than any line can need, so the platform never has
+                the option of breaking one. The line inside is as wide as
+                its own words, anchored to the right, which is where an
+                Arabic line begins. */}
+            <View
+              pointerEvents="box-none"
+              style={[
+                styles.printedBox,
+                { width: measure * PRINTED_BOX_SLACK, height: rowHeight, right: indent },
+              ]}
+            >
             <Text
               allowFontScaling={false}
-              onTextLayout={e =>
-                onLineLayout(
-                  index,
-                  e.nativeEvent.lines.reduce((m, l) => Math.max(m, l.width), 0),
-                  spaceEm,
-                  gaps,
-                )
-              }
+              /**
+               * ITS OWN WIDTH, NOT THE WIDTH OF ITS LINE.
+               *
+               * This read `onTextLayout`'s line width, and the platforms do
+               * not agree on what that is. Android reports the words — the
+               * figure justification needs. iOS reports the line fragment
+               * of a right-aligned box, which is nearly the whole box: the
+               * line was taken to be far wider than it is and squeezed, a
+               * void at the end of every line on every Apple device. The
+               * web never sends the event, so its lines were not justified
+               * at all. The text box itself is shrink-wrapped to its words
+               * on all of them, so its laid-out width IS Android's number,
+               * everywhere. The transform does not enter layout.
+               */
+              onLayout={e => onLineLayout(index, e.nativeEvent.layout.width, spaceEm, gaps)}
               style={[
                 styles.body,
                 styles.printedLine,
                 {
-                  // Far wider than any line can need, so the platform never
-                  // has the option of breaking one. Anchored to the right,
-                  // which is where an Arabic line begins, and scaled about
-                  // that same edge so the text lands on the margin.
-                  width: measure * PRINTED_BOX_SLACK,
                   height: rowHeight,
                   lineHeight: rowHeight,
                   fontFamily,
                   fontSize,
                   color: colors.text,
-                  right: indent,
+                  // Scaled about the right edge, so the text lands on the
+                  // margin.
                   transform: [{ scaleX }],
                 },
               ]}
@@ -1566,7 +1600,7 @@ function PrintedPageBody({
                   ) : (
                     // The madda wājib, on text engines older than it — see
                     // `maddaWajibFallback.ts`. The text itself is untouched.
-                    drawableWord(token.text)
+                    openDammatanForFace(drawableWord(token.text), fontFamily)
                   )}
                   {token.markText != null ? (
                     // The print's medallion, in the page's own face: the
@@ -1593,6 +1627,7 @@ function PrintedPageBody({
                 </Text>
               ))}
             </Text>
+            </View>
           </View>
         );
       })}
@@ -1604,9 +1639,14 @@ function PrintedPageBody({
 export default React.memo(MushafUnicodePage);
 
 const styles = StyleSheet.create({
+  printedBox: {
+    position: 'absolute',
+    top: 0,
+  },
   printedLine: {
     // Anchored to the right, which is where an Arabic line begins, and
-    // scaled about that same edge so the text lands on the margin.
+    // scaled about that same edge so the text lands on the margin. No
+    // width: shrink-wrapped to its words, which is what is measured.
     position: 'absolute',
     top: 0,
     right: 0,
