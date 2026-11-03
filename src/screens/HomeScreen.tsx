@@ -310,12 +310,14 @@ export function HomeScreen() {
    * the table and the cards under it keep to the measure in the middle.
    * Held as a book the page is laid out by its two halves instead.
    */
+  // The same on the web (the Windows/Linux app): a window between the
+  // phone's measure and the dashboard is this page too.
   const wideInset =
-    Platform.OS === 'android' &&
+    (Platform.OS === 'android' || Platform.OS === 'web') &&
     !isDashboard &&
     !isRoomy &&
     !book &&
-    Math.min(screenWidth, screenHeight) >= 600 &&
+    (Platform.OS === 'web' || Math.min(screenWidth, screenHeight) >= 600) &&
     screenWidth > MAX_CONTENT_WIDTH
       ? Math.round((screenWidth - MAX_CONTENT_WIDTH) / 2)
       : 0;

@@ -464,6 +464,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: SPACING.sm,
     flexShrink: 1,
+    // The pin centres its row, and a centred child is not shrunk to its
+    // parent on the web (Yoga does it): without this a long name ran out
+    // of the pin both ways, its start cut off by the screen's edge.
+    maxWidth: '100%',
   },
   headerPinLabel: {
     fontSize: TYPE.callout.fontSize,
