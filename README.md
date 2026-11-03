@@ -19,6 +19,8 @@
 
   <p>Mac: <code>brew install --cask mihrabhq/tap/mihrab</code></p>
 
+  <p><b>In your browser</b> — <a href="https://mihrabhq.github.io/">Mihrab Web</a>: prayer times, notifications at each prayer and the whole Qur'an, nothing to install</p>
+
   <p><b>Android</b></p>
 
   <p>
@@ -162,6 +164,7 @@ Prayer times computed with **[mihrab-methods](https://github.com/MihrabHQ/mihrab
 | **Android — Google Play** | [Google Play](https://play.google.com/store/apps/details?id=com.prayer_times) |
 | **Android — F-Droid** | [f-droid.org/packages/com.prayer_times](https://f-droid.org/packages/com.prayer_times/) |
 | **Android — APK** | [GitHub Releases](https://github.com/MihrabHQ/Mihrab/releases/latest) → `Mihrab-vX.Y.Z.apk` (ARM phones, 32- and 64-bit) |
+| **In your browser** | [Mihrab Web](https://mihrabhq.github.io/) — prayer times for where you are, browser notifications at each prayer, and the whole Qur'an (Ḥafṣ with tajwīd, Warsh, Qālūn, Shuʿbah and the IndoPak print, hard-word meanings, and Husary with word highlight). Settings and bookmarks stay in your browser; add it to your home screen to keep it close. Built from `desktop/` (`npx webpack --mode production --env web`, then `desktop/scripts/build-web.js`) into [MihrabHQ.github.io](https://github.com/MihrabHQ/MihrabHQ.github.io) |
 | **Windows & Linux (preview)** | One command to install, one to remove — [below](#windows-and-linux-preview) |
 
 ### Windows and Linux (preview)

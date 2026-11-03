@@ -264,6 +264,24 @@ ${list.map(v => card(v, true)).join('\n')}
 }
 
 /**
+ * Mihrab Web: the same app in a browser, at the MihrabHQ.github.io site. A
+ * link, nothing more — this page still loads nothing from anywhere else.
+ */
+const WEB_APP_URL = 'https://mihrabhq.github.io/';
+
+function webCard(code, t) {
+  const w = t.install && t.install.web;
+  if (!w) throw new Error(`${code}: no strings for the Mihrab Web card`);
+  return `      <div class="platform web">
+        <h3><svg class="glyph" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18"/></svg>${esc(w.h3)}</h3>
+        <div class="web-row">
+          <p class="web-body">${esc(w.body)}</p>
+          <p class="web-link"><a class="button" href="${WEB_APP_URL}">${esc(w.link)}</a> <code>mihrabhq.github.io</code></p>
+        </div>
+      </div>`;
+}
+
+/**
  * The Windows and Linux app, in preview: one line to install it and one to
  * remove it, for each system — the commands desktop/README.md gives and the
  * Desktop workflow runs on every build. In a <pre>, left to right on every
@@ -510,6 +528,7 @@ ${badgeList(['appstore'], '../assets/img/badges', '        ')}
 ${badgeList(['obtainium', 'googleplay', 'fdroid', 'github'], '../assets/img/badges', '        ')}
         <p class="flag">${esc(t.install.flag)} <a href="https://github.com/ImranR98/Obtainium">${esc(t.install.getObtainium)}</a></p>
       </div>
+${webCard(code, t)}
 ${desktopCard(code, t)}
     </div>
   </div>
@@ -648,6 +667,7 @@ function build() {
       text = patchBlock(text, 'langpicker', picker(langs, code));
       text = patchBlock(text, 'gallery', gallery(code, l));
       text = patchBlock(text, 'reviews', reviews(code, l));
+      text = patchBlock(text, 'web', webCard(code, l));
       text = patchBlock(text, 'desktop', desktopCard(code, l));
       files.set(file, fillPage(text, code));
       continue;
@@ -687,4 +707,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { build, picker, hreflang, gallery, desktopCard, DESKTOP_COMMANDS, ORIGIN, SHOTS, SHOT_V, FANS };
+module.exports = { build, picker, hreflang, gallery, webCard, desktopCard, DESKTOP_COMMANDS, ORIGIN, SHOTS, SHOT_V, FANS };
