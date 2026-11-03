@@ -332,13 +332,10 @@ That APK is **not** what goes on GitHub Releases any more (it was, up to 2.25.0)
 ### Windows and Linux (`desktop/`)
 
 The React Native app rendered with react-native-web in Electron — see
-`desktop/README.md`. Published on the GitHub release, opt-in per release:
-
-```sh
-DESKTOP=1 ./scripts/release.sh X.Y.Z
-```
-
-builds on this Mac, and uploads:
+`desktop/README.md` and, for who looks after it, `desktop/MAINTAINING.md`.
+Nothing about it runs on this Mac: `.github/workflows/desktop.yml` builds on
+real Windows and Linux runners, launches each packaged app, and on a `v*` tag
+attaches the installers to the release that `release.sh` publishes:
 
 | File | For |
 |---|---|
@@ -346,12 +343,16 @@ builds on this Mac, and uploads:
 | `Mihrab-X.Y.Z-linux-x86_64.AppImage`, `-linux-arm64.AppImage` | Any Linux, no install |
 | `Mihrab-X.Y.Z-linux-amd64.deb`, `-linux-arm64.deb` | Debian / Ubuntu |
 
-`verify-release.sh` requires all six or none. `desktop/package.json`'s
-version is stamped by `sync-version.js` with everything else. Before
-flipping `DESKTOP` to the default, one release has to have been installed
-and used on a real Windows PC and a real Linux desktop — the Actions
-workflow `desktop.yml` launches both packaged builds, but a launch is not
-an adhan at Fajr.
+Opt-in: the upload runs only while the repository variable `DESKTOP_RELEASE`
+is `true` (Settings → Secrets and variables → Actions → Variables). Before
+setting it, one build has to have been installed and used on a real Windows
+PC and a real Linux desktop — the workflow launches both, but a launch is
+not an adhan at Fajr. `desktop/package.json`'s version is stamped by
+`sync-version.js` with everything else.
+
+Every push to `main` builds and launches the Linux app too. That check is
+not required: a change to the app that breaks the desktop still merges, and
+the red run goes to the desktop maintainer.
 
 Not yet: code signing on Windows, a Flathub manifest, winget and the
 Microsoft Store.

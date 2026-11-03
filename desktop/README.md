@@ -65,6 +65,7 @@ npm run dist:linux   # AppImage + deb, x64 + arm64
 npm run dist:win     # NSIS installer, x64 + arm64 (unsigned)
 ```
 
-Both build on macOS. `release.sh` does this with `DESKTOP=1`;
-`.github/workflows/desktop.yml` builds on real Windows and Linux runners and
-launches the packaged app as a smoke test (run it from the Actions tab).
+Both build on macOS, for trying an installer locally. Releases are not built
+here: `.github/workflows/desktop.yml` builds on real Windows and Linux
+runners, launches the packaged app, and attaches the installers to the
+release (see `docs/DISTRIBUTION.md`).

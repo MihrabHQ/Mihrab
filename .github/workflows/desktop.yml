@@ -1,34 +1,41 @@
 name: Desktop
 
-# Builds the Windows and Linux app (desktop/) on the platforms it ships
-# for, launches each packaged build, and keeps the installers as artifacts.
+# The Windows and Linux app (desktop/): the same src/ as the phones and the
+# Mac, rendered with react-native-web in Electron. This workflow is the whole
+# of its build and release, so a release costs the Mac nothing:
 #
-# Run by hand (Actions → Desktop → Run workflow) or by a version tag. It is
-# NOT run on every push: an Electron build is minutes of runner time per OS,
-# and release.sh builds the same artifacts locally anyway.
-#
-# The smoke test is the thing a Mac cannot do: start the real Windows .exe
-# and the real Linux AppImage, let the app render, and fail if the window
-# stays blank or the page throws before it draws.
+#   push to main  Linux only: build, launch the packaged app, fail if it
+#                 draws nothing or throws while starting. NOT a required
+#                 check — a core change that breaks the desktop still merges,
+#                 and the red run is the desktop maintainer's to fix
+#                 (desktop/MAINTAINING.md).
+#   tag v*        Windows and Linux, x64 and arm64, both launched; and, when
+#                 the repository variable DESKTOP_RELEASE is 'true', the six
+#                 installers attached to the release release.sh publishes.
+#   by hand       Actions → Desktop → Run workflow: both, no upload.
 
 on:
-  workflow_dispatch:
   push:
+    branches: [main]
     tags: ['v*']
+    paths-ignore: ['docs/**', '**/*.md', 'fastlane/**', 'release-notes/**']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: desktop-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - os: ubuntu-latest
-            target: --linux AppImage deb --x64
-            exe: desktop/dist/linux-unpacked/mihrab
-          - os: windows-latest
-            target: --win nsis --x64
-            exe: desktop/dist/win-unpacked/Mihrab.exe
+        os: ${{ fromJSON((github.ref_type == 'tag' || github.event_name == 'workflow_dispatch') && '["ubuntu-latest","windows-latest"]' || '["ubuntu-latest"]') }}
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 40
     defaults:
       run:
         shell: bash
@@ -43,18 +50,22 @@ jobs:
             package-lock.json
             desktop/package-lock.json
 
-      # The app's own dependencies: the web bundle is built from src/ and
-      # the React Native packages it imports.
+      # The app's own dependencies: the bundle is built from src/ and the
+      # React Native packages it imports.
       - name: App dependencies
         run: npm ci --no-audit
 
       - name: Desktop dependencies
         working-directory: desktop
-        run: npm ci --no-audit --include=dev
+        run: npm ci --no-audit --include=dev && node node_modules/electron/install.js
 
+      # On a push the installer is not the point, the launch is: x64 only.
       - name: Build
         working-directory: desktop
-        run: npm run build && npx electron-builder ${{ matrix.target }} --publish never
+        run: |
+          if [ "$RUNNER_OS" = "Linux" ]; then target="--linux AppImage deb"; else target="--win nsis"; fi
+          if [ "${{ github.ref_type }}" = "tag" ]; then arch="--x64 --arm64"; else arch="--x64"; fi
+          npm run build && npx electron-builder $target $arch --publish never
 
       - name: Linux display
         if: runner.os == 'Linux'
@@ -68,12 +79,12 @@ jobs:
           MIHRAB_USER_DATA: ${{ runner.temp }}/profile
         run: |
           if [ "$RUNNER_OS" = "Linux" ]; then
-            timeout 120 xvfb-run -a -s "-screen 0 1280x900x24" "${{ matrix.exe }}" --no-sandbox | tee app.log
+            timeout 120 xvfb-run -a -s "-screen 0 1280x900x24" desktop/dist/linux-unpacked/mihrab --no-sandbox | tee app.log
           else
-            timeout 120 "${{ matrix.exe }}" | tee app.log
+            timeout 120 desktop/dist/win-unpacked/Mihrab.exe | tee app.log
           fi
           test -s "$MIHRAB_SNAPSHOT" || { echo "no snapshot: the window never drew"; exit 1; }
-          if grep -q "\[page:uncaught\]\|Uncaught" app.log; then
+          if grep -q "\[page:uncaught\]\|Uncaught\|\[page\] gone" app.log; then
             echo "the page threw while starting"; exit 1
           fi
           node -e "
@@ -92,3 +103,14 @@ jobs:
             desktop/dist/*.deb
             ${{ runner.temp }}/snapshot.png
           if-no-files-found: warn
+
+      # release.sh creates the release a few minutes after it pushes the tag;
+      # wait for it rather than race it.
+      - name: Attach to the release
+        if: github.ref_type == 'tag' && vars.DESKTOP_RELEASE == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          for i in $(seq 1 60); do gh release view "$TAG" >/dev/null 2>&1 && break; sleep 30; done
+          gh release upload "$TAG" desktop/dist/Mihrab-*.exe desktop/dist/Mihrab-*.AppImage desktop/dist/Mihrab-*.deb --clobber
