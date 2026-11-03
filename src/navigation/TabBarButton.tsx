@@ -9,7 +9,7 @@
  * from the touch events it keeps receiving and hands it to the store.
  */
 import { useCallback, useEffect, useRef } from 'react';
-import { Pressable, type GestureResponderEvent, type HostInstance } from 'react-native';
+import { Platform, Pressable, type GestureResponderEvent, type HostInstance } from 'react-native';
 import type { BottomTabBarButtonProps } from '@react-navigation/bottom-tabs';
 import { hapticScrubStart, hapticScrubTick } from '../polish/haptics';
 import {
@@ -81,6 +81,12 @@ export function TabBarButton({
       // The tap. Not after a hold: a hold is settled on lift, below, and a
       // hold that slid away must not also tap here.
       onPress={e => {
+        // On the web the navigator gives the button an `href`, and the
+        // button is drawn as a link. The navigator's own button keeps the
+        // browser from following it; this one did not, so every click on
+        // a tab ALSO loaded that tab's URL — the whole app booted again
+        // on each tab change, and an adhan playing at the time stopped.
+        if (Platform.OS === 'web') e?.preventDefault?.();
         if (tabBarPress().held || wasHeld.current) return;
         press(e);
       }}

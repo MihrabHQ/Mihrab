@@ -13,6 +13,9 @@ module.exports = async ({ page, shot, log }) => {
     log('missing', String(re));
     return false;
   };
+  // A mark on the page: a tab switch that reloads the app wipes it. Tabs
+  // were links the browser followed, and every switch booted the app again.
+  await page.evaluate(() => { window.__sameDocument = true; });
   const widths = (process.env.MIHRAB_WIDTHS || '380,480,600,700').split(',').map(Number);
   for (const w of widths) {
     await cdp.send('Emulation.setDeviceMetricsOverride', { width: w, height: 820, deviceScaleFactor: 0, mobile: false });
@@ -36,5 +39,7 @@ module.exports = async ({ page, shot, log }) => {
     }
   }
   await cdp.send('Emulation.clearDeviceMetricsOverride');
+  if (!(await page.evaluate(() => window.__sameDocument === true))) errors.push('a tab switch reloaded the whole app');
   log('ERRORS', JSON.stringify(errors));
+  if (errors.length) throw new Error(errors.join('; '));
 };
