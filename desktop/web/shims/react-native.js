@@ -208,3 +208,22 @@ export const Animated = {
   decay: (value, config) => RNW.Animated.decay(value, jsDriver(config)),
   event: (mapping, config) => RNW.Animated.event(mapping, jsDriver(config)),
 };
+
+/**
+ * `ellipsizeMode="clip"` as the phones do it. react-native-web ignores the
+ * prop: a one-line Text always gets `text-overflow: ellipsis` and
+ * `max-width: 100%`. The muṣḥaf's lines (src/quran/MushafTextPage.tsx, the
+ * only `clip` in the app) are sized wider than their parent on purpose —
+ * padded out so calligraphy that overshoots its advance has room to land —
+ * and the cap squeezed that room back out of the text, so every line came
+ * out a few pixels too wide and lost its end to "…". On a phone neither
+ * happens: an explicit width is the width, and clip clips.
+ */
+const TEXT_CLIP = { maxWidth: 'none', textOverflow: 'clip' };
+export const Text = React.forwardRef(function Text(props, ref) {
+  if (props.ellipsizeMode === 'clip') {
+    return React.createElement(RNW.Text, { ...props, ref, style: [props.style, TEXT_CLIP] });
+  }
+  return React.createElement(RNW.Text, { ...props, ref });
+});
+Text.displayName = 'Text';

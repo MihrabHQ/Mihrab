@@ -72,6 +72,39 @@ function register() {
     return buf.toString('utf8');
   });
 
+  // blob-util's slice(src, dest, start, end): bytes [start, end) of a file
+  // into a file of their own. The app reads a recitation's first four bytes
+  // this way to tell audio from an error page, without reading a 200 MB
+  // surah whole.
+  ipcMain.handle('fs:slice', async (_e, from, to, start, end) => {
+    const src = readable(from);
+    const target = inside(to);
+    const size = (await fsp.stat(src)).size;
+    const a = Math.max(0, Math.min(Number(start) || 0, size));
+    const b = Math.max(a, Math.min(end == null ? size : Number(end), size));
+    const fh = await fsp.open(src, 'r');
+    try {
+      const buf = Buffer.alloc(b - a);
+      if (buf.length) await fh.read(buf, 0, buf.length, a);
+      await fsp.mkdir(path.dirname(target), { recursive: true });
+      await fsp.writeFile(target, buf);
+    } finally {
+      await fh.close();
+    }
+    return to;
+  });
+
+  // blob-util's hash(path, algorithm): the file's digest as hex, streamed.
+  ipcMain.handle('fs:hash', async (_e, p, algorithm) => {
+    const crypto = require('crypto');
+    const algo = { md5: 'md5', sha1: 'sha1', sha224: 'sha224', sha256: 'sha256', sha384: 'sha384', sha512: 'sha512' }[algorithm] ?? 'md5';
+    const h = crypto.createHash(algo);
+    await new Promise((resolve, reject) => {
+      fs.createReadStream(readable(p)).on('data', c => h.update(c)).on('end', resolve).on('error', reject);
+    });
+    return h.digest('hex');
+  });
+
   ipcMain.handle('fs:writeFile', async (_e, p, data, encoding, append) => {
     const target = inside(p);
     await fsp.mkdir(path.dirname(target), { recursive: true });

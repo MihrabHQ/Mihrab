@@ -44,6 +44,8 @@ const fs = {
   readFile: async (p, encoding = 'utf8') => need().readFile(strip(p), encoding),
   writeFile: async (p, data, encoding = 'utf8') => need().writeFile(strip(p), data, encoding, false),
   appendFile: async (p, data, encoding = 'utf8') => need().writeFile(strip(p), data, encoding, true),
+  slice: async (from, to, start, end) => need().slice(strip(from), strip(to), start, end),
+  hash: async (p, algorithm) => need().hash(strip(p), algorithm),
   // Android's `bundle-assets://` has no meaning here; the bundle is a folder.
   asset: file => `${dirs.MainBundleDir}/${file}`,
   df: async () => ({ free: Number.MAX_SAFE_INTEGER, total: Number.MAX_SAFE_INTEGER }),
