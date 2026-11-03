@@ -1,10 +1,11 @@
 /**
  * The printed riwāyah pages (Warsh, Qālūn, Shuʿbah, IndoPak) justify each
- * line from its measured width. That width was read from `onTextLayout`,
- * which Android answers with the words and iOS with the right-aligned box —
- * so every Apple device squeezed its lines short, and the web, which never
- * sends the event, did not justify them at all. The line is measured as the
- * shrink-wrapped text box now, which is the words' width everywhere.
+ * line from its measured width, by opening its word gaps. The width was read
+ * from `onTextLayout`, which the web never sends, so the web did not justify
+ * at all; the line is measured as the shrink-wrapped text box now, the same
+ * everywhere. And the gaps were opened with letter spacing, which CoreText
+ * ignores in Arabic, so on every Apple device the lines stopped short; there
+ * each gap is a spacer of its width.
  */
 import * as fs from 'fs';
 import * as path from 'path';
@@ -26,6 +27,19 @@ describe('a printed line is measured by its own width', () => {
     expect(page).toMatch(/styles\.printedBox,\s*\{ width: measure \* PRINTED_BOX_SLACK/);
     const line = page.slice(page.indexOf('printedLine: {'), page.indexOf('body: {'));
     expect(line).not.toMatch(/^\s*(max)?[wW]idth:/m);
+  });
+});
+
+describe('a word gap on Apple is a spacer of its width', () => {
+  // CoreText switches letter spacing off in Arabic, so a gap widened with
+  // it does not widen on iOS or the Mac — the lines stopped short.
+  const page = read('src/quran/MushafUnicodePage.tsx');
+
+  it('is a view of the gap width on iOS, the space elsewhere', () => {
+    expect(page).toMatch(/const GAP_AS_SPACER = Platform\.OS === 'ios';/);
+    expect(page).toMatch(
+      /GAP_AS_SPACER \? \(\s*<View style=\{\{ width: spaceEm \* fontSize, height: 1 \}\} \/>\s*\) : \(\s*<Text style=\{gapStyle\}>\{NBSP\}<\/Text>/,
+    );
   });
 });
 

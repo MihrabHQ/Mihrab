@@ -305,6 +305,25 @@ export function openDammatanForFace(
   return word.includes('\u065E') ? word.replace(/\u065E/g, '\u08F1') : word;
 }
 
+/**
+ * A word gap on Apple's platforms is a spacer of the gap's width, not a
+ * space with letter spacing.
+ *
+ * The gaps are what justify a printed line: each is set to the width that
+ * brings the line to the measure (`fitPrintedLine`), and `gapMetrics` gets
+ * there by shrinking the space glyph for a tight gap and adding letter
+ * spacing for a wide one. Android honours that letter spacing. CoreText
+ * does not, in Arabic: it switches tracking off for a script whose letters
+ * join, so on every iPhone, iPad and Mac a gap could only ever shrink. A
+ * line measured at 15.4 em and set to fill 18.2 grew by a third of an em,
+ * the scale that is the last resort was computed as if the gaps had done
+ * their part, and every line stopped short of the margin — the void at
+ * the end of each. An inline view has exactly the width it is given on
+ * every platform; Apple's gets one, and Android and the web keep the
+ * space they already draw correctly.
+ */
+const GAP_AS_SPACER = Platform.OS === 'ios';
+
 /** What one line's justification comes to, in ems of the type size. */
 export type FittedLine = {
   /** The word gap to set this line's spaces at. */
@@ -1557,16 +1576,13 @@ function PrintedPageBody({
               /**
                * ITS OWN WIDTH, NOT THE WIDTH OF ITS LINE.
                *
-               * This read `onTextLayout`'s line width, and the platforms do
-               * not agree on what that is. Android reports the words — the
-               * figure justification needs. iOS reports the line fragment
-               * of a right-aligned box, which is nearly the whole box: the
-               * line was taken to be far wider than it is and squeezed, a
-               * void at the end of every line on every Apple device. The
-               * web never sends the event, so its lines were not justified
-               * at all. The text box itself is shrink-wrapped to its words
-               * on all of them, so its laid-out width IS Android's number,
-               * everywhere. The transform does not enter layout.
+               * This read `onTextLayout`'s line width. The web never sends
+               * that event, so its lines were never justified at all, and
+               * what a "line" is differs between the platforms that do. The
+               * text box itself is shrink-wrapped to its words on every
+               * platform, so its laid-out width is the line's own width
+               * everywhere. The transform does not enter layout. (Why the
+               * lines fell short on Apple's devices is `GAP_AS_SPACER`.)
                */
               onLayout={e => onLineLayout(index, e.nativeEvent.layout.width, spaceEm, gaps)}
               style={[
@@ -1622,7 +1638,11 @@ function PrintedPageBody({
                     </Text>
                   ) : null}
                   {i < tokens.length - 1 ? (
-                    <Text style={gapStyle}>{NBSP}</Text>
+                    GAP_AS_SPACER ? (
+                      <View style={{ width: spaceEm * fontSize, height: 1 }} />
+                    ) : (
+                      <Text style={gapStyle}>{NBSP}</Text>
+                    )
                   ) : null}
                 </Text>
               ))}
