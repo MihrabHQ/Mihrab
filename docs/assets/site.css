@@ -240,6 +240,24 @@ h2 { font-size: clamp(26px, 4vw, 34px); }
 .platform .flag { margin: 14px 0 0; font-size: 14px; font-weight: 600; line-height: 1.45; color: var(--ink); }
 .platform .flag a { font-weight: 500; color: var(--accent); margin-inline-start: 4px; }
 .platform .note code { font-size: 11.5px; white-space: nowrap; display: inline-block; margin-top: 4px; }
+/* Windows & Linux: a card the width of the row, the two systems side by side,
+   each with its install and remove line in full. The lines wrap anywhere but
+   hold no line breaks, so a copied command is still one line. */
+.platform.desktop { flex: 1 1 100%; min-width: 0; }
+.platform.desktop .tag {
+  font-size: 12px; font-weight: 600; letter-spacing: .02em; color: var(--accent);
+  border: 1px solid var(--line); border-radius: 999px; padding: 2px 9px;
+}
+.platform.desktop .flag { margin: 0 0 16px; }
+.platform .oses { display: flex; flex-wrap: wrap; gap: 20px; }
+.platform .os { flex: 1 1 320px; min-width: 0; }
+.platform .os h4 { font-size: 15px; margin: 0 0 6px; }
+.platform .cmd-label { margin: 10px 0 4px; font-size: 13px; color: var(--ink-soft); }
+.platform .os pre { margin: 0; overflow-x: auto; }
+.platform .os pre code {
+  display: block; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 12px;
+  padding: 8px 10px; text-align: left;
+}
 @media (max-width: 600px) {
   .platform, .platform:first-child { flex: 1 1 100%; }
   .platform .badges { justify-content: center; }

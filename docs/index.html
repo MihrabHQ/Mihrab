@@ -277,6 +277,28 @@
         </ul>
         <p class="flag">Obtainium is recommended: first to get every update, and it updates itself. <a href="https://github.com/ImranR98/Obtainium">Don’t have it? Get Obtainium</a></p>
       </div>
+<!-- desktop:start -->
+      <div class="platform desktop">
+        <h3><svg class="glyph" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M9 20h6M12 16v4"/></svg>Windows &amp; Linux <span class="tag">Preview</span></h3>
+        <p class="flag">The whole app runs on the desktop, and it is looking for testers. <a href="https://github.com/MihrabHQ/Mihrab/issues">Report what breaks</a></p>
+        <div class="oses">
+          <div class="os">
+            <h4>Windows, in Command Prompt</h4>
+            <p class="cmd-label">Install</p>
+            <pre dir="ltr"><code>curl -fsSLo "%TEMP%\mihrab.cmd" https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/install-windows.cmd &amp;&amp; "%TEMP%\mihrab.cmd"</code></pre>
+            <p class="cmd-label">Remove, with its settings</p>
+            <pre dir="ltr"><code>curl -fsSLo "%TEMP%\mihrab.cmd" https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/install-windows.cmd &amp;&amp; "%TEMP%\mihrab.cmd" uninstall</code></pre>
+          </div>
+          <div class="os">
+            <h4>Linux, in a terminal</h4>
+            <p class="cmd-label">Install</p>
+            <pre dir="ltr"><code>curl -fsSL https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/install-linux.sh | sh</code></pre>
+            <p class="cmd-label">Remove, with its settings</p>
+            <pre dir="ltr"><code>curl -fsSL https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/install-linux.sh | sh -s uninstall</code></pre>
+          </div>
+        </div>
+      </div>
+<!-- desktop:end -->
     </div>
     <p class="note">Prefer to build it yourself? <code>npm install &amp;&amp; npm run
       android:assembleFdroidRelease</code> — the full release path is written up in

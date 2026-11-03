@@ -252,6 +252,28 @@
         </ul>
         <p class="flag">Obtainium rekommenderas: först med varje uppdatering, och uppdaterar sig själv. <a href="https://github.com/ImranR98/Obtainium">Har du det inte? Hämta Obtainium</a></p>
       </div>
+<!-- desktop:start -->
+      <div class="platform desktop">
+        <h3><svg class="glyph" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M9 20h6M12 16v4"/></svg>Windows och Linux <span class="tag">Förhandsversion</span></h3>
+        <p class="flag">Hela appen fungerar på datorn, och vi söker testare. <a href="https://github.com/MihrabHQ/Mihrab/issues">Rapportera det som inte fungerar</a></p>
+        <div class="oses">
+          <div class="os">
+            <h4>Windows, i Kommandotolken</h4>
+            <p class="cmd-label">Installera</p>
+            <pre dir="ltr"><code>curl -fsSLo "%TEMP%\mihrab.cmd" https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/install-windows.cmd &amp;&amp; "%TEMP%\mihrab.cmd"</code></pre>
+            <p class="cmd-label">Ta bort, med inställningarna</p>
+            <pre dir="ltr"><code>curl -fsSLo "%TEMP%\mihrab.cmd" https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/install-windows.cmd &amp;&amp; "%TEMP%\mihrab.cmd" uninstall</code></pre>
+          </div>
+          <div class="os">
+            <h4>Linux, i en terminal</h4>
+            <p class="cmd-label">Installera</p>
+            <pre dir="ltr"><code>curl -fsSL https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/install-linux.sh | sh</code></pre>
+            <p class="cmd-label">Ta bort, med inställningarna</p>
+            <pre dir="ltr"><code>curl -fsSL https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/install-linux.sh | sh -s uninstall</code></pre>
+          </div>
+        </div>
+      </div>
+<!-- desktop:end -->
     </div>
   </div>
 </section>

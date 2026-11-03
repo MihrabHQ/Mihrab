@@ -263,6 +263,47 @@ ${list.map(v => card(v, true)).join('\n')}
 </section>`;
 }
 
+/**
+ * The Windows and Linux app, in preview: one line to install it and one to
+ * remove it, for each system — the commands desktop/README.md gives and the
+ * Desktop workflow runs on every build. In a <pre>, left to right on every
+ * page, so the line copies whole.
+ */
+const DESKTOP_SCRIPTS = 'https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts';
+const DESKTOP_COMMANDS = {
+  windows: [
+    `curl -fsSLo "%TEMP%\\mihrab.cmd" ${DESKTOP_SCRIPTS}/install-windows.cmd && "%TEMP%\\mihrab.cmd"`,
+    `curl -fsSLo "%TEMP%\\mihrab.cmd" ${DESKTOP_SCRIPTS}/install-windows.cmd && "%TEMP%\\mihrab.cmd" uninstall`,
+  ],
+  linux: [
+    `curl -fsSL ${DESKTOP_SCRIPTS}/install-linux.sh | sh`,
+    `curl -fsSL ${DESKTOP_SCRIPTS}/install-linux.sh | sh -s uninstall`,
+  ],
+};
+
+function desktopCard(code, t) {
+  const d = t.install && t.install.desktop;
+  if (!d) throw new Error(`${code}: no strings for the Windows and Linux card`);
+  const os = id => {
+    const [install, remove] = DESKTOP_COMMANDS[id];
+    return `          <div class="os">
+            <h4>${esc(d[id])}</h4>
+            <p class="cmd-label">${esc(d.install)}</p>
+            <pre dir="ltr"><code>${esc(install)}</code></pre>
+            <p class="cmd-label">${esc(d.remove)}</p>
+            <pre dir="ltr"><code>${esc(remove)}</code></pre>
+          </div>`;
+  };
+  return `      <div class="platform desktop">
+        <h3><svg class="glyph" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M9 20h6M12 16v4"/></svg>${esc(d.h3)} <span class="tag">${esc(d.tag)}</span></h3>
+        <p class="flag">${esc(d.flag)} <a href="https://github.com/MihrabHQ/Mihrab/issues">${esc(d.report)}</a></p>
+        <div class="oses">
+${os('windows')}
+${os('linux')}
+        </div>
+      </div>`;
+}
+
 /** Reciprocal hreflang: a page that names only itself is ignored. */
 function hreflang(langs) {
   const lines = Object.entries(langs).map(
@@ -469,6 +510,7 @@ ${badgeList(['appstore'], '../assets/img/badges', '        ')}
 ${badgeList(['obtainium', 'googleplay', 'fdroid', 'github'], '../assets/img/badges', '        ')}
         <p class="flag">${esc(t.install.flag)} <a href="https://github.com/ImranR98/Obtainium">${esc(t.install.getObtainium)}</a></p>
       </div>
+${desktopCard(code, t)}
     </div>
   </div>
 </section>
@@ -606,6 +648,7 @@ function build() {
       text = patchBlock(text, 'langpicker', picker(langs, code));
       text = patchBlock(text, 'gallery', gallery(code, l));
       text = patchBlock(text, 'reviews', reviews(code, l));
+      text = patchBlock(text, 'desktop', desktopCard(code, l));
       files.set(file, fillPage(text, code));
       continue;
     }
@@ -644,4 +687,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { build, picker, hreflang, gallery, ORIGIN, SHOTS, SHOT_V, FANS };
+module.exports = { build, picker, hreflang, gallery, desktopCard, DESKTOP_COMMANDS, ORIGIN, SHOTS, SHOT_V, FANS };

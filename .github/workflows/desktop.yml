@@ -12,7 +12,14 @@ name: Desktop
 #   tag v*        Windows and Linux, x64 and arm64, both launched; and, when
 #                 the repository variable DESKTOP_RELEASE is 'true', the six
 #                 installers attached to the release release.sh publishes.
-#   by hand       Actions → Desktop → Run workflow: both, no upload.
+#   by hand       Actions → Desktop → Run workflow: both, x64 and arm64,
+#                 and — unless unticked — the installers published to the
+#                 desktop-preview pre-release, which the one-line install
+#                 commands on the website and in the README download
+#                 (desktop/scripts/install-windows.cmd, install-linux.sh).
+#
+# Every run also installs and removes the app with those two scripts, from
+# the files it just built, so the commands people paste keep working.
 
 on:
   push:
@@ -20,6 +27,11 @@ on:
     tags: ['v*']
     paths-ignore: ['docs/**', '**/*.md', 'fastlane/**', 'release-notes/**']
   workflow_dispatch:
+    inputs:
+      preview:
+        description: 'Publish the installers to the desktop-preview pre-release'
+        type: boolean
+        default: true
 
 permissions:
   contents: write
@@ -64,7 +76,7 @@ jobs:
         working-directory: desktop
         run: |
           if [ "$RUNNER_OS" = "Linux" ]; then target="--linux AppImage deb"; else target="--win nsis"; fi
-          if [ "${{ github.ref_type }}" = "tag" ]; then arch="--x64 --arm64"; else arch="--x64"; fi
+          if [ "${{ github.ref_type }}" = "tag" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then arch="--x64 --arm64"; else arch="--x64"; fi
           npm run build && npx electron-builder $target $arch --publish never
 
       - name: Linux display
@@ -106,6 +118,81 @@ jobs:
             timeout 180 bash scripts/ci-notify.sh
           fi
 
+      # The names the install scripts ask for, which do not change with the
+      # version: dist/preview/Mihrab-windows-x64.exe, Mihrab-linux-amd64.deb, …
+      - name: Name the installers
+        working-directory: desktop
+        run: |
+          ls dist
+          mkdir -p dist/preview
+          for f in dist/Mihrab-*; do
+            case "$f" in
+              *-x64.exe) n=Mihrab-windows-x64.exe ;;
+              *-arm64.exe) n=Mihrab-windows-arm64.exe ;;
+              *-x86_64.AppImage) n=Mihrab-linux-x86_64.AppImage ;;
+              *-arm64.AppImage) n=Mihrab-linux-arm64.AppImage ;;
+              *-amd64.deb) n=Mihrab-linux-amd64.deb ;;
+              *-arm64.deb) n=Mihrab-linux-arm64.deb ;;
+              *) continue ;;
+            esac
+            cp "$f" "dist/preview/$n"
+          done
+          ls -la dist/preview
+          if [ "$RUNNER_OS" = "Linux" ]; then want="Mihrab-linux-amd64.deb Mihrab-linux-x86_64.AppImage"; else want="Mihrab-windows-x64.exe"; fi
+          for n in $want; do test -s "dist/preview/$n" || { echo "missing $n"; exit 1; }; done
+
+      # The deb (what apt's family gets) and the unpacked AppImage (everyone
+      # else): installed, the deb's app started under Ubuntu 24.04's sandbox
+      # rules, then removed — app, menu entry and settings.
+      - name: Install and remove — Linux
+        if: runner.os == 'Linux'
+        working-directory: desktop
+        env:
+          MIHRAB_FROM: ${{ github.workspace }}/desktop/dist/preview
+        run: |
+          sh scripts/install-linux.sh
+          dpkg -s mihrab >/dev/null
+          test -x /opt/Mihrab/mihrab
+          command -v mihrab
+          set +e
+          MIHRAB_USER_DATA="$RUNNER_TEMP/deb-profile" timeout 25 xvfb-run -a mihrab > deb.log 2>&1
+          code=$?
+          set -e
+          cat deb.log | tail -20
+          [ "$code" = 124 ] || { echo "the installed app exited ($code) instead of running"; exit 1; }
+          sh scripts/install-linux.sh uninstall
+          if dpkg -s mihrab >/dev/null 2>&1; then echo "the package is still installed"; exit 1; fi
+          MIHRAB_FORMAT=appimage sh scripts/install-linux.sh
+          test -x "$HOME/.local/share/mihrab/mihrab"
+          test -f "$HOME/.local/share/applications/mihrab.desktop"
+          test -L "$HOME/.local/bin/mihrab"
+          mkdir -p "$HOME/.config/Mihrab" && touch "$HOME/.config/Mihrab/settings"
+          sh scripts/install-linux.sh uninstall
+          for left in "$HOME/.local/share/mihrab" "$HOME/.local/bin/mihrab" "$HOME/.config/Mihrab"; do
+            if [ -e "$left" ]; then echo "left behind: $left"; exit 1; fi
+          done
+
+      # Installed for the user, started once (which writes its start-at-login
+      # entry, as a first run does), then removed with the entry and settings.
+      - name: Install and remove — Windows
+        if: runner.os == 'Windows'
+        working-directory: desktop
+        shell: cmd
+        env:
+          MIHRAB_FROM: ${{ github.workspace }}\desktop\dist\preview
+        run: |
+          call scripts\install-windows.cmd || exit /b 1
+          if not exist "%LOCALAPPDATA%\Programs\Mihrab\Mihrab.exe" (echo not installed & exit /b 1)
+          start "" "%LOCALAPPDATA%\Programs\Mihrab\Mihrab.exe"
+          ping -n 25 127.0.0.1 >nul
+          reg query "HKCU\Software\Microsoft\Windows\CurrentVersion\Run"
+          reg query "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v com.prayer_times.desktop || (echo no start-at-login entry under that name & exit /b 1)
+          call scripts\install-windows.cmd uninstall || exit /b 1
+          if exist "%LOCALAPPDATA%\Programs\Mihrab\Mihrab.exe" (echo still installed & exit /b 1)
+          if exist "%APPDATA%\Mihrab" (echo settings left behind & exit /b 1)
+          reg query "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v com.prayer_times.desktop >nul 2>&1 && (echo start-at-login entry left behind & exit /b 1)
+          echo installed, started and removed
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -127,3 +214,22 @@ jobs:
         run: |
           for i in $(seq 1 60); do gh release view "$TAG" >/dev/null 2>&1 && break; sleep 30; done
           gh release upload "$TAG" desktop/dist/Mihrab-*.exe desktop/dist/Mihrab-*.AppImage desktop/dist/Mihrab-*.deb --clobber
+
+      # The one-line installs download from here. The tag sits on the last
+      # release's commit and never moves — F-Droid reads tags — while the
+      # files are replaced by each run.
+      - name: Publish the desktop preview
+        if: github.event_name == 'workflow_dispatch' && inputs.preview
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if ! gh release view desktop-preview >/dev/null 2>&1; then
+            git fetch --tags --quiet
+            target=$(git rev-list -n1 "$(git tag --list 'v*' --sort=-v:refname | head -1)")
+            gh release create desktop-preview --prerelease --latest=false --target "$target" \
+              --title "Windows and Linux preview" \
+              --notes "Installers for testing the Windows and Linux app. Install and remove with one command: see desktop/README.md." || true
+          fi
+          gh release upload desktop-preview desktop/dist/preview/* --clobber
+          gh release edit desktop-preview --prerelease --latest=false \
+            --notes "Installers for testing the Windows and Linux app, built from $(git rev-parse --short HEAD) on $(date -u +%Y-%m-%d). Install and remove with one command: see [desktop/README.md](https://github.com/MihrabHQ/Mihrab/blob/main/desktop/README.md)."

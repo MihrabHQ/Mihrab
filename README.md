@@ -162,6 +162,38 @@ Prayer times computed with **[mihrab-methods](https://github.com/MihrabHQ/mihrab
 | **Android — Google Play** | [Google Play](https://play.google.com/store/apps/details?id=com.prayer_times) |
 | **Android — F-Droid** | [f-droid.org/packages/com.prayer_times](https://f-droid.org/packages/com.prayer_times/) |
 | **Android — APK** | [GitHub Releases](https://github.com/MihrabHQ/Mihrab/releases/latest) → `Mihrab-vX.Y.Z.apk` (ARM phones, 32- and 64-bit) |
+| **Windows & Linux (preview)** | One command to install, one to remove — [below](#windows-and-linux-preview) |
+
+### Windows and Linux (preview)
+
+The desktop app is in preview: the whole app runs, and it needs testers and a
+maintainer ([desktop/MAINTAINING.md](desktop/MAINTAINING.md)). Bugs are welcome as
+[issues](https://github.com/MihrabHQ/Mihrab/issues).
+
+**Windows** — in Command Prompt (`cmd`), installs for your user, no administrator needed:
+
+```bat
+curl -fsSLo "%TEMP%\mihrab.cmd" https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/install-windows.cmd && "%TEMP%\mihrab.cmd"
+```
+
+Remove it, with its settings:
+
+```bat
+curl -fsSLo "%TEMP%\mihrab.cmd" https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/install-windows.cmd && "%TEMP%\mihrab.cmd" uninstall
+```
+
+**Linux** — in a terminal. Debian, Ubuntu and their family get the `.deb` (sudo asks once);
+other distributions get the AppImage, unpacked into your home folder:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/install-linux.sh | sh
+```
+
+Remove it, with its settings:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/install-linux.sh | sh -s uninstall
+```
 
 ---
 

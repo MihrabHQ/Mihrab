@@ -109,7 +109,17 @@
       "apple": "Apple",
       "android": "Android",
       "flag": "Obtainium is recommended: first to get every update, and it updates itself.",
-      "getObtainium": "Don’t have it? Get Obtainium"
+      "getObtainium": "Don’t have it? Get Obtainium",
+      "desktop": {
+        "h3": "Windows & Linux",
+        "tag": "Preview",
+        "flag": "The whole app runs on the desktop, and it is looking for testers.",
+        "report": "Report what breaks",
+        "windows": "Windows, in Command Prompt",
+        "linux": "Linux, in a terminal",
+        "install": "Install",
+        "remove": "Remove, with its settings"
+      }
     },
     "reviews": {
       "eyebrow": "From the stores",
@@ -228,7 +238,17 @@
       "apple": "Apple",
       "android": "Android",
       "flag": "Obtainium rekommenderas: först med varje uppdatering, och uppdaterar sig själv.",
-      "getObtainium": "Har du det inte? Hämta Obtainium"
+      "getObtainium": "Har du det inte? Hämta Obtainium",
+      "desktop": {
+        "h3": "Windows och Linux",
+        "tag": "Förhandsversion",
+        "flag": "Hela appen fungerar på datorn, och vi söker testare.",
+        "report": "Rapportera det som inte fungerar",
+        "windows": "Windows, i Kommandotolken",
+        "linux": "Linux, i en terminal",
+        "install": "Installera",
+        "remove": "Ta bort, med inställningarna"
+      }
     },
     "reviews": {
       "eyebrow": "Från butikerna",
@@ -258,7 +278,17 @@
       "apple": "أبل",
       "android": "أندرويد",
       "flag": "ننصح بـ Obtainium: أول من يحصل على كل إصدار، ويحدّث نفسه.",
-      "getObtainium": "ليس لديك؟ احصل على Obtainium"
+      "getObtainium": "ليس لديك؟ احصل على Obtainium",
+      "desktop": {
+        "h3": "ويندوز ولينكس",
+        "tag": "معاينة",
+        "flag": "التطبيق كاملًا يعمل على الحاسوب، ونبحث عمّن يجرّبه.",
+        "report": "أبلغ عمّا لا يعمل",
+        "windows": "ويندوز، في موجّه الأوامر",
+        "linux": "لينكس، في الطرفية",
+        "install": "التثبيت",
+        "remove": "الإزالة مع الإعدادات"
+      }
     },
     "features": {
       "eyebrow": "المزايا",
@@ -506,7 +536,17 @@
       "apple": "Apple",
       "android": "Android",
       "flag": "Obtainium önerilir: her sürüm önce orada ve kendini günceller.",
-      "getObtainium": "Yüklü değil mi? Obtainium’u edinin"
+      "getObtainium": "Yüklü değil mi? Obtainium’u edinin",
+      "desktop": {
+        "h3": "Windows ve Linux",
+        "tag": "Önizleme",
+        "flag": "Uygulamanın tamamı bilgisayarda çalışıyor ve test edecek kişiler arıyoruz.",
+        "report": "Bozuk olanı bildirin",
+        "windows": "Windows, Komut İstemi’nde",
+        "linux": "Linux, bir terminalde",
+        "install": "Kur",
+        "remove": "Ayarlarıyla birlikte kaldır"
+      }
     },
     "features": {
       "eyebrow": "Özellikler",
@@ -747,7 +787,17 @@
       "apple": "ایپل",
       "android": "اینڈرائیڈ",
       "flag": "Obtainium تجویز کیا جاتا ہے: ہر ورژن سب سے پہلے، اور خود اپڈیٹ ہوتا ہے۔",
-      "getObtainium": "موجود نہیں؟ Obtainium حاصل کریں"
+      "getObtainium": "موجود نہیں؟ Obtainium حاصل کریں",
+      "desktop": {
+        "h3": "ونڈوز اور لینکس",
+        "tag": "پیش نظارہ",
+        "flag": "پوری ایپ کمپیوٹر پر چلتی ہے، اور ہمیں آزمانے والوں کی تلاش ہے۔",
+        "report": "جو کام نہ کرے اس کی اطلاع دیں",
+        "windows": "ونڈوز، کمانڈ پرامپٹ میں",
+        "linux": "لینکس، ٹرمینل میں",
+        "install": "انسٹال کریں",
+        "remove": "ترتیبات سمیت ہٹائیں"
+      }
     },
     "features": {
       "eyebrow": "خصوصیات",
@@ -969,7 +1019,17 @@
       "apple": "Apple",
       "android": "Android",
       "flag": "Obtainium disarankan: setiap rilis lebih dulu, dan memperbarui sendiri.",
-      "getObtainium": "Belum punya? Dapatkan Obtainium"
+      "getObtainium": "Belum punya? Dapatkan Obtainium",
+      "desktop": {
+        "h3": "Windows & Linux",
+        "tag": "Pratinjau",
+        "flag": "Seluruh aplikasi berjalan di komputer, dan kami mencari penguji.",
+        "report": "Laporkan yang rusak",
+        "windows": "Windows, di Command Prompt",
+        "linux": "Linux, di terminal",
+        "install": "Pasang",
+        "remove": "Hapus, beserta pengaturannya"
+      }
     },
     "features": {
       "eyebrow": "Fitur",
@@ -1210,7 +1270,17 @@
       "apple": "Apple",
       "android": "Android",
       "flag": "Obtainium wird empfohlen: jede Version zuerst, und es aktualisiert sich selbst.",
-      "getObtainium": "Noch nicht installiert? Obtainium holen"
+      "getObtainium": "Noch nicht installiert? Obtainium holen",
+      "desktop": {
+        "h3": "Windows & Linux",
+        "tag": "Vorschau",
+        "flag": "Die ganze App läuft auf dem Computer, und wir suchen Tester.",
+        "report": "Melde, was nicht funktioniert",
+        "windows": "Windows, in der Eingabeaufforderung",
+        "linux": "Linux, im Terminal",
+        "install": "Installieren",
+        "remove": "Entfernen, samt Einstellungen"
+      }
     },
     "features": {
       "eyebrow": "Funktionen",
@@ -1432,7 +1502,17 @@
       "apple": "Apple",
       "android": "Android",
       "flag": "Obtainium est recommandé : chaque version en premier, et il se met à jour tout seul.",
-      "getObtainium": "Pas encore installé ? Obtenir Obtainium"
+      "getObtainium": "Pas encore installé ? Obtenir Obtainium",
+      "desktop": {
+        "h3": "Windows et Linux",
+        "tag": "Aperçu",
+        "flag": "L’application entière fonctionne sur ordinateur, et nous cherchons des testeurs.",
+        "report": "Signalez ce qui ne marche pas",
+        "windows": "Windows, dans l’invite de commandes",
+        "linux": "Linux, dans un terminal",
+        "install": "Installer",
+        "remove": "Désinstaller, avec ses réglages"
+      }
     },
     "features": {
       "eyebrow": "Fonctions",
@@ -1680,7 +1760,17 @@
       "apple": "Apple",
       "android": "Android",
       "flag": "Se recomienda Obtainium: cada versión primero, y se actualiza solo.",
-      "getObtainium": "¿No lo tienes? Consigue Obtainium"
+      "getObtainium": "¿No lo tienes? Consigue Obtainium",
+      "desktop": {
+        "h3": "Windows y Linux",
+        "tag": "Vista previa",
+        "flag": "La aplicación completa funciona en el ordenador, y buscamos personas que la prueben.",
+        "report": "Informa de lo que falle",
+        "windows": "Windows, en el Símbolo del sistema",
+        "linux": "Linux, en una terminal",
+        "install": "Instalar",
+        "remove": "Quitar, con sus ajustes"
+      }
     },
     "features": {
       "eyebrow": "Funciones",
@@ -1902,7 +1992,17 @@
       "apple": "Apple",
       "android": "Android",
       "flag": "Рекомендуем Obtainium: каждая версия первой, и обновляется само.",
-      "getObtainium": "Нет приложения? Установите Obtainium"
+      "getObtainium": "Нет приложения? Установите Obtainium",
+      "desktop": {
+        "h3": "Windows и Linux",
+        "tag": "Предварительная версия",
+        "flag": "Приложение целиком работает на компьютере, и мы ищем тех, кто его протестирует.",
+        "report": "Сообщите, что не работает",
+        "windows": "Windows, в командной строке",
+        "linux": "Linux, в терминале",
+        "install": "Установить",
+        "remove": "Удалить вместе с настройками"
+      }
     },
     "features": {
       "eyebrow": "Возможности",
@@ -2124,7 +2224,17 @@
       "apple": "অ্যাপল",
       "android": "অ্যান্ড্রয়েড",
       "flag": "Obtainium প্রস্তাবিত: প্রতিটি সংস্করণ সবার আগে, আর নিজে থেকেই আপডেট হয়।",
-      "getObtainium": "নেই? Obtainium নিন"
+      "getObtainium": "নেই? Obtainium নিন",
+      "desktop": {
+        "h3": "উইন্ডোজ ও লিনাক্স",
+        "tag": "প্রিভিউ",
+        "flag": "পুরো অ্যাপটি কম্পিউটারে চলে, আর আমরা পরীক্ষক খুঁজছি।",
+        "report": "যা কাজ করে না তা জানান",
+        "windows": "উইন্ডোজ, কমান্ড প্রম্পটে",
+        "linux": "লিনাক্স, টার্মিনালে",
+        "install": "ইনস্টল",
+        "remove": "সেটিংসসহ সরান"
+      }
     },
     "features": {
       "eyebrow": "বৈশিষ্ট্য",
@@ -2346,7 +2456,17 @@
       "apple": "Apple",
       "android": "Android",
       "flag": "Obtainium अनुशंसित है: हर संस्करण सबसे पहले, और यह अपने-आप अपडेट होता है।",
-      "getObtainium": "नहीं है? Obtainium पाएँ"
+      "getObtainium": "नहीं है? Obtainium पाएँ",
+      "desktop": {
+        "h3": "विंडोज़ और लिनक्स",
+        "tag": "प्रीव्यू",
+        "flag": "पूरा ऐप कंप्यूटर पर चलता है, और हमें इसे परखने वालों की तलाश है।",
+        "report": "जो काम न करे, उसकी रिपोर्ट करें",
+        "windows": "विंडोज़, कमांड प्रॉम्प्ट में",
+        "linux": "लिनक्स, टर्मिनल में",
+        "install": "इंस्टॉल करें",
+        "remove": "सेटिंग्स समेत हटाएँ"
+      }
     },
     "features": {
       "eyebrow": "विशेषताएँ",
@@ -2568,7 +2688,17 @@
       "apple": "Apple",
       "android": "Android",
       "flag": "推荐使用 Obtainium：每个版本最先到达，并自动更新。",
-      "getObtainium": "还没有？获取 Obtainium"
+      "getObtainium": "还没有？获取 Obtainium",
+      "desktop": {
+        "h3": "Windows 和 Linux",
+        "tag": "预览版",
+        "flag": "完整的应用已能在电脑上运行，我们正在寻找测试者。",
+        "report": "报告问题",
+        "windows": "Windows：在命令提示符中",
+        "linux": "Linux：在终端中",
+        "install": "安装",
+        "remove": "卸载（连同设置）"
+      }
     },
     "features": {
       "eyebrow": "功能",

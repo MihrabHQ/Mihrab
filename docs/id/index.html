@@ -211,6 +211,26 @@
         </ul>
         <p class="flag">Obtainium disarankan: setiap rilis lebih dulu, dan memperbarui sendiri. <a href="https://github.com/ImranR98/Obtainium">Belum punya? Dapatkan Obtainium</a></p>
       </div>
+      <div class="platform desktop">
+        <h3><svg class="glyph" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M9 20h6M12 16v4"/></svg>Windows &amp; Linux <span class="tag">Pratinjau</span></h3>
+        <p class="flag">Seluruh aplikasi berjalan di komputer, dan kami mencari penguji. <a href="https://github.com/MihrabHQ/Mihrab/issues">Laporkan yang rusak</a></p>
+        <div class="oses">
+          <div class="os">
+            <h4>Windows, di Command Prompt</h4>
+            <p class="cmd-label">Pasang</p>
+            <pre dir="ltr"><code>curl -fsSLo "%TEMP%\mihrab.cmd" https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/install-windows.cmd &amp;&amp; "%TEMP%\mihrab.cmd"</code></pre>
+            <p class="cmd-label">Hapus, beserta pengaturannya</p>
+            <pre dir="ltr"><code>curl -fsSLo "%TEMP%\mihrab.cmd" https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/install-windows.cmd &amp;&amp; "%TEMP%\mihrab.cmd" uninstall</code></pre>
+          </div>
+          <div class="os">
+            <h4>Linux, di terminal</h4>
+            <p class="cmd-label">Pasang</p>
+            <pre dir="ltr"><code>curl -fsSL https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/install-linux.sh | sh</code></pre>
+            <p class="cmd-label">Hapus, beserta pengaturannya</p>
+            <pre dir="ltr"><code>curl -fsSL https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/install-linux.sh | sh -s uninstall</code></pre>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>

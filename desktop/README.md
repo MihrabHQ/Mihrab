@@ -6,6 +6,22 @@ with [react-native-web](https://necolas.github.io/react-native-web/) inside
 view because the mushaf has to draw identically everywhere, and a bundled
 Chromium is the only way to know it does.
 
+## Install the preview
+
+The installers from the newest **Actions → Desktop → Run workflow** are on the
+[desktop-preview](https://github.com/MihrabHQ/Mihrab/releases/tag/desktop-preview)
+pre-release. One line installs them, one removes them — app, start-at-login
+entry and settings. The workflow runs both scripts on every build.
+
+| | Install | Remove |
+|---|---|---|
+| Windows (`cmd`) | `curl -fsSLo "%TEMP%\mihrab.cmd" https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/install-windows.cmd && "%TEMP%\mihrab.cmd"` | `curl -fsSLo "%TEMP%\mihrab.cmd" https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/install-windows.cmd && "%TEMP%\mihrab.cmd" uninstall` |
+| Linux (terminal) | `curl -fsSL https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/install-linux.sh \| sh` | `curl -fsSL https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/install-linux.sh \| sh -s uninstall` |
+
+Windows installs for the user into `%LOCALAPPDATA%\Programs\Mihrab`. Linux uses
+the `.deb` where there is apt and the AppImage, unpacked into
+`~/.local/share/mihrab`, everywhere else (`MIHRAB_FORMAT=appimage` forces it).
+
 ## Run it
 
 ```sh
