@@ -123,6 +123,14 @@ module.exports = (env, argv) => {
       }),
       // React Native internals and the app's own native views: reached only
       // behind a platform check that is false here (see each shim).
+      // start/end over left/right, as in React Native — see the shim. Every
+      // import of react-native-web's preprocess but the shim's own.
+      new webpack.NormalModuleReplacementPlugin(/[\\/]StyleSheet[\\/]preprocess(\.js)?$|^\.\/preprocess$/, resource => {
+        const from = resource.contextInfo && resource.contextInfo.issuer;
+        if (!from || from === shim('rnw-preprocess.js')) return;
+        if (!/react-native-web[\\/]dist[\\/]exports[\\/]StyleSheet/.test(resource.context || '') && !/StyleSheet[\\/]preprocess/.test(resource.request)) return;
+        resource.request = shim('rnw-preprocess.js');
+      }),
       new webpack.NormalModuleReplacementPlugin(/^react-native\/Libraries\//, shim('rn-internal.js')),
       new webpack.NormalModuleReplacementPlugin(/\/MushafLineNativeComponent(\.ts)?$/, shim('mushaf-line.js')),
       new webpack.DefinePlugin({

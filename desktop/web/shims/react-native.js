@@ -227,3 +227,31 @@ export const Text = React.forwardRef(function Text(props, ref) {
   return React.createElement(RNW.Text, { ...props, ref });
 });
 Text.displayName = 'Text';
+
+/**
+ * `contentOffset` on a list, as a phone takes it: where the scroll view
+ * OPENS. react-native-web ignores the prop. Today's day pager opens on
+ * today with it (src/screens/home/TodayCard.tsx) — two weeks of pages,
+ * today in the middle — and mounts a beat after the first paint, in place
+ * of the plain day drawn until then; ignored, it opened at page 0, which is
+ * not drawn, and the day's times went blank under a bar still naming the
+ * day. Read once, at mount, as on a phone. A subclass, not a wrapper:
+ * libraries test `instanceof` against the list classes.
+ */
+export class FlatList extends RNW.FlatList {
+  componentDidMount() {
+    if (super.componentDidMount) super.componentDidMount();
+    const o = this.props.contentOffset;
+    if (!o || (!o.x && !o.y)) return;
+    const offset = this.props.horizontal ? o.x : o.y;
+    const go = () => this.scrollToOffset && this.scrollToOffset({ offset, animated: false });
+    go();
+    // Once more after the pages have laid out: a scroll that lands before
+    // the content is wide enough is pulled back to 0 by scroll snapping.
+    this.__contentOffsetFrame = requestAnimationFrame(go);
+  }
+  componentWillUnmount() {
+    if (this.__contentOffsetFrame) cancelAnimationFrame(this.__contentOffsetFrame);
+    if (super.componentWillUnmount) super.componentWillUnmount();
+  }
+}

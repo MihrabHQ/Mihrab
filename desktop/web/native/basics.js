@@ -81,7 +81,7 @@ export const I18nManager = {
 
 export const RateApp = {
   requestReview() {
-    void desktop()?.app.openExternal('https://github.com/Hassan-PS/Mihrab');
+    void desktop()?.app.openExternal('https://github.com/MihrabHQ/Mihrab');
   },
 };
 

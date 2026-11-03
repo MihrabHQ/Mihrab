@@ -20,9 +20,15 @@ module.exports = async ({ page, shot, log }) => {
   const check = async label => {
     const r = await page.evaluate(() => {
       const big = [...document.querySelectorAll('div')].filter(e => parseFloat(getComputedStyle(e).fontSize) > 25 && e.getBoundingClientRect().width > 100 && e.getBoundingClientRect().left >= 0 && e.getBoundingClientRect().right <= innerWidth + 1);
+      // How full each line is against the page's widest: a justified page
+      // has every line but a surah's last at the measure.
+      const widths = big.map(e => e.getBoundingClientRect().width);
+      const widest = Math.max(0, ...widths);
+      const short = widths.filter(w => w < widest * 0.97).length;
       return {
         pg: (document.body.innerText.match(/(\d+)\s*\/\s*(\d+)/) || []).slice(1).join('/'),
         lines: big.length,
+        short,
         over: big.filter(e => e.scrollWidth > e.clientWidth + 0.5).length,
         fonts: [...new Set(big.map(e => getComputedStyle(e).fontFamily))].join(','),
       };
@@ -30,7 +36,12 @@ module.exports = async ({ page, shot, log }) => {
     log(label, JSON.stringify(r));
     if (r.over) errors.push(`${label}: ${r.over} line(s) wider than their box`);
     if (!r.lines) errors.push(`${label}: no lines drawn`);
+    // A surah's closing line or two may stop short; more is a ragged page.
+    if (r.short > 3) errors.push(`${label}: ${r.short} of ${r.lines} lines short of the measure`);
   };
+  // One viewport whatever the window manager makes of the window.
+  const cdp = await page.context().newCDPSession(page);
+  await cdp.send('Emulation.setDeviceMetricsOverride', { width: 1214, height: 1350, deviceScaleFactor: 0, mobile: false });
   await page.waitForTimeout(4000);
   if (await page.getByText(/^What.s new$/).count()) await tap(/^Close$/, 1200);
   await tap(/^Quran$/);
