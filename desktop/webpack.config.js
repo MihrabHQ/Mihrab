@@ -69,6 +69,7 @@ module.exports = (env, argv) => {
         'react-native-view-shot$': shim('view-shot.js'),
         '@react-native-community/geolocation$': shim('geolocation.js'),
         '@react-native-community/blur$': shim('blur.js'),
+        '@react-native/assets-registry/registry$': shim('assets-registry.js'),
         '@sayem314/react-native-keep-awake$': shim('keep-awake.js'),
         'react-native-sensors$': shim('sensors.js'),
         // gesture-handler probes for reanimated in a try/catch; there is none.
@@ -119,6 +120,10 @@ module.exports = (env, argv) => {
           resource.request = resource.request.replace(/useBackButton(\.js)?$/, 'useBackButton.native.js');
         }
       }),
+      // React Native internals and the app's own native views: reached only
+      // behind a platform check that is false here (see each shim).
+      new webpack.NormalModuleReplacementPlugin(/^react-native\/Libraries\//, shim('rn-internal.js')),
+      new webpack.NormalModuleReplacementPlugin(/\/MushafLineNativeComponent(\.ts)?$/, shim('mushaf-line.js')),
       new webpack.DefinePlugin({
         __DEV__: JSON.stringify(dev),
         'process.env.NODE_ENV': JSON.stringify(dev ? 'development' : 'production'),

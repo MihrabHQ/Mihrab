@@ -178,3 +178,33 @@ export const View = React.forwardRef(function View(props, ref) {
   }
   return React.createElement(RNW.View, { ...props, ref });
 });
+
+/**
+ * Animated without the native driver. On a phone `useNativeDriver: true`
+ * hands an animation to the UI thread; react-native-web has no such thread,
+ * and an animation (or an `Animated.event`) that insists on it throws
+ * "Native animated module is not available" — which blanked the window
+ * right after onboarding. Every animation runs on JavaScript here instead.
+ */
+const jsDriver = config => (config && config.useNativeDriver ? { ...config, useNativeDriver: false } : config);
+// A value can ask for the native driver at birth too (the Today hero's run
+// progress does), and then throws on its first setValue.
+class JsAnimatedValue extends RNW.Animated.Value {
+  constructor(value, config) {
+    super(value, jsDriver(config));
+  }
+}
+class JsAnimatedValueXY extends RNW.Animated.ValueXY {
+  constructor(value, config) {
+    super(value, jsDriver(config));
+  }
+}
+export const Animated = {
+  ...RNW.Animated,
+  Value: JsAnimatedValue,
+  ValueXY: JsAnimatedValueXY,
+  timing: (value, config) => RNW.Animated.timing(value, jsDriver(config)),
+  spring: (value, config) => RNW.Animated.spring(value, jsDriver(config)),
+  decay: (value, config) => RNW.Animated.decay(value, jsDriver(config)),
+  event: (mapping, config) => RNW.Animated.event(mapping, jsDriver(config)),
+};
