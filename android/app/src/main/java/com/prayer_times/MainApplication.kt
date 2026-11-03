@@ -104,7 +104,38 @@ class MainApplication : Application(), ReactApplication, androidx.work.Configura
         Log.w("MihrabBoot", "could not start React Native early", t)
       }
     }
+    warmIntl()
     BootTimes.app(appStart, SystemClock.uptimeMillis())
+  }
+
+  /**
+   * ICU, WARMED OFF THE JAVASCRIPT THREAD.
+   *
+   * Hermes answers `toLocaleDateString` through Android's ICU
+   * (`com.facebook.hermes.intl` over `android.icu`), and the first
+   * formatter of the process — the day bar's weekday — cost 12 ms on the
+   * JS thread of a Pixel 10 Pro while every later one cost two: the first
+   * loads ICU's classes, its pattern generator and the locale's data. Done
+   * here on a thread of its own, from the process's first moment, so the
+   * JS thread finds them loaded. Best effort: nothing waits for it.
+   */
+  private fun warmIntl() {
+    Thread(
+      {
+        try {
+          val locale = android.icu.util.ULocale.forLocale(java.util.Locale.getDefault())
+          val generator = android.icu.text.DateTimePatternGenerator.getInstance(locale)
+          val skeletons = arrayOf("EEEE", "dMMM", "jm", "yMMMd")
+          for (skeleton in skeletons) {
+            android.icu.text.SimpleDateFormat(generator.getBestPattern(skeleton), locale).format(java.util.Date())
+          }
+          android.icu.text.NumberFormat.getInstance(locale).format(1)
+        } catch (_: Throwable) {
+          // Then the JS thread loads them, as before.
+        }
+      },
+      "mihrab-intl-warm",
+    ).apply { priority = Thread.MIN_PRIORITY + 2 }.start()
   }
 
   /**

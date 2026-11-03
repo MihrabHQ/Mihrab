@@ -38,7 +38,7 @@ type Ring = {
 type Poly = { outer: Ring; holes: Ring[] };
 type Country = {
   code: string;
-  polys: Poly[];
+  readonly polys: Poly[];
   minX: number;
   minY: number;
   maxX: number;
@@ -68,19 +68,44 @@ function ring(flat: number[], scale: number): Ring {
   return { xs, ys, minX, minY, maxX, maxY };
 }
 
+/** The box round a country's outer rings, from the file's integers: no allocation, no division until the end. */
+function bounds(polys: number[][][], scale: number): Pick<Country, 'minX' | 'minY' | 'maxX' | 'maxY'> {
+  let minX = Infinity,
+    minY = Infinity,
+    maxX = -Infinity,
+    maxY = -Infinity;
+  for (const rings of polys) {
+    const flat = rings[0];
+    for (let i = 0; i < flat.length; i += 2) {
+      const x = flat[i];
+      const y = flat[i + 1];
+      if (x < minX) minX = x;
+      if (x > maxX) maxX = x;
+      if (y < minY) minY = y;
+      if (y > maxY) maxY = y;
+    }
+  }
+  return { minX: minX / scale, minY: minY / scale, maxX: maxX / scale, maxY: maxY / scale };
+}
+
+/**
+ * Every country's box now; a country's rings the first time its box holds
+ * a point. Building every ring of the thirty-nine outlines at the first
+ * question was 7 ms of a cold start on a Pixel 10 Pro, for a reader in
+ * one of them.
+ */
 function build(source: Record<string, number[][][]>): Country[] {
   return Object.entries(source).map(([code, polys]) => {
-    const ps = polys.map(rings => ({
-      outer: ring(rings[0], DATA.scale),
-      holes: rings.slice(1).map(r => ring(r, DATA.scale)),
-    }));
+    let built: Poly[] | null = null;
     return {
       code,
-      polys: ps,
-      minX: Math.min(...ps.map(p => p.outer.minX)),
-      minY: Math.min(...ps.map(p => p.outer.minY)),
-      maxX: Math.max(...ps.map(p => p.outer.maxX)),
-      maxY: Math.max(...ps.map(p => p.outer.maxY)),
+      ...bounds(polys, DATA.scale),
+      get polys(): Poly[] {
+        return (built ??= polys.map(rings => ({
+          outer: ring(rings[0], DATA.scale),
+          holes: rings.slice(1).map(r => ring(r, DATA.scale)),
+        })));
+      },
     };
   });
 }

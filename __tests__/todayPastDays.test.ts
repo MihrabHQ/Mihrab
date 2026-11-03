@@ -156,7 +156,8 @@ describe('the day bar', () => {
     expect(bar).toMatch(/\{getDayDate\(selected\)\}/);
     expect(bar).toMatch(/getHijriDate\(selected\)/);
     // The weekday is the weekday, today included — "Today" is the dot's word.
-    expect(home).toMatch(/const getWeekday = useCallback\([\s\S]*?weekday: 'long'/);
+    expect(home).toMatch(/const getWeekday = useCallback\([\s\S]*?dayWord\(dayOffset, 'weekday'\)/);
+    expect(home).toMatch(/kind === 'weekday' \? \{ weekday: 'long' \}/);
   });
 
   it('steps a day at each edge, and stops at the ends of the record', () => {

@@ -469,11 +469,19 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
           calculationMethod: settings.calculationMethod,
           school: settings.school,
         };
-        const statusPromise = getCacheStatus(cacheParams).then(
-          status => status.monthsStored < 2 || status.isExpired,
-          // Cache status check failing is non-critical; we just won't fill.
-          () => false,
-        );
+        // After the first paint: the status reads and parses the whole
+        // stored-times cache, and for a reader whose week is computed on
+        // the phone (Sweden, Morocco) that was the one read of it, landing
+        // under the first frame — 13 ms of the JS thread on a Pixel 10
+        // Pro, sampled. A reader whose week comes from the cache has read
+        // it by then, and the status read is deduped against that one.
+        const statusPromise = afterFirstPaint()
+          .then(() => getCacheStatus(cacheParams))
+          .then(
+            status => status.monthsStored < 2 || status.isExpired,
+            // Cache status check failing is non-critical; we just won't fill.
+            () => false,
+          );
         const weekResults = await Promise.allSettled(
           Array.from({ length: WEEK_DAYS }, (_, i) =>
             getOrFetchPrayerDay({
@@ -1071,10 +1079,7 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
     if (!hydrated || !settings.locationOnboardingComplete) {
       return;
     }
-    const unsubscribeNetInfo = NetInfo.addEventListener(netState => {
-      if (!netState.isConnected) {
-        return;
-      }
+    const onConnected = (wifi: boolean) => {
       const lat =
         settings.locationMode === 'automatic'
           ? settings.lastFetchedLatitude
@@ -1105,12 +1110,24 @@ export function usePrayerDay(settings: PrayerAppSettings, hydrated: boolean) {
       refetchFallbackDays(params).catch(e =>
         console.warn('Re-fetching stand-in days failed:', e),
       );
-      if (netState.type !== 'wifi') {
+      if (!wifi) {
         return;
       }
       maybeFullSyncOnWifi(params).catch(e =>
         console.warn('WiFi-triggered sync check failed:', e),
       );
+    };
+    // NetInfo calls the listener at once with the network as it is, so
+    // on a cold start this ran as the settings arrived: the stand-in days'
+    // re-fetch read and parsed the whole stored-times cache under the
+    // first frame (a Pixel 10 Pro, sampled). Maintenance, so after the
+    // first paint and the launch run (boot/firstPaint.ts).
+    const unsubscribeNetInfo = NetInfo.addEventListener(netState => {
+      if (!netState.isConnected) {
+        return;
+      }
+      const wifi = netState.type === 'wifi';
+      void afterFirstPaint().then(() => onConnected(wifi));
     });
     return () => {
       unsubscribeNetInfo();

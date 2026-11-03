@@ -14,9 +14,10 @@ launches; the spread is ±20 ms unless said.
 
 ---
 
-## 1. The timeline as it stands
+## 1. The timeline as it stood
 
-Milliseconds. The native marks count from the process's birth; the JS marks
+As of `c6b8838b`, before §4's work; §4 has what moved since and the
+timeline after. Milliseconds. The native marks count from the process's birth; the JS marks
 from the bundle's first line (`js0`), which comes ~100 ms after the activity
 is created.
 
@@ -156,30 +157,106 @@ the hero changes often (docs/hero-plan.md). Revisit if the live screen
 cannot be brought under ~400 ms from the process's birth by §4, or if the
 no-picture launches (after every update) are what readers notice.
 
-## 4. The plan: the live screen sooner
+## 4. The plan, and what it found (2026-11-03, the same evening)
 
-In order; each step measured on the phone with `tools/startup-trace/cold.sh`
-and the trace before it is kept, with the numbers in its commit message.
+The plan was: lazy view-manager constants, then a sampling profile of
+the launch, then whatever the profile said. The profile said more than
+the hypotheses did, so this section is the record of what was found and
+done, in the order it was done, with the numbers; §4.9 is what is left.
 
-1. **`UIManager` constants.** The JS half is done (§1). The native 33 ms: `getUIManagerConstants` instantiates every view
-   manager to collect its constants; check whether `DefaultReactHost` can
-   take `lazyViewManagersEnabled` (it is a `ReactNativeHost` option; the
-   bridgeless host builds its `ViewManagerRegistry` from the package list)
-   and whether `react-native-svg`, `react-native-screens` and our own
-   packages implement `ViewManagerOnDemandReactPackage` (ours can).
-2. **Attribute `commit` → `raf`.** A Hermes sampling profile of the launch
-   (`HermesSamplingProfiler` from `MainActivity`, 1 ms interval, dumped at
-   `run`) and a Perfetto trace with the `rn` tags, read side by side at the
-   `commit` mark. The hypotheses, in the order I would bet on them: the
-   passive effects of the ready render (`HomeScreen`'s and `TodayCard`'s
-   `useEffect`s, the navigation's own, `react-navigation`'s header), the
-   `v2-swept/read/parsed` cache sweep that lands in this window on some
-   launches (it is already after `commit`, but it is JS; it could wait for
-   `paint`), `syncWidgetUiHints`/`setWidgetSkySchedule` (already after the
-   run — check), and the i18n/Intl formatters' first use (`Intl.DateTimeFormat`
-   construction is 5–15 ms each on Hermes; the hero formats times, dates,
-   and the countdown in the first render).
-   Expected: 40–80 ms off `raf`.
+**The profile.** `MainActivity` enables Hermes's sampling profiler when
+started with `--ez mihrab.profile true` and dumps it to logcat
+(`tools/startup-trace/profile.sh`); 100 Hz is too coarse for one launch,
+so ten to sixteen are aggregated between two boot marks
+(`profile-annotate.js` names the frames from the bundle's source map,
+`profile-aggregate.py` counts them). Every number below is from that,
+on the Pixel 10 Pro, with the sky theme on and a sync folder paired.
+
+1. **View managers on demand, the native half** (patch to
+   `react-native-screens`, `MushafLinePackage`): `RNScreensPackage`
+   implements `ViewManagerOnDemandReactPackage`, so its nineteen view
+   managers' constants are read when a screen of that kind is first
+   rendered rather than all at the first `UIManager` read. Module
+   top-level code before the paint 105 → 74 ms; `js0` ~60 ms after the
+   activity rather than ~100. `react-native-svg` and gesture-handler
+   already were on demand; safe-area-context (2) and blur (2) are not,
+   ~3 ms, left.
+2. **The sync round ran under the first frame.** `startAutoSync` ran its
+   first round as the root mounted; with a folder paired, reading and
+   decrypting every peer's envelope (secretbox, in JavaScript) was a
+   third of the JS thread's time between `commit` and `raf`. It waits
+   for `afterFirstPaint()` now (the paint and the launch run).
+3. **The day bar's words.** `toLocaleDateString` five times a render of
+   the card — each a formatter built on Hermes — and the first one of
+   the process 12 ms (ICU's classes and the locale's data). The words
+   are kept per day and language (`HomeScreen`'s `dayWord`), and ICU is
+   warmed on a thread of its own from `Application.onCreate`
+   (`MainApplication.warmIntl`): 17 → 8 samples in the render.
+4. **The correction lists.** The downloaded lists were checked whole at
+   launch — Diyanet's nine thousand entries by regex, 22 ms before the
+   first times could be read; a stored copy is taken on its outline now
+   and checked after the first frame (`methodCurrency.checkStoredLater`),
+   put back to the bundled list if it fails. `correctionsKey`, asked once
+   a slot by the launch sweep, summarised the whole list each time; it is
+   kept per authority.
+5. **Two parses of the stored-times cache, and three readers of it.**
+   The launch sweep parsed the cache and handed the bytes to the first
+   load, which parsed them again (7 ms): it hands the parsed shape now.
+   And for a reader whose week is computed on the phone, three things
+   read the cache before the first frame for nothing on it: the cache
+   status (`usePrayerDay`), the stand-in days' re-fetch (NetInfo calls
+   its listener at once) and the saved locations' prefetch. All three
+   wait for the first paint.
+6. **The first times, 80 ms → 35.** `DIYANET_METHOD_ID` moved to a leaf
+   module: comparing a method id against it loaded `diyanetMethod.ts`
+   and its 600 KB of places (7 ms) for every reader; the places are
+   required at first use. The country outlines are built per country
+   when its box holds the point rather than all thirty-nine at the
+   first question (7 ms). The nearest Swedish city is kept per spot
+   (a haversine over every listed city, a week of times a launch). The
+   national tables' seeds and place lists are read when a table is first
+   asked, not when the module loads (4 ms). And the device's zone comes
+   from a native constant (`SystemClock.timeZone`) rather than the first
+   `Intl.DateTimeFormat().resolvedOptions()` (7 ms).
+7. **The font store's listing** (`reconcileMushafAssets`, six hundred
+   files) waits for the first paint too.
+
+**Where it stands** (cold start, median of five, after `js0`):
+
+| mark | before §4 | after |
+|---|---|---|
+| `settings` | 70 | 73 |
+| `home` | 150 | 110 |
+| `commit` | 255 | 220 |
+| `raf` | 365 | 255 |
+| `paint` | 400 | 275 |
+
+and `js0` itself ~60 ms after the activity rather than ~100, so the live
+screen is on the glass at ~465 ms from the process's birth, from ~635.
+(`settings` did not move: it is the Keychain read, §4.9.)
+
+### 4.9 Left
+
+- **The render, `ready-cache` → `commit`, ~70 ms**, is now the largest
+  piece: React's work on the ready tree (`completeRoot`, `createNode`,
+  text measurement). The text plan stands as written below.
+- **`commit` → `raf`, ~45 ms**: the remainder is React's own passive
+  effects and the UI-thread handoff; nothing of ours over 2 ms is left
+  in it.
+- **`skyMoods` at load, 3–4 ms** (the OKLCH conversions): lazy per
+  variant; the classic themes would never pay it.
+- **The bundled Diyanet list at launch, 3 ms**: `adopt` summarises the
+  bundled list to compare a stored one against it; a generated summary
+  file would spare the require.
+- **`releaseNotes.generated.ts`, 2 ms**, evaluated at the first render
+  to decide whether the changelog sheet is due; the latest version alone
+  would do.
+- **The Keychain read, 35–45 ms**, still the head of `settings` (item 6
+  below).
+- **Text measurement** (item 3 below).
+
+The plan as first written, for the items still open:
+
 3. **Text measurement in the commit.** Count the `Text` nodes in the ready
    tree (a `console.count` in a dev build is enough; I expect 60–90: the
    rows alone are 6 × (name, time, two chips)). Each is a JNI measurement.
@@ -188,17 +265,6 @@ and the trace before it is kept, with the numbers in its commit message.
    measures fewer nodes (the layout memory already knows the row height),
    and `numberOfLines={1}` on every single-line label (it is a cheaper
    measure path). Expected: 10–20 ms off `commit`.
-4. **`skyMoods` at load, 7 ms.** Convert the anchors on first use rather
-   than at module load, and memoise per variant — the Sky theme pays it at
-   `home` instead; the classic themes never do. Trivial; after 1–3 so it
-   is measured on its own.
-5. **`diyanetPlaces`, 9 ms.** Not the parse but the question: "is the
-   reader within 25 km of one of 8,000 places?". A generated side table of
-   the 1°×1° cells that hold a place (~1,500 cells, 15 KB) answers "no"
-   without the file; readers in a cell with a place still parse it (so
-   Europe, Türkiye, the big cities everywhere). Worth it only if the
-   profile shows the parse on the critical path for the readers we think
-   about; otherwise leave it.
 6. **The Keychain read, 35–45 ms, on the critical path.** `settings` waits
    for `readSecureSettings` because the location is in it and the times
    need the location. Two options: (a) keep the *cached day's times* in
@@ -207,12 +273,11 @@ and the trace before it is kept, with the numbers in its commit message.
    known, and reconcile when it is; (b) keep a non-secret hash of the
    location (the cache key) in the fast store so the cache can be read
    before the Keychain answers. (b) is smaller; both change what the
-   first render trusts, so this is last and only with the numbers from 2
-   showing the Keychain still at the head of the queue.
+   first render trusts, so this is last and only with the numbers
+   showing the Keychain still at the head of the queue — they do.
 
-Expected together: `paint` from ~400 to ~280 ms after `js0`, the live
-screen under ~500 ms from the process's birth. If that lands, §3 stays
-on the shelf.
+If the text and the Keychain land, the live screen is under ~400 ms from
+the process's birth, and §3 stays on the shelf.
 
 ## 5. Not doing
 

@@ -31,7 +31,6 @@ import { congressTimes, CONGRESS_ISHA_DEG, DIYANET_ISHA_DEG, type CongressInstan
 import { computeImsak, DEFAULT_IMSAK_OFFSET_MINUTES } from './imsak';
 import { diyanetUsesCongressIsha } from './diyanetRegion';
 import { diyanetCorrection, swedenCorrection } from './swedenCorrections';
-import placesFile from './data/diyanetPlaces.json';
 import { isCoordinateInTurkey } from '../utils/turkeyRegion';
 
 /** Isha's depression in Diyanet's tables for the country a spot is in (`diyanetRegion.ts`). */
@@ -41,8 +40,7 @@ export function diyanetIshaDeg(latitude: number, longitude: number): number {
 
 const toMinute = (d: Date) => new Date(Math.round(d.getTime() / 60_000) * 60_000);
 
-/** The id AlAdhan gives Türkiye's method; the app computes it as Diyanet does, on the phone. */
-export const DIYANET_METHOD_ID = 13;
+export { DIYANET_METHOD_ID } from './diyanetMethodId';
 
 /**
  * A place Diyanet lists: its point, Isha's angle, and — in Türkiye — a point
@@ -76,7 +74,10 @@ type PlacesFile = {
 let placesCache: DiyanetPlace[] | null = null;
 export function diyanetPlaces(): DiyanetPlace[] {
   if (placesCache) return placesCache;
-  const f = placesFile as unknown as PlacesFile;
+  // Required here, not imported: the file is 600 KB of bytecode to run, and
+  // a reader far from every listed place never needs it (the first look is
+  // the country's, `regionalProviders.ts`).
+  const f = require('./data/diyanetPlaces.json') as PlacesFile;
   placesCache = f.places.map(([id, name, lat, lon, ishaDeg, list]) => ({
     id,
     name,

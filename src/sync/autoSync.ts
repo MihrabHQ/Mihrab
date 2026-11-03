@@ -34,6 +34,7 @@ import { AppState, type AppStateStatus } from 'react-native';
 import { ensureSyncFolder, runSyncNow, type SyncRunResult } from './runSync';
 import { getSyncSettings, syncFrequencyGapMs } from './syncSettings';
 import { afterRun } from '../boot/launchWarp';
+import { afterFirstPaint } from '../boot/firstPaint';
 
 /** Below the rate anyone's record changes, above the rate `active` fires. */
 export const AUTO_SYNC_MIN_GAP_MS = 2 * 60 * 1000;
@@ -120,10 +121,15 @@ export async function maybeAutoSync(
  * Start listening. Returns the unsubscribe, for a `useEffect`.
  *
  * Runs once on mount as well: a cold start IS the app opening, and the
- * `active` event does not fire for it.
+ * `active` event does not fire for it. After the first paint and the
+ * launch run (boot/firstPaint.ts): it ran as the root mounted, and on a
+ * phone with a sync folder the round's reads and decryptions — every
+ * peer's envelope, secretbox in JavaScript — were a third of the JS
+ * thread's time between the ready commit and the first frame (a Pixel
+ * 10 Pro, sampled; docs/first-frame-plan.md).
  */
 export function startAutoSync(): () => void {
-  void maybeAutoSync({ trigger: 'open' });
+  void afterFirstPaint().then(() => maybeAutoSync({ trigger: 'open' }));
   const subscription = AppState.addEventListener(
     'change',
     (state: AppStateStatus) => {

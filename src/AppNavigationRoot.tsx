@@ -103,10 +103,13 @@ export function AppNavigationRoot() {
    * kept the lot. Fonts from a superseded release are worse — nothing about
    * them looks wrong from inside the app, so nobody would ever go looking.
    */
+  // After the first paint and the launch run (boot/firstPaint.ts): the
+  // listing of six hundred page fonts came back, and was read, under the
+  // ready commit's first frame.
   useEffect(() => {
-    void reconcileMushafAssets().catch(e =>
-      console.warn('mushafAssets: reconciliation failed', e),
-    );
+    void afterFirstPaint()
+      .then(() => reconcileMushafAssets())
+      .catch(e => console.warn('mushafAssets: reconciliation failed', e));
   }, []);
 
   // Daily-notification resync — ayah of the day, khatmah reminder, and

@@ -70,9 +70,15 @@ export type CorrectionsSummary = { from: string; to: string; entries: number };
 export function summarize(list: Corrections): CorrectionsSummary {
   return { from: list.from, to: list.to, entries: Object.values(list.points).reduce((n, e) => n + e.length, 0) };
 }
-/** The list in force for an authority. */
+/**
+ * The list in force for an authority. Kept once summarised: the stored
+ * times' cache key carries it (prayer/prayerStorage.ts), so the launch
+ * sweep asked for it once a slot, and each answer was a walk of every
+ * point in the list.
+ */
+const summaries: Partial<Record<CorrectionAuthority, CorrectionsSummary>> = {};
 export function correctionsInForce(authority: CorrectionAuthority): CorrectionsSummary {
-  return summarize(listInForce(authority));
+  return (summaries[authority] ??= summarize(listInForce(authority)));
 }
 /** A short key for the list in force, for what is stored under it. */
 export function correctionsKey(authority: CorrectionAuthority): string {
@@ -80,13 +86,24 @@ export function correctionsKey(authority: CorrectionAuthority): string {
   return `${s.to}#${s.entries}`;
 }
 
-/** A list that does not have the shape of one is refused whole. */
-export function isCorrections(x: unknown): x is Corrections {
+/**
+ * The outline of a list — its dates and that it has points — without the
+ * walk of every entry: what the launch checks before a stored copy of its
+ * own is put in force (`methodCurrency.ts`), the whole check following
+ * after the first frame.
+ */
+export function hasCorrectionsOutline(x: unknown): x is Corrections {
   if (!x || typeof x !== 'object') return false;
   const c = x as Corrections;
   const date = /^\d{4}-\d{2}-\d{2}$/;
   if (typeof c.from !== 'string' || typeof c.to !== 'string' || !date.test(c.from) || !date.test(c.to) || c.from > c.to) return false;
-  if (!c.points || typeof c.points !== 'object') return false;
+  return !!c.points && typeof c.points === 'object';
+}
+
+/** A list that does not have the shape of one is refused whole. */
+export function isCorrections(x: unknown): x is Corrections {
+  if (!hasCorrectionsOutline(x)) return false;
+  const c = x as Corrections;
   const entry = /^\d{4}-\d{2}-\d{2} (fajr|sunrise|dhuhr|asr|maghrib|isha) [+-]1$/;
   return Object.entries(c.points).every(
     ([k, v]) => /^-?\d+\.\d{3},-?\d+\.\d{3}$/.test(k) && Array.isArray(v) && v.every(e => typeof e === 'string' && entry.test(e)),
@@ -97,12 +114,20 @@ export function isCorrections(x: unknown): x is Corrections {
 export function setCorrections(authority: CorrectionAuthority, list: Corrections): void {
   inForce[authority] = list;
   delete indexes[authority];
+  delete summaries[authority];
+}
+/** The bundled list back in force for an authority (a stored copy that failed its check). */
+export function clearCorrections(authority: CorrectionAuthority): void {
+  delete inForce[authority];
+  delete indexes[authority];
+  delete summaries[authority];
 }
 /** Tests: back to the bundled lists. */
 export function _resetCorrectionsForTests(): void {
   for (const a of CORRECTION_AUTHORITIES) {
     delete inForce[a];
     delete indexes[a];
+    delete summaries[a];
   }
 }
 

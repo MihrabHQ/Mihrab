@@ -4,6 +4,7 @@
  * clock) and the readers (`utils/prayerTimes.ts`, which turn a written time
  * back into an instant) need. A leaf, so neither has to import the other.
  */
+import { nativeTimeZone } from '../native/SystemClock';
 
 /**
  * The zone as last resolved, and the device offset it was resolved under.
@@ -11,6 +12,7 @@
  * question is asked for every stored day and every time read back.
  */
 let zoneCache: { zone: string | undefined; offset: number } | null = null;
+let askedNative = false;
 
 /**
  * The phone's own zone (IANA), or undefined where Intl cannot say.
@@ -26,10 +28,19 @@ export function deviceZone(): string | undefined {
   const offset = new Date().getTimezoneOffset();
   if (zoneCache && zoneCache.offset === offset) return zoneCache.zone;
   let zone: string | undefined;
-  try {
-    zone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  } catch {
-    zone = undefined;
+  // The first look is the native side's constant, read at launch: Intl's
+  // answer costs a formatter (7 ms on a Pixel 10 Pro). Every later look —
+  // the offset moved, a foreground invalidated the cache — asks Intl.
+  if (zoneCache === null && !askedNative) {
+    askedNative = true;
+    zone = nativeTimeZone() ?? undefined;
+  }
+  if (zone === undefined) {
+    try {
+      zone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    } catch {
+      zone = undefined;
+    }
   }
   zoneCache = { zone, offset };
   return zone;
@@ -43,6 +54,7 @@ export function invalidateDeviceZone(): void {
 /** Tests that change the phone's zone (a mocked `resolvedOptions`). */
 export function _resetZoneCacheForTests(): void {
   zoneCache = null;
+  askedNative = false;
 }
 
 /** Zones that are GMT all year, written without asking Intl. */

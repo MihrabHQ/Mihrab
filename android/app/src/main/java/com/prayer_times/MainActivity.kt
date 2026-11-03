@@ -58,6 +58,49 @@ class MainActivity : ReactActivity() {
     // The last Today screen as this window's first frame — see LaunchSnapshot.
     LaunchSnapshot.show(this)
     BootTimes.activity()
+    if (intent?.getBooleanExtra("mihrab.profile", false) == true) profileLaunch()
+  }
+
+  /**
+   * A HERMES SAMPLING PROFILE OF THE LAUNCH — tools/startup-trace/profile.sh.
+   *
+   * Only when the activity is started with `--ez mihrab.profile true`
+   * (`adb shell am start`): the sampler (100 Hz, every runtime) is enabled
+   * as soon as the JavaScript runtime exists and, two and a half seconds
+   * later, its trace is written gzip + base64 to logcat in 3 KB lines,
+   * since the release build's files cannot be pulled. The trace holds
+   * function addresses and names, nothing of the reader's.
+   */
+  private fun profileLaunch() {
+    (application as ReactApplication).reactHost!!.addReactInstanceEventListener(
+      object : com.facebook.react.ReactInstanceEventListener {
+        override fun onReactContextInitialized(context: com.facebook.react.bridge.ReactContext) {
+          com.facebook.hermes.instrumentation.HermesSamplingProfiler.enable()
+          android.util.Log.i(
+            "MihrabProfile",
+            "enabled at uptime=" + android.os.SystemClock.uptimeMillis() + " epoch=" + System.currentTimeMillis(),
+          )
+          android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+            com.facebook.hermes.instrumentation.HermesSamplingProfiler.disable()
+            val f = java.io.File(cacheDir, "launch.cpuprofile")
+            com.facebook.hermes.instrumentation.HermesSamplingProfiler.dumpSampledTraceToFile(f.absolutePath)
+            val bo = java.io.ByteArrayOutputStream()
+            java.util.zip.GZIPOutputStream(bo).use { it.write(f.readBytes()) }
+            f.delete()
+            val b64 = android.util.Base64.encodeToString(bo.toByteArray(), android.util.Base64.NO_WRAP)
+            var i = 0
+            var n = 0
+            while (i < b64.length) {
+              val e = minOf(i + 3000, b64.length)
+              android.util.Log.i("MihrabProfile", "[$n] " + b64.substring(i, e))
+              i = e
+              n++
+            }
+            android.util.Log.i("MihrabProfile", "DONE $n")
+          }, 2500)
+        }
+      },
+    )
   }
 
   override fun onResume() {

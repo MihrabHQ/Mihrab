@@ -36,7 +36,8 @@ import { AppState, NativeModules, type AppStateStatus } from 'react-native';
 
 type SystemClockNative = {
   is24Hour?: unknown;
-  getConstants?: () => { is24Hour?: unknown } | undefined;
+  timeZone?: unknown;
+  getConstants?: () => { is24Hour?: unknown; timeZone?: unknown } | undefined;
   readIs24Hour?: () => Promise<boolean>;
 };
 
@@ -62,6 +63,25 @@ function readConstant(): boolean | null {
 }
 
 let cached: boolean | null = readConstant();
+
+/**
+ * The device's zone as the native side names it at launch (an IANA name),
+ * or null off the phone. The first `Intl.DateTimeFormat().resolvedOptions()`
+ * costs a formatter, 7 ms of a cold start on a Pixel 10 Pro; this is a
+ * constant. Only for the first look (utils/zoneClock.ts): a zone changed
+ * while the app runs is asked of Intl.
+ */
+export function nativeTimeZone(): string | null {
+  if (!native) return null;
+  let value: unknown;
+  try {
+    value = native.getConstants?.()?.timeZone;
+  } catch {
+    value = undefined;
+  }
+  if (typeof value !== 'string') value = native.timeZone;
+  return typeof value === 'string' && value.length > 0 ? value : null;
+}
 
 const listeners = new Set<() => void>();
 let appStateSub: { remove: () => void } | null = null;

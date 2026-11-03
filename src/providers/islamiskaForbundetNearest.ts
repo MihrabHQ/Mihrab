@@ -17,10 +17,17 @@ function haversineDistance(lat1: number, lon1: number, lat2: number, lon2: numbe
   return R * c;
 }
 
+// Asked for every day computed — a week at a launch, a year on a fill —
+// at the same spot, and each answer was a haversine for every listed city.
+let lastNearest: { latitude: number; longitude: number; city: string; distanceKm: number } | null = null;
+
 export function getNearestIslamiskaForbundetCityWithDistance(
   latitude: number,
   longitude: number,
 ): { city: string; distanceKm: number } {
+  if (lastNearest && lastNearest.latitude === latitude && lastNearest.longitude === longitude) {
+    return { city: lastNearest.city, distanceKm: lastNearest.distanceKm };
+  }
   let nearestCity = 'Stockholm';
   let minDistance = Infinity;
 
@@ -32,6 +39,7 @@ export function getNearestIslamiskaForbundetCityWithDistance(
     }
   }
 
+  lastNearest = { latitude, longitude, city: nearestCity, distanceKm: minDistance };
   return { city: nearestCity, distanceKm: minDistance };
 }
 

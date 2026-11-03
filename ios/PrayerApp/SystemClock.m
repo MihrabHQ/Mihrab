@@ -34,7 +34,9 @@ static BOOL MihrabSystemIs24Hour(void)
 
 - (NSDictionary *)constantsToExport
 {
-  return @{ @"is24Hour": @(MihrabSystemIs24Hour()) };
+  // The zone as well: JavaScript's first Intl call built a formatter to
+  // learn it, milliseconds of a cold start (utils/zoneClock.ts).
+  return @{ @"is24Hour": @(MihrabSystemIs24Hour()), @"timeZone": [NSTimeZone localTimeZone].name };
 }
 
 // A different name from the `is24Hour` constant above, on purpose: a

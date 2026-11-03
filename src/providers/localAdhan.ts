@@ -35,7 +35,8 @@ import {
   moroccoCorrection,
   swedenCorrection,
 } from './swedenCorrections';
-import { DIYANET_METHOD_ID, diyanetInstants } from './diyanetMethod';
+import { DIYANET_METHOD_ID } from './diyanetMethodId';
+import { diyanetInstants } from './diyanetMethod';
 import { algeriaTimes } from './algeriaMethod';
 import { moroccoTimes, MOROCCO_DIP_PER_SQRT_M } from './moroccoMethod';
 import { kemenagTimes } from './indonesiaMethod';

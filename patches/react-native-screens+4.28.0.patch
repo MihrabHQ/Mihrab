@@ -30,6 +30,51 @@ index 59b5e46..2275730 100644
      @UiThread
      fun updateState(
          width: Int,
+diff --git a/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/RNScreensPackage.kt b/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/RNScreensPackage.kt
+index 990a39d..38ec045 100644
+--- a/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/RNScreensPackage.kt
++++ b/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/RNScreensPackage.kt
+@@ -1,6 +1,7 @@
+ package com.swmansion.rnscreens
+ 
+ import com.facebook.react.BaseReactPackage
++import com.facebook.react.ViewManagerOnDemandReactPackage
+ import com.facebook.react.bridge.NativeModule
+ import com.facebook.react.bridge.ReactApplicationContext
+ import com.facebook.react.module.annotations.ReactModuleList
+@@ -26,7 +27,31 @@ import com.swmansion.rnscreens.utils.ScreenDummyLayoutHelper
+         ScreensModule::class,
+     ],
+ )
+-class RNScreensPackage : BaseReactPackage() {
++// MIHRAB PATCH — view managers on demand. In the new architecture the
++// bridgeless host builds, at the first JavaScript read of UIManager, the
++// constants of every view manager from every package that is not
++// ViewManagerOnDemandReactPackage: nineteen here, each a walk of its
++// @ReactProp setters by reflection, before the first frame. With this
++// the managers are created once (their side effects below need the
++// context) but a manager's constants are read only when a screen of
++// that kind is first rendered.
++class RNScreensPackage :
++    BaseReactPackage(),
++    ViewManagerOnDemandReactPackage {
++    private var onDemandManagers: Map<String, ViewManager<*, *>>? = null
++
++    @Synchronized
++    private fun onDemandManagers(reactContext: ReactApplicationContext): Map<String, ViewManager<*, *>> =
++        onDemandManagers ?: createViewManagers(reactContext).associateBy { it.name }.also { onDemandManagers = it }
++
++    override fun getViewManagerNames(reactContext: ReactApplicationContext): Collection<String> =
++        onDemandManagers(reactContext).keys
++
++    override fun createViewManager(
++        reactContext: ReactApplicationContext,
++        viewManagerName: String,
++    ): ViewManager<*, *>? = onDemandManagers(reactContext)[viewManagerName]
++
+     // We just retain it here. This object helps us tackle jumping content when using native header.
+     // See: https://github.com/software-mansion/react-native-screens/pull/2169
+     private var screenDummyLayoutHelper: ScreenDummyLayoutHelper? = null
 diff --git a/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/Screen.kt b/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/Screen.kt
 index 96631b0..b01c3ab 100644
 --- a/node_modules/react-native-screens/android/src/main/java/com/swmansion/rnscreens/Screen.kt

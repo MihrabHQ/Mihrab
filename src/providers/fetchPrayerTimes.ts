@@ -25,7 +25,8 @@ import {
 } from './locationClock';
 import { notePlaceZone, placeZoneFor } from './placeZone';
 import { DEVICE_CLOCK } from '../utils/prayerTimes';
-import { computeDiyanetTimes, DIYANET_METHOD_ID } from './diyanetMethod';
+import { DIYANET_METHOD_ID } from './diyanetMethodId';
+import { computeDiyanetTimes } from './diyanetMethod';
 import { autoMethodForCoords } from './autoMethod';
 import { ALGERIA_METHOD_ID } from './algeriaCities';
 import { nearestMoroccoCity } from './moroccoNearest';

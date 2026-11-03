@@ -15,6 +15,7 @@ import {
 } from '../src/providers/methodCurrency';
 import { _resetCorrectionsForTests, correctionFor, correctionsInForce, correctionsKey } from '../src/providers/swedenCorrections';
 import { METHOD_REVISION } from '../src/providers/methodRevisions';
+import { _resetFirstPaintForTests, markFirstPaint } from '../src/boot/firstPaint';
 
 const ok = (body: unknown) => ({ ok: true, json: async () => body });
 const certification = (over: Record<string, unknown> = {}) => ({
@@ -31,7 +32,9 @@ beforeEach(async () => {
   mockFetch.mockReset();
   _resetMethodCurrencyForTests();
   _resetCorrectionsForTests();
+  _resetFirstPaintForTests();
 });
+afterEach(() => _resetFirstPaintForTests());
 
 describe('whose calculation it is', () => {
   it('follows the source, and a ministry’s method by hand only inside its country', () => {
@@ -136,7 +139,34 @@ describe('the read at start', () => {
     }
     expect(single.mock.calls.map(c => c[0])).not.toContain('methods.certification.v1');
     expect(single.mock.calls.map(c => c[0])).not.toContain('methods.corrections.v1.morocco');
-    multi.mockRestore();
-    single.mockRestore();
+    // Not mockRestore: on the storage mock's own jest.fn it leaves the
+    // function without an implementation, and every later read answers undefined.
+    multi.mockClear();
+    single.mockClear();
+  });
+
+  it('takes a stored list on its outline, and checks every entry after the first frame', async () => {
+    // Diyanet's nine thousand entries were 22 ms of a cold start, walked by
+    // regex before the first times could be read.
+    const bundledTo = correctionsInForce('morocco').to;
+    const damaged = { ...newer, points: { '34.022,-6.844': ['2027-01-05 fajr +1', 'not an entry'] } };
+    await AsyncStorage.setItem('methods.corrections.v1.morocco', JSON.stringify({ revision: METHOD_REVISION.morocco, list: damaged }));
+    await loadCachedMethodCurrency();
+    expect(correctionsInForce('morocco').to).toBe(newer.to);
+    markFirstPaint();
+    await new Promise(r => setTimeout(r, 0));
+    await new Promise(r => setTimeout(r, 0));
+    expect(correctionsInForce('morocco').to).toBe(bundledTo);
+    expect(await AsyncStorage.getItem('methods.corrections.v1.morocco')).toBeNull();
+  });
+
+  it('keeps a stored list that passes the whole check', async () => {
+    await AsyncStorage.setItem('methods.corrections.v1.morocco', JSON.stringify({ revision: METHOD_REVISION.morocco, list: newer }));
+    await loadCachedMethodCurrency();
+    markFirstPaint();
+    await new Promise(r => setTimeout(r, 0));
+    await new Promise(r => setTimeout(r, 0));
+    expect(correctionsInForce('morocco').to).toBe(newer.to);
+    expect(await AsyncStorage.getItem('methods.corrections.v1.morocco')).not.toBeNull();
   });
 });

@@ -29,10 +29,13 @@ import {
 import { httpUserAgent } from '../config/httpIdentity';
 import { fetchWithRetry } from '../utils/fetchWithRetry';
 import { hydrateClockSkew, noteServerDate } from './clockSkew';
+import { afterFirstPaint } from '../boot/firstPaint';
 import { METHOD_REVISION } from './methodRevisions';
 import {
   CORRECTION_AUTHORITIES,
+  clearCorrections,
   correctionsInForce,
+  hasCorrectionsOutline,
   isCorrections,
   setCorrections,
   summarize,
@@ -71,14 +74,24 @@ export function onMethodCurrencyChange(listener: () => void): () => void {
 const same = (a?: CorrectionsSummary, b?: CorrectionsSummary) =>
   !!a && !!b && a.from === b.from && a.to === b.to && a.entries === b.entries;
 
-/** Take a list for this build's method that is newer than the one in force. */
+/**
+ * Take a list for this build's method that is newer than the one in force.
+ *
+ * `checked`: the list has been through `isCorrections`, every entry. A
+ * download is checked before it is taken. A stored copy — our own write
+ * of a checked download — is taken at launch on its outline alone and
+ * checked whole after the first frame (`checkStoredLater`): the walk of
+ * Diyanet's nine thousand entries was 22 ms of a cold start on a Pixel
+ * 10 Pro, and every read of the times waited for it.
+ */
 function adopt(
   authority: CorrectionAuthority,
   list: Corrections,
   revision: number | undefined,
+  checked: boolean,
 ): boolean {
-  if (revision !== METHOD_REVISION[authority] || !isCorrections(list))
-    return false;
+  if (revision !== METHOD_REVISION[authority]) return false;
+  if (checked ? !isCorrections(list) : !hasCorrectionsOutline(list)) return false;
   const now = correctionsInForce(authority);
   const next = summarize(list);
   if (same(now, next) || next.to < now.to) return false;
@@ -153,6 +166,7 @@ async function hydrate(): Promise<void> {
     /* the bundled lists stand */
   }
   const read = new Map(rows.map(([k, v]) => [k, v]));
+  const unchecked: Array<readonly [CorrectionAuthority, Corrections]> = [];
   try {
     const raw = read.get(STATE_KEY);
     remote = (raw && parseRemote(JSON.parse(raw))) || {};
@@ -166,7 +180,7 @@ async function hydrate(): Promise<void> {
           revision?: number;
           list: Corrections;
         };
-        adopt(a, list, revision);
+        if (adopt(a, list, revision, false)) unchecked.push([a, list]);
       } catch {
         /* this one's bundled list stands */
       }
@@ -175,6 +189,26 @@ async function hydrate(): Promise<void> {
     /* the bundled lists stand */
   }
   changed();
+  if (unchecked.length) checkStoredLater(unchecked);
+}
+
+/**
+ * The whole check of the stored lists taken on their outline, after the
+ * first frame. One that fails is a copy damaged on disk: the bundled list
+ * is put back in force, the copy removed, and the times recomputed under
+ * the bundled key (`changed`).
+ */
+function checkStoredLater(lists: ReadonlyArray<readonly [CorrectionAuthority, Corrections]>): void {
+  void afterFirstPaint().then(() => {
+    let reverted = false;
+    for (const [a, list] of lists) {
+      if (isCorrections(list)) continue;
+      clearCorrections(a);
+      reverted = true;
+      AsyncStorage.removeItem(LIST_KEY(a)).catch(() => {});
+    }
+    if (reverted) changed();
+  });
 }
 
 let inFlight: Promise<boolean> | null = null;
@@ -240,7 +274,7 @@ async function refresh(force: boolean): Promise<boolean> {
       // The file must be the list the certification names, or it is not taken.
       if (!isCorrections(list) || !same(summarize(list), e.corrections))
         continue;
-      if (adopt(a, list, e.revision)) {
+      if (adopt(a, list, e.revision, true)) {
         adopted = true;
         await AsyncStorage.setItem(
           LIST_KEY(a),

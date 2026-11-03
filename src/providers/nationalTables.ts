@@ -23,11 +23,17 @@ import type { PrayerTimesResult } from './types';
 import { computeLocalAdhanTimes } from './localAdhan';
 import { indonesiaClock, type PlaceClock } from './locationClock';
 import { fetchJakimLive, fetchMuisLive, jakimZoneCode } from './nationalLive';
-import kemenagPoints from './data/kemenagMethodPoints.json';
 
-/** Each regency's point as Kemenag computes it, and its class (1 highland, 2 the degree on Fajr and Isha too). */
-const KEMENAG_POINTS = kemenagPoints as Record<string, number[]>;
+/** Each regency's point as Kemenag computes it, and its class (1 highland, 2 the degree on Fajr and Isha too). Read at the first Indonesian day, not at load. */
+const kemenagPointOf = (id: number): number[] | undefined =>
+  (require('./data/kemenagMethodPoints.json') as Record<string, number[]>)[String(id)];
 
+// The seeds and the place lists are read when a table is first asked for
+// a place, not when this module loads (the `get places()` and `get seed()`
+// below): it loads at the first times of every launch (`prayerStorage.ts`
+// asks `nationalTableFor`), and reading the three tables' files there was
+// 4 ms of a cold start on a Pixel 10 Pro for a reader none of them serves.
+// A `require` is answered from the module cache after the first.
 function seedOf(load: () => unknown): NationalTableSeed {
   try {
     return load() as NationalTableSeed;
@@ -57,9 +63,13 @@ export const muisTable = createNationalTable({
   dataset: 'muis',
   baseUrl: MUIS_DATASET_BASE_URL,
   timezone: 'Asia/Singapore',
-  places: placesOf(() => require('./data/muisPlaces.json')),
+  get places() {
+    return placesOf(() => require('./data/muisPlaces.json'));
+  },
   maxPlaceKm: 35,
-  seed: seedOf(() => require('./data/muisSeed.json')),
+  get seed() {
+    return seedOf(() => require('./data/muisSeed.json'));
+  },
   refreshTtlMs: NATIONAL_TABLE_REFRESH_TTL_MS,
   indexPollIntervalMs: NATIONAL_TABLE_INDEX_POLL_INTERVAL_MS,
   // A day the repo's copy lacks: MUIS's own table on data.gov.sg, then MUIS's method.
@@ -88,9 +98,13 @@ export const jakimTable = createNationalTable({
   dataset: 'jakim',
   baseUrl: JAKIM_DATASET_BASE_URL,
   timezone: 'Asia/Kuala_Lumpur',
-  places: placesOf(() => require('./data/jakimPlaces.json')),
+  get places() {
+    return placesOf(() => require('./data/jakimPlaces.json'));
+  },
   maxPlaceKm: 120,
-  seed: seedOf(() => require('./data/jakimSeed.json')),
+  get seed() {
+    return seedOf(() => require('./data/jakimSeed.json'));
+  },
   refreshTtlMs: NATIONAL_TABLE_REFRESH_TTL_MS,
   indexPollIntervalMs: NATIONAL_TABLE_INDEX_POLL_INTERVAL_MS,
   // A day the repo's copy lacks: the zone's year from e-Solat itself, then
@@ -124,7 +138,9 @@ export const kemenagTable = createNationalTable({
   id: 'kemenag',
   dataset: 'kemenag',
   timezone: 'Asia/Jakarta',
-  places: placesOf(() => require('./data/kemenagPlaces.json')),
+  get places() {
+    return placesOf(() => require('./data/kemenagPlaces.json'));
+  },
   maxPlaceKm: 200,
   refreshTtlMs: NATIONAL_TABLE_REFRESH_TTL_MS,
   indexPollIntervalMs: NATIONAL_TABLE_INDEX_POLL_INTERVAL_MS,
@@ -139,7 +155,7 @@ export const kemenagTable = createNationalTable({
 
 /** Kemenag's method for a listed regency, at the point(s) the ministry computes it, with its correction list. */
 function kemenagAt(place: NearestPlace, date: Date, school: number): PrayerTimesResult {
-  const p = KEMENAG_POINTS[String(place.id)];
+  const p = kemenagPointOf(place.id);
   const flags = p?.[2] ?? 0;
   return {
     ...computeLocalAdhanTimes({

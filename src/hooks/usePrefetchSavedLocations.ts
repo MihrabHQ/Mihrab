@@ -24,6 +24,7 @@
 import { useEffect } from 'react';
 import { usePrayerSettings } from '../context/PrayerSettingsContext';
 import { refreshPrayerDataCache } from '../prayer/prayerStorage';
+import { afterFirstPaint } from '../boot/firstPaint';
 import { getEffectiveDataProvider } from '../settings/effectiveProvider';
 import { providerChoiceForPreset } from '../settings/locationProviders';
 
@@ -41,6 +42,12 @@ export function usePrefetchSavedLocations(): void {
     let cancelled = false;
 
     void (async () => {
+      // After the first paint and the launch run (boot/firstPaint.ts): the
+      // first preset's fill began as Today mounted, and its read of the
+      // whole stored-times cache landed under the first frame — 10 ms of
+      // the JS thread on a Pixel 10 Pro, sampled.
+      await afterFirstPaint();
+      if (cancelled) return;
       // Order: active preset first, then the rest. This way if the user
       // backgrounds the app mid-fill the most-likely-needed cache is
       // already warm.

@@ -129,11 +129,16 @@ describe('the second pass, on the device clock', () => {
   // AFTER it and re-read the same blob. And a second, identical pipeline
   // ran a second later on every launch, because the first GPS fix had no
   // city id to compare with and so always counted as a change of city.
-  it('asks the cache status alongside the week rather than after it', () => {
-    const started = HOOK.indexOf('const statusPromise = getCacheStatus(');
+  // And since then (docs/first-frame-plan.md): the status is asked after
+  // the first paint, not alongside the week — for a reader whose week is
+  // computed on the phone it was the one read of the whole cache, landing
+  // under the first frame. It is still never awaited before the screen.
+  it('asks the cache status after the first paint, never before the screen', () => {
+    const started = HOOK.indexOf('const statusPromise = afterFirstPaint()');
     const week = HOOK.indexOf('await Promise.allSettled(');
     expect(started).toBeGreaterThan(-1);
     expect(started).toBeLessThan(week);
+    expect(HOOK).toMatch(/const statusPromise = afterFirstPaint\(\)\s*\.then\(\(\) => getCacheStatus\(cacheParams\)\)/);
     expect(HOOK).toContain('const needsCacheFill = await statusPromise;');
     expect(HOOK).not.toContain('await getCacheStatus(');
   });

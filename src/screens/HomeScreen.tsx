@@ -1536,32 +1536,44 @@ export function HomeScreen() {
   ]);
 
 
+  // The day bar's words, formatted once a day and a language: every
+  // `toLocaleDateString` builds a formatter (Hermes, 1–2 ms each), and the
+  // card asked five times a render — a tenth of the JS thread's time
+  // between the ready commit and the first frame (docs/first-frame-plan.md).
+  const dayWords = useRef(new Map<string, string>());
+  const dayWord = useCallback(
+    (dayOffset: number, kind: 'weekday' | 'date'): string => {
+      const date = addDays(new Date(), dayOffset);
+      const key = `${kind}|${i18n.language}|${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+      const kept = dayWords.current.get(key);
+      if (kept !== undefined) return kept;
+      const word = date.toLocaleDateString(
+        i18n.language,
+        kind === 'weekday' ? { weekday: 'long' } : { day: 'numeric', month: 'short' },
+      );
+      if (dayWords.current.size > 64) dayWords.current.clear();
+      dayWords.current.set(key, word);
+      return word;
+    },
+    [i18n.language],
+  );
   const getDayLabel = useCallback(
     (dayOffset: number): string => {
       if (dayOffset === 0) return t('home.today');
       if (dayOffset === 1) return t('home.tomorrow');
       if (dayOffset === -1) return t('home.yesterday');
-      return addDays(new Date(), dayOffset).toLocaleDateString(i18n.language, {
-        weekday: 'long',
-      });
+      return dayWord(dayOffset, 'weekday');
     },
-    [t, i18n.language],
+    [t, dayWord],
   );
   /** The weekday's name for any day, today included — the table's day line. */
   const getWeekday = useCallback(
-    (dayOffset: number): string =>
-      addDays(new Date(), dayOffset).toLocaleDateString(i18n.language, {
-        weekday: 'long',
-      }),
-    [i18n.language],
+    (dayOffset: number): string => dayWord(dayOffset, 'weekday'),
+    [dayWord],
   );
   const getDayDate = useCallback(
-    (dayOffset: number): string =>
-      addDays(new Date(), dayOffset).toLocaleDateString(i18n.language, {
-        day: 'numeric',
-        month: 'short',
-      }),
-    [i18n.language],
+    (dayOffset: number): string => dayWord(dayOffset, 'date'),
+    [dayWord],
   );
   const getHijriDate = useCallback(
     /**

@@ -36,7 +36,10 @@ class SystemClockModule(private val reactContext: ReactApplicationContext) :
 
   private fun read(): Boolean = DateFormat.is24HourFormat(reactContext)
 
-  override fun getConstants(): Map<String, Any> = mapOf("is24Hour" to read())
+  // The zone as well: JavaScript's first `Intl.DateTimeFormat().resolvedOptions()`
+  // built a formatter to learn it, 7 ms of a cold start (utils/zoneClock.ts).
+  override fun getConstants(): Map<String, Any> =
+    mapOf("is24Hour" to read(), "timeZone" to java.util.TimeZone.getDefault().id)
 
   @ReactMethod
   fun readIs24Hour(promise: Promise) {
