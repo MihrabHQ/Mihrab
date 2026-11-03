@@ -56,7 +56,14 @@ describe('the setting', () => {
   it('is on the Widgets page on both platforms', () => {
     const subpages = read('src/screens/settings/subpages.tsx');
     const widgets = subpages.slice(subpages.indexOf("route: 'SettingsWidgets'"));
-    expect(widgets.slice(0, widgets.indexOf('},'))).not.toMatch(/platforms:/);
+    // Both phone platforms (the Mac is 'ios'); Windows and Linux, which have
+    // no widgets, may be left out.
+    const entry = widgets.slice(0, widgets.indexOf('},'));
+    const only = /platforms:\s*\[([^\]]*)\]/.exec(entry);
+    if (only) {
+      expect(only[1]).toMatch(/'ios'/);
+      expect(only[1]).toMatch(/'android'/);
+    }
     expect(read('src/screens/settings/pages/WidgetsSettingsScreen.tsx')).toMatch(/<WidgetSinceAdhanCard \/>/);
   });
 });

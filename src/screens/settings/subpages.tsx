@@ -128,6 +128,8 @@ const ALL_SUBPAGES: readonly SettingsSubpage[] = [
      * of their own (time since the adhan).
      */
     route: 'SettingsWidgets',
+    // Phones, tablets and the Mac. Windows and Linux have no widgets.
+    platforms: ['ios', 'android'],
     titleKey: 'settings.sectionWidgets',
     // iOS has only the one setting: say that, not Android's list.
     blurbKey: Platform.OS === 'ios' ? 'settings.sectionWidgetsBlurbIos' : 'settings.sectionWidgetsBlurb',
