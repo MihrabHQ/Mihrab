@@ -126,7 +126,11 @@ function register() {
     await fsp.mkdir(path.dirname(target), { recursive: true });
     const controller = new AbortController();
     downloads.set(id, controller);
-    const tmp = `${target}.part`;
+    // Its own temporary file: the app names its destination `….part` and
+    // fetches a page from two places at once (the reader and the queue), so
+    // a shared `<dest>.part` was renamed out from under the second download
+    // — which failed, and turned the app to its slower fallback for good.
+    const tmp = `${target}.${String(id).replace(/[^\w-]/g, '')}.dl`;
     try {
       const res = await net.fetch(url, { headers: headers || {}, signal: controller.signal });
       const total = Number(res.headers.get('content-length')) || -1;

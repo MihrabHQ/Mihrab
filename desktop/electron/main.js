@@ -91,13 +91,29 @@ function allowAppRequests() {
     !win.isDestroyed() &&
     details.webContentsId === win.webContents.id &&
     /^https?:/.test(details.url);
+  // The origin each request was sent with. Usually mihrab://app, but after
+  // a cross-origin redirect Chromium sends `Origin: null`, as the Fetch
+  // spec has it — and GitHub's release downloads redirect to its asset
+  // host, so a fixed mihrab://app answer blocked every tajwīd page that
+  // took the page's own fetch. The answer echoes what was asked.
+  const origins = new Map();
+  session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) => {
+    if (fromApp(details)) {
+      const key = Object.keys(details.requestHeaders).find(k => k.toLowerCase() === 'origin');
+      if (key) origins.set(details.id, details.requestHeaders[key]);
+    }
+    callback({ requestHeaders: details.requestHeaders });
+  });
+  const forget = details => origins.delete(details.id);
+  session.defaultSession.webRequest.onCompleted(forget);
+  session.defaultSession.webRequest.onErrorOccurred(forget);
   session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
     if (!fromApp(details)) return callback({});
     const headers = { ...details.responseHeaders };
     for (const k of Object.keys(headers)) {
       if (/^access-control-allow-/i.test(k)) delete headers[k];
     }
-    headers['Access-Control-Allow-Origin'] = ['mihrab://app'];
+    headers['Access-Control-Allow-Origin'] = [origins.get(details.id) ?? 'mihrab://app'];
     headers['Access-Control-Allow-Headers'] = ['*'];
     headers['Access-Control-Allow-Methods'] = ['GET, POST, HEAD, OPTIONS'];
     headers['Access-Control-Expose-Headers'] = ['*'];

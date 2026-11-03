@@ -8,6 +8,7 @@
  */
 import { NativeModules } from 'react-native-web/dist/index';
 import './fonts';
+import './network';
 import { MushafFont } from './mushafFont';
 import { MihrabKeyCommands } from './keys';
 import {
