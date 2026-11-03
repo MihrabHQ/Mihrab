@@ -1,0 +1,5 @@
+• Idag öppnas snabbare, utan att sidan rör sig medan den landar.
+• Widgetarna får Himmel-temats himmel för sin timme, läses från höger till vänster på arabiska och urdu, och går att dra ut på bredden igen på Android.
+• Himmel-temat: blå vinterdag i Livfull, vit sida i Realistisk, polarvintern och midnattssolen efter den verkliga solen.
+• Rätt tider där klockorna inte längre ställs om till vintertid; justeringar når två timmar.
+• Rättelser i Warsh-tajwīd.

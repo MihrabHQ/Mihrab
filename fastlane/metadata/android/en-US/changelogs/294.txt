@@ -1,0 +1,5 @@
+• Today opens sooner, without the page moving as it settles.
+• Widgets take the Sky theme's sky for their own hour, read right to left in Arabic and Urdu, and stretch sideways again on Android.
+• Sky theme: a blue winter day in Vibrant, a white page in Realistic, the polar winter and midnight sun by the real sun.
+• Times stay right where the clocks no longer change for winter; adjustments reach two hours.
+• Warsh tajwīd fixes.

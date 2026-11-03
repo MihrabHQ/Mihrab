@@ -1,0 +1,7 @@
+• Idag öppnas snabbare och i ett stycke: vid start rör sig inte längre himlen och tiderna innan de landar, och den levande sidan är på skärmen ungefär en tredjedel snabbare än i 2.34.
+• Widgetarna bär Himmel-temats himmel för sin egen timme, på Android och iOS, och läses från höger till vänster på arabiska och urdu även på en telefon inställd på ett annat språk (#118). Android: widgetarna går att dra ut på bredden igen (#115).
+• Himmel-temat: Livfulls vinterdag är blå i stället för lila; Realistisks sida är vit i stället för mintgrön, med terrakotta som varm accent; polarvintern och midnattssolen följer den verkliga solen; och efter dagar borta öppnas appen på dagens himmel.
+• Helskärmslarmets himmel har din egen sol vid Dhuhr och Asr.
+• Platser vars klockor inte längre ställs om till vintertid — bland dem Jordanien och Syrien — behåller rätt tider på telefoner utan de senaste tidszonsdata (#117); varje bönetids justering når nu två timmar åt båda hållen.
+• Warsh-tajwīd: rimsluten som är skrivna för sammanbindning, och ikhfāʾ och iqlāb färgar bara nūn (#64).
+• Widgeten Fortsätt läsa: uppspelningsknappen centrerad, och sidraden hel på arabiska.

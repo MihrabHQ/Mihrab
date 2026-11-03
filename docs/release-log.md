@@ -1335,4 +1335,8 @@ Took 4 aborted attempt(s) before it ran clean:
   - 1 the last release left its lesson unwritten — fill in that '**Lesson:**' line in docs/release-log.md, commit it, and rerun
   - 1 working tree has tracked changes — commit or stash them first
 
-**Lesson:** _(unfilled)_
+**Lesson:** the third release running whose aborts were all preparation —
+the notes for the new code, the last lesson, a clean tree — plus one the
+gate was right to stop: main was red. Before starting: CI green on the
+commit being released, the notes and the last lesson committed, and any
+probe files stashed, not just unstaged.

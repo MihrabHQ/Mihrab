@@ -1,0 +1,7 @@
+• Today opens sooner and in one piece: on launch the sky and the times no longer move before coming to rest, and the live page is on screen about a third sooner than in 2.34.
+• Widgets wear the Sky theme's sky for their own hour, on Android and iOS, and read right to left in Arabic and Urdu even on a phone set to another language (#118). Android: the widgets stretch sideways again (#115).
+• The Sky theme: Vibrant's winter day is blue rather than lilac; Realistic's page is white rather than mint, its warm accent terracotta; the polar winter and the midnight sun follow the real sun; and after days away the app opens on today's sky.
+• The full-screen alert's sky has your own sun at Dhuhr and Asr.
+• Places whose clocks no longer change for winter — Jordan and Syria among them — keep the right times on phones without the latest time-zone data (#117); each prayer's adjustment now reaches two hours either way.
+• Warsh tajwīd: the rhyme-ends written for the join, and ikhfāʾ and iqlāb colouring the nūn alone (#64).
+• The Continue reading widget: the play button centred, and the page line whole in Arabic.
