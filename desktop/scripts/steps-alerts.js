@@ -25,7 +25,12 @@ module.exports = async ({ page, shot, log }) => {
   if (!before.length) {
     if (await sw.count()) { await sw.click(); await page.waitForTimeout(2000); } else log('no switch');
   }
-  // Scheduling runs after the switch settles, a few seconds on.
+  // The schedule is written by Today (as on a phone, where an inactive tab
+  // is frozen): go back to it, and it lands a few seconds on.
+  await page.mouse.click(5, 5);
+  await page.keyboard.press('Escape');
+  await page.waitForTimeout(1200);
+  await tap(/^Today$/, 1500);
   let after = await triggers();
   for (let i = 0; i < 15 && !after.length; i++) { await page.waitForTimeout(2000); after = await triggers(); }
   log('scheduled before', before.length, 'after', after.length);
