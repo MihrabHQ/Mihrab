@@ -88,10 +88,10 @@
         }
       },
       "maintainer": "Hassan El Ghamri <hassan15015099@gmail.com>",
-      "packageName": "mihrab",
       "syncDesktopName": true
     },
     "deb": {
+      "packageName": "mihrab",
       "depends": [
         "libnotify4",
         "libxtst6",
