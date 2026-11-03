@@ -40,13 +40,26 @@ function load() {
   }
 }
 
+function writeNow() {
+  clearTimeout(saveTimer);
+  saveTimer = null;
+  const tmp = `${file}.tmp`;
+  fs.writeFileSync(tmp, JSON.stringify(store));
+  fs.renameSync(tmp, file);
+}
+
 function save() {
   clearTimeout(saveTimer);
-  saveTimer = setTimeout(() => {
-    const tmp = `${file}.tmp`;
-    fs.writeFileSync(tmp, JSON.stringify(store));
-    fs.renameSync(tmp, file);
-  }, 200);
+  saveTimer = setTimeout(writeNow, 200);
+}
+
+/**
+ * A save still waiting when the app quits is written now. Quitting inside
+ * the 200 ms lost it: an alert turned off just before Quit came back on
+ * the next start and fired anyway.
+ */
+function flush() {
+  if (saveTimer) writeNow();
 }
 
 function send(channel, ...args) {
@@ -111,6 +124,7 @@ function tick() {
 function register(windowGetter) {
   getWindow = windowGetter;
   load();
+  app.on('will-quit', flush);
   setInterval(tick, TICK_MS);
   powerMonitor.on('resume', tick);
   powerMonitor.on('unlock-screen', tick);

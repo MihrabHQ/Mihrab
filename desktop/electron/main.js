@@ -244,6 +244,14 @@ function registerIpc() {
   ipcMain.handle('clipboard:write', (_e, text) => clipboard.writeText(String(text ?? '')));
 }
 
+// Windows shows a toast only for an app it can name, and it names an app by
+// its AppUserModelID — the one the installer gives the Start menu shortcut,
+// which electron-builder takes from `build.appId`. Without this the toasts
+// went out under Electron's own id, which nothing installed answers to, and
+// Windows dropped them: no adhan banner, no reminder, nothing in the Action
+// Center.
+if (process.platform === 'win32') app.setAppUserModelId('com.prayer_times.desktop');
+
 // One instance: a second launch focuses the first, so two copies never
 // schedule the same adhan twice.
 if (!app.requestSingleInstanceLock()) {

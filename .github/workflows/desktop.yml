@@ -93,6 +93,19 @@ jobs:
             console.log('snapshot ' + s + ' bytes');
           "
 
+      # A trigger scheduled a few seconds ahead is shown by the system and
+      # reported to the page (where the adhan plays); a daily one moves on
+      # by a day. On Linux a real notification daemon must receive it.
+      - name: Notifications deliver
+        working-directory: desktop
+        run: |
+          if [ "$RUNNER_OS" = "Linux" ]; then
+            sudo apt-get install -yq dunst dbus-x11
+            timeout 180 xvfb-run -a -s "-screen 0 1280x900x24" dbus-run-session -- bash scripts/ci-notify.sh
+          else
+            timeout 180 bash scripts/ci-notify.sh
+          fi
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:
