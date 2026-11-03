@@ -105,6 +105,14 @@ function register() {
     return h.digest('hex');
   });
 
+  // blob-util's df(): the disk the app's documents live on, as iOS answers
+  // it — { free, total } in bytes. The Downloads page shows it, and the app
+  // checks there is room before a download.
+  ipcMain.handle('fs:df', async () => {
+    const st = await fsp.statfs(roots().data);
+    return { free: st.bavail * st.bsize, total: st.blocks * st.bsize };
+  });
+
   ipcMain.handle('fs:writeFile', async (_e, p, data, encoding, append) => {
     const target = inside(p);
     await fsp.mkdir(path.dirname(target), { recursive: true });

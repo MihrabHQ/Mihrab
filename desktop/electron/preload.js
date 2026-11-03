@@ -93,6 +93,7 @@ contextBridge.exposeInMainWorld('mihrabDesktop', {
     writeFile: (p, data, enc, append) => ipcRenderer.invoke('fs:writeFile', p, data, enc, append),
     slice: (from, to, start, end) => ipcRenderer.invoke('fs:slice', from, to, start, end),
     hash: (p, algorithm) => ipcRenderer.invoke('fs:hash', p, algorithm),
+    df: () => ipcRenderer.invoke('fs:df'),
     download: (url, dest, headers, onProgress) => {
       const id = nextId++;
       if (onProgress) progress.set(id, onProgress);
