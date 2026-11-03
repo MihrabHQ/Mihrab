@@ -1676,7 +1676,13 @@
     "location": {
       "title": "¿Dónde estás?",
       "body": "Los tiempos de oración dependen de dónde estés. Tus coordenadas se cifran en este dispositivo y solo van a un servicio que las necesita para responder, nunca a nosotros.",
-      "ready": "Hoy en {{city}}"
+      "ready": "Hoy en {{city}}",
+      "ipLooking": "Buscando tu ciudad…",
+      "ipTitle": "¿Estás en {{city}}?",
+      "ipBody": "Es una estimación a partir de tu conexión a internet, así que puede fallar por una ciudad o más. Los horarios de oración dependen de dónde estés realmente.",
+      "ipYes": "Sí, es correcto",
+      "ipNo": "No, elegir mi ubicación",
+      "bodyWeb": "Los horarios de oración dependen de dónde estés. Tu ubicación se guarda en este navegador y solo va a un servicio que la necesite para responder, nunca a nosotros."
     },
     "salamA11y": "As-salāmu ʿalaykum wa raḥmatu llāhi taʿālā wa barakātuh",
     "notNow": "Ahora no",
@@ -1701,7 +1707,9 @@
       "preReminder": "Recordarme antes",
       "exact": "Precisión horaria",
       "exactFix": "Arreglar",
-      "exactWhy": "Android necesita un permiso más para que los avisos suenen al minuto y no con minutos de retraso."
+      "exactWhy": "Android necesita un permiso más para que los avisos suenen al minuto y no con minutos de retraso.",
+      "bodyWeb": "Un aviso del navegador cuando llega cada oración, con el adhan. Los navegadores solo pueden hacerlo mientras Mihrab está abierto, así que déjalo en una pestaña.",
+      "deniedWeb": "Tu navegador bloquea las notificaciones de esta página. Puedes permitirlas en la configuración del sitio, junto a la barra de direcciones."
     },
     "personalise": {
       "title": "Hazla tuya",
@@ -2463,5 +2471,14 @@
     "beyondShort": "solo el método después del {{date}}",
     "checkingShort": "nuevos horarios en revisión",
     "updateShort": "actualiza Mihrab para el último cálculo"
+  },
+  "webApp": {
+    "keepTitle": "Ten Mihrab a mano",
+    "keepBody": "Guarda esta página en marcadores para consultar los horarios de oración cuando los necesites. Tus ajustes y marcadores se guardan en este navegador.",
+    "keepIos": "Toca Compartir y luego «Añadir a pantalla de inicio».",
+    "keepAndroid": "Abre el menú del navegador ⋮ y elige «Añadir a pantalla de inicio».",
+    "keepDesktop": "Pulsa {{keys}} para guardar esta página en marcadores.",
+    "install": "Añadir Mihrab a este dispositivo",
+    "gotIt": "Entendido"
   }
 }

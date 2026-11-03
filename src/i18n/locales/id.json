@@ -1675,7 +1675,13 @@
     "location": {
       "title": "Di mana Anda berada?",
       "body": "Waktu salat bergantung pada lokasi Anda. Koordinat Anda dienkripsi di perangkat ini dan hanya dikirim ke layanan yang memerlukannya untuk menjawab — tidak pernah ke kami.",
-      "ready": "Hari ini di {{city}}"
+      "ready": "Hari ini di {{city}}",
+      "ipLooking": "Mencari kota Anda…",
+      "ipTitle": "Apakah Anda di {{city}}?",
+      "ipBody": "Ini perkiraan dari koneksi internet Anda, jadi bisa meleset satu kota atau lebih. Waktu salat bergantung pada tempat Anda sebenarnya.",
+      "ipYes": "Ya, benar",
+      "ipNo": "Tidak, pilih lokasi saya",
+      "bodyWeb": "Waktu salat bergantung pada tempat Anda berada. Lokasi Anda disimpan di peramban ini dan hanya dikirim ke layanan yang membutuhkannya untuk menjawab — tidak pernah kepada kami."
     },
     "salamA11y": "Assalāmu ʿalaikum warahmatullāhi taʿālā wabarakātuh",
     "notNow": "Nanti saja",
@@ -1700,7 +1706,9 @@
       "preReminder": "Ingatkan sebelumnya",
       "exact": "Waktu tepat",
       "exactFix": "Perbaiki",
-      "exactWhy": "Android memerlukan satu izin lagi agar peringatan berbunyi tepat waktu, bukan terlambat beberapa menit."
+      "exactWhy": "Android memerlukan satu izin lagi agar peringatan berbunyi tepat waktu, bukan terlambat beberapa menit.",
+      "bodyWeb": "Notifikasi dari peramban setiap kali waktu salat tiba, dengan azan. Peramban hanya bisa melakukannya selama Mihrab terbuka, jadi biarkan tetap di sebuah tab.",
+      "deniedWeb": "Peramban Anda memblokir notifikasi dari halaman ini. Anda dapat mengizinkannya di pengaturan situs, di dekat bilah alamat."
     },
     "personalise": {
       "title": "Sesuaikan",
@@ -2462,5 +2470,14 @@
     "beyondShort": "hanya metode setelah {{date}}",
     "checkingShort": "waktu baru sedang diperiksa",
     "updateShort": "perbarui Mihrab untuk perhitungan terbaru"
+  },
+  "webApp": {
+    "keepTitle": "Simpan Mihrab agar mudah dibuka",
+    "keepBody": "Tandai halaman ini agar bisa melihat waktu salat kapan pun Anda perlu. Pengaturan dan penanda Anda disimpan di peramban ini.",
+    "keepIos": "Ketuk Bagikan, lalu “Tambah ke Layar Utama”.",
+    "keepAndroid": "Buka menu peramban ⋮ dan pilih “Tambahkan ke layar utama”.",
+    "keepDesktop": "Tekan {{keys}} untuk menandai halaman ini.",
+    "install": "Tambahkan Mihrab ke perangkat ini",
+    "gotIt": "Mengerti"
   }
 }

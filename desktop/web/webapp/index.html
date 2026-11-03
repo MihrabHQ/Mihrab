@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Mihrab Web: prayer times for where you are, and the Madinah muṣḥaf with tajwīd colours, four other riwāyāt, hard-word meanings and a recitation that follows word by word — in your browser." />
+    <meta name="theme-color" content="#0f4d44" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Mihrab" />
+    <meta http-equiv="Content-Security-Policy"
+      content="default-src 'self' data: blob:; img-src 'self' data: blob: https:; media-src 'self' blob: https:; font-src 'self' data: blob:; connect-src 'self' https:; style-src 'self' 'unsafe-inline'; script-src 'self'; manifest-src 'self'" />
+    <link rel="manifest" href="<%= htmlWebpackPlugin.options.base %>/manifest.webmanifest" />
+    <link rel="icon" type="image/png" href="<%= htmlWebpackPlugin.options.base %>/icon-192.png" />
+    <link rel="apple-touch-icon" href="<%= htmlWebpackPlugin.options.base %>/apple-touch-icon.png" />
+    <title>Mihrab Web — prayer times and the Qur'an</title>
+    <style>
+      html, body { height: 100%; margin: 0; background: #0f4d44; }
+      body { display: flex; flex-direction: column; overflow: hidden;
+        font: 13px/1.3 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+      #root { flex: 1; display: flex; min-height: 0; }
+      #loading { margin: auto; color: #f2e8d5; }
+    </style>
+  </head>
+  <body>
+    <div id="root"><div id="loading">Loading Mihrab…</div></div>
+  </body>
+</html>

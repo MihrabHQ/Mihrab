@@ -21,8 +21,8 @@
  * The times are still shown to someone who steps BACK to this screen to
  * check what they entered, with Continue to go on.
  */
-import { useEffect, useMemo, useRef } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import { usePrayerSettings } from '../../context/PrayerSettingsContext';
@@ -36,7 +36,10 @@ import {
   OnboardingFrame,
   OnboardingHeading,
   PrimaryAction,
+  QuietAction,
 } from '../OnboardingChrome';
+import { IS_WEB_APP } from '../../config/webApp';
+import { guessPlaceFromIp, type IpPlace } from '../ipLocation';
 
 export function LocationScreen({
   progress,
@@ -47,9 +50,43 @@ export function LocationScreen({
 }) {
   const { t } = useTranslation();
   const { palette } = useAppPalette();
-  const { settings } = usePrayerSettings();
+  const { settings, updateSettings } = usePrayerSettings();
   const clock = useClockFormatter();
   const done = settings.locationOnboardingComplete;
+
+  /**
+   * Mihrab Web opens on a guess — the city the visitor's connection is
+   * registered to — put as a question. Yes sets it, the same write a
+   * picked search result makes; No, or no guess at all, is this screen as
+   * the apps have it. See `../ipLocation`.
+   */
+  const [guess, setGuess] = useState<IpPlace | null | 'looking'>(
+    IS_WEB_APP && !done ? 'looking' : null,
+  );
+  const [choosing, setChoosing] = useState(false);
+  useEffect(() => {
+    if (guess !== 'looking') return undefined;
+    let live = true;
+    void guessPlaceFromIp().then(place => {
+      if (live) setGuess(place);
+    });
+    return () => {
+      live = false;
+    };
+    // Once, on arrival.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const offered = !done && !choosing && guess !== null && guess !== 'looking' ? guess : null;
+  const acceptGuess = () => {
+    if (!offered) return;
+    updateSettings({
+      locationMode: 'manual',
+      manualLatitude: offered.latitude,
+      manualLongitude: offered.longitude,
+      manualLocationLabel: offered.label,
+      locationOnboardingComplete: true,
+    });
+  };
 
   const coords = useMemo(() => previewCoords(settings), [settings]);
   const times = useMemo(
@@ -82,6 +119,51 @@ export function LocationScreen({
   const city =
     settings.manualLocationLabel ?? settings.autoLocationLabel ?? undefined;
 
+  if (!done && !choosing && guess === 'looking') {
+    return (
+      <OnboardingFrame progress={progress} center>
+        <OnboardingHeading
+          title={t('onboarding.location.title', 'Where are you?')}
+          body={t('onboarding.location.ipLooking', 'Finding your city…')}
+        />
+        <ActivityIndicator style={styles.looking} color={palette.muted} />
+      </OnboardingFrame>
+    );
+  }
+
+  if (offered) {
+    return (
+      <OnboardingFrame
+        progress={progress}
+        center
+        footer={
+          <>
+            <PrimaryAction
+              testID="onboarding-location-ip-yes"
+              label={t('onboarding.location.ipYes', 'Yes, that’s right')}
+              onPress={acceptGuess}
+            />
+            <QuietAction
+              testID="onboarding-location-ip-no"
+              label={t('onboarding.location.ipNo', 'No, choose my location')}
+              onPress={() => setChoosing(true)}
+            />
+          </>
+        }>
+        <OnboardingHeading
+          title={t('onboarding.location.ipTitle', {
+            city: offered.label,
+            defaultValue: 'Are you in {{city}}?',
+          })}
+          body={t(
+            'onboarding.location.ipBody',
+            'A guess from your internet connection, so it can be a city or more off. Prayer times depend on where you really are.',
+          )}
+        />
+      </OnboardingFrame>
+    );
+  }
+
   return (
     <OnboardingFrame
       progress={progress}
@@ -98,10 +180,17 @@ export function LocationScreen({
       }>
       <OnboardingHeading
         title={t('onboarding.location.title', 'Where are you?')}
-        body={t(
-          'onboarding.location.body',
-          'Prayer times depend on where you stand. Your coordinates are encrypted on this device, and go only to a service that needs them to answer — never to us.',
-        )}
+        body={
+          IS_WEB_APP
+            ? t(
+                'onboarding.location.bodyWeb',
+                'Prayer times depend on where you stand. Your location is kept in this browser, and goes only to a service that needs it to answer — never to us.',
+              )
+            : t(
+                'onboarding.location.body',
+                'Prayer times depend on where you stand. Your coordinates are encrypted on this device, and go only to a service that needs them to answer — never to us.',
+              )
+        }
       />
 
       {armed && times ? (
@@ -158,6 +247,7 @@ export function LocationScreen({
 
 const styles = StyleSheet.create({
   embed: { minHeight: 320, marginTop: SPACING.sm },
+  looking: { marginTop: SPACING.lg },
   proof: { gap: SPACING.sm, marginTop: SPACING.lg },
   city: { textAlign: 'center', marginBottom: SPACING.sm },
   row: {

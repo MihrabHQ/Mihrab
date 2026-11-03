@@ -1675,7 +1675,13 @@
     "location": {
       "title": "Var befinner du dig?",
       "body": "Bönetiderna beror på var du står. Dina koordinater krypteras på den här enheten och går bara till en tjänst som behöver dem för att svara — aldrig till oss.",
-      "ready": "Idag i {{city}}"
+      "ready": "Idag i {{city}}",
+      "ipLooking": "Letar efter din stad…",
+      "ipTitle": "Är du i {{city}}?",
+      "ipBody": "En gissning utifrån din internetanslutning, så den kan slå fel med en stad eller mer. Bönetiderna beror på var du faktiskt är.",
+      "ipYes": "Ja, det stämmer",
+      "ipNo": "Nej, välj min plats",
+      "bodyWeb": "Bönetiderna beror på var du befinner dig. Din plats sparas i den här webbläsaren och går bara till en tjänst som behöver den för att svara — aldrig till oss."
     },
     "salamA11y": "As-salāmu ʿalaykum wa raḥmatu llāhi taʿālā wa barakātuh",
     "notNow": "Inte nu",
@@ -1700,7 +1706,9 @@
       "preReminder": "Påminn mig innan",
       "exact": "Exakt tidpunkt",
       "exactFix": "Åtgärda",
-      "exactWhy": "Android behöver ytterligare en behörighet för att aviseringarna ska komma på minuten, inte minuter för sent."
+      "exactWhy": "Android behöver ytterligare en behörighet för att aviseringarna ska komma på minuten, inte minuter för sent.",
+      "bodyWeb": "En avisering från webbläsaren när varje bön börjar, med adhan. Webbläsare kan bara göra det medan Mihrab är öppen, så låt den ligga kvar i en flik.",
+      "deniedWeb": "Din webbläsare blockerar aviseringar från den här sidan. Du kan tillåta dem i webbplatsens inställningar, vid adressfältet."
     },
     "personalise": {
       "title": "Gör den till din",
@@ -2462,5 +2470,14 @@
     "beyondShort": "endast metoden efter {{date}}",
     "checkingShort": "nya tider kontrolleras",
     "updateShort": "uppdatera Mihrab för den senaste beräkningen"
+  },
+  "webApp": {
+    "keepTitle": "Ha Mihrab nära till hands",
+    "keepBody": "Bokmärk sidan så kan du se bönetiderna när du behöver dem. Dina inställningar och bokmärken sparas i den här webbläsaren.",
+    "keepIos": "Tryck på Dela och sedan ”Lägg till på hemskärmen”.",
+    "keepAndroid": "Öppna webbläsarens meny ⋮ och välj ”Lägg till på startskärmen”.",
+    "keepDesktop": "Tryck {{keys}} för att bokmärka sidan.",
+    "install": "Lägg till Mihrab på den här enheten",
+    "gotIt": "Uppfattat"
   }
 }

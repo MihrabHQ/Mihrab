@@ -16,7 +16,7 @@
  * etc.).
  */
 
-import { WEB_DEMO_PHONE } from '../config/webDemo';
+import { WEB_APP_PHONE } from '../config/webApp';
 import { Platform } from 'react-native';
 import { useWindowSize } from './windowSize';
 
@@ -139,10 +139,10 @@ export const isDesktop: boolean = isMacCatalyst || Platform.OS === 'web';
 /**
  * Whether the page is laid out as the desktop's (the Mac's header row and
  * hero card) rather than the phone's (the sky to the screen's edges).
- * `isDesktop` everywhere but one place: the website's demo opened on a
+ * `isDesktop` everywhere but one place: Mihrab Web opened on a
  * phone, which is a phone and is shown the phone's page.
  */
-export const desktopLayout: boolean = isDesktop && !WEB_DEMO_PHONE;
+export const desktopLayout: boolean = isDesktop && !WEB_APP_PHONE;
 
 /**
  * The width at which Home becomes the two-column dashboard (day table +

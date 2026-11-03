@@ -114,6 +114,7 @@ import { firstWindowEnd } from '../journal/quickLog';
 import { syncPrayerSilence } from '../notifications/prayerSilence';
 import { rescheduleDuaReminders } from '../notifications/duaReminders';
 import { HomeFeaturesOffer } from '../home/HomeFeaturesOffer';
+import { WebBookmarkOffer } from '../home/WebBookmarkOffer';
 import { SkyThemeOffer } from '../home/SkyThemeOffer';
 import {
   ChangelogSheet,
@@ -2152,6 +2153,14 @@ export function HomeScreen() {
         }
       />
       <SkyThemeOffer
+        ready={
+          hydrated &&
+          settings.onboardingComplete &&
+          changelogSince === null &&
+          !changelogShown.current
+        }
+      />
+      <WebBookmarkOffer
         ready={
           hydrated &&
           settings.onboardingComplete &&

@@ -39,19 +39,23 @@ if (d) {
 
 const call = (name, ...args) => (d ? d.notifications[name](...args) : Promise.resolve(undefined));
 
-const settings = () => ({
-  authorizationStatus: AUTHORIZED,
+// The browser asks the visitor (Mihrab Web); the desktop app is always allowed.
+const STATUS = { granted: AUTHORIZED, denied: 0, default: -1 };
+const settings = answer => ({
+  authorizationStatus: answer == null ? AUTHORIZED : STATUS[answer] ?? -1,
   android: { alarm: ENABLED },
   ios: {},
   web: {},
 });
+const browserAnswer = () => d?.notifications.permission?.();
 
 const notifee = {
   async requestPermission() {
-    return settings();
+    const ask = d?.notifications.requestPermission;
+    return settings(ask ? await ask() : undefined);
   },
   async getNotificationSettings() {
-    return settings();
+    return settings(browserAnswer());
   },
   async createChannel(channel) {
     return call('createChannel', channel);

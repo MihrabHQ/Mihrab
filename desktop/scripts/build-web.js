@@ -1,24 +1,24 @@
 #!/usr/bin/env node
 /**
- * Assemble the website demo: the app built for a browser, and beside it,
- * everything the Qur'an reader would otherwise download — so the demo has
+ * Assemble Mihrab Web: the app built for a browser, and beside it,
+ * everything the Qur'an reader would otherwise download — so the web app has
  * no download manager and nothing to wait for.
  *
- *   npx webpack --mode production --env demo        # → build/demo
- *   node scripts/build-demo.js --profile <dir> --out <dir>
+ *   npx webpack --mode production --env web        # → build/web
+ *   node scripts/build-web.js --profile <dir> --out <dir>
  *
  * --profile  a desktop app profile (its userData folder) that has the
  *            muṣḥaf, both tajwīd sets, the four riwāyāt and Husary's word
  *            timings downloaded by the app itself — so every file is in
  *            exactly the form the app writes it. Recitation audio in it is
- *            left out: the demo plays from the reciter's own server.
- * --out      the demo site's folder (the mihrab-demo repository).
+ *            left out: the web app plays from the reciter's own server.
+ * --out      the web app site's folder (the MihrabHQ.github.io repository).
  *
  * The hard-word meanings are fetched here, from the app's own mirror, and
  * written as the app writes them (src/quran/wordMeanings.ts).
  *
- * `files/index.json` lists every preloaded file with its size: the demo's
- * file layer (web/demo/bridge.js) answers exists/stat/ls from it.
+ * `files/index.json` lists every preloaded file with its size: the web app's
+ * file layer (web/webapp/bridge.js) answers exists/stat/ls from it.
  */
 const fs = require('fs');
 const fsp = fs.promises;
@@ -32,12 +32,12 @@ const arg = name => {
 const profile = arg('profile');
 const out = arg('out');
 if (!profile || !out) {
-  console.error('usage: build-demo.js --profile <app profile> --out <site folder>');
+  console.error('usage: build-web.js --profile <app profile> --out <site folder>');
   process.exit(1);
 }
 
 const DESKTOP = path.resolve(__dirname, '..');
-const BUILD = path.join(DESKTOP, 'build', 'demo');
+const BUILD = path.join(DESKTOP, 'build', 'web');
 const BUNDLE = path.join(DESKTOP, 'build', 'bundle');
 const DOCS = path.join(profile, 'Documents');
 const FILES = path.join(out, 'files');
@@ -113,7 +113,7 @@ async function manifest(root) {
 }
 
 (async () => {
-  if (!fs.existsSync(path.join(BUILD, 'index.html'))) throw new Error('no build/demo: run `npx webpack --mode production --env demo` first');
+  if (!fs.existsSync(path.join(BUILD, 'index.html'))) throw new Error('no build/web: run `npx webpack --mode production --env web` first');
   for (const [rel, min] of PRELOADED) {
     const dir = path.join(DOCS, rel);
     if (!fs.existsSync(dir) || (await count(dir)) < min) throw new Error(`the profile is missing ${rel} (want ${min} files)`);
@@ -128,6 +128,10 @@ async function manifest(root) {
   }
   await fsp.cp(BUILD, out, { recursive: true });
   await fsp.writeFile(path.join(out, '.nojekyll'), '');
+  // What a browser needs to put Mihrab on a home screen or install it.
+  for (const name of ['manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png']) {
+    await fsp.copyFile(path.join(DESKTOP, 'web', 'webapp', name), path.join(out, name));
+  }
 
   // The preloaded tree, laid out as the app's own folders are.
   console.log('copying the muṣḥaf, tajwīd and riwāyāt…');
@@ -141,7 +145,7 @@ async function manifest(root) {
   const index = await manifest(FILES);
   await fsp.writeFile(path.join(FILES, 'index.json'), JSON.stringify(index));
   const bytes = Object.values(index).reduce((a, b) => a + b, 0);
-  console.log(`demo: ${Object.keys(index).length} preloaded files, ${(bytes / 1e6).toFixed(0)} MB → ${out}`);
+  console.log(`Mihrab Web: ${Object.keys(index).length} preloaded files, ${(bytes / 1e6).toFixed(0)} MB → ${out}`);
 })().catch(e => {
   console.error(e.message);
   process.exit(1);

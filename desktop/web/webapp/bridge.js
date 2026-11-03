@@ -1,9 +1,9 @@
 /**
- * The website demo's stand-in for the desktop app's bridge
+ * Mihrab Web's stand-in for the desktop app's bridge
  * (desktop/electron/preload.js): the same `window.mihrabDesktop`, answered
  * by the browser instead of an Electron main process.
  *
- * Files. The desktop shims already speak one file API, so the demo gives
+ * Files. The desktop shims already speak one file API, so the web app gives
  * them one: a read-only tree of everything preloaded (the muṣḥaf's page
  * fonts, the tajwīd colours, the riwāyāt, the hard-word meanings, the word
  * timings, the bundled Qur'an text) served beside the page under `files/`,
@@ -16,8 +16,8 @@
  * Notifications fire while the tab is open (a browser keeps no schedule for
  * a closed page) and the adhan plays in the page, as on the desktop.
  */
-/* global __MIHRAB_DEMO_BASE__, __MIHRAB_DEMO_VERSION__ */
-const BASE = __MIHRAB_DEMO_BASE__;
+/* global __MIHRAB_WEB_BASE__, __MIHRAB_WEB_VERSION__ */
+const BASE = __MIHRAB_WEB_BASE__;
 const FILES = `${BASE}/files/`;
 const ROOT = '/mihrab';
 const dirs = {
@@ -127,7 +127,7 @@ let db = null;
 function openDb() {
   return new Promise(resolve => {
     try {
-      const req = indexedDB.open('mihrab-demo', 1);
+      const req = indexedDB.open('mihrab-web', 1);
       req.onupgradeneeded = () => {
         req.result.createObjectStore('files');
         req.result.createObjectStore('meta');
@@ -207,7 +207,7 @@ function fileUrl(raw) {
 
 // ── Notifications (while the tab is open) ──────────────────────────────
 const notifListeners = new Set();
-const NKEY = 'mihrab.demo.notifications';
+const NKEY = 'mihrab.web.notifications';
 const REPEAT_MS = { 0: 3_600_000, 1: 86_400_000, 2: 604_800_000 };
 const STALE_MS = 10 * 60_000;
 let nstore = { triggers: {}, channels: {}, categories: [] };
@@ -224,12 +224,19 @@ const nsave = () => {
   }
 };
 const displayed = new Map();
+// What the browser said when it was last asked; its `permission` property is
+// read otherwise. (Some browsers report the property late.)
+let answered = null;
+function notificationPermission() {
+  if (typeof Notification === 'undefined') return 'denied';
+  return answered ?? Notification.permission;
+}
 const emit = event => notifListeners.forEach(fn => fn(event));
 const newId = () => `n${Date.now()}${Math.random().toString(36).slice(2, 7)}`;
 function show(notification) {
   const channel = nstore.channels[notification.android?.channelId] ?? null;
   const sound = notification.android?.sound ?? channel?.sound ?? notification.ios?.sound ?? 'default';
-  if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+  if (notificationPermission() === 'granted') {
     try {
       const n = new Notification(notification.title ?? 'Mihrab', { body: notification.body ?? '', silent: sound !== 'default' });
       n.onclick = () => {
@@ -265,14 +272,14 @@ document.addEventListener('visibilitychange', () => document.visibilityState ===
 
 // ── The bridge ─────────────────────────────────────────────────────────
 let nextDl = 1;
-const SECURE = 'mihrab.demo.secure.';
+const SECURE = 'mihrab.web.secure.';
 let wakeLock = null;
 
 window.mihrabDesktop = {
-  demo: true,
+  web: true,
   app: {
     info: {
-      version: __MIHRAB_DEMO_VERSION__,
+      version: __MIHRAB_WEB_VERSION__,
       platform: 'web',
       arch: '',
       locale: navigator.language,
@@ -303,6 +310,20 @@ window.mihrabDesktop = {
     },
   },
   notifications: {
+    // The browser's own permission, which the desktop app does not have: the
+    // notifee shim asks here when it is answered, and assumes yes otherwise.
+    permission: notificationPermission,
+    requestPermission: async () => {
+      if (typeof Notification === 'undefined') return 'denied';
+      try {
+        // Asked even when already answered: a browser that has an answer
+        // gives it back without showing anything.
+        answered = await Notification.requestPermission();
+      } catch {
+        answered = 'denied';
+      }
+      return answered;
+    },
     onEvent: fn => {
       notifListeners.add(fn);
       return () => notifListeners.delete(fn);
@@ -393,7 +414,7 @@ window.mihrabDesktop = {
   },
   capture: {
     rect: async () => {
-      throw new Error('Saving a picture of the page is not part of the demo.');
+      throw new Error('Saving a picture of the page is not part of the web app.');
     },
   },
   power: {
@@ -415,10 +436,10 @@ window.mihrabDesktop = {
     forget: async () => undefined,
     list: async () => [],
     read: async () => {
-      throw new Error('Sync is not part of the demo.');
+      throw new Error('Sync is not part of the web app.');
     },
     write: async () => {
-      throw new Error('Sync is not part of the demo.');
+      throw new Error('Sync is not part of the web app.');
     },
     remove: async () => undefined,
     pickFile: async () => null,
@@ -508,7 +529,7 @@ window.mihrabDesktop = {
         return { free: 0, total: 0 };
       }
     },
-    // The app's downloads: into the overlay. Nothing in the demo should
+    // The app's downloads: into the overlay. Nothing in the web app should
     // need one — it is all preloaded — but a tafsir fetched on demand does.
     download: (url, dest, headers, onProgress) => {
       const id = nextDl++;

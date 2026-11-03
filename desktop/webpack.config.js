@@ -36,25 +36,25 @@ const TRANSPILE = [
 module.exports = (env = {}, argv) => {
   const dev = argv.mode !== 'production';
   /**
-   * `--env demo`: the website's demo, the same app for a plain browser —
-   * web/demo/ answers what Electron's main process does here, and
-   * src/config/webDemo.ts is swapped for its demo copy. `--env base=/x`
-   * names the path it is served under (GitHub Pages: /mihrab-demo).
+   * `--env web`: Mihrab Web, the same app for a plain browser —
+   * web/webapp/ answers what Electron's main process does here, and
+   * src/config/webApp.ts is swapped for its browser copy. `--env base=/x`
+   * names a path it is served under; GitHub Pages serves it at the root.
    */
-  const demo = Boolean(env.demo);
-  const base = demo ? String(env.base ?? '/mihrab-demo').replace(/\/$/, '') : '';
+  const webApp = Boolean(env.web);
+  const base = webApp ? String(env.base ?? '').replace(/\/$/, '') : '';
   return {
     target: 'web',
-    entry: demo ? path.join(__dirname, 'web', 'demo', 'index.js') : path.join(__dirname, 'web', 'index.js'),
+    entry: webApp ? path.join(__dirname, 'web', 'webapp', 'index.js') : path.join(__dirname, 'web', 'index.js'),
     output: {
-      path: path.join(__dirname, 'build', demo ? 'demo' : 'renderer'),
+      path: path.join(__dirname, 'build', webApp ? 'web' : 'renderer'),
       filename: 'app.[contenthash:8].js',
-      publicPath: demo ? `${base}/` : './',
+      publicPath: webApp ? `${base}/` : './',
       clean: true,
     },
     // Never an eval-based map: the page's CSP forbids eval, dev or not.
-    // None for the demo: it is published, and the map is ten megabytes.
-    devtool: demo ? false : 'source-map',
+    // None for the web app: it is published, and the map is ten megabytes.
+    devtool: webApp ? false : 'source-map',
     resolve: {
       // Platform extensions the way Metro does them, web first.
       extensions: ['.web.tsx', '.web.ts', '.web.js', '.tsx', '.ts', '.js', '.json'],
@@ -141,10 +141,10 @@ module.exports = (env = {}, argv) => {
         resource.request = shim('rnw-preprocess.js');
       }),
       new webpack.NormalModuleReplacementPlugin(/^react-native\/Libraries\//, shim('rn-internal.js')),
-      // The demo's switches: download manager off, one reciter, its path.
-      ...(demo
+      // The web app's switches: download manager off, one reciter, its path.
+      ...(webApp
         ? [
-            new webpack.NormalModuleReplacementPlugin(/[\\/]config[\\/]webDemo(\.ts)?$/, path.join(__dirname, 'web', 'demo', 'webDemo.js')),
+            new webpack.NormalModuleReplacementPlugin(/[\\/]config[\\/]webApp(\.ts)?$/, path.join(__dirname, 'web', 'webapp', 'webApp.js')),
           ]
         : []),
       new webpack.NormalModuleReplacementPlugin(/\/MushafLineNativeComponent(\.ts)?$/, shim('mushaf-line.js')),
@@ -152,16 +152,17 @@ module.exports = (env = {}, argv) => {
         __DEV__: JSON.stringify(dev),
         'process.env.NODE_ENV': JSON.stringify(dev ? 'development' : 'production'),
         'process.env.MIHRAB_DESKTOP': JSON.stringify('1'),
-        __MIHRAB_DEMO_BASE__: JSON.stringify(base),
-        __MIHRAB_DEMO_VERSION__: JSON.stringify(require('./package.json').version),
+        __MIHRAB_WEB_BASE__: JSON.stringify(base),
+        __MIHRAB_WEB_VERSION__: JSON.stringify(require('./package.json').version),
       }),
       new HtmlWebpackPlugin({
-        template: path.join(__dirname, 'web', demo ? 'demo' : '', 'index.html'),
+        template: path.join(__dirname, 'web', webApp ? 'webapp' : '', 'index.html'),
+        base,
       }),
       // GitHub Pages answers an unknown path with 404.html: the same page,
-      // so a reload of /mihrab-demo/quran opens the app on the Quran tab.
-      ...(demo
-        ? [new HtmlWebpackPlugin({ template: path.join(__dirname, 'web', 'demo', 'index.html'), filename: '404.html' })]
+      // so a reload of /quran opens the app on the Quran tab.
+      ...(webApp
+        ? [new HtmlWebpackPlugin({ template: path.join(__dirname, 'web', 'webapp', 'index.html'), filename: '404.html', base })]
         : []),
     ],
     performance: { hints: false },

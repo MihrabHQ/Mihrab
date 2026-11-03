@@ -19,7 +19,7 @@ import {
   QuranIcon,
   WidgetsIcon,
 } from './SettingsSectionIcons';
-import { IS_WEB_DEMO } from '../../config/webDemo';
+import { IS_WEB_APP } from '../../config/webApp';
 
 export type SettingsSubpageRoute = Extract<
   keyof RootStackParamList,
@@ -199,8 +199,8 @@ export const SETTINGS_SUBPAGES: readonly SettingsSubpage[] =
   ALL_SUBPAGES.filter(
     page =>
       (!page.platforms || page.platforms.includes(Platform.OS)) &&
-      // The website's demo carries everything; there is nothing to manage.
-      !(IS_WEB_DEMO && page.route === 'SettingsDownloads'),
+      // Mihrab Web carries everything; there is nothing to manage.
+      !(IS_WEB_APP && page.route === 'SettingsDownloads'),
   );
 
 /** Every section, whatever the platform — for tests that check the set. */

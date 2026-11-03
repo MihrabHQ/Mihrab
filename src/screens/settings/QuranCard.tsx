@@ -37,7 +37,7 @@ import {
   SettingsLinkRow,
   SettingsToggleRow,
 } from './SettingsGroup';
-import { IS_WEB_DEMO } from '../../config/webDemo';
+import { IS_WEB_APP } from '../../config/webApp';
 
 /**
  * Quran preferences — the app-wide companion-text choice (v2.7.40), and
@@ -132,7 +132,7 @@ function QuranCardImpl() {
           value={t(riwayahById(riwayah).nameKey, riwayahById(riwayah).arabic)}
           onPress={() => setRiwayahVisible(true)}
         />
-        {IS_WEB_DEMO ? null : (
+        {IS_WEB_APP ? null : (
         <SettingsLinkRow
           testID="settings-riwayah-manage"
           title={t('quran.riwayahManage', 'Add or remove traditions')}

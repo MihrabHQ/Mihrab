@@ -113,7 +113,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useVerticalBar } from '../../native/VerticalBar';
 import { RADIUS, SPACING } from '../../theme/tokens';
 import { tajweedColoursShown } from '../tajweed/tajweedSupport';
-import { IS_WEB_DEMO } from '../../config/webDemo';
+import { IS_WEB_APP } from '../../config/webApp';
 import { useSheetSides } from '../../responsive/sheetSides';
 import { drawableText } from '../maddaWajibFallback';
 
@@ -1008,7 +1008,7 @@ export function AyahActionSheet({
                     pct: wordMeaningsPct,
                   })}
                 </Text>
-              ) : tafsirWhole === false && !IS_WEB_DEMO ? (
+              ) : tafsirWhole === false && !IS_WEB_APP ? (
                 <Pressable
                   accessibilityRole="button"
                   hitSlop={6}

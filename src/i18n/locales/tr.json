@@ -1675,7 +1675,13 @@
     "location": {
       "title": "Neredesiniz?",
       "body": "Namaz vakitleri bulunduğunuz yere bağlıdır. Koordinatlarınız bu cihazda şifrelenir ve yalnızca cevap vermek için onlara ihtiyaç duyan bir hizmete gider — bize asla.",
-      "ready": "Bugün {{city}}"
+      "ready": "Bugün {{city}}",
+      "ipLooking": "Şehriniz bulunuyor…",
+      "ipTitle": "{{city}} konumunda mısınız?",
+      "ipBody": "İnternet bağlantınıza göre bir tahmin; bir şehir ya da daha fazla yanılabilir. Namaz vakitleri gerçekte nerede olduğunuza bağlıdır.",
+      "ipYes": "Evet, doğru",
+      "ipNo": "Hayır, konumumu seçeyim",
+      "bodyWeb": "Namaz vakitleri nerede olduğunuza bağlıdır. Konumunuz bu tarayıcıda saklanır ve yalnızca yanıt vermek için ona ihtiyaç duyan bir hizmete gider — asla bize değil."
     },
     "salamA11y": "Es-selâmü aleyküm ve rahmetullâhi teâlâ ve berekâtüh",
     "notNow": "Şimdi değil",
@@ -1700,7 +1706,9 @@
       "preReminder": "Önceden hatırlat",
       "exact": "Tam zamanında",
       "exactFix": "Düzelt",
-      "exactWhy": "Uyarıların dakikasında çalması için Android’in bir izne daha ihtiyacı var."
+      "exactWhy": "Uyarıların dakikasında çalması için Android’in bir izne daha ihtiyacı var.",
+      "bodyWeb": "Her namaz vakti girdiğinde tarayıcınızdan ezanla birlikte bir bildirim. Tarayıcılar bunu yalnızca Mihrab açıkken yapabilir, bu yüzden onu bir sekmede açık tutun.",
+      "deniedWeb": "Tarayıcınız bu sayfanın bildirimlerini engelliyor. Adres çubuğunun yanındaki site ayarlarından izin verebilirsiniz."
     },
     "personalise": {
       "title": "Kendinize göre ayarlayın",
@@ -2462,5 +2470,14 @@
     "beyondShort": "{{date}} sonrası yalnızca yöntem",
     "checkingShort": "yeni vakitler kontrol ediliyor",
     "updateShort": "en son hesaplama için Mihrab'ı güncelleyin"
+  },
+  "webApp": {
+    "keepTitle": "Mihrab elinizin altında olsun",
+    "keepBody": "Namaz vakitlerine istediğiniz zaman bakmak için bu sayfayı yer imlerine ekleyin. Ayarlarınız ve yer imleriniz bu tarayıcıda saklanır.",
+    "keepIos": "Paylaş’a, ardından “Ana Ekrana Ekle”ye dokunun.",
+    "keepAndroid": "Tarayıcı menüsünü ⋮ açın ve “Ana ekrana ekle”yi seçin.",
+    "keepDesktop": "Bu sayfayı yer imlerine eklemek için {{keys}} tuşlarına basın.",
+    "install": "Mihrab’ı bu cihaza ekle",
+    "gotIt": "Anladım"
   }
 }

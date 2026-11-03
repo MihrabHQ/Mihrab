@@ -24,7 +24,7 @@ import {
   getStateFromPath as defaultGetStateFromPath,
   type LinkingOptions,
 } from '@react-navigation/native';
-import { WEB_BASE_PATH } from '../config/webDemo';
+import { WEB_BASE_PATH } from '../config/webApp';
 import notifee, { EventType } from '@notifee/react-native';
 import { Linking, Platform } from 'react-native';
 
@@ -126,9 +126,9 @@ export function withSettingsUnder<S extends { routes: Array<{ name: string }> }>
 let launchLinkPending = false;
 
 /**
- * The website's demo is served under a path of its own (`WEB_BASE_PATH`),
+ * Mihrab Web is served under a path of its own (`WEB_BASE_PATH`),
  * and on the web the address bar IS the link: without this the app read
- * `/mihrab-demo/` as a route it did not know, and wrote `/quran` over it —
+ * `/<base>/` as a route it did not know, and wrote `/quran` over it —
  * a reload then asked the server for a page that is not there. Empty, and
  * so a no-op, in every app build.
  */

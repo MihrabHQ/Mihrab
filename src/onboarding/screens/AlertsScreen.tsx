@@ -46,6 +46,7 @@ import { useAppPalette } from '../../hooks/useAppPalette';
 import { usePrayerSettings } from '../../context/PrayerSettingsContext';
 import { useIsActive } from '../../hooks/useIsActive';
 import { requestNotificationPermission } from '../../notifications/requestNotificationAccess';
+import { IS_WEB_APP } from '../../config/webApp';
 import {
   NOTIFICATION_SOUND_OPTIONS,
   type NotificationSoundId,
@@ -237,19 +238,31 @@ export function AlertsScreen({
       }>
       <OnboardingHeading
         title={t('onboarding.alerts.title', 'Notify you at prayer times?')}
-        body={t(
-          'onboarding.alerts.body',
-          'A notification when each prayer comes in — with the adhan, or your phone’s own tone. This device only.',
-        )}
+        body={
+          IS_WEB_APP
+            ? t(
+                'onboarding.alerts.bodyWeb',
+                'A notification from your browser when each prayer comes in, with the adhan. Browsers can only do this while Mihrab is open, so keep it in a tab.',
+              )
+            : t(
+                'onboarding.alerts.body',
+                'A notification when each prayer comes in — with the adhan, or your phone’s own tone. This device only.',
+              )
+        }
       />
 
       {face === 'denied' ? (
         <Text
           style={[typeStyle('footnote'), styles.denied, { color: palette.muted }]}>
-          {t(
-            'onboarding.alerts.denied',
-            'Your phone is set to block notifications from Mihrab. You can turn them on later in Settings → Notifications.',
-          )}
+          {IS_WEB_APP
+            ? t(
+                'onboarding.alerts.deniedWeb',
+                'Your browser is blocking notifications from this page. You can allow them in the site’s settings, by the address bar.',
+              )
+            : t(
+                'onboarding.alerts.denied',
+                'Your phone is set to block notifications from Mihrab. You can turn them on later in Settings → Notifications.',
+              )}
         </Text>
       ) : null}
 

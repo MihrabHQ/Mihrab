@@ -160,6 +160,9 @@ const STAYS: Record<string, string> = {
   'mihrab.skyAsked.v1':
     'describes this phone — that the first-run walkthrough showed the Sky ' +
     'theme here, so the home screen does not offer it again',
+  'mihrab.webBookmarkOffer.v1':
+    'describes this browser — whether Mihrab Web has said how to keep the ' +
+    'page close (src/home/WebBookmarkOffer.tsx); sync never runs there.',
   'mihrab.skyThemeOffer.v1':
     'describes this phone — whether the home screen has offered the Sky ' +
     'theme, once, to somebody from before it (src/home/SkyThemeOffer.tsx). ' +

@@ -1675,7 +1675,13 @@
     "location": {
       "title": "Wo bist du?",
       "body": "Die Gebetszeiten hängen davon ab, wo du stehst. Deine Koordinaten werden auf diesem Gerät verschlüsselt und gehen nur an einen Dienst, der sie für die Antwort braucht — nie an uns.",
-      "ready": "Heute in {{city}}"
+      "ready": "Heute in {{city}}",
+      "ipLooking": "Deine Stadt wird gesucht…",
+      "ipTitle": "Bist du in {{city}}?",
+      "ipBody": "Eine Schätzung anhand deiner Internetverbindung – sie kann um eine Stadt oder mehr danebenliegen. Gebetszeiten hängen davon ab, wo du wirklich bist.",
+      "ipYes": "Ja, stimmt",
+      "ipNo": "Nein, Ort selbst wählen",
+      "bodyWeb": "Gebetszeiten hängen davon ab, wo du bist. Dein Standort bleibt in diesem Browser und geht nur an einen Dienst, der ihn für die Antwort braucht – nie an uns."
     },
     "salamA11y": "As-salāmu ʿalaykum wa raḥmatu llāhi taʿālā wa barakātuh",
     "notNow": "Jetzt nicht",
@@ -1700,7 +1706,9 @@
       "preReminder": "Vorher erinnern",
       "exact": "Exaktes Timing",
       "exactFix": "Beheben",
-      "exactWhy": "Android braucht eine weitere Berechtigung, damit Hinweise auf die Minute kommen und nicht Minuten später."
+      "exactWhy": "Android braucht eine weitere Berechtigung, damit Hinweise auf die Minute kommen und nicht Minuten später.",
+      "bodyWeb": "Eine Benachrichtigung deines Browsers, wenn ein Gebet beginnt, mit dem Adhan. Browser können das nur, solange Mihrab geöffnet ist – lass es also in einem Tab offen.",
+      "deniedWeb": "Dein Browser blockiert Benachrichtigungen dieser Seite. Du kannst sie in den Website-Einstellungen neben der Adressleiste erlauben."
     },
     "personalise": {
       "title": "Mach es zu deinem",
@@ -2462,5 +2470,14 @@
     "beyondShort": "nur Methode nach dem {{date}}",
     "checkingShort": "neue Zeiten werden geprüft",
     "updateShort": "Mihrab für die neueste Berechnung aktualisieren"
+  },
+  "webApp": {
+    "keepTitle": "Mihrab griffbereit halten",
+    "keepBody": "Setz ein Lesezeichen, um die Gebetszeiten jederzeit nachzusehen. Deine Einstellungen und Lesezeichen bleiben in diesem Browser gespeichert.",
+    "keepIos": "Tippe auf „Teilen“ und dann auf „Zum Home-Bildschirm“.",
+    "keepAndroid": "Öffne das Browsermenü ⋮ und wähle „Zum Startbildschirm hinzufügen“.",
+    "keepDesktop": "Drücke {{keys}}, um ein Lesezeichen zu setzen.",
+    "install": "Mihrab zu diesem Gerät hinzufügen",
+    "gotIt": "Verstanden"
   }
 }

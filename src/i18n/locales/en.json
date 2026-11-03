@@ -1675,7 +1675,13 @@
     "location": {
       "title": "Where are you?",
       "body": "Prayer times depend on where you stand. Your coordinates are encrypted on this device, and go only to a service that needs them to answer — never to us.",
-      "ready": "Today in {{city}}"
+      "ready": "Today in {{city}}",
+      "ipLooking": "Finding your city…",
+      "ipTitle": "Are you in {{city}}?",
+      "ipBody": "A guess from your internet connection, so it can be a city or more off. Prayer times depend on where you really are.",
+      "ipYes": "Yes, that’s right",
+      "ipNo": "No, choose my location",
+      "bodyWeb": "Prayer times depend on where you stand. Your location is kept in this browser, and goes only to a service that needs it to answer — never to us."
     },
     "salamA11y": "As-salāmu ʿalaykum wa raḥmatu llāhi taʿālā wa barakātuh",
     "notNow": "Not now",
@@ -1700,7 +1706,9 @@
       "preReminder": "Remind me before",
       "exact": "Exact timing",
       "exactFix": "Fix",
-      "exactWhy": "Android needs one more permission so alerts fire on the minute, not minutes late."
+      "exactWhy": "Android needs one more permission so alerts fire on the minute, not minutes late.",
+      "bodyWeb": "A notification from your browser when each prayer comes in, with the adhan. Browsers can only do this while Mihrab is open, so keep it in a tab.",
+      "deniedWeb": "Your browser is blocking notifications from this page. You can allow them in the site’s settings, by the address bar."
     },
     "personalise": {
       "title": "Make it yours",
@@ -2462,5 +2470,14 @@
     "beyondShort": "method alone after {{date}}",
     "checkingShort": "new times being checked",
     "updateShort": "update Mihrab for the latest calculation"
+  },
+  "webApp": {
+    "keepTitle": "Keep Mihrab close",
+    "keepBody": "Bookmark this page to check the prayer times whenever you need them. Your settings and bookmarks are kept in this browser.",
+    "keepIos": "Tap Share, then “Add to Home Screen”.",
+    "keepAndroid": "Open the browser’s menu ⋮ and choose “Add to Home screen”.",
+    "keepDesktop": "Press {{keys}} to bookmark this page.",
+    "install": "Add Mihrab to this device",
+    "gotIt": "Got it"
   }
 }

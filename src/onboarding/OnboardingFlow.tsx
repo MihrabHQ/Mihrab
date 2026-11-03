@@ -36,6 +36,7 @@ import { useBreakpoint } from '../responsive/breakpoints';
 import { isReduceMotion } from '../theme/motion';
 import type { RootStackParamList } from '../navigation/types';
 import { buildOnboardingSteps, onboardingProgress } from './steps';
+import { IS_WEB_APP, webApp } from '../config/webApp';
 import { SalamScreen } from './screens/SalamScreen';
 import { LocationScreen } from './screens/LocationScreen';
 import { MadhabScreen } from './screens/MadhabScreen';
@@ -59,7 +60,7 @@ export function OnboardingFlow() {
   // flips mid-flow would drop the step the user is standing on and shift
   // every index under them.
   const [steps] = useState(() =>
-    buildOnboardingSteps(location.locationOnboardingComplete),
+    buildOnboardingSteps(location.locationOnboardingComplete, IS_WEB_APP),
   );
   const [index, setIndex] = useState(0);
   const step = steps[index];
@@ -116,6 +117,9 @@ export function OnboardingFlow() {
     // The alerts step offered the full-screen alert and the look step
     // showed Sky: the home screen's later offers must not ask again.
     markWalkthroughFinished();
+    // Settings and bookmarks live in this browser's storage: ask it to
+    // keep them when the disk runs low.
+    if (IS_WEB_APP) webApp.keepStorage();
     updateSettings({ onboardingComplete: true });
     navigation.goBack();
   }, [
@@ -128,9 +132,14 @@ export function OnboardingFlow() {
   const advance = useCallback(() => {
     // Never past the end, and never a dismissal: the last screen does not
     // call this — it calls `finish` through `onFinish` — so nothing but a
-    // deliberate Start can end the flow.
+    // deliberate Start can end the flow. Mihrab Web has no Start screen:
+    // answering its last question is what ends it.
+    if (IS_WEB_APP && index >= steps.length - 1) {
+      finish();
+      return;
+    }
     setIndex(i => Math.min(i + 1, steps.length - 1));
-  }, [steps.length]);
+  }, [finish, index, steps.length]);
 
   const back = useCallback(() => {
     setIndex(i => (i > 0 ? i - 1 : i));

@@ -1,11 +1,11 @@
 # Privacy Policy — Mihrab: The Muslim Companion
 
-**Effective:** 2026-10-27
+**Effective:** 2026-11-03
 **Language:** English first, Swedish (Svenska) below.
 
 ## About this policy
 
-This policy covers the app **Mihrab: The Muslim Companion** ("Mihrab", "the app"), for Android and iOS/iPadOS/macOS.
+This policy covers the app **Mihrab: The Muslim Companion** ("Mihrab", "the app"), for Android and iOS/iPadOS/macOS, and **Mihrab Web**, the same app in a browser at [https://mihrabhq.github.io](https://mihrabhq.github.io) (see "Mihrab Web" below for what differs).
 
 | | |
 |---|---|
@@ -45,6 +45,15 @@ Mihrab is free and open source. It has no accounts, no ads, no analytics, no cra
 
 **Clipboard.** The app only places text on the clipboard when you tap a copy action (for example a pairing code).
 
+## Mihrab Web
+
+Mihrab Web is the same app running in your browser. What differs:
+
+- **Where your data is kept.** Your settings, location, saved places, Quran bookmarks and records are kept in your browser's storage for the site (`localStorage` and IndexedDB), in this browser only. They are not encrypted by Mihrab there, and there is no device sync. Clearing the site's data in your browser deletes them.
+- **Hosting.** The page and its Quran files (fonts, riwayat, word timings, word meanings) are served by **GitHub Pages** (`mihrabhq.github.io`), which sees your IP address and the files requested, under GitHub's privacy statement.
+- **Your first location.** When you first open it, the page asks **GeoJS** (`get.geojs.io`), or **ipapi.co** if GeoJS does not answer, for the city your internet connection is registered to, and offers it as a question. Sent: only the request itself, which carries your IP address. Nothing is saved unless you confirm it; you can choose your place instead. Device location in the browser uses the browser's own location permission.
+- **Notifications.** If you allow them, prayer notifications are shown by your browser, scheduled in the page and only while it is open. No push service is used.
+
 ## Third-party services
 
 When you use these features, your device contacts the service directly. The service may see technical data such as your IP address, the time of the request and the requested URL, under its own privacy policy. Mihrab sends no account identifier, advertising identifier or device identifier.
@@ -77,11 +86,11 @@ If the app's data handling changes, this policy and its effective date will be u
 
 # Integritetspolicy — Mihrab: The Muslim Companion
 
-**Gäller från:** 2026-10-27
+**Gäller från:** 2026-11-03
 
 ## Om policyn
 
-Den här policyn gäller appen **Mihrab: The Muslim Companion** ("Mihrab", "appen") för Android och iOS/iPadOS/macOS.
+Den här policyn gäller appen **Mihrab: The Muslim Companion** ("Mihrab", "appen") för Android och iOS/iPadOS/macOS, och **Mihrab Web**, samma app i en webbläsare på [https://mihrabhq.github.io](https://mihrabhq.github.io) (se "Mihrab Web" nedan för det som skiljer sig).
 
 | | |
 |---|---|
@@ -120,6 +129,15 @@ Mihrab är gratis och öppen källkod. Appen har inga konton, ingen reklam, inge
 **Widgetar och Live Activity.** Widgetar och iOS Live Activity visar de bönetider appen redan har. De använder ingen server och ingen pushtjänst.
 
 **Urklipp.** Appen lägger bara text i urklipp när du trycker på en kopieringsåtgärd (t.ex. en parningskod).
+
+## Mihrab Web
+
+Mihrab Web är samma app i din webbläsare. Det här skiljer sig:
+
+- **Var dina uppgifter lagras.** Dina inställningar, din plats, sparade platser, Koranbokmärken och poster sparas i webbläsarens lagring för webbplatsen (`localStorage` och IndexedDB), bara i den webbläsaren. Mihrab krypterar dem inte där, och det finns ingen enhetssynk. Rensar du webbplatsens data i webbläsaren tas de bort.
+- **Värd.** Sidan och dess Koranfiler (typsnitt, riwayat, ordtidtabeller, ordbetydelser) levereras av **GitHub Pages** (`mihrabhq.github.io`), som ser din IP-adress och vilka filer som begärs, enligt GitHubs integritetspolicy.
+- **Din första plats.** När du öppnar sidan första gången frågar den **GeoJS** (`get.geojs.io`), eller **ipapi.co** om GeoJS inte svarar, vilken stad din internetanslutning är registrerad i, och ställer det som en fråga. Skickas: bara själva förfrågan, som bär din IP-adress. Inget sparas om du inte bekräftar; du kan välja plats själv i stället. Enhetsplats i webbläsaren använder webbläsarens egen platsbehörighet.
+- **Notiser.** Om du tillåter dem visas bönenotiser av webbläsaren, schemalagda i sidan och bara medan den är öppen. Ingen pushtjänst används.
 
 ## Tredje parter
 

@@ -25,6 +25,7 @@
  * So the asking lives here, once. A caller gets a boolean and is expected
  * to act on it.
  */
+import { IS_WEB_APP } from '../config/webApp';
 import { PermissionsAndroid, Platform } from 'react-native';
 import notifee, { AuthorizationStatus } from '@notifee/react-native';
 
@@ -44,7 +45,9 @@ import notifee, { AuthorizationStatus } from '@notifee/react-native';
  * refused one lose the other.
  */
 export async function requestNotificationPermission(): Promise<boolean> {
-  if (Platform.OS === 'ios') {
+  // Mihrab Web: the browser asks the visitor. iOS's own branch below asks
+  // in the same words, so it serves both.
+  if (Platform.OS === 'ios' || IS_WEB_APP) {
     const perm = await notifee.requestPermission({
       alert: true,
       badge: true,

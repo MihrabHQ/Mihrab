@@ -39,7 +39,7 @@
 
 import type { RiwayahId } from '../riwayat';
 import { hasSurahTable } from './surahRecitation';
-import { IS_WEB_DEMO, WEB_DEMO_RECITER_ID } from '../../config/webDemo';
+import { IS_WEB_APP, WEB_APP_RECITER_ID } from '../../config/webApp';
 
 export type Reciter = {
   /** Stable id used in settings + file paths. */
@@ -687,12 +687,12 @@ const ALL_RECITERS: ReadonlyArray<Reciter> = [
 ] as const;
 
 /**
- * Every reciter the app offers. The website's demo offers one: it carries
+ * Every reciter the app offers. Mihrab Web offers one: it carries
  * the word timings of a single reciter, and a list of fifty that mostly
  * could not highlight a word would be a poor picture of the reader.
  */
-export const RECITERS: ReadonlyArray<Reciter> = IS_WEB_DEMO
-  ? ALL_RECITERS.filter(r => r.id === WEB_DEMO_RECITER_ID)
+export const RECITERS: ReadonlyArray<Reciter> = IS_WEB_APP
+  ? ALL_RECITERS.filter(r => r.id === WEB_APP_RECITER_ID)
   : ALL_RECITERS;
 
 /**

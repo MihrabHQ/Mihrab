@@ -1676,7 +1676,13 @@
     "location": {
       "title": "Où êtes-vous ?",
       "body": "Les heures de prière dépendent de l’endroit où vous êtes. Vos coordonnées sont chiffrées sur cet appareil et ne vont qu’à un service qui en a besoin pour répondre — jamais à nous.",
-      "ready": "Aujourd’hui à {{city}}"
+      "ready": "Aujourd’hui à {{city}}",
+      "ipLooking": "Recherche de votre ville…",
+      "ipTitle": "Êtes-vous à {{city}} ?",
+      "ipBody": "Une estimation d’après votre connexion internet : elle peut se tromper d’une ville ou plus. Les horaires de prière dépendent de l’endroit où vous êtes réellement.",
+      "ipYes": "Oui, c’est bien ça",
+      "ipNo": "Non, choisir mon lieu",
+      "bodyWeb": "Les horaires de prière dépendent de l’endroit où vous êtes. Votre position reste dans ce navigateur et ne va qu’à un service qui en a besoin pour répondre — jamais à nous."
     },
     "salamA11y": "As-salāmu ʿalaykum wa raḥmatu llāhi taʿālā wa barakātuh",
     "notNow": "Pas maintenant",
@@ -1701,7 +1707,9 @@
       "preReminder": "Me rappeler avant",
       "exact": "Horaire exact",
       "exactFix": "Corriger",
-      "exactWhy": "Android a besoin d’une autorisation supplémentaire pour que les alertes se déclenchent à la minute près."
+      "exactWhy": "Android a besoin d’une autorisation supplémentaire pour que les alertes se déclenchent à la minute près.",
+      "bodyWeb": "Une notification du navigateur à l’entrée de chaque prière, avec l’adhan. Les navigateurs ne le peuvent que si Mihrab est ouvert : gardez-le dans un onglet.",
+      "deniedWeb": "Votre navigateur bloque les notifications de cette page. Vous pouvez les autoriser dans les paramètres du site, près de la barre d’adresse."
     },
     "personalise": {
       "title": "Personnalisez",
@@ -2463,5 +2471,14 @@
     "beyondShort": "méthode seule après le {{date}}",
     "checkingShort": "nouveaux horaires en vérification",
     "updateShort": "mettez Mihrab à jour pour le dernier calcul"
+  },
+  "webApp": {
+    "keepTitle": "Gardez Mihrab à portée de main",
+    "keepBody": "Ajoutez cette page à vos favoris pour consulter les horaires de prière quand vous en avez besoin. Vos réglages et signets restent dans ce navigateur.",
+    "keepIos": "Touchez Partager, puis « Sur l’écran d’accueil ».",
+    "keepAndroid": "Ouvrez le menu du navigateur ⋮ et choisissez « Ajouter à l’écran d’accueil ».",
+    "keepDesktop": "Appuyez sur {{keys}} pour ajouter cette page aux favoris.",
+    "install": "Ajouter Mihrab à cet appareil",
+    "gotIt": "Compris"
   }
 }

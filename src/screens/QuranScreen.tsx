@@ -96,7 +96,7 @@ import { useTabBarScroll } from '../navigation/tabBarVisibility';
 import { RADIUS, SPACING } from '../theme/tokens';
 import { tajweedColoursShown } from '../quran/tajweed/tajweedSupport';
 import { useSheetSides } from '../responsive/sheetSides';
-import { IS_WEB_DEMO } from '../config/webDemo';
+import { IS_WEB_APP } from '../config/webApp';
 
 type Tab = 'surah' | 'juz' | 'bookmarks';
 const TABS: Tab[] = ['surah', 'juz', 'bookmarks'];
@@ -953,7 +953,7 @@ export function QuranScreen() {
       <View style={styles.downloadsRow}>
         {/* Sync, once it is set up — it used to sit in the title bar. */}
         <SyncHeaderButton />
-        {riwayahOffered && !IS_WEB_DEMO ? (
+        {riwayahOffered && !IS_WEB_APP ? (
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={t(
@@ -989,7 +989,7 @@ export function QuranScreen() {
             {t('tajweed.title', 'Tajweed colours')} ›
           </Text>
         </Pressable>
-        {IS_WEB_DEMO ? null : (
+        {IS_WEB_APP ? null : (
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={t('downloads.title', 'Manage downloads')}

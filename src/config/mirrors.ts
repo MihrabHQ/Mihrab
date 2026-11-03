@@ -9,7 +9,7 @@
  * its terms, moving, or going away does not take a downloaded feature with
  * it. Forks: change MIRROR_BASE to your own repository's releases.
  */
-import { IS_WEB_DEMO } from './webDemo';
+import { IS_WEB_APP } from './webApp';
 import { fetchWithRetry, type FetchWithRetryOptions } from '../utils/fetchWithRetry';
 
 export const MIRROR_BASE = 'https://github.com/MihrabHQ/Mihrab/releases/download';
@@ -38,10 +38,10 @@ export async function fetchMirrored(
   init: RequestInit | undefined,
   options: FetchWithRetryOptions = {},
 ): Promise<Response> {
-  // The website's demo runs in a browser, and a release download answers a
+  // Mihrab Web runs in a browser, and a release download answers a
   // browser without the header that would let it read the file: the mirror
-  // can only fail there, loudly, so the demo asks the source straight away.
-  if (IS_WEB_DEMO) return fetchWithRetry(original, init, options);
+  // can only fail there, loudly, so the web app asks the source straight away.
+  if (IS_WEB_APP) return fetchWithRetry(original, init, options);
   try {
     const res = await fetchWithRetry(mirror, init, {
       ...options,

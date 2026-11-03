@@ -241,7 +241,13 @@ describe('the location screen', () => {
     // must lead to the prompt with no exit or delay affordance. The
     // manual city path inside LocationSetup is the escape hatch. This is
     // a compliance contract and exactly what a redesign loses quietly.
-    expect(src).not.toMatch(/QuietAction/);
+    //
+    // The one quiet button is Mihrab Web's "No, choose my location" under
+    // its IP guess — it opens the same picker, it does not leave the
+    // screen — and only a web build ever has a guess to offer.
+    expect(src.match(/<QuietAction/g) ?? []).toHaveLength(1);
+    expect(src).toMatch(/<QuietAction[\s\S]*?onPress=\{\(\) => setChoosing\(true\)\}/);
+    expect(src).toMatch(/useState<IpPlace \| null \| 'looking'>\(\s*IS_WEB_APP && !done \? 'looking' : null,?\s*\)/);
     expect(src).not.toMatch(/onboarding\.skip/);
     expect(src).not.toMatch(/onboarding\.notNow/);
   });

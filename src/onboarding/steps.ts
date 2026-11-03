@@ -60,9 +60,24 @@ export const ONBOARDING_STEPS: readonly OnboardingStepId[] = [
  */
 export function buildOnboardingSteps(
   locationDone: boolean,
+  web = false,
 ): OnboardingStepId[] {
-  return ONBOARDING_STEPS.filter(id => id !== 'location' || !locationDone);
+  const list = web ? WEB_ONBOARDING_STEPS : ONBOARDING_STEPS;
+  return list.filter(id => id !== 'location' || !locationDone);
 }
+
+/**
+ * Mihrab Web's walkthrough: where you are, and whether to be told when a
+ * prayer comes in — then the times. Somebody who opened a link to check
+ * the times came for the times; the school, the shelf of preferences and
+ * the preview card are all in Settings, at their defaults until then. The
+ * last step ends the flow itself (`OnboardingFlow`), so there is no Start
+ * screen to press through.
+ */
+export const WEB_ONBOARDING_STEPS: readonly OnboardingStepId[] = [
+  'location',
+  'alerts',
+];
 
 /**
  * How far along a step is, for the progress rule.
