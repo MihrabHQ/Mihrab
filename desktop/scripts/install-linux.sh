@@ -76,7 +76,11 @@ if uses_apt; then
   fetch "Mihrab-linux-$DEB.deb" "$TMP/mihrab.deb"
   chmod 644 "$TMP/mihrab.deb"
   say "Installing (sudo may ask for your password)…"
-  $SUDO apt-get install -y "$TMP/mihrab.deb" >/dev/null || fail "apt-get could not install the package."
+  # A fresh system (or container) may have no package lists yet, and then
+  # none of the deb's dependencies is installable: refresh them and retry.
+  $SUDO apt-get install -y "$TMP/mihrab.deb" >/dev/null 2>&1 ||
+    { $SUDO apt-get update -qq && $SUDO apt-get install -y "$TMP/mihrab.deb" >/dev/null; } ||
+    fail "apt-get could not install the package."
   RUN=mihrab
 else
   fetch "Mihrab-linux-$AI.AppImage" "$TMP/Mihrab.AppImage"

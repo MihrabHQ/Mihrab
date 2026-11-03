@@ -192,6 +192,7 @@ jobs:
           if exist "%APPDATA%\Mihrab" (echo settings left behind & exit /b 1)
           reg query "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v com.prayer_times.desktop >nul 2>&1 && (echo start-at-login entry left behind & exit /b 1)
           echo installed, started and removed
+          exit /b 0
 
       - uses: actions/upload-artifact@v4
         if: always()
