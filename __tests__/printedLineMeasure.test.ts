@@ -17,14 +17,18 @@ const read = (p: string) => fs.readFileSync(path.join(__dirname, '..', p), 'utf8
 describe('a printed line is measured by its own width', () => {
   const page = read('src/quran/MushafUnicodePage.tsx');
 
-  it('reads the laid-out width of the text, not a line of its box', () => {
-    expect(page).toMatch(/onLayout=\{e => onLineLayout\(index, e\.nativeEvent\.layout\.width, spaceEm, gaps\)\}/);
-    expect(page).not.toMatch(/nativeEvent\.lines\.reduce/);
+  it('reads the box on the web and the laid-out line on the phones', () => {
+    expect(page).toMatch(/const MEASURE_BY_LAYOUT = Platform\.OS === 'web';/);
+    expect(page).toMatch(
+      /MEASURE_BY_LAYOUT\s*\?\s*e => onLineLayout\(index, e\.nativeEvent\.layout\.width, spaceEm, gaps\)/,
+    );
+    expect(page).toMatch(/MEASURE_BY_LAYOUT\s*\?\s*undefined\s*:\s*e =>\s*onLineLayout\(\s*index,\s*e\.nativeEvent\.lines\.reduce/);
   });
 
-  it('keeps the text shrink-wrapped inside the wide box', () => {
-    // The width sits on the box around the line, never on the line itself.
-    expect(page).toMatch(/styles\.printedBox,\s*\{ width: measure \* PRINTED_BOX_SLACK/);
+  it('never lets a line break off the web', () => {
+    // A shrink-wrapped line on iOS came back a hair too narrow and wrapped,
+    // and with the gap spacers TextKit never finished laying it out.
+    expect(page).toMatch(/!MEASURE_BY_LAYOUT && \{ width: measure \* PRINTED_BOX_SLACK \}/);
     const line = page.slice(page.indexOf('printedLine: {'), page.indexOf('body: {'));
     expect(line).not.toMatch(/^\s*(max)?[wW]idth:/m);
   });

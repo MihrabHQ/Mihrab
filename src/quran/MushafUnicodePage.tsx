@@ -324,6 +324,9 @@ export function openDammatanForFace(
  */
 const GAP_AS_SPACER = Platform.OS === 'ios';
 
+/** The web measures a printed line by its box — see the line's `onLayout`. */
+const MEASURE_BY_LAYOUT = Platform.OS === 'web';
+
 /** What one line's justification comes to, in ems of the type size. */
 export type FittedLine = {
   /** The word gap to set this line's spaces at. */
@@ -1574,20 +1577,40 @@ function PrintedPageBody({
             <Text
               allowFontScaling={false}
               /**
-               * ITS OWN WIDTH, NOT THE WIDTH OF ITS LINE.
+               * The line's own width — two ways, because the platforms
+               * differ in what they offer and in what they survive.
                *
-               * This read `onTextLayout`'s line width. The web never sends
-               * that event, so its lines were never justified at all, and
-               * what a "line" is differs between the platforms that do. The
-               * text box itself is shrink-wrapped to its words on every
-               * platform, so its laid-out width is the line's own width
-               * everywhere. The transform does not enter layout. (Why the
-               * lines fell short on Apple's devices is `GAP_AS_SPACER`.)
+               * iOS and Android report each laid-out line's width in
+               * `onTextLayout`, and the line is drawn in a box far wider than
+               * it can need, so it can never break. The web never sends that
+               * event, so there the text is shrink-wrapped to its words and
+               * its `onLayout` width is read instead. Not on iOS: a box
+               * shrink-wrapped by Yoga comes back a hair narrower than
+               * TextKit needs to draw it, the last word wraps (the IndoPak
+               * pages came out with every other row on two lines), and with
+               * the gap spacers in the line TextKit never finished laying it
+               * out — the app hung and grew until it was killed.
                */
-              onLayout={e => onLineLayout(index, e.nativeEvent.layout.width, spaceEm, gaps)}
+              onLayout={
+                MEASURE_BY_LAYOUT
+                  ? e => onLineLayout(index, e.nativeEvent.layout.width, spaceEm, gaps)
+                  : undefined
+              }
+              onTextLayout={
+                MEASURE_BY_LAYOUT
+                  ? undefined
+                  : e =>
+                      onLineLayout(
+                        index,
+                        e.nativeEvent.lines.reduce((m, l) => Math.max(m, l.width), 0),
+                        spaceEm,
+                        gaps,
+                      )
+              }
               style={[
                 styles.body,
                 styles.printedLine,
+                !MEASURE_BY_LAYOUT && { width: measure * PRINTED_BOX_SLACK },
                 {
                   height: rowHeight,
                   lineHeight: rowHeight,
@@ -1665,8 +1688,8 @@ const styles = StyleSheet.create({
   },
   printedLine: {
     // Anchored to the right, which is where an Arabic line begins, and
-    // scaled about that same edge so the text lands on the margin. No
-    // width: shrink-wrapped to its words, which is what is measured.
+    // scaled about that same edge so the text lands on the margin. Its
+    // width is set per platform — see the line's `onLayout`.
     position: 'absolute',
     top: 0,
     right: 0,
