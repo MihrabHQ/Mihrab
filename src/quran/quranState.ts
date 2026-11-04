@@ -46,6 +46,7 @@ import {
   resetKhatmahGapMemo,
 } from './khatmahProgress';
 import { KHATMAH_MARK_LIMIT } from './khatmahEdits';
+import { coerceHifz, type HifzState } from './hifz';
 
 /** The Quran blob's key. Exported so the snapshot layer names it once. */
 export const QURAN_STORAGE_KEY = 'mihrab.quran.v1';
@@ -529,6 +530,11 @@ function mergeStored(raw: unknown): QuranState {
           r.khatmah.map(coerceKhatmah).filter((k): k is KhatmahPlan => k !== null),
         )
       : [],
+    // Present only when there is something to hold — see `QuranState.hifz`.
+    ...(() => {
+      const hifz = coerceHifz(r.hifz);
+      return hifz ? { hifz } : {};
+    })(),
     prefs: {
       ...DEFAULT_QURAN_STATE.prefs,
       ...(r.prefs ?? {}),
@@ -772,6 +778,20 @@ export function updateQuranState(
         };
   emit();
   persist();
+}
+
+/** Change the reader's Hifz (`hifz.ts`); a result with nothing in it drops the key. */
+export function updateHifz(updater: (prev: HifzState) => HifzState): void {
+  updateQuranState(prev => {
+    const next = updater(prev.hifz ?? { portions: [] });
+    const kept = coerceHifz(next);
+    if (!kept) {
+      const rest = { ...prev };
+      delete rest.hifz;
+      return rest;
+    }
+    return { ...prev, hifz: kept };
+  });
 }
 
 export function subscribeQuranState(listener: () => void): () => void {

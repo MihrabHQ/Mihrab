@@ -11,6 +11,7 @@
 import type { RiwayahId } from './riwayat';
 import type { KhatmahPace } from './khatmahPace';
 import type { AyahMark, AyahRange } from './khatmahDone';
+import type { HifzState } from './hifz';
 
 export type BookmarkColor = 'emerald' | 'sapphire' | 'amber' | 'rose' | 'violet';
 
@@ -562,6 +563,13 @@ export type QuranState = {
   khatmah: KhatmahPlan[];
   prefs: QuranPrefs;
   /**
+   * What the reader knows by heart, and when each portion is next due
+   * (`hifz.ts`, #121). Additive, and ABSENT until the first portion is
+   * marked, so a blob from before it — and a reader who never memorises —
+   * carries no such key and merges to none.
+   */
+  hifz?: HifzState;
+  /**
    * WHEN THE PREFERENCES LAST CHANGED (additive).
    *
    * They used to ride on `lastRead.updatedAt` — the only timestamp this
@@ -611,6 +619,7 @@ export type QuranState = {
 
 /** Something the reader took away, and when. */
 export type Removal = { id: string; at: number };
+
 
 /** The text under the āyah in its sheet — see `QuranPrefs.ayahSheetPanel`. */
 export type AyahSheetPanel = 'none' | 'translation' | 'tafsir' | 'tajweed';

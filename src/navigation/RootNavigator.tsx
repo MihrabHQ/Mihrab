@@ -283,6 +283,15 @@ export function RootNavigator() {
         })}
       />
       <Stack.Screen
+        name="Hifz"
+        getComponent={() => (require('../screens/quran/HifzScreen') as typeof import('../screens/quran/HifzScreen')).HifzScreen}
+        options={() => ({
+          title: t('hifz.title', 'Hifz'),
+          headerLargeTitle: false,
+          contentStyle: edgeToEdge,
+        })}
+      />
+      <Stack.Screen
         name="Khatmah"
         getComponent={() => (require('../screens/quran/KhatmahScreen') as typeof import('../screens/quran/KhatmahScreen')).KhatmahScreen}
         options={() => ({

@@ -38,6 +38,7 @@ import { useActiveEdition } from '../useActiveEdition';
 import {
   useQuranState,
   setQuranPrefs,
+  updateHifz,
   BOOKMARK_COLORS,
   KHATMAH_COLOR,
   READING_COLOR,
@@ -48,6 +49,9 @@ import type {
   QuranBookmark,
 } from '../quranTypes';
 import { activeKhatmah } from '../khatmahProgress';
+import { dayOf, HIFZ_COLOR, markSurah, markUpTo, portionAt, removePortion } from '../hifz';
+import { hifzDueLabel } from '../hifzLabels';
+import { ayahCount } from '../ayahIndex';
 import { khatmahPageInWindow } from '../khatmahSchedule';
 import { clearKhatmahPosition, setKhatmahPosition } from '../khatmahActions';
 import {
@@ -472,6 +476,9 @@ export function AyahActionSheet({
   // The muṣḥaf on screen: which portion a page belongs to is a question
   // about THIS print's pagination, not the default one's.
   const riwayah = resolveRiwayah(state.prefs.riwayah);
+  // Hifz (#121): the portion this ayah sits in, if it is known by heart.
+  const hifzToday = dayOf(Date.now());
+  const hifzHere = state.hifz ? portionAt(state.hifz, surah, ayah) : undefined;
   // The other trail's marker (#41): pinned here, or recorded here by
   // reading — either way "Continue reading" already leads to this ayah.
   const isReadingHere =
@@ -1390,6 +1397,89 @@ export function AyahActionSheet({
               />
             </Pressable>
           ) : null}
+
+          {/* Hifz (#121): the third trail through the book, in its own
+              colour. An ayah inside a memorised portion says so and when
+              that portion is next due, and can be taken out; any other
+              ayah offers the whole surah, or — from the second ayah on,
+              short of the last — the surah up to here, which is how a
+              stretch still being learned is marked. */}
+          {hifzHere ? (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityState={{ selected: true }}
+              accessibilityLabel={t('hifz.sheetKnown', {
+                defaultValue: 'By heart · {{when}}',
+                when: hifzDueLabel(hifzHere, hifzToday, t),
+              })}
+              onPress={() =>
+                updateHifz(prev => removePortion(prev, hifzHere.id, Date.now()))
+              }
+              style={({ pressed }) => [
+                styles.pinButton,
+                { backgroundColor: `${HIFZ_COLOR}33` },
+                pressed && styles.pinPressed,
+              ]}
+            >
+              <PinFace
+                color={HIFZ_COLOR}
+                textColor={palette.text}
+                active
+                label={t('hifz.sheetKnown', {
+                  defaultValue: 'By heart · {{when}}',
+                  when: hifzDueLabel(hifzHere, hifzToday, t),
+                })}
+                action={t('hifz.sheetNotKnown', 'Not by heart')}
+              />
+            </Pressable>
+          ) : (
+            <>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={t('hifz.sheetSurah', 'I know this surah by heart')}
+                onPress={() => {
+                  const now = Date.now();
+                  updateHifz(prev => markSurah(prev, surah, dayOf(now), now));
+                }}
+                style={({ pressed }) => [
+                  styles.pinButton,
+                  { backgroundColor: `${HIFZ_COLOR}1F` },
+                  pressed && styles.pinPressed,
+                ]}
+              >
+                <PinFace
+                  color={HIFZ_COLOR}
+                  textColor={palette.text}
+                  active={false}
+                  label={t('hifz.sheetSurah', 'I know this surah by heart')}
+                  action={t('hifz.sheetMark', 'Mark')}
+                />
+              </Pressable>
+              {ayah > 1 && ayah < ayahCount(surah) ? (
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={t('hifz.sheetUpTo', 'Memorised up to here')}
+                  onPress={() => {
+                    const now = Date.now();
+                    updateHifz(prev => markUpTo(prev, surah, ayah, dayOf(now), now));
+                  }}
+                  style={({ pressed }) => [
+                    styles.pinButton,
+                    { backgroundColor: `${HIFZ_COLOR}1F` },
+                    pressed && styles.pinPressed,
+                  ]}
+                >
+                  <PinFace
+                    color={HIFZ_COLOR}
+                    textColor={palette.text}
+                    active={false}
+                    label={t('hifz.sheetUpTo', 'Memorised up to here')}
+                    action={t('hifz.sheetMark', 'Mark')}
+                  />
+                </Pressable>
+              ) : null}
+            </>
+          )}
 
           {/* PLAY — everything that makes this āyah sound, in one place:
               play from here and repeat at the top, then the reciter,

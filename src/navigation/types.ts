@@ -82,6 +82,8 @@ export type RootStackParamList = {
    * reason as Tilāwah — and because the tab was a wall of controls.
    */
   Khatmah: undefined;
+  /** What is known by heart and its revision (#121); the row on the Qur'an tab leads here. */
+  Hifz: undefined;
   Onboarding: undefined;
   Backup: undefined;
   Sync: undefined;

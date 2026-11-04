@@ -322,8 +322,34 @@ function randomQuran(r: () => number): QuranState {
   for (const k of Object.keys(starsAt)) {
     if (!liveStars.includes(k)) delete starsAt[k];
   }
+  // Hifz (#121): portions by id with a stamp each, and removals, the same
+  // shape as the bookmarks' — and absent entirely on some states, as on
+  // every blob from before it.
+  const hifzIds = ['h1', 'h2', 'h3'];
+  const spans = [[5242, 5271], [6222, 6225], [6226, 6230]] as const;
+  const hifzRemoved = hifzIds
+    .filter(() => r() < 0.4)
+    .map(id => ({ id, at: NOW - Math.floor(r() * 100_000) }));
+  const portions = hifzIds
+    .filter(() => r() < 0.6)
+    .map(id => {
+      const at = NOW - Math.floor(r() * 100_000);
+      const [start, end] = spans[hifzIds.indexOf(id)];
+      return { id, start, end, memorisedAt: at, updatedAt: at, interval: 1, due: '2026-11-05', reviews: [] };
+    })
+    .filter(p => !hifzRemoved.some(x => x.id === p.id && x.at >= p.updatedAt))
+    .sort((x, y) => x.start - y.start);
+  const hifz =
+    r() < 0.5 && (portions.length > 0 || hifzRemoved.length > 0)
+      ? {
+          portions,
+          ...(hifzRemoved.length > 0 ? { removed: mergeRemovals(hifzRemoved, []) } : {}),
+          ...(r() < 0.5 ? { cap: 14 as const, prefsUpdatedAt: NOW - Math.floor(r() * 100_000) } : {}),
+        }
+      : undefined;
   return {
     ...DEFAULT_QURAN_STATE,
+    ...(hifz ? { hifz } : {}),
     bookmarks: bookmarks.filter(
       b => !removed.some(x => x.id === b.id && x.at >= b.createdAt),
     ),

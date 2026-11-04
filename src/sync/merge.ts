@@ -55,6 +55,7 @@ import {
   type AyahMark,
 } from '../quran/khatmahDone';
 import { mergeRemovals, removedAfter } from '../quran/quranState';
+import { mergeHifz } from '../quran/hifz';
 import type {
   KhatmahPlan,
   QuranState,
@@ -781,6 +782,11 @@ export function mergeQuran(
     ...(starsRemoved.length > 0 ? { starsRemoved } : {}),
     ...(Object.keys(starsAt).length > 0 ? { starsAt } : {}),
     khatmah: mergeKhatmah(local.khatmah, incoming.khatmah),
+    // Hifz, where either side has any (`hifz.ts`): absent stays absent.
+    ...(() => {
+      const hifz = mergeHifz(local.hifz, incoming.hifz);
+      return hifz ? { hifz } : {};
+    })(),
     prefs: theirPrefsAreNewer ? incoming.prefs : local.prefs,
     // The stamp travels with the choice, or the loser's own next sync
     // would look newer than the winner it just accepted. Left out when

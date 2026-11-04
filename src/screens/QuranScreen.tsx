@@ -92,6 +92,7 @@ import { stripShowsRun } from '../quran/quranDownloadManager';
 import { SyncHeaderButton } from './sync/SyncHeaderButton';
 import { TilawahRow } from './quran/TilawahRow';
 import { KhatmahEntry } from './quran/KhatmahEntry';
+import { HifzEntry } from './quran/HifzEntry';
 import { useTabBarScroll } from '../navigation/tabBarVisibility';
 import { RADIUS, SPACING } from '../theme/tokens';
 import { tajweedColoursShown } from '../quran/tajweed/tajweedSupport';
@@ -695,6 +696,10 @@ export function QuranScreen() {
           play), play/pause, next surah; the row opens the player. Only
           beside a live plan: without one it is the half-row above. */}
       {plan ? <TilawahRow /> : null}
+
+      {/* Hifz (#121): a door until something is by heart, then the day's
+          revision — the portions due, ticked off here. See `HifzEntry`. */}
+      <HifzEntry />
 
       {/* Verse of the day (QR-23).
 
