@@ -21,6 +21,7 @@
  * Both gestures drive one selection: tap a chip, or swipe the card body the
  * way the carousel used to work.
  */
+import { useWebScrollSettle } from '../../hooks/useWebScrollSettle';
 import { useMinimalOffered } from '../../settings/useMinimalOffered';
 import React, { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import {
@@ -1890,6 +1891,8 @@ function TodayCardImpl({
     },
     [pageWidth, todayIndex, pastDays.length, week.length, pagePosition],
   );
+  // A browser sends no momentum end: settle on the scroll coming to rest.
+  const webSettle = useWebScrollSettle(onPageSettled);
   const pageLayout = useCallback(
     (_: unknown, index: number) => ({
       length: pageWidth,
@@ -2922,6 +2925,7 @@ function TodayCardImpl({
               }
               getItemLayout={pageLayout}
               onMomentumScrollEnd={onPageSettled}
+              {...webSettle}
               // A finger on the pager is a choice of day, and the card
               // stops turning itself from here on. The settle cannot say
               // this: a programmatic scroll settles identically.

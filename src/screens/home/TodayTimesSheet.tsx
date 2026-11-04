@@ -4,6 +4,7 @@ import { memo, useCallback, useEffect, useRef, useState } from 'react';
 // plain scroll view had its touch cancelled part way — the page stopped
 // between two days and did not snap. This one is a native handler of its
 // own that the drag, failing on a sideways move, hands the finger to.
+import { useWebScrollSettle } from '../../hooks/useWebScrollSettle';
 import { FlatList } from 'react-native-gesture-handler';
 import {
   Pressable,
@@ -399,6 +400,8 @@ function DayPager({
     (_: unknown, index: number) => ({ length: width, offset: width * index, index }),
     [width],
   );
+  // A browser sends no momentum end: settle on the scroll coming to rest.
+  const webSettle = useWebScrollSettle(onSettled);
   // Out to the sheet's edges, each page padded back in: a scroll view clips
   // what it holds, and the checks' rings reach past the rows' start — inset,
   // they were cut in half. The swipe takes the sheet's whole width with it.
@@ -417,6 +420,7 @@ function DayPager({
           initialScrollIndex={positionOf(offset)}
           getItemLayout={layout}
           onMomentumScrollEnd={onSettled}
+          {...webSettle}
           nestedScrollEnabled
           renderItem={({ item }) => (
             <View style={[styles.page, { width }]}>
