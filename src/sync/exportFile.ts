@@ -23,7 +23,12 @@
 import ReactNativeBlobUtil from 'react-native-blob-util';
 import RNShare from 'react-native-share';
 import { NativeModules, Platform } from 'react-native';
-import { buildSnapshot, readSnapshot, type Snapshot, type SyncSelection } from './snapshot';
+import {
+  buildSnapshot,
+  readSnapshot,
+  type Snapshot,
+  type SyncSelection,
+} from './snapshot';
 import { collectData } from './snapshotStore';
 
 /**
@@ -93,7 +98,10 @@ export async function writeExportFile(
   return { path, fileName, bytes: text.length, snapshot, text };
 }
 
-/** Hand a written export to the share sheet. Resolves false if cancelled. */
+/**
+ * Hand a written export to the share sheet. Resolves false if cancelled.
+ * On Windows and Linux the "share sheet" is a save dialog.
+ */
 export async function shareExportFile(result: ExportResult): Promise<boolean> {
   try {
     await RNShare.open({
@@ -133,6 +141,9 @@ const SyncFolderNative = NativeModules.SyncFolder as
  * offering one that cannot work.
  */
 export function hasFileSaver(): boolean {
+  // The desktop's "share" already IS a save dialog (desktop/web/shims/share),
+  // so a second button there would open the same dialog under an Apple name.
+  if (Platform.OS === 'web') return false;
   return Platform.OS !== 'android' || Boolean(SyncFolderNative?.saveFile);
 }
 
@@ -146,11 +157,17 @@ export function hasFileSaver(): boolean {
  * create-document dialog, which the native module drives. Both end with a
  * file the user named, sitting where they put it.
  */
-export async function saveExportToFiles(result: ExportResult): Promise<boolean> {
+export async function saveExportToFiles(
+  result: ExportResult,
+): Promise<boolean> {
   if (Platform.OS === 'android') {
     const saveFile = SyncFolderNative?.saveFile;
     if (!saveFile) return false;
-    const saved = await saveFile(result.fileName, result.text, 'application/json');
+    const saved = await saveFile(
+      result.fileName,
+      result.text,
+      'application/json',
+    );
     return Boolean(saved);
   }
   try {

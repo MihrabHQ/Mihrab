@@ -1,6 +1,7 @@
 // hover-ok: list-row / settings-row / sheet pressables. Hover-state
 // treatment would visually noise these dense surfaces; the touch
 // feedback (pressed opacity / ripple) is the right affordance here.
+import { IS_WEB_APP } from '../../config/webApp';
 import { hasFolderPicker } from '../../sync/folderAccess';
 import { memo, useMemo, useRef, useState } from 'react';
 import { Alert, Linking, StyleSheet, Text, View } from 'react-native';
@@ -48,7 +49,8 @@ function AboutCardImpl() {
   const onVersionTap = () => {
     if (settings.dataStatsUnlocked) return;
     const now = Date.now();
-    versionTaps.current = now - lastVersionTap.current > 1500 ? 1 : versionTaps.current + 1;
+    versionTaps.current =
+      now - lastVersionTap.current > 1500 ? 1 : versionTaps.current + 1;
     lastVersionTap.current = now;
     if (versionTaps.current >= 5) {
       versionTaps.current = 0;
@@ -119,29 +121,38 @@ function AboutCardImpl() {
           are two answers to one question, so they are one card. The
           downloads inventory was the third; it is its own section now,
           Settings → Downloads. */}
-      <SettingsGroup title={t('settings.dataAndPrivacy')}>
-        <SettingsLinkRow
-          title={t('nav.backup')}
-          help={t('backup.exportSection')}
-          onPress={goToBackup}
-        />
-        {/* Sync needs a folder to write to; Mihrab Web has none. */}
-        {hasFolderPicker() ? (
-          <SettingsLinkRow
-            title={t('nav.sync')}
-            help={t('sync.settingsRowHint')}
-            onPress={goToSync}
-          />
-        ) : null}
-        {settings.dataStatsUnlocked ? (
-          <SettingsToggleRow
-            title={t('dataStats.toggle')}
-            help={t('dataStats.toggleHelp')}
-            value={settings.showDataStats}
-            onValueChange={v => updateSettings({ showDataStats: v })}
-          />
-        ) : null}
-      </SettingsGroup>
+      {/* Mihrab Web keeps no backup: its record lives in the browser's own
+          storage, which the browser can clear, and a backup file there is a
+          download and an upload away from a page that is better installed
+          as the app. Sync needs a folder, which it has none of either — so
+          on the web the group can be empty, and is then left out. */}
+      {!IS_WEB_APP || hasFolderPicker() || settings.dataStatsUnlocked ? (
+        <SettingsGroup title={t('settings.dataAndPrivacy')}>
+          {IS_WEB_APP ? null : (
+            <SettingsLinkRow
+              title={t('nav.backup')}
+              help={t('backup.exportSection')}
+              onPress={goToBackup}
+            />
+          )}
+          {/* Sync needs a folder to write to; Mihrab Web has none. */}
+          {hasFolderPicker() ? (
+            <SettingsLinkRow
+              title={t('nav.sync')}
+              help={t('sync.settingsRowHint')}
+              onPress={goToSync}
+            />
+          ) : null}
+          {settings.dataStatsUnlocked ? (
+            <SettingsToggleRow
+              title={t('dataStats.toggle')}
+              help={t('dataStats.toggleHelp')}
+              value={settings.showDataStats}
+              onValueChange={v => updateSettings({ showDataStats: v })}
+            />
+          ) : null}
+        </SettingsGroup>
+      ) : null}
 
       <SettingsGroup title={t('settings.sectionAbout')}>
         {/* "Rate Mihrab" was the first row here. It is on its own page
@@ -187,7 +198,8 @@ function AboutCardImpl() {
         <Text
           suppressHighlighting
           onPress={onVersionTap}
-          style={[styles.versionText, { color: palette.muted }]}>
+          style={[styles.versionText, { color: palette.muted }]}
+        >
           {t('settings.versionInstalled', { version: versionLabel })}
         </Text>
         {/* The website, not the repo. Someone who has scrolled to the foot
@@ -200,7 +212,8 @@ function AboutCardImpl() {
           style={[styles.versionLink, { color: palette.accent }]}
           onPress={() => {
             void Linking.openURL(MIHRAB_WEBSITE);
-          }}>
+          }}
+        >
           {MIHRAB_WEBSITE_LABEL}
         </Text>
       </View>

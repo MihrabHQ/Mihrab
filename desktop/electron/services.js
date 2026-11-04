@@ -58,6 +58,17 @@ function entry(handle, name) {
   return path.join(folder(handle), name);
 }
 
+/**
+ * The file dialogs' type list: the file's own kind first, then anything.
+ * A backup is JSON; without a filter Windows offers "All Files" with no
+ * name for what is being saved, and GTK shows every file in the folder.
+ */
+function fileFilters(ext) {
+  const e = String(ext || '').replace(/^\./, '').toLowerCase();
+  const kind = e === 'json' ? { name: 'Mihrab backup', extensions: ['json'] } : e ? { name: e.toUpperCase(), extensions: [e] } : null;
+  return [...(kind ? [kind] : []), { name: 'All files', extensions: ['*'] }];
+}
+
 function register(getWindow) {
   ipcMain.handle('secure:get', (_e, k) => decrypt(secrets.read()[k]));
   ipcMain.handle('secure:set', (_e, k, v) => {
@@ -79,9 +90,14 @@ function register(getWindow) {
     const win = getWindow() ?? undefined;
     if (files.length === 1) {
       const ext = path.extname(files[0]);
-      const name = suggested ? `${String(suggested).replace(/[\\/:*?"<>|]/g, '-')}${ext}` : path.basename(files[0]);
+      // The suggestion is a title ("Mihrab backup") or already a file name
+      // ("mihrab-backup-2026-11-04.json"): add the file's extension only when
+      // it has none, or the backup is offered as "….json.json".
+      const safe = suggested ? String(suggested).replace(/[\\/:*?"<>|]/g, '-') : null;
+      const name = safe ? (path.extname(safe) ? safe : `${safe}${ext}`) : path.basename(files[0]);
       const { canceled, filePath } = await dialog.showSaveDialog(win, {
         defaultPath: path.join(app.getPath('documents'), name),
+        filters: fileFilters(ext),
       });
       if (canceled || !filePath) return null;
       await fsp.copyFile(files[0], filePath);
@@ -164,6 +180,9 @@ function register(getWindow) {
   ipcMain.handle('sync:pickFile', async () => {
     const { canceled, filePaths } = await dialog.showOpenDialog(getWindow() ?? undefined, {
       properties: ['openFile'],
+      // What the app opens through here is a backup; any file can still be
+      // chosen, and one that is not a backup is answered in the app.
+      filters: fileFilters('.json'),
     });
     if (canceled || !filePaths[0]) return null;
     const buf = await fsp.readFile(filePaths[0]);

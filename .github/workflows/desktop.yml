@@ -154,6 +154,27 @@ jobs:
             ${{ runner.temp }}/sync-pair/shared/
           if-no-files-found: ignore
 
+      - name: Backup out and back in
+        working-directory: desktop
+        env:
+          BACKUP_DIR: ${{ runner.temp }}/backup
+        run: |
+          if [ "$RUNNER_OS" = "Linux" ]; then
+            timeout 300 xvfb-run -a -s "-screen 0 1280x900x24" node scripts/backup-roundtrip.js
+          else
+            timeout 300 node scripts/backup-roundtrip.js
+          fi
+
+      - name: Keep the backup check's screens
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backup-${{ runner.os }}-${{ matrix.arch || 'x64' }}
+          path: |
+            ${{ runner.temp }}/backup/*.png
+            ${{ runner.temp }}/backup/out/
+          if-no-files-found: ignore
+
       # The names the install scripts ask for, which do not change with the
       # version: dist/preview/Mihrab-windows-x64.exe, Mihrab-linux-amd64.deb, …
       - name: Name the installers

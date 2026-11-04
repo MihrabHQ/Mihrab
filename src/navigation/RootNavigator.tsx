@@ -1,4 +1,5 @@
 import { useNavigation, useTheme } from '@react-navigation/native';
+import { IS_WEB_APP } from '../config/webApp';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useEffect, useRef } from 'react';
@@ -28,7 +29,6 @@ const isIOS = Platform.OS === 'ios';
 
 /** The wrapper the playback bar and the screen share. */
 const SCREEN = { flex: 1 } as const;
-
 
 // Home header controls now live in ../navigation/HomeHeaderControls so the
 // HomeScreen can render the same row as content on Mac Catalyst, where the
@@ -98,7 +98,10 @@ export function RootNavigator() {
    * that a scrolling page slid under. Kept as the default only for the
    * muṣḥaf reader and onboarding, which lay out against it.
    */
-  const edgeToEdge = { backgroundColor: theme.colors.background, paddingBottom: 0 };
+  const edgeToEdge = {
+    backgroundColor: theme.colors.background,
+    paddingBottom: 0,
+  };
   // iPhone Duo: pushed pages and onboarding keep clear of the vertical bar's
   // column; the tabs ("Home") and the muṣḥaf reader lay out around it
   // themselves (MainTabs, MushafPhoneReader).
@@ -126,7 +129,8 @@ export function RootNavigator() {
             bookPad && route.name !== 'Home' && route.name !== 'QuranSurah'
               ? [bookPad, { backgroundColor: theme.colors.background }]
               : null,
-          ]}>
+          ]}
+        >
           {/* `theme.colors.background` is exactly what `headerStyle` below
               is given, so the bar and the header are one surface. */}
           <HeaderPlaybackBar
@@ -177,10 +181,15 @@ export function RootNavigator() {
          * iOS only in effect; Android's toolbar has no back title.
          */
         headerBackButtonDisplayMode: 'minimal',
-        headerStyle: { backgroundColor: isIOS ? 'transparent' : theme.colors.background },
+        headerStyle: {
+          backgroundColor: isIOS ? 'transparent' : theme.colors.background,
+        },
         headerLargeStyle: { backgroundColor: 'transparent' },
         // Keep content above the system navigation bar (edge-to-edge bottom inset).
-        contentStyle: { paddingBottom: insets.bottom, backgroundColor: theme.colors.background },
+        contentStyle: {
+          paddingBottom: insets.bottom,
+          backgroundColor: theme.colors.background,
+        },
         // writingDirection is a valid RN TextStyle prop (needed for the RTL
         // title fix) but react-navigation types the title style as a narrower
         // Pick<TextStyle, …> that omits it; cast past the type to keep the
@@ -207,7 +216,8 @@ export function RootNavigator() {
         // android:screenOrientation is now 'unspecified' so this option
         // takes effect.
         orientation: 'portrait',
-      })}>
+      })}
+    >
       {/* The six tabs are the app (design review 2e). Everything below is
           pushed ON TOP of them: sub-pages, readers and one-off flows. */}
       <Stack.Screen
@@ -232,13 +242,29 @@ export function RootNavigator() {
           gap below the title bar (#91). */}
       <Stack.Screen
         name="MonthTimes"
-        getComponent={() => (require('../screens/MonthTimesScreen') as typeof import('../screens/MonthTimesScreen')).MonthTimesScreen}
-        options={{ title: t('nav.month'), headerLargeTitle: false, contentStyle: edgeToEdge }}
+        getComponent={() =>
+          (
+            require('../screens/MonthTimesScreen') as typeof import('../screens/MonthTimesScreen')
+          ).MonthTimesScreen
+        }
+        options={{
+          title: t('nav.month'),
+          headerLargeTitle: false,
+          contentStyle: edgeToEdge,
+        }}
       />
       <Stack.Screen
         name="ShareMonth"
-        getComponent={() => (require('../screens/ShareMonthScreen') as typeof import('../screens/ShareMonthScreen')).ShareMonthScreen}
-        options={{ title: t('nav.shareMonth'), headerLargeTitle: false, contentStyle: edgeToEdge }}
+        getComponent={() =>
+          (
+            require('../screens/ShareMonthScreen') as typeof import('../screens/ShareMonthScreen')
+          ).ShareMonthScreen
+        }
+        options={{
+          title: t('nav.shareMonth'),
+          headerLargeTitle: false,
+          contentStyle: edgeToEdge,
+        }}
       />
       {/* Not on a Mac. There is no magnetometer in one, so the dial has
           nothing to point with — it would sit at a fixed heading and look
@@ -252,13 +278,25 @@ export function RootNavigator() {
       {isDesktop ? null : (
         <Stack.Screen
           name="Compass"
-          getComponent={() => (require('../screens/CompassScreen') as typeof import('../screens/CompassScreen')).CompassScreen}
-          options={{ title: t('nav.compass'), headerLargeTitle: false, contentStyle: edgeToEdge }}
+          getComponent={() =>
+            (
+              require('../screens/CompassScreen') as typeof import('../screens/CompassScreen')
+            ).CompassScreen
+          }
+          options={{
+            title: t('nav.compass'),
+            headerLargeTitle: false,
+            contentStyle: edgeToEdge,
+          }}
         />
       )}
       <Stack.Screen
         name="QuranSurah"
-        getComponent={() => (require('../screens/QuranSurahScreen') as typeof import('../screens/QuranSurahScreen')).QuranSurahScreen}
+        getComponent={() =>
+          (
+            require('../screens/QuranSurahScreen') as typeof import('../screens/QuranSurahScreen')
+          ).QuranSurahScreen
+        }
         options={{
           title: '',
           headerLargeTitle: false,
@@ -271,7 +309,11 @@ export function RootNavigator() {
       />
       <Stack.Screen
         name="QuranListen"
-        getComponent={() => (require('../screens/quran/TilawahScreen') as typeof import('../screens/quran/TilawahScreen')).TilawahScreen}
+        getComponent={() =>
+          (
+            require('../screens/quran/TilawahScreen') as typeof import('../screens/quran/TilawahScreen')
+          ).TilawahScreen
+        }
         options={() => ({
           title: t('quran.listenTitle', 'Tilawah'),
           headerLargeTitle: false,
@@ -284,7 +326,11 @@ export function RootNavigator() {
       />
       <Stack.Screen
         name="Hifz"
-        getComponent={() => (require('../screens/quran/HifzScreen') as typeof import('../screens/quran/HifzScreen')).HifzScreen}
+        getComponent={() =>
+          (
+            require('../screens/quran/HifzScreen') as typeof import('../screens/quran/HifzScreen')
+          ).HifzScreen
+        }
         options={() => ({
           title: t('hifz.title', 'Hifz'),
           headerLargeTitle: false,
@@ -293,7 +339,11 @@ export function RootNavigator() {
       />
       <Stack.Screen
         name="Khatmah"
-        getComponent={() => (require('../screens/quran/KhatmahScreen') as typeof import('../screens/quran/KhatmahScreen')).KhatmahScreen}
+        getComponent={() =>
+          (
+            require('../screens/quran/KhatmahScreen') as typeof import('../screens/quran/KhatmahScreen')
+          ).KhatmahScreen
+        }
         options={() => ({
           title: t('quran.khatmah', 'Khatmah'),
           headerLargeTitle: false,
@@ -304,7 +354,11 @@ export function RootNavigator() {
       />
       <Stack.Screen
         name="QuranTajweed"
-        getComponent={() => (require('../quran/tajweed/TajweedGuideScreen') as typeof import('../quran/tajweed/TajweedGuideScreen')).TajweedGuideScreen}
+        getComponent={() =>
+          (
+            require('../quran/tajweed/TajweedGuideScreen') as typeof import('../quran/tajweed/TajweedGuideScreen')
+          ).TajweedGuideScreen
+        }
         options={() => ({
           title: t('tajweed.guideTitle', 'Reading the colours'),
           headerLargeTitle: false,
@@ -328,7 +382,11 @@ export function RootNavigator() {
           not have a half-built Home peeking over its shoulder. */}
       <Stack.Screen
         name="Onboarding"
-        getComponent={() => (require('../screens/OnboardingScreen') as typeof import('../screens/OnboardingScreen')).OnboardingScreen}
+        getComponent={() =>
+          (
+            require('../screens/OnboardingScreen') as typeof import('../screens/OnboardingScreen')
+          ).OnboardingScreen
+        }
         options={{
           title: '',
           headerShown: false,
@@ -337,27 +395,55 @@ export function RootNavigator() {
           gestureEnabled: false,
         }}
       />
-      <Stack.Screen
-        name="Backup"
-        getComponent={() => (require('../screens/BackupScreen') as typeof import('../screens/BackupScreen')).BackupScreen}
-        options={{ title: t('nav.backup'), headerLargeTitle: false, contentStyle: edgeToEdge }}
-      />
+      {/* Not on Mihrab Web — see AboutCard. Absent, not hidden: no link or
+          stale navigation state can open it there. */}
+      {IS_WEB_APP ? null : (
+        <Stack.Screen
+          name="Backup"
+          getComponent={() =>
+            (
+              require('../screens/BackupScreen') as typeof import('../screens/BackupScreen')
+            ).BackupScreen
+          }
+          options={{
+            title: t('nav.backup'),
+            headerLargeTitle: false,
+            contentStyle: edgeToEdge,
+          }}
+        />
+      )}
       {/* Pairing lives next to Backup because it is the same question asked
           twice — where does my record live, and how do I get it somewhere
           else. Its own destination rather than a card inside Backup, since
           the paired list is something people come back to. */}
       <Stack.Screen
         name="Sync"
-        getComponent={() => (require('../screens/SyncScreen') as typeof import('../screens/SyncScreen')).SyncScreen}
-        options={{ title: t('nav.sync'), headerLargeTitle: false, contentStyle: edgeToEdge }}
+        getComponent={() =>
+          (
+            require('../screens/SyncScreen') as typeof import('../screens/SyncScreen')
+          ).SyncScreen
+        }
+        options={{
+          title: t('nav.sync'),
+          headerLargeTitle: false,
+          contentStyle: edgeToEdge,
+        }}
       />
       {/* The sunnah calendar, the day-before reminder and the full history —
           reference material, reached from the Log's fasting card rather
           than owning a destination of its own. */}
       <Stack.Screen
         name="Fasting"
-        getComponent={() => (require('../screens/FastingScreen') as typeof import('../screens/FastingScreen')).FastingScreen}
-        options={{ title: t('nav.fasting'), headerLargeTitle: false, contentStyle: edgeToEdge }}
+        getComponent={() =>
+          (
+            require('../screens/FastingScreen') as typeof import('../screens/FastingScreen')
+          ).FastingScreen
+        }
+        options={{
+          title: t('nav.fasting'),
+          headerLargeTitle: false,
+          contentStyle: edgeToEdge,
+        }}
       />
 
       {/* The settings subpages.

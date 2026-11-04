@@ -25,6 +25,7 @@ import { useCallback, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -95,7 +96,9 @@ function CategoryRow({
   return (
     <View style={styles.row}>
       <View style={styles.rowText}>
-        <Text style={[typeStyle('body'), { color: palette.text }]}>{label}</Text>
+        <Text style={[typeStyle('body'), { color: palette.text }]}>
+          {label}
+        </Text>
         <Text style={[typeStyle('footnote'), { color: palette.muted }]}>
           {t(`sync.categoryHint.${category}`)}
         </Text>
@@ -105,7 +108,10 @@ function CategoryRow({
         value={value}
         onValueChange={onChange}
         disabled={disabled}
-        trackColor={{ true: palette.accentSolid, false: String(palette.border) }}
+        trackColor={{
+          true: palette.accentSolid,
+          false: String(palette.border),
+        }}
         thumbColor="#ffffff" // tokens-ok-line: a Switch thumb stays light in both states so it reads against an accent track
       />
     </View>
@@ -144,7 +150,12 @@ export function BackupScreen() {
     try {
       const written = await writeExportFile(selection);
       path = written.path;
-      await shareExportFile(written);
+      const shared = await shareExportFile(written);
+      // On Windows and Linux "share" is a save dialog, which closes without a
+      // word: say it was saved, as Save to Files does on the phones. A share
+      // sheet says so itself, and a cancel says nothing.
+      if (shared && Platform.OS === 'web')
+        Alert.alert(t('sync.savedTitle', 'Saved'));
     } catch (e) {
       Alert.alert(t('sync.exportFailedTitle', 'Export failed'), String(e));
     } finally {
@@ -223,7 +234,10 @@ export function BackupScreen() {
       if ((e as { code?: string })?.code === 'too_large') {
         Alert.alert(
           t('sync.importUnreadableTitle', 'Couldn’t read that'),
-          t('sync.importTooLarge', 'That file is far too large to be a backup.'),
+          t(
+            'sync.importTooLarge',
+            'That file is far too large to be a backup.',
+          ),
         );
         return;
       }
@@ -323,11 +337,7 @@ export function BackupScreen() {
           duaCardSpacing, which pins this for every screen that does it. */}
       <CenteredColumn innerStyle={styles.stack} style={styles.stack}>
         <Text
-          style={[
-            typeStyle('label'),
-            styles.section,
-            { color: palette.muted },
-          ]}
+          style={[typeStyle('label'), styles.section, { color: palette.muted }]}
         >
           {t('sync.exportSection', 'Export')}
         </Text>
@@ -395,11 +405,7 @@ export function BackupScreen() {
         </View>
 
         <Text
-          style={[
-            typeStyle('label'),
-            styles.section,
-            { color: palette.muted },
-          ]}
+          style={[typeStyle('label'), styles.section, { color: palette.muted }]}
         >
           {t('sync.importSection', 'Import')}
         </Text>
@@ -413,7 +419,10 @@ export function BackupScreen() {
           {canPickFile ? (
             <Pressable
               accessibilityRole="button"
-              accessibilityLabel={t('sync.importChooseFileCta', 'Choose a backup file')}
+              accessibilityLabel={t(
+                'sync.importChooseFileCta',
+                'Choose a backup file',
+              )}
               accessibilityState={{ disabled: busy }}
               testID="sync-choose-file"
               onPress={() => void onChooseFile()}
@@ -487,7 +496,9 @@ export function BackupScreen() {
                 ? t('sync.importApplyCta', 'Import into this device')
                 : t('sync.importPreviewCta', 'Check the file')
             }
-            accessibilityState={{ disabled: busy || (!pending && !pasted.trim()) }}
+            accessibilityState={{
+              disabled: busy || (!pending && !pasted.trim()),
+            }}
             testID="sync-import"
             onPress={() => void (pending ? onApply() : onPreview())}
             disabled={busy || (!pending && !pasted.trim())}
