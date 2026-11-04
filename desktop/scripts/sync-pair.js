@@ -16,7 +16,9 @@ const fs = require('fs');
 const os = require('os');
 const { _electron: electron } = require('playwright-core');
 
-const root = fs.mkdtempSync(path.join(os.tmpdir(), 'mihrab-sync-'));
+const root = process.env.SYNC_PAIR_DIR
+  ? (fs.mkdirSync(process.env.SYNC_PAIR_DIR, { recursive: true }), process.env.SYNC_PAIR_DIR)
+  : fs.mkdtempSync(path.join(os.tmpdir(), 'mihrab-sync-'));
 const folder = path.join(root, 'shared');
 fs.mkdirSync(folder);
 
@@ -89,6 +91,25 @@ async function pairWith(d, other) {
   await d.click(/^Pair$/, 2500); // the confirmation
 }
 
+// Put away anything over the page — an alert's OK, a sheet's Not now, or
+// Esc — until "Sync now" can be clicked, without leaving the Sync page.
+async function clear(d) {
+  for (let i = 0; i < 4; i++) {
+    const target = d.page.getByText(/^Sync now$/).first();
+    if (await target.count()) {
+      try {
+        await target.click({ trial: true, timeout: 1500 });
+        return;
+      } catch {}
+    }
+    if (!(await d.click(/^(OK|Not now|Close|Done|Maybe later)$/, 800))) {
+      await d.page.keyboard.press('Escape');
+      await d.page.waitForTimeout(800);
+    }
+  }
+  if (!(await d.page.getByText(/^Sync now$/).count())) await openSync(d);
+}
+
 // Back out of Sync and About (Esc is the app's back), to Today.
 async function home(d) {
   for (let i = 0; i < 2; i++) {
@@ -139,7 +160,11 @@ const loggedChecks = d =>
     a.say('sync now:', (await a.page.evaluate(() => document.body.innerText)).match(/Synced|Nothing new|didn’t finish[^\n]*/)?.[0]);
     a.say('folder after A synced', fs.readdirSync(folder).join(', '));
 
-    // B syncs, and the log has to be there.
+    // B syncs, and the log has to be there. Whatever B was left showing
+    // after pairing (a sheet, an alert) is put away first.
+    await b.page.screenshot({ path: path.join(root, 'B-before-sync.png') });
+    b.say('before sync now:', (await b.page.evaluate(() => document.body.innerText)).replace(/\s+/g, ' ').slice(0, 300));
+    await clear(b);
     await b.click(/^Sync now$/, 4000);
     await b.page.screenshot({ path: path.join(root, 'B-synced.png') });
     b.say('after sync now:', (await b.page.evaluate(() => document.body.innerText)).replace(/\s+/g, ' ').slice(0, 300));

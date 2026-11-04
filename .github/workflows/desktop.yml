@@ -123,12 +123,24 @@ jobs:
       # other, one logs a prayer and syncs, and the other has to show it.
       - name: Sync between two copies
         working-directory: desktop
+        env:
+          SYNC_PAIR_DIR: ${{ runner.temp }}/sync-pair
         run: |
           if [ "$RUNNER_OS" = "Linux" ]; then
             timeout 300 xvfb-run -a -s "-screen 0 1280x900x24" node scripts/sync-pair.js
           else
             timeout 300 node scripts/sync-pair.js
           fi
+
+      - name: Keep the sync check's screens
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sync-pair-${{ runner.os }}-${{ matrix.arch || 'x64' }}
+          path: |
+            ${{ runner.temp }}/sync-pair/*.png
+            ${{ runner.temp }}/sync-pair/shared/
+          if-no-files-found: ignore
 
       # The names the install scripts ask for, which do not change with the
       # version: dist/preview/Mihrab-windows-x64.exe, Mihrab-linux-amd64.deb, …
