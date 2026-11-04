@@ -47,5 +47,6 @@ export function hifzDueLabel(p: HifzPortion, today: string, t: TFunction): strin
 export function hifzStockLine(stock: { surahs: number; ayahs: number }, t: TFunction): string {
   const surahs = t('hifz.stockSurahs', { defaultValue: '{{count}} surahs', count: stock.surahs });
   const ayahs = t('hifz.stockAyahs', { defaultValue: '{{count}} ayahs by heart', count: stock.ayahs });
-  return `${surahs} · ${ayahs}`;
+  // Only a stretch of a surah held: "0 surahs" says nothing worth saying.
+  return stock.surahs > 0 ? `${surahs} · ${ayahs}` : ayahs;
 }

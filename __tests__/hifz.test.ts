@@ -212,3 +212,15 @@ describe('the merge', () => {
     expect(coerceHifz({ portions: [{ id: 'x', start: 5, end: 2 }, a.portions[0]] })?.portions).toHaveLength(1);
   });
 });
+
+describe('the stock line', () => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { hifzStockLine } = require('../src/quran/hifzLabels');
+  const t = (k: string, o: { defaultValue: string; count: number }) => o.defaultValue.replace('{{count}}', String(o.count));
+  it('names the surahs and the ayahs', () => {
+    expect(hifzStockLine({ surahs: 2, ayahs: 10 }, t)).toBe('2 surahs · 10 ayahs by heart');
+  });
+  it('leaves out "0 surahs" when only a stretch is held', () => {
+    expect(hifzStockLine({ surahs: 0, ayahs: 7 }, t)).toBe('7 ayahs by heart');
+  });
+});

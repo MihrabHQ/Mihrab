@@ -23,6 +23,7 @@ import {
   SystemClock,
 } from './basics';
 import { SyncFolder } from './syncFolder';
+import { WordPlayer } from './wordPlayer';
 
 Object.assign(NativeModules, {
   AdhanPlayer,
@@ -38,4 +39,6 @@ Object.assign(NativeModules, {
   // offers no sync at all (`hasFolderPicker`), rather than a page that fails.
   ...(desktop()?.syncFolder ? { SyncFolder } : null),
   SystemClock,
+  // The word reader's player (hold a word on the page to hear it).
+  WordPlayer,
 });
