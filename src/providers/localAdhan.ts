@@ -38,7 +38,7 @@ import {
 import { DIYANET_METHOD_ID } from './diyanetMethodId';
 import { diyanetInstants } from './diyanetMethod';
 import { algeriaTimes } from './algeriaMethod';
-import { moroccoTimes, MOROCCO_DIP_PER_SQRT_M } from './moroccoMethod';
+import { moroccoTimes, moroccoDipEast, moroccoDipWest } from './moroccoMethod';
 import { kemenagTimes } from './indonesiaMethod';
 import { jakimTimes } from './malaysiaMethod';
 
@@ -559,11 +559,7 @@ export function computeLocalAdhanInstants(
   }
   if (methodId === MOROCCO_METHOD_ID_LOCAL) {
     // The ministry's method (`moroccoMethod.ts`), on the minute as it prints.
-    const dip =
-      params.horizonDipDeg ??
-      (params.heightM && params.heightM > 0
-        ? MOROCCO_DIP_PER_SQRT_M * Math.sqrt(params.heightM)
-        : 0);
+    const dip = params.horizonDipDeg ?? moroccoDipEast(params.heightM ?? 0);
     const at = moroccoTimes(
       params.latitude,
       params.longitude,
@@ -572,7 +568,7 @@ export function computeLocalAdhanInstants(
       day,
       dip,
       params.school === 1 ? 2 : 1,
-      params.horizonDipMaghribDeg,
+      params.horizonDipMaghribDeg ?? (params.horizonDipDeg === undefined ? moroccoDipWest(params.heightM ?? 0) : undefined),
     );
     // at a city's own point, the ministry's few times on the other side of a minute (`moroccoCorrections.json`)
     if (at)

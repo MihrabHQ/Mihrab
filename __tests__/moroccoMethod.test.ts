@@ -9,7 +9,7 @@ jest.unmock('adhan');
 import fs from 'fs';
 import path from 'path';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { moroccoTimes } from '../src/providers/moroccoMethod';
+import { moroccoTimes, moroccoDipEast, moroccoDipWest } from '../src/providers/moroccoMethod';
 import { computeLocalAdhanInstants } from '../src/providers/localAdhan';
 import { getHabousDatasetTimes } from '../src/providers/habousDataset';
 import { referenceCities, withReferenceTables } from './fixtures/referenceTables';
@@ -75,7 +75,7 @@ describe('the ministry’s method', () => {
   it('is what method 21 computes, the horizon taken from the height where the ministry’s is not known', () => {
     const day = new Date(2026, 9, 20);
     const a = computeLocalAdhanInstants({ latitude: 34.02, longitude: -6.84, date: day, calculationMethod: 21, school: 0, heightM: 400 });
-    const b = moroccoTimes(34.02, -6.84, 2026, 9, 20, 0.02 * Math.sqrt(400))!;
+    const b = moroccoTimes(34.02, -6.84, 2026, 9, 20, moroccoDipEast(400), 1, moroccoDipWest(400))!;
     expect(a.maghrib.getTime()).toBe(b.maghrib.getTime());
     expect(a.sunrise.getTime()).toBe(b.sunrise.getTime());
   });

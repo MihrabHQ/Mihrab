@@ -90,7 +90,8 @@ The first run (October 2026) found the angles right everywhere and
 three other things, each now in the data:
 
 - **A town on a hill.** The Moroccan ministry lowers the horizon for
-  every city by about 0.02° per √metre; JAKIM computes its five summit
+  every city by about 0.02° per √metre (and 0.32°–0.37° for all, the
+  archive's full-year pages showed: an angle, not minutes); JAKIM computes its five summit
   zones at altitude with the textbook 0.0293°; Kemenag gives 56 highland
   regencies a flat four and a half minutes whatever their height. So the
   places files carry `heightM` (SRTM) and, where the

@@ -2,26 +2,44 @@
  * Morocco — the Ministry of Habous and Islamic Affairs's method, as its
  * timetable is computed (issue #10).
  *
- * Read off 77 days of the ministry's tables for its 164 located cities:
+ * Read off the ministry's tables: 96 days of 2026 for its 164 located
+ * cities, and — through the Internet Archive — its pages of 2014–2025 for
+ * Rabat, Figuig, Tangier, Casablanca, Laayoune and a dozen more, every
+ * month of the year. The ministry's program changed between 2019 and
+ * 2023; this is the one it has used since (2023–2026), and what it does:
  *
  *   • a precise Sun — Meeus's apparent Sun with the full nutation and his
  *     chapter-28 equation of time; a JPL ephemeris fits no better, NOAA's
  *     and the Almanac's series far worse — taken at each prayer's own
  *     moment (iterated), declination and equation of time alike;
- *   • Fajr 19°, Isha 17°, Asr one shadow length (Shafi'i);
+ *   • Fajr 19° and Isha 17°, true altitudes;
  *   • Dhuhr five minutes after the transit;
- *   • sunrise 2.85 minutes before, and Maghrib 3.7 after, the Sun's upper
- *     limb on the horizon — refraction 34′ and the Sun's semi-diameter for
- *     its distance that day — less the city's own horizon dip;
+ *   • Asr on the APPARENT Sun, by the classical rule: a gnomon's shadow at
+ *     noon (the noon declination, the noon altitude raised by refraction)
+ *     plus one length (Shafi'i), and the moment the apparent Sun casts it
+ *     — refraction by Sæmundsson's formula from the true altitude at noon,
+ *     Bennett's from the apparent at Asr (Meeus 16.4 and 16.3);
+ *   • sunrise one minute before, and Maghrib 1.8 minutes after, the Sun
+ *     on an altitude −(34′ + s) − dip: refraction, the semi-diameter for
+ *     its distance that day, and the city's own allowance for its horizon;
  *   • Fajr rounded down to the minute, the rest to the nearest.
  *
- * The dip is the ministry's own per city and per side — the horizon east
- * at sunrise, west at Maghrib, which mountains or the sea make different —
- * fitted from its tables with the city's point (`data/moroccoMethodPoints.json`,
- * about 0.02° per √metre of height); elsewhere 0.02°·√height, 0.86 of it at
- * Maghrib. On 77 days of the ministry's tables for its 164 located cities
- * this is its printed minute for 99.12 % of times, and never further than
- * one; `data/corrections/morocco.json` holds the rest.
+ * The horizon allowance ("dip") is the ministry's own per city and per
+ * side — east at sunrise, west at Maghrib — fitted from its tables with
+ * the city's point (`data/moroccoMethodPoints.json`); it follows the
+ * city's height closely (about 0.32° + 0.025°·√metres east, 0.37° +
+ * 0.021°·√metres west; 92 % correlation), which is what a city off the
+ * list gets. It is an angle, not minutes: the allowance in minutes grows
+ * towards the solstices, as the ministry's does, and the fixed minute
+ * margins are the small rest. Fitted on the autumn alone (the first
+ * version of this method) the two could not be told apart, and the method
+ * drifted a tenth of a minute by late November.
+ *
+ * On the 2026 tables this is the ministry's printed minute for 99.88 % of
+ * times (114 of 94,350 off, each within a second or two of a minute's
+ * edge: the ministry's Sun and this one differ by that much), and never
+ * further than one; `data/corrections/morocco.json` holds the rest. On
+ * the archive's 2023–2026 pages, every month of the year, 99.3 %.
  */
 
 const RAD = Math.PI / 180;
@@ -62,12 +80,16 @@ export function meeusApparentSun(d: number): { dec: number; eot: number } {
 
 const ITERATIONS = 3;
 /** Minutes before the horizon crossing that the ministry prints sunrise, and after it Maghrib. */
-export const MOROCCO_SUNRISE_MARGIN = -2.85;
-export const MOROCCO_MAGHRIB_MARGIN = 3.7;
-/** The share of the horizon dip Maghrib takes, against sunrise's whole, where a city's own is not known. */
-export const MOROCCO_MAGHRIB_DIP_SHARE = 0.86;
-/** Degrees of dip per √metre where the ministry's own value is not known. */
-export const MOROCCO_DIP_PER_SQRT_M = 0.02;
+export const MOROCCO_SUNRISE_MARGIN = -1.0;
+export const MOROCCO_MAGHRIB_MARGIN = 1.8;
+/** The horizon allowance of a city whose own is not known: degrees, from its height in metres, east (sunrise) and west (Maghrib). */
+export const moroccoDipEast = (heightM: number): number => 0.32 + 0.025 * Math.sqrt(Math.max(heightM, 0));
+export const moroccoDipWest = (heightM: number): number => 0.37 + 0.021 * Math.sqrt(Math.max(heightM, 0));
+
+/** Refraction (degrees) that lifts a TRUE altitude h (degrees) to its apparent one — Sæmundsson, Meeus 16.4. */
+export const refractionFromTrue = (h: number): number => (1.02 / Math.tan((h + 10.3 / (h + 5.11)) * RAD)) / 60;
+/** Refraction (degrees) under an APPARENT altitude h (degrees) — Bennett, Meeus 16.3. */
+export const refractionFromApparent = (h: number): number => (1 / Math.tan((h + 7.31 / (h + 4.4)) * RAD)) / 60;
 
 /** Exact times, minutes past 00:00 UT of the civil date, margins applied, before rounding. NaN where one does not form. */
 export function moroccoRawMinutes(
@@ -76,10 +98,11 @@ export function moroccoRawMinutes(
   year: number,
   month: number,
   day: number,
-  dipDeg = 0,
+  /** The horizon allowance eastward, at sunrise, degrees: the city's own, else `moroccoDipEast(height)`. */
+  dipDeg = moroccoDipEast(0),
   asrShadow = 1,
-  /** The horizon's dip westward, at Maghrib; MOROCCO_MAGHRIB_DIP_SHARE of `dipDeg` when not known. */
-  dipMaghribDeg = MOROCCO_MAGHRIB_DIP_SHARE * dipDeg,
+  /** The horizon allowance westward, at Maghrib; `moroccoDipWest(0)` offset by the east's excess when not known. */
+  dipMaghribDeg = dipDeg + (moroccoDipWest(0) - moroccoDipEast(0)),
 ): { fajr: number; sunrise: number; dhuhr: number; asr: number; maghrib: number; isha: number } {
   const d0 = (Date.UTC(year, month, day) - Date.UTC(2000, 0, 1)) / DAY_MS - 0.5;
   const at = (t: number) => meeusApparentSun(d0 + t / 1440);
@@ -102,13 +125,19 @@ export function moroccoRawMinutes(
     return t;
   };
   const fixed = (a: number) => () => a;
-  const asrAltitude = (dec: number) =>
-    Math.atan(1 / (asrShadow + Math.tan(Math.abs(latitude - dec / RAD) * RAD))) / RAD;
+  // Asr on the apparent Sun: the noon shadow of a gnomon from the apparent noon altitude (the noon
+  // declination), plus `asrShadow` lengths; the Sun's apparent altitude that casts it; the true
+  // altitude under it is what the hour angle is solved for, with the declination at the event.
+  const noonDec = at(noon).dec;
+  const noonTrue = 90 - Math.abs(latitude - noonDec / RAD);
+  const noonApparent = noonTrue + refractionFromTrue(noonTrue);
+  const asrApparent = Math.atan(1 / (asrShadow + 1 / Math.tan(noonApparent * RAD))) / RAD;
+  const asrTrue = asrApparent - refractionFromApparent(asrApparent);
   return {
     fajr: event(fixed(-19), -1, noon - 420) - 0.5,
     sunrise: event(fixed(horizon - dipDeg), -1, noon - 360) + MOROCCO_SUNRISE_MARGIN,
     dhuhr: noon + 5,
-    asr: event(asrAltitude, 1, noon + 200),
+    asr: event(fixed(asrTrue), 1, noon + 200),
     maghrib: event(fixed(horizon - dipMaghribDeg), 1, noon + 360) + MOROCCO_MAGHRIB_MARGIN,
     isha: event(fixed(-17), 1, noon + 420),
   };
@@ -124,7 +153,7 @@ export function moroccoTimes(
   year: number,
   month: number,
   day: number,
-  dipDeg = 0,
+  dipDeg?: number,
   asrShadow = 1,
   dipMaghribDeg?: number,
 ): MoroccoInstants | null {
