@@ -130,9 +130,9 @@
       "icon": "resources/icon.png"
     },
     "appx": {
-      "identityName": "HassanElGhamri.Mihrab",
-      "publisher": "CN=00000000-0000-0000-0000-000000000000",
-      "publisherDisplayName": "Hassan El Ghamri",
+      "identityName": "Mihrab.Mihrab",
+      "publisher": "CN=FF334BB6-94FB-4977-AA86-C696DDDBB2DB",
+      "publisherDisplayName": "Mihrab",
       "applicationId": "Mihrab",
       "displayName": "Mihrab",
       "backgroundColor": "#0F4D44",

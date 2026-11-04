@@ -58,9 +58,9 @@ Tagged and hand-run Desktop builds also make the Store's package — unsigned
 `.appx` files for x64 and arm64 (the Store signs what it publishes), in the
 `mihrab-microsoft-store` artifact — and prove a test-signed copy installs,
 starts from the Start menu and uninstalls. Its identity is `build.appx` in
-`package.json`: `identityName`, `publisher` and `publisherDisplayName` must be
-copied exactly from Partner Center (Product identity) once the name is
-reserved; until then they are placeholders. Tile images are in
+`package.json` — `identityName`, `publisher` and `publisherDisplayName`,
+copied exactly from Partner Center → Mihrab → Product identity (Store ID
+9N43KNMJHBWV, [apps.microsoft.com/detail/9N43KNMJHBWV](https://apps.microsoft.com/detail/9N43KNMJHBWV)). Tile images are in
 `resources/appx/`. Packaged, the app gives Windows its own toast identity and
 leaves start at login to the package's startup task, whose switch is in
 Settings → Apps → Startup (the tray item opens it).
