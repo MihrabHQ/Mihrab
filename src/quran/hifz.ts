@@ -257,18 +257,52 @@ export function markUpTo(state: HifzState, surah: number, ayah: number, today: s
   return markRange(state, ayahIndexOf(surah, 1), ayahIndexOf(surah, ayah), today, now);
 }
 
+/**
+ * Take a range out of the stock: whatever lies inside it goes, and a portion
+ * reaching past either end keeps the part outside — with its schedule, since
+ * the part still known is as known as it was.
+ */
+export function unmarkRange(state: HifzState, start: number, end: number, now: number): HifzState {
+  const inside = state.portions.filter(p => p.start <= end && p.end >= start);
+  if (inside.length === 0) return state;
+  // The part before the range keeps the portion's id — it is the same
+  // portion, shorter, and a merge reads it as an edit (newest `updatedAt`)
+  // rather than a removal and a stranger. Failing that, the part after
+  // does. Only a portion with nothing left is removed, with a tombstone.
+  const gone = inside.filter(p => p.start >= start && p.end <= end).map(p => p.id);
+  const next = remove(state, gone, now);
+  const pieces: HifzPortion[] = [];
+  for (const p of inside) {
+    const head = p.start < start ? { start: p.start, end: start - 1 } : null;
+    const tail = p.end > end ? { start: end + 1, end: p.end } : null;
+    if (!head && !tail) continue;
+    const first = head ?? tail!;
+    pieces.push({ ...p, ...first, updatedAt: now });
+    if (head && tail) {
+      pieces.push({ ...newPortion(tail.start, tail.end, dayOf(now), now), interval: p.interval, due: p.due, reviews: p.reviews });
+    }
+  }
+  const kept = new Set(pieces.map(p => p.id));
+  return {
+    ...next,
+    portions: [...next.portions.filter(p => !kept.has(p.id)), ...pieces].sort((a, b) => a.start - b.start),
+  };
+}
+
 /** Take a surah out of the stock: every portion in it, and the parts of portions that reach into it. */
 export function unmarkSurah(state: HifzState, surah: number, now: number): HifzState {
-  const s = ayahIndexOf(surah, 1);
-  const e = ayahIndexOf(surah, ayahCount(surah));
-  const inside = portionsOfSurah(state, surah);
-  let next = remove(state, inside.map(p => p.id), now);
-  // A portion that runs past this surah keeps what lies outside it.
-  for (const p of inside) {
-    if (p.start < s) next = { ...next, portions: [...next.portions, { ...newPortion(p.start, s - 1, dayOf(now), now), interval: p.interval, due: p.due, reviews: p.reviews }] };
-    if (p.end > e) next = { ...next, portions: [...next.portions, { ...newPortion(e + 1, p.end, dayOf(now), now), interval: p.interval, due: p.due, reviews: p.reviews }] };
-  }
-  return { ...next, portions: next.portions.sort((a, b) => a.start - b.start) };
+  return unmarkRange(state, ayahIndexOf(surah, 1), ayahIndexOf(surah, ayahCount(surah)), now);
+}
+
+/**
+ * "Not by heart from here": the portion holding this ayah ends before it.
+ * The tail is what is forgotten, as a rule; the head keeps its schedule.
+ * From the portion's first ayah, it is the whole portion.
+ */
+export function unmarkFrom(state: HifzState, surah: number, ayah: number, now: number): HifzState {
+  const p = portionAt(state, surah, ayah);
+  if (!p) return state;
+  return unmarkRange(state, ayahIndexOf(surah, ayah), p.end, now);
 }
 
 export function removePortion(state: HifzState, id: string, now: number): HifzState {

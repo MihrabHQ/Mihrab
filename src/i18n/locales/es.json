@@ -2500,7 +2500,7 @@
     "stock": "{{surahs}} suras · {{ayahs}} aleyas de memoria",
     "known": "De memoria",
     "add": "Añade lo que sabes",
-    "addHint": "Toca las suras que sabes de memoria. Una parte de una sura se marca desde cualquier aleya en el lector: «Memorizado hasta aquí».",
+    "addHint": "Toca las suras que sabes de memoria. Mantén pulsada una para marcar una parte — o, en el lector, cada aleya tiene «Memorizado hasta aquí».",
     "juz": "Yuz {{number}}",
     "capTitle": "Recitar todo al menos cada",
     "capDays": "{{count}} días",
@@ -2535,6 +2535,12 @@
     "holdsEvery": "cada {{count}} días",
     "progress": "Progreso",
     "progressLine": "{{ayahs}} de {{total}} aleyas · {{percent}} % del Corán · {{juz}} de 30 juz’ completos",
-    "juzCoverage": "Juz’ {{number}}: {{memorised}} de {{total}} aleyas"
+    "juzCoverage": "Juz’ {{number}}: {{memorised}} de {{total}} aleyas",
+    "partHint": "Mantén pulsado para marcar una parte",
+    "partTitle": "{{surah}} — la parte de memoria",
+    "partHelp": "Aleyas {{from}} a {{to}} de {{count}}. Lo que queda fuera se quita; lo que queda conserva su repaso.",
+    "partFrom": "Desde la aleya",
+    "partTo": "Hasta la aleya",
+    "sheetNotKnownHint": "Quita esta aleya y el resto del pasaje de lo memorizado; lo anterior se queda."
   }
 }

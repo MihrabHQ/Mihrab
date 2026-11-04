@@ -2499,7 +2499,7 @@
     "stock": "已熟记 {{surahs}} 章 · {{ayahs}} 节",
     "known": "已熟记",
     "add": "添加已熟记的经文",
-    "addHint": "点选你已熟记的章。章的一部分可在阅读器中从任一节标记：“熟记至此”。",
+    "addHint": "点按你已背熟的章。长按一章可标记其中一部分——或在阅读器中，每节经文都有“背到这里”。",
     "juz": "第 {{number}} 卷",
     "capTitle": "全部经文至少每隔多久诵读一遍",
     "capDays": "{{count}} 天",
@@ -2534,6 +2534,12 @@
     "holdsEvery": "每 {{count}} 天",
     "progress": "进度",
     "progressLine": "{{ayahs}}/{{total}} 节 · 古兰经的 {{percent}}% · 30 卷中已完成 {{juz}} 卷",
-    "juzCoverage": "第 {{number}} 卷：{{memorised}}/{{total}} 节"
+    "juzCoverage": "第 {{number}} 卷：{{memorised}}/{{total}} 节",
+    "partHint": "长按以标记一部分",
+    "partTitle": "{{surah}} — 已背熟的部分",
+    "partHelp": "第 {{from}} 至 {{to}} 节（共 {{count}} 节）。范围外的会被移除；保留的部分保持其复习进度。",
+    "partFrom": "起始节",
+    "partTo": "结束节",
+    "sheetNotKnownHint": "将此节及该段其余部分从已背熟中移除；此前的部分保留。"
   }
 }

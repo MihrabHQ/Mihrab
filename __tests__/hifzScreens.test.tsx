@@ -49,6 +49,8 @@ jest.mock('@react-navigation/native', () => ({
 }));
 jest.mock('../src/navigation/tabBarInset', () => ({ useTabBarInset: () => 0 }));
 jest.mock('../src/responsive/breakpoints', () => ({ useBreakpoint: () => 'compact' }));
+jest.mock('../src/hooks/useKeyboardInset', () => ({ useKeyboardInset: () => 0 }));
+jest.mock('../src/responsive/sheetSides', () => ({ useSheetSides: () => ({ left: 0, right: 0 }) }));
 jest.mock('react-native-safe-area-context', () => ({
   useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
 }));
@@ -56,6 +58,7 @@ jest.mock('react-native-safe-area-context', () => ({
 import { HifzEntry } from '../src/screens/quran/HifzEntry';
 import { HifzScreen } from '../src/screens/quran/HifzScreen';
 import { dayOf, markSurah } from '../src/quran/hifz';
+import { ayahIndexOf } from '../src/quran/ayahIndex';
 import {
   __resetQuranStateForTests,
   getQuranState,
@@ -138,6 +141,44 @@ describe('the page', () => {
     expect(getQuranState().hifz?.portions).toHaveLength(0);
     expect(getQuranState().hifz?.removed).toHaveLength(1);
     expect(texts(tree.root)).toContain('Which surahs do you know by heart?');
+  });
+
+  it('marks part of a surah from a long press on the grid', () => {
+    const tree = render(<HifzScreen />);
+    act(() => {
+      byLabel(tree.root, '2 Al-Baqarah').props.onLongPress();
+    });
+    const field = (label: string) =>
+      tree.root.findAll(n => n.props.accessibilityLabel === label && typeof n.props.onChangeText === 'function')[0];
+    const inputs = [field('From ayah'), field('To ayah')];
+    expect(inputs.every(Boolean)).toBe(true);
+    act(() => {
+      inputs[0].props.onChangeText('1');
+      inputs[1].props.onChangeText('100');
+    });
+    act(() => {
+      byLabel(tree.root, 'Mark').props.onPress();
+    });
+    const p = getQuranState().hifz!.portions;
+    expect(p).toHaveLength(1);
+    expect([p[0].start, p[0].end]).toEqual([ayahIndexOf(2, 1), ayahIndexOf(2, 100)]);
+    // Opened again, it says what is held — and cutting it keeps the head.
+    act(() => {
+      byLabel(tree.root, '2 Al-Baqarah').props.onLongPress();
+    });
+    const again = [field('From ayah'), field('To ayah')];
+    expect(again[0].props.value).toBe('1');
+    expect(again[1].props.value).toBe('100');
+    act(() => {
+      again[1].props.onChangeText('80');
+    });
+    act(() => {
+      byLabel(tree.root, 'Mark').props.onPress();
+    });
+    const q = getQuranState().hifz!.portions;
+    expect(q).toHaveLength(1);
+    expect(q[0].id).toBe(p[0].id);
+    expect(q[0].end).toBe(ayahIndexOf(2, 80));
   });
 
   it("marks all of Juz' 30 in one tap", () => {

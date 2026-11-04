@@ -2499,7 +2499,7 @@
     "stock": "{{surahs}} surahs · {{ayahs}} ayahs by heart",
     "known": "By heart",
     "add": "Add what you know",
-    "addHint": "Tap the surahs you know by heart. A stretch of a surah is marked from any ayah in the reader: \"Memorised up to here\".",
+    "addHint": "Tap the surahs you know by heart. Hold one to mark part of it — or, in the reader, any ayah has \"Memorised up to here\".",
     "juz": "Juz' {{number}}",
     "capTitle": "Recite everything at least every",
     "capDays": "{{count}} days",
@@ -2534,6 +2534,12 @@
     "holdsEvery": "every {{count}} days",
     "progress": "Progress",
     "progressLine": "{{ayahs}} of {{total}} ayahs · {{percent}}% of the Qur’an · {{juz}} of 30 juz’ complete",
-    "juzCoverage": "Juz' {{number}}: {{memorised}} of {{total}} ayahs"
+    "juzCoverage": "Juz' {{number}}: {{memorised}} of {{total}} ayahs",
+    "partHint": "Hold to mark part of it",
+    "partTitle": "{{surah}} — the part by heart",
+    "partHelp": "Ayahs {{from}} to {{to}} of {{count}}. What lies outside is taken out; what stays keeps its revision.",
+    "partFrom": "From ayah",
+    "partTo": "To ayah",
+    "sheetNotKnownHint": "Takes this ayah and the rest of the portion out of what is by heart; what comes before it stays."
   }
 }

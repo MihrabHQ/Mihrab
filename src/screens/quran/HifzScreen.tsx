@@ -18,7 +18,9 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useKeyboardInset } from '../../hooks/useKeyboardInset';
+import { useSheetSides } from '../../responsive/sheetSides';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import type { RootStackParamList } from '../../navigation/types';
 import { useBreakpoint } from '../../responsive/breakpoints';
@@ -33,7 +35,9 @@ import {
   HIFZ_CAPS,
   HIFZ_COLOR,
   hifzStock,
+  markRange,
   markSurah,
+  portionsOfSurah,
   portionSpan,
   recitedToday,
   removePortion,
@@ -41,9 +45,11 @@ import {
   setCap,
   surahMemorised,
   todaysRevision,
+  unmarkRange,
   unmarkSurah,
   type HifzPortion,
 } from '../../quran/hifz';
+import { ayahCount, ayahIndexOf } from '../../quran/ayahIndex';
 import { hifzDueLabel, hifzPortionName } from '../../quran/hifzLabels';
 import { juzCoverage } from '../../quran/hifzProgress';
 import { TOTAL_AYAHS } from '../../quran/ayahIndex';
@@ -78,8 +84,20 @@ export function HifzScreen() {
   const cap = capOf(hifz);
   const budget = budgetOf(hifz);
   const coverage = useMemo(() => juzCoverage(hifz), [hifz]);
+  const partlyKnown = useMemo(
+    () => new Set(SURAHS.filter(s => portionsOfSurah(hifz, s.number).length > 0).map(s => s.number)),
+    [hifz],
+  );
   const known = useMemo(() => new Set(SURAHS.filter(s => surahMemorised(hifz, s.number)).map(s => s.number)), [hifz]);
   const [grading, setGrading] = useState<HifzPortion | null>(null);
+  /**
+   * Part of a surah (held on the grid): which surah, and the two fields.
+   * Opened on what is already held of it, so "1–100" can be grown to
+   * 1–150 or cut to 1–80 without starting the stretch's revision over.
+   */
+  const [part, setPart] = useState<{ surah: number; from: string; to: string } | null>(null);
+  const keyboardInset = useKeyboardInset();
+  const sheetEdges = useSheetSides();
   const gradeChoices = useHifzGradeChoices(grade => {
     if (grading) recite(grading.id, grade);
     setGrading(null);
@@ -97,6 +115,32 @@ export function HifzScreen() {
     updateHifz(prev =>
       all.reduce((s, n) => (every ? unmarkSurah(s, n, now) : surahMemorised(s, n) ? s : markSurah(s, n, dayOf(now), now)), prev),
     );
+  };
+  const openPart = (n: number) => {
+    const held = portionsOfSurah(hifz, n);
+    const first = held[0] ? portionSpan(held[0]) : null;
+    const last = held[held.length - 1] ? portionSpan(held[held.length - 1]) : null;
+    setPart({
+      surah: n,
+      from: String(first && first.surah === n ? first.from : 1),
+      to: String(last && last.endSurah === n ? last.to : ayahCount(n)),
+    });
+  };
+  /** Mark `from`–`to` of the surah and nothing else of it — the rest of the surah goes. */
+  const markPart = () => {
+    if (!part) return;
+    const n = part.surah;
+    const max = ayahCount(n);
+    const from = Math.max(1, Math.min(max, Number(part.from) || 1));
+    const to = Math.max(from, Math.min(max, Number(part.to) || max));
+    const now = Date.now();
+    updateHifz(prev => {
+      let next = prev;
+      if (from > 1) next = unmarkRange(next, ayahIndexOf(n, 1), ayahIndexOf(n, from - 1), now);
+      if (to < max) next = unmarkRange(next, ayahIndexOf(n, to + 1), ayahIndexOf(n, max), now);
+      return markRange(next, ayahIndexOf(n, from), ayahIndexOf(n, to), dayOf(now), now);
+    });
+    setPart(null);
   };
   const open = (p: HifzPortion) => {
     const span = portionSpan(p);
@@ -264,7 +308,7 @@ export function HifzScreen() {
         <Text style={[styles.note, { color: palette.muted }]}>
           {t(
             'hifz.addHint',
-            'Tap the surahs you know by heart. A stretch of a surah is marked from any ayah in the reader: "Memorised up to here".',
+            'Tap the surahs you know by heart. Hold one to mark part of it — or, in the reader, any ayah has "Memorised up to here".',
           )}
         </Text>
         <View style={styles.chips}>
@@ -287,16 +331,23 @@ export function HifzScreen() {
         <View style={styles.grid}>
           {SURAHS.map(s => {
             const on = known.has(s.number);
+            const partly = !on && partlyKnown.has(s.number);
             return (
               <Pressable
                 key={s.number}
                 accessibilityRole="button"
                 accessibilityState={{ selected: on }}
                 accessibilityLabel={`${s.number} ${s.romanized}`}
+                accessibilityHint={t('hifz.partHint', 'Hold to mark part of it')}
                 onPress={() => toggleSurah(s.number)}
+                onLongPress={() => openPart(s.number)}
                 style={({ pressed }) => [
                   styles.cell,
-                  on ? { backgroundColor: HIFZ_COLOR, borderColor: HIFZ_COLOR } : { borderColor: palette.border },
+                  on
+                    ? { backgroundColor: HIFZ_COLOR, borderColor: HIFZ_COLOR }
+                    : partly
+                      ? { backgroundColor: `${HIFZ_COLOR}33`, borderColor: HIFZ_COLOR }
+                      : { borderColor: palette.border },
                   pressed && styles.pressed,
                 ]}>
                 <Text style={[styles.cellNumber, on ? styles.onCell : { color: palette.muted }]}>{s.number}</Text>
@@ -343,6 +394,80 @@ export function HifzScreen() {
         </View>
       </View>
 
+      <Modal visible={part !== null} transparent animationType="fade" onRequestClose={() => setPart(null)}>
+        <Pressable
+          style={[styles.menuBackdrop, { backgroundColor: palette.overlay }]}
+          accessibilityLabel={t('common.close', 'Close')}
+          onPress={() => setPart(null)}
+        />
+        {part ? (
+          <View
+            style={[
+              styles.menuCard,
+              { backgroundColor: palette.card },
+              keyboardInset > 0 ? { bottom: keyboardInset + SPACING.xl } : styles.menuCardResting,
+              { left: 24 + sheetEdges.left, right: 24 + sheetEdges.right }, // rtl-safe: physical edges
+            ]}>
+            <Text style={[styles.menuTitle, { color: palette.text }]}>
+              {t('hifz.partTitle', {
+                defaultValue: '{{surah}} — the part by heart',
+                surah: SURAHS[part.surah - 1]?.romanized ?? part.surah,
+              })}
+            </Text>
+            <Text style={[styles.note, { color: palette.muted }]}>
+              {t('hifz.partHelp', {
+                defaultValue: 'Ayahs {{from}} to {{to}} of {{count}}. What lies outside is taken out; what stays keeps its revision.',
+                from: part.from || 1,
+                to: part.to || ayahCount(part.surah),
+                count: ayahCount(part.surah),
+              })}
+            </Text>
+            <View style={styles.fields}>
+              <View style={styles.field}>
+                <Text style={[styles.fieldLabel, { color: palette.muted }]}>{t('hifz.partFrom', 'From ayah')}</Text>
+                <TextInput
+                  value={part.from}
+                  onChangeText={v => setPart({ ...part, from: v.replace(/\D/g, '') })}
+                  keyboardType="number-pad"
+                  autoFocus
+                  maxLength={3}
+                  accessibilityLabel={t('hifz.partFrom', 'From ayah')}
+                  style={[styles.input, { color: palette.text, borderColor: palette.border }]}
+                />
+              </View>
+              <View style={styles.field}>
+                <Text style={[styles.fieldLabel, { color: palette.muted }]}>{t('hifz.partTo', 'To ayah')}</Text>
+                <TextInput
+                  value={part.to}
+                  onChangeText={v => setPart({ ...part, to: v.replace(/\D/g, '') })}
+                  keyboardType="number-pad"
+                  maxLength={3}
+                  accessibilityLabel={t('hifz.partTo', 'To ayah')}
+                  style={[styles.input, { color: palette.text, borderColor: palette.border }]}
+                  onSubmitEditing={markPart}
+                />
+              </View>
+            </View>
+            <View style={styles.menuRow}>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={t('common.cancel', 'Cancel')}
+                onPress={() => setPart(null)}
+                style={styles.menuButton}>
+                <Text style={{ color: palette.muted }}>{t('common.cancel', 'Cancel')}</Text>
+              </Pressable>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={t('hifz.sheetMark', 'Mark')}
+                onPress={markPart}
+                style={styles.menuButton}>
+                <Text style={[styles.menuMark, { color: HIFZ_COLOR }]}>{t('hifz.sheetMark', 'Mark')}</Text>
+              </Pressable>
+            </View>
+          </View>
+        ) : null}
+      </Modal>
+
       <ChoiceSheet
         visible={grading !== null}
         onClose={() => setGrading(null)}
@@ -373,6 +498,32 @@ const styles = StyleSheet.create({
   cellNumber: { fontSize: TYPE.caption.fontSize, fontVariant: ['tabular-nums'] },
   cellName: { fontSize: TYPE.caption.fontSize, fontWeight: '500' },
   onCell: { color: '#fff' },
+  menuBackdrop: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
+  menuCard: {
+    position: 'absolute',
+    // rtl-safe: a dialog pinned to both edges — symmetric, direction-agnostic
+    left: 24,
+    right: 24,
+    borderRadius: RADIUS.lg,
+    padding: SPACING.lg,
+    gap: SPACING.md,
+  },
+  menuCardResting: { top: '25%' },
+  menuTitle: { fontSize: TYPE.title3.fontSize, fontWeight: '500' },
+  fields: { flexDirection: 'row', gap: SPACING.md },
+  field: { flex: 1, gap: SPACING.xs },
+  fieldLabel: { fontSize: TYPE.label.fontSize },
+  input: {
+    borderWidth: 1,
+    borderRadius: RADIUS.md,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    fontSize: TYPE.title3.fontSize,
+    fontVariant: ['tabular-nums'],
+  },
+  menuRow: { flexDirection: 'row', justifyContent: 'flex-end', gap: SPACING.lg },
+  menuButton: { alignItems: 'center', paddingVertical: SPACING.sm },
+  menuMark: { fontWeight: '600' },
   juzGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.xs },
   juzCell: {
     width: '9%',

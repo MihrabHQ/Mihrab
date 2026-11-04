@@ -2499,7 +2499,7 @@
     "stock": "{{surahs}} suror · {{ayahs}} ayat utantill",
     "known": "Utantill",
     "add": "Lägg till det du kan",
-    "addHint": "Tryck på surorna du kan utantill. En del av en sura markeras från valfri ayah i läsaren: ”Memorerad hit”.",
+    "addHint": "Tryck på surorna du kan utantill. Håll inne en för att markera en del av den — eller, i läsaren, har varje ayah \"Memorerad hit\".",
     "juz": "Juz {{number}}",
     "capTitle": "Recitera allt minst var",
     "capDays": "{{count}} dag",
@@ -2534,6 +2534,12 @@
     "holdsEvery": "var {{count}}:e dag",
     "progress": "Framsteg",
     "progressLine": "{{ayahs}} av {{total}} ayat · {{percent}} % av Koranen · {{juz}} av 30 juz’ klara",
-    "juzCoverage": "Juz’ {{number}}: {{memorised}} av {{total}} ayat"
+    "juzCoverage": "Juz’ {{number}}: {{memorised}} av {{total}} ayat",
+    "partHint": "Håll inne för att markera en del",
+    "partTitle": "{{surah}} — delen du kan utantill",
+    "partHelp": "Ayat {{from}} till {{to}} av {{count}}. Det som ligger utanför tas bort; det som blir kvar behåller sin repetition.",
+    "partFrom": "Från ayah",
+    "partTo": "Till ayah",
+    "sheetNotKnownHint": "Tar bort denna ayah och resten av avsnittet från det du kan utantill; det som kommer före blir kvar."
   }
 }

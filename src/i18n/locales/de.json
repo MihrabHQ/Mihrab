@@ -2499,7 +2499,7 @@
     "stock": "{{surahs}} Suren · {{ayahs}} Ayat auswendig",
     "known": "Auswendig",
     "add": "Hinzufügen, was du kannst",
-    "addHint": "Tippe die Suren an, die du auswendig kannst. Ein Abschnitt einer Sure wird im Leser von jeder Aya aus markiert: „Bis hierher auswendig“.",
+    "addHint": "Tippe auf die Suren, die du auswendig kannst. Halte eine gedrückt, um einen Teil zu markieren — oder im Leser hat jede Aya „Bis hier auswendig gelernt“.",
     "juz": "Dschuz {{number}}",
     "capTitle": "Alles mindestens rezitieren alle",
     "capDays": "{{count}} Tage",
@@ -2534,6 +2534,12 @@
     "holdsEvery": "alle {{count}} Tage",
     "progress": "Fortschritt",
     "progressLine": "{{ayahs}} von {{total}} Ayat · {{percent}} % des Korans · {{juz}} von 30 Juz’ vollständig",
-    "juzCoverage": "Juz’ {{number}}: {{memorised}} von {{total}} Ayat"
+    "juzCoverage": "Juz’ {{number}}: {{memorised}} von {{total}} Ayat",
+    "partHint": "Gedrückt halten, um einen Teil zu markieren",
+    "partTitle": "{{surah}} — der auswendig gelernte Teil",
+    "partHelp": "Ayat {{from}} bis {{to}} von {{count}}. Was außerhalb liegt, wird entfernt; was bleibt, behält seine Wiederholung.",
+    "partFrom": "Ab Aya",
+    "partTo": "Bis Aya",
+    "sheetNotKnownHint": "Nimmt diese Aya und den Rest des Abschnitts aus dem Auswendiggelernten; was davor kommt, bleibt."
   }
 }

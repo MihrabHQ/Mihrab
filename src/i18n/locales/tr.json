@@ -2499,7 +2499,7 @@
     "stock": "Ezberde {{surahs}} sure · {{ayahs}} ayet",
     "known": "Ezberde",
     "add": "Bildiklerini ekle",
-    "addHint": "Ezberindeki surelere dokun. Bir surenin bir bölümü okuyucuda herhangi bir ayetten işaretlenir: \"Buraya kadar ezberde\".",
+    "addHint": "Ezberinizdeki sureleri işaretleyin. Bir kısmını işaretlemek için sureye basılı tutun — ya da okuyucuda her ayette «Buraya kadar ezberledim» var.",
     "juz": "{{number}}. cüz",
     "capTitle": "Her şeyi en az şu sıklıkla oku",
     "capDays": "{{count}} gün",
@@ -2534,6 +2534,12 @@
     "holdsEvery": "her {{count}} günde bir",
     "progress": "İlerleme",
     "progressLine": "{{total}} ayetten {{ayahs}} · Kur’an’ın %{{percent}}’i · 30 cüzden {{juz}} tamam",
-    "juzCoverage": "{{number}}. cüz: {{total}} ayetten {{memorised}}"
+    "juzCoverage": "{{number}}. cüz: {{total}} ayetten {{memorised}}",
+    "partHint": "Bir kısmını işaretlemek için basılı tutun",
+    "partTitle": "{{surah}} — ezberdeki kısım",
+    "partHelp": "{{count}} ayetin {{from}}–{{to}} arası. Dışında kalan çıkarılır; kalan kısım tekrar düzenini korur.",
+    "partFrom": "Başlangıç ayeti",
+    "partTo": "Bitiş ayeti",
+    "sheetNotKnownHint": "Bu ayeti ve bölümün geri kalanını ezberden çıkarır; öncesi kalır."
   }
 }

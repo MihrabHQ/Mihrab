@@ -2499,7 +2499,7 @@
     "stock": "{{surahs}} surah · {{ayahs}} ayat dihafal",
     "known": "Dihafal",
     "add": "Tambahkan yang Anda hafal",
-    "addHint": "Ketuk surah yang Anda hafal. Sebagian surah ditandai dari ayat mana pun di pembaca: \"Hafal sampai di sini\".",
+    "addHint": "Ketuk surah yang Anda hafal. Tahan salah satunya untuk menandai sebagian — atau, di pembaca, setiap ayat punya «Hafal sampai sini».",
     "juz": "Juz {{number}}",
     "capTitle": "Baca semuanya setidaknya setiap",
     "capDays": "{{count}} hari",
@@ -2534,6 +2534,12 @@
     "holdsEvery": "setiap {{count}} hari",
     "progress": "Kemajuan",
     "progressLine": "{{ayahs}} dari {{total}} ayat · {{percent}}% Al-Qur’an · {{juz}} dari 30 juz lengkap",
-    "juzCoverage": "Juz {{number}}: {{memorised}} dari {{total}} ayat"
+    "juzCoverage": "Juz {{number}}: {{memorised}} dari {{total}} ayat",
+    "partHint": "Tahan untuk menandai sebagian",
+    "partTitle": "{{surah}} — bagian yang dihafal",
+    "partHelp": "Ayat {{from}} sampai {{to}} dari {{count}}. Yang di luar dihapus; yang tersisa tetap dengan jadwal murajaahnya.",
+    "partFrom": "Dari ayat",
+    "partTo": "Sampai ayat",
+    "sheetNotKnownHint": "Mengeluarkan ayat ini dan sisa bagian dari hafalan; yang sebelumnya tetap."
   }
 }

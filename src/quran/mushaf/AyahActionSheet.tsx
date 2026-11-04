@@ -49,7 +49,7 @@ import type {
   QuranBookmark,
 } from '../quranTypes';
 import { activeKhatmah } from '../khatmahProgress';
-import { dayOf, HIFZ_COLOR, markRange, markSurah, markUpTo, portionAt, removePortion } from '../hifz';
+import { dayOf, HIFZ_COLOR, markRange, markSurah, markUpTo, portionAt, unmarkFrom } from '../hifz';
 import { clearDrillOffer, useLastDrill } from '../hifzDrill';
 import { hifzDueLabel } from '../hifzLabels';
 import { ayahCount, ayahIndexOf } from '../ayahIndex';
@@ -1425,9 +1425,11 @@ export function AyahActionSheet({
                 defaultValue: 'By heart · {{when}}',
                 when: hifzDueLabel(hifzHere, hifzToday, t),
               })}
-              onPress={() =>
-                updateHifz(prev => removePortion(prev, hifzHere.id, Date.now()))
-              }
+              accessibilityHint={t(
+                'hifz.sheetNotKnownHint',
+                'Takes this ayah and the rest of the portion out of what is by heart; what comes before it stays.',
+              )}
+              onPress={() => updateHifz(prev => unmarkFrom(prev, surah, ayah, Date.now()))}
               style={({ pressed }) => [
                 styles.pinButton,
                 { backgroundColor: `${HIFZ_COLOR}33` },

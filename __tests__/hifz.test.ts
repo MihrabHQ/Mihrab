@@ -20,6 +20,8 @@ import {
   setCap,
   surahMemorised,
   todaysRevision,
+  unmarkFrom,
+  unmarkRange,
   unmarkSurah,
   type HifzState,
 } from '../src/quran/hifz';
@@ -110,6 +112,43 @@ describe('marking', () => {
     expect(surahMemorised(s, 114)).toBe(true);
     expect(s.portions).toHaveLength(2);
     expect(hifzStock(s)).toEqual({ ayahs: 4 + 6, surahs: 2 });
+  });
+
+  it('"not by heart" on an ayah ends the portion before it, and the head keeps its schedule', () => {
+    let s = markSurah(EMPTY_HIFZ, 78, TODAY, NOW); // an-Naba 1–40
+    const id = s.portions[0].id;
+    s = reviewPortion(s, id, 'fine', addDays(TODAY, 1), NOW + 864e5);
+    s = unmarkFrom(s, 78, 31, NOW + 2 * 864e5);
+    expect(s.portions).toHaveLength(1);
+    expect(portionSpan(s.portions[0])).toMatchObject({ surah: 78, from: 1, to: 30 });
+    expect(s.portions[0].interval).toBe(3);
+    expect(s.portions[0].reviews).toHaveLength(1);
+    // From the first ayah, nothing of it is left.
+    s = unmarkFrom(s, 78, 1, NOW + 3 * 864e5);
+    expect(s.portions).toHaveLength(0);
+    // An ayah not held changes nothing.
+    expect(unmarkFrom(s, 1, 1, NOW)).toBe(s);
+  });
+
+  it('a portion cut short is the same portion: the shorter copy wins a merge either way', () => {
+    const a = markSurah(EMPTY_HIFZ, 78, TODAY, NOW);
+    const b = unmarkFrom(a, 78, 31, NOW + 1000);
+    expect(b.portions[0].id).toBe(a.portions[0].id);
+    expect(b.removed ?? []).toHaveLength(0);
+    for (const m of [mergeHifz(a, b), mergeHifz(b, a)]) {
+      expect(m?.portions).toHaveLength(1);
+      expect(portionSpan(m!.portions[0]).to).toBe(30);
+    }
+  });
+
+  it('unmarking the middle of a portion leaves both ends', () => {
+    let s = markSurah(EMPTY_HIFZ, 67, TODAY, NOW); // al-Mulk 1–30
+    s = unmarkRange(s, ayahIndexOf(67, 11), ayahIndexOf(67, 20), NOW + 1);
+    expect(s.portions.map(p => [portionSpan(p).from, portionSpan(p).to])).toEqual([
+      [1, 10],
+      [21, 30],
+    ]);
+    expect(hifzStock(s).ayahs).toBe(20);
   });
 
   it('a removed portion stays removed through a merge with a device that still has it', () => {

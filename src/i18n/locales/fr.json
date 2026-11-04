@@ -2500,7 +2500,7 @@
     "stock": "{{surahs}} sourates · {{ayahs}} versets par cœur",
     "known": "Par cœur",
     "add": "Ajouter ce que vous connaissez",
-    "addHint": "Touchez les sourates que vous connaissez par cœur. Une partie de sourate se marque depuis n'importe quel verset dans le lecteur : « Mémorisé jusqu'ici ».",
+    "addHint": "Touchez les sourates que vous connaissez par cœur. Maintenez-en une pour en marquer une partie — ou, dans le lecteur, chaque verset propose « Mémorisé jusqu’ici ».",
     "juz": "Juz {{number}}",
     "capTitle": "Tout réciter au moins tous les",
     "capDays": "{{count}} jours",
@@ -2535,6 +2535,12 @@
     "holdsEvery": "tous les {{count}} jours",
     "progress": "Progression",
     "progressLine": "{{ayahs}} versets sur {{total}} · {{percent}} % du Coran · {{juz}} juz’ sur 30 complets",
-    "juzCoverage": "Juz’ {{number}} : {{memorised}} versets sur {{total}}"
+    "juzCoverage": "Juz’ {{number}} : {{memorised}} versets sur {{total}}",
+    "partHint": "Maintenir pour en marquer une partie",
+    "partTitle": "{{surah}} — la partie connue par cœur",
+    "partHelp": "Versets {{from}} à {{to}} sur {{count}}. Ce qui est en dehors est retiré ; ce qui reste garde sa révision.",
+    "partFrom": "Du verset",
+    "partTo": "Au verset",
+    "sheetNotKnownHint": "Retire ce verset et le reste du passage de ce qui est connu par cœur ; ce qui précède reste."
   }
 }
