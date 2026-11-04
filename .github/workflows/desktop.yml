@@ -37,7 +37,8 @@ permissions:
   contents: write
 
 concurrency:
-  group: desktop-${{ github.ref }}
+  # By hand and by push apart: a push must not cancel a preview being built.
+  group: desktop-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
