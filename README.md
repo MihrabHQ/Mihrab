@@ -32,7 +32,7 @@
 
   <p><b>Windows</b></p>
 
-  <p><a href="https://apps.microsoft.com/detail/9N43KNMJHBWV"><img src="branding/badges/microsoft.png" alt="Download from the Microsoft Store" height="60"></a></p>
+  <p><a href="https://apps.microsoft.com/detail/9N43KNMJHBWV"><img src="branding/badges/microsoft.png" alt="Get it from the Microsoft Store" height="60"></a></p>
 
   <p><b>Linux</b> <sub>(preview)</sub></p>
 
