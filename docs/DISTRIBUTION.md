@@ -329,33 +329,37 @@ That APK is **not** what goes on GitHub Releases any more (it was, up to 2.25.0)
 - **No Google Play Services** — guarded by the `patch-package` patch on `@react-native-community/geolocation` that strips `play-services-location` and uses AOSP `LocationManager` only.
 - **No ABI splits** — split APKs are only enabled for `playRelease` (guarded by `wantsPlayRelease` in `app/build.gradle`). The F-Droid build is a single universal APK, which is what their CI recipe expects.
 
-### Windows and Linux (`desktop/`)
+### Windows, Linux and Mihrab Web (`desktop/`)
 
 The React Native app rendered with react-native-web in Electron — see
 `desktop/README.md` and, for who looks after it, `desktop/MAINTAINING.md`.
-Nothing about it runs on this Mac: `.github/workflows/desktop.yml` builds on
-real Windows and Linux runners, launches each packaged app, and on a `v*` tag
-attaches the installers to the release that `release.sh` publishes:
+Nothing about it is built on this Mac, and a release asks one thing of a
+person here: the Microsoft Store submission. What a `v*` tag sets going:
 
-| File | For |
-|---|---|
-| `Mihrab-X.Y.Z-win-x64.exe`, `-win-arm64.exe` | Windows installer (per-user, unsigned — SmartScreen warns on first run) |
-| `Mihrab-X.Y.Z-linux-x86_64.AppImage`, `-linux-arm64.AppImage` | Any Linux, no install |
-| `Mihrab-X.Y.Z-linux-amd64.deb`, `-linux-arm64.deb` | Debian / Ubuntu |
+| Channel | How it gets the release | When |
+|---|---|---|
+| GitHub release | `.github/workflows/desktop.yml` builds on real Windows and Linux runners, launches and installs each package, and attaches `Mihrab-X.Y.Z-win-{x64,arm64}.exe`, `-linux-{x86_64,arm64}.AppImage`, `-linux-{amd64,arm64}.deb` and `-linux-{x86_64,aarch64}.rpm` to the release `release.sh` publishes | about 40 minutes after the tag |
+| apt, dnf, zypper, pacman | `MihrabHQ/packages` (`publish.yml`, hourly) takes the deb and rpm from the latest release, builds the repositories with that tag's `desktop/packaging/`, signs them and serves them at mihrabhq.github.io/packages | within the hour after the installers |
+| AUR `mihrab-bin` | the same run, once `AUR_SSH_KEY` is set there — not yet: there is no AUR account | — |
+| Microsoft Store | **by hand.** The tag's Desktop run uploads the unsigned `.appx` packages (x64 and arm64) as the artifact `mihrab-microsoft-store`; download them and submit them in Partner Center. `release.sh`'s summary prints the command. Automatic submission waits for the four `STORE_*` secrets, which need an Entra tenant | once the Desktop run is green |
+| Mihrab Web | `MihrabHQ.github.io` (`publish.yml`, hourly) builds the web app from the latest release's tag, reusing the Qur'an files it already serves, and writes the tag to `version.txt` | within the hour after the release |
 
-Opt-in: the upload runs only while the repository variable `DESKTOP_RELEASE`
-is `true` (Settings → Secrets and variables → Actions → Variables). Before
-setting it, one build has to have been installed and used on a real Windows
-PC and a real Linux desktop — the workflow launches both, but a launch is
-not an adhan at Fajr. `desktop/package.json`'s version is stamped by
-`sync-version.js` with everything else.
+The installers are attached only while the repository variable
+`DESKTOP_RELEASE` is `true` (Settings → Secrets and variables → Actions →
+Variables). `desktop/package.json` and its lockfile are stamped by
+`sync-version.js` with everything else and go into the release commit — a
+tag with the previous desktop version would build installers the Store
+refuses, since a package must be newer than the last. `verify-release.sh`
+checks the installers, the repositories and the web (V13); until each has
+caught up it is pending, not failed.
 
 Every push to `main` builds and launches the Linux app too. That check is
 not required: a change to the app that breaks the desktop still merges, and
-the red run goes to the desktop maintainer.
+the red run goes to the desktop maintainer — but cut no release over a red
+one, or the tag's installers will not build.
 
-Not yet: code signing on Windows, a Flathub manifest, winget and the
-Microsoft Store.
+Not yet: code signing on Windows (SmartScreen warns on the .exe), winget,
+and the AUR.
 
 ### F-Droid CI rules (`rewritemeta` linter)
 

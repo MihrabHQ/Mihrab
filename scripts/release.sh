@@ -354,7 +354,7 @@ JOURNAL="$ROOT/docs/release-log.md"
 # site is fourteen files and a list of them here goes stale the moment it
 # grows. An abort that leaves half the site stamped is an abort that makes
 # the next run refuse to start on a dirty tree, with no clue why.
-REVERT="git checkout -- android/app/build.gradle ios/PrayerApp.xcodeproj/project.pbxproj docs contrib/fdroid/com.prayer_times.yml src/polish/releaseNotes.generated.ts package.json package-lock.json"
+REVERT="git checkout -- android/app/build.gradle ios/PrayerApp.xcodeproj/project.pbxproj docs contrib/fdroid/com.prayer_times.yml src/polish/releaseNotes.generated.ts package.json package-lock.json desktop/package.json desktop/package-lock.json"
 
 current_version() { grep -o 'versionName "[^"]*"' "$GRADLE_FILE" | head -1 | cut -d'"' -f2; }
 current_code()    { grep -o 'versionCode [0-9]*'  "$GRADLE_FILE" | head -1 | awk '{print $2}'; }
@@ -928,7 +928,8 @@ git add "$GRADLE_FILE" "$PBXPROJ" "$ROOT/docs" \
         "$JOURNAL" \
         "$ROOT/fastlane/metadata/android" \
         "$ROOT/src/polish/releaseNotes.generated.ts" \
-        "$ROOT/package.json" "$ROOT/package-lock.json" || die "git add failed"
+        "$ROOT/package.json" "$ROOT/package-lock.json" \
+        "$ROOT/desktop/package.json" "$ROOT/desktop/package-lock.json" || die "git add failed"
 git commit -q -m "Release $VERSION ($CODE)" || die "commit failed"
 ok "committed"
 
@@ -1351,7 +1352,7 @@ else
 fi
 cat <<EOF
 
-  Still yours to do — both need a human at a console:
+  Still yours to do — all three need a human at a console:
 
     Play      upload $AAB
               (release notes for this build are already in the repo)
@@ -1363,6 +1364,19 @@ cat <<EOF
               nothing but a release is pushed there: each run posts a
               PUBLIC commit status, and a cancelled one is a red X on a
               commit that deserves none. See docs/DISTRIBUTION.md.
+
+    Microsoft Store
+              the tag's Desktop run builds the Store packages (about
+              40 minutes). When it is green, download them and submit
+              them in Partner Center as a new submission:
+                gh run download -R MihrabHQ/Mihrab -n mihrab-microsoft-store -D ~/Downloads/mihrab-store-$VERSION \\
+                  \$(gh run list -R MihrabHQ/Mihrab --workflow desktop.yml --branch v$VERSION --limit 1 --json databaseId --jq '.[0].databaseId')
+
+  On their own, after the tag's Desktop run:
+    Windows and Linux installers   attached to v$VERSION by that run
+    apt, dnf, zypper, pacman       MihrabHQ/packages, within the hour after
+    Mihrab Web                     MihrabHQ.github.io, within the hour
+  An hour on, ./scripts/verify-release.sh v$VERSION checks all three.
 
 EOF
 

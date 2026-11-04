@@ -17,6 +17,18 @@ const BASE = 'https://api.appstoreconnect.apple.com';
 const SDK = `${HOME}/Library/Android/sdk/build-tools`;
 const PEM = generateKeyPairSync('ec', { namedCurve: 'P-256' }).privateKey.export({ type: 'pkcs8', format: 'pem' }) as string;
 const CERT = 'e66c0dabc898856bd0f6057a8fe0aaa440fa1d04f0da5a213104f41f89e6f997';
+/** What the tag's Desktop run attaches. */
+const INSTALLERS = [
+  `Mihrab-${'2.28.0'}-win-x64.exe`,
+  `Mihrab-${'2.28.0'}-win-arm64.exe`,
+  `Mihrab-${'2.28.0'}-linux-x86_64.AppImage`,
+  `Mihrab-${'2.28.0'}-linux-arm64.AppImage`,
+  `Mihrab-${'2.28.0'}-linux-amd64.deb`,
+  `Mihrab-${'2.28.0'}-linux-arm64.deb`,
+  `Mihrab-${'2.28.0'}-linux-x86_64.rpm`,
+  `Mihrab-${'2.28.0'}-linux-aarch64.rpm`,
+].map(name => ({ name }));
+const RELEASE_ASSETS = [{ name: 'Mihrab-v2.28.0.apk' }, { name: 'Mihrab-macOS-2.28.0.zip' }, ...INSTALLERS];
 
 /** A release that is fine on every channel. */
 function published() {
@@ -32,7 +44,7 @@ function published() {
   w.dir('/Applications/Mihrab.app/Contents/PlugIns/PrayerWidgetExtension.appex');
   w.on('git ls-remote', { stdout: `abc\trefs/tags/${TAG}\n` })
     .on('gh release view', {
-      stdout: JSON.stringify({ isDraft: false, assets: [{ name: `Mihrab-v${V}.apk` }, { name: `Mihrab-macOS-${V}.zip` }] }),
+      stdout: JSON.stringify({ isDraft: false, assets: RELEASE_ASSETS }),
     })
     .on('unzip -Z1', { stdout: 'lib/arm64-v8a/libhermes.so\nlib/armeabi-v7a/libhermes.so\n' })
     .on(/^unzip -Z1 \S+ classes\*\.dex$/, { stdout: 'classes.dex\n' })
@@ -60,6 +72,8 @@ function published() {
   w.url(`${DL}/Mihrab-macOS-${V}.zip`, { body: zipBytes });
   w.url(`${DL}/Mihrab-v${V}.apk`, { body: 'APK' });
   w.url('https://mihrab.elghamri.se/', { text: `<p>Version ${V} (283)</p>` });
+  w.url('https://mihrabhq.github.io/packages/version.txt', { text: `${V}\n` });
+  w.url('https://mihrabhq.github.io/version.txt', { text: `${TAG}\n` });
   // App Store Connect: the build is there.
   w.file(`${HOME}/.config/mihrab/asc.json`, JSON.stringify({ keyPath: '/k.p8', keyId: 'K', issuerId: 'I' }));
   w.file('/k.p8', PEM);
@@ -121,6 +135,59 @@ describe('a healthy release', () => {
     await run(w);
     expect(w.indexOf(/lsregister -u \/tmp\/mihrab-verifyapp-\d+\/Mihrab\.app$/)).toBeGreaterThan(-1);
     expect(w.indexOf('pluginkit -a')).toBeGreaterThan(w.indexOf(/lsregister -u/));
+  });
+});
+
+describe('Windows, Linux and the web (V13)', () => {
+  const withoutInstallers = () =>
+    published().on('gh release view', {
+      stdout: JSON.stringify({ isDraft: false, assets: RELEASE_ASSETS.slice(0, 2) }),
+    });
+
+  it('a healthy release has all eight installers, the repositories and the web on it', async () => {
+    const { oks } = await run(published());
+    expect(oks).toEqual(
+      expect.arrayContaining([
+        'Windows and Linux installers attached (8)',
+        `apt, dnf and pacman repositories serve ${V}`,
+        `Mihrab Web is built from ${TAG}`,
+      ]),
+    );
+  });
+
+  it('installers not yet attached while the Desktop run goes is pending, not failed', async () => {
+    const w = withoutInstallers().on(/^gh run list --workflow=desktop\.yml/, { stdout: 'in_progress||https://ci/d\n' });
+    const { fails, pends, code } = await run(w);
+    expect(fails).toEqual([]);
+    expect(pends).toContain("Windows and Linux installers: the tag's Desktop run is in_progress");
+    expect(code).toBe(0);
+  });
+
+  it('a red Desktop run fails, with its link', async () => {
+    const w = withoutInstallers().on(/^gh run list --workflow=desktop\.yml/, { stdout: 'completed|failure|https://ci/d\n' });
+    expect((await run(w)).fails).toContain("Windows and Linux installers: the tag's Desktop run failure — https://ci/d");
+  });
+
+  it('installers under the previous version say the desktop version was not stamped', async () => {
+    const stale = INSTALLERS.map(a => ({ name: a.name.replace('2.28.0', '2.27.1') }));
+    const w = published().on('gh release view', {
+      stdout: JSON.stringify({ isDraft: false, assets: [...RELEASE_ASSETS.slice(0, 2), ...stale] }),
+    });
+    expect((await run(w)).fails[0]).toMatch(/0 of 8 attached .*8 attached under another version — was desktop\/package\.json stamped\?/);
+  });
+
+  it('repositories and the web still on the last release are pending', async () => {
+    const w = published();
+    w.url('https://mihrabhq.github.io/packages/version.txt', { text: '2.27.1\n' });
+    w.url('https://mihrabhq.github.io/version.txt', { text: 'v2.27.1\n' });
+    const { pends, fails } = await run(w);
+    expect(fails).toEqual([]);
+    expect(pends).toEqual(
+      expect.arrayContaining([
+        expect.stringMatching(/^apt, dnf and pacman repositories serve 2\.27\.1/),
+        expect.stringMatching(/^Mihrab Web is built from v2\.27\.1/),
+      ]),
+    );
   });
 });
 

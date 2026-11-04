@@ -123,7 +123,7 @@ async function manifest(root) {
   // The app, replacing the last one but keeping the repository's own files.
   await fsp.mkdir(out, { recursive: true });
   for (const name of await fsp.readdir(out)) {
-    if (name === '.git' || name === 'README.md' || name === 'LICENSE' || name === 'CNAME') continue;
+    if (['.git', '.github', 'README.md', 'LICENSE', 'CNAME'].includes(name)) continue;
     await fsp.rm(path.join(out, name), { recursive: true, force: true });
   }
   await fsp.cp(BUILD, out, { recursive: true });

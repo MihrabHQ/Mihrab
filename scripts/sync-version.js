@@ -31,6 +31,7 @@ const PACKAGE = path.join(ROOT, 'package.json');
 const LOCK = path.join(ROOT, 'package-lock.json');
 const PKG_NAME = JSON.parse(fs.readFileSync(PACKAGE, 'utf-8')).name;
 const DESKTOP = path.join(ROOT, 'desktop', 'package.json');
+const DESKTOP_LOCK = path.join(ROOT, 'desktop', 'package-lock.json');
 /** Every language page other than English and Swedish, which have rules of their own. */
 const OTHER_SITES = ['ar', 'bn', 'de', 'es', 'fr', 'hi', 'id', 'ru', 'tr', 'ur', 'zh'].map(
   lang => ({ lang, file: path.join(ROOT, 'docs', lang, 'index.html') }),
@@ -201,6 +202,19 @@ function rules({ versionName, versionCode }) {
       what: 'desktop: package version',
       find: /"version": "[\d.]+"/,
       replace: `"version": "${versionName}"`,
+    },
+    // Its lockfile, as the root's: the same number twice.
+    {
+      file: DESKTOP_LOCK,
+      what: 'desktop/package-lock.json: root version',
+      find: /\n  "version": "[\d.]+"/,
+      replace: `\n  "version": "${versionName}"`,
+    },
+    {
+      file: DESKTOP_LOCK,
+      what: 'desktop/package-lock.json: packages[""] version',
+      find: /"": \{\n      "name": "mihrab-desktop",\n      "version": "[\d.]+"/,
+      replace: `"": {\n      "name": "mihrab-desktop",\n      "version": "${versionName}"`,
     },
   ];
 }

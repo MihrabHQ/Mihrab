@@ -50,6 +50,14 @@ import { Asc, AscExit } from './asc.ts';
 import { POSTFLIGHT_DO, POSTFLIGHT_STEPS } from './preflight.ts';
 import * as xc from './xcodeCloud.ts';
 
+/** What the tag's Desktop run attaches: an .exe, an AppImage, a .deb and
+ *  an .rpm, each for x64 and arm64. */
+export const DESKTOP_INSTALLERS = 8;
+/** The version the apt, dnf and pacman repositories serve (MihrabHQ/packages). */
+export const PACKAGES_VERSION_URL = 'https://mihrabhq.github.io/packages/version.txt';
+/** The tag Mihrab Web was built from (MihrabHQ.github.io's publish workflow). */
+export const WEB_VERSION_URL = 'https://mihrabhq.github.io/version.txt';
+
 export function caskVersion(cask: string): string {
   return /.*version "(.*)".*/.exec(cask)?.[1] ?? '';
 }
@@ -343,6 +351,49 @@ export async function verify(ctx: Ctx, tag: string, opts: { self?: string } = {}
     else if (kind === 'fail') fail('V12', text);
     else pend('V12', text);
   }
+
+  // ── V13 — WINDOWS, LINUX AND THE WEB ──
+  //
+  // None of them is built on this Mac: the tag's Desktop run builds the
+  // installers and attaches them (about 40 minutes), MihrabHQ/packages
+  // serves the deb and rpm from the release within the hour after, and
+  // MihrabHQ.github.io rebuilds Mihrab Web from the tag within the hour.
+  // So "not yet" is pending, and only a run that finished red, or a
+  // finished run with nothing attached, is a failure.
+  const installers = (rel?.assets ?? [])
+    .map(a => a.name)
+    .filter(n => /^Mihrab-.*\.(exe|AppImage|deb|rpm)$/.test(n));
+  const stamped = installers.filter(n => has(n, `-${version}-`));
+  if (stamped.length >= DESKTOP_INSTALLERS) {
+    ok('V13', `Windows and Linux installers attached (${stamped.length})`);
+  } else {
+    const row = (
+      await gh(ctx, [
+        'run', 'list', '--workflow=desktop.yml', '--branch', tag, '-R', REPO, '--limit', '1',
+        '--json', 'status,conclusion,url',
+        '--jq', '.[0] // empty | "\\(.status)|\\(.conclusion)|\\(.url)"',
+      ])
+    ).stdout.trim();
+    const [status, conclusion, url] = row.split('|');
+    const older = installers.length > stamped.length ? ` (${installers.length - stamped.length} attached under another version — was desktop/package.json stamped?)` : '';
+    if (!row || status !== 'completed') {
+      pend('V13', `Windows and Linux installers: the tag's Desktop run is ${row ? status : 'not started'}${older}`);
+    } else if (conclusion !== 'success') {
+      fail('V13', `Windows and Linux installers: the tag's Desktop run ${conclusion} — ${url}`);
+    } else {
+      fail('V13', `Windows and Linux installers: ${stamped.length} of ${DESKTOP_INSTALLERS} attached though the Desktop run is green${older} — is DESKTOP_RELEASE still 'true'?`);
+    }
+  }
+  const served = async (url: string) => {
+    const res = await ctx.io.http.request({ method: 'GET', url: `${url}?bust=${Math.floor(ctx.io.clock.now() / 1000)}`, timeoutMs: 20_000 });
+    return res.status >= 200 && res.status < 300 ? res.text.trim() : '';
+  };
+  const repoVersion = await served(PACKAGES_VERSION_URL);
+  if (repoVersion === version) ok('V13', `apt, dnf and pacman repositories serve ${version}`);
+  else pend('V13', `apt, dnf and pacman repositories serve ${repoVersion || 'nothing readable'} — MihrabHQ/packages publishes hourly once the deb and rpm are attached`);
+  const webVersion = await served(WEB_VERSION_URL);
+  if (webVersion === tag) ok('V13', `Mihrab Web is built from ${tag}`);
+  else pend('V13', `Mihrab Web is built from ${webVersion || 'an unknown version'} — MihrabHQ.github.io rebuilds hourly from the latest release`);
 
   r.say('');
   if (!r.failed && r.pending) {

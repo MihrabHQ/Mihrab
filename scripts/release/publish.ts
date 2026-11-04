@@ -117,6 +117,12 @@ export const RELEASE_COMMIT_PATHS = [
   // saying 2.30.0 as an uncommitted change in the working tree.
   'package.json',
   'package-lock.json',
+  // The Windows/Linux app's version, stamped by sync-version.js like the
+  // root's. Left out, the tag's desktop build — the installers, the Store
+  // package, the Linux repositories — would carry the previous version,
+  // and the Store refuses a package no newer than the last.
+  'desktop/package.json',
+  'desktop/package-lock.json',
 ];
 export const commitMessage = (rel: Release) => `Release ${rel.version} (${rel.code})`;
 export const tagMessage = (rel: Release) => `Mihrab ${rel.version} (${rel.code})`;
@@ -645,7 +651,7 @@ export function summary(rel: Release, built: Built, ios: IosState, ci: { state: 
                 ./scripts/build-ios-appstore.sh`;
   }
   out.push(`
-  Still yours to do — both need a human at a console:
+  Still yours to do — all three need a human at a console:
 
     Play      upload ${built.aab}
               (release notes for this build are already in the repo)
@@ -657,6 +663,19 @@ export function summary(rel: Release, built: Built, ios: IosState, ci: { state: 
               nothing but a release is pushed there: each run posts a
               PUBLIC commit status, and a cancelled one is a red X on a
               commit that deserves none. See docs/DISTRIBUTION.md.
+
+    Microsoft Store
+              the tag's Desktop run builds the Store packages (about
+              40 minutes). When it is green, download them and submit
+              them in Partner Center as a new submission:
+                gh run download -R ${REPO} -n mihrab-microsoft-store -D ~/Downloads/mihrab-store-${rel.version} \\
+                  $(gh run list -R ${REPO} --workflow desktop.yml --branch ${rel.tag} --limit 1 --json databaseId --jq '.[0].databaseId')
+`);
+  out.push(`  On their own, after the tag's Desktop run:
+    Windows and Linux installers   attached to ${rel.tag} by that run
+    apt, dnf, zypper, pacman       MihrabHQ/packages, within the hour after
+    Mihrab Web                     MihrabHQ.github.io, within the hour
+  An hour on, ./scripts/verify-release.sh ${rel.tag} checks all three.
 `);
   return out;
 }
