@@ -89,6 +89,33 @@ export function ayahCountForRiwayah(
   return own && own > 0 ? own : ayahCount(surah);
 }
 
+/**
+ * The ayah one step before or after this one, in this riwayah's own
+ * numbering — over a surah's end into the next, and null past either end
+ * of the Qur'an. The ayah sheet's ‹ › walk with it.
+ *
+ * Counted with `ayahCountForRiwayah`, not the Ḥafṣ table: in Warsh,
+ * al-Māʾidah runs to 122, and stepping by Ḥafṣ's 120 would jump from
+ * 5:120 to 6:1 over two ayahs.
+ */
+export function adjacentAyah(
+  surah: number,
+  ayah: number,
+  step: 1 | -1,
+  riwayah: RiwayahId = DEFAULT_RIWAYAH,
+): { surah: number; ayah: number } | null {
+  if (step === 1) {
+    if (ayah < ayahCountForRiwayah(riwayah, surah)) {
+      return { surah, ayah: ayah + 1 };
+    }
+    return surah < 114 ? { surah: surah + 1, ayah: 1 } : null;
+  }
+  if (ayah > 1) return { surah, ayah: ayah - 1 };
+  return surah > 1
+    ? { surah: surah - 1, ayah: ayahCountForRiwayah(riwayah, surah - 1) }
+    : null;
+}
+
 /** Pages in this riwayah's muṣḥaf — not assumed to be 604. */
 export function totalPagesForRiwayah(
   riwayah: RiwayahId = DEFAULT_RIWAYAH,
