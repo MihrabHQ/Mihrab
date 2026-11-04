@@ -9,8 +9,11 @@ gpg --batch --import /work/key.asc 2>/dev/null
 key=$(gpg --batch --list-secret-keys --with-colons | awk -F: '/^fpr:/ { print $10; exit }')
 
 # The recipe downloads from the release; here it reads the same files.
+# Under a release's names, whichever build they came from (the preview's
+# files are named without the version).
 mkdir -p "/build/rel/v$VERSION"
-cp /in/Mihrab-*.deb "/build/rel/v$VERSION/"
+cp /in/Mihrab-*amd64.deb "/build/rel/v$VERSION/Mihrab-$VERSION-linux-amd64.deb"
+cp /in/Mihrab-*arm64.deb "/build/rel/v$VERSION/Mihrab-$VERSION-linux-arm64.deb"
 MIHRAB_RELEASES=file:///build/rel MIHRAB_PKGNAME=mihrab \
   sh /packaging/aur/make-pkgbuild.sh "$VERSION" /in/Mihrab-*-amd64.deb /in/Mihrab-*-arm64.deb /build/pkg
 useradd -m builder

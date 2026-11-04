@@ -18,15 +18,19 @@ entry and settings. The workflow runs both scripts on every build.
 | Windows (`cmd`) | `curl -fsSLo "%TEMP%\mihrab.cmd" https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/install-windows.cmd && "%TEMP%\mihrab.cmd"` | `curl -fsSLo "%TEMP%\mihrab-remove.cmd" https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/uninstall-windows.cmd && "%TEMP%\mihrab-remove.cmd"` |
 | Linux (terminal) | `curl -fsSL https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/install-linux.sh \| sh` | `curl -fsSL https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/uninstall-linux.sh \| sh` |
 
-Windows installs for the user into `%LOCALAPPDATA%\Programs\Mihrab`. Linux uses
-the `.deb` where there is apt and the AppImage, unpacked into
-`~/.local/share/mihrab`, everywhere else (`MIHRAB_FORMAT=appimage` forces it).
+Windows installs for the user into `%LOCALAPPDATA%\Programs\Mihrab`. On Linux
+the script adds Mihrab's repository to the system's package manager — apt,
+dnf, zypper or pacman — and installs from it, so Mihrab is updated with the
+rest of the system; removing takes the repository and its key away too.
+Anywhere else it unpacks the AppImage into `~/.local/share/mihrab`
+(`MIHRAB_FORMAT=appimage` forces it).
 
 ## Linux package managers
 
-From the first release that carries the desktop app (the repository variable
-`DESKTOP_RELEASE` set to `true`), each release's `.deb` and `.rpm` are
-published where Linux's package managers install, update and remove them:
+Each release's `.deb` and `.rpm` (the repository variable `DESKTOP_RELEASE`
+is `true`) are published where Linux's package managers install, update and
+remove them. Until a release carries them, the repositories hold the latest
+desktop-preview build instead; the first such release takes over by itself.
 
 | | Install | Updates with | Remove |
 |---|---|---|---|
