@@ -2519,6 +2519,21 @@
     "range": "{{surah}} {{from}}–{{to}}",
     "rangeAcross": "{{from}} – {{to}}",
     "whichSurahs": "你已熟记哪些章？",
-    "portions": "{{count}} 段"
+    "portions": "{{count}} 段",
+    "reviewing": "背诵 {{name}}",
+    "reviewChecked": "已核对 {{done}}/{{total}} — 点按经文以核对",
+    "reviewDone": "完成",
+    "reciteFromMemory": "背诵",
+    "drilled": "已练习 {{range}} — 已记住",
+    "reminder": "每日背诵提醒",
+    "reminderHelp": "在有待背诵段落的日子，提示需要背诵的段落数。",
+    "reminderNoStock": "请先在古兰经标签页中标记你已记住的内容。",
+    "reminderChannelName": "背诵提醒",
+    "reminderBody": "今天有 {{count}} 段需要背诵。",
+    "holdsDaily": "每天背诵",
+    "holdsEvery": "每 {{count}} 天",
+    "progress": "进度",
+    "progressLine": "{{ayahs}}/{{total}} 节 · 古兰经的 {{percent}}% · 30 卷中已完成 {{juz}} 卷",
+    "juzCoverage": "第 {{number}} 卷：{{memorised}}/{{total}} 节"
   }
 }

@@ -45,6 +45,10 @@ import {
   watchKhatmahReminder,
 } from './notifications/khatmahReminder';
 import {
+  rescheduleHifzReminder,
+  watchHifzReminder,
+} from './notifications/hifzReminder';
+import {
   getQuranState,
   hydrateQuranState,
   subscribeQuranState,
@@ -163,6 +167,9 @@ export function AppNavigationRoot() {
         String(settings.khatmahReminderEnabled),
         settings.khatmahReminderHour,
         settings.khatmahReminderMinute,
+        String(settings.hifzReminderEnabled),
+        settings.hifzReminderHour,
+        settings.hifzReminderMinute,
         String(settings.fastingRemindersEnabled),
         settings.fastingReminderHour,
         String(settings.kahfReminderEnabled),
@@ -201,6 +208,11 @@ export function AppNavigationRoot() {
         enabled: settings.khatmahReminderEnabled,
         hour: settings.khatmahReminderHour,
         minute: settings.khatmahReminderMinute,
+      });
+      void rescheduleHifzReminder({
+        enabled: settings.hifzReminderEnabled,
+        hour: settings.hifzReminderHour,
+        minute: settings.hifzReminderMinute,
       });
       void rescheduleFastingReminders({
         enabled: settings.fastingRemindersEnabled,
@@ -278,12 +290,28 @@ export function AppNavigationRoot() {
         });
       },
     });
+    // The hifz reminder (#121) is the same kind of thing: a recitation
+    // during the day should silence today's, and the first portion marked
+    // is what gives it anything to say.
+    const unsubHifz = watchHifzReminder({
+      subscribe: subscribeQuranState,
+      hydrate: hydrateQuranState,
+      getState: getQuranState,
+      onChange: () => {
+        void rescheduleHifzReminder({
+          enabled: settings.hifzReminderEnabled,
+          hour: settings.hifzReminderHour,
+          minute: settings.hifzReminderMinute,
+        });
+      },
+    });
     return () => {
       live = false;
       sub.remove();
       unsubQuran();
       unsubHijri();
       unsubKhatmah();
+      unsubHifz();
     };
   }, [
     hydrated,
@@ -295,6 +323,9 @@ export function AppNavigationRoot() {
     settings.khatmahReminderEnabled,
     settings.khatmahReminderHour,
     settings.khatmahReminderMinute,
+    settings.hifzReminderEnabled,
+    settings.hifzReminderHour,
+    settings.hifzReminderMinute,
     settings.fastingRemindersEnabled,
     settings.fastingReminderHour,
     settings.kahfReminderEnabled,

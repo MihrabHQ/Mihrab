@@ -1701,6 +1701,8 @@ export function HomeScreen() {
     () => navigation.navigate('QuranTab' as never),
     [navigation],
   );
+  /** The day's hifz revision (#121): its page, on the root stack. */
+  const handleOpenHifz = useCallback(() => navigation.navigate('Hifz' as never), [navigation]);
   /** Continue reading exactly where the card says — surah, page, ayah. */
   const handleOpenQuranAt = useCallback(
     (
@@ -2031,6 +2033,7 @@ export function HomeScreen() {
           <QuranCard
             onOpenAt={handleOpenQuranAt}
             onOpenQuran={handleOpenQuran}
+            onOpenHifz={handleOpenHifz}
             // The phone's door sits on the page under the table, in the
             // rows' own grammar; the dashboard and the book keep the card.
             bare={fullBleed}

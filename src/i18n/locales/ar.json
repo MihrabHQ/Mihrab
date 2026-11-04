@@ -2527,6 +2527,21 @@
     "range": "{{surah}} {{from}}–{{to}}",
     "rangeAcross": "{{from}} – {{to}}",
     "whichSurahs": "ما السور التي تحفظها؟",
-    "portions": "{{count}} مقاطع"
+    "portions": "{{count}} مقاطع",
+    "reviewing": "تسميع {{name}} غيبًا",
+    "reviewChecked": "تمت مراجعة {{done}} من {{total}} — انقر على آية للتحقق منها",
+    "reviewDone": "تم",
+    "reciteFromMemory": "سمِّع غيبًا",
+    "drilled": "تم تكرار {{range}} — محفوظ",
+    "reminder": "تذكير الحفظ اليومي",
+    "reminderHelp": "عدد المقاطع المستحقة للتسميع، في الأيام التي يستحق فيها شيء.",
+    "reminderNoStock": "حدِّد ما تحفظه في تبويب القرآن لاستخدام هذا.",
+    "reminderChannelName": "تذكير الحفظ",
+    "reminderBody": "{{count}} مقاطع للتسميع غيبًا اليوم.",
+    "holdsDaily": "يُسمَّع يوميًا",
+    "holdsEvery": "كل {{count}} أيام",
+    "progress": "التقدم",
+    "progressLine": "{{ayahs}} من {{total}} آية · {{percent}}٪ من القرآن · {{juz}} من 30 جزءًا مكتملة",
+    "juzCoverage": "الجزء {{number}}: {{memorised}} من {{total}} آية"
   }
 }

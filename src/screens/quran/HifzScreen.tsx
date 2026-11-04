@@ -45,6 +45,8 @@ import {
   type HifzPortion,
 } from '../../quran/hifz';
 import { hifzDueLabel, hifzPortionName } from '../../quran/hifzLabels';
+import { juzCoverage } from '../../quran/hifzProgress';
+import { TOTAL_AYAHS } from '../../quran/ayahIndex';
 import { findPageForAyah } from '../../quran/pages';
 import { SURAHS } from '../../quran/quran';
 import { updateHifz, useQuranState } from '../../quran/quranState';
@@ -53,7 +55,7 @@ import { CheckIcon } from '../../theme/icons';
 import { cardEdgeStyle } from '../../theme/chrome';
 import { TYPE } from '../../theme/typography';
 import { RADIUS, SPACING } from '../../theme/tokens';
-import { recite, useHifzGradeChoices } from './HifzEntry';
+import { recite, reviewPortion, useHifzGradeChoices } from './HifzEntry';
 
 const BUDGETS = [1, 2, 3, 5, 10] as const;
 
@@ -75,6 +77,7 @@ export function HifzScreen() {
   const stock = hifzStock(hifz);
   const cap = capOf(hifz);
   const budget = budgetOf(hifz);
+  const coverage = useMemo(() => juzCoverage(hifz), [hifz]);
   const known = useMemo(() => new Set(SURAHS.filter(s => surahMemorised(hifz, s.number)).map(s => s.number)), [hifz]);
   const [grading, setGrading] = useState<HifzPortion | null>(null);
   const gradeChoices = useHifzGradeChoices(grade => {
@@ -143,8 +146,8 @@ export function HifzScreen() {
                 <View key={p.id} style={styles.portion}>
                   <Pressable
                     accessibilityRole="button"
-                    accessibilityLabel={`${name} — ${t('hifz.openReader', 'Open in the reader')}`}
-                    onPress={() => open(p)}
+                    accessibilityLabel={`${name} — ${t('hifz.reciteFromMemory', 'Recite from memory')}`}
+                    onPress={() => reviewPortion(navigation, p)}
                     style={({ pressed }) => [styles.portionBody, pressed && styles.pressed]}>
                     <Text style={[styles.portionName, { color: palette.text }]} numberOfLines={1}>
                       {name}
@@ -198,7 +201,11 @@ export function HifzScreen() {
                     {name}
                   </Text>
                   <Text style={[styles.note, { color: palette.muted }]} numberOfLines={1}>
-                    {hifzDueLabel(p, today, t)}
+                    {`${hifzDueLabel(p, today, t)} · ${
+                      p.interval <= 1
+                        ? t('hifz.holdsDaily', 'recited daily')
+                        : t('hifz.holdsEvery', { defaultValue: 'every {{count}} days', count: p.interval })
+                    }`}
                   </Text>
                 </Pressable>
                 <Pressable
@@ -212,6 +219,40 @@ export function HifzScreen() {
               </View>
             );
           })}
+        </View>
+      ) : null}
+
+      {hifz.portions.length > 0 ? (
+        <View style={[styles.card, { backgroundColor: palette.card, ...cardEdgeStyle(palette) }]}>
+          <SectionHead label={t('hifz.progress', 'Progress')} tight />
+          <Text style={[styles.note, { color: palette.muted }]}>
+            {t('hifz.progressLine', {
+              defaultValue: '{{ayahs}} of {{total}} ayahs · {{percent}}% of the Qur’an · {{juz}} of 30 juz’ complete',
+              ayahs: stock.ayahs,
+              total: TOTAL_AYAHS,
+              percent: Math.floor((stock.ayahs / TOTAL_AYAHS) * 1000) / 10,
+              juz: coverage.filter(c => c.memorised === c.total).length,
+            })}
+          </Text>
+          <View style={styles.juzGrid} accessibilityLabel={t('hifz.progress', 'Progress')}>
+            {coverage.map(c => {
+              const share = c.total > 0 ? c.memorised / c.total : 0;
+              return (
+                <View
+                  key={c.juz}
+                  accessibilityLabel={t('hifz.juzCoverage', {
+                    defaultValue: "Juz' {{number}}: {{memorised}} of {{total}} ayahs",
+                    number: c.juz,
+                    memorised: c.memorised,
+                    total: c.total,
+                  })}
+                  style={[styles.juzCell, { borderColor: palette.border }]}>
+                  <View style={[styles.juzFill, { backgroundColor: HIFZ_COLOR, height: `${Math.round(share * 100)}%` }]} />
+                  <Text style={[styles.juzNumber, share >= 0.5 ? styles.onCell : { color: palette.muted }]}>{c.juz}</Text>
+                </View>
+              );
+            })}
+          </View>
         </View>
       ) : null}
 
@@ -332,5 +373,18 @@ const styles = StyleSheet.create({
   cellNumber: { fontSize: TYPE.caption.fontSize, fontVariant: ['tabular-nums'] },
   cellName: { fontSize: TYPE.caption.fontSize, fontWeight: '500' },
   onCell: { color: '#fff' },
+  juzGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.xs },
+  juzCell: {
+    width: '9%',
+    flexGrow: 1,
+    aspectRatio: 1,
+    borderWidth: 1,
+    borderRadius: RADIUS.xs,
+    overflow: 'hidden',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+  juzFill: { position: 'absolute', left: 0, right: 0, bottom: 0 },
+  juzNumber: { fontSize: TYPE.caption.fontSize, fontVariant: ['tabular-nums'], paddingBottom: 2 },
   pressed: { opacity: 0.6 },
 });

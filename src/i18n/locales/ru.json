@@ -2600,6 +2600,21 @@
     "range": "{{surah}} {{from}}–{{to}}",
     "rangeAcross": "{{from}} – {{to}}",
     "whichSurahs": "Какие суры вы знаете наизусть?",
-    "portions": "{{count}} отрывков"
+    "portions": "{{count}} отрывков",
+    "reviewing": "{{name}} наизусть",
+    "reviewChecked": "Проверено {{done}} из {{total}} — коснитесь аята, чтобы проверить его",
+    "reviewDone": "Готово",
+    "reciteFromMemory": "Прочитать наизусть",
+    "drilled": "Отработано {{range}} — выучено",
+    "reminder": "Ежедневное напоминание о хифзе",
+    "reminderHelp": "Сколько отрывков нужно прочитать — в те дни, когда они есть.",
+    "reminderNoStock": "Отметьте во вкладке Коран то, что знаете наизусть, чтобы пользоваться этим.",
+    "reminderChannelName": "Напоминание о хифзе",
+    "reminderBody": "Сегодня {{count}} отрывков для чтения наизусть.",
+    "holdsDaily": "повторяется ежедневно",
+    "holdsEvery": "каждые {{count}} дн.",
+    "progress": "Прогресс",
+    "progressLine": "{{ayahs}} из {{total}} аятов · {{percent}} % Корана · {{juz}} из 30 джузов полностью",
+    "juzCoverage": "Джуз {{number}}: {{memorised}} из {{total}} аятов"
   }
 }

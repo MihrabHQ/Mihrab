@@ -64,6 +64,13 @@ export type RootStackParamList = {
      * already was.
      */
     playFromAyah?: number;
+    /**
+     * Recite a hifz portion from memory (#121): the id of the portion.
+     * The verse-by-verse reader opens whichever reader is the habit, with
+     * the portion's ayahs hidden until each is tapped to check, and a
+     * "Done" that asks how it went and records the review.
+     */
+    hifzReview?: string;
   };
   /** The tajwīd colours explained — the legend, rule by rule. */
   QuranTajweed: undefined;

@@ -90,7 +90,7 @@ const reading = {
 
 /** A card state with no bookmark doors — the tests below are about the two trails. */
 type Doors = Pick<QuranCardState, 'khatmah' | 'reading'> & Partial<QuranCardState>;
-const card = (s: Doors): QuranCardState => ({ shortcuts: [], homeBookmark: null, ...s });
+const card = (s: Doors): QuranCardState => ({ shortcuts: [], homeBookmark: null, hifzDue: 0, ...s });
 
 function render(state: Doors, showStart = false, layout: 'stack' | 'columns' = 'stack') {
   const onOpenKhatmah = jest.fn();

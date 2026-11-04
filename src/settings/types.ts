@@ -708,6 +708,13 @@ export type PrayerAppSettings = {
   khatmahReminderHour: number;
   khatmahReminderMinute: number;
   /**
+   * Hifz daily reminder (#121): how many portions are due today, at the
+   * chosen time, on the days something is due. Off by default.
+   */
+  hifzReminderEnabled: boolean;
+  hifzReminderHour: number;
+  hifzReminderMinute: number;
+  /**
    * The two surahs with a time of their own — issue #36.
    *
    * Al-Kahf on Friday and Al-Mulk before sleeping are the two most
@@ -863,6 +870,9 @@ export const DEFAULT_SETTINGS: PrayerAppSettings = {
   khatmahReminderEnabled: false,
   khatmahReminderHour: 18,
   khatmahReminderMinute: 0,
+  hifzReminderEnabled: false,
+  hifzReminderHour: 20,
+  hifzReminderMinute: 0,
   kahfReminderEnabled: false,
   kahfReminderHour: 9,
   kahfReminderMinute: 0,

@@ -17,6 +17,9 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
+import { ChoiceSheet } from '../../components/ui/ChoiceSheet';
+import { HIFZ_COLOR } from '../../quran/hifz';
+import { recite, useHifzGradeChoices } from './HifzEntry';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
   FlatList,
@@ -95,6 +98,14 @@ type Props = {
   scrollToAyah?: number;
   /** Switch to the muṣḥaf. */
   onToggleMode: () => void;
+  /**
+   * Reciting a hifz portion from memory (#121): these ayahs of this surah
+   * are hidden — Arabic and companion text both — until each is tapped
+   * to check it, and a bar at the foot asks how it went when the reader
+   * is done. The grade is recorded on the portion and the reader goes
+   * back to where it came from.
+   */
+  hifzReview?: { id: string; from: number; to: number };
 };
 
 export function TranslationSurahScreen({
@@ -102,6 +113,7 @@ export function TranslationSurahScreen({
   surahNumber,
   scrollToAyah,
   onToggleMode,
+  hifzReview,
 }: Props) {
   const { t, i18n } = useTranslation();
   const isArabic = i18n.language === 'ar';
@@ -188,6 +200,13 @@ export function TranslationSurahScreen({
   const [sheetScrollAudio, setSheetScrollAudio] = useState(false);
   const [editionPickerVisible, setEditionPickerVisible] = useState(false);
   const [revealed, setRevealed] = useState<Set<number>>(new Set());
+  /** The review's grade sheet, open once the reader says they are done. */
+  const [reviewGrading, setReviewGrading] = useState(false);
+  const reviewChoices = useHifzGradeChoices(grade => {
+    if (hifzReview) recite(hifzReview.id, grade);
+    setReviewGrading(false);
+    if (navigation.canGoBack()) navigation.goBack();
+  });
 
   useEffect(() => {
     // Reset per-surah reveal state when hide mode or surah changes.
@@ -587,6 +606,19 @@ export function TranslationSurahScreen({
 
   // ── Translation mode ────────────────────────────────────────────────
   const hideMode = quran.prefs.hideMode;
+  const reviewName = hifzReview
+    ? hifzReview.from === 1 && hifzReview.to === surah.ayahCount
+      ? surah.romanized
+      : t('hifz.range', {
+          defaultValue: '{{surah}} {{from}}–{{to}}',
+          surah: surah.romanized,
+          from: hifzReview.from,
+          to: hifzReview.to,
+        })
+    : '';
+  const reviewChecked = hifzReview
+    ? [...revealed].filter(a => a >= hifzReview.from && a <= hifzReview.to).length
+    : 0;
   // App-wide companion mode (v2.7.40): translation ⇄ tafsir under each ayah.
   const companionMode = quran.prefs.companionMode;
   const tafsirEdition = resolveTafsirEdition(
@@ -621,8 +653,12 @@ export function TranslationSurahScreen({
         : -1;
     const translation = translations?.[ayah - 1] ?? '';
     const isRevealed = revealed.has(ayah);
-    const maskArabic = hideMode === 'arabic' && !isRevealed;
-    const maskTranslation = hideMode === 'translation' && !isRevealed;
+    // Under review, the portion's ayahs hide everything: the translation
+    // would be a prompt, and reciting from memory is reciting without one.
+    const inReview =
+      hifzReview != null && ayah >= hifzReview.from && ayah <= hifzReview.to;
+    const maskArabic = (inReview || hideMode === 'arabic') && !isRevealed;
+    const maskTranslation = (inReview || hideMode === 'translation') && !isRevealed;
 
     const words = arabic.split(' ');
     // The timing counts QPC's words; the text is Tanzil's. Map one onto
@@ -641,7 +677,7 @@ export function TranslationSurahScreen({
           ayah,
         })}
         onPress={() => {
-          if (hideMode !== 'none' && !isRevealed) {
+          if ((inReview || hideMode !== 'none') && !isRevealed) {
             setRevealed(prev => new Set(prev).add(ayah));
             return;
           }
@@ -786,7 +822,7 @@ export function TranslationSurahScreen({
           {t('quran.tapToPick', 'choose')}
         </Text>
       </Pressable>
-      {hideMode !== 'none' ? (
+      {hideMode !== 'none' && !hifzReview ? (
         <Text style={[styles.hideHint, { color: palette.accentSolid }]}>
           {t('quran.hideModeActive', {
             defaultValue: 'Memorization mode: {{what}} hidden — tap an ayah to reveal',
@@ -887,6 +923,56 @@ export function TranslationSurahScreen({
         />
       )}
       <MiniPlayer />
+
+      {/* The review bar (#121): what is being recited, how much of it has
+          been checked, and Done — which asks how it went. At the foot, so
+          it is there whatever the list has scrolled to. */}
+      {hifzReview ? (
+        <View
+          style={[
+            styles.reviewBar,
+            {
+              backgroundColor: palette.card,
+              borderTopColor: palette.border ?? palette.muted,
+              paddingBottom: insets.bottom + SPACING.sm,
+            },
+          ]}>
+          <View style={styles.reviewText}>
+            <Text style={[styles.reviewTitle, { color: palette.text }]} numberOfLines={1}>
+              {t('hifz.reviewing', {
+                defaultValue: 'Reciting {{name}} from memory',
+                name: reviewName,
+              })}
+            </Text>
+            <Text style={[styles.reviewSub, { color: palette.muted }]} numberOfLines={1}>
+              {t('hifz.reviewChecked', {
+                defaultValue: '{{done}} of {{total}} checked — tap an ayah to check it',
+                done: reviewChecked,
+                total: hifzReview.to - hifzReview.from + 1,
+              })}
+            </Text>
+          </View>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t('hifz.reviewDone', 'Done')}
+            onPress={() => setReviewGrading(true)}
+            style={({ pressed }) => [
+              styles.reviewDone,
+              { backgroundColor: HIFZ_COLOR },
+              pressed && { opacity: 0.7 },
+            ]}>
+            <Text style={styles.reviewDoneText}>{t('hifz.reviewDone', 'Done')}</Text>
+          </Pressable>
+        </View>
+      ) : null}
+      {hifzReview ? (
+        <ChoiceSheet
+          visible={reviewGrading}
+          onClose={() => setReviewGrading(false)}
+          title={t('hifz.gradeTitle', { defaultValue: 'How did {{name}} go?', name: reviewName })}
+          choices={reviewChoices}
+        />
+      ) : null}
 
       {selectedAyah != null ? (
         <AyahActionSheet
@@ -1047,6 +1133,19 @@ const styles = StyleSheet.create({
     fontWeight: '400',
   },
   hideHint: { fontSize: TYPE.label.fontSize, fontWeight: '400', textAlign: 'center', marginTop: SPACING.sm },
+  reviewBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.md,
+    paddingHorizontal: SPACING.lg,
+    paddingTop: SPACING.sm,
+    borderTopWidth: StyleSheet.hairlineWidth,
+  },
+  reviewText: { flex: 1, minWidth: 0 },
+  reviewTitle: { fontSize: TYPE.callout.fontSize, fontWeight: '500' },
+  reviewSub: { fontSize: TYPE.footnote.fontSize, marginTop: 1 },
+  reviewDone: { paddingHorizontal: SPACING.lg, paddingVertical: SPACING.sm, borderRadius: RADIUS.full },
+  reviewDoneText: { color: '#fff', fontSize: TYPE.callout.fontSize, fontWeight: '600' },
   ayahCard: { padding: SPACING.lg, borderRadius: RADIUS.md, gap: SPACING.md, marginTop: SPACING.md },
   ayahMetaRow: {
     flexDirection: 'row',

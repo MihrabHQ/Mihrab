@@ -36,7 +36,8 @@ import { memo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useAppPalette } from '../hooks/useAppPalette';
-import { QuranBookIcon } from '../theme/icons';
+import { HifzIcon, QuranBookIcon } from '../theme/icons';
+import { HIFZ_COLOR } from './hifz';
 import { TABULAR_MAX_FONT_SCALE } from '../theme/textScale';
 import { RADIUS, SPACING } from '../theme/tokens';
 import { TYPE } from '../theme/typography';
@@ -57,6 +58,11 @@ type Props = {
   onOpenBookmark: (bookmark: QuranBookmark) => void;
   /** The Qur'an index — where "Start reading" and the khatmah offer go. */
   onOpenQuran: () => void;
+  /**
+   * The day's hifz revision (#121) — a door on Home while portions are
+   * due. Not given by the Qur'an tab, which has the revision itself.
+   */
+  onOpenHifz?: () => void;
   /**
    * Draw the way in when there is no door yet. Home wants it — the card
    * never disappears — and the Qur'an tab does not: it IS the way in.
@@ -567,12 +573,40 @@ function StartDoor({
   );
 }
 
+/** Revise today — the way from Home to the day's hifz (#121). */
+function HifzDoor({
+  due,
+  divided,
+  onPress,
+}: {
+  due: number;
+  divided?: boolean;
+  onPress: () => void;
+}) {
+  const { t } = useTranslation();
+  const { palette } = useAppPalette();
+  const title = t('hifz.today', 'Revise today');
+  const sub = t('hifz.portions', { defaultValue: '{{count}} portions', count: due });
+  return (
+    <Door label={`${title} · ${sub}`} onPress={onPress} divided={divided} dense>
+      <HifzIcon color={HIFZ_COLOR} size={20} />
+      <View style={styles.body}>
+        <Text style={[styles.title, { color: palette.text }]} numberOfLines={1}>
+          {title}
+          <Text style={{ color: palette.muted }}>{` · ${sub}`}</Text>
+        </Text>
+      </View>
+    </Door>
+  );
+}
+
 function ResumeDoorsImpl({
   state,
   onOpenKhatmah,
   onOpenReading,
   onOpenBookmark,
   onOpenQuran,
+  onOpenHifz,
   showStart = false,
   layout = 'stack',
   dense = false,
@@ -586,8 +620,14 @@ function ResumeDoorsImpl({
   // The tab's rows under "Continue reading". Never on Home.
   const shortcuts = layout === 'stack' ? state.shortcuts : [];
   const first = khatmah != null || starred != null;
+  const hifz = onOpenHifz && state.hifzDue > 0 ? state.hifzDue : 0;
   if (!first && !reading && shortcuts.length === 0) {
-    return showStart ? <StartDoor onOpenQuran={onOpenQuran} /> : null;
+    return (
+      <>
+        {showStart ? <StartDoor onOpenQuran={onOpenQuran} /> : null}
+        {hifz && onOpenHifz ? <HifzDoor due={hifz} divided={showStart} onPress={onOpenHifz} /> : null}
+      </>
+    );
   }
   // Side by side only when there are two: a lone door is a full row,
   // with its icon and its page, whichever screen it is on.
@@ -647,12 +687,22 @@ function ResumeDoorsImpl({
   // and a row laid out for one shape and updated in place into the other
   // kept the khatmah's door at its dense width — a dot beside a full-width
   // "Continue reading". Built fresh, each shape lays out from nothing.
+  // A full dense row under the columns: a third column would have cut
+  // all three to a word each.
+  const hifzDoor =
+    hifz && onOpenHifz ? <HifzDoor due={hifz} divided onPress={onOpenHifz} /> : null;
   return column ? (
-    <View key={dense ? 'dense' : 'full'} style={styles.columns}>
-      {doors}
-    </View>
+    <>
+      <View key={dense ? 'dense' : 'full'} style={styles.columns}>
+        {doors}
+      </View>
+      {hifzDoor}
+    </>
   ) : (
-    doors
+    <>
+      {doors}
+      {hifzDoor}
+    </>
   );
 }
 

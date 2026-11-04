@@ -2519,6 +2519,21 @@
     "range": "{{surah}} {{from}}–{{to}}",
     "rangeAcross": "{{from}} – {{to}}",
     "whichSurahs": "Hangi sureler ezberinde?",
-    "portions": "{{count}} bölüm"
+    "portions": "{{count}} bölüm",
+    "reviewing": "{{name}} ezberden okunuyor",
+    "reviewChecked": "{{total}} ayetten {{done}} tanesi kontrol edildi — kontrol etmek için bir ayete dokunun",
+    "reviewDone": "Bitti",
+    "reciteFromMemory": "Ezberden oku",
+    "drilled": "{{range}} tekrar edildi — ezberlendi",
+    "reminder": "Günlük hıfz hatırlatıcısı",
+    "reminderHelp": "Okunması gereken bölüm sayısı, bir şey olan günlerde.",
+    "reminderNoStock": "Bunu kullanmak için Kur’an sekmesinde ezberinizdekileri işaretleyin.",
+    "reminderChannelName": "Hıfz hatırlatıcısı",
+    "reminderBody": "Bugün ezberden okunacak {{count}} bölüm.",
+    "holdsDaily": "her gün okunuyor",
+    "holdsEvery": "her {{count}} günde bir",
+    "progress": "İlerleme",
+    "progressLine": "{{total}} ayetten {{ayahs}} · Kur’an’ın %{{percent}}’i · 30 cüzden {{juz}} tamam",
+    "juzCoverage": "{{number}}. cüz: {{total}} ayetten {{memorised}}"
   }
 }

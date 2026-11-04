@@ -2519,6 +2519,21 @@
     "range": "{{surah}} {{from}}–{{to}}",
     "rangeAcross": "{{from}} – {{to}}",
     "whichSurahs": "Vilka suror kan du utantill?",
-    "portions": "{{count}} avsnitt"
+    "portions": "{{count}} avsnitt",
+    "reviewing": "Reciterar {{name}} ur minnet",
+    "reviewChecked": "{{done}} av {{total}} kontrollerade — tryck på en ayah för att kontrollera den",
+    "reviewDone": "Klar",
+    "reciteFromMemory": "Recitera ur minnet",
+    "drilled": "Övade {{range}} — memorerad",
+    "reminder": "Daglig hifz-påminnelse",
+    "reminderHelp": "Hur många avsnitt som ska reciteras, de dagar något ska det.",
+    "reminderNoStock": "Markera det du kan utantill i Koranen-fliken för att använda detta.",
+    "reminderChannelName": "Hifz-påminnelse",
+    "reminderBody": "{{count}} avsnitt att recitera ur minnet i dag.",
+    "holdsDaily": "reciteras dagligen",
+    "holdsEvery": "var {{count}}:e dag",
+    "progress": "Framsteg",
+    "progressLine": "{{ayahs}} av {{total}} ayat · {{percent}} % av Koranen · {{juz}} av 30 juz’ klara",
+    "juzCoverage": "Juz’ {{number}}: {{memorised}} av {{total}} ayat"
   }
 }

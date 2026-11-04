@@ -21,13 +21,19 @@ import { useTranslation } from 'react-i18next';
 import { useAppPalette } from '../../hooks/useAppPalette';
 import type { RootStackParamList } from '../../navigation/types';
 import { ChoiceSheet } from '../../components/ui/ChoiceSheet';
+import { ayahIndexOf } from '../../quran/ayahIndex';
+import { clearDrillOffer, useLastDrill } from '../../quran/hifzDrill';
+import { findSurah } from '../../quran/quran';
 import {
   dayOf,
   EMPTY_HIFZ,
   HIFZ_COLOR,
   hifzStock,
+  markRange,
+  portionAt,
+  portionSpan,
   recitedToday,
-  reviewPortion,
+  reviewPortion as recordReview,
   todaysRevision,
   type HifzGrade,
   type HifzPortion,
@@ -49,10 +55,78 @@ export function useHifzGradeChoices(onGrade: (grade: HifzGrade) => void) {
   ];
 }
 
+/**
+ * Open a portion in the reader to recite it from memory: its ayahs hidden
+ * until checked, and a Done that asks how it went (#121).
+ */
+export function reviewPortion(
+  navigation: NativeStackNavigationProp<RootStackParamList>,
+  p: HifzPortion,
+) {
+  const span = portionSpan(p);
+  navigation.navigate('QuranSurah', {
+    surahNumber: span.surah,
+    scrollToAyah: span.from,
+    hifzReview: p.id,
+  });
+}
+
 /** Record a recitation of `id` with `grade`, dated now. */
 export function recite(id: string, grade: HifzGrade) {
   const now = Date.now();
-  updateHifz(prev => reviewPortion(prev, id, grade, dayOf(now), now));
+  updateHifz(prev => recordReview(prev, id, grade, dayOf(now), now));
+}
+
+/**
+ * The drill that just finished, as a row: its range, and Mark — the one
+ * step from learning a range to keeping it (#121).
+ */
+function DrillOffer() {
+  const { t } = useTranslation();
+  const { palette } = useAppPalette();
+  const drill = useLastDrill();
+  const hifz = useQuranState().hifz;
+  // Marked meanwhile, by the sheet or the grid: nothing left to offer.
+  const kept =
+    drill != null &&
+    hifz != null &&
+    portionAt(hifz, drill.surah, drill.from) != null &&
+    portionAt(hifz, drill.surah, drill.to) != null;
+  if (!drill || kept) return null;
+  const range = t('hifz.range', {
+    defaultValue: '{{surah}} {{from}}–{{to}}',
+    surah: findSurah(drill.surah)?.romanized ?? String(drill.surah),
+    from: drill.from,
+    to: drill.to,
+  });
+  const label = t('hifz.drilled', { defaultValue: 'Drilled {{range}} — memorised', range });
+  return (
+    <View style={styles.portion}>
+      <Text style={[styles.sub, styles.portionBody, { color: palette.muted }]} numberOfLines={2}>
+        {label}
+      </Text>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={`${label} — ${t('hifz.sheetMark', 'Mark')}`}
+        hitSlop={8}
+        onPress={() => {
+          const now = Date.now();
+          updateHifz(prev =>
+            markRange(
+              prev,
+              ayahIndexOf(drill.surah, drill.from),
+              ayahIndexOf(drill.surah, drill.to),
+              dayOf(now),
+              now,
+            ),
+          );
+          clearDrillOffer();
+        }}
+        style={({ pressed }) => [styles.markChip, { backgroundColor: HIFZ_COLOR }, pressed && styles.pressed]}>
+        <Text style={styles.markChipText}>{t('hifz.sheetMark', 'Mark')}</Text>
+      </Pressable>
+    </View>
+  );
 }
 
 export function HifzEntry() {
@@ -68,27 +142,26 @@ export function HifzEntry() {
 
   if (hifz.portions.length === 0) {
     return (
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel={`${t('hifz.door', 'Hifz')} — ${t('hifz.doorSub', 'What you know by heart')}`}
-        onPress={() => navigation.navigate('Hifz')}
-        style={({ pressed }) => [
-          styles.row,
-          { backgroundColor: palette.card, ...cardEdgeStyle(palette) },
-          pressed && styles.pressed,
-        ]}>
-        <View style={[styles.mark, { backgroundColor: `${HIFZ_COLOR}26` }]}>
-          <HifzIcon color={HIFZ_COLOR} size={18} />
-        </View>
-        <View style={styles.text}>
-          <Text style={[styles.title, { color: palette.text }]} numberOfLines={1}>
-            {t('hifz.door', 'Hifz')}
-          </Text>
-          <Text style={[styles.sub, { color: palette.muted }]} numberOfLines={1}>
-            {t('hifz.doorSub', 'What you know by heart')}
-          </Text>
-        </View>
-      </Pressable>
+      <View style={[styles.card, { backgroundColor: palette.card, ...cardEdgeStyle(palette) }]}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`${t('hifz.door', 'Hifz')} — ${t('hifz.doorSub', 'What you know by heart')}`}
+          onPress={() => navigation.navigate('Hifz')}
+          style={({ pressed }) => [styles.head, pressed && styles.pressed]}>
+          <View style={[styles.mark, { backgroundColor: `${HIFZ_COLOR}26` }]}>
+            <HifzIcon color={HIFZ_COLOR} size={18} />
+          </View>
+          <View style={styles.text}>
+            <Text style={[styles.title, { color: palette.text }]} numberOfLines={1}>
+              {t('hifz.door', 'Hifz')}
+            </Text>
+            <Text style={[styles.sub, { color: palette.muted }]} numberOfLines={1}>
+              {t('hifz.doorSub', 'What you know by heart')}
+            </Text>
+          </View>
+        </Pressable>
+        <DrillOffer />
+      </View>
     );
   }
 
@@ -128,8 +201,8 @@ export function HifzEntry() {
           <View key={p.id} style={styles.portion}>
             <Pressable
               accessibilityRole="button"
-              accessibilityLabel={name}
-              onPress={() => navigation.navigate('Hifz')}
+              accessibilityLabel={`${name} — ${t('hifz.reciteFromMemory', 'Recite from memory')}`}
+              onPress={() => reviewPortion(navigation, p)}
               style={({ pressed }) => [styles.portionBody, pressed && styles.pressed]}>
               <Text style={[styles.portionName, { color: palette.text }]} numberOfLines={1}>
                 {name}
@@ -155,6 +228,7 @@ export function HifzEntry() {
           </View>
         );
       })}
+      <DrillOffer />
       <Text style={[styles.foot, { color: palette.muted }]} numberOfLines={1}>
         {more > 0
           ? t('hifz.more', { defaultValue: '{{count}} more tomorrow', count: more })
@@ -178,14 +252,8 @@ export function HifzEntry() {
 }
 
 const styles = StyleSheet.create({
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: SPACING.md,
-    borderRadius: RADIUS.md,
-    paddingVertical: SPACING.md,
-    paddingHorizontal: SPACING.md,
-  },
+  markChip: { paddingHorizontal: SPACING.md, paddingVertical: SPACING.xs, borderRadius: RADIUS.full },
+  markChipText: { color: '#fff', fontSize: TYPE.footnote.fontSize, fontWeight: '600' },
   card: {
     borderRadius: RADIUS.md,
     paddingVertical: SPACING.md,

@@ -2519,6 +2519,21 @@
     "range": "{{surah}} {{from}}–{{to}}",
     "rangeAcross": "{{from}} – {{to}}",
     "whichSurahs": "کون سی سورتیں آپ کو حفظ ہیں؟",
-    "portions": "{{count}} حصے"
+    "portions": "{{count}} حصے",
+    "reviewing": "{{name}} زبانی سنانا",
+    "reviewChecked": "{{total}} میں سے {{done}} چیک ہوئیں — چیک کرنے کے لیے آیت پر ٹیپ کریں",
+    "reviewDone": "ہو گیا",
+    "reciteFromMemory": "زبانی سنائیں",
+    "drilled": "{{range}} کی مشق ہوئی — یاد ہو گیا",
+    "reminder": "حفظ کی روزانہ یاد دہانی",
+    "reminderHelp": "جن دنوں کچھ باقی ہو، کتنے حصے سنانے ہیں۔",
+    "reminderNoStock": "اسے استعمال کرنے کے لیے قرآن ٹیب میں نشان لگائیں کہ آپ کو کیا یاد ہے۔",
+    "reminderChannelName": "حفظ کی یاد دہانی",
+    "reminderBody": "آج زبانی سنانے کے لیے {{count}} حصے۔",
+    "holdsDaily": "روزانہ سنایا جاتا ہے",
+    "holdsEvery": "ہر {{count}} دن بعد",
+    "progress": "پیش رفت",
+    "progressLine": "{{total}} میں سے {{ayahs}} آیات · قرآن کا {{percent}}٪ · 30 میں سے {{juz}} پارے مکمل",
+    "juzCoverage": "پارہ {{number}}: {{total}} میں سے {{memorised}} آیات"
   }
 }

@@ -94,6 +94,7 @@ const TAB_UNDER: Readonly<Record<string, string>> = {
   QuranSurah: 'QuranTab',
   QuranListen: 'QuranTab',
   Khatmah: 'QuranTab',
+  Hifz: 'QuranTab',
   QuranTajweed: 'QuranTab',
   MonthTimes: 'TodayTab',
   ShareMonth: 'TodayTab',
@@ -253,6 +254,8 @@ export const linking: LinkingOptions<RootStackParamList> = {
        * running, the screen steps aside to the Qur'an tab.
        */
       Khatmah: 'khatmah',
+      /** mihrab://hifz — the Hifz page (#121); the hifz reminder lands here. */
+      Hifz: 'hifz',
       Sync: 'sync',
       /**
        * mihrab://downloads — Settings → Downloads.

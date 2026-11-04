@@ -49,9 +49,10 @@ import type {
   QuranBookmark,
 } from '../quranTypes';
 import { activeKhatmah } from '../khatmahProgress';
-import { dayOf, HIFZ_COLOR, markSurah, markUpTo, portionAt, removePortion } from '../hifz';
+import { dayOf, HIFZ_COLOR, markRange, markSurah, markUpTo, portionAt, removePortion } from '../hifz';
+import { clearDrillOffer, useLastDrill } from '../hifzDrill';
 import { hifzDueLabel } from '../hifzLabels';
-import { ayahCount } from '../ayahIndex';
+import { ayahCount, ayahIndexOf } from '../ayahIndex';
 import { khatmahPageInWindow } from '../khatmahSchedule';
 import { clearKhatmahPosition, setKhatmahPosition } from '../khatmahActions';
 import {
@@ -479,6 +480,18 @@ export function AyahActionSheet({
   // Hifz (#121): the portion this ayah sits in, if it is known by heart.
   const hifzToday = dayOf(Date.now());
   const hifzHere = state.hifz ? portionAt(state.hifz, surah, ayah) : undefined;
+  const drill = useLastDrill();
+  const drillLabel = drill
+    ? t('hifz.drilled', {
+        defaultValue: 'Drilled {{range}} — memorised',
+        range: t('hifz.range', {
+          defaultValue: '{{surah}} {{from}}–{{to}}',
+          surah: findSurah(drill.surah)?.romanized ?? String(drill.surah),
+          from: drill.from,
+          to: drill.to,
+        }),
+      })
+    : '';
   // The other trail's marker (#41): pinned here, or recorded here by
   // reading — either way "Continue reading" already leads to this ayah.
   const isReadingHere =
@@ -1434,6 +1447,40 @@ export function AyahActionSheet({
             </Pressable>
           ) : (
             <>
+              {/* The drill that just finished here (#121): the range it
+                  played, one tap from the tracker. */}
+              {drill && drill.surah === surah ? (
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={drillLabel}
+                  onPress={() => {
+                    const now = Date.now();
+                    updateHifz(prev =>
+                      markRange(
+                        prev,
+                        ayahIndexOf(drill.surah, drill.from),
+                        ayahIndexOf(drill.surah, drill.to),
+                        dayOf(now),
+                        now,
+                      ),
+                    );
+                    clearDrillOffer();
+                  }}
+                  style={({ pressed }) => [
+                    styles.pinButton,
+                    { backgroundColor: `${HIFZ_COLOR}1F` },
+                    pressed && styles.pinPressed,
+                  ]}
+                >
+                  <PinFace
+                    color={HIFZ_COLOR}
+                    textColor={palette.text}
+                    active={false}
+                    label={drillLabel}
+                    action={t('hifz.sheetMark', 'Mark')}
+                  />
+                </Pressable>
+              ) : null}
               <Pressable
                 accessibilityRole="button"
                 accessibilityLabel={t('hifz.sheetSurah', 'I know this surah by heart')}

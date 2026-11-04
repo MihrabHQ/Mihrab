@@ -45,6 +45,7 @@ import {
 import { planDays, khatmahGap } from './khatmahSchedule';
 import { khatmahDay, khatmahDaysLeft, khatmahPages } from './khatmahStatus';
 import { readingContinueTarget } from './readerMarks';
+import { dayOf, todaysRevision } from './hifz';
 
 export type QuranCardKhatmah = {
   /** 1-based day within the plan. */
@@ -104,6 +105,12 @@ export type QuranCardState = {
    * it, and only while the bookmark still exists.
    */
   homeBookmark: QuranBookmark | null;
+  /**
+   * Hifz portions due today and not yet recited (#121). Home draws a door
+   * to the day's revision while this is above zero; the Qur'an tab has
+   * its own row for it and ignores this.
+   */
+  hifzDue: number;
 };
 
 /** `khatmahGap` as something the card can open. */
@@ -197,5 +204,6 @@ export function selectQuranCardState(
     reading: readingContinueTarget(state, state.prefs.riwayah),
     shortcuts,
     homeBookmark,
+    hifzDue: state.hifz ? todaysRevision(state.hifz, dayOf(now)).due.length : 0,
   };
 }

@@ -2519,6 +2519,21 @@
     "range": "{{surah}} {{from}}–{{to}}",
     "rangeAcross": "{{from}} – {{to}}",
     "whichSurahs": "कौन सी सूरतें आपको याद हैं?",
-    "portions": "{{count}} हिस्से"
+    "portions": "{{count}} हिस्से",
+    "reviewing": "{{name}} ज़बानी सुनाना",
+    "reviewChecked": "{{total}} में से {{done}} जाँची गईं — जाँचने के लिए किसी आयत पर टैप करें",
+    "reviewDone": "हो गया",
+    "reciteFromMemory": "ज़बानी सुनाएँ",
+    "drilled": "{{range}} का अभ्यास हुआ — याद हो गया",
+    "reminder": "हिफ़्ज़ की दैनिक याद दिलाना",
+    "reminderHelp": "जिन दिनों कुछ बाकी हो, कितने हिस्से सुनाने हैं।",
+    "reminderNoStock": "इसे इस्तेमाल करने के लिए क़ुरआन टैब में चिह्नित करें कि आपको क्या याद है।",
+    "reminderChannelName": "हिफ़्ज़ याद दिलाना",
+    "reminderBody": "आज ज़बानी सुनाने के लिए {{count}} हिस्से।",
+    "holdsDaily": "रोज़ सुनाया जाता है",
+    "holdsEvery": "हर {{count}} दिन में",
+    "progress": "प्रगति",
+    "progressLine": "{{total}} में से {{ayahs}} आयतें · क़ुरआन का {{percent}}% · 30 में से {{juz}} पारे पूरे",
+    "juzCoverage": "पारा {{number}}: {{total}} में से {{memorised}} आयतें"
   }
 }

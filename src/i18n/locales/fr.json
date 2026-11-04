@@ -2520,6 +2520,21 @@
     "range": "{{surah}} {{from}}–{{to}}",
     "rangeAcross": "{{from}} – {{to}}",
     "whichSurahs": "Quelles sourates connaissez-vous par cœur ?",
-    "portions": "{{count}} portions"
+    "portions": "{{count}} portions",
+    "reviewing": "Réciter {{name}} de mémoire",
+    "reviewChecked": "{{done}} sur {{total}} vérifiés — touchez un verset pour le vérifier",
+    "reviewDone": "Terminé",
+    "reciteFromMemory": "Réciter de mémoire",
+    "drilled": "{{range}} répété — mémorisé",
+    "reminder": "Rappel quotidien de hifz",
+    "reminderHelp": "Combien de passages sont à réciter, les jours où il y en a.",
+    "reminderNoStock": "Marquez ce que vous connaissez par cœur dans l’onglet Coran pour utiliser ceci.",
+    "reminderChannelName": "Rappel de hifz",
+    "reminderBody": "{{count}} passages à réciter de mémoire aujourd’hui.",
+    "holdsDaily": "récité chaque jour",
+    "holdsEvery": "tous les {{count}} jours",
+    "progress": "Progression",
+    "progressLine": "{{ayahs}} versets sur {{total}} · {{percent}} % du Coran · {{juz}} juz’ sur 30 complets",
+    "juzCoverage": "Juz’ {{number}} : {{memorised}} versets sur {{total}}"
   }
 }

@@ -2519,6 +2519,21 @@
     "range": "{{surah}} {{from}}–{{to}}",
     "rangeAcross": "{{from}} – {{to}}",
     "whichSurahs": "কোন সূরাগুলো আপনার মুখস্থ?",
-    "portions": "{{count}}টি অংশ"
+    "portions": "{{count}}টি অংশ",
+    "reviewing": "{{name}} মুখস্থ থেকে তিলাওয়াত",
+    "reviewChecked": "{{total}}টির মধ্যে {{done}}টি যাচাই হয়েছে — যাচাই করতে একটি আয়াতে ট্যাপ করুন",
+    "reviewDone": "হয়ে গেছে",
+    "reciteFromMemory": "মুখস্থ থেকে পড়ুন",
+    "drilled": "{{range}} অনুশীলন হয়েছে — মুখস্থ",
+    "reminder": "দৈনিক হিফজ স্মরণিকা",
+    "reminderHelp": "যে দিনগুলোতে কিছু বাকি থাকে, কতটি অংশ পড়তে হবে।",
+    "reminderNoStock": "এটি ব্যবহার করতে কুরআন ট্যাবে আপনার মুখস্থ অংশ চিহ্নিত করুন।",
+    "reminderChannelName": "হিফজ স্মরণিকা",
+    "reminderBody": "আজ মুখস্থ থেকে পড়ার জন্য {{count}}টি অংশ।",
+    "holdsDaily": "প্রতিদিন পড়া হয়",
+    "holdsEvery": "প্রতি {{count}} দিনে",
+    "progress": "অগ্রগতি",
+    "progressLine": "{{total}}টির মধ্যে {{ayahs}}টি আয়াত · কুরআনের {{percent}}% · ৩০টির মধ্যে {{juz}}টি পারা সম্পূর্ণ",
+    "juzCoverage": "পারা {{number}}: {{total}}টির মধ্যে {{memorised}}টি আয়াত"
   }
 }

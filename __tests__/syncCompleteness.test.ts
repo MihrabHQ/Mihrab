@@ -221,6 +221,7 @@ const STAYS: Record<string, string> = {
   'dua-adhkar-': 'a notification id prefix, not a store',
   'fast-rem-': 'a notification id prefix, not a store',
   'khatmah-rem-': 'a notification id prefix, not a store',
+  'hifz-rem-': 'a notification id prefix, not a store',
   'surah-kahf-': 'a notification id prefix, not a store',
   'surah-mulk-': 'a notification id prefix, not a store',
   'dhikr-rem-': 'a notification id prefix, not a store',

@@ -28,7 +28,7 @@ export function DailyRemindersSettingsScreen() {
   const clock = useClockFormatter();
   /** Which of the two times the sheet is editing, or none. */
   const [timeTarget, setTimeTarget] = useState<
-    'ayah' | 'khatmah' | 'kahf' | 'mulk' | null
+    'ayah' | 'khatmah' | 'hifz' | 'kahf' | 'mulk' | null
   >(null);
 
   // The khatmah reminder has nothing to say without a plan — the
@@ -42,6 +42,8 @@ export function DailyRemindersSettingsScreen() {
   }, []);
   const quran = useQuranState();
   const hasKhatmah = activeKhatmah(quran) != null;
+  // Likewise the hifz reminder (#121): nothing by heart, nothing to say.
+  const hasHifz = (quran.hifz?.portions.length ?? 0) > 0;
 
   const fmtTime = (h: number, m: number) =>
     clock(`${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`);
@@ -62,6 +64,15 @@ export function DailyRemindersSettingsScreen() {
     }
     if (!(await ensureNotifPermission())) return;
     updateSettings({ khatmahReminderEnabled: true });
+  };
+
+  const onToggleHifzReminder = async (value: boolean) => {
+    if (!value) {
+      updateSettings({ hifzReminderEnabled: false });
+      return;
+    }
+    if (!(await ensureNotifPermission())) return;
+    updateSettings({ hifzReminderEnabled: true });
   };
 
   /**
@@ -141,6 +152,12 @@ export function DailyRemindersSettingsScreen() {
       minute: settings.khatmahReminderMinute,
       setHour: (h: number) => updateSettings({ khatmahReminderHour: h }),
       setMinute: (m: number) => updateSettings({ khatmahReminderMinute: m }),
+    },
+    hifz: {
+      hour: settings.hifzReminderHour,
+      minute: settings.hifzReminderMinute,
+      setHour: (h: number) => updateSettings({ hifzReminderHour: h }),
+      setMinute: (m: number) => updateSettings({ hifzReminderMinute: m }),
     },
     kahf: {
       hour: settings.kahfReminderHour,
@@ -230,6 +247,28 @@ export function DailyRemindersSettingsScreen() {
                 settings.khatmahReminderMinute,
               )}
               onPress={() => setTimeTarget('khatmah')}
+            />
+          ) : null}
+        </SettingsGroup>
+
+        {/* Hifz (#121): how many portions are due, on the days any are. */}
+        <SettingsGroup title={t('hifz.title', 'Hifz')}>
+          <SettingsToggleRow
+            title={t('hifz.reminder', 'Hifz daily reminder')}
+            help={
+              hasHifz
+                ? t('hifz.reminderHelp', 'How many portions are due to recite, on the days any are.')
+                : t('hifz.reminderNoStock', 'Mark what you know by heart in the Qur’an tab to use this.')
+            }
+            value={settings.hifzReminderEnabled && hasHifz}
+            disabled={!hasHifz}
+            onValueChange={onToggleHifzReminder}
+          />
+          {settings.hifzReminderEnabled && hasHifz ? (
+            <SettingsLinkRow
+              title={t('settings.ayahOfDayTime', 'Notification time')}
+              value={fmtTime(settings.hifzReminderHour, settings.hifzReminderMinute)}
+              onPress={() => setTimeTarget('hifz')}
             />
           ) : null}
         </SettingsGroup>

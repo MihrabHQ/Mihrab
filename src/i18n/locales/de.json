@@ -2519,6 +2519,21 @@
     "range": "{{surah}} {{from}}–{{to}}",
     "rangeAcross": "{{from}} – {{to}}",
     "whichSurahs": "Welche Suren kannst du auswendig?",
-    "portions": "{{count}} Abschnitte"
+    "portions": "{{count}} Abschnitte",
+    "reviewing": "{{name}} auswendig aufsagen",
+    "reviewChecked": "{{done}} von {{total}} geprüft — tippe auf eine Aya, um sie zu prüfen",
+    "reviewDone": "Fertig",
+    "reciteFromMemory": "Auswendig aufsagen",
+    "drilled": "{{range}} geübt — auswendig gelernt",
+    "reminder": "Tägliche Hifz-Erinnerung",
+    "reminderHelp": "Wie viele Abschnitte aufzusagen sind, an den Tagen, an denen welche fällig sind.",
+    "reminderNoStock": "Markiere im Koran-Tab, was du auswendig kannst, um dies zu nutzen.",
+    "reminderChannelName": "Hifz-Erinnerung",
+    "reminderBody": "{{count}} Abschnitte heute auswendig aufzusagen.",
+    "holdsDaily": "täglich aufgesagt",
+    "holdsEvery": "alle {{count}} Tage",
+    "progress": "Fortschritt",
+    "progressLine": "{{ayahs}} von {{total}} Ayat · {{percent}} % des Korans · {{juz}} von 30 Juz’ vollständig",
+    "juzCoverage": "Juz’ {{number}}: {{memorised}} von {{total}} Ayat"
   }
 }

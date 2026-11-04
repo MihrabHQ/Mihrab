@@ -2520,6 +2520,21 @@
     "range": "{{surah}} {{from}}–{{to}}",
     "rangeAcross": "{{from}} – {{to}}",
     "whichSurahs": "¿Qué suras sabes de memoria?",
-    "portions": "{{count}} porciones"
+    "portions": "{{count}} porciones",
+    "reviewing": "Recitando {{name}} de memoria",
+    "reviewChecked": "{{done}} de {{total}} comprobadas — toca una aleya para comprobarla",
+    "reviewDone": "Hecho",
+    "reciteFromMemory": "Recitar de memoria",
+    "drilled": "Practicado {{range}} — memorizado",
+    "reminder": "Recordatorio diario de hifz",
+    "reminderHelp": "Cuántos pasajes toca recitar, los días que haya alguno.",
+    "reminderNoStock": "Marca lo que sabes de memoria en la pestaña del Corán para usar esto.",
+    "reminderChannelName": "Recordatorio de hifz",
+    "reminderBody": "{{count}} pasajes para recitar de memoria hoy.",
+    "holdsDaily": "recitado a diario",
+    "holdsEvery": "cada {{count}} días",
+    "progress": "Progreso",
+    "progressLine": "{{ayahs}} de {{total}} aleyas · {{percent}} % del Corán · {{juz}} de 30 juz’ completos",
+    "juzCoverage": "Juz’ {{number}}: {{memorised}} de {{total}} aleyas"
   }
 }

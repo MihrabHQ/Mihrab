@@ -2519,6 +2519,21 @@
     "range": "{{surah}} {{from}}–{{to}}",
     "rangeAcross": "{{from}} – {{to}}",
     "whichSurahs": "Surah mana yang Anda hafal?",
-    "portions": "{{count}} bagian"
+    "portions": "{{count}} bagian",
+    "reviewing": "Membaca {{name}} dari hafalan",
+    "reviewChecked": "{{done}} dari {{total}} diperiksa — ketuk ayat untuk memeriksanya",
+    "reviewDone": "Selesai",
+    "reciteFromMemory": "Baca dari hafalan",
+    "drilled": "Berlatih {{range}} — hafal",
+    "reminder": "Pengingat hafalan harian",
+    "reminderHelp": "Berapa bagian yang harus dibaca, pada hari ada yang jatuh tempo.",
+    "reminderNoStock": "Tandai yang Anda hafal di tab Al-Qur’an untuk menggunakan ini.",
+    "reminderChannelName": "Pengingat hafalan",
+    "reminderBody": "{{count}} bagian untuk dibaca dari hafalan hari ini.",
+    "holdsDaily": "dibaca setiap hari",
+    "holdsEvery": "setiap {{count}} hari",
+    "progress": "Kemajuan",
+    "progressLine": "{{ayahs}} dari {{total}} ayat · {{percent}}% Al-Qur’an · {{juz}} dari 30 juz lengkap",
+    "juzCoverage": "Juz {{number}}: {{memorised}} dari {{total}} ayat"
   }
 }

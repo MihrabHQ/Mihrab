@@ -26,6 +26,7 @@ import TrackPlayer, {
   type Track,
 } from 'react-native-track-player';
 import { findSurah, SURAHS } from '../quran';
+import { noteDrillFinished } from '../hifzDrill';
 import { getQuranState } from '../quranState';
 import { ayahCountForRiwayah } from '../pages';
 import { DEFAULT_RIWAYAH, resolveRiwayah, type RiwayahId } from '../riwayat';
@@ -140,6 +141,22 @@ const IDLE: PlaybackStatus = {
 
 let status: PlaybackStatus = IDLE;
 const listeners = new Set<() => void>();
+
+/**
+ * The drill in the queue, if the queue is one (#121): a range played
+ * with repeats, so the reader is learning it. When the queue runs out at
+ * the drill's last ayah, the Hifz tracker is told, and offers to mark the
+ * range memorised. Any other queue clears it — a drill abandoned for a
+ * listen is not a drill finished.
+ */
+let currentDrill: { surah: number; from: number; to: number } | null = null;
+
+function drillEndedAt(active: AyahRef | null): void {
+  const d = currentDrill;
+  currentDrill = null;
+  if (!d || !active) return;
+  if (active.surah === d.surah && active.ayah === d.to) noteDrillFinished(d);
+}
 
 function setStatus(next: Partial<PlaybackStatus>): void {
   status = { ...status, ...next };
@@ -379,6 +396,7 @@ async function ensureSetup(): Promise<void> {
       }
     });
     TrackPlayer.addEventListener(Event.PlaybackQueueEnded, () => {
+      drillEndedAt(status.active);
       setStatus({ active: null, playing: false, loading: false, clip: null });
       void stoppedAtMissingSurah();
     });
@@ -1448,6 +1466,7 @@ async function extendListening({ queue, idx }: QueueSnapshot): Promise<void> {
  * here" listening flow). Repeat settings apply only via `playRange`.
  */
 export async function playFromAyah(surah: number, ayah: number): Promise<void> {
+  currentDrill = null;
   if (!findSurah(surah)) return;
   const riwayah = resolveRiwayah(getQuranState().prefs.riwayah);
   await playRange(
@@ -1475,6 +1494,7 @@ async function setLoop(on: boolean): Promise<void> {
  * counts, this does not — it is for sitting with an ayah.
  */
 export async function playAyahOnRepeat(surah: number, ayah: number): Promise<void> {
+  currentDrill = null;
   if (!findSurah(surah)) return;
   await ensureSetup();
   endListening();
@@ -1527,12 +1547,16 @@ export async function playRange(
   }
   let repeating = false;
   let restFactor = 0;
+  currentDrill = null;
   if (opts.useRepeats !== false) {
     const { eachAyah, range, pauseFactor } = prefs.repeat;
     refs = applyRepeats(refs, eachAyah, range);
     repeating = eachAyah > 1;
     // Only a drill rests: a range heard once is a listen.
-    if (eachAyah > 1 || range > 1) restFactor = Math.max(0, pauseFactor || 0);
+    if (eachAyah > 1 || range > 1) {
+      restFactor = Math.max(0, pauseFactor || 0);
+      if (from.surah === to.surah) currentDrill = { surah: from.surah, from: from.ayah, to: to.ayah };
+    }
   }
   const tracks = await buildTracks(
     refs,
@@ -1608,6 +1632,7 @@ export async function listenFrom(
   surah: number,
   ayah: number = 1,
 ): Promise<void> {
+  currentDrill = null;
   if (!findSurah(surah)) return;
   await ensureSetup();
   const prefs = getQuranState().prefs;

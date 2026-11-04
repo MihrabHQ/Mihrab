@@ -2519,6 +2519,21 @@
     "range": "{{surah}} {{from}}–{{to}}",
     "rangeAcross": "{{from}} – {{to}}",
     "whichSurahs": "Which surahs do you know by heart?",
-    "portions": "{{count}} portions"
+    "portions": "{{count}} portions",
+    "reviewing": "Reciting {{name}} from memory",
+    "reviewChecked": "{{done}} of {{total}} checked — tap an ayah to check it",
+    "reviewDone": "Done",
+    "reciteFromMemory": "Recite from memory",
+    "drilled": "Drilled {{range}} — memorised",
+    "reminder": "Hifz daily reminder",
+    "reminderHelp": "How many portions are due to recite, on the days any are.",
+    "reminderNoStock": "Mark what you know by heart in the Qur’an tab to use this.",
+    "reminderChannelName": "Hifz reminder",
+    "reminderBody": "{{count}} portions to recite from memory today.",
+    "holdsDaily": "recited daily",
+    "holdsEvery": "every {{count}} days",
+    "progress": "Progress",
+    "progressLine": "{{ayahs}} of {{total}} ayahs · {{percent}}% of the Qur’an · {{juz}} of 30 juz’ complete",
+    "juzCoverage": "Juz' {{number}}: {{memorised}} of {{total}} ayahs"
   }
 }

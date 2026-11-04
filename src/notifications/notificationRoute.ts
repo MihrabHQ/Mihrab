@@ -47,6 +47,8 @@ import { activeKhatmah } from '../quran/khatmahProgress';
 
 /** The value of `data.route` on a notification that has a destination. */
 export const ROUTE_KHATMAH = 'khatmah';
+/** The day's hifz revision — #121. */
+export const ROUTE_HIFZ = 'hifz';
 export const ROUTE_AYAH_OF_DAY = 'ayahOfDay';
 /** A whole surah — the Al-Kahf and Al-Mulk reminders, #36. */
 export const ROUTE_SURAH = 'surah';
@@ -159,6 +161,10 @@ export async function notificationRoute(
       ? `${MIHRAB_SCHEME}duas/${data.duaCategory}`
       : `${MIHRAB_SCHEME}duas`;
   }
+
+  // The Hifz page: the day's revision is drawn there whatever has changed
+  // since this was scheduled.
+  if (data.route === ROUTE_HIFZ) return `${MIHRAB_SCHEME}hifz`;
 
   if (data.route === ROUTE_KHATMAH) {
     // The plan may have finished, been deleted, or never existed by the

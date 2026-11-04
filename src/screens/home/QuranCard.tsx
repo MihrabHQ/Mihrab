@@ -46,6 +46,8 @@ type Props = {
   ) => void;
   /** Opens the Quran home (surah list, khatmah controls). */
   onOpenQuran: () => void;
+  /** The day's hifz revision (#121). */
+  onOpenHifz?: () => void;
   /**
    * No card: the door sits on the page under the table's last hairline,
    * edge to edge like the rows, in their grammar — the phone's full-bleed
@@ -57,7 +59,7 @@ type Props = {
   dense?: boolean;
 };
 
-function QuranCardImpl({ onOpenAt, onOpenQuran, bare = false, dense = false }: Props) {
+function QuranCardImpl({ onOpenAt, onOpenQuran, onOpenHifz, bare = false, dense = false }: Props) {
   const { palette } = useAppPalette();
   const quran = useQuranState();
   // The day's portion is keyed on the Islamic day, so the card has to
@@ -111,6 +113,7 @@ function QuranCardImpl({ onOpenAt, onOpenQuran, bare = false, dense = false }: P
       onOpenReading={openReading}
       onOpenBookmark={openBookmark}
       onOpenQuran={onOpenQuran}
+      onOpenHifz={onOpenHifz}
       showStart
       layout="columns"
       dense={dense}

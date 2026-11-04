@@ -61,6 +61,7 @@ describe('selectQuranCardState', () => {
       reading: null,
       shortcuts: [],
       homeBookmark: null,
+      hifzDue: 0,
     });
   });
 
@@ -111,6 +112,7 @@ describe('selectQuranCardState', () => {
       reading: null,
       shortcuts: [],
       homeBookmark: null,
+      hifzDue: 0,
     });
   });
 

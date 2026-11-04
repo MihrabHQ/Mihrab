@@ -34,7 +34,9 @@ import {
   riwayahDataHydrated,
   useRiwayahAvailability,
 } from '../quran/riwayahData';
-import { hydrateQuranState, useQuranHydrated, useQuranState } from '../quran/quranState';
+import { getQuranState, hydrateQuranState, useQuranHydrated, useQuranState } from '../quran/quranState';
+import { portionSpan } from '../quran/hifz';
+import { ayahCount } from '../quran/ayahIndex';
 import { coerceRiwayahId, DEFAULT_RIWAYAH, resolveRiwayah } from '../quran/riwayat';
 import { resolveOpenPage } from '../quran/pages';
 import { activeReaderMode } from '../quran/readerMode';
@@ -57,6 +59,7 @@ export function QuranSurahScreen() {
     playFromAyah,
     sessionBookmarkId,
     sessionKhatmah,
+    hifzReview,
   } = route.params;
 
   /**
@@ -166,7 +169,24 @@ export function QuranSurahScreen() {
    * its own — there is no state to keep in step.
    */
   const verseByVerse = settings.quranVerseByVerseEnabled;
-  const isMushaf = activeReaderMode(settings) === 'mushaf';
+  // A hifz review (#121) is the verse-by-verse reader whatever the habit:
+  // a page cannot hide one ayah and show the next, a list of cards can.
+  // The portion is looked up by id, so a review of one removed meanwhile
+  // (on another device, say) opens as an ordinary visit.
+  const review = useMemo(() => {
+    if (!hifzReview) return undefined;
+    const p = getQuranState().hifz?.portions.find(x => x.id === hifzReview);
+    if (!p) return undefined;
+    const span = portionSpan(p);
+    if (span.surah !== surahNumber) return undefined;
+    return {
+      id: p.id,
+      from: span.from,
+      to: span.endSurah === surahNumber ? span.to : ayahCount(surahNumber),
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hifzReview, surahNumber]);
+  const isMushaf = activeReaderMode(settings) === 'mushaf' && !review;
   const toggleMode = useCallback(() => {
     updateSettings({
       quranReadingMode: isMushaf ? 'withTranslation' : 'mushaf',
@@ -234,6 +254,7 @@ export function QuranSurahScreen() {
       surahNumber={surahNumber}
       scrollToAyah={scrollToAyah}
       onToggleMode={toggleMode}
+      hifzReview={review}
     />
   );
 }
