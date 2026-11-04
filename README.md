@@ -198,62 +198,7 @@ Prayer times computed with **[mihrab-methods](https://github.com/MihrabHQ/mihrab
 | **Android — APK** | [GitHub Releases](https://github.com/MihrabHQ/Mihrab/releases/latest) → `Mihrab-vX.Y.Z.apk` (ARM phones, 32- and 64-bit) |
 | **In your browser** | [Mihrab Web](https://mihrabhq.github.io/) — prayer times for where you are, browser notifications at each prayer, and the whole Qur'an (Ḥafṣ with tajwīd, Warsh, Qālūn, Shuʿbah and the IndoPak print, hard-word meanings, and Husary with word highlight). Settings and bookmarks stay in your browser; add it to your home screen to keep it close. Built from `desktop/` (`npx webpack --mode production --env web`, then `desktop/scripts/build-web.js`) into [MihrabHQ.github.io](https://github.com/MihrabHQ/MihrabHQ.github.io) |
 | **Windows** | [Microsoft Store](https://apps.microsoft.com/detail/9N43KNMJHBWV) |
-| **Linux (preview)** | apt, dnf, zypper or pacman — [below](#windows-and-linux-preview) |
-
-### Windows and Linux (preview)
-
-The desktop app is in preview: the whole app runs, and it needs testers and a
-maintainer ([desktop/MAINTAINING.md](desktop/MAINTAINING.md)). Bugs are welcome as
-[issues](https://github.com/MihrabHQ/Mihrab/issues).
-
-**Windows** — from the [Microsoft Store](https://apps.microsoft.com/detail/9N43KNMJHBWV),
-which installs it and keeps it up to date.
-
-[<img src="docs/assets/img/badges/microsoft.png" width="188" alt="Download Mihrab from the Microsoft Store">](https://apps.microsoft.com/detail/9N43KNMJHBWV)
-
-**Linux** — with your distribution's own package manager, from Mihrab's signed
-repositories at [mihrabhq.github.io/packages](https://mihrabhq.github.io/packages).
-Once it is added, Mihrab is updated with the rest of your system.
-
-Debian, Ubuntu, Mint (apt):
-
-```sh
-sudo curl -fsSLo /usr/share/keyrings/mihrab.gpg https://mihrabhq.github.io/packages/mihrab.gpg
-sudo curl -fsSLo /etc/apt/sources.list.d/mihrab.sources https://mihrabhq.github.io/packages/mihrab.sources
-sudo apt update && sudo apt install mihrab
-```
-
-Fedora (dnf):
-
-```sh
-sudo curl -fsSLo /etc/yum.repos.d/mihrab.repo https://mihrabhq.github.io/packages/mihrab.repo
-sudo dnf install mihrab
-```
-
-openSUSE (zypper):
-
-```sh
-sudo zypper addrepo https://mihrabhq.github.io/packages/mihrab.repo
-sudo zypper install mihrab
-```
-
-Arch, Manjaro, EndeavourOS (pacman, and so yay):
-
-```sh
-curl -fsSL https://mihrabhq.github.io/packages/mihrab.asc | sudo pacman-key --add -
-sudo pacman-key --lsign-key 28BB36D6D8388A8EF15EEA24E19DCF135A3D8035
-printf '\n[mihrab]\nServer = https://mihrabhq.github.io/packages/arch/$arch\n' | sudo tee -a /etc/pacman.conf
-sudo pacman -Syu mihrab
-```
-
-Remove it with the same package manager (`sudo apt purge mihrab`, `sudo dnf remove
-mihrab`, `sudo zypper remove mihrab`, `sudo pacman -R mihrab`); its settings are in
-`~/.config/Mihrab`.
-
-For a Linux system without apt, dnf, zypper or pacman,
-[`install-linux.sh`](desktop/scripts/install-linux.sh) unpacks the AppImage instead.
-The Desktop workflow runs the scripts on every build, and installs and removes the
-app from the repositories on Debian, Ubuntu, Fedora, openSUSE and Arch.
+| **Linux (preview)** | apt, dnf, zypper or pacman, from Mihrab's signed repositories at [mihrabhq.github.io/packages](https://mihrabhq.github.io/packages) — the commands are at the top of this page. Without any of those, [`install-linux.sh`](desktop/scripts/install-linux.sh) unpacks the AppImage. Testers and a maintainer are welcome ([desktop/MAINTAINING.md](desktop/MAINTAINING.md)) |
 
 ---
 
