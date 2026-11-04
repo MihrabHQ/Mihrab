@@ -74,6 +74,13 @@
             "x64",
             "arm64"
           ]
+        },
+        {
+          "target": "rpm",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
         }
       ],
       "category": "Utility",
@@ -97,6 +104,17 @@
         "libxtst6",
         "libnss3",
         "libasound2 | libasound2t64"
+      ]
+    },
+    "rpm": {
+      "packageName": "mihrab",
+      "depends": [
+        "(gtk3 or libgtk-3-0)",
+        "(libnotify or libnotify4)",
+        "(nss or mozilla-nss)",
+        "(libXtst or libXtst6)",
+        "(alsa-lib or libasound2)",
+        "xdg-utils"
       ]
     },
     "win": {

@@ -10,8 +10,12 @@ name: Desktop
 #                 and the red run is the desktop maintainer's to fix
 #                 (desktop/MAINTAINING.md).
 #   tag v*        Windows and Linux, x64 and arm64, both launched; and, when
-#                 the repository variable DESKTOP_RELEASE is 'true', the six
-#                 installers attached to the release release.sh publishes.
+#                 the repository variable DESKTOP_RELEASE is 'true', the
+#                 installers (exe, AppImage, deb, rpm) attached to the release
+#                 release.sh publishes. MihrabHQ/packages picks the deb and rpm
+#                 up from there within the hour: the apt and dnf repositories
+#                 at mihrabhq.github.io/packages and the AUR's mihrab-bin,
+#                 built with desktop/packaging/.
 #   by hand       Actions → Desktop → Run workflow: both, x64 and arm64,
 #                 and — unless unticked — the installers published to the
 #                 desktop-preview pre-release, which the one-line install
@@ -77,7 +81,13 @@ jobs:
         working-directory: desktop
         run: |
           if [ "$RUNNER_OS" = "Linux" ]; then target="--linux AppImage deb"; else target="--win nsis"; fi
-          if [ "${{ github.ref_type }}" = "tag" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then arch="--x64 --arm64"; else arch="--x64"; fi
+          if [ "${{ github.ref_type }}" = "tag" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            arch="--x64 --arm64"
+            # The rpm (Fedora, openSUSE: the dnf repository) needs rpmbuild.
+            if [ "$RUNNER_OS" = "Linux" ]; then sudo apt-get install -yq rpm >/dev/null; target="$target rpm"; fi
+          else
+            arch="--x64"
+          fi
           npm run build && npx electron-builder $target $arch --publish never
 
       - name: Linux display
@@ -157,6 +167,8 @@ jobs:
               *-arm64.AppImage) n=Mihrab-linux-arm64.AppImage ;;
               *-amd64.deb) n=Mihrab-linux-amd64.deb ;;
               *-arm64.deb) n=Mihrab-linux-arm64.deb ;;
+              *-x86_64.rpm) n=Mihrab-linux-x86_64.rpm ;;
+              *-aarch64.rpm) n=Mihrab-linux-aarch64.rpm ;;
               *) continue ;;
             esac
             cp "$f" "dist/preview/$n"
@@ -226,6 +238,7 @@ jobs:
             desktop/dist/*.exe
             desktop/dist/*.AppImage
             desktop/dist/*.deb
+            desktop/dist/*.rpm
             ${{ runner.temp }}/snapshot.png
           if-no-files-found: warn
 
@@ -238,7 +251,8 @@ jobs:
           TAG: ${{ github.ref_name }}
         run: |
           for i in $(seq 1 60); do gh release view "$TAG" >/dev/null 2>&1 && break; sleep 30; done
-          gh release upload "$TAG" desktop/dist/Mihrab-*.exe desktop/dist/Mihrab-*.AppImage desktop/dist/Mihrab-*.deb --clobber
+          shopt -s nullglob
+          gh release upload "$TAG" desktop/dist/Mihrab-*.exe desktop/dist/Mihrab-*.AppImage desktop/dist/Mihrab-*.deb desktop/dist/Mihrab-*.rpm --clobber
 
       # The one-line installs download from here. The tag sits on the last
       # release's commit and never moves — F-Droid reads tags — while the
@@ -258,3 +272,98 @@ jobs:
           gh release upload desktop-preview desktop/dist/preview/* --clobber
           gh release edit desktop-preview --prerelease --latest=false \
             --notes "Installers for testing the Windows and Linux app, built from $(git rev-parse --short HEAD) on $(date -u +%Y-%m-%d). Install and remove with one command: see [desktop/README.md](https://github.com/MihrabHQ/Mihrab/blob/main/desktop/README.md)."
+
+  # The package managers' way in, proved on the files this run built: the apt
+  # and dnf repositories and the AUR recipe exactly as MihrabHQ/packages
+  # publishes them (desktop/packaging/), signed with a throwaway key and
+  # served from this runner, then installed, found, started and removed in a
+  # clean Debian, Ubuntu, Fedora, openSUSE and Arch.
+  packages:
+    needs: build
+    if: github.ref_type == 'tag' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: desktop/packaging
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: mihrab-desktop-Linux
+          path: pkgs
+
+      - name: Build the repositories
+        run: |
+          # The artifact keeps the runner's folders; the files are what matter.
+          mkdir in && find pkgs -name 'Mihrab-*' \( -name '*.deb' -o -name '*.rpm' \) -exec mv {} in/ \;
+          ls -la in
+          sudo apt-get install -yq apt-utils createrepo-c rpm >/dev/null
+          export GNUPGHOME="$RUNNER_TEMP/gpg"; mkdir -m700 "$GNUPGHOME"
+          gpg --batch --pinentry-mode loopback --passphrase '' --quick-gen-key "Mihrab CI <ci@invalid>" ed25519 sign 1d
+          MIHRAB_REPO_URL=http://127.0.0.1:8080 sh desktop/packaging/build-repos.sh in site
+          version=$(cat site/version.txt)
+          echo "VERSION=$version" >> "$GITHUB_ENV"
+          # The AUR recipe downloads from a release; this one is served here.
+          mkdir -p "site/rel/v$version"
+          cp in/Mihrab-*.deb "site/rel/v$version/"
+          MIHRAB_RELEASES=http://127.0.0.1:8080/rel sh desktop/packaging/aur/make-pkgbuild.sh "$version" \
+            in/Mihrab-*-amd64.deb in/Mihrab-*-arm64.deb aur
+          (cd site && python3 -m http.server 8080 >/dev/null 2>&1 &)
+          sleep 1 && curl -fsS http://127.0.0.1:8080/version.txt
+
+      - name: apt — Debian and Ubuntu
+        run: |
+          for image in debian:stable ubuntu:24.04; do
+            echo "::group::$image"
+            docker run --rm --network host "$image" sh -euxc '
+              export DEBIAN_FRONTEND=noninteractive
+              apt-get update -qq && apt-get install -yqq curl ca-certificates >/dev/null
+              curl -fsSLo /usr/share/keyrings/mihrab.gpg http://127.0.0.1:8080/mihrab.gpg
+              curl -fsSLo /etc/apt/sources.list.d/mihrab.sources http://127.0.0.1:8080/mihrab.sources
+              apt-get update -qq
+              apt-get install -yqq mihrab >/dev/null
+              dpkg-query -W mihrab
+              test -x /opt/Mihrab/mihrab && command -v mihrab
+              apt-get purge -yqq mihrab >/dev/null
+              if dpkg -s mihrab >/dev/null 2>&1; then echo still installed; exit 1; fi
+            '
+            echo "::endgroup::"
+          done
+
+      - name: dnf and zypper — Fedora and openSUSE
+        run: |
+          docker run --rm --network host fedora:latest sh -euxc '
+            curl -fsSLo /etc/yum.repos.d/mihrab.repo http://127.0.0.1:8080/mihrab.repo
+            dnf install -y -q mihrab
+            rpm -q mihrab
+            test -x /opt/Mihrab/mihrab && command -v mihrab
+            dnf remove -y -q mihrab
+            if rpm -q mihrab; then echo still installed; exit 1; fi
+          '
+          docker run --rm --network host opensuse/tumbleweed sh -euxc '
+            zypper --non-interactive --gpg-auto-import-keys addrepo http://127.0.0.1:8080/mihrab.repo
+            zypper --non-interactive --gpg-auto-import-keys install mihrab >/dev/null
+            rpm -q mihrab
+            test -x /opt/Mihrab/mihrab
+            zypper --non-interactive remove mihrab >/dev/null
+            if rpm -q mihrab; then echo still installed; exit 1; fi
+          '
+
+      - name: AUR recipe — Arch
+        run: |
+          docker run --rm --network host -v "$PWD/aur:/aur:ro" archlinux:latest sh -euxc '
+            pacman -Syu --noconfirm --needed base-devel gtk3 libnotify nss libxtst alsa-lib xdg-utils >/dev/null
+            useradd -m builder
+            cp -r /aur /home/builder/mihrab-bin && chown -R builder /home/builder/mihrab-bin
+            cd /home/builder/mihrab-bin
+            # The .SRCINFO written by hand must be the one makepkg would write.
+            su builder -c "makepkg --printsrcinfo" > /tmp/srcinfo
+            diff -u /tmp/srcinfo .SRCINFO
+            su builder -c "makepkg --noconfirm"
+            pacman -U --noconfirm mihrab-bin-*.pkg.tar.zst >/dev/null
+            pacman -Q mihrab-bin
+            test -x /opt/Mihrab/mihrab && command -v mihrab
+            pacman -R --noconfirm mihrab-bin >/dev/null
+            if pacman -Q mihrab-bin; then echo still installed; exit 1; fi
+          '

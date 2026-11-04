@@ -22,6 +22,30 @@ Windows installs for the user into `%LOCALAPPDATA%\Programs\Mihrab`. Linux uses
 the `.deb` where there is apt and the AppImage, unpacked into
 `~/.local/share/mihrab`, everywhere else (`MIHRAB_FORMAT=appimage` forces it).
 
+## Linux package managers
+
+From the first release that carries the desktop app (the repository variable
+`DESKTOP_RELEASE` set to `true`), each release's `.deb` and `.rpm` are
+published where Linux's package managers install, update and remove them:
+
+| | Install | Updates with | Remove |
+|---|---|---|---|
+| Debian, Ubuntu (apt) | the two `curl` lines and `apt install mihrab` on [mihrabhq.github.io/packages](https://mihrabhq.github.io/packages) | `apt upgrade`, Software Updater | `apt purge mihrab` |
+| Fedora (dnf), openSUSE (zypper) | the `.repo` file, then `dnf install mihrab` / `zypper install mihrab` | `dnf upgrade`, GNOME Software / Discover | `dnf remove mihrab` |
+| Arch (AUR) | `yay -S mihrab-bin` | `yay -Syu` | `yay -R mihrab-bin` |
+
+[MihrabHQ/packages](https://github.com/MihrabHQ/packages) does the publishing:
+every hour it looks at the latest release and, when there is a new version,
+builds the signed apt and dnf repositories with
+[`packaging/build-repos.sh`](packaging/build-repos.sh), deploys them to its
+Pages site, and pushes the AUR recipe written by
+[`packaging/aur/make-pkgbuild.sh`](packaging/aur/make-pkgbuild.sh). Its two
+secrets — the repositories' signing key and the AUR account's SSH key — are
+made by [`packaging/make-keys.sh`](packaging/make-keys.sh), run once by the
+maintainer. Every tagged or hand-run Desktop build installs, finds and removes
+the app from those repositories in clean Debian, Ubuntu, Fedora, openSUSE and
+Arch containers (the `packages` job).
+
 ## Run it
 
 ```sh

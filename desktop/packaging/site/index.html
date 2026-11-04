@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mihrab for Linux — apt, dnf and the AUR</title>
+<meta name="description" content="Install Mihrab on Linux with apt, dnf, zypper or yay, and get updates with the rest of your system.">
+<style>
+  :root { --bg: #fbf8f2; --ink: #1d1b16; --muted: #6b6457; --line: #e3dccd; --code: #f1ebdf; --accent: #2f5d50; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #14130f; --ink: #ece6d8; --muted: #a49c8c; --line: #2c2a24; --code: #1e1c17; --accent: #8cc5b3; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 17px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 46rem; margin: 0 auto; padding: 3rem 1rem 4rem; }
+  h1 { font-size: 1.9rem; line-height: 1.2; margin: 0 0 .4rem; }
+  h2 { font-size: 1.15rem; margin: 2.2rem 0 .5rem; }
+  p { margin: .4rem 0; }
+  .muted { color: var(--muted); }
+  pre { background: var(--code); border: 1px solid var(--line); border-radius: 8px; padding: .8rem 1rem; overflow-x: auto; margin: .5rem 0; }
+  code { font: 14px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  pre code { white-space: pre-wrap; word-break: break-all; }
+  a { color: var(--accent); }
+  footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--line); font-size: .9rem; color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Mihrab for Linux</h1>
+  <p class="muted">Version @VERSION@ · x86_64 and arm64</p>
+  <p>Add Mihrab's repository once, and it is installed, updated and removed by your system's own package manager, with the rest of your updates.</p>
+
+  <h2>Debian, Ubuntu, Mint, Pop!_OS (apt)</h2>
+<pre><code>sudo curl -fsSLo /usr/share/keyrings/mihrab.gpg https://mihrabhq.github.io/packages/mihrab.gpg
+sudo curl -fsSLo /etc/apt/sources.list.d/mihrab.sources https://mihrabhq.github.io/packages/mihrab.sources
+sudo apt update &amp;&amp; sudo apt install mihrab</code></pre>
+  <p class="muted">Remove: <code>sudo apt purge mihrab</code>, and the two files above to drop the repository.</p>
+
+  <h2>Fedora (dnf)</h2>
+<pre><code>sudo curl -fsSLo /etc/yum.repos.d/mihrab.repo https://mihrabhq.github.io/packages/mihrab.repo
+sudo dnf install mihrab</code></pre>
+  <p class="muted">Remove: <code>sudo dnf remove mihrab</code>, and <code>/etc/yum.repos.d/mihrab.repo</code> to drop the repository.</p>
+
+  <h2>openSUSE (zypper)</h2>
+<pre><code>sudo zypper addrepo https://mihrabhq.github.io/packages/mihrab.repo
+sudo zypper install mihrab</code></pre>
+  <p class="muted">Remove: <code>sudo zypper remove mihrab</code> and <code>sudo zypper removerepo mihrab</code>.</p>
+
+  <h2>Arch, Manjaro, EndeavourOS (AUR)</h2>
+<pre><code>yay -S mihrab-bin</code></pre>
+  <p class="muted">Updates come with <code>yay -Syu</code>. Remove: <code>yay -R mihrab-bin</code>.</p>
+
+  <h2>The signing key</h2>
+  <p>Both repositories are signed; apt, dnf and zypper check every update against <a href="mihrab.asc">this key</a> before installing it.</p>
+
+  <footer>
+    <a href="https://mihrab.elghamri.se">Mihrab</a> · <a href="https://github.com/MihrabHQ/Mihrab">source</a> · the packages are the ones attached to each <a href="https://github.com/MihrabHQ/Mihrab/releases">release</a>.
+  </footer>
+</main>
+</body>
+</html>
