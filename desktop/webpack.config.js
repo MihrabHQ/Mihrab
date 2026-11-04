@@ -141,6 +141,13 @@ module.exports = (env = {}, argv) => {
         resource.request = shim('rnw-preprocess.js');
       }),
       new webpack.NormalModuleReplacementPlugin(/^react-native\/Libraries\//, shim('rn-internal.js')),
+      // A modal shown later is drawn over one shown earlier, as on a phone —
+      // see the shim.
+      new webpack.NormalModuleReplacementPlugin(/^\.\/ModalPortal$/, resource => {
+        if (/react-native-web[\\/]dist[\\/]exports[\\/]Modal/.test(resource.context || '')) {
+          resource.request = shim('modal-portal.js');
+        }
+      }),
       // The web app's switches: download manager off, one reciter, its path.
       ...(webApp
         ? [
