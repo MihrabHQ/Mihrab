@@ -250,7 +250,9 @@ function registerIpc() {
 // went out under Electron's own id, which nothing installed answers to, and
 // Windows dropped them: no adhan banner, no reminder, nothing in the Action
 // Center.
-if (process.platform === 'win32') app.setAppUserModelId('com.prayer_times.desktop');
+// From the Microsoft Store the package names the app itself
+// (PackageFamilyName!App), and the toasts must go out under that name.
+if (process.platform === 'win32' && !process.windowsStore) app.setAppUserModelId('com.prayer_times.desktop');
 
 // One instance: a second launch focuses the first, so two copies never
 // schedule the same adhan twice.

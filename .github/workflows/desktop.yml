@@ -85,6 +85,8 @@ jobs:
             arch="--x64 --arm64"
             # The rpm (Fedora, openSUSE: the dnf repository) needs rpmbuild.
             if [ "$RUNNER_OS" = "Linux" ]; then sudo apt-get install -yq rpm >/dev/null; target="$target rpm"; fi
+            # The Microsoft Store's package (unsigned: the Store signs it).
+            if [ "$RUNNER_OS" = "Windows" ]; then target="$target appx"; fi
           else
             arch="--x64"
           fi
@@ -232,6 +234,48 @@ jobs:
           echo installed, started and removed
           exit /b 0
 
+      # The Store package, proved: signed here with a throwaway certificate
+      # whose subject is the package's publisher (the Store signs the real
+      # upload with its own), installed for this user, started from its
+      # Start-menu entry, and removed. Catches a manifest Windows refuses, an
+      # app that does not start packaged, and a startup task that is missing.
+      - name: Store package — install, start, remove
+        if: runner.os == 'Windows' && (github.ref_type == 'tag' || github.event_name == 'workflow_dispatch')
+        working-directory: desktop
+        shell: pwsh
+        run: |
+          $appx = Get-ChildItem dist\*.appx | Where-Object Name -match 'x64' | Select-Object -First 1
+          if (-not $appx) { $appx = Get-ChildItem dist\*.appx | Select-Object -First 1 }
+          if (-not $appx) { throw 'no .appx was built' }
+          Write-Host "package: $($appx.Name) ($([math]::Round($appx.Length / 1MB)) MB)"
+          $publisher = (Get-Content package.json -Raw | ConvertFrom-Json).build.appx.publisher
+          $cert = New-SelfSignedCertificate -Type CodeSigningCert -Subject $publisher `
+            -CertStoreLocation Cert:\CurrentUser\My -TextExtension @('2.5.29.19={text}false', '2.5.29.37={text}1.3.6.1.5.5.7.3.3')
+          $pfx = Join-Path $env:RUNNER_TEMP 'test.pfx'
+          $pw = ConvertTo-SecureString -String 'ci-only' -Force -AsPlainText
+          Export-PfxCertificate -Cert $cert -FilePath $pfx -Password $pw | Out-Null
+          Import-PfxCertificate -FilePath $pfx -CertStoreLocation Cert:\LocalMachine\TrustedPeople -Password $pw | Out-Null
+          $signtool = Get-ChildItem "${env:ProgramFiles(x86)}\Windows Kits\10\bin\*\x64\signtool.exe" | Sort-Object FullName | Select-Object -Last 1
+          $test = Join-Path $env:RUNNER_TEMP 'test.appx'
+          Copy-Item $appx.FullName $test
+          & $signtool.FullName sign /fd SHA256 /f $pfx /p ci-only $test
+          if ($LASTEXITCODE) { throw 'signing the test copy failed' }
+          Add-AppxPackage -Path $test
+          $pkg = Get-AppxPackage | Where-Object Name -eq ((Get-Content package.json -Raw | ConvertFrom-Json).build.appx.identityName)
+          if (-not $pkg) { throw 'the package did not install' }
+          Write-Host "installed $($pkg.PackageFullName)"
+          $manifest = Get-AppxPackageManifest $pkg
+          if (-not ($manifest.OuterXml -match 'windows.startupTask')) { throw 'no startup task in the manifest' }
+          Start-Process "shell:AppsFolder\$($pkg.PackageFamilyName)!Mihrab"
+          Start-Sleep -Seconds 25
+          $running = Get-Process -Name mihrab -ErrorAction SilentlyContinue | Where-Object { $_.Path -like "*WindowsApps*" }
+          if (-not $running) { throw 'the packaged app did not start (or did not stay running)' }
+          Write-Host "running from $($running[0].Path)"
+          $running | Stop-Process -Force
+          Remove-AppxPackage -Package $pkg.PackageFullName
+          if (Get-AppxPackage | Where-Object PackageFullName -eq $pkg.PackageFullName) { throw 'the package is still installed' }
+          Write-Host 'installed, started and removed'
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -243,6 +287,14 @@ jobs:
             desktop/dist/*.rpm
             ${{ runner.temp }}/snapshot.png
           if-no-files-found: warn
+
+      # What goes up to Partner Center: the unsigned .appx files, kept apart.
+      - uses: actions/upload-artifact@v4
+        if: runner.os == 'Windows' && (github.ref_type == 'tag' || github.event_name == 'workflow_dispatch')
+        with:
+          name: mihrab-microsoft-store
+          path: desktop/dist/*.appx
+          if-no-files-found: error
 
       # release.sh creates the release a few minutes after it pushes the tag;
       # wait for it rather than race it.

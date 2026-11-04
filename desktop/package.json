@@ -129,6 +129,17 @@
       ],
       "icon": "resources/icon.png"
     },
+    "appx": {
+      "identityName": "HassanElGhamri.Mihrab",
+      "publisher": "CN=00000000-0000-0000-0000-000000000000",
+      "publisherDisplayName": "Hassan El Ghamri",
+      "applicationId": "Mihrab",
+      "displayName": "Mihrab",
+      "backgroundColor": "#0F4D44",
+      "languages": ["en-US"],
+      "minVersion": "10.0.17763.0",
+      "addAutoLaunchExtension": true
+    },
     "nsis": {
       "oneClick": false,
       "perMachine": false,

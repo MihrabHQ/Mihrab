@@ -10,10 +10,19 @@
  *    runs, and a tray menu checkbox to turn off.
  *  - The first time the window is closed, one notification says where it
  *    went, so a user who wanted it gone knows to Quit.
+ *
+ * From the Microsoft Store (an MSIX package, `process.windowsStore`) the
+ * login item is the package's own startup task (appx.addAutoLaunchExtension
+ * in package.json): Windows turns it on after the first launch and keeps the
+ * switch in Settings → Apps → Startup, which the tray item opens. A packaged
+ * app's registry Run entry would be written into its private copy of the
+ * registry, where Windows never looks.
  */
 const fs = require('fs');
 const path = require('path');
-const { app, Menu, Notification, Tray, nativeImage } = require('electron');
+const { app, Menu, Notification, Tray, nativeImage, shell } = require('electron');
+
+const STORE = process.platform === 'win32' && !!process.windowsStore;
 
 const HIDDEN_ARG = '--hidden';
 let tray = null;
@@ -96,15 +105,17 @@ function buildMenu(getWindow, send) {
     { label: 'Open Mihrab', click: () => showWindow(getWindow) },
     { label: 'Stop the adhan', click: () => send('adhan:stop') },
     { type: 'separator' },
-    {
-      label: 'Start at login',
-      type: 'checkbox',
-      checked: getOpenAtLogin(),
-      click: item => {
-        setOpenAtLogin(item.checked);
-        writeState({ autostartChosen: true });
-      },
-    },
+    STORE
+      ? { label: 'Start at login…', click: () => shell.openExternal('ms-settings:startupapps') }
+      : {
+          label: 'Start at login',
+          type: 'checkbox',
+          checked: getOpenAtLogin(),
+          click: item => {
+            setOpenAtLogin(item.checked);
+            writeState({ autostartChosen: true });
+          },
+        },
     { type: 'separator' },
     {
       label: 'Quit Mihrab',
@@ -137,8 +148,9 @@ function register(getWindow) {
   // First run: start at login unless the user has ever said otherwise.
   // The adhan is the point of the app, and it cannot sound from an app
   // that is not running.
+  // (A Store package's startup task does this itself.)
   const state = readState();
-  if (!state.autostartChosen && !process.env.MIHRAB_USER_DATA) {
+  if (!STORE && !state.autostartChosen && !process.env.MIHRAB_USER_DATA) {
     try {
       setOpenAtLogin(true);
     } catch (e) {
