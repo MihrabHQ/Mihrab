@@ -121,11 +121,13 @@ case "$m" in
   pacman)
     say "Adding Mihrab's repository to pacman (sudo may ask for your password)…"
     fpr=$(curl -fsSL "$REPO/fingerprint.txt") || fail "the repository's key could not be read."
-    if [ ! -f /etc/pacman.d/gnupg/pubring.gpg ] && [ ! -f /etc/pacman.d/gnupg/pubring.kbx ]; then
-      $SUDO pacman-key --init >/dev/null 2>&1
-    fi
-    curl -fsSL "$REPO/mihrab.asc" | $SUDO pacman-key --add - >/dev/null
-    $SUDO pacman-key --lsign-key "$fpr" >/dev/null
+    curl -fsSL "$REPO/mihrab.asc" | $SUDO pacman-key --add - >/dev/null 2>&1 ||
+      { $SUDO pacman-key --init >/dev/null 2>&1; curl -fsSL "$REPO/mihrab.asc" | $SUDO pacman-key --add - >/dev/null; }
+    # Trusting it needs pacman's own local key, which an installed Arch has
+    # and a bare one (a container) may not: --init makes it, keeping the rest.
+    $SUDO pacman-key --lsign-key "$fpr" >/dev/null 2>&1 ||
+      { $SUDO pacman-key --init >/dev/null 2>&1; $SUDO pacman-key --lsign-key "$fpr" >/dev/null; } ||
+      fail "pacman would not trust the repository's key."
     if ! grep -q '^\[mihrab\]' /etc/pacman.conf; then
       printf '\n[mihrab]\nServer = %s/arch/$arch\n' "$REPO" | $SUDO tee -a /etc/pacman.conf >/dev/null
     fi
