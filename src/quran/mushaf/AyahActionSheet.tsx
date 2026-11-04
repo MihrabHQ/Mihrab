@@ -11,6 +11,7 @@
  *     memorization, range player) — the header "Recitation" button
  *     opens this same sheet scrolled straight to this section.
  */
+import { NO_TEXT_SELECTION } from '../noTextSelection';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Modal,
@@ -1706,10 +1707,11 @@ const styles = StyleSheet.create({
     textAlign: 'right',
     writingDirection: 'rtl',
     ...arabicTextStyle('quran'),
+    ...NO_TEXT_SELECTION,
   },
   // The page-font āyah lays itself out in lines; this is the same air the
   // text version had around it.
-  arabicGlyphs: { paddingVertical: SPACING.xs },
+  arabicGlyphs: { paddingVertical: SPACING.xs, ...NO_TEXT_SELECTION },
   translation: {
     fontSize: TYPE.callout.fontSize,
     lineHeight: 22,

@@ -15,6 +15,7 @@
  * reader under the sheet may well be in plain ink. An āyah that runs
  * over a page turn has words in two fonts, so a line never mixes pages.
  */
+import { NO_TEXT_SELECTION } from '../noTextSelection';
 import { pressLocationX } from '../../components/pressLocation';
 import { useCallback, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -264,7 +265,7 @@ function GlyphLine({
         const w = wordAt(right - pressLocationX(e));
         if (w && onWordPress) onWordPress(w);
       }}
-      style={{ width, height: lineHeight }}>
+      style={[{ width, height: lineHeight }, NO_TEXT_SELECTION]}>
       <Native
         accessible={false}
         importantForAccessibility="no"
@@ -293,5 +294,5 @@ function GlyphLine({
 
 const styles = StyleSheet.create({
   block: { alignSelf: 'stretch' },
-  fallback: { writingDirection: 'rtl' },
+  fallback: { writingDirection: 'rtl', ...NO_TEXT_SELECTION },
 });

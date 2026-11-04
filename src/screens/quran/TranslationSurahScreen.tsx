@@ -15,6 +15,7 @@
  * share a route and a toggle; `QuranSurahScreen` is the route now, and this
  * is the translation reader on its own.
  */
+import { NO_TEXT_SELECTION } from '../../quran/noTextSelection';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { ChoiceSheet } from '../../components/ui/ChoiceSheet';
@@ -846,7 +847,8 @@ export function TranslationSurahScreen({
   );
 
   return (
-    <View style={{ flex: 1, backgroundColor: palette.bg }}>
+    // Every ayah card's Arabic and translation: the app's actions, not a selection (noTextSelection).
+    <View style={[{ flex: 1, backgroundColor: palette.bg }, NO_TEXT_SELECTION]}>
       {/* The download strip — the ayah sheet below starts the per-surah
           tilāwah download and then closes, so this is where it can be
           watched from. iOS floats its header over the content, so the

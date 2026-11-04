@@ -24,6 +24,7 @@
  * renders publishes its page turn into `keyTurn`.
  */
 
+import { NO_TEXT_SELECTION } from './noTextSelection';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -418,5 +419,6 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.md,
   },
   ctaLabel: { fontSize: TYPE.body.fontSize, fontWeight: '500' },
-  withStrip: { flex: 1 },
+  // The page's text is the Qur'an's, not a selection — see noTextSelection.
+  withStrip: { flex: 1, ...NO_TEXT_SELECTION },
 });

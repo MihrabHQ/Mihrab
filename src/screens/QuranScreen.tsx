@@ -14,6 +14,7 @@
  * the day. The khatmah card itself is `KhatmahScreen`; what sits under
  * each verse is chosen in Settings → Quran and on any āyah.
  */
+import { NO_TEXT_SELECTION } from '../quran/noTextSelection';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigation, useScrollToTop } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -1754,6 +1755,7 @@ const styles = StyleSheet.create({
     textAlign: 'right',
     writingDirection: 'rtl',
     ...arabicTextStyle('quran'),
+    ...NO_TEXT_SELECTION,
   },
   votdTranslation: { fontSize: TYPE.footnote.fontSize, lineHeight: 19 },
   votdShowMore: { fontSize: TYPE.label.fontSize, fontWeight: '500', marginTop: SPACING.xs },
@@ -1850,6 +1852,7 @@ const styles = StyleSheet.create({
     textAlign: 'right',
     writingDirection: 'rtl',
     ...arabicTextStyle('quran'),
+    ...NO_TEXT_SELECTION,
   },
   resultTranslation: { fontSize: TYPE.label.fontSize, lineHeight: 17 },
   row: {
