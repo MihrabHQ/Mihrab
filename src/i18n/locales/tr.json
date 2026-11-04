@@ -1681,7 +1681,7 @@
       "ipBody": "İnternet bağlantınıza göre bir tahmin; bir şehir ya da daha fazla yanılabilir. Namaz vakitleri gerçekte nerede olduğunuza bağlıdır.",
       "ipYes": "Evet, doğru",
       "ipNo": "Hayır, konumumu seçeyim",
-      "bodyWeb": "Namaz vakitleri nerede olduğunuza bağlıdır. Konumunuz bu tarayıcıda saklanır ve yalnızca yanıt vermek için ona ihtiyaç duyan bir hizmete gider — asla bize değil."
+      "bodyWeb": "Namaz vakitleri konumunuza bağlıdır. Bu tarayıcıda koordinatlar, cihaz şifrelemesi olmadan bu profilde saklanır. Namaz vakti veya yer arama hizmeti koordinatları yalnızca gerektiğinde alır; Mihrab almaz."
     },
     "salamA11y": "Es-selâmü aleyküm ve rahmetullâhi teâlâ ve berekâtüh",
     "notNow": "Şimdi değil",
