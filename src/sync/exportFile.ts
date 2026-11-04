@@ -23,12 +23,7 @@
 import ReactNativeBlobUtil from 'react-native-blob-util';
 import RNShare from 'react-native-share';
 import { NativeModules, Platform } from 'react-native';
-import {
-  buildSnapshot,
-  readSnapshot,
-  type Snapshot,
-  type SyncSelection,
-} from './snapshot';
+import { buildSnapshot, readSnapshot, type Snapshot, type SyncSelection } from './snapshot';
 import { collectData } from './snapshotStore';
 
 /**
@@ -157,17 +152,11 @@ export function hasFileSaver(): boolean {
  * create-document dialog, which the native module drives. Both end with a
  * file the user named, sitting where they put it.
  */
-export async function saveExportToFiles(
-  result: ExportResult,
-): Promise<boolean> {
+export async function saveExportToFiles(result: ExportResult): Promise<boolean> {
   if (Platform.OS === 'android') {
     const saveFile = SyncFolderNative?.saveFile;
     if (!saveFile) return false;
-    const saved = await saveFile(
-      result.fileName,
-      result.text,
-      'application/json',
-    );
+    const saved = await saveFile(result.fileName, result.text, 'application/json');
     return Boolean(saved);
   }
   try {

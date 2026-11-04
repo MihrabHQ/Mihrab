@@ -49,8 +49,7 @@ function AboutCardImpl() {
   const onVersionTap = () => {
     if (settings.dataStatsUnlocked) return;
     const now = Date.now();
-    versionTaps.current =
-      now - lastVersionTap.current > 1500 ? 1 : versionTaps.current + 1;
+    versionTaps.current = now - lastVersionTap.current > 1500 ? 1 : versionTaps.current + 1;
     lastVersionTap.current = now;
     if (versionTaps.current >= 5) {
       versionTaps.current = 0;
@@ -198,8 +197,7 @@ function AboutCardImpl() {
         <Text
           suppressHighlighting
           onPress={onVersionTap}
-          style={[styles.versionText, { color: palette.muted }]}
-        >
+          style={[styles.versionText, { color: palette.muted }]}>
           {t('settings.versionInstalled', { version: versionLabel })}
         </Text>
         {/* The website, not the repo. Someone who has scrolled to the foot
@@ -212,8 +210,7 @@ function AboutCardImpl() {
           style={[styles.versionLink, { color: palette.accent }]}
           onPress={() => {
             void Linking.openURL(MIHRAB_WEBSITE);
-          }}
-        >
+          }}>
           {MIHRAB_WEBSITE_LABEL}
         </Text>
       </View>
