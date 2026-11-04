@@ -5,11 +5,15 @@
  */
 import type { TFunction } from 'i18next';
 import { findSurah } from './quran';
+import { surahName as localName } from './surahName';
 import { daysBetween, portionSpan, type HifzPortion } from './hifz';
 
-function surahName(n: number): string {
-  return findSurah(n)?.romanized ?? String(n);
+/** The surah's name as the app writes it in the reader's language: Arabic script for Arabic, Urdu…, else transliterated. */
+export function hifzSurahName(n: number): string {
+  const meta = findSurah(n);
+  return meta ? localName(meta) : String(n);
 }
+const surahName = hifzSurahName;
 
 /** "An-Naba", "An-Naba 1–20", or "Al-Mulk 1 – Al-Qalam 10". */
 export function hifzPortionName(p: HifzPortion, t: TFunction): string {
@@ -37,4 +41,11 @@ export function hifzDueLabel(p: HifzPortion, today: string, t: TFunction): strin
   if (days === 0) return t('hifz.dueToday', 'Due today');
   if (days === 1) return t('hifz.dueTomorrow', 'Tomorrow');
   return t('hifz.dueIn', { defaultValue: 'In {{count}} days', count: days });
+}
+
+/** "37 surahs · 666 ayahs by heart" — two counted halves, so each takes its own plural form. */
+export function hifzStockLine(stock: { surahs: number; ayahs: number }, t: TFunction): string {
+  const surahs = t('hifz.stockSurahs', { defaultValue: '{{count}} surahs', count: stock.surahs });
+  const ayahs = t('hifz.stockAyahs', { defaultValue: '{{count}} ayahs by heart', count: stock.ayahs });
+  return `${surahs} · ${ayahs}`;
 }

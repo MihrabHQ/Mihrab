@@ -37,7 +37,7 @@ jest.mock('@react-navigation/native', () => ({
 import { HifzEntry } from '../src/screens/quran/HifzEntry';
 import { ResumeDoors } from '../src/quran/ResumeDoors';
 import { selectQuranCardState } from '../src/quran/quranCardState';
-import { dayOf, markSurah, type HifzState } from '../src/quran/hifz';
+import { dayOf, markSurah, reviewPortion, type HifzState } from '../src/quran/hifz';
 import { __resetDrillForTests, noteDrillFinished, lastDrill } from '../src/quran/hifzDrill';
 import { juzCoverage } from '../src/quran/hifzProgress';
 import { hifzReminderDue, hifzReminderVerdict } from '../src/notifications/hifzReminder';
@@ -167,13 +167,48 @@ describe('the reminder', () => {
     expect(hifzReminderDue(getQuranState(), now)).toBe(2);
     const before = hifzReminderVerdict(getQuranState(), now);
     act(() => {
-      updateHifz(prev => ({
-        ...prev,
-        portions: prev.portions.map((p, i) => (i === 0 ? { ...p, reviews: [{ at: now, grade: 'fine' as const }] } : p)),
-      }));
+      updateHifz(prev => reviewPortion(prev, prev.portions[0].id, 'fine', dayOf(now), now));
     });
     expect(hifzReminderDue(getQuranState(), now)).toBe(1);
     expect(hifzReminderVerdict(getQuranState(), now)).not.toBe(before);
+  });
+});
+
+describe('the day’s budget', () => {
+  it('counts what was recited today: three a day means three, not three at a time', () => {
+    const now = Date.now();
+    const today = dayOf(now);
+    act(() => {
+      for (let n = 105; n <= 114; n++) updateHifz(prev => markSurah(prev, n, today, now));
+      updateHifz(prev => ({ ...prev, portions: prev.portions.map(p => ({ ...p, due: today })) }));
+    });
+    const tree = render(<HifzEntry />);
+    for (const name of ['Al-Fil', 'Quraysh', 'Al-Maun']) {
+      act(() => {
+        byLabel(tree.root, `Recited ${name}`).props.onPress();
+      });
+    }
+    const shown = texts(tree.root);
+    expect(shown).toContain("Today's revision done");
+    expect(shown).toContain('7 more tomorrow');
+    expect(hifzReminderDue(getQuranState(), now)).toBe(0);
+  });
+});
+
+describe('known surahs join the long cycle', () => {
+  it('spreads Juz’ 30 over the month instead of putting it all on tomorrow', () => {
+    const now = Date.now();
+    const today = dayOf(now);
+    let s: HifzState = { portions: [] };
+    for (let n = 78; n <= 114; n++) s = markSurah(s, n, today, now, 'known');
+    const perDay = new Map<string, number>();
+    for (const p of s.portions) perDay.set(p.due, (perDay.get(p.due) ?? 0) + 1);
+    expect(Math.max(...perDay.values())).toBe(2); // 37 over 30 days
+    expect(perDay.size).toBe(30);
+    expect(s.portions.every(p => p.interval === 30)).toBe(true);
+    // Learning, by contrast, starts tomorrow and daily.
+    const l = markSurah({ portions: [] }, 1, today, now);
+    expect(l.portions[0].interval).toBe(1);
   });
 });
 

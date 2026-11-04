@@ -16,6 +16,7 @@ import {
   portionSpan,
   recitedToday,
   removePortion,
+  restorePortion,
   reviewPortion,
   setCap,
   surahMemorised,
@@ -149,6 +150,18 @@ describe('marking', () => {
       [21, 30],
     ]);
     expect(hifzStock(s).ayahs).toBe(20);
+  });
+
+  it('an undone removal brings the portion back, schedule and all, past a device that saw the removal', () => {
+    let a = markSurah(EMPTY_HIFZ, 67, TODAY, NOW);
+    a = reviewPortion(a, a.portions[0].id, 'fine', TODAY, NOW + 1);
+    const before = a.portions[0];
+    const removed = removePortion(a, before.id, NOW + 1000);
+    const back = restorePortion(removed, before, TODAY, NOW + 2000);
+    expect(back.portions).toHaveLength(1);
+    expect(back.portions[0]).toMatchObject({ id: before.id, interval: before.interval, due: before.due });
+    expect(back.portions[0].reviews).toHaveLength(1);
+    for (const m of [mergeHifz(back, removed), mergeHifz(removed, back)]) expect(m?.portions).toHaveLength(1);
   });
 
   it('a removed portion stays removed through a merge with a device that still has it', () => {

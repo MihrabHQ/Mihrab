@@ -70,6 +70,14 @@ export const HIFZ_CAPS: readonly HifzCap[] = [7, 14, 30];
 const REVIEWS_KEPT = 30;
 /** The colour the reader draws Hifz in — a green apart from the khatmah's teal and the marker's rust. */
 export const HIFZ_COLOR = '#2e7d4f';
+/**
+ * The green as text or an outline. On a dark page the fill green is under
+ * 3:1 against the card; this one is over 7:1 there and stays HIFZ_COLOR on
+ * a light page. Fills carrying white keep HIFZ_COLOR (5:1 with white).
+ */
+export function hifzInk(isDark: boolean): string {
+  return isDark ? '#7fd3a3' : HIFZ_COLOR;
+}
 
 export const EMPTY_HIFZ: HifzState = { portions: [] };
 
@@ -140,15 +148,18 @@ export function overdueBy(p: HifzPortion, today: string): number {
 
 /**
  * Today's revision: every portion due, the most overdue first and, among
- * those equally due, in the order of the muṣḥaf. `budget` of them are the
- * day's; the rest wait, and `more` says how many.
+ * those equally due, in the order of the muṣḥaf. The day asks for `budget`
+ * recitations: what was recited today counts towards it, `shown` is what is
+ * left of it, and `more` is what waits for another day. A recitation moves
+ * its portion's due date on, so `due` never holds one recited today.
  */
 export function todaysRevision(state: HifzState, today: string): { due: HifzPortion[]; shown: HifzPortion[]; more: number } {
   const due = state.portions
     .filter(p => overdueBy(p, today) >= 0)
     .sort((a, b) => overdueBy(b, today) - overdueBy(a, today) || a.start - b.start);
-  const n = Math.max(1, budgetOf(state));
-  return { due, shown: due.slice(0, n), more: Math.max(0, due.length - n) };
+  const left = Math.max(0, Math.max(1, budgetOf(state)) - recitedToday(state, today).length);
+  const shown = due.slice(0, left);
+  return { due, shown, more: due.length - shown.length };
 }
 
 /** The portions recited today (a review dated today), for "2 of 3 done". */
@@ -172,6 +183,38 @@ function newPortion(start: number, end: number, today: string, now: number): Hif
   };
 }
 
+/**
+ * A portion KNOWN for a long time rather than being learned now: it joins
+ * the long cycle (`interval` the cap) on the day of the cycle with the
+ * fewest portions due, so marking Juz' 30 lays its 37 surahs over the
+ * month instead of putting all of them on tomorrow, and a surah added
+ * later finds the quietest day. Equal days: the earliest.
+ */
+function knownPortion(state: HifzState, start: number, end: number, today: string, now: number): HifzPortion {
+  const cap = capOf(state);
+  const load = new Map<string, number>();
+  for (const p of state.portions) load.set(p.due, (load.get(p.due) ?? 0) + 1);
+  let best = addDays(today, 1);
+  let least = Infinity;
+  for (let d = 1; d <= cap; d++) {
+    const day = addDays(today, d);
+    const n = load.get(day) ?? 0;
+    if (n < least) {
+      least = n;
+      best = day;
+    }
+  }
+  return { ...newPortion(start, end, today, now), interval: cap, due: best };
+}
+
+/**
+ * How a newly marked range enters the schedule. `learning` — memorised now
+ * (from the reader, a drill): daily first, then out as it holds. `known` —
+ * memorised long ago (the grid, the juz' chips, the part sheet): straight
+ * into the long cycle, spread over it.
+ */
+export type HifzMarkAs = 'learning' | 'known';
+
 /** The surah and ayahs a portion spans. */
 export function portionSpan(p: HifzPortion): {
   surah: number;
@@ -190,6 +233,19 @@ export function portionSpan(p: HifzPortion): {
 export function portionAt(state: HifzState, surah: number, ayah: number): HifzPortion | undefined {
   const i = ayahIndexOf(surah, ayah);
   return state.portions.find(p => p.start <= i && i <= p.end);
+}
+
+/** The share of a surah's ayahs held, 0 to 1. */
+export function surahShare(state: HifzState, surah: number): number {
+  const s = ayahIndexOf(surah, 1);
+  const e = ayahIndexOf(surah, ayahCount(surah));
+  let held = 0;
+  for (const p of state.portions) {
+    const lo = Math.max(s, p.start);
+    const hi = Math.min(e, p.end);
+    if (hi >= lo) held += hi - lo + 1;
+  }
+  return held / (e - s + 1);
 }
 
 /** The portions touching a surah, in order. */
@@ -223,7 +279,14 @@ function remove(state: HifzState, ids: string[], now: number): HifzState {
  * kept, so extending "an-Naba 1–20" to 1–30 does not restart its revision —
  * and a new, separate range is due tomorrow.
  */
-export function markRange(state: HifzState, start: number, end: number, today: string, now: number): HifzState {
+export function markRange(
+  state: HifzState,
+  start: number,
+  end: number,
+  today: string,
+  now: number,
+  as: HifzMarkAs = 'learning',
+): HifzState {
   if (!(start >= 1 && end >= start && end <= TOTAL_AYAHS)) return state;
   // Joined: overlapping, or end to end within one surah (the stretch grown
   // "up to here"). Two whole surahs side by side stay two portions.
@@ -232,7 +295,8 @@ export function markRange(state: HifzState, start: number, end: number, today: s
     p => (p.start <= end && p.end >= start) || (p.end + 1 === start && sameSurah(p.end, start)) || (end + 1 === p.start && sameSurah(end, p.start)),
   );
   if (touching.length === 0) {
-    return { ...state, portions: [...state.portions, newPortion(start, end, today, now)].sort((a, b) => a.start - b.start) };
+    const fresh = as === 'known' ? knownPortion(state, start, end, today, now) : newPortion(start, end, today, now);
+    return { ...state, portions: [...state.portions, fresh].sort((a, b) => a.start - b.start) };
   }
   const keep = [...touching].sort((a, b) => a.due.localeCompare(b.due) || a.start - b.start)[0];
   const joined: HifzPortion = {
@@ -248,8 +312,8 @@ export function markRange(state: HifzState, start: number, end: number, today: s
   };
 }
 
-export function markSurah(state: HifzState, surah: number, today: string, now: number): HifzState {
-  return markRange(state, ayahIndexOf(surah, 1), ayahIndexOf(surah, ayahCount(surah)), today, now);
+export function markSurah(state: HifzState, surah: number, today: string, now: number, as: HifzMarkAs = 'learning'): HifzState {
+  return markRange(state, ayahIndexOf(surah, 1), ayahIndexOf(surah, ayahCount(surah)), today, now, as);
 }
 
 /** "Memorised up to here": from the surah's first ayah (or the held stretch before it) to this ayah. */
@@ -303,6 +367,19 @@ export function unmarkFrom(state: HifzState, surah: number, ayah: number, now: n
   const p = portionAt(state, surah, ayah);
   if (!p) return state;
   return unmarkRange(state, ayahIndexOf(surah, ayah), p.end, now);
+}
+
+/**
+ * Undo a removal: the portion back as it was — its schedule and its
+ * recitations — stamped now, so it outranks its own tombstone in a merge
+ * (`removedAfter` keeps a portion edited after its removal). If something
+ * has been marked over it since, the two join as any marking does.
+ */
+export function restorePortion(state: HifzState, p: HifzPortion, today: string, now: number): HifzState {
+  if (state.portions.some(q => q.start <= p.end && q.end >= p.start)) {
+    return markRange(state, p.start, p.end, today, now);
+  }
+  return { ...state, portions: [...state.portions, { ...p, updatedAt: now }].sort((a, b) => a.start - b.start) };
 }
 
 export function removePortion(state: HifzState, id: string, now: number): HifzState {

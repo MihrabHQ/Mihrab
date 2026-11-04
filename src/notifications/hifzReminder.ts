@@ -17,7 +17,7 @@ import i18n from '../i18n';
 import { ROUTE_HIFZ } from './notificationRoute';
 import { getQuranState, hydrateQuranState } from '../quran/quranState';
 import type { QuranState } from '../quran/quranTypes';
-import { dayOf, recitedToday, todaysRevision } from '../quran/hifz';
+import { budgetOf, dayOf, todaysRevision } from '../quran/hifz';
 
 const HIFZ_REM_ID_PREFIX = 'hifz-rem-';
 const HIFZ_CHANNEL_ID = 'prayer_app_hifz_reminder';
@@ -35,15 +35,16 @@ export async function cancelAllHifzReminders(): Promise<void> {
   }
 }
 
-/** Portions due on the day `at` falls in and not yet recited that day. */
+/**
+ * What the day at `at` will ask for: today, what is left of today's
+ * revision (`todaysRevision`, which counts what has been recited); a later
+ * day, as many as are due by then, up to the day's budget.
+ */
 export function hifzReminderDue(state: QuranState, at: number): number {
   if (!state.hifz || state.hifz.portions.length === 0) return 0;
   const day = dayOf(at);
-  const due = todaysRevision(state.hifz, day).due.length;
-  // Today: what has been recited already is not due. Later days have no
-  // recitations yet.
-  const done = day === dayOf(Date.now()) ? recitedToday(state.hifz, day).length : 0;
-  return Math.max(0, due - done);
+  if (day === dayOf(Date.now())) return todaysRevision(state.hifz, day).shown.length;
+  return Math.min(budgetOf(state.hifz), todaysRevision(state.hifz, day).due.length);
 }
 
 export async function rescheduleHifzReminder(opts: {

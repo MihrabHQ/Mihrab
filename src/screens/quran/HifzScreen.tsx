@@ -14,7 +14,7 @@
  * ("Memorised up to here" in the ayah sheet); the grid is whole surahs
  * only, because a grid of 6,236 ayahs is not a thing to tap.
  */
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -41,16 +41,19 @@ import {
   portionSpan,
   recitedToday,
   removePortion,
+  restorePortion,
   setBudget,
   setCap,
+  hifzInk,
   surahMemorised,
+  surahShare,
   todaysRevision,
   unmarkRange,
   unmarkSurah,
   type HifzPortion,
 } from '../../quran/hifz';
 import { ayahCount, ayahIndexOf } from '../../quran/ayahIndex';
-import { hifzDueLabel, hifzPortionName } from '../../quran/hifzLabels';
+import { hifzDueLabel, hifzPortionName, hifzStockLine, hifzSurahName } from '../../quran/hifzLabels';
 import { juzCoverage } from '../../quran/hifzProgress';
 import { TOTAL_AYAHS } from '../../quran/ayahIndex';
 import { findPageForAyah } from '../../quran/pages';
@@ -64,6 +67,19 @@ import { RADIUS, SPACING } from '../../theme/tokens';
 import { recite, reviewPortion, useHifzGradeChoices } from './HifzEntry';
 
 const BUDGETS = [1, 2, 3, 5, 10] as const;
+
+/** The 114 surahs, four to a row. */
+const SURAH_ROWS = Array.from({ length: Math.ceil(SURAHS.length / 4) }, (_, i) => SURAHS.slice(i * 4, i * 4 + 4));
+
+/** A card's own heading: the section label without the rule and air a section head brings. */
+function CardHead({ label }: { label: string }) {
+  const { palette } = useAppPalette();
+  return (
+    <Text accessibilityRole="header" style={[styles.cardHead, { color: palette.muted }]} numberOfLines={1}>
+      {label}
+    </Text>
+  );
+}
 
 /** The surahs that make up a juz' from its first surah on — only the two whole-surah juz' are offered. */
 const JUZ_SURAHS: Record<number, [number, number]> = { 30: [78, 114], 29: [67, 77] };
@@ -101,11 +117,31 @@ export function HifzScreen() {
   const gradeChoices = useHifzGradeChoices(grade => {
     if (grading) recite(grading.id, grade);
     setGrading(null);
-  });
+  }, grading);
+  const ink = hifzInk(Boolean(palette.isDark));
+  /**
+   * The portion just removed, for a few seconds: Remove is one tap and a
+   * portion carries weeks of schedule, so the tap can be taken back.
+   */
+  const [undo, setUndo] = useState<HifzPortion | null>(null);
+  const undoTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const offerUndo = (p: HifzPortion) => {
+    if (undoTimer.current) clearTimeout(undoTimer.current);
+    setUndo(p);
+    undoTimer.current = setTimeout(() => setUndo(null), 6000);
+  };
+  useEffect(
+    () => () => {
+      if (undoTimer.current) clearTimeout(undoTimer.current);
+    },
+    [],
+  );
+  /** The stock, next due first; all of it only on request — Juz' 30 alone is 37 rows. */
+  const [allShown, setAllShown] = useState(false);
 
   const toggleSurah = (n: number) => {
     const now = Date.now();
-    updateHifz(prev => (surahMemorised(prev, n) ? unmarkSurah(prev, n, now) : markSurah(prev, n, dayOf(now), now)));
+    updateHifz(prev => (surahMemorised(prev, n) ? unmarkSurah(prev, n, now) : markSurah(prev, n, dayOf(now), now, 'known')));
   };
   const toggleJuz = (juz: number) => {
     const [from, to] = JUZ_SURAHS[juz];
@@ -113,7 +149,7 @@ export function HifzScreen() {
     const every = all.every(n => known.has(n));
     const now = Date.now();
     updateHifz(prev =>
-      all.reduce((s, n) => (every ? unmarkSurah(s, n, now) : surahMemorised(s, n) ? s : markSurah(s, n, dayOf(now), now)), prev),
+      all.reduce((s, n) => (every ? unmarkSurah(s, n, now) : surahMemorised(s, n) ? s : markSurah(s, n, dayOf(now), now, 'known')), prev),
     );
   };
   const openPart = (n: number) => {
@@ -138,7 +174,7 @@ export function HifzScreen() {
       let next = prev;
       if (from > 1) next = unmarkRange(next, ayahIndexOf(n, 1), ayahIndexOf(n, from - 1), now);
       if (to < max) next = unmarkRange(next, ayahIndexOf(n, to + 1), ayahIndexOf(n, max), now);
-      return markRange(next, ayahIndexOf(n, from), ayahIndexOf(n, to), dayOf(now), now);
+      return markRange(next, ayahIndexOf(n, from), ayahIndexOf(n, to), dayOf(now), now, 'known');
     });
     setPart(null);
   };
@@ -156,9 +192,12 @@ export function HifzScreen() {
     on ? { backgroundColor: HIFZ_COLOR, borderColor: HIFZ_COLOR } : { borderColor: palette.border },
   ];
   const chipText = (on: boolean) => [styles.chipText, { color: on ? '#fff' : palette.text }];
-  const sorted = [...hifz.portions].sort((a, b) => a.start - b.start);
+  const byDue = [...hifz.portions].sort((a, b) => a.due.localeCompare(b.due) || a.start - b.start);
+  const STOCK_ROWS = 5;
+  const listed = allShown ? byDue : byDue.slice(0, STOCK_ROWS);
 
   return (
+    <View style={[styles.root, { backgroundColor: palette.bg }]}>
     <ScrollView
       style={{ backgroundColor: palette.bg }}
       contentInsetAdjustmentBehavior="automatic"
@@ -171,14 +210,14 @@ export function HifzScreen() {
         <Text style={[styles.intro, { color: palette.text }]}>
           {t(
             'hifz.empty',
-            'Mark the surahs you know by heart, and Mihrab will say when to recite each one again — every day at first, then every few days, and never less than once a month.',
+            'Mark what you know by heart. Mihrab spreads it over the days so that each surah comes round at least once a month. What you are memorising now — marked from the reader, or after a drill — comes round every day at first, then less often as it holds.',
           )}
         </Text>
       ) : null}
 
       {hifz.portions.length > 0 ? (
         <View style={[styles.card, { backgroundColor: palette.card, ...cardEdgeStyle(palette) }]}>
-          <SectionHead label={t('hifz.today', 'Revise today')} tight />
+          <CardHead label={t('hifz.today', 'Revise today')} />
           {shown.length === 0 ? (
             <Text style={[styles.note, { color: palette.muted }]}>
               {done > 0 ? t('hifz.allDone', "Today's revision done") : t('hifz.nothingDue', 'Nothing to revise today')}
@@ -207,8 +246,8 @@ export function HifzScreen() {
                     hitSlop={8}
                     onPress={() => recite(p.id, 'fine')}
                     onLongPress={() => setGrading(p)}
-                    style={({ pressed }) => [styles.tick, { borderColor: HIFZ_COLOR }, pressed && styles.pressed]}>
-                    <CheckIcon color={HIFZ_COLOR} size={18} />
+                    style={({ pressed }) => [styles.tick, { borderColor: ink }, pressed && styles.pressed]}>
+                    <CheckIcon color={ink} size={18} />
                   </Pressable>
                 </View>
               );
@@ -224,15 +263,11 @@ export function HifzScreen() {
 
       {hifz.portions.length > 0 ? (
         <View style={[styles.card, { backgroundColor: palette.card, ...cardEdgeStyle(palette) }]}>
-          <SectionHead label={t('hifz.known', 'By heart')} tight />
+          <CardHead label={t('hifz.known', 'By heart')} />
           <Text style={[styles.note, { color: palette.muted }]}>
-            {t('hifz.stock', {
-              defaultValue: '{{surahs}} surahs · {{ayahs}} ayahs by heart',
-              surahs: stock.surahs,
-              ayahs: stock.ayahs,
-            })}
+            {hifzStockLine(stock, t)}
           </Text>
-          {sorted.map(p => {
+          {listed.map(p => {
             const name = hifzPortionName(p, t);
             return (
               <View key={p.id} style={styles.portion}>
@@ -256,19 +291,34 @@ export function HifzScreen() {
                   accessibilityRole="button"
                   accessibilityLabel={`${t('hifz.remove', 'Remove')} — ${name}`}
                   hitSlop={8}
-                  onPress={() => updateHifz(prev => removePortion(prev, p.id, Date.now()))}
+                  onPress={() => {
+                    updateHifz(prev => removePortion(prev, p.id, Date.now()));
+                    offerUndo(p);
+                  }}
                   style={({ pressed }) => [styles.remove, pressed && styles.pressed]}>
                   <Text style={[styles.removeText, { color: palette.danger }]}>{t('hifz.remove', 'Remove')}</Text>
                 </Pressable>
               </View>
             );
           })}
+          {byDue.length > STOCK_ROWS ? (
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => setAllShown(v => !v)}
+              style={({ pressed }) => [styles.showAll, pressed && styles.pressed]}>
+              <Text style={[styles.showAllText, { color: ink }]}>
+                {allShown
+                  ? t('hifz.showFewer', 'Show fewer')
+                  : t('hifz.showAll', { defaultValue: 'Show all {{count}}', count: byDue.length })}
+              </Text>
+            </Pressable>
+          ) : null}
         </View>
       ) : null}
 
       {hifz.portions.length > 0 ? (
         <View style={[styles.card, { backgroundColor: palette.card, ...cardEdgeStyle(palette) }]}>
-          <SectionHead label={t('hifz.progress', 'Progress')} tight />
+          <CardHead label={t('hifz.progress', 'Progress')} />
           <Text style={[styles.note, { color: palette.muted }]}>
             {t('hifz.progressLine', {
               defaultValue: '{{ayahs}} of {{total}} ayahs · {{percent}}% of the Qur’an · {{juz}} of 30 juz’ complete',
@@ -279,7 +329,9 @@ export function HifzScreen() {
             })}
           </Text>
           <View style={styles.juzGrid} accessibilityLabel={t('hifz.progress', 'Progress')}>
-            {coverage.map(c => {
+            {[0, 10, 20].map(row => (
+              <View key={row} style={styles.juzRow}>
+            {coverage.slice(row, row + 10).map(c => {
               const share = c.total > 0 ? c.memorised / c.total : 0;
               return (
                 <View
@@ -296,15 +348,15 @@ export function HifzScreen() {
                 </View>
               );
             })}
+              </View>
+            ))}
           </View>
         </View>
       ) : null}
 
       <View style={[styles.card, { backgroundColor: palette.card, ...cardEdgeStyle(palette) }]}>
-        <SectionHead
-          label={hifz.portions.length === 0 ? t('hifz.whichSurahs', 'Which surahs do you know by heart?') : t('hifz.add', 'Add what you know')}
-          tight
-        />
+        <CardHead
+          label={hifz.portions.length === 0 ? t('hifz.whichSurahs', 'Which surahs do you know by heart?') : t('hifz.add', 'Add what you know')} />
         <Text style={[styles.note, { color: palette.muted }]}>
           {t(
             'hifz.addHint',
@@ -329,15 +381,18 @@ export function HifzScreen() {
           })}
         </View>
         <View style={styles.grid}>
-          {SURAHS.map(s => {
+          {SURAH_ROWS.map(row => (
+            <View key={row[0].number} style={styles.gridRow}>
+          {row.map(s => {
             const on = known.has(s.number);
             const partly = !on && partlyKnown.has(s.number);
+            const share = partly ? surahShare(hifz, s.number) : 0;
             return (
               <Pressable
                 key={s.number}
                 accessibilityRole="button"
                 accessibilityState={{ selected: on }}
-                accessibilityLabel={`${s.number} ${s.romanized}`}
+                accessibilityLabel={`${s.number} ${hifzSurahName(s.number)}`}
                 accessibilityHint={t('hifz.partHint', 'Hold to mark part of it')}
                 onPress={() => toggleSurah(s.number)}
                 onLongPress={() => openPart(s.number)}
@@ -346,22 +401,37 @@ export function HifzScreen() {
                   on
                     ? { backgroundColor: HIFZ_COLOR, borderColor: HIFZ_COLOR }
                     : partly
-                      ? { backgroundColor: `${HIFZ_COLOR}33`, borderColor: HIFZ_COLOR }
+                      ? { borderColor: ink }
                       : { borderColor: palette.border },
                   pressed && styles.pressed,
                 ]}>
+                {/* Part of it held: filled from the bottom by the share, as the juz' cells are. */}
+                {partly ? (
+                  <View
+                    style={[
+                      styles.cellFill,
+                      { backgroundColor: `${HIFZ_COLOR}66`, height: `${Math.max(8, Math.round(share * 100))}%` },
+                    ]}
+                  />
+                ) : null}
                 <Text style={[styles.cellNumber, on ? styles.onCell : { color: palette.muted }]}>{s.number}</Text>
                 <Text style={[styles.cellName, on ? styles.onCell : { color: palette.text }]} numberOfLines={1}>
-                  {s.romanized}
+                  {hifzSurahName(s.number)}
                 </Text>
               </Pressable>
             );
           })}
+              {/* The last row is short (114 is not a multiple of four): spacers keep its cells the width of the rest. */}
+              {Array.from({ length: 4 - row.length }, (_, k) => (
+                <View key={`gap${k}`} style={styles.cellGap} />
+              ))}
+            </View>
+          ))}
         </View>
       </View>
 
       <View style={[styles.card, { backgroundColor: palette.card, ...cardEdgeStyle(palette) }]}>
-        <SectionHead label={t('hifz.capTitle', 'Recite everything at least every')} tight />
+        <CardHead label={t('hifz.capTitle', 'Recite everything at least every')} />
         <View style={styles.chips}>
           {HIFZ_CAPS.map(c => (
             <Pressable
@@ -411,7 +481,7 @@ export function HifzScreen() {
             <Text style={[styles.menuTitle, { color: palette.text }]}>
               {t('hifz.partTitle', {
                 defaultValue: '{{surah}} — the part by heart',
-                surah: SURAHS[part.surah - 1]?.romanized ?? part.surah,
+                surah: hifzSurahName(part.surah),
               })}
             </Text>
             <Text style={[styles.note, { color: palette.muted }]}>
@@ -461,7 +531,7 @@ export function HifzScreen() {
                 accessibilityLabel={t('hifz.sheetMark', 'Mark')}
                 onPress={markPart}
                 style={styles.menuButton}>
-                <Text style={[styles.menuMark, { color: HIFZ_COLOR }]}>{t('hifz.sheetMark', 'Mark')}</Text>
+                <Text style={[styles.menuMark, { color: ink }]}>{t('hifz.sheetMark', 'Mark')}</Text>
               </Pressable>
             </View>
           </View>
@@ -475,10 +545,50 @@ export function HifzScreen() {
         choices={gradeChoices}
       />
     </ScrollView>
+    {undo ? (
+      <View
+        style={[
+          styles.undoBar,
+          { backgroundColor: palette.card, bottom: tabBarInset + SPACING.md, ...cardEdgeStyle(palette) },
+        ]}>
+        <Text style={[styles.undoText, { color: palette.text }]} numberOfLines={1}>
+          {t('hifz.removed', { defaultValue: 'Removed {{name}}', name: hifzPortionName(undo, t) })}
+        </Text>
+        <Pressable
+          accessibilityRole="button"
+          hitSlop={8}
+          onPress={() => {
+            const now = Date.now();
+            const p = undo;
+            updateHifz(prev => restorePortion(prev, p, dayOf(now), now));
+            setUndo(null);
+          }}
+          style={({ pressed }) => [styles.undoButton, pressed && styles.pressed]}>
+          <Text style={[styles.undoAction, { color: ink }]}>{t('hifz.undo', 'Undo')}</Text>
+        </Pressable>
+      </View>
+    ) : null}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  root: { flex: 1 },
+  undoBar: {
+    position: 'absolute',
+    start: SPACING.lg,
+    end: SPACING.lg,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.md,
+    borderRadius: RADIUS.md,
+    paddingStart: SPACING.lg,
+    paddingEnd: SPACING.sm,
+    paddingVertical: SPACING.sm,
+  },
+  undoText: { flex: 1, minWidth: 0, fontSize: TYPE.callout.fontSize },
+  undoButton: { paddingHorizontal: SPACING.md, paddingVertical: SPACING.sm },
+  undoAction: { fontSize: TYPE.callout.fontSize, fontWeight: '600' },
   content: { padding: SPACING.lg, gap: SPACING.md },
   contentWide: { maxWidth: 640, alignSelf: 'center', width: '100%' },
   intro: { fontSize: TYPE.body.fontSize, lineHeight: 22 },
@@ -493,11 +603,17 @@ const styles = StyleSheet.create({
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.sm },
   chip: { paddingHorizontal: SPACING.md, paddingVertical: SPACING.sm, borderRadius: RADIUS.lg, borderWidth: 1 },
   chipText: { fontSize: TYPE.footnote.fontSize, fontWeight: '500' },
-  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.xs },
-  cell: { width: '23%', flexGrow: 1, borderWidth: 1, borderRadius: RADIUS.sm, paddingVertical: SPACING.xs, paddingHorizontal: SPACING.xs },
+  grid: { gap: SPACING.xs },
+  gridRow: { flexDirection: 'row', gap: SPACING.xs },
+  cellGap: { flex: 1 },
+  cell: { flex: 1, minWidth: 0, borderWidth: 1, borderRadius: RADIUS.sm, paddingVertical: SPACING.xs, paddingHorizontal: SPACING.xs, overflow: 'hidden' },
   cellNumber: { fontSize: TYPE.caption.fontSize, fontVariant: ['tabular-nums'] },
   cellName: { fontSize: TYPE.caption.fontSize, fontWeight: '500' },
   onCell: { color: '#fff' },
+  cardHead: { fontSize: TYPE.label.fontSize, fontWeight: '400' },
+  showAll: { paddingVertical: SPACING.sm, alignItems: 'center' },
+  showAllText: { fontSize: TYPE.footnote.fontSize, fontWeight: '600' },
+  cellFill: { position: 'absolute', left: 0, right: 0, bottom: 0 },
   menuBackdrop: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
   menuCard: {
     position: 'absolute',
@@ -520,14 +636,17 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.sm,
     fontSize: TYPE.title3.fontSize,
     fontVariant: ['tabular-nums'],
+    // An ayah number, in either direction: centred rather than at an edge
+    // that is left on iOS whatever the layout and right on Android in RTL.
+    textAlign: 'center',
   },
   menuRow: { flexDirection: 'row', justifyContent: 'flex-end', gap: SPACING.lg },
   menuButton: { alignItems: 'center', paddingVertical: SPACING.sm },
   menuMark: { fontWeight: '600' },
-  juzGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.xs },
+  juzGrid: { gap: SPACING.xs },
+  juzRow: { flexDirection: 'row', gap: SPACING.xs },
   juzCell: {
-    width: '9%',
-    flexGrow: 1,
+    flex: 1,
     aspectRatio: 1,
     borderWidth: 1,
     borderRadius: RADIUS.xs,

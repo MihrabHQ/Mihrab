@@ -49,9 +49,9 @@ import type {
   QuranBookmark,
 } from '../quranTypes';
 import { activeKhatmah } from '../khatmahProgress';
-import { dayOf, HIFZ_COLOR, markRange, markSurah, markUpTo, portionAt, unmarkFrom } from '../hifz';
+import { dayOf, HIFZ_COLOR, hifzInk, markRange, markSurah, markUpTo, portionAt, unmarkFrom } from '../hifz';
 import { clearDrillOffer, useLastDrill } from '../hifzDrill';
-import { hifzDueLabel } from '../hifzLabels';
+import { hifzDueLabel, hifzPortionName, hifzSurahName } from '../hifzLabels';
 import { ayahCount, ayahIndexOf } from '../ayahIndex';
 import { khatmahPageInWindow } from '../khatmahSchedule';
 import { clearKhatmahPosition, setKhatmahPosition } from '../khatmahActions';
@@ -101,6 +101,7 @@ import { TajweedAyahGlyphs } from '../tajweed/TajweedAyahGlyphs';
 const AYAH_GLYPH_SIZE = 30;
 import {
   CloseIcon,
+  HifzIcon,
   QuranBookIcon,
   ShareIcon,
   StarIcon,
@@ -160,13 +161,20 @@ function PinFace({
   active,
   label,
   action,
+  icon = 'book',
+  ink,
 }: {
   color: string;
   textColor: ColorValue;
   active: boolean;
   label: string;
   action: string;
+  /** The trail's mark: the book for the reading and khatmah pins, the heart-over-book for hifz. */
+  icon?: 'book' | 'hifz';
+  /** The colour for the outlined action once set, where `color` is too dark to read on the page. */
+  ink?: string;
 }) {
+  const Icon = icon === 'hifz' ? HifzIcon : QuranBookIcon;
   return (
     <>
       <View
@@ -175,19 +183,19 @@ function PinFace({
           { backgroundColor: active ? color : `${color}33` },
         ]}
       >
-        <QuranBookIcon color={active ? '#fff' : color} size={15} />
+        <Icon color={active ? '#fff' : color} size={15} />
       </View>
       <Text style={[styles.pinLabel, { color: textColor }]}>{label}</Text>
       <View
         style={[
           styles.pinAction,
           active
-            ? { borderWidth: 1, borderColor: color }
+            ? { borderWidth: 1, borderColor: ink ?? color }
             : { backgroundColor: color },
         ]}
       >
         <Text
-          style={[styles.pinActionText, { color: active ? color : '#fff' }]}
+          style={[styles.pinActionText, { color: active ? (ink ?? color) : '#fff' }]}
         >
           {action}
         </Text>
@@ -480,13 +488,19 @@ export function AyahActionSheet({
   // Hifz (#121): the portion this ayah sits in, if it is known by heart.
   const hifzToday = dayOf(Date.now());
   const hifzHere = state.hifz ? portionAt(state.hifz, surah, ayah) : undefined;
+  const hifzHereLabel = hifzHere
+    ? t('hifz.sheetKnown', {
+        defaultValue: 'By heart · {{when}}',
+        when: `${hifzPortionName(hifzHere, t)} · ${hifzDueLabel(hifzHere, hifzToday, t)}`,
+      })
+    : '';
   const drill = useLastDrill();
   const drillLabel = drill
     ? t('hifz.drilled', {
         defaultValue: 'Drilled {{range}} — memorised',
         range: t('hifz.range', {
           defaultValue: '{{surah}} {{from}}–{{to}}',
-          surah: findSurah(drill.surah)?.romanized ?? String(drill.surah),
+          surah: hifzSurahName(drill.surah),
           from: drill.from,
           to: drill.to,
         }),
@@ -1421,10 +1435,7 @@ export function AyahActionSheet({
             <Pressable
               accessibilityRole="button"
               accessibilityState={{ selected: true }}
-              accessibilityLabel={t('hifz.sheetKnown', {
-                defaultValue: 'By heart · {{when}}',
-                when: hifzDueLabel(hifzHere, hifzToday, t),
-              })}
+              accessibilityLabel={hifzHereLabel}
               accessibilityHint={t(
                 'hifz.sheetNotKnownHint',
                 'Takes this ayah and the rest of the portion out of what is by heart; what comes before it stays.',
@@ -1438,12 +1449,11 @@ export function AyahActionSheet({
             >
               <PinFace
                 color={HIFZ_COLOR}
+                ink={hifzInk(Boolean(palette.isDark))}
+                icon="hifz"
                 textColor={palette.text}
                 active
-                label={t('hifz.sheetKnown', {
-                  defaultValue: 'By heart · {{when}}',
-                  when: hifzDueLabel(hifzHere, hifzToday, t),
-                })}
+                label={hifzHereLabel}
                 action={t('hifz.sheetNotKnown', 'Not by heart')}
               />
             </Pressable>
@@ -1476,6 +1486,7 @@ export function AyahActionSheet({
                 >
                   <PinFace
                     color={HIFZ_COLOR}
+                    icon="hifz"
                     textColor={palette.text}
                     active={false}
                     label={drillLabel}
@@ -1488,7 +1499,7 @@ export function AyahActionSheet({
                 accessibilityLabel={t('hifz.sheetSurah', 'I know this surah by heart')}
                 onPress={() => {
                   const now = Date.now();
-                  updateHifz(prev => markSurah(prev, surah, dayOf(now), now));
+                  updateHifz(prev => markSurah(prev, surah, dayOf(now), now, 'known'));
                 }}
                 style={({ pressed }) => [
                   styles.pinButton,
@@ -1498,6 +1509,7 @@ export function AyahActionSheet({
               >
                 <PinFace
                   color={HIFZ_COLOR}
+                  icon="hifz"
                   textColor={palette.text}
                   active={false}
                   label={t('hifz.sheetSurah', 'I know this surah by heart')}
@@ -1520,6 +1532,7 @@ export function AyahActionSheet({
                 >
                   <PinFace
                     color={HIFZ_COLOR}
+                    icon="hifz"
                     textColor={palette.text}
                     active={false}
                     label={t('hifz.sheetUpTo', 'Memorised up to here')}

@@ -535,21 +535,23 @@ export function CheckIcon({ size = 24, color }: { size?: number; color?: ColorVa
 }
 
 /**
- * Hifz — a heart over an open book: what is kept by heart. Same 24 grid
- * and stroke as the rest.
+ * Hifz — a heart above an open book: what is kept by heart. The heart
+ * stands clear of the pages so it still reads as a heart at 15 px, where
+ * one drawn on the spine ran into it and the whole read as a letter M.
+ * Same 24 grid and stroke as the rest.
  */
 export function HifzIcon({ size = 24, color }: { size?: number; color?: ColorValue }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Path
-        d="M3 19.5V6.5c2.6 0 4.6.5 6 1.6V21c-1.4-1-3.4-1.5-6-1.5ZM21 19.5V6.5c-2.6 0-4.6.5-6 1.6V21c1.4-1 3.4-1.5 6-1.5Z"
-        stroke={color}
-        strokeWidth={2}
-        strokeLinejoin="round"
+        d="M12 9.6C10.2 8.2 8.2 6.9 8.2 5c0-1.2.9-2.1 2-2.1.8 0 1.4.4 1.8 1 .4-.6 1-1 1.8-1 1.1 0 2 .9 2 2.1 0 1.9-2 3.2-3.8 4.6Z"
+        fill={color}
       />
       <Path
-        d="M12 11.3c-.9-1.3-3-1.1-3 .7 0 1.3 1.6 2.4 3 3.6 1.4-1.2 3-2.3 3-3.6 0-1.8-2.1-2-3-.7Z"
-        fill={color}
+        d="M2.5 13c3-.7 6.5-.3 9.5 1.6v6.6c-3-1.9-6.5-2.3-9.5-1.6V13ZM21.5 13c-3-.7-6.5-.3-9.5 1.6v6.6c3-1.9 6.5-2.3 9.5-1.6V13Z"
+        stroke={color}
+        strokeWidth={1.9}
+        strokeLinejoin="round"
       />
     </Svg>
   );

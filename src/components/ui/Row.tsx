@@ -4,6 +4,7 @@ import { useAppPalette } from '../../hooks/useAppPalette';
 import { TYPE, typeStyle } from '../../theme/typography';
 import { ROW_PADDING } from './Group';
 import { SPACING } from '../../theme/tokens';
+import { useLayoutRtl } from '../../i18n/useLayoutRtl';
 
 /**
  * Row — title, optional subtitle, optional trailing, inside a Group or bare
@@ -41,6 +42,7 @@ function RowImpl({
   testID,
 }: Props) {
   const { palette } = useAppPalette();
+  const rtl = useLayoutRtl();
   const titleColor =
     tone === 'accent' ? palette.accent : tone === 'danger' ? palette.danger : palette.text;
   const body = (
@@ -67,7 +69,9 @@ function RowImpl({
       {trailing}
       {onPress && !trailing ? (
         <Text style={[styles.chevron, { color: tone ? titleColor : palette.muted }]}>
-          {tone ? '→' : '›'}
+          {/* '›' is mirrored by Unicode in right-to-left text; '→' is not,
+              so the arrow is chosen by the direction. */}
+          {tone ? (rtl ? '←' : '→') : '›'}
         </Text>
       ) : null}
     </>

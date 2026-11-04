@@ -23,11 +23,13 @@ import type { RootStackParamList } from '../../navigation/types';
 import { ChoiceSheet } from '../../components/ui/ChoiceSheet';
 import { ayahIndexOf } from '../../quran/ayahIndex';
 import { clearDrillOffer, useLastDrill } from '../../quran/hifzDrill';
-import { findSurah } from '../../quran/quran';
 import {
+  capOf,
   dayOf,
   EMPTY_HIFZ,
   HIFZ_COLOR,
+  hifzInk,
+  nextInterval,
   hifzStock,
   markRange,
   portionAt,
@@ -38,20 +40,34 @@ import {
   type HifzGrade,
   type HifzPortion,
 } from '../../quran/hifz';
-import { hifzDueLabel, hifzPortionName } from '../../quran/hifzLabels';
+import { hifzDueLabel, hifzPortionName, hifzStockLine, hifzSurahName } from '../../quran/hifzLabels';
 import { updateHifz, useQuranState } from '../../quran/quranState';
 import { CheckIcon, HifzIcon } from '../../theme/icons';
 import { cardEdgeStyle } from '../../theme/chrome';
 import { RADIUS, SPACING } from '../../theme/tokens';
 import { TYPE } from '../../theme/typography';
 
-/** The three grades as sheet choices; shared with the Hifz page. */
-export function useHifzGradeChoices(onGrade: (grade: HifzGrade) => void) {
+/**
+ * The three grades as sheet choices; shared with the Hifz page and the
+ * review. Each says what it will do to the portion — "Next in 7 days",
+ * "Again tomorrow" — so a grade is a choice about the schedule, not a
+ * mood.
+ */
+export function useHifzGradeChoices(onGrade: (grade: HifzGrade) => void, portion?: HifzPortion | null) {
   const { t } = useTranslation();
+  const hifz = useQuranState().hifz;
+  const cap = capOf(hifz ?? EMPTY_HIFZ);
+  const after = (grade: HifzGrade) => {
+    if (!portion) return undefined;
+    const days = nextInterval(portion.interval, grade, cap);
+    return days <= 1
+      ? t('hifz.nextTomorrow', 'Again tomorrow')
+      : t('hifz.nextIn', { defaultValue: 'Next in {{count}} days', count: days });
+  };
   return [
-    { id: 'fluent', title: t('hifz.gradeFluent', 'Fluent'), onPress: () => onGrade('fluent') },
-    { id: 'fine', title: t('hifz.gradeFine', 'Fine'), onPress: () => onGrade('fine') },
-    { id: 'again', title: t('hifz.gradeAgain', 'Needed help'), onPress: () => onGrade('again') },
+    { id: 'fluent', title: t('hifz.gradeFluent', 'Fluent'), subtitle: after('fluent'), onPress: () => onGrade('fluent') },
+    { id: 'fine', title: t('hifz.gradeFine', 'Fine'), subtitle: after('fine'), onPress: () => onGrade('fine') },
+    { id: 'again', title: t('hifz.gradeAgain', 'Needed help'), subtitle: after('again'), onPress: () => onGrade('again') },
   ];
 }
 
@@ -95,7 +111,7 @@ function DrillOffer() {
   if (!drill || kept) return null;
   const range = t('hifz.range', {
     defaultValue: '{{surah}} {{from}}–{{to}}',
-    surah: findSurah(drill.surah)?.romanized ?? String(drill.surah),
+    surah: hifzSurahName(drill.surah),
     from: drill.from,
     to: drill.to,
   });
@@ -134,11 +150,12 @@ export function HifzEntry() {
   const { palette } = useAppPalette();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const hifz = useQuranState().hifz ?? EMPTY_HIFZ;
+  const ink = hifzInk(Boolean(palette.isDark));
   const [grading, setGrading] = useState<HifzPortion | null>(null);
   const gradeChoices = useHifzGradeChoices(grade => {
     if (grading) recite(grading.id, grade);
     setGrading(null);
-  });
+  }, grading);
 
   if (hifz.portions.length === 0) {
     return (
@@ -166,15 +183,15 @@ export function HifzEntry() {
   }
 
   const today = dayOf(Date.now());
-  const { due, shown, more } = todaysRevision(hifz, today);
+  const { shown, more } = todaysRevision(hifz, today);
   const done = recitedToday(hifz, today).length;
   const stock = hifzStock(hifz);
   const subtitle =
-    due.length === 0
+    shown.length === 0
       ? done > 0
         ? t('hifz.allDone', "Today's revision done")
         : t('hifz.nothingDue', 'Nothing to revise today')
-      : t('hifz.doneOf', { defaultValue: '{{done}} of {{total}} recited', done, total: done + due.length });
+      : t('hifz.doneOf', { defaultValue: '{{done}} of {{total}} recited', done, total: done + shown.length });
 
   return (
     <View style={[styles.card, { backgroundColor: palette.card, ...cardEdgeStyle(palette) }]}>
@@ -220,10 +237,10 @@ export function HifzEntry() {
               onLongPress={() => setGrading(p)}
               style={({ pressed }) => [
                 styles.tick,
-                { borderColor: HIFZ_COLOR },
+                { borderColor: ink },
                 pressed && styles.pressed,
               ]}>
-              <CheckIcon color={HIFZ_COLOR} size={18} />
+              <CheckIcon color={ink} size={18} />
             </Pressable>
           </View>
         );
@@ -232,11 +249,7 @@ export function HifzEntry() {
       <Text style={[styles.foot, { color: palette.muted }]} numberOfLines={1}>
         {more > 0
           ? t('hifz.more', { defaultValue: '{{count}} more tomorrow', count: more })
-          : t('hifz.stock', {
-              defaultValue: '{{surahs}} surahs · {{ayahs}} ayahs by heart',
-              surahs: stock.surahs,
-              ayahs: stock.ayahs,
-            })}
+          : hifzStockLine(stock, t)}
       </Text>
       <ChoiceSheet
         visible={grading !== null}

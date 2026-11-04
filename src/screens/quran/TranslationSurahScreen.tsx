@@ -19,6 +19,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { ChoiceSheet } from '../../components/ui/ChoiceSheet';
 import { HIFZ_COLOR } from '../../quran/hifz';
+import { hifzSurahName } from '../../quran/hifzLabels';
 import { recite, useHifzGradeChoices } from './HifzEntry';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
@@ -90,6 +91,9 @@ type AyahRow = {
   ayah: number; // 1-based
   arabic: string;
 };
+
+/** Room the review bar takes at the foot of the list (#121). */
+const REVIEW_BAR_ROOM = 88;
 
 type Props = {
   surah: SurahIndex;
@@ -202,11 +206,14 @@ export function TranslationSurahScreen({
   const [revealed, setRevealed] = useState<Set<number>>(new Set());
   /** The review's grade sheet, open once the reader says they are done. */
   const [reviewGrading, setReviewGrading] = useState(false);
-  const reviewChoices = useHifzGradeChoices(grade => {
-    if (hifzReview) recite(hifzReview.id, grade);
-    setReviewGrading(false);
-    if (navigation.canGoBack()) navigation.goBack();
-  });
+  const reviewChoices = useHifzGradeChoices(
+    grade => {
+      if (hifzReview) recite(hifzReview.id, grade);
+      setReviewGrading(false);
+      if (navigation.canGoBack()) navigation.goBack();
+    },
+    hifzReview ? quran.hifz?.portions.find(p => p.id === hifzReview.id) : null,
+  );
 
   useEffect(() => {
     // Reset per-surah reveal state when hide mode or surah changes.
@@ -608,10 +615,10 @@ export function TranslationSurahScreen({
   const hideMode = quran.prefs.hideMode;
   const reviewName = hifzReview
     ? hifzReview.from === 1 && hifzReview.to === surah.ayahCount
-      ? surah.romanized
+      ? hifzSurahName(surahNumber)
       : t('hifz.range', {
           defaultValue: '{{surah}} {{from}}–{{to}}',
-          surah: surah.romanized,
+          surah: hifzSurahName(surahNumber),
           from: hifzReview.from,
           to: hifzReview.to,
         })
@@ -725,8 +732,10 @@ export function TranslationSurahScreen({
           </Text>
         </View>
         {maskArabic ? (
-          <Text style={[styles.masked, { color: palette.muted }]}>
-            {t('quran.tapToReveal', 'Tap to reveal')}
+          <Text style={[styles.masked, inReview && styles.maskedUpright, { color: inReview ? palette.text : palette.muted }]}>
+            {inReview
+              ? t('hifz.reviewTapToCheck', 'Recite it, then tap to check')
+              : t('quran.tapToReveal', 'Tap to reveal')}
           </Text>
         ) : (
           <Text
@@ -751,7 +760,7 @@ export function TranslationSurahScreen({
               : arabic}
           </Text>
         )}
-        {companionMode === 'tafsir' ? (
+        {inReview && !isRevealed ? null : companionMode === 'tafsir' ? (
           maskTranslation ? (
             <Text style={[styles.masked, { color: palette.muted }]}>
               {t('quran.tapToReveal', 'Tap to reveal')}
@@ -893,7 +902,9 @@ export function TranslationSurahScreen({
           }
           contentContainerStyle={[
             styles.scroll,
-            { paddingBottom: insets.bottom + 24 },
+            // Under review the bar sits over the foot of the list; the last
+            // ayah of the portion has to be able to scroll clear of it.
+            { paddingBottom: insets.bottom + 24 + (hifzReview ? REVIEW_BAR_ROOM : 0) },
           ]}
           contentInsetAdjustmentBehavior="automatic"
           initialNumToRender={8}
@@ -1176,6 +1187,8 @@ const styles = StyleSheet.create({
     ...arabicTextStyle('quran'),
   },
   ayahTranslation: { fontSize: TYPE.callout.fontSize, lineHeight: 22 },
+  // A prompt rather than a placeholder; and upright, since Arabic has no italic to slant into.
+  maskedUpright: { fontStyle: 'normal' },
   masked: {
     fontSize: TYPE.callout.fontSize,
     fontStyle: 'italic',

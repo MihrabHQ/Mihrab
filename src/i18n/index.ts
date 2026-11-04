@@ -1,3 +1,6 @@
+// First: i18next reads Intl.PluralRules to choose a counted string's form,
+// and Hermes has none — see pluralRules.ts.
+import './pluralRules';
 import i18n, { type BackendModule, type ResourceKey } from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import en from './locales/en.json';
