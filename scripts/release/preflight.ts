@@ -27,6 +27,7 @@ import {
   tapPath,
 } from './common.ts';
 import { Asc } from './asc.ts';
+import { ReleaseStop } from './report.ts';
 import * as xc from './xcodeCloud.ts';
 
 export interface Release {
@@ -130,9 +131,22 @@ export async function catalystToolchain(ctx: Ctx): Promise<void> {
 }
 
 // ── P3 ────────────────────────────────────────────────────────────────
+// Files a build rewrites with nothing of anyone's in them. `pod install`
+// reorders the privacy manifest on every run, and it stopped 2.28.1 and
+// others as a "tracked change"; the committed copy is the right one, so it
+// is put back rather than reported.
+export const BUILD_NOISE = ['ios/PrayerApp/PrivacyInfo.xcprivacy'];
+
 export async function onMainAndClean(ctx: Ctx): Promise<void> {
   const branch = (await git(ctx, ['rev-parse', '--abbrev-ref', 'HEAD'])).stdout.trim();
   if (branch !== 'main') ctx.report.stop('P3', 'not on main');
+  if (!ctx.shadow) {
+    const noisy = (await git(ctx, ['diff', '--name-only', 'HEAD', '--', ...BUILD_NOISE])).stdout.split('\n').filter(Boolean);
+    if (noisy.length) {
+      await git(ctx, ['checkout', 'HEAD', '--', ...noisy]);
+      ctx.report.ok('P3', `put back what a build rewrites: ${noisy.join(', ')}`);
+    }
+  }
   // Untracked files are the author's business; STAGED or MODIFIED tracked
   // files are not, because the release commit would sweep them up.
   const status = (await git(ctx, ['status', '--porcelain', '--untracked-files=no'])).stdout;
@@ -159,7 +173,26 @@ export async function notBehindOrigin(ctx: Ctx): Promise<void> {
   if (reached.code !== 0) ctx.report.stop('P4', 'cannot reach origin');
   const behind = await git(ctx, ['rev-list', 'main..origin/main']);
   if (behind.code === 0 && behind.stdout.trim()) {
-    ctx.report.stop('P4', 'origin/main has commits main does not — pull first');
+    // The commonest stop of all (twelve times): the dataset bots push on
+    // their own schedule. A main that is only BEHIND — nothing of its own
+    // that origin lacks, nothing uncommitted — is fast-forwarded here;
+    // anything else is still the person's to sort out.
+    const ahead = (await git(ctx, ['rev-list', 'origin/main..main'])).stdout.trim();
+    const dirty = (await git(ctx, ['status', '--porcelain', '--untracked-files=no'])).stdout.trim();
+    const branch = (await git(ctx, ['rev-parse', '--abbrev-ref', 'HEAD'])).stdout.trim();
+    if (ctx.shadow || ahead || dirty || branch !== 'main') {
+      ctx.report.stop('P4', 'origin/main has commits main does not — pull first');
+    }
+    const n = behind.stdout.trim().split('\n').length;
+    const moved = (await git(ctx, ['diff', '--name-only', 'main', 'origin/main', '--', GRADLE])).stdout.trim();
+    if ((await shown(ctx, git(ctx, ['merge', '--ff-only', '-q', 'origin/main']))).code !== 0) {
+      ctx.report.stop('P4', 'origin/main has commits main does not, and fast-forwarding failed — pull first');
+    }
+    // The version was read from the old main; if origin moved it, this run
+    // is working from a stale number.
+    if (moved) ctx.report.stop('P4', `main was brought up to date and ${GRADLE} changed with it — run the release again`);
+    ctx.report.ok('P4', `main brought up to date with origin (${n} commit${n === 1 ? '' : 's'})`);
+    return;
   }
   ctx.report.ok('P4', 'main is not behind origin');
 }
@@ -271,13 +304,14 @@ export function caskGate(ctx: Ctx, rel: Release): void {
   ctx.report.ok('P8', 'cask re-registers the widget extension');
 }
 
-// ── P9 — THE LAST RELEASE'S LESSON MUST BE WRITTEN ────────────────────
+// ── P9 — THE LAST RELEASE'S LESSON ─────────────────────────────────────
 //
-// The self-improvement step, and a gate rather than a reminder because
-// reminders about process are the first thing a hurried release skips. A
-// release that changed the cycle, or had to be restarted, leaves a
-// `**Lesson:**` line unfilled, and the NEXT release will not start until
-// it says something. ANCHORED: the journal quotes the marker in its own
+// A release that changed the cycle, or had to be restarted, leaves a
+// `**Lesson:**` line unfilled. This was a gate — the next release would not
+// start until it said something — and it stopped eight releases, every one
+// of them a release that had done nothing wrong (2.21.1's own lesson: "it
+// bills the wrong release"). The journal and the attempts log keep the
+// evidence either way, so it is a reminder now. ANCHORED: the journal quotes the marker in its own
 // header, so a substring test matched the documentation and would have
 // blocked every release for ever. Only a whole line counts.
 export const UNFILLED = '**Lesson:** _(unfilled)_';
@@ -300,12 +334,8 @@ export function lessonGate(ctx: Ctx): void {
   if (ctx.io.fs.isFile(file)) {
     const entry = unfilledLesson(ctx.io.fs.readText(file));
     if (entry) {
-      ctx.report.say('');
-      for (const l of entry) ctx.report.say(`    ${l}`);
-      ctx.report.stop(
-        'P9',
-        "the last release left its lesson unwritten — fill in that '**Lesson:**' line in docs/release-log.md, commit it, and rerun",
-      );
+      ctx.report.warn('P9', "the last release's lesson is unwritten — fill in its '**Lesson:**' line in docs/release-log.md when you can");
+      return;
     }
   }
   ctx.report.ok('P9', "the last release's lesson is written down");
@@ -415,23 +445,63 @@ export async function cycleTouched(
   return r.code === 0 ? r.stdout.trim() : '';
 }
 
-/** The whole of phase 1, in the shell's order. Returns the cycle files. */
+/**
+ * Every stop the checks below found, together. Most aborted releases were
+ * preparation — notes not written, a dirty tree, origin ahead, CI red — and
+ * each was found one run at a time: 2.34.0 took four runs to learn four
+ * things one run could have listed.
+ */
+export class PrepStop extends ReleaseStop {
+  readonly reasons: string[];
+  constructor(reasons: string[]) {
+    super('prep', reasons.length === 1 ? reasons[0] : `${reasons.length} things to fix before releasing: ${reasons.join('; ')}`);
+    this.reasons = reasons;
+  }
+}
+
+/** Run each check; collect their stops rather than ending at the first. */
+export async function gathered(ctx: Ctx, checks: Array<() => unknown>): Promise<void> {
+  const reasons: string[] = [];
+  for (const check of checks) {
+    try {
+      await check();
+    } catch (e) {
+      if (!(e instanceof ReleaseStop)) throw e;
+      reasons.push(...(e instanceof PrepStop ? e.reasons : [e.message]));
+    }
+  }
+  if (!reasons.length) return;
+  if (reasons.length > 1) {
+    ctx.report.say('');
+    ctx.report.bold(`  ${reasons.length} things to fix, all of them before anything is built:`);
+    for (const r of reasons) ctx.report.say(`    • ${r}`);
+  }
+  throw new PrepStop(reasons);
+}
+
+/**
+ * The whole of phase 1. Returns the cycle files. The quick checks run
+ * first and all of them run; the minutes of jest and tsc come last, and
+ * only once everything quick has passed.
+ */
 export async function preflight(ctx: Ctx, rel: Release): Promise<string> {
   ctx.report.bold(`Releasing ${rel.oldVersion} (${rel.oldCode}) → ${rel.version} (${rel.code})`);
   ctx.report.step('Preflight');
   await toolsPresent(ctx);
   await catalystToolchain(ctx);
-  await onMainAndClean(ctx);
-  await notBehindOrigin(ctx);
-  await tagFree(ctx, rel);
-  versionMoves(ctx, rel);
-  playNotes(ctx, rel);
-  appNotes(ctx, rel);
-  caskGate(ctx, rel);
-  lessonGate(ctx);
-  await ciOnMain(ctx);
+  await gathered(ctx, [
+    () => onMainAndClean(ctx),
+    () => notBehindOrigin(ctx),
+    () => tagFree(ctx, rel),
+    () => versionMoves(ctx, rel),
+    () => playNotes(ctx, rel),
+    () => appNotes(ctx, rel),
+    () => caskGate(ctx, rel),
+    () => lessonGate(ctx),
+    () => ciOnMain(ctx),
+    () => xcodeCloudIdle(ctx),
+  ]);
   await tests(ctx);
-  await xcodeCloudIdle(ctx);
 
   ctx.report.step('What this ships');
   await showUnreleased(ctx);
@@ -440,8 +510,7 @@ export async function preflight(ctx: Ctx, rel: Release): Promise<string> {
     ctx.report.say('');
     ctx.report.bold('  This release CHANGES THE RELEASE CYCLE:');
     for (const f of touched.split('\n')) ctx.report.say(`    ${f}`);
-    ctx.report.say('    → its journal entry will ask what that changed, and the next');
-    ctx.report.say('      release will not start until you have answered.');
+    ctx.report.say('    → its journal entry will ask what that changed.');
   }
   return touched;
 }

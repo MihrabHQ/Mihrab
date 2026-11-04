@@ -2,9 +2,10 @@
  * The whole cut (scripts/release/release.ts): the order of the phases, the
  * exit status, and the attempts log — with each phase replaced by a stub,
  * since every phase has its own suite. What is held here is what only the
- * cut decides: a dry run stops before publishing, a stop AND a crash are
- * both written down, a failed verification is a stop, and a release whose
- * own commit fails CI exits 1.
+ * cut decides: a dry run stops before publishing and undoes its stamps, a
+ * stop AND a crash are both written down, a failed verification lets the
+ * published release finish and exits 1, and a release whose own commit
+ * fails CI exits 1.
  */
 import type { Ctx } from '../scripts/release/common.ts';
 import { release } from '../scripts/release/release.ts';
@@ -64,7 +65,7 @@ describe('the cut', () => {
   });
 
   it('a dry run builds, cleans up, and publishes nothing', async () => {
-    const w = world();
+    const w = world().on('git checkout --', {});
     expect(await release(w.io(), ROOT, HOME, ['2.28.0', '--dry-run'])).toBe(0);
     expect(build).toHaveBeenCalledTimes(1);
     expect(cleanup).toHaveBeenCalledTimes(1);
@@ -73,6 +74,11 @@ describe('the cut', () => {
     const out = w.out.join('\n');
     expect(out).toContain('Dry run. Everything that can fail has passed.');
     expect(out).toContain('/b/Mihrab-macOS-2.28.0.zip');
+    // It puts its own version bump back: left behind, it stopped the next
+    // real run as a "tracked change" (2.28.1).
+    const undo = w.ran('git checkout --')[0].args;
+    expect(undo).toEqual(expect.arrayContaining(['android/app/build.gradle', 'desktop/package.json', 'docs']));
+    expect(out).toContain('The version bump has been undone');
     // The context the phases were handed is not a dry run: the shell's dry
     // run stops before publishing rather than pretending through it.
     expect((mocked(build).mock.calls[0][0] as Ctx).dryRun).toBe(false);
@@ -97,13 +103,26 @@ describe('the cut', () => {
     expect(publish).not.toHaveBeenCalled();
   });
 
-  it('a failed verification is a stop (V), and nothing after it runs', async () => {
+  it('a failed verification does not cut the published release short: the rest runs, the summary prints, exit 1', async () => {
     mocked(verify).mockResolvedValue(1);
     const w = world();
     expect(await release(w.io(), ROOT, HOME, ['2.28.0'])).toBe(1);
-    expect(w.files.get(ATTEMPTS)).toBe('2026-09-29T12:00:00Z\t2.28.0\tverification failed — see the ✗ lines above\n');
-    expect(installAsUser).not.toHaveBeenCalled();
-    expect(ciOnRelease).not.toHaveBeenCalled();
+    expect(installAsUser).toHaveBeenCalledTimes(1);
+    expect(ciOnRelease).toHaveBeenCalledTimes(1);
+    expect(w.out.join('\n')).toContain('Still yours to do');
+    expect(w.err.join('\n')).toContain('v2.28.0 is published, and its verification failed');
+    // Not an aborted attempt: nothing was stopped.
+    expect(w.files.has(ATTEMPTS)).toBe(false);
+  });
+
+  it('every problem preflight found is its own line in the attempts log', async () => {
+    const { PrepStop } = jest.requireActual('../scripts/release/preflight.ts');
+    mocked(preflight).mockRejectedValue(new PrepStop(['not on main', 'missing in-app release notes: release-notes/en/283.txt']));
+    const w = world();
+    expect(await release(w.io(), ROOT, HOME, ['2.28.0'])).toBe(1);
+    expect(w.files.get(ATTEMPTS)).toBe(
+      '2026-09-29T12:00:00Z\t2.28.0\tnot on main\n2026-09-29T12:00:00Z\t2.28.0\tmissing in-app release notes: release-notes/en/283.txt\n',
+    );
   });
 
   it('a release whose own commit fails CI exits 1 — after the summary, and without a stop', async () => {

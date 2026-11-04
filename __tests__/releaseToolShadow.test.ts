@@ -171,7 +171,9 @@ describe('the preflight shadow', () => {
       const shell = `${SHELL_PREFLIGHT.split('\n').slice(0, at).join('\n')}\ndie\t${words}`;
       const res = await shadowPreflight(shadowCtx(w.io(), ROOT, HOME, 'release'), rel, shell);
       expect(res.comparison.onlyShell).toEqual([]);
-      expect(res.comparison.onlyTs).toEqual([]);
+      // The TypeScript asks Xcode Cloud BEFORE the minutes of tests, the
+      // shell after them — so it has that one answer the shell never got to.
+      expect(res.comparison.onlyTs).toEqual([{ kind: 'ok', text: 'no Xcode Cloud run in flight' }]);
     }
   });
 

@@ -99,6 +99,21 @@ describe('P3 on main, tracked files clean', () => {
     expect(w.out).toContain('     M android/app/build.gradle');
     expect(w.ran('git status --porcelain')[0].args).toContain('--untracked-files=no');
   });
+
+  it('puts back the privacy manifest a pod install reorders, rather than stopping on it', async () => {
+    const w = world()
+      .on('git rev-parse --abbrev-ref HEAD', { stdout: 'main\n' })
+      .on('git diff --name-only HEAD --', { stdout: 'ios/PrayerApp/PrivacyInfo.xcprivacy\n' })
+      .on('git checkout HEAD --', {})
+      .on('git status --porcelain', {});
+    const ctx = w.ctx();
+    await onMainAndClean(ctx);
+    expect(w.ran('git checkout HEAD --')[0].args).toEqual(['checkout', 'HEAD', '--', 'ios/PrayerApp/PrivacyInfo.xcprivacy']);
+    expect(lines(ctx)).toEqual([
+      'ok P3 put back what a build rewrites: ios/PrayerApp/PrivacyInfo.xcprivacy',
+      'ok P3 on main, tracked files clean',
+    ]);
+  });
 });
 
 describe('P4 not behind origin', () => {
@@ -108,6 +123,48 @@ describe('P4 not behind origin', () => {
       .on('git rev-list main..origin/main', { stdout: 'abc123\n' });
     expect(await stopOf(() => notBehindOrigin(w.ctx()))).toBe(
       'origin/main has commits main does not — pull first',
+    );
+  });
+
+  it('fast-forwards a main that is only behind — the commonest stop of all', async () => {
+    const w = world()
+      .on('git fetch --quiet origin', {})
+      .on('git rev-list main..origin/main', { stdout: 'abc123\ndef456\n' })
+      .on('git rev-list origin/main..main', {})
+      .on('git status --porcelain', {})
+      .on('git rev-parse --abbrev-ref HEAD', { stdout: 'main\n' })
+      .on('git diff --name-only main origin/main', {})
+      .on('git merge --ff-only', {});
+    const ctx = w.ctx();
+    await notBehindOrigin(ctx);
+    expect(w.ran('git merge --ff-only')).toHaveLength(1);
+    expect(lines(ctx)).toEqual(['ok P4 main brought up to date with origin (2 commits)']);
+  });
+
+  it('still stops when main has its own commits, or uncommitted changes', async () => {
+    for (const [ahead, dirty] of [['f00\n', ''], ['', ' M src/App.tsx\n']]) {
+      const w = world()
+        .on('git fetch --quiet origin', {})
+        .on('git rev-list main..origin/main', { stdout: 'abc123\n' })
+        .on('git rev-list origin/main..main', { stdout: ahead })
+        .on('git status --porcelain', { stdout: dirty })
+        .on('git rev-parse --abbrev-ref HEAD', { stdout: 'main\n' });
+      expect(await stopOf(() => notBehindOrigin(w.ctx()))).toBe('origin/main has commits main does not — pull first');
+      expect(w.ran('git merge')).toHaveLength(0);
+    }
+  });
+
+  it('stops when origin moved the version under it — the run read the old one', async () => {
+    const w = world()
+      .on('git fetch --quiet origin', {})
+      .on('git rev-list main..origin/main', { stdout: 'abc123\n' })
+      .on('git rev-list origin/main..main', {})
+      .on('git status --porcelain', {})
+      .on('git rev-parse --abbrev-ref HEAD', { stdout: 'main\n' })
+      .on('git diff --name-only main origin/main', { stdout: 'android/app/build.gradle\n' })
+      .on('git merge --ff-only', {});
+    expect(await stopOf(() => notBehindOrigin(w.ctx()))).toBe(
+      'main was brought up to date and android/app/build.gradle changed with it — run the release again',
     );
   });
 
@@ -249,12 +306,13 @@ describe('P9 the last lesson is written', () => {
     expect(unfilledLesson(journal(''))).toBeNull();
   });
 
-  it('shows the owing entry from its heading and stops', () => {
+  it('an unwritten lesson is a reminder, not a stop — it stopped eight releases that had done nothing wrong', () => {
     const w = world().file(`${ROOT}/docs/release-log.md`, journal('\n## 2.27.1 (282)\n\nChanged…\n\n**Lesson:** _(unfilled)_\n'));
-    expect(() => lessonGate(w.ctx())).toThrow(/left its lesson unwritten/);
-    expect(w.out).toContain('    ## 2.27.1 (282)');
-    expect(w.out).toContain('    **Lesson:** _(unfilled)_');
-    expect(w.out).not.toContain('    ## 2.27.0 (281)');
+    const ctx = w.ctx();
+    expect(() => lessonGate(ctx)).not.toThrow();
+    expect(lines(ctx)).toEqual([
+      "warn P9 the last release's lesson is unwritten — fill in its '**Lesson:**' line in docs/release-log.md when you can",
+    ]);
   });
 });
 
@@ -375,7 +433,7 @@ describe('the two sides agree on what the cycle is', () => {
 });
 
 describe('the whole preflight, in order', () => {
-  it('stops at the first gate that says no and runs nothing after it', async () => {
+  it('lists every quick problem at once, and runs no tests', async () => {
     const w = world()
       .on('/bin/sh -c command -v', {})
       .on('xcodebuild -version', { stdout: 'Xcode 27.0' })
@@ -385,11 +443,14 @@ describe('the whole preflight, in order', () => {
       .on('git rev-list main..origin/main', {})
       .on('git rev-parse v2.28.0', { code: 128 })
       .on('git ls-remote', {});
-    // No notes: P7 stops.
+    // No notes and no tap: all three found in one run (2.34.0 took four).
     const ctx = w.ctx();
-    expect(await stopOf(() => preflight(ctx, rel))).toBe('missing release notes: en-US/changelogs/283.txt');
-    expect(w.ran('gh')).toHaveLength(0);
+    expect(await stopOf(() => preflight(ctx, rel))).toBe(
+      '3 things to fix before releasing: missing release notes: en-US/changelogs/283.txt; ' +
+        'missing in-app release notes: release-notes/en/283.txt; ' +
+        'cask not found at /home/mac/git/homebrew-tap/Casks/mihrab.rb — clone the tap before releasing',
+    );
+    expect(w.out).toContain('    • missing in-app release notes: release-notes/en/283.txt');
     expect(w.ran('npx')).toHaveLength(0);
-    expect(ctx.report.outcomes.map(o => o.id)).toEqual(['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7']);
   });
 });

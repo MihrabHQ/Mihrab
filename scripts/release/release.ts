@@ -30,10 +30,10 @@
  * landed; Play notes over 500 characters found after the tag; fixes on main
  * for days, released to nobody; widgets frozen on every Mac upgrade.
  */
-import type { Ctx } from './common.ts';
+import { git, type Ctx } from './common.ts';
 import type { Io } from './io.ts';
 import { ReleaseStop, Reporter } from './report.ts';
-import { ATTEMPTS, VERSION_RE, preflight, readRelease, showUnreleased } from './preflight.ts';
+import { ATTEMPTS, PrepStop, VERSION_RE, preflight, readRelease, showUnreleased } from './preflight.ts';
 import { REVERT, build } from './build.ts';
 import { ciOnRelease, cleanup, installAsUser, publish, summary } from './publish.ts';
 import { verify } from './verify.ts';
@@ -69,15 +69,19 @@ export async function release(io: Io, root: string, home: string, argv: string[]
     // failed attempt from two weeks ago. A CRASH IS AN ABORT TOO: the
     // shell could not crash past its `die`, and a TypeScript that threw
     // left no line at all — the one attempt most worth reading later.
-    let reason: string;
-    if (e instanceof ReleaseStop) {
-      reason = e.message;
+    let reasons: string[];
+    if (e instanceof PrepStop) {
+      // One line each, so the journal counts what actually stopped it.
+      reasons = e.reasons;
+    } else if (e instanceof ReleaseStop) {
+      reasons = [e.message];
     } else {
       const err = e instanceof Error ? e : new Error(String(e));
       io.err(err.stack ?? err.message);
-      reason = `the release tool crashed: ${err.message.split('\n')[0]}`;
+      reasons = [`the release tool crashed: ${err.message.split('\n')[0]}`];
     }
-    io.fs.appendText(`${root}/${ATTEMPTS}`, `${isoSeconds(io.clock.now())}\t${version || '?'}\t${reason}\n`);
+    const at = isoSeconds(io.clock.now());
+    io.fs.appendText(`${root}/${ATTEMPTS}`, reasons.map(r => `${at}\t${version || '?'}\t${r}\n`).join(''));
     return 1;
   }
 }
@@ -97,9 +101,12 @@ async function cut(ctx: Ctx, version: string, dryRun: boolean): Promise<number> 
     r.say(`    ${built.apk}`);
     r.say(`    ${built.aab}`);
     if (built.zip) r.say(`    ${built.zip}`);
+    // The stamps are put back here: left in the tree, they were the next
+    // real run's "tracked changes" stop (2.28.1).
+    const reverted = await git(ctx, ['checkout', '--', ...REVERT.replace(/^git checkout -- /, '').split(' ')]);
     r.say('');
-    r.say('  The version bump is in your working tree. Undo it with:');
-    r.say(`    ${REVERT}`);
+    if (reverted.code === 0) r.say('  The version bump has been undone; the tree is as it was.');
+    else r.say(`  Could not undo the version bump — undo it with:\n    ${REVERT}`);
     return 0;
   }
   // PHASE 3 — PUBLISH. From here nothing can be taken back.
@@ -107,7 +114,12 @@ async function cut(ctx: Ctx, version: string, dryRun: boolean): Promise<number> 
   // PHASE 4 — VERIFY, against what is now live.
   ctx.report.step('Verifying');
   const v: Ctx = { ...ctx, report: new Reporter(ctx.io, 'verify') };
-  if ((await verify(v, rel.tag)) !== 0) ctx.report.stop('V', 'verification failed — see the ✗ lines above');
+  // NOT a stop. By here the release is public, and a stop skipped the
+  // install, the CI check and the summary — the Play, App Store and
+  // Microsoft Store steps a person still has to take — over a check that
+  // is re-run on its own. It is said, and the exit status carries it.
+  const verified = (await verify(v, rel.tag)) === 0;
+  if (!verified) ctx.report.warn('V', `verification failed — see the ✗ lines above; fix them, then ./scripts/verify-release.sh ${rel.tag}`);
   // PHASE 5 — BE A USER.
   await installAsUser(ctx, rel);
   // PHASE 6 — THE RELEASE COMMIT'S OWN CI.
@@ -115,7 +127,8 @@ async function cut(ctx: Ctx, version: string, dryRun: boolean): Promise<number> 
   // Last: verification and the install both touch bundles.
   await cleanup(ctx);
   for (const line of summary(rel, built, pub.ios, ci)) ctx.report.say(line);
+  if (!verified) ctx.report.warn('V', `${rel.tag} is published, and its verification failed — see the ✗ lines above`);
   // A cycle that published a commit failing CI did not finish clean, and
   // the exit status says so — a 0 here let five of them pass unremarked.
-  return ci.state === 'red' ? 1 : 0;
+  return ci.state === 'red' || !verified ? 1 : 0;
 }

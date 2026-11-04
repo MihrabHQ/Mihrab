@@ -4,14 +4,15 @@ What each release cost to cut, and what it taught the cycle.
 
 Written by `scripts/release.sh` — the facts automatically, the **Lesson**
 line by hand. A release that changed the cycle, or that had to be aborted
-and restarted, leaves that line as `_(unfilled)_`, and **the next release
-refuses to start until it says something.**
+and restarted, leaves that line as `_(unfilled)_`, and the next release
+reminds you of it. A clean run that did not touch the cycle records "none
+needed" on its own.
 
-That gate is the point of this file. Every check in `release.sh` stops a
-bad release; this one stops a bad *cycle* — the same mistake being paid
-for twice because nobody wrote down what the first one cost. It is cheap
-when nothing happened: a clean run that did not touch the cycle records
-"none needed" on its own and never asks.
+Until 2.36.0 an unfilled line was a gate: the next release refused to
+start. It stopped eight releases, every one of them a release that had
+done nothing wrong, and the attempts log below keeps the evidence whether
+the line is written or not — so it is a reminder now. Write it in the same
+sitting as the cut, while the answer is known.
 
 Entries are appended newest-last.
 
