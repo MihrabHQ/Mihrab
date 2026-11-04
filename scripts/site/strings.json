@@ -116,7 +116,7 @@
         "flag": "The whole app runs on the desktop, and it is looking for testers.",
         "report": "Report what breaks",
         "windows": "Windows",
-        "linux": "Linux, in a terminal",
+        "linux": "Linux",
         "install": "Install",
         "remove": "Remove, with its settings"
       },
@@ -250,7 +250,7 @@
         "flag": "Hela appen fungerar på datorn, och vi söker testare.",
         "report": "Rapportera det som inte fungerar",
         "windows": "Windows",
-        "linux": "Linux, i en terminal",
+        "linux": "Linux",
         "install": "Installera",
         "remove": "Ta bort, med inställningarna"
       },
@@ -295,7 +295,7 @@
         "flag": "التطبيق كاملًا يعمل على الحاسوب، ونبحث عمّن يجرّبه.",
         "report": "أبلغ عمّا لا يعمل",
         "windows": "ويندوز",
-        "linux": "لينكس، في الطرفية",
+        "linux": "لينكس",
         "install": "التثبيت",
         "remove": "الإزالة مع الإعدادات"
       },
@@ -558,7 +558,7 @@
         "flag": "Uygulamanın tamamı bilgisayarda çalışıyor ve test edecek kişiler arıyoruz.",
         "report": "Bozuk olanı bildirin",
         "windows": "Windows",
-        "linux": "Linux, bir terminalde",
+        "linux": "Linux",
         "install": "Kur",
         "remove": "Ayarlarıyla birlikte kaldır"
       },
@@ -814,7 +814,7 @@
         "flag": "پوری ایپ کمپیوٹر پر چلتی ہے، اور ہمیں آزمانے والوں کی تلاش ہے۔",
         "report": "جو کام نہ کرے اس کی اطلاع دیں",
         "windows": "ونڈوز",
-        "linux": "لینکس، ٹرمینل میں",
+        "linux": "لینکس",
         "install": "انسٹال کریں",
         "remove": "ترتیبات سمیت ہٹائیں"
       },
@@ -1051,7 +1051,7 @@
         "flag": "Seluruh aplikasi berjalan di komputer, dan kami mencari penguji.",
         "report": "Laporkan yang rusak",
         "windows": "Windows",
-        "linux": "Linux, di terminal",
+        "linux": "Linux",
         "install": "Pasang",
         "remove": "Hapus, beserta pengaturannya"
       },
@@ -1307,7 +1307,7 @@
         "flag": "Die ganze App läuft auf dem Computer, und wir suchen Tester.",
         "report": "Melde, was nicht funktioniert",
         "windows": "Windows",
-        "linux": "Linux, im Terminal",
+        "linux": "Linux",
         "install": "Installieren",
         "remove": "Entfernen, samt Einstellungen"
       },
@@ -1544,7 +1544,7 @@
         "flag": "L’application entière fonctionne sur ordinateur, et nous cherchons des testeurs.",
         "report": "Signalez ce qui ne marche pas",
         "windows": "Windows",
-        "linux": "Linux, dans un terminal",
+        "linux": "Linux",
         "install": "Installer",
         "remove": "Désinstaller, avec ses réglages"
       },
@@ -1807,7 +1807,7 @@
         "flag": "La aplicación completa funciona en el ordenador, y buscamos personas que la prueben.",
         "report": "Informa de lo que falle",
         "windows": "Windows",
-        "linux": "Linux, en una terminal",
+        "linux": "Linux",
         "install": "Instalar",
         "remove": "Quitar, con sus ajustes"
       },
@@ -2044,7 +2044,7 @@
         "flag": "Приложение целиком работает на компьютере, и мы ищем тех, кто его протестирует.",
         "report": "Сообщите, что не работает",
         "windows": "Windows",
-        "linux": "Linux, в терминале",
+        "linux": "Linux",
         "install": "Установить",
         "remove": "Удалить вместе с настройками"
       },
@@ -2281,7 +2281,7 @@
         "flag": "পুরো অ্যাপটি কম্পিউটারে চলে, আর আমরা পরীক্ষক খুঁজছি।",
         "report": "যা কাজ করে না তা জানান",
         "windows": "উইন্ডোজ",
-        "linux": "লিনাক্স, টার্মিনালে",
+        "linux": "লিনাক্স",
         "install": "ইনস্টল",
         "remove": "সেটিংসসহ সরান"
       },
@@ -2518,7 +2518,7 @@
         "flag": "पूरा ऐप कंप्यूटर पर चलता है, और हमें इसे परखने वालों की तलाश है।",
         "report": "जो काम न करे, उसकी रिपोर्ट करें",
         "windows": "विंडोज़",
-        "linux": "लिनक्स, टर्मिनल में",
+        "linux": "लिनक्स",
         "install": "इंस्टॉल करें",
         "remove": "सेटिंग्स समेत हटाएँ"
       },
@@ -2755,7 +2755,7 @@
         "flag": "完整的应用已能在电脑上运行，我们正在寻找测试者。",
         "report": "报告问题",
         "windows": "Windows",
-        "linux": "Linux：在终端中",
+        "linux": "Linux",
         "install": "安装",
         "remove": "卸载（连同设置）"
       },

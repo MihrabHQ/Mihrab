@@ -338,31 +338,28 @@ const LINUX_COMMANDS = [
 
 function desktopCard(code, t, imgBase) {
   const d = t.install && t.install.desktop;
-  if (!d) throw new Error(`${code}: no strings for the Windows and Linux card`);
-  const windows = () => `          <div class="os">
-            <h4>${esc(d.windows)}</h4>
-${badgeList(['microsoft'], imgBase, '            ')}
-          </div>`;
-  const linux = () => {
-    const distros = LINUX_COMMANDS.map(
-      l => `            <h5 class="distro" dir="ltr">${esc(l.name)}</h5>
-            <p class="cmd-label">${esc(d.install)}</p>
-            <pre dir="ltr"><code>${esc(l.install.join('\n'))}</code></pre>
-            <p class="cmd-label">${esc(d.remove)}</p>
-            <pre dir="ltr"><code>${esc(l.remove)}</code></pre>`,
-    ).join('\n');
-    return `          <div class="os">
-            <h4>${esc(d.linux)}</h4>
+  if (!d) throw new Error(`${code}: no strings for the Windows and Linux cards`);
+  const glyph = inner =>
+    `<svg class="glyph" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${inner}</svg>`;
+  // Each distribution folded under its name, so the card stays the size of
+  // its neighbours; the one a reader opens shows its lines in full.
+  const distros = LINUX_COMMANDS.map(
+    l => `        <details class="distro">
+          <summary dir="ltr">${esc(l.name)}</summary>
+          <p class="cmd-label">${esc(d.install)}</p>
+          <pre dir="ltr"><code>${esc(l.install.join('\n'))}</code></pre>
+          <p class="cmd-label">${esc(d.remove)}</p>
+          <pre dir="ltr"><code>${esc(l.remove)}</code></pre>
+        </details>`,
+  ).join('\n');
+  return `      <div class="platform windows">
+        <h3>${glyph('<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 12h18M12 4v16"/>')}${esc(d.windows)}</h3>
+${badgeList(['microsoft'], imgBase, '        ')}
+      </div>
+      <div class="platform linux">
+        <h3>${glyph('<rect x="3" y="4" width="18" height="16" rx="2"/><path d="m7 10 3 2-3 2M12 15h5"/>')}${esc(d.linux)} <span class="tag">${esc(d.tag)}</span></h3>
 ${distros}
-          </div>`;
-  };
-  return `      <div class="platform desktop">
-        <h3><svg class="glyph" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M9 20h6M12 16v4"/></svg>${esc(d.h3)} <span class="tag">${esc(d.tag)}</span></h3>
         <p class="flag">${esc(d.flag)} <a href="https://github.com/MihrabHQ/Mihrab/issues">${esc(d.report)}</a></p>
-        <div class="oses">
-${windows()}
-${linux()}
-        </div>
       </div>`;
 }
 
@@ -572,8 +569,8 @@ ${badgeList(['appstore'], '../assets/img/badges', '        ')}
 ${badgeList(['obtainium', 'googleplay', 'fdroid', 'github'], '../assets/img/badges', '        ')}
         <p class="flag">${esc(t.install.flag)} <a href="https://github.com/ImranR98/Obtainium">${esc(t.install.getObtainium)}</a></p>
       </div>
-${webCard(code, t)}
 ${desktopCard(code, t, '../assets/img/badges')}
+${webCard(code, t)}
     </div>
   </div>
 </section>
