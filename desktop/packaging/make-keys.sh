@@ -20,7 +20,8 @@ REPO=MihrabHQ/packages
 DIR="$HOME/.mihrab-keys"
 mkdir -p "$DIR" && chmod 700 "$DIR"
 
-GNUPGHOME="$(mktemp -d)"
+# Short: gpg-agent's socket lives in it, and a long temp path breaks it.
+GNUPGHOME="$(mktemp -d /tmp/mk.XXXXXX)"
 export GNUPGHOME
 trap 'rm -rf "$GNUPGHOME"' EXIT
 
