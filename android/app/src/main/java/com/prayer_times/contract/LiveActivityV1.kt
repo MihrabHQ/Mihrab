@@ -99,6 +99,7 @@ object LiveActivityV1 {
     val android = la.android
     out.put("alertActionEnabled", android.alertActionEnabled)
     out.put("aodActionEnabled", android.aodActionEnabled)
+    out.put("showBeforeMinutes", android.showBeforeMinutes)
     out.put("adhanChannelId", android.adhanChannelId)
     out.put("adhanSoundId", android.adhanSoundId)
     out.put("defaultChannelId", android.defaultChannelId)

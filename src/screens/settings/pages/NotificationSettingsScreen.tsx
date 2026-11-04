@@ -19,6 +19,7 @@ import { useTranslation } from 'react-i18next';
 import { usePrayerSettings } from '../../../context/PrayerSettingsContext';
 import { useAppPalette } from '../../../hooks/useAppPalette';
 import { LiveActivityCard } from '../LiveActivityCard';
+import { LIVE_ACTIVITY_SHOW_BEFORE_OPTIONS } from '../../../settings/prePrayerReminder';
 import { MalikiAlertsCard } from '../MalikiAlertsCard';
 import { NestedPageRows } from '../NestedPageRows';
 import { NotificationsCard } from '../NotificationsCard';
@@ -49,6 +50,7 @@ export function NotificationSettingsScreen() {
   const [soundModal, setSoundModal] = useState(false);
   const [preReminderModal, setPreReminderModal] = useState(false);
   const [daruriLeadModal, setDaruriLeadModal] = useState(false);
+  const [showFromModal, setShowFromModal] = useState(false);
   // The quiet windows' four pickers (issue #60): one sheet at a time.
   const [silenceModal, setSilenceModal] = useState<
     'lead' | 'duration' | 'jumuahDuration' | 'jumuahTime' | null
@@ -61,13 +63,15 @@ export function NotificationSettingsScreen() {
 
   const deferBack = useRef(false);
   deferBack.current =
-    soundModal || preReminderModal || daruriLeadModal || silenceModal !== null;
+    soundModal || preReminderModal || daruriLeadModal || showFromModal || silenceModal !== null;
 
   const openSound = useCallback(() => setSoundModal(true), []);
   const closeSound = useCallback(() => setSoundModal(false), []);
   const openPreReminder = useCallback(() => setPreReminderModal(true), []);
   const closePreReminder = useCallback(() => setPreReminderModal(false), []);
   const openDaruriLead = useCallback(() => setDaruriLeadModal(true), []);
+  const openShowFrom = useCallback(() => setShowFromModal(true), []);
+  const closeShowFrom = useCallback(() => setShowFromModal(false), []);
   const closeDaruriLead = useCallback(() => setDaruriLeadModal(false), []);
   const openSilenceLead = useCallback(() => setSilenceModal('lead'), []);
   const openSilenceDuration = useCallback(() => setSilenceModal('duration'), []);
@@ -156,7 +160,7 @@ export function NotificationSettingsScreen() {
             it is drawn rather than by what it is — and left it somewhere
             nobody thought to look. It owns no modals, so the page's
             back-deferral is unaffected. */}
-        <LiveActivityCard />
+        <LiveActivityCard onOpenShowFromPicker={openShowFrom} />
       </SettingsPage>
 
       <SoundPickerModal
@@ -193,6 +197,20 @@ export function NotificationSettingsScreen() {
           updateSettings({ malikiSecondTimeAlertMinutes: minutes })
         }
         onClose={closeDaruriLead}
+      />
+      {/* The Live Activity's "show from": the same "how far before"
+          question, with longer answers and a different zero. */}
+      <PreReminderModal
+        visible={showFromModal}
+        current={settings.liveActivityShowBeforeMinutes}
+        options={LIVE_ACTIVITY_SHOW_BEFORE_OPTIONS}
+        palette={palette}
+        title={t('settings.laShowFromTitle')}
+        offLabel={t('settings.laShowFromAlways')}
+        onSelect={minutes =>
+          updateSettings({ liveActivityShowBeforeMinutes: minutes })
+        }
+        onClose={closeShowFrom}
       />
       {/* The quiet windows' pickers. The lead is the reminder picker's
           question asked again — "how far before" — so it is the same

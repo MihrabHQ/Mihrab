@@ -7,6 +7,7 @@ import { isDesktop } from '../../responsive/breakpoints';
 import {
   SettingsBlock,
   SettingsGroup,
+  SettingsLinkRow,
   SettingsToggleRow,
 } from './SettingsGroup';
 import { sharedSettingsStyles as s } from './sharedStyles';
@@ -203,7 +204,12 @@ function PlainBar({ accent, muted, pct }: { accent: string; muted: string; pct: 
  *
  * Off by default — existing users see no change unless they opt in.
  */
-function LiveActivityCardImpl() {
+function LiveActivityCardImpl({
+  onOpenShowFromPicker,
+}: {
+  /** Opens the "show from" picker, which the page owns (it defers back while a sheet is up). */
+  onOpenShowFromPicker: () => void;
+}) {
   const { t } = useTranslation();
   const { slice: settings, update } = useLiveActivitySettings();
   const { palette } = useAppPalette();
@@ -346,6 +352,28 @@ function LiveActivityCardImpl() {
           })}
           value={settings.liveActivityLockButton !== false}
           onValueChange={v => update({ liveActivityLockButton: v })}
+        />
+      ) : null}
+
+      {/* "Show from" — Android only. A card that is up all day is a card
+          most people stop seeing; this keeps it — the notification, the
+          status-bar chip, the lock screen and the always-on display — out
+          of sight until the prayer is near. */}
+      {Platform.OS === 'android' && settings.liveActivityEnabled ? (
+        <SettingsLinkRow
+          title={t('settings.laShowFromLabel', { defaultValue: 'Show from' })}
+          value={
+            !settings.liveActivityShowBeforeMinutes
+              ? t('settings.laShowFromAlways', { defaultValue: 'All day' })
+              : t('settings.prePrayerReminderOption', {
+                  count: settings.liveActivityShowBeforeMinutes,
+                })
+          }
+          help={t('settings.laShowFromHelp', {
+            defaultValue:
+              'Keep the card, the status-bar chip and the always-on display clear until this long before the next prayer.',
+          })}
+          onPress={onOpenShowFromPicker}
         />
       ) : null}
     </SettingsGroup>

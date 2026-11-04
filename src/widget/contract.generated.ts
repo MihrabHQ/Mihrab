@@ -386,6 +386,11 @@ export type WidgetContractLiveActivityAndroid = {
   alertActionEnabled?: boolean;
   /** Offer the hide/show-on-lock-screen button. */
   aodActionEnabled?: boolean;
+  /**
+   * Show the card only from this many minutes before the next prayer; 0 shows
+   * it always.
+   */
+  showBeforeMinutes?: number;
   /** The notification channel an adhan alert posts to. */
   adhanChannelId?: string;
   /** The adhan chosen. */
@@ -804,6 +809,7 @@ export function readWidgetContractLiveActivityAndroid(
   const out: WidgetContractLiveActivityAndroid = {
     alertActionEnabled: wcBool(input.alertActionEnabled) ?? false,
     aodActionEnabled: wcBool(input.aodActionEnabled) ?? true,
+    showBeforeMinutes: wcInt(input.showBeforeMinutes) ?? 0,
     adhanChannelId: wcString(input.adhanChannelId) ?? 'prayer-times-default',
     adhanSoundId: wcString(input.adhanSoundId) ?? 'default',
     defaultChannelId:

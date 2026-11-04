@@ -560,6 +560,12 @@ export type PrayerAppSettings = {
    */
   liveActivityLockButton: boolean;
   /**
+   * Android: keep the Live Activity — the notification, the status-bar
+   * chip, the lock screen and the always-on display — out of sight until
+   * this many minutes before the next prayer. 0 shows it all day.
+   */
+  liveActivityShowBeforeMinutes: number;
+  /**
    * Non-prayer time toggles. Each gates one optional entry across the prayer
    * table, notifications, home-screen widget, and Live Activity. All three use
    * the default notification sound (never the adhan).
@@ -838,6 +844,7 @@ export const DEFAULT_SETTINGS: PrayerAppSettings = {
   liveActivityShowLocation: true,
   liveActivityDesign: 'timeline',
   liveActivityLockButton: true,
+  liveActivityShowBeforeMinutes: 0,
   // Sunrise on by default (unchanged behaviour); the two night times off by
   // default so existing users see no new rows/notifications until they opt in.
   sunriseEnabled: true,

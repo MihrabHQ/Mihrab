@@ -256,6 +256,7 @@ export type AndroidLiveActivityPayload = {
   secondMetric: 'time';
   alertActionEnabled: boolean;
   aodActionEnabled: boolean;
+  showBeforeMinutes: number;
   adhanChannelId: string;
   adhanSoundId: string;
   defaultChannelId: string;
@@ -328,6 +329,7 @@ export function liveActivityAndroidPayload(
     secondMetric: 'time',
     alertActionEnabled: android?.alertActionEnabled ?? false,
     aodActionEnabled: android?.aodActionEnabled ?? true,
+    showBeforeMinutes: android?.showBeforeMinutes ?? 0,
     adhanChannelId: android?.adhanChannelId ?? 'prayer-times-default',
     adhanSoundId: android?.adhanSoundId ?? 'default',
     defaultChannelId: android?.defaultChannelId ?? 'prayer-times-default',

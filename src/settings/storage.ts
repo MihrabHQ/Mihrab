@@ -9,7 +9,10 @@ import { coerceSavedAccents } from './accentColors';
 import { coerceClockFormat } from '../utils/clockFormat';
 import { coerceDhikrReminders } from '../dhikr/dhikrReminders';
 import { coerceDaruriAlerts } from '../prayer/daruriTimes';
-import { coercePrePrayerReminderMinutes } from './prePrayerReminder';
+import {
+  coerceLiveActivityShowBeforeMinutes,
+  coercePrePrayerReminderMinutes,
+} from './prePrayerReminder';
 import { coercePrayerSilence } from './prayerSilence';
 import { clampReadingScale } from '../theme/readingText';
 import {
@@ -767,6 +770,9 @@ async function loadSettingsUncached(): Promise<PrayerAppSettings> {
   );
   merged.prePrayerReminderMinutes = coercePrePrayerReminderMinutes(
     parsed.prePrayerReminderMinutes,
+  );
+  merged.liveActivityShowBeforeMinutes = coerceLiveActivityShowBeforeMinutes(
+    merged.liveActivityShowBeforeMinutes,
   );
   merged.notificationSound = coerceNotificationSoundId(
     parsed.notificationSound,

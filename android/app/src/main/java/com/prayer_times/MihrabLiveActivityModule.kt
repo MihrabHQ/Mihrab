@@ -112,8 +112,10 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
         // notification appears.
         Log.w(NAME, "display: FGS blocked from background; falling back to notify()", ise)
         runCatching {
-          val notif = buildNotificationFromPayload(reactContext, p)
-          NotificationManagerCompat.from(reactContext).notify(NOTIF_ID, notif)
+          if (!windowHides(p, System.currentTimeMillis())) {
+            val notif = buildNotificationFromPayload(reactContext, p)
+            NotificationManagerCompat.from(reactContext).notify(NOTIF_ID, notif)
+          }
         }
         promise.resolve(null)
       }
@@ -189,7 +191,7 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
         .apply()
       runCatching {
         val payload = currentPayload(reactContext)?.let { JSONObject(it) }
-        if (payload != null) {
+        if (payload != null && !windowHides(payload, System.currentTimeMillis())) {
           NotificationManagerCompat.from(reactContext).notify(
             NOTIF_ID,
             buildNotificationFromPayload(reactContext, payload),
@@ -250,6 +252,39 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
       val prefs = context.getSharedPreferences(PREFS_NAME, android.content.Context.MODE_PRIVATE)
       if (!prefs.getBoolean(PREF_KEY_ENABLED, false)) return null
       return prefs.getString(PREF_KEY_PAYLOAD_V2, null)
+    }
+
+    /**
+     * "SHOW FROM" — the card out of sight until shortly before the prayer.
+     *
+     * With `showBeforeMinutes` set, the Live Activity is not drawn at all —
+     * no notification, no status-bar chip, nothing on the lock screen or
+     * the always-on display — until that many minutes before the next
+     * prayer. The service does not run in between: it arms an exact alarm
+     * for the moment the window opens and stops, and once the prayer has
+     * come in (after the card's "Now" moment) it goes again until the next
+     * window. 0 is the card all day, as it has always been.
+     *
+     * The instant the card is to come up, or 0 when it is up all day.
+     */
+    fun windowOpensAt(p: JSONObject): Long {
+      val before = p.optInt("showBeforeMinutes", 0)
+      if (before <= 0) return 0L
+      val next = p.optLong("nextEpochMs", 0L)
+      if (next <= 0L) return 0L
+      return next - before * 60_000L
+    }
+
+    /** True while the card is to stay out of sight at `now`. */
+    fun windowHides(p: JSONObject, now: Long): Boolean {
+      val opens = windowOpensAt(p)
+      if (opens <= 0L || now >= opens) return false
+      // Just after a prayer the card says "<prayer> · Now" for a moment
+      // (`ARRIVED_MS`); that moment is shown even when the next window is
+      // hours away, so the card does not vanish the instant the adhan goes.
+      val prev = p.optLong("prevEpochMs", 0L)
+      if (prev > 0L && now - prev in 0 until MihrabLiveActivityService.ARRIVED_MS) return false
+      return true
     }
 
     /** The shared payload as the notification draws it at this minute; null when nothing is ahead. */

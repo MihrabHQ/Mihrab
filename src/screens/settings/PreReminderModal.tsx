@@ -14,9 +14,11 @@ import { useSheetPadding } from '../../responsive/sheetSides';
 
 type Props = {
   visible: boolean;
-  current: PrePrayerReminderMinutes;
+  current: number;
   palette: AppPalette;
   onSelect: (minutes: PrePrayerReminderMinutes) => void;
+  /** The minutes on offer; the pre-prayer reminder's unless given. */
+  options?: ReadonlyArray<number>;
   onClose: () => void;
   /**
    * Override the sheet's own title. The list of minutes is the same
@@ -37,6 +39,7 @@ export const PreReminderModal = memo(function PreReminderModal({
   onClose,
   title,
   offLabel,
+  options,
 }: Props) {
   const { t } = useTranslation();
   const sheetPad = useSheetPadding();
@@ -73,7 +76,7 @@ export const PreReminderModal = memo(function PreReminderModal({
             {sheetTitle}
           </Text>
           <FlatList
-            data={[...PRE_PRAYER_REMINDER_OPTIONS]}
+            data={[...(options ?? PRE_PRAYER_REMINDER_OPTIONS)]}
             keyExtractor={item => String(item)}
             renderItem={({ item }) => {
               const label =
@@ -91,7 +94,7 @@ export const PreReminderModal = memo(function PreReminderModal({
                     current === item && { backgroundColor: palette.bg },
                   ]}
                   onPress={() => {
-                    onSelect(item);
+                    onSelect(item as PrePrayerReminderMinutes);
                     onClose();
                   }}
                 >

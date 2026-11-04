@@ -70,6 +70,9 @@ class MihrabLiveActivityService : Service() {
   /** The rich notification is held back until the app is left (see onStartCommand). */
   @Volatile private var richPending = false
 
+  /** Stopping until the "show from" window opens: the alarm for that moment stays armed (see `sleepUntilWindow`). */
+  @Volatile private var sleepingUntilWindow = false
+
   private val handler = Handler(Looper.getMainLooper())
   private var ticker: Runnable? = null
   /** Most recent JSON payload pushed by JS. The ticker rebuilds the
@@ -256,6 +259,12 @@ class MihrabLiveActivityService : Service() {
     MihrabLiveActivityModule.ensureChannelExists(this)
     MihrabLiveActivityModule.ensureFgsChannelExists(this)
 
+    // "Show from": not yet. Down, with an alarm for the moment it opens.
+    if (MihrabLiveActivityModule.windowHides(JSONObject(payload), System.currentTimeMillis())) {
+      sleepUntilWindow(payload, startId)
+      return START_NOT_STICKY
+    }
+
     // Single-notification architecture (v2.5.0): the rich ProgressStyle
     // notification IS the foreground-service notification. On this platform
     // it is still eligible for the Android 16 status-bar Live Update chip.
@@ -326,6 +335,45 @@ class MihrabLiveActivityService : Service() {
     stopSelf(startId)
   }
 
+  /**
+   * Out of sight until the "show from" window opens (`windowOpensAt`).
+   *
+   * The service stops rather than sitting on a hidden notification: a
+   * foreground service always has one, and even the quietest shows in the
+   * shade and in the system's "running in background" list. So the rich
+   * notification comes down, an exact alarm is armed for the moment the
+   * window opens — the same restart the prayer's own wake alarm uses, which
+   * is allowed to start a foreground service from the background — and the
+   * service ends. A service started with `startForegroundService` must reach
+   * `startForeground` before it stops, hence the placeholder first.
+   *
+   * `onDestroy` leaves the window alarm armed when it sees this flag;
+   * turning the feature off goes through `takeDown`, which cancels it.
+   */
+  private fun sleepUntilWindow(payload: String, startId: Int?) {
+    val opens = runCatching { MihrabLiveActivityModule.windowOpensAt(JSONObject(payload)) }.getOrDefault(0L)
+    Log.i(TAG, "out of sight until the window opens at $opens")
+    sleepingUntilWindow = true
+    richPending = false
+    ticker?.let { handler.removeCallbacks(it) }
+    ticker = null
+    startOnPlaceholder()
+    runCatching { NotificationManagerCompat.from(this).cancel(MihrabLiveActivityModule.NOTIF_ID) }
+    runCatching {
+      val am = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+      am.cancel(minuteAlarmPendingIntent(this))
+      if (opens > System.currentTimeMillis()) {
+        val pi = wakeAlarmPendingIntent(this)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !am.canScheduleExactAlarms()) {
+          am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, opens, pi)
+        } else {
+          am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, opens, pi)
+        }
+      }
+    }.onFailure { Log.w(TAG, "arming the window alarm failed", it) }
+    if (startId != null) stopSelf(startId) else stopSelf()
+  }
+
   /** Re-post the notification once a minute so the progress bar /
    *  chronometer advance. The Notification's own chronometer ticks
    *  every second on its own via setUsesChronometer(true); the progress
@@ -356,6 +404,12 @@ class MihrabLiveActivityService : Service() {
         try {
           // Held back while the app is in front: nothing to re-post yet.
           if (richPending) return@Runnable
+          // The prayer has come in and the card has had its "Now" moment:
+          // out of sight until the next window.
+          if (MihrabLiveActivityModule.windowHides(JSONObject(currentPayload), System.currentTimeMillis())) {
+            sleepUntilWindow(currentPayload, null)
+            return@Runnable
+          }
           val notif = build(currentPayload)
           NotificationManagerCompat.from(this)
             .notify(MihrabLiveActivityModule.NOTIF_ID, notif)
@@ -806,7 +860,8 @@ class MihrabLiveActivityService : Service() {
     super.onDestroy()
     if (running === this) running = null
     runCatching { unregisterReceiver(screenReceiver) }
-    cancelWakeAlarm(this)
+    // Asleep until the window opens: the alarm for that moment is the way back.
+    if (!sleepingUntilWindow) cancelWakeAlarm(this)
     ticker?.let { handler.removeCallbacks(it) }
     ticker = null
     runCatching {

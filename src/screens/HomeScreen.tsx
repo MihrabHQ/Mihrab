@@ -1483,6 +1483,7 @@ export function HomeScreen() {
     // Re-push the Live Activity the instant the user changes its options
     // (HomeScreen stays mounted, so this fires even from the Settings screen).
     settings.liveActivityLockButton,
+    settings.liveActivityShowBeforeMinutes,
     // Re-push when the app language changes so the notification's localised
     // labels (In/At, mute toggle, Hijri month) update. Using i18n.language
     // (not settings.language) guarantees i18n has already switched before we

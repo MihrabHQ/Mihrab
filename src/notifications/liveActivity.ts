@@ -140,6 +140,7 @@ export async function loadLiveActivityOptions(): Promise<LiveActivityOptions> {
     android: {
       alertActionEnabled: false,
       aodActionEnabled: true,
+      showBeforeMinutes: 0,
       adhanChannelId: 'prayer-times-default',
       adhanSoundId: 'default',
       defaultChannelId: 'prayer-times-default',
@@ -169,6 +170,7 @@ export async function loadLiveActivityOptions(): Promise<LiveActivityOptions> {
     out.android = {
       alertActionEnabled: s.notificationsEnabled,
       aodActionEnabled: s.liveActivityLockButton !== false,
+      showBeforeMinutes: Math.max(0, Math.round(s.liveActivityShowBeforeMinutes ?? 0)),
       adhanChannelId: resolveSoundTargets(
         soundOpt.id,
         s.adhanUsesAlarmStream === true,

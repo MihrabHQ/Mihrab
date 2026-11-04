@@ -508,6 +508,11 @@ module.exports = {
           'Offer the hide/show-on-lock-screen button.',
         ],
         [
+          'showBeforeMinutes',
+          t.int({ default: 0 }),
+          'Show the card only from this many minutes before the next prayer; 0 shows it always.',
+        ],
+        [
           'adhanChannelId',
           t.string({ default: 'prayer-times-default' }),
           'The notification channel an adhan alert posts to.',

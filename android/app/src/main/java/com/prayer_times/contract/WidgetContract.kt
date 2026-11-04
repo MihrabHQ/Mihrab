@@ -995,6 +995,11 @@ object WidgetContract {
     val alertActionEnabled: Boolean = false,
     /** Offer the hide/show-on-lock-screen button. */
     val aodActionEnabled: Boolean = true,
+    /**
+     * Show the card only from this many minutes before the next prayer; 0
+     * shows it always.
+     */
+    val showBeforeMinutes: Int = 0,
     /** The notification channel an adhan alert posts to. */
     val adhanChannelId: String = "prayer-times-default",
     /** The adhan chosen. */
@@ -1005,6 +1010,7 @@ object WidgetContract {
     fun toJson(): JSONObject = JSONObject().apply {
       put("alertActionEnabled", alertActionEnabled)
       put("aodActionEnabled", aodActionEnabled)
+      put("showBeforeMinutes", showBeforeMinutes)
       put("adhanChannelId", adhanChannelId)
       put("adhanSoundId", adhanSoundId)
       put("defaultChannelId", defaultChannelId)
@@ -1016,6 +1022,7 @@ object WidgetContract {
         return LiveActivityAndroid(
           alertActionEnabled = o.wcBool("alertActionEnabled") ?: false,
           aodActionEnabled = o.wcBool("aodActionEnabled") ?: true,
+          showBeforeMinutes = o.wcRaw("showBeforeMinutes").wcAsInt() ?: 0,
           adhanChannelId = o.wcString("adhanChannelId") ?: "prayer-times-default",
           adhanSoundId = o.wcString("adhanSoundId") ?: "default",
           defaultChannelId = o.wcString("defaultChannelId") ?: "prayer-times-default",

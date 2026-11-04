@@ -1014,6 +1014,9 @@ enum WidgetContract {
     var alertActionEnabled: Bool
     /// Offer the hide/show-on-lock-screen button.
     var aodActionEnabled: Bool
+    /// Show the card only from this many minutes before the next prayer; 0
+    /// shows it always.
+    var showBeforeMinutes: Int
     /// The notification channel an adhan alert posts to.
     var adhanChannelId: String
     /// The adhan chosen.
@@ -1024,12 +1027,14 @@ enum WidgetContract {
     init(
       alertActionEnabled: Bool = false,
       aodActionEnabled: Bool = true,
+      showBeforeMinutes: Int = 0,
       adhanChannelId: String = "prayer-times-default",
       adhanSoundId: String = "default",
       defaultChannelId: String = "prayer-times-default"
     ) {
       self.alertActionEnabled = alertActionEnabled
       self.aodActionEnabled = aodActionEnabled
+      self.showBeforeMinutes = showBeforeMinutes
       self.adhanChannelId = adhanChannelId
       self.adhanSoundId = adhanSoundId
       self.defaultChannelId = defaultChannelId
@@ -1038,6 +1043,7 @@ enum WidgetContract {
     enum CodingKeys: String, CodingKey {
       case alertActionEnabled
       case aodActionEnabled
+      case showBeforeMinutes
       case adhanChannelId
       case adhanSoundId
       case defaultChannelId
@@ -1047,6 +1053,7 @@ enum WidgetContract {
       let c = try decoder.container(keyedBy: CodingKeys.self)
       alertActionEnabled = c.wcValue(Bool.self, .alertActionEnabled) ?? false
       aodActionEnabled = c.wcValue(Bool.self, .aodActionEnabled) ?? true
+      showBeforeMinutes = c.wcInt(.showBeforeMinutes).flatMap(wcInt32) ?? 0
       adhanChannelId = c.wcValue(String.self, .adhanChannelId) ?? "prayer-times-default"
       adhanSoundId = c.wcValue(String.self, .adhanSoundId) ?? "default"
       defaultChannelId = c.wcValue(String.self, .defaultChannelId) ?? "prayer-times-default"
