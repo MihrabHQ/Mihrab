@@ -13,6 +13,17 @@ change that lands it. A roadmap nobody trims is a roadmap nobody can act on.
 
 ---
 
+## Browser and desktop releases
+
+Most features stay in the shared `src/` and reach the browser and Windows/Linux
+desktop builds through normal mainline development. They are tracked here, not
+duplicated in a platform backlog. Web or desktop work may lag when a feature
+needs implementation, packaging, certification, or validation specific to that
+platform. Track those exceptions and their release gates in the
+[Desktop Release Roadmap](desktop/ROADMAP.md).
+
+---
+
 ## Part 0 — Shipped since this file was written
 
 Kept only as a record, so these do not get proposed again. Each was verified

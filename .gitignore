@@ -95,6 +95,8 @@ src/quran/data/source/
 *.apk
 *.aab
 *.ipa
+# Electron desktop package output, including unpacked app.asar files.
+/artifacts/desktop/
 
 # Device dumps — NEVER commit these. A bugreport is a 38MB transcript of
 # everything the phone was doing: full logcat, every installed package,
