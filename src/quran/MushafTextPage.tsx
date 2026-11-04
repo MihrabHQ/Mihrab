@@ -48,6 +48,7 @@
  * set that much larger. The `<Text>` paragraph described above remains
  * the fallback, and the lessons above are why it looks the way it does.
  */
+import { pressLocationX } from '../components/pressLocation';
 import React, { useCallback, useMemo, useRef } from 'react';
 import {
   Pressable,
@@ -374,9 +375,18 @@ type LineViewProps = {
  */
 const TAP_SLOP_PX = 12;
 function useTapOnly() {
-  const start = useRef<{ x: number; y: number } | null>(null);
+  const start = useRef<{ x: number; y: number; lx: number } | null>(null);
   const onPressIn = useCallback((e: GestureResponderEvent) => {
-    start.current = { x: e.nativeEvent.pageX, y: e.nativeEvent.pageY };
+    start.current = { x: e.nativeEvent.pageX, y: e.nativeEvent.pageY, lx: pressLocationX(e) };
+  }, []);
+  /**
+   * Where along the line the press is, from the line box's left edge —
+   * `pressLocationX`, and where even that has nothing, where the press
+   * began (a tap moves less than TAP_SLOP_PX, so it is the same word).
+   */
+  const xOf = useCallback((e: GestureResponderEvent) => {
+    const x = pressLocationX(e);
+    return Number.isFinite(x) ? x : start.current?.lx ?? NaN;
   }, []);
   const wasTap = useCallback((e: GestureResponderEvent) => {
     const s = start.current;
@@ -386,7 +396,7 @@ function useTapOnly() {
       Math.abs(e.nativeEvent.pageY - s.y) <= TAP_SLOP_PX
     );
   }, []);
-  return { onPressIn, wasTap };
+  return { onPressIn, wasTap, xOf };
 }
 
 const LineView = React.memo(function LineView({
@@ -458,6 +468,9 @@ const LineView = React.memo(function LineView({
   const runRightEdge = (boxWidth - lineWidth) / 2 + lineWidth;
 
   const wordAt = (xFromRight: number): MushafWord | null => {
+    // No point to go on is no word — never the line's last word by default,
+    // which is what a NaN used to fall through to (see pressLocationX).
+    if (!Number.isFinite(xFromRight)) return null;
     let cursor = 0;
     for (const word of line.words) {
       cursor += word.advance * fontSize + space;
@@ -547,11 +560,11 @@ const LineView = React.memo(function LineView({
           onPressIn={tap.onPressIn}
           onPress={e => {
             if (!tap.wasTap(e)) return;
-            const w = wordAt(runRightEdge - e.nativeEvent.locationX);
+            const w = wordAt(runRightEdge - tap.xOf(e));
             if (w) onPress(w);
           }}
           onLongPress={e => {
-            const w = wordAt(runRightEdge - e.nativeEvent.locationX);
+            const w = wordAt(runRightEdge - tap.xOf(e));
             if (w) onLongPress(w);
           }}
           delayLongPress={280}
@@ -641,11 +654,11 @@ const LineView = React.memo(function LineView({
         onPressIn={tap.onPressIn}
         onPress={e => {
           if (!tap.wasTap(e)) return;
-          const w = wordAt(runRightEdge - e.nativeEvent.locationX);
+          const w = wordAt(runRightEdge - tap.xOf(e));
           if (w) onPress(w);
         }}
         onLongPress={e => {
-          const w = wordAt(runRightEdge - e.nativeEvent.locationX);
+          const w = wordAt(runRightEdge - tap.xOf(e));
           if (w) onLongPress(w);
         }}
         delayLongPress={280}

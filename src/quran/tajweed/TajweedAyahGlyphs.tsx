@@ -15,6 +15,7 @@
  * reader under the sheet may well be in plain ink. An āyah that runs
  * over a page turn has words in two fonts, so a line never mixes pages.
  */
+import { pressLocationX } from '../../components/pressLocation';
 import { useCallback, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useAppPalette } from '../../hooks/useAppPalette';
@@ -236,7 +237,7 @@ function GlyphLine({
         onPress={
           onWordPress
             ? e => {
-                const w = wordAt(right - e.nativeEvent.locationX);
+                const w = wordAt(right - pressLocationX(e));
                 if (w) onWordPress(w);
               }
             : undefined
@@ -260,7 +261,7 @@ function GlyphLine({
     <Pressable
       disabled={!onWordPress}
       onPress={e => {
-        const w = wordAt(right - e.nativeEvent.locationX);
+        const w = wordAt(right - pressLocationX(e));
         if (w && onWordPress) onWordPress(w);
       }}
       style={{ width, height: lineHeight }}>
