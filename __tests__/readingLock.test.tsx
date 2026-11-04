@@ -174,7 +174,8 @@ describe('the readers', () => {
       const src = read(f);
       expect(src).toMatch(/onWordPress=\{wordsLive \? onWordPress : undefined\}/);
       expect(src).toMatch(/onWordLongPress=\{wordsLive \? onWordPress : undefined\}/);
-      expect(src).toMatch(/scrollEnabled=\{!locked\}/);
+      expect(src).toMatch(/scrollEnabled=\{!locked && !swipe\}/);
+      expect(src).toMatch(/useWebSwipePaging\(\{ turnPage, enabled: !locked \}\)/);
       // The badge rides in the fullscreen band (MushafPageHeader), fed from
       // here; the bar button locks on a tap and unlocks on a hold.
       expect(src).toMatch(/const lockBadge = useMemo\([\s\S]{0,300}onUnlock: \(\) => setLock\(false\)/);

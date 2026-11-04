@@ -42,7 +42,9 @@ describe('the muṣḥaf header', () => {
   });
 
   it("draws the arrow only when there is somewhere to go back to, in the page's ink", () => {
-    expect(src).toMatch(/navigation\.canGoBack\(\) \? \(\s*<TabBackButton[\s\S]{0,120}color=\{ink\}/);
+    // The page's ink — except over the index in a browser, where the arrow
+    // stands on the sidebar's colours.
+    expect(src).toMatch(/navigation\.canGoBack\(\) \? \(\s*<TabBackButton[\s\S]{0,300}color=\{webSpread && sidebarUp \? String\(palette\.textSolid\) : ink\}/);
   });
 
   it('carries the riwayah into the vertical bar’s column too, first after the arrow', () => {

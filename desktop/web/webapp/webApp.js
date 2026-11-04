@@ -6,11 +6,18 @@
 export const IS_WEB_APP = true;
 export const WEB_BASE_PATH = __MIHRAB_WEB_BASE__;
 export const WEB_APP_RECITER_ID = 'husary';
-/** A touch screen the size of a phone: the phone's page, not the desktop's. */
-export const WEB_APP_PHONE =
-  typeof window !== 'undefined' &&
-  window.matchMedia?.('(pointer: coarse)').matches === true &&
-  Math.min(window.screen?.width ?? 0, window.screen?.height ?? 0) < 600;
+/**
+ * A phone: the phone's page, not the desktop's. A touch screen the size of
+ * one — or a phone's browser saying so, since not every phone answers the
+ * pointer query with `coarse` (Android's WebView, some in-app browsers).
+ */
+export const WEB_APP_PHONE = (() => {
+  if (typeof window === 'undefined') return false;
+  const small = Math.min(window.screen?.width ?? 0, window.screen?.height ?? 0) < 600;
+  const touch = window.matchMedia?.('(pointer: coarse)').matches === true || navigator.maxTouchPoints > 0;
+  const phoneUa = /iPhone|iPod|Android.+Mobile/.test(navigator.userAgent);
+  return phoneUa || (touch && small);
+})();
 
 const ua = typeof navigator !== 'undefined' ? navigator.userAgent : '';
 const touchMac = typeof navigator !== 'undefined' && navigator.maxTouchPoints > 1 && /Macintosh/.test(ua);

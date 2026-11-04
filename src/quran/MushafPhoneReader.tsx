@@ -43,6 +43,7 @@ import React, {
 import {
   Animated,
   FlatList,
+  Platform,
   Pressable,
   ScrollView,
   StatusBar,
@@ -84,6 +85,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { volumeKeysAvailable } from '../native/volumeKeys';
 import { useTranslation } from 'react-i18next';
 import { useRegisterKeyPaging } from './useKeyPaging';
+import { useWebSwipePaging } from './useWebSwipePaging';
 import { useMushafPager } from './useMushafPager';
 import { useMushafFontSet, warmAround } from './useMushafPageFont';
 import { findPageForAyah } from './pages';
@@ -179,6 +181,14 @@ const WINDOW_READING = 5;
 const WINDOW_OPEN_MS = 700;
 
 type PageItemProps = {
+  /**
+   * The browser only: the item's height, the list's own. A native list
+   * gives its cells the list's height, so `height: '100%'` is the list; a
+   * browser's cell wrapper has no height of its own, and the item grew to
+   * its content — taller than the window, with the page's last line under
+   * the page bar and nothing to scroll it into view.
+   */
+  itemH?: number;
   page: number;
   /** Live: the FlatList item has to be exactly one viewport wide. */
   pageWidth: number;
@@ -243,6 +253,7 @@ const PhonePageItem = React.memo(function PhonePageItem({
   locked,
   wordsLive,
   lock,
+  itemH,
 }: PageItemProps) {
   // Locked: no tap does anything; a deliberate hold toggles the chrome.
   const onTap = locked ? undefined : onToggleFullscreen;
@@ -351,7 +362,12 @@ const PhonePageItem = React.memo(function PhonePageItem({
   }, [page, geometry, scrolls, playingSurah, playingAyah, pageBoxH, wordLine]);
 
   return (
-    <View style={[styles.item, { width: pageWidth, backgroundColor: pageBg }]}>
+    <View
+      style={[
+        styles.item,
+        { width: pageWidth, backgroundColor: pageBg },
+        itemH ? { height: itemH } : null,
+      ]}>
       {/* The header strip toggles fullscreen too — with a tap on a word now
           opening the ayah, the strip and the margins are where the chrome
           is put away and brought back.
@@ -776,6 +792,9 @@ export const MushafPhoneReader = React.memo(function MushafPhoneReader(
     available: volumeKeysAvailable(),
   });
   const locked = lock.locked;
+  // A browser on a touch screen turns by the finger's drag, one page at a
+  // time, instead of the list's own snapping scroll — see the hook.
+  const swipe = useWebSwipePaging({ turnPage, enabled: !locked });
   const wordsLive = lock.wordsLive;
   const [lockHint, setLockHint] = useState<'touch' | 'explain' | null>(null);
   const lockHintTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -917,9 +936,11 @@ export const MushafPhoneReader = React.memo(function MushafPhoneReader(
         locked={locked}
         wordsLive={wordsLive}
         lock={lockBadge}
+        itemH={Platform.OS === 'web' && listH > 0 ? listH : undefined}
       />
     ),
     [
+      listH,
       pageWidth,
       geometry,
       navPad,
@@ -979,7 +1000,7 @@ export const MushafPhoneReader = React.memo(function MushafPhoneReader(
         animated
       />
       <View
-        style={styles.listWrap}
+        style={[styles.listWrap, swipe?.areaStyle]}
         // A finger on the pager before the opening has widened the window
         // means a turn is coming now: draw the neighbours at once.
         onTouchStart={() => {
@@ -988,7 +1009,9 @@ export const MushafPhoneReader = React.memo(function MushafPhoneReader(
           // controls, rather than look broken.
           if (locked) showLockHint();
         }}
-        onLayout={e => setListH(e.nativeEvent.layout.height)}>
+        onLayout={e => setListH(e.nativeEvent.layout.height)}
+        {...(swipe?.panHandlers ?? {})}>
+        <Animated.View style={[styles.lean, swipe?.leanStyle]}>
         <FlatList
           ref={listRef}
           data={data}
@@ -1005,8 +1028,9 @@ export const MushafPhoneReader = React.memo(function MushafPhoneReader(
           scrollEventThrottle={16}
           onScrollToIndexFailed={pagerHandlers.onScrollToIndexFailed}
           onScrollBeginDrag={pagerHandlers.onScrollBeginDrag}
-          // Touch-locked: only the volume buttons turn the page (#72).
-          scrollEnabled={!locked}
+          // Touch-locked: only the volume buttons turn the page (#72). In a
+          // touch browser the finger's drag turns it instead (`swipe`).
+          scrollEnabled={!locked && !swipe}
           // The content has been laid out at a new width (a rotation, a
           // resize, another muṣḥaf): re-anchor the settled page against
           // it. The re-anchor that runs when the width CHANGES is executed
@@ -1024,6 +1048,7 @@ export const MushafPhoneReader = React.memo(function MushafPhoneReader(
           removeClippedSubviews={false}
           style={{ backgroundColor: pageBg }}
         />
+        </Animated.View>
         {/* The rotation cover — see `phoneGeometryFits`. A plain sheet of
             the page colour over the pager while its offset and its item
             width disagree, so the reader never shows two pages sliding
@@ -1198,6 +1223,7 @@ const styles = StyleSheet.create({
    * in the app's own direction.
    */
   listWrap: { flex: 1, direction: 'ltr' },
+  lean: { flex: 1 },
   lockHintWrap: {
     position: 'absolute',
     start: SPACING.lg,

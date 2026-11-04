@@ -6,6 +6,7 @@
  * compass, haptics, QR scanning) are left absent: every wrapper in
  * src/native already treats a missing module as "this device cannot".
  */
+import { desktop } from '../shims/desktop';
 import { NativeModules } from 'react-native-web/dist/index';
 import './fonts';
 import './network';
@@ -33,6 +34,8 @@ Object.assign(NativeModules, {
   PrayerBuildInfo,
   RateApp,
   SecureRandom,
-  SyncFolder,
+  // Mihrab Web has no folders to sync through: without the module the app
+  // offers no sync at all (`hasFolderPicker`), rather than a page that fails.
+  ...(desktop()?.syncFolder ? { SyncFolder } : null),
   SystemClock,
 });

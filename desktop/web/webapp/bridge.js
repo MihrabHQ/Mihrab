@@ -430,20 +430,8 @@ window.mihrabDesktop = {
       }
     },
   },
-  syncFolder: {
-    pick: async () => null,
-    hasAccess: async () => false,
-    forget: async () => undefined,
-    list: async () => [],
-    read: async () => {
-      throw new Error('Sync is not part of the web app.');
-    },
-    write: async () => {
-      throw new Error('Sync is not part of the web app.');
-    },
-    remove: async () => undefined,
-    pickFile: async () => null,
-  },
+  // No `syncFolder`: a browser has no folder to sync through, and without
+  // it the app offers no sync (see desktop/web/native/install.js).
   clipboard: {
     read: () => navigator.clipboard?.readText?.() ?? Promise.resolve(''),
     write: text => navigator.clipboard?.writeText?.(String(text ?? '')) ?? Promise.resolve(),

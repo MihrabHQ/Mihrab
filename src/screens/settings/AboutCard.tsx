@@ -1,6 +1,7 @@
 // hover-ok: list-row / settings-row / sheet pressables. Hover-state
 // treatment would visually noise these dense surfaces; the touch
 // feedback (pressed opacity / ripple) is the right affordance here.
+import { hasFolderPicker } from '../../sync/folderAccess';
 import { memo, useMemo, useRef, useState } from 'react';
 import { Alert, Linking, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -124,11 +125,14 @@ function AboutCardImpl() {
           help={t('backup.exportSection')}
           onPress={goToBackup}
         />
-        <SettingsLinkRow
-          title={t('nav.sync')}
-          help={t('sync.settingsRowHint')}
-          onPress={goToSync}
-        />
+        {/* Sync needs a folder to write to; Mihrab Web has none. */}
+        {hasFolderPicker() ? (
+          <SettingsLinkRow
+            title={t('nav.sync')}
+            help={t('sync.settingsRowHint')}
+            onPress={goToSync}
+          />
+        ) : null}
         {settings.dataStatsUnlocked ? (
           <SettingsToggleRow
             title={t('dataStats.toggle')}

@@ -64,6 +64,7 @@ import { MiniPlayer } from './audio/MiniPlayer';
 import { ActiveWordProbe } from './audio/ActiveWordProbe';
 import { useRegisterKeyPaging } from './useKeyPaging';
 import { useMushafPager } from './useMushafPager';
+import { useWebSwipePaging } from './useWebSwipePaging';
 import { useMushafFontSet, warmAround } from './useMushafPageFont';
 import { findPageForAyah } from './pages';
 import { riwayahById, type RiwayahId } from './riwayat';
@@ -470,6 +471,9 @@ export const MushafSpreadReader = React.memo(function MushafSpreadReader(
     available: volumeKeysAvailable(),
   });
   const locked = lock.locked;
+  // A tablet's browser turns by the finger, one spread a swipe — the same
+  // as the phone reader (see the hook).
+  const swipe = useWebSwipePaging({ turnPage, enabled: !locked });
   const wordsLive = lock.wordsLive;
   const setLock = useCallback((next: boolean) => setQuranPrefs({ touchLock: next }), []);
   const lockBadge = useMemo(
@@ -668,11 +672,13 @@ export const MushafSpreadReader = React.memo(function MushafSpreadReader(
       ) : null}
       <View style={styles.reader}>
       <View
-        style={styles.listWrap}
+        style={[styles.listWrap, swipe?.areaStyle]}
         onLayout={e => {
           const { width: w, height: h } = e.nativeEvent.layout;
           setList(prev => (prev.w === w && prev.h === h ? prev : { w, h }));
-        }}>
+        }}
+        {...(swipe?.panHandlers ?? {})}>
+        <Animated.View style={[styles.lean, swipe?.leanStyle]}>
         <FlatList
           ref={listRef}
           data={data}
@@ -691,7 +697,7 @@ export const MushafSpreadReader = React.memo(function MushafSpreadReader(
           onScrollBeginDrag={pagerHandlers.onScrollBeginDrag}
           // The reading lock (#75): no swipe turns the spread. The keys and
           // the chevrons still do — those are not a brush of the hand.
-          scrollEnabled={!locked}
+          scrollEnabled={!locked && !swipe}
           // The content has been laid out at a new width (a rotation, a
           // resize, another muṣḥaf): re-anchor the settled page against
           // it. The re-anchor that runs when the width CHANGES is executed
@@ -704,6 +710,7 @@ export const MushafSpreadReader = React.memo(function MushafSpreadReader(
           removeClippedSubviews
           style={{ backgroundColor: pageBg }}
         />
+        </Animated.View>
         {/* The rotation cover, as on the phone — see `phoneGeometryFits`.
             An iPad turned on its side re-pairs the list AND changes the
             item width, and the offset is corrected a frame later; without
@@ -764,6 +771,26 @@ export const MushafSpreadReader = React.memo(function MushafSpreadReader(
             </Pressable>
           ) : null}
         </>
+      ) : null}
+
+      {/* THE WAY OUT OF FULLSCREEN, IN A BROWSER. The app's iPad and Mac
+          windows have the system's own way out (and Esc), and the strip
+          and the margins toggle it there; a browser tab has none of that
+          on screen, and a reader who came in by the ⛶ was left guessing.
+          The ✕ sits at the outer corner of the left page, opposite the
+          surah name — where the phone reader puts its own. */}
+      {isFullscreen && Platform.OS === 'web' ? (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t('quran.exitFullscreen', 'Exit fullscreen')}
+          hitSlop={12}
+          onPress={onToggleFullscreen}
+          style={({ hovered }: { pressed: boolean; hovered?: boolean }) => [
+            styles.exitFullscreen,
+            { backgroundColor: railChrome.control, opacity: hovered ? 1 : 0.75 },
+          ]}>
+          <Text style={[styles.exitFullscreenGlyph, { color: ornament }]}>✕</Text>
+        </Pressable>
       ) : null}
 
       {/* 604 pages is too many for ‹ ›. A rail states where you are and
@@ -836,6 +863,7 @@ const styles = StyleSheet.create({
    * in the app's own direction.
    */
   listWrap: { flex: 1, direction: 'ltr' },
+  lean: { flex: 1 },
   item: { height: '100%' },
   spreadRow: { flexDirection: 'row' },
   // Centred in the middle gap, which the three-way split above makes
@@ -862,6 +890,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   chevronLeft: { left: 8 },
+  // Physical: the outer corner of the left page, like the chevrons.
+  exitFullscreen: {
+    position: 'absolute',
+    top: 10,
+    left: 12,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  exitFullscreenGlyph: { fontSize: 17, lineHeight: 20 }, // tokens-ok-line: a glyph sized to its button
   chevronRight: { right: 8 },
   chevronGlyph: { fontSize: 30, fontWeight: '400', lineHeight: 34 }, // tokens-ok-line: display or Arabic scale, sized by hand
 });

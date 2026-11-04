@@ -14,6 +14,7 @@
  * use, so the danger tone on Reset and the switch on the reminder look
  * the way they look everywhere else in the app.
  */
+import { hasFolderPicker } from '../../sync/folderAccess';
 import { useCallback, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Switch, Text, View } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
@@ -141,7 +142,7 @@ export function LogOptionsSheet({
                 />
               }
             />
-            {syncReady ? (
+            {!hasFolderPicker() ? null : syncReady ? (
               <Row
                 tone="accent"
                 title={t('sync.syncNow')}

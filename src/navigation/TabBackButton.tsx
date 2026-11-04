@@ -64,7 +64,7 @@ import { SPACING } from '../theme/tokens';
  * to a row the device did not lay out: the Duas arrow sat on the trailing
  * edge in Arabic, pointing away from it.
  */
-function BackArrow({ color, rtl }: { color: string; rtl: boolean }) {
+function BackArrow({ color, rtl, chevron }: { color: string; rtl: boolean; chevron: boolean }) {
   const flip = rtl ? [{ scaleX: -1 as const }] : undefined;
   return (
     <Svg
@@ -78,12 +78,12 @@ function BackArrow({ color, rtl }: { color: string; rtl: boolean }) {
         stroke={color}
         // iOS's chevron carries the whole control, so it is drawn a hair
         // heavier; Android's shares the weight with its shaft.
-        strokeWidth={Platform.OS === 'ios' ? 2.2 : 2}
+        strokeWidth={chevron ? 2.2 : 2}
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       {/* Android's arrow has a shaft; iOS's chevron is the stroke alone. */}
-      {Platform.OS === 'ios' ? null : (
+      {chevron ? null : (
         <Path
           d="M8.5 12H20"
           stroke={color}
@@ -100,6 +100,7 @@ export function TabBackButton({
   label,
   inNativeHeader = false,
   color,
+  chevron = Platform.OS === 'ios',
 }: {
   /**
    * Somewhere other than Today. A tab that opens a page INSIDE itself —
@@ -122,6 +123,11 @@ export function TabBackButton({
    * muṣḥaf's header takes the page's tone, near-black at night.
    */
   color?: string;
+  /**
+   * The bare chevron, as iOS draws it, rather than Android's arrow — for a
+   * bar dressed as the iPad's (the muṣḥaf's spread in a browser).
+   */
+  chevron?: boolean;
 } = {}) {
   const { t } = useTranslation();
   const { palette } = useAppPalette();
@@ -143,6 +149,7 @@ export function TabBackButton({
       <BackArrow
         color={color ?? palette.textSolid}
         rtl={inNativeHeader ? I18nManager.isRTL : appRtl}
+        chevron={chevron}
       />
     </Pressable>
   );

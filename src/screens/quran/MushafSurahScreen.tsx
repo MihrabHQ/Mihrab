@@ -337,7 +337,24 @@ export function MushafSurahScreen({
      * `start`/`end` because this is the physical side the sidebar is on,
      * chosen by the layout direction (see the title shift above).
      */
-    const barChrome = isMacCatalyst
+    /**
+     * THE BROWSER'S SPREAD WEARS THE iPAD'S BAR.
+     *
+     * The web header was an opaque strip in the page's colour across the
+     * whole window: it covered the top of the index sidebar, so the dark
+     * list started under a band of paper, and its controls sat loose on
+     * it. On the iPad the bar is clear — the sidebar runs to the top of
+     * the window under the back button, the page runs under the title —
+     * and the controls sit in capsules (`webGlass` below). Same here.
+     */
+    const webSpread = Platform.OS === 'web' && deviceClass !== 'phone';
+    const barChrome = webSpread
+      ? {
+          headerTransparent: true,
+          headerShadowVisible: false,
+          headerStyle: { backgroundColor: 'transparent' },
+        }
+      : isMacCatalyst
       ? {
           headerStyle: { backgroundColor: 'transparent' },
           headerBackground: () => (
@@ -471,7 +488,10 @@ export function MushafSurahScreen({
       <TabBackButton
         onPress={() => navigation.goBack()}
         inNativeHeader
-        color={ink}
+        // Over the index in a browser (the sidebar keeps the app's own
+        // colours), the arrow takes the index's ink, not the page's.
+        color={webSpread && sidebarUp ? String(palette.textSolid) : ink}
+        chevron={Platform.OS === 'ios' || (Platform.OS === 'web' && deviceClass !== 'phone')}
       />
     ) : null;
     // The riwayah's button — only in the muṣḥaf, because the translation
@@ -567,7 +587,19 @@ export function MushafSurahScreen({
        * is somewhere to go back to, as the system's would be. The swipe
        * and the hardware back do not go through it.
        */
-      headerLeft: () => (
+      headerLeft: () =>
+        webSpread ? (
+          // The iPad's arrangement (see `unstable_headerLeftItems` below):
+          // the arrow in its own capsule over the index, the riwayah past
+          // the index, at the page's leading edge.
+          <View key={`left-${headerW}x${headerH}`} style={headerSide.row}>
+            {backButton ? <View style={[webGlass.capsule, webGlass.round]}>{backButton}</View> : null}
+            {sidebarUp ? (
+              <View style={{ width: Math.max(0, SIDEBAR_WIDTH - WEB_RIWAYAH_PAST_INDEX) }} />
+            ) : null}
+            {riwayahChip}
+          </View>
+        ) : (
         <View
           // Keyed on the settled window size — see the note by `headerW`.
           key={`left-${headerW}x${headerH}`}
@@ -620,11 +652,15 @@ export function MushafSurahScreen({
         <View
           // Keyed on the settled window size — see the note by `headerW`.
           key={`chips-${headerW}x${headerH}`}
-          style={{
-            flexDirection: 'row',
-            gap: desktopSize(14),
-            alignItems: 'center',
-          }}>
+          style={[
+            {
+              flexDirection: 'row',
+              gap: desktopSize(14),
+              alignItems: 'center',
+            },
+            // One capsule for the page's controls, as the iPad groups them.
+            webSpread ? [webGlass.capsule, webGlass.group] : null,
+          ]}>
           {onToggleMode ? (
             // Only when the verse-by-verse reader is switched on in
             // Settings → Quran. A header control for a reader that is not
@@ -866,6 +902,29 @@ const columnStyles = StyleSheet.create({
     gap: SPACING.xl,
   },
   group: { alignItems: 'center', gap: SPACING.xl },
+});
+
+/**
+ * How far the back capsule and its gaps reach into the index in a browser,
+ * so the riwayah lands just past it, over the page.
+ */
+const WEB_RIWAYAH_PAST_INDEX = 64;
+
+/**
+ * The iPad's glass, as near as a browser draws it: a neutral tint that
+ * reads on the dark index and on any page tone alike, and a hairline.
+ */
+const webGlass = StyleSheet.create({
+  capsule: {
+    backgroundColor: 'rgba(128,128,128,0.16)',
+    borderColor: 'rgba(128,128,128,0.24)',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: 999,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  round: { width: 44, height: 44, paddingStart: 4 },
+  group: { height: 44, paddingHorizontal: 14, marginEnd: 4 },
 });
 
 const headerSide = StyleSheet.create({

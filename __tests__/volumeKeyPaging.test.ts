@@ -60,7 +60,8 @@ describe('the reading lock and the buttons (#72, #75)', () => {
 
   it('stops the swipe and the tap, and a hold brings the controls', () => {
     const phone = readFileSync(path.join(__dirname, '..', 'src/quran/MushafPhoneReader.tsx'), 'utf8');
-    expect(phone).toMatch(/scrollEnabled=\{!locked\}/);
+    expect(phone).toMatch(/scrollEnabled=\{!locked && !swipe\}/);
+    expect(phone).toMatch(/useWebSwipePaging\(\{ turnPage, enabled: !locked \}\)/);
     expect(phone).toMatch(/const onTap = locked \? undefined : onToggleFullscreen;/);
     expect(phone).toMatch(/const onHold = locked \? onToggleFullscreen : undefined;/);
     // And says so when touched, rather than look broken.

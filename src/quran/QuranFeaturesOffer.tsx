@@ -20,6 +20,7 @@
  * download the same way the Settings switch does — see
  * `tajweedAutoDownload`.
  */
+import { IS_WEB_APP } from '../config/webApp';
 import { COLOUR_FONTS_DRAWN } from './tajweed/tajweedSupport';
 import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Switch, Text, View } from 'react-native';
@@ -183,7 +184,7 @@ export function QuranFeaturesOfferSheet({
             />
           ))}
         </Group>
-        {features.includes('tajweedColours') && resolveRiwayah(prefs.riwayah) !== 'warsh' ? (
+        {features.includes('tajweedColours') && resolveRiwayah(prefs.riwayah) !== 'warsh' && !IS_WEB_APP ? (
           <Text style={[typeStyle('footnote'), styles.note, { color: palette.muted }]}>
             {t('quran.featuresOfferTajweedNote', {
               defaultValue:
