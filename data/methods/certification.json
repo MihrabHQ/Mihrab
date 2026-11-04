@@ -1,7 +1,7 @@
 {
   "sweden": {
     "certified": true,
-    "checkedAt": "2026-11-02",
+    "checkedAt": "2026-11-04",
     "places": 108,
     "checks": [
       {
@@ -38,7 +38,7 @@
   },
   "diyanet": {
     "certified": true,
-    "checkedAt": "2026-11-02",
+    "checkedAt": "2026-11-04",
     "places": 8132,
     "checks": [
       {
@@ -84,7 +84,7 @@
   },
   "algeria": {
     "certified": true,
-    "checkedAt": "2026-11-02",
+    "checkedAt": "2026-11-04",
     "places": 68,
     "checks": [
       {
@@ -107,7 +107,7 @@
   },
   "indonesia": {
     "certified": true,
-    "checkedAt": "2026-11-02",
+    "checkedAt": "2026-11-04",
     "places": 517,
     "checks": [
       {
