@@ -286,6 +286,45 @@ jobs:
             ${{ runner.temp }}/snapshot.png
           if-no-files-found: warn
 
+      # A release goes to the Microsoft Store on its own: the x64 and arm64
+      # packages bundled into one .appxbundle and submitted with the Store CLI,
+      # which commits the submission for certification; it is live when it
+      # passes. Needs the four STORE_* secrets (desktop/README.md, "Microsoft
+      # Store"); without them the step says so and the .appx files stay in the
+      # mihrab-microsoft-store artifact for a hand upload.
+      - name: The Microsoft Store CLI
+        if: runner.os == 'Windows' && github.ref_type == 'tag' && vars.DESKTOP_RELEASE == 'true'
+        uses: microsoft/microsoft-store-apppublisher@v1.1
+
+      - name: Submit to the Microsoft Store
+        if: runner.os == 'Windows' && github.ref_type == 'tag' && vars.DESKTOP_RELEASE == 'true'
+        working-directory: desktop
+        shell: pwsh
+        env:
+          STORE_TENANT_ID: ${{ secrets.STORE_TENANT_ID }}
+          STORE_SELLER_ID: ${{ secrets.STORE_SELLER_ID }}
+          STORE_CLIENT_ID: ${{ secrets.STORE_CLIENT_ID }}
+          STORE_CLIENT_SECRET: ${{ secrets.STORE_CLIENT_SECRET }}
+          STORE_PRODUCT_ID: 9N43KNMJHBWV
+        run: |
+          if (-not $env:STORE_CLIENT_SECRET) {
+            Write-Host '::notice::No STORE_* secrets: upload the mihrab-microsoft-store artifact in Partner Center by hand.'
+            exit 0
+          }
+          $version = (Get-Content package.json -Raw | ConvertFrom-Json).version + '.0'
+          $dir = Join-Path $env:RUNNER_TEMP 'store-bundle'
+          New-Item -ItemType Directory -Force $dir | Out-Null
+          Copy-Item dist\*.appx $dir
+          $makeappx = Get-ChildItem "${env:ProgramFiles(x86)}\Windows Kits\10\bin\*\x64\makeappx.exe" | Sort-Object FullName | Select-Object -Last 1
+          $bundle = Join-Path $env:RUNNER_TEMP "Mihrab-$version.appxbundle"
+          & $makeappx.FullName bundle /d $dir /p $bundle /bv $version /o
+          if ($LASTEXITCODE) { throw 'bundling the packages failed' }
+          msstore reconfigure --tenantId $env:STORE_TENANT_ID --sellerId $env:STORE_SELLER_ID `
+            --clientId $env:STORE_CLIENT_ID --clientSecret $env:STORE_CLIENT_SECRET
+          if ($LASTEXITCODE) { throw 'the Store CLI could not sign in' }
+          msstore publish $bundle -id $env:STORE_PRODUCT_ID
+          if ($LASTEXITCODE) { throw 'the Store submission failed' }
+
       # What goes up to Partner Center: the unsigned .appx files, kept apart.
       - uses: actions/upload-artifact@v4
         if: runner.os == 'Windows' && (github.ref_type == 'tag' || github.event_name == 'workflow_dispatch')
