@@ -389,3 +389,32 @@ describe('the page says which category is open', () => {
     expect(() => render()).not.toThrow();
   });
 });
+
+describe('the bedtime Muʿawwidhāt on the screen — issue #120', () => {
+  it('step through the three surahs a round at a time, stop at 3 / 3, and tick every surah', () => {
+    const tree = render();
+    const row = tree.root
+      .findAllByProps({ accessibilityRole: 'button' })
+      .find(n => n.props.accessibilityLabel === 'duas.cat.sleep');
+    act(() => {
+      row!.props.onPress();
+    });
+    expect(duasByCategory('sleep')[0].id).toBe('sleep_three_quls');
+    // The first counter on the page is the Muʿawwidhāt's (read afresh: its props change with each tap).
+    const counter = () =>
+      tree.root.findAllByProps({ accessibilityRole: 'button' }).find(n => n.props.accessibilityLabel === 'Tap to count')!;
+    const value = () => counter().props.accessibilityValue.text;
+    // A tap on al-Ikhlas and al-Falaq moves on; an-Nas completes the round.
+    act(() => counter().props.onPress());
+    act(() => counter().props.onPress());
+    expect(value()).toBe('0 / 3');
+    act(() => counter().props.onPress());
+    expect(value()).toBe('1 / 3');
+    for (let i = 0; i < 9; i++) act(() => counter().props.onPress());
+    expect(value()).toBe('3 / 3'); // not 9 / 3
+    const shown = texts(tree.root);
+    for (const name of ['Al-Ikhlas', 'Al-Falaq', 'An-Nas']) {
+      expect(shown.some(s => s.startsWith(name) && s.endsWith('✓'))).toBe(true);
+    }
+  });
+});

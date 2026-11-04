@@ -38,6 +38,7 @@ import {
 import { ShareIcon } from '../theme/icons';
 import { duaShareText, type DuaShareParts } from '../share/shareText';
 import { ShareDuaSheet } from '../duas/ShareDuaSheet';
+import { countKeyOf, partsDone, tapCount } from '../duas/duaCount';
 import { TYPE, arabicTextStyle } from '../theme/typography';
 import { READING_BASE, READING_BASE_UNLEADED } from '../theme/readingText';
 import { useReadingText } from '../hooks/useReadingText';
@@ -312,18 +313,18 @@ export function DuasScreen({ route, navigation }: DuasScreenProps = {}) {
     setOpenParts(prev => ({ ...prev, [key]: !prev[key] }));
   }, []);
 
-  const onIncrement = useCallback((id: string, target: number) => {
-    setCounts(prev => {
-      const cur = prev[id] ?? 0;
-      const next = cur + 1;
-      Vibration.vibrate(
-        target > 0 && next === target ? [0, 60, 80, 60, 80, 60] : 20,
-      );
-      return { ...prev, [id]: next };
-    });
-  }, []);
-  const onResetCount = useCallback((id: string) => {
-    setCounts(prev => ({ ...prev, [id]: 0 }));
+  /** One tap on a card's counter (the rules: src/duas/duaCount.ts — issue #120). */
+  const onTap = useCallback((dua: Dua, partIndex: number) => {
+    const tap = tapCount(dua, partIndex, counts);
+    if (tap.step === 'none') return;
+    Vibration.vibrate(tap.step === 'done' ? [0, 60, 80, 60, 80, 60] : 20);
+    if (tap.step !== 'part') setCounts(prev => ({ ...prev, [tap.key]: tap.count }));
+    if (tap.part !== partIndex) setPartSel(prev => ({ ...prev, [dua.id]: tap.part }));
+  }, [counts]);
+  const onResetCount = useCallback((dua: Dua, key: string) => {
+    setCounts(prev => ({ ...prev, [key]: 0 }));
+    // A set starts again from its first surah.
+    if (dua.parts && !dua.countEach) setPartSel(prev => ({ ...prev, [dua.id]: 0 }));
   }, []);
 
   /**
@@ -538,23 +539,11 @@ export function DuasScreen({ route, navigation }: DuasScreenProps = {}) {
                   ? body?.arabic ?? dua.arabic.split(' · ')[partIndex] ?? dua.arabic
                   : dua.arabic;
                 const translitShown = part ? part.transliteration : dua.transliteration;
-                const countKey =
-                  part && dua.countEach ? `${dua.id}|${part.surah}` : dua.id;
+                const countKey = countKeyOf(dua, partIndex);
                 const countNow = counts[countKey] ?? 0;
                 const target = dua.repeat ?? 0;
-                const onCount = () => {
-                  onIncrement(countKey, target);
-                  // A surah counted out hands on to the next.
-                  if (
-                    part &&
-                    dua.countEach &&
-                    dua.parts &&
-                    countNow + 1 === target &&
-                    partIndex + 1 < dua.parts.length
-                  ) {
-                    setPartSel(prev => ({ ...prev, [dua.id]: partIndex + 1 }));
-                  }
-                };
+                const onCount = () => onTap(dua, partIndex);
+                const tabsDone = partsDone(dua, counts);
                 return (
                 <View
                   key={dua.id}
@@ -622,10 +611,7 @@ export function DuasScreen({ route, navigation }: DuasScreenProps = {}) {
                         })}
                         segments={dua.parts.map((part, i) => {
                           const name = findSurah(part.surah)?.romanized ?? String(part.surah);
-                          const done =
-                            dua.countEach &&
-                            (counts[`${dua.id}|${part.surah}`] ?? 0) >= (dua.repeat ?? 0) &&
-                            (dua.repeat ?? 0) > 0;
+                          const done = tabsDone[i];
                           return {
                             key: String(i),
                             label: done ? `${name} ✓` : name,
@@ -805,7 +791,7 @@ export function DuasScreen({ route, navigation }: DuasScreenProps = {}) {
                       <Pressable
                         accessibilityRole="button"
                         accessibilityLabel={t('tasbih.reset', 'Reset')}
-                        onPress={() => onResetCount(countKey)}
+                        onPress={() => onResetCount(dua, countKey)}
                         hitSlop={8}
                         style={styles.counterReset}
                       >
