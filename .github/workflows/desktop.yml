@@ -172,14 +172,14 @@ jobs:
           set -e
           cat deb.log | tail -20
           [ "$code" = 124 ] || { echo "the installed app exited ($code) instead of running"; exit 1; }
-          sh scripts/install-linux.sh uninstall
+          sh scripts/uninstall-linux.sh
           if dpkg -s mihrab >/dev/null 2>&1; then echo "the package is still registered"; dpkg -s mihrab | head -3; exit 1; fi
           MIHRAB_FORMAT=appimage sh scripts/install-linux.sh
           test -x "$HOME/.local/share/mihrab/mihrab"
           test -f "$HOME/.local/share/applications/mihrab.desktop"
           test -L "$HOME/.local/bin/mihrab"
           mkdir -p "$HOME/.config/Mihrab" && touch "$HOME/.config/Mihrab/settings"
-          sh scripts/install-linux.sh uninstall
+          sh scripts/install-linux.sh uninstall   # the install script's own way out, kept in step
           for left in "$HOME/.local/share/mihrab" "$HOME/.local/bin/mihrab" "$HOME/.config/Mihrab"; do
             if [ -e "$left" ]; then echo "left behind: $left"; exit 1; fi
           done
@@ -199,7 +199,7 @@ jobs:
           ping -n 25 127.0.0.1 >nul
           reg query "HKCU\Software\Microsoft\Windows\CurrentVersion\Run"
           reg query "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v com.prayer_times.desktop || (echo no start-at-login entry under that name & exit /b 1)
-          call scripts\install-windows.cmd uninstall || exit /b 1
+          call scripts\uninstall-windows.cmd || exit /b 1
           if exist "%LOCALAPPDATA%\Programs\Mihrab\Mihrab.exe" (echo still installed & exit /b 1)
           if exist "%APPDATA%\Mihrab" (echo settings left behind & exit /b 1)
           reg query "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v com.prayer_times.desktop >nul 2>&1 && (echo start-at-login entry left behind & exit /b 1)

@@ -2,7 +2,8 @@
 rem Mihrab for Windows, the desktop preview. In Command Prompt:
 rem
 rem   install:  curl -fsSLo "%TEMP%\mihrab.cmd" https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/install-windows.cmd && "%TEMP%\mihrab.cmd"
-rem   remove:   curl -fsSLo "%TEMP%\mihrab.cmd" https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/install-windows.cmd && "%TEMP%\mihrab.cmd" uninstall
+rem   remove:   curl -fsSLo "%TEMP%\mihrab-remove.cmd" https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/uninstall-windows.cmd && "%TEMP%\mihrab-remove.cmd"
+rem             (or this script with `uninstall`: the same, kept in step)
 rem
 rem Installs for this user only (no administrator prompt) into
 rem %LOCALAPPDATA%\Programs\Mihrab, with Start menu and desktop shortcuts.
@@ -57,5 +58,5 @@ if not exist "%APPDIR%\Mihrab.exe" (
 echo Mihrab is installed.
 if not defined MIHRAB_FROM start "" "%APPDIR%\Mihrab.exe"
 echo To remove it again:
-echo   curl -fsSLo "%%TEMP%%\mihrab.cmd" https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/install-windows.cmd ^&^& "%%TEMP%%\mihrab.cmd" uninstall
+echo   curl -fsSLo "%%TEMP%%\mihrab-remove.cmd" https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/uninstall-windows.cmd ^&^& "%%TEMP%%\mihrab-remove.cmd"
 exit /b 0

@@ -2,7 +2,8 @@
 # Mihrab for Linux, the desktop preview.
 #
 #   install:  curl -fsSL https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/install-linux.sh | sh
-#   remove:   curl -fsSL https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/install-linux.sh | sh -s uninstall
+#   remove:   curl -fsSL https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/uninstall-linux.sh | sh
+#             (or this script with `uninstall`: the same, kept in step)
 #
 # Debian, Ubuntu, Mint and the rest of apt's family get the .deb (sudo asks
 # for your password once): it brings its own dependencies and the sandbox
@@ -114,4 +115,4 @@ if [ -n "${DISPLAY:-}${WAYLAND_DISPLAY:-}" ] && [ -z "${MIHRAB_FROM:-}" ]; then
 else
   say "Open it from your applications menu. To remove it again:"
 fi
-say "  curl -fsSL https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/install-linux.sh | sh -s uninstall"
+say "  curl -fsSL https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/uninstall-linux.sh | sh"

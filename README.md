@@ -182,7 +182,7 @@ curl -fsSLo "%TEMP%\mihrab.cmd" https://raw.githubusercontent.com/MihrabHQ/Mihra
 Remove it, with its settings:
 
 ```bat
-curl -fsSLo "%TEMP%\mihrab.cmd" https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/install-windows.cmd && "%TEMP%\mihrab.cmd" uninstall
+curl -fsSLo "%TEMP%\mihrab-remove.cmd" https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/uninstall-windows.cmd && "%TEMP%\mihrab-remove.cmd"
 ```
 
 **Linux** — in a terminal. Debian, Ubuntu and their family get the `.deb` (sudo asks once);
@@ -195,13 +195,15 @@ curl -fsSL https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/script
 Remove it, with its settings:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/install-linux.sh | sh -s uninstall
+curl -fsSL https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/uninstall-linux.sh | sh
 ```
 
-Both commands run a script from this repository, which you can read first:
-[`desktop/scripts/install-windows.cmd`](desktop/scripts/install-windows.cmd) and
-[`desktop/scripts/install-linux.sh`](desktop/scripts/install-linux.sh). Each one installs,
-and with `uninstall` removes; the Desktop workflow runs both on every build.
+Each command runs a script from this repository, which you can read first:
+[`install-windows.cmd`](desktop/scripts/install-windows.cmd) and
+[`uninstall-windows.cmd`](desktop/scripts/uninstall-windows.cmd),
+[`install-linux.sh`](desktop/scripts/install-linux.sh) and
+[`uninstall-linux.sh`](desktop/scripts/uninstall-linux.sh). The Desktop workflow runs all
+four on every build.
 
 ---
 

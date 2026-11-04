@@ -291,11 +291,11 @@ const DESKTOP_SCRIPTS = 'https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/
 const DESKTOP_COMMANDS = {
   windows: [
     `curl -fsSLo "%TEMP%\\mihrab.cmd" ${DESKTOP_SCRIPTS}/install-windows.cmd && "%TEMP%\\mihrab.cmd"`,
-    `curl -fsSLo "%TEMP%\\mihrab.cmd" ${DESKTOP_SCRIPTS}/install-windows.cmd && "%TEMP%\\mihrab.cmd" uninstall`,
+    `curl -fsSLo "%TEMP%\\mihrab-remove.cmd" ${DESKTOP_SCRIPTS}/uninstall-windows.cmd && "%TEMP%\\mihrab-remove.cmd"`,
   ],
   linux: [
     `curl -fsSL ${DESKTOP_SCRIPTS}/install-linux.sh | sh`,
-    `curl -fsSL ${DESKTOP_SCRIPTS}/install-linux.sh | sh -s uninstall`,
+    `curl -fsSL ${DESKTOP_SCRIPTS}/uninstall-linux.sh | sh`,
   ],
 };
 
