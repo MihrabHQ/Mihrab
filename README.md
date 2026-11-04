@@ -165,7 +165,7 @@ Prayer times computed with **[mihrab-methods](https://github.com/MihrabHQ/mihrab
 | **Android — F-Droid** | [f-droid.org/packages/com.prayer_times](https://f-droid.org/packages/com.prayer_times/) |
 | **Android — APK** | [GitHub Releases](https://github.com/MihrabHQ/Mihrab/releases/latest) → `Mihrab-vX.Y.Z.apk` (ARM phones, 32- and 64-bit) |
 | **In your browser** | [Mihrab Web](https://mihrabhq.github.io/) — prayer times for where you are, browser notifications at each prayer, and the whole Qur'an (Ḥafṣ with tajwīd, Warsh, Qālūn, Shuʿbah and the IndoPak print, hard-word meanings, and Husary with word highlight). Settings and bookmarks stay in your browser; add it to your home screen to keep it close. Built from `desktop/` (`npx webpack --mode production --env web`, then `desktop/scripts/build-web.js`) into [MihrabHQ.github.io](https://github.com/MihrabHQ/MihrabHQ.github.io) |
-| **Windows & Linux (preview)** | One command to install, one to remove — [below](#windows-and-linux-preview) |
+| **Windows & Linux (preview)** | Windows: one command to install, one to remove. Linux: apt, dnf, zypper or pacman — [below](#windows-and-linux-preview) |
 
 ### Windows and Linux (preview)
 
@@ -185,25 +185,52 @@ Remove it, with its settings:
 curl -fsSLo "%TEMP%\mihrab-remove.cmd" https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/uninstall-windows.cmd && "%TEMP%\mihrab-remove.cmd"
 ```
 
-**Linux** — in a terminal. Debian, Ubuntu and their family get the `.deb` (sudo asks once);
-other distributions get the AppImage, unpacked into your home folder:
+**Linux** — with your distribution's own package manager, from Mihrab's signed
+repositories at [mihrabhq.github.io/packages](https://mihrabhq.github.io/packages).
+Once it is added, Mihrab is updated with the rest of your system.
+
+Debian, Ubuntu, Mint (apt):
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/install-linux.sh | sh
+sudo curl -fsSLo /usr/share/keyrings/mihrab.gpg https://mihrabhq.github.io/packages/mihrab.gpg
+sudo curl -fsSLo /etc/apt/sources.list.d/mihrab.sources https://mihrabhq.github.io/packages/mihrab.sources
+sudo apt update && sudo apt install mihrab
 ```
 
-Remove it, with its settings:
+Fedora (dnf):
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/uninstall-linux.sh | sh
+sudo curl -fsSLo /etc/yum.repos.d/mihrab.repo https://mihrabhq.github.io/packages/mihrab.repo
+sudo dnf install mihrab
 ```
 
-Each command runs a script from this repository, which you can read first:
+openSUSE (zypper):
+
+```sh
+sudo zypper addrepo https://mihrabhq.github.io/packages/mihrab.repo
+sudo zypper install mihrab
+```
+
+Arch, Manjaro, EndeavourOS (pacman, and so yay):
+
+```sh
+curl -fsSL https://mihrabhq.github.io/packages/mihrab.asc | sudo pacman-key --add -
+sudo pacman-key --lsign-key 28BB36D6D8388A8EF15EEA24E19DCF135A3D8035
+printf '\n[mihrab]\nServer = https://mihrabhq.github.io/packages/arch/$arch\n' | sudo tee -a /etc/pacman.conf
+sudo pacman -Syu mihrab
+```
+
+Remove it with the same package manager (`sudo apt purge mihrab`, `sudo dnf remove
+mihrab`, `sudo zypper remove mihrab`, `sudo pacman -R mihrab`); its settings are in
+`~/.config/Mihrab`.
+
+The Windows commands run scripts from this repository, which you can read first:
 [`install-windows.cmd`](desktop/scripts/install-windows.cmd) and
-[`uninstall-windows.cmd`](desktop/scripts/uninstall-windows.cmd),
-[`install-linux.sh`](desktop/scripts/install-linux.sh) and
-[`uninstall-linux.sh`](desktop/scripts/uninstall-linux.sh). The Desktop workflow runs all
-four on every build.
+[`uninstall-windows.cmd`](desktop/scripts/uninstall-windows.cmd). For a Linux
+system without apt, dnf, zypper or pacman,
+[`install-linux.sh`](desktop/scripts/install-linux.sh) unpacks the AppImage instead.
+The Desktop workflow runs the scripts on every build, and installs and removes the
+app from the repositories on Debian, Ubuntu, Fedora, openSUSE and Arch.
 
 ---
 

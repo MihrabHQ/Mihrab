@@ -263,6 +263,8 @@ h2 { font-size: clamp(26px, 4vw, 34px); }
 .platform .oses { display: flex; flex-wrap: wrap; gap: 20px; }
 .platform .os { flex: 1 1 320px; min-width: 0; }
 .platform .os h4 { font-size: 15px; margin: 0 0 6px; }
+.platform .os h5.distro { font-size: 14px; margin: 18px 0 0; }
+.platform .os h4 + h5.distro { margin-top: 4px; }
 .platform .cmd-label { margin: 10px 0 4px; font-size: 13px; color: var(--ink-soft); }
 .platform .os pre { margin: 0; overflow-x: auto; }
 .platform .os pre code {

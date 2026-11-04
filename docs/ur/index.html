@@ -231,10 +231,33 @@
           </div>
           <div class="os">
             <h4>لینکس، ٹرمینل میں</h4>
+            <h5 class="distro" dir="ltr">Debian, Ubuntu, Mint (apt)</h5>
             <p class="cmd-label">انسٹال کریں</p>
-            <pre dir="ltr"><code>curl -fsSL https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/install-linux.sh | sh</code></pre>
+            <pre dir="ltr"><code>sudo curl -fsSLo /usr/share/keyrings/mihrab.gpg https://mihrabhq.github.io/packages/mihrab.gpg
+sudo curl -fsSLo /etc/apt/sources.list.d/mihrab.sources https://mihrabhq.github.io/packages/mihrab.sources
+sudo apt update &amp;&amp; sudo apt install mihrab</code></pre>
             <p class="cmd-label">ترتیبات سمیت ہٹائیں</p>
-            <pre dir="ltr"><code>curl -fsSL https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/uninstall-linux.sh | sh</code></pre>
+            <pre dir="ltr"><code>sudo apt purge mihrab &amp;&amp; rm -rf ~/.config/Mihrab</code></pre>
+            <h5 class="distro" dir="ltr">Fedora (dnf)</h5>
+            <p class="cmd-label">انسٹال کریں</p>
+            <pre dir="ltr"><code>sudo curl -fsSLo /etc/yum.repos.d/mihrab.repo https://mihrabhq.github.io/packages/mihrab.repo
+sudo dnf install mihrab</code></pre>
+            <p class="cmd-label">ترتیبات سمیت ہٹائیں</p>
+            <pre dir="ltr"><code>sudo dnf remove mihrab &amp;&amp; rm -rf ~/.config/Mihrab</code></pre>
+            <h5 class="distro" dir="ltr">openSUSE (zypper)</h5>
+            <p class="cmd-label">انسٹال کریں</p>
+            <pre dir="ltr"><code>sudo zypper addrepo https://mihrabhq.github.io/packages/mihrab.repo
+sudo zypper install mihrab</code></pre>
+            <p class="cmd-label">ترتیبات سمیت ہٹائیں</p>
+            <pre dir="ltr"><code>sudo zypper remove mihrab &amp;&amp; rm -rf ~/.config/Mihrab</code></pre>
+            <h5 class="distro" dir="ltr">Arch, Manjaro, EndeavourOS (pacman, yay)</h5>
+            <p class="cmd-label">انسٹال کریں</p>
+            <pre dir="ltr"><code>curl -fsSL https://mihrabhq.github.io/packages/mihrab.asc | sudo pacman-key --add -
+sudo pacman-key --lsign-key 28BB36D6D8388A8EF15EEA24E19DCF135A3D8035
+printf '\n[mihrab]\nServer = https://mihrabhq.github.io/packages/arch/$arch\n' | sudo tee -a /etc/pacman.conf
+sudo pacman -Syu mihrab</code></pre>
+            <p class="cmd-label">ترتیبات سمیت ہٹائیں</p>
+            <pre dir="ltr"><code>sudo pacman -R mihrab &amp;&amp; rm -rf ~/.config/Mihrab</code></pre>
           </div>
         </div>
       </div>

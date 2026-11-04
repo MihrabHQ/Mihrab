@@ -282,42 +282,94 @@ function webCard(code, t) {
 }
 
 /**
- * The Windows and Linux app, in preview: one line to install it and one to
- * remove it, for each system — the commands desktop/README.md gives and the
- * Desktop workflow runs on every build. In a <pre>, left to right on every
- * page, so the line copies whole.
+ * The Windows and Linux app, in preview. Windows: one line to install it and
+ * one to remove it (desktop/scripts/, run by the Desktop workflow on every
+ * build). Linux: the distribution's own package manager, from Mihrab's
+ * signed repositories at mihrabhq.github.io/packages (published by
+ * MihrabHQ/packages; the Desktop workflow's `packages` job installs and
+ * removes from them on each distribution), so updates come with the
+ * system's. In a <pre>, left to right on every page, so the lines copy whole.
  */
 const DESKTOP_SCRIPTS = 'https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts';
+const PACKAGES = 'https://mihrabhq.github.io/packages';
+// The repositories' signing key (desktop/packaging/make-keys.sh): pacman is
+// told to trust it by this fingerprint. Change it here if the key changes.
+const PACKAGES_KEY = '28BB36D6D8388A8EF15EEA24E19DCF135A3D8035';
+// The package manager takes the app; the settings live in the home folder.
+const SETTINGS = 'rm -rf ~/.config/Mihrab';
 const DESKTOP_COMMANDS = {
   windows: [
     `curl -fsSLo "%TEMP%\\mihrab.cmd" ${DESKTOP_SCRIPTS}/install-windows.cmd && "%TEMP%\\mihrab.cmd"`,
     `curl -fsSLo "%TEMP%\\mihrab-remove.cmd" ${DESKTOP_SCRIPTS}/uninstall-windows.cmd && "%TEMP%\\mihrab-remove.cmd"`,
   ],
-  linux: [
-    `curl -fsSL ${DESKTOP_SCRIPTS}/install-linux.sh | sh`,
-    `curl -fsSL ${DESKTOP_SCRIPTS}/uninstall-linux.sh | sh`,
-  ],
 };
+const LINUX_COMMANDS = [
+  {
+    name: 'Debian, Ubuntu, Mint (apt)',
+    install: [
+      `sudo curl -fsSLo /usr/share/keyrings/mihrab.gpg ${PACKAGES}/mihrab.gpg`,
+      `sudo curl -fsSLo /etc/apt/sources.list.d/mihrab.sources ${PACKAGES}/mihrab.sources`,
+      'sudo apt update && sudo apt install mihrab',
+    ],
+    remove: `sudo apt purge mihrab && ${SETTINGS}`,
+  },
+  {
+    name: 'Fedora (dnf)',
+    install: [
+      `sudo curl -fsSLo /etc/yum.repos.d/mihrab.repo ${PACKAGES}/mihrab.repo`,
+      'sudo dnf install mihrab',
+    ],
+    remove: `sudo dnf remove mihrab && ${SETTINGS}`,
+  },
+  {
+    name: 'openSUSE (zypper)',
+    install: [`sudo zypper addrepo ${PACKAGES}/mihrab.repo`, 'sudo zypper install mihrab'],
+    remove: `sudo zypper remove mihrab && ${SETTINGS}`,
+  },
+  {
+    name: 'Arch, Manjaro, EndeavourOS (pacman, yay)',
+    install: [
+      `curl -fsSL ${PACKAGES}/mihrab.asc | sudo pacman-key --add -`,
+      `sudo pacman-key --lsign-key ${PACKAGES_KEY}`,
+      `printf '\\n[mihrab]\\nServer = ${PACKAGES}/arch/$arch\\n' | sudo tee -a /etc/pacman.conf`,
+      'sudo pacman -Syu mihrab',
+    ],
+    remove: `sudo pacman -R mihrab && ${SETTINGS}`,
+  },
+];
 
 function desktopCard(code, t) {
   const d = t.install && t.install.desktop;
   if (!d) throw new Error(`${code}: no strings for the Windows and Linux card`);
-  const os = id => {
-    const [install, remove] = DESKTOP_COMMANDS[id];
+  const windows = () => {
+    const [install, remove] = DESKTOP_COMMANDS.windows;
     return `          <div class="os">
-            <h4>${esc(d[id])}</h4>
+            <h4>${esc(d.windows)}</h4>
             <p class="cmd-label">${esc(d.install)}</p>
             <pre dir="ltr"><code>${esc(install)}</code></pre>
             <p class="cmd-label">${esc(d.remove)}</p>
             <pre dir="ltr"><code>${esc(remove)}</code></pre>
           </div>`;
   };
+  const linux = () => {
+    const distros = LINUX_COMMANDS.map(
+      l => `            <h5 class="distro" dir="ltr">${esc(l.name)}</h5>
+            <p class="cmd-label">${esc(d.install)}</p>
+            <pre dir="ltr"><code>${esc(l.install.join('\n'))}</code></pre>
+            <p class="cmd-label">${esc(d.remove)}</p>
+            <pre dir="ltr"><code>${esc(l.remove)}</code></pre>`,
+    ).join('\n');
+    return `          <div class="os">
+            <h4>${esc(d.linux)}</h4>
+${distros}
+          </div>`;
+  };
   return `      <div class="platform desktop">
         <h3><svg class="glyph" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M9 20h6M12 16v4"/></svg>${esc(d.h3)} <span class="tag">${esc(d.tag)}</span></h3>
         <p class="flag">${esc(d.flag)} <a href="https://github.com/MihrabHQ/Mihrab/issues">${esc(d.report)}</a></p>
         <div class="oses">
-${os('windows')}
-${os('linux')}
+${windows()}
+${linux()}
         </div>
       </div>`;
 }

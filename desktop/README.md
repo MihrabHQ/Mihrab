@@ -10,20 +10,20 @@ Chromium is the only way to know it does.
 
 The installers from the newest **Actions → Desktop → Run workflow** are on the
 [desktop-preview](https://github.com/MihrabHQ/Mihrab/releases/tag/desktop-preview)
-pre-release. One line installs them, one removes them — app, start-at-login
-entry and settings. The workflow runs both scripts on every build.
+pre-release. On Windows one line installs them and one removes them — app,
+start-at-login entry and settings; on Linux the package manager does.
 
 | | Install | Remove |
 |---|---|---|
 | Windows (`cmd`) | `curl -fsSLo "%TEMP%\mihrab.cmd" https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/install-windows.cmd && "%TEMP%\mihrab.cmd"` | `curl -fsSLo "%TEMP%\mihrab-remove.cmd" https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/uninstall-windows.cmd && "%TEMP%\mihrab-remove.cmd"` |
-| Linux (terminal) | `curl -fsSL https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/install-linux.sh \| sh` | `curl -fsSL https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/uninstall-linux.sh \| sh` |
+| Linux (terminal) | your package manager — [below](#linux-package-managers) | `sudo apt purge mihrab`, `dnf remove`, `zypper remove`, `pacman -R` |
 
-Windows installs for the user into `%LOCALAPPDATA%\Programs\Mihrab`. On Linux
-the script adds Mihrab's repository to the system's package manager — apt,
-dnf, zypper or pacman — and installs from it, so Mihrab is updated with the
-rest of the system; removing takes the repository and its key away too.
-Anywhere else it unpacks the AppImage into `~/.local/share/mihrab`
-(`MIHRAB_FORMAT=appimage` forces it).
+Windows installs for the user into `%LOCALAPPDATA%\Programs\Mihrab`. Linux
+installs from Mihrab's repositories with the system's package manager (below).
+`scripts/install-linux.sh` does the same in one line — it adds the repository
+for apt, dnf, zypper or pacman and installs, and with `uninstall` takes the
+app, the repository and its key away — and unpacks the AppImage on a system
+with none of them (`MIHRAB_FORMAT=appimage` forces it).
 
 ## Linux package managers
 
