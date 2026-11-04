@@ -1682,7 +1682,7 @@
       "ipBody": "Une estimation d’après votre connexion internet : elle peut se tromper d’une ville ou plus. Les horaires de prière dépendent de l’endroit où vous êtes réellement.",
       "ipYes": "Oui, c’est bien ça",
       "ipNo": "Non, choisir mon lieu",
-      "bodyWeb": "Les horaires de prière dépendent de votre position. Dans ce navigateur, les coordonnées sont stockées dans ce profil sans chiffrement de l’appareil. Un service de calcul des horaires de prière ou de recherche de lieux ne les reçoit qu’en cas de besoin ; Mihrab ne les reçoit pas."
+      "bodyWeb": "Les horaires de prière dépendent de l’endroit où vous êtes. Votre position reste dans ce navigateur, sans chiffrement, et ne va qu’à un service qui en a besoin pour répondre — la source des horaires ou la carte qui nomme votre ville —, jamais à nous."
     },
     "salamA11y": "As-salāmu ʿalaykum wa raḥmatu llāhi taʿālā wa barakātuh",
     "notNow": "Pas maintenant",

@@ -1681,7 +1681,7 @@
       "ipBody": "Eine Schätzung anhand deiner Internetverbindung – sie kann um eine Stadt oder mehr danebenliegen. Gebetszeiten hängen davon ab, wo du wirklich bist.",
       "ipYes": "Ja, stimmt",
       "ipNo": "Nein, Ort selbst wählen",
-      "bodyWeb": "Die Gebetszeiten hängen von deinem Standort ab. In diesem Browser werden die Koordinaten ohne Geräteverschlüsselung in diesem Profil gespeichert. Ein Dienst für Gebetszeiten oder die Ortssuche erhält sie nur bei Bedarf; Mihrab erhält sie nicht."
+      "bodyWeb": "Gebetszeiten hängen davon ab, wo du bist. Dein Standort bleibt unverschlüsselt in diesem Browser und geht nur an einen Dienst, der ihn für die Antwort braucht – die Quelle der Gebetszeiten oder die Karte, die deinen Ort benennt –, nie an uns."
     },
     "salamA11y": "As-salāmu ʿalaykum wa raḥmatu llāhi taʿālā wa barakātuh",
     "notNow": "Jetzt nicht",

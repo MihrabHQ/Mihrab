@@ -1681,7 +1681,7 @@
       "ipBody": "En gissning utifrån din internetanslutning, så den kan slå fel med en stad eller mer. Bönetiderna beror på var du faktiskt är.",
       "ipYes": "Ja, det stämmer",
       "ipNo": "Nej, välj min plats",
-      "bodyWeb": "Bönetiderna beror på din plats. I den här webbläsaren lagras koordinaterna i profilen utan enhetskryptering. En tjänst för bönetider eller platssökning får dem bara när det behövs; Mihrab får dem inte."
+      "bodyWeb": "Bönetiderna beror på var du befinner dig. Din plats sparas okrypterad i den här webbläsaren och går bara till en tjänst som behöver den för att svara — källan till bönetiderna eller kartan som namnger din ort — aldrig till oss."
     },
     "salamA11y": "As-salāmu ʿalaykum wa raḥmatu llāhi taʿālā wa barakātuh",
     "notNow": "Inte nu",

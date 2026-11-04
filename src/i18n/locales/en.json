@@ -1681,7 +1681,7 @@
       "ipBody": "A guess from your internet connection, so it can be a city or more off. Prayer times depend on where you really are.",
       "ipYes": "Yes, that’s right",
       "ipNo": "No, choose my location",
-      "bodyWeb": "Prayer times depend on your location. In this browser, coordinates are stored in this profile without device encryption. A prayer-time or place-search service receives them only when needed; Mihrab does not."
+      "bodyWeb": "Prayer times depend on where you stand. Your location is kept in this browser, not encrypted, and goes only to a service that needs it to answer — the prayer-time source or the map that names your town — never to us."
     },
     "salamA11y": "As-salāmu ʿalaykum wa raḥmatu llāhi taʿālā wa barakātuh",
     "notNow": "Not now",

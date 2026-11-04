@@ -184,7 +184,7 @@ export function LocationScreen({
           IS_WEB_APP
             ? t(
                 'onboarding.location.bodyWeb',
-                'Prayer times depend on your location. In this browser, coordinates are stored in this profile without device encryption. A prayer-time or place-search service receives them only when needed; Mihrab does not.',
+                'Prayer times depend on where you stand. Your location is kept in this browser, not encrypted, and goes only to a service that needs it to answer — the prayer-time source or the map that names your town — never to us.',
               )
             : t(
                 'onboarding.location.body',
