@@ -302,6 +302,8 @@ jobs:
           export GNUPGHOME="$RUNNER_TEMP/gpg"; mkdir -m700 "$GNUPGHOME"
           gpg --batch --pinentry-mode loopback --passphrase '' --quick-gen-key "Mihrab CI <ci@invalid>" ed25519 sign 1d
           MIHRAB_REPO_URL=http://127.0.0.1:8080 sh desktop/packaging/build-repos.sh in site
+          sh desktop/packaging/build-arch.sh in site
+          find site/arch -type f | sort
           version=$(cat site/version.txt)
           echo "VERSION=$version" >> "$GITHUB_ENV"
           # The AUR recipe downloads from a release; this one is served here.
@@ -348,6 +350,24 @@ jobs:
             test -x /opt/Mihrab/mihrab
             zypper --non-interactive remove mihrab >/dev/null
             if rpm -q mihrab; then echo still installed; exit 1; fi
+          '
+
+      # Mihrab's own pacman repository, added the way the site says (the key
+      # trusted by its fingerprint), then installed and removed by pacman —
+      # which is also what yay does for a repository package.
+      - name: pacman repository — Arch
+        run: |
+          docker run --rm --network host -e FPR="$(cat site/fingerprint.txt)" archlinux:latest sh -euxc '
+            pacman-key --init >/dev/null 2>&1
+            curl -fsSL http://127.0.0.1:8080/mihrab.asc | pacman-key --add -
+            pacman-key --lsign-key "$FPR"
+            printf "\n[mihrab]\nServer = http://127.0.0.1:8080/arch/\$arch\n" >> /etc/pacman.conf
+            tail -3 /etc/pacman.conf
+            pacman -Syu --noconfirm mihrab >/dev/null
+            pacman -Q mihrab
+            test -x /opt/Mihrab/mihrab && command -v mihrab
+            pacman -R --noconfirm mihrab >/dev/null
+            if pacman -Q mihrab; then echo still installed; exit 1; fi
           '
 
       - name: AUR recipe — Arch

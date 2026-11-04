@@ -14,6 +14,10 @@ amd64=$2
 arm64=$3
 out=$4
 base=${MIHRAB_RELEASES:-https://github.com/MihrabHQ/Mihrab/releases/download}
+# mihrab-bin on the AUR; plain `mihrab` in Mihrab's own pacman repository
+# (build-arch.sh). Either stands in for the other.
+pkgname=${MIHRAB_PKGNAME:-mihrab-bin}
+if [ "$pkgname" = mihrab ]; then provides="" conflicts="mihrab-bin"; else provides="mihrab" conflicts="mihrab"; fi
 
 sum() { sha256sum "$1" | cut -d' ' -f1; }
 sum_x86_64=$(sum "$amd64")
@@ -33,7 +37,7 @@ mkdir -p "$out"
   echo "# Written by desktop/packaging/aur/make-pkgbuild.sh in MihrabHQ/Mihrab for"
   echo "# each release; changes belong there."
   echo
-  echo "pkgname=mihrab-bin"
+  echo "pkgname=$pkgname"
   echo "pkgver=$version"
   echo "pkgrel=1"
   echo "pkgdesc=\"$desc\""
@@ -41,8 +45,8 @@ mkdir -p "$out"
   echo "url=\"$url\""
   echo "license=('AGPL-3.0-or-later')"
   printf "depends=("; for d in $depends; do printf "'%s' " "$d"; done | sed 's/ $//'; echo ")"
-  echo "provides=('mihrab')"
-  echo "conflicts=('mihrab')"
+  [ -z "$provides" ] || echo "provides=('$provides')"
+  echo "conflicts=('$conflicts')"
   echo "options=('!strip' '!debug')"
   echo "source_x86_64=(\"$src_x86_64\")"
   echo "source_aarch64=(\"$src_aarch64\")"
@@ -60,7 +64,7 @@ EOF
 } > "$out/PKGBUILD"
 
 {
-  echo "pkgbase = mihrab-bin"
+  echo "pkgbase = $pkgname"
   printf '\tpkgdesc = %s\n' "$desc"
   printf '\tpkgver = %s\n' "$version"
   printf '\tpkgrel = 1\n'
@@ -68,11 +72,12 @@ EOF
   printf '\tarch = x86_64\n\tarch = aarch64\n'
   printf '\tlicense = AGPL-3.0-or-later\n'
   for d in $depends; do printf '\tdepends = %s\n' "$d"; done
-  printf '\tprovides = mihrab\n\tconflicts = mihrab\n'
+  [ -z "$provides" ] || printf '\tprovides = %s\n' "$provides"
+  printf '\tconflicts = %s\n' "$conflicts"
   printf '\toptions = !strip\n\toptions = !debug\n'
   printf '\tsource_x86_64 = %s\n\tsha256sums_x86_64 = %s\n' "$src_x86_64" "$sum_x86_64"
   printf '\tsource_aarch64 = %s\n\tsha256sums_aarch64 = %s\n' "$src_aarch64" "$sum_aarch64"
-  printf '\npkgname = mihrab-bin\n'
+  printf '\npkgname = %s\n' "$pkgname"
 } > "$out/.SRCINFO"
 
-echo "mihrab-bin $version written to $out"
+echo "$pkgname $version written to $out"

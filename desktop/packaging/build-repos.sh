@@ -93,4 +93,5 @@ repo_gpgcheck=1
 gpgkey=$url/mihrab.asc
 EOF
 echo "$version" > "$out/version.txt"
+echo "$key" > "$out/fingerprint.txt"
 echo "repositories for Mihrab $version in $out"

@@ -32,12 +32,14 @@ published where Linux's package managers install, update and remove them:
 |---|---|---|---|
 | Debian, Ubuntu (apt) | the two `curl` lines and `apt install mihrab` on [mihrabhq.github.io/packages](https://mihrabhq.github.io/packages) | `apt upgrade`, Software Updater | `apt purge mihrab` |
 | Fedora (dnf), openSUSE (zypper) | the `.repo` file, then `dnf install mihrab` / `zypper install mihrab` | `dnf upgrade`, GNOME Software / Discover | `dnf remove mihrab` |
-| Arch (AUR) | `yay -S mihrab-bin` | `yay -Syu` | `yay -R mihrab-bin` |
+| Arch, Manjaro (pacman, yay) | trust the key and add `[mihrab]` to `/etc/pacman.conf` (on the site), then `pacman -S mihrab` | `pacman -Syu`, `yay -Syu` | `pacman -R mihrab` |
+| Arch (AUR, once its registration reopens) | `yay -S mihrab-bin` | `yay -Syu` | `yay -R mihrab-bin` |
 
 [MihrabHQ/packages](https://github.com/MihrabHQ/packages) does the publishing:
 every hour it looks at the latest release and, when there is a new version,
 builds the signed apt and dnf repositories with
-[`packaging/build-repos.sh`](packaging/build-repos.sh), deploys them to its
+[`packaging/build-repos.sh`](packaging/build-repos.sh) and the pacman one with
+[`packaging/build-arch.sh`](packaging/build-arch.sh), deploys them to its
 Pages site, and pushes the AUR recipe written by
 [`packaging/aur/make-pkgbuild.sh`](packaging/aur/make-pkgbuild.sh). Its two
 secrets — the repositories' signing key and the AUR account's SSH key — are

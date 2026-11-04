@@ -46,12 +46,15 @@ sudo dnf install mihrab</code></pre>
 sudo zypper install mihrab</code></pre>
   <p class="muted">Remove: <code>sudo zypper remove mihrab</code> and <code>sudo zypper removerepo mihrab</code>.</p>
 
-  <h2>Arch, Manjaro, EndeavourOS (AUR)</h2>
-<pre><code>yay -S mihrab-bin</code></pre>
-  <p class="muted">Updates come with <code>yay -Syu</code>. Remove: <code>yay -R mihrab-bin</code>.</p>
+  <h2>Arch, Manjaro, EndeavourOS (pacman, yay)</h2>
+<pre><code>curl -fsSL https://mihrabhq.github.io/packages/mihrab.asc | sudo pacman-key --add -
+sudo pacman-key --lsign-key @FINGERPRINT@
+printf '\n[mihrab]\nServer = https://mihrabhq.github.io/packages/arch/$arch\n' | sudo tee -a /etc/pacman.conf
+sudo pacman -Syu mihrab</code></pre>
+  <p class="muted">Updates come with <code>sudo pacman -Syu</code> or <code>yay -Syu</code>. Remove: <code>sudo pacman -R mihrab</code>, and the <code>[mihrab]</code> lines in <code>/etc/pacman.conf</code> to drop the repository.</p>
 
   <h2>The signing key</h2>
-  <p>Both repositories are signed; apt, dnf and zypper check every update against <a href="mihrab.asc">this key</a> before installing it.</p>
+  <p>All three repositories are signed; apt, dnf, zypper and pacman check every update against <a href="mihrab.asc">this key</a> (fingerprint <code>@FINGERPRINT@</code>) before installing it.</p>
 
   <footer>
     <a href="https://mihrab.elghamri.se">Mihrab</a> · <a href="https://github.com/MihrabHQ/Mihrab">source</a> · the packages are the ones attached to each <a href="https://github.com/MihrabHQ/Mihrab/releases">release</a>.
