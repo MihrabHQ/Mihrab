@@ -265,6 +265,19 @@ final class PrayerLiveActivity: NSObject {
 
   // MARK: - staleDate helper
 
+  /// How long after the next prayer the content goes stale. The stale redraw
+  /// is the one the card uses to move itself on to the prayer after (see
+  /// `ContentState.aim`), so it comes soon after the prayer rather than a
+  /// minute of 0:00 later. Not at the instant itself: the system's timing
+  /// is approximate, and a redraw a moment early would find the prayer
+  /// still ahead and change nothing.
+  static let staleAfter: TimeInterval = 5
+
+  /// Just after `epoch`, as a stale date.
+  static func staleDate(nextEpoch epoch: Double) -> Date {
+    Date(timeIntervalSince1970: epoch + staleAfter)
+  }
+
   #if canImport(ActivityKit) && !targetEnvironment(macCatalyst)
   /// Just after the next prayer instant, or nil when there is no valid future
   /// target (so we don't mark fresh content immediately stale).
@@ -273,7 +286,7 @@ final class PrayerLiveActivity: NSObject {
     for state: PrayerLiveActivityAttributes.ContentState
   ) -> Date? {
     let target = Date(timeIntervalSince1970: state.nextEpochSeconds)
-    return target > Date() ? target.addingTimeInterval(60) : nil
+    return target > Date() ? staleDate(nextEpoch: state.nextEpochSeconds) : nil
   }
   #endif
 
@@ -340,7 +353,7 @@ final class PrayerLiveActivity: NSObject {
             attributes: PrayerLiveActivityAttributes(),
             content: ActivityContent(
               state: freshState,
-              staleDate: Date(timeIntervalSince1970: freshState.nextEpochSeconds + 60)),
+              staleDate: Self.staleDate(nextEpoch: freshState.nextEpochSeconds)),
             pushType: nil
           )
           LiveActivityRefresher.scheduleRefresh()
@@ -351,23 +364,18 @@ final class PrayerLiveActivity: NSObject {
         return
       }
       // Re-point to the current next prayer so the revived card isn't stale.
-      guard let next = LiveActivityRefresher.computeNext(state: state, now: now) else {
+      let aim = state.aim(at: now)
+      guard aim.ahead else {
         // No remaining event today — let the foreground sync re-arm with
         // tomorrow's data instead of reviving a past countdown.
         resolve(nil)
         return
       }
-      state.nextKey = next.key
-      state.nextLabel = next.label
-      state.nextTime = next.time
-      state.nextTimeDisplay = next.display
-      state.nextEpochSeconds = next.epoch
-      state.prevEpochSeconds = next.prevEpoch
-      let stale = Date(timeIntervalSince1970: next.epoch + 60)
+      state = state.pointed(at: aim)
       do {
         let _ = try Activity<PrayerLiveActivityAttributes>.request(
           attributes: PrayerLiveActivityAttributes(),
-          content: ActivityContent(state: state, staleDate: stale),
+          content: ActivityContent(state: state, staleDate: Self.staleDate(nextEpoch: aim.epoch)),
           pushType: nil
         )
         LiveActivityRefresher.scheduleRefresh()
@@ -476,7 +484,7 @@ enum LiveActivityRefresher {
     // The shared payload's days, when the app stored them: the card as it
     // stands now, rows and all — after ʿIshāʾ that is tomorrow's.
     if let state = PrayerLiveActivity.storedContentState(now: now) {
-      let stale = Date(timeIntervalSince1970: state.nextEpochSeconds + 60)
+      let stale = PrayerLiveActivity.staleDate(nextEpoch: state.nextEpochSeconds)
       for activity in Activity<PrayerLiveActivityAttributes>.activities
       where activity.content.state != state {
         await activity.update(ActivityContent(state: state, staleDate: stale))
@@ -485,18 +493,15 @@ enum LiveActivityRefresher {
     }
     for activity in Activity<PrayerLiveActivityAttributes>.activities {
       let state = activity.content.state
-      guard let next = computeNext(state: state, now: now) else { continue }
-      // Nothing to do if the activity already points at the same future prayer.
-      if next.key == state.nextKey && next.epoch == state.nextEpochSeconds { continue }
-      var newState = state
-      newState.nextKey = next.key
-      newState.nextLabel = next.label
-      newState.nextTime = next.time
-      newState.nextTimeDisplay = next.display
-      newState.nextEpochSeconds = next.epoch
-      newState.prevEpochSeconds = next.prevEpoch
-      let stale = Date(timeIntervalSince1970: next.epoch + 60)
-      await activity.update(ActivityContent(state: newState, staleDate: stale))
+      // The same arithmetic the card draws by (`ContentState.aim`), so the
+      // pushed state and the drawn card agree. Nothing to do while the
+      // activity already points at a future prayer, or nothing is ahead.
+      let aim = state.aim(at: now)
+      guard aim.ahead, aim.key != state.nextKey || aim.epoch != state.nextEpochSeconds
+      else { continue }
+      await activity.update(ActivityContent(
+        state: state.pointed(at: aim),
+        staleDate: PrayerLiveActivity.staleDate(nextEpoch: aim.epoch)))
     }
   }
 
@@ -508,71 +513,13 @@ enum LiveActivityRefresher {
     }
     var soonest: Date?
     for activity in Activity<PrayerLiveActivityAttributes>.activities {
-      if let n = computeNext(state: activity.content.state, now: now) {
-        let d = Date(timeIntervalSince1970: n.epoch)
-        if soonest == nil || d < soonest! { soonest = d }
-      }
+      let aim = activity.content.state.aim(at: now)
+      guard aim.ahead else { continue }
+      let d = Date(timeIntervalSince1970: aim.epoch)
+      if soonest == nil || d < soonest! { soonest = d }
     }
     return soonest
   }
 
-  fileprivate struct NextInfo {
-    let key: String
-    let label: String
-    /// CANONICAL 24-hour `HH:mm`.
-    let time: String
-    /// The same instant as the user reads it (issue #18).
-    let display: String
-    let epoch: Double
-    let prevEpoch: Double
-  }
-
-  /// Next prayer (and previous, for the progress bar) computed from the
-  /// activity's own rows by wall clock. Self-contained — needs no app data.
-  /// Returns nil after the day's last event (the activity is short-lived and
-  /// gets re-armed from the foreground next time the app opens).
-  @available(iOS 16.1, *)
-  fileprivate static func computeNext(
-    state: PrayerLiveActivityAttributes.ContentState,
-    now: Date
-  ) -> NextInfo? {
-    var rows = state.rows
-    if let sun = state.sunriseRow {
-      if rows.isEmpty { rows.append(sun) } else { rows.insert(sun, at: 1) }
-    }
-    // The night marks are events like any other: they are in the state only
-    // because the user turned them on, and a roll-forward that cannot see
-    // them can neither land on one nor step off it — the card holds a First
-    // Third that passed hours ago until the app is opened. Order does not
-    // matter here; the list is sorted by wall clock below, which is the only
-    // thing that could put them in the right place anyway.
-    rows.append(contentsOf: state.extraRows ?? [])
-    // Used when there is no stored shared payload or it has nothing ahead: an
-    // activity from a build before step 1.5, or a payload whose days have run
-    // out. Rows are placed by `Row.at`.
-    let cal = WallClock.localCalendar
-    let todayKey = WallClock.dateKey(now, calendar: cal)
-    var events: [(date: Date, row: PrayerLiveActivityAttributes.Row)] = []
-    for row in rows {
-      guard let m = row.at,
-            let d = WallClock.date(dateKey: todayKey, minutes: m, calendar: cal)
-      else { continue }
-      events.append((d, row))
-    }
-    guard !events.isEmpty else { return nil }
-    events.sort { $0.date < $1.date }
-    guard let next = events.first(where: { $0.date > now }) else { return nil }
-    let prev = events.last(where: { $0.date <= now })
-    let prevEpoch = (prev?.date ?? next.date.addingTimeInterval(-3600)).timeIntervalSince1970
-    let label = next.row.name.isEmpty ? next.row.abbr : next.row.name
-    return NextInfo(
-      key: next.row.key,
-      label: label,
-      time: next.row.time,
-      display: next.row.text,
-      epoch: next.date.timeIntervalSince1970,
-      prevEpoch: prevEpoch
-    )
-  }
   #endif
 }

@@ -14,6 +14,13 @@
 //     of the Android foreground-service progress bar).
 //   • A compact strip of the day's prayers with the upcoming one accented.
 //
+// WHAT THE CARD COUNTS DOWN TO IS DECIDED HERE, AT DRAW TIME — not taken
+// from the state as pushed. The system redraws the card when its content is
+// pushed and again when it goes stale (just after the next prayer); at that
+// second redraw the pushed prayer has passed, and `ContentState.aim(at:)`
+// finds the one after it from the rows, so the card moves on by itself
+// instead of naming a prayer that has come and gone until the app is opened.
+//
 // Visual language: dark frosted card, a single accent colour (the user's app
 // accent) used sparingly for the next-prayer name, countdown, progress bar and
 // the highlighted strip cell. Everything else is white at graded opacity so it
@@ -63,57 +70,26 @@ struct PrayerLiveActivityWidget: Widget {
 // MARK: - Shared date helpers
 
 @available(iOS 16.1, *)
-private func nextPrayerDate(_ s: PrayerLiveActivityAttributes.ContentState) -> Date {
-  Date(timeIntervalSince1970: s.nextEpochSeconds)
-}
+private typealias Aim = PrayerLiveActivityAttributes.ContentState.Aim
 
-/// now…next range for the live countdown. nil once the prayer time has passed
-/// (an invalid range would crash the extension).
+/// now…next for the live countdown, or nil when nothing is ahead (an
+/// invalid range would crash the extension).
 @available(iOS 16.1, *)
-private func countdownRange(
-  _ s: PrayerLiveActivityAttributes.ContentState
-) -> ClosedRange<Date>? {
-  let end = nextPrayerDate(s)
-  let now = Date()
+private func countdownRange(_ aim: Aim, now: Date) -> ClosedRange<Date>? {
+  guard aim.ahead else { return nil }
+  let end = Date(timeIntervalSince1970: aim.epoch)
   guard end > now else { return nil }
   return now...end
 }
 
-/// Fraction (0…1) of elapsed time from the previous prayer to the next,
-/// evaluated at render time. Used for a determinate progress bar that always
-/// renders (the timerInterval ProgressView was rendering blank in the Dynamic
-/// Island / banner). Updates on each content push (foreground + BGTask).
+/// previous…next for the progress bar, or nil when it would be empty.
 @available(iOS 16.1, *)
-private func progressFraction(
-  _ s: PrayerLiveActivityAttributes.ContentState
-) -> Double {
-  let end = s.nextEpochSeconds
-  var start = s.prevEpochSeconds
-  if start >= end { start = end - 3600 }
-  guard end > start else { return 0 }
-  let now = Date().timeIntervalSince1970
-  return min(1, max(0, (now - start) / (end - start)))
-}
-
-@available(iOS 16.1, *)
-private func displayRows(
-  _ s: PrayerLiveActivityAttributes.ContentState
-) -> [PrayerLiveActivityAttributes.Row] {
-  var out = s.rows
-  if let sun = s.sunriseRow {
-    if out.isEmpty { out.append(sun) } else { out.insert(sun, at: 1) }
-  }
-  // The night marks the user turned on, placed by the clock rather than
-  // appended: Islamic Midnight and the Last Third fall in the small hours
-  // and the First Third that evening, so tacking them onto the end would
-  // draw a list that runs backwards. Rows the countdown can now aim at have
-  // to be rows the reader can see.
-  let night = s.extraRows ?? []
-  if !night.isEmpty {
-    out.append(contentsOf: night)
-    out.sort { ($0.at ?? 0) < ($1.at ?? 0) }
-  }
-  return out
+private func progressRange(_ aim: Aim) -> ClosedRange<Date>? {
+  guard aim.ahead else { return nil }
+  var start = aim.prevEpoch
+  if start >= aim.epoch { start = aim.epoch - 3600 }
+  guard aim.epoch > start else { return nil }
+  return Date(timeIntervalSince1970: start)...Date(timeIntervalSince1970: aim.epoch)
 }
 
 // MARK: - Reusable pieces
@@ -123,13 +99,14 @@ private func displayRows(
 /// prayer).
 @available(iOS 16.1, *)
 private struct CountdownText: View {
-  let state: PrayerLiveActivityAttributes.ContentState
+  let aim: Aim
+  let now: Date
   var font: Font
   var color: Color
 
   var body: some View {
     Group {
-      if let range = countdownRange(state) {
+      if let range = countdownRange(aim, now: now) {
         Text(timerInterval: range, countsDown: true)
           .font(font)
           .monospacedDigit()
@@ -137,7 +114,7 @@ private struct CountdownText: View {
           .lineLimit(1)
           .minimumScaleFactor(0.5)
       } else {
-        Text(state.nextTimeText)
+        Text(aim.timeText)
           .font(font)
           .monospacedDigit()
           .foregroundColor(color)
@@ -152,21 +129,27 @@ private struct CountdownText: View {
 @available(iOS 16.1, *)
 private struct PrayerProgressBar: View {
   let state: PrayerLiveActivityAttributes.ContentState
+  let aim: Aim
+  let now: Date
   var height: CGFloat = 5
 
   var body: some View {
-    // Determinate bar drawn manually so it ALWAYS renders (the timerInterval
-    // ProgressView came back blank in the Live Activity). Track + accent fill.
-    GeometryReader { geo in
-      ZStack(alignment: .leading) {
-        Capsule()
-          .fill(Color.white.opacity(0.18))
-        Capsule()
-          .fill(liveActivityAccent(state: state))
-          .frame(width: max(0, geo.size.width * progressFraction(state)))
-      }
+    // The system's timer bar: it fills on its own, every second, with no
+    // redraw — a bar drawn from `Date()` at draw time stood still between
+    // pushes, for hours. Its labels are left out so only the bar shows.
+    if let range = progressRange(aim) {
+      ProgressView(
+        timerInterval: range, countsDown: false,
+        label: { EmptyView() }, currentValueLabel: { EmptyView() }
+      )
+      .progressViewStyle(.linear)
+      .tint(liveActivityAccent(state: state))
+      .frame(height: height)
+    } else {
+      Capsule()
+        .fill(Color.white.opacity(0.18))
+        .frame(height: height)
     }
-    .frame(height: height)
   }
 }
 
@@ -174,11 +157,14 @@ private struct PrayerProgressBar: View {
 @available(iOS 16.1, *)
 private struct PrayerStrip: View {
   let state: PrayerLiveActivityAttributes.ContentState
+  let aim: Aim
   var nameSize: CGFloat = 10
   var timeSize: CGFloat = 11
 
   var body: some View {
-    let rows = displayRows(state)
+    let rows = state.allRows
+    // Nothing is lit once the day's last event has passed.
+    let lit = aim.ahead ? aim.key : ""
     if !rows.isEmpty {
       HStack(spacing: 0) {
         ForEach(rows, id: \.key) { row in
@@ -186,7 +172,7 @@ private struct PrayerStrip: View {
             Text(row.abbr)
               .font(.system(size: nameSize, weight: .medium))
               .foregroundColor(
-                row.key == state.nextKey
+                row.key == lit
                   ? liveActivityAccent(state: state)
                   : Color.white.opacity(0.5)
               )
@@ -194,9 +180,9 @@ private struct PrayerStrip: View {
               .minimumScaleFactor(0.7)
             Text(row.text)
               .font(.system(size: timeSize, design: .monospaced))
-              .fontWeight(row.key == state.nextKey ? .semibold : .regular)
+              .fontWeight(row.key == lit ? .semibold : .regular)
               .foregroundColor(
-                row.key == state.nextKey
+                row.key == lit
                   ? Color.white
                   : Color.white.opacity(0.6)
               )
@@ -215,8 +201,15 @@ private struct PrayerStrip: View {
 @available(iOS 16.1, *)
 private struct LockScreenLiveActivityView: View {
   let state: PrayerLiveActivityAttributes.ContentState
+  /// Drawn once per redraw, so every piece of the card agrees on `now`.
+  private let now = Date()
+
+  init(state: PrayerLiveActivityAttributes.ContentState) {
+    self.state = state
+  }
 
   var body: some View {
+    let aim = state.aim(at: now)
     VStack(alignment: .leading, spacing: 10) {
       // Headline: accent dot · prayer name · time, with the live countdown
       // pinned to the trailing edge.
@@ -226,32 +219,34 @@ private struct LockScreenLiveActivityView: View {
           .frame(width: 8, height: 8)
           .alignmentGuide(.firstTextBaseline) { d in d[.bottom] - 1 }
 
-        Text(state.nextLabel)
+        Text(aim.label)
           .font(.system(size: 17, weight: .semibold))
           .foregroundColor(.white)
           .lineLimit(1)
 
-        Text(state.nextTimeText)
+        Text(aim.timeText)
           .font(.system(size: 13, design: .monospaced))
           .foregroundColor(Color.white.opacity(0.6))
 
         Spacer(minLength: 6)
 
         CountdownText(
-          state: state,
+          aim: aim, now: now,
           font: .system(.title3, design: .rounded).weight(.semibold),
           color: liveActivityAccent(state: state)
         )
       }
 
       // Auto-filling progress toward the next prayer.
-      PrayerProgressBar(state: state)
+      PrayerProgressBar(state: state, aim: aim, now: now)
 
       // The day's prayer strip with the next one accented.
-      PrayerStrip(state: state)
+      PrayerStrip(state: state, aim: aim)
     }
     .padding(.horizontal, 16)
     .padding(.vertical, 12)
+    .accessibilityElement(children: .combine)
+    .accessibilityLabel(aim.ahead ? "\(aim.label), \(aim.timeText)" : aim.label)
   }
 }
 
@@ -272,8 +267,9 @@ private struct DynamicIslandCompactLeading: View {
 private struct DynamicIslandCompactTrailing: View {
   let state: PrayerLiveActivityAttributes.ContentState
   var body: some View {
+    let now = Date()
     CountdownText(
-      state: state,
+      aim: state.aim(at: now), now: now,
       font: .system(.body, design: .rounded).weight(.semibold),
       color: liveActivityAccent(state: state)
     )
@@ -285,8 +281,9 @@ private struct DynamicIslandCompactTrailing: View {
 private struct DynamicIslandMinimal: View {
   let state: PrayerLiveActivityAttributes.ContentState
   var body: some View {
+    let now = Date()
     CountdownText(
-      state: state,
+      aim: state.aim(at: now), now: now,
       font: .system(.caption, design: .rounded).weight(.semibold),
       color: liveActivityAccent(state: state)
     )
@@ -297,15 +294,16 @@ private struct DynamicIslandMinimal: View {
 private struct DynamicIslandLeading: View {
   let state: PrayerLiveActivityAttributes.ContentState
   var body: some View {
+    let aim = state.aim(at: Date())
     HStack(spacing: 8) {
       Image(systemName: "moon.stars.fill")
         .font(.system(size: 18))
         .foregroundColor(liveActivityAccent(state: state))
       VStack(alignment: .leading, spacing: 1) {
-        Text(state.nextLabel)
+        Text(aim.label)
           .font(.system(size: 16, weight: .semibold))
           .lineLimit(1)
-        Text(state.nextTimeText)
+        Text(aim.timeText)
           .font(.system(size: 12, design: .monospaced))
           .foregroundColor(.secondary)
       }
@@ -318,8 +316,9 @@ private struct DynamicIslandLeading: View {
 private struct DynamicIslandTrailing: View {
   let state: PrayerLiveActivityAttributes.ContentState
   var body: some View {
+    let now = Date()
     CountdownText(
-      state: state,
+      aim: state.aim(at: now), now: now,
       font: .system(.title2, design: .rounded).weight(.semibold),
       color: liveActivityAccent(state: state)
     )
@@ -331,9 +330,11 @@ private struct DynamicIslandTrailing: View {
 private struct DynamicIslandBottom: View {
   let state: PrayerLiveActivityAttributes.ContentState
   var body: some View {
+    let now = Date()
+    let aim = state.aim(at: now)
     VStack(spacing: 8) {
-      PrayerProgressBar(state: state, height: 6)
-      PrayerStrip(state: state, nameSize: 11, timeSize: 12)
+      PrayerProgressBar(state: state, aim: aim, now: now, height: 6)
+      PrayerStrip(state: state, aim: aim, nameSize: 11, timeSize: 12)
     }
     .padding(.horizontal, 4)
     .padding(.top, 6)

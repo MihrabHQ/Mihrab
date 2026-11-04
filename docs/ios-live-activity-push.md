@@ -14,7 +14,9 @@ that was rejected — see "Why not push" below.)
    Dynamic Island use `Text(timerInterval:)` and `ProgressView(timerInterval:)`
    (see `PrayerLiveActivityWidget.swift`). These tick and fill every second on
    the device with **zero** app execution or network — the countdown to the
-   next prayer is always live and correct offline.
+   next prayer is always live and correct offline. (The bar was for a while
+   drawn by hand from `Date()` at draw time, which stood still between
+   pushes; the system's own timer bar is back, with its labels left out.)
 
 2. **Foreground refresh.** Whenever the app becomes active / the prayer-day
    data changes, `syncLiveActivity` pushes the current `ContentState`
@@ -31,9 +33,21 @@ that was rejected — see "Why not push" below.)
    best-effort — it cannot guarantee "update exactly at Maghrib," but combined
    with the always-live on-device countdown it keeps the card current.
 
-4. **`staleDate`.** Each update sets `staleDate` just after the next prayer
-   (iOS 16.2+), so if no refresh has landed yet the system visibly
-   de-emphasizes the card rather than showing a stale state as if it were live.
+4. **The card moves itself on at `staleDate`.** Each update sets `staleDate`
+   a few seconds after the next prayer (iOS 16.2+). The system redraws the
+   card then, and at that redraw the views do not take the next prayer from
+   the pushed state: `ContentState.aim(at:)` (PrayerLiveActivityAttributes.swift)
+   finds the first event of the shown day after now — the five, Sunrise and
+   the night marks, placed on the clock from their minutes — and the card
+   counts down to that, with the strip lit on it and the progress bar run
+   from the prayer that just came in. So a phone left in a pocket shows the
+   right next prayer without the app opening or the background task running.
+   The background refresh and `reassert` use the same arithmetic, so what is
+   pushed and what is drawn never disagree. One step only: the extension
+   cannot set a new `staleDate`, so the step after that waits for the
+   foreground or the background task. `ios/LiveActivityTests/run.sh` checks
+   the arithmetic in a simulator (past midnight, a night mark, tomorrow's
+   Fajr, the clock-change day).
 
 ## The duration reality (why a server wouldn't change the picture)
 

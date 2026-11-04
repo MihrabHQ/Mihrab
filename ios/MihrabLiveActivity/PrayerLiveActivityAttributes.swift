@@ -208,6 +208,138 @@ extension PrayerLiveActivityAttributes.ContentState {
   }
 }
 
+// MARK: - What the card aims at, worked out when it is drawn
+
+/**
+ THE CARD FINDS ITS OWN NEXT PRAYER.
+
+ The app pushes a state whose `nextKey` and `nextEpochSeconds` are right for
+ the minute it pushed them. Then the phone goes into a pocket, the prayer
+ comes and goes, and nothing redraws the card until the app is opened or the
+ background refresh happens to run — which iOS does when it likes, often
+ hours later. Until then the card counted down to 0:00 and sat there, with
+ the prayer that had just come in still named as the one ahead.
+
+ The one redraw the system does promise is at `staleDate`, which the app
+ sets just after the next prayer. The rows carry every event of the shown
+ day with its minutes, so at that redraw the card can find the event after
+ now by itself and count down to THAT. The background refresh and `reassert`
+ use the same arithmetic, so all three agree on what is next.
+
+ In the extension and the app alike: this file is in both targets.
+ */
+@available(iOS 16.1, *)
+extension PrayerLiveActivityAttributes.ContentState {
+  /// One event of the shown day, placed on the clock.
+  struct Event: Hashable {
+    let row: PrayerLiveActivityAttributes.Row
+    let date: Date
+  }
+
+  /// What the card counts down to.
+  struct Aim: Hashable {
+    let key: String
+    let label: String
+    /// The time as the user reads it. Never parsed.
+    let timeText: String
+    /// Canonical `HH:mm`, for content that still carries it.
+    let time: String
+    let epoch: Double
+    /// Where the progress bar starts: the event before, or an hour earlier.
+    let prevEpoch: Double
+    /// False once the shown day's last event has passed: nothing is ahead,
+    /// and the card names the event that came last rather than counting
+    /// down to a time gone by.
+    let ahead: Bool
+  }
+
+  /// The rows the card draws — the five, Sunrise, and the night marks the
+  /// user turned on — in clock order.
+  var allRows: [PrayerLiveActivityAttributes.Row] {
+    var out = rows
+    if let sun = sunriseRow {
+      if out.isEmpty { out.append(sun) } else { out.insert(sun, at: 1) }
+    }
+    // The night marks fall in the small hours (Islamic Midnight, the Last
+    // Third) and the evening (the First Third): placed by the clock, never
+    // tacked onto the end, or the list runs backwards.
+    let night = extraRows ?? []
+    if !night.isEmpty {
+      out.append(contentsOf: night)
+      out.sort { ($0.at ?? 0) < ($1.at ?? 0) }
+    }
+    return out
+  }
+
+  /// The day the rows' minutes count from: the day the pushed next prayer
+  /// is on, found by walking back from its instant by its own minutes — so
+  /// an ʿIshāʾ written past midnight (1442) still names the day before.
+  /// Falls back to the instant's own date when the pushed prayer is not
+  /// among the rows.
+  func shownDayKey(calendar: Calendar = WallClock.localCalendar) -> String {
+    let nextDate = Date(timeIntervalSince1970: nextEpochSeconds)
+    guard let at = allRows.first(where: { $0.key == nextKey })?.at else {
+      return WallClock.dateKey(nextDate, calendar: calendar)
+    }
+    // Back to midnight, then into the day's middle: a clock change on that
+    // day moves midnight by an hour, and noon is still the same date.
+    let midday = nextDate.addingTimeInterval(TimeInterval(-at * 60 + 12 * 3600))
+    return WallClock.dateKey(midday, calendar: calendar)
+  }
+
+  /// Every event of the shown day with its instant, in order.
+  func events(calendar: Calendar = WallClock.localCalendar) -> [Event] {
+    let day = shownDayKey(calendar: calendar)
+    var out: [Event] = []
+    for row in allRows {
+      guard let m = row.at,
+            let d = WallClock.date(dateKey: day, minutes: m, calendar: calendar)
+      else { continue }
+      out.append(Event(row: row, date: d))
+    }
+    out.sort { $0.date < $1.date }
+    return out
+  }
+
+  /// What to count down to at `now`: the pushed next prayer while it is
+  /// still ahead, otherwise the first event of the shown day after `now`.
+  func aim(at now: Date, calendar: Calendar = WallClock.localCalendar) -> Aim {
+    let pushed = Aim(
+      key: nextKey, label: nextLabel, timeText: nextTimeText, time: nextTime,
+      epoch: nextEpochSeconds, prevEpoch: prevEpochSeconds, ahead: true)
+    if nextEpochSeconds > now.timeIntervalSince1970 { return pushed }
+    let events = events(calendar: calendar)
+    guard let next = events.first(where: { $0.date > now }) else {
+      return Aim(
+        key: pushed.key, label: pushed.label, timeText: pushed.timeText, time: pushed.time,
+        epoch: pushed.epoch, prevEpoch: pushed.prevEpoch, ahead: false)
+    }
+    let prev = events.last { $0.date <= now }?.date ?? next.date.addingTimeInterval(-3600)
+    let row = next.row
+    return Aim(
+      key: row.key,
+      label: row.name.isEmpty ? row.abbr : row.name,
+      timeText: row.text,
+      time: row.time,
+      epoch: next.date.timeIntervalSince1970,
+      prevEpoch: prev.timeIntervalSince1970,
+      ahead: true)
+  }
+
+  /// This state re-pointed at `aim` — what the app pushes when it rolls
+  /// the card forward, so the stored state and the drawn card agree.
+  func pointed(at aim: Aim) -> PrayerLiveActivityAttributes.ContentState {
+    var s = self
+    s.nextKey = aim.key
+    s.nextLabel = aim.label
+    s.nextTime = aim.time
+    s.nextTimeDisplay = aim.timeText
+    s.nextEpochSeconds = aim.epoch
+    s.prevEpochSeconds = aim.prevEpoch
+    return s
+  }
+}
+
 @available(iOS 16.1, *)
 extension PrayerLiveActivityAttributes.Row {
   public init(from decoder: Decoder) throws {
