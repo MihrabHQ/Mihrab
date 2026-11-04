@@ -32,8 +32,16 @@ unsure whether a change touches 1 or 2, assume it does.
 - **Commits are authored by the maintainer alone.** No `Co-Authored-By`, no
   session links, no "Generated with …" lines — in commits or in PR bodies.
 - **Never** run `git checkout -- .` or `git stash` on a working tree that is
-  not yours; never commit `desktop/`; never commit secrets, keystores or
-  `.env` files.
+  not yours; never commit `desktop/build` or `desktop/dist` (build output);
+  never commit secrets, keystores or `.env` files.
+- **The browser, Windows and Linux are one target.** Mihrab Web (the
+  browser) and the Windows/Linux app are the same react-native-web build of
+  `src/`. A fix for one is made for all three unless it is about something
+  only one of them has: gate it on `Platform.OS === 'web'` (browser and
+  Electron), and reach for `IS_WEB_APP` (browser only) only for what Electron
+  lacks or does natively — the IP place guess, the bookmark nudge, browser
+  notifications, no folder sync, touch paging. Check a change in both the
+  web build and the Electron build before pushing (`desktop/MAINTAINING.md`).
 - `unset NODE_ENV` before `npm ci` / `npm run` (a production `NODE_ENV`
   skips the dev tools and the tests run against nothing).
 - **Releases** go through `scripts/release.sh` only, and only when asked: no
