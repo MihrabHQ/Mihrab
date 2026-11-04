@@ -684,7 +684,10 @@ export const MushafSpreadReader = React.memo(function MushafSpreadReader(
           data={data}
           inverted
           horizontal
-          pagingEnabled
+          // No scroll snapping under a finger in a browser — see the same
+          // line in MushafPhoneReader: Safari re-snapped to the spread
+          // being left mid-turn, and the turn never arrived.
+          pagingEnabled={!swipe}
           showsHorizontalScrollIndicator={false}
           initialScrollIndex={indexForPage(currentPage)}
           getItemLayout={getItemLayout}

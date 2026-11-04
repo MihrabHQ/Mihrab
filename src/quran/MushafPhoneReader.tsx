@@ -1017,7 +1017,12 @@ export const MushafPhoneReader = React.memo(function MushafPhoneReader(
           data={data}
           inverted
           horizontal
-          pagingEnabled
+          // Not under a finger in a browser: the list never scrolls by
+          // touch there, so CSS scroll snapping has nothing to snap — and
+          // Safari re-snapped to the page being left while the turn's
+          // smooth scroll was on its way, so the counter moved and the
+          // page did not (iPhone, Safari and Chrome, 2026-11-04).
+          pagingEnabled={!swipe}
           showsHorizontalScrollIndicator={false}
           initialScrollIndex={currentPage - 1}
           getItemLayout={getItemLayout}
