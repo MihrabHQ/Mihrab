@@ -19,8 +19,6 @@
 
   <p>Mac: <code>brew install --cask mihrabhq/tap/mihrab</code></p>
 
-  <p><b>In your browser</b> — <a href="https://mihrabhq.github.io/">Mihrab Web</a>: prayer times, notifications at each prayer and the whole Qur'an, nothing to install</p>
-
   <p><b>Android</b></p>
 
   <p>
@@ -31,6 +29,40 @@
   </p>
 
   <p><sub>Obtainium is recommended: first to get every update, and it updates itself. Don’t have it? <a href="https://github.com/ImranR98/Obtainium">Get Obtainium</a>.</sub></p>
+
+  <p><b>Windows</b></p>
+
+  <p><a href="https://apps.microsoft.com/detail/9N43KNMJHBWV"><img src="branding/badges/microsoft.png" alt="Download from the Microsoft Store" height="60"></a></p>
+
+  <p><b>Linux</b> <sub>(preview)</sub></p>
+
+  <p>From your package manager, with Mihrab's signed repositories — updates come with the rest of your system:</p>
+
+  <details><summary>Debian, Ubuntu, Mint (apt)</summary>
+<pre>sudo curl -fsSLo /usr/share/keyrings/mihrab.gpg https://mihrabhq.github.io/packages/mihrab.gpg
+sudo curl -fsSLo /etc/apt/sources.list.d/mihrab.sources https://mihrabhq.github.io/packages/mihrab.sources
+sudo apt update &amp;&amp; sudo apt install mihrab</pre>
+<p><sub>Remove: <code>sudo apt purge mihrab</code></sub></p>
+  </details>
+  <details><summary>Fedora (dnf)</summary>
+<pre>sudo curl -fsSLo /etc/yum.repos.d/mihrab.repo https://mihrabhq.github.io/packages/mihrab.repo
+sudo dnf install mihrab</pre>
+<p><sub>Remove: <code>sudo dnf remove mihrab</code></sub></p>
+  </details>
+  <details><summary>openSUSE (zypper)</summary>
+<pre>sudo zypper addrepo https://mihrabhq.github.io/packages/mihrab.repo
+sudo zypper install mihrab</pre>
+<p><sub>Remove: <code>sudo zypper remove mihrab</code></sub></p>
+  </details>
+  <details><summary>Arch, Manjaro, EndeavourOS (pacman, yay)</summary>
+<pre>curl -fsSL https://mihrabhq.github.io/packages/mihrab.asc | sudo pacman-key --add -
+sudo pacman-key --lsign-key 28BB36D6D8388A8EF15EEA24E19DCF135A3D8035
+printf '\n[mihrab]\nServer = https://mihrabhq.github.io/packages/arch/$arch\n' | sudo tee -a /etc/pacman.conf
+sudo pacman -Syu mihrab</pre>
+<p><sub>Remove: <code>sudo pacman -R mihrab</code></sub></p>
+  </details>
+
+  <p><b>In your browser</b> — <a href="https://mihrabhq.github.io/">Mihrab Web</a>: prayer times, notifications at each prayer and the whole Qur'an, nothing to install</p>
 
 </div>
 
