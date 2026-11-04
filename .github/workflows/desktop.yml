@@ -118,6 +118,17 @@ jobs:
             timeout 180 bash scripts/ci-notify.sh
           fi
 
+      # Two copies of the app, two profiles, one folder: each pairs with the
+      # other, one logs a prayer and syncs, and the other has to show it.
+      - name: Sync between two copies
+        working-directory: desktop
+        run: |
+          if [ "$RUNNER_OS" = "Linux" ]; then
+            timeout 300 xvfb-run -a -s "-screen 0 1280x900x24" node scripts/sync-pair.js
+          else
+            timeout 300 node scripts/sync-pair.js
+          fi
+
       # The names the install scripts ask for, which do not change with the
       # version: dist/preview/Mihrab-windows-x64.exe, Mihrab-linux-amd64.deb, …
       - name: Name the installers
