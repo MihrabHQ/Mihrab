@@ -6,24 +6,22 @@ with [react-native-web](https://necolas.github.io/react-native-web/) inside
 view because the mushaf has to draw identically everywhere, and a bundled
 Chromium is the only way to know it does.
 
-## Install the preview
+## Install it
 
-The installers from the newest **Actions → Desktop → Run workflow** are on the
-[desktop-preview](https://github.com/MihrabHQ/Mihrab/releases/tag/desktop-preview)
-pre-release. On Windows one line installs them and one removes them — app,
-start-at-login entry and settings; on Linux the package manager does.
-
-| | Install | Remove |
-|---|---|---|
-| Windows (`cmd`) | `curl -fsSLo "%TEMP%\mihrab.cmd" https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/install-windows.cmd && "%TEMP%\mihrab.cmd"` | `curl -fsSLo "%TEMP%\mihrab-remove.cmd" https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/uninstall-windows.cmd && "%TEMP%\mihrab-remove.cmd"` |
-| Linux (terminal) | your package manager — [below](#linux-package-managers) | `sudo apt purge mihrab`, `dnf remove`, `zypper remove`, `pacman -R` |
-
-Windows installs for the user into `%LOCALAPPDATA%\Programs\Mihrab`. Linux
-installs from Mihrab's repositories with the system's package manager (below).
+**Windows:** the [Microsoft Store](https://apps.microsoft.com/detail/9N43KNMJHBWV)
+(see [Microsoft Store](#microsoft-store) below for how it gets there).
+**Linux:** the system's package manager, from Mihrab's repositories (below).
 `scripts/install-linux.sh` does the same in one line — it adds the repository
 for apt, dnf, zypper or pacman and installs, and with `uninstall` takes the
 app, the repository and its key away — and unpacks the AppImage on a system
 with none of them (`MIHRAB_FORMAT=appimage` forces it).
+
+Testers can take the installers from the newest **Actions → Desktop → Run
+workflow** off the
+[desktop-preview](https://github.com/MihrabHQ/Mihrab/releases/tag/desktop-preview)
+pre-release: on Windows `Mihrab-windows-x64.exe` (or `-arm64`) installs for
+the user into `%LOCALAPPDATA%\Programs\Mihrab`, and removes itself from
+Settings → Apps.
 
 ## Linux package managers
 

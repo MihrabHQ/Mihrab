@@ -1,3 +1,0 @@
-
-# Command Prompt scripts keep Windows line endings, as raw.githubusercontent serves them.
-desktop/scripts/*.cmd -text

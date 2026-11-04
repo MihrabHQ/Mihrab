@@ -165,7 +165,8 @@ Prayer times computed with **[mihrab-methods](https://github.com/MihrabHQ/mihrab
 | **Android — F-Droid** | [f-droid.org/packages/com.prayer_times](https://f-droid.org/packages/com.prayer_times/) |
 | **Android — APK** | [GitHub Releases](https://github.com/MihrabHQ/Mihrab/releases/latest) → `Mihrab-vX.Y.Z.apk` (ARM phones, 32- and 64-bit) |
 | **In your browser** | [Mihrab Web](https://mihrabhq.github.io/) — prayer times for where you are, browser notifications at each prayer, and the whole Qur'an (Ḥafṣ with tajwīd, Warsh, Qālūn, Shuʿbah and the IndoPak print, hard-word meanings, and Husary with word highlight). Settings and bookmarks stay in your browser; add it to your home screen to keep it close. Built from `desktop/` (`npx webpack --mode production --env web`, then `desktop/scripts/build-web.js`) into [MihrabHQ.github.io](https://github.com/MihrabHQ/MihrabHQ.github.io) |
-| **Windows & Linux (preview)** | Windows: one command to install, one to remove. Linux: apt, dnf, zypper or pacman — [below](#windows-and-linux-preview) |
+| **Windows** | [Microsoft Store](https://apps.microsoft.com/detail/9N43KNMJHBWV) |
+| **Linux (preview)** | apt, dnf, zypper or pacman — [below](#windows-and-linux-preview) |
 
 ### Windows and Linux (preview)
 
@@ -173,17 +174,10 @@ The desktop app is in preview: the whole app runs, and it needs testers and a
 maintainer ([desktop/MAINTAINING.md](desktop/MAINTAINING.md)). Bugs are welcome as
 [issues](https://github.com/MihrabHQ/Mihrab/issues).
 
-**Windows** — in Command Prompt (`cmd`), installs for your user, no administrator needed:
+**Windows** — from the [Microsoft Store](https://apps.microsoft.com/detail/9N43KNMJHBWV),
+which installs it and keeps it up to date.
 
-```bat
-curl -fsSLo "%TEMP%\mihrab.cmd" https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/install-windows.cmd && "%TEMP%\mihrab.cmd"
-```
-
-Remove it, with its settings:
-
-```bat
-curl -fsSLo "%TEMP%\mihrab-remove.cmd" https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts/uninstall-windows.cmd && "%TEMP%\mihrab-remove.cmd"
-```
+[<img src="docs/assets/img/badges/microsoft.png" width="188" alt="Download Mihrab from the Microsoft Store">](https://apps.microsoft.com/detail/9N43KNMJHBWV)
 
 **Linux** — with your distribution's own package manager, from Mihrab's signed
 repositories at [mihrabhq.github.io/packages](https://mihrabhq.github.io/packages).
@@ -224,10 +218,7 @@ Remove it with the same package manager (`sudo apt purge mihrab`, `sudo dnf remo
 mihrab`, `sudo zypper remove mihrab`, `sudo pacman -R mihrab`); its settings are in
 `~/.config/Mihrab`.
 
-The Windows commands run scripts from this repository, which you can read first:
-[`install-windows.cmd`](desktop/scripts/install-windows.cmd) and
-[`uninstall-windows.cmd`](desktop/scripts/uninstall-windows.cmd). For a Linux
-system without apt, dnf, zypper or pacman,
+For a Linux system without apt, dnf, zypper or pacman,
 [`install-linux.sh`](desktop/scripts/install-linux.sh) unpacks the AppImage instead.
 The Desktop workflow runs the scripts on every build, and installs and removes the
 app from the repositories on Debian, Ubuntu, Fedora, openSUSE and Arch.

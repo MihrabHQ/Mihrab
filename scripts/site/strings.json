@@ -115,7 +115,7 @@
         "tag": "Preview",
         "flag": "The whole app runs on the desktop, and it is looking for testers.",
         "report": "Report what breaks",
-        "windows": "Windows, in Command Prompt",
+        "windows": "Windows",
         "linux": "Linux, in a terminal",
         "install": "Install",
         "remove": "Remove, with its settings"
@@ -249,7 +249,7 @@
         "tag": "Förhandsversion",
         "flag": "Hela appen fungerar på datorn, och vi söker testare.",
         "report": "Rapportera det som inte fungerar",
-        "windows": "Windows, i Kommandotolken",
+        "windows": "Windows",
         "linux": "Linux, i en terminal",
         "install": "Installera",
         "remove": "Ta bort, med inställningarna"
@@ -294,7 +294,7 @@
         "tag": "معاينة",
         "flag": "التطبيق كاملًا يعمل على الحاسوب، ونبحث عمّن يجرّبه.",
         "report": "أبلغ عمّا لا يعمل",
-        "windows": "ويندوز، في موجّه الأوامر",
+        "windows": "ويندوز",
         "linux": "لينكس، في الطرفية",
         "install": "التثبيت",
         "remove": "الإزالة مع الإعدادات"
@@ -557,7 +557,7 @@
         "tag": "Önizleme",
         "flag": "Uygulamanın tamamı bilgisayarda çalışıyor ve test edecek kişiler arıyoruz.",
         "report": "Bozuk olanı bildirin",
-        "windows": "Windows, Komut İstemi’nde",
+        "windows": "Windows",
         "linux": "Linux, bir terminalde",
         "install": "Kur",
         "remove": "Ayarlarıyla birlikte kaldır"
@@ -813,7 +813,7 @@
         "tag": "پیش نظارہ",
         "flag": "پوری ایپ کمپیوٹر پر چلتی ہے، اور ہمیں آزمانے والوں کی تلاش ہے۔",
         "report": "جو کام نہ کرے اس کی اطلاع دیں",
-        "windows": "ونڈوز، کمانڈ پرامپٹ میں",
+        "windows": "ونڈوز",
         "linux": "لینکس، ٹرمینل میں",
         "install": "انسٹال کریں",
         "remove": "ترتیبات سمیت ہٹائیں"
@@ -1050,7 +1050,7 @@
         "tag": "Pratinjau",
         "flag": "Seluruh aplikasi berjalan di komputer, dan kami mencari penguji.",
         "report": "Laporkan yang rusak",
-        "windows": "Windows, di Command Prompt",
+        "windows": "Windows",
         "linux": "Linux, di terminal",
         "install": "Pasang",
         "remove": "Hapus, beserta pengaturannya"
@@ -1306,7 +1306,7 @@
         "tag": "Vorschau",
         "flag": "Die ganze App läuft auf dem Computer, und wir suchen Tester.",
         "report": "Melde, was nicht funktioniert",
-        "windows": "Windows, in der Eingabeaufforderung",
+        "windows": "Windows",
         "linux": "Linux, im Terminal",
         "install": "Installieren",
         "remove": "Entfernen, samt Einstellungen"
@@ -1543,7 +1543,7 @@
         "tag": "Aperçu",
         "flag": "L’application entière fonctionne sur ordinateur, et nous cherchons des testeurs.",
         "report": "Signalez ce qui ne marche pas",
-        "windows": "Windows, dans l’invite de commandes",
+        "windows": "Windows",
         "linux": "Linux, dans un terminal",
         "install": "Installer",
         "remove": "Désinstaller, avec ses réglages"
@@ -1806,7 +1806,7 @@
         "tag": "Vista previa",
         "flag": "La aplicación completa funciona en el ordenador, y buscamos personas que la prueben.",
         "report": "Informa de lo que falle",
-        "windows": "Windows, en el Símbolo del sistema",
+        "windows": "Windows",
         "linux": "Linux, en una terminal",
         "install": "Instalar",
         "remove": "Quitar, con sus ajustes"
@@ -2043,7 +2043,7 @@
         "tag": "Предварительная версия",
         "flag": "Приложение целиком работает на компьютере, и мы ищем тех, кто его протестирует.",
         "report": "Сообщите, что не работает",
-        "windows": "Windows, в командной строке",
+        "windows": "Windows",
         "linux": "Linux, в терминале",
         "install": "Установить",
         "remove": "Удалить вместе с настройками"
@@ -2280,7 +2280,7 @@
         "tag": "প্রিভিউ",
         "flag": "পুরো অ্যাপটি কম্পিউটারে চলে, আর আমরা পরীক্ষক খুঁজছি।",
         "report": "যা কাজ করে না তা জানান",
-        "windows": "উইন্ডোজ, কমান্ড প্রম্পটে",
+        "windows": "উইন্ডোজ",
         "linux": "লিনাক্স, টার্মিনালে",
         "install": "ইনস্টল",
         "remove": "সেটিংসসহ সরান"
@@ -2517,7 +2517,7 @@
         "tag": "प्रीव्यू",
         "flag": "पूरा ऐप कंप्यूटर पर चलता है, और हमें इसे परखने वालों की तलाश है।",
         "report": "जो काम न करे, उसकी रिपोर्ट करें",
-        "windows": "विंडोज़, कमांड प्रॉम्प्ट में",
+        "windows": "विंडोज़",
         "linux": "लिनक्स, टर्मिनल में",
         "install": "इंस्टॉल करें",
         "remove": "सेटिंग्स समेत हटाएँ"
@@ -2754,7 +2754,7 @@
         "tag": "预览版",
         "flag": "完整的应用已能在电脑上运行，我们正在寻找测试者。",
         "report": "报告问题",
-        "windows": "Windows：在命令提示符中",
+        "windows": "Windows",
         "linux": "Linux：在终端中",
         "install": "安装",
         "remove": "卸载（连同设置）"

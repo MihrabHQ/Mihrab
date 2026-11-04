@@ -18,12 +18,12 @@ name: Desktop
 #                 built with desktop/packaging/.
 #   by hand       Actions → Desktop → Run workflow: both, x64 and arm64,
 #                 and — unless unticked — the installers published to the
-#                 desktop-preview pre-release, which the one-line install
-#                 commands on the website and in the README download
-#                 (desktop/scripts/install-windows.cmd, install-linux.sh).
+#                 desktop-preview pre-release (for testers; Windows users
+#                 install from the Microsoft Store, Linux users from the
+#                 package repositories).
 #
-# Every run also installs and removes the app with those two scripts, from
-# the files it just built, so the commands people paste keep working.
+# Every run also installs and removes the app from the files it just built:
+# the Linux install script, the Windows .exe, and the Store package.
 
 on:
   push:
@@ -212,25 +212,23 @@ jobs:
             if [ -e "$left" ]; then echo "left behind: $left"; exit 1; fi
           done
 
-      # Installed for the user, started once (which writes its start-at-login
-      # entry, as a first run does), then removed with the entry and settings.
+      # The .exe (the Store package is checked below): installed silently for
+      # the user, started once (which writes its start-at-login entry, as a
+      # first run does), then removed by its own uninstaller.
       - name: Install and remove — Windows
         if: runner.os == 'Windows'
         working-directory: desktop
         shell: cmd
-        env:
-          MIHRAB_FROM: ${{ github.workspace }}\desktop\dist\preview
         run: |
-          call scripts\install-windows.cmd || exit /b 1
+          start /wait "" "dist\preview\Mihrab-windows-x64.exe" /S
           if not exist "%LOCALAPPDATA%\Programs\Mihrab\Mihrab.exe" (echo not installed & exit /b 1)
           start "" "%LOCALAPPDATA%\Programs\Mihrab\Mihrab.exe"
           ping -n 25 127.0.0.1 >nul
-          reg query "HKCU\Software\Microsoft\Windows\CurrentVersion\Run"
           reg query "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v com.prayer_times.desktop || (echo no start-at-login entry under that name & exit /b 1)
-          call scripts\uninstall-windows.cmd || exit /b 1
+          taskkill /f /im Mihrab.exe >nul 2>&1
+          ping -n 3 127.0.0.1 >nul
+          start /wait "" "%LOCALAPPDATA%\Programs\Mihrab\Uninstall Mihrab.exe" /S _?=%LOCALAPPDATA%\Programs\Mihrab
           if exist "%LOCALAPPDATA%\Programs\Mihrab\Mihrab.exe" (echo still installed & exit /b 1)
-          if exist "%APPDATA%\Mihrab" (echo settings left behind & exit /b 1)
-          reg query "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v com.prayer_times.desktop >nul 2>&1 && (echo start-at-login entry left behind & exit /b 1)
           echo installed, started and removed
           exit /b 0
 

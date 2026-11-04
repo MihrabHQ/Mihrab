@@ -78,6 +78,11 @@ const BADGES = [
     href: 'https://github.com/MihrabHQ/Mihrab/releases/latest',
   },
   {
+    img: 'microsoft',
+    alt: 'Microsoft Store',
+    href: 'https://apps.microsoft.com/detail/9N43KNMJHBWV',
+  },
+  {
     img: 'obtainium',
     alt: 'Obtainium',
     href: 'https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22com.prayer_times%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2FMihrabHQ%2FMihrab%22%2C%22author%22%3A%22Hassan-PS%22%2C%22name%22%3A%22Mihrab%22%7D',
@@ -282,27 +287,20 @@ function webCard(code, t) {
 }
 
 /**
- * The Windows and Linux app, in preview. Windows: one line to install it and
- * one to remove it (desktop/scripts/, run by the Desktop workflow on every
- * build). Linux: the distribution's own package manager, from Mihrab's
- * signed repositories at mihrabhq.github.io/packages (published by
- * MihrabHQ/packages; the Desktop workflow's `packages` job installs and
- * removes from them on each distribution), so updates come with the
- * system's. In a <pre>, left to right on every page, so the lines copy whole.
+ * The Windows and Linux app. Windows: the Microsoft Store (Store ID
+ * 9N43KNMJHBWV), which installs it and keeps it up to date. Linux: the
+ * distribution's own package manager, from Mihrab's signed repositories at
+ * mihrabhq.github.io/packages (published by MihrabHQ/packages; the Desktop
+ * workflow's `packages` job installs and removes from them on each
+ * distribution), so updates come with the system's. Commands are in a <pre>,
+ * left to right on every page, so the lines copy whole.
  */
-const DESKTOP_SCRIPTS = 'https://raw.githubusercontent.com/MihrabHQ/Mihrab/main/desktop/scripts';
 const PACKAGES = 'https://mihrabhq.github.io/packages';
 // The repositories' signing key (desktop/packaging/make-keys.sh): pacman is
 // told to trust it by this fingerprint. Change it here if the key changes.
 const PACKAGES_KEY = '28BB36D6D8388A8EF15EEA24E19DCF135A3D8035';
 // The package manager takes the app; the settings live in the home folder.
 const SETTINGS = 'rm -rf ~/.config/Mihrab';
-const DESKTOP_COMMANDS = {
-  windows: [
-    `curl -fsSLo "%TEMP%\\mihrab.cmd" ${DESKTOP_SCRIPTS}/install-windows.cmd && "%TEMP%\\mihrab.cmd"`,
-    `curl -fsSLo "%TEMP%\\mihrab-remove.cmd" ${DESKTOP_SCRIPTS}/uninstall-windows.cmd && "%TEMP%\\mihrab-remove.cmd"`,
-  ],
-};
 const LINUX_COMMANDS = [
   {
     name: 'Debian, Ubuntu, Mint (apt)',
@@ -338,19 +336,13 @@ const LINUX_COMMANDS = [
   },
 ];
 
-function desktopCard(code, t) {
+function desktopCard(code, t, imgBase) {
   const d = t.install && t.install.desktop;
   if (!d) throw new Error(`${code}: no strings for the Windows and Linux card`);
-  const windows = () => {
-    const [install, remove] = DESKTOP_COMMANDS.windows;
-    return `          <div class="os">
+  const windows = () => `          <div class="os">
             <h4>${esc(d.windows)}</h4>
-            <p class="cmd-label">${esc(d.install)}</p>
-            <pre dir="ltr"><code>${esc(install)}</code></pre>
-            <p class="cmd-label">${esc(d.remove)}</p>
-            <pre dir="ltr"><code>${esc(remove)}</code></pre>
+${badgeList(['microsoft'], imgBase, '            ')}
           </div>`;
-  };
   const linux = () => {
     const distros = LINUX_COMMANDS.map(
       l => `            <h5 class="distro" dir="ltr">${esc(l.name)}</h5>
@@ -581,7 +573,7 @@ ${badgeList(['obtainium', 'googleplay', 'fdroid', 'github'], '../assets/img/badg
         <p class="flag">${esc(t.install.flag)} <a href="https://github.com/ImranR98/Obtainium">${esc(t.install.getObtainium)}</a></p>
       </div>
 ${webCard(code, t)}
-${desktopCard(code, t)}
+${desktopCard(code, t, '../assets/img/badges')}
     </div>
   </div>
 </section>
@@ -720,7 +712,11 @@ function build() {
       text = patchBlock(text, 'gallery', gallery(code, l));
       text = patchBlock(text, 'reviews', reviews(code, l));
       text = patchBlock(text, 'web', webCard(code, l));
-      text = patchBlock(text, 'desktop', desktopCard(code, l));
+      text = patchBlock(
+        text,
+        'desktop',
+        desktopCard(code, l, path.relative(path.dirname(file), path.join(DOCS, 'assets', 'img', 'badges'))),
+      );
       files.set(file, fillPage(text, code));
       continue;
     }
@@ -759,4 +755,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { build, picker, hreflang, gallery, webCard, desktopCard, DESKTOP_COMMANDS, ORIGIN, SHOTS, SHOT_V, FANS };
+module.exports = { build, picker, hreflang, gallery, webCard, desktopCard, ORIGIN, SHOTS, SHOT_V, FANS };
