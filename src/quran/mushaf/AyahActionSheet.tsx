@@ -276,9 +276,6 @@ export function AyahActionSheet({
     ayah: number;
     page: number;
   } | null>(null);
-  useEffect(() => {
-    if (!visible) setStepped(null);
-  }, [visible]);
   const at =
     stepped && stepped.from === openedKey
       ? stepped
@@ -458,6 +455,9 @@ export function AyahActionSheet({
     if (!visible) {
       setShareCardVisible(false);
       setFormatPicker(false);
+      // A walk with ‹ › ends with the sheet: reopened, it shows the ayah it
+      // is opened on (see `stepped`).
+      setStepped(null);
     }
   }, [visible]);
 
