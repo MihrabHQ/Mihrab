@@ -96,6 +96,9 @@ import {
 } from '../tajweed/TajweedAyahSection';
 import { riwayahHasTajweed } from '../tajweed/rules';
 import { TajweedAyahGlyphs } from '../tajweed/TajweedAyahGlyphs';
+import { adjacentAyah, findPageForAyah } from '../pages';
+import Svg, { Path } from 'react-native-svg';
+import { useLayoutRtl } from '../../i18n/useLayoutRtl';
 
 /** The page font's size for the āyah at the top of the sheet, dp — the
  *  same as the Tajweed section's, so the two read as one face. */
@@ -205,12 +208,37 @@ function PinFace({
   );
 }
 
+/**
+ * ‹ or › for stepping between ayahs: a drawn path, so the layout's
+ * mirroring does not turn it — the caller picks the direction.
+ */
+function StepChevron({ color, back }: { color: ColorValue; back: boolean }) {
+  return (
+    <Svg
+      width={20}
+      height={20}
+      viewBox="0 0 20 20"
+      accessibilityElementsHidden
+      importantForAccessibility="no"
+    >
+      <Path
+        d={back ? 'M12.5 4 6.5 10l6 6' : 'M7.5 4l6 6-6 6'}
+        stroke={color}
+        strokeWidth={1.8}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+      />
+    </Svg>
+  );
+}
+
 export function AyahActionSheet({
   visible,
   onClose,
-  surah,
-  ayah,
-  page,
+  surah: openedSurah,
+  ayah: openedAyah,
+  page: openedPage,
   scrollToAudio,
   showHideForReview = false,
 }: Props) {
@@ -229,6 +257,34 @@ export function AyahActionSheet({
   const { settings, updateSettings } = usePrayerSettings();
   const edition = useActiveEdition();
   const state = useQuranState();
+  const rtl = useLayoutRtl();
+
+  /**
+   * THE AYAH ON SHOW, which ‹ › can move away from the one the sheet was
+   * opened on. Everything below reads `surah`, `ayah` and `page` and
+   * reloads when they change, so stepping is the same as reopening on the
+   * next ayah: its text, translation, tafsir, marks and audio.
+   *
+   * A step is kept against the ayah it started from (`from`), so a sheet
+   * opened on another ayah shows that one, not where the last walk ended;
+   * closing the sheet forgets it.
+   */
+  const openedKey = `${openedSurah}:${openedAyah}:${openedPage}`;
+  const [stepped, setStepped] = useState<{
+    from: string;
+    surah: number;
+    ayah: number;
+    page: number;
+  } | null>(null);
+  useEffect(() => {
+    if (!visible) setStepped(null);
+  }, [visible]);
+  const at =
+    stepped && stepped.from === openedKey
+      ? stepped
+      : { surah: openedSurah, ayah: openedAyah, page: openedPage };
+  const { surah, ayah, page } = at;
+
   const [arabic, setArabic] = useState<string>('');
   /** The "as text or as a card" question — see `share` below. */
   const [formatPicker, setFormatPicker] = useState(false);
@@ -258,6 +314,18 @@ export function AyahActionSheet({
   // in plain Unicode under tajwīd-coloured page fonts, and its Tajweed
   // tab looked for Warsh's rules and found none.
   const shownRiwayah = resolveRiwayah(state.prefs.riwayah);
+  const prevAyah = adjacentAyah(surah, ayah, -1, shownRiwayah);
+  const nextAyah = adjacentAyah(surah, ayah, 1, shownRiwayah);
+  const stepTo = (to: { surah: number; ayah: number } | null) => {
+    if (!to) return;
+    setStepped({
+      from: openedKey,
+      ...to,
+      page: findPageForAyah(to.surah, to.ayah, shownRiwayah),
+    });
+    // The new ayah starts at its top, not where the last one was scrolled.
+    scrollRef.current?.scrollTo({ y: 0, animated: false });
+  };
   const tajweedOffered = riwayahHasTajweed(shownRiwayah);
   const ownFont = riwayahTextFontFamily(shownRiwayah);
   const panel =
@@ -689,7 +757,13 @@ export function AyahActionSheet({
         ]}
       >
         <View style={styles.headerRow}>
-          <Text style={[styles.reference, { color: palette.muted }]}>
+          <Text
+            style={[styles.reference, { color: palette.muted }]}
+            numberOfLines={1}
+            // Read out when a step (below) changes it, so the new ayah is
+            // announced.
+            accessibilityLiveRegion="polite"
+          >
             {reference}
           </Text>
           {/* Share and star: the two things done to the āyah as a whole.
@@ -804,6 +878,54 @@ export function AyahActionSheet({
               {drawableText(arabic)}
             </Text>
           ) : null}
+          {/* ‹ Previous ayah · Next ayah › — a step either way without
+              closing the sheet, right above the texts it changes. The
+              chevrons point the way the reading goes in the app's
+              language: in Arabic or Urdu the ayah before is on the right
+              and its chevron points right. At the Qur'an's first or last
+              ayah that button stays, dimmed, so the other does not move. */}
+          <View style={styles.stepRow}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityState={{ disabled: !prevAyah }}
+              disabled={!prevAyah}
+              hitSlop={6}
+              style={({ pressed }) => [
+                styles.stepBtn,
+                !prevAyah && styles.stepOff,
+                pressed && styles.stepPressed,
+              ]}
+              onPress={() => stepTo(prevAyah)}
+            >
+              <StepChevron color={palette.muted} back={!rtl} />
+              <Text
+                style={[styles.stepLabel, { color: palette.muted }]}
+                numberOfLines={1}
+              >
+                {t('quran.previousAyah', 'Previous ayah')}
+              </Text>
+            </Pressable>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityState={{ disabled: !nextAyah }}
+              disabled={!nextAyah}
+              hitSlop={6}
+              style={({ pressed }) => [
+                styles.stepBtn,
+                !nextAyah && styles.stepOff,
+                pressed && styles.stepPressed,
+              ]}
+              onPress={() => stepTo(nextAyah)}
+            >
+              <Text
+                style={[styles.stepLabel, { color: palette.muted }]}
+                numberOfLines={1}
+              >
+                {t('quran.nextAyah', 'Next ayah')}
+              </Text>
+              <StepChevron color={palette.muted} back={rtl} />
+            </Pressable>
+          </View>
           {/* Translation (v2.14.5) — a section like the tafsir below it,
               closed until asked for, and carrying its own edition picker
               so a reader can read an ayah in a language other than the
@@ -1695,10 +1817,33 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  // ‹ Previous ayah at the leading edge, Next ayah › at the trailing one.
+  stepRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: SPACING.sm,
+  },
+  // 44 tall with the slop: a thumb's target, though the row reads as text.
+  stepBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.xs,
+    minHeight: 32,
+    flexShrink: 1,
+  },
+  stepLabel: {
+    fontSize: TYPE.footnote.fontSize,
+    fontWeight: '500',
+    flexShrink: 1,
+  },
+  stepOff: { opacity: 0.3 },
+  stepPressed: { opacity: 0.6 },
   reference: {
     fontSize: TYPE.footnote.fontSize,
     fontWeight: '500',
     letterSpacing: 0.3,
+    flexShrink: 1,
   },
   body: { flexGrow: 0 },
   arabic: {
