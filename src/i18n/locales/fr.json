@@ -1838,7 +1838,7 @@
     "tajweedRules": "Règles de tajwid de chaque mot",
     "tajweedFonts": "Polices de page aux couleurs du tajwid (téléchargées, non incluses)",
     "recitation": "Audio de récitation (44 récitateurs) : EveryAyah.com · synchronisation des mots : quran-align (CC BY 4.0)",
-    "tafsir": "Textes de tafsir : Ibn Kathir, Maarif-ul-Quran, al-Muyassar",
+    "tafsir": "Textes de tafsir : Ibn Kathir, Maarif-ul-Quran, al-Muyassar, al-Mukhtasar, as-Sa’di, Ahsanul Bayaan",
     "wordMeanings": "Sens arabes des mots difficiles",
     "surahHeaderFont": "Calligraphie des en-têtes de sourates",
     "recitationWholeSurah": "Récitations de sourates entières (15) : mp3quran.net · minutage des versets aligné sur l’audio par Mihrab"

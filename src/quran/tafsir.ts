@@ -98,6 +98,62 @@ export const TAFSIR_EDITIONS: ReadonlyArray<TafsirEdition> = [
     language: 'Bengali',
     approxBytes: 52700000,
   },
+  // Issue #125 (2026-11-05): tafsir in Bahasa Indonesia, and the other
+  // editions of the same corpus that are COMPLETE in an app language — all
+  // 114 surahs and 6,236 ayahs present, checked against the CDN surah by
+  // surah. As-Sa'di (Indonesian) is the one exception: surahs 22, 25 and
+  // 79 are missing upstream, which Ibn Kathir above already lives with.
+  // Each new one comes after its language's existing editions, so nobody's
+  // default changes. Not added: the corpus's Indonesian Jalalayn, whose
+  // every file is an empty list.
+  {
+    id: 'indonesian-mokhtasar',
+    label: 'Tafsir Al-Mukhtashar',
+    locale: 'id',
+    rtl: false,
+    language: 'Indonesian',
+    approxBytes: 2500000,
+  },
+  {
+    id: 'id-tafsir-as-saadi',
+    label: "Tafsir As-Sa'di",
+    locale: 'id',
+    rtl: false,
+    language: 'Indonesian',
+    approxBytes: 62200000,
+  },
+  {
+    id: 'ar-tafsir-al-mukhtasar',
+    label: 'المختصر في التفسير',
+    locale: 'ar',
+    rtl: true,
+    language: 'Arabic',
+    approxBytes: 2300000,
+  },
+  {
+    id: 'bengali-mokhtasar',
+    label: 'আল-মুখতাসার',
+    locale: 'bn',
+    rtl: false,
+    language: 'Bengali',
+    approxBytes: 4800000,
+  },
+  {
+    id: 'bn-tafsir-ahsanul-bayaan',
+    label: 'তাফসীর আহসানুল বায়ান',
+    locale: 'bn',
+    rtl: false,
+    language: 'Bengali',
+    approxBytes: 9600000,
+  },
+  {
+    id: 'russian-mokhtasar',
+    label: 'Аль-Мухтасар',
+    locale: 'ru',
+    rtl: false,
+    language: 'Russian',
+    approxBytes: 3300000,
+  },
 ] as const;
 
 /** Editions offered for an app locale: native ones first, then English. */

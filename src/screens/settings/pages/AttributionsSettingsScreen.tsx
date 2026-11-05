@@ -117,7 +117,7 @@ export function AttributionsSettingsScreen() {
     {
       label: t('attributions.tafsir', {
         defaultValue:
-          'Tafsir texts: Ibn Kathir, Maarif-ul-Quran, al-Muyassar',
+          'Tafsir texts: Ibn Kathir, Maarif-ul-Quran, al-Muyassar, al-Mukhtasar, as-Sa’di, Ahsanul Bayaan',
       }),
       sub: 'spa5k/tafsir_api · Quran.com tafsir corpus',
       url: 'https://github.com/spa5k/tafsir_api',

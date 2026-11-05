@@ -356,6 +356,45 @@ cannot. To pull the assets above, do one of:
   if you want to fetch them inside Cowork sessions.
 
 
+## Tafsir in Bahasa Indonesia — issue #125, SHIPPED 2026-11-05
+
+#125 asked for tafsir in Bahasa. The answer was already in the corpus the
+six existing editions come from (spa5k/tafsir_api, the Quran.com tafsir
+corpus): its `editions.json` lists 130-odd editions, three of them
+Indonesian. Every surah file of each candidate was fetched from the CDN
+and counted; 2:255 was read in each to confirm the language.
+
+| Edition | Surahs | Ayahs | Size | Decision |
+|---|---|---|---|---|
+| `indonesian-mokhtasar` (Al-Mukhtashar) | 114 | 6,236 | 2.5 MB | added, Indonesian default |
+| `id-tafsir-as-saadi` (as-Sa'di) | 111 (no 22, 25, 79) | 6,034 | 62 MB | added |
+| `in-tafsir-jalalayn` | every file `[]` | 0 | — | not usable |
+| `ar-tafsir-al-mukhtasar` | 114 | 6,236 | 2.3 MB | added |
+| `bengali-mokhtasar` | 114 | 6,236 | 4.8 MB | added |
+| `bn-tafsir-ahsanul-bayaan` | 114 | 6,236 | 9.6 MB | added |
+| `russian-mokhtasar` | 114 | 6,236 | 3.3 MB | added, first Russian edition |
+
+Same corpus, same terms, same attribution line (Settings → About), so no
+new licence regime. Each joins AFTER its language's existing editions, so
+no reader's default changes; Indonesian and Russian readers, who had only
+English before, now open their own language first.
+
+Also complete-or-nearly in the corpus, and not added yet: Turkish Ibn
+Kathir (no 70), Turkish/French/Spanish/Chinese/Hindi Mukhtasar (one to
+eight surahs missing each), Russian Ibn Kathir (no 47, 100), Arabic
+as-Sa'di (no 73), Urdu Bayan ul-Quran (no 10).
+
+**Jalalayn and al-Muntakhab in Indonesian** exist complete in the
+*Tanzil* corpus as `id.jalalayn` and `id.muntakhab` (6,236 ayahs each,
+CC BY 3.0 like the shipped translations). Tanzil files them as
+translations; they are tafsir, the same as `ar.muyassar` was, so they
+would join `TAFSIR_EDITIONS` with a loader for Tanzil's shape, not
+`QURAN_TRANSLATIONS`.
+
+The `data-tafsir-v1` mirror does not hold the new editions until
+`scripts/mirror/build-mirror.js` is run and uploaded; until then the app
+reads them from the CDN, as it does whenever the mirror has no answer.
+
 ## The Isa García Spanish translation — issue #37, SHIPPED 2026-09-08
 
 The app shipped one Spanish edition, Julio Cortés. #37 asked for a
