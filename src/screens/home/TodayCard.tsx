@@ -182,6 +182,8 @@ const MINIMAL_DIGIT_TINT = 0.45;
 /** The unit letters' size in the figures' em, and the seconds' unit in theirs. */
 const UNIT_EM = 0.4;
 const SECONDS_UNIT_EM = 0.7;
+/** The dashboard card's sky band, dp: the room a desktop has to spare. */
+const HERO_SCENE_EXPANDED = 96;
 /** The hair space (U+200A) between a figure and its unit letter. */
 const UNIT_HAIR = '\u200A';
 /** The rail's thread, its head, and the soft ring round the head (dp). */
@@ -1027,7 +1029,12 @@ const HeroToday = memo(function HeroToday({
   const bleedTop = bleed?.top ?? 0;
   const bleedBottom = bleed?.bottom ?? 0;
   const skyH = heroH + bleedTop + bleedBottom;
-  const measured = fill && heroH > 0 && block !== null;
+  // The band is measured on the page AND in the dashboard's card: the
+  // card used to draw the sun — and now the Track — over its own eyebrow,
+  // laid out for a sky that was the whole hero. Only the roomy tablet
+  // card, whose height is the hinge's, keeps the drawn fractions.
+  const banded = fill || expanded;
+  const measured = banded && heroH > 0 && block !== null;
   const heroY = measured
     ? {
         eyebrow: (bleedTop + block.y) / skyH,
@@ -1277,8 +1284,11 @@ const HeroToday = memo(function HeroToday({
   );
   // The band the bodies keep out of: the status bar and the top row above,
   // the countdown block (and the hero's foot padding) below.
-  const sceneTop = fill ? statusBarInset + topRowH + SPACING.md : 0;
-  const sceneBottom = fill && block ? heroH - block.y + bleedBottom : 0;
+  // In the card the sky bleeds past the box by the hero's own padding, so
+  // the band's top is the bleed and the top row, as the status bar and the
+  // top row are on the page.
+  const sceneTop = banded ? (fill ? statusBarInset : bleedTop + SPACING.md) + topRowH + SPACING.md : 0;
+  const sceneBottom = banded && block ? heroH - block.y + bleedBottom : 0;
 
 
   // What the countdown is aimed at, and the rail's start: kept with the
@@ -1301,7 +1311,7 @@ const HeroToday = memo(function HeroToday({
   return (
     <View
       style={[styles.hero, expanded && styles.heroExpanded, fill && styles.heroFill]}
-      onLayout={fill || onLayout ? onHeroLayout : undefined}>
+      onLayout={banded || onLayout ? onHeroLayout : undefined}>
       {/* The sky, under everything and out to the card's edges — and, on
           the phone, up under the status bar. */}
       <HeroSky
@@ -1345,17 +1355,23 @@ const HeroToday = memo(function HeroToday({
         // row where the Qibla chip stood — the way into Help Mihrab, and
         // (as on the full page) the place to put it away.
         topRow?.renderHelp ? (
-          <View style={styles.heroTopRow} onLayout={fill ? onTopRowLayout : undefined}>
+          <View style={styles.heroTopRow} onLayout={banded ? onTopRowLayout : undefined}>
             <View style={styles.heroTopLeading} />
             {topRow.renderHelp(inkTop)}
           </View>
         ) : null
       ) : topRow && fill && vbar ? null : topRow ? (
-        <HeroTopRow topRow={topRow} ink={inkTop} onLayout={fill ? onTopRowLayout : undefined} />
+        <HeroTopRow topRow={topRow} ink={inkTop} onLayout={banded ? onTopRowLayout : undefined} />
       ) : null}
       {/* The room the sky's bodies move in. */}
-      {fill ? <View style={[styles.heroScene, minimal && styles.heroSceneAbove, { minHeight: HERO_SCENE_MIN[tier] }]} /> : null}
-      <View onLayout={fill ? onBlockLayout : undefined}>
+      {/* The dashboard's card does not grow, so its band is a fixed
+          height — the room a desktop has to spare — rather than a share. */}
+      {fill ? (
+        <View style={[styles.heroScene, minimal && styles.heroSceneAbove, { minHeight: HERO_SCENE_MIN[tier] }]} />
+      ) : expanded ? (
+        <View style={{ height: HERO_SCENE_EXPANDED }} />
+      ) : null}
+      <View onLayout={banded ? onBlockLayout : undefined}>
       {/* "Fajr in" leading, and on the trailing end of the same line —
           the side with nothing on it — the heart that opens Help Mihrab.
           Minimal says it under the figures instead. */}
