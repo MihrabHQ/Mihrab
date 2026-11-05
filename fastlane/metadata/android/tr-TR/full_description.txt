@@ -19,7 +19,8 @@ OKU VE DİNLE
 - 59 kâri; kelime zamanlaması olanlarda okunan kelime sayfada yanar
 - Tilavet: ekran kapalıyken sure sure dinleme, uyku zamanlayıcısı ve hız ayarıyla; kaldığınız yeri hatırlar ve o saatte sünnetin tavsiye ettiğini önerir: cuma günü Kehf, gece Mülk
 - 14 meal ve klasik tefsirler, çevrimdışı da okunabilir
-- Ezber araçları, yer imleri ve açık olduğunuz sayfayı izleyen hatim planları
+- Hifz: ezbere bildikleriniz, her bölüm kendi döngüsünde geri gelir
+- Ezber alıştırmaları, yer imleri ve hatim planları
 
 ZİKİR
 - Hısnü'l-Müslim'den 100'den fazla dua, okunuşu ve mealiyle
