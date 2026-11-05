@@ -40,14 +40,17 @@ describe('Minimal wears the classic colours', () => {
     );
   });
 
-  it('comes on in the Vibrant sky, and Classic stays a choice after', () => {
-    const off = { minimalUi: false, appearance: 'light', skyVariant: 'realistic' };
+  it('comes on in the Realistic sky, and Vibrant and Classic stay choices after', () => {
+    const off = { minimalUi: false, appearance: 'light', skyVariant: 'vibrant' };
     expect(enteringMinimal(off, { ...off, minimalUi: true })).toEqual({
       minimalUi: true,
       appearance: 'sky',
-      skyVariant: 'vibrant',
+      skyVariant: 'realistic',
     });
-    // Already on: a later choice of Classic (light, dark, system) holds.
+    // Already on: a later choice of Vibrant holds.
+    const vivid = { minimalUi: true, appearance: 'sky', skyVariant: 'vibrant' };
+    expect(enteringMinimal(vivid, vivid)).toBe(vivid);
+    // And of Classic (light, dark, system).
     const on = { minimalUi: true, appearance: 'dark', skyVariant: 'realistic' };
     expect(enteringMinimal(on, on)).toBe(on);
     // Turning it off changes nothing.

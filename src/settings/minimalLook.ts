@@ -37,15 +37,16 @@ export function minimalLook<T extends { minimalUi: boolean; tintedSurfaces: bool
 }
 
 /**
- * Turning Minimal on puts the app in the Sky theme's Vibrant colours —
- * the sky Minimal's pages were drawn for. Only the turn: Classic stays a
- * choice under Minimal (Settings → Appearance → Theme), and a reader who
- * picks it afterwards keeps it.
+ * Turning Minimal on puts the app in the Sky theme's Realistic colours —
+ * the sky as it looks, over a calm page, the Sky theme's own default. It
+ * was Vibrant, the palette Minimal's pages were first drawn in. Only the
+ * turn: Vibrant and Classic stay choices under Minimal (Settings →
+ * Appearance), and a reader who picks either afterwards keeps it.
  */
 export function enteringMinimal<T extends { minimalUi: boolean; appearance: string; skyVariant: string }>(
   prev: { minimalUi: boolean },
   next: T,
 ): T {
   if (!MINIMAL_OFFERED || prev.minimalUi || !next.minimalUi) return next;
-  return { ...next, appearance: 'sky', skyVariant: 'vibrant' };
+  return { ...next, appearance: 'sky', skyVariant: 'realistic' };
 }
