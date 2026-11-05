@@ -395,6 +395,107 @@ The `data-tafsir-v1` mirror does not hold the new editions until
 `scripts/mirror/build-mirror.js` is run and uploaded; until then the app
 reads them from the CDN, as it does whenever the mirror has no answer.
 
+## More translations and tafsir — SHIPPED 2026-11-05
+
+The second round after #125, chosen for who stands behind each text (a
+printing complex, a ministry, a translation centre, or a mainstream
+scholar), for a source already in use (no new licence regime), and for
+completeness — every one fetched whole and counted before it went in.
+
+### Translations that are downloads, not assets
+
+Fifteen translations joined `QURAN_TRANSLATIONS` with a `source`: they do
+not ship inside the app. As assets they would have put some twenty
+megabytes on every install for editions most readers never open (the
+fourteen bundled ones were moved off the JS bundle for the same reason).
+Instead they are kept exactly as tafsir is, by the store the two now
+share (`src/quran/surahStore.ts`): an ayah read on demand under an open
+sheet and cached, a whole edition downloadable from the sheet or the
+Quran downloads screen (`kind: 'translation'`), 114 surah files under
+`<Documents>/quran/translations/<edition>/`, mirrored as
+`data-translations-v1`. The three upstream shapes live in one table
+(`src/quran/textSources.ts`).
+
+| App language | Edition | Source | Compact file |
+|---|---|---|---|
+| English | Hilali & Khan `en.hilali` | Tanzil | 1.2 MB |
+| English | Rowwad Translation Center `english_rwwad` | QuranEnc 1.0.20 | 1.2 MB |
+| Swedish | Rowwad Translation Center `swedish_rwwad` | QuranEnc 1.0.2 | 0.9 MB |
+| Urdu | Muhammad Junagarhi `ur.junagarhi` | Tanzil | 1.5 MB |
+| Hindi | Azizul Haq al-Omari `hindi_omari` | QuranEnc 1.1.5 | 3.2 MB |
+| French | Rachid Maach `french_rashid` | QuranEnc 1.0.3 | 1.3 MB |
+| Spanish | Noor International `spanish_montada_eu` | QuranEnc 1.0.1 | 1.4 MB |
+| German | Rowwad Translation Center `german_rwwad` | QuranEnc 1.0.16 | 1.1 MB |
+| Turkish | Diyanet Vakfı `tr.vakfi` | Tanzil | 1.0 MB |
+| Turkish | Elmalılı Hamdi Yazır `tr.yazir` | Tanzil | 1.0 MB |
+| Indonesian | Kementerian Agama, 2019 `indonesian_affairs` | QuranEnc 1.0.1 | 1.3 MB |
+| Indonesian | King Fahd Complex `indonesian_complex` | QuranEnc 1.0.1 | 1.5 MB |
+| Russian | Abu Adel `ru.abuadel` | Tanzil | 2.8 MB |
+| Chinese | Muhammad Makin `chinese_makin` | QuranEnc 1.0.2 | 0.8 MB |
+| Malay (no app locale) | Abdullah Basmeih `ms.basmeih` | Tanzil | 1.5 MB |
+
+All 6,236 ayahs in each, measured on 2026-11-05. The Tanzil editions
+come through alquran.cloud on the terms the bundled fourteen already
+carry (CC BY 3.0, verbatim). The QuranEnc editions are the second regime
+the García note below chose to avoid; it is accepted here because the
+Swedish, Hindi, French and Spanish options and the newer Indonesian
+revision exist nowhere else, and its conditions are met as stated: the
+text is shown as published (the translation, then its footnotes — the
+markers in the text point at them), QuranEnc is credited in Settings →
+About with the version each edition was checked against, and the app
+reads the API's current revision. Not taken from QuranEnc: Abu Bakr
+Zakaria's Bengali, which answers at the API but is absent from its
+published list, so has no version to name; the same text is in the tafsir
+registry from the Quran.com corpus.
+
+### Tafsir, second round
+
+| Language | Edition | Source | Surahs |
+|---|---|---|---|
+| Indonesian | Tafsir Jalalain `id-tafsir-jalalayn` | Tanzil `id.jalalayn` | 114 |
+| Indonesian | Al-Muntakhab, Quraish Shihab `id-tafsir-muntakhab` | Tanzil `id.muntakhab` | 114 |
+| Russian | Kuliev with as-Sa'di's commentary `ru-tafsir-kuliev-alsaadi` | Tanzil `ru.kuliev-alsaadi` | 114 |
+| Russian | Ibn Kathir `ru-tafsir-ibne-kahtir` | Quran.com | 112 (no 47, 100) |
+| Arabic | as-Sa'di `ar-tafseer-al-saddi` | Quran.com | 113 (no 73) |
+| Urdu | Bayan ul-Quran, Israr Ahmad `ur-tafsir-bayan-ul-quran` | Quran.com | 113 (no 10) |
+| Bengali | Abu Bakr Zakaria `bn-tafsir-abu-bakr-zakaria` | Quran.com | 113 (no 105) |
+| English | al-Mukhtasar `en-tafsir-al-mukhtasar` | Quran.com | 111 |
+| Turkish | el-Muhtasar `turkish-mokhtasar` | Quran.com | 112 |
+| French | al-Mukhtasar `french-mokhtasar` | Quran.com | 113 |
+| Spanish | al-Mukhtasar `spanish-mokhtasar` | Quran.com | 109 |
+| Chinese | 古兰经简明注释 `chinese-mokhtasar` | Quran.com | 110 |
+| Hindi | अल-मुख़्तसर `hindi-mokhtasar` | Quran.com | 106 |
+
+Tanzil files the three Indonesian and Russian texts as translations; they
+are tafsir, as `ar.muyassar` was, so they are in `TAFSIR_EDITIONS` under
+a `source: 'tanzil'` and never in the translation list. A surah missing
+upstream is an empty file in a download and "unavailable" in the sheet,
+as it has been for Ibn Kathir since 2.7.28.
+
+**Not added.** The corpus's `tr-tafsir-ibne-kathir` (1.1 MB for the whole
+Qur'an) is the ayah's meaning and nothing else — a translation wearing a
+tafsir's name — and its `in-tafsir-jalalayn` is empty; the big Arabic
+classics (al-Tabari, al-Qurtubi, al-Baghawi, al-Wasit) were not measured.
+Quran-only readings (Yüksel, Öztürk) and the Shia translations (Qarai,
+Shakir, Najafi, Jawadi) were left out: the first on reliability, the
+second because every text in the app is Sunni and adding them is a
+positioning decision, not a quality one.
+
+### The picker
+
+With twenty-nine translations and twenty-five tafsirs the ayah sheet's row of
+chips became two rows (`src/quran/mushaf/EditionPicker.tsx`): a language,
+then — where the language has more than one — an edition within it. The
+companion-text sheet, already grouped by language, is unchanged.
+
+### The mirror
+
+`scripts/mirror/build-mirror.js` reads both registries, fetches each
+edition from its own source and writes `data-tafsir-v1` and
+`data-translations-v1`. Until the new assets are uploaded the app reads
+these editions from their sources, which all answer a browser too (CORS
+`*`), so Mihrab Web has them from the start.
+
 ## The Isa García Spanish translation — issue #37, SHIPPED 2026-09-08
 
 The app shipped one Spanish edition, Julio Cortés. #37 asked for a

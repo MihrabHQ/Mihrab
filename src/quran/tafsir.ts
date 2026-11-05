@@ -12,15 +12,20 @@
  * (inside the managed `quran/` store so it is excluded from Android
  * Auto Backup and cleaned by the Manage-downloads screen).
  */
-import ReactNativeBlobUtil from 'react-native-blob-util';
-import { fetchWithRetry } from '../utils/fetchWithRetry';
-import { fetchMirrored, mirrorUrl, MIRROR_TAGS } from '../config/mirrors';
-import { IS_WEB_APP } from '../config/webApp';
 import {
-  CONTENT_DEADLINES,
-  GIVE_UP_AFTER_CONSECUTIVE_FAILURES,
-} from './contentNetwork';
-import { mkdirDeep } from './mushafDownload';
+  deleteEdition,
+  deleteStore,
+  downloadEdition,
+  editionStats,
+  hasSurah,
+  loadAyah,
+  resetStoreMemory,
+  storeDir,
+  storeDiskUsage,
+  STORE_SURAHS,
+  type StoredEdition,
+} from './surahStore';
+import { TEXT_SOURCES, type TextSourceId } from './textSources';
 import type {
   MushafDownloadHandle,
   MushafDownloadProgress,
@@ -30,6 +35,13 @@ export type TafsirEdition = {
   id: string;
   /** Display label (proper noun — not translated). */
   label: string;
+  /**
+   * Where the text comes from (`textSources.ts`). Absent: the Quran.com
+   * corpus, under `id`. The three Tanzil editions name `tanzil` and the id
+   * alquran.cloud knows them by.
+   */
+  source?: TextSourceId;
+  sourceId?: string;
   /** App locale this edition serves. */
   locale: string;
   /** RTL text? */
@@ -154,6 +166,124 @@ export const TAFSIR_EDITIONS: ReadonlyArray<TafsirEdition> = [
     language: 'Russian',
     approxBytes: 3300000,
   },
+  // The second round (2026-11-05), after the first was out: the rest of the
+  // corpus that is complete or a surah or two short in an app language, and
+  // three editions Tanzil files as translations that are tafsir — Jalalayn
+  // and al-Muntakhab in Indonesian (the corpus's own Indonesian Jalalayn is
+  // empty), and Kuliev's translation with as-Sa'di's commentary in Russian.
+  // Sizes are the surah files summed, or the compact file this app writes.
+  // Not added: the corpus's "Turkish Ibn Kathir", which is the ayah's
+  // meaning alone and not a tafsir.
+  {
+    id: 'id-tafsir-jalalayn',
+    label: 'Tafsir Jalalain',
+    source: 'tanzil',
+    sourceId: 'id.jalalayn',
+    locale: 'id',
+    rtl: false,
+    language: 'Indonesian',
+    approxBytes: 2800000,
+  },
+  {
+    id: 'id-tafsir-muntakhab',
+    label: 'Al-Muntakhab (Quraish Shihab)',
+    source: 'tanzil',
+    sourceId: 'id.muntakhab',
+    locale: 'id',
+    rtl: false,
+    language: 'Indonesian',
+    approxBytes: 2600000,
+  },
+  {
+    id: 'ar-tafseer-al-saddi',
+    label: 'تفسير السعدي',
+    locale: 'ar',
+    rtl: true,
+    language: 'Arabic',
+    approxBytes: 6300000,
+  },
+  {
+    id: 'ur-tafsir-bayan-ul-quran',
+    label: 'بیان القرآن (ڈاکٹر اسرار احمد)',
+    locale: 'ur',
+    rtl: true,
+    language: 'Urdu',
+    approxBytes: 9900000,
+  },
+  {
+    id: 'bn-tafsir-abu-bakr-zakaria',
+    label: 'তাফসীর আবু বকর যাকারিয়া',
+    locale: 'bn',
+    rtl: false,
+    language: 'Bengali',
+    approxBytes: 13900000,
+  },
+  {
+    id: 'ru-tafsir-kuliev-alsaadi',
+    label: 'Кулиев + ас-Саади',
+    source: 'tanzil',
+    sourceId: 'ru.kuliev-alsaadi',
+    locale: 'ru',
+    rtl: false,
+    language: 'Russian',
+    approxBytes: 10500000,
+  },
+  {
+    id: 'ru-tafsir-ibne-kahtir',
+    label: 'Тафсир Ибн Касира',
+    locale: 'ru',
+    rtl: false,
+    language: 'Russian',
+    approxBytes: 16000000,
+  },
+  {
+    id: 'en-tafsir-al-mukhtasar',
+    label: 'Al-Mukhtasar',
+    locale: 'en',
+    rtl: false,
+    language: 'English',
+    approxBytes: 2000000,
+  },
+  {
+    id: 'turkish-mokhtasar',
+    label: 'El-Muhtasar',
+    locale: 'tr',
+    rtl: false,
+    language: 'Turkish',
+    approxBytes: 2200000,
+  },
+  {
+    id: 'french-mokhtasar',
+    label: 'Al-Mukhtasar',
+    locale: 'fr',
+    rtl: false,
+    language: 'French',
+    approxBytes: 2200000,
+  },
+  {
+    id: 'spanish-mokhtasar',
+    label: 'Al-Mukhtasar',
+    locale: 'es',
+    rtl: false,
+    language: 'Spanish',
+    approxBytes: 2000000,
+  },
+  {
+    id: 'chinese-mokhtasar',
+    label: '古兰经简明注释',
+    locale: 'zh',
+    rtl: false,
+    language: 'Chinese',
+    approxBytes: 1600000,
+  },
+  {
+    id: 'hindi-mokhtasar',
+    label: 'अल-मुख़्तसर',
+    locale: 'hi',
+    rtl: false,
+    language: 'Hindi',
+    approxBytes: 4600000,
+  },
 ] as const;
 
 /** Editions offered for an app locale: native ones first, then English. */
@@ -217,399 +347,88 @@ export function resolveTafsirEdition(
   );
 }
 
-function tafsirUrl(edition: string, surah: number, ayah: number): string {
-  return `https://cdn.jsdelivr.net/gh/spa5k/tafsir_api@main/tafsir/${edition}/${surah}/${ayah}.json`;
+// ─── The store ─────────────────────────────────────────────────────────
+//
+// Everything below is `surahStore.ts` with the kind filled in: a tafsir is
+// kept a surah at a time, fetched on demand under an open sheet and
+// downloadable whole (`kind: 'tafsir'` in the download manager). The
+// layout and the mirror asset names are the ones this file had before the
+// store was shared with the translations (2026-11); nothing on a phone's
+// disk moved.
+
+/** What the store needs of an edition; an id it has never heard of is
+ *  taken as a Quran.com edition of that name, as every one once was. */
+function stored(edition: string): StoredEdition {
+  const ed = findTafsirEdition(edition);
+  return {
+    id: edition,
+    source: ed?.source ?? 'quran.com',
+    sourceId: ed?.sourceId ?? edition,
+    approxBytes: ed?.approxBytes ?? Infinity,
+  };
 }
+
+export const TAFSIR_SURAHS = STORE_SURAHS;
 
 export function tafsirCacheDir(): string {
-  return `${ReactNativeBlobUtil.fs.dirs.DocumentDir}/quran/tafsir`;
+  return storeDir('tafsir');
 }
 
-function cachePath(edition: string, surah: number, ayah: number): string {
-  return `${tafsirCacheDir()}/${edition}/${surah}/${ayah}.json`;
+export function resetTafsirMemory(): void {
+  resetStoreMemory('tafsir');
 }
 
 /**
  * Fetch (or read from cache) one ayah's tafsir text. Resolves null on
  * any failure — the UI shows a quiet "unavailable offline" note.
  */
-export async function loadTafsir(
+export function loadTafsir(
   edition: string,
   surah: number,
   ayah: number,
 ): Promise<string | null> {
-  // A downloaded edition answers from disk, whatever the network is doing.
-  const whole = await readSurahFile(edition, surah);
-  const held = whole?.ayahs[String(ayah)];
-  if (held) return held;
-  const path = cachePath(edition, surah, ayah);
-  try {
-    if (await ReactNativeBlobUtil.fs.exists(path)) {
-      const raw = await ReactNativeBlobUtil.fs.readFile(path, 'utf8');
-      const parsed = JSON.parse(String(raw)) as { text?: string };
-      if (parsed.text) return parsed.text;
-    }
-  } catch {
-    /* fall through to network */
-  }
-  try {
-    // This repo's mirror first (a surah file, kept in memory), the original
-    // host's one-ayah answer when the mirror cannot give it.
-    let text: string | undefined = (
-      await mirrorSurah(edition, surah)
-    )?.ayahs[String(ayah)];
-    if (!text) {
-      // Two attempts, not four: a reader is looking at an open sheet, so a
-      // CDN's transient 502 is worth exactly one more try and no more. The
-      // deadline is what matters most here — before this, a stalled origin
-      // left the sheet's spinner running with nothing to end it.
-      const res = await fetchWithRetry(
-        tafsirUrl(edition, surah, ayah),
-        undefined,
-        {
-          maxAttempts: 2,
-          baseDelayMs: 400,
-          timeoutMs: CONTENT_DEADLINES.tafsir,
-        },
-      );
-      if (!res.ok) return null;
-      const parsed = (await res.json()) as { text?: string };
-      text = parsed.text?.trim();
-    }
-    if (!text) return null;
-    // Cache for offline re-reads (best effort).
-    try {
-      await mkdirDeep(`${tafsirCacheDir()}/${edition}/${surah}`);
-      await ReactNativeBlobUtil.fs.writeFile(
-        path,
-        JSON.stringify({ text }),
-        'utf8',
-      );
-    } catch {
-      /* cache write is optional */
-    }
-    return text;
-  } catch {
-    return null;
-  }
-}
-
-// ─── Whole editions ─────────────────────────────────────────────────────
-//
-// An edition can be downloaded WHOLE, by the Quran download manager
-// (`kind: 'tafsir'`): one file per surah, 114 requests instead of 6,236,
-// then read from disk. Until it is, an ayah is fetched on demand as before
-// and cached on its own. Both live under `<tafsirCacheDir>/<edition>/`:
-//   s/{surah}.json   → { v: 1, ayahs: { "<ayah>": "text" } }   (a download)
-//   {surah}/{ayah}.json → { text }                              (on demand)
-
-export const TAFSIR_SURAHS = 114;
-
-/** Under this a whole edition is small enough to treat its files as small. */
-const SMALL_EDITION_BYTES = 10_000_000;
-
-function surahUrl(edition: string, surah: number): string {
-  return `https://cdn.jsdelivr.net/gh/spa5k/tafsir_api@main/tafsir/${edition}/${surah}.json`;
-}
-
-/** The same surah file, from this repo's own mirror (see config/mirrors). */
-function mirrorSurahUrl(edition: string, surah: number): string {
-  return mirrorUrl(MIRROR_TAGS.tafsir, `${edition}__${surah}.json`);
-}
-
-function surahFilePath(edition: string, surah: number): string {
-  return `${tafsirCacheDir()}/${edition}/s/${surah}.json`;
-}
-
-type TafsirSurahFile = { v: 1; ayahs: Record<string, string> };
-
-/**
- * The last few surah files read, parsed. A big edition's surah is several
- * megabytes of JSON; reading ayah after ayah of one surah must not parse it
- * again each time. Few entries, because each one is large.
- */
-const SURAH_MEMORY_LIMIT = 3;
-const surahMemory = new Map<string, TafsirSurahFile>();
-
-export function resetTafsirMemory(): void {
-  surahMemory.clear();
-}
-
-function rememberSurah(key: string, file: TafsirSurahFile): void {
-  surahMemory.set(key, file);
-  while (surahMemory.size > SURAH_MEMORY_LIMIT) {
-    const oldest = surahMemory.keys().next().value;
-    if (oldest === undefined) break;
-    surahMemory.delete(oldest);
-  }
-}
-
-const mirrorInFlight = new Map<string, Promise<TafsirSurahFile | null>>();
-
-/**
- * One ayah asked for under an open sheet, answered from the mirror.
- *
- * The mirror holds a surah per file, not an ayah per file, so the surah is
- * fetched once and kept in memory with the files read from disk: the next
- * ayah of the same surah is then immediate rather than another download.
- * Concurrent asks for one surah share a request. Bounded by its own
- * deadline — on a slow link the original host's one-ayah answer is the
- * quicker of the two, so null here simply hands over to it. Never written
- * to disk: a whole-edition download is the only thing that marks a surah
- * as held.
- */
-async function mirrorSurah(
-  edition: string,
-  surah: number,
-): Promise<TafsirSurahFile | null> {
-  // A browser can't read a release download (no CORS header): the web app
-  // goes to the original host instead of failing loudly first.
-  if (IS_WEB_APP) return null;
-  const key = `${edition}:${surah}`;
-  const pending = mirrorInFlight.get(key);
-  if (pending) return pending;
-  const job = (async () => {
-    try {
-      const res = await fetchWithRetry(mirrorSurahUrl(edition, surah), undefined, {
-        maxAttempts: 1,
-        timeoutMs: CONTENT_DEADLINES.tafsirMirrorSurah,
-      });
-      if (!res.ok) return null;
-      const rows = surahRows(await res.json());
-      if (!rows) return null;
-      const ayahs: Record<string, string> = {};
-      for (const r of rows) {
-        const t = typeof r?.text === 'string' ? r.text.trim() : '';
-        if (t && r.ayah != null) ayahs[String(r.ayah)] = t;
-      }
-      const file: TafsirSurahFile = { v: 1, ayahs };
-      rememberSurah(key, file);
-      return file;
-    } catch {
-      return null;
-    } finally {
-      mirrorInFlight.delete(key);
-    }
-  })();
-  mirrorInFlight.set(key, job);
-  return job;
-}
-
-async function readSurahFile(
-  edition: string,
-  surah: number,
-): Promise<TafsirSurahFile | null> {
-  const key = `${edition}:${surah}`;
-  const hit = surahMemory.get(key);
-  if (hit) {
-    surahMemory.delete(key); // refresh recency
-    surahMemory.set(key, hit);
-    return hit;
-  }
-  try {
-    const path = surahFilePath(edition, surah);
-    if (!(await ReactNativeBlobUtil.fs.exists(path))) return null;
-    const parsed = JSON.parse(
-      String(await ReactNativeBlobUtil.fs.readFile(path, 'utf8')),
-    ) as Partial<TafsirSurahFile>;
-    if (parsed?.v !== 1 || !parsed.ayahs || typeof parsed.ayahs !== 'object') {
-      return null;
-    }
-    const file = parsed as TafsirSurahFile;
-    rememberSurah(key, file);
-    return file;
-  } catch {
-    return null;
-  }
+  return loadAyah('tafsir', stored(edition), surah, ayah);
 }
 
 /** Is this surah of the edition on disk as part of a whole-edition download? */
-export async function hasTafsirSurah(
-  edition: string,
-  surah: number,
-): Promise<boolean> {
-  try {
-    return await ReactNativeBlobUtil.fs.exists(surahFilePath(edition, surah));
-  } catch {
-    return false;
-  }
+export function hasTafsirSurah(edition: string, surah: number): Promise<boolean> {
+  return hasSurah('tafsir', edition, surah);
 }
 
 /** How much of one edition is on disk, for the downloads screen. */
-export async function tafsirEditionStats(edition: string): Promise<{
-  bytes: number;
-  surahs: number;
-}> {
-  const dir = `${tafsirCacheDir()}/${edition}`;
-  const walk = async (d: string, countSurahFiles: boolean) => {
-    let bytes = 0;
-    let surahs = 0;
-    let entries: Awaited<ReturnType<typeof ReactNativeBlobUtil.fs.lstat>> = [];
-    try {
-      entries = await ReactNativeBlobUtil.fs.lstat(d);
-    } catch {
-      return { bytes, surahs };
-    }
-    for (const e of entries) {
-      if (e.type === 'directory') {
-        const inner = await walk(`${d}/${e.filename}`, e.filename === 's');
-        bytes += inner.bytes;
-        surahs += inner.surahs;
-      } else {
-        bytes += Number(e.size) || 0;
-        if (countSurahFiles && /^\d+\.json$/.test(String(e.filename))) surahs += 1;
-      }
-    }
-    return { bytes, surahs };
-  };
-  try {
-    if (!(await ReactNativeBlobUtil.fs.exists(dir))) return { bytes: 0, surahs: 0 };
-  } catch {
-    return { bytes: 0, surahs: 0 };
-  }
-  return walk(dir, false);
+export function tafsirEditionStats(edition: string): Promise<{ bytes: number; surahs: number }> {
+  return editionStats('tafsir', edition);
 }
 
 /** Delete one edition — the whole download and anything cached ayah by ayah. */
-export async function deleteTafsirEdition(edition: string): Promise<void> {
-  surahMemory.clear();
-  try {
-    await ReactNativeBlobUtil.fs.unlink(`${tafsirCacheDir()}/${edition}`);
-  } catch {
-    /* already gone */
-  }
-}
-
-type SurahArray = Array<{ ayah?: number | string; text?: string | null }>;
-
-/**
- * A surah file's rows. Most editions are a bare array; the Urdu Ibn Kathir is
- * `{ "ayahs": [...] }`, which this used to refuse as "unexpected response" —
- * so that edition's whole-edition download could never finish.
- */
-export function surahRows(json: unknown): SurahArray | null {
-  if (Array.isArray(json)) return json as SurahArray;
-  const inner = (json as { ayahs?: unknown } | null)?.ayahs;
-  return Array.isArray(inner) ? (inner as SurahArray) : null;
-}
-
-/** One surah file → disk. A surah upstream has no file for is NOT a failure. */
-async function fetchTafsirSurah(edition: string, surah: number): Promise<void> {
-  // A small edition's surah is a few tens of kilobytes: a request that has
-  // not answered in a dozen seconds is a stalled one, and waiting a minute
-  // on it three at a time is what made the first run crawl on a phone
-  // (≈3 surahs a minute). So: a short deadline and several tries. A big
-  // edition's biggest surah is megabytes, which needs the long one.
-  const small =
-    (findTafsirEdition(edition)?.approxBytes ?? Infinity) < SMALL_EDITION_BYTES;
-  const res = await fetchMirrored(mirrorSurahUrl(edition, surah), surahUrl(edition, surah), undefined, {
-    maxAttempts: small ? 4 : 2,
-    baseDelayMs: 400,
-    timeoutMs: small ? CONTENT_DEADLINES.tafsirSurahSmall : CONTENT_DEADLINES.tafsirSurah,
-  });
-  const ayahs: Record<string, string> = {};
-  if (res.status === 404) {
-    // A few surahs are simply missing from some editions upstream. Marking
-    // it done (empty) is what lets the run finish; an ayah in it is still
-    // fetched on demand, as it would have been.
-  } else {
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const rows = surahRows(await res.json());
-    if (!rows) throw new Error('unexpected response');
-    for (const r of rows) {
-      const text = typeof r?.text === 'string' ? r.text.trim() : '';
-      if (text && r.ayah != null) ayahs[String(r.ayah)] = text;
-    }
-  }
-  await mkdirDeep(`${tafsirCacheDir()}/${edition}/s`);
-  await ReactNativeBlobUtil.fs.writeFile(
-    surahFilePath(edition, surah),
-    JSON.stringify({ v: 1, ayahs } satisfies TafsirSurahFile),
-    'utf8',
-  );
+export function deleteTafsirEdition(edition: string): Promise<void> {
+  return deleteEdition('tafsir', edition);
 }
 
 /**
- * Fetch every surah of an edition, skipping the ones already on disk, three
- * at a time. Same contract as the other download jobs: a handle whose
- * promise says whether it finished and, if not, whether the connection had
- * stopped working altogether.
+ * A Quran.com surah file's rows: a bare array, or `{ ayahs: [...] }` as the
+ * Urdu Ibn Kathir has it. The mirror builder checks files with this.
  */
+export function surahRows(json: unknown): Array<{ ayah: number; text: string }> | null {
+  return TEXT_SOURCES['quran.com'].surahRows(json);
+}
+
+/** Fetch every surah of an edition, skipping the ones already on disk. */
 export function downloadTafsirEdition(
   edition: string,
   opts: { onProgress?: (p: MushafDownloadProgress) => void },
 ): MushafDownloadHandle {
-  let cancelled = false;
-  const promise = (async () => {
-    const total = TAFSIR_SURAHS;
-    let done = 0;
-    let failed = 0;
-    let inARow = 0;
-    let interrupted = false;
-    let next = 1;
-    const report = () => opts.onProgress?.({ done, total, failed });
-    report();
-    const worker = async () => {
-      while (!cancelled && !interrupted) {
-        const surah = next++;
-        if (surah > total) return;
-        try {
-          if (!(await hasTafsirSurah(edition, surah))) {
-            await fetchTafsirSurah(edition, surah);
-          }
-          done += 1;
-          inARow = 0;
-        } catch {
-          failed += 1;
-          inARow += 1;
-          if (inARow >= GIVE_UP_AFTER_CONSECUTIVE_FAILURES) interrupted = true;
-        }
-        report();
-      }
-    };
-    await Promise.all([worker(), worker(), worker()]);
-    return {
-      complete: !cancelled && !interrupted && failed === 0 && done === total,
-      interrupted: interrupted && !cancelled,
-    };
-  })();
-  return {
-    promise,
-    cancel: () => {
-      cancelled = true;
-    },
-  };
+  return downloadEdition('tafsir', stored(edition), opts);
 }
 
 /** Bytes on disk in the tafsir cache (Manage-downloads screen). */
-export async function tafsirDiskUsage(): Promise<number> {
-  const walk = async (dir: string): Promise<number> => {
-    try {
-      const entries = await ReactNativeBlobUtil.fs.lstat(dir);
-      let sum = 0;
-      for (const e of entries) {
-        if (e.type === 'directory') {
-          sum += await walk(`${dir}/${e.filename}`);
-        } else {
-          sum += Number(e.size) || 0;
-        }
-      }
-      return sum;
-    } catch {
-      return 0;
-    }
-  };
-  if (!(await ReactNativeBlobUtil.fs.exists(tafsirCacheDir()))) return 0;
-  return walk(tafsirCacheDir());
+export function tafsirDiskUsage(): Promise<number> {
+  return storeDiskUsage('tafsir');
 }
 
 /** Delete the whole tafsir cache. */
-export async function deleteTafsirCache(): Promise<void> {
-  try {
-    await ReactNativeBlobUtil.fs.unlink(tafsirCacheDir());
-  } catch {
-    /* already gone */
-  }
+export function deleteTafsirCache(): Promise<void> {
+  return deleteStore('tafsir');
 }
 
 export const TAFSIR_ATTRIBUTION =

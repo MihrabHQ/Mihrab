@@ -170,7 +170,10 @@ describe('the editions stay out of the JS bundle', () => {
       .filter((f: string) => f.endsWith('.json'))
       .map((f: string) => f.replace(/\.json$/, ''))
       .sort();
-    const registered = QURAN_TRANSLATIONS.map(e => e.id).sort();
+    // The editions that are downloads (`source` set) have no asset to ship.
+    const registered = QURAN_TRANSLATIONS.filter(e => !e.source)
+      .map(e => e.id)
+      .sort();
     expect(onDisk).toEqual(registered);
   });
 

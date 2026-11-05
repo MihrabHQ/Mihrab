@@ -20,6 +20,31 @@ import { SettingsGroup } from '../SettingsGroup';
 import { SettingsPage } from '../SettingsPage';
 import { SPACING } from '../../../theme/tokens';
 import { TYPE } from '../../../theme/typography';
+import { QURAN_TRANSLATIONS } from '../../../quran/translations';
+import { TAFSIR_EDITIONS } from '../../../quran/tafsir';
+
+/**
+ * The counts and the QuranEnc versions come from the registries, so a
+ * new edition is credited the day it is added. QuranEnc asks that the
+ * version read be named: these are the versions the editions were checked
+ * against when they were added (2026-11-05), the same text the app reads
+ * live, since the API serves its current revision.
+ */
+const TANZIL_TRANSLATIONS = QURAN_TRANSLATIONS.filter(e => !e.source || e.source === 'tanzil');
+const QURANENC_TRANSLATIONS = QURAN_TRANSLATIONS.filter(e => e.source === 'quranenc');
+const QURANENC_VERSIONS: Record<string, string> = {
+  english_rwwad: '1.0.20',
+  swedish_rwwad: '1.0.2',
+  hindi_omari: '1.1.5',
+  french_rashid: '1.0.3',
+  spanish_montada_eu: '1.0.1',
+  german_rwwad: '1.0.16',
+  indonesian_affairs: '1.0.1',
+  indonesian_complex: '1.0.1',
+  chinese_makin: '1.0.2',
+};
+const QURANCOM_TAFSIR = TAFSIR_EDITIONS.filter(e => !e.source || e.source === 'quran.com');
+const TANZIL_TAFSIR = TAFSIR_EDITIONS.filter(e => e.source === 'tanzil');
 
 type Credit = { label: string; sub: string; url: string };
 
@@ -109,18 +134,40 @@ export function AttributionsSettingsScreen() {
   const meaning: Credit[] = [
     {
       label: t('attributions.translationEditions', {
-        defaultValue: 'Translation editions (14)',
+        defaultValue: 'Translation editions ({{n}})',
+        n: TANZIL_TRANSLATIONS.length,
       }),
       sub: 'alquran.cloud · Tanzil-derived · CC BY 3.0',
       url: 'https://alquran.cloud/',
     },
     {
+      label: t('attributions.quranencTranslations', {
+        defaultValue: 'Translation editions from QuranEnc ({{n}}), shown as published',
+        n: QURANENC_TRANSLATIONS.length,
+      }),
+      sub:
+        'Encyclopedia of the Noble Quran · QuranEnc.com · ' +
+        QURANENC_TRANSLATIONS.map(
+          e => `${e.sourceId} ${QURANENC_VERSIONS[e.sourceId ?? e.id] ?? ''}`.trim(),
+        ).join(' · '),
+      url: 'https://quranenc.com/',
+    },
+    {
       label: t('attributions.tafsir', {
         defaultValue:
-          'Tafsir texts: Ibn Kathir, Maarif-ul-Quran, al-Muyassar, al-Mukhtasar, as-Sa’di, Ahsanul Bayaan',
+          'Tafsir editions ({{n}}): Ibn Kathir, Maarif-ul-Quran, al-Muyassar, al-Mukhtasar, as-Sa’di, Ahsanul Bayaan, Abu Bakr Zakaria, Bayan ul-Quran',
+        n: QURANCOM_TAFSIR.length,
       }),
       sub: 'spa5k/tafsir_api · Quran.com tafsir corpus',
       url: 'https://github.com/spa5k/tafsir_api',
+    },
+    {
+      label: t('attributions.tanzilTafsir', {
+        defaultValue: 'Tafsir editions from Tanzil ({{n}}): Jalalayn, al-Muntakhab, Kuliev & as-Sa’di',
+        n: TANZIL_TAFSIR.length,
+      }),
+      sub: 'alquran.cloud · Tanzil-derived · CC BY 3.0',
+      url: 'https://alquran.cloud/',
     },
     {
       label: t('attributions.wordMeanings', {

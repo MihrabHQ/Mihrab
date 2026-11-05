@@ -69,6 +69,13 @@ import {
   tafsirNameInSentence,
   TAFSIR_SURAHS,
 } from './tafsir';
+import {
+  downloadTranslationEdition,
+  findTranslationEdition,
+  isFetchedTranslation,
+  translationEditionStats,
+  TRANSLATION_SURAHS,
+} from './translations';
 import { findSurah } from './quran';
 import { surahName } from './surahName';
 import {
@@ -105,6 +112,8 @@ export type QuranDownloadJob =
   | { kind: 'wordMeanings' }
   /** One tafsir edition, whole — 114 surah files (`tafsir.ts`). */
   | { kind: 'tafsir'; editionId: string }
+  /** One of the translations that are downloads, whole (`translations.ts`). */
+  | { kind: 'translation'; editionId: string }
   /**
    * One riwayah's muṣḥaf text (`riwayahDownload.ts`) — one file, a few
    * megabytes. `url` is a link the reader pasted; without it, the
@@ -200,6 +209,9 @@ export function isJobRunning(job: QuranDownloadJob): boolean {
     return running.reciterId === job.reciterId;
   }
   if (running.kind === 'tafsir' && job.kind === 'tafsir') {
+    return running.editionId === job.editionId;
+  }
+  if (running.kind === 'translation' && job.kind === 'translation') {
     return running.editionId === job.editionId;
   }
   if (running.kind === 'riwayah' && job.kind === 'riwayah') {
@@ -328,6 +340,24 @@ function notificationText(job: QuranDownloadJob) {
         i18n.t('quran.downloadStoppedBodySurahs', { done, total }),
     };
   }
+  if (job.kind === 'translation') {
+    const name = tafsirNameInSentence(
+      findTranslationEdition(job.editionId)?.label ?? job.editionId,
+    );
+    return {
+      label: i18n.t('quran.downloadingTranslation', { name }),
+      body: (done: number, total: number) =>
+        i18n.t('quran.downloadProgressSurahs', { done, total }),
+      doneTitle: i18n.t('quran.translationDoneTitle', { name }),
+      doneBody: i18n.t('quran.translationDoneBody'),
+      incompleteTitle: i18n.t('quran.downloadIncompleteTitle'),
+      incompleteBody: (failed: number) =>
+        i18n.t('quran.wordMeaningsIncompleteBody', { count: failed }),
+      stoppedTitle: i18n.t('quran.downloadStoppedTitle'),
+      stoppedBody: (done: number, total: number) =>
+        i18n.t('quran.downloadStoppedBodySurahs', { done, total }),
+    };
+  }
   if (job.kind === 'riwayah') {
     const name = riwayahLabel(job.riwayahId);
     return {
@@ -386,6 +416,8 @@ export function jobDisplayName(job: QuranDownloadJob): string {
       return `${jobSurahName(job.surah)} · ${reciterLabel(job.reciterId)}`;
     case 'tafsir':
       return findTafsirEdition(job.editionId)?.label ?? job.editionId;
+    case 'translation':
+      return findTranslationEdition(job.editionId)?.label ?? job.editionId;
     case 'wordMeanings':
       return i18n.t('downloads.wordMeanings', 'Arabic word meanings');
     case 'riwayah':
@@ -448,6 +480,9 @@ function begin(
   }
   if (job.kind === 'wordMeanings') return downloadWordMeanings({ onProgress });
   if (job.kind === 'tafsir') return downloadTafsirEdition(job.editionId, { onProgress });
+  if (job.kind === 'translation') {
+    return downloadTranslationEdition(job.editionId, { onProgress });
+  }
   if (job.kind === 'riwayah') {
     const def = RIWAYAT.find(r => r.id === job.riwayahId);
     return downloadRiwayah(
@@ -469,7 +504,7 @@ function begin(
  * under the margin `spaceShortfall` keeps anyway.
  */
 function needsSpaceCheck(job: QuranDownloadJob): boolean {
-  return job.kind === 'audio' || job.kind === 'tafsir';
+  return job.kind === 'audio' || job.kind === 'tafsir' || job.kind === 'translation';
 }
 
 async function bytesStillNeeded(job: QuranDownloadJob): Promise<number> {
@@ -480,6 +515,11 @@ async function bytesStillNeeded(job: QuranDownloadJob): Promise<number> {
   if (job.kind === 'tafsir') {
     const whole = findTafsirEdition(job.editionId)?.approxBytes ?? 0;
     const have = (await tafsirEditionStats(job.editionId)).bytes;
+    return Math.max(0, whole - have);
+  }
+  if (job.kind === 'translation') {
+    const whole = findTranslationEdition(job.editionId)?.approxBytes ?? 0;
+    const have = (await translationEditionStats(job.editionId)).bytes;
     return Math.max(0, whole - have);
   }
   return 0;
@@ -500,6 +540,7 @@ function initialProgress(job: QuranDownloadJob): MushafDownloadProgress {
   if (job.kind === 'surah') return { done: 0, total: surahJobTotal(job), failed: 0 };
   if (job.kind === 'wordMeanings') return { done: 0, total: WORD_MEANINGS_SURAHS, failed: 0 };
   if (job.kind === 'tafsir') return { done: 0, total: TAFSIR_SURAHS, failed: 0 };
+  if (job.kind === 'translation') return { done: 0, total: TRANSLATION_SURAHS, failed: 0 };
   if (job.kind === 'riwayah') return { done: 0, total: 1, failed: 0 };
   return EMPTY_PROGRESS;
 }
@@ -609,6 +650,7 @@ function sameJob(a: QuranDownloadJob, b: QuranDownloadJob): boolean {
   if (a.kind === 'audio' && b.kind === 'audio') return a.reciterId === b.reciterId;
   if (a.kind === 'wordMeanings' && b.kind === 'wordMeanings') return true;
   if (a.kind === 'tafsir' && b.kind === 'tafsir') return a.editionId === b.editionId;
+  if (a.kind === 'translation' && b.kind === 'translation') return a.editionId === b.editionId;
   if (a.kind === 'riwayah' && b.kind === 'riwayah') return a.riwayahId === b.riwayahId;
   if (a.kind === 'surah' && b.kind === 'surah') {
     return a.reciterId === b.reciterId && a.surah === b.surah;
@@ -897,6 +939,11 @@ function validJob(value: unknown): QuranDownloadJob | null {
   if (job.kind === 'tafsir') {
     return typeof job.editionId === 'string' && findTafsirEdition(job.editionId)
       ? { kind: 'tafsir', editionId: job.editionId }
+      : null;
+  }
+  if (job.kind === 'translation') {
+    return typeof job.editionId === 'string' && isFetchedTranslation(job.editionId)
+      ? { kind: 'translation', editionId: job.editionId }
       : null;
   }
   if (typeof job.reciterId !== 'string' || !job.reciterId) return null;

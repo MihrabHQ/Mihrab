@@ -16,6 +16,8 @@ export const MIRROR_BASE = 'https://github.com/MihrabHQ/Mihrab/releases/download
 
 export const MIRROR_TAGS = {
   tafsir: 'data-tafsir-v1',
+  /** The translations that are downloads rather than assets (`surahStore`). */
+  translations: 'data-translations-v1',
   wordMeanings: 'data-wordmeanings-v1',
   riwayah: 'data-riwayah-v1',
   indopak: 'data-indopak-v1',

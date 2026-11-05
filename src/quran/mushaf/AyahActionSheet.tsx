@@ -34,7 +34,15 @@ import { TextSizeStepper } from '../../components/ui';
 import { findSurah, loadSurah } from '../quran';
 import { resolveRiwayah, riwayahById, riwayahTextFontFamily } from '../riwayat';
 import { riwayahAyahText } from '../riwayahData';
-import { getAyahTranslation, QURAN_TRANSLATIONS } from '../translations';
+import {
+  findTranslationEdition,
+  getAyahTranslation,
+  QURAN_TRANSLATIONS,
+  translationEditionStats,
+  translationSizeLabel,
+  TRANSLATION_SURAHS,
+} from '../translations';
+import { EditionPicker } from './EditionPicker';
 import { useActiveEdition } from '../useActiveEdition';
 import {
   useQuranState,
@@ -71,7 +79,6 @@ import {
   resolveTafsirEdition,
   TAFSIR_EDITIONS,
   TAFSIR_SURAHS,
-  tafsirChipLabel,
   tafsirEditionStats,
   tafsirNameInSentence,
   tafsirSizeLabel,
@@ -401,6 +408,28 @@ export function AyahActionSheet({
   const [translationExpanded, setTranslationExpanded] = useState(false);
 
   const translationOpen = panel === 'translation';
+  /**
+   * The same question of a translation that is a download rather than an
+   * asset (2026-11): on this device in full, or read an ayah at a time?
+   * Null while the disk is answering, and always null for a bundled
+   * edition, which is never offered.
+   */
+  const translationEditionDef = findTranslationEdition(edition);
+  const translationFetched = !!translationEditionDef?.source;
+  const [translationWhole, setTranslationWhole] = useState<boolean | null>(null);
+  const translationDownloading =
+    dl.running?.kind === 'translation' && dl.running.editionId === edition;
+  useEffect(() => {
+    if (!visible || !translationOpen || !translationFetched || translationDownloading) return;
+    let cancelled = false;
+    setTranslationWhole(null);
+    void translationEditionStats(edition).then(stats => {
+      if (!cancelled) setTranslationWhole(stats.surahs >= TRANSLATION_SURAHS);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [visible, translationOpen, translationFetched, edition, translationDownloading]);
 
   const scrollRef = useRef<ScrollViewInstance>(null);
   const audioSectionY = useRef(0);
@@ -983,44 +1012,13 @@ export function AyahActionSheet({
           ) : null}
           {translationOpen ? (
             <View style={styles.tafsirBlock}>
-              <View style={styles.tafsirChips}>
-                {QURAN_TRANSLATIONS.map(ed => {
-                  const sel = ed.id === edition;
-                  return (
-                    <Pressable
-                      key={ed.id}
-                      accessibilityRole="radio"
-                      accessibilityState={{ selected: sel }}
-                      accessibilityLabel={`${ed.language} — ${ed.label}`}
-                      onPress={() =>
-                        updateSettings({ quranTranslationEdition: ed.id })
-                      }
-                      style={[
-                        styles.tafsirChip,
-                        {
-                          backgroundColor: sel
-                            ? palette.accentBg
-                            : 'transparent',
-                          borderColor: sel
-                            ? palette.accentSolid
-                            : palette.border,
-                        },
-                      ]}
-                    >
-                      <Text
-                        style={[
-                          styles.chipLabel,
-                          {
-                            color: sel ? palette.accentSolid : palette.muted,
-                          },
-                        ]}
-                      >
-                        {ed.language}
-                      </Text>
-                    </Pressable>
-                  );
-                })}
-              </View>
+              <EditionPicker
+                kind="translation"
+                editions={QURAN_TRANSLATIONS}
+                selectedId={edition}
+                appLocale={settings.language}
+                onSelect={ed => updateSettings({ quranTranslationEdition: ed.id })}
+              />
               <TextSizeStepper style={styles.sizeStepper} />
               {translation ? (
                 <>
@@ -1044,56 +1042,58 @@ export function AyahActionSheet({
                 </>
               ) : (
                 <Text style={[styles.tafsirMeta, { color: palette.muted }]}>
-                  {t(
-                    'quran.translationUnavailable',
-                    'No translation for this ayah.',
-                  )}
+                  {translationFetched
+                    ? t(
+                        'quran.translationFetchedUnavailable',
+                        'Translation unavailable — connect to the internet once to download it.',
+                      )
+                    : t(
+                        'quran.translationUnavailable',
+                        'No translation for this ayah.',
+                      )}
                 </Text>
               )}
+              {translationDownloading ? (
+                <Text style={[styles.tafsirMeta, { color: palette.muted }]}>
+                  {t('quran.tafsirDownloadStrip', {
+                    defaultValue: 'Downloading {{name}} · {{pct}}%',
+                    name: tafsirNameInSentence(translationEditionDef?.label ?? edition),
+                    pct: wordMeaningsPct,
+                  })}
+                </Text>
+              ) : translationFetched && translationWhole === false && !IS_WEB_APP ? (
+                <Pressable
+                  accessibilityRole="button"
+                  hitSlop={6}
+                  onPress={() => {
+                    queueQuranDownload({ kind: 'translation', editionId: edition });
+                  }}
+                  style={styles.wordMeaningsHeader}
+                >
+                  <Text
+                    style={[styles.moreLink, { color: palette.accentSolid }]}
+                  >
+                    {t('quran.tafsirGet', {
+                      defaultValue: 'Download {{name}} for offline · {{size}}',
+                      name: tafsirNameInSentence(translationEditionDef?.label ?? edition),
+                      size: translationSizeLabel(translationEditionDef?.approxBytes ?? 0),
+                    })}
+                  </Text>
+                </Pressable>
+              ) : null}
             </View>
           ) : null}
 
           {/* Tafsir (v2.7.28) */}
           {tafsirOpen ? (
             <View style={styles.tafsirBlock}>
-              {tafsirEditions.length > 1 ? (
-                <View style={styles.tafsirChips}>
-                  {tafsirEditions.map(ed => {
-                    const sel = ed.id === tafsirEdition.id;
-                    return (
-                      <Pressable
-                        key={ed.id}
-                        accessibilityRole="radio"
-                        accessibilityState={{ selected: sel }}
-                        onPress={() => setTafsirEdition(ed)}
-                        style={[
-                          styles.tafsirChip,
-                          {
-                            backgroundColor: sel
-                              ? palette.accentBg
-                              : 'transparent',
-                            borderColor: sel
-                              ? palette.accentSolid
-                              : palette.border,
-                          },
-                        ]}
-                      >
-                        <Text
-                          style={[
-                            styles.chipLabel,
-                            ed.rtl && styles.chipLabelRtl,
-                            {
-                              color: sel ? palette.accentSolid : palette.muted,
-                            },
-                          ]}
-                        >
-                          {tafsirChipLabel(ed.label)}
-                        </Text>
-                      </Pressable>
-                    );
-                  })}
-                </View>
-              ) : null}
+              <EditionPicker
+                kind="tafsir"
+                editions={tafsirEditions}
+                selectedId={tafsirEdition.id}
+                appLocale={settings.language}
+                onSelect={setTafsirEdition}
+              />
               <TextSizeStepper style={styles.sizeStepper} />
               {tafsirLoading ? (
                 <Text style={[styles.tafsirMeta, { color: palette.muted }]}>
@@ -1879,41 +1879,6 @@ const styles = StyleSheet.create({
   },
   panelTabLabel: { fontSize: TYPE.footnote.fontSize, fontWeight: '500' },
   tafsirBlock: { marginTop: SPACING.md, gap: SPACING.sm },
-  tafsirChips: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.sm },
-  tafsirChip: {
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.xs,
-    borderRadius: RADIUS.md,
-    borderWidth: 1,
-    /**
-     * A chip wraps to the next line; it never gets squeezed.
-     *
-     * Without this, Yoga fits a wrapping row by SHRINKING its items, and
-     * the text inside a shrunken chip is truncated to whatever survives.
-     * "التفسير الميسر" came back from a rotation as "التفسير" — the
-     * edition losing its name and reading as the generic word, on the one
-     * control whose whole job is to say which edition you are reading.
-     */
-    flexShrink: 0,
-  },
-  chipLabel: {
-    fontSize: TYPE.label.fontSize,
-    fontWeight: '400',
-    flexShrink: 0,
-  },
-  /**
-   * An Arabic-script edition name is drawn with its own face, not the
-   * Latin one, and at weight 600 Android drew only the first word of it
-   * ("التفسير الميسر" → "التفسير") inside a chip that had been sized for the
-   * whole name — flexShrink: 0 on the chip does not help, the chip is the
-   * right width; the text inside is what is cut. Plain weight, centred, and
-   * a stated direction, so the measured box and the drawn text agree.
-   */
-  chipLabelRtl: {
-    fontWeight: '400',
-    textAlign: 'center',
-    writingDirection: 'rtl',
-  },
   tafsirMeta: { fontSize: TYPE.footnote.fontSize, fontStyle: 'italic' },
   wordMeanings: { marginTop: SPACING.sm, gap: SPACING.xs },
   wordMeaningsHeader: { alignSelf: 'flex-start' },

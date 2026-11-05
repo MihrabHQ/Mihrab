@@ -535,6 +535,8 @@ try {
 // `fetch` mocks it. Loopback is let through: a test's own local server
 // (the release tool's HTTP timeouts) is not the network.
 const realFetch = global.fetch;
+// For the one suite that IS the network (liveTextSources, opt-in).
+global.__realFetch = realFetch;
 global.fetch = jest.fn((input, init) => {
   const url = typeof input === 'string' ? input : input?.url ?? String(input);
   if (realFetch && /^https?:\/\/(127\.0\.0\.1|localhost|\[::1\])(:|\/)/.test(url)) {

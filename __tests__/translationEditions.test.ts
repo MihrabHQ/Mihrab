@@ -26,7 +26,9 @@ import { SURAHS } from '../src/quran/quran';
 beforeEach(() => _clearTranslationCache());
 
 describe('every shipped edition carries the whole Qur’an', () => {
-  it.each(QURAN_TRANSLATIONS.map(e => [e.id, e.label] as const))(
+  // The bundled ones. The editions that are downloads are checked live, by
+  // `translationSources.test.ts`, when asked.
+  it.each(QURAN_TRANSLATIONS.filter(e => !e.source).map(e => [e.id, e.label] as const))(
     '%s (%s)',
     async (id: string) => {
       const map = await loadTranslation(id as QuranTranslationId);
@@ -67,7 +69,8 @@ describe('the second Spanish edition sits beside the first, not on top of it', (
   const spanish = QURAN_TRANSLATIONS.filter(e => e.locale === 'es');
 
   it('offers both', () => {
-    expect(spanish.map(e => e.id)).toEqual(['es.cortes', 'es.garcia']);
+    // The two bundled ones lead; the downloads (2026-11) come after.
+    expect(spanish.map(e => e.id).slice(0, 2)).toEqual(['es.cortes', 'es.garcia']);
   });
 
   it('still opens Cortés for a reader who has never chosen', () => {

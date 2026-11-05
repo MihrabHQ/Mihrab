@@ -28,6 +28,7 @@ import { useTranslation } from 'react-i18next';
 import { useAppPalette } from '../hooks/useAppPalette';
 import { findReciter } from './audio/reciters';
 import { findTafsirEdition, tafsirNameInSentence } from './tafsir';
+import { findTranslationEdition } from './translations';
 import {
   cancelQuranDownload,
   dismissResumableJob,
@@ -130,6 +131,14 @@ export function QuranDownloadStripView({
             defaultValue: 'Downloading {{name}} · {{pct}}%',
             name: tafsirNameInSentence(
               findTafsirEdition(job.editionId)?.label ?? job.editionId,
+            ),
+            pct,
+          })
+      : job.kind === 'translation'
+        ? t('quran.tafsirDownloadStrip', {
+            defaultValue: 'Downloading {{name}} · {{pct}}%',
+            name: tafsirNameInSentence(
+              findTranslationEdition(job.editionId)?.label ?? job.editionId,
             ),
             pct,
           })
@@ -237,6 +246,8 @@ function StoppedStrip({
         : t('tajweed.downloadsRow', 'Tajweed colours')
       : job.kind === 'tafsir'
         ? findTafsirEdition(job.editionId)?.label ?? job.editionId
+      : job.kind === 'translation'
+        ? findTranslationEdition(job.editionId)?.label ?? job.editionId
       : job.kind === 'wordMeanings'
         ? t('downloads.wordMeanings', 'Arabic word meanings')
       : job.kind === 'riwayah'

@@ -69,6 +69,13 @@ import {
   TAFSIR_SURAHS,
 } from '../quran/tafsir';
 import {
+  deleteTranslationEdition,
+  findTranslationEdition,
+  QURAN_TRANSLATIONS,
+  translationEditionStats,
+  TRANSLATION_SURAHS,
+} from '../quran/translations';
+import {
   deleteWordMeanings,
   wordMeaningsStats,
   WORD_MEANINGS_SURAHS,
@@ -106,6 +113,10 @@ export function QuranDownloadsContent() {
   const [tafsirRows, setTafsirRows] = useState<
     Array<{ id: string; bytes: number; surahs: number }>
   >([]);
+  /** One entry per fetched translation that has anything on disk. */
+  const [translationRows, setTranslationRows] = useState<
+    Array<{ id: string; bytes: number; surahs: number }>
+  >([]);
   const [wordMeanings, setWordMeanings] = useState({ bytes: 0, surahs: 0 });
   /** The tajwīd page fonts, one set per palette (`mushafFontStore`). */
   const [tajweed, setTajweed] = useState({
@@ -134,7 +145,7 @@ export function QuranDownloadsContent() {
           0,
         ),
       );
-      const [fonts, light, dark, legacy, tafsir, words] = await Promise.all([
+      const [fonts, light, dark, legacy, tafsir, translations, words] = await Promise.all([
         fontStoreStats(),
         fontStoreStats('tajweed-light'),
         fontStoreStats('tajweed-dark'),
@@ -143,6 +154,12 @@ export function QuranDownloadsContent() {
           TAFSIR_EDITIONS.map(async e => ({
             id: e.id,
             ...(await tafsirEditionStats(e.id)),
+          })),
+        ),
+        Promise.all(
+          QURAN_TRANSLATIONS.filter(e => e.source).map(async e => ({
+            id: e.id,
+            ...(await translationEditionStats(e.id)),
           })),
         ),
         wordMeaningsStats(),
@@ -155,6 +172,7 @@ export function QuranDownloadsContent() {
       });
       setLegacyBytes(legacy);
       setTafsirRows(tafsir.filter(e => e.bytes > 0));
+      setTranslationRows(translations.filter(e => e.bytes > 0));
       setWordMeanings(words);
       const base = `${ReactNativeBlobUtil.fs.dirs.DocumentDir}/quran/audio`;
       const out: ReciterUsage[] = [];
@@ -260,6 +278,7 @@ export function QuranDownloadsContent() {
     tajweed.dark.bytes +
     legacyBytes +
     tafsirRows.reduce((s, e) => s + e.bytes, 0) +
+    translationRows.reduce((s, e) => s + e.bytes, 0) +
     wordMeanings.bytes +
     riwayahBytes +
     audio.reduce((s, a) => s + a.bytes, 0);
@@ -429,6 +448,45 @@ export function QuranDownloadsContent() {
             ? undefined
             : () => {
                 startQuranDownload({ kind: 'tafsir', editionId: e.id });
+              },
+        )}
+      />,
+    );
+  }
+
+  for (const e of translationRows) {
+    const edition = findTranslationEdition(e.id);
+    if (!edition) continue;
+    const live =
+      running?.kind === 'translation' && running.editionId === e.id
+        ? download.progress
+        : null;
+    const surahs = live ? Math.max(e.surahs, live.done) : e.surahs;
+    const whole = surahs >= TRANSLATION_SURAHS;
+    items.push(
+      <DownloadRow
+        key={`translation-${e.id}`}
+        title={`${edition.label} · ${edition.language}`}
+        sub={
+          whole
+            ? t('downloads.translationWhole', 'Complete translation')
+            : surahs > 0
+              ? t('downloads.tafsirPart', {
+                  defaultValue: '{{done}} of {{total}} surahs',
+                  done: surahs,
+                  total: TRANSLATION_SURAHS,
+                })
+              : t('downloads.translationSub', 'Cached translation texts')
+        }
+        bytes={e.bytes}
+        progress={whole || surahs === 0 ? undefined : surahs / TRANSLATION_SURAHS}
+        actions={itemActions(
+          edition.label,
+          () => confirmDelete(edition.label, () => deleteTranslationEdition(e.id)),
+          whole || live || surahs === 0
+            ? undefined
+            : () => {
+                startQuranDownload({ kind: 'translation', editionId: e.id });
               },
         )}
       />,
