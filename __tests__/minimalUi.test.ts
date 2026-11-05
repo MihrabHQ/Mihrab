@@ -354,7 +354,7 @@ describe('one answer to "is Minimal on"', () => {
     expect(read('src/settings/minimalLook.ts')).toContain(
       'if (!minimalOn(settings) || (!settings.tintedSurfaces && !settings.useSystemDynamicTheme)) return settings;',
     );
-    expect(read('src/settings/minimalLook.ts')).toContain('if (!MINIMAL_OFFERED || prev.minimalUi || !next.minimalUi) return next;');
+    expect(read('src/settings/minimalLook.ts')).toContain('if (!MINIMAL_OFFERED || prev.minimalUi === next.minimalUi) return next;');
   });
 });
 

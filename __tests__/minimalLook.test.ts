@@ -57,8 +57,12 @@ describe('Minimal wears the classic colours', () => {
     // And of Classic (light, dark, system).
     const on = { minimalUi: true, appearance: 'dark', skyVariant: 'realistic', heroLook: 'track' };
     expect(enteringMinimal(on, on)).toBe(on);
-    // Turning it off changes nothing.
-    expect(enteringMinimal(on, { ...on, minimalUi: false })).toEqual({ ...on, minimalUi: false });
+    // Turning it off goes back to Painted, the full page's band, and
+    // leaves the colours as they are.
+    expect(enteringMinimal(on, { ...on, minimalUi: false })).toEqual({ ...on, minimalUi: false, heroLook: 'sky' });
+    // Only the turn: the Track picked on the full page afterwards holds.
+    const fullTrack = { minimalUi: false, appearance: 'dark', skyVariant: 'realistic', heroLook: 'track' };
+    expect(enteringMinimal(fullTrack, fullTrack)).toBe(fullTrack);
   });
 });
 

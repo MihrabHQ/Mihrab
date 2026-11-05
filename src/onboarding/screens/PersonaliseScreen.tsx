@@ -326,8 +326,9 @@ export function PersonaliseScreen({
         ) : null}
         {/* The hero's sky band, painted or as the Track, shown as Settings
             → Appearance shows it. After the layout: choosing Minimal
-            switches the band to the Track (minimalLook.ts), so a band
-            picked here is the one that stays. Under Minimal the Track's
+            switches the band to the Track and the full page back to
+            Painted (minimalLook.ts), so a band picked here is the one
+            that stays. Under Minimal the Track's
             picture loses its rail and goes on under the horizon, as the
             hero does. */}
         <SettingsBlock>

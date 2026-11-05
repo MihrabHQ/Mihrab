@@ -46,10 +46,16 @@ export function minimalLook<T extends { minimalUi: boolean; tintedSurfaces: bool
  * day is. Only the turn: Vibrant, Classic and Painted stay choices under
  * Minimal (Settings → Appearance), and a reader who picks one afterwards
  * keeps it until Minimal is next turned on.
+ *
+ * Turning it off goes back to Painted, the full page's own band — the
+ * painted sky over the rail, which the full page has. Only the band, and
+ * only the turn: the colours stay as they are, and the Track stays a
+ * choice on the full page too.
  */
 export function enteringMinimal<
   T extends { minimalUi: boolean; appearance: string; skyVariant: string; heroLook: string },
 >(prev: { minimalUi: boolean }, next: T): T {
-  if (!MINIMAL_OFFERED || prev.minimalUi || !next.minimalUi) return next;
+  if (!MINIMAL_OFFERED || prev.minimalUi === next.minimalUi) return next;
+  if (!next.minimalUi) return next.heroLook === 'sky' ? next : { ...next, heroLook: 'sky' };
   return { ...next, appearance: 'sky', skyVariant: 'realistic', heroLook: 'track' };
 }
