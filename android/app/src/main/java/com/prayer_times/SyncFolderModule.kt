@@ -65,9 +65,21 @@ import com.facebook.react.bridge.WritableArray
  * taken. If this module only ever matched the exact name it asked for, a
  * provider that renamed once would make it create a new file on every
  * single sync until the folder was full of them. So writing looks for an
- * exact match first and then for any child starting with the same stem —
- * which is this device's own id and unique to it.
+ * exact match first and then for a renamed copy of the same whole name
+ * (`isCopyOf`) — never merely the same id, which an invite shares with
+ * the snapshot of the device it is addressed to.
  */
+/**
+ * Whether `childName` is `exact` as a provider may have renamed it on
+ * create: " (n)" added anywhere, or an extension added after the name.
+ * Never a different file under the same id — see `copiesOf`.
+ */
+internal fun isCopyOf(childName: String, exact: String): Boolean {
+  if (childName == exact) return true
+  val bare = childName.replace(Regex(" \\(\\d+\\)"), "")
+  return bare == exact || bare.startsWith("$exact.")
+}
+
 class SyncFolderModule(private val reactContext: ReactApplicationContext) :
   ReactContextBaseJavaModule(reactContext), ActivityEventListener {
 
@@ -470,7 +482,7 @@ class SyncFolderModule(private val reactContext: ReactApplicationContext) :
       // There is normally one; there can be more because a provider is
       // allowed to rename on create, and an earlier build then made a fresh
       // file every round instead of finding the one it already had.
-      val ours = childrenWithStem(folder, stemOf(name), name)
+      val ours = copiesOf(folder, name)
 
       if (ours.isNotEmpty()) {
         val target = DocumentsContract.buildDocumentUriUsingTree(
@@ -532,7 +544,7 @@ class SyncFolderModule(private val reactContext: ReactApplicationContext) :
    * corpse that the merge would keep listening to for ever. See
    * `forgetPeer` and the comment above `syncWithFolder`.
    *
-   * `childrenWithStem` rather than one exact name, because a provider is
+   * `copiesOf` rather than one exact name, because a provider is
    * allowed to rename on create — a departed device can have left
    * `mihrab-XXXX.sync.json` AND `mihrab-XXXX (1).sync.json`, and clearing
    * only the first would leave the resurrection running from the second.
@@ -545,7 +557,7 @@ class SyncFolderModule(private val reactContext: ReactApplicationContext) :
   fun remove(handle: String, name: String, promise: Promise) {
     try {
       val folder = Uri.parse(handle)
-      val matches = childrenWithStem(folder, stemOf(name), name)
+      val matches = copiesOf(folder, name)
       if (matches.isEmpty()) {
         promise.resolve(false)
         return
@@ -782,34 +794,40 @@ class SyncFolderModule(private val reactContext: ReactApplicationContext) :
   }
 
   /** `mihrab-XXXXXXXXXXXX` — this device's own id, and unique to it. */
-  private fun stemOf(name: String): String = name.substringBefore('.')
-
   /**
-   * Every child whose name begins with `stem`, with an exact match for
-   * `exact` first if there is one.
+   * Every copy of the file called `exact`: the file itself first, if it is
+   * there, then any a provider made by renaming it on create —
+   * "mihrab-X.sync (1).json", "mihrab-X (1).sync.json", or with an
+   * extension of its own added after ours.
    *
-   * The stem is this device's own id, so this can only ever match files
-   * this device wrote. That is what makes it safe for the caller to
-   * overwrite the first and delete the rest.
+   * THE WHOLE NAME, NOT THE ID IN FRONT OF IT. This used to match every
+   * child starting with the id ("mihrab-X"), on the belief that the id was
+   * this device's own. It is not, for an invite: `mihrab-X.invite.json` is
+   * named after the device it is FOR. So writing an invite to the Mac
+   * matched the Mac's own `mihrab-X.sync.json` as a "duplicate" and
+   * deleted it — or, with no invite there yet, took it for ours and wrote
+   * the invite over it. Every round, because the Mac had never been heard
+   * from, which is why an invite was being written at all: the phone never
+   * saw a byte of the Mac's record (reported 2026-11-05, a khatmah day
+   * finished on the Mac that never reached the phone). A snapshot and an
+   * invite under one id are two different files, and nothing here may
+   * take one for a copy of the other.
    */
-  private fun childrenWithStem(
-    folder: Uri,
-    stem: String,
-    exact: String,
-  ): List<String> {
-    if (stem.isEmpty()) return emptyList()
-    val matches = mutableListOf<String>()
+  private fun copiesOf(folder: Uri, exact: String): List<String> {
+    if (exact.isEmpty()) return emptyList()
+    val copies = mutableListOf<String>()
     var exactId: String? = null
     forEachChild(folder) { id, childName ->
       if (childName == exact) {
         exactId = id
-      } else if (childName.startsWith(stem)) {
-        matches.add(id)
+      } else if (isCopyOf(childName, exact)) {
+        copies.add(id)
       }
     }
     val first = exactId ?: documentIdFor(folder, exact)
-    return if (first != null) listOf(first) + matches else matches
+    return if (first != null) listOf(first) + copies else copies
   }
+
 
   private fun labelFor(tree: Uri): String {
     val doc = documentOf(tree)
