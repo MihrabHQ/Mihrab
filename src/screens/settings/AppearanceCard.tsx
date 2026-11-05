@@ -198,6 +198,32 @@ function AppearanceCardImpl() {
           </SettingsBlock>
         )}
 
+        {/* The hero's band: the painted sky, or the Track — the same band
+            as a chart of the sky, from the reader's own coordinates
+            (screens/home/trackModel.ts). Under every theme; the text, the
+            rail and the page stay where they are. */}
+        <SettingsBlock>
+          <Text style={[s.label, { color: palette.muted }]}>
+            {t('settings.heroLook', 'Sky band')}
+          </Text>
+          <SegmentedControl
+            accessibilityLabel={t('settings.heroLook', 'Sky band')}
+            testID="appearance-heroLook"
+            segments={[
+              { key: 'sky', label: t('settings.heroLookSky', 'Painted') },
+              { key: 'track', label: t('settings.heroLookTrack', 'Track') },
+            ]}
+            value={settings.heroLook}
+            onChange={heroLook => updateSettings({ heroLook })}
+          />
+          <Text style={[s.help, { color: palette.muted, marginTop: SPACING.sm }]}>
+            {t(
+              'settings.heroLookHelp',
+              "Painted shows the sun and the moon on the sky. Track draws the band as a chart: the horizon as a line, today's path of the sun (the moon's at night) to scale where you are, and a ring where it will be at the next prayer.",
+            )}
+          </Text>
+        </SettingsBlock>
+
         {/* The layout — the full page or Minimal (settings/types.ts
             `minimalUi`) — chosen by seeing it, as in the walkthrough: the
             same two pictures of Today in the reader's own colours, not a

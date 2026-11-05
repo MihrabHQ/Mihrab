@@ -53,6 +53,13 @@ export type WidgetHighlightId =
   | 'blue'
   | 'amber'
   | 'custom';
+/** The hero's sky band: painted, or drawn as a chart — see `heroLook`. */
+export type HeroLook = 'sky' | 'track';
+export const HERO_LOOKS: readonly HeroLook[] = ['sky', 'track'];
+export const DEFAULT_HERO_LOOK: HeroLook = 'sky';
+export function isHeroLook(v: unknown): v is HeroLook {
+  return v === 'sky' || v === 'track';
+}
 
 /**
  * App accent color id — task #127.
@@ -494,6 +501,15 @@ export type PrayerAppSettings = {
    * is not, for the next time it is.
    */
   skyVariant: SkyVariant;
+  /**
+   * How the hero's sky band is drawn (screens/home/trackModel.ts):
+   * 'sky', the painted sky with the sun and the moon on their arc, or
+   * 'track', the same band as a chart — the horizon as a hairline,
+   * today's track of the sun (the moon's by night) to scale from the
+   * reader's coordinates, the body on it and the next prayer's ring.
+   * Under every theme; the text, the rail and the page do not move.
+   */
+  heroLook: HeroLook;
   tintedSurfaces: boolean;
   /**
    * Custom colours the user has kept, newest first — see
@@ -831,6 +847,8 @@ export const DEFAULT_SETTINGS: PrayerAppSettings = {
   // Upgrades without this key stay Classic — see storage.ts.
   tintedSurfaces: true,
   skyVariant: 'realistic',
+  // The painted sky until someone picks the chart under Appearance.
+  heroLook: DEFAULT_HERO_LOOK,
   // Nobody starts with a colour they did not pick.
   savedAccentColors: [],
   // Live Activity defaults: OFF; when enabled, the detail-rich layout

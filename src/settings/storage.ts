@@ -48,7 +48,9 @@ import {
 import { CALCULATION_METHODS } from './methodList';
 import { coercePrayerOffsets } from './prayerOffsets';
 import {
+  DEFAULT_HERO_LOOK,
   DEFAULT_SETTINGS,
+  isHeroLook,
   PRAYER_DATA_PROVIDER_IDS,
   WIDGET_TIME_SCALE_MAX,
   WIDGET_TIME_SCALE_MIN,
@@ -669,6 +671,10 @@ async function loadSettingsUncached(): Promise<PrayerAppSettings> {
   // The Sky theme's colours: Vibrant unless a known variant was kept.
   if (!isSkyVariant(merged.skyVariant)) {
     merged.skyVariant = DEFAULT_SKY_VARIANT;
+  }
+  // The hero's look: the painted sky unless the chart was picked.
+  if (!isHeroLook(merged.heroLook)) {
+    merged.heroLook = DEFAULT_HERO_LOOK;
   }
   // Reconcile coords with the active location preset — task #137. The
   // user's coordinates live in two places: `manualLatitude/Longitude`

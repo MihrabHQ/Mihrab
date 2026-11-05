@@ -69,6 +69,8 @@ export type AppearanceSlice = Pick<
   | 'tintedSurfaces'
   // Vibrant or Realistic, under the Sky theme (theme/skyMoods.ts).
   | 'skyVariant'
+  // The hero's band: painted, or the chart (screens/home/trackModel.ts).
+  | 'heroLook'
   // The shelf of kept custom colours, drawn by the same swatch row as
   // the presets — so the card that renders one renders the other.
   | 'savedAccentColors'
@@ -322,6 +324,7 @@ export function PrayerSettingsProvider({
       appAccentCustomHex: settings.appAccentCustomHex,
       tintedSurfaces: settings.tintedSurfaces,
       skyVariant: settings.skyVariant,
+      heroLook: settings.heroLook,
       savedAccentColors: settings.savedAccentColors,
       showPracticeOnHome: settings.showPracticeOnHome,
       launchAnimation: settings.launchAnimation,
@@ -337,6 +340,7 @@ export function PrayerSettingsProvider({
       settings.appAccentCustomHex,
       settings.tintedSurfaces,
       settings.skyVariant,
+      settings.heroLook,
       settings.savedAccentColors,
       settings.showPracticeOnHome,
       settings.launchAnimation,

@@ -92,6 +92,7 @@ import { lastTimeOfDay } from '../../prayer/dayRollover';
 import type { TimingsMap } from '../../types/prayer';
 import {
   addDays,
+  combineLocalDateAndTime,
   countdownPieces,
   eventAt,
   onClock,
@@ -112,6 +113,8 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { TodayTimesSheet, type TimesSheetDay, type TimesSheetRow } from './TodayTimesSheet';
 import { pageRecess } from './MinimalSheet';
 import { HeroSky, type SkyRun } from './HeroSky';
+import { trackFrame, trackWindow } from './trackModel';
+import type { HeroLook } from '../../settings/types';
 import {
   HERO_Y,
   SKY_FADE_LOW_MID_AT,
@@ -489,6 +492,7 @@ const HeroToday = memo(function HeroToday({
   launchRun: launchRunWanted = true,
   skyTheme = false,
   skyVariant = 'realistic',
+  heroLook = 'sky',
   dayClock,
   minimal = false,
   recess,
@@ -496,6 +500,8 @@ const HeroToday = memo(function HeroToday({
   onOpenTimes,
   layoutKey,
 }: {
+  /** The band: the painted sky, or the Track (settings `heroLook`, trackModel.ts). */
+  heroLook?: HeroLook;
   /**
    * Minimal: open the day's times — for a screen reader, from the prayer's
    * line. A finger opens them by the drag up on the page (TodayCardImpl).
@@ -1177,6 +1183,32 @@ const HeroToday = memo(function HeroToday({
   );
   const inkTop = useMemo(() => skyInkAt(frame, yEyebrow), [frame, yEyebrow]);
   const ink = useMemo(() => skyInkAt(frame, yCountdown), [frame, yCountdown]);
+  /**
+   * The Track look (trackModel.ts): the band as a chart of the sky, from
+   * the reader's coordinates — nothing without them, when the painted sky
+   * stands. Once a minute, with the frame: the body moves on the engine's
+   * tick, the ring at the next prayer, the track once a day. By night the
+   * band follows the moon from the evening's Maghrib to the morning's
+   * sunrise; otherwise the sun over the local day.
+   */
+  const targetAtMs = target.at.getTime();
+  const track = useMemo(() => {
+    if (heroLook !== 'track' || typeof latitude !== 'number' || typeof longitude !== 'number') return null;
+    const at = new Date(minuteKey * 60_000);
+    const map = skyToday ?? today;
+    let night: { maghrib: Date; sunrise: Date } | null = null;
+    if (map.Maghrib && map.Sunrise) {
+      // The night around `at`: the Maghrib behind it, the sunrise ahead —
+      // on the clock the sky reads the day by (skyMoment), not the rows'.
+      let maghrib = combineLocalDateAndTime(at, map.Maghrib);
+      if (maghrib.getTime() > at.getTime()) maghrib = addDays(maghrib, -1);
+      let sunrise = combineLocalDateAndTime(at, map.Sunrise);
+      if (sunrise.getTime() < at.getTime()) sunrise = addDays(sunrise, 1);
+      night = { maghrib, sunrise };
+    }
+    const window = trackWindow(frame.passage, at, night);
+    return trackFrame({ ...window, now: at, latitude, longitude, nextAt: new Date(targetAtMs) });
+  }, [heroLook, latitude, longitude, minuteKey, skyToday, today, frame.passage, targetAtMs]);
   const inkFoot = useMemo(() => skyInkAt(frame, yFoot), [frame, yFoot]);
   /**
    * Minimal stacks the countdown, its line and the rail in the middle of
@@ -1280,6 +1312,8 @@ const HeroToday = memo(function HeroToday({
         still={posed || !lively}
         sceneTop={sceneTop}
         sceneBottom={sceneBottom}
+        track={track}
+        trackInk={inkTop.text}
         bleed={
           bleed ?? {
             horizontal: SPACING.xl,
@@ -2671,6 +2705,7 @@ function TodayCardImpl({
               frozenAt={interval.fromAt}
               skyTheme={settings.appearance === 'sky'}
               skyVariant={settings.skyVariant}
+              heroLook={settings.heroLook}
             />
             </View>
           </View>
@@ -2685,6 +2720,7 @@ function TodayCardImpl({
             launchRun={runWanted}
             skyTheme={settings.appearance === 'sky'}
             skyVariant={settings.skyVariant}
+            heroLook={settings.heroLook}
             today={timings}
             skyToday={skyDay}
             latitude={latitude}

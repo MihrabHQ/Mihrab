@@ -6,6 +6,8 @@ import Svg, { Circle, G, Path } from 'react-native-svg';
 import { linearDown, radialGlow, withAlpha } from './skyPaint';
 import { skyColorAt, SUN_HORIZON_Y, type SkyFrame } from './skyModel';
 import { SUN_GLOW_PEAK } from './skyLight';
+import { HeroTrack } from './HeroTrack';
+import type { TrackFrame } from './trackModel';
 
 /**
  * How wide the halo reaches, as a percentage of the sky, at no light and
@@ -127,8 +129,21 @@ function HeroSkyImpl({
   bleed,
   sceneTop = 0,
   sceneBottom = 0,
+  track,
+  trackInk,
 }: {
   frame: SkyFrame;
+  /**
+   * The Track look (trackModel.ts): the band drawn as a chart of the sky
+   * — the horizon as a hairline, today's track to scale, the body on it
+   * and the next prayer's ring. The sky's own sun, moon and halo stand
+   * down; the track draws the body where the chart puts it. Only once
+   * the sky has a size, and never during a launch run, which draws its
+   * own layers.
+   */
+  track?: TrackFrame | null;
+  /** The hero's ink at the band — the lines are drawn in it. */
+  trackInk?: string;
   /** While a launch run draws: the sky as native layers, not `frame`. */
   run?: SkyRun;
   /**
@@ -190,7 +205,10 @@ function HeroSkyImpl({
   // The run's sky is the layers', once the sky has a size to lay them in.
   const running = run && size.width > 0 && size.height > 0;
 
-  const bodyXY = body.kind === 'none' || cramped ? null : { x: body.x, y: body.y };
+  // The Track look takes the band once there is one to draw in; until
+  // then (and in a cramped band) the sky draws as it always has.
+  const tracked = !!track && !!trackInk && !cramped && size.width > 0 && height > 0;
+  const bodyXY = body.kind === 'none' || cramped || tracked ? null : { x: body.x, y: body.y };
   /**
    * ── THE HORIZON ──────────────────────────────────────────────────────
    * The line the sun rises over and sets under: where the model puts a
@@ -320,7 +338,7 @@ function HeroSkyImpl({
           {drawStars && size.width > 0 && height > 0 ? (
             <StarField scene={scene} glow={glow} stars={stars} dense={denseStars} width={size.width} height={height} />
           ) : null}
-          {body.kind === 'sun' && !cramped && typeof sunCy === 'number' && size.width > 0 ? (
+          {body.kind === 'sun' && !cramped && !tracked && typeof sunCy === 'number' && size.width > 0 ? (
             // Clipped at the horizon when it is going under it.
             <View
               pointerEvents="none"
@@ -351,10 +369,13 @@ function HeroSkyImpl({
       {!running && !still && drawStars && denseStars ? (
         <Twinkle scene={scene} glow={glow} stars={stars} width={size.width} height={size.height} />
       ) : null}
-      {!running && body.kind === 'moon' && !cramped ? (
+      {!running && body.kind === 'moon' && !cramped && !tracked ? (
         <View style={[styles.moon, { start: `${body.x * 100}%`, top: sceneY(body.y), opacity: body.alpha }]}>
           <Moon illuminated={body.illuminated} tilt={body.tilt} lit={body.light} />
         </View>
+      ) : null}
+      {!running && tracked && track && trackInk && horizon != null ? (
+        <HeroTrack track={track} frame={frame} width={size.width} bandTop={scene.top} horizon={horizon} ink={trackInk} />
       ) : null}
     </View>
   );
