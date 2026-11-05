@@ -176,8 +176,13 @@ type Sampled = {
   circumpolar: boolean;
   across: (p: { at: number; azimuth: number }) => number;
   base: TrackBase[];
+  /** The span sampled: the window, or the moon's pass. */
+  from: number;
+  to: number;
 };
 const SAMPLED_KEEP = 4;
+/** How far, in samples, the moon's pass is followed past the night's window: half a day. */
+const MOON_PASS_REACH = (12 * 60) / TRACK_STEP_MINUTES;
 const sampledCache = new Map<string, Sampled>();
 /** Coordinates to ~100 m: a reader's GPS jitter is not a new track. */
 const placeKey = (v: number) => v.toFixed(3);
@@ -192,8 +197,44 @@ function sampleTrack(kind: TrackKind, t0: number, t1: number, latitude: number, 
     return kept;
   }
   const step = TRACK_STEP_MINUTES * 60_000;
+  // THE MOON'S WHOLE PASS. The night's window (Maghrib to sunrise) cuts a
+  // moon that rises in the night and is still up at dawn — a waning one —
+  // or one already up at Maghrib: the window held a rising with no
+  // setting, the span came out null, and the chart fell back to the whole
+  // circle, so the moon's path was drawn in a quarter of the width. The
+  // window only says when the band follows the moon; its path is the pass
+  // the night is about — of the passes the window touches, the one with
+  // most of it above the horizon in the window (not the tail of
+  // yesterday's, still near the line at Maghrib) — followed either side
+  // until the moon is off the chart, or half a day has gone.
+  let from = t0;
+  let to = t1;
+  if (kind === 'moon') {
+    const on = (at: number) => positionOf(kind, new Date(at), latitude, longitude).altitude >= TRACK_FLOOR;
+    let best: { a: number; b: number; up: number } | null = null;
+    let run: { a: number; b: number; up: number } | null = null;
+    for (let at = t0; at <= t1 + 1; at += step) {
+      const alt = positionOf(kind, new Date(at), latitude, longitude).altitude;
+      if (alt >= TRACK_FLOOR) {
+        const up = alt >= 0 ? 1 : 0;
+        run = run != null ? { a: run.a, b: at, up: run.up + up } : { a: at, b: at, up };
+        if (!best || run.up >= best.up) best = run;
+      } else {
+        run = null;
+      }
+    }
+    if (best) {
+      from = best.a;
+      to = best.b;
+      for (let n = 0; n < MOON_PASS_REACH && on(from - step); n++) from -= step;
+      for (let n = 0; n < MOON_PASS_REACH && on(to + step); n++) to += step;
+      // One sample off the chart either side, so the pass meets the floor.
+      from -= step;
+      to += step;
+    }
+  }
   const raw: Array<{ at: number; altitude: number; azimuth: number }> = [];
-  for (let at = t0; at <= t1 + 1; at += step) {
+  for (let at = from; at <= to + 1; at += step) {
     const p = positionOf(kind, new Date(at), latitude, longitude);
     raw.push({ at, altitude: p.altitude, azimuth: chartAzimuth(p.azimuth, latitude) });
   }
@@ -240,7 +281,7 @@ function sampleTrack(kind: TrackKind, t0: number, t1: number, latitude: number, 
       under: p.altitude < 0,
       at: p.at,
     }));
-  const sampled: Sampled = { raw, peak, top, byHour, circumpolar, across, base };
+  const sampled: Sampled = { raw, peak, top, byHour, circumpolar, across, base, from, to };
   sampledCache.set(key, sampled);
   while (sampledCache.size > SAMPLED_KEEP) {
     const oldest = sampledCache.keys().next().value;
@@ -263,7 +304,10 @@ export function trackFrame(input: TrackInput): TrackFrame {
   const { kind, now, latitude, longitude, from, to, nextAt } = input;
   const t0 = from.getTime();
   const t1 = Math.max(t0, to.getTime());
-  const { peak, top, byHour, circumpolar, across, base } = sampleTrack(kind, t0, t1, latitude, longitude);
+  const { peak, top, byHour, circumpolar, across, base, from: passFrom, to: passTo } = sampleTrack(kind, t0, t1, latitude, longitude);
+  // On the pass drawn, or not at all: a moon on another pass (yesterday's,
+  // setting at Maghrib) has no place on this one.
+  const onPass = (at: number) => at >= passFrom && at <= passTo;
   const nextMs = nextAt ? nextAt.getTime() : null;
   const nowMs = now.getTime();
   const point = (p: { at: number; altitude: number; azimuth: number }): TrackPoint => ({
@@ -278,13 +322,13 @@ export function trackFrame(input: TrackInput): TrackFrame {
   const here = positionOf(kind, now, latitude, longitude);
   const hereAz = chartAzimuth(here.azimuth, latitude);
   const body =
-    here.altitude >= TRACK_FLOOR
+    here.altitude >= TRACK_FLOOR && onPass(nowMs)
       ? { ...point({ at: nowMs, altitude: here.altitude, azimuth: hereAz }), azimuth: here.azimuth }
       : null;
   let ring: TrackPoint | null = null;
   if (nextAt) {
     const n = positionOf(kind, nextAt, latitude, longitude);
-    if (n.altitude >= TRACK_FLOOR) {
+    if (n.altitude >= TRACK_FLOOR && onPass(nextAt.getTime())) {
       ring = point({ at: nextAt.getTime(), altitude: n.altitude, azimuth: chartAzimuth(n.azimuth, latitude) });
     }
   }

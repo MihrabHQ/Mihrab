@@ -150,6 +150,37 @@ describe('trackFrame — the world', () => {
   });
 });
 
+describe('trackFrame — the moon over a night that cuts its pass', () => {
+  // Stockholm, the night of 5–6 November 2026: a waning crescent that
+  // rises after midnight and is still high at sunrise. Maghrib 15:51 CET,
+  // sunrise 07:12 CET; now 03:00.
+  const f = trackFrame({
+    kind: 'moon',
+    now: new Date('2026-11-06T02:00:00Z'),
+    nextAt: new Date('2026-11-06T03:57:00Z'),
+    ...STOCKHOLM,
+    from: new Date('2026-11-05T14:51:00Z'),
+    to: new Date('2026-11-06T06:12:00Z'),
+  });
+
+  it('draws the whole pass across the width, not a piece of the circle', () => {
+    const up = f.base.filter(p => !p.under);
+    const xs = up.map(p => p.x);
+    expect(Math.min(...xs)).toBeLessThan(0.3);
+    expect(Math.max(...xs)).toBeGreaterThan(0.7);
+    // It rises and sets on the chart: both ends meet the line.
+    expect(f.base[0].under).toBe(true);
+    expect(f.base[f.base.length - 1].under).toBe(true);
+    expect(f.circumpolar).toBe(false);
+  });
+
+  it('keeps the body and the Fajr ring on it', () => {
+    expect(f.body).not.toBeNull();
+    expect(f.ring).not.toBeNull();
+    expect(f.points.some(p => p.remaining)).toBe(true);
+  });
+});
+
 describe('trackSpan', () => {
   it('finds where the track enters and leaves the chart', () => {
     const s = trackSpan([
