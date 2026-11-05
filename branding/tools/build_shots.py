@@ -93,6 +93,7 @@ GALLERY = [
     ('and-tilawah-suggest', 'shot-tilawah-suggest'),
     ('and-reciters', 'shot-reciters'),
     ('and-memorize', 'shot-memorize'),
+    ('and-hifz', 'shot-hifz'),
     ('and-qibla', 'shot-qibla'),
     ('and-month', 'shot-month'),
     ('and-month-share', 'shot-month-share'),

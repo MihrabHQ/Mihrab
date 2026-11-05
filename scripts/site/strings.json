@@ -45,6 +45,10 @@
           "alt": "The recitation panel: reciter, speed, repeat each ayah, repeat the range, a pause between repeats, and hiding the Arabic or the translation while reviewing.",
           "cap": "Repeat, pause, hide — for memorising"
         },
+        "hifz": {
+          "alt": "The Hifz page: what is due to recite today, the portions held by heart with the interval each is on, and the thirty ajzāʾ filling in as they are learnt.",
+          "cap": "Hifz: what comes round today"
+        },
         "quran": {
           "alt": "The Quran tab: continue the khatmah or your reading, today’s portion, the Tilāwah row, the surahs read often, and every surah named in the muṣḥaf’s own calligraphy.",
           "cap": "Khatmah and where you left off"
@@ -178,6 +182,10 @@
         "memorize": {
           "alt": "Recitationspanelen: recitatör, hastighet, upprepa varje vers, upprepa stycket, paus mellan upprepningarna och att dölja arabiskan eller översättningen under repetition.",
           "cap": "Upprepa, pausa, dölj — för memorering"
+        },
+        "hifz": {
+          "alt": "Hifz-sidan: vad som ska reciteras i dag, de stycken du kan utantill med intervallet vart och ett går på, och de trettio ajzāʾ som fylls i efter hand.",
+          "cap": "Hifz: vad som kommer tillbaka i dag"
         },
         "quran": {
           "alt": "Koran-fliken: fortsätt khatman eller läsningen, dagens del, Tilāwah-raden, de suror som läses ofta, och varje sura med sitt namn i muṣḥafens egen kalligrafi.",
@@ -440,6 +448,10 @@
         "memorize": {
           "alt": "لوحة التلاوة: القارئ، والسرعة، وتكرار كل آية، وتكرار المقطع، ووقفة بين التكرارات، وإخفاء العربية أو الترجمة أثناء المراجعة.",
           "cap": "تكرار ووقفة وإخفاء — للحفظ"
+        },
+        "hifz": {
+          "alt": "صفحة الحفظ: ما يُراجَع اليوم، والمقاطع المحفوظة ومدّة المراجعة لكلّ منها، والأجزاء الثلاثون تمتلئ شيئًا فشيئًا.",
+          "cap": "الحفظ: ما يعود اليوم"
         },
         "quran": {
           "alt": "تبويب القرآن: تابع الختمة أو قراءتك، وورد اليوم، وصفّ التلاوة، والسور التي تُقرأ كثيرًا، وكل سورة باسمها بخط المصحف.",
@@ -708,6 +720,10 @@
           "alt": "Tilavet paneli: kâri, hız, her ayeti tekrar, aralığı tekrar, tekrarlar arası duraklama ve tekrar ederken Arapçayı ya da meali gizleme.",
           "cap": "Tekrar, duraklama, gizleme — ezber için"
         },
+        "hifz": {
+          "alt": "Hıfz sayfası: bugün tekrar edilecekler, ezberdeki bölümler ve her birinin tekrar aralığı, bir de dolmakta olan otuz cüz.",
+          "cap": "Hıfz: bugün sırası gelen"
+        },
         "quran": {
           "alt": "Kur’an sekmesi: hatme ya da okumaya devam, günün payı, Tilâvet satırı, sık okunan sureler ve her sure adı mushafın kendi hattıyla.",
           "cap": "Hatim ve kaldığın yer"
@@ -968,6 +984,10 @@
           "alt": "تلاوت پینل: قاری، رفتار، ہر آیت کی تکرار، پورے حصے کی تکرار، تکرار کے درمیان وقفہ، اور دہراتے وقت عربی یا ترجمہ چھپانا۔",
           "cap": "تکرار، وقفہ، اخفا — حفظ کے لیے"
         },
+        "hifz": {
+          "alt": "حفظ کا صفحہ: آج کس کا دور ہے، یاد کیے ہوئے حصے اور ہر ایک کا وقفہ، اور تیس پارے جو بھرتے جاتے ہیں۔",
+          "cap": "حفظ: آج کس کی باری ہے"
+        },
         "quran": {
           "alt": "قرآن ٹیب: ختمہ یا اپنی پڑھائی جاری رکھیں، آج کا حصہ، تلاوت کی سطر، اکثر پڑھی جانے والی سورتیں، اور ہر سورہ کا نام مصحف کے اپنے خط میں۔",
           "cap": "ختمہ اور جہاں آپ نے چھوڑا"
@@ -1208,6 +1228,10 @@
         "memorize": {
           "alt": "Panel tilawah: qari, kecepatan, ulangi tiap ayat, ulangi rentang, jeda antar pengulangan, dan menyembunyikan teks Arab atau terjemahan saat mengulang.",
           "cap": "Ulang, jeda, sembunyikan — untuk menghafal"
+        },
+        "hifz": {
+          "alt": "Halaman Hifz: apa yang jatuh tempo diulang hari ini, bagian-bagian yang sudah dihafal beserta jeda masing-masing, dan tiga puluh juz yang terisi.",
+          "cap": "Hifz: yang kembali hari ini"
         },
         "quran": {
           "alt": "Tab Quran: lanjutkan khatam atau bacaan Anda, bagian hari ini, baris Tilawah, surah yang sering dibaca, dan setiap surah dengan namanya dalam kaligrafi mushaf.",
@@ -1469,6 +1493,10 @@
           "alt": "Das Rezitationspanel: Rezitator, Tempo, jede Aya wiederholen, den Abschnitt wiederholen, Pause zwischen den Wiederholungen und das Ausblenden von Arabisch oder Übersetzung beim Wiederholen.",
           "cap": "Wiederholen, pausieren, ausblenden — zum Auswendiglernen"
         },
+        "hifz": {
+          "alt": "Die Hifz-Seite: was heute zu wiederholen ist, die auswendig gelernten Abschnitte mit ihrem Abstand, und die dreißig Dschuzʾ, die sich füllen.",
+          "cap": "Hifz: was heute wiederkommt"
+        },
         "quran": {
           "alt": "Der Quran-Tab: die Khatma oder das Lesen fortsetzen, der heutige Teil, die Tilāwah-Zeile, oft gelesene Suren und jede Sure mit ihrem Namen in der Kalligrafie des Muṣḥaf.",
           "cap": "Khatmah und wo du warst"
@@ -1709,6 +1737,10 @@
         "memorize": {
           "alt": "Le panneau de récitation : récitateur, vitesse, répéter chaque verset, répéter la plage, pause entre les répétitions, et masquer l’arabe ou la traduction pendant la révision.",
           "cap": "Répéter, marquer une pause, masquer — pour mémoriser"
+        },
+        "hifz": {
+          "alt": "La page Hifz : ce qui est à réciter aujourd’hui, les portions sues par cœur avec leur intervalle, et les trente juzʾ qui se remplissent.",
+          "cap": "Hifz : ce qui revient aujourd’hui"
         },
         "quran": {
           "alt": "L’onglet Coran : reprendre la khatma ou la lecture, la portion du jour, la ligne Tilāwah, les sourates souvent lues, et chaque sourate nommée dans la calligraphie du muṣḥaf.",
@@ -1977,6 +2009,10 @@
           "alt": "El panel de recitación: recitador, velocidad, repetir cada aleya, repetir el tramo, pausa entre repeticiones y ocultar el árabe o la traducción al repasar.",
           "cap": "Repetir, pausar, ocultar — para memorizar"
         },
+        "hifz": {
+          "alt": "La página Hifz: lo que toca recitar hoy, las porciones sabidas de memoria con su intervalo, y los treinta yuz que se van llenando.",
+          "cap": "Hifz: lo que vuelve hoy"
+        },
         "quran": {
           "alt": "La pestaña Corán: seguir con la jatma o la lectura, la porción de hoy, la fila de Tilāwah, las suras más leídas y cada sura con su nombre en la caligrafía del muṣḥaf.",
           "cap": "Jatma y dónde lo dejaste"
@@ -2217,6 +2253,10 @@
         "memorize": {
           "alt": "Панель чтения: чтец, скорость, повтор каждого аята, повтор отрывка, пауза между повторами и сокрытие арабского или перевода при повторении.",
           "cap": "Повтор, пауза, скрытие — для заучивания"
+        },
+        "hifz": {
+          "alt": "Страница хифза: что нужно повторить сегодня, выученные отрывки с их интервалом и тридцать джузов, которые постепенно заполняются.",
+          "cap": "Хифз: что возвращается сегодня"
         },
         "quran": {
           "alt": "Вкладка «Коран»: продолжить хатму или чтение, сегодняшняя часть, строка тилявы, часто читаемые суры и каждая сура, названная каллиграфией мусхафа.",
@@ -2459,6 +2499,10 @@
           "alt": "তিলাওয়াত প্যানেল: ক্বারী, গতি, প্রতিটি আয়াতের পুনরাবৃত্তি, অংশের পুনরাবৃত্তি, পুনরাবৃত্তির মাঝে বিরতি এবং পুনরালোচনার সময় আরবি বা অনুবাদ লুকানো।",
           "cap": "পুনরাবৃত্তি, বিরতি, আড়াল — মুখস্থের জন্য"
         },
+        "hifz": {
+          "alt": "হিফজ পাতা: আজ কোনগুলো পড়তে হবে, মুখস্থ অংশগুলো ও প্রতিটির বিরতি, আর ভরে ওঠা ত্রিশটি পারা।",
+          "cap": "হিফজ: আজ যা ফিরে আসে"
+        },
         "quran": {
           "alt": "কুরআন ট্যাব: খতম বা আপনার পড়া চালিয়ে যান, আজকের অংশ, তিলাওয়াতের সারি, প্রায়ই পড়া সূরা, আর প্রতিটি সূরার নাম মুসহাফের নিজস্ব ক্যালিগ্রাফিতে।",
           "cap": "খতম আর যেখানে থেমেছিলেন"
@@ -2700,6 +2744,10 @@
           "alt": "तिलावत पैनल: क़ारी, गति, हर आयत दोहराना, पूरे हिस्से को दोहराना, दोहराव के बीच ठहराव, और दोहराते समय अरबी या अनुवाद छिपाना।",
           "cap": "दोहराव, ठहराव, छिपाव — याद करने के लिए"
         },
+        "hifz": {
+          "alt": "हिफ़्ज़ पृष्ठ: आज किसका दौर है, याद किए हुए हिस्से और हर एक का अंतराल, और भरते हुए तीस जुज़।",
+          "cap": "हिफ़्ज़: आज क्या लौटता है"
+        },
         "quran": {
           "alt": "क़ुरआन टैब: ख़त्म या अपनी पढ़ाई जारी रखें, आज का हिस्सा, तिलावत की पंक्ति, अक्सर पढ़ी जाने वाली सूरतें, और हर सूरह का नाम मुसहफ़ की अपनी सुलेख में।",
           "cap": "ख़त्म और जहाँ आपने छोड़ा"
@@ -2940,6 +2988,10 @@
         "memorize": {
           "alt": "诵读面板：诵读者、语速、逐节重复、整段重复、重复之间的停顿，以及复习时隐藏阿拉伯文或译文。",
           "cap": "重复、停顿、隐藏——为了背诵"
+        },
+        "hifz": {
+          "alt": "背诵页面：今天该复习的内容、已熟记的段落及各自的复习间隔，以及逐渐填满的三十卷。",
+          "cap": "背诵：今天轮到的"
         },
         "quran": {
           "alt": "古兰经标签页：继续通读或阅读、今日分量、诵读一行、常读章节，以及每章以穆斯哈夫自身书法写出的名称。",
