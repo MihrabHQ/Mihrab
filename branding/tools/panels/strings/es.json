@@ -40,5 +40,11 @@
   "remember.sub": "Duas de Hisn al-Muslim, un tasbih para después de la oración, y tus ayunos, anotados.",
   "day.eyebrow": "Tu día",
   "day.title": "No pierdas ninguna oración.",
-  "day.sub": "Adhan y alertas a pantalla completa, widgets, la alquibla, un mes para compartir — y el registro de cada oración."
+  "day.sub": "Adhan y alertas a pantalla completa, widgets, la alquibla, un mes para compartir — y el registro de cada oración.",
+  "month.eyebrow": "Planifica",
+  "month.title": "El mes que viene, y cada oración <em>anotada</em>.",
+  "month.sub": "Los horarios de un mes para imprimir o compartir como imagen o PDF, con el registro de tus oraciones y ayunos al lado.",
+  "devices.eyebrow": "Cada pantalla",
+  "devices.title": "En todos tus <em>dispositivos</em>.",
+  "devices.sub": "Móviles, tabletas y plegables Android, iPhone, iPad, Mac, Windows, Linux y la web — sincronizados sin cuenta y sin ningún servidor nuestro."
 }

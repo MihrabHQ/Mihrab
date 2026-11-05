@@ -40,5 +40,11 @@
   "remember.sub": "Duas aus Hisn al-Muslim, eine Tasbih für nach dem Gebet, und dein Fasten, festgehalten.",
   "day.eyebrow": "Dein Tag",
   "day.title": "Verpasse kein Gebet.",
-  "day.sub": "Adhan und Vollbild-Alarme, Widgets, die Qibla, ein Monat zum Teilen – und ein Protokoll jedes Gebets."
+  "day.sub": "Adhan und Vollbild-Alarme, Widgets, die Qibla, ein Monat zum Teilen – und ein Protokoll jedes Gebets.",
+  "month.eyebrow": "Planen",
+  "month.title": "Der Monat voraus, und jedes Gebet <em>festgehalten</em>.",
+  "month.sub": "Die Zeiten eines Monats zum Drucken oder Teilen als Bild oder PDF, daneben das Protokoll deiner Gebete und deines Fastens.",
+  "devices.eyebrow": "Jeder Bildschirm",
+  "devices.title": "Auf jedem deiner <em>Geräte</em>.",
+  "devices.sub": "Android-Handys, -Tablets und Foldables, iPhone, iPad, Mac, Windows, Linux und das Web – per Sync im Gleichklang, ohne Konto und ohne einen Server von uns."
 }

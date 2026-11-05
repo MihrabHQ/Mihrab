@@ -36,7 +36,7 @@ for (const lang of langs) {
       W,
       H,
       out: path.join(out, lang, `${String(i + 1).padStart(2, '0')}_${p.id}.${set.ext ?? 'png'}`),
-      html: page(W, H, i, n, p.html({ W, H, u, i, n, t, rtl: RTL.has(lang) }), {
+      html: page(W, H, set.sky?.i ?? i, set.sky?.n ?? n, p.html({ W, H, u, i, n, t, rtl: RTL.has(lang) }), {
         ...(set.backdrop ?? {}),
         ...(p.backdrop ?? {}),
         face: set.face,

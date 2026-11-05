@@ -41,5 +41,11 @@
   "remember.sub": "Duas from Ḥiṣn al-Muslim, a tasbīḥ for after the prayer, and your fasts, kept.",
   "day.eyebrow": "Your day",
   "day.title": "Never miss a prayer.",
-  "day.sub": "Adhan and full-screen alerts, widgets, the qibla, a month to share — and a log of every prayer."
+  "day.sub": "Adhan and full-screen alerts, widgets, the qibla, a month to share — and a log of every prayer.",
+  "month.eyebrow": "Plan",
+  "month.title": "The month ahead, and every prayer <em>kept</em>.",
+  "month.sub": "A month of times to print or share as an image or PDF, and the log of your prayers and fasts beside it.",
+  "devices.eyebrow": "Every screen",
+  "devices.title": "On every device you <em>own</em>.",
+  "devices.sub": "Android phones, tablets and foldables, iPhone, iPad, Mac, Windows, Linux and the web — kept in step by sync, with no account and no server of ours."
 }

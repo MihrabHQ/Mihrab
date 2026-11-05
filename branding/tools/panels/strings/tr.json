@@ -40,5 +40,11 @@
   "remember.sub": "Hısnü’l-Müslim’den dualar, namaz sonrası için bir tesbih ve oruçlarınızın kaydı.",
   "day.eyebrow": "Gününüz",
   "day.title": "Hiçbir namazı kaçırmayın.",
-  "day.sub": "Ezan ve tam ekran uyarılar, widget’lar, kıble, paylaşılacak bir ay — ve her namazın kaydı."
+  "day.sub": "Ezan ve tam ekran uyarılar, widget’lar, kıble, paylaşılacak bir ay — ve her namazın kaydı.",
+  "month.eyebrow": "Planla",
+  "month.title": "Önümüzdeki ay, ve her namaz <em>kayıtlı</em>.",
+  "month.sub": "Yazdırmak ya da görsel veya PDF olarak paylaşmak için bir aylık vakitler; yanında namaz ve oruç kaydınız.",
+  "devices.eyebrow": "Her ekran",
+  "devices.title": "Sahip olduğunuz her <em>cihazda</em>.",
+  "devices.sub": "Android telefon, tablet ve katlanabilirler, iPhone, iPad, Mac, Windows, Linux ve web — hesapsız ve bize ait hiçbir sunucu olmadan senkronize."
 }

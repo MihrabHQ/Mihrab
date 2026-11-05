@@ -40,5 +40,11 @@
   "remember.sub": "《穆斯林堡垒》中的祈祷词、礼拜后的赞珠，以及你的斋戒记录。",
   "day.eyebrow": "你的一天",
   "day.title": "不错过任何一次礼拜。",
-  "day.sub": "宣礼与全屏提醒、小组件、朝向、可分享的整月时间表——以及每次礼拜的记录。"
+  "day.sub": "宣礼与全屏提醒、小组件、朝向、可分享的整月时间表——以及每次礼拜的记录。",
+  "month.eyebrow": "规划",
+  "month.title": "未来一个月，每次礼拜都<em>有记录</em>。",
+  "month.sub": "整月时间表可打印或以图片、PDF 分享，旁边是你的礼拜与斋戒记录。",
+  "devices.eyebrow": "每一块屏幕",
+  "devices.title": "在你的每一台<em>设备</em>上。",
+  "devices.sub": "安卓手机、平板与折叠屏，iPhone、iPad、Mac、Windows、Linux 和网页——同步保持一致，无需账户，也没有我们的服务器。"
 }

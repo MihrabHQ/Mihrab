@@ -40,5 +40,11 @@
   "remember.sub": "Les invocations de Hisn al-Muslim, un tasbih pour après la prière, et vos jeûnes, notés.",
   "day.eyebrow": "Votre journée",
   "day.title": "Ne manquez aucune prière.",
-  "day.sub": "Adhan et alertes plein écran, widgets, la qibla, un mois à partager — et le registre de chaque prière."
+  "day.sub": "Adhan et alertes plein écran, widgets, la qibla, un mois à partager — et le registre de chaque prière.",
+  "month.eyebrow": "Prévoir",
+  "month.title": "Le mois qui vient, et chaque prière <em>notée</em>.",
+  "month.sub": "Les horaires d’un mois à imprimer ou partager en image ou en PDF, avec à côté le registre de vos prières et de vos jeûnes.",
+  "devices.eyebrow": "Chaque écran",
+  "devices.title": "Sur tous vos <em>appareils</em>.",
+  "devices.sub": "Téléphones, tablettes et pliables Android, iPhone, iPad, Mac, Windows, Linux et le web — synchronisés sans compte et sans aucun serveur à nous."
 }

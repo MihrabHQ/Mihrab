@@ -40,5 +40,11 @@
   "remember.sub": "Duas ur Hisn al-Muslim, en tasbih för efter bönen, och dina fastor, sparade.",
   "day.eyebrow": "Din dag",
   "day.title": "Missa aldrig en bön.",
-  "day.sub": "Adhan och helskärmslarm, widgetar, qibla, en månad att dela – och en logg över varje bön."
+  "day.sub": "Adhan och helskärmslarm, widgetar, qibla, en månad att dela – och en logg över varje bön.",
+  "month.eyebrow": "Planera",
+  "month.title": "Månaden framåt, och varje bön <em>sparad</em>.",
+  "month.sub": "En månads tider att skriva ut eller dela som bild eller PDF, och loggen över dina böner och fastor bredvid.",
+  "devices.eyebrow": "Varje skärm",
+  "devices.title": "På alla dina <em>enheter</em>.",
+  "devices.sub": "Android-telefoner, surfplattor och vikbara, iPhone, iPad, Mac, Windows, Linux och webben – i takt genom synk, utan konto och utan någon server av oss."
 }

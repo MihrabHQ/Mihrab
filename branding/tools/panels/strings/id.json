@@ -40,5 +40,11 @@
   "remember.sub": "Doa dari Hisnul Muslim, tasbih untuk selepas salat, dan catatan puasa Anda.",
   "day.eyebrow": "Hari Anda",
   "day.title": "Jangan lewatkan satu salat pun.",
-  "day.sub": "Azan dan peringatan layar penuh, widget, kiblat, jadwal sebulan untuk dibagikan — dan catatan setiap salat."
+  "day.sub": "Azan dan peringatan layar penuh, widget, kiblat, jadwal sebulan untuk dibagikan — dan catatan setiap salat.",
+  "month.eyebrow": "Rencanakan",
+  "month.title": "Sebulan ke depan, dan setiap salat <em>tercatat</em>.",
+  "month.sub": "Jadwal sebulan untuk dicetak atau dibagikan sebagai gambar atau PDF, dengan catatan salat dan puasa Anda di sampingnya.",
+  "devices.eyebrow": "Setiap layar",
+  "devices.title": "Di setiap perangkat <em>Anda</em>.",
+  "devices.sub": "Ponsel, tablet, dan perangkat lipat Android, iPhone, iPad, Mac, Windows, Linux, dan web — selaras lewat sinkronisasi, tanpa akun dan tanpa server kami."
 }
