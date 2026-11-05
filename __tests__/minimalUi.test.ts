@@ -402,3 +402,11 @@ describe('the Track takes the room', () => {
     expect(card).toMatch(/trackDepth=\{trackDepth\}/);
   });
 });
+
+describe('the night along the floor', () => {
+  it('is drawn only while the sun is crossing it', () => {
+    const chart = read('src/screens/home/HeroTrack.tsx');
+    expect(chart).toMatch(/\(track\.deep != null \? under\.floor : \[\]\)\.map/);
+    expect(chart.match(/\(track\.deep != null \? drawn\.stretchFloor : \[\]\)\.map/g)).toHaveLength(2);
+  });
+});

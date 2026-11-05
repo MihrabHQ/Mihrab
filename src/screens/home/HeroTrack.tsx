@@ -283,12 +283,15 @@ function HeroTrackImpl({
         <Path key={i} d={seg.d} stroke={seg.stroke} strokeWidth={TRACK_W} strokeOpacity={0.55} strokeLinecap="round" fill="none" />
       ))}
       {under.d ? <Path d={under.d} stroke={ink} strokeWidth={TRACK_W} strokeOpacity={0.3} strokeLinecap="round" fill="none" /> : null}
-      {under.floor.map((l, i) => (
+      {/* The night's dotted crossing only while the sun is on it: out of
+          the night the floor is empty, and the line at the edges reads as
+          the track leaving the chart and coming back. */}
+      {(track.deep != null ? under.floor : []).map((l, i) => (
         <Line key={`f${i}`} x1={l.x1} y1={floor} x2={l.x2} y2={floor} stroke={ink} strokeWidth={1.25} strokeOpacity={0.35} strokeDasharray="1 3" />
       ))}
       {running
         ? null
-        : drawn.stretchFloor.map((l, i) => (
+        : (track.deep != null ? drawn.stretchFloor : []).map((l, i) => (
             <Line key={`sf${i}`} x1={l.x1} y1={floor} x2={l.x2} y2={floor} stroke={ink} strokeWidth={1.25} strokeOpacity={0.75} strokeDasharray="1 3" />
           ))}
       {depth && track.start ? (
@@ -377,7 +380,7 @@ function HeroTrackImpl({
           {drawn.stretch ? (
             <Path d={drawn.stretch} stroke={ink} strokeWidth={STRETCH_W} strokeOpacity={0.6} strokeLinecap="round" fill="none" />
           ) : null}
-          {drawn.stretchFloor.map((l, i) => (
+          {(track.deep != null ? drawn.stretchFloor : []).map((l, i) => (
             <Line key={`sf${i}`} x1={l.x1} y1={floor} x2={l.x2} y2={floor} stroke={ink} strokeWidth={1.25} strokeOpacity={0.75} strokeDasharray="1 3" />
           ))}
           {at && at.under ? (
