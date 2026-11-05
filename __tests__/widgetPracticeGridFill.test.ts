@@ -244,7 +244,13 @@ describe('the times row fits its own columns', () => {
   });
 
   it('shrinks the meridiem on the Log card too', () => {
-    expect(src('glance/LogGlanceWidget')).toContain('ClockText(chip.minutes, m.clock,');
+    // What matters is that the chip's time goes through ClockText, which
+    // is what sets the meridiem smaller than the digits — not how the call
+    // happens to be wrapped. Written as a literal line, this broke three
+    // times in one afternoon on reformatting that changed no behaviour.
+    expect(src('glance/LogGlanceWidget')).toMatch(
+      /ClockText\(\s*chip\.minutes,\s*m\.clock,/,
+    );
   });
 
   it('leaves a gutter, so fitting is not the same as touching', () => {

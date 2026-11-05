@@ -20,6 +20,10 @@ dependencies {
 sourceSets {
   main {
     kotlin.srcDir("../../android/app/src/main/java/com/prayer_times/contract")
+    // The widget cards' height arithmetic. It is a package of its own for
+    // exactly this reason: a Glance composable cannot be run off a device,
+    // so the spending is kept Android-free and swept here instead.
+    kotlin.srcDir("../../android/app/src/main/java/com/prayer_times/cardfit")
   }
 }
 

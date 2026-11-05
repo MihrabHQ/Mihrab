@@ -31,6 +31,7 @@ import com.prayer_times.PrayerWidgetProvider
 import com.prayer_times.R
 import com.prayer_times.WidgetLogQueue
 import com.prayer_times.WidgetQueueEvents
+import com.prayer_times.cardfit.fitLogCard
 import com.prayer_times.contract.WallClock
 import com.prayer_times.contract.WidgetContract
 
@@ -258,37 +259,33 @@ internal class LogGlanceWidget(
     // a time, to a floor that is still a widget's smallest readable size.
     // Nothing is clipped on the way: a card too short even for the floor
     // is a card that drops the footer deliberately, in `showFoot`.
-    var topPad = 6 + slack
-    var botPad = slack
-    var gapDp = 4
-    var nameSp = 11f
-    var timeSp = 15f
-    var footSp = 11f
-    var showFoot = true
-    if (h > 0 && !graphHeight) {
-      val room = h - 2 * CARD_INSET_DP - 2 * paddingFor(size)
-      val titleDp = if (!bare) textLineDp(context, 11f, medium = true) else 0f
+    // The spending itself is `cardfit.fitLogCard`, which has no Android in
+    // it so that `contract-tests/kotlin` can sweep it over every height a
+    // launcher might hand this card. Only the measuring is done here: line
+    // heights need the device's own fonts.
+    val fit = fitLogCard(
+      roomDp = if (graphHeight) 0 else h - 2 * CARD_INSET_DP - 2 * paddingFor(size),
+      titleDp = if (!bare) textLineDp(context, 11f, medium = true) else 0f,
       // Rule(top = 6, bottom = 8) plus its own 1dp line.
-      val ruleDp = if (!tight) 15f else 0f
-      fun nameDp() = m.chips.maxOfOrNull { textHeightDp(context, it.name, nameSp, medium = false) }
-        ?: textLineDp(context, nameSp, medium = false)
-      fun need() = titleDp + topPad + chipHeight + gapDp + nameDp() +
-        textLineDp(context, timeSp, medium = false) + botPad + ruleDp +
-        (if (showFoot) textLineDp(context, footSp, medium = false) else 0f)
-      fun over() = Math.ceil((need() - room).toDouble()).toInt()
-      if (over() > 0) chipHeight = (chipHeight - over()).coerceAtLeast(CHIP_MIN_HEIGHT_DP)
-      if (over() > 0) topPad = (topPad - over()).coerceAtLeast(0)
-      if (over() > 0) botPad = (botPad - over()).coerceAtLeast(0)
-      if (over() > 0) gapDp = (gapDp - over()).coerceAtLeast(1)
-      while (over() > 0 && timeSp > CARD_MIN_SP) timeSp -= 0.5f
-      while (over() > 0 && nameSp > CARD_MIN_SP) {
-        nameSp -= 0.5f
-        footSp -= 0.5f
-      }
-      // Under the floor the footer is the band to let go of: the chips are
-      // what the card is for, and a half-drawn line is worse than none.
-      if (over() > 0) showFoot = false
-    }
+      ruleDp = if (!tight) 15f else 0f,
+      slackDp = slack,
+      startPillDp = chipHeight,
+      minPillDp = CHIP_MIN_HEIGHT_DP,
+      minSp = CARD_MIN_SP,
+      nameDp = { sp ->
+        m.chips.maxOfOrNull { textHeightDp(context, it.name, sp, medium = false) }
+          ?: textLineDp(context, sp, medium = false)
+      },
+      lineDp = { sp -> textLineDp(context, sp, medium = false) },
+    )
+    chipHeight = fit.pillDp
+    val topPad = fit.topPadDp
+    val botPad = fit.botPadDp
+    val gapDp = fit.gapDp
+    val nameSp = fit.nameSp
+    val timeSp = fit.timeSp
+    val footSp = fit.footSp
+    val showFoot = fit.showFoot
 
     DirColumn(
       modifier = GlanceModifier.fillMaxSize(),
@@ -307,7 +304,10 @@ internal class LogGlanceWidget(
         verticalAlignment = Alignment.CenterVertically,
       ) {
         for ((i, chip) in m.chips.withIndex()) cell {
-          ChipCell(chip, i, chipHeight, gapDp, nameSp, timeSp, m, GlanceModifier.defaultWeight())
+          ChipCell(
+            chip, i, chipHeight, gapDp, nameSp, timeSp,
+            fit.showName, fit.showTime, m, GlanceModifier.defaultWeight(),
+          )
         }
       }
       // The rule above the footer is what a one-row card does without.
@@ -362,6 +362,8 @@ internal class LogGlanceWidget(
     gapDp: Int,
     nameSp: Float,
     timeSp: Float,
+    showName: Boolean,
+    showTime: Boolean,
     m: Model,
     modifier: GlanceModifier,
   ) {
@@ -393,15 +395,27 @@ internal class LogGlanceWidget(
       ) {
         Label(glyph, 18f, color, medium = true)
       }
-      Label(
-        chip.name,
-        nameSp,
-        if (chip.due || chip.queued) Palette.TEXT else Palette.MUTED,
-        align = TextAlign.Center,
-        modifier = GlanceModifier.padding(top = gapDp.dp),
-      )
+      // On a cell too short for them these go rather than overflow — the
+      // ladder is in `cardfit.fitLogCard`, the tick always stays.
+      if (showName) {
+        Label(
+          chip.name,
+          nameSp,
+          if (chip.due || chip.queued) Palette.TEXT else Palette.MUTED,
+          align = TextAlign.Center,
+          modifier = GlanceModifier.padding(top = gapDp.dp),
+        )
+      }
       // The meridiem small, the same as the prayer strip.
-      ClockText(chip.minutes, m.clock, timeSp, Palette.TEXT)
+      if (showTime) {
+        ClockText(
+          chip.minutes,
+          m.clock,
+          timeSp,
+          Palette.TEXT,
+          modifier = if (showName) GlanceModifier else GlanceModifier.padding(top = gapDp.dp),
+        )
+      }
     }
   }
 
