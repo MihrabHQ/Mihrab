@@ -1,7 +1,7 @@
 import { memo, useMemo } from 'react';
-import { StyleSheet } from 'react-native';
+import { Animated, StyleSheet, View } from 'react-native';
 import Svg, { Circle, ClipPath, Defs, G, Line, Path, Rect } from 'react-native-svg';
-import { MOON, moonLitPath, NEW_MOON_BELOW, SUN_R } from './HeroSky';
+import { MOON, Moon, moonLitPath, NEW_MOON_BELOW, SUN_R } from './HeroSky';
 import { type SkyFrame } from './skyModel';
 import { SUN_SURFACE, tintedBy } from './skyLight';
 import { type TrackFrame, type TrackPoint } from './trackModel';
@@ -38,9 +38,20 @@ function HeroTrackImpl({
   bandTop,
   horizon,
   ink,
+  run,
 }: {
   track: TrackFrame;
   frame: SkyFrame;
+  /**
+   * A launch run (HeroSky's SkyRun): the chart, the horizon and the ring
+   * are drawn as they will be at the run's end, and the body rides the
+   * run's native progress along the track through the keyframes'
+   * places, as the painted sky's body rides its layers. The stretch —
+   * from the body to the ring — fades in over the run's last part, since
+   * it is the end's. When the run ends the live drawing takes over at
+   * the same place.
+   */
+  run?: { tracks: Array<TrackFrame | null>; progress: Animated.Value };
   width: number;
   /** The band's top, dp from the sky's top: the foot of the chrome row. */
   bandTop: number;
@@ -102,7 +113,58 @@ function HeroTrackImpl({
   const at = track.body;
   const sunR = SUN_R;
   const clipId = 'track-horizon';
-  return (
+  const running = !!run;
+  /**
+   * The run's body: its place at each keyframe, held where the chart has
+   * none, and seen only where it is up — interpolated through the run's
+   * progress, native-driven, as HeroSky's run bodies are.
+   */
+  const ride = useMemo(() => {
+    if (!run) return null;
+    const K = run.tracks.length;
+    const es = run.tracks.map((_, i) => (K <= 1 ? 1 : i / (K - 1)));
+    const places = run.tracks.map(t => (t && t.body ? { x: X(t.body), y: Y(t.body), up: !t.body.under } : null));
+    let held = places.find(p => p != null) ?? { x: 0, y: horizon, up: false };
+    const xs = places.map(p => (held = p ?? held).x);
+    held = places.find(p => p != null) ?? { x: 0, y: horizon, up: false };
+    const ys = places.map(p => (held = p ?? held).y);
+    const ups = places.map(p => (p && p.up ? 1 : 0));
+    const through = (values: number[]) =>
+      K <= 1
+        ? run.progress.interpolate({ inputRange: [0, 1], outputRange: [values[0], values[0]] })
+        : run.progress.interpolate({ inputRange: es, outputRange: values, extrapolate: 'clamp' });
+    return {
+      tx: through(xs),
+      ty: through(ys),
+      up: through(ups),
+      // The end's stretch and its under-the-line outline come in over the last third.
+      end: run.progress.interpolate({ inputRange: [0.66, 1], outputRange: [0, 1], extrapolate: 'clamp' }),
+    };
+    // X and Y are closures over the layout numbers, which the deps carry.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [run, width, roomTop, room, horizon]);
+  const bodyView =
+    ride && body.kind !== 'none' ? (
+      <View style={{ position: 'absolute', left: 0, top: 0, width, height: Math.max(0, horizon), overflow: 'hidden' }} pointerEvents="none">
+        <Animated.View
+          style={{
+            position: 'absolute',
+            left: 0,
+            top: 0,
+            opacity: Animated.multiply(ride.up, body.alpha),
+            transform: [{ translateX: ride.tx }, { translateY: ride.ty }],
+          }}>
+          {body.kind === 'sun' ? (
+            <View style={{ marginLeft: -sunR, marginTop: -sunR, width: sunR * 2, height: sunR * 2, borderRadius: sunR, backgroundColor: body.light }} />
+          ) : (
+            <View style={{ marginLeft: -MOON / 2, marginTop: -MOON / 2, width: MOON, height: MOON }}>
+              <Moon illuminated={body.illuminated} tilt={body.tilt} lit={body.light} />
+            </View>
+          )}
+        </Animated.View>
+      </View>
+    ) : null;
+  const svg = (
     <Svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} style={styles.svg} pointerEvents="none">
       <Defs>
         <ClipPath id={clipId}>
@@ -112,28 +174,52 @@ function HeroTrackImpl({
       {drawn.above.map((seg, i) => (
         <Path key={i} d={seg.d} stroke={seg.stroke} strokeWidth={TRACK_W} strokeOpacity={0.55} strokeLinecap="round" fill="none" />
       ))}
-      {drawn.alongLine.map((l, i) => (
-        <Line key={`u${i}`} x1={l.x1} y1={horizon} x2={l.x2} y2={horizon} stroke={ink} strokeWidth={1.25} strokeOpacity={0.6} strokeDasharray="1 3" />
-      ))}
-      {drawn.stretch ? (
+      {running
+        ? null
+        : drawn.alongLine.map((l, i) => (
+            <Line key={`u${i}`} x1={l.x1} y1={horizon} x2={l.x2} y2={horizon} stroke={ink} strokeWidth={1.25} strokeOpacity={0.6} strokeDasharray="1 3" />
+          ))}
+      {drawn.stretch && !running ? (
         <Path d={drawn.stretch} stroke={ink} strokeWidth={STRETCH_W} strokeOpacity={0.6} strokeLinecap="round" fill="none" />
       ) : null}
       <Line x1={0} y1={horizon} x2={width} y2={horizon} stroke={ink} strokeWidth={TRACK_W} strokeOpacity={0.5} />
-      {at && !at.under && body.kind === 'sun' ? (
+      {!running && at && !at.under && body.kind === 'sun' ? (
         <G clipPath={`url(#${clipId})`}>
           <Circle cx={X(at)} cy={Y(at) + 2 * body.below * sunR} r={sunR} fill={body.light} fillOpacity={body.alpha} />
         </G>
       ) : null}
-      {at && !at.under && body.kind === 'moon' ? (
+      {!running && at && !at.under && body.kind === 'moon' ? (
         <MoonDisc cx={X(at)} cy={Y(at)} illuminated={body.illuminated} tilt={body.tilt} lit={body.light} alpha={body.alpha} />
       ) : null}
-      {at && at.under ? (
+      {!running && at && at.under ? (
         <Circle cx={X(at)} cy={horizon} r={UNDER_R} stroke={ink} strokeWidth={TRACK_W} strokeOpacity={0.8} fill="none" />
       ) : null}
       {ring ? (
         <Circle cx={X(ring)} cy={Y(ring)} r={RING_R} stroke={ink} strokeWidth={1} strokeOpacity={0.95} fill="none" />
       ) : null}
     </Svg>
+  );
+  if (!ride) return svg;
+  // The run: the chart, then the end's stretch and outline fading in,
+  // then the body riding.
+  return (
+    <>
+      {svg}
+      <Animated.View style={[StyleSheet.absoluteFill, { opacity: ride.end }]} pointerEvents="none">
+        <Svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} style={styles.svg} pointerEvents="none">
+          {drawn.alongLine.map((l, i) => (
+            <Line key={`u${i}`} x1={l.x1} y1={horizon} x2={l.x2} y2={horizon} stroke={ink} strokeWidth={1.25} strokeOpacity={0.6} strokeDasharray="1 3" />
+          ))}
+          {drawn.stretch ? (
+            <Path d={drawn.stretch} stroke={ink} strokeWidth={STRETCH_W} strokeOpacity={0.6} strokeLinecap="round" fill="none" />
+          ) : null}
+          {at && at.under ? (
+            <Circle cx={X(at)} cy={horizon} r={UNDER_R} stroke={ink} strokeWidth={TRACK_W} strokeOpacity={0.8} fill="none" />
+          ) : null}
+        </Svg>
+      </Animated.View>
+      {bodyView}
+    </>
   );
 }
 

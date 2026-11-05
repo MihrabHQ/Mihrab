@@ -871,6 +871,34 @@ const HeroToday = memo(function HeroToday({
     },
     [skyTheme, heroVariant, pageBg, pageDark, lowMidAt],
   );
+  /**
+   * The Track look (trackModel.ts) at a moment: the band as a chart of
+   * the sky, from the reader's coordinates — nothing without them, when
+   * the painted sky stands. By night the band follows the moon from the
+   * evening's Maghrib to the morning's sunrise; otherwise the sun over the
+   * local day. Read once a minute for the live hero, and once per
+   * keyframe for a launch run's ride along it.
+   */
+  const targetAtMs = target.at.getTime();
+  const trackAt = useCallback(
+    (at: Date, passage: SkyFrame['passage']) => {
+      if (heroLook !== 'track' || typeof latitude !== 'number' || typeof longitude !== 'number') return null;
+      const map = skyToday ?? today;
+      let night: { maghrib: Date; sunrise: Date } | null = null;
+      if (map.Maghrib && map.Sunrise) {
+        // The night around `at`: the Maghrib behind it, the sunrise ahead —
+        // on the clock the sky reads the day by (skyMoment), not the rows'.
+        let maghrib = combineLocalDateAndTime(at, map.Maghrib);
+        if (maghrib.getTime() > at.getTime()) maghrib = addDays(maghrib, -1);
+        let sunrise = combineLocalDateAndTime(at, map.Sunrise);
+        if (sunrise.getTime() < at.getTime()) sunrise = addDays(sunrise, 1);
+        night = { maghrib, sunrise };
+      }
+      const window = trackWindow(passage, at, night);
+      return trackFrame({ ...window, now: at, latitude, longitude, nextAt: new Date(targetAtMs) });
+    },
+    [heroLook, latitude, longitude, skyToday, today, targetAtMs],
+  );
   const skyRunRef = useRef<SkyRun | null>(null);
   if (launchRun && warp && !skyRunRef.current) {
     const nowMs = now.getTime();
@@ -880,10 +908,13 @@ const HeroToday = memo(function HeroToday({
     const day = skyToday ?? today;
     const frames = Array.from({ length: K }, (_, i) => {
       const at = new Date(Math.floor(warpSkyAt(warp, nowMs, i / (K - 1)) / 60_000) * 60_000);
-      return paint(skyFrame(skyMoment(day, at, tomorrowFajr), at, { latitude, longitude }));
+      const f = paint(skyFrame(skyMoment(day, at, tomorrowFajr), at, { latitude, longitude }));
+      return { at: at.getTime(), passage: f.passage, frame: f };
     });
+    // The chart's body at the same keyframes, for the Track to ride.
+    const tracks = frames.map(f => trackAt(new Date(f.at), f.passage));
     runProgress.current.setValue(0);
-    skyRunRef.current = { frames, progress: runProgress.current };
+    skyRunRef.current = { frames: frames.map(f => f.frame), progress: runProgress.current, tracks };
   } else if (!launchRun && skyRunRef.current) {
     skyRunRef.current = null;
   }
@@ -1200,24 +1231,10 @@ const HeroToday = memo(function HeroToday({
    * band follows the moon from the evening's Maghrib to the morning's
    * sunrise; otherwise the sun over the local day.
    */
-  const targetAtMs = target.at.getTime();
-  const track = useMemo(() => {
-    if (heroLook !== 'track' || typeof latitude !== 'number' || typeof longitude !== 'number') return null;
-    const at = new Date(minuteKey * 60_000);
-    const map = skyToday ?? today;
-    let night: { maghrib: Date; sunrise: Date } | null = null;
-    if (map.Maghrib && map.Sunrise) {
-      // The night around `at`: the Maghrib behind it, the sunrise ahead —
-      // on the clock the sky reads the day by (skyMoment), not the rows'.
-      let maghrib = combineLocalDateAndTime(at, map.Maghrib);
-      if (maghrib.getTime() > at.getTime()) maghrib = addDays(maghrib, -1);
-      let sunrise = combineLocalDateAndTime(at, map.Sunrise);
-      if (sunrise.getTime() < at.getTime()) sunrise = addDays(sunrise, 1);
-      night = { maghrib, sunrise };
-    }
-    const window = trackWindow(frame.passage, at, night);
-    return trackFrame({ ...window, now: at, latitude, longitude, nextAt: new Date(targetAtMs) });
-  }, [heroLook, latitude, longitude, minuteKey, skyToday, today, frame.passage, targetAtMs]);
+  const track = useMemo(
+    () => trackAt(new Date(minuteKey * 60_000), frame.passage),
+    [trackAt, minuteKey, frame.passage],
+  );
   const inkFoot = useMemo(() => skyInkAt(frame, yFoot), [frame, yFoot]);
   /**
    * Minimal stacks the countdown, its line and the rail in the middle of

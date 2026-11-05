@@ -119,7 +119,17 @@ export function skyScene({
  * its start and the last at now; `progress` is the run's eased progress,
  * 0…1, a native-driven value the hero sets once a frame.
  */
-export type SkyRun = { frames: SkyFrame[]; progress: Animated.Value };
+export type SkyRun = {
+  frames: SkyFrame[];
+  progress: Animated.Value;
+  /**
+   * The Track look's frames at the same keyframes (trackModel.ts), when
+   * that look is on: the body's place on the chart at each, which the
+   * run's body rides through as it rides the sky's. The chart itself is
+   * the day's and does not move.
+   */
+  tracks?: Array<TrackFrame | null>;
+};
 
 function HeroSkyImpl({
   frame,
@@ -270,7 +280,17 @@ function HeroSkyImpl({
         },
       ]}>
       {running ? (
-        <SkyRunLayers run={run} width={Math.ceil(size.width)} height={Math.ceil(size.height)} scene={scene} denseStars={denseStars} />
+        <SkyRunLayers
+          run={run}
+          width={Math.ceil(size.width)}
+          height={Math.ceil(size.height)}
+          scene={scene}
+          denseStars={denseStars}
+          // Under the Track the chart draws the body (below), on its own
+          // track; the run's sun, moon and halo stand down as the live
+          // sky's do.
+          noBodies={tracked && !!run.tracks}
+        />
       ) : null}
       {running ? null : (
         // ── VIEWS, NOT A BITMAP ──────────────────────────────────────────
@@ -374,8 +394,18 @@ function HeroSkyImpl({
           <Moon illuminated={body.illuminated} tilt={body.tilt} lit={body.light} />
         </View>
       ) : null}
-      {!running && tracked && track && trackInk && horizon != null ? (
-        <HeroTrack track={track} frame={frame} width={size.width} bandTop={scene.top} horizon={horizon} ink={trackInk} />
+      {tracked && track && trackInk && horizon != null && (!running || run?.tracks) ? (
+        <HeroTrack
+          track={track}
+          frame={frame}
+          width={size.width}
+          bandTop={scene.top}
+          horizon={horizon}
+          ink={trackInk}
+          // Through a launch run the chart stands and the body rides the
+          // run's progress along it; the rest is drawn as it will be.
+          run={running && run?.tracks ? { tracks: run.tracks, progress: run.progress } : undefined}
+        />
       ) : null}
     </View>
   );
@@ -422,12 +452,15 @@ function SkyRunLayersImpl({
   height,
   scene,
   denseStars = false,
+  noBodies = false,
 }: {
   run: SkyRun;
   width: number;
   height: number;
   scene: Scene;
   denseStars?: boolean;
+  /** No sun, moon or halo: the Track draws the body (HeroTrack). */
+  noBodies?: boolean;
 }) {
   const { frames, progress } = run;
   const K = frames.length;
@@ -546,7 +579,7 @@ function SkyRunLayersImpl({
           }}
         />
       ))}
-      {built.anyBody && built.halo ? (
+      {!noBodies && built.anyBody && built.halo ? (
         <Animated.View
           style={{
             position: 'absolute',
@@ -560,7 +593,7 @@ function SkyRunLayersImpl({
           }}
         />
       ) : null}
-      {built.anyBody && built.halo && built.topFadeH > 0
+      {!noBodies && built.anyBody && built.halo && built.topFadeH > 0
         ? built.gradients.map((g, i) =>
             g.fadeTo ? (
               <Animated.View
@@ -586,7 +619,7 @@ function SkyRunLayersImpl({
           <StarField scene={scene} glow={built.stars.glow} stars={1} dense={denseStars} width={width} height={height} />
         </Animated.View>
       ) : null}
-      {built.anyBody ? (
+      {!noBodies && built.anyBody ? (
         // Clipped at the horizon: a sun under it is not drawn.
         <View style={{ position: 'absolute', left: 0, top: 0, width, height: Math.max(0, built.horizon), overflow: 'hidden' }} pointerEvents="none">
           {built.suns.map((s, i) =>
@@ -609,7 +642,7 @@ function SkyRunLayersImpl({
           )}
         </View>
       ) : null}
-      {built.moon ? (
+      {!noBodies && built.moon ? (
         <Animated.View
           style={[
             styles.moon,
@@ -822,7 +855,7 @@ const Twinkle = memo(TwinkleImpl);
  * every night but the full moon's the dark limb was a black hole in the
  * sky with a sliver of light on it (2.33).
  */
-const Moon = memo(function Moon({
+export const Moon = memo(function Moon({
   illuminated,
   tilt,
   lit,
