@@ -14,6 +14,8 @@
  * the day. The khatmah card itself is `KhatmahScreen`; what sits under
  * each verse is chosen in Settings → Quran and on any āyah.
  */
+import { ReadRecommendations } from './quran/ReadRecommendations';
+import { portionSpan } from '../quran/hifz';
 import { NO_TEXT_SELECTION } from '../quran/noTextSelection';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigation, useScrollToTop } from '@react-navigation/native';
@@ -117,7 +119,6 @@ const AnimatedFlatList = Animated.FlatList;
  * moment it tries to be a favourites feature, and this one is meant to
  * cost nothing to skip.
  */
-const OFTEN_READ = [18, 67] as const;
 
 type JuzRow = { juz: number; page: number; startSurah: SurahIndex | undefined };
 
@@ -906,45 +907,25 @@ export function QuranScreen() {
         const h = e.nativeEvent.layout.height;
         setHeaderH(prev => (prev[pageTab] === h ? prev : { ...prev, [pageTab]: h }));
       }}>
-      {/* The two surahs with a place in the week — issue #23.
-          
-          Al-Kahf on Friday and Al-Mulk before sleep are read on a
-          schedule rather than looked up, and reaching them meant
-          scrolling 18 and 67 rows or typing a name that has four
-          spellings in Latin letters. Only on the surah tab, and only
-          while nothing is being searched: they are a shortcut past the
-          list, so above a list that is already narrowed they would be in
-          the way. */}
+      {/* What to read now, and what of the hifz to practise before it is
+          due (ReadRecommendations) — in the place of the "Often read" row,
+          whose Al-Kahf and Al-Mulk (issue #23) it always holds. Only on
+          the surah tab, and only while nothing is being searched: they
+          are a shortcut past the list, so above a list that is already
+          narrowed they would be in the way. */}
       {pageTab === 'surah' && !query.trim() && results == null ? (
-        <View style={styles.oftenRow}>
-          <Text style={[styles.oftenLabel, { color: palette.muted }]}>
-            {t('quran.oftenRead', { defaultValue: 'Often read' })}
-          </Text>
-          {OFTEN_READ.map(number => {
-            const surah = findSurah(number);
-            if (!surah) return null;
-            return (
-              <Pressable
-                key={number}
-                accessibilityRole="button"
-                accessibilityLabel={`${surah.romanized} — ${surah.english}`}
-                onPress={() => openSurah(number)}
-                style={[
-                  styles.oftenChip,
-                  {
-                    backgroundColor: palette.card,
-                    ...cardEdgeStyle(palette),
-                  },
-                ]}>
-                <Text
-                  numberOfLines={1}
-                  style={[styles.oftenChipText, { color: palette.text }]}>
-                  {isArabic ? surah.arabic : surah.romanized}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </View>
+        <ReadRecommendations
+          onRead={(surah, ayah) => openSurah(surah, ayah > 1 ? ayah : undefined)}
+          onPractise={p => {
+            const span = portionSpan(p);
+            navigation.navigate('QuranSurah', {
+              surahNumber: span.surah,
+              scrollToAyah: span.from,
+              hifzReview: p.id,
+              hifzPractice: true,
+            });
+          }}
+        />
       ) : null}
 
       {/* Manage downloads (v2.7.28), and beside it the way to a second
@@ -2016,20 +1997,6 @@ const styles = StyleSheet.create({
   },
   menuCancel: { alignItems: 'center', paddingVertical: SPACING.sm },
   downloadsLink: { paddingVertical: 2 },
-  oftenRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-    gap: SPACING.sm,
-    marginTop: SPACING.md,
-  },
-  oftenLabel: { fontSize: TYPE.label.fontSize, fontWeight: '500' },
-  oftenChip: {
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
-    borderRadius: RADIUS.full,
-  },
-  oftenChipText: { fontSize: TYPE.footnote.fontSize, fontWeight: '400' },
   /** Tilāwah leads as a chip; the two plain links trail behind it. */
   downloadsRow: {
     flexDirection: 'row',

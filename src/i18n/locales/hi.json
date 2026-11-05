@@ -2579,6 +2579,9 @@
     "stockAyahs_one": "{{count}} आयत याद",
     "overdue_one": "{{count}} दिन देर",
     "removed": "{{name}} हटाया गया",
-    "undo": "पूर्ववत करें"
+    "undo": "पूर्ववत करें",
+    "practiseAhead": "तय दिन से पहले अभ्यास करें",
+    "neededHelpLast": "पिछली बार मदद चाहिए थी",
+    "practising": "{{name}} ज़बानी अभ्यास"
   }
 }

@@ -2579,6 +2579,9 @@
     "stockSurahs_one": "{{count}} surah",
     "stockAyahs_one": "{{count}} ayat dihafal",
     "removed": "{{name}} dihapus",
-    "undo": "Urungkan"
+    "undo": "Urungkan",
+    "practiseAhead": "Latihan sebelum jadwalnya",
+    "neededHelpLast": "terakhir perlu bantuan",
+    "practising": "Berlatih {{name}} dari hafalan"
   }
 }

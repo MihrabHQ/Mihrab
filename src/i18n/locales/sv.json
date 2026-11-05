@@ -2579,6 +2579,9 @@
     "portions_one": "{{count}} avsnitt",
     "reminderBody_one": "{{count}} avsnitt att recitera ur minnet i dag.",
     "removed": "{{name}} borttagen",
-    "undo": "Ångra"
+    "undo": "Ångra",
+    "practiseAhead": "Öva innan det är dags",
+    "neededHelpLast": "behövde hjälp förra gången",
+    "practising": "Övar {{name}} ur minnet"
   }
 }

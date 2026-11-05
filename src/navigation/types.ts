@@ -71,6 +71,12 @@ export type RootStackParamList = {
      * "Done" that asks how it went and records the review.
      */
     hifzReview?: string;
+    /**
+     * With `hifzReview`: practise the portion ahead of its day rather than
+     * revise it — the same hidden ayahs, and a Done that goes back without
+     * asking how it went, so nothing is recorded and the schedule stands.
+     */
+    hifzPractice?: boolean;
   };
   /** The tajwīd colours explained — the legend, rule by rule. */
   QuranTajweed: undefined;

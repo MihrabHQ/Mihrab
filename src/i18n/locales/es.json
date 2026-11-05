@@ -2580,6 +2580,9 @@
     "stockAyahs": "{{count}} aleyas de memoria",
     "stockAyahs_one": "{{count}} aleya de memoria",
     "removed": "{{name}} quitado",
-    "undo": "Deshacer"
+    "undo": "Deshacer",
+    "practiseAhead": "Practica antes de que toque",
+    "neededHelpLast": "la última vez necesitó ayuda",
+    "practising": "Practicando {{name}} de memoria"
   }
 }

@@ -2623,6 +2623,9 @@
     "stockAyahs_few": "{{count}} آيات محفوظة",
     "stockAyahs_many": "{{count}} آية محفوظة",
     "removed": "أُزيل {{name}}",
-    "undo": "تراجع"
+    "undo": "تراجع",
+    "practiseAhead": "راجِع قبل موعدها",
+    "neededHelpLast": "احتاجت عونًا في المرة الماضية",
+    "practising": "تمرين {{name}} غيبًا"
   }
 }

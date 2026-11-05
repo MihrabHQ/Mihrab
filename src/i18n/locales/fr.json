@@ -2580,6 +2580,9 @@
     "stockAyahs": "{{count}} versets par cœur",
     "stockAyahs_one": "{{count}} verset par cœur",
     "removed": "{{name}} retiré",
-    "undo": "Annuler"
+    "undo": "Annuler",
+    "practiseAhead": "S'exercer avant l'échéance",
+    "neededHelpLast": "a demandé de l'aide la dernière fois",
+    "practising": "S'exercer à {{name}} de mémoire"
   }
 }

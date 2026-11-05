@@ -2579,6 +2579,9 @@
     "stockSurahs_one": "{{count}} sure",
     "stockAyahs_one": "{{count}} ayet ezberde",
     "removed": "{{name}} kaldırıldı",
-    "undo": "Geri al"
+    "undo": "Geri al",
+    "practiseAhead": "Vaktinden önce çalış",
+    "neededHelpLast": "geçen sefer yardım gerekti",
+    "practising": "{{name}} ezberden çalışılıyor"
   }
 }

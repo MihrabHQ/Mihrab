@@ -2579,6 +2579,9 @@
     "stockAyahs": "{{count}} ayahs by heart",
     "stockAyahs_one": "{{count}} ayah by heart",
     "removed": "Removed {{name}}",
-    "undo": "Undo"
+    "undo": "Undo",
+    "practiseAhead": "Practise before it's due",
+    "neededHelpLast": "needed help last time",
+    "practising": "Practising {{name}} from memory"
   }
 }

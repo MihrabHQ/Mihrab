@@ -162,6 +162,33 @@ export function todaysRevision(state: HifzState, today: string): { due: HifzPort
   return { due, shown, more: due.length - shown.length };
 }
 
+/** How far ahead a portion is offered to practise before it is due, days. */
+export const PRACTISE_WITHIN = 7;
+
+/** Whether the last recitation of a portion needed help. */
+export function neededHelpLast(p: HifzPortion): boolean {
+  return p.reviews.length > 0 && p.reviews[p.reviews.length - 1].grade === 'again';
+}
+
+/**
+ * What to practise before it is due: the portions coming up within
+ * `PRACTISE_WITHIN` days — not today's, which the revision already holds,
+ * and not one recited today — the soonest first, a portion that needed
+ * help last time a day sooner than its date, then the muṣḥaf's order.
+ * Practising does not touch the schedule (the reader's practice mode
+ * records nothing), so it never takes a place in today's revision.
+ */
+export function practiseAhead(state: HifzState, today: string, max = 4): HifzPortion[] {
+  const recited = new Set(recitedToday(state, today).map(p => p.id));
+  return state.portions
+    .map(p => ({ p, days: daysBetween(today, p.due) }))
+    .filter(({ p, days }) => days > 0 && days <= PRACTISE_WITHIN && !recited.has(p.id))
+    .map(x => ({ ...x, rank: x.days - (neededHelpLast(x.p) ? 1 : 0) }))
+    .sort((a, b) => a.rank - b.rank || a.days - b.days || a.p.start - b.p.start)
+    .slice(0, max)
+    .map(x => x.p);
+}
+
 /** The portions recited today (a review dated today), for "2 of 3 done". */
 export function recitedToday(state: HifzState, today: string): HifzPortion[] {
   return state.portions.filter(p => p.reviews.some(r => dayOf(r.at) === today));

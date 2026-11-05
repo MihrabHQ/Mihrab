@@ -110,7 +110,7 @@ type Props = {
    * is done. The grade is recorded on the portion and the reader goes
    * back to where it came from.
    */
-  hifzReview?: { id: string; from: number; to: number };
+  hifzReview?: { id: string; from: number; to: number; practice?: boolean };
 };
 
 export function TranslationSurahScreen({
@@ -952,10 +952,15 @@ export function TranslationSurahScreen({
           ]}>
           <View style={styles.reviewText}>
             <Text style={[styles.reviewTitle, { color: palette.text }]} numberOfLines={1}>
-              {t('hifz.reviewing', {
-                defaultValue: 'Reciting {{name}} from memory',
-                name: reviewName,
-              })}
+              {hifzReview.practice
+                ? t('hifz.practising', {
+                    defaultValue: 'Practising {{name}} from memory',
+                    name: reviewName,
+                  })
+                : t('hifz.reviewing', {
+                    defaultValue: 'Reciting {{name}} from memory',
+                    name: reviewName,
+                  })}
             </Text>
             <Text style={[styles.reviewSub, { color: palette.muted }]} numberOfLines={1}>
               {t('hifz.reviewChecked', {
@@ -968,7 +973,13 @@ export function TranslationSurahScreen({
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={t('hifz.reviewDone', 'Done')}
-            onPress={() => setReviewGrading(true)}
+            onPress={() => {
+              // Practice (ahead of the portion's day) records nothing: Done
+              // is only the way back.
+              if (hifzReview.practice) {
+                if (navigation.canGoBack()) navigation.goBack();
+              } else setReviewGrading(true);
+            }}
             style={({ pressed }) => [
               styles.reviewDone,
               { backgroundColor: HIFZ_COLOR },

@@ -2579,6 +2579,9 @@
     "stockAyahs": "{{count}} Ayat auswendig",
     "stockAyahs_one": "{{count}} Aya auswendig",
     "removed": "{{name}} entfernt",
-    "undo": "Rückgängig"
+    "undo": "Rückgängig",
+    "practiseAhead": "Vor dem Termin üben",
+    "neededHelpLast": "brauchte zuletzt Hilfe",
+    "practising": "{{name}} auswendig üben"
   }
 }

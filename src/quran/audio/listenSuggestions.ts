@@ -47,14 +47,14 @@ export type ListenSuggestion = {
 const THURSDAY = 4;
 const FRIDAY = 5;
 
-const KAHF: ListenSuggestion = {
+export const KAHF: ListenSuggestion = {
   id: 'kahf',
   surah: 18,
   ayah: 1,
   reasonKey: 'quran.suggest.kahf',
   reasonDefault: "Friday's sunnah, from Thursday's maghrib",
 };
-const MULK: ListenSuggestion = {
+export const MULK: ListenSuggestion = {
   id: 'mulk',
   surah: 67,
   ayah: 1,
@@ -102,7 +102,7 @@ const INSAN_FRIDAY: ListenSuggestion = {
   reasonKey: 'quran.suggest.fridayFajr',
   reasonDefault: 'Recited in Fajr on Friday',
 };
-const BAQARAH: ListenSuggestion = {
+export const BAQARAH: ListenSuggestion = {
   id: 'baqarah',
   surah: 2,
   ayah: 1,
@@ -122,6 +122,20 @@ export function listenSuggestions(
   now: Date,
   maghrib: Date | null = null,
 ): ListenSuggestion[] {
+  const timely = timelySuggestions(now, maghrib);
+  // Al-Baqarah is for any hour, so it keeps the last place whatever else
+  // the hour brings — unless the hour already brought it.
+  return [...timely.slice(0, MAX_SUGGESTIONS - 1), BAQARAH].filter(
+    (s, i, all) => all.findIndex(o => o.id === s.id) === i,
+  );
+}
+
+/**
+ * Only what the hour itself asks for, most timely first, one per surah
+ * and uncapped — the listening page's and the reading page's lists are
+ * both made from it.
+ */
+export function timelySuggestions(now: Date, maghrib: Date | null = null): ListenSuggestion[] {
   const sameDay =
     maghrib != null &&
     maghrib.getFullYear() === now.getFullYear() &&
@@ -146,15 +160,10 @@ export function listenSuggestions(
   else if (morning || evening) out.push(MUAWWIDHAT);
 
   const seen = new Set<number>();
-  const timely = out.filter(s => {
+  return out.filter(s => {
     // One row per surah: Friday morning's As-Sajdah is not the night's.
     if (seen.has(s.surah)) return false;
     seen.add(s.surah);
     return true;
   });
-  // Al-Baqarah is for any hour, so it keeps the last place whatever else
-  // the hour brings — unless the hour already brought it.
-  return [...timely.slice(0, MAX_SUGGESTIONS - 1), BAQARAH].filter(
-    (s, i, all) => all.findIndex(o => o.id === s.id) === i,
-  );
 }

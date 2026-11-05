@@ -2579,6 +2579,9 @@
     "stockSurahs_one": "{{count}} 章",
     "stockAyahs_one": "{{count}} 节已熟记",
     "removed": "已移除 {{name}}",
-    "undo": "撤销"
+    "undo": "撤销",
+    "practiseAhead": "到期前先练习",
+    "neededHelpLast": "上次需要提示",
+    "practising": "练习背诵 {{name}}"
   }
 }

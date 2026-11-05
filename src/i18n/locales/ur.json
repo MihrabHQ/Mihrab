@@ -2579,6 +2579,9 @@
     "stockAyahs_one": "{{count}} آیت حفظ",
     "overdue_one": "{{count}} دن تاخیر",
     "removed": "{{name}} ہٹا دیا گیا",
-    "undo": "واپس لیں"
+    "undo": "واپس لیں",
+    "practiseAhead": "مقررہ دن سے پہلے مشق کریں",
+    "neededHelpLast": "پچھلی بار مدد درکار تھی",
+    "practising": "{{name}} زبانی مشق"
   }
 }

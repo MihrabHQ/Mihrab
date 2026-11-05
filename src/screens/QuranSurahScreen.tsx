@@ -60,6 +60,7 @@ export function QuranSurahScreen() {
     sessionBookmarkId,
     sessionKhatmah,
     hifzReview,
+    hifzPractice,
   } = route.params;
 
   /**
@@ -183,9 +184,10 @@ export function QuranSurahScreen() {
       id: p.id,
       from: span.from,
       to: span.endSurah === surahNumber ? span.to : ayahCount(surahNumber),
+      practice: hifzPractice === true,
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hifzReview, surahNumber]);
+  }, [hifzReview, hifzPractice, surahNumber]);
   const isMushaf = activeReaderMode(settings) === 'mushaf' && !review;
   const toggleMode = useCallback(() => {
     updateSettings({

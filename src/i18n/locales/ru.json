@@ -2678,6 +2678,9 @@
     "stockAyahs_other": "{{count}} аята наизусть",
     "overdue_few": "Просрочено на {{count}} дн.",
     "overdue_many": "Просрочено на {{count}} дн.",
-    "overdue_other": "Просрочено на {{count}} дн."
+    "overdue_other": "Просрочено на {{count}} дн.",
+    "practiseAhead": "Повторить заранее",
+    "neededHelpLast": "в прошлый раз нужна была помощь",
+    "practising": "{{name}} наизусть: тренировка"
   }
 }

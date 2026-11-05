@@ -2579,6 +2579,9 @@
     "stockSurahs_one": "{{count}}টি সূরা",
     "stockAyahs_one": "{{count}}টি আয়াত মুখস্থ",
     "removed": "{{name}} সরানো হয়েছে",
-    "undo": "ফিরিয়ে আনুন"
+    "undo": "ফিরিয়ে আনুন",
+    "practiseAhead": "নির্ধারিত দিনের আগে অনুশীলন করুন",
+    "neededHelpLast": "গতবার সাহায্য লেগেছিল",
+    "practising": "{{name}} মুখস্থ থেকে অনুশীলন"
   }
 }
