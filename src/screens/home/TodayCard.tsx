@@ -100,6 +100,7 @@ import {
   wallClockDate,
 } from '../../utils/prayerTimes';
 import { isRtlLanguage } from '../../i18n/layoutDirection';
+import { desktopLayout } from '../../responsive/breakpoints';
 import {
   isSalah,
   quickLogPhase,
@@ -497,6 +498,7 @@ const HeroToday = memo(function HeroToday({
   skyTheme = false,
   skyVariant = 'realistic',
   heroLook = 'sky',
+  band = false,
   dayClock,
   minimal = false,
   recess,
@@ -506,6 +508,14 @@ const HeroToday = memo(function HeroToday({
 }: {
   /** The band: the painted sky, or the Track (settings `heroLook`, trackModel.ts). */
   heroLook?: HeroLook;
+  /**
+   * A card with a sky band of its own above the text — the desktop's
+   * cards, wide (the dashboard) or narrow (a window the size of a
+   * phone): the page's structure, in a card. Without it the card is the
+   * short one the tablet's roomy page and the dashboard's neighbours
+   * draw, laid out for a sky that is the whole hero.
+   */
+  band?: boolean;
   /**
    * Minimal: open the day's times — for a screen reader, from the prayer's
    * line. A finger opens them by the drag up on the page (TodayCardImpl).
@@ -1064,7 +1074,7 @@ const HeroToday = memo(function HeroToday({
   // card used to draw the sun — and now the Track — over its own eyebrow,
   // laid out for a sky that was the whole hero. Only the roomy tablet
   // card, whose height is the hinge's, keeps the drawn fractions.
-  const banded = fill || expanded;
+  const banded = fill || expanded || band;
   const measured = banded && heroH > 0 && block !== null;
   const heroY = measured
     ? {
@@ -1304,7 +1314,7 @@ const HeroToday = memo(function HeroToday({
   // In the card the sky bleeds past the box by the hero's own padding, so
   // the band's top is the bleed and the top row, as the status bar and the
   // top row are on the page.
-  const sceneTop = banded ? (fill ? statusBarInset : bleedTop + SPACING.md) + topRowH + SPACING.md : 0;
+  const sceneTop = banded ? (fill ? statusBarInset : bleedTop + (expanded ? SPACING.md : 0)) + topRowH + SPACING.md : 0;
   const sceneBottom = banded && block ? heroH - block.y + bleedBottom : 0;
 
 
@@ -1385,7 +1395,7 @@ const HeroToday = memo(function HeroToday({
           height — the room a desktop has to spare — rather than a share. */}
       {fill ? (
         <View style={[styles.heroScene, minimal && styles.heroSceneAbove, { minHeight: HERO_SCENE_MIN[tier] }]} />
-      ) : expanded ? (
+      ) : expanded || band ? (
         <View style={{ height: HERO_SCENE_EXPANDED }} />
       ) : null}
       <View onLayout={banded ? onBlockLayout : undefined}>
@@ -2749,6 +2759,7 @@ function TodayCardImpl({
               skyTheme={settings.appearance === 'sky'}
               skyVariant={settings.skyVariant}
               heroLook={settings.heroLook}
+              band={desktopLayout}
             />
             </View>
           </View>
@@ -2764,6 +2775,7 @@ function TodayCardImpl({
             skyTheme={settings.appearance === 'sky'}
             skyVariant={settings.skyVariant}
             heroLook={settings.heroLook}
+            band={desktopLayout}
             today={timings}
             skyToday={skyDay}
             latitude={latitude}
