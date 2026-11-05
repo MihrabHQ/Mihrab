@@ -494,6 +494,14 @@ export type QuranPrefs = {
    */
   verseOfDayOpen: boolean;
   /**
+   * Are the Qur'an tab's "Recommended now" and "Practise before it's due"
+   * open? (additive) Closed to begin with — two rows of cards each between
+   * the top of the tab and the surah list — and kept as the reader leaves
+   * them, each on its own, as the verse of the day's is.
+   */
+  recommendedOpen: boolean;
+  practiseOpen: boolean;
+  /**
    * Which text the āyah sheet shows under the āyah — translation, tafsir
    * or tajwīd, one at a time — or none. (additive)
    *

@@ -190,6 +190,8 @@ describe('two devices reading the same khatmah in different muṣḥafs', () => 
     companionMode: 'translation',
     tafsirEditionId: '',
     verseOfDayOpen: false,
+    recommendedOpen: false,
+    practiseOpen: false,
     shuffleSurahs: false,
     tilawahShowPage: true,
     verseOfDay: false,

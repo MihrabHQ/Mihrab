@@ -100,3 +100,15 @@ describe('wiring', () => {
     expect(read('src/screens/QuranSurahScreen.tsx')).toContain('practice: hifzPractice === true,');
   });
 });
+
+describe('folding', () => {
+  it('starts closed, and keeps what the reader leaves open, each on its own', () => {
+    expect(read('src/quran/quranState.ts')).toMatch(/recommendedOpen: false,\s*practiseOpen: false,/);
+    const view = read('src/screens/quran/ReadRecommendations.tsx');
+    expect(view).toContain('() => setQuranPrefs({ recommendedOpen: !recommendedOpen })');
+    expect(view).toContain('() => setQuranPrefs({ practiseOpen: !practiseOpen })');
+    expect(view).toMatch(/\{recommendedOpen \? \(\s*<View style=\{styles\.grid\}>/);
+    expect(view).toMatch(/\{practiseOpen \? \(\s*<View style=\{styles\.grid\}>/);
+    expect(view).toContain('accessibilityState={{ expanded: open }}');
+  });
+});

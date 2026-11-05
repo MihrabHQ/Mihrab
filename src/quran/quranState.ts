@@ -174,6 +174,8 @@ export const DEFAULT_QURAN_STATE: QuranState = {
     companionMode: 'translation',
     tafsirEditionId: '',
     verseOfDayOpen: false,
+    recommendedOpen: false,
+    practiseOpen: false,
     ayahSheetPanel: 'none',
     verseOfDay: false,
     homeBookmarkId: '',
