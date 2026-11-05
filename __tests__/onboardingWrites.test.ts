@@ -307,6 +307,16 @@ describe('the personalisation shelf', () => {
     expect(row).toContain('onboarding.personalise.verseByVerseHelp');
   });
 
+  it('offers the sky band, after the layout, with its pictures', () => {
+    // Choosing Minimal switches the band to the Track, so the band comes
+    // after the layout: a band picked here is the one that stays.
+    expect(src).toContain('<HeroLookPicker');
+    expect(src).toMatch(/onChange=\{heroLook => updateSettings\(\{ heroLook \}\)\}/);
+    expect(src).toMatch(/minimal=\{minimalActive\}/);
+    expect(src.indexOf('personalise-heroLook')).toBeGreaterThan(src.indexOf('personalise-layout'));
+    expect(src).toContain("t('settings.heroLookHelp')");
+  });
+
   it('borrows the names the rest of the app already uses', () => {
     // A second translation of "Verse-by-verse view" is a second thing to
     // keep in step with Settings → Quran, and a chance for the two to

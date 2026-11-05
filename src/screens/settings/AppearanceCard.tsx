@@ -214,6 +214,7 @@ function AppearanceCardImpl() {
             testID="appearance-heroLook"
             value={settings.heroLook}
             onChange={heroLook => updateSettings({ heroLook })}
+            minimal={minimalActive}
             skyTop={previewSky ? previewSky.heroTop : String(palette.accentBg)}
             skyFoot={previewSky ? previewSky.heroMid : String(palette.bg)}
             sun={previewSky ? previewSky.bodyLight : SUN_SURFACE}

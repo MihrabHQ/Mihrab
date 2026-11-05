@@ -11,6 +11,9 @@
  * them drawn stronger. Sketches, not screenshots: lines where the words
  * are, so they read the same in every language and at every text size,
  * and only the countdown in type.
+ *
+ * Under Minimal the Track has no rail and carries on below the horizon
+ * (TodayCard `trackDepth`), so its picture does too when `minimal` is set.
  */
 import { memo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -30,6 +33,8 @@ type Colors = {
   text: string;
   muted: string;
   accent: string;
+  /** Minimal's Track: no rail, the path drawn on under the horizon. */
+  minimal?: boolean;
 };
 
 type Props = Colors & {
@@ -43,6 +48,8 @@ const PREVIEW_W = 150;
 const COUNTDOWN = '1h 15m';
 /** The sky band the bodies live in: the picture's top, down to the eyebrow. */
 const BAND_H = 56;
+/** Minimal's band: the same horizon, with room under it for the night. */
+const DEEP_BAND_H = 74;
 
 function Bar({ w, color, h = 3, style }: { w: number; color: string; h?: number; style?: object }) {
   return <View style={[{ width: w, height: h, borderRadius: h / 2, backgroundColor: color }, style]} />;
@@ -60,16 +67,18 @@ function Countdown({ color }: { color: string }) {
 }
 
 /** The eyebrow, the countdown and the rail: the same under both looks. */
-function Words({ text }: { text: string }) {
+function Words({ text, rail = true }: { text: string; rail?: boolean }) {
   return (
     <View style={styles.words}>
       <Bar w={26} color={withAlpha(text, 0.45)} style={styles.eyebrow} />
       <Countdown color={text} />
-      <View style={styles.rail}>
-        <View style={[styles.railTrack, { backgroundColor: withAlpha(text, 0.25) }]} />
-        <View style={[styles.railTrack, { width: '55%', backgroundColor: text }]} />
-        <View style={[styles.railHead, { left: '55%', backgroundColor: text }]} />
-      </View>
+      {rail ? (
+        <View style={styles.rail}>
+          <View style={[styles.railTrack, { backgroundColor: withAlpha(text, 0.25) }]} />
+          <View style={[styles.railTrack, { width: '55%', backgroundColor: text }]} />
+          <View style={[styles.railHead, { left: '55%', backgroundColor: text }]} />
+        </View>
+      ) : null}
     </View>
   );
 }
@@ -80,7 +89,7 @@ function PaintedPreview(c: Colors) {
       {/* The sun of a morning, its glow on the sky, over the words. */}
       <View style={[styles.glow, { backgroundImage: radialGlow(c.sun, 0.85) }]} />
       <View style={[styles.sun, { backgroundColor: c.sun }]} />
-      <Words text={c.text} />
+      <Words text={c.text} rail={!c.minimal} />
     </View>
   );
 }
@@ -106,16 +115,30 @@ function TrackPreview(c: Colors) {
     const pts = [0.3, 0.35, 0.4, 0.45, 0.5].map(at);
     return pts.map((p, i) => `${i ? 'L' : 'M'}${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
   })();
+  // Minimal: the same curve carried on past both ends, under the horizon,
+  // faint — the night's share of the path, as the hero draws it.
+  const under = (from: number, to: number) =>
+    [0, 1, 2, 3, 4]
+      .map(i => at(from + ((to - from) * i) / 4))
+      .map((p, i) => `${i ? 'L' : 'M'}${p.x.toFixed(1)} ${p.y.toFixed(1)}`)
+      .join(' ');
+  const bandH = c.minimal ? DEEP_BAND_H : BAND_H;
   return (
     <View style={[styles.preview, { backgroundImage: linearDown([[c.skyTop, 0], [c.skyFoot, 1]]) }]}>
-      <Svg width={PREVIEW_W} height={BAND_H} viewBox={`0 0 ${PREVIEW_W} ${BAND_H}`} style={styles.band} pointerEvents="none">
+      <Svg width={PREVIEW_W} height={bandH} viewBox={`0 0 ${PREVIEW_W} ${bandH}`} style={styles.band} pointerEvents="none">
+        {c.minimal ? (
+          <>
+            <Path d={under(-0.14, 0)} stroke={c.sun} strokeWidth={0.75} strokeOpacity={0.3} fill="none" />
+            <Path d={under(1, 1.14)} stroke={c.sun} strokeWidth={0.75} strokeOpacity={0.3} fill="none" />
+          </>
+        ) : null}
         <Path d={d} stroke={c.sun} strokeWidth={0.75} strokeOpacity={0.7} fill="none" />
         <Path d={stretch} stroke={c.text} strokeWidth={1.25} strokeOpacity={0.6} fill="none" strokeLinecap="round" />
         <Line x1={0} y1={horizon} x2={PREVIEW_W} y2={horizon} stroke={c.text} strokeWidth={0.75} strokeOpacity={0.5} />
         <Circle cx={sun.x} cy={sun.y} r={4} fill={c.sun} />
         <Circle cx={ring.x} cy={ring.y} r={2.5} stroke={c.text} strokeWidth={1} strokeOpacity={0.95} fill="none" />
       </Svg>
-      <Words text={c.text} />
+      <Words text={c.text} rail={!c.minimal} />
     </View>
   );
 }
