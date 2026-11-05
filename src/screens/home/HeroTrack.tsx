@@ -163,59 +163,61 @@ function HeroTrackImpl({
    */
   const step = TRACK_STEP_MINUTES * 60_000;
   const breaks = (p: TrackBase, prev: TrackBase) => Math.abs(p.x - prev.x) > 0.5 || p.at - prev.at > step * 1.5;
-  // Past the floor the line is the floor's, dotted: the sun is deeper
-  // than the chart goes, and a solid line there would say it waited at
-  // twenty degrees under. Runs of it are joined into one dotted line.
-  const pastFloor = (p: TrackBase) => p.altitude <= TRACK_FLOOR;
-  const floorRuns = (segs: Array<[TrackBase, TrackBase]>) => {
-    const runs: { x1: number; x2: number }[] = [];
-    for (const [a, b] of segs) {
-      const last = runs[runs.length - 1];
-      if (last && Math.abs(last.x2 - X(a)) < 0.5) last.x2 = X(b);
-      else runs.push({ x1: X(a), x2: X(b) });
-    }
-    return runs;
-  };
+  // THE NIGHT ALONG THE FLOOR. Where the track leaves the chart (deeper
+  // than the floor) and comes back — out on the right after Isha, in on
+  // the left before Fajr — the floor carries it across, dotted: the hours
+  // it spends under the north, which the body crosses by the clock
+  // (trackModel's `deep`).
+  const isGap = (p: TrackBase, prev: TrackBase) => p.at - prev.at > step * 1.5;
   const under = useMemo(() => {
-    if (!depth) return { d: '', floor: [] as { x1: number; x2: number }[] };
+    const none = { d: '', floor: [] as { x1: number; x2: number }[] };
+    if (!depth) return none;
     const pts = track.base;
     const parts: string[] = [];
-    const deep: Array<[TrackBase, TrackBase]> = [];
+    const floorLines: { x1: number; x2: number }[] = [];
     for (let i = 1; i < pts.length; i++) {
       const p = pts[i];
       const prev = pts[i - 1];
+      if (isGap(p, prev)) {
+        floorLines.push({ x1: X(prev), x2: X(p) });
+        continue;
+      }
       if ((!p.under && !prev.under) || breaks(p, prev)) continue;
-      if (pastFloor(p) && pastFloor(prev)) deep.push([prev, p]);
-      else parts.push(`M${X(prev).toFixed(1)} ${Y(prev).toFixed(1)} L${X(p).toFixed(1)} ${Y(p).toFixed(1)}`);
+      parts.push(`M${X(prev).toFixed(1)} ${Y(prev).toFixed(1)} L${X(p).toFixed(1)} ${Y(p).toFixed(1)}`);
     }
-    return { d: parts.join(' '), floor: floorRuns(deep) };
+    return { d: parts.join(' '), floor: floorLines };
     // X, Y and breaks are closures over the layout numbers, which the deps carry.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [depth, track.base, width, roomTop, room, horizon, deepRoom]);
   const drawn = useMemo(() => {
     const stretch: string[] = [];
-    const stretchDeep: Array<[TrackBase, TrackBase]> = [];
     const alongLine: { x1: number; x2: number }[] = [];
+    const stretchFloor: { x1: number; x2: number }[] = [];
     const pts = track.points;
     for (let i = 1; i < pts.length; i++) {
       const p = pts[i];
       const prev = pts[i - 1];
+      // Across the floor, the part of the night still to come: from where
+      // the body is (or where it leaves the chart) to where it comes back.
+      if (depth && isGap(p, prev) && p.remaining) {
+        const x1 = prev.remaining ? X(prev) : track.deep != null ? track.deep * width : null;
+        if (x1 != null) stretchFloor.push({ x1, x2: X(p) });
+        continue;
+      }
       if (!p.remaining || !prev.remaining) continue;
       if (Math.abs(p.x - prev.x) > 0.5) continue;
       if (depth) {
         // To the floor and back: the stretch follows the track either side of the line.
-        if (breaks(p, prev)) continue;
-        if (pastFloor(p) && pastFloor(prev)) stretchDeep.push([prev, p]);
-        else stretch.push(`M${X(prev).toFixed(1)} ${Y(prev).toFixed(1)} L${X(p).toFixed(1)} ${Y(p).toFixed(1)}`);
+        if (!breaks(p, prev)) stretch.push(`M${X(prev).toFixed(1)} ${Y(prev).toFixed(1)} L${X(p).toFixed(1)} ${Y(p).toFixed(1)}`);
       } else if (!p.under && !prev.under) {
         stretch.push(`M${X(prev).toFixed(1)} ${Y(prev).toFixed(1)} L${X(p).toFixed(1)} ${Y(p).toFixed(1)}`);
       } else if (p.under && prev.under) {
         alongLine.push({ x1: X(prev), x2: X(p) });
       }
     }
-    return { above, stretch: stretch.join(' '), alongLine, stretchFloor: floorRuns(stretchDeep) };
+    return { above, stretch: stretch.join(' '), alongLine, stretchFloor };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [above, track.points, width, roomTop, room, horizon, depth, deepRoom]);
+  }, [above, track.points, track.deep, width, roomTop, room, horizon, depth, deepRoom]);
 
   const ring = track.ring;
   const at = track.body;
@@ -282,13 +284,18 @@ function HeroTrackImpl({
       ))}
       {under.d ? <Path d={under.d} stroke={ink} strokeWidth={TRACK_W} strokeOpacity={0.3} strokeLinecap="round" fill="none" /> : null}
       {under.floor.map((l, i) => (
-        <Line key={`f${i}`} x1={l.x1} y1={floor} x2={l.x2} y2={floor} stroke={ink} strokeWidth={1.5} strokeOpacity={0.35} strokeDasharray="1 3" />
+        <Line key={`f${i}`} x1={l.x1} y1={floor} x2={l.x2} y2={floor} stroke={ink} strokeWidth={1.25} strokeOpacity={0.35} strokeDasharray="1 3" />
       ))}
       {running
         ? null
         : drawn.stretchFloor.map((l, i) => (
-            <Line key={`sf${i}`} x1={l.x1} y1={floor} x2={l.x2} y2={floor} stroke={ink} strokeWidth={1.5} strokeOpacity={0.7} strokeDasharray="1 3" />
+            <Line key={`sf${i}`} x1={l.x1} y1={floor} x2={l.x2} y2={floor} stroke={ink} strokeWidth={1.25} strokeOpacity={0.75} strokeDasharray="1 3" />
           ))}
+      {depth && track.start ? (
+        // The interval's prayer — Isha through the night — where it was: the
+        // other end of what the countdown measures, quieter than the ring.
+        <Circle cx={X(track.start)} cy={Y(track.start)} r={RING_R - 1} stroke={ink} strokeWidth={1} strokeOpacity={0.55} fill="none" />
+      ) : null}
       {running
         ? null
         : drawn.alongLine.map((l, i) => (
@@ -371,7 +378,7 @@ function HeroTrackImpl({
             <Path d={drawn.stretch} stroke={ink} strokeWidth={STRETCH_W} strokeOpacity={0.6} strokeLinecap="round" fill="none" />
           ) : null}
           {drawn.stretchFloor.map((l, i) => (
-            <Line key={`sf${i}`} x1={l.x1} y1={floor} x2={l.x2} y2={floor} stroke={ink} strokeWidth={1.5} strokeOpacity={0.7} strokeDasharray="1 3" />
+            <Line key={`sf${i}`} x1={l.x1} y1={floor} x2={l.x2} y2={floor} stroke={ink} strokeWidth={1.25} strokeOpacity={0.75} strokeDasharray="1 3" />
           ))}
           {at && at.under ? (
             <Circle cx={X(at)} cy={Y(at)} r={UNDER_R} stroke={ink} strokeWidth={TRACK_W} strokeOpacity={0.8} fill="none" />

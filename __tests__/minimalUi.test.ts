@@ -393,13 +393,12 @@ describe('under the Track', () => {
 });
 
 describe('the Track takes the room', () => {
-  it('brings the horizon to the middle and draws the depth under it, by time, following the sun to the next prayer', () => {
+  it('brings the horizon to the middle and draws the depth under it, following the sun to the next prayer', () => {
     expect(card).toMatch(/const trackDepth = railHidden && MINIMAL_TRACK_DEPTH;/);
     expect(card).toMatch(/minimal && \(railHidden \? styles\.heroSceneAboveTrack : styles\.heroSceneAbove\)/);
     expect(card).toMatch(/railHidden \? styles\.heroSceneBelowTrack : styles\.heroSceneBelow/);
-    // By time: a third of a day behind now, the rest ahead, in five-minute steps.
-    expect(card).toMatch(/from: new Date\(trackAnchor - TRACK_TIME_BEHIND\)/);
-    expect(card).toMatch(/axis: 'time' as const/);
+    // The 24 hours that end at the next prayer: now and the ring on one loop.
+    expect(card).toMatch(/from: new Date\(Math\.min\(at\.getTime\(\), targetAtMs - 24 \* 3_600_000\)\)/);
     expect(card).toMatch(/trackDepth=\{trackDepth\}/);
   });
 });

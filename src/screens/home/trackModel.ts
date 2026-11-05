@@ -113,6 +113,8 @@ export type TrackFrame = {
    * it on the floor there.
    */
   deep: number | null;
+  /** Where the body was at the interval's prayer (`prevAt`), or null. */
+  start: TrackPoint | null;
 };
 
 export type TrackInput = {
@@ -125,14 +127,8 @@ export type TrackInput = {
   to: Date;
   /** The next prayer's time (the ring), or null. */
   nextAt: Date | null;
-  /**
-   * What runs across the band. 'azimuth' (the default): the sky as it is
-   * seen, east to west. 'time': the window's hours, left to right — the
-   * track as a graph of the body's height through the day, with every
-   * sample kept (those under the floor stand on it), so the time to the
-   * next prayer is its true share of the width (Minimal's chart).
-   */
-  axis?: 'azimuth' | 'time';
+  /** The prayer the interval runs from — Isha through the night — marked where the body was then (`start`). */
+  prevAt?: Date | null;
 };
 
 const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
@@ -202,15 +198,8 @@ const sampledCache = new Map<string, Sampled>();
 /** Coordinates to ~100 m: a reader's GPS jitter is not a new track. */
 const placeKey = (v: number) => v.toFixed(3);
 
-function sampleTrack(
-  kind: TrackKind,
-  t0: number,
-  t1: number,
-  latitude: number,
-  longitude: number,
-  byTime = false,
-): Sampled {
-  const key = `${kind}|${t0}|${t1}|${placeKey(latitude)}|${placeKey(longitude)}|${byTime ? 't' : 'a'}`;
+function sampleTrack(kind: TrackKind, t0: number, t1: number, latitude: number, longitude: number): Sampled {
+  const key = `${kind}|${t0}|${t1}|${placeKey(latitude)}|${placeKey(longitude)}`;
   const kept = sampledCache.get(key);
   if (kept) {
     // Most recent last, so the oldest is the first the map iterates.
@@ -231,7 +220,7 @@ function sampleTrack(
   // until the moon is off the chart, or half a day has gone.
   let from = t0;
   let to = t1;
-  if (kind === 'moon' && !byTime) {
+  if (kind === 'moon') {
     const on = (at: number) => positionOf(kind, new Date(at), latitude, longitude).altitude >= TRACK_FLOOR;
     let best: { a: number; b: number; up: number } | null = null;
     let run: { a: number; b: number; up: number } | null = null;
@@ -266,9 +255,7 @@ function sampleTrack(
   const span = trackSpan(raw);
   const circumpolar = span == null && raw.every(p => p.altitude >= TRACK_FLOOR);
   let across: (p: { at: number; azimuth: number }) => number;
-  if (byTime) {
-    across = p => (to > from ? clamp01((p.at - from) / (to - from)) : 0.5);
-  } else if (byHour) {
+  if (byHour) {
     // Entering and leaving the chart, by the clock.
     const on = raw.filter(p => p.altitude >= TRACK_FLOOR);
     const a = on.length ? on[0].at : t0;
@@ -297,7 +284,7 @@ function sampleTrack(
     across = p => clamp01((p.azimuth - a) / (b - a));
   }
   const base: TrackBase[] = raw
-    .filter(p => byTime || p.altitude >= TRACK_FLOOR)
+    .filter(p => p.altitude >= TRACK_FLOOR)
     .map(p => ({
       x: across(p),
       y: p.altitude >= 0 ? 1 - clamp01(p.altitude / top) : 1,
@@ -305,17 +292,7 @@ function sampleTrack(
       under: p.altitude < 0,
       at: p.at,
     }));
-  const sampled: Sampled = {
-    raw,
-    peak,
-    top,
-    byHour: byHour && !byTime,
-    circumpolar: circumpolar && !byTime,
-    across,
-    base,
-    from,
-    to,
-  };
+  const sampled: Sampled = { raw, peak, top, byHour, circumpolar, across, base, from, to };
   sampledCache.set(key, sampled);
   while (sampledCache.size > SAMPLED_KEEP) {
     const oldest = sampledCache.keys().next().value;
@@ -336,12 +313,9 @@ export function clearTrackCache(): void {
  */
 export function trackFrame(input: TrackInput): TrackFrame {
   const { kind, now, latitude, longitude, from, to, nextAt } = input;
-  const byTime = input.axis === 'time';
-  // By time every sample is on the chart: one under the floor stands on it.
-  const onChart = (altitude: number) => byTime || altitude >= TRACK_FLOOR;
   const t0 = from.getTime();
   const t1 = Math.max(t0, to.getTime());
-  const { peak, top, byHour, circumpolar, across, base, from: passFrom, to: passTo } = sampleTrack(kind, t0, t1, latitude, longitude, byTime);
+  const { peak, top, byHour, circumpolar, across, base, from: passFrom, to: passTo } = sampleTrack(kind, t0, t1, latitude, longitude);
   // On the pass drawn, or not at all: a moon on another pass (yesterday's,
   // setting at Maghrib) has no place on this one.
   const onPass = (at: number) => at >= passFrom && at <= passTo;
@@ -359,18 +333,46 @@ export function trackFrame(input: TrackInput): TrackFrame {
   const here = positionOf(kind, now, latitude, longitude);
   const hereAz = chartAzimuth(here.azimuth, latitude);
   const body =
-    onChart(here.altitude) && onPass(nowMs)
+    here.altitude >= TRACK_FLOOR && onPass(nowMs)
       ? { ...point({ at: nowMs, altitude: here.altitude, azimuth: hereAz }), azimuth: here.azimuth }
       : null;
   let ring: TrackPoint | null = null;
   if (nextAt) {
     const n = positionOf(kind, nextAt, latitude, longitude);
-    if (onChart(n.altitude) && onPass(nextAt.getTime())) {
+    if (n.altitude >= TRACK_FLOOR && onPass(nextAt.getTime())) {
       ring = point({ at: nextAt.getTime(), altitude: n.altitude, azimuth: chartAzimuth(n.azimuth, latitude) });
     }
   }
-  const deep = body == null && onPass(nowMs) ? across({ at: nowMs, azimuth: hereAz }) : null;
-  return { kind, base, points, body, ring, peak, top, circumpolar, byHour, deep };
+  let start: TrackPoint | null = null;
+  if (input.prevAt) {
+    const s0 = positionOf(kind, input.prevAt, latitude, longitude);
+    if (s0.altitude >= TRACK_FLOOR && onPass(input.prevAt.getTime())) {
+      start = point({ at: input.prevAt.getTime(), altitude: s0.altitude, azimuth: chartAzimuth(s0.azimuth, latitude) });
+    }
+  }
+  // PAST THE FLOOR, BY THE CLOCK. Where the body is deeper than the chart
+  // goes (the night's deep, under the north) it is placed along the floor
+  // between where it left the chart and where it comes back, at its share
+  // of the time between the two — so from Isha on the right to Fajr on
+  // the left it moves as the hours do, not by its azimuth, which would
+  // pin it to an edge and then jump.
+  let deep: number | null = null;
+  if (body == null && onPass(nowMs)) {
+    let before: TrackBase | null = null;
+    let after: TrackBase | null = null;
+    for (const p of base) {
+      if (p.at <= nowMs) before = p;
+      else {
+        after = p;
+        break;
+      }
+    }
+    deep =
+      before && after && after.at > before.at
+        ? before.x + (after.x - before.x) * ((nowMs - before.at) / (after.at - before.at))
+        : across({ at: nowMs, azimuth: hereAz });
+  }
+  return { kind, base, points, body, ring, peak, top, circumpolar, byHour, deep, start };
 }
 
 /**
