@@ -7,6 +7,7 @@ import {
   landscapeTurnButtons,
   TURN_BUTTON_W,
 } from '../src/quran/landscapeTurnButtons';
+import { classifySideCutout } from '../src/native/DisplayCutout';
 
 describe('landscapeTurnButtons', () => {
   it('centres each button between the edge of the display and the text', () => {
@@ -46,5 +47,51 @@ describe('landscapeTurnButtons', () => {
     expect(p.left).toBe(126 / 2 - TURN_BUTTON_W / 2);
     expect(p.right).not.toBeNull();
     expect(48 + p.right! + TURN_BUTTON_W).toBeLessThanOrEqual(48 + 126);
+  });
+
+  it('keeps clear of a side camera that is not padded off', () => {
+    // Fullscreen Android: no padding, but a 30dp hole at the left edge.
+    const p = landscapeTurnButtons({
+      padLeft: 0,
+      padRight: 0,
+      pageWidth: 900,
+      textWidth: 600,
+      cutoutLeft: 70,
+    });
+    expect(p.left!).toBeGreaterThanOrEqual(70);
+    expect(p.right).toBe(75 - TURN_BUTTON_W / 2);
+  });
+});
+
+describe('classifySideCutout', () => {
+  it('finds a punch-hole camera at the middle of a side edge', () => {
+    // A Pixel on its side: the hole from the top-middle, now on the left.
+    const cut = classifySideCutout(
+      { rects: [{ x: 0, y: 190, width: 36, height: 36 }] },
+      915,
+      412,
+    );
+    expect(cut).toEqual({ side: 'left', centreY: 208, depth: 36 });
+  });
+
+  it('finds it on the right edge too', () => {
+    const cut = classifySideCutout(
+      { rects: [{ x: 880, y: 190, width: 35, height: 36 }] },
+      915,
+      412,
+    );
+    expect(cut.side).toBe('right');
+    expect(cut.depth).toBe(35);
+  });
+
+  it('ignores a camera in a corner and a phone without one', () => {
+    expect(
+      classifySideCutout({ rects: [{ x: 0, y: 10, width: 36, height: 36 }] }, 915, 412).side,
+    ).toBe('none');
+    expect(classifySideCutout({ rects: [] }, 915, 412).side).toBe('none');
+    // Upright, a top-centre camera touches no side edge.
+    expect(
+      classifySideCutout({ rects: [{ x: 188, y: 0, width: 36, height: 36 }] }, 412, 915).side,
+    ).toBe('none');
   });
 });

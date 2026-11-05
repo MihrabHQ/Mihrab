@@ -147,6 +147,35 @@ export function classifyTopCutout(
 }
 
 /**
+ * The camera of a phone on its side: a punch-hole that sat in the middle of
+ * the top edge upright is, turned, at the middle of the left or right edge.
+ *
+ * Pure, for the tests. A rect counts when it touches the left or right edge
+ * of the window and its centre is in the middle third of the height — a
+ * waterfall edge or a corner camera is not one. `centreY` is where its
+ * middle is, from the top of the window; `depth` how far it reaches in
+ * from its edge.
+ */
+export function classifySideCutout(
+  info: Pick<DisplayCutoutInfo, 'rects'>,
+  windowWidth: number,
+  windowHeight: number,
+): { side: 'none' | 'left' | 'right'; centreY: number; depth: number } {
+  const none = { side: 'none' as const, centreY: 0, depth: 0 };
+  if (!(windowWidth > 0) || !(windowHeight > 0)) return none;
+  for (const r of info.rects) {
+    if (!(r.width > 0) || !(r.height > 0)) continue;
+    const cy = r.y + r.height / 2;
+    if (cy < windowHeight / 3 || cy > (windowHeight * 2) / 3) continue;
+    if (r.x <= 1) return { side: 'left', centreY: cy, depth: r.x + r.width };
+    if (r.x + r.width >= windowWidth - 1) {
+      return { side: 'right', centreY: cy, depth: windowWidth - r.x };
+    }
+  }
+  return none;
+}
+
+/**
  * The cutout, re-read when the window changes shape (a rotation moves the
  * camera to another edge). `NO_CUTOUT` until it has been read and on iOS,
  * where the island is always centred and the insets already say so.
@@ -156,11 +185,19 @@ export function useDisplayCutout(): DisplayCutoutInfo {
   const [info, setInfo] = useState<DisplayCutoutInfo>(NO_CUTOUT);
   useEffect(() => {
     let live = true;
-    void getDisplayCutout().then(next => {
-      if (live) setInfo(next);
-    });
+    const read = () =>
+      void getDisplayCutout().then(next => {
+        if (live) setInfo(next);
+      });
+    read();
+    // ...and again once the turn has finished. The window's new size
+    // reaches JS before the decor view's insets are re-dispatched, so the
+    // first read after a rotation can still describe the old one — the
+    // camera at the top of a window that now has it on its side.
+    const later = [setTimeout(read, 300), setTimeout(read, 1200)];
     return () => {
       live = false;
+      later.forEach(clearTimeout);
     };
   }, [width, height]);
   return info;

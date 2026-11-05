@@ -34,6 +34,7 @@
  * the screen can re-render and the page does not notice.
  */
 import React, {
+  type ComponentRef,
   useCallback,
   useEffect,
   useMemo,
@@ -119,7 +120,11 @@ import {
   TURN_BUTTON_H,
   TURN_BUTTON_W,
 } from './landscapeTurnButtons';
-import { classifyTopCutout, useDisplayCutout } from '../native/DisplayCutout';
+import {
+  classifySideCutout,
+  classifyTopCutout,
+  useDisplayCutout,
+} from '../native/DisplayCutout';
 import { useVerticalBar } from '../native/VerticalBar';
 
 /** Index per page: the FlatList index IS the page, less one. */
@@ -554,6 +559,10 @@ export const MushafPhoneReader = React.memo(function MushafPhoneReader(
   // Measured list viewport (excludes the fullscreen top inset padding).
   // Raw: the geometry it feeds is what settles, not this on its own.
   const [listH, setListH] = useState(0);
+  // Where the pager starts, from the top of the window — the buttons in
+  // the margins line up with a side camera measured in window terms.
+  const listWrapRef = useRef<ComponentRef<typeof View>>(null);
+  const [listTop, setListTop] = useState(0);
 
   /**
    * Display cutout / rounded corners (v2.8.2). `insets.left` and
@@ -890,6 +899,7 @@ export const MushafPhoneReader = React.memo(function MushafPhoneReader(
   // The ‹ › in the margins of a phone on its side, in fullscreen — see
   // `landscapeTurnButtons`. Nothing in portrait (the page fills the width)
   // or out of fullscreen (the rail is there).
+  const sideCamera = classifySideCutout(cutout, width, height);
   const turnButtons =
     isFullscreen && width > height && geometry
       ? landscapeTurnButtons({
@@ -897,7 +907,15 @@ export const MushafPhoneReader = React.memo(function MushafPhoneReader(
           padRight,
           pageWidth,
           textWidth: geometry.textWidth,
+          cutoutLeft: sideCamera.side === 'left' ? sideCamera.depth : 0,
+          cutoutRight: sideCamera.side === 'right' ? sideCamera.depth : 0,
         })
+      : null;
+  // A punch-hole camera on the edge: both buttons on its line, so lens and
+  // buttons read as one row. Otherwise the pager's middle (the stylesheet).
+  const turnTop =
+    sideCamera.side !== 'none'
+      ? { top: sideCamera.centreY - listTop - TURN_BUTTON_H / 2, marginTop: 0 }
       : null;
   // The page's accent — its frame, the beginning of a surah, the marks —
   // is the page bar's: the theme rendered for the PAGE's mode, not the
@@ -1026,7 +1044,11 @@ export const MushafPhoneReader = React.memo(function MushafPhoneReader(
           // controls, rather than look broken.
           if (locked) showLockHint();
         }}
-        onLayout={e => setListH(e.nativeEvent.layout.height)}
+        ref={listWrapRef}
+        onLayout={e => {
+          setListH(e.nativeEvent.layout.height);
+          listWrapRef.current?.measureInWindow((_x: number, y: number) => setListTop(y));
+        }}
         {...(swipe?.panHandlers ?? {})}>
         <Animated.View style={[styles.lean, swipe?.leanStyle]}>
         <FlatList
@@ -1108,6 +1130,7 @@ export const MushafPhoneReader = React.memo(function MushafPhoneReader(
                 onPress={() => turnPage(1)}
                 style={({ pressed }) => [
                   styles.turnButton,
+                  turnTop,
                   {
                     left: turnButtons.left, // rtl-safe: the mushaf's page order is physical
                     backgroundColor: railChrome.control,
@@ -1125,6 +1148,7 @@ export const MushafPhoneReader = React.memo(function MushafPhoneReader(
                 onPress={() => turnPage(-1)}
                 style={({ pressed }) => [
                   styles.turnButton,
+                  turnTop,
                   {
                     right: turnButtons.right, // rtl-safe: the mushaf's page order is physical
                     backgroundColor: railChrome.control,

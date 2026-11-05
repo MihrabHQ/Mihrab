@@ -17,6 +17,12 @@
  * - a margin too narrow for the button: then there is no button on that
  *   side, rather than one drawn over the words.
  *
+ * A phone with a punch-hole camera in the middle of its top edge has it,
+ * on its side, in the middle of the left or right edge: there the buttons
+ * are put on the camera's line rather than the pager's middle (the two
+ * differ by the gesture bar under the pager), so the lens and the buttons
+ * read as one row — see the reader's `turnTop`.
+ *
  * Pure, and measured in the pager's own box (the window less the side
  * padding), which is where the buttons are drawn.
  */
@@ -39,6 +45,8 @@ export function landscapeTurnButtons({
   padRight,
   pageWidth,
   textWidth,
+  cutoutLeft = 0,
+  cutoutRight = 0,
 }: {
   /** The reader's left padding (cutout, vertical bar), physical. */
   padLeft: number;
@@ -48,19 +56,26 @@ export function landscapeTurnButtons({
   pageWidth: number;
   /** The text column's width; it is centred in the pager. */
   textWidth: number;
+  /** How far a camera at the left edge reaches in, from the display's edge. */
+  cutoutLeft?: number;
+  /** The same at the right edge. */
+  cutoutRight?: number;
 }): TurnButtonPlacement {
   const margin = Math.max(0, (pageWidth - textWidth) / 2);
-  const side = (pad: number): number | null => {
+  const side = (pad: number, cutout: number): number | null => {
     // The text's edge, measured from the display's edge.
     const textEdge = pad + margin;
     const half = TURN_BUTTON_W / 2;
     // Clear of the cutout where there is one; clear of the text always.
-    const lo = pad > 0 ? pad + half + AIR : half;
+    // A camera the buttons share a line with (see `classifySideCutout`)
+    // may not be padded off in fullscreen: its own depth counts too.
+    const clear = Math.max(pad, cutout);
+    const lo = clear > 0 ? clear + half + AIR : half;
     const hi = textEdge - half - AIR;
     if (hi < lo) return null;
     const centre = Math.min(hi, Math.max(lo, textEdge / 2));
     // Back into the pager's box, as the offset of the button's outer side.
     return centre - half - pad;
   };
-  return { left: side(padLeft), right: side(padRight) };
+  return { left: side(padLeft, cutoutLeft), right: side(padRight, cutoutRight) };
 }
