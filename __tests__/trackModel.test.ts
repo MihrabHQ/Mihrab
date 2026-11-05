@@ -296,3 +296,32 @@ describe('trackFrame — the sun past the floor', () => {
     expect(day.deep).toBeNull();
   });
 });
+
+describe('trackFrame — by time (Minimal)', () => {
+  // Stockholm, 5 November, 18:28 CET; Fajr 04:57 tomorrow. Now a third of
+  // the way in, sixteen hours ahead.
+  const now = new Date('2026-11-05T17:28:00Z');
+  const fajr = new Date('2026-11-06T03:57:00Z');
+  const from = new Date(now.getTime() - 8 * 3_600_000);
+  const to = new Date(now.getTime() + 16 * 3_600_000);
+  const f = trackFrame({ kind: 'sun', now, nextAt: fajr, ...STOCKHOLM, from, to, axis: 'time' });
+
+  it('puts the time to the next prayer at its share of the width', () => {
+    expect(f.body!.x).toBeCloseTo(1 / 3, 3);
+    // 10h29m of 24h.
+    expect(f.ring!.x - f.body!.x).toBeCloseTo((fajr.getTime() - now.getTime()) / (24 * 3_600_000), 3);
+  });
+
+  it('keeps every sample, the deep night under the floor too, and the body on it', () => {
+    expect(f.base.length).toBe(24 * 12 + 1);
+    expect(f.base.some(p => p.altitude < TRACK_FLOOR)).toBe(true);
+    expect(f.body).not.toBeNull();
+    expect(f.deep).toBeNull();
+    expect(f.circumpolar).toBe(false);
+    expect(f.byHour).toBe(false);
+  });
+
+  it('runs left to right in time: x rises with the clock', () => {
+    for (let i = 1; i < f.base.length; i++) expect(f.base[i].x).toBeGreaterThan(f.base[i - 1].x);
+  });
+});

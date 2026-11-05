@@ -125,6 +125,14 @@ export type TrackInput = {
   to: Date;
   /** The next prayer's time (the ring), or null. */
   nextAt: Date | null;
+  /**
+   * What runs across the band. 'azimuth' (the default): the sky as it is
+   * seen, east to west. 'time': the window's hours, left to right — the
+   * track as a graph of the body's height through the day, with every
+   * sample kept (those under the floor stand on it), so the time to the
+   * next prayer is its true share of the width (Minimal's chart).
+   */
+  axis?: 'azimuth' | 'time';
 };
 
 const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
@@ -194,8 +202,15 @@ const sampledCache = new Map<string, Sampled>();
 /** Coordinates to ~100 m: a reader's GPS jitter is not a new track. */
 const placeKey = (v: number) => v.toFixed(3);
 
-function sampleTrack(kind: TrackKind, t0: number, t1: number, latitude: number, longitude: number): Sampled {
-  const key = `${kind}|${t0}|${t1}|${placeKey(latitude)}|${placeKey(longitude)}`;
+function sampleTrack(
+  kind: TrackKind,
+  t0: number,
+  t1: number,
+  latitude: number,
+  longitude: number,
+  byTime = false,
+): Sampled {
+  const key = `${kind}|${t0}|${t1}|${placeKey(latitude)}|${placeKey(longitude)}|${byTime ? 't' : 'a'}`;
   const kept = sampledCache.get(key);
   if (kept) {
     // Most recent last, so the oldest is the first the map iterates.
@@ -216,7 +231,7 @@ function sampleTrack(kind: TrackKind, t0: number, t1: number, latitude: number, 
   // until the moon is off the chart, or half a day has gone.
   let from = t0;
   let to = t1;
-  if (kind === 'moon') {
+  if (kind === 'moon' && !byTime) {
     const on = (at: number) => positionOf(kind, new Date(at), latitude, longitude).altitude >= TRACK_FLOOR;
     let best: { a: number; b: number; up: number } | null = null;
     let run: { a: number; b: number; up: number } | null = null;
@@ -251,7 +266,9 @@ function sampleTrack(kind: TrackKind, t0: number, t1: number, latitude: number, 
   const span = trackSpan(raw);
   const circumpolar = span == null && raw.every(p => p.altitude >= TRACK_FLOOR);
   let across: (p: { at: number; azimuth: number }) => number;
-  if (byHour) {
+  if (byTime) {
+    across = p => (to > from ? clamp01((p.at - from) / (to - from)) : 0.5);
+  } else if (byHour) {
     // Entering and leaving the chart, by the clock.
     const on = raw.filter(p => p.altitude >= TRACK_FLOOR);
     const a = on.length ? on[0].at : t0;
@@ -280,7 +297,7 @@ function sampleTrack(kind: TrackKind, t0: number, t1: number, latitude: number, 
     across = p => clamp01((p.azimuth - a) / (b - a));
   }
   const base: TrackBase[] = raw
-    .filter(p => p.altitude >= TRACK_FLOOR)
+    .filter(p => byTime || p.altitude >= TRACK_FLOOR)
     .map(p => ({
       x: across(p),
       y: p.altitude >= 0 ? 1 - clamp01(p.altitude / top) : 1,
@@ -288,7 +305,17 @@ function sampleTrack(kind: TrackKind, t0: number, t1: number, latitude: number, 
       under: p.altitude < 0,
       at: p.at,
     }));
-  const sampled: Sampled = { raw, peak, top, byHour, circumpolar, across, base, from, to };
+  const sampled: Sampled = {
+    raw,
+    peak,
+    top,
+    byHour: byHour && !byTime,
+    circumpolar: circumpolar && !byTime,
+    across,
+    base,
+    from,
+    to,
+  };
   sampledCache.set(key, sampled);
   while (sampledCache.size > SAMPLED_KEEP) {
     const oldest = sampledCache.keys().next().value;
@@ -309,9 +336,12 @@ export function clearTrackCache(): void {
  */
 export function trackFrame(input: TrackInput): TrackFrame {
   const { kind, now, latitude, longitude, from, to, nextAt } = input;
+  const byTime = input.axis === 'time';
+  // By time every sample is on the chart: one under the floor stands on it.
+  const onChart = (altitude: number) => byTime || altitude >= TRACK_FLOOR;
   const t0 = from.getTime();
   const t1 = Math.max(t0, to.getTime());
-  const { peak, top, byHour, circumpolar, across, base, from: passFrom, to: passTo } = sampleTrack(kind, t0, t1, latitude, longitude);
+  const { peak, top, byHour, circumpolar, across, base, from: passFrom, to: passTo } = sampleTrack(kind, t0, t1, latitude, longitude, byTime);
   // On the pass drawn, or not at all: a moon on another pass (yesterday's,
   // setting at Maghrib) has no place on this one.
   const onPass = (at: number) => at >= passFrom && at <= passTo;
@@ -329,13 +359,13 @@ export function trackFrame(input: TrackInput): TrackFrame {
   const here = positionOf(kind, now, latitude, longitude);
   const hereAz = chartAzimuth(here.azimuth, latitude);
   const body =
-    here.altitude >= TRACK_FLOOR && onPass(nowMs)
+    onChart(here.altitude) && onPass(nowMs)
       ? { ...point({ at: nowMs, altitude: here.altitude, azimuth: hereAz }), azimuth: here.azimuth }
       : null;
   let ring: TrackPoint | null = null;
   if (nextAt) {
     const n = positionOf(kind, nextAt, latitude, longitude);
-    if (n.altitude >= TRACK_FLOOR && onPass(nextAt.getTime())) {
+    if (onChart(n.altitude) && onPass(nextAt.getTime())) {
       ring = point({ at: nextAt.getTime(), altitude: n.altitude, azimuth: chartAzimuth(n.azimuth, latitude) });
     }
   }

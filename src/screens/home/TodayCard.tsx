@@ -170,6 +170,8 @@ import { VerticalBarActionsBand } from '../../navigation/VerticalTabBar';
 const CHEVRON_SIZE = 20;
 /** Minimal under the Track: the chart goes on under the line to its floor (see `trackDepth`). */
 const MINIMAL_TRACK_DEPTH = true;
+/** Minimal's chart by time: how much of it is behind now — a third of a day. */
+const TRACK_TIME_BEHIND = 8 * 3_600_000;
 /** Minimal: the seconds appear this close to the prayer — the last five minutes. */
 const MINIMAL_SECONDS_UNDER = 5 * 60;
 /** The unit letters' size in the figures' em, and the seconds' unit in theirs. */
@@ -903,6 +905,7 @@ const HeroToday = memo(function HeroToday({
    * keyframe for a launch run's ride along it.
    */
   const targetAtMs = target.at.getTime();
+  const trackAnchor = Math.floor(now.getTime() / 300_000) * 300_000;
   const trackAt = useCallback(
     (at: Date, passage: SkyFrame['passage']) => {
       if (heroLook !== 'track' || typeof latitude !== 'number' || typeof longitude !== 'number') return null;
@@ -917,24 +920,25 @@ const HeroToday = memo(function HeroToday({
         if (sunrise.getTime() < at.getTime()) sunrise = addDays(sunrise, 1);
         night = { maghrib, sunrise };
       }
-      // Under the line the sun is followed through the night, so the window
-      // is the 24 hours that END at the next prayer, not the calendar's
-      // day: it holds now and the next prayer at once — at 18:00 the
-      // evening behind and tomorrow's Fajr ahead — and stays the same for
-      // the whole of a prayer's interval (one sampling per interval).
-      // Across is by azimuth, so whichever 24 hours they are, the loop is
-      // the day's one loop; where it closes, a day apart, the two ends are
-      // a fraction of a degree out, and that seam is under the ring.
+      // Under the line the chart runs by TIME: the sun's height through the
+      // hours, now a third of the way in, the next sixteen ahead — so the
+      // ten hours from Isha to Fajr are ten hours of width, not the jump
+      // from one edge to the other that the sky's directions made of them
+      // (the sun spends them past the floor, under the north). The window
+      // is the live clock's, in five-minute steps (one sampling per step,
+      // trackModel's cache), and stretches to hold a next prayer further
+      // off; a launch run rides the same window.
       const window = trackDepth
         ? {
             kind: 'sun' as const,
-            from: new Date(Math.min(at.getTime(), targetAtMs - 24 * 3_600_000)),
-            to: new Date(Math.max(at.getTime(), targetAtMs)),
+            from: new Date(trackAnchor - TRACK_TIME_BEHIND),
+            to: new Date(Math.max(trackAnchor - TRACK_TIME_BEHIND + 24 * 3_600_000, targetAtMs + 1_800_000)),
+            axis: 'time' as const,
           }
         : trackWindow(passage, at, night);
       return trackFrame({ ...window, now: at, latitude, longitude, nextAt: new Date(targetAtMs) });
     },
-    [heroLook, latitude, longitude, skyToday, today, targetAtMs, trackDepth],
+    [heroLook, latitude, longitude, skyToday, today, targetAtMs, trackDepth, trackAnchor],
   );
   const skyRunRef = useRef<SkyRun | null>(null);
   if (launchRun && warp && !skyRunRef.current) {

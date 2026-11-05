@@ -163,22 +163,38 @@ function HeroTrackImpl({
    */
   const step = TRACK_STEP_MINUTES * 60_000;
   const breaks = (p: TrackBase, prev: TrackBase) => Math.abs(p.x - prev.x) > 0.5 || p.at - prev.at > step * 1.5;
+  // Past the floor the line is the floor's, dotted: the sun is deeper
+  // than the chart goes, and a solid line there would say it waited at
+  // twenty degrees under. Runs of it are joined into one dotted line.
+  const pastFloor = (p: TrackBase) => p.altitude <= TRACK_FLOOR;
+  const floorRuns = (segs: Array<[TrackBase, TrackBase]>) => {
+    const runs: { x1: number; x2: number }[] = [];
+    for (const [a, b] of segs) {
+      const last = runs[runs.length - 1];
+      if (last && Math.abs(last.x2 - X(a)) < 0.5) last.x2 = X(b);
+      else runs.push({ x1: X(a), x2: X(b) });
+    }
+    return runs;
+  };
   const under = useMemo(() => {
-    if (!depth) return '';
+    if (!depth) return { d: '', floor: [] as { x1: number; x2: number }[] };
     const pts = track.base;
     const parts: string[] = [];
+    const deep: Array<[TrackBase, TrackBase]> = [];
     for (let i = 1; i < pts.length; i++) {
       const p = pts[i];
       const prev = pts[i - 1];
       if ((!p.under && !prev.under) || breaks(p, prev)) continue;
-      parts.push(`M${X(prev).toFixed(1)} ${Y(prev).toFixed(1)} L${X(p).toFixed(1)} ${Y(p).toFixed(1)}`);
+      if (pastFloor(p) && pastFloor(prev)) deep.push([prev, p]);
+      else parts.push(`M${X(prev).toFixed(1)} ${Y(prev).toFixed(1)} L${X(p).toFixed(1)} ${Y(p).toFixed(1)}`);
     }
-    return parts.join(' ');
+    return { d: parts.join(' '), floor: floorRuns(deep) };
     // X, Y and breaks are closures over the layout numbers, which the deps carry.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [depth, track.base, width, roomTop, room, horizon, deepRoom]);
   const drawn = useMemo(() => {
     const stretch: string[] = [];
+    const stretchDeep: Array<[TrackBase, TrackBase]> = [];
     const alongLine: { x1: number; x2: number }[] = [];
     const pts = track.points;
     for (let i = 1; i < pts.length; i++) {
@@ -188,14 +204,16 @@ function HeroTrackImpl({
       if (Math.abs(p.x - prev.x) > 0.5) continue;
       if (depth) {
         // To the floor and back: the stretch follows the track either side of the line.
-        if (!breaks(p, prev)) stretch.push(`M${X(prev).toFixed(1)} ${Y(prev).toFixed(1)} L${X(p).toFixed(1)} ${Y(p).toFixed(1)}`);
+        if (breaks(p, prev)) continue;
+        if (pastFloor(p) && pastFloor(prev)) stretchDeep.push([prev, p]);
+        else stretch.push(`M${X(prev).toFixed(1)} ${Y(prev).toFixed(1)} L${X(p).toFixed(1)} ${Y(p).toFixed(1)}`);
       } else if (!p.under && !prev.under) {
         stretch.push(`M${X(prev).toFixed(1)} ${Y(prev).toFixed(1)} L${X(p).toFixed(1)} ${Y(p).toFixed(1)}`);
       } else if (p.under && prev.under) {
         alongLine.push({ x1: X(prev), x2: X(p) });
       }
     }
-    return { above, stretch: stretch.join(' '), alongLine };
+    return { above, stretch: stretch.join(' '), alongLine, stretchFloor: floorRuns(stretchDeep) };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [above, track.points, width, roomTop, room, horizon, depth, deepRoom]);
 
@@ -262,7 +280,15 @@ function HeroTrackImpl({
       {drawn.above.map((seg, i) => (
         <Path key={i} d={seg.d} stroke={seg.stroke} strokeWidth={TRACK_W} strokeOpacity={0.55} strokeLinecap="round" fill="none" />
       ))}
-      {under ? <Path d={under} stroke={ink} strokeWidth={TRACK_W} strokeOpacity={0.3} strokeLinecap="round" fill="none" /> : null}
+      {under.d ? <Path d={under.d} stroke={ink} strokeWidth={TRACK_W} strokeOpacity={0.3} strokeLinecap="round" fill="none" /> : null}
+      {under.floor.map((l, i) => (
+        <Line key={`f${i}`} x1={l.x1} y1={floor} x2={l.x2} y2={floor} stroke={ink} strokeWidth={1.5} strokeOpacity={0.35} strokeDasharray="1 3" />
+      ))}
+      {running
+        ? null
+        : drawn.stretchFloor.map((l, i) => (
+            <Line key={`sf${i}`} x1={l.x1} y1={floor} x2={l.x2} y2={floor} stroke={ink} strokeWidth={1.5} strokeOpacity={0.7} strokeDasharray="1 3" />
+          ))}
       {running
         ? null
         : drawn.alongLine.map((l, i) => (
@@ -344,6 +370,9 @@ function HeroTrackImpl({
           {drawn.stretch ? (
             <Path d={drawn.stretch} stroke={ink} strokeWidth={STRETCH_W} strokeOpacity={0.6} strokeLinecap="round" fill="none" />
           ) : null}
+          {drawn.stretchFloor.map((l, i) => (
+            <Line key={`sf${i}`} x1={l.x1} y1={floor} x2={l.x2} y2={floor} stroke={ink} strokeWidth={1.5} strokeOpacity={0.7} strokeDasharray="1 3" />
+          ))}
           {at && at.under ? (
             <Circle cx={X(at)} cy={Y(at)} r={UNDER_R} stroke={ink} strokeWidth={TRACK_W} strokeOpacity={0.8} fill="none" />
           ) : null}
