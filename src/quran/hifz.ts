@@ -162,8 +162,12 @@ export function todaysRevision(state: HifzState, today: string): { due: HifzPort
   return { due, shown, more: due.length - shown.length };
 }
 
-/** How far ahead a portion is offered to practise before it is due, days. */
-export const PRACTISE_WITHIN = 7;
+/**
+ * How far ahead a portion is offered to practise before it is due, days:
+ * tomorrow and the day after. A week ahead filled the four cards with
+ * portions far from mattering while today's were still waiting.
+ */
+export const PRACTISE_WITHIN = 2;
 
 /** Whether the last recitation of a portion needed help. */
 export function neededHelpLast(p: HifzPortion): boolean {
@@ -171,22 +175,32 @@ export function neededHelpLast(p: HifzPortion): boolean {
 }
 
 /**
- * What to practise before it is due: the portions coming up within
- * `PRACTISE_WITHIN` days — not today's, which the revision already holds,
- * and not one recited today — the soonest first, a portion that needed
- * help last time a day sooner than its date, then the muṣḥaf's order.
- * Practising does not touch the schedule (the reader's practice mode
- * records nothing), so it never takes a place in today's revision.
+ * What to practise: today's portions not yet marked done first — the most
+ * overdue first, then the muṣḥaf's order — and after them the ones coming
+ * up tomorrow and the day after (`PRACTISE_WITHIN`), a portion that needed
+ * help last time a day sooner than its date. Four at most.
+ *
+ * So the cards follow the day: while today's revision is open its portions
+ * are here to rehearse before reciting them; marking one done moves its
+ * due date on and takes it out (a recitation today counts as done), and
+ * tomorrow's and the day after's take the room it leaves. Practising
+ * itself records nothing (the reader's practice mode), so it never marks
+ * a portion done or moves the schedule.
  */
 export function practiseAhead(state: HifzState, today: string, max = 4): HifzPortion[] {
   const recited = new Set(recitedToday(state, today).map(p => p.id));
-  return state.portions
+  const open = state.portions.filter(p => !recited.has(p.id));
+  const dueNow = open
+    .filter(p => overdueBy(p, today) >= 0)
+    .sort((a, b) => overdueBy(b, today) - overdueBy(a, today) || a.start - b.start);
+  const coming = open
     .map(p => ({ p, days: daysBetween(today, p.due) }))
-    .filter(({ p, days }) => days > 0 && days <= PRACTISE_WITHIN && !recited.has(p.id))
+    .filter(({ days }) => days > 0)
     .map(x => ({ ...x, rank: x.days - (neededHelpLast(x.p) ? 1 : 0) }))
+    .filter(({ rank }) => rank <= PRACTISE_WITHIN)
     .sort((a, b) => a.rank - b.rank || a.days - b.days || a.p.start - b.p.start)
-    .slice(0, max)
     .map(x => x.p);
+  return [...dueNow, ...coming].slice(0, max);
 }
 
 /** The portions recited today (a review dated today), for "2 of 3 done". */

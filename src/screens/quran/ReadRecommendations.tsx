@@ -7,8 +7,10 @@
  *   [ reason…      ] [ reason…     ]     hour (`readSuggestions`), with
  *                                        Al-Kahf and Al-Mulk always there
  *   ♥ Practise before it's due
- *   [ An-Naba      ] [ Al-Mursalat ]     the portions coming up
- *   [ Tomorrow     ] [ In 3 days   ]     (`practiseAhead`)
+ *   [ An-Naba      ] [ Al-Mursalat ]     today's portions not yet done,
+ *   [ Due today    ] [ Tomorrow    ]     then tomorrow's and the day
+ *                                        after's, four at most
+ *                                        (`practiseAhead`)
  *
  * Each is a heading that opens and closes, closed to begin with: two rows
  * of cards each are a lot to scroll past on the way to the surah list

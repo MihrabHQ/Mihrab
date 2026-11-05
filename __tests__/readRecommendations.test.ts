@@ -59,15 +59,29 @@ describe('practiseAhead — Practise before it’s due', () => {
   });
   const state = (portions: HifzPortion[]): HifzState => ({ ...EMPTY_HIFZ, portions });
 
-  it('offers what comes up within the week, soonest first, not today’s or overdue', () => {
+  it("puts today's not-done portions first, then tomorrow and the day after", () => {
     const tomorrow = portion(addDays(today, 1));
-    const inThree = portion(addDays(today, 3));
-    const inWeek = portion(addDays(today, PRACTISE_WITHIN));
+    const dayAfter = portion(addDays(today, PRACTISE_WITHIN));
     const later = portion(addDays(today, PRACTISE_WITHIN + 1));
     const dueToday = portion(today);
     const overdue = portion(addDays(today, -2));
-    const got = practiseAhead(state([later, inThree, dueToday, inWeek, overdue, tomorrow]), today);
-    expect(got.map(p => p.id)).toEqual([tomorrow.id, inThree.id, inWeek.id]);
+    const got = practiseAhead(state([later, dayAfter, dueToday, overdue, tomorrow]), today);
+    // The most overdue first; nothing beyond the day after.
+    expect(got.map(p => p.id)).toEqual([overdue.id, dueToday.id, tomorrow.id, dayAfter.id]);
+  });
+
+  it("drops today's once marked done, and the coming days take the room", () => {
+    const done = new Date(2026, 10, 5, 9).getTime();
+    const a = portion(today);
+    const b = portion(today);
+    const c = portion(today);
+    const d = portion(today);
+    const tomorrow = portion(addDays(today, 1));
+    const dayAfter = portion(addDays(today, 2));
+    expect(practiseAhead(state([a, b, c, d, tomorrow, dayAfter]), today).map(p => p.id)).toEqual([a.id, b.id, c.id, d.id]);
+    // Recited today, each moves on (here, its review is today's): out of the list.
+    const marked = [a, b, c, d].map(p => ({ ...p, due: addDays(today, 3), reviews: [{ at: done, grade: 'fine' as const }] }));
+    expect(practiseAhead(state([...marked, tomorrow, dayAfter]), today).map(p => p.id)).toEqual([tomorrow.id, dayAfter.id]);
   });
 
   it('brings one that needed help a day sooner, and leaves out one recited today', () => {
@@ -83,7 +97,7 @@ describe('practiseAhead — Practise before it’s due', () => {
   });
 
   it('is capped, and empty with nothing coming up', () => {
-    const many = Array.from({ length: 9 }, (_, i) => portion(addDays(today, 1 + (i % 5))));
+    const many = Array.from({ length: 9 }, (_, i) => portion(addDays(today, i % 3)));
     expect(practiseAhead(state(many), today)).toHaveLength(4);
     expect(practiseAhead(state([]), today)).toEqual([]);
   });
