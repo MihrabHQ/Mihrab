@@ -113,6 +113,8 @@
     "trackExplainA11y": "Qué muestra la línea",
     "trackLabelSunPath": "Trayectoria del sol",
     "trackLabelMoonPath": "Trayectoria de la luna",
+    "trackLabelSunBelow": "Sol bajo el horizonte",
+    "trackLabelMoonBelow": "Luna bajo el horizonte",
     "trackLabelHorizon": "Horizonte",
     "timezoneShiftNotice": "Aquí ha cambiado la hora local ({{from}} → {{to}}). Los tiempos de oración se han actualizado.",
     "zoneDataStaleNotice": "Los datos de zona horaria de tu teléfono aún sitúan a Marruecos en GMT+1, que Marruecos dejó en septiembre de 2026, así que el reloj del teléfono —y los horarios de aquí, escritos sobre él— van una hora por delante de los del ministerio. Una actualización de software del teléfono lo corrige. Mientras tanto, pon la zona horaria a mano en GMT (Fecha y hora → zona horaria automática desactivada): el reloj marca bien y la app escribe los horarios del ministerio.",

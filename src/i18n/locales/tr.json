@@ -113,6 +113,8 @@
     "trackExplainA11y": "Çizgi ne gösteriyor",
     "trackLabelSunPath": "Güneşin yolu",
     "trackLabelMoonPath": "Ayın yolu",
+    "trackLabelSunBelow": "Güneş ufkun altında",
+    "trackLabelMoonBelow": "Ay ufkun altında",
     "trackLabelHorizon": "Ufuk",
     "timezoneShiftNotice": "Buradaki saatler değişti ({{from}} → {{to}}). Namaz vakitleri yenilendi.",
     "zoneDataStaleNotice": "Telefonunuzun saat dilimi verileri Fas'ı hâlâ Fas'ın Eylül 2026'da bıraktığı GMT+1'de tutuyor; bu yüzden telefonun saati — ve ona göre yazılan buradaki vakitler — bakanlığın vakitlerinden bir saat ileride. Telefonun yazılım güncellemesi bunu düzeltir. O zamana kadar saat dilimini elle GMT'ye ayarlayın (Tarih ve saat → otomatik saat dilimi kapalı): saat doğru gösterir, uygulama bakanlığın vakitlerini yazar.",

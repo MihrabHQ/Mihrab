@@ -113,6 +113,8 @@
     "trackExplainA11y": "Was die Linie zeigt",
     "trackLabelSunPath": "Sonnenbahn",
     "trackLabelMoonPath": "Mondbahn",
+    "trackLabelSunBelow": "Sonne unter dem Horizont",
+    "trackLabelMoonBelow": "Mond unter dem Horizont",
     "trackLabelHorizon": "Horizont",
     "timezoneShiftNotice": "Hier wurden die Uhren umgestellt ({{from}} → {{to}}). Die Gebetszeiten wurden aktualisiert.",
     "zoneDataStaleNotice": "Die Zeitzonendaten deines Telefons führen Marokko noch unter GMT+1, das Marokko im September 2026 verlassen hat; die Uhr des Telefons – und die Zeiten hier, die auf ihr geschrieben sind – gehen eine Stunde vor denen des Ministeriums. Ein Software-Update des Telefons behebt das. Bis dahin: Zeitzone von Hand auf GMT stellen (Datum & Uhrzeit → automatische Zeitzone aus): die Uhr geht richtig und die App schreibt die Zeiten des Ministeriums.",

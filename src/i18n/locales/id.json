@@ -113,6 +113,8 @@
     "trackExplainA11y": "Arti garis ini",
     "trackLabelSunPath": "Lintasan matahari",
     "trackLabelMoonPath": "Lintasan bulan",
+    "trackLabelSunBelow": "Matahari di bawah cakrawala",
+    "trackLabelMoonBelow": "Bulan di bawah cakrawala",
     "trackLabelHorizon": "Cakrawala",
     "timezoneShiftNotice": "Waktu setempat telah berubah ({{from}} → {{to}}). Waktu sholat sudah diperbarui.",
     "zoneDataStaleNotice": "Data zona waktu ponselmu masih menempatkan Maroko di GMT+1, yang ditinggalkan Maroko pada September 2026, sehingga jam ponsel — dan waktu di sini, yang ditulis menurutnya — satu jam lebih cepat dari waktu kementerian. Pembaruan perangkat lunak ponsel memperbaikinya. Sementara itu, atur zona waktu secara manual ke GMT (Tanggal & waktu → zona waktu otomatis nonaktif): jam menjadi benar dan aplikasi menulis waktu kementerian.",

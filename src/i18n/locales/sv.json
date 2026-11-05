@@ -113,6 +113,8 @@
     "trackExplainA11y": "Vad linjen visar",
     "trackLabelSunPath": "Solens bana",
     "trackLabelMoonPath": "Månens bana",
+    "trackLabelSunBelow": "Solen under horisonten",
+    "trackLabelMoonBelow": "Månen under horisonten",
     "trackLabelHorizon": "Horisont",
     "timezoneShiftNotice": "Klockan har ställts om här ({{from}} → {{to}}). Bönetiderna har uppdaterats.",
     "zoneDataStaleNotice": "Telefonens tidszonsdata har fortfarande Marocko på GMT+1, som Marocko lämnade i september 2026, så telefonens klocka – och tiderna här, som skrivs på den – går en timme före ministeriets. En programuppdatering av telefonen rättar till det. Tills dess: ställ in tidszonen för hand på GMT (Datum och tid → automatisk tidszon av): klockan visar rätt och appen skriver ministeriets tider.",

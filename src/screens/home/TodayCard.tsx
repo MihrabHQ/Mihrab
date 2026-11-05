@@ -1315,6 +1315,10 @@ const HeroToday = memo(function HeroToday({
               track.kind === 'moon'
                 ? t('home.trackLabelMoonPath', "Moon's path")
                 : t('home.trackLabelSunPath', "Sun's path"),
+            below:
+              track.kind === 'moon'
+                ? t('home.trackLabelMoonBelow', 'Moon below the horizon')
+                : t('home.trackLabelSunBelow', 'Sun below the horizon'),
             horizon: t('home.trackLabelHorizon', 'Horizon'),
             prayer: targetLabel,
           }

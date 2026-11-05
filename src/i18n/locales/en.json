@@ -113,6 +113,8 @@
     "trackExplainA11y": "What the line shows",
     "trackLabelSunPath": "Sun's path",
     "trackLabelMoonPath": "Moon's path",
+    "trackLabelSunBelow": "Sun below the horizon",
+    "trackLabelMoonBelow": "Moon below the horizon",
     "trackLabelHorizon": "Horizon",
     "timezoneShiftNotice": "The clocks here changed ({{from}} → {{to}}). Prayer times have been refreshed.",
     "zoneDataStaleNotice": "Your phone's time-zone data still puts Morocco at GMT+1, which Morocco left in September 2026, so your phone's clock — and the times here, which are written on it — run an hour ahead of the ministry's. A software update for the phone puts it right. Until then, set the time zone by hand to GMT (Date & time → automatic time zone off): the clock reads right and the app writes the ministry's times.",

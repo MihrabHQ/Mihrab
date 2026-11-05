@@ -113,6 +113,8 @@
     "trackExplainA11y": "Ce que montre la ligne",
     "trackLabelSunPath": "Trajectoire du soleil",
     "trackLabelMoonPath": "Trajectoire de la lune",
+    "trackLabelSunBelow": "Soleil sous l'horizon",
+    "trackLabelMoonBelow": "Lune sous l'horizon",
     "trackLabelHorizon": "Horizon",
     "timezoneShiftNotice": "Ici, l’heure locale a changé ({{from}} → {{to}}). Les horaires de prière ont été actualisés.",
     "zoneDataStaleNotice": "Les données de fuseau horaire de votre téléphone placent encore le Maroc à GMT+1, que le Maroc a quitté en septembre 2026 : l'horloge du téléphone — et les horaires ici, écrits sur elle — avancent d'une heure sur ceux du ministère. Une mise à jour logicielle du téléphone corrige cela. En attendant, réglez le fuseau horaire à la main sur GMT (Date et heure → fuseau automatique désactivé) : l'horloge est juste et l'app écrit les horaires du ministère.",

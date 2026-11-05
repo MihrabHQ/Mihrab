@@ -113,6 +113,8 @@
     "trackExplainA11y": "这条线表示什么",
     "trackLabelSunPath": "太阳轨迹",
     "trackLabelMoonPath": "月亮轨迹",
+    "trackLabelSunBelow": "太阳在地平线下",
+    "trackLabelMoonBelow": "月亮在地平线下",
     "trackLabelHorizon": "地平线",
     "timezoneShiftNotice": "本地时间已调整（{{from}} → {{to}}）。祈祷时间已刷新。",
     "zoneDataStaleNotice": "手机的时区数据仍把摩洛哥列为 GMT+1，而摩洛哥已于 2026 年 9 月改为 GMT，因此手机的时钟——以及此处按它写出的时间——比宗教事务部的时间早一小时。手机的软件更新可以修正。在此之前，请手动把时区设为 GMT（日期和时间 → 关闭自动时区）：时钟将显示正确，应用也会写出宗教事务部的时间。",
