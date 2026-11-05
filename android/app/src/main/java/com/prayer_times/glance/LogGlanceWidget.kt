@@ -239,7 +239,56 @@ internal class LogGlanceWidget(
     // a script whose lines are taller (Arabic) takes the difference out of
     // the chip, not off the bottom of the card (#118).
     val nameSurplus = m.chips.maxOfOrNull { textHeightDp(context, it.name, 11f, medium = false) - textLineDp(context, 11f, medium = false) } ?: 0f
-    val chipHeight = ((if (tight) 30 else 38) - (if (h > 0) Math.ceil(nameSurplus.toDouble()).toInt() else 0)).coerceAtLeast(CHIP_MIN_HEIGHT_DP)
+    var chipHeight = ((if (tight) 30 else 38) - (if (h > 0) Math.ceil(nameSurplus.toDouble()).toInt() else 0)).coerceAtLeast(CHIP_MIN_HEIGHT_DP)
+
+    // ── A CARD SHORTER THAN ITS BUDGET ─────────────────────────────────
+    //
+    // The budgets above read a 4×1 cell as about 112dp. Launchers do not
+    // promise that: `minHeight` is 40dp, `targetCellHeight` is 1, and a
+    // Pixel's own launcher hands this card 89dp — 65dp of it inside the
+    // inset and the padding. A 30dp pill, a name, a time and the footer
+    // want 84dp, so the column ran past the bottom edge and Glance cut it
+    // there: the footer — the line the countdown is on — was simply not
+    // drawn, with nothing on the card to say a line was missing.
+    //
+    // So the card is fitted to the room there is rather than the room the
+    // budget assumed, and what gives, gives in order: the pill first,
+    // because it is the one band with nothing written in it; then the air
+    // over the chips and under them; then the type itself, half a point at
+    // a time, to a floor that is still a widget's smallest readable size.
+    // Nothing is clipped on the way: a card too short even for the floor
+    // is a card that drops the footer deliberately, in `showFoot`.
+    var topPad = 6 + slack
+    var botPad = slack
+    var gapDp = 4
+    var nameSp = 11f
+    var timeSp = 15f
+    var footSp = 11f
+    var showFoot = true
+    if (h > 0 && !graphHeight) {
+      val room = h - 2 * CARD_INSET_DP - 2 * paddingFor(size)
+      val titleDp = if (!bare) textLineDp(context, 11f, medium = true) else 0f
+      // Rule(top = 6, bottom = 8) plus its own 1dp line.
+      val ruleDp = if (!tight) 15f else 0f
+      fun nameDp() = m.chips.maxOfOrNull { textHeightDp(context, it.name, nameSp, medium = false) }
+        ?: textLineDp(context, nameSp, medium = false)
+      fun need() = titleDp + topPad + chipHeight + gapDp + nameDp() +
+        textLineDp(context, timeSp, medium = false) + botPad + ruleDp +
+        (if (showFoot) textLineDp(context, footSp, medium = false) else 0f)
+      fun over() = Math.ceil((need() - room).toDouble()).toInt()
+      if (over() > 0) chipHeight = (chipHeight - over()).coerceAtLeast(CHIP_MIN_HEIGHT_DP)
+      if (over() > 0) topPad = (topPad - over()).coerceAtLeast(0)
+      if (over() > 0) botPad = (botPad - over()).coerceAtLeast(0)
+      if (over() > 0) gapDp = (gapDp - over()).coerceAtLeast(1)
+      while (over() > 0 && timeSp > CARD_MIN_SP) timeSp -= 0.5f
+      while (over() > 0 && nameSp > CARD_MIN_SP) {
+        nameSp -= 0.5f
+        footSp -= 0.5f
+      }
+      // Under the floor the footer is the band to let go of: the chips are
+      // what the card is for, and a half-drawn line is worse than none.
+      if (over() > 0) showFoot = false
+    }
 
     DirColumn(
       modifier = GlanceModifier.fillMaxSize(),
@@ -254,20 +303,20 @@ internal class LogGlanceWidget(
         }
       }
       DirRow(
-        modifier = GlanceModifier.fillMaxWidth().padding(top = (6 + slack).dp, bottom = slack.dp),
+        modifier = GlanceModifier.fillMaxWidth().padding(top = topPad.dp, bottom = botPad.dp),
         verticalAlignment = Alignment.CenterVertically,
       ) {
         for ((i, chip) in m.chips.withIndex()) cell {
-          ChipCell(chip, i, chipHeight, m, GlanceModifier.defaultWeight())
+          ChipCell(chip, i, chipHeight, gapDp, nameSp, timeSp, m, GlanceModifier.defaultWeight())
         }
       }
       // The rule above the footer is what a one-row card does without.
-      if (!tight) Rule(Palette.RULE, top = 6, bottom = 8)
-      DirRow(modifier = GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        if (!showGrid) cell { Label(m.footLeft, 11f, Palette.MUTED, modifier = GlanceModifier.defaultWeight()) }
+      if (!tight && showFoot) Rule(Palette.RULE, top = 6, bottom = 8)
+      if (showFoot) DirRow(modifier = GlanceModifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        if (!showGrid) cell { Label(m.footLeft, footSp, Palette.MUTED, modifier = GlanceModifier.defaultWeight()) }
         m.next?.let { (name, at) ->
-          cell { Label(name, 11f, Palette.MUTED) }
-          cell { Countdown(at, m.now, 11f, Palette.MUTED, modifier = GlanceModifier.padStart(4.dp)) }
+          cell { Label(name, footSp, Palette.MUTED) }
+          cell { Countdown(at, m.now, footSp, Palette.MUTED, modifier = GlanceModifier.padStart(4.dp)) }
         }
         cell { Spacer(GlanceModifier.defaultWeight()) }
         practice?.let { pr ->
@@ -306,7 +355,16 @@ internal class LogGlanceWidget(
   }
 
   @Composable
-  private fun ChipCell(chip: Chip, index: Int, chipHeight: Int, m: Model, modifier: GlanceModifier) {
+  private fun ChipCell(
+    chip: Chip,
+    index: Int,
+    chipHeight: Int,
+    gapDp: Int,
+    nameSp: Float,
+    timeSp: Float,
+    m: Model,
+    modifier: GlanceModifier,
+  ) {
     // Only a chip that can legitimately change takes a tap; the rest fall
     // through to the card's own "open the Log".
     val cell = modifier.padding(horizontal = 2.dp)
@@ -337,13 +395,13 @@ internal class LogGlanceWidget(
       }
       Label(
         chip.name,
-        11f,
+        nameSp,
         if (chip.due || chip.queued) Palette.TEXT else Palette.MUTED,
         align = TextAlign.Center,
-        modifier = GlanceModifier.padding(top = 4.dp),
+        modifier = GlanceModifier.padding(top = gapDp.dp),
       )
       // The meridiem small, the same as the prayer strip.
-      ClockText(chip.minutes, m.clock, 15f, Palette.TEXT)
+      ClockText(chip.minutes, m.clock, timeSp, Palette.TEXT)
     }
   }
 
@@ -354,6 +412,13 @@ internal class LogGlanceWidget(
     private const val CHIPS = 5
     /** The shortest a chip gets to make room for a taller script's names. */
     private const val CHIP_MIN_HEIGHT_DP = 22
+
+    /**
+     * The smallest type the card will set to fit a short cell. Below this a
+     * line is dropped rather than shrunk: 9sp is about where a time on a
+     * widget stops being read at arm's length.
+     */
+    private const val CARD_MIN_SP = 9f
 
     /** PrayerWidgetLogProvider's budgets, unchanged (see the notes there). */
     private const val GRID_MIN_HEIGHT_DP = 190

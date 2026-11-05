@@ -305,8 +305,11 @@ describe('the streak sits on the line with what is next', () => {
   it('rules itself off the same way on both cards', () => {
     // The prayer card draws its rules in the user's text colour (`d.rule`),
     // the Log card in the fixed one: the same rule, the same margins.
+    // The Log card carries one condition the strip does not — a cell too
+    // short for the footer drops it, and a rule over a footer that is not
+    // there is a line to nowhere.
     expect(strip).toContain('if (!tight) Rule(d.rule, top = 6, bottom = 8)');
-    expect(log).toContain('if (!tight) Rule(Palette.RULE, top = 6, bottom = 8)');
+    expect(log).toContain('if (!tight && showFoot) Rule(Palette.RULE, top = 6, bottom = 8)');
   });
 
   /**
