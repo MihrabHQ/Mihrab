@@ -107,6 +107,7 @@
     "yesterday": "Hier",
     "startReading": "Commencer la lecture",
     "startReadingHint": "Al-Fātiha, page 1",
+    "startKhatmahHint": "Tout le Coran, à votre rythme",
     "timezoneShiftNotice": "Ici, l’heure locale a changé ({{from}} → {{to}}). Les horaires de prière ont été actualisés.",
     "zoneDataStaleNotice": "Les données de fuseau horaire de votre téléphone placent encore le Maroc à GMT+1, que le Maroc a quitté en septembre 2026 : l'horloge du téléphone — et les horaires ici, écrits sur elle — avancent d'une heure sur ceux du ministère. Une mise à jour logicielle du téléphone corrige cela. En attendant, réglez le fuseau horaire à la main sur GMT (Date et heure → fuseau automatique désactivé) : l'horloge est juste et l'app écrit les horaires du ministère.",
     "zoneDataStaleFixedNotice": "Les données de fuseau horaire de votre téléphone sont obsolètes : là où vous êtes, l'heure reste à {{offset}} toute l'année depuis {{since}}, et votre téléphone l'ignore ; son horloge — et les horaires d'ici, écrits sur elle — sont décalés de {{minutes}} minutes. Une mise à jour logicielle du téléphone corrige cela. En attendant, désactivez le fuseau horaire automatique (Date et heure) et choisissez un fuseau à {{offset}} : l'horloge et les horaires sont alors justes.",

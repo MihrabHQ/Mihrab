@@ -545,6 +545,14 @@ function BookmarkDoor({
   );
 }
 
+/**
+ * Nothing begun yet: the two ways in, in the grammar the two "Continue"
+ * doors have once something is — a dot, a title, a line under it, side
+ * by side. It was one door with a "Start a khatmah" chip in the trailing
+ * slot: a button in a row of doors, and the one place on Home that drew
+ * a pill. Both go to the Qur'an index, where reading and the khatmah's
+ * set-up both begin.
+ */
 function StartDoor({
   onOpenQuran,
 }: {
@@ -552,24 +560,37 @@ function StartDoor({
 }) {
   const { t } = useTranslation();
   const { palette } = useAppPalette();
-  const title = t('home.startReading', 'Start reading');
+  const read = t('home.startReading', 'Start reading');
+  const plan = t('quran.startKhatmah', 'Start a khatmah');
   return (
-    <Door label={title} onPress={onOpenQuran}>
-      <QuranBookIcon color={palette.accentSolid} size={20} />
-      <View style={styles.body}>
-        <Text style={[styles.title, { color: palette.text }]} numberOfLines={1}>
-          {title}
-        </Text>
-        <Text style={[styles.subtitle, { color: palette.muted }]} numberOfLines={1}>
-          {t('home.startReadingHint', 'Al-Fātiḥah, page 1')}
-        </Text>
-      </View>
-      <View style={[styles.chip, { backgroundColor: palette.accentBg }]}>
-        <Text style={[styles.chipLabel, { color: palette.accent }]} numberOfLines={1}>
-          {t('quran.startKhatmah', 'Start a khatmah')}
-        </Text>
-      </View>
-    </Door>
+    <View style={styles.columns}>
+      <Door label={read} onPress={onOpenQuran} column>
+        <View style={styles.body}>
+          <View style={[styles.titleRow, styles.titleRowColumn]}>
+            <View style={[styles.dot, { backgroundColor: READING_COLOR }]} />
+            <Text style={[styles.title, { color: palette.text }]} numberOfLines={1}>
+              {read}
+            </Text>
+          </View>
+          <Text style={[styles.subtitle, { color: palette.muted }]} numberOfLines={1}>
+            {t('home.startReadingHint', 'Al-Fātiḥah, page 1')}
+          </Text>
+        </View>
+      </Door>
+      <Door label={plan} onPress={onOpenQuran} column divided>
+        <View style={styles.body}>
+          <View style={[styles.titleRow, styles.titleRowColumn]}>
+            <View style={[styles.dot, { backgroundColor: palette.accentSolid }]} />
+            <Text style={[styles.title, { color: palette.text }]} numberOfLines={1}>
+              {plan}
+            </Text>
+          </View>
+          <Text style={[styles.subtitle, { color: palette.muted }]} numberOfLines={1}>
+            {t('home.startKhatmahHint', 'The whole Qurʼan, at your pace')}
+          </Text>
+        </View>
+      </Door>
+    </View>
   );
 }
 
@@ -738,12 +759,6 @@ const styles = StyleSheet.create({
   shrinks: { flexShrink: 1 },
   track: { height: 3, borderRadius: 2, marginTop: SPACING.sm, overflow: 'hidden' },
   fill: { height: '100%', borderRadius: 2 },
-  chip: {
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.xs + 2,
-    borderRadius: RADIUS.full,
-  },
-  chipLabel: { fontSize: TYPE.label.fontSize, fontWeight: '500' },
   gapRow: {
     flexDirection: 'row',
     alignItems: 'center',
