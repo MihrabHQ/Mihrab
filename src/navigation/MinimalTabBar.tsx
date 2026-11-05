@@ -181,7 +181,8 @@ export function MinimalTabBar({ state, descriptors, navigation }: BottomTabBarPr
     [navigation, state.routes],
   );
   // Icons kept up: as if a turn never settled — no dots, the icons always.
-  const iconsAlways = useAppearanceSliceOrNull()?.minimalTabIcons === true;
+  // Outside the provider (tests drawing the bar alone), the shipped default.
+  const iconsAlways = useAppearanceSliceOrNull()?.minimalTabIcons ?? true;
   const shown = useMemo(() => (iconsAlways ? new Animated.Value(1) : pagerEngaged), [iconsAlways]);
   const dotsOpacity = useMemo(
     () => shown.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }),

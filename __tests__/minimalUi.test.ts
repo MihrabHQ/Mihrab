@@ -427,12 +427,12 @@ describe("the sheet's foot", () => {
 });
 
 describe('icons instead of dots', () => {
-  it('is a setting, off by default, offered under Minimal only, that keeps the icons up', () => {
-    expect(read('src/settings/types.ts')).toMatch(/minimalTabIcons: false,/);
-    expect(read('src/settings/storage.ts')).toMatch(/if \(typeof merged\.minimalTabIcons !== 'boolean'\) \{\s*merged\.minimalTabIcons = false;/);
+  it('is a setting, on by default, offered under Minimal only, that keeps the icons up', () => {
+    expect(read('src/settings/types.ts')).toMatch(/minimalTabIcons: true,/);
+    expect(read('src/settings/storage.ts')).toMatch(/if \(typeof merged\.minimalTabIcons !== 'boolean'\) \{\s*merged\.minimalTabIcons = true;/);
     const card = read('src/screens/settings/AppearanceCard.tsx');
     expect(card).toMatch(/\{minimalActive \? \(\s*<SettingsToggleRow\s*testID="appearance-minimalTabIcons"/);
-    expect(bar).toContain('const iconsAlways = useAppearanceSliceOrNull()?.minimalTabIcons === true;');
+    expect(bar).toContain('const iconsAlways = useAppearanceSliceOrNull()?.minimalTabIcons ?? true;');
     expect(bar).toContain('iconsAlways ? new Animated.Value(1) : pagerEngaged');
     expect(bar).toContain('iconOpacity: Animated.multiply(shown,');
   });

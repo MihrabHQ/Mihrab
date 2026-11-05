@@ -468,7 +468,8 @@ export type PrayerAppSettings = {
   /**
    * Under Minimal, the tab bar's small icons stay up instead of the dots
    * (MinimalTabBar) — for a reader who finds a page by its icon rather
-   * than its place in the row. Off by default: the dots are Minimal's.
+   * than its place in the row. On by default: six small icons say which
+   * page is which at a glance, where six dots only say how many.
    */
   minimalTabIcons: boolean;
   /**
@@ -844,7 +845,7 @@ export const DEFAULT_SETTINGS: PrayerAppSettings = {
   logLateByClock: false,
   launchAnimation: true,
   minimalUi: false,
-  minimalTabIcons: false,
+  minimalTabIcons: true,
   // App accent defaults to brand green (matches the historical hardcoded
   // accent so users on existing installs see no visual diff after the
   // upgrade).
