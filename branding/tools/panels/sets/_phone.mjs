@@ -4,10 +4,25 @@
  * captures, its face and how many panels its store takes.
  */
 import path from 'node:path';
-import { ROOT, brand, callout, chip, device, loupe, tile } from '../kit.mjs';
+import { ROOT, brand, callout, chip, device, laptop, loupe, tile } from '../kit.mjs';
 
-export function phonePanels({ kind, raw, extra = {} }) {
+export function phonePanels({ kind, raw, extra = {}, tabletKind = 'ipad', tabletRaw = 'ipad', foldRaw = 'android-fold' }) {
   const s = n => path.join(ROOT, 'branding/store-raw', raw, n + '.png');
+  // The cuts of each capture, in its own pixels: [x, y, w, h], and for
+  // the source picker the line to ring (top, height).
+  const R = {
+    android: {
+      source: [0, 1036, 1080, 900], ring: [1580, 250],
+      translation: [0, 420, 1080, 820], tafsir: [0, 1080, 1080, 520], tajweed: [0, 1350, 1080, 600],
+      qibla: [100, 260, 880, 1120],
+    },
+    ios: {
+      source: [0, 1090, 1206, 1010], ring: [1690, 310],
+      translation: [0, 560, 1206, 780], tafsir: [0, 2060, 1206, 560], tajweed: [0, 1040, 1206, 1230],
+      qibla: [100, 260, 880, 1120],
+    },
+  }[raw];
+  const sw = R.source[2];
   const img = n => path.join(ROOT, 'docs/assets/img', n + '.png');
 
   const words = (u, { eyebrow, title, sub, top = 8, extra: more = '', limit }) => `
@@ -64,8 +79,8 @@ export function phonePanels({ kind, raw, extra = {} }) {
           </ul>`,
         })}
         <div class="lower">
-        ${tile({ img: s('source'), region: [0, 1036, 1080, 900], x: u * 7, y: u * 113, w: u * 86, z: 2 })}
-        ${callout({ u, x: u * 5.5, y: u * (113 + (1580 - 1036) * 86 / 1080), w: u * 89, h: u * (250 * 86 / 1080) })}
+        ${tile({ img: s('source'), region: R.source, x: u * 7, y: u * 113, w: u * 86, z: 2 })}
+        ${callout({ u, x: u * 5.5, y: u * (113 + (R.ring[0] - R.source[1]) * 86 / sw), w: u * 89, h: u * (R.ring[1] * 86 / sw) })}
         </div>
       `,
     },
@@ -100,9 +115,9 @@ export function phonePanels({ kind, raw, extra = {} }) {
       html: ({ u, t }) => `
         ${words(u, { limit: 50, eyebrow: t('understand.eyebrow'), title: t('understand.title'), sub: t('understand.sub') })}
         <div class="lower">
-        ${tile({ img: s('ayah-translation'), region: [0, 420, 1080, 820], x: u * 6, y: u * 52, w: u * 70, rot: -3, z: 2 })}
-        ${tile({ img: s('ayah-tafsir'), region: [0, 1080, 1080, 520], x: u * 26, y: u * 94, w: u * 68, rot: 2, z: 3 })}
-        ${tile({ img: s('tajweed-guide'), region: [0, 1350, 1080, 600], x: u * 8, y: u * 122, w: u * 62, rot: -2, z: 4 })}
+        ${tile({ img: s('ayah-translation'), region: R.translation, x: u * 6, y: u * 52, w: u * 70, rot: -3, z: 2 })}
+        ${tile({ img: s('ayah-tafsir'), region: R.tafsir, x: u * 26, y: u * 94, w: u * 68, rot: 2, z: 3 })}
+        ${tile({ img: s('tajweed-guide'), region: R.tajweed, x: u * 8, y: u * 122, w: u * 62, rot: -2, z: 4 })}
         </div>
       `,
     },
@@ -137,6 +152,28 @@ export function phonePanels({ kind, raw, extra = {} }) {
         ${tile({ img: s('qibla'), region: [80, 260, 920, 1130], x: u * 53, y: u * 112, w: u * 42, rot: 3, z: 3 })}
         </div>
       `,
+    },
+    // iOS has no full-screen alert fan: its day is the month, the qibla and the log.
+    dayIos: {
+      id: 'day',
+      html: ({ u, t }) => `
+        ${words(u, { limit: 48, eyebrow: t('day.eyebrow'), title: t('day.title'), sub: t('day.sub') })}
+        <div class="lower">
+        ${device({ kind, img: s('month'), x: u * 4, y: u * 56, w: u * 50, rot: -4, z: 2 })}
+        ${device({ kind, img: s('log'), x: u * 48, y: u * 64, w: u * 48, rot: 5, z: 1 })}
+        ${tile({ img: s('qibla'), region: R.qibla, x: u * 54, y: u * 128, w: u * 40, rot: 3, z: 3 })}
+        </div>`,
+    },
+    devices: {
+      id: 'devices',
+      html: ({ u, t }) => `
+        ${words(u, { limit: 60, eyebrow: t('devices.eyebrow'), title: t('devices.title'), sub: t('devices.sub') })}
+        <div class="lower">
+        ${laptop({ img: path.join(ROOT, 'branding/store-raw/desktop/home.png'), x: u * 8, y: u * 66, w: u * 84, z: 1 })}
+        ${device({ kind: tabletKind, img: path.join(ROOT, 'branding/store-raw', tabletRaw, 'spread.png'), x: u * 2, y: u * 104, w: u * 62, rot: -3, z: 2 })}
+        ${device({ kind, img: s('home-sunset'), x: u * 56, y: u * 98, w: u * 30, rot: 4, z: 3 })}
+        ${device({ kind, img: s('minimal-dawn'), x: u * 74, y: u * 112, w: u * 25, rot: 8, z: 4 })}
+        </div>`,
     },
     ...extra,
   };

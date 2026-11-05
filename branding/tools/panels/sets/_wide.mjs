@@ -3,10 +3,17 @@
  * the words on the reading side, the screens on the other.
  */
 import path from 'node:path';
-import { ROOT, brand, callout, chip, device, laptop, loupe, tile, windowFrame } from '../kit.mjs';
+import { ROOT, brand, callout, chip, device, imageSize, laptop, loupe, tile, windowFrame } from '../kit.mjs';
 
 export function widePanels({ kind = 'tab', raw, phoneKind = 'android', phoneRaw = 'android', foldRaw = 'android-fold', extra = {} }) {
   const s = (n, dir = raw) => path.join(ROOT, 'branding/store-raw', dir, n + '.png');
+  const SRC = phoneRaw === 'ios' ? { region: [0, 1090, 1206, 1010], ring: [1690, 310] } : { region: [0, 1036, 1080, 900], ring: [1580, 250] };
+  const sw = SRC.region[2];
+  // The loupe over the spread: the first lines of the left-hand page.
+  const spreadAt = () => {
+    const { w, h } = imageSize(s('spread'));
+    return [w * 0.29, h * (raw === 'ipad' ? 0.36 : 0.26)];
+  };
   // The big screen: a tablet, or (for Chromebooks and computers) a laptop.
   const big = o => (o.kind === 'laptop' ? laptop({ ...o, w: o.w * 0.92, x: o.x + o.w * 0.04 }) : device(o));
 
@@ -22,7 +29,14 @@ export function widePanels({ kind = 'tab', raw, phoneKind = 'android', phoneRaw 
       ${chip(t('badge.noads'), 'noads', 'solid')}${chip(t('badge.open'), 'open', 'solid')}${chip(t('badge.noaccount'), 'user', 'solid')}
       ${chip(t('badge.notracking'), 'lock')}${chip(t('badge.offline'), 'offline')}</div>`;
 
-  return {
+  // Laid out for 16:9. A squarer screen (the iPad's 4:3) gets the same
+  // layout, scaled to its width and centred top to bottom, over the full sky.
+  const fit = fn => ctx => {
+    const u = Math.min(ctx.u, ctx.W / 177.78);
+    const h = u * 100;
+    return `<div style="position:absolute;left:0;width:${ctx.W}px;top:${(ctx.H - h) / 2}px;height:${h}px;--u:${u}px">${fn({ ...ctx, u })}</div>`;
+  };
+  const panels = {
     hero: {
       id: 'hero',
       html: ({ u, W, t }) => `
@@ -51,8 +65,8 @@ export function widePanels({ kind = 'tab', raw, phoneKind = 'android', phoneRaw 
           ${['diyanet', 'sweden', 'morocco', 'algeria', 'indonesia'].map(k => `<li style="font-size:${u * 3.1}px"><i>✓</i><div>${t('accuracy.' + k)}</div></li>`).join('')}
           <li style="font-size:${u * 2.5}px;opacity:.9"><i>+</i><div>${t('accuracy.more')}</div></li>
         </ul>
-        ${tile({ img: s('source', phoneRaw), region: [0, 1036, 1080, 900], x: u * 81, y: u * 50, w: u * 80, z: 2 })}
-        ${callout({ u, x: u * 79.5, y: u * (50 + (1580 - 1036) * 80 / 1080), w: u * 83, h: u * (250 * 80 / 1080) })}
+        ${tile({ img: s('source', phoneRaw), region: SRC.region, x: u * 81, y: u * 50, w: u * 80, z: 2 })}
+        ${callout({ u, x: u * 79.5, y: u * (50 + (SRC.ring[0] - SRC.region[1]) * 80 / sw), w: u * 83, h: u * (SRC.ring[1] * 80 / sw) })}
         </div>`,
     },
     spread: {
@@ -66,7 +80,7 @@ export function widePanels({ kind = 'tab', raw, phoneKind = 'android', phoneRaw 
         })}
         <div class="lower">
         ${big({ kind, img: s('spread'), x: u * 70, y: u * 14, w: u * 104, z: 1 })}
-        ${loupe({ img: s('spread'), at: [740, 420], zoom: 0.8, x: u * 128, y: u * 52, d: u * 44 })}
+        ${loupe({ img: s('spread'), at: spreadAt(), zoom: raw === 'ipad' ? 0.7 : 0.8, x: u * 128, y: u * 52, d: u * 44 })}
         </div>`,
     },
     tilawah: {
@@ -108,4 +122,6 @@ export function widePanels({ kind = 'tab', raw, phoneKind = 'android', phoneRaw 
     },
     ...extra,
   };
+  for (const p of Object.values(panels)) p.html = fit(p.html);
+  return panels;
 }
