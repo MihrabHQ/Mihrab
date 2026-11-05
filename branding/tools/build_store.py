@@ -82,6 +82,10 @@ CAPTIONS = {
         "The month ahead,\\nready to share",
         "Every day's times in one table, offline, as an image or a PDF",
     ),
+    "hifz": (
+        "What you know\\nby heart, kept",
+        "Each portion comes round again: a day, then 3, 7, 14 and 30",
+    ),
     "qibla": (
         "Facing\\nthe Ka'bah",
         "A live bearing from your phone's own sensors",
