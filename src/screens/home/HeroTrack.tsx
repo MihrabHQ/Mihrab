@@ -4,7 +4,7 @@ import Svg, { Circle, ClipPath, Defs, G, Line, Path, Rect } from 'react-native-s
 import { MOON, Moon, moonLitPath, NEW_MOON_BELOW, SUN_R } from './HeroSky';
 import { type SkyFrame } from './skyModel';
 import { SUN_SURFACE, tintedBy } from './skyLight';
-import { type TrackFrame, type TrackPoint } from './trackModel';
+import { type TrackBase, type TrackFrame } from './trackModel';
 
 /**
  * The Track look's drawing — see trackModel.ts for what it is and why.
@@ -64,23 +64,37 @@ function HeroTrackImpl({
   const margin = MOON / 2;
   const roomTop = bandTop + margin;
   const room = Math.max(0, horizon - roomTop);
-  const height = Math.ceil(horizon + UNDER_R + 2);
-  const X = (p: TrackPoint) => p.x * width;
-  const Y = (p: TrackPoint) => (p.under ? horizon : roomTop + p.y * room);
+  /**
+   * THE BITMAP IS THE BAND'S. On Android every <Svg> is an ARGB bitmap the
+   * size of its view (HeroSky draws the sky as views for that reason), and
+   * this one ran from the sky's top — under the status bar and the chrome
+   * row, where nothing of the chart is ever drawn. It now starts at the
+   * band: a third to a half less on a phone, the same drawing, the
+   * coordinates kept by the viewBox's offset.
+   */
+  const svgTop = Math.max(0, Math.floor(bandTop - 2));
+  const height = Math.max(1, Math.ceil(horizon + UNDER_R + 2) - svgTop);
+  const X = (p: TrackBase) => p.x * width;
+  const Y = (p: TrackBase) => (p.under ? horizon : roomTop + p.y * room);
 
-  const drawn = useMemo(() => {
-    const above: { d: string; stroke: string }[] = [];
-    const stretch: string[] = [];
-    const alongLine: { x1: number; x2: number }[] = [];
-    const pts = track.points;
-    let run: TrackPoint[] = [];
+  /**
+   * THE DAY'S LINES ARE BUILT ONCE. The tinted track is the window's
+   * (`track.base` is the same object all day, trackModel's cache), so its
+   * paths are built when the day or the layout changes, not once a
+   * minute; only the stretch — now to the ring — is the minute's.
+   */
+  const moonLight = body.kind === 'moon' ? body.light : null;
+  const above = useMemo(() => {
+    const out: { d: string; stroke: string }[] = [];
+    const pts = track.base;
+    let seg: typeof pts = [];
     const flush = () => {
-      if (run.length > 1) {
-        const mid = run[Math.floor(run.length / 2)];
-        const stroke = track.kind === 'sun' ? tintedBy(SUN_SURFACE, mid.altitude) : (body.kind === 'moon' ? body.light : ink);
-        above.push({ d: run.map((p, i) => `${i ? 'L' : 'M'}${X(p).toFixed(1)} ${Y(p).toFixed(1)}`).join(' '), stroke });
+      if (seg.length > 1) {
+        const mid = seg[Math.floor(seg.length / 2)];
+        const stroke = track.kind === 'sun' ? tintedBy(SUN_SURFACE, mid.altitude) : (moonLight ?? ink);
+        out.push({ d: seg.map((p, i) => `${i ? 'L' : 'M'}${X(p).toFixed(1)} ${Y(p).toFixed(1)}`).join(' '), stroke });
       }
-      run = [];
+      seg = [];
     };
     for (let i = 0; i < pts.length; i++) {
       const p = pts[i];
@@ -89,25 +103,36 @@ function HeroTrackImpl({
       const seam = prev && Math.abs(p.x - prev.x) > 0.5;
       if (p.under || seam || (prev && prev.under)) flush();
       if (!p.under) {
-        run.push(p);
-        if (run.length >= TINT_RUN + 1) {
+        seg.push(p);
+        if (seg.length >= TINT_RUN + 1) {
           flush();
-          run = [p];
-        }
-      }
-      if (prev && p.remaining && prev.remaining) {
-        if (!p.under && !prev.under && !seam) {
-          stretch.push(`M${X(prev).toFixed(1)} ${Y(prev).toFixed(1)} L${X(p).toFixed(1)} ${Y(p).toFixed(1)}`);
-        } else if (p.under && prev.under && !seam) {
-          alongLine.push({ x1: X(prev), x2: X(p) });
+          seg = [p];
         }
       }
     }
     flush();
-    return { above, stretch: stretch.join(' '), alongLine };
+    return out;
     // X and Y are closures over the layout numbers, which the deps carry.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [track, width, roomTop, room, horizon, ink, body]);
+  }, [track.base, track.kind, width, roomTop, room, horizon, ink, moonLight]);
+  const drawn = useMemo(() => {
+    const stretch: string[] = [];
+    const alongLine: { x1: number; x2: number }[] = [];
+    const pts = track.points;
+    for (let i = 1; i < pts.length; i++) {
+      const p = pts[i];
+      const prev = pts[i - 1];
+      if (!p.remaining || !prev.remaining) continue;
+      if (Math.abs(p.x - prev.x) > 0.5) continue;
+      if (!p.under && !prev.under) {
+        stretch.push(`M${X(prev).toFixed(1)} ${Y(prev).toFixed(1)} L${X(p).toFixed(1)} ${Y(p).toFixed(1)}`);
+      } else if (p.under && prev.under) {
+        alongLine.push({ x1: X(prev), x2: X(p) });
+      }
+    }
+    return { above, stretch: stretch.join(' '), alongLine };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [above, track.points, width, roomTop, room, horizon]);
 
   const ring = track.ring;
   const at = track.body;
@@ -145,12 +170,10 @@ function HeroTrackImpl({
   }, [run, width, roomTop, room, horizon]);
   const bodyView =
     ride && body.kind !== 'none' ? (
-      <View style={{ position: 'absolute', left: 0, top: 0, width, height: Math.max(0, horizon), overflow: 'hidden' }} pointerEvents="none">
+      <View style={[styles.clip, { width, height: Math.max(0, horizon) }]} pointerEvents="none">
         <Animated.View
           style={{
-            position: 'absolute',
-            left: 0,
-            top: 0,
+            ...styles.origin,
             opacity: Animated.multiply(ride.up, body.alpha),
             transform: [{ translateX: ride.tx }, { translateY: ride.ty }],
           }}>
@@ -165,7 +188,7 @@ function HeroTrackImpl({
       </View>
     ) : null;
   const svg = (
-    <Svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} style={styles.svg} pointerEvents="none">
+    <Svg width={width} height={height} viewBox={`0 ${svgTop} ${width} ${height}`} style={[styles.svg, { top: svgTop }]} pointerEvents="none">
       <Defs>
         <ClipPath id={clipId}>
           <Rect x={0} y={0} width={width} height={Math.max(0, horizon)} />
@@ -206,7 +229,7 @@ function HeroTrackImpl({
     <>
       {svg}
       <Animated.View style={[StyleSheet.absoluteFill, { opacity: ride.end }]} pointerEvents="none">
-        <Svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} style={styles.svg} pointerEvents="none">
+        <Svg width={width} height={height} viewBox={`0 ${svgTop} ${width} ${height}`} style={[styles.svg, { top: svgTop }]} pointerEvents="none">
           {drawn.alongLine.map((l, i) => (
             <Line key={`u${i}`} x1={l.x1} y1={horizon} x2={l.x2} y2={horizon} stroke={ink} strokeWidth={1.25} strokeOpacity={0.6} strokeDasharray="1 3" />
           ))}
@@ -256,4 +279,6 @@ export const HeroTrack = memo(HeroTrackImpl);
 
 const styles = StyleSheet.create({
   svg: { position: 'absolute', left: 0, top: 0 },
+  clip: { position: 'absolute', left: 0, top: 0, overflow: 'hidden' },
+  origin: { position: 'absolute', left: 0, top: 0 },
 });

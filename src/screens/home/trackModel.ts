@@ -80,8 +80,18 @@ export type TrackPoint = {
   at: number;
 };
 
+/** A track point without the per-minute flag: the part that is the day's. */
+export type TrackBase = Omit<TrackPoint, 'remaining'>;
+
 export type TrackFrame = {
   kind: TrackKind;
+  /**
+   * The day's track, the same object for every minute of the same window
+   * at the same place (`sampleTrack` keeps it): the drawing builds its
+   * paths from this once, not once a minute. `points` is this with the
+   * minute's `remaining` flags.
+   */
+  base: TrackBase[];
   /** The sampled track, in time order, only the samples on the chart (above TRACK_FLOOR). */
   points: TrackPoint[];
   /** The body now, or null when it is off the chart. */
@@ -146,14 +156,42 @@ export function trackSpan(
 }
 
 /**
- * Today's track, sampled through `from`–`to`, and where the body and the
- * next prayer sit on it. Everything in the band's unit square.
+ * THE DAY'S TRACK IS SAMPLED ONCE.
+ *
+ * A track is 289 positions of the sun (a day at five minutes) or a night's
+ * worth of the moon's, each a page of trigonometry — 1.6 ms on a laptop's
+ * JIT, ten times that under Hermes on a phone — and it was sampled afresh
+ * every minute, and once per keyframe of a launch run, up to nine times in
+ * the run's first render. The track is the window's and the place's, not
+ * the minute's: it is sampled once per (body, window, place) and kept;
+ * the minute only places the body, the ring and the stretch on it.
+ * A handful of windows are kept — today's sun and tonight's moon, and a
+ * run's across midnight — and the oldest goes first.
  */
-export function trackFrame(input: TrackInput): TrackFrame {
-  const { kind, now, latitude, longitude, from, to, nextAt } = input;
+type Sampled = {
+  raw: Array<{ at: number; altitude: number; azimuth: number }>;
+  peak: number;
+  top: number;
+  byHour: boolean;
+  circumpolar: boolean;
+  across: (p: { at: number; azimuth: number }) => number;
+  base: TrackBase[];
+};
+const SAMPLED_KEEP = 4;
+const sampledCache = new Map<string, Sampled>();
+/** Coordinates to ~100 m: a reader's GPS jitter is not a new track. */
+const placeKey = (v: number) => v.toFixed(3);
+
+function sampleTrack(kind: TrackKind, t0: number, t1: number, latitude: number, longitude: number): Sampled {
+  const key = `${kind}|${t0}|${t1}|${placeKey(latitude)}|${placeKey(longitude)}`;
+  const kept = sampledCache.get(key);
+  if (kept) {
+    // Most recent last, so the oldest is the first the map iterates.
+    sampledCache.delete(key);
+    sampledCache.set(key, kept);
+    return kept;
+  }
   const step = TRACK_STEP_MINUTES * 60_000;
-  const t0 = from.getTime();
-  const t1 = Math.max(t0, to.getTime());
   const raw: Array<{ at: number; altitude: number; azimuth: number }> = [];
   for (let at = t0; at <= t1 + 1; at += step) {
     const p = positionOf(kind, new Date(at), latitude, longitude);
@@ -193,6 +231,39 @@ export function trackFrame(input: TrackInput): TrackFrame {
     }
     across = p => clamp01((p.azimuth - a) / (b - a));
   }
+  const base: TrackBase[] = raw
+    .filter(p => p.altitude >= TRACK_FLOOR)
+    .map(p => ({
+      x: across(p),
+      y: p.altitude >= 0 ? 1 - clamp01(p.altitude / top) : 1,
+      altitude: p.altitude,
+      under: p.altitude < 0,
+      at: p.at,
+    }));
+  const sampled: Sampled = { raw, peak, top, byHour, circumpolar, across, base };
+  sampledCache.set(key, sampled);
+  while (sampledCache.size > SAMPLED_KEEP) {
+    const oldest = sampledCache.keys().next().value;
+    if (oldest === undefined) break;
+    sampledCache.delete(oldest);
+  }
+  return sampled;
+}
+
+/** Forget the kept tracks (tests). */
+export function clearTrackCache(): void {
+  sampledCache.clear();
+}
+
+/**
+ * Today's track, sampled through `from`–`to`, and where the body and the
+ * next prayer sit on it. Everything in the band's unit square.
+ */
+export function trackFrame(input: TrackInput): TrackFrame {
+  const { kind, now, latitude, longitude, from, to, nextAt } = input;
+  const t0 = from.getTime();
+  const t1 = Math.max(t0, to.getTime());
+  const { peak, top, byHour, circumpolar, across, base } = sampleTrack(kind, t0, t1, latitude, longitude);
   const nextMs = nextAt ? nextAt.getTime() : null;
   const nowMs = now.getTime();
   const point = (p: { at: number; altitude: number; azimuth: number }): TrackPoint => ({
@@ -203,7 +274,7 @@ export function trackFrame(input: TrackInput): TrackFrame {
     remaining: nextMs != null && p.at >= nowMs && p.at <= nextMs,
     at: p.at,
   });
-  const points = raw.filter(p => p.altitude >= TRACK_FLOOR).map(point);
+  const points = base.map(p => ({ ...p, remaining: nextMs != null && p.at >= nowMs && p.at <= nextMs }));
   const here = positionOf(kind, now, latitude, longitude);
   const hereAz = chartAzimuth(here.azimuth, latitude);
   const body =
@@ -217,7 +288,7 @@ export function trackFrame(input: TrackInput): TrackFrame {
       ring = point({ at: nextAt.getTime(), altitude: n.altitude, azimuth: chartAzimuth(n.azimuth, latitude) });
     }
   }
-  return { kind, points, body, ring, peak, top, circumpolar, byHour };
+  return { kind, base, points, body, ring, peak, top, circumpolar, byHour };
 }
 
 /**

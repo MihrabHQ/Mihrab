@@ -1,5 +1,6 @@
 import {
   chartAzimuth,
+  clearTrackCache,
   TRACK_FLOOR,
   TRACK_MIN_TOP,
   trackFrame,
@@ -193,5 +194,40 @@ describe('the engine it reads', () => {
     expect(p.altitude).toBeGreaterThan(11);
     expect(p.altitude).toBeLessThan(16);
     expect(Math.abs(p.azimuth - 180)).toBeLessThan(10);
+  });
+});
+
+describe('the day is sampled once', () => {
+  const window = { from: new Date('2026-11-04T23:00:00Z'), to: new Date('2026-11-05T23:00:00Z') };
+  const at = (iso: string, where = STOCKHOLM) =>
+    trackFrame({ kind: 'sun', now: new Date(iso), nextAt: new Date('2026-11-05T14:54:00Z'), ...where, ...window });
+
+  it('keeps the same track through the minutes of a window', () => {
+    clearTrackCache();
+    const a = at('2026-11-05T12:40:00Z');
+    const b = at('2026-11-05T12:41:00Z');
+    expect(b.base).toBe(a.base);
+    // The minute still moves the body and the stretch.
+    expect(b.body!.x).not.toBe(a.body!.x);
+    expect(b.points.filter(p => p.remaining).length).toBeLessThanOrEqual(a.points.filter(p => p.remaining).length);
+  });
+
+  it('a few metres of GPS are the same place; another city is not', () => {
+    clearTrackCache();
+    const a = at('2026-11-05T12:40:00Z');
+    expect(at('2026-11-05T12:40:00Z', { latitude: 59.3301, longitude: 18.0702 }).base).toBe(a.base);
+    expect(at('2026-11-05T12:40:00Z', { latitude: 57.7, longitude: 11.97 }).base).not.toBe(a.base);
+  });
+
+  it('a minute after the first costs a small part of it', () => {
+    clearTrackCache();
+    const t0 = Date.now();
+    at('2026-11-05T12:40:00Z');
+    const first = Date.now() - t0;
+    const t1 = Date.now();
+    for (let m = 0; m < 60; m++) at(`2026-11-05T12:${String(m).padStart(2, '0')}:00Z`);
+    const hour = Date.now() - t1;
+    // An hour of minutes for not much more than one fresh sampling.
+    expect(hour).toBeLessThan(Math.max(20, first * 8));
   });
 });
