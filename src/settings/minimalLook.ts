@@ -39,14 +39,17 @@ export function minimalLook<T extends { minimalUi: boolean; tintedSurfaces: bool
 /**
  * Turning Minimal on puts the app in the Sky theme's Realistic colours —
  * the sky as it looks, over a calm page, the Sky theme's own default. It
- * was Vibrant, the palette Minimal's pages were first drawn in. Only the
- * turn: Vibrant and Classic stay choices under Minimal (Settings →
- * Appearance), and a reader who picks either afterwards keeps it.
+ * was Vibrant, the palette Minimal's pages were first drawn in. And in the
+ * Track (settings `heroLook`): Minimal's page is drawn for the chart — the
+ * horizon at the middle, the night under it, the interval's two prayers
+ * marked — where the painted sky needs the rail to say how far along the
+ * day is. Only the turn: Vibrant, Classic and Painted stay choices under
+ * Minimal (Settings → Appearance), and a reader who picks one afterwards
+ * keeps it until Minimal is next turned on.
  */
-export function enteringMinimal<T extends { minimalUi: boolean; appearance: string; skyVariant: string }>(
-  prev: { minimalUi: boolean },
-  next: T,
-): T {
+export function enteringMinimal<
+  T extends { minimalUi: boolean; appearance: string; skyVariant: string; heroLook: string },
+>(prev: { minimalUi: boolean }, next: T): T {
   if (!MINIMAL_OFFERED || prev.minimalUi || !next.minimalUi) return next;
-  return { ...next, appearance: 'sky', skyVariant: 'realistic' };
+  return { ...next, appearance: 'sky', skyVariant: 'realistic', heroLook: 'track' };
 }

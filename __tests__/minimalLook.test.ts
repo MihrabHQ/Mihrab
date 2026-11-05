@@ -40,18 +40,22 @@ describe('Minimal wears the classic colours', () => {
     );
   });
 
-  it('comes on in the Realistic sky, and Vibrant and Classic stay choices after', () => {
-    const off = { minimalUi: false, appearance: 'light', skyVariant: 'vibrant' };
+  it('comes on in the Realistic sky and the Track, and Vibrant, Classic and Painted stay choices after', () => {
+    const off = { minimalUi: false, appearance: 'light', skyVariant: 'vibrant', heroLook: 'sky' };
     expect(enteringMinimal(off, { ...off, minimalUi: true })).toEqual({
       minimalUi: true,
       appearance: 'sky',
       skyVariant: 'realistic',
+      heroLook: 'track',
     });
     // Already on: a later choice of Vibrant holds.
-    const vivid = { minimalUi: true, appearance: 'sky', skyVariant: 'vibrant' };
+    const vivid = { minimalUi: true, appearance: 'sky', skyVariant: 'vibrant', heroLook: 'track' };
     expect(enteringMinimal(vivid, vivid)).toBe(vivid);
+    // And of Painted.
+    const painted = { minimalUi: true, appearance: 'sky', skyVariant: 'realistic', heroLook: 'sky' };
+    expect(enteringMinimal(painted, painted)).toBe(painted);
     // And of Classic (light, dark, system).
-    const on = { minimalUi: true, appearance: 'dark', skyVariant: 'realistic' };
+    const on = { minimalUi: true, appearance: 'dark', skyVariant: 'realistic', heroLook: 'track' };
     expect(enteringMinimal(on, on)).toBe(on);
     // Turning it off changes nothing.
     expect(enteringMinimal(on, { ...on, minimalUi: false })).toEqual({ ...on, minimalUi: false });
@@ -65,7 +69,7 @@ describe('Minimal is not offered on the Mac', () => {
     const m = require('../src/settings/minimalLook');
     expect(m.MINIMAL_OFFERED).toBe(false);
     expect(m.minimalOn({ minimalUi: true })).toBe(false);
-    const s = { minimalUi: true, tintedSurfaces: true, useSystemDynamicTheme: false, appearance: 'light', skyVariant: 'realistic' };
+    const s = { minimalUi: true, tintedSurfaces: true, useSystemDynamicTheme: false, appearance: 'light', skyVariant: 'realistic', heroLook: 'sky' };
     // A colour theme stays a colour theme; turning it on changes no theme.
     expect(m.minimalLook(s)).toBe(s);
     expect(m.enteringMinimal({ minimalUi: false }, s)).toBe(s);
