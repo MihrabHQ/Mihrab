@@ -399,7 +399,7 @@ describe('the hero under the theme', () => {
     for (const mood of Object.values(SKY_MOODS)) expect(mood.heroFoot).toBe(mood.bg);
   });
 
-  it('is painted in the hero and in the launch run\'s keyframes alike, glows by night, and has the fuller stars', () => {
+  it('is painted in the hero and in the launch run\'s keyframes alike, with flat figures, and has the fuller stars', () => {
     const card = read('src/screens/home/TodayCard.tsx');
     // Every look has the theme's hero: Sky in the chosen colours, the
     // others in Realistic's, running into the page the theme draws.
@@ -407,11 +407,10 @@ describe('the hero under the theme', () => {
     expect(card).toMatch(/if \(skyTheme\) return themedSkyFrame\(f, mood\);/);
     expect(card).toMatch(/\{ \.\.\.mood, heroFoot: pageBg \},\s*mood\.isDark === pageDark \? SKY_THEME_MID_AT : lowMidAt/);
     expect(card).toMatch(/\[skyTheme, heroVariant, pageBg, pageDark, lowMidAt\]/);
-    expect(card).toMatch(/return paint\(skyFrame\(skyMoment\(day, at, tomorrowFajr\)/);
-    expect(card).toMatch(/textShadowColor: `\$\{mood\.accent\}\$\{alpha\}`/);
-    // The ordinary halo's strength; it brightens only in the last minutes.
-    expect(card).toContain('const GLOW_ALPHA = 0x73;');
-    expect(card).toMatch(/if \(!mood\.isDark\) return null;/);
+    expect(card).toMatch(/const f = paint\(skyFrame\(skyMoment\(day, at, tomorrowFajr\)/);
+    // The countdown is flat ink in every sky: no halo, no tint of the hour.
+    expect(card).not.toMatch(/textShadow/);
+    expect(card).toMatch(/const digitInk = ink\.text;/);
     expect(card).toMatch(/\n\s+denseStars\n/);
     const sky = read('src/screens/home/HeroSky.tsx');
     expect(sky).toMatch(/const field = dense \? STAR_FIELD_DENSE : STAR_FIELD;/);
@@ -515,8 +514,6 @@ describe('access and polish', () => {
     expect(root).toMatch(/setLaunchSnapshotLook\(lookKeyOf\(settings\), settings\.appearance === 'system'\);/);
     expect(root).not.toMatch(/lookMoodKey/);
     const card = read('src/screens/home/TodayCard.tsx');
-    expect(card).toMatch(/const moreContrast = useIncreasedContrast\(\);/);
-    expect(card).toMatch(/if \(moreContrast\) return null;/);
     // The hero asks for the crossfade before it repaints across the switch.
     expect(card).toMatch(/if \(!posed && !launchRun && moodDark != null && lastMoodDark\.current != null && lastMoodDark\.current !== moodDark\) \{\s*crossfadeScreen\(\);/);
     const hook = read('src/hooks/useIncreasedContrast.ts');

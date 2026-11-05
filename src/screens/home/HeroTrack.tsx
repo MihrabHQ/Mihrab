@@ -196,9 +196,9 @@ function HeroTrackImpl({
             transform: [{ translateX: ride.tx }, { translateY: ride.ty }],
           }}>
           {body.kind === 'sun' ? (
-            <View style={{ marginLeft: -sunR, marginTop: -sunR, width: sunR * 2, height: sunR * 2, borderRadius: sunR, backgroundColor: body.light }} />
+            <View style={{ transform: [{ translateX: -sunR }, { translateY: -sunR }], width: sunR * 2, height: sunR * 2, borderRadius: sunR, backgroundColor: body.light }} />
           ) : (
-            <View style={{ marginLeft: -MOON / 2, marginTop: -MOON / 2, width: MOON, height: MOON }}>
+            <View style={{ transform: [{ translateX: -MOON / 2 }, { translateY: -MOON / 2 }], width: MOON, height: MOON }}>
               <Moon illuminated={body.illuminated} tilt={body.tilt} lit={body.light} />
             </View>
           )}

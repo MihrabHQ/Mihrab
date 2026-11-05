@@ -269,7 +269,7 @@ describe('wiring', () => {
     // The hero builds the keyframes once per run and owns the value…
     expect(card).toMatch(/new Animated\.Value\(0, \{ useNativeDriver: true \}\)/);
     expect(card).toMatch(/const K = Math\.max\(2, Math\.min\(SKY_RUN_KEYFRAMES_MAX, Math\.ceil\(hours\) \+ 1\)\);/);
-    expect(card).toMatch(/skyRunRef\.current = \{ frames, progress: runProgress\.current \};/);
+    expect(card).toMatch(/skyRunRef\.current = \{ frames: frames\.map\(f => f\.frame\), progress: runProgress\.current, tracks \};/);
     // …and once the run begins, hands it to native to animate to its end
     // over the run's remaining length, with the run's own easing from
     // where it is — the per-frame values did not reach the layers in time
@@ -283,7 +283,7 @@ describe('wiring', () => {
     expect(card).toMatch(/run=\{skyRun \?\? undefined\}/);
     // …and the sky draws the layers, not the frame, while it runs.
     expect(sky).toMatch(/const running = run && size\.width > 0 && size\.height > 0;/);
-    expect(sky).toMatch(/<SkyRunLayers run=\{run\}/);
+    expect(sky).toMatch(/<SkyRunLayers\s+run=\{run\}/);
     expect(sky).toMatch(/const SkyRunLayers = memo\(SkyRunLayersImpl\);/);
     // Every layer is an interpolation of the one value; a layer is dropped
     // once the next is in; the gradients and the halo are native

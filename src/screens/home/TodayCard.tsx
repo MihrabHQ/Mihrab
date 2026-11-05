@@ -48,7 +48,6 @@ import { useTranslation } from 'react-i18next';
 import { useIsActive, useIsOnScreen } from '../../hooks/useIsActive';
 import { useLively } from '../../hooks/useLively';
 import { useReduceMotion } from '../../hooks/useReduceMotion';
-import { useIncreasedContrast } from '../../hooks/useIncreasedContrast';
 import {
   easeOutCubic,
   launchRunDurationMs,
@@ -122,7 +121,6 @@ import {
   SKY_FADE_LOW_MID_AT,
   SKY_THEME_MID_AT,
   skyFrame,
-  mixHex,
   skyInkAt,
   skyMoment,
   themedSkyFrame,
@@ -170,17 +168,8 @@ import { VerticalBarActionsBand } from '../../navigation/VerticalTabBar';
  * it and a generous hit slop instead.
  */
 const CHEVRON_SIZE = 20;
-/** The countdown's halo under the Sky theme by night — its blur, and the room its text is given for it. */
-const GLOW_RADIUS = 14;
-/** The halo's strength (0–255): the ordinary one, and the one it reaches at the prayer's time. */
-const GLOW_ALPHA = 0x73;
-const GLOW_ALPHA_NEAR = 0xb4;
-/** The halo starts to brighten this far from the prayer: the last five minutes. */
-const GLOW_NEAR_SECONDS = 5 * 60;
 /** Minimal: the seconds appear this close to the prayer — the last five minutes. */
 const MINIMAL_SECONDS_UNDER = 5 * 60;
-/** Minimal: how far the figures go from the ink toward the hour's accent. */
-const MINIMAL_DIGIT_TINT = 0.45;
 /** The unit letters' size in the figures' em, and the seconds' unit in theirs. */
 const UNIT_EM = 0.4;
 const SECONDS_UNIT_EM = 0.7;
@@ -1135,11 +1124,10 @@ const HeroToday = memo(function HeroToday({
   const yCountdown = measured ? heroY.countdown : HERO_Y.countdown;
   const yFoot = measured ? heroY.foot : HERO_Y.foot;
   /**
-   * Under the Sky theme, by night, the countdown glows: a soft halo of the
-   * hour's accent behind the white digits — cyan at night, coral at dawn,
-   * magenta in the evening — which is what makes a dark page read as lit
-   * rather than merely dark. By day the ink is dark on a light sky and a
-   * glow would only blur it, so there is none.
+   * The countdown is flat ink, in every sky and both colour sets: no halo
+   * of the hour's accent behind it by night, no tint toward it in Minimal.
+   * The sky carries the hour's colour; the figures are only read, and a
+   * glow or a tint blurred them and made them a colour of the theme.
    */
   /**
    * The hero is the first thing to repaint when the hour turns from dark to
@@ -1160,46 +1148,6 @@ const HeroToday = memo(function HeroToday({
     crossfadeScreen();
   }
   lastMoodDark.current = moodDark;
-  const moreContrast = useIncreasedContrast();
-  // The last minutes: the halo brightens slowly as the prayer comes, in
-  // tenths, so the approach is felt before it is read — and settles when
-  // the time arrives. Zero until the final minutes, so nothing re-renders
-  // on an ordinary tick.
-  const near = shownRemaining < GLOW_NEAR_SECONDS ? Math.round((1 - shownRemaining / GLOW_NEAR_SECONDS) * 10) / 10 : 0;
-  const glow = useMemo(() => {
-    // The digits' halo on a night sky, in every look now that every look
-    // has the Sky theme's hero.
-    if (moreContrast) return null;
-    const mood = skyMoodFor(frame.passage, frame.t, undefined, heroVariant, frame.light);
-    if (!mood.isDark) return null;
-    const alpha = Math.round(GLOW_ALPHA + (GLOW_ALPHA_NEAR - GLOW_ALPHA) * near)
-      .toString(16)
-      .padStart(2, '0');
-    return {
-      textShadowColor: `${mood.accent}${alpha}`,
-      textShadowRadius: GLOW_RADIUS,
-      textShadowOffset: { width: 0, height: 0 },
-      // UIKit draws a text view's shadow inside the view's own frame, so a
-      // halo wider than the glyphs was cut square at the frame — on the
-      // Mac a hard-edged box round each piece, sharpest at the right of
-      // the minutes. The frame is grown by the halo and the room taken
-      // back, so the halo has room and the row does not move.
-      padding: GLOW_RADIUS,
-      margin: -GLOW_RADIUS,
-    };
-  }, [heroVariant, moreContrast, frame.passage, frame.t, frame.light, near]);
-  // The halo on the figures' span; the room it needs is on the line's view.
-  const glowSpan = useMemo(
-    () =>
-      glow
-        ? {
-            textShadowColor: glow.textShadowColor,
-            textShadowRadius: glow.textShadowRadius,
-            textShadowOffset: glow.textShadowOffset,
-          }
-        : null,
-    [glow],
-  );
   /**
    * The baselines of the countdown and of the time, from the text engine.
    *
@@ -1280,20 +1228,7 @@ const HeroToday = memo(function HeroToday({
     () => [styles.heroUnit, { fontSize: Math.round(secondsSize * SECONDS_UNIT_EM), color: ink.muted }],
     [secondsSize, ink.muted],
   );
-  /**
-   * Minimal: the figures take a little of the hour's own light. The sky
-   * already derives an accent for the hour — coral at dawn, moonlight
-   * blue by night, terracotta under a low sun — and the digits, the one
-   * thing on the page, are tinted part way from the ink toward it: still
-   * the ink's contrast against the sky, but the number belongs to that
-   * sky and no other. The full page keeps the plain ink, and so does
-   * Minimal when more contrast is asked for.
-   */
-  const digitInk = useMemo(() => {
-    if (!minimal || moreContrast) return ink.text;
-    const mood = skyMoodFor(frame.passage, frame.t, undefined, heroVariant, frame.light);
-    return mixHex(ink.text, mood.accent, MINIMAL_DIGIT_TINT);
-  }, [minimal, moreContrast, ink.text, frame.passage, frame.t, frame.light, heroVariant]);
+  const digitInk = ink.text;
   const eyebrowLabel = useMemo(
     () =>
       t('home.nextPrayerIn', {
@@ -1474,7 +1409,6 @@ const HeroToday = memo(function HeroToday({
             minimal && styles.heroCountdownLineMinimal,
             tabularNumeralStyle,
             { writingDirection: rtl ? 'rtl' : 'ltr' },
-            glow ? { padding: glow.padding, margin: glow.margin } : null,
           ]}
           numberOfLines={1}
           maxFontSizeMultiplier={TABULAR_MAX_FONT_SCALE}
@@ -1493,7 +1427,6 @@ const HeroToday = memo(function HeroToday({
               minimal && styles.heroCountdownMinimal,
               expanded && styles.heroCountdownExpanded,
               { color: digitInk },
-              glowSpan,
             ]}>
             {/* A hair of space before each unit: the figures are tracked
                 tight (−1.5), which pulls the letter under the last digit's
