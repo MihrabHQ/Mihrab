@@ -142,6 +142,7 @@ function HeroSkyImpl({
   track,
   trackInk,
   trackLabels,
+  trackDepth = false,
 }: {
   frame: SkyFrame;
   /**
@@ -157,6 +158,8 @@ function HeroSkyImpl({
   trackInk?: string;
   /** The chart's parts named, shown on a tap of the band (TrackExplainer). */
   trackLabels?: TrackLabels;
+  /** The chart goes on under the line to its floor (HeroTrack's `depth`): Minimal's. */
+  trackDepth?: boolean;
   /** While a launch run draws: the sky as native layers, not `frame`. */
   run?: SkyRun;
   /**
@@ -406,6 +409,7 @@ function HeroSkyImpl({
           horizon={horizon}
           ink={trackInk}
           labels={trackLabels}
+          depth={trackDepth}
           // Through a launch run the chart stands and the body rides the
           // run's progress along it; the rest is drawn as it will be.
           run={running && run?.tracks ? { tracks: run.tracks, progress: run.progress } : undefined}

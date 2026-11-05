@@ -43,6 +43,12 @@ export type LabelGeometry = {
   bandTop: number;
   /** The hairline: names stay above it. */
   horizon: number;
+  /**
+   * The chart's floor, when it goes on under the line (HeroTrack's
+   * `depth`): names may stand under the line too, down to it — a ring at
+   * Fajr is under it — but never across it.
+   */
+  bottom?: number;
   /** A point on the chart to dp. */
   X: (p: TrackBase) => number;
   Y: (p: TrackBase) => number;
@@ -111,9 +117,10 @@ export function placeTrackLabels(
   const minX = LABEL_INSET;
   const maxX = g.width - LABEL_INSET;
   const minY = g.bandTop + 2;
-  const maxY = g.horizon - 2;
+  const maxY = (g.bottom ?? g.horizon) - 2;
+  const crosses = (b: Box) => b.y < g.horizon + 2 && b.y + b.h > g.horizon - 2;
   const fits = (b: Box) =>
-    b.x >= minX && b.x + b.w <= maxX && b.y >= minY && b.y + b.h <= maxY;
+    b.x >= minX && b.x + b.w <= maxX && b.y >= minY && b.y + b.h <= maxY && !crosses(b);
   const attempt = (horizonFirst: boolean): PlacedLabel[] => {
     // What a name must not cover: the body, the ring.
     const taken: Box[] = [];

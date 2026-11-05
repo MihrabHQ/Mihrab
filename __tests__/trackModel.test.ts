@@ -262,3 +262,37 @@ describe('the day is sampled once', () => {
     expect(hour).toBeLessThan(Math.max(20, first * 8));
   });
 });
+
+describe('trackFrame — the sun past the floor', () => {
+  // Stockholm, 5 November, 22:00 CET: the sun is ~45° under, past the
+  // chart's floor; the window is the 24 hours ending at tomorrow's Fajr.
+  const fajr = new Date('2026-11-06T03:57:00Z');
+  const f = trackFrame({
+    kind: 'sun',
+    now: new Date('2026-11-05T21:00:00Z'),
+    nextAt: fajr,
+    ...STOCKHOLM,
+    from: new Date(fajr.getTime() - 24 * 3_600_000),
+    to: fajr,
+  });
+
+  it('has no body on the chart, but says where across it stands on the floor', () => {
+    expect(f.body).toBeNull();
+    expect(f.deep).not.toBeNull();
+    expect(f.deep!).toBeGreaterThanOrEqual(0);
+    expect(f.deep!).toBeLessThanOrEqual(1);
+  });
+
+  it('puts the Fajr ring under the line, at the depth Fajr is reckoned by', () => {
+    expect(f.ring).not.toBeNull();
+    expect(f.ring!.under).toBe(true);
+    expect(f.ring!.altitude).toBeLessThan(-12);
+    expect(f.ring!.altitude).toBeGreaterThan(TRACK_FLOOR);
+  });
+
+  it('is on the chart when the body is', () => {
+    const day = trackFrame({ kind: 'sun', now: new Date('2026-11-05T11:00:00Z'), nextAt: null, ...STOCKHOLM, ...{ from: new Date('2026-11-04T23:00:00Z'), to: new Date('2026-11-05T23:00:00Z') } });
+    expect(day.body).not.toBeNull();
+    expect(day.deep).toBeNull();
+  });
+});

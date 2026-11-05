@@ -391,3 +391,14 @@ describe('under the Track', () => {
     expect(card).toMatch(/\{`\$\{targetLabel\} · \$\{targetClock\}`\}/);
   });
 });
+
+describe('the Track takes the room', () => {
+  it('brings the horizon to the middle and draws the depth under it, following the sun to the next prayer', () => {
+    expect(card).toMatch(/const trackDepth = railHidden && MINIMAL_TRACK_DEPTH;/);
+    expect(card).toMatch(/minimal && \(railHidden \? styles\.heroSceneAboveTrack : styles\.heroSceneAbove\)/);
+    expect(card).toMatch(/railHidden \? styles\.heroSceneBelowTrack : styles\.heroSceneBelow/);
+    // The 24 hours that end at the next prayer: now and the ring on one loop.
+    expect(card).toMatch(/from: new Date\(Math\.min\(at\.getTime\(\), targetAtMs - 24 \* 3_600_000\)\)/);
+    expect(card).toMatch(/trackDepth=\{trackDepth\}/);
+  });
+});

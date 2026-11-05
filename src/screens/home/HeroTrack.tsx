@@ -5,7 +5,7 @@ import Svg, { Circle, ClipPath, Defs, G, Line, Path, Rect } from 'react-native-s
 import { MOON, Moon, moonLitPath, NEW_MOON_BELOW, SUN_R } from './HeroSky';
 import { type SkyFrame } from './skyModel';
 import { SUN_SURFACE, tintedBy } from './skyLight';
-import { type TrackBase, type TrackFrame } from './trackModel';
+import { TRACK_FLOOR, TRACK_STEP_MINUTES, type TrackBase, type TrackFrame } from './trackModel';
 
 /**
  * The Track look's drawing — see trackModel.ts for what it is and why.
@@ -52,12 +52,23 @@ function HeroTrackImpl({
   frame,
   width,
   bandTop,
-  horizon,
+  horizon: given,
   ink,
   run,
   labels,
+  depth = false,
 }: {
   track: TrackFrame;
+  /**
+   * THE DEPTH UNDER THE LINE (Minimal under the Track). The chart goes on
+   * under the horizon to its floor, to the same scale as above it: the
+   * sun's path down into the twilights and up out of them, the ring at
+   * Fajr or Isha where the sun will be then — the depth those prayers
+   * are reckoned by — and a sun past the floor (the night's deep)
+   * standing on the floor. `horizon` is then the floor's y; the line is
+   * placed above it so that a degree is the same height either side.
+   */
+  depth?: boolean;
   frame: SkyFrame;
   labels?: TrackLabels;
   /**
@@ -73,7 +84,7 @@ function HeroTrackImpl({
   width: number;
   /** The band's top, dp from the sky's top: the foot of the chrome row. */
   bandTop: number;
-  /** The hairline's y, dp from the sky's top. */
+  /** The hairline's y, dp from the sky's top — or, with `depth`, the floor's. */
   horizon: number;
   /** The hero's ink at the band, hex. */
   ink: string;
@@ -81,7 +92,13 @@ function HeroTrackImpl({
   const body = frame.body;
   const margin = MOON / 2;
   const roomTop = bandTop + margin;
+  // With the depth, the band is the chart from its top to its floor, and
+  // the line divides it in the ratio of the degrees either side.
+  const floor = given;
+  const below = -TRACK_FLOOR;
+  const horizon = depth ? roomTop + Math.max(0, floor - roomTop) * (track.top / (track.top + below)) : given;
   const room = Math.max(0, horizon - roomTop);
+  const deepRoom = Math.max(0, floor - horizon);
   /**
    * THE BITMAP IS THE BAND'S. On Android every <Svg> is an ARGB bitmap the
    * size of its view (HeroSky draws the sky as views for that reason), and
@@ -91,9 +108,14 @@ function HeroTrackImpl({
    * coordinates kept by the viewBox's offset.
    */
   const svgTop = Math.max(0, Math.floor(bandTop - 2));
-  const height = Math.max(1, Math.ceil(horizon + UNDER_R + 2) - svgTop);
+  const height = Math.max(1, Math.ceil(floor + UNDER_R + 2) - svgTop);
   const X = (p: TrackBase) => p.x * width;
-  const Y = (p: TrackBase) => (p.under ? horizon : roomTop + p.y * room);
+  const Y = (p: TrackBase) =>
+    !p.under
+      ? roomTop + p.y * room
+      : depth
+        ? horizon + Math.min(1, -p.altitude / below) * deepRoom
+        : horizon;
 
   /**
    * THE DAY'S LINES ARE BUILT ONCE. The tinted track is the window's
@@ -133,6 +155,28 @@ function HeroTrackImpl({
     // X and Y are closures over the layout numbers, which the deps carry.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [track.base, track.kind, width, roomTop, room, horizon, ink, moonLight]);
+  /**
+   * Under the line, with the depth: the track on down to the floor, in the
+   * ink, fainter than the sky's part — the sun is not seen there, only
+   * reckoned. A run breaks where the track leaves the chart (past the
+   * floor, a gap in the samples) and at a circumpolar seam.
+   */
+  const step = TRACK_STEP_MINUTES * 60_000;
+  const breaks = (p: TrackBase, prev: TrackBase) => Math.abs(p.x - prev.x) > 0.5 || p.at - prev.at > step * 1.5;
+  const under = useMemo(() => {
+    if (!depth) return '';
+    const pts = track.base;
+    const parts: string[] = [];
+    for (let i = 1; i < pts.length; i++) {
+      const p = pts[i];
+      const prev = pts[i - 1];
+      if ((!p.under && !prev.under) || breaks(p, prev)) continue;
+      parts.push(`M${X(prev).toFixed(1)} ${Y(prev).toFixed(1)} L${X(p).toFixed(1)} ${Y(p).toFixed(1)}`);
+    }
+    return parts.join(' ');
+    // X, Y and breaks are closures over the layout numbers, which the deps carry.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [depth, track.base, width, roomTop, room, horizon, deepRoom]);
   const drawn = useMemo(() => {
     const stretch: string[] = [];
     const alongLine: { x1: number; x2: number }[] = [];
@@ -142,7 +186,10 @@ function HeroTrackImpl({
       const prev = pts[i - 1];
       if (!p.remaining || !prev.remaining) continue;
       if (Math.abs(p.x - prev.x) > 0.5) continue;
-      if (!p.under && !prev.under) {
+      if (depth) {
+        // To the floor and back: the stretch follows the track either side of the line.
+        if (!breaks(p, prev)) stretch.push(`M${X(prev).toFixed(1)} ${Y(prev).toFixed(1)} L${X(p).toFixed(1)} ${Y(p).toFixed(1)}`);
+      } else if (!p.under && !prev.under) {
         stretch.push(`M${X(prev).toFixed(1)} ${Y(prev).toFixed(1)} L${X(p).toFixed(1)} ${Y(p).toFixed(1)}`);
       } else if (p.under && prev.under) {
         alongLine.push({ x1: X(prev), x2: X(p) });
@@ -150,7 +197,7 @@ function HeroTrackImpl({
     }
     return { above, stretch: stretch.join(' '), alongLine };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [above, track.points, width, roomTop, room, horizon]);
+  }, [above, track.points, width, roomTop, room, horizon, depth, deepRoom]);
 
   const ring = track.ring;
   const at = track.body;
@@ -185,7 +232,7 @@ function HeroTrackImpl({
     };
     // X and Y are closures over the layout numbers, which the deps carry.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [run, width, roomTop, room, horizon]);
+  }, [run, width, roomTop, room, horizon, deepRoom]);
   const bodyView =
     ride && body.kind !== 'none' ? (
       <View style={[styles.clip, { width, height: Math.max(0, horizon) }]} pointerEvents="none">
@@ -215,6 +262,7 @@ function HeroTrackImpl({
       {drawn.above.map((seg, i) => (
         <Path key={i} d={seg.d} stroke={seg.stroke} strokeWidth={TRACK_W} strokeOpacity={0.55} strokeLinecap="round" fill="none" />
       ))}
+      {under ? <Path d={under} stroke={ink} strokeWidth={TRACK_W} strokeOpacity={0.3} strokeLinecap="round" fill="none" /> : null}
       {running
         ? null
         : drawn.alongLine.map((l, i) => (
@@ -224,16 +272,20 @@ function HeroTrackImpl({
         <Path d={drawn.stretch} stroke={ink} strokeWidth={STRETCH_W} strokeOpacity={0.6} strokeLinecap="round" fill="none" />
       ) : null}
       <Line x1={0} y1={horizon} x2={width} y2={horizon} stroke={ink} strokeWidth={TRACK_W} strokeOpacity={0.5} />
-      {!running && at && !at.under && body.kind === 'sun' ? (
+      {!running && at && !at.under && body.kind === 'sun' && track.kind === 'sun' ? (
         <G clipPath={`url(#${clipId})`}>
           <Circle cx={X(at)} cy={Y(at) + 2 * body.below * sunR} r={sunR} fill={body.light} fillOpacity={body.alpha} />
         </G>
       ) : null}
-      {!running && at && !at.under && body.kind === 'moon' ? (
+      {!running && at && !at.under && body.kind === 'moon' && track.kind === 'moon' ? (
         <MoonDisc cx={X(at)} cy={Y(at)} illuminated={body.illuminated} tilt={body.tilt} lit={body.light} alpha={body.alpha} />
       ) : null}
       {!running && at && at.under ? (
-        <Circle cx={X(at)} cy={horizon} r={UNDER_R} stroke={ink} strokeWidth={TRACK_W} strokeOpacity={0.8} fill="none" />
+        <Circle cx={X(at)} cy={Y(at)} r={UNDER_R} stroke={ink} strokeWidth={TRACK_W} strokeOpacity={0.8} fill="none" />
+      ) : null}
+      {!running && depth && !at && track.deep != null ? (
+        // Past the floor: standing on it, where it will come up from.
+        <Circle cx={track.deep * width} cy={floor} r={UNDER_R} stroke={ink} strokeWidth={TRACK_W} strokeOpacity={0.8} fill="none" />
       ) : null}
       {ring ? (
         <Circle cx={X(ring)} cy={Y(ring)} r={RING_R} stroke={ink} strokeWidth={1} strokeOpacity={0.95} fill="none" />
@@ -251,7 +303,7 @@ function HeroTrackImpl({
     if (!labels || !labels.open) return null;
     const placed = placeTrackLabels(
       track,
-      { width, bandTop, horizon, X, Y },
+      { width, bandTop, horizon, bottom: depth ? floor : undefined, X, Y },
       { path: labels.path, below: labels.below, horizon: labels.horizon, prayer: labels.prayer },
       PixelRatio.getFontScale(),
     );
@@ -293,7 +345,7 @@ function HeroTrackImpl({
             <Path d={drawn.stretch} stroke={ink} strokeWidth={STRETCH_W} strokeOpacity={0.6} strokeLinecap="round" fill="none" />
           ) : null}
           {at && at.under ? (
-            <Circle cx={X(at)} cy={horizon} r={UNDER_R} stroke={ink} strokeWidth={TRACK_W} strokeOpacity={0.8} fill="none" />
+            <Circle cx={X(at)} cy={Y(at)} r={UNDER_R} stroke={ink} strokeWidth={TRACK_W} strokeOpacity={0.8} fill="none" />
           ) : null}
         </Svg>
       </Animated.View>

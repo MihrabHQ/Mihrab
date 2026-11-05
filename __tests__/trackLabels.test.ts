@@ -153,3 +153,40 @@ describe('labelWidth', () => {
     expect(labelWidth('Horizon', 3)).toBe(labelWidth('Horizon', 1.3));
   });
 });
+
+describe('with the depth under the line', () => {
+  it('may name a ring under the line, and never sets a name across it', () => {
+    const fajr = new Date('2026-11-06T03:57:00Z');
+    const track = trackFrame({
+      kind: 'sun',
+      now: new Date('2026-11-05T21:00:00Z'),
+      nextAt: fajr,
+      latitude: 59.33,
+      longitude: 18.07,
+      from: new Date(fajr.getTime() - 24 * 3_600_000),
+      to: fajr,
+    });
+    const width = 412;
+    const bandTop = 110;
+    const floor = 420;
+    const roomTop = bandTop + 11;
+    const horizon = roomTop + (floor - roomTop) * (track.top / (track.top + 20));
+    const X = (p: { x: number }) => p.x * width;
+    const Y = (p: { under: boolean; y: number; altitude: number }) =>
+      p.under ? horizon + Math.min(1, -p.altitude / 20) * (floor - horizon) : roomTop + p.y * (horizon - roomTop);
+    const placed = placeTrackLabels(
+      track,
+      { width, bandTop, horizon, bottom: floor, X, Y },
+      { path: "Sun's path", below: 'Sun below the horizon', horizon: 'Horizon', prayer: 'Fajr' },
+      1,
+    );
+    const prayer = placed.find(l => l.key === 'prayer');
+    expect(prayer).toBeDefined();
+    expect(prayer!.y).toBeGreaterThan(horizon);
+    for (const l of placed) {
+      const across = l.y < horizon + 2 && l.y + l.h > horizon - 2;
+      expect([l.key, across]).toEqual([l.key, false]);
+      expect(l.y + l.h).toBeLessThanOrEqual(floor - 2);
+    }
+  });
+});

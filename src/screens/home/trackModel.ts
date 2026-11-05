@@ -106,6 +106,13 @@ export type TrackFrame = {
   circumpolar: boolean;
   /** True when placed across by the hour rather than the azimuth. */
   byHour: boolean;
+  /**
+   * Where across the body is when it is under the chart's floor (the
+   * night's deep, past the twilights), 0–1, or null when it is on the
+   * chart. The drawing that shows the depth (HeroTrack's `depth`) stands
+   * it on the floor there.
+   */
+  deep: number | null;
 };
 
 export type TrackInput = {
@@ -332,7 +339,8 @@ export function trackFrame(input: TrackInput): TrackFrame {
       ring = point({ at: nextAt.getTime(), altitude: n.altitude, azimuth: chartAzimuth(n.azimuth, latitude) });
     }
   }
-  return { kind, base, points, body, ring, peak, top, circumpolar, byHour };
+  const deep = body == null && onPass(nowMs) ? across({ at: nowMs, azimuth: hereAz }) : null;
+  return { kind, base, points, body, ring, peak, top, circumpolar, byHour, deep };
 }
 
 /**

@@ -168,6 +168,8 @@ import { VerticalBarActionsBand } from '../../navigation/VerticalTabBar';
  * it and a generous hit slop instead.
  */
 const CHEVRON_SIZE = 20;
+/** Minimal under the Track: the chart goes on under the line to its floor (see `trackDepth`). */
+const MINIMAL_TRACK_DEPTH = true;
 /** Minimal: the seconds appear this close to the prayer — the last five minutes. */
 const MINIMAL_SECONDS_UNDER = 5 * 60;
 /** The unit letters' size in the figures' em, and the seconds' unit in theirs. */
@@ -642,6 +644,17 @@ const HeroToday = memo(function HeroToday({
    * reads them.
    */
   const railHidden = minimal && heroLook === 'track' && typeof latitude === 'number' && typeof longitude === 'number';
+  /**
+   * MINIMAL'S TRACK GOES UNDER THE LINE. With the rail gone the page had
+   * half a screen of empty sky under the figures, and the chart squeezed
+   * into a strip at the top. The chart takes the room: the horizon comes
+   * down to the page's middle and the countdown stands under it, and the
+   * chart goes on under the line to its floor, to the same scale — the
+   * sun's path down into the twilights and back, Fajr's and Isha's rings
+   * at the depth those prayers are reckoned by. Under it the band follows
+   * the sun all night, since that depth is what the night's prayers are.
+   */
+  const trackDepth = railHidden && MINIMAL_TRACK_DEPTH;
   const breathing = minimal && !railHidden && lively && !reduceMotion && !posed;
   const breath = useRef(new Animated.Value(0)).current;
   useEffect(() => {
@@ -904,10 +917,24 @@ const HeroToday = memo(function HeroToday({
         if (sunrise.getTime() < at.getTime()) sunrise = addDays(sunrise, 1);
         night = { maghrib, sunrise };
       }
-      const window = trackWindow(passage, at, night);
+      // Under the line the sun is followed through the night, so the window
+      // is the 24 hours that END at the next prayer, not the calendar's
+      // day: it holds now and the next prayer at once — at 18:00 the
+      // evening behind and tomorrow's Fajr ahead — and stays the same for
+      // the whole of a prayer's interval (one sampling per interval).
+      // Across is by azimuth, so whichever 24 hours they are, the loop is
+      // the day's one loop; where it closes, a day apart, the two ends are
+      // a fraction of a degree out, and that seam is under the ring.
+      const window = trackDepth
+        ? {
+            kind: 'sun' as const,
+            from: new Date(Math.min(at.getTime(), targetAtMs - 24 * 3_600_000)),
+            to: new Date(Math.max(at.getTime(), targetAtMs)),
+          }
+        : trackWindow(passage, at, night);
       return trackFrame({ ...window, now: at, latitude, longitude, nextAt: new Date(targetAtMs) });
     },
-    [heroLook, latitude, longitude, skyToday, today, targetAtMs],
+    [heroLook, latitude, longitude, skyToday, today, targetAtMs, trackDepth],
   );
   const skyRunRef = useRef<SkyRun | null>(null);
   if (launchRun && warp && !skyRunRef.current) {
@@ -1322,6 +1349,7 @@ const HeroToday = memo(function HeroToday({
         track={track}
         trackInk={inkTop.text}
         trackLabels={trackLabels}
+        trackDepth={trackDepth}
         bleed={
           bleed ?? {
             horizontal: SPACING.xl,
@@ -1369,7 +1397,7 @@ const HeroToday = memo(function HeroToday({
             kind={track.kind}
             prayer={targetLabel}
             onPress={explain.toggle}
-            style={[styles.heroScene, minimal && styles.heroSceneAbove, { minHeight: HERO_SCENE_MIN[tier] }]}
+            style={[styles.heroScene, minimal && (railHidden ? styles.heroSceneAboveTrack : styles.heroSceneAbove), { minHeight: HERO_SCENE_MIN[tier] }]}
           />
         ) : (
           <View style={[styles.heroScene, minimal && styles.heroSceneAbove, { minHeight: HERO_SCENE_MIN[tier] }]} />
@@ -1602,7 +1630,7 @@ const HeroToday = memo(function HeroToday({
       </View>
       {/* Minimal: as much sky under the block as over it, so the figures
           stand in the middle of the page — and the footer at its foot. */}
-      {minimal && fill ? <View style={[styles.heroScene, styles.heroSceneBelow]} /> : null}
+      {minimal && fill ? <View style={[styles.heroScene, railHidden ? styles.heroSceneBelowTrack : styles.heroSceneBelow]} /> : null}
       {/* The way to the day's times, said once: a chevron over the footer,
           the shape of the drag up that opens them. */}
       {minimal && fill ? (
@@ -3197,6 +3225,10 @@ const styles = StyleSheet.create({
   // of sky above the block, eleven below.
   heroSceneAbove: { flexGrow: 9 },
   heroSceneBelow: { flexGrow: 11 },
+  // Minimal under the Track: the chart takes the room the rail left — three
+  // parts of four above the figures, the horizon at the page's middle.
+  heroSceneAboveTrack: { flexGrow: 15 },
+  heroSceneBelowTrack: { flexGrow: 5 },
   // Sentence case, quiet: the countdown is the thing the eye lands on and
   // the eyebrow only names what it counts to. It was an uppercase,
   // letterspaced overline — the 2016 idiom (docs/design/redesign-plan.md
