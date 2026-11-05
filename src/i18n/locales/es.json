@@ -1824,7 +1824,7 @@
     "groupRecitation": "Recitación",
     "groupMeaning": "Traducción y tafsir",
     "groupTypefaces": "Tipografías",
-    "footer": "Cada línea enlaza con su fuente.",
+    "footer": "Cada línea enlaza con su fuente. Lo que Mihrab descarga se sirve desde su propia copia de estas fuentes, y solo se pide a la fuente cuando esa copia no puede responder.",
     "quranText": "Texto coránico uzmaní",
     "mushafImages": "Imágenes de páginas del mushaf (604)",
     "translationEditions": "Ediciones de traducción ({{n}})",

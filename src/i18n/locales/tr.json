@@ -1823,7 +1823,7 @@
     "groupRecitation": "Tilavet",
     "groupMeaning": "Meal ve tefsir",
     "groupTypefaces": "Yazı tipleri",
-    "footer": "Her satır kaynağına bağlanır.",
+    "footer": "Her satır kaynağına bağlanır. Mihrab’ın indirdikleri bu kaynakların kendi kopyasından sunulur; kaynağın kendisine yalnızca bu kopya yanıt veremediğinde başvurulur.",
     "quranText": "Kur’an — Osmani metni",
     "mushafImages": "Mushaf sayfa görselleri (604)",
     "translationEditions": "Meal sürümleri ({{n}})",

@@ -19,10 +19,11 @@ What ships today:
 
 - **Quran text** — the full Tanzil Uthmani text and fourteen Tanzil-derived
   translation editions, as app assets (`assets/quran/surahs/`,
-  `assets/quran/translations/`; `src/quran/translations.ts`). Tafsir and
-  the Arabic meanings of harder words are downloads
-  (`src/quran/tafsir.ts`, `wordMeanings.ts`; the `data-tafsir-v1` and
-  `data-wordmeanings-v1` tags), served through the content mirrors.
+  `assets/quran/translations/`; `src/quran/translations.ts`). Tafsir,
+  fifteen more translations and the Arabic meanings of harder words are
+  downloads (`src/quran/tafsir.ts`, `translations.ts`, `wordMeanings.ts`;
+  a `data-tafsir-<edition>` or `data-translation-<edition>` tag each, and
+  `data-wordmeanings-v1`), served through the content mirrors.
 - **The muṣḥaf** — the King Fahd Complex's QPC page fonts (v2, v4 and the
   v4 tajweed pair, one font per page, downloaded on demand; manifests in
   `src/quran/data/`), the Warsh riwāyah (`data-riwayah-v1`), tajweed
@@ -364,25 +365,34 @@ corpus): its `editions.json` lists 130-odd editions, three of them
 Indonesian. Every surah file of each candidate was fetched from the CDN
 and counted; 2:255 was read in each to confirm the language.
 
-| Edition | Surahs | Ayahs | Size | Decision |
-|---|---|---|---|---|
-| `indonesian-mokhtasar` (Al-Mukhtashar) | 114 | 6,236 | 2.5 MB | added, Indonesian default |
-| `id-tafsir-as-saadi` (as-Sa'di) | 111 (no 22, 25, 79) | 6,034 | 62 MB | added |
-| `in-tafsir-jalalayn` | every file `[]` | 0 | — | not usable |
-| `ar-tafsir-al-mukhtasar` | 114 | 6,236 | 2.3 MB | added |
-| `bengali-mokhtasar` | 114 | 6,236 | 4.8 MB | added |
-| `bn-tafsir-ahsanul-bayaan` | 114 | 6,236 | 9.6 MB | added |
-| `russian-mokhtasar` | 114 | 6,236 | 3.3 MB | added, first Russian edition |
+| Edition | Surahs | Size on disk | Decision |
+|---|---|---|---|
+| `indonesian-mokhtasar` (Al-Mukhtashar) | 114 | 2.2 MB | added, Indonesian default |
+| `id-tafsir-as-saadi` (as-Sa'di) | 114 | 63 MB | added |
+| `in-tafsir-jalalayn` | every file `[]` | — | not usable |
+| `ar-tafsir-al-mukhtasar` | 114 | 2.0 MB | added |
+| `bengali-mokhtasar` | 114 | 4.5 MB | added |
+| `bn-tafsir-ahsanul-bayaan` | 114 | 9.3 MB | added |
+| `russian-mokhtasar` | 114 | 3.1 MB | added, first Russian edition |
+
+**The counts and sizes above were corrected on 2026-11-05**, when the whole
+corpus was fetched into the mirror in one complete run (below). The first
+pass had been ayah by ayah over a flaky afternoon, and a surah that failed
+to answer was recorded as a gap upstream: as-Sa'di was written up as missing
+22, 25 and 79, and five other editions as missing one to eight surahs each.
+None of it was true — every edition here carries all 114. The same run
+corrected the sizes, which had the same flaw: the Bengali Ibn Kathir was
+recorded as 53 MB and is 90, the Urdu as 35 and is 48.
 
 Same corpus, same terms, same attribution line (Settings → About), so no
 new licence regime. Each joins AFTER its language's existing editions, so
 no reader's default changes; Indonesian and Russian readers, who had only
 English before, now open their own language first.
 
-Also complete-or-nearly in the corpus, and not added yet: Turkish Ibn
-Kathir (no 70), Turkish/French/Spanish/Chinese/Hindi Mukhtasar (one to
-eight surahs missing each), Russian Ibn Kathir (no 47, 100), Arabic
-as-Sa'di (no 73), Urdu Bayan ul-Quran (no 10).
+Also in the corpus and not added in this round: Turkish Ibn Kathir, the
+Mukhtasar in Turkish, French, Spanish, Chinese and Hindi, Russian Ibn
+Kathir, Arabic as-Sa'di and Urdu Bayan ul-Quran — all of which came in the
+round below.
 
 **Jalalayn and al-Muntakhab in Indonesian** exist complete in the
 *Tanzil* corpus as `id.jalalayn` and `id.muntakhab` (6,236 ayahs each,
@@ -391,9 +401,9 @@ translations; they are tafsir, the same as `ar.muyassar` was, so they
 would join `TAFSIR_EDITIONS` with a loader for Tanzil's shape, not
 `QURAN_TRANSLATIONS`.
 
-The `data-tafsir-v1` mirror does not hold the new editions until
-`scripts/mirror/build-mirror.js` is run and uploaded; until then the app
-reads them from the CDN, as it does whenever the mirror has no answer.
+These editions are in the app's own mirror as of 2026-11-05 — see "The
+mirror" in the round below, which is also where the surah counts and sizes
+in this section were corrected from.
 
 ## More translations and tafsir — SHIPPED 2026-11-05
 
@@ -413,7 +423,7 @@ share (`src/quran/surahStore.ts`): an ayah read on demand under an open
 sheet and cached, a whole edition downloadable from the sheet or the
 Quran downloads screen (`kind: 'translation'`), 114 surah files under
 `<Documents>/quran/translations/<edition>/`, mirrored as
-`data-translations-v1`. The three upstream shapes live in one table
+`data-translation-<edition>`. The three upstream shapes live in one table
 (`src/quran/textSources.ts`).
 
 | App language | Edition | Source | Compact file |
@@ -450,27 +460,28 @@ registry from the Quran.com corpus.
 
 ### Tafsir, second round
 
-| Language | Edition | Source | Surahs |
+All 114 surahs each, and all measured on disk, from the complete mirror
+build of 2026-11-05.
+
+| Language | Edition | Source | On disk |
 |---|---|---|---|
-| Indonesian | Tafsir Jalalain `id-tafsir-jalalayn` | Tanzil `id.jalalayn` | 114 |
-| Indonesian | Al-Muntakhab, Quraish Shihab `id-tafsir-muntakhab` | Tanzil `id.muntakhab` | 114 |
-| Russian | Kuliev with as-Sa'di's commentary `ru-tafsir-kuliev-alsaadi` | Tanzil `ru.kuliev-alsaadi` | 114 |
-| Russian | Ibn Kathir `ru-tafsir-ibne-kahtir` | Quran.com | 112 (no 47, 100) |
-| Arabic | as-Sa'di `ar-tafseer-al-saddi` | Quran.com | 113 (no 73) |
-| Urdu | Bayan ul-Quran, Israr Ahmad `ur-tafsir-bayan-ul-quran` | Quran.com | 113 (no 10) |
-| Bengali | Abu Bakr Zakaria `bn-tafsir-abu-bakr-zakaria` | Quran.com | 113 (no 105) |
-| English | al-Mukhtasar `en-tafsir-al-mukhtasar` | Quran.com | 111 |
-| Turkish | el-Muhtasar `turkish-mokhtasar` | Quran.com | 112 |
-| French | al-Mukhtasar `french-mokhtasar` | Quran.com | 113 |
-| Spanish | al-Mukhtasar `spanish-mokhtasar` | Quran.com | 109 |
-| Chinese | 古兰经简明注释 `chinese-mokhtasar` | Quran.com | 110 |
-| Hindi | अल-मुख़्तसर `hindi-mokhtasar` | Quran.com | 106 |
+| Indonesian | Tafsir Jalalain `id-tafsir-jalalayn` | Tanzil `id.jalalayn` | 2.8 MB |
+| Indonesian | Al-Muntakhab, Quraish Shihab `id-tafsir-muntakhab` | Tanzil `id.muntakhab` | 2.6 MB |
+| Russian | Kuliev with as-Sa'di's commentary `ru-tafsir-kuliev-alsaadi` | Tanzil `ru.kuliev-alsaadi` | 10 MB |
+| Russian | Ibn Kathir `ru-tafsir-ibne-kahtir` | Quran.com | 16 MB |
+| Arabic | as-Sa'di `ar-tafseer-al-saddi` | Quran.com | 6.0 MB |
+| Urdu | Bayan ul-Quran, Israr Ahmad `ur-tafsir-bayan-ul-quran` | Quran.com | 9.7 MB |
+| Bengali | Abu Bakr Zakaria `bn-tafsir-abu-bakr-zakaria` | Quran.com | 14 MB |
+| English | al-Mukhtasar `en-tafsir-al-mukhtasar` | Quran.com | 1.8 MB |
+| Turkish | el-Muhtasar `turkish-mokhtasar` | Quran.com | 1.9 MB |
+| French | al-Mukhtasar `french-mokhtasar` | Quran.com | 2.0 MB |
+| Spanish | al-Mukhtasar `spanish-mokhtasar` | Quran.com | 1.8 MB |
+| Chinese | 古兰经简明注释 `chinese-mokhtasar` | Quran.com | 1.3 MB |
+| Hindi | अल-मुख़्तसर `hindi-mokhtasar` | Quran.com | 4.6 MB |
 
 Tanzil files the three Indonesian and Russian texts as translations; they
 are tafsir, as `ar.muyassar` was, so they are in `TAFSIR_EDITIONS` under
-a `source: 'tanzil'` and never in the translation list. A surah missing
-upstream is an empty file in a download and "unavailable" in the sheet,
-as it has been for Ibn Kathir since 2.7.28.
+a `source: 'tanzil'` and never in the translation list.
 
 **Not added.** The corpus's `tr-tafsir-ibne-kathir` (1.1 MB for the whole
 Qur'an) is the ayah's meaning and nothing else — a translation wearing a
@@ -488,13 +499,59 @@ chips became two rows (`src/quran/mushaf/EditionPicker.tsx`): a language,
 then — where the language has more than one — an edition within it. The
 companion-text sheet, already grouped by language, is unchanged.
 
-### The mirror
+### The mirror — a release per edition
 
-`scripts/mirror/build-mirror.js` reads both registries, fetches each
-edition from its own source and writes `data-tafsir-v1` and
-`data-translations-v1`. Until the new assets are uploaded the app reads
-these editions from their sources, which all answer a browser too (CORS
-`*`), so Mihrab Web has them from the start.
+`scripts/mirror/build-mirror.js` reads both registries, fetches every
+edition from its own source and writes one directory per release tag. They
+were built and uploaded on 2026-11-05, so the app reads these editions from
+this repository and asks a source only when the mirror cannot answer — an
+edition whose release is not there yet simply comes from its source, which
+is the same fallback a 404 has always taken.
+
+Uploading all of it is 4,560 assets, which is close enough to GitHub's
+5,000-an-hour API limit that it does not fit in one window; the upload
+script skips what is already uploaded, so it is re-run until it reports
+every tag complete.
+
+**A release holds at most 1,000 assets.** GitHub refuses the 1,001st with
+`422 file_count limited to 1000 assets per release`. One tag for all the
+tafsir was fine at six editions and 684 files; twenty-five editions are
+2,850, and the fifteen fetched translations another 1,710. So an edition
+gets a release of its own, 114 assets in it:
+
+```
+data-tafsir-<edition>/<surah>.json
+data-translation-<edition>/<surah>.json
+```
+
+`editionMirrorTag` in `src/config/mirrors.ts` works the name out on the
+app's side, and the builder writes the same one. The tag comes from the
+edition's id, which never changes — a tag derived from a POSITION in the
+registry would have moved under the editions already on someone's phone
+the first time that list was reordered, and it is deliberately ordered
+(the order decides the defaults). It is the shape
+`data-namazvakti-<year>` already uses, for the same reason.
+
+`data-tafsir-v1` is **frozen**: every version up to 2.35.0 reads its six
+editions from it, so it keeps its 684 files and must not be deleted while
+those versions are out there. Nothing new is written to it.
+
+Rebuilding and uploading, after adding an edition:
+
+```sh
+node scripts/mirror/build-mirror.js /tmp/mihrab-mirror   # resumable; skips what it has
+# then, per new tag: gh release create <tag> … && gh release upload <tag> <files>
+```
+
+The build is resumable (a file already written is kept) and polite: one
+request pool per source, six at a time for the CDN and two for
+alquran.cloud, which answers a sixth concurrent request with 429.
+
+Mihrab Web is the exception. A release asset is served without an
+`access-control-allow-origin` header, so a browser cannot read it; the web
+app goes to the sources, which all do send one. That is why
+`mirrorSurah` returns null under `IS_WEB_APP` rather than trying and
+failing.
 
 ## The Isa García Spanish translation — issue #37, SHIPPED 2026-09-08
 

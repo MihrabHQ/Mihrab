@@ -8,10 +8,16 @@
  *   node scripts/mirror/build-mirror.js [outDir]        (default /tmp/mihrab-mirror)
  *
  * Tags / assets:
- *   data-tafsir-v1         <edition>__<surah>.json     (spa5k/tafsir_api, MIT; three
- *                                                       Tanzil editions via alquran.cloud)
- *   data-translations-v1   <edition>__<surah>.json     (the translations that are
- *                                                       downloads: alquran.cloud, QuranEnc)
+ *   data-tafsir-<edition>       <surah>.json         (spa5k/tafsir_api, MIT; three
+ *                                                     Tanzil editions via alquran.cloud)
+ *   data-translation-<edition>  <surah>.json         (the translations that are
+ *                                                     downloads: alquran.cloud, QuranEnc)
+ *
+ * A release takes at most 1,000 assets, so an edition gets a release of its
+ * own and the asset is the surah — `editionMirrorTag` in src/config/mirrors.ts
+ * works out the same name on the app's side. `data-tafsir-v1`, where the six
+ * editions of 2.7.28 all lived, is frozen for the versions that read it and
+ * is not written here any more.
  *   data-wordmeanings-v1   <surah>.json                (QuranEnc arabic_seraj)
  *   data-riwayah-v1        <id>.json                   (Quranpedia / KFGQPC)
  *   data-indopak-v1        text, font and both licences (DigitalKhatt, pinned commit)
@@ -52,14 +58,20 @@ const SOURCES = {
       `https://raw.githubusercontent.com/spa5k/tafsir_api/main/tafsir/${id}/${s}.json`,
     ],
     rows: json => (Array.isArray(json) ? json : json && json.ayahs),
+    // A CDN; six at a time is nothing to it.
+    concurrency: 6,
   },
   tanzil: {
     urls: (id, s) => [`https://api.alquran.cloud/v1/surah/${s}/${id}`],
     rows: json => json && json.data && json.data.ayahs,
+    // One server, and it answers a sixth concurrent request with 429.
+    concurrency: 2,
   },
   quranenc: {
     urls: (id, s) => [`https://quranenc.com/api/v1/translation/sura/${id}/${s}`],
     rows: json => json && json.result,
+    // One server too, steadier than alquran.cloud but not a CDN.
+    concurrency: 3,
   },
 };
 
@@ -78,17 +90,34 @@ const INDOPAK_FILES = Object.fromEntries([
 ]);
 if (Object.keys(INDOPAK_FILES).length !== 3) throw new Error('indopakSource.ts: expected two files');
 
-async function get(url, tries = 4) {
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+/**
+ * One file from a source.
+ *
+ * 429 is the one answer worth waiting out rather than retrying over:
+ * alquran.cloud refuses a sixth concurrent request and keeps refusing for
+ * a moment, so a flat backoff turns a whole edition into failures. Its
+ * `Retry-After` is honoured when it sends one, and the wait grows
+ * steeply either way. 404 is not a failure: a surah some editions simply
+ * do not have (the app treats a missing mirror file as "ask upstream").
+ */
+async function get(url, tries = 5) {
   let last;
   for (let i = 0; i < tries; i++) {
     try {
       const r = await fetch(url);
       if (r.status === 404) return null;
+      if (r.status === 429) {
+        const after = Number(r.headers.get('retry-after'));
+        await sleep(Number.isFinite(after) && after > 0 ? after * 1000 : 2000 * (i + 1));
+        throw new Error('HTTP 429');
+      }
       if (!r.ok) throw new Error('HTTP ' + r.status);
       return Buffer.from(await r.arrayBuffer());
     } catch (e) {
       last = e;
-      await new Promise(r => setTimeout(r, 800 * (i + 1)));
+      await sleep(800 * (i + 1));
     }
   }
   throw new Error(url + ': ' + last.message);
@@ -112,6 +141,15 @@ function put(tag, name, buf) {
   fs.writeFileSync(path.join(dir, name), buf);
 }
 
+/** Already built and not empty — a re-run after a refusal resumes. */
+function have(tag, name) {
+  try {
+    return fs.statSync(path.join(out, tag, name)).size > 0;
+  } catch {
+    return false;
+  }
+}
+
 (async () => {
   const surahs = Array.from({ length: 114 }, (_, i) => i + 1);
   const report = {};
@@ -119,30 +157,42 @@ function put(tag, name, buf) {
   // A surah upstream has no file for is simply absent (the app treats a
   // mirror 404 as "ask upstream"). A surah that answers but not with rows
   // is an error: the mirror must never hold a file the app cannot read.
-  const mirrorEditions = async (tag, list) => {
-    const jobs = list.flatMap(e => surahs.map(s => ({ e, s })));
+  const mirrorEditions = async (kind, list) => {
     let missing = 0;
-    await pool(jobs, 6, async ({ e, s }) => {
-      const src = SOURCES[e.source];
-      const urls = src.urls(e.sourceId, s);
-      let buf = null;
-      for (let i = 0; i < urls.length; i++) {
-        try {
-          buf = await get(urls[i], i < urls.length - 1 ? 2 : 4);
-          break;
-        } catch (err) {
-          if (i === urls.length - 1) throw err;
-        }
-      }
-      if (!buf) { missing++; return; }
-      const rows = src.rows(JSON.parse(buf.toString('utf8')));
-      if (!Array.isArray(rows)) throw new Error(`${tag} ${e.id}/${s} has no rows`);
-      put(tag, `${e.id}__${s}.json`, buf);
-    });
-    return { editions: list.length, missing };
+    let kept = 0;
+    // One pool PER SOURCE, at the rate that source will take: a CDN is
+    // happy with six at once, alquran.cloud answers a seventh request with
+    // 429 and sulks. The sources run alongside each other, each at its own
+    // pace, so the polite one does not hold the quick one up.
+    await Promise.all(
+      Object.entries(SOURCES).map(async ([name, src]) => {
+        const editions = list.filter(e => e.source === name);
+        const jobs = editions.flatMap(e => surahs.map(s => ({ e, s })));
+        await pool(jobs, src.concurrency, async ({ e, s }) => {
+          const tag = `data-${kind}-${e.id}`;
+          const asset = `${s}.json`;
+          if (have(tag, asset)) { kept++; return; }
+          const urls = src.urls(e.sourceId, s);
+          let buf = null;
+          for (let i = 0; i < urls.length; i++) {
+            try {
+              buf = await get(urls[i], i < urls.length - 1 ? 2 : 5);
+              break;
+            } catch (err) {
+              if (i === urls.length - 1) throw err;
+            }
+          }
+          if (!buf) { missing++; return; }
+          const rows = src.rows(JSON.parse(buf.toString('utf8')));
+          if (!Array.isArray(rows)) throw new Error(`${tag}/${s} has no rows`);
+          put(tag, asset, buf);
+        });
+      }),
+    );
+    return { editions: list.length, missing, kept };
   };
-  report.tafsir = await mirrorEditions('data-tafsir-v1', tafsirEditions);
-  report.translations = await mirrorEditions('data-translations-v1', translationEditions);
+  report.tafsir = await mirrorEditions('tafsir', tafsirEditions);
+  report.translations = await mirrorEditions('translation', translationEditions);
 
   // Word meanings: refuse a short surah (the app does too).
   const AYAHS = [7,286,200,176,120,165,206,75,129,109,123,111,43,52,99,128,111,110,98,135,112,78,118,64,77,227,93,88,69,60,34,30,73,54,45,83,182,88,75,85,54,53,89,59,37,35,38,29,18,45,60,49,62,55,78,96,29,22,24,13,14,11,11,18,12,12,30,52,52,44,28,28,20,56,40,31,50,40,46,42,29,19,36,25,22,17,19,26,30,20,15,21,11,8,8,19,5,8,8,11,11,8,3,9,5,4,7,3,6,3,5,4,5,6];

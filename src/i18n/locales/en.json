@@ -1823,7 +1823,7 @@
     "groupRecitation": "Recitation",
     "groupMeaning": "Translation and tafsir",
     "groupTypefaces": "Typefaces",
-    "footer": "Every line links to the source it came from.",
+    "footer": "Every line links to the source it came from. What Mihrab downloads is served from its own copy of these sources, and asked of the source itself only when that copy cannot answer.",
     "quranText": "Quran Uthmani text",
     "mushafImages": "Mushaf page images (604)",
     "translationEditions": "Translation editions ({{n}})",

@@ -1,4 +1,9 @@
-import { fetchMirrored, mirrorUrl, MIRROR_TAGS } from '../src/config/mirrors';
+import {
+  editionMirrorTag,
+  fetchMirrored,
+  mirrorUrl,
+  MIRROR_TAGS,
+} from '../src/config/mirrors';
 import { surahRows } from '../src/quran/tafsir';
 
 const ok = (body: unknown) => ({ ok: true, status: 200, json: async () => body });
@@ -6,9 +11,26 @@ const no = (status: number) => ({ ok: false, status });
 
 describe('mirror urls', () => {
   it('point at this repository release assets', () => {
-    expect(mirrorUrl(MIRROR_TAGS.tafsir, 'x__1.json')).toBe(
-      'https://github.com/MihrabHQ/Mihrab/releases/download/data-tafsir-v1/x__1.json',
+    expect(mirrorUrl(MIRROR_TAGS.wordMeanings, '1.json')).toBe(
+      'https://github.com/MihrabHQ/Mihrab/releases/download/data-wordmeanings-v1/1.json',
     );
+  });
+
+  // A release holds 1,000 assets; twenty-five tafsir editions at 114 surahs
+  // each is 2,850. So an edition is a release, and the asset is the surah.
+  it('give each text edition its own release, named by the edition', () => {
+    expect(mirrorUrl(editionMirrorTag('tafsir', 'ar-tafsir-muyassar'), '2.json')).toBe(
+      'https://github.com/MihrabHQ/Mihrab/releases/download/data-tafsir-ar-tafsir-muyassar/2.json',
+    );
+    expect(mirrorUrl(editionMirrorTag('translation', 'en.hilali'), '112.json')).toBe(
+      'https://github.com/MihrabHQ/Mihrab/releases/download/data-translation-en.hilali/112.json',
+    );
+  });
+
+  // Up to 2.35.0 the six tafsir editions were read from one release. Those
+  // versions are still out there, so the tag stays and stays as it was.
+  it('keeps the frozen tag the shipped versions read', () => {
+    expect(MIRROR_TAGS.legacyTafsir).toBe('data-tafsir-v1');
   });
 });
 

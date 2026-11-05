@@ -1824,7 +1824,7 @@
     "groupRecitation": "Récitation",
     "groupMeaning": "Traduction et tafsir",
     "groupTypefaces": "Polices",
-    "footer": "Chaque ligne renvoie à sa source.",
+    "footer": "Chaque ligne renvoie à sa source. Ce que Mihrab télécharge provient de sa propre copie de ces sources ; la source elle-même n’est sollicitée que si cette copie ne peut répondre.",
     "quranText": "Texte coranique uthmanique",
     "mushafImages": "Images des pages du mushaf (604)",
     "translationEditions": "Éditions de traduction ({{n}})",

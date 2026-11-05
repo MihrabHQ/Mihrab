@@ -59,7 +59,7 @@ function answer(url: string): ReturnType<typeof ok> | typeof gone {
   // The mirror holds a surah file as the source answered it: the same
   // shape, served from the release. Here it answers with the source's own
   // surah, so a test can tell the surah path from the one-ayah one.
-  let m = /releases\/download\/data-translations-v1\/(.+)__(\d+)\.json$/.exec(url);
+  let m = /releases\/download\/data-translation-(.+)\/(\d+)\.json$/.exec(url);
   if (m) {
     const ed = QURAN_TRANSLATIONS.find(e => e.id === m![1]);
     if (!ed?.source) return gone;

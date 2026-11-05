@@ -108,23 +108,23 @@ export const QURAN_TRANSLATIONS: ReadonlyArray<QuranTranslationEdition> = [
   // Settings → About with the version read). Sizes: all 6,236 ayahs in the
   // compact file this app writes, measured on 2026-11-05. Provenance and
   // the choosing in docs/data-sources.md.
-  { id: 'en.hilali', label: 'Hilali & Khan', language: 'English', locale: 'en', source: 'tanzil', sourceId: 'en.hilali', approxBytes: 1200000 },
-  { id: 'english_rwwad', label: 'Rowwad Translation Center', language: 'English', locale: 'en', source: 'quranenc', sourceId: 'english_rwwad', approxBytes: 1200000 },
+  { id: 'en.hilali', label: 'Hilali & Khan', language: 'English', locale: 'en', source: 'tanzil', sourceId: 'en.hilali', approxBytes: 1170000 },
+  { id: 'english_rwwad', label: 'Rowwad Translation Center', language: 'English', locale: 'en', source: 'quranenc', sourceId: 'english_rwwad', approxBytes: 1150000 },
   { id: 'swedish_rwwad', label: 'Rowwad Translation Center', language: 'Swedish', locale: 'sv', source: 'quranenc', sourceId: 'swedish_rwwad', approxBytes: 910000 },
-  { id: 'ur.junagarhi', label: 'Muhammad Junagarhi', language: 'Urdu', locale: 'ur', rtl: true, source: 'tanzil', sourceId: 'ur.junagarhi', approxBytes: 1500000 },
-  { id: 'hindi_omari', label: 'Azizul Haq al-Omari', language: 'Hindi', locale: 'hi', source: 'quranenc', sourceId: 'hindi_omari', approxBytes: 3200000 },
-  { id: 'french_rashid', label: 'Rachid Maach', language: 'French', locale: 'fr', source: 'quranenc', sourceId: 'french_rashid', approxBytes: 1300000 },
-  { id: 'spanish_montada_eu', label: 'Noor International', language: 'Spanish', locale: 'es', source: 'quranenc', sourceId: 'spanish_montada_eu', approxBytes: 1400000 },
-  { id: 'german_rwwad', label: 'Rowwad Translation Center', language: 'German', locale: 'de', source: 'quranenc', sourceId: 'german_rwwad', approxBytes: 1100000 },
+  { id: 'ur.junagarhi', label: 'Muhammad Junagarhi', language: 'Urdu', locale: 'ur', rtl: true, source: 'tanzil', sourceId: 'ur.junagarhi', approxBytes: 1470000 },
+  { id: 'hindi_omari', label: 'Azizul Haq al-Omari', language: 'Hindi', locale: 'hi', source: 'quranenc', sourceId: 'hindi_omari', approxBytes: 3240000 },
+  { id: 'french_rashid', label: 'Rachid Maach', language: 'French', locale: 'fr', source: 'quranenc', sourceId: 'french_rashid', approxBytes: 1250000 },
+  { id: 'spanish_montada_eu', label: 'Noor International', language: 'Spanish', locale: 'es', source: 'quranenc', sourceId: 'spanish_montada_eu', approxBytes: 1420000 },
+  { id: 'german_rwwad', label: 'Rowwad Translation Center', language: 'German', locale: 'de', source: 'quranenc', sourceId: 'german_rwwad', approxBytes: 1060000 },
   { id: 'tr.vakfi', label: 'Diyanet Vakfı', language: 'Turkish', locale: 'tr', source: 'tanzil', sourceId: 'tr.vakfi', approxBytes: 960000 },
   { id: 'tr.yazir', label: 'Elmalılı Hamdi Yazır', language: 'Turkish', locale: 'tr', source: 'tanzil', sourceId: 'tr.yazir', approxBytes: 970000 },
   { id: 'indonesian_affairs', label: 'Kementerian Agama (2019)', language: 'Indonesian', locale: 'id', source: 'quranenc', sourceId: 'indonesian_affairs', approxBytes: 1300000 },
-  { id: 'indonesian_complex', label: 'King Fahd Complex', language: 'Indonesian', locale: 'id', source: 'quranenc', sourceId: 'indonesian_complex', approxBytes: 1500000 },
-  { id: 'ru.abuadel', label: 'Abu Adel', language: 'Russian', locale: 'ru', source: 'tanzil', sourceId: 'ru.abuadel', approxBytes: 2800000 },
+  { id: 'indonesian_complex', label: 'King Fahd Complex', language: 'Indonesian', locale: 'id', source: 'quranenc', sourceId: 'indonesian_complex', approxBytes: 1470000 },
+  { id: 'ru.abuadel', label: 'Abu Adel', language: 'Russian', locale: 'ru', source: 'tanzil', sourceId: 'ru.abuadel', approxBytes: 2830000 },
   { id: 'chinese_makin', label: 'Muhammad Makin', language: 'Chinese', locale: 'zh', source: 'quranenc', sourceId: 'chinese_makin', approxBytes: 800000 },
   // A language the app itself does not speak yet: offered under its own
   // heading, never a default.
-  { id: 'ms.basmeih', label: 'Abdullah Basmeih', language: 'Malay', locale: 'ms', source: 'tanzil', sourceId: 'ms.basmeih', approxBytes: 1500000 },
+  { id: 'ms.basmeih', label: 'Abdullah Basmeih', language: 'Malay', locale: 'ms', source: 'tanzil', sourceId: 'ms.basmeih', approxBytes: 1510000 },
 ] as const;
 
 export type QuranTranslationId = (typeof QURAN_TRANSLATIONS)[number]['id'];

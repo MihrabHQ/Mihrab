@@ -1823,7 +1823,7 @@
     "groupRecitation": "诵读",
     "groupMeaning": "翻译与经注",
     "groupTypefaces": "字体",
-    "footer": "每一行都链接到它的来源。",
+    "footer": "每一行都链接到它的来源。Mihrab 下载的内容由应用自己保存的这些来源副本提供，只有当该副本无法作答时才向来源本身索取。",
     "quranText": "《古兰经》奥斯曼体经文",
     "mushafImages": "《麦地那经》页面图像（604）",
     "translationEditions": "译本（{{n}}）",

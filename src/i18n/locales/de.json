@@ -1823,7 +1823,7 @@
     "groupRecitation": "Rezitation",
     "groupMeaning": "Übersetzung und Tafsir",
     "groupTypefaces": "Schriften",
-    "footer": "Jede Zeile führt zu ihrer Quelle.",
+    "footer": "Jede Zeile führt zu ihrer Quelle. Was Mihrab herunterlädt, kommt aus einer eigenen Kopie dieser Quellen; die Quelle selbst wird nur gefragt, wenn die Kopie nicht antworten kann.",
     "quranText": "Koran (Uthmani-Text)",
     "mushafImages": "Mushaf-Seitenbilder (604)",
     "translationEditions": "Übersetzungs-Editionen ({{n}})",

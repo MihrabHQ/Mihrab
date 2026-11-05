@@ -22,7 +22,7 @@
  */
 import ReactNativeBlobUtil from 'react-native-blob-util';
 import { fetchWithRetry } from '../utils/fetchWithRetry';
-import { fetchMirrored, mirrorUrl, MIRROR_TAGS } from '../config/mirrors';
+import { editionMirrorTag, fetchMirrored, mirrorUrl } from '../config/mirrors';
 import { IS_WEB_APP } from '../config/webApp';
 import {
   CONTENT_DEADLINES,
@@ -52,11 +52,11 @@ export const STORE_SURAHS = 114;
 /** Under this a whole edition is small enough to treat its files as small. */
 const SMALL_EDITION_BYTES = 10_000_000;
 
-const KIND: Record<StoreKind, { dir: string; mirrorTag: string; memory: number }> = {
-  tafsir: { dir: 'tafsir', mirrorTag: MIRROR_TAGS.tafsir, memory: 3 },
+const KIND: Record<StoreKind, { dir: string; memory: number }> = {
+  tafsir: { dir: 'tafsir', memory: 3 },
   // A translation's surah is a few tens of kilobytes where a tafsir's can
   // be megabytes: more of them can be kept.
-  translation: { dir: 'translations', mirrorTag: MIRROR_TAGS.translations, memory: 6 },
+  translation: { dir: 'translations', memory: 6 },
 };
 
 export function storeDir(kind: StoreKind): string {
@@ -75,8 +75,9 @@ function ayahFilePath(kind: StoreKind, edition: string, surah: number, ayah: num
   return `${editionDir(kind, edition)}/${surah}/${ayah}.json`;
 }
 
+/** This repository's own copy of the surah — one release per edition. */
 function mirrorSurahUrl(kind: StoreKind, edition: string, surah: number): string {
-  return mirrorUrl(KIND[kind].mirrorTag, `${edition}__${surah}.json`);
+  return mirrorUrl(editionMirrorTag(kind, edition), `${surah}.json`);
 }
 
 export type SurahFile = { v: 1; ayahs: Record<string, string> };

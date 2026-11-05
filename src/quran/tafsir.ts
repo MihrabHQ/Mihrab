@@ -49,16 +49,24 @@ export type TafsirEdition = {
   /** Display name of the edition's language (for the selector subtitle). */
   language: string;
   /**
-   * What the whole edition comes to on disk, in bytes — the 114 surah files
-   * summed from the CDN on 2026-10-05. Only so the offer can say what it
-   * costs BEFORE the reader agrees; the downloads screen reports the real
-   * figure once it is there. Rounded; upstream is missing a few surahs.
+   * What the whole edition comes to on disk, in bytes. Only so the offer
+   * can say what it costs BEFORE the reader agrees; the downloads screen
+   * reports the real figure once it is there.
+   *
+   * Measured 2026-11-05 off a complete mirror build — every surah of every
+   * edition fetched, then summed in the compact form this app writes
+   * (`scripts/mirror/build-mirror.js`, then the sizes read back from its
+   * output). The figures before that were taken ayah by ayah over a flaky
+   * run, and a surah that failed to answer was quietly counted as nothing:
+   * the Bengali Ibn Kathir was recorded as 53 MB and is 90, the Urdu as 35
+   * and is 48. Rounded to the nearest 10 KB.
    */
   approxBytes: number;
 };
 
 /**
- * Verified live against the CDN on 2026-07-05 (HTTP 200 for 1:1).
+ * Every edition here has been fetched whole into the app's own mirror
+ * (`scripts/mirror/build-mirror.js`): 114 surahs each, no empty files.
  * Locales without a native edition fall back to Ibn Kathir (English).
  */
 export const TAFSIR_EDITIONS: ReadonlyArray<TafsirEdition> = [
@@ -68,7 +76,7 @@ export const TAFSIR_EDITIONS: ReadonlyArray<TafsirEdition> = [
     locale: 'en',
     rtl: false,
     language: 'English',
-    approxBytes: 44600000,
+    approxBytes: 44300000,
   },
   {
     id: 'en-tafsir-maarif-ul-quran',
@@ -76,7 +84,7 @@ export const TAFSIR_EDITIONS: ReadonlyArray<TafsirEdition> = [
     locale: 'en',
     rtl: false,
     language: 'English',
-    approxBytes: 17000000,
+    approxBytes: 21570000,
   },
   {
     id: 'ar-tafsir-muyassar',
@@ -84,7 +92,7 @@ export const TAFSIR_EDITIONS: ReadonlyArray<TafsirEdition> = [
     locale: 'ar',
     rtl: true,
     language: 'Arabic',
-    approxBytes: 3100000,
+    approxBytes: 2860000,
   },
   {
     id: 'ar-tafsir-ibn-kathir',
@@ -92,7 +100,7 @@ export const TAFSIR_EDITIONS: ReadonlyArray<TafsirEdition> = [
     locale: 'ar',
     rtl: true,
     language: 'Arabic',
-    approxBytes: 84100000,
+    approxBytes: 89510000,
   },
   {
     id: 'ur-tafseer-ibn-e-kaseer',
@@ -100,7 +108,7 @@ export const TAFSIR_EDITIONS: ReadonlyArray<TafsirEdition> = [
     locale: 'ur',
     rtl: true,
     language: 'Urdu',
-    approxBytes: 34800000,
+    approxBytes: 47800000,
   },
   {
     id: 'bn-tafseer-ibn-e-kaseer',
@@ -108,23 +116,25 @@ export const TAFSIR_EDITIONS: ReadonlyArray<TafsirEdition> = [
     locale: 'bn',
     rtl: false,
     language: 'Bengali',
-    approxBytes: 52700000,
+    approxBytes: 90290000,
   },
   // Issue #125 (2026-11-05): tafsir in Bahasa Indonesia, and the other
-  // editions of the same corpus that are COMPLETE in an app language — all
-  // 114 surahs and 6,236 ayahs present, checked against the CDN surah by
-  // surah. As-Sa'di (Indonesian) is the one exception: surahs 22, 25 and
-  // 79 are missing upstream, which Ibn Kathir above already lives with.
+  // editions of the same corpus in an app language. Every one of them
+  // carries all 114 surahs — the whole corpus was fetched into the mirror
+  // and counted, which is how the gaps first recorded here (as-Sa'di
+  // "missing" 22, 25 and 79, and others) turned out to be a flaky
+  // afternoon's downloads rather than anything upstream.
   // Each new one comes after its language's existing editions, so nobody's
   // default changes. Not added: the corpus's Indonesian Jalalayn, whose
-  // every file is an empty list.
+  // every file is an empty list — the Tanzil one below is the complete
+  // text of that tafsir.
   {
     id: 'indonesian-mokhtasar',
     label: 'Tafsir Al-Mukhtashar',
     locale: 'id',
     rtl: false,
     language: 'Indonesian',
-    approxBytes: 2500000,
+    approxBytes: 2240000,
   },
   {
     id: 'id-tafsir-as-saadi',
@@ -132,7 +142,7 @@ export const TAFSIR_EDITIONS: ReadonlyArray<TafsirEdition> = [
     locale: 'id',
     rtl: false,
     language: 'Indonesian',
-    approxBytes: 62200000,
+    approxBytes: 63380000,
   },
   {
     id: 'ar-tafsir-al-mukhtasar',
@@ -140,7 +150,7 @@ export const TAFSIR_EDITIONS: ReadonlyArray<TafsirEdition> = [
     locale: 'ar',
     rtl: true,
     language: 'Arabic',
-    approxBytes: 2300000,
+    approxBytes: 1970000,
   },
   {
     id: 'bengali-mokhtasar',
@@ -148,7 +158,7 @@ export const TAFSIR_EDITIONS: ReadonlyArray<TafsirEdition> = [
     locale: 'bn',
     rtl: false,
     language: 'Bengali',
-    approxBytes: 4800000,
+    approxBytes: 4530000,
   },
   {
     id: 'bn-tafsir-ahsanul-bayaan',
@@ -156,7 +166,7 @@ export const TAFSIR_EDITIONS: ReadonlyArray<TafsirEdition> = [
     locale: 'bn',
     rtl: false,
     language: 'Bengali',
-    approxBytes: 9600000,
+    approxBytes: 9270000,
   },
   {
     id: 'russian-mokhtasar',
@@ -164,14 +174,13 @@ export const TAFSIR_EDITIONS: ReadonlyArray<TafsirEdition> = [
     locale: 'ru',
     rtl: false,
     language: 'Russian',
-    approxBytes: 3300000,
+    approxBytes: 3060000,
   },
   // The second round (2026-11-05), after the first was out: the rest of the
-  // corpus that is complete or a surah or two short in an app language, and
-  // three editions Tanzil files as translations that are tafsir — Jalalayn
-  // and al-Muntakhab in Indonesian (the corpus's own Indonesian Jalalayn is
-  // empty), and Kuliev's translation with as-Sa'di's commentary in Russian.
-  // Sizes are the surah files summed, or the compact file this app writes.
+  // corpus in an app language, and three editions Tanzil files as
+  // translations that are tafsir — Jalalayn and al-Muntakhab in Indonesian
+  // (the corpus's own Indonesian Jalalayn is empty), and Kuliev's
+  // translation with as-Sa'di's commentary in Russian. All 114 surahs each.
   // Not added: the corpus's "Turkish Ibn Kathir", which is the ayah's
   // meaning alone and not a tafsir.
   {
@@ -182,7 +191,7 @@ export const TAFSIR_EDITIONS: ReadonlyArray<TafsirEdition> = [
     locale: 'id',
     rtl: false,
     language: 'Indonesian',
-    approxBytes: 2800000,
+    approxBytes: 2780000,
   },
   {
     id: 'id-tafsir-muntakhab',
@@ -192,7 +201,7 @@ export const TAFSIR_EDITIONS: ReadonlyArray<TafsirEdition> = [
     locale: 'id',
     rtl: false,
     language: 'Indonesian',
-    approxBytes: 2600000,
+    approxBytes: 2570000,
   },
   {
     id: 'ar-tafseer-al-saddi',
@@ -200,7 +209,7 @@ export const TAFSIR_EDITIONS: ReadonlyArray<TafsirEdition> = [
     locale: 'ar',
     rtl: true,
     language: 'Arabic',
-    approxBytes: 6300000,
+    approxBytes: 5990000,
   },
   {
     id: 'ur-tafsir-bayan-ul-quran',
@@ -208,7 +217,7 @@ export const TAFSIR_EDITIONS: ReadonlyArray<TafsirEdition> = [
     locale: 'ur',
     rtl: true,
     language: 'Urdu',
-    approxBytes: 9900000,
+    approxBytes: 9650000,
   },
   {
     id: 'bn-tafsir-abu-bakr-zakaria',
@@ -216,7 +225,7 @@ export const TAFSIR_EDITIONS: ReadonlyArray<TafsirEdition> = [
     locale: 'bn',
     rtl: false,
     language: 'Bengali',
-    approxBytes: 13900000,
+    approxBytes: 13580000,
   },
   {
     id: 'ru-tafsir-kuliev-alsaadi',
@@ -226,7 +235,7 @@ export const TAFSIR_EDITIONS: ReadonlyArray<TafsirEdition> = [
     locale: 'ru',
     rtl: false,
     language: 'Russian',
-    approxBytes: 10500000,
+    approxBytes: 10480000,
   },
   {
     id: 'ru-tafsir-ibne-kahtir',
@@ -234,7 +243,7 @@ export const TAFSIR_EDITIONS: ReadonlyArray<TafsirEdition> = [
     locale: 'ru',
     rtl: false,
     language: 'Russian',
-    approxBytes: 16000000,
+    approxBytes: 15840000,
   },
   {
     id: 'en-tafsir-al-mukhtasar',
@@ -242,7 +251,7 @@ export const TAFSIR_EDITIONS: ReadonlyArray<TafsirEdition> = [
     locale: 'en',
     rtl: false,
     language: 'English',
-    approxBytes: 2000000,
+    approxBytes: 1800000,
   },
   {
     id: 'turkish-mokhtasar',
@@ -250,7 +259,7 @@ export const TAFSIR_EDITIONS: ReadonlyArray<TafsirEdition> = [
     locale: 'tr',
     rtl: false,
     language: 'Turkish',
-    approxBytes: 2200000,
+    approxBytes: 1920000,
   },
   {
     id: 'french-mokhtasar',
@@ -258,7 +267,7 @@ export const TAFSIR_EDITIONS: ReadonlyArray<TafsirEdition> = [
     locale: 'fr',
     rtl: false,
     language: 'French',
-    approxBytes: 2200000,
+    approxBytes: 1960000,
   },
   {
     id: 'spanish-mokhtasar',
@@ -266,7 +275,7 @@ export const TAFSIR_EDITIONS: ReadonlyArray<TafsirEdition> = [
     locale: 'es',
     rtl: false,
     language: 'Spanish',
-    approxBytes: 2000000,
+    approxBytes: 1770000,
   },
   {
     id: 'chinese-mokhtasar',
@@ -274,7 +283,7 @@ export const TAFSIR_EDITIONS: ReadonlyArray<TafsirEdition> = [
     locale: 'zh',
     rtl: false,
     language: 'Chinese',
-    approxBytes: 1600000,
+    approxBytes: 1340000,
   },
   {
     id: 'hindi-mokhtasar',
@@ -282,7 +291,7 @@ export const TAFSIR_EDITIONS: ReadonlyArray<TafsirEdition> = [
     locale: 'hi',
     rtl: false,
     language: 'Hindi',
-    approxBytes: 4600000,
+    approxBytes: 4610000,
   },
 ] as const;
 

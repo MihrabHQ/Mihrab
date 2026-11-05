@@ -21,7 +21,13 @@ import {
   downloadTafsirEdition,
   loadTafsir,
   resetTafsirMemory,
+  TAFSIR_EDITIONS,
 } from '../src/quran/tafsir';
+import {
+  getAyahTranslation,
+  QURAN_TRANSLATIONS,
+  type QuranTranslationId,
+} from '../src/quran/translations';
 import {
   downloadWordMeanings,
   resetWordMeaningsMemory,
@@ -90,7 +96,9 @@ function respond(req: http.IncomingMessage, res: http.ServerResponse) {
     log.push('mirror');
     if (mode === 'missing') return void res.writeHead(404).end('Not Found');
     if (mode === 'error') return void res.writeHead(503).end('busy');
-    let m = url.match(/^\/mirror\/data-tafsir-v1\/(.+)__(\d+)\.json$/);
+    // One release per edition now (`editionMirrorTag`): the tag names the
+    // edition, the asset is the surah.
+    let m = url.match(/^\/mirror\/data-tafsir-(.+)\/(\d+)\.json$/);
     if (m) return send(tafsirRows(Number(m[2]), 'mirror'));
     m = url.match(/^\/mirror\/data-wordmeanings-v1\/(\d+)\.json$/);
     if (m) return send(suraBody(Number(m[1]), 'mirror'));
@@ -268,18 +276,32 @@ describe('riwayah text', () => {
     realMirror = true;
   });
 
-  it.each([
-    'en-tafisr-ibn-kathir',
-    'en-tafsir-maarif-ul-quran',
-    'ar-tafsir-muyassar',
-    'ar-tafsir-ibn-kathir',
-    'ur-tafseer-ibn-e-kaseer',
-    'bn-tafseer-ibn-e-kaseer',
-  ])('%s answers Āyat al-Kursī and al-Ikhlāṣ from the mirror alone', async ed => {
-    expect((await loadTafsir(ed, 2, 255))?.length).toBeGreaterThan(20);
-    expect((await loadTafsir(ed, 112, 1))?.length).toBeGreaterThan(5);
-    expect(count('original')).toBe(0);
-  }, 60_000);
+  // EVERY edition, not a sample: the mirror is what the app reads first,
+  // so a surah missing from it is a source asked for traffic it was never
+  // meant to carry — and one edition's files landing under another's tag
+  // would be invisible from anywhere else.
+  it.each(TAFSIR_EDITIONS.map(e => [e.id, e.language] as const))(
+    'tafsir %s (%s) answers Āyat al-Kursī and al-Ikhlāṣ from the mirror alone',
+    async ed => {
+      expect((await loadTafsir(ed, 2, 255))?.length).toBeGreaterThan(20);
+      expect((await loadTafsir(ed, 112, 1))?.length).toBeGreaterThan(5);
+      expect(count('original')).toBe(0);
+    },
+    60_000,
+  );
+
+  it.each(
+    QURAN_TRANSLATIONS.filter(e => e.source).map(e => [e.id, e.language] as const),
+  )(
+    'translation %s (%s) answers from the mirror alone',
+    async ed => {
+      const id = ed as QuranTranslationId;
+      expect((await getAyahTranslation(id, 2, 255)).length).toBeGreaterThan(40);
+      expect((await getAyahTranslation(id, 112, 1)).length).toBeGreaterThan(5);
+      expect(count('original')).toBe(0);
+    },
+    60_000,
+  );
 
   it('word meanings download complete from the mirror alone', async () => {
     const out = await downloadWordMeanings({}).promise;

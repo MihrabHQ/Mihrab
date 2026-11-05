@@ -1823,7 +1823,7 @@
     "groupRecitation": "Recitation",
     "groupMeaning": "Översättning och tafsir",
     "groupTypefaces": "Typsnitt",
-    "footer": "Varje rad länkar till sin källa.",
+    "footer": "Varje rad länkar till sin källa. Det Mihrab laddar ner hämtas från appens egen kopia av dessa källor, och från källan själv först när kopian inte kan svara.",
     "quranText": "Koranen — Uthmani-text",
     "mushafImages": "Mushaf-sidbilder (604)",
     "translationEditions": "Översättningar ({{n}})",

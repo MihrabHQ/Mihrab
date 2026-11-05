@@ -276,10 +276,26 @@ Religious content is sourced and attributed (also listed in-app under Settings �
 - Tajweed colours — KFGQPC QPC V4 Tajweed page fonts, from the [Quranic Universal Library](https://qul.tarteel.ai/resources/font) ([KFGQPC terms](https://dm.qurancomplex.gov.sa/copyright-2/)), downloaded on request; the rules of each word from the [quran.com API](https://api-docs.quran.com/) (`text_uthmani_tajweed`)
 - Ayah and word positions — [quran.com / Quran for Android](https://github.com/quran/quran_android)
 - Recitation audio — [EveryAyah.com](https://everyayah.com/); word timings from [cpfair/quran-align](https://github.com/cpfair/quran-align) (CC BY 4.0)
-- Tafsir texts — [spa5k/tafsir_api](https://github.com/spa5k/tafsir_api) mirror of the Quran.com tafsir corpus
-- Translations — [alquran.cloud](https://alquran.cloud/) (Tanzil-derived, CC BY 3.0)
+- Tafsir texts — [spa5k/tafsir_api](https://github.com/spa5k/tafsir_api) mirror of the Quran.com tafsir corpus, and [alquran.cloud](https://alquran.cloud/) for the three Tanzil editions (Jalalayn, al-Muntakhab, Kuliev & as-Sa'di)
+- Translations — [alquran.cloud](https://alquran.cloud/) (Tanzil-derived, CC BY 3.0) and the [Encyclopedia of the Noble Quran](https://quranenc.com/) (QuranEnc), whose editions are shown as published, footnotes and all, with the version named in Settings → About
 - Duas — [Hisn al-Muslim](https://github.com/rn0x/hisn_almuslim_json) (MIT)
 - Arabic fonts — [Amiri & Amiri Quran](https://github.com/aliftype/amiri) (SIL OFL 1.1)
+
+Everything the app downloads from those sources — the tafsir, the
+translations that are not bundled, the word meanings, the riwāyāt, the
+IndoPak text and font — is also **mirrored in this repository's releases**,
+byte for byte as the source answered. `scripts/mirror/build-mirror.js`
+builds them; the `data-…` tags hold them, a release per text edition
+(a release takes at most 1,000 assets, and twenty-five tafsir editions at
+114 surahs each is 2,850).
+
+The app asks that mirror **first** and the original source only when the
+mirror cannot answer. So a source changing its terms, moving, or going away
+does not take a downloaded feature with it, and none of these projects is
+asked to carry Mihrab's traffic for it. Mihrab Web is the one exception: a
+browser cannot read a release asset (no CORS header), so it reads from the
+sources directly. Forks: point `MIRROR_BASE` in `src/config/mirrors.ts` at
+your own releases.
 
 ---
 

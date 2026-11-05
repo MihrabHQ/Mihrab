@@ -252,10 +252,10 @@ export function AttributionsSettingsScreen() {
           through the list arrives at it. */}
       <SettingsGroup
         title={t('attributions.groupTypefaces', 'Typefaces')}
-        footer={t(
-          'attributions.footer',
-          'Every line links to the source it came from.',
-        )}>
+        footer={t('attributions.footer', {
+          defaultValue:
+            'Every line links to the source it came from. What Mihrab downloads is served from its own copy of these sources, and asked of the source itself only when that copy cannot answer.',
+        })}>
         {typefaces.map(c => (
           <CreditRow key={c.url + c.label} credit={c} />
         ))}

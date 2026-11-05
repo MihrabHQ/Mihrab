@@ -15,13 +15,44 @@ import { fetchWithRetry, type FetchWithRetryOptions } from '../utils/fetchWithRe
 export const MIRROR_BASE = 'https://github.com/MihrabHQ/Mihrab/releases/download';
 
 export const MIRROR_TAGS = {
-  tafsir: 'data-tafsir-v1',
-  /** The translations that are downloads rather than assets (`surahStore`). */
-  translations: 'data-translations-v1',
   wordMeanings: 'data-wordmeanings-v1',
   riwayah: 'data-riwayah-v1',
   indopak: 'data-indopak-v1',
+  /**
+   * FROZEN. The six tafsir editions of 2.7.28 lived here, all 684 surah
+   * files in one release, and every version up to 2.35.0 reads them from
+   * it. Nothing new goes in — see `editionMirrorTag` for why — and it must
+   * not be deleted while those versions are out there.
+   */
+  legacyTafsir: 'data-tafsir-v1',
 } as const;
+
+/**
+ * The tag that mirrors ONE text edition, a surah per asset.
+ *
+ * ── WHY A TAG EACH ─────────────────────────────────────────────────────
+ *
+ * A release holds at most 1,000 assets, and GitHub refuses the 1,001st
+ * (422, "file_count limited to 1000 assets per release"). One tag for all
+ * the tafsir was fine at six editions and 684 files; at twenty-five it is
+ * 2,850, and the translations add 1,710 more.
+ *
+ * So an edition gets its own release, 114 assets in it — the shape
+ * `data-namazvakti-<year>` already uses for the same reason. The tag comes
+ * from the edition's id, which never changes, so adding an edition adds a
+ * release and moves nothing: a tag worked out from a POSITION in the
+ * registry would have silently changed under the editions already on
+ * someone's phone the first time that list was reordered, and that list is
+ * deliberately ordered (it decides the defaults).
+ *
+ * The asset is `<surah>.json`, the edition being the tag now.
+ */
+export function editionMirrorTag(
+  kind: 'tafsir' | 'translation',
+  editionId: string,
+): string {
+  return `data-${kind}-${editionId}`;
+}
 
 export function mirrorUrl(tag: string, asset: string): string {
   return `${MIRROR_BASE}/${tag}/${asset}`;
