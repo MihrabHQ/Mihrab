@@ -182,6 +182,8 @@ const MINIMAL_DIGIT_TINT = 0.45;
 /** The unit letters' size in the figures' em, and the seconds' unit in theirs. */
 const UNIT_EM = 0.4;
 const SECONDS_UNIT_EM = 0.7;
+/** The hair space (U+200A) between a figure and its unit letter. */
+const UNIT_HAIR = '\u200A';
 /** The rail's thread, its head, and the soft ring round the head (dp). */
 const RAIL_LINE = 2;
 const RAIL_HEAD = 9;
@@ -1412,14 +1414,21 @@ const HeroToday = memo(function HeroToday({
               { color: digitInk },
               glowSpan,
             ]}>
+            {/* A hair of space before each unit: the figures are tracked
+                tight (−1.5), which pulls the letter under the last digit's
+                overhang — a "4" and an "h" touched. The hair space is the
+                figures' own size, a tenth of an em, and unlike a margin it
+                survives inside one line of nested text. */}
             {pieces.hours ? (
               <>
                 {pieces.h}
+                {UNIT_HAIR}
                 <Text style={unitStyle}>{units.hour}</Text>
                 {' '}
               </>
             ) : null}
             {pieces.m}
+            {UNIT_HAIR}
             <Text style={unitStyle}>{units.minute}</Text>
           </Text>
           {/* The seconds come and go with the distance: on the full page
@@ -1436,6 +1445,7 @@ const HeroToday = memo(function HeroToday({
               ]}>
               {' '}
               {pieces.s}
+              {UNIT_HAIR}
               <Text style={secondsUnitStyle}>{units.second}</Text>
             </Text>
           ) : null}

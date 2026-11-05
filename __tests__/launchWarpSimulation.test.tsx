@@ -147,9 +147,11 @@ function flatten(c: unknown): string {
  * above it the line says hours and minutes, so it is read to the minute.
  */
 function shownCountdown(tree: ReactTestRenderer): { value: number; exact: boolean } {
+  // A hair space (U+200A) sits between each figure and its unit letter;
+  // it is not part of the number.
   const line = tree.root
     .findAllByType(Text)
-    .map(n => flatten(n.props.children))
+    .map(n => flatten(n.props.children).replace(/\u200A/g, ''))
     .find(c => /^(\d+h )?\d+m( \d\ds)?$/.test(c));
   const h = line?.match(/^(\d+)h /)?.[1];
   const m = line?.match(/(\d+)m/)?.[1];

@@ -29,6 +29,8 @@ import { useClockFormatter } from '../../hooks/useClockFormatter';
 import type { ClockFormat } from '../../utils/clockFormat';
 import { SkyVariantPicker } from '../../components/SkyVariantPicker';
 import { LayoutPicker } from '../../components/LayoutPicker';
+import { HeroLookPicker } from '../../components/HeroLookPicker';
+import { SUN_SURFACE } from '../home/skyLight';
 import { useSkyTheme } from '../../theme/skyTheme';
 import { SegmentedControl } from '../../components/ui';
 import {
@@ -206,15 +208,18 @@ function AppearanceCardImpl() {
           <Text style={[s.label, { color: palette.muted }]}>
             {t('settings.heroLook', 'Sky band')}
           </Text>
-          <SegmentedControl
-            accessibilityLabel={t('settings.heroLook', 'Sky band')}
+          {/* Shown, as the layouts are: the hour's sky under the Sky theme,
+              the page's paper otherwise; the sun in its own light. */}
+          <HeroLookPicker
             testID="appearance-heroLook"
-            segments={[
-              { key: 'sky', label: t('settings.heroLookSky', 'Painted') },
-              { key: 'track', label: t('settings.heroLookTrack', 'Track') },
-            ]}
             value={settings.heroLook}
             onChange={heroLook => updateSettings({ heroLook })}
+            skyTop={previewSky ? previewSky.heroTop : String(palette.accentBg)}
+            skyFoot={previewSky ? previewSky.heroMid : String(palette.bg)}
+            sun={previewSky ? previewSky.bodyLight : SUN_SURFACE}
+            text={String(palette.text)}
+            muted={String(palette.muted)}
+            accent={String(palette.accent)}
           />
           <Text style={[s.help, { color: palette.muted, marginTop: SPACING.sm }]}>
             {t(
