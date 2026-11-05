@@ -115,6 +115,7 @@ import { TodayTimesSheet, type TimesSheetDay, type TimesSheetRow } from './Today
 import { pageRecess } from './MinimalSheet';
 import { HeroSky, type SkyRun } from './HeroSky';
 import { trackFrame, trackWindow } from './trackModel';
+import { TrackExplainer } from './TrackExplainer';
 import type { HeroLook } from '../../settings/types';
 import {
   HERO_Y,
@@ -1394,9 +1395,23 @@ const HeroToday = memo(function HeroToday({
       {/* The dashboard's card does not grow, so its band is a fixed
           height — the room a desktop has to spare — rather than a share. */}
       {fill ? (
-        <View style={[styles.heroScene, minimal && styles.heroSceneAbove, { minHeight: HERO_SCENE_MIN[tier] }]} />
+        track ? (
+          // Under the Track the band is a tap target that explains the chart.
+          <TrackExplainer
+            kind={track.kind}
+            prayer={targetLabel}
+            ink={inkTop.text}
+            style={[styles.heroScene, minimal && styles.heroSceneAbove, { minHeight: HERO_SCENE_MIN[tier] }]}
+          />
+        ) : (
+          <View style={[styles.heroScene, minimal && styles.heroSceneAbove, { minHeight: HERO_SCENE_MIN[tier] }]} />
+        )
       ) : expanded || band ? (
-        <View style={{ height: HERO_SCENE_EXPANDED }} />
+        track ? (
+          <TrackExplainer kind={track.kind} prayer={targetLabel} ink={inkTop.text} style={{ height: HERO_SCENE_EXPANDED }} />
+        ) : (
+          <View style={{ height: HERO_SCENE_EXPANDED }} />
+        )
       ) : null}
       <View onLayout={banded ? onBlockLayout : undefined}>
       {/* "Fajr in" leading, and on the trailing end of the same line —
