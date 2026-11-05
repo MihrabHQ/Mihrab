@@ -1,5 +1,6 @@
 import { memo, useMemo } from 'react';
-import { Animated, StyleSheet, View } from 'react-native';
+import { Animated, StyleSheet, Text, View } from 'react-native';
+import { TYPE } from '../../theme/typography';
 import Svg, { Circle, ClipPath, Defs, G, Line, Path, Rect } from 'react-native-svg';
 import { MOON, Moon, moonLitPath, NEW_MOON_BELOW, SUN_R } from './HeroSky';
 import { type SkyFrame } from './skyModel';
@@ -22,6 +23,23 @@ import { type TrackBase, type TrackFrame } from './trackModel';
  * `tintedBy` the sun's disc is coloured with — so the one coloured line
  * is computed, not chosen.
  */
+/** The chart's parts named, shown on a tap of the band (TrackExplainer). */
+export type TrackLabels = {
+  /** Asked for: drawn only then. */
+  open: boolean;
+  /** Their fade in, native-driven. */
+  opacity: Animated.Value;
+  /** "Sun's path" or "Moon's path". */
+  path: string;
+  horizon: string;
+  /** The next prayer, beside its ring. */
+  prayer: string;
+};
+/** The names' width, dp: wide enough for a word or two, centred on their place. */
+const LABEL_W = 120;
+/** The names keep off the screen's edge by the page's own margin, dp. */
+const LABEL_INSET = 24;
+
 /** The track's weight, dp, and the stretch's. */
 const TRACK_W = 0.75;
 const STRETCH_W = 1.25;
@@ -39,9 +57,11 @@ function HeroTrackImpl({
   horizon,
   ink,
   run,
+  labels,
 }: {
   track: TrackFrame;
   frame: SkyFrame;
+  labels?: TrackLabels;
   /**
    * A launch run (HeroSky's SkyRun): the chart, the horizon and the ring
    * are drawn as they will be at the run's end, and the body rides the
@@ -222,7 +242,65 @@ function HeroTrackImpl({
       ) : null}
     </Svg>
   );
-  if (!ride) return svg;
+  /**
+   * THE NAMES, WHERE THE PARTS ARE. Three words in the eyebrow's muted
+   * ink, small: the path over the arc's highest point, the horizon at the
+   * line's start, the prayer beside its ring (on the side with room). No
+   * box, no rule, no arrow: the chart is the diagram. They are drawn only
+   * while asked for, and take no touches, so the band stays the tap.
+   */
+  const named = (() => {
+    if (!labels || !labels.open) return null;
+    let peak: TrackBase | null = null;
+    for (const p of track.base) if (!p.under && (!peak || p.y < peak.y)) peak = p;
+    const ringX = ring ? X(ring) : null;
+    const ringY = ring ? Y(ring) : null;
+    const ringOnRight = ringX != null && ringX > width - LABEL_W - 16;
+    // The horizon is named at the line's start, or at its end when the
+    // ring's name would sit on it there.
+    const horizonRight = ringX != null && ringX < LABEL_W + 2 * LABEL_INSET;
+    return (
+      <Animated.View style={[StyleSheet.absoluteFill, { opacity: labels.opacity }]} pointerEvents="none">
+        {peak ? (
+          <Text
+            numberOfLines={1}
+            style={[styles.label, styles.centre, { color: ink, left: X(peak) - LABEL_W / 2, top: Y(peak) - 18 }]}>
+            {labels.path}
+          </Text>
+        ) : null}
+        <Text
+          numberOfLines={1}
+          style={[
+            styles.label,
+            horizonRight ? styles.end : null,
+            { color: ink, top: horizon - 16, left: horizonRight ? width - LABEL_W - LABEL_INSET : LABEL_INSET },
+          ]}>
+          {labels.horizon}
+        </Text>
+        {ringX != null && ringY != null ? (
+          <Text
+            numberOfLines={1}
+            style={[
+              styles.label,
+              ringOnRight ? styles.end : null,
+              { color: ink, top: ringY - 16, left: ringOnRight ? ringX - LABEL_W - 6 : ringX + 6 },
+            ]}>
+            {labels.prayer}
+          </Text>
+        ) : null}
+      </Animated.View>
+    );
+  })();
+  if (!ride) {
+    return named ? (
+      <>
+        {svg}
+        {named}
+      </>
+    ) : (
+      svg
+    );
+  }
   // The run: the chart, then the end's stretch and outline fading in,
   // then the body riding.
   return (
@@ -242,6 +320,7 @@ function HeroTrackImpl({
         </Svg>
       </Animated.View>
       {bodyView}
+      {named}
     </>
   );
 }
@@ -278,6 +357,16 @@ const MoonDisc = memo(function TrackMoon({
 export const HeroTrack = memo(HeroTrackImpl);
 
 const styles = StyleSheet.create({
+  // The chart's names: the footnote's little sibling, muted, untracked.
+  label: {
+    position: 'absolute',
+    width: LABEL_W,
+    fontSize: TYPE.caption.fontSize,
+    lineHeight: TYPE.caption.lineHeight,
+    opacity: 0.75,
+  },
+  centre: { textAlign: 'center' },
+  end: { textAlign: 'right' },
   svg: { position: 'absolute', left: 0, top: 0 },
   clip: { position: 'absolute', left: 0, top: 0, overflow: 'hidden' },
   origin: { position: 'absolute', left: 0, top: 0 },

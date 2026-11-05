@@ -115,7 +115,7 @@ import { TodayTimesSheet, type TimesSheetDay, type TimesSheetRow } from './Today
 import { pageRecess } from './MinimalSheet';
 import { HeroSky, type SkyRun } from './HeroSky';
 import { trackFrame, trackWindow } from './trackModel';
-import { TrackExplainer } from './TrackExplainer';
+import { TrackExplainer, useTrackExplain } from './TrackExplainer';
 import type { HeroLook } from '../../settings/types';
 import {
   HERO_Y,
@@ -1303,6 +1303,24 @@ const HeroToday = memo(function HeroToday({
     [t, target.name],
   );
   const targetLabel = useMemo(() => t(`prayer.${target.name}`), [t, target.name]);
+  // Tap the band and the Track names its parts (TrackExplainer).
+  const explain = useTrackExplain();
+  const trackLabels = useMemo(
+    () =>
+      track
+        ? {
+            open: explain.open,
+            opacity: explain.opacity,
+            path:
+              track.kind === 'moon'
+                ? t('home.trackLabelMoonPath', "Moon's path")
+                : t('home.trackLabelSunPath', "Sun's path"),
+            horizon: t('home.trackLabelHorizon', 'Horizon'),
+            prayer: targetLabel,
+          }
+        : undefined,
+    [track, explain.open, explain.opacity, t, targetLabel],
+  );
   const railFromKey = rail?.from.key;
   const railFromLabel = useMemo(() => (railFromKey ? t(`prayer.${railFromKey}`) : ''), [t, railFromKey]);
   // On the day's clock, as the rows are: a saved place's own time.
@@ -1354,6 +1372,7 @@ const HeroToday = memo(function HeroToday({
         sceneBottom={sceneBottom}
         track={track}
         trackInk={inkTop.text}
+        trackLabels={trackLabels}
         bleed={
           bleed ?? {
             horizontal: SPACING.xl,
@@ -1400,7 +1419,7 @@ const HeroToday = memo(function HeroToday({
           <TrackExplainer
             kind={track.kind}
             prayer={targetLabel}
-            ink={inkTop.text}
+            onPress={explain.toggle}
             style={[styles.heroScene, minimal && styles.heroSceneAbove, { minHeight: HERO_SCENE_MIN[tier] }]}
           />
         ) : (
@@ -1408,7 +1427,7 @@ const HeroToday = memo(function HeroToday({
         )
       ) : expanded || band ? (
         track ? (
-          <TrackExplainer kind={track.kind} prayer={targetLabel} ink={inkTop.text} style={{ height: HERO_SCENE_EXPANDED }} />
+          <TrackExplainer kind={track.kind} prayer={targetLabel} onPress={explain.toggle} style={{ height: HERO_SCENE_EXPANDED }} />
         ) : (
           <View style={{ height: HERO_SCENE_EXPANDED }} />
         )

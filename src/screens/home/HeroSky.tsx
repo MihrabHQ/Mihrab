@@ -6,7 +6,7 @@ import Svg, { Circle, G, Path } from 'react-native-svg';
 import { linearDown, radialGlow, withAlpha } from './skyPaint';
 import { skyColorAt, SUN_HORIZON_Y, type SkyFrame } from './skyModel';
 import { SUN_GLOW_PEAK } from './skyLight';
-import { HeroTrack } from './HeroTrack';
+import { HeroTrack, type TrackLabels } from './HeroTrack';
 import type { TrackFrame } from './trackModel';
 
 /**
@@ -141,6 +141,7 @@ function HeroSkyImpl({
   sceneBottom = 0,
   track,
   trackInk,
+  trackLabels,
 }: {
   frame: SkyFrame;
   /**
@@ -154,6 +155,8 @@ function HeroSkyImpl({
   track?: TrackFrame | null;
   /** The hero's ink at the band — the lines are drawn in it. */
   trackInk?: string;
+  /** The chart's parts named, shown on a tap of the band (TrackExplainer). */
+  trackLabels?: TrackLabels;
   /** While a launch run draws: the sky as native layers, not `frame`. */
   run?: SkyRun;
   /**
@@ -402,6 +405,7 @@ function HeroSkyImpl({
           bandTop={scene.top}
           horizon={horizon}
           ink={trackInk}
+          labels={trackLabels}
           // Through a launch run the chart stands and the body rides the
           // run's progress along it; the rest is drawn as it will be.
           run={running && run?.tracks ? { tracks: run.tracks, progress: run.progress } : undefined}
