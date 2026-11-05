@@ -1,14 +1,17 @@
-import { isMacCatalyst } from '../responsive/breakpoints';
+import { desktopLayout } from '../responsive/breakpoints';
 
 /**
- * Where Minimal is offered: the phone and the iPad, not the Mac. A Mac
- * window is a desktop's, with a pointer and a keyboard, any size the
- * reader drags it to — the dots, the swipe between pages and the sheet
- * pulled up from the foot are a phone's hand. On the Mac the switch is not
- * shown, and a `minimalUi` carried over (a backup, an old build) is read
- * as off — by the app and by the colour rules below alike.
+ * Where Minimal is offered: the phone and the iPad, and Mihrab Web opened
+ * on a phone — not a desktop's page: the Mac, the Windows and Linux app,
+ * or Mihrab Web in a computer's browser or on a tablet, which is laid out
+ * as the desktop's (`desktopLayout`). A desktop window has a pointer and a
+ * keyboard and is any size the reader drags it to — the dots, the swipe
+ * between pages and the sheet pulled up from the foot are a phone's hand.
+ * Where it is not offered the switch is not shown, and a `minimalUi`
+ * carried over (a backup, sync, an old build) is read as off — by the app
+ * and by the colour rules below alike.
  */
-export const MINIMAL_OFFERED = !isMacCatalyst;
+export const MINIMAL_OFFERED = !desktopLayout;
 
 /** Whether Minimal is on here: asked for, and offered on this device. */
 export function minimalOn(settings: { minimalUi: boolean }): boolean {

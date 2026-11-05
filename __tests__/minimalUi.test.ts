@@ -324,7 +324,7 @@ describe('one answer to "is Minimal on"', () => {
   // was off, Today the hero alone under the column's tabs.
   it('is asked for AND offered on this device, and every reader asks the one hook', () => {
     expect(read('src/settings/useMinimalOffered.ts')).toContain('return MINIMAL_OFFERED && !vbar;');
-    expect(read('src/settings/minimalLook.ts')).toContain('export const MINIMAL_OFFERED = !isMacCatalyst;');
+    expect(read('src/settings/minimalLook.ts')).toContain('export const MINIMAL_OFFERED = !desktopLayout;');
     expect(inset).toMatch(
       /export function useMinimalUi\(\): boolean \{\s*const offered = useMinimalOffered\(\);\s*const asked = useAppearanceSettings\(\)\.slice\.minimalUi;\s*return offered && asked;\s*\}/,
     );

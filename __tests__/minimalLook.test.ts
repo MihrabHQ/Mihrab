@@ -66,10 +66,21 @@ describe('Minimal wears the classic colours', () => {
   });
 });
 
-describe('Minimal is not offered on the Mac', () => {
+describe('Minimal is not offered on a desktop page', () => {
+  it('follows the desktop layout: off on the Mac, Windows, Linux and a computer browser; on for a phone, also Mihrab Web on one', () => {
+    // desktopLayout = (Mac Catalyst or web) and not Mihrab Web on a phone.
+    const bp = read('src/responsive/breakpoints.ts');
+    expect(bp).toMatch(/export const isDesktop: boolean = isMacCatalyst \|\| Platform\.OS === 'web';/);
+    expect(bp).toMatch(/export const desktopLayout: boolean = isDesktop && !WEB_APP_PHONE;/);
+    jest.resetModules();
+    jest.doMock('../src/responsive/breakpoints', () => ({ desktopLayout: false }));
+    expect(require('../src/settings/minimalLook').MINIMAL_OFFERED).toBe(true);
+    jest.dontMock('../src/responsive/breakpoints');
+  });
+
   it('reads as off there, for the app and the colour rules alike', () => {
     jest.resetModules();
-    jest.doMock('../src/responsive/breakpoints', () => ({ isMacCatalyst: true }));
+    jest.doMock('../src/responsive/breakpoints', () => ({ desktopLayout: true }));
     const m = require('../src/settings/minimalLook');
     expect(m.MINIMAL_OFFERED).toBe(false);
     expect(m.minimalOn({ minimalUi: true })).toBe(false);
