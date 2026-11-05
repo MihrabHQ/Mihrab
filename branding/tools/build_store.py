@@ -147,6 +147,14 @@ SETS = [
         # phone's own 1080x2400 (2.22) cannot be uploaded as-is and the panel
         # is composed at 1080x2160 (exactly 2.00). F-Droid gets the same
         # panels, under plain 1-based names — see the note in build().
+        # NINE PANELS, EIGHT SLOTS. Play takes at most eight phone
+        # screenshots; F-Droid takes as many as this folder holds and never
+        # deletes one. So all nine are built, and the Play listing carries
+        # eight of them: the qibla panel is the one left out, because every
+        # prayer app has a compass and it does the least to tell this
+        # listing apart — hifz has its place instead (2026-11-05). F-Droid
+        # keeps both. Drop a panel from this folder and F-Droid keeps
+        # showing it anyway; see the note in build().
         "name": "Android phone",
         "src": "branding/store/play",
         "raw_size": (1080, 2400),
