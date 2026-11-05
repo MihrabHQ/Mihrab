@@ -26,7 +26,9 @@ READ AND LISTEN
 - A choice of reciters, and for those with word timings, the recited word lit on the page
 - Tilawah: surah into surah with the screen off, with a sleep timer
 - Translations and classical tafsir, kept for offline reading
-- Memorisation tools, bookmarks and khatmah plans
+[ios]- Hifz: mark what you know by heart; each portion comes round again — a day, then 3, 7, 14 and 30, never longer than the cap you set
+[ios]- Drills, bookmarks and khatmah plans
+[android]- Hifz: what you know by heart, revised on its own cycle; drills, bookmarks, khatmah plans
 
 REMEMBER
 - Duas from Hisn al-Muslim, with transliteration and translation

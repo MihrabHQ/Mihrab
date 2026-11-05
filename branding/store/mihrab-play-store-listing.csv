@@ -24,7 +24,7 @@ READ AND LISTEN
 - A choice of reciters, and for those with word timings, the recited word lit on the page
 - Tilawah: surah into surah with the screen off, with a sleep timer
 - Translations and classical tafsir, kept for offline reading
-- Memorisation tools, bookmarks and khatmah plans
+- Hifz: what you know by heart, revised on its own cycle; drills, bookmarks, khatmah plans
 
 REMEMBER
 - Duas from Hisn al-Muslim, with transliteration and translation
@@ -63,7 +63,8 @@ Mihrab is independent. It is not affiliated with or endorsed by Diyanet, Islamis
 - 59 قارئًا، ولمن تتوفّر لتلاوته توقيتات الكلمات تُضيء الكلمة المتلوّة على الصفحة
 - التلاوة: سورة بعد سورة والشاشة مطفأة، مع مؤقّت نوم وتحكّم في السرعة؛ وتحفظ موضعك، وتقترح ما تستحبّه السنّة في تلك الساعة — الكهف يوم الجمعة، والملك في الليل
 - 14 ترجمة وتفاسير كلاسيكية، محفوظة للقراءة دون اتصال
-- أدوات للحفظ، وعلامات، وخطط ختمة تتبع الصفحة التي أنت عليها
+- الحفظ: علِّم ما تحفظه، فيعود كل مقطع للتسميع — بعد يوم، ثم بعد 3 و7 و14 و30، ولا يتجاوز الحدّ الذي تختاره
+- تمارين للحفظ، وعلامات، وخطط ختمة
 
 اذكر
 - أكثر من 100 دعاء من حصن المسلم، مع النطق بالحروف اللاتينية والترجمة
@@ -105,7 +106,8 @@ Mihrab is independent. It is not affiliated with or endorsed by Diyanet, Islamis
 - ৫৯ জন কারী; যাঁদের শব্দভিত্তিক সময় আছে, তাঁদের পড়ার সময় শব্দটি পাতায় জ্বলে ওঠে
 - তিলাওয়াত: স্ক্রিন বন্ধ রেখেও সূরার পর সূরা, স্লিপ টাইমার ও গতি নিয়ন্ত্রণসহ; আপনি কোথায় ছিলেন তা মনে রাখে এবং সেই সময়ে সুন্নাহ যা পড়তে উৎসাহ দেয় তা প্রস্তাব করে — জুমায় আল-কাহফ, রাতে আল-মুলক
 - ১৪টি অনুবাদ ও ক্লাসিক তাফসির, অফলাইনেও পড়া যায়
-- মুখস্থ করার সরঞ্জাম, বুকমার্ক এবং আপনি যে পাতায় আছেন তা অনুসরণ করা খতমের পরিকল্পনা
+- হিফজ: যা মুখস্থ আছে তা চিহ্নিত করুন, প্রতিটি অংশ শোনানোর জন্য ফিরে আসে — একদিন পর, এরপর ৩, ৭, ১৪ ও ৩০ দিন, আপনার বেঁধে দেওয়া সীমার বেশি কখনও নয়
+- মুখস্থের অনুশীলন, বুকমার্ক ও খতমের পরিকল্পনা
 
 জিকির
 - হিসনুল মুসলিম থেকে ১০০টিরও বেশি দোয়া, উচ্চারণ ও অনুবাদসহ
@@ -147,7 +149,7 @@ LESEN UND HÖREN
 - 59 Rezitatoren, und bei denen mit Wort-Zeitmarken leuchtet das rezitierte Wort auf der Seite
 - Tilawa: Sure für Sure bei ausgeschaltetem Bildschirm, mit Schlaftimer; sie merkt sich, wo du warst, und schlägt vor, was die Sunna zu dieser Stunde empfiehlt – al-Kahf am Freitag, al-Mulk in der Nacht
 - 14 Übersetzungen und klassischer Tafsir, auch offline lesbar
-- Hilfen zum Auswendiglernen, Lesezeichen und Khatma-Pläne
+- Hifz: was Sie auswendig können, in eigenem Rhythmus
 
 GEDENKEN
 - Mehr als 100 Duas aus Hisn al-Muslim, mit Umschrift und Übersetzung
@@ -189,7 +191,7 @@ LEER Y ESCUCHAR
 - 59 recitadores y, en los que tienen tiempos por palabra, la palabra recitada iluminada en la página
 - Tilawa: sura tras sura con la pantalla apagada, con temporizador; recuerda dónde te quedaste y sugiere lo que la sunna recomienda a esa hora: al-Kahf el viernes, al-Mulk por la noche
 - 14 traducciones y tafsir clásico, disponibles sin conexión
-- Herramientas de memorización, marcadores y planes de jatma
+- Hifz: lo que sabes de memoria, cada porción a su propio ritmo
 
 RECORDAR
 - Más de 100 duas del Hisn al-Muslim, con transliteración y traducción
@@ -231,7 +233,7 @@ LIRE ET ÉCOUTER
 - 59 récitateurs et, pour ceux qui ont des repères par mot, le mot récité éclairé sur la page
 - Tilawa : sourate après sourate écran éteint, avec minuterie de sommeil ; elle garde votre place et propose ce que la sunna recommande à cette heure : al-Kahf le vendredi, al-Mulk la nuit
 - 14 traductions et des tafsirs classiques, lisibles hors ligne
-- Des outils de mémorisation, des signets et des plans de khatma
+- Hifz : ce que vous savez par cœur, chaque portion à son rythme
 
 SE SOUVENIR
 - Plus de 100 douas du Hisn al-Muslim, avec translittération et traduction
@@ -271,6 +273,7 @@ Mihrab est open source sous licence AGPL-3.0-or-later."
 - तजवीद के रंग, हर नियम की व्याख्या के साथ — हफ़्स और वर्श में
 - शब्द-पाठक: किसी शब्द को दबाए रखें और उसे अकेले सुनें
 - 59 क़ारी; जिनके शब्द-दर-शब्द समय उपलब्ध हैं, उनमें पढ़ा जा रहा शब्द पन्ने पर चमकता है
+- हिफ़्ज़: जो आपको ज़बानी याद है उसे चिह्नित करें; हर हिस्सा दोबारा सुनाने के लिए लौटता है — एक दिन बाद, फिर 3, 7, 14 और 30 दिन, आपकी तय की हुई हद से कभी आगे नहीं
 - तिलावत: स्क्रीन बंद होने पर भी सूरह के बाद सूरह, स्लीप टाइमर और गति नियंत्रण के साथ; यह आपकी जगह याद रखती है और बताती है कि उस समय सुन्नत क्या पढ़ने की सलाह देती है — जुमा को अल-कहफ़, रात को अल-मुल्क
 - 14 अनुवाद और क्लासिकल तफ़सीर, ऑफ़लाइन भी
 - हिफ़्ज़ के औज़ार, बुकमार्क और ख़त्म की योजनाएँ जो आपके खुले पन्ने के साथ चलती हैं
@@ -315,7 +318,7 @@ MEMBACA DAN MENDENGAR
 - 59 qari, dan pada qari yang memiliki penanda waktu per kata, kata yang dibaca menyala di halaman
 - Tilawah: surah demi surah dengan layar mati, dengan pengatur waktu tidur dan kendali kecepatan; mengingat posisi Anda dan menyarankan bacaan yang dianjurkan sunnah pada jam itu — Al-Kahf di hari Jumat, Al-Mulk di malam hari
 - 14 terjemahan dan tafsir klasik, bisa dibaca tanpa internet
-- Alat bantu hafalan, penanda, dan rencana khatam yang mengikuti halaman yang sedang Anda baca
+- Hifz: yang sudah Anda hafal, tiap bagian kembali pada siklusnya
 
 MENGINGAT
 - Lebih dari 100 doa dari Hisnul Muslim, dengan transliterasi dan terjemahan
@@ -357,7 +360,8 @@ Mihrab bersumber terbuka dengan lisensi AGPL-3.0-or-later."
 - 59 чтеца, а у чтецов с разметкой слов — подсветка читаемого слова на странице
 - Тиляват: сура за сурой при выключенном экране, с таймером сна и регулировкой скорости; запоминает, где вы остановились, и предлагает то, что сунна советует читать в этот час, — аль-Кахф в пятницу, аль-Мульк ночью
 - 14 переводов и классические тафсиры, доступные офлайн
-- Инструменты заучивания, закладки и планы хатмы, которые следуют за страницей, где вы находитесь
+- Хифз: выученное наизусть, каждая часть в своём цикле
+- Упражнения для заучивания, закладки и планы хатмы
 
 ПОМИНАНИЕ
 - Более 100 дуа из «Хисн аль-Муслим» с транскрипцией и переводом
@@ -399,7 +403,8 @@ LÄS OCH LYSSNA
 - 59 recitatörer, och för dem med ordtider lyser det reciterade ordet upp på sidan
 - Tilawah: sura efter sura med skärmen släckt, med sovtimer och hastighetsreglage; den minns var du slutade och föreslår vad sunnan rekommenderar vid den tiden — al-Kahf på fredagen, al-Mulk på natten
 - 14 översättningar och klassisk tafsir, sparade för läsning offline
-- Memoreringsverktyg, bokmärken och khatmah-planer som följer sidan du är på
+- Hifz: det du kan utantill, där varje del kommer tillbaka i sin egen takt
+- Memoreringsövningar, bokmärken och khatmah-planer
 
 MINNS
 - Över 100 duor ur Hisn al-Muslim, med translitterering och översättning
@@ -441,7 +446,8 @@ OKU VE DİNLE
 - 59 kâri; kelime zamanlaması olanlarda okunan kelime sayfada yanar
 - Tilavet: ekran kapalıyken sure sure dinleme, uyku zamanlayıcısı ve hız ayarıyla; kaldığınız yeri hatırlar ve o saatte sünnetin tavsiye ettiğini önerir: cuma günü Kehf, gece Mülk
 - 14 meal ve klasik tefsirler, çevrimdışı da okunabilir
-- Ezber araçları, yer imleri ve açık olduğunuz sayfayı izleyen hatim planları
+- Hifz: ezbere bildikleriniz, her bölüm kendi döngüsünde geri gelir
+- Ezber alıştırmaları, yer imleri ve hatim planları
 
 ZİKİR
 - Hısnü'l-Müslim'den 100'den fazla dua, okunuşu ve mealiyle
@@ -483,7 +489,8 @@ Mihrab, AGPL-3.0-or-later lisansıyla açık kaynaktır."
 - 59 قاری؛ جن کے لفظ بہ لفظ اوقات موجود ہیں، ان میں پڑھا جانے والا لفظ صفحے پر روشن ہوتا ہے
 - تلاوت: اسکرین بند ہونے پر بھی سورت کے بعد سورت، سلیپ ٹائمر اور رفتار کنٹرول کے ساتھ؛ یہ آپ کی جگہ یاد رکھتی ہے اور بتاتی ہے کہ اس وقت سنت کیا پڑھنے کی ترغیب دیتی ہے — جمعہ کو سورۂ کہف، رات کو سورۂ ملک
 - 14 تراجم اور کلاسیکی تفاسیر، آف لائن بھی
-- حفظ کے اوزار، بک مارکس اور ختم کے منصوبے جو آپ کے کھلے صفحے کے ساتھ چلتے ہیں
+- حفظ: جو یاد ہے اسے نشان زد کریں، ہر حصہ سنانے کے لیے لوٹ آتا ہے — ایک دن بعد، پھر 3، 7، 14 اور 30 دن، آپ کی مقرر کردہ حد سے کبھی زیادہ نہیں
+- حفظ کی مشقیں، بک مارکس اور ختم کے منصوبے
 
 ذکر
 - حصن المسلم سے 100 سے زیادہ دعائیں، تلفظ اور ترجمے کے ساتھ
@@ -525,7 +532,8 @@ Mihrab, AGPL-3.0-or-later lisansıyla açık kaynaktır."
 - 59 位诵读者；对于有逐词时间标记的诵读，被读到的词会在页面上亮起
 - 连续诵读：熄屏后逐章播放，带睡眠定时与语速调节；会记住你的进度，并按时辰推荐圣行所提倡的章节——周五读山洞章，夜里读国权章
 - 14 种译本与经典经注，可离线阅读
-- 背诵工具、书签，以及跟随当前页面的通读（Khatmah）计划
+- 背诵（Hifz）：标记你已背下的内容，每一段都会回来等你再背一次——第一天之后是第 3、7、14、30 天，绝不超过你设定的上限
+- 背诵练习、书签，以及跟随当前页面的通读（Khatmah）计划
 
 记念
 - 来自《穆斯林堡垒》的 100 多条祈祷词，附音译与译文
