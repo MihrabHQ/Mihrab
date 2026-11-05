@@ -113,7 +113,12 @@ import {
   useSettledGeometry,
   type PhonePageGeometry,
 } from './phonePageGeometry';
-import { SPACING } from '../theme/tokens';
+import { RADIUS, SPACING } from '../theme/tokens';
+import {
+  landscapeTurnButtons,
+  TURN_BUTTON_H,
+  TURN_BUTTON_W,
+} from './landscapeTurnButtons';
 import { classifyTopCutout, useDisplayCutout } from '../native/DisplayCutout';
 import { useVerticalBar } from '../native/VerticalBar';
 
@@ -882,6 +887,18 @@ export const MushafPhoneReader = React.memo(function MushafPhoneReader(
 
   const { marks, finish, selected, openSelection, openJump } = core;
   const railChrome = useScrubberChrome(tone);
+  // The ‹ › in the margins of a phone on its side, in fullscreen — see
+  // `landscapeTurnButtons`. Nothing in portrait (the page fills the width)
+  // or out of fullscreen (the rail is there).
+  const turnButtons =
+    isFullscreen && width > height && geometry
+      ? landscapeTurnButtons({
+          padLeft,
+          padRight,
+          pageWidth,
+          textWidth: geometry.textWidth,
+        })
+      : null;
   // The page's accent — its frame, the beginning of a surah, the marks —
   // is the page bar's: the theme rendered for the PAGE's mode, not the
   // app's. On a night page under the Sky theme at a light hour the app's
@@ -1074,6 +1091,51 @@ export const MushafPhoneReader = React.memo(function MushafPhoneReader(
             { backgroundColor: pageBg, opacity: rotationFade },
           ]}
         />
+        {/* ON ITS SIDE, IN FULLSCREEN: THE ‹ › THE DESKTOP HAS. Drawn over
+            the pager, not inside a page, so they stay where they are while
+            the column scrolls — each centred between the display's edge
+            and the text (see `landscapeTurnButtons`). The mushaf turns
+            right to left: the left button is the next page. Like the
+            spread's, they are not behind the reading lock — a press is
+            not a brush of the hand. */}
+        {turnButtons ? (
+          <>
+            {turnButtons.left != null && currentPage < totalPages ? (
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={t('quran.nextPage', 'Next page')}
+                hitSlop={8}
+                onPress={() => turnPage(1)}
+                style={({ pressed }) => [
+                  styles.turnButton,
+                  {
+                    left: turnButtons.left, // rtl-safe: the mushaf's page order is physical
+                    backgroundColor: railChrome.control,
+                    opacity: pressed ? 0.95 : 0.5,
+                  },
+                ]}>
+                <Text style={[styles.turnGlyph, { color: ornament }]}>‹</Text>
+              </Pressable>
+            ) : null}
+            {turnButtons.right != null && currentPage > 1 ? (
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={t('quran.prevPage', 'Previous page')}
+                hitSlop={8}
+                onPress={() => turnPage(-1)}
+                style={({ pressed }) => [
+                  styles.turnButton,
+                  {
+                    right: turnButtons.right, // rtl-safe: the mushaf's page order is physical
+                    backgroundColor: railChrome.control,
+                    opacity: pressed ? 0.95 : 0.5,
+                  },
+                ]}>
+                <Text style={[styles.turnGlyph, { color: ornament }]}>›</Text>
+              </Pressable>
+            ) : null}
+          </>
+        ) : null}
       </View>
 
       {/* The rail was iPad/Mac-only (design review 2d) on the theory that a
@@ -1254,4 +1316,16 @@ const styles = StyleSheet.create({
   columnContent: { paddingBottom: SPACING.xl },
   pageWrap: { alignItems: 'center' },
   pageTopGap: { height: PAGE_TOP_GAP },
+  // Physical sides on purpose, as on the spread: the page order is.
+  turnButton: {
+    position: 'absolute',
+    top: '50%',
+    marginTop: -TURN_BUTTON_H / 2,
+    width: TURN_BUTTON_W,
+    height: TURN_BUTTON_H,
+    borderRadius: RADIUS.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  turnGlyph: { fontSize: 30, fontWeight: '400', lineHeight: 34 }, // tokens-ok-line: the spread's chevron glyph
 });
