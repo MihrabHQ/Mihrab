@@ -33,8 +33,9 @@ describe('the dots', () => {
     expect(bar).toContain('accessibilityRole="tab"');
     expect(bar).toContain('accessibilityState={{ selected: focused }}');
     expect(bar).toContain("navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true })");
-    expect(bar).toContain('if (focused || event.defaultPrevented) return;');
-    expect(bar).toContain('settlePagerBase(index);\n              navigation.navigate(route.name, route.params);');
+    expect(bar).toContain('if (at === index || event.defaultPrevented) return;');
+    // The row slides first; the navigator hears when it lands (turnPagerTo).
+    expect(bar).toContain('turnPagerTo(index, at, () => navigation.navigate(route.name, route.params));');
   });
 
   it('fade the page under them everywhere but on the sky', () => {
@@ -106,7 +107,7 @@ describe('the swipe', () => {
     // The navigator is told when the slide lands (minimalPagerTurn.test.ts
     // holds why, and what keeps the second swipe): the position is one node
     // whichever tab is current, and the reach follows a slide behind.
-    expect(swipe).toMatch(/settlePagerBase\(i \+ step\);\s*holdPendingTurn\(i \+ step, \(\) => navigation\.navigate\(next\.name as never\)\);\s*settlePagerDrag\(done\);/);
+    expect(swipe).toMatch(/const ms = releaseDuration\(w - Math\.abs\(translationX\), velocityX\);\s*settlePagerBase\(i \+ step, true, ms\);\s*holdPendingTurn\(i \+ step, \(\) => navigation\.navigate\(next\.name as never\)\);\s*settlePagerDrag\(done, ms\);/);
     expect(swipe).toContain('const t = setTimeout(() => setReachIndex(index), PAGER_TRANSITION_MS + 80);');
     expect(swipe).toContain('const distance = Math.abs(myIndex - reachIndex);');
     // A finger down before the reach has caught up brings it in at once.

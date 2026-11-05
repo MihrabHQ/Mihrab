@@ -20,6 +20,13 @@ import {
   settlePagerBase,
   settlePagerHold,
   notePagerIndex,
+  pagerRowIndex,
+  turnPagerTo,
+  nextPagerTurn,
+  isCurrentPagerTurn,
+  holdPendingTurn,
+  flushPendingTurn,
+  setPagerSettling,
 } from './minimalPager';
 
 /**
@@ -162,14 +169,27 @@ export function MinimalTabBar({ state, descriptors, navigation }: BottomTabBarPr
           if (!success) return; // onFinalize lets go.
           const target = Math.round(slotAt(e.x));
           const route = state.routes[target];
-          if (route && target !== live.current.index) {
+          holding.current = false;
+          if (route && target !== pagerRowIndex(live.current.index)) {
             const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
             if (!event.defaultPrevented) {
+              // As a swipe's: the navigator hears of it when the row has
+              // landed (minimalPager.ts, `turnPagerTo`), the pages already
+              // laid out by the hold's reach.
+              const mine = nextPagerTurn();
+              setPagerSettling(true);
               settlePagerBase(target);
-              navigation.navigate(route.name, route.params);
+              holdPendingTurn(target, () => navigation.navigate(route.name, route.params));
+              settlePagerHold(() => {
+                if (isCurrentPagerTurn(mine)) {
+                  flushPendingTurn();
+                  setPagerSettling(false);
+                }
+                setPagerEngaged(false, true);
+              });
+              return;
             }
           }
-          holding.current = false;
           settlePagerHold(() => setPagerEngaged(false, true));
         })
         .onFinalize((_e, success) => {
@@ -259,12 +279,16 @@ export function MinimalTabBar({ state, descriptors, navigation }: BottomTabBarPr
             testID={options.tabBarButtonTestID}
             hitSlop={6}
             onPress={() => {
+              // The tab the row is on or going to — a turn still sliding
+              // counts as made, so a second tap on it starts nothing.
+              const at = pagerRowIndex(state.index);
               const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
-              if (focused || event.defaultPrevented) return;
-              // The icons show for the slide, as under a finger — from
-              // the effect above, as the tab changes.
-              settlePagerBase(index);
-              navigation.navigate(route.name, route.params);
+              if (at === index || event.defaultPrevented) return;
+              // The row slides first and the navigator hears when it has
+              // landed — the stutter of a tap on the page beside this one
+              // was the navigator's render under the slide
+              // (minimalPager.ts, `turnPagerTo`).
+              turnPagerTo(index, at, () => navigation.navigate(route.name, route.params));
             }}
             style={styles.hit}>
             <Animated.View

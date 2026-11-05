@@ -24,6 +24,7 @@ import {
   setFingerOnRow,
   setPagerSettling,
   pagerPosition,
+  releaseDuration,
   setPagerEngaged,
   settlePagerBase,
   settlePagerDrag,
@@ -138,7 +139,7 @@ export function MinimalSwipe({
       };
       if (state !== State.END) {
         // Cancelled or failed under the finger: back where it was.
-        springPagerDrag(done);
+        springPagerDrag(done, velocityX);
         return;
       }
       const { routes: rs, width: w } = live.current;
@@ -151,7 +152,7 @@ export function MinimalSwipe({
       if (live.current.rtl) step = -step;
       const next = far && sameWay ? rs[i + step] : undefined;
       if (!next) {
-        springPagerDrag(done);
+        springPagerDrag(done, velocityX);
         return;
       }
       // No haptic: a page turning is not a count, and a tick on every
@@ -160,9 +161,12 @@ export function MinimalSwipe({
       // zero: the position, and so every page, carries on from where the
       // finger left it (minimalPager.ts). The navigator is NOT told here
       // but when the slide lands (`done`): see "A SWIPE'S TURN" there.
-      settlePagerBase(i + step);
+      // Timed to leave at the finger's speed (`releaseDuration`): the
+      // base and the drag together, so their sum moves as one.
+      const ms = releaseDuration(w - Math.abs(translationX), velocityX);
+      settlePagerBase(i + step, true, ms);
       holdPendingTurn(i + step, () => navigation.navigate(next.name as never));
-      settlePagerDrag(done);
+      settlePagerDrag(done, ms);
     },
     [navigation],
   );

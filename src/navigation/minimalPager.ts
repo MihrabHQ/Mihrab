@@ -92,31 +92,61 @@ export function pagerPosition(width: number, count: number, rtl = false): Animat
   });
 }
 
-/** Slide the settled tab to `index` — at once when nothing is drawn yet. */
-export function settlePagerBase(index: number, animated = true): void {
-  if (baseTarget === index && baseAnim) return;
+/**
+ * Slide the settled tab to `index` — at once when nothing is drawn yet.
+ * `onDone` hears when it lands (`finished`) or is stopped by another
+ * turn; a slide already on its way there without one carries on.
+ */
+export function settlePagerBase(
+  index: number,
+  animated = true,
+  duration: number = PAGER_TRANSITION_MS,
+  onDone?: (finished: boolean) => void,
+): void {
+  if (baseTarget === index && baseAnim && !onDone) return;
   baseAnim?.stop();
   baseTarget = index;
   if (!animated) {
     baseAnim = null;
     pagerBase.setValue(index);
+    onDone?.(true);
     return;
   }
   baseAnim = Animated.timing(pagerBase, {
     toValue: index,
-    duration: PAGER_TRANSITION_MS,
+    duration,
     easing: pagerEasing,
     useNativeDriver: true,
   });
   const anim = baseAnim;
-  anim.start(() => {
+  anim.start(({ finished }) => {
     if (baseAnim === anim) baseAnim = null;
+    onDone?.(finished);
   });
 }
 
 /** The navigator's slide, and the drag's run back to zero with it. */
 export const PAGER_TRANSITION_MS = 280;
 export const pagerEasing = Easing.out(Easing.cubic);
+
+/**
+ * A released swipe's run to the next page, timed to leave at the
+ * finger's speed. The ease-out curve starts at three times its average
+ * speed, so a fixed 280 ms threw a slow release forward and dragged a
+ * fast flick back — the page changed pace the moment the finger lifted.
+ * Timed from what is left to go and the finger's speed, the page carries
+ * on as fast as the finger was moving, and then settles; kept between
+ * RELEASE_MIN_MS and RELEASE_MAX_MS so a flick is not a jump and a slow
+ * release does not crawl.
+ */
+export const RELEASE_MIN_MS = 190;
+export const RELEASE_MAX_MS = 360;
+export function releaseDuration(remainingPx: number, velocityPxPerS: number): number {
+  const speed = Math.abs(velocityPxPerS);
+  if (!(speed > 0) || !(remainingPx > 0)) return RELEASE_MAX_MS;
+  const ms = (3 * remainingPx * 1000) / speed;
+  return Math.round(Math.max(RELEASE_MIN_MS, Math.min(RELEASE_MAX_MS, ms)));
+}
 
 /*
  * ── A SWIPE'S TURN IS TOLD TO THE NAVIGATOR WHEN IT HAS LANDED ─────────
@@ -161,6 +191,54 @@ let fingerOnRow = false;
 /** A swipe's turn, held until its slide lands. */
 export function holdPendingTurn(index: number, go: () => void): void {
   heldTurn = { index, go };
+}
+
+/**
+ * A turn with no finger on the page: a tap on a dot, or the hold on the
+ * dots let go. Held and told as a swipe's is (above), and for the same
+ * reason: told at the tap, the navigator's render, the new page's focus
+ * effects and every page laid out for the slide (`engagePagerFor`) were
+ * work on the UI thread in the frames the slide is drawn in, and a tap on
+ * the page beside the one on show stuttered where the swipe to it was
+ * smooth. Now a tap on a neighbour lays nothing out — the neighbour is
+ * already drawn — and slides at once; a tap further along lays out the
+ * pages between first, two frames before the row moves, so the slide
+ * itself is only the slide. The navigator hears when it lands.
+ */
+export const TAP_LAYOUT_FRAMES = 2;
+export function turnPagerTo(target: number, from: number, go: () => void, duration: number = PAGER_TRANSITION_MS): void {
+  const mine = nextPagerTurn();
+  setPagerSettling(true);
+  holdPendingTurn(target, go);
+  // The icons come up for the slide (a neighbour needs no other page).
+  setPagerEngaged(true);
+  const slide = () => {
+    if (!isCurrentPagerTurn(mine)) {
+      setPagerEngaged(false);
+      return;
+    }
+    settlePagerBase(target, true, duration, () => {
+      if (isCurrentPagerTurn(mine)) {
+        flushPendingTurn();
+        setPagerSettling(false);
+      }
+      setPagerEngaged(false);
+    });
+  };
+  if (Math.abs(target - from) <= 1) {
+    slide();
+    return;
+  }
+  // Every page in reach — the ones the row slides past — for the wait,
+  // the slide and a margin for the landing to be told.
+  engagePagerFor(TAP_LAYOUT_FRAMES * 17 + duration + 200);
+  let frames = TAP_LAYOUT_FRAMES;
+  const wait = () => {
+    frames -= 1;
+    if (frames <= 0) slide();
+    else requestAnimationFrame(wait);
+  };
+  requestAnimationFrame(wait);
 }
 
 /** Tell the navigator of the held turn, if there is one. */
@@ -380,19 +458,24 @@ export function _resetPagerEngagementForTests(): void {
 }
 
 /** The drag's run back to zero, as the navigator slides the pages. */
-export function settlePagerDrag(onDone?: () => void): void {
+export function settlePagerDrag(onDone?: () => void, duration: number = PAGER_TRANSITION_MS): void {
   Animated.timing(pagerDragRaw, {
     toValue: 0,
-    duration: PAGER_TRANSITION_MS,
+    duration,
     easing: pagerEasing,
     useNativeDriver: true,
   }).start(() => onDone?.());
 }
 
-/** A release that does not turn: the page springs back under the finger. */
-export function springPagerDrag(onDone?: () => void): void {
+/**
+ * A release that does not turn: the page springs back under the finger —
+ * leaving with the finger's own speed (points a second), so a flick back
+ * is not stopped dead before it returns.
+ */
+export function springPagerDrag(onDone?: () => void, velocity = 0): void {
   Animated.spring(pagerDragRaw, {
     toValue: 0,
+    velocity,
     stiffness: 260,
     damping: 28,
     mass: 1,
