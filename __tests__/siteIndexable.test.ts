@@ -28,14 +28,15 @@ const LANGS: Record<string, { name: string; dir: string; path: string }> =
 const host = readFileSync(path.join(DOCS, 'CNAME'), 'utf-8').trim();
 const origin = `https://${host}`;
 
-type Shot = { alt: string; cap: string };
-type Shots = { items: Record<string, Shot>; spread: Shot; fans: Record<string, Shot> };
-const SHOT_STRINGS = LANGS as unknown as Record<string, { shots: Shots }>;
-const { SHOTS, SHOT_V, FANS } = require('../scripts/build-site') as {
-  SHOTS: string[];
-  SHOT_V: string;
-  FANS: { id: string; v: string }[];
-};
+const { SHOT_V, PHONE_PANELS, WIDE_PANELS, panelWords, plain } =
+  require('../scripts/build-site') as {
+    SHOT_V: string;
+    PHONE_PANELS: string[];
+    WIDE_PANELS: { key: string; device: string }[];
+    panelWords: (code: string) => Record<string, string>;
+    plain: (s: string) => string;
+  };
+const PANELS = path.join(DOCS, 'assets', 'img', 'panels');
 
 describe('the page agrees with itself about where it lives', () => {
   it.each([
@@ -402,44 +403,46 @@ describe('every language the app speaks has a page', () => {
    * missing from a page, a picture missing from disk, or a translated page
    * carrying the English words under it.
    */
-  it.each(codes)('%s shows every screenshot, not only the words', code => {
+  it.each(codes)('%s shows the store panels in its own language', code => {
+    // The gallery is the store panels themselves (branding/tools/panels):
+    // every device at once, eight phone panels, one panel per platform —
+    // each with its words in the page's language, not English with a
+    // translated caption under it.
     const page = pageOf(code);
     const at = code === 'en' ? 'assets' : '../assets';
-    for (const id of [...SHOTS, 'spread']) {
-      expect(page).toContain(`src="${at}/img/shot-${id}.png${SHOT_V}"`);
-    }
-    // The two fans were hand-written into the English page once, and the
-    // twelve others went without them: they are generated too now.
-    for (const { id, v } of FANS) {
-      expect(page).toContain(`src="${at}/img/shot-${id}.png${v}"`);
-    }
+    expect(page).toContain(`src="${at}/img/panels/xplat.jpg${SHOT_V}"`);
+    PHONE_PANELS.forEach((_k, i) =>
+      expect(page).toContain(
+        `src="${at}/img/panels/${code}/phone-${i + 1}.jpg${SHOT_V}"`,
+      ),
+    );
+    WIDE_PANELS.forEach((_p, i) =>
+      expect(page).toContain(
+        `src="${at}/img/panels/${code}/wide-${i + 1}.jpg${SHOT_V}"`,
+      ),
+    );
   });
 
-  it('ships every picture the pages ask for', () => {
-    for (const id of [...SHOTS, 'spread', ...FANS.map(f => f.id)]) {
-      expect(existsSync(path.join(DOCS, 'assets', 'img', `shot-${id}.png`))).toBe(
-        true,
-      );
-    }
+  it.each(codes)('%s ships every panel its page asks for', code => {
+    expect(existsSync(path.join(PANELS, 'xplat.jpg'))).toBe(true);
+    PHONE_PANELS.forEach((_k, i) =>
+      expect(existsSync(path.join(PANELS, code, `phone-${i + 1}.jpg`))).toBe(true),
+    );
+    WIDE_PANELS.forEach((_p, i) =>
+      expect(existsSync(path.join(PANELS, code, `wide-${i + 1}.jpg`))).toBe(true),
+    );
   });
 
   it.each(codes.filter(c => c !== 'en'))(
-    '%s captions the pictures in its own language',
+    '%s describes the panels in its own language',
     code => {
-      const shots = SHOT_STRINGS[code].shots;
-      const english = SHOT_STRINGS.en.shots;
-      for (const id of SHOTS) {
-        expect(shots.items[id].alt.trim()).not.toBe('');
-        expect(shots.items[id].cap.trim()).not.toBe('');
-        expect(shots.items[id].alt).not.toBe(english.items[id].alt);
-        expect(pageOf(code)).toContain(shots.items[id].cap);
-      }
-      expect(shots.spread.cap).not.toBe(english.spread.cap);
-      for (const { id } of FANS) {
-        expect(shots.fans[id].alt.trim()).not.toBe('');
-        expect(shots.fans[id].alt).not.toBe(english.fans[id].alt);
-        expect(shots.fans[id].cap).not.toBe(english.fans[id].cap);
-        expect(pageOf(code)).toContain(shots.fans[id].cap);
+      const own = panelWords(code);
+      const english = panelWords('en');
+      for (const k of [...PHONE_PANELS, ...WIDE_PANELS.map(p => p.key), 'devices']) {
+        const title = plain(own[`${k}.title`] ?? '');
+        expect(title).not.toBe('');
+        expect(title).not.toBe(plain(english[`${k}.title`]));
+        expect(pageOf(code)).toContain(title.replace(/&/g, '&amp;'));
       }
     },
   );

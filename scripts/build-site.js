@@ -23,7 +23,7 @@
  * page). The screenshots are NOT one of those things — they were, for a
  * while, and a page describing an app it never shows is a page asking to
  * be taken on faith — so the gallery is generated into all thirteen from
- * the SHOTS list below.
+ * the store panels (see gallery() below).
  *
  * What every page must agree about — which languages exist, where they
  * live, and that each declares all the others — is generated into all
@@ -106,59 +106,13 @@ function badgeList(names, imgBase, indent = '      ', flags = {}) {
     .join('\n')}\n${indent}</ul>`;
 }
 
-/**
- * The screenshot gallery, in the order the English page shows it.
- *
- * The pictures were the one thing the translations did not get: a reader
- * arriving on /tr/ was asked to believe a description of an app nobody had
- * shown them. The images carry no words of ours — the app in the shots
- * speaks English, and that is worth saying rather than hiding — so the
- * only thing a translation has to supply is the alt text and the caption,
- * keyed here so a missing one is an error and not a silently English page.
- */
 /*
  * Bumped whenever a shot is retaken, INCLUDING a retake on the same day as
  * the last one — a browser holding the old picture has no way to know the
  * bytes moved under an unchanged URL, and the widget shots have now been
  * retaken twice on 2026-09-06.
  */
-const SHOT_V = '?v=2026-11-05';
-const SHOTS = [
-  'home',
-  'home-maliki',
-  'home-dark',
-  'tilawah',
-  'tilawah-suggest',
-  'reciters',
-  'mushaf',
-  'ayah',
-  'mushaf-dark',
-  'memorize',
-  'hifz',
-  'quran',
-  'qibla',
-  'month',
-  'month-share',
-  'duas',
-  'tasbih',
-  'log',
-  'fasting',
-  'widgets',
-  'widgets-android',
-];
-
-/**
- * The two fans — five screens of one picture — that follow the gallery:
- * the Sky theme at five hours, and the five full-screen alerts under it.
- * Each is versioned on its own, because each is retaken on its own
- * (branding/tools/fan.py builds them from the single shots).
- */
-const FANS = [
-  { id: 'themes', v: '?v=2026-10-28' },
-  { id: 'minimal', v: '?v=2026-10-28' },
-  { id: 'alerts', v: '?v=2026-10-18' },
-];
-
+const SHOT_V = '?v=2026-11-05p';
 /** Pages written by hand, which the generator only patches between markers. */
 const HAND_WRITTEN = {
   en: path.join(DOCS, 'index.html'),
@@ -198,34 +152,63 @@ ${items}
 }
 
 /**
- * The gallery itself — the same pictures in the same order on every page,
- * each with the words of the page it is on. English sits at the root and
- * every other language a directory down, so the only thing that differs
- * between them is how far back up to the assets.
+ * The gallery: the store panels themselves, in the page's language — the
+ * same pictures the stores show (branding/tools/panels), so the site and the
+ * listings never drift. First every device at once, then the eight phone
+ * panels (each a group of features, not a bare screenshot), then one wide
+ * panel per platform: an iPad, a Mac, Windows and a Chromebook. Their words
+ * are the panels' own captions (branding/tools/panels/strings), so a page in
+ * Urdu shows Urdu panels and describes them in Urdu.
+ *
+ * The pictures are written by branding/tools/panels/publish.py into
+ * assets/img/panels/<lang>/; xplat.jpg carries no words and is shared.
  */
+const PANEL_STRINGS = path.join(__dirname, '..', 'branding', 'tools', 'panels', 'strings');
+const PHONE_PANELS = ['hero', 'accuracy', 'mushaf', 'tilawah', 'understand', 'hifz', 'remember', 'day'];
+const WIDE_PANELS = [
+  { key: 'mushaf', device: 'iPad' },
+  { key: 'hero', device: 'Mac' },
+  { key: 'remember', device: 'Windows' },
+  { key: 'month', device: 'Chromebook' },
+];
+const plain = h => String(h).replace(/<br\s*\/?>/g, ' ').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+function panelWords(code) {
+  const read = c => {
+    const f = path.join(PANEL_STRINGS, `${c}.json`);
+    return fs.existsSync(f) ? JSON.parse(fs.readFileSync(f, 'utf-8')) : {};
+  };
+  return { ...read('en'), ...read(code) };
+}
+
 function gallery(code, t) {
   const at = code === 'en' ? 'assets' : '../assets';
-  const shot = (id, w, h, alt, cap, cls, v = SHOT_V) =>
-    `<figure${cls ? ` class="${cls}"` : ''}>
-        <img src="${at}/img/shot-${id}.png${v}" width="${w}" height="${h}" loading="lazy" decoding="async"
-          alt="${esc(alt)}">
-        <figcaption>${esc(cap)}</figcaption>
-      </figure>`;
-  const items = SHOTS.map(id => {
-    const s = t.shots.items[id];
-    if (!s) throw new Error(`${code}: no strings for the "${id}" screenshot`);
-    return `      <li>${shot(id, 810, 1800, s.alt, s.cap)}</li>`;
-  }).join('\n');
-  const fans = FANS.map(({ id, v }) => {
-    const s = t.shots.fans && t.shots.fans[id];
-    if (!s) throw new Error(`${code}: no strings for the "${id}" fan`);
-    return `    ${shot(id, 1600, 926, s.alt, s.cap, 'fan', v)}`;
-  }).join('\n');
-  return `    <ul class="gallery">
-${items}
+  const w = panelWords(code);
+  const lang = fs.existsSync(path.join(DOCS, 'assets', 'img', 'panels', code)) ? code : 'en';
+  const cap = k => plain(w[`${k}.title`]);
+  const alt = k => `${cap(k)} ${plain(w[`${k}.sub`] ?? '')}`.trim();
+  const phones = PHONE_PANELS.map(
+    (k, i) => `      <li><figure>
+        <img src="${at}/img/panels/${lang}/phone-${i + 1}.jpg${SHOT_V}" width="540" height="960" loading="lazy" decoding="async"
+          alt="${esc(alt(k))}">
+      </figure></li>`,
+  ).join('\n');
+  const wide = WIDE_PANELS.map(
+    ({ key, device }, i) => `      <li><figure>
+        <img src="${at}/img/panels/${lang}/wide-${i + 1}.jpg${SHOT_V}" width="1280" height="720" loading="lazy" decoding="async"
+          alt="${esc(`${device}: ${alt(key)}`)}">
+        <figcaption>${esc(device)}</figcaption>
+      </figure></li>`,
+  ).join('\n');
+  return `    <figure class="xplat">
+      <img src="${at}/img/panels/xplat.jpg${SHOT_V}" width="2400" height="1200" loading="lazy" decoding="async"
+        alt="${esc(`${plain(w['devices.title'])} ${plain(w['devices.sub'])}`)}">
+    </figure>
+    <ul class="panels">
+${phones}
     </ul>
-    ${shot('spread', 1600, 878, t.shots.spread.alt, t.shots.spread.cap, 'spread')}
-${fans}`;
+    <ul class="panels wide">
+${wide}
+    </ul>`;
 }
 
 /**
@@ -437,7 +420,7 @@ function renderPage(code, langs, version) {
     softwareVersion: version.versionName,
     url: `${ORIGIN}${t.path}`,
     inLanguage: code,
-    image: `${ORIGIN}/assets/img/og-hero.png?v=2026-10-16b`,
+    image: `${ORIGIN}/assets/img/og-hero.png?v=2026-11-05`,
     description: t.description,
     isAccessibleForFree: true,
     offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
@@ -488,14 +471,14 @@ ${hreflang(langs)}
 <meta property="og:title" content="${esc(t.title)}">
 <meta property="og:description" content="${esc(t.description)}">
 <meta property="og:url" content="${ORIGIN}${t.path}">
-<meta property="og:image" content="${ORIGIN}/assets/img/og-hero.png?v=2026-10-16b">
+<meta property="og:image" content="${ORIGIN}/assets/img/og-hero.png?v=2026-11-05">
 <meta property="og:image:width" content="1600">
 <meta property="og:image:height" content="900">
 <meta property="og:locale" content="${code}">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${esc(t.title)}">
 <meta name="twitter:description" content="${esc(t.description)}">
-<meta name="twitter:image" content="${ORIGIN}/assets/img/og-hero.png?v=2026-10-16b">
+<meta name="twitter:image" content="${ORIGIN}/assets/img/og-hero.png?v=2026-11-05">
 <script type="application/ld+json">
 ${ld(app)}
 </script>
@@ -753,4 +736,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { build, picker, hreflang, gallery, webCard, desktopCard, ORIGIN, SHOTS, SHOT_V, FANS };
+module.exports = { build, picker, hreflang, gallery, webCard, desktopCard, ORIGIN, SHOT_V, PHONE_PANELS, WIDE_PANELS, panelWords, plain };

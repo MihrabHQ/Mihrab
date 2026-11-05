@@ -6,7 +6,7 @@
 import path from 'node:path';
 import { ROOT, brand, callout, chip, device, laptop, loupe, tile } from '../kit.mjs';
 
-export function phonePanels({ kind, raw, extra = {}, tabletKind = 'ipad', tabletRaw = 'ipad', foldRaw = 'android-fold' }) {
+export function phonePanels({ kind, raw, extra = {}, tabletKind = 'ipad', tabletRaw = 'ipad', foldRaw = 'android-fold', lift = 0 }) {
   const s = n => path.join(ROOT, 'branding/store-raw', raw, n + '.png');
   // The cuts of each capture, in its own pixels: [x, y, w, h], and for
   // the source picker the line to ring (top, height).
@@ -169,10 +169,10 @@ export function phonePanels({ kind, raw, extra = {}, tabletKind = 'ipad', tablet
       html: ({ u, t }) => `
         ${words(u, { limit: 60, eyebrow: t('devices.eyebrow'), title: t('devices.title'), sub: t('devices.sub') })}
         <div class="lower">
-        ${laptop({ img: path.join(ROOT, 'branding/store-raw/desktop/home.png'), x: u * 8, y: u * 66, w: u * 84, z: 1 })}
-        ${device({ kind: tabletKind, img: path.join(ROOT, 'branding/store-raw', tabletRaw, 'spread.png'), x: u * 2, y: u * 104, w: u * 62, rot: -3, z: 2 })}
-        ${device({ kind, img: s('home-sunset'), x: u * 56, y: u * 98, w: u * 30, rot: 4, z: 3 })}
-        ${device({ kind, img: s('minimal-dawn'), x: u * 74, y: u * 112, w: u * 25, rot: 8, z: 4 })}
+        ${laptop({ img: path.join(ROOT, 'branding/store-raw/desktop/home.png'), x: u * 8, y: u * (66 - lift), w: u * 84, z: 1 })}
+        ${device({ kind: tabletKind, img: path.join(ROOT, 'branding/store-raw', tabletRaw, 'spread.png'), x: u * 2, y: u * (104 - lift), w: u * 62, rot: -3, z: 2 })}
+        ${device({ kind, img: s('home-sunset'), x: u * (56 - lift / 4), y: u * (98 - lift), w: u * 30, rot: 4, z: 3 })}
+        ${device({ kind, img: s('minimal-dawn'), x: u * (74 - lift / 3), y: u * (112 - lift), w: u * 25, rot: 8, z: 4 })}
         </div>`,
     },
     ...extra,

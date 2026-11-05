@@ -15,7 +15,13 @@ export function widePanels({ kind = 'tab', raw, phoneKind = 'android', phoneRaw 
     return [w * 0.29, h * (raw === 'ipad' ? 0.36 : 0.26)];
   };
   // The big screen: a tablet, or (for Chromebooks and computers) a laptop.
-  const big = o => (o.kind === 'laptop' ? laptop({ ...o, w: o.w * 0.92, x: o.x + o.w * 0.04 }) : device(o));
+  const big = o =>
+    o.kind === 'laptop'
+      ? laptop({ ...o, w: o.w * 0.92, x: o.x + o.w * 0.04 })
+      : o.kind === 'window'
+        ? windowFrame({ ...o, w: o.w * 0.96, x: o.x + o.w * 0.02, y: o.y + o.w * 0.02 })
+        : device(o);
+  const desktopOnly = raw === 'desktop';
 
   // The words on the left third (the right in Arabic and Urdu, by dir).
   const words = (u, W, { eyebrow, title, sub, top = 14, width = 58, more = '' }) => `
@@ -105,8 +111,10 @@ export function widePanels({ kind = 'tab', raw, phoneKind = 'android', phoneRaw 
       html: ({ u, W, t }) => `
         ${words(u, W, { eyebrow: t('month.eyebrow'), title: t('month.title'), sub: t('month.sub') })}
         <div class="lower">
-        ${big({ kind, img: s('month'), x: u * 68, y: u * 8, w: u * 80, rot: 0, z: 1 })}
-        ${device({ kind: 'tab', img: s('log'), x: u * 104, y: u * 46, w: u * 70, rot: 0, z: 2 })}
+        ${desktopOnly
+          ? big({ kind, img: s('month'), x: u * 66, y: u * 12, w: u * 106, z: 1 })
+          : big({ kind, img: s('month'), x: u * 68, y: u * 8, w: u * 80, rot: 0, z: 1 })}
+        ${desktopOnly ? '' : device({ kind: 'tab', img: s('log'), x: u * 104, y: u * 46, w: u * 70, rot: 0, z: 2 })}
         </div>`,
     },
     devices: {

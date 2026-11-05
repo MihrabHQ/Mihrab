@@ -92,20 +92,12 @@ Prayer times computed with **[mihrab-methods](https://github.com/MihrabHQ/mihrab
 
 <div align="center">
 
-<img src="branding/readme/01_home.png" width="32%" alt="Home — the day’s sky behind the next prayer and its countdown, the day above the times, and a check beside each prayer">&nbsp;<img src="branding/readme/02_quran.png" width="32%" alt="The mushaf in tajweed colour mid-recitation — every letter in the ink of its rule, the recited word lit, the player below">&nbsp;<img src="branding/readme/03_duas.png" width="32%" alt="Duas — Ayat al-Kursi with transliteration and source">
+<img src="branding/readme/xplat.jpg" width="100%" alt="Mihrab on every device at once: a MacBook with Today, an iPad with the muṣḥaf open as a two-page spread, an Android foldable, an Android phone with the countdown to Maghrib and an iPhone in Minimal mode at dawn">
+<br><sub>Android phones, tablets and foldables, iPhone, iPad, Mac, Windows, Linux and the web.</sub>
 
-<img src="branding/readme/04_tasbih.png" width="32%" alt="Tasbih counter — dhikr with tabular digits">&nbsp;<img src="branding/readme/05_qibla.png" width="32%" alt="Qibla compass — the bearing, the signal strength and a cross-check">&nbsp;<img src="branding/readme/06_journal.png" width="32%" alt="Prayer journal — the practice graph, the on-time streak and what is owed">
+<img src="branding/readme/panels-phone.jpg" width="100%" alt="The eight store panels: For every prayer, and everything between — no ads, open source, no account, no tracking, works offline; to the printed minute, checked against the published timetables of Diyanet, Islamiska Förbundet, Morocco’s Habous, Algeria’s ministry and Kemenag; the Madinah muṣḥaf in tajwīd colour; Tilāwah, surah into surah; translation, tafsīr and tajwīd; hifz, revised on its own cycle; duas, tasbīḥ and fasting; and the adhan, full-screen alerts, widgets and the qibla">
 
-<img src="branding/readme/07_tilawah.png" width="32%" alt="Tilawah — Al-Mulk playing, with the reciter, the transport, speed, sleep timer and shuffle, and a live mushaf page with the recited word lit">&nbsp;<img src="branding/readme/08_fasting.png" width="32%" alt="Fasting — today's fast, the Ramadan and voluntary counts, and the coming Sunnah days">&nbsp;<img src="branding/readme/09_widgets.png" width="32%" alt="Android home-screen widgets — today’s six times, a row to log each prayer with one tap, the next prayer with its countdown, the Hijri date and today’s khatmah portion">
-
-<img src="branding/readme/12_themes.png" width="98%" alt="Five home screens fanned out at the same minute before Maghrib, one per look: Light, Dark, the Sky theme in its Realistic colours in front, Sky in its Vibrant colours, and Dark with the green colour theme">
-<br><sub>One app, five looks — Light, Dark, Sky (Realistic and Vibrant) and the green colour theme.</sub>
-
-<img src="branding/readme/13_minimal.png" width="98%" alt="Five Minimal mode screens fanned out: the countdown alone on Light, Dark, the Sky theme's Realistic colours in front, its Vibrant colours, and the same sky at night with the moon">
-<br><sub>Minimal mode — the next prayer and nothing more. Swipe up for the day's times.</sub>
-
-<img src="branding/readme/10_alerts.png" width="98%" alt="Five full-screen prayer alerts fanned out, each in its hour’s colours under the Sky theme — Fajr’s dawn, Dhuhr’s blue, Asr’s amber, Maghrib’s sunset, Isha’s night — with Stop, Snooze and Log prayer">
-<br><sub>Full-screen prayer alerts on Android, under the Sky theme — each in its hour.</sub>
+<img src="branding/readme/panels-wide.jpg" width="100%" alt="One panel per platform: the iPad’s two-page muṣḥaf, Mihrab on a Mac, the remembrance between prayers on Windows, and the month on a Chromebook">
 
 </div>
 

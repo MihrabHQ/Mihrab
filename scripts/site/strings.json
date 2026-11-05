@@ -407,7 +407,7 @@
     "shots": {
       "eyebrow": "لقطات الشاشة",
       "h2": "كيف يبدو التطبيق",
-      "lede": "بمظهر «السماء» بألوانه الواقعية، عبر ساعات يوم واحد. المصحف هو صفحة المدينة المطبوعة نفسها لا صورة عنها. اللقطات بالإنجليزية، والتطبيق يتحدث العربية كذلك.",
+      "lede": "كل ميزة على الجهاز الذي صُنعت له: الهواتف أولًا، ثم iPad وMac وWindows وChromebook، بمظهر «السماء» عبر ساعات يوم واحد. المصحف هو صفحة المدينة المطبوعة نفسها لا صورة عنها. التطبيق على الشاشات بالإنجليزية، ويتحدث العربية كذلك.",
       "items": {
         "home": {
           "alt": "شاشة اليوم تحت مظهر «السماء» عند الغروب: الشمس المنخفضة في سماء وردية وبنفسجية خلف عدّ تنازلي حيّ إلى المغرب، والتاريخ فوق الأوقات، وعلامة إلى جانب كل صلاة أُدّيت.",
@@ -678,7 +678,7 @@
     "shots": {
       "eyebrow": "Ekran görüntüleri",
       "h2": "Nasıl görünüyor",
-      "lede": "Gökyüzü teması, Gerçekçi renkleriyle, bir günün saatleri boyunca. Mushaf, basılı Medine sayfasının kendisi; onun bir fotoğrafı değil. Görsellerdeki uygulama İngilizce; uygulama Türkçe de konuşuyor.",
+      "lede": "Her özellik, yapıldığı cihazda: önce telefonlar, sonra iPad, Mac, Windows ve Chromebook; Gökyüzü temasıyla bir günün saatleri boyunca. Mushaf, basılı Medine sayfasının kendisi; onun bir fotoğrafı değil. Ekranlardaki uygulama İngilizce; Türkçe de konuşuyor.",
       "items": {
         "home": {
           "alt": "Gün batımında Gökyüzü temasıyla Bugün ekranı: pembe ve mor bir gökyüzünde alçalan güneş, akşama canlı geri sayım, vakitlerin üstünde gün ve kılınan her namazın yanında bir işaret.",
@@ -942,7 +942,7 @@
     "shots": {
       "eyebrow": "اسکرین شاٹس",
       "h2": "دیکھنے میں کیسا ہے",
-      "lede": "آسمان تھیم اپنے حقیقی رنگوں میں، ایک دن کے پہروں میں۔ مصحف مدینہ کا چھپا ہوا صفحہ ہی ہے، اُس کی تصویر نہیں۔ تصاویر میں ایپ انگریزی میں ہے؛ یہ اردو بھی بولتی ہے۔",
+      "lede": "ہر خصوصیت اُسی ڈیوائس پر جس کے لیے بنی: پہلے فون، پھر iPad، Mac، Windows اور Chromebook، آسمان تھیم میں ایک دن کے پہروں کے ساتھ۔ مصحف مدینہ کا چھپا ہوا صفحہ ہی ہے، اُس کی تصویر نہیں۔ اسکرینوں پر ایپ انگریزی میں ہے؛ یہ اردو بھی بولتی ہے۔",
       "items": {
         "home": {
           "alt": "غروب کے وقت آسمان تھیم میں آج کی اسکرین: گلابی اور بنفشی آسمان میں ڈوبتا سورج، مغرب تک چلتی گنتی، اوقات کے اوپر دن، اور ہر ادا کی گئی نماز کے ساتھ نشان۔",
@@ -1187,7 +1187,7 @@
     "shots": {
       "eyebrow": "Tangkapan layar",
       "h2": "Seperti apa tampilannya",
-      "lede": "Tema Langit dengan warna Realistis, sepanjang jam-jam satu hari. Mushafnya adalah halaman Madinah cetakan itu sendiri, bukan fotonya. Aplikasi pada gambar berbahasa Inggris; aplikasinya berbahasa Indonesia juga.",
+      "lede": "Setiap fitur di perangkat yang dibuat untuknya: ponsel dulu, lalu iPad, Mac, Windows, dan Chromebook, dengan tema Langit sepanjang jam-jam satu hari. Mushafnya adalah halaman Madinah cetakan itu sendiri, bukan fotonya. Aplikasi di layar berbahasa Inggris; aplikasinya berbahasa Indonesia juga.",
       "items": {
         "home": {
           "alt": "Layar Hari Ini dengan tema Langit saat matahari terbenam: matahari rendah di langit merah muda dan ungu di belakang hitung mundur ke Magrib, tanggal di atas jadwal, dan tanda centang di samping setiap salat yang ditunaikan.",
@@ -1451,7 +1451,7 @@
     "shots": {
       "eyebrow": "Bildschirmfotos",
       "h2": "So sieht sie aus",
-      "lede": "Im Thema Himmel mit realistischen Farben, durch die Stunden eines Tages. Der Mushaf ist die gedruckte Medina-Seite selbst, kein Bild davon. Die App auf den Aufnahmen ist englisch; sie spricht auch Deutsch.",
+      "lede": "Jede Funktion auf dem Gerät, für das sie gemacht ist: erst die Telefone, dann iPad, Mac, Windows und Chromebook, im Thema Himmel durch die Stunden eines Tages. Der Mushaf ist die gedruckte Medina-Seite selbst, kein Bild davon. Die App auf den Bildschirmen ist englisch; sie spricht auch Deutsch.",
       "items": {
         "home": {
           "alt": "Startseite im Thema Himmel bei Sonnenuntergang: die tiefe Sonne an einem rosa-violetten Himmel hinter einem lebendigen Countdown bis Maghrib, das Datum über den Zeiten und ein Häkchen neben jedem verrichteten Gebet.",
@@ -1696,7 +1696,7 @@
     "shots": {
       "eyebrow": "Captures d’écran",
       "h2": "À quoi ça ressemble",
-      "lede": "Sous le thème Ciel en couleurs réalistes, au fil des heures d’une journée. Le mushaf est la page de Médine imprimée elle-même, pas une image de celle-ci. L’application des captures est en anglais ; elle parle aussi français.",
+      "lede": "Chaque fonction sur l’appareil pour lequel elle est faite : d’abord les téléphones, puis iPad, Mac, Windows et Chromebook, sous le thème Ciel au fil des heures d’une journée. Le mushaf est la page de Médine imprimée elle-même, pas une image de celle-ci. L’application à l’écran est en anglais ; elle parle aussi français.",
       "items": {
         "home": {
           "alt": "Écran d’accueil sous le thème Ciel au coucher du soleil : le soleil bas dans un ciel rose et violet derrière un compte à rebours vivant jusqu’à Maghrib, la date au-dessus des horaires, et une coche près de chaque prière accomplie.",
@@ -1967,7 +1967,7 @@
     "shots": {
       "eyebrow": "Capturas de pantalla",
       "h2": "Qué aspecto tiene",
-      "lede": "Con el tema Cielo en colores realistas, a lo largo de las horas de un día. El mushaf es la página de Medina impresa, no una foto de ella. La app de las capturas está en inglés; también habla español.",
+      "lede": "Cada función en el dispositivo para el que está hecha: primero los teléfonos, luego iPad, Mac, Windows y Chromebook, con el tema Cielo a lo largo de las horas de un día. El mushaf es la página de Medina impresa, no una foto de ella. La app de las pantallas está en inglés; también habla español.",
       "items": {
         "home": {
           "alt": "Pantalla de inicio con el tema Cielo al atardecer: el sol bajo en un cielo rosa y violeta tras una cuenta atrás viva hasta Maghrib, la fecha sobre los horarios y una marca junto a cada oración hecha.",
@@ -2212,7 +2212,7 @@
     "shots": {
       "eyebrow": "Скриншоты",
       "h2": "Как это выглядит",
-      "lede": "Тема «Небо» в реалистичных цветах, через часы одного дня. Мусхаф — это сама печатная мединская страница, а не её снимок. На скриншотах приложение по-английски; по-русски оно говорит так же.",
+      "lede": "Каждая функция — на том устройстве, для которого она сделана: сначала телефоны, затем iPad, Mac, Windows и Chromebook, в теме «Небо» через часы одного дня. Мусхаф — это сама печатная мединская страница, а не её снимок. На экранах приложение по-английски; по-русски оно говорит так же.",
       "items": {
         "home": {
           "alt": "Главный экран в теме «Небо» на закате: низкое солнце в розово-фиолетовом небе за живым обратным отсчётом до магриба, дата над временами и отметка у каждой совершённой молитвы.",
@@ -2457,7 +2457,7 @@
     "shots": {
       "eyebrow": "স্ক্রিনশট",
       "h2": "দেখতে কেমন",
-      "lede": "আকাশ থিম, বাস্তবসম্মত রঙে, একটি দিনের প্রহর জুড়ে। মুসহাফ হলো ছাপা মদিনা পৃষ্ঠাটিই, তার ছবি নয়। ছবিতে অ্যাপটি ইংরেজিতে; বাংলাও সে বলে।",
+      "lede": "প্রতিটি সুবিধা সেই ডিভাইসে, যার জন্য তা তৈরি: আগে ফোন, তারপর iPad, Mac, Windows ও Chromebook, আকাশ থিমে একটি দিনের প্রহর জুড়ে। মুসহাফ হলো ছাপা মদিনা পৃষ্ঠাটিই, তার ছবি নয়। স্ক্রিনে অ্যাপটি ইংরেজিতে; বাংলাও সে বলে।",
       "items": {
         "home": {
           "alt": "সূর্যাস্তে আকাশ থিমে হোম স্ক্রিন: গোলাপি-বেগুনি আকাশে নিচু সূর্য, মাগরিব পর্যন্ত চলমান কাউন্টডাউন, সময়ের উপরে দিন, আর আদায় করা প্রতিটি নামাজের পাশে টিক।",
@@ -2702,7 +2702,7 @@
     "shots": {
       "eyebrow": "स्क्रीनशॉट",
       "h2": "यह दिखता कैसा है",
-      "lede": "आकाश थीम, यथार्थ रंगों में, एक दिन के पहरों में। मुसहफ़ छपा हुआ मदीना पृष्ठ ही है, उसकी तस्वीर नहीं। तस्वीरों में ऐप अंग्रेज़ी में है; हिंदी भी वह बोलता है।",
+      "lede": "हर सुविधा उसी डिवाइस पर जिसके लिए वह बनी है: पहले फ़ोन, फिर iPad, Mac, Windows और Chromebook, आकाश थीम में एक दिन के पहरों के साथ। मुसहफ़ छपा हुआ मदीना पृष्ठ ही है, उसकी तस्वीर नहीं। स्क्रीन पर ऐप अंग्रेज़ी में है; हिंदी भी वह बोलता है।",
       "items": {
         "home": {
           "alt": "सूर्यास्त के समय आकाश थीम में होम स्क्रीन: गुलाबी और बैंगनी आकाश में ढलता सूरज, मग़रिब तक चलती गिनती, समयों के ऊपर दिन, और अदा की गई हर नमाज़ के पास निशान।",
@@ -2947,7 +2947,7 @@
     "shots": {
       "eyebrow": "应用截图",
       "h2": "它长什么样",
-      "lede": "“天空”主题的写实配色，贯穿一天的各个时辰。穆斯哈夫就是印刷的麦地那版页面本身，而不是它的图片。截图里的应用是英文的；它同样说中文。",
+      "lede": "每项功能都在它所针对的设备上展示：先是手机，再是 iPad、Mac、Windows 和 Chromebook，以“天空”主题贯穿一天的各个时辰。穆斯哈夫就是印刷的麦地那版页面本身，而不是它的图片。屏幕上的应用是英文的；它同样说中文。",
       "items": {
         "home": {
           "alt": "日落时“天空”主题下的主屏幕：粉紫色天空中低垂的太阳，背后是到昏礼的实时倒计时，时刻表上方是日期，已完成的每次礼拜旁有勾选。",

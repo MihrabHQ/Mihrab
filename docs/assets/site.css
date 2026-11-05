@@ -643,3 +643,17 @@ footer code { background: rgba(255, 255, 255, .08); border-color: rgba(255, 255,
   main > section { background: none; }
   footer { background: none; color: #000; --ink: #000; --ink-soft: #333; --accent: #000; }
 }
+
+/* The gallery: the store panels (scripts/build-site.js, gallery()). */
+.xplat { margin: 0 0 28px; }
+.xplat img { display: block; width: 100%; height: auto; aspect-ratio: 2 / 1; border-radius: 20px; }
+.panels { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.panels figure { margin: 0; }
+.panels img { display: block; width: 100%; height: auto; aspect-ratio: 9 / 16; border-radius: 14px; }
+.panels.wide { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 16px; }
+.panels.wide img { aspect-ratio: 16 / 9; }
+.panels figcaption { margin-top: 8px; font-size: 14px; color: var(--ink-soft); text-align: center; }
+@media (max-width: 640px) {
+  .panels { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .panels.wide { grid-template-columns: 1fr; }
+}

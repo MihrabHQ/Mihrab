@@ -1,72 +1,38 @@
 /**
- * The README and the site show the same nine pictures, and they drift.
+ * The README and the site show the same pictures, and they drift.
  *
- * There are two galleries of the app: `branding/readme/*.png`, which is
- * what somebody sees on GitHub, and `docs/assets/img/shot-*.png`, which is
- * what somebody sees on the site in thirteen languages. Every pair is one
- * screenshot copied to two paths, and nothing until now said so — so a
- * retake could land in one gallery and not the other, and the only way to
- * notice was to open both and compare by eye.
- *
- * That is exactly what happened after the practice graph's cells were made
- * smaller: the site's Android widget shot was replaced and the README's
- * copy of the same picture was not, leaving the repo's front page showing
- * a graph the app had stopped drawing.
- *
- * Byte-identity is the right assertion here rather than "looks similar":
- * these are copies, not two renders of one scene, so anything other than
- * equal bytes means one of them was regenerated alone.
+ * Both galleries are the store panels (branding/tools/panels), written by
+ * one script, publish.py: the README gets branding/readme/*.jpg, the site
+ * docs/assets/img/panels/. Nothing else should put a picture in either, so
+ * the README may show only what publish.py writes, and every picture it
+ * shows must exist. (The old screenshot pairs — the same PNG copied to two
+ * paths — once drifted when one copy was retaken and the other was not;
+ * the shared generator is what stops that now.)
  */
-import { createHash } from 'crypto';
-import { readFileSync } from 'fs';
+import { existsSync, readFileSync } from 'fs';
 import path from 'path';
 
 const ROOT = path.join(__dirname, '..');
-
-/**
- * README file → the site shot it is a copy of.
- *
- * The names differ on purpose: the README numbers its shots so they order
- * themselves in a directory listing, and the site names them after what
- * they show, because `build-site.js` keys alt text and captions off that
- * name. Adding a screenshot to one gallery means adding a row here.
- */
-const PAIRS: ReadonlyArray<readonly [string, string]> = [
-  ['01_home.png', 'shot-home.png'],
-  ['02_quran.png', 'shot-mushaf.png'],
-  ['03_duas.png', 'shot-duas.png'],
-  ['04_tasbih.png', 'shot-tasbih.png'],
-  ['05_qibla.png', 'shot-qibla.png'],
-  ['06_journal.png', 'shot-log.png'],
-  ['07_tilawah.png', 'shot-tilawah.png'],
-  ['08_fasting.png', 'shot-fasting.png'],
-  ['09_widgets.png', 'shot-widgets-android.png'],
-  // The fans (branding/tools/fan.py): five screens in one picture.
-  ['10_alerts.png', 'shot-alerts.png'],
-  ['12_themes.png', 'shot-themes.png'],
-  ['13_minimal.png', 'shot-minimal.png'],
-];
-
-const sha = (p: string) =>
-  createHash('sha256').update(readFileSync(p)).digest('hex');
-
 const readme = readFileSync(path.join(ROOT, 'README.md'), 'utf-8');
+const publish = readFileSync(
+  path.join(ROOT, 'branding', 'tools', 'panels', 'publish.py'),
+  'utf-8',
+);
 
-describe('the README gallery and the site gallery are the same pictures', () => {
-  it.each(PAIRS)('%s is byte-identical to %s', (branding, shot) => {
-    expect(sha(path.join(ROOT, 'branding', 'readme', branding))).toBe(
-      sha(path.join(ROOT, 'docs', 'assets', 'img', shot)),
+describe('the README gallery and the site gallery come from one generator', () => {
+  const shown = [...readme.matchAll(/branding\/readme\/([\w.-]+\.(?:png|jpg))/g)]
+    .map(m => m[1])
+    .filter((v, i, a) => a.indexOf(v) === i);
+
+  it('shows the cross-platform panels', () => {
+    expect(shown).toEqual(
+      expect.arrayContaining(['xplat.jpg', 'panels-phone.jpg', 'panels-wide.jpg']),
     );
   });
 
-  it('pairs every screenshot the README actually shows', () => {
-    // A tenth shot added to the README without a row above would otherwise
-    // be unpaired and unchecked.
-    const shown = [...readme.matchAll(/branding\/readme\/([\w.-]+\.png)/g)]
-      .map(m => m[1])
-      .filter((v, i, a) => a.indexOf(v) === i)
-      .sort();
-    expect(shown).toEqual(PAIRS.map(([b]) => b).sort());
+  it.each(shown)('%s exists and is written by publish.py', f => {
+    expect(existsSync(path.join(ROOT, 'branding', 'readme', f))).toBe(true);
+    expect(publish).toContain(f);
   });
 });
 
