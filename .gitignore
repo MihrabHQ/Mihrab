@@ -156,3 +156,8 @@ tools/startup-trace/out/
 # Written by tools/verify-methods when run; the daily run keeps them in the
 # maintainer's private monitoring repository.
 /data/prayer-times/verification/
+
+# Store panels: English is kept; the other twelve languages are rebuilt with
+#   node branding/tools/panels/build.mjs <set> --lang=all
+branding/store-panels/*/*
+!branding/store-panels/*/en/
