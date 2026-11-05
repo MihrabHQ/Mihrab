@@ -519,6 +519,8 @@
     "providerTableFallback": "{{picked}} hat für heute keine veröffentlichten Zeiten, daher wird seine eigene Methode auf dem Telefon berechnet, bis die Tabelle den Tag wieder abdeckt.",
     "minimalUi": "Minimal",
     "minimalUiHelp": "Eine Sache pro Bildschirm. Heute behält den Countdown; nach oben wischen zeigt die Zeiten des Tages. Die anderen Tabs behalten, wofür sie da sind.",
+    "minimalTabIcons": "Symbole statt Punkte",
+    "minimalTabIconsHelp": "Die kleinen Symbole der Tabs unten auf der Seite stehen lassen, statt Punkten, die sie nur beim Blättern zeigen.",
     "minimalClassicOnly": "Minimal behält die klassischen Farben. Schalte es aus, um ein Farbthema oder Systemfarben zu wählen.",
     "minimalRestartBody": "Minimal startet im Himmel-Design, daher werden die Systemfarben ausgeschaltet. Die App muss neu starten, damit jeder Bildschirm die Änderung übernimmt. Jetzt neu starten?",
     "widgetSinceAdhanTitle": "Zeit seit dem Adhan",

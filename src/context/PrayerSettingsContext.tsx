@@ -86,6 +86,7 @@ export type AppearanceSlice = Pick<
   | 'launchAnimation'
   // Minimal — one thing per screen; AppearanceCard's switch.
   | 'minimalUi'
+  | 'minimalTabIcons'
 >;
 
 export type LocationSlice = Pick<
@@ -329,6 +330,7 @@ export function PrayerSettingsProvider({
       showPracticeOnHome: settings.showPracticeOnHome,
       launchAnimation: settings.launchAnimation,
       minimalUi: settings.minimalUi,
+      minimalTabIcons: settings.minimalTabIcons,
     }),
     [
       settings.appearance,
@@ -345,6 +347,7 @@ export function PrayerSettingsProvider({
       settings.showPracticeOnHome,
       settings.launchAnimation,
       settings.minimalUi,
+      settings.minimalTabIcons,
     ],
   );
 
@@ -623,6 +626,15 @@ function useSliceCtx<S>(
 /** Subscribe only to appearance fields (theme, dynamic colors, OLED, language). */
 export function useAppearanceSettings() {
   return useSliceCtx(AppearanceContext, 'useAppearanceSettings');
+}
+
+/**
+ * The appearance slice, or null outside the provider — for chrome that
+ * reads one switch and should not take a screen down without one (the
+ * tab bar, drawn in tests on its own); see `usePrayerSettingsOrDefaults`.
+ */
+export function useAppearanceSliceOrNull(): AppearanceSlice | null {
+  return useContext(AppearanceContext)?.slice ?? null;
 }
 
 /** Subscribe only to location fields (mode, manual coords, last-fetched, onboarding). */

@@ -264,6 +264,17 @@ function AppearanceCardImpl() {
             </Text>
           </SettingsBlock>
         ) : null}
+        {/* Under Minimal only: the tab bar's small icons kept up in place of
+            the dots (MinimalTabBar). */}
+        {minimalActive ? (
+          <SettingsToggleRow
+            testID="appearance-minimalTabIcons"
+            title={t('settings.minimalTabIcons')}
+            help={t('settings.minimalTabIconsHelp')}
+            value={settings.minimalTabIcons}
+            onValueChange={v => updateSettings({ minimalTabIcons: v })}
+          />
+        ) : null}
 
         {/* Colour theme — the alternative to system colours. Classic is the
             app's own paper and ink; a preset themes dark mode in that colour

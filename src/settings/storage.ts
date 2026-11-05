@@ -588,6 +588,9 @@ async function loadSettingsUncached(): Promise<PrayerAppSettings> {
   if (!('appearance' in parsed)) {
     merged.appearance = 'system';
   }
+  if (typeof merged.minimalTabIcons !== 'boolean') {
+    merged.minimalTabIcons = false;
+  }
   if (!('pureBlackDark' in parsed)) {
     merged.pureBlackDark = false;
   }

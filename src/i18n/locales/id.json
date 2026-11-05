@@ -519,6 +519,8 @@
     "providerTableFallback": "{{picked}} tidak punya jadwal terbitan untuk hari ini, jadi metodenya sendiri dihitung di ponsel sampai tabelnya mencakup hari ini lagi.",
     "minimalUi": "Minimal",
     "minimalUiHelp": "Satu hal per layar. Hari Ini menyimpan hitung mundur; geser ke atas untuk melihat waktu hari ini. Tab lain menyimpan fungsi masing-masing.",
+    "minimalTabIcons": "Ikon, bukan titik",
+    "minimalTabIconsHelp": "Tampilkan ikon kecil tab di bawah halaman, bukan titik yang hanya menampilkannya saat berpindah halaman.",
     "minimalClassicOnly": "Minimal tetap memakai warna klasik. Matikan untuk memilih tema warna atau warna sistem.",
     "minimalRestartBody": "Minimal aktif dengan tema Langit, jadi warna sistem akan dimatikan. Aplikasi perlu dimulai ulang agar setiap layar menerapkan perubahan. Mulai ulang sekarang?",
     "widgetSinceAdhanTitle": "Waktu sejak azan",

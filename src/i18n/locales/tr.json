@@ -519,6 +519,8 @@
     "providerTableFallback": "{{picked}} için bugün yayımlanmış vakit yok; cetvel bugünü yeniden kapsayana kadar kendi yöntemi telefonda hesaplanır.",
     "minimalUi": "Sade",
     "minimalUiHelp": "Her ekranda tek bir şey. Bugün geri sayımı tutar; günün vakitleri için yukarı kaydırın. Diğer sekmeler ne için varsa onu tutar.",
+    "minimalTabIcons": "Noktalar yerine simgeler",
+    "minimalTabIconsHelp": "Sekmelerin küçük simgeleri sayfanın altında kalsın; yalnızca sayfa değişirken gösteren noktalar yerine.",
     "minimalClassicOnly": "Minimal klasik renkleri korur. Bir renk teması veya sistem renkleri seçmek için kapatın.",
     "minimalRestartBody": "Minimal Gökyüzü temasıyla açılır, bu yüzden sistem renkleri kapatılacak. Değişikliğin her ekrana yansıması için uygulamanın yeniden başlaması gerekir. Şimdi yeniden başlatılsın mı?",
     "widgetSinceAdhanTitle": "Ezandan bu yana geçen süre",

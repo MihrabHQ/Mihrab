@@ -519,6 +519,8 @@
     "providerTableFallback": "{{picked}} 没有今天的已发布时间，因此在时间表再次覆盖今天之前，改在手机上按其自身方法计算。",
     "minimalUi": "极简",
     "minimalUiHelp": "每个页面只留一样。「今天」保留倒计时，向上滑动查看当天礼拜时间。其他标签页只保留各自的主要功能。",
+    "minimalTabIcons": "用图标代替圆点",
+    "minimalTabIconsHelp": "在页面底部始终显示各标签的小图标，而不是只在翻页时才显示图标的圆点。",
     "minimalClassicOnly": "极简模式保留经典配色。关闭它即可选择颜色主题或系统颜色。",
     "minimalRestartBody": "极简模式会以天空主题开启，因此将关闭系统颜色。应用需要重新启动，才能让每个页面应用此更改。现在重新启动？",
     "widgetSinceAdhanTitle": "宣礼后的时间",

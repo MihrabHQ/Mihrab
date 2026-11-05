@@ -170,8 +170,10 @@ describe('the swipe', () => {
   it('shows the icons while a page turns, the current one larger, and dots at rest', () => {
     expect(bar).toContain("outputRange: [0.85, 1.25]");
     // Built with the position, not on every render of the bar.
-    expect(bar).toContain('[position, routeCount, dotsOpacity],');
-    expect(bar).toMatch(/pagerEngaged\.interpolate\(\{ inputRange: \[0, 1\], outputRange: \[1, 0\] \}\)/);
+    expect(bar).toContain('[position, routeCount, dotsOpacity, shown],');
+    // The turn's engagement, or always (Icons instead of dots).
+    expect(bar).toContain('iconsAlways ? new Animated.Value(1) : pagerEngaged');
+    expect(bar).toMatch(/shown\.interpolate\(\{ inputRange: \[0, 1\], outputRange: \[1, 0\] \}\)/);
     // A component of its own, so the icon's hooks are not the bar's
     // (minimalTabBarHidden.test.tsx).
     expect(bar).toContain('<TabIcon render={Icon} color={String(palette.textSolid)} size={ICON} focused={focused} />');
@@ -421,5 +423,17 @@ describe("the sheet's foot", () => {
     expect(at('styles.footEnd')).toBeGreaterThan(at('styles.sourceBox'));
     expect(foot).toMatch(/\{t\('provider\.timesSource'\)\}\s*<\/Text>\s*<Text[\s\S]*?\{source\}/);
     expect(sheet).toMatch(/source: \{ fontSize: TYPE\.caption\.fontSize/);
+  });
+});
+
+describe('icons instead of dots', () => {
+  it('is a setting, off by default, offered under Minimal only, that keeps the icons up', () => {
+    expect(read('src/settings/types.ts')).toMatch(/minimalTabIcons: false,/);
+    expect(read('src/settings/storage.ts')).toMatch(/if \(typeof merged\.minimalTabIcons !== 'boolean'\) \{\s*merged\.minimalTabIcons = false;/);
+    const card = read('src/screens/settings/AppearanceCard.tsx');
+    expect(card).toMatch(/\{minimalActive \? \(\s*<SettingsToggleRow\s*testID="appearance-minimalTabIcons"/);
+    expect(bar).toContain('const iconsAlways = useAppearanceSliceOrNull()?.minimalTabIcons === true;');
+    expect(bar).toContain('iconsAlways ? new Animated.Value(1) : pagerEngaged');
+    expect(bar).toContain('iconOpacity: Animated.multiply(shown,');
   });
 });

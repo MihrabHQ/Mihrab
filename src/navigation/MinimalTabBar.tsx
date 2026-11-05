@@ -5,6 +5,7 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { linearDown, withAlpha } from '../screens/home/skyPaint';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useAppPalette } from '../hooks/useAppPalette';
+import { useAppearanceSliceOrNull } from '../context/PrayerSettingsContext';
 import { MINIMAL_TAB_BAR_HEIGHT, useTabBarBottom } from './tabBarInset';
 import { useTabBarHidden } from './tabBarVisibility';
 import { scrimColor } from './TabBarScrim';
@@ -39,6 +40,11 @@ import {
  * the icons come up, the lit one follows the finger from dot to dot and
  * the page leans the way it is going, and the tab under the finger when
  * it lifts is the one opened — the full bar's hold-and-slide, on dots.
+ *
+ * Or, with Settings → Appearance → "Icons instead of dots"
+ * (`minimalTabIcons`), the small icons stay up all the time and the dots
+ * are never drawn: the same row, the current one lit and a little larger,
+ * lighting the next as a page turns.
  *
  * No labels: six words along the foot were the one line of chrome
  * Minimal still had, and a dot says "there are six pages and this is the
@@ -174,9 +180,12 @@ export function MinimalTabBar({ state, descriptors, navigation }: BottomTabBarPr
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [navigation, state.routes],
   );
+  // Icons kept up: as if a turn never settled — no dots, the icons always.
+  const iconsAlways = useAppearanceSliceOrNull()?.minimalTabIcons === true;
+  const shown = useMemo(() => (iconsAlways ? new Animated.Value(1) : pagerEngaged), [iconsAlways]);
   const dotsOpacity = useMemo(
-    () => pagerEngaged.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }),
-    [],
+    () => shown.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }),
+    [shown],
   );
 
   // Each dot's animated nodes, built with the position rather than on
@@ -195,11 +204,11 @@ export function MinimalTabBar({ state, descriptors, navigation }: BottomTabBarPr
         });
         return {
           dotOpacity: Animated.multiply(dotsOpacity, near.interpolate({ inputRange: [0, 1], outputRange: [0.28, 0.9] })),
-          iconOpacity: Animated.multiply(pagerEngaged, near.interpolate({ inputRange: [0, 1], outputRange: [0.45, 1] })),
+          iconOpacity: Animated.multiply(shown, near.interpolate({ inputRange: [0, 1], outputRange: [0.45, 1] })),
           iconScale: near.interpolate({ inputRange: [0, 1], outputRange: [0.85, 1.25] }),
         };
       }),
-    [position, routeCount, dotsOpacity],
+    [position, routeCount, dotsOpacity, shown],
   );
 
   if (hidden) return null;

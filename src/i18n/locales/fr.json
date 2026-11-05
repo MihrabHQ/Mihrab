@@ -520,6 +520,8 @@
     "providerTableFallback": "{{picked}} n’a pas d’horaires publiés pour aujourd’hui : sa propre méthode est calculée sur le téléphone jusqu’à ce que la table couvre à nouveau ce jour.",
     "minimalUi": "Minimal",
     "minimalUiHelp": "Une chose par écran. Aujourd’hui garde le compte à rebours ; balayez vers le haut pour les horaires du jour. Les autres onglets gardent ce pour quoi ils sont faits.",
+    "minimalTabIcons": "Icônes au lieu de points",
+    "minimalTabIconsHelp": "Garder les petites icônes des onglets en bas de la page, au lieu de points qui ne les montrent qu’en changeant de page.",
     "minimalClassicOnly": "Minimal garde les couleurs classiques. Désactivez-le pour choisir un thème de couleur ou les couleurs du système.",
     "minimalRestartBody": "Minimal s’active avec le thème Ciel : les couleurs du système seront donc désactivées. L’app doit redémarrer pour que chaque écran prenne en compte le changement. Redémarrer maintenant ?",
     "widgetSinceAdhanTitle": "Temps depuis l’adhan",

@@ -466,6 +466,12 @@ export type PrayerAppSettings = {
    */
   minimalUi: boolean;
   /**
+   * Under Minimal, the tab bar's small icons stay up instead of the dots
+   * (MinimalTabBar) — for a reader who finds a page by its icon rather
+   * than its place in the row. Off by default: the dots are Minimal's.
+   */
+  minimalTabIcons: boolean;
+  /**
    * App accent color id — task #127. Drives the in-app accent and (when
    * `useSystemDynamicTheme` is off) also the widget highlight via the
    * sync logic in `syncWidgetUiHints.ts`. When `useSystemDynamicTheme`
@@ -838,6 +844,7 @@ export const DEFAULT_SETTINGS: PrayerAppSettings = {
   logLateByClock: false,
   launchAnimation: true,
   minimalUi: false,
+  minimalTabIcons: false,
   // App accent defaults to brand green (matches the historical hardcoded
   // accent so users on existing installs see no visual diff after the
   // upgrade).
