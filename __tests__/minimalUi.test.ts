@@ -410,3 +410,16 @@ describe('the night along the floor', () => {
     expect(chart).toMatch(/\{drawn\.floorLine \? \(/);
   });
 });
+
+describe("the sheet's foot", () => {
+  it('holds the place, the source (label over provider, small) and the Qibla on one row', () => {
+    const sheet = read('src/screens/home/TodayTimesSheet.tsx');
+    const foot = sheet.slice(sheet.indexOf('<View style={styles.foot}>'));
+    const at = (s: string) => foot.indexOf(s);
+    expect(at('styles.footStart')).toBeGreaterThan(-1);
+    expect(at('styles.sourceBox')).toBeGreaterThan(at('styles.footStart'));
+    expect(at('styles.footEnd')).toBeGreaterThan(at('styles.sourceBox'));
+    expect(foot).toMatch(/\{t\('provider\.timesSource'\)\}\s*<\/Text>\s*<Text[\s\S]*?\{source\}/);
+    expect(sheet).toMatch(/source: \{ fontSize: TYPE\.caption\.fontSize/);
+  });
+});

@@ -235,14 +235,11 @@ function TodayTimesSheetImpl({
         ) : (
           <DayRows rows={rows} />
         )}
-        {source ? (
-          <Text style={[styles.source, { color: palette.muted }]} numberOfLines={1}>
-            {`${t('provider.timesSource')} · ${source}`}
-          </Text>
-        ) : null}
-        {/* The foot, one row: the place at the start, the Qibla at the
-            end. No Close button — the sheet goes by a swipe down, a tap
-            on the sky above it, or Back. */}
+        {/* The foot, one row: the place at the start, where the times come
+            from in the middle — "Times source" over the provider, small, so
+            the two doors keep their room either side — and the Qibla at the
+            end. No Close button — the sheet goes by a swipe down, a tap on
+            the sky above it, or Back. */}
         <View style={styles.foot}>
           <View style={[styles.footSide, styles.footStart]}>
             {place ? (
@@ -263,6 +260,25 @@ function TodayTimesSheetImpl({
               </Pressable>
             ) : null}
           </View>
+          {source ? (
+            <View
+              style={styles.sourceBox}
+              accessible
+              accessibilityLabel={`${t('provider.timesSource')} · ${source}`}>
+              <Text
+                style={[styles.source, { color: palette.muted }]}
+                numberOfLines={1}
+                maxFontSizeMultiplier={SOURCE_MAX_SCALE}>
+                {t('provider.timesSource')}
+              </Text>
+              <Text
+                style={[styles.source, styles.sourceName, { color: palette.muted }]}
+                numberOfLines={1}
+                maxFontSizeMultiplier={SOURCE_MAX_SCALE}>
+                {source}
+              </Text>
+            </View>
+          ) : null}
           <View style={[styles.footSide, styles.footEnd]}>
             {qibla ? (
               <Pressable
@@ -466,6 +482,9 @@ function MonthGlyph({ color }: { color: string }) {
 
 export const TodayTimesSheet = memo(TodayTimesSheetImpl);
 
+/** The source's two lines follow the text size only so far: they share a row with the two doors. */
+const SOURCE_MAX_SCALE = 1.3;
+
 const styles = StyleSheet.create({
   sheet: { gap: SPACING.sm },
   dayBar: { flexDirection: 'row', alignItems: 'center', gap: SPACING.xs },
@@ -513,5 +532,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   door: { fontSize: TYPE.footnote.fontSize, fontWeight: '400', flexShrink: 1 },
-  source: { fontSize: TYPE.label.fontSize, fontWeight: '400', textAlign: 'center', marginTop: SPACING.xs, opacity: 0.8 },
+  // Where the times come from, between the doors: two short lines in the
+  // caption's size, the label quieter than the name, never wider than it
+  // must be — a long provider is cut rather than pushing the doors off.
+  sourceBox: { flexShrink: 1, maxWidth: '36%', alignItems: 'center' },
+  source: { fontSize: TYPE.caption.fontSize, lineHeight: TYPE.caption.lineHeight, fontWeight: '400', textAlign: 'center', opacity: 0.7 },
+  sourceName: { opacity: 0.95 },
 });
