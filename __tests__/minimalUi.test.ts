@@ -379,3 +379,15 @@ describe('an aim and the minimal face', () => {
     expect(card).not.toMatch(/onToggle: \(\) => aimAt/);
   });
 });
+
+describe('under the Track', () => {
+  it('draws no rail, and no breath, where the Track draws the day — and the rail is back without coordinates', () => {
+    expect(card).toMatch(
+      /const railHidden = minimal && heroLook === 'track' && typeof latitude === 'number' && typeof longitude === 'number';/,
+    );
+    expect(card).toMatch(/const breathing = minimal && !railHidden && /);
+    expect(card).toMatch(/\{\(rail \|\| dayRail\) && !railHidden \? \(\s*<View style=\{styles\.railWrap\}>/);
+    // The line under the figures is not the rail's: it stays.
+    expect(card).toMatch(/\{`\$\{targetLabel\} · \$\{targetClock\}`\}/);
+  });
+});

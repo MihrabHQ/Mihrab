@@ -58,7 +58,7 @@ describe('what the window gates', () => {
   it('the breath and the twinkle', () => {
     const card = read('src/screens/home/TodayCard.tsx');
     expect(card).toContain('const lively = useLively(active && !posed);');
-    expect(card).toContain('const breathing = minimal && lively && !reduceMotion && !posed;');
+    expect(card).toContain('const breathing = minimal && !railHidden && lively && !reduceMotion && !posed;');
     expect(card).toContain('still={posed || !lively}');
   });
 

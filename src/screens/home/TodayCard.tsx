@@ -632,7 +632,17 @@ const HeroToday = memo(function HeroToday({
   // loop that never ends keeps the renderer drawing every frame for as
   // long as the page is up.
   const lively = useLively(active && !posed);
-  const breathing = minimal && lively && !reduceMotion && !posed;
+  /**
+   * MINIMAL UNDER THE TRACK HAS NO RAIL. The Track draws the day as the
+   * sun's path with the body on it and the stretch to the next prayer
+   * bolder — the progress the rail was there to show, twice over on a page
+   * of two things. The line under the figures stays ("Fajr · 04:57").
+   * Without coordinates the Track does not draw (the painted sky stands),
+   * and the rail is back. Its numbers are still worked out: the launch run
+   * reads them.
+   */
+  const railHidden = minimal && heroLook === 'track' && typeof latitude === 'number' && typeof longitude === 'number';
+  const breathing = minimal && !railHidden && lively && !reduceMotion && !posed;
   const breath = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     if (!breathing) return undefined;
@@ -1504,7 +1514,7 @@ const HeroToday = memo(function HeroToday({
           {`${targetLabel} · ${targetClock}`}
         </Text>
       ) : null}
-      {rail || dayRail ? (
+      {(rail || dayRail) && !railHidden ? (
         <View style={styles.railWrap}>
           <View style={[styles.railTrack, { backgroundColor: railInk.track }]}>
             {/* Minimal: the day's prayers, marked along the rail — the
