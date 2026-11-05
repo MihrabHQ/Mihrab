@@ -169,7 +169,7 @@ export async function loadLiveActivityOptions(): Promise<LiveActivityOptions> {
       shownAlertMode(key, alertModes, adhanChosen, s.notificationsEnabled);
     out.android = {
       alertActionEnabled: s.notificationsEnabled,
-      aodActionEnabled: s.liveActivityLockButton !== false,
+      aodActionEnabled: s.liveActivityLockButton === true,
       showBeforeMinutes: Math.max(0, Math.round(s.liveActivityShowBeforeMinutes ?? 0)),
       adhanChannelId: resolveSoundTargets(
         soundOpt.id,

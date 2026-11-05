@@ -797,7 +797,7 @@ export function readWidgetContractLiveActivityAppearance(
     tinted: wcBool(input.tinted) ?? false,
     design:
       wcEnum(input.design, ['timeline', 'countdown', 'markers'] as const) ??
-      'timeline',
+      'countdown',
   };
   return out;
 }
@@ -808,7 +808,7 @@ export function readWidgetContractLiveActivityAndroid(
   if (!wcIsObject(input)) return null;
   const out: WidgetContractLiveActivityAndroid = {
     alertActionEnabled: wcBool(input.alertActionEnabled) ?? false,
-    aodActionEnabled: wcBool(input.aodActionEnabled) ?? true,
+    aodActionEnabled: wcBool(input.aodActionEnabled) ?? false,
     showBeforeMinutes: wcInt(input.showBeforeMinutes) ?? 0,
     adhanChannelId: wcString(input.adhanChannelId) ?? 'prayer-times-default',
     adhanSoundId: wcString(input.adhanSoundId) ?? 'default',

@@ -212,7 +212,7 @@ async function syncLiveActivityImpl(args: {
       // Android has always read "tinted surfaces" from settings, iOS from
       // the caller; the same setting either way.
       tinted: Platform.OS === 'android' ? options.tinted : !!args.tinted,
-      design: args.design ?? 'timeline',
+      design: args.design ?? 'countdown',
     },
     android: options.android,
     words: options.words,

@@ -30,9 +30,9 @@ const kotlin = read(
 );
 
 describe('the lock-screen button can be turned off', () => {
-  it('is a stored setting, on by default', () => {
+  it('is a stored setting, off by default', () => {
     expect(types).toMatch(/liveActivityLockButton: boolean;/);
-    expect(types).toMatch(/liveActivityLockButton: true,/);
+    expect(types).toMatch(/liveActivityLockButton: false,/);
   });
 
   it('has a row in Settings, and only on Android', () => {
@@ -40,16 +40,15 @@ describe('the lock-screen button can be turned off', () => {
       /Platform\.OS === 'android' && settings\.liveActivityEnabled \?/,
     );
     expect(card).toMatch(/update\(\{ liveActivityLockButton: v \}\)/);
-    // Absent means on: a stored `false` is the only thing that hides it,
-    // so an install from before the toggle existed keeps the button.
-    expect(card).toMatch(/settings\.liveActivityLockButton !== false/);
+    // Absent means off: only a stored `true` shows it.
+    expect(card).toMatch(/settings\.liveActivityLockButton === true/);
   });
 
   it('reaches the card as aodActionEnabled', () => {
     expect(bridge).toMatch(
-      /aodActionEnabled: s\.liveActivityLockButton !== false,/,
+      /aodActionEnabled: s\.liveActivityLockButton === true,/,
     );
-    expect(shared).toMatch(/aodActionEnabled: android\?\.aodActionEnabled \?\? true,/);
+    expect(shared).toMatch(/aodActionEnabled: android\?\.aodActionEnabled \?\? false,/);
     expect(adapter).toMatch(/out\.put\("aodActionEnabled", android\.aodActionEnabled\)/);
   });
 

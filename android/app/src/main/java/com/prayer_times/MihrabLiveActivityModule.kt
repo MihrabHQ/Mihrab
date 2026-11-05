@@ -657,7 +657,7 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
         // eligible for the status-bar chip) and both keeping the chip + AOD:
         //   'timeline'  — full ProgressStyle prayer-day timeline + inline title.
         //   'countdown' — countdown-focused: big countdown title + prayer/time.
-        val design = p.optString("design", "timeline")
+        val design = p.optString("design", "countdown")
         val nextTime = p.optString("nextTime", "")
         // What the card DRAWS: the time as the user reads a clock. `nextTime`
         // is its canonical 24-hour twin, text only, and stands in for
@@ -808,7 +808,7 @@ class MihrabLiveActivityModule(private val reactContext: ReactApplicationContext
         // See the note in the other builder: `nextTimeText` is what is drawn.
         val nextTimeText =
           p.optString("nextTimeDisplay", "").ifEmpty { nextTime }
-        val design = p.optString("design", "timeline")
+        val design = p.optString("design", "countdown")
         val prevEpochMs = p.optLong("prevEpochMs", 0L)
         // "It's <prayer> time" — brief SAFE (green) state for ~90s right after a
         // prayer instant. The just-passed prayer's localised name is looked up

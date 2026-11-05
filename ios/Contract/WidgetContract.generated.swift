@@ -981,7 +981,7 @@ enum WidgetContract {
       systemTinted: Bool = false,
       systemAccent: Bool = false,
       tinted: Bool = false,
-      design: LiveActivityDesign = .timeline
+      design: LiveActivityDesign = .countdown
     ) {
       self.accentHex = accentHex
       self.systemTinted = systemTinted
@@ -1004,7 +1004,7 @@ enum WidgetContract {
       systemTinted = c.wcValue(Bool.self, .systemTinted) ?? false
       systemAccent = c.wcValue(Bool.self, .systemAccent) ?? false
       tinted = c.wcValue(Bool.self, .tinted) ?? false
-      design = c.wcValue(String.self, .design).flatMap(LiveActivityDesign.init(rawValue:)) ?? .timeline
+      design = c.wcValue(String.self, .design).flatMap(LiveActivityDesign.init(rawValue:)) ?? .countdown
     }
   }
 
@@ -1026,7 +1026,7 @@ enum WidgetContract {
 
     init(
       alertActionEnabled: Bool = false,
-      aodActionEnabled: Bool = true,
+      aodActionEnabled: Bool = false,
       showBeforeMinutes: Int = 0,
       adhanChannelId: String = "prayer-times-default",
       adhanSoundId: String = "default",
@@ -1052,7 +1052,7 @@ enum WidgetContract {
     init(from decoder: Decoder) throws {
       let c = try decoder.container(keyedBy: CodingKeys.self)
       alertActionEnabled = c.wcValue(Bool.self, .alertActionEnabled) ?? false
-      aodActionEnabled = c.wcValue(Bool.self, .aodActionEnabled) ?? true
+      aodActionEnabled = c.wcValue(Bool.self, .aodActionEnabled) ?? false
       showBeforeMinutes = c.wcInt(.showBeforeMinutes).flatMap(wcInt32) ?? 0
       adhanChannelId = c.wcValue(String.self, .adhanChannelId) ?? "prayer-times-default"
       adhanSoundId = c.wcValue(String.self, .adhanSoundId) ?? "default"

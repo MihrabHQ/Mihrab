@@ -86,7 +86,7 @@ describe('the shared payload', () => {
     expect(read.days.map(d => d.prayers)).toEqual(
       JSON.parse(JSON.stringify(la.days.map(d => d.prayers))),
     );
-    expect(read.android?.aodActionEnabled).toBe(true);
+    expect(read.android?.aodActionEnabled).toBe(false);
     expect(read.words?.alertOnceWord).toBe('');
   });
 });

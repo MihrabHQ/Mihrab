@@ -550,9 +550,9 @@ export type PrayerAppSettings = {
    * Visual style for the Android Live Activity. Both preserve the Android 16
    * status-bar chip + the always-on ongoing notification.
    *   'timeline'  — the full prayer-day ProgressStyle timeline with a marker at
-   *                 each prayer and an inline countdown in the title (default).
+   *                 each prayer and an inline countdown in the title.
    *   'countdown' — countdown-focused: the live countdown is the prominent title,
-   *                 with the next prayer's name + clock time beneath it.
+   *                 with the next prayer's name + clock time beneath it (default).
    * Android only; ignored on iOS.
    */
   liveActivityDesign: 'timeline' | 'countdown' | 'markers';
@@ -575,11 +575,12 @@ export type PrayerAppSettings = {
   /**
    * Whether the Live Activity card carries its lock-screen toggle button.
    *
-   * Android only, and on by default because that is the behaviour it had.
-   * The card has room for two actions and the other one — muting the next
-   * adhan — is the one people reach for; someone who never hides the card
-   * from their lock screen is carrying a button they will never press,
-   * on a surface where space is the scarce thing.
+   * Android only, and OFF by default (it was on, the behaviour it had before
+   * the toggle existed). The card has room for two actions and the other
+   * one — muting the next adhan — is the one people reach for; someone who
+   * never hides the card from their lock screen is carrying a button they
+   * will never press, on a surface where space is the scarce thing. Absent
+   * means off, everywhere it is read.
    */
   liveActivityLockButton: boolean;
   /**
@@ -868,8 +869,10 @@ export const DEFAULT_SETTINGS: PrayerAppSettings = {
   liveActivityShowSunrise: true,
   liveActivityShowHijri: true,
   liveActivityShowLocation: true,
-  liveActivityDesign: 'timeline',
-  liveActivityLockButton: true,
+  // The countdown is the design a new install starts on, and the lock-
+  // screen button starts off: both are a tap away under Live Activity.
+  liveActivityDesign: 'countdown',
+  liveActivityLockButton: false,
   liveActivityShowBeforeMinutes: 0,
   // Sunrise on by default (unchanged behaviour); the two night times off by
   // default so existing users see no new rows/notifications until they opt in.

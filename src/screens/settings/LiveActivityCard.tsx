@@ -350,7 +350,7 @@ function LiveActivityCardImpl({
             defaultValue:
               'Show a button on the card for hiding it from the lock screen and always-on display.',
           })}
-          value={settings.liveActivityLockButton !== false}
+          value={settings.liveActivityLockButton === true}
           onValueChange={v => update({ liveActivityLockButton: v })}
         />
       ) : null}

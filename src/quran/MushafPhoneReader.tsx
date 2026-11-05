@@ -896,6 +896,12 @@ export const MushafPhoneReader = React.memo(function MushafPhoneReader(
 
   const { marks, finish, selected, openSelection, openJump } = core;
   const railChrome = useScrubberChrome(tone);
+  // The page's accent — its frame, the beginning of a surah, the marks —
+  // is the page bar's: the theme rendered for the PAGE's mode, not the
+  // app's. On a night page under the Sky theme at a light hour the app's
+  // accent is the midday's deep blue, which vanished on the black page
+  // while the bar beside it wore the night's; the two now agree.
+  const accent = railChrome.accent;
   // The ‹ › in the margins of a phone on its side, in fullscreen — see
   // `landscapeTurnButtons`. Nothing in portrait (the page fills the width)
   // or out of fullscreen (the rail is there).
@@ -917,12 +923,6 @@ export const MushafPhoneReader = React.memo(function MushafPhoneReader(
     sideCamera.side !== 'none'
       ? { top: sideCamera.centreY - listTop - TURN_BUTTON_H / 2, marginTop: 0 }
       : null;
-  // The page's accent — its frame, the beginning of a surah, the marks —
-  // is the page bar's: the theme rendered for the PAGE's mode, not the
-  // app's. On a night page under the Sky theme at a light hour the app's
-  // accent is the midday's deep blue, which vanished on the black page
-  // while the bar beside it wore the night's; the two now agree.
-  const accent = railChrome.accent;
   /**
    * The recited ayah, as far as the PAGE is concerned — null while nobody
    * is looking.

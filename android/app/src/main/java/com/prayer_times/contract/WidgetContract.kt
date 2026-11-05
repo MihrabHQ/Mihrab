@@ -958,7 +958,7 @@ object WidgetContract {
     /** "Tinted surfaces": the accent becomes the card's background. */
     val tinted: Boolean = false,
     /** Android: which of the three layouts. */
-    val design: LiveActivityDesign = LiveActivityDesign.TIMELINE,
+    val design: LiveActivityDesign = LiveActivityDesign.COUNTDOWN,
   ) {
     fun toJson(): JSONObject = JSONObject().apply {
       put("accentHex", accentHex)
@@ -976,7 +976,7 @@ object WidgetContract {
           systemTinted = o.wcBool("systemTinted") ?: false,
           systemAccent = o.wcBool("systemAccent") ?: false,
           tinted = o.wcBool("tinted") ?: false,
-          design = LiveActivityDesign.fromWire(o.wcString("design")) ?: LiveActivityDesign.TIMELINE,
+          design = LiveActivityDesign.fromWire(o.wcString("design")) ?: LiveActivityDesign.COUNTDOWN,
         )
       }
 
@@ -994,7 +994,7 @@ object WidgetContract {
     /** Offer the button that changes the next alert once. */
     val alertActionEnabled: Boolean = false,
     /** Offer the hide/show-on-lock-screen button. */
-    val aodActionEnabled: Boolean = true,
+    val aodActionEnabled: Boolean = false,
     /**
      * Show the card only from this many minutes before the next prayer; 0
      * shows it always.
@@ -1021,7 +1021,7 @@ object WidgetContract {
         if (o == null) return null
         return LiveActivityAndroid(
           alertActionEnabled = o.wcBool("alertActionEnabled") ?: false,
-          aodActionEnabled = o.wcBool("aodActionEnabled") ?: true,
+          aodActionEnabled = o.wcBool("aodActionEnabled") ?: false,
           showBeforeMinutes = o.wcRaw("showBeforeMinutes").wcAsInt() ?: 0,
           adhanChannelId = o.wcString("adhanChannelId") ?: "prayer-times-default",
           adhanSoundId = o.wcString("adhanSoundId") ?: "default",

@@ -487,7 +487,7 @@ module.exports = {
           'design',
           t.enumOf(['timeline', 'countdown', 'markers'], {
             name: 'LiveActivityDesign',
-            default: 'timeline',
+            default: 'countdown',
           }),
           'Android: which of the three layouts.',
         ],
@@ -504,7 +504,7 @@ module.exports = {
         ],
         [
           'aodActionEnabled',
-          t.bool({ default: true }),
+          t.bool({ default: false }),
           'Offer the hide/show-on-lock-screen button.',
         ],
         [
