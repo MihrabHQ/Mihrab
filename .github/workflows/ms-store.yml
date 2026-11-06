@@ -1,8 +1,8 @@
 name: Microsoft Store
 
-# A release goes to the Microsoft Store on its own: when a tag's Desktop run
-# is green, its mihrab-microsoft-store artifact (the x64 and arm64 .appx) is
-# submitted through the Partner Center API by scripts/ms-store-submit.js —
+# Submits a release to the Microsoft Store: the mihrab-microsoft-store
+# artifact (the x64 and arm64 .appx) of a tag's green Desktop run goes up
+# through the Partner Center API by scripts/ms-store-submit.js —
 # old packages out, new ones in, "What's new" from release-notes/, committed
 # for certification. It is live when it passes.
 #
@@ -12,10 +12,11 @@ name: Microsoft Store
 #
 # Run it by hand to (re)submit a tag whose Desktop run is already green.
 
+# Off for now: run by hand only. The release leaves the packages and the
+# What's new text in ~/Downloads/mihrab-store-<version> for a hand upload.
+# To make it automatic, add back:
+#   workflow_run: { workflows: [Desktop], types: [completed] }
 on:
-  workflow_run:
-    workflows: [Desktop]
-    types: [completed]
   workflow_dispatch:
     inputs:
       tag:

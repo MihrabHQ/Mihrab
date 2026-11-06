@@ -61,26 +61,19 @@ copied exactly from Partner Center → Mihrab → Product identity (Store ID
 9N43KNMJHBWV, [apps.microsoft.com/detail/9N43KNMJHBWV](https://apps.microsoft.com/detail/9N43KNMJHBWV)). Tile images are in
 `resources/appx/`.
 
-A release submits itself: when the tag's Desktop run is green, the
-Microsoft Store workflow (`.github/workflows/ms-store.yml`) hands the two
-packages to `scripts/ms-store-submit.js`, which uses the Partner Center
-submission API — it drops a pending draft, starts from the live submission,
-swaps the packages, sets "What's new in this version" from
-`release-notes/<lang>/<code>.txt` (Android and iPhone lines left out, fitted
-to 1500 characters) and commits it for certification; it goes live when it
-passes. Run the workflow by hand with a tag to resubmit one. The version is
-the release's (`2.36.0` → `2.36.0.0`), so each one is higher than the last,
-as the Store requires.
+A release is uploaded by hand, like the Play bundle: the release starts
+`./scripts/fetch-store-packages.sh <version>` in the background, which waits
+for the tag's Desktop run and leaves in `~/Downloads/mihrab-store-<version>`
+the two `.appx` files and `whats-new-{en,sv,ar}.txt` (the release notes
+without the Android and iPhone lines, fitted to the Store's 1500
+characters); the release's summary names them. Upload them in Partner
+Center as a new submission. The version is the release's (`2.36.0` →
+`2.36.0.0`), so each one is higher than the last, as the Store requires.
 
-It needs three repository secrets, from a Microsoft Entra app given the
-**Manager** role in Partner Center (Account settings → Tenants to create or
-associate a tenant, then User management → Microsoft Entra applications →
-Create Microsoft Entra application, which also makes its key):
-`STORE_TENANT_ID`, `STORE_CLIENT_ID` and `STORE_CLIENT_SECRET`. Set each with
-`gh secret set <NAME> -R MihrabHQ/Mihrab`, which asks for the value. Without
-them the workflow says so, and the packages are uploaded by hand —
-`./scripts/fetch-store-packages.sh <version>` puts them in
-`~/Downloads/mihrab-store-<version>` (a release starts it on its own).
+`.github/workflows/ms-store.yml` can submit a tag through the Partner Center
+API instead (`scripts/ms-store-submit.js`), run by hand. It needs an
+Entra tenant and app with the Manager role in Partner Center, and three
+secrets: `STORE_TENANT_ID`, `STORE_CLIENT_ID`, `STORE_CLIENT_SECRET`.
 
 Packaged, the app gives Windows its own toast identity and
 leaves start at login to the package's startup task, whose switch is in

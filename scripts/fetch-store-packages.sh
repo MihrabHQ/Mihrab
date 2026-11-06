@@ -7,12 +7,16 @@
 #   ./scripts/fetch-store-packages.sh 2.36.0
 #   ./scripts/fetch-store-packages.sh 2.36.0 --background   # what release.sh does
 #
+# Beside them go whats-new-{en,sv,ar}.txt, the release's notes fitted to the
+# Store's "What's new in this version" (Android and iPhone lines left out).
+#
 # The background form returns at once and logs to
 # ~/Downloads/mihrab-store-<version>/fetch.log; the Mac says when the
 # packages are there.
 set -uo pipefail
 
 REPO=MihrabHQ/Mihrab
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 VERSION="${1:-}"
 VERSION="${VERSION#v}"
 [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "usage: $0 X.Y.Z [--background]" >&2; exit 2; }
@@ -29,7 +33,15 @@ fi
 say() { printf '%s  %s\n' "$(date '+%H:%M:%S')" "$*"; }
 tell() { command -v osascript >/dev/null && osascript -e "display notification \"$1\" with title \"Mihrab $VERSION\"" >/dev/null 2>&1; true; }
 
-if ls "$DEST"/*.appx >/dev/null 2>&1; then say "already here:"; ls -1 "$DEST"/*.appx; exit 0; fi
+# What's new, from the tag's version code and notes.
+notes() {
+  local code
+  code="$(git -C "$ROOT" show "$TAG:android/app/build.gradle" 2>/dev/null | sed -n 's/^ *versionCode \([0-9]*\).*/\1/p' | head -1)"
+  [ -n "$code" ] || { say "no versionCode at $TAG — no What's new files"; return; }
+  node "$ROOT/scripts/ms-store-submit.js" --notes-out "$DEST" --code "$code" --root "$ROOT" >/dev/null && say "What's new: $DEST/whats-new-{en,sv,ar}.txt"
+}
+
+if ls "$DEST"/*.appx >/dev/null 2>&1; then notes; say "already here:"; ls -1 "$DEST"/*.appx; exit 0; fi
 
 # The tag's run appears a moment after the push: wait up to 15 minutes.
 run=""
@@ -53,6 +65,7 @@ if ! gh run download -R "$REPO" "$run" -n mihrab-microsoft-store -D "$DEST"; the
   say "download failed"; tell "Store package download failed"; exit 1
 fi
 ls "$DEST"/*.appx >/dev/null 2>&1 || { say "the artifact held no .appx"; exit 1; }
+notes
 say "ready to upload in Partner Center:"
 ls -l "$DEST"/*.appx
 tell "Microsoft Store packages are in Downloads/mihrab-store-$VERSION"

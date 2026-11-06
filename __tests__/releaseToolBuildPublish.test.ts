@@ -521,7 +521,8 @@ describe('the summary', () => {
   it('hands over the Microsoft Store packages and says what follows on its own', () => {
     const text = summary(rel, built, 'cloud', { state: 'green', url: 'https://ci/9' }).join('\n');
     expect(text).toContain('Microsoft Store');
-    expect(text).toContain('~/Downloads/mihrab-store-2.28.0');
+    expect(text).toContain('~/Downloads/mihrab-store-2.28.0/Mihrab-2.28.0-win-x64.appx');
+    expect(text).toContain('~/Downloads/mihrab-store-2.28.0/whats-new-en.txt');
     expect(text).toContain('./scripts/fetch-store-packages.sh 2.28.0');
     expect(text).toContain('Mihrab Web');
     expect(text).toContain('./scripts/verify-release.sh v2.28.0');

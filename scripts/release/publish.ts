@@ -665,12 +665,14 @@ export function summary(rel: Release, built: Built, ios: IosState, ci: { state: 
               commit that deserves none. See docs/DISTRIBUTION.md.
 
     Microsoft Store
-              the tag's Desktop run builds the Store packages (about
-              40 minutes); when it is green the Microsoft Store workflow
-              submits them, if its STORE_* secrets are set. Either way
-              they download to ~/Downloads/mihrab-store-${rel.version} — without
-              the secrets, upload them in Partner Center by hand. Again:
-                ./scripts/fetch-store-packages.sh ${rel.version}
+              upload, as a new submission in Partner Center (about 40
+              minutes from now, when the tag's Desktop run is green and
+              the Mac says they have arrived):
+                ~/Downloads/mihrab-store-${rel.version}/Mihrab-${rel.version}-win-x64.appx
+                ~/Downloads/mihrab-store-${rel.version}/Mihrab-${rel.version}-win-arm64.appx
+              What's new in this version (Store listings → English):
+                ~/Downloads/mihrab-store-${rel.version}/whats-new-en.txt
+              Not there? ./scripts/fetch-store-packages.sh ${rel.version}
 `);
   out.push(`  On their own, after the tag's Desktop run:
     Windows and Linux installers   attached to ${rel.tag} by that run

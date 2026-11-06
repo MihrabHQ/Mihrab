@@ -17,6 +17,7 @@
  *
  *   node scripts/ms-store-submit.js --dir <folder with the .appx files>
  *     [--root <checkout of the release tag>] [--code 295] [--dry-run]
+ *   node scripts/ms-store-submit.js --notes-out <folder> [--code 295]   # What's new files only
  *
  * Needs STORE_TENANT_ID, STORE_CLIENT_ID, STORE_CLIENT_SECRET (an Entra app
  * with the Manager role in Partner Center) and STORE_PRODUCT_ID. --dry-run
@@ -182,9 +183,21 @@ async function main(argv) {
     return i >= 0 ? argv[i + 1] : undefined;
   };
   const dir = arg('--dir');
-  if (!dir) throw new Error('usage: ms-store-submit.js --dir <folder> [--root <release checkout>] [--code N] [--dry-run]');
+  const notesOut = arg('--notes-out');
+  if (!dir && !notesOut) throw new Error('usage: ms-store-submit.js --dir <folder> [--root <release checkout>] [--code N] [--dry-run] | --notes-out <folder> [--code N]');
   const root = path.resolve(arg('--root') ?? ROOT);
   const code = Number(arg('--code') ?? versionCode(root));
+  if (notesOut) {
+    // The "What's new in this version" text, one file per language, for a
+    // hand upload in Partner Center → Store listings.
+    fs.mkdirSync(notesOut, { recursive: true });
+    for (const [lang, text] of Object.entries(notesFor(['en-us', 'sv', 'ar'], code, root))) {
+      const file = path.join(notesOut, `whats-new-${notesLang(lang)}.txt`);
+      fs.writeFileSync(file, `${text}\n`);
+      console.log(`${file} (${text.length} characters)`);
+    }
+    return;
+  }
   if (argv.includes('--dry-run')) {
     for (const [lang, text] of Object.entries(notesFor(['en-us', 'sv', 'ar'], code, root))) {
       console.log(`--- ${lang} (${text.length})\n${text}`);

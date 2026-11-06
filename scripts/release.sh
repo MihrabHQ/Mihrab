@@ -1366,12 +1366,14 @@ cat <<EOF
               commit that deserves none. See docs/DISTRIBUTION.md.
 
     Microsoft Store
-              the tag's Desktop run builds the Store packages (about
-              40 minutes); when it is green the Microsoft Store workflow
-              submits them, if its STORE_* secrets are set. Either way
-              they download to ~/Downloads/mihrab-store-$VERSION — without
-              the secrets, upload them in Partner Center by hand. Again:
-                ./scripts/fetch-store-packages.sh $VERSION
+              upload, as a new submission in Partner Center (about 40
+              minutes from now, when the tag's Desktop run is green and
+              the Mac says they have arrived):
+                ~/Downloads/mihrab-store-$VERSION/Mihrab-$VERSION-win-x64.appx
+                ~/Downloads/mihrab-store-$VERSION/Mihrab-$VERSION-win-arm64.appx
+              What's new in this version (Store listings → English):
+                ~/Downloads/mihrab-store-$VERSION/whats-new-en.txt
+              Not there? ./scripts/fetch-store-packages.sh $VERSION
 
   On their own, after the tag's Desktop run:
     Windows and Linux installers   attached to v$VERSION by that run
