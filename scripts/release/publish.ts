@@ -666,10 +666,10 @@ export function summary(rel: Release, built: Built, ios: IosState, ci: { state: 
 
     Microsoft Store
               the tag's Desktop run builds the Store packages (about
-              40 minutes). When it is green, download them and submit
-              them in Partner Center as a new submission:
-                gh run download -R ${REPO} -n mihrab-microsoft-store -D ~/Downloads/mihrab-store-${rel.version} \\
-                  $(gh run list -R ${REPO} --workflow desktop.yml --branch ${rel.tag} --limit 1 --json databaseId --jq '.[0].databaseId')
+              40 minutes); they download on their own, when it is green,
+              to ~/Downloads/mihrab-store-${rel.version} — upload them in
+              Partner Center as a new submission. By hand, or again:
+                ./scripts/fetch-store-packages.sh ${rel.version}
 `);
   out.push(`  On their own, after the tag's Desktop run:
     Windows and Linux installers   attached to ${rel.tag} by that run

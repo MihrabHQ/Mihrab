@@ -1367,10 +1367,10 @@ cat <<EOF
 
     Microsoft Store
               the tag's Desktop run builds the Store packages (about
-              40 minutes). When it is green, download them and submit
-              them in Partner Center as a new submission:
-                gh run download -R MihrabHQ/Mihrab -n mihrab-microsoft-store -D ~/Downloads/mihrab-store-$VERSION \\
-                  \$(gh run list -R MihrabHQ/Mihrab --workflow desktop.yml --branch v$VERSION --limit 1 --json databaseId --jq '.[0].databaseId')
+              40 minutes); they download on their own, when it is green,
+              to ~/Downloads/mihrab-store-$VERSION — upload them in
+              Partner Center as a new submission. By hand, or again:
+                ./scripts/fetch-store-packages.sh $VERSION
 
   On their own, after the tag's Desktop run:
     Windows and Linux installers   attached to v$VERSION by that run
@@ -1379,6 +1379,10 @@ cat <<EOF
   An hour on, ./scripts/verify-release.sh v$VERSION checks all three.
 
 EOF
+
+# The Store packages, fetched in the background once the tag's Desktop run
+# is green — ready to upload, like the Play bundle.
+"$ROOT/scripts/fetch-store-packages.sh" "$VERSION" --background || true
 
 # A cycle that published a commit failing CI did not finish clean, and the
 # shell should say so — a 0 here is what let five of them pass unremarked.

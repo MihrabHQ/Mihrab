@@ -127,6 +127,11 @@ async function cut(ctx: Ctx, version: string, dryRun: boolean): Promise<number> 
   // Last: verification and the install both touch bundles.
   await cleanup(ctx);
   for (const line of summary(rel, built, pub.ios, ci)) ctx.report.say(line);
+  // The Store packages, fetched in the background once the tag's Desktop
+  // run is green — ready to upload, like the Play bundle.
+  const fetched = await ctx.io.exec.run(`${ctx.root}/scripts/fetch-store-packages.sh`, [rel.version, '--background'], { cwd: ctx.root });
+  if (fetched.code === 0) ctx.report.say(fetched.stdout.trimEnd());
+  else ctx.report.warn('M', `could not start the Store package download — ./scripts/fetch-store-packages.sh ${rel.version}`);
   if (!verified) ctx.report.warn('V', `${rel.tag} is published, and its verification failed — see the ✗ lines above`);
   // A cycle that published a commit failing CI did not finish clean, and
   // the exit status says so — a 0 here let five of them pass unremarked.
