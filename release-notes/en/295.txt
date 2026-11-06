@@ -1,0 +1,14 @@
+• Hifz: what you know by heart, and when to recite it again (#121). Tap the surahs you know on a grid, or mark a portion from any ayah, and the Qur'an tab gives you each day's revision — daily at first, then every 3, 7, 14 and 30 days as it holds. Recite from memory with the ayahs hidden, see your progress across the thirty ajzāʾ, and have a daily reminder if you like. It travels in backups and sync.
+• Recommended now: the Qur'an tab suggests what the sunnah attaches to the hour — Al-Kahf on Friday, Al-Mulk at night, the three quls morning and evening — and under it, portions to practise before they are due. Both fold away and remember how you left them.
+• The ayah sheet steps to the previous or next ayah without closing.
+• Fifteen more translations and thirteen more tafsirs to download, Bahasa Indonesia among them (#125); the ayah sheet picks a language, then an edition.
+• Warsh, Qālūn and Shuʿbah are drawn in their own King Fahd Complex fonts, downloaded with the muṣḥaf. A muṣḥaf already on the device gets its font on the next launch. With tajwīd colours on, Warsh stays in the app's own Qur'anic font.
+• Today's sky band has a second look, Track: the sky as a chart, with the sun's path, the horizon and a ring at the next prayer. Tap it and its parts are named in place. Settings → Appearance → Sky band.
+• Minimal: the tab icons stay at the foot instead of dots; it comes on in the Track and the Realistic sky; a tap to the next tab slides as smoothly as a swipe.
+• The countdown is plain ink on every sky.
+• Morocco: the method's second revision gives the ministry's printed minute for nearly every day of the year.
+• Duas: the bedtime Muʿawwidhāt count in rounds, and no counter goes past its number (#120).
+• Android: the Live Activity can stay out of sight until shortly before the next prayer (Settings → Notifications → Live activity → Show from). Its default look is now the countdown, and the lock-screen button is off unless you turn it on.
+• Android: in landscape full screen, the muṣḥaf has page-turn buttons in the margins, level with the camera.
+• Android: folder sync no longer deletes another device's file in the shared folder.
+• iPhone: the Live Activity moves on to the next prayer by itself, and its bar fills as the time passes.

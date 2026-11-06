@@ -1,0 +1,14 @@
+• Hifz: det du kan utantill, och när det ska reciteras igen (#121). Tryck på surorna du kan i ett rutnät, eller markera ett avsnitt från vilken vers som helst, så ger Koranfliken dig dagens repetition — dagligen i början, sedan var 3:e, 7:e, 14:e och 30:e dag när det sitter. Recitera ur minnet med verserna dolda, se dina framsteg över de trettio ajzāʾ, och få en daglig påminnelse om du vill. Det följer med i säkerhetskopior och synk.
+• Rekommenderat nu: Koranfliken föreslår det sunnan knyter till stunden — Al-Kahf på fredag, Al-Mulk på natten, de tre qul morgon och kväll — och under det avsnitt att öva innan de är dags. Båda går att fälla ihop och minns hur du lämnade dem.
+• Versbladet stegar till föregående eller nästa vers utan att stängas.
+• Femton fler översättningar och tretton fler tafsir att ladda ner, bland dem på indonesiska (#125); versbladet väljer språk, sedan utgåva.
+• Warsh, Qālūn och Shuʿbah ritas i sina egna typsnitt från King Fahd-komplexet, som laddas ner med muṣḥafen. En muṣḥaf som redan finns på enheten får sitt typsnitt vid nästa start. Med tajwīd-färger på stannar Warsh i appens eget Korantypsnitt.
+• Idags himmelsband har ett andra utseende, Bana: himlen som ett diagram, med solens bana, horisonten och en ring vid nästa bön. Tryck på det så får delarna sina namn. Inställningar → Utseende → Himmelsband.
+• Minimal: flikarnas ikoner står kvar längst ner i stället för prickar; det slås på med Bana och den realistiska himlen; ett tryck till nästa flik glider lika mjukt som ett svep.
+• Nedräkningen är enkel bläck mot varje himmel.
+• Marocko: metodens andra revision ger ministeriets tryckta minut nästan varje dag på året.
+• Duaer: sänggåendets Muʿawwidhāt räknas i varv, och ingen räknare går förbi sitt tal (#120).
+• Android: Live-aktiviteten kan hålla sig undan tills strax före nästa bön (Inställningar → Aviseringar → Live-aktivitet → Visa från). Standardutseendet är nu nedräkningen, och knappen på låsskärmen är av om du inte slår på den.
+• Android: i liggande helskärm har muṣḥafen bläddringsknappar i marginalerna, i höjd med kameran.
+• Android: mappsynk raderar inte längre en annan enhets fil i den delade mappen.
+• iPhone: Live-aktiviteten går vidare till nästa bön av sig själv, och dess stapel fylls allteftersom tiden går.
