@@ -1,7 +1,7 @@
 {
   "name": "mihrab-desktop",
   "private": true,
-  "version": "2.35.0",
+  "version": "2.36.0",
   "productName": "Mihrab",
   "description": "Mihrab for Windows and Linux: the React Native app rendered with react-native-web inside Electron.",
   "author": {

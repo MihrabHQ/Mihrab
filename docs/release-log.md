@@ -1347,3 +1347,23 @@ probe files stashed, not just unstaged.
 Ran clean on the first attempt.
 
 **Lesson:** none needed — clean run, no change to the cycle.
+
+## 2.36.0 (295) — 2026-11-06
+
+Took 1 aborted attempt(s) before it ran clean:
+
+  - 1 catalyst build failed — /tmp/release-catalyst.log
+
+Changed the release cycle itself:
+
+  - `.github/workflows/desktop.yml`
+  - `docs/DISTRIBUTION.md`
+  - `scripts/release.sh`
+  - `scripts/release/build.ts`
+  - `scripts/release/preflight.ts`
+  - `scripts/release/publish.ts`
+  - `scripts/release/release.ts`
+  - `scripts/release/verify.ts`
+  - `scripts/sync-version.js`
+
+**Lesson:** _(unfilled)_
