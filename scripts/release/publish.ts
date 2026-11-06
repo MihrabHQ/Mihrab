@@ -666,9 +666,10 @@ export function summary(rel: Release, built: Built, ios: IosState, ci: { state: 
 
     Microsoft Store
               the tag's Desktop run builds the Store packages (about
-              40 minutes); they download on their own, when it is green,
-              to ~/Downloads/mihrab-store-${rel.version} — upload them in
-              Partner Center as a new submission. By hand, or again:
+              40 minutes); when it is green the Microsoft Store workflow
+              submits them, if its STORE_* secrets are set. Either way
+              they download to ~/Downloads/mihrab-store-${rel.version} — without
+              the secrets, upload them in Partner Center by hand. Again:
                 ./scripts/fetch-store-packages.sh ${rel.version}
 `);
   out.push(`  On their own, after the tag's Desktop run:

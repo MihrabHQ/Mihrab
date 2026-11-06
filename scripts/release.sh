@@ -1367,9 +1367,10 @@ cat <<EOF
 
     Microsoft Store
               the tag's Desktop run builds the Store packages (about
-              40 minutes); they download on their own, when it is green,
-              to ~/Downloads/mihrab-store-$VERSION — upload them in
-              Partner Center as a new submission. By hand, or again:
+              40 minutes); when it is green the Microsoft Store workflow
+              submits them, if its STORE_* secrets are set. Either way
+              they download to ~/Downloads/mihrab-store-$VERSION — without
+              the secrets, upload them in Partner Center by hand. Again:
                 ./scripts/fetch-store-packages.sh $VERSION
 
   On their own, after the tag's Desktop run:

@@ -1,0 +1,91 @@
+name: Microsoft Store
+
+# A release goes to the Microsoft Store on its own: when a tag's Desktop run
+# is green, its mihrab-microsoft-store artifact (the x64 and arm64 .appx) is
+# submitted through the Partner Center API by scripts/ms-store-submit.js —
+# old packages out, new ones in, "What's new" from release-notes/, committed
+# for certification. It is live when it passes.
+#
+# Needs the STORE_TENANT_ID, STORE_CLIENT_ID and STORE_CLIENT_SECRET secrets
+# (desktop/README.md, "Microsoft Store"); without them it says so and the
+# packages are uploaded by hand (./scripts/fetch-store-packages.sh).
+#
+# Run it by hand to (re)submit a tag whose Desktop run is already green.
+
+on:
+  workflow_run:
+    workflows: [Desktop]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to submit, e.g. v2.36.0'
+        required: true
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: ms-store
+  cancel-in-progress: false
+
+jobs:
+  submit:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       startsWith(github.event.workflow_run.head_branch, 'v') &&
+       github.event.workflow_run.event == 'push' &&
+       vars.DESKTOP_RELEASE == 'true')
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Which release
+        id: which
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG_IN: ${{ inputs.tag }}
+          RUN_TAG: ${{ github.event.workflow_run.head_branch }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+        run: |
+          if [ -n "$TAG_IN" ]; then
+            tag="$TAG_IN"
+            run=$(gh run list -R "$GITHUB_REPOSITORY" --workflow desktop.yml --branch "$tag" --status success --limit 1 --json databaseId --jq '.[0].databaseId')
+            [ -n "$run" ] || { echo "::error::no green Desktop run for $tag"; exit 1; }
+          else
+            tag="$RUN_TAG"; run="$RUN_ID"
+          fi
+          [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "::error::$tag is not a release tag"; exit 1; }
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "run=$run" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.which.outputs.tag }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: mihrab-microsoft-store
+          path: store
+          run-id: ${{ steps.which.outputs.run }}
+          github-token: ${{ github.token }}
+
+      - name: Submit to the Microsoft Store
+        env:
+          STORE_TENANT_ID: ${{ secrets.STORE_TENANT_ID }}
+          STORE_CLIENT_ID: ${{ secrets.STORE_CLIENT_ID }}
+          STORE_CLIENT_SECRET: ${{ secrets.STORE_CLIENT_SECRET }}
+          STORE_PRODUCT_ID: 9N43KNMJHBWV
+        run: |
+          ls -l store
+          node scripts/ms-store-submit.js --dir store --dry-run
+          if [ -z "$STORE_CLIENT_SECRET" ]; then
+            echo "::notice::No STORE_* secrets: upload the mihrab-microsoft-store artifact in Partner Center by hand (./scripts/fetch-store-packages.sh)."
+            exit 0
+          fi
+          node scripts/ms-store-submit.js --dir store
