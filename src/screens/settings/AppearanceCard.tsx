@@ -150,6 +150,17 @@ function AppearanceCardImpl() {
   // Duo that was a noon blue under a night page) — for the layout pictures.
   const sky = useSkyTheme(skyActive);
   const previewSky = skyActive ? skyMoodFor(sky.passage, sky.t, PALETTE_STEPS, undefined, sky.light) : null;
+  // Minimal's picture is drawn in the sky Minimal opens in — Realistic,
+  // whatever the theme now — not the page's present colours (LayoutPicker).
+  const minimalMood = skyMoodFor(sky.passage, sky.t, PALETTE_STEPS, 'realistic', sky.light);
+  const minimalSky = {
+    top: minimalMood.heroTop,
+    mid: minimalMood.heroMid,
+    foot: minimalMood.heroFoot,
+    sun: minimalMood.bodyLight,
+    text: minimalMood.text,
+    isDark: minimalMood.isDark,
+  };
   return (
     <>
       <SettingsGroup
@@ -243,6 +254,7 @@ function AppearanceCardImpl() {
             </Text>
             <LayoutPicker
               testID="appearance-layout"
+              minimalSky={minimalSky}
               value={settings.minimalUi ? 'minimal' : 'full'}
               onChange={v => {
                 const on = v === 'minimal';
