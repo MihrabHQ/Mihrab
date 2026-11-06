@@ -623,15 +623,24 @@ main > section:last-of-type       { --sky-from: var(--sky-afterglow); --sky-to: 
 main > section:first-of-type:nth-last-of-type(2) { --sky-from: var(--sky-sunrise); --sky-to: var(--sky-golden); }
 main > section:first-of-type:last-of-type { --sky-from: var(--sky-sunrise); --sky-to: var(--sky-dusk); }
 /* The night. The same in both schemes: the footer is where the dark page
-   and the light page meet. */
+   and the light page meet.
+   On the light page the last section ends in a pale dusk and the night
+   began at the footer's edge, a hard line where every other hour fades.
+   So the footer starts in that same dusk and falls through the dusk's
+   mauve into the night over its first 220px, the padding grown so its
+   words start where the ground is already night-dark enough to read on. */
 footer {
   --accent: #B9C9F0; --ink: #EDE6DA; --ink-soft: #B5BDD3; --line: rgba(255, 255, 255, .14);
-  background: linear-gradient(180deg, #2A2F6B 0%, #18255C 38%, #0A1136 100%);
+  background: linear-gradient(180deg, var(--sky-dusk) 0, #A090B4 60px, #5B4F8A 130px, #2A2F6B 220px, #18255C max(38%, 320px), #0A1136 100%);
+  padding-top: 180px;
   color: var(--ink-soft);
 }
 @media (prefers-color-scheme: dark) {
   /* The dark page is already in the dusk, so the night only deepens. */
-  footer { background: linear-gradient(180deg, var(--sky-dusk) 0%, #0E152F 45%, #060B22 100%); }
+  footer {
+    background: linear-gradient(180deg, var(--sky-dusk) 0%, #0E152F 45%, #060B22 100%);
+    padding-top: 46px;
+  }
 }
 footer code { background: rgba(255, 255, 255, .08); border-color: rgba(255, 255, 255, .16); }
 /* Asked for more contrast: the plain paper, and opaque cards. */
