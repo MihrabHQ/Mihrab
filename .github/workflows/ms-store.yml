@@ -60,9 +60,16 @@ jobs:
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
           echo "run=$run" >> "$GITHUB_OUTPUT"
 
+      # The tooling from main; the version and notes from the tag.
+      - uses: actions/checkout@v4
       - uses: actions/checkout@v4
         with:
           ref: ${{ steps.which.outputs.tag }}
+          path: release
+          sparse-checkout: |
+            android/app/build.gradle
+            release-notes
+          sparse-checkout-cone-mode: false
 
       - uses: actions/setup-node@v4
         with:
@@ -83,9 +90,9 @@ jobs:
           STORE_PRODUCT_ID: 9N43KNMJHBWV
         run: |
           ls -l store
-          node scripts/ms-store-submit.js --dir store --dry-run
+          node scripts/ms-store-submit.js --dir store --root release --dry-run
           if [ -z "$STORE_CLIENT_SECRET" ]; then
             echo "::notice::No STORE_* secrets: upload the mihrab-microsoft-store artifact in Partner Center by hand (./scripts/fetch-store-packages.sh)."
             exit 0
           fi
-          node scripts/ms-store-submit.js --dir store
+          node scripts/ms-store-submit.js --dir store --root release

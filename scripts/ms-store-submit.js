@@ -15,7 +15,8 @@
  *   5. uploads the packages, commits the submission for certification and
  *      waits until the Store has taken it.
  *
- *   node scripts/ms-store-submit.js --dir <folder with the .appx files> [--code 295] [--dry-run]
+ *   node scripts/ms-store-submit.js --dir <folder with the .appx files>
+ *     [--root <checkout of the release tag>] [--code 295] [--dry-run]
  *
  * Needs STORE_TENANT_ID, STORE_CLIENT_ID, STORE_CLIENT_SECRET (an Entra app
  * with the Manager role in Partner Center) and STORE_PRODUCT_ID. --dry-run
@@ -115,7 +116,7 @@ async function token(env, fetchImpl) {
   return (await res.json()).access_token;
 }
 
-async function submit({ env, dir, code, fetchImpl = fetch, log = console.log, zip, pollMs = 30000, maxPolls = 120 }) {
+async function submit({ env, dir, code, root = ROOT, fetchImpl = fetch, log = console.log, zip, pollMs = 30000, maxPolls = 120 }) {
   const appx = fs.readdirSync(dir).filter(f => /\.(appx|msix)$/i.test(f)).sort();
   if (appx.length === 0) throw new Error(`no .appx in ${dir}`);
   const auth = await token(env, fetchImpl);
@@ -139,7 +140,7 @@ async function submit({ env, dir, code, fetchImpl = fetch, log = console.log, zi
   }
   const created = await call('POST', `${app}/submissions`);
   log(`submission ${created.id}`);
-  const notes = notesFor(Object.keys(created.listings ?? {}), code);
+  const notes = notesFor(Object.keys(created.listings ?? {}), code, root);
   for (const [lang, text] of Object.entries(notes)) log(`what's new, ${lang}: ${text.length} characters`);
   const body = prepareSubmission(created, appx, notes);
   await call('PUT', `${app}/submissions/${created.id}`, body);
@@ -181,10 +182,11 @@ async function main(argv) {
     return i >= 0 ? argv[i + 1] : undefined;
   };
   const dir = arg('--dir');
-  if (!dir) throw new Error('usage: ms-store-submit.js --dir <folder> [--code N] [--dry-run]');
-  const code = Number(arg('--code') ?? versionCode());
+  if (!dir) throw new Error('usage: ms-store-submit.js --dir <folder> [--root <release checkout>] [--code N] [--dry-run]');
+  const root = path.resolve(arg('--root') ?? ROOT);
+  const code = Number(arg('--code') ?? versionCode(root));
   if (argv.includes('--dry-run')) {
-    for (const [lang, text] of Object.entries(notesFor(['en-us', 'sv', 'ar'], code))) {
+    for (const [lang, text] of Object.entries(notesFor(['en-us', 'sv', 'ar'], code, root))) {
       console.log(`--- ${lang} (${text.length})\n${text}`);
     }
     return;
@@ -192,7 +194,7 @@ async function main(argv) {
   const env = process.env;
   const missing = ['STORE_TENANT_ID', 'STORE_CLIENT_ID', 'STORE_CLIENT_SECRET', 'STORE_PRODUCT_ID'].filter(k => !env[k]);
   if (missing.length) throw new Error(`missing ${missing.join(', ')}`);
-  await submit({ env, dir, code, zip: zipWithCli });
+  await submit({ env, dir, code, root, zip: zipWithCli });
 }
 
 if (require.main === module) {
