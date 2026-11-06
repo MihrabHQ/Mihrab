@@ -33,6 +33,7 @@ import { FONTS } from '../theme/typography';
 import type { RiwayahPageTable } from './riwayahData';
 import { loadRiwayahPages, loadedRiwayahFontFamily } from './riwayahData';
 import { INDOPAK_TEXT, indopakUrls } from './indopakSource';
+import { RIWAYAH_FONTS, type RiwayahFontFile } from './riwayahFonts';
 
 /**
  * Where a riwayah's muṣḥaf can be obtained, and by whom it is published.
@@ -95,6 +96,14 @@ export type PrintedTypeMetrics = {
   typicalLineEm: number;
   /** Row height as a multiple of the type size: the leading the marks need. */
   lineHeightEm: number;
+  /**
+   * The face's vertical metrics, in ems — what the platform lays a row
+   * out with. Absent means Amiri Quran's (`MushafUnicodePage`), which is
+   * right for every print set in the fallback face and wrong for one set
+   * in its own.
+   */
+  ascentEm?: number;
+  descentEm?: number;
 };
 
 export type RiwayahDefinition = {
@@ -122,29 +131,27 @@ export type RiwayahDefinition = {
    * with the text. IndoPak.
    */
   render: 'glyph' | 'unicode' | 'unicode-lines';
-  /** Type metrics for a `unicode-lines` print; absent means Warsh's. */
+  /**
+   * Type metrics for a print drawn in the fallback face (Amiri Quran);
+   * absent means Warsh's. A print set in its own face takes the metrics
+   * from that face instead (`font.metrics`).
+   */
   printed?: PrintedTypeMetrics;
   /** Where a `unicode` riwayah's data comes from; Hafs is in the build. */
   source?: RiwayahSource;
-  /** Font family for `unicode` riwayat; the glyph pipeline picks its own. */
-  fontFamily?: string;
   /**
-   * Is that font actually IN this build?
+   * The publisher's own face for this print, fetched beside the text and
+   * registered from the device — see `riwayahFonts.ts`.
    *
-   * Separate from `fontFamily` because the two arrive together and neither
-   * is here yet. The QPC Warsh face is a QUL resource under the same
-   * unresolved licence as the text (`docs/design/riwayat-plan.md` §1), so
-   * it lands in `assets/fonts/` and the iOS Info.plist in the same data
-   * drop that produces `data/warsh/`, and this flag is what that drop
-   * flips.
-   *
-   * Naming a family the build does not carry is not harmless: Android
-   * silently substitutes whatever it likes and iOS logs "Unrecognized font
-   * family" on every page. Falling back to the bundled AmiriQuran instead
-   * is a deliberate choice — it is a Qur'anic face that shapes the marks
-   * correctly, so the text is right even before its own face arrives.
+   * An improvement, not a requirement: until it is on the device (and on
+   * a build that cannot register fonts at all) the page is drawn in the
+   * bundled AmiriQuran, a Qur'anic face that shapes the marks correctly,
+   * so the text is right before its own face arrives. Naming a family the
+   * build does not carry would not be: Android silently substitutes
+   * whatever it likes and iOS logs "Unrecognized font family" on every
+   * page.
    */
-  fontBundled?: boolean;
+  font?: RiwayahFontFile;
   /**
    * The font arrives WITH the dataset and is registered from the device.
    *
@@ -237,8 +244,7 @@ export const RIWAYAT: readonly RiwayahDefinition[] = [
       direct: 'https://api.quranpedia.net/v1/mushafs/4',
       credits: 'King Fahd Glorious Quran Printing Complex',
     },
-    fontFamily: 'UthmanicWarsh',
-    fontBundled: false,
+    font: RIWAYAH_FONTS.warsh,
   },
   {
     /**
@@ -262,8 +268,7 @@ export const RIWAYAT: readonly RiwayahDefinition[] = [
       direct: 'https://api.quranpedia.net/v1/mushafs/7',
       credits: 'King Fahd Glorious Quran Printing Complex',
     },
-    fontFamily: 'UthmanicQaloun',
-    fontBundled: false,
+    font: RIWAYAH_FONTS.qalun,
   },
   {
     /**
@@ -286,8 +291,7 @@ export const RIWAYAT: readonly RiwayahDefinition[] = [
       direct: 'https://api.quranpedia.net/v1/mushafs/9',
       credits: 'King Fahd Glorious Quran Printing Complex',
     },
-    fontFamily: 'UthmanicShuba',
-    fontBundled: false,
+    font: RIWAYAH_FONTS.shubah,
   },
 ];
 
@@ -296,26 +300,45 @@ export function riwayahById(id: RiwayahId): RiwayahDefinition {
 }
 
 /**
- * The face to draw a `unicode` riwayah in — see `fontBundled`.
+ * The face to draw a `unicode` riwayah in.
  *
  * Null for a `fontDownloaded` row whose font is not registered yet: the
- * page waits rather than draw in a face that cannot shape the text.
+ * page waits rather than draw in a face that cannot shape the text. A row
+ * with an optional `font` is drawn in it once registered and in the
+ * bundled face until then.
  */
 export function riwayahFontFamily(def: RiwayahDefinition): string | null {
   if (def.fontDownloaded) return loadedRiwayahFontFamily(def.id);
-  return def.fontBundled && def.fontFamily ? def.fontFamily : FONTS.arabicQuran;
+  if (def.font) return loadedRiwayahFontFamily(def.id) ?? FONTS.arabicQuran;
+  return FONTS.arabicQuran;
+}
+
+/** Is the page set in the print's own face right now, or in the fallback? */
+export function riwayahOwnFaceLoaded(def: RiwayahDefinition): boolean {
+  return (def.fontDownloaded || def.font != null) && loadedRiwayahFontFamily(def.id) !== null;
+}
+
+/**
+ * The type metrics for a printed page of this riwayah AS DRAWN NOW: the
+ * face's own when it is loaded, the fallback face's otherwise.
+ */
+export function riwayahPrintedMetrics(def: RiwayahDefinition): PrintedTypeMetrics | undefined {
+  if (def.font && loadedRiwayahFontFamily(def.id) !== null) return def.font.metrics;
+  return def.printed;
 }
 
 /**
  * The face an ayah's text must be shown in OUTSIDE the page — the sheet,
  * the share card — or null for the app's own Qur'anic face.
  *
- * Only a muṣḥaf whose font came with it answers: its text leans on marks
- * the bundled face cannot shape, so showing it in Amiri draws boxes.
+ * A muṣḥaf whose font came with it answers because its text leans on
+ * marks the bundled face cannot shape, so showing it in Amiri draws
+ * boxes; one whose font is optional answers once it has it, so the sheet
+ * matches the page.
  */
 export function riwayahTextFontFamily(id: RiwayahId): string | null {
   const def = riwayahById(id);
-  return def.fontDownloaded ? loadedRiwayahFontFamily(id) : null;
+  return def.fontDownloaded || def.font ? loadedRiwayahFontFamily(id) : null;
 }
 
 /** Which reading's text a row carries: what audio and tajwīd ask. */

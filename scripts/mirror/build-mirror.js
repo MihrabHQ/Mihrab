@@ -19,7 +19,7 @@
  * editions of 2.7.28 all lived, is frozen for the versions that read it and
  * is not written here any more.
  *   data-wordmeanings-v1   <surah>.json                (QuranEnc arabic_seraj)
- *   data-riwayah-v1        <id>.json                   (Quranpedia / KFGQPC)
+ *   data-riwayah-v1        <id>.json, each face, licence (Quranpedia / KFGQPC)
  *   data-indopak-v1        text, font and both licences (DigitalKhatt, pinned commit)
  */
 const fs = require('fs');
@@ -76,6 +76,25 @@ const SOURCES = {
 };
 
 const RIWAYAH = { warsh: 4, qalun: 7, shubah: 9 };
+
+// The faces the Quranpedia muṣḥafs are set in, read from the one place
+// the pins live (`src/quran/riwayahFonts.ts`): the file name and
+// Quranpedia's URL for each. The app checks the bytes against those pins.
+//
+// The pins are version 2 of each face, because the mirrored text is
+// version 2 of each muṣḥaf. Quranpedia has since re-encoded its text for
+// version 3 of the fonts, and the app's verifier refuses that text (it
+// spells hamzat al-waṣl with letters the reference corpus does not have),
+// so a rebuild must NOT replace the mirrored text with it: a record whose
+// `font_file` is not the pinned face is left as the mirror already has it.
+const fontsSrc = fs.readFileSync(path.join(root, 'src/quran/riwayahFonts.ts'), 'utf8');
+const FONTS_BASE = /QURANPEDIA_FONTS = '([^']+)'/.exec(fontsSrc)[1];
+const RIWAYAH_FONTS = Object.fromEntries(
+  [...fontsSrc.matchAll(/(\w+): \{\s*name: '([^']+\.ttf)',[\s\S]*?original: `\$\{QURANPEDIA_FONTS\}\/([^`]+)`/g)].map(
+    m => [m[1], { name: m[2], url: `${FONTS_BASE}/${m[3]}` }],
+  ),
+);
+if (Object.keys(RIWAYAH_FONTS).sort().join() !== Object.keys(RIWAYAH).sort().join()) throw new Error('riwayahFonts.ts: expected one face per muṣḥaf');
 
 // DigitalKhatt IndoPak: text (MIT) and font (OFL), pinned to one commit so
 // the release and the fallback are the same bytes. Both licence texts ride
@@ -208,13 +227,26 @@ function have(tag, name) {
   });
   report.wordmeanings = 114;
 
+  const riwayahKept = [];
   for (const [id, n] of Object.entries(RIWAYAH)) {
     const buf = await get(`https://api.quranpedia.net/v1/mushafs/${n}`);
     if (!buf) throw new Error('riwayah 404 ' + id);
-    JSON.parse(buf.toString('utf8'));
-    put('data-riwayah-v1', `${id}.json`, buf);
+    const record = JSON.parse(buf.toString('utf8'));
+    if (record.font_file === RIWAYAH_FONTS[id].url) put('data-riwayah-v1', `${id}.json`, buf);
+    else riwayahKept.push(id);
+    const font = await get(RIWAYAH_FONTS[id].url);
+    if (!font) throw new Error('riwayah font 404 ' + id);
+    if (font.readUInt32BE(0) !== 0x00010000) throw new Error('riwayah font is not a TrueType file: ' + id);
+    put('data-riwayah-v1', RIWAYAH_FONTS[id].name, font);
   }
-  report.riwayah = Object.keys(RIWAYAH);
+  put('data-riwayah-v1', 'LICENSE-KFGQPC-fonts.txt', fs.readFileSync(path.join(__dirname, 'LICENSE-KFGQPC-fonts.txt')));
+  report.riwayah = {
+    mushafs: Object.keys(RIWAYAH),
+    // Quranpedia serves a newer encoding than the pinned face: the release
+    // keeps the text it has. Do not upload a <id>.json this run did not write.
+    kept: riwayahKept,
+    fonts: Object.values(RIWAYAH_FONTS).map(f => f.name),
+  };
 
   for (const [name, repoPath] of Object.entries(INDOPAK_FILES)) {
     const buf = await get(`${INDOPAK_RAW}/${repoPath}`);

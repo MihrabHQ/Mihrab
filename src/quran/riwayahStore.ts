@@ -326,6 +326,35 @@ export async function writeRiwayahDataset(
   return provenance;
 }
 
+/**
+ * Rewrite part of a muṣḥaf's provenance — a face added after the text
+ * (`attachRiwayahFont`). The bytes are re-measured, since the point of
+ * the amendment is usually that there is a new file to count. Null when
+ * there is no provenance to amend or the write fails.
+ */
+export async function amendRiwayahProvenance(
+  id: RiwayahId,
+  patch: Partial<Pick<RiwayahProvenance, 'font' | 'sha256'>>,
+): Promise<RiwayahProvenance | null> {
+  const path = `${riwayahDir(id)}/source.json`;
+  const stored = await readJson<RiwayahProvenance>(path);
+  if (!stored) return null;
+  const next: RiwayahProvenance = { ...stored, ...patch };
+  const measured = await bytesOnDisk(id, next);
+  if (measured != null) next.bytes = measured;
+  try {
+    await ReactNativeBlobUtil.fs.writeFile(path, JSON.stringify(next), 'utf8');
+  } catch {
+    return null;
+  }
+  // A face replaced by a newer one: the old file is no longer named by the
+  // provenance, so nothing would count it or erase it — remove it now.
+  if (stored.font && patch.font && stored.font !== patch.font) {
+    await ReactNativeBlobUtil.fs.unlink(riwayahFontPath(id, stored.font)).catch(() => undefined);
+  }
+  return next;
+}
+
 /** Remove a riwayah's muṣḥaf from this device, provenance and all. */
 export async function eraseRiwayahDataset(id: RiwayahId): Promise<void> {
   const dir = riwayahDir(id);

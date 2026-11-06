@@ -301,7 +301,7 @@ const styles = StyleSheet.create({
     width: 5,
     height: 5,
     borderTopWidth: 1,
-    borderLeftWidth: 1,
+    borderLeftWidth: 1, // rtl-safe: two edges of a rotated square make the chevron; symmetric either way
     transform: [{ rotate: '45deg' }],
   },
   footer: { position: 'absolute', bottom: 22, alignSelf: 'center' },

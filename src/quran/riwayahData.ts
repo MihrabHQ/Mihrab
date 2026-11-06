@@ -29,6 +29,7 @@ import { registerNamedFont } from '../native/MushafFont';
 import type { MushafPageRange, SurahMeta } from './pages';
 import type { ExactLinesTable, RiwayahDataset } from './riwayahImport';
 import {
+  amendRiwayahProvenance,
   eraseRiwayahDataset,
   readRiwayahDataset,
   readRiwayahLines,
@@ -138,10 +139,16 @@ export function hydrateRiwayahData(): Promise<void> {
       if (requiredFormat(id) != null && provenance.format !== requiredFormat(id)) continue;
       // A muṣḥaf whose face arrives with it is not drawable without the
       // face: register it before the riwayah is announced, so there is no
-      // moment where the pages exist and the font does not.
-      if (provenance.font) {
+      // moment where the pages exist and the font does not. One whose face
+      // is optional (`font` on the row) is announced either way and drawn
+      // in the fallback until its face registers.
+      if (provenance.font && fontRequired(id)) {
         const family = await registerRiwayahFont(id, provenance.font);
         if (!family) continue;
+      } else if (provenance.font && provenance.font === optionalFontName(id)) {
+        // Registered only when it is the face this build pins; an older
+        // face is left for `fetchMissingRiwayahFonts` to replace.
+        await registerRiwayahFont(id, provenance.font);
       }
       pageCache.set(id, {
         pages: dataset.pages,
@@ -153,6 +160,19 @@ export function hydrateRiwayahData(): Promise<void> {
     }
     hydrated = true;
     publish();
+    // A muṣḥaf installed before its face was offered gets the face now,
+    // in the background; the page redraws when it lands. Required lazily:
+    // the fetcher imports this module, and a cycle at load time would
+    // leave one of the two half-initialised.
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const fonts = require('./riwayahFontDownload') as {
+        fetchMissingRiwayahFonts: () => Promise<void>;
+      };
+      void fonts.fetchMissingRiwayahFonts().catch(() => undefined);
+    } catch {
+      // No fetcher in this build (tests that stub the store): nothing to add.
+    }
   })();
   return hydrating;
 }
@@ -160,6 +180,58 @@ export function hydrateRiwayahData(): Promise<void> {
 /** The table format a muṣḥaf converted on the phone must carry, if any. */
 function requiredFormat(id: RiwayahId): number | null {
   return RIWAYAT.find(r => r.id === id)?.render === 'unicode-lines' ? INDOPAK_FORMAT : null;
+}
+
+/** The file name of the optional face this build pins for a row, if any. */
+function optionalFontName(id: RiwayahId): string | null {
+  return RIWAYAT.find(r => r.id === id)?.font?.name ?? null;
+}
+
+/** Is the font part of the muṣḥaf (IndoPak) rather than an improvement on it? */
+function fontRequired(id: RiwayahId): boolean {
+  return RIWAYAT.find(r => r.id === id)?.fontDownloaded === true;
+}
+
+/**
+ * The installed muṣḥafs whose own face this device does not have yet —
+ * what `fetchMissingRiwayahFonts` works through.
+ *
+ * Installed before the face was offered, installed from a pasted link, or
+ * installed on a day the mirror was down: in every case the text is here
+ * and drawn in the fallback, and the face can be added without touching
+ * it.
+ */
+export function riwayatMissingFont(): RiwayahId[] {
+  return RIWAYAT.filter(
+    r => r.font && provenanceCache.has(r.id) && !fontCache.has(r.id),
+  ).map(r => r.id);
+}
+
+/**
+ * Add a face to a muṣḥaf already on the device.
+ *
+ * The file is ALREADY in the riwayah's folder; this registers it, records
+ * it in the provenance (so the store counts it, and erases it with the
+ * rest), and tells the screens. False when the platform refuses the file,
+ * in which case nothing is recorded and the page stays in the fallback.
+ */
+export async function attachRiwayahFont(
+  id: RiwayahId,
+  fileName: string,
+  sha256: string,
+): Promise<boolean> {
+  if (!provenanceCache.has(id)) return false;
+  fontCache.delete(id);
+  const family = await registerRiwayahFont(id, fileName);
+  if (!family) return false;
+  const current = provenanceCache.get(id);
+  const amended = await amendRiwayahProvenance(id, {
+    font: fileName,
+    sha256: { ...(current?.sha256 ?? {}), [fileName]: sha256 },
+  });
+  if (amended) provenanceCache.set(id, amended);
+  publish();
+  return true;
 }
 
 /** The registered family of a downloaded muṣḥaf font, or null until it is. */
@@ -257,11 +329,15 @@ export async function installRiwayahDataset(
   extras: RiwayahExtras = {},
 ): Promise<RiwayahProvenance> {
   // The font first: a muṣḥaf whose face the platform refuses is not
-  // installed, and the caller hears why before anything is written.
+  // installed, and the caller hears why before anything is written. An
+  // optional face that is refused is left out of the record instead.
   if (extras.font) {
     fontCache.delete(id);
     const family = await registerRiwayahFont(id, extras.font);
-    if (!family) throw new Error(`the font ${extras.font} could not be registered`);
+    if (!family) {
+      if (fontRequired(id)) throw new Error(`the font ${extras.font} could not be registered`);
+      extras = { ...extras, font: undefined };
+    }
   }
   const provenance = await writeRiwayahDataset(id, dataset, from, extras);
   pageCache.set(id, {

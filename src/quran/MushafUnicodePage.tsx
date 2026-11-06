@@ -81,6 +81,7 @@ import {
 import {
   riwayahById,
   riwayahFontFamily,
+  riwayahPrintedMetrics,
   type PrintedTypeMetrics,
   type RiwayahId,
 } from './riwayat';
@@ -842,7 +843,9 @@ function MushafUnicodePage({
   // (below), because the fallback face cannot shape this text and a line
   // measured in it would justify the wrong line.
   const fontFamily = riwayahFontFamily(definition);
-  const metrics = definition.printed ?? {
+  // The face's own metrics once the page is set in it; the fallback's
+  // until then — the same page is sized differently in the two.
+  const metrics = riwayahPrintedMetrics(definition) ?? {
     typicalLineEm: PRINTED_TYPICAL_LINE_EM,
     lineHeightEm: PRINTED_LINE_HEIGHT_EM,
   };
@@ -968,7 +971,7 @@ function MushafUnicodePage({
         onAyahLongPress={onAyahLongPress}
         tajweed={tajweed}
         darkPage={darkPage}
-        edge={tight ? printedEdgeInk(riwayah, page) : null}
+        edge={tight && fontFamily === FONTS.arabicQuran ? printedEdgeInk(riwayah, page) : null}
       />
     );
   }
@@ -1112,10 +1115,11 @@ let printedEdgeTable: PrintedEdgeTable | null = null;
 
 /**
  * What this page's first row reaches up to and its last row down to, in
- * the face the page is set in — measured by shaping every ayah the edge
- * rows carry (`scripts/mushaf/measure_unicode_edge_ink.py`; the Warsh
- * table serves Qālūn, as the line table does). Null when the edge row is
- * a band or a basmalah, or the page is not in the table.
+ * Amiri Quran — measured by shaping every ayah the edge rows carry
+ * (`scripts/mushaf/measure_unicode_edge_ink.py`; the Warsh table serves
+ * Qālūn, as the line table does). Null when the edge row is a band or a
+ * basmalah, or the page is not in the table. Only the fallback face is
+ * measured: a page set in the print's own face takes the loose fit.
  */
 export function printedEdgeInk(riwayah: RiwayahId, page: number): PrintedEdgeInk | null {
   if (printedEdgeTable == null) {
@@ -1152,6 +1156,8 @@ export function fitPrintedRows(
   count: number,
   edge: PrintedEdgeInk | null,
   lineHeightEm: number = PRINTED_LINE_HEIGHT_EM,
+  ascentEm: number = AMIRI_ASCENT_EM,
+  descentEm: number = AMIRI_DESCENT_EM,
 ): {
   rowHeight: number;
   margin: number;
@@ -1168,7 +1174,7 @@ export function fitPrintedRows(
   if (!edge || count < 1 || !(fontSize > 0)) {
     return loose(Math.min(height / count, cap));
   }
-  const box = (AMIRI_ASCENT_EM + AMIRI_DESCENT_EM) * fontSize;
+  const box = (ascentEm + descentEm) * fontSize;
   const room = (rowHeight: number, metric: number) => {
     const leading = rowHeight - box;
     // Positive leading is split evenly everywhere; a deficit is assumed
@@ -1181,14 +1187,14 @@ export function fitPrintedRows(
       edge.above != null
         ? Math.max(
             0,
-            room(rowHeight, AMIRI_ASCENT_EM) - edge.above * fontSize - PRINTED_BREATH,
+            room(rowHeight, ascentEm) - edge.above * fontSize - PRINTED_BREATH,
           )
         : 0,
     bottom:
       edge.below != null
         ? Math.max(
             0,
-            room(rowHeight, AMIRI_DESCENT_EM) - edge.below * fontSize - PRINTED_BREATH,
+            room(rowHeight, descentEm) - edge.below * fontSize - PRINTED_BREATH,
           )
         : 0,
   });
@@ -1371,7 +1377,15 @@ function PrintedPageBody({
     MIN_PRINTED_SIZE,
     Math.min(height / rows.length / metrics.lineHeightEm, measure / lineEm),
   );
-  const fit = fitPrintedRows(fontSize, height, rows.length, edge, metrics.lineHeightEm);
+  const fit = fitPrintedRows(
+    fontSize,
+    height,
+    rows.length,
+    edge,
+    metrics.lineHeightEm,
+    metrics.ascentEm,
+    metrics.descentEm,
+  );
   const { rowHeight, margin } = fit;
 
   const onLineLayout = React.useCallback(

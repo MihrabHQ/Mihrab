@@ -164,10 +164,16 @@ non-free network asset, and the metadata should declare it.
 
 ### Not done
 
-- The QPC Warsh face (`fontBundled: false` in `riwayat.ts`) is a QUL
-  resource like the text, so it is not bundled either. Until a reader can
-  install one the Unicode renderer draws in AmiriQuran, which shapes the
-  marks correctly.
+- ~~The QPC Warsh face is a QUL resource like the text, so it is not
+  bundled either; the Unicode renderer draws in AmiriQuran.~~ Done,
+  November 2026: the KFGQPC Warsh, Qālūn and Shuʿbah faces are fetched
+  beside the text, mirror first (`riwayahFonts.ts`,
+  `riwayahFontDownload.ts`) — version 2 of each face, the one the mirrored
+  text is encoded for; a copy installed earlier gets its face on the next
+  launch. AmiriQuran remains the fallback while the face is not there.
+  Quranpedia now serves version 3 of the text, which the verifier refuses;
+  moving to it is its own piece of work (new letters in the reference
+  normalisation, the v3 faces, a format bump).
 - Phase 5 — Qālūn, al-Dūrī, al-Sūsī and Shuʿbah are each one dataset and
   one table row away, and nothing in the code counts to two.
 
