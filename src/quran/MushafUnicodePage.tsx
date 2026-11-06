@@ -839,16 +839,6 @@ function MushafUnicodePage({
   );
   const extent = useMemo(() => pageExtent(blocks), [blocks]);
   const definition = riwayahById(riwayah);
-  // Null while a downloaded face is not yet registered: the page waits
-  // (below), because the fallback face cannot shape this text and a line
-  // measured in it would justify the wrong line.
-  const fontFamily = riwayahFontFamily(definition);
-  // The face's own metrics once the page is set in it; the fallback's
-  // until then — the same page is sized differently in the two.
-  const metrics = riwayahPrintedMetrics(definition) ?? {
-    typicalLineEm: PRINTED_TYPICAL_LINE_EM,
-    lineHeightEm: PRINTED_LINE_HEIGHT_EM,
-  };
   const pageSurahs = useMemo(() => {
     const out: number[] = [];
     for (const b of blocks) {
@@ -858,6 +848,27 @@ function MushafUnicodePage({
     return out;
   }, [blocks]);
   const tajweed = useWarshTajweed(riwayah, pageSurahs);
+  // Null while a downloaded face is not yet registered: the page waits
+  // (below), because the fallback face cannot shape this text and a line
+  // measured in it would justify the wrong line.
+  //
+  // The tajwīd colours keep the page in Amiri. They cut words into runs,
+  // and Android shapes each run apart; Amiri holds its joins across the
+  // cut with a zero-width joiner, but the KFGQPC faces choose each
+  // letter's form from the letter AFTER it (هـ before د is not هـ before
+  // nothing), which no joiner carries — so in their own face the coloured
+  // words came apart into stretched pieces and the lines overran the page.
+  // An optional face only: a muṣḥaf whose face is required has no colours.
+  const ownFamily = riwayahFontFamily(definition);
+  const coloured = tajweed !== NO_TAJWEED;
+  const fontFamily =
+    coloured && ownFamily != null && !definition.fontDownloaded ? FONTS.arabicQuran : ownFamily;
+  // The face's own metrics when the page is set in it; the fallback's
+  // otherwise — the same page is sized differently in the two.
+  const metrics = (fontFamily === ownFamily ? riwayahPrintedMetrics(definition) : definition.printed) ?? {
+    typicalLineEm: PRINTED_TYPICAL_LINE_EM,
+    lineHeightEm: PRINTED_LINE_HEIGHT_EM,
+  };
   const darkPage = inkIsLight(colors.text);
 
   /**
@@ -971,7 +982,7 @@ function MushafUnicodePage({
         onAyahLongPress={onAyahLongPress}
         tajweed={tajweed}
         darkPage={darkPage}
-        edge={tight && fontFamily === FONTS.arabicQuran ? printedEdgeInk(riwayah, page) : null}
+        edge={tight ? printedEdgeInk(riwayah, page, fontFamily !== FONTS.arabicQuran) : null}
       />
     );
   }
@@ -1115,18 +1126,23 @@ let printedEdgeTable: PrintedEdgeTable | null = null;
 
 /**
  * What this page's first row reaches up to and its last row down to, in
- * Amiri Quran — measured by shaping every ayah the edge rows carry
- * (`scripts/mushaf/measure_unicode_edge_ink.py`; the Warsh table serves
- * Qālūn, as the line table does). Null when the edge row is a band or a
- * basmalah, or the page is not in the table. Only the fallback face is
- * measured: a page set in the print's own face takes the loose fit.
+ * the face the page is set in — measured by shaping every ayah the edge
+ * rows carry (`scripts/mushaf/measure_unicode_edge_ink.py`). In Amiri the
+ * Warsh table serves Qālūn, as the line table does; in the muṣḥafs' own
+ * KFGQPC faces (`ownFace`) each has its own, keyed `<id>@qpc`, because the
+ * faces differ. Null when the edge row is a band or a basmalah, or the
+ * page is not in the table — which leaves the loose fit, never a clip.
  */
-export function printedEdgeInk(riwayah: RiwayahId, page: number): PrintedEdgeInk | null {
+export function printedEdgeInk(
+  riwayah: RiwayahId,
+  page: number,
+  ownFace = false,
+): PrintedEdgeInk | null {
   if (printedEdgeTable == null) {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     printedEdgeTable = require('./data/unicodeEdgeInk.json') as PrintedEdgeTable;
   }
-  const key = riwayah === 'qalun' ? 'warsh' : riwayah;
+  const key = ownFace ? `${riwayah}@qpc` : riwayah === 'qalun' ? 'warsh' : riwayah;
   const entry = printedEdgeTable[key]?.[String(page)];
   if (!entry) return null;
   return { above: entry[0], below: entry[1] };
@@ -1164,7 +1180,12 @@ export function fitPrintedRows(
   shiftTop: number;
   shiftBottom: number;
 } {
-  const cap = fontSize * lineHeightEm * MAX_PRINTED_LEADING;
+  // The cap is on the space between the lines as the page shows it, so it
+  // is taken from the taller of this face's leading and Amiri's. The
+  // KFGQPC faces need less (1.85 em, against Amiri's 2.05), and capping
+  // them at 1.3 times their own left a band of empty paper above and below
+  // a full-screen page that Amiri's filled.
+  const cap = fontSize * Math.max(lineHeightEm, PRINTED_LINE_HEIGHT_EM) * MAX_PRINTED_LEADING;
   const loose = (rowHeight: number) => ({
     rowHeight,
     margin: Math.max(0, (height - rowHeight * count) / 2),

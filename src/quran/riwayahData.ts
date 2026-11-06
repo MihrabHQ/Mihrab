@@ -328,6 +328,22 @@ export async function installRiwayahDataset(
   from: string,
   extras: RiwayahExtras = {},
 ): Promise<RiwayahProvenance> {
+  // A muṣḥaf installed again over itself keeps the face it already has:
+  // the file is still in its folder, and a record that forgot it would
+  // leave it uncounted until the next launch fetched it all over again.
+  const kept = provenanceCache.get(id);
+  if (
+    !extras.font &&
+    kept?.font &&
+    kept.font === optionalFontName(id) &&
+    fontCache.has(id)
+  ) {
+    extras = {
+      ...extras,
+      font: kept.font,
+      sha256: { ...(kept.sha256 ?? {}), ...(extras.sha256 ?? {}) },
+    };
+  }
   // The font first: a muṣḥaf whose face the platform refuses is not
   // installed, and the caller hears why before anything is written. An
   // optional face that is refused is left out of the record instead.

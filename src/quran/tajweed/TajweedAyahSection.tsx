@@ -21,7 +21,7 @@ import { SPACING } from '../../theme/tokens';
 import { useReadingText } from '../../hooks/useReadingText';
 import { hold, release } from '../audio/wordReader';
 import { setQuranPrefs, useQuranState } from '../quranState';
-import { resolveRiwayah, riwayahById, riwayahFontFamily } from '../riwayat';
+import { resolveRiwayah, riwayahById } from '../riwayat';
 import { riwayahAyahText } from '../riwayahData';
 import { loadTajweedAyah, type TajweedAyah } from './tajweedData';
 import {
@@ -228,7 +228,10 @@ function WarshTajweedBody({
   const readingText = useReadingText();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [words, setWords] = useState<WarshTajweedWord[] | null | undefined>(undefined);
-  const fontFamily = riwayahFontFamily(riwayahById('warsh')) ?? FONTS.arabicQuran;
+  // Amiri, never the Warsh muṣḥaf's own face: the colours cut words into
+  // runs, and only Amiri keeps its joins across the cut (see
+  // `MushafUnicodePage`, where the coloured page makes the same choice).
+  const fontFamily = FONTS.arabicQuran;
 
   useEffect(() => {
     let alive = true;
@@ -364,7 +367,10 @@ export function WarshTajweedAyah({
 }) {
   const { palette, isDark } = useAppPalette();
   const [words, setWords] = useState<WarshTajweedWord[] | null>(null);
-  const fontFamily = riwayahFontFamily(riwayahById('warsh')) ?? FONTS.arabicQuran;
+  // Amiri, never the Warsh muṣḥaf's own face: the colours cut words into
+  // runs, and only Amiri keeps its joins across the cut (see
+  // `MushafUnicodePage`, where the coloured page makes the same choice).
+  const fontFamily = FONTS.arabicQuran;
 
   useEffect(() => {
     let alive = true;

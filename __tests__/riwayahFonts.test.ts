@@ -86,6 +86,22 @@ describe('which face the page is drawn in', () => {
     expect(riwayahTextFontFamily('qalun')).toBe('MihrabRiwayah_qalun');
   });
 
+  it('keeps the tajwīd colours in Amiri, on the page and in the sheet', () => {
+    // The colours cut words into runs; the KFGQPC faces pick each letter's
+    // form from the next letter, which a run boundary hides, so a coloured
+    // Warsh page in its own face came apart and overran its lines.
+    const read = (p: string) => fs.readFileSync(path.join(__dirname, '..', p), 'utf8');
+    const page = read('src/quran/MushafUnicodePage.tsx');
+    expect(page).toMatch(
+      /const fontFamily =\s*coloured && ownFamily != null && !definition\.fontDownloaded \? FONTS\.arabicQuran : ownFamily;/,
+    );
+    // The coloured page is sized for the face it is drawn in.
+    expect(page).toMatch(/fontFamily === ownFamily \? riwayahPrintedMetrics\(definition\) : definition\.printed/);
+    const sheet = read('src/quran/tajweed/TajweedAyahSection.tsx');
+    expect(sheet).not.toMatch(/riwayahFontFamily\(/);
+    expect(sheet.match(/const fontFamily = FONTS\.arabicQuran;/g)).toHaveLength(2);
+  });
+
   it('still waits for a face the text cannot do without', () => {
     const def = riwayahById('indopak');
     _setRiwayahDataForTests('indopak', DATASET);

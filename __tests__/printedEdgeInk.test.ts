@@ -20,6 +20,31 @@ describe('printedEdgeInk', () => {
     expect(printedEdgeInk('shubah', 571)).not.toBeNull();
   });
 
+  it('measures each muṣḥaf in its own face, apart from Amiri', () => {
+    for (const id of ['warsh', 'qalun', 'shubah'] as const) {
+      const own = printedEdgeInk(id, 571, true)!;
+      // The KFGQPC faces are compact: nothing reaches Amiri's heights.
+      expect(own.above).toBeGreaterThan(0.8);
+      expect(own.above).toBeLessThan(1.25);
+      expect(own.below).toBeGreaterThan(0.2);
+      expect(own.below).toBeLessThan(0.7);
+      expect(own.above).toBeLessThan(printedEdgeInk(id, 571)!.above!);
+    }
+    // The same bands as the Amiri table: they are the line table's, not the face's.
+    expect(printedEdgeInk('qalun', 572, true)!.above).toBeNull();
+    expect(printedEdgeInk('qalun', 1, true)).toBeNull();
+  });
+
+  it('pulls a QPC page tight within the face’s own metrics', () => {
+    const fs = 24;
+    const box = 724;
+    const edge = printedEdgeInk('qalun', 571, true)!;
+    const fit = fitPrintedRows(fs, box, ROWS, edge, 1.85, 1.147, 0.574);
+    expect(fit.rowHeight * ROWS - fit.shiftTop - fit.shiftBottom).toBeCloseTo(box, 2);
+    expect(fit.shiftTop).toBeGreaterThanOrEqual(0);
+    expect(fit.shiftBottom).toBeGreaterThanOrEqual(0);
+  });
+
   it('has no reach for an edge row that is a surah band', () => {
     // Page 572 opens with the band for al-Jinn.
     expect(printedEdgeInk('warsh', 572)!.above).toBeNull();
@@ -63,6 +88,15 @@ describe('fitPrintedRows', () => {
     const fit = fitPrintedRows(fs, box, ROWS, { above: null, below: 0.2 });
     expect(fit.shiftTop).toBe(0);
     expect(fit.shiftBottom).toBeGreaterThan(0);
+  });
+
+  it('lets a compact face open its rows as far as Amiri’s would go', () => {
+    // A full-screen box: the same type size, the face needing 1.85 em.
+    const tall = fs * UNICODE_LINE_HEIGHT_EM * 1.3 * ROWS;
+    const amiri = fitPrintedRows(fs, tall, ROWS, null);
+    const qpc = fitPrintedRows(fs, tall, ROWS, null, 1.85, 1.147, 0.574);
+    expect(qpc.rowHeight).toBeCloseTo(amiri.rowHeight, 5);
+    expect(qpc.margin).toBeCloseTo(0, 5);
   });
 
   it('keeps the leading cap, and centres what the cap leaves', () => {

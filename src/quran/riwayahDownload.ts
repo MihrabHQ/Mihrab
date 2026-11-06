@@ -244,7 +244,11 @@ export async function installRiwayahFromText(
   contents: string,
   from: string,
 ): Promise<RiwayahInstallResult> {
-  return finish(id, contents, from);
+  const result = await finish(id, contents, from);
+  // The text came from the reader; the face is ours to fetch, and it is
+  // not worth holding their file up for — the page redraws when it lands.
+  if (result.ok && riwayahById(id).font) void fetchRiwayahFont(id).catch(() => undefined);
+  return result;
 }
 
 /** Parse, verify, store. The only way a muṣḥaf reaches the device. */

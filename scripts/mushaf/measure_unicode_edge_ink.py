@@ -24,10 +24,21 @@ which is the safe direction: the reader keeps at least this much room.
 A page whose edge line is a surah band or basmalah (an empty line in the
 table) gets null for that edge.
 
-  { "warsh": { "571": [above, below], … }, "shubah": { … } }   ems
+  { "warsh": { "571": [above, below], … }, "shubah": { … },
+    "warsh@qpc": { … }, "qalun@qpc": { … }, "shubah@qpc": { … } }   ems
+
+The `@qpc` tables are the same reach in each muṣḥaf's own KFGQPC face
+(`src/quran/riwayahFonts.ts`), which the page is set in once that face is
+on the device. Neither the faces nor the texts are in the repository, so
+those tables are measured from local copies — the mirror's files — and
+shaped from the riwayah's OWN text, ayah by ayah, so no window is needed:
 
     python3 scripts/mushaf/measure_unicode_edge_ink.py
     python3 scripts/mushaf/measure_unicode_edge_ink.py --pages 571,572 --out -
+    python3 scripts/mushaf/measure_unicode_edge_ink.py --qpc <dir>
+        (<dir> holds warsh.json, qalun.json, shubah.json from the
+         data-riwayah-v1 release and the three faces it pins; the Amiri
+         tables already in the output are kept)
 
 Requires: uharfbuzz  (pip install uharfbuzz)
 """
@@ -53,6 +64,13 @@ HAIR_EM = 0.02
 # Ayah numbering drifts between the riwayat by at most a few within a
 # surah; widening by this many on each side covers it.
 AYAH_WINDOW = 2
+# The faces each muṣḥaf is set in once its own face is loaded, and the
+# line table it reads (Qālūn reads Warsh's).
+QPC = {
+    "warsh": ("UthmanicWarsh_V21.ttf", "warsh"),
+    "qalun": ("UthmanicQaloun_V21.ttf", "warsh"),
+    "shubah": ("UthmanicShuba_V20.ttf", "shubah"),
+}
 
 
 def load_text() -> dict[int, list[str]]:
@@ -78,18 +96,21 @@ def spans(line: list) -> list[tuple[int, int]]:
     return out
 
 
-def main() -> int:
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--pages", default="", help="comma-separated; default all")
-    ap.add_argument("--out", default=OUT, help="- for stdout")
-    args = ap.parse_args()
+def own_text(path: str) -> dict[int, list[str]]:
+    """A Quranpedia muṣḥaf record, as `load_text` returns the Hafs one."""
+    with open(path, encoding="utf-8") as fh:
+        d = json.load(fh)
+    out: dict[int, list[str]] = {}
+    for surah in d["surahs"]:
+        ayahs = sorted(surah["ayahs"], key=lambda a: int(a["number"]))
+        out[int(surah["id"])] = [a["text"] for a in ayahs]
+    return out
 
-    import uharfbuzz as hb
 
-    face = hb.Face(hb.Blob.from_file_path(FONT))
+def measure(hb, font_path: str, text: dict[int, list[str]], window: int, lines: dict, pages: list[str]) -> dict[str, list]:
+    face = hb.Face(hb.Blob.from_file_path(font_path))
     font = hb.Font(face)
     upem = face.upem
-    text = load_text()
     reach: dict[str, tuple[float, float]] = {}
 
     def ayah_reach(surah: int, ayah: int) -> tuple[float, float]:
@@ -99,7 +120,7 @@ def main() -> int:
         ayahs = text.get(surah, [])
         above = 0.0
         below = 0.0
-        for n in range(ayah - AYAH_WINDOW, ayah + AYAH_WINDOW + 1):
+        for n in range(ayah - window, ayah + window + 1):
             if not 1 <= n <= len(ayahs):
                 continue
             buf = hb.Buffer()
@@ -117,46 +138,85 @@ def main() -> int:
         reach[key] = (above, below)
         return reach[key]
 
-    out: dict[str, dict[str, list]] = {}
-    for riwayah, path in TABLES.items():
-        with open(path, encoding="utf-8") as fh:
-            lines = json.load(fh)["lines"]
-        pages = (
+    table: dict[str, list] = {}
+    for page in pages:
+        rows = lines[page]
+        # The surah is stated once per page and carried forward; a
+        # line's spans need the surah in force where the line starts.
+        carried: list[list] = []
+        surah = 0
+        for row in rows:
+            fixed = []
+            for entry in row:
+                if len(entry) == 3:
+                    surah = entry[0]
+                    fixed.append(entry)
+                else:
+                    fixed.append([surah, entry[0], entry[1]])
+            carried.append(fixed)
+        first = spans(carried[0]) if rows else []
+        last = spans(carried[-1]) if rows else []
+        above = (
+            round(max(ayah_reach(s, a)[0] for s, a in first) + HAIR_EM, 4)
+            if first
+            else None
+        )
+        below = (
+            round(max(ayah_reach(s, a)[1] for s, a in last) + HAIR_EM, 4)
+            if last
+            else None
+        )
+        table[page] = [above, below]
+    return table
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--pages", default="", help="comma-separated; default all")
+    ap.add_argument("--out", default=OUT, help="- for stdout")
+    ap.add_argument("--qpc", default="", help="folder with the mirror's texts and faces")
+    args = ap.parse_args()
+
+    import uharfbuzz as hb
+
+    def pages_of(lines: dict) -> list[str]:
+        return (
             [p for p in args.pages.split(",") if p]
             if args.pages
             else sorted(lines, key=int)
         )
-        table: dict[str, list] = {}
-        for page in pages:
-            rows = lines[page]
-            # The surah is stated once per page and carried forward; a
-            # line's spans need the surah in force where the line starts.
-            carried: list[list] = []
-            surah = 0
-            for row in rows:
-                fixed = []
-                for entry in row:
-                    if len(entry) == 3:
-                        surah = entry[0]
-                        fixed.append(entry)
-                    else:
-                        fixed.append([surah, entry[0], entry[1]])
-                carried.append(fixed)
-            first = spans(carried[0]) if rows else []
-            last = spans(carried[-1]) if rows else []
-            above = (
-                round(max(ayah_reach(s, a)[0] for s, a in first) + HAIR_EM, 4)
-                if first
-                else None
+
+    tables: dict[str, dict] = {}
+    for riwayah, path in TABLES.items():
+        with open(path, encoding="utf-8") as fh:
+            tables[riwayah] = json.load(fh)["lines"]
+
+    out: dict[str, dict[str, list]] = {}
+    if args.qpc:
+        # Keep the Amiri tables; add the faces' own.
+        if args.out != "-" and os.path.exists(args.out):
+            with open(args.out, encoding="utf-8") as fh:
+                out = {k: v for k, v in json.load(fh).items() if "@" not in k}
+        for riwayah, (font_name, table) in QPC.items():
+            lines = tables[table]
+            out[f"{riwayah}@qpc"] = measure(
+                hb,
+                os.path.join(args.qpc, font_name),
+                own_text(os.path.join(args.qpc, f"{riwayah}.json")),
+                0,
+                lines,
+                pages_of(lines),
             )
-            below = (
-                round(max(ayah_reach(s, a)[1] for s, a in last) + HAIR_EM, 4)
-                if last
-                else None
-            )
-            table[page] = [above, below]
-        out[riwayah] = table
-        print(f"  {riwayah}: {len(table)} pages", file=sys.stderr)
+            print(f"  {riwayah}@qpc: {len(out[riwayah + '@qpc'])} pages", file=sys.stderr)
+    else:
+        text = load_text()
+        for riwayah, lines in tables.items():
+            out[riwayah] = measure(hb, FONT, text, AYAH_WINDOW, lines, pages_of(lines))
+            print(f"  {riwayah}: {len(out[riwayah])} pages", file=sys.stderr)
+        # Re-measuring the Amiri tables keeps the faces' tables as they are.
+        if args.out != "-" and os.path.exists(args.out):
+            with open(args.out, encoding="utf-8") as fh:
+                out.update({k: v for k, v in json.load(fh).items() if "@" in k})
 
     body = json.dumps(out, separators=(",", ":"))
     if args.out == "-":
