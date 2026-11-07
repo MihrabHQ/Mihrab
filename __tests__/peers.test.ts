@@ -42,6 +42,7 @@ import { toBase64 } from '../src/sync/secureRandom';
 import {
   acceptPeer,
   addPeerByCode,
+  awaiting,
   forgetCachedPeers,
   forgetPeer,
   hasPeers,
@@ -165,6 +166,20 @@ describe('the announcement, which is how one code syncs both ways', () => {
     // Accepting twice, or a device never announced, is a no-op.
     expect(await acceptPeer(toBase64(other.publicKey))).toBe(false);
     expect(await acceptPeer('nobody')).toBe(false);
+  });
+
+  it('says what the screen is waiting for', async () => {
+    expect(awaiting([])).toBe('announcement');
+    const other = otherDevice();
+    await addPeerByCode(other.code);
+    // Paired here, never heard from: waiting for its first file.
+    expect(awaiting(await listPeers())).toBe('answer');
+    await notePeerSeen({ publicKey: other.publicKey });
+    expect(awaiting(await listPeers())).toBeNull();
+    // A pending device waits for the user, not for the folder.
+    const third = otherDevice();
+    await notePeerSeen({ publicKey: third.publicKey });
+    expect(awaiting(await listPeers())).toBeNull();
   });
 
   it('is paired by typing its code too', async () => {

@@ -92,7 +92,7 @@ export async function ensureSyncFolder(): Promise<FolderHandle | null> {
 }
 
 export async function runSyncNow(
-  options: { folder?: SyncFolder; now?: Date } = {},
+  options: { folder?: SyncFolder; now?: Date; readOnly?: boolean } = {},
 ): Promise<SyncRunResult> {
   if (!hasSecureRandom()) return { ok: false, reason: 'no-identity' };
 
@@ -114,6 +114,7 @@ export async function runSyncNow(
     const outcome = await syncWithFolder(folder, {
       selection: settings.selection,
       now: options.now,
+      readOnly: options.readOnly,
     });
     const at = (options.now ?? new Date()).toISOString();
     // Recorded even when nothing changed: "last checked" is the thing the

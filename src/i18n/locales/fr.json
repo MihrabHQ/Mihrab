@@ -2169,7 +2169,7 @@
     "pairWarnBody": "Tout ce qui est enregistré sur cet appareil apparaîtra ici, et tout ce qui est ici apparaîtra là-bas. En cas de désaccord, l’entrée la plus récente est conservée — et ce que vous supprimez sur un appareil est aussi supprimé sur l’autre.",
     "pairConfirm": "Associer",
     "pairedTitle": "Associé",
-    "pairedBody": "Cet appareil a écrit sa clé dans le dossier. Ouvrez Mihrab sur l’autre appareil — il affichera cet appareil en attente, avec une empreinte à comparer ; acceptez-le là-bas et les deux seront appairés et synchronisés.",
+    "pairedBody": "Cet appareil a écrit sa clé dans le dossier. Ouvrez Synchronisation sur l’autre appareil : il affichera cet appareil en attente, avec une empreinte à comparer ; acceptez-le là-bas. Cette page continue de vérifier le dossier pour sa réponse — rien d’autre à appuyer.",
     "errorBadCodeTitle": "Ce code n’a pas fonctionné",
     "errorBadCode": "Vérifiez le code et réessayez. Il est écrit par groupes de six, et un seul caractère erroné suffit à le rejeter.",
     "errorThisDevice": "C’est le code de cet appareil-ci. Il vous faut celui affiché sur l’autre.",
@@ -2239,7 +2239,11 @@
     "acceptBody": "Cet appareil s’est annoncé en écrivant dans votre dossier de synchronisation. Acceptez-le seulement si l’empreinte correspond à celle qu’il affiche.",
     "pendingTitle": "Un appareil attend",
     "pendingBody": "{{device}} (empreinte {{fingerprint}}) a écrit dans votre dossier de synchronisation. Rien n’est partagé avec lui tant que vous ne l’acceptez pas sous Appareils appairés.",
-    "storeDegraded": "Le stockage sécurisé de cet appareil ne fonctionne pas. La synchronisation ne peut pas s’exécuter sans lui, et certains enregistrements sont conservés dans un fichier non chiffré en attendant."
+    "storeDegraded": "Le stockage sécurisé de cet appareil ne fonctionne pas. La synchronisation ne peut pas s’exécuter sans lui, et certains enregistrements sont conservés dans un fichier non chiffré en attendant.",
+    "watchingAnswer": "Le dossier est vérifié toutes les quelques secondes pour {{device}}. Laissez cette page ouverte ou revenez plus tard — rien d’autre n’est nécessaire.",
+    "watchingAnnouncement": "Le dossier est vérifié toutes les quelques secondes pour un appareil disposant de ce code.",
+    "answeredTitle": "Appairés",
+    "answeredBody": "{{device}} a répondu. Les deux appareils se connaissent désormais et se synchronisent."
   },
   "stats": {
     "daysUnit_one": " jour",

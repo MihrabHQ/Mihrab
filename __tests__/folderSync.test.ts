@@ -63,6 +63,7 @@ import { forgetCachedDeviceName, setDeviceName } from '../src/sync/deviceName';
 import {
   acceptPeer,
   addPeerByCode,
+  awaiting,
   forgetCachedPeers,
   forgetPeer,
   listPeers,
@@ -247,6 +248,37 @@ describe('one code, carried once, in one direction', () => {
     expect(roundA2.read).toBe(1);
     expect(roundA2.wrote).toBe(syncFileNameFor(await publicKeyOf('A')));
     expect((await as('A', () => listPeers()))[0].pending).toBeUndefined();
+  });
+
+  it('pairs in the rounds the screens run by themselves: pair, check, accept, check', async () => {
+    // What the user does: type A's code into B, accept B on A. Everything
+    // else is the two Sync screens checking the folder on their own
+    // (read-only rounds, nothing written), so nobody presses Sync now.
+    const folder = memoryFolder();
+    await pairBFromA();
+    // B: pairing runs one round, which writes B's file and an invite to A.
+    await as('B', () => syncWithFolder(folder));
+    // A's screen, open, checks the folder: B is waiting. Nothing written.
+    const checkA = await as('A', () => syncWithFolder(folder, { readOnly: true }));
+    expect(checkA.wrote).toBeNull();
+    expect(checkA.learned).toBe(1);
+    expect(folder.files.has(syncFileNameFor(await publicKeyOf('A')))).toBe(false);
+    // A accepts, which runs one full round: B merged, A's file written for B.
+    const acceptRound = await as('A', async () => {
+      await acceptPeer((await listPeers())[0].pk);
+      return syncWithFolder(folder);
+    });
+    expect(acceptRound.read).toBe(1);
+    expect(acceptRound.wrote).toBe(syncFileNameFor(await publicKeyOf('A')));
+    // B's screen, still open, checks the folder: A has answered.
+    expect((await as('B', () => listPeers()))[0].lastSeenAt).toBeUndefined();
+    const checkB = await as('B', () => syncWithFolder(folder, { readOnly: true }));
+    expect(checkB.read).toBe(1);
+    expect(checkB.wrote).toBeNull();
+    expect((await as('B', () => listPeers()))[0].lastSeenAt).toBeDefined();
+    // Both know each other; nothing left to wait for on either.
+    expect(awaiting(await as('A', () => listPeers()))).toBeNull();
+    expect(awaiting(await as('B', () => listPeers()))).toBeNull();
   });
 
   it('does not act on removals a device that has not been accepted announces', async () => {

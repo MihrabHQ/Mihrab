@@ -2168,7 +2168,7 @@
     "pairWarnBody": "Alles, was auf jenem Gerät erfasst ist, erscheint hier, und alles von hier erscheint dort. Wo beide sich unterscheiden, bleibt der neuere Eintrag – und was Sie auf einem Gerät löschen, wird auch auf dem anderen entfernt.",
     "pairConfirm": "Koppeln",
     "pairedTitle": "Gekoppelt",
-    "pairedBody": "Dieses Gerät hat seinen Schlüssel in den Ordner geschrieben. Öffne Mihrab auf dem anderen Gerät — es zeigt dieses Gerät als wartend, mit einem Fingerabdruck zum Vergleichen; nimm es dort an, und beide sind gekoppelt und synchronisieren.",
+    "pairedBody": "Dieses Gerät hat seinen Schlüssel in den Ordner geschrieben. Öffne Sync auf dem anderen Gerät: Es zeigt dieses Gerät als wartend, mit einem Fingerabdruck zum Vergleichen; nimm es dort an. Diese Seite prüft den Ordner weiter auf die Antwort — du musst nichts weiter drücken.",
     "errorBadCodeTitle": "Dieser Code hat nicht funktioniert",
     "errorBadCode": "Prüfe den Code und versuche es erneut. Er ist in Sechsergruppen geschrieben, und ein einziges falsches Zeichen genügt zur Ablehnung.",
     "errorThisDevice": "Das ist der eigene Code dieses Geräts. Du brauchst den, der auf dem anderen Gerät steht.",
@@ -2238,7 +2238,11 @@
     "acceptBody": "Dieses Gerät hat sich durch Schreiben in deinen Sync-Ordner gemeldet. Nimm es nur an, wenn der Fingerabdruck mit dem dort angezeigten übereinstimmt.",
     "pendingTitle": "Ein Gerät wartet",
     "pendingBody": "{{device}} (Fingerabdruck {{fingerprint}}) hat in deinen Sync-Ordner geschrieben. Es wird nichts geteilt, bis du es unter „Gekoppelte Geräte“ annimmst.",
-    "storeDegraded": "Der sichere Speicher dieses Geräts funktioniert nicht. Sync kann ohne ihn nicht laufen, und einige Einträge werden bis dahin in einer unverschlüsselten Datei gehalten."
+    "storeDegraded": "Der sichere Speicher dieses Geräts funktioniert nicht. Sync kann ohne ihn nicht laufen, und einige Einträge werden bis dahin in einer unverschlüsselten Datei gehalten.",
+    "watchingAnswer": "Der Ordner wird alle paar Sekunden nach {{device}} durchsucht. Lass die Seite offen oder komm später wieder — mehr ist nicht nötig.",
+    "watchingAnnouncement": "Der Ordner wird alle paar Sekunden nach einem Gerät mit diesem Code durchsucht.",
+    "answeredTitle": "Gekoppelt",
+    "answeredBody": "{{device}} hat geantwortet. Beide Geräte kennen sich jetzt und synchronisieren ab sofort."
   },
   "stats": {
     "daysUnit_one": " Tag",

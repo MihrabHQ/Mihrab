@@ -2168,7 +2168,7 @@
     "pairWarnBody": "Semua yang tercatat di perangkat itu akan muncul di sini, dan semua yang di sini akan muncul di sana. Bila keduanya berbeda, entri yang lebih baru yang disimpan, dan apa yang Anda hapus di satu perangkat juga terhapus di perangkat lain.",
     "pairConfirm": "Sandingkan",
     "pairedTitle": "Tersanding",
-    "pairedBody": "Perangkat ini telah menulis kuncinya ke folder. Buka Mihrab di perangkat lain — perangkat ini akan tampil sebagai menunggu, dengan sidik jari untuk dibandingkan; terima di sana, maka keduanya tersambung dan menyinkron.",
+    "pairedBody": "Perangkat ini telah menulis kuncinya ke folder. Buka Sinkronisasi di perangkat lain: perangkat ini akan tampil sebagai menunggu, dengan sidik jari untuk dibandingkan; terima di sana. Layar ini terus memeriksa folder untuk jawabannya — tidak perlu menekan apa pun lagi.",
     "errorBadCodeTitle": "Kode itu tidak berhasil",
     "errorBadCode": "Periksa kodenya dan coba lagi. Kode ditulis dalam kelompok enam, dan satu karakter salah saja sudah cukup untuk ditolak.",
     "errorThisDevice": "Itu kode milik perangkat ini sendiri. Anda perlu kode yang tampil di perangkat satunya.",
@@ -2238,7 +2238,11 @@
     "acceptBody": "Perangkat ini memperkenalkan diri dengan menulis ke folder sinkronisasi Anda. Terima hanya jika sidik jarinya cocok dengan yang ditampilkan di sana.",
     "pendingTitle": "Sebuah perangkat menunggu",
     "pendingBody": "{{device}} (sidik jari {{fingerprint}}) menulis ke folder sinkronisasi Anda. Tidak ada yang dibagikan sampai Anda menerimanya di Perangkat tersambung.",
-    "storeDegraded": "Penyimpanan aman perangkat ini tidak berfungsi. Sinkronisasi tidak dapat berjalan tanpanya, dan beberapa catatan disimpan dalam berkas tanpa enkripsi sampai pulih."
+    "storeDegraded": "Penyimpanan aman perangkat ini tidak berfungsi. Sinkronisasi tidak dapat berjalan tanpanya, dan beberapa catatan disimpan dalam berkas tanpa enkripsi sampai pulih.",
+    "watchingAnswer": "Memeriksa folder untuk {{device}} setiap beberapa detik. Biarkan layar ini terbuka atau kembali nanti — tidak perlu apa-apa lagi.",
+    "watchingAnnouncement": "Memeriksa folder setiap beberapa detik untuk perangkat yang memiliki kode ini.",
+    "answeredTitle": "Tersambung",
+    "answeredBody": "{{device}} telah menjawab. Kedua perangkat kini saling mengenal dan menyinkron mulai sekarang."
   },
   "stats": {
     "daysUnit_one": " hari",

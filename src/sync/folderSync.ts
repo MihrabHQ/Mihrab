@@ -273,7 +273,17 @@ export type SyncOutcome = {
  */
 export async function syncWithFolder(
   folder: SyncFolder,
-  options: { selection?: SyncSelection; now?: Date } = {},
+  options: {
+    selection?: SyncSelection;
+    now?: Date;
+    /**
+     * Read and merge, write nothing. For the Sync screen checking the
+     * folder every few seconds for the other device's answer: our own
+     * file is already there from the round that paired, and rewriting
+     * it on every check would churn the folder for whatever carries it.
+     */
+    readOnly?: boolean;
+  } = {},
 ): Promise<SyncOutcome> {
   const me = await getDeviceIdentity();
   const mine = syncFileNameFor(me.publicKey);
@@ -500,6 +510,10 @@ export async function syncWithFolder(
     const applied = await applySnapshot(snapshot, everything());
     merged = merged ? mergeSummaries(merged, applied.summary) : applied.summary;
     read++;
+  }
+
+  if (options.readOnly) {
+    return { wrote: null, read, learned, forgotten, merged, skipped };
   }
 
   const now = options.now ?? new Date();

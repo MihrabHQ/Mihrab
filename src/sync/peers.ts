@@ -479,3 +479,23 @@ export function forgetCachedPeers(): void {
   cached = null;
   chain = Promise.resolve();
 }
+
+/**
+ * What this device is waiting for from the folder, if anything — the
+ * reason for the Sync screen to keep checking it rather than leave the
+ * user pressing Sync now until the other device's file has travelled.
+ *
+ *   'answer'       — a device paired here has never had a file of its
+ *                    read: it has not written yet, or its file has not
+ *                    arrived. The case after typing or scanning a code.
+ *   'announcement' — no device at all: this one's code may have been
+ *                    carried to another, whose first file is on its way.
+ *
+ * A pending device is not waited for: it waits for the user.
+ */
+export function awaiting(peers: Peer[]): 'answer' | 'announcement' | null {
+  const accepted = peers.filter(p => !p.pending);
+  if (accepted.some(p => !p.lastSeenAt)) return 'answer';
+  if (peers.length === 0) return 'announcement';
+  return null;
+}

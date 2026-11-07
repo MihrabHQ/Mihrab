@@ -27,7 +27,8 @@
  * to do it on both, because the alternative is a phone that keeps writing
  * files nobody opens and a user who thinks it did not work.
  */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import {
   ActivityIndicator,
   Pressable,
@@ -70,6 +71,7 @@ import {
 import {
   acceptPeer,
   addPeerByCode,
+  awaiting,
   forgetPeer,
   listPeers,
   MAX_PEERS,
@@ -98,6 +100,21 @@ type Palette = ReturnType<typeof useAppPalette>['palette'];
  * Spelled out rather than built from the value, so every string this
  * screen shows can be found by searching for it.
  */
+/**
+ * How the screen waits for the other device, so the user does not.
+ *
+ * Pairing is two files passing through a folder that something else
+ * carries — Syncthing, a cloud app — and that takes anywhere from a
+ * second to a few minutes. Pressing Sync now before the file has
+ * arrived reads "Nothing arrived", and the only thing to do was press
+ * again, which is what people did, many times. So while this screen is
+ * open and there is something to wait for (`awaiting`), it checks the
+ * folder itself — a read-only round, nothing written — this often, for
+ * this long after the last thing that gave it a reason, and says so.
+ */
+const WATCH_EVERY_MS = 10 * 1000;
+const WATCH_FOR_MS = 10 * 60 * 1000;
+
 const FREQUENCY_LABELS: Record<SyncFrequency, string> = {
   open: 'sync.freqOpen',
   '15min': 'sync.freq15Min',
@@ -294,6 +311,74 @@ export function SyncScreen() {
     setPeers(await listPeers());
   }, []);
 
+  // ── WATCHING THE FOLDER ────────────────────────────────────────────
+  // Armed by anything that gives the screen a reason to expect a file:
+  // opening it, pairing, accepting. Disarmed by time, or by there being
+  // nothing left to wait for.
+  const watchUntil = useRef(0);
+  const [watching, setWatching] = useState<'answer' | 'announcement' | null>(null);
+  const armWatch = useCallback(() => {
+    watchUntil.current = Date.now() + WATCH_FOR_MS;
+  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      armWatch();
+      return () => {
+        watchUntil.current = 0;
+      };
+    }, [armWatch]),
+  );
+  // What the last check saw, so a change can be announced once.
+  const seenRef = useRef(peers);
+  seenRef.current = peers;
+  useEffect(() => {
+    const reason = ready && settings?.folder ? awaiting(peers) : null;
+    setWatching(reason);
+    if (!reason) return;
+    let inFlight = false;
+    const check = async () => {
+      if (inFlight || Date.now() > watchUntil.current) {
+        if (Date.now() > watchUntil.current) setWatching(null);
+        return;
+      }
+      inFlight = true;
+      try {
+        const result = await runSyncNow({ readOnly: true });
+        if (!result.ok) return;
+        const before = seenRef.current;
+        const after = await listPeers();
+        setPeers(after);
+        // A device that has your code just wrote its first file.
+        const arrived = after.find(p => p.pending && !before.some(b => b.pk === p.pk));
+        if (arrived) {
+          tell(
+            t('sync.pendingTitle'),
+            t('sync.pendingBody', {
+              device: arrived.name ?? t('sync.unnamedDevice'),
+              fingerprint: arrived.fingerprint,
+            }),
+          );
+          return;
+        }
+        // The device you paired with has answered: both know each other.
+        const answered = after.find(
+          p => !p.pending && p.lastSeenAt && before.some(b => b.pk === p.pk && !b.lastSeenAt),
+        );
+        if (answered) {
+          setSettings(await getSyncSettings());
+          tell(
+            t('sync.answeredTitle'),
+            t('sync.answeredBody', { device: answered.name ?? t('sync.unnamedDevice') }),
+          );
+        }
+      } finally {
+        inFlight = false;
+      }
+    };
+    const timer = setInterval(() => void check(), WATCH_EVERY_MS);
+    return () => clearInterval(timer);
+  }, [peers, ready, settings?.folder, t, tell]);
+
   const onCopy = useCallback(async () => {
     if (!code) return;
     const result = await copyToClipboard(code);
@@ -376,6 +461,8 @@ export function SyncScreen() {
                 setSyncing(false);
               }
               setSettings(await getSyncSettings());
+              await refreshPeers();
+              armWatch();
               tell(t('sync.pairedTitle'), t('sync.pairedBody'));
             } catch {
               tell(t('sync.errorSaveTitle'), t('sync.errorSaveBody'));
@@ -386,7 +473,7 @@ export function SyncScreen() {
         },
       });
     },
-    [ask, busy, refreshPeers, t, tell],
+    [armWatch, ask, busy, refreshPeers, t, tell],
   );
 
   const onAdd = useCallback(() => pairWith(entered), [entered, pairWith]);
@@ -516,11 +603,23 @@ export function SyncScreen() {
           void (async () => {
             await acceptPeer(peer.pk);
             await refreshPeers();
+            // AND WRITE FOR IT NOW: the accepted device is waiting for a
+            // file sealed to it, and the next app open is too late to be
+            // the first time it gets one.
+            setSyncing(true);
+            try {
+              await runSyncNow();
+            } finally {
+              setSyncing(false);
+            }
+            setSettings(await getSyncSettings());
+            await refreshPeers();
+            armWatch();
           })();
         },
       });
     },
-    [ask, refreshPeers, t],
+    [armWatch, ask, refreshPeers, t],
   );
 
   const onRemove = useCallback(
@@ -901,6 +1000,20 @@ export function SyncScreen() {
               />
             ))
           )}
+          {watching ? (
+            <View style={styles.watching}>
+              <ActivityIndicator size="small" color={String(palette.muted)} />
+              <Text style={[typeStyle('footnote'), styles.watchingText, { color: palette.muted }]}>
+                {watching === 'answer'
+                  ? t('sync.watchingAnswer', {
+                      device:
+                        peers.find(p => !p.pending && !p.lastSeenAt)?.name ??
+                        t('sync.unnamedDevice'),
+                    })
+                  : t('sync.watchingAnnouncement')}
+              </Text>
+            </View>
+          ) : null}
         </View>
 
 
@@ -998,6 +1111,13 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.xs,
   },
   peerText: { flex: 1 },
+  watching: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.sm,
+    paddingTop: SPACING.sm,
+  },
+  watchingText: { flex: 1 },
   peerName: { padding: 0, margin: 0 },
   remove: { paddingVertical: SPACING.xs, paddingHorizontal: SPACING.xs },
 });

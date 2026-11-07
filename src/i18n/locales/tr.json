@@ -2168,7 +2168,7 @@
     "pairWarnBody": "O cihazda kayıtlı olan her şey burada, buradaki her şey de orada görünecek. İkisi ayrıldığında daha yeni kayıt korunur; bir cihazda sildiğiniz şey diğerinden de silinir.",
     "pairConfirm": "Eşleştir",
     "pairedTitle": "Eşleştirildi",
-    "pairedBody": "Bu cihaz anahtarını klasöre yazdı. Diğer cihazda Mihrab’ı açın — bu cihazı karşılaştırmak için bir parmak iziyle bekliyor olarak gösterir; orada kabul edin, ikisi de eşleşir ve eşitlenir.",
+    "pairedBody": "Bu cihaz anahtarını klasöre yazdı. Diğer cihazda Eşitleme’yi açın: bu cihazı karşılaştırmak için bir parmak iziyle bekliyor olarak gösterir; orada kabul edin. Bu ekran, yanıtı için klasörü kontrol etmeye devam eder — başka bir şeye basmanız gerekmez.",
     "errorBadCodeTitle": "Bu kod işe yaramadı",
     "errorBadCode": "Kodu denetleyip yeniden deneyin. Altışarlı gruplar hâlindedir ve tek bir yanlış karakter reddedilmesine yeter.",
     "errorThisDevice": "Bu, bu cihazın kendi kodu. Diğer cihazda görünen kod gerekiyor.",
@@ -2238,7 +2238,11 @@
     "acceptBody": "Bu cihaz eşitleme klasörünüze yazarak kendini duyurdu. Yalnızca parmak izi onda gösterilenle eşleşiyorsa kabul edin.",
     "pendingTitle": "Bir cihaz bekliyor",
     "pendingBody": "{{device}} (parmak izi {{fingerprint}}) eşitleme klasörünüze yazdı. Eşleştirilmiş cihazlar altında kabul edene kadar onunla hiçbir şey paylaşılmaz.",
-    "storeDegraded": "Bu cihazın güvenli depolaması çalışmıyor. Eşitleme onsuz çalışamaz ve bazı kayıtlar geri gelene kadar şifrelenmemiş bir dosyada tutuluyor."
+    "storeDegraded": "Bu cihazın güvenli depolaması çalışmıyor. Eşitleme onsuz çalışamaz ve bazı kayıtlar geri gelene kadar şifrelenmemiş bir dosyada tutuluyor.",
+    "watchingAnswer": "Klasör birkaç saniyede bir {{device}} için kontrol ediliyor. Bu ekranı açık bırakın ya da sonra dönün — başka bir şey gerekmiyor.",
+    "watchingAnnouncement": "Klasör, bu koda sahip bir cihaz için birkaç saniyede bir kontrol ediliyor.",
+    "answeredTitle": "Eşleştirildi",
+    "answeredBody": "{{device}} yanıt verdi. İki cihaz artık birbirini tanıyor ve bundan sonra eşitleniyor."
   },
   "stats": {
     "daysUnit_one": " gün",

@@ -13,6 +13,16 @@ import { create, type ReactTestRenderer } from 'react-test-renderer';
 
 const mockSecure = new Map<string, string>();
 
+// The screen is rendered without a navigator; focus runs its effect once.
+jest.mock('@react-navigation/native', () => {
+  const React = require('react');
+  return {
+    useFocusEffect: (effect: () => void | (() => void)) => {
+      React.useEffect(effect, [effect]);
+    },
+  };
+});
+
 jest.mock('../src/storage/durableWrite', () => ({
   // The store announces writes; `recordChanged` subscribes on import.
   // A mock without it makes every module that saves anything fail to load.

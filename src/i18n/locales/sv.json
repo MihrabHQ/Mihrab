@@ -2168,7 +2168,7 @@
     "pairWarnBody": "Allt som finns registrerat på den enheten dyker upp här, och allt som finns här dyker upp där. Där de två skiljer sig behålls den senaste posten – och det du tar bort på en enhet tas bort på den andra också.",
     "pairConfirm": "Parkoppla",
     "pairedTitle": "Parkopplad",
-    "pairedBody": "Den här enheten har skrivit sin nyckel till mappen. Öppna Mihrab på den andra enheten — den visar den här enheten som väntande, med ett fingeravtryck att jämföra; godkänn den där så är båda parkopplade och synkar.",
+    "pairedBody": "Den här enheten har skrivit sin nyckel till mappen. Öppna Synk på den andra enheten: den visar den här enheten som väntande, med ett fingeravtryck att jämföra, och godkänn den där. Den här sidan fortsätter kontrollera mappen efter svaret — du behöver inte trycka på något mer.",
     "errorBadCodeTitle": "Koden fungerade inte",
     "errorBadCode": "Kontrollera koden och försök igen. Den är grupperad i sexor, och ett enda fel tecken räcker för att den ska avvisas.",
     "errorThisDevice": "Det är den här enhetens egen kod. Du behöver den som visas på den andra enheten.",
@@ -2238,7 +2238,11 @@
     "acceptBody": "Den här enheten anmälde sig genom att skriva i din synkmapp. Godkänn den bara om fingeravtrycket stämmer med det som visas på den.",
     "pendingTitle": "En enhet väntar",
     "pendingBody": "{{device}} (fingeravtryck {{fingerprint}}) skrev i din synkmapp. Inget delas med den förrän du godkänner den under Parkopplade enheter.",
-    "storeDegraded": "Enhetens säkra lagring fungerar inte. Synk kan inte köras utan den, och vissa poster sparas i en okrypterad fil tills den fungerar igen."
+    "storeDegraded": "Enhetens säkra lagring fungerar inte. Synk kan inte köras utan den, och vissa poster sparas i en okrypterad fil tills den fungerar igen.",
+    "watchingAnswer": "Kontrollerar mappen efter {{device}} med några sekunders mellanrum. Låt sidan vara öppen eller kom tillbaka senare — inget mer behövs.",
+    "watchingAnnouncement": "Kontrollerar mappen med några sekunders mellanrum efter en enhet som har den här koden.",
+    "answeredTitle": "Parkopplade",
+    "answeredBody": "{{device}} har svarat. Båda enheterna känner nu varandra och synkar från och med nu."
   },
   "stats": {
     "daysUnit_one": " dag",
