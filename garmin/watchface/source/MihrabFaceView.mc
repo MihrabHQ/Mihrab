@@ -8,7 +8,8 @@
 //           👣 004532                   today's steps
 //   ☁ 8°                  am
 //   16°/7°   16:42        07            the weather · the time · the seconds
-//            ─────
+//            ━━━──                      the battery, as wide as the figures
+//              87%                      and how full it is, at its right end
 //          Asr  16:42                   the next prayer
 //            5h 49m                     the countdown as Minimal writes it
 //      times may be out of date         after days without the phone
@@ -54,10 +55,12 @@ class MihrabFaceView extends WatchUi.WatchFace {
     // The ring round the edge: its radius in from the edge, its width.
     private const RING_IN = 3;
     private const RING_PEN = 4;
-    // The rule under the time, thick enough to carry the accent.
-    private const RULE_PEN = 2;
-    // The rule under the time sits this far below its baseline.
+    // The battery bar under the time, thick enough to read its colour.
+    private const RULE_PEN = 4;
+    // The bar under the time sits this far below its baseline.
     private const RULE_DROP = 5;
+    // Between the bar and the percentage under its right end.
+    private const PCT_GAP = 2;
 
     // Weather icon kinds.
     private const W_SUN = 0;
@@ -230,11 +233,10 @@ class MihrabFaceView extends WatchUi.WatchFace {
             drawLines(dc, staleLines, _fStale, _bStale);
         }
 
-        // The time with the weather and the seconds, and a rule under the
-        // figures as wide as they are.
+        // The time with the weather and the seconds, and the battery under
+        // the figures as wide as they are.
         var figures = drawClock(dc, clock.min.format("%02d"), clock.sec, suffix, accent);
-        dc.setColor(accent, Graphics.COLOR_TRANSPARENT);
-        dc.fillRectangle(figures[0], _bClock + RULE_DROP, figures[1] + 1, RULE_PEN);
+        drawBattery(dc, figures[0], figures[1] + 1);
 
         // The next prayer and the countdown, or why there is none.
         var next = _next;
@@ -569,7 +571,7 @@ class MihrabFaceView extends WatchUi.WatchFace {
     // its up * 1000 + down there, left width, left up, upper offset, right width, right up,
     // suffix offset, steps up, down, width, stale line height, stale
     // variants ([up, down, width, lines] for one and two lines, null where
-    // it will not wrap)].
+    // it will not wrap), the battery percentage's up].
     private function measureOthers(dc as Dc, fonts as Array<Graphics.FontType>, full as Number) as Array {
         var fDate = fonts[0];
         var fStale = fonts[1];
@@ -654,7 +656,8 @@ class MihrabFaceView extends WatchUi.WatchFace {
             inlineW, inlineUp * 1000 + inlineDown,
             leftW, leftUp, upperOff, rightW, rightUp, suffixOff,
             sUp, sDown, ICON + 4 + textW(dc, "000000", fSteps),
-            lineH, stale
+            lineH, stale,
+            Graphics.getFontAscent(fSide)
         ];
     }
 
@@ -713,9 +716,12 @@ class MihrabFaceView extends WatchUi.WatchFace {
         if (leftW > 0) {
             ok = fit(lx, b - leftUp, b) && ok;
         }
-        ok = fit(dx, b - clockUp, b + RULE_DROP + RULE_PEN) && ok;
+        // The bar, and under its right end the percentage, which ends
+        // where the figures do and so is no wider than they are.
+        var pctB = b + RULE_DROP + RULE_PEN + PCT_GAP + (om[16] as Number);
+        ok = fit(dx, b - clockUp, pctB) && ok;
         ok = fit(rx, b - rightUp, b) && ok;
-        y = b + RULE_DROP + RULE_PEN + ROW_GAP;
+        y = pctB + ROW_GAP;
 
         // The prayer and its countdown, or the message.
         var hasNext = _next != null;
@@ -786,6 +792,38 @@ class MihrabFaceView extends WatchUi.WatchFace {
     }
 
     // ---- Drawing ----
+
+    // The battery: a bar from x, w wide, under the figures — the charge
+    // left in its colour (green, then yellow, orange and red as it runs
+    // down), what has been used in grey — and the percentage under its
+    // right end.
+    private function drawBattery(dc as Dc, x as Number, w as Number) as Void {
+        var pct = System.getSystemStats().battery;
+        pct = pct < 0.0 ? 0.0 : (pct > 100.0 ? 100.0 : pct);
+        var y = _bClock + RULE_DROP;
+        var full = (w * pct / 100.0 + 0.5).toNumber();
+        dc.setColor(RULE, Graphics.COLOR_TRANSPARENT);
+        dc.fillRectangle(x, y, w, RULE_PEN);
+        if (full > 0) {
+            dc.setColor(batteryColor(pct), Graphics.COLOR_TRANSPARENT);
+            dc.fillRectangle(x, y, full, RULE_PEN);
+        }
+        dc.setColor(DIM, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(x + w, y + RULE_PEN + PCT_GAP, _fSide, (pct + 0.5).toNumber().format("%d") + "%", Graphics.TEXT_JUSTIFY_RIGHT);
+    }
+
+    private function batteryColor(pct as Float) as Number {
+        if (pct > 50.0) {
+            return Graphics.COLOR_GREEN;
+        }
+        if (pct > 25.0) {
+            return Graphics.COLOR_YELLOW;
+        }
+        if (pct > 10.0) {
+            return Graphics.COLOR_ORANGE;
+        }
+        return Graphics.COLOR_RED;
+    }
 
     // Text centred on the dial, on baseline b.
     private function drawRow(dc as Dc, text as String, f as Graphics.FontType, b as Number) as Void {
