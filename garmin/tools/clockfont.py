@@ -17,7 +17,7 @@ Needs Pillow. The font's base sits on the tops of the figures, with no room
 for accents above them, so the ascent the face measures is the ink.
 
 Also the battery's percentage under the clock's bar: figures and "%", small
-enough to tuck into the room above the prayer line rather than push it down.
+enough to sit under the seconds, in the room above the prayer line.
 """
 import os
 from PIL import Image, ImageDraw, ImageFont
