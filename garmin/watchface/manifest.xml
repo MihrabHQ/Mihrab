@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<iq:manifest xmlns:iq="http://www.garmin.com/xml/connectiq" version="3">
+    <!-- The UUID is what Mihrab on the phone addresses the message to
+         (android/.../GarminWatch.kt, FACE_APP_ID). Never change it. -->
+    <iq:application entry="MihrabFaceApp" id="ce7d11516b8742a1b561364b45404b37" launcherIcon="@Drawables.LauncherIcon" minApiLevel="3.2.0" name="@Strings.AppName" type="watchface" version="1.0.0">
+        <iq:products>
+            <iq:product id="enduro3"/>
+        </iq:products>
+        <iq:permissions>
+            <iq:uses-permission id="Background"/>
+            <iq:uses-permission id="Communications"/>
+        </iq:permissions>
+        <iq:languages>
+            <iq:language>eng</iq:language>
+            <iq:language>swe</iq:language>
+            <iq:language>deu</iq:language>
+            <iq:language>fre</iq:language>
+            <iq:language>spa</iq:language>
+            <iq:language>ind</iq:language>
+            <iq:language>tur</iq:language>
+            <iq:language>rus</iq:language>
+        </iq:languages>
+        <iq:barrels/>
+    </iq:application>
+</iq:manifest>

@@ -1,0 +1,12 @@
+<strings>
+    <string id="AppName">Mihrab</string>
+    <string id="OpenMihrab" scope="glance">Buka Mihrab di ponsel</string>
+    <string id="TimesEnded" scope="glance">Tidak ada waktu lagi – buka Mihrab</string>
+    <string id="Stale">waktu mungkin usang</string>
+    <string id="Label">Salat</string>
+    <string id="NextLong" scope="glance">Salat berikutnya</string>
+    <string id="UntilLong">Menuju salat</string>
+    <string id="NextShort">Salat</string>
+    <string id="UntilShort">Lagi</string>
+    <string id="FaceItDefault">Mihrab</string>
+</strings>

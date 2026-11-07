@@ -1,0 +1,12 @@
+<strings>
+    <string id="AppName">Mihrab</string>
+    <string id="OpenMihrab" scope="glance">Öppna Mihrab på telefonen</string>
+    <string id="TimesEnded" scope="glance">Inga tider kvar – öppna Mihrab</string>
+    <string id="Stale">tiderna kan vara gamla</string>
+    <string id="Label">Bön</string>
+    <string id="NextLong" scope="glance">Nästa bön</string>
+    <string id="UntilLong">Tid till bönen</string>
+    <string id="NextShort">Bön</string>
+    <string id="UntilShort">Till</string>
+    <string id="FaceItDefault">Mihrab</string>
+</strings>

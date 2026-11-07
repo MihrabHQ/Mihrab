@@ -25,6 +25,7 @@ import { NestedPageRows } from '../NestedPageRows';
 import { NotificationsCard } from '../NotificationsCard';
 import { PreReminderModal } from '../PreReminderModal';
 import { PrayerSilenceCard } from '../PrayerSilenceCard';
+import { GarminWatchCard } from '../GarminWatchCard';
 import { MinutesPickerModal } from '../MinutesPickerModal';
 import { TimePickerSheet } from '../TimePickerSheet';
 import {
@@ -161,6 +162,9 @@ export function NotificationSettingsScreen() {
             nobody thought to look. It owns no modals, so the page's
             back-deferral is unaffected. */}
         <LiveActivityCard onOpenShowFromPicker={openShowFrom} />
+        {/* The same countdown on a Garmin watch, through Gadgetbridge
+            (garmin/README.md). Android only; nothing elsewhere. */}
+        <GarminWatchCard />
       </SettingsPage>
 
       <SoundPickerModal

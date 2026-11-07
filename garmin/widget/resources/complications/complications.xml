@@ -1,0 +1,13 @@
+<complications>
+    <!-- Published for Face It faces and any Connect IQ face that subscribes.
+         ids are forever: 0 is the next prayer and its time, 1 the time
+         until it in one unit ("5h", "49m"), refreshed every five minutes
+         by the background service — the finest a background may run, so
+         the minutes can lag by up to five. -->
+    <complication id="0" access="public" icon="@Drawables.ComplicationIcon" shortLabel="@Strings.NextShort" longLabel="@Strings.NextLong" glancePreview="true">
+        <faceIt defaultText="@Strings.FaceItDefault" />
+    </complication>
+    <complication id="1" access="public" icon="@Drawables.ComplicationIcon" shortLabel="@Strings.UntilShort" longLabel="@Strings.UntilLong">
+        <faceIt defaultText="@Strings.FaceItDefault" />
+    </complication>
+</complications>

@@ -1,0 +1,12 @@
+<strings>
+    <string id="AppName">Mihrab</string>
+    <string id="OpenMihrab" scope="glance">Telefonda Mihrab’ı açın</string>
+    <string id="TimesEnded" scope="glance">Vakit kalmadı – Mihrab’ı açın</string>
+    <string id="Stale">vakitler eski olabilir</string>
+    <string id="Label">Namaz</string>
+    <string id="NextLong" scope="glance">Sonraki namaz</string>
+    <string id="UntilLong">Namaza kalan</string>
+    <string id="NextShort">Namaz</string>
+    <string id="UntilShort">Kalan</string>
+    <string id="FaceItDefault">Mihrab</string>
+</strings>

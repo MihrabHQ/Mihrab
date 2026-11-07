@@ -24,6 +24,11 @@
         <package android:name="com.vivo.compass" />
         <package android:name="com.sec.android.app.compass" />
         <package android:name="com.motorola.compass" />
+        <!-- Gadgetbridge, which carries the prayer times to a Garmin watch
+             (GarminWatch.kt): the app asks whether it is installed. -->
+        <package android:name="nodomain.freeyourgadget.gadgetbridge" />
+        <package android:name="nodomain.freeyourgadget.gadgetbridge.nightly" />
+        <package android:name="nodomain.freeyourgadget.gadgetbridge.nightly_nopebble" />
     </queries>
 
     <uses-permission android:name="android.permission.INTERNET" />

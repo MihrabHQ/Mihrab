@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40">
+  <!-- The arch, as a one-colour mark: a face tints it in its own ink. -->
+  <path d="M 10 36 L 10 17 Q 10 11 15 8 L 20 4 L 25 8 Q 30 11 30 17 L 30 36 Z M 14 33 L 26 33 L 26 18 Q 26 14 22.5 11.5 L 20 9.5 L 17.5 11.5 Q 14 14 14 18 Z" fill="#FFFFFF" fill-rule="evenodd"/>
+</svg>

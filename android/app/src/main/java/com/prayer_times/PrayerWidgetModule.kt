@@ -196,6 +196,8 @@ class PrayerWidgetModule(private val reactContext: ReactApplicationContext) :
       // widget kinds maintained in two places is a list that will be wrong
       // in one of them, and it already was.
       PrayerWidgetProvider.requestUpdate(reactContext)
+      // The Garmin watch draws from this same schedule (GarminWatch.kt).
+      GarminWatch.onPayloadWritten(reactContext)
       promise.resolve(null)
     } catch (e: Exception) {
       promise.reject("E_WIDGET", e.message, e)

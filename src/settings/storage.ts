@@ -14,6 +14,7 @@ import {
   coercePrePrayerReminderMinutes,
 } from './prePrayerReminder';
 import { coercePrayerSilence } from './prayerSilence';
+import { coerceGarminWatch } from './garminWatch';
 import { clampReadingScale } from '../theme/readingText';
 import {
   coerceHijriAdjust,
@@ -613,6 +614,9 @@ async function loadSettingsUncached(): Promise<PrayerAppSettings> {
   // a clock, and a half-shaped blob would be read by a receiver with the
   // app closed, where there is nobody to notice.
   merged.prayerSilence = coercePrayerSilence(parsed.prayerSilence);
+  // The watch's address is typed by hand; a blob from before the setting
+  // existed gets the default (off), never undefined.
+  merged.garminWatch = coerceGarminWatch(parsed.garminWatch);
   // One-time v2.7.27 migration: the mushaf became the default reading
   // mode. Blobs written before the marker existed carry the OLD default
   // ('withTranslation') that virtually no user chose explicitly — apply

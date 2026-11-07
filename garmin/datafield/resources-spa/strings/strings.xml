@@ -1,0 +1,7 @@
+<strings>
+    <string id="AppName">Mihrab</string>
+    <string id="OpenMihrab">Abre Mihrab en el teléfono</string>
+    <string id="TimesEnded">Sin horarios – abre Mihrab</string>
+    <string id="Stale">horarios quizá antiguos</string>
+    <string id="Label">Oración</string>
+</strings>

@@ -8,6 +8,7 @@ import type { NotificationSoundId } from '../notifications/notificationSounds';
 import type { PrayerOffsetMinutes } from './prayerOffsets';
 import type { AlertModeMap } from './alertModes';
 import { DEFAULT_PRAYER_SILENCE, type PrayerSilenceSettings } from './prayerSilence';
+import { DEFAULT_GARMIN_WATCH, type GarminWatchSettings } from './garminWatch';
 import type { ClockFormat } from '../utils/clockFormat';
 import type { DhikrReminder } from '../dhikr/dhikrReminders';
 import { DEFAULT_READING_SCALE } from '../theme/readingText';
@@ -273,6 +274,12 @@ export type PrayerAppSettings = {
    * shown on iOS, which lets no app touch silent mode or Focus.
    */
   prayerSilence: PrayerSilenceSettings;
+  /**
+   * ANDROID: the next days' prayer times to a Garmin watch through
+   * Gadgetbridge, for the Mihrab watch face and data field —
+   * garmin/README.md. See `settings/garminWatch.ts`.
+   */
+  garminWatch: GarminWatchSettings;
   /** Android: widget background opacity 0–100. */
   androidWidgetBackgroundOpacity: number;
   /** Highlight style for the widget next-prayer row. */
@@ -809,6 +816,7 @@ export const DEFAULT_SETTINGS: PrayerAppSettings = {
   adhanUsesAlarmStream: false,
   prayerAlertFullScreen: false,
   prayerSilence: { ...DEFAULT_PRAYER_SILENCE },
+  garminWatch: { ...DEFAULT_GARMIN_WATCH },
   prayerAlertModes: {},
   androidWidgetBackgroundOpacity: 88,
   widgetHighlightId: 'green',

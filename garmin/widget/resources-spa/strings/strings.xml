@@ -1,0 +1,12 @@
+<strings>
+    <string id="AppName">Mihrab</string>
+    <string id="OpenMihrab" scope="glance">Abre Mihrab en el teléfono</string>
+    <string id="TimesEnded" scope="glance">Sin horarios – abre Mihrab</string>
+    <string id="Stale">horarios quizá antiguos</string>
+    <string id="Label">Oración</string>
+    <string id="NextLong" scope="glance">Próxima oración</string>
+    <string id="UntilLong">Hasta la oración</string>
+    <string id="NextShort">Oración</string>
+    <string id="UntilShort">Falta</string>
+    <string id="FaceItDefault">Mihrab</string>
+</strings>

@@ -1,0 +1,7 @@
+<strings>
+    <string id="AppName">Mihrab</string>
+    <string id="OpenMihrab">Öppna Mihrab på telefonen</string>
+    <string id="TimesEnded">Inga tider kvar – öppna Mihrab</string>
+    <string id="Stale">tiderna kan vara gamla</string>
+    <string id="Label">Bön</string>
+</strings>

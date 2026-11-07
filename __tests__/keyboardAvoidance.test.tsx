@@ -80,6 +80,8 @@ const DELEGATES_TO_HOST: Record<string, string> = {
     'a settings card (the custom twilight angles) — SettingsPage owns the ScrollView',
   'screens/settings/WidgetTextColor.tsx':
     'a settings card (the custom widget text colour) — SettingsPage owns the ScrollView',
+  'screens/settings/GarminWatchCard.tsx':
+    'a settings card (the watch\'s Bluetooth address) — SettingsPage owns the ScrollView',
   'quran/RiwayahDownloadSection.tsx':
     'a section of the Downloads settings page — SettingsPage owns the ScrollView',
   'quran/audio/RecitationControls.tsx':

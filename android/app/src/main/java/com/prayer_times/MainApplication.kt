@@ -47,6 +47,7 @@ class MainApplication : Application(), ReactApplication, androidx.work.Configura
           add(MushafFontPackage())
           add(MushafLinePackage())
           add(PrayerSilencePackage())
+          add(GarminWatchPackage())
           add(FullScreenAlarmPackage())
           add(CustomAdhanPackage())
           add(SecureRandomPackage())

@@ -1,0 +1,12 @@
+<strings>
+    <string id="AppName">Mihrab</string>
+    <string id="OpenMihrab" scope="glance">Откройте Mihrab на телефоне</string>
+    <string id="TimesEnded" scope="glance">Времена закончились – откройте Mihrab</string>
+    <string id="Stale">времена могут устареть</string>
+    <string id="Label">Намаз</string>
+    <string id="NextLong" scope="glance">Следующий намаз</string>
+    <string id="UntilLong">До намаза</string>
+    <string id="NextShort">Намаз</string>
+    <string id="UntilShort">До</string>
+    <string id="FaceItDefault">Mihrab</string>
+</strings>
